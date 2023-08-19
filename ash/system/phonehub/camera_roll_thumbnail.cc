@@ -4,6 +4,7 @@
 
 #include "ash/system/phonehub/camera_roll_thumbnail.h"
 
+#include "ash/constants/ash_features.h"
 #include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/style/ash_color_id.h"
 #include "ash/style/ash_color_provider.h"
@@ -106,6 +107,12 @@ void CameraRollThumbnail::ShowContextMenuForViewImpl(
 }
 
 void CameraRollThumbnail::ButtonPressed() {
+  if (base::TimeTicks::Now() - download_throttle_timestamp_ <
+      features::kPhoneHubCameraRollThrottleInterval.Get()) {
+    return;
+  }
+
+  download_throttle_timestamp_ = base::TimeTicks::Now();
   phone_hub_metrics::LogCameraRollContentClicked(index_, GetMediaType());
   DownloadRequested();
 }

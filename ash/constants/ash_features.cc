@@ -1951,6 +1951,12 @@ BASE_FEATURE(kPhoneHubCameraRoll,
              "PhoneHubCameraRoll",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
+// Maximum number of seconds to wait before users can download the same photo
+// from Camera Roll again.
+const base::FeatureParam<base::TimeDelta> kPhoneHubCameraRollThrottleInterval{
+    &kPhoneHubCameraRoll, "PhoneHubCameraRollThrottleInterval",
+    base::Seconds(2)};
+
 // Enable PhoneHub features setup error handling, which handles different
 // setup response from remote phone device.
 BASE_FEATURE(kPhoneHubFeatureSetupErrorHandling,
