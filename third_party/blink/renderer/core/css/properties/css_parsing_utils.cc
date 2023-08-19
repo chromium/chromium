@@ -949,7 +949,8 @@ class MathFunctionParser {
       const CSSParserContext& context,
       CSSPrimitiveValue::ValueRange value_range,
       const bool is_percentage_allowed = true,
-      CSSAnchorQueryTypes allowed_anchor_queries = kCSSAnchorQueryTypesNone)
+      CSSAnchorQueryTypes allowed_anchor_queries = kCSSAnchorQueryTypesNone,
+      HashMap<CSSValueID, double> color_channel_keyword_values = {})
       : source_range_(range), range_(range) {
     const CSSParserToken& token = range.Peek();
     if (token.GetType() == kFunctionToken) {

@@ -81,7 +81,10 @@ class CORE_EXPORT CSSMathExpressionNode
       CSSParserTokenRange tokens,
       const CSSParserContext&,
       const bool is_percentage_allowed,
-      CSSAnchorQueryTypes allowed_anchor_queries);
+      CSSAnchorQueryTypes allowed_anchor_queries,
+      // Variable substitutions for relative color syntax.
+      // https://www.w3.org/TR/css-color-5/#relative-colors
+      HashMap<CSSValueID, double> color_channel_keyword_values = {});
 
   virtual bool IsNumericLiteral() const { return false; }
   virtual bool IsOperation() const { return false; }
