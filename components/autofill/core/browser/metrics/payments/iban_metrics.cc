@@ -71,4 +71,10 @@ void LogIndividualIbanSuggestionsEvent(IbanSuggestionsEvent event) {
   base::UmaHistogramEnumeration("Autofill.Iban.Suggestions", event);
 }
 
+void LogIbanSuggestionBlockListStatusMetric(
+    IbanSuggestionBlockListStatus event) {
+  base::UmaHistogramEnumeration(
+      "Autofill.Iban.ShowSuggestionsBlocklistDecision", event);
+}
+
 }  // namespace autofill::autofill_metrics

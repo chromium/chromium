@@ -64,6 +64,18 @@ enum class IbanSuggestionsEvent {
   kMaxValue = kIbanSuggestionSelectedOnce,
 };
 
+// Metrics to track the site blocklist status when showing IBAN suggestions.
+enum class IbanSuggestionBlockListStatus {
+  // IBAN suggestions were allowed.
+  kAllowed = 0,
+  // IBAN suggestions were blocked due to the site's origin being in the
+  // blocklist.
+  kBlocked = 1,
+  // Blocklist is not available.
+  kBlocklistIsNotAvailable = 2,
+  kMaxValue = kBlocklistIsNotAvailable,
+};
+
 // Logs various metrics about the local IBANs associated with a profile. This
 // should be called each time a new Chrome profile is launched.
 // `disused_data_threshold` is the time threshold to mark an IBAN as disused.
@@ -89,6 +101,12 @@ void LogSaveIbanBubbleResultSavedWithNicknameMetric(bool save_with_nickname);
 
 // Logs metrics related to IBAN individual suggestions being shown or selected.
 void LogIndividualIbanSuggestionsEvent(IbanSuggestionsEvent event);
+
+// Logs when the user clicks on an IBAN field and triggers IBAN autofill.
+// `event` donates whether IBAN suggestions were allowed to be shown, blocked
+// from being shown, or if the blocklist was not accessible at all.
+void LogIbanSuggestionBlockListStatusMetric(
+    IbanSuggestionBlockListStatus event);
 
 }  // namespace autofill::autofill_metrics
 

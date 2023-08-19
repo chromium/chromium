@@ -8,6 +8,7 @@
 #include "components/autofill/core/browser/autofill_optimization_guide.h"
 #include "components/autofill/core/browser/autofill_suggestion_generator.h"
 #include "components/autofill/core/browser/browser_autofill_manager.h"
+#include "components/autofill/core/browser/metrics/payments/iban_metrics.h"
 #include "components/autofill/core/browser/personal_data_manager.h"
 #include "components/autofill/core/browser/suggestions_context.h"
 #include "components/autofill/core/common/autofill_clock.h"
@@ -33,36 +34,43 @@ bool IbanManager::OnGetSingleFieldSuggestions(
     return false;
   }
 
-  // AutofillOptimizationGuide will not be present on unsupported platforms.
-  if (auto* autofill_optimization_guide =
-          client.GetAutofillOptimizationGuide()) {
-    if (autofill_optimization_guide->ShouldBlockSingleFieldSuggestions(
-            client.GetLastCommittedPrimaryMainFrameOrigin().GetURL(),
-            focused_field)) {
-      return false;
-    }
-  }
-
   if (!personal_data_manager_ ||
       !personal_data_manager_->IsAutofillCreditCardEnabled()) {
     return false;
   }
 
   std::vector<Iban*> ibans = personal_data_manager_->GetLocalIbans();
-  if (!ibans.empty()) {
-    // Rank the IBANs by ranking score (see AutoFillDataModel for details).
-    base::Time comparison_time = AutofillClock::Now();
-    if (ibans.size() > 1) {
-      base::ranges::sort(
-          ibans, [comparison_time](const Iban* iban0, const Iban* iban1) {
-            return iban0->HasGreaterRankingThan(iban1, comparison_time);
-          });
-    }
-    SendIbanSuggestions(ibans, QueryHandler(field.global_id(), trigger_source,
-                                            field.value, handler));
-    return true;
+  if (ibans.empty()) {
+    return false;
   }
-  return false;
+
+  // AutofillOptimizationGuide will not be present on unsupported platforms.
+  if (auto* autofill_optimization_guide =
+          client.GetAutofillOptimizationGuide()) {
+    if (autofill_optimization_guide->ShouldBlockSingleFieldSuggestions(
+            client.GetLastCommittedPrimaryMainFrameOrigin().GetURL(),
+            focused_field)) {
+      autofill_metrics::LogIbanSuggestionBlockListStatusMetric(
+          autofill_metrics::IbanSuggestionBlockListStatus::kBlocked);
+      return false;
+    }
+    autofill_metrics::LogIbanSuggestionBlockListStatusMetric(
+        autofill_metrics::IbanSuggestionBlockListStatus::kAllowed);
+  } else {
+    autofill_metrics::LogIbanSuggestionBlockListStatusMetric(
+        autofill_metrics::IbanSuggestionBlockListStatus::
+            kBlocklistIsNotAvailable);
+  }
+
+  // Rank the IBANs by ranking score (see AutoFillDataModel for details).
+  base::ranges::sort(ibans, [comparison_time = AutofillClock::Now()](
+                                const Iban* iban0, const Iban* iban1) {
+    return iban0->HasGreaterRankingThan(iban1, comparison_time);
+  });
+  SendIbanSuggestions(ibans, QueryHandler(field.global_id(), trigger_source,
+                                          field.value, handler));
+
+  return true;
 }
 
 base::WeakPtr<IbanManager> IbanManager::GetWeakPtr() {

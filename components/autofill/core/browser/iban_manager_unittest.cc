@@ -396,6 +396,73 @@ TEST_F(IbanManagerTest, NotIbanFieldFocused_NoSuggestionsShown) {
       /*context=*/context));
 }
 
+// Tests that when showing IBAN suggestions is allowed by the site-specific
+// blocklist, appropriate metrics are logged.
+TEST_F(IbanManagerTest, Metrics_Suggestions_Allowed) {
+  base::HistogramTester histogram_tester;
+  SetUpIban(test::kIbanValue, kNickname_0);
+
+  AutofillField test_field;
+  test_field.unique_renderer_id = test::MakeFieldRendererId();
+  SuggestionsContext context = GetIbanFocusedSuggestionsContext(test_field);
+  // Simulate request for suggestions.
+  iban_manager_.OnGetSingleFieldSuggestions(
+      AutofillSuggestionTriggerSource::kFormControlElementClicked, test_field,
+      autofill_client_, suggestions_handler_.GetWeakPtr(), context);
+
+  histogram_tester.ExpectUniqueSample(
+      "Autofill.Iban.ShowSuggestionsBlocklistDecision",
+      autofill_metrics::IbanSuggestionBlockListStatus::kAllowed, 1);
+}
+
+// Tests that when showing IBAN suggestions is blocked by the site-specific
+// blocklist, appropriate metrics are logged.
+TEST_F(IbanManagerTest, Metrics_Suggestions_Blocked) {
+  base::HistogramTester histogram_tester;
+  SetUpIban(test::kIbanValue, kNickname_0);
+  AutofillField test_field;
+  SuggestionsContext context = GetIbanFocusedSuggestionsContext(test_field);
+
+  // Setting up mock to verify that suggestions returning is not triggered if
+  // the website is blocked.
+  EXPECT_CALL(suggestions_handler_, OnSuggestionsReturned).Times(0);
+  ON_CALL(*static_cast<MockAutofillOptimizationGuide*>(
+              autofill_client_.GetAutofillOptimizationGuide()),
+          ShouldBlockSingleFieldSuggestions)
+      .WillByDefault(testing::Return(true));
+  // Simulate request for suggestions.
+  iban_manager_.OnGetSingleFieldSuggestions(
+      AutofillSuggestionTriggerSource::kFormControlElementClicked, test_field,
+      autofill_client_, suggestions_handler_.GetWeakPtr(),
+      /*context=*/context);
+
+  histogram_tester.ExpectUniqueSample(
+      "Autofill.Iban.ShowSuggestionsBlocklistDecision",
+      autofill_metrics::IbanSuggestionBlockListStatus::kBlocked, 1);
+}
+
+// Tests that when showing IBAN suggestions and the site-specific blocklist is
+// not available, appropriate metrics are logged.
+TEST_F(IbanManagerTest, Metrics_Suggestions_BlocklistNotAccessible) {
+  base::HistogramTester histogram_tester;
+  SetUpIban(test::kIbanValue, kNickname_0);
+  AutofillField test_field;
+  SuggestionsContext context = GetIbanFocusedSuggestionsContext(test_field);
+  // Delete the AutofillOptimizationGuide.
+  autofill_client_.ResetAutofillOptimizationGuide();
+
+  // Simulate request for suggestions.
+  iban_manager_.OnGetSingleFieldSuggestions(
+      AutofillSuggestionTriggerSource::kFormControlElementClicked, test_field,
+      autofill_client_, suggestions_handler_.GetWeakPtr(),
+      /*context=*/context);
+
+  histogram_tester.ExpectUniqueSample(
+      "Autofill.Iban.ShowSuggestionsBlocklistDecision",
+      autofill_metrics::IbanSuggestionBlockListStatus::kBlocklistIsNotAvailable,
+      1);
+}
+
 // Test that the metrics for IBAN-related suggestions shown and shown once are
 // logged correctly.
 TEST_F(IbanManagerTest, Metrics_SuggestionsShown) {

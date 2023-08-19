@@ -2331,6 +2331,18 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Autofill.Iban.ShowSuggestionsBlocklistDecision"
+    enum="IbanSuggestionBlockListStatus" expires_after="2024-07-01">
+  <owner>qihuizhao@google.com</owner>
+  <owner>jsaul@google.com</owner>
+  <owner>payments-autofill-team@google.com</owner>
+  <summary>
+    Recorded when the user has IBANs and clicks on an IBAN form field. Logs
+    whether IBAN suggestions were allowed to be shown, blocked from being shown,
+    or if the blocklist was not accessible at all.
+  </summary>
+</histogram>
+
 <histogram name="Autofill.Iban.Suggestions" enum="IbanSuggestionsEvent"
     expires_after="2024-03-01">
   <owner>qihuizhao@google.com</owner>
