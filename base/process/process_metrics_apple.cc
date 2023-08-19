@@ -286,6 +286,37 @@ MachVMRegionResult GetBasicInfo(mach_port_t task,
   return ParseOutputFromMachVMRegion(kr);
 }
 
+int ProcessMetrics::GetOpenFdCount() const {
+#if BUILDFLAG(USE_BLINK)
+  // In order to get a true count of the open number of FDs, PROC_PIDLISTFDS
+  // is used. This is done twice: first to get the appropriate size of a
+  // buffer, and then secondly to fill the buffer with the actual FD info.
+  //
+  // The buffer size returned in the first call is an estimate, based on the
+  // number of allocated fileproc structures in the kernel. This number can be
+  // greater than the actual number of open files, since the structures are
+  // allocated in slabs. The value returned in proc_bsdinfo::pbi_nfiles is
+  // also the number of allocated fileprocs, not the number in use.
+  //
+  // However, the buffer size returned in the second call is an accurate count
+  // of the open number of descriptors. The contents of the buffer are unused.
+  int rv = proc_pidinfo(process_, PROC_PIDLISTFDS, 0, nullptr, 0);
+  if (rv < 0) {
+    return -1;
+  }
+
+  std::unique_ptr<char[]> buffer(new char[static_cast<size_t>(rv)]);
+  rv = proc_pidinfo(process_, PROC_PIDLISTFDS, 0, buffer.get(), rv);
+  if (rv < 0) {
+    return -1;
+  }
+  return static_cast<int>(static_cast<unsigned long>(rv) / PROC_PIDLISTFD_SIZE);
+#else
+  NOTIMPLEMENTED_LOG_ONCE();
+  return -1;
+#endif  // BUILDFLAG(USE_BLINK)
+}
+
 int ProcessMetrics::GetOpenFdSoftLimit() const {
   return checked_cast<int>(GetMaxFds());
 }

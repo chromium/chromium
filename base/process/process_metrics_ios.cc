@@ -19,10 +19,4 @@ std::unique_ptr<ProcessMetrics> ProcessMetrics::CreateProcessMetrics(
   return WrapUnique(new ProcessMetrics(process));
 }
 
-int ProcessMetrics::GetOpenFdCount() const {
-  // Provide a stub for now. -1 indicates an error.
-  NOTIMPLEMENTED_LOG_ONCE();
-  return -1;
-}
-
 }  // namespace base
