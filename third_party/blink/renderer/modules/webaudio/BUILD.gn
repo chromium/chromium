@@ -114,8 +114,6 @@ blink_modules_sources("webaudio") {
     "delay_handler.h",
     "delay_node.cc",
     "delay_node.h",
-    "delay_processor.cc",
-    "delay_processor.h",
     "dynamics_compressor_handler.cc",
     "dynamics_compressor_handler.h",
     "dynamics_compressor_node.cc",
