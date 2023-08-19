@@ -3,6 +3,10 @@
 <os-settings-animated-pages id="pages" section="[[section_]]">
   <div route-path="default">
     <!-- TODO(b/292678609) Include L1 page content here -->
+    <settings-date-time-card prefs="{{prefs}}"
+        active-time-zone-display-name="{{activeTimeZoneDisplayName_}}">
+    </settings-date-time-card>
+
     <settings-search-and-assistant-card prefs="{{prefs}}">
     </settings-search-and-assistant-card>
 
@@ -10,6 +14,15 @@
       <settings-reset-card></settings-reset-card>
     </template>
   </div>
+
+  <!-- Date and Time subpages -->
+  <template is="dom-if" route-path="/dateTime/timeZone">
+    <os-settings-subpage page-title="$i18n{timeZoneSubpageTitle}">
+      <timezone-subpage prefs="{{prefs}}"
+          active-time-zone-display-name="{{activeTimeZoneDisplayName_}}">
+      </timezone-subpage>
+    </os-settings-subpage>
+  </template>
 
   <!-- Search and Assistant subpages -->
   <template is="dom-if" if="[[shouldShowQuickAnswersSettings_]]">

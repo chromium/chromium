@@ -509,12 +509,6 @@ export function createRoutes(): OsSettingsRoutes {
         Subpage.kBruschettaManageSharedFolders);
   }
 
-  // Date and Time section.
-  r.DATETIME = createSection(
-      r.ADVANCED, routesMojom.DATE_AND_TIME_SECTION_PATH, Section.kDateAndTime);
-  r.DATETIME_TIMEZONE_SUBPAGE = createSubpage(
-      r.DATETIME, routesMojom.TIME_ZONE_SUBPAGE_PATH, Subpage.kTimeZone);
-
   // Privacy and Security section.
   r.OS_PRIVACY = createSection(
       r.BASIC, routesMojom.PRIVACY_AND_SECURITY_SECTION_PATH,
@@ -598,6 +592,11 @@ export function createRoutes(): OsSettingsRoutes {
         r.BASIC, routesMojom.SYSTEM_PREFERENCES_SECTION_PATH,
         Section.kSystemPreferences);
 
+    // Date and Time subpages.
+    r.DATETIME_TIMEZONE_SUBPAGE = createSubpage(
+        r.SYSTEM_PREFERENCES, routesMojom.TIME_ZONE_SUBPAGE_PATH,
+        Subpage.kTimeZone);
+
     // Search and Assistant subpages.
     r.SEARCH_SUBPAGE = createSubpage(
         r.SYSTEM_PREFERENCES, routesMojom.SEARCH_SUBPAGE_PATH, Subpage.kSearch);
@@ -605,6 +604,13 @@ export function createRoutes(): OsSettingsRoutes {
         r.SYSTEM_PREFERENCES, routesMojom.ASSISTANT_SUBPAGE_PATH,
         Subpage.kAssistant);
   } else {
+    // Date and Time section.
+    r.DATETIME = createSection(
+        r.ADVANCED, routesMojom.DATE_AND_TIME_SECTION_PATH,
+        Section.kDateAndTime);
+    r.DATETIME_TIMEZONE_SUBPAGE = createSubpage(
+        r.DATETIME, routesMojom.TIME_ZONE_SUBPAGE_PATH, Subpage.kTimeZone);
+
     // Reset section.
     if (isPowerwashAllowed()) {
       r.OS_RESET = createSection(

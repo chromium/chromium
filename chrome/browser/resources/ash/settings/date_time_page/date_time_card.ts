@@ -21,7 +21,7 @@ import {I18nMixin} from 'chrome://resources/cr_elements/i18n_mixin.js';
 import {WebUiListenerMixin} from 'chrome://resources/cr_elements/web_ui_listener_mixin.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {isChild} from '../common/load_time_booleans.js';
+import {isChild, isRevampWayfindingEnabled} from '../common/load_time_booleans.js';
 import {DeepLinkingMixin} from '../deep_linking_mixin.js';
 import {Setting} from '../mojom-webui/setting.mojom-webui.js';
 import {RouteOriginMixin} from '../route_origin_mixin.js';
@@ -101,7 +101,8 @@ export class SettingsDateTimeCardElement extends
     super();
 
     /** RouteOriginMixin override */
-    this.route = routes.DATETIME;
+    this.route = isRevampWayfindingEnabled() ? routes.SYSTEM_PREFERENCES :
+                                               routes.DATETIME;
 
     this.browserProxy_ = TimeZoneBrowserProxyImpl.getInstance();
   }
@@ -145,6 +146,13 @@ export class SettingsDateTimeCardElement extends
   }
 
   private computeTimeZoneSettingSublabel_(): string {
+    // Note: `this.getPref()` will assert the queried pref exists, but the prefs
+    // property may not be initialized yet when this element runs the first
+    // computation of this method. Ensure prefs is initialized first.
+    if (!this.prefs) {
+      return '';
+    }
+
     if (!this.getPref('generated.resolve_timezone_by_geolocation_on_off')
              .value) {
       return this.activeTimeZoneDisplayName;

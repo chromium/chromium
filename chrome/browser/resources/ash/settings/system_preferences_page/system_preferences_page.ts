@@ -8,6 +8,7 @@
  * system preferences settings.
  */
 
+import '../date_time_page/date_time_card.js';
 import '../os_settings_page/os_settings_animated_pages.js';
 import '../os_settings_page/os_settings_subpage.js';
 import '../os_reset_page/reset_card.js';
@@ -16,6 +17,7 @@ import '../settings_shared.css.js';
 
 import {I18nMixin} from 'chrome://resources/cr_elements/i18n_mixin.js';
 import {assert} from 'chrome://resources/js/assert_ts.js';
+import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {isAssistantAllowed, isPowerwashAllowed, isRevampWayfindingEnabled, shouldShowQuickAnswersSettings} from '../common/load_time_booleans.js';
@@ -49,6 +51,15 @@ export class SettingsSystemPreferencesPageElement extends
         notify: true,
       },
 
+      /**
+       * This is used to cache the current time zone display name selected from
+       * <timezone-selector> via bi-directional binding.
+       */
+      activeTimeZoneDisplayName_: {
+        type: String,
+        value: loadTimeData.getString('timeZoneName'),
+      },
+
       shouldShowResetCard_: {
         type: Boolean,
         value: () => {
@@ -74,6 +85,9 @@ export class SettingsSystemPreferencesPageElement extends
 
   prefs: PrefsState;
   private section_: Section;
+
+  // Date and Time subsection
+  private activeTimeZoneDisplayName_: string;
 
   // Reset subsection
   private shouldShowResetCard_: boolean;

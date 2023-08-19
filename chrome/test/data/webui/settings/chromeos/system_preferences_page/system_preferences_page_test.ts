@@ -38,6 +38,26 @@ suite('<settings-system-preferences-page>', () => {
     Router.getInstance().resetRouteForTesting();
   });
 
+  suite('Date and Time subsection', () => {
+    test('Date and Time card is visible', async () => {
+      Router.getInstance().navigateTo(routes.SYSTEM_PREFERENCES);
+      await createPage();
+
+      const dateTimeCard =
+          page.shadowRoot!.querySelector('settings-date-time-card');
+      assertTrue(
+          isVisible(dateTimeCard), 'Date and Time card should be visible.');
+    });
+
+    test('Timezone subpage is visible', async () => {
+      await createPage();
+
+      await navigateToSubpage(routes.DATETIME_TIMEZONE_SUBPAGE);
+      const subpage = page.shadowRoot!.querySelector('timezone-subpage');
+      assertTrue(isVisible(subpage), 'Subpage should be visible.');
+    });
+  });
+
   suite('Reset subsection', () => {
     test('Reset card is visible if powerwash is allowed', async () => {
       loadTimeData.overrideValues({allowPowerwash: true});
@@ -59,7 +79,7 @@ suite('<settings-system-preferences-page>', () => {
   });
 
   suite('Search & Assistant subsection', () => {
-    test('Search and Assistant card is always visible', async () => {
+    test('Search and Assistant card is visible', async () => {
       Router.getInstance().navigateTo(routes.SYSTEM_PREFERENCES);
       await createPage();
 
@@ -69,20 +89,17 @@ suite('<settings-system-preferences-page>', () => {
           isVisible(card), 'Search and Assistant card should be visible.');
     });
 
-    test(
-        'Search subpage should be visible if quick answers is enabled',
-        async () => {
-          loadTimeData.overrideValues({shouldShowQuickAnswersSettings: true});
-          await createPage();
+    test('Search subpage is visible if quick answers is enabled', async () => {
+      loadTimeData.overrideValues({shouldShowQuickAnswersSettings: true});
+      await createPage();
 
-          await navigateToSubpage(routes.SEARCH_SUBPAGE);
-          const subpage =
-              page.shadowRoot!.querySelector('settings-search-subpage');
-          assertTrue(isVisible(subpage), 'Subpage should be visible.');
-        });
+      await navigateToSubpage(routes.SEARCH_SUBPAGE);
+      const subpage = page.shadowRoot!.querySelector('settings-search-subpage');
+      assertTrue(isVisible(subpage), 'Subpage should be visible.');
+    });
 
     test(
-        'Search subpage should not be stamped if quick answers is disabled',
+        'Search subpage is not stamped if quick answers is disabled',
         async () => {
           loadTimeData.overrideValues({shouldShowQuickAnswersSettings: false});
           await createPage();
@@ -93,20 +110,18 @@ suite('<settings-system-preferences-page>', () => {
           assertNull(subpage, 'Subpage should not be stamped.');
         });
 
-    test(
-        'Assistant subpage should be visible if assistant is enabled',
-        async () => {
-          loadTimeData.overrideValues({isAssistantAllowed: true});
-          await createPage();
+    test('Assistant subpage is visible if assistant is enabled', async () => {
+      loadTimeData.overrideValues({isAssistantAllowed: true});
+      await createPage();
 
-          await navigateToSubpage(routes.GOOGLE_ASSISTANT);
-          const subpage = page.shadowRoot!.querySelector(
-              'settings-google-assistant-subpage');
-          assertTrue(isVisible(subpage), 'Subpage should be visible.');
-        });
+      await navigateToSubpage(routes.GOOGLE_ASSISTANT);
+      const subpage =
+          page.shadowRoot!.querySelector('settings-google-assistant-subpage');
+      assertTrue(isVisible(subpage), 'Subpage should be visible.');
+    });
 
     test(
-        'Assistant subpage should not be stamped if assistant is disabled',
+        'Assistant subpage is not stamped if assistant is disabled',
         async () => {
           loadTimeData.overrideValues({isAssistantAllowed: false});
           await createPage();
