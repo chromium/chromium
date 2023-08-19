@@ -83,7 +83,14 @@ class PersistedTabDataAndroid
   // Called when a Tab is closed.
   static void OnTabClose(TabAndroid* tab_android);
 
-  static Profile* GetProfile(TabAndroid* tab_android);
+  static std::map<std::string,
+                  std::vector<PersistedTabDataAndroid::FromCallback>>*
+  GetCachedCallbackMap();
+
+  static void RunCallbackOnUIThread(
+      TabAndroid* tab_android,
+      const void* user_data_key,
+      PersistedTabDataAndroid* persisted_tab_data_android);
 
   TAB_ANDROID_USER_DATA_KEY_DECL();
 };

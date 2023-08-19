@@ -17,6 +17,7 @@ class FooPersistedTabDataAndroid : public PersistedTabDataAndroid {
 
   static void From(TabAndroid* tab_android, FromCallback from_callback);
   void SetValue(int32_t foo_value);
+  int32_t value() { return foo_value_; }
   static void ExistsForTesting(TabAndroid* tab_android,
                                base::OnceCallback<void(bool)> exists_callback);
 
