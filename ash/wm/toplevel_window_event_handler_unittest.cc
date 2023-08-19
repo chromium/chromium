@@ -16,6 +16,7 @@
 #include "ash/system/status_area_widget.h"
 #include "ash/system/status_area_widget_test_helper.h"
 #include "ash/test/ash_test_base.h"
+#include "ash/test/test_window_builder.h"
 #include "ash/wm/desks/desks_util.h"
 #include "ash/wm/overview/overview_controller.h"
 #include "ash/wm/overview/overview_grid.h"
@@ -31,11 +32,13 @@
 #include "base/functional/bind.h"
 #include "base/run_loop.h"
 #include "base/task/single_thread_task_runner.h"
+#include "base/test/scoped_feature_list.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/aura/client/aura_constants.h"
 #include "ui/aura/client/capture_client.h"
 #include "ui/aura/test/aura_test_base.h"
 #include "ui/aura/test/test_window_delegate.h"
+#include "ui/aura/test/test_windows.h"
 #include "ui/aura/window.h"
 #include "ui/aura/window_event_dispatcher.h"
 #include "ui/aura/window_observer.h"
@@ -1290,6 +1293,154 @@ TEST_F(ToplevelWindowEventHandlerDragTest, WindowDestroyedDuringDragging) {
   EXPECT_FALSE(event_handler->is_drag_in_progress());
 }
 
+class ToplevelWindowEventHandlerPipPinchToResizeTest : public AshTestBase {
+ public:
+  ToplevelWindowEventHandlerPipPinchToResizeTest()
+      : scoped_feature_list_(features::kPipPinchToResize) {}
+
+  ToplevelWindowEventHandlerPipPinchToResizeTest(
+      const ToplevelWindowEventHandlerPipPinchToResizeTest&) = delete;
+  ToplevelWindowEventHandlerPipPinchToResizeTest& operator=(
+      const ToplevelWindowEventHandlerPipPinchToResizeTest&) = delete;
+
+  ~ToplevelWindowEventHandlerPipPinchToResizeTest() override = default;
+
+ protected:
+  // Send gesture event with `type` to the toplevel window event handler.
+  aura::Window* CreatePipWindow() {
+    gfx::Size kMaxWindowSize(600, 400);
+    gfx::Size kMinWindowSize(300, 200);
+    gfx::SizeF kWindowAspectRatio(3.f, 2.f);
+
+    gfx::Rect bounds(0, 0, 300, 200);
+    aura::test::TestWindowDelegate* delegate =
+        aura::test::TestWindowDelegate::CreateSelfDestroyingDelegate();
+    aura::Window* window(TestWindowBuilder()
+                             .AllowAllWindowStates()
+                             .SetBounds(bounds)
+                             .SetDelegate(delegate)
+                             .SetShow(false)
+                             .Build()
+                             .release());
+
+    delegate->set_maximum_size(kMaxWindowSize);
+    delegate->set_minimum_size(kMinWindowSize);
+    delegate->set_window_component(HTCAPTION);
+    window->SetProperty(aura::client::kAspectRatio, kWindowAspectRatio);
+    window->SetProperty(aura::client::kZOrderingKey,
+                        ui::ZOrderLevel::kFloatingWindow);
+
+    WindowState* window_state = WindowState::Get(window);
+    const WMEvent enter_pip(WM_EVENT_PIP);
+    window_state->OnWMEvent(&enter_pip);
+    EXPECT_TRUE(window_state->IsPip());
+    window->Show();
+    return window;
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+TEST_F(ToplevelWindowEventHandlerPipPinchToResizeTest,
+       PinchToResizeOnPipChangesWindowBounds) {
+  std::unique_ptr<aura::Window> window(CreatePipWindow());
+  ASSERT_TRUE(WindowState::Get(window.get())->IsPip());
+  EXPECT_EQ(gfx::Rect(8, 8, 300, 200), window->bounds());
+
+  ui::test::EventGenerator* gen = GetEventGenerator();
+  const int kTouchPoints = 2;
+  int delay_adding_finger_ms[kTouchPoints] = {0, 0};
+  int delay_releasing_finger_ms[kTouchPoints] = {1500, 1500};
+
+  {
+    // Execute pinch (zoom in) event on PiP window.
+    gfx::Point start[kTouchPoints] = {gfx::Point(100, 100),
+                                      gfx::Point(250, 100)};
+    gfx::Vector2d delta[kTouchPoints] = {gfx::Vector2d(100, 100),
+                                         gfx::Vector2d(200, 200)};
+
+    gen->GestureMultiFingerScrollWithDelays(kTouchPoints, start, delta,
+                                            delay_adding_finger_ms,
+                                            delay_releasing_finger_ms, 15, 100);
+    base::RunLoop().RunUntilIdle();
+
+    // Verify that PiP window bounds (origin and size) have changed.
+    EXPECT_EQ(gfx::Rect(8, 94, 506, 337), window->bounds());
+  }
+
+  {
+    // Execute pinch (zoom out) event on PiP window.
+    gfx::Point start[kTouchPoints] = {gfx::Point(200, 200),
+                                      gfx::Point(450, 300)};
+    gfx::Vector2d delta[kTouchPoints] = {gfx::Vector2d(-100, -100),
+                                         gfx::Vector2d(-200, -200)};
+
+    gen->GestureMultiFingerScrollWithDelays(kTouchPoints, start, delta,
+                                            delay_adding_finger_ms,
+                                            delay_releasing_finger_ms, 15, 100);
+    base::RunLoop().RunUntilIdle();
+
+    // Verify that PiP window bounds (origin and size) have changed again.
+    EXPECT_EQ(gfx::Rect(8, 8, 300, 200), window->bounds());
+  }
+
+  const WMEvent exit_pip(WM_EVENT_NORMAL);
+  WindowState::Get(window.get())->OnWMEvent(&exit_pip);
+}
+
+TEST_F(ToplevelWindowEventHandlerPipPinchToResizeTest,
+       PinchToResizeOnPipRespectsMaxSizeAndMinSize) {
+  UpdateDisplay("1500x1000");
+
+  ui::test::EventGenerator* gen = GetEventGenerator();
+  const int kTouchPoints = 2;
+  int delay_adding_finger_ms[kTouchPoints] = {0, 0};
+  int delay_releasing_finger_ms[kTouchPoints] = {1500, 1500};
+  gfx::Point start[kTouchPoints] = {gfx::Point(100, 100), gfx::Point(250, 100)};
+
+  {
+    // Create a PiP window with maximum_size and minimum_size.
+    std::unique_ptr<aura::Window> window(CreatePipWindow());
+    ASSERT_TRUE(WindowState::Get(window.get())->IsPip());
+
+    // Execute pinch (zoom in) event on PiP window.
+    gfx::Vector2d delta[kTouchPoints] = {gfx::Vector2d(100, 100),
+                                         gfx::Vector2d(400, 400)};
+
+    gen->GestureMultiFingerScrollWithDelays(kTouchPoints, start, delta,
+                                            delay_adding_finger_ms,
+                                            delay_releasing_finger_ms, 15, 100);
+    base::RunLoop().RunUntilIdle();
+
+    // Verify that PiP window did not exceed the maximum size.
+    EXPECT_EQ(gfx::Rect(8, 166, 600, 400), window->bounds());
+
+    const WMEvent exit_pip(WM_EVENT_NORMAL);
+    WindowState::Get(window.get())->OnWMEvent(&exit_pip);
+  }
+
+  {
+    // Create a PiP window with maximum_size and minimum_size set.
+    std::unique_ptr<aura::Window> window(CreatePipWindow());
+    ASSERT_TRUE(WindowState::Get(window.get())->IsPip());
+
+    // Execute pinch (zoom out) event on PiP window.
+    gfx::Vector2d delta[kTouchPoints] = {gfx::Vector2d(0, 0),
+                                         gfx::Vector2d(-100, 0)};
+
+    gen->GestureMultiFingerScrollWithDelays(kTouchPoints, start, delta,
+                                            delay_adding_finger_ms,
+                                            delay_releasing_finger_ms, 15, 100);
+    base::RunLoop().RunUntilIdle();
+
+    // Verify that PiP window size did not become smaller than the minimum size.
+    EXPECT_EQ(gfx::Rect(8, 8, 300, 200), window->bounds());
+
+    const WMEvent exit_pip(WM_EVENT_NORMAL);
+    WindowState::Get(window.get())->OnWMEvent(&exit_pip);
+  }
+}
 // Showing the resize shadows when the mouse is over the window edges is
 // tested in resize_shadow_and_cursor_test.cc
 

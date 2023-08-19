@@ -98,6 +98,12 @@ class ASH_EXPORT ToplevelWindowEventHandler
                           bool update_gesture_target,
                           bool grab_capture = true);
 
+  // Attempts to start a pinch if one is not already in progress. Returns true
+  // if successful.
+  bool AttemptToStartPinch(aura::Window* window,
+                           const gfx::PointF& point_in_parent,
+                           int window_component);
+
   // If there is a drag in progress it is reverted, otherwise does nothing.
   void RevertDrag();
 
@@ -134,15 +140,28 @@ class ASH_EXPORT ToplevelWindowEventHandler
                       ::wm::WindowMoveSource source,
                       bool grab_capture);
 
+  // Called from `AttemptToStartPinch()` to create the WindowResizer. This also
+  // returns true on success and false if resize cannot be initiated.
+  bool PrepareForPinch(aura::Window* window,
+                       const gfx::PointF& point_in_parent,
+                       int window_component);
+
   // Completes or reverts the drag if one is in progress. Returns true if a
   // drag was completed or reverted.
   bool CompleteDrag(DragResult result);
+
+  // Completes pinch but not drag. `CompleteDrag()` should be called even
+  // after `CompletePinch()` is called to handle revert, snap, etc.
+  bool CompletePinch();
 
   void HandleMousePressed(aura::Window* target, ui::MouseEvent* event);
   void HandleMouseReleased(aura::Window* target, ui::MouseEvent* event);
 
   // Called during a drag to resize/position the window.
   void HandleDrag(aura::Window* target, ui::LocatedEvent* event);
+
+  // Called during a pinch to resize/position the window.
+  void HandlePinch(aura::Window* target, ui::GestureEvent* event);
 
   // Called during mouse moves to update window resize shadows.
   void HandleMouseMoved(aura::Window* target, ui::LocatedEvent* event);
@@ -183,6 +202,16 @@ class ASH_EXPORT ToplevelWindowEventHandler
 
   // Is a window move/resize in progress because of gesture events?
   bool in_gesture_drag_ = false;
+
+  // Is a pinch in progress because of gesture events?
+  bool in_pinch_ = false;
+
+  // True if the bounds need to be reinitialized in the next gesture update.
+  // This is necessary because during the transition from pinch gesture to
+  // drag gesture the ET_GESTURE_SCROLL_BEGIN event is never called, and
+  // therefore `window_resizer_` must be initiated with the next
+  // ET_GESTURE_SCROLL_UPDATE event.
+  bool requires_reinitialization_ = false;
 
   raw_ptr<aura::Window, ExperimentalAsh> gesture_target_ = nullptr;
   gfx::PointF event_location_in_gesture_target_;

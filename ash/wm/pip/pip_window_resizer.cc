@@ -14,10 +14,13 @@
 #include "ash/wm/wm_event.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
+#include "ui/aura/client/aura_constants.h"
 #include "ui/aura/window.h"
+#include "ui/aura/window_delegate.h"
 #include "ui/compositor/layer.h"
 #include "ui/compositor/scoped_layer_animation_settings.h"
 #include "ui/display/screen.h"
+#include "ui/gfx/geometry/resize_utils.h"
 #include "ui/views/widget/widget.h"
 #include "ui/wm/core/coordinate_conversion.h"
 
@@ -174,6 +177,70 @@ void PipWindowResizer::Drag(const gfx::PointF& location_in_parent,
     moved_or_resized_ = true;
     SetBoundsDuringResize(new_bounds);
   }
+}
+
+void PipWindowResizer::Pinch(const gfx::PointF& location_in_parent,
+                             const float scale) {
+  accumulated_scale_ *= scale;
+  gfx::Rect new_bounds = CalculateBoundsForPinch(
+      window_state_->window(), details().initial_location_in_parent,
+      details().initial_bounds_in_parent, location_in_parent);
+
+  // We do everything in screen coordinates, so convert here.
+  wm::ConvertPointToScreen(GetTarget()->parent(), &last_location_in_screen_);
+  wm::ConvertRectToScreen(GetTarget()->parent(), &new_bounds);
+
+  // Ensure that the PiP window stays inside the PiP movement area.
+  // This has to be consistent with `PipWindowResizer::Drag()`, as otherwise
+  // it can cause jump during transition from pinch to drag. This could be
+  // due to change (b/292768858).
+  display::Display display = window_state()->GetDisplay();
+  new_bounds = PipPositioner::GetBoundsForDrag(display, new_bounds);
+
+  // Convert back to root window coordinates for setting bounds.
+  wm::ConvertRectFromScreen(GetTarget()->parent(), &new_bounds);
+  if (new_bounds != GetTarget()->bounds()) {
+    moved_or_resized_ = true;
+    SetBoundsDuringResize(new_bounds);
+  }
+}
+
+gfx::Rect PipWindowResizer::CalculateBoundsForPinch(
+    const aura::Window* window,
+    const gfx::PointF& initial_location,
+    const gfx::Rect& initial_bounds,
+    const gfx::PointF& location) const {
+  gfx::Size size =
+      gfx::ScaleToRoundedSize(initial_bounds.size(), accumulated_scale_);
+
+  gfx::Size max_size = window->delegate()->GetMaximumSize();
+  gfx::Size min_size = window->delegate()->GetMinimumSize();
+  size.SetToMin(max_size);
+  size.SetToMax(min_size);
+
+  gfx::SizeF* aspect_ratio_size =
+      window->GetProperty(aura::client::kAspectRatio);
+  // Aspect ratio must be set for pinch-to-resize to change window bounds.
+  if (!aspect_ratio_size) {
+    return initial_bounds;
+  }
+  float aspect_ratio = aspect_ratio_size->width() / aspect_ratio_size->height();
+
+  gfx::Rect new_bounds(window->bounds().origin(), size);
+  gfx::SizeRectToAspectRatio(gfx::ResizeEdge::kBottom, aspect_ratio, min_size,
+                             max_size, &new_bounds);
+
+  // `gfx::SizeRectToAspectRatio()` is not designed for pinch and cannot
+  // calculate origin change in regards to pinch, so we calculate the origin
+  // change here.
+  float left_ratio =
+      (initial_location.x() - initial_bounds.x()) / initial_bounds.width();
+  float top_ratio =
+      (initial_location.y() - initial_bounds.y()) / initial_bounds.height();
+  new_bounds.set_x(location.x() - new_bounds.width() * left_ratio);
+  new_bounds.set_y(location.y() - new_bounds.height() * top_ratio);
+
+  return new_bounds;
 }
 
 void PipWindowResizer::CompleteDrag() {

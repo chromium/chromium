@@ -104,6 +104,15 @@ void OnDragCompleted(
   run_loop->Quit();
 }
 
+// Convert event location into location in parent of target window.
+gfx::PointF ConvertToLocationInParent(const aura::Window* target,
+                                      const gfx::PointF& location) {
+  gfx::PointF location_in_parent = location;
+  aura::Window::ConvertPointToTarget(target, target->parent(),
+                                     &location_in_parent);
+  return location_in_parent;
+}
+
 }  // namespace
 
 // -----------------------------------------------------------------------------
@@ -355,12 +364,10 @@ void ToplevelWindowEventHandler::OnGestureEvent(ui::GestureEvent* event) {
 
       ShowResizeShadow(target, component);
 
-      gfx::PointF location_in_parent = event_location;
-      aura::Window::ConvertPointToTarget(target, target->parent(),
-                                         &location_in_parent);
-      AttemptToStartDrag(target, location_in_parent, component,
-                         ::wm::WINDOW_MOVE_SOURCE_TOUCH, EndClosure(),
-                         /*update_gesture_target=*/false);
+      AttemptToStartDrag(
+          target, ConvertToLocationInParent(target, event_location), component,
+          ::wm::WINDOW_MOVE_SOURCE_TOUCH, EndClosure(),
+          /*update_gesture_target=*/false);
       event->StopPropagation();
       return;
     }
@@ -419,10 +426,19 @@ void ToplevelWindowEventHandler::OnGestureEvent(ui::GestureEvent* event) {
       gfx::PointF location_in_parent = event_location;
       aura::Window::ConvertPointToTarget(target, target->parent(),
                                          &location_in_parent);
-      AttemptToStartDrag(target, location_in_parent, component,
-                         ::wm::WINDOW_MOVE_SOURCE_TOUCH, EndClosure(),
-                         /*update_gesture_target=*/false);
+      AttemptToStartDrag(
+          target, ConvertToLocationInParent(target, event_location), component,
+          ::wm::WINDOW_MOVE_SOURCE_TOUCH, EndClosure(),
+          /*update_gesture_target=*/false);
       event->StopPropagation();
+      return;
+    }
+    case ui::ET_GESTURE_PINCH_BEGIN: {
+      if (AttemptToStartPinch(target,
+                              ConvertToLocationInParent(target, event_location),
+                              component)) {
+        event->StopPropagation();
+      }
       return;
     }
     case ui::ET_GESTURE_TAP:
@@ -445,6 +461,29 @@ void ToplevelWindowEventHandler::OnGestureEvent(ui::GestureEvent* event) {
 
   switch (event->type()) {
     case ui::ET_GESTURE_SCROLL_UPDATE: {
+      // `ET_GESTURE_SCROLL_UPDATE` is also called during a pinch but should
+      // be ignored.
+      if (in_pinch_) {
+        return;
+      }
+
+      // `ET_GESTURE_SCROLL_BEGIN` is not called after a pinch ends, so if a
+      // drag is ongoing after a pinch then `window_resizer_` has to be
+      // reinitialized here.
+      if (requires_reinitialization_) {
+        if (!window_resizer_) {
+          requires_reinitialization_ = false;
+          return;
+        }
+
+        AttemptToStartDrag(
+            target, ConvertToLocationInParent(target, event_location),
+            component, wm::WINDOW_MOVE_SOURCE_TOUCH, EndClosure(),
+            /*update_gesture_target=*/false);
+        event->StopPropagation();
+        return;
+      }
+
       gfx::Rect bounds_in_screen = target->GetRootWindow()->GetBoundsInScreen();
       gfx::PointF screen_location = event->location_f();
       ::wm::ConvertPointToScreen(target, &screen_location);
@@ -480,9 +519,34 @@ void ToplevelWindowEventHandler::OnGestureEvent(ui::GestureEvent* event) {
       CompleteDrag(DragResult::SUCCESS);
       event->StopPropagation();
       return;
+    case ui::ET_GESTURE_PINCH_END: {
+      if (!features::IsPipPinchToResizeEnabled()) {
+        return;
+      }
+      CompletePinch();
+      event->StopPropagation();
+      return;
+    }
+    case ui::ET_GESTURE_PINCH_UPDATE:
+      if (!features::IsPipPinchToResizeEnabled()) {
+        return;
+      }
+
+      // `ET_GESTURE_PINCH_UPDATE` is also called during two-finger edge resize,
+      // but is handled with `ET_GESTURE_SCROLL_UPDATE`.
+      if (window_resizer_ && window_resizer_->IsResize()) {
+        return;
+      }
+
+      HandlePinch(target, event);
+      event->StopPropagation();
+      return;
     case ui::ET_SCROLL_FLING_START:
-      [[fallthrough]];
     case ui::ET_GESTURE_SWIPE:
+      // Ignore swipe during pinch.
+      if (in_pinch_) {
+        return;
+      }
       HandleFlingOrSwipe(event);
       return;
     default:
@@ -613,6 +677,69 @@ bool ToplevelWindowEventHandler::AttemptToStartDrag(
   return true;
 }
 
+bool ToplevelWindowEventHandler::AttemptToStartPinch(
+    aura::Window* window,
+    const gfx::PointF& point_in_parent,
+    int window_component) {
+  if (!features::IsPipPinchToResizeEnabled()) {
+    return false;
+  }
+
+  // `ET_GESTURE_PINCH_BEGIN` is also called during two-finger edge resize,
+  // in which case should be ignored. `IsResize()` is determined by the
+  // gesture start location, so even though pinch resizes the window
+  // `IsResize()` should be false.
+  if (window_resizer_ && window_resizer_->IsResize()) {
+    return false;
+  }
+
+  // Only gesture drag move can switch to pinch to resize. No other existing
+  // resizer is allowed.
+  bool in_gesture_drag_move = in_gesture_drag_ && window_resizer_->IsMove();
+  if (window_resizer_ && !in_gesture_drag_move) {
+    return false;
+  }
+
+  WindowState* window_state = WindowState::Get(window);
+  // Pinch to resize is only applied to PiP windows.
+  if (!window_state || !window_state->IsPip()) {
+    return false;
+  }
+
+  if (!PrepareForPinch(window, point_in_parent, window_component)) {
+    return false;
+  }
+
+  in_gesture_drag_ = true;
+  return true;
+}
+
+bool ToplevelWindowEventHandler::PrepareForPinch(
+    aura::Window* window,
+    const gfx::PointF& point_in_parent,
+    int window_component) {
+  // Do not allow resizing if the window's state is not managed by the window
+  // manager.
+  if (!WindowState::Get(window)) {
+    return false;
+  }
+
+  // Reset `window_resizer_` if there is an ongoing drag move.
+  if (window_resizer_ && in_gesture_drag_ && window_resizer_->IsMove()) {
+    window_resizer_.reset();
+  }
+
+  in_pinch_ = true;
+  std::unique_ptr<WindowResizer> resizer(
+      CreateWindowResizer(window, point_in_parent, window_component,
+                          ::wm::WINDOW_MOVE_SOURCE_TOUCH));
+  window_resizer_ =
+      std::make_unique<ScopedWindowResizer>(this, std::move(resizer), false);
+  Shell::Get()->multi_display_metrics_controller()->OnWindowMovedOrResized(
+      window);
+  return true;
+}
+
 void ToplevelWindowEventHandler::RevertDrag() {
   CompleteDrag(DragResult::REVERT);
 }
@@ -677,11 +804,20 @@ bool ToplevelWindowEventHandler::PrepareForDrag(
     int window_component,
     ::wm::WindowMoveSource source,
     bool grab_capture) {
-  // Do not allow resizing if there is already one in progress or if the
-  // window's state is not managed by the window manager.
-  if (window_resizer_ || !WindowState::Get(window))
+  // Only gesture drag move can switch to pinch to resize. No other existing
+  // resizer is allowed.
+  bool in_gesture_drag_move = in_gesture_drag_ && window_resizer_->IsMove();
+  if ((window_resizer_ && !in_gesture_drag_move) || !WindowState::Get(window)) {
     return false;
+  }
 
+  // If an ongoing resizing event exists (e.g. during transition from pinch to
+  // drag), reset the resizer here.
+  if (window_resizer_) {
+    window_resizer_.reset();
+  }
+
+  requires_reinitialization_ = false;
   std::unique_ptr<WindowResizer> resizer(
       CreateWindowResizer(window, point_in_parent, window_component, source));
   if (!resizer)
@@ -715,8 +851,25 @@ bool ToplevelWindowEventHandler::CompleteDrag(DragResult result) {
 
   first_finger_hittest_ = HTNOWHERE;
   in_gesture_drag_ = false;
+  in_pinch_ = false;
+  requires_reinitialization_ = false;
   if (end_closure_)
     std::move(end_closure_).Run(result);
+  return true;
+}
+
+bool ToplevelWindowEventHandler::CompletePinch() {
+  if (!window_resizer_ || !in_pinch_) {
+    return false;
+  }
+
+  in_pinch_ = false;
+
+  // Reinitialize the `window_resizer_` if an `ET_GESTURE_SCROLL_UPDATE` event
+  // is called right after pinch is completed. This is necessary because
+  // `ET_GESTURE_SCROLL_BEGIN` event is not called after
+  // `ET_GESTURE_PINCH_END`.
+  requires_reinitialization_ = true;
   return true;
 }
 
@@ -737,11 +890,9 @@ void ToplevelWindowEventHandler::HandleMousePressed(aura::Window* target,
   if ((event->flags() & (ui::EF_IS_DOUBLE_CLICK | ui::EF_IS_TRIPLE_CLICK)) ==
           0 &&
       WindowResizer::GetBoundsChangeForWindowComponent(component)) {
-    gfx::PointF location_in_parent = event->location_f();
-    aura::Window::ConvertPointToTarget(target, target->parent(),
-                                       &location_in_parent);
-    AttemptToStartDrag(target, location_in_parent, component,
-                       ::wm::WINDOW_MOVE_SOURCE_MOUSE, EndClosure(),
+    AttemptToStartDrag(target,
+                       ConvertToLocationInParent(target, event->location_f()),
+                       component, ::wm::WINDOW_MOVE_SOURCE_MOUSE, EndClosure(),
                        /*update_gesture_target=*/false);
     // Set as handled so that other event handlers do no act upon the event
     // but still receive it so that they receive both parts of each pressed/
@@ -778,6 +929,25 @@ void ToplevelWindowEventHandler::HandleDrag(aura::Window* target,
       target, window_resizer_->resizer()->GetTarget()->parent(),
       &location_in_parent);
   window_resizer_->resizer()->Drag(location_in_parent, event->flags());
+  event->StopPropagation();
+}
+
+void ToplevelWindowEventHandler::HandlePinch(aura::Window* target,
+                                             ui::GestureEvent* event) {
+  // This function is only to be triggered to move and resize
+  // a PiP window with a pinch event.
+  CHECK_EQ(event->type(), ui::ET_GESTURE_PINCH_UPDATE);
+
+  if (!window_resizer_ || !in_pinch_) {
+    return;
+  }
+
+  gfx::PointF location_in_parent = event->location_f();
+  aura::Window::ConvertPointToTarget(
+      target, window_resizer_->resizer()->GetTarget()->parent(),
+      &location_in_parent);
+  window_resizer_->resizer()->Pinch(location_in_parent,
+                                    event->details().scale());
   event->StopPropagation();
 }
 
@@ -829,6 +999,7 @@ void ToplevelWindowEventHandler::HandleFlingOrSwipe(ui::GestureEvent* event) {
   resizer->resizer()->FlingOrSwipe(event);
   first_finger_hittest_ = HTNOWHERE;
   in_gesture_drag_ = false;
+  requires_reinitialization_ = false;
   if (end_closure_)
     std::move(end_closure_).Run(DragResult::SUCCESS);
 }

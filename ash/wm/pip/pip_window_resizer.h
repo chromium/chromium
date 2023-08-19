@@ -32,18 +32,24 @@ class ASH_EXPORT PipWindowResizer : public WindowResizer {
 
   // WindowResizer:
   void Drag(const gfx::PointF& location_in_parent, int event_flags) override;
+  void Pinch(const gfx::PointF& location, float scale) override;
   void CompleteDrag() override;
   void RevertDrag() override;
   void FlingOrSwipe(ui::GestureEvent* event) override;
 
  private:
   WindowState* window_state() { return window_state_; }
+  gfx::Rect CalculateBoundsForPinch(const aura::Window* pip_window,
+                                    const gfx::PointF& initial_location,
+                                    const gfx::Rect& initial_bounds,
+                                    const gfx::PointF& location) const;
   gfx::Rect ComputeFlungPosition();
 
   gfx::PointF last_location_in_screen_;
   int fling_velocity_x_ = 0;
   int fling_velocity_y_ = 0;
   float dismiss_fraction_ = 1.f;
+  float accumulated_scale_ = 1.f;
   bool moved_or_resized_ = false;
   bool may_dismiss_horizontally_ = false;
   bool may_dismiss_vertically_ = false;
