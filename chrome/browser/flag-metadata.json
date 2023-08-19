@@ -1017,7 +1017,7 @@
   },
   {
     "name": "canvas-2d-layers",
-    "owners": [ "fserb", "jpgravel", "juanmihd", "yiyix" ],
+    "owners": [ "fserb", "jpgravel", "yiyix" ],
     "expiry_milestone": 120
   },
   {

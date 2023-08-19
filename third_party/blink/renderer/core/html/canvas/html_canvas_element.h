@@ -82,9 +82,6 @@ CORE_EXPORT BASE_DECLARE_FEATURE(kStartCanvasWithAccelerationDisabled);
 // It can be a 3D Context (WebGL or WebGL2), 2D Context,
 // BitmapRenderingContext or it can have no context (Offscreen placeholder).
 // To check the no context case is good to check if there is a placeholder.
-//
-// TODO (juanmihd): Study if a refactor of context could help in simplifying
-// this class and without overcomplicating context.
 class CORE_EXPORT HTMLCanvasElement final
     : public HTMLElement,
       public ExecutionContextLifecycleObserver,

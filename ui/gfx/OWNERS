@@ -17,7 +17,7 @@ per-file color_palette.h=pkasting@chromium.org
 per-file color_utils*=pkasting@chromium.org
 per-file color_conversions*=fserb@chromium.org
 per-file color_conversions*=ccameron@chromium.org
-per-file color_conversions*=juanmihd@chromium.org
+per-file color_conversions*=aaronhk@chromium.org
 
 # Display and related classes.
 per-file display*=oshima@chromium.org

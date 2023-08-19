@@ -267,7 +267,7 @@ chromium-metrics-reviews@google.com.
 <histogram name="Blink.Canvas.2DPrintingAsVector" enum="BooleanSuccess"
     expires_after="2024-04-01">
   <owner>fserb@chromium.org</owner>
-  <owner>juanmihd@chromium.org</owner>
+  <owner>aaronhk@chromium.org</owner>
   <summary>
     Records if a Canvas is being printed as a vector or as an image.
   </summary>

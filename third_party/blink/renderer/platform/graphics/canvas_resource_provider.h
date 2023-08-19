@@ -228,9 +228,6 @@ class PLATFORM_EXPORT CanvasResourceProvider
   using RestoreMatrixClipStackCb =
       base::RepeatingCallback<void(cc::PaintCanvas*)>;
 
-  // TODO(juanmihd@ bug/1078518) Check whether FilterQuality is needed in all
-  // these Create methods below, or just call setFilterQuality explicitly.
-
   // Used to determine if the provider is going to be initialized or not,
   // ignored by PassThrough
   enum class ShouldInitialize { kNo, kCallClear };
