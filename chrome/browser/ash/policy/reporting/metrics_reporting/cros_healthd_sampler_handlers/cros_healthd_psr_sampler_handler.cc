@@ -25,7 +25,10 @@ enum class EnterpriseReportingPsrResult {
   kUnknownSystemResultType = 2,
   kNullPsrInfo = 3,
   kPsrUnsupported = 4,
-  kMaxValue = kPsrUnsupported
+  kPsrNotStarted = 5,
+  kPsrStopped = 6,
+  kUnknownPsrLogState = 7,
+  kMaxValue = kUnknownPsrLogState
 };
 
 // Records PSR result to UMA.
@@ -79,6 +82,24 @@ void CrosHealthdPsrSamplerHandler::HandleResult(
 
   if (!psr_info->is_supported) {
     RecordPsrResult(EnterpriseReportingPsrResult::kPsrUnsupported);
+    return;
+  }
+
+  if (psr_info->log_state != cros_healthd::PsrInfo::LogState::kStarted) {
+    // Meaning log state is either kNotStarted (PSR was not started by OEM) or
+    // kStopped (PSR log has been tampered and permanently stopped.). Don't
+    // report anything as PSR would (no longer) run on this device.
+    switch (psr_info->log_state) {
+      case cros_healthd::PsrInfo::LogState::kNotStarted:
+        RecordPsrResult(EnterpriseReportingPsrResult::kPsrNotStarted);
+        break;
+      case cros_healthd::PsrInfo::LogState::kStopped:
+        RecordPsrResult(EnterpriseReportingPsrResult::kPsrStopped);
+        break;
+      default:
+        LOG(ERROR) << "Unknown log state!";
+        RecordPsrResult(EnterpriseReportingPsrResult::kUnknownPsrLogState);
+    }
     return;
   }
 

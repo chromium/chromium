@@ -34022,6 +34022,9 @@ Called by update_document_policy_enum.py.-->
   <int value="2" label="Unknown SystemResult type"/>
   <int value="3" label="Null PsrInfo"/>
   <int value="4" label="PSR is unsupported"/>
+  <int value="5" label="PSR was not started"/>
+  <int value="6" label="PSR has been stopped"/>
+  <int value="7" label="Unknown PSR log state"/>
 </enum>
 
 <enum name="EnterpriseRetrievePolicyResponseType">

@@ -109,8 +109,12 @@ cros_healthd::SystemInfoPtr CreateSystemInfoWithPsr(
 // Create system info with PSR unsupported.
 cros_healthd::SystemInfoPtr CreateSystemInfoWithPsrUnsupported();
 
-// Create system info with PSR supported.
-cros_healthd::SystemInfoPtr CreateSystemInfoWithPsrSupported(
+// Create system info with PSR supported and a specified log state.
+cros_healthd::SystemInfoPtr CreateSystemInfoWithPsrLogState(
+    cros_healthd::PsrInfo::LogState log_state);
+
+// Create system info with PSR supported and running.
+cros_healthd::SystemInfoPtr CreateSystemInfoWithPsrSupportedRunning(
     uint32_t uptime_seconds,
     uint32_t s5_counter,
     uint32_t s4_counter,

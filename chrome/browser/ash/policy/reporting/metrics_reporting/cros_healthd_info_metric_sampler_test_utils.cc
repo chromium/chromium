@@ -203,13 +203,22 @@ cros_healthd::SystemInfoPtr CreateSystemInfoWithPsrUnsupported() {
   return CreateSystemInfoWithPsr(std::move(psr_info));
 }
 
-cros_healthd::SystemInfoPtr CreateSystemInfoWithPsrSupported(
+cros_healthd::SystemInfoPtr CreateSystemInfoWithPsrLogState(
+    cros_healthd::PsrInfo::LogState log_state) {
+  auto psr_info = cros_healthd::PsrInfo::New();
+  psr_info->is_supported = true;
+  psr_info->log_state = log_state;
+  return CreateSystemInfoWithPsr(std::move(psr_info));
+}
+
+cros_healthd::SystemInfoPtr CreateSystemInfoWithPsrSupportedRunning(
     uint32_t uptime_seconds,
     uint32_t s5_counter,
     uint32_t s4_counter,
     uint32_t s3_counter) {
   auto psr_info = cros_healthd::PsrInfo::New();
   psr_info->is_supported = true;
+  psr_info->log_state = cros_healthd::PsrInfo::LogState::kStarted;
   psr_info->uptime_seconds = uptime_seconds;
   psr_info->s5_counter = s5_counter;
   psr_info->s4_counter = s4_counter;

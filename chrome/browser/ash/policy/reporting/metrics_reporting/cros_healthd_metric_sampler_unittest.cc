@@ -306,7 +306,31 @@ TEST_F(CrosHealthdMetricSamplerTest,
   EXPECT_FALSE(optional_result.has_value());
 }
 
-TEST_F(CrosHealthdMetricSamplerTest, TestRuntimeCountersTelemetryPsrSupported) {
+TEST_F(CrosHealthdMetricSamplerTest,
+       TestRuntimeCountersTelemetryPsrNotStarted) {
+  const absl::optional<MetricData> optional_result =
+      CollectData(std::make_unique<CrosHealthdPsrSamplerHandler>(),
+                  CreateSystemResult(CreateSystemInfoWithPsrLogState(
+                      cros_healthd::PsrInfo::LogState::kNotStarted)),
+                  cros_healthd::ProbeCategoryEnum::kSystem,
+                  CrosHealthdSamplerHandler::MetricType::kTelemetry);
+
+  EXPECT_FALSE(optional_result.has_value());
+}
+
+TEST_F(CrosHealthdMetricSamplerTest, TestRuntimeCountersTelemetryPsrStopped) {
+  const absl::optional<MetricData> optional_result =
+      CollectData(std::make_unique<CrosHealthdPsrSamplerHandler>(),
+                  CreateSystemResult(CreateSystemInfoWithPsrLogState(
+                      cros_healthd::PsrInfo::LogState::kStopped)),
+                  cros_healthd::ProbeCategoryEnum::kSystem,
+                  CrosHealthdSamplerHandler::MetricType::kTelemetry);
+
+  EXPECT_FALSE(optional_result.has_value());
+}
+
+TEST_F(CrosHealthdMetricSamplerTest,
+       TestRuntimeCountersTelemetryPsrSupportedRunning) {
   constexpr uint32_t kUptimeSeconds = 1u;
   constexpr uint32_t kS5Counter = 2u;
   constexpr uint32_t kS4Counter = 3u;
@@ -314,7 +338,7 @@ TEST_F(CrosHealthdMetricSamplerTest, TestRuntimeCountersTelemetryPsrSupported) {
 
   const absl::optional<MetricData> optional_result =
       CollectData(std::make_unique<CrosHealthdPsrSamplerHandler>(),
-                  CreateSystemResult(CreateSystemInfoWithPsrSupported(
+                  CreateSystemResult(CreateSystemInfoWithPsrSupportedRunning(
                       kUptimeSeconds, kS5Counter, kS4Counter, kS3Counter)),
                   cros_healthd::ProbeCategoryEnum::kSystem,
                   CrosHealthdSamplerHandler::MetricType::kTelemetry);
