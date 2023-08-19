@@ -9,10 +9,12 @@
 #include <utility>
 #include <vector>
 
+#include "base/containers/span.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/i18n/rtl.h"
 #include "base/memory/raw_ptr.h"
+#include "base/ranges/algorithm.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/to_string.h"
 #include "base/strings/utf_string_conversions.h"
@@ -759,13 +761,20 @@ void MenuControllerTest::TestSubmenuFitsOnScreen(
     const gfx::Rect& monitor_bounds,
     const gfx::Rect& parent_bounds,
     MenuAnchorPosition menu_anchor) {
-  const MenuBoundsOptions options = {.monitor_bounds = monitor_bounds,
-                                     .menu_anchor = menu_anchor};
+  const MenuBoundsOptions options = {
+      .monitor_bounds = monitor_bounds,
+      .menu_size = GetPreferredSizeForSubmenu(*item->GetSubmenu()),
+      .menu_anchor = menu_anchor};
 
   // Put the parent menu onscreen so that `item` is in a widget hierarchy and
   // `GetBoundsInScreen()` will work.
   SubmenuView* const submenu = item->GetParentMenuItem()->GetSubmenu();
-  ShowSubmenu(submenu, [&](auto& params) { params.bounds = parent_bounds; });
+  ShowSubmenu(submenu, [&](auto& params) {
+    // Set the bounds such that `item` (which is assumed to be the sole
+    // content of `submenu`) has screen bounds `parent_bounds`.
+    params.bounds = parent_bounds;
+    params.bounds.Inset(-submenu->GetScrollViewContainer()->GetInsets());
+  });
 
   const gfx::Rect final_bounds =
       CalculateBubbleMenuBoundsWithoutInsets(options, item);
@@ -2231,7 +2240,12 @@ TEST_P(MenuControllerTest, TestMenuFitsOnSmallScreen) {
 // screens.
 TEST_P(MenuControllerTest, TestSubmenuFitsOnScreen) {
   menu_controller()->set_use_ash_system_ui_layout(true);
-  MenuItemView* const sub_item = menu_item()->GetSubmenu()->GetMenuItemAt(0);
+  SubmenuView* const submenu = menu_item()->GetSubmenu();
+  const std::vector<MenuItemView*> menu_items = submenu->GetMenuItems();
+  base::ranges::for_each(
+      base::make_span(menu_items).subspan(1),
+      [&](auto* item) { menu_item()->RemoveMenuItem(item); });
+  MenuItemView* const sub_item = submenu->GetMenuItemAt(0);
   sub_item->AppendMenuItem(11, u"Subitem.One");
 
   const int menu_width = MenuConfig::instance().touchable_menu_min_width;
