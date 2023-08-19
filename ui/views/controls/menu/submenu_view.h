@@ -186,6 +186,7 @@ class VIEWS_EXPORT SubmenuView : public View,
     resize_open_menu_ = resize_open_menu;
   }
   MenuHost* host() { return host_; }
+  const MenuHost* host() const { return host_; }
 
   void SetBorderColorId(absl::optional<ui::ColorId> color_id);
 

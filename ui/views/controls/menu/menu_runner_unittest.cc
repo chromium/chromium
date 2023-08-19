@@ -606,9 +606,8 @@ MenuRunnerDestructionTest::MenuRunnerAsWeakPtr(
 }
 
 void MenuRunnerDestructionTest::SetUp() {
-  auto test_views_delegate = std::make_unique<ReleaseRefTestViewsDelegate>();
-  test_views_delegate_ = test_views_delegate.get();
-  set_views_delegate(std::move(test_views_delegate));
+  test_views_delegate_ =
+      set_views_delegate(std::make_unique<ReleaseRefTestViewsDelegate>());
   MenuRunnerTest::SetUp();
   InitMenuViews();
 }
