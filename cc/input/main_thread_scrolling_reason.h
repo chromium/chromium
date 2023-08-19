@@ -38,6 +38,7 @@ struct CC_EXPORT MainThreadScrollingReason {
 
     // Non-transient scrolling reasons. These are set on the ScrollNode.
     kHasBackgroundAttachmentFixedObjects = 1 << 2,
+    // TODO(crbug.com/1087725): Remove kThreadedScrollingDisabled.
     kThreadedScrollingDisabled = 1 << 3,
     kPopupNoThreadedInput = 1 << 4,
     kPreferNonCompositedScrolling = 1 << 15,

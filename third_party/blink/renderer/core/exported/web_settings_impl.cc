@@ -428,10 +428,6 @@ void WebSettingsImpl::SetAllowGeolocationOnInsecureOrigins(bool allow) {
   settings_->SetAllowGeolocationOnInsecureOrigins(allow);
 }
 
-void WebSettingsImpl::SetThreadedScrollingEnabled(bool enabled) {
-  settings_->SetThreadedScrollingEnabled(enabled);
-}
-
 void WebSettingsImpl::SetTouchDragDropEnabled(bool enabled) {
   settings_->SetTouchDragDropEnabled(enabled);
 }

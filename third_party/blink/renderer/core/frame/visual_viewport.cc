@@ -275,11 +275,6 @@ PaintPropertyChangeType VisualViewport::UpdatePaintPropertyNodesIfNeeded(
         state.prevent_viewport_scrolling_from_inner =
             !uses_default_root_scroller;
       }
-
-      if (!LocalMainFrame().GetSettings()->GetThreadedScrollingEnabled()) {
-        state.main_thread_scrolling_reasons =
-            cc::MainThreadScrollingReason::kThreadedScrollingDisabled;
-      }
     }
 
     if (!scroll_node_) {

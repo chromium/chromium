@@ -241,15 +241,6 @@
       initial: true,
     },
 
-    // Used before scroll unification to disable threaded, compositor scrolling
-    // for testing purposes.
-    // TODO(crbug.com/1087725): remove.
-    {
-      name: "threadedScrollingEnabled",
-      initial: true,
-      invalidate: ["Style", "ViewportPaintProperties"],
-    },
-
     // Used in web tests for gesture tap highlights. Makes the highlights square
     // (rather than rounded) to make it possible to reftest the results.
     {

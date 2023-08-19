@@ -3436,11 +3436,6 @@ void PaintPropertyTreeBuilder::UpdateForSelf() {
 void PaintPropertyTreeBuilder::UpdateGlobalMainThreadScrollingReasons() {
   DCHECK(IsA<LayoutView>(object_));
 
-  if (!object_.GetFrame()->GetSettings()->GetThreadedScrollingEnabled()) {
-    context_.global_main_thread_scrolling_reasons |=
-        cc::MainThreadScrollingReason::kThreadedScrollingDisabled;
-  }
-
   if (object_.GetFrameView()
           ->RequiresMainThreadScrollingForBackgroundAttachmentFixed()) {
     context_.global_main_thread_scrolling_reasons |=

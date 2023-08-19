@@ -242,7 +242,6 @@ class WebSettings {
   virtual void SetTextTrackTextSize(const WebString&) = 0;
   virtual void SetTextTrackWindowColor(const WebString&) = 0;
   virtual void SetTextTrackWindowRadius(const WebString&) = 0;
-  virtual void SetThreadedScrollingEnabled(bool) = 0;
   virtual void SetTouchDragDropEnabled(bool) = 0;
   virtual void SetTouchDragEndContextMenu(bool) = 0;
   virtual void SetBarrelButtonForDragEnabled(bool) = 0;

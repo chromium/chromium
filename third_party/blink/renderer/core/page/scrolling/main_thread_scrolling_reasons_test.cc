@@ -351,23 +351,6 @@ TEST_P(MainThreadScrollingReasonsTest,
   EXPECT_FALSE(GetViewMainThreadScrollingReasons());
 }
 
-TEST_P(MainThreadScrollingReasonsTest, FastScrollingCanBeDisabledWithSetting) {
-  GetWebView()->MainFrameViewWidget()->Resize(gfx::Size(800, 600));
-  LoadHTML("<div id='spacer' style='height: 1000px'></div>");
-  GetWebView()->GetSettings()->SetThreadedScrollingEnabled(false);
-  GetFrame()->View()->SetNeedsPaintPropertyUpdate();
-  ForceFullCompositingUpdate();
-
-  // Main scrolling should be enabled with the setting override.
-  EXPECT_TRUE(GetViewMainThreadScrollingReasons());
-
-  // Main scrolling should also propagate to inner viewport layer.
-  const cc::Layer* visual_viewport_scroll_layer =
-      GetFrame()->GetPage()->GetVisualViewport().LayerForScrolling();
-  ASSERT_TRUE(IsScrollable(visual_viewport_scroll_layer));
-  EXPECT_TRUE(GetMainThreadScrollingReasons(visual_viewport_scroll_layer));
-}
-
 TEST_P(MainThreadScrollingReasonsTest, FastScrollingForFixedPosition) {
   RegisterMockedHttpURLLoad("fixed-position.html");
   NavigateTo(base_url_ + "fixed-position.html");

@@ -34,49 +34,6 @@ INSTANTIATE_TEST_SUITE_P(All,
                          ::testing::Values(0, kUnderInvalidationChecking));
 
 TEST_P(PaintPropertyTreeUpdateTest,
-       ThreadedScrollingDisabledMainThreadScrollReason) {
-  SetBodyInnerHTML(R"HTML(
-    <style>
-      #overflowA {
-        position: absolute;
-        overflow: scroll;
-        width: 20px;
-        height: 20px;
-      }
-      .forceScroll {
-        height: 4000px;
-      }
-    </style>
-    <div id='overflowA'>
-      <div class='forceScroll'></div>
-    </div>
-    <div class='forceScroll'></div>
-  )HTML");
-  Element* overflow_a = GetDocument().getElementById(AtomicString("overflowA"));
-  EXPECT_FALSE(DocScroll()->ThreadedScrollingDisabled());
-  EXPECT_FALSE(overflow_a->GetLayoutObject()
-                   ->FirstFragment()
-                   .PaintProperties()
-                   ->ScrollTranslation()
-                   ->ScrollNode()
-                   ->ThreadedScrollingDisabled());
-
-  GetDocument().GetSettings()->SetThreadedScrollingEnabled(false);
-  // TODO(pdr): The main thread scrolling setting should invalidate properties.
-  GetDocument().View()->SetNeedsPaintPropertyUpdate();
-  overflow_a->GetLayoutObject()->SetNeedsPaintPropertyUpdate();
-  UpdateAllLifecyclePhasesForTest();
-
-  EXPECT_TRUE(DocScroll()->ThreadedScrollingDisabled());
-  EXPECT_TRUE(overflow_a->GetLayoutObject()
-                  ->FirstFragment()
-                  .PaintProperties()
-                  ->ScrollTranslation()
-                  ->ScrollNode()
-                  ->ThreadedScrollingDisabled());
-}
-
-TEST_P(PaintPropertyTreeUpdateTest,
        BackgroundAttachmentFixedMainThreadScrollReasonsWithNestedScrollers) {
   SetBodyInnerHTML(R"HTML(
     <style>
