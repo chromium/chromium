@@ -58,7 +58,7 @@ class CORE_EXPORT NodeCloningData final {
   HeapHashMap<WeakMember<const Node>, WeakMember<Node>> cloned_node_map_;
   HeapHashMap<WeakMember<const PartRoot>, WeakMember<PartRoot>>
       cloned_part_root_map_;
-  HeapLinkedHashSet<Member<const Part>> part_queue_;
+  HeapVector<Member<const Part>> part_queue_;
   bool finalized_{false};
 };
 
