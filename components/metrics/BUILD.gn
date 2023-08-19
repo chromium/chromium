@@ -220,6 +220,7 @@ if (!is_cronet_build || is_ios) {
       "//build:branding_buildflags",
       "//build:chromeos_buildflags",
       "//components/flags_ui:switches",
+      "//components/network_time",
       "//components/prefs",
       "//components/variations",
       "//components/variations/field_trial_config",
