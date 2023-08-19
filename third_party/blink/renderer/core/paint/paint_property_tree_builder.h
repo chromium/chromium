@@ -233,7 +233,6 @@ struct PaintPropertyTreeBuilderContext final {
   static constexpr MainThreadScrollingReasons
       kGlobalMainThreadScrollingReasons =
           cc::MainThreadScrollingReason::kHasBackgroundAttachmentFixedObjects |
-          cc::MainThreadScrollingReason::kThreadedScrollingDisabled |
           cc::MainThreadScrollingReason::kPopupNoThreadedInput;
   static_assert(kGlobalMainThreadScrollingReasons < (1 << 6));
 

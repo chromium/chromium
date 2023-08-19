@@ -1645,7 +1645,7 @@ class LayerTreeHostScrollTestImplScrollUnderMainThreadScrollingParent
     LayerTreeHostScrollTest::SetupTree();
     GetScrollNode(layer_tree_host()->OuterViewportScrollLayerForTesting())
         ->main_thread_scrolling_reasons =
-        MainThreadScrollingReason::kThreadedScrollingDisabled;
+        MainThreadScrollingReason::kPreferNonCompositedScrolling;
 
     scroller_ = Layer::Create();
     scroller_->SetIsDrawable(true);

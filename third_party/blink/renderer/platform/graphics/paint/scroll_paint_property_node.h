@@ -174,12 +174,6 @@ class PLATFORM_EXPORT ScrollPaintPropertyNode
     return state_.main_thread_scrolling_reasons;
   }
 
-  // Main thread scrolling reason for the threaded scrolling disabled setting.
-  bool ThreadedScrollingDisabled() const {
-    return state_.main_thread_scrolling_reasons &
-           cc::MainThreadScrollingReason::kThreadedScrollingDisabled;
-  }
-
   // Main thread scrolling reason for background attachment fixed descendants.
   bool HasBackgroundAttachmentFixedDescendants() const {
     return state_.main_thread_scrolling_reasons &
