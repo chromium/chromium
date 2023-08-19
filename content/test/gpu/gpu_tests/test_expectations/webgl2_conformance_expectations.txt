@@ -688,8 +688,8 @@ crbug.com/1289303 [ android-pixel-4 android-r ] conformance/textures/misc/textur
 crbug.com/1175232 [ android android-pixel-4 angle-opengles passthrough ] conformance2/reading/read-pixels-from-fbo-test.html [ Failure ]
 
 crbug.com/angleproject/3684 [ android angle-opengles ] conformance2/renderbuffers/multisample-with-full-sample-counts.html [ Failure ]
-crbug.com/angleproject/3686 [ android angle-opengles ] deqp/functional/gles3/multisample/fbo_4_samples.html [ Failure ]
-crbug.com/angleproject/3686 [ android angle-opengles ] deqp/functional/gles3/multisample/fbo_max_samples.html [ Failure ]
+crbug.com/angleproject/3686 [ android-pixel-4 android-r angle-opengles ] deqp/functional/gles3/multisample/fbo_4_samples.html [ Failure ]
+crbug.com/angleproject/3686 [ android-pixel-4 android-r angle-opengles ] deqp/functional/gles3/multisample/fbo_max_samples.html [ Failure ]
 
 
 
