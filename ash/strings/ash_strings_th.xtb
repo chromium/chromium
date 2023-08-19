@@ -655,6 +655,7 @@
 <translation id="380165613292957338">สวัสดี มีอะไรให้ฉันช่วยไหม</translation>
 <translation id="3804737937830804242">ย่อขนาดกล้อง</translation>
 <translation id="3824784079442479685">การดำเนินการนี้ช่วยให้ <ph name="APP_NAME" /> รวมถึงแอปและเว็บไซต์ทั้งหมดที่มีสิทธิ์สามารถเข้าถึงกล้องได้ คุณอาจต้องรีเฟรชหน้าเว็บหรือรีสตาร์ทแอป</translation>
+<translation id="3825680296690914697">ส่งแล้ว <ph name="NUM_TURNED_IN" /> จาก <ph name="TOTAL_NUM_OF_SUBMISSIONS" /> รายการ ให้คะแนนแล้ว <ph name="NUM_GRADED" /> รายการ</translation>
 <translation id="3826099427150913765">เปลี่ยนไปใช้รหัสผ่าน</translation>
 <translation id="383058930331066723">โหมดประหยัดแบตเตอรี่เปิดอยู่</translation>
 <translation id="383629559565718788">แสดงการตั้งค่าแป้นพิมพ์</translation>
@@ -1740,6 +1741,7 @@
 <translation id="8446884382197647889">ดูข้อมูลเพิ่มเติม</translation>
 <translation id="8456543082656546101"><ph name="SHORTCUT_KEY_NAME" /> + V</translation>
 <translation id="8462305545768648477">ปิดฟีเจอร์เลือกเพื่อให้อ่าน</translation>
+<translation id="8468806060683421065">ครบกำหนด <ph name="DUE_DATE_AND_TIME" /></translation>
 <translation id="847056008324733326">การตั้งค่าระดับการแสดงผล</translation>
 <translation id="8473301994082929012"><ph name="ORGANIZATION_NAME" /> ได้<ph name="FEATURE_STATE" /><ph name="FEATURE_NAME" />ไว้</translation>
 <translation id="8477270416194247200">กด Alt + Search หรือ Shift เพื่อยกเลิก</translation>
@@ -1823,6 +1825,7 @@
 <translation id="8853703225951107899">ยังคงยืนยัน PIN หรือรหัสผ่านของคุณไม่ได้ หากคุณเพิ่งเปลี่ยนรหัสผ่านไปไม่นาน ให้ใช้รหัสผ่านเก่า รหัสผ่านใหม่จะมีผลเมื่อคุณออกจากระบบ</translation>
 <translation id="8855885154700222542">แป้นแสดงเต็มหน้าจอ</translation>
 <translation id="8858369206579825206">การควบคุมความเป็นส่วนตัว</translation>
+<translation id="8860366331836346216">เพิ่ม eSIM</translation>
 <translation id="8870509716567206129">แอปไม่สนับสนุนการแยกหน้าจอ</translation>
 <translation id="8874184842967597500">ไม่เชื่อมต่อ</translation>
 <translation id="8875021410787719674">ย้ายไปมาระหว่างมุมขวาล่าง, Launcher, แถบที่อยู่, แถบบุ๊กมาร์ก, เว็บไซต์ที่เปิดอยู่ และการดาวน์โหลด</translation>

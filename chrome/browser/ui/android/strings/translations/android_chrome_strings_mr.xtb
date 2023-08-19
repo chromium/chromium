@@ -311,6 +311,7 @@
 <translation id="2656405586795711023">वेब अ‍ॅप्स</translation>
 <translation id="2669454659051515572">हे डिव्हाइस वापरणारे कोणीही डाउनलोड केलेल्या फाइल पाहू शकते</translation>
 <translation id="2702516483241149200">नवीन: या मजकुरापर्यंत स्क्रोल करणारी लिंक शेअर करा</translation>
+<translation id="2708051474374549906">Google कडे पाठवल्या जाणाऱ्या तुमच्या ब्राउझिंग डेटावर आधारित धोकादायक वेबसाइट, डाउनलोड आणि एक्स्टेंशनपासून रीअल-टाइम, प्रोअ‍ॅक्टिव्ह संरक्षण</translation>
 <translation id="271033894570825754">नवीन</translation>
 <translation id="2711073837061989559">चाचण्या</translation>
 <translation id="2718352093833049315">केवळ वाय-फाय वर</translation>
@@ -674,6 +675,7 @@
 <translation id="4583164079174244168">{MINUTES,plural, =1{# मिनिटापूर्वी}other{# मिनिटांपूर्वी}}</translation>
 <translation id="4587589328781138893">Sites</translation>
 <translation id="4594952190837476234">हे <ph name="CREATION_TIME" /> पासूनचे ऑफलाइन पेज आहे आणि ऑनलाइन आवृत्तीपेक्षा वेगळे असू शकते.</translation>
+<translation id="4601095002996233687">संशयास्पद डाउनलोडसाठी तपशीलवार स्कॅनची सुविधा.</translation>
 <translation id="4616150815774728855"><ph name="WEBAPK_NAME" /> उघडा</translation>
 <translation id="4619564267100705184">हे तुम्हीच असल्याची पडताळणी करा</translation>
 <translation id="4634124774493850572">पासवर्ड वापरा</translation>
@@ -842,6 +844,7 @@
 <translation id="543338862236136125">पासवर्ड संपादित करा</translation>
 <translation id="5433691172869980887">वापरकर्ता नाव कॉपी केले</translation>
 <translation id="5438292632479953702">पुन्हा डाउनलोड करा</translation>
+<translation id="5439191312780166229">साधारण संरक्षणापेक्षा साइटवरील अधिक डेटाचे विश्लेषण करून, Google ला यापूर्वी माहीत नसलेल्या धोकादायक साइटबद्दल तुम्हाला चेतावणी देते. तुम्ही Chrome च्या चेतावण्या वगळणे निवडू शकता.</translation>
 <translation id="5441137934526263133">साइट काम करत नाही का? तृतीय पक्ष कुकी ब्लॉक केल्या आहेत</translation>
 <translation id="5441466871879044658">या भाषेमध्ये भाषांतर करा</translation>
 <translation id="5441522332038954058">अ‍ॅड्रेस बारवर जा</translation>
@@ -1054,6 +1057,7 @@
 <translation id="6541983376925655882">{NUM_HOURS,plural, =1{एका तासापूर्वी तपासले}other{# तासांपूर्वी तपासले}}</translation>
 <translation id="6545017243486555795">सर्व डेटा साफ करा</translation>
 <translation id="6546511553472444032">फाइल हानिकारक असू शकते</translation>
+<translation id="6550891580932862748">धोकादायक वेबसाइट, डाउनलोड आणि एक्स्टेंशनपासून तुमचे संरक्षण करत नाही. तुमच्या इतर Google उत्पादनांमधील सुरक्षित ब्राउझिंग सेटिंग्जवर परिणाम होणार नाही.</translation>
 <translation id="6556542240154580383">{TAB_COUNT,plural, =1{<ph name="TAB_TITLE" /> आणि आणखी <ph name="TAB_COUNT_ONE" /> टॅब बंद केला जाईल}other{<ph name="TAB_TITLE" /> आणि आणखी <ph name="TAB_COUNT_MANY" /> टॅब बंद केले जातील}}</translation>
 <translation id="6560414384669816528">Sogou सह शोध करा</translation>
 <translation id="656065428026159829">आणखी पहा</translation>
@@ -1309,6 +1313,7 @@
 <translation id="7772032839648071052">सांकेतिक पासफ्रेझ निश्चित करा</translation>
 <translation id="7772375229873196092"><ph name="APP_NAME" /> बंद करा</translation>
 <translation id="7774809984919390718">{PAYMENT_METHOD,plural, =1{<ph name="PAYMENT_METHOD_PREVIEW" />\u2026 आणि <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" /> अधिक}other{<ph name="PAYMENT_METHOD_PREVIEW" />\u2026 आणि <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" /> अधिक}}</translation>
+<translation id="777637629667389858">तुम्ही साइन इन केलेले असते, तेव्हा संपूर्ण Google सेवांवर तुमचे संरक्षण करते.</translation>
 <translation id="7778840695157240389">नवीन बातम्यांसाठी नंतर पुन्हा भेट द्या</translation>
 <translation id="7780645209293383778">सर्व Google अ‍ॅप्सवर तुमचे संरक्षण करण्यासाठी, तुम्ही पुन्हा साइन इन केल्यावर, हा डेटा तुमच्या Google खाते शी तात्पुरते लिंक करते</translation>
 <translation id="7791543448312431591">जोडा</translation>
@@ -1350,6 +1355,7 @@
 <translation id="7968014550143838305">वाचन सूचीमध्ये जोडले</translation>
 <translation id="7971136598759319605">एका दिवसापूर्वी ॲक्टिव्ह होते</translation>
 <translation id="7975379999046275268">पेज <ph name="BEGIN_NEW" />नवीन<ph name="END_NEW" /> चे पूर्वावलोकन करा</translation>
+<translation id="7977451675950311423">तुम्ही डेटा भंगामध्ये धोक्यात असलेला पासवर्ड वापरल्यास, तुम्हाला चेतावणी देते.</translation>
 <translation id="7986497153528221272">पासवर्ड पाहण्यासाठी, प्रथम तुमच्या डिव्हाइसवर स्क्रीन लॉक सेट करा</translation>
 <translation id="7995059495660416932">आशय उपलब्ध झाल्यावर तुम्हाला दिसेल</translation>
 <translation id="799576009106109668">तुम्हाला आणखी जलद ब्राउझ करता येईल कारण तुमच्या सध्याच्या वेबपेज भेटीच्या आधारावर आशय प्रोॲक्टिव्हपणे लोड केला जातो</translation>

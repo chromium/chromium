@@ -309,6 +309,7 @@ Os tokens de estado particular melhoram a privacidade na Web e não podem ser us
 <translation id="2656405586795711023">Apps da Web</translation>
 <translation id="2669454659051515572">Qualquer pessoa que use este dispositivo pode ver os arquivos transferidos por download</translation>
 <translation id="2702516483241149200">Novo: compartilhe um link para este texto</translation>
+<translation id="2708051474374549906">Proteção proativa em tempo real contra sites, extensões e downloads perigosos baseados nos dados de navegação enviados ao Google</translation>
 <translation id="271033894570825754">Novo</translation>
 <translation id="2711073837061989559">Testes</translation>
 <translation id="2718352093833049315">Apenas com Wi-Fi</translation>
@@ -670,6 +671,7 @@ Os tokens de estado particular melhoram a privacidade na Web e não podem ser us
 <translation id="4583164079174244168">{MINUTES,plural, =1{# minuto atrás}one{# minutos atrás}other{# minutos atrás}}</translation>
 <translation id="4587589328781138893">Sites</translation>
 <translation id="4594952190837476234">Esta página off-line é de <ph name="CREATION_TIME" /> e pode ser diferente da versão on-line.</translation>
+<translation id="4601095002996233687">Verificações detalhadas de downloads suspeitos.</translation>
 <translation id="4616150815774728855">Abrir <ph name="WEBAPK_NAME" /></translation>
 <translation id="4619564267100705184">Confirmar sua identidade</translation>
 <translation id="4634124774493850572">Usar senha</translation>
@@ -837,6 +839,7 @@ Para alterar essa configuração, <ph name="BEGIN_LINK" />redefina a sincroniza�
 <translation id="543338862236136125">Editar senha</translation>
 <translation id="5433691172869980887">Nome de usuário copiado</translation>
 <translation id="5438292632479953702">Fazer o download novamente</translation>
+<translation id="5439191312780166229">Avisa você sobre sites perigosos, mesmo aqueles que o Google não conhecia, analisando mais dados de sites do que a proteção padrão. Você pode ignorar os avisos do Chrome.</translation>
 <translation id="5441466871879044658">Traduzir para este idioma</translation>
 <translation id="5441522332038954058">Ir para a barra de endereço</translation>
 <translation id="5444999712122199445">Voltar para o site</translation>
@@ -1047,6 +1050,7 @@ Por exemplo, alguns sites podem responder a esse pedido mostrando anúncios que 
 <translation id="6541983376925655882">{NUM_HOURS,plural, =1{Verificado 1 hora atrás}one{Verificado # hora atrás}other{Verificado # horas atrás}}</translation>
 <translation id="6545017243486555795">Limpar todos os dados</translation>
 <translation id="6546511553472444032">O arquivo pode ser nocivo</translation>
+<translation id="6550891580932862748">Não protege você contra sites, downloads e extensões perigosos. Suas configurações de Navegação segura em outros produtos do Google não serão afetadas.</translation>
 <translation id="6556542240154580383">{TAB_COUNT,plural, =1{A guia <ph name="TAB_TITLE" /> e <ph name="TAB_COUNT_ONE" /> outra serão fechadas}one{A guia <ph name="TAB_TITLE" /> e <ph name="TAB_COUNT_MANY" /> outra serão fechadas}other{A guia <ph name="TAB_TITLE" /> e <ph name="TAB_COUNT_MANY" /> outras serão fechadas}}</translation>
 <translation id="6560414384669816528">Pesquisar usando o Sogou</translation>
 <translation id="656065428026159829">Ver mais</translation>
@@ -1301,6 +1305,7 @@ Por exemplo, alguns sites podem responder a esse pedido mostrando anúncios que 
 <translation id="7772032839648071052">Confirmar senha</translation>
 <translation id="7772375229873196092">Fechar <ph name="APP_NAME" /></translation>
 <translation id="7774809984919390718">{PAYMENT_METHOD,plural, =1{<ph name="PAYMENT_METHOD_PREVIEW" />\u2026 e mais <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" />}one{<ph name="PAYMENT_METHOD_PREVIEW" />\u2026 e mais <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" />}other{<ph name="PAYMENT_METHOD_PREVIEW" />\u2026 e mais <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" />}}</translation>
+<translation id="777637629667389858">Quando sua conta está conectada, essa opção protege você nos Serviços do Google.</translation>
 <translation id="7778840695157240389">Volte mais tarde para ver novas matérias</translation>
 <translation id="7780645209293383778">Vincula temporariamente esses dados à sua Conta do Google quando ela está conectada para proteger você nos apps do Google</translation>
 <translation id="7791543448312431591">Adicionar</translation>
@@ -1344,6 +1349,7 @@ Por exemplo, alguns sites podem responder a esse pedido mostrando anúncios que 
 <translation id="7971136598759319605">Ativado há um dia</translation>
 <translation id="7972866381678406344">Voltar <ph name="NUMBER_OF_SECONDS" /> segundos</translation>
 <translation id="7975379999046275268">Visualizar página <ph name="BEGIN_NEW" />Novidade<ph name="END_NEW" /></translation>
+<translation id="7977451675950311423">Avisa se você usa uma senha que foi comprometida em uma violação de dados.</translation>
 <translation id="7986497153528221272">Para poder ver as senhas, configure um bloqueio de tela no dispositivo</translation>
 <translation id="7995059495660416932">O conteúdo vai ser mostrado quando estiver disponível</translation>
 <translation id="799576009106109668">Como o conteúdo é carregado proativamente com base na página da Web acessada, você vai navegar com mais rapidez</translation>

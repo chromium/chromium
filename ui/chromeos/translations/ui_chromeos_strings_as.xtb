@@ -35,6 +35,7 @@
 <translation id="1280820357415527819">ম’বাইল নেটৱৰ্ক বিচাৰি থকা হৈছে</translation>
 <translation id="1293556467332435079">Files</translation>
 <translation id="1297922636971898492">এই মুহূৰ্তত Google Drive উপলব্ধ নহয় Google Drive উপলব্ধ হোৱাৰ লগে লগে আপল‘ড পুনৰ আৰম্ভ হ‘ব।</translation>
+<translation id="1306130176943817227">মচিব নোৱাৰি। বস্তুটো ব্যৱহাৰ হৈ আছে।</translation>
 <translation id="1307931752636661898">Linux ফাইলসমূহ চাব পৰা নগ’ল</translation>
 <translation id="1313405956111467313">স্বয়ংক্রিয় প্ৰক্সিৰ কনফিগাৰেশ্বন</translation>
 <translation id="134645005685694099">আপোনাৰ ফাইল ছিংক অন কৰি ৰাখিবলৈ আপোনাৰ ডিভাইচটোত পৰ্যাপ্ত পৰিমাণৰ ষ্ট’ৰেজৰ ঠাই নাই। নতুন ফাইলসমূহ আৰু স্বয়ংক্ৰিয়ভাৱে ছিংক কৰা নহ’ব।</translation>
@@ -537,6 +538,7 @@
 <translation id="5218183485292899140">ছুইছ ফৰাচী</translation>
 <translation id="5234764350956374838">অগ্ৰাহ্য কৰক</translation>
 <translation id="5253070652067921974">সৃষ্টি কৰোঁতা</translation>
+<translation id="5254207638927440400">ফাইলটো স্থানান্তৰ কৰিব নোৱাৰি। ফাইলটো ব্যৱহাৰ হৈ আছে।</translation>
 <translation id="5257456363153333584">ফৰিং</translation>
 <translation id="5262311848634918433"><ph name="MARKUP_1" />যিকোনো ঠাইৰ পৰাই, আনকি অফলাইন হৈ থাকিলেও ফাইল এক্সেছ কৰক।<ph name="MARKUP_2" />
     Google Driveৰ Files একেবাৰে শেহতীয়া অৱস্থাত আছে আৰু যিকোনো ডিভাইচৰ পৰাই এক্সেছ কৰিব পাৰি।<ph name="MARKUP_3" />

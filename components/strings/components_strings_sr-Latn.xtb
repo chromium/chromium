@@ -2290,6 +2290,7 @@ To inače blokiraju podešavanja privatnosti. To omogućava da sadržaj sa koji
 <translation id="5873297634595728366">Dizel vozila</translation>
 <translation id="5877831137320480913">Lepota i fitnes</translation>
 <translation id="5879989559903563723">Nije dozvoljeno u režimu gosta</translation>
+<translation id="5883861433316751031">Želite da kontrolišete i reprogramirate MIDI uređaje?</translation>
 <translation id="5884465125445718607">Kineska koverta br. 6</translation>
 <translation id="5887400589839399685">Kartica je sačuvana</translation>
 <translation id="5887687176710214216">Poslednja poseta: juče</translation>
@@ -3332,6 +3333,7 @@ Dodatni detalji:
 <translation id="8038817883578389970">Automobilske trke</translation>
 <translation id="8041089156583427627">Pošalji povratne informacije</translation>
 <translation id="8041940743680923270">Koristi globalnu podrazumevanu vrednost (Pitaj)</translation>
+<translation id="8042577181291637092">Želite da koristite MIDI uređaje?</translation>
 <translation id="8046360364391076336">Industrijski materijali i oprema</translation>
 <translation id="8052898407431791827">Kopirano je u privremenu memoriju</translation>
 <translation id="8055534648776115597">Stručno osposobljavanje i kontinuirano obrazovanje</translation>
@@ -3626,6 +3628,7 @@ Dodatni detalji:
 <translation id="8671519637524426245">Vrednost <ph name="SECURE_DNS_SALT" /> ne ispunjava uslove za veličinu.</translation>
 <translation id="867224526087042813">Potpis</translation>
 <translation id="8672264262457010862">Poslovanje i industrija</translation>
+<translation id="8673776281896298303">da kontroliše i reprogramira MIDI uređaje (SysEx)</translation>
 <translation id="8676424191133491403">Bez odlaganja</translation>
 <translation id="8680536109547170164"><ph name="QUERY" />, odgovor, <ph name="ANSWER" /></translation>
 <translation id="8681531050781943054">Veb-stranica na adresi <ph name="PAGE" /> ne može da se učita iz sledećih razloga:</translation>

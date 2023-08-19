@@ -35,6 +35,7 @@
 <translation id="1280820357415527819">Mobil şəbəkə axtarılır</translation>
 <translation id="1293556467332435079">Fayllar</translation>
 <translation id="1297922636971898492">Google Disk hazırda əlçatmazdır. Google Disk əlçatan olan kimi yükləmə avtomatik yenidən başlayacaq.</translation>
+<translation id="1306130176943817227">Silmək olmur. Element istifadə edilir.</translation>
 <translation id="1307931752636661898">Linux fayllarını göstərmək alınmadı</translation>
 <translation id="1313405956111467313">Avtomatik proksi sazlama</translation>
 <translation id="134645005685694099">Fayl sinxronlaşdırmasını aktiv saxlamaq üçün cihazda yaddaş yeri kifayət deyil. Yeni fayllar avtomatik sinxronlaşdırılmayacaq.</translation>
@@ -537,6 +538,7 @@
 <translation id="5218183485292899140">İsveçrə-Fransız</translation>
 <translation id="5234764350956374838">Kənarlaşdırın</translation>
 <translation id="5253070652067921974">Yaradıb:</translation>
+<translation id="5254207638927440400">Faylı köçürmək olmur. Fayl istifadə edilir.</translation>
 <translation id="5257456363153333584">Cırcırama</translation>
 <translation id="5262311848634918433"><ph name="MARKUP_1" />Faylları hər yerdən, hətta oflayn olduqda belə əldə edin.<ph name="MARKUP_2" />
     Google Diskdə fayllar güncəldir və istənilən cihazdan əlçatandır.<ph name="MARKUP_3" />

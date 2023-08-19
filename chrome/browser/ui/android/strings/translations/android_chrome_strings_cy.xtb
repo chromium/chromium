@@ -309,6 +309,7 @@ Mae tocynnau ymddiriedaeth yn gwella eich preifatrwydd ar y we ac ni ellir eu de
 <translation id="2656405586795711023">Apiau gwe</translation>
 <translation id="2669454659051515572">Gall unrhyw un sy'n defnyddio'r ddyfais hon weld ffeiliau sydd wedi'u lawrlwytho</translation>
 <translation id="2702516483241149200">Newydd: gallwch rannu dolen sy'n sgrolio i'r testun hwn</translation>
+<translation id="2708051474374549906">Amddiffyniad amser real, rhagweithiol yn erbyn gwefannau, lawrlwythiadau ac estyniadau peryglus sy'n seiliedig ar anfon eich data pori i Google</translation>
 <translation id="271033894570825754">Newydd</translation>
 <translation id="2711073837061989559">Profion</translation>
 <translation id="2718352093833049315">Dim ond ar Wi-Fi</translation>
@@ -668,6 +669,7 @@ Mae'n bosib y bydd gan eich cyfrif Google fathau eraill o hanes pori megis chwil
 <translation id="4583164079174244168">{MINUTES,plural, =1{# funud yn ôl}zero{# munud yn ôl}two{# funud yn ôl}few{# munud yn ôl}many{# munud yn ôl}other{# munud yn ôl}}</translation>
 <translation id="4587589328781138893">Gwefannau</translation>
 <translation id="4594952190837476234">Daw'r dudalen all-lein hon o <ph name="CREATION_TIME" /> a gall fod yn wahanol i'r fersiwn ar-lein.</translation>
+<translation id="4601095002996233687">Sganiau manwl ar gyfer lawrlwythiadau amheus.</translation>
 <translation id="4616150815774728855">Agor <ph name="WEBAPK_NAME" /></translation>
 <translation id="4619564267100705184">Cadarnhewch mai chi sydd yno</translation>
 <translation id="4634124774493850572">Defnyddio cyfrinair</translation>
@@ -833,6 +835,7 @@ I newid y gosodiad hwn, <ph name="BEGIN_LINK" />ailosodwch gysoni<ph name="END_L
 <translation id="543338862236136125">Golygu cyfrinair</translation>
 <translation id="5433691172869980887">Copïwyd enw defnyddiwr</translation>
 <translation id="5438292632479953702">Lawrlwytho eto</translation>
+<translation id="5439191312780166229">Yn eich rhybuddio am wefannau peryglus, hyd yn oed rhai nad oedd Google yn gwybod amdanynt o'r blaen, trwy ddadansoddi mwy o ddata o wefannau na diogelwch safonol. Gallwch ddewis hepgor rhybuddion Chrome.</translation>
 <translation id="5441466871879044658">Cyfieithu i'r iaith hon</translation>
 <translation id="5441522332038954058">Neidio i'r bar cyfeiriad</translation>
 <translation id="5444999712122199445">Mynd yn ôl i'r wefan</translation>
@@ -1043,6 +1046,7 @@ Er enghraifft, gall rhai gwefannau ymateb i'r cais hwn drwy ddangos hysbysebion 
 <translation id="6541983376925655882">{NUM_HOURS,plural, =1{Gwiriwyd 1 awr yn ôl}zero{Gwiriwyd # awr yn ôl}two{Gwiriwyd # awr yn ôl}few{Gwiriwyd # awr yn ôl}many{Gwiriwyd # awr yn ôl}other{Gwiriwyd # awr yn ôl}}</translation>
 <translation id="6545017243486555795">Clirio'r Holl Ddata</translation>
 <translation id="6546511553472444032">Mae'n bosib bod y ffeil yn niweidiol</translation>
+<translation id="6550891580932862748">Nid yw'n eich amddiffyn rhag gwefannau peryglus, lawrlwythiadau nac estyniadau. Ni fydd eich gosodiadau Pori'n Ddiogel mewn cynhyrchion Google eraill yn cael eu heffeithio.</translation>
 <translation id="6556542240154580383">{TAB_COUNT,plural, =1{Bydd <ph name="TAB_TITLE" /> a <ph name="TAB_COUNT_ONE" /> tab arall yn cael eu cau}zero{Bydd <ph name="TAB_TITLE" /> a <ph name="TAB_COUNT_MANY" /> tab arall yn cael eu cau}two{Bydd <ph name="TAB_TITLE" /> a <ph name="TAB_COUNT_MANY" /> dab arall yn cael eu cau}few{Bydd <ph name="TAB_TITLE" /> a <ph name="TAB_COUNT_MANY" /> thab arall yn cael eu cau}many{Bydd <ph name="TAB_TITLE" /> a <ph name="TAB_COUNT_MANY" /> thab arall yn cael eu cau}other{Bydd <ph name="TAB_TITLE" /> a <ph name="TAB_COUNT_MANY" /> tab arall yn cael eu cau}}</translation>
 <translation id="6560414384669816528">Chwilio gyda Sogou</translation>
 <translation id="656065428026159829">Gweld rhagor</translation>
@@ -1296,6 +1300,7 @@ Er enghraifft, gall rhai gwefannau ymateb i'r cais hwn drwy ddangos hysbysebion 
 <translation id="7772032839648071052">Cadarnhau cyfrinymadrodd</translation>
 <translation id="7772375229873196092">Cau <ph name="APP_NAME" /></translation>
 <translation id="7774809984919390718">{PAYMENT_METHOD,plural, =1{<ph name="PAYMENT_METHOD_PREVIEW" />\u2026 ac <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" /> arall}zero{<ph name="PAYMENT_METHOD_PREVIEW" />\u2026 a <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" /> arall}two{<ph name="PAYMENT_METHOD_PREVIEW" />\u2026 a <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" /> arall}few{<ph name="PAYMENT_METHOD_PREVIEW" />\u2026 a <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" /> arall}many{<ph name="PAYMENT_METHOD_PREVIEW" />\u2026 a <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" /> arall}other{<ph name="PAYMENT_METHOD_PREVIEW" />\u2026 a <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" /> arall}}</translation>
+<translation id="777637629667389858">Pan fyddwch wedi mewngofnodi, mae'n eich diogelu ar draws gwasanaethau Google.</translation>
 <translation id="7778840695157240389">Dewch yn ôl yn nes ymlaen am straeon newydd</translation>
 <translation id="7780645209293383778">Mae'n cysylltu'r data hyn dros dro â'ch Cyfrif Google pan fyddwch wedi mewngofnodi, i'ch amddiffyn ar draws apiau Google</translation>
 <translation id="7791543448312431591">Ychwanegu</translation>
@@ -1337,6 +1342,7 @@ Er enghraifft, gall rhai gwefannau ymateb i'r cais hwn drwy ddangos hysbysebion 
 <translation id="7968014550143838305">Ychwanegwyd at y rhestr ddarllen</translation>
 <translation id="7971136598759319605">Yma 1 diwrnod yn ôl</translation>
 <translation id="7975379999046275268">Tudalen rhagolwg <ph name="BEGIN_NEW" />Newydd<ph name="END_NEW" /></translation>
+<translation id="7977451675950311423">Yn eich rhybuddio os ydych yn defnyddio cyfrinair sydd wedi'i beryglu mewn achos o dor data.</translation>
 <translation id="7986497153528221272">I weld y cyfrineiriau, gosodwch glo sgrîn ar eich dyfais yn gyntaf.</translation>
 <translation id="7995059495660416932">Byddwn yn gweld cynnwys pan fydd ar gael</translation>
 <translation id="799576009106109668">Byddwch yn pori'n gyflymach oherwydd bod cynnwys yn cael ei lwytho'n rhagweithiol yn seiliedig ar eich ymweliad tudalen we bresennol</translation>

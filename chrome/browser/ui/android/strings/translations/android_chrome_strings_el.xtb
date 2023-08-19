@@ -311,6 +311,7 @@
 <translation id="2656405586795711023">Εφαρμογές ιστού</translation>
 <translation id="2669454659051515572">Όλοι όσοι χρησιμοποιούν αυτήν τη συσκευή θα μπορούν να βλέπουν τα αρχεία που έχετε κατεβάσει</translation>
 <translation id="2702516483241149200">Νέο: Κοινοποιήστε έναν σύνδεσμο που κάνει κύλιση σε αυτό το κείμενο</translation>
+<translation id="2708051474374549906">Προληπτική προστασία σε πραγματικό χρόνο από επικίνδυνους ιστοτόπους, λήψεις και επεκτάσεις που βασίζεται στα δεδομένα περιήγησης που αποστέλλονται στην Google</translation>
 <translation id="271033894570825754">Νέο</translation>
 <translation id="2711073837061989559">Δοκιμές</translation>
 <translation id="2718352093833049315">Μόνο σε Wi-Fi</translation>
@@ -674,6 +675,7 @@
 <translation id="4583164079174244168">{MINUTES,plural, =1{Πριν από # λεπτό}other{Πριν από # λεπτά}}</translation>
 <translation id="4587589328781138893">Ιστότοποι</translation>
 <translation id="4594952190837476234">Αυτή η σελίδα εκτός σύνδεσης δημιουργήθηκε στις <ph name="CREATION_TIME" /> και μπορεί να διαφέρει από την έκδοση στο διαδίκτυο.</translation>
+<translation id="4601095002996233687">Λεπτομερείς σαρώσεις σε βάθος για ύποπτες λήψεις.</translation>
 <translation id="4616150815774728855">Ανοίξτε <ph name="WEBAPK_NAME" /></translation>
 <translation id="4619564267100705184">Επαλήθευση ταυτότητας</translation>
 <translation id="4634124774493850572">Χρήση κωδικού πρόσβασης</translation>
@@ -844,6 +846,7 @@
 <translation id="543338862236136125">Επεξεργασία κωδικού πρόσβασης</translation>
 <translation id="5433691172869980887">Το όνομα χρήστη αντιγράφηκε</translation>
 <translation id="5438292632479953702">Λήψη ξανά</translation>
+<translation id="5439191312780166229">Σας προειδοποιεί για επικίνδυνους ιστοτόπους, ακόμα και για όσους δεν γνώριζε η Google στο παρελθόν, αναλύοντας περισσότερα δεδομένα από ιστοτόπους σε σχέση με την βασική προστασία. Μπορείτε να επιλέξετε να παραβλέψετε τις ειδοποιήσεις του Chrome.</translation>
 <translation id="5441137934526263133">Δεν λειτουργεί ο ιστότοπος; Τα cookie τρίτου μέρους αποκλείστηκαν.</translation>
 <translation id="5441466871879044658">Μετάφραση σε αυτήν τη γλώσσα</translation>
 <translation id="5441522332038954058">Μετάβαση στη γραμμή διευθύνσεων</translation>
@@ -1056,6 +1059,7 @@
 <translation id="6541983376925655882">{NUM_HOURS,plural, =1{Ελέγχθηκε πριν από μία ώρα}other{Ελέγχθηκε πριν από # ώρες}}</translation>
 <translation id="6545017243486555795">Διαγραφή όλων των δεδομένων</translation>
 <translation id="6546511553472444032">Το αρχείο μπορεί να είναι επιβλαβές</translation>
+<translation id="6550891580932862748">Δεν σας προστατεύει από επικίνδυνους ιστοτόπους, λήψεις και επεκτάσεις. Οι ρυθμίσεις Ασφαλούς περιήγησης σε άλλα προϊόντα της Google δεν θα επηρεαστούν.</translation>
 <translation id="6556542240154580383">{TAB_COUNT,plural, =1{Πρόκειται να κλείσει η καρτέλα <ph name="TAB_TITLE" /> και <ph name="TAB_COUNT_ONE" /> ακόμη καρτέλα}other{Πρόκειται να κλείσει η καρτέλα <ph name="TAB_TITLE" /> και <ph name="TAB_COUNT_MANY" /> ακόμη καρτέλες}}</translation>
 <translation id="6560414384669816528">Αναζήτηση με το Sogou</translation>
 <translation id="656065428026159829">Δείτε περισσότερα</translation>
@@ -1312,6 +1316,7 @@
 <translation id="7772032839648071052">Επιβεβαίωση φράσης πρόσβασης</translation>
 <translation id="7772375229873196092">Κλείσιμο <ph name="APP_NAME" /></translation>
 <translation id="7774809984919390718">{PAYMENT_METHOD,plural, =1{<ph name="PAYMENT_METHOD_PREVIEW" />\u2026 και <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" /> ακόμη}other{<ph name="PAYMENT_METHOD_PREVIEW" />\u2026 και <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" /> ακόμη}}</translation>
+<translation id="777637629667389858">Όταν είστε συνδεδεμένοι, σας προστατεύει σε όλες τις υπηρεσίες Google.</translation>
 <translation id="7778840695157240389">Ελέγξτε πάλι αργότερα για νέες ιστορίες</translation>
 <translation id="7780645209293383778">Όταν είστε συνδεδεμένοι, συνδέει προσωρινά αυτά τα δεδομένα με τον Λογαριασμό σας Google, για να σας προστατεύσει σε όλες τις εφαρμογές Google.</translation>
 <translation id="7791543448312431591">Προσθήκη</translation>
@@ -1355,6 +1360,7 @@
 <translation id="7971136598759319605">Ενεργή 1 ημέρα πριν</translation>
 <translation id="7972866381678406344">Πίσω <ph name="NUMBER_OF_SECONDS" /> δευτερόλεπτα</translation>
 <translation id="7975379999046275268">Προεπισκόπηση σελίδας <ph name="BEGIN_NEW" />Νέο<ph name="END_NEW" /></translation>
+<translation id="7977451675950311423">Σας προειδοποιεί εάν χρησιμοποιήσετε έναν κωδικό πρόσβασης που έχει παραβιαστεί μέσω παραβίασης δεδομένων.</translation>
 <translation id="7986497153528221272">Για να δείτε τους κωδικούς πρόσβασης, ορίστε πρώτα ένα κλείδωμα οθόνης στη συσκευή σας.</translation>
 <translation id="7995059495660416932">Το περιεχόμενο θα εμφανίζεται όταν καθίσταται διαθέσιμο</translation>
 <translation id="799576009106109668">Η περιήγησή σας θα είναι πιο γρήγορη επειδή το περιεχόμενο φορτώνεται προληπτικά με βάση την τρέχουσα επίσκεψή σας στην ιστοσελίδα</translation>

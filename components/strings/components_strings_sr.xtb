@@ -2290,6 +2290,7 @@
 <translation id="5873297634595728366">Дизел возила</translation>
 <translation id="5877831137320480913">Лепота и фитнес</translation>
 <translation id="5879989559903563723">Није дозвољено у режиму госта</translation>
+<translation id="5883861433316751031">Желите да контролишете и репрограмирате MIDI уређаје?</translation>
 <translation id="5884465125445718607">Кинеска коверта бр. 6</translation>
 <translation id="5887400589839399685">Картица је сачувана</translation>
 <translation id="5887687176710214216">Последња посета: јуче</translation>
@@ -3332,6 +3333,7 @@
 <translation id="8038817883578389970">Аутомобилске трке</translation>
 <translation id="8041089156583427627">Пошаљи повратне информације</translation>
 <translation id="8041940743680923270">Користи глобалну подразумевану вредност (Питај)</translation>
+<translation id="8042577181291637092">Желите да користите MIDI уређаје?</translation>
 <translation id="8046360364391076336">Индустријски материјали и опрема</translation>
 <translation id="8052898407431791827">Копирано је у привремену меморију</translation>
 <translation id="8055534648776115597">Стручно оспособљавање и континуирано образовање</translation>
@@ -3626,6 +3628,7 @@
 <translation id="8671519637524426245">Вредност <ph name="SECURE_DNS_SALT" /> не испуњава услове за величину.</translation>
 <translation id="867224526087042813">Потпис</translation>
 <translation id="8672264262457010862">Пословање и индустрија</translation>
+<translation id="8673776281896298303">да контролише и репрограмира MIDI уређаје (SysEx)</translation>
 <translation id="8676424191133491403">Без одлагања</translation>
 <translation id="8680536109547170164"><ph name="QUERY" />, одговор, <ph name="ANSWER" /></translation>
 <translation id="8681531050781943054">Веб-страница на адреси <ph name="PAGE" /> не може да се учита из следећих разлога:</translation>

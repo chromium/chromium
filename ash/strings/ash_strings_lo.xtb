@@ -659,6 +659,7 @@
 <translation id="380165613292957338">ສະບາຍດີ, ຂ້ອຍຊ່ວຍຫຍັງໄດ້ແດ່?</translation>
 <translation id="3804737937830804242">ຫຍໍ້ກ້ອງຖ່າຍຮູບລົງ</translation>
 <translation id="3824784079442479685">ການດຳເນີນການນີ້ອະນຸຍາດໃຫ້ <ph name="APP_NAME" /> ຮວມທັງແອັບ ແລະ ເວັບໄຊທັງໝົດທີ່ມີສິດສາມາດເຂົ້າເຖິງກ້ອງຖ່າຍຮູບໄດ້. ທ່ານອາດຕ້ອງໂຫຼດຂໍ້ມູນໜ້າເວັບຄືນໃໝ່ ຫຼື ຣີສະຕາດແອັບ.</translation>
+<translation id="3825680296690914697">ສົ່ງ <ph name="NUM_TURNED_IN" /> ຈາກທັງໝົດ <ph name="TOTAL_NUM_OF_SUBMISSIONS" /> ລາຍການ, ໃຫ້ຄະແນນໄປແລ້ວ <ph name="NUM_GRADED" /> ລາຍການ</translation>
 <translation id="3826099427150913765">ປ່ຽນໄປໃຊ້ລະຫັດຜ່ານ</translation>
 <translation id="383058930331066723">ໂໝດປະຢັດແບັດເຕີຣີເປີດຢູ່</translation>
 <translation id="383629559565718788">ສະແດງການຕັ້ງຄ່າແປ້ນພິມ</translation>
@@ -1744,6 +1745,7 @@
 <translation id="8446884382197647889">ຮຽນ​ຮູ້​ເພີ່ມ​ເຕີມ</translation>
 <translation id="8456543082656546101"><ph name="SHORTCUT_KEY_NAME" /> + V</translation>
 <translation id="8462305545768648477">ປິດເລືອກເພື່ອເວົ້າ</translation>
+<translation id="8468806060683421065">ຮອດກຳນົດ <ph name="DUE_DATE_AND_TIME" /></translation>
 <translation id="847056008324733326">ສະແດງການຕັ້ງຄ່າຂະໜາດ</translation>
 <translation id="8473301994082929012"><ph name="ORGANIZATION_NAME" /> ມີ <ph name="FEATURE_STATE" /> <ph name="FEATURE_NAME" />.</translation>
 <translation id="8477270416194247200">ກົດ Alt+ຊອກຫາ ຫຼື Shift ເພື່ອຍົກເລີກ.</translation>
@@ -1827,6 +1829,7 @@
 <translation id="8853703225951107899">ຍັງບໍ່ສາມາດຢັ້ງຢືນ PIN ຫຼື ລະຫັດຜ່ານຂອງທ່ານໄດ້. ໝາຍເຫດ: ຖ້າທ່ານໄດ້ປ່ຽນລະຫັດຜ່ານຂອງທ່ານເມື່ອບໍ່ດົນມານີ້, ກະລຸນາໃຊ້ລະຫັດຜ່ານເກົ່າຂອງທ່ານ. ຈະມີການນຳໃຊ້ລະຫັດຜ່ານໃໝ່ຂອງທ່ານເມື່ອທ່ານອອກຈາກລະບົບແລ້ວ.</translation>
 <translation id="8855885154700222542">ປຸ່ມເຕັມຈໍ</translation>
 <translation id="8858369206579825206">ການຄວບຄຸມຄວາມເປັນສ່ວນຕົວ</translation>
+<translation id="8860366331836346216">ເພີ່ມ eSIM</translation>
 <translation id="8870509716567206129">ແອັບບໍ່ຮອງຮັບໜ້າຈໍແບບແຍກກັນ.</translation>
 <translation id="8874184842967597500">ບໍ່​ໄດ້​ເຊື່ອມ​ຕໍ່</translation>
 <translation id="8875021410787719674">ຍ້າຍລະຫວ່າງມຸມຂວາລຸ່ມ, ຕົວເປີດໃຊ້, ແຖບທີ່ຢູ່, ແຖບບຸກມາກ, ເວັບໄຊທີ່ເປີດ ແລະ ດາວໂຫຼດ</translation>

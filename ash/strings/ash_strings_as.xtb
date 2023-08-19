@@ -659,6 +659,7 @@
 <translation id="380165613292957338">নমস্কাৰ, মই আপোনাক কেনেদৰে সহায় কৰিব পাৰোঁ?</translation>
 <translation id="3804737937830804242">কেমেৰা সংকোচন কৰক</translation>
 <translation id="3824784079442479685">এইটোৱে <ph name="APP_NAME" /> আৰু কেমেৰাৰ অনুমতি থকা আটাইবোৰ এপ্‌ আৰু ৱেবছাইটৰ বাবে কেমেৰা এক্সেছ কৰাৰ অনুমতি দিয়ে। আপুনি ৱেবপৃষ্ঠাখন ৰিফ্ৰেশ্ব কৰিব লাগিব পাৰে বা এপ্‌টো পুনৰাৰম্ভ কৰিব লাগিব পাৰে।</translation>
+<translation id="3825680296690914697"><ph name="TOTAL_NUM_OF_SUBMISSIONS" /> টাৰ <ph name="NUM_TURNED_IN" /> টা দাখিল কৰা হৈছে, <ph name="NUM_GRADED" /> টাত গ্ৰে’ড দিয়া হৈছে</translation>
 <translation id="3826099427150913765">পাছৱৰ্ডলৈ সলনি কৰক</translation>
 <translation id="383058930331066723">বেটাৰী সঞ্চয়কাৰী মোড অন কৰা আছে</translation>
 <translation id="383629559565718788">কীব’ৰ্ডৰ ছেটিংসমূহ দেখুৱাওক</translation>
@@ -1744,6 +1745,7 @@
 <translation id="8446884382197647889">অধিক জানক</translation>
 <translation id="8456543082656546101"><ph name="SHORTCUT_KEY_NAME" /> + V</translation>
 <translation id="8462305545768648477">কথা ক’বলৈ বাছনি কৰক সুবিধাটো বন্ধ কৰক</translation>
+<translation id="8468806060683421065">কাৰ্য সমাপ্তিৰ শেষ তাৰিখ হৈছে <ph name="DUE_DATE_AND_TIME" /></translation>
 <translation id="847056008324733326">ডিছপ্লে’ স্কে’লৰ ছেটিং</translation>
 <translation id="8473301994082929012"><ph name="ORGANIZATION_NAME" />ৰ <ph name="FEATURE_STATE" /> <ph name="FEATURE_NAME" />আছে।</translation>
 <translation id="8477270416194247200">বাতিল কৰিবলৈ Alt+Search বা Shift টিপক।</translation>
@@ -1827,6 +1829,7 @@
 <translation id="8853703225951107899">আপোনাৰ পিন অথবা পাছৱৰ্ডটো তথাপি সত্যাপন কৰিব পৰা নগ’ল। টোকা: আপুনি যদি শেহতীয়াকৈ আপোনাৰ পাছৱৰ্ড সলনি কৰিছে, আপোনাৰ পুৰণি পাছৱৰ্ডটো ব্যৱহাৰ কৰক। আপুনি ছাইন আউট কৰিলে আপোনাৰ নতুন পাছৱৰ্ডটো প্ৰযোজ্য হ'ব।</translation>
 <translation id="8855885154700222542">সম্পূৰ্ণ স্ক্রীণলৈ যাবৰ বাবে কী</translation>
 <translation id="8858369206579825206">গোপনীয়তাৰ নিয়ন্ত্ৰণ</translation>
+<translation id="8860366331836346216">ই-ছিম যোগ দিয়ক</translation>
 <translation id="8870509716567206129">এপটোৱে বিভাজিত স্ক্ৰীন সমৰ্থন নকৰে।</translation>
 <translation id="8874184842967597500">সংযোগ হোৱা নাই</translation>
 <translation id="8875021410787719674">একেবাৰে তলৰ সোঁ কোণ, লঞ্চাৰ, ঠিকনাৰ বাৰ, বুকমাৰ্কৰ বাৰ, খোলা থকা ৱেবছাইট আৰু ডাউনল’ডৰ মাজত ইফাল সিফাল কৰক</translation>

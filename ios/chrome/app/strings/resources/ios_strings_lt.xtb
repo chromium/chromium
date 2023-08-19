@@ -61,6 +61,7 @@ Jei norite pakeisti šį nustatymą, <ph name="BEGIN_LINK" />išvalykite „Chro
 <translation id="1283524564873030414">Pastarosios 24 valandos</translation>
 <translation id="1285320974508926690">Niekada neversti šios svetainės</translation>
 <translation id="1291506870746876680"><ph name="BEGIN_BOLD" /><ph name="SITE_NAME" /><ph name="END_BOLD" /> leidimai bus iš naujo nustatyti kaip išjungti, kai išeisite iš šios svetainės.</translation>
+<translation id="1295289763199166823">Tinkinti meniu</translation>
 <translation id="1305822519689023679">Kad užtikrintumėte, jog visada galėsite naudoti slaptažodžius „Google“ paskyroje, patvirtinkite savo tapatybę.</translation>
 <translation id="1312721752506309252">Sustiprinta apsauga įjungta</translation>
 <translation id="1316466854070752597">Žr. visus atidarytus skirtukus</translation>
@@ -106,6 +107,7 @@ Jei norite pakeisti šį nustatymą, <ph name="BEGIN_LINK" />išvalykite „Chro
 <translation id="1554477036522844996">Naujas langas</translation>
 <translation id="1563071802032385236">Įjunkite parinktį „Prašyti atidaryti nuorodas iš kitų programų inkognito režimu“.</translation>
 <translation id="1565371473877914088">Naujas inkognito skirtukas</translation>
+<translation id="1565395699240341063">Paslėpta</translation>
 <translation id="1580715474678097352">Būkite apsaugoti nuo pavojingų svetainių</translation>
 <translation id="1580783302095112590">El. laiškas išsiųstas.</translation>
 <translation id="1582732959743469162">Bus sustabdytas dabartinis atsisiuntimas.</translation>
@@ -436,6 +438,7 @@ Peržiūrėkite paieškos variklio instrukcijas, kaip ištrinti paieškos istori
 <translation id="3533436815740441613">Naujas skirtukas</translation>
 <translation id="3540141921715814660">Pridėti prie žymių</translation>
 <translation id="3551320343578183772">Uždaryti skirtuką</translation>
+<translation id="3564513311876185114">Išmaniojo užsakymo meniu juosta</translation>
 <translation id="3565207542107370586">Išvalyti naršymo duomenis…</translation>
 <translation id="3575234738189584619">Paieška naudojant „Lens“</translation>
 <translation id="3577555362230509265">Naudokite „Chrome“ kitose programose.</translation>
@@ -1287,6 +1290,7 @@ Duomenys užšifruoti naudojant slaptafrazę <ph name="TIME" />. Įveskite ją, 
 <translation id="854938212724803178">Turite vieną pažeistą slaptažodį. Pataisykite dabar, kad užtikrintumėte saugą.</translation>
 <translation id="8556590991644167667">{count,plural, =1{Atsisakėte {count} perspėjimo}one{Atsisakėte {count} perspėjimo}few{Atsisakėte {count} perspėjimų}many{Atsisakėte {count} perspėjimo}other{Atsisakėte {count} perspėjimų}}</translation>
 <translation id="8558480467877843976">Dabar galite naudoti „Chrome“ bet kada naršydami ar paliesdami nuorodas pranešimuose, dokumentuose ir kitose programose.</translation>
+<translation id="8560253818350321773">Pirmiausia rodykite dažnai naudojamus elementus.</translation>
 <translation id="8580411965900177618">Ne, ačiū</translation>
 <translation id="8588404856427128947">Išjungta</translation>
 <translation id="8591976964826315682">Blokuoti trečiųjų šalių slapukus inkognito režimu</translation>

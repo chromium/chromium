@@ -311,6 +311,7 @@
 <translation id="2656405586795711023">Веб программууд</translation>
 <translation id="2669454659051515572">Энэ төхөөрөмжийг ашиглаж байгаа дурын хүн татсан файлуудыг харах боломжтой</translation>
 <translation id="2702516483241149200">Шинэ: энэ текст рүү гүйлгэж очих холбоосыг хуваалцаарай</translation>
+<translation id="2708051474374549906">Таны Google-д илгээсэн интернэтээр үзсэн өгөгдөлд тулгуурласан аюултай сайт, татаж авсан файл болон өргөтгөлүүдийн эсрэг тухайн агшны, идэвхтэй хамгаалалт</translation>
 <translation id="271033894570825754">Шинэ</translation>
 <translation id="2711073837061989559">Туршилтын хугацаа</translation>
 <translation id="2718352093833049315">Зөвхөн Wi-Fi-аар</translation>
@@ -674,6 +675,7 @@ Tаны Google бүртгэл <ph name="BEGIN_LINK" />history.google.com<ph name
 <translation id="4583164079174244168">{MINUTES,plural, =1{# минутын өмнө}other{# минутын өмнө}}</translation>
 <translation id="4587589328781138893">Сайт</translation>
 <translation id="4594952190837476234">Энэ офлайн хуудсыг <ph name="CREATION_TIME" />-с харуулж байгаа бөгөөд онлайн хувилбараас өөр байж болзошгүй.</translation>
+<translation id="4601095002996233687">Сэжигтэй татаж авсан файлд хийх нарийвчилсан скан.</translation>
 <translation id="4616150815774728855"><ph name="WEBAPK_NAME" />-г нээх</translation>
 <translation id="4619564267100705184">Өөрийгөө мөн болохыг бататгах</translation>
 <translation id="4634124774493850572">Нууц үг ашиглах</translation>
@@ -841,6 +843,7 @@ Tаны Google бүртгэл <ph name="BEGIN_LINK" />history.google.com<ph name
 <translation id="543338862236136125">Нууц үг засах</translation>
 <translation id="5433691172869980887">Хэрэглэгчийн нэрийг хуулсан</translation>
 <translation id="5438292632479953702">Дахин татах</translation>
+<translation id="5439191312780166229">Стандарт хамгаалалтаас илүүтэйгээр сайтуудын бусад өгөгдлийг задлан шинжилснээр танд аюултай сайтуудын талаар сануулах бөгөөд эдгээрт Google-н өмнө нь мэдээгүй сайт ч багтана. Та Chrome-н сануулгыг алгасахаар сонгох боломжтой.</translation>
 <translation id="5441137934526263133">Сайт ажиллахгүй байна уу? Гуравдагч талын күүкиг блоклосон</translation>
 <translation id="5441466871879044658">Энэ хэл рүү орчуулах</translation>
 <translation id="5441522332038954058">Хаяг оруулах хэсэгт очих</translation>
@@ -1053,6 +1056,7 @@ Tаны Google бүртгэл <ph name="BEGIN_LINK" />history.google.com<ph name
 <translation id="6541983376925655882">{NUM_HOURS,plural, =1{1 цагийн өмнө шалгасан}other{# цагийн өмнө шалгасан}}</translation>
 <translation id="6545017243486555795">Бүх өгөгдлийг устгах</translation>
 <translation id="6546511553472444032">Файл аюултай байж магадгүй</translation>
+<translation id="6550891580932862748">Таныг аюултай вебсайт, татаж авсан файл болон өргөтгөлүүдээс хамгаалахгүй. Google-н бусад бүтээгдэхүүн дэх таны Аюулгүй хөтчийн тохиргоонд нөлөөлөхгүй.</translation>
 <translation id="6556542240154580383">{TAB_COUNT,plural, =1{<ph name="TAB_TITLE" /> болон бусад <ph name="TAB_COUNT_ONE" /> табыг хаана}other{<ph name="TAB_TITLE" /> болон бусад <ph name="TAB_COUNT_MANY" /> табыг хаана}}</translation>
 <translation id="6560414384669816528">Sogou-р хайх</translation>
 <translation id="656065428026159829">Дэлгэрэнгүй үзэх</translation>
@@ -1308,6 +1312,7 @@ Tаны Google бүртгэл <ph name="BEGIN_LINK" />history.google.com<ph name
 <translation id="7772032839648071052">Нэвтрэх үгүүдийг баталгаажуул</translation>
 <translation id="7772375229873196092"><ph name="APP_NAME" />-г хаах</translation>
 <translation id="7774809984919390718">{PAYMENT_METHOD,plural, =1{<ph name="PAYMENT_METHOD_PREVIEW" />\u2026 болон бусад <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" />}other{<ph name="PAYMENT_METHOD_PREVIEW" />\u2026 болон бусад <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" />}}</translation>
+<translation id="777637629667389858">Таныг нэвтэрсэн үед Google-н үйлчилгээнүүдэд хамгаална.</translation>
 <translation id="7778840695157240389">Шинэ түүхийг дараа дахин шалгана уу</translation>
 <translation id="7780645209293383778">Таныг нэвтэрсэн үед Google-н аппууд дээр хамгаалахын тулд энэ өгөгдлийг таны Google Бүртгэлтэй түр хугацаанд холбоно</translation>
 <translation id="7791543448312431591">Нэмэх</translation>
@@ -1349,6 +1354,7 @@ Tаны Google бүртгэл <ph name="BEGIN_LINK" />history.google.com<ph name
 <translation id="7968014550143838305">Унших жагсаалтад нэмсэн</translation>
 <translation id="7971136598759319605">1 өдрийн өмнө идэвхтэй</translation>
 <translation id="7975379999046275268">Хуудсыг урьдчилан үзэх <ph name="BEGIN_NEW" />Шинэ<ph name="END_NEW" /></translation>
+<translation id="7977451675950311423">Таныг өгөгдлийн зөрчилд алдагдсан нууц үгийг ашигласан тохиолдолд танд сануулна.</translation>
 <translation id="7986497153528221272">Нууц үг харах бол, эхлээд төхөөрөмж дээрээ дэлгэцийн түгжээг тохируулна уу</translation>
 <translation id="7995059495660416932">Та контентыг боломжтой болсон үед нь харна</translation>
 <translation id="799576009106109668">Контентыг таны одоогийн веб хуудасны зочилсон байдалд тулгуурлан идэвхтэй ачаалсан тул та илүү хурдан үзнэ</translation>

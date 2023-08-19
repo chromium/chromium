@@ -309,6 +309,7 @@
 <translation id="2656405586795711023">ওয়েব অ্যাপ</translation>
 <translation id="2669454659051515572">এই ডিভাইস ব্যবহার করছেন এমন যেকেউ ডাউনলোড করা ফাইলগুলি দেখতে পারবেন</translation>
 <translation id="2702516483241149200">নতুন: এই টেক্সট পর্যন্ত স্ক্রোল করতে পারে এমন লিঙ্ক শেয়ার করুন</translation>
+<translation id="2708051474374549906">Google-কে পাঠানো আপনার ব্রাউজ করা ডেটা অনুযায়ী বিপজ্জনক সাইট, ডাউনলোড এবং এক্সটেনশন থেকে রিয়েল-টাইমে সুরক্ষা পাওয়া যায়</translation>
 <translation id="271033894570825754">নতুন</translation>
 <translation id="2711073837061989559">ট্রায়াল</translation>
 <translation id="2718352093833049315">শুধুমাত্র ওয়াই-ফাই এ</translation>
@@ -671,6 +672,7 @@
 <translation id="4583164079174244168">{MINUTES,plural, =1{# মিনিট আগে}one{# মিনিট আগে}other{# মিনিট আগে}}</translation>
 <translation id="4587589328781138893">সাইট</translation>
 <translation id="4594952190837476234">এই অফলাইন পৃষ্ঠাটি <ph name="CREATION_TIME" />-এ তৈরি করা হয়েছিল এবং এটি অনলাইন ভার্সনের থেকে আলাদা হতে পারে।</translation>
+<translation id="4601095002996233687">এই সুবিধা সন্দেহজনক ডাউনলোড যাচাই করতে ভালভাবে স্ক্যান করে।</translation>
 <translation id="4616150815774728855"><ph name="WEBAPK_NAME" /> খুলুন</translation>
 <translation id="4619564267100705184">নিজের পরিচয় যাচাই করুন</translation>
 <translation id="4634124774493850572">পাসওয়ার্ড ব্যবহার করুন</translation>
@@ -836,6 +838,7 @@
 <translation id="543338862236136125">পাসওয়ার্ড এডিট করুন</translation>
 <translation id="5433691172869980887">ইউজারনেম কপি করা হয়েছে</translation>
 <translation id="5438292632479953702">আবার ডাউনলোড করুন</translation>
+<translation id="5439191312780166229">স্ট্যান্ডার্ড সুরক্ষার চেয়ে সাইট থেকে আরও বেশি ডেটা বিশ্লেষণ করার মাধ্যমে Google আপনাকে বিপজ্জনক সাইট সম্পর্কে সতর্ক করে, এমনকি আগে যার সম্পর্কে জানা নেই সেই বিষয়েও সতর্ক করে। আপনি Chrome সম্পর্কিত সতর্কতা এড়িয়ে যাওয়ার বিকল্প বেছে নিতে পারবেন।</translation>
 <translation id="5441466871879044658">এই ভাষায় অনুবাদ করুন</translation>
 <translation id="5441522332038954058">অ্যাড্রেস বারে চলে যান</translation>
 <translation id="5444999712122199445">সাইটে ফিরে যান</translation>
@@ -1046,6 +1049,7 @@
 <translation id="6541983376925655882">{NUM_HOURS,plural, =1{১ ঘণ্টা আগে চেক করা হয়েছে}one{# ঘণ্টা আগে চেক করা হয়েছে}other{# ঘণ্টা আগে চেক করা হয়েছে}}</translation>
 <translation id="6545017243486555795">সমস্ত ডেটা সাফ করুন</translation>
 <translation id="6546511553472444032">ফাইলটি ক্ষতিকর হতে পারে</translation>
+<translation id="6550891580932862748">এই মোডে আপনার ডিভাইসের ক্ষতি করতে পারে এমন ওয়েবসাইট, ডাউনলোড অথবা এক্সটেনশন থেকে কোনও সুরক্ষা পাওয়া সম্ভব হয় না। Google-এর অন্য প্রোডাক্টে আপনার নিরাপদ ব্রাউজিংয়ের সেটিংস প্রভাবিত হবে না।</translation>
 <translation id="6556542240154580383">{TAB_COUNT,plural, =1{<ph name="TAB_TITLE" /> এবং আরও <ph name="TAB_COUNT_ONE" />টি ট্যাব বন্ধ করা হবে}one{<ph name="TAB_TITLE" /> এবং আরও <ph name="TAB_COUNT_MANY" />টি ট্যাব বন্ধ করা হবে}other{<ph name="TAB_TITLE" /> এবং আরও <ph name="TAB_COUNT_MANY" />টি ট্যাব বন্ধ করা হবে}}</translation>
 <translation id="6560414384669816528">Sogou দিয়ে খুঁজুন</translation>
 <translation id="656065428026159829">আরও দেখুন</translation>
@@ -1259,6 +1263,7 @@
 <translation id="757855969265046257">{FILES,plural, =1{<ph name="FILES_DOWNLOADED_ONE" />টি ফাইল ডাউনলোড হয়েছে}one{<ph name="FILES_DOWNLOADED_MANY" />টি ফাইল ডাউনলোড হয়েছে}other{<ph name="FILES_DOWNLOADED_MANY" />টি ফাইল ডাউনলোড হয়েছে}}</translation>
 <translation id="7581273696622423628">সমীক্ষায় যোগ দিন</translation>
 <translation id="7583262514280211622">আপনি নিজের পড়ার তালিকা এখানে খুঁজে পাবেন</translation>
+<translation id="7587250070160020374">Chrome এখন চলছে</translation>
 <translation id="7588219262685291874">আপনার ডিভাইস ব্যাটারি সেভারে চললে গাঢ় থিম চালু করুন</translation>
 <translation id="7594687499944811403"><ph name="TOP_ORIGIN" />-এর জন্য <ph name="EMBEDDED_ORIGIN" />-কে আপনার পরিচয় যাচাই করতে দিন</translation>
 <translation id="7596558890252710462">অপারেটিং সিস্টেম</translation>
@@ -1298,6 +1303,7 @@
 <translation id="7772032839648071052">পাসফ্রেজ নিশ্চিত করুন</translation>
 <translation id="7772375229873196092"><ph name="APP_NAME" /> বন্ধ করুন</translation>
 <translation id="7774809984919390718">{PAYMENT_METHOD,plural, =1{<ph name="PAYMENT_METHOD_PREVIEW" />\u2026 এবং <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" /> আরও অনেক}one{<ph name="PAYMENT_METHOD_PREVIEW" />\u2026 এবং <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" /> আরও অনেক}other{<ph name="PAYMENT_METHOD_PREVIEW" />\u2026 এবং <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" /> আরও অনেক}}</translation>
+<translation id="777637629667389858">আপনি যখন সাইন-ইন করে থাকেন, তখন Google পরিষেবা জুড়ে আপনাকে সুরক্ষিত রাখে।</translation>
 <translation id="7778840695157240389">নতুন খবরের জন্য পরে আবার চেক করুন</translation>
 <translation id="7780645209293383778">সব Google অ্যাপ জুড়ে আপনাকে সুরক্ষিত রাখতে, যখন আপনি সাইন-ইন করেন, তখন আপনার Google অ্যাকাউন্টে অস্থায়ীভাবে এই ডেটা লিঙ্ক করায়</translation>
 <translation id="7791543448312431591">জুড়ুন</translation>
@@ -1339,6 +1345,7 @@
 <translation id="7968014550143838305">পড়ার তালিকায় যোগ করা হয়েছে</translation>
 <translation id="7971136598759319605">১ দিন আগে ব্যবহার করা হয়েছে</translation>
 <translation id="7975379999046275268"><ph name="BEGIN_NEW" />নতুন<ph name="END_NEW" /> পৃষ্ঠার প্রিভিউ দেখুন</translation>
+<translation id="7977451675950311423">আপনি যদি এমন কোনও পাসওয়ার্ড ব্যবহার করেন যা ডেটার নিরাপত্তা লঙ্ঘনের কারণে সুরক্ষিত নয়, সেক্ষেত্রে এটি আপনাকে সতর্ক করে।</translation>
 <translation id="7986497153528221272">পাসওয়ার্ড দেখতে, আগে আপনার ডিভাইসে স্ক্রিন লক সেট করুন</translation>
 <translation id="7995059495660416932">কন্টেন্ট উপলভ্য হলে আপনি তা দেখতে পাবেন</translation>
 <translation id="799576009106109668">আপনি আরও দ্রুত ব্রাউজ করবেন কারণ, আপনার বর্তমান ওয়েবপেজ দেখার উপরে ভিত্তি করে কন্টেন্ট নিজে থেকে লোড হয়</translation>

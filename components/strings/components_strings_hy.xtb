@@ -2301,6 +2301,7 @@
 <translation id="5873297634595728366">Դիզելային ավտոմեքենաներ</translation>
 <translation id="5877831137320480913">Գեղեցկություն և ֆիթնես</translation>
 <translation id="5879989559903563723">Թույլատրված չէ հյուրի ռեժիմում</translation>
+<translation id="5883861433316751031">Թույլատրե՞լ վերահսկել և վերածրագրավորել MIDI սարքերը</translation>
 <translation id="5884465125445718607">Envelope Chinese #6</translation>
 <translation id="5887400589839399685">Քարտը պահվեց</translation>
 <translation id="5887687176710214216">Վերջին այցելությունը՝ երեկ</translation>
@@ -3344,6 +3345,7 @@
 <translation id="8038817883578389970">Ավտոմրցարշավ</translation>
 <translation id="8041089156583427627">Կարծիք հայտնել</translation>
 <translation id="8041940743680923270">Օգտագործել համընդհանուր կանխադրվածը (Հարցնել)</translation>
+<translation id="8042577181291637092">Թույլատրե՞լ օգտագործել MIDI սարքերը</translation>
 <translation id="8046360364391076336">Արդյունաբերական նյութեր և սարքավորումներ</translation>
 <translation id="8052898407431791827">Պատճենվեց սեղմատախտակին</translation>
 <translation id="8055534648776115597">Մասնագիտական և շարունակական կրթություն</translation>
@@ -3637,6 +3639,7 @@
 <translation id="8671519637524426245"><ph name="SECURE_DNS_SALT" /> կանոնի արժեքը չի համապատասխանում չափսի պահանջներին։</translation>
 <translation id="867224526087042813">Ստորագրություն</translation>
 <translation id="8672264262457010862">Բիզնես և արդյունաբերություն</translation>
+<translation id="8673776281896298303">Վերահսկել և վերածրագրավորել ձեր MIDI սարքերը (SysEx)</translation>
 <translation id="8676424191133491403">Առանց հետաձգման</translation>
 <translation id="8680536109547170164"><ph name="QUERY" />, պատասխան, <ph name="ANSWER" /></translation>
 <translation id="8681531050781943054"><ph name="PAGE" />-ի կայքէջը չհաջողվեց բեռնել, քանի որ՝</translation>

@@ -311,6 +311,7 @@ Pinapahusay ng mga private state token ang privacy sa web at hindi magagamit ang
 <translation id="2656405586795711023">Mga web app</translation>
 <translation id="2669454659051515572">Makikita ng sinumang gumagamit ng device na ito ang mga na-download na file</translation>
 <translation id="2702516483241149200">Bago: magbahagi ng link na nagso-scroll papunta sa text na ito</translation>
+<translation id="2708051474374549906">Real-time at proactive na proteksyon laban sa mga mapanganib na site, download, at extension na nakabatay sa iyong data mula sa pag-browse na ipinapadala sa Google</translation>
 <translation id="271033894570825754">Bago</translation>
 <translation id="2711073837061989559">Mga Trial</translation>
 <translation id="2718352093833049315">Sa Wi-Fi lang</translation>
@@ -674,6 +675,7 @@ Maaaring may ibang uri ng history ng pag-browse ang iyong Google account tulad n
 <translation id="4583164079174244168">{MINUTES,plural, =1{# minuto ang nakalipas}one{# minuto ang nakalipas}other{# na minuto ang nakalipas}}</translation>
 <translation id="4587589328781138893">Mga Site</translation>
 <translation id="4594952190837476234">Naka-offline ang page na ito mula noong <ph name="CREATION_TIME" /> at maaaring iba ito sa online na bersyon.</translation>
+<translation id="4601095002996233687">Mga detalyadong pag-scan para sa mga kahina-hinalang pag-download.</translation>
 <translation id="4616150815774728855">Buksan ang <ph name="WEBAPK_NAME" /></translation>
 <translation id="4619564267100705184">I-verify na ikaw ito</translation>
 <translation id="4634124774493850572">Gamitin ang password</translation>
@@ -844,6 +846,7 @@ Para baguhin ang setting na ito, <ph name="BEGIN_LINK" />i-reset ang pag-sync<ph
 <translation id="543338862236136125">I-edit ang password</translation>
 <translation id="5433691172869980887">Nakopya ang username</translation>
 <translation id="5438292632479953702">I-download ulit</translation>
+<translation id="5439191312780166229">Babalaan ka tungkol sa mga mapanganib na site, kahit iyong mga hindi alam ng Google noon, sa pamamagitan ng pagsusuri sa higit pang data mula sa mga site kaysa sa karaniwang proteksyon. Puwede mong piliing laktawan ang mga babala ng Chrome.</translation>
 <translation id="5441137934526263133">Hindi gumagana ang site? Bina-block ang third-party na cookies</translation>
 <translation id="5441466871879044658">Isalin sa wikang ito</translation>
 <translation id="5441522332038954058">Pumunta sa address bar</translation>
@@ -1056,6 +1059,7 @@ Halimbawa, puwedeng tumugon ang ilang website sa kahilingang ito sa pamamagitan 
 <translation id="6541983376925655882">{NUM_HOURS,plural, =1{Nagsuri 1 oras ang nakalipas}one{Nagsuri # oras ang nakalipas}other{Nagsuri # na oras ang nakalipas}}</translation>
 <translation id="6545017243486555795">I-clear ang Lahat ng Data</translation>
 <translation id="6546511553472444032">Posibleng mapaminsala ang file</translation>
+<translation id="6550891580932862748">Hindi ka poprotektahan laban sa mga mapanganib na website, download, at extension. Hindi maaapektuhan ang mga setting ng Ligtas na Pag-browse mo sa iba pang produkto ng Google.</translation>
 <translation id="6556542240154580383">{TAB_COUNT,plural, =1{Isasara ang <ph name="TAB_TITLE" /> at <ph name="TAB_COUNT_ONE" /> pang tab}one{Isasara ang <ph name="TAB_TITLE" /> at <ph name="TAB_COUNT_MANY" /> pang tab}other{Isasara ang <ph name="TAB_TITLE" /> at <ph name="TAB_COUNT_MANY" /> pang tab}}</translation>
 <translation id="6560414384669816528">Maghanap gamit ang Sogou</translation>
 <translation id="656065428026159829">Tumingin pa</translation>
@@ -1312,6 +1316,7 @@ Halimbawa, puwedeng tumugon ang ilang website sa kahilingang ito sa pamamagitan 
 <translation id="7772032839648071052">Kumpirmahin ang passphrase</translation>
 <translation id="7772375229873196092">Isara ang <ph name="APP_NAME" /></translation>
 <translation id="7774809984919390718">{PAYMENT_METHOD,plural, =1{<ph name="PAYMENT_METHOD_PREVIEW" />\u2026 at <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" /> iba pa}one{<ph name="PAYMENT_METHOD_PREVIEW" />\u2026 at <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" /> iba pa}other{<ph name="PAYMENT_METHOD_PREVIEW" />\u2026 at <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" /> na iba pa}}</translation>
+<translation id="777637629667389858">Kapag naka-sign in ka, poprotektahan ka nito sa lahat ng serbisyo ng Google.</translation>
 <translation id="7778840695157240389">Bumalik sa ibang pagkakataon para sa mga bagong kuwento</translation>
 <translation id="7780645209293383778">Pansamantalang nili-link ang data na ito sa iyong Google Account kapag naka-sign in ka, para protektahan ka sa lahat ng Google app</translation>
 <translation id="7791543448312431591">Idagdag</translation>
@@ -1355,6 +1360,7 @@ Halimbawa, puwedeng tumugon ang ilang website sa kahilingang ito sa pamamagitan 
 <translation id="7971136598759319605">Aktibo 1 araw ang nakalipas</translation>
 <translation id="7972866381678406344">Bumalik nang <ph name="NUMBER_OF_SECONDS" /> (na) segundo</translation>
 <translation id="7975379999046275268">I-preview ang page na <ph name="BEGIN_NEW" />Bago<ph name="END_NEW" /></translation>
+<translation id="7977451675950311423">Babalaan ka kung gagamit ka ng password na nakompromiso sa isang paglabag sa data.</translation>
 <translation id="7986497153528221272">Para tingnan ang mga password, magtakda muna ng lock ng screen sa iyong device</translation>
 <translation id="7995059495660416932">Makikita mo ang content kapag naging available ito</translation>
 <translation id="799576009106109668">Makakapag-browse ka nang mas mabilis dahil aktibong naglo-load ng content batay sa kasalukuyan mong pagbisita sa webpage</translation>

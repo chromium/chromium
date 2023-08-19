@@ -309,6 +309,7 @@ I token di stato privati migliorano la privacy sul web e non possono essere usat
 <translation id="2656405586795711023">App web</translation>
 <translation id="2669454659051515572">Tutte le persone che usano questo dispositivo possono vedere i file scaricati</translation>
 <translation id="2702516483241149200">Novità: condividi un link che scorre direttamente a questo testo</translation>
+<translation id="2708051474374549906">Protezione proattiva in tempo reale da estensioni, siti e download pericolosi basati sui tuoi dati di navigazione inviati a Google</translation>
 <translation id="271033894570825754">Nuovo</translation>
 <translation id="2711073837061989559">Prove</translation>
 <translation id="2718352093833049315">Solo su Wi-Fi</translation>
@@ -669,6 +670,7 @@ Il tuo Account Google potrebbe avere altre forme di cronologia di navigazione, a
 <translation id="4583164079174244168">{MINUTES,plural, =1{# minuto fa}other{# minuti fa}}</translation>
 <translation id="4587589328781138893">Siti</translation>
 <translation id="4594952190837476234">Questa pagina offline risale al giorno <ph name="CREATION_TIME" /> e potrebbe essere diversa dalla versione online.</translation>
+<translation id="4601095002996233687">Scansioni approfondite per rilevare i download sospetti.</translation>
 <translation id="4616150815774728855">Apri <ph name="WEBAPK_NAME" /></translation>
 <translation id="4619564267100705184">Verifica la tua identità</translation>
 <translation id="4634124774493850572">Utilizza password</translation>
@@ -834,6 +836,7 @@ Per cambiare questa impostazione, <ph name="BEGIN_LINK" />reimposta la sincroniz
 <translation id="543338862236136125">Modifica password</translation>
 <translation id="5433691172869980887">Nome utente copiato</translation>
 <translation id="5438292632479953702">Scarica di nuovo</translation>
+<translation id="5439191312780166229">Ricevi un avviso in caso di siti pericolosi, inclusi quelli di cui Google non era a conoscenza, analizzando più dati provenienti dai siti rispetto al livello Protezione standard. Puoi scegliere di ignorare gli avvisi di Chrome.</translation>
 <translation id="5441466871879044658">Traduci in questa lingua</translation>
 <translation id="5441522332038954058">Vai alla barra degli indirizzi</translation>
 <translation id="5444999712122199445">Torna al sito</translation>
@@ -1044,6 +1047,7 @@ Ad esempio, alcuni siti web potrebbero rispondere alla richiesta mostrando annun
 <translation id="6541983376925655882">{NUM_HOURS,plural, =1{Eseguito 1 ora fa}other{Eseguito # ore fa}}</translation>
 <translation id="6545017243486555795">Cancella tutti i dati</translation>
 <translation id="6546511553472444032">Potrebbe essere dannoso</translation>
+<translation id="6550891580932862748">Non ti protegge da estensioni, download e siti web pericolosi. Le impostazioni di Navigazione sicura di altri prodotti Google rimarranno invariate.</translation>
 <translation id="6556542240154580383">{TAB_COUNT,plural, =1{<ph name="TAB_TITLE" /> e <ph name="TAB_COUNT_ONE" /> altra scheda verranno chiuse}other{<ph name="TAB_TITLE" /> e altre <ph name="TAB_COUNT_MANY" /> schede verranno chiuse}}</translation>
 <translation id="6560414384669816528">Ricerche con Sogou</translation>
 <translation id="656065428026159829">Mostra altri</translation>
@@ -1257,6 +1261,7 @@ Ad esempio, alcuni siti web potrebbero rispondere alla richiesta mostrando annun
 <translation id="757855969265046257">{FILES,plural, =1{<ph name="FILES_DOWNLOADED_ONE" /> file scaricato}other{<ph name="FILES_DOWNLOADED_MANY" /> file scaricati}}</translation>
 <translation id="7581273696622423628">Vai al sondaggio</translation>
 <translation id="7583262514280211622">Qui troverai il tuo elenco di lettura</translation>
+<translation id="7587250070160020374">Chrome ora in riproduzione</translation>
 <translation id="7588219262685291874">Attiva il tema scuro quando sul dispositivo è attivo Risparmio energetico</translation>
 <translation id="7594687499944811403">Consenti a <ph name="EMBEDDED_ORIGIN" /> di verificare la tua identità per <ph name="TOP_ORIGIN" /></translation>
 <translation id="7596558890252710462">Sistema operativo</translation>
@@ -1296,6 +1301,7 @@ Ad esempio, alcuni siti web potrebbero rispondere alla richiesta mostrando annun
 <translation id="7772032839648071052">Conferma passphrase</translation>
 <translation id="7772375229873196092">Chiudi <ph name="APP_NAME" /></translation>
 <translation id="7774809984919390718">{PAYMENT_METHOD,plural, =1{<ph name="PAYMENT_METHOD_PREVIEW" />\u2026 e altri <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" />}other{<ph name="PAYMENT_METHOD_PREVIEW" />\u2026 e altri <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" />}}</translation>
+<translation id="777637629667389858">Se hai eseguito l'accesso, ti protegge nei servizi Google.</translation>
 <translation id="7778840695157240389">Ricontrolla più tardi se ci sono nuove notizie</translation>
 <translation id="7780645209293383778">Se hai eseguito l'accesso, collega temporaneamente questi dati al tuo Account Google per proteggerti nelle app Google</translation>
 <translation id="7791543448312431591">Aggiungi</translation>
@@ -1337,6 +1343,7 @@ Ad esempio, alcuni siti web potrebbero rispondere alla richiesta mostrando annun
 <translation id="7968014550143838305">Aggiunto all'elenco di lettura</translation>
 <translation id="7971136598759319605">Attivo 1 giorno fa</translation>
 <translation id="7975379999046275268">Anteprima pagina <ph name="BEGIN_NEW" />Novità<ph name="END_NEW" /></translation>
+<translation id="7977451675950311423">Ricevi un avviso se utilizzi una password che è stata compromessa a causa di una violazione dei dati.</translation>
 <translation id="7986497153528221272">Per visualizzare le password, imposta un blocco schermo sul tuo dispositivo</translation>
 <translation id="7995059495660416932">Vedrai i contenuti non appena saranno disponibili</translation>
 <translation id="799576009106109668">Navigherai più velocemente perché i contenuti vengono caricati in modo proattivo in base alla pagina web che stai visitando</translation>

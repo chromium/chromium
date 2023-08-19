@@ -61,6 +61,7 @@
 <translation id="1283524564873030414">24 ชั่วโมงที่ผ่านมา</translation>
 <translation id="1285320974508926690">ไม่ต้องแปลเว็บไซต์นี้</translation>
 <translation id="1291506870746876680">สิทธิ์ของ <ph name="BEGIN_BOLD" />"<ph name="SITE_NAME" />"<ph name="END_BOLD" /> จะรีเซ็ตเป็นปิดเมื่อคุณออกจากเว็บไซต์นี้</translation>
+<translation id="1295289763199166823">ปรับแต่งเมนู</translation>
 <translation id="1305822519689023679">โปรดยืนยันว่าเป็นคุณเพื่อให้ใช้รหัสผ่านในบัญชี Google ได้เสมอ</translation>
 <translation id="1312721752506309252">การปกป้องที่ดียิ่งขึ้นเปิดอยู่</translation>
 <translation id="1316466854070752597">ดูแท็บที่เปิดอยู่ทั้งหมด</translation>
@@ -106,6 +107,7 @@
 <translation id="1554477036522844996">หน้าต่างใหม่</translation>
 <translation id="1563071802032385236">เปิด "ขอเปิดลิงก์จากแอปอื่นๆ ในโหมดไม่ระบุตัวตน"</translation>
 <translation id="1565371473877914088">แท็บใหม่ที่ไม่ระบุตัวตน</translation>
+<translation id="1565395699240341063">ซ่อน</translation>
 <translation id="1580715474678097352">รับการปกป้องจากเว็บไซต์ที่เป็นอันตราย</translation>
 <translation id="1580783302095112590">ส่งอีเมลแล้ว</translation>
 <translation id="1582732959743469162">การดำเนินการนี้จะหยุดการดาวน์โหลดที่ดำเนินอยู่ทั้งหมด</translation>
@@ -436,6 +438,7 @@
 <translation id="3533436815740441613">แท็บใหม่</translation>
 <translation id="3540141921715814660">เพิ่มไปยังบุ๊กมาร์ก</translation>
 <translation id="3551320343578183772">ปิดแท็บ</translation>
+<translation id="3564513311876185114">แถบเมนูของคําสั่งซื้ออัจฉริยะ</translation>
 <translation id="3565207542107370586">ล้างข้อมูลการท่องเว็บ…</translation>
 <translation id="3575234738189584619">ค้นหาด้วย Lens</translation>
 <translation id="3577555362230509265">ใช้ Chrome ในแอปอื่นๆ</translation>
@@ -1287,6 +1290,7 @@
 <translation id="854938212724803178">คุณมีรหัสผ่านที่ถูกละเมิด 1 รายการ แก้ไขเลยเพื่อความปลอดภัย</translation>
 <translation id="8556590991644167667">{count,plural, =1{คุณได้ปิดคำเตือน {count} รายการ}other{คุณได้ปิดคําเตือน {count} รายการ}}</translation>
 <translation id="8558480467877843976">ตอนนี้คุณจะใช้ Chrome ทุกครั้งที่เรียกดูหรือแตะลิงก์ในข้อความ เอกสาร และแอปอื่นๆ ได้</translation>
+<translation id="8560253818350321773">แสดงรายการที่ใช้บ่อยก่อน</translation>
 <translation id="8580411965900177618">ไม่ ขอบคุณ</translation>
 <translation id="8588404856427128947">ปิด</translation>
 <translation id="8591976964826315682">บล็อกคุกกี้ของบุคคลที่สามในโหมดไม่ระบุตัวตน</translation>

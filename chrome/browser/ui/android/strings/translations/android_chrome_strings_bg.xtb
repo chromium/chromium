@@ -309,6 +309,7 @@
 <translation id="2656405586795711023">Уеб приложения</translation>
 <translation id="2669454659051515572">Всеки, който използва това устройство, може да преглежда изтеглените файлове</translation>
 <translation id="2702516483241149200">Ново: споделяне на връзка, която превърта до този текст</translation>
+<translation id="2708051474374549906">Проактивна защита в реално време срещу опасни сайтове, изтегляния и разширения, която работи чрез изпращане на данни за сърфирането ви до Google</translation>
 <translation id="271033894570825754">Създаване</translation>
 <translation id="2711073837061989559">Експерименти</translation>
 <translation id="2718352093833049315">Само при Wi-Fi</translation>
@@ -669,6 +670,7 @@
 <translation id="4583164079174244168">{MINUTES,plural, =1{преди # минута}other{преди # минути}}</translation>
 <translation id="4587589328781138893">Сайтове</translation>
 <translation id="4594952190837476234">Тази офлайн страница е от <ph name="CREATION_TIME" /> и може да се различава от онлайн версията.</translation>
+<translation id="4601095002996233687">Задълбочено сканиране за подозрителни изтегляния.</translation>
 <translation id="4616150815774728855">Отваряне на <ph name="WEBAPK_NAME" /></translation>
 <translation id="4619564267100705184">Потвърдете, че сте вие</translation>
 <translation id="4634124774493850572">Използване на паролата</translation>
@@ -834,6 +836,7 @@
 <translation id="543338862236136125">Редактиране на паролата</translation>
 <translation id="5433691172869980887">Потребителското име е копирано</translation>
 <translation id="5438292632479953702">Повторно изтегляне</translation>
+<translation id="5439191312780166229">Предупреждава ви за опасни сайтове, включително такива, които не са били известни на Google, като анализира повече данни от сайтовете в сравнение със стандартната защита. Можете да пропуснете предупрежденията от Chrome.</translation>
 <translation id="5441466871879044658">Превеждане на този език</translation>
 <translation id="5441522332038954058">Преминаване към адресната лента</translation>
 <translation id="5444999712122199445">Назад към сайта</translation>
@@ -1044,6 +1047,7 @@
 <translation id="6541983376925655882">{NUM_HOURS,plural, =1{Проверено преди 1 час}other{Проверено преди # часа}}</translation>
 <translation id="6545017243486555795">Изчистване на всички данни</translation>
 <translation id="6546511553472444032">Файлът може да бъде опасен</translation>
+<translation id="6550891580932862748">Няма защита срещу опасни уебсайтове, изтегляния и разширения. Настройките ви за Безопасно сърфиране в други продукти на Google няма да бъдат засегнати.</translation>
 <translation id="6556542240154580383">{TAB_COUNT,plural, =1{<ph name="TAB_TITLE" /> и още <ph name="TAB_COUNT_ONE" /> раздел ще бъдат затворени}other{<ph name="TAB_TITLE" /> и още <ph name="TAB_COUNT_MANY" /> раздела ще бъдат затворени}}</translation>
 <translation id="6560414384669816528">Търсене със Sogou</translation>
 <translation id="656065428026159829">Вижте още</translation>
@@ -1297,6 +1301,7 @@
 <translation id="7772032839648071052">Потвърдете пропуска</translation>
 <translation id="7772375229873196092">Затваряне на <ph name="APP_NAME" /></translation>
 <translation id="7774809984919390718">{PAYMENT_METHOD,plural, =1{<ph name="PAYMENT_METHOD_PREVIEW" />\u2026 и още <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" />}other{<ph name="PAYMENT_METHOD_PREVIEW" />\u2026 и още <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" />}}</translation>
+<translation id="777637629667389858">Защитава ви в услугите на Google, когато сте влезли в профила си.</translation>
 <translation id="7778840695157240389">Проверете отново по-късно за нови истории</translation>
 <translation id="7780645209293383778">Временно свързва тези данни с профила ви в Google, докато сте в него, за да ви защитава в приложенията на Google</translation>
 <translation id="7791543448312431591">Добавяне</translation>
@@ -1338,6 +1343,7 @@
 <translation id="7968014550143838305">Добавено към списъка за четене</translation>
 <translation id="7971136598759319605">Активно преди 1 ден</translation>
 <translation id="7975379999046275268">Визуализация <ph name="BEGIN_NEW" />Ново<ph name="END_NEW" /></translation>
+<translation id="7977451675950311423">Предупреждава ви, ако използвате парола, която е компрометирана при нарушение на сигурността на данните.</translation>
 <translation id="7986497153528221272">За да видите паролите, първо настройте заключване на екрана на устройството си</translation>
 <translation id="7995059495660416932">Ще видите съдържание, когато има такова</translation>
 <translation id="799576009106109668">Ще сърфирате по-бързо, тъй като съдържанието се зарежда предварително въз основа на уеб страницата, която сте посетили в момента</translation>

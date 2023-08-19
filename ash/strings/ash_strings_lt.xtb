@@ -659,6 +659,7 @@ Prijunkite įrenginį prie maitinimo šaltinio.</translation>
 <translation id="380165613292957338">Sveiki, kuo galiu padėti?</translation>
 <translation id="3804737937830804242">Sutraukti fotoaparatą</translation>
 <translation id="3824784079442479685">Tai leis pasiekti fotoaparatą „<ph name="APP_NAME" />“ ir visoms programoms bei svetainėms, turinčioms fotoaparato leidimą. Gali reikėti atnaujinti tinklalapį arba paleisti programą iš naujo.</translation>
+<translation id="3825680296690914697">Pateikta: <ph name="NUM_TURNED_IN" /> iš <ph name="TOTAL_NUM_OF_SUBMISSIONS" />, įvertinta: <ph name="NUM_GRADED" /></translation>
 <translation id="3826099427150913765">Perjungti į slaptažodį</translation>
 <translation id="383058930331066723">Akumuliatoriaus tausojimo priemonės režimas įjungtas</translation>
 <translation id="383629559565718788">Rodyti klaviatūros nustatymus</translation>
@@ -1744,6 +1745,7 @@ Jei norite išjungti įrenginį, dar kartą paspauskite ir palaikykite įrengini
 <translation id="8446884382197647889">Sužinokite daugiau</translation>
 <translation id="8456543082656546101"><ph name="SHORTCUT_KEY_NAME" /> + V</translation>
 <translation id="8462305545768648477">Uždaryti „Teksto ištarimo“ funkciją</translation>
+<translation id="8468806060683421065">Terminas: <ph name="DUE_DATE_AND_TIME" /></translation>
 <translation id="847056008324733326">Ekrano mastelio nustatymai</translation>
 <translation id="8473301994082929012"><ph name="ORGANIZATION_NAME" />: <ph name="FEATURE_STATE" /> <ph name="FEATURE_NAME" />.</translation>
 <translation id="8477270416194247200">Jei norite atšaukti, paspauskite „Alt“ + paieškos klavišą arba „Alt“ + „Shift“.</translation>
@@ -1827,6 +1829,7 @@ Jei norite išjungti įrenginį, dar kartą paspauskite ir palaikykite įrengini
 <translation id="8853703225951107899">Vis tiek nepavyko patvirtinti PIN kodo arba slaptažodžio. Pastaba: jei neseniai pakeitėte slaptažodį, naudokite senąjį. Naujas slaptažodis bus pritaikytas atsijungus.</translation>
 <translation id="8855885154700222542">Viso ekrano klavišas</translation>
 <translation id="8858369206579825206">Privatumo valdikliai</translation>
+<translation id="8860366331836346216">Pridėti „eSIM“ kortelę</translation>
 <translation id="8870509716567206129">Programoje nepalaikomas skaidytas ekranas.</translation>
 <translation id="8874184842967597500">Neprisijungta</translation>
 <translation id="8875021410787719674">Perkelti iš apatinio dešiniojo kampo, Paleidimo priemonės, adreso juostos, žymių juostos, atidarytos svetainės ir atsisiuntimų arba į juos</translation>

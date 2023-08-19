@@ -309,6 +309,7 @@
 <translation id="2656405586795711023">Веб-қолданбалар</translation>
 <translation id="2669454659051515572">Осы құрылғыны пайдаланатын кез келген адам жүктеп алынған файлдарды көре алады.</translation>
 <translation id="2702516483241149200">Жаңа: осы мәтінге бағыттайтын сілтемені бөлісу</translation>
+<translation id="2708051474374549906">Google-ға жіберілетін браузерді пайдалану деректеріне негізделген қауіпті сайттардан, жүктеп алынғандардан және кеңейтімдерден нақты уақыттағы әрі белсенді қорғаныс.</translation>
 <translation id="271033894570825754">Жаңа</translation>
 <translation id="2711073837061989559">Сынақ нұсқалары</translation>
 <translation id="2718352093833049315">Тек Wi-Fi</translation>
@@ -669,6 +670,7 @@ Google аккаунтының шолу тарихы басқа Google қызме
 <translation id="4583164079174244168">{MINUTES,plural, =1{# минут бұрын}other{# минут бұрын}}</translation>
 <translation id="4587589328781138893">Сайттар</translation>
 <translation id="4594952190837476234">Бұл офлайн бет <ph name="CREATION_TIME" /> күні жасалған, сондықтан онлайн нұсқасынан өзгеше болуы мүмкін.</translation>
+<translation id="4601095002996233687">Күдікті жүктеп алынғандарға арналған тереңінен сканерлеулер.</translation>
 <translation id="4616150815774728855"><ph name="WEBAPK_NAME" /> қолданбасын ашу</translation>
 <translation id="4619564267100705184">Жеке басыңызды растаңыз</translation>
 <translation id="4634124774493850572">Құпия сөзді пайдалану</translation>
@@ -834,6 +836,7 @@ Google аккаунтының шолу тарихы басқа Google қызме
 <translation id="543338862236136125">Құпия сөзді өзгерту</translation>
 <translation id="5433691172869980887">Пайдаланушының аты көшірілді</translation>
 <translation id="5438292632479953702">Қайта жүктеп алу</translation>
+<translation id="5439191312780166229">Стандартты қорғанысқа қарағанда сайттардағы көбірек деректерді талдау арқылы қауіпті сайттар, тіпті Google-ға бұрын белгісіз болған сайттар туралы ескертеді. Chrome ескертулерін өткізіп жіберуді таңдауға болады.</translation>
 <translation id="5441466871879044658">Осы тілге аудару</translation>
 <translation id="5441522332038954058">Мекенжай жолағына өту</translation>
 <translation id="5444999712122199445">Сайтқа оралу</translation>
@@ -1044,6 +1047,7 @@ Google аккаунтының шолу тарихы басқа Google қызме
 <translation id="6541983376925655882">{NUM_HOURS,plural, =1{1 сағат бұрын тексерілді.}other{# сағат бұрын тексерілді.}}</translation>
 <translation id="6545017243486555795">Барлық деректерді өшіру</translation>
 <translation id="6546511553472444032">Файл зиянды болуы мүмкін</translation>
+<translation id="6550891580932862748">Қауіпті веб-сайттардан, жүктеп алынғандардан және кеңейтімдерден қорғамайды. Басқа Google өнімдеріндегі Safe Browsing параметрлеріне әсер етпейді.</translation>
 <translation id="6556542240154580383">{TAB_COUNT,plural, =1{"<ph name="TAB_TITLE" />" және тағы <ph name="TAB_COUNT_ONE" /> қойынды жабылады.}other{"<ph name="TAB_TITLE" />" және тағы <ph name="TAB_COUNT_MANY" /> қойынды жабылады.}}</translation>
 <translation id="6560414384669816528">Sogou қызметімен іздеу</translation>
 <translation id="656065428026159829">Басқаларын көру</translation>
@@ -1297,6 +1301,7 @@ Google аккаунтының шолу тарихы басқа Google қызме
 <translation id="7772032839648071052">Құпия фразаны растау</translation>
 <translation id="7772375229873196092"><ph name="APP_NAME" /> қолданбасын жабу</translation>
 <translation id="7774809984919390718">{PAYMENT_METHOD,plural, =1{<ph name="PAYMENT_METHOD_PREVIEW" />\u2026 және тағы <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" />}other{<ph name="PAYMENT_METHOD_PREVIEW" />\u2026 және тағы <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" />}}</translation>
+<translation id="777637629667389858">Аккаунтқа кірген кезде, сізді Google қызметтерінде қорғайды.</translation>
 <translation id="7778840695157240389">Жаңалықтарды кейінірек тексеріңіз.</translation>
 <translation id="7780645209293383778">Google қолданбаларында сізді қорғау үшін, аккаунтқа кіріп отырғанда деректер мен аккаунтты уақытша байланыстырады.</translation>
 <translation id="7791543448312431591">Қосу</translation>
@@ -1338,6 +1343,7 @@ Google аккаунтының шолу тарихы басқа Google қызме
 <translation id="7968014550143838305">Оқу тізіміне енгізілді.</translation>
 <translation id="7971136598759319605">1 күн бұрын қосылған.</translation>
 <translation id="7975379999046275268">Бетті алдын ала көру <ph name="BEGIN_NEW" />Жаңа<ph name="END_NEW" /></translation>
+<translation id="7977451675950311423">Деректер қолды болған кезде ұрланған құпия сөзді пайдалансаңыз, сізге ескертеді.</translation>
 <translation id="7986497153528221272">Құпия сөздерді көру үшін алдымен құрылғыңызда экран құлпын орнатыңыз.</translation>
 <translation id="7995059495660416932">Контент қолжетімді болған кезде, оны көресіз.</translation>
 <translation id="799576009106109668">Кіріп отырған веб-бетке сәйкес контент алдын ала жүктелетіндіктен, шолу барысы жылдамдайды.</translation>

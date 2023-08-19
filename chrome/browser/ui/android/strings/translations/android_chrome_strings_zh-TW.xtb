@@ -310,6 +310,7 @@
 <translation id="2656405586795711023">網頁應用程式</translation>
 <translation id="2669454659051515572">這部裝置的任何使用者都可以看到已下載的檔案</translation>
 <translation id="2702516483241149200">新功能：分享可跳至這段文字的連結</translation>
+<translation id="2708051474374549906">系統會根據你傳送到 Google 的瀏覽資料，即時、主動防範危險的網站、下載內容和擴充功能</translation>
 <translation id="271033894570825754">全新</translation>
 <translation id="2711073837061989559">試用</translation>
 <translation id="2718352093833049315">僅限連上 Wi-Fi 網路時</translation>
@@ -668,6 +669,7 @@
 <translation id="4583164079174244168">{MINUTES,plural, =1{# 分鐘前}other{# 分鐘前}}</translation>
 <translation id="4587589328781138893">網站</translation>
 <translation id="4594952190837476234">這個離線版網頁是於 <ph name="CREATION_TIME" />建立，可能會和線上版本有所不同。</translation>
+<translation id="4601095002996233687">提供深入掃描功能，檢查是否有可疑的下載內容。</translation>
 <translation id="4616150815774728855">開啟 <ph name="WEBAPK_NAME" /></translation>
 <translation id="4619564267100705184">驗證身分</translation>
 <translation id="4634124774493850572">使用密碼</translation>
@@ -835,6 +837,7 @@
 <translation id="543338862236136125">修改密碼</translation>
 <translation id="5433691172869980887">已複製使用者名稱</translation>
 <translation id="5438292632479953702">再次下載</translation>
+<translation id="5439191312780166229">這項防護機制分析的網站資料比標準防護來得多，因此即使是 Google 不知道的網站，這項防護機制也能提供危險網站警告。你可以選擇略過 Chrome 的警告。</translation>
 <translation id="5441466871879044658">翻譯成這種語言</translation>
 <translation id="5441522332038954058">切換到網址列</translation>
 <translation id="5444999712122199445">返回網站</translation>
@@ -1045,6 +1048,7 @@
 <translation id="6541983376925655882">{NUM_HOURS,plural, =1{已在 1 小時前檢查}other{已在 # 小時前檢查}}</translation>
 <translation id="6545017243486555795">清除所有資料</translation>
 <translation id="6546511553472444032">檔案可能有害</translation>
+<translation id="6550891580932862748">無法防範危險的網站、下載內容和擴充功能。其他 Google 產品的安全瀏覽設定不會受到影響。</translation>
 <translation id="6556542240154580383">{TAB_COUNT,plural, =1{即將關閉「<ph name="TAB_TITLE" />」和另外 <ph name="TAB_COUNT_ONE" /> 個分頁}other{即將關閉「<ph name="TAB_TITLE" />」和另外 <ph name="TAB_COUNT_MANY" /> 個分頁}}</translation>
 <translation id="6560414384669816528">使用 Sogou 搜尋</translation>
 <translation id="656065428026159829">顯示更多</translation>
@@ -1299,6 +1303,7 @@
 <translation id="7772032839648071052">確認通關密語</translation>
 <translation id="7772375229873196092">關閉 <ph name="APP_NAME" /></translation>
 <translation id="7774809984919390718">{PAYMENT_METHOD,plural, =1{<ph name="PAYMENT_METHOD_PREVIEW" />\u2026 和另外 <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" /> 種付款方式}other{<ph name="PAYMENT_METHOD_PREVIEW" />\u2026 和另外 <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" /> 種付款方式}}</translation>
+<translation id="777637629667389858">當你登入帳戶後，保護你在各項 Google 服務中的安全。</translation>
 <translation id="7778840695157240389">請稍後再返回查看是否有新的報導</translation>
 <translation id="7780645209293383778">登入 Google 帳戶後，系統會將這些資料暫時連結至你的帳戶，以便在你使用各個 Google 應用程式時提供保護</translation>
 <translation id="7791543448312431591">新增</translation>
@@ -1342,6 +1347,7 @@
 <translation id="7971136598759319605">上次使用時間：1 天前</translation>
 <translation id="7972866381678406344">倒轉 <ph name="NUMBER_OF_SECONDS" /> 秒</translation>
 <translation id="7975379999046275268">預覽網頁 <ph name="BEGIN_NEW" />新功能<ph name="END_NEW" /></translation>
+<translation id="7977451675950311423">如果你使用的密碼因資料侵害事件而外洩，系統會顯示警告訊息。</translation>
 <translation id="7986497153528221272">如要查看密碼，請先在裝置上設定螢幕鎖定功能</translation>
 <translation id="7995059495660416932">目前沒有內容，請耐心等候</translation>
 <translation id="799576009106109668">系統會根據你目前造訪的網頁主動載入內容，幫助你加快瀏覽速度</translation>

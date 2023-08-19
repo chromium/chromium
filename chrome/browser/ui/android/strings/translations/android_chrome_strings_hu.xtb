@@ -309,6 +309,7 @@ A privát állapottokenek nagyobb fokú adatvédelmet biztosítanak az internete
 <translation id="2656405586795711023">Webalkalmazások</translation>
 <translation id="2669454659051515572">A letöltött fájlokat bárki láthatja, aki az eszközt használja</translation>
 <translation id="2702516483241149200">Új: az ehhez a szöveghez gördülő linket oszthat meg</translation>
+<translation id="2708051474374549906">Valós idejű, proaktív védelem a veszélyes webhelyek, letöltések és bővítmények ellen, amelyek az Ön Google-nak küldött böngészési adatain alapulnak.</translation>
 <translation id="271033894570825754">Új</translation>
 <translation id="2711073837061989559">Próbaidőszakok</translation>
 <translation id="2718352093833049315">Csak Wi-Fi-n</translation>
@@ -669,11 +670,13 @@ Előfordulhat, hogy Google-fiókjában (a <ph name="BEGIN_LINK" />myactivity.goo
 <translation id="4583164079174244168">{MINUTES,plural, =1{# perce}other{# perce}}</translation>
 <translation id="4587589328781138893">Webhelyek</translation>
 <translation id="4594952190837476234">Az offline oldal létrehozási ideje: <ph name="CREATION_TIME" />. Az oldal eltérhet az online változattól.</translation>
+<translation id="4601095002996233687">Mélyreható vizsgálatok a gyanús letöltött tartalmak ellenőrzéséhez.</translation>
 <translation id="4616150815774728855"><ph name="WEBAPK_NAME" /> megnyitása</translation>
 <translation id="4619564267100705184">Igazolja személyazonosságát</translation>
 <translation id="4634124774493850572">Jelszó használata</translation>
 <translation id="4637420359569396807">A hirdetésméréssel korlátozott adattípusok oszthatók meg az alkalmazások és a webhelyek között a hirdetéseik teljesítményének mérése érdekében (ilyen adat például az a napszak, amikor egy adott hirdetés megjelent Önnek).</translation>
 <translation id="4640331037679501949">{NUM_PASSWORDS,plural, =1{1 jelszó, amelyhez illetéktelenül hozzáfértek}other{# jelszó, amelyhez illetéktelenül hozzáfértek}}</translation>
+<translation id="4645146721047390964">Inkognitó módban a webhelyek nem használhatják fel az Ön cookie-jait arra, hogy lássák a különböző webhelyeken végzett böngészési tevékenységeit például annak érdekében, hogy a hirdetéseket személyre szabják. Előfordulhat, hogy bizonyos webhelyek funkciói nem működnek majd megfelelően.</translation>
 <translation id="4650364565596261010">Alapértelmezett</translation>
 <translation id="4654641641922242357">Az „Oldal meghallgatása” lejátszó</translation>
 <translation id="465657074423018424">A Biztonságos Böngészés védelmet nyújt a megtévesztő webhelyekkel szemben. Ha kikapcsolja, legyen kivételesen óvatos böngészéskor – különösen a jelszavak megadása előtt.</translation>
@@ -693,6 +696,7 @@ Előfordulhat, hogy Google-fiókjában (a <ph name="BEGIN_LINK" />myactivity.goo
 <translation id="4719927025381752090">Fordítás felajánlása</translation>
 <translation id="4720023427747327413">Megnyitás itt: <ph name="PRODUCT_NAME" /></translation>
 <translation id="47217992755561375">A leginkább kedvelt webhelyei megtekintése</translation>
+<translation id="4731877163452936634">Lejátszási sebesség: <ph name="PLAYBACK_SPEED" />. Kattintson a módosításhoz.</translation>
 <translation id="4732120983431207637">Stack Unwinder</translation>
 <translation id="4736934858538408121">Virtuális kártya</translation>
 <translation id="473775607612524610">Frissítés</translation>
@@ -834,6 +838,7 @@ A beállítás módosításához <ph name="BEGIN_LINK" />állítsa vissza a szin
 <translation id="543338862236136125">Jelszó módosítása</translation>
 <translation id="5433691172869980887">Felhasználónév vágólapra másolva</translation>
 <translation id="5438292632479953702">Letöltés újra</translation>
+<translation id="5439191312780166229">Figyelmezteti Önt a veszélyes webhelyekre (még azokra is, amelyekről a Google korábban nem tudott), azáltal hogy több, webhelyekről származó adatot elemez, mint a normál védelem. Beállíthatja a Chrome figyelmeztetéseinek kihagyását.</translation>
 <translation id="5441466871879044658">Fordítás erre a nyelvre</translation>
 <translation id="5441522332038954058">Ugrás a címsávba</translation>
 <translation id="5444999712122199445">Vissza a webhelyre</translation>
@@ -1044,6 +1049,7 @@ Egyes webhelyek például válaszolhatnak rá úgy, hogy olyan hirdetéseket jel
 <translation id="6541983376925655882">{NUM_HOURS,plural, =1{1 órája ellenőrizve}other{# órája ellenőrizve}}</translation>
 <translation id="6545017243486555795">Összes adat törlése</translation>
 <translation id="6546511553472444032">A fájl kártékony lehet</translation>
+<translation id="6550891580932862748">Nem védi meg Önt a veszélyes webhelyek, letöltések vagy bővítmények ellen. A Biztonságos Böngészés beállításait más Google-termékekben nem érinti a módosítás.</translation>
 <translation id="6556542240154580383">{TAB_COUNT,plural, =1{A(z) <ph name="TAB_TITLE" /> és <ph name="TAB_COUNT_ONE" /> másik lap be lesz zárva}other{A(z) <ph name="TAB_TITLE" /> és <ph name="TAB_COUNT_MANY" /> másik lap be lesz zárva}}</translation>
 <translation id="6560414384669816528">Keresés a Sogou használatával</translation>
 <translation id="656065428026159829">Továbbiak megjelenítése</translation>
@@ -1250,6 +1256,7 @@ Egyes webhelyek például válaszolhatnak rá úgy, hogy olyan hirdetéseket jel
 <translation id="751961395872307827">Nem lehet csatlakozni a webhelyhez</translation>
 <translation id="752220631458524187">Válassza le eszközét, ha végzett</translation>
 <translation id="7523960634226602883">Keresés a kamerájával a Google Lens segítségével</translation>
+<translation id="752731652852882757">Letiltás az Inkognitó mód használata közben</translation>
 <translation id="7539698981064401140">Lapok és előzmények szinkronizálása</translation>
 <translation id="7562080006725997899">Böngészési adatok törlése</translation>
 <translation id="756809126120519699">Chrome-adatok törölve</translation>
@@ -1297,6 +1304,7 @@ Egyes webhelyek például válaszolhatnak rá úgy, hogy olyan hirdetéseket jel
 <translation id="7772032839648071052">Összetett jelszó megerősítése</translation>
 <translation id="7772375229873196092">A(z) <ph name="APP_NAME" /> bezárása</translation>
 <translation id="7774809984919390718">{PAYMENT_METHOD,plural, =1{<ph name="PAYMENT_METHOD_PREVIEW" />\u2026 és további <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" />}other{<ph name="PAYMENT_METHOD_PREVIEW" />\u2026 és további <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" />}}</translation>
+<translation id="777637629667389858">Amikor be van jelentkezve, védi Önt a Google szolgáltatásaiban.</translation>
 <translation id="7778840695157240389">Új hírekért látogasson vissza később</translation>
 <translation id="7780645209293383778">Amikor be van jelentkezve, ideiglenesen a Google-fiókjához kapcsolja ezeket az adatokat, hogy megvédhessük Önt a Google-alkalmazásokban</translation>
 <translation id="7791543448312431591">Hozzáadás</translation>
@@ -1329,6 +1337,7 @@ Egyes webhelyek például válaszolhatnak rá úgy, hogy olyan hirdetéseket jel
 <translation id="7939485076072265087">Stilizált kártya létrehozása kiemeléssel</translation>
 <translation id="7942131818088350342">A(z) <ph name="PRODUCT_NAME" /> elavult.</translation>
 <translation id="7944772052836377867">A szinkronizálás ellenőrizni szeretné az Ön személyazonosságát</translation>
+<translation id="7945822420239537236">Előre <ph name="NUMBER_OF_SECONDS" /> másodpercet</translation>
 <translation id="7947953824732555851">Elfogadás és bejelentkezés</translation>
 <translation id="7957413488482743710">A virtuális kártya elrejti tényleges kártyáját, így segíthet az esetleges csalások elleni védekezésben. <ph name="BEGIN_LINK1" />További információ a virtuális kártyákról<ph name="END_LINK1" />.</translation>
 <translation id="7960972236129063347">Oldalstatisztikák vissza gombja</translation>
@@ -1337,7 +1346,9 @@ Egyes webhelyek például válaszolhatnak rá úgy, hogy olyan hirdetéseket jel
 <translation id="7965838025086216108">A mentett jelszavakat bármelyik eszközön használhatja. A jelszavakat a Google Jelszókezelő szolgáltatásba menti a rendszer a(z) <ph name="ACCOUNT" /> fiókhoz.</translation>
 <translation id="7968014550143838305">Hozzáadva az olvasási listához</translation>
 <translation id="7971136598759319605">1 napja volt aktív</translation>
+<translation id="7972866381678406344">Vissza <ph name="NUMBER_OF_SECONDS" /> másodpercet</translation>
 <translation id="7975379999046275268">Oldal előnézete <ph name="BEGIN_NEW" />Új<ph name="END_NEW" /></translation>
+<translation id="7977451675950311423">Figyelmezteti Önt, ha adatvédelmi incidensben érintett jelszót használ.</translation>
 <translation id="7986497153528221272">A jelszavak megtekintéséhez először képernyőzárat kell beállítania az eszközön</translation>
 <translation id="7995059495660416932">A tartalmakat akkor láthatja, amikor hozzáférhetővé válnak</translation>
 <translation id="799576009106109668">Gyorsabban böngészhet, mivel a rendszer proaktív módon tölti be a tartalmat az aktuálisan felkeresett weboldal alapján.</translation>

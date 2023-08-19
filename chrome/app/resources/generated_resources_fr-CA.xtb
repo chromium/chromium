@@ -1083,6 +1083,7 @@ Les autorisations que vous avez déjà accordées à des applications peuvent s'
 <translation id="1854180393107901205">Arrêter l'envoi de contenu</translation>
 <translation id="1856715684130786728">Ajouter un dossier...</translation>
 <translation id="1858585891038687145">Considérer ce certificat comme fiable pour identifier les concepteurs de logiciels</translation>
+<translation id="1859294693760125695">Fin de l'intérêt</translation>
 <translation id="1859339856433307593">Un mot de passe pour ce compte est déjà enregistré dans votre <ph name="BRAND" /> (<ph name="USER_EMAIL" />)</translation>
 <translation id="1861262398884155592">Ce dossier est vide</translation>
 <translation id="1862311223300693744">Avez-vous installé un RPV, un mandataire, un pare-feu ou un logiciel pour serveur de stockage NAS?</translation>
@@ -2764,6 +2765,7 @@ https://support.google.com/chrome/?p=applescript</translation>
 <translation id="3226487301970807183">Activer ou désactiver le panneau latéral aligné à gauche</translation>
 <translation id="322708765617468434">Vous pouvez toujours ajouter une autre personne à l'appareil après la configuration. Chaque personne peut personnaliser son expérience et garder ses données privées.</translation>
 <translation id="3227137524299004712">Microphone</translation>
+<translation id="3229412050601871341">Mot de passe de l'appareil</translation>
 <translation id="3232168089952388105">Partager des renseignements sur votre appareil?</translation>
 <translation id="3232558119926886907">Aligner à droite</translation>
 <translation id="3232754137068452469">Application Web</translation>
@@ -2822,6 +2824,7 @@ https://support.google.com/chrome/?p=applescript</translation>
 <translation id="3275778913554317645">Ouvrir dans une fenêtre</translation>
 <translation id="3277214528693754078">Naviguer à l'aide du curseur de texte (navigation au clavier)</translation>
 <translation id="3277594800340743211">Grande ombre</translation>
+<translation id="3277784185056747463">Mot de passe de l'appareil ou mot de passe du compte Google</translation>
 <translation id="3278001907972365362">Un ou plusieurs de vos comptes Google nécessitent votre attention</translation>
 <translation id="3279092821516760512">Certains contacts peuvent partager du contenu avec vous lorsqu'ils sont à proximité. Les transferts ne démarreront pas tant que vous ne les autoriserez pas.</translation>
 <translation id="3279230909244266691">Ce processus peut prendre quelques minutes. Démarrage de la machine virtuelle en cours…</translation>
@@ -3278,6 +3281,7 @@ https://support.google.com/chrome/?p=applescript</translation>
 <translation id="3660234220361471169">Non fiable</translation>
 <translation id="3661297433172569100">{NUM_PASSWORDS,plural, =1{un ancien mot de passe trouvé}one{{NUM_PASSWORDS} mots de passe existants trouvés}other{{NUM_PASSWORDS} mots de passe existants trouvés}}</translation>
 <translation id="3664511988987167893">Icône de l'extension</translation>
+<translation id="3665301845536101715">Ouvrir dans le panneau latéral</translation>
 <translation id="3665589677786828986">Chrome a détecté que certains paramètres de votre navigateur ont été corrompus par un autre programme, et les a réinitialisé à leurs valeurs par défaut.</translation>
 <translation id="3665919494326051362">Version actuelle : <ph name="CURRENT_VERSION" /></translation>
 <translation id="3666196264870170605">Vidage de débogage des CIR Wi-Fi Intel</translation>
@@ -5239,7 +5243,6 @@ Appuyez sur Ctrl+Alt+diminuer la luminosité pour dézoomer.</translation>
 <translation id="5298219193514155779">Thème créé par</translation>
 <translation id="5299109548848736476">Ne pas faire le suivi</translation>
 <translation id="5299558715747014286">Afficher et gérer vos groupes d'onglets</translation>
-<translation id="529986401483187205">désactivé</translation>
 <translation id="5300426565656326054">Personnalisation des annonces en fonction du navigateur</translation>
 <translation id="5300589172476337783">Afficher</translation>
 <translation id="5300719150368506519">Envoyer les URL des pages que vous consultez à Google</translation>
@@ -7012,6 +7015,7 @@ Vous avez # autres mots de passe compromis. Le gestionnaire de mots de passe de
 <translation id="6805647936811177813">Veuillez vous connecter à <ph name="TOKEN_NAME" /> pour importer le certificat client de <ph name="HOST_NAME" />.</translation>
 <translation id="680572642341004180">Activer le suivi RLZ pour <ph name="SHORT_PRODUCT_OS_NAME" />.</translation>
 <translation id="6806089545527108739">Ne pas autoriser, mais demander plus tard</translation>
+<translation id="680644983456221885">Une protection proactive en temps réel contre les sites, les extensions et les téléchargements dangereux, basée sur les données de navigation envoyées à Google</translation>
 <translation id="6808039367995747522">Pour continuer, insérez et touchez votre clé de sécurité</translation>
 <translation id="6808166974213191158">Générateur d'images du système Chrome OS Flex</translation>
 <translation id="6808193438228982088">Renard</translation>
@@ -8654,6 +8658,7 @@ Conservez votre fichier de clé en lieu sûr. Vous en aurez besoin lors de la cr
 <translation id="814204052173971714">{COUNT,plural, =1{une vidéo}one{# vidéo}other{# vidéos}}</translation>
 <translation id="8143442547342702591">Application non valide</translation>
 <translation id="8143609395536282994">Comment gérer vos données :</translation>
+<translation id="8144429778087524791">Marquer comme terminé et masquer</translation>
 <translation id="8145170459658034418">Économiseur de mémoire</translation>
 <translation id="8146177459103116374">Si vous êtes déjà enregistré sur ​​cet appareil, vous pouvez <ph name="LINK2_START" />vous connecter à l'aide de votre compte<ph name="LINK2_END" />.</translation>
 <translation id="8146287226035613638">Ajoutez et classez vos langues préférées. Les sites Web s'afficheront dans vos langues préférées lorsque cela est possible. Ces préférences sont synchronisées avec les paramètres de votre navigateur. <ph name="BEGIN_LINK_LEARN_MORE" />En savoir plus<ph name="END_LINK_LEARN_MORE" /></translation>
@@ -9144,6 +9149,7 @@ Conservez votre fichier de clé en lieu sûr. Vous en aurez besoin lors de la cr
 <translation id="8557022314818157177">Continuez à toucher votre clé de sécurité jusqu'à ce que votre empreinte digitale soit capturée</translation>
 <translation id="8557180006508471423">Activer « Google Chrome » dans les services de localisation sur votre Mac</translation>
 <translation id="8557856025359704738">Le prochain téléchargement est prévu à <ph name="NEXT_DATE_DOWNLOAD" />.</translation>
+<translation id="8558281414737757274">Mot de passe du compte Google</translation>
 <translation id="8559858985063901027">Clés d'accès</translation>
 <translation id="8559961053328923750">Chrome limite la quantité totale de données que les sites peuvent transmettre au moyen du navigateur pour mesurer la performance des annonces</translation>
 <translation id="8560327176991673955">{COUNT,plural, =0{Tout ouvrir dans une &amp;nouvelle fenêtre}=1{Ouvrir dans une &amp;nouvelle fenêtre}one{Tout ouvrir ({COUNT}) dans une &amp;nouvelle fenêtre}other{Tout ouvrir ({COUNT}) dans une &amp;nouvelle fenêtre}}</translation>
@@ -9156,6 +9162,7 @@ Conservez votre fichier de clé en lieu sûr. Vous en aurez besoin lors de la cr
 <translation id="8569682776816196752">Aucune destination trouvée</translation>
 <translation id="8571213806525832805">Quatre dernières semaines</translation>
 <translation id="8571687764447439720">Ajouter un ticket Kerberos</translation>
+<translation id="8572052284359771939">Envoie les URL de sites que vous visitez et des échantillons du contenu de la page, des téléchargements, des activités des extensions et des données système à la navigation sécurisée Google pour qu'elle vérifie s'ils sont dangereux.</translation>
 <translation id="8573111744706778015">Tapez « uo7 » pour obtenir « ươ »</translation>
 <translation id="8574990355410201600">Toujours autoriser le son sur <ph name="HOST" /></translation>
 <translation id="8575286410928791436">Maintenez la touche <ph name="KEY_EQUIVALENT" /> enfoncée pour quitter.</translation>

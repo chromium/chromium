@@ -309,6 +309,7 @@
 <translation id="2656405586795711023">Web 应用</translation>
 <translation id="2669454659051515572">任何使用此设备的用户都能看到已下载的文件</translation>
 <translation id="2702516483241149200">新功能：可分享能够定位到此文本的链接</translation>
+<translation id="2708051474374549906">根据系统向 Google 发送的浏览数据，实时地主动保护您免受危险网站、下载内容和扩展程序的侵害</translation>
 <translation id="271033894570825754">新</translation>
 <translation id="2711073837061989559">试用版</translation>
 <translation id="2718352093833049315">仅限使用 Wi-Fi 时</translation>
@@ -669,6 +670,7 @@
 <translation id="4583164079174244168">{MINUTES,plural, =1{# 分钟前}other{# 分钟前}}</translation>
 <translation id="4587589328781138893">网站</translation>
 <translation id="4594952190837476234">此离线网页是在 <ph name="CREATION_TIME" />创建的，可能与在线版本有所不同。</translation>
+<translation id="4601095002996233687">针对可疑的下载内容进行深入扫描。</translation>
 <translation id="4616150815774728855">打开<ph name="WEBAPK_NAME" /></translation>
 <translation id="4619564267100705184">请验证是您本人在操作</translation>
 <translation id="4634124774493850572">使用密码</translation>
@@ -834,6 +836,7 @@
 <translation id="543338862236136125">修改密码</translation>
 <translation id="5433691172869980887">已复制用户名</translation>
 <translation id="5438292632479953702">再次下载</translation>
+<translation id="5439191312780166229">通过比“标准保护”机制分析更多的网站数据，针对危险网站（甚至是 Google 未曾得知的网站）向您发出警告。您可以选择忽略 Chrome 警告。</translation>
 <translation id="5441466871879044658">翻译成该语言</translation>
 <translation id="5441522332038954058">跳转到地址栏</translation>
 <translation id="5444999712122199445">返回网站</translation>
@@ -1044,6 +1047,7 @@
 <translation id="6541983376925655882">{NUM_HOURS,plural, =1{1 小时前检查过}other{# 小时前检查过}}</translation>
 <translation id="6545017243486555795">清除所有数据</translation>
 <translation id="6546511553472444032">文件可能有害</translation>
+<translation id="6550891580932862748">不会保护您免受危险网站、下载内容和扩展程序的侵害。您在其他 Google 产品中的安全浏览设置不受影响。</translation>
 <translation id="6556542240154580383">{TAB_COUNT,plural, =1{系统将会关闭标签页“<ph name="TAB_TITLE" />”以及另外 <ph name="TAB_COUNT_ONE" /> 个标签页}other{系统将会关闭标签页“<ph name="TAB_TITLE" />”以及另外 <ph name="TAB_COUNT_MANY" /> 个标签页}}</translation>
 <translation id="6560414384669816528">改用搜狗搜索</translation>
 <translation id="656065428026159829">查看更多</translation>
@@ -1297,6 +1301,7 @@
 <translation id="7772032839648071052">确认密码</translation>
 <translation id="7772375229873196092">关闭<ph name="APP_NAME" /></translation>
 <translation id="7774809984919390718">{PAYMENT_METHOD,plural, =1{<ph name="PAYMENT_METHOD_PREVIEW" />\u2026以及另外 <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" /> 种付款方式}other{<ph name="PAYMENT_METHOD_PREVIEW" />\u2026以及另外 <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" /> 种付款方式}}</translation>
+<translation id="777637629667389858">当您登录后，在各种 Google 服务中保护您。</translation>
 <translation id="7778840695157240389">请稍后再回来查看是否有新报道</translation>
 <translation id="7780645209293383778">而且，会在您登录后暂时将这些数据关联到您的 Google 账号，以便在各款 Google 应用中为您提供保护</translation>
 <translation id="7791543448312431591">添加</translation>
@@ -1338,6 +1343,7 @@
 <translation id="7968014550143838305">已添加到阅读清单</translation>
 <translation id="7971136598759319605">1 天前曾有活动</translation>
 <translation id="7975379999046275268">预览网页<ph name="BEGIN_NEW" />新<ph name="END_NEW" /></translation>
+<translation id="7977451675950311423">如果发现您使用的密码已遭遇数据泄露，就会向您发出警告。</translation>
 <translation id="7986497153528221272">若要查看密码，请先在设备上设置屏幕锁定</translation>
 <translation id="7995059495660416932">待内容可显示后，您即会看到相应内容</translation>
 <translation id="799576009106109668">您的浏览速度会更快，因为系统会根据您当前访问的网页主动加载内容</translation>

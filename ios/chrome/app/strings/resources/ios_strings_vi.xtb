@@ -61,6 +61,7 @@
 <translation id="1283524564873030414">24 giờ qua</translation>
 <translation id="1285320974508926690">Không bao giờ dịch trang web này</translation>
 <translation id="1291506870746876680">Các quyền của <ph name="BEGIN_BOLD" />"<ph name="SITE_NAME" />"<ph name="END_BOLD" /> sẽ được đặt lại thành tắt khi bạn rời khỏi trang web này.</translation>
+<translation id="1295289763199166823">Tuỳ chỉnh trình đơn</translation>
 <translation id="1305822519689023679">Nhằm đảm bảo bạn luôn có thể sử dụng mật khẩu trong Tài khoản Google, hãy xác minh danh tính của bạn.</translation>
 <translation id="1312721752506309252">Chế độ Bảo vệ nâng cao đang bật</translation>
 <translation id="1316466854070752597">Xem tất cả các thẻ đang mở</translation>
@@ -106,6 +107,7 @@
 <translation id="1554477036522844996">Cửa sổ mới</translation>
 <translation id="1563071802032385236">Bật tuỳ chọn "Yêu cầu mở đường liên kết từ các ứng dụng khác ở chế độ ẩn danh".</translation>
 <translation id="1565371473877914088">Thẻ ẩn danh mới</translation>
+<translation id="1565395699240341063">Đã ẩn</translation>
 <translation id="1580715474678097352">Luôn được bảo vệ khỏi các trang web nguy hiểm</translation>
 <translation id="1580783302095112590">Thư đã được gửi.</translation>
 <translation id="1582732959743469162">Thao tác này sẽ ngừng tất cả hoạt động tải xuống đang diễn ra.</translation>
@@ -436,6 +438,7 @@ Chỉ những người có cụm mật khẩu mới đọc được dữ liệu 
 <translation id="3533436815740441613">Thẻ mới</translation>
 <translation id="3540141921715814660">Thêm vào Dấu trang</translation>
 <translation id="3551320343578183772">Đóng Thẻ</translation>
+<translation id="3564513311876185114">Thanh trình đơn sắp xếp thông minh</translation>
 <translation id="3565207542107370586">Xoá dữ liệu duyệt web…</translation>
 <translation id="3575234738189584619">Tìm kiếm bằng Ống kính</translation>
 <translation id="3577555362230509265">Sử dụng Chrome trong các ứng dụng khác.</translation>
@@ -1287,6 +1290,7 @@ Dữ liệu của bạn đã được mã hoá bằng cụm mật khẩu vào <p
 <translation id="854938212724803178">Bạn đã bị lộ 1 mật khẩu Hãy khắc phục ngay để giữ an toàn.</translation>
 <translation id="8556590991644167667">{count,plural, =1{Bạn đã đóng {count} cảnh báo}other{Bạn đã đóng {count} cảnh báo}}</translation>
 <translation id="8558480467877843976">Giờ bạn có thể dùng Chrome mỗi khi duyệt web hoặc nhấn vào liên kết trong thư/tin nhắn, tài liệu, v.v.</translation>
+<translation id="8560253818350321773">Hiển thị các mục thường dùng trước tiên.</translation>
 <translation id="8580411965900177618">Không, cảm ơn</translation>
 <translation id="8588404856427128947">Đang tắt</translation>
 <translation id="8591976964826315682">Chặn cookie của bên thứ ba ở chế độ Ẩn danh</translation>

@@ -309,6 +309,7 @@ Zasebni žetoni stanja izboljšujejo zaupanje v spletu in jih ni mogoče uporabi
 <translation id="2656405586795711023">Spletni programi</translation>
 <translation id="2669454659051515572">Prenesene datoteke lahko vidijo vsi, ki uporabljajo to napravo.</translation>
 <translation id="2702516483241149200">Novo: Delite povezavo, ki se pomakne do tega besedila.</translation>
+<translation id="2708051474374549906">Proaktivna sprotna zaščita pred nevarnimi spletnimi mesti, prenosi in razširitvami, ki temelji na podatkih brskanja, poslanih Googlu</translation>
 <translation id="271033894570825754">Novo</translation>
 <translation id="2711073837061989559">Preizkusi</translation>
 <translation id="2718352093833049315">Samo v omrežju Wi-Fi</translation>
@@ -669,6 +670,7 @@ V Google Računu so morda druge vrste zgodovine brskanja, kot so iskanja in deja
 <translation id="4583164079174244168">{MINUTES,plural, =1{Pred # minuto}one{Pred # minuto}two{Pred # minutama}few{Pred # minutami}other{Pred # minutami}}</translation>
 <translation id="4587589328781138893">Spletna mesta</translation>
 <translation id="4594952190837476234">Ta stran brez povezave je bila ustvarjena <ph name="CREATION_TIME" /> in se morda razlikuje od spletne različice.</translation>
+<translation id="4601095002996233687">Poglobljeni pregledi za sumljive prenose.</translation>
 <translation id="4616150815774728855">Odpri <ph name="WEBAPK_NAME" /></translation>
 <translation id="4619564267100705184">Potrditev identitete</translation>
 <translation id="4634124774493850572">Uporabi geslo</translation>
@@ -834,6 +836,7 @@ V Google Računu so morda druge vrste zgodovine brskanja, kot so iskanja in deja
 <translation id="543338862236136125">Uredi geslo</translation>
 <translation id="5433691172869980887">Uporabniško ime kopirano</translation>
 <translation id="5438292632479953702">Znova prenesi</translation>
+<translation id="5439191312780166229">Opozori vas o nevarnih spletnih mestih, celo tistih, za katere Google prej ni vedel, in sicer tako, da analizira več podatkov s spletnih mest kot standardna zaščita. Izberete lahko, da preskočite opozorila za Chrome.</translation>
 <translation id="5441466871879044658">Prevedi v ta jezik</translation>
 <translation id="5441522332038954058">Premik na naslovno vrstico</translation>
 <translation id="5444999712122199445">Nazaj na spletno mesto</translation>
@@ -1044,6 +1047,7 @@ Nekatera spletna mesta se lahko na primer na zahtevo odzovejo tako, da prikažej
 <translation id="6541983376925655882">{NUM_HOURS,plural, =1{Preverjeno pred 1 uro}one{Preverjeno pred # uro}two{Preverjeno pred # urama}few{Preverjeno pred # urami}other{Preverjeno pred # urami}}</translation>
 <translation id="6545017243486555795">Izbris vseh podatkov</translation>
 <translation id="6546511553472444032">Datoteka je morda škodljiva</translation>
+<translation id="6550891580932862748">Ne ščiti pred nevarnimi spletnimi mesti, prenosi in razširitvami. To ne vpliva na vaše nastavitve varnega brskanja v drugih Googlovih izdelkih.</translation>
 <translation id="6556542240154580383">{TAB_COUNT,plural, =1{Zaprt bo zavihek <ph name="TAB_TITLE" /> in še <ph name="TAB_COUNT_ONE" />.}one{Zaprt bo zavihek <ph name="TAB_TITLE" /> in še <ph name="TAB_COUNT_MANY" />.}two{Zaprt bo zavihek <ph name="TAB_TITLE" /> in še <ph name="TAB_COUNT_MANY" />.}few{Zaprt bo zavihek <ph name="TAB_TITLE" /> in še <ph name="TAB_COUNT_MANY" />.}other{Zaprt bo zavihek <ph name="TAB_TITLE" /> in še <ph name="TAB_COUNT_MANY" />.}}</translation>
 <translation id="6560414384669816528">Iskanje z iskalnikom Sogou</translation>
 <translation id="656065428026159829">Prikaži več</translation>
@@ -1257,6 +1261,7 @@ Nekatera spletna mesta se lahko na primer na zahtevo odzovejo tako, da prikažej
 <translation id="757855969265046257">{FILES,plural, =1{<ph name="FILES_DOWNLOADED_ONE" /> prenesena datoteka}one{<ph name="FILES_DOWNLOADED_MANY" /> prenesena datoteka}two{<ph name="FILES_DOWNLOADED_MANY" /> preneseni datoteki}few{<ph name="FILES_DOWNLOADED_MANY" /> prenesene datoteke}other{<ph name="FILES_DOWNLOADED_MANY" /> prenesenih datotek}}</translation>
 <translation id="7581273696622423628">Izpolnjevanje ankete</translation>
 <translation id="7583262514280211622">Tukaj bo prikazan seznam za branje</translation>
+<translation id="7587250070160020374">Chrome zdaj predvaja</translation>
 <translation id="7588219262685291874">Vklop temne teme, ko je v napravi vklopljeno varčevanje z energijo</translation>
 <translation id="7594687499944811403">Naj <ph name="EMBEDDED_ORIGIN" /> preveri, da ste to vi, za <ph name="TOP_ORIGIN" />.</translation>
 <translation id="7596558890252710462">Operacijski sistem</translation>
@@ -1296,6 +1301,7 @@ Nekatera spletna mesta se lahko na primer na zahtevo odzovejo tako, da prikažej
 <translation id="7772032839648071052">Potrdi geslo</translation>
 <translation id="7772375229873196092">Zapri aplikacijo <ph name="APP_NAME" /></translation>
 <translation id="7774809984919390718">{PAYMENT_METHOD,plural, =1{<ph name="PAYMENT_METHOD_PREVIEW" /> \u2026 in še <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" />}one{<ph name="PAYMENT_METHOD_PREVIEW" /> \u2026 in še <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" />}two{<ph name="PAYMENT_METHOD_PREVIEW" /> \u2026 in še <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" />}few{<ph name="PAYMENT_METHOD_PREVIEW" /> \u2026 in še <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" />}other{<ph name="PAYMENT_METHOD_PREVIEW" /> \u2026 in še <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" />}}</translation>
+<translation id="777637629667389858">Ko ste prijavljeni, vas ščiti v Googlovih storitvah.</translation>
 <translation id="7778840695157240389">Vrnite se pozneje in preverite, ali so na voljo nove novice</translation>
 <translation id="7780645209293383778">Te podatke začasno poveže z vašim računom Google, če ste prijavljeni, zaradi zagotavljanja zaščite v Googlovih aplikacijah.</translation>
 <translation id="7791543448312431591">Dodaj</translation>
@@ -1337,6 +1343,7 @@ Nekatera spletna mesta se lahko na primer na zahtevo odzovejo tako, da prikažej
 <translation id="7968014550143838305">Dodano na bralni seznam</translation>
 <translation id="7971136598759319605">Aktivna pred 1 dnevom</translation>
 <translation id="7975379999046275268">Predogled strani <ph name="BEGIN_NEW" />Novo<ph name="END_NEW" /></translation>
+<translation id="7977451675950311423">Opozori vas, če uporabite geslo, ki je ogroženo zaradi podatkovne kršitve.</translation>
 <translation id="7986497153528221272">Če si želite ogledati gesla, najprej v napravi nastavite zaklepanje zaslona</translation>
 <translation id="7995059495660416932">Vsebina bo prikazana, ko bo na voljo.</translation>
 <translation id="799576009106109668">Brskali boste hitreje, ker se vsebina proaktivno naloži glede na trenutni obisk spletne strani.</translation>

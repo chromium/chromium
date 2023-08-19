@@ -1165,6 +1165,7 @@ Berechtigungen, die du Apps bereits gewährt hast, gelten möglicherweise für d
 <translation id="1925124445985510535">Der Sicherheitscheck wurde um <ph name="TIME" /> durchgeführt</translation>
 <translation id="192564025059434655">Ältere Versionen von Chrome-Apps können nach Dezember 2022 auf Windows-Geräten nicht mehr geöffnet werden. Du kannst nachsehen, ob eine neue Version verfügbar ist.</translation>
 <translation id="1926339101652878330">Diese Einstellungen werden durch Unternehmensrichtlinien bestimmt. Bitte wende dich für weitere Informationen an deinen Administrator.</translation>
+<translation id="1926887872692564784">Cursor</translation>
 <translation id="1927632033341042996">Finger <ph name="NEW_FINGER_NUMBER" /></translation>
 <translation id="192817607445937251">PIN für die Displaysperre</translation>
 <translation id="192858925209436740">Du kannst OneDrive mit der App „Dateien“ verbinden, um gespeicherte Dokumente auf deinem Chromebook zu verwalten. Melde dich dazu mit deinem Microsoft-Konto an.</translation>
@@ -1880,6 +1881,7 @@ Diese Aktion wirkt sich nicht auf Lesezeichen, Passwörter und den Verlauf aus.<
 <translation id="2480868415629598489">Daten ändern, die du kopierst und einfügst</translation>
 <translation id="2482878487686419369">Benachrichtigungen</translation>
 <translation id="2482895651873876648">Tab wurde in die folgende Gruppe verschoben: <ph name="GROUP_NAME" /> – <ph name="GROUP_CONTENTS" /></translation>
+<translation id="2483627560139625913">Suchmaschine in den Chrome-Browsereinstellungen festlegen</translation>
 <translation id="2484743711056182585">Zugriffsberechtigung entfernen</translation>
 <translation id="2484909293434545162">Wenn eine Website Cookies verwendet, werden sie hier angezeigt</translation>
 <translation id="2484959914739448251">Wenn du Browserdaten von allen deinen synchronisierten Geräten und aus deinem Google-Konto löschen möchtest, <ph name="BEGIN_LINK" />gib deine Passphrase ein<ph name="END_LINK" />.</translation>
@@ -2034,6 +2036,7 @@ Diese Aktion wirkt sich nicht auf Lesezeichen, Passwörter und den Verlauf aus.<
 <translation id="2612676031748830579">Kartennummer</translation>
 <translation id="2613210758071148851">Keine Erweiterungen auf <ph name="RESTRICTED_SITE" /> zulassen</translation>
 <translation id="2613535083491958306"><ph name="ORIGIN" /> kann <ph name="FILENAME" /> bearbeiten</translation>
+<translation id="2615159404909536465">{FILE_COUNT,plural, =1{<ph name="FILE1" /> in dieser Erweiterung öffnen und bearbeiten}other{<ph name="FILE1" /> in dieser App öffnen und bearbeiten}}</translation>
 <translation id="2616366145935564096">Eigene Daten auf <ph name="WEBSITE_1" /> lesen und ändern</translation>
 <translation id="2618797463720777311">Nearby Share einrichten</translation>
 <translation id="261953424982546039">Chrome-&amp;Labs…</translation>
@@ -3268,6 +3271,7 @@ Servernachricht: <ph name="SERVER_MSG" /></translation>
 <translation id="3653887973853407813">Du kannst diese Erweiterung nicht verwenden. Deine Eltern oder Erziehungsberechtigten haben „Berechtigungen für Websites, Apps und Erweiterungen“ für Chrome deaktiviert.</translation>
 <translation id="3653999333232393305"><ph name="HOST" /> weiterhin Zugriff auf mein Mikrofon gestatten</translation>
 <translation id="3654045516529121250">Einstellungen für Bedienungshilfen lesen</translation>
+<translation id="3656328935986149999">Cursorgeschwindigkeit</translation>
 <translation id="3658871634334445293">TrackPoint-Beschleunigung</translation>
 <translation id="3659550105763988702">Passkey für <ph name="APP_NAME" /> verwenden</translation>
 <translation id="3659929705630080526">Du hast zu oft einen falschen Zugriffscode eingegeben. Versuche es später noch einmal.</translation>
@@ -3982,6 +3986,7 @@ Dazu gehören beispielsweise installierte Software, Dateien, dein Browser und da
 <translation id="4232375817808480934">Kerberos konfigurieren</translation>
 <translation id="4233739489690259993">Dein Chromebook erhält keine Sicherheits- und Softwareupdates mehr. Aktualisiere dein Gerät, um die neuesten Sicherheitsupdates und Funktionen zu erhalten. Es gelten die Angebotsbedingungen.</translation>
 <translation id="4235965441080806197">Anmeldung abbrechen</translation>
+<translation id="4235976607074422892">Scrollgeschwindigkeit</translation>
 <translation id="4237282663517880406">Google Drive-Vorschläge anzeigen</translation>
 <translation id="4241182343707213132">Neu starten, um die Apps der Organisation zu aktualisieren</translation>
 <translation id="4242145785130247982">Mehrere Clientzertifikate werden nicht unterstützt</translation>
@@ -4407,6 +4412,7 @@ Dazu gehören beispielsweise installierte Software, Dateien, dein Browser und da
 <translation id="4585793705637313973">Seite bearbeiten</translation>
 <translation id="4586275095964870617"><ph name="URL" /> konnte nicht in einem alternativen Browser geöffnet werden. Bitte setze dich mit dem Systemadministrator in Verbindung.</translation>
 <translation id="4587589328781138893">Websites</translation>
+<translation id="4588749726511456218">Beschleunigtes Scrollen <ph name="LINK_BEGIN" />Weitere Informationen<ph name="LINK_END" /></translation>
 <translation id="4589713469967853491">Protokolle erfolgreich in Downloadverzeichnis geschrieben.</translation>
 <translation id="459204634473266369">Keine Geräte in <ph name="PRIMARY_EMAIL" /> gespeichert</translation>
 <translation id="4592525994536856567">Surfen und Suchen ist schneller.</translation>
@@ -5235,7 +5241,6 @@ Zum Herauszoomen drücke Strg + Alt + „Helligkeit verringern“.</translatio
 <translation id="5298219193514155779">Design von</translation>
 <translation id="5299109548848736476">Do Not Track</translation>
 <translation id="5299558715747014286">Tabgruppen ansehen und verwalten</translation>
-<translation id="529986401483187205">deaktiviert</translation>
 <translation id="5300426565656326054">Browserbasierte personalisierte Werbung</translation>
 <translation id="5300589172476337783">Anzeigen</translation>
 <translation id="5300719150368506519">URLs der von dir besuchten Seiten an Google senden</translation>
@@ -5306,6 +5311,7 @@ Zum Herauszoomen drücke Strg + Alt + „Helligkeit verringern“.</translatio
 <translation id="5365881113273618889">Der ausgewählte Ordner enthält vertrauliche Dateien. Möchtest du <ph name="APP_NAME" /> wirklich dauerhaft Schreibzugriff auf diesen Ordner gewähren?</translation>
 <translation id="536638840841140142">Keine</translation>
 <translation id="5368246151595623328">„<ph name="NETWORK_NAME" />“ gespeichert von „<ph name="DEVICE_NAME" />“</translation>
+<translation id="5368255566854433132"><ph name="DEVICE_TYPE" />-Passwort erstellen</translation>
 <translation id="5368720394188453070">Dein Telefon ist gesperrt. Entsperre es, um fortzufahren.</translation>
 <translation id="5368779022775404937">Anmelden bei <ph name="REALM" /></translation>
 <translation id="536882527576164740">{0,plural, =1{Inkognito}other{Inkognito (#)}}</translation>
@@ -6222,6 +6228,7 @@ Berechtigungen, die du Websites und Apps bereits gewährt hast, gelten mögliche
 <translation id="6130692320435119637">WLAN hinzufügen</translation>
 <translation id="6130887916931372608">Taste</translation>
 <translation id="6132714462430777655">Registrierung bei einer Bildungseinrichtung überspringen?</translation>
+<translation id="6134428719487602109">Entfernt alle Nutzerkonten und setzt Chromebook auf die Werkseinstellungen zurück.</translation>
 <translation id="6135823405800500595">Dein Smartphone muss sich in der Nähe befinden und entsperrt sein. Außerdem müssen Bluetooth und die WLAN-Funktion aktiviert sein.</translation>
 <translation id="6135826623269483856">Websites dürfen Fenster auf allen deinen Bildschirmen nicht verwalten</translation>
 <translation id="6136114942382973861">Downloadleiste schließen</translation>
@@ -8637,6 +8644,7 @@ Speichere deine Schlüsseldatei an einem sicheren Ort. Du benötigst die Datei, 
 <translation id="8137559199583651773">Erweiterungen verwalten</translation>
 <translation id="8138217203226449454">Möchtest du deinen Suchanbieter wechseln?</translation>
 <translation id="8138997515734480534"><ph name="VM_NAME" />-Status</translation>
+<translation id="8139440916039659819">Cursorbeschleunigung</translation>
 <translation id="8139447493436036221">Google Drive-Dateien</translation>
 <translation id="8139643636835015859">Dadurch werden <ph name="OFFLINE_STORAGE_SIZE" /> Speicherplatz freigegeben, der von deinen Offlinedateien belegt wird. Einige Dateien sind weiterhin offline verfügbar. <ph name="LINK_BEGIN" />Weitere Informationen<ph name="LINK_END" /></translation>
 <translation id="8140070492745508800">„<ph name="FIRST_DEVICE" />“, „<ph name="SECOND_DEVICE" />“</translation>
@@ -9101,6 +9109,7 @@ Speichere deine Schlüsseldatei an einem sicheren Ort. Du benötigst die Datei, 
 <translation id="8526813720153458066">SSH</translation>
 <translation id="8527228059738193856">Lautsprecher</translation>
 <translation id="8527257351549797148">Möglicherweise ist seitens deiner Organisation eine Registrierung erforderlich, damit du auf Apps, Erweiterungen und mehr zugreifen kannst. Außerdem können Organisationen beispielsweise die Sicherheits- und Geräteeinstellungen verwalten.</translation>
+<translation id="8527869672961320915">„<ph name="VM_NAME" />“-Apps</translation>
 <translation id="8528074251912154910">Sprachen hinzufügen</translation>
 <translation id="8528479410903501741">IBAN speichern</translation>
 <translation id="8528962588711550376">Anmeldung läuft...</translation>
@@ -9359,6 +9368,7 @@ Speichere deine Schlüsseldatei an einem sicheren Ort. Du benötigst die Datei, 
 <translation id="8736288397686080465">Diese Website wurde im Hintergrund aktualisiert.</translation>
 <translation id="8737709691285775803">Shill</translation>
 <translation id="8737914367566358838">Wähle die Sprache aus, in die die Seite übersetzt werden soll</translation>
+<translation id="8740086188450289493">Google-Kontopasswort verwenden</translation>
 <translation id="8740247629089392745">Du kannst dieses Chromebook nun <ph name="SUPERVISED_USER_NAME" /> geben. Die Einrichtung ist fast abgeschlossen, jetzt ist es an der Zeit, auf Entdeckungstour zu gehen.</translation>
 <translation id="8740672167979365981">Chrome OS Flex-Update erforderlich</translation>
 <translation id="8741944563400125534">Einrichtung des Schalterzugriffs</translation>
@@ -9743,6 +9753,7 @@ Berechtigungen, die du Websites und Apps bereits gewährt hast, gelten mögliche
 <translation id="9045160989383249058">Deine Leseliste wurde in die neue Seitenliste verschoben. Hier kannst du die Funktion testen.</translation>
 <translation id="9045430190527754450">Die Webadresse der Seite, die du aufrufen möchtest, wird an Google gesendet</translation>
 <translation id="9048745018038487540">Alle Schriftarten auswählen</translation>
+<translation id="9050135202879860719">Melde dich auf deinem <ph name="DEVICE_TYPE" /> mit einem Passwort an</translation>
 <translation id="9050666287014529139">Passphrase</translation>
 <translation id="9052404922357793350">Weiterhin blockieren</translation>
 <translation id="90528604757378587">Hintergrundaktivitäten und einige visuelle Effekte wie flüssiges Scrollen können eingeschränkt sein.</translation>

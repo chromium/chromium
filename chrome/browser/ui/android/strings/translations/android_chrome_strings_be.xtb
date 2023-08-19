@@ -309,6 +309,7 @@
 <translation id="2656405586795711023">Вэб-праграмы</translation>
 <translation id="2669454659051515572">Усе, хто карыстаецца гэтай прыладай, могуць бачыць спампаваныя файлы</translation>
 <translation id="2702516483241149200">Навінка: абагульце спасылку, пры выкарыстанні якой старонка прагартаецца гэтага фрагмента тэксту</translation>
+<translation id="2708051474374549906">Актыўная абарона ў рэальным часе ад небяспечных вэб-сайтаў, спамповак і пашырэнняў. Яе эфектыўнасць забяспечваюць даныя пра вашу работу ў браўзеры, якія адпраўляюцца ў Google.</translation>
 <translation id="271033894570825754">Новае</translation>
 <translation id="2711073837061989559">Пробныя версіі функцый</translation>
 <translation id="2718352093833049315">Толькі па Wi-Fi</translation>
@@ -667,6 +668,7 @@
 <translation id="4583164079174244168">{MINUTES,plural, =1{1 хвіліну таму}one{# хвіліну таму}few{# хвіліны таму}many{# хвілін таму}other{# хвіліны таму}}</translation>
 <translation id="4587589328781138893">Сайты</translation>
 <translation id="4594952190837476234">Гэта пазасеткавая старонка створана <ph name="CREATION_TIME" /> і можа адрознівацца ад сваёй інтэрнэт-версіі.</translation>
+<translation id="4601095002996233687">Выконвае дэталёвую праверку падазроных спамповак.</translation>
 <translation id="4616150815774728855">Адкрыць <ph name="WEBAPK_NAME" /></translation>
 <translation id="4619564267100705184">Пацвердзіць маю асобу</translation>
 <translation id="4634124774493850572">Выкарыстаць пароль</translation>
@@ -830,6 +832,7 @@
 <translation id="543338862236136125">Змяніць пароль</translation>
 <translation id="5433691172869980887">Імя карыстальніка скапіравана</translation>
 <translation id="5438292632479953702">Спампаваць яшчэ раз</translation>
+<translation id="5439191312780166229">Папярэджвае пра небяспечныя сайты (нават тыя, пра якія ў Google дагэтуль не было звестак), аналізуючы больш даных з сайтаў, чым аналізуецца пры стандартнай абароне. Папярэджанні браўзера Chrome можна прапускаць.</translation>
 <translation id="5441466871879044658">Перакласці на гэту мову</translation>
 <translation id="5441522332038954058">Перайсці да адраснага радка</translation>
 <translation id="5444999712122199445">Вярнуцца на сайт</translation>
@@ -1040,6 +1043,7 @@
 <translation id="6541983376925655882">{NUM_HOURS,plural, =1{Праверка праводзілася гадзіну таму}one{Праверка праводзілася # гадзіну таму}few{Праверка праводзілася # гадзіны таму}many{Праверка праводзілася # гадзін таму}other{Праверка праводзілася # гадзіны таму}}</translation>
 <translation id="6545017243486555795">Ачысціць усе даныя</translation>
 <translation id="6546511553472444032">Файл можа быць шкодным</translation>
+<translation id="6550891580932862748">Не абараняе ад небяспечных вэб-сайтаў, спамповак і пашырэнняў. Гэты рэжым не паўплывае на налады Бяспечнага прагляду ў іншых прадуктах Google.</translation>
 <translation id="6556542240154580383">{TAB_COUNT,plural, =1{Укладка "<ph name="TAB_TITLE" />" і яшчэ <ph name="TAB_COUNT_ONE" /> укладка будуць закрыты}one{Укладка "<ph name="TAB_TITLE" />" і яшчэ <ph name="TAB_COUNT_MANY" /> укладка будуць закрыты}few{Укладка "<ph name="TAB_TITLE" />" і яшчэ <ph name="TAB_COUNT_MANY" /> укладкі будуць закрыты}many{Укладка "<ph name="TAB_TITLE" />" і яшчэ <ph name="TAB_COUNT_MANY" /> укладак будуць закрыты}other{Укладка "<ph name="TAB_TITLE" />" і яшчэ <ph name="TAB_COUNT_MANY" /> укладкі будуць закрыты}}</translation>
 <translation id="6560414384669816528">Пошук праз Sogou</translation>
 <translation id="656065428026159829">Яшчэ</translation>
@@ -1292,6 +1296,7 @@
 <translation id="7772032839648071052">Пацвердзіце фразу-пароль</translation>
 <translation id="7772375229873196092">Закрыццё праграмы "<ph name="APP_NAME" />"</translation>
 <translation id="7774809984919390718">{PAYMENT_METHOD,plural, =1{<ph name="PAYMENT_METHOD_PREVIEW" />\u2026 і яшчэ <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" />}one{<ph name="PAYMENT_METHOD_PREVIEW" />\u2026 і яшчэ <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" />}few{<ph name="PAYMENT_METHOD_PREVIEW" />\u2026 і яшчэ <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" />}many{<ph name="PAYMENT_METHOD_PREVIEW" />\u2026 і яшчэ <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" />}other{<ph name="PAYMENT_METHOD_PREVIEW" />\u2026 і яшчэ <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" />}}</translation>
+<translation id="777637629667389858">Калі вы ўвайшлі ва ўліковы запіс, абараняе вас ва ўсіх сэрвісах Google.</translation>
 <translation id="7778840695157240389">Каб праверыць, ці з'явіліся новыя артыкулы, загляніце сюды пазней</translation>
 <translation id="7780645209293383778">Часова звязвае гэтыя даныя з Уліковым запісам Google, у які вы ўвайшлі, каб абараніць вас у праграмах Google</translation>
 <translation id="7791543448312431591">Дадаць</translation>
@@ -1332,6 +1337,7 @@
 <translation id="7968014550143838305">Дададзена ў спіс чытання</translation>
 <translation id="7971136598759319605">Апошнія дзеянні: дзень таму</translation>
 <translation id="7975379999046275268">Перадпрагляд старонкі <ph name="BEGIN_NEW" />Навінка<ph name="END_NEW" /></translation>
+<translation id="7977451675950311423">Папярэджвае, калі вы выкарыстоўваеце пароль, які быў раскрыты ў выніку ўцечкі даных.</translation>
 <translation id="7986497153528221272">Каб праглядаць паролі, спачатку наладзьце на прыладзе блакіроўку экрана</translation>
 <translation id="7995059495660416932">Вы ўбачыце змесціва, калі яно стане даступным</translation>
 <translation id="799576009106109668">Паскорыцца прагляд сайтаў, паколькі змесціва будзе загружацца без запыту на падставе даных з бягучай вэб-старонкі.</translation>

@@ -659,6 +659,7 @@ Hãy sạc thiết bị.</translation>
 <translation id="380165613292957338">Xin chào, tôi có thể trợ giúp gì?</translation>
 <translation id="3804737937830804242">Thu gọn máy ảnh</translation>
 <translation id="3824784079442479685">Nếu bạn bật, <ph name="APP_NAME" /> và tất cả ứng dụng cũng như trang web có quyền truy cập máy ảnh sẽ có thể sử dụng máy ảnh. Bạn có thể cần làm mới trang web hoặc khởi động lại ứng dụng.</translation>
+<translation id="3825680296690914697">Đã nộp: <ph name="NUM_TURNED_IN" />/<ph name="TOTAL_NUM_OF_SUBMISSIONS" />, đã chấm điểm: <ph name="NUM_GRADED" /></translation>
 <translation id="3826099427150913765">Chuyển sang mật khẩu</translation>
 <translation id="383058930331066723">Chế độ trình tiết kiệm pin đang bật</translation>
 <translation id="383629559565718788">Hiển thị các tùy chọn cài đặt bàn phím</translation>
@@ -1744,6 +1745,7 @@ Mới cài đặt</translation>
 <translation id="8446884382197647889">Tìm hiểu thêm</translation>
 <translation id="8456543082656546101"><ph name="SHORTCUT_KEY_NAME" /> + V</translation>
 <translation id="8462305545768648477">Đóng tính năng Chọn để nói</translation>
+<translation id="8468806060683421065">hạn nộp: <ph name="DUE_DATE_AND_TIME" /></translation>
 <translation id="847056008324733326">Cài đặt tỷ lệ hiển thị</translation>
 <translation id="8473301994082929012"><ph name="ORGANIZATION_NAME" /> đã <ph name="FEATURE_STATE" /> <ph name="FEATURE_NAME" />.</translation>
 <translation id="8477270416194247200">Nhấn phím Alt+Search hoặc Shift để hủy.</translation>
@@ -1827,6 +1829,7 @@ Mới cài đặt</translation>
 <translation id="8853703225951107899">Hệ thống vẫn chưa xác minh được mã PIN hoặc mật khẩu của bạn. Lưu ý: Nếu bạn đổi mật khẩu gần đây, hãy dùng mật khẩu cũ. Bạn có thể dùng mật khẩu mới sau khi đăng xuất.</translation>
 <translation id="8855885154700222542">Phím toàn màn hình</translation>
 <translation id="8858369206579825206">Chế độ kiểm soát quyền riêng tư</translation>
+<translation id="8860366331836346216">Thêm eSIM</translation>
 <translation id="8870509716567206129">Ứng dụng không hỗ trợ chế độ chia đôi màn hình.</translation>
 <translation id="8874184842967597500">Chưa kết nối</translation>
 <translation id="8875021410787719674">Di chuyển giữa góc dưới cùng bên phải, Trình chạy, thanh địa chỉ, thanh dấu trang, trang web đang mở và tệp đã tải xuống</translation>

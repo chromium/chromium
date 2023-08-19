@@ -2,14 +2,25 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="fi">
 <translation id="1143896152279775643">Salasana tallennetaan Googlen Salasanojen ylläpitoon sähköpostiosoitteella <ph name="EMAIL" />.</translation>
+<translation id="1180362651362502943">Jatka Chrome-datan käyttöä Google-tilillä.</translation>
 <translation id="1282031177488366470">Auta parantamaan Chromen ominaisuuksia ja suorituskykyä</translation>
 <translation id="1352919863522755794">Google Salasanat ei voinut tarkistaa salasanojasi. Tarkista internetyhteytesi.</translation>
+<translation id="1407843355326180937">Kirjaudu tälle sivustolle ja Chromeen, niin voit käyttää kirjanmerkkejä ja muita asetuksia kaikilla laitteillasi.</translation>
 <translation id="1462727070346936664">Saat eniten irti Chromesta kirjautumalla sisään.</translation>
 <translation id="1479202195792305274">Chrome voi tarkistaa salasanasi, kun kirjaudut sisään Google-tililläsi.</translation>
 <translation id="1491435845014430217">Laita päälle "Lukitse incognito-välilehdet, kun suljet Chromen".</translation>
 <translation id="1493827051843127077">Aseta Chrome oletusselaimeksi, niin voit synkronoida välilehdet, salasanat ja maksutiedot kaikilla laitteillasi</translation>
 <translation id="1504372625950710826">Chrome ei voinut tarkistaa, onko päivityksiä saatavilla. Tarkista internetyhteytesi.</translation>
 <translation id="1511320244449497906">Olet kirjautunut sisään ja dataasi synkronoidaan <ph name="DOMAIN" />-osoitteen hallinnoimalle tilille. Sen järjestelmänvalvoja voi nyt asettaa tilikohtaisia käyttäjäkäytäntöjä, jotka voivat muuttaa Chromen käyttäytymistä.</translation>
+<translation id="1526327845902180576">Kun se on päällä:
+<ph name="BEGIN_INDENT" />  • Auta tekemään Chromesta parempi muille, jotka käyttävät sitä samoin kuin sinä.<ph name="END_INDENT" />
+
+Huomioitavaa:
+<ph name="BEGIN_INDENT" />  • Chromen käytöstä lähetetään tietoja Googlelle, mutta niitä ei liitetä sinuun.
+
+  • Chromen kaatumisesta kerättävät tiedot saattavat sisältää henkilökohtaisia tietoja.
+
+• Jos laitat historian synkronoinnin Google-tilille päälle, tiedot voivat koskea myös avaamiasi URL-osoitteita.<ph name="END_INDENT" /></translation>
 <translation id="1554731936187952550">Käytössäsi on Chromen vahvin suojaus haitallisia verkkosivustoja vastaan</translation>
 <translation id="1682483655351012182">Chrome-datan synkronointi</translation>
 <translation id="1733654336159102143">Lukitse incognito-tila, kun poistut Chromesta tai vaihdat toiseen sovellukseen.</translation>
@@ -56,6 +67,7 @@
 <translation id="3720541637541300822">Lukitse incognito-välilehdet, kun suljet Chromen</translation>
 <translation id="3827545470516145620">Tällä laitteella on perustason suojaus</translation>
 <translation id="384394811301901750">Google Chrome ei voi käyttää kameraa tällä hetkellä.</translation>
+<translation id="3901001113120561395">Paras hyöty Chromesta</translation>
 <translation id="3980220367029651214">Muutoksen jälkeen synkronointi käyttää tilin <ph name="USER_EMAIL1" /> sijaan tiliä <ph name="USER_EMAIL2" />. Nykyisiä Chrome-tietojasi hallinnoi <ph name="DOMAIN" />. Tietosi poistetaan tältä laitteelta, mutta ne jäävät tilille <ph name="USER_EMAIL1" />.</translation>
 <translation id="3984746313391923992">Organisaatiosi edellyttää, että et kirjaudu sisään Chromeen.</translation>
 <translation id="3988789688219830639">Google Chrome ei voi käyttää kuviasi tai videoitasi. Anna käyttöoikeus kohdassa iOS-asetukset &gt; Tietosuoja &gt; Kuvat.</translation>
@@ -71,6 +83,9 @@
 <translation id="4636900170638246267">Kirjaudu tälle sivustolle ja Chromeen.</translation>
 <translation id="4698415050768537821">Chrome ei voinut tarkistaa kaikkia salasanoja. Yritä uudelleen huomenna tai <ph name="BEGIN_LINK" />tarkista salasanat Google-tililtä<ph name="END_LINK" />.</translation>
 <translation id="4819268619367838612">Chrome lähettää käyttö- ja kaatumisdataa Googlelle sovelluksen kehittämiseksi. <ph name="BEGIN_LINK" />Muokkaa<ph name="END_LINK" /></translation>
+<translation id="4831642696589369971">Osaa Chrome-datastasi ei ole vielä tallennettu Google-tilillesi.
+
+        Odota muutama minuutti ennen uloskirjautumista. Jos kirjaudut ulos nyt, tämä data poistetaan.</translation>
 <translation id="484033449593719797">Ei tueta Chrome Betassa</translation>
 <translation id="4840404732697892756">Google Salasanat voi tarkistaa salasanasi, kun kirjaudut sisään Google-tililläsi.</translation>
 <translation id="4903674399067644695">Tässä kortissa on ehdotuksia Chromen hyödyntämiseen parhaalla mahdollisella tavalla.</translation>
@@ -78,6 +93,7 @@
 <translation id="5108659628347594808">Entistä parempi Chrome</translation>
 <translation id="5119391094379141756">Valitse Chrome</translation>
 <translation id="5162467219239570114">Chrome on vanhentunut. Jos päivitystä ei ole saatavilla <ph name="BEGIN_LINK" />sovelluskaupasta<ph name="END_LINK" />, laitteesi ei välttämättä enää tue Chromen uusia versioita.</translation>
+<translation id="5190139289262548459">Organisaatiosi (<ph name="DOMAIN" />) ylläpitää tiliä, jolla olet kirjautuneena sisään ja sitä, miten Chromea käytetään.</translation>
 <translation id="5389212809648216794">Google Chrome ei voi käyttää kameraa, koska se on toisen sovelluksen käytössä.</translation>
 <translation id="5395376160638294582">Varmista, että voit aina käyttää Chrome-dataa Google-tilillä</translation>
 <translation id="5439191312780166229">Varoittaa vaarallisista sivustoista, myös niistä, joista Google ei ole tiennyt aiemmin, analysoimalla enemmän dataa sivustoilta kuin Perustason suojaus. Voit ohittaa Chromen varoitukset.</translation>
@@ -107,6 +123,9 @@
 <translation id="6648150602980899529">Olet kirjautumassa sisään verkkotunnuksen <ph name="DOMAIN" /> hallinnoimalla tilillä ja antamassa sen järjestelmänvalvojalle oikeuden hallita Chrome-tietojasi. Tietosi liitetään pysyvästi tähän tiliin. Chromesta uloskirjautuminen poistaa tietosi tältä laitteelta, mutta ne säilyvät Google-tililläsi.</translation>
 <translation id="6676840375528380067">Poistetaanko Chrome-data tältä laitteelta?</translation>
 <translation id="6709398533399187136">Salasanasi vaarantui tietosuojaloukkauksessa. Googlen Salasanojen ylläpito suosittelee, että vaihdat sen heti.</translation>
+<translation id="6815466750807582739">Maksutapoja ja osoitteita ei salata. Chromen selaushistoriaa ei synkronoida.
+
+Salattua dataa voi lukea vain tunnuslauseen avulla. Tunnuslausetta ei lähetetä Googlelle eikä Google tallenna sitä. Jos unohdat tunnuslauseen tai haluat muuttaa asetusta, <ph name="BEGIN_LINK" />tyhjennä tilin Chrome-data<ph name="END_LINK" />.</translation>
 <translation id="6822673484890854830">Chrome ei voinut tarkistaa kaikkia salasanoja. Yritä myöhemmin uudelleen.</translation>
 <translation id="6964931465519938134">Voit nyt käyttää Chromea aina, kun napautat linkkejä viesteissä, dokumenteissa tai muissa sovelluksissa.</translation>
 <translation id="6975725306479268850">Chromen valinta automaattiseen täyttöön</translation>
@@ -152,6 +171,9 @@
 <translation id="8772179140489533211">Näytä kehotteet kirjautua Chromeen.</translation>
 <translation id="8788269841521769222">Sinun ei tarvitse muistaa tätä salasanaa. Se tallennetaan Googlen Salasanojen ylläpitoon sähköpostiosoitteella <ph name="EMAIL" /></translation>
 <translation id="8808828119384186784">Chromen asetukset</translation>
+<translation id="8856877214925961642">Tunnuslauseella ei salata maksutapoja ja osoitteita.
+
+Jos haluat muuttaa tätä asetusta, <ph name="BEGIN_LINK" />tyhjennä tilin Chrome-data<ph name="END_LINK" />.</translation>
 <translation id="8857676124663337448">Google Salasanat ei voinut tarkistaa kaikkia salasanoja. Yritä uudelleen huomenna.</translation>
 <translation id="8897749957032330183">Salasanat tallennetaan Google Salasanoihin tällä laitteella.</translation>
 <translation id="8969290730818637510">Kun se on päällä:

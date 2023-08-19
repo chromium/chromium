@@ -2988,15 +2988,6 @@ Veillez à ne pas laisser cette règle activée en permanence, en particulier po
 <translation id="3591584750136265240">Configurer le mode d'authentification lors de la connexion</translation>
 <translation id="3593905652755912452">L'ancien comportement d'envoi des événements sur les commandes de formulaire désactivées sera utilisé.</translation>
 <translation id="3596112486106491038">Activer l'accès par ligne de commande aux machines virtuelles</translation>
-<translation id="3596651403637948128">Ce paramètre détermine si le mode de protection standard de la navigation sécurisée autorise l'envoi des hachages partiels de l'URL à Google au travers d'un proxy, via un protocole HTTP Oblivious, pour déterminer si l'URL peut être visitée en toute sécurité.
-
-Le proxy permet aux navigateurs d'envoyer des hachages partiels d'URL vers Google de manière anonyme. Il permet également aux navigateurs de procéder à ces envois plus fréquemment pour améliorer la qualité de la protection offerte par la navigation sécurisée.
-
-Cette règle est ignorée si la navigation sécurisée est désactivée ou définie sur le mode de protection renforcée.
-
-Si cette règle est activée ou n'est pas configurée, la recherche d'une protection supérieure via proxy est activée.
-
-Si cette règle est désactivée, la recherche d'une protection supérieure via proxy est désactivée. Les URL seront envoyées directement à Google avec une fréquence beaucoup plus faible.</translation>
 <translation id="3603469950773500315">Permet d'atténuer les contrôles <ph name="CORS" /> dans la nouvelle mise en œuvre de <ph name="CORS" />. Les extensions peuvent ainsi conserver un comportement compatible, et <ph name="PRODUCT_NAME" /> peut envoyer les en-têtes spécifiés sans contrôles <ph name="CORS" />.
 
       Si aucun paramètre d'atténuation n'est indiqué dans la liste, <ph name="PRODUCT_NAME" /> essaie d'exécuter les extensions de manière compatible, et n'introduit pas de modifications de <ph name="API" /> pour <ph name="PRODUCT_NAME" /> 79 (comme indiqué à la page <ph name="WEB_REQUEST_API_MANUAL" />).

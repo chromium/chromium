@@ -3036,22 +3036,6 @@ Não deixe a política sempre ativada, especialmente em implantações de produ�
 <translation id="3591584750136265240">Configura o comportamento de autenticação de login</translation>
 <translation id="3593905652755912452">O comportamento antigo para envio de eventos em controles de formulário desativados vai ser usado.</translation>
 <translation id="3596112486106491038">Ativar o acesso à linha de comando de máquinas virtuais</translation>
-<translation id="3596651403637948128">Isso controla se o modo de proteção padrão da Navegação segura pode
-enviar hashes parciais do URL ao Google por um proxy via HTTP Oblivious
-para determinar se o URL é seguro.
-
-O proxy permite que os navegadores façam o upload de hashes parciais de URLs para o Google
-anonimamente. Ele também permite que os navegadores façam uploads com maior frequência para
-melhorar a qualidade da proteção da Navegação segura.
-
-Esta política será ignorada se a Navegação segura estiver desativada ou definida como
-o modo de proteção avançada.
-
-Se a política for definida como ativada ou não for definida, as pesquisas por
-proxy com maior proteção poderão ser usadas.
-
-Se a política for definida como desativada, as pesquisas por proxy com maior proteção não
-serão permitidas. Os URLs serão enviados ao Google diretamente e com uma frequência muito menor.</translation>
 <translation id="3603469950773500315">Ative as mitigações de verificação de <ph name="CORS" /> na nova implementação de <ph name="CORS" />, permitindo que as extensões mantenham um comportamento compatível e permitindo que o <ph name="PRODUCT_NAME" /> envie cabeçalhos especificados sem verificações de <ph name="CORS" />.
 
       Se esta lista for definida como vazia, o <ph name="PRODUCT_NAME" /> tentará executar extensões de maneiras compatíveis e não introduzirá mudanças de <ph name="API" /> para o <ph name="PRODUCT_NAME" /> 79, conforme explicado em <ph name="WEB_REQUEST_API_MANUAL" />.

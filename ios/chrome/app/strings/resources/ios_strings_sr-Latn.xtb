@@ -61,6 +61,7 @@ Da biste promenili ovo podešavanje, <ph name="BEGIN_LINK" />obrišite Chrome po
 <translation id="1283524564873030414">Poslednja 24 sata</translation>
 <translation id="1285320974508926690">Nikad ne prevodi ovaj sajt</translation>
 <translation id="1291506870746876680">Dozvole za <ph name="BEGIN_BOLD" /><ph name="SITE_NAME" /><ph name="END_BOLD" /> će se resetovati i isključiti kad napustite ovaj sajt.</translation>
+<translation id="1295289763199166823">Prilagodite meni</translation>
 <translation id="1305822519689023679">Da biste bili sigurni da uvek možete da koristite lozinke na Google nalogu, potvrdite svoj identitet.</translation>
 <translation id="1312721752506309252">Poboljšana zaštita je uključena</translation>
 <translation id="1316466854070752597">Pregledajte sve otvorene kartice</translation>
@@ -106,6 +107,7 @@ Da biste promenili ovo podešavanje, <ph name="BEGIN_LINK" />obrišite Chrome po
 <translation id="1554477036522844996">Novi prozor</translation>
 <translation id="1563071802032385236">Uključite Zatraži otvaranje linkova iz drugih aplikacija u režimu bez arhiviranja.</translation>
 <translation id="1565371473877914088">Nova kartica bez arhiviranja</translation>
+<translation id="1565395699240341063">Skriveno</translation>
 <translation id="1580715474678097352">Uvek budite zaštićeni od opasnih veb-sajtova</translation>
 <translation id="1580783302095112590">Imejl je poslata.</translation>
 <translation id="1582732959743469162">Na taj način ćete potpuno zaustaviti trenutno preuzimanje.</translation>
@@ -436,6 +438,7 @@ Pogledajte uputstva pretraživača za brisanje istorije pretrage ako je to prime
 <translation id="3533436815740441613">Nova kartica</translation>
 <translation id="3540141921715814660">Dodaj u obeleživače</translation>
 <translation id="3551320343578183772">Zatvori karticu</translation>
+<translation id="3564513311876185114">Traka menija pametnog rasproreda</translation>
 <translation id="3565207542107370586">Obriši podatke pregledanja…</translation>
 <translation id="3575234738189584619">Pretražujte pomoću Objektiva</translation>
 <translation id="3577555362230509265">Koristite Chrome u drugim aplikacijama.</translation>
@@ -1287,6 +1290,7 @@ Podaci su šifrovani pomoću pristupne fraze <ph name="TIME" />. Unesite je da 
 <translation id="854938212724803178">Imate 1 ugroženu lozinku. Rešite problem odmah da biste bili bezbedni.</translation>
 <translation id="8556590991644167667">{count,plural, =1{Odbacili ste {count} upozorenje}one{Odbacili ste {count} upozorenje}few{Odbacili ste {count} upozorenja}other{Odbacili ste {count} upozorenja}}</translation>
 <translation id="8558480467877843976">Sada možete da koristite Chrome svaki put kada pregledate ili dodirnete linkove u porukama, dokumentima i drugim aplikacijama.</translation>
+<translation id="8560253818350321773">Prvo prikaži često korišćene stavke.</translation>
 <translation id="8580411965900177618">Ne, hvala</translation>
 <translation id="8588404856427128947">Isključeno</translation>
 <translation id="8591976964826315682">Blokirajte kolačiće trećih strana u režimu bez arhiviranja</translation>

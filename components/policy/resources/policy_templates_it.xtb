@@ -2981,22 +2981,6 @@ Ricorda di non tenere questo criterio sempre attivo, soprattutto nelle distribuz
 <translation id="3591584750136265240">Configura il comportamento di autenticazione dell'accesso</translation>
 <translation id="3593905652755912452">Verrà utilizzato il comportamento precedente per l'esecuzione di eventi sui controlli dei moduli disattivati.</translation>
 <translation id="3596112486106491038">Attiva l'accesso alla riga di comando delle macchine virtuali</translation>
-<translation id="3596651403637948128">Questa opzione consente di stabilire se la modalità di Protezione standard di Navigazione sicura può
-inviare hash parziali dell'URL a Google tramite un proxy con HTTP ovvio
-per determinare se l'URL può essere visitato in sicurezza.
-
-Il proxy consente ai browser di caricare hash parziali di URL su Google
-in modo anonimo. Consente inoltre ai browser di caricare con frequenza maggiore per
-una migliore qualità della protezione di Navigazione sicura.
-
-Questo criterio verrà ignorato se la funzionalità Navigazione sicura viene disattivata o se viene impostata la modalità di
-Protezione avanzata.
-
-Se il criterio viene attivato o se non viene configurato,
-consente le ricerche inviate tramite proxy con una protezione maggiore.
-
-Se il criterio viene disattivato, non consente le ricerche
-inviate tramite proxy con una protezione maggiore. Gli URL verranno caricati direttamente su Google con una frequenza molto inferiore.</translation>
 <translation id="3603469950773500315">Consente di attivare le mitigazioni dei controlli <ph name="CORS" /> nella nuova implementazione <ph name="CORS" />, consentendo alle estensioni di mantenere un comportamento compatibile e a <ph name="PRODUCT_NAME" /> di inviare le intestazioni specificate senza controlli <ph name="CORS" />.
 
       Se questo elenco viene lasciato vuoto, <ph name="PRODUCT_NAME" /> prova a eseguire le estensioni in modalità compatibili e non introduce modifiche <ph name="API" /> per la versione 79 di <ph name="PRODUCT_NAME" />, come spiegato all'indirizzo <ph name="WEB_REQUEST_API_MANUAL" />.

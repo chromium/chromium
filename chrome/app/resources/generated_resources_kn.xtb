@@ -1916,6 +1916,7 @@
 <translation id="2480868415629598489">ನೀವು ನಕಲಿಸಿದ ಮತ್ತು ಅಂಟಿಸಿದ ಡೇಟಾವನ್ನು ಮಾರ್ಪಡಿಸಿ</translation>
 <translation id="2482878487686419369">ಸೂಚನೆಗಳು</translation>
 <translation id="2482895651873876648"><ph name="GROUP_NAME" /> - <ph name="GROUP_CONTENTS" /> ಗುಂಪಿಗೆ ಟ್ಯಾಬ್ ಅನ್ನು ಸರಿಸಲಾಗಿದೆ</translation>
+<translation id="2483627560139625913">Chrome ಬ್ರೌಸರ್ ಸೆಟ್ಟಿಂಗ್‌ಗಳಲ್ಲಿ ಸರ್ಚ್ ಎಂಜಿನ್ ಅನ್ನು ಸೆಟ್ ಮಾಡಿ</translation>
 <translation id="2484743711056182585">ಅನುಮತಿಯನ್ನು ತೆಗೆದುಹಾಕಿ</translation>
 <translation id="2484909293434545162">ಸೈಟ್ ಕುಕೀಗಳನ್ನು ಬಳಸಿದರೆ, ಅದು ಇಲ್ಲಿ ಗೋಚರಿಸುತ್ತದೆ</translation>
 <translation id="2484959914739448251">ಸಿಂಕ್ ಮಾಡಿರುವ ನಿಮ್ಮ ಎಲ್ಲಾ ಸಾಧನಗಳು ಮತ್ತು ನಿಮ್ಮ Google ಖಾತೆಯಿಂದ ಬ್ರೌಸಿಂಗ್ ಡೇಟಾವನ್ನು ತೆರವುಗೊಳಿಸಲು, <ph name="BEGIN_LINK" />ನಿಮ್ಮ ಪಾಸ್‌ಫ್ರೇಸ್ ನಮೂದಿಸಿ<ph name="END_LINK" />.</translation>
@@ -2072,6 +2073,7 @@
 <translation id="2612676031748830579">ಕಾರ್ಡ್ ಸಂಖ್ಯೆ</translation>
 <translation id="2613210758071148851"><ph name="RESTRICTED_SITE" /> ನಲ್ಲಿ ಯಾವುದೇ ವಿಸ್ತರಣೆಗಳಿಗೆ ಅನುಮತಿಸಬೇಡಿ</translation>
 <translation id="2613535083491958306"><ph name="FILENAME" /> ಅನ್ನು ಎಡಿಟ್ ಮಾಡಲು <ph name="ORIGIN" /> ಗೆ ಸಾಧ್ಯವಾಗುತ್ತದೆ</translation>
+<translation id="2615159404909536465">{FILE_COUNT,plural, =1{ಈ ಎಕ್ಸ್‌ಟೆನ್ಶನ್‌ನಲ್ಲಿ <ph name="FILE1" /> ಅನ್ನು ತೆರೆದು, ಎಡಿಟ್ ಮಾಡಬೇಕೇ?}one{ಈ ವೆಬ್ ಆ್ಯಪ್‌ನಲ್ಲಿ <ph name="FILE1" /> ... ಅನ್ನು ತೆರೆದು, ಎಡಿಟ್ ಮಾಡಬೇಕೇ?}other{ಈ ವೆಬ್ ಆ್ಯಪ್‌ನಲ್ಲಿ <ph name="FILE1" /> ... ಅನ್ನು ತೆರೆದು, ಎಡಿಟ್ ಮಾಡಬೇಕೇ?}}</translation>
 <translation id="2616366145935564096"><ph name="WEBSITE_1" /> ನಲ್ಲಿ ನಿಮ್ಮ ಡೇಟಾವನ್ನು ಓದಿ ಮತ್ತು ಬದಲಾಯಿಸಿ</translation>
 <translation id="2618797463720777311">Nearby ಶೇರ್ ಸೆಟಪ್ ಮಾಡಿ</translation>
 <translation id="261953424982546039">Chrome ಮತ್ತುಲ್ಯಾಬ್ಸ್...</translation>
@@ -4483,6 +4485,7 @@
 <translation id="4585793705637313973">ಪುಟ ಎಡಿಟ್ ಮಾಡಿ</translation>
 <translation id="4586275095964870617"><ph name="URL" /> ಅನ್ನು ಪರ್ಯಾಯ ಬ್ರೌಸರ್‌ನಲ್ಲಿ ತೆರೆಯಲಾಗುವುದಿಲ್ಲ. ದಯವಿಟ್ಟು ನಿಮ್ಮ ಸಿಸ್ಟಂ ನಿರ್ವಾಹಕರನ್ನು ಸಂಪರ್ಕಿಸಿ.</translation>
 <translation id="4587589328781138893">Sites</translation>
+<translation id="4588749726511456218">ಸ್ಕ್ರಾಲ್ ವೇಗವರ್ಧನೆ <ph name="LINK_BEGIN" />ಇನ್ನಷ್ಟು ತಿಳಿಯಿರಿ<ph name="LINK_END" /></translation>
 <translation id="4589713469967853491">ಡೌನ್‌ಲೋಡ್‌ಗಳ ಡೈರೆಕ್ಟರಿಯಲ್ಲಿ ಲಾಗ್‌ಗಳನ್ನು ಯಶಸ್ವಿಯಾಗಿ ಬರೆಯಲಾಗಿದೆ.</translation>
 <translation id="459204634473266369"><ph name="PRIMARY_EMAIL" /> ಗೆ ಯಾವುದೇ ಸಾಧನಗಳನ್ನು ಉಳಿಸಿಲ್ಲ</translation>
 <translation id="4592525994536856567">ಬ್ರೌಸಿಂಗ್ ಮತ್ತು ಹುಡುಕಾಟವು ವೇಗವಾಗಿರುತ್ತದೆ.</translation>
@@ -5319,7 +5322,6 @@
 <translation id="5298219193514155779">ಇವರಿಂದ ಥೀಮ್ ರಚಿಸಲಾಗಿದೆ</translation>
 <translation id="5299109548848736476">ಟ್ರ್ಯಾಕ್ ಮಾಡಬೇಡಿ</translation>
 <translation id="5299558715747014286">ನಿಮ್ಮ ಟ್ಯಾಬ್ ಗುಂಪುಗಳನ್ನು ವೀಕ್ಷಿಸಿ ಮತ್ತು ನಿರ್ವಹಿಸಿ</translation>
-<translation id="529986401483187205">ಡಿಸೇಬಲ್ಡ್</translation>
 <translation id="5300426565656326054">ಬ್ರೌಸರ್-ಆಧಾರಿತ ಜಾಹೀರಾತು ವೈಯಕ್ತಿಕಗೊಳಿಸುವಿಕೆ</translation>
 <translation id="5300589172476337783">ತೋರಿಸಿ</translation>
 <translation id="5300719150368506519">ನೀವು ಭೇಟಿ ನೀಡುವ ಪುಟಗಳ URL ಗಳನ್ನು Google ಗೆ ಕಳುಹಿಸಿ</translation>
@@ -6322,6 +6324,7 @@
 <translation id="6130692320435119637">ವೈ-ಫೈ ಸೇರಿಸಿ</translation>
 <translation id="6130887916931372608">ಕೀಬೋರ್ಡ್ ಕೀ</translation>
 <translation id="6132714462430777655">ಶಾಲಾ ದಾಖಲಾತಿಯನ್ನು ಸ್ಕಿಪ್ ಮಾಡಬೇಕೆ?</translation>
+<translation id="6134428719487602109">ಎಲ್ಲಾ ಬಳಕೆದಾರರ ಖಾತೆಗಳನ್ನು ತೆಗೆದುಹಾಕಿ ಹಾಗೂ ನಿಮ್ಮ Chromebook ಸಾಧನವನ್ನು ಹೊಸ ರೀತಿಯಲ್ಲಿ ರೀಸೆಟ್ ಮಾಡಿ.</translation>
 <translation id="6135823405800500595">ನಿಮ್ಮ ಫೋನ್ ಸಮೀಪದಲ್ಲಿದೆ, ಅನ್‌ಲಾಕ್ ಆಗಿದೆ ಮತ್ತು ಅದರಲ್ಲಿ ಬ್ಲೂಟೂತ್ ಹಾಗೂ ವೈ-ಫೈ ಆನ್ ಆಗಿದೆ ಎಂಬುದನ್ನು ಖಚಿತಪಡಿಸಿಕೊಳ್ಳಿ</translation>
 <translation id="6135826623269483856">ನಿಮ್ಮ ಎಲ್ಲಾ ಡಿಸ್‌ಪ್ಲೇಗಳಲ್ಲಿ ವಿಂಡೋಗಳನ್ನು ನಿರ್ವಹಿಸಲು ಈ ಸೈಟ್‌ಗಳಿಗೆ ಅನುಮತಿಸಲಾಗುವುದಿಲ್ಲ</translation>
 <translation id="6136114942382973861">ಡೌನ್‌ಲೋಡ್‌ಗಳ ಪಟ್ಟಿಯನ್ನು ಮುಚ್ಚಿ</translation>

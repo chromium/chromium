@@ -2288,6 +2288,7 @@ Ezt egyéb esetben letiltják az Ön adatvédelmi beállításai. Az engedélyez
 <translation id="5873297634595728366">Dízel gépjárművek</translation>
 <translation id="5877831137320480913">Szépség és fitnesz</translation>
 <translation id="5879989559903563723">Vendég módban nem engedélyezett</translation>
+<translation id="5883861433316751031">Szeretné vezérelni és átprogramozni a MIDI-eszközöket?</translation>
 <translation id="5884465125445718607">6. kínai boríték</translation>
 <translation id="5887400589839399685">Kártya elmentve</translation>
 <translation id="5887687176710214216">Utolsó látogatás: tegnap</translation>
@@ -3331,6 +3332,7 @@ További részletek:
 <translation id="8038817883578389970">Autóversenyzés</translation>
 <translation id="8041089156583427627">Visszajelzés küldése</translation>
 <translation id="8041940743680923270">Globális alapértelmezés használata (Megkérdezés)</translation>
+<translation id="8042577181291637092">MIDI-eszközöket használ?</translation>
 <translation id="8046360364391076336">Ipari anyagok és berendezések</translation>
 <translation id="8052898407431791827">Vágólapra másolva</translation>
 <translation id="8055534648776115597">Szakképzés és folyamatos képzés</translation>
@@ -3625,6 +3627,7 @@ További részletek:
 <translation id="8671519637524426245">A(z) <ph name="SECURE_DNS_SALT" /> értéke nem felel meg a méretre vonatkozó követelményeknek.</translation>
 <translation id="867224526087042813">Aláírás</translation>
 <translation id="8672264262457010862">Üzleti és ipari termékek</translation>
+<translation id="8673776281896298303">MIDI-eszközök (SysEx) vezérlése és átprogramozása</translation>
 <translation id="8676424191133491403">Nincs késleltetés</translation>
 <translation id="8680536109547170164"><ph name="QUERY" />. A válasz: <ph name="ANSWER" /></translation>
 <translation id="8681531050781943054">A(z) <ph name="PAGE" /> webhelyen található oldal betöltése a következő okból nem sikerült:</translation>

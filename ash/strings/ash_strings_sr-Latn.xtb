@@ -659,6 +659,7 @@ Priključite uređaj na napajanje.</translation>
 <translation id="380165613292957338">Zdravo, kako mogu da pomognem?</translation>
 <translation id="3804737937830804242">Skupite kameru</translation>
 <translation id="3824784079442479685">Ovo omogućava pristup kameri za aplikaciju <ph name="APP_NAME" />, kao i sve aplikacije i veb-sajtove sa dozvolom za kameru. Možda ćete morati da osvežite veb-stranicu ili restartujete aplikaciju.</translation>
+<translation id="3825680296690914697">Predato: <ph name="NUM_TURNED_IN" /> od <ph name="TOTAL_NUM_OF_SUBMISSIONS" />, ocenjeno: <ph name="NUM_GRADED" /></translation>
 <translation id="3826099427150913765">Pređi na lozinku</translation>
 <translation id="383058930331066723">Režim uštede baterije je uključen</translation>
 <translation id="383629559565718788">Pregledajte podešavanja tastature</translation>
@@ -1745,6 +1746,7 @@ Da biste isključili uređaj, ponovo pritisnite i zadržite dugme za uključivan
 <translation id="8446884382197647889">Saznajte više</translation>
 <translation id="8456543082656546101"><ph name="SHORTCUT_KEY_NAME" /> + V</translation>
 <translation id="8462305545768648477">Zatvorite Izaberite za govor</translation>
+<translation id="8468806060683421065">rok: <ph name="DUE_DATE_AND_TIME" /></translation>
 <translation id="847056008324733326">Podešavanja razmere prikaza</translation>
 <translation id="8473301994082929012"><ph name="ORGANIZATION_NAME" /> – <ph name="FEATURE_STATE" />: <ph name="FEATURE_NAME" />.</translation>
 <translation id="8477270416194247200">Pritisnite Alt + taster za pretragu ili Shift da biste otkazali.</translation>
@@ -1828,6 +1830,7 @@ Da biste isključili uređaj, ponovo pritisnite i zadržite dugme za uključivan
 <translation id="8853703225951107899">Verifikacija PIN-a ili lozinke još uvek nije uspela. Napomena: Ako ste nedavno promenili lozinku, koristite staru. Nova lozinka će biti primenjena kada se odjavite.</translation>
 <translation id="8855885154700222542">Taster za ceo ekran</translation>
 <translation id="8858369206579825206">Kontrole privatnosti</translation>
+<translation id="8860366331836346216">Dodaj eSIM</translation>
 <translation id="8870509716567206129">Aplikacija ne podržava podeljeni ekran.</translation>
 <translation id="8874184842967597500">Nije povezano</translation>
 <translation id="8875021410787719674">Premeštajte iz donjeg desnog ugla na pokretač, traku za adresu, traku sa obeleživačima, veb-sajt koji je otvoren i preuzimanja</translation>

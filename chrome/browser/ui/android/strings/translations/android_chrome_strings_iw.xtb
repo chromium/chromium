@@ -307,6 +307,7 @@
 <translation id="2656405586795711023">אפליקציות אינטרנט</translation>
 <translation id="2669454659051515572">כל מי שמשתמש במכשיר הזה יכול לראות את הקבצים שהורדו</translation>
 <translation id="2702516483241149200">חדש: ניתן לשתף קישור שגולל לטקסט הזה</translation>
+<translation id="2708051474374549906">‏הגנה יזומה בזמן אמת מפני אתרים, הורדות ותוספים מסוכנים, המבוססת על נתוני הגלישה שלך שנשלחים אל Google</translation>
 <translation id="271033894570825754">חדש</translation>
 <translation id="2711073837061989559">תקופות ניסיון</translation>
 <translation id="2718352093833049315">‏רק ב-Wi-Fi</translation>
@@ -664,6 +665,7 @@
 <translation id="4583164079174244168">{MINUTES,plural, =1{לפני דקה}one{לפני # דקות}two{לפני # דקות}other{לפני # דקות}}</translation>
 <translation id="4587589328781138893">אתרים</translation>
 <translation id="4594952190837476234">הדף האופליין הזה נוצר ב-<ph name="CREATION_TIME" /> ויכול להיות שהגרסה המקוונת שלו שונה.</translation>
+<translation id="4601095002996233687">סריקות מעמיקות לאיתור הורדות חשודות.</translation>
 <translation id="4616150815774728855">פתיחה של <ph name="WEBAPK_NAME" /></translation>
 <translation id="4619564267100705184">אימות הזהות שלך</translation>
 <translation id="4634124774493850572">שימוש בסיסמה</translation>
@@ -827,6 +829,7 @@
 <translation id="543338862236136125">עריכת סיסמה</translation>
 <translation id="5433691172869980887">שם המשתמש הועתק</translation>
 <translation id="5438292632479953702">להורדה מחדש</translation>
+<translation id="5439191312780166229">‏מקבלים אזהרות לגבי אתרים מסוכנים, גם כאלה שלא היו ידועים ל-Google לפני כן, בעזרת ניתוח של יותר נתונים מאתרים בהשוואה להגנה הרגילה. אפשר לדלג על האזהרות מ-Chrome.</translation>
 <translation id="5441466871879044658">תרגום לשפה זו</translation>
 <translation id="5441522332038954058">מעבר לשורת כתובת האתר</translation>
 <translation id="5444999712122199445">חזרה לאתר</translation>
@@ -1037,6 +1040,7 @@
 <translation id="6541983376925655882">{NUM_HOURS,plural, =1{התבצעה בדיקה לפני שעה אחת}one{התבצעה בדיקה לפני # שעות}two{התבצעה בדיקה לפני שעתיים}other{התבצעה בדיקה לפני # שעות}}</translation>
 <translation id="6545017243486555795">ניקוי כל הנתונים</translation>
 <translation id="6546511553472444032">הקובץ עלול להזיק</translation>
+<translation id="6550891580932862748">‏במצב הזה המערכת לא מגינה עליך מפני אתרים, הורדות ותוספים מסוכנים. ההגדרות שקבעת לגלישה הבטוחה במוצרים אחרים של Google לא יושפעו.</translation>
 <translation id="6556542240154580383">{TAB_COUNT,plural, =1{הכרטיסייה <ph name="TAB_TITLE" /> וכרטיסייה אחת (<ph name="TAB_COUNT_ONE" />) נוספת ייסגרו}one{הכרטיסייה <ph name="TAB_TITLE" /> ו-<ph name="TAB_COUNT_MANY" /> כרטיסיות נוספות ייסגרו}two{הכרטיסייה <ph name="TAB_TITLE" /> ו-<ph name="TAB_COUNT_MANY" /> כרטיסיות נוספות ייסגרו}other{הכרטיסייה <ph name="TAB_TITLE" /> ו-<ph name="TAB_COUNT_MANY" /> כרטיסיות נוספות ייסגרו}}</translation>
 <translation id="6560414384669816528">‏שימוש ב-Sogou לחיפוש</translation>
 <translation id="656065428026159829">אפשרויות נוספות</translation>
@@ -1290,6 +1294,7 @@
 <translation id="7772032839648071052">אישור משפט-סיסמה</translation>
 <translation id="7772375229873196092">סגירת <ph name="APP_NAME" /></translation>
 <translation id="7774809984919390718">{PAYMENT_METHOD,plural, =1{‏<ph name="PAYMENT_METHOD_PREVIEW" />‎\u2026‎ ו-<ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" /> נוסף}one{‏<ph name="PAYMENT_METHOD_PREVIEW" />‎\u2026‎ ו-<ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" /> נוספים}two{‏<ph name="PAYMENT_METHOD_PREVIEW" />‎\u2026‎ ו-<ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" /> נוספים}other{‏<ph name="PAYMENT_METHOD_PREVIEW" />‎\u2026‎ ו-<ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" /> נוספים}}</translation>
+<translation id="777637629667389858">‏אחרי שנכנסת לחשבון, המערכת מגינה עליך בשירותי Google.</translation>
 <translation id="7778840695157240389">בהמשך יהיו פה סיפורים חדשים</translation>
 <translation id="7780645209293383778">‏כדי להגן עליך באפליקציות של Google, הנתונים האלה מקושרים באופן זמני לחשבון Google שלך. ההגנה הזו פעילה רק אם נכנסים לחשבון.</translation>
 <translation id="7791543448312431591">הוספה</translation>
@@ -1329,6 +1334,7 @@
 <translation id="7968014550143838305">נוסף לרשימת הקריאה</translation>
 <translation id="7971136598759319605">פעילות אחרונה: לפני יום אחד</translation>
 <translation id="7975379999046275268">הצגת הדף בתצוגה מקדימה<ph name="BEGIN_NEW" />חדש<ph name="END_NEW" /></translation>
+<translation id="7977451675950311423">מקבלים אזהרה אם משתמשים בסיסמה שנחשפה בפרצה באבטחת מידע.</translation>
 <translation id="7986497153528221272">כדי להציג סיסמאות, תחילה יש להגדיר נעילת מסך במכשיר</translation>
 <translation id="7995059495660416932">תוכן יוצג לך ברגע שיהיה זמין</translation>
 <translation id="799576009106109668">מהירות הגלישה תגבר כי התוכן ייטען באופן יזום, על סמך הביקור הנוכחי שלך בדף האינטרנט</translation>

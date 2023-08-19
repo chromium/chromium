@@ -3042,22 +3042,6 @@ Perlu diingat untuk tidak selalu mengaktifkan kebijakan ini, terutama dalam depl
 <translation id="3591584750136265240">Mengonfigurasi perilaku autentikasi proses masuk</translation>
 <translation id="3593905652755912452">Perilaku lama pengiriman peristiwa pada kontrol formulir yang dinonaktifkan akan digunakan.</translation>
 <translation id="3596112486106491038">Aktifkan akses command line mesin virtual</translation>
-<translation id="3596651403637948128">Kebijakan ini mengontrol apakah mode perlindungan standar Safe Browsing diizinkan
-untuk mengirim hash sebagian dari URL ke Google melalui proxy via Oblivious HTTP
-untuk menentukan apakah URL aman untuk dibuka atau tidak.
-
-Proxy memungkinkan browser mengupload hash sebagian dari URL ke Google
-secara anonim. Hal ini juga memungkinkan browser mengupload dengan frekuensi yang lebih tinggi untuk
-kualitas perlindungan Safe Browsing yang lebih baik.
-
-Kebijakan ini akan diabaikan jika Safe Browsing dinonaktifkan atau disetel ke mode
-perlindungan yang ditingkatkan.
-
-Jika kebijakan disetel ke Aktif atau tidak disetel, pemeriksaan
-lewat proxy dengan perlindungan yang lebih tinggi akan diizinkan.
-
-Jika kebijakan disetel ke Nonaktif, pemeriksaan lewat proxy dengan perlindungan yang lebih tinggi
-tidak akan diizinkan. URL akan diupload ke Google secara langsung dengan frekuensi yang jauh lebih rendah.</translation>
 <translation id="3603469950773500315">Mengaktifkan mitigasi pemeriksaan <ph name="CORS" /> dalam implementasi <ph name="CORS" /> baru, sehingga memungkinkan Ekstensi tetap kompatibel dan mengizinkan <ph name="PRODUCT_NAME" /> mengirim header tertentu tanpa pemeriksaan <ph name="CORS" />.
 
       Jika daftar ini dibiarkan kosong, <ph name="PRODUCT_NAME" /> akan mencoba menjalankan Ekstensi secara kompatibel, dan tidak menerapkan perubahan <ph name="API" /> untuk <ph name="PRODUCT_NAME" /> 79 seperti yang dijelaskan dalam <ph name="WEB_REQUEST_API_MANUAL" />.

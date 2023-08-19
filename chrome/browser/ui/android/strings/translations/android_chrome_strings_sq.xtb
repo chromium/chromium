@@ -309,6 +309,7 @@ Kodet e gjendjes private përmirësojnë privatësinë në ueb dhe nuk mund të 
 <translation id="2656405586795711023">Aplikacionet e uebit</translation>
 <translation id="2669454659051515572">Çdo person që e përdor këtë pajisje mund t'i shikojë skedarët e shkarkuar</translation>
 <translation id="2702516483241149200">E re: Ndaj një lidhje që të drejton te ky tekst</translation>
+<translation id="2708051474374549906">Mbrojtje proaktive dhe në kohë reale nga sajtet, shkarkimet dhe shtesat e rrezikshme që bazohet në të dhënat e tua të shfletimit që dërgohen te Google</translation>
 <translation id="271033894570825754">E re</translation>
 <translation id="2711073837061989559">Provat</translation>
 <translation id="2718352093833049315">Vetëm me Wi-Fi</translation>
@@ -669,6 +670,7 @@ Llogaria jote e Google mund të ketë forma të tjera të historikut të shfleti
 <translation id="4583164079174244168">{MINUTES,plural, =1{# minutë më parë}other{# minuta më parë}}</translation>
 <translation id="4587589328781138893">Sajtet</translation>
 <translation id="4594952190837476234">Kjo faqe jashtë linje është nga <ph name="CREATION_TIME" /> dhe mund të ndryshojë nga versioni në linjë.</translation>
+<translation id="4601095002996233687">Skanime të thella për shkarkime të dyshimta.</translation>
 <translation id="4616150815774728855">Hap <ph name="WEBAPK_NAME" /></translation>
 <translation id="4619564267100705184">Verifiko që je ti</translation>
 <translation id="4634124774493850572">Përdor fjalëkalimin</translation>
@@ -834,6 +836,7 @@ Për të ndryshuar këtë cilësim, <ph name="BEGIN_LINK" />rivendos sinkronizim
 <translation id="543338862236136125">Redakto fjalëkalimin</translation>
 <translation id="5433691172869980887">Emri i përdoruesit u kopjua</translation>
 <translation id="5438292632479953702">Shkarko sërish</translation>
+<translation id="5439191312780166229">Të paralajmëron për sajtet e rrezikshme, edhe ato që Google nuk i ka njohur më parë, duke analizuar më shumë të dhëna nga sajtet sesa nga mbrojtja standarde. Mund të zgjedhësh që t'i kapërcesh paralajmërimet e Chrome.</translation>
 <translation id="5441466871879044658">Përkthe në këtë gjuhë</translation>
 <translation id="5441522332038954058">Kalo te shiriti i adresës</translation>
 <translation id="5444999712122199445">Kthehu prapa te sajti</translation>
@@ -1044,6 +1047,7 @@ Për shembull, disa sajte uebi mund t'i përgjigjen kësaj kërkese duke të tre
 <translation id="6541983376925655882">{NUM_HOURS,plural, =1{Kontrolluar 1 orë më parë}other{Kontrolluar # orë më parë}}</translation>
 <translation id="6545017243486555795">Pastro të gjitha të dhënat</translation>
 <translation id="6546511553472444032">Skedari mund të jetë i dëmshëm</translation>
+<translation id="6550891580932862748">Nuk të mbron nga sajtet e uebit, shkarkimet dhe shtesat e rrezikshme. Cilësimet e tua të "Shfletimit të sigurt" në produktet e tjera të Google nuk do të preken.</translation>
 <translation id="6556542240154580383">{TAB_COUNT,plural, =1{<ph name="TAB_TITLE" /> dhe <ph name="TAB_COUNT_ONE" /> skedë tjetër do të mbyllen}other{<ph name="TAB_TITLE" /> dhe <ph name="TAB_COUNT_MANY" /> skeda të tjera do të mbyllen}}</translation>
 <translation id="6560414384669816528">Kërko me Sogou</translation>
 <translation id="656065428026159829">Shiko më shumë</translation>
@@ -1257,6 +1261,7 @@ Për shembull, disa sajte uebi mund t'i përgjigjen kësaj kërkese duke të tre
 <translation id="757855969265046257">{FILES,plural, =1{<ph name="FILES_DOWNLOADED_ONE" /> skedar i shkarkuar}other{<ph name="FILES_DOWNLOADED_MANY" /> skedarë të shkarkuar}}</translation>
 <translation id="7581273696622423628">Merr pjesë në anketë</translation>
 <translation id="7583262514280211622">Këtu do të gjesh listën tënde të leximit</translation>
+<translation id="7587250070160020374">Chrome po luan tani</translation>
 <translation id="7588219262685291874">Aktivizo temën e errët kur "Kursyesi i baterisë" i pajisjes është aktiv</translation>
 <translation id="7594687499944811403">Lejo që <ph name="EMBEDDED_ORIGIN" /> të verifikojë që je ti për <ph name="TOP_ORIGIN" /></translation>
 <translation id="7596558890252710462">Sistemi operativ</translation>
@@ -1296,6 +1301,7 @@ Për shembull, disa sajte uebi mund t'i përgjigjen kësaj kërkese duke të tre
 <translation id="7772032839648071052">Konfirmo shprehjen e kalimit</translation>
 <translation id="7772375229873196092">Mbyll <ph name="APP_NAME" /></translation>
 <translation id="7774809984919390718">{PAYMENT_METHOD,plural, =1{<ph name="PAYMENT_METHOD_PREVIEW" />\u2026 dhe <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" /> tjetër}other{<ph name="PAYMENT_METHOD_PREVIEW" />\u2026 dhe <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" /> të tjera}}</translation>
+<translation id="777637629667389858">Kur je i identifikuar, të mbron nëpër shërbimet e Google.</translation>
 <translation id="7778840695157240389">Kontrollo përsëri më vonë për histori të reja</translation>
 <translation id="7780645209293383778">I lidh përkohësisht këto të dhëna me "Llogarinë tënde të Google" kur je identifikuar, për të të mbrojtur në të gjitha aplikacionet e Google</translation>
 <translation id="7791543448312431591">Shtoje</translation>
@@ -1337,6 +1343,7 @@ Për shembull, disa sajte uebi mund t'i përgjigjen kësaj kërkese duke të tre
 <translation id="7968014550143838305">U shtua te lista e leximit</translation>
 <translation id="7971136598759319605">Aktiv 1 ditë më parë</translation>
 <translation id="7975379999046275268">Shiko paraprakisht faqen <ph name="BEGIN_NEW" />E re<ph name="END_NEW" /></translation>
+<translation id="7977451675950311423">Të paralajmëron nëse ti përdor një fjalëkalim që është komprometuar në një nxjerrje të paautorizuar të të dhënave.</translation>
 <translation id="7986497153528221272">Për të parë fjalëkalimet, në fillim cakto një kyçje ekrani në pajisjen tënde</translation>
 <translation id="7995059495660416932">Do ta shikosh përmbajtjen kur të ofrohet</translation>
 <translation id="799576009106109668">Do të shfletosh më shpejt sepse përmbajtja ngarkohet në mënyrë proaktive bazuar në vizitën aktuale në faqen e uebit</translation>

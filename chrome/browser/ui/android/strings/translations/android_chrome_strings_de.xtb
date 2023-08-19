@@ -309,6 +309,7 @@ Private State Tokens verbessern den Datenschutz im Web und können nicht dazu ve
 <translation id="2656405586795711023">Web-Apps</translation>
 <translation id="2669454659051515572">Alle Personen, die dieses Gerät nutzen, können heruntergeladene Dateien sehen</translation>
 <translation id="2702516483241149200">Neu: Link teilen, der direkt zu diesem Text führt</translation>
+<translation id="2708051474374549906">Proaktiver Schutz in Echtzeit vor gefährlichen Websites, Downloads und Erweiterungen auf der Grundlage deiner Browserdaten, die an Google gesendet werden</translation>
 <translation id="271033894570825754">Neu</translation>
 <translation id="2711073837061989559">Tests</translation>
 <translation id="2718352093833049315">Nur bei WLAN</translation>
@@ -669,11 +670,13 @@ Eventuell findest du unter <ph name="BEGIN_LINK" />history.google.com<ph name="E
 <translation id="4583164079174244168">{MINUTES,plural, =1{vor # Minute}other{vor # Minuten}}</translation>
 <translation id="4587589328781138893">Websites</translation>
 <translation id="4594952190837476234">Diese Offlineseite ist vom <ph name="CREATION_TIME" /> und unterscheidet sich gegebenenfalls von der Onlineversion.</translation>
+<translation id="4601095002996233687">Umfangreiche Scans für verdächtige Downloads.</translation>
 <translation id="4616150815774728855"><ph name="WEBAPK_NAME" /> öffnen</translation>
 <translation id="4619564267100705184">Identität bestätigen</translation>
 <translation id="4634124774493850572">Passwort verwenden</translation>
 <translation id="4637420359569396807">Bei der Erfolgsmessung von Anzeigen können nur manche Datentypen zwischen Websites und Apps geteilt werden, beispielsweise die Tageszeit, zu der dir Werbung präsentiert wurde.</translation>
 <translation id="4640331037679501949">{NUM_PASSWORDS,plural, =1{1 gehacktes Passwort}other{# gehackte Passwörter}}</translation>
+<translation id="4645146721047390964">Wenn der Inkognitomodus aktiviert ist, können Websites keine Cookies verwenden, um deine Browseraktivitäten auf anderen Websites zu sehen und beispielsweise zur Personalisierung von Werbung zu nutzen. Einige Websites funktionieren dann möglicherweise nicht mehr richtig.</translation>
 <translation id="4650364565596261010">Systemstandard</translation>
 <translation id="4654641641922242357">Player für „Diese Seite anhören“.</translation>
 <translation id="465657074423018424">Safe Browsing schützt dich vor betrügerischen Websites. Wenn du Safe Browsing deaktivierst, solltest du besonders vorsichtig sein, wenn du im Internet surfst, besonders wenn du Passwörter eingibst.</translation>
@@ -693,6 +696,7 @@ Eventuell findest du unter <ph name="BEGIN_LINK" />history.google.com<ph name="E
 <translation id="4719927025381752090">Übersetzung anbieten</translation>
 <translation id="4720023427747327413">In <ph name="PRODUCT_NAME" /> öffnen</translation>
 <translation id="47217992755561375">Deine Top-Websites aufrufen</translation>
+<translation id="4731877163452936634">Wiedergabegeschwindigkeit: <ph name="PLAYBACK_SPEED" /> Zum Ändern klicken.</translation>
 <translation id="4732120983431207637">Stack Unwinder</translation>
 <translation id="4736934858538408121">Virtuelle Karte</translation>
 <translation id="473775607612524610">Aktualisieren</translation>
@@ -834,6 +838,7 @@ Wenn du diese Einstellung ändern möchtest, <ph name="BEGIN_LINK" />setze die S
 <translation id="543338862236136125">Passwort ändern</translation>
 <translation id="5433691172869980887">Nutzername kopiert</translation>
 <translation id="5438292632479953702">Noch einmal herunterladen</translation>
+<translation id="5439191312780166229">Warnt dich vor schädlichen Websites, auch solchen, die Google vorher nicht bekannt waren, indem mehr Daten von Websites analysiert werden als beim Standardschutz. Du kannst Warnungen von Chrome überspringen.</translation>
 <translation id="5441466871879044658">In diese Sprache übersetzen</translation>
 <translation id="5441522332038954058">Zur Adressleiste wechseln</translation>
 <translation id="5444999712122199445">Zurück zur Website</translation>
@@ -1006,6 +1011,7 @@ Einige Websites schalten möglicherweise Werbeanzeigen, deren Auswahl nicht dara
 <translation id="6363990818884053551">Bestätige deine Identität, um die Synchronisierung zu starten</translation>
 <translation id="6364438453358674297">Vorschlag aus Verlauf entfernen?</translation>
 <translation id="6380100320871303656">Chrome lädt Seiten häufiger vorab, die du wahrscheinlich aufrufen wirst. Bei dieser Einstellung werden voraussichtlich mehr Daten genutzt.</translation>
+<translation id="6382848304055775421">Werden exportiert</translation>
 <translation id="6391355955030242704">Wenn du deine Chrome-Daten synchronisieren und in deinem Auto schützen möchtest, musst du in den Sicherheitseinstellungen eine Profilsperre erstellen. Du musst dann jedes Mal, wenn du in dein Auto einsteigst, einen Code oder ein Passwort eingeben.</translation>
 <translation id="6394791151443660613">Suchen: <ph name="SEARCH_QUERY" /></translation>
 <translation id="6395288395575013217">LINK</translation>
@@ -1043,6 +1049,7 @@ Einige Websites schalten möglicherweise Werbeanzeigen, deren Auswahl nicht dara
 <translation id="6541983376925655882">{NUM_HOURS,plural, =1{Zuletzt geprüft: vor 1 Stunde}other{Zuletzt geprüft: vor # Stunden}}</translation>
 <translation id="6545017243486555795">Alle Daten löschen</translation>
 <translation id="6546511553472444032">Die Datei könnte schädlich sein</translation>
+<translation id="6550891580932862748">Schützt dich nicht vor gefährlichen Websites, Downloads und Erweiterungen. Deine Safe Browsing-Einstellungen in anderen Google-Produkten sind davon nicht betroffen.</translation>
 <translation id="6556542240154580383">{TAB_COUNT,plural, =1{„<ph name="TAB_TITLE" />“ und <ph name="TAB_COUNT_ONE" /> weiterer Tab werden geschlossen}other{„<ph name="TAB_TITLE" />“ und <ph name="TAB_COUNT_MANY" /> weitere Tabs werden geschlossen}}</translation>
 <translation id="6560414384669816528">Suche mit Sogou</translation>
 <translation id="656065428026159829">Mehr anzeigen</translation>
@@ -1142,6 +1149,7 @@ Einige Websites schalten möglicherweise Werbeanzeigen, deren Auswahl nicht dara
 <translation id="6979737339423435258">Gesamte Zeit</translation>
 <translation id="6987047470128880212">Der Inkognitomodus ist auf diesem Gerät nicht verfügbar</translation>
 <translation id="6995899638241819463">Warnen, wenn Passwörter durch eine Datenpanne preisgegeben wurden</translation>
+<translation id="6996145122199359148">Diese Seite herunterladen</translation>
 <translation id="7020741890149022655">Zur Leseliste hinzufügen <ph name="BEGIN_NEW" />Neu<ph name="END_NEW" /></translation>
 <translation id="7022756207310403729">Im Browser öffnen</translation>
 <translation id="7027549951530753705">Wiederhergestellt: <ph name="ITEM_TITLE" /></translation>
@@ -1247,6 +1255,7 @@ Einige Websites schalten möglicherweise Werbeanzeigen, deren Auswahl nicht dara
 <translation id="751961395872307827">Keine Verbindung zur Website möglich</translation>
 <translation id="752220631458524187">Wenn du fertig bist, kannst du die Verbindung trennen</translation>
 <translation id="7523960634226602883">Mit deiner Kamera über Google Lens suchen</translation>
+<translation id="752731652852882757">Im Inkognitomodus blockieren</translation>
 <translation id="7539698981064401140">Tabs und Verlauf synchronisieren</translation>
 <translation id="7562080006725997899">Browserdaten werden gelöscht</translation>
 <translation id="756809126120519699">Gelöschte Chrome-Daten</translation>
@@ -1294,6 +1303,7 @@ Einige Websites schalten möglicherweise Werbeanzeigen, deren Auswahl nicht dara
 <translation id="7772032839648071052">Passphrase bestätigen</translation>
 <translation id="7772375229873196092"><ph name="APP_NAME" /> schließen</translation>
 <translation id="7774809984919390718">{PAYMENT_METHOD,plural, =1{<ph name="PAYMENT_METHOD_PREVIEW" />\u2026 und <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" /> weitere}other{<ph name="PAYMENT_METHOD_PREVIEW" />\u2026 und <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" /> weitere}}</translation>
+<translation id="777637629667389858">Wenn du angemeldet bist, bist du in allen Google-Diensten besser geschützt.</translation>
 <translation id="7778840695157240389">Komm später wieder vorbei, um neue Artikel zu lesen</translation>
 <translation id="7780645209293383778">Verknüpft diese Daten vorübergehend mit deinem Google-Konto, sofern du angemeldet bist, um dich in Google-Apps zu schützen</translation>
 <translation id="7791543448312431591">Hinzufügen</translation>
@@ -1326,6 +1336,7 @@ Einige Websites schalten möglicherweise Werbeanzeigen, deren Auswahl nicht dara
 <translation id="7939485076072265087">Stilisierte Karte mit markiertem Text erstellen</translation>
 <translation id="7942131818088350342"><ph name="PRODUCT_NAME" /> ist veraltet.</translation>
 <translation id="7944772052836377867">Zur Synchronisierung muss deine Identität bestätigt werden</translation>
+<translation id="7945822420239537236"><ph name="NUMBER_OF_SECONDS" /> Sekunden vorspulen</translation>
 <translation id="7947953824732555851">Akzeptieren und anmelden</translation>
 <translation id="7957413488482743710">Wenn du eine virtuelle Karte verwendest, werden deine tatsächlichen Kartendetails nicht preisgegeben – dadurch bist du besser vor Betrugsversuchen geschützt. <ph name="BEGIN_LINK1" />Weitere Informationen zu virtuellen Karten<ph name="END_LINK1" /></translation>
 <translation id="7960972236129063347">Schaltfläche „Zurück“ in den Seitenstatistiken</translation>
@@ -1334,7 +1345,9 @@ Einige Websites schalten möglicherweise Werbeanzeigen, deren Auswahl nicht dara
 <translation id="7965838025086216108">Du kannst gespeicherte Passwörter auf jedem Gerät nutzen. Sie werden im Google Passwortmanager für <ph name="ACCOUNT" /> gespeichert.</translation>
 <translation id="7968014550143838305">Zur Leseliste hinzugefügt</translation>
 <translation id="7971136598759319605">Vor 1 Tag aktiv</translation>
+<translation id="7972866381678406344"><ph name="NUMBER_OF_SECONDS" /> Sekunden zurück</translation>
 <translation id="7975379999046275268">Seitenvorschau <ph name="BEGIN_NEW" />Neu<ph name="END_NEW" /></translation>
+<translation id="7977451675950311423">Warnt dich, wenn du ein Passwort verwendest, das bei einer Datenpanne gehackt wurde.</translation>
 <translation id="7986497153528221272">Wenn du Passwörter ansehen möchtest, richte zuerst eine Displaysperre auf deinem Gerät ein</translation>
 <translation id="7995059495660416932">Inhalte werden angezeigt, sobald sie verfügbar sind</translation>
 <translation id="799576009106109668">Du kannst schneller surfen, da Inhalte basierend auf deinen Seitenaufrufen proaktiv geladen werden</translation>
@@ -1575,6 +1588,7 @@ Einige Websites schalten möglicherweise Werbeanzeigen, deren Auswahl nicht dara
 <translation id="918419812064856259">Chrome Beta</translation>
 <translation id="9190276265094487094">Du siehst deinen Verlauf auf allen synchronisierten Geräten und kannst dort weitermachen, wo du vorher aufgehört hast</translation>
 <translation id="9199368092038462496">{NUM_MINS,plural, =1{Zuletzt geprüft: vor 1 Minute}other{Zuletzt geprüft: vor # Minuten}}</translation>
+<translation id="9204021776105550328">Werden gelöscht</translation>
 <translation id="9204836675896933765">Noch 1 Datei</translation>
 <translation id="9205933215779845960">Diese Seite konnte nicht gefunden werden. Prüfe die Schreibweise oder versuche es mit einer Suchanfrage bei <ph name="SEARCH_ENGINE" />.</translation>
 <translation id="9206873250291191720">A</translation>

@@ -1903,6 +1903,7 @@ Jei nenorite, dabar atsijunkite, kad šios paskyros pakeitimai būtų matomi ši
 <translation id="2480868415629598489">Keisti kopijuojamus ir įklijuojamus duomenis</translation>
 <translation id="2482878487686419369">Pranešimai</translation>
 <translation id="2482895651873876648">Skirtukas perkeltas į grupę „<ph name="GROUP_NAME" />“ – <ph name="GROUP_CONTENTS" /></translation>
+<translation id="2483627560139625913">Paieškos variklio nustatymas „Chrome“ naršyklės nustatymuose</translation>
 <translation id="2484743711056182585">Pašalinti suteiktą leidimą</translation>
 <translation id="2484909293434545162">Jei svetainėje naudojami slapukai, tai bus rodoma čia</translation>
 <translation id="2484959914739448251">Norėdami išvalyti naršymo duomenis iš sinchronizuotų įrenginių ir „Google“ paskyros, <ph name="BEGIN_LINK" />įveskite slaptafrazę<ph name="END_LINK" />.</translation>
@@ -2057,6 +2058,7 @@ Jei nenorite, dabar atsijunkite, kad šios paskyros pakeitimai būtų matomi ši
 <translation id="2612676031748830579">Kortelės numeris</translation>
 <translation id="2613210758071148851">Neleisti jokių plėtinių šioje svetainėje: <ph name="RESTRICTED_SITE" /></translation>
 <translation id="2613535083491958306"><ph name="ORIGIN" /> galės redaguoti „<ph name="FILENAME" />“</translation>
+<translation id="2615159404909536465">{FILE_COUNT,plural, =1{Atidaryti ir redaguoti „<ph name="FILE1" />“ šiame plėtinyje}one{Atidaryti ir redaguoti „<ph name="FILE1" />“ šioje programoje}few{Atidaryti ir redaguoti „<ph name="FILE1" />“ šioje programoje}many{Atidaryti ir redaguoti „<ph name="FILE1" />“ šioje programoje}other{Atidaryti ir redaguoti „<ph name="FILE1" />“ šioje programoje}}</translation>
 <translation id="2616366145935564096">Skaityti ir keisti duomenis <ph name="WEBSITE_1" /></translation>
 <translation id="2618797463720777311">Bendrinimo netoliese nustatymas</translation>
 <translation id="261953424982546039">„Chrome“ ir Laboratorijos...</translation>
@@ -4433,6 +4435,7 @@ Tai gali būti informacija apie įdiegtą programinę įrangą, failus, naršykl
 <translation id="4585793705637313973">Redaguoti puslapį</translation>
 <translation id="4586275095964870617">Nepavyko atidaryti <ph name="URL" /> alternatyvioje naršyklėje. Susisiekite su sistemos administratoriumi.</translation>
 <translation id="4587589328781138893">Svetainės</translation>
+<translation id="4588749726511456218">Slinkimo spartinimas <ph name="LINK_BEGIN" />Sužinokite daugiau<ph name="LINK_END" /></translation>
 <translation id="4589713469967853491">Žurnalai sėkmingai įrašyti kataloge „Atsisiuntimai“.</translation>
 <translation id="459204634473266369">Jokie įrenginiai neišsaugoti adresu <ph name="PRIMARY_EMAIL" /></translation>
 <translation id="4592525994536856567">Spartesnis naršymas ir paieška.</translation>
@@ -5261,7 +5264,6 @@ Jei norite nutolinti, naudokite „Ctrl“ + „Alt“ + šviesumo mažinimo kla
 <translation id="5298219193514155779">Temą sukūrė</translation>
 <translation id="5299109548848736476">Nestebėti</translation>
 <translation id="5299558715747014286">Peržiūrėti ir tvarkyti jūsų skirtukų grupes</translation>
-<translation id="529986401483187205">išjungtas</translation>
 <translation id="5300426565656326054">Skelbimų suasmeninimas pagal naršyklę</translation>
 <translation id="5300589172476337783">Rodyti</translation>
 <translation id="5300719150368506519">Siųsti „Google“ puslapių, kuriuose lankotės, URL</translation>
@@ -6253,6 +6255,7 @@ Leidimai, kuriuos jau esate suteikę svetainėms ir programoms, gali būti taiko
 <translation id="6130692320435119637">Pridėti „Wi-Fi“</translation>
 <translation id="6130887916931372608">Klaviatūros klavišas</translation>
 <translation id="6132714462430777655">Praleisti mokyklos registraciją?</translation>
+<translation id="6134428719487602109">Pašalinamos visos naudotojų paskyros ir „Chromebook“ įrenginys nustatomas iš naujo, kad būtų kaip naujas.</translation>
 <translation id="6135823405800500595">Įsitikinkite, kad telefonas yra netoliese, atrakintas ir įjungtas „Bluetooth“ bei „Wi-Fi“</translation>
 <translation id="6135826623269483856">Neleidžiama tvarkyti langų visuose ekranuose</translation>
 <translation id="6136114942382973861">Uždaryti atsisiuntimų juostą</translation>

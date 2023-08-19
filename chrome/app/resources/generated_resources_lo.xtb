@@ -1899,6 +1899,7 @@
 <translation id="2480868415629598489">ແກ້ໄຂຂໍ້ມູນທີ່ທ່ານສຳເນົາ ແລະ ວາງໃສ່</translation>
 <translation id="2482878487686419369">ການແຈ້ງເຕືອນ</translation>
 <translation id="2482895651873876648">ຍ້າຍແຖບໄປໃສ່ກຸ່ມ <ph name="GROUP_NAME" /> - <ph name="GROUP_CONTENTS" /> ແລ້ວ</translation>
+<translation id="2483627560139625913">ຕັ້ງໂປຣແກຣມຊອກຫາໃນການຕັ້ງຄ່າໂປຣແກຣມທ່ອງເວັບ Chrome</translation>
 <translation id="2484743711056182585">ລຶບການໃຫ້ສິດອອກ</translation>
 <translation id="2484909293434545162">ຫາກເວັບໄຊໃດໜຶ່ງໃຊ້ຄຸກກີ້, ມັນຈະປາກົດຢູ່ບ່ອນນີ້</translation>
 <translation id="2484959914739448251">ເພື່ອລຶບລ້າງຂໍ້ມູນການທ່ອງເວັບອອກຈາກອຸປະກອນທີ່ຊິ້ງຂໍ້ມູນຂອງທ່ານທັງໝົດ ແລະ ບັນຊີ Google ຂອງທ່ານ, ກະລຸນາ <ph name="BEGIN_LINK" />ປ້ອນລະຫັດຜ່ານຂອງທ່ານ<ph name="END_LINK" />.</translation>
@@ -2053,6 +2054,7 @@
 <translation id="2612676031748830579">ເລກບັດ</translation>
 <translation id="2613210758071148851">ບໍ່ອະນຸຍາດສ່ວນຂະຫຍາຍໃດໆຢູ່ <ph name="RESTRICTED_SITE" /></translation>
 <translation id="2613535083491958306"><ph name="ORIGIN" /> ຈະສາມາດແກ້ໄຂ <ph name="FILENAME" /> ໄດ້</translation>
+<translation id="2615159404909536465">{FILE_COUNT,plural, =1{ເປີດ ແລະ ແກ້ໄຂ <ph name="FILE1" /> ໃນສ່ວນຂະຫຍາຍນີ້}other{ເປີດ ແລະ ແກ້ໄຂ <ph name="FILE1" />, ... ໃນແອັບນີ້}}</translation>
 <translation id="2616366145935564096">ອ່ານ​ ແລະ​ປ່ຽນແປງ​ຂໍ້​ມູນ​ຂອງ​ທ່ານຢູ່ເທິງ <ph name="WEBSITE_1" /></translation>
 <translation id="2618797463720777311">ຕັ້ງຄ່າການແບ່ງປັນໃກ້ຄຽງ</translation>
 <translation id="261953424982546039">Chrome ແລະ Labs...</translation>
@@ -4429,6 +4431,7 @@
 <translation id="4585793705637313973">ແກ້ໄຂໜ້າ</translation>
 <translation id="4586275095964870617">ບໍ່ສາມາດເປີດ <ph name="URL" /> ໃນໂປຣແກຣມທ່ອງເວັບສຳຮອງໄດ້ ກະລຸນາຕິດຕໍ່ຜູ້ເບິ່ງແຍງລະບົບຂອງທ່ານ.</translation>
 <translation id="4587589328781138893">ເວັບໄຊ</translation>
+<translation id="4588749726511456218">ການເລັ່ງຄວາມໄວຂອງການເລື່ອນ <ph name="LINK_BEGIN" />ສຶກສາເພີ່ມເຕີມ<ph name="LINK_END" /></translation>
 <translation id="4589713469967853491">ຂຽນບັນທຶກໃສ່ແຟ້ມການດາວໂຫຼດສຳເລັດແລ້ວ.</translation>
 <translation id="459204634473266369">ບໍ່ມີອຸປະກອນຖືກບັນທຶກໄວ້ໃນ <ph name="PRIMARY_EMAIL" /></translation>
 <translation id="4592525994536856567">ການເລືອກເບິ່ງ ແລະ ການຊອກຫາແມ່ນໄວຂຶ້ນ.</translation>
@@ -5257,7 +5260,6 @@
 <translation id="5298219193514155779">ສ້າງເທມຂຶ້ນໂດຍ</translation>
 <translation id="5299109548848736476">ຢ່າຕິດຕາມ</translation>
 <translation id="5299558715747014286">ເບິ່ງ ແລະ ຈັດການກຸ່ມແຖບຂອງທ່ານ</translation>
-<translation id="529986401483187205">ປິດການນຳໃຊ້ແລ້ວ</translation>
 <translation id="5300426565656326054">ການປັບແຕ່ງໂຄສະນາເປັນແບບສ່ວນຕົວໂດຍອ້າງອີງໃສ່ໂປຣແກຣມທ່ອງເວັບ</translation>
 <translation id="5300589172476337783">ສະ​ແດງ​</translation>
 <translation id="5300719150368506519">ສົ່ງ URL ຂອງໜ້າຕ່າງໆທີ່ທ່ານເຂົ້າເບິ່ງໃຫ້ Google</translation>
@@ -6247,6 +6249,7 @@
 <translation id="6130692320435119637">ເພີ່ມ Wi-Fi</translation>
 <translation id="6130887916931372608">ປຸ່ມແປ້ນພິມ</translation>
 <translation id="6132714462430777655">ຂ້າມການລົງທະບຽນເຂົ້າໂຮງຮຽນບໍ?</translation>
+<translation id="6134428719487602109">ລຶບບັນຊີຜູ້ໃຊ້ທັງໝົດອອກແລ້ວຣີເຊັດ Chromebook ຂອງທ່ານເພື່ອໃຫ້ເປັນຄືອັນໃໝ່.</translation>
 <translation id="6135823405800500595">ກະລຸນາກວດສອບວ່າໂທລະສັບຂອງທ່ານຢູ່ໃກ້ໆ, ປົດລັອກແລ້ວ ແລະ ເປີດ Bluetooth ກັບ Wi-Fi ໄວ້ຢູ່</translation>
 <translation id="6135826623269483856">ບໍ່ອະນຸຍາດໃຫ້ຈັດການໜ້າຈໍຢູ່ການສະແດງຜົນທັງໝົດຂອງທ່ານ</translation>
 <translation id="6136114942382973861">ປິດແຖບການດາວໂຫຼດ</translation>

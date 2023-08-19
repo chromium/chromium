@@ -2995,15 +2995,6 @@ Recuerda que no debes dejar esta política habilitada en todo momento, especialm
 <translation id="3591584750136265240">Configurar el comportamiento de la autenticación de inicio de sesión</translation>
 <translation id="3593905652755912452">Se usará el comportamiento anterior de envío de eventos en controles de formulario inhabilitados.</translation>
 <translation id="3596112486106491038">Habilitar el acceso a la línea de comandos de las máquinas virtuales</translation>
-<translation id="3596651403637948128">Controla si el modo de protección estándar de Navegación segura puede enviar hashes parciales de una URL a Google mediante un proxy, a través de Oblivious HTTP, para determinar si es seguro visitar la URL.
-
-El proxy permite que los navegadores suban hashes parciales de URLs a Google de forma anónima. También permite que los navegadores los suban con más frecuencia para aumentar la calidad de la protección de Navegación segura.
-
-Esta política se ignorará si se desactiva Navegación segura o si se le asigna el modo de protección mejorada.
-
-Si se habilita esta política o no se establece, se permitirán las consultas de mayor protección mediante proxy.
-
-Si se inhabilita esta política, no se permitirán las consultas de mayor protección mediante proxy. Las URLs se subirán directamente a Google con mucha menos frecuencia.</translation>
 <translation id="3603469950773500315">Habilita las mitigaciones de comprobación de <ph name="CORS" /> en la nueva implementación de <ph name="CORS" />. Así, las extensiones continúan siendo compatibles y <ph name="PRODUCT_NAME" /> puede enviar encabezados definidos sin comprobaciones de <ph name="CORS" />.
 
       Si esta lista se deja vacía, <ph name="PRODUCT_NAME" /> intentará ejecutar las extensiones de forma compatible y no introducirá cambios de <ph name="API" /> en <ph name="PRODUCT_NAME" /> 79, tal y como se explica en <ph name="WEB_REQUEST_API_MANUAL" />.

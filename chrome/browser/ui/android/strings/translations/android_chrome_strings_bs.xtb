@@ -309,6 +309,7 @@ Privatni tokeni stanja poboljšavaju zaštitu privatnosti na webu i ne mogu se k
 <translation id="2656405586795711023">Web aplikacije</translation>
 <translation id="2669454659051515572">Svako ko koristi ovaj uređaj može vidjeti preuzete fajlove</translation>
 <translation id="2702516483241149200">Novo: dijelite link koji kliže do ovog teksta</translation>
+<translation id="2708051474374549906">Proaktivna zaštita od opasnih web lokacija, preuzimanja i ekstenzija u stvarnom vremenu koja se zasniva na vašim podacima o pregledanju koji se šalju Googleu</translation>
 <translation id="271033894570825754">Novo</translation>
 <translation id="2711073837061989559">Probni periodi</translation>
 <translation id="2718352093833049315">Samo na WiFi mreži</translation>
@@ -669,6 +670,7 @@ Vaš Google račun može imati druge oblike historije pregledanja kao što su pr
 <translation id="4583164079174244168">{MINUTES,plural, =1{Prije # min}one{Prije # min}few{Prije # min}other{Prije # min}}</translation>
 <translation id="4587589328781138893">Web lokacije</translation>
 <translation id="4594952190837476234">Stranica van mreže je od <ph name="CREATION_TIME" /> i može se razlikovati od verzije koja je na mreži.</translation>
+<translation id="4601095002996233687">Detaljna skeniranja radi provjere sumnjivih preuzimanja.</translation>
 <translation id="4616150815774728855">Otvori <ph name="WEBAPK_NAME" /></translation>
 <translation id="4619564267100705184">Potvrdite identitet</translation>
 <translation id="4634124774493850572">Koristi lozinku</translation>
@@ -836,6 +838,7 @@ Da promijenite ovu postavku, <ph name="BEGIN_LINK" />poništite sinhronizaciju<p
 <translation id="543338862236136125">Uredite lozinku</translation>
 <translation id="5433691172869980887">Kopirano je korisničko ime</translation>
 <translation id="5438292632479953702">Preuzmi ponovo</translation>
+<translation id="5439191312780166229">Upozorava vas o opasnim web lokacijama, čak i onim za koje Google nije ranije znao, analizirajući više podataka s web lokacija nego što se analizira standardnom zaštitom. Možete odabrati preskakanje Chromeovih upozorenja.</translation>
 <translation id="5441466871879044658">Prevedi na ovaj jezik</translation>
 <translation id="5441522332038954058">Pređi na traku za adresu</translation>
 <translation id="5444999712122199445">Vratite se na web lokaciju</translation>
@@ -1046,6 +1049,7 @@ Naprimjer, neke web lokacije mogu reagirati na ovaj zahtjev prikazivanjem oglasa
 <translation id="6541983376925655882">{NUM_HOURS,plural, =1{Provjereno prije 1 sat}one{Provjereno prije # sat}few{Provjereno prije # sata}other{Provjereno prije # sati}}</translation>
 <translation id="6545017243486555795">Obriši sve podatke</translation>
 <translation id="6546511553472444032">Fajl može biti štetan</translation>
+<translation id="6550891580932862748">Ne štiti vas od opasnih web lokacija, preuzimanja i ekstenzija. To neće uticati na vaše postavke Sigurnog pregledanja na drugim Googleovim proizvodima.</translation>
 <translation id="6556542240154580383">{TAB_COUNT,plural, =1{<ph name="TAB_TITLE" /> i još <ph name="TAB_COUNT_ONE" /> kartica će se zatvoriti}one{<ph name="TAB_TITLE" /> i još <ph name="TAB_COUNT_MANY" /> kartica će se zatvoriti}few{<ph name="TAB_TITLE" /> i još <ph name="TAB_COUNT_MANY" /> kartice će se zatvoriti}other{<ph name="TAB_TITLE" /> i još <ph name="TAB_COUNT_MANY" /> kartica će se zatvoriti}}</translation>
 <translation id="6560414384669816528">Pretražite pomoću usluge Sogou</translation>
 <translation id="656065428026159829">Prikaži više</translation>
@@ -1260,7 +1264,7 @@ Naprimjer, neke web lokacije mogu reagirati na ovaj zahtjev prikazivanjem oglasa
 <translation id="757855969265046257">{FILES,plural, =1{Preuzet je <ph name="FILES_DOWNLOADED_ONE" /> fajl}one{Preuzet je <ph name="FILES_DOWNLOADED_MANY" /> fajl}few{Preuzeta su <ph name="FILES_DOWNLOADED_MANY" /> fajla}other{Preuzeto je <ph name="FILES_DOWNLOADED_MANY" /> fajlova}}</translation>
 <translation id="7581273696622423628">Popunite anketu</translation>
 <translation id="7583262514280211622">Listu za čitanje ćete pronaći ovdje</translation>
-<translation id="7587250070160020374">Chrome sada reproducira</translation>
+<translation id="7587250070160020374">Chrome trenutno reproducira</translation>
 <translation id="7588219262685291874">Uključi tamnu temu kada je na uređaju uključena Ušteda baterije</translation>
 <translation id="7594687499944811403">Dozvolite da <ph name="EMBEDDED_ORIGIN" /> potvrdi vaš identitet za <ph name="TOP_ORIGIN" /></translation>
 <translation id="7596558890252710462">Operativni sistem</translation>
@@ -1300,6 +1304,7 @@ Naprimjer, neke web lokacije mogu reagirati na ovaj zahtjev prikazivanjem oglasa
 <translation id="7772032839648071052">Potvrdite pristupni izraz</translation>
 <translation id="7772375229873196092">Zatvori <ph name="APP_NAME" /></translation>
 <translation id="7774809984919390718">{PAYMENT_METHOD,plural, =1{<ph name="PAYMENT_METHOD_PREVIEW" />\u2026 i još <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" />}one{<ph name="PAYMENT_METHOD_PREVIEW" />\u2026 i još <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" />}few{<ph name="PAYMENT_METHOD_PREVIEW" />\u2026 i još <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" />}other{<ph name="PAYMENT_METHOD_PREVIEW" />\u2026 i još <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" />}}</translation>
+<translation id="777637629667389858">Kada ste prijavljeni, štiti vas na svim Googleovim uslugama.</translation>
 <translation id="7778840695157240389">Provjerite nove priče kasnije</translation>
 <translation id="7780645209293383778">Privremeno povezuje ove podatke s vašim Google računom kada ste prijavljeni da vas zaštiti na svim Googleovim aplikacijama</translation>
 <translation id="7791543448312431591">Dodaj</translation>
@@ -1343,6 +1348,7 @@ Naprimjer, neke web lokacije mogu reagirati na ovaj zahtjev prikazivanjem oglasa
 <translation id="7971136598759319605">Aktivan prije 1 dan</translation>
 <translation id="7972866381678406344"><ph name="NUMBER_OF_SECONDS" /> s unatrag</translation>
 <translation id="7975379999046275268">Pregledaj stranicu <ph name="BEGIN_NEW" />Novo<ph name="END_NEW" /></translation>
+<translation id="7977451675950311423">Upozorava vas ako koristite lozinku ugroženu narušavanjem podataka.</translation>
 <translation id="7986497153528221272">Da pogledate lozinke, najprije postavite zaključavanje ekrana na uređaju</translation>
 <translation id="7995059495660416932">Vidjet ćete sadržaj kada postane dostupan</translation>
 <translation id="799576009106109668">Pregledat ćete brže jer se sadržaj učitava proaktivno na osnovu vaše posjete trenutnoj web stranici</translation>

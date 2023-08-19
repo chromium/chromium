@@ -155,6 +155,7 @@ Les autorisations que vous avez déjà accordées à des sites Web et à des app
 <translation id="4216212958613226427">Cette langue est utilisée pour afficher l'IU de Chromium</translation>
 <translation id="4222932583846282852">Annulation en cours…</translation>
 <translation id="4230135487732243613">Associer vos données de Chromium à ce compte?</translation>
+<translation id="4251772536351901305">Vous avertit des sites dangereux, même ceux que Google ne connaissait pas auparavant, en analysant plus de données provenant des sites que la protection standard. Vous pouvez choisir d'ignorer les avertissements de Chromium.</translation>
 <translation id="4271805377592243930">Obtenir de l'aide pour Chromium</translation>
 <translation id="4281844954008187215">Conditions d'utilisation</translation>
 <translation id="4285930937574705105">Échec de l'installation suite à une erreur non spécifiée. Si Chromium est en cours d'exécution, veuillez le fermer, puis réessayer.</translation>
@@ -265,6 +266,7 @@ Les autorisations que vous avez déjà accordées à des sites Web et à des app
 <translation id="6510925080656968729">Désinstaller Chromium</translation>
 <translation id="6539122709674868420">Votre organisation ferme Chromium lorsqu'il n'est pas utilisé pendant <ph name="TIMEOUT_DURATION" />. Les données de navigation ont été supprimées. Cela peut inclure l'historique, le remplissage automatique et les téléchargements.</translation>
 <translation id="6542839706527980775">Chaque profil Chromium contient ses propres données, comme les favoris, l'historique, les mots de passe, etc.</translation>
+<translation id="6563921047760808519">En savoir plus sur la <ph name="BEGIN_LINK" />manière dont Chromium préserve la confidentialité de vos données<ph name="END_LINK" /></translation>
 <translation id="656935081669708576">Vous pouvez passer à un autre profil Chromium pour voir les mots de passe</translation>
 <translation id="6570579332384693436">Pour corriger les fautes d'orthographe, Chromium envoie le texte que vous entrez dans des zones de texte à Google</translation>
 <translation id="6598877126913850652">Accéder aux paramètres de notification Chromium</translation>

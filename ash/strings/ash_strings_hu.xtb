@@ -660,6 +660,7 @@ Az összes felhasználónak ki kell jelentkeznie a folytatáshoz.</translation>
 <translation id="380165613292957338">Üdvözlöm. Miben segíthetek?</translation>
 <translation id="3804737937830804242">Kamera összecsukása</translation>
 <translation id="3824784079442479685">Ezzel engedélyezi a kamerához való hozzáférést a(z) <ph name="APP_NAME" />, valamint a kamerahasználati engedéllyel rendelkező összes alkalmazás és webhely számára. Előfordulhat, hogy frissítenie kell a weboldalt, vagy újra kell indítania az alkalmazást.</translation>
+<translation id="3825680296690914697"><ph name="TOTAL_NUM_OF_SUBMISSIONS" />/<ph name="NUM_TURNED_IN" /> beadva, <ph name="NUM_GRADED" /> osztályozva</translation>
 <translation id="3826099427150913765">Váltás jelszóra</translation>
 <translation id="383058930331066723">Az Akkumulátorkímélő mód be van kapcsolva</translation>
 <translation id="383629559565718788">Billentyűzetbeállítások megjelenítése</translation>
@@ -1745,6 +1746,7 @@ Az eszköz leállításához tartsa ismét nyomva az eszköz bekapcsológombját
 <translation id="8446884382197647889">További információ</translation>
 <translation id="8456543082656546101"><ph name="SHORTCUT_KEY_NAME" /> + V</translation>
 <translation id="8462305545768648477">Felolvasás bezárása</translation>
+<translation id="8468806060683421065">határidő: <ph name="DUE_DATE_AND_TIME" /></translation>
 <translation id="847056008324733326">A megjelenítési méret beállításai</translation>
 <translation id="8473301994082929012">A(z) <ph name="ORGANIZATION_NAME" /> szervezetnél <ph name="FEATURE_STATE" /> van a(z) <ph name="FEATURE_NAME" />.</translation>
 <translation id="8477270416194247200">A kikapcsoláshoz nyomja meg az Alt+Keresés billentyűkombinációt vagy a Shift billentyűt.</translation>
@@ -1828,6 +1830,7 @@ Az eszköz leállításához tartsa ismét nyomva az eszköz bekapcsológombját
 <translation id="8853703225951107899">PIN-kódjának vagy jelszavának ellenőrzése még mindig nem sikerült. Megjegyzés: Ha nemrég módosította jelszavát, akkor használja a régit. Az új jelszó beállítása a kijelentkezés után lép érvénybe.</translation>
 <translation id="8855885154700222542">Teljes képernyő billentyű</translation>
 <translation id="8858369206579825206">Adatvédelmi beállítások</translation>
+<translation id="8860366331836346216">eSIM hozzáadása</translation>
 <translation id="8870509716567206129">Az alkalmazás nem támogatja az osztott képernyős nézetet.</translation>
 <translation id="8874184842967597500">Nincs csatl.</translation>
 <translation id="8875021410787719674">Váltás a jobb alsó sarok, az Indító, a címsáv, a könyvjelzősáv, a megnyitott webhely és a letöltések között</translation>

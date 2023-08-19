@@ -2969,15 +2969,6 @@
 <translation id="3591584750136265240">配置登录身份验证行为</translation>
 <translation id="3593905652755912452">系统将使用针对已停用的表单控件分派事件的旧行为。</translation>
 <translation id="3596112486106491038">启用虚拟机命令行访问权限</translation>
-<translation id="3596651403637948128">此政策用于控制是否允许“安全浏览”功能的标准保护模式通过 Oblivious HTTP 代理将网址的部分哈希值发送给 Google，以确定该网址是否可安全访问。
-
-此代理允许浏览器以匿名方式将网址的部分哈希值上传到 Google。它还允许浏览器以更高的频率上传，从而增强“安全浏览”功能的保护成效。
-
-如果“安全浏览”功能已停用或已设为“增强型保护”模式，系统会忽略此政策。
-
-如果已启用或未设置此政策，系统将允许以更高保护级别通过代理进行查询。
-
-如果已停用此政策，系统将禁止以更高保护级别通过代理进行查询。网址将以低得多的频率直接上传到 Google。</translation>
 <translation id="3603469950773500315">在新版 <ph name="CORS" /> 实现方案中启用 <ph name="CORS" /> 检查缓解功能，从而允许扩展程序保持兼容的行为，并允许 <ph name="PRODUCT_NAME" /> 无需进行 <ph name="CORS" /> 检查便可发送指定标头。
 
       如果此列表设为空，<ph name="PRODUCT_NAME" /> 会尝试以兼容的方式运行扩展程序，而不会激活 <ph name="PRODUCT_NAME" /> 79 版中引入的 <ph name="API" /> 更改（如 <ph name="WEB_REQUEST_API_MANUAL" /> 所述）。

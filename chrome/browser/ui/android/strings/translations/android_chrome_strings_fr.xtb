@@ -309,6 +309,7 @@ Les jetons d'état privés améliorent la confidentialité sur le Web et ne peuv
 <translation id="2656405586795711023">Applications Web</translation>
 <translation id="2669454659051515572">Toute personne utilisant cet appareil peut voir les fichiers téléchargés</translation>
 <translation id="2702516483241149200">Nouveau : partagez un lien vers ce texte</translation>
+<translation id="2708051474374549906">Protection proactive en temps réel contre les extensions, sites et téléchargements dangereux, basée sur vos données de navigation envoyées à Google</translation>
 <translation id="271033894570825754">Nouveau</translation>
 <translation id="2711073837061989559">Essais</translation>
 <translation id="2718352093833049315">Wi-Fi uniquement</translation>
@@ -669,6 +670,7 @@ Votre compte Google conserve peut-être d'autres contenus d'historique de naviga
 <translation id="4583164079174244168">{MINUTES,plural, =1{Il y a # minute}one{Il y a # minute}other{Il y a # minutes}}</translation>
 <translation id="4587589328781138893">Sites</translation>
 <translation id="4594952190837476234">Cette page hors connexion date du <ph name="CREATION_TIME" /> et peut différer de la version en ligne.</translation>
+<translation id="4601095002996233687">Analyses approfondies pour les téléchargements suspects.</translation>
 <translation id="4616150815774728855">Ouvrir <ph name="WEBAPK_NAME" /></translation>
 <translation id="4619564267100705184">Confirmer votre identité</translation>
 <translation id="4634124774493850572">Utiliser le mot de passe</translation>
@@ -834,6 +836,7 @@ Pour modifier ce paramètre, <ph name="BEGIN_LINK" />réinitialisez la synchroni
 <translation id="543338862236136125">Modifier le mot de passe</translation>
 <translation id="5433691172869980887">Nom d'utilisateur copié</translation>
 <translation id="5438292632479953702">Retélécharger</translation>
+<translation id="5439191312780166229">Vous avertit en cas de sites dangereux, y compris pour ceux dont Google n'avait pas connaissance, en analysant plus de données provenant des sites que la protection standard. Vous pouvez ignorer les avertissements de Chrome.</translation>
 <translation id="5441466871879044658">Traduire dans cette langue</translation>
 <translation id="5441522332038954058">Accéder à la barre d'adresse</translation>
 <translation id="5444999712122199445">Revenir au site</translation>
@@ -1044,6 +1047,7 @@ Par exemple, certains sites Web peuvent répondre à cette demande en diffusant 
 <translation id="6541983376925655882">{NUM_HOURS,plural, =1{Vérification effectuée il y a 1 heure}one{Vérification effectuée il y a # heure}other{Vérification effectuée il y a # heures}}</translation>
 <translation id="6545017243486555795">Supprimer toutes les données</translation>
 <translation id="6546511553472444032">Fichier potentiellement dangereux</translation>
+<translation id="6550891580932862748">Ce mode ne vous protège pas contre les téléchargements, les extensions et les sites Web dangereux. Vos paramètres de navigation sécurisée dans les autres produits Google ne seront pas affectés.</translation>
 <translation id="6556542240154580383">{TAB_COUNT,plural, =1{<ph name="TAB_TITLE" /> et <ph name="TAB_COUNT_ONE" /> autre onglet seront fermés}one{<ph name="TAB_TITLE" /> et <ph name="TAB_COUNT_MANY" /> autre onglet seront fermés}other{<ph name="TAB_TITLE" /> et <ph name="TAB_COUNT_MANY" /> autres onglets seront fermés}}</translation>
 <translation id="6560414384669816528">Rechercher avec Sogou</translation>
 <translation id="656065428026159829">Voir plus</translation>
@@ -1257,6 +1261,7 @@ Par exemple, certains sites Web peuvent répondre à cette demande en diffusant 
 <translation id="757855969265046257">{FILES,plural, =1{<ph name="FILES_DOWNLOADED_ONE" /> fichier téléchargé}one{<ph name="FILES_DOWNLOADED_MANY" /> fichier téléchargé}other{<ph name="FILES_DOWNLOADED_MANY" /> fichiers téléchargés}}</translation>
 <translation id="7581273696622423628">Participer à l'enquête</translation>
 <translation id="7583262514280211622">Votre liste de lecture s'affichera ici</translation>
+<translation id="7587250070160020374">Chrome lit actuellement</translation>
 <translation id="7588219262685291874">Activer le thème sombre lorsque l'économiseur de batterie de l'appareil est activé</translation>
 <translation id="7594687499944811403">Autorisez <ph name="EMBEDDED_ORIGIN" /> à vérifier qu'il s'agit bien de vous pour <ph name="TOP_ORIGIN" /></translation>
 <translation id="7596558890252710462">Système d'exploitation</translation>
@@ -1296,6 +1301,7 @@ Par exemple, certains sites Web peuvent répondre à cette demande en diffusant 
 <translation id="7772032839648071052">Confirmez la phrase secrète</translation>
 <translation id="7772375229873196092">Fermer <ph name="APP_NAME" /></translation>
 <translation id="7774809984919390718">{PAYMENT_METHOD,plural, =1{<ph name="PAYMENT_METHOD_PREVIEW" />\u2026 et <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" /> de plus}one{<ph name="PAYMENT_METHOD_PREVIEW" />\u2026 et <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" /> de plus}other{<ph name="PAYMENT_METHOD_PREVIEW" />\u2026 et <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" /> de plus}}</translation>
+<translation id="777637629667389858">Lorsque vous êtes connecté, vous êtes protégé dans tous les services Google.</translation>
 <translation id="7778840695157240389">Revenez plus tard pour découvrir d'autres événements</translation>
 <translation id="7780645209293383778">Ces données sont temporairement associées à votre compte Google lorsque vous êtes connecté afin de vous protéger dans les applis Google</translation>
 <translation id="7791543448312431591">Ajouter</translation>
@@ -1337,6 +1343,7 @@ Par exemple, certains sites Web peuvent répondre à cette demande en diffusant 
 <translation id="7968014550143838305">Ajouté à la liste de lecture</translation>
 <translation id="7971136598759319605">Actif il y a 1 jour</translation>
 <translation id="7975379999046275268">Prévisualiser la page <ph name="BEGIN_NEW" />Nouveau<ph name="END_NEW" /></translation>
+<translation id="7977451675950311423">Vous avertit si vous utilisez un mot de passe compromis par une violation des données.</translation>
 <translation id="7986497153528221272">Pour afficher les mots de passe, définissez d'abord un verrouillage d'écran sur votre appareil</translation>
 <translation id="7995059495660416932">Vous verrez le contenu lorsqu'il sera disponible</translation>
 <translation id="799576009106109668">Vous naviguerez plus rapidement, car le contenu sera chargé de manière proactive en fonction de la page Web que vous êtes en train de consulter</translation>

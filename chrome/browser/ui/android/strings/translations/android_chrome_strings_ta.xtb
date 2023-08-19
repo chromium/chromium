@@ -309,6 +309,7 @@
 <translation id="2656405586795711023">இணைய ஆப்ஸ்</translation>
 <translation id="2669454659051515572">இந்தச் சாதனத்தைப் பயன்படுத்தும் அனைவராலும் பதிவிறக்கிய ஃபைல்களைப் பார்க்க முடியும்</translation>
 <translation id="2702516483241149200">புதிது: இந்த உரைக்குச் செல்லும் இணைப்பைப் பகிரலாம்</translation>
+<translation id="2708051474374549906">Googleக்கு அனுப்பப்படும் உங்கள் உலாவிய தரவின் அடிப்படையில் ஆபத்தான இணையதளங்கள், பதிவிறக்கங்கள், நீட்டிப்புகள் ஆகியவற்றுக்கு எதிராக வழங்கப்படும் நிகழ்நேர, முன்கூட்டிய பாதுகாப்பு</translation>
 <translation id="271033894570825754">புதிது</translation>
 <translation id="2711073837061989559">சோதனைகள்</translation>
 <translation id="2718352093833049315">வைஃபையில் மட்டும்</translation>
@@ -669,6 +670,7 @@
 <translation id="4583164079174244168">{MINUTES,plural, =1{# நிமிடத்திற்கு முன்பு}other{# நிமிடங்களுக்கு முன்பு}}</translation>
 <translation id="4587589328781138893">Sites</translation>
 <translation id="4594952190837476234"><ph name="CREATION_TIME" /> அன்று இந்த ஆஃப்லைன் பக்கம் உருவாக்கப்பட்டது. இது ஆன்லைன் பதிப்பிலிருந்து வேறுபடலாம்.</translation>
+<translation id="4601095002996233687">சந்தேகத்திற்கிடமான பதிவிறக்கங்களை விரிவாக ஸ்கேன் செய்யலாம்.</translation>
 <translation id="4616150815774728855"><ph name="WEBAPK_NAME" />ஐத் திற</translation>
 <translation id="4619564267100705184">இது நீங்கள்தான் என உறுதிசெய்யுங்கள்</translation>
 <translation id="4634124774493850572">கடவுச்சொல்லைப் பயன்படுத்து</translation>
@@ -834,6 +836,7 @@
 <translation id="543338862236136125">கடவுச்சொல்லை மாற்று</translation>
 <translation id="5433691172869980887">பயனர்பெயர் நகலெடுக்கப்பட்டது</translation>
 <translation id="5438292632479953702">மீண்டும் பதிவிறக்கு</translation>
+<translation id="5439191312780166229">தளங்களில் இருந்து தரவைப் பகுப்பாய்வு செய்வதன் மூலம் ஆபத்தான தளங்கள் (இந்தத் தளங்கள் பற்றி Googleளுக்கு முன்கூட்டியே தெரிந்திருக்கவில்லை என்றாலும்கூட) குறித்து உங்களை எச்சரிக்கும். இயல்பான பாதுகாப்பைக் காட்டிலும் அதிகளவில் 'தரவுப் பகுப்பாய்வு' செய்யப்படும். Chrome வழங்கும் எச்சரிக்கைகளை நீங்கள் தவிர்க்கலாம்.</translation>
 <translation id="5441466871879044658">இலக்கு மொழி</translation>
 <translation id="5441522332038954058">முகவரிப் பட்டிக்குச் செல்லும்</translation>
 <translation id="5444999712122199445">தளத்திற்குச் செல்</translation>
@@ -1044,6 +1047,7 @@
 <translation id="6541983376925655882">{NUM_HOURS,plural, =1{சரிபார்த்தது: 1 மணிநேரத்திற்கு முன்பு}other{சரிபார்த்தது: # மணிநேரத்திற்கு முன்பு}}</translation>
 <translation id="6545017243486555795">எல்லா தரவையும் அழி</translation>
 <translation id="6546511553472444032">ஃபைல் தீங்கிழைப்பதாக இருக்கக்கூடும்</translation>
+<translation id="6550891580932862748">ஆபத்தான இணையதளங்கள், பதிவிறக்கங்கள், நீட்டிப்புகள் ஆகியவற்றிலிருந்து உங்களைப் பாதுகாக்காது. பிற Google தயாரிப்புகளில் அமைக்கப்பட்டிருக்கும் உங்கள் பாதுகாப்பு உலாவல் அமைப்புகள் மாற்றப்படாது.</translation>
 <translation id="6556542240154580383">{TAB_COUNT,plural, =1{<ph name="TAB_TITLE" />, மேலும் <ph name="TAB_COUNT_ONE" /> பக்கம் மூடப்படும்}other{<ph name="TAB_TITLE" />, மேலும் <ph name="TAB_COUNT_MANY" /> பக்கங்கள் மூடப்படும்}}</translation>
 <translation id="6560414384669816528">Sogou மூலம் தேடுக</translation>
 <translation id="656065428026159829">மேலும் காட்டு</translation>
@@ -1257,6 +1261,7 @@
 <translation id="757855969265046257">{FILES,plural, =1{<ph name="FILES_DOWNLOADED_ONE" /> ஃபைல் பதிவிறக்கப்பட்டது}other{<ph name="FILES_DOWNLOADED_MANY" /> ஃபைல்கள்  பதிவிறக்கப்பட்டன}}</translation>
 <translation id="7581273696622423628">கருத்துக்கணிப்பைத் தொடங்கு</translation>
 <translation id="7583262514280211622">உங்கள் வாசிப்புப் பட்டியலை இங்கே பார்ப்பீர்கள்</translation>
+<translation id="7587250070160020374">Chromeமில் தற்போது படித்துக் காட்டப்படுவது:</translation>
 <translation id="7588219262685291874">சாதனத்தில் பேட்டரி சேமிப்பான் இயக்கத்தில் இருக்கும்போது டார்க் தீமை இயக்கும்</translation>
 <translation id="7594687499944811403"><ph name="TOP_ORIGIN" /> இல் உங்கள் அடையாளத்தைச் சரிபார்க்க <ph name="EMBEDDED_ORIGIN" /> ஐ அனுமதியுங்கள்</translation>
 <translation id="7596558890252710462">ஆப்ரேட்டிங் சிஸ்டம்</translation>
@@ -1296,6 +1301,7 @@
 <translation id="7772032839648071052">கடவுச்சொற்றொடரை உறுதி செய்க</translation>
 <translation id="7772375229873196092"><ph name="APP_NAME" />ஐ மூடு</translation>
 <translation id="7774809984919390718">{PAYMENT_METHOD,plural, =1{<ph name="PAYMENT_METHOD_PREVIEW" />\u2026 மற்றும் <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" /> கட்டண முறை}other{<ph name="PAYMENT_METHOD_PREVIEW" />\u2026 மற்றும் <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" /> கட்டண முறைகள்}}</translation>
+<translation id="777637629667389858">நீங்கள் உள்நுழைந்திருக்கும்போது Google சேவைகள் முழுவதிலும் உங்களைப் பாதுகாப்பாக வைத்திருக்கிறது.</translation>
 <translation id="7778840695157240389">புதிய கட்டுரைகளைப் பார்க்க பின்னர் வந்து பாருங்கள்</translation>
 <translation id="7780645209293383778">Google ஆப்ஸ் முழுவதும் உங்களைப் பாதுகாக்க, நீங்கள் உள்நுழைந்திருக்கும்போது இந்தத் தரவை உங்கள் Google கணக்கில் தற்காலிகமாக இணைக்கும்</translation>
 <translation id="7791543448312431591">சேர்</translation>
@@ -1337,6 +1343,7 @@
 <translation id="7968014550143838305">வாசிப்புப் பட்டியலில் சேர்ந்தது</translation>
 <translation id="7971136598759319605">கடைசியாக 1 நாளுக்கு முன் பயன்படுத்தியுள்ளார்</translation>
 <translation id="7975379999046275268">பக்க மாதிரிக்காட்சியைக் காட்டு <ph name="BEGIN_NEW" />புதிது<ph name="END_NEW" /></translation>
+<translation id="7977451675950311423">தரவு மீறலில் பாதிக்கப்பட்டுள்ள கடவுச்சொல்லை நீங்கள் பயன்படுத்தினால் உங்களை எச்சரிக்கும்.</translation>
 <translation id="7986497153528221272">கடவுச்சொற்களைப் பார்க்க, முதலில் உங்கள் சாதனத்தில் திரைப் பூட்டை அமைக்கவும்</translation>
 <translation id="7995059495660416932">கிடைக்கும்போது உள்ளடக்கம் காட்டப்படும்</translation>
 <translation id="799576009106109668">நீங்கள் தற்போது பார்க்கும் இணையப் பக்கத்தின் அடிப்படையில் உள்ளடக்கம் முன்கூட்டியே ஏற்றப்படுவதால் விரைவாக உலாவலாம்</translation>

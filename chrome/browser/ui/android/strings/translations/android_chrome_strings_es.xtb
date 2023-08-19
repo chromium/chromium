@@ -309,6 +309,7 @@ Los tokens de confianza mejoran la privacidad en la Web y no se pueden usar para
 <translation id="2656405586795711023">Aplicaciones web</translation>
 <translation id="2669454659051515572">Cualquier persona que use este dispositivo puede ver los archivos descargados</translation>
 <translation id="2702516483241149200">Nuevo: Comparte un enlace que vaya directamente a este texto</translation>
+<translation id="2708051474374549906">Protección proactiva en tiempo real (frente a descargas, extensiones y sitios peligrosos) que se basa en el envío de tus datos de navegación a Google</translation>
 <translation id="271033894570825754">Nuevo</translation>
 <translation id="2711073837061989559">Pruebas</translation>
 <translation id="2718352093833049315">Solo en Wi-Fi</translation>
@@ -669,6 +670,7 @@ Es posible que tu cuenta de Google tenga otros tipos de historial de navegación
 <translation id="4583164079174244168">{MINUTES,plural, =1{Hace # minuto}other{Hace # minutos}}</translation>
 <translation id="4587589328781138893">Sitios web</translation>
 <translation id="4594952190837476234">Esta página sin conexión se creó el <ph name="CREATION_TIME" /> y puede ser distinta de la versión online.</translation>
+<translation id="4601095002996233687">Análisis exhaustivos para detectar descargas sospechosas.</translation>
 <translation id="4616150815774728855">Abrir <ph name="WEBAPK_NAME" /></translation>
 <translation id="4619564267100705184">Verificar mi identidad</translation>
 <translation id="4634124774493850572">Utilizar contraseña</translation>
@@ -834,6 +836,7 @@ Para cambiar esta opción, <ph name="BEGIN_LINK" />restablece la sincronización
 <translation id="543338862236136125">Cambiar contraseña</translation>
 <translation id="5433691172869980887">Se ha copiado el nombre de usuario</translation>
 <translation id="5438292632479953702">Volver a descargar</translation>
+<translation id="5439191312780166229">Te envía advertencias sobre sitios peligrosos (aunque Google no los conozca) analizando más datos de sitios que la protección estándar. Si quieres, puedes omitir las advertencias de Chrome.</translation>
 <translation id="5441466871879044658">Traducir a este idioma</translation>
 <translation id="5441522332038954058">Te dirige a la barra de direcciones</translation>
 <translation id="5444999712122199445">Volver al sitio</translation>
@@ -1044,6 +1047,7 @@ Por ejemplo, algunos sitios web pueden responder a la solicitud mostrándote anu
 <translation id="6541983376925655882">{NUM_HOURS,plural, =1{Comprobado hace 1 hora}other{Comprobado hace # horas}}</translation>
 <translation id="6545017243486555795">Borrar todos los datos</translation>
 <translation id="6546511553472444032">Es posible que el archivo sea dañino</translation>
+<translation id="6550891580932862748">No te protege frente a descargas, extensiones ni sitios web peligrosos. La configuración de Navegación segura en otros productos de Google no se verá afectada.</translation>
 <translation id="6556542240154580383">{TAB_COUNT,plural, =1{Se cerrarán la pestaña <ph name="TAB_TITLE" /> y <ph name="TAB_COUNT_ONE" /> más}other{Se cerrarán la pestaña <ph name="TAB_TITLE" /> y <ph name="TAB_COUNT_MANY" /> más}}</translation>
 <translation id="6560414384669816528">Realizar búsquedas con Sogou</translation>
 <translation id="656065428026159829">Ver más</translation>
@@ -1297,6 +1301,7 @@ Por ejemplo, algunos sitios web pueden responder a la solicitud mostrándote anu
 <translation id="7772032839648071052">Repite la frase de contraseña</translation>
 <translation id="7772375229873196092">Cerrar <ph name="APP_NAME" /></translation>
 <translation id="7774809984919390718">{PAYMENT_METHOD,plural, =1{<ph name="PAYMENT_METHOD_PREVIEW" />\u2026 y <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" /> más}other{<ph name="PAYMENT_METHOD_PREVIEW" />\u2026 y <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" /> más}}</translation>
+<translation id="777637629667389858">Cuando inicias sesión, te protege en los servicios de Google.</translation>
 <translation id="7778840695157240389">Vuelve en otro momento para descubrir más historias</translation>
 <translation id="7780645209293383778">Vincula temporalmente estos datos a tu cuenta de Google (si has iniciado sesión) para protegerte en las aplicaciones de Google</translation>
 <translation id="7791543448312431591">Añadir</translation>
@@ -1338,6 +1343,7 @@ Por ejemplo, algunos sitios web pueden responder a la solicitud mostrándote anu
 <translation id="7968014550143838305">Añadido a la lista de lectura</translation>
 <translation id="7971136598759319605">Activo hace 1 día</translation>
 <translation id="7975379999046275268">Revisar página <ph name="BEGIN_NEW" />Nuevo<ph name="END_NEW" /></translation>
+<translation id="7977451675950311423">Te avisa si usas una contraseña vulnerada en una brecha de seguridad de datos.</translation>
 <translation id="7986497153528221272">Para ver las contraseñas, primero debes establecer un bloqueo de pantalla en tu dispositivo</translation>
 <translation id="7995059495660416932">Verás contenido cuando esté disponible</translation>
 <translation id="799576009106109668">Navegarás más rápido porque el contenido se cargará de forma proactiva en función de la página web en la que estés.</translation>

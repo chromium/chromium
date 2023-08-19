@@ -309,6 +309,7 @@
 <translation id="2656405586795711023">वेब एपहरू</translation>
 <translation id="2669454659051515572">यो डिभाइस प्रयोग गर्ने सबै जना डाउनलोड गरिएका फाइलहरू देख्न सक्छन्</translation>
 <translation id="2702516483241149200">नयाँ: स्क्रोल गरी यो पाठसम्म लैजाने लिंक सेयर गर्नुहोस्</translation>
+<translation id="2708051474374549906">Google मा पठाइने तपाईंको ब्राउजिङ डेटाका आधारमा प्रदान गरिने खतरनाक वेबसाइट, डाउनलोड र एक्स्टेन्सनहरूबाट प्रत्यक्ष र सक्रिय सुरक्षा</translation>
 <translation id="271033894570825754">नयाँ</translation>
 <translation id="2711073837061989559">ट्रायलहरू</translation>
 <translation id="2718352093833049315">Wi-Fi मा मात्र</translation>
@@ -668,6 +669,7 @@
 <translation id="4583164079174244168">{MINUTES,plural, =1{# मिनेटअघि}other{# मिनेटअघि}}</translation>
 <translation id="4587589328781138893">साइटहरू</translation>
 <translation id="4594952190837476234">यो पृष्ठ <ph name="CREATION_TIME" /> मा सिर्जना गरिएको हुँदा अनलाइन संस्करणभन्दा भिन्न हुन सक्छ।</translation>
+<translation id="4601095002996233687">डाउनलोड गरिएका फाइल शङ्कास्पद देखिएमा विस्तृत रूपमा स्क्यान गर्ने सुविधा।</translation>
 <translation id="4616150815774728855"><ph name="WEBAPK_NAME" /> खोल्नुहोस्</translation>
 <translation id="4619564267100705184">यो व्यक्ति तपाईं नै हो भन्ने कुरा पुष्टि गर्नुहोस्</translation>
 <translation id="4634124774493850572">पासवर्ड प्रयोग गर्नुहोस्</translation>
@@ -833,6 +835,7 @@
 <translation id="543338862236136125">पासवर्ड सम्पादन गर्नुहोस्</translation>
 <translation id="5433691172869980887">युजरनेम कपी गरियो</translation>
 <translation id="5438292632479953702">फेरि डाउनलोड गर्नुहोस्</translation>
+<translation id="5439191312780166229">यसले साइटहरूबाट मानक सुरक्षाले भन्दा धेरै डेटा विश्लेषण गरेर Google लाई पनि यसअघि थाहा नभएका खतरनाक साइटहरूका बारेमा तपाईंलाई चेतावनी दिन्छ। तपाईं Chrome का चेतावनी सेटअप गर्ने प्रक्रिया स्किप गर्न सक्नुहुन्छ।</translation>
 <translation id="5441466871879044658">यो भाषामा अनुवाद गर्नुहोस्</translation>
 <translation id="5441522332038954058">ठेगाना पट्टीमा जानुहोस्</translation>
 <translation id="5444999712122199445">साइटमा फर्कनुहोस्</translation>
@@ -1043,6 +1046,7 @@
 <translation id="6541983376925655882">{NUM_HOURS,plural, =1{१ घन्टाअघि जाँच गरिएको}other{# घन्टाअघि जाँच गरिएको}}</translation>
 <translation id="6545017243486555795">सबै डेटा मेटाउनुहोस्</translation>
 <translation id="6546511553472444032">यो फाइल हानिकारक हुन सक्छ</translation>
+<translation id="6550891580932862748">यसले तपाईंलाई खतरनाक वेबसाइट, डाउनलोड र एक्स्टेन्सनहरूबाट सुरक्षित राख्दैन। यसका कारण Google का अन्य उत्पादनहरूमा तपाईंले तय गर्नुभएका Safe Browsing का सेटिङ प्रभावित हुने छैनन्।</translation>
 <translation id="6556542240154580383">{TAB_COUNT,plural, =1{<ph name="TAB_TITLE" /> र अर्को <ph name="TAB_COUNT_ONE" /> ट्याब बन्द गरिने छन्}other{<ph name="TAB_TITLE" /> र अरू <ph name="TAB_COUNT_MANY" /> वटा ट्याब बन्द गरिने छन्}}</translation>
 <translation id="6560414384669816528">Sogou मार्फत खोजी गर्नुहोस्</translation>
 <translation id="656065428026159829">थप हेर्नुहोस्</translation>
@@ -1256,6 +1260,7 @@
 <translation id="757855969265046257">{FILES,plural, =1{<ph name="FILES_DOWNLOADED_ONE" /> फाइल डाउनलोड गरियो}other{<ph name="FILES_DOWNLOADED_MANY" /> फाइलहरू डाउनलोड गरिए}}</translation>
 <translation id="7581273696622423628">सर्वेक्षणमा भाग लिनुहोस्</translation>
 <translation id="7583262514280211622">तपाईंको अध्ययन सूची यहाँ देखिने छ</translation>
+<translation id="7587250070160020374">Chrome अहिले चलिरहेको छ</translation>
 <translation id="7588219262685291874">तपाईंको डिभाइसमा ब्याट्री सेभर मोड अन हुँदा अँध्यारो थिम अन गर्नुहोस्</translation>
 <translation id="7594687499944811403"><ph name="EMBEDDED_ORIGIN" /> लाई <ph name="TOP_ORIGIN" /> का सम्बन्धमा कोड पेस गर्ने व्यक्ति तपाईं नै हो भन्ने कुरा पुष्टि गर्न दिनुहोस्</translation>
 <translation id="7596558890252710462">अपरेटिङ सिस्टम</translation>
@@ -1295,6 +1300,7 @@
 <translation id="7772032839648071052">पासफ्रेज पक्का</translation>
 <translation id="7772375229873196092"><ph name="APP_NAME" />बन्द गर्नुहोस्</translation>
 <translation id="7774809984919390718">{PAYMENT_METHOD,plural, =1{<ph name="PAYMENT_METHOD_PREVIEW" />\u2026 र <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" /> थप}other{<ph name="PAYMENT_METHOD_PREVIEW" />\u2026 र <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" /> थप}}</translation>
+<translation id="777637629667389858">तपाईं साइन इन हुनुभएका अवस्थामा Google का सेवाहरूमा तपाईंको जानकारी सुरक्षित राख्छ।</translation>
 <translation id="7778840695157240389">नयाँ समाचार हेर्न पछि फर्केर आउनुहोस्</translation>
 <translation id="7780645209293383778">यो सुविधाले तपाईंको Google खाता Google का विभिन्न एपहरूमा सुरक्षित राख्ने प्रयोजनका लागि तपाईं साइन इन भएका बेला यो डेटा केही समयका लागि उक्त खातासँग लिंक गर्छ</translation>
 <translation id="7791543448312431591">थप्नुहोस्</translation>
@@ -1336,6 +1342,7 @@
 <translation id="7968014550143838305">अध्ययन सूचीमा हालियो</translation>
 <translation id="7971136598759319605">१ दिनअघि सक्रिय</translation>
 <translation id="7975379999046275268"><ph name="BEGIN_NEW" />नयाँ<ph name="END_NEW" /> पृष्ठको पूर्वावलोकन गर्नु…</translation>
+<translation id="7977451675950311423">तपाईंले डेटा चोरीको घटनामा अरूले देखेका पासवर्ड प्रयोग गर्नुभयो भने यसले तपाईंलाई चेतावनी दिन्छ।</translation>
 <translation id="7986497153528221272">पासवर्डहरू हेर्न सर्वप्रथम आफ्नो यन्त्रमा स्क्रिन लक सेट गर्नुहोस्</translation>
 <translation id="7995059495660416932">सामग्री उपलब्ध भएपछि यहाँ देखिने छ</translation>
 <translation id="799576009106109668">तपाईंले हालै खोलेको वेबपेजका आधारमा अग्रिम रूपमा सामग्री लोड गरिएको हुनाले तपाईं छिटो ब्राउज गर्नु हुने छ</translation>

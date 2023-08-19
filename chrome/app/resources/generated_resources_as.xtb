@@ -1757,6 +1757,7 @@
 <translation id="2369058545741334020">পঢ়াৰ ম’ডত খোলক</translation>
 <translation id="236939127352773362">ডিভাইচে নিকটৱৰ্তী স্থানত শ্বেয়াৰ কৰি থাকোঁতে</translation>
 <translation id="2371076942591664043">&amp;সম্পূর্ণ হ’লে খোলক</translation>
+<translation id="237336063998926520">অৱস্থান নিৰ্ধাৰণ কৰিবলৈ আপোনাৰ আইপি ঠিকনা ব্যৱহাৰ কৰক</translation>
 <translation id="2373666622366160481">কাগজৰ আকাৰ অনুসৰি খাপ খুৱাওক</translation>
 <translation id="2375406435414127095">আপোনাৰ ফ’ন সংযোগ কৰক</translation>
 <translation id="2376056713414548745">ডাঙৰকৈ পঢ়ক</translation>
@@ -1897,6 +1898,7 @@
 <translation id="2480868415629598489">আপুনি প্ৰতিলিপি আৰু পে’ষ্ট কৰা ডেটা সংশোধন কৰক</translation>
 <translation id="2482878487686419369">জাননী</translation>
 <translation id="2482895651873876648">টেবটো <ph name="GROUP_NAME" /> গোটলৈ নিয়া হ'ল - <ph name="GROUP_CONTENTS" /></translation>
+<translation id="2483627560139625913">Chrome ব্ৰাউজাৰৰ ছেটিঙত সন্ধান ইঞ্জিন ছেট কৰক</translation>
 <translation id="2484743711056182585">অনুমতি আঁতৰাওক</translation>
 <translation id="2484909293434545162">যদি কোনো ছাইটে কুকি ব্যৱহাৰ কৰে, তেন্তে সেয়া ইয়াত দেখা পোৱা যাব</translation>
 <translation id="2484959914739448251">আপুনি ছিংক কৰি ৰখা সকলো ডিভাইচ আৰু আপোনাৰ Google একাউণ্টৰ পৰা ব্ৰাউজ কৰা ডেটা মচিবলৈ <ph name="BEGIN_LINK" />আপোনাৰ পাছফ্ৰেজ দিয়ক<ph name="END_LINK" />।</translation>
@@ -2051,6 +2053,7 @@
 <translation id="2612676031748830579">কার্ড নম্বৰ</translation>
 <translation id="2613210758071148851"><ph name="RESTRICTED_SITE" />ত কোনো এক্সটেনশ্বনৰ অনুমতি নিদিব</translation>
 <translation id="2613535083491958306"><ph name="ORIGIN" />এ <ph name="FILENAME" /> সম্পাদনা কৰিব পাৰিব</translation>
+<translation id="2615159404909536465">{FILE_COUNT,plural, =1{এই এক্সটেনশ্বনটোত <ph name="FILE1" /> খোলক আৰু সম্পাদনা কৰক}one{<ph name="FILE1" /> খোলক আৰু সম্পাদনা কৰক, ... এই এপ্‌টোত}other{<ph name="FILE1" /> খোলক আৰু সম্পাদনা কৰক, ... এই এপ্‌টোত}}</translation>
 <translation id="2616366145935564096">আপোনাৰ ডেটা <ph name="WEBSITE_1" />ত পঢ়ক আৰু সলনি কৰক</translation>
 <translation id="2618797463720777311">Nearby Share কৰাৰ সুবিধাটো ছেট আপ কৰক</translation>
 <translation id="261953424982546039">Chrome &amp;Labs...</translation>
@@ -4426,6 +4429,7 @@
 <translation id="4585793705637313973">পৃষ্ঠা সম্পাদনা কৰক</translation>
 <translation id="4586275095964870617"><ph name="URL" /> কোনো বিকল্প ব্ৰাউজাৰত খুলিব নোৱাৰি। অনুগ্ৰহ কৰি আপোনাৰ ছিষ্টেমৰ প্ৰশাসকৰ সৈতে যোগাযোগ কৰক।</translation>
 <translation id="4587589328781138893">Sites</translation>
+<translation id="4588749726511456218">স্ক্ৰ’লৰ এক্সিলাৰেশ্বন <ph name="LINK_BEGIN" />অধিক জানক<ph name="LINK_END" /></translation>
 <translation id="4589713469967853491">লগসমূহ ডাউনল’ডৰ ডাইৰেক্টৰীত সফলভাৱে লিখা হ’ল।</translation>
 <translation id="459204634473266369"><ph name="PRIMARY_EMAIL" />ত কোনো ডিভাইচ ছেভ কৰি থোৱা নাই।</translation>
 <translation id="4592525994536856567">ব্ৰাউজিং আৰু সন্ধান কৰাটো অধিক ক্ষিপ্ৰ।</translation>
@@ -5254,7 +5258,6 @@
 <translation id="5298219193514155779">থীম সৃষ্টি কৰোঁতা</translation>
 <translation id="5299109548848736476">ট্ৰেক নকৰিব</translation>
 <translation id="5299558715747014286">আপোনাৰ টেবৰ গোটসমূহ চাওক আৰু পৰিচালনা কৰক</translation>
-<translation id="529986401483187205">অক্ষম কৰা আছে</translation>
 <translation id="5300426565656326054">ব্ৰাউজাৰৰ ভিত্তিত বিজ্ঞাপন ব্যক্তিগতকৃত কৰা</translation>
 <translation id="5300589172476337783">দেখুৱাওক</translation>
 <translation id="5300719150368506519">আপুনি চোৱা পৃষ্ঠাসমূহৰ URLসমূহ Googleলৈ পঠিয়াওক</translation>
@@ -6245,6 +6248,7 @@
 <translation id="6130692320435119637">ৱাই-ফাই যোগ দিয়ক</translation>
 <translation id="6130887916931372608">কীব’ৰ্ডৰ কী</translation>
 <translation id="6132714462430777655">বিদ্যালয়ৰ পঞ্জীয়ন এৰি যাবনে?</translation>
+<translation id="6134428719487602109">আটাইবোৰ ব্যৱহাৰকাৰীৰ একাউণ্ট আঁতৰাওক আৰু আপোনাৰ Chromebookটো নতুন ডিভাইচৰ দৰে কৰি তুলিবলৈ ৰিছেট কৰক।</translation>
 <translation id="6135823405800500595">আপোনাৰ ফ’নটো ওচৰত থকাটো, আনলক কৰি ৰখাটো আৰু ব্লুটুথ তথা ৱাই-ফাই অন কৰি ৰখাটো নিশ্চিত কৰক</translation>
 <translation id="6135826623269483856">আপোনাৰ আটাইবোৰ ডিছপ্লে’ত থকা ৱিণ্ড’সমূহ পৰিচালনা কৰিবলৈ দিয়া নহয়</translation>
 <translation id="6136114942382973861">ডাউনল’ডৰ বাৰডাল বন্ধ কৰক</translation>

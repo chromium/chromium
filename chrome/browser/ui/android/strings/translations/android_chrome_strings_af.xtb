@@ -309,6 +309,7 @@ Privaatstatustoken verbeter privaatheid op die web en kan nie gebruik word om ui
 <translation id="2656405586795711023">Webprogramme</translation>
 <translation id="2669454659051515572">Enigiemand wat hierdie toestel gebruik, kan afgelaaide lêers sien</translation>
 <translation id="2702516483241149200">Nuut: Deel 'n skakel wat na hierdie teks toe rollees</translation>
+<translation id="2708051474374549906">Intydse, proaktiewe beskerming teen gevaarlike werwe, aflaaie en uitbreidings wat gegrond is op blaaierdata wat na Google toe gestuur word</translation>
 <translation id="271033894570825754">Nuut</translation>
 <translation id="2711073837061989559">Proeflopies</translation>
 <translation id="2718352093833049315">Net met Wi-Fi</translation>
@@ -669,6 +670,7 @@ Jou Google-rekening het dalk ander vorme van blaaigeskiedenis, soos soektogte en
 <translation id="4583164079174244168">{MINUTES,plural, =1{# minuut gelede}other{# minute gelede}}</translation>
 <translation id="4587589328781138893">Werwe</translation>
 <translation id="4594952190837476234">Hierdie vanlyn bladsy is van <ph name="CREATION_TIME" /> af en kan van die aanlyn weergawe verskil.</translation>
+<translation id="4601095002996233687">Omvattende skanderings vir verdagte aflaaie.</translation>
 <translation id="4616150815774728855">Maak <ph name="WEBAPK_NAME" /> oop</translation>
 <translation id="4619564267100705184">Verifieer dis jy</translation>
 <translation id="4634124774493850572">Gebruik wagwoord</translation>
@@ -834,6 +836,7 @@ Jou Google-rekening het dalk ander vorme van blaaigeskiedenis, soos soektogte en
 <translation id="543338862236136125">Wysig wagwoord</translation>
 <translation id="5433691172869980887">Gebruikernaam is gekopieer</translation>
 <translation id="5438292632479953702">Laai weer af</translation>
+<translation id="5439191312780166229">Waarsku jou oor gevaarlike werwe – selfs werwe waarvan Google nie voorheen geweet het nie – deur meer data van werwe te ontleed as standaardbeskerming. Jy kan kies om Chrome-waarskuwings oor te slaan.</translation>
 <translation id="5441466871879044658">Vertaal in hierdie taal</translation>
 <translation id="5441522332038954058">Spring na die adresbalk</translation>
 <translation id="5444999712122199445">Gaan terug na werf</translation>
@@ -1044,6 +1047,7 @@ Byvoorbeeld, sommige webwerwe kan op hierdie versoek reageer deur vir jou advert
 <translation id="6541983376925655882">{NUM_HOURS,plural, =1{1 uur gelede nagegaan}other{# uur gelede nagegaan}}</translation>
 <translation id="6545017243486555795">Vee alle data uit</translation>
 <translation id="6546511553472444032">Lêer kan skadelik wees</translation>
+<translation id="6550891580932862748">Beskerm jou nie teen gevaarlike webwerwe, aflaaie en uitbreidings nie. Jou Veiligblaai-instellings in ander Google-produkte sal nie geraak word nie.</translation>
 <translation id="6556542240154580383">{TAB_COUNT,plural, =1{<ph name="TAB_TITLE" /> en nog <ph name="TAB_COUNT_ONE" /> oortjie sal toegemaak word}other{<ph name="TAB_TITLE" /> en nog <ph name="TAB_COUNT_MANY" /> oortjies sal toegemaak word}}</translation>
 <translation id="6560414384669816528">Soek met Sogou</translation>
 <translation id="656065428026159829">Sien meer</translation>
@@ -1297,6 +1301,7 @@ Byvoorbeeld, sommige webwerwe kan op hierdie versoek reageer deur vir jou advert
 <translation id="7772032839648071052">Bevestig wagfrase</translation>
 <translation id="7772375229873196092">Maak <ph name="APP_NAME" /> toe</translation>
 <translation id="7774809984919390718">{PAYMENT_METHOD,plural, =1{<ph name="PAYMENT_METHOD_PREVIEW" /> \u2026 en nog <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" />}other{<ph name="PAYMENT_METHOD_PREVIEW" /> \u2026 en nog <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" />}}</translation>
+<translation id="777637629667389858">Wanneer jy aangemeld is, beskerm dit jou oral in Google-dienste.</translation>
 <translation id="7778840695157240389">Loer later weer in vir nuwe stories</translation>
 <translation id="7780645209293383778">Koppel hierdie data tydelik aan jou Google-rekening wanneer jy aangemeld is om jou oral in Google-programme te beskerm</translation>
 <translation id="7791543448312431591">Voeg by</translation>
@@ -1338,6 +1343,7 @@ Byvoorbeeld, sommige webwerwe kan op hierdie versoek reageer deur vir jou advert
 <translation id="7968014550143838305">By leeslys gevoeg</translation>
 <translation id="7971136598759319605">1 dag gelede aktief</translation>
 <translation id="7975379999046275268">Voorbeskou bladsy <ph name="BEGIN_NEW" />Nuwe<ph name="END_NEW" /></translation>
+<translation id="7977451675950311423">Waarsku jou as jy ’n wagwoord gebruik wat in ’n dataskending gekompromitteer is.</translation>
 <translation id="7986497153528221272">Stel eers 'n skermslot op jou toestel om wagwoorde te bekyk</translation>
 <translation id="7995059495660416932">Jy sal inhoud sien wanneer dit beskikbaar word</translation>
 <translation id="799576009106109668">Jy sal vinniger kan blaai omdat inhoud proaktief op grond van jou huidige webbladsybesoek gelaai word</translation>

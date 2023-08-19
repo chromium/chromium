@@ -35,6 +35,7 @@
 <translation id="1280820357415527819">Recherche de réseaux mobiles…</translation>
 <translation id="1293556467332435079">Fichiers</translation>
 <translation id="1297922636971898492">Google Drive n'est pas disponible pour le moment. L'importation reprendra lorsque Google Drive sera à nouveau disponible.</translation>
+<translation id="1306130176943817227">Impossible de supprimer l'élément, car il est en cours d'utilisation.</translation>
 <translation id="1307931752636661898">Impossible d'afficher les fichiers Linux</translation>
 <translation id="1313405956111467313">Configuration automatique du proxy</translation>
 <translation id="134645005685694099">L'espace de stockage de votre appareil est insuffisant pour permettre la synchronisation des fichiers. Les nouveaux fichiers ne seront plus synchronisés automatiquement.</translation>
@@ -537,6 +538,7 @@
 <translation id="5218183485292899140">Français suisse</translation>
 <translation id="5234764350956374838">Ignorer</translation>
 <translation id="5253070652067921974">Créé par</translation>
+<translation id="5254207638927440400">Impossible de déplacer le fichier, car il est en cours d'utilisation.</translation>
 <translation id="5257456363153333584">Libellule</translation>
 <translation id="5262311848634918433"><ph name="MARKUP_1" />Accédez à vos fichiers où que vous soyez, même hors connexion.<ph name="MARKUP_2" />
     Les fichiers enregistrés dans Google Drive sont à jour et disponibles depuis n'importe quel appareil.<ph name="MARKUP_3" />

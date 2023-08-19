@@ -310,6 +310,7 @@
 <translation id="2656405586795711023">تطبيقات الويب</translation>
 <translation id="2669454659051515572">يمكن لأي شخص يستخدم هذا الجهاز الاطّلاع على الملفات التي تم تنزيلها.</translation>
 <translation id="2702516483241149200">ميزة جديدة: يمكنك مشاركة رابط يؤدي إلى هذا النص.</translation>
+<translation id="2708051474374549906">‏يوفّر هذا الوضع حمايةً استباقية في الوقت الفعلي من المواقع الإلكترونية وعمليات التنزيل والإضافات الخطيرة استنادًا إلى بيانات التصفّح التي يتم إرسالها إلى Google.</translation>
 <translation id="271033894570825754">جديد</translation>
 <translation id="2711073837061989559">الإصدارات التجريبية</translation>
 <translation id="2718352093833049315">‏باستخدام شبكة Wi-Fi فقط</translation>
@@ -671,6 +672,7 @@
 <translation id="4583164079174244168">{MINUTES,plural, =1{قبل دقيقة واحدة (#)}zero{قبل # دقيقة}two{قبل دقيقتين (#)}few{قبل # دقائق}many{قبل # دقيقة}other{قبل # دقيقة}}</translation>
 <translation id="4587589328781138893">المواقع</translation>
 <translation id="4594952190837476234">تم إنشاء هذه الصفحة المتوفّرة بلا اتصال بالإنترنت في <ph name="CREATION_TIME" />، وقد تختلف عن النسخة المتوفِّرة على الإنترنت.</translation>
+<translation id="4601095002996233687">يفحص هذا الوضع عمليات التنزيل المريبة بشكل مفصَّل.</translation>
 <translation id="4616150815774728855">فتح <ph name="WEBAPK_NAME" /></translation>
 <translation id="4619564267100705184">إثبات هويّتك</translation>
 <translation id="4634124774493850572">استخدام كلمة المرور</translation>
@@ -836,6 +838,7 @@
 <translation id="543338862236136125">تعديل كلمة المرور</translation>
 <translation id="5433691172869980887">تم نسخ اسم المستخدم</translation>
 <translation id="5438292632479953702">تنزيل الملف مرة أخرى</translation>
+<translation id="5439191312780166229">‏ستتلقّى تحذيرات بشأن المواقع الإلكترونية الخطيرة، بما فيها المواقع التي لم يتعرّف عليها محرك البحث Google من قَبل، من خلال تحليل بيانات من المواقع الإلكترونية أكثر من الحماية العادية. يمكنك اختيار تخطّي تحذيرات Chrome.</translation>
 <translation id="5441466871879044658">ترجمة لهذه اللغة</translation>
 <translation id="5441522332038954058">الانتقال السريع إلى شريط العناوين</translation>
 <translation id="5444999712122199445">الرجوع إلى الموقع الإلكتروني</translation>
@@ -1046,6 +1049,7 @@
 <translation id="6541983376925655882">{NUM_HOURS,plural, =1{تمّ إجراء عملية التحقُّق قبل ساعة واحدة.}zero{تمّ إجراء عملية التحقُّق قبل # ساعة.}two{تمّ إجراء عملية التحقُّق قبل ساعتَين.}few{تمّ إجراء عملية التحقُّق قبل # ساعات.}many{تمّ إجراء عملية التحقُّق قبل # ساعة.}other{تمّ إجراء عملية التحقُّق قبل # ساعة.}}</translation>
 <translation id="6545017243486555795">محو جميع البيانات</translation>
 <translation id="6546511553472444032">قد يكون هذا الملف ضارًا.</translation>
+<translation id="6550891580932862748">‏لا يوفّر لك هذا الوضع حماية من الإضافات أو عمليات التنزيل أو المواقع الإلكترونية الضارة. لن تتأثر إعدادات "التصفح الآمن" في منتجات Google الأخرى.</translation>
 <translation id="6556542240154580383">{TAB_COUNT,plural, =1{سيتم إغلاق علامة التبويب <ph name="TAB_TITLE" /> وعلامة تبويب واحدة (<ph name="TAB_COUNT_ONE" />) أخرى.}zero{سيتم إغلاق علامة التبويب <ph name="TAB_TITLE" /> و<ph name="TAB_COUNT_MANY" /> علامة تبويب أخرى.}two{سيتم إغلاق علامة التبويب <ph name="TAB_TITLE" /> وعلامتَي تبويب (<ph name="TAB_COUNT_MANY" />) أُخريان.}few{سيتم إغلاق علامة التبويب <ph name="TAB_TITLE" /> و<ph name="TAB_COUNT_MANY" /> علامات تبويب أخرى.}many{سيتم إغلاق علامة التبويب <ph name="TAB_TITLE" /> و<ph name="TAB_COUNT_MANY" /> علامة تبويب أخرى.}other{سيتم إغلاق علامة التبويب <ph name="TAB_TITLE" /> و<ph name="TAB_COUNT_MANY" /> علامة تبويب أخرى.}}</translation>
 <translation id="6560414384669816528">‏البحث باستخدام Sogou</translation>
 <translation id="656065428026159829">عرض المزيد</translation>
@@ -1145,7 +1149,7 @@
 <translation id="6978717888677691380">المواقع الإلكترونية التي حظرتها</translation>
 <translation id="6979737339423435258">جميع الأوقات</translation>
 <translation id="6987047470128880212">علامة التبويب في وضع التصفُّح المتخفي غير متوفّرة على هذا الجهاز.</translation>
-<translation id="6995899638241819463">التحذير إذا تم الكشف عن كلمات المرور في عملية اختراق بيانات</translation>
+<translation id="6995899638241819463">التحذير في حال الكشف عن كلمات المرور في عملية اختراق بيانات</translation>
 <translation id="6996145122199359148">تنزيل هذه الصفحة</translation>
 <translation id="7020741890149022655">الإضافة إلى قائمة القراءة <ph name="BEGIN_NEW" />جديد<ph name="END_NEW" /></translation>
 <translation id="7022756207310403729">فتح في المتصفح</translation>
@@ -1299,6 +1303,7 @@
 <translation id="7772032839648071052">تأكيد عبارة المرور</translation>
 <translation id="7772375229873196092">إغلاق <ph name="APP_NAME" /></translation>
 <translation id="7774809984919390718">{PAYMENT_METHOD,plural, =1{‏<ph name="PAYMENT_METHOD_PREVIEW" />\u2026 وطريقة دفع إضافية واحدة (<ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" />)}zero{‏<ph name="PAYMENT_METHOD_PREVIEW" />\u2026 و<ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" /> طريقة دفع إضافية}two{‏<ph name="PAYMENT_METHOD_PREVIEW" />\u2026 وطريقتا دفع إضافيتان (<ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" />)}few{‏<ph name="PAYMENT_METHOD_PREVIEW" />\u2026 و<ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" /> طرق دفع إضافية}many{‏<ph name="PAYMENT_METHOD_PREVIEW" />\u2026 و<ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" /> طريقة دفع إضافية}other{‏<ph name="PAYMENT_METHOD_PREVIEW" />\u2026 و<ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" /> طريقة دفع إضافية}}</translation>
+<translation id="777637629667389858">‏عندما تكون مسجّلاً الدخول، تتم حماية حسابك على خدمات Google.</translation>
 <translation id="7778840695157240389">يُرجى إعادة التحقُّق من توفّر قصص جديدة لاحقًا.</translation>
 <translation id="7780645209293383778">‏يتم ربط هذه البيانات مؤقتًا بحسابك على Google عندما يكون دخولك مسجّلاً، بهدف حمايتك على مختلف تطبيقات Google.</translation>
 <translation id="7791543448312431591">إضافة</translation>
@@ -1340,6 +1345,7 @@
 <translation id="7968014550143838305">تمت الإضافة إلى قائمة القراءة.</translation>
 <translation id="7971136598759319605">نشط قبل يوم واحد</translation>
 <translation id="7975379999046275268">معاينة صفحة <ph name="BEGIN_NEW" />ميزة جديدة<ph name="END_NEW" /></translation>
+<translation id="7977451675950311423">ستتلقّى تحذيرًا إذا كنت تستخدم كلمة مرور تم اختراقها في عملية اختراق للبيانات.</translation>
 <translation id="7986497153528221272">للاطّلاع على كلمات المرور، يجب أولاً إعداد قفل الشاشة على جهازك.</translation>
 <translation id="7995059495660416932">سيظهر لك المحتوى عند توفّره.</translation>
 <translation id="799576009106109668">ستتمكّن من التصفُّح بشكلٍ أسرع لأنه يتم تحميل المحتوى مسبقًا استنادًا إلى زيارتك الحالية لصفحة الويب</translation>

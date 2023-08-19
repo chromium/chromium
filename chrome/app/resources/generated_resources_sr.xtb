@@ -1884,6 +1884,7 @@
 <translation id="2480868415629598489">Мењање података које прекопирате</translation>
 <translation id="2482878487686419369">Обавештења</translation>
 <translation id="2482895651873876648">Картица је премештена у групу <ph name="GROUP_NAME" /> – <ph name="GROUP_CONTENTS" /></translation>
+<translation id="2483627560139625913">Подесите претраживач у подешавањима Chrome прегледача</translation>
 <translation id="2484743711056182585">Уклони дозволу</translation>
 <translation id="2484909293434545162">Ако сајт користи колачиће, они ће се приказивати овде</translation>
 <translation id="2484959914739448251">Да бисте обрисали податке прегледања са свих синхронизованих уређаја и са Google налога, <ph name="BEGIN_LINK" />унесите приступну фразу<ph name="END_LINK" />.</translation>
@@ -2038,6 +2039,7 @@
 <translation id="2612676031748830579">Број картице</translation>
 <translation id="2613210758071148851">Не дозвољавај никакве додатке на сајту <ph name="RESTRICTED_SITE" /></translation>
 <translation id="2613535083491958306"><ph name="ORIGIN" /> ће моћи да мења <ph name="FILENAME" /></translation>
+<translation id="2615159404909536465">{FILE_COUNT,plural, =1{Отворите и измените <ph name="FILE1" /> у овом додатку}one{Отворите и измените <ph name="FILE1" /> у овом додатку}few{Отворите и измените <ph name="FILE1" /> у овом додатку}other{Отворите и измените <ph name="FILE1" /> у овом додатку}}</translation>
 <translation id="2616366145935564096">Читање и мењање података на <ph name="WEBSITE_1" /></translation>
 <translation id="2618797463720777311">Подесите Дељење у близини</translation>
 <translation id="261953424982546039">Chrome &amp;Labs…</translation>
@@ -4413,6 +4415,7 @@
 <translation id="4585793705637313973">Измени страницу</translation>
 <translation id="4586275095964870617">Нисмо успели да отворимо <ph name="URL" /> у алтернативном прегледачу. Контактирајте администратора система.</translation>
 <translation id="4587589328781138893">Сајтови</translation>
+<translation id="4588749726511456218">Убрзање скроловања <ph name="LINK_BEGIN" />Сазнајте више<ph name="LINK_END" /></translation>
 <translation id="4589713469967853491">Евиденције су уписане у фолдер Подешавања.</translation>
 <translation id="459204634473266369">Нема сачуваних уређаја на <ph name="PRIMARY_EMAIL" /></translation>
 <translation id="4592525994536856567">Прегледање и претраживање су бржи.</translation>
@@ -5241,7 +5244,6 @@
 <translation id="5298219193514155779">Тему је направио/ла</translation>
 <translation id="5299109548848736476">Не прати</translation>
 <translation id="5299558715747014286">Приказ група картица и управљање њима</translation>
-<translation id="529986401483187205">онемогућено</translation>
 <translation id="5300426565656326054">Персонализација огласа на основу прегледача</translation>
 <translation id="5300589172476337783">Прикажи</translation>
 <translation id="5300719150368506519">Шаље URL-ове страница које посећујете Google-у</translation>
@@ -6232,6 +6234,7 @@
 <translation id="6130692320435119637">Додај WiFi</translation>
 <translation id="6130887916931372608">Тастер тастатуре</translation>
 <translation id="6132714462430777655">Желите да прескочите регистрацију за школу?</translation>
+<translation id="6134428719487602109">Уклоните све корисничке налоге и рестартујте Chromebook да би био као нов.</translation>
 <translation id="6135823405800500595">Уверите се да је телефон у близини, да је откључан и да су Bluetooth и WiFi укључени</translation>
 <translation id="6135826623269483856">Није им дозвољено да управљају прозорима на свим екранима</translation>
 <translation id="6136114942382973861">Затвори траку са преузимањима</translation>

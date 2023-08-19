@@ -35,6 +35,7 @@
 <translation id="1280820357415527819">Notiek mobilo tīklu meklēšana</translation>
 <translation id="1293556467332435079">Faili</translation>
 <translation id="1297922636971898492">Google disks pašlaik nav pieejams. Augšupielāde tiks automātiski atsākta, tiklīdz Google disks atkal būs pieejams.</translation>
+<translation id="1306130176943817227">Nevar dzēst vienumu. Vienums tiek izmantots.</translation>
 <translation id="1307931752636661898">Nevar skatīt Linux failus</translation>
 <translation id="1313405956111467313">Automātiska starpniekservera konfigurācija</translation>
 <translation id="134645005685694099">Ierīcē nepietiek vietas, lai turpinātu failu sinhronizāciju. Jaunie faili vairs netiks automātiski sinhronizēti.</translation>
@@ -537,6 +538,7 @@
 <translation id="5218183485292899140">Šveices franču</translation>
 <translation id="5234764350956374838">Nerādīt</translation>
 <translation id="5253070652067921974">Autors:</translation>
+<translation id="5254207638927440400">Nevar pārvietot failu. Fails tiek izmantots.</translation>
 <translation id="5257456363153333584">Spāre</translation>
 <translation id="5262311848634918433"><ph name="MARKUP_1" />Piekļūstiet saviem failiem, atrodoties jebkurā vietā, pat bezsaistē.<ph name="MARKUP_2" />
     Google diskā esošie faili ir atjaunināti, un tie ir pieejami no jebkuras ierīces.<ph name="MARKUP_3" />

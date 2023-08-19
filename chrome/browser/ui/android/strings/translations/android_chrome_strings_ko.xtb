@@ -309,6 +309,7 @@
 <translation id="2656405586795711023">웹 앱</translation>
 <translation id="2669454659051515572">이 기기를 사용하는 누구나 다운로드된 파일을 볼 수 있습니다.</translation>
 <translation id="2702516483241149200">신규: 이 텍스트로 스크롤하는 링크 공유하기</translation>
+<translation id="2708051474374549906">Google로 전송되는 인터넷 사용 기록을 토대로 위험한 사이트, 다운로드 항목, 확장 프로그램에 대한 실시간 선제적 보호 조치를 적용합니다.</translation>
 <translation id="271033894570825754">New</translation>
 <translation id="2711073837061989559">체험판</translation>
 <translation id="2718352093833049315">Wi-Fi 연결 시</translation>
@@ -669,6 +670,7 @@
 <translation id="4583164079174244168">{MINUTES,plural, =1{#분 전}other{#분 전}}</translation>
 <translation id="4587589328781138893">사이트</translation>
 <translation id="4594952190837476234">이 오프라인 페이지는 <ph name="CREATION_TIME" />에 생성되었으며 온라인 버전과 다를 수 있습니다.</translation>
+<translation id="4601095002996233687">의심스러운 다운로드 항목을 심층 스캔합니다.</translation>
 <translation id="4616150815774728855"><ph name="WEBAPK_NAME" /> 열기</translation>
 <translation id="4619564267100705184">본인 인증</translation>
 <translation id="4634124774493850572">비밀번호 사용</translation>
@@ -834,6 +836,7 @@
 <translation id="543338862236136125">비밀번호 수정</translation>
 <translation id="5433691172869980887">사용자 이름 복사됨</translation>
 <translation id="5438292632479953702">다시 다운로드</translation>
+<translation id="5439191312780166229">표준 보호 모드보다 더 많은 사이트에서 데이터를 분석하여 위험한 사이트에 관해 경고합니다. Google이 이전에 몰랐던 사이트도 여기에 포함됩니다. Chrome 경고를 건너뛸 수 있습니다.</translation>
 <translation id="5441466871879044658">번역 도착어</translation>
 <translation id="5441522332038954058">검색주소창으로 이동</translation>
 <translation id="5444999712122199445">사이트로 돌아가기</translation>
@@ -1044,6 +1047,7 @@
 <translation id="6541983376925655882">{NUM_HOURS,plural, =1{1시간 전에 확인됨}other{#시간 전에 확인됨}}</translation>
 <translation id="6545017243486555795">모든 데이터 삭제</translation>
 <translation id="6546511553472444032">유해한 파일일 수도 있음</translation>
+<translation id="6550891580932862748">위험한 웹사이트, 다운로드 항목, 확장 프로그램으로부터 사용자를 보호하지 않습니다. 다른 Google 제품의 세이프 브라우징 설정은 영향을 받지 않습니다.</translation>
 <translation id="6556542240154580383">{TAB_COUNT,plural, =1{<ph name="TAB_TITLE" /> 외 탭 <ph name="TAB_COUNT_ONE" />개가 닫힙니다.}other{<ph name="TAB_TITLE" /> 외 탭 <ph name="TAB_COUNT_MANY" />개가 닫힙니다.}}</translation>
 <translation id="6560414384669816528">Sogou로 검색</translation>
 <translation id="656065428026159829">더보기</translation>
@@ -1297,6 +1301,7 @@
 <translation id="7772032839648071052">암호 확인</translation>
 <translation id="7772375229873196092"><ph name="APP_NAME" /> 닫기</translation>
 <translation id="7774809984919390718">{PAYMENT_METHOD,plural, =1{<ph name="PAYMENT_METHOD_PREVIEW" /> 외 <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" />개}other{<ph name="PAYMENT_METHOD_PREVIEW" /> 외 <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" />개}}</translation>
+<translation id="777637629667389858">로그인하면 Google 서비스 전반에서 사용자를 보호합니다.</translation>
 <translation id="7778840695157240389">나중에 다시 새 스토리를 확인하세요.</translation>
 <translation id="7780645209293383778">사용자가 로그인하면 이 데이터를 사용자의 Google 계정에 일시적으로 연결하여 Google 앱 전반에서 사용자를 보호합니다.</translation>
 <translation id="7791543448312431591">추가</translation>
@@ -1338,6 +1343,7 @@
 <translation id="7968014550143838305">읽기 목록에 추가됨</translation>
 <translation id="7971136598759319605">1일 전 동기화됨</translation>
 <translation id="7975379999046275268">페이지 미리보기 표시 <ph name="BEGIN_NEW" />새로운 기능<ph name="END_NEW" /></translation>
+<translation id="7977451675950311423">정보 유출로 인해 유출된 비밀번호를 사용하면 경고를 보냅니다.</translation>
 <translation id="7986497153528221272">비밀번호를 보려면 먼저 기기에 화면 잠금을 설정하세요.</translation>
 <translation id="7995059495660416932">이용 가능한 콘텐츠가 있으면 표시됩니다.</translation>
 <translation id="799576009106109668">현재 웹페이지 방문을 토대로 콘텐츠가 미리 로드되므로 더 빠르게 탐색할 수 있습니다.</translation>

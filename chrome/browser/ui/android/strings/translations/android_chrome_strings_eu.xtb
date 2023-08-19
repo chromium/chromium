@@ -309,6 +309,7 @@ Egoeraren token pribatuek sareko pribatutasuna hobetzen dute eta ezin dira erabi
 <translation id="2656405586795711023">Sareko aplikazioak</translation>
 <translation id="2669454659051515572">Gailu hau darabilen edonork ikus ditzake deskargatutako fitxategiak</translation>
 <translation id="2702516483241149200">Berria: partekatu testu honetan gora eta behera egiteko esteka bat</translation>
+<translation id="2708051474374549906">Webgune, deskarga eta luzapen arriskutsuen aurkako babes proaktiboa denbora errealean, Google-ri bidaltzen zaizkion zure arakatze-datuetan oinarritutakoa</translation>
 <translation id="271033894570825754">Berria</translation>
 <translation id="2711073837061989559">Probak</translation>
 <translation id="2718352093833049315">Wifi bidez soilik</translation>
@@ -669,6 +670,7 @@ Baliteke Google-ko kontuak arakatze-historiako bestelako datu batzuk (adibidez, 
 <translation id="4583164079174244168">{MINUTES,plural, =1{Duela # minutu}other{Duela # minutu}}</translation>
 <translation id="4587589328781138893">Webguneak</translation>
 <translation id="4594952190837476234">Konexiorik gabe erabiltzeko orri hau <ph name="CREATION_TIME" /> datan sortu zen. Ondorioz, baliteke sareko bertsioarekin bat ez etortzea.</translation>
+<translation id="4601095002996233687">Deskarga susmagarrien azterketa sakonak.</translation>
 <translation id="4616150815774728855">Ireki <ph name="WEBAPK_NAME" /></translation>
 <translation id="4619564267100705184">Egiaztatu zeu zarela</translation>
 <translation id="4634124774493850572">Erabili pasahitza</translation>
@@ -834,6 +836,7 @@ Ezarpena aldatzeko, <ph name="BEGIN_LINK" />berrezarri sinkronizazioa<ph name="E
 <translation id="543338862236136125">Editatu pasahitza</translation>
 <translation id="5433691172869980887">Kopiatu da erabiltzaile-izena</translation>
 <translation id="5438292632479953702">Deskargatu berriro</translation>
+<translation id="5439191312780166229">Webgune arriskutsuen berri ematen dizu, Google-k ezagutzen ez zituenak barne, webguneetan babes estandarrak baino datu gehiago aztertuz. Chrome-ren abisuak saltatzea aukera dezakezu.</translation>
 <translation id="5441466871879044658">Itzuli hizkuntza honetara</translation>
 <translation id="5441522332038954058">Saltatu helbide-barrara</translation>
 <translation id="5444999712122199445">Itzuli webgunera</translation>
@@ -1044,6 +1047,7 @@ Esaterako, bisitatu dituzun webguneetan oinarritzen ez diren iragarkiak bidalita
 <translation id="6541983376925655882">{NUM_HOURS,plural, =1{Duela ordubete egiaztatu du}other{Duela # ordu egiaztatu du}}</translation>
 <translation id="6545017243486555795">Garbitu datu guztiak</translation>
 <translation id="6546511553472444032">Baliteke fitxategia kaltegarria izatea</translation>
+<translation id="6550891580932862748">Ez zaitu babesten webgune, deskarga eta luzapen kaltegarrien aurka. Honek ez du eraginik izango Google-ren beste produktuetako Arakatze segurua eginbidearen ezarpenetan.</translation>
 <translation id="6556542240154580383">{TAB_COUNT,plural, =1{<ph name="TAB_TITLE" /> eta beste <ph name="TAB_COUNT_ONE" /> fitxa itxiko dira}other{<ph name="TAB_TITLE" /> eta beste <ph name="TAB_COUNT_MANY" /> fitxa itxiko dira}}</translation>
 <translation id="6560414384669816528">Erabili Sogou bilatzaile gisa</translation>
 <translation id="656065428026159829">Ikusi gehiago</translation>
@@ -1257,6 +1261,7 @@ Esaterako, bisitatu dituzun webguneetan oinarritzen ez diren iragarkiak bidalita
 <translation id="757855969265046257">{FILES,plural, =1{<ph name="FILES_DOWNLOADED_ONE" /> fitxategi deskargatu da}other{<ph name="FILES_DOWNLOADED_MANY" /> fitxategi deskargatu dira}}</translation>
 <translation id="7581273696622423628">Erantzun inkestari</translation>
 <translation id="7583262514280211622">Irakurketa-zerrenda aurkituko duzu hemen</translation>
+<translation id="7587250070160020374">Chrome orain erreproduzitzen ari da</translation>
 <translation id="7588219262685291874">Aktibatu gai iluna gailuaren bateria-aurreztailea aktibatuta dagoenean</translation>
 <translation id="7594687499944811403">Utzi zeu zarela egiaztatzen <ph name="EMBEDDED_ORIGIN" /> webguneari <ph name="TOP_ORIGIN" /> webgunearen zerbitzua erabili ahal izateko</translation>
 <translation id="7596558890252710462">Sistema eragilea</translation>
@@ -1296,6 +1301,7 @@ Esaterako, bisitatu dituzun webguneetan oinarritzen ez diren iragarkiak bidalita
 <translation id="7772032839648071052">Berretsi pasaesaldia</translation>
 <translation id="7772375229873196092">Itxi <ph name="APP_NAME" /></translation>
 <translation id="7774809984919390718">{PAYMENT_METHOD,plural, =1{<ph name="PAYMENT_METHOD_PREVIEW" /> eta beste <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" />}other{<ph name="PAYMENT_METHOD_PREVIEW" /> eta beste <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" />}}</translation>
+<translation id="777637629667389858">Saioa hasita daukazunean, Google-ren zerbitzu guztietan babesten zaitu.</translation>
 <translation id="7778840695157240389">Itzuli geroago istorio berririk dagoen ikusteko</translation>
 <translation id="7780645209293383778">Saioa hasita daukazunean, datu horiek zure Google-ko kontuarekin lotzen ditu aldi baterako, Google-ren aplikazioetan babestuago egon zaitezen.</translation>
 <translation id="7791543448312431591">Gehitu</translation>
@@ -1337,6 +1343,7 @@ Esaterako, bisitatu dituzun webguneetan oinarritzen ez diren iragarkiak bidalita
 <translation id="7968014550143838305">Gehitu da irakurketa-zerrendan</translation>
 <translation id="7971136598759319605">Aktibo duela 1 egun</translation>
 <translation id="7975379999046275268">Aurreikusi orria <ph name="BEGIN_NEW" />Berria<ph name="END_NEW" /></translation>
+<translation id="7977451675950311423">Datuen isilpekotasunaren urratze batean arriskuan jarri den pasahitz bat badarabilzu, horren berri emango dizu.</translation>
 <translation id="7986497153528221272">Pasahitzak ikusteko, ezarri lehendabizi pantailaren blokeoa gailuan</translation>
 <translation id="7995059495660416932">Erabilgarri dagoenean ikusiko duzu edukia</translation>
 <translation id="799576009106109668">Bizkorrago arakatuko duzu, edukia proaktiboki kargatuko delako bisitatzen ari zaren web-orriaren arabera.</translation>

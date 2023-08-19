@@ -4,6 +4,7 @@
 <translation id="1006017844123154345">Online openen</translation>
 <translation id="1036348656032585052">Uitzetten</translation>
 <translation id="1044891598689252897">Sites werken naar behoren</translation>
+<translation id="1073417869336441572">Help ons Chrome te verbeteren door ons te vertellen waarom je cookies van derden hebt toegestaan. <ph name="BEGIN_LINK" />Feedback sturen<ph name="END_LINK" /></translation>
 <translation id="1124090076051167250">Hiermee wis je <ph name="DATASIZE" /> aan gegevens en cookies die zijn opgeslagen door sites of apps op je startscherm.</translation>
 <translation id="1178581264944972037">Onderbreken</translation>
 <translation id="1181037720776840403">Verwijderen</translation>
@@ -50,6 +51,7 @@
 <translation id="1984937141057606926">Toegestaan, behalve van derden</translation>
 <translation id="1989112275319619282">Browsen</translation>
 <translation id="1994173015038366702">Site-URL</translation>
+<translation id="1999195646219379110">{COUNT,plural, =1{Verloopt over 1 dag}other{Verloopt over # dagen}}</translation>
 <translation id="2004697686368036666">Functies op bepaalde sites werken misschien niet</translation>
 <translation id="2025115093177348061">Augmented reality</translation>
 <translation id="2030769033451695672">Tik om terug te gaan naar <ph name="URL_OF_THE_CURRENT_TAB" /></translation>
@@ -140,6 +142,7 @@
 <translation id="3386292677130313581">Eerst vragen voordat sites toegang krijgen tot je locatie (aanbevolen)</translation>
 <translation id="3403537308306431953"><ph name="ZOOM_LEVEL" />%%</translation>
 <translation id="344449859752187052">Cookies van derden geblokkeerd</translation>
+<translation id="3465378418721443318">{DAYS,plural, =1{Chrome blokkeert morgen weer cookies}other{Nog # dagen totdat Chrome weer cookies blokkeert}}</translation>
 <translation id="3521663503435878242">Sites onder <ph name="DOMAIN" /></translation>
 <translation id="3538390592868664640">Voorkomen dat sites een 3D-kaart van je omgeving maken of de camerapositie volgen</translation>
 <translation id="3544058026430919413">Een bedrijf kan een groep sites definiëren die cookies kunnen gebruiken om je activiteit in de groep te delen. Dit staat uit in de incognitomodus.</translation>
@@ -162,6 +165,7 @@
 <translation id="381841723434055211">Telefoonnummers</translation>
 <translation id="3826050100957962900">Externe login</translation>
 <translation id="3835233591525155343">Je apparaatgebruik</translation>
+<translation id="3843916486309149084">Chrome blokkeert vandaag weer cookies</translation>
 <translation id="385051799172605136">Terug</translation>
 <translation id="3859306556332390985">Vooruit zoeken</translation>
 <translation id="3895926599014793903">Zoom verplicht aan</translation>
@@ -301,6 +305,7 @@
 <translation id="6367753977865761591">Externe login blokkeren voor een specifieke site.</translation>
 <translation id="6388207532828177975">Wissen en opnieuw instellen</translation>
 <translation id="6398765197997659313">Volledig scherm sluiten</translation>
+<translation id="640163077447496506">Verloopt vandaag</translation>
 <translation id="6405650995156823521"><ph name="FIRST_PART" /> • <ph name="SECOND_PART" /></translation>
 <translation id="6439114592976064011">Voorkomen dat sites je virtualreality-apparaat en -gegevens gebruiken</translation>
 <translation id="6447842834002726250">Cookies</translation>
@@ -396,6 +401,7 @@
 <translation id="8131740175452115882">Bevestigen</translation>
 <translation id="8154912474061769055">Functies op veel sites werken misschien niet</translation>
 <translation id="8168435359814927499">Content</translation>
+<translation id="8186479265534291036">Werkt de site niet? Cookies van derden geblokkeerd</translation>
 <translation id="8197286292360124385"><ph name="PERMISSION_1" /> toegestaan</translation>
 <translation id="8200772114523450471">Doorgaan</translation>
 <translation id="8206354486702514201">Deze instelling wordt door je beheerder afgedwongen.</translation>

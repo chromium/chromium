@@ -69,6 +69,7 @@
 <translation id="1054048317165655285">Dovršite postavljanje na telefonu</translation>
 <translation id="1054153489933238809">Otvori izvornu sl&amp;iku na novoj kartici</translation>
 <translation id="1055274863771110134">{NUM_WEEKS,plural, =1{Ažurirajte uređaj <ph name="DEVICE_TYPE" /> u roku od 1 tjedna}one{Ažurirajte uređaj <ph name="DEVICE_TYPE" /> u roku od {NUM_WEEKS} tjedna}few{Ažurirajte uređaj <ph name="DEVICE_TYPE" /> u roku od {NUM_WEEKS} tjedna}other{Ažurirajte uređaj <ph name="DEVICE_TYPE" /> u roku od {NUM_WEEKS} tjedana}}</translation>
+<translation id="1056398434290692818">Krećite se unatrag i unaprijed prelaskom prsta</translation>
 <translation id="1056898198331236512">Upozorenje</translation>
 <translation id="1056980582064308040">Promjenom postavki ponovo će se pokrenuti žarišna točka. Prekinut će se veza s uređajima koji upotrebljavaju žarišnu točku.</translation>
 <translation id="1058262162121953039">PUK</translation>
@@ -513,6 +514,7 @@ Zaporke uvijek možete provjeriti u odjeljku <ph name="GOOGLE_PASSWORD_MANAGER" 
 <translation id="1417428793154876133">{NUM_APPS,plural, =1{Ukloni aplikaciju}one{Ukloni aplikacije}few{Ukloni aplikacije}other{Ukloni aplikacije}}</translation>
 <translation id="1417497355604638350">Pošaljite dijagnostičke podatke i podatke o upotrebi.</translation>
 <translation id="1418552618736477642">Obavijesti i aplikacije</translation>
+<translation id="1418559532423038045">Uklanja se <ph name="VM_NAME" /> s vašeg uređaja <ph name="DEVICE_TYPE" />. Time će se izbrisati sve aplikacije i podaci na virtualnom stroju!</translation>
 <translation id="1418882096915998312">U tijeku je prijava poduzeća</translation>
 <translation id="1418954524306642206">Pregledajte da biste naveli PPD pisača</translation>
 <translation id="1420834118113404499">Licence medijskog sadržaja</translation>
@@ -2372,6 +2374,7 @@ Postavkama računa možete upravljati tako da instalirate aplikaciju Family Link
 <translation id="287205682142673348">Prosljeđ. priklj.</translation>
 <translation id="287286579981869940">Dodaj davatelja usluge <ph name="PROVIDER_NAME" />...</translation>
 <translation id="2872961005593481000">Isključi</translation>
+<translation id="2873744479411987024">Uz višu učestalost osvježavanja imat ćete glatni prikaz s više pojedinosti. Povećana učestalost osvježavanja može utjecati na trajanje baterije.</translation>
 <translation id="2873995907777332853">Prikaži pojedinosti o blokiranju svih kolačića</translation>
 <translation id="2874939134665556319">Prethodna pjesma</translation>
 <translation id="2875698561019555027">(Chromeove stranice pogrešaka)</translation>
@@ -2461,6 +2464,7 @@ Postavkama računa možete upravljati tako da instalirate aplikaciju Family Link
 <translation id="2944060181911631861">Slanje podataka o upotrebi i dijagnostici. Pomognite poboljšati Android automatskim slanjem dijagnostičkih podataka te podataka o upotrebi uređaja i aplikacija Googleu. Ti podaci pomoći će poboljšati stabilnost sustava, aplikacija i drugo. Neki skupni podaci pomoći će i Googleovim aplikacijama i partnerima, na primjer razvojnim programerima za Android. Ako je uključena dodatna postavka Aktivnost na webu i u aplikacijama, ti se podaci mogu spremati na vaš Google račun. <ph name="BEGIN_LINK1" />Saznajte više<ph name="END_LINK1" /></translation>
 <translation id="2946054015403765210">Idi na datoteke</translation>
 <translation id="2946119680249604491">Dodaj vezu</translation>
+<translation id="2946190589196900944">Granice prikaza</translation>
 <translation id="2946640296642327832">Omogući Bluetooth</translation>
 <translation id="2947605845283690091">Pregledavanje weba treba biti brzo. Odvojite trenutak i <ph name="BEGIN_LINK" />pregledajte svoja proširenja<ph name="END_LINK" /> odmah.</translation>
 <translation id="2948300991547862301">Idi na stranicu <ph name="PAGE_TITLE" /></translation>
@@ -2476,6 +2480,7 @@ Postavkama računa možete upravljati tako da instalirate aplikaciju Family Link
 <translation id="2959127025785722291">Nešto nije u redu. Pregled nije dovršen. Pokušajte ponovo.</translation>
 <translation id="2959842337402130152">Vraćanje nije moguće jer nema dovoljno prostora za pohranu. Oslobodite <ph name="SPACE_REQUIRED" /> na uređaju i pokušajte ponovo.</translation>
 <translation id="2960208947600937804">Došlo je do pogreške prilikom konfiguriranja Linuxa. Obratite se administratoru.</translation>
+<translation id="2960942820860729477">Učestalost osvježavanja</translation>
 <translation id="2961090598421146107"><ph name="CERTIFICATE_NAME" /> (omogućeno produženje)</translation>
 <translation id="2961210776189273067">Titula</translation>
 <translation id="2961695502793809356">Kliknite za kretanje prema naprijed, zadržite da biste vidjeli povijest</translation>
@@ -4195,6 +4200,7 @@ To može uključivati informacije o instaliranom softveru, datotekama, vašem pr
 <translation id="4404843640767531781">Tvoj roditelj blokirao je aplikaciju <ph name="APP_NAME" />. Ako želiš koristiti tu aplikaciju, traži dopuštenje od roditelja.</translation>
 <translation id="4405117686468554883">*.jpeg, *.jpg, *.png</translation>
 <translation id="4405224443901389797">Premjesti u…</translation>
+<translation id="4405781821077215583">Stavke na zaslonu, uključujući tekst, možete povećati ili smanjiti</translation>
 <translation id="4406883609789734330">Automatski titlovi</translation>
 <translation id="4407039574263172582">Da biste nastavili, <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> podijelit će vaše ime, e-adresu i profilnu sliku s ovom web-lokacijom. Pogledajte <ph name="BEGIN_LINK" />uvjete pružanja usluge<ph name="END_LINK" /> ove web-lokacije.</translation>
 <translation id="4408599188496843485">P&amp;omoć</translation>
@@ -5248,7 +5254,6 @@ Upotrijebite Ctrl + Alt + Smanjivanje svjetline za smanjivanje prikaza.</transla
 <translation id="5298219193514155779">Temu je stvorio autor</translation>
 <translation id="5299109548848736476">Nemoj pratiti</translation>
 <translation id="5299558715747014286">Pregled grupa kartica i upravljanje njima</translation>
-<translation id="529986401483187205">onemogućeno</translation>
 <translation id="5300426565656326054">Prilagodba oglasa na temelju preglednika</translation>
 <translation id="5300589172476337783">Prikaži</translation>
 <translation id="5300719150368506519">Slanje URL-ova posjećenih stranica Googleu</translation>
@@ -6304,6 +6309,7 @@ Dopuštenja koja ste već dali web-lokacijama i aplikacijama mogu se primijeniti
 <translation id="6196640612572343990">Blokiraj kolačiće trećih strana</translation>
 <translation id="6196854373336333322">Proširenje "<ph name="EXTENSION_NAME" />" preuzelo je kontrolu nad vašim postavkama proxyja, a to znači da može promijeniti, prekinuti ili prisluškivati sve što radite na mreži. Ako niste sigurni kako je došlo do te promjene, vjerojatno je ne želite.</translation>
 <translation id="6197128521826316819">Izradi QR kôd za ovu stranicu</translation>
+<translation id="6198223452299275399">Prelazite prstom između stranica</translation>
 <translation id="6198252989419008588">Promijeni PIN</translation>
 <translation id="6200047250927636406">Odbaci datoteku</translation>
 <translation id="6200151268994853226">Upravljajte proširenjem</translation>
@@ -6700,6 +6706,7 @@ Dopuštenja koja ste već dali web-lokacijama i aplikacijama mogu se primijeniti
 <translation id="6532527800157340614">Prijava nije uspjela jer nije dohvaćen vaš pristupni token. Provjerite mrežnu vezu i pokušajte ponovo.</translation>
 <translation id="6532663472409656417">Prijavljeno u poduzeću</translation>
 <translation id="6533315466883598769">Upotreba Google prevoditelja</translation>
+<translation id="65334502113648172">Pritisnite tipke sa strelicama da biste smanjili ili proširili područje prikaza. Da biste pomicali područje prikaza, pritisnite Shift i +, a zatim upotrijebite tipke sa strelicama.</translation>
 <translation id="6533636340637966565">Uključivanje...</translation>
 <translation id="6535331821390304775">Uvijek dopusti da <ph name="ORIGIN" /> otvara veze ove vrste u povezanoj aplikaciji</translation>
 <translation id="653659894138286600">Skeniranje dokumenata i slika</translation>

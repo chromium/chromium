@@ -659,6 +659,7 @@
 <translation id="380165613292957338">Здраво, како могу да помогнем?</translation>
 <translation id="3804737937830804242">Скупите камеру</translation>
 <translation id="3824784079442479685">Ово омогућава приступ камери за апликацију <ph name="APP_NAME" />, као и све апликације и веб-сајтове са дозволом за камеру. Можда ћете морати да освежите веб-страницу или рестартујете апликацију.</translation>
+<translation id="3825680296690914697">Предато: <ph name="NUM_TURNED_IN" /> од <ph name="TOTAL_NUM_OF_SUBMISSIONS" />, оцењено: <ph name="NUM_GRADED" /></translation>
 <translation id="3826099427150913765">Пређи на лозинку</translation>
 <translation id="383058930331066723">Режим уштеде батерије је укључен</translation>
 <translation id="383629559565718788">Прегледајте подешавања тастатуре</translation>
@@ -1745,6 +1746,7 @@
 <translation id="8446884382197647889">Сазнајте више</translation>
 <translation id="8456543082656546101"><ph name="SHORTCUT_KEY_NAME" /> + V</translation>
 <translation id="8462305545768648477">Затворите Изаберите за говор</translation>
+<translation id="8468806060683421065">рок: <ph name="DUE_DATE_AND_TIME" /></translation>
 <translation id="847056008324733326">Подешавања размере приказа</translation>
 <translation id="8473301994082929012"><ph name="ORGANIZATION_NAME" /> – <ph name="FEATURE_STATE" />: <ph name="FEATURE_NAME" />.</translation>
 <translation id="8477270416194247200">Притисните Alt + тастер за претрагу или Shift да бисте отказали.</translation>
@@ -1828,6 +1830,7 @@
 <translation id="8853703225951107899">Верификација PIN-а или лозинке још увек није успела. Напомена: Ако сте недавно променили лозинку, користите стару. Нова лозинка ће бити примењена када се одјавите.</translation>
 <translation id="8855885154700222542">Тастер за цео екран</translation>
 <translation id="8858369206579825206">Контроле приватности</translation>
+<translation id="8860366331836346216">Додај eSIM</translation>
 <translation id="8870509716567206129">Апликација не подржава подељени екран.</translation>
 <translation id="8874184842967597500">Није повезано</translation>
 <translation id="8875021410787719674">Премештајте из доњег десног угла на покретач, траку за адресу, траку са обележивачима, веб-сајт који је отворен и преузимања</translation>

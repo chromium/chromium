@@ -606,6 +606,7 @@
 <translation id="2225927550500503913">Carte virtuelle activée</translation>
 <translation id="2226636330183131181"><ph name="BEGIN_LINK" />Se connecter<ph name="END_LINK" /> au réseau Wi-Fi</translation>
 <translation id="2228057197024893428">Cette adresse est actuellement enregistrée dans Chrome. Pour l'utiliser dans tous les produits Google, enregistrez-le dans votre compte Google, <ph name="ACCOUNT" />.</translation>
+<translation id="2228466771983364669"><ph name="EMBEDDED_URL" /> saura que vous avez visité <ph name="TOP_LEVEL_URL" />.</translation>
 <translation id="2233745931693710080">Disque compact</translation>
 <translation id="2239100178324503013">Envoyer maintenant</translation>
 <translation id="2241693394036365668">Un fichier est téléchargé</translation>
@@ -2093,6 +2094,7 @@
 <translation id="5426179911063097041"><ph name="SITE" /> veut vous envoyer des notifications.</translation>
 <translation id="5430298929874300616">Retirer le favori</translation>
 <translation id="5443468954631487277">Ordre inversé, face vers le haut</translation>
+<translation id="5447235695608032700">Autoriser <ph name="SITE" /> à utiliser les informations qu'il a enregistrées à votre sujet</translation>
 <translation id="5447765697759493033">Ce site ne sera pas traduit</translation>
 <translation id="5452270690849572955">Cette page <ph name="HOST_NAME" /> est introuvable</translation>
 <translation id="5455374756549232013">Horodatage de la règle incorrect.</translation>

@@ -2943,13 +2943,6 @@
 <translation id="3591584750136265240">設定登入驗證行為</translation>
 <translation id="3593905652755912452">系統將使用在已停用表單控制項上傳送事件的舊行為。</translation>
 <translation id="3596112486106491038">啟用虛擬機器指令列存取權</translation>
-<translation id="3596651403637948128">這項政策可控制是否允許安全瀏覽的標準防護模式，經由 Oblivious HTTP 透過 Proxy 將網址的部分雜湊值傳送至 Google，用於判斷該網址能否安全瀏覽。
-
-Proxy 可讓瀏覽器以匿名方式將網址的部分雜湊值上傳至 Google。同時，瀏覽器也能以更高的頻率上傳，提升安全瀏覽的防護品質。如果安全瀏覽功能停用或設為強化防護模式，系統會忽略這項政策。
-
-如果將這項政策設為啟用或不設定，可以使用防護等級較高的 Proxy 查詢。
-
-如果將這項政策設為停用，就無法使用防護等級較高的 Proxy 查詢。網址會直接上傳至 Google，但頻率大幅降低。</translation>
 <translation id="3603469950773500315">在新版 <ph name="CORS" /> 模式中啟用寬鬆檢查機制來放寬 <ph name="CORS" /> 檢查標準，讓擴充功能保持相容行為，並允許 <ph name="PRODUCT_NAME" /> 不需經過 <ph name="CORS" /> 檢查即可傳送指定標頭。
 
       如果將這份清單設為空白，<ph name="PRODUCT_NAME" /> 會嘗試以相容方式執行擴充功能，且不會採用 <ph name="PRODUCT_NAME" /> 第 79 版的 <ph name="API" /> 變更，詳情請參閱 <ph name="WEB_REQUEST_API_MANUAL" />。

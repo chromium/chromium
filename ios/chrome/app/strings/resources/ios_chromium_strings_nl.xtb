@@ -12,6 +12,7 @@
 <translation id="1507010443238049608">Help de functies en prestaties van Chromium te verbeteren</translation>
 <translation id="1531155317299575425">Toont prompts om in te loggen bij Chromium.</translation>
 <translation id="1617663976202781617">Gegevens van Chromium-synchronisatie</translation>
+<translation id="1647558790457890304">Chromium-instellingen</translation>
 <translation id="1722370509450468186">Je wachtwoord wordt opgeslagen in je account (<ph name="EMAIL" />).</translation>
 <translation id="1736662517232558588">Chromium-gegevens gewist</translation>
 <translation id="1758508597843173586">Vergrendel de incognitomodus als je Chromium verlaat of overschakelt naar een andere app.</translation>
@@ -54,6 +55,10 @@
 <translation id="3780779443901618967">Geeft je waarschuwingen over gevaarlijke sites, zelfs sites die Google niet eerder kende, door meer gegevens van sites te analyseren dan de standaardbeveiliging. Je kunt ervoor kiezen om waarschuwingen voor Chromium over te slaan.</translation>
 <translation id="3805899903892079518">Chromium heeft geen toegang tot je foto's of video's. Geef in iOS toegang via Instellingen &gt; Privacy &gt; Foto's.</translation>
 <translation id="3827545470516145620">Je krijgt standaardbeveiliging op dit apparaat</translation>
+<translation id="3886689467633467988">Log in op deze site en bij Chromium om onder andere je bookmarks op al je apparaten te gebruiken.</translation>
+<translation id="394413318816989199">Versleuteling van wachtwoordzinnen omvat geen betaalmethoden en adressen.
+
+Als je deze instelling wilt wijzigen, <ph name="BEGIN_LINK" />wis je de Chromium-gegevens in je account<ph name="END_LINK" />.</translation>
 <translation id="3955621079070267756">Chromium openen via elke app</translation>
 <translation id="4043291146360695975">Wachtwoorden worden alleen opgeslagen in Wachtwoordmanager op dit apparaat.</translation>
 <translation id="4099085513035183040">Niet ondersteund in Chromium (bèta)</translation>
@@ -65,14 +70,19 @@
 <translation id="4654936625574199632">Chromium stuurt gebruiks- en crashgegevens naar Google om de app te helpen verbeteren. <ph name="BEGIN_LINK" />Beheren<ph name="END_LINK" /></translation>
 <translation id="4681781466797808448">Chromium-scanner aanzetten</translation>
 <translation id="4736424910885271643">Je account wordt beheerd door <ph name="HOSTED_DOMAIN" />, dus je Chromium-gegevens worden verwijderd van dit apparaat</translation>
+<translation id="4790638144988730920">Blijf de Chromium-gegevens in je Google-account gebruiken.</translation>
 <translation id="4828317641996116749">Chromium kan niet alle wachtwoorden checken. Probeer het later opnieuw.</translation>
 <translation id="4985291216379576555">Offline. Chromium kan niet checken op updates</translation>
 <translation id="4996471330284142407">Krijg meer gedaan met Chromium. Nu nog makkelijker, veiliger en sneller dan ooit.</translation>
 <translation id="4999538639245140991">Omdat je uitlogt van een account dat wordt beheerd door <ph name="SIGNOUT_MANAGED_DOMAIN" />, worden je Chromium-gegevens van dit apparaat verwijderd. Je gegevens blijven echter wel in je Google-account staan.</translation>
 <translation id="5042011327527167688">Tik op 'Bekijken met Google Maps in Chromium'.</translation>
 <translation id="5048795749726991615">Gebruik Chromium voor automatisch invullen om je opgeslagen wachtwoorden makkelijk te gebruiken in je andere apps</translation>
+<translation id="5131565040785979529">Je organisatie, <ph name="DOMAIN" />, beheert het account waarop je bent ingelogd en hoe Chromium wordt gebruikt.</translation>
 <translation id="5171868502429358653">Inloggen bij Chromium</translation>
 <translation id="5224391634244552924">Geen opgeslagen wachtwoorden. Chromium kan je wachtwoorden checken als je deze hebt opgeslagen.</translation>
+<translation id="5242782538551259282">Sommige van je Chromium-gegevens zijn nog niet opgeslagen in je Google-account.
+
+        Wacht een paar minuten voordat je uitlogt. Als je nu uitlogt, worden deze gegevens verwijderd.</translation>
 <translation id="5308226104666789935">Chromium kan niet checken op updates</translation>
 <translation id="5396916991083608703">Chromium instellen als standaard?</translation>
 <translation id="5453478652154926037">Chromium kan je wachtwoorden niet checken.</translation>
@@ -82,7 +92,17 @@
 <translation id="5688047395118852662">Op deze kaart zie je suggesties voor hoe je het maximale uit Chromium kunt halen.</translation>
 <translation id="5700709190537129682">Chromium kan je wachtwoorden niet checken</translation>
 <translation id="5777187867430702742">Chromium-pagina</translation>
+<translation id="5889847953983052353">Als dit aanstaat:
+<ph name="BEGIN_INDENT" />  • Help Chromium beter te maken voor mensen die de functie gebruiken zoals jij dat doet.<ph name="END_INDENT" />
+
+Aandachtspunten:
+<ph name="BEGIN_INDENT" />  • Er wordt informatie naar Google gestuurd over je Chromium-gebruik, maar deze is niet aan jou gekoppeld.
+
+  • Als Chromium crasht, kunnen de gegevens over de crash wat persoonlijke informatie bevatten.
+
+  • Als je je geschiedenis synchroniseert met je Google-account, kunnen de statistieken ook informatie bevatten over de URL's die je bezoekt.<ph name="END_INDENT" /></translation>
 <translation id="5945387852661427312">Je logt in met een account dat wordt beheerd door <ph name="DOMAIN" />, waarmee je de eigenaar beheer geeft over je Chromium-gegevens. Je gegevens worden permanent gekoppeld aan dit account. Als je uitlogt van Chromium, worden je gegevens van dit apparaat verwijderd. Ze blijven echter opgeslagen in je Google-account.</translation>
+<translation id="5951593919357934226">Haal het maximale uit Chromium.</translation>
 <translation id="5983312940147103417">Chromium verbeteren</translation>
 <translation id="6062449165341879460">Je organisatie <ph name="DOMAIN" /> heeft toegang tot je Chromium-gegevens, bookmarks, geschiedenis, wachtwoorden en andere instellingen die je in dit account opslaat. Als je uitlogt, worden je gegevens van dit apparaat gewist.  De gegevens blijven wel opgeslagen in je beheerde Google-account en zijn nog steeds beschikbaar voor je organisatie. Je organisatie kan ook specifiek voor dat account gebruikersbeleid instellen waarmee het gedrag van Chromium kan worden gewijzigd.</translation>
 <translation id="61109258320235597">Geef je wachtwoordzin op als je Chromium-gegevens wilt gebruiken en opslaan in je Google-account.</translation>
@@ -94,6 +114,9 @@
 <translation id="6268381023930128611">Uitloggen bij Chromium?</translation>
 <translation id="632825460376924298">Inloggen bij Chromium toestaan</translation>
 <translation id="6337530241089703714">Kies of je je Chromium-gegevens voor dit apparaat wilt verwijderen of behouden</translation>
+<translation id="6407399265324739055">Betaalmethoden en adressen worden niet versleuteld. De browsegeschiedenis in Chromium wordt niet gesynchroniseerd.
+
+Alleen iemand met je wachtwoordzin kan je versleutelde gegevens lezen. De wachtwoordzin wordt niet gestuurd naar of opgeslagen door Google. Als je je wachtwoordzin vergeet of deze instelling wilt wijzigen, <ph name="BEGIN_LINK" />wis je de Chromium-gegevens in je account<ph name="END_LINK" />.</translation>
 <translation id="6424492062988593837">Chromium is nu nog beter! Er is een nieuwe versie beschikbaar.</translation>
 <translation id="6563921047760808519">Meer informatie over <ph name="BEGIN_LINK" />hoe Chromium je gegevens privé houdt<ph name="END_LINK" /></translation>
 <translation id="6625409903340039086">Chromium ondersteunt nu gebruikersbeleid voor je beheerde account</translation>

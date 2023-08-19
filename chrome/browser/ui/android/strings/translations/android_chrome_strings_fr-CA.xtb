@@ -309,6 +309,7 @@ Les jetons de confiance valides améliorent la confidentialité sur le Web et ne
 <translation id="2656405586795711023">Applications Web</translation>
 <translation id="2669454659051515572">Toute personne utilisant cet appareil peut voir les fichiers téléchargés</translation>
 <translation id="2702516483241149200">Nouveauté : communiquez un lien qui fait défiler l'écran jusqu'à ce texte</translation>
+<translation id="2708051474374549906">Une protection proactive en temps réel contre les sites, les extensions et les téléchargements dangereux, basée sur les données de navigation envoyées à Google</translation>
 <translation id="271033894570825754">Nouveau</translation>
 <translation id="2711073837061989559">Essais</translation>
 <translation id="2718352093833049315">Wi-Fi uniquement</translation>
@@ -470,6 +471,7 @@ Les jetons de confiance valides améliorent la confidentialité sur le Web et ne
 <translation id="3513704683820682405">Réalité augmentée</translation>
 <translation id="3518985090088779359">Accepter et continuer</translation>
 <translation id="3522247891732774234">Mise à jour disponible. Plus d'options</translation>
+<translation id="3523426587027570423">Toucher pour fermer « Écouter cette page ».</translation>
 <translation id="3524138585025253783">IU de développeur</translation>
 <translation id="3524334353996115845">Laissez <ph name="ORIGIN" /> vérifier qu'il s'agit bien de vous</translation>
 <translation id="3527085408025491307">Dossier</translation>
@@ -668,12 +670,14 @@ D'autres formes d'historique de navigation, telles que les recherches et l'activ
 <translation id="4583164079174244168">{MINUTES,plural, =1{Il y a # minute}one{Il y a # minute}other{Il y a # minutes}}</translation>
 <translation id="4587589328781138893">Sites</translation>
 <translation id="4594952190837476234">Cette page hors connexion a été créée le <ph name="CREATION_TIME" /> et peut différer de la version en ligne.</translation>
+<translation id="4601095002996233687">Analyses approfondies des téléchargements suspects.</translation>
 <translation id="4616150815774728855">Ouvrir <ph name="WEBAPK_NAME" /></translation>
 <translation id="4619564267100705184">Confirmer que c'est bien vous</translation>
 <translation id="4634124774493850572">Utiliser le mot de passe</translation>
 <translation id="4637420359569396807">Pour la mesure des annonces, seulement certains types de données peuvent être partagés entre les applications pour mesurer la performance de leurs annonces, comme l'heure à laquelle une annonce vous a été montrée.</translation>
 <translation id="4640331037679501949">{NUM_PASSWORDS,plural, =1{1 mot de passe compromis}one{# mot de passe compromis}other{# mots de passe compromis}}</translation>
 <translation id="4650364565596261010">Paramètres par défaut</translation>
+<translation id="4654641641922242357">Lecteur « Écouter cette page ».</translation>
 <translation id="465657074423018424">La navigation sécurisée vous protège contre les sites Web trompeurs. Si vous la désactivez, faites bien attention durant la navigation, surtout lorsque vous entrez des mots de passe.</translation>
 <translation id="4662373422909645029">Aucun chiffre dans le pseudo</translation>
 <translation id="4663499661119906179">Consultez les sites les plus fréquentés et des articles sélectionnés pour vous</translation>
@@ -803,6 +807,7 @@ Pour modifier ce paramètre, <ph name="BEGIN_LINK" />réinitialisez la synchroni
 <translation id="5222676887888702881">Déconnexion</translation>
 <translation id="5227554086496586518">Touchez pour afficher les résultats de recherche</translation>
 <translation id="5233638681132016545">Nouvel onglet</translation>
+<translation id="5234971936051226002">Lecteur « Écouter cette page » minimisé.</translation>
 <translation id="5235196193381275927">Un problème est survenu lors de la connexion</translation>
 <translation id="5246093389635966745">Modifier le raccourci de la barre d'outils</translation>
 <translation id="5271967389191913893">L'appareil ne peut pas ouvrir le contenu à télécharger.</translation>
@@ -831,6 +836,7 @@ Pour modifier ce paramètre, <ph name="BEGIN_LINK" />réinitialisez la synchroni
 <translation id="543338862236136125">Modifier le mot de passe</translation>
 <translation id="5433691172869980887">Nom d'utilisateur copié</translation>
 <translation id="5438292632479953702">Télécharger de nouveau</translation>
+<translation id="5439191312780166229">Vous avertit des sites dangereux, même ceux que Google ne connaissait pas auparavant, en analysant plus de données provenant des sites que la protection standard. Vous pouvez choisir d'ignorer les avertissements de Chrome.</translation>
 <translation id="5441466871879044658">Traduire dans cette langue</translation>
 <translation id="5441522332038954058">Accéder à la barre d'adresse</translation>
 <translation id="5444999712122199445">Retour au site</translation>
@@ -1041,6 +1047,7 @@ Par exemple, certains sites Web peuvent répondre à cette demande en diffusant 
 <translation id="6541983376925655882">{NUM_HOURS,plural, =1{Dernière vérification : il y a 1 heure}one{Dernière vérification : il y a # heure}other{Dernière vérification : il y a # heures}}</translation>
 <translation id="6545017243486555795">Effacer toutes les données</translation>
 <translation id="6546511553472444032">Le fichier peut être dangereux</translation>
+<translation id="6550891580932862748">Ne vous protège pas contre les téléchargements, les extensions, ou les sites Web dangereux. Vos paramètres de navigation sécurisée dans les autres produits Google ne seront pas affectés.</translation>
 <translation id="6556542240154580383">{TAB_COUNT,plural, =1{<ph name="TAB_TITLE" /> et <ph name="TAB_COUNT_ONE" /> autre onglet seront fermés}one{<ph name="TAB_TITLE" /> et <ph name="TAB_COUNT_MANY" /> autre onglet seront fermés}other{<ph name="TAB_TITLE" /> et <ph name="TAB_COUNT_MANY" /> autres onglets seront fermés}}</translation>
 <translation id="6560414384669816528">Utiliser Sogou pour les recherches</translation>
 <translation id="656065428026159829">En voir plus</translation>
@@ -1254,6 +1261,7 @@ Par exemple, certains sites Web peuvent répondre à cette demande en diffusant 
 <translation id="757855969265046257">{FILES,plural, =1{<ph name="FILES_DOWNLOADED_ONE" /> fichier téléchargé}one{<ph name="FILES_DOWNLOADED_MANY" /> fichier téléchargé}other{<ph name="FILES_DOWNLOADED_MANY" /> fichiers téléchargés}}</translation>
 <translation id="7581273696622423628">Répondre au sondage</translation>
 <translation id="7583262514280211622">Vous trouverez votre liste de lecture ici</translation>
+<translation id="7587250070160020374">Chrome en cours de lecture</translation>
 <translation id="7588219262685291874">Activer le thème sombre lorsque la fonction Économiseur de pile de votre appareil est activée</translation>
 <translation id="7594687499944811403">Laissez <ph name="EMBEDDED_ORIGIN" /> vérifier qu'il s'agit bien de vous pour <ph name="TOP_ORIGIN" /></translation>
 <translation id="7596558890252710462">Système d'exploitation</translation>
@@ -1293,6 +1301,7 @@ Par exemple, certains sites Web peuvent répondre à cette demande en diffusant 
 <translation id="7772032839648071052">Confirmer la phrase de passe</translation>
 <translation id="7772375229873196092">Fermer <ph name="APP_NAME" /></translation>
 <translation id="7774809984919390718">{PAYMENT_METHOD,plural, =1{<ph name="PAYMENT_METHOD_PREVIEW" />\u2026 et <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" /> autre mode de paiement}one{<ph name="PAYMENT_METHOD_PREVIEW" />\u2026 et <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" /> autre mode de paiement}other{<ph name="PAYMENT_METHOD_PREVIEW" />\u2026 et <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" /> autres modes de paiement}}</translation>
+<translation id="777637629667389858">Vous protège dans l'ensemble des services Google lorsque vous êtes connecté.</translation>
 <translation id="7778840695157240389">Revenez plus tard lorsque de nouveaux articles seront proposés</translation>
 <translation id="7780645209293383778">Associe temporairement ces données à votre compte Google lorsque vous êtes connecté pour vous protéger dans l'ensemble des applications Google</translation>
 <translation id="7791543448312431591">Ajouter</translation>
@@ -1321,6 +1330,7 @@ Par exemple, certains sites Web peuvent répondre à cette demande en diffusant 
 <translation id="7926975587469166629">Pseudo de la carte</translation>
 <translation id="7929962904089429003">Ouvrir le menu</translation>
 <translation id="7930998711684428189">Il vous envoie un avertissement si des mots de passe sont exposés dans une violation de données.</translation>
+<translation id="7934668619883965330">Impossible de télécharger le fichier. Format de fichier non compatible.</translation>
 <translation id="7939485076072265087">Créez une carte stylisée mise en évidence</translation>
 <translation id="7942131818088350342"><ph name="PRODUCT_NAME" /> n'est pas à jour.</translation>
 <translation id="7944772052836377867">La synchronisation doit vérifier qu'il s'agit bien de vous</translation>
@@ -1333,6 +1343,7 @@ Par exemple, certains sites Web peuvent répondre à cette demande en diffusant 
 <translation id="7968014550143838305">Ajouté à la liste de lecture</translation>
 <translation id="7971136598759319605">Actif il y a 1 jour</translation>
 <translation id="7975379999046275268">Prévisualiser la page <ph name="BEGIN_NEW" />Nouveau<ph name="END_NEW" /></translation>
+<translation id="7977451675950311423">Vous avertit si vous utilisez un mot de passe qui a été compromis à la suite d'une violation de données.</translation>
 <translation id="7986497153528221272">Pour afficher les mots de passe, configurez d'abord un verrouillage d'écran sur votre appareil</translation>
 <translation id="7995059495660416932">Vous verrez le contenu lorsqu'il sera accessible</translation>
 <translation id="799576009106109668">Vous naviguerez plus rapidement parce que le contenu sera chargé de manière proactive en fonction de la page Web que vous êtes en train de consulter</translation>
@@ -1522,6 +1533,7 @@ Par exemple, certains sites Web peuvent répondre à cette demande en diffusant 
 <translation id="8937772741022875483">Supprimer votre activité Chrome de Bien-être numérique?</translation>
 <translation id="8942627711005830162">Ouvrir dans une autre fenêtre</translation>
 <translation id="8945143127965743188">Impossible de télécharger cette langue : <ph name="LANG" />. Réessayez plus tard.</translation>
+<translation id="8953618380150219653">Lecteur « Écouter cette page » ouvert à pleine hauteur.</translation>
 <translation id="8955719471735800169">Retour en haut de la page</translation>
 <translation id="8964479563882643397">Pour ouvrir un nouvel onglet de navigation privée, ouvrez le menu</translation>
 <translation id="8965591936373831584">en attente</translation>

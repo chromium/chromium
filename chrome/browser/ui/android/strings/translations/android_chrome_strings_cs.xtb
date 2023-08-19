@@ -309,6 +309,7 @@ Tokeny soukromého stavu zvyšují ochranu soukromí na webu a nelze pomocí ni
 <translation id="2656405586795711023">Webové aplikace</translation>
 <translation id="2669454659051515572">Stažené soubory může vidět kdokoli, kdo používá tohle zařízení</translation>
 <translation id="2702516483241149200">Nové: Sdílení odkazu, který obsah posune na tento text</translation>
+<translation id="2708051474374549906">Proaktivní ochrana v reálném čase před nebezpečnými weby, soubory ke stažení a rozšířeními, která je založena na odesílání údajů o prohlížení do Googlu</translation>
 <translation id="271033894570825754">Nové</translation>
 <translation id="2711073837061989559">Zkušební funkce</translation>
 <translation id="2718352093833049315">Pouze v sítích Wi-Fi</translation>
@@ -669,6 +670,7 @@ Na stránce <ph name="BEGIN_LINK" />history.google.com<ph name="END_LINK" /> moh
 <translation id="4583164079174244168">{MINUTES,plural, =1{před # minutou}few{před # minutami}many{před # minuty}other{před # minutami}}</translation>
 <translation id="4587589328781138893">Weby</translation>
 <translation id="4594952190837476234">Tato offline stránka je z <ph name="CREATION_TIME" /> a může se od online verze lišit.</translation>
+<translation id="4601095002996233687">Hloubkové kontroly podezřelých souborů ke stažení.</translation>
 <translation id="4616150815774728855">Do aplikace <ph name="WEBAPK_NAME" /></translation>
 <translation id="4619564267100705184">Ověřte svoji totožnost</translation>
 <translation id="4634124774493850572">Použít heslo</translation>
@@ -834,6 +836,7 @@ Chcete-toto nastavení změnit, <ph name="BEGIN_LINK" />resetujte synchronizaci<
 <translation id="543338862236136125">Upravit heslo</translation>
 <translation id="5433691172869980887">Uživatelské jméno bylo zkopírováno</translation>
 <translation id="5438292632479953702">Stáhnout znovu</translation>
+<translation id="5439191312780166229">Varuje vás před nebezpečnými weby (včetně těch, o kterých Google dříve nevěděl) tím, že analyzuje více dat z webů než standardní ochrana. Upozornění prohlížeče Chrome můžete přeskočit.</translation>
 <translation id="5441466871879044658">Přeložit do tohoto jazyka</translation>
 <translation id="5441522332038954058">Přejít na adresní řádek</translation>
 <translation id="5444999712122199445">Zpět na web</translation>
@@ -1044,6 +1047,7 @@ Některé weby mohou například na tento požadavek reagovat tak, že vám zobr
 <translation id="6541983376925655882">{NUM_HOURS,plural, =1{Zkontrolováno před hodinou}few{Zkontrolováno před # hodinami}many{Zkontrolováno před # hodiny}other{Zkontrolováno před # hodinami}}</translation>
 <translation id="6545017243486555795">Vymazat všechna data</translation>
 <translation id="6546511553472444032">Soubor může být škodlivý</translation>
+<translation id="6550891580932862748">Nebudete chráněni před nebezpečnými weby, soubory ke stažení a rozšířeními. Vaše nastavení Bezpečného prohlížení v jiných službách Google nebude dotčeno.</translation>
 <translation id="6556542240154580383">{TAB_COUNT,plural, =1{Zavře se karta <ph name="TAB_TITLE" /> a <ph name="TAB_COUNT_ONE" /> další karta}few{Zavře se karta <ph name="TAB_TITLE" /> a <ph name="TAB_COUNT_MANY" /> další karty}many{Zavře se karta <ph name="TAB_TITLE" /> a <ph name="TAB_COUNT_MANY" /> další karty}other{Zavře se karta <ph name="TAB_TITLE" /> a <ph name="TAB_COUNT_MANY" /> dalších karet}}</translation>
 <translation id="6560414384669816528">Vyhledávat pomocí Sogou</translation>
 <translation id="656065428026159829">Zobrazit další</translation>
@@ -1257,6 +1261,7 @@ Některé weby mohou například na tento požadavek reagovat tak, že vám zobr
 <translation id="757855969265046257">{FILES,plural, =1{Byl stažen <ph name="FILES_DOWNLOADED_ONE" /> soubor}few{Byly staženy <ph name="FILES_DOWNLOADED_MANY" /> soubory}many{Bylo staženo <ph name="FILES_DOWNLOADED_MANY" /> souboru}other{Bylo staženo <ph name="FILES_DOWNLOADED_MANY" /> souborů}}</translation>
 <translation id="7581273696622423628">Zúčastnit se průzkumu</translation>
 <translation id="7583262514280211622">Zde najdete svůj seznam četby</translation>
+<translation id="7587250070160020374">V Chromu teď hraje</translation>
 <translation id="7588219262685291874">Když je na zařízení zapnutý spořič baterie, zapnout tmavý motiv</translation>
 <translation id="7594687499944811403">Umožněte doméně <ph name="EMBEDDED_ORIGIN" /> ověřit vaši totožnost pro doménu <ph name="TOP_ORIGIN" /></translation>
 <translation id="7596558890252710462">Operační systém</translation>
@@ -1296,6 +1301,7 @@ Některé weby mohou například na tento požadavek reagovat tak, že vám zobr
 <translation id="7772032839648071052">Potvrďte heslovou frázi</translation>
 <translation id="7772375229873196092">Zavřít aplikaci <ph name="APP_NAME" /></translation>
 <translation id="7774809984919390718">{PAYMENT_METHOD,plural, =1{<ph name="PAYMENT_METHOD_PREVIEW" /> a <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" /> další}few{<ph name="PAYMENT_METHOD_PREVIEW" /> a <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" /> další}many{<ph name="PAYMENT_METHOD_PREVIEW" /> a <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" /> další}other{<ph name="PAYMENT_METHOD_PREVIEW" /> a <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" /> dalších}}</translation>
+<translation id="777637629667389858">Když jste přihlášeni, chrání vás ve službách Google.</translation>
 <translation id="7778840695157240389">Brzy tu najdete nové příběhy</translation>
 <translation id="7780645209293383778">Když jste přihlášeni k účtu Google, jsou s ním tato data dočasně spojena, abychom vás mohli v aplikacích Google chránit</translation>
 <translation id="7791543448312431591">Přidat</translation>
@@ -1337,6 +1343,7 @@ Některé weby mohou například na tento požadavek reagovat tak, že vám zobr
 <translation id="7968014550143838305">Přidáno do seznamu četby</translation>
 <translation id="7971136598759319605">Aktivní včera</translation>
 <translation id="7975379999046275268">Zobrazit náhled stránky <ph name="BEGIN_NEW" />Nové<ph name="END_NEW" /></translation>
+<translation id="7977451675950311423">Upozorní vás, pokud používáte heslo, které bylo prozrazeno při porušení zabezpečení dat.</translation>
 <translation id="7986497153528221272">Chcete-li zobrazit hesla, nejdříve na zařízení nastavte zámek obrazovky</translation>
 <translation id="7995059495660416932">Obsah se zobrazí, až bude k dispozici</translation>
 <translation id="799576009106109668">Budete web moci procházet rychleji, protože se obsah bude načítat proaktivně na základě aktuálně navštívené webové stránky</translation>

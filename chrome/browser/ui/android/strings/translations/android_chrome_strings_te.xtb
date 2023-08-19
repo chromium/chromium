@@ -309,6 +309,7 @@
 <translation id="2656405586795711023">వెబ్ యాప్‌లు</translation>
 <translation id="2669454659051515572">డౌన్‌లోడ్ చేసిన ఫైల్స్‌ను ఈ పరికరాన్ని ఉపయోగించే ఎవరైనా చూడగలరు</translation>
 <translation id="2702516483241149200">కొత్తది: ఈ టెక్స్ట్‌కు స్క్రోల్ చేసే లింక్‌ను షేర్ చేయండి</translation>
+<translation id="2708051474374549906">Googleకు పంపబడే మీ బ్రౌజింగ్ డేటా ఆధారంగా ప్రమాదకరమైన సైట్‌లు, డౌన్‌లోడ్‌లు, అలాగే ఎక్స్‌టెన్షన్‌ల నుండి రియల్-టైమ్, క్రియాశీలమైన రక్షణ</translation>
 <translation id="271033894570825754">కొత్తది</translation>
 <translation id="2711073837061989559">ట్రయల్స్</translation>
 <translation id="2718352093833049315">Wi-Fiలో మాత్రమే</translation>
@@ -669,6 +670,7 @@
 <translation id="4583164079174244168">{MINUTES,plural, =1{# నిమిషం క్రితం}other{# నిమిషాల క్రితం}}</translation>
 <translation id="4587589328781138893">సైట్‌లు</translation>
 <translation id="4594952190837476234">ఈ ఆఫ్‌లైన్ పేజీ <ph name="CREATION_TIME" />కి చెందినది మరియు ఆన్‌లైన్ వెర్షన్ వేరుగా ఉండవచ్చు.</translation>
+<translation id="4601095002996233687">అనుమానాస్పద డౌన్‌లోడ్‌ల కోసం లోతైన స్కాన్‌లు చేయండి.</translation>
 <translation id="4616150815774728855"><ph name="WEBAPK_NAME" />ని తెరువు</translation>
 <translation id="4619564267100705184">ఇది మీరే అని వెరిఫై చేయండి</translation>
 <translation id="4634124774493850572">పాస్‌వర్డ్‌ను ఉపయోగించండి</translation>
@@ -834,6 +836,7 @@
 <translation id="543338862236136125">పాస్‌వర్డ్‌ను ఎడిట్ చేయండి</translation>
 <translation id="5433691172869980887">వినియోగదారు పేరు కాపీ చేయబడింది</translation>
 <translation id="5438292632479953702">మళ్లీ డౌన్‌లోడ్ చేయండి</translation>
+<translation id="5439191312780166229">స్టాండర్డ్ రక్షణ కంటే ఎక్కువగా సైట్‌లలోని డేటాను విశ్లేషించి, Googleకు మనుపెన్నడూ తెలియని ప్రమాదకరమైన సైట్‌ల గురించి కూడా ఇది హెచ్చరిస్తుంది. Chrome హెచ్చరికలను స్కిప్ చేయడానికి మీరు ఎంచుకోవచ్చు.</translation>
 <translation id="5441466871879044658">ఈ భాషలోకి అనువదించు</translation>
 <translation id="5441522332038954058">అడ్రస్‌ బార్‌కు వెళ్లండి</translation>
 <translation id="5444999712122199445">సైట్‌కు తిరిగి వెళ్లండి</translation>
@@ -1044,6 +1047,7 @@
 <translation id="6541983376925655882">{NUM_HOURS,plural, =1{1 గంట క్రితం చెక్ చేసింది}other{# గంటల క్రితం చెక్ చేసింది}}</translation>
 <translation id="6545017243486555795">మొత్తం డేటాను తీసివేయండి</translation>
 <translation id="6546511553472444032">ఫైల్ హానికరమైనది కావచ్చు</translation>
+<translation id="6550891580932862748">ప్రమాదకరమైన వెబ్‌సైట్‌లు, డౌన్‌లోడ్‌లు లేదా ఎక్స్‌టెన్షన్‌ల నుండి మిమ్మల్ని రక్షించదు. ఇతర Google ప్రోడక్ట్‌లలో మీ సురక్షిత బ్రౌజింగ్ సెట్టింగ్‌లు ప్రభావితం కావు.</translation>
 <translation id="6556542240154580383">{TAB_COUNT,plural, =1{<ph name="TAB_TITLE" />, ఇంకా మరో <ph name="TAB_COUNT_ONE" /> ట్యాబ్ మూసివేయబడుతుంది}other{<ph name="TAB_TITLE" />, ఇంకా మరో <ph name="TAB_COUNT_MANY" /> ట్యాబ్‌లు మూసివేయబడతాయి}}</translation>
 <translation id="6560414384669816528">Sogouతో వెతకండి</translation>
 <translation id="656065428026159829">మరిన్ని చూడండి</translation>
@@ -1297,6 +1301,7 @@
 <translation id="7772032839648071052">రహస్య పదబంధాన్ని నిర్ధారించండి</translation>
 <translation id="7772375229873196092"><ph name="APP_NAME" />ను మూసివేయి</translation>
 <translation id="7774809984919390718">{PAYMENT_METHOD,plural, =1{<ph name="PAYMENT_METHOD_PREVIEW" />\u2026 మరియు మరో <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" />}other{<ph name="PAYMENT_METHOD_PREVIEW" />\u2026 మరియు మరో <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" />}}</translation>
+<translation id="777637629667389858">మీరు సైన్ ఇన్ చేసినప్పుడు, Google సర్వీస్‌లన్నింటిలో మిమ్మల్ని సురక్షితంగా ఉంచుతుంది.</translation>
 <translation id="7778840695157240389">కొత్త కథనాల కోసం తర్వాత మళ్లీ చెక్ చేయండి</translation>
 <translation id="7780645209293383778">మీరు సైన్ ఇన్ చేసి ఉన్నప్పుడు, మిమ్మల్ని అన్ని Google యాప్‌లలో కాపాడటానికి ఈ డేటాను తాత్కాలికంగా మీ Google ఖాతాకు లింక్ చేస్తుంది</translation>
 <translation id="7791543448312431591">జోడించండి</translation>
@@ -1338,6 +1343,7 @@
 <translation id="7968014550143838305">చదవాల్సిన లిస్ట్‌కు జోడించబడింది</translation>
 <translation id="7971136598759319605">1 రోజు క్రితం యాక్టివ్‌గా ఉంది</translation>
 <translation id="7975379999046275268"><ph name="BEGIN_NEW" />కొత్త<ph name="END_NEW" /> పేజీని ప్రివ్యూ చేయండి</translation>
+<translation id="7977451675950311423">మీరు డేటా ఉల్లంఘనలో చోరీకి గురైన పాస్‌వర్డ్‌ని ఉపయోగిస్తే అది మిమ్మల్ని హెచ్చరిస్తుంది.</translation>
 <translation id="7986497153528221272">పాస్‌వర్డ్‌లను చూడటానికి, ముందుగా మీ పరికరంపై స్క్రీన్ లాక్‍ను సెట్ చేయండి</translation>
 <translation id="7995059495660416932">కంటెంట్ అందుబాటులోకి వచ్చినప్పుడు దానిని మీరు చూడవచ్చు</translation>
 <translation id="799576009106109668">మీ ప్రస్తుత వెబ్‌పేజీ సందర్శన ఆధారంగా కంటెంట్ ముందస్తుగా లోడ్ చేయబడినందున మీరు వేగంగా బ్రౌజ్ చేస్తారు</translation>

@@ -309,6 +309,7 @@ Tokeni za hali ya faragha zinaboresha faragha kwenye wavuti na haziwezi kutumiwa
 <translation id="2656405586795711023">Programu za wavuti</translation>
 <translation id="2669454659051515572">Mtu yeyote anayetumia kifaa hiki anaweza kuona faili zilizopakuliwa</translation>
 <translation id="2702516483241149200">Mpya: shiriki kiungo kinachoenda kwenye maandishi haya</translation>
+<translation id="2708051474374549906">Ulinzi wa muda halisi na wa mapema dhidi ya tovuti, vipakuliwa na viendelezi hatari kulingana na data yako ya kuvinjari inayotumwa kwa Google</translation>
 <translation id="271033894570825754">Mpya</translation>
 <translation id="2711073837061989559">Majaribio</translation>
 <translation id="2718352093833049315">Kwenye Wi-Fi pekee</translation>
@@ -669,6 +670,7 @@ Huenda akaunti yako ya Google ina aina nyingine za historia ya kuvinjari kama vi
 <translation id="4583164079174244168">{MINUTES,plural, =1{Dakika # iliyopita}other{Dakika # zilizopita}}</translation>
 <translation id="4587589328781138893">Tovuti</translation>
 <translation id="4594952190837476234">Ukurasa huu wa nje ya mtandao umetoka <ph name="CREATION_TIME" /> na huenda ukatofautiana na toleo lililo mtandaoni.</translation>
+<translation id="4601095002996233687">Ukaguzi wa kina wa vipakuliwa vinavyoshukiwa.</translation>
 <translation id="4616150815774728855">Fungua <ph name="WEBAPK_NAME" /></translation>
 <translation id="4619564267100705184">Thibitisha kwamba ni wewe</translation>
 <translation id="4634124774493850572">Tumia nenosiri</translation>
@@ -834,6 +836,7 @@ Ili ubadilishe mipangilio hii, <ph name="BEGIN_LINK" />fanya usawazishaji upya<p
 <translation id="543338862236136125">Badilisha nenosiri</translation>
 <translation id="5433691172869980887">Jina la mtumiaji limenakiliwa</translation>
 <translation id="5438292632479953702">Pakua tena</translation>
+<translation id="5439191312780166229">Hukutahadharisha kuhusu tovuti hatari, hata zile ambazo hazikutambuliwa na Google hapo awali, kwa kuchambua data zaidi kutoka kwenye tovuti kuliko ulinzi wa kawaida. Unaweza kuchagua kuruka tahadhari za Chrome.</translation>
 <translation id="5441466871879044658">Tafsiri katika lugha hii</translation>
 <translation id="5441522332038954058">Rudi kwenye sehemu ya anwani</translation>
 <translation id="5444999712122199445">Rudi kwenye tovuti</translation>
@@ -1044,6 +1047,7 @@ Kwa mfano, baadhi ya tovuti zinaweza kujibu ombi hili kwa kukuonyesha matangazo 
 <translation id="6541983376925655882">{NUM_HOURS,plural, =1{Ilikaguliwa saa moja iliyopita}other{Ilikaguliwa saa # zilizopita}}</translation>
 <translation id="6545017243486555795">Futa Data Yote</translation>
 <translation id="6546511553472444032">Huenda faili hii ikawa hatari</translation>
+<translation id="6550891580932862748">Haikulindi dhidi ya tovuti, vipakuliwa na viendelezi hatari. Mipangilio yako ya Kuvinjari Salama katika bidhaa nyingine za Google haitaathiriwa.</translation>
 <translation id="6556542240154580383">{TAB_COUNT,plural, =1{Kichupo cha <ph name="TAB_TITLE" /> na kichupo kingine <ph name="TAB_COUNT_ONE" /> vitafungwa}other{Kichupo cha <ph name="TAB_TITLE" /> na vichupo vingine <ph name="TAB_COUNT_MANY" /> vitafungwa}}</translation>
 <translation id="6560414384669816528">Tafuta kwa kutumia Sogou</translation>
 <translation id="656065428026159829">Angalia zaidi</translation>
@@ -1297,6 +1301,7 @@ Kwa mfano, baadhi ya tovuti zinaweza kujibu ombi hili kwa kukuonyesha matangazo 
 <translation id="7772032839648071052">Thibitisha kaulisiri</translation>
 <translation id="7772375229873196092">Funga <ph name="APP_NAME" /></translation>
 <translation id="7774809984919390718">{PAYMENT_METHOD,plural, =1{<ph name="PAYMENT_METHOD_PREVIEW" />\u2026 na <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" /> zaidi}other{<ph name="PAYMENT_METHOD_PREVIEW" />\u2026 na <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" /> zaidi}}</translation>
+<translation id="777637629667389858">Unapokuwa umeingia katika akaunti, hukulinda kwenye huduma zote za Google.</translation>
 <translation id="7778840695157240389">Angalia tena baadaye ili upate taarifa mpya</translation>
 <translation id="7780645209293383778">Huunganisha data hii kwenye Akaunti yako ya Google kwa muda mfupi ukiwa umeingia katika akaunti, ili kukulinda kwenye programu zote za Google</translation>
 <translation id="7791543448312431591">Ongeza</translation>
@@ -1338,6 +1343,7 @@ Kwa mfano, baadhi ya tovuti zinaweza kujibu ombi hili kwa kukuonyesha matangazo 
 <translation id="7968014550143838305">Imewekwa kwenye orodha ya kusoma</translation>
 <translation id="7971136598759319605">Ilitumika siku 1 iliyopita</translation>
 <translation id="7975379999046275268">Kagua ukurasa kwanza <ph name="BEGIN_NEW" />Mpya<ph name="END_NEW" /></translation>
+<translation id="7977451675950311423">Hukutahadharisha iwapo unatumia nenosiri ambalo limeathiriwa na ufichuzi haramu wa data.</translation>
 <translation id="7986497153528221272">Ili uone manenosiri, weka kwanza mipangilio ya kufunga skrini kwenye kifaa chako</translation>
 <translation id="7995059495660416932">Utaona maudhui yatakapopatikana</translation>
 <translation id="799576009106109668">Utavinjari kwa haraka zaidi kwa sababu maudhui hupakiwa kabla hujayaomba, kulingana na jinsi unavyotembelea ukurasa wa wavuti ulioufungua</translation>

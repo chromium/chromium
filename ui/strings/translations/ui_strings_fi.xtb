@@ -125,6 +125,7 @@
 <translation id="5329858601952122676">&amp;Poista</translation>
 <translation id="5361107212971249203">teksti</translation>
 <translation id="5463830097259460683">Emojit ja merkit</translation>
+<translation id="5505748296268090374">Poista <ph name="ITEM_TEXT" />.</translation>
 <translation id="5528053674512161860">Sivun lataus ei onnistunut, koska kehittäjän käyttöliittymämoduulia (dev_ui) ei ole asennettu</translation>
 <translation id="5574202486608032840">Järjestelmä <ph name="IDS_SHORT_PRODUCT_OS_NAME" /></translation>
 <translation id="5583640892426849032">Askelpalautin</translation>

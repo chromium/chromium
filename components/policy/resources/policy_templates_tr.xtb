@@ -3019,22 +3019,6 @@ Bu politikayı her zaman (özellikle de üretim dağıtımı zamanlarında) etki
 <translation id="3591584750136265240">Giriş için kimlik doğrulama yöntemini yapılandır</translation>
 <translation id="3593905652755912452">Devre dışı bırakılan form kontrollerinde eski etkinlik gönderme davranışı kullanılacak.</translation>
 <translation id="3596112486106491038">Sanal makine komut satırı erişimini etkinleştir</translation>
-<translation id="3596651403637948128">Bu politika, URL'nin ziyaret edilmesinin güvenli olup olmadığını belirlemek için
-Güvenli Tarama'nın standart koruma modunun, URL'nin kısmi karmalarını habersiz
-HTTP üzerinden proxy aracılığıyla Google'a göndermesine izin verilip verilmediğini kontrol eder.
-
-Proxy sayesinde tarayıcılar, URL'lerin kısmi karmalarını Google'a anonim olarak
-yükleyebilir. Ayrıca, Güvenli Tarama koruma kalitesinin artması için tarayıcıların
-daha yüksek sıklıkta yükleme yapmalarına da olanak tanır.
-
-Güvenli Tarama devre dışıysa veya gelişmiş koruma moduna ayarlanmışsa bu
-politika yoksayılır.
-
-Politika, Etkin değerine ayarlanır veya ayarlanmadan bırakılırsa daha yüksek
-korumalı proxy kullanan aramalara izin verilir.
-
-Politika, Devre Dışı değerine ayarlanırsa daha yüksek korumalı proxy kullanan aramalara izin
-verilmez. URL'ler çok daha düşük sıklıkta doğrudan Google'a yüklenir.</translation>
 <translation id="3603469950773500315">Yeni <ph name="CORS" /> uygulamasındaki çözümlerin <ph name="CORS" /> tarafından kontrol edilmesini sağlayarak Uzantıların uyumlu davranışı sürdürmesine ve belirtilen üstbilgilerin <ph name="PRODUCT_NAME" /> tarafından <ph name="CORS" /> kontrolleri olmadan gönderilmesine olanak tanıyın.
 
       Bu liste boş değere ayarlanırsa <ph name="PRODUCT_NAME" />, Uzantıları uyumlu şekillerde çalıştırmayı dener ve <ph name="WEB_REQUEST_API_MANUAL" /> içinde açıklanan <ph name="PRODUCT_NAME" /> 79 için <ph name="API" /> değişikliklerini uygulamaz.

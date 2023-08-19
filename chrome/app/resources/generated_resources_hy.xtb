@@ -1887,6 +1887,7 @@
 <translation id="2480868415629598489">Փոփոխել տվյալները, որոնք դուք պատճենում և տեղադրում եք</translation>
 <translation id="2482878487686419369">Ծանուցումներ</translation>
 <translation id="2482895651873876648">Ներդիրը տեղափոխվեց «<ph name="GROUP_NAME" />» խումբ – <ph name="GROUP_CONTENTS" /></translation>
+<translation id="2483627560139625913">Կարգավորեք որոնողական համակարգ Chrome դիտարկիչի կարգավորումներում</translation>
 <translation id="2484743711056182585">Հեռացնել թույլտվությունը</translation>
 <translation id="2484909293434545162">Եթե որևէ կայք քուքիներ է օգտագործում, դրա մասին տեղեկությունները կցուցադրվեն այստեղ</translation>
 <translation id="2484959914739448251">Այցելությունների պատմությունը բոլոր համաժամացված սարքերից և Google հաշվից ջնջելու համար <ph name="BEGIN_LINK" />մուտքագրեք ձեր անցաբառը<ph name="END_LINK" />:</translation>
@@ -2041,6 +2042,7 @@
 <translation id="2612676031748830579">Քարտի համարը</translation>
 <translation id="2613210758071148851">Արգելել բոլոր ընդլայնումները <ph name="RESTRICTED_SITE" /> կայքում</translation>
 <translation id="2613535083491958306"><ph name="ORIGIN" /> կայքը կկարողանա փոփոխել <ph name="FILENAME" /> ֆայլը</translation>
+<translation id="2615159404909536465">{FILE_COUNT,plural, =1{Բացել և փոփոխել <ph name="FILE1" /> ֆայլը այս ընդլայնման մեջ}one{Բացել և փոփոխել <ph name="FILE1" /> ֆայլը այս հավելվածում}other{Բացել և փոփոխել <ph name="FILE1" />, ... ֆայլերը այս հավելվածում}}</translation>
 <translation id="2616366145935564096">Կարդալ և փոխել ձեր տվյալները <ph name="WEBSITE_1" /> վեբկայքում</translation>
 <translation id="2618797463720777311">Կարգավորեք «Փոխանակում մոտակա սարքերի հետ» գործառույթը</translation>
 <translation id="261953424982546039">Chrome-ի Լաբորատորիա...</translation>
@@ -4416,6 +4418,7 @@
 <translation id="4585793705637313973">Փոխել էջը</translation>
 <translation id="4586275095964870617">Չհաջողվեց <ph name="URL" /> կայքը բացել այլ դիտարկիչում։ Կապվեք համակարգի ադմինիստրատորի հետ:</translation>
 <translation id="4587589328781138893">Կայքեր</translation>
+<translation id="4588749726511456218">Ոլորման արագացում <ph name="LINK_BEGIN" />Իմանալ ավելին<ph name="LINK_END" /></translation>
 <translation id="4589713469967853491">Մատյանները գրվեցին «Ներբեռնումներ» գրացուցակում։</translation>
 <translation id="459204634473266369">Ոչ մի պահված սարք չկա <ph name="PRIMARY_EMAIL" /> հաշվում</translation>
 <translation id="4592525994536856567">Դիտարկիչի և որոնման աշխատանքն ավելի արագ է։</translation>
@@ -5247,7 +5250,6 @@
 <translation id="5298219193514155779">Թեմայի հեղինակ՝</translation>
 <translation id="5299109548848736476">Չհետևել</translation>
 <translation id="5299558715747014286">Ներդիրների խմբերի դիտում և կառավարում</translation>
-<translation id="529986401483187205">անջատված</translation>
 <translation id="5300426565656326054">Գովազդի անհատականացում դիտարկիչում գործողությունների հիման վրա</translation>
 <translation id="5300589172476337783">Ցույց տալ</translation>
 <translation id="5300719150368506519">Ուղարկել ձեր այցելած էջերի հասցեները Google-ին</translation>
@@ -6235,6 +6237,7 @@
 <translation id="6130692320435119637">Ավելացնել Wi-Fi</translation>
 <translation id="6130887916931372608">Ստեղնաշարի ստեղն</translation>
 <translation id="6132714462430777655">Բաց թողնե՞լ գրանցումն ուսումնական հաստատության հաշվում</translation>
+<translation id="6134428719487602109">Հեռացնել բոլոր օգտատերերի հաշիվները և վերականգնել Chromebook-ի գործարանային կարգավորումները։</translation>
 <translation id="6135823405800500595">Համոզվեք, որ ձեր հեռախոսը մոտակայքում է, ապակողպված, և որ Bluetooth-ն ու Wi-Fi-ը միացված են</translation>
 <translation id="6135826623269483856">Չի թույլատրվում կառավարել պատուհանները բոլոր էկրաններին</translation>
 <translation id="6136114942382973861">Փակել ներբեռնումների գոտին</translation>

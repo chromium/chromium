@@ -309,6 +309,7 @@ Tokeny prywatności zwiększają prywatność w sieci i nie można za ich pomo
 <translation id="2656405586795711023">Aplikacje internetowe</translation>
 <translation id="2669454659051515572">Pobrane pliki może zobaczyć każdy użytkownik tego urządzenia</translation>
 <translation id="2702516483241149200">Nowość: udostępnij link przewijający do tego tekstu</translation>
+<translation id="2708051474374549906">Proaktywna ochrona przed niebezpiecznymi stronami, pobieranymi plikami i rozszerzeniami, realizowana w czasie rzeczywistym dzięki wysyłaniu Twoich danych przeglądania do Google</translation>
 <translation id="271033894570825754">Nowy</translation>
 <translation id="2711073837061989559">Wersje próbne</translation>
 <translation id="2718352093833049315">Tylko przez Wi-Fi</translation>
@@ -669,6 +670,7 @@ Na stronie <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" /> n
 <translation id="4583164079174244168">{MINUTES,plural, =1{# minutę temu}few{# minuty temu}many{# minut temu}other{# minuty temu}}</translation>
 <translation id="4587589328781138893">Witryny</translation>
 <translation id="4594952190837476234">Ta strona offline jest z <ph name="CREATION_TIME" /> i może różnić się od wersji online.</translation>
+<translation id="4601095002996233687">Szczegółowe skanowanie w poszukiwaniu podejrzanych pobranych plików.</translation>
 <translation id="4616150815774728855">Otwórz <ph name="WEBAPK_NAME" /></translation>
 <translation id="4619564267100705184">Potwierdź, że to Ty</translation>
 <translation id="4634124774493850572">Użyj hasła</translation>
@@ -834,6 +836,7 @@ Aby zmienić to ustawienie, <ph name="BEGIN_LINK" />zresetuj synchronizację<ph 
 <translation id="543338862236136125">Edytuj hasło</translation>
 <translation id="5433691172869980887">Nazwa użytkownika została skopiowana</translation>
 <translation id="5438292632479953702">Pobierz ponownie</translation>
+<translation id="5439191312780166229">Ostrzega o niebezpiecznych witrynach, nawet takich, które wcześniej nie były znane Google. Jest to możliwe dzięki analizowaniu większej ilości danych z witryn niż w trybie standardowej ochrony. Możesz wybrać pomijanie ostrzeżeń Chrome.</translation>
 <translation id="5441466871879044658">Tłumacz na ten język</translation>
 <translation id="5441522332038954058">Przejdź do paska adresu</translation>
 <translation id="5444999712122199445">Wróć do witryny</translation>
@@ -1044,6 +1047,7 @@ Na przykład niektóre strony mogą na nie zareagować, wyświetlając reklamy b
 <translation id="6541983376925655882">{NUM_HOURS,plural, =1{Sprawdzano godzinę temu}few{Sprawdzano # godziny temu}many{Sprawdzano # godzin temu}other{Sprawdzano # godziny temu}}</translation>
 <translation id="6545017243486555795">Wyczyść wszystkie dane</translation>
 <translation id="6546511553472444032">Plik może być szkodliwy</translation>
+<translation id="6550891580932862748">Nie chroni przed niebezpiecznymi stronami, pobieranymi plikami ani rozszerzeniami. Nie wpływa na ustawienia Bezpiecznego przeglądania dostępne w innych usługach Google.</translation>
 <translation id="6556542240154580383">{TAB_COUNT,plural, =1{Zostaną zamknięte karty: <ph name="TAB_TITLE" /> i <ph name="TAB_COUNT_ONE" /> inna}few{Zostaną zamknięte karty: <ph name="TAB_TITLE" /> i <ph name="TAB_COUNT_MANY" /> inne}many{Zostaną zamknięte karty: <ph name="TAB_TITLE" /> i <ph name="TAB_COUNT_MANY" /> innych}other{Zostaną zamknięte karty: <ph name="TAB_TITLE" /> i <ph name="TAB_COUNT_MANY" /> innej}}</translation>
 <translation id="6560414384669816528">Szukaj w Sogou</translation>
 <translation id="656065428026159829">Pokaż więcej</translation>
@@ -1297,6 +1301,7 @@ Na przykład niektóre strony mogą na nie zareagować, wyświetlając reklamy b
 <translation id="7772032839648071052">Potwierdź hasło</translation>
 <translation id="7772375229873196092">Zamknij aplikację <ph name="APP_NAME" /></translation>
 <translation id="7774809984919390718">{PAYMENT_METHOD,plural, =1{<ph name="PAYMENT_METHOD_PREVIEW" />\u2026 i jeszcze <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" />}few{<ph name="PAYMENT_METHOD_PREVIEW" />\u2026 i jeszcze <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" />}many{<ph name="PAYMENT_METHOD_PREVIEW" />\u2026 i jeszcze <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" />}other{<ph name="PAYMENT_METHOD_PREVIEW" />\u2026 i jeszcze <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" />}}</translation>
+<translation id="777637629667389858">Gdy się zalogujesz, chroni Cię we wszystkich usługach Google.</translation>
 <translation id="7778840695157240389">Sprawdź później, czy pojawiły się nowe</translation>
 <translation id="7780645209293383778">Tymczasowo łączy te dane z Twoim kontem Google, gdy się na nie zalogujesz, aby chronić Cię we wszystkich aplikacjach Google</translation>
 <translation id="7791543448312431591">Dodaj</translation>
@@ -1338,6 +1343,7 @@ Na przykład niektóre strony mogą na nie zareagować, wyświetlając reklamy b
 <translation id="7968014550143838305">Dodano do listy Do przeczytania</translation>
 <translation id="7971136598759319605">Aktywność 1 dzień temu</translation>
 <translation id="7975379999046275268">Wyświetl podgląd strony <ph name="BEGIN_NEW" />Nowość<ph name="END_NEW" /></translation>
+<translation id="7977451675950311423">Ostrzega, jeśli użyjesz hasła, które zostało przejęte w wyniku naruszenia bezpieczeństwa danych.</translation>
 <translation id="7986497153528221272">Aby wyświetlić hasła, najpierw ustaw blokadę ekranu na urządzeniu</translation>
 <translation id="7995059495660416932">Zobaczysz treść, gdy stanie się dostępna</translation>
 <translation id="799576009106109668">Przeglądarka będzie działać szybciej dzięki proaktywnemu wczytywaniu stron na podstawie danych o bieżącej wizycie na stronie.</translation>

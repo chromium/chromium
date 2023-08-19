@@ -309,6 +309,7 @@
 <translation id="2656405586795711023">เว็บแอป</translation>
 <translation id="2669454659051515572">ใครก็ตามที่ใช้อุปกรณ์นี้จะเห็นไฟล์ที่ดาวน์โหลด</translation>
 <translation id="2702516483241149200">ใหม่: แชร์ลิงก์ที่เลื่อนมายังข้อความนี้</translation>
+<translation id="2708051474374549906">การปกป้องเชิงรุกแบบเรียลไทม์จากเว็บไซต์ การดาวน์โหลด และส่วนขยายที่เป็นอันตราย ซึ่งอิงตามข้อมูลการท่องเว็บของคุณที่ส่งไปยัง Google</translation>
 <translation id="271033894570825754">ใหม่</translation>
 <translation id="2711073837061989559">การทดลองใช้</translation>
 <translation id="2718352093833049315">Wi-Fi เท่านั้น</translation>
@@ -669,11 +670,13 @@
 <translation id="4583164079174244168">{MINUTES,plural, =1{# นาทีที่ผ่านมา}other{# นาทีที่ผ่านมา}}</translation>
 <translation id="4587589328781138893">เว็บไซต์</translation>
 <translation id="4594952190837476234">หน้าเว็บออฟไลน์นี้สร้างเมื่อวันที่ <ph name="CREATION_TIME" /> และอาจแตกต่างไปจากเวอร์ชันออนไลน์</translation>
+<translation id="4601095002996233687">การสแกนเชิงลึกสำหรับการดาวน์โหลดที่น่าสงสัย</translation>
 <translation id="4616150815774728855">เปิด <ph name="WEBAPK_NAME" /></translation>
 <translation id="4619564267100705184">ยืนยันว่าเป็นคุณ</translation>
 <translation id="4634124774493850572">ใช้รหัสผ่าน</translation>
 <translation id="4637420359569396807">เมื่อใช้การวัดผลโฆษณา ระบบจะแชร์ข้อมูลบางประเภทระหว่างเว็บไซต์และแอปเพื่อวัดประสิทธิภาพของโฆษณา เช่น ช่วงเวลาของวันที่มีการแสดงโฆษณาแก่คุณ</translation>
 <translation id="4640331037679501949">{NUM_PASSWORDS,plural, =1{มีรหัสผ่านที่ถูกละเมิด 1 รายการ}other{มีรหัสผ่านที่ถูกละเมิด # รายการ}}</translation>
+<translation id="4645146721047390964">ขณะอยู่ในโหมดไม่ระบุตัวตน เว็บไซต์จะไม่สามารถใช้คุกกี้เพื่อดูกิจกรรมการท่องเว็บของคุณในเว็บไซต์ต่างๆ เช่น เพื่อปรับโฆษณาตามโปรไฟล์ของคุณ ฟีเจอร์ในเว็บไซต์บางแห่งอาจใช้งานไม่ได้</translation>
 <translation id="4650364565596261010">ค่าเริ่มต้นของระบบ</translation>
 <translation id="4654641641922242357">โปรแกรมเล่น "ฟังหน้านี้"</translation>
 <translation id="465657074423018424">Google Safe Browsing ปกป้องคุณจากเว็บไซต์ที่หลอกลวง หากคุณปิดใช้ ให้ระวังเป็นพิเศษขณะท่องเว็บ โดยเฉพาะก่อนที่จะป้อนรหัสผ่าน</translation>
@@ -693,6 +696,7 @@
 <translation id="4719927025381752090">เสนอการแปล</translation>
 <translation id="4720023427747327413">เปิดใน <ph name="PRODUCT_NAME" /></translation>
 <translation id="47217992755561375">ดูเว็บไซต์ยอดนิยม</translation>
+<translation id="4731877163452936634">ความเร็วในการเล่น: <ph name="PLAYBACK_SPEED" /> คลิกเพื่อเปลี่ยน</translation>
 <translation id="4732120983431207637">ตัวคลายสแต็ก</translation>
 <translation id="4736934858538408121">บัตรเสมือน</translation>
 <translation id="473775607612524610">อัปเดต</translation>
@@ -834,6 +838,7 @@
 <translation id="543338862236136125">แก้ไขรหัสผ่าน</translation>
 <translation id="5433691172869980887">คัดลอกชื่อผู้ใช้แล้ว</translation>
 <translation id="5438292632479953702">ดาวน์โหลดอีกครั้ง</translation>
+<translation id="5439191312780166229">เตือนคุณเกี่ยวกับเว็บไซต์ที่เป็นอันตราย แม้แต่เว็บไซต์ที่ Google ไม่เคยรู้จักมาก่อนด้วยการวิเคราะห์ข้อมูลจากเว็บไซต์มากกว่าการปกป้องแบบมาตรฐาน คุณเลือกข้ามคำเตือนของ Chrome ได้</translation>
 <translation id="5441466871879044658">แปลเป็นภาษานี้</translation>
 <translation id="5441522332038954058">ข้ามไปยังแถบที่อยู่เว็บ</translation>
 <translation id="5444999712122199445">กลับไปที่เว็บไซต์</translation>
@@ -1044,6 +1049,7 @@
 <translation id="6541983376925655882">{NUM_HOURS,plural, =1{ตรวจสอบเมื่อ 1 ชั่วโมงที่ผ่านมา}other{ตรวจสอบเมื่อ # ชั่วโมงที่ผ่านมา}}</translation>
 <translation id="6545017243486555795">ล้างข้อมูลทั้งหมด</translation>
 <translation id="6546511553472444032">ไฟล์อาจเป็นอันตราย</translation>
+<translation id="6550891580932862748">ไม่ปกป้องคุณจากเว็บไซต์ การดาวน์โหลด และส่วนขยายที่เป็นอันตราย การตั้งค่า Google Safe Browsing ในผลิตภัณฑ์อื่นๆ ของ Google จะไม่ได้รับผลกระทบ</translation>
 <translation id="6556542240154580383">{TAB_COUNT,plural, =1{ระบบจะปิดแท็บ <ph name="TAB_TITLE" /> และอีก <ph name="TAB_COUNT_ONE" /> แท็บ}other{ระบบจะปิดแท็บ <ph name="TAB_TITLE" /> และอีก <ph name="TAB_COUNT_MANY" /> แท็บ}}</translation>
 <translation id="6560414384669816528">ค้นหาด้วย Sogou</translation>
 <translation id="656065428026159829">ดูเพิ่มเติม</translation>
@@ -1250,6 +1256,7 @@
 <translation id="751961395872307827">เชื่อมต่อเว็บไซต์ไม่ได้</translation>
 <translation id="752220631458524187">เลิกเชื่อมต่อเมื่อดำเนินการเสร็จแล้ว</translation>
 <translation id="7523960634226602883">ค้นหาด้วยกล้องโดยใช้ Google Lens</translation>
+<translation id="752731652852882757">บล็อกขณะใช้โหมดไม่ระบุตัวตน</translation>
 <translation id="7539698981064401140">ซิงค์แท็บและประวัติการเข้าชม</translation>
 <translation id="7562080006725997899">กำลังล้างข้อมูลการท่องเว็บ</translation>
 <translation id="756809126120519699">ล้างข้อมูล Chrome แล้ว</translation>
@@ -1297,6 +1304,7 @@
 <translation id="7772032839648071052">ยืนยันข้อความรหัสผ่าน</translation>
 <translation id="7772375229873196092">ปิด <ph name="APP_NAME" /></translation>
 <translation id="7774809984919390718">{PAYMENT_METHOD,plural, =1{<ph name="PAYMENT_METHOD_PREVIEW" />\u2026 และอีก <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" /> วิธี}other{<ph name="PAYMENT_METHOD_PREVIEW" />\u2026 และอีก <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" /> วิธี}}</translation>
+<translation id="777637629667389858">เมื่อลงชื่อเข้าใช้ ฟีเจอร์จะปกป้องคุณในบริการต่างๆ ของ Google</translation>
 <translation id="7778840695157240389">กลับมาดูเรื่องราวใหม่ๆ ภายหลัง</translation>
 <translation id="7780645209293383778">ลิงก์ข้อมูลนี้กับบัญชี Google เป็นการชั่วคราวเมื่อลงชื่อเข้าใช้ เพื่อปกป้องคุณในแอปต่างๆ ของ Google</translation>
 <translation id="7791543448312431591">เพิ่ม</translation>
@@ -1329,6 +1337,7 @@
 <translation id="7939485076072265087">สร้างการ์ดที่ปรับแต่งสไตล์ด้วยการไฮไลต์ข้อความ</translation>
 <translation id="7942131818088350342"><ph name="PRODUCT_NAME" /> ล้าสมัย</translation>
 <translation id="7944772052836377867">การซิงค์จะต้องยืนยันว่าเป็นคุณ</translation>
+<translation id="7945822420239537236">กรอไปข้างหน้า <ph name="NUMBER_OF_SECONDS" /> วินาที</translation>
 <translation id="7947953824732555851">ยอมรับและลงชื่อเข้าใช้</translation>
 <translation id="7957413488482743710">บัตรเสมือนจะซ่อนบัตรจริงไว้เพื่อช่วยปกป้องคุณจากการฉ้อโกงที่อาจเกิดขึ้น <ph name="BEGIN_LINK1" />ดูข้อมูลเพิ่มเติมเกี่ยวกับบัตรเสมือน<ph name="END_LINK1" /></translation>
 <translation id="7960972236129063347">ปุ่มย้อนกลับในข้อมูลเชิงลึกของหน้า</translation>
@@ -1337,7 +1346,9 @@
 <translation id="7965838025086216108">คุณใช้รหัสผ่านที่บันทึกไว้ในอุปกรณ์ใดก็ได้ โดยจะบันทึกอยู่ในเครื่องมือจัดการรหัสผ่านบน Google สำหรับ <ph name="ACCOUNT" /></translation>
 <translation id="7968014550143838305">เพิ่มไปยังเรื่องรออ่านแล้ว</translation>
 <translation id="7971136598759319605">ใช้งานเมื่อ 1 วันที่ผ่านมา</translation>
+<translation id="7972866381678406344">ย้อนกลับ <ph name="NUMBER_OF_SECONDS" /> วินาที</translation>
 <translation id="7975379999046275268">พรีวิวหน้า <ph name="BEGIN_NEW" />ใหม่<ph name="END_NEW" /></translation>
+<translation id="7977451675950311423">เตือนคุณหากใช้รหัสผ่านที่ถูกละเมิดในการละเมิดข้อมูล</translation>
 <translation id="7986497153528221272">หากต้องการดูรหัสผ่าน ให้ตั้งค่าการล็อกหน้าจอในอุปกรณ์ก่อน</translation>
 <translation id="7995059495660416932">คุณจะเห็นเนื้อหาเมื่อพร้อมให้บริการ</translation>
 <translation id="799576009106109668">คุณจะท่องเว็บได้เร็วขึ้นเนื่องจากมีการโหลดเนื้อหาโดยอิงจากหน้าเว็บที่กำลังเข้าชมโดยที่คุณไม่ต้องขอ</translation>

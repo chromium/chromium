@@ -311,6 +311,7 @@ Privaatse oleku märgid täiustavad veebis privaatsust ja neid ei saa kasutada t
 <translation id="2656405586795711023">Veebirakendused</translation>
 <translation id="2669454659051515572">Kõik inimesed, kes seda seadet kasutavad, näevad allalaaditud faile</translation>
 <translation id="2702516483241149200">Uus: jagage linki, millega keritakse selle teksti juurde</translation>
+<translation id="2708051474374549906">Reaalajas ja ennetav kaitse ohtlike saitide, allalaadimiste ja laienduste eest, mis põhineb teie sirvimisandmetel, mis saadetakse Google'ile</translation>
 <translation id="271033894570825754">Uus</translation>
 <translation id="2711073837061989559">Prooviversioonid</translation>
 <translation id="2718352093833049315">Ainult WiFi-ga</translation>
@@ -674,6 +675,7 @@ Veebisaidil <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" /> 
 <translation id="4583164079174244168">{MINUTES,plural, =1{# minut tagasi}other{# minutit tagasi}}</translation>
 <translation id="4587589328781138893">Saidid</translation>
 <translation id="4594952190837476234">Võrguühenduseta leht loodi <ph name="CREATION_TIME" /> ja see võib veebiversioonist erineda.</translation>
+<translation id="4601095002996233687">Põhjalikud kontrollid kahtlaste allalaadimiste korral.</translation>
 <translation id="4616150815774728855">Ava <ph name="WEBAPK_NAME" /></translation>
 <translation id="4619564267100705184">Kinnitage, et see olete teie</translation>
 <translation id="4634124774493850572">Kasuta parooli</translation>
@@ -842,6 +844,7 @@ Seade muutmiseks <ph name="BEGIN_LINK" />lähtestage sünkroonimine<ph name="END
 <translation id="543338862236136125">Muuda parooli</translation>
 <translation id="5433691172869980887">Kasutajanimi on kopeeritud</translation>
 <translation id="5438292632479953702">Laadi uuesti alla</translation>
+<translation id="5439191312780166229">Hoiatab teid ohtlike saitide eest, isegi nende eest, millest Google varem ei teadnud, analüüsides standardse kaitsega võrreldes rohkem saitidelt pärinevaid andmeid. Soovi korral saate Chrome'i hoiatused vahele jätta.</translation>
 <translation id="5441137934526263133">Kas sait ei tööta? Kolmanda osapoole küpsisefailid on blokeeritud</translation>
 <translation id="5441466871879044658">Tõlgi sellesse keelde</translation>
 <translation id="5441522332038954058">Aadressiribale liikumine</translation>
@@ -1054,6 +1057,7 @@ Näiteks võivad mõned veebisaidid taotlusele reageerida nii, et näitavad teil
 <translation id="6541983376925655882">{NUM_HOURS,plural, =1{Kontrolliti 1 tund tagasi}other{Kontrolliti # tundi tagasi}}</translation>
 <translation id="6545017243486555795">Kustuta kõik andmed</translation>
 <translation id="6546511553472444032">Fail võib olla kahjulik</translation>
+<translation id="6550891580932862748">Ei kaitse teid ohtlike veebisaitide, allalaadimiste ega laienduste eest. See ei mõjuta teie Google'i ohutu sirvimise seadeid teistes Google'i teenustes.</translation>
 <translation id="6556542240154580383">{TAB_COUNT,plural, =1{<ph name="TAB_TITLE" /> ja veel <ph name="TAB_COUNT_ONE" /> vaheleht suletakse}other{<ph name="TAB_TITLE" /> ja veel <ph name="TAB_COUNT_MANY" /> vahelehte suletakse}}</translation>
 <translation id="6560414384669816528">Otsi teenusega Sogou</translation>
 <translation id="656065428026159829">Kuva rohkem</translation>
@@ -1309,6 +1313,7 @@ Näiteks võivad mõned veebisaidid taotlusele reageerida nii, et näitavad teil
 <translation id="7772032839648071052">Kinnitage parool</translation>
 <translation id="7772375229873196092">Sule <ph name="APP_NAME" /></translation>
 <translation id="7774809984919390718">{PAYMENT_METHOD,plural, =1{<ph name="PAYMENT_METHOD_PREVIEW" />\u2026 ja veel <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" />}other{<ph name="PAYMENT_METHOD_PREVIEW" />\u2026 ja veel <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" />}}</translation>
+<translation id="777637629667389858">Kui olete sisse logitud, kaitseb see teid Google'i teenustes.</translation>
 <translation id="7778840695157240389">Uute lugude nägemiseks tulge hiljem tagasi</translation>
 <translation id="7780645209293383778">Kui olete sisse logitud, lingitakse need andmed ajutiselt teie Google'i kontoga, et kaitsta teid kõigis Google'i rakendustes</translation>
 <translation id="7791543448312431591">Lisa</translation>
@@ -1350,6 +1355,7 @@ Näiteks võivad mõned veebisaidid taotlusele reageerida nii, et näitavad teil
 <translation id="7968014550143838305">Lisati lugemisloendisse</translation>
 <translation id="7971136598759319605">Aktiivne 1 päev tagasi</translation>
 <translation id="7975379999046275268">Lehe eelvaade <ph name="BEGIN_NEW" />Uus<ph name="END_NEW" /></translation>
+<translation id="7977451675950311423">Hoiatab teid, kui kasutate parooli, mis on andmetega seotud rikkumise tõttu ohtu sattunud.</translation>
 <translation id="7986497153528221272">Paroolide vaatamiseks määrake esmalt oma seadmes ekraanilukk</translation>
 <translation id="7995059495660416932">Näete sisu, kui see on saadaval</translation>
 <translation id="799576009106109668">Saate kiiremini sirvida, kuna sisu laaditakse ennetavalt teie praeguse veebilehekülastuse põhjal</translation>

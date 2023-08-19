@@ -1885,6 +1885,7 @@
 <translation id="2480868415629598489">แก้ไขข้อมูลที่คุณคัดลอกและวาง</translation>
 <translation id="2482878487686419369">การแจ้งเตือน</translation>
 <translation id="2482895651873876648">แท็บถูกย้ายไปอยู่ในกลุ่ม <ph name="GROUP_NAME" /> - <ph name="GROUP_CONTENTS" /></translation>
+<translation id="2483627560139625913">ตั้งค่าเครื่องมือค้นหาในการตั้งค่าเบราว์เซอร์ Chrome</translation>
 <translation id="2484743711056182585">นำการให้สิทธิ์ออก</translation>
 <translation id="2484909293434545162">หากเว็บไซต์ใช้คุกกี้ก็จะปรากฏที่นี่</translation>
 <translation id="2484959914739448251"><ph name="BEGIN_LINK" />ป้อนรหัสผ่าน<ph name="END_LINK" />เพื่อล้างข้อมูลการท่องเว็บในอุปกรณ์ทุกเครื่องที่ซิงค์และบัญชี Google</translation>
@@ -2039,6 +2040,7 @@
 <translation id="2612676031748830579">หมายเลขบัตร</translation>
 <translation id="2613210758071148851">ไม่อนุญาตให้มีส่วนขยายใดๆ ใน <ph name="RESTRICTED_SITE" /></translation>
 <translation id="2613535083491958306"><ph name="ORIGIN" /> จะแก้ไข <ph name="FILENAME" /> ได้</translation>
+<translation id="2615159404909536465">{FILE_COUNT,plural, =1{เปิดและแก้ไข <ph name="FILE1" /> ในส่วนขยายนี้}other{เปิดและแก้ไข <ph name="FILE1" />, ... ในแอปนี้}}</translation>
 <translation id="2616366145935564096">อ่านและเปลี่ยนแปลงข้อมูลของคุณใน <ph name="WEBSITE_1" /></translation>
 <translation id="2618797463720777311">ตั้งค่าการแชร์ใกล้เคียง</translation>
 <translation id="261953424982546039">Chrome &amp;Labs...</translation>
@@ -4414,6 +4416,7 @@
 <translation id="4585793705637313973">แก้ไขหน้า</translation>
 <translation id="4586275095964870617"><ph name="URL" /> เปิดในเบราว์เซอร์สำรองไม่ได้ โปรดติดต่อผู้ดูแลระบบของคุณ</translation>
 <translation id="4587589328781138893">เว็บไซต์</translation>
+<translation id="4588749726511456218">การเร่งความเร็วของการเลื่อน <ph name="LINK_BEGIN" />ดูข้อมูลเพิ่มเติม<ph name="LINK_END" /></translation>
 <translation id="4589713469967853491">เขียนบันทึกไปยังไดเรกทอรี "การดาวน์โหลด" เรียบร้อยแล้ว</translation>
 <translation id="459204634473266369">ไม่มีอุปกรณ์ที่บันทึกไว้ใน <ph name="PRIMARY_EMAIL" /></translation>
 <translation id="4592525994536856567">การท่องเว็บและการค้นหารวดเร็วขึ้น</translation>
@@ -5242,7 +5245,6 @@
 <translation id="5298219193514155779">ธีมที่สร้างโดย</translation>
 <translation id="5299109548848736476">ไม่ติดตาม</translation>
 <translation id="5299558715747014286">ดูและจัดการกลุ่มแท็บ</translation>
-<translation id="529986401483187205">ปิดอยู่</translation>
 <translation id="5300426565656326054">การปรับโฆษณาตามโปรไฟล์ของผู้ใช้ด้วยข้อมูลจากเบราว์เซอร์</translation>
 <translation id="5300589172476337783">แสดง</translation>
 <translation id="5300719150368506519">ส่ง URL ของหน้าที่คุณเข้าชมไปยัง Google</translation>
@@ -6230,6 +6232,7 @@
 <translation id="6130692320435119637">เพิ่ม Wi-Fi</translation>
 <translation id="6130887916931372608">ปุ่มบนแป้นพิมพ์</translation>
 <translation id="6132714462430777655">ข้ามการลงทะเบียนโรงเรียนไหม</translation>
+<translation id="6134428719487602109">นําบัญชีผู้ใช้ทั้งหมดออกและรีเซ็ต Chromebook ให้เหมือนใหม่</translation>
 <translation id="6135823405800500595">ตรวจสอบว่าโทรศัพท์อยู่ใกล้ๆ ปลดล็อกแล้ว และเปิดบลูทูธกับ Wi-Fi ไว้</translation>
 <translation id="6135826623269483856">ไม่อนุญาตให้จัดการหน้าต่างบนจอแสดงผลทั้งหมด</translation>
 <translation id="6136114942382973861">ปิดแถบดาวน์โหลด</translation>

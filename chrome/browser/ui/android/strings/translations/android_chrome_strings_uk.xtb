@@ -311,6 +311,7 @@
 <translation id="2656405586795711023">Веб-додатки</translation>
 <translation id="2669454659051515572">Усі користувачі цього пристрою можуть бачити завантажені файли</translation>
 <translation id="2702516483241149200">Новинка! Діліться посиланням, яке прокручує сторінку до цього тексту</translation>
+<translation id="2708051474374549906">Розумний захист у реальному часі від небезпечних сайтів, завантажень і розширень на основі ваших даних веб-перегляду, що надсилаються в Google</translation>
 <translation id="271033894570825754">Новий</translation>
 <translation id="2711073837061989559">Пробні версії функцій</translation>
 <translation id="2718352093833049315">Лише у Wi-Fi</translation>
@@ -674,6 +675,7 @@
 <translation id="4583164079174244168">{MINUTES,plural, =1{# хвилину тому}one{# хвилину тому}few{# хвилини тому}many{# хвилин тому}other{# хвилини тому}}</translation>
 <translation id="4587589328781138893">Сайти</translation>
 <translation id="4594952190837476234">Цю сторінку створено <ph name="CREATION_TIME" />. Вона може відрізнятися від онлайн-версії.</translation>
+<translation id="4601095002996233687">Ретельна перевірка підозрілих завантажень.</translation>
 <translation id="4616150815774728855">Відкрити файл <ph name="WEBAPK_NAME" /></translation>
 <translation id="4619564267100705184">Підтвердити особу</translation>
 <translation id="4634124774493850572">Прийняти пароль</translation>
@@ -842,6 +844,7 @@
 <translation id="543338862236136125">Змінити пароль</translation>
 <translation id="5433691172869980887">Ім’я користувача скопійовано</translation>
 <translation id="5438292632479953702">Завантажити знову</translation>
+<translation id="5439191312780166229">Попереджає вас про небезпечні сайти, навіть раніше невідомі Google, аналізуючи більше даних від сайтів, ніж системи стандартного захисту. Ви можете пропустити попередження Chrome.</translation>
 <translation id="5441137934526263133">Сайт не працює? Сторонні файли cookie заблоковано.</translation>
 <translation id="5441466871879044658">Перекладати на цю мову</translation>
 <translation id="5441522332038954058">Перейти до адресного рядка</translation>
@@ -1054,6 +1057,7 @@
 <translation id="6541983376925655882">{NUM_HOURS,plural, =1{Перевірено 1 годину тому}one{Перевірено # годину тому}few{Перевірено # години тому}many{Перевірено # годин тому}other{Перевірено # години тому}}</translation>
 <translation id="6545017243486555795">Видалити всі дані</translation>
 <translation id="6546511553472444032">Файл може бути шкідливим</translation>
+<translation id="6550891580932862748">Не захищає від небезпечних веб-сайтів, завантажень і розширень. Це не вплине на налаштування Безпечного перегляду в інших продуктах Google.</translation>
 <translation id="6556542240154580383">{TAB_COUNT,plural, =1{"<ph name="TAB_TITLE" />" і ще <ph name="TAB_COUNT_ONE" /> вкладку буде закрито}one{"<ph name="TAB_TITLE" />" і ще <ph name="TAB_COUNT_MANY" /> вкладку буде закрито}few{"<ph name="TAB_TITLE" />" і ще <ph name="TAB_COUNT_MANY" /> вкладки буде закрито}many{"<ph name="TAB_TITLE" />" і ще <ph name="TAB_COUNT_MANY" /> вкладок буде закрито}other{"<ph name="TAB_TITLE" />" і ще <ph name="TAB_COUNT_MANY" /> вкладки буде закрито}}</translation>
 <translation id="6560414384669816528">Шукати за допомогою Sogou</translation>
 <translation id="656065428026159829">Показати більше</translation>
@@ -1267,6 +1271,7 @@
 <translation id="757855969265046257">{FILES,plural, =1{Завантажено <ph name="FILES_DOWNLOADED_ONE" /> файл}one{Завантажено <ph name="FILES_DOWNLOADED_MANY" /> файл}few{Завантажено <ph name="FILES_DOWNLOADED_MANY" /> файли}many{Завантажено <ph name="FILES_DOWNLOADED_MANY" /> файлів}other{Завантажено <ph name="FILES_DOWNLOADED_MANY" /> файлу}}</translation>
 <translation id="7581273696622423628">Відповісти на запитання</translation>
 <translation id="7583262514280211622">Тут відображатиметься ваш список читання</translation>
+<translation id="7587250070160020374">У Chrome відтворюється звук</translation>
 <translation id="7588219262685291874">Показувати темну тему, коли на пристрої ввімкнено режим енергозбереження</translation>
 <translation id="7594687499944811403"><ph name="EMBEDDED_ORIGIN" /> підтвердить вашу особу для сайту <ph name="TOP_ORIGIN" /></translation>
 <translation id="7596558890252710462">Операційна система</translation>
@@ -1308,6 +1313,7 @@
 <translation id="7772032839648071052">Підтвердити парольну фразу</translation>
 <translation id="7772375229873196092">Закрити додаток <ph name="APP_NAME" /></translation>
 <translation id="7774809984919390718">{PAYMENT_METHOD,plural, =1{<ph name="PAYMENT_METHOD_PREVIEW" />\u2026 і ще <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" />}one{<ph name="PAYMENT_METHOD_PREVIEW" />\u2026 і ще <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" />}few{<ph name="PAYMENT_METHOD_PREVIEW" />\u2026 і ще <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" />}many{<ph name="PAYMENT_METHOD_PREVIEW" />\u2026 і ще <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" />}other{<ph name="PAYMENT_METHOD_PREVIEW" />\u2026 і ще <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" />}}</translation>
+<translation id="777637629667389858">Якщо ви ввійшли в обліковий запис, ця функція захищає вас у всіх сервісах Google.</translation>
 <translation id="7778840695157240389">Повертайтеся пізніше, щоб переглянути останні новини</translation>
 <translation id="7780645209293383778">Тимчасово зв’язує ці дані з обліковим записом Google, у який ви ввійшли, щоб захищати вас у всіх додатках Google</translation>
 <translation id="7791543448312431591">Додати</translation>
@@ -1349,6 +1355,7 @@
 <translation id="7968014550143838305">Додано в список читання</translation>
 <translation id="7971136598759319605">У мережі 1 день тому</translation>
 <translation id="7975379999046275268">Переглянути сторінку <ph name="BEGIN_NEW" />Нове<ph name="END_NEW" /></translation>
+<translation id="7977451675950311423">Попереджає, якщо ви використовуєте пароль, який було зламано через порушення безпеки даних.</translation>
 <translation id="7986497153528221272">Щоб переглянути паролі, спершу налаштуйте блокування екрана на пристрої</translation>
 <translation id="7995059495660416932">Контент почне відображатися, коли стане доступним</translation>
 <translation id="799576009106109668">Ви будете швидше переглядати веб-сторінки, оскільки контент попередньо завантажується на основі поточної відкритої веб-сторінки</translation>

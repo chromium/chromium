@@ -309,6 +309,7 @@ Indicativele de stare private îmbunătățesc confidențialitatea pe web și nu
 <translation id="2656405586795711023">Aplicații web</translation>
 <translation id="2669454659051515572">Oricine folosește acest dispozitiv poate să vadă fișierele descărcate</translation>
 <translation id="2702516483241149200">Nou: distribuie un link care derulează la acest text</translation>
+<translation id="2708051474374549906">Protecție proactivă în timp real împotriva site-urilor, descărcărilor și extensiilor periculoase, pe baza datelor de navigare trimise la Google</translation>
 <translation id="271033894570825754">Nou</translation>
 <translation id="2711073837061989559">Versiuni de încercare</translation>
 <translation id="2718352093833049315">Numai prin Wi-Fi</translation>
@@ -669,6 +670,7 @@ Contul Google poate să ofere alte forme ale istoricului de navigare, cum ar fi 
 <translation id="4583164079174244168">{MINUTES,plural, =1{Acum # minut}few{Acum # minute}other{Acum # de minute}}</translation>
 <translation id="4587589328781138893">Site-uri</translation>
 <translation id="4594952190837476234">Această pagină offline este din data de <ph name="CREATION_TIME" /> și poate fi diferită de versiunea online.</translation>
+<translation id="4601095002996233687">Scanări detaliate pentru descărcările suspecte.</translation>
 <translation id="4616150815774728855">Deschide <ph name="WEBAPK_NAME" /></translation>
 <translation id="4619564267100705184">Confirmă-ți identitatea</translation>
 <translation id="4634124774493850572">Folosește parola</translation>
@@ -834,6 +836,7 @@ Pentru a modifica această setare, <ph name="BEGIN_LINK" />resetează sincroniza
 <translation id="543338862236136125">Editează parola</translation>
 <translation id="5433691172869980887">Numele de utilizator a fost copiat</translation>
 <translation id="5438292632479953702">Descarcă din nou</translation>
+<translation id="5439191312780166229">Te avertizează cu privire la site-uri periculoase, chiar și cele pe care Google nu le cunoștea înainte, analizând mai multe date din site-uri decât Protecția standard. Poți să omiți avertismentele din Chrome.</translation>
 <translation id="5441466871879044658">Tradu în această limbă</translation>
 <translation id="5441522332038954058">Accesează bara de adrese</translation>
 <translation id="5444999712122199445">Revino pe site</translation>
@@ -1044,6 +1047,7 @@ De exemplu, unele site-uri pot răspunde la această solicitare afișând anunț
 <translation id="6541983376925655882">{NUM_HOURS,plural, =1{A rulat acum o oră}few{A rulat acum # ore}other{A rulat acum # de ore}}</translation>
 <translation id="6545017243486555795">Șterge toate datele</translation>
 <translation id="6546511553472444032">Fișierul poate fi dăunător</translation>
+<translation id="6550891580932862748">Nu te protejează împotriva site-urilor, descărcărilor și extensiilor periculoase. Setările tale pentru Navigarea sigură din alte produse Google nu vor fi afectate.</translation>
 <translation id="6556542240154580383">{TAB_COUNT,plural, =1{<ph name="TAB_TITLE" /> și încă <ph name="TAB_COUNT_ONE" /> filă vor fi închise}few{<ph name="TAB_TITLE" /> și încă <ph name="TAB_COUNT_MANY" /> file vor fi închise}other{<ph name="TAB_TITLE" /> și încă <ph name="TAB_COUNT_MANY" /> de file vor fi închise}}</translation>
 <translation id="6560414384669816528">Caută cu Sogou</translation>
 <translation id="656065428026159829">Vezi mai multe</translation>
@@ -1297,6 +1301,7 @@ De exemplu, unele site-uri pot răspunde la această solicitare afișând anunț
 <translation id="7772032839648071052">Confirmă expresia de acces</translation>
 <translation id="7772375229873196092">Închide <ph name="APP_NAME" /></translation>
 <translation id="7774809984919390718">{PAYMENT_METHOD,plural, =1{<ph name="PAYMENT_METHOD_PREVIEW" />\u2026 și încă <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" />}few{<ph name="PAYMENT_METHOD_PREVIEW" />\u2026 și încă <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" />}other{<ph name="PAYMENT_METHOD_PREVIEW" />\u2026 și încă <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" />}}</translation>
+<translation id="777637629667389858">Dacă te-ai conectat, te protejează în toate serviciile Google.</translation>
 <translation id="7778840695157240389">Revino mai târziu pentru subiecte noi</translation>
 <translation id="7780645209293383778">Conectează temporar aceste date la Contul tău Google dacă te-ai conectat, pentru a te proteja în aplicațiile Google</translation>
 <translation id="7791543448312431591">Adaugă</translation>
@@ -1338,6 +1343,7 @@ De exemplu, unele site-uri pot răspunde la această solicitare afișând anunț
 <translation id="7968014550143838305">S-a adăugat în lista de lectură</translation>
 <translation id="7971136598759319605">Activ acum o zi</translation>
 <translation id="7975379999046275268">Previzualizează pagina <ph name="BEGIN_NEW" />Nou<ph name="END_NEW" /></translation>
+<translation id="7977451675950311423">Te avertizează dacă folosești o parolă care a fost compromisă printr-o încălcare a securității datelor.</translation>
 <translation id="7986497153528221272">Pentru a vedea parolele, mai întâi setează o blocare a ecranului pe dispozitiv</translation>
 <translation id="7995059495660416932">Vei vedea conținut când acesta devine disponibil</translation>
 <translation id="799576009106109668">Vei naviga mai rapid deoarece conținutul se încarcă proactiv în funcție de pagina web accesată în acel moment</translation>

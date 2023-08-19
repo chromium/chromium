@@ -5245,7 +5245,6 @@
 <translation id="5298219193514155779">مظهر أنشأه</translation>
 <translation id="5299109548848736476">عدم التعقب</translation>
 <translation id="5299558715747014286">عرض مجموعات علامات التبويب وإدارتها</translation>
-<translation id="529986401483187205">غير مفعَّل</translation>
 <translation id="5300426565656326054">تخصيص الإعلانات حسب المتصفِّح</translation>
 <translation id="5300589172476337783">عرض</translation>
 <translation id="5300719150368506519">‏إرسال عناوين URL الخاصة بالصفحات التي تزورها إلى Google</translation>
@@ -7269,7 +7268,7 @@
 <translation id="6992554835374084304">تفعيل التدقيق الإملائي المُحسَّن</translation>
 <translation id="6993000214273684335">تمت إزالة علامة التبويب من مجموعة لم تتم تسميتها وتحتوي على <ph name="GROUP_CONTENTS" />.</translation>
 <translation id="6993050154661569036">‏جارٍ تحديث متصفّح Chrome</translation>
-<translation id="6995899638241819463">التحذير إذا تم الكشف عن كلمات المرور في عملية اختراق بيانات</translation>
+<translation id="6995899638241819463">التحذير في حال الكشف عن كلمات المرور في عملية اختراق بيانات</translation>
 <translation id="6995984090981858039">‏الاطّلاع على معلومات وبيانات جهاز ChromeOS</translation>
 <translation id="6996438701394974959">زيادة حجم شاشة العرض والنص</translation>
 <translation id="6997553674029032185">زيارة الموقع الإلكتروني</translation>

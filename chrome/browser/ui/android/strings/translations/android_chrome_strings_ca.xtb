@@ -309,6 +309,7 @@ Els testimonis d'estat privat milloren la privadesa al web i no poden utilitzar-
 <translation id="2656405586795711023">Aplicacions web</translation>
 <translation id="2669454659051515572">Qualsevol persona que utilitzi aquest dispositiu pot veure els fitxers baixats</translation>
 <translation id="2702516483241149200">Nou: comparteix un enllaç que es desplaça fins a aquest text</translation>
+<translation id="2708051474374549906">Protecció proactiva en temps real contra baixades, extensions i llocs web perillosos basada en les teves dades de navegació enviades a Google</translation>
 <translation id="271033894570825754">Nou</translation>
 <translation id="2711073837061989559">Proves</translation>
 <translation id="2718352093833049315">Només amb Wi-Fi</translation>
@@ -669,6 +670,7 @@ Els testimonis d'estat privat milloren la privadesa al web i no poden utilitzar-
 <translation id="4583164079174244168">{MINUTES,plural, =1{fa # minut}other{fa # minuts}}</translation>
 <translation id="4587589328781138893">Llocs web</translation>
 <translation id="4594952190837476234">Aquesta pàgina sense connexió és del dia <ph name="CREATION_TIME" /> i pot ser diferent de la versió en línia.</translation>
+<translation id="4601095002996233687">Anàlisis detallades per comprovar si hi ha baixades sospitoses.</translation>
 <translation id="4616150815774728855">Obre <ph name="WEBAPK_NAME" /></translation>
 <translation id="4619564267100705184">Verifica la teva identitat</translation>
 <translation id="4634124774493850572">Fes servir la contrasenya</translation>
@@ -834,6 +836,7 @@ Per canviar aquesta opció, <ph name="BEGIN_LINK" />restableix la sincronitzaci�
 <translation id="543338862236136125">Edita la contrasenya</translation>
 <translation id="5433691172869980887">S'ha copiat el nom d'usuari</translation>
 <translation id="5438292632479953702">Torna a baixar</translation>
+<translation id="5439191312780166229">T'avisa de llocs web perillosos, fins i tot dels que Google no coneixia abans, ja que analitza més dades dels llocs web que la protecció estàndard. Pots optar per ometre els advertiments de Chrome.</translation>
 <translation id="5441466871879044658">Tradueix a aquest idioma</translation>
 <translation id="5441522332038954058">Ves a la barra d'adreces</translation>
 <translation id="5444999712122199445">Torna al lloc web</translation>
@@ -1044,6 +1047,7 @@ Per exemple, és possible que alguns llocs web responguin a aquesta sol·licitud
 <translation id="6541983376925655882">{NUM_HOURS,plural, =1{S'ha comprovat fa 1 hora}other{S'ha comprovat fa # hores}}</translation>
 <translation id="6545017243486555795">Esborra totes les dades</translation>
 <translation id="6546511553472444032">El fitxer pot ser perjudicial</translation>
+<translation id="6550891580932862748">No et protegeix contra baixades, extensions ni llocs web perillosos. La configuració de Navegació segura en altres productes de Google no es veurà afectada.</translation>
 <translation id="6556542240154580383">{TAB_COUNT,plural, =1{Es tancaran <ph name="TAB_TITLE" /> i <ph name="TAB_COUNT_ONE" /> pestanya més}other{Es tancaran <ph name="TAB_TITLE" /> i <ph name="TAB_COUNT_MANY" /> pestanyes més}}</translation>
 <translation id="6560414384669816528">Cerca amb Sogou</translation>
 <translation id="656065428026159829">Mostra'n més</translation>
@@ -1257,6 +1261,7 @@ Per exemple, és possible que alguns llocs web responguin a aquesta sol·licitud
 <translation id="757855969265046257">{FILES,plural, =1{<ph name="FILES_DOWNLOADED_ONE" /> fitxer baixat}other{<ph name="FILES_DOWNLOADED_MANY" /> fitxers baixats}}</translation>
 <translation id="7581273696622423628">Ves a l'enquesta</translation>
 <translation id="7583262514280211622">Trobaràs la llista de lectura aquí</translation>
+<translation id="7587250070160020374">Chrome està reproduint</translation>
 <translation id="7588219262685291874">Activa el tema fosc quan l'estalvi de bateria del dispositiu estigui activat</translation>
 <translation id="7594687499944811403">Permet que <ph name="EMBEDDED_ORIGIN" /> verifiqui la teva identitat per a <ph name="TOP_ORIGIN" /></translation>
 <translation id="7596558890252710462">Sistema operatiu</translation>
@@ -1296,6 +1301,7 @@ Per exemple, és possible que alguns llocs web responguin a aquesta sol·licitud
 <translation id="7772032839648071052">Confirmeu la frase de contrasenya</translation>
 <translation id="7772375229873196092">Tanca <ph name="APP_NAME" /></translation>
 <translation id="7774809984919390718">{PAYMENT_METHOD,plural, =1{<ph name="PAYMENT_METHOD_PREVIEW" />\u2026 i <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" /> més}other{<ph name="PAYMENT_METHOD_PREVIEW" />\u2026 i <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" /> més}}</translation>
+<translation id="777637629667389858">Quan tens la sessió iniciada, et protegeix en tots els serveis de Google.</translation>
 <translation id="7778840695157240389">Torna més tard per veure històries noves</translation>
 <translation id="7780645209293383778">Enllaça temporalment aquestes dades al teu Compte de Google quan tens la sessió iniciada per protegir-te en totes les aplicacions de Google</translation>
 <translation id="7791543448312431591">Afegeix</translation>
@@ -1337,6 +1343,7 @@ Per exemple, és possible que alguns llocs web responguin a aquesta sol·licitud
 <translation id="7968014550143838305">S'ha afegit a la llista de lectura</translation>
 <translation id="7971136598759319605">Actiu fa 1 dia</translation>
 <translation id="7975379999046275268">Previsualitza la pàgina <ph name="BEGIN_NEW" />Novetat<ph name="END_NEW" /></translation>
+<translation id="7977451675950311423">T'avisa si utilitzes una contrasenya que està en perill a causa d'una violació de les dades.</translation>
 <translation id="7986497153528221272">Per veure les contrasenyes, primer has d'establir un bloqueig de pantalla al dispositiu</translation>
 <translation id="7995059495660416932">Veuràs contingut quan estigui disponible</translation>
 <translation id="799576009106109668">Navegaràs més de pressa perquè el contingut es carrega de forma proactiva en funció de la pàgina web que estiguis visitant</translation>

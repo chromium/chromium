@@ -310,6 +310,7 @@
 <translation id="2656405586795711023">ウェブアプリ</translation>
 <translation id="2669454659051515572">ダウンロードしたファイルは、このデバイスを使用するすべてのユーザーが確認できます</translation>
 <translation id="2702516483241149200">新規: このテキストにスクロールするリンクを共有できます</translation>
+<translation id="2708051474374549906">Google に送信される閲覧データに基づき、危険なサイト、ダウンロード、拡張機能から、リアルタイムで予防的に保護します</translation>
 <translation id="271033894570825754">New</translation>
 <translation id="2711073837061989559">試用版</translation>
 <translation id="2718352093833049315">Wi-Fi接続時のみ</translation>
@@ -669,6 +670,7 @@
 <translation id="4583164079174244168">{MINUTES,plural, =1{# 分前}other{# 分前}}</translation>
 <translation id="4587589328781138893">ウェブサイト</translation>
 <translation id="4594952190837476234">このオフライン ページは <ph name="CREATION_TIME" /> 時点のものであり、オンライン版とは異なる可能性があります。</translation>
+<translation id="4601095002996233687">不審なダウンロードを詳しくスキャンします。</translation>
 <translation id="4616150815774728855"><ph name="WEBAPK_NAME" /> を起動</translation>
 <translation id="4619564267100705184">本人確認</translation>
 <translation id="4634124774493850572">パスワードを使用</translation>
@@ -832,6 +834,7 @@
 <translation id="543338862236136125">パスワードを編集</translation>
 <translation id="5433691172869980887">ユーザー名がコピーされました</translation>
 <translation id="5438292632479953702">再ダウンロード</translation>
+<translation id="5439191312780166229">標準保護機能より多くのサイトデータを分析して、危険なサイト（Google が認識していなかったサイトも含む）について警告します。Chrome の警告をスキップすることもできます。</translation>
 <translation id="5441466871879044658">この言語に翻訳する</translation>
 <translation id="5441522332038954058">アドレスバーに移動する</translation>
 <translation id="5444999712122199445">サイトに戻ってください</translation>
@@ -1042,6 +1045,7 @@
 <translation id="6541983376925655882">{NUM_HOURS,plural, =1{前回の確認: 1 時間前}other{前回の確認: # 時間前}}</translation>
 <translation id="6545017243486555795">すべてのデータを削除</translation>
 <translation id="6546511553472444032">有害なファイルの可能性があります</translation>
+<translation id="6550891580932862748">危険なウェブサイト、ダウンロード、拡張機能から保護されていません。他の Google サービスのセーフ ブラウジング設定には影響しません。</translation>
 <translation id="6556542240154580383">{TAB_COUNT,plural, =1{「<ph name="TAB_TITLE" />」と <ph name="TAB_COUNT_ONE" /> 個以上のタブが閉じられます}other{「<ph name="TAB_TITLE" />」と <ph name="TAB_COUNT_MANY" /> 個以上のタブが閉じられます}}</translation>
 <translation id="6560414384669816528">Sogou で検索します</translation>
 <translation id="656065428026159829">もっと見る</translation>
@@ -1295,6 +1299,7 @@
 <translation id="7772032839648071052">パスフレーズの確認</translation>
 <translation id="7772375229873196092"><ph name="APP_NAME" /> を閉じる</translation>
 <translation id="7774809984919390718">{PAYMENT_METHOD,plural, =1{<ph name="PAYMENT_METHOD_PREVIEW" />\u2026 他 <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" /> 件}other{<ph name="PAYMENT_METHOD_PREVIEW" />\u2026 他 <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" /> 件}}</translation>
+<translation id="777637629667389858">ログイン中、すべての Google サービスで保護します。</translation>
 <translation id="7778840695157240389">しばらくしてからご確認ください</translation>
 <translation id="7780645209293383778">ログイン時には、このデータを一時的に Google アカウントにリンクして、すべての Google アプリを安全に利用できるように保護します</translation>
 <translation id="7791543448312431591">追加</translation>
@@ -1335,6 +1340,7 @@
 <translation id="7968014550143838305">リーディング リストに追加しました</translation>
 <translation id="7971136598759319605">最終同期: 1 日前</translation>
 <translation id="7975379999046275268">ページをプレビュー <ph name="BEGIN_NEW" />New<ph name="END_NEW" /></translation>
+<translation id="7977451675950311423">データ侵害で流出したパスワードを使用すると警告します。</translation>
 <translation id="7986497153528221272">パスワードを表示するには、まずデバイスで画面ロックを設定してください</translation>
 <translation id="7995059495660416932">利用可能になると、コンテンツが表示されます</translation>
 <translation id="799576009106109668">表示中のウェブページに基づいてコンテンツが事前に読み込まれるので、すばやくブラウジングできます</translation>

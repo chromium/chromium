@@ -309,6 +309,7 @@ Privātā stāvokļa pilnvaras uzlabo konfidencialitāti tīmeklī. Tās nevar i
 <translation id="2656405586795711023">Tīmekļa lietotnes</translation>
 <translation id="2669454659051515572">Lejupielādētie faili ir redzami visiem šīs ierīces lietotājiem.</translation>
 <translation id="2702516483241149200">Jaunums: varat kopīgot saiti uz šo tekstu</translation>
+<translation id="2708051474374549906">Aktīva reāllaika aizsardzība pret bīstamām vietnēm, lejupielādēm un paplašinājumiem, kura tiek nodrošināta, sūtot jūsu pārlūkošanas datus uzņēmumam Google.</translation>
 <translation id="271033894570825754">Jauns</translation>
 <translation id="2711073837061989559">Izmēģinājuma versijas</translation>
 <translation id="2718352093833049315">Tikai Wi-Fi</translation>
@@ -669,6 +670,7 @@ Jūsu Google kontam vietnē <ph name="BEGIN_LINK" />myactivity.google.com<ph nam
 <translation id="4583164079174244168">{MINUTES,plural, =1{pirms # minūtes}zero{pirms # minūtēm}one{pirms # minūtes}other{pirms # minūtēm}}</translation>
 <translation id="4587589328781138893">Vietnes</translation>
 <translation id="4594952190837476234">Šī lapas bezsaistes versija (izveidota: <ph name="CREATION_TIME" />) var atšķirties no tiešsaistes versijas.</translation>
+<translation id="4601095002996233687">Detalizēta aizdomīgu lejupielāžu pārbaude.</translation>
 <translation id="4616150815774728855">Atvērt <ph name="WEBAPK_NAME" /></translation>
 <translation id="4619564267100705184">Apstiprināt identitāti</translation>
 <translation id="4634124774493850572">Izmantot paroli</translation>
@@ -834,6 +836,7 @@ Lai mainītu šo iestatījumu, <ph name="BEGIN_LINK" />atiestatiet sinhronizāci
 <translation id="543338862236136125">Rediģēt paroli</translation>
 <translation id="5433691172869980887">Lietotājvārds ir nokopēts.</translation>
 <translation id="5438292632479953702">Lejupielādēt vēlreiz</translation>
+<translation id="5439191312780166229">Tiek rādīts brīdinājums par bīstamām vietnēm (pat ja Google par tām iepriekš nezināja), analizējot vairāk datu no vietnēm, nekā analizē standarta aizsardzība. Varat izlaist Chrome brīdinājumus.</translation>
 <translation id="5441466871879044658">Tulkot šajā valodā</translation>
 <translation id="5441522332038954058">Pāriet uz adreses joslu</translation>
 <translation id="5444999712122199445">Atgriezieties vietnē.</translation>
@@ -1044,6 +1047,7 @@ Piemēram, dažas vietnes, reaģējot uz šo pieprasījumu, var rādīt jums rek
 <translation id="6541983376925655882">{NUM_HOURS,plural, =1{Pārbaudīts: pirms 1 stundas}zero{Pārbaudīts: pirms # stundām}one{Pārbaudīts: pirms # stundas}other{Pārbaudīts: pirms # stundām}}</translation>
 <translation id="6545017243486555795">Notīrīt visus datus</translation>
 <translation id="6546511553472444032">Fails var būt kaitīgs</translation>
+<translation id="6550891580932862748">Netiek nodrošināta aizsardzība pret bīstamām vietnēm, lejupielādēm un paplašinājumiem. Citos Google produktos izvēlētie drošās pārlūkošanas iestatījumi netiks ietekmēti.</translation>
 <translation id="6556542240154580383">{TAB_COUNT,plural, =1{Tiks aizvērta cilne “<ph name="TAB_TITLE" />” un vēl <ph name="TAB_COUNT_ONE" /> cilne.}zero{Tiks aizvērta cilne “<ph name="TAB_TITLE" />” un vēl <ph name="TAB_COUNT_MANY" /> cilnes.}one{Tiks aizvērta cilne “<ph name="TAB_TITLE" />” un vēl <ph name="TAB_COUNT_MANY" /> cilne.}other{Tiks aizvērta cilne “<ph name="TAB_TITLE" />” un vēl <ph name="TAB_COUNT_MANY" /> cilnes.}}</translation>
 <translation id="6560414384669816528">Meklēšana, izmantojot Sogou</translation>
 <translation id="656065428026159829">Skatīt vairāk</translation>
@@ -1257,6 +1261,7 @@ Piemēram, dažas vietnes, reaģējot uz šo pieprasījumu, var rādīt jums rek
 <translation id="757855969265046257">{FILES,plural, =1{Lejupielādēts <ph name="FILES_DOWNLOADED_ONE" /> fails}zero{Lejupielādēti <ph name="FILES_DOWNLOADED_MANY" /> faili}one{Lejupielādēts <ph name="FILES_DOWNLOADED_MANY" /> fails}other{Lejupielādēti <ph name="FILES_DOWNLOADED_MANY" /> faili}}</translation>
 <translation id="7581273696622423628">Piedalīties aptaujā</translation>
 <translation id="7583262514280211622">Šeit varēsiet skatīt savu lasīšanas sarakstu</translation>
+<translation id="7587250070160020374">Pārlūkā Chrome notiek atskaņošana:</translation>
 <translation id="7588219262685291874">Ieslēgt tumšo motīvu, kad ierīcē ir ieslēgts akumulatora enerģijas taupīšanas režīms</translation>
 <translation id="7594687499944811403">Ļaujiet <ph name="EMBEDDED_ORIGIN" /> apstiprināt jūsu identitāti <ph name="TOP_ORIGIN" /> vārdā.</translation>
 <translation id="7596558890252710462">Operētājsistēma</translation>
@@ -1296,6 +1301,7 @@ Piemēram, dažas vietnes, reaģējot uz šo pieprasījumu, var rādīt jums rek
 <translation id="7772032839648071052">Apstipriniet ieejas frāzi</translation>
 <translation id="7772375229873196092">Aizvērt <ph name="APP_NAME" /></translation>
 <translation id="7774809984919390718">{PAYMENT_METHOD,plural, =1{<ph name="PAYMENT_METHOD_PREVIEW" />… un vēl <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" />}zero{<ph name="PAYMENT_METHOD_PREVIEW" />… un vēl <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" />}one{<ph name="PAYMENT_METHOD_PREVIEW" />… un vēl <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" />}other{<ph name="PAYMENT_METHOD_PREVIEW" />… un vēl <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" />}}</translation>
+<translation id="777637629667389858">Kad esat pierakstījies, šī funkcija aizsargā jūsu informāciju Google pakalpojumos.</translation>
 <translation id="7778840695157240389">Lai skatītu jaunus rakstus, atgriezieties vēlāk</translation>
 <translation id="7780645209293383778">Lai aizsargātu jūs dažādās Google lietotnēs, šie dati tiek īslaicīgi saistīti ar jūsu Google kontu, kad esat pierakstījies.</translation>
 <translation id="7791543448312431591">Pievienot</translation>
@@ -1337,6 +1343,7 @@ Piemēram, dažas vietnes, reaģējot uz šo pieprasījumu, var rādīt jums rek
 <translation id="7968014550143838305">Pievienota lasīšanas sarakstam</translation>
 <translation id="7971136598759319605">Aktīva pirms 1 dienas</translation>
 <translation id="7975379999046275268">Priekšskatīt lapu <ph name="BEGIN_NEW" />Jauna<ph name="END_NEW" /></translation>
+<translation id="7977451675950311423">Tiek rādīts brīdinājums, ja izmantojat paroli, kas ir uzlauzta datu aizsardzības pārkāpuma dēļ.</translation>
 <translation id="7986497153528221272">Lai skatītu paroles, vispirms iestatiet ierīcei ekrāna bloķēšanu</translation>
 <translation id="7995059495660416932">Kad saturs būs pieejams, jūs to redzēsiet.</translation>
 <translation id="799576009106109668">Pārlūkošana būs ātrāka, jo saturs tiks iepriekš ielādēts, pamatojoties uz jūsu pašlaik apmeklēto tīmekļa lapu.</translation>

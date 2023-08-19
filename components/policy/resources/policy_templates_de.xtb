@@ -96,6 +96,7 @@ Beachte, dass unter <ph name="MS_WIN_NAME" />, <ph name="MAC_OS_NAME" /> und <ph
 <translation id="1065175969514496951">Mit dieser Richtlinie kann während der Authentifizierung (z. B. auf dem Anmelde- oder Sperrbildschirm) auf die aufgeführten URLs zugegriffen werden (als Ausnahmen von „<ph name="DEVICE_AUTHENTICATION_URL_BLOCKLIST_POLICY_NAME" />“). Informationen zum Format der Einträge in der Liste findest du in der Beschreibung der Richtlinie. Beispielsweise werden alle Anfragen blockiert, wenn du „<ph name="DEVICE_AUTHENTICATION_URL_BLOCKLIST_POLICY_NAME" />“ auf <ph name="WILDCARD_VALUE" /> setzt. Du kannst diese Richtlinie verwenden, um den Zugriff auf eine eingeschränkte Liste mit URLs zu erlauben. Mit ihr lassen sich bei Verwendung des unter https://support.google.com/chrome/a?p=url_blocklist_filter_format angegebenen Formats Ausnahmen für bestimmte Schemas, Subdomains anderer Domains, Ports oder bestimmte Pfade festlegen. Mit dem spezifischsten Filter wird festgelegt, ob eine URL blockiert oder zulässig ist. Die Richtlinie „<ph name="DEVICE_AUTHENTICATION_URL_ALLOWLIST_POLICY_NAME" />“ hat Vorrang vor „<ph name="DEVICE_AUTHENTICATION_URL_BLOCKLIST_POLICY_NAME" />“. Diese Richtlinie ist auf 1.000 Einträge beschränkt.
 
 Wenn sie nicht konfiguriert ist, sind keine Ausnahmen zu „<ph name="DEVICE_AUTHENTICATION_URL_BLOCKLIST_POLICY_NAME" />“ möglich.</translation>
+<translation id="1068801725746725727">Empfang von Safe Browsing-Umfragen aktivieren</translation>
 <translation id="1069489575852947981">Wenn die Richtlinie aktiviert oder nicht konfiguriert ist, wird ein lokales Gerätekonto für die verzögerungsfreie automatische Anmeldung eingerichtet. <ph name="PRODUCT_OS_NAME" /> verwendet die Tastenkombination Strg + Alt + S, um die automatische Anmeldung zu umgehen und stattdessen den Anmeldebildschirm aufzurufen.
 
       Wenn die Richtlinie deaktiviert ist, kann eine verzögerungsfreie automatische Anmeldung, sofern konfiguriert, nicht umgangen werden.</translation>
@@ -138,6 +139,11 @@ Wenn sie nicht konfiguriert ist, sind keine Ausnahmen zu „<ph name="DEVICE_AUT
           Ist die Richtlinie aktiviert oder nicht konfiguriert, können Nutzer entscheiden, ob Kerberos-Passwörter gespeichert werden, sodass sie nicht wieder eingegeben werden müssen. Kerberos-Tickets werden automatisch abgerufen, sofern keine zusätzliche Authentifizierung erforderlich ist (2-Faktor-Authentifizierung).
 
           Wenn die Richtlinie deaktiviert ist, werden Passwörter nie gespeichert und alle zuvor gespeicherten Passwörter werden gelöscht. Nutzer müssen ihr Passwort dann jedes Mal eingeben, wenn eine Authentifizierung beim Kerberos-System erforderlich ist. Je nach Servereinstellungen kann das alle 8 Stunden oder alle paar Monate der Fall sein.</translation>
+<translation id="112794759469625182">Diese Richtlinie wurde in M118 entfernt. Sie diente dazu, Remote Attestation für den Nutzer zu aktivieren und zu deaktivieren, allerdings war diese Einstellung standardmäßig aktiviert.
+
+Wenn diese Richtlinie aktiviert ist, ist die Remote Attestation der Identität gegenüber der Datenschutz-Zertifizierungsstelle anhand der Hardware von <ph name="PRODUCT_OS_NAME" />-Geräten möglich. Dies geschieht mithilfe der Funktion „<ph name="CHALLENGE_USER_KEY_FUNCTION" />“ über die <ph name="ENTERPRISE_PLATFORM_KEYS_API" />.
+
+      Wenn die Richtlinie deaktiviert ist oder nicht konfiguriert wird, schlagen API-Aufrufe fehl und ein Fehlercode wird angezeigt.</translation>
 <translation id="1133622335785078255">Diese Einstellung erlaubt Nutzern, sekundäre Profile zu erstellen und zu verwenden sowie den Gastmodus im <ph name="LACROS_NAME" />-Browser zu verwenden</translation>
 <translation id="1137096407176363892">Hiermit kannst du die Stimmen für die Sprachausgabe bei Enhanced Network in der Bedienungshilfe „Vorlesen“ zulassen. Diese Stimmen senden Text an die Server von Google, um natürlich klingende Sprache zu synthetisieren.
 
@@ -1283,6 +1289,7 @@ Die separate Richtlinie „<ph name="HTTP_ALLOWLIST_POLICY_NAME" />“ kann verw
 
           Wenn die Richtlinie deaktiviert oder nicht konfiguriert ist, werden den Einstellungen für Kerberos-Konten keine Konten hinzugefügt und alle zuvor über diese Richtlinie hinzugefügten Konten werden entfernt. Nutzer können jedoch trotzdem Konten manuell hinzufügen, wenn die Richtlinie „Nutzer können Kerberos-Konten hinzufügen“ aktiviert ist.</translation>
 <translation id="2104418465060359056">Daten von Erweiterungen und Plug-ins erfassen</translation>
+<translation id="210652463860415362">Webinhalte akzeptieren, die die Funktion für den komprimierten Wörterbuchtransport verwenden</translation>
 <translation id="2106627642643925514">Hiermit wird der Standardmodus für den PIN-Druck überschrieben. Wenn der Modus nicht verfügbar ist, wird diese Richtlinie ignoriert.</translation>
 <translation id="2107563874993284076">Wenn die Richtlinie aktiviert ist, können Nutzer Netzwerkfreigaben für <ph name="PRODUCT_NAME" /> verwenden. Ist sie deaktiviert, können Nutzer diese Funktion nicht verwenden.</translation>
 <translation id="2107601598727098402">
@@ -1458,6 +1465,7 @@ Wenn die Richtlinie nicht konfiguriert oder deaktiviert ist, ist eine Dateiüber
       Diese Richtlinie überschreibt <ph name="DEFAULT_SERIAL_GUARD_SETTING_POLICY_NAME" />, <ph name="SERIAL_ASK_FOR_URLS_POLICY_NAME" />, <ph name="SERIAL_BLOCKED_FOR_URLS_POLICY_NAME" /> und die Nutzereinstellungen.
 
       Sie wirkt sich nur auf den Zugriff auf USB-Geräte über die Web Serial API aus. Sieh dir für die Gewährung des Zugriffs auf USB-Geräte über die WebUSB API die Richtlinie <ph name="WEB_USB_ALLOW_DEVICES_FOR_URLS_POLICY_NAME" /> an.</translation>
+<translation id="2246565294817797392">Abgeschnittene Cookies blockieren</translation>
 <translation id="2246621891161157804">Chrome erlauben, das Aufrufen externer Protokolle in einem Sandbox-iFrame zu blockieren</translation>
 <translation id="224750967938323855">Einwilligung zur Synchronisierung während der Anmeldung nicht anzeigen</translation>
 <translation id="2252400912879027343">WebSQL bleibt in nicht sicheren Kontexten bis M109 verfügbar und ist dann ab M110 nicht mehr verfügbar.</translation>
@@ -2978,15 +2986,6 @@ Denke daran, diese Richtlinie nicht dauerhaft aktiviert zu lassen, insbesondere 
 <translation id="3591584750136265240">Verhalten der Log-in-Authentifizierung konfigurieren</translation>
 <translation id="3593905652755912452">Bei deaktivierten Formularsteuerelementen wird die alte Ereignisweiterleitung verwendet.</translation>
 <translation id="3596112486106491038">Befehlszeilenzugriff auf virtuellen Maschinen aktivieren</translation>
-<translation id="3596651403637948128">Hiermit wird festgelegt, ob im Standardschutzmodus von Safe Browsing Teil-Hashes der URL über einen Proxy über Oblivious HTTP an Google gesendet werden dürfen, um festzustellen, ob die URL sicher aufgerufen werden kann.
-
-Über den Proxy können Browser anonym Teil-Hashes von URLs zu Google hochladen. Außerdem können Browser häufiger Daten hochladen, um den Safe Browsing-Schutz zu verbessern.
-
-Diese Richtlinie wird ignoriert, wenn Safe Browsing deaktiviert oder der erweiterte Schutzmodus aktiviert ist.
-
-Wenn die Richtlinie aktiviert oder nicht konfiguriert ist, werden weitergeleitete Suchen mit erhöhter Sicherheit zugelassen.
-
-Ist die Richtlinie deaktiviert, sind keine weitergeleiteten Suchen mit erhöhter Sicherheit zugelassen. URLs werden viel seltener direkt zu Google hochgeladen.</translation>
 <translation id="3603469950773500315">Einschränkungen von <ph name="CORS" />-Prüfungen in der neuen <ph name="CORS" />-Implementierung erlauben, wodurch Erweiterungen kompatibles Verhalten beibehalten können und <ph name="PRODUCT_NAME" /> angegebene Header ohne <ph name="CORS" />-Prüfungen senden kann.
 
       Wird diese Liste leergelassen, versucht <ph name="PRODUCT_NAME" />, Erweiterungen auf kompatible Weise auszuführen und setzt keine <ph name="API" />-Änderungen für Version 79 von <ph name="PRODUCT_NAME" /> um, wie unter <ph name="WEB_REQUEST_API_MANUAL" /> erläutert.
@@ -5028,6 +5027,7 @@ Ist die Richtlinie deaktiviert oder nicht konfiguriert, wird anhand der Einstell
       Wenn die Option „Forced“ ausgewählt ist, können Seiten ausschließlich im Inkognitomodus geöffnet werden. Die Option „Forced“ funktioniert nicht bei Android-Apps, die auf Chrome ausgeführt werden.
 
       Hinweis: Wenn die Richtlinie unter iOS während einer Sitzung geändert wird, gilt sie erst beim Neustart.</translation>
+<translation id="549471902631700911">Empfang von Safe Browsing-Umfragen deaktivieren</translation>
 <translation id="5499375345075963939">Diese Richtlinie ist nur im Händlermodus aktiv.
 
       Wenn für diese Richtlinie ein Wert festgelegt wurde und dieser Wert nicht "0" ist, wird der aktuell angemeldete Demo-Nutzer nach der angegebenen Inaktivitätsdauer automatisch abgemeldet.
@@ -5388,6 +5388,7 @@ Wenn die Richtlinie deaktiviert ist, ist auch der <ph name="SAFE_BROWSING_NAME" 
       Ist sie deaktiviert oder nicht konfiguriert, werden keine Systemprotokolle gemeldet.</translation>
 <translation id="5861856285460256766">Konfiguration von Elternzugangscodes</translation>
 <translation id="5868414965372171132">Netzwerkkonfiguration auf Nutzerebene</translation>
+<translation id="5871786561822073630">Verwendung der Funktion für den komprimierten Wörterbuchtransport nicht zulassen</translation>
 <translation id="587242272905978723">Zulassen, dass <ph name="PLUGIN_VM_NAME" /> Nutzerdaten von <ph name="PLUGIN_VM_NAME" /> erhebt.
 
       Wenn die Richtlinie auf "false" gesetzt oder nicht konfiguriert ist, darf <ph name="PLUGIN_VM_NAME" /> keine Daten erheben.
@@ -6062,6 +6063,7 @@ Die separate Richtlinie <ph name="HTTP_ALLOWLIST_POLICY_NAME" /> kann verwendet 
 Weitere Informationen findest du in der Richtlinie <ph name="HTTPS_ONLY_MODE_POLICY_NAME" />.</translation>
 <translation id="6438972408080276697">Wenn diese Richtlinie auf "True" gesetzt ist, werden Informationen über wichtige richtlinienbasierte Android-App-Installationsereignisse an Google gesendet. Wenn die Richtlinie auf "False" gesetzt ist, werden keine Ereignisse erfasst.</translation>
 <translation id="6440051664870270040">Websites erlauben, gleichzeitig auf andere Websites weiterzuleiten und Pop-ups zu öffnen</translation>
+<translation id="6441781723322254041">Abgeschnittene Cookies zulassen</translation>
 <translation id="6446366416439249472">Google Drive-Synchronisierung über Mobilfunkverbindungen deaktivieren</translation>
 <translation id="6447948611083700881">"Sicherung und Wiederherstellung" deaktiviert</translation>
 <translation id="6449476513004303784">Nutzern nicht erlauben, Zertifikate zu verwalten</translation>
@@ -6301,6 +6303,7 @@ Wenn die Richtlinie nicht konfiguriert ist, beträgt die Häufigkeit standardmä
       – Wenn die Richtlinie deaktiviert ist, sind die Browserfunktionen eingeschränkt.
 
       – Wenn die Richtlinie deaktiviert ist, müssen Administratoren Endnutzer dieses Geräts darüber informieren.</translation>
+<translation id="6605778633186421420">Unterstützung für komprimierten Wörterbuchtransport aktivieren</translation>
 <translation id="6607983779935460461">Unterstützung von Daten-URLs für SVGUseElement.</translation>
 <translation id="6609867253856597039">Nutzereinstellungen für deaktivierte Funktionen festlegen</translation>
 <translation id="6614557704487944013">Nutzern erlauben, <ph name="LACROS_NAME" /> zu verwenden</translation>
@@ -6313,6 +6316,13 @@ Wenn die Richtlinie nicht konfiguriert ist, beträgt die Häufigkeit standardmä
 <translation id="66265932317331474">CPU-Informationen ausgeben</translation>
 <translation id="6628120204569232711">Speicherstatus melden</translation>
 <translation id="662991036483361836">Nutzer dürfen Nearby Share nicht aktivieren</translation>
+<translation id="6634974629075330608">Durch diese Richtlinie wird vorübergehend die Zustimmung zu Änderungen am Umgang von Chrome mit Cookies widerrufen, die per JavaScript mit bestimmten Steuerzeichen festgelegt werden (NULL, Zeilenumbruch und Zeilenvorschub).
+Bisher führten diese Zeichen in einem Cookie-String dazu, dass der String abgeschnitten, aber dennoch festgelegt wurde.
+Jetzt führen diese Zeichen dazu, dass der gesamte Cookie-String ignoriert wird.
+
+Wenn diese Richtlinie auf „true“ gesetzt ist (Standardeinstellung), ist das neue Verhalten aktiviert.
+
+Wenn diese Richtlinie auf „false“ gesetzt ist, ist das alte Verhalten aktiviert.</translation>
 <translation id="663685822663765995">Farbdruck einschränken</translation>
 <translation id="6637946190026453735">Liste der Einstellungen für <ph name="PRODUCT_NAME" /> Enterprise Connectors-Dienste für den Enterprise Connector „<ph name="ON_PRINT_ENTERPRISE_CONNECTOR" />“. Dieser wird ausgelöst, wenn eine Seite oder Datei über <ph name="PRODUCT_NAME" /> gedruckt wird.
 
@@ -7919,6 +7929,10 @@ Wenn man <ph name="LACROS_SELECTION_USER_CHOICE_VALUE" /> oder <ph name="LACROS_
 <translation id="8078297389450285582">Wenn die Richtlinie aktiviert oder nicht konfiguriert ist, wird das intelligente Dimm-Modell verwendet und der Zeitraum bis zum Dimmen des Bildschirms kann verlängert werden. Wenn das Dimmen des Bildschirms durch das Modell verzögert wird, werden die Verzögerungen für das Ausschalten des Bildschirms, die Bildschirmsperre und die Inaktivität entsprechend angepasst, um die ursprünglich konfigurierten Abstände beizubehalten.
 
       Wenn die Richtlinie deaktiviert ist, wird das Dimmen des Bildschirms nicht durch das intelligente Dimm-Modell beeinflusst.</translation>
+<translation id="8078540622602481084">Diese Funktion aktiviert die Verwendung wörterbuchspezifischer Inhaltscodierungen im „Accept-Codierung“-Anfrageheader („sbr“ und „zst-d“), wenn Wörterbücher zur Nutzung verfügbar sind.
+
+Wenn die Richtlinie aktiviert oder nicht konfiguriert ist, akzeptiert <ph name="PRODUCT_NAME" /> Webinhalte, die mithilfe der Funktion für den komprimierten Wörterbuchtransport übertragen wurden.
+Ist die Richtlinie deaktiviert, wird die Funktion für den komprimierten Wörterbuchtransport deaktiviert.</translation>
 <translation id="8079544387901313374">Diese Richtlinie ist veraltet und wurde in Version 88 von <ph name="PRODUCT_OS_NAME" /> entfernt. Öffentliche Sitzungen werden nicht mehr unterstützt. Verwenden Sie stattdessen <ph name="DEVICE_LOCAL_ACCOUNTS_POLICY_NAME" /> zum Konfigurieren verwalteter Gastsitzungen.
       Wenn diese Richtlinie auf „False“ festgelegt ist, verhalten sich verwaltete Gastsitzungen wie unter https://support.google.com/chrome/a/answer/3017014 beschrieben. Dieses Verhalten entspricht einer standardmäßigen öffentlichen Sitzung.
 
@@ -8667,6 +8681,7 @@ Wenn die Richtlinie nicht konfiguriert ist, werden bei der ersten Ausführung ke
 <translation id="874149307422233209">Mit dieser Richtlinie können Administratoren festlegen, wie Google Nutzerdaten verarbeitet, die über <ph name="PRODUCT_OS_NAME" />-Funktionen an die Google Suche gesendet werden.
 Wenn die Richtlinie aktiviert ist, können Nutzer das Suchfeld des <ph name="PRODUCT_OS_NAME" />-Launchers und die Adressleiste von <ph name="PRODUCT_NAME" /> unter <ph name="PRODUCT_OS_NAME" /> so verwenden, dass der Suchverlauf des Nutzers nicht mit seiner Identität verknüpft wird.
 Ist die Richtlinie nicht konfiguriert oder deaktiviert, werden die Daten des Nutzers von diesen Suchanfragen mit seiner Identität verknüpft.</translation>
+<translation id="8743902569031401303">Safe Browsing-Umfragen zulassen</translation>
 <translation id="8744844164152340112">Dadurch wird festgelegt, welches Design zum Rendern der Benutzeroberfläche während der OOBE (Out-of-Box-Experience) und während einer Sitzung verwendet wird.
       Dieser automatische Modus wechselt bei Sonnenauf- und untergang zwischen dem hellen und dunklen Design.
       Diese Richtlinie sollte Nutzern empfohlen werden, damit sie das Design in den Systemeinstellungen ändern können.</translation>
@@ -9269,6 +9284,8 @@ Wenn die Richtlinie nicht konfiguriert ist, kann <ph name="PRODUCT_NAME" /> dies
 <translation id="981346395360763138">Standortdienste von Google deaktiviert</translation>
 <translation id="982497069985795632">Rechtschreibprüfung aktivieren</translation>
 <translation id="983256325512298435">Eine Liste mit Protokollen festlegen, über die eine externe App aus aufgeführten Quellen gestartet werden kann, ohne beim Nutzer nachzufragen</translation>
+<translation id="984365509386992443">Wenn diese Richtlinie aktiviert ist oder nicht konfiguriert wird, erhält der Nutzer möglicherweise Umfragen zu Safe Browsing.
+Ist die Richtlinie deaktiviert, erhält der Nutzer keine Umfragen zu Safe Browsing.</translation>
 <translation id="987261962216071510">Nur Browseranmeldungen durch Gäste zulassen</translation>
 <translation id="987975731398348803">Wenn die Richtlinie aktiviert oder nicht konfiguriert ist, werden über registrierte Geräte alle Gerätenutzer gemeldet, die sich vor Kurzem angemeldet haben.
 

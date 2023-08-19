@@ -61,6 +61,7 @@
 <translation id="1283524564873030414">যোৱা ২৪ ঘণ্টাত</translation>
 <translation id="1285320974508926690">এই ছাইটটো কেতিয়াও অনুবাদ নকৰিব</translation>
 <translation id="1291506870746876680">আপুনি এই ছাইটটোৰ পৰা বাহিৰ ওলালে <ph name="BEGIN_BOLD" />"<ph name="SITE_NAME" />"<ph name="END_BOLD" />ৰ অনুমতিসমূহ অফ হিচাপে ৰিছেট কৰা হ’ব।</translation>
+<translation id="1295289763199166823">মেনু কাষ্টমাইজ কৰক</translation>
 <translation id="1305822519689023679">আপোনাৰ Google একাউণ্টত আপুনি সদায়ে পাছৱৰ্ডসমূহ ব্যৱহাৰ কৰিব পৰাটো নিশ্চিত কৰিবলৈ, এয়া আপুনিয়েই বুলি সত্যাপন কৰক।</translation>
 <translation id="1312721752506309252">বৰ্ধিত সুৰক্ষা অন আছে</translation>
 <translation id="1316466854070752597">আটাইবোৰ খোল খাই থকা টেব চাওক</translation>
@@ -106,6 +107,7 @@
 <translation id="1554477036522844996">নতুন ৱিণ্ড’</translation>
 <translation id="1563071802032385236">"ইনক’গনিট’ত অন্য এপৰ পৰা লিংক খুলিবলৈ অনুমতি বিচাৰক" অন কৰক।</translation>
 <translation id="1565371473877914088">নতুন ইনক’গ্নিট’ টেব</translation>
+<translation id="1565395699240341063">লুকাই থকা</translation>
 <translation id="1580715474678097352">বিপজ্জনক ৱেবছাইটৰ পৰা সুৰক্ষিত হৈ থাকক</translation>
 <translation id="1580783302095112590">মেইল পঠিওৱা হ'ল।</translation>
 <translation id="1582732959743469162">এই কার্যয়ে আপোনাৰ বর্তমানৰ ডাউনল’ডৰ সকলো প্ৰগতি বন্ধ কৰিব।</translation>
@@ -436,6 +438,7 @@
 <translation id="3533436815740441613">নতুন টেব</translation>
 <translation id="3540141921715814660">বুকমাৰ্কত যোগ দিয়ক</translation>
 <translation id="3551320343578183772">টেব বন্ধ কৰক</translation>
+<translation id="3564513311876185114">স্মাৰ্ট অৰ্ডাৰৰ মেনু বাৰ</translation>
 <translation id="3565207542107370586">ব্ৰাউজিং ডেটা মচক…</translation>
 <translation id="3575234738189584619">Lensৰ জৰিয়তে সন্ধান কৰক</translation>
 <translation id="3577555362230509265">অন্য এপ্‌সমূহত Chrome ব্যৱহাৰ কৰক।</translation>
@@ -1287,6 +1290,7 @@
 <translation id="854938212724803178">আপোনাৰ ১ টা হেক কৰা পাছৱৰ্ড আছে। সুৰক্ষিত হৈ থাকিবলৈ এইটো এতিয়াই ঠিক কৰক।</translation>
 <translation id="8556590991644167667">{count,plural, =1{আপুনি {count} টা সকীয়নি অগ্ৰাহ্য কৰিছে}one{আপুনি {count} টা সকীয়নি অগ্ৰাহ্য কৰিছে}other{আপুনি {count} টা সকীয়নি অগ্ৰাহ্য কৰিছে}}</translation>
 <translation id="8558480467877843976">এতিয়া আপুনি বাৰ্তা, নথি আৰু অন্য এপ্‌সমূহত থকা কোনো লিংক ব্ৰাউজ কৰিলে অথবা টিপিলে যিকোনো সময়তে Chrome ব্যৱহাৰ কৰিব পাৰে।</translation>
+<translation id="8560253818350321773">প্ৰথমে সঘনাই ব্যৱহৃত বস্তুবোৰ দেখুৱাওক।</translation>
 <translation id="8580411965900177618">নালাগে, ধন্যবাদ</translation>
 <translation id="8588404856427128947">অফ আছে</translation>
 <translation id="8591976964826315682">ইনক’গনিট’ত তৃতীয় পক্ষৰ কুকিসমূহ অৱৰোধ কৰক</translation>

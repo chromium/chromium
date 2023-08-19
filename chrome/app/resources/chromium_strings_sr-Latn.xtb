@@ -266,6 +266,7 @@ Dozvole koje ste već dali veb-sajtovima i aplikacijama mogu da važe za ovaj n
 <translation id="6510925080656968729">Deinstaliraj Chromium</translation>
 <translation id="6539122709674868420">Organizacija zatvara Chromium kada se ne koristi <ph name="TIMEOUT_DURATION" />. Podaci pregledanja su izbrisani. To može da obuhvata istoriju, automatsko popunjavanje i preuzimanja.</translation>
 <translation id="6542839706527980775">Svaki profil zadržava sopstvene Chromium podatke, poput obeleživača, istorije, lozinki i drugog sadržaja</translation>
+<translation id="6563921047760808519">Saznajte više o tome <ph name="BEGIN_LINK" />kako Chromium štiti privatnost podataka<ph name="END_LINK" /></translation>
 <translation id="656935081669708576">Možete da se prebacite da biste videli lozinke sa drugog Chromium profila</translation>
 <translation id="6570579332384693436">Da bi ispravio pravopisne greške, Chromium šalje Google-ovim serverima tekst koji unosite u polja za tekst.</translation>
 <translation id="6598877126913850652">Idi na podešavanja obaveštenja za Chromium</translation>

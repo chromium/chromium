@@ -35,6 +35,7 @@
 <translation id="1280820357415527819">Hľadajú sa mobilné siete</translation>
 <translation id="1293556467332435079">Súbory</translation>
 <translation id="1297922636971898492">Služba Disk Google práve teraz nie je k dispozícii. Nahrávanie sa automaticky spustí znova, keď bude služba Disk Google opäť dostupná.</translation>
+<translation id="1306130176943817227">Nepodarilo sa odstrániť. Položka sa používa.</translation>
 <translation id="1307931752636661898">Súbory systému Linux sa nedajú zobraziť</translation>
 <translation id="1313405956111467313">Automatická konfigurácia servera proxy</translation>
 <translation id="134645005685694099">V zariadení nie je dostatok ukladacieho priestoru na to, aby mohla zostať synchronizácia súborov zapnutá. Nové súbory sa už nebudú automaticky synchronizovať.</translation>
@@ -537,6 +538,7 @@
 <translation id="5218183485292899140">Švajčiarska francúzska klávesnica</translation>
 <translation id="5234764350956374838">Ignorovať</translation>
 <translation id="5253070652067921974">Autor</translation>
+<translation id="5254207638927440400">Súbor sa nepodarilo presunúť. Súbor sa používa.</translation>
 <translation id="5257456363153333584">Vážka</translation>
 <translation id="5262311848634918433"><ph name="MARKUP_1" />Pristupujte k súborom odkiaľkoľvek, dokonca aj v režime offline.<ph name="MARKUP_2" />
 Súbory na Disku Google sú aktualizované a môžete k nim pristupovať z akéhokoľvek zariadenia.<ph name="MARKUP_3" />

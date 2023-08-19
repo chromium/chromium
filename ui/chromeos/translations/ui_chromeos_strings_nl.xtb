@@ -95,6 +95,7 @@
 <translation id="174937106936716857">Totaal aantal bestanden</translation>
 <translation id="1755345808328621801">Dit bestand is bedoeld voor een pc met Windows-software. Dit werkt niet met je apparaat, dat Chrome OS gebruikt. Zoek in de Chrome Web Store naar een geschikte vervangende app.</translation>
 <translation id="1757915090001272240">Latijn (verbreed)</translation>
+<translation id="1761091787730831947">Delen met <ph name="VM_NAME" /></translation>
 <translation id="1773212559869067373">Verificatiecertificaat lokaal geweigerd</translation>
 <translation id="1775381402323441512">Videogegevens</translation>
 <translation id="180035236176489073">Je moet online zijn om deze bestanden te openen.</translation>
@@ -211,6 +212,7 @@
 <translation id="2718540689505416944">App installeren met Linux</translation>
 <translation id="2719020180254996569">Netwerk <ph name="NETWORK_INDEX" /> van <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" />, details</translation>
 <translation id="2724954091494693138">Turks met F-toetsenbord</translation>
+<translation id="2732288874651063549">Delen met <ph name="VM_NAME" /> beheren</translation>
 <translation id="2732839045120506979">Vietnamees (VNI)</translation>
 <translation id="2735623501230989521">Parallels Desktop toegang geven tot bestanden in de map <ph name="FOLDER_NAME" /></translation>
 <translation id="2764206540577097904">Je persoonlijke Google Workspace-opslag is helemaal vol.</translation>
@@ -305,6 +307,7 @@
 <translation id="3509680540198371098">Netwerk <ph name="NETWORK_INDEX" /> van <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="SECURITY_STATUS" />, <ph name="CONNECTION_STATUS" />, signaalsterkte <ph name="SIGNAL_STRENGTH" />%, details</translation>
 <translation id="3511705761158917664">Synchronisatie van <ph name="NUMBER_OF_ITEMS" /> items voorbereiden...</translation>
 <translation id="3522708245912499433">Portugees</translation>
+<translation id="3523225005467146490">1 map gedeeld met <ph name="VM_NAME" /></translation>
 <translation id="3524311639100184459">Let op: Deze bestanden zijn tijdelijk en kunnen automatisch worden verwijderd om schijfruimte vrij te maken.  <ph name="BEGIN_LINK" />Meer informatie<ph name="END_LINK" /></translation>
 <translation id="3527085408025491307">Map</translation>
 <translation id="3548125359243647069">Je hebt te vaak een verkeerde pincode opgegeven.</translation>
@@ -663,6 +666,7 @@
 <translation id="6164412158936057769">Vlinders</translation>
 <translation id="6165508094623778733">Meer informatie</translation>
 <translation id="6170470584681422115">Sandwich</translation>
+<translation id="6181912134988520389">Geef <ph name="VM_NAME" /> toegang tot bestanden in je Google Drive. Wijzigingen worden gesynchroniseerd met je andere apparaten.</translation>
 <translation id="6187719147498869044">Hongaars</translation>
 <translation id="6198252989419008588">Pincode wijzigen</translation>
 <translation id="6199801702437275229">Wachten op ruimte-informatie...</translation>
@@ -766,6 +770,7 @@
 <translation id="6989942356279143254">Zweeds</translation>
 <translation id="6990081529015358884">Er is onvoldoende ruimte beschikbaar</translation>
 <translation id="6993826899923627728">Deze items staan in je prullenbak</translation>
+<translation id="6996593023542748157">Map delen met <ph name="VM_NAME" /></translation>
 <translation id="7008426324576352165">Je organisatie heeft meer opslagruimte nodig om de upload af te ronden.</translation>
 <translation id="7009985720488544166"><ph name="COUNT" /> bestanden verplaatsen is geblokkeerd door het beheerdersbeleid</translation>
 <translation id="7012943028104619157"><ph name="ROOT_TITLE" /> (<ph name="ROOT_SUMMARY" />)</translation>
@@ -952,6 +957,7 @@
 <translation id="8335837413233998004">Wit-Russisch</translation>
 <translation id="8336153091935557858">Gisteren <ph name="YESTERDAY_DAYTIME" /></translation>
 <translation id="8342318071240498787">Er bestaat al een bestand of map met dezelfde naam.</translation>
+<translation id="83651606385705612"><ph name="VM_NAME" /> toegang geven tot bestanden in de map <ph name="FOLDER_NAME" /></translation>
 <translation id="8372369524088641025">Slechte WEP-sleutel</translation>
 <translation id="8372852072747894550">Grieks</translation>
 <translation id="8386903983509584791">Scan voltooid</translation>
@@ -961,6 +967,7 @@
 <translation id="8408068190360279472">Netwerk: <ph name="NETWORK_TYPE" />, verbinden</translation>
 <translation id="8425213833346101688">Wijzigen</translation>
 <translation id="8428213095426709021">Instellingen</translation>
+<translation id="8429998526804961548"><ph name="NUMBER_OF_ITEMS" /> mappen gedeeld met <ph name="VM_NAME" /></translation>
 <translation id="8431909052837336408">Pincode van simkaart wijzigen</translation>
 <translation id="8437209419043462667">Amerikaans</translation>
 <translation id="8452135315243592079">Simkaart ontbreekt</translation>

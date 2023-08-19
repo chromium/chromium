@@ -309,6 +309,7 @@ Med förtroendetoken förbättras integriteten på webben. De kan inte användas
 <translation id="2656405586795711023">Webbappar</translation>
 <translation id="2669454659051515572">Alla som använder enheten kan se nedladdade filer</translation>
 <translation id="2702516483241149200">Nyhet: dela en länk som scrollar fram till den här texten</translation>
+<translation id="2708051474374549906">Proaktivt skydd i realtid mot farliga webbplatser, nedladdningar och tillägg baserat på din webbinformation som skickas till Google</translation>
 <translation id="271033894570825754">Ny</translation>
 <translation id="2711073837061989559">Provversioner</translation>
 <translation id="2718352093833049315">Endast på wifi</translation>
@@ -670,6 +671,7 @@ Det kan finnas andra former av webbhistorik i Google-kontot på <ph name="BEGIN_
 <translation id="4583164079174244168">{MINUTES,plural, =1{för # minut sedan}other{för # minuter sedan}}</translation>
 <translation id="4587589328781138893">Webbplatser</translation>
 <translation id="4594952190837476234">Den här offlinesidan sparades <ph name="CREATION_TIME" /> och kan skilja sig från onlineversionen.</translation>
+<translation id="4601095002996233687">Ingående genomsökningar efter misstänkta nedladdningar.</translation>
 <translation id="4616150815774728855">Öppna <ph name="WEBAPK_NAME" /></translation>
 <translation id="4619564267100705184">Verifiera din identitet</translation>
 <translation id="4634124774493850572">Använd lösenordet</translation>
@@ -835,6 +837,7 @@ Det kan finnas andra former av webbhistorik i Google-kontot på <ph name="BEGIN_
 <translation id="543338862236136125">Redigera lösenord</translation>
 <translation id="5433691172869980887">Användarnamnet har kopierats</translation>
 <translation id="5438292632479953702">Ladda ned igen</translation>
+<translation id="5439191312780166229">Varnar dig om farliga webbplatser, även sådana som Google inte kände till tidigare, genom att analysera mer data från webbplatser än standardskyddet. Du kan välja att hoppa över Chrome-varningar.</translation>
 <translation id="5441466871879044658">Översätt till detta språk</translation>
 <translation id="5441522332038954058">Hoppa till adressfältet</translation>
 <translation id="5444999712122199445">Gå tillbaka till webbplatsen</translation>
@@ -1045,6 +1048,7 @@ Vissa webbplatser kan till exempel svara på begäran genom att visa annonser so
 <translation id="6541983376925655882">{NUM_HOURS,plural, =1{Genomsöktes för 1 timme sedan}other{Genomsöktes för # timmar sedan}}</translation>
 <translation id="6545017243486555795">Rensa all data</translation>
 <translation id="6546511553472444032">Filen kan vara skadlig</translation>
+<translation id="6550891580932862748">Skyddar inte mot farliga webbplatser, nedladdningar och tillägg. Inställningarna för Säker webbsökning i andra produkter från Google påverkas inte.</translation>
 <translation id="6556542240154580383">{TAB_COUNT,plural, =1{<ph name="TAB_TITLE" /> och <ph name="TAB_COUNT_ONE" /> flik till stängs}other{<ph name="TAB_TITLE" /> och <ph name="TAB_COUNT_MANY" /> flikar till stängs}}</translation>
 <translation id="6560414384669816528">Sök med Sogou</translation>
 <translation id="656065428026159829">Visa fler</translation>
@@ -1298,6 +1302,7 @@ Vissa webbplatser kan till exempel svara på begäran genom att visa annonser so
 <translation id="7772032839648071052">Bekräfta lösenfras</translation>
 <translation id="7772375229873196092">Stäng <ph name="APP_NAME" /></translation>
 <translation id="7774809984919390718">{PAYMENT_METHOD,plural, =1{<ph name="PAYMENT_METHOD_PREVIEW" />\u2026 och <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" /> till}other{<ph name="PAYMENT_METHOD_PREVIEW" />\u2026 och <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" /> till}}</translation>
+<translation id="777637629667389858">När du är inloggad skyddas du i alla Googles tjänster.</translation>
 <translation id="7778840695157240389">Återkom senare för nya berättelser</translation>
 <translation id="7780645209293383778">Denna data länkas tillfälligt till Google-kontot när du loggar in för att skydda dig i Googles appar</translation>
 <translation id="7791543448312431591">Lägg till</translation>
@@ -1339,6 +1344,7 @@ Vissa webbplatser kan till exempel svara på begäran genom att visa annonser so
 <translation id="7968014550143838305">Har lagts till i läslistan</translation>
 <translation id="7971136598759319605">Aktiv för 1 dag sedan</translation>
 <translation id="7975379999046275268">Förhandsgranska sida <ph name="BEGIN_NEW" />Nyhet<ph name="END_NEW" /></translation>
+<translation id="7977451675950311423">Varnar dig om du använder ett lösenord som har läckt ut i samband med ett dataintrång.</translation>
 <translation id="7986497153528221272">Om du vill kunna se lösenorden måste du först ställa in ett skärmlås på enheten</translation>
 <translation id="7995059495660416932">Innehåll visas när det blir tillgängligt</translation>
 <translation id="799576009106109668">Du surfar snabbare eftersom innehåll läses in proaktivt baserat på den webbsida du besöker för tillfället</translation>
