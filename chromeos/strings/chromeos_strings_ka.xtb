@@ -21,6 +21,7 @@
 <translation id="1128128132059598906">EAP-TTLS</translation>
 <translation id="1145018782460575098">გახსნილია გარე მოწყობილობების ჩაშენებული პროგრამული უზრუნველყოფის განახლების ფანჯარა. ხელმისაწვდომია <ph name="NUM_UPDATES" /> განახლება.</translation>
 <translation id="1145516343487477149">იპოვეთ დამხმარე სტატიები და პასუხები გავრცელებულ შეკითხვებზე Chromebook-თან დაკავშირებით</translation>
+<translation id="1154390310959620237">მაქსიმუმ 5 მალსახმობის მორგება შეგიძლიათ. ახლის დასამატებლად წაშალეთ ერთ-ერთი მალსახმობი.</translation>
 <translation id="1164939766849482256">ეკრანმზოგი განთიადიდან შებინდებამდე</translation>
 <translation id="1167755866710282443">კლავიშების მოსარგებად გახსენით მენიუ. გადასაადგილებლად ჩავლებით გადაიტანეთ მენიუ.</translation>
 <translation id="1175697296044146566">ეს <ph name="DEVICE_TYPE" /> იმართება <ph name="MANAGER" />-ის მიერ.</translation>
@@ -216,6 +217,7 @@
 <translation id="253029298928638905">მიმდინარეობს გადატვირთვა...</translation>
 <translation id="2533048460510040082">შემოთავაზებული დამხმარე კონტენტი</translation>
 <translation id="2536159006530886390">ინტერნეტთან დაკავშირება ვერ მოხერხდა.</translation>
+<translation id="2555662516429796509">დააჭირეთ 1-4 მოდიფიკატორსა და 1 სხვა კლავიშს თქვენს კლავიატურაზე</translation>
 <translation id="2570743873672969996">გაშვებულია <ph name="TEST_NAME" /> ტესტი...</translation>
 <translation id="2584559707064218956">დასაყენებლად გადადით პარამეტრებზე</translation>
 <translation id="2597774443162333062">ფაილები, გამართვის მიზნით, Google-ს გაეგზავნება</translation>
@@ -296,6 +298,7 @@
 <translation id="3369013195428705271">ნამდვილად გსურთ ბეჭდვის ისტორიის მთლიანად გასუფთავება? ბეჭდვის მიმდინარე დავალებები არ წაიშლება.</translation>
 <translation id="3373141842870501561">მიწის ნაკადის ფონი</translation>
 <translation id="337375748120863155">თქვენს არჩევანთან დაკავშირებული ინფორმაცია. მართვის საშუალებებზე წვდომისთვის გამოიყენეთ კლავიში მარცხნივ ან მარჯვნივ მიმართული ისრით.</translation>
+<translation id="3383623117265110236">ექსკლუზიური</translation>
 <translation id="3404249063913988450">ეკრანმზოგის ჩართვა</translation>
 <translation id="3413935475507503304">განახლების გასაგრძელებლად დაწკაპუნებით აირჩიეთ „შემდეგი“.</translation>
 <translation id="3434107140712555581"><ph name="BATTERY_PERCENTAGE" />%</translation>
@@ -401,6 +404,7 @@
 <translation id="4171077696775491955">სიკაშკაშის დაკლება</translation>
 <translation id="4176463684765177261">გამორთული</translation>
 <translation id="4176659219503619100">მართვის პანელი</translation>
+<translation id="4185315616950253617">ზედა მწკრივის კლავიშების შემცველი მალსახმობი უნდა შეიცავდეს search კლავიშს.</translation>
 <translation id="420283545744377356">ეკრანმზოგის გამორთვა</translation>
 <translation id="4213104098953699324">USB კლავიატურა</translation>
 <translation id="4227825898293920515">პაროლი ძალაშია <ph name="TIME" /></translation>
@@ -411,6 +415,7 @@
 <translation id="4258281355379922695">HTTP რეაგირების დრო</translation>
 <translation id="4271957103967917607">სრულ ეკრანზე ნახვა</translation>
 <translation id="4275663329226226506">მედია</translation>
+<translation id="4278766082079064416">ამ მალსახმობის მეშვეობით უკვე ხდება „<ph name="CONFLICT_ACCEL_NAME" />“. კონფლიქტის მოსაგვარებლად ჩაასწორეთ ან ამოშალეთ ის.</translation>
 <translation id="4289540628985791613">მიმოხილვა</translation>
 <translation id="4289849978083912975">სლაიდშოუ</translation>
 <translation id="4297501883039923494">გაჩერდა — უცნობი შეცდომა</translation>
@@ -491,6 +496,7 @@
 <translation id="4861758251032006121">{ATTEMPTS_LEFT,plural, =1{<ph name="ERROR_MESSAGE" /> დარჩენილია {0} მცდელობა}other{<ph name="ERROR_MESSAGE" /> დარჩენილია {0} მცდელობა}}</translation>
 <translation id="4873827928179867585">ავტორიზაციის ალგორითმი</translation>
 <translation id="4880328057631981605">წვდომის წერტილის სახელი</translation>
+<translation id="488307179443832524">ამ მალსახმობის მეშვეობით უკვე ხდება „<ph name="CONFLICT_ACCEL_NAME" />“. დააჭირეთ ახალ მალსახმობს.</translation>
 <translation id="4885705234041587624">MSCHAPv2</translation>
 <translation id="4890353053343094602">დაუყოვნებლივ აირჩიეთ ახალი</translation>
 <translation id="4891842000192098784">სტრესი</translation>
@@ -606,6 +612,7 @@
 <translation id="576835345334454681">ეკრანის სიკაშკაშის მომატება</translation>
 <translation id="57838592816432529">დადუმება</translation>
 <translation id="5784136236926853061">HTTP რეაგირების დრო დიდია</translation>
+<translation id="5816802250591013230">დანიშნული მალსახმობები არ არის</translation>
 <translation id="5826644637650799838">ხელოვნების შესახებ</translation>
 <translation id="5832805196449965646">მომხმარებლის დამატება</translation>
 <translation id="583281660410589416">უცნობი</translation>
@@ -767,6 +774,7 @@
 <translation id="7028979494427204405"><ph name="MANAGER" /> მართავს ამ მოწყობილობას და აქვს წვდომა მომხმარებლების ნებისმიერ აქტივობაზე, მათ შორის, მონახულებულ ვებგვერდებზე, პაროლებსა და ელფოსტაზე.</translation>
 <translation id="7040230719604914234">ოპერატორი</translation>
 <translation id="7041549558901442110">მოწყობილობა დაკავშირებული არ არის.</translation>
+<translation id="7046522406494308071">გსურთ, ნაგულისხმევზე დააბრუნოთ ყველა მალსახმობი?</translation>
 <translation id="7058278511608979688">დასრულება და შენახვა</translation>
 <translation id="7059230779847288458">იტენება, სრულ დატენამდე დარჩენილია <ph name="TIME_VALUE" /></translation>
 <translation id="7068619307603204412">მოამზადეთ თქვენი მოწყობილობა</translation>
@@ -774,6 +782,7 @@
 <translation id="7086440545492620869"><ph name="VALUE" /> <ph name="DISPLAY_NAME" /></translation>
 <translation id="710028965487274708">წარუმატებელია — ავტორიზაცია ვერ მოხერხდა</translation>
 <translation id="7103252855940681301">მოწყობილობა <ph name="INDEX" /> / <ph name="COUNT" />-დან, სახელწოდებით — <ph name="NAME" />.</translation>
+<translation id="7107255225945990211">ექსკლუზიურად <ph name="PRODUCT_NAME" />-ზე ხელმისაწვდომი ნამუშევრების არჩევა</translation>
 <translation id="7108668606237948702">შეყვანა</translation>
 <translation id="7130438335435247835">წვდომის წერტილი (APN)</translation>
 <translation id="7134436342991564651">{0,plural, =1{სახელთა სერვერი}other{სახელთა სერვერები}}</translation>
@@ -795,6 +804,7 @@
 <translation id="7216409898977639127">ფიჭური ქსელის პროვაიდერი</translation>
 <translation id="725133483556299729">აირჩიეთ ელფოსტის მისამართი</translation>
 <translation id="7271040990581020067">სკანერი ამჟამად გამოიყენება. ცადეთ მოგვიანებით.</translation>
+<translation id="7273347807225967898">მალსახმობი მიუწვდომელია დააჭირეთ ახალ მალსახმობს მოდიფიკატორი კლავიშის (ctrl, alt, shift, search ან launcher) მეშვეობით.</translation>
 <translation id="7274587244503383581"><ph name="PRINTED_PAGES_NUMBER" />/<ph name="TOTAL_PAGES_NUMBER" /></translation>
 <translation id="7281657306185710294">ბრიზი</translation>
 <translation id="7287310195820267359">ფონების კოლექციები</translation>
@@ -854,6 +864,7 @@
 <translation id="7718231387947923843">კლავიატურის სინათლე</translation>
 <translation id="773153675489693198">ციკლების რაოდენობა</translation>
 <translation id="7747039790905080783">წინასწარ გაზიარებული გასაღები</translation>
+<translation id="7752963721013053477">განთიადიდან შებინდებამდე — ექსკლუზიური</translation>
 <translation id="7762130827864645708">პაროლი წარმატებით შეიცვალა. ამიერიდან გამოიყენეთ ახალი პაროლი.</translation>
 <translation id="7763470514545477072">დომენის სუფიქსის დამთხვევა</translation>
 <translation id="7769672763586021400">მოდელის ID</translation>
@@ -873,6 +884,7 @@
 <translation id="7881066108824108340">DNS</translation>
 <translation id="7882358943899516840">პროვაიდერის ტიპი</translation>
 <translation id="7882501334836096755">საჯარო გასაღები</translation>
+<translation id="7903695460270716054">აირჩიეთ კურირებული სურათები და ხელოვნების ნიმუშები</translation>
 <translation id="7915220255123750251">მართეთ ქსელის APN-ის პარამეტრები. APN ამყარებს კავშირს ფიჭურ ქსელსა და ინტერნეტს შორის.</translation>
 <translation id="7936303884198020182">სახელების სერვერი ვერ მოიძებნა</translation>
 <translation id="7942349550061667556">წითელი</translation>
@@ -899,6 +911,7 @@
 <translation id="808894953321890993">პაროლის შეცვლა</translation>
 <translation id="8094062939584182041">ამ პრობლემის თაობაზე ელფოსტით დაკავშირების დაშვება Google-ისთვის</translation>
 <translation id="8104083085214006426">თქვენ ღია და არასტაბილური ქსელით სარგებლობთ</translation>
+<translation id="8111706652656628199">მალსახმობი მიუწვდომელია დააჭირეთ ახალ მალსახმობს shift-ისა და კიდევ ერთი მოდიფიკატორი კლავიშის (ctrl, alt, search ან launcher) მეშვეობით.</translation>
 <translation id="811820734797650957">(Android) გეითვეის ping-მეთოდით ტესტირება</translation>
 <translation id="8129620843620772246"><ph name="TEMPERATURE_C" />°C</translation>
 <translation id="8132480444149501833">ტრაფიკის მთვლელების მოთხოვნა</translation>
@@ -977,6 +990,7 @@
 <translation id="8764414543112028321">WireGuard</translation>
 <translation id="87646919272181953">Google Photos ალბომი</translation>
 <translation id="877985182522063539">A4</translation>
+<translation id="8789196995628578448">ამ მალსახმობის მეშვეობით უკვე ხდება „<ph name="CONFLICT_ACCEL_NAME" />“. დააჭირეთ ახალ მალსახმობს. თავდაპირველი მალსახმობის ჩასანაცვლებლად დააჭირეთ ამ მალსახმობს ხელახლა.</translation>
 <translation id="879568662008399081">ამ ქსელს, შესაძლოა, ავტორიზაციის პორტალი ჰქონდეს</translation>
 <translation id="8798099450830957504">ნაგულისხმევი</translation>
 <translation id="8798441408945964110">პროვაიდერის სახელი</translation>

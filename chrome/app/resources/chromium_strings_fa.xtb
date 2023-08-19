@@ -206,11 +206,13 @@
 <translation id="5527463683072221100">‏باز کردن فایل‌های PDF در Chromium</translation>
 <translation id="5614091477838198795">‏وقتی روشن باشد، از سیستم Chromium نیز خارج خواهید شد</translation>
 <translation id="5623402015214259806">{0,plural, =0{‏به‌روزرسانی Chromium دردسترس است}=1{‏به‌روزرسانی Chromium دردسترس است}one{‏به‌روزرسانی Chromium از # روز پیش دردسترس است}other{‏به‌روزرسانی Chromium از # روز پیش دردسترس است}}</translation>
+<translation id="5643865575100044307">‏داده‌های سایت همواره بعداز بستن Chromium از دستگاه حذف شود</translation>
 <translation id="5653831366781983928">‏لطفاً اکنون Chromium را بازراه‌اندازی کنید</translation>
 <translation id="5690427481109656848">Google LLC</translation>
 <translation id="5698481217667032250">‏نمایش Chromium به این زبان</translation>
 <translation id="5862307444128926510">‏به Chromium خوش آمدید</translation>
 <translation id="5883558403894052917">‏Chromium متوجه شده است که این موارد حاوی بدافزار هستند:</translation>
+<translation id="5889361821821684993">‏Chromium به‌طور منظم بررسی می‌کند تا مطمئن شود مرورگرتان ایمن‌ترین تنظیمات را دارد. اگر موردی به بازبینی شما نیاز داشته باشد، به شما اطلاع خواهیم داد.</translation>
 <translation id="5895138241574237353">راه‌اندازی مجدد</translation>
 <translation id="5903106910045431592"><ph name="PAGE_TITLE" /> - ورود به سیستم شبکه</translation>
 <translation id="5924017743176219022">درحال اتصال به اینترنت…</translation>
@@ -221,6 +223,7 @@
 <translation id="5988505247484123880">‏امری عادی است که سایت‌هایی که بازدید می‌کنید برای شخصی کردن تجربه‌تان، علایق شما را به‌خاطر آورند. به‌علاوه، سایت‌ها می‌توانند بااستفاده از Chromium اطلاعاتی درباره علایقتان ذخیره کنند.</translation>
 <translation id="6003112304606738118">درحال بارگیری… <ph name="HOURS" /> ساعت باقی مانده است</translation>
 <translation id="6040143037577758943">بستن</translation>
+<translation id="6055611795418209449">‏Chromium برخی‌از بارگیری‌ها را مسدود می‌کند</translation>
 <translation id="6055895534982063517">‏نسخه جدیدی از Chromium وجود دارد که سریع‌تر از همیشه است.</translation>
 <translation id="6063093106622310249">‏&amp;باز کردن در Chromium</translation>
 <translation id="6072279588547424923">‏<ph name="EXTENSION_NAME" /> به Chromium اضافه شد</translation>
@@ -234,6 +237,7 @@
 <translation id="6132897690380286411">‏Chromium به‌زودی بسته می‌شود و داده‌ها را حذف می‌کند</translation>
 <translation id="6134968993075716475">‏«مرور ایمن» خاموش است. Chromium توصیه می‌کند آن را روشن کنید.</translation>
 <translation id="6145820983052037069">‏می‌توانید در اینجا بین نمایه‌های Chromium جابه‌جا شوید</translation>
+<translation id="6175304430031192654">‏بسته به تنظیمات، Chromium ممکن است کوکی‌ها و نشانی وب فعلی‌تان را نیز ارسال کند</translation>
 <translation id="6183079672144801177">‏مطمئن شوید در <ph name="TARGET_DEVICE_NAME" /> به سیستم Chromium وارد شده باشید و سپس دوباره ارسال کنید.</translation>
 <translation id="6212496753309875659">‏این رایانه در حال حاضر دارای یک نسخه جدیدتر از Chromium است. درصورتی‌که نرم‌افزار کار نمی‌کند، لطفاً Chromium را حذف نصب کنید و دوباره سعی کنید.</translation>
 <translation id="6219195342503754812">{0,plural, =0{‏Chromium هم‌اکنون راه‌اندازی مجدد می‌شود}=1{‏Chromium ‏۱ ثانیه دیگر راه‌اندازی مجدد می‌شود}one{‏Chromium ‏# ثانیه دیگر راه‌اندازی مجدد می‌شود}other{‏Chromium ‏# ثانیه دیگر راه‌اندازی مجدد می‌شود}}</translation>
@@ -254,6 +258,7 @@
 <translation id="6373523479360886564">‏آیا مطمئن هستید که می‌خواهید Chromium را حذف نصب کنید؟</translation>
 <translation id="6375219077595103062">میان‌بری به «مدیر گذرواژه» اضافه کنید</translation>
 <translation id="6384011394608460044">‏<ph name="BEGIN_BOLD" />نحوه استفاده ما از این داده‌ها:<ph name="END_BOLD" /> Chromium می‌تواند علایق شما را برآورد کند. بعداً، سایتی که از آن بازدید می‌کنید می‌تواند برای شخصی کردن آگهی‌هایی که به شما نشان می‌دهد از Chromium بخواهد علایق شما را ببیند.</translation>
+<translation id="6400112897226594999">‏نشان‌واره Chromium درون صفحه‌نمایش رایانه.</translation>
 <translation id="6403826409255603130">‏Chromium یک مرورگر وب است که صفحات وب و برنامه‌ها را با سرعت بسیار زیاد اجرا می‌کند. این مرورگر خیلی سریع، پایدار و دارای کاربرد آسان است. با محافظت در مقابل بدافزار و رمزگیری طراحی شده در داخل Chromium، با امنیت بیشتری وب را مرور کنید.</translation>
 <translation id="6442900851116057561">‏بازراه‌اندازی ChromiumOS</translation>
 <translation id="6455857529632101747">‏به نمایه‌های Chromium خوش‌آمدید</translation>
@@ -303,6 +308,7 @@
 <translation id="718435575166326686">‏Chromium برای این سایت به اجازه دوربین نیاز دارد</translation>
 <translation id="7196312274710523067">‏Chromium راه‌اندازی نشد. دوباره امتحان کنید.</translation>
 <translation id="7197677400338048821">‏Chromium نمی‌تواند گذرواژه‌هایتان را بررسی کند. بعد از ۲۴ ساعت دوباره امتحان کنید.</translation>
+<translation id="7213407614656404070">‏از Chromium برای باز کردن پیوندهای موجود در پیام‌ها، اسناد، و برنامه‌های دیگر استفاده کنید</translation>
 <translation id="7223968959479464213">‏مدیر وظایف - Chromium</translation>
 <translation id="7246575524853130370">‏علایق شما به‌طوری‌که Chromium برآورد کرده است</translation>
 <translation id="7309928523159922338">‏سنجش آگهی به سایت‌هایی که بازدید می‌کنید امکان می‌دهد اطلاعاتی را از Chromium درخواست کنند که به آن‌ها کمک می‌کند عملکرد آگهی‌هایشان را بسنجند. «سنجش آگهی» ردیابی بین‌سایتی را با انتقال حداقل اطلاعات ممکن بین سایت‌ها محدود می‌کند.</translation>

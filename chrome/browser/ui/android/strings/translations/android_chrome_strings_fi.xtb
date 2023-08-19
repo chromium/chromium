@@ -119,6 +119,7 @@ Kun poistat selaushistorian (kokonaan tai vain tietyn sivuston osalta), poistat 
 <translation id="1553358976309200471">Päivitä Chrome</translation>
 <translation id="1554532453982918912">Auta tekemään Chromesta parempi muille, jotka käyttävät sitä samoin kuin sinä</translation>
 <translation id="1558391695376153246">Sulje incognito-välilehdet</translation>
+<translation id="1568636008098739136">Kuuntele tämä sivu. Kosketa pikakuvaketta pitkään, niin voit muokata sitä.</translation>
 <translation id="1571304935088121812">Kopioi käyttäjänimi</translation>
 <translation id="1592864538817356322">Perustason suojaus:</translation>
 <translation id="1594635596540195766">Alla olevassa listassa on <ph name="SUGGESTIONS_COUNT" /> suositeltua kohdetta.</translation>
@@ -195,6 +196,7 @@ Kun poistat selaushistorian (kokonaan tai vain tietyn sivuston osalta), poistat 
 <translation id="2065944887543506430">{FILE_COUNT,plural, =1{1 lataus epäonnistui}other{# latausta epäonnistui}}</translation>
 <translation id="2067805253194386918">tekstiviesti</translation>
 <translation id="2082238445998314030">Tulos <ph name="RESULT_NUMBER" />/<ph name="TOTAL_RESULTS" /></translation>
+<translation id="2093731487903423814">15 viime minuuttia</translation>
 <translation id="2096012225669085171">Synkronoi ja yksilöi kaikilla laitteilla</translation>
 <translation id="2100273922101894616">Automaattinen kirjautuminen</translation>
 <translation id="2100314319871056947">Kokeile jakaa teksti pienempinä pätkinä</translation>
@@ -564,6 +566,7 @@ Yksityiset tilamerkit parantavat yksityisyyttä verkossa, eikä sinua voi tunnis
 <translation id="4056223980640387499">Seepia</translation>
 <translation id="4062305924942672200">Oikeudelliset tiedot</translation>
 <translation id="4072805772816336153">Yritä myöhemmin uudelleen</translation>
+<translation id="4080602171844412446">Aiheeseen liittyviä vinkkejä</translation>
 <translation id="4084682180776658562">Kirjanmerkki</translation>
 <translation id="4084712963632273211">Lähde: <ph name="PUBLISHER_ORIGIN" /> – <ph name="BEGIN_DEEMPHASIZED" />Googlen toimittama<ph name="END_DEEMPHASIZED" /></translation>
 <translation id="409109920254068737">Voit kirjautua sisään QR-koodin näyttävälle laitteelle tämän tabletin avulla.</translation>
@@ -644,6 +647,7 @@ Yksityiset tilamerkit parantavat yksityisyyttä verkossa, eikä sinua voi tunnis
 <translation id="4484496141267039529">Ei yhteyttä. Yritä myöhemmin uudelleen.</translation>
 <translation id="4487967297491345095">Kaikki Chromen sovellustiedot, mukaan lukien tiedostot, asetukset, tilit ja tietokannat, poistetaan pysyvästi.</translation>
 <translation id="449126573531210296">Salaa synkronoidut salasanat Google-tilisi avulla</translation>
+<translation id="4491323382106587961">Valitse tili. Tällä hetkellä valittuna: <ph name="EMAIL" />.</translation>
 <translation id="4508528996305412043">Fiidikorttien valikko on avattu</translation>
 <translation id="4509501256689523862">Selaamisen aikana näkemiesi mainosten personointi riippuu tästä asetuksesta, <ph name="BEGIN_LINK_1" />Mainosten aiheet<ph name="END_LINK_1" /> ‑asetuksesta, <ph name="BEGIN_LINK_2" />evästeasetuksista<ph name="END_LINK_2" /> ja siitä, personoiko katsomasi sivusto mainoksia</translation>
 <translation id="4513387527876475750">{DAYS,plural, =1{# päivä sitten}other{# päivää sitten}}</translation>
@@ -651,6 +655,7 @@ Yksityiset tilamerkit parantavat yksityisyyttä verkossa, eikä sinua voi tunnis
 <translation id="4521489764227272523">Valitut tiedot on poistettu Chromesta ja synkronoiduilta laitteilta.
 
 Google-tililläsi voi olla muita selaushistoriatietoja, kuten hakuja ja toimintaa muista Google-palveluista. Voit katsella tietoja osoitteessa <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" />.</translation>
+<translation id="4523326818319942067">viime tunti</translation>
 <translation id="452750746583162491">Tarkista synkronoitu datasi</translation>
 <translation id="4528638190900283934">Kirjaudu sisään, niin voit käyttää lisäominaisuuksia</translation>
 <translation id="4532845899244822526">Valitse kansio</translation>
@@ -703,6 +708,7 @@ Google-tililläsi voi olla muita selaushistoriatietoja, kuten hakuja ja toiminta
 <translation id="4766678251456904326">Lisää tili laitteelle</translation>
 <translation id="4767947714785277816">Julkaisemme uuden yksityisyyteen liittyvän mainosominaisuuden, jota kutsutaan mainosmittaukseksi. Chrome jakaa vain hyvin rajallisia tietoja sivustojen ja sovellusten välillä (esim. kun mainos on näytetty sinulle), jotta mainosten tuloksia voidaan mitata.</translation>
 <translation id="4769095993849849966">Uusi tiedostonimi</translation>
+<translation id="4775646243557794597"><ph name="TIME_PERIOD" /> poistettu</translation>
 <translation id="4778653490315793244">Ei vielä näytettävää</translation>
 <translation id="4787736314074622408">Poistetaanko <ph name="ITEM_TITLE" />?</translation>
 <translation id="4794291718671962615">(<ph name="MEGABYTES" />) <ph name="URL" /></translation>
@@ -802,6 +808,7 @@ Jos haluat muokata asetusta, <ph name="BEGIN_LINK" />nollaa synkronointi<ph name
 <translation id="5233638681132016545">Uusi välilehti</translation>
 <translation id="5235196193381275927">Jotain meni pieleen sisäänkirjautumisen aikana</translation>
 <translation id="5246093389635966745">Muokkaa työkalupalkin pikakuvaketta</translation>
+<translation id="5264813352784073502">24 viime tuntia</translation>
 <translation id="5271967389191913893">Laite ei voi avata ladattavaa sisältöä.</translation>
 <translation id="5292796745632149097">Lähetä:</translation>
 <translation id="5300426565656326054">Selainpohjainen mainosten personointi</translation>
@@ -814,6 +821,7 @@ Jos haluat muokata asetusta, <ph name="BEGIN_LINK" />nollaa synkronointi<ph name
 <translation id="5329858041417644019">Selainta ei ylläpidetä</translation>
 <translation id="5339031667684712858">Poistamasi sivustot</translation>
 <translation id="5342314432463739672">Käyttöoikeuspyynnöt</translation>
+<translation id="534580735623577507">Ei sivustoja ajalta: <ph name="TIME_PERIOD" /></translation>
 <translation id="53537532693258630">Poistamasi sivustot näkyvät täällä</translation>
 <translation id="5355191726083956201">Parannettu suojaus on päällä</translation>
 <translation id="5361107212971249203">teksti</translation>
@@ -828,6 +836,7 @@ Jos haluat muokata asetusta, <ph name="BEGIN_LINK" />nollaa synkronointi<ph name
 <translation id="543338862236136125">Muokkaa salasanaa</translation>
 <translation id="5433691172869980887">Käyttäjänimi kopioitu</translation>
 <translation id="5438292632479953702">Lataa uudelleen</translation>
+<translation id="5441137934526263133">Eikö sivusto toimi? Kolmannen osapuolen evästeet on estetty</translation>
 <translation id="5441466871879044658">Käännä tälle kielelle</translation>
 <translation id="5441522332038954058">Siirry osoitepalkkiin</translation>
 <translation id="5444999712122199445">Palaa sivustolle</translation>
@@ -926,6 +935,7 @@ Jos haluat muokata asetusta, <ph name="BEGIN_LINK" />nollaa synkronointi<ph name
 <translation id="5951119116059277034">Katsotaan live-sivua</translation>
 <translation id="5956665950594638604">Avaa Chromen ohjekeskus uudella välilehdellä</translation>
 <translation id="5957442310066583693">Katso suositut sivustosi napauttamalla Etusivu-painiketta</translation>
+<translation id="59577092665511740">Valitse tili.</translation>
 <translation id="5958275228015807058">Löydät tiedostosi ja sivusi Latauksista</translation>
 <translation id="5958994127112619898">Yksinkertaista sivua</translation>
 <translation id="5962718611393537961">Tiivistä napauttamalla.</translation>
@@ -1264,7 +1274,9 @@ Jotkin verkkosivustot voivat vastata tähän pyyntöön esimerkiksi näyttämäl
 <translation id="7638584964844754484">Väärä tunnuslause.</translation>
 <translation id="7641339528570811325">Poista selaustiedot…</translation>
 <translation id="7646772052135772216">Salasanojen synkronointi ei toimi</translation>
+<translation id="7655240423373329753">seitsemän viime päivää</translation>
 <translation id="7655900163790317559">Laitetaan Bluetooth päälle…</translation>
+<translation id="7656721520530864426">Ei sivustoja</translation>
 <translation id="7656862631699126784">Laita incognito-välilehtien lukitus päälle</translation>
 <translation id="7658239707568436148">Peru</translation>
 <translation id="7665369617277396874">Lisää tili</translation>
@@ -1361,6 +1373,7 @@ Jotkin verkkosivustot voivat vastata tähän pyyntöön esimerkiksi näyttämäl
 <translation id="8088176524274673045">Jaa lähellä oleville ihmisille antamalla tämä QR-koodi skannattavaksi</translation>
 <translation id="8090732854597034573">Kysy tarvittaessa vanhemmaltasi apua</translation>
 <translation id="8100969750121413114">Kirjaudu sisään ja tee Chromesta itsesi näköinen</translation>
+<translation id="8101414242770404289">Ei välilehtiä: <ph name="TIME_PERIOD" /></translation>
 <translation id="8103578431304235997">Incognito-välilehti</translation>
 <translation id="8105613260829665809">Jatkamalla hyväksyt <ph name="BEGIN_TOS_LINK" />käyttöehdot<ph name="END_TOS_LINK" />.\nChrome lähettää käyttö- ja kaatumisdataa Googlelle sovelluksen kehittämiseksi. <ph name="BEGIN_UMA_LINK" />Muuta asetuksia<ph name="END_UMA_LINK" /></translation>
 <translation id="8105893657415066307"><ph name="DESCRIPTION" /> <ph name="SEPARATOR" /> <ph name="FILE_SIZE" /></translation>
@@ -1412,6 +1425,7 @@ Jotkin verkkosivustot voivat vastata tähän pyyntöön esimerkiksi näyttämäl
 <translation id="8414396119627470038">Kirjaudu sisään: <ph name="SITE_ETLD_PLUS_ONE" /> (<ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" />)</translation>
 <translation id="8416347857511542594">Lue lisää mainosten personoinnista Chromessa</translation>
 <translation id="8419244640277402268">Sisällytä</translation>
+<translation id="8422250855136581222">Ei välilehtiä tällä laitteella</translation>
 <translation id="8424781820952413435">Sivu lähetetty. Jos haluat nähdä sen, avaa Chrome <ph name="DEVICE_TYPE" /></translation>
 <translation id="8427875596167638501">Esikatseluvälilehti on puoliksi auki</translation>
 <translation id="8428213095426709021">Asetukset</translation>

@@ -209,11 +209,13 @@ Rechten die je al hebt gegeven aan websites en apps, kunnen van toepassing zijn 
 <translation id="5527463683072221100">Pdf's openen in Chromium</translation>
 <translation id="5614091477838198795">Als de schakelaar aanstaat, word je ook uitgelogd van Chromium</translation>
 <translation id="5623402015214259806">{0,plural, =0{Er is een Chromium-update beschikbaar}=1{Er is een Chromium-update beschikbaar}other{Er is al # dagen een Chromium-update beschikbaar}}</translation>
+<translation id="5643865575100044307">Sitegegevens altijd verwijderen van je apparaat als je Chromium sluit</translation>
 <translation id="5653831366781983928">Chromium nu opnieuw opstarten</translation>
 <translation id="5690427481109656848">Google LLC</translation>
 <translation id="5698481217667032250">Chromium bekijken in deze taal</translation>
 <translation id="5862307444128926510">Welkom bij Chromium</translation>
 <translation id="5883558403894052917">Chromium heeft vastgesteld dat deze items malware bevatten:</translation>
+<translation id="5889361821821684993">Chromium checkt regelmatig of je browser de veiligste instellingen heeft. We laten het je weten als je iets moet controleren.</translation>
 <translation id="5895138241574237353">Opnieuw starten</translation>
 <translation id="5903106910045431592"><ph name="PAGE_TITLE" /> - Inloggen bij netwerk</translation>
 <translation id="5924017743176219022">Verbinding maken met internet...</translation>
@@ -224,6 +226,7 @@ Rechten die je al hebt gegeven aan websites en apps, kunnen van toepassing zijn 
 <translation id="5988505247484123880">Door jou bezochte sites onthouden over het algemeen informatie over je interesses om zo de functionaliteit te personaliseren. Sites kunnen ook informatie over je interesses in Chromium opslaan.</translation>
 <translation id="6003112304606738118">Downloaden... Nog <ph name="HOURS" /> uur</translation>
 <translation id="6040143037577758943">Sluiten</translation>
+<translation id="6055611795418209449">Chromium blokkeert bepaalde downloads</translation>
 <translation id="6055895534982063517">Er is een nieuwe versie van Chromium beschikbaar, en deze is sneller dan ooit.</translation>
 <translation id="6063093106622310249">&amp;Openen in Chromium</translation>
 <translation id="6072279588547424923"><ph name="EXTENSION_NAME" /> is toegevoegd aan Chromium</translation>
@@ -237,6 +240,7 @@ Rechten die je al hebt gegeven aan websites en apps, kunnen van toepassing zijn 
 <translation id="6132897690380286411">Chromium wordt zo meteen gesloten en de gegevens worden verwijderd</translation>
 <translation id="6134968993075716475">Safe Browsing staat uit. Chromium raadt je aan deze functie aan te zetten.</translation>
 <translation id="6145820983052037069">Je kunt hier schakelen tussen verschillende Chromium-profielen</translation>
+<translation id="6175304430031192654">Afhankelijk van je instellingen kan Chromium ook cookies en je huidige URL sturen</translation>
 <translation id="6183079672144801177">Zorg dat je bent ingelogd bij Chromium op je <ph name="TARGET_DEVICE_NAME" /> en probeer opnieuw te sturen.</translation>
 <translation id="6212496753309875659">Deze computer beschikt al over een recentere versie van Chromium. Als de software niet werkt, moet je Chromium verwijderen en het opnieuw proberen.</translation>
 <translation id="6219195342503754812">{0,plural, =0{Chromium wordt nu opnieuw gestart}=1{Chromium wordt over één seconde opnieuw gestart}other{Chromium wordt over # seconden opnieuw gestart}}</translation>
@@ -257,6 +261,7 @@ Rechten die je al hebt gegeven aan websites en apps, kunnen van toepassing zijn 
 <translation id="6373523479360886564">Weet je zeker dat je Chromium wilt verwijderen?</translation>
 <translation id="6375219077595103062">Voeg een snelkoppeling naar Wachtwoordmanager toe</translation>
 <translation id="6384011394608460044"><ph name="BEGIN_BOLD" />Hoe we deze gegevens gebruiken:<ph name="END_BOLD" /> Chromium kan een schatting van je interesses maken. Later kan een site die je bezoekt Chromium vragen om je interesses te bekijken zodat de advertenties die je ziet, kunnen worden gepersonaliseerd.</translation>
+<translation id="6400112897226594999">Chromium-logo in een computerscherm.</translation>
 <translation id="6403826409255603130">Chromium is een webbrowser die webpagina's en applicaties bliksemsnel uitvoert. Chromium is snel, stabiel en eenvoudig in gebruik. Surf veiliger op internet met de in Chromium ingebouwde beveiliging tegen malware en phishing.</translation>
 <translation id="6442900851116057561">Chromium OS opnieuw opstarten</translation>
 <translation id="6455857529632101747">Welkom bij Chromium-profielen</translation>
@@ -305,6 +310,7 @@ Sommige functies zijn mogelijk niet beschikbaar. Geef een andere profieldirector
 <translation id="718435575166326686">Chromium heeft camerarechten nodig voor deze site</translation>
 <translation id="7196312274710523067">Kan Chromium niet starten. Probeer het opnieuw.</translation>
 <translation id="7197677400338048821">Chromium kan je wachtwoorden niet checken. Probeer het over 24 uur opnieuw.</translation>
+<translation id="7213407614656404070">Chromium gebruiken als je op links in berichten, documenten en andere apps klikt</translation>
 <translation id="7223968959479464213">Taakbeheer - Chromium</translation>
 <translation id="7246575524853130370">Je interesses volgens schattingen van Chromium</translation>
 <translation id="7309928523159922338">Via Advertentiemeting kunnen sites die je bezoekt Chromium om informatie vragen zodat ze de prestaties van hun advertenties kunnen meten. Advertentiemeting beperkt tracking op meerdere sites door zo min mogelijk informatie over te dragen tussen sites.</translation>

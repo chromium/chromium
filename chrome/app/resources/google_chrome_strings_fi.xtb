@@ -38,6 +38,7 @@
 <translation id="1627304841979541023"><ph name="BEGIN_BOLD" />Miten voit vaikuttaa dataasi:<ph name="END_BOLD" /> Yksityisyytesi suojaamiseksi poistamme automaattisesti yli neljä viikkoa vanhat kiinnostuksen kohteet. Kun jatkat selaamista, kiinnostuksen kohde voi näkyä listalla uudelleen. Voit myös poistaa kiinnostuksen kohteet, joita et halua Chromen ottavan huomioon.</translation>
 <translation id="1628000112320670027">Ohjeita Chromen käyttöön</translation>
 <translation id="1640672724030957280">Ladataan...</translation>
+<translation id="1642309806724967937">Asetuksista riippuen Chrome voi myös lähettää evästeitä ja nykyisen URL-osoitteesi</translation>
 <translation id="1662146548738125461">Tietoa ChromeOS Flexistä</translation>
 <translation id="1674870198290878346">Avaa linkki Chromen inco&amp;gnito-ikkunassa</translation>
 <translation id="1682634494516646069">Chrome ei voi lukea tietohakemistoaan <ph name="USER_DATA_DIRECTORY" /> tai kirjoittaa siihen</translation>
@@ -93,6 +94,7 @@
 <translation id="2597976513418770460">Käytä tililtä <ph name="ACCOUNT_EMAIL" /> löytyvää Chrome-selaimen sisältöä</translation>
 <translation id="2622559029861875898">Chrome ei voi tarkistaa päivityksiä. Tarkista internetyhteytesi.</translation>
 <translation id="2645435784669275700">Chrome-käyttöjärjestelmä</translation>
+<translation id="2649768380733403658">Chrome tarkistaa säännöllisesti, että selaimen asetukset ovat mahdollisimman turvalliset. Ilmoitamme, jos jotain on tarkistettava.</translation>
 <translation id="2652691236519827073">Avaa linkki uudella Chromen välilehdellä</translation>
 <translation id="2665296953892887393">Auta parantamaan Google Chromea lähettämällä kaatumisilmoitukset ja <ph name="UMA_LINK" /> Googlelle</translation>
 <translation id="2689103672227170538">Tämä laajennus on vaihtanut Chromen aloitussivun.</translation>
@@ -230,6 +232,7 @@
 <translation id="5163087008893166964">Tervetuloa Chromeen, uusi selainikkuna avattu</translation>
 <translation id="5170938038195470297">Profiiliasi ei voi käyttää, koska se on peräisin uudemmasta Google Chromen versiosta. Kaikkia toimintoja ei välttämättä voi käyttää. Määritä toinen profiilihakemisto tai käytä uudempaa Chromen versiota.</translation>
 <translation id="521447420733633466">Jos käytät jaettua laitetta, kaverisi ja perheenjäsenesi voivat selata verkkoa erillään ja räätälöidä Chromesta juuri itselleen sopivan</translation>
+<translation id="5239627039202700673">Käytä Chromea aina, kun klikkaat viesteissä, dokumenteissa ja muissa sovelluksissa olevia linkkejä</translation>
 <translation id="5251420635869119124">Vierailijat voivat käyttää Chromea jälkiä jättämättä.</translation>
 <translation id="5334309298019785904">Chrome-käyttöjärjestelmä ei voinut synkronoida dataa, koska synkronointi ei ole käytettävissä verkkotunnuksessasi.</translation>
 <translation id="5334487786912937552">Chrome tarvitsee tallennustilan pääsyoikeudet tiedostojen lataamiseen</translation>
@@ -244,6 +247,7 @@
 <translation id="5566025111015594046">Google Chrome (saapuva mDNS)</translation>
 <translation id="565744775970812598"><ph name="FILE_NAME" /> voi olla vaarallinen, joten Chrome on estänyt sen.</translation>
 <translation id="5678190148303298925">{COUNT,plural, =0{Ylläpitäjä pyytää Chromen uudelleenkäynnistystä, jotta tämä päivitys voidaan ottaa käyttöön.}=1{Ylläpitäjä pyytää Chromen uudelleenkäynnistystä, jotta tämä päivitys voidaan ottaa käyttöön. Incognito-ikkunaasi ei avata uudelleen.}other{Ylläpitäjä pyytää Chromen uudelleenkäynnistystä, jotta tämä päivitys voidaan ottaa käyttöön. # incognito-ikkunaasi ei avata uudelleen.}}</translation>
+<translation id="5682679001737420487">Chrome estää joitain latauksia</translation>
 <translation id="5686916850681061684">Yksilöi ja ylläpidä Google Chromea. Toimenpiteitä vaaditaan. Katso lisätiedot klikkaamalla.</translation>
 <translation id="5690427481109656848">Google LLC</translation>
 <translation id="570005089986962444">Kun tämä on päällä, Chrome vapauttaa muistia ei-aktiivisilta välilehdiltä. Näin aktiiviset välilehdet ja muut sovellukset voivat käyttää enemmän tietokoneen resursseja ja Chrome pysyy nopeana. Ei-aktiiviset välilehdet aktivoituvat automaattisesti, kun palaat niihin.</translation>
@@ -301,6 +305,7 @@
 <translation id="6739177684496155661">Jatketaanko uudessa Chrome-profiilissa?</translation>
 <translation id="6750954913813541382">Chrome lähettää selaimeen kirjoittamasi tekstin Googlelle kirjoitusvirheiden korjaamiseksi</translation>
 <translation id="677276454032249905">Suljetaanko Chrome silti?</translation>
+<translation id="6794858689789885890">Poista laitteen sivustodata aina, kun suljet Chromen</translation>
 <translation id="683440813066116847">Google Chrome Canaryn saapuvien yhteyksien sääntö, joka sallii mDNS-liikenteen.</translation>
 <translation id="6881299373831449287">Päivitetään Chromea</translation>
 <translation id="6885412569789873916">Chromen betaversion sovellukset</translation>
@@ -385,6 +390,7 @@ Sivustoille ja sovelluksille myöntämäsi luvat saattavat koskea tätä tiliä.
 <translation id="8383226135083126309"><ph name="BEGIN_BOLD" />Miten käytämme tätä dataa:<ph name="END_BOLD" /> Chrome voi rakentaa kuvaa kiinnostuksen kohteistasi. Sivut, joilla käyt, voivat myöhemmin pyytää Chromelta tietoa kiinnostuksen kohteistasi ja personoida näkemiäsi mainoksia.</translation>
 <translation id="8387459386171870978">Jatka Chromen käyttöä</translation>
 <translation id="8394720698884623075">Tarkistaa URL-osoitteet Chromeen tallennetun vaarallisten sivustojen listan avulla</translation>
+<translation id="8403038600646341038">Chrome-logo tietokoneen näytöllä.</translation>
 <translation id="8416347857511542594">Lue lisää mainosten personoinnista Chromessa</translation>
 <translation id="8418845734693287262">Chrome-käyttöjärjestelmä ei voinut synkronoida dataa, koska tilin kirjautumistiedot ovat vanhentuneet.</translation>
 <translation id="8433638294851456451">Jos haluat lähettää numeron täältä Android-puhelimeesi, kirjaudu Chromeen molemmilla laitteilla.</translation>

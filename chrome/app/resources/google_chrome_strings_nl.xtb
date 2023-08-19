@@ -39,6 +39,7 @@ Sommige functies zijn wellicht niet beschikbaar en wijzigingen in voorkeuren wor
 <translation id="1627304841979541023"><ph name="BEGIN_BOLD" />Hoe je je gegevens kunt beheren:<ph name="END_BOLD" /> Ter bescherming van je privacy verwijderen we automatisch interesses die ouder zijn dan 4 weken. Het kan gebeuren dat een interesse weer in de lijst komt te staan als je blijft browsen. Je kunt ook interesses verwijderen waarvan je niet wilt dat Chrome deze overweegt.</translation>
 <translation id="1628000112320670027">Hulp bij Chrome</translation>
 <translation id="1640672724030957280">Bezig met downloaden...</translation>
+<translation id="1642309806724967937">Afhankelijk van je instellingen kan Chrome ook cookies en je huidige URL sturen</translation>
 <translation id="1662146548738125461">Over Chrome OS Flex</translation>
 <translation id="1674870198290878346">Link openen in een Chrome-inco&amp;gnitovenster</translation>
 <translation id="1682634494516646069">Chrome kan niet lezen van en schrijven naar de gegevensdirectory:
@@ -96,6 +97,7 @@ Sommige functies zijn wellicht niet beschikbaar en wijzigingen in voorkeuren wor
 <translation id="2597976513418770460">Haal je Chrome-browsergegevens op via <ph name="ACCOUNT_EMAIL" /></translation>
 <translation id="2622559029861875898">Chrome kan niet checken op updates. Check de internetverbinding.</translation>
 <translation id="2645435784669275700">Chrome OS</translation>
+<translation id="2649768380733403658">Chrome checkt regelmatig of je browser de veiligste instellingen heeft. We laten het je weten als je iets moet controleren.</translation>
 <translation id="2652691236519827073">Link openen op een nieuw Chrome-&amp;tabblad</translation>
 <translation id="2665296953892887393">Help ons Google Chrome te verbeteren door crashrapporten en <ph name="UMA_LINK" /> naar Google te verzenden</translation>
 <translation id="2689103672227170538">Deze extensie heeft gewijzigd welke pagina wordt getoond wanneer je Chrome start.</translation>
@@ -235,6 +237,7 @@ Sommige functies zijn wellicht niet beschikbaar en wijzigingen in voorkeuren wor
 
 Sommige functies zijn wellicht niet beschikbaar. Geef een andere profieldirectory op of gebruik een nieuwere versie van Chrome.</translation>
 <translation id="521447420733633466">Als je een apparaat deelt, kunnen vrienden en familie afzonderlijk surfen en Chrome instellen zoals zij dat willen.</translation>
+<translation id="5239627039202700673">Gebruik Chrome als je op links in berichten, documenten en andere apps klikt</translation>
 <translation id="5251420635869119124">Gasten kunnen Chrome gebruiken zonder iets achter te laten.</translation>
 <translation id="5334309298019785904">Chrome OS kan je gegevens niet synchroniseren, omdat synchronisatie niet beschikbaar is voor je domein.</translation>
 <translation id="5334487786912937552">Chrome heeft toegang tot de opslag nodig om bestanden te downloaden</translation>
@@ -249,6 +252,7 @@ Sommige functies zijn wellicht niet beschikbaar. Geef een andere profieldirector
 <translation id="5566025111015594046">Google Chrome (mDNS-In)</translation>
 <translation id="565744775970812598"><ph name="FILE_NAME" /> kan gevaarlijk zijn en is daarom door Chrome geblokkeerd.</translation>
 <translation id="5678190148303298925">{COUNT,plural, =0{Je beheerder vraagt je Chrome opnieuw te starten om deze update uit te voeren.}=1{Je beheerder vraagt je Chrome opnieuw te starten om deze update uit te voeren. Je incognitovenster kan niet opnieuw worden geopend.}other{Je beheerder vraagt je Chrome opnieuw te starten om deze update uit te voeren. Je # incognitovensters kunnen niet opnieuw worden geopend.}}</translation>
+<translation id="5682679001737420487">Chrome blokkeert bepaalde downloads</translation>
 <translation id="5686916850681061684">Pas Google Chrome aan en beheer de instellingen. Je aandacht is vereist. Klik voor meer informatie.</translation>
 <translation id="5690427481109656848">Google LLC</translation>
 <translation id="570005089986962444">Als deze functie aanstaat, maakt Chrome geheugen van inactieve tabbladen vrij. Zo krijgen actieve tabbladen en andere apps meer computerbronnen en blijft Chrome snel. Je inactieve tabbladen worden automatisch weer actief als je ernaar terugkeert.</translation>
@@ -306,6 +310,7 @@ Sommige functies zijn wellicht niet beschikbaar. Geef een andere profieldirector
 <translation id="6739177684496155661">Doorgaan met een nieuw Chrome-profiel?</translation>
 <translation id="6750954913813541382">Voor het verbeteren van spelfouten verzendt Chrome de tekst die je in de browser typt naar Google</translation>
 <translation id="677276454032249905">Chrome toch sluiten?</translation>
+<translation id="6794858689789885890">Sitegegevens altijd verwijderen van je apparaat als je Chrome sluit</translation>
 <translation id="683440813066116847">Inkomende regel zodat Google Chrome Canary mDNS-verkeer toestaat.</translation>
 <translation id="6881299373831449287">Chrome updaten</translation>
 <translation id="6885412569789873916">Chrome Bèta-apps</translation>
@@ -390,6 +395,7 @@ Rechten die je al hebt gegeven aan websites en apps, kunnen van toepassing zijn 
 <translation id="8383226135083126309"><ph name="BEGIN_BOLD" />Hoe we deze gegevens gebruiken:<ph name="END_BOLD" /> Chrome kan een schatting van je interesses maken. Later kan een site die je bezoekt Chrome vragen om je interesses te bekijken zodat de advertenties die je ziet kunnen worden gepersonaliseerd.</translation>
 <translation id="8387459386171870978">Chrome blijven gebruiken</translation>
 <translation id="8394720698884623075">Checkt URL's aan de hand van een lijst met onveilige sites die is opgeslagen in Chrome</translation>
+<translation id="8403038600646341038">Chrome-logo in een computerscherm.</translation>
 <translation id="8416347857511542594">Meer informatie over advertentiepersonalisatie in Chrome</translation>
 <translation id="8418845734693287262">Chrome OS kan je gegevens niet synchroniseren, omdat de inloggegevens voor je account zijn verouderd.</translation>
 <translation id="8433638294851456451">Als je een nummer hier vandaan naar je Android-telefoon wilt sturen, log je in bij Chrome op beide apparaten.</translation>

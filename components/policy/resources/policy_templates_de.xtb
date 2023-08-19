@@ -96,6 +96,7 @@ Beachte, dass unter <ph name="MS_WIN_NAME" />, <ph name="MAC_OS_NAME" /> und <ph
 <translation id="1065175969514496951">Mit dieser Richtlinie kann während der Authentifizierung (z. B. auf dem Anmelde- oder Sperrbildschirm) auf die aufgeführten URLs zugegriffen werden (als Ausnahmen von „<ph name="DEVICE_AUTHENTICATION_URL_BLOCKLIST_POLICY_NAME" />“). Informationen zum Format der Einträge in der Liste findest du in der Beschreibung der Richtlinie. Beispielsweise werden alle Anfragen blockiert, wenn du „<ph name="DEVICE_AUTHENTICATION_URL_BLOCKLIST_POLICY_NAME" />“ auf <ph name="WILDCARD_VALUE" /> setzt. Du kannst diese Richtlinie verwenden, um den Zugriff auf eine eingeschränkte Liste mit URLs zu erlauben. Mit ihr lassen sich bei Verwendung des unter https://support.google.com/chrome/a?p=url_blocklist_filter_format angegebenen Formats Ausnahmen für bestimmte Schemas, Subdomains anderer Domains, Ports oder bestimmte Pfade festlegen. Mit dem spezifischsten Filter wird festgelegt, ob eine URL blockiert oder zulässig ist. Die Richtlinie „<ph name="DEVICE_AUTHENTICATION_URL_ALLOWLIST_POLICY_NAME" />“ hat Vorrang vor „<ph name="DEVICE_AUTHENTICATION_URL_BLOCKLIST_POLICY_NAME" />“. Diese Richtlinie ist auf 1.000 Einträge beschränkt.
 
 Wenn sie nicht konfiguriert ist, sind keine Ausnahmen zu „<ph name="DEVICE_AUTHENTICATION_URL_BLOCKLIST_POLICY_NAME" />“ möglich.</translation>
+<translation id="1068801725746725727">Empfang von Safe Browsing-Umfragen aktivieren</translation>
 <translation id="1069489575852947981">Wenn die Richtlinie aktiviert oder nicht konfiguriert ist, wird ein lokales Gerätekonto für die verzögerungsfreie automatische Anmeldung eingerichtet. <ph name="PRODUCT_OS_NAME" /> verwendet die Tastenkombination Strg + Alt + S, um die automatische Anmeldung zu umgehen und stattdessen den Anmeldebildschirm aufzurufen.
 
       Wenn die Richtlinie deaktiviert ist, kann eine verzögerungsfreie automatische Anmeldung, sofern konfiguriert, nicht umgangen werden.</translation>
@@ -5030,6 +5031,7 @@ Ist die Richtlinie deaktiviert oder nicht konfiguriert, wird anhand der Einstell
       Wenn die Option „Forced“ ausgewählt ist, können Seiten ausschließlich im Inkognitomodus geöffnet werden. Die Option „Forced“ funktioniert nicht bei Android-Apps, die auf Chrome ausgeführt werden.
 
       Hinweis: Wenn die Richtlinie unter iOS während einer Sitzung geändert wird, gilt sie erst beim Neustart.</translation>
+<translation id="549471902631700911">Empfang von Safe Browsing-Umfragen deaktivieren</translation>
 <translation id="5499375345075963939">Diese Richtlinie ist nur im Händlermodus aktiv.
 
       Wenn für diese Richtlinie ein Wert festgelegt wurde und dieser Wert nicht "0" ist, wird der aktuell angemeldete Demo-Nutzer nach der angegebenen Inaktivitätsdauer automatisch abgemeldet.
@@ -8663,6 +8665,7 @@ Wenn die Richtlinie nicht konfiguriert ist, werden bei der ersten Ausführung ke
 <translation id="874149307422233209">Mit dieser Richtlinie können Administratoren festlegen, wie Google Nutzerdaten verarbeitet, die über <ph name="PRODUCT_OS_NAME" />-Funktionen an die Google Suche gesendet werden.
 Wenn die Richtlinie aktiviert ist, können Nutzer das Suchfeld des <ph name="PRODUCT_OS_NAME" />-Launchers und die Adressleiste von <ph name="PRODUCT_NAME" /> unter <ph name="PRODUCT_OS_NAME" /> so verwenden, dass der Suchverlauf des Nutzers nicht mit seiner Identität verknüpft wird.
 Ist die Richtlinie nicht konfiguriert oder deaktiviert, werden die Daten des Nutzers von diesen Suchanfragen mit seiner Identität verknüpft.</translation>
+<translation id="8743902569031401303">Safe Browsing-Umfragen zulassen</translation>
 <translation id="8744844164152340112">Dadurch wird festgelegt, welches Design zum Rendern der Benutzeroberfläche während der OOBE (Out-of-Box-Experience) und während einer Sitzung verwendet wird.
       Dieser automatische Modus wechselt bei Sonnenauf- und untergang zwischen dem hellen und dunklen Design.
       Diese Richtlinie sollte Nutzern empfohlen werden, damit sie das Design in den Systemeinstellungen ändern können.</translation>
@@ -9265,6 +9268,8 @@ Wenn die Richtlinie nicht konfiguriert ist, kann <ph name="PRODUCT_NAME" /> dies
 <translation id="981346395360763138">Standortdienste von Google deaktiviert</translation>
 <translation id="982497069985795632">Rechtschreibprüfung aktivieren</translation>
 <translation id="983256325512298435">Eine Liste mit Protokollen festlegen, über die eine externe App aus aufgeführten Quellen gestartet werden kann, ohne beim Nutzer nachzufragen</translation>
+<translation id="984365509386992443">Wenn diese Richtlinie aktiviert ist oder nicht konfiguriert wird, erhält der Nutzer möglicherweise Umfragen zu Safe Browsing.
+Ist die Richtlinie deaktiviert, erhält der Nutzer keine Umfragen zu Safe Browsing.</translation>
 <translation id="987261962216071510">Nur Browseranmeldungen durch Gäste zulassen</translation>
 <translation id="987975731398348803">Wenn die Richtlinie aktiviert oder nicht konfiguriert ist, werden über registrierte Geräte alle Gerätenutzer gemeldet, die sich vor Kurzem angemeldet haben.
 
