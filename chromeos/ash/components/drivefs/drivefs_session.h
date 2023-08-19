@@ -115,7 +115,8 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_DRIVEFS) DriveFsSession
   base::FilePath mount_path_;
 
   // Mojo interface to the DriveFS process.
-  raw_ptr<mojom::DriveFs, ExperimentalAsh> drivefs_ = nullptr;
+  raw_ptr<mojom::DriveFs, DanglingUntriaged | ExperimentalAsh> drivefs_ =
+      nullptr;
 
   bool drivefs_has_started_ = false;
   bool drivefs_has_terminated_ = false;

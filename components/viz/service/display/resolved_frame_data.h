@@ -43,7 +43,8 @@ struct VIZ_SERVICE_EXPORT FixedPassData {
   FixedPassData& operator=(FixedPassData&& other);
   ~FixedPassData();
 
-  raw_ptr<CompositorRenderPass, DanglingUntriaged> render_pass = nullptr;
+  raw_ptr<CompositorRenderPass, AcrossTasksDanglingUntriaged> render_pass =
+      nullptr;
   // DrawQuads in |render_pass| that can contribute additional damage (eg.
   // surface and render passes) that need to be visited during the prewalk phase
   // of aggregation. Stored in front-to-back order like in |render_pass|.
@@ -108,15 +109,21 @@ struct VIZ_SERVICE_EXPORT AggregationPassData {
   // is false for may still be drawn but they won't contribute pixels to
   // framebuffer.
   bool will_draw = false;
+
+  // The damage added from its descandant surfaces during aggregation. This is
+  // not part of the original render_pass->damage_rect from CC.
+  gfx::Rect added_damage;
 };
 
-struct ParentClipData {
-  ParentClipData();
-  ParentClipData(ParentClipData&& other);
-  ParentClipData& operator=(ParentClipData& other);
-  ParentClipData& operator=(const ParentClipData& other);
-  ParentClipData& operator=(ParentClipData&& other);
-  ~ParentClipData();
+// Render pass data that must be recomputed each aggregation and needs to be
+// persisted to next aggregation.
+struct PersistentPassData {
+  PersistentPassData();
+  PersistentPassData(PersistentPassData&& other);
+  PersistentPassData& operator=(PersistentPassData& other);
+  PersistentPassData& operator=(const PersistentPassData& other);
+  PersistentPassData& operator=(PersistentPassData&& other);
+  ~PersistentPassData();
 
   enum MergeState { kInitState, kNotMerged, kAlwaysMerged, kSomeTimesMerged };
 
@@ -164,19 +171,19 @@ class VIZ_SERVICE_EXPORT ResolvedPassData {
   AggregationPassData& aggregation() { return aggregation_; }
   const AggregationPassData& aggregation() const { return aggregation_; }
 
-  ParentClipData& current_parent_clip_data() {
-    return current_parent_clip_data_;
+  PersistentPassData& current_persistent_data() {
+    return current_persistent_data_;
   }
 
-  ParentClipData& previous_parent_clip_data() {
-    return previous_parent_clip_data_;
+  PersistentPassData& previous_persistent_data() {
+    return previous_persistent_data_;
   }
 
-  const ParentClipData& previous_parent_clip_data() const {
-    return previous_parent_clip_data_;
+  const PersistentPassData& previous_persistent_data() const {
+    return previous_persistent_data_;
   }
 
-  void CopyAndResetParentClipData();
+  void CopyAndResetPersistentPassData();
 
  private:
   friend class ResolvedFrameData;
@@ -187,8 +194,8 @@ class VIZ_SERVICE_EXPORT ResolvedPassData {
   // Data that will change each aggregation.
   AggregationPassData aggregation_;
 
-  ParentClipData current_parent_clip_data_;
-  ParentClipData previous_parent_clip_data_;
+  PersistentPassData current_persistent_data_;
+  PersistentPassData previous_persistent_data_;
 };
 
 enum FrameDamageType {
@@ -294,7 +301,7 @@ class VIZ_SERVICE_EXPORT ResolvedFrameData {
 
  private:
   void RegisterWithResourceProvider();
-  void MoveParentClipDataFromPreviousFrame(
+  void MovePersistentPassDataFromPreviousFrame(
       const std::vector<ResolvedPassData>& previoius_resolved_passes);
 
   const raw_ptr<DisplayResourceProvider> resource_provider_;

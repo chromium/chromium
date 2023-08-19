@@ -9,6 +9,7 @@
 #include <memory>
 #include <string>
 
+#include "base/android/java_exception_reporter.h"
 #include "base/android/jni_android.h"
 #include "base/android/jni_string.h"
 #include "base/files/file_path.h"
@@ -21,7 +22,7 @@
 #include "chromecast/app/android/cast_crash_reporter_client_android.h"
 #include "chromecast/base/cast_paths.h"
 #include "chromecast/base/pref_names.h"
-#include "chromecast/browser/jni_headers/CastCrashHandler_jni.h"
+#include "chromecast/browser/android/crash_handler_jni_headers/CastCrashHandler_jni.h"
 #include "components/crash/core/app/crash_reporter_client.h"
 #include "components/crash/core/app/crashpad.h"
 #include "components/crash/core/common/crash_key.h"
@@ -54,6 +55,7 @@ CastCrashUploaderAndroid::CastCrashUploaderAndroid(
   crash_reporter::SetCrashReporterClient(crash_reporter_client_.get());
   crash_reporter::InitializeCrashpad(process_type_.empty(), process_type_);
   crash_reporter::InitializeCrashKeys();
+  base::android::InitJavaExceptionReporter();
   crash_reporter_runner_ = base::ThreadPool::CreateSequencedTaskRunner(
       {base::MayBlock(), base::TaskPriority::BEST_EFFORT,
        base::TaskShutdownBehavior::SKIP_ON_SHUTDOWN});
@@ -107,7 +109,7 @@ void CastCrashUploaderAndroid::StartPeriodicCrashReportUpload() {
   OnStartPeriodicCrashReportUpload();
   crash_reporter_timer_ = std::make_unique<base::RepeatingTimer>();
   crash_reporter_timer_->Start(
-      FROM_HERE, base::TimeDelta::FromMinutes(20), this,
+      FROM_HERE, base::Minutes(20), this,
       &CastCrashUploaderAndroid::OnStartPeriodicCrashReportUpload);
 }
 

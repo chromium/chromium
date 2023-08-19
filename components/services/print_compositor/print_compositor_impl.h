@@ -65,10 +65,8 @@ class PrintCompositorImpl : public mojom::PrintCompositor {
       uint64_t frame_guid,
       base::ReadOnlySharedMemoryRegion serialized_content,
       const ContentToFrameMap& subframe_content_map) override;
-#if BUILDFLAG(ENABLE_TAGGED_PDF)
   void SetAccessibilityTree(
       const ui::AXTreeUpdate& accessibility_tree) override;
-#endif
   void CompositePageToPdf(
       uint64_t frame_guid,
       base::ReadOnlySharedMemoryRegion serialized_content,

@@ -122,7 +122,8 @@ HashRealTimeService::HashRealTimeService(
         get_network_context,
     VerdictCacheManager* cache_manager,
     OhttpKeyService* ohttp_key_service,
-    base::RepeatingCallback<bool()> get_is_enhanced_protection_enabled)
+    base::RepeatingCallback<bool()> get_is_enhanced_protection_enabled,
+    WebUIDelegate* webui_delegate)
     : url_loader_factory_(url_loader_factory),
       get_network_context_(std::move(get_network_context)),
       cache_manager_(cache_manager),
@@ -133,7 +134,8 @@ HashRealTimeService::HashRealTimeService(
           kMinBackOffResetDurationInSeconds,
           /*max_backoff_reset_duration_in_seconds=*/
           kMaxBackOffResetDurationInSeconds)),
-      get_is_enhanced_protection_enabled_(get_is_enhanced_protection_enabled) {}
+      get_is_enhanced_protection_enabled_(get_is_enhanced_protection_enabled),
+      webui_delegate_(webui_delegate) {}
 
 HashRealTimeService::~HashRealTimeService() = default;
 
@@ -145,8 +147,10 @@ bool HashRealTimeService::IsEnhancedProtectionEnabled() {
 bool HashRealTimeService::CanCheckUrl(
     const GURL& url,
     network::mojom::RequestDestination request_destination) {
-  return request_destination == network::mojom::RequestDestination::kDocument &&
-         CanGetReputationOfUrl(url);
+  if (VerdictCacheManager::has_artificial_cached_url()) {
+    return true;
+  }
+  return hash_realtime_utils::CanCheckUrl(url, request_destination);
 }
 
 // static
@@ -268,6 +272,7 @@ void HashRealTimeService::LogSearchCacheWithNoQueryParamsMetric(
 
 void HashRealTimeService::StartLookup(
     const GURL& url,
+    bool is_source_lookup_mechanism_experiment,
     HPRTLookupResponseCallback response_callback,
     scoped_refptr<base::SequencedTaskRunner> callback_task_runner) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -323,31 +328,42 @@ void HashRealTimeService::StartLookup(
                               hash_prefixes_to_request.size());
 
   // Send request.
-  if (base::FeatureList::IsEnabled(kHashRealTimeOverOhttp)) {
+  if (!is_source_lookup_mechanism_experiment ||
+      base::FeatureList::IsEnabled(kHashRealTimeOverOhttp)) {
     // OHTTP
     ohttp_key_service_->GetOhttpKey(base::BindOnce(
         &HashRealTimeService::OnGetOhttpKey, weak_factory_.GetWeakPtr(),
-        std::move(request), url, std::move(hash_prefixes_to_request),
-        std::move(cached_full_hashes), base::TimeTicks::Now(),
-        std::move(callback_task_runner), std::move(response_callback),
-        locally_cached_results_threat_type));
+        std::move(request), url, is_source_lookup_mechanism_experiment,
+        std::move(hash_prefixes_to_request), std::move(cached_full_hashes),
+        base::TimeTicks::Now(), std::move(callback_task_runner),
+        std::move(response_callback), locally_cached_results_threat_type));
   } else {
     // Direct fetch
+    DCHECK(is_source_lookup_mechanism_experiment);
     std::unique_ptr<network::SimpleURLLoader> url_loader =
         network::SimpleURLLoader::Create(
-            GetDirectFetchResourceRequest(std::move(request)),
+            GetDirectFetchResourceRequest(request.get()),
             GetTrafficAnnotationTagForDirectFetch());
     url_loader->SetTimeoutDuration(
         base::Seconds(kLookupTimeoutDurationInSeconds));
+    // The following |webui_delegate_| call is to log this HPRT lookup request
+    // on any open chrome://safe-browsing pages. The parameters |relay_url_spec|
+    // and |ohttp_key| are both empty because they are not sent for direct
+    // fetch.
+    absl::optional<int> webui_delegate_token =
+        webui_delegate_
+            ? webui_delegate_->AddToHPRTLookupPings(
+                  request.get(), /*relay_url_spec=*/"", /*ohttp_key=*/"")
+            : absl::nullopt;
     url_loader->DownloadToStringOfUnboundedSizeUntilCrashAndDie(
         url_loader_factory_.get(),
-        base::BindOnce(&HashRealTimeService::OnDirectURLLoaderComplete,
-                       weak_factory_.GetWeakPtr(), url,
-                       std::move(hash_prefixes_to_request),
-                       std::move(cached_full_hashes), url_loader.get(),
-                       base::TimeTicks::Now(), std::move(callback_task_runner),
-                       std::move(response_callback),
-                       locally_cached_results_threat_type));
+        base::BindOnce(
+            &HashRealTimeService::OnDirectURLLoaderComplete,
+            weak_factory_.GetWeakPtr(), url,
+            std::move(hash_prefixes_to_request), std::move(cached_full_hashes),
+            url_loader.get(), base::TimeTicks::Now(),
+            std::move(callback_task_runner), std::move(response_callback),
+            locally_cached_results_threat_type, webui_delegate_token));
     pending_requests_.emplace(std::move(url_loader));
   }
 }
@@ -355,6 +371,7 @@ void HashRealTimeService::StartLookup(
 void HashRealTimeService::OnGetOhttpKey(
     std::unique_ptr<V5::SearchHashesRequest> request,
     const GURL& url,
+    bool is_source_lookup_mechanism_experiment,
     const std::vector<std::string>& hash_prefixes_in_request,
     std::vector<V5::FullHash> result_full_hashes,
     base::TimeTicks request_start_time,
@@ -376,11 +393,14 @@ void HashRealTimeService::OnGetOhttpKey(
   // Construct OHTTP request.
   network::mojom::ObliviousHttpRequestPtr ohttp_request =
       network::mojom::ObliviousHttpRequest::New();
-  ohttp_request->relay_url = GURL(kHashRealTimeOverOhttpRelayUrl.Get());
+  GURL relay_url = is_source_lookup_mechanism_experiment
+                       ? GURL(kHashRealTimeOverOhttpRelayUrl.Get())
+                       : GURL(kHashPrefixRealTimeLookupsRelayUrl.Get());
+  ohttp_request->relay_url = relay_url;
   ohttp_request->traffic_annotation = net::MutableNetworkTrafficAnnotationTag(
       GetTrafficAnnotationTagForOhttp());
   ohttp_request->key_config = key.value();
-  ohttp_request->resource_url = GURL(GetResourceUrl(std::move(request)));
+  ohttp_request->resource_url = GURL(GetResourceUrl(request.get()));
   ohttp_request->method = net::HttpRequestHeaders::kGetMethod;
   ohttp_request->timeout_duration =
       base::Seconds(kLookupTimeoutDurationInSeconds);
@@ -389,6 +409,12 @@ void HashRealTimeService::OnGetOhttpKey(
   get_network_context_.Run()->GetViaObliviousHttp(
       std::move(ohttp_request),
       pending_receiver.InitWithNewPipeAndPassRemote());
+  // The following |webui_delegate_| call is to log this HPRT lookup request on
+  // any open chrome://safe-browsing pages.
+  absl::optional<int> webui_delegate_token =
+      webui_delegate_ ? webui_delegate_->AddToHPRTLookupPings(
+                            request.get(), relay_url.spec(), key.value())
+                      : absl::nullopt;
   ohttp_client_receivers_.Add(
       std::make_unique<ObliviousHttpClient>(base::BindOnce(
           &HashRealTimeService::OnOhttpComplete, weak_factory_.GetWeakPtr(),
@@ -396,7 +422,7 @@ void HashRealTimeService::OnGetOhttpKey(
           std::move(result_full_hashes), request_start_time,
           std::move(response_callback_task_runner),
           std::move(response_callback), locally_cached_results_threat_type,
-          key.value())),
+          key.value(), webui_delegate_token)),
       std::move(pending_receiver));
 }
 
@@ -409,6 +435,7 @@ void HashRealTimeService::OnOhttpComplete(
     HPRTLookupResponseCallback response_callback,
     SBThreatType locally_cached_results_threat_type,
     std::string ohttp_key,
+    absl::optional<int> webui_delegate_token,
     const absl::optional<std::string>& response_body,
     int net_error,
     int response_code,
@@ -422,7 +449,7 @@ void HashRealTimeService::OnOhttpComplete(
       request_start_time, std::move(response_callback_task_runner),
       std::move(response_callback), locally_cached_results_threat_type,
       std::move(response_body_ptr), net_error, response_code,
-      /*allow_retriable_errors=*/false);
+      /*allow_retriable_errors=*/false, webui_delegate_token);
 }
 
 void HashRealTimeService::OnDirectURLLoaderComplete(
@@ -434,6 +461,7 @@ void HashRealTimeService::OnDirectURLLoaderComplete(
     scoped_refptr<base::SequencedTaskRunner> response_callback_task_runner,
     HPRTLookupResponseCallback response_callback,
     SBThreatType locally_cached_results_threat_type,
+    absl::optional<int> webui_delegate_token,
     std::unique_ptr<std::string> response_body) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
@@ -450,7 +478,7 @@ void HashRealTimeService::OnDirectURLLoaderComplete(
       request_start_time, std::move(response_callback_task_runner),
       std::move(response_callback), locally_cached_results_threat_type,
       std::move(response_body), url_loader->NetError(), response_code,
-      /*allow_retriable_errors=*/true);
+      /*allow_retriable_errors=*/true, webui_delegate_token);
 
   pending_requests_.erase(pending_request_it);
 }
@@ -466,7 +494,8 @@ void HashRealTimeService::OnURLLoaderComplete(
     std::unique_ptr<std::string> response_body,
     int net_error,
     int response_code,
-    bool allow_retriable_errors) {
+    bool allow_retriable_errors,
+    absl::optional<int> webui_delegate_token) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   base::UmaHistogramTimes("SafeBrowsing.HPRT.Network.Time",
                           base::TimeTicks::Now() - request_start_time);
@@ -488,7 +517,8 @@ void HashRealTimeService::OnURLLoaderComplete(
           net_error, response_code, std::move(response_body),
           hash_prefixes_in_request, allow_retriable_errors);
   absl::optional<SBThreatType> sb_threat_type;
-  if (response.has_value()) {
+  bool is_lookup_successful = response.has_value();
+  if (is_lookup_successful) {
     if (cache_manager_) {
       cache_manager_->CacheHashPrefixRealTimeLookupResults(
           hash_prefixes_in_request,
@@ -507,10 +537,16 @@ void HashRealTimeService::OnURLLoaderComplete(
 
   response_callback_task_runner->PostTask(
       FROM_HERE, base::BindOnce(std::move(response_callback),
-                                /*is_lookup_successful=*/response.has_value(),
-                                sb_threat_type,
+                                is_lookup_successful, sb_threat_type,
                                 /*locally_cached_results_threat_type=*/
                                 locally_cached_results_threat_type));
+  if (webui_delegate_ && is_lookup_successful &&
+      webui_delegate_token.has_value()) {
+    // The following |webui_delegate_| call is to log this HPRT lookup response
+    // on any open chrome://safe-browsing pages.
+    webui_delegate_->AddToHPRTLookupResponses(webui_delegate_token.value(),
+                                              response.value().get());
+  }
 }
 
 base::expected<std::unique_ptr<V5::SearchHashesResponse>,
@@ -622,9 +658,9 @@ HashRealTimeService::ParseResponse(
 
 std::unique_ptr<network::ResourceRequest>
 HashRealTimeService::GetDirectFetchResourceRequest(
-    std::unique_ptr<V5::SearchHashesRequest> request) const {
+    V5::SearchHashesRequest* request) const {
   auto resource_request = std::make_unique<network::ResourceRequest>();
-  resource_request->url = GURL(GetResourceUrl(std::move(request)));
+  resource_request->url = GURL(GetResourceUrl(request));
   resource_request->method = net::HttpRequestHeaders::kGetMethod;
   resource_request->load_flags = net::LOAD_DISABLE_CACHE;
   resource_request->credentials_mode = network::mojom::CredentialsMode::kOmit;
@@ -632,7 +668,7 @@ HashRealTimeService::GetDirectFetchResourceRequest(
 }
 
 std::string HashRealTimeService::GetResourceUrl(
-    std::unique_ptr<V5::SearchHashesRequest> request) const {
+    V5::SearchHashesRequest* request) const {
   std::string request_data, request_base64;
   request->SerializeToString(&request_data);
   base::Base64UrlEncode(request_data,
@@ -775,6 +811,12 @@ HashRealTimeService::GetTrafficAnnotationTagForOhttp() const {
       SafeBrowsingEnabled {
         policy_options {mode: MANDATORY}
         SafeBrowsingEnabled: false
+      }
+    }
+    chrome_policy {
+      SafeBrowsingProxiedRealTimeChecksAllowed {
+        policy_options {mode: MANDATORY}
+        SafeBrowsingProxiedRealTimeChecksAllowed: false
       }
     }
     deprecated_policies: "SafeBrowsingEnabled"

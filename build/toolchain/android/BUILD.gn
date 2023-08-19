@@ -49,12 +49,6 @@ android_clang_toolchain("android_clang_x86") {
   toolchain_args = {
     current_cpu = "x86"
 
-    # We lack the libclang_rt.profile library for x86 and x86_64, so we cannot
-    # link any binaries that are generated with coverage instrumentation.
-    # Therefore we need to turn off 'use_clang_coverage' for this toolchain.
-    # TODO(crbug.com/865376)
-    use_clang_coverage = false
-
     # This turns off all of the LaCrOS-specific flags. A LaCrOS related build
     # may use |ash_clang_x64| or |lacros_clang_x64| toolchain, which are
     # chromeos toolchains, to build Ash-Chrome or Lacros-Chrome in a
@@ -84,12 +78,6 @@ android_clang_toolchain("android_clang_mipsel") {
 android_clang_toolchain("android_clang_x64") {
   toolchain_args = {
     current_cpu = "x64"
-
-    # We lack the libclang_rt.profile library for x86 and x86_64, so we cannot
-    # link any binaries that are generated with coverage instrumentation.
-    # Therefore we need to turn off 'use_clang_coverage' for this toolchain.
-    # TODO(crbug.com/865376)
-    use_clang_coverage = false
 
     # This turns off all of the LaCrOS-specific flags. A LaCrOS related build
     # may use |ash_clang_x64| or |lacros_clang_x64| toolchain, which are

@@ -41,6 +41,8 @@ import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.task.TaskTraits;
 import org.chromium.base.task.test.ShadowPostTask;
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.ui.widget.Toast;
+import org.chromium.ui.widget.ToastManager;
 
 import java.util.Locale;
 import java.util.concurrent.TimeUnit;
@@ -94,6 +96,7 @@ public class BrandingControllerUnitTest {
         ShadowPostTask.reset();
         ShadowSystemClock.reset();
         ShadowToast.reset();
+        ToastManager.resetForTesting();
     }
 
     @Test
@@ -186,8 +189,8 @@ public class BrandingControllerUnitTest {
                 .assertShownRegularLocationBar(true);
 
         // BrandingController.TOTAL_BRANDING_DELAY_MS - TEST_MAX_TOOLBAR_BLANK_TIMEOUT = 800
-        assertEquals(
-                "Toast duration is different.", 800, ShadowToast.getLatestToast().getDuration());
+        assertEquals("Toast duration is different.", Toast.LENGTH_LONG,
+                ShadowToast.getLatestToast().getDuration());
     }
 
     @Test
@@ -212,7 +215,7 @@ public class BrandingControllerUnitTest {
                 .onToolbarInitialized()
                 .assertBrandingDecisionMade(BrandingDecision.TOOLBAR);
 
-        SharedPreferencesBrandingTimeStorage.resetInstanceForTesting();
+        SharedPreferencesBrandingTimeStorage.resetInstance();
 
         // After reset storage instance, decision should be in use again.
         new BrandingCheckTester()
@@ -319,6 +322,7 @@ public class BrandingControllerUnitTest {
         public BrandingCheckTester assertShownToastBranding(boolean shown) {
             assertEquals("Toast shown count does not match.", shown ? 1 : 0,
                     ShadowToast.shownToastCount());
+            ToastManager.resetForTesting();
             return this;
         }
 

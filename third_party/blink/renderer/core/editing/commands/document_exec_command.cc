@@ -111,6 +111,8 @@ bool Document::execCommand(const String& command_name,
         "execCommand is only supported on HTML documents.");
     return false;
   }
+
+  UseCounter::Count(*this, WebFeature::kExecCommand);
   if (FocusedElement() && IsTextControl(*FocusedElement()))
     UseCounter::Count(*this, WebFeature::kExecCommandOnInputOrTextarea);
 

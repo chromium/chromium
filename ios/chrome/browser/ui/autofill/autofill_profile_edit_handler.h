@@ -40,14 +40,20 @@
 // button.
 - (void)loadMessageAndButtonForModalIfSaveOrUpdate:(BOOL)update;
 
-// Called when the edit button is pressed.
-- (void)editButtonPressed;
+// Called to update the profile data in the fields.
+- (void)updateProfileData;
+
+// Called when the fields need to be reconfigured.
+- (void)reconfigureCells;
 
 // Returns YES if the `cellPath` belongs to a text field.
 - (BOOL)isItemAtIndexPathTextEditCell:(NSIndexPath*)cellPath;
 
 // Setter called only for the migration prompt view.
 - (BOOL)setMigrationPrompt:(BOOL)migrationPrompt;
+
+// Setter called for the migration of an incomplete profile via the settings.
+- (void)setMoveToAccountFromSettings:(BOOL)moveToAccountFromSettings;
 
 @end
 

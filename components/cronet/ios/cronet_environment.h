@@ -179,8 +179,6 @@ class CronetEnvironment {
   // on the network thread.
   void SetNetworkThreadPriorityOnNetworkThread(double priority);
 
-  std::string getDefaultQuicUserAgentId() const;
-
   // Prepares the Cronet environment to be destroyed. The method must be
   // executed on the network thread. No other tasks should be posted to the
   // network thread after calling this method.

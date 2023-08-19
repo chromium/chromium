@@ -9,7 +9,6 @@
 
 #include "base/functional/callback.h"
 #include "base/task/single_thread_task_runner.h"
-#include "base/time/time.h"
 #include "content/common/content_export.h"
 
 #include "base/task/single_thread_task_runner.h"
@@ -63,9 +62,6 @@ class CONTENT_EXPORT StartupTaskRunner {
   void WrappedTask();
 
   base::OnceCallback<void(int)> startup_complete_callback_;
-  // Stores the time that the last post of a WrappedTask occurred. Used for
-  // gathering metrics.
-  base::TimeTicks last_wrapped_task_post_time_;
   scoped_refptr<base::SingleThreadTaskRunner> proxy_;
 };
 

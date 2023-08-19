@@ -230,7 +230,7 @@ class XrBrowserTestBase : public InProcessBrowserTest {
   // HTML files, initializing and starting the server if necessary.
   net::EmbeddedTestServer* GetEmbeddedServer();
 
-  raw_ptr<Browser, DanglingUntriaged> browser_ = nullptr;
+  raw_ptr<Browser, AcrossTasksDanglingUntriaged> browser_ = nullptr;
   std::unique_ptr<net::EmbeddedTestServer> server_;
   base::test::ScopedFeatureList scoped_feature_list_;
   bool test_skipped_at_startup_ = false;

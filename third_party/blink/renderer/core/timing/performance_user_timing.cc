@@ -24,6 +24,7 @@
  */
 
 #include "third_party/blink/renderer/core/timing/performance_user_timing.h"
+#include "base/trace_event/typed_macros.h"
 
 #include "third_party/blink/public/mojom/use_counter/metrics/web_feature.mojom-shared.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_performance_mark_options.h"
@@ -57,15 +58,21 @@ void UserTiming::AddMarkToPerformanceTimeline(PerformanceMark& mark) {
     return;
   }
 
-  std::unique_ptr<TracedValue> traced_value;
-  if (performance_->timing()) {
-    traced_value = performance_->timing()->GetNavigationTracingData();
-  } else {
-    traced_value = std::make_unique<TracedValue>();
-  }
-  traced_value->SetDouble("startTime", mark.startTime());
-  TRACE_EVENT_COPY_MARK1("blink.user_timing", mark.name().Utf8().c_str(),
-                         "data", std::move(traced_value));
+  const auto trace_event_details = [&](perfetto::EventContext ctx) {
+    ctx.event()->set_name(mark.name().Utf8().c_str());
+    ctx.AddDebugAnnotation("data", [&](perfetto::TracedValue trace_context) {
+      auto dict = std::move(trace_context).WriteDictionary();
+      dict.Add("startTime", mark.startTime());
+      // Only set when performance_ is a WindowPerformance.
+      // performance_->timing() returns null when performance_ is a
+      // WorkerPerformance.
+      if (performance_->timing()) {
+        performance_->timing()->WriteInto(dict);
+      }
+    });
+  };
+  TRACE_EVENT_INSTANT("blink.user_timing", nullptr, mark.UnsafeTimeForTraces(),
+                      trace_event_details);
 }
 
 void UserTiming::ClearMarks(const AtomicString& mark_name) {

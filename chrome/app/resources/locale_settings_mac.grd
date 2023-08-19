@@ -129,7 +129,7 @@
 
       <!-- The default value for |WebPreference::fixed_font_family| -->
       <message name="IDS_FIXED_FONT_FAMILY" use_name_for_id="true">
-        Courier
+        Menlo
       </message>
 
       <!-- The default value for |WebPreference::serif_font_family| -->

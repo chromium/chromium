@@ -14,16 +14,30 @@ namespace {
 class Foo;
 using FooId = IdType<Foo, int, 0>;
 
+// A type that uses both 0 and -1 as invalid values.
+using MultipleInvalidId = IdType<class MultipleInvalid, int, 0, 1, -1>;
+
 }  // namespace
 
 TEST(IdType, DefaultValueIsInvalid) {
   FooId foo_id;
   EXPECT_TRUE(foo_id.is_null());
+
+  MultipleInvalidId multi_id;
+  EXPECT_TRUE(multi_id.is_null());
 }
 
 TEST(IdType, NormalValueIsValid) {
   FooId foo_id = FooId::FromUnsafeValue(123);
   EXPECT_FALSE(foo_id.is_null());
+
+  MultipleInvalidId multi_id = MultipleInvalidId::FromUnsafeValue(123);
+  EXPECT_FALSE(multi_id.is_null());
+}
+
+TEST(IdType, ExtraInvalidValue) {
+  MultipleInvalidId multi_id = MultipleInvalidId::FromUnsafeValue(-1);
+  EXPECT_TRUE(multi_id.is_null());
 }
 
 TEST(IdType, Generator) {
@@ -73,13 +87,23 @@ TEST(IdType, EnsureConstexpr) {
   static_assert(kZero.GetUnsafeValue() == 0, "");
   static_assert(kOne.GetUnsafeValue() == 1, "");
 
+  static constexpr MultipleInvalidId kMultiZero;
+  static constexpr auto kMultiNegative = MultipleInvalidId::FromUnsafeValue(-1);
+  static constexpr auto kMultiOne = MultipleInvalidId::FromUnsafeValue(1);
+
   // Test is_null().
   static_assert(kZero.is_null(), "");
   static_assert(!kOne.is_null(), "");
+  static_assert(kMultiZero.is_null(), "");
+  static_assert(kMultiNegative.is_null(), "");
+  static_assert(!kMultiOne.is_null(), "");
 
   // Test operator bool.
   static_assert(!kZero, "");
   static_assert(kOne, "");
+  static_assert(!kMultiZero, "");
+  static_assert(!kMultiNegative, "");
+  static_assert(kMultiOne, "");
 }
 
 class IdTypeSpecificValueTest : public ::testing::TestWithParam<int> {

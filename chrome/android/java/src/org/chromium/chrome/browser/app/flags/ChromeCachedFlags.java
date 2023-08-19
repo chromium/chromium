@@ -9,6 +9,7 @@ import android.text.TextUtils;
 import org.chromium.build.BuildConfig;
 import org.chromium.chrome.browser.WarmupManager;
 import org.chromium.chrome.browser.app.ChromeActivity;
+import org.chromium.chrome.browser.back_press.BackPressManager;
 import org.chromium.chrome.browser.back_press.MinimizeAppAndCloseTabBackPressHandler;
 import org.chromium.chrome.browser.customtabs.CustomTabActivity;
 import org.chromium.chrome.browser.customtabs.CustomTabIntentDataProvider;
@@ -23,6 +24,7 @@ import org.chromium.chrome.browser.notifications.chime.ChimeFeatures;
 import org.chromium.chrome.browser.omaha.VersionNumberGetter;
 import org.chromium.chrome.browser.omnibox.OmniboxFeatures;
 import org.chromium.chrome.browser.optimization_guide.OptimizationGuidePushNotificationManager;
+import org.chromium.chrome.browser.recent_tabs.RestoreTabsFeatureHelper;
 import org.chromium.chrome.browser.tab.state.FilePersistedTabDataStorage;
 import org.chromium.chrome.browser.tabmodel.TabPersistentStore;
 import org.chromium.chrome.browser.tasks.tab_management.TabManagementFieldTrial;
@@ -68,6 +70,7 @@ public class ChromeCachedFlags {
         CachedFeatureFlags.cacheNativeFlags(ChromeFeatureList.sFlagsCachedFullBrowser);
         CachedFeatureFlags.cacheAdditionalNativeFlags();
 
+        //clang-format off
         List<CachedFieldTrialParameter> fieldTrialsToCache = List.of(
                 BrandingController.BRANDING_CADENCE_MS,
                 BrandingController.MAX_BLANK_TOOLBAR_TIMEOUT_MS,
@@ -90,6 +93,7 @@ public class ChromeCachedFlags {
                 CustomTabIntentDataProvider.DENYLIST_ENTRIES,
                 CustomTabIntentDataProvider.ALLOWLIST_ENTRIES,
                 WarmupManager.SPARE_TAB_INITIALIZE_RENDERER,
+                RestoreTabsFeatureHelper.RESTORE_TABS_PROMO_SKIP_FEATURE_ENGAGEMENT,
                 StartSurfaceConfiguration.IS_DOODLE_SUPPORTED,
                 StartSurfaceConfiguration.START_SURFACE_RETURN_TIME_SECONDS,
                 StartSurfaceConfiguration.START_SURFACE_RETURN_TIME_ON_TABLET_SECONDS,
@@ -102,19 +106,19 @@ public class ChromeCachedFlags {
                 StartSurfaceConfiguration.START_SURFACE_LAST_ACTIVE_TAB_ONLY,
                 StartSurfaceConfiguration.START_SURFACE_OPEN_NTP_INSTEAD_OF_START,
                 StartSurfaceConfiguration.START_SURFACE_OPEN_START_AS_HOMEPAGE,
+                StartSurfaceConfiguration.SURFACE_POLISH_OMNIBOX_COLOR,
+                StartSurfaceConfiguration.SURFACE_POLISH_USE_MAGIC_SPACE,
                 TabPersistentStore.CRITICAL_PERSISTED_TAB_DATA_SAVE_ONLY_PARAM,
-                TabUiFeatureUtilities.ENABLE_TAB_GROUP_AUTO_CREATION,
                 TabUiFeatureUtilities.GTS_ACCESSIBILITY_LIST_MODE,
-                TabUiFeatureUtilities.SHOW_OPEN_IN_TAB_GROUP_MENU_ITEM_FIRST,
                 TabUiFeatureUtilities.ZOOMING_MIN_MEMORY, TabUiFeatureUtilities.SKIP_SLOW_ZOOMING,
-                TabUiFeatureUtilities.THUMBNAIL_ASPECT_RATIO,
                 TabUiFeatureUtilities.TAB_STRIP_REDESIGN_DISABLE_NTB_ANCHOR,
                 TabUiFeatureUtilities.TAB_STRIP_REDESIGN_DISABLE_BUTTON_STYLE,
                 TabManagementFieldTrial.DELAY_TEMP_STRIP_TIMEOUT_MS,
                 TabManagementFieldTrial.TAB_STRIP_REDESIGN_ENABLE_FOLIO,
                 TabManagementFieldTrial.TAB_STRIP_REDESIGN_ENABLE_DETACHED,
                 VersionNumberGetter.MIN_SDK_VERSION, ChromeActivity.CONTENT_VIS_DELAY_MS,
-                MinimizeAppAndCloseTabBackPressHandler.SYSTEM_BACK);
+                MinimizeAppAndCloseTabBackPressHandler.SYSTEM_BACK,
+                BackPressManager.TAB_HISTORY_RECOVER);
         // clang-format on
         tryToCatchMissingParameters(fieldTrialsToCache);
         CachedFeatureFlags.cacheFieldTrialParameters(fieldTrialsToCache);

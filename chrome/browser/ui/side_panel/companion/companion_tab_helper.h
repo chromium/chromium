@@ -8,6 +8,7 @@
 #include "chrome/browser/companion/core/mojom/companion.mojom.h"
 #include "chrome/browser/ui/side_panel/side_panel_enums.h"
 #include "components/lens/buildflags.h"
+#include "components/lens/lens_metrics.h"
 #include "content/public/browser/web_contents_user_data.h"
 
 #if BUILDFLAG(ENABLE_LENS_DESKTOP_GOOGLE_BRANDED_FEATURES)
@@ -46,11 +47,23 @@ class CompanionTabHelper
     virtual void OnCompanionSidePanelClosed() = 0;
     // Retrieves the web contents for testing purposes.
     virtual content::WebContents* GetCompanionWebContentsForTesting() = 0;
+    // Add a callback to be called when Companion is fully loaded in the side
+    // panel, i.e. the spinner of the tab would stop spinning, Javascript is
+    // loaded and the onload event was dispatched.
+    virtual void AddCompanionFinishedLoadingCallback(
+        base::OnceCallback<void()> callback) = 0;
   };
+
+  using CompanionLoadedCallback = base::OnceCallback<void()>;
 
   CompanionTabHelper(const CompanionTabHelper&) = delete;
   CompanionTabHelper& operator=(const CompanionTabHelper&) = delete;
   ~CompanionTabHelper() override;
+
+  // Add a callback to be called when Companion is fully loaded in the side
+  // panel, i.e. the spinner of the tab would stop spinning, Javascript is
+  // loaded and the onload event was dispatched.
+  void AddCompanionFinishedLoadingCallback(CompanionLoadedCallback callback);
 
   // Shows the companion side panel with query provided by the |search_url|.
   void ShowCompanionSidePanelForSearchURL(const GURL& search_url);
@@ -69,11 +82,12 @@ class CompanionTabHelper
   // Returns the latest text query set by the client or an empty string if none.
   // Clears the last previous query after returning a copy.
   std::string GetTextQuery();
-  // Sets the latest text query and shows the side panel with that query.
-  void SetTextQuery(const std::string& text_query);
   // Starts the region search controller with the specified parameters.
   void StartRegionSearch(content::WebContents* web_contents,
-                         bool use_fullscreen_capture);
+                         bool use_fullscreen_capture,
+                         lens::AmbientSearchEntryPoint entry_point =
+                             lens::AmbientSearchEntryPoint::
+                                 CONTEXT_MENU_SEARCH_REGION_WITH_GOOGLE_LENS);
 
   // Returns the latest image data saved to the helper and not passed to the
   // handler or an empty pointer if none.
@@ -113,6 +127,9 @@ class CompanionTabHelper
   explicit CompanionTabHelper(content::WebContents* web_contents);
 
   friend class content::WebContentsUserData<CompanionTabHelper>;
+
+  // Sets the latest text query and shows the side panel with that query.
+  void SetTextQuery(const std::string& text_query);
 
   // Sets appropriate source and target language parameters and translate
   // filter.

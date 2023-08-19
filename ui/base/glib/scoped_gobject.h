@@ -66,8 +66,9 @@ class ScopedGObject {
   // This function is necessary so that gtk can overload it in
   // the case of T = GtkStyleContext.
   void Unref() {
-    if (obj_)
-      g_object_unref(obj_);
+    if (obj_) {
+      g_object_unref(obj_.ExtractAsDangling());
+    }
   }
 
   raw_ptr<T> obj_ = nullptr;

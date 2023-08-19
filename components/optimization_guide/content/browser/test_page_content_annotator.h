@@ -33,6 +33,12 @@ class TestPageContentAnnotator : public PageContentAnnotator {
       const absl::optional<ModelInfo>& model_info,
       const base::flat_map<std::string, double>& visibility_scores_for_input);
 
+  // The given text embedding is used for the matching BatchAnnotationResults
+  // by input string. If the input is not found, the output is left as nullopt.
+  void UseTextEmbeddings(const absl::optional<ModelInfo>& model_info,
+                         const base::flat_map<std::string, std::vector<float>>&
+                             text_embeddings_for_input);
+
   // When set, |Annotate| will never call its callback.
   void SetAlwaysHang(bool hang);
 
@@ -66,6 +72,9 @@ class TestPageContentAnnotator : public PageContentAnnotator {
 
   absl::optional<ModelInfo> visibility_scores_model_info_;
   base::flat_map<std::string, double> visibility_scores_for_input_;
+
+  absl::optional<ModelInfo> text_embeddings_model_info_;
+  base::flat_map<std::string, std::vector<float>> text_embeddings_for_input_;
 
   std::vector<AnnotateInputsAndType> annotation_requests_;
 

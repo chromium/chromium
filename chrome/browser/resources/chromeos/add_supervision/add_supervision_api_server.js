@@ -2,8 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {PostMessageAPIServer} from 'chrome://resources/ash/common/post_message_api/post_message_api_server.js';
+import {PostMessageApiServer} from 'chrome://resources/ash/common/post_message_api/post_message_api_server.js';
 
+import {AddSupervisionHandler} from './add_supervision.mojom-webui.js';
 import {isLocalHostForTesting} from './add_supervision_ui.js';
 
 /**
@@ -12,7 +13,7 @@ import {isLocalHostForTesting} from './add_supervision_ui.js';
  * the remote website that calls the API  is the client.  This is the opposite
  * of the normal browser/web-server client/server relationship.
  */
-export class AddSupervisionAPIServer extends PostMessageAPIServer {
+export class AddSupervisionAPIServer extends PostMessageApiServer {
   /*
    * @constructor
    * @param {!Element} ui  Polymer object add-supervision-ui
@@ -28,8 +29,7 @@ export class AddSupervisionAPIServer extends PostMessageAPIServer {
 
     this.ui_ = ui;
 
-    this.addSupervisionHandler_ =
-        addSupervision.mojom.AddSupervisionHandler.getRemote();
+    this.addSupervisionHandler_ = AddSupervisionHandler.getRemote();
 
     this.registerMethod('logOut', this.logOut.bind(this));
     this.registerMethod(
@@ -44,7 +44,7 @@ export class AddSupervisionAPIServer extends PostMessageAPIServer {
   initialize() {
     // The server cannot communicate with the mock webview used
     // in the browser test, so skip initialization during tests.
-    if (isLocalHostForTesting(this.targetURL())) {
+    if (isLocalHostForTesting(this.targetUrl())) {
       return;
     }
     super.initialize();

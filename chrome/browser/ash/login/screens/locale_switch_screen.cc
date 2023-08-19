@@ -88,8 +88,8 @@ bool LocaleSwitchScreen::MaybeSkip(WizardContext& wizard_context) {
     return false;
   }
 
-  // Switch language if logging into a public account.
-  if (user_manager::UserManager::Get()->IsLoggedInAsPublicAccount()) {
+  // Switch language if logging into a managed guest session.
+  if (user_manager::UserManager::Get()->IsLoggedInAsManagedGuestSession()) {
     return false;
   }
 
@@ -196,7 +196,7 @@ void LocaleSwitchScreen::SwitchLocale(std::string locale) {
       user_manager::UserManager::Get()->GetActiveUser();
   // Don't show notification for the ephemeral logins, proceed with the default
   // flow.
-  if (!chrome_user_manager_util::IsPublicSessionOrEphemeralLogin() &&
+  if (!chrome_user_manager_util::IsManagedGuestSessionOrEphemeralLogin() &&
       context()->is_add_person_flow &&
       base::Contains(kAddPersonUserTypes, user->GetType())) {
     VLOG(1) << "Add Person flow detected, delegating locale switch decision"

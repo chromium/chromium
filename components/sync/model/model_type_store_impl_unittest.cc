@@ -13,6 +13,8 @@
 #include "base/run_loop.h"
 #include "base/test/bind.h"
 #include "base/test/task_environment.h"
+#include "components/sync/base/model_type.h"
+#include "components/sync/base/storage_type.h"
 #include "components/sync/model/model_error.h"
 #include "components/sync/protocol/entity_metadata.pb.h"
 #include "components/sync/protocol/model_type_state.pb.h"
@@ -158,10 +160,12 @@ MATCHER_P2(RecordMatches, id, value, "") {
 
 }  // namespace
 
-class ModelTypeStoreImplTest : public testing::Test {
+class ModelTypeStoreImplTest : public testing::TestWithParam<StorageType> {
  public:
   ModelTypeStoreImplTest()
-      : store_(ModelTypeStoreTestUtil::CreateInMemoryStoreForTest()) {}
+      : store_(ModelTypeStoreTestUtil::CreateInMemoryStoreForTest(
+            PREFERENCES,
+            /*storage_type=*/GetParam())) {}
 
   ~ModelTypeStoreImplTest() override {
     if (store_) {
@@ -184,8 +188,13 @@ class ModelTypeStoreImplTest : public testing::Test {
   std::unique_ptr<ModelTypeStore> store_;
 };
 
+INSTANTIATE_TEST_SUITE_P(StorageType,
+                         ModelTypeStoreImplTest,
+                         testing::Values(StorageType::kUnspecified,
+                                         StorageType::kAccount));
+
 // Test read functions on empty store.
-TEST_F(ModelTypeStoreImplTest, ReadEmptyStore) {
+TEST_P(ModelTypeStoreImplTest, ReadEmptyStore) {
   std::unique_ptr<ModelTypeStore::RecordList> data_records;
   std::unique_ptr<MetadataBatch> metadata_batch;
   ReadStoreContents(store(), &data_records, &metadata_batch);
@@ -195,7 +204,7 @@ TEST_F(ModelTypeStoreImplTest, ReadEmptyStore) {
 }
 
 // Test that records that are written to store later can be read from it.
-TEST_F(ModelTypeStoreImplTest, WriteThenRead) {
+TEST_P(ModelTypeStoreImplTest, WriteThenRead) {
   WriteTestData();
 
   std::unique_ptr<ModelTypeStore::RecordList> data_records;
@@ -208,7 +217,7 @@ TEST_F(ModelTypeStoreImplTest, WriteThenRead) {
                  {{"id1", CreateEntityMetadata("metadata1")}});
 }
 
-TEST_F(ModelTypeStoreImplTest, WriteThenReadWithPreprocessing) {
+TEST_P(ModelTypeStoreImplTest, WriteThenReadWithPreprocessing) {
   WriteTestData();
 
   base::RunLoop loop;
@@ -236,7 +245,7 @@ TEST_F(ModelTypeStoreImplTest, WriteThenReadWithPreprocessing) {
                                    Pair("key_id2", "value_data2")));
 }
 
-TEST_F(ModelTypeStoreImplTest, WriteThenReadWithPreprocessingError) {
+TEST_P(ModelTypeStoreImplTest, WriteThenReadWithPreprocessingError) {
   WriteTestData();
 
   base::RunLoop loop;
@@ -254,7 +263,7 @@ TEST_F(ModelTypeStoreImplTest, WriteThenReadWithPreprocessingError) {
 }
 
 // Test that records that DeleteAllDataAndMetadata() deletes everything.
-TEST_F(ModelTypeStoreImplTest, WriteThenDeleteAll) {
+TEST_P(ModelTypeStoreImplTest, WriteThenDeleteAll) {
   WriteTestData();
 
   {
@@ -278,7 +287,7 @@ TEST_F(ModelTypeStoreImplTest, WriteThenDeleteAll) {
 
 // Test that if ModelTypeState is not set then ReadAllMetadata still succeeds
 // and returns entry metadata records.
-TEST_F(ModelTypeStoreImplTest, MissingModelTypeState) {
+TEST_P(ModelTypeStoreImplTest, MissingModelTypeState) {
   WriteTestData();
 
   absl::optional<ModelError> error;
@@ -302,7 +311,7 @@ TEST_F(ModelTypeStoreImplTest, MissingModelTypeState) {
 
 // Test that when reading data records by id, if one of the ids is missing
 // operation still succeeds and missing id is returned in missing_id_list.
-TEST_F(ModelTypeStoreImplTest, ReadMissingDataRecords) {
+TEST_P(ModelTypeStoreImplTest, ReadMissingDataRecords) {
   WriteTestData();
 
   absl::optional<ModelError> error;
@@ -381,6 +390,104 @@ TEST(ModelTypeStoreImplWithTwoStoreTest, DeleteAllWithSharedBackend) {
 
   WriteData(store_2.get(), "key", "data2");
   WriteMetadata(store_2.get(), "key", metadata2);
+
+  {
+    std::unique_ptr<ModelTypeStore::RecordList> data_records;
+    std::unique_ptr<MetadataBatch> metadata_batch;
+    ReadStoreContents(store_1.get(), &data_records, &metadata_batch);
+    ASSERT_THAT(*data_records, SizeIs(1));
+    ASSERT_THAT(metadata_batch, Not(IsEmptyMetadataBatch()));
+    ReadStoreContents(store_2.get(), &data_records, &metadata_batch);
+    ASSERT_THAT(*data_records, SizeIs(1));
+    ASSERT_THAT(metadata_batch, Not(IsEmptyMetadataBatch()));
+  }
+
+  store_2->DeleteAllDataAndMetadata(base::DoNothing());
+
+  {
+    std::unique_ptr<ModelTypeStore::RecordList> data_records;
+    std::unique_ptr<MetadataBatch> metadata_batch;
+    ReadStoreContents(store_1.get(), &data_records, &metadata_batch);
+    EXPECT_THAT(*data_records, SizeIs(1));
+    EXPECT_THAT(metadata_batch, Not(IsEmptyMetadataBatch()));
+    ReadStoreContents(store_2.get(), &data_records, &metadata_batch);
+    EXPECT_THAT(*data_records, IsEmpty());
+    EXPECT_THAT(metadata_batch, IsEmptyMetadataBatch());
+  }
+}
+
+TEST(ModelTypeStoreImplWithTwoStoreTest,
+     AccountStoreDeleteAllWithSharedBackendAndSameModelType) {
+  base::test::SingleThreadTaskEnvironment task_environment;
+
+  std::unique_ptr<ModelTypeStore> store_1 =
+      ModelTypeStoreTestUtil::CreateInMemoryStoreForTest(
+          PREFERENCES, StorageType::kUnspecified);
+  std::unique_ptr<ModelTypeStore> store_2 =
+      ModelTypeStoreTestUtil::CreateInMemoryStoreForTest(PREFERENCES,
+                                                         StorageType::kAccount);
+
+  const sync_pb::EntityMetadata metadata1 = CreateEntityMetadata("metadata1");
+  const sync_pb::EntityMetadata metadata2 = CreateEntityMetadata("metadata2");
+  const sync_pb::ModelTypeState state1 = CreateModelTypeState("state1");
+  const sync_pb::ModelTypeState state2 = CreateModelTypeState("state2");
+
+  WriteData(store_1.get(), "key", "data1");
+  WriteMetadata(store_1.get(), "key", metadata1);
+  WriteModelTypeState(store_1.get(), state1);
+
+  WriteData(store_2.get(), "key", "data2");
+  WriteMetadata(store_2.get(), "key", metadata2);
+  WriteModelTypeState(store_2.get(), state2);
+
+  {
+    std::unique_ptr<ModelTypeStore::RecordList> data_records;
+    std::unique_ptr<MetadataBatch> metadata_batch;
+    ReadStoreContents(store_1.get(), &data_records, &metadata_batch);
+    ASSERT_THAT(*data_records, SizeIs(1));
+    ASSERT_THAT(metadata_batch, Not(IsEmptyMetadataBatch()));
+    ReadStoreContents(store_2.get(), &data_records, &metadata_batch);
+    ASSERT_THAT(*data_records, SizeIs(1));
+    ASSERT_THAT(metadata_batch, Not(IsEmptyMetadataBatch()));
+  }
+
+  store_2->DeleteAllDataAndMetadata(base::DoNothing());
+
+  {
+    std::unique_ptr<ModelTypeStore::RecordList> data_records;
+    std::unique_ptr<MetadataBatch> metadata_batch;
+    ReadStoreContents(store_1.get(), &data_records, &metadata_batch);
+    EXPECT_THAT(*data_records, SizeIs(1));
+    EXPECT_THAT(metadata_batch, Not(IsEmptyMetadataBatch()));
+    ReadStoreContents(store_2.get(), &data_records, &metadata_batch);
+    EXPECT_THAT(*data_records, IsEmpty());
+    EXPECT_THAT(metadata_batch, IsEmptyMetadataBatch());
+  }
+}
+
+TEST(ModelTypeStoreImplWithTwoStoreTest,
+     UnspecifiedStoreDeleteAllWithSharedBackendAndSameModelType) {
+  base::test::SingleThreadTaskEnvironment task_environment;
+
+  std::unique_ptr<ModelTypeStore> store_1 =
+      ModelTypeStoreTestUtil::CreateInMemoryStoreForTest(PREFERENCES,
+                                                         StorageType::kAccount);
+  std::unique_ptr<ModelTypeStore> store_2 =
+      ModelTypeStoreTestUtil::CreateInMemoryStoreForTest(
+          PREFERENCES, StorageType::kUnspecified);
+
+  const sync_pb::EntityMetadata metadata1 = CreateEntityMetadata("metadata1");
+  const sync_pb::EntityMetadata metadata2 = CreateEntityMetadata("metadata2");
+  const sync_pb::ModelTypeState state1 = CreateModelTypeState("state1");
+  const sync_pb::ModelTypeState state2 = CreateModelTypeState("state2");
+
+  WriteData(store_1.get(), "key", "data1");
+  WriteMetadata(store_1.get(), "key", metadata1);
+  WriteModelTypeState(store_1.get(), state1);
+
+  WriteData(store_2.get(), "key", "data2");
+  WriteMetadata(store_2.get(), "key", metadata2);
+  WriteModelTypeState(store_2.get(), state2);
 
   {
     std::unique_ptr<ModelTypeStore::RecordList> data_records;

@@ -70,7 +70,7 @@ class DemoWindowDelegate : public aura::WindowDelegate {
     window_bounds_ = new_bounds;
   }
   gfx::NativeCursor GetCursor(const gfx::Point& point) override {
-    return gfx::kNullCursor;
+    return gfx::NativeCursor{};
   }
   int GetNonClientComponent(const gfx::Point& point) const override {
     return HTCAPTION;

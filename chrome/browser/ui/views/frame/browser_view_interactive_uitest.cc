@@ -10,10 +10,12 @@
 #include "chrome/browser/ui/exclusive_access/exclusive_access_manager.h"
 #include "chrome/browser/ui/exclusive_access/exclusive_access_test.h"
 #include "chrome/browser/ui/exclusive_access/fullscreen_controller.h"
+#include "chrome/browser/ui/tab_modal_confirm_dialog.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/location_bar/location_bar_view.h"
 #include "chrome/browser/ui/views/tabs/tab_strip.h"
 #include "chrome/common/pref_names.h"
+#include "chrome/grit/chromium_strings.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "content/public/browser/web_contents.h"
@@ -38,6 +40,10 @@ class BrowserViewTest : public InProcessBrowserTest {
   ~BrowserViewTest() override = default;
   BrowserViewTest(const BrowserViewTest&) = delete;
   BrowserViewTest& operator=(const BrowserViewTest&) = delete;
+
+  BrowserView* browser_view() {
+    return BrowserView::GetBrowserViewForBrowser(browser());
+  }
 
   void SetUpOnMainThread() override {
 #if BUILDFLAG(IS_MAC)
@@ -366,3 +372,49 @@ IN_PROC_BROWSER_TEST_F(BrowserViewTestWithStopLoadingAnimationForHiddenWindow,
   navigation_watcher.Wait();
   EXPECT_FALSE(browser()->tab_strip_model()->TabsAreLoading());
 }
+
+// On Mac, voiceover treats tab modal dialogs as native windows, so setting an
+// accessible title for tab-modal dialogs is not necessary.
+#if !BUILDFLAG(IS_MAC)
+
+namespace {
+
+class TestTabModalConfirmDialogDelegate : public TabModalConfirmDialogDelegate {
+ public:
+  explicit TestTabModalConfirmDialogDelegate(content::WebContents* contents)
+      : TabModalConfirmDialogDelegate(contents) {}
+
+  TestTabModalConfirmDialogDelegate(const TestTabModalConfirmDialogDelegate&) =
+      delete;
+  TestTabModalConfirmDialogDelegate& operator=(
+      const TestTabModalConfirmDialogDelegate&) = delete;
+
+  std::u16string GetTitle() override { return std::u16string(u"Dialog Title"); }
+  std::u16string GetDialogMessage() override { return std::u16string(); }
+};
+
+}  // namespace
+
+// Open a tab-modal dialog and check that the accessible window title is the
+// title of the dialog. The accessible window title is based on the focused
+// dialog and this dependency on focus is why this is an interactive ui test.
+IN_PROC_BROWSER_TEST_F(BrowserViewTest, GetAccessibleTabModalDialogTitle) {
+  std::u16string window_title =
+      u"about:blank - " + l10n_util::GetStringUTF16(IDS_PRODUCT_NAME);
+  EXPECT_TRUE(base::StartsWith(browser_view()->GetAccessibleWindowTitle(),
+                               window_title, base::CompareCase::SENSITIVE));
+
+  content::WebContents* contents = browser_view()->GetActiveWebContents();
+  auto delegate = std::make_unique<TestTabModalConfirmDialogDelegate>(contents);
+  TestTabModalConfirmDialogDelegate* delegate_observer = delegate.get();
+  TabModalConfirmDialog::Create(std::move(delegate), contents);
+  EXPECT_EQ(browser_view()->GetAccessibleWindowTitle(),
+            delegate_observer->GetTitle());
+
+  delegate_observer->Close();
+
+  EXPECT_TRUE(base::StartsWith(browser_view()->GetAccessibleWindowTitle(),
+                               window_title, base::CompareCase::SENSITIVE));
+}
+
+#endif

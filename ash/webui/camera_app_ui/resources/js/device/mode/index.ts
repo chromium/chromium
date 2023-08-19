@@ -37,15 +37,11 @@ import {
   VideoHandler,
 } from './video.js';
 
-export {PhotoHandler, PhotoResult} from './photo.js';
-export {getDefaultScanCorners, ScanHandler} from './scan.js';
-export {
-  GifResult,
-  setAvc1Parameters,
-  Video,
-  VideoHandler,
-  VideoResult,
-} from './video.js';
+export type{PhotoHandler, PhotoResult} from './photo.js';
+export {getDefaultScanCorners} from './scan.js';
+export type{ScanHandler} from './scan.js';
+export {setAvc1Parameters, Video} from './video.js';
+export type{GifResult, VideoHandler, VideoResult} from './video.js';
 
 /**
  * Callback to trigger mode switching. Should return whether mode switching
@@ -72,7 +68,7 @@ interface CaptureParams {
 interface ModeConfig {
   /**
    * @return Resolves to boolean indicating whether the mode is supported by
-   *     video device with specified device id.
+   *     video device with specified `deviceId`.
    */
   isSupported(deviceId: string|null): Promise<boolean>;
 
@@ -128,7 +124,7 @@ export class Modes {
     }
 
     /**
-     * Prepare the device for the specific resolution and capture intent.
+     * Prepares the device for the specific `resolution` and `captureIntent`.
      */
     async function prepareDeviceForPhoto(
         constraints: StreamConstraints, resolution: Resolution,
@@ -277,7 +273,7 @@ export class Modes {
   }
 
   /**
-   * Gets factory to create mode capture object.
+   * Gets factory to create `mode` capture object.
    */
   getModeFactory(mode: Mode): ModeFactory {
     return this.allModes[mode].getCaptureFactory();
@@ -350,8 +346,6 @@ export class Modes {
 
   /**
    * Checks whether to save image metadata or not.
-   *
-   * @return Promise for the operation.
    */
   private async updateSaveMetadata(): Promise<void> {
     if (expert.isEnabled(expert.ExpertOption.SAVE_METADATA)) {
@@ -363,8 +357,6 @@ export class Modes {
 
   /**
    * Enables save metadata of subsequent photos in the current mode.
-   *
-   * @return Promise for the operation.
    */
   private async enableSaveMetadata(): Promise<void> {
     if (this.current !== null) {

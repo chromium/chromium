@@ -109,10 +109,8 @@ class CORE_EXPORT PointerEventManager final
   // function.
   WebInputEventResult FlushEvents();
 
-  // Returns the id of the pointer event corresponding to the given pointer
-  // properties if exists otherwise s_invalidId.
-  int GetPointerEventId(
-      const WebPointerProperties& web_pointer_properties) const;
+  // See `PointerEventFactory::GetPointerIdForTouchGesture`.
+  PointerId GetPointerIdForTouchGesture(const uint32_t unique_touch_event_id);
 
   Element* CurrentTouchDownElement();
 
@@ -262,7 +260,7 @@ class CORE_EXPORT PointerEventManager final
   const Member<LocalFrame> frame_;
 
   WeakMember<PaintLayerScrollableArea> resize_scrollable_area_;
-  LayoutSize offset_from_resize_corner_;
+  gfx::Vector2d offset_from_resize_corner_;
 
   // Prevents firing mousedown, mousemove & mouseup in-between a canceled
   // pointerdown and next pointerup/pointercancel.
@@ -299,6 +297,11 @@ class CORE_EXPORT PointerEventManager final
   // main thread, or all events (touch start/end/move).
   bool skip_touch_filter_discrete_ = false;
   bool skip_touch_filter_all_ = false;
+
+  struct {
+    DOMNodeId target = kInvalidDOMNodeId;
+    base::TimeTicks time;
+  } discarded_event_;
 
   WeakMember<Scrollbar> captured_scrollbar_;
 };

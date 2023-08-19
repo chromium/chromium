@@ -14,11 +14,15 @@
 #include <vector>
 
 #include "ash/constants/ash_paths.h"
+#include "ash/constants/ash_pref_names.h"
 #include "ash/constants/ash_switches.h"
+#include "ash/display/display_prefs.h"
+#include "ash/display/screen_orientation_controller_test_api.h"
 #include "ash/public/cpp/login_screen_test_api.h"
 #include "ash/shell.h"
 #include "ash/system/session/logout_confirmation_controller.h"
 #include "ash/system/session/logout_confirmation_dialog.h"
+#include "base/allocator/partition_allocator/pointers/raw_ptr.h"
 #include "base/command_line.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
@@ -36,7 +40,6 @@
 #include "base/strings/stringprintf.h"
 #include "base/synchronization/lock.h"
 #include "base/test/gtest_tags.h"
-#include "base/test/repeating_test_future.h"
 #include "base/test/simple_test_clock.h"
 #include "base/test/test_future.h"
 #include "base/threading/thread_restrictions.h"
@@ -123,6 +126,7 @@
 #include "components/policy/policy_constants.h"
 #include "components/policy/proto/chrome_device_policy.pb.h"
 #include "components/prefs/pref_service.h"
+#include "components/prefs/scoped_user_pref_update.h"
 #include "components/session_manager/core/session_manager.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/user_manager/user.h"
@@ -154,7 +158,11 @@
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/window_open_disposition.h"
 #include "ui/display/display.h"
+#include "ui/display/manager/display_manager.h"
+#include "ui/display/manager/managed_display_info.h"
 #include "ui/display/screen.h"
+#include "ui/display/test/display_manager_test_api.h"
+#include "ui/display/types/display_constants.h"
 #include "ui/gfx/image/image_skia.h"
 #include "ui/views/widget/widget.h"
 #include "url/gurl.h"
@@ -318,13 +326,15 @@ TestingUpdateManifestProvider::HandleRequest(
     const net::test_server::HttpRequest& request) {
   base::AutoLock auto_lock(lock_);
   const GURL url("http://localhost" + request.relative_url);
-  if (url.path() != relative_update_url_)
+  if (url.path() != relative_update_url_) {
     return nullptr;
+  }
 
   std::vector<extensions::UpdateManifestItem> update_manifest;
   for (net::QueryIterator it(url); !it.IsAtEnd(); it.Advance()) {
-    if (it.GetKey() != "x")
+    if (it.GetKey() != "x") {
       continue;
+    }
     // Extract the extension id from the subquery. Since GetValueForKeyInQuery()
     // expects a complete URL, dummy scheme and host must be prepended.
     std::string id;
@@ -359,9 +369,8 @@ const base::Value* RefreshAndWaitForPolicies(
     policy::PolicyService* policy_service,
     const policy::PolicyNamespace& ns) {
   PolicyChangeRegistrar policy_registrar(policy_service, ns);
-  base::test::RepeatingTestFuture<const base::Value*, const base::Value*>
-      future;
-  policy_registrar.Observe("string", future.GetCallback());
+  TestFuture<const base::Value*, const base::Value*> future;
+  policy_registrar.Observe("string", future.GetRepeatingCallback());
   policy_service->RefreshPolicies(base::OnceClosure());
   return std::get<1>(future.Take());
 }
@@ -400,6 +409,8 @@ class DeviceLocalAccountTest : public DevicePolicyCrosBrowserTest,
       "screenplay-91d50c4f-f526-4fad-a04d-5c9e1a90fb2b";
   static constexpr char kSessionLengthLimitTag[] =
       "screenplay-a91d99d7-8ea0-4ec7-9c64-bc614a759d02";
+  static constexpr char kDisplayPrefsTag[] =
+      "screenplay-5476f7ac-a3c2-47ad-865f-62ff31374865";
 
   DeviceLocalAccountTest()
       : public_session_input_method_id_(
@@ -448,8 +459,9 @@ class DeviceLocalAccountTest : public DevicePolicyCrosBrowserTest,
     ASSERT_TRUE(oobe_ui);
     base::RunLoop run_loop;
     const bool oobe_ui_ready = oobe_ui->IsJSReady(run_loop.QuitClosure());
-    if (!oobe_ui_ready)
+    if (!oobe_ui_ready) {
       run_loop.Run();
+    }
 
     // Skip to the login screen.
     ash::OobeScreenWaiter(ash::OobeBaseTest::GetFirstSigninScreen()).Wait();
@@ -466,25 +478,29 @@ class DeviceLocalAccountTest : public DevicePolicyCrosBrowserTest,
 
   // user_manager::UserManager::Observer:
   void LocalStateChanged(user_manager::UserManager* user_manager) override {
-    if (local_state_changed_run_loop_)
+    if (local_state_changed_run_loop_) {
       local_state_changed_run_loop_->Quit();
+    }
   }
 
   // BrowserListObserver:
   void OnBrowserRemoved(Browser* browser) override {
-    if (run_loop_)
+    if (run_loop_) {
       run_loop_->Quit();
+    }
   }
 
   // extensions::AppWindowRegistry::Observer:
   void OnAppWindowAdded(extensions::AppWindow* app_window) override {
-    if (run_loop_)
+    if (run_loop_) {
       run_loop_->Quit();
+    }
   }
 
   void OnAppWindowRemoved(extensions::AppWindow* app_window) override {
-    if (run_loop_)
+    if (run_loop_) {
       run_loop_->Quit();
+    }
   }
 
   void InitializePolicy() {
@@ -658,8 +674,9 @@ class DeviceLocalAccountTest : public DevicePolicyCrosBrowserTest,
   }
 
   void WaitForSessionStart() {
-    if (IsSessionStarted())
+    if (IsSessionStarted()) {
       return;
+    }
     if (ash::WizardController::default_controller()) {
       ash::WizardController::default_controller()
           ->SkipPostLoginScreensForTesting();
@@ -683,8 +700,9 @@ class DeviceLocalAccountTest : public DevicePolicyCrosBrowserTest,
             language_code, ash::input_method::kKeyboardLayoutsOnly,
             &layouts_from_locale);
     EXPECT_FALSE(layouts_from_locale.empty());
-    if (layouts_from_locale.empty())
+    if (layouts_from_locale.empty()) {
       return std::string();
+    }
     return layouts_from_locale.front();
   }
   void VerifyKeyboardLayoutMatchesLocale() {
@@ -773,14 +791,16 @@ class ExtensionInstallObserver : public ProfileManagerObserver,
   ExtensionInstallObserver& operator=(const ExtensionInstallObserver&) = delete;
 
   ~ExtensionInstallObserver() override {
-    if (registry_ != nullptr)
+    if (registry_ != nullptr) {
       registry_->RemoveObserver(this);
+    }
   }
 
   // Wait until an extension with |extension_id| is installed.
   void Wait() {
-    if (!observed_)
+    if (!observed_) {
       run_loop_.Run();
+    }
   }
 
  private:
@@ -798,8 +818,9 @@ class ExtensionInstallObserver : public ProfileManagerObserver,
   // ProfileManagerObserver:
   void OnProfileAdded(Profile* profile) override {
     // Ignore lock screen apps profile.
-    if (ash::ProfileHelper::IsLockScreenAppProfile(profile))
+    if (ash::ProfileHelper::IsLockScreenAppProfile(profile)) {
       return;
+    }
     registry_ = extensions::ExtensionRegistry::Get(profile);
     profile_manager_observer_.Reset();
 
@@ -1001,8 +1022,9 @@ IN_PROC_BROWSER_TEST_F(DeviceLocalAccountTest, StartSession) {
       SessionStartupPref::kPrefValueURLs);
   em::StringListPolicyProto* startup_urls_proto =
       device_local_account_policy_.payload().mutable_restoreonstartupurls();
-  for (size_t i = 0; i < std::size(kStartupURLs); ++i)
+  for (size_t i = 0; i < std::size(kStartupURLs); ++i) {
     startup_urls_proto->mutable_value()->add_entries(kStartupURLs[i]);
+  }
   UploadAndInstallDeviceLocalAccountPolicy();
   AddPublicSessionToDevicePolicy(kAccountId1);
 
@@ -1341,8 +1363,9 @@ IN_PROC_BROWSER_TEST_F(DeviceLocalAccountTest, ExternalData) {
       [](const base::RepeatingClosure& quit_closure,
          const net::test_server::HttpRequest& request)
           -> std::unique_ptr<net::test_server::HttpResponse> {
-        if (request.relative_url != kExternalDataPath)
+        if (request.relative_url != kExternalDataPath) {
           return nullptr;
+        }
 
         auto response = std::make_unique<net::test_server::BasicHttpResponse>();
         response->set_content(kExternalData);
@@ -1810,8 +1833,9 @@ IN_PROC_BROWSER_TEST_F(DeviceLocalAccountTest, MultipleRecommendedLocales) {
   // Verify that the recommended locales do not appear again in the remainder of
   // the list.
   std::set<std::string> recommended_locales;
-  for (size_t i = 0; i < std::size(kRecommendedLocales1); ++i)
+  for (size_t i = 0; i < std::size(kRecommendedLocales1); ++i) {
     recommended_locales.insert(kRecommendedLocales1[i]);
+  }
   for (size_t i = std::size(kRecommendedLocales1); i < locales.size(); ++i) {
     const std::string& locale = locales[i].language_code;
     EXPECT_EQ(recommended_locales.end(), recommended_locales.find(locale));
@@ -2655,6 +2679,137 @@ IN_PROC_BROWSER_TEST_P(TermsOfServiceDownloadTest, DeclineTermsOfService) {
 
 INSTANTIATE_TEST_SUITE_P(TermsOfServiceDownloadTestInstance,
                          TermsOfServiceDownloadTest,
+                         testing::Bool());
+
+// Tests that display prefs are updated in MGS when enabled by
+// DeviceAllowMGSToStoreDisplayProperties policy.
+class MgsDisplayPrefsTest : public DeviceLocalAccountTest,
+                            public testing::WithParamInterface<bool> {
+ protected:
+  void SetUpOnMainThread() override {
+    DeviceLocalAccountTest::SetUpOnMainThread();
+    local_state_ = g_browser_process->local_state();
+    ASSERT_TRUE(local_state_);
+  }
+
+  void TearDownOnMainThread() override {
+    DeviceLocalAccountTest::TearDownOnMainThread();
+    local_state_ = nullptr;
+  }
+
+  void SetUpAndWaitForSessionStart() {
+    UploadAndInstallDeviceLocalAccountPolicy();
+    AddPublicSessionToDevicePolicy(kAccountId1);
+    WaitForPolicy();
+
+    ASSERT_NO_FATAL_FAILURE(StartLogin(std::string(), std::string()));
+    WaitForSessionStart();
+  }
+
+  void SetAllowMgsToStoreDisplayProperties(bool allowed) {
+    local_state_->SetBoolean(ash::prefs::kAllowMGSToStoreDisplayProperties,
+                             allowed);
+  }
+
+  bool IsMgsAllowedToStoreDisplayProperties() { return GetParam(); }
+
+  const base::Value::Dict* GetDisplayProperties() {
+    const base::Value::Dict& display_properties =
+        local_state_->GetDict(ash::prefs::kDisplayProperties);
+    return display_properties.FindDict(
+        base::NumberToString(GetPrimaryDisplay().id()));
+  }
+
+  void UpdateDisplayProperties(base::Value::Dict properties) {
+    ScopedDictPrefUpdate update(local_state_, ash::prefs::kDisplayProperties);
+    update->Set(base::NumberToString(GetPrimaryDisplay().id()),
+                std::move(properties));
+  }
+
+  static void UpdateDisplay(const std::string& display_specs) {
+    display::test::DisplayManagerTestApi(GetDisplayManager())
+        .UpdateDisplay(display_specs);
+    ash::ScreenOrientationControllerTestApi(
+        ash::Shell::Get()->screen_orientation_controller())
+        .UpdateNaturalOrientation();
+  }
+
+  static const display::Display& GetPrimaryDisplay() {
+    return GetDisplayManager()->GetPrimaryDisplayCandidate();
+  }
+
+  static const display::ManagedDisplayMode GetManagedDisplayMode() {
+    display::ManagedDisplayMode display_mode;
+    GetDisplayManager()->GetSelectedModeForDisplayId(GetPrimaryDisplay().id(),
+                                                     &display_mode);
+    return display_mode;
+  }
+
+  static ash::DisplayPrefs* GetDisplayPrefs() {
+    return ash::Shell::Get()->display_prefs();
+  }
+
+  static display::DisplayManager* GetDisplayManager() {
+    return ash::Shell::Get()->display_manager();
+  }
+
+ private:
+  raw_ptr<PrefService> local_state_;
+};
+
+IN_PROC_BROWSER_TEST_P(MgsDisplayPrefsTest,
+                       PRE_DisplayPropertiesPersistWhenEnabledByPolicy) {
+  // Set initial values for the display which will be loaded from `local_state`
+  // by `display_prefs`.
+  SetAllowMgsToStoreDisplayProperties(true);
+  // This adds one display with maximum resolution 1960x1000 and two display
+  // modes with resolution 1960x1000 and 1000x600.
+  UpdateDisplay("1960x1000#1960x1000*1|1000x600*2");
+  UpdateDisplayProperties(
+      base::Value::Dict()
+          .Set("rotation", display::Display::Rotation::ROTATE_0)
+          .Set("width", 1960)
+          .Set("height", 1000));
+  GetDisplayPrefs()->LoadDisplayPrefsForTest();
+
+  SetUpAndWaitForSessionStart();
+
+  // Verify initial display pref values.
+  EXPECT_EQ(display::Display::Rotation::ROTATE_0,
+            GetPrimaryDisplay().rotation());
+  EXPECT_EQ(GetManagedDisplayMode().size(), gfx::Size(1960, 1000));
+  EXPECT_EQ(GetManagedDisplayMode().device_scale_factor(), 1.0f);
+
+  SetAllowMgsToStoreDisplayProperties(IsMgsAllowedToStoreDisplayProperties());
+
+  EXPECT_TRUE(display::test::SetDisplayResolution(
+      GetDisplayManager(), GetPrimaryDisplay().id(), gfx::Size(1000, 600)));
+  GetDisplayManager()->SetDisplayRotation(
+      GetPrimaryDisplay().id(), display::Display::Rotation::ROTATE_270,
+      display::Display::RotationSource::USER);
+}
+
+IN_PROC_BROWSER_TEST_P(MgsDisplayPrefsTest,
+                       DisplayPropertiesPersistWhenEnabledByPolicy) {
+  base::AddFeatureIdTagToTestResult(DeviceLocalAccountTest::kDisplayPrefsTag);
+
+  GetDisplayPrefs()->LoadDisplayPrefsForTest();
+
+  if (IsMgsAllowedToStoreDisplayProperties()) {
+    EXPECT_EQ(GetPrimaryDisplay().rotation(),
+              display::Display::Rotation::ROTATE_270);
+    EXPECT_EQ(GetManagedDisplayMode().size(), gfx::Size(1000, 600));
+    EXPECT_EQ(GetManagedDisplayMode().device_scale_factor(), 2.0f);
+  } else {
+    EXPECT_EQ(GetPrimaryDisplay().rotation(),
+              display::Display::Rotation::ROTATE_0);
+    EXPECT_EQ(GetManagedDisplayMode().size(), gfx::Size(1960, 1000));
+    EXPECT_EQ(GetManagedDisplayMode().device_scale_factor(), 1.0f);
+  }
+}
+
+INSTANTIATE_TEST_SUITE_P(MgsDisplayPrefsTestInstance,
+                         MgsDisplayPrefsTest,
                          testing::Bool());
 
 IN_PROC_BROWSER_TEST_F(DeviceLocalAccountTest, WebAppsInPublicSession) {

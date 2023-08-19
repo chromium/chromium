@@ -35,8 +35,10 @@
 <translation id="1280820357415527819">Ieškoma mobiliojo ryšio tinklų</translation>
 <translation id="1293556467332435079">Failai</translation>
 <translation id="1297922636971898492">„Google“ diskas dabar nepasiekiamas. Įkėlimas bus iš naujo pradėtas automatiškai, kai „Google“ diskas bus vėl pasiekiamas.</translation>
+<translation id="1306130176943817227">Nepavyksta ištrinti. Elementas naudojamas.</translation>
 <translation id="1307931752636661898">Nepavyko peržiūrėti „Linux“ failų</translation>
 <translation id="1313405956111467313">Automatinė tarpinio serverio konfigūracija</translation>
+<translation id="134645005685694099">Įrenginyje nėra pakankamai saugyklos vietos, kad būtų įjungtas failų sinchronizavimas. Nauji failai nebebus sinchronizuojami automatiškai.</translation>
 <translation id="1353686479385938207">„<ph name="PROVIDER_NAME" />“: „<ph name="NETWORK_NAME" />“</translation>
 <translation id="1358735829858566124">Failas arba katalogas nenaudojamas.</translation>
 <translation id="1363028406613469049">Takelis</translation>
@@ -113,7 +115,6 @@
 <translation id="1920798810075583923">Arbūzas</translation>
 <translation id="1924372192547904021">Suformatuota: „<ph name="DRIVE_NAME" />“</translation>
 <translation id="1931134289871235022">Slovakų</translation>
-<translation id="1933345018156373194">Nepavyko perkelti, netikėta klaida: <ph name="ERROR_MESSAGE" /></translation>
 <translation id="1936717151811561466">Suomių</translation>
 <translation id="1942765061641586207">Vaizdo skyra</translation>
 <translation id="1972984168337863910">Išskleisti failų atsiliepimų skydelius</translation>
@@ -130,7 +131,7 @@
 <translation id="2084108471225856927">Įrenginio nustatymai</translation>
 <translation id="2084809735218147718">Rašoma „ačiū“</translation>
 <translation id="2088690981887365033">VPN tinklas</translation>
-<translation id="2089751716171649322">Lengvai pasiekite „Google“ disko failus neprisijungę</translation>
+<translation id="209653272837065803">Nepakanka saugyklos vietos, kad būtų galima toliau sinchronizuoti failus</translation>
 <translation id="2111134541987263231">Įjunkite parinktį <ph name="BEGIN_BOLD" />Leisti inkognito režimu<ph name="END_BOLD" />.</translation>
 <translation id="2114191879048183086">Elementai (iš viso: <ph name="NUMBER_OF_ITEMS" />) bus ištrinti ir nebegalėsite jų atkurti.</translation>
 <translation id="2122305276694332719">Automatiškai susiejus su paslėptu tinklu kiti gali matyti jūsų įrenginį ir kai kuriuos tinklo nustatymus (nerekomenduojama).</translation>
@@ -147,9 +148,11 @@
 <translation id="2198315389084035571">Supaprastinta kinų k.</translation>
 <translation id="22085916256174561">Korėjiečių k.</translation>
 <translation id="2208919847696382164">Diegimas naudojant „Linux“</translation>
+<translation id="2215692307449050019">Akumuliatorius senka. Failų sinchronizavimas bus atnaujintas, kai prisijungsite prie maitinimo šaltinio.</translation>
 <translation id="2225536596944493418">Ar tikrai norite ištrinti <ph name="NUMBER_OF_ITEMS" /> element.?</translation>
 <translation id="2230062665678605299">Nepavyko sukurti aplanko „<ph name="FOLDER_NAME" />“. <ph name="ERROR_MESSAGE" /></translation>
 <translation id="2239068707900391003">Žmogus su kava</translation>
+<translation id="2247561763838186830">Buvote atjungtas (-a)</translation>
 <translation id="2251368349685848079">Atkurti iš šiukšliadėžės</translation>
 <translation id="2278133026967558505">Visų svetainių ir URL prieiga prie failų</translation>
 <translation id="2282155092769082568">Automatinės konfigūracijos URL:</translation>
@@ -163,7 +166,7 @@
 <translation id="2312704192806647271">{COUNT,plural, =1{Nepavyko rasti plėtinio, kurio ID <ph name="BEGIN_LIST" /><ph name="END_LIST" />. Susisiekite su administratoriumi.}one{Nepavyko rasti plėtinių, kurių ID <ph name="BEGIN_LIST" /><ph name="END_LIST" />. Susisiekite su administratoriumi.}few{Nepavyko rasti plėtinių, kurių ID <ph name="BEGIN_LIST" /><ph name="END_LIST" />. Susisiekite su administratoriumi.}many{Nepavyko rasti plėtinių, kurių ID <ph name="BEGIN_LIST" /><ph name="END_LIST" />. Susisiekite su administratoriumi.}other{Nepavyko rasti plėtinių, kurių ID <ph name="BEGIN_LIST" /><ph name="END_LIST" />. Susisiekite su administratoriumi.}}</translation>
 <translation id="2325650632570794183">Šio tipo failas nepalaikomas. Apsilankykite „Chrome“ internetinėje parduotuvėje ir suraskite programą, kurią naudojant galima atidaryti šio tipo failą.</translation>
 <translation id="2326539130272988168">Bulgarų k.</translation>
-<translation id="2337715497728194187">Bendrinti su „Bruschetta“</translation>
+<translation id="233822363739146957">Nepakanka saugyklos vietos, kad būtų galima sinchronizuoti visus failus</translation>
 <translation id="23721837607121582">Atsisiųsti mobiliojo ryšio tinklo profilį; <ph name="NETWORK_INDEX" /> tinklas iš <ph name="NETWORK_COUNT" />, „<ph name="NETWORK_NAME" />“</translation>
 <translation id="2377319039870049694">Perjungti į sąrašo rodinį</translation>
 <translation id="2377590462528165447">Su „Linux“ bendrinamų aplankų: <ph name="NUMBER_OF_ITEMS" /></translation>
@@ -181,6 +184,7 @@
 <translation id="2464089476039395325">HTTP tarpinis serveris</translation>
 <translation id="2467267713099745100">Tinklas: <ph name="NETWORK_TYPE" />, išjungta</translation>
 <translation id="2468402215065996499">Tamagočis</translation>
+<translation id="2468470447085858632">Galimybė pasiekti „Google“ disko failus neprisijungus naudojant failų sinchronizavimo funkciją</translation>
 <translation id="2470939964922472929">Per daug kartų įvestas netinkamas PIN kodas. Jei norite nustatyti naują PIN kodą, įveskite operatoriaus pateiktą aštuonių skaitmenų asmeninį blokavimo panaikinimo raktą (PUK kodą).</translation>
 <translation id="2500392669976258912">Gudžaratų k. fonetinė</translation>
 <translation id="2515586267016047495">Alt</translation>
@@ -192,7 +196,6 @@
 <translation id="2544853746127077729">Autentifikavimo sertifikatą atmetė tinklas</translation>
 <translation id="255937426064304553">JAV tarptautinė</translation>
 <translation id="2563185590376525700">Varlė</translation>
-<translation id="2574327434504608656">Vienas aplankas bendrinamas su „Bruschetta“</translation>
 <translation id="2578394532502990878">Tamilų k. fonetinė</translation>
 <translation id="2579959351793446050">Orijų k.</translation>
 <translation id="2587195714949534472">Ruošiamasi sinchronizuoti „<ph name="FILE_NAME" />“...</translation>
@@ -216,6 +219,7 @@
 <translation id="2782104745158847185">Įdiegiant „Linux“ programą įvyko klaida</translation>
 <translation id="2802583107108007218">Sužinokite daugiau apie šiuos apribojimus</translation>
 <translation id="2803375539583399270">Įveskite PIN kodą</translation>
+<translation id="2819519502129272135">Failų sinchronizavimas išjungtas</translation>
 <translation id="2820957248982571256">Nuskaitoma...</translation>
 <translation id="2830077785865012357">Kinų k. „Zhuyin“</translation>
 <translation id="2843806747483486897">Keisti numatytąjį...</translation>
@@ -291,7 +295,6 @@
 <translation id="3408072735282270043">Suaktyvinti „<ph name="NETWORK_NAME" />“</translation>
 <translation id="3408236822532681288">Vokiečių k. (Vokietija) su „Neo 2“ klaviatūra</translation>
 <translation id="3414856743105198592">Formatuojant keičiamąją mediją visi duomenys bus ištrinti. Ar norite tęsti?</translation>
-<translation id="3435143625481187092">Suteikti „Bruschetta“ leidimą pasiekti failus aplanke „<ph name="FOLDER_NAME" />“</translation>
 <translation id="3437801641691368414">Sukūrimo laikas</translation>
 <translation id="343907260260897561">Momentinis fotoaparatas</translation>
 <translation id="3455931012307786678">Estų k.</translation>
@@ -299,7 +302,6 @@
 <translation id="3479552764303398839">Ne dabar</translation>
 <translation id="3486821258960016770">Mongolų k.</translation>
 <translation id="3495304270784461826">Klaidų: <ph name="COUNT" />.</translation>
-<translation id="3501954296166022751">Jūsų „Google“ disko failai pasiekiami neprisijungus</translation>
 <translation id="3509680540198371098"><ph name="NETWORK_INDEX" /> tinklas iš <ph name="NETWORK_COUNT" />, „<ph name="NETWORK_NAME" />“, <ph name="SECURITY_STATUS" />, <ph name="CONNECTION_STATUS" />, signalo stiprumas <ph name="SIGNAL_STRENGTH" /> %, išsami informacija</translation>
 <translation id="3511705761158917664">Ruošiamasi sinchronizuoti <ph name="NUMBER_OF_ITEMS" /> elem...</translation>
 <translation id="3522708245912499433">Portugalų</translation>
@@ -356,8 +358,10 @@
 <translation id="3906232975181435906">Įdiegiamas mobiliojo ryšio profilis, <ph name="NETWORK_INDEX" /> tinklas iš <ph name="NETWORK_COUNT" />, „<ph name="NETWORK_NAME" />“</translation>
 <translation id="3924145049010392604">Meta</translation>
 <translation id="3943857333388298514">Įklijuoti</translation>
+<translation id="3950820424414687140">Prisijungti</translation>
 <translation id="3952872973865944257">Telugų k. fonetinė</translation>
 <translation id="3958548648197196644">Kivis</translation>
+<translation id="397105322502079400">Skaičiuojama...</translation>
 <translation id="3971140002794351170">Atsisiųsti mobiliojo ryšio tinklo profilį; <ph name="NETWORK_INDEX" /> tinklas iš <ph name="NETWORK_COUNT" />, „<ph name="NETWORK_NAME" />“, „<ph name="NETWORK_PROVIDER_NAME" />“</translation>
 <translation id="3973925058222872294">Anglų k. (JK)</translation>
 <translation id="3975895378829046965">Bengalų k. fonetinė</translation>
@@ -368,6 +372,7 @@
 <translation id="4040753847560036377">Netinkamas PUK kodas</translation>
 <translation id="4057991113334098539">Aktyvinama...</translation>
 <translation id="4092890906744441904">Airių k.</translation>
+<translation id="4124731372776320263">Sinchronizuojamas vienas Disko failas</translation>
 <translation id="4124935795427217608">Vienaragis</translation>
 <translation id="4131235941541910880">Perkelkite nereikalingus elementus į šiukšliadėžę</translation>
 <translation id="4134804435730168042"><ph name="NETWORK_INDEX" /> tinklas iš <ph name="NETWORK_COUNT" />, „<ph name="NETWORK_NAME" />“, „<ph name="NETWORK_PROVIDER_NAME" />“, aktyvinti nustačius įrenginį</translation>
@@ -377,7 +382,6 @@
 <translation id="4159731583141908892">Perkelta: <ph name="FILE_NAME" />.</translation>
 <translation id="4176286497474237543">Ištuštinti šiukšliadėžę dabar</translation>
 <translation id="4179621117429069925">Šis elementas yra jūsų šiukšliadėžėje</translation>
-<translation id="4181839429935094755">Su „Bruschetta“ bendrinamų aplankų: <ph name="NUMBER_OF_ITEMS" /></translation>
 <translation id="4186579485882418952">Įgalinti prieigą neprisijungus</translation>
 <translation id="4193154014135846272">„Google“ dokumentas</translation>
 <translation id="4197674956721858839">„Zip“ archyvo failų pasirinkimas</translation>
@@ -417,6 +421,7 @@
 <translation id="4432921877815220091"><ph name="NETWORK_INDEX" /> tinklas iš <ph name="NETWORK_COUNT" />, „<ph name="NETWORK_NAME" />“, aktyvinti nustačius įrenginį, tvarko administratorius</translation>
 <translation id="4439427728133035643"><ph name="NETWORK_INDEX" /> tinklas iš <ph name="NETWORK_COUNT" />, „<ph name="NETWORK_NAME" />“, signalo stiprumas <ph name="SIGNAL_STRENGTH" /> %, prisijungti</translation>
 <translation id="4442424173763614572">Įvyko DNS paieškos klaida</translation>
+<translation id="4445896958353114391">Sinchronizuojami failai</translation>
 <translation id="4462159676511157176">Tinkintų pavadinimų serveriai</translation>
 <translation id="4465725236958772856"><ph name="NETWORK_INDEX" /> tinklas iš <ph name="NETWORK_COUNT" />, „<ph name="NETWORK_NAME" />“, tvarko administratorius, prisijungti</translation>
 <translation id="4470564870223067757">Hangul 2 rinkinys</translation>
@@ -438,11 +443,11 @@
 <translation id="4599600860674643278">Filtras nustatytas iš naujo.</translation>
 <translation id="4603392156942865207">Failas „<ph name="FILE_NAME" />“ kopijuojamas į aplanką „<ph name="FOLDER_NAME" />“</translation>
 <translation id="4631887759990505102">Atlikėjas</translation>
+<translation id="4635373743001040938">Saugykloje liko labai mažai vietos. Failų sinchronizavimas išjungtas.</translation>
 <translation id="4642769377300286600">Įdiegiamas mobiliojo ryšio profilis, <ph name="NETWORK_INDEX" /> tinklas iš <ph name="NETWORK_COUNT" />, „<ph name="NETWORK_NAME" />“, „<ph name="NETWORK_PROVIDER_NAME" />“</translation>
 <translation id="4646813851450205600">Čekų k. su „Qwerty“ klaviatūra</translation>
 <translation id="4656777537938206294">Leidimas pasiekti failus neprisijungus</translation>
 <translation id="4658782175094886150">Žmogus sniege</translation>
-<translation id="466782788172479199">Suteikite „Bruschetta“ leidimą pasiekti failus „Google“ diske. Pakeitimai bus sinchronizuoti su kitais jūsų įrenginiais.</translation>
 <translation id="4669606053856530811">„<ph name="SOURCE_NAME" />“ nariai praras prieigą, nebent šie elementai bus bendrinami su jais.</translation>
 <translation id="467809019005607715">„Google“ skaidrės</translation>
 <translation id="4690246192099372265">Švedų</translation>
@@ -491,8 +496,8 @@
 <translation id="4961158930123534723">Vienas aplankas bendrinamas su „Parallels Desktop“</translation>
 <translation id="496656650103537022">„<ph name="FILE_NAME" />“ atkurtas</translation>
 <translation id="4969785127455456148">Albumas</translation>
+<translation id="4972330214479971536">Nepavyko užbaigti failų sinchronizavimo sąrankos</translation>
 <translation id="4973523518332075481">Naudokite pavadinimą, sudarytą iš <ph name="MAX_LENGTH" /> ar mažiau simbolių</translation>
-<translation id="4973970068702235170">Archyvuojant įvyko netikėta klaida: <ph name="ERROR_MESSAGE" /></translation>
 <translation id="4984616446166309645">Japonų k.</translation>
 <translation id="4987699874727873250">Anglų k. (Indija)</translation>
 <translation id="4988205478593450158">Ar tikrai norite ištrinti „<ph name="FILE_NAME" />“?</translation>
@@ -514,6 +519,7 @@
 <translation id="5102922915594634436">Tvarkyti sinchronizuotus aplankus</translation>
 <translation id="5109254780565519649">Įvyko klaida. Gali būti, kad kai kurie elementai nebuvo atkurti.</translation>
 <translation id="5110329002213341433">Anglų k. (Kanada)</translation>
+<translation id="5119780910075847424">Sinchronizavimas pristabdytas</translation>
 <translation id="5123433949759960244">Krepšinis</translation>
 <translation id="5129662217315786329">Lenkų</translation>
 <translation id="5144820558584035333">Hangul 3 rinkinys (390)</translation>
@@ -532,6 +538,7 @@
 <translation id="5218183485292899140">Šveicarijos prancūzų</translation>
 <translation id="5234764350956374838">Atsisakyti</translation>
 <translation id="5253070652067921974">Sukūrė</translation>
+<translation id="5254207638927440400">Nepavyko perkelti failo. Failas naudojamas.</translation>
 <translation id="5257456363153333584">Laumžirgis</translation>
 <translation id="5262311848634918433"><ph name="MARKUP_1" />Pasiekite failus iš visur, net neprisijungę.<ph name="MARKUP_2" />
     „Google“ diske saugomi failai yra atnaujinami ir pasiekiami iš bet kurio įrenginio.<ph name="MARKUP_3" />
@@ -552,7 +559,6 @@
 <translation id="5323213332664049067">Lotynų amerikiečių</translation>
 <translation id="5330145655348521461">Šie failai atidaryti kitame darbalaukyje. Perkelkite failus <ph name="USER_NAME" /> (<ph name="MAIL_ADDRESS" />), kad peržiūrėtumėte juos.</translation>
 <translation id="5330512191124428349">Gauti informacijos</translation>
-<translation id="5344246330454251646">Tvarkyti „Bruschetta“ bendrinimą</translation>
 <translation id="535792325654997756">Žmogus su katėmis</translation>
 <translation id="5358764674931277">Kadrų dažnis</translation>
 <translation id="5363339716524495120">Įvesties kalba yra kinų k.</translation>
@@ -564,6 +570,7 @@
 <translation id="5422221874247253874">Prieigos taškas</translation>
 <translation id="5428105026674456456">Ispanų</translation>
 <translation id="5438282218546237410">Nėra jokių rezultatų pagal užklausą „<ph name="SEARCH_TERM" />“.</translation>
+<translation id="5447680084201416734">Trūksta saugyklos vietos.</translation>
 <translation id="5449551289610225147">Netinkamas slaptažodis</translation>
 <translation id="5459064203055649751">Failas pavadinimu „<ph name="FILENAME" />“ jau yra. Ar norite jį pakeisti tuo, kurį perkeliate?</translation>
 <translation id="5463231940765244860">Įvesti</translation>
@@ -574,7 +581,6 @@
 <translation id="5494920125229734069">Pasirinkti viską</translation>
 <translation id="5500122897333236901">Islandų</translation>
 <translation id="5508696409934741614">Taškai</translation>
-<translation id="5519161320735100193">„Google“ disko nustatymai</translation>
 <translation id="5522908512596376669">Failų sąrašas pakeistas į sąrašo rodinį.</translation>
 <translation id="5524517123096967210">Nepavyko nuskaityti failo.</translation>
 <translation id="5533102081734025921"><ph name="IMAGE_TYPE" /> vaizdas</translation>
@@ -602,6 +608,7 @@
 <translation id="5720028165859493293">Failas „<ph name="FILE_NAME" />“ perkeltas į šiukšliadėžę</translation>
 <translation id="5724172041621205163">Tajų k. su „Pattachote“ klaviatūra</translation>
 <translation id="57383366388012121">Pastarasis mėnuo</translation>
+<translation id="575175778971367197">Šiuo metu negalima sinchronizuoti šio failo</translation>
 <translation id="5756666464756035725">Vengriška QWERTY</translation>
 <translation id="5760252553414789727">Pasirinkta elementų: <ph name="SELECTED_FILES_COUNT" /></translation>
 <translation id="5763377084591234761">Vokiečių k. (Šveicarija)</translation>
@@ -627,7 +634,6 @@
 <translation id="5896749729057314184"><ph name="NETWORK_INDEX" /> tinklas iš <ph name="NETWORK_COUNT" />, „<ph name="NETWORK_NAME" />“, nesuaktyvintas, signalo stiprumas <ph name="SIGNAL_STRENGTH" /> proc., išsami informacija</translation>
 <translation id="5911887972742538906">Diegiant „Linux“ programą įvyko klaida.</translation>
 <translation id="5912396950572065471">Formatas</translation>
-<translation id="5913638992615760742">Nepavyko įvykdyti kopijavimo operacijos; nenumatyta klaida: <ph name="ERROR_MESSAGE" /></translation>
 <translation id="5918480239180455431">Pasiekiamos naujos paieškos funkcijos</translation>
 <translation id="5926082595146149752">Nyderlandų k. (Nyderlandai) su JAV tarptautine (AK) klaviatūra</translation>
 <translation id="5932901536148835538">Chromebit</translation>
@@ -635,7 +641,6 @@
 <translation id="5955954492236143329">Elementų: <ph name="NUMBER_OF_ITEMS" /></translation>
 <translation id="5957366693331451795">Chromebox</translation>
 <translation id="5982621672636444458">Rūšiuoti parinktis</translation>
-<translation id="6007237601604674381">Nepavyko perkelti. <ph name="ERROR_MESSAGE" /></translation>
 <translation id="6011074160056912900">Eterneto tinklas</translation>
 <translation id="60357267506638014">Čekiška QWERTY</translation>
 <translation id="603895874132768835">Negalėsite naudoti šio tinklo, kol nustatysite naują PIN kodą</translation>
@@ -691,6 +696,7 @@
 <translation id="6423031066725912715">Vietnamiečių k. su TCVN klaviatūra</translation>
 <translation id="6430271654280079150">Liko vienas bandymas.</translation>
 <translation id="643243556292470964">Ištrinti failai perkeliami į šiukšliadėžę</translation>
+<translation id="6438480100790416671">Tikrinama saugyklos vieta…</translation>
 <translation id="6485131920355264772">Nepavyko nuskaityti vietos informacijos</translation>
 <translation id="6495925982925244349"><ph name="NETWORK_INDEX" /> tinklas iš <ph name="NETWORK_COUNT" />, „<ph name="NETWORK_NAME" />“, <ph name="SECURITY_STATUS" />, <ph name="CONNECTION_STATUS" />, signalo stiprumas <ph name="SIGNAL_STRENGTH" /> %, tvarko administratorius, išsami informacija</translation>
 <translation id="649877868557234318">Failas <ph name="FILE_NAME" /> išarchyvuojamas į aplanką „<ph name="FOLDER_NAME" />“</translation>
@@ -703,6 +709,7 @@
 <translation id="6558280019477628686">Įvyko klaida. Kai kurie elementai galėjo nebūti ištrinti.</translation>
 <translation id="656398493051028875">Ištrinamas failas „<ph name="FILENAME" />“...</translation>
 <translation id="6581162200855843583">„Google“ disko nuoroda</translation>
+<translation id="6588648400954570689">Failų sinchronizavimo nustatymai</translation>
 <translation id="6594855146910089723">Šis aplankas bendrinamas su „Linux“ ir „Parallels Desktop“</translation>
 <translation id="6607272825297743757">Failo informacija</translation>
 <translation id="6609332149380188670">Su „Parallels Desktop“ bendrinamų aplankų: <ph name="NUMBER_OF_ITEMS" /></translation>
@@ -717,7 +724,6 @@
 <translation id="6710213216561001401">Ankstesnė</translation>
 <translation id="6732801395666424405">Sertifikatai neįkelti</translation>
 <translation id="6736329909263487977">„<ph name="ISSUED_BY" />“ [<ph name="ISSUED_TO" />]</translation>
-<translation id="6740270213273127264">Bendrinti aplanką su „Bruschetta“</translation>
 <translation id="6750737795876287924">Dabartinis katalogas</translation>
 <translation id="6751256176799620176">Pasirinktas 1 aplankas</translation>
 <translation id="6755827872271341378">„ChromeOS Flex“ įrenginys</translation>
@@ -794,6 +800,7 @@
 <translation id="7256405249507348194">Neatpažinta klaida: <ph name="DESC" /></translation>
 <translation id="7268659760406822741">Prieinamos paslaugos</translation>
 <translation id="7291818353625820805">Norite, kad klavišai būtų kartojami? Išjunkite kirčio ženklus klaviatūros nustatymuose</translation>
+<translation id="729236380049459563">Failų sinchronizavimas įjungtas</translation>
 <translation id="7292816689782057017">Pagal administratoriaus politiką neleidžiama išsaugoti kai kurių vietovių.</translation>
 <translation id="7294063083760278948">Telugų k. transliteracija</translation>
 <translation id="7295662345261934369">Bendrinti su kitais žmonėmis</translation>
@@ -801,6 +808,7 @@
 <translation id="7309413087278791451">Vokiečių k. (Belgija)</translation>
 <translation id="7339898014177206373">Naujas langas</translation>
 <translation id="7343393116438664539">Vietnamiečių k. teleteksas</translation>
+<translation id="7347346221088620549">Šifruotas failas</translation>
 <translation id="7357762654218998920">Šio tipo failas nepalaikomas. <ph name="BEGIN_LINK_HELP" />Sužinokite daugiau<ph name="END_LINK_HELP" /> apie failų atidarymą naudojant „Chrome“ OS.</translation>
 <translation id="7359359531237882347">Kopijuojama elementų: <ph name="NUMBER_OF_ITEMS" />...</translation>
 <translation id="7375951387215729722">Failų sąrašas surūšiuotas pagal stulpelį „<ph name="COLUMN_NAME" />“ mažėjimo tvarka.</translation>
@@ -827,6 +835,7 @@
 <translation id="7547811415869834682">Olandų</translation>
 <translation id="7551643184018910560">Prisegti prie lentynos</translation>
 <translation id="7553492409867692754">Suteikite „Linux“ programoms leidimą pasiekti failus aplanke „<ph name="FOLDER_NAME" />“</translation>
+<translation id="7555339735447658365">Šiuo metu esate neprisijungę. Sinchronizavimas bus atnaujintas, kai būsite prisijungę prie interneto</translation>
 <translation id="7589661784326793847">Luktelėkite sekundėlę</translation>
 <translation id="7592775719802218421">Nustatoma, kad failas „<ph name="FILE_NAME" />“ būtų pasiekiamas neprisijungus</translation>
 <translation id="7600126690270271294">Serbų k.</translation>
@@ -845,6 +854,7 @@
 <translation id="76959938259365003">Nepavyko išvalyti šiukšliadėžės.</translation>
 <translation id="770015031906360009">Graikų</translation>
 <translation id="7705251383879779343">Nukopijuota: <ph name="FILE_NAME" />.</translation>
+<translation id="7707941139430559579">Nepavyko perkelti failo. <ph name="ERROR_MESSAGE" /></translation>
 <translation id="7708271999969613024">Jei norite naudoti šį tinklą, turite įvesti operatoriaus pateiktą aštuonių skaitmenų asmeninį blokavimo panaikinimo raktą (angl. „Personal Unblocking Key“, PUK).</translation>
 <translation id="7711920809702896782">Vaizdo informacija</translation>
 <translation id="7724603315864178912">Iškirpti</translation>
@@ -890,10 +900,10 @@
 <translation id="7972920761225148017">Prancūzų k. (Šveicarija)</translation>
 <translation id="7973962044839454485">Nepavyko autentifikuoti PGP dėl netinkamo naudotojo vardo ar slaptažodžio</translation>
 <translation id="7980421588063892270">Anglų k. (JAV) su „Colemak“ klaviatūra</translation>
-<translation id="7985008041109611710">Sinchronizuojama failų: <ph name="NUMBER_OF_FILES_SYNCING" /></translation>
 <translation id="8000066093800657092">Tinklo nėra</translation>
 <translation id="8008366997883261463">Džeko Raselo terjeras</translation>
 <translation id="8028993641010258682">Dydis</translation>
+<translation id="8034974485549318493">Per pradinę sąranką turite prisijungti prie interneto, kad būtų galima sinchronizuoti failus.</translation>
 <translation id="803771048473350947">Failas</translation>
 <translation id="8038111231936746805">(numatyt.)</translation>
 <translation id="8042602468072383151"><ph name="AUDIO_TYPE" /> garso įrašas</translation>
@@ -904,6 +914,7 @@
 <translation id="8087576439476816834">Atsisiųsti „<ph name="PROFILE_NAME" />“</translation>
 <translation id="8106045200081704138">Bendrinama su manimi</translation>
 <translation id="8116072619078571545">Ledinis vanduo</translation>
+<translation id="8124093710070495550">Sinchronizavimo problema</translation>
 <translation id="8128733386027980860">Anglų k. (JK) su Dvorako klaviatūra</translation>
 <translation id="8137331602592933310">Su jumis buvo bendrintas failas „<ph name="FILENAME" />“. Negalite jo ištrinti, nes jis jums nepriklauso.</translation>
 <translation id="8138705869659070104">Suaktyvinti po įrenginio sąrankos</translation>
@@ -913,9 +924,11 @@
 <translation id="8154842056504218462">Pasirinkti visi įrašai.</translation>
 <translation id="8157684860301034423">Nepavyko nuskaityti programos informacijos.</translation>
 <translation id="8175731104491895765">Prancūzų k. (Belgija)</translation>
+<translation id="8175799081768705361">Sinchronizuojama Disko failų: <ph name="NUMBER_OF_FILES_SYNCING" /></translation>
 <translation id="8179976553408161302">Įvesti</translation>
 <translation id="8193175696669055101">Įrenginio modelis</translation>
 <translation id="8223479393428528563">Jei norite išsaugoti šiuos failus ir naudoti juos be interneto ryšio, vėl prisijunkite prie interneto, spustelėkite failus dešiniuoju pelės klavišu ir pasirinkite parinktį „<ph name="OFFLINE_CHECKBOX_NAME" />“.</translation>
+<translation id="8241139360630443550">Peržiūrėti saugyklą</translation>
 <translation id="8249296373107784235">Nutraukti</translation>
 <translation id="8250690786522693009">Lotynų</translation>
 <translation id="8250920743982581267">Dokumentai</translation>
@@ -946,6 +959,7 @@
 <translation id="8404498045299006085">Saugoti viską</translation>
 <translation id="8408068190360279472">Tinklas: <ph name="NETWORK_TYPE" />, jungiamasi</translation>
 <translation id="8425213833346101688">Keisti</translation>
+<translation id="8428213095426709021">Nustatymai</translation>
 <translation id="8431909052837336408">SIM kortelės PIN kodo pakeitimas</translation>
 <translation id="8437209419043462667">JAV</translation>
 <translation id="8452135315243592079">Nėra SIM kortelės</translation>
@@ -982,6 +996,7 @@
 <translation id="8609695766746872526">Islandų k.</translation>
 <translation id="863903787380594467">Netinkamas PIN kodas. Liko bandymų: <ph name="RETRIES" />.</translation>
 <translation id="8639391553632924850"><ph name="INPUT_LABEL" /> – prievadas</translation>
+<translation id="8656407365183407932">Neprisijungus pasiekiamus failus teko pašalinti</translation>
 <translation id="8656768832129462377">Netikrinti</translation>
 <translation id="8688591111840995413">Netinkamas slaptažodis</translation>
 <translation id="8698464937041809063">„Google“ piešinys</translation>
@@ -1012,10 +1027,12 @@
 <translation id="8919081441417203123">Danų</translation>
 <translation id="8949925099261528566">Prisijungta, nėra interneto</translation>
 <translation id="8965697826696209160">Nepakanka vietos.</translation>
+<translation id="8970887620466824814">Kažkas ne taip.</translation>
 <translation id="8971742885766657349">Sinchronizuojama – <ph name="PERCENT" /> %</translation>
 <translation id="8997962250644902079">Kinų k. (tradicinė) „Pinyin“</translation>
 <translation id="8998871447376656508">„Google“ diske nepakanka laisvos vietos, kad būtų galima užbaigti įkėlimą.</translation>
 <translation id="9003940392834790328"><ph name="NETWORK_INDEX" /> tinklas iš <ph name="NETWORK_COUNT" />, „<ph name="NETWORK_NAME" />“, <ph name="CONNECTION_STATUS" />, signalo stiprumas <ph name="SIGNAL_STRENGTH" /> %, tvarko administratorius, išsami informacija</translation>
+<translation id="9007990314804111233">Prisijunkite prie „Microsoft“ paskyros</translation>
 <translation id="9017798300203431059">Fonetinė rusų</translation>
 <translation id="9034924485347205037">„Linux“ failai</translation>
 <translation id="9035012421917565900">Elementų negalima perkelti atgal į „<ph name="DESTINATION_NAME" />“, todėl negalėsite anuliuoti šio veiksmo.</translation>
@@ -1046,7 +1063,6 @@
 <translation id="9213073329713032541">Diegimas sėkmingai pradėtas.</translation>
 <translation id="9219103736887031265">Vaizdai</translation>
 <translation id="9219908252191632183">Mėnulyje</translation>
-<translation id="937795003075802289">Sinchronizuojamas vienas failas</translation>
 <translation id="938470336146445890">Įdiekite naudotojo sertifikatą.</translation>
 <translation id="939736085109172342">Naujas aplankas</translation>
 <translation id="943972244133411984">Pakeitė</translation>

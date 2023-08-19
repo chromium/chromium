@@ -140,7 +140,7 @@ class NameFull : public AddressComponent {
       const override;
 
   // Returns the format string to create the full name from its subcomponents.
-  std::u16string GetBestFormatString() const override;
+  std::u16string GetFormatString() const override;
 
  private:
   NameFirst name_first_{this};

@@ -84,6 +84,10 @@
           "group": "tryserver.chromium.win"
         },
         {
+          "builder": "win-siso-rel",
+          "group": "tryserver.chromium.win"
+        },
+        {
           "builder": "win10_chromium_inverse_fieldtrials_x64_fyi_rel_ng",
           "group": "tryserver.chromium.win"
         }
@@ -93,7 +97,8 @@
   "$build/reclient": {
     "instance": "rbe-chromium-trusted",
     "jobs": 80,
-    "metrics_project": "chromium-reclient-metrics"
+    "metrics_project": "chromium-reclient-metrics",
+    "scandeps_server": true
   },
   "$recipe_engine/resultdb/test_presentation": {
     "column_keys": [],

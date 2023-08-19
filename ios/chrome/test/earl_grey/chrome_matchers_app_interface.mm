@@ -4,7 +4,7 @@
 
 #import "ios/chrome/test/earl_grey/chrome_matchers_app_interface.h"
 
-#import "base/mac/foundation_util.h"
+#import "base/apple/foundation_util.h"
 #import "base/strings/sys_string_conversions.h"
 #import "components/safe_browsing/core/common/features.h"
 #import "components/strings/grit/components_strings.h"
@@ -57,10 +57,8 @@
 #import "ios/chrome/browser/ui/settings/settings_navigation_controller.h"
 #import "ios/chrome/browser/ui/settings/settings_root_table_constants.h"
 #import "ios/chrome/browser/ui/settings/settings_table_view_controller_constants.h"
-#import "ios/chrome/browser/ui/settings/tabs/inactive_tabs/inactive_tabs_settings_constants.h"
 #import "ios/chrome/browser/ui/settings/tabs/tabs_settings_constants.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/grid_constants.h"
-#import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/plus_sign_cell.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/tab_grid_constants.h"
 #import "ios/chrome/browser/ui/toolbar/primary_toolbar_view.h"
 #import "ios/chrome/browser/ui/toolbar/public/toolbar_constants.h"
@@ -73,10 +71,6 @@
 #import "ui/base/l10n/l10n_util.h"
 #import "ui/base/test/ios/ui_image_test_utils.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 namespace {
 
 // Identifer for cell at given `index` in the tab grid.
@@ -84,10 +78,27 @@ NSString* IdentifierForCellAtIndex(unsigned int index) {
   return [NSString stringWithFormat:@"%@%u", kGridCellIdentifierPrefix, index];
 }
 
+id<GREYMatcher> AccessibilityLabelPrefix(NSString* prefix) {
+  GREYMatchesBlock matches = ^BOOL(id element) {
+    if ([element respondsToSelector:@selector(accessibilityLabel)]) {
+      NSString* label = [element accessibilityLabel];
+      return [label hasPrefix:prefix];
+    }
+    return NO;
+  };
+  GREYDescribeToBlock describe = ^void(id<GREYDescription> description) {
+    NSString* name =
+        [NSString stringWithFormat:@"accessibilityLabelPrefix: %@", prefix];
+    [description appendText:name];
+  };
+  return [[GREYElementMatcherBlock alloc] initWithMatchesBlock:matches
+                                              descriptionBlock:describe];
+}
+
 id<GREYMatcher> TableViewSwitchIsToggledOn(BOOL is_toggled_on) {
   GREYMatchesBlock matches = ^BOOL(id element) {
     TableViewSwitchCell* switch_cell =
-        base::mac::ObjCCastStrict<TableViewSwitchCell>(element);
+        base::apple::ObjCCastStrict<TableViewSwitchCell>(element);
     UISwitch* switch_view = switch_cell.switchView;
     return (switch_view.on && is_toggled_on) ||
            (!switch_view.on && !is_toggled_on);
@@ -105,7 +116,7 @@ id<GREYMatcher> TableViewSwitchIsToggledOn(BOOL is_toggled_on) {
 id<GREYMatcher> TableViewSwitchIsEnabled(BOOL is_enabled) {
   GREYMatchesBlock matches = ^BOOL(id element) {
     TableViewSwitchCell* switch_cell =
-        base::mac::ObjCCastStrict<TableViewSwitchCell>(element);
+        base::apple::ObjCCastStrict<TableViewSwitchCell>(element);
     UISwitch* switch_view = switch_cell.switchView;
     return (switch_view.enabled && is_enabled) ||
            (!switch_view.enabled && !is_enabled);
@@ -139,7 +150,7 @@ UIView* SubviewWithAccessibilityIdentifier(NSString* accessibility_id,
 UIWindow* WindowWithAccessibilityIdentifier(NSString* accessibility_id) {
   for (UIScene* scene in UIApplication.sharedApplication.connectedScenes) {
     UIWindowScene* windowScene =
-        base::mac::ObjCCastStrict<UIWindowScene>(scene);
+        base::apple::ObjCCastStrict<UIWindowScene>(scene);
     for (UIWindow* window in windowScene.windows) {
       if ([window.accessibilityIdentifier isEqualToString:accessibility_id]) {
         return window;
@@ -174,6 +185,27 @@ UIWindow* WindowWithAccessibilityIdentifier(NSString* accessibility_id) {
 + (id<GREYMatcher>)buttonWithAccessibilityLabelID:(int)messageID {
   return [ChromeMatchersAppInterface
       buttonWithAccessibilityLabel:l10n_util::GetNSStringWithFixup(messageID)];
+}
+
++ (id<GREYMatcher>)contextMenuItemWithAccessibilityLabel:(NSString*)label {
+  if (@available(iOS 17, *)) {
+    // On iOS 17 beta 6, context menu item labels contain a comma
+    // followed by the alt text for the item's icon. On iOS 17 beta 5
+    // and earlier, the context menu item labels are simply the item's
+    // title.
+    NSString* commaStr = [label stringByAppendingString:@","];
+    return grey_allOf(grey_anyOf(grey_accessibilityLabel(label),
+                                 AccessibilityLabelPrefix(commaStr), nil),
+                      grey_accessibilityTrait(UIAccessibilityTraitButton), nil);
+  }
+  return grey_allOf(grey_accessibilityLabel(label),
+                    grey_accessibilityTrait(UIAccessibilityTraitButton), nil);
+}
+
++ (id<GREYMatcher>)contextMenuItemWithAccessibilityLabelID:(int)messageID {
+  return [ChromeMatchersAppInterface
+      contextMenuItemWithAccessibilityLabel:l10n_util::GetNSStringWithFixup(
+                                                messageID)];
 }
 
 + (id<GREYMatcher>)imageViewWithImageNamed:(NSString*)imageName {
@@ -293,8 +325,8 @@ UIWindow* WindowWithAccessibilityIdentifier(NSString* accessibility_id) {
 
 + (id<GREYMatcher>)closeTabMenuButton {
   return grey_allOf(
-      [ChromeMatchersAppInterface
-          buttonWithAccessibilityLabelID:(IDS_IOS_CONTENT_CONTEXT_CLOSETAB)],
+      [ChromeMatchersAppInterface contextMenuItemWithAccessibilityLabelID:
+                                      (IDS_IOS_CONTENT_CONTEXT_CLOSETAB)],
       grey_sufficientlyVisible(), nil);
 }
 
@@ -332,16 +364,16 @@ UIWindow* WindowWithAccessibilityIdentifier(NSString* accessibility_id) {
 }
 
 + (id<GREYMatcher>)pageSecurityInfoIndicator {
-  return grey_allOf(grey_accessibilityLabel(@"Page Security Info"),
-                    grey_ancestor(grey_kindOfClass([PrimaryToolbarView class])),
-                    nil);
+  return grey_allOf(
+      grey_accessibilityLabel(@"Page Security Info"),
+      grey_ancestor(grey_kindOfClass([LocationBarSteadyView class])), nil);
 }
 
 + (id<GREYMatcher>)omniboxText:(NSString*)text {
   GREYElementMatcherBlock* matcher = [GREYElementMatcherBlock
       matcherWithMatchesBlock:^BOOL(id element) {
         OmniboxTextFieldIOS* omnibox =
-            base::mac::ObjCCast<OmniboxTextFieldIOS>(element);
+            base::apple::ObjCCast<OmniboxTextFieldIOS>(element);
         return [omnibox.text isEqualToString:text];
       }
       descriptionBlock:^void(id<GREYDescription> description) {
@@ -356,7 +388,7 @@ UIWindow* WindowWithAccessibilityIdentifier(NSString* accessibility_id) {
   GREYElementMatcherBlock* matcher = [GREYElementMatcherBlock
       matcherWithMatchesBlock:^BOOL(id element) {
         OmniboxTextFieldIOS* omnibox =
-            base::mac::ObjCCast<OmniboxTextFieldIOS>(element);
+            base::apple::ObjCCast<OmniboxTextFieldIOS>(element);
         return [omnibox.text containsString:text];
       }
       descriptionBlock:^void(id<GREYDescription> description) {
@@ -403,7 +435,7 @@ UIWindow* WindowWithAccessibilityIdentifier(NSString* accessibility_id) {
 + (id<GREYMatcher>)shareButton {
   return grey_allOf(
       [ChromeMatchersAppInterface
-          buttonWithAccessibilityLabelID:(IDS_IOS_TOOLS_MENU_SHARE)],
+          contextMenuItemWithAccessibilityLabelID:(IDS_IOS_TOOLS_MENU_SHARE)],
       grey_not([self tabShareButton]), grey_sufficientlyVisible(), nil);
 }
 
@@ -421,14 +453,14 @@ UIWindow* WindowWithAccessibilityIdentifier(NSString* accessibility_id) {
 
 + (id<GREYMatcher>)addToReadingListButton {
   return grey_allOf([ChromeMatchersAppInterface
-                        buttonWithAccessibilityLabelID:
+                        contextMenuItemWithAccessibilityLabelID:
                             (IDS_IOS_CONTENT_CONTEXT_ADDTOREADINGLIST)],
                     grey_sufficientlyVisible(), nil);
 }
 
 + (id<GREYMatcher>)addToBookmarksButton {
   return grey_allOf(
-      [ChromeMatchersAppInterface buttonWithAccessibilityLabelID:
+      [ChromeMatchersAppInterface contextMenuItemWithAccessibilityLabelID:
                                       (IDS_IOS_CONTENT_CONTEXT_ADDTOBOOKMARKS)],
       grey_sufficientlyVisible(), nil);
 }
@@ -460,18 +492,21 @@ UIWindow* WindowWithAccessibilityIdentifier(NSString* accessibility_id) {
 }
 
 + (id<GREYMatcher>)openLinkInNewTabButton {
-  return [ChromeMatchersAppInterface
-      buttonWithAccessibilityLabelID:(IDS_IOS_CONTENT_CONTEXT_OPENLINKNEWTAB)];
+  return
+      [ChromeMatchersAppInterface contextMenuItemWithAccessibilityLabelID:
+                                      (IDS_IOS_CONTENT_CONTEXT_OPENLINKNEWTAB)];
 }
 
 + (id<GREYMatcher>)openLinkInIncognitoButton {
   int stringId = IDS_IOS_OPEN_IN_INCOGNITO_ACTION_TITLE;
-  return [ChromeMatchersAppInterface buttonWithAccessibilityLabelID:(stringId)];
+  return [ChromeMatchersAppInterface
+      contextMenuItemWithAccessibilityLabelID:(stringId)];
 }
 
 + (id<GREYMatcher>)openLinkInNewWindowButton {
-  return [ChromeMatchersAppInterface
-      buttonWithAccessibilityLabelID:(IDS_IOS_CONTENT_CONTEXT_OPENINNEWWINDOW)];
+  return
+      [ChromeMatchersAppInterface contextMenuItemWithAccessibilityLabelID:
+                                      IDS_IOS_CONTENT_CONTEXT_OPENINNEWWINDOW];
 }
 
 + (id<GREYMatcher>)navigationBarDoneButton {
@@ -486,7 +521,7 @@ UIWindow* WindowWithAccessibilityIdentifier(NSString* accessibility_id) {
 }
 
 + (id<GREYMatcher>)bookmarksNavigationBarBackButton {
-  UINavigationBar* navBar = base::mac::ObjCCastStrict<UINavigationBar>(
+  UINavigationBar* navBar = base::apple::ObjCCastStrict<UINavigationBar>(
       SubviewWithAccessibilityIdentifier(kBookmarkNavigationBarIdentifier,
                                          GetAnyKeyWindow()));
   return grey_allOf(grey_buttonTitle(navBar.backItem.title),
@@ -661,6 +696,11 @@ UIWindow* WindowWithAccessibilityIdentifier(NSString* accessibility_id) {
       buttonWithAccessibilityLabelID:(IDS_IOS_OPTIONS_MOVE_INACTIVE_TABS)];
 }
 
++ (id<GREYMatcher>)tabPickupSettingsButton {
+  return [ChromeMatchersAppInterface
+      buttonWithAccessibilityLabelID:(IDS_IOS_OPTIONS_TAB_PICKUP)];
+}
+
 + (id<GREYMatcher>)tabsSettingsButton {
   return [ChromeMatchersAppInterface
       buttonWithAccessibilityLabelID:(IDS_IOS_TABS_MANAGEMENT_SETTINGS)];
@@ -686,7 +726,7 @@ UIWindow* WindowWithAccessibilityIdentifier(NSString* accessibility_id) {
 }
 
 + (id<GREYMatcher>)settingsMenuBackButton {
-  UINavigationBar* navBar = base::mac::ObjCCastStrict<UINavigationBar>(
+  UINavigationBar* navBar = base::apple::ObjCCastStrict<UINavigationBar>(
       SubviewWithAccessibilityIdentifier(@"SettingNavigationBar",
                                          GetAnyKeyWindow()));
   return
@@ -694,7 +734,7 @@ UIWindow* WindowWithAccessibilityIdentifier(NSString* accessibility_id) {
 }
 
 + (id<GREYMatcher>)settingsMenuBackButtonInWindowWithNumber:(int)windowNumber {
-  UINavigationBar* navBar = base::mac::ObjCCastStrict<UINavigationBar>(
+  UINavigationBar* navBar = base::apple::ObjCCastStrict<UINavigationBar>(
       SubviewWithAccessibilityIdentifier(
           @"SettingNavigationBar", WindowWithAccessibilityIdentifier([NSString
                                        stringWithFormat:@"%d", windowNumber])));
@@ -836,38 +876,41 @@ UIWindow* WindowWithAccessibilityIdentifier(NSString* accessibility_id) {
 
 + (id<GREYMatcher>)copyLinkButton {
   int stringId = IDS_IOS_COPY_LINK_ACTION_TITLE;
-  return [ChromeMatchersAppInterface buttonWithAccessibilityLabelID:stringId];
+  return [ChromeMatchersAppInterface
+      contextMenuItemWithAccessibilityLabelID:stringId];
 }
 
 + (id<GREYMatcher>)editButton {
   int stringId = IDS_IOS_EDIT_ACTION_TITLE;
-  return [ChromeMatchersAppInterface buttonWithAccessibilityLabelID:stringId];
+  return [ChromeMatchersAppInterface
+      contextMenuItemWithAccessibilityLabelID:stringId];
 }
 
 + (id<GREYMatcher>)moveButton {
-  return [ChromeMatchersAppInterface
-      buttonWithAccessibilityLabelID:IDS_IOS_BOOKMARK_CONTEXT_MENU_MOVE];
+  return [ChromeMatchersAppInterface contextMenuItemWithAccessibilityLabelID:
+                                         IDS_IOS_BOOKMARK_CONTEXT_MENU_MOVE];
 }
 
 + (id<GREYMatcher>)readingListMarkAsReadButton {
-  return [ChromeMatchersAppInterface
-      buttonWithAccessibilityLabelID:IDS_IOS_READING_LIST_MARK_AS_READ_ACTION];
+  return
+      [ChromeMatchersAppInterface contextMenuItemWithAccessibilityLabelID:
+                                      IDS_IOS_READING_LIST_MARK_AS_READ_ACTION];
 }
 
 + (id<GREYMatcher>)readingListMarkAsUnreadButton {
   return [ChromeMatchersAppInterface
-      buttonWithAccessibilityLabelID:
+      contextMenuItemWithAccessibilityLabelID:
           IDS_IOS_READING_LIST_MARK_AS_UNREAD_ACTION];
 }
 
 + (id<GREYMatcher>)deleteButton {
   return [ChromeMatchersAppInterface
-      buttonWithAccessibilityLabelID:IDS_IOS_DELETE_ACTION_TITLE];
+      contextMenuItemWithAccessibilityLabelID:IDS_IOS_DELETE_ACTION_TITLE];
 }
 
 + (id<GREYMatcher>)contextMenuCopyButton {
   return [ChromeMatchersAppInterface
-      buttonWithAccessibilityLabelID:(IDS_IOS_CONTENT_CONTEXT_COPY)];
+      contextMenuItemWithAccessibilityLabelID:(IDS_IOS_CONTENT_CONTEXT_COPY)];
 }
 
 + (id<GREYMatcher>)NTPOmnibox {
@@ -913,7 +956,6 @@ UIWindow* WindowWithAccessibilityIdentifier(NSString* accessibility_id) {
 
 + (id<GREYMatcher>)tabGridCellAtIndex:(unsigned int)index {
   return grey_allOf(grey_accessibilityID(IdentifierForCellAtIndex(index)),
-                    grey_not(grey_kindOfClass([PlusSignCell class])),
                     grey_sufficientlyVisible(), nil);
 }
 
@@ -1027,9 +1069,13 @@ UIWindow* WindowWithAccessibilityIdentifier(NSString* accessibility_id) {
   return grey_accessibilityID(kSettingsSearchEngineCellId);
 }
 
++ (id<GREYMatcher>)settingsAddressBarButton {
+  return grey_accessibilityID(kSettingsAddressBarCellId);
+}
+
 + (id<GREYMatcher>)contentViewSmallerThanScrollView {
   GREYMatchesBlock matches = ^BOOL(UIView* view) {
-    UIScrollView* scrollView = base::mac::ObjCCast<UIScrollView>(view);
+    UIScrollView* scrollView = base::apple::ObjCCast<UIScrollView>(view);
     return scrollView &&
            scrollView.contentSize.height < scrollView.bounds.size.height;
   };
@@ -1070,7 +1116,8 @@ UIWindow* WindowWithAccessibilityIdentifier(NSString* accessibility_id) {
     if (![element isKindOfClass:UITableViewCell.class])
       return NO;
 
-    UITableViewCell* cell = base::mac::ObjCCastStrict<UITableViewCell>(element);
+    UITableViewCell* cell =
+        base::apple::ObjCCastStrict<UITableViewCell>(element);
 
     // Try to find the TableView containing the cell.
     UIView* potential_table_view = [cell superview];
@@ -1083,7 +1130,7 @@ UIWindow* WindowWithAccessibilityIdentifier(NSString* accessibility_id) {
       return NO;
 
     UITableView* table_view =
-        base::mac::ObjCCastStrict<UITableView>(potential_table_view);
+        base::apple::ObjCCastStrict<UITableView>(potential_table_view);
 
     NSIndexPath* index_path = [table_view indexPathForCell:cell];
 
@@ -1370,15 +1417,15 @@ UIWindow* WindowWithAccessibilityIdentifier(NSString* accessibility_id) {
 
 + (id<GREYMatcher>)tabGridEditMenuCloseAllButton {
   return grey_allOf(
-      [ChromeMatchersAppInterface buttonWithAccessibilityLabelID:
+      [ChromeMatchersAppInterface contextMenuItemWithAccessibilityLabelID:
                                       (IDS_IOS_CONTENT_CONTEXT_CLOSEALLTABS)],
       grey_sufficientlyVisible(), nil);
 }
 
 + (id<GREYMatcher>)tabGridSelectTabsMenuButton {
   return grey_allOf(
-      [ChromeMatchersAppInterface
-          buttonWithAccessibilityLabelID:(IDS_IOS_CONTENT_CONTEXT_SELECTTABS)],
+      [ChromeMatchersAppInterface contextMenuItemWithAccessibilityLabelID:
+                                      (IDS_IOS_CONTENT_CONTEXT_SELECTTABS)],
       grey_sufficientlyVisible(), nil);
 }
 

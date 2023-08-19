@@ -28,6 +28,7 @@ blink::UserAgentMetadata MakeToEncode() {
   to_encode.mobile = false;
   to_encode.bitness = "8";
   to_encode.wow64 = true;
+  to_encode.form_factor = "tubular";
   return to_encode;
 }
 

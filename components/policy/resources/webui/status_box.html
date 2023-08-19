@@ -3,15 +3,18 @@
   display: block;
 }
 
-fieldset {
-  border: 1px solid rgb(217, 217, 217);
-  display: inline;
+.status-box-fields {
+  background-color: rgb(241, 243, 244); /* Google grey 100 */
+  border: none;
+  border-radius: 15px;
+  box-sizing: border-box;
+  height: 100%;
   margin: 0;
-  padding: 7px;
+  padding: 1px 10px 10px 10px;
 }
 
-fieldset + fieldset {
-  margin-inline-start: 20px;
+.status-box-heading {
+  font-weight: 500;
 }
 
 div.status-entry * {
@@ -20,7 +23,12 @@ div.status-entry * {
 
 div.status-entry:not([hidden]) {
   display: flex;
-  margin-bottom: .8em;
+  justify-content: space-between;
+  margin-bottom: .6em;
+}
+
+.status-entry-value {
+  text-align: right;
 }
 
 div.status-entry:last-child {
@@ -37,102 +45,102 @@ a {
   max-width: 312px;
 }
 </style>
-<fieldset>
-  <legend class="legend"></legend>
+<div class="status-box-fields">
+  <p class="status-box-heading"></p>
   <div class="status-entry" hidden>
     <div class="label">$i18n{labelVersion}</div>
-    <div class="version"></div>
+    <div class="version status-entry-value"></div>
   </div>
   <div class="status-entry" hidden>
     <div class="label">$i18n{labelMachineEnrollmentMachineName}</div>
-    <div class="machine-enrollment-name"></div>
+    <div class="machine-enrollment-name status-entry-value"></div>
   </div>
   <div class="status-entry" hidden>
     <div class="label">$i18n{labelMachineEnrollmentDomain}</div>
-    <div class="machine-enrollment-domain"></div>
+    <div class="machine-enrollment-domain status-entry-value"></div>
   </div>
   <div class="status-entry" hidden>
     <div class="label">$i18n{labelMachineEnrollmentToken}</div>
-    <div class="machine-enrollment-token"></div>
+    <div class="machine-enrollment-token status-entry-value"></div>
   </div>
   <div class="status-entry" hidden>
     <div class="label">$i18n{labelMachineEntrollmentDeviceId}</div>
-    <div class="machine-enrollment-device-id"></div>
+    <div class="machine-enrollment-device-id status-entry-value"></div>
   </div>
   <div class="status-entry" hidden>
     <div class="label">$i18n{labelUsername}</div>
-    <div class="username"></div>
+    <div class="username status-entry-value"></div>
   </div>
   <div class="status-entry" hidden>
     <div class="label">$i18n{labelManagedBy}</div>
-    <div class="managed-by"></div>
+    <div class="managed-by status-entry-value"></div>
   </div>
   <div class="status-entry" hidden>
     <div class="label">$i18n{labelGaiaId}</div>
-    <div class="gaia-id"></div>
+    <div class="gaia-id status-entry-value"></div>
   </div>
   <div class="status-entry" hidden>
     <div class="label">$i18n{labelClientId}</div>
-    <div class="client-id"></div>
+    <div class="client-id status-entry-value"></div>
   </div>
   <div class="status-entry" hidden>
     <div class="label">$i18n{labelProfileId}</div>
-    <div class="profile-id"></div>
+    <div class="profile-id status-entry-value"></div>
   </div>
   <div class="status-entry" hidden>
     <div class="label">$i18n{labelAssetId}</div>
-    <div class="asset-id"></div>
+    <div class="asset-id status-entry-value"></div>
   </div>
   <div class="status-entry" hidden>
     <div class="label">$i18n{labelLocation}</div>
-    <div class="location"></div>
+    <div class="location status-entry-value"></div>
   </div>
   <div class="status-entry" hidden>
     <div class="label">$i18n{labelDirectoryApiId}</div>
-    <div class="directory-api-id"></div>
+    <div class="directory-api-id status-entry-value"></div>
   </div>
   <div class="status-entry" hidden>
     <div class="label">$i18n{labelTimeSinceLastFetchAttempt}</div>
-    <div class="time-since-last-fetch-attempt"></div>
+    <div class="time-since-last-fetch-attempt status-entry-value"></div>
   </div>
   <div class="status-entry" hidden>
     <div class="label">$i18n{labelTimeSinceLastRefresh}</div>
-    <div class="time-since-last-refresh"></div>
+    <div class="time-since-last-refresh status-entry-value"></div>
   </div>
   <div class="status-entry" hidden>
     <div class="label">$i18n{labelRefreshInterval}</div>
-    <div class="refresh-interval"></div>
+    <div class="refresh-interval status-entry-value"></div>
   </div>
   <div class="status-entry" hidden>
     <div class="label">$i18n{labelPoliciesPush}</div>
-    <div class="policy-push"></div>
+    <div class="policy-push status-entry-value"></div>
   </div>
   <div class="status-entry" hidden>
     <div class="label">$i18n{labelStatus}</div>
-    <div class="status"></div>
+    <div class="status status-entry-value"></div>
   </div>
   <div class="status-entry" hidden>
     <div class="label">$i18n{labelIsAffiliated}</div>
-    <div class="is-affiliated"></div>
+    <div class="is-affiliated status-entry-value"></div>
   </div>
   <div class="status-entry" hidden>
     <div class="label">$i18n{labelIsOffHoursActive}</div>
-    <div class="is-offhours-active"></div>
+    <div class="is-offhours-active status-entry-value"></div>
   </div>
   <div class="status-entry" hidden>
     <div class="label">$i18n{labelVersion}</div>
-    <div class="version"></div>
+    <div class="version status-entry-value"></div>
   </div>
   <div class="status-entry" hidden>
     <div class="label">$i18n{labelLastCloudReportSentTimestamp}</div>
-    <div class="last-cloud-report-sent-timestamp"></div>
+    <div class="last-cloud-report-sent-timestamp status-entry-value"></div>
   </div>
   <div class="status-entry" hidden>
     <div class="label">$i18n{labelError}:</div>
-    <div class="error"></div>
+    <div class="error status-entry-value"></div>
   </div>
   <div class="status-entry" hidden>
     <div class="label">$i18n{labelWarning}:</div>
-    <div class="warning"></div>
+    <div class="warning status-entry-value"></div>
   </div>
-</fieldset>
+</div>

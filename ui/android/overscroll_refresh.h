@@ -109,7 +109,7 @@ class UI_ANDROID_EXPORT OverscrollRefresh {
   float scroll_begin_y_;
   const float edge_width_;  // in px
   gfx::Vector2dF cumulative_scroll_;
-  const raw_ptr<OverscrollRefreshHandler> handler_;
+  const raw_ptr<OverscrollRefreshHandler, DanglingUntriaged> handler_;
 };
 
 }  // namespace ui

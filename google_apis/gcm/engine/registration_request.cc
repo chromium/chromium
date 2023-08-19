@@ -8,6 +8,7 @@
 
 #include <utility>
 
+#include "base/containers/contains.h"
 #include "base/functional/bind.h"
 #include "base/location.h"
 #include "base/metrics/histogram.h"
@@ -53,20 +54,27 @@ const char kTooManyRegistrations[] = "TOO_MANY_REGISTRATIONS";
 
 // Gets correct status from the error message.
 RegistrationRequest::Status GetStatusFromError(const std::string& error) {
-  if (error.find(kDeviceRegistrationError) != std::string::npos)
+  if (base::Contains(error, kDeviceRegistrationError)) {
     return RegistrationRequest::DEVICE_REGISTRATION_ERROR;
-  if (error.find(kAuthenticationFailed) != std::string::npos)
+  }
+  if (base::Contains(error, kAuthenticationFailed)) {
     return RegistrationRequest::AUTHENTICATION_FAILED;
-  if (error.find(kInvalidSender) != std::string::npos)
+  }
+  if (base::Contains(error, kInvalidSender)) {
     return RegistrationRequest::INVALID_SENDER;
-  if (error.find(kInvalidParameters) != std::string::npos)
+  }
+  if (base::Contains(error, kInvalidParameters)) {
     return RegistrationRequest::INVALID_PARAMETERS;
-  if (error.find(kInternalServerError) != std::string::npos)
+  }
+  if (base::Contains(error, kInternalServerError)) {
     return RegistrationRequest::INTERNAL_SERVER_ERROR;
-  if (error.find(kQuotaExceeded) != std::string::npos)
+  }
+  if (base::Contains(error, kQuotaExceeded)) {
     return RegistrationRequest::QUOTA_EXCEEDED;
-  if (error.find(kTooManyRegistrations) != std::string::npos)
+  }
+  if (base::Contains(error, kTooManyRegistrations)) {
     return RegistrationRequest::TOO_MANY_REGISTRATIONS;
+  }
   // Should not be reached, unless the server adds new error types.
   return RegistrationRequest::UNKNOWN_ERROR;
 }

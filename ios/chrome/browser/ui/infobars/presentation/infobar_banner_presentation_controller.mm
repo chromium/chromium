@@ -10,10 +10,6 @@
 #import "base/check.h"
 #import "ios/chrome/browser/ui/infobars/presentation/infobar_banner_positioner.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 namespace {
 // The presented view outer horizontal margins.
 const CGFloat kContainerHorizontalPadding = 8;

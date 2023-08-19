@@ -52,6 +52,14 @@ The bot provides analysis using:
       is worth the added file size, then add why you think it is.
         - To get a feeling for how large existing features are, refer to
           [go/chrome-supersize](Googlers only).
+- If an **auto-roll commit triggered this failure**:
+    - The purpose of blocking large rolls is so that we can have the roll commits
+      annotated with what is causing the large growth, and to ensure teams are
+      aware of large size changes.
+    - Please include in the roll commit message what is causing the increase, as
+      well as any pointers to discussions / justifications of the size increase.
+    - If there is a possibility of any follow-up size reductions, please include
+      `Bug:` lines for bugs that will track this work.
 
 - Add a footer to the commit description along the lines of:
     - `Binary-Size: Size increase is unavoidable (see above).`

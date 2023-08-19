@@ -28,6 +28,7 @@ import org.chromium.components.browser_ui.notifications.NotificationManagerProxy
 import org.chromium.components.browser_ui.notifications.NotificationMetadata;
 import org.chromium.components.browser_ui.notifications.NotificationWrapper;
 import org.chromium.components.browser_ui.notifications.PendingIntentProvider;
+import org.chromium.components.sync.SyncService;
 import org.chromium.components.sync.TrustedVaultUserActionTriggerForUMA;
 
 import java.lang.annotation.Retention;
@@ -65,14 +66,13 @@ public class SyncErrorNotifier implements SyncService.SyncStateChangedListener {
     /**
      * Returns null if there's no instance of SyncService (Sync disabled via command-line).
      */
-    @Nullable
-    public static SyncErrorNotifier get() {
+    public static @Nullable SyncErrorNotifier get() {
         ThreadUtils.assertOnUiThread();
         if (!sInitialized) {
-            if (SyncService.get() != null) {
+            if (SyncServiceFactory.get() != null) {
                 sInstance = new SyncErrorNotifier(
                         new NotificationManagerProxyImpl(ContextUtils.getApplicationContext()),
-                        SyncService.get(), TrustedVaultClient.get());
+                        SyncServiceFactory.get(), TrustedVaultClient.get());
             }
             sInitialized = true;
         }

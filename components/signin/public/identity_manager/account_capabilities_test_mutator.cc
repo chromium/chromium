@@ -36,14 +36,20 @@ void AccountCapabilitiesTestMutator::set_can_run_chrome_privacy_sandbox_trials(
       value;
 }
 
-void AccountCapabilitiesTestMutator::set_can_stop_parental_supervision(
+void AccountCapabilitiesTestMutator::set_is_opted_in_to_parental_supervision(
     bool value) {
-  capabilities_->capabilities_map_[kCanStopParentalSupervisionCapabilityName] =
+  capabilities_
+      ->capabilities_map_[kIsOptedInToParentalSupervisionCapabilityName] =
       value;
 }
 
 void AccountCapabilitiesTestMutator::set_can_toggle_auto_updates(bool value) {
   capabilities_->capabilities_map_[kCanToggleAutoUpdatesName] = value;
+}
+
+void AccountCapabilitiesTestMutator::set_can_use_chrome_ip_protection(
+    bool value) {
+  capabilities_->capabilities_map_[kCanUseChromeIpProtectionName] = value;
 }
 
 void AccountCapabilitiesTestMutator::set_is_allowed_for_machine_learning(

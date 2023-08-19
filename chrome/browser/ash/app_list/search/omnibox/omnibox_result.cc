@@ -130,27 +130,16 @@ OmniboxResult::~OmniboxResult() {
 void OmniboxResult::UpdateRelevance() {
   double normalized_autocomplete_relevance =
       search_result_->relevance / kMaxOmniboxScore;
-  bool fuzzy_match_cutoff_enabled = base::GetFieldTrialParamByFeatureAsBool(
-      search_features::kLauncherFuzzyMatchForOmnibox, "enable_cutoff", false);
-  bool fuzzy_match_relevance_enabled = base::GetFieldTrialParamByFeatureAsBool(
-      search_features::kLauncherFuzzyMatchForOmnibox, "enable_relevance",
-      false);
 
-  if (!fuzzy_match_cutoff_enabled && !fuzzy_match_relevance_enabled) {
-    // Derive relevance from autocomplete relevance and normalize it to [0, 1].
-    set_relevance(normalized_autocomplete_relevance);
-    return;
-  }
-
-  double title_relevance = CalculateTitleRelevance();
-  if (fuzzy_match_cutoff_enabled) {
+  if (search_features::isLauncherFuzzyMatchForOmniboxEnabled()) {
+    double title_relevance = CalculateTitleRelevance();
     if (title_relevance < kRelevanceThreshold) {
       scoring().set_filtered(true);
     }
-    set_relevance(normalized_autocomplete_relevance);
-  } else {
-    set_relevance((normalized_autocomplete_relevance + title_relevance) / 2);
   }
+
+  // Derive relevance from autocomplete relevance and normalize it to [0, 1].
+  set_relevance(normalized_autocomplete_relevance);
 }
 
 double OmniboxResult::CalculateTitleRelevance() const {
@@ -198,8 +187,9 @@ ash::SearchResultType OmniboxResult::GetSearchResultType() const {
       return ash::OMNIBOX_SEARCH_SUGGEST_ENTITY;
     case CrosApiSearchResult::MetricsType::kNavSuggest:
       return ash::OMNIBOX_NAVSUGGEST;
-
-    default:
+    case CrosApiSearchResult::MetricsType::kCalculator:
+      return ash::OMNIBOX_CALCULATOR;
+    case CrosApiSearchResult::MetricsType::kUnset:
       return ash::SEARCH_RESULT_TYPE_BOUNDARY;
   }
 }
@@ -213,7 +203,7 @@ void OmniboxResult::OnFaviconReceived(const gfx::ImageSkia& icon) {
   // By contract, this is never called with an empty |icon|.
   DCHECK(!icon.isNull());
   search_result_->favicon = icon;
-  SetIcon(IconInfo(icon, kFaviconDimension));
+  SetIcon(IconInfo(ui::ImageModel::FromImageSkia(icon), kFaviconDimension));
 }
 
 void OmniboxResult::UpdateIcon() {
@@ -225,8 +215,9 @@ void OmniboxResult::UpdateIcon() {
   // Use a favicon if eligible. In the event that a favicon becomes available
   // asynchronously, it will be sent to us over Mojo and we will update our
   // icon.
-  if (!search_result_->favicon.isNull()) {
-    SetIcon(IconInfo(search_result_->favicon, kFaviconDimension));
+  gfx::ImageSkia icon = search_result_->favicon;
+  if (!icon.isNull()) {
+    SetIcon(IconInfo(ui::ImageModel::FromImageSkia(icon), kFaviconDimension));
     return;
   }
 
@@ -239,15 +230,16 @@ void OmniboxResult::SetGenericIcon() {
   // the generic bookmark or another generic icon as appropriate.
   if (search_result_->omnibox_type ==
       CrosApiSearchResult::OmniboxType::kBookmark) {
-    SetIcon(IconInfo(
-        gfx::CreateVectorIcon(omnibox::kBookmarkIcon, kSystemIconDimension,
-                              GetGenericIconColor()),
-        kSystemIconDimension));
+    SetIcon(IconInfo(ui::ImageModel::FromVectorIcon(omnibox::kBookmarkIcon,
+                                                    GetGenericIconColor(),
+                                                    kSystemIconDimension),
+
+                     kSystemIconDimension));
   } else {
-    SetIcon(IconInfo(
-        gfx::CreateVectorIcon(TypeToVectorIcon(search_result_->omnibox_type),
-                              kSystemIconDimension, GetGenericIconColor()),
-        kSystemIconDimension));
+    SetIcon(IconInfo(ui::ImageModel::FromVectorIcon(
+                         TypeToVectorIcon(search_result_->omnibox_type),
+                         GetGenericIconColor(), kSystemIconDimension),
+                     kSystemIconDimension));
   }
 }
 
@@ -318,7 +310,8 @@ void OmniboxResult::OnFetchComplete(const GURL& url, const SkBitmap* bitmap) {
   if (!bitmap)
     return;
 
-  IconInfo icon_info(gfx::ImageSkia::CreateFrom1xBitmap(*bitmap),
+  IconInfo icon_info(ui::ImageModel::FromImageSkia(
+                         gfx::ImageSkia::CreateFrom1xBitmap(*bitmap)),
                      kImageIconDimension, IconShape::kRoundedRectangle);
   SetIcon(icon_info);
 }

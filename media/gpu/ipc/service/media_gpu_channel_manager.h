@@ -47,6 +47,8 @@ class MediaGpuChannelManager
   // TODO(sandersd): Should we expose the MediaGpuChannel instead?
   gpu::GpuChannel* LookupChannel(const base::UnguessableToken& channel_token);
 
+  gpu::GpuChannelManager* channel_manager() const { return channel_manager_; }
+
  private:
   const raw_ptr<gpu::GpuChannelManager> channel_manager_;
   std::unordered_map<int32_t, std::unique_ptr<MediaGpuChannel>>

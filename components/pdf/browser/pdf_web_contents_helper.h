@@ -27,7 +27,6 @@ class WebContents;
 namespace pdf {
 
 class PDFWebContentsHelperClient;
-class PDFWebContentsHelperTest;
 
 // Per-WebContents class to handle PDF messages.
 class PDFWebContentsHelper
@@ -74,7 +73,7 @@ class PDFWebContentsHelper
   bool ShouldShowQuickMenu() override;
   std::u16string GetSelectedText() override;
 
-  // ui::TouchSelectionControllerClientManager::Observer:
+  // content::TouchSelectionControllerClientManager::Observer:
   void OnManagerWillDestroy(
       content::TouchSelectionControllerClientManager* manager) override;
 
@@ -92,7 +91,6 @@ class PDFWebContentsHelper
 
  private:
   friend class content::WebContentsUserData<PDFWebContentsHelper>;
-  friend class PDFWebContentsHelperTest;
 
   PDFWebContentsHelper(content::WebContents* web_contents,
                        std::unique_ptr<PDFWebContentsHelperClient> client);

@@ -1,0 +1,27 @@
+# Copyright 2023 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+source_set("trusted_vault") {
+  sources = [
+    "ios_trusted_vault_client.h",
+    "ios_trusted_vault_client.mm",
+    "ios_trusted_vault_service_factory.h",
+    "ios_trusted_vault_service_factory.mm",
+  ]
+  public_deps = [
+    "//base",
+    "//components/keyed_service/ios",
+    "//components/trusted_vault",
+  ]
+  deps = [
+    "//components/signin/public/identity_manager",
+    "//ios/chrome/browser/shared/model/browser_state",
+    "//ios/chrome/browser/signin",
+
+    # TODO(crbug.com/1434661): move trusted_vault code from i/c/b/signin to
+    # i/c/b/trusted_vault.
+    "//ios/chrome/browser/signin:trusted_vault",
+    "//ios/chrome/browser/signin:trusted_vault_factory",
+  ]
+}

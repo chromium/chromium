@@ -83,7 +83,7 @@ const AtomicString& NavigationHistoryEntry::InterfaceName() const {
 }
 
 void NavigationHistoryEntry::Trace(Visitor* visitor) const {
-  EventTargetWithInlineData::Trace(visitor);
+  EventTarget::Trace(visitor);
   ExecutionContextClient::Trace(visitor);
 }
 

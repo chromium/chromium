@@ -12,6 +12,7 @@ import 'chrome://resources/cr_elements/cr_expand_button/cr_expand_button.js';
 import 'chrome://resources/cr_elements/cr_link_row/cr_link_row.js';
 import 'chrome://resources/cr_elements/cr_shared_style.css.js';
 import 'chrome://resources/polymer/v3_0/iron-collapse/iron-collapse.js';
+import '/shared/settings/controls/settings_toggle_button.js';
 import '../settings_shared.css.js';
 import './recent_site_permissions.js';
 import './unused_site_permissions.js';
@@ -25,7 +26,7 @@ import {FocusConfig} from '../focus_config.js';
 import {loadTimeData} from '../i18n_setup.js';
 import {routes} from '../route.js';
 import {Router} from '../router.js';
-import {SafetyHubBrowserProxy, SafetyHubBrowserProxyImpl, UnusedSitePermissions} from '../safety_hub/safety_hub_browser_proxy.js';
+import {SafetyHubBrowserProxy, SafetyHubBrowserProxyImpl, SafetyHubEvent, UnusedSitePermissions} from '../safety_hub/safety_hub_browser_proxy.js';
 import {ContentSettingsTypes} from '../site_settings/constants.js';
 
 import {CategoryListItem} from './site_settings_list.js';
@@ -308,8 +309,7 @@ function getCategoryItemMap(): Map<ContentSettingsTypes, CategoryListItem> {
       route: routes.SITE_SETTINGS_STORAGE_ACCESS,
       id: Id.STORAGE_ACCESS,
       label: 'siteSettingsStorageAccess',
-      // TODO(b/276716832): Change icon to the final SAA.
-      icon: 'settings:cookie',
+      icon: 'settings:storage-access',
       enabledLabel: 'storageAccessAllowed',
       disabledLabel: 'storageAccessBlocked',
       shouldShow: () =>
@@ -395,33 +395,43 @@ export class SettingsSiteSettingsPageElement extends
       lists_: {
         type: Object,
         value: function() {
+          // Move `BACKGROUND_SYNC` to the sixth position under the fold if
+          // `STORAGE_ACCESS` is present.
+          const enablePermissionStorageAccessApi =
+              loadTimeData.getBoolean('enablePermissionStorageAccessApi');
+          const basic = enablePermissionStorageAccessApi ? Id.STORAGE_ACCESS :
+                                                           Id.BACKGROUND_SYNC;
+          const advanced: ContentSettingsTypes[] =
+              enablePermissionStorageAccessApi ? [Id.BACKGROUND_SYNC] : [];
+
           return {
             permissionsBasic: buildItemListFromIds([
               Id.GEOLOCATION,
               Id.CAMERA,
               Id.MIC,
               Id.NOTIFICATIONS,
-              Id.BACKGROUND_SYNC,
-              Id.STORAGE_ACCESS,
+              basic,
             ]),
             permissionsAdvanced: buildItemListFromIds([
-              Id.SENSORS,
-              Id.AUTOMATIC_DOWNLOADS,
-              Id.PROTOCOL_HANDLERS,
-              Id.MIDI_DEVICES,
-              Id.USB_DEVICES,
-              Id.SERIAL_PORTS,
-              Id.BLUETOOTH_DEVICES,
-              Id.FILE_SYSTEM_WRITE,
-              Id.HID_DEVICES,
-              Id.CLIPBOARD,
-              Id.PAYMENT_HANDLER,
-              Id.BLUETOOTH_SCANNING,
-              Id.AR,
-              Id.VR,
-              Id.IDLE_DETECTION,
-              Id.WINDOW_MANAGEMENT,
-              Id.LOCAL_FONTS,
+              ...advanced,
+              ...[Id.SENSORS,
+                  Id.AUTOMATIC_DOWNLOADS,
+                  Id.PROTOCOL_HANDLERS,
+                  Id.MIDI_DEVICES,
+                  Id.USB_DEVICES,
+                  Id.SERIAL_PORTS,
+                  Id.BLUETOOTH_DEVICES,
+                  Id.FILE_SYSTEM_WRITE,
+                  Id.HID_DEVICES,
+                  Id.CLIPBOARD,
+                  Id.PAYMENT_HANDLER,
+                  Id.BLUETOOTH_SCANNING,
+                  Id.AR,
+                  Id.VR,
+                  Id.IDLE_DETECTION,
+                  Id.WINDOW_MANAGEMENT,
+                  Id.LOCAL_FONTS,
+          ],
             ]),
             contentBasic: buildItemListFromIds([
               Id.COOKIES,
@@ -465,6 +475,13 @@ export class SettingsSiteSettingsPageElement extends
               'safetyCheckUnusedSitePermissionsEnabled');
         },
       },
+
+      enableSafetyHub_: {
+        type: Boolean,
+        value() {
+          return loadTimeData.getBoolean('enableSafetyHub');
+        },
+      },
     };
   }
 
@@ -472,15 +489,13 @@ export class SettingsSiteSettingsPageElement extends
     super.connectedCallback();
 
     this.addWebUiListener(
-        'unused-permission-review-list-maybe-changed',
+        SafetyHubEvent.UNUSED_PERMISSIONS_MAYBE_CHANGED,
         (sites: UnusedSitePermissions[]) =>
             this.onUnusedSitePermissionListChanged_(sites));
 
-    this.siteSettingsPermissionsBrowserProxy_
-        .getRevokedUnusedSitePermissionsList()
-        .then(
-            (sites: UnusedSitePermissions[]) =>
-                this.onUnusedSitePermissionListChanged_(sites));
+    this.safetyHubBrowserProxy_.getRevokedUnusedSitePermissionsList().then(
+        (sites: UnusedSitePermissions[]) =>
+            this.onUnusedSitePermissionListChanged_(sites));
   }
 
   prefs: Object;
@@ -490,7 +505,7 @@ export class SettingsSiteSettingsPageElement extends
   private noRecentSitePermissions_: boolean;
   private showUnusedSitePermissions_: boolean;
   private unusedSitePermissionsEnabled_: boolean;
-  private siteSettingsPermissionsBrowserProxy_: SafetyHubBrowserProxy =
+  private safetyHubBrowserProxy_: SafetyHubBrowserProxy =
       SafetyHubBrowserProxyImpl.getInstance();
 
   private lists_: {

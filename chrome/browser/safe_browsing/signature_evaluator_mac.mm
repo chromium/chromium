@@ -12,18 +12,14 @@
 #include <sys/xattr.h>
 
 #include "base/apple/bridging.h"
-#include "base/mac/foundation_util.h"
+#include "base/apple/foundation_util.h"
+#include "base/apple/scoped_cftyperef.h"
 #include "base/mac/mac_util.h"
-#include "base/mac/scoped_cftyperef.h"
 #include "base/strings/string_util.h"
 #include "base/strings/sys_string_conversions.h"
 #include "chrome/common/safe_browsing/binary_feature_extractor.h"
 #include "chrome/common/safe_browsing/mach_o_image_reader_mac.h"
 #include "components/safe_browsing/core/common/proto/csd.pb.h"
-
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
 
 namespace safe_browsing {
 
@@ -53,15 +49,15 @@ bool GetPathFromCFObject(CFTypeRef obj, std::string* output) {
   // cheat by bridging to Foundation types.
   id ns_obj = (__bridge id)obj;
 
-  if (NSString* str = base::mac::ObjCCast<NSString>(ns_obj)) {
+  if (NSString* str = base::apple::ObjCCast<NSString>(ns_obj)) {
     output->assign(str.fileSystemRepresentation);
     return true;
   }
-  if (NSURL* url = base::mac::ObjCCast<NSURL>(ns_obj)) {
+  if (NSURL* url = base::apple::ObjCCast<NSURL>(ns_obj)) {
     output->assign(url.path.fileSystemRepresentation);
     return true;
   }
-  if (NSBundle* bundle = base::mac::ObjCCast<NSBundle>(ns_obj)) {
+  if (NSBundle* bundle = base::apple::ObjCCast<NSBundle>(ns_obj)) {
     output->assign(bundle.bundlePath.fileSystemRepresentation);
     return true;
   }
@@ -105,7 +101,7 @@ void ReportAlteredFiles(
     CFTypeRef detail,
     const base::FilePath& bundle_path,
     ClientIncidentReport_IncidentData_BinaryIntegrityIncident* incident) {
-  if (CFArrayRef array = base::mac::CFCast<CFArrayRef>(detail)) {
+  if (CFArrayRef array = base::apple::CFCast<CFArrayRef>(detail)) {
     for (CFIndex i = 0; i < CFArrayGetCount(array); ++i) {
       ReportAlteredFiles(CFArrayGetValueAtIndex(array, i), bundle_path,
                          incident);
@@ -180,7 +176,8 @@ bool MacSignatureEvaluator::GetRelativePathComponent(
 }
 
 bool MacSignatureEvaluator::Initialize() {
-  base::ScopedCFTypeRef<CFURLRef> code_url = base::mac::FilePathToCFURL(path_);
+  base::ScopedCFTypeRef<CFURLRef> code_url =
+      base::apple::FilePathToCFURL(path_);
   if (!code_url)
     return false;
 
@@ -218,13 +215,13 @@ bool MacSignatureEvaluator::PerformEvaluation(
   if (SecCodeCopySigningInformation(code_, kSecCSDefaultFlags,
                                     info_dict.InitializeInto()) ==
       errSecSuccess) {
-    CFURLRef exec_url = base::mac::CFCastStrict<CFURLRef>(
+    CFURLRef exec_url = base::apple::CFCastStrict<CFURLRef>(
         CFDictionaryGetValue(info_dict, kSecCodeInfoMainExecutable));
     if (!exec_url)
       return false;
 
     exec_path =
-        base::mac::NSURLToFilePath(base::apple::CFToNSPtrCast(exec_url));
+        base::apple::NSURLToFilePath(base::apple::CFToNSPtrCast(exec_url));
     if (exec_path != path_) {
       ReportAlteredFiles(exec_url, path_, incident);
     } else {

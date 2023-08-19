@@ -2,6 +2,7 @@ Name: divsufsort
 URL: https://github.com/y-256/libdivsufsort
 Date: 2016-06-01
 Security Critical: no
+Shipped: yes
 License: MIT
 License File: LICENSE
 

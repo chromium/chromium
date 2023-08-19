@@ -24,15 +24,30 @@ public final class HomepageMetricsEnums {
     @IntDef({HomepageLocationType.POLICY_NTP, HomepageLocationType.POLICY_OTHER,
             HomepageLocationType.PARTNER_PROVIDED_NTP, HomepageLocationType.PARTNER_PROVIDED_OTHER,
             HomepageLocationType.USER_CUSTOMIZED_NTP, HomepageLocationType.USER_CUSTOMIZED_OTHER,
-            HomepageLocationType.DEFAULT_NTP})
+            HomepageLocationType.DEFAULT_NTP, HomepageLocationType.NUM_ENTRIES})
     @Retention(RetentionPolicy.SOURCE)
+
+    /**
+     * A single Homepage URL can be supplied by one of three sources (with precedence between them).
+     * That Homepage is then categorized as being The Chrome NTP, or some "OTHER" URL.
+     * E.g. A partner can provide their own custom Homepage URL, which will be
+     * PARTNER_PROVIDED_OTHER. Some users may want to use something else, e.g. Chrome's NTP which
+     * will be USER_CUSTOMIZED_NTP or their own custom URL which will be USER_CUSTOMIZED_NTP.
+     */
     public @interface HomepageLocationType {
+        /** Enterprise policy provided New Tab Page. */
         int POLICY_NTP = 0;
+        /** Enterprise policy provided Homepage. */
         int POLICY_OTHER = 1;
+        /** Partner provided New Tab Page. */
         int PARTNER_PROVIDED_NTP = 2;
+        /** Partner provided Homepage. */
         int PARTNER_PROVIDED_OTHER = 3;
+        /** User provided New Tab Page. */
         int USER_CUSTOMIZED_NTP = 4;
+        /** User specified Homepage. */
         int USER_CUSTOMIZED_OTHER = 5;
+        /** Chrome's default NTP. */
         int DEFAULT_NTP = 6;
 
         int NUM_ENTRIES = 7;

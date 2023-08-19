@@ -4,8 +4,6 @@
 
 #include "net/base/prioritized_dispatcher.h"
 
-#include <ctype.h>
-
 #include <memory>
 #include <string>
 

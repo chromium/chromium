@@ -4,6 +4,8 @@
 
 //! Utilities to handle vendored third-party crates.
 
+use crate::config::BuildConfig;
+use crate::deps;
 use crate::log_err;
 use crate::manifest;
 use crate::util::AsDebug;
@@ -99,8 +101,8 @@ impl Epoch {
     /// `semver` library.
     pub fn from_version(version: &Version) -> Self {
         match version.major {
-            0 => Self::Minor(version.minor.try_into().unwrap()),
-            x => Self::Major(x.try_into().unwrap()),
+            0 => Self::Minor(version.minor),
+            x => Self::Major(x),
         }
     }
 
@@ -165,7 +167,7 @@ impl FromStr for Epoch {
             return Err(EpochParseError::BadFormat);
         }
         let s = iter.next().ok_or(EpochParseError::BadFormat)?;
-        if iter.next() != None {
+        if iter.next().is_some() {
             return Err(EpochParseError::BadFormat);
         }
 
@@ -187,7 +189,7 @@ impl FromStr for Epoch {
         }?;
 
         // Ensure there's no remaining parts.
-        if parts.next() == None { Ok(result) } else { Err(EpochParseError::BadFormat) }
+        if parts.next().is_none() { Ok(result) } else { Err(EpochParseError::BadFormat) }
     }
 }
 
@@ -273,6 +275,30 @@ impl VendoredCrate {
     }
 }
 
+pub struct CrateFiles {
+    /// The list of all source files that are part of the crate and may be used
+    /// by rustc when building any part of the crate, as absolute paths. These
+    /// files are those found under the crate root.
+    pub sources: Vec<PathBuf>,
+    /// The list of all input files that are part of the crate and may be used
+    /// by rustc when building any part of the crate, as absolute paths. This
+    /// may contain .rs files as well that are part of other crates and which
+    /// may be include()'d or used through module paths.
+    pub inputs: Vec<PathBuf>,
+}
+
+impl CrateFiles {
+    fn new() -> Self {
+        Self { sources: vec![], inputs: vec![] }
+    }
+
+    /// Sorts the CrateFiles for a deterministic output.
+    fn sort(&mut self) {
+        self.sources.sort_unstable();
+        self.inputs.sort_unstable();
+    }
+}
+
 /// Set of vendored packages in `//third_party/rust` format. Namely, foo 1.2.3
 /// would be in `<root>/foo/v1/crate` and bar 0.1.2 would be in
 /// `<root>/bar/v0_1/crate`. The names also must be normalized according to
@@ -282,16 +308,16 @@ impl VendoredCrate {
 pub struct ThirdPartySource {
     /// The available set of versions for each crate.
     crate_versions: HashMap<String, Vec<Version>>,
-    /// As an optimization, cache the parsed manifest for each crate: it's
-    /// needed later, and we have to parse it here anyway.
-    manifests: HashMap<VendoredCrate, manifest::CargoPackage>,
+    /// Serves as a set of crate ids (the VendoredCrate keys), and holds the
+    /// source and input files for each crate.
+    crate_files: HashMap<VendoredCrate, CrateFiles>,
 }
 
 impl ThirdPartySource {
     /// Collects set of vendored crates on disk.
     pub fn new(crates_path: &Path) -> io::Result<Self> {
         let mut crate_versions = HashMap::<String, Vec<Version>>::new();
-        let mut manifests = HashMap::new();
+        let mut all_crate_files = HashMap::new();
 
         for crate_dir in log_err!(
             fs::read_dir(crates_path),
@@ -326,18 +352,27 @@ impl ThirdPartySource {
 
                 let crate_path = epoch_dir.path().join("crate");
 
-                let Some((crate_id, manifest)) = get_vendored_crate_info(&crate_path)? else {
-                    warn!("directory name parsed as valid epoch but contained no Cargo.toml: {}",
-                          crate_path.to_string_lossy());
+                let Some(crate_id) = get_vendored_crate_id(&crate_path)? else {
+                    warn!(
+                        "directory name parsed as valid epoch but contained no Cargo.toml: {}",
+                        crate_path.to_string_lossy()
+                    );
                     continue;
                 };
 
-                manifests.insert(crate_id.clone(), manifest.package);
+                let mut files = CrateFiles::new();
+                recurse_crate_files(&crate_path, &mut |filepath| {
+                    collect_crate_file(&mut files, CollectCrateFiles::Internal, filepath)
+                })?;
+                files.sort();
+
+                all_crate_files.insert(crate_id.clone(), files);
+
                 crate_versions.entry(crate_id.name).or_default().push(crate_id.version);
             }
         }
 
-        Ok(ThirdPartySource { crate_versions, manifests })
+        Ok(ThirdPartySource { crate_versions, crate_files: all_crate_files })
     }
 
     /// Find crate with `name` that meets version requirement. Returns `None` if
@@ -348,16 +383,16 @@ impl ThirdPartySource {
         Some(VendoredCrate { name: key.clone(), version })
     }
 
-    pub fn present_crates(&self) -> &HashMap<VendoredCrate, manifest::CargoPackage> {
-        &self.manifests
+    pub fn crate_files(&self) -> &HashMap<VendoredCrate, CrateFiles> {
+        &self.crate_files
     }
 
     /// Get Cargo.toml `[patch]` sections for each third-party crate.
     pub fn cargo_patches(&self) -> Vec<manifest::PatchSpecification> {
         let mut patches: Vec<_> = self
-            .manifests
-            .iter()
-            .map(|(c, _)| manifest::PatchSpecification {
+            .crate_files
+            .keys()
+            .map(|c| manifest::PatchSpecification {
                 package_name: c.name.clone(),
                 patch_name: format!(
                     "{name}_{epoch}",
@@ -393,12 +428,47 @@ pub fn std_crate_path(id: &VendoredCrate) -> PathBuf {
     format!("{}-{}", id.name, id.version).into()
 }
 
+/// Collect the source and input files (i.e. `CrateFiles`) for each library that
+/// is part of the standard library build.
+pub fn collect_std_crate_files<'a>(
+    p: &deps::Package,
+    config: &BuildConfig,
+) -> io::Result<(VendoredCrate, CrateFiles)> {
+    // We only look at lib targets here because these are stdlib targets, and thus
+    // we only are building the libs. We're not building bins even if they existed.
+    let lib_target = p.lib_target.as_ref().expect("dependency had no lib target");
+    let root_dir = lib_target.root.parent().expect("lib target has no directory in its path");
+    let crate_config = config.per_crate_config.get(&p.crate_id().name);
+
+    let extra_src_roots =
+        crate_config.iter().flat_map(|crate_config| &crate_config.extra_src_roots);
+    let extra_input_roots =
+        crate_config.iter().flat_map(|crate_config| &crate_config.extra_input_roots);
+
+    let mut files = CrateFiles::new();
+    recurse_crate_files(&root_dir, &mut |filepath| {
+        collect_crate_file(&mut files, CollectCrateFiles::Internal, filepath)
+    })?;
+    for path in extra_src_roots {
+        recurse_crate_files(&root_dir.to_owned().join(path), &mut |filepath| {
+            collect_crate_file(&mut files, CollectCrateFiles::ExternalSourcesAndInputs, filepath)
+        })?;
+    }
+    for path in extra_input_roots {
+        recurse_crate_files(&root_dir.to_owned().join(path), &mut |filepath| {
+            collect_crate_file(&mut files, CollectCrateFiles::ExternalInputsOnly, filepath)
+        })?;
+    }
+    files.sort();
+
+    let crate_id = VendoredCrate { name: p.package_name.clone(), version: p.version.clone() };
+    Ok((crate_id, files))
+}
+
 /// Traverse vendored third-party crates in the Rust source package. Each
 /// `VendoredCrate` is paired with the package metadata from its manifest. The
 /// returned list is in unspecified order.
-pub fn collect_std_vendored_crates(
-    vendor_path: &Path,
-) -> io::Result<Vec<(VendoredCrate, manifest::CargoPackage)>> {
+pub fn collect_std_vendored_crates(vendor_path: &Path) -> io::Result<Vec<VendoredCrate>> {
     let mut crates = Vec::new();
 
     for vendored_crate in fs::read_dir(vendor_path)? {
@@ -407,9 +477,11 @@ pub fn collect_std_vendored_crates(
             continue;
         }
 
-        let Some((crate_id, manifest)) = get_vendored_crate_info(&vendored_crate.path())? else {
-            error!("Cargo.toml not found at {}. cargo vendor would not do that to us.",
-                   vendored_crate.path().to_string_lossy());
+        let Some(crate_id) = get_vendored_crate_id(&vendored_crate.path())? else {
+            error!(
+                "Cargo.toml not found at {}. cargo vendor would not do that to us.",
+                vendored_crate.path().to_string_lossy()
+            );
             panic!()
         };
 
@@ -417,7 +489,13 @@ pub fn collect_std_vendored_crates(
         // "{package_name}-{version}", but for now we only use the latter for
         // std vendored deps. For simplicity, accept only that.
         let dir_name = vendored_crate.file_name().to_string_lossy().into_owned();
-        if std_crate_path(&crate_id) != Path::new(&dir_name) {
+        let std_path = std_crate_path(&crate_id).to_str().unwrap().to_string();
+        let std_path_no_version = std_path
+            .rfind("-")
+            .and_then(|pos| Some(std_path[..pos].to_string()))
+            .or(Some(std_path.to_string()))
+            .unwrap();
+        if &std_path != &dir_name && &std_path_no_version != &dir_name {
             return Err(io::Error::new(
                 io::ErrorKind::Other,
                 format!(
@@ -426,17 +504,74 @@ pub fn collect_std_vendored_crates(
             ));
         }
 
-        crates.push((crate_id, manifest.package));
+        crates.push(crate_id);
     }
 
     Ok(crates)
 }
 
+#[derive(Copy, Clone, PartialEq, Eq)]
+enum CollectCrateFiles {
+    /// Collect .rs files and store them as `sources` and other files as
+    /// `inputs`. These are part of the crate directly.
+    Internal,
+    /// Collect .rs files, .md files and other file types that may be
+    /// include!()'d into the crate, and store them as `inputs`. These are not
+    /// directly part of the crate.
+    ExternalSourcesAndInputs,
+    /// Like ExternalSourcesAndInputs but excludes .rs files.
+    ExternalInputsOnly,
+}
+
+// Adds a `filepath` to `CrateFiles` depending on the type of file and the
+// `mode` of collection.
+fn collect_crate_file(files: &mut CrateFiles, mode: CollectCrateFiles, filepath: PathBuf) {
+    match filepath.extension().map(std::ffi::OsStr::to_str).flatten() {
+        Some("rs") => match mode {
+            CollectCrateFiles::Internal => files.sources.push(filepath),
+            CollectCrateFiles::ExternalSourcesAndInputs => files.inputs.push(filepath),
+            CollectCrateFiles::ExternalInputsOnly => (),
+        },
+        // md: Markdown files are commonly include!()'d into source code as docs.
+        // h: cxxbridge_cmd include!()'s its .h file into it.
+        Some("md") | Some("h") => files.inputs.push(filepath),
+        _ => (),
+    };
+}
+
+// Recursively visits all files under `dir` and calls `f` on each one.
+fn recurse_crate_files(dir: &Path, f: &mut dyn FnMut(PathBuf)) -> io::Result<()> {
+    fn recurse(dir: &Path, root: &Path, f: &mut dyn FnMut(PathBuf)) -> io::Result<()> {
+        'each_dir_entry: for r in std::fs::read_dir(dir)? {
+            let entry = r?;
+            let path = entry.path();
+            let is_dir = entry.metadata()?.is_dir();
+            // Working locally can produce files in tree that should not be considered, and
+            // which are not part of the git repository.
+            //
+            // * `.devcontainer/` may contain .md files such as a README.md that are never
+            //   part of the build.
+            // * `.vscode/` may contain .md files such as a README.md generated there.
+            // * `target/` may contain .rs files generated by build scripts when compiling
+            //   the crate with cargo or rust-analyzer.
+            //
+            // Ideally we should just include files that are listed in `git ls-files`.
+            const SKIP_PREFIXES: [&str; 3] = [".devcontainer", ".vscode", "target"];
+            for skip in SKIP_PREFIXES {
+                if path.starts_with(root.join(Path::new(skip))) {
+                    continue 'each_dir_entry;
+                }
+            }
+            if is_dir { recurse(&path, root, f)? } else { f(path) }
+        }
+        Ok(())
+    }
+    recurse(dir, dir, f)
+}
+
 /// Get a crate's ID and parsed manifest from its path. Returns `Ok(None)` if
 /// there was no Cargo.toml, or `Err(_)` for other IO errors.
-fn get_vendored_crate_info(
-    package_path: &Path,
-) -> io::Result<Option<(VendoredCrate, manifest::CargoManifest)>> {
+fn get_vendored_crate_id(package_path: &Path) -> io::Result<Option<VendoredCrate>> {
     let manifest_file = match fs::read_to_string(package_path.join("Cargo.toml")) {
         Ok(f) => f,
         Err(e) if e.kind() == io::ErrorKind::NotFound => return Ok(None),
@@ -444,13 +579,11 @@ fn get_vendored_crate_info(
     };
 
     let manifest: manifest::CargoManifest = toml::de::from_str(&manifest_file).unwrap();
-
     let crate_id = VendoredCrate {
         name: manifest.package.name.as_str().into(),
         version: manifest.package.version.clone(),
     };
-
-    Ok(Some((crate_id, manifest)))
+    Ok(Some(crate_id))
 }
 
 /// Utility to read a path as a `&str` with an informative error message if it

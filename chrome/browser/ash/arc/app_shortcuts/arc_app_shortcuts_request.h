@@ -31,7 +31,7 @@ class ArcAppShortcutsRequest {
 
   ~ArcAppShortcutsRequest();
 
-  // Starts querying app shortcuts for |package_name|. Results are retruned in
+  // Starts querying app shortcuts for |package_name|. Results are returned in
   // |callback_|. It shouldn't be called more than one time for the life cycle
   // of |this|.
   void StartForPackage(const std::string& package_name);

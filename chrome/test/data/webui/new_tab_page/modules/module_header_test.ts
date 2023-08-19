@@ -2,8 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import 'chrome://webui-test/mojo_webui_test_support.js';
-
 import {ModuleHeaderElement} from 'chrome://new-tab-page/lazy_load.js';
 import {$$} from 'chrome://new-tab-page/new_tab_page.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
@@ -28,6 +26,7 @@ suite('NewTabPageModulesModuleHeaderTest', () => {
     moduleHeader.showDismissButton = true;
     moduleHeader.dismissText = 'baz';
     moduleHeader.disableText = 'abc';
+    moduleHeader.moreActionsText = 'def';
     moduleHeader.showInfoButtonDropdown = true;
     render(moduleHeader);
 
@@ -43,6 +42,8 @@ suite('NewTabPageModulesModuleHeaderTest', () => {
     assertEquals(
         'abc',
         $$<HTMLElement>(moduleHeader, '#disableButton')!.textContent!.trim());
+    assertEquals(
+        'def', $$<HTMLElement>(moduleHeader, '#menuButton')!.title!.trim());
     assertEquals(
         'About this card',
         $$<HTMLElement>(moduleHeader, '#infoButton')!.textContent!.trim());

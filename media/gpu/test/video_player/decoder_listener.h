@@ -37,6 +37,7 @@ class DecoderListener {
  public:
   enum class Event : size_t {
     kInitialized,
+    kDecoderBufferAccepted,  // Calling Decode() fires a kOK DecodeCB call.
     kFrameDecoded,
     kFlushing,
     kFlushDone,

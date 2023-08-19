@@ -43,6 +43,7 @@
 #endif
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)
+#include "chrome/browser/extensions/chrome_content_browser_client_extensions_part.h"
 #include "extensions/browser/extension_registry.h"
 #include "extensions/browser/process_manager.h"
 #include "extensions/browser/process_map.h"
@@ -291,19 +292,24 @@ void MemoryDetails::CollectChildInfoOnUIThread() {
     // Determine if this is an extension process.
     bool process_is_for_extensions = false;
     const extensions::ExtensionSet* extension_set = nullptr;
-    if (render_process_host) {
+    if (render_process_host &&
+        !extensions::ChromeContentBrowserClientExtensionsPart::
+            AreExtensionsDisabledForProfile(
+                render_process_host->GetBrowserContext())) {
       content::BrowserContext* context =
           render_process_host->GetBrowserContext();
       extensions::ExtensionRegistry* extension_registry =
           extensions::ExtensionRegistry::Get(context);
+      DCHECK(extension_registry);
       extension_set = &extension_registry->enabled_extensions();
       extensions::ProcessMap* process_map =
           extensions::ProcessMap::Get(context);
+      DCHECK(process_map);
       int rph_id = render_process_host->GetID();
       process_is_for_extensions = process_map->Contains(rph_id);
 
-      // For our purposes, don't count processes containing only hosted apps
-      // as extension processes. See also: crbug.com/102533.
+      // For our purposes, don't count processes containing only hosted
+      // apps as extension processes. See also: crbug.com/102533.
       for (auto& extension_id : process_map->GetExtensionsInProcess(rph_id)) {
         const Extension* extension = extension_set->GetByID(extension_id);
         if (extension && !extension->is_hosted_app()) {

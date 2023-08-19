@@ -98,7 +98,7 @@ class WorkletAnimationTest : public RenderingTest {
 
   void SetUp() override {
     RenderingTest::SetUp();
-    element_ = GetDocument().CreateElementForBinding("test");
+    element_ = GetDocument().CreateElementForBinding(AtomicString("test"));
     GetDocument().body()->appendChild(element_);
     // Animator has to be registered before constructing WorkletAnimation. For
     // unit test this is faked by adding the animator name to
@@ -446,8 +446,9 @@ TEST_F(WorkletAnimationTest, DISABLED_ScrollTimelineNewlyActive) {
   ASSERT_FALSE(worklet_animation->startTime().has_value());
 
   // Make the timeline active.
-  scroller_element->setAttribute(html_names::kStyleAttr,
-                                 "overflow:scroll;width:100px;height:100px;");
+  scroller_element->setAttribute(
+      html_names::kStyleAttr,
+      AtomicString("overflow:scroll;width:100px;height:100px;"));
   UpdateAllLifecyclePhasesForTest();
   // Simulate a new animation frame  which allows the timeline to compute new
   // current time.
@@ -514,8 +515,9 @@ TEST_F(WorkletAnimationTest, DISABLED_ScrollTimelineNewlyInactive) {
   EXPECT_TIME_NEAR(0, start_time.value());
 
   // Make the timeline inactive.
-  scroller_element->setAttribute(html_names::kStyleAttr,
-                                 "overflow:visible;width:100px;height:100px;");
+  scroller_element->setAttribute(
+      html_names::kStyleAttr,
+      AtomicString("overflow:visible;width:100px;height:100px;"));
   UpdateAllLifecyclePhasesForTest();
   GetPage().Animator().ServiceScriptedAnimations(base::TimeTicks::Now());
   ASSERT_FALSE(scroll_timeline->IsActive());
@@ -529,8 +531,9 @@ TEST_F(WorkletAnimationTest, DISABLED_ScrollTimelineNewlyInactive) {
   EXPECT_TIME_NEAR(40, current_time.value());
 
   // Make the timeline active again.
-  scroller_element->setAttribute(html_names::kStyleAttr,
-                                 "overflow:scroll;width:100px;height:100px;");
+  scroller_element->setAttribute(
+      html_names::kStyleAttr,
+      AtomicString("overflow:scroll;width:100px;height:100px;"));
   UpdateAllLifecyclePhasesForTest();
   GetPage().Animator().ServiceScriptedAnimations(base::TimeTicks::Now());
   ASSERT_TRUE(scroll_timeline->IsActive());

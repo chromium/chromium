@@ -14,11 +14,9 @@
 #include "base/sequence_checker.h"
 #include "base/time/clock.h"
 #include "base/time/default_clock.h"
-#include "base/timer/timer.h"
 #include "components/permissions/object_permission_context_base.h"
 #include "content/public/browser/file_system_access_permission_context.h"
 #include "third_party/blink/public/mojom/file_system_access/file_system_access_manager.mojom-forward.h"
-#include "third_party/blink/public/mojom/permissions/permission_status.mojom.h"
 
 class HostContentSettingsMap;
 enum ContentSetting;
@@ -45,9 +43,13 @@ BASE_DECLARE_FEATURE(kFileSystemAccessLocalUNCPathBlock);
 // 1. Active permissions are scoped to the lifetime of the handles that
 //    reference the grants. When the last tab for an origin is closed, all
 //    active permissions for that origin are revoked.
-// 2. Persistent permissions allow for auto-granting permissions which the user
-//    had given access to prior, within a given time window. These are stored
-//    using ObjectPermissionContextBase.
+// 2. Persistent permissions, which are stored via ObjectPermissionContextBase,
+//    allow for auto-granting permissions that the user had given access to
+//    prior. Before user accepts the Extend Permission prompt, the permission
+//    objects are simply "dormant grants", representing recently granted
+//    permission, which are created together with active permissions. After
+//    user accepts the Extend Permission prompt, dormant grants become
+//    "extended grants", which can auto-grant permissions.
 //
 // All methods must be called on the UI thread.
 class ChromeFileSystemAccessPermissionContext
@@ -70,6 +72,7 @@ class ChromeFileSystemAccessPermissionContext
   std::string GetKeyForObject(const base::Value::Dict& object) override;
   bool IsValidObject(const base::Value::Dict& object) override;
   std::u16string GetObjectDisplayName(const base::Value::Dict& object) override;
+  std::set<url::Origin> GetOriginsWithGrants() override;
 
   // content::FileSystemAccessPermissionContext:
   scoped_refptr<content::FileSystemAccessPermissionGrant>
@@ -121,6 +124,30 @@ class ChromeFileSystemAccessPermissionContext
     max_ids_per_origin_ = max_ids;
   }
 
+  // This method may only be called when the Persistent Permissions feature
+  // flag is enabled.
+  void SetOriginHasExtendedPermissionForTesting(const url::Origin& origin) {
+    CHECK(base::FeatureList::IsEnabled(
+        features::kFileSystemAccessPersistentPermissions));
+    // TODO(crbug.com/1011533): Refactor to use the registered Content Setting
+    // value, once implemented.
+    extended_permissions_settings_map_[origin] =
+        ContentSetting::CONTENT_SETTING_ALLOW;
+  }
+  bool RevokeActiveGrantsForTesting(
+      const url::Origin& origin,
+      base::FilePath file_path = base::FilePath()) {
+    return RevokeActiveGrants(origin, std::move(file_path));
+  }
+  std::vector<std::unique_ptr<Object>> GetExtendedPersistedObjectsForTesting(
+      const url::Origin& origin) {
+    return GetExtendedPersistedObjects(origin);
+  }
+  std::vector<std::unique_ptr<Object>> GetDormantPersistedObjectsForTesting(
+      const url::Origin& origin) {
+    return GetDormantPersistedObjects(origin);
+  }
+
   enum class GrantType { kRead, kWrite };
 
   enum class PersistedPermissionOptions {
@@ -128,8 +155,9 @@ class ChromeFileSystemAccessPermissionContext
     kUpdatePersistedPermission,
   };
 
-  // Returns a snapshot of both the currently granted active and persisted
-  // permissions.
+  // Converts permissions objects into a snapshot of grants categorized by
+  // read/write and file/directory types. Currently, used in UI code.
+  // Assumes that all objects are grants for the same origin.
   struct Grants {
     Grants();
     ~Grants();
@@ -141,17 +169,15 @@ class ChromeFileSystemAccessPermissionContext
     std::vector<base::FilePath> directory_read_grants;
     std::vector<base::FilePath> directory_write_grants;
   };
-  Grants GetPermissionGrants(const url::Origin& origin);
+  Grants ConvertObjectsToGrants(
+      const std::vector<std::unique_ptr<Object>> objects);
 
-  // Revokes read access and/or write access for the given origin
-  // and given file path.
-  void RevokeGrant(const url::Origin& origin,
-                   const base::FilePath& file_path,
-                   PersistedPermissionOptions persisted_status);
+  // Revokes active and extended grants for the given origin and given file
+  // path.
+  void RevokeGrant(const url::Origin& origin, const base::FilePath& file_path);
 
-  // Revokes write access and directory read access for the given origin.
-  void RevokeGrants(const url::Origin& origin,
-                    PersistedPermissionOptions persisted_status);
+  // Revokes active and extended grants for the given origin.
+  void RevokeGrants(const url::Origin& origin);
 
   // Returns whether active permissions exist for the origin of the given type.
   bool OriginHasReadAccess(const url::Origin& origin);
@@ -165,22 +191,18 @@ class ChromeFileSystemAccessPermissionContext
 
   void TriggerTimersForTesting();
 
-  // Return all persisted objects, including those which have expired.
-  std::vector<std::unique_ptr<ObjectPermissionContextBase::Object>>
-  GetAllGrantedOrExpiredObjects();
   scoped_refptr<content::FileSystemAccessPermissionGrant>
-  GetPersistedReadPermissionGrantForTesting(const url::Origin& origin,
+  GetExtendedReadPermissionGrantForTesting(const url::Origin& origin,
+                                           const base::FilePath& path,
+                                           HandleType handle_type);
+  scoped_refptr<content::FileSystemAccessPermissionGrant>
+  GetExtendedWritePermissionGrantForTesting(const url::Origin& origin,
                                             const base::FilePath& path,
                                             HandleType handle_type);
-  scoped_refptr<content::FileSystemAccessPermissionGrant>
-  GetPersistedWritePermissionGrantForTesting(const url::Origin& origin,
-                                             const base::FilePath& path,
-                                             HandleType handle_type);
-  void UpdatePersistedPermissionsForTesting();
-  bool HasPersistedPermissionForTesting(const url::Origin& origin,
-                                        const base::FilePath& path,
-                                        HandleType handle_type,
-                                        GrantType grant_type);
+  bool HasExtendedPermissionForTesting(const url::Origin& origin,
+                                       const base::FilePath& path,
+                                       HandleType handle_type,
+                                       GrantType grant_type);
 
   HostContentSettingsMap* content_settings() { return content_settings_.get(); }
 
@@ -190,33 +212,35 @@ class ChromeFileSystemAccessPermissionContext
   // site_settings_helper, which displays File System Access permissions on the
   // chrome://settings/content/filesystem UI.
   static constexpr char kPermissionPathKey[] = "path";
-  // This long after the handle has last been used, revoke the persisted
-  // permission.
-  static constexpr base::TimeDelta
-      kPersistentPermissionExpirationTimeoutDefault = base::Hours(5);
-  static constexpr base::TimeDelta
-      kPersistentPermissionExpirationTimeoutExtended = base::Days(30);
-  // Amount of time a persisted permission will remain persisted after its
-  // expiry. Used for metrics.
-  static constexpr base::TimeDelta kPersistentPermissionGracePeriod =
-      base::Days(1);
 
  protected:
   SEQUENCE_CHECKER(sequence_checker_);
 
-  base::RepeatingTimer&
-  periodic_sweep_persisted_permissions_timer_for_testing() {
-    return periodic_sweep_persisted_permissions_timer_;
-  }
-
-  // Returns whether persisted permission grants for the origin are subject to
-  // the extended permission duration policy.
-  bool OriginHasExtendedPermissions(const url::Origin& origin) const;
-
  private:
-  enum class MetricsOptions { kRecord, kDoNotRecord };
-
   class PermissionGrantImpl;
+
+  // This value should not be stored, and should only be used to check the
+  // state of persisted grants, using the `GetPersistedGrantState()` method.
+  enum class PersistedGrantState {
+    // Represents a grant that was granted access on previous visit.
+    // Extended Permissions is not enabled for the given origin.
+    kDormant,
+    // Represents a grant that "shadows" an active grant for the
+    // current visit. Extended permissions is not enabled for the
+    // given origin. Shadow grants can be used to auto-grant
+    // permission requests. May have active grants that are GRANTED.
+    kShadow,
+    // Represents a grant that persists across multiple visits.
+    // The user has enabled Extended Permissions for the given
+    // origin via the Restore Prompt or by installing a PWA. Can be
+    // used to auto-grant permission requests.
+    kExtended,
+  };
+
+  // Retrieve the persisted grant state for all persisted grants for a given
+  // origin.
+  PersistedGrantState GetPersistedGrantState(const url::Origin& origin) const;
+
   void PermissionGrantDestroyed(PermissionGrantImpl* grant);
 
   // Checks whether the file or directory at `path` corresponds to a directory
@@ -255,31 +279,33 @@ class ChromeFileSystemAccessPermissionContext
   // permissions for that origin.
   void MaybeCleanupActivePermissions(const url::Origin& origin);
 
-  // Sweeps HostContentSettingsMap, revoking expired persisted permissions and
-  // auto-extending persisted permissions with active grants.
-  void UpdatePersistedPermissions();
-  // Only sweep persisted permissions for the given |origin|.
-  void UpdatePersistedPermissionsForOrigin(const url::Origin& origin);
-
-  // Renew the persisted permission if it has active permissions, or
-  // revoke the persisted permission if it has expired.
-  void MaybeRenewOrRevokePersistedPermission(const url::Origin& origin,
-                                             base::Value::Dict grant,
-                                             bool has_extended_permissions);
-
   bool AncestorHasActivePermission(const url::Origin& origin,
                                    const base::FilePath& path,
                                    GrantType grant_type) const;
-  absl::optional<base::Value::Dict> GetPersistedPermission(
-      const url::Origin& origin,
-      const base::FilePath& path);
-  bool HasPersistedPermission(const url::Origin& origin,
-                              const base::FilePath& path,
-                              HandleType handle_type,
-                              GrantType grant_type,
-                              MetricsOptions options);
-  bool PersistentPermissionIsExpired(const base::Time& last_used,
-                                     bool has_extended_permissions) const;
+
+  bool OriginHasExtendedPermission(const url::Origin& origin) const;
+
+  // Returns whether the origin has extended permission for a specific file.
+  bool HasExtendedPermission(const url::Origin& origin,
+                             const base::FilePath& path,
+                             HandleType handle_type,
+                             GrantType grant_type);
+
+  bool HasGrantedActiveGrant(const url::Origin& origin) const;
+
+  // Similar to GetGrantedObjects() but returns only extended grants.
+  std::vector<std::unique_ptr<Object>> GetExtendedPersistedObjects(
+      const url::Origin& origin);
+
+  // Similar to GetGrantedObjects() but returns only dormant grants.
+  std::vector<std::unique_ptr<Object>> GetDormantPersistedObjects(
+      const url::Origin& origin);
+
+  // Revokes the active grants for the given origin, and returns whether any is
+  // revoked. If the `file_path` is provided, then only the grant matching
+  // the file path is revoked.
+  bool RevokeActiveGrants(const url::Origin& origin,
+                          base::FilePath file_path = base::FilePath());
 
   base::WeakPtr<ChromeFileSystemAccessPermissionContext> GetWeakPtr();
 
@@ -287,7 +313,11 @@ class ChromeFileSystemAccessPermissionContext
 
   // Permission state per origin.
   struct OriginState;
-  std::map<url::Origin, OriginState> origins_;
+  std::map<url::Origin, OriginState> active_permissions_map_;
+
+  // TODO(crbug.com/1011533): Remove this map once the Persistent Permission
+  // Content Setting is implemented.
+  std::map<url::Origin, ContentSetting> extended_permissions_settings_map_;
 
   bool usage_icon_update_scheduled_ = false;
 
@@ -297,7 +327,6 @@ class ChromeFileSystemAccessPermissionContext
   size_t max_ids_per_origin_ = 32u;
 
   const raw_ptr<const base::Clock> clock_;
-  base::RepeatingTimer periodic_sweep_persisted_permissions_timer_;
 
   base::WeakPtrFactory<ChromeFileSystemAccessPermissionContext> weak_factory_{
       this};

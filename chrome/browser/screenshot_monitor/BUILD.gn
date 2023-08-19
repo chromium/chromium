@@ -1,0 +1,26 @@
+# Copyright 2023 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/android/config.gni")
+import("//build/config/android/rules.gni")
+
+android_library("java") {
+  sources = [
+    "java/src/org/chromium/chrome/browser/screenshot_monitor/ScreenshotMonitor.java",
+    "java/src/org/chromium/chrome/browser/screenshot_monitor/ScreenshotMonitorDelegate.java",
+    "java/src/org/chromium/chrome/browser/screenshot_monitor/ScreenshotMonitorImpl.java",
+    "java/src/org/chromium/chrome/browser/screenshot_monitor/ScreenshotTabObserver.java",
+  ]
+
+  deps = [
+    "//base:base_java",
+    "//chrome/browser/profiles/android:java",
+    "//chrome/browser/tab:java",
+    "//components/ukm/android:java",
+    "//content/public/android:content_java",
+    "//third_party/androidx:androidx_annotation_annotation_java",
+    "//third_party/androidx:androidx_core_core_java",
+    "//ui/android:ui_full_java",
+  ]
+}

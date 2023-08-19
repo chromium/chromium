@@ -3,13 +3,16 @@
 <translationbundle lang="it">
 <translation id="1016765312371154165">Chrome non si è chiuso correttamente.</translation>
 <translation id="130631256467250065">Le modifiche verranno applicate al successivo riavvio del dispositivo.</translation>
+<translation id="1555506416658437797">modifica metodi di pagamento.</translation>
 <translation id="1635457557763038537">Le modifiche verranno applicate al prossimo riavvio di Chrome.</translation>
+<translation id="2399868464369312507">Google Chrome sta tentando di modificare i metodi di pagamento.</translation>
 <translation id="2447485272386224171">La realizzazione di Chrome è stata possibile grazie al progetto open source <ph name="BEGIN_LINK_CHROMIUM" />Chromium<ph name="END_LINK_CHROMIUM" /> e ad altri <ph name="BEGIN_LINK_OSS" />software open source<ph name="END_LINK_OSS" />.</translation>
 <translation id="2588322182880276190">Logo di Chrome</translation>
 <translation id="3444832043240812445">Questa pagina mostra solo informazioni sugli arresti anomali recenti se <ph name="BEGIN_LINK" />attivi la segnalazione degli arresti anomali<ph name="END_LINK" />.</translation>
 <translation id="3875312571075912821">Consenti a Chrome di accedere alla rete nelle impostazioni del firewall o del software
         antivirus.</translation>
 <translation id="5005121315113832363">Questa pagina è stata bloccata da Chrome</translation>
+<translation id="585620188971323280">modificare le impostazioni per la compilazione dei metodi di pagamento.</translation>
 <translation id="6011049234605203654">Seleziona
           il menu Chrome &gt;
           <ph name="SETTINGS_TITLE" />
@@ -36,4 +39,5 @@ Se il problema non si risolve, dovresti riselezionare questa opzione per ottener
           e deseleziona i proxy selezionati.</translation>
 <translation id="8232971017369963250">La realizzazione di Chrome è stata possibile grazie al progetto open source <ph name="BEGIN_LINK_CHROMIUM" />Chromium<ph name="END_LINK_CHROMIUM" />.</translation>
 <translation id="8279509328145658601">La realizzazione di Chrome è stata possibile anche grazie ad altri <ph name="BEGIN_LINK_OSS" />software open source<ph name="END_LINK_OSS" />.</translation>
+<translation id="8544217240017914508">Google Chrome sta cercando di modificare le impostazioni per la compilazione dei metodi di pagamento.</translation>
 </translationbundle>

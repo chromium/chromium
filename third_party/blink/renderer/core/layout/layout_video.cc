@@ -44,8 +44,8 @@ LayoutVideo::LayoutVideo(HTMLVideoElement* video) : LayoutMedia(video) {
 
 LayoutVideo::~LayoutVideo() = default;
 
-LayoutSize LayoutVideo::DefaultSize() {
-  return LayoutSize(kDefaultWidth, kDefaultHeight);
+PhysicalSize LayoutVideo::DefaultSize() {
+  return PhysicalSize(LayoutUnit(kDefaultWidth), LayoutUnit(kDefaultHeight));
 }
 
 void LayoutVideo::IntrinsicSizeChanged() {
@@ -58,7 +58,7 @@ void LayoutVideo::IntrinsicSizeChanged() {
 void LayoutVideo::UpdateIntrinsicSize() {
   NOT_DESTROYED();
 
-  LayoutSize size = CalculateIntrinsicSize(StyleRef().EffectiveZoom());
+  PhysicalSize size = CalculateIntrinsicSize(StyleRef().EffectiveZoom());
 
   // Never set the element size to zero when in a media document.
   if (size.IsEmpty() && GetNode()->ownerDocument() &&
@@ -74,14 +74,14 @@ void LayoutVideo::UpdateIntrinsicSize() {
       layout_invalidation_reason::kSizeChanged);
 }
 
-LayoutSize LayoutVideo::CalculateIntrinsicSize(float scale) {
+PhysicalSize LayoutVideo::CalculateIntrinsicSize(float scale) {
   NOT_DESTROYED();
   HTMLVideoElement* video = VideoElement();
   DCHECK(video);
 
   if (RuntimeEnabledFeatures::ExperimentalPoliciesEnabled()) {
     if (video->IsDefaultIntrinsicSize()) {
-      LayoutSize size = DefaultSize();
+      PhysicalSize size = DefaultSize();
       size.Scale(scale);
       return size;
     }
@@ -112,7 +112,7 @@ LayoutSize LayoutVideo::CalculateIntrinsicSize(float scale) {
       if (const auto* player = MediaElement()->GetWebMediaPlayer()) {
         gfx::Size size = player->NaturalSize();
         if (!size.IsEmpty()) {
-          LayoutSize layout_size = LayoutSize(size);
+          PhysicalSize layout_size = PhysicalSize(size);
           layout_size.Scale(scale);
           return layout_size;
         }
@@ -120,7 +120,7 @@ LayoutSize LayoutVideo::CalculateIntrinsicSize(float scale) {
       break;
   }
 
-  LayoutSize size = DefaultSize();
+  PhysicalSize size = DefaultSize();
   size.Scale(scale);
   return size;
 }
@@ -168,10 +168,10 @@ void LayoutVideo::PaintReplaced(const PaintInfo& paint_info,
   VideoPainter(*this).PaintReplaced(paint_info, paint_offset);
 }
 
-void LayoutVideo::UpdateLayout() {
+void LayoutVideo::UpdateAfterLayout() {
   NOT_DESTROYED();
-  UpdatePlayer(/* is_in_layout */ true);
-  LayoutMedia::UpdateLayout();
+  LayoutMedia::UpdateAfterLayout();
+  InvalidateCompositing();
 }
 
 HTMLVideoElement* LayoutVideo::VideoElement() const {
@@ -182,17 +182,13 @@ HTMLVideoElement* LayoutVideo::VideoElement() const {
 void LayoutVideo::UpdateFromElement() {
   NOT_DESTROYED();
   LayoutMedia::UpdateFromElement();
-  UpdatePlayer(/* is_in_layout */ false);
-
+  InvalidateCompositing();
+  UpdateIntrinsicSize();
   SetShouldDoFullPaintInvalidation();
 }
 
-void LayoutVideo::UpdatePlayer(bool is_in_layout) {
+void LayoutVideo::InvalidateCompositing() {
   NOT_DESTROYED();
-  if (!is_in_layout) {
-    UpdateIntrinsicSize();
-  }
-
   WebMediaPlayer* media_player = MediaElement()->GetWebMediaPlayer();
   if (!media_player)
     return;
@@ -206,18 +202,17 @@ void LayoutVideo::UpdatePlayer(bool is_in_layout) {
 }
 
 PhysicalRect LayoutVideo::ReplacedContentRectFrom(
-    const LayoutSize size,
-    const NGPhysicalBoxStrut& border_padding) const {
+    const PhysicalRect& base_content_rect) const {
   NOT_DESTROYED();
   if (GetDisplayMode() == kVideo) {
     // Video codecs may need to restart from an I-frame when the output is
     // resized. Round size in advance to avoid 1px snap difference.
     return PreSnappedRectForPersistentSizing(
-        ComputeReplacedContentRect(size, border_padding));
+        ComputeReplacedContentRect(base_content_rect));
   }
   // If we are displaying the poster image no pre-rounding is needed, but the
   // size of the image should be used for fitting instead.
-  return ComputeReplacedContentRect(size, border_padding, &cached_image_size_);
+  return ComputeReplacedContentRect(base_content_rect, &cached_image_size_);
 }
 
 bool LayoutVideo::SupportsAcceleratedRendering() const {

@@ -172,6 +172,7 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothDeviceFloss
                         int32_t mtu,
                         GattStatus status) override;
 #if BUILDFLAG(IS_CHROMEOS)
+  void GattServiceChanged(std::string address) override;
   void GattExecuteWrite(std::string address, GattStatus status) override;
 #endif
 

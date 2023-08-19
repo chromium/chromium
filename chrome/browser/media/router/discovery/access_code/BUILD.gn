@@ -74,5 +74,16 @@ if (!is_android) {
       "//content/public/browser",
       "//services/preferences/public/cpp:cpp",
     ]
+
+    if (is_chromeos_lacros) {
+      sources += [
+        "access_code_cast_pref_updater_lacros.cc",
+        "access_code_cast_pref_updater_lacros.h",
+      ]
+      deps += [
+        "//chromeos/crosapi/mojom",
+        "//chromeos/lacros:lacros",
+      ]
+    }
   }
 }

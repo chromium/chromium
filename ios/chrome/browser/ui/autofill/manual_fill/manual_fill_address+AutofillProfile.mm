@@ -10,10 +10,6 @@
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "url/gurl.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 namespace {
 
 // Takes in an autofill profile and an autofill field type and returns the

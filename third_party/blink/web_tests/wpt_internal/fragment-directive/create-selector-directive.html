@@ -17,14 +17,26 @@
       return range;
     }
 
+    function rAF() {
+      return new Promise(resolve => {
+        requestAnimationFrame(resolve);
+      });
+    }
+
     // Performs a same-document navigation to a text directive whose content is
     // `directive` so that the page attempts to scroll to it. Navigation is
     // performed in the given window `win`, if null uses main frame.
-    function scrollToSelectorDirective(directive, win) {
+    async function scrollToSelectorDirective(directive, test, win) {
       let w = window;
       if (typeof win != 'undefined')
         w = win;
       w.location.hash = `:~:${directive}`;
+
+      await test.step_wait(() => window.scrollY > 0, "Wait for scroll");
+
+      // Needed since the text fragment will be kept in view until
+      // scriptable actions are performed in the next frame.
+      await rAF();
     }
 
     function reset() {
@@ -164,7 +176,7 @@
       },
     ];
 
-    onload = () => {
+    onload = async () => {
       for (let test of test_cases) {
         promise_test(async (t) => {
           reset();
@@ -197,9 +209,7 @@
             return promise_rejects_dom(t, test.rejects_dom, result_promise);
           } else {
             const result = await result_promise;
-            scrollToSelectorDirective(result);
-
-            await t.step_wait(() => window.scrollY > 0, "Wait for scroll");
+            await scrollToSelectorDirective(result, t);
             assert_true(isInViewport(start_element), '`p1 is scrolled into view.');
           }
         }, test.description);
@@ -221,8 +231,7 @@
           assert_equals(range.toString(), 'Text inside an iframe', 'PRECONDITION: Correct range.');
 
           const result = await iframeDoc.fragmentDirective.createSelectorDirective(range);
-          scrollToSelectorDirective(result, frames[0]);
-          await t.step_wait(() => window.scrollY > 0, "Wait for scroll");
+          await scrollToSelectorDirective(result, t, frames[0]);
           assert_greater_than(iframeDoc.scrollingElement.scrollTop, 100, 'iframe text scrolled into view');
         }, 'Generate selector within iframe');
 

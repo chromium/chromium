@@ -15,7 +15,8 @@ found in the LICENSE file.
         android:id="@+id/icon"
         android:layout_width="36dp"
         android:layout_height="36dp"
-        android:layout_marginTop="10dp"
+        android:layout_gravity="center_vertical"
+        android:layout_marginTop="2dp"
         tools:ignore="ContentDescription"
         android:visibility="gone" />
 
@@ -25,14 +26,15 @@ found in the LICENSE file.
         android:id="@+id/spinny"
         android:layout_width="32dp"
         android:layout_height="32dp"
-        android:layout_marginTop="10dp" />
+        android:layout_gravity="center_vertical"
+        android:layout_marginTop="2dp" />
 
     <!-- An editable text field for the name of the home screen icon. -->
     <org.chromium.components.browser_ui.widget.text.AlertDialogEditText
         android:id="@+id/text"
         android:inputType="text"
         android:layout_width="match_parent"
-        android:layout_height="32dp"
+        android:layout_height="wrap_content"
         android:textAppearance="@style/TextAppearance.AddToHomeScreenEditText"
         android:singleLine="true"
         android:paddingTop="0dp"

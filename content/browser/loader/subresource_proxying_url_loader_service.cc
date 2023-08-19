@@ -128,14 +128,11 @@ void SubresourceProxyingURLLoaderService::CreateLoaderAndStart(
   }
 
   if (resource_request_in.ad_auction_headers &&
-      (!base::FeatureList::IsEnabled(blink::features::kInterestGroupStorage) ||
-       !base::FeatureList::IsEnabled(
-           blink::features::kFledgeBiddingAndAuctionServer))) {
+      !base::FeatureList::IsEnabled(blink::features::kInterestGroupStorage)) {
     loader_factory_receivers_.ReportBadMessage(
         "Unexpected `resource_request_in` in "
         "SubresourceProxyingURLLoaderService::CreateLoaderAndStart(): "
-        "ad_auction_headers is set when FledgeBiddingAndAuctionServer is "
-        "disabled.");
+        "ad_auction_headers is set when InterestGroupStorage is disabled.");
     return;
   }
 

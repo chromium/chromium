@@ -50,10 +50,7 @@ class FakeLoginDisplayHost : public LoginDisplayHost {
   void CompleteLogin(const UserContext& user_context) override;
   void OnGaiaScreenReady() override;
   void SetDisplayEmail(const std::string& email) override;
-  void SetDisplayAndGivenName(const std::string& display_name,
-                              const std::string& given_name) override;
-  void LoadWallpaper(const AccountId& account_id) override;
-  void LoadSigninWallpaper() override;
+  void UpdateWallpaper(const AccountId& prefilled_account) override;
   bool IsUserAllowlisted(
       const AccountId& account_id,
       const absl::optional<user_manager::UserType>& user_type) override;

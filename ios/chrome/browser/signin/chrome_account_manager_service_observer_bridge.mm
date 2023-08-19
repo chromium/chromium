@@ -4,12 +4,8 @@
 
 #import "ios/chrome/browser/signin/chrome_account_manager_service_observer_bridge.h"
 
-#import "base/mac/foundation_util.h"
+#import "base/apple/foundation_util.h"
 #import "ios/chrome/browser/signin/chrome_account_manager_service.h"
-
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
 
 ChromeAccountManagerServiceObserverBridge::
     ChromeAccountManagerServiceObserverBridge(

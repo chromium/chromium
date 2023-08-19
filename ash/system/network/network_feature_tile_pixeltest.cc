@@ -138,7 +138,8 @@ class NetworkFeatureTilePixelTest : public AshTestBase {
   std::unique_ptr<NetworkFeaturePodController> network_feature_pod_controller_;
   network_config::CrosNetworkConfigTestHelper network_config_helper_;
   // Owned by `widget_`.
-  raw_ptr<FeatureTile, ExperimentalAsh> feature_tile_ = nullptr;
+  raw_ptr<FeatureTile, DanglingUntriaged | ExperimentalAsh> feature_tile_ =
+      nullptr;
 };
 
 TEST_F(NetworkFeatureTilePixelTest, NoNetworks) {

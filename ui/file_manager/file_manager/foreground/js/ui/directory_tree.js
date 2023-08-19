@@ -4,6 +4,7 @@
 
 import {assert, assertNotReached} from 'chrome://resources/ash/common/assert.js';
 import {dispatchSimpleEvent, getPropertyDescriptor, PropertyKind} from 'chrome://resources/ash/common/cr_deprecated.js';
+import {sanitizeInnerHtml} from 'chrome://resources/js/parse_html_subset.js';
 
 import {maybeShowTooltip} from '../../../common/js/dom_utils.js';
 import {isEntryInsideDrive} from '../../../common/js/entry_utils.js';
@@ -223,7 +224,8 @@ class FilesTreeItem extends TreeItem {
     this.parentTree_ = tree;
 
     const innerHTML = directorytree.createRowElementContent(id);
-    this.rowElement.innerHTML = innerHTML;
+    this.rowElement.innerHTML =
+        sanitizeInnerHtml(innerHTML, {attrs: ['class', 'id']});
     this.label = label;
   }
 
@@ -310,6 +312,10 @@ export class DirectoryItem extends FilesTreeItem {
     // @type {function()=} onMetadataUpdated_ bound to |this| used to listen
     // metadata update events.
     this.onMetadataUpdateBound_ = undefined;
+  }
+
+  get typeName() {
+    return 'directory_item';
   }
 
   /**
@@ -1168,10 +1174,16 @@ class VolumeItem extends DirectoryItem {
     if (modelItem.volumeInfo_.providerId !== '@smb' &&
         modelItem.volumeInfo_.volumeType !==
             VolumeManagerCommon.VolumeType.SMB) {
-      this.volumeInfo_.resolveDisplayRoot((displayRoot) => {
-        this.resolved_ = true;
-        this.updateSubDirectories(false /* recursive */);
-      });
+      this.volumeInfo_.resolveDisplayRoot(
+          (displayRoot) => {
+            this.resolved_ = true;
+            this.updateSubDirectories(false /* recursive */);
+          },
+          (error) => {
+            console.warn(
+                'Failed to resolve display root of',
+                modelItem.volumeInfo_.volumeType, 'due to', error);
+          });
     }
   }
 
@@ -1484,9 +1496,14 @@ export class DriveVolumeItem extends VolumeItem {
     if (!target.classList.contains('expand-icon')) {
       // If the Drive volume is clicked, select one of the children instead of
       // this item itself.
-      this.volumeInfo_.resolveDisplayRoot((displayRoot) => {
-        this.searchAndSelectByEntry(displayRoot);
-      });
+      this.volumeInfo_.resolveDisplayRoot(
+          (displayRoot) => {
+            this.searchAndSelectByEntry(displayRoot);
+          },
+          (error) => {
+            console.warn(
+                'Unable to select display root for', target, 'due to', error);
+          });
     }
   }
 
@@ -2002,6 +2019,10 @@ export class DirectoryTree extends Tree {
     this.privateOnDirectoryChangedBound_ = null;
   }
 
+  get typeName() {
+    return 'directory_tree';
+  }
+
   /**
    * Decorates an element.
    * @param {!DirectoryModel} directoryModel Current DirectoryModel.
@@ -2264,14 +2285,18 @@ export class DirectoryTree extends Tree {
     if (!volumeInfo) {
       return;
     }
-    volumeInfo.resolveDisplayRoot(async () => {
-      if (this.sequence_ !== currentSequence) {
-        return;
-      }
-      if (!(await this.searchAndSelectByEntry(entry))) {
-        this.selectedItem = null;
-      }
-    });
+    volumeInfo.resolveDisplayRoot(
+        async () => {
+          if (this.sequence_ !== currentSequence) {
+            return;
+          }
+          if (!(await this.searchAndSelectByEntry(entry))) {
+            this.selectedItem = null;
+          }
+        },
+        (error) => {
+          console.warn('Failed to select by entry due to', error);
+        });
   }
 
   /**

@@ -36,6 +36,16 @@
       "2FCBCE08B34CCA1728A85F1EFBD9A34DD2558B2E"
     ]
   },
+  "accessibilityServicePrivate": {
+    "channel": "stable",
+    "component_extensions_auto_granted": false,
+    "extension_types": ["extension"],
+    "location": "component",
+    "platforms": ["chromeos", "lacros"],
+    "allowlist": [
+      "3CD7D4ABEB04E8C4D20552C60B8B20983DD10A2F"   // Embedded A11y Helper.
+    ]
+  },
   "activityLogPrivate": {
     "channel": "stable",
     "extension_types": ["extension", "platform_app"],
@@ -229,10 +239,6 @@
     "channel": "stable",
     "extension_types": ["extension", "platform_app"]
   },
-  "desktopCapturePrivate": {
-    "channel": "stable",
-    "extension_types": ["extension", "platform_app"]
-  },
   "documentScan": {
     "channel": "stable",
     "extension_types": ["extension", "platform_app"],
@@ -348,10 +354,12 @@
   },
   "fileManagerPrivate": {
     "channel": "stable",
-    "extension_types": ["extension", "legacy_packaged_app", "platform_app"],
+    "extension_types": ["extension", "platform_app"],
+    "location": "component",
     "platforms": ["chromeos"],
     "allowlist": [
-      "74E2D32A61B08D29521A8C4E360F581DE78F5CA5"  // Image loader
+      // Only used for API tests by test ext pkplfbidichfdicaijlchgnapepdginl.
+      "5065C83E84321221675D20FBE4DC43C655CC8C6F"
     ]
   },
   "fileSystemProvider": [{
@@ -409,13 +417,6 @@
     "channel": "stable",
     "extension_types": ["extension", "platform_app"]
   },
-  "identityPrivate": {
-    "channel": "stable",
-    "extension_types": [
-      "legacy_packaged_app", "platform_app"
-    ],
-    "location": "component"
-  },
   "idltest": {
     "channel": "trunk",
     "extension_types": ["extension"]
@@ -424,6 +425,16 @@
     "channel": "stable",
     "extension_types": ["extension", "legacy_packaged_app"],
     "platforms": ["chromeos", "win", "linux"]
+  },
+  "imageLoaderPrivate": {
+    "channel": "stable",
+    "component_extensions_auto_granted": false,
+    "extension_types": ["extension"],
+    "location": "component",
+    "platforms": ["chromeos"],
+    "allowlist": [
+      "74E2D32A61B08D29521A8C4E360F581DE78F5CA5"  // Image loader
+    ]
   },
   "inputMethodPrivate": [{
     "channel": "stable",
@@ -753,6 +764,11 @@
       "754A9CB3C8623093180E10CF4C3AB64837179E68",  // https://crbug.com/1201800
       "CF6B19571334F49878327D557597D23B1458AA39"   // https://crbug.com/1201800
     ]
+  },
+  "readingList": {
+    "channel": "trunk",
+    "extension_types": ["extension"],
+    "min_manifest_version": 3
   },
   "resourcesPrivate": {
     "channel": "stable",

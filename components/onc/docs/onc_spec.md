@@ -158,6 +158,13 @@ fetching new policy or logging in.
 A [Help Center article](https://support.google.com/chrome/a/answer/6326250)
 warns admins of the implications of mis-using this policy for Chrome OS.
 
+* **AllowCellularHotspot**
+    * (optional, defaults to true) - **boolean**
+    * When this field is present and set to true, chromebook users will be allowed to
+      turn on hotspot on their devices. If there is an active hotspot and this field
+      is set to false, hotspot will be turned off and a notification will be
+      displayed to the user.
+
 * **AllowCellularSimLock**
     * (optional, defaults to true) - **boolean**
     * When this field is present and set to false, a SIM cannot be PIM Locked on
@@ -194,6 +201,18 @@ warns admins of the implications of mis-using this policy for Chrome OS.
       range (e.g. user’s home), the device may connect to any network. If
       enabled and a network scan shows a new policy managed network, the device
       will automatically switch to the managed network.
+
+* **AllowTextMessages**
+    * (optional, defaults to Unset) - **string**
+    * When this field is present and set to Allow text message notifications
+     will be shown. When this field is set to Suppress, no text message
+     notifications will be shown and text messages will be dropped forever.
+     When this field is Unset, text messages notifications will be shown by
+     default and will allow user configuration for suppressing text messages.
+     * Allowed values are:
+        * *Allow*
+        * *Suppress*
+        * *Unset*
 
 * **BlacklistedHexSSIDs** <!--- nocheck -->
     * DEPRECATED, use **BlockedHexSSIDs** instead.<br/>
@@ -505,6 +524,22 @@ field **WiFi** must be set to an object of type [WiFi](#WiFi-type).
         * *["00:00:00:00:00:00"]*: Special value indicating the network
           shouldn't associate with any AP. `"00:00:00:00:00:00"` shouldn't be a
           part of any other list of values, otherwise it may cause an error.
+
+* **BSSIDRequested**
+    * (optional) - **string**
+    * BSSID that the AP should connect to. BSSIDs
+      should be formatted as colon-separated octets (e.g.
+      `"00:01:02:03:04:05"`).
+    * If the AP cannot connect to the requested BSSID, then it will not fallback
+      to another BSSID and will remain unconnected.
+    * If **BSSIDRequested** is empty and **BSSIDAllowlist** is not, then the
+      WiFi network will follow the values in **BSSIDAllowlist**
+    * If **BSSIDAllowlist** is empty and **BSSIDRequested** is not, then the
+      WiFi network will follow the value in **BSSIDRequested**
+    * If **BSSIDRequested** and **BSSIDAllowlist** have a disjoint set of
+      values, then the WiFi network will not connect.
+    * If **BSSIDRequested** is also in **BSSIDAllowlist**, then the network will
+      follow the value in **BSSIDRequested**
 
 * **EAP**
     * (required if **Security** is
@@ -1624,15 +1659,21 @@ ONC configuration of of **Cellular** networks is not yet supported.
 
 * **SMDPAddress**
     * (optional, read-only) - **string**
-    * When set with the address of an SMDP+ server, indicates that the eSIM
-      profile for this network should be downloaded and installed using this
-      address. This field is mutually exclusive with SMDSAddress.
+    * The activation code containing the address of the SM-DP+ server that
+      should be used to download and install an eSIM profile for this network.
+      This field is mutually exclusive with SMDSAddress. While this field has
+      "address" in its name for backwards compatibility, its value is expected
+      to be formatted according to the GSMA specification. Policies that do not
+      conform to the GSMA specification will fail. Learn more about the
+      specification at
+      https://www.gsma.com/newsroom/wp-content/uploads/SGP.22_v2.2.pdf.
 
 * **SMDSAddress**
     * (optional, read-only) - **string**
-    * When set with the address of an SMDS server, indicates that the eSIM
-      profile for this network should be downloaded and installed using this
-      address. This field is mutually exclusive with SMDPAddress and is expected
+    * The activation code containing the address of the SM-DS server that should
+      be used to download and install an eSIM profile for this network. This
+      field is mutually exclusive with SMDPAddress. While this field has
+      "address" in its name for backwards compatibility, its value is expected
       to be formatted according to the GSMA specification. Policies that do not
       conform to the GSMA specification will fail. Learn more about the
       specification at

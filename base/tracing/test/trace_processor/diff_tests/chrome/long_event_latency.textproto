@@ -1,0 +1,212 @@
+# Long latency events from two renderer processes
+packet {
+  trusted_packet_sequence_id: 1
+  timestamp: 0
+  track_descriptor {
+    uuid: 10
+    process {
+      pid: 1001
+      process_name: "Renderer"
+    }
+  }
+}
+
+packet {
+  trusted_packet_sequence_id: 1
+  timestamp: 0
+  track_descriptor {
+    uuid: 20
+    process {
+      pid: 1002
+      process_name: "Renderer"
+    }
+  }
+}
+
+# EventLatency 1: 200ms duration
+packet {
+  trusted_packet_sequence_id: 1
+  timestamp: 0
+  track_descriptor {
+    uuid: 101
+    parent_uuid: 10
+    name: "EventLatency"
+  }
+}
+
+packet {
+  trusted_packet_sequence_id: 1
+  timestamp: 111000
+  track_event {
+    track_uuid: 101
+    categories: "cat"
+    debug_annotations: {
+      name: "event"
+      string_value: "FirstGestureScrollUpdate"
+    }
+    name: "EventLatency"
+    type: 1
+  }
+}
+
+packet {
+  trusted_packet_sequence_id: 1
+  timestamp: 200111000
+  track_event {
+    track_uuid: 101
+    categories: "cat"
+    name: "EventLatency"
+    type: 2
+  }
+}
+
+# EventLatency 2: 110ms ending at the same timestamp as EventLatency 1.
+# EventLatency 1 and 2 are reported as one occurrence of long latency.
+packet {
+  trusted_packet_sequence_id: 1
+  timestamp: 0
+  track_descriptor {
+    uuid: 102
+    parent_uuid: 10
+    name: "EventLatency"
+  }
+}
+
+packet {
+  trusted_packet_sequence_id: 1
+  timestamp: 90111000
+  track_event {
+    track_uuid: 102
+    categories: "cat"
+    debug_annotations: {
+      name: "event"
+      string_value: "GestureScrollUpdate"
+    }
+    name: "EventLatency"
+    type: 1
+  }
+}
+
+packet {
+  trusted_packet_sequence_id: 1
+  timestamp: 200111000
+  track_event {
+    track_uuid: 102
+    categories: "cat"
+    name: "EventLatency"
+    type: 2
+  }
+}
+
+# EventLatency 3: a long latency slightly above the 100ms threshold
+packet {
+  trusted_packet_sequence_id: 1
+  timestamp: 0
+  track_descriptor {
+    uuid: 103
+    parent_uuid: 10
+    name: "EventLatency"
+  }
+}
+
+packet {
+  trusted_packet_sequence_id: 1
+  timestamp: 180111000
+  track_event {
+    track_uuid: 103
+    categories: "cat"
+    debug_annotations: {
+      name: "event"
+      string_value: "GestureScrollUpdate"
+    }
+    name: "EventLatency"
+    type: 1
+  }
+}
+
+packet {
+  trusted_packet_sequence_id: 1
+  timestamp: 280111001
+  track_event {
+    track_uuid: 103
+    categories: "cat"
+    name: "EventLatency"
+    type: 2
+  }
+}
+
+# EventLatency 4: below the 100ms threshold; not a long latency
+packet {
+  trusted_packet_sequence_id: 1
+  timestamp: 0
+  track_descriptor {
+    uuid: 104
+    parent_uuid: 10
+    name: "EventLatency"
+  }
+}
+
+packet {
+  trusted_packet_sequence_id: 1
+  timestamp: 250111001
+  track_event {
+    track_uuid: 104
+    categories: "cat"
+    debug_annotations: {
+      name: "event"
+      string_value: "GestureScrollUpdate"
+    }
+    name: "EventLatency"
+    type: 1
+  }
+}
+
+packet {
+  trusted_packet_sequence_id: 1
+  timestamp: 350111000
+  track_event {
+    track_uuid: 104
+    categories: "cat"
+    name: "EventLatency"
+    type: 2
+  }
+}
+
+# EventLatency 5: long latency from the second renderer process;
+# should be reported as a standalone long latency occurrence despite having
+# the same end time as EventLatency 1.
+packet {
+  trusted_packet_sequence_id: 1
+  timestamp: 0
+  track_descriptor {
+    uuid: 201
+    parent_uuid: 20
+    name: "EventLatency"
+  }
+}
+
+packet {
+  trusted_packet_sequence_id: 1
+  timestamp: 111000
+  track_event {
+    track_uuid: 201
+    categories: "cat"
+    debug_annotations: {
+      name: "event"
+      string_value: "GestureScrollUpdate"
+    }
+    name: "EventLatency"
+    type: 1
+  }
+}
+
+packet {
+  trusted_packet_sequence_id: 1
+  timestamp: 200111000
+  track_event {
+    track_uuid: 201
+    categories: "cat"
+    name: "EventLatency"
+    type: 2
+  }
+}

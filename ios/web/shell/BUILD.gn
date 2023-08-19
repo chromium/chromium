@@ -12,8 +12,6 @@ ios_app_bundle("ios_web_shell") {
 
   deps = [ ":shell" ]
 
-  configs += [ "//build/config/compiler:enable_arc" ]
-
   assert_no_deps = ios_assert_no_deps
 }
 
@@ -28,6 +26,17 @@ bundle_data("shell_bundle_data") {
   outputs = [ "{{bundle_resources_dir}}/{{source_file_part}}" ]
 }
 
+# The scene startup flow (which is needed for multi-window) requires both
+# additional plist entries (handled in ../BUILD.gn) and an additional storyboard
+# file.
+bundle_data_ib_file("base_scene_storyboard") {
+  source = "BaseScene.storyboard"
+}
+
+bundle_data_ib_file("launchscreen_xib") {
+  source = "LaunchScreen.xib"
+}
+
 mojom("shell_interfaces") {
   sources = [ "web_usage_controller.mojom" ]
 }
@@ -36,6 +45,8 @@ source_set("shell") {
   sources = [
     "app_delegate.h",
     "app_delegate.mm",
+    "scene_delegate.h",
+    "scene_delegate.mm",
     "shell_browser_state.h",
     "shell_browser_state.mm",
     "shell_main_delegate.h",
@@ -52,6 +63,8 @@ source_set("shell") {
   ]
 
   deps = [
+    ":base_scene_storyboard",
+    ":launchscreen_xib",
     ":shell_bundle_data",
     ":shell_interfaces",
     "//base",
@@ -59,6 +72,7 @@ source_set("shell") {
     "//ios/web",
     "//ios/web/common:user_agent",
     "//ios/web/public",
+    "//ios/web/public/browsing_data",
     "//ios/web/public/init",
     "//net",
     "//net:extras",
@@ -73,6 +87,4 @@ source_set("shell") {
     "UIKit.framework",
     "UniformTypeIdentifiers.framework",
   ]
-
-  configs += [ "//build/config/compiler:enable_arc" ]
 }

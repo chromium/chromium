@@ -1,6 +1,8 @@
 Name: small_ctor
 URL: https://crates.io/crates/small_ctor
 Description: A minimal, dependency free version of the ctor crate
-Version: 0.1.0
+Version: 0.1.1
 Security Critical: no
+Shipped: no
 License: Apache 2.0
+Revision: 8f0e3b43c16c884e5be219c01c896d1e44ff85f2

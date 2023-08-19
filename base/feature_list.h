@@ -245,7 +245,7 @@ class BASE_EXPORT FeatureList {
 
     // Unowned pointer to the FeatureList object we use to look up feature
     // enablement.
-    raw_ptr<FeatureList> feature_list_;
+    raw_ptr<FeatureList, DanglingUntriaged> feature_list_;
   };
 
   // Describes a feature override. The first member is a Feature that will be

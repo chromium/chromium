@@ -26,7 +26,6 @@
 <translation id="2060505056492490888">Сімвал "<ph name="DOT" />" у адрасе "<ph name="INVALIDDOMAIN" />" размешчаны няправільна.</translation>
 <translation id="2148716181193084225">Сёння</translation>
 <translation id="2226276347425096477">Паменшыце колькасць сімвалаў у гэтым тэксце значэння, не большага за <ph name="MAX_CHARACTERS" /> (зараз у вас – <ph name="CURRENT_LENGTH" />).</translation>
-<translation id="2246498165605549352">Лакальны файл</translation>
 <translation id="2247351761944213033">Тыдзень <ph name="WEEKNUMBER" />, <ph name="YEAR" /></translation>
 <translation id="2277199496770840904">Трэк <ph name="NUMBER" /></translation>
 <translation id="2393030564806080191">Шаснаццатковае значэнне колеру</translation>
@@ -89,6 +88,7 @@
 <translation id="5425179576310518467">бягучая дата</translation>
 <translation id="5466621249238537318">Выберыце адзін або некалькі файлаў.</translation>
 <translation id="5468998798572797635">выключыць поўнаэкранны рэжым</translation>
+<translation id="5514612371225420585">Файл на вашай прыладзе</translation>
 <translation id="5516235301412634559">0,75</translation>
 <translation id="5537725057119320332">Трансліраваць</translation>
 <translation id="5546461542133609677">уключыць гук</translation>
@@ -113,6 +113,7 @@
 <translation id="6398862346408813489">Паказаць панэль выбару месяца</translation>
 <translation id="6404546809543547843">паўзунок часу аўдыяфайла</translation>
 <translation id="6443871981718447451">паказаць меню субцітраў</translation>
+<translation id="6484738902856791350">Вывесці ў зручным фармаце</translation>
 <translation id="6550675742724504774">Параметры</translation>
 <translation id="6572309429103589720">Граматычная памылка</translation>
 <translation id="658823671542763450">уключыць поўнаэкранны рэжым</translation>

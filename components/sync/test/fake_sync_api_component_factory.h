@@ -55,7 +55,6 @@ class FakeSyncApiComponentFactory : public SyncApiComponentFactory {
       DataTypeManagerObserver* observer) override;
   std::unique_ptr<SyncEngine> CreateSyncEngine(
       const std::string& name,
-      invalidation::InvalidationService* invalidator,
       syncer::SyncInvalidationsService* sync_invalidations_service) override;
   void ClearAllTransportData() override;
 

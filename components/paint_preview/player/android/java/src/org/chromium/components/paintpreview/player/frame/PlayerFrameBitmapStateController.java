@@ -6,8 +6,6 @@ package org.chromium.components.paintpreview.player.frame;
 
 import android.util.Size;
 
-import androidx.annotation.VisibleForTesting;
-
 import org.chromium.base.UnguessableToken;
 import org.chromium.components.paintpreview.player.PlayerCompositorDelegate;
 
@@ -52,7 +50,6 @@ public class PlayerFrameBitmapStateController {
         deleteAll();
     }
 
-    @VisibleForTesting
     void swapForTest() {
         swap(mLoadingBitmapState);
     }
@@ -96,13 +93,15 @@ public class PlayerFrameBitmapStateController {
      */
     void swap(PlayerFrameBitmapState newState) {
         assert mLoadingBitmapState == newState;
-        // Clear the state to stop potential stragling updates.
-        if (mVisibleBitmapState != null) {
-            mVisibleBitmapState.destroy();
-        }
+        PlayerFrameBitmapState oldState = mVisibleBitmapState;
         mVisibleBitmapState = newState;
         mLoadingBitmapState = null;
         mMediatorDelegate.onSwapState();
+        // Clear the state to stop potential stragling updates. Destroy afterwards in case drawing
+        // is happening concurrently somehow.
+        if (oldState != null) {
+            oldState.destroy();
+        }
     }
 
     /**

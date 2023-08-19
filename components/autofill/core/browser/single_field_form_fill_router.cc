@@ -11,7 +11,7 @@ namespace autofill {
 
 SingleFieldFormFillRouter::SingleFieldFormFillRouter(
     AutocompleteHistoryManager* autocomplete_history_manager,
-    IBANManager* iban_manager,
+    IbanManager* iban_manager,
     MerchantPromoCodeManager* merchant_promo_code_manager)
     : autocomplete_history_manager_(autocomplete_history_manager->GetWeakPtr()),
       iban_manager_(iban_manager ? iban_manager->GetWeakPtr() : nullptr),
@@ -62,7 +62,7 @@ void SingleFieldFormFillRouter::OnWillSubmitForm(
 }
 
 bool SingleFieldFormFillRouter::OnGetSingleFieldSuggestions(
-    AutoselectFirstSuggestion autoselect_first_suggestion,
+    AutofillSuggestionTriggerSource trigger_source,
     const FormFieldData& field,
     const AutofillClient& client,
     base::WeakPtr<SingleFieldFormFiller::SuggestionsHandler> handler,
@@ -70,16 +70,15 @@ bool SingleFieldFormFillRouter::OnGetSingleFieldSuggestions(
   // Retrieving suggestions for a new field; select the appropriate filler.
   if (merchant_promo_code_manager_ &&
       merchant_promo_code_manager_->OnGetSingleFieldSuggestions(
-          autoselect_first_suggestion, field, client, handler, context)) {
+          trigger_source, field, client, handler, context)) {
     return true;
   }
-  if (iban_manager_ &&
-      iban_manager_->OnGetSingleFieldSuggestions(
-          autoselect_first_suggestion, field, client, handler, context)) {
+  if (iban_manager_ && iban_manager_->OnGetSingleFieldSuggestions(
+                           trigger_source, field, client, handler, context)) {
     return true;
   }
   if (autocomplete_history_manager_->OnGetSingleFieldSuggestions(
-          autoselect_first_suggestion, field, client, handler, context)) {
+          trigger_source, field, client, handler, context)) {
     return true;
   }
   return false;
@@ -102,33 +101,33 @@ void SingleFieldFormFillRouter::CancelPendingQueries(
 void SingleFieldFormFillRouter::OnRemoveCurrentSingleFieldSuggestion(
     const std::u16string& field_name,
     const std::u16string& value,
-    Suggestion::FrontendId frontend_id) {
+    PopupItemId popup_item_id) {
   if (merchant_promo_code_manager_ &&
-      frontend_id == PopupItemId::kMerchantPromoCodeEntry) {
+      popup_item_id == PopupItemId::kMerchantPromoCodeEntry) {
     merchant_promo_code_manager_->OnRemoveCurrentSingleFieldSuggestion(
-        field_name, value, frontend_id);
-  } else if (iban_manager_ && frontend_id == PopupItemId::kIbanEntry) {
+        field_name, value, popup_item_id);
+  } else if (iban_manager_ && popup_item_id == PopupItemId::kIbanEntry) {
     iban_manager_->OnRemoveCurrentSingleFieldSuggestion(field_name, value,
-                                                        frontend_id);
+                                                        popup_item_id);
   } else {
     autocomplete_history_manager_->OnRemoveCurrentSingleFieldSuggestion(
-        field_name, value, frontend_id);
+        field_name, value, popup_item_id);
   }
 }
 
 void SingleFieldFormFillRouter::OnSingleFieldSuggestionSelected(
     const std::u16string& value,
-    Suggestion::FrontendId frontend_id) {
+    PopupItemId popup_item_id) {
   if (merchant_promo_code_manager_ &&
-      (frontend_id == PopupItemId::kMerchantPromoCodeEntry ||
-       frontend_id == PopupItemId::kSeePromoCodeDetails)) {
-    merchant_promo_code_manager_->OnSingleFieldSuggestionSelected(value,
-                                                                  frontend_id);
-  } else if (iban_manager_ && frontend_id == PopupItemId::kIbanEntry) {
-    iban_manager_->OnSingleFieldSuggestionSelected(value, frontend_id);
+      (popup_item_id == PopupItemId::kMerchantPromoCodeEntry ||
+       popup_item_id == PopupItemId::kSeePromoCodeDetails)) {
+    merchant_promo_code_manager_->OnSingleFieldSuggestionSelected(
+        value, popup_item_id);
+  } else if (iban_manager_ && popup_item_id == PopupItemId::kIbanEntry) {
+    iban_manager_->OnSingleFieldSuggestionSelected(value, popup_item_id);
   } else {
-    autocomplete_history_manager_->OnSingleFieldSuggestionSelected(value,
-                                                                   frontend_id);
+    autocomplete_history_manager_->OnSingleFieldSuggestionSelected(
+        value, popup_item_id);
   }
 }
 

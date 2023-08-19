@@ -4,6 +4,7 @@
 
 #import "ios/chrome/browser/infobars/infobar_badge_tab_helper.h"
 
+#import "base/containers/contains.h"
 #import "ios/chrome/browser/infobars/infobar_badge_tab_helper.h"
 #import "ios/chrome/browser/infobars/infobar_manager_impl.h"
 #import "ios/chrome/browser/infobars/test/fake_infobar_ios.h"
@@ -12,10 +13,6 @@
 #import "ios/web/public/test/fakes/fake_navigation_manager.h"
 #import "ios/web/public/test/fakes/fake_web_state.h"
 #import "testing/platform_test.h"
-
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
 
 namespace {
 // The InfobarTypes to use for the test.
@@ -137,7 +134,7 @@ TEST_F(InfobarBadgeTabHelperTest, TestInfobarBadgeStateNoBadge) {
   InfobarType added_type = AddInfobar(/*has_badge=*/false)->infobar_type();
   std::map<InfobarType, BadgeState> badge_states =
       tab_helper()->GetInfobarBadgeStates();
-  EXPECT_EQ(badge_states.find(added_type), badge_states.end());
+  EXPECT_FALSE(base::Contains(badge_states, added_type));
   EXPECT_FALSE([delegate_ itemForInfobarType:added_type]);
 }
 
@@ -206,7 +203,7 @@ TEST_F(InfobarBadgeTabHelperTest, TestInfobarBadgeOnInfobarDestruction) {
   InfoBarManagerImpl::FromWebState(&web_state_)->RemoveInfoBar(added_infobar);
   std::map<InfobarType, BadgeState> badge_states =
       tab_helper()->GetInfobarBadgeStates();
-  EXPECT_EQ(badge_states.find(added_type), badge_states.end());
+  EXPECT_FALSE(base::Contains(badge_states, added_type));
   EXPECT_FALSE([delegate_ itemForInfobarType:added_type]);
 }
 

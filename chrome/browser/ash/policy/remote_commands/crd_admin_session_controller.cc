@@ -7,6 +7,7 @@
 #include <iomanip>
 #include <ostream>
 #include <string>
+#include <utility>
 
 #include "base/functional/bind.h"
 #include "base/functional/callback_forward.h"
@@ -14,19 +15,25 @@
 #include "base/time/time.h"
 #include "chrome/browser/ash/policy/remote_commands/crd_logging.h"
 #include "chrome/browser/ash/policy/remote_commands/crd_remote_command_utils.h"
-#include "chrome/browser/ash/policy/remote_commands/device_command_start_crd_session_job.h"
+#include "chrome/common/pref_names.h"
+#include "components/prefs/pref_registry_simple.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
+#include "mojo/public/cpp/bindings/receiver.h"
+#include "remoting/host/chromeos/features.h"
 #include "remoting/host/chromeos/remote_support_host_ash.h"
 #include "remoting/host/chromeos/remoting_service.h"
+#include "remoting/host/chromeos/session_id.h"
 #include "remoting/host/mojom/remote_support.mojom.h"
 #include "remoting/protocol/errors.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace policy {
 
-using AccessCodeCallback = DeviceCommandStartCrdSessionJob::AccessCodeCallback;
-using ErrorCallback = DeviceCommandStartCrdSessionJob::ErrorCallback;
-using SessionEndCallback = DeviceCommandStartCrdSessionJob::SessionEndCallback;
+using AccessCodeCallback = StartCrdSessionJobDelegate::AccessCodeCallback;
+using ErrorCallback = StartCrdSessionJobDelegate::ErrorCallback;
+using SessionEndCallback = StartCrdSessionJobDelegate::SessionEndCallback;
+using SessionParameters = StartCrdSessionJobDelegate::SessionParameters;
+using remoting::features::kEnableCrdAdminRemoteAccessV2;
 
 namespace {
 
@@ -44,15 +51,32 @@ class DefaultRemotingService
   void StartSession(remoting::mojom::SupportSessionParamsPtr params,
                     const remoting::ChromeOsEnterpriseParams& enterprise_params,
                     StartSessionCallback callback) override {
-    return remoting::RemotingService::Get().GetSupportHost().StartSession(
-        std::move(params), enterprise_params, std::move(callback));
+    return GetSupportHost().StartSession(*params.get(), enterprise_params,
+                                         std::move(callback));
+  }
+
+  void GetReconnectableSessionId(SessionIdCallback callback) override {
+    return GetService().GetReconnectableEnterpriseSessionId(
+        std::move(callback));
+  }
+
+  void ReconnectToSession(remoting::SessionId session_id,
+                          StartSessionCallback callback) override {
+    return GetSupportHost().ReconnectToSession(session_id, std::move(callback));
+  }
+
+ private:
+  remoting::RemotingService& GetService() {
+    return remoting::RemotingService::Get();
+  }
+
+  remoting::RemoteSupportHostAsh& GetSupportHost() {
+    return remoting::RemotingService::Get().GetSupportHost();
   }
 };
 
-std::ostream& operator<<(
-    std::ostream& os,
-    const DeviceCommandStartCrdSessionJob::Delegate::SessionParameters&
-        parameters) {
+std::ostream& operator<<(std::ostream& os,
+                         const SessionParameters& parameters) {
   return os << "{ "
             << "user_name " << std::quoted(parameters.user_name)
             << ", admin_email "
@@ -62,6 +86,8 @@ std::ostream& operator<<(
             << parameters.show_confirmation_dialog
             << ", curtain_local_user_session "
             << parameters.curtain_local_user_session
+            << ", show_troubleshooting_tools "
+            << parameters.show_troubleshooting_tools
             << ", allow_troubleshooting_tools "
             << parameters.allow_troubleshooting_tools
             << ", allow_reconnections " << parameters.allow_reconnections
@@ -168,15 +194,45 @@ class SupportHostObserver : public remoting::mojom::SupportHostObserver {
   mojo::Receiver<remoting::mojom::SupportHostObserver> receiver_{this};
 };
 
+remoting::mojom::SupportSessionParamsPtr GetSessionParameters(
+    const SessionParameters& parameters) {
+  auto result = remoting::mojom::SupportSessionParams::New();
+  result->user_name = parameters.user_name;
+  result->authorized_helper = parameters.admin_email;
+  // Note the oauth token must be prefixed with 'oauth2:', or it will be
+  // rejected by the CRD host.
+  result->oauth_access_token = "oauth2:" + parameters.oauth_token;
+
+  return result;
+}
+
+remoting::ChromeOsEnterpriseParams GetEnterpriseParameters(
+    const SessionParameters& parameters) {
+  return remoting::ChromeOsEnterpriseParams{
+      .suppress_user_dialogs = !parameters.show_confirmation_dialog,
+      .suppress_notifications = !parameters.show_confirmation_dialog,
+      .terminate_upon_input = parameters.terminate_upon_input,
+      .curtain_local_user_session = parameters.curtain_local_user_session,
+      .show_troubleshooting_tools = parameters.show_troubleshooting_tools,
+      .allow_troubleshooting_tools = parameters.allow_troubleshooting_tools,
+      .allow_reconnections = parameters.allow_reconnections,
+      .allow_file_transfer = parameters.allow_file_transfer,
+  };
+}
 }  // namespace
 
 class CrdAdminSessionController::CrdHostSession {
  public:
-  CrdHostSession(const SessionParameters& parameters,
+  explicit CrdHostSession(RemotingServiceProxy& remoting_service)
+      : CrdHostSession(remoting_service,
+                       base::DoNothing(),
+                       base::DoNothing(),
+                       base::DoNothing()) {}
+  CrdHostSession(RemotingServiceProxy& remoting_service,
                  AccessCodeCallback success_callback,
                  ErrorCallback error_callback,
                  SessionEndCallback session_finished_callback)
-      : parameters_(parameters),
+      : remoting_service_(remoting_service),
         observer_(std::move(success_callback),
                   std::move(error_callback),
                   std::move(session_finished_callback)) {}
@@ -184,17 +240,37 @@ class CrdAdminSessionController::CrdHostSession {
   CrdHostSession& operator=(const CrdHostSession&) = delete;
   ~CrdHostSession() = default;
 
-  void Start(
-      CrdAdminSessionController::RemotingServiceProxy& remoting_service) {
-    CRD_DVLOG(3) << "Starting CRD session with parameters " << parameters_;
+  void Start(const SessionParameters& parameters) {
+    CRD_DVLOG(3) << "Starting CRD session with parameters " << parameters;
 
-    remoting_service.StartSession(
-        GetSessionParameters(), GetEnterpriseParameters(),
+    remoting_service_->StartSession(
+        GetSessionParameters(parameters), GetEnterpriseParameters(parameters),
         base::BindOnce(&CrdHostSession::OnStartSupportSessionResponse,
                        weak_factory_.GetWeakPtr()));
   }
 
+  void TryToReconnect(base::OnceClosure done_callback) {
+    CRD_DVLOG(3) << "Trying to reconnect to previous CRD session (if any)";
+    remoting_service_->GetReconnectableSessionId(
+        base::BindOnce(&CrdHostSession::ReconnectToSession,
+                       weak_factory_.GetWeakPtr())
+            .Then(std::move(done_callback)));
+  }
+
  private:
+  void ReconnectToSession(absl::optional<remoting::SessionId> id) {
+    if (id.has_value()) {
+      CRD_LOG(INFO) << "Attempting to resume reconnectable session";
+
+      remoting_service_->ReconnectToSession(
+          id.value(),
+          base::BindOnce(&CrdHostSession::OnStartSupportSessionResponse,
+                         weak_factory_.GetWeakPtr()));
+    } else {
+      CRD_DVLOG(1) << "No reconnectable CRD session found.";
+    }
+  }
+
   void OnStartSupportSessionResponse(
       remoting::mojom::StartSupportSessionResponsePtr response) {
     if (response->is_support_session_error()) {
@@ -207,29 +283,7 @@ class CrdAdminSessionController::CrdHostSession {
     observer_.Bind(std::move(response->get_observer()));
   }
 
-  remoting::mojom::SupportSessionParamsPtr GetSessionParameters() const {
-    auto result = remoting::mojom::SupportSessionParams::New();
-    result->user_name = parameters_.user_name;
-    result->authorized_helper = parameters_.admin_email;
-    // Note the oauth token must be prefixed with 'oauth2:', or it will be
-    // rejected by the CRD host.
-    result->oauth_access_token = "oauth2:" + parameters_.oauth_token;
-
-    return result;
-  }
-
-  remoting::ChromeOsEnterpriseParams GetEnterpriseParameters() const {
-    return remoting::ChromeOsEnterpriseParams{
-        .suppress_user_dialogs = !parameters_.show_confirmation_dialog,
-        .suppress_notifications = !parameters_.show_confirmation_dialog,
-        .terminate_upon_input = parameters_.terminate_upon_input,
-        .curtain_local_user_session = parameters_.curtain_local_user_session,
-        .allow_troubleshooting_tools = parameters_.allow_troubleshooting_tools,
-        .allow_reconnections = parameters_.allow_reconnections,
-    };
-  }
-
-  SessionParameters parameters_;
+  raw_ref<RemotingServiceProxy> remoting_service_;
   SupportHostObserver observer_;
 
   base::WeakPtrFactory<CrdHostSession> weak_factory_{this};
@@ -244,6 +298,18 @@ CrdAdminSessionController::CrdAdminSessionController(
 
 CrdAdminSessionController::~CrdAdminSessionController() = default;
 
+void CrdAdminSessionController::Init(base::OnceClosure done_callback) {
+  if (base::FeatureList::IsEnabled(kEnableCrdAdminRemoteAccessV2)) {
+    TryToReconnect(std::move(done_callback));
+  } else {
+    std::move(done_callback).Run();
+  }
+}
+
+StartCrdSessionJobDelegate& CrdAdminSessionController::GetDelegate() {
+  return *this;
+}
+
 bool CrdAdminSessionController::HasActiveSession() const {
   return active_session_ != nullptr;
 }
@@ -254,6 +320,14 @@ void CrdAdminSessionController::TerminateSession(base::OnceClosure callback) {
   std::move(callback).Run();
 }
 
+void CrdAdminSessionController::TryToReconnect(
+    base::OnceClosure done_callback) {
+  CHECK(!active_session_);
+
+  active_session_ = std::make_unique<CrdHostSession>(*remoting_service_);
+  active_session_->TryToReconnect(std::move(done_callback));
+}
+
 void CrdAdminSessionController::StartCrdHostAndGetCode(
     const SessionParameters& parameters,
     AccessCodeCallback success_callback,
@@ -261,10 +335,16 @@ void CrdAdminSessionController::StartCrdHostAndGetCode(
     SessionEndCallback session_finished_callback) {
   CHECK(!active_session_);
   active_session_ = std::make_unique<CrdHostSession>(
-      parameters, std::move(success_callback), std::move(error_callback),
-      std::move(session_finished_callback));
+      *remoting_service_, std::move(success_callback),
+      std::move(error_callback), std::move(session_finished_callback));
 
-  active_session_->Start(*remoting_service_);
+  active_session_->Start(parameters);
+}
+
+// static
+void CrdAdminSessionController::RegisterLocalStatePrefs(
+    PrefRegistrySimple* registry) {
+  registry->RegisterBooleanPref(prefs::kRemoteAdminWasPresent, false);
 }
 
 }  // namespace policy

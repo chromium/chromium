@@ -76,7 +76,7 @@ CastStreamingSession::ReceiverSessionClient::ReceiverSessionClient(
     ReceiverSession::MessagePortProvider message_port_provider,
     scoped_refptr<base::SequencedTaskRunner> task_runner)
     : task_runner_(task_runner),
-      environment_(&openscreen::Clock::now, &task_runner_),
+      environment_(&openscreen::Clock::now, task_runner_),
       cast_message_port_converter_(CastMessagePortConverter::Create(
           std::move(message_port_provider),
           base::BindOnce(

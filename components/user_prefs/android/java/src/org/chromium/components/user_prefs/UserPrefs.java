@@ -22,7 +22,7 @@ public class UserPrefs {
         return UserPrefsJni.get().get(browserContextHandle);
     }
 
-    @VisibleForTesting
+    @VisibleForTesting(otherwise = VisibleForTesting.PACKAGE_PRIVATE)
     @NativeMethods
     public interface Natives {
         PrefService get(BrowserContextHandle browserContextHandle);

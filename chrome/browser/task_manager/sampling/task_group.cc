@@ -345,10 +345,10 @@ void TaskGroup::OnSwappedMemRefreshDone(int64_t swapped_mem_bytes) {
   OnBackgroundRefreshTypeFinished(REFRESH_TYPE_SWAPPED_MEM);
 }
 
-void TaskGroup::OnProcessPriorityDone(bool is_backgrounded) {
+void TaskGroup::OnProcessPriorityDone(base::Process::Priority priority) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
-  is_backgrounded_ = is_backgrounded;
+  is_backgrounded_ = priority == base::Process::Priority::kBestEffort;
   OnBackgroundRefreshTypeFinished(REFRESH_TYPE_PRIORITY);
 }
 

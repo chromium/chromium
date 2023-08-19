@@ -21,7 +21,7 @@ function shouldSuccessfullyParse(color) {
     ctx.fillStyle = "#008800";
     ctx.fillStyle = color;
     // Check that there is no green.
-    if (ctx.fillStyle.match(/^#(?!(008800|080)$)/))
+    if (ctx.fillStyle.match(/^(?!(#008800|#080)$)/))
         testPassed("Setting color to " + color + " was successfully set.");
     else
         testFailed("Setting color to " + color + " was not set but should!");

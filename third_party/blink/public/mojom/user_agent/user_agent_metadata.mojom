@@ -23,6 +23,7 @@ struct UserAgentMetadata {
   bool mobile;
   string bitness;
   bool wow64;
+  string form_factor;
 };
 
 // See UserAgentOverride in

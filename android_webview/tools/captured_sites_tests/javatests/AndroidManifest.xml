@@ -1,0 +1,45 @@
+<!--
+ * Copyright 2023 The Chromium Authors
+ * Use of this source code is governed by a BSD-style license that can be
+ * found in the LICENSE file.
+-->
+
+<manifest
+      xmlns:android="http://schemas.android.com/apk/res/android"
+      package="org.chromium.webview_ui_test.test">
+
+    <uses-permission android:name="android.permission.RUN_INSTRUMENTATION" />
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
+
+    <!-- We add an application tag here just so that we can indicate that this
+         package needs to link against the android.test library, which is
+         needed when building test cases. -->
+    <application>
+        <uses-library android:name="android.test.runner" />
+        <activity android:name="org.chromium.test.broker.OnDeviceInstrumentationBroker"
+            android:exported="true"/>
+        <provider
+            xmlns:tools="http://schemas.android.com/tools"
+            android:name="androidx.startup.InitializationProvider"
+            android:exported="false"
+            tools:node="remove"/>
+        <provider
+            xmlns:tools="http://schemas.android.com/tools"
+            android:name="androidx.lifecycle.ProcessLifecycleOwnerInitializer"
+            android:exported="false"
+            tools:node="remove"/>
+        <service
+            android:name="org.chromium.webview_ui_test.test.TestAutofillService"
+            android:label="Static AutofillService"
+            android:permission="android.permission.BIND_AUTOFILL_SERVICE"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="android.service.autofill.AutofillService" />
+            </intent-filter>
+        </service>
+    </application>
+
+    <instrumentation android:name="org.chromium.base.test.BaseChromiumAndroidJUnitRunner"
+        android:targetPackage="org.chromium.webview_ui_test"
+        android:label="Tests for org.chromium.webview_ui_test"/>
+</manifest>

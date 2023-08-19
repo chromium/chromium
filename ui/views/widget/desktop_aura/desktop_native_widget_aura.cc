@@ -301,9 +301,7 @@ DesktopNativeWidgetAura::DesktopNativeWidgetAura(
     : desktop_window_tree_host_(nullptr),
 
       content_window_(new aura::Window(this)),
-      native_widget_delegate_(delegate->AsWidget()->GetWeakPtr()),
-
-      cursor_(gfx::kNullCursor) {
+      native_widget_delegate_(delegate->AsWidget()->GetWeakPtr()) {
   aura::client::SetFocusChangeObserver(content_window_, this);
   wm::SetActivationChangeObserver(content_window_, this);
 }

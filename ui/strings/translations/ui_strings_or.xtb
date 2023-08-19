@@ -105,7 +105,6 @@
 <translation id="4266252015790371705">{MONTHS,plural, =1{1 ମାସ ପୂର୍ବେ}other{# ମାସ ପୂର୍ବେ}}</translation>
 <translation id="4289300219472526559">କହିବା ଆରମ୍ଭ କରନ୍ତୁ</translation>
 <translation id="4289540628985791613">ଅବଲୋକନ</translation>
-<translation id="4306392492252714209">କ୍ଲିପବୋର୍ଡରୁ କାଢ଼ି ଦିଅନ୍ତୁ।</translation>
 <translation id="4491109536499578614">ଛବି</translation>
 <translation id="4565377596337484307">ପାସୱାର୍ଡ୍ ଲୁଚାନ୍ତୁ</translation>
 <translation id="4588090240171750605">ଦକ୍ଷିଣକୁ ସ୍କ୍ରୋଲ୍ କରନ୍ତୁ</translation>
@@ -148,6 +147,7 @@
 <translation id="6142413573757616983"><ph name="QUANTITY" /> ବା/ସେ</translation>
 <translation id="6237461503717005873"><ph name="ROW_NAME" />କୁ ଚୟନ କରାଯାଇଛି।</translation>
 <translation id="6264365405983206840">&amp;ସବୁ ଚୟନ କରନ୍ତୁ</translation>
+<translation id="6346952829206698721">କ୍ଲିପବୋର୍ଡରୁ ପେଷ୍ଟ କରନ୍ତୁ</translation>
 <translation id="6364916375976753737">ବାମକୁ ସ୍କ୍ରୋଲ୍ କରନ୍ତୁ</translation>
 <translation id="6394627529324717982">କମା</translation>
 <translation id="6397363302884558537">କଥା କହିବା ବନ୍ଦ କରନ୍ତୁ</translation>
@@ -174,6 +174,7 @@
 <translation id="7170202025028120564">ପରବର୍ତ୍ତୀ ସମୟରେ ଆପଣଙ୍କ ଆପ୍ଲିକେସନର ଡିସପ୍ଲେ ସେଟିଂସ୍ ରିଷ୍ଟାର୍ଟ ହେଲେ ଏଥିରେ ପରିବର୍ତ୍ତନଗୁଡ଼ିକ କାର୍ଯ୍ୟକାରୀ ହେବ।</translation>
 <translation id="7222373446505536781">F11</translation>
 <translation id="7238427729722629793">{MINUTES,plural, =1{1 ମିନିଟ୍ ବାକି ଅଛି}other{# ମିନିଟ୍ ବାକି ଅଛି}}</translation>
+<translation id="7363164521834647158">ଉତ୍ତର ପଠାନ୍ତୁ</translation>
 <translation id="7365057348334984696">{MINUTES,plural, =1{1 ମିନିଟ୍ ପୂର୍ବେ}other{# ମିନିଟ୍ ପୂର୍ବେ}}</translation>
 <translation id="7389409599945284130">- <ph name="MESSAGE" /></translation>
 <translation id="7410957453383678442">{MINUTES,plural, =1{1 ମିନିଟ୍‍ ବାକି ଅଛି}other{# ମିନିଟ୍‍ ବାକି ଅଛି}}</translation>

@@ -2,10 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import <Cocoa/Cocoa.h>
-
 #import "chrome/browser/ui/cocoa/window_size_autosaver.h"
 
+#import <Cocoa/Cocoa.h>
+
+#include "base/memory/raw_ptr.h"
 #include "components/prefs/pref_service.h"
 #include "components/prefs/scoped_user_pref_update.h"
 
@@ -22,7 +23,11 @@ const int kMinWindowHeight = 17;
 - (void)restore;
 @end
 
-@implementation WindowSizeAutosaver
+@implementation WindowSizeAutosaver {
+  NSWindow* __weak _window;
+  raw_ptr<PrefService> _prefService;  // weak
+  const char* _path;
+}
 
 - (instancetype)initWithWindow:(NSWindow*)window
                    prefService:(PrefService*)prefs
@@ -33,23 +38,21 @@ const int kMinWindowHeight = 17;
     _path = path;
 
     [self restore];
-    [[NSNotificationCenter defaultCenter]
-      addObserver:self
-         selector:@selector(save:)
-             name:NSWindowDidMoveNotification
-           object:_window];
-    [[NSNotificationCenter defaultCenter]
-      addObserver:self
-         selector:@selector(save:)
-             name:NSWindowDidResizeNotification
-           object:_window];
+    [NSNotificationCenter.defaultCenter addObserver:self
+                                           selector:@selector(save:)
+                                               name:NSWindowDidMoveNotification
+                                             object:_window];
+    [NSNotificationCenter.defaultCenter
+        addObserver:self
+           selector:@selector(save:)
+               name:NSWindowDidResizeNotification
+             object:_window];
   }
   return self;
 }
 
 - (void)dealloc {
-  [[NSNotificationCenter defaultCenter] removeObserver:self];
-  [super dealloc];
+  [NSNotificationCenter.defaultCenter removeObserver:self];
 }
 
 - (void)save:(NSNotification*)notification {

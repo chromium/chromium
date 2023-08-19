@@ -1,0 +1,14 @@
+Tests that Page.lifecycleEvent is issued after aborted client-side navigation.
+Intercepted http://127.0.0.1:8000/inspector-protocol/page/resources/client-side-redirect.html?location=http://127.0.0.1:8000/inspector-protocol/page/resources/basic.html
+Intercepted http://127.0.0.1:8000/inspector-protocol/page/resources/basic.html
+{
+    method : Page.lifecycleEvent
+    params : {
+        frameId : <string>
+        loaderId : <string>
+        name : networkIdle
+        timestamp : <number>
+    }
+    sessionId : <string>
+}
+

@@ -25,11 +25,15 @@ static_library("extensions") {
     "chromeos_system_extensions_manifest_handler.h",
   ]
 
+  public_deps = [ "//components/web_package" ]
+
   deps = [
     ":resources",
     "api:api",
     "api:extensions_features",
     "//base",
+    "//chrome/common:url_constants",
+    "//chromeos/constants",
     "//extensions/common",
   ]
 }

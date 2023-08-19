@@ -23,7 +23,7 @@ chromium-metrics-reviews@google.com.
 <histograms>
 
 <histogram base="true" name="SimpleCache.CacheSizeOnInit" units="KB"
-    expires_after="2023-07-01">
+    expires_after="2024-07-01">
   <owner>jkarlin@chromium.org</owner>
   <owner>shivanisha@chromium.org</owner>
   <summary>
@@ -58,7 +58,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram base="true" name="SimpleCache.CreationToIndex" units="ms"
-    expires_after="2023-07-01">
+    expires_after="2024-07-01">
   <owner>morlovich@chromium.org</owner>
   <owner>wanderview@chromium.org</owner>
   <summary>
@@ -68,7 +68,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram base="true" name="SimpleCache.CreationToIndexFail" units="ms"
-    expires_after="2023-07-01">
+    expires_after="2024-07-01">
   <owner>morlovich@chromium.org</owner>
   <owner>wanderview@chromium.org</owner>
   <summary>
@@ -91,7 +91,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram base="true" name="SimpleCache.DiskCloseLatency" units="ms"
-    expires_after="2023-07-01">
+    expires_after="2024-07-01">
   <owner>morlovich@chromium.org</owner>
   <owner>wanderview@chromium.org</owner>
   <summary>
@@ -101,7 +101,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram base="true" name="SimpleCache.DiskCreateLatency" units="ms"
-    expires_after="2023-07-01">
+    expires_after="2024-07-01">
   <owner>morlovich@chromium.org</owner>
   <owner>wanderview@chromium.org</owner>
   <summary>
@@ -111,7 +111,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram base="true" name="SimpleCache.DiskDoomLatency" units="ms"
-    expires_after="2023-07-01">
+    expires_after="2024-07-01">
   <owner>morlovich@chromium.org</owner>
   <owner>wanderview@chromium.org</owner>
   <summary>
@@ -121,7 +121,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram base="true" name="SimpleCache.DiskOpenLatency" units="ms"
-    expires_after="2023-07-01">
+    expires_after="2024-07-01">
   <owner>morlovich@chromium.org</owner>
   <owner>wanderview@chromium.org</owner>
   <summary>
@@ -131,7 +131,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram base="true" name="SimpleCache.DiskWriteLatency" units="ms"
-    expires_after="2023-07-01">
+    expires_after="2024-07-01">
   <owner>morlovich@chromium.org</owner>
   <owner>wanderview@chromium.org</owner>
   <summary>
@@ -141,7 +141,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram base="true" name="SimpleCache.EntryCreationTime" units="ms"
-    expires_after="2023-07-01">
+    expires_after="2024-07-01">
   <owner>morlovich@chromium.org</owner>
   <owner>wanderview@chromium.org</owner>
   <summary>
@@ -153,21 +153,21 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram base="true" name="SimpleCache.Eviction.EntryCount" units="units"
-    expires_after="2023-07-01">
+    expires_after="2024-07-01">
   <owner>morlovich@chromium.org</owner>
   <owner>wanderview@chromium.org</owner>
   <summary>The number of entries to be erased in an eviction.</summary>
 </histogram>
 
 <histogram base="true" name="SimpleCache.Eviction.TimeToDone" units="ms"
-    expires_after="2023-07-01">
+    expires_after="2024-07-01">
   <owner>morlovich@chromium.org</owner>
   <owner>wanderview@chromium.org</owner>
   <summary>Time spent completing an eviction.</summary>
 </histogram>
 
 <histogram base="true" name="SimpleCache.Eviction.TimeToSelectEntries"
-    units="ms" expires_after="2023-07-01">
+    units="ms" expires_after="2024-07-01">
   <owner>morlovich@chromium.org</owner>
   <owner>wanderview@chromium.org</owner>
   <summary>Time spent selecting entries for eviction.</summary>
@@ -185,7 +185,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram base="true" name="SimpleCache.HeaderSize" units="bytes"
-    expires_after="2023-07-01">
+    expires_after="2024-07-01">
   <owner>morlovich@chromium.org</owner>
   <owner>wanderview@chromium.org</owner>
   <summary>
@@ -195,14 +195,14 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram base="true" name="SimpleCache.IndexCreatedEntryCount" units="units"
-    expires_after="2023-07-01">
+    expires_after="2024-07-01">
   <owner>morlovich@chromium.org</owner>
   <owner>wanderview@chromium.org</owner>
   <summary>The number of entries in a newly created index file.</summary>
 </histogram>
 
 <histogram base="true" name="SimpleCache.IndexFileStateOnLoad"
-    enum="SimpleIndexState" expires_after="2023-07-01">
+    enum="SimpleIndexState" expires_after="2024-07-01">
   <owner>morlovich@chromium.org</owner>
   <owner>wanderview@chromium.org</owner>
   <summary>
@@ -211,14 +211,14 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram base="true" name="SimpleCache.IndexInitializeMethod"
-    enum="SimpleCacheIndexInitializeMethod" expires_after="2023-07-01">
+    enum="SimpleCacheIndexInitializeMethod" expires_after="2024-07-01">
   <owner>wanderview@chromium.org</owner>
   <owner>morlovich@chromium.org</owner>
   <summary>The method used to initialize the simple cache index.</summary>
 </histogram>
 
 <histogram base="true" name="SimpleCache.IndexNumEntriesOnInit" units="entries"
-    expires_after="2023-07-01">
+    expires_after="2024-07-01">
   <owner>jkarlin@chromium.org</owner>
   <owner>morlovich@chromium.org</owner>
   <summary>
@@ -228,7 +228,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram base="true" name="SimpleCache.IndexRestoreTime" units="ms"
-    expires_after="2023-07-01">
+    expires_after="2024-07-01">
   <owner>morlovich@chromium.org</owner>
   <owner>wanderview@chromium.org</owner>
   <summary>
@@ -237,18 +237,8 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram base="true" name="SimpleCache.MaxCacheSizeOnInit" units="KB"
-    expires_after="2023-07-01">
-  <owner>jkarlin@chromium.org</owner>
-  <owner>morlovich@chromium.org</owner>
-  <summary>
-    The maximum allowed size of the cache at the time that the index has
-    finished initializing.
-  </summary>
-</histogram>
-
 <histogram base="true" name="SimpleCache.OpenEntryIndexState"
-    enum="SimpleCacheOpenEntryIndexState" expires_after="2023-07-01">
+    enum="SimpleCacheOpenEntryIndexState" expires_after="2024-07-01">
   <owner>morlovich@chromium.org</owner>
   <owner>wanderview@chromium.org</owner>
   <summary>
@@ -283,7 +273,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram base="true" name="SimpleCache.StaleIndexExtraEntryCount"
-    units="entries" expires_after="2023-07-01">
+    units="entries" expires_after="2024-07-01">
   <owner>morlovich@chromium.org</owner>
   <owner>wanderview@chromium.org</owner>
   <summary>
@@ -294,7 +284,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram base="true" name="SimpleCache.StaleIndexMissedEntryCount"
-    units="entries" expires_after="2023-07-01">
+    units="entries" expires_after="2024-07-01">
   <owner>morlovich@chromium.org</owner>
   <owner>wanderview@chromium.org</owner>
   <summary>
@@ -305,7 +295,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram base="true" name="SimpleCache.StaleIndexQuality"
-    enum="SimpleCacheStaleIndexQuality" expires_after="2023-07-01">
+    enum="SimpleCacheStaleIndexQuality" expires_after="2024-07-01">
   <owner>morlovich@chromium.org</owner>
   <owner>wanderview@chromium.org</owner>
   <summary>

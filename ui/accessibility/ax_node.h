@@ -475,13 +475,9 @@ class AX_EXPORT AXNode final {
   // TODO(nektar): Consider changing the return value to std::string.
   const std::u16string& GetHypertext() const;
 
-  // Temporary method that marks `hypertext_` dirty. This will eventually be
-  // handled by the AX tree in a followup patch.
-  void SetNeedsToUpdateHypertext();
   // Temporary accessor methods until hypertext is fully migrated to this class.
   // Hypertext won't eventually need to be accessed outside this class.
   const std::map<int, int>& GetHypertextOffsetToHyperlinkChildIndex() const;
-  const AXHypertext& GetOldHypertext() const;
 
   // Returns the text that is found inside this node and all its descendants;
   // including text found in embedded objects.
@@ -599,10 +595,12 @@ class AX_EXPORT AXNode final {
   bool IsTableCellOrHeader() const;
   absl::optional<int> GetTableCellIndex() const;
   absl::optional<int> GetTableCellColIndex() const;
+  // The row index of a cell. If a row is passed in, use the first cell.
   absl::optional<int> GetTableCellRowIndex() const;
   absl::optional<int> GetTableCellColSpan() const;
   absl::optional<int> GetTableCellRowSpan() const;
   absl::optional<int> GetTableCellAriaColIndex() const;
+  // The ARIA row index of a cell. If a row is passed in, use the first cell.
   absl::optional<int> GetTableCellAriaRowIndex() const;
   std::vector<AXNodeID> GetTableCellColHeaderNodeIds() const;
   std::vector<AXNodeID> GetTableCellRowHeaderNodeIds() const;
@@ -789,7 +787,6 @@ class AX_EXPORT AXNode final {
   // See the class comment in "ax_hypertext.h" for an explanation of this
   // member.
   mutable AXHypertext hypertext_;
-  mutable AXHypertext old_hypertext_;
 
   // Stores information about this node that can be computed on demand and
   // cached.

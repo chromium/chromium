@@ -3,7 +3,6 @@
 # found in the LICENSE file.
 
 source_set("rlz") {
-  configs += [ "//build/config/compiler:enable_arc" ]
   sources = [
     "rlz_tracker_delegate_impl.h",
     "rlz_tracker_delegate_impl.mm",

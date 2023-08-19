@@ -9,6 +9,7 @@
 #include "ash/components/arc/arc_prefs.h"
 #include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/webui/file_manager/file_manager_ui.h"
+#include "ash/webui/settings/public/constants/routes.mojom.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_forward.h"
 #include "base/functional/callback_helpers.h"
@@ -25,12 +26,12 @@
 #include "chrome/browser/ash/file_manager/io_task.h"
 #include "chrome/browser/ash/file_manager/io_task_controller.h"
 #include "chrome/browser/ash/file_manager/path_util.h"
+#include "chrome/browser/ash/policy/dlp/dialogs/files_policy_dialog.h"
 #include "chrome/browser/ash/policy/dlp/files_policy_notification_manager.h"
 #include "chrome/browser/ash/policy/dlp/files_policy_notification_manager_factory.h"
-#include "chrome/browser/chromeos/policy/dlp/dialogs/files_policy_dialog.h"
 #include "chrome/browser/platform_util.h"
 #include "chrome/browser/ui/settings_window_manager_chromeos.h"
-#include "chrome/browser/ui/webui/settings/chromeos/constants/routes.mojom.h"
+#include "chrome/common/extensions/api/file_manager_private.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/prefs/pref_service.h"
 #include "content/public/browser/browser_task_traits.h"
@@ -191,72 +192,22 @@ std::u16string GetIOTaskMessage(Profile* profile,
                       .BaseName()
                       .value()));
 }
-
-// TODO(b/279435843): Replace with translation strings.
-std::u16string GetPolicyNotificationTitle(const ProgressStatus& status) {
-  if (status.HasWarning()) {
-    return u"Confirmation required";
-  } else {
-    return u"files blocked";
-  }
-}
-
-// TODO(b/279435843): Replace with translation strings.
-std::u16string GetPolicyNotificationMessage(const ProgressStatus& status) {
-  if (status.HasWarning()) {
-    return (status.sources.size() == 1)
-               ? u"File may contain sensitive content"
-               : u"files may contain sensitive content";
-  }
-  // error
-  return (status.sources.size() == 1) ? u"File was blocked" : u"Files blocked";
-}
-
-// TODO(b/279435843): Replace with translation strings.
-std::u16string GetPolicyNotificationCancelButton(const ProgressStatus& status) {
-  if (status.HasWarning()) {
-    return GetStringUTF16(IDS_FILE_BROWSER_CANCEL_LABEL);
-  } else {
-    return u"Dismiss";
-  }
-}
-
-// TODO(b/279435843): Replace with translation strings.
-std::u16string GetPolicyNotificationProceedButton(
-    const ProgressStatus& status) {
-  if (status.sources.size() > 1) {
-    return u"Review";
-  }
-
-  DCHECK(status.HasWarning());
-
-  switch (status.type) {
-    case OperationType::kCopy:
-      return u"Copy anyway";
-    case OperationType::kMove:
-      return u"Move anyway";
-    case OperationType::kDelete:
-    case OperationType::kEmptyTrash:
-    case OperationType::kExtract:
-    case OperationType::kRestore:
-    case OperationType::kRestoreToDestination:
-    case OperationType::kTrash:
-    case OperationType::kZip:
-      NOTREACHED() << "Unexpected operation type " << status.type;
-      return u"";
-  }
-}
-
 }  // namespace
 
-NotificationPtr CreateSystemNotification(const std::string& notification_id,
-                                         const std::u16string& title,
-                                         const std::u16string& message,
-                                         DelegatePtr delegate) {
+std::string GetNotificationId(io_task::IOTaskId task_id) {
+  return base::StrCat({kSwaFileOperationPrefix, base::NumberToString(task_id)});
+}
+
+NotificationPtr CreateSystemNotification(
+    const std::string& notification_id,
+    const std::u16string& title,
+    const std::u16string& message,
+    DelegatePtr delegate,
+    message_center::RichNotificationData optional_fields) {
   return ash::CreateSystemNotificationPtr(
       NOTIFICATION_TYPE_SIMPLE, notification_id, title, message,
       GetStringUTF16(IDS_FILEMANAGER_APP_NAME), GURL(), NotifierId(),
-      RichNotificationData(), std::move(delegate), ash::kFolderIcon,
+      optional_fields, std::move(delegate), ash::kFolderIcon,
       SystemNotificationWarningLevel::NORMAL);
 }
 
@@ -527,18 +478,9 @@ void SystemNotificationManager::HandleDeviceEvent(
 
 static const char kBulkPinningNotificationId[] = "drive-bulk-pinning-error";
 
-void SystemNotificationManager::HandleBulkPinningNotificationClick(
-    absl::optional<int> button_index) {
-  if (button_index.has_value()) {
-    VLOG(1) << "Click on button #" << *button_index;
-    DCHECK_EQ(*button_index, 0);
-    drive_settings_open_count_++;
-    chrome::SettingsWindowManager::GetInstance()->ShowOSSettings(
-        profile_, chromeos::settings::mojom::kGoogleDriveSubpagePath);
-  } else {
-    VLOG(1) << "Click on notification body";
-  }
-
+void SystemNotificationManager::HandleBulkPinningNotificationClick() {
+  chrome::SettingsWindowManager::GetInstance()->ShowOSSettings(
+      profile_, chromeos::settings::mojom::kGoogleDriveSubpagePath);
   GetNotificationDisplayService()->Close(NotificationHandler::Type::TRANSIENT,
                                          kBulkPinningNotificationId);
 }
@@ -554,32 +496,56 @@ NotificationPtr SystemNotificationManager::MakeBulkPinningErrorNotification(
   }
 
   // Remember the bulk-pinning stage.
+  using enum BulkPinStage;
   const BulkPinStage old_stage = bulk_pin_stage_;
   bulk_pin_stage_ = progress.stage;
 
-  // Check the bulk-pinning stage.
-  using enum fmp::BulkPinStage;
-  if (bulk_pin_stage_ != BULK_PIN_STAGE_NOT_ENOUGH_SPACE ||
-      old_stage != BULK_PIN_STAGE_SYNCING) {
-    VLOG(1) << "Ignored BulkPinProgress event with stage '"
-            << ToString(bulk_pin_stage_) << "'";
+  if (old_stage != BULK_PIN_STAGE_SYNCING) {
     return nullptr;
   }
 
-  // Not enough space for bulk-pinning.
-  VLOG(1) << "Creating bulk-pinning error notification";
-  NotificationPtr notification = CreateSystemNotification(
-      kBulkPinningNotificationId,
-      GetStringUTF16(IDS_FILE_BROWSER_DRIVE_SYNC_ERROR_TITLE),
-      GetStringUTF16(
-          IDS_FILE_BROWSER_BULK_PINNING_NOT_ENOUGH_SPACE_NOTIFICATION),
-      MakeRefCounted<HandleNotificationClickDelegate>(BindRepeating(
-          &SystemNotificationManager::HandleBulkPinningNotificationClick,
-          weak_ptr_factory_.GetWeakPtr())));
+  // Check the bulk-pinning stage.
+  switch (bulk_pin_stage_) {
+    case BULK_PIN_STAGE_NONE:
+    case BULK_PIN_STAGE_STOPPED:
+    case BULK_PIN_STAGE_PAUSED_OFFLINE:
+    case BULK_PIN_STAGE_PAUSED_BATTERY_SAVER:
+    case BULK_PIN_STAGE_GETTING_FREE_SPACE:
+    case BULK_PIN_STAGE_LISTING_FILES:
+    case BULK_PIN_STAGE_SYNCING:
+    case BULK_PIN_STAGE_SUCCESS:
+      return nullptr;
 
-  // Add button to the notification.
-  notification->set_buttons(
-      {ButtonInfo(GetStringUTF16(IDS_FILE_BROWSER_SETTINGS_LABEL))});
+    case BULK_PIN_STAGE_NOT_ENOUGH_SPACE:
+    case BULK_PIN_STAGE_CANNOT_GET_FREE_SPACE:
+    case BULK_PIN_STAGE_CANNOT_LIST_FILES:
+    case BULK_PIN_STAGE_CANNOT_ENABLE_DOCS_OFFLINE:
+      break;
+  }
+
+  VLOG(1) << "Creating bulk-pinning error notification";
+  int title_id, message_id;
+
+  if (bulk_pin_stage_ == BULK_PIN_STAGE_NOT_ENOUGH_SPACE) {
+    if (progress.emptied_queue) {
+      title_id = IDS_FILE_BROWSER_DRIVE_SYNC_TURNED_OFF_TITLE;
+      message_id =
+          IDS_FILE_BROWSER_BULK_PINNING_NOT_ENOUGH_SPACE_NOTIFICATION_2;
+    } else {
+      title_id = IDS_FILE_BROWSER_DRIVE_SYNC_ERROR_TITLE;
+      message_id = IDS_FILE_BROWSER_BULK_PINNING_NOT_ENOUGH_SPACE_NOTIFICATION;
+    }
+  } else {
+    title_id = IDS_FILE_BROWSER_DRIVE_SYNC_TURNED_OFF_TITLE;
+    message_id = IDS_FILE_BROWSER_BULK_PINNING_ERROR;
+  }
+
+  NotificationPtr notification = CreateSystemNotification(
+      kBulkPinningNotificationId, GetStringUTF16(title_id),
+      GetStringUTF16(message_id),
+      BindRepeating(
+          &SystemNotificationManager::HandleBulkPinningNotificationClick,
+          weak_ptr_factory_.GetWeakPtr()));
 
   return notification;
 }
@@ -810,8 +776,7 @@ void SystemNotificationManager::HandleEvent(const Event& event) {
 
 void SystemNotificationManager::HandleIOTaskProgress(
     const ProgressStatus& status) {
-  std::string id = base::StrCat(
-      {kSwaFileOperationPrefix, base::NumberToString(status.task_id)});
+  std::string id = GetNotificationId(status.task_id);
 
   // If there are any SWA windows open, remove the IOTask progress from system
   // notifications.
@@ -823,12 +788,17 @@ void SystemNotificationManager::HandleIOTaskProgress(
   // If there's a warning or security error, show a data protection
   // notification.
   if (status.HasWarning() || status.HasPolicyError()) {
+    policy::FilesPolicyNotificationManager* manager =
+        policy::FilesPolicyNotificationManagerFactory::GetForBrowserContext(
+            profile_);
+    if (!manager) {
+      LOG(ERROR) << "No FilesPolicyNotificationManager instantiated,"
+                    "can't show policy dialog for task_id "
+                 << status.task_id;
+      return;
+    }
     Dismiss(id);
-    NotificationPtr notification =
-        MakeDataProtectionPolicyNotification(id, status);
-    GetNotificationDisplayService()->Display(
-        NotificationHandler::Type::TRANSIENT, *notification,
-        /*metadata=*/nullptr);
+    manager->ShowFilesPolicyNotification(id, status);
     return;
   }
 
@@ -1132,68 +1102,6 @@ NotificationPtr SystemNotificationManager::MakeRemovableNotification(
       notification = MakeMountErrorNotification(event, volume);
     }
   }
-
-  return notification;
-}
-
-NotificationPtr SystemNotificationManager::MakeDataProtectionPolicyNotification(
-    const std::string& notification_id,
-    const ProgressStatus& status) {
-  std::u16string title = GetPolicyNotificationTitle(status);
-  std::u16string message = GetPolicyNotificationMessage(status);
-  std::u16string cancel_button = GetPolicyNotificationCancelButton(status);
-
-  std::vector<ButtonInfo> notification_buttons;
-  notification_buttons.emplace_back(cancel_button);
-
-  RepeatingClosure proceed_callback;
-  RepeatingClosure cancel_callback;
-  if (status.HasWarning()) {
-    notification_buttons.emplace_back(
-        GetPolicyNotificationProceedButton(status));
-    if (status.sources.size() == 1) {
-      // Single file: the user can continue the action directly from the
-      // notification.
-      proceed_callback =
-          BindRepeating(&SystemNotificationManager::ResumeTask,
-                        weak_ptr_factory_.GetWeakPtr(), status.task_id,
-                        status.pause_params.policy_params->type);
-    } else {
-      // Multiple files: add the "Review" button. The user can continue the
-      // action from the dialog.
-      proceed_callback = BindRepeating(
-          &SystemNotificationManager::ShowDataProtectionPolicyDialog,
-          weak_ptr_factory_.GetWeakPtr(), status.task_id,
-          policy::FilesDialogType::kWarning);
-    }
-    cancel_callback =
-        BindRepeating(&SystemNotificationManager::CancelTask,
-                      weak_ptr_factory_.GetWeakPtr(), status.task_id);
-  } else {  // Error - some files couldn't be transferred.
-    DCHECK(status.HasPolicyError());
-    if (status.policy_error != io_task::PolicyErrorType::kDlpWarningTimeout &&
-        status.sources.size() > 1) {
-      // If more than one file was blocked, add the "Review" button.
-      notification_buttons.emplace_back(
-          GetPolicyNotificationProceedButton(status));
-      proceed_callback = BindRepeating(
-          &SystemNotificationManager::ShowDataProtectionPolicyDialog,
-          weak_ptr_factory_.GetWeakPtr(), status.task_id,
-          policy::FilesDialogType::kError);
-    }
-    cancel_callback =
-        BindRepeating(&SystemNotificationManager::Dismiss,
-                      weak_ptr_factory_.GetWeakPtr(), notification_id);
-  }
-
-  NotificationPtr notification = CreateSystemNotification(
-      notification_id, title, message,
-      MakeRefCounted<HandleNotificationClickDelegate>(BindRepeating(
-          &SystemNotificationManager::
-              HandleDataProtectionPolicyNotificationClick,
-          weak_ptr_factory_.GetWeakPtr(), proceed_callback, cancel_callback)));
-
-  notification->set_buttons(notification_buttons);
 
   return notification;
 }

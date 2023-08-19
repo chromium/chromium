@@ -1,0 +1,27 @@
+# Copyright 2023 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+source_set("test_support") {
+  testonly = true
+  sources = [
+    "kids_chrome_management_test_utils.cc",
+    "kids_chrome_management_test_utils.h",
+    "kids_management_api_server_mock.cc",
+    "kids_management_api_server_mock.h",
+  ]
+  deps = [
+    "//base",
+    "//components/safe_search_api",
+    "//components/signin/public/identity_manager",
+    "//components/supervised_user/core/browser",
+    "//components/supervised_user/core/browser:fetcher",
+    "//components/supervised_user/core/browser:fetcher_config",
+    "//components/supervised_user/core/browser:fetcher_config",
+    "//components/supervised_user/core/browser/proto",
+    "//net:test_support",
+    "//net/traffic_annotation",
+    "//services/network/public/cpp",
+    "//url",
+  ]
+}

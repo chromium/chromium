@@ -34,6 +34,8 @@
 #include "ash/shelf/shelf_layout_manager.h"
 #include "ash/shell.h"
 #include "ash/shell_observer.h"
+#include "ash/system/message_center/ash_message_popup_collection.h"
+#include "ash/system/message_center/message_popup_animation_waiter.h"
 #include "ash/system/unified/unified_system_tray.h"
 #include "ash/test/ash_test_base.h"
 #include "ash/test/test_window_builder.h"
@@ -46,6 +48,7 @@
 #include "ash/wm/overview/overview_grid.h"
 #include "ash/wm/splitview/split_view_controller.h"
 #include "ash/wm/tablet_mode/tablet_mode_controller.h"
+#include "ash/wm/test/fake_window_state.h"
 #include "ash/wm/window_properties.h"
 #include "ash/wm/window_state.h"
 #include "ash/wm/window_util.h"
@@ -53,6 +56,7 @@
 #include "ash/wm/work_area_insets.h"
 #include "ash/wm/workspace/backdrop_controller.h"
 #include "ash/wm/workspace/workspace_window_resizer.h"
+#include "ash/wm/workspace_controller.h"
 #include "ash/wm/workspace_controller_test_api.h"
 #include "base/functional/callback_helpers.h"
 #include "base/memory/raw_ptr.h"
@@ -88,6 +92,7 @@ namespace ash {
 namespace {
 
 using ::chromeos::WindowStateType;
+const char kTestAppId[] = "test-app-id";
 
 class MaximizeDelegateView : public views::WidgetDelegateView {
  public:
@@ -1012,6 +1017,57 @@ TEST_F(WorkspaceLayoutManagerTest,
   EXPECT_EQ(gfx::Rect(800, 0, 900, 700), window->GetBoundsInScreen());
 }
 
+TEST_F(WorkspaceLayoutManagerTest,
+       PipReturnsToPositionAfterNotificationIsDismissed) {
+  // Create a new PiP window using TestWindowBuilder().
+  // Set SetShow to false upon creation to simulate the window being created
+  // as a PiP rather than being changed to PiP.
+  std::unique_ptr<aura::Window> pip_window(
+      TestWindowBuilder()
+          .AllowAllWindowStates()
+          .SetBounds(gfx::Rect(432, 416, 360, 128))
+          .SetShow(false)
+          .Build()
+          .release());
+  WindowState* window_state = WindowState::Get(pip_window.get());
+  const WMEvent enter_pip(WM_EVENT_PIP);
+  window_state->OnWMEvent(&enter_pip);
+  pip_window->SetProperty(aura::client::kZOrderingKey,
+                          ui::ZOrderLevel::kFloatingWindow);
+  EXPECT_TRUE(window_state->IsPip());
+  gfx::Rect old_bounds = pip_window->GetBoundsInScreen();
+  pip_window->Show();
+
+  // Create a new popup notification window.
+  std::string notification_id("notification_id");
+  const message_center::NotifierId notifier_id(
+      message_center::NotifierType::APPLICATION, kTestAppId);
+  std::unique_ptr<message_center::Notification> notification =
+      std::make_unique<message_center::Notification>(
+          message_center::NOTIFICATION_TYPE_SIMPLE, notification_id,
+          u"Test Web Notification", u"Notification message body.",
+          ui::ImageModel(), u"www.test.org", GURL(), notifier_id,
+          message_center::RichNotificationData(), /*delegate=*/nullptr);
+  message_center::MessageCenter::Get()->AddNotification(
+      std::move(notification));
+  MessagePopupAnimationWaiter(
+      GetPrimaryUnifiedSystemTray()->GetMessagePopupCollection())
+      .Wait();
+
+  // PiP window has moved due to the popup notification window.
+  EXPECT_NE(old_bounds, pip_window->GetBoundsInScreen());
+
+  // Remove the popup notification window.
+  message_center::MessageCenter::Get()->RemoveNotification(notification_id,
+                                                           /*by_user=*/true);
+  MessagePopupAnimationWaiter(
+      GetPrimaryUnifiedSystemTray()->GetMessagePopupCollection())
+      .Wait();
+
+  // Now, the PiP window has returned to its original position.
+  EXPECT_EQ(old_bounds, pip_window->GetBoundsInScreen());
+}
+
 // Following "Solo" tests were originally written for BaseLayoutManager.
 using WorkspaceLayoutManagerSoloTest = AshTestBase;
 
@@ -1578,7 +1634,7 @@ class WorkspaceLayoutManagerBackdropTest : public AshTestBase {
 
  private:
   // The default container.
-  raw_ptr<aura::Window, ExperimentalAsh> default_container_;
+  raw_ptr<aura::Window, DanglingUntriaged | ExperimentalAsh> default_container_;
 };
 
 constexpr absl::optional<Sound> kNoSoundKey = absl::nullopt;
@@ -2026,7 +2082,8 @@ class WorkspaceLayoutManagerKeyboardTest : public AshTestBase {
  private:
   gfx::Insets restore_work_area_insets_;
   gfx::Rect keyboard_bounds_;
-  raw_ptr<WorkspaceLayoutManager, ExperimentalAsh> layout_manager_;
+  raw_ptr<WorkspaceLayoutManager, DanglingUntriaged | ExperimentalAsh>
+      layout_manager_;
 };
 
 // Tests that when a child window gains focus the top level window containing it
@@ -2195,6 +2252,13 @@ TEST_F(WorkspaceLayoutManagerBackdropTest, BackdropForSplitViewTest) {
     EXPECT_TRUE(child->IsVisible());
   }
 
+  BackdropController* backdrop_controller =
+      GetActiveWorkspaceController(Shell::GetPrimaryRootWindow())
+          ->layout_manager()
+          ->backdrop_controller();
+  ASSERT_EQ(backdrop_controller->backdrop_window(),
+            default_container()->children()[0]);
+
   EXPECT_EQ(window1.get(), default_container()->children()[1]);
   EXPECT_EQ(default_container()->bounds(),
             default_container()->children()[0]->bounds());
@@ -2204,6 +2268,7 @@ TEST_F(WorkspaceLayoutManagerBackdropTest, BackdropForSplitViewTest) {
   // container. Its bounds should be the same as the snapped window's bounds.
   split_view_controller()->SnapWindow(
       window1.get(), SplitViewController::SnapPosition::kPrimary);
+
   EXPECT_TRUE(Shell::Get()->overview_controller()->InOverviewSession());
   // One of the windows in the default container is the overview
   // no_windows_widget window. Exclude it.
@@ -2258,37 +2323,6 @@ TEST_F(WorkspaceLayoutManagerBackdropTest, BackdropForSplitViewTest) {
             default_container()->children()[0]->bounds());
 }
 
-namespace {
-
-class TestState : public WindowState::State {
- public:
-  TestState() = default;
-
-  TestState(const TestState&) = delete;
-  TestState& operator=(const TestState&) = delete;
-
-  ~TestState() override = default;
-
-  // WindowState::State overrides:
-  void OnWMEvent(WindowState* window_state, const WMEvent* event) override {
-    if (event->type() == WM_EVENT_SYSTEM_UI_AREA_CHANGED)
-      num_system_ui_area_changes_++;
-  }
-  WindowStateType GetType() const override { return WindowStateType::kNormal; }
-  void AttachState(WindowState* window_state,
-                   WindowState::State* previous_state) override {}
-  void DetachState(WindowState* window_state) override {}
-
-  int num_system_ui_area_changes() const { return num_system_ui_area_changes_; }
-
-  void reset_num_system_ui_area_changes() { num_system_ui_area_changes_ = 0; }
-
- private:
-  int num_system_ui_area_changes_ = 0;
-};
-
-}  // namespace
-
 class WorkspaceLayoutManagerSystemUiAreaTest : public AshTestBase {
  public:
   WorkspaceLayoutManagerSystemUiAreaTest() = default;
@@ -2307,9 +2341,10 @@ class WorkspaceLayoutManagerSystemUiAreaTest : public AshTestBase {
 
     window_ = CreateTestWindowInShellWithBounds(gfx::Rect(0, 0, 100, 100));
     WindowState* window_state = WindowState::Get(window_);
-    test_state_ = new TestState();
-    window_state->SetStateObject(
-        std::unique_ptr<WindowState::State>(test_state_));
+    auto test_state =
+        std::make_unique<FakeWindowState>(WindowStateType::kNormal);
+    test_state_ = test_state.get();
+    window_state->SetStateObject(std::move(test_state));
   }
 
   void TearDown() override {
@@ -2319,11 +2354,12 @@ class WorkspaceLayoutManagerSystemUiAreaTest : public AshTestBase {
 
  protected:
   aura::Window* window() { return window_; }
-  TestState* test_state() { return test_state_; }
+  FakeWindowState* test_state() { return test_state_; }
 
  private:
-  raw_ptr<aura::Window, ExperimentalAsh> window_ = nullptr;
-  raw_ptr<TestState, ExperimentalAsh> test_state_ = nullptr;
+  raw_ptr<aura::Window, DanglingUntriaged | ExperimentalAsh> window_ = nullptr;
+  raw_ptr<FakeWindowState, DanglingUntriaged | ExperimentalAsh> test_state_ =
+      nullptr;
 };
 
 // Expect that showing and hiding the unified system tray triggers a system ui

@@ -35,10 +35,12 @@ class PlatformFont;
 class GFX_EXPORT Font {
  public:
   // The following constants indicate the font style.
+  // These are treated as bitwise operators.
   enum FontStyle {
-    NORMAL = 0,
-    ITALIC = 1,
-    UNDERLINE = 2,
+    NORMAL = 0b0,
+    ITALIC = 0b1,
+    STRIKE_THROUGH = 0b10,
+    UNDERLINE = 0b100,
   };
 
   // Standard font weights as used in Pango and Windows. The values must match

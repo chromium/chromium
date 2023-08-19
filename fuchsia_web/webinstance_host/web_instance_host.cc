@@ -30,7 +30,9 @@
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_piece.h"
+#include "base/strings/string_util.h"
 #include "base/types/expected.h"
+#include "base/types/expected_macros.h"
 #include "components/fuchsia_component_support/serialize_arguments.h"
 #include "fuchsia_web/webengine/switches.h"
 #include "fuchsia_web/webinstance_host/web_instance_host_constants.h"
@@ -43,18 +45,28 @@ namespace fcdecl = ::fuchsia::component::decl;
 // The name of the component collection hosting the instances.
 constexpr char kCollectionName[] = "web_instances";
 
+// Returns the default package URL for WebEngine.
+// It is possible that this is not the actual URL for the current package.
+// The package URL for the current component cannot be obtained programmatically
+// (see fxbug.dev/51490), and this should always work in production, which is
+// when this is needed.
+// TODO(crbug.com/1211174): Remove when a different mechanism is available.
+// TODO(crbug.com/1395054): Replace with constant once `with_webui` is removed.
+std::string GetAbsoluteWebEnginePackageUrl(bool with_webui) {
+  return base::StrCat({"fuchsia-pkg://fuchsia.com/",
+                       (with_webui ? "web_engine_with_webui" : "web_engine")});
+}
+
 // Returns the URL of the WebInstance component to be launched.
 // `with_webui` is a test-only feature for `web_engine_shell` that causes
 // `web_instance.cm` to be run from the `web_engine_with_webui` package rather
 // than the production `web_engine` package.
-std::string MakeWebInstanceComponentUrl(bool with_webui,
+std::string MakeWebInstanceComponentUrl(bool use_relative_url,
+                                        bool with_webui,
                                         base::StringPiece component_name) {
-  // TODO(crbug.com/1010222): Use a relative component URL when the hosting
-  // component is in the same package as web_instance.cm and remove this
-  // workaround.
-  return base::StrCat({"fuchsia-pkg://fuchsia.com/",
-                       (with_webui ? "web_engine_with_webui" : "web_engine"),
-                       "#meta/", component_name});
+  return base::StrCat(
+      {(use_relative_url ? "" : GetAbsoluteWebEnginePackageUrl(with_webui)),
+       "#meta/", component_name});
 }
 
 // Returns the "/web_instances" dir from the component's outgoing directory,
@@ -552,8 +564,11 @@ bool HandleContentDirectoriesParam(InstanceBuilder& builder,
 
 }  // namespace
 
-WebInstanceHost::WebInstanceHost(sys::OutgoingDirectory& outgoing_directory)
-    : outgoing_directory_(outgoing_directory) {}
+WebInstanceHost::WebInstanceHost(sys::OutgoingDirectory& outgoing_directory,
+                                 bool is_web_instance_component_in_same_package)
+    : outgoing_directory_(outgoing_directory),
+      is_web_instance_component_in_same_package_(
+          is_web_instance_component_in_same_package) {}
 
 WebInstanceHost::~WebInstanceHost() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -564,7 +579,7 @@ zx_status_t WebInstanceHost::CreateInstanceForContextWithCopiedArgsAndUrl(
     fuchsia::web::CreateContextParams params,
     fidl::InterfaceRequest<fuchsia::io::Directory> outgoing_services_request,
     base::CommandLine extra_args,
-    base::StringPiece instance_component_url,
+    base::StringPiece component_name,
     std::vector<std::string> services_to_offer) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
@@ -572,12 +587,9 @@ zx_status_t WebInstanceHost::CreateInstanceForContextWithCopiedArgsAndUrl(
     Initialize();
   }
 
-  auto expected_builder = InstanceBuilder::Create(*outgoing_directory_, *realm_,
-                                                  std::move(extra_args));
-  if (!expected_builder.has_value()) {
-    return expected_builder.error();
-  }
-  auto builder = std::move(expected_builder.value());
+  ASSIGN_OR_RETURN(auto builder,
+                   InstanceBuilder::Create(*outgoing_directory_, *realm_,
+                                           std::move(extra_args)));
 
   if (zx_status_t status = AppendLaunchArgs(params, builder->args());
       status != ZX_OK) {
@@ -620,14 +632,31 @@ zx_status_t WebInstanceHost::CreateInstanceForContextWithCopiedArgsAndUrl(
     debug_proxy_.RegisterInstance(std::move(debug_handle));
   }
 
-  // Ensure WebInstance is registered before launching it.
-  // TODO(crbug.com/1275224): Replace with a different mechanism when available.
-  RegisterWebInstanceProductData(instance_component_url);
+  const bool with_webui =
+      base::CommandLine::ForCurrentProcess()->HasSwitch(switches::kWithWebui);
 
-  // TODO(crbug.com/1395054): Replace the with_webui component with direct
-  // routing of the resources from web_engine_shell.
-  auto instance = builder->Build(instance_component_url,
+  auto component_url_to_launch = MakeWebInstanceComponentUrl(
+      is_web_instance_component_in_same_package_, with_webui, component_name);
+
+  auto component_url_to_register = component_url_to_launch;
+
+  if (is_web_instance_component_in_same_package_) {
+    // RegisterWebInstanceProductData() requires an absolute component URL, but
+    // the package URL for the current component cannot be obtained
+    // programmatically (see fxbug.dev/51490). Use the default absolute package
+    // URL for WebEngine; this should always work in production, which is
+    // when registration is needed.
+    // TODO(crbug.com/1211174): Remove when a different mechanism is available.
+    component_url_to_register =
+        MakeWebInstanceComponentUrl(false, with_webui, component_name);
+  }
+
+  // Ensure WebInstance is registered before launching it.
+  RegisterWebInstanceProductData(component_url_to_register);
+
+  auto instance = builder->Build(component_url_to_launch,
                                  std::move(outgoing_services_request));
+
   // Monitor the instance's Binder to track its destruction.
   instance.binder_ptr.set_error_handler(
       [this, id = instance.id](zx_status_t status) {
@@ -703,8 +732,10 @@ void WebInstanceHost::OnComponentBinderClosed(const base::Uuid& id,
 
 WebInstanceHostWithServicesFromThisComponent::
     WebInstanceHostWithServicesFromThisComponent(
-        sys::OutgoingDirectory& outgoing_directory)
-    : WebInstanceHost(outgoing_directory) {}
+        sys::OutgoingDirectory& outgoing_directory,
+        bool is_web_instance_component_in_same_package)
+    : WebInstanceHost(outgoing_directory,
+                      is_web_instance_component_in_same_package) {}
 
 zx_status_t WebInstanceHostWithServicesFromThisComponent::
     CreateInstanceForContextWithCopiedArgs(
@@ -715,10 +746,6 @@ zx_status_t WebInstanceHostWithServicesFromThisComponent::
   // Services are offered from this Component, so they should not be provided.
   CHECK(!params.has_service_directory());
 
-  const auto instance_component_url = MakeWebInstanceComponentUrl(
-      base::CommandLine::ForCurrentProcess()->HasSwitch(switches::kWithWebui),
-      "web_instance.cm");
-
   std::vector<std::string> services;
   const auto features = params.has_features()
                             ? params.features()
@@ -727,12 +754,14 @@ zx_status_t WebInstanceHostWithServicesFromThisComponent::
 
   return CreateInstanceForContextWithCopiedArgsAndUrl(
       std::move(params), std::move(outgoing_services_request), extra_args,
-      instance_component_url, services);
+      "web_instance.cm", services);
 }
 
 WebInstanceHostWithoutServices::WebInstanceHostWithoutServices(
-    sys::OutgoingDirectory& outgoing_directory)
-    : WebInstanceHost(outgoing_directory) {}
+    sys::OutgoingDirectory& outgoing_directory,
+    bool is_web_instance_component_in_same_package)
+    : WebInstanceHost(outgoing_directory,
+                      is_web_instance_component_in_same_package) {}
 
 zx_status_t
 WebInstanceHostWithoutServices::CreateInstanceForContextWithCopiedArgs(
@@ -747,10 +776,7 @@ WebInstanceHostWithoutServices::CreateInstanceForContextWithCopiedArgs(
     return ZX_ERR_INVALID_ARGS;
   }
 
-  const auto instance_component_url = MakeWebInstanceComponentUrl(
-      /* with_webui */ false, "web_instance_with_svc_directory.cm");
-
   return CreateInstanceForContextWithCopiedArgsAndUrl(
       std::move(params), std::move(outgoing_services_request), extra_args,
-      instance_component_url, {});
+      "web_instance_with_svc_directory.cm", {});
 }

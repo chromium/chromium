@@ -182,20 +182,6 @@ bool DictionaryHelper::Get(const Dictionary& dictionary,
 template <>
 bool DictionaryHelper::Get(const Dictionary& dictionary,
                            const StringView& key,
-                           Member<DOMWindow>& value) {
-  v8::Local<v8::Value> v8_value;
-  if (!dictionary.Get(key, v8_value))
-    return false;
-
-  // We need to handle a DOMWindow specially, because a DOMWindow wrapper
-  // exists on a prototype chain of v8Value.
-  value = ToDOMWindow(dictionary.GetIsolate(), v8_value);
-  return true;
-}
-
-template <>
-bool DictionaryHelper::Get(const Dictionary& dictionary,
-                           const StringView& key,
                            Member<TrackBase>& value) {
   v8::Local<v8::Value> v8_value;
   if (!dictionary.Get(key, v8_value))

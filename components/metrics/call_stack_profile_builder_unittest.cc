@@ -11,7 +11,6 @@
 #include "base/profiler/module_cache.h"
 #include "base/profiler/stack_sampling_profiler_test_util.h"
 #include "base/test/bind.h"
-#include "base/test/metrics/histogram_tester.h"
 #include "base/test/mock_callback.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
@@ -616,81 +615,6 @@ TEST(CallStackProfileBuilderTest,
 
   for (const CallStackProfile::StackSample& sample : profile.stack_sample())
     EXPECT_EQ(0, sample.metadata_size());
-}
-
-struct SampleInOrderHistogramTestParams {
-  std::string name;
-  int time_delta_multiple;
-  bool expected_result;
-  SampleInOrderHistogramTestParams(const char* name_param,
-                                   int time_delta_multiple_param,
-                                   int expected_result_param)
-      : name(name_param),
-        time_delta_multiple(time_delta_multiple_param),
-        expected_result(expected_result_param) {}
-};
-
-class CallStackProfileBuilderOrderingHistogramTest
-    : public testing::TestWithParam<SampleInOrderHistogramTestParams> {};
-TEST_P(CallStackProfileBuilderOrderingHistogramTest, HistogramValue) {
-  auto profile_builder =
-      std::make_unique<TestingCallStackProfileBuilder>(kProfileParams, nullptr);
-  base::TestModule module;
-  base::Frame frame = {0x10, &module};
-  base::TimeTicks profile_start_time = base::TimeTicks::UnixEpoch() +
-                                       base::Days(104) + base::Hours(3) +
-                                       base::Minutes(7);
-  base::TimeDelta sample_time_delta = base::Seconds(10);
-
-  // Always add 4 in-order entries:
-  profile_builder->OnSampleCompleted({frame}, profile_start_time);
-  profile_builder->OnSampleCompleted(
-      {frame}, profile_start_time + 10 * sample_time_delta);
-  profile_builder->OnSampleCompleted(
-      {frame}, profile_start_time + 20 * sample_time_delta);
-  profile_builder->OnSampleCompleted(
-      {frame}, profile_start_time + 30 * sample_time_delta);
-  SampleInOrderHistogramTestParams params = GetParam();
-  base::HistogramTester histogram_tester;
-  profile_builder->OnSampleCompleted(
-      {frame},
-      profile_start_time + params.time_delta_multiple * sample_time_delta);
-
-  histogram_tester.ExpectUniqueSample("UMA.StackProfiler.SampleInOrder",
-                                      params.expected_result, 1);
-}
-
-INSTANTIATE_TEST_SUITE_P(
-    CallStackProfileBuilderOrderingHistogram,
-    CallStackProfileBuilderOrderingHistogramTest,
-    testing::Values(
-        SampleInOrderHistogramTestParams("InOrder", 100, true),
-        SampleInOrderHistogramTestParams("DuplicatesAreAlsoInOrder", 30, true),
-        SampleInOrderHistogramTestParams("BeforeLast", 25, false),
-        SampleInOrderHistogramTestParams("DuplicateOfSecondToLast", 20, false),
-        SampleInOrderHistogramTestParams("BeforeSecondToLast", 15, false),
-        SampleInOrderHistogramTestParams("DuplicateOfThirdToLast", 10, false),
-        SampleInOrderHistogramTestParams("BeforeThirdToLast", 5, false),
-        SampleInOrderHistogramTestParams("DuplicateOfFirst", 0, false),
-        SampleInOrderHistogramTestParams("BeforeFirst", -1, false)),
-    [](const testing::TestParamInfo<
-        CallStackProfileBuilderOrderingHistogramTest::ParamType>& info) {
-      return info.param.name;
-    });
-
-TEST(CallStackProfileBuilderOrderingHistogram, FirstSampleIsInOrder) {
-  auto profile_builder =
-      std::make_unique<TestingCallStackProfileBuilder>(kProfileParams, nullptr);
-  base::TestModule module;
-  base::Frame frame = {0x10, &module};
-  base::TimeTicks profile_start_time = base::TimeTicks::UnixEpoch() +
-                                       base::Days(104) + base::Hours(3) +
-                                       base::Minutes(7);
-
-  base::HistogramTester histogram_tester;
-  profile_builder->OnSampleCompleted({frame}, profile_start_time);
-  histogram_tester.ExpectUniqueSample("UMA.StackProfiler.SampleInOrder", true,
-                                      1);
 }
 
 }  // namespace metrics

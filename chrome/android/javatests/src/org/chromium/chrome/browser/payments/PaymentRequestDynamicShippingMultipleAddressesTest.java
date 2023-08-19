@@ -16,11 +16,11 @@ import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Feature;
 import org.chromium.chrome.browser.autofill.AutofillTestHelper;
-import org.chromium.chrome.browser.autofill.PersonalDataManager.AutofillProfile;
 import org.chromium.chrome.browser.autofill.PersonalDataManager.CreditCard;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.R;
+import org.chromium.components.autofill.AutofillProfile;
 
 import java.util.ArrayList;
 import java.util.concurrent.TimeoutException;
@@ -156,6 +156,9 @@ public class PaymentRequestDynamicShippingMultipleAddressesTest {
 
         // Set up the profile use stats.
         for (int i = 0; i < guids.size(); i++) {
+            // TODO(crbug.com/1463732): Update Disabled Test Callsites of
+            // SetProfileUseStatsForTesting and SetCreditCardUseStatsForTesting since the underlying
+            // logic has changed.
             helper.setProfileUseStatsForTesting(guids.get(i), mCountsToSet[i], mDatesToSet[i]);
         }
     }

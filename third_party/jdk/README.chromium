@@ -1,26 +1,39 @@
 Name: Java Development Kit
 Short Name: JDK
 URL: https://openjdk.java.net/
-Version: see_below
+Version: 17
 License: GPL v2
-License File: NOT_SHIPPED
 Security Critical: no
+Shipped: no
 
 Description:
 The Java Development Kit (JDK) is a software development environment used for
 developing Java applications and applets. (linux-x64)
 
-How to update:
-For the `jdk` directory:
-1. 3pp automatically uploads new releases at https://chrome-infra-packages.appspot.com/p/chromium/third_party/jdk/+/
-2. Each instance is tagged with version:2@<jdk version>.<md5 hash>.
-3. Choose the cipd instance you wish to roll.
-7. Update the cipd instance ID in //DEPS
-
 Check Current Version:
- - run ./print_version.sh
- - Find the tag that looks like `version:2@<jdk version>.<md5 hash>`
- - The version is the <jdk version> part of the tag.
+ * run ./print_version.sh
+ * Find the tag that looks like `version:2@<jdk version>.<md5 hash>`
+ * The version is the <jdk version> part of the tag.
+
+This Package is Auto-Rolled:
+ * Minor versions are auto-rolled.
+ * New instances are uploaded by the packager bot:
+   https://ci.chromium.org/p/chromium/builders/ci/3pp-linux-amd64-packager
+ * The bot autoruns every 6 hours. Ping a trooper or a clank-build-core@ dev to
+   trigger it if you need it sooner:
+   https://luci-scheduler.appspot.com/jobs/chromium/3pp-linux-amd64-packager
+ * New packages are rolled automatically by:
+   https://autoroll.skia.org/r/jdk-chromium
+
+To roll to a new JDK major version:
+ * Test locally that builds (with Errorprone enabled) work.
+ * Get confiramtion from chops-source-team@google.com that Kythe supports the new version.
+ * Change the package in 3pp/fetch.py
+ * Pause the auto-roller
+ * Wait for the 3pp packager to create a new package
+ * Land a manual roll:
+   * Update Instance ID in //DEPS
+   * Update Version: at the top of this file.
 
 Local Modifications:
 None

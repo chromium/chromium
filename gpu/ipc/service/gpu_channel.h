@@ -35,6 +35,7 @@
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/gfx/geometry/size.h"
+#include "ui/gfx/gpu_extra_info.h"
 #include "ui/gfx/native_widget_types.h"
 #include "ui/gl/gl_share_group.h"
 #include "ui/gl/gpu_preference.h"
@@ -80,20 +81,10 @@ class GPU_IPC_SERVICE_EXPORT GpuChannel : public IPC::Listener,
   void Init(IPC::ChannelHandle channel_handle,
             base::WaitableEvent* shutdown_event);
 
+  void SetGpuExtraInfo(const gfx::GpuExtraInfo& gpu_extra_info);
   void InitForTesting(IPC::Channel* channel);
 
   base::WeakPtr<GpuChannel> AsWeakPtr();
-
-  using CommandBufferMediaBinder =
-      base::RepeatingCallback<void(CommandBufferStub*,
-                                   mojo::GenericPendingAssociatedReceiver)>;
-  void set_command_buffer_media_binder(CommandBufferMediaBinder binder) {
-    command_buffer_media_binder_ = std::move(binder);
-  }
-
-  const CommandBufferMediaBinder& command_buffer_media_binder() const {
-    return command_buffer_media_binder_;
-  }
 
   // Get the GpuChannelManager that owns this channel.
   GpuChannelManager* gpu_channel_manager() const {
@@ -136,7 +127,7 @@ class GPU_IPC_SERVICE_EXPORT GpuChannel : public IPC::Listener,
 
   CommandBufferStub* LookupCommandBuffer(int32_t route_id);
 
-  bool HasActiveWebGLContext() const;
+  bool HasActiveStatefulContext() const;
   void MarkAllContextsLost();
 
   // Called to add a listener for a particular message routing ID.
@@ -246,10 +237,6 @@ class GPU_IPC_SERVICE_EXPORT GpuChannel : public IPC::Listener,
       channel_;  // Same as sync_channel_.get() except in tests.
 
   base::ProcessId client_pid_ = base::kNullProcessId;
-
-  // An optional binder to handle associated interface requests from the Media
-  // stack, targeting a specific CommandBuffer.
-  CommandBufferMediaBinder command_buffer_media_binder_;
 
   // Map of routing id to command buffer stub.
   base::flat_map<int32_t, std::unique_ptr<CommandBufferStub>> stubs_;

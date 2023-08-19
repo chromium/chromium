@@ -2,6 +2,9 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+# @generated from third_party/rust/BUILD.gn.hbs by tools/crates/gnrt.
+# Do not edit!
+
 import("//build/rust/cargo_crate.gni")
 
 cargo_crate("lib") {
@@ -13,10 +16,37 @@ cargo_crate("lib") {
   # third_party.toml to use it from first-party code.
   visibility = [ "//third_party/rust/*" ]
   crate_root = "crate/src/lib.rs"
+  sources = [
+    "//third_party/rust/env_logger/v0_10/crate/examples/custom_default_format.rs",
+    "//third_party/rust/env_logger/v0_10/crate/examples/custom_format.rs",
+    "//third_party/rust/env_logger/v0_10/crate/examples/custom_logger.rs",
+    "//third_party/rust/env_logger/v0_10/crate/examples/default.rs",
+    "//third_party/rust/env_logger/v0_10/crate/examples/direct_logger.rs",
+    "//third_party/rust/env_logger/v0_10/crate/examples/filters_from_code.rs",
+    "//third_party/rust/env_logger/v0_10/crate/examples/in_tests.rs",
+    "//third_party/rust/env_logger/v0_10/crate/examples/syslog_friendly_format.rs",
+    "//third_party/rust/env_logger/v0_10/crate/src/filter/mod.rs",
+    "//third_party/rust/env_logger/v0_10/crate/src/filter/regex.rs",
+    "//third_party/rust/env_logger/v0_10/crate/src/filter/string.rs",
+    "//third_party/rust/env_logger/v0_10/crate/src/fmt/humantime/extern_impl.rs",
+    "//third_party/rust/env_logger/v0_10/crate/src/fmt/humantime/mod.rs",
+    "//third_party/rust/env_logger/v0_10/crate/src/fmt/humantime/shim_impl.rs",
+    "//third_party/rust/env_logger/v0_10/crate/src/fmt/mod.rs",
+    "//third_party/rust/env_logger/v0_10/crate/src/fmt/writer/atty.rs",
+    "//third_party/rust/env_logger/v0_10/crate/src/fmt/writer/mod.rs",
+    "//third_party/rust/env_logger/v0_10/crate/src/fmt/writer/termcolor/extern_impl.rs",
+    "//third_party/rust/env_logger/v0_10/crate/src/fmt/writer/termcolor/mod.rs",
+    "//third_party/rust/env_logger/v0_10/crate/src/fmt/writer/termcolor/shim_impl.rs",
+    "//third_party/rust/env_logger/v0_10/crate/src/lib.rs",
+    "//third_party/rust/env_logger/v0_10/crate/tests/init-twice-retains-filter.rs",
+    "//third_party/rust/env_logger/v0_10/crate/tests/log-in-log.rs",
+    "//third_party/rust/env_logger/v0_10/crate/tests/log_tls_dtors.rs",
+    "//third_party/rust/env_logger/v0_10/crate/tests/regexp_filter.rs",
+  ]
+  inputs = [ "//third_party/rust/env_logger/v0_10/crate/README.md" ]
 
   # Unit tests skipped. Generate with --with-tests to include them.
   build_native_rust_unit_tests = false
-  sources = [ "crate/src/lib.rs" ]
   edition = "2021"
   cargo_pkg_version = "0.10.0"
   cargo_pkg_name = "env_logger"

@@ -11,7 +11,6 @@ if (is_android) {
 source_set("browser") {
   sources = [
     "platform_spell_checker.h",
-    "pref_names.cc",
     "pref_names.h",
     "spell_check_host_impl.cc",
     "spell_check_host_impl.h",
@@ -54,7 +53,6 @@ source_set("browser") {
 
   if (is_mac) {
     sources += [ "spellcheck_platform_mac.mm" ]
-    configs += [ "//build/config/compiler:enable_arc" ]
   }
 
   if (is_android) {

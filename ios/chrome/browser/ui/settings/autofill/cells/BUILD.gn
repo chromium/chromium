@@ -21,8 +21,6 @@ source_set("cells") {
     "//ios/chrome/common/ui/colors",
     "//ios/chrome/common/ui/table_view:cells_constants",
   ]
-
-  configs += [ "//build/config/compiler:enable_arc" ]
 }
 
 source_set("unit_tests") {
@@ -37,6 +35,4 @@ source_set("unit_tests") {
     "//testing/gtest",
     "//third_party/ocmock:ocmock",
   ]
-
-  configs += [ "//build/config/compiler:enable_arc" ]
 }

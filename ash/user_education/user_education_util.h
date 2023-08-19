@@ -6,12 +6,20 @@
 #define ASH_USER_EDUCATION_USER_EDUCATION_UTIL_H_
 
 #include <string>
+#include <utility>
 
 #include "ash/ash_export.h"
+#include "base/values.h"
 #include "components/user_education/common/help_bubble_params.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
+#include "ui/base/interaction/element_tracker.h"
+#include "ui/base/ui_base_types.h"
 
 class AccountId;
+
+namespace gfx {
+struct VectorIcon;
+}  // namespace gfx
 
 namespace ui {
 class ElementIdentifier;
@@ -30,6 +38,11 @@ struct UserSession;
 
 namespace user_education_util {
 
+// Returns extended properties for a help bubble having set `body_icon`.
+// NOTE: `body_icon` must have static storage duration.
+ASH_EXPORT user_education::HelpBubbleParams::ExtendedProperties
+CreateExtendedProperties(const gfx::VectorIcon& body_icon);
+
 // Returns extended properties for a help bubble having set `help_bubble_id`.
 ASH_EXPORT user_education::HelpBubbleParams::ExtendedProperties
 CreateExtendedProperties(HelpBubbleId help_bubble_id);
@@ -38,12 +51,53 @@ CreateExtendedProperties(HelpBubbleId help_bubble_id);
 ASH_EXPORT user_education::HelpBubbleParams::ExtendedProperties
 CreateExtendedProperties(HelpBubbleStyle help_bubble_style);
 
+// Returns extended properties for a help bubble having set `modal_type`.
+ASH_EXPORT user_education::HelpBubbleParams::ExtendedProperties
+CreateExtendedProperties(ui::ModalType modal_type);
+
+/*
+Creates an extended properties instance by merging `properties`.
+
+Example usage:
+const user_education::HelpBubbleParams::ExtendedProperties
+      extended_properties = CreateExtendedProperties(
+          CreateExtendedProperties(HelpBubbleId::kTest),
+          CreateExtendedProperties(HelpBubbleStyle::kNudge));
+*/
+template <typename... Properties>
+ASH_EXPORT user_education::HelpBubbleParams::ExtendedProperties
+CreateExtendedProperties(Properties&&... properties) {
+  user_education::HelpBubbleParams::ExtendedProperties extended_properties;
+  base::Value::Dict& values = extended_properties.values();
+  ([&] { values.Merge(std::move(properties.values())); }(), ...);
+  return extended_properties;
+}
+
 // Returns the `AccountId` for the specified `user_session`. If the specified
 // `user_session` is `nullptr`, `EmptyAccountId()` is returned.
 ASH_EXPORT const AccountId& GetAccountId(const UserSession* user_session);
 
+// Returns the custom event type for help bubble anchor bounds changed events.
+// TODO(http://b/287129131): Remove this utility after exporting
+//  `user_education::kHelpBubbleAnchorBoundsChangedEvent`.
+ASH_EXPORT ui::CustomElementEventType
+GetHelpBubbleAnchorBoundsChangedEventType();
+
+// Returns help bubble body icon from the specified `external_properties`. If
+// the specified `external_properties` does not contain a help bubble body icon,
+// an absent value is returned.
+ASH_EXPORT absl::optional<std::reference_wrapper<const gfx::VectorIcon>>
+GetHelpBubbleBodyIcon(
+    const user_education::HelpBubbleParams::ExtendedProperties&
+        extended_properties);
+
 // Returns help bubble ID from the specified `extended_properties`.
 ASH_EXPORT HelpBubbleId GetHelpBubbleId(
+    const user_education::HelpBubbleParams::ExtendedProperties&
+        extended_properties);
+
+// Returns modal type from the specified `extended_properties`.
+ASH_EXPORT ui::ModalType GetHelpBubbleModalType(
     const user_education::HelpBubbleParams::ExtendedProperties&
         extended_properties);
 

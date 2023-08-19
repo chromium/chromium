@@ -218,6 +218,12 @@
           Applications &gt; System Preferences &gt; Network &gt; Advanced &gt; Proxies
           and deselect any proxies that have been selected.
         </message>
+        <message name="IDS_PAYMENTS_AUTOFILL_MANDATORY_REAUTH_PROMPT" desc="Message to be displayed to the user in the device authentication prompt when they click on the mandatory auth toggle on the Payments settings page, irrespective to enable or disable it. When mandatory auth toggle is enabled, we would authenticate the user before autofilling in the payment details. Note: MacOS has the wording 'Chromium is trying to' prepended onto the message during user auth.">
+          modify settings for filling payment methods.
+        </message>
+        <message name="IDS_PAYMENTS_AUTOFILL_EDIT_CARD_MANDATORY_REAUTH_PROMPT" desc="Message to be displayed to the user in the device authentication prompt when they try to edit a local card on the Payments settings page if the mandatory auth toggle is enabled. If the user auth was succesful, we would then show the edit card dialog. Note: MacOS has the wording 'Chromium is trying to' prepended onto the message during user auth.">
+          edit payment methods.
+        </message>
       </if>
       <!-- The ChromeOS version of this string is defined in //components/error_page_strings.grdp. -->
       <if expr="is_linux">
@@ -244,6 +250,12 @@
           &gt;
           LAN Settings
           and deselect the &quot;Use a proxy server for your LAN&quot; checkbox.
+        </message>
+        <message name="IDS_PAYMENTS_AUTOFILL_MANDATORY_REAUTH_PROMPT" desc="Message to be displayed to the user in the device authentication prompt when they click on the mandatory auth toggle on the Payments settings page, irrespective to enable or disable it. When mandatory auth toggle is enabled, we would authenticate the user before autofilling in the payment details.">
+          Chromium is trying to modify settings for filling payment methods.
+        </message>
+        <message name="IDS_PAYMENTS_AUTOFILL_EDIT_CARD_MANDATORY_REAUTH_PROMPT" desc="Message to be displayed to the user in the device authentication prompt when they try to edit a local card on the Payments settings page if the mandatory auth toggle is enabled. If the user auth was succesful, we would then show the edit card dialog.">
+          Chromium is trying to edit payment methods.
         </message>
       </if>
 
@@ -296,9 +308,18 @@
       </if>
 
       <!-- Page Info -->
-      <message name="IDS_PAGE_INFO_INTERNAL_PAGE" desc="Message to display in the page info bubble when the page you are on is a chrome:// page or about:something.">
-        You're viewing a secure Chromium page
-      </message>
+      <if expr="_is_chrome_for_testing_branded">
+        <then>
+          <message name="IDS_PAGE_INFO_INTERNAL_PAGE" desc="Message to display in the page info bubble when the page you are on is a chrome:// page or about:something.">
+            You're viewing a secure Chrome for Testing page
+          </message>
+        </then>
+        <else>
+          <message name="IDS_PAGE_INFO_INTERNAL_PAGE" desc="Message to display in the page info bubble when the page you are on is a chrome:// page or about:something.">
+            You're viewing a secure Chromium page
+          </message>
+        </else>
+      </if>
 
       <!-- Session Crash -->
       <message name="IDS_SESSION_CRASHED_VIEW_MESSAGE" desc="Message shown when the last session didn't exit cleanly.">

@@ -114,28 +114,14 @@ VulkanImplementationHeadless::ExportVkFenceToGpuFence(VkDevice vk_device,
   return nullptr;
 }
 
-VkSemaphore VulkanImplementationHeadless::CreateExternalSemaphore(
-    VkDevice vk_device) {
-  return gpu::CreateExternalVkSemaphore(
-      vk_device, VK_EXTERNAL_SEMAPHORE_HANDLE_TYPE_OPAQUE_FD_BIT);
-}
-
-VkSemaphore VulkanImplementationHeadless::ImportSemaphoreHandle(
-    VkDevice vk_device,
-    gpu::SemaphoreHandle sync_handle) {
-  return ImportVkSemaphoreHandle(vk_device, std::move(sync_handle));
-}
-
-gpu::SemaphoreHandle VulkanImplementationHeadless::GetSemaphoreHandle(
-    VkDevice vk_device,
-    VkSemaphore vk_semaphore) {
-  return gpu::GetVkSemaphoreHandle(
-      vk_device, vk_semaphore, VK_EXTERNAL_SEMAPHORE_HANDLE_TYPE_OPAQUE_FD_BIT);
-}
-
 VkExternalMemoryHandleTypeFlagBits
 VulkanImplementationHeadless::GetExternalImageHandleType() {
   return VK_EXTERNAL_MEMORY_HANDLE_TYPE_OPAQUE_FD_BIT;
+}
+
+VkExternalSemaphoreHandleTypeFlagBits
+VulkanImplementationHeadless::GetExternalSemaphoreHandleType() {
+  return VK_EXTERNAL_SEMAPHORE_HANDLE_TYPE_OPAQUE_FD_BIT;
 }
 
 bool VulkanImplementationHeadless::CanImportGpuMemoryBuffer(

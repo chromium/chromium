@@ -3,10 +3,11 @@
 // found in the LICENSE file.
 
 #include "chrome/browser/ui/views/side_panel/side_panel_coordinator.h"
+
 #include <memory>
 #include <utility>
-#include <vector>
 
+#include "base/check.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/functional/callback_forward.h"
@@ -15,7 +16,6 @@
 #include "chrome/app/vector_icons/vector_icons.h"
 #include "chrome/browser/feature_engagement/tracker_factory.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/themes/theme_properties.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/color/chrome_color_id.h"
@@ -23,26 +23,25 @@
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
+#include "chrome/browser/ui/views/side_panel/search_companion/search_companion_side_panel_coordinator.h"
 #include "chrome/browser/ui/views/side_panel/side_panel.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_combobox_model.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_content_proxy.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_entry.h"
+#include "chrome/browser/ui/views/side_panel/side_panel_header.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_toolbar_container.h"
-#include "chrome/browser/ui/views/side_panel/side_panel_web_ui_view.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_view.h"
 #include "chrome/common/pref_names.h"
-#include "chrome/common/webui_url_constants.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/feature_engagement/public/feature_constants.h"
 #include "components/strings/grit/components_strings.h"
-#include "ui/accessibility/accessibility_features.h"
 #include "ui/base/interaction/element_tracker.h"
 #include "ui/base/l10n/l10n_util.h"
-#include "ui/base/metadata/metadata_header_macros.h"
-#include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/models/combobox_model.h"
+#include "ui/base/ui_base_features.h"
 #include "ui/base/window_open_disposition.h"
 #include "ui/color/color_id.h"
+#include "ui/gfx/vector_icon_types.h"
 #include "ui/gfx/vector_icon_utils.h"
 #include "ui/views/controls/button/image_button.h"
 #include "ui/views/controls/button/image_button_factory.h"
@@ -58,7 +57,7 @@ namespace {
 
 const char kGlobalSidePanelRegistryKey[] = "global_side_panel_registry_key";
 
-constexpr int kSidePanelContentViewId = 42;
+constexpr int kSidePanelContentContainerViewId = 42;
 constexpr int kSidePanelContentWrapperViewId = 43;
 
 SidePanelEntry::Id GetDefaultEntry() {
@@ -98,13 +97,19 @@ std::unique_ptr<views::ToggleImageButton> CreatePinToggleButton(
 
   int dip_size = ChromeLayoutProvider::Get()->GetDistanceMetric(
       ChromeDistanceMetric::DISTANCE_SIDE_PANEL_HEADER_VECTOR_ICON_SIZE);
-  views::SetImageFromVectorIconWithColorId(button.get(), views::kPinIcon,
-                                           ui::kColorIcon,
-                                           ui::kColorIconDisabled, dip_size);
+  const gfx::VectorIcon& pin_icon = features::IsChromeRefresh2023()
+                                        ? kKeepPinChromeRefreshIcon
+                                        : views::kPinIcon;
+  const gfx::VectorIcon& unpin_icon = features::IsChromeRefresh2023()
+                                          ? kKeepPinFilledChromeRefreshIcon
+                                          : views::kUnpinIcon;
+  views::SetImageFromVectorIconWithColorId(
+      button.get(), pin_icon, kColorSidePanelHeaderButtonIcon,
+      kColorSidePanelHeaderButtonIconDisabled, dip_size);
   const ui::ImageModel& normal_image = ui::ImageModel::FromVectorIcon(
-      views::kUnpinIcon, ui::kColorIcon, dip_size);
+      unpin_icon, kColorSidePanelHeaderButtonIcon, dip_size);
   const ui::ImageModel& disabled_image = ui::ImageModel::FromVectorIcon(
-      views::kUnpinIcon, ui::kColorIconDisabled, dip_size);
+      unpin_icon, kColorSidePanelHeaderButtonIconDisabled, dip_size);
   button->SetToggledImageModel(views::Button::STATE_NORMAL, normal_image);
   button->SetToggledImageModel(views::Button::STATE_DISABLED, disabled_image);
   return button;
@@ -117,8 +122,9 @@ std::unique_ptr<views::ImageButton> CreateControlButton(
     const std::u16string& tooltip_text,
     ui::ElementIdentifier view_id,
     int dip_size) {
-  auto button = views::CreateVectorImageButtonWithNativeTheme(pressed_callback,
-                                                              icon, dip_size);
+  auto button = views::CreateVectorImageButtonWithNativeTheme(
+      pressed_callback, icon, dip_size, kColorSidePanelHeaderButtonIcon,
+      kColorSidePanelHeaderButtonIconDisabled);
   button->SetTooltipText(tooltip_text);
   ConfigureControlButton(button.get());
   button->SetProperty(views::kElementIdentifierKey, view_id);
@@ -172,12 +178,15 @@ class SidePanelContentSwappingContainer : public views::View {
   }
 
   void ResetLoadingEntryIfNecessary() {
-    if (loading_entry_ && loading_entry_->CachedView()) {
-      // The available callback here is used for showing the entry once it has
-      // loaded. We need to reset this to make sure it is not triggered to be
-      // shown once available.
-      SidePanelUtil::GetSidePanelContentProxy(loading_entry_->CachedView())
-          ->ResetAvailableCallback();
+    if (loading_entry_) {
+      loading_entry_->ResetLoadTimestamp();
+      if (loading_entry_->CachedView()) {
+        // The available callback here is used for showing the entry once it has
+        // loaded. We need to reset this to make sure it is not triggered to be
+        // shown once available.
+        SidePanelUtil::GetSidePanelContentProxy(loading_entry_->CachedView())
+            ->ResetAvailableCallback();
+      }
     }
     loading_entry_ = nullptr;
   }
@@ -202,17 +211,10 @@ class SidePanelContentSwappingContainer : public views::View {
   PopulateSidePanelCallback loaded_callback_;
 };
 
-// Get the list of distillable URLs defined by the Finch experiment parameter.
-std::vector<std::string> GetDistillableURLs() {
-  return base::SplitString(base::GetFieldTrialParamValueByFeature(
-                               features::kReadAnything, "distillable_urls"),
-                           ",", base::TRIM_WHITESPACE, base::SPLIT_WANT_ALL);
-}
-
 }  // namespace
 
 SidePanelCoordinator::SidePanelCoordinator(BrowserView* browser_view)
-    : browser_view_(browser_view), distillable_urls_(GetDistillableURLs()) {
+    : browser_view_(browser_view) {
   combobox_model_ = std::make_unique<SidePanelComboboxModel>(browser_view_);
 
   auto global_registry = std::make_unique<SidePanelRegistry>();
@@ -222,16 +224,17 @@ SidePanelCoordinator::SidePanelCoordinator(BrowserView* browser_view)
                                        std::move(global_registry));
 
   browser_view_->browser()->tab_strip_model()->AddObserver(this);
-  Observe(GetActiveWebContents());
 
   SidePanelUtil::PopulateGlobalEntries(browser_view->browser(),
                                        global_registry_);
+  if (features::IsChromeRefresh2023()) {
+    browser_view_->unified_side_panel()->AddHeaderView(CreateHeader());
+  }
 }
 
 SidePanelCoordinator::~SidePanelCoordinator() {
   browser_view_->browser()->tab_strip_model()->RemoveObserver(this);
   view_state_observers_.Clear();
-  Observe(nullptr);
 }
 
 // static
@@ -280,8 +283,9 @@ void SidePanelCoordinator::SetSidePanelButtonTooltipText(
 }
 
 void SidePanelCoordinator::Close() {
-  if (!GetContentView())
+  if (!GetContentContainerView()) {
     return;
+  }
 
   if (current_entry_) {
     // Reset current_entry_ first to prevent current_entry->OnEntryHidden() from
@@ -312,10 +316,13 @@ void SidePanelCoordinator::Close() {
   }
 
   // `OnEntryWillDeregister` (triggered by calling `OnEntryHidden`) may already
-  // have deleted the content view, so check that it still exists.
-  if (views::View* content_view = GetContentView())
-    browser_view_->unified_side_panel()->RemoveChildViewT(content_view);
-  header_combobox_ = nullptr;
+  // have deleted the content container, so check that it still exists.
+  if (views::View* content_container = GetContentContainerView()) {
+    browser_view_->unified_side_panel()->RemoveChildViewT(content_container);
+  }
+  if (!features::IsChromeRefresh2023()) {
+    header_combobox_ = nullptr;
+  }
   SidePanelUtil::RecordSidePanelClosed(opened_timestamp_);
 
   for (SidePanelViewStateObserver& view_state_observer :
@@ -338,8 +345,9 @@ void SidePanelCoordinator::Toggle() {
 }
 
 void SidePanelCoordinator::OpenInNewTab() {
-  if (!GetContentView() || !current_entry_)
+  if (!GetContentContainerView() || !current_entry_) {
     return;
+  }
 
   GURL new_tab_url = current_entry_->GetOpenInNewTabURL();
   if (!new_tab_url.is_valid())
@@ -361,6 +369,8 @@ void SidePanelCoordinator::UpdatePinState() {
         prefs::kSidePanelCompanionEntryPinnedToToolbar);
     pref_service->SetBoolean(prefs::kSidePanelCompanionEntryPinnedToToolbar,
                              !current_state);
+    SearchCompanionSidePanelCoordinator::SetAccessibleNameForToolbarButton(
+        browser_view_, /*is_open=*/true);
     base::RecordComputedAction(base::StrCat(
         {"SidePanel.Companion.", !current_state ? "Pinned" : "Unpinned",
          ".BySidePanelHeaderButton"}));
@@ -375,7 +385,7 @@ absl::optional<SidePanelEntry::Id> SidePanelCoordinator::GetCurrentEntryId()
 }
 
 bool SidePanelCoordinator::IsSidePanelShowing() const {
-  return GetContentView() != nullptr;
+  return GetContentContainerView() != nullptr;
 }
 
 bool SidePanelCoordinator::IsSidePanelEntryShowing(
@@ -412,7 +422,8 @@ void SidePanelCoordinator::Show(
     return;
   }
 
-  if (GetContentView() == nullptr) {
+  if (GetContentContainerView() == nullptr) {
+    CHECK(browser_view_->unified_side_panel());
     InitializeSidePanel();
     opened_timestamp_ = base::TimeTicks::Now();
     SidePanelUtil::RecordSidePanelOpen(open_trigger);
@@ -430,9 +441,12 @@ void SidePanelCoordinator::Show(
         feature_engagement::kIPHReadingModeSidePanelFeature);
   }
 
+  SidePanelUtil::RecordSidePanelShowOrChangeEntryTrigger(open_trigger);
+
   SidePanelContentSwappingContainer* content_wrapper =
       static_cast<SidePanelContentSwappingContainer*>(
-          GetContentView()->GetViewByID(kSidePanelContentWrapperViewId));
+          GetContentContainerView()->GetViewByID(
+              kSidePanelContentWrapperViewId));
   DCHECK(content_wrapper);
 
   // If we are already loading this entry, do nothing.
@@ -461,9 +475,13 @@ void SidePanelCoordinator::Show(
                             base::Unretained(this)));
 }
 
-views::View* SidePanelCoordinator::GetContentView() const {
-  return browser_view_->unified_side_panel()->GetViewByID(
-      kSidePanelContentViewId);
+views::View* SidePanelCoordinator::GetContentContainerView() const {
+  if (const SidePanel* side_panel = browser_view_->unified_side_panel()) {
+    return browser_view_->unified_side_panel()->GetViewByID(
+        kSidePanelContentContainerViewId);
+  }
+
+  return nullptr;
 }
 
 SidePanelEntry* SidePanelCoordinator::GetEntryForKey(
@@ -483,16 +501,19 @@ SidePanelEntry* SidePanelCoordinator::GetActiveContextualEntryForKey(
 }
 
 SidePanelEntry* SidePanelCoordinator::GetLoadingEntry() const {
+  auto* content_container = GetContentContainerView();
+  DCHECK(content_container);
+
   SidePanelContentSwappingContainer* content_wrapper =
       static_cast<SidePanelContentSwappingContainer*>(
-          GetContentView()->GetViewByID(kSidePanelContentWrapperViewId));
+          content_container->GetViewByID(kSidePanelContentWrapperViewId));
   DCHECK(content_wrapper);
   return content_wrapper->loading_entry();
 }
 
 bool SidePanelCoordinator::IsGlobalEntryShowing(
     const SidePanelEntry::Key& entry_key) const {
-  if (!GetContentView() || !current_entry_) {
+  if (!GetContentContainerView() || !current_entry_) {
     return false;
   }
 
@@ -512,11 +533,13 @@ void SidePanelCoordinator::InitializeSidePanel() {
   container->SetMainAxisAlignment(views::LayoutAlignment::kStart);
   // Stretch views to fill horizontal bounds.
   container->SetCrossAxisAlignment(views::LayoutAlignment::kStretch);
-  container->SetID(kSidePanelContentViewId);
+  container->SetID(kSidePanelContentContainerViewId);
 
-  container->AddChildView(CreateHeader());
-  container->AddChildView(std::make_unique<views::Separator>())
-      ->SetColorId(kColorSidePanelContentAreaSeparator);
+  if (!features::IsChromeRefresh2023()) {
+    container->AddChildView(CreateHeader());
+    container->AddChildView(std::make_unique<views::Separator>())
+        ->SetColorId(kColorSidePanelContentAreaSeparator);
+  }
 
   auto content_wrapper = std::make_unique<SidePanelContentSwappingContainer>(
       no_delays_for_testing_);
@@ -536,15 +559,23 @@ void SidePanelCoordinator::PopulateSidePanel(
   DCHECK(header_combobox_);
   SetSelectedEntryInCombobox(entry->key());
 
+  auto* content_container = GetContentContainerView();
+  DCHECK(content_container);
   auto* content_wrapper =
-      GetContentView()->GetViewByID(kSidePanelContentWrapperViewId);
+      content_container->GetViewByID(kSidePanelContentWrapperViewId);
   DCHECK(content_wrapper);
   // |content_wrapper| should have either no child views or one child view for
   // the currently hosted SidePanelEntry.
   DCHECK(content_wrapper->children().size() <= 1);
 
+  // Side panel is opened when the `content_container` is made visible for the
+  // first time. The subsequent calls of `PopulateSidePanel()` that have visible
+  // `content_container` is to update the content of the side panel.
+  const bool opening_side_panel = !content_container->GetVisible();
+
   content_wrapper->SetVisible(true);
-  GetContentView()->SetVisible(true);
+  content_container->SetVisible(true);
+
   if (current_entry_ && content_wrapper->children().size()) {
     auto current_entry_view =
         content_wrapper->RemoveChildViewT(content_wrapper->children().front());
@@ -568,6 +599,14 @@ void SidePanelCoordinator::PopulateSidePanel(
           browser_view_->toolbar()->side_panel_container()) {
     UpdateHeaderPinButtonState();
     side_panel_container->UpdateSidePanelContainerButtonsState();
+  }
+
+  // Notify the observers if the side panel is opened (made visible).
+  if (opening_side_panel) {
+    for (SidePanelViewStateObserver& view_state_observer :
+         view_state_observers_) {
+      view_state_observer.OnSidePanelDidOpen();
+    }
   }
 }
 
@@ -611,8 +650,10 @@ SidePanelCoordinator::GetLastActiveGlobalEntryKey() const {
 
 absl::optional<SidePanelEntry::Key> SidePanelCoordinator::GetSelectedKey()
     const {
-  if (!header_combobox_)
+  // If the side panel is not shown then return nullopt.
+  if (!header_combobox_ || !IsSidePanelShowing()) {
     return absl::nullopt;
+  }
 
   // If we are waiting on content swapping delays we want to return the id for
   // the entry we are attempting to swap to.
@@ -627,33 +668,40 @@ absl::optional<SidePanelEntry::Key> SidePanelCoordinator::GetSelectedKey()
 }
 
 SidePanelRegistry* SidePanelCoordinator::GetActiveContextualRegistry() const {
-  if (auto* web_contents = GetActiveWebContents()) {
+  if (auto* web_contents =
+          browser_view_->browser()->tab_strip_model()->GetActiveWebContents()) {
     return SidePanelRegistry::Get(web_contents);
   }
   return nullptr;
 }
 
 std::unique_ptr<views::View> SidePanelCoordinator::CreateHeader() {
-  auto header = std::make_unique<views::FlexLayoutView>();
-  // ChromeLayoutProvider for providing margins.
-  ChromeLayoutProvider* const chrome_layout_provider =
-      ChromeLayoutProvider::Get();
+  auto header = std::make_unique<SidePanelHeader>();
+  auto* const layout =
+      header->SetLayoutManager(std::make_unique<views::FlexLayout>());
 
-  // Set the interior margins of the header on the left and right sides.
-  const int horizontal_margin = chrome_layout_provider->GetDistanceMetric(
-      ChromeDistanceMetric::
-          DISTANCE_SIDE_PANEL_HEADER_INTERIOR_MARGIN_HORIZONTAL);
-  header->SetInteriorMargin(
-      gfx::Insets::TLBR(0, horizontal_margin, 0, horizontal_margin * 2));
+  if (!features::IsChromeRefresh2023()) {
+    // ChromeLayoutProvider for providing margins.
+    ChromeLayoutProvider* const chrome_layout_provider =
+        ChromeLayoutProvider::Get();
+
+    // Set the interior margins of the header on the left and right sides.
+    const int horizontal_margin = chrome_layout_provider->GetDistanceMetric(
+        ChromeDistanceMetric::
+            DISTANCE_SIDE_PANEL_HEADER_INTERIOR_MARGIN_HORIZONTAL);
+    layout->SetInteriorMargin(
+        gfx::Insets::TLBR(0, horizontal_margin, 0, horizontal_margin * 2));
+    header->SetBackground(
+        views::CreateThemedSolidBackground(ui::kColorWindowBackground));
+  }
+
   // Set alignments for horizontal (main) and vertical (cross) axes.
-  header->SetMainAxisAlignment(views::LayoutAlignment::kStart);
-  header->SetCrossAxisAlignment(views::LayoutAlignment::kCenter);
+  layout->SetMainAxisAlignment(views::LayoutAlignment::kStart);
+  layout->SetCrossAxisAlignment(views::LayoutAlignment::kCenter);
 
   // The minimum cross axis size should the expected height of the header.
   constexpr int kDefaultSidePanelHeaderHeight = 40;
-  header->SetMinimumCrossAxisSize(kDefaultSidePanelHeaderHeight);
-  header->SetBackground(
-      views::CreateThemedSolidBackground(ui::kColorWindowBackground));
+  layout->SetMinimumCrossAxisSize(kDefaultSidePanelHeaderHeight);
 
   header_combobox_ = header->AddChildView(CreateCombobox());
   header_combobox_->SetFocusBehavior(views::View::FocusBehavior::ALWAYS);
@@ -697,6 +745,9 @@ std::unique_ptr<views::Combobox> SidePanelCoordinator::CreateCombobox() {
   combobox->SetMenuSelectionAtCallback(
       base::BindRepeating(&SidePanelCoordinator::OnComboboxChangeTriggered,
                           base::Unretained(this)));
+  on_menu_will_show_subscription_ = combobox->AddMenuWillShowCallback(
+      base::BindRepeating(&SidePanelCoordinator::OnComboboxMenuWillShow,
+                          base::Unretained(this)));
   combobox->SetSelectedIndex(
       combobox_model_->GetIndexForKey((GetLastActiveEntryKey().value_or(
           SidePanelEntry::Key(GetDefaultEntry())))));
@@ -711,6 +762,11 @@ std::unique_ptr<views::Combobox> SidePanelCoordinator::CreateCombobox() {
           .WithAlignment(views::LayoutAlignment::kStart));
   combobox->SetBorderColorId(ui::kColorSidePanelComboboxBorder);
   combobox->SetBackgroundColorId(ui::kColorSidePanelComboboxBackground);
+  if (features::IsChromeRefresh2023()) {
+    combobox->SetForegroundColorId(kColorSidePanelEntryTitle);
+    combobox->SetForegroundIconColorId(kColorSidePanelEntryIcon);
+    combobox->SetForegroundTextStyle(views::style::STYLE_HEADLINE_5);
+  }
   combobox->SetEventHighlighting(true);
   combobox->SetSizeToLargestLabel(false);
   return combobox;
@@ -722,6 +778,10 @@ bool SidePanelCoordinator::OnComboboxChangeTriggered(size_t index) {
   views::ElementTrackerViews::GetInstance()->NotifyCustomEvent(
       kSidePanelComboboxChangedCustomEventId, header_combobox_);
   return true;
+}
+
+void SidePanelCoordinator::OnComboboxMenuWillShow() {
+  SidePanelUtil::RecordComboboxShown();
 }
 
 void SidePanelCoordinator::SetSelectedEntryInCombobox(
@@ -752,7 +812,7 @@ SidePanelEntry* SidePanelCoordinator::GetNewActiveEntryOnDeregister(
     SidePanelRegistry* deregistering_registry,
     const SidePanelEntry::Key& key) {
   // This function should only be called when the side panel view is shown.
-  DCHECK(GetContentView());
+  DCHECK(IsSidePanelShowing());
 
   // Attempt to return an entry in the following fallback order: global entry
   // for `key` if a contextual entry is deregistered > active global entry >
@@ -767,7 +827,7 @@ SidePanelEntry* SidePanelCoordinator::GetNewActiveEntryOnDeregister(
 
 SidePanelEntry* SidePanelCoordinator::GetNewActiveEntryOnTabChanged() {
   // This function should only be called when the side panel view is shown.
-  DCHECK(GetContentView());
+  DCHECK(IsSidePanelShowing());
 
   // Attempt to return an entry in the following fallback order:
   //  - the new tab's registry's active entry
@@ -803,7 +863,7 @@ SidePanelEntry* SidePanelCoordinator::GetNewActiveEntryOnTabChanged() {
 void SidePanelCoordinator::OnEntryRegistered(SidePanelRegistry* registry,
                                              SidePanelEntry* entry) {
   combobox_model_->AddItem(entry);
-  if (GetContentView()) {
+  if (GetContentContainerView()) {
     SetSelectedEntryInCombobox(GetLastActiveEntryKey().value_or(
         SidePanelEntry::Key(GetDefaultEntry())));
   }
@@ -822,7 +882,7 @@ void SidePanelCoordinator::OnEntryWillDeregister(SidePanelRegistry* registry,
   if (ShouldRemoveFromComboboxOnDeregister(registry, entry->key())) {
     combobox_model_->RemoveItem(entry->key());
 
-    if (GetContentView()) {
+    if (GetContentContainerView()) {
       SetSelectedEntryInCombobox(GetLastActiveEntryKey().value_or(
           SidePanelEntry::Key(GetDefaultEntry())));
     }
@@ -845,7 +905,7 @@ void SidePanelCoordinator::OnEntryWillDeregister(SidePanelRegistry* registry,
   // Update the current entry to make sure we don't show an entry that is being
   // removed or close the panel if the entry being deregistered is the only one
   // that has been visible.
-  if (GetContentView() && selected_key.has_value() &&
+  if (GetContentContainerView() && selected_key.has_value() &&
       selected_key.value() == entry->key()) {
     // If a global entry is deregistered but a contextual entry with the same
     // key is shown, do nothing.
@@ -857,7 +917,7 @@ void SidePanelCoordinator::OnEntryWillDeregister(SidePanelRegistry* registry,
 
     // Fetch the entry's view from the side panel container if it is shown.
     auto* content_wrapper =
-        GetContentView()->GetViewByID(kSidePanelContentWrapperViewId);
+        GetContentContainerView()->GetViewByID(kSidePanelContentWrapperViewId);
     DCHECK(content_wrapper);
     if (content_wrapper->children().size() == 1) {
       entry_view = content_wrapper->RemoveChildViewT(
@@ -926,7 +986,7 @@ void SidePanelCoordinator::OnTabStripModelChanged(
 
   // Show an entry in the following fallback order: new contextual registry's
   // active entry > active global entry > none (close the side panel).
-  if (GetContentView()) {
+  if (GetContentContainerView()) {
     // Attempt to find a suitable entry to be shown after the tab switch and if
     // one is found, show it.
     if (auto* new_active_entry = GetNewActiveEntryOnTabChanged()) {
@@ -938,8 +998,8 @@ void SidePanelCoordinator::OnTabStripModelChanged(
       // the side panel.
       if (old_contextual_registry && old_contextual_registry->active_entry() &&
           *old_contextual_registry->active_entry() == current_entry_.get()) {
-        auto* content_wrapper =
-            GetContentView()->GetViewByID(kSidePanelContentWrapperViewId);
+        auto* content_wrapper = GetContentContainerView()->GetViewByID(
+            kSidePanelContentWrapperViewId);
         DCHECK(content_wrapper);
         DCHECK(content_wrapper->children().size() == 1);
         auto current_entry_view = content_wrapper->RemoveChildViewT(
@@ -954,9 +1014,6 @@ void SidePanelCoordinator::OnTabStripModelChanged(
     Show(new_contextual_registry->active_entry().value(),
          SidePanelUtil::SidePanelOpenTrigger::kTabChanged);
   }
-
-  Observe(GetActiveWebContents());
-  MaybeShowReadingModeSidePanelIPH();
 }
 
 void SidePanelCoordinator::UpdateNewTabButtonState() {
@@ -969,7 +1026,7 @@ void SidePanelCoordinator::UpdateNewTabButtonState() {
 }
 
 void SidePanelCoordinator::UpdateHeaderPinButtonState() {
-  if (!GetContentView()) {
+  if (!GetContentContainerView()) {
     return;
   }
 
@@ -995,32 +1052,4 @@ void SidePanelCoordinator::UpdateToolbarButtonHighlight(
 void SidePanelCoordinator::OnViewVisibilityChanged(views::View* observed_view,
                                                    views::View* starting_from) {
   UpdateToolbarButtonHighlight(observed_view->GetVisible());
-}
-
-void SidePanelCoordinator::DidStopLoading() {
-  MaybeShowReadingModeSidePanelIPH();
-}
-
-content::WebContents* SidePanelCoordinator::GetActiveWebContents() const {
-  return browser_view_->browser()->tab_strip_model()->GetActiveWebContents();
-}
-
-void SidePanelCoordinator::MaybeShowReadingModeSidePanelIPH() {
-  if (!features::IsReadAnythingEnabled()) {
-    return;
-  }
-  auto* web_contents = GetActiveWebContents();
-  if (!web_contents) {
-    return;
-  }
-  auto url = web_contents->GetLastCommittedURL();
-  for (auto distillable : distillable_urls_) {
-    // If the url's domain is found in distillable urls AND the url has a
-    // filename (i.e. it is not a home page or sub-home page), show the promo.
-    if (url.DomainIs(distillable) && !url.ExtractFileName().empty()) {
-      browser_view_->browser()->window()->MaybeShowFeaturePromo(
-          feature_engagement::kIPHReadingModeSidePanelFeature);
-      return;
-    }
-  }
 }

@@ -53,7 +53,7 @@
 #include "ash/touch/touch_hud_debug.h"
 #include "ash/touch/touch_hud_projection.h"
 #include "ash/touch/touch_observer_hud.h"
-#include "ash/wallpaper/wallpaper_widget_controller.h"
+#include "ash/wallpaper/views/wallpaper_widget_controller.h"
 #include "ash/wm/always_on_top_controller.h"
 #include "ash/wm/container_finder.h"
 #include "ash/wm/desks/desks_controller.h"
@@ -69,11 +69,11 @@
 #include "ash/wm/root_window_layout_manager.h"
 #include "ash/wm/splitview/split_view_controller.h"
 #include "ash/wm/splitview/split_view_utils.h"
-#include "ash/wm/stacking_controller.h"
 #include "ash/wm/switchable_windows.h"
 #include "ash/wm/system_modal_container_layout_manager.h"
 #include "ash/wm/system_wallpaper_controller.h"
 #include "ash/wm/tablet_mode/tablet_mode_controller.h"
+#include "ash/wm/window_parenting_controller.h"
 #include "ash/wm/window_properties.h"
 #include "ash/wm/window_state.h"
 #include "ash/wm/window_util.h"
@@ -206,7 +206,7 @@ void ReparentWindow(aura::Window* window, aura::Window* new_parent) {
   const bool has_restore_bounds = state && state->HasRestoreBounds();
 
   const bool update_bounds =
-      state && (state->IsNormalOrSnapped() || state->IsMinimized());
+      state && (state->IsNormalStateType() || state->IsMinimized());
   gfx::Rect work_area_in_new_parent =
       screen_util::GetDisplayWorkAreaBoundsInParent(new_parent);
 
@@ -225,7 +225,7 @@ void ReparentWindow(aura::Window* window, aura::Window* new_parent) {
 
   new_parent->AddChild(window);
 
-  // Docked windows have bounds handled by the layout manager in AddChild().
+  // Snapped windows have bounds handled by the layout manager in AddChild().
   if (update_bounds) {
     window->SetBounds(local_bounds);
   }
@@ -611,10 +611,12 @@ bool RootWindowController::CanWindowReceiveEvents(aura::Window* window) {
   window_util::GetBlockingContainersForRoot(
       GetRootWindow(), &blocking_container, &modal_container);
   SystemModalContainerLayoutManager* modal_layout_manager = nullptr;
-  modal_layout_manager = static_cast<SystemModalContainerLayoutManager*>(
-      modal_container->layout_manager());
+  if (modal_container && modal_container->layout_manager()) {
+    modal_layout_manager = static_cast<SystemModalContainerLayoutManager*>(
+        modal_container->layout_manager());
+  }
 
-  if (modal_layout_manager->has_window_dimmer()) {
+  if (modal_layout_manager && modal_layout_manager->has_window_dimmer()) {
     blocking_container = modal_container;
   } else {
     modal_container = nullptr;  // Don't check modal dialogs.
@@ -836,7 +838,8 @@ void RootWindowController::ShowContextMenu(const gfx::Point& location_in_screen,
       Shell::Get()->tablet_mode_controller()->InTabletMode();
   root_window_menu_model_adapter_ =
       std::make_unique<RootWindowMenuModelAdapter>(
-          std::make_unique<ShelfContextMenuModel>(nullptr, display_id),
+          std::make_unique<ShelfContextMenuModel>(nullptr, display_id,
+                                                  /*menu_in_shelf=*/false),
           wallpaper_widget_controller()->GetWidget(), source_type,
           base::BindOnce(&RootWindowController::OnMenuClosed,
                          base::Unretained(this)),
@@ -996,9 +999,9 @@ RootWindowController::RootWindowController(AshWindowTreeHost* ash_host)
   aura::Window* root_window = GetRootWindow();
   GetRootWindowSettings(root_window)->controller = this;
 
-  stacking_controller_ = std::make_unique<StackingController>();
+  window_parenting_controller_ = std::make_unique<WindowParentingController>();
   aura::client::SetWindowParentingClient(root_window,
-                                         stacking_controller_.get());
+                                         window_parenting_controller_.get());
   capture_client_ = std::make_unique<::wm::ScopedCaptureClient>(root_window);
 }
 

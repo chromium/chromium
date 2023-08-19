@@ -70,7 +70,8 @@ class IppClientInfoCalculatorTest : public testing::Test {
   base::test::ScopedChromeOSVersionInfo cros_version_info_{kLsbRelease,
                                                            base::Time()};
   ScopedTestingCrosSettings testing_cros_settings_;
-  raw_ptr<policy::FakeDeviceAttributes, ExperimentalAsh> device_attributes_;
+  raw_ptr<policy::FakeDeviceAttributes, DanglingUntriaged | ExperimentalAsh>
+      device_attributes_;
   std::unique_ptr<IppClientInfoCalculator> client_info_calculator_;
 };
 

@@ -21,9 +21,11 @@
 #include "ash/wm/overview/overview_test_util.h"
 #include "ash/wm/pip/pip_positioner.h"
 #include "ash/wm/screen_pinning_controller.h"
+#include "ash/wm/splitview/split_view_constants.h"
 #include "ash/wm/splitview/split_view_controller.h"
 #include "ash/wm/splitview/split_view_divider.h"
 #include "ash/wm/tablet_mode/tablet_mode_controller.h"
+#include "ash/wm/test/fake_window_state.h"
 #include "ash/wm/window_state.h"
 #include "ash/wm/window_state_delegate.h"
 #include "ash/wm/window_util.h"
@@ -139,29 +141,6 @@ class TestWidgetDelegate : public views::WidgetDelegateView {
   }
 };
 
-class TestWindowStateDelegate : public WindowStateDelegate {
- public:
-  TestWindowStateDelegate() = default;
-  TestWindowStateDelegate(const TestWindowStateDelegate&) = delete;
-  TestWindowStateDelegate& operator=(const TestWindowStateDelegate&) = delete;
-  ~TestWindowStateDelegate() override = default;
-
-  // WindowStateDelegate:
-  std::unique_ptr<PresentationTimeRecorder> OnDragStarted(
-      int component) override {
-    drag_in_progress_ = true;
-    return nullptr;
-  }
-  void OnDragFinished(bool cancel, const gfx::PointF& location) override {
-    drag_in_progress_ = false;
-  }
-
-  bool drag_in_progress() const { return drag_in_progress_; }
-
- private:
-  bool drag_in_progress_ = false;
-};
-
 }  // namespace
 
 class ClientControlledStateTest : public AshTestBase {
@@ -199,7 +178,7 @@ class ClientControlledStateTest : public AshTestBase {
     auto state = std::make_unique<ClientControlledState>(std::move(delegate));
     state_ = state.get();
     window_state->SetStateObject(std::move(state));
-    auto window_state_delegate = std::make_unique<TestWindowStateDelegate>();
+    auto window_state_delegate = std::make_unique<FakeWindowStateDelegate>();
     window_state_delegate_ = window_state_delegate.get();
     window_state->SetDelegate(std::move(window_state_delegate));
     widget_->Show();
@@ -221,7 +200,7 @@ class ClientControlledStateTest : public AshTestBase {
   ScreenPinningController* GetScreenPinningController() {
     return Shell::Get()->screen_pinning_controller();
   }
-  TestWindowStateDelegate* window_state_delegate() {
+  FakeWindowStateDelegate* window_state_delegate() {
     return window_state_delegate_;
   }
 
@@ -237,13 +216,15 @@ class ClientControlledStateTest : public AshTestBase {
   }
 
  private:
-  raw_ptr<ClientControlledState, ExperimentalAsh> state_ = nullptr;
-  raw_ptr<TestClientControlledStateDelegate, ExperimentalAsh> state_delegate_ =
+  raw_ptr<ClientControlledState, DanglingUntriaged | ExperimentalAsh> state_ =
       nullptr;
-  raw_ptr<TestWidgetDelegate, ExperimentalAsh> widget_delegate_ =
-      nullptr;  // owned by itself.
-  raw_ptr<TestWindowStateDelegate, ExperimentalAsh> window_state_delegate_ =
-      nullptr;
+  raw_ptr<TestClientControlledStateDelegate,
+          DanglingUntriaged | ExperimentalAsh>
+      state_delegate_ = nullptr;
+  raw_ptr<TestWidgetDelegate, DanglingUntriaged | ExperimentalAsh>
+      widget_delegate_ = nullptr;  // owned by itself.
+  raw_ptr<FakeWindowStateDelegate, DanglingUntriaged | ExperimentalAsh>
+      window_state_delegate_ = nullptr;
   std::unique_ptr<views::Widget> widget_;
   base::test::ScopedFeatureList scoped_feature_list_;
 };
@@ -840,38 +821,44 @@ TEST_F(ClientControlledStateTest,
   EXPECT_EQ(WindowStateType::kMaximized, delegate()->new_state());
 }
 
-TEST_F(ClientControlledStateTest, ResizeSnappedWindowInTabletMode) {
+TEST_P(ClientControlledStateTestClamshellAndTablet, ResizeSnappedWindow) {
+  // Set screen width.
+  UpdateDisplay("1200x600");
+
   window()->SetProperty(aura::client::kAppType,
                         static_cast<int>(AppType::ARC_APP));
   ASSERT_EQ(chromeos::OrientationType::kLandscapePrimary,
             GetCurrentScreenOrientation());
   auto* const split_view_controller = SplitViewController::Get(window());
 
-  // Enter tablet mode
-  Shell::Get()->tablet_mode_controller()->SetEnabledForTest(true);
-  ASSERT_EQ(true, Shell::Get()->tablet_mode_controller()->InTabletMode());
-
   // Snap a window
   widget_delegate()->EnableSnap();
-  split_view_controller->SnapWindow(
-      window(), SplitViewController::SnapPosition::kPrimary);
-  EXPECT_EQ(WindowStateType::kPrimarySnapped, delegate()->new_state());
+  const WindowSnapWMEvent snap_primary(WM_EVENT_SNAP_PRIMARY);
+  window_state()->OnWMEvent(&snap_primary);
   state()->EnterNextState(window_state(), delegate()->new_state());
+  ApplyPendingRequestedBounds();
   EXPECT_TRUE(window_state()->IsSnapped());
 
-  // Move the divider
-  const gfx::Rect initial_bounds = delegate()->requested_bounds();
-  auto* const split_view_divider = split_view_controller->split_view_divider();
-  const gfx::Rect divider_bounds =
-      split_view_divider->GetDividerBoundsInScreen(false);
+  // Resize to 1/3 (i.e. make the width 400).
   ui::test::EventGenerator* const generator = GetEventGenerator();
-  generator->set_current_screen_location(divider_bounds.CenterPoint());
-  const gfx::Rect display_bounds =
-      screen_util::GetDisplayWorkAreaBoundsInScreenForActiveDeskContainer(
-          window());
-  const gfx::Point resize_point(display_bounds.width() * 0.33f, 0);
-  generator->DragMouseTo(resize_point);
-  EXPECT_GT(initial_bounds.width(), delegate()->requested_bounds().width());
+  if (InTabletMode()) {
+    const gfx::Rect divider_bounds =
+        split_view_controller->split_view_divider()->GetDividerBoundsInScreen(
+            false);
+    generator->set_current_screen_location(divider_bounds.CenterPoint());
+  } else {
+    generator->set_current_screen_location(
+        window()->GetBoundsInScreen().right_center());
+  }
+  generator->DragMouseTo(gfx::Point(1200 / 3, 0));
+  EXPECT_NEAR(delegate()->requested_bounds().width(), 1200 / 3,
+              InTabletMode() ? kSplitviewDividerShortSideLength / 2 : 0);
+  ApplyPendingRequestedBounds();
+
+  // Changing display size should keep the current snap ratio.
+  UpdateDisplay("900x600");
+  EXPECT_NEAR(delegate()->requested_bounds().width(), 900 / 3,
+              InTabletMode() ? kSplitviewDividerShortSideLength / 2 : 0);
 }
 
 TEST_F(ClientControlledStateTest, FlingFloatedWindowInTabletMode) {
@@ -887,7 +874,8 @@ TEST_F(ClientControlledStateTest, FlingFloatedWindowInTabletMode) {
   ASSERT_EQ(true, Shell::Get()->tablet_mode_controller()->InTabletMode());
 
   // Float window.
-  const WMEvent float_event(WM_EVENT_FLOAT);
+  const WindowFloatWMEvent float_event(
+      chromeos::FloatStartLocation::kBottomRight);
   window_state()->OnWMEvent(&float_event);
   ApplyPendingRequestedBounds();
   state()->EnterNextState(window_state(), delegate()->new_state());
@@ -939,7 +927,8 @@ TEST_F(ClientControlledStateTest, TuckAndUntuckFloatedWindowInTabletMode) {
   ASSERT_TRUE(Shell::Get()->tablet_mode_controller()->InTabletMode());
 
   // Float window.
-  const WMEvent float_event(WM_EVENT_FLOAT);
+  const WindowFloatWMEvent float_event(
+      chromeos::FloatStartLocation::kBottomRight);
   window_state()->OnWMEvent(&float_event);
   ApplyPendingRequestedBounds();
   state()->EnterNextState(window_state(), delegate()->new_state());
@@ -973,7 +962,7 @@ TEST_F(ClientControlledStateTest, TuckAndUntuckFloatedWindowInTabletMode) {
   ShellTestApi().WaitForWindowFinishAnimating(window());
   EXPECT_TRUE(window()->IsVisible());
   EXPECT_FALSE(float_controller->IsFloatedWindowTuckedForTablet(window()));
-  EXPECT_EQ(FloatController::GetPreferredFloatWindowTabletBounds(window()),
+  EXPECT_EQ(FloatController::GetFloatWindowTabletBounds(window()),
             delegate()->requested_bounds());
 }
 
@@ -989,7 +978,8 @@ TEST_P(ClientControlledStateTestClamshellAndTablet, MoveFloatedWindow) {
   ASSERT_TRUE(chromeos::wm::CanFloatWindow(window()));
 
   // Float window.
-  const WMEvent float_event(WM_EVENT_FLOAT);
+  const WindowFloatWMEvent float_event(
+      chromeos::FloatStartLocation::kBottomRight);
   window_state()->OnWMEvent(&float_event);
   ApplyPendingRequestedBounds();
   state()->EnterNextState(window_state(), delegate()->new_state());
@@ -1039,6 +1029,12 @@ TEST_P(ClientControlledStateTestClamshellAndTablet, MoveFloatedWindow) {
     // persist after releasing the mouse button.
     EXPECT_EQ(delegate()->requested_bounds(), expected_bounds);
   }
+
+  // Minimize and unminimize the window. Test that its bounds are restored.
+  window_state()->Minimize();
+  window_state()->Restore();
+  ApplyPendingRequestedBounds();
+  EXPECT_EQ(delegate()->requested_bounds(), expected_bounds);
 }
 
 TEST_P(ClientControlledStateTestClamshellAndTablet, FloatWindow) {
@@ -1053,13 +1049,14 @@ TEST_P(ClientControlledStateTestClamshellAndTablet, FloatWindow) {
   ASSERT_TRUE(chromeos::wm::CanFloatWindow(window()));
 
   // Test float.
-  const WMEvent float_event(WM_EVENT_FLOAT);
+  const WindowFloatWMEvent float_event(
+      chromeos::FloatStartLocation::kBottomRight);
   window_state()->OnWMEvent(&float_event);
-  EXPECT_EQ(
-      InTabletMode()
-          ? FloatController::GetPreferredFloatWindowTabletBounds(window())
-          : FloatController::GetPreferredFloatWindowClamshellBounds(window()),
-      delegate()->requested_bounds());
+  EXPECT_EQ(InTabletMode()
+                ? FloatController::GetFloatWindowTabletBounds(window())
+                : FloatController::GetFloatWindowClamshellBounds(
+                      window(), chromeos::FloatStartLocation::kBottomRight),
+            delegate()->requested_bounds());
   EXPECT_EQ(WindowStateType::kDefault, delegate()->old_state());
   EXPECT_EQ(WindowStateType::kFloated, delegate()->new_state());
 
@@ -1073,11 +1070,11 @@ TEST_P(ClientControlledStateTestClamshellAndTablet, FloatWindow) {
       display::Screen::GetScreen()->GetPrimaryDisplay().id(),
       display::Display::ROTATE_90, display::Display::RotationSource::USER);
   ASSERT_FALSE(chromeos::wm::IsLandscapeOrientationForWindow(window()));
-  EXPECT_EQ(
-      InTabletMode()
-          ? FloatController::GetPreferredFloatWindowTabletBounds(window())
-          : FloatController::GetPreferredFloatWindowClamshellBounds(window()),
-      delegate()->requested_bounds());
+  EXPECT_EQ(InTabletMode()
+                ? FloatController::GetFloatWindowTabletBounds(window())
+                : FloatController::GetFloatWindowClamshellBounds(
+                      window(), chromeos::FloatStartLocation::kBottomRight),
+            delegate()->requested_bounds());
 
   // Test minimize.
   const WMEvent minimize_event(WM_EVENT_MINIMIZE);
@@ -1091,11 +1088,11 @@ TEST_P(ClientControlledStateTestClamshellAndTablet, FloatWindow) {
   // Test unminimize.
   const WMEvent unminimize_event(WM_EVENT_RESTORE);
   window_state()->OnWMEvent(&unminimize_event);
-  EXPECT_EQ(
-      InTabletMode()
-          ? FloatController::GetPreferredFloatWindowTabletBounds(window())
-          : FloatController::GetPreferredFloatWindowClamshellBounds(window()),
-      delegate()->requested_bounds());
+  EXPECT_EQ(InTabletMode()
+                ? FloatController::GetFloatWindowTabletBounds(window())
+                : FloatController::GetFloatWindowClamshellBounds(
+                      window(), chromeos::FloatStartLocation::kBottomRight),
+            delegate()->requested_bounds());
   EXPECT_EQ(WindowStateType::kMinimized, delegate()->old_state());
   EXPECT_EQ(WindowStateType::kFloated, delegate()->new_state());
   state()->EnterNextState(window_state(), delegate()->new_state());

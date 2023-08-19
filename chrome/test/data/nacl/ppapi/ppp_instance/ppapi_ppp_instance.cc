@@ -73,7 +73,6 @@ PP_Bool HandleDocumentLoad(PP_Instance instance,
   // Only called for full-frame plugins. For coverage see:
   // tests/ppapi_browser/extension_mime_handler/
   NACL_NOTREACHED();
-  return PP_FALSE;
 }
 
 const PPP_Instance ppp_instance_interface = {

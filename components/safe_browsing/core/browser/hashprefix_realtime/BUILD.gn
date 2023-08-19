@@ -24,7 +24,7 @@ static_library("hash_realtime_service") {
     "//components/safe_browsing/core/common:safe_browsing_prefs",
     "//components/safe_browsing/core/common/proto:safebrowsingv5_alpha1_proto",
     "//google_apis:google_apis",
-    "//services/network/public/cpp:cpp",
+    "//services/network/public/cpp",
     "//url:url",
   ]
 }
@@ -54,7 +54,12 @@ static_library("hash_realtime_utils") {
 
   deps = [
     "//base:base",
+    "//build:branding_buildflags",
+    "//components/prefs",
+    "//components/safe_browsing/core/common",
+    "//components/safe_browsing/core/common:safe_browsing_prefs",
     "//components/safe_browsing/core/common/proto:safebrowsingv5_alpha1_proto",
+    "//services/network/public/cpp",
   ]
 }
 
@@ -64,13 +69,13 @@ source_set("unit_tests") {
     "hash_realtime_cache_unittest.cc",
     "hash_realtime_service_unittest.cc",
     "hash_realtime_utils_unittest.cc",
-    "ohttp_key_service_unittest.cc",
   ]
   deps = [
     ":hash_realtime_cache",
     ":hash_realtime_service",
     ":hash_realtime_utils",
     "//base/test:test_support",
+    "//build:branding_buildflags",
     "//components/prefs",
     "//components/prefs:test_support",
     "//components/safe_browsing/core/browser:verdict_cache_manager",
@@ -83,4 +88,7 @@ source_set("unit_tests") {
     "//services/network:test_support",
     "//testing/gtest",
   ]
+  if (!is_android) {
+    sources += [ "ohttp_key_service_unittest.cc" ]
+  }
 }

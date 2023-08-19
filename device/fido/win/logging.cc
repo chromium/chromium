@@ -260,3 +260,14 @@ std::ostream& operator<<(std::ostream& out, const WEBAUTHN_ASSERTION& in) {
   }
   return out << "}";
 }
+
+std::ostream& operator<<(std::ostream& out,
+                         const WEBAUTHN_GET_CREDENTIALS_OPTIONS& in) {
+  out << "{" << in.dwVersion << kSep;
+  if (in.pwszRpId) {
+    out << in.pwszRpId;
+  } else {
+    out << "(null)";
+  }
+  return out << kSep << in.bBrowserInPrivateMode << "}";
+}

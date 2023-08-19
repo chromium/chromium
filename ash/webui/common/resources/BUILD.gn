@@ -41,10 +41,14 @@ web_component_files = [
   "cellular_setup/base_page.js",
   "cellular_setup/button_bar.js",
   "cellular_setup/cellular_setup.js",
+  "cellular_setup/confirmation_code_page_legacy.js",
   "cellular_setup/confirmation_code_page.js",
   "cellular_setup/esim_flow_ui.js",
   "cellular_setup/final_page.js",
+  "cellular_setup/profile_discovery_consent_page.js",
+  "cellular_setup/profile_discovery_list_item_legacy.js",
   "cellular_setup/profile_discovery_list_item.js",
+  "cellular_setup/profile_discovery_list_page_legacy.js",
   "cellular_setup/profile_discovery_list_page.js",
   "cellular_setup/provisioning_page.js",
   "cellular_setup/psim_flow_ui.js",
@@ -143,21 +147,24 @@ non_web_component_files = [
   "store/store.js",
   "store/store_client.js",
   "traffic_counters/traffic_counters_adapter.js",
-  "quick_unlock/lock_screen_constants.js",
   "util.js",
   "web_ui_listener_behavior.js",
 ]
 
 web_component_files_ts = [
+  "auth_setup/local_password_input.ts",
   "quick_unlock/pin_keyboard.ts",
   "quick_unlock/setup_pin_keyboard.ts",
+  "quick_unlock/fingerprint_progress.ts",
 ]
 
 non_web_component_files_ts = [
   "connectivity/mojo_connectivity_provider.ts",
   "hotspot/cros_hotspot_config.ts",
   "hotspot/fake_hotspot_config.ts",
+  "quick_unlock/utils.ts",
   "typescript_utils/strict_query.ts",
+  "quick_unlock/lock_screen_constants.ts",
 ]
 
 mojo_files_ts = [
@@ -175,6 +182,7 @@ icons_html_files = [
   "cr_picture/icons.html",
   "network/network_icons.html",
   "quick_unlock/pin_keyboard_icons.html",
+  "quick_unlock/fingerprint_progress_icons.html",
 ]
 
 # Files that are passed as input to html_to_wrapper().
@@ -241,12 +249,18 @@ ts_library("build_ts") {
   in_files = non_web_component_files_ts + web_component_files_ts + mojo_files_ts
   composite = true
   deps = [
+    "//third_party/cros-components:cros_components_ts",
+    "//third_party/material_web_components:bundle_lit_ts",
+    "//third_party/material_web_components:library",
     "//third_party/polymer/v3_0:library",
     "//ui/webui/resources/cr_elements:build_ts",
     "//ui/webui/resources/js:build_ts",
     "//ui/webui/resources/mojo:build_ts",
   ]
-  definitions = [ "//tools/typescript/definitions/quick_unlock_private.d.ts" ]
+  definitions = [
+    "//tools/typescript/definitions/quick_unlock_private.d.ts",
+    "//tools/typescript/definitions/chrome_send.d.ts",
+  ]
   extra_deps = [
     ":generate_definitions",
     ":preprocess",
@@ -273,7 +287,6 @@ generate_grd("build_grd") {
     "fake_method_resolver.js",
     "fake_observables.js",
     "keyboard_layouts.js",
-    "mojo_utils.js",
 
     # Test runner used by file manager tests, webui_resource_browsertest.cc, and
     # default_keyboard_extension_browser_test.cc
@@ -299,6 +312,7 @@ generate_grd("build_grd") {
     "multidevice_setup/all_set_2x_light.svg",
     "multidevice_setup/multidevice_setup_dark.json",
     "multidevice_setup/multidevice_setup_light.json",
+    "multidevice_setup/multidevice_setup_jelly.json",
     "network/cellular_0.svg",
     "network/cellular_0_with_x.svg",
     "network/cellular_1.svg",
@@ -323,6 +337,8 @@ generate_grd("build_grd") {
     "network_health/test_not_run.png",
     "network_health/test_passed.png",
     "network_health/test_warning.png",
+    "quick_unlock/fingerprint_enrollment.json",
+    "quick_unlock/fingerprint_check.json",
   ]
   input_files_base_dir = rebase_path(".", "//")
   deps = [
@@ -365,6 +381,7 @@ grit("resources") {
 
 generate_definitions_js_files = [
   "assert.js",
+  "auth_setup/local_password_input.html.js",
   "bluetooth/bluetooth_metrics_utils.js",
   "bluetooth/bluetooth_types.js",
   "bluetooth/bluetooth_utils.js",
@@ -397,10 +414,11 @@ generate_definitions_js_files = [
   "network/network_listener_behavior.js",
   "network/network_shared.css.js",
   "network/onc_mojo.js",
-  "quick_unlock/lock_screen_constants.js",
   "quick_unlock/pin_keyboard.html.js",
   "quick_unlock/pin_keyboard_icons.html.js",
   "quick_unlock/setup_pin_keyboard.html.js",
+  "quick_unlock/fingerprint_progress.html.js",
+  "quick_unlock/fingerprint_progress_icons.html.js",
   "store/store.js",
   "store/store_client.js",
   "traffic_counters/traffic_counters_adapter.js",
@@ -461,6 +479,8 @@ checked_in_dts_files = [
   "cellular_setup/button_bar.d.ts",
   "cellular_setup/cellular_setup.d.ts",
   "cellular_setup/esim_flow_ui.d.ts",
+  "cellular_setup/profile_discovery_consent_page.d.ts",
+  "cellular_setup/profile_discovery_list_page_legacy.d.ts",
   "cellular_setup/profile_discovery_list_page.d.ts",
   "cellular_setup/provisioning_page.d.ts",
   "cellular_setup/psim_flow_ui.d.ts",
@@ -491,6 +511,10 @@ checked_in_dts_files = [
   "network/network_siminfo.d.ts",
   "network/sim_lock_dialogs.d.ts",
   "network/apn_detail_dialog.d.ts",
+
+  "post_message_api/post_message_api_client.d.ts",
+  "post_message_api/post_message_api_request_handler.d.ts",
+  "post_message_api/post_message_api_server.d.ts",
 ]
 
 copy("copy_checked_in_dts_files") {
@@ -508,7 +532,6 @@ group("closure_compile") {
     "network:closure_compile_module",
     "network_health:closure_compile_module",
     "post_message_api:closure_compile",
-    "quick_unlock:closure_compile_module",
     "smb_shares:closure_compile_module",
     "store:closure_compile_module",
     "traffic_counters:closure_compile_module",
@@ -533,7 +556,6 @@ js_type_check("closure_compile_local") {
     ":keyboard_shortcut_list_js",
     ":list_property_update_behavior",
     ":load_time_data.m",
-    ":mojo_utils",
     ":navigation_selector",
     ":navigation_view_panel",
     ":page_toolbar",
@@ -643,10 +665,6 @@ js_library("list_property_update_behavior") {
 }
 
 js_library("load_time_data.m") {
-}
-
-js_library("mojo_utils") {
-  deps = [ "//ash/webui/common/mojom:mojom_js_library_for_compile" ]
 }
 
 js_library("navigation_selector") {

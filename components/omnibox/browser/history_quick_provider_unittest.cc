@@ -18,6 +18,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
+#include "base/test/to_vector.h"
 #include "components/bookmarks/browser/bookmark_model.h"
 #include "components/bookmarks/test/test_bookmark_client.h"
 #include "components/history/core/browser/history_backend.h"
@@ -493,17 +494,17 @@ TEST_F(HistoryQuickProviderTest,
   RunTestWithCursor(u"prefixsuffix", std::string::npos, false, expected_urls,
                     false, u"https://suffix.com/prefixsuffix1",
                     std::u16string());
-  std::vector<int> unbroken_scores(3);
-  base::ranges::transform(ac_matches(), unbroken_scores.begin(),
-                          &AutocompleteMatch::relevance);
+  std::vector<int> unbroken_scores =
+      base::test::ToVector(ac_matches(), &AutocompleteMatch::relevance);
+  EXPECT_EQ(unbroken_scores.size(), 3U);
 
   // Get scores for 'prefix suffix'
   RunTestWithCursor(u"prefix suffix", std::string::npos, false, expected_urls,
                     false, u"https://suffix.com/prefixsuffix1",
                     std::u16string());
-  std::vector<int> broken_scores(3);
-  base::ranges::transform(ac_matches(), broken_scores.begin(),
-                          &AutocompleteMatch::relevance);
+  std::vector<int> broken_scores =
+      base::test::ToVector(ac_matches(), &AutocompleteMatch::relevance);
+  EXPECT_EQ(broken_scores.size(), 3U);
   // Ensure the latter scores are higher than the former.
   for (size_t i = 0; i < 3; ++i)
     EXPECT_GT(broken_scores[i], unbroken_scores[i]);
@@ -914,9 +915,6 @@ TEST_F(HistoryQuickProviderTest, CorrectAutocompleteWithTrailingSlash) {
 }
 
 TEST_F(HistoryQuickProviderTest, KeywordModeExtractUserInput) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(omnibox::kSiteSearchStarterPack);
-
   // Populate template URL with starter pack entries
   std::vector<std::unique_ptr<TemplateURLData>> turls =
       TemplateURLStarterPackData::GetStarterPackEngines();
@@ -999,6 +997,45 @@ TEST_F(HistoryQuickProviderTest, MaxMatches) {
 
   matches = provider().matches();
   EXPECT_EQ(matches.size(), provider().provider_max_matches_in_keyword_mode());
+
+  // The provider should not limit the number of suggestions when ML scoring
+  // w/increased candidates is enabled. Any matches beyond the limit should be
+  // marked as culled_by_provider and have a relevance of 0.
+  input.set_keyword_mode_entry_method(
+      metrics::OmniboxEventProto_KeywordModeEntryMethod_INVALID);
+  input.set_prefer_keyword(false);
+
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitWithFeaturesAndParameters(
+      /*enabled_features=*/
+      {{omnibox::kUrlScoringModel, {}},
+       {omnibox::kMlUrlScoring,
+        {{"MlUrlScoringUnlimitedNumCandidates", "true"}}}},
+      /*disabled_features=*/{});
+  OmniboxFieldTrial::ScopedMLConfigForTesting scoped_ml_config;
+
+  provider().Start(input, false);
+  matches = provider().matches();
+  EXPECT_EQ(matches.size(), 8u);
+  // Matches below the `max_matches` limit.
+  for (size_t i = 0; i < provider().provider_max_matches(); i++) {
+    EXPECT_FALSE(matches[i].culled_by_provider);
+    EXPECT_GT(matches[i].relevance, 0);
+  }
+  // "Extra" matches above the `max_matches` limit. Should have 0 relevance and
+  // be marked as `culled_by_provider`.
+  for (size_t i = provider().provider_max_matches(); i < matches.size(); i++) {
+    EXPECT_TRUE(matches[i].culled_by_provider);
+    EXPECT_EQ(matches[i].relevance, 0);
+  }
+
+  // Unlimited matches should ignore the provider max matches, even if the
+  // `kMlUrlScoringMaxMatchesByProvider` param is set.
+  scoped_ml_config.GetMLConfig().ml_url_scoring_max_matches_by_provider = "*:6";
+
+  provider().Start(input, false);
+  matches = provider().matches();
+  EXPECT_EQ(matches.size(), 8u);
 }
 
 class HQPDomainSuggestionsTest : public HistoryQuickProviderTest {

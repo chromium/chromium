@@ -7,19 +7,15 @@
 #include <Cocoa/Cocoa.h>
 #include <sys/stat.h>
 
+#include "base/apple/foundation_util.h"
 #include "base/files/file.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/functional/bind.h"
-#include "base/mac/foundation_util.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "third_party/zlib/google/zip.h"
 #include "ui/shell_dialogs/selected_file_info.h"
-
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
 
 namespace {
 
@@ -110,7 +106,7 @@ void FileSelectHelper::ProcessSelectedFilesMac(
   std::vector<base::FilePath> temporary_files;
 
   for (auto& file_info : files_out) {
-    NSString* filename = base::mac::FilePathToNSString(file_info.local_path);
+    NSString* filename = base::apple::FilePathToNSString(file_info.local_path);
     BOOL isPackage =
         [[NSWorkspace sharedWorkspace] isFilePackageAtPath:filename];
     if (isPackage && base::DirectoryExists(file_info.local_path)) {

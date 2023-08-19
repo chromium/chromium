@@ -316,4 +316,20 @@ void SkColorToWlArray(const SkColor4f& color, wl_array& array) {
   }
 }
 
+void TransformToWlArray(
+    const absl::variant<gfx::OverlayTransform, gfx::Transform>& transform,
+    wl_array& array) {
+  if (absl::holds_alternative<gfx::OverlayTransform>(transform)) {
+    return;
+  }
+
+  gfx::Transform t = absl::get<gfx::Transform>(transform);
+  constexpr int rcs[][2] = {{0, 0}, {1, 0}, {0, 1}, {1, 1}, {0, 3}, {1, 3}};
+  for (auto* rc : rcs) {
+    float* ptr = static_cast<float*>(wl_array_add(&array, sizeof(float)));
+    DCHECK(ptr);
+    *ptr = static_cast<float>(t.rc(rc[0], rc[1]));
+  }
+}
+
 }  // namespace wl

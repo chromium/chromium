@@ -19,7 +19,6 @@ import {WaitableEvent} from './waitable_event.js';
  * @param element Source element.
  * @param width Canvas width.
  * @param height Canvas height.
- * @return Converted jpeg blob.
  * @throws {EmptyThumbnailError} Thrown when the data to generate thumbnail is
  *     empty.
  */
@@ -161,7 +160,6 @@ class NoImageInPdfError extends Error {
  * Gets image embedded in a PDF.
  *
  * @param blob Blob of PDF.
- * @return Promise resolved to image blob inside PDF.
  */
 async function getImageFromPdf(blob: Blob): Promise<Blob> {
   const buf = await blob.arrayBuffer();
@@ -240,8 +238,6 @@ const VIDEO_COVER_WIDTH = 240;
 
 /**
  * Extracts image blob from an arbitrary type of blob.
- *
- * @return Resolved to the image blob.
  */
 export async function extractImageFromBlob(blob: Blob): Promise<Blob> {
   switch (blob.type) {

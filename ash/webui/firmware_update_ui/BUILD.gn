@@ -16,6 +16,7 @@ static_library("firmware_update_ui") {
 
   deps = [
     "//ash/constants",
+    "//ash/webui/common:trusted_types_util",
     "//ash/webui/firmware_update_ui/mojom",
     "//ash/webui/resources:firmware_update_app_resources",
     "//chromeos/ash/components/fwupd",

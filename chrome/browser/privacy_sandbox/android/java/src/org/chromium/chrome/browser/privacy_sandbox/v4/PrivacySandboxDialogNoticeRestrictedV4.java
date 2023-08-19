@@ -64,7 +64,7 @@ public class PrivacySandboxDialogNoticeRestrictedV4
 
     @Override
     public void show() {
-        PrivacySandboxBridge.promptActionOccurred(PromptAction.NOTICE_SHOWN);
+        PrivacySandboxBridge.promptActionOccurred(PromptAction.RESTRICTED_NOTICE_SHOWN);
         super.show();
     }
 
@@ -80,7 +80,8 @@ public class PrivacySandboxDialogNoticeRestrictedV4
             dismiss();
             mSettingsLauncher.launchSettingsActivity(getContext(), AdMeasurementFragmentV4.class);
         } else if (id == R.id.more_button) {
-            PrivacySandboxBridge.promptActionOccurred(PromptAction.NOTICE_MORE_BUTTON_CLICKED);
+            PrivacySandboxBridge.promptActionOccurred(
+                    PromptAction.RESTRICTED_NOTICE_MORE_BUTTON_CLICKED);
             if (mScrollView.canScrollVertically(ScrollView.FOCUS_DOWN)) {
                 mScrollView.post(() -> { mScrollView.pageScroll(ScrollView.FOCUS_DOWN); });
             } else {

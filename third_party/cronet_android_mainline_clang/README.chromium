@@ -1,0 +1,13 @@
+Name: cronet_android_mainline_clang
+URL: https://clang.llvm.org/
+Version: clang-r487747c
+License: Apache 2.0
+License File: LICENSE
+Security Critical: no
+Shipped: no
+License Android Compatible: no
+
+Description:
+Clang is a compiler front end for the C language family and is the default compiler for Android and Chrome.
+
+Local Modifications:

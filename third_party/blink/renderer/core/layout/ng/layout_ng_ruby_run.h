@@ -42,6 +42,8 @@ class CORE_EXPORT LayoutNGRubyRun final : public LayoutNGBlockFlow {
   bool IsOfType(LayoutObjectType type) const override;
   bool CreatesAnonymousWrapper() const override;
   void RemoveLeftoverAnonymousBlock(LayoutBlock*) override;
+  void UpdateAnonymousChildStyle(const LayoutObject* child,
+                                 ComputedStyleBuilder& builder) const override;
 
  private:
   LayoutNGRubyBase& CreateRubyBase() const;

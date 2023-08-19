@@ -47,8 +47,8 @@ class ExtensionNavigationUIDataObserver : public content::WebContentsObserver {
       const ExtensionNavigationUIDataObserver&) = delete;
 
   const ExtensionNavigationUIData* GetExtensionNavigationUIData(
-      content::RenderFrameHost* rfh) const {
-    auto iter = navigation_ui_data_map_.find(rfh);
+      content::RenderFrameHost* render_frame_host) const {
+    auto iter = navigation_ui_data_map_.find(render_frame_host);
     if (iter == navigation_ui_data_map_.end())
       return nullptr;
     return iter->second.get();
@@ -60,10 +60,11 @@ class ExtensionNavigationUIDataObserver : public content::WebContentsObserver {
     if (!navigation_handle->HasCommitted())
       return;
 
-    content::RenderFrameHost* rfh = navigation_handle->GetRenderFrameHost();
+    content::RenderFrameHost* render_frame_host =
+        navigation_handle->GetRenderFrameHost();
     const auto* data = static_cast<const ChromeNavigationUIData*>(
         navigation_handle->GetNavigationUIData());
-    navigation_ui_data_map_[rfh] =
+    navigation_ui_data_map_[render_frame_host] =
         data->GetExtensionNavigationUIData()->DeepCopy();
   }
 

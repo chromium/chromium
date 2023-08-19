@@ -1,0 +1,26 @@
+caption: Enable file transfer capability in enterprise remote support sessions
+default: false
+desc: |-
+  If this policy is enabled, admin-initiated enterprise remote support sessions will allow the transfer of files between the client and the host.
+
+  This policy does not affect remote access scenarios.
+
+  Leaving this policy unset or setting to Disabled disallows file transfer.
+example_value: false
+features:
+  dynamic_refresh: true
+  per_profile: false
+items:
+- caption: Enable file transfer in remote support connections from enterprise admins
+  value: true
+- caption: Disable file transfer in remote support connections from enterprise admins
+  value: false
+owners:
+- macinashutosh@google.com
+- file://remoting/OWNERS
+schema:
+  type: boolean
+supported_on:
+- chrome_os:117-
+tags: []
+type: main

@@ -1,0 +1,32 @@
+# Copyright 2023 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/chrome_build.gni")
+
+source_set("instant_signin") {
+  sources = [
+    "instant_signin_coordinator.h",
+    "instant_signin_coordinator.mm",
+    "instant_signin_mediator.h",
+    "instant_signin_mediator.mm",
+  ]
+  deps = [
+    "//components/sync/base:features",
+    "//components/sync/service",
+    "//ios/chrome/browser/main",
+    "//ios/chrome/browser/shared/coordinator/alert",
+    "//ios/chrome/browser/shared/model/application_context",
+    "//ios/chrome/browser/shared/ui/elements:activity_overlay",
+    "//ios/chrome/browser/signin",
+    "//ios/chrome/browser/sync",
+    "//ios/chrome/browser/ui/authentication",
+    "//ios/chrome/browser/ui/authentication/signin:signin_protected",
+    "//ios/chrome/browser/ui/authentication/unified_consent/identity_chooser",
+    "//ui/base",
+  ]
+  public_deps = [
+    "//ios/chrome/browser/ui/authentication/signin:constants",
+    "//ios/chrome/browser/ui/authentication/signin:signin_headers",
+  ]
+}

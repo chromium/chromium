@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "chromeos/ash/components/login/auth/public/authentication_error.h"
+
 #include "base/strings/strcat.h"
 #include "base/strings/stringprintf.h"
 

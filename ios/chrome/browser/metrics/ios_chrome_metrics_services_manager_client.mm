@@ -17,7 +17,7 @@
 #import "components/variations/service/variations_service.h"
 #import "ios/chrome/browser/metrics/ios_chrome_metrics_service_accessor.h"
 #import "ios/chrome/browser/metrics/ios_chrome_metrics_service_client.h"
-#import "ios/chrome/browser/paths/paths.h"
+#import "ios/chrome/browser/shared/model/paths/paths.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/model/browser/browser_list.h"
@@ -27,10 +27,6 @@
 #import "ios/chrome/browser/variations/ios_chrome_variations_service_client.h"
 #import "ios/chrome/browser/variations/ios_ui_string_overrider_factory.h"
 #import "services/network/public/cpp/shared_url_loader_factory.h"
-
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
 
 class IOSChromeMetricsServicesManagerClient::IOSChromeEnabledStateProvider
     : public metrics::EnabledStateProvider {

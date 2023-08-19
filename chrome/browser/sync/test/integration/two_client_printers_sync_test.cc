@@ -159,7 +159,7 @@ IN_PROC_BROWSER_TEST_F(TwoClientPrintersSyncTest, ConflictResolution) {
   // We must wait until the sync cycle is completed before client 0 resumes in
   // order to make the outcome of conflict resolution deterministic (needed due
   // to lack of a strong consistency model on the server).
-  SyncServiceImplHarness::AwaitQuiescence({GetClient(1)});
+  ASSERT_TRUE(SyncServiceImplHarness::AwaitQuiescence({GetClient(1)}));
 
   ASSERT_EQ(GetPrinterStore(0)->GetSavedPrinters()[0].description(),
             kLatestDescription);

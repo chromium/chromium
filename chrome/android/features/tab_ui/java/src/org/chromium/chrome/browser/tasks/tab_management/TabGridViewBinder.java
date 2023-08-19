@@ -12,7 +12,6 @@ import android.graphics.Matrix;
 import android.util.Size;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.ViewGroup.LayoutParams;
 import android.widget.ImageView;
 import android.widget.ImageView.ScaleType;
 import android.widget.TextView;
@@ -25,10 +24,13 @@ import androidx.core.view.ViewCompat;
 import androidx.core.widget.ImageViewCompat;
 import androidx.vectordrawable.graphics.drawable.AnimatedVectorDrawableCompat;
 
+import org.chromium.base.BuildInfo;
 import org.chromium.base.Callback;
+import org.chromium.base.ResettersForTesting;
 import org.chromium.chrome.browser.tab.TabUtils;
 import org.chromium.chrome.browser.tab.state.ShoppingPersistedTabData;
 import org.chromium.chrome.tab_ui.R;
+import org.chromium.ui.display.DisplayUtil;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.widget.ButtonCompat;
@@ -123,8 +125,6 @@ class TabGridViewBinder {
             }
 
             updateFavicon(view, model);
-        } else if (TabProperties.THUMBNAIL_FETCHER == propertyKey) {
-            updateThumbnail(view, model);
         } else if (TabProperties.CONTENT_DESCRIPTION_STRING == propertyKey) {
             view.setContentDescription(model.get(TabProperties.CONTENT_DESCRIPTION_STRING));
         } else if (TabProperties.GRID_CARD_SIZE == propertyKey) {
@@ -136,7 +136,8 @@ class TabGridViewBinder {
             view.setLayoutParams(view.getLayoutParams());
             TabGridThumbnailView thumbnail =
                     (TabGridThumbnailView) view.fastFindViewById(R.id.tab_thumbnail);
-            thumbnail.getLayoutParams().height = LayoutParams.MATCH_PARENT;
+            updateThumbnail(view, model);
+        } else if (TabProperties.THUMBNAIL_FETCHER == propertyKey) {
             updateThumbnail(view, model);
         }
     }
@@ -285,34 +286,37 @@ class TabGridViewBinder {
     private static void updateThumbnail(ViewLookupCachingFrameLayout view, PropertyModel model) {
         TabGridThumbnailView thumbnail =
                 (TabGridThumbnailView) view.fastFindViewById(R.id.tab_thumbnail);
-        final TabListMediator.ThumbnailFetcher fetcher = model.get(TabProperties.THUMBNAIL_FETCHER);
-        // To GC on hide remove the thumbnail and set a background color.
-        boolean isSelected = model.get(TabProperties.IS_SELECTED);
-        thumbnail.setColorThumbnailPlaceHolder(model.get(TabProperties.IS_INCOGNITO), isSelected);
-        thumbnail.setImageDrawable(null);
-        if (fetcher == null) {
-            return;
-        }
 
+        // To GC on hide set a background color and remove the thumbnail.
+        final boolean isSelected = model.get(TabProperties.IS_SELECTED);
+        thumbnail.updateThumbnailPlaceholder(model.get(TabProperties.IS_INCOGNITO), isSelected);
+
+        final TabListMediator.ThumbnailFetcher fetcher = model.get(TabProperties.THUMBNAIL_FETCHER);
         final Size cardSize = model.get(TabProperties.GRID_CARD_SIZE);
-        if (cardSize == null) {
+        if (fetcher == null || cardSize == null) {
+            thumbnail.setImageDrawable(null);
             return;
         }
 
         // TODO(crbug/1395467): Consider unsetting the bitmap early to allow memory reuse if needed.
         final Size thumbnailSize = TabUtils.deriveThumbnailSize(cardSize, view.getContext());
         Callback<Bitmap> callback = result -> {
+            final boolean isMostRecentRequest =
+                    fetcher == model.get(TabProperties.THUMBNAIL_FETCHER)
+                    && cardSize.equals(model.get(TabProperties.GRID_CARD_SIZE));
             if (result != null) {
                 // TODO(crbug/1395467): look into cancelling if there are multiple in-flight
-                // requests. Ensure only the most recently requested bitmap it used.
-                if (fetcher != model.get(TabProperties.THUMBNAIL_FETCHER)
-                        || !cardSize.equals(model.get(TabProperties.GRID_CARD_SIZE))) {
+                // requests. Ensure only the most recently requested bitmap is used.
+                if (!isMostRecentRequest) {
                     result.recycle();
                     return;
                 }
                 // Adjust bitmap to thumbnail.
                 updateThumbnailMatrix(thumbnail, result, thumbnailSize);
                 thumbnail.setImageBitmap(result);
+            } else if (isMostRecentRequest) {
+                // If the most recent request is a null bitmap ensure a placeholder is visible.
+                thumbnail.setImageDrawable(null);
             }
         };
         if (TabUiFeatureUtilities.isTabGroupsAndroidContinuationEnabled(view.getContext())
@@ -330,8 +334,13 @@ class TabGridViewBinder {
      * @param source Image bitmap to resize.
      * @param destinationSize Desired width and height for source.
      */
-    private static void updateThumbnailMatrix(
+    @VisibleForTesting
+    static void updateThumbnailMatrix(
             TabGridThumbnailView thumbnail, Bitmap source, Size destinationSize) {
+        if (BuildInfo.getInstance().isAutomotive) {
+            source.setDensity(
+                    (int) (source.getDensity() * DisplayUtil.getUiScalingFactorForAutomotive()));
+        }
         int newWidth = destinationSize == null ? 0 : destinationSize.getWidth();
         int newHeight = destinationSize == null ? 0 : destinationSize.getHeight();
         if (newWidth <= 0 || newHeight <= 0
@@ -341,10 +350,8 @@ class TabGridViewBinder {
         }
 
         final Matrix m = new Matrix();
-
-        // Scale image to larger of the two dimensions.
         final float scale = Math.max(
-                (float) newWidth / source.getWidth(), (float) newHeight / source.getHeight()); //
+                (float) newWidth / source.getWidth(), (float) newHeight / source.getHeight());
         m.setScale(scale, scale);
 
         /**
@@ -422,7 +429,7 @@ class TabGridViewBinder {
         titleView.setTextColor(TabUiThemeProvider.getTitleTextColor(
                 titleView.getContext(), isIncognito, isSelected));
 
-        thumbnail.setColorThumbnailPlaceHolder(isIncognito, isSelected);
+        thumbnail.updateThumbnailPlaceholder(isIncognito, isSelected);
 
         if (TabUiFeatureUtilities.isTabGroupsAndroidEnabled(rootView.getContext())) {
             ViewCompat.setBackgroundTintList(backgroundView,
@@ -464,8 +471,8 @@ class TabGridViewBinder {
         }
     }
 
-    @VisibleForTesting
     static void setThumbnailFeatureForTesting(TabListMediator.ThumbnailFetcher fetcher) {
         sThumbnailFetcherForTesting = fetcher;
+        ResettersForTesting.register(() -> sThumbnailFetcherForTesting = null);
     }
 }

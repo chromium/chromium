@@ -7,7 +7,6 @@
 
 #include "ash/ash_export.h"
 #include "ash/system/media/media_notification_provider.h"
-#include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "chrome/browser/ash/crosapi/media_ui_ash.h"
 #include "chrome/browser/ui/ash/global_media_controls/media_item_ui_device_selector_delegate_ash.h"
@@ -20,6 +19,7 @@
 #include "components/media_message_center/media_notification_view_impl.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
+class CastMediaNotificationProducerKeyedService;
 class Profile;
 
 namespace global_media_controls {
@@ -27,6 +27,8 @@ namespace mojom {
 class DeviceService;
 }  // namespace mojom
 class MediaItemManager;
+class MediaItemUIDeviceSelector;
+class MediaItemUIFooter;
 class MediaItemUIListView;
 class MediaSessionItemProducer;
 }  // namespace global_media_controls
@@ -56,12 +58,28 @@ class ASH_EXPORT MediaNotificationProviderImpl
   std::unique_ptr<views::View> GetMediaNotificationListView(
       int separator_thickness,
       bool should_clip_height,
-      const std::string& item_id) override;
+      const std::string& item_id,
+      const std::string& show_devices_for_item_id) override;
   void OnBubbleClosing() override;
   void SetColorTheme(
       const media_message_center::NotificationTheme& color_theme) override;
   global_media_controls::MediaItemManager* GetMediaItemManager() override;
   void OnPrimaryUserSessionStarted() override;
+  void AddMediaItemManagerToCastService(
+      global_media_controls::MediaItemManager* media_item_manager) override;
+  void RemoveMediaItemManagerFromCastService(
+      global_media_controls::MediaItemManager* media_item_manager) override;
+  std::unique_ptr<global_media_controls::MediaItemUIDeviceSelector>
+  BuildDeviceSelectorView(
+      const std::string& id,
+      base::WeakPtr<media_message_center::MediaNotificationItem> item,
+      global_media_controls::GlobalMediaControlsEntryPoint entry_point,
+      bool show_devices) override;
+  std::unique_ptr<global_media_controls::MediaItemUIFooter> BuildFooterView(
+      const std::string& id,
+      base::WeakPtr<media_message_center::MediaNotificationItem> item,
+      global_media_controls::GlobalMediaControlsEntryPoint entry_point)
+      override;
 
   // global_media_controls::MediaDialogDelegate:
   global_media_controls::MediaItemUI* ShowMediaItem(
@@ -70,8 +88,7 @@ class ASH_EXPORT MediaNotificationProviderImpl
   void HideMediaItem(const std::string& id) override;
   void RefreshMediaItem(
       const std::string& id,
-      base::WeakPtr<media_message_center::MediaNotificationItem> item)
-      override {}
+      base::WeakPtr<media_message_center::MediaNotificationItem> item) override;
   void HideMediaDialog() override;
   void Focus() override {}
 
@@ -111,7 +128,9 @@ class ASH_EXPORT MediaNotificationProviderImpl
   base::ObserverList<MediaNotificationProviderObserver> observers_;
 
   base::WeakPtr<global_media_controls::MediaItemUIListView>
-      active_session_view_;
+      media_item_ui_list_view_;
+
+  std::string show_devices_for_item_id_;
 
   std::unique_ptr<global_media_controls::MediaItemManager> item_manager_;
 
@@ -122,6 +141,8 @@ class ASH_EXPORT MediaNotificationProviderImpl
 
   absl::optional<media_message_center::NotificationTheme> color_theme_;
 
+  absl::optional<media_message_center::MediaColorTheme> media_color_theme_;
+
   global_media_controls::MediaItemUIObserverSet item_ui_observer_set_{this};
 
   MediaItemUIDeviceSelectorDelegateAsh device_selector_delegate_;
@@ -129,7 +150,9 @@ class ASH_EXPORT MediaNotificationProviderImpl
   global_media_controls::GlobalMediaControlsEntryPoint entry_point_{
       global_media_controls::GlobalMediaControlsEntryPoint::kSystemTray};
 
-  raw_ptr<Profile> profile_for_testing_ = nullptr;
+  raw_ptr<CastMediaNotificationProducerKeyedService> cast_service_ = nullptr;
+
+  raw_ptr<Profile, DanglingUntriaged> profile_for_testing_ = nullptr;
   raw_ptr<global_media_controls::mojom::DeviceService>
       device_service_for_testing_ = nullptr;
 

@@ -65,6 +65,7 @@ CommandBufferProxyImpl::~CommandBufferProxyImpl() {
   for (auto& observer : deletion_observers_)
     observer.OnWillDeleteImpl();
   DisconnectChannel();
+  CancelAllQueries();
 }
 
 ContextResult CommandBufferProxyImpl::Initialize(
@@ -420,8 +421,18 @@ void CommandBufferProxyImpl::EnsureWorkVisible() {
   if (disconnected_)
     return;
 
+  constexpr char kEnsureWorkVisible[] = "EnsureWorkVisible";
+
   const base::ElapsedTimer elapsed_timer;
+
+  TRACE_EVENT_NESTABLE_ASYNC_BEGIN0("gpu,login", kEnsureWorkVisible,
+                                    TRACE_ID_LOCAL(kEnsureWorkVisible));
+
   channel_->VerifyFlush(UINT32_MAX);
+
+  TRACE_EVENT_NESTABLE_ASYNC_END0("gpu,login", kEnsureWorkVisible,
+                                  TRACE_ID_LOCAL(kEnsureWorkVisible));
+
   GetUMAHistogramEnsureWorkVisibleDuration()->Add(
       elapsed_timer.Elapsed().InMicroseconds());
 
@@ -508,6 +519,11 @@ void CommandBufferProxyImpl::SignalQuery(uint32_t query,
   uint32_t signal_id = next_signal_id_++;
   command_buffer_->SignalQuery(query, signal_id);
   signal_tasks_.insert(std::make_pair(signal_id, std::move(callback)));
+}
+
+void CommandBufferProxyImpl::CancelAllQueries() {
+  // Clear all of the signal query callbacks.
+  signal_tasks_.clear();
 }
 
 void CommandBufferProxyImpl::CreateGpuFence(uint32_t gpu_fence_id,

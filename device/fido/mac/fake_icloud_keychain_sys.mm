@@ -12,10 +12,6 @@
 #include "device/fido/fido_parsing_utils.h"
 #include "device/fido/mac/fake_icloud_keychain_sys.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 // A number of AuthenticationServices objects are subclassed so that the
 // values of readonly properties can be overridden in tests.
 
@@ -201,8 +197,7 @@ void FakeSystemInterface::GetPlatformCredentials(
 void FakeSystemInterface::MakeCredential(
     NSWindow* window,
     CtapMakeCredentialRequest request,
-    base::OnceCallback<void(ASAuthorization* __strong, NSError* __strong)>
-        callback) {
+    base::OnceCallback<void(ASAuthorization*, NSError*)> callback) {
   auto attestation_object_bytes =
       std::move(make_credential_attestation_object_bytes_);
   make_credential_attestation_object_bytes_.reset();
@@ -238,8 +233,7 @@ void FakeSystemInterface::MakeCredential(
 void FakeSystemInterface::GetAssertion(
     NSWindow* window,
     CtapGetAssertionRequest request,
-    base::OnceCallback<void(ASAuthorization* __strong, NSError* __strong)>
-        callback) {
+    base::OnceCallback<void(ASAuthorization*, NSError*)> callback) {
   if (!get_assertion_authenticator_data_) {
     std::move(callback).Run(nullptr, [[NSError alloc] initWithDomain:@""
                                                                 code:1001

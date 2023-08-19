@@ -27,6 +27,7 @@ source_set("media_foundation_util") {
   deps = [
     "//base",
     "//media:shared_memory_support",
+    "//media/base",
   ]
   libs = [
     "d3d11.lib",

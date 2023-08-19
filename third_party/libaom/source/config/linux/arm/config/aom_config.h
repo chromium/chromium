@@ -10,6 +10,7 @@
  */
 #ifndef AOM_CONFIG_H_
 #define AOM_CONFIG_H_
+#define AOM_ARCH_AARCH64 0
 #define AOM_ARCH_ARM 1
 #define AOM_ARCH_PPC 0
 #define AOM_ARCH_X86 0
@@ -57,7 +58,7 @@
 #define CONFIG_RD_DEBUG 0
 #define CONFIG_REALTIME_ONLY 1
 #define CONFIG_RT_ML_PARTITIONING 0
-#define CONFIG_RUNTIME_CPU_DETECT 0
+#define CONFIG_RUNTIME_CPU_DETECT 1
 #define CONFIG_SALIENCY_MAP 0
 #define CONFIG_SHARED 0
 #define CONFIG_SIZE_LIMIT 1
@@ -77,6 +78,8 @@
 #define HAVE_FEXCEPT 1
 #define HAVE_MMX 0
 #define HAVE_NEON 0
+#define HAVE_NEON_DOTPROD 0
+#define HAVE_NEON_I8MM 0
 #define HAVE_PTHREAD_H 1
 #define HAVE_SSE 0
 #define HAVE_SSE2 0
@@ -84,6 +87,7 @@
 #define HAVE_SSE4_1 0
 #define HAVE_SSE4_2 0
 #define HAVE_SSSE3 0
+#define HAVE_SVE 0
 #define HAVE_UNISTD_H 1
 #define HAVE_VSX 0
 #define HAVE_WXWIDGETS 0

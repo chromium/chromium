@@ -5,7 +5,6 @@
 import("//build/config/chrome_build.gni")
 
 source_set("unified_consent") {
-  configs += [ "//build/config/compiler:enable_arc" ]
   sources = [
     "unified_consent_coordinator.h",
     "unified_consent_coordinator.mm",
@@ -28,7 +27,6 @@ source_set("unified_consent") {
 }
 
 source_set("unified_consent_ui") {
-  configs += [ "//build/config/compiler:enable_arc" ]
   sources = [
     "unified_consent_view_controller.h",
     "unified_consent_view_controller.mm",
@@ -58,7 +56,6 @@ source_set("unified_consent_ui") {
 }
 
 source_set("constants") {
-  configs += [ "//build/config/compiler:enable_arc" ]
   sources = [
     "unified_consent_constants.h",
     "unified_consent_constants.mm",
@@ -67,7 +64,6 @@ source_set("constants") {
 }
 
 source_set("unit_tests") {
-  configs += [ "//build/config/compiler:enable_arc" ]
   testonly = true
   sources = [
     "unified_consent_mediator_unittest.mm",

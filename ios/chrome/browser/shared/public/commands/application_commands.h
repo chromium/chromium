@@ -19,8 +19,13 @@ enum class DefaultBrowserPromoSource;
 namespace syncer {
 enum class TrustedVaultUserActionTriggerForUMA;
 }  // namespace syncer
+namespace autofill {
+class CreditCard;
+}  // namespace autofill
 namespace password_manager {
 struct CredentialUIEntry;
+enum class PasswordCheckReferrer;
+enum class WarningType;
 }  // namespace password_manager
 
 // This protocol groups commands that are part of ApplicationCommands, but
@@ -69,12 +74,15 @@ struct CredentialUIEntry;
             (password_manager::CredentialUIEntry)credential
                         showCancelButton:(BOOL)showCancelButton;
 
-// Shows the list of profiles (addresess) in the settings.
+// Shows the list of profiles (addresses) in the settings.
 - (void)showProfileSettingsFromViewController:
     (UIViewController*)baseViewController;
 
 // Shows the list of credit cards in the settings.
 - (void)showCreditCardSettings;
+
+// Shows the credit card details view.
+- (void)showCreditCardDetails:(const autofill::CreditCard*)creditCard;
 
 // Shows the settings page informing the user how to set Chrome as the default
 // browser.
@@ -92,6 +100,16 @@ struct CredentialUIEntry;
 // Shows the Safe Browsing page.
 - (void)showSafeBrowsingSettings;
 
+// Shows the Password Manager's search page.
+- (void)showPasswordSearchPage;
+
+// Shows the Tab Pickup Settings screen.
+- (void)showTabPickupSettings;
+
+// Shows the Content Settings page in the settings on top of baseViewController.
+- (void)showContentsSettingsFromViewController:
+    (UIViewController*)baseViewController;
+
 @end
 
 // Protocol for commands that will generally be handled by the application,
@@ -103,12 +121,20 @@ struct CredentialUIEntry;
 
 @protocol ApplicationCommands <NSObject, ApplicationSettingsCommands>
 
-// Dismisses all modal dialogs.
-- (void)dismissModalDialogs;
-
 // Dismisses all modal dialogs with a completion block that is called when
 // modals are dismissed (animations done).
 - (void)dismissModalDialogsWithCompletion:(ProceduralBlock)completion;
+
+// Shows the Password Checkup page for `referrer`.
+- (void)showPasswordCheckupPageForReferrer:
+    (password_manager::PasswordCheckReferrer)referrer;
+
+// Opens the Password Issues list displaying compromised, weak or reused
+// credentials for `referrer`.
+- (void)
+    showPasswordIssuesWithWarningType:(password_manager::WarningType)warningType
+                             referrer:(password_manager::PasswordCheckReferrer)
+                                          referrer;
 
 // TODO(crbug.com/779791) : Do not pass baseViewController through dispatcher.
 // Shows the Settings UI, presenting from `baseViewController`.
@@ -152,8 +178,7 @@ struct CredentialUIEntry;
 // Prepare to show the TabSwitcher UI.
 - (void)prepareTabSwitcher;
 
-// Shows the TabSwitcher UI. When the thumb strip is enabled, shows the
-// TabSwitcher UI, specifically in its grid layout.
+// Shows the TabSwitcher UI.
 - (void)displayTabSwitcherInGridLayout;
 
 // Same as displayTabSwitcherInGridLayout, but also force tab switcher to
@@ -163,6 +188,10 @@ struct CredentialUIEntry;
 // TODO(crbug.com/779791) : Do not pass baseViewController through dispatcher.
 // Shows the Autofill Settings UI, presenting from `baseViewController`.
 - (void)showAutofillSettingsFromViewController:
+    (UIViewController*)baseViewController;
+
+// Shows the settings Privacy UI.
+- (void)showPrivacySettingsFromViewController:
     (UIViewController*)baseViewController;
 
 // Shows the Report an Issue UI, presenting from `baseViewController`.

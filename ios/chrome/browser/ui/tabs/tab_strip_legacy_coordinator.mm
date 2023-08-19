@@ -4,14 +4,13 @@
 
 #import "ios/chrome/browser/ui/tabs/tab_strip_legacy_coordinator.h"
 
+#import "ios/chrome/browser/shared/coordinator/layout_guide/layout_guide_util.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
+#import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
+#import "ios/chrome/browser/shared/public/commands/tab_strip_commands.h"
 #import "ios/chrome/browser/ui/tabs/requirements/tab_strip_presentation.h"
 #import "ios/chrome/browser/ui/tabs/tab_strip_controller.h"
-
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
 
 @protocol TabStripContaining;
 
@@ -60,15 +59,6 @@
   [self.tabStripController tabStripSizeDidChange];
 }
 
-- (void)setPanGestureHandler:
-    (ViewRevealingVerticalPanHandler*)panGestureHandler {
-  self.tabStripController.panGestureHandler = panGestureHandler;
-}
-
-- (id<ViewRevealingAnimatee>)animatee {
-  return self.tabStripController.animatee;
-}
-
 #pragma mark - ChromeCoordinator
 
 - (void)start {
@@ -79,10 +69,14 @@
   self.tabStripController = [[TabStripController alloc]
       initWithBaseViewController:self.baseViewController
                          browser:self.browser
-                           style:style];
+                           style:style
+               layoutGuideCenter:LayoutGuideCenterForBrowser(self.browser)];
   self.tabStripController.presentationProvider = self.presentationProvider;
   self.tabStripController.animationWaitDuration = self.animationWaitDuration;
   [self.presentationProvider showTabStripView:[self.tabStripController view]];
+  [self.browser->GetCommandDispatcher()
+      startDispatchingToTarget:_tabStripController
+                   forProtocol:@protocol(TabStripCommands)];
   self.started = YES;
 }
 
@@ -91,6 +85,8 @@
   [self.tabStripController disconnect];
   self.tabStripController = nil;
   self.presentationProvider = nil;
+  [self.browser->GetCommandDispatcher()
+      stopDispatchingForProtocol:@protocol(TabStripCommands)];
 }
 
 @end

@@ -30,6 +30,7 @@
 #include "chrome/browser/policy/developer_tools_policy_handler.h"
 #include "chrome/browser/policy/profile_policy_connector.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/common/chrome_switches.h"
 #include "chrome/common/pref_names.h"
 #include "chromeos/components/onc/onc_utils.h"
 #include "components/onc/onc_constants.h"
@@ -385,15 +386,18 @@ void OverrideArcPolicies(base::Value::Dict& filtered_policies,
   // available for ARC as well. This must be after the initial writing of
   // "debuggingFeaturesDisabled".
   if (base::CommandLine::ForCurrentProcess()->HasSwitch(
-          ash::switches::kForceDevToolsAvailable)) {
+          switches::kForceDevToolsAvailable)) {
     filtered_policies.Set(policy_util::kArcPolicyKeyDebuggingFeaturesDisabled,
                           false);
   }
 
   // Always enable APK Cache for affiliated users, and always disable it for
-  // not affiliated ones.
+  // not affiliated ones, unless kArcForceEnableApkCache is set.
+  bool apk_cache_enabled =
+      is_affiliated || base::CommandLine::ForCurrentProcess()->HasSwitch(
+                           ash::switches::kArcForceEnableApkCache);
   filtered_policies.Set(policy_util::kArcPolicyKeyApkCacheEnabled,
-                        is_affiliated);
+                        apk_cache_enabled);
 
   filtered_policies.Set(policy_util::kArcPolicyKeyGuid, guid);
 
@@ -606,44 +610,6 @@ void ArcPolicyBridge::ReportCompliance(const std::string& request,
       request,
       base::BindOnce(&ArcPolicyBridge::OnReportComplianceParse,
                      weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
-}
-
-void ArcPolicyBridge::ReportCloudDpsRequested(
-    base::Time time,
-    const std::vector<std::string>& package_names) {
-  const std::set<std::string> packages_set(package_names.begin(),
-                                           package_names.end());
-  for (Observer& observer : observers_) {
-    observer.OnCloudDpsRequested(time, packages_set);
-  }
-}
-
-void ArcPolicyBridge::ReportCloudDpsSucceeded(
-    base::Time time,
-    const std::vector<std::string>& package_names) {
-  const std::set<std::string> packages_set(package_names.begin(),
-                                           package_names.end());
-  for (Observer& observer : observers_) {
-    observer.OnCloudDpsSucceeded(time, packages_set);
-  }
-}
-
-void ArcPolicyBridge::ReportCloudDpsFailed(base::Time time,
-                                           const std::string& package_name,
-                                           mojom::InstallErrorReason reason) {
-  for (Observer& observer : observers_) {
-    observer.OnCloudDpsFailed(time, package_name, reason);
-  }
-}
-
-void ArcPolicyBridge::ReportForceInstallMainLoopFailed(
-    base::Time time,
-    const std::vector<std::string>& package_names) {
-  const std::set<std::string> packages_set(package_names.begin(),
-                                           package_names.end());
-  for (Observer& observer : observers_) {
-    observer.OnReportForceInstallMainLoopFailed(time, packages_set);
-  }
 }
 
 void ArcPolicyBridge::ReportDPCVersion(const std::string& version) {

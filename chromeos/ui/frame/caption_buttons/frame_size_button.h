@@ -126,6 +126,7 @@ class COMPONENT_EXPORT(CHROMEOS_UI_FRAME) FrameSizeButton
   // Not owned.
   raw_ptr<FrameSizeButtonDelegate> delegate_;
   views::UniqueWidgetPtr multitask_menu_widget_;
+  base::WeakPtr<MultitaskMenu> multitask_menu_;
 
   // The window observer to observe the to-be-snapped window.
   std::unique_ptr<SnappingWindowObserver> snapping_window_observer_;

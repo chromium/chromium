@@ -10,9 +10,11 @@
 #include "base/command_line.h"
 #include "base/environment.h"
 #include "base/nix/xdg_util.h"
+#include "base/no_destructor.h"
 #include "base/strings/string_util.h"
 #include "build/chromecast_buildflags.h"
 #include "ui/base/buildflags.h"
+#include "ui/base/ui_base_switches.h"
 #include "ui/color/system_theme.h"
 #include "ui/linux/fallback_linux_ui.h"
 #include "ui/linux/linux_ui.h"
@@ -33,12 +35,16 @@ namespace ui {
 
 namespace {
 
-const char kUiToolkitFlag[] = "ui-toolkit";
+std::vector<LinuxUiTheme*>& GetLinuxUiThemesImpl() {
+  static base::NoDestructor<std::vector<LinuxUiTheme*>> themes;
+  return *themes;
+}
 
 std::unique_ptr<LinuxUiAndTheme> CreateGtkUi() {
 #if BUILDFLAG(USE_GTK)
   auto gtk_ui = BuildGtkUi();
   if (gtk_ui->Initialize()) {
+    GetLinuxUiThemesImpl().push_back(gtk_ui.get());
     return gtk_ui;
   }
 #endif
@@ -61,6 +67,7 @@ std::unique_ptr<LinuxUiAndTheme> CreateQtUi() {
 #if BUILDFLAG(USE_QT)
   auto qt_ui = qt::CreateQtUi(GetGtkUi());
   if (qt_ui->Initialize()) {
+    GetLinuxUiThemesImpl().push_back(qt_ui.get());
     return qt_ui;
   }
 #endif
@@ -87,8 +94,8 @@ LinuxUiAndTheme* GetFallbackUi() {
 
 LinuxUiAndTheme* GetDefaultLinuxUiAndTheme() {
   auto* cmd_line = base::CommandLine::ForCurrentProcess();
-  std::string ui_toolkit =
-      base::ToLowerASCII(cmd_line->GetSwitchValueASCII(kUiToolkitFlag));
+  std::string ui_toolkit = base::ToLowerASCII(
+      cmd_line->GetSwitchValueASCII(switches::kUiToolkitFlag));
   if (ui_toolkit == "gtk") {
     if (auto* gtk_ui = GetGtkUi()) {
       return gtk_ui;
@@ -154,6 +161,10 @@ LinuxUiTheme* GetLinuxUiTheme(SystemTheme system_theme) {
     case SystemTheme::kDefault:
       return nullptr;
   }
+}
+
+const std::vector<LinuxUiTheme*>& GetLinuxUiThemes() {
+  return GetLinuxUiThemesImpl();
 }
 
 SystemTheme GetDefaultSystemTheme() {

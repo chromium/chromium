@@ -30,11 +30,9 @@ public class SafeBrowsingApiHandlerBridgeNativeUnitTestHelper {
         private static final long DEFAULT_CHECK_DELTA_MS = 10;
         // See safe_browsing_handler_util.h --> JavaThreatTypes
         private static final int THREAT_TYPE_CSD_ALLOWLIST = 16;
-        private static final int THREAT_TYPE_HIGH_CONFIDENCE_ALLOWLIST = 17;
 
         // Maps to store preset values, keyed by uri.
         private static final Map<String, Boolean> sCsdAllowlistMap = new HashMap<>();
-        private static final Map<String, Boolean> sHighConfidenceAllowlistMap = new HashMap<>();
         private static final Map<String, int[]> sThreatsOfInterestMap = new HashMap<>();
         private static final Map<String, String> sMetadataMap = new HashMap<>();
 
@@ -50,6 +48,7 @@ public class SafeBrowsingApiHandlerBridgeNativeUnitTestHelper {
                 mObserver.onUrlCheckDone(callbackId, sResult, "{}", DEFAULT_CHECK_DELTA_MS);
                 return;
             }
+            Assert.assertTrue(sThreatsOfInterestMap.containsKey(uri));
             int[] expectedThreatsOfInterest = sThreatsOfInterestMap.get(uri);
             Assert.assertNotNull(expectedThreatsOfInterest);
             // The order of threatsOfInterest doesn't matter.
@@ -63,12 +62,15 @@ public class SafeBrowsingApiHandlerBridgeNativeUnitTestHelper {
 
         @Override
         public boolean startAllowlistLookup(final String uri, int threatType) {
-            Assert.assertTrue(threatType == THREAT_TYPE_CSD_ALLOWLIST
-                    || threatType == THREAT_TYPE_HIGH_CONFIDENCE_ALLOWLIST);
-            if (threatType == THREAT_TYPE_CSD_ALLOWLIST) {
-                return Boolean.TRUE.equals(sCsdAllowlistMap.get(uri));
-            }
-            return Boolean.TRUE.equals(sHighConfidenceAllowlistMap.get(uri));
+            Assert.assertTrue(threatType == THREAT_TYPE_CSD_ALLOWLIST);
+            return Boolean.TRUE.equals(sCsdAllowlistMap.get(uri));
+        }
+
+        public static void tearDown() {
+            sThreatsOfInterestMap.clear();
+            sMetadataMap.clear();
+            sCsdAllowlistMap.clear();
+            sResult = SafeBrowsingResult.SUCCESS;
         }
 
         public static void setExpectedThreatsOfInterest(String uri, int[] threatOfInterests) {
@@ -83,32 +85,103 @@ public class SafeBrowsingApiHandlerBridgeNativeUnitTestHelper {
             sCsdAllowlistMap.put(uri, match);
         }
 
-        public static void setHighConfidenceAllowlistMatch(String uri, boolean match) {
-            sHighConfidenceAllowlistMap.put(uri, match);
-        }
-
         public static void setResult(int result) {
             sResult = result;
+        }
+    }
+
+    /**
+     * A fake SafeBrowsingApiHandler which verifies the parameters of the overridden functions and
+     * returns lookup result based on preset values.
+     */
+    public static class MockSafeBrowsingApiHandler implements SafeBrowsingApiHandler {
+        private Observer mObserver;
+
+        // Mock time it takes for a lookup request to complete.
+        private static final long DEFAULT_CHECK_DELTA_MS = 10;
+
+        // Maps to store preset values, keyed by uri.
+        private static final Map<String, UrlCheckDoneValues> sPresetValuesMap = new HashMap<>();
+
+        @Override
+        public void setObserver(Observer observer) {
+            mObserver = observer;
+        }
+
+        @Override
+        public void startUriLookup(
+                final long callbackId, String uri, int[] threatTypes, int protocol) {
+            Assert.assertTrue(sPresetValuesMap.containsKey(uri));
+            UrlCheckDoneValues presetValues = sPresetValuesMap.get(uri);
+            int[] expectedThreatTypes = presetValues.mExpectedThreatTypes;
+            Assert.assertNotNull(expectedThreatTypes);
+            // The order of threatTypes doesn't matter.
+            Arrays.sort(expectedThreatTypes);
+            Arrays.sort(threatTypes);
+            Assert.assertArrayEquals(threatTypes, expectedThreatTypes);
+            Assert.assertEquals(protocol, presetValues.mExpectedProtocol);
+
+            mObserver.onUrlCheckDone(callbackId, presetValues.mReturnedLookupResult,
+                    presetValues.mReturnedThreatType, presetValues.mReturnedThreatAttributes,
+                    presetValues.mReturnedResponseStatus, DEFAULT_CHECK_DELTA_MS);
+        }
+
+        public static void tearDown() {
+            sPresetValuesMap.clear();
+        }
+
+        public static void setUrlCheckDoneValues(String uri, int[] expectedThreatTypes,
+                int expectedProtocol, int returnedLookupResult, int returnedThreatType,
+                int[] returnedThreatAttributes, int returnedResponseStatus) {
+            Assert.assertFalse(sPresetValuesMap.containsKey(uri));
+            sPresetValuesMap.put(uri,
+                    new UrlCheckDoneValues(expectedThreatTypes, expectedProtocol,
+                            returnedLookupResult, returnedThreatType, returnedThreatAttributes,
+                            returnedResponseStatus));
+        }
+
+        private static class UrlCheckDoneValues {
+            public final int[] mExpectedThreatTypes;
+            public final int mExpectedProtocol;
+            public final int mReturnedLookupResult;
+            public final int mReturnedThreatType;
+            public final int[] mReturnedThreatAttributes;
+            public final int mReturnedResponseStatus;
+
+            private UrlCheckDoneValues(int[] expectedThreatTypes, int expectedProtocol,
+                    int returnedLookupResult, int returnedThreatType,
+                    int[] returnedThreatAttributes, int returnedResponseStatus) {
+                mExpectedThreatTypes = expectedThreatTypes;
+                mExpectedProtocol = expectedProtocol;
+                mReturnedLookupResult = returnedLookupResult;
+                mReturnedThreatType = returnedThreatType;
+                mReturnedThreatAttributes = returnedThreatAttributes;
+                mReturnedResponseStatus = returnedResponseStatus;
+            }
         }
     }
 
     @CalledByNative
     static void setUp() {
         SafeBrowsingApiBridge.setHandler(new MockSafetyNetApiHandler());
+        SafeBrowsingApiBridge.setSafeBrowsingApiHandler(new MockSafeBrowsingApiHandler());
     }
 
     @CalledByNative
     static void tearDown() {
+        MockSafetyNetApiHandler.tearDown();
+        MockSafeBrowsingApiHandler.tearDown();
         SafeBrowsingApiBridge.clearHandlerForTesting();
     }
 
     @CalledByNative
-    static void setExpectedThreatsOfInterest(String uri, int[] threatsOfInterest) {
+    static void setExpectedSafetyNetApiHandlerThreatsOfInterest(
+            String uri, int[] threatsOfInterest) {
         MockSafetyNetApiHandler.setExpectedThreatsOfInterest(uri, threatsOfInterest);
     }
 
     @CalledByNative
-    static void setMetadata(String uri, String metadata) {
+    static void setSafetyNetApiHandlerMetadata(String uri, String metadata) {
         MockSafetyNetApiHandler.setMetadata(uri, metadata);
     }
 
@@ -118,12 +191,16 @@ public class SafeBrowsingApiHandlerBridgeNativeUnitTestHelper {
     }
 
     @CalledByNative
-    static void setHighConfidenceAllowlistMatch(String uri, boolean match) {
-        MockSafetyNetApiHandler.setHighConfidenceAllowlistMatch(uri, match);
+    static void setSafetyNetApiHandlerResult(int result) {
+        MockSafetyNetApiHandler.setResult(result);
     }
 
     @CalledByNative
-    static void setResult(int result) {
-        MockSafetyNetApiHandler.setResult(result);
+    static void setSafeBrowsingApiHandlerResponse(String uri, int[] expectedThreatTypes,
+            int expectedProtocol, int returnedLookupResult, int returnedThreatType,
+            int[] returnedThreatAttributes, int returnedResponseStatus) {
+        MockSafeBrowsingApiHandler.setUrlCheckDoneValues(uri, expectedThreatTypes, expectedProtocol,
+                returnedLookupResult, returnedThreatType, returnedThreatAttributes,
+                returnedResponseStatus);
     }
 }

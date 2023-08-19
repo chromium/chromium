@@ -75,6 +75,7 @@ const char kInitialTimezoneKey[] = "initial_timezone";
 const char kKeyboardLayoutKey[] = "keyboard_layout";
 const char kKeyboardMechanicalLayoutKey[] = "keyboard_mechanical_layout";
 const char kAttestedDeviceIdKey[] = "attested_device_id";
+const char kDisplayProfilesKey[] = "display_profiles";
 
 // OEM specific statistics. Must be prefixed with "oem_".
 const char kOemCanExitEnterpriseEnrollmentKey[] = "oem_can_exit_enrollment";

@@ -79,7 +79,7 @@ struct BASE_EXPORT MemoryDumpProviderInfo
 
   // It is safe to access the const fields below from any thread as they are
   // never mutated.
-  const raw_ptr<MemoryDumpProvider, DanglingUntriaged> dump_provider;
+  const raw_ptr<MemoryDumpProvider, AcrossTasksDanglingUntriaged> dump_provider;
 
   // The |options| arg passed to MDM::RegisterDumpProvider().
   const MemoryDumpProvider::Options options;

@@ -39,6 +39,7 @@ std::string KioskAppLaunchError::GetErrorMessage(Error error) {
     case Error::kUnableToRetrieveHash:
     case Error::kPolicyLoadFailed:
     case Error::kArcAuthFailed:
+    case Error::kUserNotAllowlisted:
       return l10n_util::GetStringUTF8(IDS_KIOSK_APP_FAILED_TO_LAUNCH);
 
     case Error::kCryptohomedNotRunning:

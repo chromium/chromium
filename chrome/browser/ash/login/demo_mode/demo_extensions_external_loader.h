@@ -34,6 +34,13 @@ namespace ash {
 // mounted demo resources root to absolute paths that can be used by external
 // extensions provider.
 // NOTE: The class is expected to be used on the UI thread exclusively.
+//
+// TODO(b/290844778): Delete this class. It was used in olden times to launch
+// the Demo Mode Chrome Apps from Chromium, but the Chrome Apps have been
+// replaced by the Demo Mode SWA. Even for 1-2 yearly releases before the
+// SWA migration, the Chrome Apps were installed via policy and self-launched
+// via background script on installation. There's no need for this class
+// anymore.
 class DemoExtensionsExternalLoader : public extensions::ExternalLoader,
                                      public chromeos::ExternalCacheDelegate {
  public:

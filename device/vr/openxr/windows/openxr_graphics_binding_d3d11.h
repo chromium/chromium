@@ -32,13 +32,22 @@ class OpenXrGraphicsBindingD3D11 : public OpenXrGraphicsBinding {
   const void* GetSessionCreateInfo() const override;
   int64_t GetSwapchainFormat(XrSession session) const override;
   XrResult EnumerateSwapchainImages(
-      const XrSwapchain& color_swapchain,
-      std::vector<SwapChainInfo>& color_swapchain_images) const override;
+      const XrSwapchain& color_swapchain) override;
+  void ClearSwapChainImages() override;
+  base::span<SwapChainInfo> GetSwapChainImages() override;
+  bool CanUseSharedImages() const override;
+  void CreateSharedImages(gpu::SharedImageInterface* sii) override;
+  const SwapChainInfo& GetActiveSwapchainImage() override;
+  bool WaitOnFence(gfx::GpuFence& gpu_fence) override;
 
  private:
+  void OnSwapchainImageSizeChanged() override;
+  void OnSwapchainImageActivated(gpu::SharedImageInterface* sii) override;
+
   bool initialized_ = false;
   raw_ptr<D3D11TextureHelper> texture_helper_;
   base::WeakPtr<OpenXrPlatformHelperWindows> weak_platform_helper_;
+  std::vector<SwapChainInfo> color_swapchain_images_;
 
   XrGraphicsBindingD3D11KHR binding_{XR_TYPE_GRAPHICS_BINDING_D3D11_KHR,
                                      nullptr, nullptr};

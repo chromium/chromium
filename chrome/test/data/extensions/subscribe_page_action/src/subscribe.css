@@ -11,6 +11,7 @@ body>* {
   -webkit-box-flex:1;
   -webkit-box-orient:vertical;
   -webkit-box-align:stretch;
+  height: -webkit-fill-available;
 }
 
 iframe {

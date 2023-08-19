@@ -14,7 +14,6 @@
 #include "chrome/browser/android/android_theme_resources.h"
 #include "chrome/browser/android/resource_mapper.h"
 #include "chrome/browser/flags/android/chrome_feature_list.h"
-#include "chrome/browser/password_manager/android/local_passwords_migration_warning_util.h"
 #include "chrome/browser/password_manager/android/password_infobar_utils.h"
 #include "chrome/browser/password_manager/chrome_password_manager_client.h"
 #include "chrome/browser/profiles/profile.h"
@@ -93,16 +92,37 @@ bool UPMExploratoryStringsEnabledWithSupportedParam() {
   return string_version == 2 || string_version == 3;
 }
 
+void TryToShowPasswordMigrationWarning(
+    base::RepeatingCallback<
+        void(gfx::NativeWindow,
+             Profile*,
+             password_manager::metrics_util::PasswordMigrationWarningTriggers)>
+        callback,
+    raw_ptr<content::WebContents> web_contents) {
+  if (base::FeatureList::IsEnabled(
+          password_manager::features::
+              kUnifiedPasswordManagerLocalPasswordsMigrationWarning)) {
+    callback.Run(
+        web_contents->GetTopLevelNativeWindow(),
+        Profile::FromBrowserContext(web_contents->GetBrowserContext()),
+        password_manager::metrics_util::PasswordMigrationWarningTriggers::
+            kPasswordSaveUpdateMessage);
+  }
+}
+
 }  // namespace
 
 SaveUpdatePasswordMessageDelegate::SaveUpdatePasswordMessageDelegate()
     : SaveUpdatePasswordMessageDelegate(
           base::BindRepeating(PasswordEditDialogBridge::Create),
-          base::BindRepeating(&password_manager::ShowWarning)) {}
+          base::BindRepeating(&local_password_migration::ShowWarning)) {}
 
 SaveUpdatePasswordMessageDelegate::SaveUpdatePasswordMessageDelegate(
     PasswordEditDialogFactory password_edit_dialog_factory,
-    base::RepeatingCallback<void(gfx::NativeWindow)>
+    base::RepeatingCallback<
+        void(gfx::NativeWindow,
+             Profile*,
+             password_manager::metrics_util::PasswordMigrationWarningTriggers)>
         create_migration_warning_callback)
     : password_edit_dialog_factory_(std::move(password_edit_dialog_factory)),
       create_migration_warning_callback_(
@@ -164,13 +184,9 @@ void SaveUpdatePasswordMessageDelegate::DisplaySaveUpdatePasswordPromptInternal(
   }
 
   if (account_info.has_value()) {
-    if (!account_info->CanHaveEmailAddressDisplayed() &&
-        base::FeatureList::IsEnabled(
-            chrome::android::kHideNonDisplayableAccountEmail)) {
-      account_email_ = account_info.value().full_name;
-    } else {
-      account_email_ = account_info.value().email;
-    }
+    account_email_ = account_info->CanHaveEmailAddressDisplayed()
+                         ? account_info.value().email
+                         : account_info.value().full_name;
   } else {
     account_email_ = std::string();
   }
@@ -415,15 +431,6 @@ unsigned int SaveUpdatePasswordMessageDelegate::GetDisplayUsernames(
 
 void SaveUpdatePasswordMessageDelegate::HandleSaveButtonClicked() {
   passwords_state_.form_manager()->Save();
-
-  if (base::FeatureList::IsEnabled(
-          password_manager::features::
-              kUnifiedPasswordManagerLocalPasswordsMigrationWarning)) {
-    // TODO(crbug.com/439853): Check if the bottom sheet was shown a month ago
-    // or more.
-    create_migration_warning_callback_.Run(
-        web_contents_->GetTopLevelNativeWindow());
-  }
 }
 
 void SaveUpdatePasswordMessageDelegate::HandleNeverSaveClicked() {
@@ -482,6 +489,11 @@ void SaveUpdatePasswordMessageDelegate::HandleMessageDismissed(
     RecordSaveUpdateUIDismissalReason(
         GetSaveUpdatePasswordMessageDismissReason(dismiss_reason));
   }
+
+  if (dismiss_reason == messages::DismissReason::PRIMARY_ACTION) {
+    TryToShowPasswordMigrationWarning(create_migration_warning_callback_,
+                                      web_contents_);
+  }
   ClearState();
 }
 
@@ -520,6 +532,9 @@ void SaveUpdatePasswordMessageDelegate::HandleDialogDismissed(
     RecordSaveUpdateUIDismissalReason(
         GetPasswordEditDialogDismissReason(dialog_accepted));
   }
+
+  TryToShowPasswordMigrationWarning(create_migration_warning_callback_,
+                                    web_contents_);
 
   password_edit_dialog_.reset();
   ClearState();
@@ -571,10 +586,6 @@ void SaveUpdatePasswordMessageDelegate::RecordDismissalReasonMetrics(
     password_manager::metrics_util::LogSaveUIDismissalReason(
         ui_dismissal_reason, submission_event,
         /*user_state=*/absl::nullopt);
-    if (passwords_state_.form_manager()->WasUnblocklisted()) {
-      password_manager::metrics_util::
-          LogSaveUIDismissalReasonAfterUnblocklisting(ui_dismissal_reason);
-    }
   }
   if (auto* recorder = passwords_state_.form_manager()->GetMetricsRecorder()) {
     recorder->RecordUIDismissalReason(ui_dismissal_reason);

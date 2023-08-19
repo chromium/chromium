@@ -91,6 +91,9 @@ class InputDelegateForCompositor {
   // but will never receive a ScrollUpdate.
   virtual ActivelyScrollingType GetActivelyScrollingType() const = 0;
 
+  // Returns true if the user is currently touching the device.
+  virtual bool IsHandlingTouchSequence() const = 0;
+
   // Returns true if we're currently scrolling and the scroll must be realized
   // on the main thread (see ScrollTree::CanRealizeScrollsOnCompositor).
   // TODO(skobes): Combine IsCurrentlyScrolling, GetActivelyScrollingType, and

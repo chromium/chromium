@@ -82,8 +82,13 @@ class TestWebUIControllerFactory : public WebUIControllerFactory {
   bool UseWebUIForURL(BrowserContext* browser_context,
                       const GURL& url) override;
 
+  void SetSupportedScheme(const std::string& scheme);
+
  private:
   bool disable_xfo_ = false;
+
+  // Scheme supported by the WebUIControllerFactory.
+  std::string supported_scheme_;
 };
 
 }  // namespace content

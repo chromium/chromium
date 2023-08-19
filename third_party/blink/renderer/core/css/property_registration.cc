@@ -42,10 +42,12 @@ const PropertyRegistration* PropertyRegistration::From(
 PropertyRegistration::PropertyRegistration(const AtomicString& name,
                                            const CSSSyntaxDefinition& syntax,
                                            bool inherits,
-                                           const CSSValue* initial)
+                                           const CSSValue* initial,
+                                           StyleRuleProperty* property_rule)
     : syntax_(syntax),
       inherits_(inherits),
       initial_(initial),
+      property_rule_(property_rule),
       interpolation_types_(
           CSSInterpolationTypesMap::CreateInterpolationTypesForCSSSyntax(
               name,
@@ -69,6 +71,11 @@ unsigned PropertyRegistration::GetViewportUnitFlags() const {
     }
   }
   return flags;
+}
+
+void PropertyRegistration::Trace(Visitor* visitor) const {
+  visitor->Trace(initial_);
+  visitor->Trace(property_rule_);
 }
 
 static bool ComputationallyIndependent(const CSSValue& value) {
@@ -170,7 +177,7 @@ PropertyRegistration* PropertyRegistration::MaybeCreateForDeclaredProperty(
   }
 
   return MakeGarbageCollected<PropertyRegistration>(name, *syntax, inherits,
-                                                    initial);
+                                                    initial, &rule);
 }
 
 void PropertyRegistration::registerProperty(

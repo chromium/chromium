@@ -10,10 +10,6 @@
 #import "ios/testing/earl_grey/earl_grey_test.h"
 #import "net/test/embedded_test_server/default_handlers.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 // Integration tests for side swipe.
 @interface SideSwipeTestCase : ChromeTestCase
 @end
@@ -29,23 +25,12 @@
         @"This tests should only be tested if the secondary toolbar is "
         @"present");
   }
-  if ([ChromeEarlGrey isSortingTabsByRecency]) {
-    EARL_GREY_TEST_DISABLED(@"Disabled when sorting tabs by recency -- depends "
-                            @"on swiping in the toolbar to change tabs, which "
-                            @"is disabled when sorting tabs by recency.");
-  }
 
   [self checkSideSwipeOnToolbarClassName:@"SecondaryToolbarView"];
 }
 
 // Tests that swiping horizontally on the top toolbar is changing tab.
 - (void)testSideSwipeTopToolbar {
-  if ([ChromeEarlGrey isSortingTabsByRecency]) {
-    EARL_GREY_TEST_DISABLED(@"Disabled when sorting tabs by recency -- depends "
-                            @"on swiping in the toolbar to change tabs, which "
-                            @"is disabled when sorting tabs by recency.");
-  }
-
   [self checkSideSwipeOnToolbarClassName:@"PrimaryToolbarView"];
 }
 

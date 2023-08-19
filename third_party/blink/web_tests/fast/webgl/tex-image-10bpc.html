@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<script src="../../resources/testharness.js"></script>
+<script src="../../resources/testharnessreport.js"></script>
+<script>
+  // This is an 8x1, 10-bit-per-channel PNG (encoded as 16bpc).
+  // The first pixel is black, and each next pixel is one brighter:
+  // (0/1023,0,0), (1/1023,0,0), (2/1023,0,0), ..., (7/1023,0,0)
+  const imgW = 8, imgH = 1;
+  const imgURL = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAgAAAABEAIAAAA88qRXAAAAA3NCSVQKCgoEXZggAAAAEklEQVQI12NkgAAHdJLRAbs4ACi6AcMdwM4EAAAAAElFTkSuQmCC";
+
+  async_test(t => {
+    const cvs = document.createElement("canvas");
+    cvs.width = cvs.height = 1;
+    const gl = cvs.getContext("webgl2");
+    if (!gl) {
+      assert_unreached("webgl2 context not available");
+      t.done();
+    }
+
+    const img = document.createElement("img");
+    img.onload = () => {
+      const tex = gl.createTexture();
+      gl.bindTexture(gl.TEXTURE_2D, tex);
+      const level = 0;
+      const internalformat = gl.RGB10_A2;
+      const border = 0;
+      const format = gl.RGBA;
+      const type = gl.UNSIGNED_INT_2_10_10_10_REV;
+      gl.texImage2D(gl.TEXTURE_2D, level, internalformat, imgW, imgH, border, format, type, img);
+
+      const fbo = gl.createFramebuffer();
+      gl.bindFramebuffer(gl.FRAMEBUFFER, fbo);
+      gl.framebufferTexture2D(gl.FRAMEBUFFER, gl.COLOR_ATTACHMENT0, gl.TEXTURE_2D, tex, 0);
+
+      let complete = gl.checkFramebufferStatus(gl.FRAMEBUFFER) == gl.FRAMEBUFFER_COMPLETE;
+      assert_true(complete);
+
+      const pixels = new Uint32Array(imgW * imgH);
+      gl.readPixels(0, 0, imgW, imgH, format, type, pixels);
+      const uniquePixels = new Set(pixels);
+      // If the image was crushed to 8bpc, there will be at most 3 distinct values:
+      // (0/255,0,0), (1/255,0,0), and maybe (2/255,0,0) (depending on rounding).
+      // If it wasn't, we'll definitely see more.
+      // (At time of writing, on Mac M1, we get 2 if it's crushed, and 7 if it's not.)
+      assert_greater_than(uniquePixels.size, 3, 'too few distinct color values!');
+      t.done();
+    };
+    img.src = imgURL;
+  }, "ensure 10bpc image is not crushed to 8bpc in texImage2D");
+</script>

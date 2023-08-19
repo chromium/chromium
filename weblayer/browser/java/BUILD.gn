@@ -79,11 +79,16 @@ java_cpp_enum("generated_enums") {
   ]
 }
 
+generate_jni("base_module_jni") {
+  sources = [ "org/chromium/weblayer_private/ApplicationInfoHelper.java" ]
+}
+
 android_library("base_module_java") {
   sources = [
     "org/chromium/weblayer_private/ApplicationInfoHelper.java",
     "org/chromium/weblayer_private/ChildProcessServiceImpl.java",
   ]
+  srcjar_deps = [ ":base_module_jni" ]
   deps = [
     ":base_module_interfaces_java",
     "$google_play_services_package:google_play_services_basement_java",
@@ -95,8 +100,6 @@ android_library("base_module_java") {
     "//content/public/android:content_java",
   ]
 
-  annotation_processor_deps = [ "//base/android/jni_generator:jni_processor" ]
-
   # Needed for android.webkit.WebViewFactory
   alternative_android_sdk_dep =
       "//third_party/android_sdk:public_framework_system_java"
@@ -104,7 +107,6 @@ android_library("base_module_java") {
 
 android_library("java") {
   sources = [
-    "org/chromium/weblayer_private/ActionModeCallback.java",
     "org/chromium/weblayer_private/AutocompleteSchemeClassifierImpl.java",
     "org/chromium/weblayer_private/BrowserFragmentImpl.java",
     "org/chromium/weblayer_private/BrowserImpl.java",
@@ -153,6 +155,7 @@ android_library("java") {
     "org/chromium/weblayer_private/WebApkServiceConnection.java",
     "org/chromium/weblayer_private/WebContentsGestureStateTracker.java",
     "org/chromium/weblayer_private/WebLayerAccessibilityUtil.java",
+    "org/chromium/weblayer_private/WebLayerActionModeCallback.java",
     "org/chromium/weblayer_private/WebLayerExceptionFilter.java",
     "org/chromium/weblayer_private/WebLayerFactoryImpl.java",
     "org/chromium/weblayer_private/WebLayerImpl.java",
@@ -291,6 +294,7 @@ android_library("java") {
     "//third_party/androidx:androidx_mediarouter_mediarouter_java",
     "//third_party/androidx:androidx_preference_preference_java",
     "//third_party/blink/public/mojom:android_mojo_bindings_java",
+    "//ui/accessibility:ax_base_java",
     "//ui/android:ui_full_java",
     "//ui/android:ui_java",
     "//url:gurl_java",
@@ -308,11 +312,11 @@ android_library("java") {
 
   srcjar_deps = [
     ":generated_enums",
+    ":jni",
     ":resource_id_javagen",
     ":weblayer_product_config",
   ]
   jar_excluded_patterns = [ "*/ProductConfig.class" ]
-  annotation_processor_deps = [ "//base/android/jni_generator:jni_processor" ]
 
   # Needed for android.webkit.WebView(Delegate|Factory)
   alternative_android_sdk_dep =
@@ -341,6 +345,10 @@ android_library("test_java") {
     "org/chromium/weblayer_private/test/TestInfoBar.java",
     "org/chromium/weblayer_private/test/TestWebLayerImpl.java",
   ]
+  srcjar_deps = [
+    ":test_aidl",
+    ":test_jni",
+  ]
   resources_package = "org.chromium.weblayer_private.test"
   deps = [
     ":base_module_interfaces_java",
@@ -361,6 +369,7 @@ android_library("test_java") {
     "//components/permissions/android:java",
     "//components/webauthn/android:java",
     "//components/webauthn/android:test_support_java",
+    "//content/public/android:content_java",
     "//content/public/test/android:content_java_test_support",
     "//net/android:net_java",
     "//services/device/public/java:geolocation_java",
@@ -370,13 +379,12 @@ android_library("test_java") {
     "//ui/android:ui_full_java",
     "//url:origin_java",
   ]
-  srcjar_deps = [ ":test_aidl" ]
-  annotation_processor_deps = [ "//base/android/jni_generator:jni_processor" ]
 }
 
 robolectric_library("junit_test_support") {
   deps = [
     ":java",
+    "//base:base_java",
     "//components/payments/content/android:java",
     "//components/payments/content/android:junit_test_support",
     "//components/payments/content/android:service_java",
@@ -408,6 +416,7 @@ robolectric_binary("weblayer_junit_tests") {
     "//base:base_java",
     "//base:base_java_test_support",
     "//base:base_junit_test_support",
+    "//base:jni_java",
     "//components/content_relationship_verification:java",
     "//components/content_relationship_verification/android:java",
     "//components/content_relationship_verification/android:junit_test_support",
@@ -440,7 +449,6 @@ generate_jni("test_jni") {
 
 generate_jni("jni") {
   sources = [
-    "org/chromium/weblayer_private/ApplicationInfoHelper.java",
     "org/chromium/weblayer_private/AutocompleteSchemeClassifierImpl.java",
     "org/chromium/weblayer_private/BrowserFragmentImpl.java",
     "org/chromium/weblayer_private/BrowserImpl.java",

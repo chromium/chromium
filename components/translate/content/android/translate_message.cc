@@ -393,10 +393,9 @@ void TranslateMessage::HandleDismiss(JNIEnv* env, jint dismiss_reason) {
             messages::DismissReason::GESTURE &&
         ui_delegate_->ShouldAutoNeverTranslate();
 
-    if (static_cast<messages::DismissReason>(dismiss_reason) ==
-        messages::DismissReason::GESTURE) {
-      ui_delegate_->TranslationDeclined(true);
-    }
+    ui_delegate_->TranslationDeclined(
+        static_cast<messages::DismissReason>(dismiss_reason) ==
+        messages::DismissReason::GESTURE);
 
     if (should_auto_never_translate) {
       RecordCompactInfobarEvent(
@@ -601,8 +600,6 @@ TranslateMessage::HandleSecondaryMenuItemClicked(
     }
 
     case OverflowMenuItemId::kToggleAlwaysTranslateLanguage:
-      ui_delegate_->ReportUIInteraction(
-          UIInteraction::kAlwaysTranslateLanguage);
       if (ui_delegate_->ShouldAlwaysTranslate() != desired_toggle_value) {
         RecordCompactInfobarEvent(
             desired_toggle_value ? InfobarEvent::INFOBAR_ALWAYS_TRANSLATE
@@ -615,7 +612,6 @@ TranslateMessage::HandleSecondaryMenuItemClicked(
       break;
 
     case OverflowMenuItemId::kToggleNeverTranslateLanguage:
-      ui_delegate_->ReportUIInteraction(UIInteraction::kNeverTranslateLanguage);
       if (ui_delegate_->IsLanguageBlocked() != desired_toggle_value) {
         RecordCompactInfobarEvent(
             desired_toggle_value ? InfobarEvent::INFOBAR_NEVER_TRANSLATE
@@ -631,7 +627,6 @@ TranslateMessage::HandleSecondaryMenuItemClicked(
       break;
 
     case OverflowMenuItemId::kToggleNeverTranslateSite:
-      ui_delegate_->ReportUIInteraction(UIInteraction::kNeverTranslateSite);
       if (ui_delegate_->IsSiteOnNeverPromptList() != desired_toggle_value) {
         RecordCompactInfobarEvent(
             desired_toggle_value

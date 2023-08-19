@@ -13,7 +13,7 @@
 #include "components/browsing_data/core/browsing_data_utils.h"
 #include "components/browsing_data/core/features.h"
 #include "components/browsing_data/core/pref_names.h"
-#include "components/sync/base/sync_prefs.h"
+#include "components/sync/service/sync_prefs.h"
 
 namespace browsing_data {
 
@@ -54,7 +54,8 @@ void AppendSyncTypesIfRequired(const base::Value& browsing_data_type,
            {browsing_data::policy_data_types::kSiteSettingsName,
             {syncer::UserSelectableType::kPreferences}},
            {browsing_data::policy_data_types::kAutofillName,
-            {syncer::UserSelectableType::kAutofill}},
+            {syncer::UserSelectableType::kAutofill,
+             syncer::UserSelectableType::kPayments}},
            {browsing_data::policy_data_types::kDownloadHistoryName, {}},
            {browsing_data::policy_data_types::kCookiesAndOtherSiteDataName, {}},
            {browsing_data::policy_data_types::kCachedImagesAndFilesName, {}},

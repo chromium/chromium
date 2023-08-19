@@ -6,10 +6,6 @@
 
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/transitions/legacy_grid_to_tab_transition_view.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 #import "base/check.h"
 
 @interface LegacyGridTransitionLayout ()

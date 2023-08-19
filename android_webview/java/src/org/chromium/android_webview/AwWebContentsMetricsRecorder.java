@@ -9,6 +9,7 @@ import android.content.Context;
 import androidx.annotation.NonNull;
 import androidx.annotation.VisibleForTesting;
 
+import org.chromium.android_webview.common.Lifetime;
 import org.chromium.android_webview.settings.ForceDarkBehavior;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.content_public.browser.LoadCommittedDetails;
@@ -25,6 +26,7 @@ import java.util.Set;
  * It also offers static helpers to record the settings as they are configured by the embedding
  * application.
  */
+@Lifetime.WebView
 public class AwWebContentsMetricsRecorder extends WebContentsObserver {
     private WeakReference<Context> mContext;
     private WeakReference<AwSettings> mAwSettings;

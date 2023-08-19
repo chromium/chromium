@@ -9,4 +9,7 @@ namespace enterprise_connectors::test {
 const char kAllowedHost[] = "allowed.google.com";
 const char kOtherHost[] = "notallowed.google.com";
 
+const char kFailedToParseChallengeJsonResponse[] =
+    "{\"error\":\"failed_to_parse_challenge\"}";
+
 }  // namespace enterprise_connectors::test

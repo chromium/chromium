@@ -1,0 +1,14 @@
+Verifies that requestStart and responseStart are available before the main document has finished loading.
+
+On success, you will see a series of "PASS" messages, followed by "TEST COMPLETE".
+
+PASS timing.requestStart is non-zero.
+PASS timing.responseStart is non-zero.
+PASS timing.responseEnd is 0
+PASS successfullyParsed is true
+
+TEST COMPLETE
+
+
+Notice: ob_flush(): Failed to flush buffer. No buffer to flush in C:\b\s\w\ir\third_party\blink\web_tests\http\tests\misc\webtiming-slow-load.php on line 26
+

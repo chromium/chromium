@@ -88,11 +88,11 @@ inline constexpr char16_t kAddressLine1LabelRe[] =
 inline constexpr char16_t kAddressLine2Re[] =
     u"address[_-]?line(2|two)|address2|addr2|street|suite|unit"
     u"|adresszusatz|ergänzende.?angaben"        // de-DE
-    u"|direccion2|colonia|adicional"            // es
+    u"|direccion2|adicional"                    // es
     u"|addresssuppl|complementnom|appartement"  // fr-FR
     u"|indirizzo2"                              // it-IT
     u"|住所2"                                   // ja-JP
-    u"|complemento|addrcomplement"              // pt-BR, pt-PT
+    u"|addrcomplement"                          // pt-BR, pt-PT
     u"|Улица"                                   // ru
     u"|地址2"                                   // zh-CN
     u"|주소.?2";                                // ko-KR
@@ -145,7 +145,8 @@ inline constexpr char16_t kDependentLocalityRe[] =
     u"neighbo(u)?rhood"  // en
     u"|bairro"           // pt-BR, pt-PT
     u"|mahalle|köy"      // tr
-    u"|kecamatan";       // id
+    u"|kecamatan"        // id
+    u"|colonia";         // es
 inline constexpr char16_t kCityRe[] =
     u"city|town"
     u"|\\bort\\b|stadt"                                  // de-DE
@@ -179,18 +180,21 @@ inline constexpr char16_t kStateRe[] =
     u"|((\\b|_|\\*)(eyalet|[şs]ehir|[İii̇]l(imiz)?|kent)(\\b|_|\\*))"  // tr
     u"|^시[·・]?도"                                                   // ko-KR
     u"|provinci";                                                     // id
+
+inline constexpr char16_t kOverflowRe[] = u"complemento";  // pt-BR, pt-PT
+
 inline constexpr char16_t kLandmarkRe[] =
     u"landmark"
-    u"|(?:ponto|complemento).*referência"  // pt-BR, pt-PT
-    u"|punto.*referencia";                 // es
+    u"|(?:ponto|complemento).*ref[êe]r[êe]ncia"  // pt-BR, pt-PT
+    u"|punto.*referencia";                       // es
 
 inline constexpr char16_t kBetweenStreetsRe[] =
     u"(cross|between).*street"
     u"|entre.*calle";  // es
 
 inline constexpr char16_t kAdminLevel2Re[] =
-    u"municipio"               // pt
-    u"|municipio|delegación";  // es
+    u"municipio"                  // pt
+    u"|municipio|delegaci[oó]n";  // es
 
 /////////////////////////////////////////////////////////////////////////////
 // search_field.cc
@@ -601,7 +605,7 @@ inline constexpr char16_t kUPIVirtualPaymentAddressRe[] =
 
 // Used to match the HTML name and label for International Bank Account Number
 // (IBAN).
-inline constexpr char16_t kIBANRe[] =
+inline constexpr char16_t kIbanRe[] =
     u"(\\biban(\\b|_)|international bank account number)";
 
 // Used to match field value that might be an International Bank Account Number.
@@ -633,14 +637,11 @@ inline constexpr char16_t kUrlSearchActionRe[] =
     u"/search(/|((\\w*\\.\\w+)?$))";
 
 /////////////////////////////////////////////////////////////////////////////
-// form_parser.cc
+// form_data_parser.cc
 /////////////////////////////////////////////////////////////////////////////
 inline constexpr char16_t kSocialSecurityRe[] =
     u"ssn|social.?security.?(num(ber)?|#)*";
-// TODO(crbug.com/1382805): Remove it once the new regex launched.
 inline constexpr char16_t kOneTimePwdRe[] =
-    u"one.?time|sms.?(code|token|password|pwd|pass)";
-inline constexpr char16_t kNewOneTimePwdRe[] =
     // "One time" is good signal that it is an OTP field.
     u"one.?time|"
     // The main tokens are good signals, but they are short, require word

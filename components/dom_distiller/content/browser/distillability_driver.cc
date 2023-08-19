@@ -56,12 +56,14 @@ class DistillabilityServiceImpl : public mojom::DistillabilityService {
 
   void NotifyIsDistillable(bool is_distillable,
                            bool is_last_update,
+                           bool is_long_article,
                            bool is_mobile_friendly) override {
     if (!distillability_driver_)
       return;
     DistillabilityResult result;
     result.is_distillable = is_distillable;
     result.is_last = is_last_update;
+    result.is_long_article = is_long_article;
     result.is_mobile_friendly = is_mobile_friendly;
     DVLOG(1) << "Notifying observers of distillability service result: "
              << result;
@@ -106,6 +108,7 @@ void DistillabilityDriver::OnDistillability(
       DistillabilityResult not_distillable;
       not_distillable.is_distillable = false;
       not_distillable.is_last = result.is_last;
+      not_distillable.is_long_article = result.is_long_article;
       not_distillable.is_mobile_friendly = result.is_mobile_friendly;
       latest_result_ = not_distillable;
       for (auto& observer : observers_)

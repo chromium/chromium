@@ -8,20 +8,16 @@
 
 #include <vector>
 
+#include "base/apple/foundation_util.h"
+#include "base/apple/scoped_cftyperef.h"
 #include "base/functional/bind.h"
 #include "base/logging.h"
-#include "base/mac/foundation_util.h"
-#include "base/mac/scoped_cftyperef.h"
 #include "base/memory/ptr_util.h"
 #include "base/numerics/checked_math.h"
 #include "base/strings/sys_string_conversions.h"
 #import "base/task/sequenced_task_runner.h"
 #include "base/task/sequenced_task_runner.h"
 #include "third_party/skia/include/utils/mac/SkCGUtils.h"
-
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
 
 namespace shape_detection {
 
@@ -89,7 +85,7 @@ VisionAPIAsyncRequestMac::VisionAPIAsyncRequestMac(
   // Pass symbology hints to request. Only valid for VNDetectBarcodesRequest.
   if ([symbology_hints count] > 0) {
     VNDetectBarcodesRequest* barcode_request =
-        base::mac::ObjCCastStrict<VNDetectBarcodesRequest>(request_);
+        base::apple::ObjCCastStrict<VNDetectBarcodesRequest>(request_);
     barcode_request.symbologies = symbology_hints;
   }
 }

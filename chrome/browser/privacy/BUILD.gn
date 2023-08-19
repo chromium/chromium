@@ -39,10 +39,11 @@ if (is_android) {
       "//third_party/androidx:androidx_preference_preference_java",
     ]
     srcjar_deps = [
+      ":jni_headers",
       "//chrome/browser/net:secure_dns_management_mode_generated_enum",
       "//net/dns/public:secure_dns_mode_generated_enum",
     ]
-    annotation_processor_deps = [ "//base/android/jni_generator:jni_processor" ]
+
     resources_package = "org.chromium.chrome.browser.privacy.secure_dns"
   }
 

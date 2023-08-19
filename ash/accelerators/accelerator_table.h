@@ -66,9 +66,6 @@ struct DeprecatedAcceleratorData {
   // them about the deprecation.
   int notification_message_id;
 
-  // The ID of the localized old deprecated shortcut key.
-  int old_shortcut_id;
-
   // The ID of the localized new shortcut key.
   int new_shortcut_id;
 

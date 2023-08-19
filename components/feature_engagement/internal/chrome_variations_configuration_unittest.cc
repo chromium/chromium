@@ -14,8 +14,10 @@
 #include "base/metrics/field_trial_params.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
-#include "components/feature_engagement/internal/stats.h"
 #include "components/feature_engagement/public/configuration.h"
+#include "components/feature_engagement/public/group_constants.h"
+#include "components/feature_engagement/public/stats.h"
+#include "components/feature_engagement/public/tracker.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace feature_engagement {
@@ -68,7 +70,8 @@ BlockedBy CreateBlockedByExplicit(std::vector<std::string> affected_features) {
 
 class ChromeVariationsConfigurationTest : public ::testing::Test {
  public:
-  ChromeVariationsConfigurationTest() {
+  ChromeVariationsConfigurationTest()
+      : configuration_(Tracker::GetDefaultConfigurationProviders()) {
     base::FieldTrial* foo_trial =
         base::FieldTrialList::CreateFieldTrial(kFooTrialName, kTrialGroupName);
     base::FieldTrial* bar_trial =
@@ -156,7 +159,7 @@ class ChromeVariationsConfigurationTest : public ::testing::Test {
 
     std::vector<const base::Feature*> features = {&kChromeTestFeatureFoo};
     GroupVector groups;
-    configuration_.ParseConfigs(features, groups);
+    configuration_.LoadConfigs(features, groups);
 
     FeatureConfig foo = configuration_.GetFeatureConfig(kChromeTestFeatureFoo);
     EXPECT_FALSE(foo.valid);
@@ -181,7 +184,7 @@ TEST_F(ChromeVariationsConfigurationTest,
   GroupVector groups;
   base::HistogramTester histogram_tester;
 
-  configuration_.ParseConfigs(features, groups);
+  configuration_.LoadConfigs(features, groups);
 
   FeatureConfig foo_config =
       configuration_.GetFeatureConfig(kChromeTestFeatureFoo);
@@ -209,7 +212,7 @@ TEST_F(ChromeVariationsConfigurationTest, ParseSingleFeature) {
   base::HistogramTester histogram_tester;
   std::vector<const base::Feature*> features = {&kChromeTestFeatureFoo};
   GroupVector groups;
-  configuration_.ParseConfigs(features, groups);
+  configuration_.LoadConfigs(features, groups);
 
   FeatureConfig foo = configuration_.GetFeatureConfig(kChromeTestFeatureFoo);
   EXPECT_TRUE(foo.valid);
@@ -254,7 +257,7 @@ TEST_F(ChromeVariationsConfigurationTest, ParsePrefixedParamNames) {
   base::HistogramTester histogram_tester;
   std::vector<const base::Feature*> features = {&kChromeTestFeatureFoo};
   GroupVector groups;
-  configuration_.ParseConfigs(features, groups);
+  configuration_.LoadConfigs(features, groups);
 
   FeatureConfig foo = configuration_.GetFeatureConfig(kChromeTestFeatureFoo);
   EXPECT_TRUE(foo.valid);
@@ -300,7 +303,7 @@ TEST_F(ChromeVariationsConfigurationTest,
   std::vector<const base::Feature*> features = {
       &kChromeTestFeatureFoo, &kChromeTestFeatureBar, &kChromeTestFeatureQux};
   GroupVector groups;
-  configuration_.ParseConfigs(features, groups);
+  configuration_.LoadConfigs(features, groups);
 
   FeatureConfig foo = configuration_.GetFeatureConfig(kChromeTestFeatureFoo);
   FeatureConfig bar = configuration_.GetFeatureConfig(kChromeTestFeatureBar);
@@ -330,7 +333,7 @@ TEST_F(ChromeVariationsConfigurationTest, MissingUsedIsInvalid) {
   base::HistogramTester histogram_tester;
   std::vector<const base::Feature*> features = {&kChromeTestFeatureFoo};
   GroupVector groups;
-  configuration_.ParseConfigs(features, groups);
+  configuration_.LoadConfigs(features, groups);
 
   FeatureConfig foo = configuration_.GetFeatureConfig(kChromeTestFeatureFoo);
   EXPECT_FALSE(foo.valid);
@@ -352,7 +355,7 @@ TEST_F(ChromeVariationsConfigurationTest, MissingTriggerIsInvalid) {
   base::HistogramTester histogram_tester;
   std::vector<const base::Feature*> features = {&kChromeTestFeatureFoo};
   GroupVector groups;
-  configuration_.ParseConfigs(features, groups);
+  configuration_.LoadConfigs(features, groups);
 
   FeatureConfig foo = configuration_.GetFeatureConfig(kChromeTestFeatureFoo);
   EXPECT_FALSE(foo.valid);
@@ -376,7 +379,7 @@ TEST_F(ChromeVariationsConfigurationTest, OnlyTriggerAndUsedIsValid) {
   base::HistogramTester histogram_tester;
   std::vector<const base::Feature*> features = {&kChromeTestFeatureFoo};
   GroupVector groups;
-  configuration_.ParseConfigs(features, groups);
+  configuration_.LoadConfigs(features, groups);
 
   FeatureConfig foo = configuration_.GetFeatureConfig(kChromeTestFeatureFoo);
   EXPECT_TRUE(foo.valid);
@@ -406,7 +409,7 @@ void RunBlockedByTest(ChromeVariationsConfigurationTest* test,
   test->SetFeatureParams(kChromeTestFeatureFoo, foo_params);
 
   GroupVector groups;
-  configuration->ParseConfigs(features, groups);
+  configuration->LoadConfigs(features, groups);
   FeatureConfig foo = configuration->GetFeatureConfig(kChromeTestFeatureFoo);
   EXPECT_EQ(is_valid, foo.valid);
   FeatureConfig expected_foo;
@@ -435,7 +438,7 @@ TEST_F(ChromeVariationsConfigurationTest, ParseBlockingNone) {
 
   std::vector<const base::Feature*> features = {&kChromeTestFeatureFoo};
   GroupVector groups;
-  configuration_.ParseConfigs(features, groups);
+  configuration_.LoadConfigs(features, groups);
 
   FeatureConfig foo = configuration_.GetFeatureConfig(kChromeTestFeatureFoo);
   EXPECT_EQ(foo.blocking.type, Blocking::Type::NONE);
@@ -451,7 +454,7 @@ TEST_F(ChromeVariationsConfigurationTest, ParseBlockingAll) {
 
   std::vector<const base::Feature*> features = {&kChromeTestFeatureFoo};
   GroupVector groups;
-  configuration_.ParseConfigs(features, groups);
+  configuration_.LoadConfigs(features, groups);
 
   FeatureConfig foo = configuration_.GetFeatureConfig(kChromeTestFeatureFoo);
   EXPECT_EQ(foo.blocking.type, Blocking::Type::ALL);
@@ -468,7 +471,7 @@ TEST_F(ChromeVariationsConfigurationTest, ParseInvalidBlockingParams) {
 
   std::vector<const base::Feature*> features = {&kChromeTestFeatureFoo};
   GroupVector groups;
-  configuration_.ParseConfigs(features, groups);
+  configuration_.LoadConfigs(features, groups);
 
   FeatureConfig foo = configuration_.GetFeatureConfig(kChromeTestFeatureFoo);
   EXPECT_EQ(foo.blocking.type, Blocking::Type::ALL);
@@ -546,7 +549,7 @@ void RunSessionRateImpactTest(ChromeVariationsConfigurationTest* test,
   test->SetFeatureParams(kChromeTestFeatureFoo, foo_params);
 
   GroupVector groups;
-  configuration->ParseConfigs(features, groups);
+  configuration->LoadConfigs(features, groups);
   FeatureConfig foo = configuration->GetFeatureConfig(kChromeTestFeatureFoo);
   EXPECT_EQ(is_valid, foo.valid);
 
@@ -811,7 +814,7 @@ void RunGroupsTest(ChromeVariationsConfigurationTest* test,
   foo_params["groups"] = groups_param_value;
   test->SetFeatureParams(kChromeTestFeatureFoo, foo_params);
 
-  configuration->ParseConfigs(features, groups);
+  configuration->LoadConfigs(features, groups);
   FeatureConfig foo = configuration->GetFeatureConfig(kChromeTestFeatureFoo);
   EXPECT_EQ(is_valid, foo.valid);
   FeatureConfig expected_foo;
@@ -923,7 +926,7 @@ TEST_F(ChromeVariationsConfigurationTest, WhitespaceIsValid) {
   std::vector<const base::Feature*> features = {
       &kChromeTestFeatureFoo, &kChromeTestFeatureBar, &kChromeTestFeatureQux};
   GroupVector groups;
-  configuration_.ParseConfigs(features, groups);
+  configuration_.LoadConfigs(features, groups);
 
   FeatureConfig foo = configuration_.GetFeatureConfig(kChromeTestFeatureFoo);
   EXPECT_TRUE(foo.valid);
@@ -973,7 +976,7 @@ TEST_F(ChromeVariationsConfigurationTest, IgnoresInvalidConfigKeys) {
 
   std::vector<const base::Feature*> features = {&kChromeTestFeatureFoo};
   GroupVector groups;
-  configuration_.ParseConfigs(features, groups);
+  configuration_.LoadConfigs(features, groups);
 
   FeatureConfig foo = configuration_.GetFeatureConfig(kChromeTestFeatureFoo);
   EXPECT_TRUE(foo.valid);
@@ -1000,7 +1003,7 @@ TEST_F(ChromeVariationsConfigurationTest, IgnoresInvalidEventConfigTokens) {
 
   std::vector<const base::Feature*> features = {&kChromeTestFeatureFoo};
   GroupVector groups;
-  configuration_.ParseConfigs(features, groups);
+  configuration_.LoadConfigs(features, groups);
 
   FeatureConfig foo = configuration_.GetFeatureConfig(kChromeTestFeatureFoo);
   EXPECT_TRUE(foo.valid);
@@ -1068,7 +1071,7 @@ TEST_F(ChromeVariationsConfigurationTest,
   base::HistogramTester histogram_tester;
   std::vector<const base::Feature*> features = {&kChromeTestFeatureFoo};
   GroupVector groups;
-  configuration_.ParseConfigs(features, groups);
+  configuration_.LoadConfigs(features, groups);
 
   FeatureConfig foo = configuration_.GetFeatureConfig(kChromeTestFeatureFoo);
   EXPECT_FALSE(foo.valid);
@@ -1093,7 +1096,7 @@ TEST_F(ChromeVariationsConfigurationTest,
   base::HistogramTester histogram_tester;
   std::vector<const base::Feature*> features = {&kChromeTestFeatureFoo};
   GroupVector groups;
-  configuration_.ParseConfigs(features, groups);
+  configuration_.LoadConfigs(features, groups);
 
   FeatureConfig foo = configuration_.GetFeatureConfig(kChromeTestFeatureFoo);
   EXPECT_FALSE(foo.valid);
@@ -1116,7 +1119,7 @@ TEST_F(ChromeVariationsConfigurationTest, InvalidUsedCausesInvalidConfig) {
   base::HistogramTester histogram_tester;
   std::vector<const base::Feature*> features = {&kChromeTestFeatureFoo};
   GroupVector groups;
-  configuration_.ParseConfigs(features, groups);
+  configuration_.LoadConfigs(features, groups);
 
   FeatureConfig foo = configuration_.GetFeatureConfig(kChromeTestFeatureFoo);
   EXPECT_FALSE(foo.valid);
@@ -1142,7 +1145,7 @@ TEST_F(ChromeVariationsConfigurationTest, InvalidTriggerCausesInvalidConfig) {
   base::HistogramTester histogram_tester;
   std::vector<const base::Feature*> features = {&kChromeTestFeatureFoo};
   GroupVector groups;
-  configuration_.ParseConfigs(features, groups);
+  configuration_.LoadConfigs(features, groups);
 
   FeatureConfig foo = configuration_.GetFeatureConfig(kChromeTestFeatureFoo);
   EXPECT_FALSE(foo.valid);
@@ -1171,7 +1174,7 @@ TEST_F(ChromeVariationsConfigurationTest,
 
   std::vector<const base::Feature*> features = {&kChromeTestFeatureFoo};
   GroupVector groups;
-  configuration_.ParseConfigs(features, groups);
+  configuration_.LoadConfigs(features, groups);
 
   FeatureConfig foo = configuration_.GetFeatureConfig(kChromeTestFeatureFoo);
   EXPECT_FALSE(foo.valid);
@@ -1188,7 +1191,7 @@ TEST_F(ChromeVariationsConfigurationTest,
   base::HistogramTester histogram_tester;
   std::vector<const base::Feature*> features = {&kChromeTestFeatureFoo};
   GroupVector groups;
-  configuration_.ParseConfigs(features, groups);
+  configuration_.LoadConfigs(features, groups);
 
   FeatureConfig foo = configuration_.GetFeatureConfig(kChromeTestFeatureFoo);
   EXPECT_FALSE(foo.valid);
@@ -1216,7 +1219,7 @@ void RunTrackingOnlyTest(ChromeVariationsConfigurationTest* test,
   test->SetFeatureParams(kChromeTestFeatureFoo, foo_params);
 
   GroupVector groups;
-  configuration->ParseConfigs(features, groups);
+  configuration->LoadConfigs(features, groups);
   FeatureConfig foo = configuration->GetFeatureConfig(kChromeTestFeatureFoo);
   EXPECT_EQ(is_valid, foo.valid);
 
@@ -1289,7 +1292,7 @@ TEST_F(ChromeVariationsConfigurationTest, AllComparatorTypesWork) {
 
   std::vector<const base::Feature*> features = {&kChromeTestFeatureFoo};
   GroupVector groups;
-  configuration_.ParseConfigs(features, groups);
+  configuration_.LoadConfigs(features, groups);
 
   FeatureConfig foo = configuration_.GetFeatureConfig(kChromeTestFeatureFoo);
   EXPECT_TRUE(foo.valid);
@@ -1325,7 +1328,7 @@ TEST_F(ChromeVariationsConfigurationTest, MultipleEventsWithSameName) {
 
   std::vector<const base::Feature*> features = {&kChromeTestFeatureFoo};
   GroupVector groups;
-  configuration_.ParseConfigs(features, groups);
+  configuration_.LoadConfigs(features, groups);
 
   FeatureConfig foo = configuration_.GetFeatureConfig(kChromeTestFeatureFoo);
   EXPECT_TRUE(foo.valid);
@@ -1375,7 +1378,7 @@ TEST_F(ChromeVariationsConfigurationTest, ParseMultipleFeatures) {
   std::vector<const base::Feature*> features = {
       &kChromeTestFeatureFoo, &kChromeTestFeatureBar, &kChromeTestFeatureQux};
   GroupVector groups;
-  configuration_.ParseConfigs(features, groups);
+  configuration_.LoadConfigs(features, groups);
 
   FeatureConfig foo = configuration_.GetFeatureConfig(kChromeTestFeatureFoo);
   EXPECT_TRUE(foo.valid);
@@ -1423,10 +1426,10 @@ TEST_F(ChromeVariationsConfigurationTest, CheckedInConfigIsReadable) {
   FeatureVector features;
   features.push_back(&kIPHDummyFeature);
   GroupVector groups;
-  configuration_.ParseConfigs(features, groups);
+  configuration_.LoadConfigs(features, groups);
 
   FeatureConfig expected;
-  expected.valid = false;
+  expected.valid = true;
   expected.availability = Comparator(LESS_THAN, 0);
   expected.session_rate = Comparator(LESS_THAN, 0);
   expected.trigger =
@@ -1451,7 +1454,7 @@ TEST_F(ChromeVariationsConfigurationTest,
   FeatureVector features;
   features.push_back(&kIPHDummyFeature);
   GroupVector groups;
-  configuration_.ParseConfigs(features, groups);
+  configuration_.LoadConfigs(features, groups);
 
   FeatureConfig expected;
   expected.valid = false;
@@ -1470,7 +1473,7 @@ TEST_F(ChromeVariationsConfigurationTest, NonExistingConfigIsInvalid) {
   FeatureVector features;
   features.push_back(&kChromeTestFeatureFoo);
   GroupVector groups;
-  configuration_.ParseConfigs(features, groups);
+  configuration_.LoadConfigs(features, groups);
 
   FeatureConfig expected;
   expected.valid = false;
@@ -1493,7 +1496,7 @@ TEST_F(ChromeVariationsConfigurationTest, ParseValidSnoozeParams) {
 
   std::vector<const base::Feature*> features = {&kChromeTestFeatureFoo};
   GroupVector groups;
-  configuration_.ParseConfigs(features, groups);
+  configuration_.LoadConfigs(features, groups);
 
   FeatureConfig foo = configuration_.GetFeatureConfig(kChromeTestFeatureFoo);
   EXPECT_EQ(foo.snooze_params.max_limit, 5u);
@@ -1510,7 +1513,7 @@ TEST_F(ChromeVariationsConfigurationTest, UnorderedSnoozeParams) {
 
   std::vector<const base::Feature*> features = {&kChromeTestFeatureFoo};
   GroupVector groups;
-  configuration_.ParseConfigs(features, groups);
+  configuration_.LoadConfigs(features, groups);
 
   FeatureConfig foo = configuration_.GetFeatureConfig(kChromeTestFeatureFoo);
   EXPECT_EQ(foo.snooze_params.max_limit, 3u);
@@ -1527,7 +1530,7 @@ TEST_F(ChromeVariationsConfigurationTest, InvalidMaxLimitSnoozeParams) {
 
   std::vector<const base::Feature*> features = {&kChromeTestFeatureFoo};
   GroupVector groups;
-  configuration_.ParseConfigs(features, groups);
+  configuration_.LoadConfigs(features, groups);
 
   FeatureConfig foo = configuration_.GetFeatureConfig(kChromeTestFeatureFoo);
   EXPECT_EQ(foo.snooze_params.max_limit, 0u);
@@ -1544,7 +1547,7 @@ TEST_F(ChromeVariationsConfigurationTest, InvalidIntervalSnoozeParams) {
 
   std::vector<const base::Feature*> features = {&kChromeTestFeatureFoo};
   GroupVector groups;
-  configuration_.ParseConfigs(features, groups);
+  configuration_.LoadConfigs(features, groups);
 
   FeatureConfig foo = configuration_.GetFeatureConfig(kChromeTestFeatureFoo);
   EXPECT_EQ(foo.snooze_params.max_limit, 0u);
@@ -1561,7 +1564,7 @@ TEST_F(ChromeVariationsConfigurationTest, IncompleteSnoozeParams) {
 
   std::vector<const base::Feature*> features = {&kChromeTestFeatureFoo};
   GroupVector groups;
-  configuration_.ParseConfigs(features, groups);
+  configuration_.LoadConfigs(features, groups);
 
   FeatureConfig foo = configuration_.GetFeatureConfig(kChromeTestFeatureFoo);
   EXPECT_EQ(foo.snooze_params.max_limit, 0u);
@@ -1579,7 +1582,7 @@ TEST_F(ChromeVariationsConfigurationTest,
   base::HistogramTester histogram_tester;
   FeatureVector features;
   GroupVector groups = {&kChromeTestGroupOne};
-  configuration_.ParseConfigs(features, groups);
+  configuration_.LoadConfigs(features, groups);
 
   GroupConfig group_one_config =
       configuration_.GetGroupConfig(kChromeTestGroupOne);
@@ -1609,7 +1612,7 @@ TEST_F(ChromeVariationsConfigurationTest, ParseSingleGroup) {
   base::HistogramTester histogram_tester;
   FeatureVector features;
   GroupVector groups = {&kChromeTestGroupOne};
-  configuration_.ParseConfigs(features, groups);
+  configuration_.LoadConfigs(features, groups);
 
   GroupConfig group_one = configuration_.GetGroupConfig(kChromeTestGroupOne);
   EXPECT_TRUE(group_one.valid);
@@ -1642,7 +1645,7 @@ TEST_F(ChromeVariationsConfigurationTest, EmptyGroupIsInvalid) {
   base::HistogramTester histogram_tester;
   FeatureVector features;
   GroupVector groups = {&kChromeTestGroupOne};
-  configuration_.ParseConfigs(features, groups);
+  configuration_.LoadConfigs(features, groups);
 
   GroupConfig group_one = configuration_.GetGroupConfig(kChromeTestGroupOne);
   EXPECT_FALSE(group_one.valid);
@@ -1669,7 +1672,7 @@ TEST_F(ChromeVariationsConfigurationTest, GroupOnlyTriggerIsValid) {
   base::HistogramTester histogram_tester;
   FeatureVector features;
   GroupVector groups = {&kChromeTestGroupOne};
-  configuration_.ParseConfigs(features, groups);
+  configuration_.LoadConfigs(features, groups);
 
   GroupConfig group_one = configuration_.GetGroupConfig(kChromeTestGroupOne);
   EXPECT_TRUE(group_one.valid);
@@ -1700,7 +1703,7 @@ TEST_F(ChromeVariationsConfigurationTest, GroupIgnoresInvalidConfigKeys) {
 
   FeatureVector features;
   GroupVector groups = {&kChromeTestGroupOne};
-  configuration_.ParseConfigs(features, groups);
+  configuration_.LoadConfigs(features, groups);
 
   GroupConfig group_one = configuration_.GetGroupConfig(kChromeTestGroupOne);
   EXPECT_TRUE(group_one.valid);
@@ -1733,7 +1736,7 @@ TEST_F(ChromeVariationsConfigurationTest,
   base::HistogramTester histogram_tester;
   FeatureVector features;
   GroupVector groups = {&kChromeTestGroupOne};
-  configuration_.ParseConfigs(features, groups);
+  configuration_.LoadConfigs(features, groups);
 
   GroupConfig group_one = configuration_.GetGroupConfig(kChromeTestGroupOne);
   EXPECT_FALSE(group_one.valid);
@@ -1761,7 +1764,7 @@ TEST_F(ChromeVariationsConfigurationTest,
   base::HistogramTester histogram_tester;
   FeatureVector features;
   GroupVector groups = {&kChromeTestGroupOne};
-  configuration_.ParseConfigs(features, groups);
+  configuration_.LoadConfigs(features, groups);
 
   GroupConfig group_one = configuration_.GetGroupConfig(kChromeTestGroupOne);
   EXPECT_FALSE(group_one.valid);
@@ -1796,7 +1799,7 @@ TEST_F(ChromeVariationsConfigurationTest,
 
   FeatureVector features;
   GroupVector groups = {&kChromeTestGroupOne};
-  configuration_.ParseConfigs(features, groups);
+  configuration_.LoadConfigs(features, groups);
 
   GroupConfig group_one = configuration_.GetGroupConfig(kChromeTestGroupOne);
   EXPECT_FALSE(group_one.valid);
@@ -1817,7 +1820,7 @@ TEST_F(ChromeVariationsConfigurationTest, GroupMultipleEventsWithSameName) {
 
   FeatureVector features;
   GroupVector groups = {&kChromeTestGroupOne};
-  configuration_.ParseConfigs(features, groups);
+  configuration_.LoadConfigs(features, groups);
 
   GroupConfig group_one = configuration_.GetGroupConfig(kChromeTestGroupOne);
   EXPECT_TRUE(group_one.valid);
@@ -1868,7 +1871,7 @@ TEST_F(ChromeVariationsConfigurationTest, ParseMultipleGroups) {
   FeatureVector features;
   GroupVector groups = {&kChromeTestGroupOne, &kChromeTestGroupTwo,
                         &kChromeTestGroupThree};
-  configuration_.ParseConfigs(features, groups);
+  configuration_.LoadConfigs(features, groups);
 
   GroupConfig group_one = configuration_.GetGroupConfig(kChromeTestGroupOne);
   EXPECT_TRUE(group_one.valid);
@@ -1915,10 +1918,10 @@ TEST_F(ChromeVariationsConfigurationTest, CheckedInGroupConfigIsReadable) {
   base::HistogramTester histogram_tester;
   FeatureVector features;
   GroupVector groups = {&kIPHDummyGroup};
-  configuration_.ParseConfigs(features, groups);
+  configuration_.LoadConfigs(features, groups);
 
   GroupConfig expected;
-  expected.valid = false;
+  expected.valid = true;
   expected.session_rate = Comparator(LESS_THAN, 0);
   expected.trigger =
       EventConfig("dummy_group_iph_trigger", Comparator(LESS_THAN, 0), 1, 1);
@@ -1940,7 +1943,7 @@ TEST_F(ChromeVariationsConfigurationTest,
   base::HistogramTester histogram_tester;
   FeatureVector features;
   GroupVector groups = {&kIPHDummyGroup};
-  configuration_.ParseConfigs(features, groups);
+  configuration_.LoadConfigs(features, groups);
 
   GroupConfig expected;
   expected.valid = false;
@@ -1961,7 +1964,7 @@ TEST_F(ChromeVariationsConfigurationTest, NonExistingGroupConfigIsInvalid) {
   base::HistogramTester histogram_tester;
   FeatureVector features;
   GroupVector groups = {&kIPHDummyGroup};
-  configuration_.ParseConfigs(features, groups);
+  configuration_.LoadConfigs(features, groups);
 
   GroupConfig expected;
   expected.valid = false;
@@ -1995,7 +1998,7 @@ TEST_F(ChromeVariationsConfigurationTest,
 
   FeatureVector features = {&kChromeTestFeatureFoo, &kChromeTestFeatureBar};
   GroupVector groups = {&kChromeTestGroupOne};
-  configuration_.ParseConfigs(features, groups);
+  configuration_.LoadConfigs(features, groups);
 
   FeatureConfig foo = configuration_.GetFeatureConfig(kChromeTestFeatureFoo);
 
@@ -2028,7 +2031,7 @@ TEST_F(ChromeVariationsConfigurationTest,
 
   FeatureVector features = {&kChromeTestFeatureFoo};
   GroupVector groups = {&kChromeTestGroupOne};
-  configuration_.ParseConfigs(features, groups);
+  configuration_.LoadConfigs(features, groups);
 
   FeatureConfig foo = configuration_.GetFeatureConfig(kChromeTestFeatureFoo);
 
@@ -2072,7 +2075,7 @@ TEST_F(ChromeVariationsConfigurationTest,
   FeatureVector features = {&kChromeTestFeatureFoo, &kChromeTestFeatureBar,
                             &kChromeTestFeatureQux};
   GroupVector groups = {&kChromeTestGroupOne};
-  configuration_.ParseConfigs(features, groups);
+  configuration_.LoadConfigs(features, groups);
 
   FeatureConfig foo = configuration_.GetFeatureConfig(kChromeTestFeatureFoo);
 
@@ -2117,7 +2120,7 @@ TEST_F(ChromeVariationsConfigurationTest, ParseExpandsBlockedByMultipleGroups) {
   FeatureVector features = {&kChromeTestFeatureFoo, &kChromeTestFeatureBar,
                             &kChromeTestFeatureQux};
   GroupVector groups = {&kChromeTestGroupOne, &kChromeTestGroupTwo};
-  configuration_.ParseConfigs(features, groups);
+  configuration_.LoadConfigs(features, groups);
 
   FeatureConfig foo = configuration_.GetFeatureConfig(kChromeTestFeatureFoo);
 
@@ -2156,7 +2159,7 @@ TEST_F(ChromeVariationsConfigurationTest,
 
   FeatureVector features = {&kChromeTestFeatureFoo, &kChromeTestFeatureBar};
   GroupVector groups = {&kChromeTestGroupOne, &kChromeTestGroupTwo};
-  configuration_.ParseConfigs(features, groups);
+  configuration_.LoadConfigs(features, groups);
 
   FeatureConfig foo = configuration_.GetFeatureConfig(kChromeTestFeatureFoo);
 
@@ -2198,7 +2201,7 @@ TEST_F(ChromeVariationsConfigurationTest,
 
   FeatureVector features = {&kChromeTestFeatureFoo, &kChromeTestFeatureBar};
   GroupVector groups = {&kChromeTestGroupOne};
-  configuration_.ParseConfigs(features, groups);
+  configuration_.LoadConfigs(features, groups);
 
   FeatureConfig foo = configuration_.GetFeatureConfig(kChromeTestFeatureFoo);
 
@@ -2231,7 +2234,7 @@ TEST_F(ChromeVariationsConfigurationTest,
 
   FeatureVector features = {&kChromeTestFeatureFoo};
   GroupVector groups = {&kChromeTestGroupOne};
-  configuration_.ParseConfigs(features, groups);
+  configuration_.LoadConfigs(features, groups);
 
   FeatureConfig foo = configuration_.GetFeatureConfig(kChromeTestFeatureFoo);
 

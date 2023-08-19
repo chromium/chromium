@@ -27,7 +27,7 @@ class Decompression : public base::RefCountedThreadSafe<Decompression> {
   // which compression algorithm is used. On success the returned std::string
   // sink will contain a decompressed EncryptedWrappedRecord string. The sink
   // string then can be further updated by the caller. std::string is used
-  // instead of base::StringPiece because ownership is taken of |record| through
+  // instead of std::string_view because ownership is taken of |record| through
   // std::move(record).
   [[nodiscard]] static std::string DecompressRecord(
       std::string record,

@@ -20,6 +20,7 @@
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/time/time.h"
+#include "base/types/expected_macros.h"
 #include "base/values.h"
 #include "build/branding_buildflags.h"
 #include "build/build_config.h"
@@ -534,13 +535,11 @@ void PopularSitesImpl::OnSimpleLoaderComplete(
 
 void PopularSitesImpl::OnJsonParsed(
     data_decoder::DataDecoder::ValueOrError result) {
-  if (!result.has_value()) {
-    DLOG(WARNING) << "JSON parsing failed: " << result.error();
+  ASSIGN_OR_RETURN(base::Value list, std::move(result), [&](std::string error) {
+    DLOG(WARNING) << "JSON parsing failed: " << std::move(error);
     OnDownloadFailed();
-    return;
-  }
+  });
 
-  base::Value list = std::move(*result);
   if (!list.is_list()) {
     DLOG(WARNING) << "JSON is not a list";
     OnDownloadFailed();

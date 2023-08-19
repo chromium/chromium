@@ -52,8 +52,6 @@ class CONTENT_EXPORT ServiceWorkerJobCoordinator {
                   bool is_immediate,
                   ServiceWorkerUnregisterJob::UnregistrationCallback callback);
 
-  void Update(ServiceWorkerRegistration* registration, bool force_bypass_cache);
-
   void Update(ServiceWorkerRegistration* registration,
               bool force_bypass_cache,
               bool skip_script_comparison,

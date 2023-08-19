@@ -9,7 +9,6 @@
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
 #include "chrome/browser/ash/app_list/app_service/app_service_app_item.h"
 #include "chrome/browser/ash/arc/arc_util.h"
-#include "chrome/browser/ash/crostini/crostini_util.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/services/app_service/public/cpp/app_types.h"
 #include "components/sync/protocol/app_list_specifics.pb.h"
@@ -43,7 +42,7 @@ void AppServiceAppModelBuilder::BuildModel() {
       apps::AppServiceProxyFactory::GetForProfile(profile());
   proxy->AppRegistryCache().ForEachApp(
       [this](const apps::AppUpdate& update) { OnAppUpdate(update); });
-  Observe(&proxy->AppRegistryCache());
+  app_registry_cache_observer_.Observe(&proxy->AppRegistryCache());
 }
 
 void AppServiceAppModelBuilder::OnAppUpdate(const apps::AppUpdate& update) {
@@ -51,7 +50,7 @@ void AppServiceAppModelBuilder::OnAppUpdate(const apps::AppUpdate& update) {
   bool show = ShouldShowInLauncher(update);
   if (item) {
     if (show) {
-      DCHECK(item->GetItemType() == AppServiceAppItem::kItemType);
+      DCHECK_EQ(item->GetItemType(), AppServiceAppItem::kItemType);
       static_cast<AppServiceAppItem*>(item)->OnAppUpdate(update);
 
       // TODO(crbug.com/826982): drop the check for kChromeApp or kWeb, and
@@ -99,5 +98,5 @@ void AppServiceAppModelBuilder::OnAppUpdate(const apps::AppUpdate& update) {
 
 void AppServiceAppModelBuilder::OnAppRegistryCacheWillBeDestroyed(
     apps::AppRegistryCache* cache) {
-  Observe(nullptr);
+  app_registry_cache_observer_.Reset();
 }

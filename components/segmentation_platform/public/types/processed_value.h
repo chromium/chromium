@@ -5,10 +5,15 @@
 #ifndef COMPONENTS_SEGMENTATION_PLATFORM_PUBLIC_TYPES_PROCESSED_VALUE_H_
 #define COMPONENTS_SEGMENTATION_PLATFORM_PUBLIC_TYPES_PROCESSED_VALUE_H_
 
+#include <iosfwd>
 #include <string>
 
 #include "base/time/time.h"
 #include "url/gurl.h"
+
+namespace base {
+class Value;
+}
 
 namespace segmentation_platform::processing {
 
@@ -31,6 +36,8 @@ struct ProcessedValue {
   ~ProcessedValue();
 
   bool operator==(const ProcessedValue& rhs) const;
+
+  base::Value ToDebugValue() const;
 
   static ProcessedValue FromFloat(float val);
 
@@ -60,6 +67,9 @@ struct ProcessedValue {
 
 // Represents a set of values that can represent inputs or outputs for a model.
 using Tensor = std::vector<ProcessedValue>;
+
+// For logging and debug purposes.
+std::ostream& operator<<(std::ostream& out, const ProcessedValue& value);
 
 }  // namespace segmentation_platform::processing
 

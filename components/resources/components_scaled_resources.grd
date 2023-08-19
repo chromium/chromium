@@ -22,7 +22,6 @@
       <!-- Generic resources -->
       <if expr="not is_android">
         <structure type="chrome_scaled_image" name="IDR_HISTORY_FAVICON" file="favicon_history.png" />
-        <structure type="chrome_scaled_image" name="IDR_PASSWORD_MANAGER_FAVICON" file="favicon_password_manager.png" />
       </if>
       <structure type="chrome_scaled_image" name="IDR_SAD_WEBVIEW" file="webview-crash.png" />
       <structure type="chrome_scaled_image" name="IDR_SAD_PLUGIN" file="sadplugin.png" />

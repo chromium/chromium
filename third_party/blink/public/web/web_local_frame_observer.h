@@ -42,9 +42,9 @@ class BLINK_EXPORT WebLocalFrameObserver : public base::CheckedObserver {
   // adds to the new `web_local_frame`.
   void Observe(WebLocalFrameImpl* web_local_frame);
 
-  WebPrivatePtr<WebLocalFrameImpl,
-                kWebPrivatePtrDestructionSameThread,
-                WebPrivatePtrStrength::kWeak>
+  WebPrivatePtrForGC<WebLocalFrameImpl,
+                     WebPrivatePtrDestruction::kSameThread,
+                     WebPrivatePtrStrength::kWeak>
       web_local_frame_;
 };
 

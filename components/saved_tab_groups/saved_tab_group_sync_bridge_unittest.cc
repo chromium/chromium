@@ -41,8 +41,8 @@
 using testing::_;
 
 namespace {
-constexpr base::TimeDelta discard_orphaned_tabs_threshold =
-    base::Microseconds(base::Time::kMicrosecondsPerDay * 90);
+// Discard orphaned tabs after 30 days if the associated group cannot be found.
+constexpr base::TimeDelta kDiscardOrphanedTabsThreshold = base::Days(30);
 
 // Do not check update times for specifics as adding tabs to a group through the
 // bridge will change the update times for the group object.
@@ -302,15 +302,15 @@ TEST_F(SavedTabGroupSyncBridgeTest, OrphanedTabAddedIntoGroupWhenFound) {
 }
 
 // Verify orphaned tabs (tabs missing their group) that have not been updated
-// for 90 days are discarded and not added into the model.
-TEST_F(SavedTabGroupSyncBridgeTest, OprhanedTabDiscardedAfter90Days) {
+// for 30 days are discarded and not added into the model.
+TEST_F(SavedTabGroupSyncBridgeTest, OprhanedTabDiscardedAfter30Days) {
   // Merge an orphaned tab. Then merge its missing group. This aims to
   // simulate data spread out over multiple changes.
   base::Uuid orphaned_guid = base::Uuid::GenerateRandomV4();
   SavedTabGroupTab orphaned_tab(GURL("https://mail.google.com"), u"Mail",
                                 orphaned_guid, /*position=*/0);
   orphaned_tab.SetUpdateTimeWindowsEpochMicros(base::Time::Now() -
-                                               discard_orphaned_tabs_threshold);
+                                               kDiscardOrphanedTabsThreshold);
 
   syncer::EntityChangeList orphaned_tab_change_list;
   orphaned_tab_change_list.push_back(
@@ -344,8 +344,8 @@ TEST_F(SavedTabGroupSyncBridgeTest, OprhanedTabDiscardedAfter90Days) {
 }
 
 // Verify orphaned tabs (tabs missing their group) that have not been updated
-// for 90 days and have a group are not discarded.
-TEST_F(SavedTabGroupSyncBridgeTest, OprhanedTabGroupFoundAfter90Days) {
+// for 30 days and have a group are not discarded.
+TEST_F(SavedTabGroupSyncBridgeTest, OprhanedTabGroupFoundAfter30Days) {
   // Merge an orphaned tab. Then merge its missing group. This aims to
   // simulate data spread out over multiple changes.
   base::Uuid orphaned_guid = base::Uuid::GenerateRandomV4();
@@ -366,7 +366,7 @@ TEST_F(SavedTabGroupSyncBridgeTest, OprhanedTabGroupFoundAfter90Days) {
   SavedTabGroupTab orphaned_tab(GURL("https://mail.google.com"), u"Mail",
                                 orphaned_guid, /*position=*/0);
   orphaned_tab.SetUpdateTimeWindowsEpochMicros(base::Time::Now() -
-                                               discard_orphaned_tabs_threshold);
+                                               kDiscardOrphanedTabsThreshold);
   syncer::EntityChangeList orphaned_tab_change_list;
   orphaned_tab_change_list.push_back(
       CreateEntityChange(orphaned_tab.ToSpecifics(),
@@ -577,7 +577,8 @@ TEST_F(SavedTabGroupSyncBridgeTest, AddGroupLocally) {
   saved_tab_group_model_.Add(std::move(group));
 }
 
-// Verify that locally removed groups remove all group data from the processor.
+// Verify that locally removed groups removes the group from the processor
+// and leaves the tabs without an associated group.
 TEST_F(SavedTabGroupSyncBridgeTest, RemoveGroupLocally) {
   EXPECT_TRUE(saved_tab_group_model_.saved_tab_groups().empty());
 
@@ -594,11 +595,27 @@ TEST_F(SavedTabGroupSyncBridgeTest, RemoveGroupLocally) {
   base::Uuid tab_2_guid = tab_2.saved_tab_guid();
   saved_tab_group_model_.Add(std::move(group));
 
-  EXPECT_CALL(processor_, Delete(tab_1_guid.AsLowercaseString(), _));
-  EXPECT_CALL(processor_, Delete(tab_2_guid.AsLowercaseString(), _));
   EXPECT_CALL(processor_, Delete(group_guid.AsLowercaseString(), _));
+  EXPECT_CALL(processor_, Delete(tab_1_guid.AsLowercaseString(), _)).Times(0);
+  EXPECT_CALL(processor_, Delete(tab_2_guid.AsLowercaseString(), _)).Times(0);
 
   saved_tab_group_model_.Remove(group_guid);
+
+  // Verify that the orphaned tabs are still stored locally in the sync bridge.
+  const std::vector<sync_pb::SavedTabGroupSpecifics>& tabs_missing_groups =
+      bridge_->GetTabsMissingGroupsForTesting();
+
+  auto it_1 = base::ranges::find_if(
+      tabs_missing_groups, [&](sync_pb::SavedTabGroupSpecifics specifics) {
+        return specifics.guid() == tab_1_guid.AsLowercaseString();
+      });
+  auto it_2 = base::ranges::find_if(
+      tabs_missing_groups, [&](sync_pb::SavedTabGroupSpecifics specifics) {
+        return specifics.guid() == tab_2_guid.AsLowercaseString();
+      });
+
+  EXPECT_TRUE(it_1 != tabs_missing_groups.end());
+  EXPECT_TRUE(it_2 != tabs_missing_groups.end());
 }
 
 // Verify that locally updated groups add all group data to the processor.
@@ -709,4 +726,65 @@ TEST_F(SavedTabGroupSyncBridgeTest, UpdateTabLocally) {
   EXPECT_CALL(processor_, Put(group_guid.AsLowercaseString(), _, _)).Times(0);
 
   saved_tab_group_model_.UpdateTabInGroup(group_guid, updated_tab_1);
+}
+
+// Verify that locally reordered tabs updates all tabs in the group.
+TEST_F(SavedTabGroupSyncBridgeTest, ReorderTabsInGroupLocally) {
+  EXPECT_TRUE(saved_tab_group_model_.saved_tab_groups().empty());
+
+  SavedTabGroup group(u"Test Title", tab_groups::TabGroupColorId::kBlue, {},
+                      /*position=*/absl::nullopt);
+  SavedTabGroupTab tab_1(GURL("https://website.com"), u"Website Title",
+                         group.saved_guid(), /*position=*/absl::nullopt);
+  SavedTabGroupTab tab_2(GURL("https://google.com"), u"Google",
+                         group.saved_guid(), /*position=*/absl::nullopt);
+  group.AddTabLocally(tab_1).AddTabLocally(tab_2);
+
+  SavedTabGroupTab updated_tab_1(group.saved_tabs()[0]);
+  updated_tab_1.SetURL(GURL("https://youtube.com"));
+  updated_tab_1.SetTitle(u"Youtube");
+
+  base::Uuid group_guid = group.saved_guid();
+  base::Uuid tab_1_guid = tab_1.saved_tab_guid();
+  base::Uuid tab_2_guid = tab_2.saved_tab_guid();
+  saved_tab_group_model_.Add(std::move(group));
+
+  EXPECT_CALL(processor_, Put(tab_1_guid.AsLowercaseString(), _, _));
+  EXPECT_CALL(processor_, Put(tab_2_guid.AsLowercaseString(), _, _));
+  EXPECT_CALL(processor_, Put(group_guid.AsLowercaseString(), _, _)).Times(0);
+
+  saved_tab_group_model_.MoveTabInGroupTo(group_guid, tab_1_guid, 1);
+}
+
+// Verify that locally reordered tabs updates all tabs in the group.
+TEST_F(SavedTabGroupSyncBridgeTest, ReorderGroupLocally) {
+  EXPECT_TRUE(saved_tab_group_model_.saved_tab_groups().empty());
+
+  SavedTabGroup group(u"Test Title", tab_groups::TabGroupColorId::kBlue, {},
+                      /*position=*/absl::nullopt);
+  SavedTabGroup group_2(u"Test Title 2", tab_groups::TabGroupColorId::kRed, {},
+                        /*position=*/absl::nullopt);
+  SavedTabGroupTab tab_1(GURL("https://website.com"), u"Website Title",
+                         group.saved_guid(), /*position=*/absl::nullopt);
+  SavedTabGroupTab tab_2(GURL("https://google.com"), u"Google",
+                         group.saved_guid(), /*position=*/absl::nullopt);
+  group.AddTabLocally(tab_1).AddTabLocally(tab_2);
+
+  SavedTabGroupTab updated_tab_1(group.saved_tabs()[0]);
+  updated_tab_1.SetURL(GURL("https://youtube.com"));
+  updated_tab_1.SetTitle(u"Youtube");
+
+  base::Uuid group_guid = group.saved_guid();
+  base::Uuid group_2_guid = group_2.saved_guid();
+  base::Uuid tab_1_guid = tab_1.saved_tab_guid();
+  base::Uuid tab_2_guid = tab_2.saved_tab_guid();
+  saved_tab_group_model_.Add(std::move(group));
+  saved_tab_group_model_.Add(std::move(group_2));
+
+  EXPECT_CALL(processor_, Put(tab_1_guid.AsLowercaseString(), _, _)).Times(0);
+  EXPECT_CALL(processor_, Put(tab_2_guid.AsLowercaseString(), _, _)).Times(0);
+  EXPECT_CALL(processor_, Put(group_guid.AsLowercaseString(), _, _));
+  EXPECT_CALL(processor_, Put(group_2_guid.AsLowercaseString(), _, _));
+
+  saved_tab_group_model_.ReorderGroupLocally(group_guid, 1);
 }

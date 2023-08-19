@@ -5,11 +5,11 @@
 #include "chrome/browser/dips/dips_cleanup_service.h"
 
 #include "chrome/browser/dips/dips_cleanup_service_factory.h"
-#include "chrome/browser/dips/dips_features.h"
 #include "chrome/browser/dips/dips_storage.h"
+#include "content/public/common/content_features.h"
 
 DIPSCleanupService::DIPSCleanupService(content::BrowserContext* context) {
-  DCHECK(!base::FeatureList::IsEnabled(dips::kFeature));
+  DCHECK(!base::FeatureList::IsEnabled(features::kDIPS));
   DIPSStorage::DeleteDatabaseFiles(
       GetDIPSFilePath(context),
       base::BindOnce(&DIPSCleanupService::OnCleanupFinished,

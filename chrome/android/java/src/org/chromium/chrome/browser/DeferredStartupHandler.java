@@ -7,6 +7,7 @@ package org.chromium.chrome.browser;
 import android.os.Handler;
 import android.os.Looper;
 
+import org.chromium.base.ResettersForTesting;
 import org.chromium.base.ThreadUtils;
 
 import java.util.LinkedList;
@@ -35,7 +36,9 @@ public class DeferredStartupHandler {
     }
 
     public static void setInstanceForTests(DeferredStartupHandler handler) {
+        var oldValue = sInstance;
         sInstance = handler;
+        ResettersForTesting.register(() -> sInstance = oldValue);
     }
 
     protected DeferredStartupHandler() {}

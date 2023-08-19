@@ -17,8 +17,7 @@ class Navigator;
 class ScriptState;
 class ClipboardUnsanitizedFormats;
 
-class Clipboard : public EventTargetWithInlineData,
-                  public Supplement<Navigator> {
+class Clipboard : public EventTarget, public Supplement<Navigator> {
   DEFINE_WRAPPERTYPEINFO();
 
  public:

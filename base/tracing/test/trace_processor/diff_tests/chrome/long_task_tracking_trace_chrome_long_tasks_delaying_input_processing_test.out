@@ -1,0 +1,16 @@
+
+"full_name","duration_ms","slice_id"
+"cc.mojom.RenderFrameMetadataObserverClient message (hash=330497194)",4.061000,5055
+"FrameHost::BeginNavigation (unknown frame type)",9.651000,15012
+"FrameHost::BeginNavigation (unknown frame type)",12.943000,15449
+"network.mojom.NetworkService reply (hash=1419877769)",14.118000,15899
+"content.mojom.NavigationClient reply (hash=479951742)",4.937000,21526
+"RunTask(posted_from=cc/trees/single_thread_proxy.cc:DidReceiveCompositorFrameAckOnImplThread)",4.298000,42835
+"content.mojom.FrameHost message (hash=2324894379)",4.046000,70575
+"FrameHost::BeginNavigation (unknown frame type)",15.514000,70930
+"cc.mojom.RenderFrameMetadataObserverClient message (hash=330497194)",4.950000,89184
+"content.mojom.NavigationClient reply (hash=479951742)",5.418000,91212
+"FrameHost::BeginNavigation (unknown frame type)",10.333000,98058
+"content.mojom.NavigationRendererCancellationListener message (hash=281273569)",7.876000,99938
+"FrameHost::BeginNavigation (unknown frame type)",9.585000,124732
+"network.mojom.NetworkService reply (hash=1419877769)",10.134000,126134

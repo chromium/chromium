@@ -15,7 +15,7 @@ const int32 kFailedToStartId = 0;
 
 // Enumeration of each of the diagnostics routines the platform may support.
 //
-// NextMinVersion: 9, NextIndex: 44
+// NextMinVersion: 12, NextIndex: 47
 [Stable, Extensible]
 enum DiagnosticRoutineEnum {
   [Default] kUnknown = 30,
@@ -62,6 +62,9 @@ enum DiagnosticRoutineEnum {
   [MinVersion=8] kBluetoothDiscovery = 41,
   [MinVersion=8] kBluetoothScanning = 42,
   [MinVersion=8] kBluetoothPairing = 43,
+  [MinVersion=9] kPowerButton = 44,
+  [MinVersion=10] kAudioDriver = 45,
+  [MinVersion=11] kUfsLifetime = 46,
 };
 
 // Enumeration of the possible DiskRead routine's command type
@@ -100,13 +103,15 @@ enum DiagnosticRoutineStatusEnum {
 // Enumeration of each of the messages a diagnostics routine can pass back.
 // These messages prompt interaction from the user of the routine.
 //
-// NextMinVersion: 2, NextIndex: 4
+// NextMinVersion: 3, NextIndex: 5
 [Stable, Extensible]
 enum DiagnosticRoutineUserMessageEnum {
   [Default] kUnknown = 2,
   kUnplugACPower = 0,  // The user needs to unplug the AC power cord.
   kPlugInACPower = 1,  // The user needs to plug in the AC power cord.
   [MinVersion=1] kCheckLedColor = 3, // The user needs to check the LED color.
+  [MinVersion=2] kPressPowerButton = 4, // The user needs to press the power
+                                        // button.
 };
 
 // Enumeration of the possible commands to send a diagnostics routine.
@@ -211,8 +216,8 @@ enum NvmeSelfTestTypeEnum {
 // please refer to the EC firmware.
 //
 // NextMinVersion: 1, NextIndex: 6
-[Stable, Extensible]
-enum LedName {
+[Stable, Extensible, RenamedFrom="ash.cros_healthd.mojom.LedName"]
+enum DEPRECATED_LedName {
   // The default value is for backward compatibility, should not be used.
   [Default] kUnmappedEnumField = 0,
   kBattery = 1,
@@ -225,8 +230,8 @@ enum LedName {
 // Enumeration of each possible supported LED colors.
 //
 // NextMinVersion: 1, NextIndex: 7
-[Stable, Extensible]
-enum LedColor {
+[Stable, Extensible, RenamedFrom="ash.cros_healthd.mojom.LedColor"]
+enum DEPRECATED_LedColor {
   // The default value is for backward compatibility, should not be used.
   [Default] kUnmappedEnumField = 0,
   kRed = 1,
@@ -240,8 +245,8 @@ enum LedColor {
 // Replier interface for LED lit up routine.
 //
 // NextMinVersion: 1, NextIndex: 1
-[Stable]
-interface LedLitUpRoutineReplier {
+[Stable, RenamedFrom="ash.cros_healthd.mojom.LedLitUpRoutineReplier"]
+interface DEPRECATED_LedLitUpRoutineReplier {
   // Returns whether the actual LED color matches the expected color.
   //
   // The response:

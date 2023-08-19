@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_ASH_BRUSCHETTA_BRUSCHETTA_UTIL_H_
 
 #include "base/files/file_path.h"
+#include "chrome/browser/ash/bruschetta/bruschetta_pref_names.h"
 #include "chrome/browser/ash/guest_os/guest_id.h"
 
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -18,13 +19,6 @@ extern const char kToolsDlc[];
 extern const char kUefiDlc[];
 
 extern const char kBruschettaVmName[];
-extern const char kBruschettaDisplayName[];
-
-extern const char kBruschettaPolicyId[];
-
-extern const char kBruschettaInstallerDownloadStrategyFlag[];
-extern const char kBruschettaInstallerDownloadStrategySimpleURLLoader[];
-extern const char kBruschettaInstallerDownloadStrategyDownloadService[];
 
 // These values are persisted to logs. Entries should not be renumbered and
 // numeric values should never be reused.
@@ -44,6 +38,8 @@ enum class BruschettaResult {
 struct RunningVmPolicy {
   bool vtpm_enabled;
 };
+
+using InstallableConfig = std::pair<std::string, base::Value::Dict>;
 
 // Returns the string name of the BruschettaResult.
 const char* BruschettaResultString(const BruschettaResult res);
@@ -65,6 +61,9 @@ absl::optional<const base::Value::Dict*> GetInstallableConfig(
 base::flat_map<std::string, base::Value::Dict> GetInstallableConfigs(
     const Profile* profile);
 
+// In-place sort installable configs into display order.
+void SortInstallableConfigs(std::vector<InstallableConfig>* configs);
+
 // Returns true if an installable config for Bruschetta is present in the
 // enterprise policy. (e.g. kBruschettaPolicyId)
 bool HasInstallableConfig(const Profile* profile, const std::string& config_id);
@@ -72,10 +71,27 @@ bool HasInstallableConfig(const Profile* profile, const std::string& config_id);
 // Returns true if Bruschetta is installed.
 bool IsInstalled(Profile* profile, const guest_os::GuestId& guest_id);
 
+absl::optional<const base::Value::Dict*> GetConfigForGuest(
+    Profile* profile,
+    const guest_os::GuestId& guest_id,
+    prefs::PolicyEnabledState enabled_level);
+
 absl::optional<RunningVmPolicy> GetLaunchPolicyForConfig(Profile* profile,
                                                          std::string config_id);
 
 std::string GetVmUsername(const Profile* profile);
+
+// Gets the overall VM Name (i.e. *not* the name of a specific installed VM or
+// configuration which we more commonly use throughout the UI), to be used for
+// e.g. the installer UI before we know which configuration will be installed.
+std::u16string GetOverallVmName(Profile* profile);
+
+// Gets a URL to learn more about the feature, supplied in policy so an
+// enterprise can document their specific VM. Returns an empty GURL if not set.
+GURL GetLearnMoreUrl(Profile* profile);
+
+// Gets the display name of the specified `guest` running under `profile`.
+std::string GetDisplayName(Profile* profile, guest_os::GuestId guest);
 
 }  // namespace bruschetta
 

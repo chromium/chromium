@@ -92,9 +92,6 @@ void LockScreenProfileCreatorImpl::OnExtensionSystemReady() {
 void LockScreenProfileCreatorImpl::OnProfileReady(
     const base::TimeTicks& start_time,
     Profile* profile) {
-  UMA_HISTOGRAM_BOOLEAN("Apps.LockScreen.AppsProfile.Creation.Success",
-                        profile != nullptr);
-
   // On error, bail out - this will cause the lock screen apps to remain
   // unavailable on the device.
   if (!profile) {
@@ -103,9 +100,6 @@ void LockScreenProfileCreatorImpl::OnProfileReady(
   }
 
   profile->GetPrefs()->SetBoolean(prefs::kForceEphemeralProfiles, true);
-
-  UMA_HISTOGRAM_TIMES("Apps.LockScreen.AppsProfile.Creation.Duration",
-                      tick_clock_->NowTicks() - start_time);
 
   OnLockScreenProfileCreated(profile);
 }

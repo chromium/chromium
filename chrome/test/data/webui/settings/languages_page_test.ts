@@ -3,13 +3,12 @@
 // found in the LICENSE file.
 
 // clang-format off
-import {isWindows} from 'chrome://resources/js/platform.js';
 import {PromiseResolver} from 'chrome://resources/js/promise_resolver.js';
 import {keyDownOn} from 'chrome://resources/polymer/v3_0/iron-test-helpers/mock-interactions.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-import {CrCheckboxElement, kMenuCloseDelay, LanguageHelper, LanguagesBrowserProxyImpl, SettingsAddLanguagesDialogElement, SettingsLanguagesPageElement} from 'chrome://settings/lazy_load.js';
+import {CrCheckboxElement, LanguageHelper, LanguagesBrowserProxyImpl, SettingsAddLanguagesDialogElement, SettingsLanguagesPageElement} from 'chrome://settings/lazy_load.js';
 import {CrActionMenuElement, CrButtonElement, CrSettingsPrefs, loadTimeData} from 'chrome://settings/settings.js';
-import {assertDeepEquals, assertEquals, assertFalse, assertGE, assertGT, assertLT, assertTrue} from 'chrome://webui-test/chai_assert.js';
+import {assertEquals, assertFalse, assertGE, assertGT, assertLT, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {FakeSettingsPrivate} from 'chrome://webui-test/fake_settings_private.js';
 import {eventToPromise} from 'chrome://webui-test/test_util.js';
 import {fakeDataBind} from 'chrome://webui-test/polymer_test_util.js';
@@ -19,17 +18,7 @@ import {TestLanguagesBrowserProxy} from './test_languages_browser_proxy.js';
 
 // clang-format on
 
-const languages_page_tests = {
-  TestNames: {
-    AddLanguagesDialog: 'add languages dialog',
-    LanguageMenuWithTranslate: 'language menu with translate options',
-    LanguageMenuMoveLanguages: 'move language menu items',
-  },
-};
-
-Object.assign(window, {languages_page_tests});
-
-suite('languages page', function() {
+suite('LanguagesPage', function() {
   let languageHelper: LanguageHelper;
   let languagesPage: SettingsLanguagesPageElement;
   let actionMenu: CrActionMenuElement;
@@ -103,7 +92,7 @@ suite('languages page', function() {
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
   });
 
-  suite(languages_page_tests.TestNames.AddLanguagesDialog, function() {
+  suite('AddLanguagesDialog', function() {
     let dialog: SettingsAddLanguagesDialogElement;
     let dialogItems: NodeListOf<CrCheckboxElement>;
     let cancelButton: CrButtonElement;
@@ -283,53 +272,10 @@ suite('languages page', function() {
     });
   });
 
-  suite(languages_page_tests.TestNames.LanguageMenuWithTranslate, function() {
+  suite('LanguageMenu', function() {
     /*
-     * When the detailed language settings are not shown the translate options
-     * are integrated with the language list. This suite tests the translate
-     * option in the languages submenu.
+     * This suite tests that the translate target language is labelled
      */
-    suiteSetup(function() {
-      loadTimeData.overrideValues({
-        enableDesktopDetailedLanguageSettings: false,
-      });
-    });
-
-    test('structure', function() {
-      const languageOptionsDropdownTrigger =
-          languagesPage.shadowRoot!.querySelector('cr-icon-button');
-      assertTrue(!!languageOptionsDropdownTrigger);
-      languageOptionsDropdownTrigger.click();
-      assertTrue(actionMenu.open);
-
-      const separator = actionMenu.querySelector('hr');
-      assertTrue(!!separator);
-      assertEquals(1, separator.offsetHeight);
-
-      // Disable Translate. On platforms that can't change the UI language,
-      // this hides all the checkboxes, so the separator isn't needed.
-      // Windows still shows a checkbox and thus the separator.
-      languagesPage.setPrefValue('translate.enabled', false);
-      assertEquals(isWindows ? 1 : 0, separator.offsetHeight);
-    });
-
-    test('test translate.enable toggle', function() {
-      const settingsToggle =
-          languagesPage.shadowRoot!.querySelector<HTMLElement>(
-              '#offerTranslateOtherLanguages');
-      assertTrue(!!settingsToggle);
-
-      // Clicking on the toggle switches it to false.
-      settingsToggle.click();
-      let newToggleValue = languagesPage.getPref('translate.enabled').value;
-      assertFalse(newToggleValue);
-
-      // Clicking on the toggle switches it to true again.
-      settingsToggle.click();
-      newToggleValue = languagesPage.getPref('translate.enabled').value;
-      assertTrue(newToggleValue);
-    });
-
     test('test translate target language is labelled', function() {
       // Translate target language disabled.
       const targetLanguageCode = languageHelper.languages!.translateTarget;
@@ -369,69 +315,6 @@ suite('languages page', function() {
       });
     });
 
-    test('toggle translate for a specific language', function(done) {
-      // Open options for 'sw'.
-      const languageOptionsDropdownTrigger =
-          languagesPage.shadowRoot!.querySelector<HTMLElement>('#more-sw');
-      assertTrue(!!languageOptionsDropdownTrigger);
-      languageOptionsDropdownTrigger.click();
-      assertTrue(actionMenu.open);
-
-      // 'sw' supports translate to the target language ('en').
-      const translateOption =
-          getMenuItem<CrCheckboxElement>('offerToTranslateInThisLanguage');
-      assertFalse(translateOption.disabled);
-      assertTrue(translateOption.checked);
-
-      // Toggle the translate option.
-      translateOption.click();
-
-      // Menu should stay open briefly.
-      assertTrue(actionMenu.open);
-      // Guaranteed to run later than the menu close delay.
-      setTimeout(function() {
-        assertFalse(actionMenu.open);
-        assertDeepEquals(
-            ['en-US', 'sw'],
-            languagesPage.getPref('translate_blocked_languages').value);
-        done();
-      }, kMenuCloseDelay + 1);
-    });
-
-    test('toggle translate for target language', function() {
-      // Open options for 'en'.
-      const languageOptionsDropdownTrigger =
-          languagesPage.shadowRoot!.querySelector('cr-icon-button');
-      assertTrue(!!languageOptionsDropdownTrigger);
-      languageOptionsDropdownTrigger.click();
-      assertTrue(actionMenu.open);
-
-      // 'en' does not support.
-      const translateOption =
-          getMenuItem<CrCheckboxElement>('offerToTranslateInThisLanguage');
-      assertTrue(translateOption.disabled);
-    });
-
-    test('disable translate hides language-specific option', function() {
-      // Disables translate.
-      languagesPage.setPrefValue('translate.enabled', false);
-
-      // Open options for 'sw'.
-      const languageOptionsDropdownTrigger =
-          languagesPage.shadowRoot!.querySelector<HTMLElement>('#more-sw');
-      assertTrue(!!languageOptionsDropdownTrigger);
-      languageOptionsDropdownTrigger.click();
-      assertTrue(actionMenu.open);
-
-      // The language-specific translation option should be hidden.
-      const translateOption =
-          actionMenu.querySelector<HTMLElement>('#offerTranslations');
-      assertTrue(!!translateOption);
-      assertTrue(translateOption.hidden);
-    });
-  });
-
-  suite(languages_page_tests.TestNames.LanguageMenuMoveLanguages, function() {
     /*
      * Checks the visibility of each expected menu item button.
      * @param Dictionary from i18n keys to expected visibility of those menu
@@ -481,34 +364,6 @@ suite('languages page', function() {
       assertEquals(
           initialLanguages,
           languagesPage.getPref('intl.accept_languages').value);
-    });
-
-    test('remove last blocked language', function() {
-      assertEquals(
-          initialLanguages,
-          languagesPage.getPref('intl.accept_languages').value);
-      assertDeepEquals(
-          ['en-US'],
-          languagesPage.getPref('translate_blocked_languages').value);
-
-      const items =
-          languagesPage.shadowRoot!.querySelector('#languagesSection')!
-              .querySelectorAll<HTMLElement>('.list-item');
-      const domRepeat = languagesPage.shadowRoot!.querySelector('dom-repeat');
-      assertTrue(!!domRepeat);
-      const item = Array.from(items).find(function(el) {
-        return domRepeat.itemForElement(el) &&
-            domRepeat.itemForElement(el).language.code === 'en-US';
-      });
-      assertTrue(!!item);
-      // Open the menu and select Remove.
-      item.querySelector('cr-icon-button')!.click();
-
-      assertTrue(actionMenu.open);
-      const removeMenuItem = getMenuItem<HTMLButtonElement>('removeLanguage');
-      // Remove button should be disabled
-      assertFalse(removeMenuItem.hidden);
-      assertTrue(removeMenuItem.disabled);
     });
 
     test('remove language when starting with 2 languages', function() {

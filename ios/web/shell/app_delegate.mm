@@ -7,15 +7,8 @@
 #import <memory>
 
 #import "ios/web/public/init/web_main.h"
-#import "ios/web/public/web_client.h"
-#import "ios/web/shell/shell_browser_state.h"
 #import "ios/web/shell/shell_main_delegate.h"
-#import "ios/web/shell/shell_web_client.h"
 #import "ios/web/shell/view_controller.h"
-
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
 
 @interface AppDelegate () {
   std::unique_ptr<web::ShellMainDelegate> _delegate;
@@ -25,27 +18,13 @@
 
 @implementation AppDelegate
 
-@synthesize window = _window;
-
 - (BOOL)application:(UIApplication*)application
     didFinishLaunchingWithOptions:(NSDictionary*)launchOptions {
-  _window = [[UIWindow alloc] initWithFrame:[[UIScreen mainScreen] bounds]];
-  [self.window makeKeyAndVisible];
-  self.window.backgroundColor = [UIColor whiteColor];
-  self.window.tintColor = [UIColor darkGrayColor];
-
   _delegate.reset(new web::ShellMainDelegate());
 
   web::WebMainParams params(_delegate.get());
   _webMain = std::make_unique<web::WebMain>(std::move(params));
 
-  web::ShellWebClient* client =
-      static_cast<web::ShellWebClient*>(web::GetWebClient());
-  web::BrowserState* browserState = client->browser_state();
-
-  ViewController* controller =
-      [[ViewController alloc] initWithBrowserState:browserState];
-  self.window.rootViewController = controller;
   return YES;
 }
 

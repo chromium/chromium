@@ -11,7 +11,6 @@ import android.widget.ProgressBar;
 
 import androidx.annotation.MainThread;
 import androidx.annotation.Nullable;
-import androidx.annotation.VisibleForTesting;
 import androidx.fragment.app.FragmentManager;
 
 import org.chromium.ui.modaldialog.DialogDismissalCause;
@@ -255,7 +254,6 @@ public class ConfirmSyncDataStateMachineDelegate {
         }
     }
 
-    @VisibleForTesting
     ProgressBar getProgressBarViewForTesting() {
         return mProgressDialogCoordinator.mModel.get(ModalDialogProperties.CUSTOM_VIEW)
                 .findViewById(R.id.progress_bar);

@@ -61,6 +61,7 @@ class TrustTokenRequestHelperFactoryTest : public ::testing::Test {
     suitable_params_->operation = mojom::TrustTokenOperationType::kSigning;
     suitable_params_->issuers.push_back(
         url::Origin::Create(GURL("https://issuer.example")));
+    store_.OnStoreReady(TrustTokenStore::CreateForTesting());
   }
 
  protected:
@@ -90,13 +91,9 @@ class TrustTokenRequestHelperFactoryTest : public ::testing::Test {
       const mojom::TrustTokenParams& params) {
     base::RunLoop run_loop;
     TrustTokenStatusOrRequestHelper obtained_result;
-    PendingTrustTokenStore store;
-
-    store.OnStoreReady(TrustTokenStore::CreateForTesting());
-    NoopTrustTokenKeyCommitmentGetter getter;
 
     TrustTokenRequestHelperFactory(
-        &store, &getter,
+        &store_, &getter_,
         base::BindRepeating(
             []() -> mojom::NetworkContextClient* { return nullptr; }),
         base::BindRepeating([]() { return true; }))
@@ -118,6 +115,8 @@ class TrustTokenRequestHelperFactoryTest : public ::testing::Test {
   TestURLRequestMaker maker_;
   std::unique_ptr<net::URLRequest> suitable_request_;
   mojom::TrustTokenParamsPtr suitable_params_;
+  PendingTrustTokenStore store_;
+  NoopTrustTokenKeyCommitmentGetter getter_;
 };
 
 TEST_F(TrustTokenRequestHelperFactoryTest, MissingTopFrameOrigin) {

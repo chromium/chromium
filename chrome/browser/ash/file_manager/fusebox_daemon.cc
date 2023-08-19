@@ -8,6 +8,7 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/logging.h"
+#include "base/system/sys_info.h"
 #include "chrome/browser/ash/fusebox/fusebox_server.h"
 
 namespace file_manager {
@@ -42,7 +43,9 @@ void FuseBoxDaemon::MountResponse(ash::MountError error,
   if (error == ash::MountError::kSuccess) {
     mounted_ = true;
   } else {
-    LOG(ERROR) << CrosDisksFuseBoxHelperURI() << " mount error " << error;
+    if (base::SysInfo::IsRunningOnChromeOS()) {
+      LOG(ERROR) << CrosDisksFuseBoxHelperURI() << " mount error " << error;
+    }
     mounted_ = (error == ash::MountError::kPathAlreadyMounted);
   }
 

@@ -1,0 +1,309 @@
+// Copyright 2020 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module chromeos.settings.mojom;
+
+// Enumeration of each setting in the Chrome OS Settings app. Numerical values
+// are used for metrics; do not change or reuse values. Add new values to the
+// OsSetting enum in tools/metrics/histograms/enums.xml.
+enum Setting {
+  // Network section.
+  kConfigureEthernet = 0,
+  kEthernetAutoConfigureIp = 1,
+  kEthernetDns = 2,
+  kEthernetProxy = 3,
+  kWifiOnOff = 4,
+  kDisconnectWifiNetwork = 5,
+  kPreferWifiNetwork = 6,
+  kForgetWifiNetwork = 7,
+  kWifiAddNetwork = 8,
+  kWifiAutoConfigureIp = 9,
+  kWifiDns = 10,
+  kWifiProxy = 11,
+  kWifiAutoConnectToNetwork = 12,
+  kMobileOnOff = 13,
+  kCellularSimLock = 14,
+  kCellularRoaming = 15,
+  kCellularApn = 16,
+  kDisconnectCellularNetwork = 17,
+  kCellularAutoConfigureIp = 18,
+  kCellularDns = 19,
+  kCellularProxy = 20,
+  kCellularAutoConnectToNetwork = 21,
+  kInstantTetheringOnOff = 22,
+  kDisconnectTetherNetwork = 23,
+  kWifiMetered = 24,
+  kCellularMetered = 25,
+  kAddESimNetwork = 26,
+  kCellularRemoveESimNetwork = 27,
+  kCellularRenameESimNetwork = 28,
+  kWifiHidden = 29,
+  kHotspotOnOff = 30,
+  kHotspotAutoDisabled = 31,
+
+  // Bluetooth section.
+  kBluetoothOnOff = 100,
+  // [Deprecated] kBluetoothConnectToDevice = 101,
+  // [Deprecated] kBluetoothDisconnectFromDevice = 102,
+  kBluetoothPairDevice = 103,
+  kBluetoothUnpairDevice = 104,
+  kFastPairOnOff = 105,
+  kFastPairSavedDevices= 106,
+
+  // MultiDevice section.
+  kSetUpMultiDevice = 200,
+  kVerifyMultiDeviceSetup = 201,
+  kMultiDeviceOnOff = 202,
+  kSmartLockOnOff = 203,
+  // Note: Value 204 was for deprecated kSmartLockUnlockOrSignIn -
+  // see b/227674947. Do not reuse.
+  kMessagesSetUp = 205,
+  kMessagesOnOff = 206,
+  kForgetPhone = 207,
+  kNearbyShareOnOff = 208,
+  kPhoneHubOnOff = 209,
+  kPhoneHubNotificationsOnOff = 210,
+  // Note: Value 211 was for deprecated kPhoneHubNotificationBadgeOnOff.
+  // Do not reuse.
+  kPhoneHubTaskContinuationOnOff = 212,
+  kWifiSyncOnOff = 213,
+  kNearbyShareDeviceName = 214,
+  kNearbyShareDeviceVisibility = 215,
+  kNearbyShareContacts = 216,
+  kNearbyShareDataUsage = 217,
+  kPhoneHubAppsOnOff = 218,
+  kPhoneHubCameraRollOnOff = 219,
+  kDevicesNearbyAreSharingNotificationOnOff = 220,
+
+  // People section.
+  kAddAccount = 300,
+  kRemoveAccount = 301,
+  kSplitSyncOnOff = 302,
+  // Note: Value 303 was for kLockScreen. Do not reuse.
+  // Note: Value 304 was for kChangeAuthPin. Do not reuse.
+  // Note: Value 305 was for kGuestBrowsing. Do not reuse.
+  // Note: Value 306 was for kShowUsernamesAndPhotosAtSignIn. Do not reuse.
+  // Note: Value 307 was for kRestrictSignIn. Do not reuse.
+  // Note: Value 308 was for kAddToUserAllowlist. Do not reuse.
+  // Note: Value 309 was for kRemoveFromUserAllowlist. Do not reuse.
+  // Note: Values 310, 311 and 312 were for kAddKerberosTicket,
+  // kRemoveKerberosTicket and kSetActiveKerberosTicket, respectively. These
+  // settings have been moved to a separate Kerberos section - see
+  // https://crbug.com/1186190. Do not reuse.
+  // Note: Value 313 was for kAddFingerprint. Do not reuse.
+  // Note: Value 314 was for kRemoveFingerprint. Do not reuse.
+  kSetUpParentalControls = 315,
+  kNonSplitSyncEncryptionOptions = 316,
+  kImproveSearchSuggestions = 317,
+  kMakeSearchesAndBrowsingBetter = 318,
+  kGoogleDriveSearchSuggestions = 319,
+
+  // Device section.
+  kTouchpadTapToClick = 400,
+  kTouchpadTapDragging = 401,
+  kTouchpadReverseScrolling = 402,
+  kTouchpadAcceleration = 403,
+  kTouchpadScrollAcceleration = 404,
+  kTouchpadSpeed = 405,
+  kMouseSwapPrimaryButtons = 406,
+  kMouseReverseScrolling = 407,
+  kMouseAcceleration = 408,
+  kMouseScrollAcceleration = 409,
+  kMouseSpeed = 410,
+  kKeyboardFunctionKeys = 411,
+  kKeyboardAutoRepeat = 412,
+  kKeyboardShortcuts = 413,
+  kDisplaySize = 414,
+  kNightLight = 415,
+  kStylusToolsInShelf = 416,
+  kStylusNoteTakingApp = 417,
+  kStylusNoteTakingFromLockScreen = 418,
+  kStylusLatestNoteOnLockScreen = 419,
+  kDisplayOrientation = 420,
+  kDisplayArrangement = 421,
+  kPowerIdleBehaviorWhileCharging = 422,
+  kPowerSource = 423,
+  kSleepWhenLaptopLidClosed = 424,
+  kDisplayResolution = 425,
+  kDisplayRefreshRate = 426,
+  // Note: Value 427 was for deprecated Remove DLC - see
+  // https://crbug.com/1108093. Do not reuse.
+  kDisplayMirroring = 428,
+  kAllowWindowsToSpanDisplays = 429,
+  kAmbientColors = 430,
+  kTouchscreenCalibration = 431,
+  kNightLightColorTemperature = 432,
+  kPowerIdleBehaviorWhileOnBattery = 433,
+  kDisplayOverscan = 434,
+  kPointingStickSpeed = 435,
+  kPointingStickAcceleration = 436,
+  kPointingStickSwapPrimaryButtons = 437,
+  kTouchpadHapticFeedback = 438,
+  kTouchpadHapticClickSensitivity = 439,
+  kAdaptiveCharging = 440,
+  kKeyboardBlockMetaFkeyRewrites = 441,
+  kKeyboardRemapKeys = 442,
+  kChargingSounds = 443,
+  kLowBatterySound = 444,
+  kBatterySaver = 445,
+
+  // Personalization section.
+  kOpenWallpaper = 500,
+  // 501 was used for kAmbientModeOnOff. Do not reuse.
+  // 502 was used for kAmbientModeSource. Do not reuse.
+  // 503 was used for kChangeDeviceAccountImage. Do not reuse.
+  // Note: Values 504, 505, and 506 were for deprecated
+  // kAmbientModeUpdatePhotosContainers, kDarkModeOnOff and
+  // kDarkModeThemed respectively.
+  // Do not reuse.
+
+  // Search and Assistant section.
+  kPreferredSearchEngine = 600,
+  kAssistantOnOff = 601,
+  kAssistantRelatedInfo = 602,
+  // Note: Value 603 was for deprecated kAssistantQuickAnswers.
+  // Do not reuse.
+  kAssistantOkGoogle = 604,
+  kAssistantNotifications = 605,
+  kAssistantVoiceInput = 606,
+  kTrainAssistantVoiceModel = 607,
+  kQuickAnswersOnOff = 608,
+  kQuickAnswersDefinition = 609,
+  kQuickAnswersTranslation = 610,
+  kQuickAnswersUnitConversion = 611,
+
+  // Apps section.
+  kManageAndroidPreferences = 700,
+  kRemovePlayStore = 701,
+  kTurnOnPlayStore = 702,
+  kRestoreAppsAndPages = 703,
+  kDoNotDisturbOnOff = 704,
+  kAppBadgingOnOff = 705,
+
+  // Crostini section.
+  kSetUpCrostini= 800,
+  kUninstallCrostini = 801,
+  kBackupLinuxAppsAndFiles = 802,
+  kRestoreLinuxAppsAndFiles = 803,
+  kCrostiniAdbDebugging = 804,
+  kCrostiniDiskResize = 805,
+  kCrostiniMicAccess = 806,
+  kCrostiniContainerUpgrade = 807,
+
+  // Note: Plugin VM section is omitted (see https://crbug.com/1074101).
+
+  // Date and Time section.
+  k24HourClock = 1000,
+  kChangeTimeZone = 1001,
+
+  // Privacy section.
+  kVerifiedAccess = 1101,
+  // Note: Value 1102 was for deprecated "Keep wi-fi on during sleep" setting -
+  // see https://bugs.chromium.org/p/chromium/issues/detail?id=1077126.
+  // Do not reuse.
+  kUsageStatsAndCrashReports = 1103,
+  kGuestBrowsingV2 = 1104,
+  kShowUsernamesAndPhotosAtSignInV2 = 1105,
+  kRestrictSignInV2 = 1106,
+  kAddToUserAllowlistV2 = 1107,
+  kRemoveFromUserAllowlistV2 = 1108,
+  kLockScreenV2 = 1109,
+  kChangeAuthPinV2 = 1110,
+  kAddFingerprintV2 = 1111,
+  kRemoveFingerprintV2 = 1112,
+  kPeripheralDataAccessProtection = 1113,
+  kSnoopingProtection = 1114,
+  kQuickDim = 1115,
+  kCameraOnOff = 1116,
+  kMicrophoneOnOff = 1117,
+  kGeolocationOnOff = 1118,
+  kLockScreenNotification = 1119,
+  kSpeakOnMuteDetectionOnOff = 1120,
+  kDataRecovery = 1121,
+
+  // Languages and Input section.
+  kAddLanguage = 1200,
+  kShowInputOptionsInShelf = 1201,
+  // Note: Value 1202 was deprecated for kShowPersonalInformationSuggestions.
+  // Do not reuse.
+  kShowEmojiSuggestions = 1203,
+  kChangeDeviceLanguage = 1204,
+  kOfferTranslation = 1205,
+  kAddInputMethod = 1206,
+  kSpellCheck = 1207,
+  // Note: Value 1208 was for deprecated kShowPredictiveWriting.
+  // Do not reuse.
+  // TODO(crbug/1058552): Add [Deprecated] attribute once implemented.
+  kShowPKAutoCorrection = 1209,
+  kShowVKAutoCorrection = 1210,
+  kShowDiacritic = 1211,
+
+  // Files section.
+  kGoogleDriveConnection = 1300,
+
+  // Printing section.
+  kAddPrinter = 1400,
+  kSavedPrinters = 1401,
+  kPrintJobs = 1402,
+  kScanningApp = 1403,
+
+  // Accessibility section.
+  kA11yQuickSettings = 1500,
+  kChromeVox = 1501,
+  kSelectToSpeak = 1502,
+  kTextToSpeechRate = 1503,
+  kTextToSpeechPitch = 1504,
+  kTextToSpeechVolume = 1505,
+  kTextToSpeechVoice = 1506,
+  kTextToSpeechEngines = 1507,
+  kHighContrastMode = 1508,
+  kFullscreenMagnifier = 1509,
+  kDockedMagnifier = 1510,
+  kStickyKeys = 1511,
+  kOnScreenKeyboard = 1512,
+  kDictation = 1513,
+  kHighlightKeyboardFocus = 1514,
+  kHighlightTextCaret = 1515,
+  kAutoClickWhenCursorStops = 1516,
+  kLargeCursor = 1517,
+  kHighlightCursorWhileMoving = 1518,
+  kTabletNavigationButtons = 1519,
+  kMonoAudio = 1520,
+  kStartupSound = 1521,
+  kEnableSwitchAccess = 1522,
+  kSwitchActionAssignment = 1523,
+  kSwitchActionAutoScan = 1524,
+  kSwitchActionAutoScanKeyboard = 1525,
+  kGetImageDescriptionsFromGoogle = 1526,
+  kLiveCaption = 1527,
+  kEnableCursorColor = 1528,
+  kFullscreenMagnifierFocusFollowing = 1529,
+  kFullscreenMagnifierMouseFollowingMode = 1530,
+  kSelectToSpeakWordHighlight = 1531,
+  kSelectToSpeakBackgroundShading = 1532,
+  kSelectToSpeakNavigationControls = 1533,
+  kColorCorrectionEnabled = 1534,
+  kColorCorrectionFilterType = 1535,
+  kColorCorrectionFilterAmount = 1536,
+
+  // Reset section.
+  kPowerwash = 1600,
+
+  // About Chrome OS section.
+  kChangeChromeChannel = 1700,
+  kCopyDetailedBuildInfo = 1701,
+  kCheckForOsUpdate = 1702,
+  kSeeWhatsNew = 1703,
+  kGetHelpWithChromeOs = 1704,
+  kReportAnIssue = 1705,
+  kTermsOfService = 1706,
+  kDiagnostics = 1707,
+  kChangeDeviceName = 1708,
+  kFirmwareUpdates = 1709,
+
+  // Kerberos section.
+  kAddKerberosTicketV2 = 1800,
+  kRemoveKerberosTicketV2 = 1801,
+  kSetActiveKerberosTicketV2 = 1802,
+};

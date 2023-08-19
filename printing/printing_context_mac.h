@@ -6,9 +6,9 @@
 #define PRINTING_PRINTING_CONTEXT_MAC_H_
 
 #include <ApplicationServices/ApplicationServices.h>
+
 #include <string>
 
-#include "base/mac/scoped_nsobject.h"
 #include "base/memory/raw_ptr_exclusion.h"
 #include "base/strings/string_piece.h"
 #include "printing/mojom/print.mojom.h"
@@ -107,13 +107,13 @@ class COMPONENT_EXPORT(PRINTING) PrintingContextMac : public PrintingContext {
   mojom::ResultCode PageDone();
 
   // The native print info object.
-  base::scoped_nsobject<NSPrintInfo> print_info_;
+  NSPrintInfo* __strong print_info_;
 
   // The current page's context; only valid between NewPage and PageDone call
   // pairs.
   // This field is not a raw_ptr<> because it was filtered by the rewriter
   // for: #addr-of
-  RAW_PTR_EXCLUSION CGContext* context_;
+  RAW_PTR_EXCLUSION CGContextRef context_ = nullptr;
 };
 
 }  // namespace printing

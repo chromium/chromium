@@ -8,7 +8,9 @@
 
 #include "base/json/json_reader.h"
 #include "base/json/json_writer.h"
+#include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
+#include "components/autofill/core/common/autofill_features.h"
 #include "components/pref_registry/pref_registry_syncable.h"
 #include "components/prefs/pref_service.h"
 #include "components/prefs/pref_service_factory.h"
@@ -153,6 +155,22 @@ TEST_F(AutofillPrefsTest, WalletSyncTransportPref_CanBeSetAndReadFromJSON) {
   ASSERT_TRUE(base::JSONWriter::Write(dictionary, &output_js));
   EXPECT_EQ(dictionary, *base::JSONReader::Read(output_js));
 }
+
+// Tests that the generic viewstructure provider is restricted to Android.
+#if BUILDFLAG(IS_ANDROID)
+TEST_F(AutofillPrefsTest, AutofillWithVirtualViewsAffectsAndroidOnly) {
+  base::test::ScopedFeatureList scoped_feature_list(
+      features::kAutofillVirtualViewStructureAndroid);
+  EXPECT_FALSE(UsesVirtualViewStructureForAutofill(pref_service()));
+
+  pref_service()->SetBoolean(prefs::kAutofillUsingVirtualViewStructure, true);
+  EXPECT_TRUE(UsesVirtualViewStructureForAutofill(pref_service()));
+}
+#else   // not BUILDFLAG(IS_ANDROID)
+TEST_F(AutofillPrefsTest, AutofillWithVirtualViewsAffectsAndroidOnly) {
+  EXPECT_FALSE(UsesVirtualViewStructureForAutofill(pref_service()));
+}
+#endif  // BUILDFLAG(IS_ANDROID)
 
 }  // namespace prefs
 }  // namespace autofill

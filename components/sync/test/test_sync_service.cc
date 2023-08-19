@@ -7,6 +7,7 @@
 #include <utility>
 #include <vector>
 
+#include "base/containers/contains.h"
 #include "base/time/time.h"
 #include "base/values.h"
 #include "components/sync/base/progress_marker_map.h"
@@ -39,6 +40,11 @@ TestSyncService::~TestSyncService() = default;
 
 void TestSyncService::SetDisableReasons(DisableReasonSet disable_reasons) {
   disable_reasons_ = disable_reasons;
+  if (!disable_reasons_.Empty()) {
+    transport_state_ = TransportState::DISABLED;
+  } else if (transport_state_ == TransportState::DISABLED) {
+    transport_state_ = TransportState::ACTIVE;
+  }
 }
 
 void TestSyncService::SetTransportState(TransportState transport_state) {
@@ -135,15 +141,37 @@ void TestSyncService::SetIsUsingExplicitPassphrase(bool enabled) {
   user_settings_.SetIsUsingExplicitPassphrase(enabled);
 }
 
+void TestSyncService::SetDownloadStatusFor(
+    const ModelTypeSet& types,
+    ModelTypeDownloadStatus download_status) {
+  for (const auto type : types) {
+    download_statuses_[type] = download_status;
+  }
+}
+
 void TestSyncService::FireStateChanged() {
-  for (SyncServiceObserver& observer : observers_)
+  for (SyncServiceObserver& observer : observers_) {
     observer.OnStateChanged(this);
+  }
+}
+
+void TestSyncService::FirePaymentsIntegrationEnabledChanged() {
+  for (SyncServiceObserver& observer : observers_) {
+    observer.OnSyncPaymentsIntegrationEnabledChanged(this);
+  }
 }
 
 void TestSyncService::FireSyncCycleCompleted() {
-  for (SyncServiceObserver& observer : observers_)
+  for (SyncServiceObserver& observer : observers_) {
     observer.OnSyncCycleCompleted(this);
+  }
 }
+
+#if BUILDFLAG(IS_ANDROID)
+base::android::ScopedJavaLocalRef<jobject> TestSyncService::GetJavaObject() {
+  return base::android::ScopedJavaLocalRef<jobject>();
+}
+#endif  // BUILDFLAG(IS_ANDROID)
 
 void TestSyncService::SetSyncFeatureRequested() {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
@@ -226,11 +254,18 @@ ModelTypeSet TestSyncService::GetActiveDataTypes() const {
   if (transport_state_ != TransportState::ACTIVE) {
     return ModelTypeSet();
   }
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  if (sync_feature_disabled_via_dashboard_) {
+    return ModelTypeSet();
+  }
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
   return Difference(GetPreferredDataTypes(), failed_data_types_);
 }
 
 ModelTypeSet TestSyncService::GetTypesWithPendingDownloadForInitialSync()
     const {
+  DCHECK_NE(transport_state_, TransportState::INITIALIZING)
+      << "Realistic behavior not implemented for INITIALIZING";
   if (transport_state_ != TransportState::CONFIGURING) {
     return ModelTypeSet();
   }
@@ -309,21 +344,13 @@ void TestSyncService::GetAllNodesForDebugging(
 
 SyncService::ModelTypeDownloadStatus TestSyncService::GetDownloadStatusFor(
     ModelType type) const {
+  if (base::Contains(download_statuses_, type)) {
+    return download_statuses_.at(type);
+  }
   return ModelTypeDownloadStatus::kUpToDate;
 }
 
 void TestSyncService::SetInvalidationsForSessionsEnabled(bool enabled) {}
-
-void TestSyncService::AddTrustedVaultDecryptionKeysFromWeb(
-    const std::string& gaia_id,
-    const std::vector<std::vector<uint8_t>>& keys,
-    int last_key_version) {}
-
-void TestSyncService::AddTrustedVaultRecoveryMethodFromWeb(
-    const std::string& gaia_id,
-    const std::vector<uint8_t>& public_key,
-    int method_type_hint,
-    base::OnceClosure callback) {}
 
 bool TestSyncService::IsSyncFeatureConsideredRequested() const {
   return HasSyncConsent();
@@ -332,6 +359,15 @@ bool TestSyncService::IsSyncFeatureConsideredRequested() const {
 void TestSyncService::Shutdown() {
   for (SyncServiceObserver& observer : observers_)
     observer.OnSyncShutdown(this);
+}
+
+void TestSyncService::SetTypesWithUnsyncedData(const ModelTypeSet& types) {
+  unsynced_types_ = types;
+}
+
+void TestSyncService::GetTypesWithUnsyncedData(
+    base::OnceCallback<void(ModelTypeSet)> cb) const {
+  std::move(cb).Run(unsynced_types_);
 }
 
 }  // namespace syncer

@@ -273,27 +273,34 @@ IN_PROC_BROWSER_TEST_F(RequestStorageAccessForBrowserTest,
   NavigateNestedFrameTo(kHostC, "/echoheader?cookie");
 
   // Manually create a pre-expired grant and ensure it doesn't grant access.
-  base::Time expiration_time = base::Time::Now() - base::Minutes(5);
+  const base::TimeDelta lifetime = base::Hours(24);
+  const base::Time creation_time =
+      base::Time::Now() - base::Minutes(5) - lifetime;
   HostContentSettingsMap* settings_map =
       HostContentSettingsMapFactory::GetForProfile(browser()->profile());
+  content_settings::ContentSettingConstraints constraints(creation_time);
+  constraints.set_lifetime(lifetime);
+  constraints.set_session_model(content_settings::SessionModel::UserSession);
   settings_map->SetContentSettingDefaultScope(
       GetURL(kHostB), GetURL(kHostA),
       ContentSettingsType::TOP_LEVEL_STORAGE_ACCESS, CONTENT_SETTING_ALLOW,
-      {expiration_time, content_settings::SessionModel::UserSession});
+      constraints);
   settings_map->SetContentSettingDefaultScope(
       GetURL(kHostC), GetURL(kHostA),
       ContentSettingsType::TOP_LEVEL_STORAGE_ACCESS, CONTENT_SETTING_ALLOW,
-      {expiration_time, content_settings::SessionModel::UserSession});
+      constraints);
 
   // Manually send our expired setting. This needs to be done manually because
   // normally this expired value would be filtered out before sending and time
   // cannot be properly mocked in a browser test.
   ContentSettingsForOneType settings;
-  settings.push_back(ContentSettingPatternSource(
+  content_settings::RuleMetaData metadata;
+  metadata.SetFromConstraints(constraints);
+  settings.emplace_back(
       ContentSettingsPattern::FromURLNoWildcard(GetURL(kHostB)),
       ContentSettingsPattern::FromURLNoWildcard(GetURL(kHostA)),
       base::Value(CONTENT_SETTING_ALLOW), "preference",
-      /*incognito=*/false, {.expiration = expiration_time}));
+      /*incognito=*/false, metadata);
   settings.emplace_back(
       ContentSettingsPattern::FromURLNoWildcard(GetURL(kHostC)),
       ContentSettingsPattern::FromURLNoWildcard(GetURL(kHostA)),

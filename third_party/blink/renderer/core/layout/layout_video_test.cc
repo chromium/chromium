@@ -29,7 +29,8 @@ class LayoutVideoTest : public RenderingTest {
     // Set image to video
     auto* video = To<HTMLVideoElement>(GetElementById(id));
     auto* layout_image = To<LayoutImage>(video->GetLayoutObject());
-    video->setAttribute(html_names::kPosterAttr, "http://example.com/foo.jpg");
+    video->setAttribute(html_names::kPosterAttr,
+                        AtomicString("http://example.com/foo.jpg"));
     layout_image->ImageResource()->SetImageResource(image_content);
   }
 };

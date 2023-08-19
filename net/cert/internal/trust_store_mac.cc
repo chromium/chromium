@@ -6,14 +6,14 @@
 
 #include <Security/Security.h>
 
+#include "base/apple/foundation_util.h"
+#include "base/apple/osstatus_logging.h"
 #include "base/atomicops.h"
 #include "base/callback_list.h"
 #include "base/containers/contains.h"
 #include "base/containers/flat_map.h"
 #include "base/functional/bind.h"
 #include "base/logging.h"
-#include "base/mac/foundation_util.h"
-#include "base/mac/mac_logging.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/no_destructor.h"
 #include "base/numerics/safe_conversions.h"
@@ -126,7 +126,7 @@ TrustStatus IsTrustDictionaryTrustedForPolicy(
   // |target_policy_oid|. If there is no kSecTrustSettingsPolicy key, it's
   // considered a match for all policies.
   if (CFDictionaryContainsKey(trust_dict, kSecTrustSettingsPolicy)) {
-    SecPolicyRef policy_ref = base::mac::GetValueFromDictionary<SecPolicyRef>(
+    SecPolicyRef policy_ref = base::apple::GetValueFromDictionary<SecPolicyRef>(
         trust_dict, kSecTrustSettingsPolicy);
     if (!policy_ref) {
       *debug_info |= TrustStoreMac::TRUST_SETTINGS_DICT_INVALID_POLICY_TYPE;
@@ -136,7 +136,7 @@ TrustStatus IsTrustDictionaryTrustedForPolicy(
         SecPolicyCopyProperties(policy_ref));
 
     // kSecPolicyOid is guaranteed to be present in the policy dictionary.
-    CFStringRef policy_oid = base::mac::GetValueFromDictionary<CFStringRef>(
+    CFStringRef policy_oid = base::apple::GetValueFromDictionary<CFStringRef>(
         policy_dict, kSecPolicyOid);
 
     if (!CFEqual(policy_oid, target_policy_oid))
@@ -148,8 +148,8 @@ TrustStatus IsTrustDictionaryTrustedForPolicy(
   int trust_settings_result = kSecTrustSettingsResultTrustRoot;
   if (CFDictionaryContainsKey(trust_dict, kSecTrustSettingsResult)) {
     CFNumberRef trust_settings_result_ref =
-        base::mac::GetValueFromDictionary<CFNumberRef>(trust_dict,
-                                                       kSecTrustSettingsResult);
+        base::apple::GetValueFromDictionary<CFNumberRef>(
+            trust_dict, kSecTrustSettingsResult);
     if (!trust_settings_result_ref ||
         !CFNumberGetValue(trust_settings_result_ref, kCFNumberIntType,
                           &trust_settings_result)) {
@@ -810,11 +810,11 @@ class TrustStoreMac::TrustImplDomainCacheFullCerts
       return;
     }
     CFArrayRef matching_items_array =
-        base::mac::CFCastStrict<CFArrayRef>(matching_items);
+        base::apple::CFCastStrict<CFArrayRef>(matching_items);
     for (CFIndex i = 0, item_count = CFArrayGetCount(matching_items_array);
          i < item_count; ++i) {
       SecCertificateRef match_cert_handle =
-          base::mac::CFCastStrict<SecCertificateRef>(
+          base::apple::CFCastStrict<SecCertificateRef>(
               CFArrayGetValueAtIndex(matching_items_array, i));
 
       // If cert is already in the trust domain certs cache, don't bother
@@ -992,11 +992,11 @@ class TrustStoreMac::TrustImplKeychainCacheFullCerts
       return;
     }
     CFArrayRef matching_items_array =
-        base::mac::CFCastStrict<CFArrayRef>(matching_items);
+        base::apple::CFCastStrict<CFArrayRef>(matching_items);
     std::vector<std::pair<SHA256HashValue, TrustStatus>> trust_status_vector;
     for (CFIndex i = 0, item_count = CFArrayGetCount(matching_items_array);
          i < item_count; ++i) {
-      SecCertificateRef sec_cert = base::mac::CFCastStrict<SecCertificateRef>(
+      SecCertificateRef sec_cert = base::apple::CFCastStrict<SecCertificateRef>(
           CFArrayGetValueAtIndex(matching_items_array, i));
 
       base::ScopedCFTypeRef<CFDataRef> der_data(

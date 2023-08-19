@@ -21,8 +21,7 @@ class Status;
 class Timeout;
 
 // Tracks the navigation state of the page.
-class NavigationTracker : public DevToolsEventListener,
-                          public PageLoadStrategy {
+class NavigationTracker : public PageLoadStrategy {
  public:
   NavigationTracker(DevToolsClient* client,
                     WebView* web_view,

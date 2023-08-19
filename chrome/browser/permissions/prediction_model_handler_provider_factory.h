@@ -9,7 +9,7 @@
 
 namespace base {
 template <typename T>
-struct DefaultSingletonTraits;
+class NoDestructor;
 }
 namespace permissions {
 class PredictionModelHandlerProvider;
@@ -27,11 +27,12 @@ class PredictionModelHandlerProviderFactory
   static permissions::PredictionModelHandlerProvider* GetForBrowserContext(
       content::BrowserContext* context);
 
+  bool ServiceIsCreatedWithBrowserContext() const override;
+
  private:
   PredictionModelHandlerProviderFactory();
   ~PredictionModelHandlerProviderFactory() override;
-  friend struct base::DefaultSingletonTraits<
-      PredictionModelHandlerProviderFactory>;
+  friend base::NoDestructor<PredictionModelHandlerProviderFactory>;
 
   // BrowserContextKeyedServiceFactory:
   KeyedService* BuildServiceInstanceFor(

@@ -294,7 +294,7 @@ enum class FitToPageType {
   FILL_PAGE,
 };
 
-enum class MediaType {
+enum class MediaSize {
   CUSTOM_MEDIA,
 
   // North American standard sheet media names.
@@ -473,44 +473,83 @@ enum class MediaType {
 };
 
 struct Media {
+  // Use `MediaBuilder` below to build struct `Media` in an organized fashion.
   Media();
-
-  // Page size will be set to the default size um for `type`. Printable area
-  // will be set to match the page size.
-  explicit Media(MediaType type);
-
-  // Printable area will be set to `size_um`.
-  Media(MediaType type, const gfx::Size& size_um);
-
-  Media(MediaType type,
-        const gfx::Size& size_um,
-        const gfx::Rect& printable_area_um);
-
-  // Printable area will be set to `size_um`.
-  Media(const std::string& custom_display_name,
-        const std::string& vendor_id,
-        const gfx::Size& size_um);
-
-  Media(const std::string& custom_display_name,
-        const std::string& vendor_id,
-        const gfx::Size& size_um,
-        const gfx::Rect& printable_area_um);
 
   Media(const Media& other);
   Media& operator=(const Media& other);
-
-  bool MatchBySize();
 
   bool IsValid() const;
   bool operator==(const Media& other) const;
   bool operator!=(const Media& other) const { return !(*this == other); }
 
-  MediaType type;
+  MediaSize size_name;
   gfx::Size size_um;
   bool is_continuous_feed;
   std::string custom_display_name;
   std::string vendor_id;
   gfx::Rect printable_area_um;
+  // When `is_continuous_feed` is true, the min height will be stored in
+  // `size_um` and the max height is stored in `max_height_um`.  When
+  // `is_continuous_feed` is false, `max_height_um` is not used.  This only
+  // supports a variable height, not width, so the width is always fixed.
+  int max_height_um;
+};
+
+// Builds `Media` structs. The caller must call at least one method that sets
+// the name, and follow any special requirements described by the methods below.
+//
+// Note that the build result can be invalid, e.g. If the caller passes in an
+// empty size or forgets to specify the size.
+//
+// Note that there is no requirement that the size corresponds to the
+// `MediaSize`. e.g. `MediaSize::NA_LETTER` and a size of 100x200 is considered
+// valid.
+class MediaBuilder {
+ public:
+  MediaBuilder();
+
+  // Sets the name to `size_name` and clears the display name and vendor ID.
+  MediaBuilder& WithStandardName(MediaSize size_name);
+
+  // Sets the name to `MediaSize::CUSTOM_MEDIA`. Sets the display name and
+  // vendor ID based on the input parameters.
+  MediaBuilder& WithCustomName(const std::string& custom_display_name,
+                               const std::string& vendor_id);
+
+  // The default printable area is the entire medium.
+  MediaBuilder& WithSizeAndDefaultPrintableArea(const gfx::Size& size_um);
+  MediaBuilder& WithSizeAndPrintableArea(const gfx::Size& size_um,
+                                         const gfx::Rect& printable_area_um);
+  MediaBuilder& WithMaxHeight(int max_height_um);
+
+  // This is equivalent to calling WithCustomName(), except it also tries to
+  // match the name to a standard `MediaSize`.
+  // This requires the caller to call WithSizeAndDefaultPrintableArea() or
+  // WithSizeAndPrintableArea() first.
+  MediaBuilder& WithNameMaybeBasedOnSize(const std::string& custom_display_name,
+                                         const std::string& vendor_id);
+
+  // Sets the size and printable area based on the standard name, For example,
+  // if the name is `MediaSize::NA_LETTER`, then this sets the size to
+  // 215900x279400.
+  // This requires the caller to call WithStandardName() first with a name other
+  // than `MediaSize::CUSTOM_MEDIA`.
+  MediaBuilder& WithSizeAndPrintableAreaBasedOnStandardName();
+
+  // Can be called repeatedly to build `Media` structs.
+  Media Build() const;
+
+ private:
+  bool IsContinuousFeed() const;
+
+  MediaSize size_name_;
+  std::string custom_display_name_;
+  std::string vendor_id_;
+
+  gfx::Size size_um_;
+  gfx::Rect printable_area_um_;
+  int max_height_um_ = 0;
 };
 
 struct Interval {
@@ -527,6 +566,20 @@ struct Interval {
 
 typedef std::vector<Interval> PageRange;
 
+struct MediaType {
+  MediaType();
+  MediaType(const std::string& vendor_id,
+            const std::string& custom_display_name);
+
+  bool operator==(const MediaType& other) const;
+  bool operator!=(const MediaType& other) const { return !(*this == other); }
+
+  bool IsValid() const;
+
+  std::string vendor_id;
+  std::string custom_display_name;
+};
+
 class ContentTypeTraits;
 class PwgRasterConfigTraits;
 class VendorCapabilityTraits;
@@ -537,6 +590,7 @@ class MarginsTraits;
 class DpiTraits;
 class FitToPageTraits;
 class MediaTraits;
+class MediaTypeTraits;
 class PageRangeTraits;
 class CollateTraits;
 class CopiesCapabilityTraits;
@@ -556,6 +610,7 @@ typedef SelectionCapability<Margins, MarginsTraits> MarginsCapability;
 typedef SelectionCapability<Dpi, DpiTraits> DpiCapability;
 typedef SelectionCapability<FitToPageType, FitToPageTraits> FitToPageCapability;
 typedef SelectionCapability<Media, MediaTraits> MediaCapability;
+typedef SelectionCapability<MediaType, MediaTypeTraits> MediaTypeCapability;
 typedef ValueCapability<Copies, class CopiesCapabilityTraits> CopiesCapability;
 typedef EmptyCapability<class PageRangeTraits> PageRangeCapability;
 typedef BooleanCapability<class CollateTraits> CollateCapability;

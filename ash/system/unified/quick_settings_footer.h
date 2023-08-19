@@ -34,8 +34,14 @@ class QsBatteryInfoViewBase : public PillButton, public PowerStatus::Observer {
   QsBatteryInfoViewBase& operator=(const QsBatteryInfoViewBase&) = delete;
   ~QsBatteryInfoViewBase() override;
 
-  // Updates the subclass view's ui when `OnPowerStatusChanged`.
+  // Updates the subclass view's ui including button text/background color, text
+  // content, icons, etc.It can be applied to changes such as theme change,
+  // power status change,etc.
   virtual void Update() = 0;
+  // Updates battery icon and text with battery saver mode check.
+  void UpdateIconAndText(bool bsm_active = false);
+  // Builds the battery icon image.
+  void ConfigureIcon(bool bsm_active = false);
 
  private:
   // views::View:
@@ -45,6 +51,9 @@ class QsBatteryInfoViewBase : public PillButton, public PowerStatus::Observer {
 
   // PowerStatus::Observer:
   void OnPowerStatusChanged() override;
+
+  // PillButton:
+  void OnThemeChanged() override;
 };
 
 // A view that shows battery status.
@@ -56,9 +65,6 @@ class QsBatteryLabelView : public QsBatteryInfoViewBase {
   ~QsBatteryLabelView() override;
 
  private:
-  // PillButton:
-  void OnThemeChanged() override;
-
   // QsBatteryInfoViewBase:
   void Update() override;
 };
@@ -73,14 +79,8 @@ class QsBatteryIconView : public QsBatteryInfoViewBase {
   ~QsBatteryIconView() override;
 
  private:
-  // PillButton:
-  void OnThemeChanged() override;
-
   // QsBatteryInfoViewBase:
   void Update() override;
-
-  // Builds the battery icon image.
-  void ConfigureIcon();
 };
 
 // The footer view shown on the the bottom of the `QuickSettingsView`.
@@ -104,6 +104,10 @@ class ASH_EXPORT QuickSettingsFooter : public views::View {
   // Disables/Enables the `settings_button_` based on `kSettingsIconEnabled`
   // pref.
   void UpdateSettingsButtonState();
+
+  // Creates the container to carry the battery and settings button if there's
+  // any.
+  views::View* CreateEndContainer();
 
   // Owned.
   raw_ptr<IconButton, ExperimentalAsh> settings_button_ = nullptr;

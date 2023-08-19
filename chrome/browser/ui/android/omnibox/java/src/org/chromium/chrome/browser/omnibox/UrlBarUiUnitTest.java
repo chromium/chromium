@@ -164,6 +164,32 @@ public class UrlBarUiUnitTest {
     @Test
     @SmallTest
     @Feature("Omnibox")
+    public void testVisibleTextPrefixHint_ShortTld_LongPath_WithRtl() throws Exception {
+        final String domain = "www.test.com";
+        // Add a RTL character shortly after the TLD, so that it is visible.
+        final String path = "/aت" + TextUtils.join("", Collections.nCopies(500, "a"));
+        updateUrlBarText(domain + path, UrlBar.ScrollType.SCROLL_TO_TLD, domain.length());
+
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
+            float scrollXPosForEndOfUrlText =
+                    mUrlBar.getLayout().getPrimaryHorizontal(mUrlBar.getText().length());
+            assertThat(scrollXPosForEndOfUrlText,
+                    Matchers.greaterThan((float) mUrlBar.getMeasuredWidth()));
+        });
+
+        // Assert null visible hint when there is RTl text anywhere in the visible url
+        final CharSequence prefixHint = getVisibleTextPrefixHint();
+        Assert.assertNull(prefixHint);
+
+        // Append a string to the already long initial text and validate the prefix doesn't change.
+        updateUrlBarText(getUrlText() + "bbbbbbbbbbbbbbbbbbbbbbb", UrlBar.ScrollType.SCROLL_TO_TLD,
+                domain.length());
+        Assert.assertNull(prefixHint);
+    }
+
+    @Test
+    @SmallTest
+    @Feature("Omnibox")
     public void testVisibleTextPrefixHint_LongTld() throws Exception {
         final String domain = "www." + TextUtils.join("", Collections.nCopies(500, "a")) + ".com";
         updateUrlBarText(domain, UrlBar.ScrollType.SCROLL_TO_TLD, domain.length());
@@ -175,7 +201,11 @@ public class UrlBarUiUnitTest {
 
         updateUrlBarText(
                 getUrlText() + "/foooooo", UrlBar.ScrollType.SCROLL_TO_TLD, domain.length());
-        assertTextEquals(urlText + "/", getVisibleTextPrefixHint());
+        if (UrlBar.sScrollToTLDOptimizationsFlag.isEnabled()) {
+            assertTextEquals(urlText, getVisibleTextPrefixHint());
+        } else {
+            assertTextEquals(urlText + "/", getVisibleTextPrefixHint());
+        }
     }
 
     @Test

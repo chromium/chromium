@@ -612,7 +612,6 @@ void GCMClientImplTest::InitializeGCMClient() {
   chrome_build_info.product_category_for_subtypes = kProductCategoryForSubtypes;
   gcm_client_->Initialize(
       chrome_build_info, gcm_store_path(),
-      /*remove_account_mappings_with_email_key=*/true,
       task_environment_.GetMainThreadTaskRunner(),
       base::SingleThreadTaskRunner::GetCurrentDefault(), base::DoNothing(),
       base::MakeRefCounted<network::WeakWrapperSharedURLLoaderFactory>(

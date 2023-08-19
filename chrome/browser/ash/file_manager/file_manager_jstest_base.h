@@ -8,6 +8,7 @@
 #include <string>
 
 #include "base/files/file_path.h"
+#include "chrome/test/base/devtools_agent_coverage_observer.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/test_chrome_web_ui_controller_factory.h"
 
@@ -45,6 +46,9 @@ class FileManagerJsTestBase : public InProcessBrowserTest {
   std::unique_ptr<content::ScopedWebUIControllerFactoryRegistration>
       webui_controller_factory_registration_;
   base::FilePath base_path_;
+
+  // Handles collection of code coverage.
+  std::unique_ptr<DevToolsAgentCoverageObserver> coverage_handler_;
 };
 
 #endif  // CHROME_BROWSER_ASH_FILE_MANAGER_FILE_MANAGER_JSTEST_BASE_H_

@@ -185,7 +185,7 @@ dependencies {
     // Version 1.2 is needed by espresso-web, but we'll newer 1.2.1.
     androidTestCompile 'org.ccil.cowan.tagsoup:tagsoup:1.2.1'
 
-    String mockitoVersion = '5.3.1'
+    String mockitoVersion = '5.4.0'
     androidTestCompile "org.mockito:mockito-android:${mockitoVersion}"
     androidTestCompile "org.mockito:mockito-core:${mockitoVersion}"
     androidTestCompile "org.mockito:mockito-subclass:${mockitoVersion}"

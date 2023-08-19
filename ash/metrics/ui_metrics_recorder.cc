@@ -142,20 +142,27 @@ void UiMetricsRecorder::ReportEventLatency(
     std::vector<cc::EventLatencyTracker::LatencyData> latencies) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
+  constexpr base::TimeDelta kMaxLatency = base::Seconds(5);
   constexpr base::TimeDelta kLongLatency = base::Milliseconds(500);
   for (auto& latency : latencies) {
     const char* event_type = cc::EventMetrics::GetTypeName(latency.event_type);
     base::UmaHistogramCustomMicrosecondsTimes(
         base::StrCat({"Ash.EventLatency.", event_type, ".TotalLatency"}),
-        latency.total_latency, base::Milliseconds(1), base::Seconds(5), 100);
+        latency.total_latency, base::Milliseconds(1), kMaxLatency, 100);
     UMA_HISTOGRAM_CUSTOM_TIMES("Ash.EventLatency.TotalLatency",
                                latency.total_latency, base::Milliseconds(1),
-                               base::Seconds(5), 100);
+                               kMaxLatency, 100);
 
     if (IsCoreMeric(latency.event_type)) {
       UMA_HISTOGRAM_CUSTOM_TIMES("Ash.EventLatency.Core.TotalLatency",
                                  latency.total_latency, base::Milliseconds(1),
-                                 base::Seconds(5), 100);
+                                 kMaxLatency, 100);
+
+      if (latency.total_latency < kMaxLatency) {
+        UMA_HISTOGRAM_CUSTOM_TIMES(
+            "Ash.EventLatency.Core.NoOverflow.TotalLatency",
+            latency.total_latency, base::Milliseconds(1), kMaxLatency, 100);
+      }
     }
 
     if (latency.event_type != EventType::kGestureLongPress &&

@@ -19,6 +19,10 @@
 
 namespace ash {
 
+namespace {
+constexpr char kUserActionCancel[] = "cancel";
+}
+
 BrowserDataBackMigratorBase*
     LacrosDataBackwardMigrationScreen::migrator_for_testing_ = nullptr;
 
@@ -84,6 +88,21 @@ void LacrosDataBackwardMigrationScreen::OnProgress(int percent) {
   view_->SetProgressValue(percent);
 }
 
+void LacrosDataBackwardMigrationScreen::OnUserAction(
+    const base::Value::List& args) {
+  const std::string& action_id = args[0].GetString();
+
+  if (action_id == kUserActionCancel) {
+    LOG(WARNING) << "User cancelled backward migration.";
+    migrator_->CancelMigration(
+        base::BindOnce(&LacrosDataBackwardMigrationScreen::OnCanceled,
+                       weak_factory_.GetWeakPtr()));
+
+  } else {
+    BaseScreen::OnUserAction(args);
+  }
+}
+
 void LacrosDataBackwardMigrationScreen::OnMigrated(
     BrowserDataBackMigratorBase::Result result) {
   switch (result) {
@@ -94,6 +113,10 @@ void LacrosDataBackwardMigrationScreen::OnMigrated(
       view_->SetFailureStatus();
       break;
   }
+}
+
+void LacrosDataBackwardMigrationScreen::OnCanceled() {
+  chrome::AttemptRestart();
 }
 
 void LacrosDataBackwardMigrationScreen::HideImpl() {}

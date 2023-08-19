@@ -128,7 +128,7 @@ void SecureDnsManager::OnPrefChanged() {
 
   NetworkHandler::Get()
       ->network_metadata_store()
-      ->set_secure_dns_templates_with_identifiers_active(
+      ->SetSecureDnsTemplatesWithIdentifiersActive(
           doh_templates_uri_resolver_->GetDohWithIdentifiersActive());
 }
 

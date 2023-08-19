@@ -21,7 +21,7 @@ constexpr char16_t kEllipsisOneSpace[] = u"\u2006";
 // with a whitespace. If `is_value_masked` is true, replace oneDot ('\u2022')
 // with '*'.
 // This is useful to simplify the expectations in tests.
-std::u16string GetIbanValueGroupedByFour(const IBAN& iban,
+std::u16string GetIbanValueGroupedByFour(const Iban& iban,
                                          bool is_value_masked) {
   std::u16string identifierIbanValue =
       iban.GetIdentifierStringForAutofillDisplay(is_value_masked);
@@ -32,17 +32,17 @@ std::u16string GetIbanValueGroupedByFour(const IBAN& iban,
   return identifierIbanValue;
 }
 
-TEST(IBANTest, AssignmentOperator) {
+TEST(IbanTest, AssignmentOperator) {
   // Creates two IBANs with different parameters.
-  IBAN iban_0 = test::GetIBAN();
-  IBAN iban_1 = test::GetIBAN2();
+  Iban iban_0 = test::GetIban();
+  Iban iban_1 = test::GetIban2();
   iban_1 = iban_0;
 
   EXPECT_EQ(iban_0, iban_1);
 }
 
-TEST(IBANTest, GetMetadata) {
-  IBAN local_iban = test::GetIBAN();
+TEST(IbanTest, GetMetadata) {
+  Iban local_iban = test::GetIban();
   local_iban.set_use_count(2);
   local_iban.set_use_date(base::Time::FromDoubleT(25));
   AutofillMetadata local_metadata = local_iban.GetMetadata();
@@ -55,8 +55,8 @@ TEST(IBANTest, GetMetadata) {
 // Verify that we set nickname with the processed string. We replace all tabs
 // and newlines with whitespace, replace multiple spaces into a single one
 // and trim leading/trailing whitespace.
-TEST(IBANTest, SetNickname) {
-  IBAN iban;
+TEST(IbanTest, SetNickname) {
+  Iban iban;
 
   // Normal input nickname.
   iban.set_nickname(u"My doctor's IBAN");
@@ -83,8 +83,8 @@ TEST(IBANTest, SetNickname) {
   EXPECT_EQ(u"My doctor's IBAN", iban.nickname());
 }
 
-TEST(IBANTest, SetValue) {
-  IBAN iban;
+TEST(IbanTest, SetValue) {
+  Iban iban;
 
   // Verify middle whitespace was removed.
   iban.set_value(u"DE91 1000 0000 0123 4567 89");
@@ -103,8 +103,8 @@ TEST(IBANTest, SetValue) {
   EXPECT_EQ(u"DE91100000000123456789", iban.value());
 }
 
-TEST(IBANTest, SetRawData) {
-  IBAN iban;
+TEST(IbanTest, SetRawData) {
+  Iban iban;
 
   // Verify RawInfo can be correctly set and read.
   iban.SetRawInfoWithVerificationStatus(IBAN_VALUE,
@@ -113,10 +113,10 @@ TEST(IBANTest, SetRawData) {
   EXPECT_EQ(u"DE91100000000123456789", iban.GetRawInfo(IBAN_VALUE));
 }
 
-TEST(IBANTest, GetObfuscatedStringForValue_ValidIbanValue) {
+TEST(IbanTest, GetObfuscatedStringForValue_ValidIbanValue) {
   // Verify each case of an IBAN ending in 1, 2, 3, and 4 unobfuscated
   // digits.
-  IBAN iban;
+  Iban iban;
 
   iban.set_value(u"CH5604835012345678009");
 
@@ -147,86 +147,86 @@ TEST(IBANTest, GetObfuscatedStringForValue_ValidIbanValue) {
             GetIbanValueGroupedByFour(iban, /*is_value_masked=*/false));
 }
 
-TEST(IBANTest, ValidateIbanValue_ValidateOnLength) {
+TEST(IbanTest, ValidateIbanValue_ValidateOnLength) {
   // Empty string is an invalid IBAN value.
-  EXPECT_FALSE(IBAN::IsValid(u""));
+  EXPECT_FALSE(Iban::IsValid(u""));
 
   // The length of IBAN value is 15 which is invalid as valid IBAN value length
   // should be at least 16 digits and at most 33 digits long.
-  EXPECT_FALSE(IBAN::IsValid(u"AL1212341234123"));
+  EXPECT_FALSE(Iban::IsValid(u"AL1212341234123"));
 
   // The length of IBAN value is 35 which is invalid as valid IBAN value length
   // should be at least 16 digits and at most 33 digits long.
-  EXPECT_FALSE(IBAN::IsValid(u"AL121234123412341234123412341234123"));
+  EXPECT_FALSE(Iban::IsValid(u"AL121234123412341234123412341234123"));
 
   // Valid Belgium IBAN value with length of 16.
-  EXPECT_TRUE(IBAN::IsValid(u"BE71096123456769"));
+  EXPECT_TRUE(Iban::IsValid(u"BE71096123456769"));
 
   // Valid Russia IBAN value with length of 33.
-  EXPECT_TRUE(IBAN::IsValid(u"RU0204452560040702810412345678901"));
+  EXPECT_TRUE(Iban::IsValid(u"RU0204452560040702810412345678901"));
 }
 
-TEST(IBANTest, ValidateIbanValue_ModuloOnValue) {
+TEST(IbanTest, ValidateIbanValue_ModuloOnValue) {
   // The remainder of rearranged value of IBAN on division by 97 is 1
-  EXPECT_TRUE(IBAN::IsValid(u"GB82 WEST 1234 5698 7654 32"));
+  EXPECT_TRUE(Iban::IsValid(u"GB82 WEST 1234 5698 7654 32"));
 
   // The remainder of rearranged value of IBAN on division by 97 is not 1.
-  EXPECT_FALSE(IBAN::IsValid(u"GB83 WEST 1234 5698 7654 32"));
+  EXPECT_FALSE(Iban::IsValid(u"GB83 WEST 1234 5698 7654 32"));
 
   // The remainder of rearranged value of IBAN on division by 97 is not 1.
-  EXPECT_FALSE(IBAN::IsValid(u"AL36202111090000000001234567"));
+  EXPECT_FALSE(Iban::IsValid(u"AL36202111090000000001234567"));
 
   // The remainder of rearranged value of IBAN on division by 97 is not 1.
-  EXPECT_FALSE(IBAN::IsValid(u"DO21ACAU00000000000123456789"));
+  EXPECT_FALSE(Iban::IsValid(u"DO21ACAU00000000000123456789"));
 }
 
-TEST(IBANTest, ValidateIbanValue_ValueWithCharacter) {
+TEST(IbanTest, ValidateIbanValue_ValueWithCharacter) {
   // Valid Kuwait IBAN with multi whitespaces.
-  EXPECT_TRUE(IBAN::IsValid(u"KW81CB   KU00000000000   01234560101"));
+  EXPECT_TRUE(Iban::IsValid(u"KW81CB   KU00000000000   01234560101"));
 
   // Valid Kuwait IBAN with tab.
-  EXPECT_TRUE(IBAN::IsValid(u"KW81CBKU00000000000\t01234560101"));
+  EXPECT_TRUE(Iban::IsValid(u"KW81CBKU00000000000\t01234560101"));
 
   // Valid Kuwait IBAN with Carriage Return.
-  EXPECT_TRUE(IBAN::IsValid(u"KW81CBKU00000000000\r01234560101"));
+  EXPECT_TRUE(Iban::IsValid(u"KW81CBKU00000000000\r01234560101"));
 
   // Valid Kuwait IBAN with new line.
-  EXPECT_TRUE(IBAN::IsValid(u"KW81CBKU00000000000\n01234560101"));
+  EXPECT_TRUE(Iban::IsValid(u"KW81CBKU00000000000\n01234560101"));
 
   // Valid Kuwait IBAN with invalid special character.
-  EXPECT_FALSE(IBAN::IsValid(u"KW81CBKU00000000000*01234560101"));
+  EXPECT_FALSE(Iban::IsValid(u"KW81CBKU00000000000*01234560101"));
 
   // Valid Kuwait IBAN with invalid special character.
-  EXPECT_FALSE(IBAN::IsValid(u"KW81CBKU000000#0000001234560101"));
+  EXPECT_FALSE(Iban::IsValid(u"KW81CBKU000000#0000001234560101"));
 
   // Valid Kuwait IBAN with invalid special character.
-  EXPECT_FALSE(IBAN::IsValid(u"KW81CBKU000-0000000001234560101"));
+  EXPECT_FALSE(Iban::IsValid(u"KW81CBKU000-0000000001234560101"));
 }
 
-TEST(IBANTest, ValidateIbanValue_ValidateOnRegexAndCountry) {
+TEST(IbanTest, ValidateIbanValue_ValidateOnRegexAndCountry) {
   // Valid Kuwait IBAN.
-  EXPECT_TRUE(IBAN::IsValid(u"KW81CBKU0000000000001234560101"));
+  EXPECT_TRUE(Iban::IsValid(u"KW81CBKU0000000000001234560101"));
 
   // Valid Kuwait IBAN with lower case character in the value.
-  EXPECT_TRUE(IBAN::IsValid(u"Kw81CBKU0000000000001234560101"));
+  EXPECT_TRUE(Iban::IsValid(u"Kw81CBKU0000000000001234560101"));
 
   // The IBAN value does not match the IBAN value regex.
-  EXPECT_FALSE(IBAN::IsValid(u"KWA1CBKU0000000000001234560101"));
+  EXPECT_FALSE(Iban::IsValid(u"KWA1CBKU0000000000001234560101"));
 
   // Invalid Kuwait IBAN with incorrect IBAN length.
   // KW16 will be converted into 203216, and the remainder on 97 is 1.
-  EXPECT_FALSE(IBAN::IsValid(u"KW1600000000000000000"));
+  EXPECT_FALSE(Iban::IsValid(u"KW1600000000000000000"));
 
   // The IBAN value country code is invalid.
-  EXPECT_FALSE(IBAN::IsValid(u"XXA1CBKU0000000000001234560101"));
+  EXPECT_FALSE(Iban::IsValid(u"XXA1CBKU0000000000001234560101"));
 }
 
-TEST(IBANTest, IsIbanApplicableInCountry) {
+TEST(IbanTest, IsIbanApplicableInCountry) {
   // Is an IBAN-supported country.
-  EXPECT_TRUE(IBAN::IsIbanApplicableInCountry("KW"));
+  EXPECT_TRUE(Iban::IsIbanApplicableInCountry("KW"));
 
   // Not an IBAN-supported country.
-  EXPECT_FALSE(IBAN::IsIbanApplicableInCountry("AB"));
+  EXPECT_FALSE(Iban::IsIbanApplicableInCountry("AB"));
 }
 
 }  // namespace autofill

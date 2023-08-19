@@ -247,17 +247,6 @@ UnionTraits<blink::mojom::HomeTabUnionDataView,
   }
 }
 
-blink::mojom::NewTabButtonUnionDataView::Tag
-UnionTraits<blink::mojom::NewTabButtonUnionDataView,
-            ::blink::Manifest::TabStrip::NewTabButton>::
-    GetTag(const ::blink::Manifest::TabStrip::NewTabButton& value) {
-  if (absl::holds_alternative<blink::mojom::TabStripMemberVisibility>(value)) {
-    return blink::mojom::NewTabButtonUnion::Tag::kVisibility;
-  } else {
-    return blink::mojom::NewTabButtonUnion::Tag::kParams;
-  }
-}
-
 bool UnionTraits<blink::mojom::HomeTabUnionDataView,
                  ::blink::Manifest::TabStrip::HomeTab>::
     Read(blink::mojom::HomeTabUnionDataView data,
@@ -271,27 +260,6 @@ bool UnionTraits<blink::mojom::HomeTabUnionDataView,
       return true;
     case blink::mojom::HomeTabUnionDataView::Tag::kParams:
       ::blink::Manifest::HomeTabParams params;
-      if (!data.ReadParams(&params))
-        return false;
-      *out = params;
-      return true;
-  }
-  return false;
-}
-
-bool UnionTraits<blink::mojom::NewTabButtonUnionDataView,
-                 ::blink::Manifest::TabStrip::NewTabButton>::
-    Read(blink::mojom::NewTabButtonUnionDataView data,
-         ::blink::Manifest::TabStrip::NewTabButton* out) {
-  switch (data.tag()) {
-    case blink::mojom::NewTabButtonUnionDataView::Tag::kVisibility:
-      ::blink::mojom::TabStripMemberVisibility visibility;
-      if (!data.ReadVisibility(&visibility))
-        return false;
-      *out = visibility;
-      return true;
-    case blink::mojom::NewTabButtonUnionDataView::Tag::kParams:
-      ::blink::Manifest::NewTabButtonParams params;
       if (!data.ReadParams(&params))
         return false;
       *out = params;

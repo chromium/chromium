@@ -166,8 +166,8 @@ void UnloadNativeLibrary(NativeLibrary library) {
 }
 
 void* GetFunctionPointerFromNativeLibrary(NativeLibrary library,
-                                          StringPiece name) {
-  return reinterpret_cast<void*>(GetProcAddress(library, name.data()));
+                                          const char* name) {
+  return reinterpret_cast<void*>(GetProcAddress(library, name));
 }
 
 std::string GetNativeLibraryName(StringPiece name) {

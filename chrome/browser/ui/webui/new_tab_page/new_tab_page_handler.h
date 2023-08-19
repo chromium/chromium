@@ -196,6 +196,7 @@ class NewTabPageHandler : public new_tab_page::mojom::PageHandler,
   bool IsCustomLinksEnabled() const;
   bool IsShortcutsVisible() const;
   void NotifyCustomizeChromeSidePanelVisibilityChanged(bool is_open);
+  void MaybeShowWebstoreToast();
 
   ChooseLocalCustomBackgroundCallback choose_local_custom_background_callback_;
   raw_ptr<NtpBackgroundService> ntp_background_service_;

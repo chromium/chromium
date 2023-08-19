@@ -52,8 +52,7 @@ BoxReflection BoxReflectionForPaintLayer(const PaintLayer& layer,
   if (!mask_nine_piece.HasImage())
     return BoxReflection(direction, offset, PaintRecord(), gfx::RectF());
 
-  PhysicalRect mask_rect(PhysicalOffset(),
-                         layer.GetLayoutBox()->FrameRect().Size());
+  PhysicalRect mask_rect(PhysicalOffset(), layer.GetLayoutBox()->Size());
   PhysicalRect mask_bounding_rect(mask_rect);
   mask_bounding_rect.Expand(style.ImageOutsets(mask_nine_piece));
 

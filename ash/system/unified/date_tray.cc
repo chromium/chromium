@@ -6,6 +6,7 @@
 
 #include "ash/constants/ash_features.h"
 #include "ash/constants/tray_background_view_catalog.h"
+#include "ash/glanceables/glanceables_v2_controller.h"
 #include "ash/public/cpp/ash_view_ids.h"
 #include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"
@@ -81,7 +82,9 @@ void DateTray::ShowBubble() {
     return;
   }
 
-  if (features::AreGlanceablesV2Enabled()) {
+  if (ash::Shell::Get()
+          ->glanceables_v2_controller()
+          ->AreGlanceablesAvailable()) {
     ShowGlanceableBubble();
   }
 }
@@ -91,7 +94,7 @@ void DateTray::CloseBubble() {
     return;
   }
 
-  if (features::AreGlanceablesV2Enabled()) {
+  if (bubble_) {
     HideGlanceableBubble();
   } else {
     // Lets the `unified_system_tray_` close the bubble since it's the owner of
@@ -101,9 +104,13 @@ void DateTray::CloseBubble() {
 }
 
 void DateTray::ClickedOutsideBubble() {
-  if (features::AreGlanceablesV2Enabled()) {
+  if (bubble_) {
     HideGlanceableBubble();
   }
+}
+
+void DateTray::UpdateTrayItemColor(bool is_active) {
+  time_view_->UpdateLabelOrImageViewColor(is_active);
 }
 
 void DateTray::OnOpeningCalendarView() {
@@ -122,7 +129,9 @@ void DateTray::OnButtonPressed(const ui::Event& event) {
     return;
   }
 
-  if (features::AreGlanceablesV2Enabled()) {
+  if (ash::Shell::Get()
+          ->glanceables_v2_controller()
+          ->AreGlanceablesAvailable()) {
     // Hide the unified_system_tray_ bubble.
     unified_system_tray_->CloseBubble();
     // Open the glanceables bubble.

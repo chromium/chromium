@@ -30,14 +30,17 @@ static_library("browser") {
     "content_settings_rule.cc",
     "content_settings_rule.h",
     "content_settings_type_set.h",
+    "content_settings_uma_util.cc",
+    "content_settings_uma_util.h",
     "content_settings_utils.cc",
     "content_settings_utils.h",
     "cookie_settings.cc",
     "cookie_settings.h",
     "host_content_settings_map.cc",
     "host_content_settings_map.h",
-    "local_network_settings.cc",
-    "local_network_settings.h",
+    "private_network_settings.cc",
+    "private_network_settings.h",
+    "user_modifiable_provider.cc",
     "user_modifiable_provider.h",
     "website_settings_info.cc",
     "website_settings_info.h",
@@ -45,8 +48,9 @@ static_library("browser") {
     "website_settings_registry.h",
   ]
 
+  public_deps = [ "//base" ]
   deps = [
-    "//base",
+    "//build:blink_buildflags",
     "//build:chromeos_buildflags",
     "//components/content_settings/core/common",
     "//components/keyed_service/core",
@@ -65,13 +69,14 @@ static_library("browser") {
     sources += [
       "cookie_settings_policy_handler.cc",
       "cookie_settings_policy_handler.h",
-      "insecure_local_network_policy_handler.cc",
-      "insecure_local_network_policy_handler.h",
+      "insecure_private_network_policy_handler.cc",
+      "insecure_private_network_policy_handler.h",
     ]
   }
 
   if (use_blink) {
     deps += [
+      "//components/permissions:permissions_common",
       "//components/policy:generated",
       "//components/policy/core/browser",
       "//components/privacy_sandbox:privacy_sandbox_prefs",
@@ -131,4 +136,14 @@ source_set("unit_tests") {
       "//third_party/blink/public/common:headers",
     ]
   }
+}
+
+source_set("test_support") {
+  testonly = true
+  sources = [
+    "content_settings_mock_observer.cc",
+    "content_settings_mock_observer.h",
+  ]
+  public_deps = [ ":browser" ]
+  deps = [ "//testing/gmock" ]
 }

@@ -2,14 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {PostMessageAPIClient} from '//resources/ash/common/post_message_api/post_message_api_client.js';
-import {RequestHandler} from '//resources/ash/common/post_message_api/post_message_api_request_handler.js';
 import {PromiseResolver} from '//resources/js/promise_resolver.js';
 import {ProjectorError} from 'chrome-untrusted://projector/common/message_types.js';
 
+import {installLaunchHandler} from './launch.js';
 import {browserProxy} from './untrusted_projector_browser_proxy.js';
-
-const TARGET_URL = 'chrome://projector/';
 
 // Maps video file id to promises of video files.
 const loadingFiles = new Map /*<string, PromiseResolver>*/ ();
@@ -212,109 +209,56 @@ const CLIENT_DELEGATE = {
   },
 };
 
-/**
- * Class that implements the RequestHandler inside the Projector untrusted
- * scheme for projector app.
- */
-export class UntrustedAppRequestHandler extends RequestHandler {
-  /**
-   * @param {!Window} parentWindow  The embedder window from which requests
-   *     come.
-   */
-  constructor(parentWindow) {
-    super(null, TARGET_URL, TARGET_URL);
-    this.targetWindow_ = parentWindow;
-    this.callbackRouter_ = browserProxy.getProjectorCallbackRouter();
 
-    this.callbackRouter_.onNewScreencastPreconditionChanged.addListener(
-        (precondition) => {
-          try {
-            getAppElement().onNewScreencastPreconditionChanged(precondition);
-          } catch (error) {
-            console.error(
-                'Unable to notify onNewScreencastPreconditionChanged method',
-                error);
-          }
-        });
-    this.callbackRouter_.onSodaInstallProgressUpdated.addListener(
-        (progress) => {
-          getAppElement().onSodaInstallProgressUpdated(progress);
-        });
-    this.callbackRouter_.onSodaInstallError.addListener(() => {
-      getAppElement().onSodaInstallError();
-    });
-    this.callbackRouter_.onSodaInstalled.addListener(() => {
-      getAppElement().onSodaInstalled();
-    });
-    this.callbackRouter_.onScreencastsStateChange.addListener(
-        (pendingScreencasts) => {
-          getAppElement().onScreencastsStateChange(pendingScreencasts);
-        });
-
-    this.registerMethod('onFileLoaded', (args) => {
-      if (args.length !== 3) {
-        console.error('Invalid argument to onFileLoaded', args);
-        return;
-      }
-      const fileId = args[0];
-      const file = args[1];
-      const error = args[2];
-      const resolver = getOrCreateLoadFilePromise(fileId);
-      if (!file || error) {
-        resolver.reject(error);
-        return;
-      }
-      resolver.resolve(file);
-    });
+let initialized = false;
+function initCommunication() {
+  if (initialized) {
+    return;
   }
+  initialized = true;
 
-  /** @override */
-  targetWindow() {
-    return this.targetWindow_;
-  }
-}
+  // Set the client delegate to the app element.
+  getAppElement().setClientDelegate(CLIENT_DELEGATE);
 
-/**
- * This is a class that is used to setup the duplex communication channels
- * between this origin, chrome-untrusted://projector/* and the embedder content.
- */
-export class AppUntrustedCommFactory {
-  /**
-   * Creates the instances of PostMessageAPIClient and Requesthandler.
-   */
-  static maybeCreateInstances() {
-    if (AppUntrustedCommFactory.client_ ||
-        AppUntrustedCommFactory.requestHandler_) {
+  // Install launch handler to observe files sent from
+  // Drivefs.
+  installLaunchHandler((fileId, file, error) => {
+    const resolver = getOrCreateLoadFilePromise(fileId);
+    if (!file || error) {
+      resolver.reject(error);
       return;
     }
+    resolver.resolve(file);
+  });
 
-    AppUntrustedCommFactory.client_ =
-        new PostMessageAPIClient(TARGET_URL, window.parent);
-
-    AppUntrustedCommFactory.requestHandler_ =
-        new UntrustedAppRequestHandler(window.parent);
-
-    getAppElement().setClientDelegate(CLIENT_DELEGATE);
-  }
-
-  /**
-   * In order to use this class, please do the following (e.g. to check if it is
-   * possible to start a new ProjectorSession):
-   * const canStart = await AppUntrustedCommFactory. getPostMessageAPIClient().
-   *     canStartProjectorSession();
-   * @return {!PostMessageAPIClient}
-   */
-  static getPostMessageAPIClient() {
-    // .AppUntrustedCommFactory.client_ should be available. However to be on
-    // the cautious side create an instance here if getPostMessageAPIClient is
-    // triggered before the page finishes loading.
-    AppUntrustedCommFactory.maybeCreateInstances();
-    return AppUntrustedCommFactory.client_;
-  }
+  const callbackRouter = browserProxy.getProjectorCallbackRouter();
+  // Setup the callback routers to handle requests from browser process.
+  callbackRouter.onNewScreencastPreconditionChanged.addListener(
+      (precondition) => {
+        try {
+          getAppElement().onNewScreencastPreconditionChanged(precondition);
+        } catch (error) {
+          console.error(
+              'Unable to notify onNewScreencastPreconditionChanged method',
+              error);
+        }
+      });
+  callbackRouter.onSodaInstallProgressUpdated.addListener((progress) => {
+    getAppElement().onSodaInstallProgressUpdated(progress);
+  });
+  callbackRouter.onSodaInstallError.addListener(() => {
+    getAppElement().onSodaInstallError();
+  });
+  callbackRouter.onSodaInstalled.addListener(() => {
+    getAppElement().onSodaInstalled();
+  });
+  callbackRouter.onScreencastsStateChange.addListener((pendingScreencasts) => {
+    getAppElement().onScreencastsStateChange(pendingScreencasts);
+  });
 }
 
 waitForAppElement().then(() => {
   // Create instances of the singletons (PostMessageAPIClient and
   // RequestHandler) when the document has finished loading.
-  AppUntrustedCommFactory.maybeCreateInstances();
+  initCommunication();
 });

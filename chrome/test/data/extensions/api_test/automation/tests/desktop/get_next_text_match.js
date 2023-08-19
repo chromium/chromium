@@ -4,12 +4,12 @@
 
 var allTests = [
   function testGetMatch() {
-    assertTrue(!!rootNode.getNextTextMatch('outer', false), 'Forward error');
-    assertTrue(!!rootNode.getNextTextMatch('OUTER', false), 'Case error');
-    assertFalse(!!rootNode.getNextTextMatch('outer', true), 'No obj expected');
+    assertTrue(!!rootNode.getNextTextMatch('inner', false), 'Forward error');
+    assertTrue(!!rootNode.getNextTextMatch('Inner', false), 'Case error');
+    assertFalse(!!rootNode.getNextTextMatch('inner', true), 'No obj expected');
     assertFalse(!!rootNode.getNextTextMatch('asdf', false), 'no obj expected');
     chrome.test.succeed();
   },
 ];
 
-setUpAndRunTestsInPage(allTests, 'iframe_outer.html');
+setUpAndRunTestsInPage(allTests, 'iframe_inner.html');

@@ -5,23 +5,22 @@
 #ifndef ASH_CLIPBOARD_VIEWS_CLIPBOARD_HISTORY_DELETE_BUTTON_H_
 #define ASH_CLIPBOARD_VIEWS_CLIPBOARD_HISTORY_DELETE_BUTTON_H_
 
-#include "ash/style/close_button.h"
 #include "base/memory/raw_ptr.h"
 #include "ui/base/metadata/metadata_header_macros.h"
-
-namespace views {
-class InkDropContainerView;
-}  // namespace views
+#include "ui/views/controls/button/image_button.h"
+#include "ui/views/view_targeter_delegate.h"
 
 namespace ash {
 class ClipboardHistoryItemView;
 
 // The button to delete the menu item and its corresponding clipboard data.
-class ClipboardHistoryDeleteButton : public CloseButton {
+class ClipboardHistoryDeleteButton : public views::ImageButton,
+                                     public views::ViewTargeterDelegate {
  public:
   METADATA_HEADER(ClipboardHistoryDeleteButton);
 
-  explicit ClipboardHistoryDeleteButton(ClipboardHistoryItemView* listener);
+  ClipboardHistoryDeleteButton(ClipboardHistoryItemView* listener,
+                               const std::u16string& item_text);
   ClipboardHistoryDeleteButton(const ClipboardHistoryDeleteButton& rhs) =
       delete;
   ClipboardHistoryDeleteButton& operator=(
@@ -32,16 +31,21 @@ class ClipboardHistoryDeleteButton : public CloseButton {
   // views::ImageButton:
   void AddLayerToRegion(ui::Layer* layer, views::LayerRegion region) override;
   void OnClickCanceled(const ui::Event& event) override;
+  void OnThemeChanged() override;
   void RemoveLayerFromRegions(ui::Layer* layer) override;
+
+  // views::ViewTargeterDelegate:
+  bool DoesIntersectRect(const views::View* target,
+                         const gfx::Rect& rect) const override;
 
   // Used to accommodate the ink drop layer. It ensures that the ink drop is
   // above the view background.
-  raw_ptr<views::InkDropContainerView, ExperimentalAsh> ink_drop_container_ =
-      nullptr;
+  raw_ptr<views::View, ExperimentalAsh> ink_drop_container_ = nullptr;
 
   // The listener of button events.
   const raw_ptr<ClipboardHistoryItemView, ExperimentalAsh> listener_;
 };
+
 }  // namespace ash
 
 #endif  // ASH_CLIPBOARD_VIEWS_CLIPBOARD_HISTORY_DELETE_BUTTON_H_

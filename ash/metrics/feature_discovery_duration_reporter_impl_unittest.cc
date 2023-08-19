@@ -75,9 +75,11 @@ class FeatureDiscoveryDurationReporterImplTest : public AshTestBase {
                                    /*provide_pref_service=*/false);
 
     auto user_1_prefs = std::make_unique<TestingPrefServiceSimple>();
-    RegisterUserProfilePrefs(user_1_prefs->registry(), /*for_test=*/true);
+    RegisterUserProfilePrefs(user_1_prefs->registry(), /*country=*/"",
+                             /*for_test=*/true);
     auto user_2_prefs = std::make_unique<TestingPrefServiceSimple>();
-    RegisterUserProfilePrefs(user_2_prefs->registry(), /*for_test=*/true);
+    RegisterUserProfilePrefs(user_2_prefs->registry(), /*country=*/"",
+                             /*for_test=*/true);
     session_client->SetUserPrefService(primary_account_id_,
                                        std::move(user_1_prefs));
     session_client->SetUserPrefService(secondary_account_id_,

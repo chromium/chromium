@@ -17,8 +17,8 @@ namespace bindings {
 // SyncIteratorBase is the common base class of all sync iterator classes.
 // Most importantly this class provides a way of type dispatching (e.g.
 // overload resolutions, SFINAE technique, etc.) so that it's possible to
-// distinguish sync pair iterators from anything else.  Also it provides
-// common implementation of sync pair iterators.
+// distinguish sync iterators from anything else. Also it provides common
+// implementation of sync iterators.
 class PLATFORM_EXPORT SyncIteratorBase : public ScriptWrappable {
  public:
   // https://webidl.spec.whatwg.org/#default-iterator-object-kind
@@ -60,6 +60,9 @@ class PLATFORM_EXPORT SyncIteratorBase : public ScriptWrappable {
 
 }  // namespace bindings
 
+// This class template is specialized by the bindings code generator for each
+// class T which implements an IDL interface declared to be iterable, maplike,
+// or setlike.
 template <typename T>
 class SyncIterator;
 

@@ -19,7 +19,7 @@ class ValuesOverridden {
     private Map<String, String> mOverridesTestFeatures;
 
     @VisibleForTesting
-    void setOverrideTestValue(String preferenceKey, String overrideValue) {
+    void setOverrideForTesting(String preferenceKey, String overrideValue) {
         enableOverrides();
         mOverridesTestFeatures.put(preferenceKey, overrideValue);
     }

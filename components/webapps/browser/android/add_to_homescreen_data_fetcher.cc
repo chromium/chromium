@@ -58,6 +58,8 @@ InstallableParams ParamsToPerformManifestAndIconFetch() {
   params.valid_primary_icon = true;
   params.prefer_maskable_icon =
       WebappsIconUtils::DoesAndroidSupportMaskableIcons();
+  params.fetch_favicon =
+      base::FeatureList::IsEnabled(features::kUniversalInstallIcon);
   return params;
 }
 
@@ -65,8 +67,8 @@ InstallableParams ParamsToPerformInstallableCheck() {
   InstallableParams params;
   params.check_eligibility = true;
   params.valid_manifest = true;
-  params.has_worker = !features::SkipInstallServiceWorkerCheck();
-  params.wait_for_worker = !features::SkipInstallServiceWorkerCheck();
+  params.has_worker = false;
+  params.wait_for_worker = false;
   return params;
 }
 
@@ -110,6 +112,30 @@ void RecordAddToHomescreenDialogDuration(base::TimeDelta duration) {
   UMA_HISTOGRAM_TIMES("Webapp.AddToHomescreenDialog.Timeout", duration);
 }
 
+void RecordMobileCapableUserActions(mojom::WebPageMobileCapable mobile_capable,
+                                    bool has_manifest) {
+  if (has_manifest) {
+    base::RecordAction(base::UserMetricsAction("webapps.AddShortcut.Manifest"));
+    return;
+  }
+
+  // Record the use of web-app-capable meta flag.
+  switch (mobile_capable) {
+    case mojom::WebPageMobileCapable::ENABLED:
+      base::RecordAction(
+          base::UserMetricsAction("webapps.AddShortcut.AppShortcut"));
+      break;
+    case mojom::WebPageMobileCapable::ENABLED_APPLE:
+      base::RecordAction(
+          base::UserMetricsAction("webapps.AddShortcut.AppShortcutApple"));
+      break;
+    case mojom::WebPageMobileCapable::UNSPECIFIED:
+      base::RecordAction(
+          base::UserMetricsAction("webapps.AddShortcut.Bookmark"));
+      break;
+  }
+}
+
 }  // namespace
 
 AddToHomescreenDataFetcher::AddToHomescreenDataFetcher(
@@ -145,47 +171,10 @@ void AddToHomescreenDataFetcher::OnDidGetWebPageMetadata(
   if (!web_contents_)
     return;
 
-  // Note, the title should have already been clipped on the renderer side.
-  // TODO(https://crbug.com/673422): Would be nice if this constraint could be
-  // specified directly in the mojom file and enforced automatically.
-  if (web_page_metadata->application_name.size() > kMaxMetaTagAttributeLength) {
-    mojo::ReportBadMessage("application_name is too long");
-    return;
-  }
+  shortcut_info_.user_title = web_contents_->GetTitle();
+  shortcut_info_.UpdateFromWebPageMetadata(*web_page_metadata);
 
-  // Set the user-editable title to be the page's title.
-  std::u16string app_name;
-  base::TrimWhitespace(web_page_metadata->application_name,
-                       base::TrimPositions::TRIM_ALL, &app_name);
-  shortcut_info_.user_title =
-      app_name.empty() ? web_contents_->GetTitle() : app_name;
-  shortcut_info_.short_name = shortcut_info_.user_title;
-  shortcut_info_.name = shortcut_info_.user_title;
-
-  if (web_page_metadata->mobile_capable ==
-          mojom::WebPageMobileCapable::ENABLED ||
-      web_page_metadata->mobile_capable ==
-          mojom::WebPageMobileCapable::ENABLED_APPLE) {
-    shortcut_info_.display = blink::mojom::DisplayMode::kStandalone;
-    shortcut_info_.UpdateSource(
-        ShortcutInfo::SOURCE_ADD_TO_HOMESCREEN_STANDALONE);
-  }
-
-  // Record what type of shortcut was added by the user.
-  switch (web_page_metadata->mobile_capable) {
-    case mojom::WebPageMobileCapable::ENABLED:
-      base::RecordAction(
-          base::UserMetricsAction("webapps.AddShortcut.AppShortcut"));
-      break;
-    case mojom::WebPageMobileCapable::ENABLED_APPLE:
-      base::RecordAction(
-          base::UserMetricsAction("webapps.AddShortcut.AppShortcutApple"));
-      break;
-    case mojom::WebPageMobileCapable::UNSPECIFIED:
-      base::RecordAction(
-          base::UserMetricsAction("webapps.AddShortcut.Bookmark"));
-      break;
-  }
+  mobile_capable_meta_ = web_page_metadata->mobile_capable;
 
   // Kick off a timeout for downloading web app manifest data. If we haven't
   // finished within the timeout, fall back to using any fetched icon, or at
@@ -228,8 +217,10 @@ void AddToHomescreenDataFetcher::OnDidGetManifestAndIcons(
 
   is_waiting_for_manifest_ = false;
 
+  RecordMobileCapableUserActions(mobile_capable_meta_,
+                                 !blink::IsEmptyManifest(*data.manifest));
+
   if (!blink::IsEmptyManifest(*data.manifest)) {
-    base::RecordAction(base::UserMetricsAction("webapps.AddShortcut.Manifest"));
     shortcut_info_.UpdateFromManifest(*data.manifest);
     shortcut_info_.manifest_url = (*data.manifest_url);
   }
@@ -237,9 +228,8 @@ void AddToHomescreenDataFetcher::OnDidGetManifestAndIcons(
   // Do this after updating from the manifest for the case where a site has
   // a manifest with name and standalone specified, but no icons.
   if (blink::IsEmptyManifest(*data.manifest) || !data.primary_icon) {
-    DCHECK_GT(data.errors.size(), 0u);
-    if (!data.errors.empty())
-      installable_status_code_ = data.errors[0];
+    DCHECK(!data.errors.empty());
+    installable_status_code_ = data.GetFirstError();
     observer_->OnUserTitleAvailable(shortcut_info_.user_title,
                                     shortcut_info_.url,
                                     /*is_webapk_compatible=*/false);
@@ -269,11 +259,10 @@ void AddToHomescreenDataFetcher::OnDidPerformInstallableCheck(
     return;
 
   bool webapk_compatible =
-      (data.NoBlockingErrors() && data.valid_manifest &&
-       data.worker_check_passed &&
+      (data.errors.empty() && data.valid_manifest &&
        WebappsUtils::AreWebManifestUrlsWebApkCompatible(*data.manifest));
-  if (!webapk_compatible && !data.errors.empty()) {
-    installable_status_code_ = data.errors[0];
+  if (!webapk_compatible) {
+    installable_status_code_ = data.GetFirstError();
   }
   observer_->OnUserTitleAvailable(
       webapk_compatible ? shortcut_info_.name : shortcut_info_.user_title,
@@ -298,20 +287,13 @@ void AddToHomescreenDataFetcher::FetchFavicon() {
   if (!web_contents_)
     return;
 
-  // Grab the best, largest icon we can find to represent this bookmark.
-  std::vector<favicon_base::IconTypeSet> icon_types = {
-      {favicon_base::IconType::kWebManifestIcon},
-      {favicon_base::IconType::kFavicon},
-      {favicon_base::IconType::kTouchPrecomposedIcon,
-       favicon_base::IconType::kTouchIcon}};
-
   // Using favicon if its size is not smaller than platform required size,
   // otherwise using the largest icon among all available icons.
   int threshold_to_get_any_largest_icon =
       WebappsIconUtils::GetIdealHomescreenIconSizeInPx() - 1;
   favicon::GetLargeFaviconProvider(web_contents_->GetBrowserContext())
-      ->GetLargestRawFaviconForPageURL(
-          shortcut_info_.url, icon_types, threshold_to_get_any_largest_icon,
+      ->GetLargeIconRawBitmapForPageUrl(
+          shortcut_info_.url, threshold_to_get_any_largest_icon,
           base::BindOnce(&AddToHomescreenDataFetcher::OnFaviconFetched,
                          weak_ptr_factory_.GetWeakPtr()),
           &favicon_task_tracker_);
@@ -321,14 +303,16 @@ void AddToHomescreenDataFetcher::OnFaviconFetched(
     const favicon_base::FaviconRawBitmapResult& bitmap_result) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
-  if (!web_contents_)
+  if (!web_contents_) {
     return;
+  }
 
   shortcut_info_.best_primary_icon_url = bitmap_result.icon_url;
 
-  // The user is waiting for the icon to be processed before they can proceed
-  // with add to homescreen. But if we shut down, there's no point starting the
-  // image processing. Use USER_VISIBLE with MayBlock and SKIP_ON_SHUTDOWN.
+  // The user is waiting for the icon to be processed before they can
+  // proceed with add to homescreen. But if we shut down, there's no point
+  // starting the image processing. Use USER_VISIBLE with MayBlock and
+  // SKIP_ON_SHUTDOWN.
   base::ThreadPool::PostTask(
       FROM_HERE,
       {base::MayBlock(), base::TaskPriority::USER_VISIBLE,

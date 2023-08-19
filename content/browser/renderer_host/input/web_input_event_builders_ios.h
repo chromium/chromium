@@ -30,10 +30,12 @@ class CONTENT_EXPORT WebGestureEventBuilder {
 
 class CONTENT_EXPORT WebTouchEventBuilder {
  public:
-  static blink::WebTouchEvent Build(blink::WebInputEvent::Type type,
-                                    UITouch* touch,
-                                    UIEvent* event,
-                                    UIView* view);
+  static blink::WebTouchEvent Build(
+      blink::WebInputEvent::Type type,
+      UITouch* touch,
+      UIEvent* event,
+      UIView* view,
+      const absl::optional<gfx::Vector2dF>& view_offset);
 };
 
 }  // namespace content

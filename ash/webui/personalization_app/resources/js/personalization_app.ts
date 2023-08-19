@@ -14,11 +14,11 @@ import './ambient/albums_subpage_element.js';
 import './ambient/animation_theme_item_element.js';
 import './ambient/animation_theme_list_element.js';
 import './ambient/art_album_dialog_element.js';
+import './ambient/ambient_duration_element.js';
 import './ambient/ambient_preview_large_element.js';
 import './ambient/ambient_preview_small_element.js';
 import './ambient/ambient_subpage_element.js';
 import './ambient/ambient_weather_element.js';
-import './ambient/duration_list_element.js';
 import './ambient/toggle_row_element.js';
 import './ambient/topic_source_item_element.js';
 import './ambient/topic_source_list_element.js';
@@ -43,8 +43,8 @@ import './user/user_subpage_element.js';
 import './utils.js';
 import './wallpaper/index.js';
 
-import {loadTimeData} from 'chrome://resources/ash/common/load_time_data.m.js';
-import {startColorChangeUpdater} from 'chrome://resources/cr_components/color_change_listener/colors_css_updater.js';
+import {ColorChangeUpdater} from 'chrome://resources/cr_components/color_change_listener/colors_css_updater.js';
+import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 
 import {isPersonalizationJellyEnabled} from './load_time_booleans.js';
 import {emptyState} from './personalization_state.js';
@@ -92,6 +92,7 @@ export {setDarkModeEnabledAction, SetDarkModeEnabledAction, setColorSchemeAction
 export {setThemeProviderForTesting} from './theme/theme_interface_provider.js';
 export {ColorSchemeIconSvgElement} from './theme/color_scheme_icon_svg_element.js';
 export {DynamicColorElement} from './theme/dynamic_color_element.js';
+export {getThemeProvider} from './theme/theme_interface_provider.js';
 export {ThemeObserver} from './theme/theme_observer.js';
 export {TimeOfDayBannerElement} from './time_of_day_banner_element.js';
 export {AvatarCamera, AvatarCameraMode} from './user/avatar_camera_element.js';
@@ -110,8 +111,8 @@ export {GooglePhotosPhotosByAlbumId} from './wallpaper/google_photos_photos_by_a
 export {GooglePhotosPhotos, GooglePhotosPhotosRow, GooglePhotosPhotosSection} from './wallpaper/google_photos_photos_element.js';
 export {GooglePhotosSharedAlbumDialog, AcceptEvent} from './wallpaper/google_photos_shared_album_dialog_element.js';
 export {GooglePhotosZeroState} from './wallpaper/google_photos_zero_state_element.js';
+export {DEFAULT_COLOR_SCHEME} from './theme/utils.js';
 export {LocalImages} from './wallpaper/local_images_element.js';
-export {TimeOfDayAcceptEvent, TimeOfDayWallpaperDialog} from './wallpaper/time_of_day_wallpaper_dialog_element.js';
 export {isDefaultImage, isFilePath, isGooglePhotosPhoto, isWallpaperImage} from './wallpaper/utils.js';
 export * from './wallpaper/wallpaper_actions.js';
 export {WallpaperCollections} from './wallpaper/wallpaper_collections_element.js';
@@ -124,6 +125,7 @@ export {setWallpaperProviderForTesting} from './wallpaper/wallpaper_interface_pr
 export {WallpaperObserver} from './wallpaper/wallpaper_observer.js';
 export {WallpaperPreview} from './wallpaper/wallpaper_preview_element.js';
 export {WallpaperSelected} from './wallpaper/wallpaper_selected_element.js';
+export {WallpaperSubpage} from './wallpaper/wallpaper_subpage_element.js';
 export {DailyRefreshType} from './wallpaper/wallpaper_state.js';
 
 PersonalizationStore.getInstance().init(emptyState());
@@ -146,5 +148,5 @@ if (isPersonalizationJellyEnabled()) {
   fontLink.href = 'chrome://theme/typography.css';
   document.head.appendChild(fontLink);
   document.body.classList.add('jelly-enabled');
-  startColorChangeUpdater();
+  ColorChangeUpdater.forDocument().start();
 }

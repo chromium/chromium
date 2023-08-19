@@ -12,10 +12,6 @@ source_set("office_web_app") {
   deps = [
     "//chrome/browser/apps/app_service",
     "//chrome/browser/web_applications",
-
-    # CrosAPI is a transitive dependency of //c/b/apps/app_service, but
-    # compilation breaks unless it is depended upon directly here.
-    "//chromeos/crosapi/mojom",
     "//components/webapps/browser",
     "//url",
   ]

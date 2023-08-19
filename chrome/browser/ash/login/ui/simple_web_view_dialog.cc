@@ -148,9 +148,7 @@ void SimpleWebViewDialog::StartLoad(const GURL& url) {
   DCHECK(web_contents);
 
   // Create the password manager that is needed for the proxy.
-  ChromePasswordManagerClient::CreateForWebContentsWithAutofillClient(
-      web_contents,
-      autofill::ContentAutofillClient::FromWebContents(web_contents));
+  ChromePasswordManagerClient::CreateForWebContents(web_contents);
 
   // Create the password reuse detection manager for simple web view dialog.
   ChromePasswordReuseDetectionManagerClient::CreateForWebContents(web_contents);

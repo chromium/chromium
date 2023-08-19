@@ -25,6 +25,7 @@ export class TestCrostiniBrowserProxy extends TestBrowserProxy {
       'activateCrostiniPortForward',
       'deactivateCrostiniPortForward',
       'getCrostiniActivePorts',
+      'getCrostiniActiveNetworkInfo',
       'checkCrostiniIsRunning',
       'shutdownCrostini',
       'setCrostiniMicSharingEnabled',
@@ -175,6 +176,11 @@ export class TestCrostiniBrowserProxy extends TestBrowserProxy {
   /** @override */
   getCrostiniActivePorts() {
     this.methodCalled('getCrostiniActivePorts');
+    return Promise.resolve([]);
+  }
+
+  getCrostiniActiveNetworkInfo() {
+    this.methodCalled('getCrostiniActiveNetworkInfo');
     return Promise.resolve([]);
   }
 

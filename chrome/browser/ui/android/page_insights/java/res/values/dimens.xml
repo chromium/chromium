@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+  <dimen name="page_insights_title_margin">10dp</dimen>
+  <dimen name="page_insights_header_text_margin">18dp</dimen>
+</resources>

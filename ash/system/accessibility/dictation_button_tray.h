@@ -59,6 +59,7 @@ class ASH_EXPORT DictationButtonTray : public TrayBackgroundView,
   // TrayBackgroundView:
   void Initialize() override;
   void ClickedOutsideBubble() override;
+  void UpdateTrayItemColor(bool is_active) override;
   std::u16string GetAccessibleNameForTray() override;
   void HandleLocaleChange() override;
   void HideBubbleWithView(const TrayBubbleView* bubble_view) override;

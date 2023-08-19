@@ -15,14 +15,6 @@
     </div>
   </div>
 
-  <div id="invisibleDivContainer" aria-label="invisibleDivContainer">
-    <div id="invisibleDiv" style="visibility: hidden">
-      <div>
-        <button>Button</button>
-      </div>
-    </div>
-  </div>
-
   <div id="emptyDivContainer" aria-label="emptyDivContainer">
     <div id="emptyDiv"></div>
   </div>
@@ -48,7 +40,6 @@ async_test((t) => {
 
     window.pendingSuccesses = new Set([
         'hiddenDivContainer',
-        'invisibleDivContainer',
         'emptyDiv',
         'divWithoutRoleContainer',
     ]);
@@ -74,16 +65,6 @@ async_test((t) => {
     }));
 
     document.getElementById('hiddenDiv').hidden = false;
-
-    assert_true(accessibleElementById('invisibleDivContainer') != null);
-    assert_true(accessibleElementById('invisibleDiv').isIgnored);
-
-    accessibleElementById('invisibleDivContainer').addNotificationListener(t.step_func((notification) => {
-        console.log('Got ' + notification + ' notification on invisibleDivContainer');
-        assert_equals(accessibleElementById('invisibleDivContainer').childrenCount, 1);
-        gotSuccessfulNotification('invisibleDivContainer');
-    }));
-    document.getElementById('invisibleDiv').style.visibility = 'visible';
 
     assert_true(accessibleElementById('emptyDiv') != null);
     accessibleElementById('emptyDiv').addNotificationListener(t.step_func((notification) => {

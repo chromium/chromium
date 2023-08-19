@@ -5,12 +5,11 @@
 #include "content/browser/interest_group/debuggable_auction_worklet.h"
 
 #include "base/strings/strcat.h"
+#include "base/trace_event/trace_event.h"
 #include "base/uuid.h"
-#include "content/browser/devtools/devtools_instrumentation.h"
 #include "content/browser/interest_group/debuggable_auction_worklet_tracker.h"
 #include "content/services/auction_worklet/public/mojom/bidder_worklet.mojom.h"
 #include "content/services/auction_worklet/public/mojom/seller_worklet.mojom.h"
-#include "third_party/abseil-cpp/absl/types/variant.h"
 
 namespace content {
 
@@ -43,7 +42,7 @@ void DebuggableAuctionWorklet::ConnectDevToolsAgent(
 
 DebuggableAuctionWorklet::DebuggableAuctionWorklet(
     RenderFrameHostImpl* owning_frame,
-    AuctionProcessManager::ProcessHandle* process_handle,
+    AuctionProcessManager::ProcessHandle& process_handle,
     const GURL& url,
     auction_worklet::mojom::BidderWorklet* bidder_worklet)
     : owning_frame_(owning_frame),
@@ -58,7 +57,7 @@ DebuggableAuctionWorklet::DebuggableAuctionWorklet(
 
 DebuggableAuctionWorklet::DebuggableAuctionWorklet(
     RenderFrameHostImpl* owning_frame,
-    AuctionProcessManager::ProcessHandle* process_handle,
+    AuctionProcessManager::ProcessHandle& process_handle,
     const GURL& url,
     auction_worklet::mojom::SellerWorklet* seller_worklet)
     : owning_frame_(owning_frame),
@@ -83,6 +82,11 @@ DebuggableAuctionWorklet::~DebuggableAuctionWorklet() {
   }
 }
 
+absl::optional<base::ProcessId> DebuggableAuctionWorklet::GetPid(
+    PidCallback callback) {
+  return process_handle_->GetPid(std::move(callback));
+}
+
 void DebuggableAuctionWorklet::RequestPid() {
   absl::optional<base::ProcessId> maybe_pid = process_handle_->GetPid(
       base::BindOnce(&DebuggableAuctionWorklet::OnHavePid,
@@ -93,9 +97,8 @@ void DebuggableAuctionWorklet::RequestPid() {
 
 void DebuggableAuctionWorklet::OnHavePid(base::ProcessId process_id) {
   pid_ = process_id;
-  devtools_instrumentation::DidCreateProcessForAuctionWorklet(owning_frame_,
-                                                              process_id);
-
+  // TODO(caseq): move all timeline-specific tracing logic to
+  // devtools side (i.e. AuctionWorkletDevToolsAgentHost).
   TRACE_EVENT_INSTANT1(TRACE_DISABLED_BY_DEFAULT("devtools.timeline"),
                        "AuctionWorkletRunningInProcess",
                        TRACE_EVENT_SCOPE_THREAD, "data",

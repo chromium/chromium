@@ -71,10 +71,7 @@ testPaste("<div><b><i><span style=\"font-weight: normal\">plain text<b><i>bold i
 testPaste("<span>foo</span><template>Hello</template><span>bar</span>", "foobar");
 // Note that an empty <div> is left in the resulting pasted text, which isn't ideal:
 testPaste("<span>foo</span><div><template>Hello</template></div><span>bar</span>", "foo<div></div>bar");
-// Contained shadow DOM is stripped, but content is retained (old non-streaming DSD API, shadowroot):
-testPaste("<span>foo</span><div><template shadowroot='open'>Hello</template></div><span>bar</span>", "foo<div>Hello</div>bar", "non-streaming DSD 1");
-testPaste("<span>foo</span><div><template shadowroot='open'><slot></slot>DEF</template>ABC</div><span>bar</span>", "foo<div><slot>ABC</slot>DEF</div>bar", "non-streaming DSD 2");
-// Contained shadow DOM is stripped, but content is retained (new streaming DSD API, shadowrootmode):
+// Contained shadow DOM is stripped, but content is retained (streaming DSD API, shadowrootmode attribute):
 testPaste("<span>foo</span><div><template shadowrootmode='open'>Hello</template></div><span>bar</span>", "foo<div>Hello</div>bar");
 testPaste("<span>foo</span><div><template shadowrootmode='open'><slot></slot>DEF</template>ABC</div><span>bar</span>", "foo<div><slot>ABC</slot>DEF</div>bar");
 // Make sure non-declarative <template shadowroot> doesn't form a shadow root on paste:

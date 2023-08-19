@@ -50,7 +50,7 @@ public class CaptureReadinessResult {
             TopToolbarBlockCaptureReason.BROWSER_CONTROLS_LOCKED,
             TopToolbarBlockCaptureReason.TAB_SWITCHER_MODE,
             TopToolbarBlockCaptureReason.COMPOSITOR_IN_MOTION,
-            TopToolbarBlockCaptureReason.NTP_Y_TRANSLATION,
+            TopToolbarBlockCaptureReason.NTP_Y_TRANSLATION, TopToolbarBlockCaptureReason.FULLSCREEN,
             TopToolbarBlockCaptureReason.NUM_ENTRIES})
     @Retention(RetentionPolicy.SOURCE)
     public @interface TopToolbarBlockCaptureReason {
@@ -67,7 +67,8 @@ public class CaptureReadinessResult {
         int TAB_SWITCHER_MODE = 10;
         int COMPOSITOR_IN_MOTION = 11;
         int NTP_Y_TRANSLATION = 12;
-        int NUM_ENTRIES = 13;
+        int FULLSCREEN = 13;
+        int NUM_ENTRIES = 14;
     }
 
     public static CaptureReadinessResult readyForced() {

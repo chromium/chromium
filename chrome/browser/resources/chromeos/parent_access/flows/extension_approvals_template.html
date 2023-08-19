@@ -69,8 +69,8 @@
     <div id="extension-permissions-container">
       <template is="dom-repeat" items="[[extensionPermissions]]">
         <extension-permission
-          permission="[[item]]"
-          detail="[[getPermissionDetail(index)]]">
+          permission="[[item.permission]]"
+          detail="[[item.details]]">
         </extension-permission>
       </template>
     </div>

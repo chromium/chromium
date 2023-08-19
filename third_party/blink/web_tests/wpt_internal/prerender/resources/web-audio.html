@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="/common/utils.js"></script>
+<script src="/speculation-rules/prerender/resources/utils.js"></script>
+<script>
+
+  const params = new URLSearchParams(location.search);
+
+  // The main test page (restriction-web-audio.html) loads this page without
+  // `prerendering` parameter.
+  const isPrerendering = params.has('prerendering');
+
+  if (!isPrerendering) {
+    // If this page loads without `prerendering` parameter, it calls
+    // loadInitiatorPage() to prerender itself with the `prerendering`
+    // parameter.
+    // This initiator page waits for the `readyToActivate` message from the
+    // main test page, and navigates to the prerendered page to activate it.
+    loadInitiatorPage();
+  } else {
+    // The page loads with `prerendering` parameter.
+    const channel = new PrerenderChannel('result-channel');
+
+    // Set AutoplayPolicy to permit AudioContext to run without user gesture.
+    // This is the special case we want to verify in this test.
+    // If this isn't set, AudioContext will be just suspended as a user gesture
+    // should not be given while prerendering, and it just works as usual ways.
+    internals.settings.setAutoplayPolicy('no-user-gesture-required');
+
+    // Construct AudioContext. It should be in the suspended state while
+    // prerendering.
+    const audioContext = new AudioContext();
+
+    // Call resume() to register a resume promise. Once the page is activated,
+    // the AudioContext is automatically resumed and the resume promises will be
+    // resolved. So, following message expsts `prerendering` to be false, and
+    // `audiocontext` to be `running`.
+    audioContext.resume().then(() => {
+      channel.postMessage({
+        event: 'resume',
+        prerendering: document.prerendering,
+        audiocontext: audioContext.state
+      });
+      channel.close();
+    });
+
+    // Report the initial state. The message expects `prerendering` to be true,
+    // and `audiocontext` to be `suspended`. This message also notifies the test
+    // page to send a message to initiator page to activate.
+    channel.postMessage({
+      event: 'start',
+      prerendering: document.prerendering,
+      audiocontext: audioContext.state
+    });
+  }
+
+</script>

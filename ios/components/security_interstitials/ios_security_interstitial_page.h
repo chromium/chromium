@@ -40,6 +40,11 @@ class IOSSecurityInterstitialPage {
   // to handle actions specific to the type of interstitial.
   virtual void HandleCommand(SecurityInterstitialCommand command) = 0;
 
+  // Returns the type relating to the sub-class of the interstitial instance.
+  // It allows checking the type of the interstitial at runtime before a
+  // cast to a sub-class.
+  virtual std::string_view GetInterstitialType() const;
+
  protected:
   // Returns true if the interstitial should create a new navigation item.
   virtual bool ShouldCreateNewNavigation() const = 0;

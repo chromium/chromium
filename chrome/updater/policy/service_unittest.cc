@@ -10,10 +10,23 @@
 
 #include "base/memory/ref_counted.h"
 #include "base/time/time.h"
+#include "chrome/updater/external_constants.h"
+#include "chrome/updater/policy/dm_policy_manager.h"
 #include "chrome/updater/policy/manager.h"
 #include "chrome/updater/policy/service.h"
+#include "chrome/updater/protos/omaha_settings.pb.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
+
+#if BUILDFLAG(IS_WIN)
+#include "base/test/test_reg_util_win.h"
+#include "base/win/registry.h"
+#include "chrome/updater/policy/win/group_policy_manager.h"
+#include "chrome/updater/util/win_util.h"
+#include "chrome/updater/win/win_constants.h"
+#elif BUILDFLAG(IS_MAC)
+#include "chrome/updater/policy/mac/managed_preference_policy_manager.h"
+#endif
 
 namespace updater {
 
@@ -425,5 +438,112 @@ TEST(PolicyService, MultiplePolicyManagers_WithUnmanagedOnes) {
       "  }\n"
       "}\n");
 }
+
+struct PolicyServiceAreUpdatesSuppressedNowTestCase {
+  const UpdatesSuppressedTimes updates_suppressed_times;
+  const std::string now_string;
+  const bool expect_updates_suppressed;
+};
+
+class PolicyServiceAreUpdatesSuppressedNowTest
+    : public ::testing::TestWithParam<
+          PolicyServiceAreUpdatesSuppressedNowTestCase> {};
+
+INSTANTIATE_TEST_SUITE_P(
+    PolicyServiceAreUpdatesSuppressedNowTestCases,
+    PolicyServiceAreUpdatesSuppressedNowTest,
+    ::testing::ValuesIn(
+        std::vector<PolicyServiceAreUpdatesSuppressedNowTestCase>{
+            // Suppress starting 12:00 for 959 minutes.
+            {{12, 00, 959}, "Sat, 01 July 2023 01:15:00", true},
+
+            // Suppress starting 12:00 for 959 minutes.
+            {{12, 00, 959}, "Sat, 01 July 2023 04:15:00", false},
+
+            // Suppress starting 00:00 for 959 minutes.
+            {{00, 00, 959}, "Sat, 01 July 2023 04:15:00", true},
+
+            // Suppress starting 00:00 for 959 minutes.
+            {{00, 00, 959}, "Sat, 01 July 2023 16:15:00", false},
+
+            // Suppress starting 18:00 for 12 hours.
+            {{18, 00, 12 * 60}, "Sat, 01 July 2023 05:15:00", true},
+
+            // Suppress starting 18:00 for 12 hours.
+            {{18, 00, 12 * 60}, "Sat, 01 July 2023 06:15:00", false},
+        }));
+
+TEST_P(PolicyServiceAreUpdatesSuppressedNowTest, TestCases) {
+  auto manager = base::MakeRefCounted<FakePolicyManager>(true, "group_policy");
+  manager->SetUpdatesSuppressedTimes(GetParam().updates_suppressed_times);
+  PolicyService::PolicyManagerVector managers;
+  managers.push_back(std::move(manager));
+
+  base::Time now;
+  ASSERT_TRUE(base::Time::FromString(GetParam().now_string.c_str(), &now));
+  EXPECT_EQ(
+      GetParam().expect_updates_suppressed,
+      base::MakeRefCounted<PolicyService>(managers)->AreUpdatesSuppressedNow(
+          now));
+}
+
+#if BUILDFLAG(IS_WIN)
+TEST(PolicyService, CreatePolicyManagerVector) {
+  registry_util::RegistryOverrideManager registry_overrides;
+  ASSERT_NO_FATAL_FAILURE(
+      registry_overrides.OverrideRegistry(HKEY_LOCAL_MACHINE));
+
+  auto omaha_settings =
+      std::make_unique<::wireless_android_enterprise_devicemanagement::
+                           OmahaSettingsClientProto>();
+  auto dm_policy = base::MakeRefCounted<DMPolicyManager>(*omaha_settings, true);
+  PolicyService::PolicyManagerVector managers =
+      CreatePolicyManagerVector(false, CreateExternalConstants(), dm_policy);
+  EXPECT_EQ(managers.size(), size_t{4});
+  EXPECT_EQ(managers[0]->source(), "DictValuePolicy");
+  EXPECT_EQ(managers[1]->source(), "GroupPolicy");
+  EXPECT_EQ(managers[2]->source(), "DeviceManagement");
+  EXPECT_EQ(managers[3]->source(), "default");
+
+  base::win::RegKey key(HKEY_LOCAL_MACHINE, UPDATER_POLICIES_KEY,
+                        Wow6432(KEY_WRITE));
+  EXPECT_EQ(ERROR_SUCCESS,
+            key.WriteValue(L"CloudPolicyOverridesPlatformPolicy", 1));
+  managers =
+      CreatePolicyManagerVector(false, CreateExternalConstants(), dm_policy);
+  EXPECT_EQ(managers.size(), size_t{4});
+  EXPECT_EQ(managers[0]->source(), "DictValuePolicy");
+  EXPECT_EQ(managers[1]->source(), "DeviceManagement");
+  EXPECT_EQ(managers[2]->source(), "GroupPolicy");
+  EXPECT_EQ(managers[3]->source(), "default");
+}
+#elif BUILDFLAG(IS_MAC)
+TEST(PolicyService, CreatePolicyManagerVector) {
+  auto omaha_settings =
+      std::make_unique<::wireless_android_enterprise_devicemanagement::
+                           OmahaSettingsClientProto>();
+  auto dm_policy = base::MakeRefCounted<DMPolicyManager>(*omaha_settings, true);
+  PolicyService::PolicyManagerVector managers =
+      CreatePolicyManagerVector(false, CreateExternalConstants(), dm_policy);
+  EXPECT_EQ(managers.size(), size_t{4});
+  EXPECT_EQ(managers[0]->source(), "DictValuePolicy");
+  EXPECT_EQ(managers[1]->source(), "DeviceManagement");
+  EXPECT_EQ(managers[2]->source(), "ManagedPreference");
+  EXPECT_EQ(managers[3]->source(), "default");
+}
+#else
+TEST(PolicyService, CreatePolicyManagerVector) {
+  auto omaha_settings =
+      std::make_unique<::wireless_android_enterprise_devicemanagement::
+                           OmahaSettingsClientProto>();
+  auto dm_policy = base::MakeRefCounted<DMPolicyManager>(*omaha_settings, true);
+  PolicyService::PolicyManagerVector managers =
+      CreatePolicyManagerVector(false, CreateExternalConstants(), dm_policy);
+  EXPECT_EQ(managers.size(), size_t{3});
+  EXPECT_EQ(managers[0]->source(), "DictValuePolicy");
+  EXPECT_EQ(managers[1]->source(), "DeviceManagement");
+  EXPECT_EQ(managers[2]->source(), "default");
+}
+#endif
 
 }  // namespace updater

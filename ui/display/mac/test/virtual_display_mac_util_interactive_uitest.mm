@@ -10,13 +10,14 @@
 #include "ui/gfx/geometry/size.h"
 
 class VirtualDisplayMacUtilInteractiveUitest : public testing::Test {
- protected:
-  VirtualDisplayMacUtilInteractiveUitest() = default;
-
+ public:
   VirtualDisplayMacUtilInteractiveUitest(
       const VirtualDisplayMacUtilInteractiveUitest&) = delete;
   VirtualDisplayMacUtilInteractiveUitest& operator=(
       const VirtualDisplayMacUtilInteractiveUitest&) = delete;
+
+ protected:
+  VirtualDisplayMacUtilInteractiveUitest() = default;
 
   void SetUp() override {
     if (!display::test::VirtualDisplayMacUtil::IsAPIAvailable()) {

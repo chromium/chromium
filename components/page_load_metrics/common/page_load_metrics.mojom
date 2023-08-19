@@ -26,6 +26,9 @@ struct LargestContentfulPaintTiming {
   // Time when the page's largest image is painted.
   mojo_base.mojom.TimeDelta? largest_image_paint;
 
+  // Time when the page's largest image is requested.
+  mojo_base.mojom.TimeDelta? largest_image_discovery_time;
+
   // Time when the page's largest image starts loading.
   mojo_base.mojom.TimeDelta? largest_image_load_start;
 
@@ -243,16 +246,6 @@ struct SubresourceLoadMetrics {
   // Number of subresources loads that is responded by the service worker.
   // i.e. `respondWith` was called.
   uint32 number_of_subresource_loads_handled_by_service_worker;
-
-  // Whether a pervasive payload (aka subresource) was requested.
-  bool pervasive_payload_requested;
-
-  // Number of bytes fetched by the network for pervasive payloads on a page.
-  int64 pervasive_bytes_fetched;
-
-  // Total number of bytes fetched by the network. This value can be -1
-  // when the value is unknown or there is no data.
-  int64 total_bytes_fetched;
 
   // Metrics for service workers.
   ServiceWorkerSubresourceLoadMetrics? service_worker_subresource_load_metrics;
@@ -579,7 +572,7 @@ interface PageLoadMetrics {
                CpuTiming cpu_load_timing,
                InputTiming input_timing_delta,
                SubresourceLoadMetrics? subresource_load_metrics,
-               uint32 soft_navigation_count);
+               SoftNavigationMetrics soft_navigation_metrics);
 
   // Set up a shared memory used to transfer smoothness data from the renderer
   // to the browser. The structure is defined in
@@ -603,4 +596,26 @@ struct BackForwardCacheTiming {
   // or pointer down followed by a pointer up after the time when the page is
   // restored from the back-forward cache.
   mojo_base.mojom.TimeDelta? first_input_delay_after_back_forward_cache_restore;
+};
+
+// Metrics about soft navigation. See soft navigation at https://github.com/WICG/soft-navigations.
+// The metrics are to be added in a SoftNavigation Event which is parallel to
+// a PageLoad event.
+struct SoftNavigationMetrics {
+  // The number of soft navigations that occur during a page load.
+  uint64 count;
+
+  // The start time of a soft navigation. It is the time the user initializes
+  // the soft navigation. It is relative to navigation start.
+  mojo_base.mojom.TimeDelta start_time;
+
+  // The renderer side navigation id that increments when a soft navigation
+  // happens.
+  string navigation_id;
+
+  // The LargestContentfulPaint of a soft navigation, that is, the largest
+  // contentful paint that happened after a soft navigation is detected and
+  // before the next soft navigation is detected or page end.
+  // The timings are relative to the soft navigation start.
+  LargestContentfulPaintTiming largest_contentful_paint;
 };

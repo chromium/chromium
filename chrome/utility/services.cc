@@ -64,8 +64,6 @@
 #include "chrome/common/importer/profile_import.mojom.h"
 #include "chrome/utility/importer/profile_import_impl.h"
 #include "components/mirroring/service/mirroring_service.h"
-#include "components/password_manager/services/password_strength/password_strength_calculator_impl.h"
-#include "components/password_manager/services/password_strength/public/mojom/password_strength_calculator.mojom.h"
 #include "services/proxy_resolver/proxy_resolver_factory_impl.h"  // nogncheck
 #include "services/proxy_resolver/public/mojom/proxy_resolver.mojom.h"
 #endif  // !BUILDFLAG(IS_ANDROID)
@@ -254,13 +252,6 @@ auto RunMirroringService(
       std::move(receiver), content::UtilityThread::Get()->GetIOTaskRunner());
 }
 
-auto RunPasswordStrengthCalculator(
-    mojo::PendingReceiver<password_manager::mojom::PasswordStrengthCalculator>
-        receiver) {
-  return std::make_unique<password_manager::PasswordStrengthCalculatorImpl>(
-      std::move(receiver));
-}
-
 #endif  // !BUILDFLAG(IS_ANDROID)
 
 #if BUILDFLAG(ENABLE_BROWSER_SPEECH_SERVICE)
@@ -444,7 +435,6 @@ void RegisterMainThreadServices(mojo::ServiceFactory& services) {
 #if !BUILDFLAG(IS_ANDROID)
   services.Add(RunProfileImporter);
   services.Add(RunMirroringService);
-  services.Add(RunPasswordStrengthCalculator);
 #endif  // !BUILDFLAG(IS_ANDROID)
 
 #if BUILDFLAG(ENABLE_BROWSER_SPEECH_SERVICE)

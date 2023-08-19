@@ -242,7 +242,7 @@
     flex: 1;
   }
 
-  #list-container.error-only>:not(#groups) {
+  #list-container.error-only>:not(#groups,#dummyTab) {
     display: none;
   }
 
@@ -279,7 +279,8 @@
     lazy-indexing="[[searchLazyIndexing]]"
     on-scroll="onSearchScroll"
     category-metadata="[[getCategoryMetadata(gifSupport, category)]]"
-    gif-support$="[[gifSupport]]">
+    gif-support$="[[gifSupport]]"
+    close-gif-nudge-overlay="[[closeGifNudgeOverlay]]">
   </emoji-search>
 
 <div id="list-container" class$="[[computeListContainerClass(category, status)]]">
@@ -287,6 +288,7 @@
   <div class="side-padding">
     <div id="tabs" on-scroll="onGroupsScroll">
       <cr-icon-button id="left-chevron" class="chevron"
+        aria-label$="[[getLeftChevronAriaLabel(gifSupport)]]"
         on-click="onLeftChevronClick"
         iron-icon="emoji_picker:keyboard_arrow_left">
       </cr-icon-button>
@@ -373,7 +375,9 @@
         </template>
       </template>
       <cr-icon-button id="right-chevron" class="chevron"
+        aria-label$="[[getRightChevronAriaLabel(gifSupport)]]"
         on-click="onRightChevronClick"
+        on-keydown="onRightChevronKeyDown"
         iron-icon="emoji_picker:keyboard_arrow_right">
       </cr-icon-button>
     </div>
@@ -389,6 +393,7 @@
     <template is="dom-repeat" items="[[categoriesGroupElements]]">
       <div data-group$="[[item.groupId]]">
         <emoji-group data="[[item.emoji]]"
+          gif-support$="[[gifSupport]]"
           group="[[item.name]]"
           preferred="[[item.preferences]]"
           clearable$="[[item.isHistory]]"
@@ -416,3 +421,7 @@
     </text-group-button>
   </div>
 </div>
+
+<template is="dom-if" if="[[showGifNudgeOverlay]]">
+  <emoji-gif-nudge-overlay close-overlay="[[closeGifNudgeOverlay]]">
+</template>

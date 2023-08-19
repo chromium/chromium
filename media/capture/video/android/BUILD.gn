@@ -55,9 +55,11 @@ android_library("capture_java") {
     "//build/android:build_java",
     "//third_party/androidx:androidx_annotation_annotation_java",
   ]
-  annotation_processor_deps = [ "//base/android/jni_generator:jni_processor" ]
 
-  srcjar_deps = [ ":media_java_enums_srcjar" ]
+  srcjar_deps = [
+    ":capture_jni_headers",
+    ":media_java_enums_srcjar",
+  ]
 
   sources = [
     "java/src/org/chromium/media/PhotoCapabilities.java",

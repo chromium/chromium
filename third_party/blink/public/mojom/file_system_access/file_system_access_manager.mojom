@@ -5,14 +5,14 @@
 module blink.mojom;
 
 import "mojo/public/mojom/base/string16.mojom";
-import "third_party/blink/public/mojom/file_system_access/file_system_access_directory_handle.mojom";
-import "third_party/blink/public/mojom/file_system_access/file_system_access_file_handle.mojom";
-import "third_party/blink/public/mojom/file_system_access/file_system_access_error.mojom";
-import "third_party/blink/public/mojom/file_system_access/file_system_access_transfer_token.mojom";
 import "third_party/blink/public/mojom/file_system_access/file_system_access_data_transfer_token.mojom";
+import "third_party/blink/public/mojom/file_system_access/file_system_access_directory_handle.mojom";
+import "third_party/blink/public/mojom/file_system_access/file_system_access_error.mojom";
+import "third_party/blink/public/mojom/file_system_access/file_system_access_file_handle.mojom";
+import "third_party/blink/public/mojom/file_system_access/file_system_access_observer_host.mojom";
+import "third_party/blink/public/mojom/file_system_access/file_system_access_transfer_token.mojom";
 
 enum WellKnownDirectory {
-  kDefault,
   kDirDesktop,
   kDirDocuments,
   kDirDownloads,
@@ -53,33 +53,42 @@ struct DirectoryPickerOptions {
   bool request_writable;
 };
 
-// Encapsulation of data from the FilePickerOptions idl spec:
-// https://wicg.github.io/file-system-access/#dictdef-filepickeroptions.
-union FilePickerOptions {
+union TypeSpecificFilePickerOptionsUnion {
   OpenFilePickerOptions open_file_picker_options;
   SaveFilePickerOptions save_file_picker_options;
   DirectoryPickerOptions directory_picker_options;
 };
 
-// See the documentation for how the `starting_directory` fields interact:
-// https://github.com/WICG/file-system-access/blob/main/SuggestedNameAndDir.md
-// `starting_directory_id` allows for specification of the "purpose" of a file
-// picker invocation. When an ID is specified, the picker will remember the
-// picked directory. The next time the matching ID is specified, the picker
-// will default to this directory. The ID cannot exceed 32 characters in
-// length and may only contain alphanumeric characters, '-', and '_'.
-// A maximum of 32 custom IDs is allowed per origin (LRU eviction).
-// `well_known_starting_directory` opens the file picker at a well-known
-// directory.
-// `starting_directory_token` is resolved into a file or directory by the
-// FileSystemAccessManager to be used as the starting directory for the file
-// picker. If the token is a file, its parent directory is used.
-// See the FileSystemAccessManager's ResolveDefaultDirectory() method for
-// how these fields are prioritized.
-struct CommonFilePickerOptions {
+union FilePickerStartInOptionsUnion {
+  WellKnownDirectory well_known_directory;
+  pending_remote<FileSystemAccessTransferToken> directory_token;
+};
+
+// Encapsulation of data from the FilePickerOptions idl spec:
+// https://wicg.github.io/file-system-access/#dictdef-filepickeroptions.
+//
+// See the documentation for how some of these fields interact to decide which
+// directory the picker will start in:
+// https://github.com/WICG/file-system-access/blob/main/proposals/SuggestedNameAndDir.md
+//   - `starting_directory_id` allows for specification of the "purpose" of a
+//     file picker invocation. When an ID is specified, the picker will remember
+//     the picked directory. The next time the matching ID is specified, the
+//     picker will default to this directory. The ID cannot exceed 32 characters
+//     in length and may only contain alphanumeric characters, '-', and '_'. A
+//     maximum of 32 custom IDs is allowed per origin (LRU eviction).
+//  -  `FilePickerStartInOptionsUnion.well_known_directory` opens the file
+//     picker at a well-known directory.
+//  -  `FilePickerStartInOptionsUnion.directory_token` is resolved into a file
+//     or directory by the FileSystemAccessManager to be used as the starting
+//     directory for the file picker. If the token is a file, its parent
+//     directory is used.
+//
+// TODO(https://crbug.com/1220106): Add a monostate type if/when it becomes
+// available for mojom, rather than having `start_in_options` be nullable.
+struct FilePickerOptions {
+  TypeSpecificFilePickerOptionsUnion type_specific_options;
   string starting_directory_id;
-  WellKnownDirectory well_known_starting_directory;
-  pending_remote<FileSystemAccessTransferToken>? starting_directory_token;
+  FilePickerStartInOptionsUnion? start_in_options;
 };
 
 // Interface provided by the browser to the renderer as main entry point to the
@@ -99,8 +108,7 @@ interface FileSystemAccessManager {
   // success.
   // TODO(https://crbug.com/1327821): Replace this with expected<T, E> if/when
   // it becomes available for mojom.
-  ChooseEntries(FilePickerOptions options,
-                CommonFilePickerOptions common_options) =>
+  ChooseEntries(FilePickerOptions options) =>
       (FileSystemAccessError result,
        array<FileSystemAccessEntry> entries);
 
@@ -136,4 +144,10 @@ interface FileSystemAccessManager {
   GetEntryFromDataTransferToken(
     pending_remote<FileSystemAccessDataTransferToken> token
   )  => (FileSystemAccessError result, FileSystemAccessEntry? entry);
+
+  // Binds a FileSystemAccessObserverHost to the browser process.
+  // File system watches set up through this host will be destroyed when the
+  // host is disconnected.
+  BindObserverHost(
+    pending_receiver<FileSystemAccessObserverHost> observer_host);
 };

@@ -2739,6 +2739,40 @@ const GpuControlList::Entry kGpuControlListTestingEntries[] = {
         0,        // exceptions count
         nullptr,  // exceptions
     },
+    {
+        81,  // id
+        "GpuControlListEntryTest.NativeAngleRenderer",
+        std::size(kFeatureListForGpuControlTestingEntry81),  // features size
+        kFeatureListForGpuControlTestingEntry81,             // features
+        0,        // DisabledExtensions size
+        nullptr,  // DisabledExtensions
+        0,        // DisabledWebGLExtensions size
+        nullptr,  // DisabledWebGLExtensions
+        0,        // CrBugs size
+        nullptr,  // CrBugs
+        {
+            GpuControlList::kOsAny,  // os_type
+            {GpuControlList::kUnknown, GpuControlList::kVersionStyleNumerical,
+             GpuControlList::kVersionSchemaCommon, nullptr,
+             nullptr},                               // os_version
+            0x00,                                    // vendor_id
+            0,                                       // Devices size
+            nullptr,                                 // Devices
+            GpuControlList::kMultiGpuCategoryNone,   // multi_gpu_category
+            GpuControlList::kMultiGpuStyleNone,      // multi_gpu_style
+            nullptr,                                 // driver info
+            &kGLStringsForGpuControlTestingEntry81,  // GL strings
+            nullptr,                                 // machine model info
+            0,                                       // intel_gpu_series size
+            nullptr,                                 // intel_gpu_series
+            {GpuControlList::kUnknown, GpuControlList::kVersionStyleNumerical,
+             GpuControlList::kVersionSchemaCommon, nullptr,
+             nullptr},                    // intel_gpu_generation
+            &kMoreForEntry81_1440601243,  // more data
+        },
+        0,        // exceptions count
+        nullptr,  // exceptions
+    },
 };
-const size_t kGpuControlListTestingEntryCount = 80;
+const size_t kGpuControlListTestingEntryCount = 81;
 }  // namespace gpu

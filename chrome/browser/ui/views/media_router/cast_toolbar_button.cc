@@ -186,7 +186,7 @@ void CastToolbarButton::UpdateIcon() {
         MediaRouterFactory::GetApiForBrowserContext(profile_)
             ->GetMirroringMediaControllerHost(route_id);
     if (mirroring_controller_host) {
-      is_frozen = is_frozen || mirroring_controller_host->is_frozen();
+      is_frozen = is_frozen || mirroring_controller_host->IsFrozen();
     }
   }
   const gfx::VectorIcon* new_icon = nullptr;

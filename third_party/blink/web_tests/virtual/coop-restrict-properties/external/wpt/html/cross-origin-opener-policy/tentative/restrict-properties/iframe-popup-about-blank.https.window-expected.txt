@@ -1,4 +1,5 @@
 This is a testharness.js-based test.
-FAIL iframe-popup-about-blank assert_equals: Is popup handle null? expected "false" but got "true"
+PASS Cross-origin iframe
+PASS Same-origin iframe
 Harness: the test ran to completion.
 

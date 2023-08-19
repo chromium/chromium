@@ -10,15 +10,11 @@
 #include <utility>
 
 #include "base/apple/bridging.h"
+#include "base/apple/foundation_util.h"
+#include "base/apple/scoped_cftyperef.h"
 #include "base/logging.h"
-#include "base/mac/foundation_util.h"
-#include "base/mac/scoped_cftyperef.h"
 #include "base/strings/sys_string_conversions.h"
 #include "base/values.h"
-
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
 
 // The code here is unusually skeptical about the macOS APIs returning non-null
 // values. An earlier version was reverted due to crashing tests on bots running
@@ -66,21 +62,6 @@ class FontFamilyResolver {
                                        normalized_descriptors.get());
   }
 
-  // True if the font should be hidden from Chrome.
-  //
-  // On macOS 10.15, CTFontManagerCopyAvailableFontFamilyNames() filters hidden
-  // fonts. This is not true on older version of macOS that Chrome still
-  // supports. The unittest FontTest.GetFontListDoesNotIncludeHiddenFonts can be
-  // used to determine when it's safe to slim down / remove this function.
-  static bool IsHiddenFontFamily(NSString* family_name) {
-    DCHECK(family_name != nullptr);
-    DCHECK_GT(family_name.length, 0u);
-
-    // macOS 10.13 includes names that start with . (period). These fonts should
-    // not be shown to users.
-    return [family_name characterAtIndex:0] == '.';
-  }
-
  private:
   // Returns the first font descriptor matching the given family name.
   //
@@ -100,13 +81,13 @@ class FontFamilyResolver {
     CFIndex descriptor_count = descriptors ? CFArrayGetCount(descriptors) : 0;
     for (CFIndex i = 0; i < descriptor_count; ++i) {
       CTFontDescriptorRef descriptor =
-          base::mac::CFCastStrict<CTFontDescriptorRef>(
+          base::apple::CFCastStrict<CTFontDescriptorRef>(
               CFArrayGetValueAtIndex(descriptors, i));
       DCHECK(descriptor != nullptr)
           << "The descriptors array has a null element.";
 
       base::ScopedCFTypeRef<CFStringRef> descriptor_family_name(
-          base::mac::CFCastStrict<CFStringRef>(CTFontDescriptorCopyAttribute(
+          base::apple::CFCastStrict<CFStringRef>(CTFontDescriptorCopyAttribute(
               descriptor, kCTFontFamilyNameAttribute)));
       if (CFStringCompare(family_name, descriptor_family_name,
                           /*compareOptions=*/0) == kCFCompareEqualTo) {
@@ -143,7 +124,7 @@ class FontFamilyResolver {
     }
 
     base::ScopedCFTypeRef<CFStringRef> localized_family_name(
-        base::mac::CFCastStrict<CFStringRef>(
+        base::apple::CFCastStrict<CFStringRef>(
             CTFontDescriptorCopyLocalizedAttribute(descriptor,
                                                    kCTFontFamilyNameAttribute,
                                                    /*language=*/nullptr)));
@@ -215,10 +196,6 @@ base::Value::List GetFontList_SlowBlocking() {
       DCHECK(family_name != nil)
           << "CTFontManagerCopyAvailableFontFamilyNames returned an array with "
           << "a null element";
-
-      if (FontFamilyResolver::IsHiddenFontFamily(family_name)) {
-        continue;
-      }
 
       base::ScopedCFTypeRef<CFStringRef> cf_normalized_family_name =
           resolver.CopyLocalizedFamilyName(

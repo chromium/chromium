@@ -60,6 +60,7 @@ class GraphFeatures {
 
   constexpr GraphFeatures& EnableExecutionContextPriorityDecorator() {
     EnableExecutionContextRegistry();
+    EnableFrameVisibilityDecorator();
     flags_.execution_context_priority_decorator = true;
     return *this;
   }
@@ -138,6 +139,7 @@ class GraphFeatures {
     EnableSiteDataRecorder();
     EnableTabPropertiesDecorator();
     EnableV8ContextTracker();
+    EnableExecutionContextPriorityDecorator();
     return *this;
   }
 

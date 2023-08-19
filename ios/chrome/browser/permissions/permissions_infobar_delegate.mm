@@ -6,10 +6,6 @@
 
 #import "components/infobars/core/infobar_delegate.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 PermissionsInfobarDelegate::PermissionsInfobarDelegate(
     NSArray<NSNumber*>* recently_accessible_permissions,
     web::WebState* web_state)
@@ -36,4 +32,9 @@ web::WebState* PermissionsInfobarDelegate::GetWebState() const {
 infobars::InfoBarDelegate::InfoBarIdentifier
 PermissionsInfobarDelegate::GetIdentifier() const {
   return IOS_PERMISSIONS_INFOBAR_DELEGATE;
+}
+
+bool PermissionsInfobarDelegate::EqualsDelegate(
+    infobars::InfoBarDelegate* delegate) const {
+  return delegate->GetIdentifier() == GetIdentifier();
 }

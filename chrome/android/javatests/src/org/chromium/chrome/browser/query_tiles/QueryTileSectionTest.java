@@ -17,6 +17,7 @@ import static org.chromium.chrome.browser.query_tiles.ViewActions.scrollTo;
 
 import android.view.View;
 
+import androidx.test.espresso.IdlingPolicies;
 import androidx.test.filters.SmallTest;
 
 import org.hamcrest.Matcher;
@@ -31,6 +32,7 @@ import org.junit.runner.RunWith;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
+import org.chromium.base.test.util.DumpThreadsOnFailureRule;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.tab.Tab;
@@ -40,23 +42,29 @@ import org.chromium.chrome.test.R;
 import org.chromium.chrome.test.util.ChromeTabUtils;
 import org.chromium.chrome.test.util.NewTabPageTestUtils;
 import org.chromium.chrome.test.util.OmniboxTestUtils;
-import org.chromium.chrome.test.util.browser.Features;
+import org.chromium.chrome.test.util.browser.Features.DisableFeatures;
+import org.chromium.chrome.test.util.browser.Features.EnableFeatures;
 import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.components.query_tiles.QueryTile;
 import org.chromium.components.query_tiles.TestTileProvider;
+
+import java.util.concurrent.TimeUnit;
 
 /**
  * Tests for the query tiles section on new tab page.
  */
 @RunWith(ChromeJUnit4ClassRunner.class)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
-@Features.EnableFeatures({ChromeFeatureList.QUERY_TILES, ChromeFeatureList.QUERY_TILES_IN_NTP})
-@Features.DisableFeatures({ChromeFeatureList.QUERY_TILES_SEGMENTATION})
+@EnableFeatures({ChromeFeatureList.QUERY_TILES, ChromeFeatureList.QUERY_TILES_IN_NTP})
+@DisableFeatures({ChromeFeatureList.QUERY_TILES_SEGMENTATION})
 public class QueryTileSectionTest {
     private static final String SEARCH_URL_PATTERN = "https://www.google.com/search?q=";
 
     @Rule
     public ChromeTabbedActivityTestRule mActivityTestRule = new ChromeTabbedActivityTestRule();
+    // TODO(https://crbug.com/1469931) Remove after flakes are understood/fixed.
+    @Rule
+    public DumpThreadsOnFailureRule mDumpThreadsOnFailureRule = new DumpThreadsOnFailureRule();
 
     private Tab mTab;
     private TestTileProvider mTileProvider;
@@ -64,6 +72,11 @@ public class QueryTileSectionTest {
 
     @Before
     public void setUp() {
+        // Espresso defaults to 60 seconds, but this is often too long, as our tests cases are
+        // killed in a similar amount of time. Shorten this to make it more likely that we'll fail
+        // in Java, allowing our mDumpThreadsOnFailureRule to trigger.
+        IdlingPolicies.setMasterPolicyTimeout(10, TimeUnit.SECONDS);
+
         mTileProvider = new TestTileProvider(2 /* levels */, 8 /* count */);
         TileProviderFactory.setTileProviderForTesting(mTileProvider);
         mActivityTestRule.startMainActivityOnBlankPage();

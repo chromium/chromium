@@ -24,20 +24,16 @@ constexpr auto kPossibleUsernameExpirationTimeout = base::Minutes(1);
 struct PossibleUsernameData {
   PossibleUsernameData(std::string signon_realm,
                        autofill::FieldRendererId renderer_id,
-                       const std::u16string& field_name,
                        const std::u16string& value,
                        base::Time last_change,
                        int driver_id,
-                       bool autocomplete_attribute_has_username);
+                       bool autocomplete_attribute_has_username,
+                       bool is_likely_otp);
   PossibleUsernameData(const PossibleUsernameData&);
   ~PossibleUsernameData();
 
   std::string signon_realm;
   autofill::FieldRendererId renderer_id;
-
-  // TODO(crbug.com/1260336): Delete after fields are not distinguished by
-  // |field_name|.
-  std::u16string field_name;
 
   std::u16string value;
   base::Time last_change;
@@ -50,6 +46,10 @@ struct PossibleUsernameData {
   // username.
   bool autocomplete_attribute_has_username;
 
+  // Whether the field is likely to be an OTP field, based on its HTML
+  // attributes.
+  bool is_likely_otp;
+
   // Predictions for the form which contains a field with |renderer_id|.
   absl::optional<FormPredictions> form_predictions;
 
@@ -58,7 +58,7 @@ struct PossibleUsernameData {
   bool IsStale() const;
 
   // Returns whether the field identified by |renderer_id| has a
-  // SINGLE_USERNAME prediction stored in |form_predictions|.
+  // single username prediction stored in |form_predictions|.
   bool HasSingleUsernameServerPrediction() const;
 
   // Returns whether the field identified by |renderer_id| has

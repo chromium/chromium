@@ -521,7 +521,7 @@ TEST_F(FeedApiReliabilityLoggingTest, LoadMoreSucceeds) {
   response.last_fetch_timestamp = base::Time::Now();
   response_translator_.InjectResponse(std::move(response));
 
-  stream_->LoadMore(surface, base::DoNothing());
+  stream_->LoadMore(surface.GetSurfaceId(), base::DoNothing());
   WaitForIdleTaskQueue();
 
   EXPECT_EQ(base::StrCat({"LogLoadMoreStarted\n"
@@ -546,7 +546,7 @@ TEST_F(FeedApiReliabilityLoggingTest, LoadMoreFails) {
 
   // Don't inject another response, which results in a proto translation
   // failure.
-  stream_->LoadMore(surface, base::DoNothing());
+  stream_->LoadMore(surface.GetSurfaceId(), base::DoNothing());
   WaitForIdleTaskQueue();
 
   EXPECT_EQ(
@@ -569,7 +569,7 @@ TEST_F(FeedApiReliabilityLoggingTest, LoadMoreAbortsIfNoNextPageToken) {
   WaitForIdleTaskQueue();
   surface.reliability_logging_bridge.ClearEventsString();
 
-  stream_->LoadMore(surface, base::DoNothing());
+  stream_->LoadMore(surface.GetSurfaceId(), base::DoNothing());
   WaitForIdleTaskQueue();
 
   EXPECT_EQ("", surface.reliability_logging_bridge.GetEventsString());

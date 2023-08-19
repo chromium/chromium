@@ -93,7 +93,6 @@ bool PhishingUrlFeatureExtractor::ExtractFeatures(const GURL& url,
       return false;
   }
 
-  UMA_HISTOGRAM_TIMES("SBClientPhishing.URLFeatureTime", timer.Elapsed());
   return true;
 }
 

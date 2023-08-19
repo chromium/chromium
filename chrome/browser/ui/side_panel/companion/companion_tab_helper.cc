@@ -9,6 +9,7 @@
 #include "base/strings/strcat.h"
 #include "chrome/browser/companion/core/features.h"
 #include "chrome/browser/companion/core/mojom/companion.mojom.h"
+#include "chrome/browser/companion/core/utils.h"
 #include "chrome/browser/translate/chrome_translate_client.h"
 #include "chrome/browser/ui/side_panel/companion/companion_side_panel_controller_utils.h"
 #include "chrome/browser/ui/webui/side_panel/companion/companion_page_handler.h"
@@ -52,8 +53,7 @@ void CompanionTabHelper::ShowCompanionSidePanelForImage(
   CHECK(delegate_);
 
   // Create upload URL to load in companion.
-  std::string upload_url_string =
-      companion::features::kImageUploadURLForCompanion.Get();
+  std::string upload_url_string = companion::GetImageUploadURLForCompanion();
   base::StrAppend(&upload_url_string, {"?", additional_query_params_modified});
   GURL upload_url = GURL(upload_url_string);
   CHECK(upload_url.is_valid());
@@ -116,6 +116,11 @@ CompanionTabHelper::GetCompanionPageHandler() {
   return companion_page_handler_;
 }
 
+void CompanionTabHelper::AddCompanionFinishedLoadingCallback(
+    CompanionTabHelper::CompanionLoadedCallback callback) {
+  delegate_->AddCompanionFinishedLoadingCallback(std::move(callback));
+}
+
 content::WebContents* CompanionTabHelper::GetCompanionWebContentsForTesting() {
   return delegate_->GetCompanionWebContentsForTesting();  // IN-TEST
 }
@@ -135,7 +140,7 @@ void CompanionTabHelper::SetTextQuery(const std::string& text_query) {
   CHECK(!text_query.empty());
   text_query_ = text_query;
   if (companion_page_handler_) {
-    companion_page_handler_->OnSearchTextQuery(GetTextQuery());
+    companion_page_handler_->OnSearchTextQuery();
   }
 }
 
@@ -167,8 +172,10 @@ std::string CompanionTabHelper::GetTextQueryFromSearchUrl(
   return text_query_param_value;
 }
 
-void CompanionTabHelper::StartRegionSearch(content::WebContents* web_contents,
-                                           bool use_fullscreen_capture) {
+void CompanionTabHelper::StartRegionSearch(
+    content::WebContents* web_contents,
+    bool use_fullscreen_capture,
+    lens::AmbientSearchEntryPoint entry_point) {
 #if BUILDFLAG(ENABLE_LENS_DESKTOP_GOOGLE_BRANDED_FEATURES)
   // TODO(shaktisahu): Pass a UI entry point for accurate metrics.
   Browser* browser = companion::GetBrowserForWebContents(web_contents);
@@ -179,7 +186,7 @@ void CompanionTabHelper::StartRegionSearch(content::WebContents* web_contents,
   }
   lens_region_search_controller_->Start(web_contents, use_fullscreen_capture,
                                         /*is_google_default_search_provider=*/
-                                        true);
+                                        true, entry_point);
 #endif
 }
 

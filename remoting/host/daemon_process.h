@@ -143,6 +143,8 @@ class DaemonProcess : public ConfigWatcher::Delegate,
   // session from the associated desktop environment.
   virtual void SendTerminalDisconnected(int terminal_id) = 0;
 
+  virtual void StartChromotingHostServices() = 0;
+
   scoped_refptr<AutoThreadTaskRunner> caller_task_runner() {
     return caller_task_runner_;
   }

@@ -16,10 +16,6 @@
 #include "base/gtest_prod_util.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 namespace mac_notifications {
 
 // This class manages notification categories for a given NotificationCenter.
@@ -28,7 +24,7 @@ namespace mac_notifications {
 // categories that can be used on notifications shown with it. This class
 // manages that set and returns category identifiers for a given set of action
 // buttons.
-class API_AVAILABLE(macos(10.14)) NotificationCategoryManager {
+class NotificationCategoryManager {
  public:
   using Button = std::pair</*title*/ std::u16string,
                            /*placeholder*/ absl::optional<std::u16string>>;

@@ -8,6 +8,7 @@
 #include "ash/webui/projector_app/mojom/untrusted_projector.mojom.h"
 #include "ash/webui/projector_app/projector_app_client.h"
 #include "ash/webui/projector_app/projector_xhr_sender.h"
+#include "ash/webui/projector_app/public/mojom/projector_types.mojom-forward.h"
 #include "base/files/safe_base_name.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
@@ -85,8 +86,7 @@ class UntrustedProjectorPageHandlerImpl
   // results.
   virtual void OnXhrRequestCompleted(
       SendXhrCallback callback,
-      const std::string& response_body,
-      projector::mojom::XhrResponseCode response_code);
+      projector::mojom::XhrResponsePtr xhr_response);
 
  private:
   mojo::Receiver<projector::mojom::UntrustedProjectorPageHandler> receiver_;

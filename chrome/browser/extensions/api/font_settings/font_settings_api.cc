@@ -38,6 +38,7 @@
 #include "extensions/browser/extension_prefs_helper.h"
 #include "extensions/browser/extension_prefs_helper_factory.h"
 #include "extensions/browser/extension_system.h"
+#include "extensions/common/api/types.h"
 #include "extensions/common/error_utils.h"
 
 #if BUILDFLAG(IS_WIN)
@@ -47,6 +48,7 @@
 namespace extensions {
 
 namespace fonts = api::font_settings;
+using extensions::api::types::ChromeSettingScope;
 
 namespace {
 
@@ -278,7 +280,7 @@ ExtensionFunction::ResponseAction FontSettingsClearFontFunction::Run() {
   EXTENSION_FUNCTION_VALIDATE(profile->GetPrefs()->FindPreference(pref_path));
 
   ExtensionPrefsHelper::Get(profile)->RemoveExtensionControlledPref(
-      extension_id(), pref_path, kExtensionPrefsScopeRegular);
+      extension_id(), pref_path, ChromeSettingScope::kRegular);
   return RespondNow(NoArguments());
 }
 
@@ -332,7 +334,7 @@ ExtensionFunction::ResponseAction FontSettingsSetFontFunction::Run() {
   EXTENSION_FUNCTION_VALIDATE(profile->GetPrefs()->FindPreference(pref_path));
 
   ExtensionPrefsHelper::Get(profile)->SetExtensionControlledPref(
-      extension_id(), pref_path, kExtensionPrefsScopeRegular,
+      extension_id(), pref_path, ChromeSettingScope::kRegular,
       base::Value(params->details.font_id));
   return RespondNow(NoArguments());
 }
@@ -383,7 +385,7 @@ ExtensionFunction::ResponseAction ClearFontPrefExtensionFunction::Run() {
     return RespondNow(Error(kSetFromIncognitoError));
 
   ExtensionPrefsHelper::Get(profile)->RemoveExtensionControlledPref(
-      extension_id(), GetPrefName(), kExtensionPrefsScopeRegular);
+      extension_id(), GetPrefName(), ChromeSettingScope::kRegular);
   return RespondNow(NoArguments());
 }
 
@@ -419,7 +421,7 @@ ExtensionFunction::ResponseAction SetFontPrefExtensionFunction::Run() {
   EXTENSION_FUNCTION_VALIDATE(value);
 
   ExtensionPrefsHelper::Get(profile)->SetExtensionControlledPref(
-      extension_id(), GetPrefName(), kExtensionPrefsScopeRegular,
+      extension_id(), GetPrefName(), ChromeSettingScope::kRegular,
       value->Clone());
   return RespondNow(NoArguments());
 }

@@ -215,7 +215,7 @@ pub fn ctor(args: TokenStream, input: TokenStream) -> TokenStream {
                         TokenTree::Punct(Punct::new(',', Spacing::Alone)),
                         TokenTree::Ident(Ident::new("link_section", Span::call_site())),
                         TokenTree::Punct(Punct::new('=', Spacing::Alone)),
-                        TokenTree::Literal(Literal::string("__DATA,__mod_init_func")),
+                        TokenTree::Literal(Literal::string("__DATA_CONST,__mod_init_func")),
                     ],
                 ))
             ],

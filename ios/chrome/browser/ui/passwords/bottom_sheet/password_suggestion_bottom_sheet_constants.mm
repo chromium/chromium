@@ -4,9 +4,5 @@
 
 #import "ios/chrome/browser/ui/passwords/bottom_sheet/password_suggestion_bottom_sheet_constants.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 NSString* const kPasswordSuggestionBottomSheetTableViewId =
     @"PasswordSuggestionBottomSheetTableViewId";

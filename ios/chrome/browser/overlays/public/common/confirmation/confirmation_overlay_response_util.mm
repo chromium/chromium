@@ -8,10 +8,6 @@
 #import "ios/chrome/browser/overlays/public/common/confirmation/confirmation_overlay_response.h"
 #import "ios/chrome/browser/overlays/public/overlay_response.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 using alert_overlays::AlertResponse;
 using alert_overlays::ResponseConverter;
 

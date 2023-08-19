@@ -619,7 +619,7 @@ class SecurityTokenSessionBehaviorTest : public SecurityTokenLoginTest {
       test_certificate_provider_extension_mixin_{&mixin_host_,
                                                  &user_extension_mixin_};
 
-  raw_ptr<Profile, ExperimentalAsh> profile_ = nullptr;
+  raw_ptr<Profile, DanglingUntriaged | ExperimentalAsh> profile_ = nullptr;
 };
 
 // Tests the SecurityTokenSessionBehavior policy with value "LOCK".

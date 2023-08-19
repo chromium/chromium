@@ -131,6 +131,10 @@ class UpdateServiceImpl : public UpdateService {
   std::multimap<std::string, base::RepeatingClosure> cancellation_callbacks_;
 };
 
+namespace internal {
+UpdateService::Result ToResult(update_client::Error error);
+}  // namespace internal
+
 }  // namespace updater
 
 #endif  // CHROME_UPDATER_UPDATE_SERVICE_IMPL_H_

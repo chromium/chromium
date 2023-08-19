@@ -5,7 +5,7 @@ found in the LICENSE file.
 -->
 
 
-<style include="oobe-dialog-host-styles">
+<style include="oobe-dialog-host-styles cros-color-overrides">
   #reset-revert-spinner {
     padding-inline-end: 5px;
   }
@@ -22,8 +22,14 @@ found in the LICENSE file.
 
   #tpmFirmwareUpdateContainer {
     cursor: default;
-    line-height: 20px;
+    line-height: var(--oobe-reset-firmware-update-line-height);
     pointer-events: auto;
+  }
+
+  :host-context(.jelly-enabled) .throbber {
+    background: none;
+    background-color: var(--cros-sys-primary);
+    -webkit-mask: url(chrome://resources/images/throbber_small.svg) no-repeat;
   }
 </style>
 <link rel="stylesheet" href="//resources/css/throbber.css">
@@ -69,8 +75,8 @@ found in the LICENSE file.
   </div>
   <div slot="content" class="flex layout vertical center center-justified">
     <!-- Reset screen illustration -->
-    <img src="images/powerwash.svg"
-        class="oobe-illustration" aria-hidden="true">
+    <iron-icon icon="oobe-illos:powerwash-illo" class="illustration-jelly">
+    </iron-icon>
     <!-- TPM Update - Only shown during powerwash state -->
     <div id="tpmFirmwareUpdate" class="layout horizontal"
         hidden="[[!inPowerwashState_]]">
@@ -137,7 +143,8 @@ found in the LICENSE file.
     [[i18nDynamic(locale, 'resetRollbackErrorMessageBody')]]
   </div>
   <div slot="content" class="flex layout vertical center center-justified">
-    <img src="images/error.svg" class="oobe-illustration">
+    <iron-icon icon="oobe-illos:error-illo" class="illustration-jelly">
+    </iron-icon>
   </div>
   <div slot="bottom-buttons">
     <oobe-text-button id="okButton" on-click="onCancelTap_"

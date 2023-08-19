@@ -21,7 +21,7 @@ namespace {
 
 // Adds all NSMenuItems with an accelerator to the array.
 void AddAcceleratorItemsToArray(NSMenu* menu, NSMutableArray* array) {
-  for (NSMenuItem* item in [menu itemArray]) {
+  for (NSMenuItem* item in menu.itemArray) {
     NSMenu* submenu = item.submenu;
     if (submenu)
       AddAcceleratorItemsToArray(submenu, array);
@@ -53,7 +53,7 @@ inline bool MenuItemHasModifierMask(NSMenuItem* item, NSUInteger modifierMask) {
 NSMenuItem* MenuContainsAccelerator(NSMenu* menu,
                                     NSString* key_equivalent,
                                     NSUInteger modifier_mask) {
-  for (NSMenuItem* item in [menu itemArray]) {
+  for (NSMenuItem* item in menu.itemArray) {
     NSMenu* submenu = item.submenu;
     if (submenu) {
       NSMenuItem* result =

@@ -60,8 +60,7 @@ struct TestParam {
   // Enables the following Ash feature flags:
   // - AlwaysConfirmComposition
   //
-  // Will not be true if `extended_confirm_composition` or `fix_268467697` are
-  // false.
+  // Will not be true if `extended_confirm_composition` is false.
   bool fix_265853952 = false;
 };
 
@@ -573,20 +572,20 @@ class InputMethodLacrosBrowserTest
   base::test::ScopedFeatureList feature_list_override_;
 };
 
-INSTANTIATE_TEST_SUITE_P(InputMethodLacrosBrowserTestAllParams,
-                         InputMethodLacrosBrowserTest,
-                         ::testing::Values(
-                             // All features off.
-                             TestParam{},
-                             // Enable `extended_confirm_composition` first.
-                             TestParam{.extended_confirm_composition = true},
-                             // Enable `fix_268467697` next.
-                             TestParam{.extended_confirm_composition = true,
-                                       .fix_268467697 = true},
-                             // Enable `fix_265853952` last.
-                             TestParam{.extended_confirm_composition = true,
-                                       .fix_268467697 = true,
-                                       .fix_265853952 = true}));
+INSTANTIATE_TEST_SUITE_P(
+    InputMethodLacrosBrowserTestAllParams,
+    InputMethodLacrosBrowserTest,
+    ::testing::Values(
+        // All features off.
+        TestParam{},
+        // Enable `extended_confirm_composition` first.
+        TestParam{.extended_confirm_composition = true},
+        // Combos of `fix_268467697` and `fix_265853952`.
+        TestParam{.extended_confirm_composition = true, .fix_268467697 = true},
+        TestParam{.extended_confirm_composition = true, .fix_265853952 = true},
+        TestParam{.extended_confirm_composition = true,
+                  .fix_268467697 = true,
+                  .fix_265853952 = true}));
 
 IN_PROC_BROWSER_TEST_P(InputMethodLacrosBrowserTest,
                        FocusingInputFieldSendsFocus) {
@@ -1724,6 +1723,81 @@ IN_PROC_BROWSER_TEST_P(InputMethodLacrosBrowserTest,
   input_method_async_waiter.DeleteSurroundingText(1, 0);
   EXPECT_TRUE(WaitUntilInputFieldHasText(GetActiveWebContents(browser()), id,
                                          "ab", gfx::Range(2)));
+}
+
+IN_PROC_BROWSER_TEST_P(InputMethodLacrosBrowserTest, DeadKeyTriggersWebEvents) {
+  mojo::Remote<InputMethodTestInterface> input_method =
+      BindInputMethodTestInterface(
+          GetParam(),
+          {InputMethodTestInterface::MethodMinVersions::kWaitForFocusMinVersion,
+           InputMethodTestInterface::MethodMinVersions::
+               kKeyEventHandledMinVersion},
+          {kInputMethodTestCapabilityChangeInputMethod});
+  if (!input_method.is_bound()) {
+    GTEST_SKIP() << "Unsupported ash version";
+  }
+  const std::string id = RenderAutofocusedInputFieldInLacros(browser());
+  InputMethodTestInterfaceAsyncWaiter input_method_async_waiter(
+      input_method.get());
+  input_method_async_waiter.WaitForFocus();
+  InputEventListener event_listener =
+      ListenForInputEvents(GetActiveWebContents(browser()), id);
+
+  // Switch to an US International input method, which has dead keys.
+  // TODO: crbug.com/1344058 - This currently depends on the Linux machine
+  // running the test to have "us(intl)" in the correct XKB layout directory.
+  // Refactor Ozone to use PathService so that this directory can be controlled
+  // to make this test hermetic.
+  input_method_async_waiter.InstallAndSwitchToInputMethod(
+      crosapi::mojom::InputMethod::New(/*xkb_layout=*/"us(intl)"));
+  SendKeyEventsSync(
+      input_method_async_waiter,
+      KeySequenceBuilder()
+          .PressAndRelease(ui::DomKey::DeadKeyFromCombiningCharacter(U'\u0301'),
+                           ui::DomCode::QUOTE, ui::KeyboardCode::VKEY_OEM_7)
+          .Build());
+
+  EXPECT_THAT(event_listener.WaitForMessage(),
+              IsKeyDownEvent("Dead", "Quote", 222));
+  EXPECT_THAT(event_listener.WaitForMessage(),
+              IsKeyUpEvent("Dead", "Quote", 222));
+}
+
+IN_PROC_BROWSER_TEST_P(InputMethodLacrosBrowserTest,
+                       ChangingInputMethodUpdatesKeyLayout) {
+  mojo::Remote<InputMethodTestInterface> input_method =
+      BindInputMethodTestInterface(
+          GetParam(),
+          {InputMethodTestInterface::MethodMinVersions::kWaitForFocusMinVersion,
+           InputMethodTestInterface::MethodMinVersions::
+               kKeyEventHandledMinVersion},
+          {kInputMethodTestCapabilityChangeInputMethod});
+  if (!input_method.is_bound()) {
+    GTEST_SKIP() << "Unsupported ash version";
+  }
+  const std::string id = RenderAutofocusedInputFieldInLacros(browser());
+  InputMethodTestInterfaceAsyncWaiter input_method_async_waiter(
+      input_method.get());
+  input_method_async_waiter.WaitForFocus();
+
+  // Switch to an AZERTY input method (French).
+  // TODO(crbug.com/1344058): This currently depends on the Linux machine
+  // running the test to have "fr" in the correct XKB layout directory. Refactor
+  // Ozone to use PathService so that this directory can be controlled to make
+  // this test hermetic.
+  input_method_async_waiter.InstallAndSwitchToInputMethod(
+      crosapi::mojom::InputMethod::New(/*xkb_layout=*/"fr"));
+  SendKeyEventsSync(
+      input_method_async_waiter,
+      KeySequenceBuilder()
+          .PressAndRelease(ui::DomKey::FromCharacter('q'), ui::DomCode::US_Q,
+                           ui::KeyboardCode::VKEY_Q)
+          .PressAndRelease(ui::DomKey::FromCharacter('w'), ui::DomCode::US_W,
+                           ui::KeyboardCode::VKEY_W)
+          .Build());
+
+  EXPECT_TRUE(WaitUntilInputFieldHasText(GetActiveWebContents(browser()), id,
+                                         "az", gfx::Range(2)));
 }
 
 }  // namespace

@@ -22,7 +22,7 @@ bool HasAny(const Backing<type>& backing,
             const BackingFlags& flags,
             std::initializer_list<const char*> args) {
   for (const char* str : args) {
-    if (backing.Contains(flags, str)) {
+    if (backing.Contains(flags, AtomicString(str))) {
       return true;
     }
   }
@@ -34,7 +34,7 @@ bool HasAll(const Backing<type>& backing,
             const BackingFlags& flags,
             std::initializer_list<const char*> args) {
   for (const char* str : args) {
-    if (!backing.Contains(flags, str)) {
+    if (!backing.Contains(flags, AtomicString(str))) {
       return false;
     }
   }
@@ -81,39 +81,39 @@ TEST(InvalidationSetTest, Backing_Independence) {
   Backing<BackingType::kTagNames> tag_names;
   Backing<BackingType::kAttributes> attributes;
 
-  classes.Add(flags, "test1");
-  ids.Add(flags, "test2");
-  tag_names.Add(flags, "test3");
-  attributes.Add(flags, "test4");
+  classes.Add(flags, AtomicString("test1"));
+  ids.Add(flags, AtomicString("test2"));
+  tag_names.Add(flags, AtomicString("test3"));
+  attributes.Add(flags, AtomicString("test4"));
 
   // Adding to set does not affect other backings:
-  ASSERT_TRUE(classes.Contains(flags, "test1"));
+  ASSERT_TRUE(classes.Contains(flags, AtomicString("test1")));
   ASSERT_FALSE(HasAny(classes, flags, {"test2", "test3", "test4"}));
 
-  ASSERT_TRUE(ids.Contains(flags, "test2"));
+  ASSERT_TRUE(ids.Contains(flags, AtomicString("test2")));
   ASSERT_FALSE(HasAny(ids, flags, {"test1", "test3", "test4"}));
 
-  ASSERT_TRUE(tag_names.Contains(flags, "test3"));
+  ASSERT_TRUE(tag_names.Contains(flags, AtomicString("test3")));
   ASSERT_FALSE(HasAny(tag_names, flags, {"test1", "test2", "test4"}));
 
-  ASSERT_TRUE(attributes.Contains(flags, "test4"));
+  ASSERT_TRUE(attributes.Contains(flags, AtomicString("test4")));
   ASSERT_FALSE(HasAny(attributes, flags, {"test1", "test2", "test3"}));
 
   // Adding additional items to one set does not affect others:
-  classes.Add(flags, "test5");
-  tag_names.Add(flags, "test6");
+  classes.Add(flags, AtomicString("test5"));
+  tag_names.Add(flags, AtomicString("test6"));
 
   ASSERT_TRUE(HasAll(classes, flags, {"test1", "test5"}));
   ASSERT_FALSE(HasAny(classes, flags, {"test2", "test3", "test4", "test6"}));
 
-  ASSERT_TRUE(ids.Contains(flags, "test2"));
+  ASSERT_TRUE(ids.Contains(flags, AtomicString("test2")));
   ASSERT_FALSE(
       HasAny(ids, flags, {"test1", "test3", "test4", "test5", "test6"}));
 
   ASSERT_TRUE(HasAll(tag_names, flags, {"test3", "test6"}));
   ASSERT_FALSE(HasAny(tag_names, flags, {"test1", "test2", "test4", "test5"}));
 
-  ASSERT_TRUE(attributes.Contains(flags, "test4"));
+  ASSERT_TRUE(attributes.Contains(flags, AtomicString("test4")));
   ASSERT_FALSE(HasAny(attributes, flags, {"test1", "test2", "test3"}));
 
   // Clearing one set does not clear others:
@@ -143,32 +143,35 @@ TEST(InvalidationSetTest, Backing_ClearContains) {
   BackingFlags flags;
   Backing<BackingType::kClasses> backing;
 
+  AtomicString test1("test1");
+  AtomicString test2("test2");
+
   // Clearing an empty set:
-  ASSERT_FALSE(backing.Contains(flags, "test1"));
+  ASSERT_FALSE(backing.Contains(flags, test1));
   ASSERT_FALSE(backing.IsHashSet(flags));
   backing.Clear(flags);
   ASSERT_FALSE(backing.IsHashSet(flags));
 
   // Add one element to the set, and clear it:
-  backing.Add(flags, "test1");
+  backing.Add(flags, test1);
   ASSERT_FALSE(backing.IsHashSet(flags));
-  ASSERT_TRUE(backing.Contains(flags, "test1"));
+  ASSERT_TRUE(backing.Contains(flags, test1));
   backing.Clear(flags);
-  ASSERT_FALSE(backing.Contains(flags, "test1"));
+  ASSERT_FALSE(backing.Contains(flags, test1));
   ASSERT_FALSE(backing.IsHashSet(flags));
 
   // Add two elements to the set, and clear them:
-  backing.Add(flags, "test1");
+  backing.Add(flags, test1);
   ASSERT_FALSE(backing.IsHashSet(flags));
-  ASSERT_TRUE(backing.Contains(flags, "test1"));
-  ASSERT_FALSE(backing.Contains(flags, "test2"));
-  backing.Add(flags, "test2");
+  ASSERT_TRUE(backing.Contains(flags, test1));
+  ASSERT_FALSE(backing.Contains(flags, test2));
+  backing.Add(flags, test2);
   ASSERT_TRUE(backing.IsHashSet(flags));
-  ASSERT_TRUE(backing.Contains(flags, "test1"));
-  ASSERT_TRUE(backing.Contains(flags, "test2"));
+  ASSERT_TRUE(backing.Contains(flags, test1));
+  ASSERT_TRUE(backing.Contains(flags, test2));
   backing.Clear(flags);
-  ASSERT_FALSE(backing.Contains(flags, "test1"));
-  ASSERT_FALSE(backing.Contains(flags, "test2"));
+  ASSERT_FALSE(backing.Contains(flags, test1));
+  ASSERT_FALSE(backing.Contains(flags, test2));
   ASSERT_FALSE(backing.IsHashSet(flags));
 }
 
@@ -177,9 +180,9 @@ TEST(InvalidationSetTest, Backing_BackingIsEmpty) {
   Backing<BackingType::kClasses> backing;
 
   ASSERT_TRUE(backing.IsEmpty(flags));
-  backing.Add(flags, "test1");
+  backing.Add(flags, AtomicString("test1"));
   ASSERT_FALSE(backing.IsEmpty(flags));
-  backing.Add(flags, "test2");
+  backing.Add(flags, AtomicString("test2"));
   backing.Clear(flags);
   ASSERT_TRUE(backing.IsEmpty(flags));
 }
@@ -190,7 +193,7 @@ TEST(InvalidationSetTest, Backing_IsEmpty) {
 
   ASSERT_TRUE(backing.IsEmpty(flags));
 
-  backing.Add(flags, "test1");
+  backing.Add(flags, AtomicString("test1"));
   ASSERT_FALSE(backing.IsEmpty(flags));
 
   backing.Clear(flags);
@@ -198,6 +201,9 @@ TEST(InvalidationSetTest, Backing_IsEmpty) {
 }
 
 TEST(InvalidationSetTest, Backing_Iterator) {
+  AtomicString test1("test1");
+  AtomicString test2("test2");
+  AtomicString test3("test3");
   // Iterate over empty set.
   {
     BackingFlags flags;
@@ -215,13 +221,13 @@ TEST(InvalidationSetTest, Backing_Iterator) {
     BackingFlags flags;
     Backing<BackingType::kClasses> backing;
 
-    backing.Add(flags, "test1");
+    backing.Add(flags, test1);
     Vector<AtomicString> strings;
     for (const AtomicString& str : backing.Items(flags)) {
       strings.push_back(str);
     }
     ASSERT_EQ(1u, strings.size());
-    ASSERT_TRUE(strings.Contains("test1"));
+    ASSERT_TRUE(strings.Contains(test1));
     backing.Clear(flags);
   }
 
@@ -230,17 +236,17 @@ TEST(InvalidationSetTest, Backing_Iterator) {
     BackingFlags flags;
     Backing<BackingType::kClasses> backing;
 
-    backing.Add(flags, "test1");
-    backing.Add(flags, "test2");
-    backing.Add(flags, "test3");
+    backing.Add(flags, test1);
+    backing.Add(flags, test2);
+    backing.Add(flags, test3);
     Vector<AtomicString> strings;
     for (const AtomicString& str : backing.Items(flags)) {
       strings.push_back(str);
     }
     ASSERT_EQ(3u, strings.size());
-    ASSERT_TRUE(strings.Contains("test1"));
-    ASSERT_TRUE(strings.Contains("test2"));
-    ASSERT_TRUE(strings.Contains("test3"));
+    ASSERT_TRUE(strings.Contains(test1));
+    ASSERT_TRUE(strings.Contains(test2));
+    ASSERT_TRUE(strings.Contains(test3));
     backing.Clear(flags);
   }
 }
@@ -250,9 +256,9 @@ TEST(InvalidationSetTest, Backing_GetString) {
   Backing<BackingType::kClasses> backing;
   ASSERT_NE(nullptr, backing.GetString(flags));
   EXPECT_TRUE(backing.GetString(flags)->IsNull());
-  backing.Add(flags, "a");
+  backing.Add(flags, AtomicString("a"));
   EXPECT_EQ("a", *backing.GetString(flags));
-  backing.Add(flags, "b");
+  backing.Add(flags, AtomicString("b"));
   EXPECT_EQ(nullptr, backing.GetString(flags));
   backing.Clear(flags);
 }
@@ -261,9 +267,9 @@ TEST(InvalidationSetTest, Backing_GetHashSet) {
   BackingFlags flags;
   Backing<BackingType::kClasses> backing;
   EXPECT_FALSE(backing.GetHashSet(flags));
-  backing.Add(flags, "a");
+  backing.Add(flags, AtomicString("a"));
   EXPECT_FALSE(backing.GetHashSet(flags));
-  backing.Add(flags, "b");
+  backing.Add(flags, AtomicString("b"));
   EXPECT_TRUE(backing.GetHashSet(flags));
   backing.Clear(flags);
 }
@@ -274,23 +280,23 @@ TEST(InvalidationSetTest, ClassInvalidatesElement) {
   auto& document = dummy_page_holder->GetDocument();
   document.body()->setInnerHTML("<div id=test class='a b'>");
   document.View()->UpdateAllLifecyclePhasesForTest();
-  Element* element = document.getElementById("test");
+  Element* element = document.getElementById(AtomicString("test"));
   ASSERT_TRUE(element);
 
   scoped_refptr<InvalidationSet> set = DescendantInvalidationSet::Create();
   EXPECT_FALSE(set->InvalidatesElement(*element));
   // Adding one string sets the string_impl_ of the classes_ Backing.
-  set->AddClass("a");
+  set->AddClass(AtomicString("a"));
   EXPECT_TRUE(set->InvalidatesElement(*element));
   // Adding another upgrades to a HashSet.
-  set->AddClass("c");
+  set->AddClass(AtomicString("c"));
   EXPECT_TRUE(set->InvalidatesElement(*element));
 
   // These sets should not cause invalidation.
   set = DescendantInvalidationSet::Create();
-  set->AddClass("c");
+  set->AddClass(AtomicString("c"));
   EXPECT_FALSE(set->InvalidatesElement(*element));
-  set->AddClass("d");
+  set->AddClass(AtomicString("d"));
   EXPECT_FALSE(set->InvalidatesElement(*element));
 }
 
@@ -300,30 +306,30 @@ TEST(InvalidationSetTest, AttributeInvalidatesElement) {
   auto& document = dummy_page_holder->GetDocument();
   document.body()->setInnerHTML("<div id=test a b>");
   document.View()->UpdateAllLifecyclePhasesForTest();
-  Element* element = document.getElementById("test");
+  Element* element = document.getElementById(AtomicString("test"));
   ASSERT_TRUE(element);
 
   scoped_refptr<InvalidationSet> set = DescendantInvalidationSet::Create();
   EXPECT_FALSE(set->InvalidatesElement(*element));
   // Adding one string sets the string_impl_ of the classes_ Backing.
-  set->AddAttribute("a");
+  set->AddAttribute(AtomicString("a"));
   EXPECT_TRUE(set->InvalidatesElement(*element));
   // Adding another upgrades to a HashSet.
-  set->AddAttribute("c");
+  set->AddAttribute(AtomicString("c"));
   EXPECT_TRUE(set->InvalidatesElement(*element));
 
   // These sets should not cause invalidation.
   set = DescendantInvalidationSet::Create();
-  set->AddAttribute("c");
+  set->AddAttribute(AtomicString("c"));
   EXPECT_FALSE(set->InvalidatesElement(*element));
-  set->AddAttribute("d");
+  set->AddAttribute(AtomicString("d"));
   EXPECT_FALSE(set->InvalidatesElement(*element));
 }
 
 // Once we setWholeSubtreeInvalid, we should not keep the HashSets.
 TEST(InvalidationSetTest, SubtreeInvalid_AddBefore) {
   scoped_refptr<InvalidationSet> set = DescendantInvalidationSet::Create();
-  set->AddClass("a");
+  set->AddClass(AtomicString("a"));
   set->SetWholeSubtreeInvalid();
 
   ASSERT_TRUE(set->IsEmpty());
@@ -333,7 +339,7 @@ TEST(InvalidationSetTest, SubtreeInvalid_AddBefore) {
 TEST(InvalidationSetTest, SubtreeInvalid_AddAfter) {
   scoped_refptr<InvalidationSet> set = DescendantInvalidationSet::Create();
   set->SetWholeSubtreeInvalid();
-  set->AddTagName("a");
+  set->AddTagName(AtomicString("a"));
 
   ASSERT_TRUE(set->IsEmpty());
 }
@@ -345,7 +351,7 @@ TEST(InvalidationSetTest, SubtreeInvalid_Combine_1) {
   scoped_refptr<DescendantInvalidationSet> set2 =
       DescendantInvalidationSet::Create();
 
-  set1->AddId("a");
+  set1->AddId(AtomicString("a"));
   set2->SetWholeSubtreeInvalid();
 
   set1->Combine(*set2);
@@ -363,7 +369,7 @@ TEST(InvalidationSetTest, SubtreeInvalid_Combine_2) {
       DescendantInvalidationSet::Create();
 
   set1->SetWholeSubtreeInvalid();
-  set2->AddAttribute("a");
+  set2->AddAttribute(AtomicString("a"));
 
   set1->Combine(*set2);
 

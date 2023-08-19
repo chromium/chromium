@@ -10,7 +10,7 @@ create {
       extension: ".zip"
     }
     unpack_archive: true
-    patch_version: "cr0"
+    patch_version: "cr2"
   }
 
   # This will execute the `install.sh` script in 3pp dir after the source CIPD
@@ -23,8 +23,7 @@ create {
 
 upload {
   # Together with the "3pp"'s parent dirname, this defines the CIPD path to
-  # store the generated CIPD package. The value should be:
-  #   "chromium/third_party/android_toolchain/<ndk_version>"
-  pkg_prefix: "chromium/third_party/android_toolchain/r25c"
+  # store the generated CIPD package.
+  pkg_prefix: "chromium/third_party/android_toolchain"
   universal: true
 }

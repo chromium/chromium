@@ -12,10 +12,6 @@ struct PasswordFormFillData;
 struct PasswordFormGenerationData;
 }  // namespace autofill
 
-namespace web {
-class WebFrame;
-}  // namespace web
-
 class GURL;
 
 // C++ to ObjC bridge for methods of PasswordManagerDriver.
@@ -27,12 +23,14 @@ class GURL;
 // This method calls suggestions helper's processWithPasswordFormFillData.
 - (void)processPasswordFormFillData:
             (const autofill::PasswordFormFillData&)formData
-                            inFrame:(web::WebFrame*)frame
+                         forFrameId:(const std::string&)frameId
                         isMainFrame:(BOOL)isMainFrame
                   forSecurityOrigin:(const GURL&)origin;
 
 // Informs delegate that there are no saved credentials for the current page.
-- (void)onNoSavedCredentials;
+// The frame is used to get the AccountSelectFillData and reset the credentials
+// cache and also to detach the bottom sheet listener.
+- (void)onNoSavedCredentialsWithFrameId:(const std::string&)frameId;
 
 // Informs delegate of form for password generation found.
 - (void)formEligibleForGenerationFound:

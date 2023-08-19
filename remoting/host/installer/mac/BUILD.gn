@@ -3,7 +3,6 @@
 # found in the LICENSE file.
 
 import("//build/config/zip.gni")
-import("//chrome/installer/mac/mac_signing_sources.gni")
 import("//remoting/build/config/remoting_build.gni")
 
 action("remoting_me2me_host_archive") {
@@ -20,13 +19,7 @@ action("remoting_me2me_host_archive") {
     "Scripts/remoting_preflight.sh",
     "Keystone/GoogleSoftwareUpdate.pkg",
     "//chrome/installer/mac/pkg-dmg",
-    "//chrome/installer/mac/notarize_thing.py",
   ]
-
-  # Chrome's signing/notarization Python module.
-  _mac_signing_files =
-      rebase_path(mac_signing_sources, ".", "//chrome/installer/mac")
-  _installer_mac_files += _mac_signing_files
 
   inputs = _installer_mac_files
 
@@ -115,7 +108,7 @@ mac_app_bundle("remoting_host_uninstaller") {
     "BUNDLE_ID=$uninstaller_bundle_id",
     "VERSION_FULL=$remoting_version_full",
     "VERSION_SHORT=$remoting_version_short",
-    "MACOSX_DEPLOYMENT_TARGET=10.10",
+    "MACOSX_DEPLOYMENT_TARGET=10.15",
   ]
 
   sources = [

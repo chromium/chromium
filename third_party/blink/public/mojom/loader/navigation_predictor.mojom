@@ -7,6 +7,7 @@ module blink.mojom;
 import "mojo/public/mojom/base/time.mojom";
 import "url/mojom/url.mojom";
 import "ui/gfx/geometry/mojom/geometry.mojom";
+import "third_party/blink/public/mojom/preloading/anchor_element_interaction_host.mojom";
 
 // This mojom file is for user navigation prediction experiment, using anchor
 // element metrics gathered from the renderer process. See crbug.com/850624.
@@ -87,6 +88,14 @@ struct AnchorElementClick {
   // The time between navigation start of the anchor element's root document and
   // the time the user clicked on the link.
   mojo_base.mojom.TimeDelta navigation_start_to_click;
+};
+
+struct AnchorElementPointerDataOnHoverTimerFired {
+  // The ID of the anchor that was clicked.
+  uint32 anchor_id;
+
+  // The pointer data including mouse velocity and acceleration.
+  blink.mojom.AnchorElementPointerData pointer_data;
 };
 
 struct AnchorElementEnteredViewport {
@@ -174,4 +183,8 @@ interface AnchorElementMetricsHost {
 
   // This is called whenever pointer down event happens over the anchor element.
   ReportAnchorElementPointerDown(AnchorElementPointerDown pointer_down_event);
+
+  // This is called whenever the on-hover timer for the anchor element is fired.
+  ReportAnchorElementPointerDataOnHoverTimerFired(
+    AnchorElementPointerDataOnHoverTimerFired pointer_data);
 };

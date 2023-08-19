@@ -9,6 +9,7 @@
 
 #include "base/strings/utf_string_conversions.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/ime/ash/extension_ime_util.h"
 
 namespace ash {
@@ -23,7 +24,8 @@ InputMethodDescriptor CreateDesc(const std::string& id,
   return InputMethodDescriptor(
       extension_ime_util::GetInputMethodIDByEngineID(id), /* name= */ "",
       indicator, layout, language_codes, /* is_login_keyboard= */ true,
-      /* options_page_url= */ GURL(), /* input_view_url= */ GURL());
+      /* options_page_url= */ GURL(), /* input_view_url= */ GURL(),
+      /*handwriting_language=*/absl::nullopt);
 }
 
 TEST(InputMethodDescriptorTest, GetIndicatorTest) {

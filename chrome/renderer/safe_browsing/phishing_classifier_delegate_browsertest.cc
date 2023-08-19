@@ -130,6 +130,10 @@ class MockScorer : public Scorer {
       ApplyVisualTfLiteModel,
       void(const SkBitmap& bitmap,
            base::OnceCallback<void(std::vector<double>)> callback));
+  MOCK_CONST_METHOD2(
+      ApplyVisualTfLiteModelImageEmbedding,
+      void(const SkBitmap& bitmap,
+           base::OnceCallback<void(ImageFeatureEmbedding)> callback));
   MOCK_CONST_METHOD0(model_version, int());
   MOCK_CONST_METHOD0(dom_model_version, int());
   MOCK_CONST_METHOD0(HasVisualTfLiteModel, bool());
@@ -146,6 +150,7 @@ class MockScorer : public Scorer {
   MOCK_CONST_METHOD0(tflite_thresholds,
                      const google::protobuf::RepeatedPtrField<
                          TfLiteModelMetadata::Threshold>&());
+  MOCK_CONST_METHOD0(image_embedding_tflite_model_version, int());
 };
 }  // namespace
 

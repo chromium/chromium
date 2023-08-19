@@ -11,7 +11,6 @@
 #include "base/component_export.h"
 #include "base/files/file_path.h"
 #include "base/memory/ref_counted.h"
-#include "base/task/single_thread_task_runner.h"
 
 namespace os_crypt {
 
@@ -35,10 +34,6 @@ struct COMPONENT_EXPORT(OS_CRYPT) Config {
   // Only used when the allow_runtime_configurable_key_storage feature is
   // enabled.
   std::string application_name;
-  // A runner on the main thread for gnome-keyring to be called from.
-  // TODO(crbug/466975): Libsecret and KWallet don't need this. We can remove
-  // this when we stop supporting keyring.
-  scoped_refptr<base::SingleThreadTaskRunner> main_thread_runner;
   // Controls whether preference on using or ignoring backends is used.
   bool should_use_preference;
   // Preferences are stored in a separate file in the user data directory.

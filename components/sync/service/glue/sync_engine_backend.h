@@ -14,16 +14,14 @@
 #include "base/memory/ref_counted.h"
 #include "base/sequence_checker.h"
 #include "base/time/time.h"
-#include "components/invalidation/public/invalidation.h"
 #include "components/invalidation/public/invalidator_state.h"
-#include "components/invalidation/public/topic_invalidation_map.h"
+#include "components/sync/engine/active_devices_invalidation_info.h"
 #include "components/sync/engine/cancelation_signal.h"
 #include "components/sync/engine/model_type_configurer.h"
 #include "components/sync/engine/shutdown_reason.h"
 #include "components/sync/engine/sync_encryption_handler.h"
 #include "components/sync/engine/sync_engine.h"
 #include "components/sync/engine/sync_manager.h"
-#include "components/sync/service/active_devices_provider.h"
 #include "google_apis/gaia/core_account_id.h"
 
 namespace syncer {
@@ -101,10 +99,6 @@ class SyncEngineBackend : public base::RefCountedThreadSafe<SyncEngineBackend>,
   // Forwards an invalidation state change to the sync manager.
   void DoOnInvalidatorStateChange(invalidation::InvalidatorState state);
 
-  // Forwards an invalidation to the sync manager.
-  void DoOnIncomingInvalidation(
-      const invalidation::TopicInvalidationMap& invalidation_map);
-
   // Called to perform initialization of the syncapi on behalf of
   // SyncEngine::Initialize.
   void DoInitialize(SyncEngine::InitParams params,
@@ -168,9 +162,6 @@ class SyncEngineBackend : public base::RefCountedThreadSafe<SyncEngineBackend>,
   // Notify the syncer that the cookie jar has changed.
   void DoOnCookieJarChanged(bool account_mismatch, base::OnceClosure callback);
 
-  // Notify about change in client id.
-  void DoOnInvalidatorClientIdChange(const std::string& client_id);
-
   // Forwards an invalidation to the sync manager for all data types extracted
   // from the |payload|. This method is called for sync standalone
   // invalidations.
@@ -180,6 +171,9 @@ class SyncEngineBackend : public base::RefCountedThreadSafe<SyncEngineBackend>,
 
   // Returns a Value::List representing Nigori node.
   void GetNigoriNodeForDebugging(AllNodesCallback callback);
+
+  // Returns types that have local changes yet to be synced to the server.
+  ModelTypeSet GetTypesWithUnsyncedData() const;
 
   bool HasUnsyncedItemsForTest() const;
 

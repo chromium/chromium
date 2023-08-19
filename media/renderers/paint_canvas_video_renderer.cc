@@ -46,6 +46,7 @@
 #include "third_party/skia/include/gpu/GrBackendSurface.h"
 #include "third_party/skia/include/gpu/GrDirectContext.h"
 #include "third_party/skia/include/gpu/ganesh/SkImageGanesh.h"
+#include "third_party/skia/include/gpu/ganesh/gl/GrGLBackendSurface.h"
 #include "third_party/skia/include/gpu/gl/GrGLTypes.h"
 #include "ui/gfx/geometry/rect_f.h"
 #include "ui/gfx/geometry/skia_conversions.h"
@@ -203,8 +204,8 @@ sk_sp<SkImage> WrapGLTexture(
   // SkImage factory should reflect video_frame->format(). Update once
   // Skia supports GL_RGB. skbug.com/7533
   texture_info.fFormat = GL_RGBA8_OES;
-  GrBackendTexture backend_texture(size.width(), size.height(),
-                                   GrMipMapped::kNo, texture_info);
+  auto backend_texture = GrBackendTextures::MakeGL(
+      size.width(), size.height(), skgpu::Mipmapped::kNo, texture_info);
   return SkImages::AdoptTextureFrom(
       raster_context_provider->GrContext(), backend_texture,
       texture_origin_is_top_left ? kTopLeft_GrSurfaceOrigin
@@ -935,7 +936,7 @@ class VideoTextureBacking : public cc::TextureBacking {
         DLOG(ERROR) << "Failed to get backend texture for VideoTextureBacking.";
         return false;
       }
-      if (!texture.getGLTextureInfo(&texture_info)) {
+      if (!GrBackendTextures::GetGLTextureInfo(texture, &texture_info)) {
         DLOG(ERROR) << "Failed to getGLTextureInfo for VideoTextureBacking.";
         return false;
       }
@@ -1976,12 +1977,20 @@ bool PaintCanvasVideoRenderer::UpdateLastImage(
     bool wraps_video_frame_texture = false;
     gpu::Mailbox mailbox;
 
-    // `texture_target` is set only when the image backing the frame is
-    // compatible with GL.
-    bool can_wrap_texture = video_frame->NumTextures() == 1 &&
-                            video_frame->shared_image_format_type() ==
-                                SharedImageFormatType::kLegacy &&
-                            video_frame->mailbox_holder(0).texture_target != 0;
+    // Wrapping the video frame into a GL texture is possible iff:
+    // * The frame has only a single texture that represents the whole image as
+    //   a single plane (i.e., per-plane sampling of a multiplanar image is not
+    //   being used)
+    // * The image backing the frame is compatible with GL (possible to detect
+    //   via checking `texture_target`, which will be set only if this is the
+    //   case)
+    bool can_wrap_texture =
+        video_frame->NumTextures() == 1 &&
+        (video_frame->shared_image_format_type() ==
+             SharedImageFormatType::kLegacy ||
+         video_frame->shared_image_format_type() ==
+             SharedImageFormatType::kSharedImageFormatExternalSampler) &&
+        video_frame->mailbox_holder(0).texture_target != 0;
 
     if (allow_wrap_texture && can_wrap_texture) {
       cache_.emplace(video_frame->unique_id());

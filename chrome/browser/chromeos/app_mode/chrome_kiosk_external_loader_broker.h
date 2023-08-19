@@ -13,7 +13,7 @@
 #include "chromeos/crosapi/mojom/chrome_app_kiosk_service.mojom.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
-namespace ash {
+namespace chromeos {
 
 // Singleton broker that stands in the middle between the
 // ChromeKioskAppInstaller and the KioskAppExternalLoader. The external
@@ -59,6 +59,6 @@ class ChromeKioskExternalLoaderBroker {
   InstallDataChangeCallback secondary_apps_observer_;
 };
 
-}  // namespace ash
+}  // namespace chromeos
 
 #endif  // CHROME_BROWSER_CHROMEOS_APP_MODE_CHROME_KIOSK_EXTERNAL_LOADER_BROKER_H_

@@ -6,12 +6,13 @@
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_FONTS_FONT_PALETTE_H_
 
 #include <memory>
+#include "base/check.h"
 #include "base/memory/scoped_refptr.h"
+#include "third_party/blink/renderer/platform/graphics/color.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "third_party/blink/renderer/platform/wtf/text/atomic_string.h"
 #include "third_party/blink/renderer/platform/wtf/thread_safe_ref_counted.h"
-#include "third_party/skia/include/core/SkColor.h"
 
 namespace blink {
 
@@ -32,7 +33,7 @@ class PLATFORM_EXPORT FontPalette : public RefCounted<FontPalette> {
   // Data layout should match SkFontarguments::PaletteOverride::ColorOverride.
   struct FontPaletteOverride {
     int index;
-    SkColor color;
+    Color color;
 
     bool operator==(const FontPaletteOverride& other) const {
       return index == other.index && color == other.color;
@@ -58,46 +59,13 @@ class PLATFORM_EXPORT FontPalette : public RefCounted<FontPalette> {
     DISALLOW_NEW();
   };
 
-  enum InterpolablePaletteOperationType {
-    kNoInterpolation,
-    kMixPalettes,
-    kScalePalette,
-    kAddPalettes
-  };
-
-  // We introduce a mix-palette function to present interpolated font-palette
-  // values at each frame, i.e. font-palette property’s value at time 0.5
-  // between the palettes “--p1” and “--p2” will be presented as
-  // mix-palettes(--p1, –p2, 0.5). We also introduce palette-scale() and
-  // palette-add() functions for additive animations’ implementation. Function
-  // palette-add(--p1, --p2) adds colors under the same index from "--p1" and
-  // "--p2" pelettes' color records lists as it is currently done for
-  // interpolable color properties. Function palette-scale(--p) is scaling each
-  // color from the "--p" palette's color records list by the given scaling
-  // parameter.
-  struct InterpolablePaletteOperation {
-    InterpolablePaletteOperationType type;
-    double param = 0;
-
-    bool hasValue() const { return type != kNoInterpolation; }
-    String ToString() const {
-      switch (type) {
-        case kMixPalettes:
-          return "palette-mix";
-        case kScalePalette:
-          return "palette-scale";
-        case kAddPalettes:
-          return "palette-add";
-        case kNoInterpolation:
-          NOTREACHED();
-      }
-      NOTREACHED();
-      return "";
+  struct NonNormalizedPercentages {
+    double start;
+    double end;
+    bool operator==(const NonNormalizedPercentages& other) const {
+      return start == other.start && end == other.end;
+      ;
     }
-    bool operator==(const InterpolablePaletteOperation& other) const {
-      return type == other.type && param == other.param;
-    }
-    DISALLOW_NEW();
   };
 
   static scoped_refptr<FontPalette> Create() {
@@ -114,22 +82,23 @@ class PLATFORM_EXPORT FontPalette : public RefCounted<FontPalette> {
     return base::AdoptRef(new FontPalette(std::move(palette_values_name)));
   }
 
-  static scoped_refptr<FontPalette> Mix(scoped_refptr<FontPalette> start,
-                                        scoped_refptr<FontPalette> end,
-                                        double progress) {
-    return base::AdoptRef(
-        new FontPalette(start, end, {kMixPalettes, progress}));
-  }
-
-  static scoped_refptr<FontPalette> Add(scoped_refptr<FontPalette> start,
-                                        scoped_refptr<FontPalette> end) {
-    return base::AdoptRef(new FontPalette(start, end, {kAddPalettes, 0}));
-  }
-
-  static scoped_refptr<FontPalette> Scale(scoped_refptr<FontPalette> palette,
-                                          double scale) {
-    return base::AdoptRef(
-        new FontPalette(palette, palette, {kScalePalette, scale}));
+  // We introduce a palette-mix() function to represent interpolated
+  // font-palette values during animation/transition process, e.g. font-palette
+  // property’s value at time 0.5 between the palettes “--p1” and “--p2” will be
+  // presented as palette-mix(--p1, –p2, 0.5).
+  static scoped_refptr<FontPalette> Mix(
+      scoped_refptr<FontPalette> start,
+      scoped_refptr<FontPalette> end,
+      double start_percentage,
+      double end_percentage,
+      double normalized_percentage,
+      double alpha_multiplier,
+      Color::ColorSpace color_interpolation_space,
+      absl::optional<Color::HueInterpolationMethod> hue_interpolation_method) {
+    return base::AdoptRef(new FontPalette(
+        start, end, NonNormalizedPercentages(start_percentage, end_percentage),
+        normalized_percentage, alpha_multiplier, color_interpolation_space,
+        hue_interpolation_method));
   }
 
   void SetBasePalette(BasePaletteValue base_palette) {
@@ -170,21 +139,57 @@ class PLATFORM_EXPORT FontPalette : public RefCounted<FontPalette> {
   scoped_refptr<FontPalette> GetStart() const {
     DCHECK(RuntimeEnabledFeatures::FontPaletteAnimationEnabled());
     DCHECK(IsInterpolablePalette());
-    DCHECK(operation_.hasValue());
     return start_;
   }
 
   scoped_refptr<FontPalette> GetEnd() const {
     DCHECK(RuntimeEnabledFeatures::FontPaletteAnimationEnabled());
     DCHECK(IsInterpolablePalette());
-    DCHECK(operation_.hasValue());
     return end_;
   }
 
-  InterpolablePaletteOperation GetOperation() const {
+  double GetStartPercentage() const {
     DCHECK(RuntimeEnabledFeatures::FontPaletteAnimationEnabled());
     DCHECK(IsInterpolablePalette());
-    return operation_;
+    return percentages_.start;
+  }
+
+  double GetEndPercentage() const {
+    DCHECK(RuntimeEnabledFeatures::FontPaletteAnimationEnabled());
+    DCHECK(IsInterpolablePalette());
+    return percentages_.end;
+  }
+
+  double GetNormalizedPercentage() const {
+    DCHECK(RuntimeEnabledFeatures::FontPaletteAnimationEnabled());
+    DCHECK(IsInterpolablePalette());
+    return normalized_percentage_;
+  }
+
+  static NonNormalizedPercentages ComputeEndpointPercentagesFromNormalized(
+      double normalized_percentage) {
+    double end_percentage = normalized_percentage * 100.0;
+    double start_percentage = 100.0 - end_percentage;
+    return NonNormalizedPercentages(start_percentage, end_percentage);
+  }
+
+  double GetAlphaMultiplier() const {
+    DCHECK(RuntimeEnabledFeatures::FontPaletteAnimationEnabled());
+    DCHECK((IsInterpolablePalette()));
+    return alpha_multiplier_;
+  }
+
+  Color::ColorSpace GetColorInterpolationSpace() const {
+    DCHECK(RuntimeEnabledFeatures::FontPaletteAnimationEnabled());
+    DCHECK(IsInterpolablePalette());
+    return color_interpolation_space_;
+  }
+
+  absl::optional<Color::HueInterpolationMethod> GetHueInterpolationMethod()
+      const {
+    DCHECK(RuntimeEnabledFeatures::FontPaletteAnimationEnabled());
+    DCHECK(IsInterpolablePalette());
+    return hue_interpolation_method_;
   }
 
   String ToString() const;
@@ -196,25 +201,29 @@ class PLATFORM_EXPORT FontPalette : public RefCounted<FontPalette> {
 
  private:
   explicit FontPalette(KeywordPaletteName palette_name)
-      : palette_keyword_(palette_name),
-        base_palette_({kNoBasePalette, 0}),
-        operation_({kNoInterpolation, 0}) {}
+      : palette_keyword_(palette_name), base_palette_({kNoBasePalette, 0}) {}
   explicit FontPalette(AtomicString palette_values_name)
       : palette_keyword_(kCustomPalette),
         palette_values_name_(palette_values_name),
-        base_palette_({kNoBasePalette, 0}),
-        operation_({kNoInterpolation, 0}) {}
-  FontPalette(scoped_refptr<FontPalette> start,
-              scoped_refptr<FontPalette> end,
-              InterpolablePaletteOperation operation)
+        base_palette_({kNoBasePalette, 0}) {}
+  FontPalette(
+      scoped_refptr<FontPalette> start,
+      scoped_refptr<FontPalette> end,
+      NonNormalizedPercentages percentages,
+      double normalized_percentage,
+      double alpha_multiplier,
+      Color::ColorSpace color_interpoaltion_space,
+      absl::optional<Color::HueInterpolationMethod> hue_interpolation_method)
       : palette_keyword_(kInterpolablePalette),
         start_(start),
         end_(end),
-        operation_(operation) {}
+        percentages_(percentages),
+        normalized_percentage_(normalized_percentage),
+        alpha_multiplier_(alpha_multiplier),
+        color_interpolation_space_(color_interpoaltion_space),
+        hue_interpolation_method_(hue_interpolation_method) {}
   FontPalette()
-      : palette_keyword_(kNormalPalette),
-        base_palette_({kNoBasePalette, 0}),
-        operation_({kNoInterpolation, 0}) {}
+      : palette_keyword_(kNormalPalette), base_palette_({kNoBasePalette, 0}) {}
 
   KeywordPaletteName palette_keyword_;
   AtomicString palette_values_name_;
@@ -223,7 +232,11 @@ class PLATFORM_EXPORT FontPalette : public RefCounted<FontPalette> {
   Vector<FontPaletteOverride> palette_overrides_;
   scoped_refptr<FontPalette> start_;
   scoped_refptr<FontPalette> end_;
-  InterpolablePaletteOperation operation_;
+  NonNormalizedPercentages percentages_;
+  double normalized_percentage_;
+  double alpha_multiplier_;
+  Color::ColorSpace color_interpolation_space_;
+  absl::optional<Color::HueInterpolationMethod> hue_interpolation_method_;
 };
 
 }  // namespace blink

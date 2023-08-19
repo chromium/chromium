@@ -39,8 +39,14 @@ BrowsingTopicsSiteDataStorage::~BrowsingTopicsSiteDataStorage() {
 void BrowsingTopicsSiteDataStorage::ExpireDataBefore(base::Time end_time) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  if (!LazyInit())
+  if (!LazyInit()) {
     return;
+  }
+
+  sql::Transaction transaction(db_.get());
+  if (!transaction.Begin()) {
+    return;
+  }
 
   static constexpr char kDeleteApiUsageSql[] =
       // clang-format off
@@ -51,8 +57,21 @@ void BrowsingTopicsSiteDataStorage::ExpireDataBefore(base::Time end_time) {
   sql::Statement delete_api_usage_statement(
       db_->GetCachedStatement(SQL_FROM_HERE, kDeleteApiUsageSql));
   delete_api_usage_statement.BindTime(0, end_time);
-
   delete_api_usage_statement.Run();
+
+  static constexpr char kDeleteUnusedDomainsSql[] =
+      // clang-format off
+      "DELETE FROM browsing_topics_api_hashed_to_unhashed_domain "
+          "WHERE hashed_context_domain NOT IN ("
+              "SELECT DISTINCT hashed_context_domain "
+              "FROM browsing_topics_api_usages "
+          ")";
+  // clang-format on
+  sql::Statement delete_unused_domains_sql(
+      db_->GetCachedStatement(SQL_FROM_HERE, kDeleteUnusedDomainsSql));
+  delete_unused_domains_sql.Run();
+
+  transaction.Commit();
 }
 
 void BrowsingTopicsSiteDataStorage::ClearContextDomain(
@@ -61,6 +80,11 @@ void BrowsingTopicsSiteDataStorage::ClearContextDomain(
 
   if (!LazyInit())
     return;
+
+  sql::Transaction transaction(db_.get());
+  if (!transaction.Begin()) {
+    return;
+  }
 
   static constexpr char kDeleteContextDomainSql[] =
       // clang-format off
@@ -73,6 +97,20 @@ void BrowsingTopicsSiteDataStorage::ClearContextDomain(
   delete_context_domain_statement.BindInt64(0, hashed_context_domain.value());
 
   delete_context_domain_statement.Run();
+
+  static constexpr char kDeleteUnhashedContextDomainSQL[] =
+      // clang-format off
+      "DELETE FROM browsing_topics_api_hashed_to_unhashed_domain "
+          "WHERE hashed_context_domain = ?";
+  // clang-format on
+  sql::Statement delete_unhashed_context_domain_statement(
+      db_->GetCachedStatement(SQL_FROM_HERE, kDeleteUnhashedContextDomainSQL));
+  delete_unhashed_context_domain_statement.BindInt64(
+      0, hashed_context_domain.value());
+
+  delete_unhashed_context_domain_statement.Run();
+
+  transaction.Commit();
 }
 
 browsing_topics::ApiUsageContextQueryResult
@@ -82,9 +120,6 @@ BrowsingTopicsSiteDataStorage::GetBrowsingTopicsApiUsage(base::Time begin_time,
 
   if (!LazyInit())
     return {};
-
-  // Expire data before `begin_time`, as they are no longer needed.
-  ExpireDataBefore(begin_time);
 
   static constexpr char kGetApiUsageSql[] =
       // clang-format off
@@ -125,7 +160,8 @@ BrowsingTopicsSiteDataStorage::GetBrowsingTopicsApiUsage(base::Time begin_time,
 
 void BrowsingTopicsSiteDataStorage::OnBrowsingTopicsApiUsed(
     const browsing_topics::HashedHost& hashed_main_frame_host,
-    const base::flat_set<browsing_topics::HashedDomain>& hashed_context_domains,
+    const browsing_topics::HashedDomain& hashed_context_domain,
+    const std::string& context_domain,
     base::Time time) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
@@ -136,26 +172,64 @@ void BrowsingTopicsSiteDataStorage::OnBrowsingTopicsApiUsed(
   if (!transaction.Begin())
     return;
 
-  for (const browsing_topics::HashedDomain& hashed_context_domain :
-       hashed_context_domains) {
-    static constexpr char kInsertApiUsageSql[] =
-        // clang-format off
-        "INSERT OR REPLACE INTO browsing_topics_api_usages "
-            "(hashed_context_domain,hashed_main_frame_host,last_usage_time) "
-            "VALUES (?,?,?)";
-    // clang-format on
+  static constexpr char kInsertApiUsageSql[] =
+      // clang-format off
+      "INSERT OR REPLACE INTO browsing_topics_api_usages "
+          "(hashed_context_domain,hashed_main_frame_host,last_usage_time) "
+          "VALUES (?,?,?)";
+  // clang-format on
 
-    sql::Statement insert_api_usage_statement(
-        db_->GetCachedStatement(SQL_FROM_HERE, kInsertApiUsageSql));
-    insert_api_usage_statement.BindInt64(0, hashed_context_domain.value());
-    insert_api_usage_statement.BindInt64(1, hashed_main_frame_host.value());
-    insert_api_usage_statement.BindTime(2, time);
+  sql::Statement insert_api_usage_statement(
+      db_->GetCachedStatement(SQL_FROM_HERE, kInsertApiUsageSql));
+  insert_api_usage_statement.BindInt64(0, hashed_context_domain.value());
+  insert_api_usage_statement.BindInt64(1, hashed_main_frame_host.value());
+  insert_api_usage_statement.BindTime(2, time);
 
-    if (!insert_api_usage_statement.Run())
-      return;
+  if (!insert_api_usage_statement.Run()) {
+    return;
+  }
+
+  static constexpr char kInsertUnhashedDomainSql[] =
+      // clang-format off
+      "INSERT OR REPLACE INTO browsing_topics_api_hashed_to_unhashed_domain "
+          "(hashed_context_domain,context_domain) "
+          "VALUES (?,?)";
+  // clang-format on
+  sql::Statement insert_unhashed_domain_statement(
+      db_->GetCachedStatement(SQL_FROM_HERE, kInsertUnhashedDomainSql));
+  insert_unhashed_domain_statement.BindInt64(0, hashed_context_domain.value());
+  insert_unhashed_domain_statement.BindString(1, context_domain);
+
+  if (!insert_unhashed_domain_statement.Run()) {
+    return;
   }
 
   transaction.Commit();
+}
+
+std::map<browsing_topics::HashedDomain, std::string>
+BrowsingTopicsSiteDataStorage::GetContextDomainsFromHashedContextDomains(
+    const std::set<browsing_topics::HashedDomain>& hashed_context_domains) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  std::map<browsing_topics::HashedDomain, std::string> context_domains;
+  static constexpr char kGetContextDomainSql[] =
+      // clang-format off
+      "SELECT context_domain "
+          "FROM browsing_topics_api_hashed_to_unhashed_domain "
+          "WHERE hashed_context_domain = ?";
+  // clang-format on
+  for (const browsing_topics::HashedDomain& hashed_domain :
+       hashed_context_domains) {
+    sql::Statement select_unhashed_domain_statement(
+        db_->GetCachedStatement(SQL_FROM_HERE, kGetContextDomainSql));
+    select_unhashed_domain_statement.BindInt64(0, hashed_domain.value());
+    if (select_unhashed_domain_statement.Step()) {
+      context_domains[hashed_domain] =
+          select_unhashed_domain_statement.ColumnString(0);
+    }
+  }
+  return context_domains;
 }
 
 bool BrowsingTopicsSiteDataStorage::LazyInit() {
@@ -243,6 +317,17 @@ bool BrowsingTopicsSiteDataStorage::CreateSchema() {
   // clang-format on
   if (!db_->Execute(kLastUsageTimeIndexSql))
     return false;
+
+  static constexpr char kHashedToUnhashedDomainSql[] =
+      // clang-format off
+      "CREATE TABLE IF NOT EXISTS "
+          "browsing_topics_api_hashed_to_unhashed_domain("
+          "hashed_context_domain INTEGER PRIMARY KEY,"
+          "context_domain TEXT NOT NULL)";
+  // clang-format on
+  if (!db_->Execute(kHashedToUnhashedDomainSql)) {
+    return false;
+  }
 
   return true;
 }

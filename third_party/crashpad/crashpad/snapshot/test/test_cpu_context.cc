@@ -295,5 +295,27 @@ void InitializeCPUContextMIPS64(CPUContext* context, uint32_t seed) {
   mips64->dsp_control = value++;
 }
 
+void InitializeCPUContextRISCV64(CPUContext* context, uint32_t seed) {
+  context->architecture = kCPUArchitectureRISCV64;
+  CPUContextRISCV64* riscv64 = context->riscv64;
+
+  if (seed == 0) {
+    memset(riscv64, 0, sizeof(*riscv64));
+    return;
+  }
+
+  uint32_t value = seed;
+
+  riscv64->pc = value++;
+  for (size_t index = 0; index < std::size(riscv64->regs); ++index) {
+    riscv64->regs[index] = value++;
+  }
+
+  for (size_t index = 0; index < std::size(riscv64->fpregs); ++index) {
+    riscv64->fpregs[index] = value++;
+  }
+  riscv64->fcsr = value++;
+}
+
 }  // namespace test
 }  // namespace crashpad

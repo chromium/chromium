@@ -7,9 +7,11 @@
 
 #include <stdint.h>
 
+#include <vector>
+
+#include "base/containers/span.h"
 #include "base/functional/callback_forward.h"
-#include "base/memory/ref_counted.h"
-#include "base/memory/ref_counted_memory.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/gfx/gfx_export.h"
 
@@ -91,15 +93,13 @@ GFX_EXPORT SkColor FindClosestColor(const uint8_t* image, int width, int height,
 //   |upper_bound|. Return that color.
 //   If no color fulfills that requirement return the color with the largest
 //   weight regardless of whether or not it fulfills the equation above.
-GFX_EXPORT SkColor
-    CalculateKMeanColorOfPNG(scoped_refptr<base::RefCountedMemory> png,
-                             const HSL& lower_bound,
-                             const HSL& upper_bound,
-                             KMeanImageSampler* sampler);
+GFX_EXPORT SkColor CalculateKMeanColorOfPNG(base::span<const uint8_t> png,
+                                            const HSL& lower_bound,
+                                            const HSL& upper_bound,
+                                            KMeanImageSampler* sampler);
 // Computes a dominant color using the above algorithm and reasonable defaults
 // for |lower_bound|, |upper_bound| and |sampler|.
-GFX_EXPORT SkColor CalculateKMeanColorOfPNG(
-    scoped_refptr<base::RefCountedMemory> png);
+GFX_EXPORT SkColor CalculateKMeanColorOfPNG(base::span<const uint8_t> png);
 
 // Computes a dominant color for the first |height| rows of |bitmap| using the
 // above algorithm and a reasonable default sampler. If |find_closest| is true,

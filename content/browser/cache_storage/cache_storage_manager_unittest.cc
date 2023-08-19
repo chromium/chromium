@@ -23,6 +23,7 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/test/bind.h"
+#include "base/test/gmock_expected_support.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
@@ -390,13 +391,12 @@ class CacheStorageManagerTest : public testing::Test {
 
     // These must be instantiated after `quota_manager_proxy_` has been
     // initialized.
-    auto locator =
-        GetOrCreateBucket(storage_key1_, storage::kDefaultBucketName);
-    ASSERT_TRUE(locator.has_value());
-    bucket_locator1_ = *std::move(locator);
-    locator = GetOrCreateBucket(storage_key2_, storage::kDefaultBucketName);
-    ASSERT_TRUE(locator.has_value());
-    bucket_locator2_ = *std::move(locator);
+    ASSERT_OK_AND_ASSIGN(
+        bucket_locator1_,
+        GetOrCreateBucket(storage_key1_, storage::kDefaultBucketName));
+    ASSERT_OK_AND_ASSIGN(
+        bucket_locator2_,
+        GetOrCreateBucket(storage_key2_, storage::kDefaultBucketName));
 
     cache_manager_ = CacheStorageManager::Create(
         temp_dir_path, base::SingleThreadTaskRunner::GetCurrentDefault(),
@@ -982,19 +982,17 @@ class CacheStorageManagerStorageKeyAndBucketTestP
         ASSERT_TRUE(storage_key1_.IsFirstPartyContext());
         ASSERT_TRUE(storage_key2_.IsFirstPartyContext());
 
-        auto locator = GetOrCreateBucket(storage_key1_, bucket_name);
-        ASSERT_TRUE(locator.has_value());
-        bucket_locator1_ = *std::move(locator);
-        locator = GetOrCreateBucket(storage_key2_, bucket_name);
-        ASSERT_TRUE(locator.has_value());
-        bucket_locator2_ = *std::move(locator);
+        ASSERT_OK_AND_ASSIGN(bucket_locator1_,
+                             GetOrCreateBucket(storage_key1_, bucket_name));
+        ASSERT_OK_AND_ASSIGN(bucket_locator2_,
+                             GetOrCreateBucket(storage_key2_, bucket_name));
         ASSERT_EQ(bucket_locator1_.id, storage::BucketId::FromUnsafeValue(3));
         ASSERT_EQ(bucket_locator2_.id, storage::BucketId::FromUnsafeValue(4));
         break;
       }
 
       case StorageKeyAndBucketTestCase::kThirdPartyDefault:
-      case StorageKeyAndBucketTestCase::kThirdPartyNamed: {
+      case StorageKeyAndBucketTestCase::kThirdPartyNamed:
         // Recreate storage keys and buckets.
         storage_key1_ = blink::StorageKey::Create(
             url::Origin::Create(GURL("http://example1.com")),
@@ -1005,16 +1003,13 @@ class CacheStorageManagerStorageKeyAndBucketTestP
             net::SchemefulSite(GURL("http://example3.com")),
             blink::mojom::AncestorChainBit::kCrossSite);
 
-        auto locator = GetOrCreateBucket(storage_key1_, bucket_name);
-        ASSERT_TRUE(locator.has_value());
-        bucket_locator1_ = *std::move(locator);
-        locator = GetOrCreateBucket(storage_key2_, bucket_name);
-        ASSERT_TRUE(locator.has_value());
-        bucket_locator2_ = *std::move(locator);
+        ASSERT_OK_AND_ASSIGN(bucket_locator1_,
+                             GetOrCreateBucket(storage_key1_, bucket_name));
+        ASSERT_OK_AND_ASSIGN(bucket_locator2_,
+                             GetOrCreateBucket(storage_key2_, bucket_name));
         ASSERT_EQ(bucket_locator1_.id, storage::BucketId::FromUnsafeValue(3));
         ASSERT_EQ(bucket_locator2_.id, storage::BucketId::FromUnsafeValue(4));
         break;
-      }
     }
   }
 
@@ -1388,11 +1383,10 @@ TEST_F(CacheStorageManagerTest, BadKeyName) {
   const blink::StorageKey bad_key =
       blink::StorageKey::CreateFromStringForTesting(
           "http://../../../../../../../../../../../../../../foo");
-  auto bad_bucket_locator =
-      GetOrCreateBucket(bad_key, storage::kDefaultBucketName);
-  ASSERT_TRUE(bad_bucket_locator.has_value());
-  EXPECT_TRUE(Open(*bad_bucket_locator, "foo"));
-  EXPECT_EQ(1u, Keys(*bad_bucket_locator));
+  ASSERT_OK_AND_ASSIGN(storage::BucketLocator bad_bucket_locator,
+                       GetOrCreateBucket(bad_key, storage::kDefaultBucketName));
+  EXPECT_TRUE(Open(bad_bucket_locator, "foo"));
+  EXPECT_EQ(1u, Keys(bad_bucket_locator));
   EXPECT_EQ("foo", GetFirstIndexName());
 }
 
@@ -2151,13 +2145,11 @@ TEST_F(CacheStorageManagerTest, GetAllStorageKeysUsageWithOldIndex) {
 }
 
 TEST_P(CacheStorageManagerTestP, GetAllStorageKeysUsageAggregateBucketUsages) {
-  auto locator = GetOrCreateBucket(storage_key1_, "non-default");
-  ASSERT_TRUE(locator.has_value());
-  const storage::BucketLocator bucket_locator3 = *std::move(locator);
+  ASSERT_OK_AND_ASSIGN(const storage::BucketLocator bucket_locator3,
+                       GetOrCreateBucket(storage_key1_, "non-default"));
 
-  locator = GetOrCreateBucket(storage_key2_, "non-default");
-  ASSERT_TRUE(locator.has_value());
-  const storage::BucketLocator bucket_locator4 = *std::move(locator);
+  ASSERT_OK_AND_ASSIGN(const storage::BucketLocator bucket_locator4,
+                       GetOrCreateBucket(storage_key2_, "non-default"));
 
   ASSERT_EQ(0ULL, GetAllStorageKeysUsage().size());
 
@@ -2229,13 +2221,11 @@ TEST_P(CacheStorageManagerTestP, GetStorageKeysIgnoresKeysFromNamedBuckets) {
         test_origin, net::SchemefulSite(GURL("http://example5.com")),
         blink::mojom::AncestorChainBit::kCrossSite);
 
-    auto locator = GetOrCreateBucket(storage_key3, "non-default");
-    ASSERT_TRUE(locator.has_value());
-    const storage::BucketLocator bucket_locator3 = *std::move(locator);
+    ASSERT_OK_AND_ASSIGN(const storage::BucketLocator bucket_locator3,
+                         GetOrCreateBucket(storage_key3, "non-default"));
 
-    locator = GetOrCreateBucket(storage_key4, "non-default");
-    ASSERT_TRUE(locator.has_value());
-    const storage::BucketLocator bucket_locator4 = *std::move(locator);
+    ASSERT_OK_AND_ASSIGN(const storage::BucketLocator bucket_locator4,
+                         GetOrCreateBucket(storage_key4, "non-default"));
 
     ASSERT_EQ(0ULL, GetAllStorageKeysUsage().size());
 
@@ -2883,10 +2873,9 @@ TEST_P(CacheStorageManagerTestP, BatchDeleteOriginData) {
       net::SchemefulSite(GURL("http://example3.com")),
       blink::mojom::AncestorChainBit::kCrossSite);
 
-  auto locator =
-      GetOrCreateBucket(partitioned_storage_key1, storage::kDefaultBucketName);
-  ASSERT_TRUE(locator.has_value());
-  const auto partitioned_default_bucket_locator1 = *std::move(locator);
+  ASSERT_OK_AND_ASSIGN(
+      const auto partitioned_default_bucket_locator1,
+      GetOrCreateBucket(partitioned_storage_key1, storage::kDefaultBucketName));
 
   GURL test_url = GURL("http://example.com/foo");
 
@@ -2920,22 +2909,20 @@ TEST_P(CacheStorageManagerTestP, DeleteStorageKeyData) {
   scoped_feature_list.InitAndEnableFeature(
       net::features::kThirdPartyStoragePartitioning);
 
-  auto locator = GetOrCreateBucket(storage_key1_, "non-default");
-  ASSERT_TRUE(locator.has_value());
-  const auto named_bucket_locator1 = *std::move(locator);
+  ASSERT_OK_AND_ASSIGN(const auto named_bucket_locator1,
+                       GetOrCreateBucket(storage_key1_, "non-default"));
 
   const auto partitioned_storage_key1 = blink::StorageKey::Create(
       url::Origin::Create(GURL("http://example1.com")),
       net::SchemefulSite(GURL("http://example3.com")),
       blink::mojom::AncestorChainBit::kCrossSite);
 
-  locator =
-      GetOrCreateBucket(partitioned_storage_key1, storage::kDefaultBucketName);
-  ASSERT_TRUE(locator.has_value());
-  const auto partitioned_default_bucket_locator1 = *std::move(locator);
-  locator = GetOrCreateBucket(partitioned_storage_key1, "non-default");
-  ASSERT_TRUE(locator.has_value());
-  const auto partitioned_named_bucket_locator1 = *std::move(locator);
+  ASSERT_OK_AND_ASSIGN(
+      const auto partitioned_default_bucket_locator1,
+      GetOrCreateBucket(partitioned_storage_key1, storage::kDefaultBucketName));
+  ASSERT_OK_AND_ASSIGN(
+      const auto partitioned_named_bucket_locator1,
+      GetOrCreateBucket(partitioned_storage_key1, "non-default"));
 
   GURL test_url = GURL("http://example.com/foo");
 
@@ -3241,10 +3228,10 @@ TEST_P(CacheStorageQuotaClientTestP, QuotaDeleteBucketData) {
 }
 
 TEST_P(CacheStorageQuotaClientTestP, QuotaNonDefaultBucket) {
-  auto bucket = GetOrCreateBucket(storage_key1_, "logs_bucket");
-  ASSERT_TRUE(bucket.has_value());
-  EXPECT_EQ(0, QuotaGetBucketUsage(*bucket));
-  EXPECT_TRUE(QuotaDeleteBucketData(*bucket));
+  ASSERT_OK_AND_ASSIGN(auto bucket,
+                       GetOrCreateBucket(storage_key1_, "logs_bucket"));
+  EXPECT_EQ(0, QuotaGetBucketUsage(bucket));
+  EXPECT_TRUE(QuotaDeleteBucketData(bucket));
 }
 
 TEST_P(CacheStorageQuotaClientTestP, QuotaDeleteEmptyBucket) {

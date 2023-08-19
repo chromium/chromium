@@ -181,6 +181,8 @@ void PageImpl::SetActivationStartTime(base::TimeTicks activation_start) {
 void PageImpl::ActivateForPrerendering(
     StoredPage::RenderViewHostImplSafeRefSet& render_view_hosts,
     absl::optional<blink::ViewTransitionState> view_transition_state) {
+  TRACE_EVENT0("navigation", "PageImpl::ActivateForPrerendering");
+
   base::OnceClosure did_activate_render_views =
       base::BindOnce(&PageImpl::DidActivateAllRenderViewsForPrerendering,
                      weak_factory_.GetWeakPtr());
@@ -251,6 +253,9 @@ void PageImpl::MaybeDispatchLoadEventsOnPrerenderActivation() {
 }
 
 void PageImpl::DidActivateAllRenderViewsForPrerendering() {
+  TRACE_EVENT0("navigation",
+               "PageImpl::DidActivateAllRenderViewsForPrerendering");
+
   // Tell each RenderFrameHostImpl in this Page that activation finished.
   main_document_->ForEachRenderFrameHostIncludingSpeculative(
       [this](RenderFrameHostImpl* rfh) {

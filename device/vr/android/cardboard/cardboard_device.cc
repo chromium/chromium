@@ -64,6 +64,21 @@ void CardboardDevice::RequestSession(
     return;
   }
 
+  // Store these off since we'll potentially need to use them in the future
+  // (after we've std::move'd the options object) as well as now.
+  int render_process_id = options->render_process_id;
+  int render_frame_id = options->render_frame_id;
+
+  base::android::ScopedJavaLocalRef<jobject> application_context =
+      xr_java_coordinator_->GetActivityFrom(render_process_id, render_frame_id);
+  if (!application_context.obj()) {
+    DLOG(ERROR) << "Unable to retrieve the Java context/activity!";
+    std::move(callback).Run(nullptr);
+    return;
+  }
+
+  cardboard_sdk_->Initialize(application_context.obj());
+
   pending_session_request_callback_ = std::move(callback);
 
   // Set HasExclusiveSession status to true. This lasts until OnSessionEnded.
@@ -84,19 +99,41 @@ void CardboardDevice::RequestSession(
   auto destroyed_callback =
       base::BindOnce(&CardboardDevice::OnDrawingSurfaceDestroyed,
                      weak_ptr_factory_.GetWeakPtr());
+  auto xr_session_button_callback =
+      base::BindOnce(&CardboardDevice::OnXrSessionButtonTouched,
+                     weak_ptr_factory_.GetWeakPtr());
 
-  // Need to grab the render_process_id and render_frame_id off of the options_
-  // object before we save it. It's only used in OnDrawingSurfaceReady, but
-  // stashing it as a member allows us to control its lifetime relative to the
-  // callback which can prevent some hard-to-debug issues.
-  int render_process_id = options->render_process_id;
-  int render_frame_id = options->render_frame_id;
+  // While options_ is only used in OnDrawingSurfaceReady, stashing it as a
+  // member allows us to control its lifetime relative to the callback which can
+  // prevent some hard-to-debug issues.
   options_ = std::move(options);
 
   xr_java_coordinator_->RequestVrSession(
       render_process_id, render_frame_id, *compositor_delegate_provider_.get(),
       std::move(ready_callback), std::move(touch_callback),
-      std::move(destroyed_callback));
+      std::move(destroyed_callback), std::move(xr_session_button_callback));
+}
+
+void CardboardDevice::OnXrSessionButtonTouched() {
+  // The SwitchViewer() method calls the
+  // CardboardQrCode_scanQrCodeAndSaveDeviceParams() Cardboard API entry which
+  // in turn launches a new QR code scanner activity in order to scan a QR code
+  // with the parameters of a new Cardboard viewer. The way said activity works
+  // is the following:
+  // - Uses the Camera to scan a Cardboard QR code.
+  // - Gets the device parameters from the URL from the scanned QR code.
+  // - Once scanned, saves the obtained device parameters in the scoped
+  //   storage.
+  // - In case the scan is skipped, the current device parameter are left
+  //   untouched.
+  // - The activity finishes. See
+  // https://source.chromium.org/chromium/chromium/src/+/main:third_party/cardboard/src/sdk/qrcode/android/java/com/google/cardboard/sdk/QrCodeCaptureActivity.java;l=270
+  //
+  // Next, the activity that invoked the QR code scanner is resumed and, as
+  // part the resume process it will have to obtain the newly saved device
+  // parameter and recreate the distortion meshes. See
+  // https://source.chromium.org/chromium/chromium/src/+/main:device/vr/android/cardboard/cardboard_image_transport.cc;l=64
+  cardboard_sdk_->SwitchViewer();
 }
 
 void CardboardDevice::OnDrawingSurfaceReady(gfx::AcceleratedWidget window,
@@ -119,8 +156,7 @@ void CardboardDevice::OnDrawingSurfaceReady(gfx::AcceleratedWidget window,
   PostTaskToRenderThread(base::BindOnce(
       &CardboardRenderLoop::CreateSession, render_loop_->GetWeakPtr(),
       std::move(session_result_callback), std::move(session_shutdown_callback),
-      xr_java_coordinator_.get(), cardboard_sdk_.get(), window, frame_size,
-      rotation, std::move(options_)));
+      cardboard_sdk_.get(), window, frame_size, rotation, std::move(options_)));
 }
 
 void CardboardDevice::OnDrawingSurfaceTouch(bool is_primary,

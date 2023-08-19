@@ -422,6 +422,40 @@ static_assert(offsetof(UContext<ContextTraits64>, mcontext.fpregs) ==
               "context offset mismatch");
 #endif
 
+#elif defined(ARCH_CPU_RISCV64)
+
+struct ContextTraits64 : public Traits64 {
+  using SignalThreadContext = ThreadContext::t64_t;
+  using SignalFloatContext = FloatContext::f64_t;
+  using CPUContext = CPUContextRISCV64;
+};
+
+struct MContext64 {
+  ThreadContext::t64_t regs;
+  FloatContext::f64_t fpregs;
+};
+
+template <typename Traits>
+struct UContext {
+  typename Traits::ULong flags;
+  typename Traits::Address link;
+  SignalStack<Traits> stack;
+  Sigset<Traits> sigmask;
+  char alignment_padding_[8];
+  char padding[128 - sizeof(Sigset<Traits>)];
+  MContext64 mcontext;
+};
+
+static_assert(offsetof(UContext<ContextTraits64>, mcontext) ==
+                  offsetof(ucontext_t, uc_mcontext),
+              "context offset mismatch");
+static_assert(offsetof(UContext<ContextTraits64>, mcontext.regs) ==
+                  offsetof(ucontext_t, uc_mcontext.__gregs),
+              "context offset mismatch");
+static_assert(offsetof(UContext<ContextTraits64>, mcontext.fpregs) ==
+                  offsetof(ucontext_t, uc_mcontext.__fpregs),
+              "context offset mismatch");
+
 #else
 #error Port.
 #endif  // ARCH_CPU_X86_FAMILY

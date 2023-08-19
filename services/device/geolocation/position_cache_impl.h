@@ -16,6 +16,7 @@
 #include "net/base/network_change_notifier.h"
 #include "services/device/geolocation/position_cache.h"
 #include "services/device/public/mojom/geoposition.mojom.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace base {
 class TickClock;
@@ -42,17 +43,19 @@ class PositionCacheImpl
 
   ~PositionCacheImpl() override;
 
+  // PositionCache
   void CachePosition(const WifiData& wifi_data,
                      const mojom::Geoposition& position) override;
 
-  const mojom::Geoposition* FindPosition(
-      const WifiData& wifi_data) const override;
+  const mojom::Geoposition* FindPosition(const WifiData& wifi_data) override;
 
   size_t GetPositionCacheSize() const override;
 
   const mojom::GeopositionResult* GetLastUsedNetworkPosition() const override;
   void SetLastUsedNetworkPosition(
       const mojom::GeopositionResult& result) override;
+
+  void FillDiagnostics(mojom::PositionCacheDiagnostics& diagnostics) override;
 
   // net::NetworkChangeNotifier::NetworkChangeObserver
   void OnNetworkChanged(
@@ -90,6 +93,10 @@ class PositionCacheImpl
   raw_ptr<const base::TickClock> clock_;
   std::vector<CacheEntry> data_;
   mojom::GeopositionResultPtr last_used_result_;
+  absl::optional<base::Time> last_hit_;
+  absl::optional<base::Time> last_miss_;
+  int hit_count_ = 0;
+  int miss_count_ = 0;
 };
 
 }  // namespace device

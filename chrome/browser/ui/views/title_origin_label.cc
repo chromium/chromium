@@ -4,7 +4,7 @@
 
 #include "chrome/browser/ui/views/title_origin_label.h"
 
-#include "ui/views/accessibility/view_accessibility.h"
+#include "ui/base/ui_base_features.h"
 
 std::unique_ptr<views::Label> CreateTitleOriginLabel(
     const std::u16string& text) {
@@ -26,6 +26,10 @@ std::unique_ptr<views::Label> CreateTitleOriginLabel(
   // Multiline breaks elision, which would mean a very long origin gets
   // truncated from the least significant side. Explicitly disable multiline.
   label->SetMultiLine(false);
+
+  if (features::IsChromeRefresh2023()) {
+    label->SetTextStyle(views::style::STYLE_HEADLINE_4);
+  }
 
   return label;
 }

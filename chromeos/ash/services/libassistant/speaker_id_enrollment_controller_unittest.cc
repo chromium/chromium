@@ -110,11 +110,7 @@ class AssistantSpeakerIdEnrollmentControllerTest : public ::testing::Test {
         break;
       }
       case ::assistant_client::SpeakerIdEnrollmentUpdate::State::PROCESS: {
-        if (assistant::features::IsLibAssistantV2Enabled()) {
-          event->mutable_recognize_state();
-        } else {
-          event->mutable_process_state();
-        }
+        event->mutable_process_state();
         break;
       }
       case ::assistant_client::SpeakerIdEnrollmentUpdate::State::UPLOAD: {

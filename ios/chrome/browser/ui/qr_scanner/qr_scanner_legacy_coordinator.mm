@@ -16,10 +16,6 @@
 #import "ios/chrome/browser/ui/qr_scanner/qr_scanner_view_controller.h"
 #import "ios/chrome/browser/ui/scanner/scanner_presenting.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 @interface QRScannerLegacyCoordinator () <ScannerPresenting>
 
 @property(nonatomic, readwrite, strong) QRScannerViewController* viewController;

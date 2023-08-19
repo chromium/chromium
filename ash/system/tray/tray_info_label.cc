@@ -4,8 +4,10 @@
 
 #include "ash/system/tray/tray_info_label.h"
 
-#include "ash/style/ash_color_provider.h"
+#include "ash/style/ash_color_id.h"
+#include "ash/style/typography.h"
 #include "ash/system/tray/tray_popup_utils.h"
+#include "chromeos/constants/chromeos_features.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/views/layout/fill_layout.h"
 
@@ -32,10 +34,14 @@ TrayInfoLabel::TrayInfoLabel(int message_id)
 TrayInfoLabel::~TrayInfoLabel() = default;
 
 void TrayInfoLabel::Update(int message_id) {
-  label_->SetEnabledColor(AshColorProvider::Get()->GetContentLayerColor(
-      AshColorProvider::ContentLayerType::kTextColorPrimary));
-  TrayPopupUtils::SetLabelFontList(label_,
-                                   TrayPopupUtils::FontStyle::kSystemInfo);
+  label_->SetEnabledColorId(kColorAshTextColorPrimary);
+  if (chromeos::features::IsJellyEnabled()) {
+    label_->SetAutoColorReadabilityEnabled(false);
+    TypographyProvider::Get()->StyleLabel(TypographyToken::kCrosBody2, *label_);
+  } else {
+    TrayPopupUtils::SetLabelFontList(label_,
+                                     TrayPopupUtils::FontStyle::kSystemInfo);
+  }
   label_->SetText(l10n_util::GetStringUTF16(message_id));
 }
 

@@ -114,7 +114,8 @@ class ActivationStateComputingNavigationThrottle
 
   // Must outlive this class. For root frame navigations, this member will be
   // nullptr until NotifyPageActivationWithRuleset is called.
-  raw_ptr<VerifiedRuleset::Handle, DanglingUntriaged> ruleset_handle_;
+  raw_ptr<VerifiedRuleset::Handle, AcrossTasksDanglingUntriaged>
+      ruleset_handle_;
 
   // Will be set to true when DEFER is called in WillProcessResponse.
   bool deferred_ = false;

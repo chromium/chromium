@@ -20,16 +20,35 @@ namespace {
 
 std::unique_ptr<syncer::ModelTypeControllerDelegate>
 GetDelegateFromHistoryService(syncer::ModelType model_type,
-                              HistoryService* history_service) {
+                              HistoryService* history_service,
+                              bool for_transport_mode) {
   if (!history_service) {
     return nullptr;
   }
 
-  if (model_type == syncer::TYPED_URLS) {
-    return history_service->GetTypedURLSyncControllerDelegate();
+  switch (model_type) {
+    case syncer::TYPED_URLS:
+      // TYPED_URLS doesn't support transport mode.
+      if (for_transport_mode) {
+        return nullptr;
+      }
+      return history_service->GetTypedURLSyncControllerDelegate();
+
+    case syncer::HISTORY:
+      CHECK(base::FeatureList::IsEnabled(syncer::kSyncEnableHistoryDataType));
+      // Transport-mode support for HISTORY requires
+      // `kReplaceSyncPromosWithSignInPromos`.
+      if (for_transport_mode &&
+          !base::FeatureList::IsEnabled(
+              syncer::kReplaceSyncPromosWithSignInPromos)) {
+        return nullptr;
+      }
+      // The same delegate is used for transport mode and full-sync mode.
+      return history_service->GetHistorySyncControllerDelegate();
+
+    default:
+      NOTREACHED_NORETURN();
   }
-  DCHECK_EQ(model_type, syncer::HISTORY);
-  return history_service->GetHistorySyncControllerDelegate();
 }
 
 syncer::DataTypeController::PreconditionState
@@ -85,7 +104,6 @@ syncer::DataTypeController::PreconditionState GetStricterPreconditionState(
 
 }  // namespace
 
-// TODO(crbug.com/1448887): Create a `delegate_for_transport_mode`.
 HistoryModelTypeController::HistoryModelTypeController(
     syncer::ModelType model_type,
     syncer::SyncService* sync_service,
@@ -94,14 +112,20 @@ HistoryModelTypeController::HistoryModelTypeController(
     PrefService* pref_service)
     : ModelTypeController(
           model_type,
-          GetDelegateFromHistoryService(model_type, history_service),
-          /*delegate_for_transport_mode=*/nullptr),
+          /*delegate_for_full_sync_mode=*/
+          GetDelegateFromHistoryService(model_type,
+                                        history_service,
+                                        /*for_transport_mode=*/false),
+          /*delegate_for_transport_mode=*/
+          GetDelegateFromHistoryService(model_type,
+                                        history_service,
+                                        /*for_transport_mode=*/true)),
       helper_(model_type, sync_service, pref_service),
       identity_manager_(identity_manager),
       history_service_(history_service) {
-  DCHECK(model_type == syncer::TYPED_URLS || model_type == syncer::HISTORY);
-  DCHECK(model_type == syncer::TYPED_URLS ||
-         base::FeatureList::IsEnabled(syncer::kSyncEnableHistoryDataType));
+  CHECK(model_type == syncer::TYPED_URLS || model_type == syncer::HISTORY);
+  CHECK(model_type == syncer::TYPED_URLS ||
+        base::FeatureList::IsEnabled(syncer::kSyncEnableHistoryDataType));
 
   if (type() == syncer::HISTORY) {
     sync_observation_.Observe(helper_.sync_service());

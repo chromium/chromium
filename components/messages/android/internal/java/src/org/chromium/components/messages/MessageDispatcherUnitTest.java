@@ -41,8 +41,8 @@ public class MessageDispatcherUnitTest {
     @Test
     public void testEnqueueWindowScopedMessage() {
         doReturn(mAnimationCoordinator).when(mQueueManager).getAnimationCoordinator();
-        MessageDispatcherImpl dispatcher =
-                new MessageDispatcherImpl(null, () -> 1, (x, v) -> 1L, null, mQueueManager);
+        MessageDispatcherImpl dispatcher = new MessageDispatcherImpl(
+                null, () -> 1, () -> 1, (x, v) -> 1L, null, mQueueManager);
         dispatcher.enqueueWindowScopedMessage(getModel(), false);
         ArgumentCaptor<ScopeKey> captor = ArgumentCaptor.forClass(ScopeKey.class);
         verify(mQueueManager).enqueueMessage(any(), any(), captor.capture(), anyBoolean());

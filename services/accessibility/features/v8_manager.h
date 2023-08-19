@@ -6,21 +6,22 @@
 #define SERVICES_ACCESSIBILITY_FEATURES_V8_MANAGER_H_
 
 #include <memory>
+#include <vector>
 
-#include "base/memory/ref_counted_delete_on_sequence.h"
-#include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/sequenced_task_runner_helpers.h"
-#include "base/task/single_thread_task_runner.h"
-#include "base/thread_annotations.h"
+#include "base/threading/sequence_bound.h"
 #include "mojo/public/cpp/bindings/generic_pending_receiver.h"
+#include "mojo/public/cpp/bindings/pending_associated_receiver.h"
+#include "mojo/public/cpp/bindings/pending_remote.h"
 #include "services/accessibility/features/bindings_isolate_holder.h"
-#include "services/accessibility/features/interface_binder.h"
+#include "services/accessibility/public/mojom/accessibility_service.mojom-forward.h"
+#include "services/accessibility/public/mojom/automation.mojom-forward.h"
+#include "third_party/blink/public/mojom/devtools/devtools_agent.mojom.h"
 #include "v8/include/v8-context.h"
 #include "v8/include/v8-local-handle.h"
-#include "v8/include/v8-value.h"
 
 namespace v8 {
 class Isolate;
@@ -32,36 +33,47 @@ class IsolateHolder;
 }  // namespace gin
 
 namespace ax {
-class AutomationInternalBindings;
-class AssistiveTechnologyControllerImpl;
-class TtsInterfaceBinder;
 
-// A V8Manager owns a V8 isolate within the Accessibility Service, and manages
-// the bindings that belong to that isolate, as well as loading the Javascript
-// that will run in that isolate.
-// V8Manager may be created on any service thread but must be destroyed
-// on the V8 thread created in V8Manager::Create so that the V8 context and
-// isolate are only accessed from that thread.
-// There may be one V8Manager per Assistive Technology feature or features
-// may share V8Managers.
-class V8Manager : public BindingsIsolateHolder,
-                  public base::RefCountedDeleteOnSequence<V8Manager> {
+class AutomationInternalBindings;
+class InterfaceBinder;
+class V8Manager;
+class OSDevToolsAgent;
+
+// A V8Environment owns a V8 context within the Accessibility Service, the
+// bindings that belong to that context, as well as loading the Javascript that
+// will run in that context.
+//
+// It lives on an implementation-defined task runner (typically a background
+// task runner dedicated to this isolate+context) and should primarily be used
+// through its owning class, V8Manager.
+//
+// TODO(dcheng): Move this into v8_environment.h.
+class V8Environment : public BindingsIsolateHolder {
  public:
-  // Creates a new V8Manager with its own isolate and context.
-  static scoped_refptr<V8Manager> Create();
+  // The default Context ID to use. We currently will have one context per
+  // isolate. In the future we may need to switch this to an incrementing
+  // system.
+  static const int kDefaultContextId = 1;
+
+  // Creates a new V8Environment with its own isolate and context.
+  static base::SequenceBound<V8Environment> Create(
+      base::WeakPtr<V8Manager> manager);
 
   // Gets a pointer to the V8 manager that belongs to this `context`.
-  static V8Manager* GetFromContext(v8::Local<v8::Context> context);
+  static V8Environment* GetFromContext(v8::Local<v8::Context> context);
 
-  V8Manager(const V8Manager&) = delete;
-  V8Manager& operator=(const V8Manager&) = delete;
+  V8Environment(const V8Environment&) = delete;
+  V8Environment& operator=(const V8Environment&) = delete;
 
-  // Called from main service thread.
-  // All of the APIs should be installed before adding V8 bindings.
+  // Creates a devtools agent to debug javascript running in this environment.
+  void ConnectDevToolsAgent(
+      mojo::PendingAssociatedReceiver<blink::mojom::DevToolsAgent> agent);
+
+  // All of the APIs needed for this V8Manager (based on the AT type) should be
+  // installed before adding V8 bindings.
   void InstallAutomation(
-      base::WeakPtr<AssistiveTechnologyControllerImpl> at_controller);
-  void InstallTts(
-      base::WeakPtr<AssistiveTechnologyControllerImpl> at_controller);
+      mojo::PendingAssociatedReceiver<mojom::Automation> automation,
+      mojo::PendingRemote<mojom::AutomationClient> automation_client);
   void AddV8Bindings();
 
   // Executes the given string as a Javascript script, and calls the
@@ -69,71 +81,84 @@ class V8Manager : public BindingsIsolateHolder,
   void ExecuteScript(const std::string& script,
                      base::OnceCallback<void()> on_complete);
 
-  // Called from V8 thread.
   // BindingsIsolateHolder overrides:
   v8::Isolate* GetIsolate() const override;
   v8::Local<v8::Context> GetContext() const override;
 
-  // Called from the V8 thread by Mojo when ready to bind an interface.
+  explicit V8Environment(scoped_refptr<base::SequencedTaskRunner> main_runner,
+                         base::WeakPtr<V8Manager> manager);
+  virtual ~V8Environment();
+
+  // Called by the Mojo JS API when ready to bind an interface.
   void BindInterface(const std::string& interface_name,
                      mojo::GenericPendingReceiver pending_receiver);
 
-  // Sets the InterfaceBinder used for when trying to bind
-  // axtest.mojom.TestBindingInterface. Used for testing.
-  void SetTestMojoInterface(std::unique_ptr<InterfaceBinder> test_interface);
-
  private:
-  // Allows RefCountedDeleteOnSequence access to the destructor.
-  friend class base::RefCountedDeleteOnSequence<V8Manager>;
-  friend class base::DeleteHelper<V8Manager>;
-
-  explicit V8Manager(scoped_refptr<base::SingleThreadTaskRunner> v8_runner,
-                     scoped_refptr<base::SequencedTaskRunner> main_runner);
-  virtual ~V8Manager();
-
-  // Methods called from V8 thread.
-  void ConstructIsolateOnThread();
-  void AddV8BindingsOnThread();
-  void BindAutomationOnThread(
-      base::WeakPtr<AssistiveTechnologyControllerImpl> at_controller);
-  void BindTtsOnThread(
-      base::WeakPtr<AssistiveTechnologyControllerImpl> at_controller);
-  void SetTestMojoInterfaceOnThread(
-      std::unique_ptr<InterfaceBinder> test_interface);
-  void ExecuteScriptOnThread(const std::string& script,
-                             base::OnceCallback<void()> on_complete);
-
-  // Thread runner for all things V8.
-  scoped_refptr<base::SingleThreadTaskRunner> v8_runner_;
+  void CreateIsolate();
 
   // Thread runner for communicating with object which constructed this
-  // class using V8Manager::Create. This may be the main service thread
+  // class using V8Environment::Create. This may be the main service thread,
   // but that is not required.
-  scoped_refptr<base::SequencedTaskRunner> main_runner_;
+  const scoped_refptr<base::SequencedTaskRunner> main_runner_;
+  const base::WeakPtr<V8Manager> manager_;
 
   // Bindings wrappers for V8 APIs.
   // TODO(crbug.com/1355633): Add more APIs including TTS, SST, etc.
-  std::unique_ptr<AutomationInternalBindings> automation_bindings_
-      GUARDED_BY_CONTEXT(sequence_checker_);
-  std::unique_ptr<TtsInterfaceBinder> tts_interface_binder_
-      GUARDED_BY_CONTEXT(sequence_checker_);
-
-  // Bindings wrappers for test.
-  std::unique_ptr<InterfaceBinder> test_mojo_interface_
-      GUARDED_BY_CONTEXT(sequence_checker_);
+  std::unique_ptr<AutomationInternalBindings> automation_bindings_;
 
   // Holders for isolate and context.
-  // These may only be accessed from the v8_runner_ thread.
-  std::unique_ptr<gin::IsolateHolder> isolate_holder_
-      GUARDED_BY_CONTEXT(sequence_checker_);
-  std::unique_ptr<gin::ContextHolder> context_holder_
-      GUARDED_BY_CONTEXT(sequence_checker_);
+  std::unique_ptr<gin::IsolateHolder> isolate_holder_;
+  std::unique_ptr<gin::ContextHolder> context_holder_;
 
-  // Used to check that the correct thread is used for V8 work and main
-  // service thread communication.
+  std::unique_ptr<OSDevToolsAgent> devtools_agent_;
+};
+
+// Owns the V8Environment and any Mojo interfaces exposed to that V8Environment.
+// Lives on the main service thread; any use of the internally-owned
+// V8Environment will be proxied to the v8 task runner.
+//
+// There may be one V8Manager per Assistive Technology feature or features
+// may share V8Managers.
+class V8Manager {
+ public:
+  V8Manager();
+  ~V8Manager();
+
+  // Various optional features that can be configured. All configuration must be
+  // done before calling `FinishContextSetUp()`.
+  void ConfigureAutomation(
+      mojo::PendingAssociatedReceiver<mojom::Automation> automation,
+      mojo::PendingRemote<mojom::AutomationClient> automation_client);
+  void ConfigureTts(mojom::AccessibilityServiceClient* ax_service_client);
+  void ConfigureUserInterface(
+      mojom::AccessibilityServiceClient* ax_service_client);
+
+  void FinishContextSetUp();
+
+  // Instructs V8Environment to create a devtools agent.
+  void ConnectDevToolsAgent(
+      mojo::PendingAssociatedReceiver<blink::mojom::DevToolsAgent> agent);
+
+  // Called by V8Environment when JS wants to bind a Mojo interface.
+  void BindInterface(const std::string& interface_name,
+                     mojo::GenericPendingReceiver pending_receiver);
+
+  // Allow tests to expose additional Mojo interfaces to JS.
+  void AddInterfaceForTest(std::unique_ptr<InterfaceBinder> interface_binder);
+  void RunScriptForTest(const std::string& script,
+                        base::OnceClosure on_complete);
+
+ private:
   SEQUENCE_CHECKER(sequence_checker_);
 
-  base::WeakPtrFactory<V8Manager> weak_ptr_factory_{this};
+  base::SequenceBound<V8Environment> v8_env_;
+  // The Mojo interfaces that are exposed to JS. When JS wants to bind a Mojo
+  // interface, the first matching InterfaceBinder will be used.
+  std::vector<std::unique_ptr<InterfaceBinder>> interface_binders_;
+
+  base::WeakPtrFactory<V8Manager> weak_factory_{this};
 };
+
 }  // namespace ax
+
 #endif  // SERVICES_ACCESSIBILITY_FEATURES_V8_MANAGER_H_

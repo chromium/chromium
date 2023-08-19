@@ -25,7 +25,6 @@
 #if BUILDFLAG(IS_APPLE)
 #include <mach/mach.h>
 #include "base/process/port_provider_mac.h"
-#include "process_metrics_apple_internal.h"
 
 #if !BUILDFLAG(IS_IOS)
 #include <mach/mach_vm.h>
@@ -50,8 +49,6 @@ namespace base {
 
 // Full declaration is in process_metrics_iocounters.h.
 struct IoCounters;
-
-class ProcessMetricsAppleInternal;
 
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_ANDROID)
 // Minor and major page fault counts since the process creation.
@@ -255,6 +252,9 @@ class BASE_EXPORT ProcessMetrics {
   // See |GetPackageIdleWakeupsForSecond| comment for more info.
   int CalculatePackageIdleWakeupsPerSecond(
       uint64_t absolute_package_idle_wakeups);
+
+  // Queries the port provider if it's set.
+  mach_port_t TaskForPid(ProcessHandle process) const;
 #endif
 
 #if BUILDFLAG(IS_WIN)
@@ -289,8 +289,11 @@ class BASE_EXPORT ProcessMetrics {
   double last_energy_impact_;
   // In mach_absolute_time units.
   uint64_t last_energy_impact_time_;
-  std::unique_ptr<ProcessMetricsAppleInternal> process_metrics_helper_;
 #endif
+
+#if BUILDFLAG(IS_MAC)
+  raw_ptr<PortProvider> port_provider_;
+#endif  // BUILDFLAG(IS_MAC)
 };
 
 // Returns the memory committed by the system in KBytes.
@@ -625,9 +628,7 @@ BASE_EXPORT MachVMRegionResult GetBasicInfo(mach_port_t task,
                                             mach_vm_size_t* size,
                                             mach_vm_address_t* address,
                                             vm_region_basic_info_64* info);
-#endif  // BUILDFLAG(IS_APPLE)
 
-#if BUILDFLAG(IS_MAC)
 // Returns info on the first memory region at or after |address|, including
 // resident memory and share mode. On Success, |size| reflects the size of the
 // memory region.
@@ -638,7 +639,7 @@ BASE_EXPORT MachVMRegionResult GetTopInfo(mach_port_t task,
                                           mach_vm_size_t* size,
                                           mach_vm_address_t* address,
                                           vm_region_top_info_data_t* info);
-#endif  // BUILDFLAG(IS_MAC)
+#endif  // BUILDFLAG(IS_APPLE)
 
 }  // namespace base
 

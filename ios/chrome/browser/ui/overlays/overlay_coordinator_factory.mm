@@ -22,10 +22,6 @@
 #import "ios/chrome/browser/ui/overlays/overlay_request_coordinator.h"
 #import "ios/chrome/browser/ui/overlays/web_content_area/alerts/alert_overlay_coordinator.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 @implementation OverlayRequestCoordinatorFactory {
   Browser* _browser;
   OverlayModality _modality;
@@ -68,6 +64,10 @@
           request)) {
     DefaultInfobarOverlayRequestConfig* config =
         request->GetConfig<DefaultInfobarOverlayRequestConfig>();
+    if (!config->delegate()) {
+      // This happens when the browser is killed.
+      return nil;
+    }
     return [self coordinatorClassForInfobarType:config->infobar_type()];
   }
 
@@ -87,17 +87,9 @@
       }
       return [InfobarBannerOverlayCoordinator class];
     case OverlayModality::kInfobarModal:
-      if ([SaveCardInfobarModalOverlayCoordinator requestSupport]
-              ->IsRequestSupported(request)) {
-        return [SaveCardInfobarModalOverlayCoordinator class];
-      }
       if ([SaveAddressProfileInfobarModalOverlayCoordinator requestSupport]
               ->IsRequestSupported(request)) {
         return [SaveAddressProfileInfobarModalOverlayCoordinator class];
-      }
-      if ([TranslateInfobarModalOverlayCoordinator requestSupport]
-              ->IsRequestSupported(request)) {
-        return [TranslateInfobarModalOverlayCoordinator class];
       }
       break;
   }
@@ -125,6 +117,10 @@
           return [PasswordInfobarModalOverlayCoordinator class];
         case InfobarType::kInfobarTypePermissions:
           return [PermissionsInfobarModalOverlayCoordinator class];
+        case InfobarType::kInfobarTypeSaveCard:
+          return [SaveCardInfobarModalOverlayCoordinator class];
+        case InfobarType::kInfobarTypeTranslate:
+          return [TranslateInfobarModalOverlayCoordinator class];
         default:
           break;
       }

@@ -62,17 +62,17 @@ class MojoDecoderBufferConverter {
 TEST(MojoDecoderBufferConverterTest, ConvertDecoderBuffer_Normal) {
   base::test::SingleThreadTaskEnvironment task_environment;
   const uint8_t kData[] = "hello, world";
-  const uint8_t kSideData[] = "sideshow bob";
   const size_t kDataSize = std::size(kData);
-  const size_t kSideDataSize = std::size(kSideData);
 
   scoped_refptr<DecoderBuffer> buffer(DecoderBuffer::CopyFrom(
-      reinterpret_cast<const uint8_t*>(&kData), kDataSize,
-      reinterpret_cast<const uint8_t*>(&kSideData), kSideDataSize));
+      reinterpret_cast<const uint8_t*>(&kData), kDataSize));
   buffer->set_timestamp(base::Milliseconds(123));
   buffer->set_duration(base::Milliseconds(456));
   buffer->set_discard_padding(DecoderBuffer::DiscardPadding(
       base::Milliseconds(5), base::Milliseconds(6)));
+  buffer->WritableSideData().spatial_layers = {1, 2, 3};
+  buffer->WritableSideData().alpha_data = {0, 1, 2};
+  buffer->WritableSideData().secure_handle = 42;
 
   MojoDecoderBufferConverter converter;
   converter.ConvertAndVerify(buffer);

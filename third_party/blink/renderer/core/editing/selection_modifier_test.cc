@@ -209,7 +209,7 @@ TEST_F(SelectionModifierTest, MoveCaretWithShadow) {
   LoadAhem();
   InsertStyleElement("body {font-family: Ahem}");
   SetBodyContent(body_content);
-  Element* host = GetDocument().getElementById("host");
+  Element* host = GetDocument().getElementById(AtomicString("host"));
   ShadowRoot& shadow_root =
       host->AttachShadowRootInternal(ShadowRootType::kOpen);
   shadow_root.setInnerHTML(shadow_content);
@@ -218,9 +218,9 @@ TEST_F(SelectionModifierTest, MoveCaretWithShadow) {
   Element* body = GetDocument().body();
   Node* a = body->childNodes()->item(0);
   Node* b = shadow_root.childNodes()->item(0);
-  Node* c = host->QuerySelector("[slot=c]")->firstChild();
+  Node* c = host->QuerySelector(AtomicString("[slot=c]"))->firstChild();
   Node* d = shadow_root.childNodes()->item(2);
-  Node* e = host->QuerySelector("[slot=e]")->firstChild();
+  Node* e = host->QuerySelector(AtomicString("[slot=e]"))->firstChild();
   Node* f = body->childNodes()->item(2);
 
   auto makeSelection = [&](Position position) {
@@ -428,7 +428,7 @@ TEST_F(SelectionModifierTest, OptgroupAndTable) {
       "<optgroup></optgroup><table><tbody><tr><td></td></tr></tbody></table>",
       GetSelectionTextFromBody(selection));
 
-  Element* optgroup = GetDocument().QuerySelector("optgroup");
+  Element* optgroup = GetDocument().QuerySelector(AtomicString("optgroup"));
   ShadowRoot* shadow_root = optgroup->GetShadowRoot();
   Element* label =
       shadow_root->getElementById(shadow_element_names::kIdOptGroupLabel);

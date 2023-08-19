@@ -74,7 +74,8 @@ class NetworkPrefStateObserverTest : public testing::Test {
 
   content::BrowserTaskEnvironment task_environment_;
   NetworkHandlerTestHelper network_handler_test_helper_;
-  raw_ptr<FakeChromeUserManager, ExperimentalAsh> fake_user_manager_;
+  raw_ptr<FakeChromeUserManager, DanglingUntriaged | ExperimentalAsh>
+      fake_user_manager_;
   user_manager::ScopedUserManager user_manager_enabler_;
   TestingProfileManager profile_manager_;
   session_manager::SessionManager session_manager_;
@@ -103,9 +104,9 @@ TEST_F(NetworkPrefStateObserverTest, LoginUser) {
       kNetworkId, &ui_proxy_config));
 
   // Set the profile pref to PAC script mode.
-  base::Value::Dict proxy_config;
-  proxy_config.Set("mode", ProxyPrefs::kPacScriptProxyModeName);
-  proxy_config.Set("pac_url", "http://proxy");
+  auto proxy_config = base::Value::Dict()
+                          .Set("mode", ProxyPrefs::kPacScriptProxyModeName)
+                          .Set("pac_url", "http://proxy");
   profile->GetPrefs()->Set(proxy_config::prefs::kProxy,
                            base::Value(std::move(proxy_config)));
   base::RunLoop().RunUntilIdle();

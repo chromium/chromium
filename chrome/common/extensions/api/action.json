@@ -175,7 +175,8 @@
         "properties": {
           "text": {
             "type": "string",
-            "description": "Any number of characters can be passed, but only about four can fit in the space."
+            "optional": true,
+            "description": "Any number of characters can be passed, but only about four can fit in the space. If an empty string (<code>''</code>) is passed, the badge text is cleared.  If <code>tabId</code> is specified and <code>text</code> is null, the text for the specified tab is cleared and defaults to the global badge text."
           },
           "tabId": {
             "type": "integer",

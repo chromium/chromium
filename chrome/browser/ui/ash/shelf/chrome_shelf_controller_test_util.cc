@@ -8,27 +8,12 @@
 
 #include "ash/public/cpp/shelf_item_delegate.h"
 #include "ash/public/cpp/shelf_model.h"
-#include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
-#include "base/run_loop.h"
+#include "base/test/test_future.h"
 #include "chrome/browser/ui/ash/shelf/app_shortcut_shelf_item_controller.h"
 #include "chrome/browser/ui/ash/shelf/chrome_shelf_controller.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/events/base_event_utils.h"
 #include "ui/events/event.h"
-
-namespace {
-
-// A callback that records the action taken when a shelf item is selected.
-void ItemSelectedCallback(ash::ShelfAction* action_taken,
-                          base::RunLoop* run_loop,
-                          ash::ShelfAction action,
-                          ash::ShelfItemDelegate::AppMenuItems items) {
-  *action_taken = action;
-  run_loop->Quit();
-}
-
-}  // namespace
 
 ash::ShelfAction SelectShelfItem(const ash::ShelfID& id,
                                  ui::EventType event_type,
@@ -44,15 +29,14 @@ ash::ShelfAction SelectShelfItem(const ash::ShelfID& id,
                                            ui::EF_NONE);
   }
 
-  base::RunLoop run_loop;
-  ash::ShelfAction action = ash::SHELF_ACTION_NONE;
-  ash::ShelfModel* model = ChromeShelfController::instance()->shelf_model();
-  ash::ShelfItemDelegate* delegate = model->GetShelfItemDelegate(id);
-  delegate->ItemSelected(
-      std::move(event), display_id, source,
-      base::BindOnce(&ItemSelectedCallback, &action, &run_loop),
-      base::NullCallback());
-  run_loop.Run();
+  base::test::TestFuture<ash::ShelfAction, ash::ShelfItemDelegate::AppMenuItems>
+      future;
+  ChromeShelfController::instance()
+      ->shelf_model()
+      ->GetShelfItemDelegate(id)
+      ->ItemSelected(std::move(event), display_id, source, future.GetCallback(),
+                     base::NullCallback());
+  auto [action, items] = future.Take();
   return action;
 }
 

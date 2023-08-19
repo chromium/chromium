@@ -86,6 +86,10 @@ found in the LICENSE file.
         <item name="android:fontFamily">@font/accent_font</item>
         <item name="android:textSize">@dimen/headline_size</item>
     </style>
+    <style name="TextAppearance.Headline2">
+        <item name="android:fontFamily">@font/accent_font</item>
+        <item name="android:textSize">@dimen/headline2_size</item>
+    </style>
     <style name="TextAppearance.HeadlineThick" parent="TextAppearance.AccentMediumStyle">
         <item name="android:textSize">@dimen/headline_size</item>
     </style>
@@ -94,6 +98,9 @@ found in the LICENSE file.
     </style>
     <style name="TextAppearance.TextLarge">
         <item name="android:textSize">@dimen/text_size_large</item>
+    </style>
+    <style name="TextAppearance.TextAccentLarge" parent="TextAppearance.TextLarge">
+        <item name="android:fontFamily">@font/accent_font</item>
     </style>
     <style name="TextAppearance.TextMediumThick" parent="TextAppearance.RobotoMediumStyle">
         <item name="android:textSize">@dimen/text_size_medium</item>
@@ -230,7 +237,7 @@ found in the LICENSE file.
         <item name="android:textColor">@color/default_text_color_on_accent1_baseline_list</item>
     </style>
     <style name="TextAppearance.MenuChip.Text.Blue" parent="TextAppearance.Button.Text.Blue">
-       <item name="android:textSize">@dimen/text_size_small</item>
+        <item name="android:textSize">@dimen/text_size_small</item>
     </style>
 
     <!-- Blue Non Adaptive button text styles -->
@@ -269,11 +276,18 @@ found in the LICENSE file.
     <style name="TextAppearance.Headline.Primary.Baseline" parent="TextAppearance.Headline">
         <item name="android:textColor">@color/default_text_color_list_baseline</item>
     </style>
+    <style name="TextAppearance.Headline2.Primary.Baseline" parent="TextAppearance.Headline2">
+        <item name="android:textColor">@color/default_text_color_list_baseline</item>
+    </style>
     <style name="TextAppearance.HeadlineThick.Primary.Baseline" parent="TextAppearance.HeadlineThick">
         <item name="android:textColor">@color/default_text_color_list_baseline</item>
     </style>
 
     <style name="TextAppearance.TextLarge.Primary.Baseline" parent="TextAppearance.TextLarge">
+        <item name="android:textColor">@color/default_text_color_list_baseline</item>
+    </style>
+
+    <style name="TextAppearance.TextAccentLarge.Primary.Baseline" parent="TextAppearance.TextAccentLarge">
         <item name="android:textColor">@color/default_text_color_list_baseline</item>
     </style>
 
@@ -311,14 +325,14 @@ found in the LICENSE file.
 
     <!-- Dividers -->
     <style name="HorizontalDivider"
-           tools:ignore="UnusedResources">
+        tools:ignore="UnusedResources">
         <item name="android:layout_width">match_parent</item>
         <item name="android:layout_height">@dimen/divider_height</item>
         <item name="android:background">?android:attr/listDivider</item>
         <item name="android:importantForAccessibility">no</item>
     </style>
     <style name="VerticalDivider"
-           tools:ignore="UnusedResources">
+        tools:ignore="UnusedResources">
         <item name="android:layout_width">@dimen/divider_height</item>
         <item name="android:layout_height">match_parent</item>
         <item name="android:background">?android:attr/listDivider</item>

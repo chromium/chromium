@@ -10,10 +10,6 @@
 #import "ios/chrome/browser/overlays/test/overlay_test_macros.h"
 #import "testing/platform_test.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 namespace {
 // Fake dispatch response info types.
 DEFINE_TEST_OVERLAY_RESPONSE_INFO(FirstResponseInfo);

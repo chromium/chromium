@@ -20,9 +20,9 @@ CARendererLayerParams::CARendererLayerParams(
     unsigned edge_aa_mask,
     float opacity,
     bool nearest_neighbor_filter,
-    gfx::HDRMode hdr_mode,
-    absl::optional<gfx::HDRMetadata> hdr_metadata,
-    gfx::ProtectedVideoType protected_video_type)
+    const gfx::HDRMetadata& hdr_metadata,
+    gfx::ProtectedVideoType protected_video_type,
+    bool is_render_pass_draw_quad)
     : is_clipped(is_clipped),
       clip_rect(clip_rect),
       rounded_corner_bounds(rounded_corner_bounds),
@@ -36,9 +36,9 @@ CARendererLayerParams::CARendererLayerParams(
       edge_aa_mask(edge_aa_mask),
       opacity(opacity),
       nearest_neighbor_filter(nearest_neighbor_filter),
-      hdr_mode(hdr_mode),
       hdr_metadata(hdr_metadata),
-      protected_video_type(protected_video_type) {}
+      protected_video_type(protected_video_type),
+      is_render_pass_draw_quad(is_render_pass_draw_quad) {}
 
 CARendererLayerParams::CARendererLayerParams(
     const CARendererLayerParams& other) = default;

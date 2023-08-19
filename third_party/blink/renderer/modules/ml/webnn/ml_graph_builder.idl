@@ -89,6 +89,11 @@ dictionary MLEluOptions {
   float alpha = 1;
 };
 
+dictionary MLReduceOptions {
+  sequence<[EnforceRange] unsigned long> axes;
+  boolean keepDimensions = false;
+};
+
 enum MLInterpolationMode {"nearest-neighbor", "linear" };
 
 dictionary MLResample2dOptions {
@@ -158,6 +163,9 @@ dictionary MLSplitOptions {
 
   [RaisesException] MLOperand prelu(MLOperand x, MLOperand slope);
 
+  [RaisesException] MLOperand reduceSum(MLOperand input, optional MLReduceOptions options = {});
+  [RaisesException] MLOperand reduceMean(MLOperand input, optional MLReduceOptions options = {});
+
   [RaisesException] MLOperand relu(MLOperand input);
   [RaisesException] MLActivation relu();
 
@@ -174,7 +182,11 @@ dictionary MLSplitOptions {
 
   [RaisesException] MLOperand softmax(MLOperand input);
 
-  [RaisesException] sequence<MLOperand> split(MLOperand input, [EnforceRange] sequence<unsigned long> splits, optional MLSplitOptions options = {});
+  [RaisesException] sequence<MLOperand> split(MLOperand input, [EnforceRange] unsigned long splits, optional MLSplitOptions options = {});
+  [RaisesException] sequence<MLOperand> split(MLOperand input, sequence<[EnforceRange] unsigned long> splits, optional MLSplitOptions options = {});
+
+  [RaisesException] MLOperand tanh(MLOperand input);
+  [RaisesException] MLActivation tanh();
 
   [
     CallWith=ScriptState,

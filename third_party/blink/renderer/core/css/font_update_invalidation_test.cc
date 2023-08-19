@@ -55,8 +55,8 @@ TEST_F(FontUpdateInvalidationTest, PartialLayoutInvalidationAfterFontLoading) {
   // First rendering the page with fallback
   Compositor().BeginFrame();
 
-  Element* target = GetDocument().getElementById("target");
-  Element* reference = GetDocument().getElementById("reference");
+  Element* target = GetDocument().getElementById(AtomicString("target"));
+  Element* reference = GetDocument().getElementById(AtomicString("reference"));
 
   EXPECT_GT(250, target->OffsetWidth());
   EXPECT_GT(250, reference->OffsetWidth());
@@ -108,9 +108,10 @@ TEST_F(FontUpdateInvalidationTest,
   // First rendering the page with fallback
   Compositor().BeginFrame();
 
-  auto* target = To<SVGTextElement>(GetDocument().getElementById("target"));
-  auto* reference =
-      To<SVGTextElement>(GetDocument().getElementById("reference"));
+  auto* target =
+      To<SVGTextElement>(GetDocument().getElementById(AtomicString("target")));
+  auto* reference = To<SVGTextElement>(
+      GetDocument().getElementById(AtomicString("reference")));
 
   EXPECT_GT(250 + 10, target->GetBBox().width());
   EXPECT_GT(250 + 10, reference->GetBBox().width());
@@ -168,8 +169,8 @@ TEST_F(FontUpdateInvalidationTest,
   test::RunPendingTasks();
   Compositor().BeginFrame();
 
-  Element* target = GetDocument().getElementById("target");
-  Element* reference = GetDocument().getElementById("reference");
+  Element* target = GetDocument().getElementById(AtomicString("target"));
+  Element* reference = GetDocument().getElementById(AtomicString("reference"));
 
   EXPECT_EQ(250, target->OffsetWidth());
   EXPECT_GT(250, reference->OffsetWidth());
@@ -218,7 +219,7 @@ TEST_F(FontUpdateInvalidationTest, LayoutInvalidationOnModalDialog) {
   // First render the page without the custom font
   Compositor().BeginFrame();
 
-  Element* target = GetDocument().getElementById("target");
+  Element* target = GetDocument().getElementById(AtomicString("target"));
   EXPECT_GT(250, target->OffsetWidth());
 
   // Then load the font and invalidate layout
@@ -269,7 +270,7 @@ TEST_F(FontUpdateInvalidationTest, FallbackBetweenPendingAndLoadedCustomFonts) {
   // While slow-font is pending and fast-font is already available, we should
   // use it to render the page.
   Compositor().BeginFrame();
-  Element* target = GetDocument().getElementById("target");
+  Element* target = GetDocument().getElementById(AtomicString("target"));
   DCHECK_EQ(250, target->OffsetWidth());
 
   slow_font_resource.Complete();
@@ -309,7 +310,7 @@ TEST_F(FontUpdateInvalidationTest, NoRedundantLoadingForSegmentedFont) {
 
   // Trigger frame to start font loading
   Compositor().BeginFrame();
-  Element* target = GetDocument().getElementById("target");
+  Element* target = GetDocument().getElementById(AtomicString("target"));
   DCHECK_GT(250, target->OffsetWidth());
 
   font_resource.Complete(ReadAhemWoff2());

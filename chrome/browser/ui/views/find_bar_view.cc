@@ -62,6 +62,9 @@ void SetCommonButtonAttributes(views::ImageButton* button) {
 }
 }  // namespace
 
+DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(FindBarView, kElementId);
+DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(FindBarView, kTextField);
+
 class FindBarMatchCountLabel : public views::Label {
  public:
   METADATA_HEADER(FindBarMatchCountLabel);
@@ -142,45 +145,58 @@ FindBarView::FindBarView(FindBarHost* host) {
   // we place views directly adjacent, with horizontal margins on each view
   // that will add up to the right spacing amounts.
 
-  ChromeLayoutProvider* provider = ChromeLayoutProvider::Get();
-  const auto horizontal_margin = gfx::Insets::VH(
-      0,
-      provider->GetDistanceMetric(DISTANCE_UNRELATED_CONTROL_HORIZONTAL) / 2);
+  ChromeLayoutProvider* layout_provider = ChromeLayoutProvider::Get();
+  const auto horizontal_margin =
+      gfx::Insets::VH(0, layout_provider->GetDistanceMetric(
+                             DISTANCE_UNRELATED_CONTROL_HORIZONTAL) /
+                             2);
   const gfx::Insets vector_button =
-      provider->GetInsetsMetric(views::INSETS_VECTOR_IMAGE_BUTTON);
+      layout_provider->GetInsetsMetric(views::INSETS_VECTOR_IMAGE_BUTTON);
   const auto vector_button_horizontal_margin =
       gfx::Insets::TLBR(0, horizontal_margin.left() - vector_button.left(), 0,
                         horizontal_margin.right() - vector_button.right());
   const auto toast_control_vertical_margin = gfx::Insets::VH(
-      provider->GetDistanceMetric(DISTANCE_TOAST_CONTROL_VERTICAL), 0);
+      layout_provider->GetDistanceMetric(DISTANCE_TOAST_CONTROL_VERTICAL), 0);
   const auto toast_label_vertical_margin = gfx::Insets::VH(
-      provider->GetDistanceMetric(DISTANCE_TOAST_LABEL_VERTICAL), 0);
+      layout_provider->GetDistanceMetric(DISTANCE_TOAST_LABEL_VERTICAL), 0);
   const auto image_button_margins =
       toast_control_vertical_margin + vector_button_horizontal_margin;
 
   // Align separator with textbox.
   const auto chrome_refresh_separator_vertical_margin =
-      gfx::Insets::VH(views::LayoutProvider::Get()->GetDistanceMetric(
+      gfx::Insets::VH(layout_provider->GetDistanceMetric(
                           views::DISTANCE_CONTROL_VERTICAL_TEXT_PADDING),
                       0);
+  // In ChromeRefresh we have a hover state for Textfield. We will
+  // match the horizontal hover insets to that of the vector button
+  // and take this into account when calculating the margins and Textfield
+  // border. This gives us symmetry between the left margin of the FindBarView
+  // which is lined up with the Textfield and the right margin of
+  // the FindBarView which is lined up with the close button.
+  gfx::Insets textfield_hover_padding =
+      features::IsChromeRefresh2023() ? vector_button : gfx::Insets();
+  textfield_hover_padding.set_top_bottom(0, 0);
+
   views::Builder<FindBarView>(this)
       .SetOrientation(views::BoxLayout::Orientation::kHorizontal)
       .SetInsideBorderInsets(gfx::Insets(
-          provider->GetInsetsMetric(INSETS_TOAST) - horizontal_margin))
+          layout_provider->GetInsetsMetric(INSETS_TOAST) - horizontal_margin))
       .SetHost(host)
       .SetFlipCanvasOnPaintForRTLUI(true)
+      .SetProperty(views::kElementIdentifierKey, kElementId)
       .AddChildren(
           views::Builder<views::Textfield>()
               .CopyAddressTo(&find_text_)
               .SetAccessibleName(l10n_util::GetStringUTF16(IDS_ACCNAME_FIND))
-              .SetBorder(views::NullBorder())
+              .SetBorder(views::CreateEmptyBorder(textfield_hover_padding))
               .SetDefaultWidthInChars(30)
               .SetID(VIEW_ID_FIND_IN_PAGE_TEXT_FIELD)
               .SetMinimumWidthInChars(1)
               .SetTextInputFlags(ui::TEXT_INPUT_FLAG_AUTOCORRECT_OFF)
-              .SetProperty(views::kMarginsKey,
-                           gfx::Insets(toast_control_vertical_margin +
-                                       horizontal_margin))
+              .SetProperty(views::kElementIdentifierKey, kTextField)
+              .SetProperty(views::kMarginsKey, toast_control_vertical_margin +
+                                                   horizontal_margin -
+                                                   textfield_hover_padding)
               .SetController(this),
           views::Builder<FindBarMatchCountLabel>()
               .CopyAddressTo(&match_count_text_)
@@ -452,11 +468,13 @@ void FindBarView::UpdateMatchCountAppearance(bool no_match) {
 
 void FindBarView::OnThemeChanged() {
   views::View::OnThemeChanged();
+  views::LayoutProvider* layout_provider = views::LayoutProvider::Get();
   auto border = std::make_unique<views::BubbleBorder>(
       views::BubbleBorder::NONE, views::BubbleBorder::STANDARD_SHADOW,
       kColorFindBarBackground);
-
-  border->SetCornerRadius(views::LayoutProvider::Get()->GetCornerRadiusMetric(
+  border->set_md_shadow_elevation(
+      layout_provider->GetCornerRadiusMetric(views::Emphasis::kHigh));
+  border->SetCornerRadius(layout_provider->GetCornerRadiusMetric(
       views::ShapeContextTokens::kFindBarViewRadius));
 
   SetBackground(std::make_unique<views::BubbleBackground>(border.get()));

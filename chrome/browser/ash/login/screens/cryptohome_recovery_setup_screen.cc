@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ash/login/screens/cryptohome_recovery_setup_screen.h"
 
+#include "ash/constants/ash_features.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/ash/login/quick_unlock/quick_unlock_factory.h"
 #include "chrome/browser/ash/login/quick_unlock/quick_unlock_storage.h"
@@ -12,8 +13,11 @@
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/ui/webui/ash/login/cryptohome_recovery_setup_screen_handler.h"
 #include "chromeos/ash/components/login/auth/auth_factor_editor.h"
+#include "chromeos/ash/components/osauth/public/auth_session_storage.h"
+#include "chromeos/ash/components/osauth/public/common_types.h"
 #include "chromeos/ash/services/auth_factor_config/in_process_instances.h"
 #include "chromeos/ash/services/auth_factor_config/recovery_factor_editor.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace ash {
 
@@ -90,13 +94,20 @@ void CryptohomeRecoverySetupScreen::SetupRecovery() {
   // Reset the weak ptr to prevent multiple calls at the same time.
   weak_ptr_factory_.InvalidateWeakPtrs();
 
-  quick_unlock::QuickUnlockStorage* quick_unlock_storage =
-      quick_unlock::QuickUnlockFactory::GetForProfile(
-          ProfileManager::GetActiveUserProfile());
-  CHECK(quick_unlock_storage);
-  CHECK(context()->extra_factors_auth_session);
-  const std::string token = quick_unlock_storage->CreateAuthToken(
-      *context()->extra_factors_auth_session);
+  std::string token;
+  if (ash::features::ShouldUseAuthSessionStorage()) {
+    CHECK(context()->extra_factors_token.has_value());
+    token = context()->extra_factors_token.value();
+  } else {
+    CHECK(context()->extra_factors_auth_session);
+
+    quick_unlock::QuickUnlockStorage* quick_unlock_storage =
+        quick_unlock::QuickUnlockFactory::GetForProfile(
+            ProfileManager::GetActiveUserProfile());
+    CHECK(quick_unlock_storage);
+    token = quick_unlock_storage->CreateAuthToken(
+        *context()->extra_factors_auth_session);
+  }
   auto& recovery_editor = auth::GetRecoveryFactorEditor(
       quick_unlock::QuickUnlockFactory::GetDelegate());
   recovery_editor.Configure(
@@ -109,11 +120,25 @@ void CryptohomeRecoverySetupScreen::ExitScreen(
     WizardContext& wizard_context,
     CryptohomeRecoverySetupScreen::Result result) {
   // Clear the auth session if it's not needed for PIN setup.
-  if (wizard_context.extra_factors_auth_session != nullptr &&
-      cryptohome_pin_engine_.ShouldSkipSetupBecauseOfPolicy(
-          wizard_context.extra_factors_auth_session->GetAccountId())) {
-    wizard_context.extra_factors_auth_session.reset();
+  if (ash::features::ShouldUseAuthSessionStorage()) {
+    if (wizard_context.extra_factors_token.has_value()) {
+      auto& token = wizard_context.extra_factors_token.value();
+      auto* storage = ash::AuthSessionStorage::Get();
+      if (storage->IsValid(token) &&
+          cryptohome_pin_engine_.ShouldSkipSetupBecauseOfPolicy(
+              storage->Peek(token)->GetAccountId())) {
+        storage->Invalidate(token, base::DoNothing());
+        wizard_context.extra_factors_token = absl::nullopt;
+      }
+    }
+  } else {
+    if (wizard_context.extra_factors_auth_session != nullptr &&
+        cryptohome_pin_engine_.ShouldSkipSetupBecauseOfPolicy(
+            wizard_context.extra_factors_auth_session->GetAccountId())) {
+      wizard_context.extra_factors_auth_session.reset();
+    }
   }
+
   exit_callback_.Run(result);
 }
 

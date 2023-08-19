@@ -44,6 +44,8 @@ std::string BatterySaverModeStateToString(BatterySaverModeState state) {
 }  // namespace
 
 PerformanceLogSource::PerformanceLogSource() : SystemLogsSource("Performance") {
+  battery_saver_mode_manager_ =
+      performance_manager::user_tuning::BatterySaverModeManager::GetInstance();
   tuning_manager_ = performance_manager::user_tuning::
       UserPerformanceTuningManager::GetInstance();
 }
@@ -70,9 +72,10 @@ void PerformanceLogSource::PopulatePerformanceSettingLogs(
 
   PrefService* local_prefs = g_browser_process->local_state();
   int battery_saver_state = local_prefs->GetInteger(kBatterySaverModeState);
-  bool is_battery_saver_active = tuning_manager_->IsBatterySaverActive();
+  bool is_battery_saver_active =
+      battery_saver_mode_manager_->IsBatterySaverActive();
   bool is_battery_saver_disabled_for_session =
-      tuning_manager_->IsBatterySaverModeDisabledForSession();
+      battery_saver_mode_manager_->IsBatterySaverModeDisabledForSession();
 
   response->emplace(
       "battery_saver_state",
@@ -86,9 +89,11 @@ void PerformanceLogSource::PopulatePerformanceSettingLogs(
 
 void PerformanceLogSource::PopulateBatteryDetailLogs(
     SystemLogsResponse* response) {
-  bool has_battery = tuning_manager_->DeviceHasBattery();
-  bool is_using_battery_power = tuning_manager_->IsUsingBatteryPower();
-  int battery_percentage = tuning_manager_->SampledBatteryPercentage();
+  bool has_battery = battery_saver_mode_manager_->DeviceHasBattery();
+  bool is_using_battery_power =
+      battery_saver_mode_manager_->IsUsingBatteryPower();
+  int battery_percentage =
+      battery_saver_mode_manager_->SampledBatteryPercentage();
 
   response->emplace("device_has_battery", BoolToString(has_battery));
   response->emplace("device_using_battery_power",

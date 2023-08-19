@@ -42,19 +42,22 @@ class ExtensionsMenuViewController
 
   // ExtensionsMenuHandler:
   void OpenMainPage() override;
-  void OpenSitePermissionsPage(extensions::ExtensionId extension_id) override;
+  void OpenSitePermissionsPage(
+      const extensions::ExtensionId& extension_id) override;
   void CloseBubble() override;
   void OnSiteSettingsToggleButtonPressed(bool is_on) override;
   void OnSiteAccessSelected(
-      extensions::ExtensionId extension_id,
+      const extensions::ExtensionId& extension_id,
       extensions::PermissionsManager::UserSiteAccess site_access) override;
-  void OnExtensionToggleSelected(extensions::ExtensionId extension_id,
+  void OnExtensionToggleSelected(const extensions::ExtensionId& extension_id,
                                  bool is_on) override;
   void OnReloadPageButtonClicked() override;
   void OnAllowExtensionClicked(
       const extensions::ExtensionId& extension_id) override;
   void OnDismissExtensionClicked(
       const extensions::ExtensionId& extension_id) override;
+  void OnShowRequestsTogglePressed(const extensions::ExtensionId& extension_id,
+                                   bool is_on) override;
 
   // TabStripModelObserver:
   // Sometimes, menu can stay open when tab changes (e.g keyboard shortcuts) or

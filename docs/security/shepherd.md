@@ -124,7 +124,7 @@ various important responsibilities:
   * Use the 'last updated' column to avoid duplicating the work of the previous
     secondary.
 * Stay sharp, keep in shape ([finger
-  exercises](https://youtu.be/20elMaVZ9lg?t=47s) are standard for the secondary),
+  exercises](https://youtu.be/iV9vyacIeEY?t=47s) are standard for the secondary),
   and remember you may be called upon during emergencies.
 
 ## Life Of A Security Bug
@@ -174,6 +174,7 @@ i like that.")
   * Add appropriate component or CCs to ensure it does get triaged.
   * Add the **Security** component or the **Team-Security-UX** label if the
     security team should still track the issue (e.g. security features).
+  * Please do not remove the **external_security_report** label.
 * **If the report doesn't have enough information**, ask the reporter for more
   information, add the **Needs-Feedback** label and wait for 24 hours for a
   response.
@@ -210,16 +211,23 @@ assigning it to someone else.
 A few components have their own triage processes or points of contact who can
 help.
 
-* **V8 ClusterFuzz bugs** can be assigned to the [V8 ClusterFuzz
-  Sheriff](https://rotation.googleplex.com/status?id=5714662985302016) for
-  triage. Note that V8 CHECK failure crashes can have security implications, so
-  don't triage it yourself and instead assign it to V8 ClusterFuzz Sheriff. They
-  can make an informed decision on whether it is a security vulnerability or not
-  and whether it is safe to strip the security tags (**Type=Bug-Security**,
-  **Restrict-View-SecurityTeam**).
-* **V8 non-ClusterFuzz bugs** shouldn't be assigned to the V8 ClusterFuzz sheriff.
-  Instead, Googlers should refer to [the V8 security bug triage instructions](http://go/v8-security-issue-triage-how-to)
-  for lists of component owners.
+* **V8 bugs**. First, [upload benign-looking test cases to
+  ClusterFuzz](clusterfuzz-for-shepherds.md) if it isn't already
+  there (please keep an eye out for any special flags and debug vs release).
+  Hopefully, this will cause ClusterFuzz to reproduce and bisect the bug. If
+  not:
+    * Set a provisional severity of High, assuming this causes renderer memory
+      corruption.
+    * Set a provisional `FoundIn` of the current Extended Stable.
+    * Assign it to the current [V8
+      Sheriff](https://goto.google.com/current-v8-sheriff) with
+      a comment explaining that the severity and `FoundIn` are provisional.
+      Note that V8 CHECK failure crashes can have security implications, so
+      don't triage it yourself.
+    * If for any reason you need to discuss the bug with a particular V8 contact,
+      Googlers can look at
+      [the V8 security bug triage instructions](https://goto.google.com/v8-security-issue-triage-how-to)
+      for lists of component owners, but this shouldn't normally be necessary.
 * **Skia bugs** can be assigned to hcm@chromium.org. Be careful while triaging
   these! The place where we're crashing isn't necessarily the place where the
   bug was introduced, so blame may be misleading. Skia fuzzing bugs can be

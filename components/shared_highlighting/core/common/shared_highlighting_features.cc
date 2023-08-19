@@ -15,37 +15,19 @@ BASE_FEATURE(kPreemptiveLinkToTextGeneration,
 constexpr base::FeatureParam<int> kPreemptiveLinkGenTimeoutLengthMs{
     &kPreemptiveLinkToTextGeneration, "TimeoutLengthMs", 500};
 
+#if BUILDFLAG(IS_IOS)
 BASE_FEATURE(kSharedHighlightingAmp,
              "SharedHighlightingAmp",
-#if BUILDFLAG(IS_IOS)
-             base::FEATURE_DISABLED_BY_DEFAULT
-#else
-             base::FEATURE_ENABLED_BY_DEFAULT
+             base::FEATURE_DISABLED_BY_DEFAULT);
 #endif
-);
 
 BASE_FEATURE(kIOSSharedHighlightingV2,
              "IOSSharedHighlightingV2",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-BASE_FEATURE(kSharedHighlightingRefinedBlocklist,
-             "SharedHighlightingRefinedBlocklist",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
-BASE_FEATURE(kSharedHighlightingRefinedMaxContextWords,
-             "SharedHighlightingRefinedMaxContextWords",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
 BASE_FEATURE(kSharedHighlightingManager,
              "SharedHighlightingManager",
              base::FEATURE_DISABLED_BY_DEFAULT);
-
-const char kSharedHighlightingRefinedMaxContextWordsName[] =
-    "SharedHighlightingRefinedMaxContextWords";
-
-const base::FeatureParam<int> kSharedHighlightingMaxContextWords{
-    &kSharedHighlightingRefinedMaxContextWords,
-    kSharedHighlightingRefinedMaxContextWordsName, 10};
 
 int GetPreemptiveLinkGenTimeoutLengthMs() {
   return kPreemptiveLinkGenTimeoutLengthMs.Get();

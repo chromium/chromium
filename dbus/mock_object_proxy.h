@@ -8,6 +8,8 @@
 #include <memory>
 #include <string>
 
+#include "base/types/expected.h"
+#include "dbus/error.h"
 #include "dbus/message.h"
 #include "dbus/object_path.h"
 #include "dbus/object_proxy.h"
@@ -22,13 +24,10 @@ class MockObjectProxy : public ObjectProxy {
                   const std::string& service_name,
                   const ObjectPath& object_path);
 
-  MOCK_METHOD3(CallMethodAndBlockWithErrorDetails,
-               std::unique_ptr<Response>(MethodCall* method_call,
-                                         int timeout_ms,
-                                         ScopedDBusError* error));
-  MOCK_METHOD2(CallMethodAndBlock,
-               std::unique_ptr<Response>(MethodCall* method_call,
-                                         int timeout_ms));
+  MOCK_METHOD2(
+      CallMethodAndBlock,
+      base::expected<std::unique_ptr<Response>, Error>(MethodCall* method_call,
+                                                       int timeout_ms));
 
   // This method is not mockable because it takes a move-only argument. To work
   // around this, CallMethod() implementation here calls DoCallMethod() which is

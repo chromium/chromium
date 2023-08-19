@@ -91,6 +91,13 @@ void AudioContextManagerImpl::RecordAudibleTime(base::TimeDelta audible_time) {
   ukm::UkmRecorder* ukm_recorder = ukm::UkmRecorder::Get();
   DCHECK(ukm_recorder);
 
+  // AudioContextManagerImpl is created when the AudioContext starts running.
+  // As the AudioContext is suspended during prerendering even if the autoplay
+  // is permitted, it is ensured that the lifecycle state could not be
+  // kPrerendering here. This assumption is needed to record UKMs below.
+  CHECK(!render_frame_host().IsInLifecycleState(
+      RenderFrameHost::LifecycleState::kPrerendering));
+
   ukm::builders::Media_WebAudio_AudioContext_AudibleTime(
       render_frame_host().GetPageUkmSourceId())
       .SetIsMainFrame(render_frame_host().IsInPrimaryMainFrame())

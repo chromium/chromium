@@ -12,7 +12,6 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
-#include "base/types/expected.h"
 #include "chrome/browser/ash/file_manager/copy_or_move_io_task.h"
 #include "chrome/browser/ash/file_manager/io_task.h"
 #include "chrome/browser/ash/file_manager/trash_info_validator.h"
@@ -50,6 +49,9 @@ class RestoreToDestinationIOTask : public IOTask {
 
   // Passes the Cancel on to the underlying `move_io_task_` if it exists.
   void Cancel() override;
+
+  // Returns a pointer to the underlying `move_io_task_`.
+  CopyOrMoveIOTask* GetMoveTaskForTesting();
 
  private:
   // Finalises the RestoreToDestinationIOTask with the `state`.

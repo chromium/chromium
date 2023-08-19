@@ -17,7 +17,6 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/time/time.h"
 #include "base/values.h"
-#include "components/aggregation_service/aggregation_service.mojom.h"
 #include "components/attribution_reporting/aggregatable_trigger_data.h"
 #include "components/attribution_reporting/aggregatable_values.h"
 #include "components/attribution_reporting/aggregation_keys.h"
@@ -25,6 +24,7 @@
 #include "components/attribution_reporting/filters.h"
 #include "components/attribution_reporting/source_registration_time_config.mojom.h"
 #include "components/attribution_reporting/source_type.mojom-forward.h"
+#include "components/attribution_reporting/suitable_origin.h"
 #include "content/browser/aggregation_service/aggregatable_report.h"
 #include "content/browser/attribution_reporting/aggregatable_histogram_contribution.h"
 #include "content/browser/attribution_reporting/attribution_info.h"
@@ -53,6 +53,8 @@ std::string SerializeTimeRoundedDownToWholeDayInSeconds(base::Time time) {
 std::vector<AggregatableHistogramContribution> CreateAggregatableHistogram(
     const attribution_reporting::FilterData& source_filter_data,
     attribution_reporting::mojom::SourceType source_type,
+    const base::Time& source_time,
+    const base::Time& trigger_time,
     const attribution_reporting::AggregationKeys& keys,
     const std::vector<attribution_reporting::AggregatableTriggerData>&
         aggregatable_trigger_data,
@@ -65,7 +67,8 @@ std::vector<AggregatableHistogramContribution> CreateAggregatableHistogram(
   // match for the given source, and if applicable modify the bucket based on
   // the given key piece.
   for (const auto& data : aggregatable_trigger_data) {
-    if (!source_filter_data.Matches(source_type, data.filters())) {
+    if (!source_filter_data.Matches(source_type, source_time, trigger_time,
+                                    data.filters())) {
       ++num_trigger_data_filtered;
       continue;
     }
@@ -182,7 +185,10 @@ absl::optional<AggregatableReportRequest> CreateAggregatableReportRequest(
           AggregationServicePayloadContents::Operation::kHistogram,
           std::move(contributions),
           blink::mojom::AggregationServiceMode::kDefault,
-          common_aggregatable_data->aggregation_coordinator),
+          common_aggregatable_data->aggregation_coordinator_origin
+              ? absl::make_optional(
+                    **common_aggregatable_data->aggregation_coordinator_origin)
+              : absl::nullopt),
       AggregatableReportSharedInfo(
           report.initial_report_time(), report.external_report_id(),
           report.GetReportingOrigin(), debug_mode, std::move(additional_fields),

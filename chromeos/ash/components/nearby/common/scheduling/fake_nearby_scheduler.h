@@ -35,6 +35,7 @@ class FakeNearbyScheduler : public NearbyScheduler {
   void SetTimeUntilNextRequest(absl::optional<base::TimeDelta> time_delta);
   void SetIsWaitingForResult(bool is_waiting);
   void SetNumConsecutiveFailures(size_t num_failures);
+  void SetHandleResultCallback(base::OnceClosure callback);
 
   void InvokeRequestCallback();
 
@@ -55,6 +56,7 @@ class FakeNearbyScheduler : public NearbyScheduler {
   absl::optional<base::TimeDelta> time_until_next_request_;
   bool is_waiting_for_result_ = false;
   size_t num_consecutive_failures_ = 0;
+  base::OnceClosure handle_result_callback_;
 };
 
 }  // namespace ash::nearby

@@ -53,6 +53,7 @@ void CreateFallbackSamplingTrial(
     const std::string& trial_name,
     const std::string& feature_name,
     const int sampled_in_rate_per_mille,
+    const bool starts_active,
     base::FeatureList* feature_list) {
   scoped_refptr<base::FieldTrial> trial(
       base::FieldTrialList::FactoryGetFieldTrial(
@@ -81,6 +82,10 @@ void CreateFallbackSamplingTrial(
           ? base::FeatureList::OVERRIDE_DISABLE_FEATURE
           : base::FeatureList::OVERRIDE_ENABLE_FEATURE,
       trial.get());
+
+  if (starts_active) {
+    trial->Activate();
+  }
 }
 #endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_ANDROID)
 
@@ -146,12 +151,15 @@ void CreateFallbackSamplingTrialsIfNeeded(
 
 #endif  // BUILDFLAG(IS_ANDROID)
 
+    // Note that the trial has to be activated immediately. Otherwise, it would
+    // be possible for this session to crash before its feature was queried, and
+    // the independent log produced would not contain the sampling trial.
     CreateFallbackSamplingTrial(
         entropy_provider, kSamplingTrialName,
         metrics::internal::kMetricsReportingFeature.name,
         is_stable ? kStableSampledInRatePerMille
                   : kPreStableSampledInRatePerMille,
-        feature_list);
+        /*starts_active=*/true, feature_list);
   }
 #endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_ANDROID)
 #if BUILDFLAG(IS_ANDROID)
@@ -163,12 +171,19 @@ void CreateFallbackSamplingTrialsIfNeeded(
     // This is meant to be 10%, and this population, unlike the set of users
     // under the kSamplingTrialName trial should correctly be 10% in practice.
     const int kStableSampledInRatePerMille = 100;  // 10%
+
+    // Note that as per the serverside config, this trial does not start active
+    // (so that it is possible to determine from the serverside whether the
+    // client used the old or new trial to determine sampling). So if Chrome
+    // crashes before its feature is queried, the independent log produced will
+    // not contain this trial, even if the client normally uses this trial to
+    // determine sampling.
     CreateFallbackSamplingTrial(
         entropy_provider, kPostFREFixSamplingTrialName,
         metrics::internal::kPostFREFixMetricsReportingFeature.name,
         is_stable ? kStableSampledInRatePerMille
                   : kPreStableSampledInRatePerMille,
-        feature_list);
+        /*starts_active=*/false, feature_list);
   }
 #endif  // BUILDFLAG(IS_ANDROID)
 }

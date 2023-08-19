@@ -47,6 +47,11 @@
                    completionHandler:
                        (void (^)(BOOL succeeded))completionHandler;
 
+// This method completely destroys all of the UI. It should be called when the
+// scene is disconnected.
+// It should not be called directly, except by unit test that
+// don’t test the whole activation level life cycle.
+- (void)teardownUI;
 @end
 
 #endif  // IOS_CHROME_BROWSER_SHARED_COORDINATOR_SCENE_SCENE_CONTROLLER_H_

@@ -243,6 +243,13 @@ AudioParameters AudioManagerCras::GetStreamParametersForSystem(
     }
   }
 
+  if (base::FeatureList::IsEnabled(media::kCrOSSystemVoiceIsolationOption)) {
+    if (cras_util_->CrasGetVoiceIsolationSupported()) {
+      params.set_effects(params.effects() |
+                         AudioParameters::VOICE_ISOLATION_SUPPORTED);
+    }
+  }
+
   SetAllowedDspBasedEffects(aec_group_id, params);
   return params;
 }

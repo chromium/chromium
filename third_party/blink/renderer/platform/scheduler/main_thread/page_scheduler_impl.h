@@ -19,7 +19,6 @@
 #include "third_party/blink/renderer/platform/scheduler/main_thread/agent_group_scheduler_impl.h"
 #include "third_party/blink/renderer/platform/scheduler/main_thread/frame_origin_type.h"
 #include "third_party/blink/renderer/platform/scheduler/main_thread/page_visibility_state.h"
-#include "third_party/blink/renderer/platform/scheduler/public/page_lifecycle_state.h"
 #include "third_party/blink/renderer/platform/scheduler/public/page_scheduler.h"
 #include "third_party/blink/renderer/platform/scheduler/public/post_cancellable_task.h"
 #include "third_party/blink/renderer/platform/scheduler/public/thread_scheduler.h"
@@ -116,8 +115,6 @@ class PLATFORM_EXPORT PageSchedulerImpl : public PageScheduler {
   // Return a number of child web frame schedulers for this PageScheduler.
   size_t FrameCount() const;
 
-  PageLifecycleState GetPageLifecycleState() const;
-
   void SetUpIPCTaskDetection();
   // This flag tracks whether or not IPC tasks are tracked if they are posted to
   // frames or pages that are stored in the back-forward cache
@@ -164,8 +161,6 @@ class PLATFORM_EXPORT PageSchedulerImpl : public PageScheduler {
   // Support not issuing a notification to frames when we disable freezing as
   // a part of foregrounding the page.
   void SetPageFrozenImpl(bool frozen, NotificationPolicy notification_policy);
-
-  void SetPageLifecycleState(PageLifecycleState state);
 
   // Adds or removes a |task_queue| from the WakeUpBudgetPool. When the
   // FrameOriginType or visibility of a FrameScheduler changes, it should remove
@@ -312,7 +307,6 @@ class PLATFORM_EXPORT PageSchedulerImpl : public PageScheduler {
   TaskHandle set_ipc_posted_handler_task_;
   base::TimeTicks stored_in_back_forward_cache_timestamp_;
 
-  PageLifecycleState current_lifecycle_state_ = kDefaultPageLifecycleState;
   base::WeakPtrFactory<PageSchedulerImpl> weak_factory_{this};
 };
 

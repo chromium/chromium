@@ -9,6 +9,9 @@
 
 #include "ash/public/cpp/ash_public_export.h"
 #include "base/functional/callback.h"
+#include "base/unguessable_token.h"
+#include "chromeos/crosapi/mojom/video_conference.mojom-shared.h"
+#include "chromeos/crosapi/mojom/video_conference.mojom.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
 
@@ -176,6 +179,28 @@ class ASH_PUBLIC_EXPORT CaptureModeDelegate {
   // Returns true if audio recording is disabled by admins via the
   // `AudioCaptureAllowed` policy.
   virtual bool IsAudioCaptureDisabledByPolicy() const = 0;
+
+  // Registers the given `client` as a video conference manager client with the
+  // provided `client_id`.
+  virtual void RegisterVideoConferenceManagerClient(
+      crosapi::mojom::VideoConferenceManagerClient* client,
+      const base::UnguessableToken& client_id) = 0;
+
+  // Unregisters the client whose ID is the given `client_id` from the video
+  // conference manager.
+  virtual void UnregisterVideoConferenceManagerClient(
+      const base::UnguessableToken& client_id) = 0;
+
+  // Updates the video conference manager with the given media usage `status`.
+  // This will in-turn update the video conference panel on the shelf.
+  virtual void UpdateVideoConferenceManager(
+      crosapi::mojom::VideoConferenceMediaUsageStatusPtr status) = 0;
+
+  // Requests that the video conference manager notifies the user that the given
+  // `device` (e.g. a camera or microphone) is being used for a screen recording
+  // while the device is disabled.
+  virtual void NotifyDeviceUsedWhileDisabled(
+      crosapi::mojom::VideoConferenceMediaDevice device) = 0;
 };
 
 }  // namespace ash

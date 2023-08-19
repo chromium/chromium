@@ -16,11 +16,13 @@
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/thread_pool.h"
 #include "base/threading/platform_thread.h"
+#include "base/time/time.h"
 #include "chrome/browser/ash/file_manager/fileapi_util.h"
 #include "chrome/browser/ash/file_manager/filesystem_api_util.h"
 #include "chrome/browser/ash/file_manager/path_util.h"
 #include "chrome/browser/ash/fileapi/file_system_backend.h"
 #include "chrome/browser/platform_util.h"
+#include "components/file_access/scoped_file_access.h"
 #include "components/services/unzip/content/unzip_service.h"
 #include "components/services/unzip/public/mojom/unzipper.mojom.h"
 #include "content/public/browser/browser_thread.h"
@@ -70,15 +72,16 @@ ExtractIOTask::~ExtractIOTask() {
 }
 
 void ExtractIOTask::ZipListenerCallback(uint64_t bytes) {
-  progress_.bytes_transferred += bytes;
-  speedometer_.Update(progress_.bytes_transferred);
-  const double remaining_seconds = speedometer_.GetRemainingSeconds();
+  if (speedometer_.Update(progress_.bytes_transferred += bytes)) {
+    const base::TimeDelta remaining_time = speedometer_.GetRemainingTime();
 
-  // Speedometer can produce infinite result which can't be serialized to JSON
-  // when sending the status via private API.
-  if (std::isfinite(remaining_seconds)) {
-    progress_.remaining_seconds = remaining_seconds;
+    // Speedometer can produce infinite result which can't be serialized to JSON
+    // when sending the status via private API.
+    if (!remaining_time.is_inf()) {
+      progress_.remaining_seconds = remaining_time.InSecondsF();
+    }
   }
+
   progress_callback_.Run(progress_);
 }
 
@@ -202,6 +205,8 @@ void ExtractIOTask::ExtractArchive(
   if (!destination_result.has_value()) {
     ZipExtractCallback(base::FilePath(), false);
   } else {
+    progress_.outputs.emplace_back(destination_result.value(), absl::nullopt,
+                                   progress_.sources[index].url);
     const base::FilePath destination_directory =
         destination_result.value().path();
     base::ThreadPool::PostTaskAndReplyWithResult(
@@ -298,6 +303,22 @@ void ExtractIOTask::CheckSizeThenExtract() {
   }
 }
 
+void ExtractIOTask::GotScopedFileAccess(
+    file_access::ScopedFileAccess file_access) {
+  file_access_ = std::move(file_access);
+  CheckSizeThenExtract();
+}
+
+void ExtractIOTask::GetScopedFileAccess() {
+  std::vector<base::FilePath> zip_files;
+  for (const EntryStatus& source : progress_.sources) {
+    zip_files.push_back(source.url.path());
+  }
+  file_access::RequestFilesAccessForSystem(
+      {zip_files}, base::BindOnce(&ExtractIOTask::GotScopedFileAccess,
+                                  weak_ptr_factory_.GetWeakPtr()));
+}
+
 void ExtractIOTask::Execute(IOTask::ProgressCallback progress_callback,
                             IOTask::CompleteCallback complete_callback) {
   progress_callback_ = std::move(progress_callback);
@@ -314,7 +335,7 @@ void ExtractIOTask::Execute(IOTask::ProgressCallback progress_callback,
     RecordUmaExtractStatus(ExtractStatus::kUnknownError);
     Complete();
   } else {
-    CheckSizeThenExtract();
+    GetScopedFileAccess();
   }
 }
 

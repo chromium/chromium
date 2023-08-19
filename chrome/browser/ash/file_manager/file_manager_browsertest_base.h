@@ -49,6 +49,7 @@ enum TestAccountType {
   kNonManaged,
   // Non-managed account as a non owner profile on a device.
   kNonManagedNonOwner,
+  kGoogler,
 };
 enum DeviceMode { kDeviceModeNotSet, kConsumerOwned, kEnrolled };
 
@@ -146,6 +147,9 @@ class FileManagerBrowserTestBase
     // feature.
     bool enable_dlp_files_restriction = false;
 
+    // Whether test should enable Files policy new UX feature.
+    bool enable_files_policy_new_ux = false;
+
     // Whether test should run with the Upload Office to Cloud feature.
     bool enable_upload_office_to_cloud = false;
 
@@ -171,6 +175,9 @@ class FileManagerBrowserTestBase
     // Whether tests should enable V2 of search.
     bool enable_search_v2 = false;
 
+    // Whether tests should enable image content search.
+    bool enable_image_content_search = false;
+
     // Whether tests should enable OS Feedback.
     bool enable_os_feedback = false;
 
@@ -182,6 +189,12 @@ class FileManagerBrowserTestBase
 
     // Whether to enable Drive shortcuts showing a badge or not.
     bool enable_drive_shortcuts = false;
+
+    // Whether to enable jellybean styles.
+    bool enable_jellybean = false;
+
+    // Whether to enable jellybean UI elements.
+    bool enable_cros_components = false;
 
     // Feature IDs associated for mapping test cases and features.
     std::vector<std::string> feature_ids;

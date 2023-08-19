@@ -38,6 +38,7 @@ class COMPONENT_EXPORT(UI_BASE_IME_WIN) InputMethodWinTSF
   void OnInputLocaleChanged() override;
   bool IsInputLocaleCJK() const override;
   bool IsCandidatePopupOpen() const override;
+  void OnUrlChanged() override;
 
   // Overridden from InputMethodBase:
   void OnWillChangeFocusedClient(TextInputClient* focused_before,

@@ -81,7 +81,7 @@ TEST(ScriptResourceTest, RedirectDuringRevalidation) {
   ResourceResponse revalidation_response(url);
   revalidation_response.SetHttpStatusCode(302);
   revalidation_response.SetHttpHeaderField(
-      "location", AtomicString(destination.GetString()));
+      http_names::kLocation, AtomicString(destination.GetString()));
   ResourceRequest redirect_request(destination);
   resource->WillFollowRedirect(redirect_request, revalidation_response);
 

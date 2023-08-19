@@ -243,7 +243,9 @@ class MediaEngagementBrowserTest : public InProcessBrowserTest {
   }
 
   void CloseTab() {
-    EXPECT_TRUE(browser()->tab_strip_model()->CloseWebContentsAt(0, 0));
+    const int previous_tab_count = browser()->tab_strip_model()->count();
+    browser()->tab_strip_model()->CloseWebContentsAt(0, 0);
+    EXPECT_EQ(previous_tab_count - 1, browser()->tab_strip_model()->count());
   }
 
   void LoadSubFrame(const GURL& url) {

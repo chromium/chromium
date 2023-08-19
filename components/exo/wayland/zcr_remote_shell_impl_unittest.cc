@@ -428,6 +428,7 @@ TEST_F(WaylandRemoteShellTest, DisplayRemovalAddition) {
   // Move the window to the secandary display.
   const int initial_x = 100;
   const int initial_y = 100;
+  shell_surface->SetScaleFactor(2.f);
   shell_surface->SetBounds(secondary_display_id,
                            gfx::Rect(initial_x, initial_y, kDefaultWindowLength,
                                      kDefaultWindowLength));
@@ -522,14 +523,15 @@ TEST_F(WaylandRemoteShellTest, FloatSurface) {
   SetImplementation(wl_remote_surface(), /*implementation=*/nullptr,
                     std::move(shell_surface));
 
-  // Emitting float event
-  const ash::WMEvent float_event(ash::WM_EVENT_FLOAT);
+  // Emitting float event.
+  const ash::WindowFloatWMEvent float_event(
+      chromeos::FloatStartLocation::kBottomRight);
   window_state->OnWMEvent(&float_event);
   ASSERT_EQ(1UL, remote_shell_requested_bounds_changes().size());
   ASSERT_EQ(remote_shell_requested_bounds_changes()[0].reason,
             ZCR_REMOTE_SURFACE_V2_BOUNDS_CHANGE_REASON_FLOAT);
 
-  // Set float state from clients
+  // Set float state from clients.
   zcr_remote_shell::remote_surface_set_float(wl_client(), wl_remote_surface());
   surface->Commit();
   EXPECT_TRUE(window_state->IsFloated());
@@ -576,6 +578,11 @@ TEST_F(WaylandRemoteShellTest, MoveAcrossDisplaysWithDifferentScaleFactors) {
         gfx::ScaleToRoundedSize(min_size_in_dp, device_scale_factor);
     const auto max_size_in_px =
         gfx::ScaleToRoundedSize(max_size_in_dp, device_scale_factor);
+
+    const uint scale_factor_value =
+        *reinterpret_cast<const uint*>(&device_scale_factor);
+    zcr_remote_shell::remote_surface_set_scale_factor(
+        wl_client(), wl_remote_surface(), scale_factor_value);
 
     // Set bounds, min size, max size, and then commit.
     shell_surface_ptr->SetBounds(display_id, bounds_in_px);

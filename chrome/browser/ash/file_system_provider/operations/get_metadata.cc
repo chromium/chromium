@@ -13,6 +13,7 @@
 
 #include "base/ranges/algorithm.h"
 #include "base/time/time.h"
+#include "chrome/browser/ash/file_system_provider/provided_file_system_interface.h"
 #include "chrome/common/extensions/api/file_system_provider.h"
 #include "chrome/common/extensions/api/file_system_provider_internal.h"
 
@@ -76,6 +77,13 @@ bool ConvertRequestValueToFileInfo(const RequestValue& value,
         std::make_unique<std::string>(*params->metadata.thumbnail);
   }
 
+  if (fields & ProvidedFileSystemInterface::METADATA_FIELD_CLOUD_IDENTIFIER &&
+      params->metadata.cloud_identifier) {
+    output->cloud_identifier = std::make_unique<CloudIdentifier>(
+        params->metadata.cloud_identifier->provider_name,
+        params->metadata.cloud_identifier->id);
+  }
+
   return true;
 }
 
@@ -130,6 +138,12 @@ bool ValidateIDLEntryMetadata(
       return false;
   }
 
+  if (fields & ProvidedFileSystemInterface::METADATA_FIELD_CLOUD_IDENTIFIER &&
+      (!metadata.cloud_identifier ||
+       !ValidateCloudIdentifier(*metadata.cloud_identifier))) {
+    return false;
+  }
+
   return true;
 }
 
@@ -137,6 +151,13 @@ bool ValidateName(const std::string& name, bool root_entry) {
   if (root_entry)
     return name.empty();
   return !name.empty() && name.find('/') == std::string::npos;
+}
+
+bool ValidateCloudIdentifier(
+    const extensions::api::file_system_provider::CloudIdentifier&
+        cloud_identifier) {
+  return !cloud_identifier.provider_name.empty() &&
+         !cloud_identifier.id.empty();
 }
 
 GetMetadata::GetMetadata(
@@ -172,6 +193,8 @@ bool GetMetadata::Execute(int request_id) {
       fields_ & ProvidedFileSystemInterface::METADATA_FIELD_MIME_TYPE;
   options.thumbnail =
       fields_ & ProvidedFileSystemInterface::METADATA_FIELD_THUMBNAIL;
+  options.cloud_identifier =
+      fields_ & ProvidedFileSystemInterface::METADATA_FIELD_CLOUD_IDENTIFIER;
 
   return SendEvent(
       request_id,

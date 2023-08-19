@@ -30,6 +30,8 @@ class AwBackgroundTracingMetricsProviderTest : public testing::Test {
   AwBackgroundTracingMetricsProviderTest() {
     content::SetContentClient(&content_client_);
     content::SetBrowserClientForTesting(&browser_client_);
+    background_tracing_manager_ =
+        content::BackgroundTracingManager::CreateInstance();
   }
 
   ~AwBackgroundTracingMetricsProviderTest() override {
@@ -71,6 +73,8 @@ class AwBackgroundTracingMetricsProviderTest : public testing::Test {
   content::BrowserTaskEnvironment task_environment_;
   content::ContentClient content_client_;
   content::ContentBrowserClient browser_client_;
+  std::unique_ptr<content::BackgroundTracingManager>
+      background_tracing_manager_;
 };
 
 TEST_F(AwBackgroundTracingMetricsProviderTest, NoTraceData) {
@@ -92,7 +96,7 @@ TEST_F(AwBackgroundTracingMetricsProviderTest, UploadsTraceLog) {
 
   base::RunLoop run_loop;
   provider.ProvideIndependentMetrics(
-      base::BindLambdaForTesting([&run_loop](bool success) {
+      base::DoNothing(), base::BindLambdaForTesting([&run_loop](bool success) {
         EXPECT_TRUE(success);
         run_loop.Quit();
       }),
@@ -134,7 +138,7 @@ TEST_F(AwBackgroundTracingMetricsProviderTest, HandlesOversizeTraceLog) {
 
   base::RunLoop run_loop;
   provider.ProvideIndependentMetrics(
-      base::BindLambdaForTesting([&run_loop](bool success) {
+      base::DoNothing(), base::BindLambdaForTesting([&run_loop](bool success) {
         EXPECT_FALSE(success);
         run_loop.Quit();
       }),
@@ -162,7 +166,7 @@ TEST_F(AwBackgroundTracingMetricsProviderTest, ClearsAppPackageName) {
   uma_proto.mutable_system_profile()->set_app_package_name("my_app");
   base::RunLoop run_loop;
   provider.ProvideIndependentMetrics(
-      base::BindLambdaForTesting([&run_loop](bool success) {
+      base::DoNothing(), base::BindLambdaForTesting([&run_loop](bool success) {
         EXPECT_TRUE(success);
         run_loop.Quit();
       }),
@@ -193,6 +197,7 @@ TEST_F(AwBackgroundTracingMetricsProviderTest, HandlesMissingTrace) {
   uma_proto.set_client_id(100);
   uma_proto.set_session_id(15);
   provider.ProvideIndependentMetrics(
+      base::DoNothing(),
       base::BindOnce([](bool success) { EXPECT_FALSE(success); }), &uma_proto,
       /* snapshot_manager=*/nullptr);
 

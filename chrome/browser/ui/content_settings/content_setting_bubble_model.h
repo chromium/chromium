@@ -23,10 +23,12 @@
 #include "components/content_settings/core/common/content_settings.h"
 #include "components/content_settings/core/common/content_settings_types.h"
 #include "components/custom_handlers/protocol_handler.h"
+#include "net/base/schemeful_site.h"
 #include "third_party/blink/public/common/mediastream/media_stream_request.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/gfx/image/image.h"
 #include "url/gurl.h"
+#include "url/origin.h"
 
 class ContentSettingBubbleModelDelegate;
 class Profile;
@@ -58,6 +60,7 @@ class Event;
 //   ContentSettingSubresourceFilterBubbleModel  - filtered subresources
 //   ContentSettingDownloadsBubbleModel          - automatic downloads
 //   ContentSettingQuietRequestBubbleModel       - quiet ui prompts
+//   ContentSettingStorageAccessBubbleModel      - saa prompts
 
 // Forward declaration necessary for downcasts.
 class ContentSettingSimpleBubbleModel;
@@ -111,14 +114,7 @@ class ContentSettingBubbleModel {
     int default_item = 0;
   };
 
-  struct DomainList {
-    DomainList();
-    DomainList(const DomainList& other);
-    ~DomainList();
-
-    std::u16string title;
-    std::set<std::string> hosts;
-  };
+  typedef std::map<net::SchemefulSite, /*allowed*/ bool> SiteList;
 
   struct MediaMenu {
     MediaMenu();
@@ -139,6 +135,20 @@ class ContentSettingBubbleModel {
     kButton,
     // Manage text is used as a checkbox title.
     kCheckbox,
+    // Manage text is shown in a HoverButton. The "Manage" and "Done" buttons
+    // are hidden.
+    kHoverButton,
+  };
+
+  // These values are persisted to logs. Entries should not be renumbered and
+  // numeric values should never be reused.
+  enum class ContentSettingBubbleAction {
+    kOpened = 1,
+    kPermissionAllowed = 2,
+    kPermissionBlocked = 3,
+    kManageButtonClicked = 4,
+
+    kMaxValue = kManageButtonClicked
   };
 
   struct BubbleContent {
@@ -150,16 +160,18 @@ class ContentSettingBubbleModel {
     ~BubbleContent();
 
     std::u16string title;
+    std::u16string subtitle;
     std::u16string message;
     // Whether the user can modify the content of the bubble.
     // False if controlled by policy, etc.
     bool is_user_modifiable = true;
     ListItems list_items;
     RadioGroup radio_group;
-    std::vector<DomainList> domain_lists;
+    SiteList site_list;
     std::u16string custom_link;
     bool custom_link_enabled = false;
     std::u16string manage_text;
+    std::u16string manage_tooltip;
     ManageTextStyle manage_text_style = ManageTextStyle::kButton;
     MediaMenuMap media_menus;
     bool show_learn_more = false;
@@ -189,6 +201,8 @@ class ContentSettingBubbleModel {
   void set_owner(Owner* owner) { owner_ = owner; }
 
   virtual void OnListItemClicked(int index, const ui::Event& event) {}
+  virtual void OnSiteRowClicked(const net::SchemefulSite& site,
+                                bool is_allowed) {}
   virtual void OnCustomLinkClicked() {}
   virtual void OnManageButtonClicked() {}
   virtual void OnManageCheckboxChecked(bool is_checked) {}
@@ -244,6 +258,9 @@ class ContentSettingBubbleModel {
   content::Page& GetPage() const { return web_contents_->GetPrimaryPage(); }
 
   void set_title(const std::u16string& title) { bubble_content_.title = title; }
+  void set_subtitle(const std::u16string& subtitle) {
+    bubble_content_.subtitle = subtitle;
+  }
   void set_message(const std::u16string& message) {
     bubble_content_.message = message;
   }
@@ -253,8 +270,8 @@ class ContentSettingBubbleModel {
   void set_radio_group(const RadioGroup& radio_group) {
     bubble_content_.radio_group = radio_group;
   }
-  void add_domain_list(const DomainList& domain_list) {
-    bubble_content_.domain_lists.push_back(domain_list);
+  void set_site_list(const SiteList& site_list) {
+    bubble_content_.site_list = site_list;
   }
   void set_custom_link(const std::u16string& link) {
     bubble_content_.custom_link = link;
@@ -264,6 +281,9 @@ class ContentSettingBubbleModel {
   }
   void set_manage_text(const std::u16string& text) {
     bubble_content_.manage_text = text;
+  }
+  void set_manage_tooltip(const std::u16string& text) {
+    bubble_content_.manage_tooltip = text;
   }
   void set_manage_text_style(ManageTextStyle manage_text_style) {
     bubble_content_.manage_text_style = manage_text_style;
@@ -541,6 +561,31 @@ class ContentSettingSingleRadioGroup : public ContentSettingSimpleBubbleModel {
   void SetNarrowestContentSetting(ContentSetting setting);
 
   ContentSetting block_setting_;
+};
+
+// The bubble that allows users to control StorageAccess permission.
+// It uses checkboxes instead of radio buttons to allow users to control
+// multiple embedded sites.
+class ContentSettingStorageAccessBubbleModel
+    : public ContentSettingBubbleModel {
+ public:
+  ContentSettingStorageAccessBubbleModel(Delegate* delegate,
+                                         content::WebContents* web_contents);
+  ~ContentSettingStorageAccessBubbleModel() override;
+
+  ContentSettingStorageAccessBubbleModel(
+      const ContentSettingStorageAccessBubbleModel&) = delete;
+  ContentSettingStorageAccessBubbleModel& operator=(
+      const ContentSettingStorageAccessBubbleModel&) = delete;
+
+  // ContentSettingBubbleModel:
+  void OnManageButtonClicked() override;
+  void CommitChanges() override;
+  void OnSiteRowClicked(const net::SchemefulSite& site,
+                        bool is_allowed) override;
+
+ private:
+  std::map<net::SchemefulSite, /*is_allowed*/ bool> changed_permissions_;
 };
 
 // The bubble that informs users that Chrome does not have access to Location

@@ -54,10 +54,9 @@ SVGAnimatedPropertyBase* SVGSymbolElement::PropertyFromAttribute(
   }
 }
 
-void SVGSymbolElement::SynchronizeSVGAttribute(
-    const QualifiedName& name) const {
-  SVGFitToViewBox::SynchronizeSVGAttribute(name);
-  SVGElement::SynchronizeSVGAttribute(name);
+void SVGSymbolElement::SynchronizeAllSVGAttributes() const {
+  SVGFitToViewBox::SynchronizeAllSVGAttributes();
+  SVGElement::SynchronizeAllSVGAttributes();
 }
 
 }  // namespace blink

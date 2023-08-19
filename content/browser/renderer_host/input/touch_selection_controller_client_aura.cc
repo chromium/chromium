@@ -28,7 +28,7 @@
 #include "ui/gfx/geometry/size_conversions.h"
 #include "ui/strings/grit/ui_strings.h"
 #include "ui/touch_selection/touch_handle_drawable_aura.h"
-#include "ui/touch_selection/touch_selection_magnifier_runner.h"
+#include "ui/touch_selection/touch_selection_magnifier_aura.h"
 #include "ui/touch_selection/touch_selection_menu_runner.h"
 
 namespace content {
@@ -172,8 +172,23 @@ bool TouchSelectionControllerClientAura::HandleContextMenu(
 
   if (::features::IsTouchTextEditingRedesignEnabled() &&
       params.source_type == ui::MENU_SOURCE_TOUCH && params.is_editable &&
-      params.selection_text.empty() && IsQuickMenuAvailable()) {
-    quick_menu_requested_ = !quick_menu_requested_;
+      params.selection_text.empty()) {
+    if (IsQuickMenuAvailable()) {
+      // The selection controller might have been reset between the last
+      // selection bound update and the current context menu event (e.g. if
+      // handles were hidden because the mouse moved). In this case, re-notify
+      // the selection controller of the most recently used selection bounds and
+      // show the handles and menu at these bounds.
+      if (rwhva_->selection_controller()->active_status() ==
+          ui::TouchSelectionController::INACTIVE) {
+        rwhva_->selection_controller()->OnSelectionBoundsChanged(
+            manager_selection_start_, manager_selection_end_);
+      }
+      quick_menu_requested_ = !quick_menu_requested_;
+    } else {
+      rwhva_->selection_controller()->HideAndDisallowShowingAutomatically();
+      quick_menu_requested_ = false;
+    }
     UpdateQuickMenu();
     return true;
   }
@@ -200,6 +215,17 @@ void TouchSelectionControllerClientAura::OnSwipeToMoveCursorBegin() {
 void TouchSelectionControllerClientAura::OnSwipeToMoveCursorEnd() {
   GetTouchSelectionController()->OnSwipeToMoveCursorEnd();
   OnSelectionEvent(ui::INSERTION_HANDLE_DRAG_STOPPED);
+}
+
+void TouchSelectionControllerClientAura::OnClientHitTestRegionUpdated(
+    ui::TouchSelectionControllerClient* client) {
+  if (client != active_client_ || !GetTouchSelectionController() ||
+      GetTouchSelectionController()->active_status() ==
+          ui::TouchSelectionController::INACTIVE) {
+    return;
+  }
+
+  active_client_->DidScroll();
 }
 
 void TouchSelectionControllerClientAura::UpdateClientSelectionBounds(
@@ -264,6 +290,14 @@ void TouchSelectionControllerClientAura::ShowQuickMenu() {
   if (!ui::TouchSelectionMenuRunner::GetInstance())
     return;
 
+  // Don't show the menu if the selection bounds are zero, since this usually
+  // means that touch selection is not active or that there is no cursor or
+  // selection.
+  if (::features::IsTouchTextEditingRedesignEnabled() &&
+      rwhva_->selection_controller()->GetRectBetweenBounds() == gfx::RectF()) {
+    return;
+  }
+
   gfx::RectF rect =
       rwhva_->selection_controller()->GetVisibleRectBetweenBounds();
 
@@ -315,19 +349,36 @@ void TouchSelectionControllerClientAura::UpdateQuickMenu() {
   }
 }
 
-void TouchSelectionControllerClientAura::UpdateMagnifier() {
-  if (auto* magnifier_runner =
-          ui::TouchSelectionMagnifierRunner::GetInstance()) {
-    if (handle_drag_in_progress_ &&
-        GetTouchSelectionController()->active_status() !=
-            ui::TouchSelectionController::INACTIVE) {
-      magnifier_runner->ShowMagnifier(
-          rwhva_->GetNativeView(),
-          GetTouchSelectionController()->GetFocusBound());
-    } else {
-      magnifier_runner->CloseMagnifier();
-    }
+void TouchSelectionControllerClientAura::ShowMagnifier() {
+  if (!::features::IsTouchTextEditingRedesignEnabled()) {
+    return;
   }
+
+  aura::Window* context = rwhva_->GetNativeView();
+  aura::Window* root_window = context->GetRootWindow();
+  DCHECK(root_window);
+
+  if (!touch_selection_magnifier_) {
+    touch_selection_magnifier_ =
+        std::make_unique<ui::TouchSelectionMagnifierAura>();
+  }
+
+  DCHECK_NE(GetTouchSelectionController()->active_status(),
+            ui::TouchSelectionController::INACTIVE);
+  const gfx::SelectionBound& focus_bound_in_context =
+      GetTouchSelectionController()->GetFocusBound();
+
+  // Convert focus bound to root window coordinates.
+  gfx::Point focus_start = focus_bound_in_context.edge_start_rounded();
+  gfx::Point focus_end = focus_bound_in_context.edge_end_rounded();
+  aura::Window::ConvertPointToTarget(context, root_window, &focus_start);
+  aura::Window::ConvertPointToTarget(context, root_window, &focus_end);
+  touch_selection_magnifier_->ShowFocusBound(root_window->layer(), focus_start,
+                                             focus_end);
+}
+
+void TouchSelectionControllerClientAura::HideMagnifier() {
+  touch_selection_magnifier_ = nullptr;
 }
 
 bool TouchSelectionControllerClientAura::SupportsAnimation() const {
@@ -413,18 +464,19 @@ void TouchSelectionControllerClientAura::OnSelectionEvent(
     case ui::INSERTION_HANDLE_DRAG_STARTED:
       handle_drag_in_progress_ = true;
       UpdateQuickMenu();
-      UpdateMagnifier();
       break;
     case ui::SELECTION_HANDLE_DRAG_STOPPED:
     case ui::INSERTION_HANDLE_DRAG_STOPPED:
       handle_drag_in_progress_ = false;
       UpdateQuickMenu();
-      UpdateMagnifier();
+      HideMagnifier();
       break;
     case ui::SELECTION_HANDLES_MOVED:
     case ui::INSERTION_HANDLE_MOVED:
       UpdateQuickMenu();
-      UpdateMagnifier();
+      if (handle_drag_in_progress_) {
+        ShowMagnifier();
+      }
       break;
     case ui::INSERTION_HANDLE_TAPPED:
       quick_menu_requested_ = !quick_menu_requested_;
@@ -489,10 +541,20 @@ bool TouchSelectionControllerClientAura::IsCommandIdEnabled(
           ui::ClipboardBuffer::kCopyPaste, &data_dst, &result);
       return editable && !result.empty();
     }
-    case ui::TouchEditable::kSelectAll:
+    case ui::TouchEditable::kSelectAll: {
+      gfx::Range text_range;
+      if (rwhva_->GetTextRange(&text_range)) {
+        return text_range.length() > rwhva_->GetSelectedText().length();
+      }
       return true;
-    case ui::TouchEditable::kSelectWord:
-      return editable && !has_selection;
+    }
+    case ui::TouchEditable::kSelectWord: {
+      gfx::Range text_range;
+      if (rwhva_->GetTextRange(&text_range)) {
+        return readable && !has_selection && !text_range.is_empty();
+      }
+      return readable && !has_selection;
+    }
     default:
       return false;
   }

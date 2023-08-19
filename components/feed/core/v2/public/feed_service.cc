@@ -152,9 +152,6 @@ class FeedService::StreamDelegateImpl : public FeedStream::Delegate {
   std::string GetLanguageTag() override {
     return service_delegate_->GetLanguageTag();
   }
-  bool IsAutoplayEnabled() override {
-    return service_delegate_->IsAutoplayEnabled();
-  }
   TabGroupEnabledState GetTabGroupEnabledState() override {
     return service_delegate_->GetTabGroupEnabledState();
   }
@@ -247,7 +244,8 @@ FeedService::FeedService(
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
     scoped_refptr<base::SequencedTaskRunner> background_task_runner,
     const std::string& api_key,
-    const ChromeInfo& chrome_info)
+    const ChromeInfo& chrome_info,
+    TemplateURLService* template_url_service)
     : delegate_(std::move(delegate)),
       refresh_task_scheduler_(std::move(refresh_task_scheduler)) {
   stream_delegate_ = std::make_unique<StreamDelegateImpl>(
@@ -267,7 +265,7 @@ FeedService::FeedService(
       refresh_task_scheduler_.get(), metrics_reporter_.get(),
       stream_delegate_.get(), profile_prefs, feed_network_.get(),
       image_fetcher_.get(), store_.get(), persistent_key_value_store_.get(),
-      chrome_info);
+      template_url_service, chrome_info);
   api_ = stream_.get();
 
   history_observer_ = std::make_unique<HistoryObserverImpl>(

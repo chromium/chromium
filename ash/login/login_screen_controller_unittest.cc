@@ -121,11 +121,6 @@ TEST_F(LoginScreenControllerTest, RequestUserPodFocus) {
   EXPECT_CALL(*client, OnFocusPod(id));
   controller->OnFocusPod(id);
   base::RunLoop().RunUntilIdle();
-
-  // Verify NoPodFocused mojo call is run.
-  EXPECT_CALL(*client, OnNoPodFocused());
-  controller->OnNoPodFocused();
-  base::RunLoop().RunUntilIdle();
 }
 
 TEST_F(LoginScreenControllerNoSessionTest, ShowSystemTrayOnPrimaryLoginScreen) {

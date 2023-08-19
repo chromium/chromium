@@ -145,6 +145,30 @@ ViewTransition* ViewTransitionSupplement::StartTransition(
   return transition_;
 }
 
+void ViewTransitionSupplement::SetCrossDocumentOptIn(
+    mojom::blink::ViewTransitionSameOriginOptIn cross_document_opt_in) {
+  if (cross_document_opt_in_ == cross_document_opt_in) {
+    return;
+  }
+
+  cross_document_opt_in_ = cross_document_opt_in;
+
+  // If we have a frame, notify the frame host that the opt-in has changed.
+  if (auto* document = GetSupplementable(); document->GetFrame()) {
+    document->GetFrame()
+        ->GetLocalFrameHostRemote()
+        .OnViewTransitionOptInChanged(cross_document_opt_in);
+  }
+
+  if (cross_document_opt_in_ ==
+          mojom::blink::ViewTransitionSameOriginOptIn::kDisabled &&
+      transition_ && !transition_->IsCreatedViaScriptAPI()) {
+    transition_->skipTransition();
+    DCHECK(!transition_)
+        << "skipTransition() should finish existing |transition_|";
+  }
+}
+
 // static
 void ViewTransitionSupplement::SnapshotDocumentForNavigation(
     Document& document,
@@ -250,43 +274,53 @@ ViewTransitionSupplement::TakePendingRequests() {
 
 void ViewTransitionSupplement::OnMetaTagChanged(
     const AtomicString& content_value) {
-  auto same_origin_opt_in =
+  auto cross_document_opt_in =
       EqualIgnoringASCIICase(content_value, "same-origin")
-          ? mojom::ViewTransitionSameOriginOptIn::kEnabled
-          : mojom::ViewTransitionSameOriginOptIn::kDisabled;
+          ? mojom::blink::ViewTransitionSameOriginOptIn::kEnabled
+          : mojom::blink::ViewTransitionSameOriginOptIn::kDisabled;
 
-  if (same_origin_opt_in_ == same_origin_opt_in) {
-    return;
-  }
-  same_origin_opt_in_ = same_origin_opt_in;
+  SetCrossDocumentOptIn(cross_document_opt_in);
+}
 
-  // If we have a frame, notify the frame host that the opt-in has changed.
-  if (auto* document = GetSupplementable(); document->GetFrame()) {
-    document->GetFrame()
-        ->GetLocalFrameHostRemote()
-        .OnViewTransitionOptInChanged(same_origin_opt_in);
-  }
+void ViewTransitionSupplement::OnViewTransitionsStyleUpdated(
+    bool cross_document_enabled) {
+  // TODO(https://crbug.com/1463966): Remove meta tag opt-in - ignore the case
+  // where both are specified for now.
 
-  if (same_origin_opt_in_ == mojom::ViewTransitionSameOriginOptIn::kDisabled &&
-      transition_ && !transition_->IsCreatedViaScriptAPI()) {
-    transition_->skipTransition();
-    DCHECK(!transition_)
-        << "skipTransition() should finish existing |transition_|";
-  }
+  SetCrossDocumentOptIn(
+      cross_document_enabled
+          ? mojom::blink::ViewTransitionSameOriginOptIn::kEnabled
+          : mojom::blink::ViewTransitionSameOriginOptIn::kDisabled);
 }
 
 void ViewTransitionSupplement::WillInsertBody() {
+  if (!transition_ || !transition_->IsForNavigationOnNewDocument()) {
+    return;
+  }
+
+  CHECK(RuntimeEnabledFeatures::ViewTransitionOnNavigationEnabled());
+
+  auto* document = GetSupplementable();
+  CHECK(document);
+
+  // Update actives styles will compute the @view-transitions
+  // navigation-trigger opt in.
+  // TODO(https://crbug.com/1463966): This is probably a bit of a heavy hammer.
+  // In the long term, we probably don't want to make this decision at
+  // WillInsertBody or, if we do, we could look specifically for
+  // @view-transitions rather than all rules.
+  document->GetStyleEngine().UpdateActiveStyle();
+
   // If the opt-in is enabled, then there's nothing to do in this function.
-  if (same_origin_opt_in_ == mojom::ViewTransitionSameOriginOptIn::kEnabled) {
+  if (cross_document_opt_in_ ==
+      mojom::blink::ViewTransitionSameOriginOptIn::kEnabled) {
     return;
   }
 
   // Since we don't have an opt-in, skip a navigation transition if it exists.
-  if (transition_ && transition_->IsForNavigationOnNewDocument()) {
-    transition_->skipTransition();
-    DCHECK(!transition_)
-        << "skipTransition() should finish existing |transition_|";
-  }
+  transition_->skipTransition();
+  DCHECK(!transition_)
+      << "skipTransition() should finish existing |transition_|";
 }
 
 }  // namespace blink

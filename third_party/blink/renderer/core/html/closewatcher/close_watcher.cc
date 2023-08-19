@@ -6,7 +6,6 @@
 
 #include "base/auto_reset.h"
 #include "third_party/blink/public/mojom/frame/frame.mojom-blink.h"
-#include "third_party/blink/public/platform/interface_registry.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_close_watcher_options.h"
 #include "third_party/blink/renderer/core/dom/abort_signal.h"
 #include "third_party/blink/renderer/core/dom/events/event.h"
@@ -83,7 +82,7 @@ void CloseWatcher::WatcherStack::SignalInternal(bool* cancel_skipped) {
   int num_dialogs_closed = 0;
   while (!watchers_.empty()) {
     CloseWatcher* watcher = watchers_.back();
-    watcher->close(cancel_skipped);
+    watcher->requestClose(cancel_skipped);
     if (watcher->dialog_for_use_counters_) {
       ++num_dialogs_closed;
     }
@@ -111,8 +110,9 @@ bool CloseWatcher::WatcherStack::HasConsumedFreeWatcher() const {
 // static
 CloseWatcher* CloseWatcher::Create(LocalDOMWindow* window,
                                    HTMLDialogElement* dialog_for_use_counters) {
-  if (!window->GetFrame())
+  if (!window->GetFrame()) {
     return nullptr;
+  }
 
   WatcherStack& stack = *window->closewatcher_stack();
   return CreateInternal(window, stack, nullptr, dialog_for_use_counters);
@@ -140,6 +140,8 @@ CloseWatcher* CloseWatcher::CreateInternal(
     WatcherStack& stack,
     CloseWatcherOptions* options,
     HTMLDialogElement* dialog_for_use_counters) {
+  CHECK(window->document()->IsActive());
+
   CloseWatcher* watcher =
       MakeGarbageCollected<CloseWatcher>(window, dialog_for_use_counters);
 
@@ -174,9 +176,10 @@ CloseWatcher::CloseWatcher(LocalDOMWindow* window,
     : ExecutionContextClient(window),
       dialog_for_use_counters_(dialog_for_use_counters) {}
 
-void CloseWatcher::close(bool* cancel_skipped) {
-  if (IsClosed() || dispatching_cancel_ || !DomWindow())
+void CloseWatcher::requestClose(bool* cancel_skipped) {
+  if (IsClosed() || dispatching_cancel_ || !DomWindow()) {
     return;
+  }
 
   if (DomWindow()->GetFrame()->IsHistoryUserActivationActive()) {
     Event& cancel_event = *Event::CreateCancelable(event_type_names::kCancel);
@@ -195,26 +198,34 @@ void CloseWatcher::close(bool* cancel_skipped) {
                  event_type_names::kCancel)) {
     UseCounter::Count(DomWindow(),
                       WebFeature::kDialogCloseWatcherCancelSkipped);
-    if (cancel_skipped)
+    if (cancel_skipped) {
       *cancel_skipped = true;
+    }
   }
 
-  // These might have changed because of the event firing.
-  if (IsClosed())
+  close();
+}
+
+void CloseWatcher::close() {
+  if (IsClosed()) {
     return;
+  }
+  if (!DomWindow() || !DomWindow()->document()->IsActive()) {
+    return;
+  }
+
+  destroy();
+
+  DispatchEvent(*Event::Create(event_type_names::kClose));
+}
+
+void CloseWatcher::destroy() {
+  if (IsClosed()) {
+    return;
+  }
   if (DomWindow()) {
     DomWindow()->closewatcher_stack()->Remove(this);
   }
-
-  abort_handle_.Clear();
-  state_ = State::kClosed;
-  DispatchEvent(*Event::Create(event_type_names::kClose));
-}
-void CloseWatcher::destroy() {
-  if (IsClosed())
-    return;
-  if (DomWindow())
-    DomWindow()->closewatcher_stack()->Remove(this);
   state_ = State::kClosed;
   abort_handle_.Clear();
 }
@@ -226,7 +237,7 @@ const AtomicString& CloseWatcher::InterfaceName() const {
 void CloseWatcher::Trace(Visitor* visitor) const {
   visitor->Trace(abort_handle_);
   visitor->Trace(dialog_for_use_counters_);
-  EventTargetWithInlineData::Trace(visitor);
+  EventTarget::Trace(visitor);
   ExecutionContextClient::Trace(visitor);
 }
 

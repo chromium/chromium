@@ -17,11 +17,6 @@ namespace features {
 // Controls if GPU should synchronize presentation with vsync.
 GL_EXPORT bool UseGpuVsync();
 
-#if BUILDFLAG(IS_ANDROID)
-// Use new Android 13 API to obtain and target a frame deadline.
-GL_EXPORT BASE_DECLARE_FEATURE(kAndroidFrameDeadline);
-#endif
-
 #if BUILDFLAG(ENABLE_VALIDATING_COMMAND_DECODER)
 // All features in alphabetical order. The features should be documented
 // alongside the definition of their values in the .cc file.
@@ -32,6 +27,10 @@ GL_EXPORT BASE_DECLARE_FEATURE(kDefaultPassthroughCommandDecoder);
 GL_EXPORT BASE_DECLARE_FEATURE(kWriteMetalShaderCacheToDisk);
 GL_EXPORT BASE_DECLARE_FEATURE(kUseBuiltInMetalShaderCache);
 #endif
+
+#if BUILDFLAG(IS_WIN)
+GL_EXPORT BASE_DECLARE_FEATURE(kUsePrimaryMonitorVSyncIntervalOnSV3);
+#endif  // BUILDFLAG(IS_WIN)
 
 GL_EXPORT bool IsAndroidFrameDeadlineEnabled();
 

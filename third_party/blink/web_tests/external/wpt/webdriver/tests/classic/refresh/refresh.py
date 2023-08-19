@@ -39,20 +39,28 @@ def test_no_browsing_context(session, closed_frame, inline):
     assert session.find.css("#foo", all=False)
 
 
-def test_basic(session, inline):
-    url = inline("<div id=foo>")
+@pytest.mark.parametrize("protocol,parameters", [
+    ("http", ""),
+    ("https", ""),
+    ("https", {"pipe": "header(Cross-Origin-Opener-Policy,same-origin)"})
+], ids=["http", "https", "https coop"])
+def test_seen_nodes(session, get_test_page, protocol, parameters):
+    page = get_test_page(parameters=parameters, protocol=protocol)
 
-    session.url = url
-    element = session.find.css("#foo", all=False)
+    session.url = page
+
+    element = session.find.css("#custom-element", all=False)
+    shadow_root = element.shadow_root
 
     response = refresh(session)
     assert_success(response)
 
     with pytest.raises(error.StaleElementReferenceException):
-        element.property("id")
+        element.name
+    with pytest.raises(error.DetachedShadowRootException):
+        shadow_root.find_element("css selector", "in-shadow-dom")
 
-    assert session.url == url
-    assert session.find.css("#foo", all=False)
+    session.find.css("#custom-element", all=False)
 
 
 def test_dismissed_beforeunload(session, inline):

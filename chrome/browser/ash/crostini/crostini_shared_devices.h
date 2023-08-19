@@ -55,6 +55,8 @@ class CrostiniSharedDevices : public KeyedService,
                          bool shared,
                          ResultCallback callback);
 
+  static void EnsureFactoryBuilt();
+
  private:
   void ApplySharingState(guest_os::GuestId container_id,
                          base::Value::Dict next_shared_devices,

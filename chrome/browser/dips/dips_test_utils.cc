@@ -4,16 +4,104 @@
 
 #include "chrome/browser/dips/dips_test_utils.h"
 
+#include "base/test/bind.h"
 #include "chrome/browser/dips/dips_cleanup_service_factory.h"
-#include "chrome/browser/dips/dips_features.h"
 #include "chrome/browser/dips/dips_service_factory.h"
 #include "content/public/browser/web_contents.h"
+#include "content/public/common/content_features.h"
+#include "content/public/test/browser_test_utils.h"
+#include "content/public/test/test_utils.h"
+#include "net/test/embedded_test_server/embedded_test_server.h"
 #include "testing/gmock/include/gmock/gmock.h"
 
 using content::CookieAccessDetails;
 using content::NavigationHandle;
 using content::RenderFrameHost;
 using content::WebContents;
+
+void CloseTab(content::WebContents* web_contents) {
+  content::WebContentsDestroyedWatcher destruction_watcher(web_contents);
+  web_contents->Close();
+  destruction_watcher.Wait();
+}
+
+base::expected<WebContents*, std::string> OpenInNewTab(
+    WebContents* original_tab,
+    const GURL& url) {
+  OpenedWindowObserver tab_observer(original_tab,
+                                    WindowOpenDisposition::NEW_FOREGROUND_TAB);
+  if (!content::ExecJs(original_tab,
+                       content::JsReplace("window.open($1, '_blank');", url))) {
+    return base::unexpected("window.open failed");
+  }
+  tab_observer.Wait();
+
+  // Wait for the new tab to finish navigating.
+  content::WaitForLoadStop(tab_observer.window());
+
+  return tab_observer.window();
+}
+
+void AccessCookieViaJSIn(content::WebContents* web_contents,
+                         content::RenderFrameHost* frame) {
+  FrameCookieAccessObserver observer(web_contents, frame,
+                                     CookieOperation::kChange);
+  ASSERT_TRUE(content::ExecJs(frame, "document.cookie = 'foo=bar';",
+                              content::EXECUTE_SCRIPT_NO_USER_GESTURE));
+  observer.Wait();
+}
+
+bool NavigateToSetCookie(content::WebContents* web_contents,
+                         const net::EmbeddedTestServer* server,
+                         base::StringPiece host,
+                         bool is_secure_cookie_set) {
+  std::string relative_url = "/set-cookie?name=value";
+  if (is_secure_cookie_set) {
+    relative_url += ";Secure;SameSite=None";
+  }
+  const auto url = server->GetURL(host, relative_url);
+
+  URLCookieAccessObserver observer(web_contents, url, CookieOperation::kChange);
+  bool success = content::NavigateToURL(web_contents, url);
+  if (success) {
+    observer.Wait();
+  }
+  return success;
+}
+
+void CreateImageAndWaitForCookieAccess(content::WebContents* web_contents,
+                                       const GURL& image_url) {
+  URLCookieAccessObserver observer(web_contents, image_url,
+                                   CookieOperation::kRead);
+  ASSERT_TRUE(content::ExecJs(web_contents,
+                              content::JsReplace(
+                                  R"(
+    let img = document.createElement('img');
+    img.src = $1;
+    document.body.appendChild(img);)",
+                                  image_url),
+                              content::EXECUTE_SCRIPT_NO_USER_GESTURE));
+  // The image must cause a cookie access, or else this will hang.
+  observer.Wait();
+}
+
+absl::optional<StateValue> GetDIPSState(DIPSService* dips_service,
+                                        const GURL& url) {
+  absl::optional<StateValue> state;
+
+  auto* storage = dips_service->storage();
+  DCHECK(storage);
+  storage->AsyncCall(&DIPSStorage::Read)
+      .WithArgs(url)
+      .Then(base::BindLambdaForTesting([&](const DIPSState& loaded_state) {
+        if (loaded_state.was_loaded()) {
+          state = loaded_state.ToStateValue();
+        }
+      }));
+  WaitOnStorage(dips_service);
+
+  return state;
+}
 
 URLCookieAccessObserver::URLCookieAccessObserver(WebContents* web_contents,
                                                  const GURL& url,
@@ -165,7 +253,7 @@ ScopedInitDIPSFeature::ScopedInitDIPSFeature(
     const base::FieldTrialParams& params)
     // DIPSServiceFactory and DIPSCleanupServiceFactory are singletons, and we
     // want to create them *before* constructing `init_feature_`, so that they
-    // are initialized using the default value of dips::kFeature. We only want
+    // are initialized using the default value of features::kDIPS. We only want
     // `init_feature_` to affect CreateProfileSelections(). We do this
     // concisely by using the comma operator in the arguments to
     // `init_feature_` to call DIPSServiceFactory::GetInstance() and
@@ -173,7 +261,7 @@ ScopedInitDIPSFeature::ScopedInitDIPSFeature(
     // values.
     : init_feature_((DIPSServiceFactory::GetInstance(),
                      DIPSCleanupServiceFactory::GetInstance(),
-                     dips::kFeature),
+                     features::kDIPS),
                     enable,
                     params),
       override_profile_selections_for_dips_service_(

@@ -105,6 +105,7 @@ bool IsRelevantActionForVisibility(AccessoryAction action) {
     case AccessoryAction::USE_OTHER_PASSWORD:
     case AccessoryAction::GENERATE_PASSWORD_MANUAL:
     case AccessoryAction::CREDMAN_CONDITIONAL_UI_REENTRY:
+    case AccessoryAction::CROSS_DEVICE_PASSKEY:
       return true;
 
     case AccessoryAction::COUNT:
@@ -235,13 +236,6 @@ void ManualFillingControllerImpl::ShowAccessorySheetTab(
 void ManualFillingControllerImpl::UpdateSourceAvailability(
     FillingSource source,
     bool has_suggestions) {
-  if (source == FillingSource::AUTOFILL &&
-      !base::FeatureList::IsEnabled(
-          autofill::features::kAutofillKeyboardAccessory)) {
-    // Ignore autofill signals if the feature is disabled.
-    return;
-  }
-
   if (has_suggestions == available_sources_.contains(source))
     return;
 
@@ -334,11 +328,11 @@ ManualFillingControllerImpl::ManualFillingControllerImpl(
                         ->GetOrCreatePasswordAccessory()
                         ->AsWeakPtr();
   DCHECK(pwd_controller_);
-  if (AddressAccessoryController::AllowedForWebContents(web_contents)) {
-    address_controller_ =
-        AddressAccessoryController::GetOrCreate(web_contents)->AsWeakPtr();
-    DCHECK(address_controller_);
-  }
+
+  address_controller_ =
+      AddressAccessoryController::GetOrCreate(web_contents)->AsWeakPtr();
+  DCHECK(address_controller_);
+
   if (CreditCardAccessoryController::AllowedForWebContents(web_contents)) {
     cc_controller_ =
         CreditCardAccessoryController::GetOrCreate(web_contents)->AsWeakPtr();
@@ -379,18 +373,6 @@ bool ManualFillingControllerImpl::OnMemoryDump(
 }
 
 bool ManualFillingControllerImpl::ShouldShowAccessory() const {
-  // If we only provide password fallbacks (== accessory V1), show them for
-  // passwords and username fields only.
-  if (!base::FeatureList::IsEnabled(
-          autofill::features::kAutofillKeyboardAccessory) &&
-      !base::FeatureList::IsEnabled(
-          autofill::features::kAutofillManualFallbackAndroid) &&
-      !base::FeatureList::IsEnabled(
-          autofill::features::kAutofillEnableManualFallbackForVirtualCards)) {
-    return last_focused_field_type_ ==
-               FocusedFieldType::kFillablePasswordField ||
-           last_focused_field_type_ == FocusedFieldType::kFillableUsernameField;
-  }
   switch (last_focused_field_type_) {
     // If there are suggestions, show on usual form fields.
     case FocusedFieldType::kFillablePasswordField:
@@ -446,10 +428,6 @@ void ManualFillingControllerImpl::UpdateVisibility() {
 }
 
 void ManualFillingControllerImpl::RegisterObserverForAllowedSources() {
-  if (!base::FeatureList::IsEnabled(
-          autofill::features::kAutofillKeyboardAccessory)) {
-    return;  // Observer mechanism only available for the modern accessory.
-  }
   for (FillingSource source : kAllowedFillingSources) {
     AccessoryController* sheet_controller =
         GetControllerForFillingSource(source);
@@ -502,6 +480,7 @@ AccessoryController* ManualFillingControllerImpl::GetControllerForAction(
     case AccessoryAction::GENERATE_PASSWORD_AUTOMATIC:
     case AccessoryAction::TOGGLE_SAVE_PASSWORDS:
     case AccessoryAction::CREDMAN_CONDITIONAL_UI_REENTRY:
+    case AccessoryAction::CROSS_DEVICE_PASSKEY:
       return pwd_controller_.get();
     case AccessoryAction::MANAGE_ADDRESSES:
       return address_controller_.get();

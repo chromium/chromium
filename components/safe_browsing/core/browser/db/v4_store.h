@@ -24,8 +24,11 @@ namespace safe_browsing {
 
 class V4Store;
 
+struct V4StoreDeleter;
+using V4StorePtr = std::unique_ptr<V4Store, V4StoreDeleter>;
+
 using UpdatedStoreReadyCallback =
-    base::OnceCallback<void(std::unique_ptr<V4Store> new_store)>;
+    base::OnceCallback<void(V4StorePtr new_store)>;
 
 // Stores the iterator to the last element merged from the HashPrefixMap for a
 // given prefix size.
@@ -107,7 +110,7 @@ class V4StoreFactory {
  public:
   virtual ~V4StoreFactory() {}
 
-  virtual std::unique_ptr<V4Store> CreateV4Store(
+  virtual V4StorePtr CreateV4Store(
       const scoped_refptr<base::SequencedTaskRunner>& task_runner,
       const base::FilePath& store_path);
 };
@@ -127,10 +130,6 @@ class V4Store {
           std::unique_ptr<HashPrefixMap> hash_prefix_map,
           int64_t old_file_size = 0);
   virtual ~V4Store();
-
-  // Schedules the destruction of the V4Store object pointed to by |v4_store|,
-  // on the task runner.
-  static void Destroy(std::unique_ptr<V4Store> v4_store);
 
   // If a hash prefix in this store matches |full_hash|, returns that hash
   // prefix; otherwise returns an empty hash prefix.
@@ -175,6 +174,10 @@ class V4Store {
   void CollectStoreInfo(
       DatabaseManagerInfo::DatabaseInfo::StoreInfo* store_info,
       const std::string& base_metric);
+
+  HashPrefixMap::MigrateResult migrate_result() const {
+    return migrate_result_;
+  }
 
  protected:
   std::unique_ptr<HashPrefixMap> hash_prefix_map_;
@@ -411,9 +414,31 @@ class V4Store {
   std::string state_;
   const base::FilePath store_path_;
   const scoped_refptr<base::SequencedTaskRunner> task_runner_;
+  HashPrefixMap::MigrateResult migrate_result_ =
+      HashPrefixMap::MigrateResult::kUnknown;
 };
 
 std::ostream& operator<<(std::ostream& os, const V4Store& store);
+
+struct V4StoreDeleter {
+  explicit V4StoreDeleter(scoped_refptr<base::SequencedTaskRunner> task_runner);
+  ~V4StoreDeleter();
+
+  V4StoreDeleter(V4StoreDeleter&&);
+  V4StoreDeleter& operator=(V4StoreDeleter&&);
+
+  void operator()(const V4Store* ptr) {
+    if (ptr) {
+      if (task_runner_->RunsTasksInCurrentSequence()) {
+        delete ptr;
+      } else {
+        task_runner_->DeleteSoon(FROM_HERE, ptr);
+      }
+    }
+  }
+
+  scoped_refptr<base::SequencedTaskRunner> task_runner_;
+};
 
 }  // namespace safe_browsing
 

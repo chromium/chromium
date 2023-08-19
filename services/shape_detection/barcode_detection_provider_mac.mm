@@ -10,12 +10,7 @@
 #include "base/logging.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/self_owned_receiver.h"
-#include "services/shape_detection/barcode_detection_impl_mac.h"
 #include "services/shape_detection/barcode_detection_impl_mac_vision.h"
-
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
 
 namespace shape_detection {
 
@@ -39,17 +34,11 @@ void BarcodeDetectionProviderMac::CreateBarcodeDetection(
   if (!vision_api_)
     vision_api_ = VisionAPIInterface::Create();
 
-  if (!BarcodeDetectionImplMacVision::IsBlockedMacOSVersion()) {
-    auto impl =
-        std::make_unique<BarcodeDetectionImplMacVision>(std::move(options));
-    auto* impl_ptr = impl.get();
-    impl_ptr->SetReceiver(
-        mojo::MakeSelfOwnedReceiver(std::move(impl), std::move(receiver)));
-    return;
-  }
-
-  mojo::MakeSelfOwnedReceiver(std::make_unique<BarcodeDetectionImplMac>(),
-                              std::move(receiver));
+  auto impl =
+      std::make_unique<BarcodeDetectionImplMacVision>(std::move(options));
+  auto* impl_ptr = impl.get();
+  impl_ptr->SetReceiver(
+      mojo::MakeSelfOwnedReceiver(std::move(impl), std::move(receiver)));
 }
 
 void BarcodeDetectionProviderMac::EnumerateSupportedFormats(
@@ -64,18 +53,12 @@ void BarcodeDetectionProviderMac::EnumerateSupportedFormats(
     return;
   }
 
-  if (!vision_api_)
+  if (!vision_api_) {
     vision_api_ = VisionAPIInterface::Create();
-
-  if (!BarcodeDetectionImplMacVision::IsBlockedMacOSVersion()) {
-    supported_formats_ = BarcodeDetectionImplMacVision::GetSupportedSymbologies(
-        vision_api_.get());
-    std::move(callback).Run(supported_formats_.value());
-    return;
   }
 
-  supported_formats_ = std::vector<mojom::BarcodeFormat>(
-      BarcodeDetectionImplMac::GetSupportedSymbologies());
+  supported_formats_ =
+      BarcodeDetectionImplMacVision::GetSupportedSymbologies(vision_api_.get());
   std::move(callback).Run(supported_formats_.value());
 }
 

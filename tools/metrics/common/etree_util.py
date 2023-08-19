@@ -98,5 +98,8 @@ def ParseXMLString(raw_xml):
     if sys.version_info >= (3, 8, 0):
       tree_builder = ET.TreeBuilder(insert_comments=True)
     else:
+      # Print a warning if running with an old Py3 version (e.g macOS default).
+      print('Warning: Python < 3.8 detected, comments will be stripped.')
+      print('Consider running with depot_tools/python-bin/python3 instead.')
       tree_builder = ET.TreeBuilder()
     return ET.fromstring(raw_xml, ET.XMLParser(target=tree_builder))

@@ -26,19 +26,6 @@ struct V4ProtocolConfig;
 // Does not manage a local database.
 class RemoteSafeBrowsingDatabaseManager : public SafeBrowsingDatabaseManager {
  public:
-  // These values are persisted to logs. Entries should not be renumbered and
-  // numeric values should never be reused.
-  enum class HighConfidenceUrlAllowlistCheckResult {
-    kUnknown = 0,
-    kHandlerAndComponentUpdaterBothNoMatch = 1,
-    kHandlerAndComponentUpdaterBothMatch = 2,
-    kHandlerMatchAndComponentUpdaterNoMatch = 3,
-    kHandlerNoMatchAndComponentUpdaterMatch = 4,
-    kHandlerUninitializedAndComponentUpdaterMatch = 5,
-    kHandlerUninitializedAndComponentUpdaterNoMatch = 6,
-    kMaxValue = kHandlerUninitializedAndComponentUpdaterNoMatch,
-  };
-
   // Construct RemoteSafeBrowsingDatabaseManager.
   // Must be initialized by calling StartOnSBThread() before using.
   RemoteSafeBrowsingDatabaseManager();
@@ -61,16 +48,14 @@ class RemoteSafeBrowsingDatabaseManager : public SafeBrowsingDatabaseManager {
       const GURL& url,
       const SBThreatTypeSet& threat_types,
       Client* client,
-      MechanismExperimentHashDatabaseCache experiment_cache_selection) override;
+      MechanismExperimentHashDatabaseCache experiment_cache_selection,
+      CheckBrowseUrlType check_type) override;
   bool CheckDownloadUrl(const std::vector<GURL>& url_chain,
                         Client* client) override;
   bool CheckExtensionIDs(const std::set<std::string>& extension_ids,
                          Client* client) override;
   AsyncMatch CheckCsdAllowlistUrl(const GURL& url, Client* client) override;
   bool CheckResourceUrl(const GURL& url, Client* client) override;
-  void LogCheckUrlForHighConfidenceAllowlistResults(
-      absl::optional<bool> sb_api_result,
-      bool component_updater_result);
   void CheckUrlForHighConfidenceAllowlist(
       const GURL& url,
       const std::string& metric_variation,
@@ -79,20 +64,25 @@ class RemoteSafeBrowsingDatabaseManager : public SafeBrowsingDatabaseManager {
   void MatchDownloadAllowlistUrl(
       const GURL& url,
       base::OnceCallback<void(bool)> callback) override;
-  safe_browsing::ThreatSource GetThreatSource() const override;
+  safe_browsing::ThreatSource GetBrowseUrlThreatSource(
+      CheckBrowseUrlType check_type) const override;
+  safe_browsing::ThreatSource GetNonBrowseUrlThreatSource() const override;
   bool IsDownloadProtectionEnabled() const override;
   void StartOnSBThread(
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
       const V4ProtocolConfig& config) override;
   void StopOnSBThread(bool shutdown) override;
+  bool IsDatabaseReady() const override;
 
   //
   // RemoteSafeBrowsingDatabaseManager implementation
   //
 
  private:
-  ~RemoteSafeBrowsingDatabaseManager() override;
   class ClientRequest;  // Per-request tracker.
+  friend class base::RefCountedThreadSafe<RemoteSafeBrowsingDatabaseManager>;
+
+  ~RemoteSafeBrowsingDatabaseManager() override;
 
   // Requests currently outstanding.  This owns the ptrs.
   std::vector<ClientRequest*> current_requests_;
@@ -100,7 +90,10 @@ class RemoteSafeBrowsingDatabaseManager : public SafeBrowsingDatabaseManager {
   base::flat_set<network::mojom::RequestDestination>
       request_destinations_to_check_;
 
-  friend class base::RefCountedThreadSafe<RemoteSafeBrowsingDatabaseManager>;
+  // Whether the service is running. 'enabled_' is used by the
+  // RemoteSafeBrowsingDatabaseManager on the IO thread during normal
+  // operations.
+  bool enabled_;
 };  // class RemoteSafeBrowsingDatabaseManager
 
 }  // namespace safe_browsing

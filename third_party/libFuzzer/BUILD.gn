@@ -27,6 +27,8 @@ source_set("libfuzzer") {
     "src/FuzzerExtFunctionsWeak.cpp",
     "src/FuzzerExtFunctionsWindows.cpp",
     "src/FuzzerExtraCounters.cpp",
+    "src/FuzzerExtraCountersDarwin.cpp",
+    "src/FuzzerExtraCountersWindows.cpp",
     "src/FuzzerFork.cpp",
     "src/FuzzerIO.cpp",
     "src/FuzzerIOPosix.cpp",
@@ -43,6 +45,9 @@ source_set("libfuzzer") {
     "src/FuzzerUtilPosix.cpp",
     "src/FuzzerUtilWindows.cpp",
   ]
+  if (!using_sanitizer) {
+    sources += [ "src/FuzzerInterceptors.cpp" ]
+  }
 
   configs -= fuzzing_engine_remove_configs
   configs += fuzzing_engine_add_configs

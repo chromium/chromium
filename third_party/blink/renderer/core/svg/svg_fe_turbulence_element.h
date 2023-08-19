@@ -71,7 +71,7 @@ class SVGFETurbulenceElement final
 
   SVGAnimatedPropertyBase* PropertyFromAttribute(
       const QualifiedName& attribute_name) const override;
-  void SynchronizeSVGAttribute(const QualifiedName& name) const override;
+  void SynchronizeAllSVGAttributes() const override;
 
   Member<SVGAnimatedNumberOptionalNumber> base_frequency_;
   Member<SVGAnimatedNumber> seed_;

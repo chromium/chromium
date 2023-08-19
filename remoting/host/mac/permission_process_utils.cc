@@ -15,8 +15,7 @@
 #include "remoting/host/mac/constants_mac.h"
 #include "remoting/host/version.h"
 
-namespace remoting {
-namespace mac {
+namespace remoting::mac {
 
 namespace {
 
@@ -73,5 +72,4 @@ bool CheckScreenRecordingPermission(HostMode mode) {
                              "check-screen-recording-permission");
 }
 
-}  // namespace mac
-}  // namespace remoting
+}  // namespace remoting::mac

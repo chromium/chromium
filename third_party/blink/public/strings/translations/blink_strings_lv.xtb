@@ -26,7 +26,6 @@
 <translation id="2060505056492490888">Punkts (<ph name="DOT" />) atrodas nepareizā vietā (<ph name="INVALIDDOMAIN" />).</translation>
 <translation id="2148716181193084225">Šodien</translation>
 <translation id="2226276347425096477">Lūdzu, saīsiniet šo tekstu līdz <ph name="MAX_CHARACTERS" /> vai mazāk zīmēm (pašreiz tas ietver <ph name="CURRENT_LENGTH" /> rakstzīmes).</translation>
-<translation id="2246498165605549352">Lokāls fails</translation>
 <translation id="2247351761944213033"><ph name="WEEKNUMBER" />. nedēļa, <ph name="YEAR" />. gads</translation>
 <translation id="2277199496770840904"><ph name="NUMBER" />. ieraksts</translation>
 <translation id="2393030564806080191">Heksadecimāla krāsas vērtība</translation>
@@ -89,6 +88,7 @@
 <translation id="5425179576310518467">pašreizējais datums</translation>
 <translation id="5466621249238537318">Lūdzu, atlasiet vienu vai vairākus failus.</translation>
 <translation id="5468998798572797635">iziet no pilnekrāna režīma</translation>
+<translation id="5514612371225420585">Fails jūsu ierīcē</translation>
 <translation id="5516235301412634559">0,75</translation>
 <translation id="5537725057119320332">Apraidīt</translation>
 <translation id="5546461542133609677">rādīt</translation>
@@ -113,6 +113,7 @@
 <translation id="6398862346408813489">Rādīt mēneša atlases paneli</translation>
 <translation id="6404546809543547843">audio laika skalas slīdnis</translation>
 <translation id="6443871981718447451">rādīt subtitru izvēlni</translation>
+<translation id="6484738902856791350">Lietot struktūrdruku</translation>
 <translation id="6550675742724504774">Opcijas</translation>
 <translation id="6572309429103589720">Nederīga gramatika</translation>
 <translation id="658823671542763450">atvērt pilnekrāna režīmā</translation>

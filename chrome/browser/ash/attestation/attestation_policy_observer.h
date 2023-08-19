@@ -15,6 +15,8 @@ namespace attestation {
 
 class MachineCertificateUploader;
 
+// TODO(b/285556135): Replace this observer with another trigger which starts
+// the certificate upload as soon as device policies are available.
 // A class which observes policy changes and uploads a certificate if necessary.
 class AttestationPolicyObserver {
  public:
@@ -37,7 +39,7 @@ class AttestationPolicyObserver {
   // Checks attestation policy and starts any necessary work.
   void Start();
 
-  raw_ptr<CrosSettings, ExperimentalAsh> cros_settings_;
+  raw_ptr<CrosSettings, DanglingUntriaged | ExperimentalAsh> cros_settings_;
   raw_ptr<MachineCertificateUploader, ExperimentalAsh> certificate_uploader_;
 
   base::CallbackListSubscription attestation_subscription_;

@@ -4,10 +4,10 @@
 
 module viz.mojom;
 
-import "services/viz/public/mojom/compositing/resource_format.mojom";
+import "services/viz/public/mojom/compositing/internal/singleplanar_format.mojom";
 
 // See PlaneConfig in components/viz/common/resources/shared_image_format.h
-enum PlaneConfig { kY_V_U, kY_UV, kY_UV_A };
+enum PlaneConfig { kY_U_V, kY_V_U, kY_UV, kY_UV_A };
 
 // See Subsampling in components/viz/common/resources/shared_image_format.h
 enum Subsampling { k420 };
@@ -22,11 +22,14 @@ struct MultiplanarFormat {
   PlaneConfig plane_config;
   Subsampling subsampling;
   ChannelFormat channel_format;
+
+  [EnableIf=use_ozone]
+  bool prefers_external_sampler;
 };
 
-// Corresponds to viz::SharedImageFormat. It can only be ResourceFormat (for
-// single plane, eg. RGBA) or MultiplanarFormat at any given time.
+// Corresponds to viz::SharedImageFormat. It can only be SingleplanarFormat or
+// MultiplanarFormat at any given time.
 union SharedImageFormat {
-  ResourceFormat resource_format;
+  SingleplanarFormat singleplanar_format;
   MultiplanarFormat multiplanar_format;
 };

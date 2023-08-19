@@ -13,15 +13,11 @@
 #include <sys/stat.h>
 
 #include "base/apple/bridging.h"
+#include "base/apple/foundation_util.h"
+#include "base/apple/scoped_cftyperef.h"
 #include "base/files/file_path.h"
-#include "base/mac/foundation_util.h"
 #include "base/mac/mac_util.h"
-#include "base/mac/scoped_cftyperef.h"
 #include "base/mac/scoped_ioobject.h"
-
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
 
 namespace metrics {
 
@@ -58,7 +54,7 @@ bool DriveMetricsProvider::HasSeekPenalty(const base::FilePath& path,
   if (!characteristics)
     return false;
 
-  CFStringRef type_ref = base::mac::GetValueFromDictionary<CFStringRef>(
+  CFStringRef type_ref = base::apple::GetValueFromDictionary<CFStringRef>(
       characteristics, CFSTR(kIOPropertyMediumTypeKey));
   if (!type_ref)
     return false;

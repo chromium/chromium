@@ -239,6 +239,39 @@ struct EnumTraits<media::mojom::SVCScalabilityMode, media::SVCScalabilityMode> {
 };
 
 template <>
+struct EnumTraits<media::mojom::SVCInterLayerPredMode,
+                  media::SVCInterLayerPredMode> {
+  static media::mojom::SVCInterLayerPredMode ToMojom(
+      media::SVCInterLayerPredMode input) {
+    switch (input) {
+      case media::SVCInterLayerPredMode::kOff:
+        return media::mojom::SVCInterLayerPredMode::kOff;
+      case media::SVCInterLayerPredMode::kOn:
+        return media::mojom::SVCInterLayerPredMode::kOn;
+      case media::SVCInterLayerPredMode::kOnKeyPic:
+        return media::mojom::SVCInterLayerPredMode::kOnKeyPic;
+    }
+    NOTREACHED_NORETURN();
+  }
+
+  static bool FromMojom(media::mojom::SVCInterLayerPredMode input,
+                        media::SVCInterLayerPredMode* output) {
+    switch (input) {
+      case media::mojom::SVCInterLayerPredMode::kOff:
+        *output = media::SVCInterLayerPredMode::kOff;
+        return true;
+      case media::mojom::SVCInterLayerPredMode::kOn:
+        *output = media::SVCInterLayerPredMode::kOn;
+        return true;
+      case media::mojom::SVCInterLayerPredMode::kOnKeyPic:
+        *output = media::SVCInterLayerPredMode::kOnKeyPic;
+        return true;
+    }
+    NOTREACHED_NORETURN();
+  }
+};
+
+template <>
 struct EnumTraits<media::mojom::VideoRotation, ::media::VideoRotation> {
   static media::mojom::VideoRotation ToMojom(::media::VideoRotation input) {
     switch (input) {

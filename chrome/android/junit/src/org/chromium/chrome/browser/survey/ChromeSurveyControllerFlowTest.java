@@ -139,7 +139,6 @@ public class ChromeSurveyControllerFlowTest {
 
     @After
     public void tearDown() {
-        ChromeSurveyController.forceIsUMAEnabledForTesting(false);
         ChromeSurveyController.resetMessageShownForTesting();
         FeatureList.setTestValues(null);
         UmaRecorderHolder.resetForTesting();

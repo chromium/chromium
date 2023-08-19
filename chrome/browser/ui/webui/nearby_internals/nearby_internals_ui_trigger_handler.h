@@ -105,6 +105,10 @@ class NearbyInternalsUiTriggerHandler : public content::WebUIMessageHandler,
   // the receive surface to be unregistered.
   void UnregisterReceiveSurface(const base::Value::List& args);
 
+  // Message handler callback that calls ShowSuccess in the
+  // NearbySharingService's NearbyNotificationManager.
+  void ShowReceivedNotification(const base::Value::List& args);
+
   // Message handler callback that calls IsScanning, IsTransferring,
   // IsReceivingFile, IsSendingFile, IsConnecting, and IsInHighVisibility in the
   // NearbySharingService and passes booleans to JavaScript to eventually be

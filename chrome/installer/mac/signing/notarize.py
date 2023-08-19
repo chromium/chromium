@@ -29,179 +29,36 @@ class Invoker(invoker.Base):
     @staticmethod
     def register_arguments(parser):
         parser.add_argument(
-            '--notary-user',
-            help='The username used to authenticate to the Apple notary '
-            'service.')
-        parser.add_argument(
-            '--notary-password',
-            help='The password or password reference (e.g. @keychain, see '
-            '`xcrun altool -h`) used to authenticate to the Apple notary '
-            'service.')
-        parser.add_argument(
-            '--notarization-tool',
-            choices=list(model.NotarizationTool),
-            type=model.NotarizationTool,
-            default=model.NotarizationTool.ALTOOL,
-            help='The tool to use to communicate with the Apple notary service.'
-        )
-        _AltoolNotarizer.register_arguments(parser)
-        _NotarytoolNotarizer.register_arguments(parser)
+            '--notary-arg',
+            action='append',
+            default=[],
+            help='Specifies additional arguments to pass to the notarization '
+            'tool. If specified multiple times, the arguments are passed in '
+            'the given order. These are passed to every invocation of the '
+            'notarization tool and are intended to specify authentication '
+            'parameters.')
+
+        # Legacy arguments that will be removed in the future.
+        legacy_help = ('This argument is deprecated. '
+                       'Please use --notary-arg instead.')
+        parser.add_argument('--notary-user', help=legacy_help)
+        parser.add_argument('--notary-password', help=legacy_help)
+        parser.add_argument('--notary-team-id', help=legacy_help)
 
     def __init__(self, args, config):
-        self._notary_user = args.notary_user
-        self._notary_password = args.notary_password
-        self._notarization_tool = args.notarization_tool
+        self._notary_args = args.notary_arg
 
-        if not config.notarize.should_notarize():
-            return
-
-        try:
-            notarizer_cls = {
-                model.NotarizationTool.ALTOOL: _AltoolNotarizer,
-                model.NotarizationTool.NOTARYTOOL: _NotarytoolNotarizer,
-            }[self._notarization_tool]
-        except KeyError:
-            raise invoker.InvokerConfigError(
-                f'Invalid `--notarization-tool` {self._notarization_tool} '
-                'specified.')
-        self._notarizer = notarizer_cls(args, config, self)
-
-        if not self._notary_user or not self._notary_password:
-            raise invoker.InvokerConfigError(
-                'The `--notary-user` and `--notary-password` '
-                'arguments are required if notarizing.')
+        if any([
+                getattr(args, arg, None)
+                for arg in ('notary_user', 'notary_password', 'notary_team_id')
+        ]):
+            logger.warning(
+                'Explicit notarization authentication arguments are deprecated. Use --notary-arg instead.'
+            )
 
     @property
-    def notarization_tool(self):
-        return self._notarization_tool
-
-    def submit(self, path, config):
-        return self._notarizer.submit(path, config)
-
-    def get_result(self, uuid, config):
-        return self._notarizer.get_result(uuid, config)
-
-
-class _AltoolNotarizer(invoker.Interface.Notarizer):
-
-    @staticmethod
-    def register_arguments(parser):
-        parser.add_argument(
-            '--notary-asc-provider',
-            help='The ASC provider string to be used as the `--asc-provider` '
-            'argument to `xcrun altool`, to be used when --notary-user is '
-            'associated with multiple Apple developer teams. See '
-            '`xcrun altool -h. Run `iTMSTransporter -m provider -account_type '
-            'itunes_connect -v off -u USERNAME -p PASSWORD` to list valid '
-            'providers.')
-
-    def __init__(self, args, config, parent):
-        self._notary_asc_provider = args.notary_asc_provider
-        self._parent = parent
-
-    def submit(self, path, config):
-        command = [
-            'xcrun', 'altool', '--notarize-app', '--file', path,
-            '--primary-bundle-id', config.base_bundle_id, '--username',
-            self._parent._notary_user, '--password',
-            self._parent._notary_password, '--output-format', 'xml'
-        ]
-        if self._notary_asc_provider is not None:
-            command.extend(['--asc-provider', self._notary_asc_provider])
-
-        def submit_comand():
-            return commands.run_command_output(command)
-
-        # Known bad codes:
-        # 1 - Xcode 12 altool does not always exit with distinct error codes, so
-        #     this is general failure.
-        # 13 - A server with the specified hostname could not be found.
-        # 176 - Unable to find requested file(s): metadata.xml (1057)
-        # 236 - Exception occurred when creating MZContentProviderUpload for
-        #       provider. (1004)
-        # 240 - SIGSEGV in the Java Runtime Environment
-        # 250 - Unable to process upload done request at this time due to a
-        #       general error (1018)
-        output = _notary_service_retry(submit_comand,
-                                       (1, 13, 176, 236, 240, 250),
-                                       'submission')
-
-        try:
-            plist = plistlib.loads(output)
-            return plist['notarization-upload']['RequestUUID']
-        except:
-            raise NotarizationError(
-                'xcrun altool returned output that could not be parsed: {}'
-                .format(output))
-
-    def get_result(self, uuid, config):
-        try:
-            command = [
-                'xcrun', 'altool', '--notarization-info', uuid, '--username',
-                self._parent._notary_user, '--password',
-                self._parent._notary_password, '--output-format', 'xml'
-            ]
-            if self._notary_asc_provider is not None:
-                command.extend(['--asc-provider', self._notary_asc_provider])
-            output = commands.run_command_output(command)
-        except subprocess.CalledProcessError as e:
-            # A notarization request might report as "not found" immediately
-            # after submission, which causes altool to exit non-zero. Check
-            # for this case and parse the XML output to ensure that the
-            # error code refers to the not-found state. The UUID is known-
-            # good since it was a result of submit(), so loop to wait for
-            # it to show up.
-            if e.returncode == 239:
-                plist = plistlib.loads(e.output)
-                if plist['product-errors'][0]['code'] == 1519:
-                    return NotarizationResult(Status.IN_PROGRESS, None, None,
-                                              None)
-            # Sometimes there are network hiccups when fetching notarization
-            # info, but that often fixes itself and shouldn't derail the
-            # entire signing operation. More serious extended connectivity
-            # problems will eventually fall through to the "no results"
-            # timeout.
-            if e.returncode == 13:
-                logger.warning(e.output)
-                return NotarizationResult(Status.IN_PROGRESS, None, None, None)
-            # And other times the command exits with code 1 and no further
-            # output.
-            if e.returncode == 1:
-                logger.warning(e.output)
-                return NotarizationResult(Status.IN_PROGRESS, None, None, None)
-            raise e
-
-        plist = plistlib.loads(output)
-        info = plist['notarization-info']
-        status = info['Status']
-        if status == 'in progress':
-            return NotarizationResult(Status.IN_PROGRESS, status, output, None)
-        if status == 'success':
-            return NotarizationResult(Status.SUCCESS, status, output,
-                                      info[_LOG_FILE_URL])
-        return NotarizationResult(Status.ERROR, status, output,
-                                  info[_LOG_FILE_URL])
-
-
-class _NotarytoolNotarizer(invoker.Interface.Notarizer):
-
-    @staticmethod
-    def register_arguments(parser):
-        parser.add_argument(
-            '--notary-team-id',
-            help='The Apple Developer Team ID used to authenticate to the '
-            'Apple notary service.')
-
-    def __init__(self, args, config, parent):
-        # Let the config specify the notary_team_id if one was not passed as an
-        # argument. This may be None.
-        self._notary_team_id = args.notary_team_id or config.notary_team_id
-        self._parent = parent
-
-        if not self._notary_team_id:
-            raise invoker.InvokerConfigError(
-                'The `--notarization-tool=notarytool` option requires '
-                'a --notary-team-id.')
+    def notary_args(self):
+        return self._notary_args
 
     def submit(self, path, config):
         command = [
@@ -209,21 +66,15 @@ class _NotarytoolNotarizer(invoker.Interface.Notarizer):
             'notarytool',
             'submit',
             path,
-            '--apple-id',
-            self._parent._notary_user,
-            '--team-id',
-            self._notary_team_id,
             '--no-wait',
             '--output-format',
             'plist',
-        ]
+        ] + self.notary_args
 
         # TODO(rsesek): As the reliability of notarytool is determined,
         # potentially run the command through _notary_service_retry().
 
-        output = commands.run_password_command_output(
-            command,
-            _altool_password_for_notarytool(self._parent._notary_password))
+        output = commands.run_command_output(command)
         try:
             plist = plistlib.loads(output)
             return plist['id']
@@ -238,16 +89,10 @@ class _NotarytoolNotarizer(invoker.Interface.Notarizer):
             'notarytool',
             'info',
             uuid,
-            '--apple-id',
-            self._parent._notary_user,
-            '--team-id',
-            self._notary_team_id,
             '--output-format',
             'plist',
-        ]
-        output = commands.run_password_command_output(
-            command,
-            _altool_password_for_notarytool(self._parent._notary_password))
+        ] + self.notary_args
+        output = commands.run_command_output(command)
 
         plist = plistlib.loads(output)
         status = plist['status']
@@ -265,13 +110,8 @@ class _NotarytoolNotarizer(invoker.Interface.Notarizer):
         return NotarizationResult(Status.ERROR, status, output, log)
 
     def _get_log(self, uuid, config):
-        command = [
-            'xcrun', 'notarytool', 'log', uuid, '--apple-id',
-            self._parent._notary_user, '--team-id', self._notary_team_id
-        ]
-        return commands.run_password_command_output(
-            command,
-            _altool_password_for_notarytool(self._parent._notary_password))
+        command = ['xcrun', 'notarytool', 'log', uuid] + self.notary_args
+        return commands.run_command_output(command)
 
 
 def submit(path, config):
@@ -438,21 +278,3 @@ def _notary_service_retry(func,
                     time.sleep(30)
             else:
                 raise e
-
-
-def _altool_password_for_notarytool(password):
-    """Parses an altool password value (e.g. "@env:PASSWORD_ENV_VAR") and
-    returns it as a string. Only '@env' is supported.
-
-    Args:
-        password: A string passed to the `altool` executable as a password.
-    Returns:
-        The actual password.
-    """
-    at_env = '@env:'
-    if password.startswith(at_env):
-        password = os.getenv(password[len(at_env):])
-    elif password.startswith('@keychain:'):
-        raise ValueError('Unsupported notarytool password: ' + password)
-
-    return password

@@ -7,7 +7,11 @@
 #include "chrome/browser/ui/webui/settings/ash/os_settings_lock_screen_browser_test_base.h"
 #include "content/public/test/browser_test.h"
 
+namespace ash::settings {
+
 namespace {
+
+using PasswordType = OSSettingsLockScreenBrowserTestBase::PasswordType;
 
 // Name and value of the metric that records authentication on the lock screen
 // page.
@@ -16,18 +20,28 @@ const base::HistogramBase::Sample kEnterPasswordCorrectly = 1;
 
 }  // namespace
 
-namespace ash::settings {
-
 // Test of the authentication dialog in the lock screen page in os-settings.
 class OSSettingsLockScreenAuthenticationTest
-    : public OSSettingsLockScreenBrowserTestBase {
+    : public OSSettingsLockScreenBrowserTestBase,
+      public testing::WithParamInterface<PasswordType> {
  public:
+  OSSettingsLockScreenAuthenticationTest()
+      : OSSettingsLockScreenBrowserTestBase(GetParam()) {}
+
+  // Password constants used in test cases. The correct password is the same
+  // one as the one set up through the OSSettingsLockScreenBrowserTestBase test
+  // fixture.
   static constexpr const char* kCorrectPassword =
       OSSettingsLockScreenBrowserTestBase::kPassword;
   static constexpr char kIncorrectPassword[] = "incorrect-password";
 };
 
-IN_PROC_BROWSER_TEST_F(OSSettingsLockScreenAuthenticationTest,
+INSTANTIATE_TEST_SUITE_P(OSSettingsLockScreenAuthenticationTests,
+                         OSSettingsLockScreenAuthenticationTest,
+                         testing::Values(PasswordType::kGaia,
+                                         PasswordType::kLocal));
+
+IN_PROC_BROWSER_TEST_P(OSSettingsLockScreenAuthenticationTest,
                        SuccessfulUnlock) {
   base::HistogramTester histograms;
   auto lock_screen_settings = OpenLockScreenSettings();
@@ -42,7 +56,7 @@ IN_PROC_BROWSER_TEST_F(OSSettingsLockScreenAuthenticationTest,
                                kEnterPasswordCorrectly, 1);
 }
 
-IN_PROC_BROWSER_TEST_F(OSSettingsLockScreenAuthenticationTest, FailedUnlock) {
+IN_PROC_BROWSER_TEST_P(OSSettingsLockScreenAuthenticationTest, FailedUnlock) {
   base::HistogramTester histograms;
   auto lock_screen_settings = OpenLockScreenSettings();
 

@@ -4,7 +4,6 @@
  * found in the LICENSE file.
  */
 
-#include <ctype.h>
 #include <dirent.h>
 #include <stdbool.h>
 #include <stdio.h>
@@ -102,7 +101,8 @@ static void dump_proc_stats(void) {
   bool terminate_prev_line = false;
   printf("  \"processes\":\n  {\n");
   while ((de = readdir(d))) {
-    if (!isdigit(de->d_name[0]))
+    char digit = de->d_name[0];
+    if (digit < '0' || digit > '9')
       continue;
     const int pid = atoi(de->d_name);
 

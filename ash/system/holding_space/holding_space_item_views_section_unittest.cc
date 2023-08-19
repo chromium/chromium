@@ -6,6 +6,7 @@
 
 #include <memory>
 
+#include "ash/public/cpp/holding_space/holding_space_file.h"
 #include "ash/public/cpp/holding_space/holding_space_image.h"
 #include "ash/public/cpp/holding_space/holding_space_section.h"
 #include "ash/public/cpp/holding_space/holding_space_test_api.h"
@@ -109,7 +110,7 @@ class HoldingSpaceItemViewsSectionTest
   views::UniqueWidgetPtr widget_;
   std::unique_ptr<HoldingSpaceViewDelegate> view_delegate_;
 
-  raw_ptr<TestHoldingSpaceItemViewsSection, ExperimentalAsh>
+  raw_ptr<TestHoldingSpaceItemViewsSection, DanglingUntriaged | ExperimentalAsh>
       item_views_section_ = nullptr;
 };
 
@@ -169,6 +170,7 @@ TEST_P(HoldingSpaceItemViewsSectionTest, PartiallyInitializedItemsDontShow) {
   // Once initialized, the item should show a view as normal.
   model()->InitializeOrRemoveItem(
       partially_initialized_item->id(),
+      HoldingSpaceFile(HoldingSpaceFile::FileSystemType::kTest),
       GURL(base::StrCat(
           {"filesystem:",
            partially_initialized_item->file_path().BaseName().value()})));

@@ -43,7 +43,7 @@ class PrintServersPolicyProvider : public KeyedService,
       base::WeakPtr<PrintServersProvider> device_policy_provider);
 
   // Set the callback when print servers has been updated via policy.
-  void SetListener(const OnPrintServersChanged& callback);
+  void SetListener(OnPrintServersChanged callback);
 
   // PrintServersProvider::Observer
   void OnServersChanged(
@@ -51,6 +51,8 @@ class PrintServersPolicyProvider : public KeyedService,
       const std::vector<PrintServer>& unused_servers) override;
 
  private:
+  void RecalculateServersAndNotifyListener();
+
   ServerPrintersFetchingMode GetFetchingMode(
       const std::map<GURL, PrintServer>& all_servers);
 
@@ -59,7 +61,7 @@ class PrintServersPolicyProvider : public KeyedService,
 
   std::map<GURL, PrintServer> all_servers_;
 
-  std::unique_ptr<OnPrintServersChanged> callback_;
+  OnPrintServersChanged callback_;
 
   base::WeakPtrFactory<PrintServersPolicyProvider> weak_ptr_factory_{this};
 };

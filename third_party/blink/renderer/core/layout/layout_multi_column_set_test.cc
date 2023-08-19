@@ -34,11 +34,11 @@ TEST_F(LayoutMultiColumnSetTest, ScrollAnchroingCrash) {
 <div class=c7><div class=c13></div><map class=c4></map></div>
 <h1 class=c3><button></button></h1>)HTML");
   // Triggers scroll anchoring.
-  GetDocument().QuerySelector("button")->Focus();
+  GetDocument().QuerySelector(AtomicString("button"))->Focus();
   UpdateAllLifecyclePhasesForTest();
 
   // Reattach c13.
-  Element* target = GetDocument().QuerySelector(".c13");
+  Element* target = GetDocument().QuerySelector(AtomicString(".c13"));
   auto* parent = target->parentNode();
   parent->removeChild(target);
   parent->insertBefore(target, parent->firstChild());

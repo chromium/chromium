@@ -220,7 +220,8 @@ class ArcAppQueueRestoreHandler
 
   SchedulerConfigurationManager* GetSchedulerConfigurationManager();
 
-  raw_ptr<AppLaunchHandler, ExperimentalAsh> handler_ = nullptr;
+  raw_ptr<AppLaunchHandler, DanglingUntriaged | ExperimentalAsh> handler_ =
+      nullptr;
 
   // The app id list from the restore data. If the app has been added the
   // AppRegistryCache, the app will be removed from `app_ids_` to

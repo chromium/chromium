@@ -14,8 +14,8 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/task/sequenced_task_runner.h"
-#include "content/services/auction_worklet/auction_downloader.h"
 #include "content/services/auction_worklet/auction_v8_helper.h"
+#include "content/services/auction_worklet/public/cpp/auction_downloader.h"
 #include "url/gurl.h"
 #include "v8/include/v8-context.h"
 #include "v8/include/v8-forward.h"
@@ -83,9 +83,11 @@ WorkletLoaderBase::WorkletLoaderBase(
          mime_type == AuctionDownloader::MimeType::kWebAssembly);
 
   auction_downloader_ = std::make_unique<AuctionDownloader>(
-      url_loader_factory, source_url, mime_type,
+      url_loader_factory, source_url,
+      AuctionDownloader::DownloadMode::kActualDownload, mime_type,
       base::BindOnce(&WorkletLoaderBase::OnDownloadComplete,
-                     base::Unretained(this)));
+                     base::Unretained(this)),
+      /*network_events_delegate=*/nullptr);
 }
 
 WorkletLoaderBase::~WorkletLoaderBase() = default;

@@ -102,7 +102,8 @@ class HotspotTrayViewTest : public AshTestBase,
   std::unique_ptr<hotspot_config::CrosHotspotConfigTestHelper>
       cros_hotspot_config_test_helper_;
   std::unique_ptr<views::Widget> widget_;
-  raw_ptr<HotspotTrayView, ExperimentalAsh> hotspot_tray_view_;
+  raw_ptr<HotspotTrayView, DanglingUntriaged | ExperimentalAsh>
+      hotspot_tray_view_;
 };
 
 INSTANTIATE_TEST_SUITE_P(Jelly, HotspotTrayViewTest, testing::Bool());

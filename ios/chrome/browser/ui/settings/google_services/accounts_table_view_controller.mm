@@ -4,19 +4,23 @@
 
 #import "ios/chrome/browser/ui/settings/google_services/accounts_table_view_controller.h"
 
-#import "base/mac/foundation_util.h"
+#import "base/apple/foundation_util.h"
+#import "base/feature_list.h"
 #import "base/metrics/histogram_macros.h"
 #import "base/metrics/user_metrics.h"
 #import "base/strings/sys_string_conversions.h"
 #import "base/strings/utf_string_conversions.h"
+#import "components/signin/public/base/signin_metrics.h"
 #import "components/signin/public/identity_manager/identity_manager.h"
 #import "components/signin/public/identity_manager/objc/identity_manager_observer_bridge.h"
 #import "components/strings/grit/components_strings.h"
+#import "components/sync/base/features.h"
 #import "components/sync/service/sync_service.h"
 #import "components/sync/service/sync_service_utils.h"
 #import "ios/chrome/browser/net/crurl.h"
 #import "ios/chrome/browser/settings/sync/utils/account_error_ui_info.h"
 #import "ios/chrome/browser/settings/sync/utils/identity_error_util.h"
+#import "ios/chrome/browser/settings/sync/utils/sync_util.h"
 #import "ios/chrome/browser/shared/coordinator/alert/action_sheet_coordinator.h"
 #import "ios/chrome/browser/shared/coordinator/alert/alert_coordinator.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
@@ -51,22 +55,18 @@
 #import "ios/chrome/browser/ui/authentication/authentication_ui_util.h"
 #import "ios/chrome/browser/ui/authentication/cells/table_view_account_item.h"
 #import "ios/chrome/browser/ui/authentication/enterprise/enterprise_utils.h"
+#import "ios/chrome/browser/ui/authentication/signin/signin_constants.h"
 #import "ios/chrome/browser/ui/authentication/signout_action_sheet_coordinator.h"
 #import "ios/chrome/browser/ui/settings/cells/settings_image_detail_text_item.h"
 #import "ios/chrome/browser/ui/settings/google_services/accounts_table_view_controller_constants.h"
 #import "ios/chrome/browser/ui/settings/settings_root_view_controlling.h"
 #import "ios/chrome/browser/ui/settings/sync/sync_encryption_passphrase_table_view_controller.h"
-#import "ios/chrome/browser/ui/settings/sync/utils/sync_util.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/grit/ios_chromium_strings.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "net/base/mac/url_conversions.h"
 #import "ui/base/l10n/l10n_util_mac.h"
 #import "url/gurl.h"
-
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
 
 using signin_metrics::AccessPoint;
 using signin_metrics::PromoAction;
@@ -130,11 +130,11 @@ constexpr CGFloat kErrorSymbolSize = 22.;
 
   std::unique_ptr<SyncObserverBridge> _syncObserver;
 
-  // The type of account error that is being displayed in the error section.
-  // Is set to kNone when there is no error section.
+  // The type of account error that is being displayed in the error section for
+  // syncing accounts. Is set to kNone when there is no error section.
   syncer::SyncService::UserActionableError _diplayedAccountErrorType;
 
-  // The type of actionable the user needs to take to resolve the error.
+  // The type of actionable the syncing user needs to take to resolve the error.
   AccountErrorUserActionableType _accountErrorUserActionableType;
 }
 
@@ -153,10 +153,6 @@ constexpr CGFloat kErrorSymbolSize = 22.;
 
 // AccountManager Service used to retrive identities.
 @property(nonatomic, assign) ChromeAccountManagerService* accountManagerService;
-
-// Stops observing browser state services. This is required during the shutdown
-// phase to avoid observing services for a browser state that is being killed.
-- (void)stopBrowserStateServiceObservers;
 
 @end
 
@@ -203,10 +199,6 @@ constexpr CGFloat kErrorSymbolSize = 22.;
   [self loadModel];
 }
 
-- (void)stopBrowserStateServiceObservers {
-  _identityManagerObserver.reset();
-}
-
 #pragma mark - SettingsControllerProtocol
 
 - (void)reportDismissalUserAction {
@@ -218,13 +210,11 @@ constexpr CGFloat kErrorSymbolSize = 22.;
 }
 
 - (void)settingsWillBeDismissed {
-  [self.removeOrMyGoogleChooserAlertCoordinator stop];
-  self.removeOrMyGoogleChooserAlertCoordinator = nil;
+  [self dismissRemoveOrMyGoogleChooserAlert];
   [self.signoutCoordinator stop];
   self.signoutCoordinator = nil;
-  [self.removeAccountCoordinator stop];
-  self.removeAccountCoordinator = nil;
-  [self stopBrowserStateServiceObservers];
+  [self dismissRemoveAccountCoordinator];
+  _identityManagerObserver.reset();
   _accountManagerServiceObserver.reset();
   _syncObserver.reset();
   _browser = nullptr;
@@ -263,6 +253,12 @@ constexpr CGFloat kErrorSymbolSize = 22.;
     if (!title) {
       title = authenticatedIdentity.userEmail;
     }
+  }
+  if ([self isAccountSignedInNotSyncing] ||
+      base::FeatureList::IsEnabled(
+          syncer::kReplaceSyncPromosWithSignInPromos)) {
+    title = l10n_util::GetNSString(
+        IDS_IOS_GOOGLE_ACCOUNTS_MANAGEMENT_FROM_ACCOUNT_SETTINGS_TITLE);
   }
   self.title = title;
 
@@ -324,6 +320,9 @@ constexpr CGFloat kErrorSymbolSize = 22.;
   [model addItem:[self signOutItem]
       toSectionWithIdentifier:SectionIdentifierSignOut];
 
+  // TODO(crbug.com/1462552): Simplify once kSync becomes unreachable or is
+  // deleted from the codebase. See ConsentLevel::kSync documentation for
+  // details.
   BOOL hasSyncConsent =
       authService->HasPrimaryIdentity(signin::ConsentLevel::kSync);
   TableViewLinkHeaderFooterItem* footerItem = nil;
@@ -423,7 +422,9 @@ constexpr CGFloat kErrorSymbolSize = 22.;
       [[TableViewTextItem alloc] initWithType:ItemTypeSignOut];
   item.text =
       l10n_util::GetNSString(IDS_IOS_DISCONNECT_DIALOG_CONTINUE_BUTTON_MOBILE);
-  item.textColor = [UIColor colorNamed:kRedColor];
+  item.textColor = [self isAccountSignedInNotSyncing]
+                       ? [UIColor colorNamed:kBlueColor]
+                       : [UIColor colorNamed:kRedColor];
   item.accessibilityTraits |= UIAccessibilityTraitButton;
   item.accessibilityIdentifier = kSettingsAccountsTableViewSignoutCellId;
   return item;
@@ -456,6 +457,11 @@ constexpr CGFloat kErrorSymbolSize = 22.;
 // updated without reloading the view. Can refresh, add or remove the error
 // section when an update is needed.
 - (void)updateErrorSectionModelAndReloadViewIfNeeded:(BOOL)reloadViewIfNeeded {
+  if ([self isAccountSignedInNotSyncing]) {
+    // If the account is signed in not syncing, the error handling will be shown
+    // previously in account settings page and no need to load it in this view.
+    return;
+  }
   syncer::SyncService* syncService =
       SyncServiceFactory::GetForBrowserState(_browser->GetBrowserState());
   DCHECK(syncService);
@@ -541,7 +547,7 @@ constexpr CGFloat kErrorSymbolSize = 22.;
     case SectionIdentifierSignOut: {
       // Might be a different type of footer.
       TableViewLinkHeaderFooterView* linkView =
-          base::mac::ObjCCast<TableViewLinkHeaderFooterView>(view);
+          base::apple::ObjCCast<TableViewLinkHeaderFooterView>(view);
       linkView.delegate = self;
       break;
     }
@@ -566,7 +572,7 @@ constexpr CGFloat kErrorSymbolSize = 22.;
   switch (itemType) {
     case ItemTypeAccount: {
       TableViewAccountItem* item =
-          base::mac::ObjCCastStrict<TableViewAccountItem>(
+          base::apple::ObjCCastStrict<TableViewAccountItem>(
               [self.tableViewModel itemAtIndexPath:indexPath]);
       DCHECK(item.identity);
 
@@ -580,6 +586,10 @@ constexpr CGFloat kErrorSymbolSize = 22.;
       break;
     }
     case ItemTypeSignOut: {
+      if ([self isAccountSignedInNotSyncing]) {
+        [self signOut];
+        break;
+      }
       UIView* itemView =
           [[tableView cellForRowAtIndexPath:indexPath] contentView];
       [self showSignOutWithItemView:itemView];
@@ -614,7 +624,7 @@ constexpr CGFloat kErrorSymbolSize = 22.;
 
 - (void)onEndBatchOfRefreshTokenStateChanges {
   DCHECK(_browser) << "-onEndBatchOfRefreshTokenStateChanges called after "
-                      "-stopBrowserStateServiceObservers";
+                      "-settingsWillBeDismissed";
 
   [self reloadData];
   // Only attempt to pop the top-most view controller once the account list
@@ -633,11 +643,13 @@ constexpr CGFloat kErrorSymbolSize = 22.;
   [self preventUserInteraction];
   __weak __typeof(self) weakSelf = self;
   ShowSigninCommand* command = [[ShowSigninCommand alloc]
-      initWithOperation:AuthenticationOperationAddAccount
+      initWithOperation:AuthenticationOperation::kAddAccount
                identity:nil
             accessPoint:AccessPoint::ACCESS_POINT_SETTINGS
             promoAction:PromoAction::PROMO_ACTION_NO_SIGNIN_PROMO
-               callback:^(BOOL success) {
+               callback:^(SigninCoordinatorResult result,
+                          SigninCompletionInfo* completionInfo) {
+                 BOOL success = result == SigninCoordinatorResultSuccess;
                  [weakSelf handleDidAddAccount:success];
                }];
   [self.applicationCommandsHandler showSignin:command baseViewController:self];
@@ -669,6 +681,7 @@ constexpr CGFloat kErrorSymbolSize = 22.;
                            IDS_IOS_MANAGE_YOUR_GOOGLE_ACCOUNT_TITLE)
                 action:^{
                   [weakSelf handleManageGoogleAccountWithIdentity:identity];
+                  [weakSelf dismissRemoveOrMyGoogleChooserAlert];
                 }
                  style:UIAlertActionStyleDefault];
   [self.removeOrMyGoogleChooserAlertCoordinator
@@ -676,12 +689,14 @@ constexpr CGFloat kErrorSymbolSize = 22.;
                            IDS_IOS_REMOVE_GOOGLE_ACCOUNT_TITLE)
                 action:^{
                   [weakSelf handleRemoveSecondaryAccountWithIdentity:identity];
+                  [weakSelf dismissRemoveOrMyGoogleChooserAlert];
                 }
                  style:UIAlertActionStyleDestructive];
   [self.removeOrMyGoogleChooserAlertCoordinator
       addItemWithTitle:l10n_util::GetNSString(IDS_CANCEL)
                 action:^() {
                   [weakSelf handleAlertCoordinatorCancel];
+                  [weakSelf dismissRemoveOrMyGoogleChooserAlert];
                 }
                  style:UIAlertActionStyleCancel];
   [self.removeOrMyGoogleChooserAlertCoordinator start];
@@ -726,18 +741,20 @@ constexpr CGFloat kErrorSymbolSize = 22.;
       addItemWithTitle:l10n_util::GetNSString(IDS_CANCEL)
                 action:^{
                   weakSelf.removeAccountCoordinator = nil;
+                  [weakSelf dismissRemoveAccountCoordinator];
                 }
                  style:UIAlertActionStyleCancel];
   [self.removeAccountCoordinator
       addItemWithTitle:l10n_util::GetNSString(IDS_IOS_REMOVE_ACCOUNT_LABEL)
                 action:^{
-                  [weakSelf removeSecondaryIdentity:identity];
+                  [weakSelf removeIdentity:identity];
+                  [weakSelf dismissRemoveAccountCoordinator];
                 }
                  style:UIAlertActionStyleDestructive];
   [self.removeAccountCoordinator start];
 }
 
-- (void)removeSecondaryIdentity:(id<SystemIdentity>)identity {
+- (void)removeIdentity:(id<SystemIdentity>)identity {
   DCHECK(self.removeAccountCoordinator);
   self.removeAccountCoordinator = nil;
   self.uiDisabled = YES;
@@ -776,21 +793,6 @@ constexpr CGFloat kErrorSymbolSize = 22.;
   [self.signoutCoordinator start];
 }
 
-// Logs the UMA metrics to record the data retention option selected by the user
-// on signout. If the account is managed the data will always be cleared.
-- (void)logSignoutMetricsWithForceClearData:(BOOL)forceClearData {
-  if (![self authService]->HasPrimaryIdentityManaged(
-          signin::ConsentLevel::kSignin)) {
-    UMA_HISTOGRAM_BOOLEAN("Signin.UserRequestedWipeDataOnSignout",
-                          forceClearData);
-  }
-  if (forceClearData) {
-    base::RecordAction(base::UserMetricsAction("Signin_SignoutClearData"));
-  } else {
-    base::RecordAction(base::UserMetricsAction("Signin_Signout"));
-  }
-}
-
 // Handles the cancel action for `self.removeOrMyGoogleChooserAlertCoordinator`.
 - (void)handleAlertCoordinatorCancel {
   DCHECK(self.removeOrMyGoogleChooserAlertCoordinator);
@@ -819,13 +821,13 @@ constexpr CGFloat kErrorSymbolSize = 22.;
     // Don't pop this view based on intermediary values.
     return;
   }
-  if (_isBeingDismissed) {
+  if (_isBeingDismissed || self.signoutDismissalByParentCoordinator) {
     return;
   }
   _isBeingDismissed = YES;
   __weak __typeof(self) weakSelf = self;
   void (^popAccountsTableViewController)() = ^() {
-    [base::mac::ObjCCastStrict<SettingsNavigationController>(
+    [base::apple::ObjCCastStrict<SettingsNavigationController>(
         weakSelf.navigationController)
         popViewControllerOrCloseSettingsAnimated:YES];
   };
@@ -880,8 +882,9 @@ constexpr CGFloat kErrorSymbolSize = 22.;
 #pragma mark - ChromeAccountManagerServiceObserver
 
 - (void)identityUpdated:(id<SystemIdentity>)identity {
-  TableViewAccountItem* item = base::mac::ObjCCastStrict<TableViewAccountItem>(
-      [_identityMap objectForKey:identity.gaiaID]);
+  TableViewAccountItem* item =
+      base::apple::ObjCCastStrict<TableViewAccountItem>(
+          [_identityMap objectForKey:identity.gaiaID]);
   if (!item) {
     return;
   }
@@ -977,4 +980,55 @@ constexpr CGFloat kErrorSymbolSize = 22.;
   [self.navigationController pushViewController:controllerToPush animated:YES];
 }
 
+#pragma mark - Private methods
+
+- (void)dismissRemoveOrMyGoogleChooserAlert {
+  [self.removeOrMyGoogleChooserAlertCoordinator stop];
+  self.removeOrMyGoogleChooserAlertCoordinator = nil;
+}
+
+- (void)dismissRemoveAccountCoordinator {
+  [self.removeAccountCoordinator stop];
+  self.removeAccountCoordinator = nil;
+}
+
+// Returns YES if the account is signed in not syncing, NO otherwise.
+- (BOOL)isAccountSignedInNotSyncing {
+  // TODO(crbug.com/1462552): Simplify once kSync becomes unreachable or is
+  // deleted from the codebase. See ConsentLevel::kSync documentation for
+  // details.
+  return base::FeatureList::IsEnabled(
+             syncer::kReplaceSyncPromosWithSignInPromos) &&
+         !SyncServiceFactory::GetForBrowserState(_browser->GetBrowserState())
+              ->HasSyncConsent();
+}
+
+// Signs out without showing action sheet.
+// Used when the user is signed in not syncing.
+- (void)signOut {
+  if (![self authService]->HasPrimaryIdentity(signin::ConsentLevel::kSignin)) {
+    // This could happen if the account somehow got removed after the UI was
+    // created.
+    return;
+  }
+  CHECK([self isAccountSignedInNotSyncing]);
+  if (_authenticationOperationInProgress) {
+    return;
+  }
+  _authenticationOperationInProgress = YES;
+  [self preventUserInteraction];
+  signin_metrics::RecordSignoutUserAction(/*force_clear_data=*/false);
+  __weak AccountsTableViewController* weakSelf = self;
+  ProceduralBlock signOutCompletion = ^() {
+    __strong AccountsTableViewController* strongSelf = weakSelf;
+    if (!strongSelf) {
+      return;
+    }
+    [strongSelf allowUserInteraction];
+    [strongSelf handleAuthenticationOperationDidFinish];
+  };
+  [self authService]->SignOut(
+      signin_metrics::ProfileSignout::kUserClickedSignoutSettings,
+      /*force_clear_browsing_data=*/NO, signOutCompletion);
+}
 @end

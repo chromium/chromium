@@ -8,6 +8,7 @@ import android.content.Context;
 import android.util.DisplayMetrics;
 
 import org.chromium.base.ContextUtils;
+import org.chromium.base.ResettersForTesting;
 import org.chromium.base.annotations.CalledByNative;
 import org.chromium.base.annotations.JNINamespace;
 import org.chromium.base.annotations.NativeClassQualifiedName;
@@ -69,7 +70,9 @@ public final class FeedServiceBridge {
     }
 
     public static void setProcessScopeForTesting(ProcessScope processScope) {
+        var oldValue = sXSurfaceProcessScope;
         sXSurfaceProcessScope = processScope;
+        ResettersForTesting.register(() -> sXSurfaceProcessScope = oldValue);
     }
 
     private static FeedServiceUtil sFeedServiceUtil;
@@ -139,28 +142,11 @@ public final class FeedServiceBridge {
         return FeedServiceBridgeJni.get().getLoadMoreTriggerScrollDistanceDp();
     }
 
-    public static void reportOpenVisitComplete(long visitTimeMs) {
-        FeedServiceBridgeJni.get().reportOpenVisitComplete(visitTimeMs);
-    }
-
-    public static @VideoPreviewsType int getVideoPreviewsTypePreference() {
-        return FeedServiceBridgeJni.get().getVideoPreviewsTypePreference();
-    }
-
-    public static void setVideoPreviewsTypePreference(@VideoPreviewsType int videoPreviewsType) {
-        FeedServiceBridgeJni.get().setVideoPreviewsTypePreference(videoPreviewsType);
-    }
-
     public static long getReliabilityLoggingId() {
         return FeedServiceBridgeJni.get().getReliabilityLoggingId();
     }
 
-    public static boolean isAutoplayEnabled() {
-        return FeedServiceBridgeJni.get().isAutoplayEnabled();
-    }
-
-    @ContentOrder
-    public static int getContentOrderForWebFeed() {
+    public static @ContentOrder int getContentOrderForWebFeed() {
         return FeedServiceBridgeJni.get().getContentOrderForWebFeed();
     }
 
@@ -218,11 +204,7 @@ public final class FeedServiceBridge {
         void startup();
         int getLoadMoreTriggerLookahead();
         int getLoadMoreTriggerScrollDistanceDp();
-        void reportOpenVisitComplete(long visitTimeMs);
-        int getVideoPreviewsTypePreference();
-        void setVideoPreviewsTypePreference(int videoPreviewsType);
         long getReliabilityLoggingId();
-        boolean isAutoplayEnabled();
         void reportOtherUserAction(@StreamKind int streamKind, @FeedUserActionType int userAction);
         @ContentOrder
         int getContentOrderForWebFeed();

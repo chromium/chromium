@@ -96,11 +96,8 @@ class CONTENT_EXPORT PrerenderHost : public FrameTree::Delegate,
   };
 
   // Returns the PrerenderHost that the given `frame_tree_node` is in, if it is
-  // being prerendered. Note that this function returns a nullptr if the
-  // prerender has been canceled.
-  // TODO(https://crbug.com/1355279): Always return a non-null ptr if the
-  // frame_tree_node is in a prerendering tree.
-  static PrerenderHost* GetPrerenderHostFromFrameTreeNode(
+  // being prerendered.
+  static PrerenderHost* GetFromFrameTreeNodeIfPrerendering(
       FrameTreeNode& frame_tree_node);
   // Similar to GetPrerenderHostFromFrameTreeNode() but `frame_tree_node` must
   // be in prerendering.
@@ -278,6 +275,10 @@ class CONTENT_EXPORT PrerenderHost : public FrameTree::Delegate,
     return attributes_.embedder_histogram_suffix;
   }
 
+  absl::optional<blink::mojom::SpeculationEagerness> eagerness() const {
+    return attributes_.eagerness;
+  }
+
   base::WeakPtr<PreloadingAttempt> preloading_attempt() { return attempt_; }
 
  private:
@@ -290,7 +291,7 @@ class CONTENT_EXPORT PrerenderHost : public FrameTree::Delegate,
   // PreloadingFailureReason for PreloadingAttempt associated with this
   // PrerenderHost.
   void SetTriggeringOutcome(PreloadingTriggeringOutcome outcome);
-  void SetFailureReason(PrerenderFinalStatus status);
+  void SetFailureReason(const PrerenderCancellationReason& reason);
 
   ActivationNavigationParamsMatch
   AreBeginNavigationParamsCompatibleWithNavigation(

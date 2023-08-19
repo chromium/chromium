@@ -76,6 +76,11 @@ export class AcceleratorRowElement extends AcceleratorRowElementBase {
         value: 0,
         observer: AcceleratorRowElement.prototype.onSourceChanged,
       },
+
+      selected: {
+        type: Boolean,
+        reflectToAttribute: true,
+      },
     };
   }
 
@@ -84,6 +89,7 @@ export class AcceleratorRowElement extends AcceleratorRowElementBase {
   layoutStyle: LayoutStyle;
   action: number;
   source: AcceleratorSource;
+  selected: boolean;
   private isLocked: boolean;
   private shortcutInterfaceProvider: ShortcutProviderInterface =
       getShortcutProvider();
@@ -140,6 +146,29 @@ export class AcceleratorRowElement extends AcceleratorRowElementBase {
 
   protected isEmptyList(infos: AcceleratorInfo[]): boolean {
     return infos.length === 0;
+  }
+
+  // Returns true if it is the first accelerator in the list.
+  protected isFirstAccelerator(index: number): boolean {
+    return index === 0;
+  }
+
+  private onEditIconClicked(): void {
+    this.dispatchEvent(
+        new CustomEvent('edit-icon-clicked', {bubbles: true, composed: true}));
+  }
+
+  protected getTabIndex(): number {
+    // If customization is disabled, this element should not be tab-focusable.
+    return isCustomizationDisabled() ? -1 : 0;
+  }
+
+  protected onRowFocused(): void {
+    this.selected = true;
+  }
+
+  protected onRowBlur(): void {
+    this.selected = false;
   }
 
   static get template(): HTMLTemplateElement {

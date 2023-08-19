@@ -9,11 +9,13 @@
 
 #include "base/functional/bind.h"
 #include "base/strings/pattern.h"
+#include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
 #include "media/base/cdm_config.h"
 #include "media/base/eme_constants.h"
 #include "media/base/key_systems.h"
 #include "media/base/media_permission.h"
+#include "media/base/media_switches.h"
 #include "media/base/mime_util.h"
 #include "media/cdm/clear_key_cdm_common.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -395,9 +397,19 @@ class FakeMediaPermission : public media::MediaPermission {
 
   bool IsEncryptedMediaEnabled() override { return is_encrypted_media_enabled; }
 
+#if BUILDFLAG(IS_WIN)
+  void IsHardwareSecureDecryptionAllowed(
+      IsHardwareSecureDecryptionAllowedCB cb) override {
+    std::move(cb).Run(is_hardware_secure_decryption_allowed);
+  }
+#endif  // BUILDFLAG(IS_WIN)
+
   int requests = 0;
   bool is_granted = false;
   bool is_encrypted_media_enabled = true;
+#if BUILDFLAG(IS_WIN)
+  bool is_hardware_secure_decryption_allowed = true;
+#endif  // BUILDFLAG(IS_WIN)
 };
 
 class FakeWebLocalFrameDelegate
@@ -408,7 +420,7 @@ class FakeWebLocalFrameDelegate
   bool IsCrossOriginToOutermostMainFrame() override { return is_cross_origin_; }
   bool AllowStorageAccessSync(
       WebContentSettingsClient::StorageType storage_type) override {
-    if (storage_type == WebContentSettingsClient::StorageType::kLocalStorage) {
+    if (storage_type == WebContentSettingsClient::StorageType::kIndexedDB) {
       return local_storage_allowed_;
     }
     return true;
@@ -1869,5 +1881,91 @@ TEST_F(KeySystemConfigSelectorTest,
   SelectConfigRequestsPermissionAndReturnsConfig();
   ASSERT_EQ("b", config_.label);
 }
+
+// hardware secure decryption preferences
+#if BUILDFLAG(IS_WIN)
+TEST_F(KeySystemConfigSelectorTest, HardwareDecryption_Allowed) {
+  std::vector<WebMediaKeySystemMediaCapability> video_capabilities(1);
+  video_capabilities[0].content_type = "a";
+  video_capabilities[0].mime_type = kSupportedVideoContainer;
+  video_capabilities[0].codecs = kRequireHwSecureCodec;
+
+  auto config = EmptyConfiguration();
+  config.video_capabilities = video_capabilities;
+  configs_.push_back(config);
+
+  media_permission_->is_hardware_secure_decryption_allowed = true;
+  SelectConfigReturnsConfig();
+}
+
+TEST_F(KeySystemConfigSelectorTest, HardwareDecryption_NotAllowed) {
+  std::vector<WebMediaKeySystemMediaCapability> video_capabilities(1);
+  video_capabilities[0].content_type = "a";
+  video_capabilities[0].mime_type = kSupportedVideoContainer;
+  video_capabilities[0].codecs = kRequireHwSecureCodec;
+
+  auto config = EmptyConfiguration();
+  config.video_capabilities = video_capabilities;
+  configs_.push_back(config);
+
+  media_permission_->is_hardware_secure_decryption_allowed = false;
+
+  if (media::kHardwareSecureDecryptionFallbackPerSite.Get()) {
+    SelectConfigReturnsError();
+  } else {
+    SelectConfigReturnsConfig();
+  }
+}
+
+TEST_F(KeySystemConfigSelectorTest, NotHardwareSecureDecryption_Allowed) {
+  auto config = UsableConfiguration();
+  configs_.push_back(config);
+
+  media_permission_->is_hardware_secure_decryption_allowed = false;
+  SelectConfig();
+}
+
+TEST_F(KeySystemConfigSelectorTest,
+       DisableHardwareSecureDecryptionFallbackFeature) {
+  std::vector<WebMediaKeySystemMediaCapability> video_capabilities(1);
+  video_capabilities[0].content_type = "a";
+  video_capabilities[0].mime_type = kSupportedVideoContainer;
+  video_capabilities[0].codecs = kRequireHwSecureCodec;
+
+  auto config = EmptyConfiguration();
+  config.video_capabilities = video_capabilities;
+  configs_.push_back(config);
+
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeatureWithParameters(
+      media::kHardwareSecureDecryptionFallback, {{"per_site", "false"}});
+
+  media_permission_->is_hardware_secure_decryption_allowed = true;
+  SelectConfigReturnsConfig();
+  media_permission_->is_hardware_secure_decryption_allowed = false;
+  SelectConfigReturnsConfig();
+}
+
+TEST_F(KeySystemConfigSelectorTest,
+       EnableHardwareSecureDecryptionFallbackFeature) {
+  std::vector<WebMediaKeySystemMediaCapability> video_capabilities(1);
+  video_capabilities[0].content_type = "a";
+  video_capabilities[0].mime_type = kSupportedVideoContainer;
+  video_capabilities[0].codecs = kRequireHwSecureCodec;
+
+  auto config = EmptyConfiguration();
+  config.video_capabilities = video_capabilities;
+  configs_.push_back(config);
+
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeatureWithParameters(
+      media::kHardwareSecureDecryptionFallback, {{"per_site", "true"}});
+
+  media_permission_->is_hardware_secure_decryption_allowed = true;
+  SelectConfigReturnsConfig();
+  media_permission_->is_hardware_secure_decryption_allowed = false;
+  SelectConfigReturnsError();
+}
+#endif  // BUILDFLAG(IS_WIN)
 
 }  // namespace blink

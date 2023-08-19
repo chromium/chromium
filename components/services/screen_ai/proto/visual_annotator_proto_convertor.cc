@@ -31,6 +31,11 @@ namespace ranges = base::ranges;
 
 namespace {
 
+// This flag enables or disables considering colors for word block separations.
+// TODO(b:289881423): Update once there is better consistency in color
+// recognition or add an error tolerant comparison function.
+constexpr bool kColorSensitiveStyleBlocks = false;
+
 // A negative ID for ui::AXNodeID needs to start from -2 as using -1 for this
 // node id is still incorrectly treated as invalid.
 // TODO(crbug.com/1439285): fix code treating -1 as invalid for ui::AXNodeID.
@@ -53,21 +58,31 @@ bool HaveIdenticalFormattingStyle(const chrome_screen_ai::WordBox& word_1,
                                   const chrome_screen_ai::WordBox& word_2) {
   if (word_1.language() != word_2.language())
     return false;
+  if (word_1.direction() != word_2.direction()) {
+    return false;
+  }
+  if (word_1.content_type() != word_2.content_type()) {
+    return false;
+  }
+
+  if (!kColorSensitiveStyleBlocks) {
+    return true;
+  }
 
   // The absence of reliable color information makes the two words have unequal
   // style, because it could indicate vastly different colors between them.
-  if (word_1.estimate_color_success() != word_2.estimate_color_success())
+  if (word_1.estimate_color_success() != word_2.estimate_color_success()) {
     return false;
-  if (word_1.estimate_color_success() && word_2.estimate_color_success()) {
-    if (word_1.foreground_rgb_value() != word_2.foreground_rgb_value())
-      return false;
-    if (word_1.background_rgb_value() != word_2.background_rgb_value())
-      return false;
   }
-  if (word_1.direction() != word_2.direction())
-    return false;
-  if (word_1.content_type() != word_2.content_type())
-    return false;
+  if (word_1.estimate_color_success() && word_2.estimate_color_success()) {
+    if (word_1.foreground_rgb_value() != word_2.foreground_rgb_value()) {
+      return false;
+    }
+    if (word_1.background_rgb_value() != word_2.background_rgb_value()) {
+      return false;
+    }
+  }
+
   return true;
 }
 
@@ -265,21 +280,25 @@ void SerializeWordBox(const chrome_screen_ai::WordBox& word_box,
       inline_text_box.AddIntAttribute(ax::mojom::IntAttribute::kBackgroundColor,
                                       word_box.background_rgb_value());
     } else {
-      DCHECK_EQ(inline_text_box.GetIntAttribute(
-                    ax::mojom::IntAttribute::kBackgroundColor),
-                word_box.background_rgb_value())
-          << "A `WordBox` has a different background color than its enclosing "
-             "`LineBox`.";
+      if (kColorSensitiveStyleBlocks) {
+        DCHECK_EQ(inline_text_box.GetIntAttribute(
+                      ax::mojom::IntAttribute::kBackgroundColor),
+                  word_box.background_rgb_value())
+            << "A `WordBox` has a different background color than its "
+               "enclosing `LineBox`.";
+      }
     }
     if (!inline_text_box.HasIntAttribute(ax::mojom::IntAttribute::kColor)) {
       inline_text_box.AddIntAttribute(ax::mojom::IntAttribute::kColor,
                                       word_box.foreground_rgb_value());
     } else {
-      DCHECK_EQ(
-          inline_text_box.GetIntAttribute(ax::mojom::IntAttribute::kColor),
-          word_box.foreground_rgb_value())
-          << "A `WordBox` has a different foreground color than its enclosing "
-             "`LineBox`.";
+      if (kColorSensitiveStyleBlocks) {
+        DCHECK_EQ(
+            inline_text_box.GetIntAttribute(ax::mojom::IntAttribute::kColor),
+            word_box.foreground_rgb_value())
+            << "A `WordBox` has a different foreground color than its "
+               "enclosing `LineBox`.";
+      }
     }
   }
   SerializeDirection(word_box.direction(), inline_text_box);
@@ -456,8 +475,11 @@ ui::AXTreeUpdate VisualAnnotationToAXTreeUpdate(
     ++rootnodes_count;
   if (!visual_annotation.lines().empty()) {
     ++rootnodes_count;
-    // Need two more nodes that convey the disclaimer message.
-    formatting_context_count += 2;
+    // Need four more nodes that convey the disclaimer messages. There are two
+    // messages, one before the content and one after. Each message is wrapped
+    // in an ARIA landmark so that it can easily be navigated to by a screen
+    // reader user and thus not missed.
+    formatting_context_count += 4;
   }
 
   std::vector<ui::AXNodeData> nodes(
@@ -484,17 +506,24 @@ ui::AXTreeUpdate VisualAnnotationToAXTreeUpdate(
     page_node.AddBoolAttribute(ax::mojom::BoolAttribute::kIsPageBreakingObject,
                                true);
     page_node.relative_bounds.bounds = gfx::RectF(image_rect);
-    // Add a disclaimer node informing of the beginning of extracted text.
-    // TODO(crbug.com/1442928): Check if screen readers on windows, linux, and
-    // macOS treat the status node as live region. If so, update the role.
+
+    // Add a disclaimer node informing the user of the beginning of extracted
+    // text, and place the message inside an appropriate ARIA landmark for easy
+    // navigation.
+    ui::AXNodeData& begin_node_wrapper = nodes[index++];
+    begin_node_wrapper.role = ax::mojom::Role::kBanner;
+    begin_node_wrapper.id = GetNextNegativeNodeID();
+    begin_node_wrapper.relative_bounds.bounds =
+        gfx::RectF(image_rect.x(), image_rect.y(), 1, 1);
+    page_node.child_ids.push_back(begin_node_wrapper.id);
     ui::AXNodeData& begin_node = nodes[index++];
-    begin_node.role = ax::mojom::Role::kStatus;
+    begin_node.role = ax::mojom::Role::kStaticText;
     begin_node.id = GetNextNegativeNodeID();
     begin_node.SetNameChecked(
         l10n_util::GetStringUTF8(IDS_PDF_OCR_RESULT_BEGIN));
     begin_node.relative_bounds.bounds =
-        gfx::RectF(image_rect.x(), image_rect.y(), 1, 1);
-    page_node.child_ids.push_back(begin_node.id);
+        begin_node_wrapper.relative_bounds.bounds;
+    begin_node_wrapper.child_ids.push_back(begin_node.id);
 
     for (const auto& block_to_lines_pair : blocks_to_lines_map) {
       for (const auto& line_sequence_number_to_index_pair :
@@ -509,14 +538,21 @@ ui::AXTreeUpdate VisualAnnotationToAXTreeUpdate(
       }
     }
 
-    // Add a disclaimer node informing of the end of extracted text.
+    // Add a disclaimer node informing the user of the end of extracted text,
+    // and place the message inside an appropriate ARIA landmark for easy
+    // navigation.
+    ui::AXNodeData& end_node_wrapper = nodes[index++];
+    end_node_wrapper.role = ax::mojom::Role::kContentInfo;
+    end_node_wrapper.id = GetNextNegativeNodeID();
+    end_node_wrapper.relative_bounds.bounds =
+        gfx::RectF(image_rect.width(), image_rect.height(), 1, 1);
+    page_node.child_ids.push_back(end_node_wrapper.id);
     ui::AXNodeData& end_node = nodes[index++];
-    end_node.role = ax::mojom::Role::kStatus;
+    end_node.role = ax::mojom::Role::kStaticText;
     end_node.id = GetNextNegativeNodeID();
     end_node.SetNameChecked(l10n_util::GetStringUTF8(IDS_PDF_OCR_RESULT_END));
-    end_node.relative_bounds.bounds =
-        gfx::RectF(image_rect.width(), image_rect.height(), 1, 1);
-    page_node.child_ids.push_back(end_node.id);
+    end_node.relative_bounds.bounds = end_node_wrapper.relative_bounds.bounds;
+    end_node_wrapper.child_ids.push_back(end_node.id);
   }
 
   // Filter out invalid / unrecognized / unused nodes from the update.

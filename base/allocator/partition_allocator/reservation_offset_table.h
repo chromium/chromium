@@ -155,7 +155,7 @@ PA_ALWAYS_INLINE const uint16_t* GetReservationOffsetTableEnd(
 PA_ALWAYS_INLINE uint16_t* ReservationOffsetPointer(uintptr_t address) {
 #if BUILDFLAG(HAS_64_BIT_POINTERS)
   // In 64-bit mode, find the owning Pool and compute the offset from its base.
-  auto [pool, offset] = GetPoolAndOffset(address);
+  auto [pool, unused_base, offset] = GetPoolInfo(address);
   return ReservationOffsetPointer(pool, offset);
 #else
   size_t table_index = address >> kSuperPageShift;

@@ -37,7 +37,6 @@
 #include "base/threading/scoped_blocking_call.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/ime/constants.h"
-#include "ui/display/screen.h"
 #include "ui/events/test/event_generator.h"
 #include "ui/gfx/image/image.h"
 #include "ui/views/view.h"
@@ -105,14 +104,6 @@ void WaitForRecordingToStart() {
   test_delegate->set_on_recording_started_callback(run_loop.QuitClosure());
   run_loop.Run();
   ASSERT_TRUE(controller->is_recording_in_progress());
-}
-
-void MoveMouseToAndUpdateCursorDisplay(
-    const gfx::Point& point,
-    ui::test::EventGenerator* event_generator) {
-  Shell::Get()->cursor_manager()->SetDisplay(
-      display::Screen::GetScreen()->GetDisplayNearestPoint(point));
-  event_generator->MoveMouseTo(point);
 }
 
 void StartVideoRecordingImmediately() {
@@ -204,7 +195,7 @@ void ClickOrTapView(const views::View* view,
 views::Widget* GetCaptureModeBarWidget() {
   auto* session = CaptureModeController::Get()->capture_mode_session();
   DCHECK(session);
-  return session->capture_mode_bar_widget();
+  return session->GetCaptureModeBarWidget();
 }
 
 CaptureModeBarView* GetCaptureModeBarView() {
@@ -407,11 +398,8 @@ void RemoveDefaultCamera() {
 // -----------------------------------------------------------------------------
 // ProjectorCaptureModeIntegrationHelper:
 
-ProjectorCaptureModeIntegrationHelper::ProjectorCaptureModeIntegrationHelper() {
-  scoped_feature_list_.InitWithFeatures(
-      /*enabled_features=*/{features::kProjector},
-      /*disabled_features=*/{});
-}
+ProjectorCaptureModeIntegrationHelper::ProjectorCaptureModeIntegrationHelper() =
+    default;
 
 void ProjectorCaptureModeIntegrationHelper::SetUp() {
   auto* projector_controller = ProjectorController::Get();

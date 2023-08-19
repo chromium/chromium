@@ -63,20 +63,23 @@ constexpr char kFetchTries[] = "fetchTries";
 bool GetHash(const base::Value::Dict& event,
              const base::Value::Dict& context,
              std::string* hash) {
-  if (hash == nullptr)
+  if (hash == nullptr) {
     return false;
+  }
 
   std::string serialized_string;
   JSONStringValueSerializer serializer(&serialized_string);
-  if (!serializer.Serialize(event))
+  if (!serializer.Serialize(event)) {
     return false;
+  }
 
   base::MD5Context ctx;
   base::MD5Init(&ctx);
   base::MD5Update(&ctx, serialized_string);
 
-  if (!serializer.Serialize(context))
+  if (!serializer.Serialize(context)) {
     return false;
+  }
   base::MD5Update(&ctx, serialized_string);
 
   base::MD5Digest digest;
@@ -143,8 +146,9 @@ base::Value::Dict ConvertExtensionEventToValue(
         extension_install_report_log_event,
     const base::Value::Dict& context) {
   base::Value::Dict event;
-  if (!extension_id.empty())
+  if (!extension_id.empty()) {
     event.Set(kExtensionId, extension_id);
+  }
 
   if (extension_install_report_log_event.has_event_type()) {
     event.Set(kEventType, extension_install_report_log_event.event_type());
@@ -164,8 +168,9 @@ base::Value::Dict ConvertExtensionEventToValue(
                   extension_install_report_log_event.stateful_free()));
   }
 
-  if (extension_install_report_log_event.has_online())
+  if (extension_install_report_log_event.has_online()) {
     event.Set(kOnline, extension_install_report_log_event.online());
+  }
 
   if (extension_install_report_log_event.has_session_state_change_type()) {
     event.Set(kSessionStateChangeType,
@@ -239,8 +244,8 @@ base::Value::Dict ConvertExtensionEventToValue(
               extension_install_report_log_event.crx_install_error_detail());
   }
 
-  base::Value::Dict wrapper;
-  wrapper.Set(kExtensionInstallEvent, std::move(event));
+  auto wrapper =
+      base::Value::Dict().Set(kExtensionInstallEvent, std::move(event));
 
   if (extension_install_report_log_event.has_timestamp()) {
     // Format the current time (UTC) in RFC3339 format
@@ -295,8 +300,9 @@ base::Value::Dict ConvertArcAppEventToValue(
     const base::Value::Dict& context) {
   base::Value::Dict event;
 
-  if (!package.empty())
+  if (!package.empty()) {
     event.Set(kAppPackage, package);
+  }
 
   if (app_install_report_log_event.has_event_type()) {
     event.Set(kEventType, app_install_report_log_event.event_type());
@@ -320,8 +326,9 @@ base::Value::Dict ConvertArcAppEventToValue(
               app_install_report_log_event.clouddps_response());
   }
 
-  if (app_install_report_log_event.has_online())
+  if (app_install_report_log_event.has_online()) {
     event.Set(kOnline, app_install_report_log_event.online());
+  }
 
   if (app_install_report_log_event.has_session_state_change_type()) {
     event.Set(kSessionStateChangeType,
@@ -336,8 +343,8 @@ base::Value::Dict ConvertArcAppEventToValue(
 
   event.Set(kSerialNumber, GetSerialNumber());
 
-  base::Value::Dict wrapper;
-  wrapper.Set(kAndroidAppInstallEvent, std::move(event));
+  auto wrapper =
+      base::Value::Dict().Set(kAndroidAppInstallEvent, std::move(event));
 
   if (app_install_report_log_event.has_timestamp()) {
     // Format the current time (UTC) in RFC3339 format

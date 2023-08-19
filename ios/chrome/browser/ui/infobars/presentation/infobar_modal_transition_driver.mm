@@ -7,10 +7,6 @@
 #import "ios/chrome/browser/ui/infobars/presentation/infobar_expand_banner_animator.h"
 #import "ios/chrome/browser/ui/infobars/presentation/infobar_modal_presentation_controller.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 @implementation InfobarModalTransitionDriver
 
 - (instancetype)initWithTransitionMode:(InfobarModalTransition)transitionMode {

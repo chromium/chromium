@@ -17,7 +17,6 @@
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/browser_process.h"
-#include "chrome/browser/enterprise/reporting/extension_request/extension_request_report_generator.h"
 #include "chrome/browser/enterprise/reporting/prefs.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/upgrade_detector/build_state.h"
@@ -29,11 +28,8 @@
 #include "components/enterprise/browser/controller/fake_browser_dm_token_storage.h"
 #include "components/enterprise/browser/reporting/chrome_profile_request_generator.h"
 #include "components/enterprise/browser/reporting/common_pref_names.h"
-#include "components/enterprise/browser/reporting/real_time_report_generator.h"
-#include "components/enterprise/browser/reporting/real_time_uploader.h"
 #include "components/enterprise/browser/reporting/report_generator.h"
 #include "components/enterprise/browser/reporting/report_request.h"
-#include "components/enterprise/common/proto/extensions_workflow_events.pb.h"
 #include "components/policy/core/common/cloud/mock_cloud_policy_client.h"
 #include "components/reporting/client/report_queue_provider.h"
 #include "components/reporting/proto/synced/record_constants.pb.h"
@@ -121,38 +117,6 @@ class MockReportUploader : public ReportUploader {
                void(ReportType, ReportRequestQueue, ReportCallback));
 };
 
-class MockRealTimeReportGenerator : public RealTimeReportGenerator {
- public:
-#if BUILDFLAG(IS_ANDROID)
-  explicit MockRealTimeReportGenerator(
-      ReportingDelegateFactoryAndroid* delegate_factory)
-      : RealTimeReportGenerator(delegate_factory) {}
-#else
-  explicit MockRealTimeReportGenerator(
-      ReportingDelegateFactoryDesktop* delegate_factory)
-      : RealTimeReportGenerator(delegate_factory) {}
-#endif  // BUILDFLAG(IS_ANDROID)
-
-  MOCK_METHOD2(Generate,
-               std::vector<std::unique_ptr<google::protobuf::MessageLite>>(
-                   ReportType type,
-                   const RealTimeReportGenerator::Data& data));
-};
-
-class MockRealTimeUploader : public RealTimeUploader {
- public:
-  MockRealTimeUploader() : RealTimeUploader(reporting::Priority::FAST_BATCH) {}
-
-  void Upload(std::unique_ptr<google::protobuf::MessageLite> report,
-              EnqueueCallback callback) override {
-    OnUpload(report.get(), callback);
-  }
-
-  MOCK_METHOD2(OnUpload,
-               void(google::protobuf::MessageLite* report,
-                    EnqueueCallback& callback));
-};
-
 class MockChromeProfileRequestGenerator : public ChromeProfileRequestGenerator {
  public:
 #if BUILDFLAG(IS_ANDROID)
@@ -192,12 +156,6 @@ class ReportSchedulerTest : public ::testing::Test {
     uploader_ptr_ = std::make_unique<MockReportUploader>();
     uploader_ = uploader_ptr_.get();
 
-    real_time_generator_ptr_ = std::make_unique<MockRealTimeReportGenerator>(
-        &report_delegate_factory_);
-    real_time_generator_ = real_time_generator_ptr_.get();
-    extension_request_uploader_ptr_ = std::make_unique<MockRealTimeUploader>();
-    extension_request_uploader_ = extension_request_uploader_ptr_.get();
-
     profile_request_generator_ptr_ =
         std::make_unique<MockChromeProfileRequestGenerator>(
             &report_delegate_factory_);
@@ -224,11 +182,8 @@ class ReportSchedulerTest : public ::testing::Test {
     params.client = client_;
     params.delegate = report_delegate_factory_.GetReportSchedulerDelegate();
     params.report_generator = std::move(generator_ptr_);
-    params.real_time_report_generator = std::move(real_time_generator_ptr_);
     scheduler_ = std::make_unique<ReportScheduler>(std::move(params));
     scheduler_->SetReportUploaderForTesting(std::move(uploader_ptr_));
-    scheduler_->SetExtensionRequestUploaderForTesting(
-        std::move(extension_request_uploader_ptr_));
   }
 
 #if !BUILDFLAG(IS_CHROMEOS_ASH)
@@ -240,8 +195,7 @@ class ReportSchedulerTest : public ::testing::Test {
 #if BUILDFLAG(IS_ANDROID)
         std::make_unique<ReportSchedulerAndroid>(profile);
 #else
-        std::make_unique<ReportSchedulerDesktop>(profile,
-                                                 /*profile_reporting=*/true);
+        std::make_unique<ReportSchedulerDesktop>(profile);
 #endif  // BUILDFLAG(IS_ANDROID)
     params.profile_request_generator =
         std::move(profile_request_generator_ptr_);
@@ -300,26 +254,11 @@ class ReportSchedulerTest : public ::testing::Test {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
     EXPECT_CALL(*client_, SetupRegistration(_, _, _)).Times(0);
 #else
-    EXPECT_CALL(*client_, SetupRegistration(kDMToken, kClientId, _));
-#endif
-  }
-
-  void EXPECT_CALL_SetupRegistrationWithSetDMToken() {
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-    EXPECT_CALL(*client_, SetupRegistration(_, _, _)).Times(0);
-#else
     EXPECT_CALL(*client_, SetupRegistration(kDMToken, kClientId, _))
         .WillOnce(WithArgs<0>(
             Invoke(client_.get(), &policy::MockCloudPolicyClient::SetDMToken)));
 #endif
   }
-
-#if !BUILDFLAG(IS_ANDROID)
-  void TriggerExtensionRequestReport(Profile* profile) {
-    static_cast<ReportSchedulerDesktop*>(scheduler_->GetDelegateForTesting())
-        ->TriggerExtensionRequest(profile);
-  }
-#endif  // !BUILDFLAG(IS_ANDROID)
 
   content::BrowserTaskEnvironment task_environment_;
   ScopedTestingLocalState local_state_;
@@ -334,8 +273,6 @@ class ReportSchedulerTest : public ::testing::Test {
   raw_ptr<policy::MockCloudPolicyClient, DanglingUntriaged> client_;
   raw_ptr<MockReportGenerator, DanglingUntriaged> generator_;
   raw_ptr<MockReportUploader, DanglingUntriaged> uploader_;
-  raw_ptr<MockRealTimeReportGenerator, DanglingUntriaged> real_time_generator_;
-  raw_ptr<MockRealTimeUploader, DanglingUntriaged> extension_request_uploader_;
   raw_ptr<MockChromeProfileRequestGenerator, DanglingUntriaged>
       profile_request_generator_;
 #if !BUILDFLAG(IS_CHROMEOS_ASH)
@@ -348,8 +285,6 @@ class ReportSchedulerTest : public ::testing::Test {
   std::unique_ptr<policy::MockCloudPolicyClient> client_ptr_;
   std::unique_ptr<MockReportGenerator> generator_ptr_;
   std::unique_ptr<MockReportUploader> uploader_ptr_;
-  std::unique_ptr<MockRealTimeReportGenerator> real_time_generator_ptr_;
-  std::unique_ptr<MockRealTimeUploader> extension_request_uploader_ptr_;
   std::unique_ptr<MockChromeProfileRequestGenerator>
       profile_request_generator_ptr_;
 };
@@ -446,7 +381,7 @@ TEST_F(ReportSchedulerTest, UploadReportTransientError) {
 }
 
 TEST_F(ReportSchedulerTest, UploadReportPersistentError) {
-  EXPECT_CALL_SetupRegistrationWithSetDMToken();
+  EXPECT_CALL_SetupRegistration();
   EXPECT_CALL(*generator_, OnGenerate(ReportType::kFull, _))
       .WillOnce(WithArgs<1>(ScheduleGeneratorCallback(1)));
   EXPECT_CALL(*uploader_, SetRequestAndUpload(ReportType::kFull, _, _))
@@ -472,7 +407,7 @@ TEST_F(ReportSchedulerTest, UploadReportPersistentError) {
 }
 
 TEST_F(ReportSchedulerTest, NoReportGenerate) {
-  EXPECT_CALL_SetupRegistrationWithSetDMToken();
+  EXPECT_CALL_SetupRegistration();
   EXPECT_CALL(*generator_, OnGenerate(ReportType::kFull, _))
       .WillOnce(WithArgs<1>(ScheduleGeneratorCallback(0)));
   EXPECT_CALL(*uploader_, SetRequestAndUpload(_, _, _)).Times(0);
@@ -709,10 +644,8 @@ TEST_F(ReportSchedulerTest, ManualReportWithRegularOneOngoing) {
   ::testing::Mock::VerifyAndClearExpectations(uploader_);
 }
 
-// Android does not support version updates nor extensions
-#if !BUILDFLAG(IS_ANDROID)
-
-#if !BUILDFLAG(IS_CHROMEOS_ASH)
+// Android does not support version updates
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_CHROMEOS_ASH)
 
 // Tests that a basic report is generated and uploaded when a browser update is
 // detected.
@@ -889,41 +822,6 @@ TEST_F(ReportSchedulerTest, OnNewVersionRegularReport) {
   histogram_tester_.ExpectUniqueSample(kUploadTriggerMetricName, 1, 1);
 }
 
-#endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
-
-TEST_F(ReportSchedulerTest, ExtensionRequestWithRealTimePipeline) {
-  EXPECT_CALL_SetupRegistration();
-  EXPECT_CALL(*generator_, OnGenerate(_, _)).Times(0);
-  EXPECT_CALL(*uploader_, SetRequestAndUpload(_, _, _)).Times(0);
-
-  Profile* profile = profile_manager_.CreateTestingProfile("profile");
-
-  std::vector<std::unique_ptr<google::protobuf::MessageLite>> reports;
-  reports.push_back(std::make_unique<ExtensionsWorkflowEvent>());
-  reports.push_back(std::make_unique<ExtensionsWorkflowEvent>());
-
-  EXPECT_CALL(
-      *real_time_generator_,
-      Generate(RealTimeReportGenerator::ReportType::kExtensionRequest, _))
-      .WillOnce(DoAll(
-          WithArgs<1>(
-              Invoke([profile](const MockRealTimeReportGenerator::Data& data) {
-                EXPECT_EQ(profile,
-                          static_cast<const ExtensionRequestReportGenerator::
-                                          ExtensionRequestData&>(data)
-                              .profile);
-              })),
-          Return(ByMove(std::move(reports)))));
-  EXPECT_CALL(*extension_request_uploader_, OnUpload(_, _)).Times(2);
-  CreateScheduler();
-
-  TriggerExtensionRequestReport(profile);
-
-  ExpectLastUploadTimestampUpdated(false);
-
-  histogram_tester_.ExpectUniqueSample(kUploadTriggerMetricName, 5, 1);
-}
-
-#endif  // !BUILDFLAG(IS_ANDROID)
+#endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_CHROMEOS_ASH)
 
 }  // namespace enterprise_reporting

@@ -4,6 +4,8 @@
 
 static_library("nigori") {
   sources = [
+    "cross_user_sharing_keys.cc",
+    "cross_user_sharing_keys.h",
     "cryptographer_impl.cc",
     "cryptographer_impl.h",
     "keystore_keys_cryptographer.cc",

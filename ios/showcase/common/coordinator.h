@@ -19,6 +19,11 @@
 // Typically, this initializes a view controller, sets it up and presents it.
 - (void)start;
 
+@optional
+
+// Typically, this stops a view controller.
+- (void)stop;
+
 @end
 
 #endif  // IOS_SHOWCASE_COMMON_COORDINATOR_H_

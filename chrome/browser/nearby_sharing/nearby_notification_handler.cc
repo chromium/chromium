@@ -6,6 +6,7 @@
 
 #include <utility>
 
+#include "ash/webui/settings/public/constants/routes.mojom.h"
 #include "base/functional/callback.h"
 #include "base/notreached.h"
 #include "build/build_config.h"
@@ -18,7 +19,6 @@
 #include "chrome/browser/notifications/notification_display_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/settings_window_manager_chromeos.h"
-#include "chrome/browser/ui/webui/settings/chromeos/constants/routes.mojom.h"
 
 namespace {
 

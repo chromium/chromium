@@ -70,38 +70,90 @@ struct RawPtrAndRefExclusionsOptions {
   FilterFile* paths_to_exclude;
   bool should_exclude_stack_allocated_records;
   chrome_checker::StackAllocatedPredicate* stack_allocated_predicate;
+  // Enable a fix for https://crbug.com/1449812 when true.
+  bool fix_crbug_1449812;
 };
 
 AST_MATCHER(clang::Type, anyCharType) {
   return Node.isAnyCharacterType();
 }
 
-AST_MATCHER(clang::Decl, isInScratchSpace) {
+AST_POLYMORPHIC_MATCHER(isNotSpelledInSource,
+                        AST_POLYMORPHIC_SUPPORTED_TYPES(clang::Decl,
+                                                        clang::Stmt,
+                                                        clang::TypeLoc)) {
+  const clang::SourceManager& source_manager =
+      Finder->getASTContext().getSourceManager();
+  const auto loc = source_manager.getSpellingLoc(Node.getEndLoc());
+  // Returns true if `loc` is inside either one of followings:
+  // - "<built-in>"
+  // - "<command line>"
+  // - "<scratch space>"
+  return source_manager.isWrittenInBuiltinFile(loc) ||
+         source_manager.isWrittenInCommandLineFile(loc) ||
+         source_manager.isWrittenInScratchSpace(loc);
+}
+
+// TODO(mikt): Remove after option `raw-ptr-fix-crbug-1449812` is fully enabled.
+AST_MATCHER(clang::Decl, isBeginInScratchSpace) {
   const clang::SourceManager& source_manager =
       Finder->getASTContext().getSourceManager();
   clang::SourceLocation location = Node.getSourceRange().getBegin();
-  if (location.isInvalid())
+  if (location.isInvalid()) {
     return false;
+  }
   clang::SourceLocation spelling_location =
       source_manager.getSpellingLoc(location);
   return source_manager.isWrittenInScratchSpace(spelling_location);
 }
 
-AST_MATCHER(clang::Decl, isInThirdPartyLocation) {
-  std::string filename = GetFilename(Finder->getASTContext().getSourceManager(),
-                                     Node.getSourceRange().getBegin());
+AST_POLYMORPHIC_MATCHER(isInThirdPartyLocation,
+                        AST_POLYMORPHIC_SUPPORTED_TYPES(clang::Decl,
+                                                        clang::Stmt,
+                                                        clang::TypeLoc)) {
+  std::string filename =
+      GetFilename(Finder->getASTContext().getSourceManager(), Node.getEndLoc());
 
   // Blink is part of the Chromium git repo, even though it contains
   // "third_party" in its path.
-  if (filename.find("/third_party/blink/") != std::string::npos)
+  if (filename.find("/third_party/blink/") != std::string::npos) {
     return false;
+  }
   // Otherwise, just check if the paths contains the "third_party" substring.
   // We don't want to rewrite content of such paths even if they are in the main
   // Chromium git repository.
   return filename.find("/third_party/") != std::string::npos;
 }
 
-AST_MATCHER(clang::Decl, isInGeneratedLocation) {
+// TODO(mikt): Remove after option `raw-ptr-fix-crbug-1449812` is fully enabled.
+AST_MATCHER(clang::Decl, isBeginInThirdPartyLocation) {
+  std::string filename = GetFilename(Finder->getASTContext().getSourceManager(),
+                                     Node.getSourceRange().getBegin());
+
+  // Blink is part of the Chromium git repo, even though it contains
+  // "third_party" in its path.
+  if (filename.find("/third_party/blink/") != std::string::npos) {
+    return false;
+  }
+  // Otherwise, just check if the paths contains the "third_party" substring.
+  // We don't want to rewrite content of such paths even if they are in the main
+  // Chromium git repository.
+  return filename.find("/third_party/") != std::string::npos;
+}
+
+AST_POLYMORPHIC_MATCHER(isInGeneratedLocation,
+                        AST_POLYMORPHIC_SUPPORTED_TYPES(clang::Decl,
+                                                        clang::Stmt,
+                                                        clang::TypeLoc)) {
+  std::string filename =
+      GetFilename(Finder->getASTContext().getSourceManager(), Node.getEndLoc());
+
+  return filename.find("/gen/") != std::string::npos ||
+         filename.rfind("gen/", 0) == 0;
+}
+
+// TODO(mikt): Remove after option `raw-ptr-fix-crbug-1449812` is fully enabled.
+AST_MATCHER(clang::Decl, isBeginInGeneratedLocation) {
   std::string filename = GetFilename(Finder->getASTContext().getSourceManager(),
                                      Node.getSourceRange().getBegin());
 
@@ -120,9 +172,24 @@ AST_MATCHER_P(clang::Decl,
               isInLocationListedInFilterFile,
               const FilterFile*,
               Filter) {
-  clang::SourceLocation loc = Node.getSourceRange().getBegin();
-  if (loc.isInvalid())
+  clang::SourceLocation loc = Node.getLocation();
+  if (loc.isInvalid()) {
     return false;
+  }
+  std::string file_path =
+      GetFilename(Finder->getASTContext().getSourceManager(), loc);
+  return Filter->ContainsSubstringOf(file_path);
+}
+
+// TODO(mikt): Remove after option `raw-ptr-fix-crbug-1449812` is fully enabled.
+AST_MATCHER_P(clang::Decl,
+              isBeginInLocationListedInFilterFile,
+              const FilterFile*,
+              Filter) {
+  clang::SourceLocation loc = Node.getSourceRange().getBegin();
+  if (loc.isInvalid()) {
+    return false;
+  }
   std::string file_path =
       GetFilename(Finder->getASTContext().getSourceManager(), loc);
   return Filter->ContainsSubstringOf(file_path);
@@ -360,6 +427,22 @@ AST_POLYMORPHIC_MATCHER(isInMacroLocation,
   return Node.getBeginLoc().isMacroID();
 }
 
+// Matches AST nodes that were spelled within system-header-files.
+// Unlike clang's `isExpansionInSystemHeader`, this is based on:
+// - spelling location
+// - Node's `getEndLoc()`, not `getBeginLoc()`
+AST_POLYMORPHIC_MATCHER(isSpellingInSystemHeader,
+                        AST_POLYMORPHIC_SUPPORTED_TYPES(clang::Decl,
+                                                        clang::Stmt,
+                                                        clang::TypeLoc)) {
+  auto& source_manager = Finder->getASTContext().getSourceManager();
+  auto spelling_loc = source_manager.getSpellingLoc(Node.getEndLoc());
+  if (spelling_loc.isInvalid()) {
+    return false;
+  }
+  return source_manager.isInSystemHeader(spelling_loc);
+}
+
 AST_MATCHER_P(clang::CXXRecordDecl,
               isStackAllocated,
               chrome_checker::StackAllocatedPredicate,
@@ -368,7 +451,7 @@ AST_MATCHER_P(clang::CXXRecordDecl,
 }
 
 AST_MATCHER_P(clang::Type, isCastingUnsafe, CastingUnsafePredicate, checker) {
-  return checker.IsCastingUnsafe(&Node);
+  return checker.Matches(&Node);
 }
 
 #endif  // TOOLS_CLANG_PLUGINS_RAWPTRHELPERS_H_

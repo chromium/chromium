@@ -72,14 +72,8 @@ scoped_refptr<viz::ContextProviderCommandBuffer> CreateContextProvider(
   constexpr bool kAutomaticFlushes = false;
 
   gpu::ContextCreationAttribs attributes;
-  attributes.alpha_size = -1;
-  attributes.depth_size = 0;
-  attributes.stencil_size = 0;
-  attributes.samples = 0;
-  attributes.sample_buffers = 0;
   attributes.bind_generates_resource = false;
   attributes.lose_context_when_out_of_memory = true;
-  attributes.buffer_preserved = false;
   attributes.enable_gles2_interface = supports_gles2_interface;
   attributes.enable_raster_interface = supports_raster_interface;
   attributes.enable_oop_rasterization = supports_gpu_rasterization;
@@ -375,7 +369,7 @@ void VizProcessTransportFactory::OnEstablishedGpuChannel(
     }
   }
 
-  scoped_refptr<viz::ContextProvider> context_provider;
+  scoped_refptr<viz::RasterContextProvider> context_provider;
   scoped_refptr<cc::RasterContextProviderWrapper>
       worker_context_provider_wrapper;
   if (gpu_compositing) {

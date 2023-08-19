@@ -28,7 +28,7 @@ class FakeDelegate : public AccountSelectionView::Delegate {
   content::WebContents* GetWebContents() override;
 
  private:
-  raw_ptr<content::WebContents, DanglingUntriaged> web_contents_;
+  raw_ptr<content::WebContents, AcrossTasksDanglingUntriaged> web_contents_;
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_WEBID_FAKE_DELEGATE_H_

@@ -2,7 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import 'chrome://webui-test/mojo_webui_test_support.js';
 import 'chrome://bookmarks-side-panel.top-chrome/bookmarks_list.js';
 
 import {BookmarkFolderElement, FOLDER_OPEN_CHANGED_EVENT} from 'chrome://bookmarks-side-panel.top-chrome/bookmark_folder.js';
@@ -69,11 +68,13 @@ suite('SidePanelBookmarksListTest', () => {
     bookmarkId: BigInt(3),
     info: {
       title: 'Product Foo',
+      clusterTitle: 'Product Cluster Foo',
       domain: 'foo.com',
       imageUrl: {url: 'https://foo.com/image'},
       productUrl: {url: 'https://foo.com/product'},
       currentPrice: '$12',
       previousPrice: '$34',
+      clusterId: BigInt(12345),
     },
   }];
 
@@ -291,6 +292,14 @@ suite('SidePanelBookmarksListTest', () => {
         products[0]!);
     await flushTasks();
     checkShoppingListVisibility(newbookmarksList, true);
+    assertEquals(
+        2,
+        metrics.count('Commerce.PriceTracking.SidePanel.TrackedProductsShown'));
+
+    shoppingListApi.getCallbackRouterRemote().priceUntrackedForBookmark(
+        products[0]!);
+    await flushTasks();
+    checkShoppingListVisibility(newbookmarksList, false);
     assertEquals(
         2,
         metrics.count('Commerce.PriceTracking.SidePanel.TrackedProductsShown'));

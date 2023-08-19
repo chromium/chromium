@@ -10,6 +10,8 @@ namespace enterprise_connectors::test {
 extern const char kAllowedHost[];
 extern const char kOtherHost[];
 
+extern const char kFailedToParseChallengeJsonResponse[];
+
 }  // namespace enterprise_connectors::test
 
 #endif  // CHROME_BROWSER_ENTERPRISE_CONNECTORS_DEVICE_TRUST_TEST_TEST_CONSTANTS_H_

@@ -39,8 +39,8 @@ namespace internal {
 // The driver class encapsulates the entire PCScan infrastructure.
 class PA_COMPONENT_EXPORT(PARTITION_ALLOC) PCScan final {
  public:
-  using Root = PartitionRoot<ThreadSafe>;
-  using SlotSpan = SlotSpanMetadata<ThreadSafe>;
+  using Root = PartitionRoot;
+  using SlotSpan = SlotSpanMetadata;
 
   enum class InvocationMode {
     kBlocking,

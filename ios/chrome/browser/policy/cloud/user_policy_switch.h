@@ -7,8 +7,14 @@
 
 namespace policy {
 
-// True if User Policy is enabled.
-bool IsUserPolicyEnabled();
+// True if User Policy is enabled for sign-in or sync consent levels.
+bool IsUserPolicyEnabledForSigninOrSyncConsentLevel();
+
+// True if User Policy is only enabled for sign-in consent level.
+bool IsUserPolicyEnabledForSigninAndNoSyncConsentLevel();
+
+// True if any User Policy feature is enabled.
+bool IsAnyUserPolicyFeatureEnabled();
 
 }  // namespace policy
 

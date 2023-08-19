@@ -23,6 +23,7 @@
 #import "components/sync_sessions/synced_window_delegates_getter.h"
 #import "ios/chrome/browser/favicon/favicon_service_factory.h"
 #import "ios/chrome/browser/history/history_service_factory.h"
+#import "ios/chrome/browser/shared/model/browser/browser_list_factory.h"
 #import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
 #import "ios/chrome/browser/shared/model/url/chrome_url_constants.h"
 #import "ios/chrome/browser/sync/device_info_sync_service_factory.h"
@@ -34,10 +35,6 @@
 #import "ios/components/webui/web_ui_url_constants.h"
 #import "ios/web/public/thread/web_thread.h"
 #import "url/gurl.h"
-
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
 
 using sync_sessions::SessionSyncService;
 
@@ -60,13 +57,14 @@ bool ShouldSyncURLImpl(const GURL& url) {
 // might inherit from other interfaces with same methods.
 class SyncSessionsClientImpl : public sync_sessions::SyncSessionsClient {
  public:
-  explicit SyncSessionsClientImpl(ChromeBrowserState* browser_state)
+  SyncSessionsClientImpl(ChromeBrowserState* browser_state,
+                         BrowserList* browser_list)
       : browser_state_(browser_state),
         window_delegates_getter_(
             std::make_unique<IOSSyncedWindowDelegatesGetter>()),
         local_session_event_router_(
             std::make_unique<IOSChromeLocalSessionEventRouter>(
-                browser_state_,
+                browser_list,
                 this,
                 ios::sync_start_util::GetFlareForSyncableService(
                     browser_state_->GetStatePath()))),
@@ -162,6 +160,9 @@ SessionSyncServiceFactory::BuildServiceInstanceFor(
     web::BrowserState* context) const {
   ChromeBrowserState* browser_state =
       ChromeBrowserState::FromBrowserState(context);
+  BrowserList* browser_list =
+      BrowserListFactory::GetForBrowserState(browser_state);
   return std::make_unique<sync_sessions::SessionSyncServiceImpl>(
-      ::GetChannel(), std::make_unique<SyncSessionsClientImpl>(browser_state));
+      ::GetChannel(),
+      std::make_unique<SyncSessionsClientImpl>(browser_state, browser_list));
 }

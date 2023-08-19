@@ -36,7 +36,8 @@ class MockHashRealTimeService : public HashRealTimeService {
             /*get_network_context=*/base::NullCallback(),
             /*cache_manager=*/nullptr,
             /*ohttp_key_service=*/nullptr,
-            /*get_is_enhanced_protection_enabled=*/base::NullCallback()) {}
+            /*get_is_enhanced_protection_enabled=*/base::NullCallback(),
+            /*webui_delegate=*/nullptr) {}
   base::WeakPtr<MockHashRealTimeService> GetWeakPtr() {
     return weak_factory_.GetWeakPtr();
   }
@@ -62,6 +63,7 @@ class MockHashRealTimeService : public HashRealTimeService {
 
   void StartLookup(
       const GURL& gurl,
+      bool is_source_lookup_mechanism_experiment,
       HPRTLookupResponseCallback response_callback,
       scoped_refptr<base::SequencedTaskRunner> callback_task_runner) override {
     std::string url = gurl.spec();
@@ -90,11 +92,12 @@ class MockSafeBrowsingDatabaseManager : public TestSafeBrowsingDatabaseManager {
   // SafeBrowsingDatabaseManager implementation.
   // Checks the threat type of |gurl| previously set by |SetThreatTypeForUrl|.
   // It crashes if the threat type of |gurl| is not set in advance.
-  bool CheckBrowseUrl(const GURL& gurl,
-                      const safe_browsing::SBThreatTypeSet& threat_types,
-                      Client* client,
-                      MechanismExperimentHashDatabaseCache
-                          experiment_cache_selection) override {
+  bool CheckBrowseUrl(
+      const GURL& gurl,
+      const safe_browsing::SBThreatTypeSet& threat_types,
+      Client* client,
+      MechanismExperimentHashDatabaseCache experiment_cache_selection,
+      CheckBrowseUrlType check_type) override {
     std::string url = gurl.spec();
     DCHECK(base::Contains(urls_threat_type_, url));
     DCHECK(base::Contains(urls_delayed_callback_, url));
@@ -123,7 +126,12 @@ class MockSafeBrowsingDatabaseManager : public TestSafeBrowsingDatabaseManager {
 
   bool ChecksAreAlwaysAsync() const override { return false; }
 
-  ThreatSource GetThreatSource() const override {
+  ThreatSource GetBrowseUrlThreatSource(
+      CheckBrowseUrlType check_type) const override {
+    return ThreatSource::UNKNOWN;
+  }
+
+  ThreatSource GetNonBrowseUrlThreatSource() const override {
     return ThreatSource::UNKNOWN;
   }
 
@@ -220,7 +228,8 @@ class HashRealTimeMechanismTest : public PlatformTest {
         url, SBThreatTypeSet({safe_browsing::SB_THREAT_TYPE_URL_PHISHING}),
         database_manager_, base::SequencedTaskRunner::GetCurrentDefault(),
         hash_rt_service_->GetWeakPtr(),
-        MechanismExperimentHashDatabaseCache::kNoExperiment);
+        MechanismExperimentHashDatabaseCache::kNoExperiment,
+        /*is_source_lookup_mechanism_experiment=*/false);
   }
 
  protected:
@@ -229,12 +238,13 @@ class HashRealTimeMechanismTest : public PlatformTest {
   std::unique_ptr<MockHashRealTimeService> hash_rt_service_;
 };
 
-MATCHER_P5(Matches,
+MATCHER_P6(Matches,
            url,
            threat_type,
            matched_high_confidence_allowlist,
            locally_cached_results_threat_type,
            real_time_request_failed,
+           threat_source,
            "") {
   return arg->url.spec() == url.spec() && arg->threat_type == threat_type &&
          arg->matched_high_confidence_allowlist ==
@@ -242,7 +252,7 @@ MATCHER_P5(Matches,
          arg->locally_cached_results_threat_type ==
              locally_cached_results_threat_type &&
          arg->real_time_request_failed == real_time_request_failed &&
-         !arg->is_from_url_real_time_check &&
+         arg->threat_source == threat_source &&
          arg->url_real_time_lookup_response == nullptr;
 }
 
@@ -262,7 +272,8 @@ TEST_F(HashRealTimeMechanismTest, CheckUrl_HashRealTime_AllowlistMatchSafe) {
               Run(Matches(url, SB_THREAT_TYPE_SAFE,
                           /*matched_high_confidence_allowlist*/ true,
                           /*locally_cached_results_threat_type=*/absl::nullopt,
-                          /*real_time_request_failed=*/false)))
+                          /*real_time_request_failed=*/false,
+                          /*threat_source=*/absl::nullopt)))
       .Times(1);
   task_environment_.RunUntilIdle();
 }
@@ -283,7 +294,8 @@ TEST_F(HashRealTimeMechanismTest, CheckUrl_HashRealTime_AllowlistMatchUnsafe) {
               Run(Matches(url, SB_THREAT_TYPE_URL_PHISHING,
                           /*matched_high_confidence_allowlist*/ true,
                           /*locally_cached_results_threat_type=*/absl::nullopt,
-                          /*real_time_request_failed=*/false)))
+                          /*real_time_request_failed=*/false,
+                          /*threat_source=*/ThreatSource::UNKNOWN)))
       .Times(1);
   task_environment_.RunUntilIdle();
 }
@@ -306,7 +318,8 @@ TEST_F(HashRealTimeMechanismTest, CheckUrl_HashRealTime_SafeLookup) {
       Run(Matches(url, SB_THREAT_TYPE_SAFE,
                   /*matched_high_confidence_allowlist*/ false,
                   /*locally_cached_results_threat_type=*/SB_THREAT_TYPE_SAFE,
-                  /*real_time_request_failed=*/false)))
+                  /*real_time_request_failed=*/false,
+                  /*threat_source=*/ThreatSource::NATIVE_PVER5_REAL_TIME)))
       .Times(1);
   task_environment_.RunUntilIdle();
 }
@@ -330,7 +343,8 @@ TEST_F(HashRealTimeMechanismTest, CheckUrl_HashRealTime_UnsafeLookup) {
           url, SB_THREAT_TYPE_URL_PHISHING,
           /*matched_high_confidence_allowlist*/ false,
           /*locally_cached_results_threat_type=*/SB_THREAT_TYPE_URL_UNWANTED,
-          /*real_time_request_failed=*/false)))
+          /*real_time_request_failed=*/false,
+          /*threat_source=*/ThreatSource::NATIVE_PVER5_REAL_TIME)))
       .Times(1);
   task_environment_.RunUntilIdle();
 }
@@ -352,7 +366,8 @@ TEST_F(HashRealTimeMechanismTest, CheckUrl_HashRealTime_MissingService) {
               Run(Matches(url, SB_THREAT_TYPE_URL_PHISHING,
                           /*matched_high_confidence_allowlist*/ false,
                           /*locally_cached_results_threat_type=*/absl::nullopt,
-                          /*real_time_request_failed=*/true)))
+                          /*real_time_request_failed=*/true,
+                          /*threat_source=*/ThreatSource::UNKNOWN)))
       .Times(1);
   task_environment_.RunUntilIdle();
 }
@@ -376,7 +391,8 @@ TEST_F(HashRealTimeMechanismTest, CheckUrl_HashRealTime_UnsuccessfulLookup) {
               Run(Matches(url, SB_THREAT_TYPE_URL_PHISHING,
                           /*matched_high_confidence_allowlist*/ false,
                           /*locally_cached_results_threat_type=*/absl::nullopt,
-                          /*real_time_request_failed=*/true)))
+                          /*real_time_request_failed=*/true,
+                          /*threat_source=*/ThreatSource::UNKNOWN)))
       .Times(1);
   task_environment_.RunUntilIdle();
 }

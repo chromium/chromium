@@ -5,6 +5,7 @@
 import("//build/config/android/rules.gni")
 
 android_library("java") {
+  srcjar_deps = [ ":jni_headers" ]
   sources = [ "java/src/org/chromium/chrome/browser/gesturenav/TabOnBackGestureHandler.java" ]
   deps = [
     "//base:base_java",
@@ -12,7 +13,7 @@ android_library("java") {
     "//chrome/browser/tab:java",
     "//ui/android:ui_no_recycler_view_java",
   ]
-  annotation_processor_deps = [ "//base/android/jni_generator:jni_processor" ]
+
   resources_package = "org.chromium.chrome.browser.gesturenav"
 }
 

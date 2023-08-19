@@ -52,35 +52,6 @@ namespace ash {
 
 namespace {
 
-constexpr char kLastTracingModelName[] = "last_tracing_model.json";
-
-// Maximum interval to display in full mode.
-constexpr base::TimeDelta kMaxIntervalToDisplayInFullMode = base::Seconds(5.0);
-
-base::FilePath GetLastTracingModelPath(Profile* profile) {
-  DCHECK(profile);
-  return file_manager::util::GetDownloadsFolderForProfile(profile).AppendASCII(
-      kLastTracingModelName);
-}
-
-std::pair<base::Value, std::string> MaybeLoadLastGraphicsModel(
-    const base::FilePath& last_model_path) {
-  std::string json_content;
-  if (!base::ReadFileToString(last_model_path, &json_content))
-    return std::make_pair(base::Value(), std::string());
-
-  absl::optional<base::Value> model = base::JSONReader::Read(json_content);
-  if (!model || !model->is_dict())
-    return std::make_pair(base::Value(), "Failed to read last tracing model");
-
-  arc::ArcTracingGraphicsModel graphics_model;
-  if (!graphics_model.LoadFromValue(model->GetDict())) {
-    return std::make_pair(base::Value(), "Failed to load last tracing model");
-  }
-
-  return std::make_pair(std::move(*model), "Loaded last tracing model");
-}
-
 class ProcessFilterPassAll : public base::ProcessFilter {
  public:
   ProcessFilterPassAll() = default;
@@ -152,7 +123,6 @@ void UpdateThreads(arc::ArcSystemModel::ThreadMap* threads) {
 
 std::pair<base::Value, std::string> BuildGraphicsModel(
     const std::string& data,
-    ArcGraphicsTracingMode mode,
     const std::string& title,
     const std::vector<unsigned char>& icon_png,
     base::Time timestamp,
@@ -191,8 +161,7 @@ std::pair<base::Value, std::string> BuildGraphicsModel(
                                &common_model.system_model());
 
   arc::ArcTracingGraphicsModel graphics_model;
-  if (mode != ArcGraphicsTracingMode::kFull)
-    graphics_model.set_skip_structure_validation();
+  graphics_model.set_skip_structure_validation();
   if (!graphics_model.Build(common_model)) {
     return std::make_pair(base::Value(), "Failed to build tracing model");
   }
@@ -218,11 +187,9 @@ std::pair<base::Value, std::string> BuildGraphicsModel(
 }
 
 std::pair<base::Value, std::string> LoadGraphicsModel(
-    ArcGraphicsTracingMode mode,
     const std::string& json_text) {
   arc::ArcTracingGraphicsModel graphics_model;
-  if (mode != ArcGraphicsTracingMode::kFull)
-    graphics_model.set_skip_structure_validation();
+  graphics_model.set_skip_structure_validation();
   if (!graphics_model.LoadFromJson(json_text)) {
     return std::make_pair(base::Value(), "Failed to load tracing model");
   }
@@ -232,50 +199,21 @@ std::pair<base::Value, std::string> LoadGraphicsModel(
                         "Tracing model is loaded");
 }
 
-std::string GetJavascriptDomain(ArcGraphicsTracingMode mode) {
-  switch (mode) {
-    case ArcGraphicsTracingMode::kFull:
-      return "cr.ArcGraphicsTracing.";
-    case ArcGraphicsTracingMode::kOverview:
-      return "cr.ArcOverviewTracing.";
-  }
-}
+constexpr char kJavascriptDomain[] = "cr.ArcOverviewTracing.";
 
-base::trace_event::TraceConfig GetTracingConfig(ArcGraphicsTracingMode mode) {
-  switch (mode) {
-    case ArcGraphicsTracingMode::kFull: {
-      base::trace_event::TraceConfig config(
-          "-*,exo,viz,toplevel,gpu,cc,blink,disabled-by-default-android gfx,"
-          "disabled-by-default-android view",
-          base::trace_event::RECORD_CONTINUOUSLY);
-      config.EnableSystrace();
-      // By default, systracing starts pre-defined set of categories with
-      // predefined set of events in each category. Limit events to what we
-      // actually analyze in ArcTracingModel.
-      config.EnableSystraceEvent("i915:intel_gpu_freq_change");
-      config.EnableSystraceEvent("drm_msm_gpu:msm_gpu_freq_change");
-      config.EnableSystraceEvent("power:cpu_idle");
-      config.EnableSystraceEvent("sched:sched_wakeup");
-      config.EnableSystraceEvent("sched:sched_switch");
-      return config;
-    }
-    case ArcGraphicsTracingMode::kOverview: {
-      base::trace_event::TraceConfig config(
-          "-*,exo,viz,toplevel,gpu", base::trace_event::RECORD_CONTINUOUSLY);
-      config.EnableSystrace();
-      config.EnableSystraceEvent("i915:intel_gpu_freq_change");
-      config.EnableSystraceEvent("drm_msm_gpu:msm_gpu_freq_change");
-      return config;
-    }
-  }
+base::trace_event::TraceConfig GetTracingConfig() {
+  base::trace_event::TraceConfig config("-*,exo,viz,toplevel,gpu",
+                                        base::trace_event::RECORD_CONTINUOUSLY);
+  config.EnableSystrace();
+  config.EnableSystraceEvent("i915:intel_gpu_freq_change");
+  config.EnableSystraceEvent("drm_msm_gpu:msm_gpu_freq_change");
+  return config;
 }
 
 }  // namespace
 
-// static
 base::FilePath ArcGraphicsTracingHandler::GetModelPathFromTitle(
-    Profile* profile,
-    const std::string& title) {
+    std::string_view title) {
   constexpr size_t kMaxNameSize = 32;
   char normalized_name[kMaxNameSize];
   size_t index = 0;
@@ -291,17 +229,14 @@ base::FilePath ArcGraphicsTracingHandler::GetModelPathFromTitle(
       normalized_name[index++] = c;
   }
   normalized_name[index] = 0;
-  return file_manager::util::GetDownloadsFolderForProfile(profile).AppendASCII(
+  return GetDownloadsFolder().AppendASCII(
       base::StringPrintf("overview_tracing_%s_%" PRId64 ".json",
-                         normalized_name,
-                         (base::Time::Now() - base::Time()).InSeconds()));
+                         normalized_name, Now().since_origin().InSeconds()));
 }
 
-ArcGraphicsTracingHandler::ArcGraphicsTracingHandler(
-    ArcGraphicsTracingMode mode)
+ArcGraphicsTracingHandler::ArcGraphicsTracingHandler()
     : wm_helper_(exo::WMHelper::HasInstance() ? exo::WMHelper::GetInstance()
-                                              : nullptr),
-      mode_(mode) {
+                                              : nullptr) {
   DCHECK(wm_helper_);
 
   aura::Window* const current_active = wm_helper_->GetActiveWindow();
@@ -322,26 +257,13 @@ ArcGraphicsTracingHandler::~ArcGraphicsTracingHandler() {
 
 void ArcGraphicsTracingHandler::RegisterMessages() {
   web_ui()->RegisterMessageCallback(
-      "ready", base::BindRepeating(&ArcGraphicsTracingHandler::HandleReady,
-                                   base::Unretained(this)));
-  web_ui()->RegisterMessageCallback(
       "loadFromText",
       base::BindRepeating(&ArcGraphicsTracingHandler::HandleLoadFromText,
                           base::Unretained(this)));
-  switch (mode_) {
-    case ArcGraphicsTracingMode::kFull:
-      web_ui()->RegisterMessageCallback(
-          "setStopOnJank",
-          base::BindRepeating(&ArcGraphicsTracingHandler::HandleSetStopOnJank,
-                              base::Unretained(this)));
-      break;
-    case ArcGraphicsTracingMode::kOverview:
-      web_ui()->RegisterMessageCallback(
-          "setMaxTime",
-          base::BindRepeating(&ArcGraphicsTracingHandler::HandleSetMaxTime,
-                              base::Unretained(this)));
-      break;
-  }
+  web_ui()->RegisterMessageCallback(
+      "setMaxTime",
+      base::BindRepeating(&ArcGraphicsTracingHandler::HandleSetMaxTime,
+                          base::Unretained(this)));
 }
 
 void ArcGraphicsTracingHandler::OnWindowActivated(ActivationReason reason,
@@ -363,30 +285,8 @@ void ArcGraphicsTracingHandler::OnWindowActivated(ActivationReason reason,
   arc_active_window_->AddPreTargetHandler(this);
 
   // Limit tracing by newly activated window.
-  tracing_time_min_ = TRACE_TIME_TICKS_NOW();
-  if (mode_ != ArcGraphicsTracingMode::kFull)
-    return;
-
-  jank_detector_ =
-      std::make_unique<arc::ArcGraphicsJankDetector>(base::BindRepeating(
-          &ArcGraphicsTracingHandler::OnJankDetected, base::Unretained(this)));
-  exo::Surface* const surface = exo::GetShellRootSurface(arc_active_window_);
-  DCHECK(surface);
-  surface->AddSurfaceObserver(this);
-}
-
-void ArcGraphicsTracingHandler::OnJankDetected(const base::Time& timestamp) {
-  VLOG(1) << "Jank detected " << timestamp;
-  if (tracing_active_ && stop_on_jank_)
-    StopTracingAndActivate();
-}
-
-base::TimeDelta ArcGraphicsTracingHandler::GetMaxInterval() const {
-  switch (mode_) {
-    case ArcGraphicsTracingMode::kFull:
-      return kMaxIntervalToDisplayInFullMode;
-    case ArcGraphicsTracingMode::kOverview:
-      return max_tracing_time_;
+  if (tracing_active_) {
+    tracing_time_min_ = SystemTicksNow();
   }
 }
 
@@ -458,7 +358,36 @@ void ArcGraphicsTracingHandler::DiscardActiveArcWindow() {
   arc_active_window_ = nullptr;
 }
 
-void ArcGraphicsTracingHandler::Activate() {
+base::Time ArcGraphicsTracingHandler::Now() {
+  return base::Time::Now();
+}
+
+void ArcGraphicsTracingHandler::StartTracingOnController(
+    const base::trace_event::TraceConfig& trace_config,
+    content::TracingController::StartTracingDoneCallback after_start) {
+  content::TracingController::GetInstance()->StartTracing(
+      trace_config, std::move(after_start));
+}
+
+void ArcGraphicsTracingHandler::StopTracingOnController(
+    content::TracingController::CompletionCallback after_stop) {
+  auto* const controller = content::TracingController::GetInstance();
+
+  if (!controller->IsTracing()) {
+    LOG(WARNING) << "TracingController has already stopped tracing";
+    return;
+  }
+
+  controller->StopTracing(
+      content::TracingController::CreateStringEndpoint(std::move(after_stop)));
+}
+
+base::FilePath ArcGraphicsTracingHandler::GetDownloadsFolder() {
+  return file_manager::util::GetDownloadsFolderForProfile(
+      Profile::FromWebUI(web_ui()));
+}
+
+void ArcGraphicsTracingHandler::ActivateWebUIWindow() {
   aura::Window* const window =
       web_ui()->GetWebContents()->GetTopLevelNativeWindow();
   if (!window) {
@@ -476,15 +405,15 @@ void ArcGraphicsTracingHandler::StartTracing() {
   if (jank_detector_)
     jank_detector_->Reset();
   system_stat_collector_ = std::make_unique<arc::ArcSystemStatCollector>();
-  system_stat_collector_->Start(GetMaxInterval());
+  system_stat_collector_->Start(max_tracing_time_);
 
   // Timestamp and app information would be updated when |OnTracingStarted| is
   // called.
-  timestamp_ = base::Time::Now();
+  timestamp_ = Now();
   UpdateActiveArcWindowInfo();
 
-  content::TracingController::GetInstance()->StartTracing(
-      GetTracingConfig(mode_),
+  StartTracingOnController(
+      GetTracingConfig(),
       base::BindOnce(&ArcGraphicsTracingHandler::OnTracingStarted,
                      weak_ptr_factory_.GetWeakPtr()));
 }
@@ -495,31 +424,29 @@ void ArcGraphicsTracingHandler::StopTracing() {
   tracing_active_ = false;
   stop_tracing_timer_.Stop();
 
-  tracing_time_max_ = TRACE_TIME_TICKS_NOW();
+  tracing_time_max_ = SystemTicksNow();
 
   if (system_stat_collector_)
     system_stat_collector_->Stop();
 
-  content::TracingController* const controller =
-      content::TracingController::GetInstance();
-
-  if (!controller->IsTracing())
-    return;
-
-  controller->StopTracing(content::TracingController::CreateStringEndpoint(
+  StopTracingOnController(
       base::BindOnce(&ArcGraphicsTracingHandler::OnTracingStopped,
-                     weak_ptr_factory_.GetWeakPtr())));
+                     weak_ptr_factory_.GetWeakPtr()));
 }
 
 void ArcGraphicsTracingHandler::StopTracingAndActivate() {
   StopTracing();
-  Activate();
+  ActivateWebUIWindow();
 }
 
 void ArcGraphicsTracingHandler::SetStatus(const std::string& status) {
   AllowJavascript();
-  CallJavascriptFunction(GetJavascriptDomain(mode_) + "setStatus",
+  CallJavascriptFunction(kJavascriptDomain + std::string("setStatus"),
                          base::Value(status.empty() ? "Idle" : status));
+}
+
+base::TimeTicks ArcGraphicsTracingHandler::SystemTicksNow() {
+  return TRACE_TIME_TICKS_NOW();
 }
 
 void ArcGraphicsTracingHandler::OnTracingStarted() {
@@ -528,16 +455,14 @@ void ArcGraphicsTracingHandler::OnTracingStarted() {
   if (!tracing_active_)
     return;
 
-  timestamp_ = base::Time::Now();
+  timestamp_ = Now();
   UpdateActiveArcWindowInfo();
 
-  tracing_time_min_ = TRACE_TIME_TICKS_NOW();
-  if (mode_ == ArcGraphicsTracingMode::kOverview) {
-    stop_tracing_timer_.Start(
-        FROM_HERE, system_stat_collector_->max_interval(),
-        base::BindOnce(&ArcGraphicsTracingHandler::StopTracingAndActivate,
-                       base::Unretained(this)));
-  }
+  tracing_time_min_ = SystemTicksNow();
+  stop_tracing_timer_.Start(
+      FROM_HERE, system_stat_collector_->max_interval(),
+      base::BindOnce(&ArcGraphicsTracingHandler::StopTracingAndActivate,
+                     base::Unretained(this)));
 }
 
 void ArcGraphicsTracingHandler::OnTracingStopped(
@@ -545,15 +470,11 @@ void ArcGraphicsTracingHandler::OnTracingStopped(
   std::string string_data;
   string_data.swap(*trace_data);
 
-  Profile* const profile = Profile::FromWebUI(web_ui());
-  const base::FilePath model_path =
-      mode_ == ArcGraphicsTracingMode::kFull
-          ? GetLastTracingModelPath(profile)
-          : GetModelPathFromTitle(profile, active_task_title_);
+  const base::FilePath model_path = GetModelPathFromTitle(active_task_title_);
 
   base::ThreadPool::PostTaskAndReplyWithResult(
       FROM_HERE, {base::MayBlock(), base::TaskPriority::BEST_EFFORT},
-      base::BindOnce(&BuildGraphicsModel, std::move(string_data), mode_,
+      base::BindOnce(&BuildGraphicsModel, std::move(string_data),
                      active_task_title_, active_task_icon_png_, timestamp_,
                      std::move(system_stat_collector_), tracing_time_min_,
                      tracing_time_max_, model_path),
@@ -568,44 +489,24 @@ void ArcGraphicsTracingHandler::OnGraphicsModelReady(
   if (!result.first.is_dict())
     return;
 
-  CallJavascriptFunction(GetJavascriptDomain(mode_) + "setModel",
+  CallJavascriptFunction(kJavascriptDomain + std::string("setModel"),
                          std::move(result.first));
-}
-
-void ArcGraphicsTracingHandler::HandleReady(const base::Value::List& args) {
-  if (mode_ != ArcGraphicsTracingMode::kFull)
-    return;
-
-  base::ThreadPool::PostTaskAndReplyWithResult(
-      FROM_HERE, {base::MayBlock(), base::TaskPriority::BEST_EFFORT},
-      base::BindOnce(&MaybeLoadLastGraphicsModel,
-                     GetLastTracingModelPath(Profile::FromWebUI(web_ui()))),
-      base::BindOnce(&ArcGraphicsTracingHandler::OnGraphicsModelReady,
-                     weak_ptr_factory_.GetWeakPtr()));
-}
-
-void ArcGraphicsTracingHandler::HandleSetStopOnJank(
-    const base::Value::List& args) {
-  DCHECK_EQ(1U, args.size());
-  DCHECK_EQ(ArcGraphicsTracingMode::kFull, mode_);
-  if (!args[0].is_bool()) {
-    LOG(ERROR) << "Invalid input";
-    return;
-  }
-  stop_on_jank_ = args[0].GetBool();
 }
 
 void ArcGraphicsTracingHandler::HandleSetMaxTime(
     const base::Value::List& args) {
-  DCHECK_EQ(1U, args.size());
-  DCHECK_EQ(ArcGraphicsTracingMode::kOverview, mode_);
-
-  if (!args[0].is_int()) {
-    LOG(ERROR) << "Invalid input";
+  if (args.size() != 1) {
+    LOG(ERROR) << "Expect 1 numeric arg";
     return;
   }
-  max_tracing_time_ = base::Seconds(args[0].GetInt());
-  DCHECK_GE(max_tracing_time_, base::Seconds(1));
+
+  auto new_time = args[0].GetIfDouble();
+  if (!new_time.has_value() || *new_time < 1.0) {
+    LOG(ERROR) << "Interval too small or not a number: " << args[0];
+    return;
+  }
+
+  max_tracing_time_ = base::Seconds(*new_time);
 }
 
 void ArcGraphicsTracingHandler::HandleLoadFromText(
@@ -618,7 +519,7 @@ void ArcGraphicsTracingHandler::HandleLoadFromText(
 
   base::ThreadPool::PostTaskAndReplyWithResult(
       FROM_HERE, {base::MayBlock(), base::TaskPriority::BEST_EFFORT},
-      base::BindOnce(&LoadGraphicsModel, mode_, args[0].GetString()),
+      base::BindOnce(&LoadGraphicsModel, args[0].GetString()),
       base::BindOnce(&ArcGraphicsTracingHandler::OnGraphicsModelReady,
                      weak_ptr_factory_.GetWeakPtr()));
 }

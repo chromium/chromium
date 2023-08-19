@@ -401,6 +401,13 @@ constexpr char kCableRoutingIdHeader[] = "X-caBLE-Routing-ID";
 // includes the client's nonce and pairing ID.
 constexpr char kCableClientPayloadHeader[] = "X-caBLE-Client-Payload";
 
+// kCableSignalConnectionHeader is the name of an HTTP header that indicates to
+// the tunnel server that a client supports getting a signal when the
+// authenticator connects to the tunnel server during a state-assisted
+// transaction. The tunnel server echos this header to indicate that the signal
+// will be sent.
+constexpr char kCableSignalConnectionHeader[] = "X-caBLE-Signal-Connection";
+
 // Maximum wait time before client error outs on device.
 COMPONENT_EXPORT(DEVICE_FIDO) extern const base::TimeDelta kDeviceTimeout;
 

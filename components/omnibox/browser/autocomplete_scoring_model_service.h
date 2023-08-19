@@ -44,21 +44,29 @@ class AutocompleteScoringModelService : public KeyedService {
   // `result_callback` with an optional prediction score from the model. If the
   // model is not available or the model input cannot be generated from the
   // signals, calls `result_callback` with an empty prediction score.
-  void ScoreAutocompleteUrlMatch(base::CancelableTaskTracker* tracker,
-                                 const ScoringSignals& scoring_signals,
-                                 const std::string& stripped_destination_url,
-                                 ResultCallback result_callback);
+  virtual void ScoreAutocompleteUrlMatch(
+      base::CancelableTaskTracker* tracker,
+      const ScoringSignals& scoring_signals,
+      const std::string& stripped_destination_url,
+      ResultCallback result_callback);
 
   // Invokes the model to score the given batch of `scoring_signals` and calls
   // `batch_result_callback` with a batch of optional prediction scores from the
   // model. If the model is not available or any of the model inputs cannot be
   // generated from the signals, calls `result_callback` with an empty vector of
   // prediction scores.
-  void BatchScoreAutocompleteUrlMatches(
+  virtual void BatchScoreAutocompleteUrlMatches(
       base::CancelableTaskTracker* tracker,
       const std::vector<const ScoringSignals*>& batch_scoring_signals,
       const std::vector<std::string>& stripped_destination_urls,
       BatchResultCallback batch_result_callback);
+
+  // Synchronous batch scoring. Returns a vector of batch results.
+  // Returns an empty vector if model is not available or the input signals are
+  // invalid.
+  virtual std::vector<Result> BatchScoreAutocompleteUrlMatchesSync(
+      const std::vector<const ScoringSignals*>& batch_scoring_signals,
+      const std::vector<std::string>& stripped_destination_urls);
 
  private:
   // Returns whether the scoring model is enabled and loaded.
@@ -73,6 +81,12 @@ class AutocompleteScoringModelService : public KeyedService {
 
   void ProcessBatchModelOutput(
       BatchResultCallback batch_result_callback,
+      const std::vector<std::string>& stripped_destination_urls,
+      const std::vector<absl::optional<ModelOutput>>& batch_model_output);
+
+  // Extracts model output values and associates them with the stripped
+  // destination urls.
+  std::vector<Result> GetBatchResultFromModelOutput(
       const std::vector<std::string>& stripped_destination_urls,
       const std::vector<absl::optional<ModelOutput>>& batch_model_output);
 

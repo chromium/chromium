@@ -37,13 +37,6 @@ class TestPrintPreviewObserver : PrintPreviewUI::TestDelegate {
   // convenience for callers that do not need the returned result.
   void WaitUntilPreviewIsReady();
 
-  // If a test modifies certain Print Preview settings, then another preview
-  // render will be automatically initiated.  This call resets the observer for
-  // when that next render will be expected.
-  // This doesn't work for all such settings at this time; e.g., changes to
-  // N-up are not supported since `pages_per_sheet_` are constant from ctor.
-  void ResetForAnotherPreview();
-
   uint32_t rendered_page_count() const { return rendered_page_count_; }
 
  private:

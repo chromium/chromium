@@ -48,10 +48,10 @@ PaintPropertyChangeType ScrollPaintPropertyNode::State::ComputeChange(
 }
 
 const ScrollPaintPropertyNode& ScrollPaintPropertyNode::Root() {
-  DEFINE_STATIC_REF(ScrollPaintPropertyNode, root,
-                    base::AdoptRef(new ScrollPaintPropertyNode(
-                        nullptr, State{LayoutRect::InfiniteIntRect(),
-                                       LayoutRect::InfiniteIntRect().size()})));
+  DEFINE_STATIC_REF(
+      ScrollPaintPropertyNode, root,
+      base::AdoptRef(new ScrollPaintPropertyNode(
+          nullptr, State{InfiniteIntRect(), InfiniteIntRect().size()})));
   return *root;
 }
 

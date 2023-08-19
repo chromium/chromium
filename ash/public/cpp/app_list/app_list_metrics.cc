@@ -7,6 +7,7 @@
 #include "ash/public/cpp/app_list/app_list_types.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
+#include "base/notreached.h"
 
 namespace {
 
@@ -70,6 +71,24 @@ constexpr char kAppListSortDiscoveryDurationAfterNudgeClamshell[] =
     "Apps.AppList.SortDiscoveryDurationAfterEducationNudgeV2.ClamshellMode";
 constexpr char kAppListSortDiscoveryDurationAfterNudgeTablet[] =
     "Apps.AppList.SortDiscoveryDurationAfterEducationNudgeV2.TabletMode";
+
+bool IsAppListShowSourceUserTriggered(AppListShowSource show_source) {
+  switch (show_source) {
+    case AppListShowSource::kScrollFromShelf:
+    case AppListShowSource::kSearchKey:
+    case AppListShowSource::kSearchKeyFullscreen_DEPRECATED:
+    case AppListShowSource::kShelfButton:
+    case AppListShowSource::kShelfButtonFullscreen_DEPRECATED:
+    case AppListShowSource::kSwipeFromShelf:
+      return true;
+    case AppListShowSource::kTabletMode:
+    case AppListShowSource::kAssistantEntryPoint:
+    case AppListShowSource::kBrowser:
+    case AppListShowSource::kWelcomeTour:
+      return false;
+  }
+  NOTREACHED_NORETURN();
+}
 
 void RecordSearchResultOpenTypeHistogram(AppListLaunchedFrom launch_location,
                                          SearchResultType type,

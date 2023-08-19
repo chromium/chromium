@@ -21,9 +21,9 @@ import {
   PostMessageWithOrigin,
   WireValue,
   WireValueType,
-} from './comlink_protocol';
+} from './comlink_protocol.js';
 
-export {Endpoint};
+export type {Endpoint};
 
 export const proxyMarker = Symbol('Comlink.proxy');
 export const createEndpoint = Symbol('Comlink.endpoint');

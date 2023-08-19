@@ -28,56 +28,6 @@ bool SyncSetupService::IsDataTypePreferred(
   return sync_service_->GetUserSettings()->GetSelectedTypes().Has(datatype);
 }
 
-void SyncSetupService::SetDataTypeEnabled(syncer::UserSelectableType datatype,
-                                          bool enabled) {
-  CHECK(sync_blocker_);
-
-  syncer::SyncUserSettings* user_settings = sync_service_->GetUserSettings();
-  syncer::UserSelectableTypeSet selected_types =
-      user_settings->GetSelectedTypes();
-  if (enabled)
-    selected_types.Put(datatype);
-  else
-    selected_types.Remove(datatype);
-  user_settings->SetSelectedTypes(IsSyncEverythingEnabled(), selected_types);
-}
-
-bool SyncSetupService::UserActionIsRequiredToHaveTabSyncWork() {
-  if (!IsSyncFeatureEnabled() ||
-      !IsDataTypePreferred(syncer::UserSelectableType::kTabs)) {
-    return true;
-  }
-
-  switch (sync_service_->GetUserActionableError()) {
-    // No error.
-    case syncer::SyncService::UserActionableError::kNone:
-      return false;
-
-    // These errors effectively amount to disabled sync or effectively paused.
-    case syncer::SyncService::UserActionableError::kSignInNeedsUpdate:
-    case syncer::SyncService::UserActionableError::kNeedsPassphrase:
-    case syncer::SyncService::UserActionableError::kGenericUnrecoverableError:
-    case syncer::SyncService::UserActionableError::
-        kNeedsTrustedVaultKeyForEverything:
-      return true;
-
-    // This error doesn't stop tab sync.
-    case syncer::SyncService::UserActionableError::
-        kNeedsTrustedVaultKeyForPasswords:
-      return false;
-
-    // These errors don't actually stop sync.
-    case syncer::SyncService::UserActionableError::
-        kTrustedVaultRecoverabilityDegradedForPasswords:
-    case syncer::SyncService::UserActionableError::
-        kTrustedVaultRecoverabilityDegradedForEverything:
-      return false;
-  }
-
-  NOTREACHED() << "Unknown sync service state.";
-  return true;
-}
-
 bool SyncSetupService::IsSyncEverythingEnabled() const {
   return sync_service_->GetUserSettings()->IsSyncEverythingEnabled();
 }
@@ -86,10 +36,6 @@ void SyncSetupService::SetSyncEverythingEnabled(bool sync_all) {
   CHECK(sync_blocker_);
   sync_service_->GetUserSettings()->SetSelectedTypes(
       sync_all, sync_service_->GetUserSettings()->GetSelectedTypes());
-}
-
-bool SyncSetupService::IsSyncFeatureEnabled() const {
-  return sync_service_->IsSyncFeatureEnabled();
 }
 
 bool SyncSetupService::IsEncryptEverythingEnabled() const {

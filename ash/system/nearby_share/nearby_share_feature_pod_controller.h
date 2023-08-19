@@ -57,8 +57,9 @@ class ASH_EXPORT NearbyShareFeaturePodController
   const raw_ptr<NearbyShareDelegate, ExperimentalAsh> nearby_share_delegate_;
   const raw_ptr<NearbyShareControllerImpl, ExperimentalAsh>
       nearby_share_controller_;
-  raw_ptr<FeaturePodButton, ExperimentalAsh> button_ = nullptr;
-  raw_ptr<FeatureTile, ExperimentalAsh> tile_ = nullptr;
+  raw_ptr<FeaturePodButton, DanglingUntriaged | ExperimentalAsh> button_ =
+      nullptr;
+  raw_ptr<FeatureTile, DanglingUntriaged | ExperimentalAsh> tile_ = nullptr;
 
   base::WeakPtrFactory<NearbyShareFeaturePodController> weak_ptr_factory_{this};
 };

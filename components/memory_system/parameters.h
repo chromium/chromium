@@ -69,10 +69,12 @@ struct DispatcherParameters {
 
   explicit DispatcherParameters(
       PoissonAllocationSamplerInclusion poisson_allocation_sampler_inclusion,
-      AllocationTraceRecorderInclusion allocation_trace_recorder_inclusion);
+      AllocationTraceRecorderInclusion allocation_trace_recorder_inclusion,
+      base::StringPiece process_type);
 
   PoissonAllocationSamplerInclusion poisson_allocation_sampler_inclusion;
   AllocationTraceRecorderInclusion allocation_trace_recorder_inclusion;
+  std::string process_type;
 };
 
 }  // namespace memory_system

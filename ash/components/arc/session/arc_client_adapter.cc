@@ -81,6 +81,7 @@ ArcClientAdapter::ConvertStartParamsToStartArcMiniInstanceRequest(
   request.set_disable_download_provider(params.disable_download_provider);
   request.set_disable_ureadahead(params.disable_ureadahead);
   request.set_host_ureadahead_generation(params.host_ureadahead_generation);
+  request.set_use_dev_caches(params.use_dev_caches);
   request.set_arc_generate_pai(params.arc_generate_play_auto_install);
   request.set_enable_consumer_auto_update_toggle(
       params.enable_consumer_auto_update_toggle);

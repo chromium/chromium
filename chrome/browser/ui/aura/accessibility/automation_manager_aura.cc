@@ -282,11 +282,11 @@ void AutomationManagerAura::SendPendingEvents() {
 
   std::vector<ui::AXTreeUpdate> tree_updates;
   std::vector<ui::AXEvent> events;
-  auto pending_events_copy = pending_events_;
+  auto pending_events_copy = std::move(pending_events_);
   pending_events_.clear();
   for (auto& event_copy : pending_events_copy) {
-    int id = event_copy.id;
-    ax::mojom::Event event_type = event_copy.event_type;
+    const int id = event_copy.id;
+    const ax::mojom::Event event_type = event_copy.event_type;
     auto* aura_obj = cache_->Get(id);
 
     // Some events are important enough where even if their ax obj was
@@ -302,7 +302,7 @@ void AutomationManagerAura::SendPendingEvents() {
       OnSerializeFailure(event_type, update);
       return;
     }
-    tree_updates.push_back(update);
+    tree_updates.push_back(std::move(update));
 
     // Fire the event on the node, but only if it's actually in the tree.
     // Sometimes we get events fired on nodes with an ancestor that's
@@ -318,7 +318,7 @@ void AutomationManagerAura::SendPendingEvents() {
         event.event_from_action = event_copy.currently_performing_action;
       }
       event.action_request_id = event_copy.action_request_id;
-      events.push_back(event);
+      events.push_back(std::move(event));
     }
   }
 
@@ -327,7 +327,7 @@ void AutomationManagerAura::SendPendingEvents() {
   if (focus) {
     ui::AXTreeUpdate focused_node_update;
     tree_serializer_->SerializeChanges(focus, &focused_node_update);
-    tree_updates.push_back(focused_node_update);
+    tree_updates.push_back(std::move(focused_node_update));
   }
 
   if (automation_event_router_interface_) {
@@ -387,8 +387,17 @@ void AutomationManagerAura::PerformHitTest(
     CHECK(action_handler);
 
     // Convert to pixels for the RenderFrameHost HitTest, if required.
-    if (action_handler->RequiresPerformActionPointInPixels())
-      window->GetHost()->ConvertDIPToPixels(&action.target_point);
+    if (action_handler->RequiresPerformActionPointInPixels()) {
+      // The point is in DIPs, so multiply by the device scale factor to
+      // get pixels. Don't apply magnification as the action_handler doesn't
+      // know about magnification scale (that's applied later in the stack).
+      // Specifically, we cannot use WindowTreeHost::ConvertDIPToPixels as that
+      // will re-apply the magnification transform. The local point has
+      // already been un-transformed when it was converted to local coordinates.
+      float device_scale_factor = window->GetHost()->device_scale_factor();
+      action.target_point.set_x(action.target_point.x() * device_scale_factor);
+      action.target_point.set_y(action.target_point.y() * device_scale_factor);
+    }
 
     action_handler->PerformAction(action);
     return;

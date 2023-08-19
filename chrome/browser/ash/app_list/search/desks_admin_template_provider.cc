@@ -45,9 +45,7 @@ DesksAdminTemplateResult::DesksAdminTemplateResult(
   SetResultType(ResultType::kDesksAdminTemplate);
   SetDisplayType(DisplayType::kContinue);
   SetMetricsType(ash::DESKS_ADMIN_TEMPLATE);
-
-  // TODO(b/278271038): Change to use `SetIcon` here instead of `SetBadgeIcon`.
-  SetBadgeIcon(icon);
+  SetIcon(IconInfo(icon, kSystemIconDimension));
 }
 
 DesksAdminTemplateResult::~DesksAdminTemplateResult() = default;

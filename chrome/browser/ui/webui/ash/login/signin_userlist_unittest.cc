@@ -13,7 +13,6 @@
 #include "chrome/browser/ash/login/screens/user_selection_screen.h"
 #include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
 #include "chrome/browser/ash/login/users/multi_profile_user_controller.h"
-#include "chrome/browser/ash/login/users/multi_profile_user_controller_delegate.h"
 #include "chrome/browser/ash/settings/scoped_cros_settings_test_helper.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile_manager.h"
@@ -37,8 +36,7 @@ std::string GenerateUserEmail(int number) {
 
 }  // namespace
 
-class SigninPrepareUserListTest : public testing::Test,
-                                  public MultiProfileUserControllerDelegate {
+class SigninPrepareUserListTest : public testing::Test {
  public:
   SigninPrepareUserListTest()
       : fake_user_manager_(new FakeChromeUserManager()),
@@ -57,7 +55,7 @@ class SigninPrepareUserListTest : public testing::Test,
         TestingBrowserProcess::GetGlobal());
     ASSERT_TRUE(profile_manager_->SetUp());
     controller_ = std::make_unique<MultiProfileUserController>(
-        this, TestingBrowserProcess::GetGlobal()->local_state());
+        TestingBrowserProcess::GetGlobal()->local_state(), fake_user_manager_);
     fake_user_manager_->set_multi_profile_user_controller(controller_.get());
 
     for (size_t i = 0; i < std::size(kUsersPublic); ++i)
@@ -76,20 +74,19 @@ class SigninPrepareUserListTest : public testing::Test,
   }
 
   void TearDown() override {
+    fake_user_manager_->set_multi_profile_user_controller(nullptr);
     controller_.reset();
     profile_manager_.reset();
     testing::Test::TearDown();
   }
-
-  // MultiProfileUserControllerDelegate:
-  void OnUserNotAllowed(const std::string& user_email) override {}
 
   FakeChromeUserManager* user_manager() { return fake_user_manager_; }
 
  private:
   content::BrowserTaskEnvironment task_environment_;
   ScopedCrosSettingsTestHelper cros_settings_test_helper_;
-  raw_ptr<FakeChromeUserManager, ExperimentalAsh> fake_user_manager_;
+  raw_ptr<FakeChromeUserManager, DanglingUntriaged | ExperimentalAsh>
+      fake_user_manager_;
   user_manager::ScopedUserManager user_manager_enabler_;
   std::unique_ptr<TestingProfileManager> profile_manager_;
   std::map<std::string, proximity_auth::mojom::AuthType> user_auth_type_map;

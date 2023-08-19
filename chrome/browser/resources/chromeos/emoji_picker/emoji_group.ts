@@ -13,6 +13,7 @@ import {beforeNextRender, PolymerElement} from 'chrome://resources/polymer/v3_0/
 import {VISUAL_CONTENT_WIDTH} from './constants.js';
 import {EmojiImageComponent} from './emoji_image.js';
 import {getTemplate} from './emoji_group.html.js';
+import {EmojiPickerApiProxyImpl} from './emoji_picker_api_proxy.js';
 import {createCustomEvent, EMOJI_CLEAR_RECENTS_CLICK, EMOJI_IMG_BUTTON_CLICK, EMOJI_TEXT_BUTTON_CLICK, EMOJI_VARIANTS_SHOWN, EmojiClearRecentClickEvent, EmojiTextButtonClickEvent} from './events.js';
 import {CategoryEnum, EmojiVariants} from './types.js';
 
@@ -69,6 +70,7 @@ export class EmojiGroupComponent extends PolymerElement {
       focusedEmoji: {type: Object, value: null},
       shownEmojiVariantIndex: {type: Number, value: null},
       isLangEnglish: {type: Boolean, value: false},
+      gifSupport: {type: Boolean, value: false},
     };
   }
   data: EmojiVariants[];
@@ -81,6 +83,7 @@ export class EmojiGroupComponent extends PolymerElement {
   private focusedEmoji: EmojiVariants|null;
   private shownEmojiVariantIndex: number|null;
   private isLangEnglish: boolean;
+  private gifSupport: boolean;
 
   constructor() {
     super();
@@ -173,13 +176,19 @@ export class EmojiGroupComponent extends PolymerElement {
         category: this.category,
       }));
     } else {
-      // Visual-based emoji clicked
-      this.dispatchEvent(createCustomEvent(EMOJI_IMG_BUTTON_CLICK, {
-        name: emoji.base.name,
-        visualContent: emoji.base.visualContent,
-        category: this.category,
-      }));
+      if (emoji.base.visualContent) {
+        // Visual-based emoji clicked
+        this.dispatchEvent(createCustomEvent(EMOJI_IMG_BUTTON_CLICK, {
+          name: emoji.base.name,
+          visualContent: emoji.base.visualContent,
+          category: this.category,
+        }));
+      }
     }
+  }
+
+  private onHelpClick(): void {
+    EmojiPickerApiProxyImpl.getInstance().openHelpCentreArticle();
   }
 
   /**
@@ -218,8 +227,9 @@ export class EmojiGroupComponent extends PolymerElement {
     // Polymer.
     beforeNextRender(this, () => {
       const variants = this.shownEmojiVariantIndex ?
-          this.shadowRoot!.getElementById(`emoji-variant-${dataIndex}`) :
-          null;
+          this.shadowRoot!.getElementById(`emoji-variant-${dataIndex}`) ??
+              undefined :
+          undefined;
 
       this.dispatchEvent(createCustomEvent(EMOJI_VARIANTS_SHOWN, {
         owner: this,
@@ -266,7 +276,7 @@ export class EmojiGroupComponent extends PolymerElement {
       if (emoji.alternates && emoji.alternates.length > 0) {
         return emojiLabel + ' with variants.';
       } else {
-        return emojiLabel;
+        return emojiLabel ?? '';
       }
     }
     return '';
@@ -371,6 +381,13 @@ export class EmojiGroupComponent extends PolymerElement {
 
   formatCategory(category: CategoryEnum): string {
     return category === CategoryEnum.GIF ? 'GIF' : category;
+  }
+
+  getMoreOptionsAriaLabel(gifSupport: boolean): string|undefined {
+    // TODO(b/281609806): Remove this condition once GIF support is fully
+    // launched; make sure related node finder in tast test is updated before
+    // removing this condition.
+    return gifSupport ? 'More options' : undefined;
   }
 }
 

@@ -37,6 +37,10 @@ enum class UninstallResultCode;
 
 namespace ash {
 
+// Service which manages integration of ARC packages containing web apps.
+// Watches for installation of APK web app packages and installs the
+// corresponding web app, and responds to events from both ARC and web apps to
+// keep these packages in sync.
 class ApkWebAppService : public KeyedService,
                          public ApkWebAppInstaller::Owner,
                          public ArcAppListPrefs::Observer,
@@ -85,8 +89,6 @@ class ApkWebAppService : public KeyedService,
   ApkWebAppService& operator=(const ApkWebAppService&) = delete;
 
   ~ApkWebAppService() override;
-
-  void SetArcAppListPrefsForTesting(ArcAppListPrefs* prefs);
 
   bool IsWebOnlyTwa(const web_app::AppId& app_id);
 
@@ -182,7 +184,8 @@ class ApkWebAppService : public KeyedService,
   WebAppCallbackForTesting web_app_uninstalled_callback_;
 
   raw_ptr<Profile, ExperimentalAsh> profile_;
-  raw_ptr<ArcAppListPrefs, ExperimentalAsh> arc_app_list_prefs_;
+  raw_ptr<ArcAppListPrefs, DanglingUntriaged | ExperimentalAsh>
+      arc_app_list_prefs_;
 
   // Delegate implementation used in production.
   std::unique_ptr<Delegate> real_delegate_;

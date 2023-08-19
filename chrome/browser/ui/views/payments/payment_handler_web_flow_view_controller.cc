@@ -11,6 +11,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/app/vector_icons/vector_icons.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/task_manager/web_contents_tags.h"
 #include "chrome/browser/themes/theme_service.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_tabstrip.h"
@@ -159,7 +160,8 @@ class ReadOnlyOriginView : public views::View {
     views::BoxLayout* top_level_layout =
         SetLayoutManager(std::make_unique<views::BoxLayout>());
     const bool has_icon = icon_bitmap && !icon_bitmap->drawsNothing();
-    float adjusted_width = base::checked_cast<float>(has_icon ? icon_bitmap->width() : 0);
+    float adjusted_width =
+        base::checked_cast<float>(has_icon ? icon_bitmap->width() : 0);
     if (has_icon) {
       adjusted_width =
           adjusted_width *
@@ -282,6 +284,12 @@ void PaymentHandlerWebFlowViewController::FillContentView(
       ->SetOpenedWindow(
           /*payment_handler_web_contents=*/web_contents());
   web_view->LoadInitialURL(target_);
+
+  if (base::FeatureList::IsEnabled(
+          features::kPaymentHandlerWindowInTaskManager)) {
+    // Make the web view show up in the task manager.
+    task_manager::WebContentsTags::CreateForTabContents(web_contents());
+  }
 
   // Enable modal dialogs for web-based payment handlers.
   dialog_manager_delegate_.SetWebContents(web_contents());

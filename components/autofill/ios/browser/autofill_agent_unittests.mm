@@ -9,6 +9,7 @@
 #include "base/strings/utf_string_conversions.h"
 #import "base/test/ios/wait_util.h"
 #include "base/test/scoped_feature_list.h"
+#import "base/test/test_timeouts.h"
 #include "components/autofill/core/browser/autofill_test_utils.h"
 #include "components/autofill/core/browser/data_model/credit_card.h"
 #include "components/autofill/core/browser/test_autofill_client.h"
@@ -37,17 +38,13 @@
 #include "ui/gfx/image/image_unittest_util.h"
 #include "url/gurl.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 using autofill::AutofillJavaScriptFeature;
 using autofill::FieldDataManager;
 using autofill::FieldRendererId;
 using autofill::FormRendererId;
 using autofill::PopupItemId;
 using autofill::PopupType;
-using base::test::ios::WaitUntilCondition;
+using base::test::ios::WaitUntilConditionOrTimeout;
 
 @interface AutofillAgent (Testing)
 - (void)updateFieldManagerWithFillingResults:(NSString*)jsonString;
@@ -211,9 +208,10 @@ TEST_F(AutofillAgentTests,
   fake_web_state_.WasShown();
 
   // Wait until the expected handler is called.
-  WaitUntilCondition(^bool() {
-    return completion_handler_called;
-  });
+  ASSERT_TRUE(
+      WaitUntilConditionOrTimeout(TestTimeouts::action_timeout(), ^bool() {
+        return completion_handler_called;
+      }));
   EXPECT_FALSE(completion_handler_success);
 }
 
@@ -253,9 +251,10 @@ TEST_F(AutofillAgentTests, onSuggestionsReady_ShowAccountCards) {
   fake_web_state_.WasShown();
 
   // Wait until the expected handler is called.
-  WaitUntilCondition(^bool() {
-    return completion_handler_called;
-  });
+  ASSERT_TRUE(
+      WaitUntilConditionOrTimeout(TestTimeouts::action_timeout(), ^bool() {
+        return completion_handler_called;
+      }));
 
   // "Show credit cards from account" should be the only suggestion.
   EXPECT_EQ(1U, completion_handler_suggestions.count);
@@ -277,8 +276,7 @@ TEST_F(AutofillAgentTests,
   // Initialize suggestion.
   std::vector<autofill::Suggestion> autofillSuggestions = {
       autofill::Suggestion("", "", "visaCC",
-                           autofill::Suggestion::FrontendId(
-                               autofill::PopupItemId::kCreditCardEntry)),
+                           autofill::PopupItemId::kCreditCardEntry),
       // This suggestion has a valid credit card icon, but the Suggestion type
       // (kShowAccountCards) is wrong.
       autofill::Suggestion("", "", "visaCC",
@@ -329,10 +327,8 @@ TEST_F(AutofillAgentTests, showAutofillPopup_EmptyIconInCreditCardSuggestion) {
       .WillRepeatedly(testing::Return(PopupType::kCreditCards));
 
   const std::string emptyIcon = "";
-  std::vector<autofill::Suggestion> autofillSuggestions = {
-      autofill::Suggestion("", "", emptyIcon,
-                           autofill::Suggestion::FrontendId(
-                               autofill::PopupItemId::kCreditCardEntry))};
+  std::vector<autofill::Suggestion> autofillSuggestions = {autofill::Suggestion(
+      "", "", emptyIcon, autofill::PopupItemId::kCreditCardEntry)};
 
   // Completion handler to retrieve suggestions.
   auto completionHandler = ^(NSArray<FormSuggestion*>* suggestions,
@@ -375,8 +371,7 @@ TEST_F(AutofillAgentTests,
   // Initialize suggestion, initially without a custom icon.
   std::vector<autofill::Suggestion> autofillSuggestions = {
       autofill::Suggestion("", "", suggestion_network_icon,
-                           autofill::Suggestion::FrontendId(
-                               autofill::PopupItemId::kCreditCardEntry))};
+                           autofill::PopupItemId::kCreditCardEntry)};
   ASSERT_TRUE(autofillSuggestions[0].custom_icon.IsEmpty());
 
   // When the custom icon is not present, the default icon should be used.
@@ -408,12 +403,10 @@ TEST_F(AutofillAgentTests, onSuggestionsReady_ClearForm) {
 
   // Make the suggestions available to AutofillAgent.
   std::vector<autofill::Suggestion> autofillSuggestions;
-  autofillSuggestions.push_back(autofill::Suggestion(
-      "", "", "",
-      autofill::Suggestion::FrontendId(autofill::PopupItemId::kAddressEntry)));
-  autofillSuggestions.push_back(autofill::Suggestion(
-      "", "", "",
-      autofill::Suggestion::FrontendId(autofill::PopupItemId::kAddressEntry)));
+  autofillSuggestions.push_back(
+      autofill::Suggestion("", "", "", autofill::PopupItemId::kAddressEntry));
+  autofillSuggestions.push_back(
+      autofill::Suggestion("", "", "", autofill::PopupItemId::kAddressEntry));
   autofillSuggestions.push_back(
       autofill::Suggestion("", "", "", PopupItemId::kClearForm));
   [autofill_agent_
@@ -441,9 +434,10 @@ TEST_F(AutofillAgentTests, onSuggestionsReady_ClearForm) {
   fake_web_state_.WasShown();
 
   // Wait until the expected handler is called.
-  WaitUntilCondition(^bool() {
-    return completion_handler_called;
-  });
+  ASSERT_TRUE(
+      WaitUntilConditionOrTimeout(TestTimeouts::action_timeout(), ^bool() {
+        return completion_handler_called;
+      }));
 
   // "Clear Form" should appear as the first suggestion. Otherwise, the order of
   // suggestions should not change.
@@ -464,14 +458,10 @@ TEST_F(AutofillAgentTests, onSuggestionsReady_ClearFormWithGPay) {
 
   // Make the suggestions available to AutofillAgent.
   std::vector<autofill::Suggestion> autofillSuggestions;
-  autofillSuggestions.push_back(
-      autofill::Suggestion("", "", "",
-                           autofill::Suggestion::FrontendId(
-                               autofill::PopupItemId::kCreditCardEntry)));
-  autofillSuggestions.push_back(
-      autofill::Suggestion("", "", "",
-                           autofill::Suggestion::FrontendId(
-                               autofill::PopupItemId::kCreditCardEntry)));
+  autofillSuggestions.push_back(autofill::Suggestion(
+      "", "", "", autofill::PopupItemId::kCreditCardEntry));
+  autofillSuggestions.push_back(autofill::Suggestion(
+      "", "", "", autofill::PopupItemId::kCreditCardEntry));
   autofillSuggestions.push_back(
       autofill::Suggestion("", "", "", PopupItemId::kClearForm));
   [autofill_agent_
@@ -499,9 +489,10 @@ TEST_F(AutofillAgentTests, onSuggestionsReady_ClearFormWithGPay) {
   fake_web_state_.WasShown();
 
   // Wait until the expected handler is called.
-  WaitUntilCondition(^bool() {
-    return completion_handler_called;
-  });
+  ASSERT_TRUE(
+      WaitUntilConditionOrTimeout(TestTimeouts::action_timeout(), ^bool() {
+        return completion_handler_called;
+      }));
 
   EXPECT_EQ(3U, completion_handler_suggestions.count);
   EXPECT_EQ(PopupItemId::kClearForm,

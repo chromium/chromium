@@ -4,8 +4,6 @@
 
 #include "ash/accelerators/accelerator_controller_impl.h"
 
-#include <algorithm>
-#include <cmath>
 #include <string>
 #include <utility>
 
@@ -13,20 +11,15 @@
 #include "ash/accelerators/accelerator_notifications.h"
 #include "ash/accelerators/debug_commands.h"
 #include "ash/accessibility/accessibility_controller_impl.h"
-#include "ash/accessibility/ui/accessibility_confirmation_dialog.h"
-#include "ash/app_list/app_list_metrics.h"
 #include "ash/constants/ash_features.h"
 #include "ash/constants/devicetype.h"
 #include "ash/debug.h"
 #include "ash/ime/ime_controller_impl.h"
 #include "ash/ime/ime_switch_type.h"
-#include "ash/keyboard/ui/keyboard_ui_controller.h"
 #include "ash/multi_profile_uma.h"
 #include "ash/public/cpp/accelerator_actions.h"
-#include "ash/public/cpp/accelerator_configuration.h"
 #include "ash/public/cpp/accelerators.h"
 #include "ash/shell.h"
-#include "ash/strings/grit/ash_strings.h"
 #include "ash/system/power/power_button_controller.h"
 #include "ash/wm/mru_window_tracker.h"
 #include "ash/wm/screen_pinning_controller.h"
@@ -44,11 +37,8 @@
 #include "ui/aura/env.h"
 #include "ui/base/accelerators/accelerator.h"
 #include "ui/base/accelerators/accelerator_manager.h"
-#include "ui/base/l10n/l10n_util.h"
 #include "ui/base/ui_base_features.h"
-#include "ui/display/manager/managed_display_info.h"
 #include "ui/events/ash/keyboard_layout_util.h"
-#include "ui/events/event_constants.h"
 
 namespace ash {
 
@@ -700,6 +690,7 @@ bool AcceleratorControllerImpl::CanPerformAction(
     case AcceleratorAction::kDebugSystemUiStyleViewer:
     case AcceleratorAction::kDebugToggleDarkMode:
     case AcceleratorAction::kDebugToggleDynamicColor:
+    case AcceleratorAction::kDebugClearUseKMeansPref:
     case AcceleratorAction::kDebugToggleGlanceables:
     case AcceleratorAction::kDebugTogglePowerButtonMenu:
     case AcceleratorAction::kDebugToggleShowDebugBorders:
@@ -711,6 +702,7 @@ bool AcceleratorControllerImpl::CanPerformAction(
     case AcceleratorAction::kDebugToggleWallpaperMode:
     case AcceleratorAction::kDebugTriggerCrash:
     case AcceleratorAction::kDebugToggleHudDisplay:
+    case AcceleratorAction::kDebugToggleVirtualTrackpad:
       return debug::DebugAcceleratorsEnabled();
     case AcceleratorAction::kDevAddRemoveDisplay:
     case AcceleratorAction::kDevToggleAppList:
@@ -768,8 +760,8 @@ bool AcceleratorControllerImpl::CanPerformAction(
           accelerator_history_->currently_pressed_keys());
     case AcceleratorAction::kToggleClipboardHistory:
       return true;
-    case AcceleratorAction::kToggleDictation:
-      return accelerators::CanToggleDictation();
+    case AcceleratorAction::kEnableOrToggleDictation:
+      return accelerators::CanEnableOrToggleDictation();
     case AcceleratorAction::kToggleDockedMagnifier:
       return true;
     case AcceleratorAction::kToggleFloating:
@@ -813,9 +805,6 @@ bool AcceleratorControllerImpl::CanPerformAction(
       return accelerators::CanToggleProjectorMarker();
     case AcceleratorAction::kToggleResizeLockMenu:
       return accelerators::CanToggleResizeLockMenu();
-    case AcceleratorAction::kDebugTuckFloatedWindowLeft:
-    case AcceleratorAction::kDebugTuckFloatedWindowRight:
-      return debug::CanTuckFloatedWindow();
     case AcceleratorAction::kDebugToggleVideoConferenceCameraTrayIcon:
       return true;
 
@@ -980,6 +969,7 @@ void AcceleratorControllerImpl::PerformAction(
     case AcceleratorAction::kDebugShowToast:
     case AcceleratorAction::kDebugToggleDarkMode:
     case AcceleratorAction::kDebugToggleDynamicColor:
+    case AcceleratorAction::kDebugClearUseKMeansPref:
     case AcceleratorAction::kDebugToggleGlanceables:
     case AcceleratorAction::kDebugTogglePowerButtonMenu:
     case AcceleratorAction::kDebugToggleVideoConferenceCameraTrayIcon:
@@ -1001,6 +991,7 @@ void AcceleratorControllerImpl::PerformAction(
     case AcceleratorAction::kDebugToggleWallpaperMode:
     case AcceleratorAction::kDebugTriggerCrash:
     case AcceleratorAction::kDebugToggleHudDisplay:
+    case AcceleratorAction::kDebugToggleVirtualTrackpad:
       debug::PerformDebugActionIfEnabled(action);
       break;
     case AcceleratorAction::kDevAddRemoveDisplay:
@@ -1317,17 +1308,13 @@ void AcceleratorControllerImpl::PerformAction(
     case AcceleratorAction::kToggleClipboardHistory:
       accelerators::ToggleClipboardHistory(/*is_plain_text_paste=*/false);
       break;
-    case AcceleratorAction::kToggleDictation:
-      base::RecordAction(UserMetricsAction("Accel_Toggle_Dictation"));
-      accelerators::ToggleDictation();
+    case AcceleratorAction::kEnableOrToggleDictation:
+      // UMA metrics are recorded later in the call stack.
+      accelerators::EnableOrToggleDictation();
       break;
     case AcceleratorAction::kToggleDockedMagnifier:
       base::RecordAction(UserMetricsAction("Accel_Toggle_Docked_Magnifier"));
       accelerators::ToggleDockedMagnifier();
-      break;
-    case AcceleratorAction::kDebugTuckFloatedWindowLeft:
-    case AcceleratorAction::kDebugTuckFloatedWindowRight:
-      debug::PerformDebugActionIfEnabled(action);
       break;
     case AcceleratorAction::kToggleFloating:
       // UMA metrics are recorded in the function.
@@ -1374,7 +1361,7 @@ void AcceleratorControllerImpl::PerformAction(
     case AcceleratorAction::kToggleSnapGroupWindowsMinimizeAndRestore:
       base::RecordAction(base::UserMetricsAction(
           "Accel_Toggle_Snap_Group_Windows_Minimize_Restore"));
-      accelerators::MinimizeWindowsInSnapGroup();
+      accelerators::ToggleSnapGroupsMinimize();
       break;
     case AcceleratorAction::kToggleResizeLockMenu:
       base::RecordAction(
@@ -1540,7 +1527,7 @@ AcceleratorControllerImpl::MaybeDeprecatedAcceleratorPressed(
   ShowDeprecatedAcceleratorNotification(
       deprecated_data->uma_histogram_name,
       deprecated_data->notification_message_id,
-      deprecated_data->old_shortcut_id, deprecated_data->new_shortcut_id);
+      deprecated_data->new_shortcut_id);
 
   if (!deprecated_data->deprecated_enabled)
     return AcceleratorProcessingStatus::STOP;

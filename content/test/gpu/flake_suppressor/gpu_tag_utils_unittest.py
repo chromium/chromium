@@ -10,7 +10,7 @@ from flake_suppressor import gpu_tag_utils as tag_utils
 
 class RemoveIgnoredTagsUnittest(unittest.TestCase):
   def testBasic(self) -> None:
-    tags = ['win', 'win-laptop', 'webgl-version-1']
+    tags = ['win', 'win-laptop']
     filtered_tags = tag_utils.GpuTagUtils().RemoveIgnoredTags(tags)
     self.assertEqual(filtered_tags, ('win', ))
 

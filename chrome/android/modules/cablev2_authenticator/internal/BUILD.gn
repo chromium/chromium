@@ -11,6 +11,7 @@ android_library("java") {
   deps = [
     "//chrome/android/features/cablev2_authenticator:java",
     "//chrome/android/modules/cablev2_authenticator/public:java",
+    "//third_party/androidx:androidx_fragment_fragment_java",
   ]
 }
 

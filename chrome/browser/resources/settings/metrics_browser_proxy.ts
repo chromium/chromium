@@ -156,8 +156,9 @@ export enum PrivacyGuideInteractions {
   PROMO_ENTRY = 7,
   SWAA_COMPLETION_LINK = 8,
   PRIVACY_SANDBOX_COMPLETION_LINK = 9,
+  SEARCH_SUGGESTIONS_NEXT_BUTTON = 10,
   // Max value should be updated whenever new entries are added.
-  MAX_VALUE = 10,
+  MAX_VALUE = 11,
 }
 
 /**
@@ -189,8 +190,12 @@ export enum PrivacyGuideSettingsStates {
   SAFE_BROWSING_ENHANCED_TO_STANDARD = 13,
   SAFE_BROWSING_STANDARD_TO_ENHANCED = 14,
   SAFE_BROWSING_STANDARD_TO_STANDARD = 15,
+  SEARCH_SUGGESTIONS_ON_TO_ON = 16,
+  SEARCH_SUGGESTIONS_ON_TO_OFF = 17,
+  SEARCH_SUGGESTIONS_OFF_TO_ON = 18,
+  SEARCH_SUGGESTIONS_OFF_TO_OFF = 19,
   // Max value should be updated whenever new entries are added.
-  MAX_VALUE = 16,
+  MAX_VALUE = 20,
 }
 
 /**
@@ -215,8 +220,27 @@ export enum PrivacyGuideStepsEligibleAndReached {
   COOKIES_REACHED = 7,
   COMPLETION_ELIGIBLE = 8,
   COMPLETION_REACHED = 9,
+  SEARCH_SUGGESTIONS_ELIGIBLE = 10,
+  SEARCH_SUGGESTIONS_REACHED = 11,
   // Leave this at the end.
-  COUNT = 10,
+  COUNT = 12,
+}
+
+/**
+ * Contains the possible delete browsing data action types.
+ * This should be kept in sync with the `DeleteBrowsingDataAction` enum in
+ * components/browsing_data/core/browsing_data_utils.h
+ */
+export enum DeleteBrowsingDataAction {
+  CLEAR_BROWSING_DATA_DIALOG = 0,
+  CLEAR_BROWSING_DATA_ON_EXIT = 1,
+  INCOGNITO_CLOSE_TABS = 2,
+  COOKIES_IN_USE_DIALOG = 3,
+  SITES_SETTINGS_PAGE = 4,
+  HISTORY_PAGE_ENTRIES = 5,
+  QUICK_DELETE = 6,
+  PAGE_INFO_RESET_PERMISSIONS = 7,
+  MAX_VALUE = 8,
 }
 
 export interface MetricsBrowserProxy {
@@ -319,6 +343,12 @@ export interface MetricsBrowserProxy {
    */
   recordPrivacyGuideStepsEligibleAndReachedHistogram(
       status: PrivacyGuideStepsEligibleAndReached): void;
+
+  /**
+   * Helper function that delegates the metric recording to the
+   * recordDeleteBrowsingDataAction backend function.
+   */
+  recordDeleteBrowsingDataAction(action: DeleteBrowsingDataAction): void;
 }
 
 export class MetricsBrowserProxyImpl implements MetricsBrowserProxy {
@@ -440,6 +470,14 @@ export class MetricsBrowserProxyImpl implements MetricsBrowserProxy {
       'Settings.PrivacyGuide.StepsEligibleAndReached',
       status,
       PrivacyGuideStepsEligibleAndReached.COUNT,
+    ]);
+  }
+
+  recordDeleteBrowsingDataAction(action: DeleteBrowsingDataAction): void {
+    chrome.send('metricsHandler:recordInHistogram', [
+      'Privacy.DeleteBrowsingData.Action',
+      action,
+      DeleteBrowsingDataAction.MAX_VALUE,
     ]);
   }
 

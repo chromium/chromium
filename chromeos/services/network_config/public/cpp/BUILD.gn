@@ -14,6 +14,7 @@ source_set("cpp") {
 
   public_deps = [ "//chromeos/services/network_config/public/mojom" ]
   deps = [
+    "//ash/constants",
     "//components/device_event_log:device_event_log",
     "//components/onc",
   ]

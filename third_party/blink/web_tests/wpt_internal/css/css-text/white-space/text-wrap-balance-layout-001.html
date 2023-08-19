@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<link rel="help" href="https://drafts.csswg.org/css-text-4/#valdef-text-wrap-balance">
+<link rel="match" href="text-wrap-balance-layout-001-ref.html">
+<link rel="match" href="text-wrap-balance-layout-001-ref2.html">
+<style>
+.container {
+  font-size: 20px;
+  width: 60ch;
+  border: 1px solid blue;
+  text-wrap: balance;
+}
+</style>
+<div class="container">
+  Lorem ipsum dolor sit amet, consectetur adipiscing elit.
+  Mauris ut elit lacus, non convallis odio.
+  Integer facilisis, dolor quis porttitor auctor,
+  nisi tellus aliquet urna, a dignissim orci nisl in nunc.
+  Vivamus elit risus, sagittis et lacinia quis, blandit ac elit.
+</div>
+<div class="container" style="width: 50ch">
+  Lorem ipsum dolor sit amet, consectetur adipiscing elit.
+  Mauris ut elit lacus, non convallis odio.
+  Integer facilisis, dolor quis porttitor auctor,
+  nisi tellus aliquet urna, a dignissim orci nisl in nunc.
+</div>
+<div class="container" style="width: 25ch">
+  Lorem ipsum dolor sit amet, consectetur adipiscing elit.
+  Mauris ut elit lacus, non convallis odio.
+</div>
+<div class="container" style="width: 17ch">
+  Lorem ipsum dolor sit amet, consectetur adipiscing elit.
+</div>
+<div class="container" style="width: 40ch">
+  Lorem ipsum dolor sit amet, consectetur adipiscing elit.
+</div>

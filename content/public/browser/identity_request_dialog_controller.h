@@ -115,7 +115,6 @@ class CONTENT_EXPORT IdentityRequestDialogController {
   // is called with the selected account id or empty string otherwise.
   // |sign_in_mode| represents whether this is an auto re-authn flow.
   virtual void ShowAccountsDialog(
-      WebContents* rp_web_contents,
       const std::string& top_frame_for_display,
       const absl::optional<std::string>& iframe_for_display,
       const std::vector<IdentityProviderData>& identity_provider_data,
@@ -128,10 +127,10 @@ class CONTENT_EXPORT IdentityRequestDialogController {
   // observable by users. This could happen when an IDP claims that the user is
   // signed in but not respond with any user account during browser fetches.
   virtual void ShowFailureDialog(
-      WebContents* rp_web_contents,
       const std::string& top_frame_for_display,
       const absl::optional<std::string>& iframe_for_display,
       const std::string& idp_for_display,
+      const blink::mojom::RpContext& rp_context,
       const IdentityProviderMetadata& idp_metadata,
       DismissCallback dismiss_callback,
       SigninToIdPCallback signin_callback);

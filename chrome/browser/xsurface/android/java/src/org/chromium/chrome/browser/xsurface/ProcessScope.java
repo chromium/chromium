@@ -30,8 +30,8 @@ public interface ProcessScope {
      * @param dependencyProvider Provider for activity-scoped dependencies.
      **/
     @Deprecated
-    @Nullable
-    default SurfaceScope obtainSurfaceScope(SurfaceScopeDependencyProvider dependencyProvider) {
+    default @Nullable SurfaceScope obtainSurfaceScope(
+            SurfaceScopeDependencyProvider dependencyProvider) {
         return null;
     }
 
@@ -41,8 +41,7 @@ public interface ProcessScope {
      *
      * @param dependencyProvider Provider for activity-scoped dependencies.
      **/
-    @Nullable
-    default FeedSurfaceScope obtainFeedSurfaceScope(
+    default @Nullable FeedSurfaceScope obtainFeedSurfaceScope(
             FeedSurfaceScopeDependencyProvider dependencyProvider) {
         return null;
     }
@@ -52,19 +51,16 @@ public interface ProcessScope {
      *
      * @param dependencyProvider Provider for activity-scoped dependencies.
      */
-    @Nullable
-    default PageInsightsSurfaceScope obtainPageInsightsSurfaceScope(
+    default @Nullable PageInsightsSurfaceScope obtainPageInsightsSurfaceScope(
             PageInsightsSurfaceScopeDependencyProvider dependencyProvider) {
         return null;
     }
 
-    @Nullable
-    default ImageCacheHelper provideImageCacheHelper() {
+    default @Nullable ImageCacheHelper provideImageCacheHelper() {
         return null;
     }
 
-    @Nullable
-    default ReliabilityLoggingTestUtil provideReliabilityLoggingTestUtil() {
+    default @Nullable ReliabilityLoggingTestUtil provideReliabilityLoggingTestUtil() {
         return null;
     }
 }

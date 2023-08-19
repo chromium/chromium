@@ -1,0 +1,86 @@
+context.properties = {
+    core.daemon = true              # listening for socket connections
+    core.name   = "$instance_name"  # core name and socket name
+}
+
+context.spa-libs = {
+    audio.convert.* = audioconvert/libspa-audioconvert
+    support.*       = support/libspa-support
+    # No physical device support included
+}
+
+context.modules = [
+    # The native communication protocol.
+    { name = libpipewire-module-protocol-native }
+
+    # Allows applications to create metadata objects. It creates
+    # a factory for Metadata objects.
+    { name = libpipewire-module-metadata }
+
+    # Creates a factory for making devices that run in the
+    # context of the PipeWire server.
+    { name = libpipewire-module-spa-device-factory }
+
+    # Creates a factory for making nodes that run in the
+    # context of the PipeWire server.
+    { name = libpipewire-module-spa-node-factory }
+
+    # Allows creating nodes that run in the context of the
+    # client. Is used by all clients that want to provide
+    # data to PipeWire.
+    { name = libpipewire-module-client-node }
+
+    # Allows creating devices that run in the context of the
+    # client. Is used by the session manager.
+    { name = libpipewire-module-client-device }
+
+    # The portal module monitors the PID of the portal process
+    # and tags connections with the same PID as portal
+    # connections.
+    { name = libpipewire-module-portal
+        flags = [ ifexists nofail ]
+    }
+
+    # The access module can perform access checks to determine which clients
+    # can connect.
+    { name = libpipewire-module-access }
+
+    # Makes a factory for wrapping nodes in an adapter with a
+    # converter and resampler.
+    { name = libpipewire-module-adapter }
+
+    # Makes a factory for creating links between ports.
+    { name = libpipewire-module-link-factory }
+
+    # Provides factories to make session manager objects.
+    { name = libpipewire-module-session-manager }
+
+    # Use libcanberra to play X11 Bell
+    { name = libpipewire-module-x11-bell
+        flags = [ ifexists nofail ]
+    }
+]
+
+context.objects = [
+    # A default dummy driver. This handles nodes marked with the "node.always-driver"
+    # property when no other driver is currently active. JACK clients need this.
+    { factory = spa-node-factory
+        args = {
+            factory.name    = support.node.driver
+            node.name       = Dummy-Driver
+            node.group      = pipewire.dummy
+            priority.driver = 20000
+        }
+    }
+    # A default freewheel driver. This does not include any delay between cycles,
+    # allowing a graph to run faster than realtime.
+    { factory = spa-node-factory
+        args = {
+            factory.name    = support.node.driver
+            node.name       = Freewheel-Driver
+            priority.driver = 19000
+            node.group      = pipewire.freewheel
+            node.freewheel  = true
+        }
+    }
+]

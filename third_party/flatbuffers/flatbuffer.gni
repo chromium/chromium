@@ -139,7 +139,7 @@ template("flatbuffer") {
     # This will link any libraries in the deps (the use of invoker.deps in the
     # action won't link it).
     if (defined(invoker.deps)) {
-      deps += invoker.deps
+      deps = invoker.deps
     }
 
     # Same for public_deps.

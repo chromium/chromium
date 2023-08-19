@@ -5,7 +5,9 @@ Version: 1.0.3
 Date: 2023-01-19
 Revision: 58746ca5b9f9444a2a3549704602ecc6239f8f41
 License: Apache 2.0
+License File: LICENSE
 Security Critical: yes
+Shipped: yes
 CPEPrefix: unknown
 
 Description:

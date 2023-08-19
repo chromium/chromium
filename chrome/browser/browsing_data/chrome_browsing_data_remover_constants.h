@@ -40,6 +40,9 @@ constexpr DataType DATA_TYPE_ISOLATED_ORIGINS = DATA_TYPE_EMBEDDER_BEGIN << 10;
 constexpr DataType DATA_TYPE_ACCOUNT_PASSWORDS = DATA_TYPE_EMBEDDER_BEGIN << 11;
 constexpr DataType DATA_TYPE_LOCAL_CUSTOM_DICTIONARY = DATA_TYPE_EMBEDDER_BEGIN
                                                        << 12;
+constexpr DataType DATA_TYPE_CONTROLLED_FRAME = DATA_TYPE_EMBEDDER_BEGIN << 13;
+constexpr DataType DATA_TYPE_ISOLATED_WEB_APP_COOKIES = DATA_TYPE_EMBEDDER_BEGIN
+                                                        << 14;
 
 // Group datatypes.
 
@@ -54,6 +57,7 @@ constexpr DataType DATA_TYPE_SITE_DATA =
 #endif
     DATA_TYPE_SITE_USAGE_DATA | DATA_TYPE_DURABLE_PERMISSION |
     DATA_TYPE_EXTERNAL_PROTOCOL_DATA | DATA_TYPE_ISOLATED_ORIGINS |
+    DATA_TYPE_CONTROLLED_FRAME | DATA_TYPE_ISOLATED_WEB_APP_COOKIES |
     content::BrowsingDataRemover::DATA_TYPE_PRIVACY_SANDBOX;
 
 // Datatypes protected by Important Sites.

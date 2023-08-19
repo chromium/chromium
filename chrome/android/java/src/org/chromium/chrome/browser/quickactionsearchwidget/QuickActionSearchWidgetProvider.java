@@ -135,8 +135,7 @@ public abstract class QuickActionSearchWidgetProvider extends AppWidgetProvider 
      * Get (create if necessary) an instance of QuickActionSearchWidgetProviderDelegate.
      */
     @VisibleForTesting(otherwise = VisibleForTesting.PROTECTED)
-    @NonNull
-    protected QuickActionSearchWidgetProviderDelegate getDelegate() {
+    protected @NonNull QuickActionSearchWidgetProviderDelegate getDelegate() {
         if (sDelegate != null) return sDelegate;
 
         Context context = ContextUtils.getApplicationContext();
@@ -180,8 +179,7 @@ public abstract class QuickActionSearchWidgetProvider extends AppWidgetProvider 
      * @return RemoteViews description for a single widget layout.
      */
     @VisibleForTesting(otherwise = VisibleForTesting.PROTECTED)
-    @NonNull
-    abstract RemoteViews createWidget(@NonNull Context context,
+    abstract @NonNull RemoteViews createWidget(@NonNull Context context,
             @NonNull SearchActivityPreferences prefs, int areaWidthDp, int areaHeightDp);
 
     /**

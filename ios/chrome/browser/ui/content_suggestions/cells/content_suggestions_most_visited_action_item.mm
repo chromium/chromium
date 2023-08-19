@@ -8,10 +8,6 @@
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
 #import "ios/chrome/browser/ui/content_suggestions/cells/content_suggestions_tile_constants.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 @implementation ContentSuggestionsMostVisitedActionItem
 
 - (instancetype)initWithCollectionShortcutType:(NTPCollectionShortcutType)type {
@@ -58,10 +54,26 @@
   [self updateAccessibilityLabel];
 }
 
+- (void)setDisabled:(BOOL)disabled {
+  if (_disabled == disabled) {
+    return;
+  }
+  _disabled = disabled;
+  [self updateAccessibilityLabel];
+}
+
 #pragma mark - Private
 
 // Updates self.accessibilityLabel based on the current property values.
 - (void)updateAccessibilityLabel {
+  if (self.disabled) {
+    self.accessibilityTraits =
+        super.accessibilityTraits | UIAccessibilityTraitNotEnabled;
+  } else {
+    self.accessibilityTraits =
+        super.accessibilityTraits & ~UIAccessibilityTraitNotEnabled;
+  }
+
   // Resetting self.accessibilityLabel to nil will prompt self.title to be used
   // as the default label.  This default value should be used if:
   // - the cell is not for Reading List,

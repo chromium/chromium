@@ -4,9 +4,15 @@ function test()
 {
     if (window.testRunner) {
         testRunner.dumpAsText();
+        testRunner.waitUntilDone();
         testRunner.dumpNavigationPolicy();
         document.querySelector("#link").focus();
         eventSender.keyDown("Enter", ["altKey"]);
+
+        <!-- 501 == ui::kDoubleClickTimeMs + 1 -->
+        const double_click_timeout_ms = 501;
+        setTimeout( () => requestAnimationFrame(testRunner.notifyDone()),
+                   double_click_timeout_ms);
     }
 }
 </script>

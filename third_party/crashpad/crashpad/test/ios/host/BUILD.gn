@@ -24,7 +24,7 @@ source_set("app_shared_sources") {
   testonly = true
   sources = [ "cptest_shared_object.h" ]
   configs += [ "../../..:crashpad_config" ]
-  deps = [ "../../../build:ios_enable_arc" ]
+  deps = [ "../../../build:apple_enable_arc" ]
   frameworks = [ "UIKit.framework" ]
 }
 
@@ -42,7 +42,7 @@ static_library("app_host_sources") {
   configs += [ "../../..:crashpad_config" ]
   deps = [
     ":app_shared_sources",
-    "../../../build:ios_enable_arc",
+    "../../../build:apple_enable_arc",
     "../../../client",
     "../../../snapshot",
     "../../../test",

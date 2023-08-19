@@ -97,6 +97,9 @@ class DEVICE_BLUETOOTH_EXPORT FlossBatteryManagerClient
   // Handle BatteryManager RegisterCallback result.
   void BatteryCallbackRegistered(DBusResult<uint32_t> result);
 
+  // Handle BatteryManager UnregisterCallback result.
+  void BatteryCallbackUnregistered(DBusResult<bool> result);
+
   // Managed by FlossDBusManager - we keep local pointer to access object proxy.
   raw_ptr<dbus::Bus> bus_ = nullptr;
 
@@ -128,7 +131,8 @@ class DEVICE_BLUETOOTH_EXPORT FlossBatteryManagerClient
   ExportedCallbackManager<FlossBatteryManagerClientObserver>
       exported_callback_manager_{battery_manager::kCallbackInterface};
 
-  uint32_t battery_manager_callback_id_;
+  // Callback ID used for callbacks registered to this client.
+  absl::optional<uint32_t> battery_manager_callback_id_;
 
   // Signal when the client is ready to be used.
   base::OnceClosure on_ready_;

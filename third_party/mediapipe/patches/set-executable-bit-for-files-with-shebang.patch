@@ -1,0 +1,21 @@
+From eaef81c79f0b6033bb6eadec341a24d5b07374c6 Mon Sep 17 00:00:00 2001
+From: Robert Ogden <robertogden@chromium.org>
+Date: Wed, 12 Jul 2023 13:54:25 -0700
+Subject: [PATCH] set executable bit for files with shebang
+
+---
+ third_party/mediapipe/src/setup_android_sdk_and_ndk.sh | 0
+ third_party/mediapipe/src/setup_opencv.sh              | 0
+ 2 files changed, 0 insertions(+), 0 deletions(-)
+ mode change 100644 => 100755 third_party/mediapipe/src/setup_android_sdk_and_ndk.sh
+ mode change 100644 => 100755 third_party/mediapipe/src/setup_opencv.sh
+
+diff --git a/third_party/mediapipe/src/setup_android_sdk_and_ndk.sh b/third_party/mediapipe/src/setup_android_sdk_and_ndk.sh
+old mode 100644
+new mode 100755
+diff --git a/third_party/mediapipe/src/setup_opencv.sh b/third_party/mediapipe/src/setup_opencv.sh
+old mode 100644
+new mode 100755
+-- 
+2.41.0.255.g8b1d071c50-goog
+

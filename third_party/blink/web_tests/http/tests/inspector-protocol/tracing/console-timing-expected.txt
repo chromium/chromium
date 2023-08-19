@@ -1,0 +1,24 @@
+Tests creating events with console.time and console.timeEnd
+Recording started
+Tracing complete
+Got ConsoleTime events:
+{
+    name : console-label1
+    ph : b
+}
+{
+    name : console-label2
+    ph : b
+}
+{
+    name : console-label1
+    ph : e
+}
+{
+    name : console-label2
+    ph : e
+}
+Event 0 (console-label1 b) ts is less than event 1 (console-label2 b): true
+Event 1 (console-label2 b) ts is less than event 2 (console-label1 e): true
+Event 2 (console-label1 e) ts is less than event 3 (console-label2 e): true
+

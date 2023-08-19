@@ -10,10 +10,6 @@
 #import "ios/chrome/browser/default_browser/utils_test_support.h"
 #import "testing/platform_test.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 // Tests metrics that are recorded and uploaded by
 // IOSChromeDefaultBrowserMetricsProvider.
 class IOSChromeDefaultBrowserMetricsProviderTest : public PlatformTest {

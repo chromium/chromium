@@ -685,8 +685,8 @@ class LocalFrameUkmAggregatorSimTest : public SimTest {
   void TestIntersectionObserverCounts(Document& document) {
     base::HistogramTester histogram_tester;
 
-    Element* target1 = document.getElementById("target1");
-    Element* target2 = document.getElementById("target2");
+    Element* target1 = document.getElementById(AtomicString("target1"));
+    Element* target2 = document.getElementById(AtomicString("target2"));
 
     // Create internal observer
     IntersectionObserverInit* observer_init =
@@ -734,7 +734,7 @@ class LocalFrameUkmAggregatorSimTest : public SimTest {
         base::TimeTicks(), base::TimeTicks() + base::Microseconds(10), 0,
         root_document->UkmSourceID(), root_document->UkmRecorder());
 
-    target1->setAttribute(html_names::kStyleAttr, "width: 60px");
+    target1->setAttribute(html_names::kStyleAttr, AtomicString("width: 60px"));
     Compositor().BeginFrame();
     EXPECT_EQ(
         histogram_tester.GetTotalSum(
@@ -768,10 +768,10 @@ TEST_F(LocalFrameUkmAggregatorSimTest, GetUkmAggregator) {
 
   auto* root_view = GetDocument().View();
   root_view->ResetUkmAggregatorForTesting();
-  auto* subframe_view =
-      To<HTMLFrameOwnerElement>(GetDocument().getElementById("frame"))
-          ->contentDocument()
-          ->View();
+  auto* subframe_view = To<HTMLFrameOwnerElement>(
+                            GetDocument().getElementById(AtomicString("frame")))
+                            ->contentDocument()
+                            ->View();
   auto* aggregator_from_subframe = subframe_view->GetUkmAggregator();
   auto* aggregator_from_root = root_view->GetUkmAggregator();
   EXPECT_EQ(aggregator_from_root, aggregator_from_subframe);
@@ -820,7 +820,8 @@ TEST_F(LocalFrameUkmAggregatorSimTest, IntersectionObserverCountsInChildFrame) {
   Compositor().BeginFrame();
   ChooseNextFrameForTest();
   TestIntersectionObserverCounts(
-      *To<HTMLFrameOwnerElement>(GetDocument().getElementById("frame"))
+      *To<HTMLFrameOwnerElement>(
+           GetDocument().getElementById(AtomicString("frame")))
            ->contentDocument());
 }
 
@@ -851,7 +852,7 @@ TEST_F(LocalFrameUkmAggregatorSimTest, DidReachFirstContentfulPaintMetric) {
   Compositor().BeginFrame();
 
   // Cause FCP on the next frame.
-  Element* target = GetDocument().getElementById("target");
+  Element* target = GetDocument().getElementById(AtomicString("target"));
   target->setInnerHTML("hello world");
 
   // Do a frame that will cause FCP, but the frame itself will still be pre-FCP.
@@ -910,8 +911,9 @@ TEST_F(LocalFrameUkmAggregatorSimTest, DidNotReachFirstContentfulPaintMetric) {
   Compositor().BeginFrame();
 
   // Make a change that does not result in FCP on the next frame.
-  Element* target = GetDocument().getElementById("target");
-  target->setAttribute(html_names::kStyleAttr, "background: blue;");
+  Element* target = GetDocument().getElementById(AtomicString("target"));
+  target->setAttribute(html_names::kStyleAttr,
+                       AtomicString("background: blue;"));
 
   // Do another pre-FCP frame.
   Compositor().BeginFrame();
@@ -946,9 +948,10 @@ TEST_F(LocalFrameUkmAggregatorSimTest, PrePostFCPMetricsWithChildFrameFCP) {
 
   // Make a change to the subframe that results in FCP for that subframe.
   auto* subframe_document =
-      To<HTMLFrameOwnerElement>(GetDocument().getElementById("frame"))
+      To<HTMLFrameOwnerElement>(
+          GetDocument().getElementById(AtomicString("frame")))
           ->contentDocument();
-  Element* target = subframe_document->getElementById("target");
+  Element* target = subframe_document->getElementById(AtomicString("target"));
   target->setInnerHTML("test1");
 
   // Do a frame that reaches FCP.

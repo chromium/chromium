@@ -4,10 +4,6 @@
 
 #import "ios/chrome/browser/lens/lens_browser_agent.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 #import "components/search_engines/template_url.h"
 #import "components/search_engines/template_url_service.h"
 #import "ios/chrome/browser/search_engines/template_url_service_factory.h"

@@ -4,10 +4,10 @@
 
 #include "chrome/browser/ui/webui/settings/ash/fake_os_settings_sections.h"
 
+#include "ash/webui/settings/public/constants/routes.mojom-shared.h"
 #include "base/rand_util.h"
 #include "chrome/browser/ui/webui/settings/ash/constants/constants_util.h"
 #include "chrome/browser/ui/webui/settings/ash/fake_os_settings_section.h"
-#include "chrome/browser/ui/webui/settings/chromeos/constants/routes.mojom-shared.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace ash::settings {

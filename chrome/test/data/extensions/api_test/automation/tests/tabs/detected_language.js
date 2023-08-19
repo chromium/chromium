@@ -21,57 +21,6 @@ var allTests = [
     chrome.test.succeed();
   },
 
-  function detectedLanguageCharacter() {
-    var item = rootNode.children[2].children[0];
-    var langAnnotation = item.languageAnnotationForStringAttribute('name');
-    var name = item.name;
-    assertEq(1, langAnnotation.length);
-    assertEq('el', langAnnotation[0].language);
-    var startIndex = langAnnotation[0].startIndex;
-    var endIndex = langAnnotation[0].endIndex;
-    assertEq(name,buildOutputString(name,startIndex,endIndex));
-    chrome.test.succeed();
-  },
-
-  function detectedLanguageMultiple() {
-    var item = rootNode.children[3].children[0];
-    var langAnnotation = item.languageAnnotationForStringAttribute('name');
-    var name = item.name;
-    assertEq(3, langAnnotation.length);
-    assertEq('en', langAnnotation[0].language);
-    assertEq('ja', langAnnotation[1].language);
-    assertEq('en', langAnnotation[2].language);
-
-    // Build substrings.
-    var actualSubstrings = [];
-    for (var q = 0; q < langAnnotation.length; ++q) {
-      var output = '';
-      var startIndex = langAnnotation[q].startIndex;
-      var endIndex = langAnnotation[q].endIndex;
-      actualSubstrings.push(buildOutputString(name,startIndex,endIndex));
-    }
-
-    // Can assertEq on the two English strings.
-    assertEq('Hello everyone, it\'s a pleasure to meet you. ',
-      actualSubstrings[0]);
-    assertEq('Let\'s include more English to ensure that we\'re splitting ' +
-      'indices correctly.', actualSubstrings[2]);
-    // Compare unicode code points to ensure correct symbols for Japanese
-    // substring.
-    // correctJapaneseCodePoints contains the codePoints for the string:
-    // どうぞよろしくお願いします.
-    var correctJapaneseCodePoints = [12393, 12358, 12382, 12424, 12429, 12375,
-      12367, 12362, 39000, 12356, 12375, 12414, 12377, 46];
-    var japaneseSubstring = actualSubstrings[1];
-    var japaneseSubstringSymbolArray = [...japaneseSubstring];
-    assertEq(japaneseSubstringSymbolArray.length,
-      correctJapaneseCodePoints.length);
-    for (var i = 0; i < japaneseSubstringSymbolArray.length; ++i) {
-      var codePoint = japaneseSubstring.codePointAt(i);
-      assertEq(correctJapaneseCodePoints[i], codePoint);
-    }
-    chrome.test.succeed();
-  },
   // This function ensures correct behavior when building substrings that
   // contain unicode surrogate pairs.
   function testBuildOutputStringOnSurrogatePair() {

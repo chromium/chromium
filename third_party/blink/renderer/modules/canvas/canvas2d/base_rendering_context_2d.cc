@@ -18,9 +18,11 @@
 #include "base/task/single_thread_task_runner.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/privacy_budget/identifiability_metrics.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_begin_layer_options.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_union_canvasfilter_string.h"
 #include "third_party/blink/renderer/core/css/cssom/css_color_value.h"
 #include "third_party/blink/renderer/core/css/parser/css_parser.h"
+#include "third_party/blink/renderer/core/css/properties/computed_style_utils.h"
 #include "third_party/blink/renderer/core/dom/events/event.h"
 #include "third_party/blink/renderer/core/frame/web_feature.h"
 #include "third_party/blink/renderer/core/html/canvas/canvas_context_creation_attributes_core.h"
@@ -80,12 +82,6 @@ const char BaseRenderingContext2D::kAllPetiteVariantString[] =
     "all-petite-caps";
 const char BaseRenderingContext2D::kUnicaseVariantString[] = "unicase";
 const char BaseRenderingContext2D::kTitlingCapsVariantString[] = "titling-caps";
-const char BaseRenderingContext2D::kAutoRendering[] = "auto";
-const char BaseRenderingContext2D::kOptimizeSpeedRendering[] = "optimizespeed";
-const char BaseRenderingContext2D::kOptimizeLegibilityRendering[] =
-    "optimizelegibility";
-const char BaseRenderingContext2D::kGeometricPrecisionRendering[] =
-    "geometricprecision";
 
 // Dummy overdraw test for ops that do not support overdraw detection
 const auto kNoOverdraw = [](const SkIRect& clip_bounds) { return false; };
@@ -135,8 +131,6 @@ void BaseRenderingContext2D::save() {
 
   ValidateStateStack();
 
-  DCHECK_GE(state_stack_.size(), 1u);
-
   // GetOrCreatePaintCanvas() can call RestoreMatrixClipStack which syncs
   // canvas to state_stack_. Get the canvas before adjusting state_stack_ to
   // ensure canvas is synced prior to adjusting state_stack_.
@@ -154,7 +148,7 @@ void BaseRenderingContext2D::save() {
   ValidateStateStack();
 }
 
-void BaseRenderingContext2D::restore() {
+void BaseRenderingContext2D::restore(ExceptionState& exception_state) {
   if (UNLIKELY(isContextLost())) {
     return;
   }
@@ -164,27 +158,24 @@ void BaseRenderingContext2D::restore() {
   }
   ValidateStateStack();
   if (state_stack_.size() <= 1)
+    // State stack is empty. Extra `restore()` are silently ignored.
     return;
-
-  DCHECK_GT(state_stack_.size(), static_cast<WTF::wtf_size_t>(layer_count_));
 
   // Verify that the top of the stack was pushed with Save.
-  if (RuntimeEnabledFeatures::Canvas2dLayersEnabled() &&
-      state_stack_.back()->GetSaveType() !=
-          CanvasRenderingContext2DState::SaveType::kSaveRestore) {
+  if (GetState().GetSaveType() !=
+      CanvasRenderingContext2DState::SaveType::kSaveRestore) {
+    exception_state.ThrowDOMException(
+        DOMExceptionCode::kInvalidStateError,
+        "Called `restore()` with no matching `save()` inside layer.");
     return;
   }
-
-  // Verify that the current state's transform is invertible.
-  if (IsTransformInvertible())
-    GetModifiablePath().Transform(GetState().GetTransform());
 
   PopAndRestore();
   ValidateStateStack();
 }
 
-void BaseRenderingContext2D::beginLayer(ExecutionContext* execution_context,
-                                        const V8CanvasFilterInput* filter_init,
+void BaseRenderingContext2D::beginLayer(ScriptState* script_state,
+                                        const BeginLayerOptions* options,
                                         ExceptionState& exception_state) {
   if (UNLIKELY(isContextLost())) {
     return;
@@ -194,8 +185,6 @@ void BaseRenderingContext2D::beginLayer(ExecutionContext* execution_context,
 
   ValidateStateStack();
 
-  DCHECK_GE(state_stack_.size(), 1u);
-
   // GetOrCreatePaintCanvas() can call RestoreMatrixClipStack which syncs
   // canvas to state_stack_. Get the canvas before adjusting state_stack_ to
   // ensure canvas is synced prior to adjusting state_stack_.
@@ -203,13 +192,21 @@ void BaseRenderingContext2D::beginLayer(ExecutionContext* execution_context,
   if (!canvas)
     return;
 
-  ++layer_count_;
-
   CanvasRenderingContext2DState& state = GetState();
-  if (filter_init != nullptr) {
+  if (const V8CanvasFilterInput* filter_input = CHECK_DEREF(options).filter();
+      filter_input != nullptr) {
+    FilterOperations filter_operations =
+        CanvasFilterOperationResolver::CreateFilterOperations(
+            *filter_input, CHECK_DEREF(ExecutionContext::From(script_state)),
+            exception_state);
+    if (exception_state.HadException()) {
+      return;
+    }
+
     FilterEffectBuilder filter_effect_builder(
         gfx::RectF(Width(), Height()),
         1.0f);  // Deliberately ignore zoom on the canvas element.
+
     // Save the layer's filter in the parent state, along with all the other
     // render states impacting the layer. Technically, this is only required so
     // that we could restore the `cc::PaintCanvas` matrix stack (in
@@ -217,25 +214,16 @@ void BaseRenderingContext2D::beginLayer(ExecutionContext* execution_context,
     // opened. The filter can be discarded from the parent state as soon as the
     // layer is closed.
     state.SetLayerFilter(paint_filter_builder::Build(
-        filter_effect_builder.BuildFilterEffect(
-            CanvasFilterOperationResolver::CreateFilterOperations(
-                CHECK_DEREF(filter_init), CHECK_DEREF(execution_context),
-                exception_state),
-            !OriginClean()),
+        filter_effect_builder.BuildFilterEffect(std::move(filter_operations),
+                                                !OriginClean()),
         kInterpolationSpaceSRGB));
   }
 
-  using SaveType = CanvasRenderingContext2DState::SaveType;
-  SaveType save_type = SaveLayerForState(state, *canvas);
-
-#if DCHECK_IS_ON()
-  if (save_type == SaveType::kBeginEndLayerTwoSaves) {
-    ++layer_extra_saves_;
-  }
-#endif
+  ++layer_count_;
 
   state_stack_.push_back(MakeGarbageCollected<CanvasRenderingContext2DState>(
-      state, CanvasRenderingContext2DState::kDontCopyClipList, save_type));
+      state, CanvasRenderingContext2DState::kDontCopyClipList,
+      SaveLayerForState(state, *canvas)));
   max_state_stack_depth_ =
       std::max(state_stack_.size(), max_state_stack_depth_);
 
@@ -249,8 +237,6 @@ void BaseRenderingContext2D::beginLayer(ExecutionContext* execution_context,
   DCHECK(!GetState().ShouldDrawShadows());
   setGlobalAlpha(1.0);
   setGlobalCompositeOperation("source-over");
-  setFilter(GetTopExecutionContext(),
-            MakeGarbageCollected<V8UnionCanvasFilterOrString>("none"));
 }
 
 CanvasRenderingContext2DState::SaveType
@@ -295,7 +281,7 @@ BaseRenderingContext2D::SaveLayerForState(
                         : SaveType::kBeginEndLayerOneSave;
 }
 
-void BaseRenderingContext2D::endLayer() {
+void BaseRenderingContext2D::endLayer(ExceptionState& exception_state) {
   if (UNLIKELY(isContextLost())) {
     return;
   }
@@ -303,24 +289,21 @@ void BaseRenderingContext2D::endLayer() {
   identifiability_study_helper_.set_encountered_skipped_ops();
 
   ValidateStateStack();
-  if (state_stack_.size() <= 1 || layer_count_ <= 0)
+  if (state_stack_.size() <= 1 || layer_count_ <= 0) {
+    exception_state.ThrowDOMException(
+        DOMExceptionCode::kInvalidStateError,
+        "Called `endLayer()` with no matching `beginLayer()`.");
     return;
-
-  DCHECK_GT(state_stack_.size(), static_cast<WTF::wtf_size_t>(layer_count_));
-
-  // Verify that the current state's transform is invertible.
-  if (IsTransformInvertible())
-    GetModifiablePath().Transform(GetState().GetTransform());
-
-  // All saves performed since the last beginLayer are no-ops.
-  while (state_stack_.back()->GetSaveType() ==
-         CanvasRenderingContext2DState::SaveType::kSaveRestore) {
-    PopAndRestore();
   }
 
-  // If we do an endLayer, we have to be sure that we did a beginLayer (that
-  // could have introduced an extra state).
-  DCHECK(state_stack_.back()->IsLayerSaveType());
+  // Verify that the top of the stack was pushed with `beginLayer`.
+  if (!GetState().IsLayerSaveType()) {
+    exception_state.ThrowDOMException(
+        DOMExceptionCode::kInvalidStateError,
+        "Called `endLayer()` with no matching `beginLayer()` inside parent "
+        "`save()`/`restore()` pair.");
+    return;
+  }
 
   PopAndRestore();
 
@@ -329,22 +312,17 @@ void BaseRenderingContext2D::endLayer() {
 }
 
 void BaseRenderingContext2D::PopAndRestore() {
-  if (state_stack_.size() <= 1) {
-    NOTREACHED();
-    return;
-  }
-
   cc::PaintCanvas* canvas = GetOrCreatePaintCanvas();
-
   if (!canvas)
     return;
 
   if (state_stack_.back()->GetSaveType() ==
       CanvasRenderingContext2DState::SaveType::kBeginEndLayerTwoSaves) {
     canvas->restore();
-#if DCHECK_IS_ON()
-    --layer_extra_saves_;
-#endif
+  }
+
+  if (IsTransformInvertible()) {
+    GetModifiablePath().Transform(GetState().GetTransform());
   }
 
   canvas->restore();
@@ -357,6 +335,48 @@ void BaseRenderingContext2D::PopAndRestore() {
   SetIsTransformInvertible(GetState().IsTransformInvertible());
   if (IsTransformInvertible())
     GetModifiablePath().Transform(GetState().GetTransform().Inverse());
+}
+
+void BaseRenderingContext2D::ValidateStateStackImpl(
+    const cc::PaintCanvas* canvas) const {
+  if (canvas == nullptr) {
+    canvas = GetPaintCanvas();
+  }
+
+  DCHECK_GE(state_stack_.size(), 1u);
+  DCHECK_GT(state_stack_.size(), static_cast<WTF::wtf_size_t>(layer_count_));
+
+  using SaveType = CanvasRenderingContext2DState::SaveType;
+  DCHECK_EQ(state_stack_[0]->GetSaveType(), SaveType::kInitial);
+
+  int actual_layer_count = 0;
+  int extra_layer_saves = 0;
+  for (wtf_size_t i = 1; i < state_stack_.size(); ++i) {
+    if (RuntimeEnabledFeatures::Canvas2dLayersEnabled()) {
+      DCHECK_NE(state_stack_[i]->GetSaveType(), SaveType::kInitial);
+    } else {
+      DCHECK_EQ(state_stack_[i]->GetSaveType(), SaveType::kSaveRestore);
+    }
+
+    if (state_stack_[i]->IsLayerSaveType()) {
+      ++actual_layer_count;
+    }
+    if (state_stack_[i]->GetSaveType() == SaveType::kBeginEndLayerTwoSaves) {
+      ++extra_layer_saves;
+    }
+  }
+  DCHECK_EQ(layer_count_, actual_layer_count);
+
+  if (canvas) {
+    // The canvas should always have an initial save frame, to support
+    // resetting the top level matrix and clip.
+    DCHECK_GT(canvas->getSaveCount(), 1);
+
+    if (context_lost_mode_ == CanvasRenderingContext::kNotLostContext) {
+      DCHECK_EQ(static_cast<size_t>(canvas->getSaveCount()),
+                state_stack_.size() + extra_layer_saves + 1);
+    }
+  }
 }
 
 void BaseRenderingContext2D::RestoreMatrixClipStack(cc::PaintCanvas* c) const {
@@ -391,7 +411,7 @@ void BaseRenderingContext2D::RestoreMatrixClipStack(cc::PaintCanvas* c) const {
 
     prev_state = curr_state.Get();
   }
-  ValidateStateStackWithCanvas(c);
+  ValidateStateStack(c);
 }
 
 void BaseRenderingContext2D::ResetInternal() {
@@ -401,6 +421,7 @@ void BaseRenderingContext2D::ResetInternal() {
   ValidateStateStack();
   state_stack_.resize(1);
   state_stack_.front() = MakeGarbageCollected<CanvasRenderingContext2DState>();
+  layer_count_ = 0;
   SetIsTransformInvertible(true);
   Clear();
   if (cc::PaintCanvas* c = GetPaintCanvas()) {
@@ -818,7 +839,7 @@ const V8UnionCanvasFilterOrString* BaseRenderingContext2D::filter() const {
 }
 
 void BaseRenderingContext2D::setFilter(
-    const ExecutionContext* execution_context,
+    ScriptState* script_state,
     const V8UnionCanvasFilterOrString* input) {
   if (!input)
     return;
@@ -843,12 +864,11 @@ void BaseRenderingContext2D::setFilter(
           filter_string == GetState().UnparsedCSSFilter()) {
         return;
       }
-      if (!execution_context)
-        return;
       const CSSValue* css_value = CSSParser::ParseSingleValue(
           CSSPropertyID::kFilter, filter_string,
           MakeGarbageCollected<CSSParserContext>(
-              kHTMLStandardMode, execution_context->GetSecureContextMode()));
+              kHTMLStandardMode,
+              ExecutionContext::From(script_state)->GetSecureContextMode()));
       if (!css_value || css_value->IsCSSWideKeyword())
         return;
       GetState().SetUnparsedCSSFilter(filter_string);
@@ -1071,8 +1091,10 @@ void BaseRenderingContext2D::DrawPathInternal(
     CanvasRenderingContext2DState::PaintType paint_type,
     SkPathFillType fill_type,
     UsePaintCache use_paint_cache) {
-  if (path.IsEmpty())
+  if (path.IsEmpty() ||
+      (path.BoundingRect().height() == 0 && path.BoundingRect().width() == 0)) {
     return;
+  }
 
   gfx::RectF bounds(path.BoundingRect());
   if (std::isnan(bounds.x()) || std::isnan(bounds.y()) ||
@@ -1083,6 +1105,11 @@ void BaseRenderingContext2D::DrawPathInternal(
     InflateStrokeRect(bounds);
 
   if (path.IsLine()) {
+    if (UNLIKELY(paint_type == CanvasRenderingContext2DState::kFillPaintType)) {
+      // Filling a line is a no-op.
+      // Also, SKCanvas::drawLine() ignores paint type and always strokes.
+      return;
+    }
     auto line = path.line();
     Draw<OverdrawOp::kNone>(
         [line](cc::PaintCanvas* c,
@@ -1759,8 +1786,9 @@ void BaseRenderingContext2D::drawImage(CanvasImageSource* image_source,
 
   WillDrawImage(image_source);
 
-  if (!origin_tainted_by_content_ && WouldTaintOrigin(image_source))
+  if (!origin_tainted_by_content_ && WouldTaintCanvasOrigin(image_source)) {
     SetOriginTaintedByContent();
+  }
 
   Draw<OverdrawOp::kDrawImage>(
       [this, image_source, image, src_rect, dst_rect](
@@ -1943,7 +1971,7 @@ CanvasPattern* BaseRenderingContext2D::createPattern(
   if (!image_for_rendering)
     return nullptr;
 
-  bool origin_clean = !WouldTaintOrigin(image_source);
+  bool origin_clean = !WouldTaintCanvasOrigin(image_source);
 
   auto* pattern = MakeGarbageCollected<CanvasPattern>(
       std::move(image_for_rendering), repeat_mode, origin_clean);
@@ -2091,15 +2119,17 @@ ImageData* BaseRenderingContext2D::getImageDataInternal(
       GetCanvasRenderingContextHost()->RenderingContext()) {
     if (will_read_frequently_value == CanvasContextCreationAttributesCore::
                                           WillReadFrequently::kUndefined) {
-      const String& message =
-          "Canvas2D: Multiple readback operations using getImageData are "
-          "faster with the willReadFrequently attribute set to true. See: "
-          "https://html.spec.whatwg.org/multipage/"
-          "canvas.html#concept-canvas-will-read-frequently";
-      GetTopExecutionContext()->AddConsoleMessage(
-          MakeGarbageCollected<ConsoleMessage>(
-              mojom::blink::ConsoleMessageSource::kRendering,
-              mojom::blink::ConsoleMessageLevel::kWarning, message));
+      if (auto* execution_context = GetTopExecutionContext()) {
+        const String& message =
+            "Canvas2D: Multiple readback operations using getImageData are "
+            "faster with the willReadFrequently attribute set to true. See: "
+            "https://html.spec.whatwg.org/multipage/"
+            "canvas.html#concept-canvas-will-read-frequently";
+        execution_context->AddConsoleMessage(
+            MakeGarbageCollected<ConsoleMessage>(
+                mojom::blink::ConsoleMessageSource::kRendering,
+                mojom::blink::ConsoleMessageLevel::kWarning, message));
+      }
     }
   }
 
@@ -2351,7 +2381,7 @@ String BaseRenderingContext2D::wordSpacing() const {
 }
 
 String BaseRenderingContext2D::textRendering() const {
-  return ToStringForIdl(GetState().GetTextRendering());
+  return GetState().GetTextRendering().AsString();
 }
 
 float BaseRenderingContext2D::GetFontBaseline(
@@ -2398,7 +2428,7 @@ String BaseRenderingContext2D::fontKerning() const {
 }
 
 String BaseRenderingContext2D::fontStretch() const {
-  return FontDescription::ToString(GetState().GetFontStretch()).LowerASCII();
+  return GetState().GetFontStretch().AsString();
 }
 
 String BaseRenderingContext2D::fontVariantCaps() const {
@@ -2471,6 +2501,77 @@ void BaseRenderingContext2D::WillOverwriteCanvas(
   }
 
   WillOverwriteCanvas();
+}
+
+void BaseRenderingContext2D::WillUseCurrentFont() const {}
+
+String BaseRenderingContext2D::font() const {
+  if (!GetState().HasRealizedFont()) {
+    return kDefaultFont;
+  }
+
+  WillUseCurrentFont();
+  StringBuilder serialized_font;
+  const FontDescription& font_description = GetState().GetFontDescription();
+
+  if (font_description.Style() == ItalicSlopeValue()) {
+    serialized_font.Append("italic ");
+  }
+  if (font_description.Weight() == BoldWeightValue()) {
+    serialized_font.Append("bold ");
+  } else if (font_description.Weight() != NormalWeightValue()) {
+    int weight_as_int = static_cast<int>((float)font_description.Weight());
+    serialized_font.AppendNumber(weight_as_int);
+    serialized_font.Append(" ");
+  }
+  if (font_description.VariantCaps() == FontDescription::kSmallCaps) {
+    serialized_font.Append("small-caps ");
+  }
+
+  serialized_font.AppendNumber(font_description.ComputedSize());
+  serialized_font.Append("px ");
+
+  serialized_font.Append(
+      ComputedStyleUtils::ValueForFontFamily(font_description.Family())
+          ->CssText());
+
+  return serialized_font.ToString();
+}
+
+bool BaseRenderingContext2D::WillSetFont() const {
+  return true;
+}
+
+bool BaseRenderingContext2D::CurrentFontResolvedAndUpToDate() const {
+  return GetState().HasRealizedFont();
+}
+
+bool BaseRenderingContext2D::ResolveFont(const String& new_font) {
+  // PaintRenderingContext2D does not override and should not call this method.
+  NOTREACHED_NORETURN();
+}
+
+void BaseRenderingContext2D::setFont(const String& new_font) {
+  if (UNLIKELY(!WillSetFont())) {
+    return;
+  }
+
+  if (UNLIKELY(identifiability_study_helper_.ShouldUpdateBuilder())) {
+    identifiability_study_helper_.UpdateBuilder(
+        CanvasOps::kSetFont, IdentifiabilityBenignStringToken(new_font));
+  }
+
+  if (new_font == GetState().UnparsedFont() &&
+      CurrentFontResolvedAndUpToDate()) {
+    return;
+  }
+
+  if (!ResolveFont(new_font)) {
+    return;
+  }
+
+  // The parse succeeded.
+  GetState().SetUnparsedFont(new_font);
 }
 
 }  // namespace blink

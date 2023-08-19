@@ -14,7 +14,8 @@ import time
 from typing import Optional, Tuple
 
 import common
-from common import BootMode, boot_device, get_system_info, find_image_in_sdk, \
+from boot_device import BootMode, StateTransitionError, boot_device
+from common import get_system_info, find_image_in_sdk, \
                    register_device_args
 from compatible_utils import get_sdk_hash, pave, running_unattended
 from lockfile import lock
@@ -42,7 +43,7 @@ def _get_system_info(target: Optional[str],
     if running_unattended():
         try:
             boot_device(target, BootMode.REGULAR, serial_num)
-        except (subprocess.CalledProcessError, common.StateTransitionError):
+        except (subprocess.CalledProcessError, StateTransitionError):
             logging.warning('Could not boot device. Assuming in ZEDBOOT')
             return ('', '')
         wait_cmd = common.run_ffx_command(cmd=('target', 'wait', '-t', '180'),
@@ -98,30 +99,30 @@ def _run_flash_command(system_image_dir: str, target_id: Optional[str]):
         # where large files can take longer to transfer.
         configs.append('fastboot.flash.timeout_rate=1')
 
-    common.run_ffx_command(cmd=('target', 'flash', manifest,
-                                '--no-bootloader-reboot'),
-                           target_id=target_id,
-                           configs=configs)
+    # Flash only with a file lock acquired.
+    # This prevents multiple fastboot binaries from flashing concurrently,
+    # which should increase the odds of flashing success.
+    with lock(_FF_LOCK, timeout=_FF_LOCK_ACQ_TIMEOUT):
+        common.run_ffx_command(cmd=('target', 'flash', manifest,
+                                    '--no-bootloader-reboot'),
+                               target_id=target_id,
+                               configs=configs)
 
 
 def flash(system_image_dir: str,
           target: Optional[str],
           serial_num: Optional[str] = None) -> None:
     """Flash the device."""
-    # Flash only with a file lock acquired.
-    # This prevents multiple fastboot binaries from flashing concurrently,
-    # which should increase the odds of flashing success.
-    with lock(_FF_LOCK, timeout=_FF_LOCK_ACQ_TIMEOUT):
-        if serial_num:
-            boot_device(target, BootMode.BOOTLOADER, serial_num)
-            for _ in range(10):
-                time.sleep(10)
-                if common.run_ffx_command(cmd=('target', 'list', serial_num),
-                                          check=False).returncode == 0:
-                    break
-            _run_flash_command(system_image_dir, serial_num)
-        else:
-            _run_flash_command(system_image_dir, target)
+    if serial_num:
+        boot_device(target, BootMode.BOOTLOADER, serial_num)
+        for _ in range(10):
+            time.sleep(10)
+            if common.run_ffx_command(cmd=('target', 'list', serial_num),
+                                      check=False).returncode == 0:
+                break
+        _run_flash_command(system_image_dir, serial_num)
+    else:
+        _run_flash_command(system_image_dir, target)
 
 
 def update(system_image_dir: str,

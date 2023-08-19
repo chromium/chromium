@@ -141,7 +141,7 @@ bool ThemeServiceAuraLinux::IsSystemThemeDistinctFromDefaultTheme() const {
 bool ThemeServiceAuraLinux::UsingSystemTheme() const {
   return GetThemeSupplier() &&
          GetThemeSupplier()->get_theme_type() ==
-             ui::ColorProviderManager::ThemeInitializerSupplier::ThemeType::
+             ui::ColorProviderKey::ThemeInitializerSupplier::ThemeType::
                  kNativeX11;
 }
 

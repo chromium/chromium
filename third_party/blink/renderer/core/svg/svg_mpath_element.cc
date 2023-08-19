@@ -49,9 +49,9 @@ SVGAnimatedPropertyBase* SVGMPathElement::PropertyFromAttribute(
   }
 }
 
-void SVGMPathElement::SynchronizeSVGAttribute(const QualifiedName& name) const {
-  SVGURIReference::SynchronizeSVGAttribute(name);
-  SVGElement::SynchronizeSVGAttribute(name);
+void SVGMPathElement::SynchronizeAllSVGAttributes() const {
+  SVGURIReference::SynchronizeAllSVGAttributes();
+  SVGElement::SynchronizeAllSVGAttributes();
 }
 
 void SVGMPathElement::BuildPendingResource() {

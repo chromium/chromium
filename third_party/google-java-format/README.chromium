@@ -1,0 +1,22 @@
+Name: google-java-format
+URL: https://github.com/google/google-java-format
+Version: 1.17.0
+License: Apache 2.0
+License File: LICENSE
+Security Critical: no
+Shipped: no
+
+Description:
+google-java-format is a program that reformats Java source code to comply with
+Google Java Style (https://google.github.io/styleguide/javaguide.html).
+
+Local Modifications:
+None
+
+Update instructions:
+- Find latest version available via https://ci.chromium.org/ui/p/chromium/builders/ci/3pp-linux-amd64-packager
+- Update DEPS and the version in this README.chromium.
+- Run gclient sync and verify locally that the formatter works:
+  1) Modify a Java file and including it in the patch
+  2) Run "git cl format"
+  3) Revert the Java file change

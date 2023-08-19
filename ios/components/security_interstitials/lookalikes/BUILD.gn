@@ -3,7 +3,6 @@
 # found in the LICENSE file.
 
 source_set("lookalikes") {
-  configs += [ "//build/config/compiler:enable_arc" ]
   sources = [
     "lookalike_url_blocking_page.h",
     "lookalike_url_blocking_page.mm",
@@ -34,7 +33,6 @@ source_set("lookalikes") {
 }
 
 source_set("unit_tests") {
-  configs += [ "//build/config/compiler:enable_arc" ]
   testonly = true
   sources = [
     "lookalike_url_blocking_page_unittest.mm",

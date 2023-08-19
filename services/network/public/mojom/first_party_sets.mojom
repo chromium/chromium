@@ -27,25 +27,9 @@ struct FirstPartySetEntry {
   SiteIndex? site_index;
 };
 
-// Computed for every cookie access attempt but is only relevant for SameParty
-// cookies.
-enum SamePartyCookieContextType {
-  // The opposite to kSameParty. Should be the default value.
-  kCrossParty,
-  // If the request URL is in the same First-Party Sets as the top-frame site
-  // and each member of the isolation_info.party_context.
-  kSameParty,
-};
-
-// Keep defaults in here in sync with net/cookies/same_party_context.cc.
-struct SamePartyContext {
-  SamePartyCookieContextType context_type = kCrossParty;
-};
-
 // This struct must match the class fields defined in
 // //net/first_party_sets/first_party_set_metadata.h.
 struct FirstPartySetMetadata {
-  SamePartyContext context;
   // absl::nullopt indicates that the frame's site is not associated with any
   // First-Party Set.
   FirstPartySetEntry? frame_entry;

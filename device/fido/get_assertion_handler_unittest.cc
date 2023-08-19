@@ -57,7 +57,8 @@ constexpr char kResponseTransportHistogram[] =
 
 using TestGetAssertionRequestCallback = test::StatusAndValuesCallbackReceiver<
     GetAssertionStatus,
-    absl::optional<std::vector<AuthenticatorGetAssertionResponse>>>;
+    absl::optional<std::vector<AuthenticatorGetAssertionResponse>>,
+    FidoAuthenticator*>;
 
 }  // namespace
 
@@ -930,6 +931,7 @@ TEST(GetAssertionRequestHandlerWinTest, TestWinUsbDiscovery) {
     api.set_available(enable_api);
     api.InjectNonDiscoverableCredential(
         test_data::kTestGetAssertionCredentialId, test_data::kRelyingPartyId);
+    WinWebAuthnApi::ScopedOverride win_webauthn_api_override(&api);
 
     // Simulate a connected HID device.
     ScopedFakeFidoHidManager fake_hid_manager;
@@ -937,7 +939,6 @@ TEST(GetAssertionRequestHandlerWinTest, TestWinUsbDiscovery) {
 
     TestGetAssertionRequestCallback cb;
     FidoDiscoveryFactory fido_discovery_factory;
-    fido_discovery_factory.set_win_webauthn_api(&api);
     CtapGetAssertionRequest request(test_data::kRelyingPartyId,
                                     test_data::kClientDataJson);
     request.allow_list = {PublicKeyCredentialDescriptor(

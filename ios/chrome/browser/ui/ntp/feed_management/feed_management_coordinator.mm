@@ -11,10 +11,6 @@
 #import "ios/chrome/browser/ui/ntp/feed_management/follow_management_view_controller.h"
 #import "ios/chrome/browser/ui/ntp/metrics/feed_metrics_recorder.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 @interface FeedManagementCoordinator () <FeedManagementFollowDelegate>
 
 // The navigation controller into which management UI will be placed. This is a

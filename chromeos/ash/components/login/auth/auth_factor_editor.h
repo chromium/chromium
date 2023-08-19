@@ -9,6 +9,7 @@
 #include "base/functional/callback.h"
 #include "base/memory/weak_ptr.h"
 #include "chromeos/ash/components/dbus/cryptohome/UserDataAuth.pb.h"
+#include "chromeos/ash/components/dbus/userdataauth/userdataauth_client.h"
 #include "chromeos/ash/components/login/auth/public/auth_callbacks.h"
 #include "chromeos/ash/components/login/auth/public/authentication_error.h"
 #include "chromeos/ash/components/login/auth/public/user_context.h"
@@ -21,7 +22,7 @@ namespace ash {
 // This implementation is only compatible with AuthSession-based API.
 class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_LOGIN_AUTH) AuthFactorEditor {
  public:
-  AuthFactorEditor();
+  explicit AuthFactorEditor(UserDataAuthClient* client);
 
   AuthFactorEditor(const AuthFactorEditor&) = delete;
   AuthFactorEditor& operator=(const AuthFactorEditor&) = delete;
@@ -95,10 +96,23 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_LOGIN_AUTH) AuthFactorEditor {
   void AddRecoveryFactor(std::unique_ptr<UserContext> context,
                          AuthOperationCallback callback);
 
+  // Rotates the recovery factor of the user by `context`. The recovery factor
+  // must already be configured prior to calling this.
+  // Session must be authenticated.
+  void RotateRecoveryFactor(std::unique_ptr<UserContext> context,
+                            AuthOperationCallback callback);
+
   // Remove all recovery keys for the user by `context`.
   // Session must be authenticated.
   void RemoveRecoveryFactor(std::unique_ptr<UserContext> context,
                             AuthOperationCallback callback);
+
+  // Replaces the user's local password with a new value. A local password must
+  // already be configured prior to calling this.
+  // Session should be authenticated.
+  void ReplaceLocalPasswordFactor(std::unique_ptr<UserContext> context,
+                                  cryptohome::RawPassword new_password,
+                                  AuthOperationCallback callback);
 
  private:
   void OnListAuthFactors(
@@ -129,6 +143,12 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_LOGIN_AUTH) AuthFactorEditor {
       AuthOperationCallback callback,
       absl::optional<user_data_auth::RemoveAuthFactorReply> reply);
 
+  void ReplaceLocalPasswordFactorImpl(std::unique_ptr<UserContext> context,
+                                      cryptohome::RawPassword new_password,
+                                      AuthOperationCallback callback,
+                                      const std::string& system_salt);
+
+  const raw_ptr<UserDataAuthClient, DanglingUntriaged> client_;
   base::WeakPtrFactory<AuthFactorEditor> weak_factory_{this};
 };
 

@@ -8,11 +8,11 @@
 #include <string>
 
 #include "base/check_op.h"
-#include "base/containers/stack_container.h"
 #include "cc/paint/color_filter.h"
 #include "cc/paint/paint_export.h"
 #include "cc/paint/paint_image.h"
 #include "cc/paint/paint_shader.h"
+#include "third_party/abseil-cpp/absl/container/inlined_vector.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/skia/include/core/SkBlendMode.h"
 #include "third_party/skia/include/core/SkColor.h"
@@ -249,13 +249,15 @@ class CC_PAINT_EXPORT DropShadowPaintFilter final : public PaintFilter {
 class CC_PAINT_EXPORT MagnifierPaintFilter final : public PaintFilter {
  public:
   static constexpr Type kType = Type::kMagnifier;
-  MagnifierPaintFilter(const SkRect& src_rect,
+  MagnifierPaintFilter(const SkRect& lens_bounds,
+                       SkScalar zoom_amount,
                        SkScalar inset,
                        sk_sp<PaintFilter> input,
                        const CropRect* crop_rect = nullptr);
   ~MagnifierPaintFilter() override;
 
-  const SkRect& src_rect() const { return src_rect_; }
+  const SkRect& lens_bounds() const { return lens_bounds_; }
+  SkScalar zoom_amount() const { return zoom_amount_; }
   SkScalar inset() const { return inset_; }
   const sk_sp<PaintFilter>& input() const { return input_; }
 
@@ -267,7 +269,8 @@ class CC_PAINT_EXPORT MagnifierPaintFilter final : public PaintFilter {
       ImageProvider* image_provider) const override;
 
  private:
-  SkRect src_rect_;
+  SkRect lens_bounds_;
+  SkScalar zoom_amount_;
   SkScalar inset_;
   sk_sp<PaintFilter> input_;
 };
@@ -297,15 +300,11 @@ class CC_PAINT_EXPORT AlphaThresholdPaintFilter final : public PaintFilter {
  public:
   static constexpr Type kType = Type::kAlphaThreshold;
   AlphaThresholdPaintFilter(const SkRegion& region,
-                            SkScalar inner_min,
-                            SkScalar outer_max,
                             sk_sp<PaintFilter> input,
                             const CropRect* crop_rect = nullptr);
   ~AlphaThresholdPaintFilter() override;
 
   const SkRegion& region() const { return region_; }
-  SkScalar inner_min() const { return inner_min_; }
-  SkScalar outer_max() const { return outer_max_; }
   const sk_sp<PaintFilter>& input() const { return input_; }
 
   size_t SerializedSize() const override;
@@ -317,8 +316,6 @@ class CC_PAINT_EXPORT AlphaThresholdPaintFilter final : public PaintFilter {
 
  private:
   SkRegion region_;
-  SkScalar inner_min_;
-  SkScalar outer_max_;
   sk_sp<PaintFilter> input_;
 };
 
@@ -418,7 +415,7 @@ class CC_PAINT_EXPORT MatrixConvolutionPaintFilter final : public PaintFilter {
 
  private:
   SkISize kernel_size_;
-  base::StackVector<SkScalar, 3> kernel_;
+  absl::InlinedVector<SkScalar, 3> kernel_;
   SkScalar gain_;
   SkScalar bias_;
   SkIPoint kernel_offset_;
@@ -541,7 +538,7 @@ class CC_PAINT_EXPORT MergePaintFilter final : public PaintFilter {
                    const CropRect* crop_rect = nullptr);
   ~MergePaintFilter() override;
 
-  size_t input_count() const { return inputs_->size(); }
+  size_t input_count() const { return inputs_.size(); }
   const PaintFilter* input_at(size_t i) const {
     DCHECK_LT(i, input_count());
     return inputs_[i].get();
@@ -559,7 +556,7 @@ class CC_PAINT_EXPORT MergePaintFilter final : public PaintFilter {
                    int count,
                    const CropRect* crop_rect,
                    ImageProvider* image_provider);
-  base::StackVector<sk_sp<PaintFilter>, 2> inputs_;
+  absl::InlinedVector<sk_sp<PaintFilter>, 2> inputs_;
 };
 
 class CC_PAINT_EXPORT MorphologyPaintFilter final : public PaintFilter {

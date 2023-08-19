@@ -12,7 +12,10 @@ sync_integration_tests_sources = [
   "../browser/sync/test/integration/single_client_device_info_sync_test.cc",
   "../browser/sync/test/integration/single_client_history_delete_directives_sync_test.cc",
   "../browser/sync/test/integration/single_client_history_sync_test.cc",
+  "../browser/sync/test/integration/single_client_incoming_password_sharing_invitation_test.cc",
   "../browser/sync/test/integration/single_client_offer_sync_test.cc",
+  "../browser/sync/test/integration/single_client_outgoing_password_sharing_invitation_test.cc",
+  "../browser/sync/test/integration/single_client_reading_list_sync_test.cc",
   "../browser/sync/test/integration/single_client_sync_invalidations_test.cc",
   "../browser/sync/test/integration/single_client_typed_urls_sync_test.cc",
   "../browser/sync/test/integration/sync_exponential_backoff_test.cc",
@@ -102,6 +105,6 @@ if (is_win) {
 
 # https://crbug.com/1252812 The intent picker (launch icon) actions are not
 # working on Lacros.
-if (is_chromeos && !is_chromeos_lacros) {
+if (is_chromeos_ash) {
   sync_integration_tests_sources += [ "../browser/sync/test/integration/two_client_web_apps_integration_test_cros.cc" ]
 }

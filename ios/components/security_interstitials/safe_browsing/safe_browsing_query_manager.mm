@@ -13,10 +13,6 @@
 #import "ios/web/public/thread/web_thread.h"
 #import "services/network/public/mojom/fetch_api.mojom.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 using security_interstitials::UnsafeResource;
 
 WEB_STATE_USER_DATA_KEY_IMPL(SafeBrowsingQueryManager)
@@ -71,9 +67,10 @@ void SafeBrowsingQueryManager::StartQuery(const Query& query) {
   std::unique_ptr<safe_browsing::SafeBrowsingUrlCheckerImpl> url_checker =
       safe_browsing_service->CreateUrlChecker(request_destination, web_state_,
                                               client_);
-  base::OnceCallback<void(bool proceed, bool show_error_page,
-                          bool did_perform_url_real_time_check,
-                          bool did_check_url_real_time_allowlist)>
+  base::OnceCallback<void(
+      bool proceed, bool show_error_page,
+      safe_browsing::SafeBrowsingUrlCheckerImpl::PerformedCheck performed_check,
+      bool did_check_url_real_time_allowlist)>
       callback = base::BindOnce(&SafeBrowsingQueryManager::UrlCheckFinished,
                                 weak_factory_.GetWeakPtr(), query);
   if (base::FeatureList::IsEnabled(safe_browsing::kSafeBrowsingOnUIThread)) {
@@ -113,7 +110,7 @@ void SafeBrowsingQueryManager::UrlCheckFinished(
     const Query query,
     bool proceed,
     bool show_error_page,
-    bool did_perform_url_real_time_check,
+    safe_browsing::SafeBrowsingUrlCheckerImpl::PerformedCheck performed_check,
     bool did_check_url_real_time_allowlist) {
   auto query_result_pair = results_.find(query);
   DCHECK(query_result_pair != results_.end());
@@ -131,7 +128,7 @@ void SafeBrowsingQueryManager::UrlCheckFinished(
   // when an observer is notified.
   auto weak_this = weak_factory_.GetWeakPtr();
   for (auto& observer : observers_) {
-    observer.SafeBrowsingQueryFinished(this, query, result);
+    observer.SafeBrowsingQueryFinished(this, query, result, performed_check);
     if (!weak_this)
       return;
   }
@@ -190,7 +187,8 @@ void SafeBrowsingQueryManager::UrlCheckerClient::CheckUrl(
     const std::string& method,
     base::OnceCallback<void(bool proceed,
                             bool show_error_page,
-                            bool did_perform_url_real_time_check,
+                            safe_browsing::SafeBrowsingUrlCheckerImpl::
+                                PerformedCheck performed_check,
                             bool did_check_url_real_time_allowlist)> callback) {
   DCHECK_CURRENTLY_ON(
       base::FeatureList::IsEnabled(safe_browsing::kSafeBrowsingOnUIThread)
@@ -210,7 +208,7 @@ void SafeBrowsingQueryManager::UrlCheckerClient::OnCheckUrlResult(
         slow_check_notifier,
     bool proceed,
     bool showed_interstitial,
-    bool did_perform_url_real_time_check,
+    safe_browsing::SafeBrowsingUrlCheckerImpl::PerformedCheck performed_check,
     bool did_check_url_real_time_allowlist) {
   DCHECK_CURRENTLY_ON(
       base::FeatureList::IsEnabled(safe_browsing::kSafeBrowsingOnUIThread)
@@ -223,8 +221,7 @@ void SafeBrowsingQueryManager::UrlCheckerClient::OnCheckUrlResult(
     return;
   }
 
-  OnCheckComplete(url_checker, proceed, showed_interstitial,
-                  did_perform_url_real_time_check,
+  OnCheckComplete(url_checker, proceed, showed_interstitial, performed_check,
                   did_check_url_real_time_allowlist);
 }
 
@@ -232,7 +229,7 @@ void SafeBrowsingQueryManager::UrlCheckerClient::OnCheckComplete(
     safe_browsing::SafeBrowsingUrlCheckerImpl* url_checker,
     bool proceed,
     bool showed_interstitial,
-    bool did_perform_url_real_time_check,
+    safe_browsing::SafeBrowsingUrlCheckerImpl::PerformedCheck performed_check,
     bool did_check_url_real_time_allowlist) {
   DCHECK_CURRENTLY_ON(
       base::FeatureList::IsEnabled(safe_browsing::kSafeBrowsingOnUIThread)
@@ -247,8 +244,7 @@ void SafeBrowsingQueryManager::UrlCheckerClient::OnCheckComplete(
   web::GetUIThreadTaskRunner({})->PostTask(
       FROM_HERE,
       base::BindOnce(std::move(it->second), proceed, showed_interstitial,
-                     did_perform_url_real_time_check,
-                     did_check_url_real_time_allowlist));
+                     performed_check, did_check_url_real_time_allowlist));
 
   active_url_checkers_.erase(it);
 }

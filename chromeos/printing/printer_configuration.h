@@ -170,6 +170,10 @@ class COMPONENT_EXPORT(CHROMEOS_PRINTING) Printer {
   // Everywhere.  Computed using information from |ppd_reference_| and |uri_|.
   bool IsIppEverywhere() const;
 
+  // Returns true if the printer should use driverless autoconfiguration through
+  // IPP-USB instead of the USB printer class.
+  bool RequiresDriverlessUsb() const;
+
   // Returns the hostname and port for |uri_|.  Assumes that the uri is
   // well formed.  Returns an empty string if |uri_| is not set.
   net::HostPortPair GetHostAndPort() const;

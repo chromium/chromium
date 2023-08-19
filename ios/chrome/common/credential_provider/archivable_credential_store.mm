@@ -11,13 +11,9 @@
 #import "base/strings/sys_string_conversions.h"
 #import "ios/chrome/common/credential_provider/archivable_credential.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 @interface ArchivableCredentialStore ()
 
-// The fileURL to the disk file, can be nil.
+// The fileURL to the disk file.
 @property(nonatomic, strong) NSURL* fileURL;
 
 @end
@@ -29,7 +25,7 @@
 - (instancetype)initWithFileURL:(NSURL*)fileURL {
   self = [super init];
   if (self) {
-    DCHECK(fileURL.isFileURL) << "URL must be a file URL.";
+    CHECK(fileURL.isFileURL) << "URL must be a file URL.";
     _fileURL = fileURL;
   }
   return self;
@@ -38,40 +34,20 @@
 #pragma mark - CredentialStore
 
 - (void)saveDataWithCompletion:(void (^)(NSError* error))completion {
+  __weak __typeof(self) weakSelf = self;
   dispatch_barrier_async(self.workingQueue, ^{
-    auto executeCompletionIfPresent = ^(NSError* error) {
-      if (completion) {
-        dispatch_async(dispatch_get_main_queue(), ^{
-          completion(error);
-        });
-      }
-    };
-
-    NSError* error = nil;
-    NSData* data =
-        [NSKeyedArchiver archivedDataWithRootObject:self.memoryStorage
-                              requiringSecureCoding:YES
-                                              error:&error];
-    DCHECK(!error) << base::SysNSStringToUTF8(error.description);
-    if (error) {
-      executeCompletionIfPresent(error);
-      return;
+    if (weakSelf) {
+      [weakSelf saveDataWithCompletionBlockBody:completion];
+    } else {
+      NSError* error =
+          [[NSError alloc] initWithDomain:@""
+                                     code:0
+                                 userInfo:@{
+                                   NSLocalizedDescriptionKey :
+                                       @"ArchivableCredentialStore is nil."
+                                 }];
+      completion(error);
     }
-
-    [[NSFileManager defaultManager]
-               createDirectoryAtURL:self.fileURL.URLByDeletingLastPathComponent
-        withIntermediateDirectories:YES
-                         attributes:nil
-                              error:&error];
-
-    if (error) {
-      executeCompletionIfPresent(error);
-      return;
-    }
-
-    [data writeToURL:self.fileURL options:NSDataWritingAtomic error:&error];
-    DCHECK(!error) << base::SysNSStringToUTF8(error.description);
-    executeCompletionIfPresent(error);
   });
 }
 
@@ -107,6 +83,53 @@
                                              error:&error];
   DCHECK(!error) << base::SysNSStringToUTF8(error.description);
   return dictionary;
+}
+
+#pragma mark - Private
+
+// Body of the `saveDataWithCompletion`'s block. Body was extracted so that the
+// `self`/`weak self` management is easier. `saveDataWithCompletion` takes the
+// responsability of calling `saveDataWithCompletionBlockBody` on a weak
+// version of `self`. There is therefore no need to use a weak reference
+// everywhere in the method here.
+- (void)saveDataWithCompletionBlockBody:(void (^)(NSError* error))completion {
+  auto executeCompletionIfPresent = ^(NSError* error) {
+    if (completion) {
+      dispatch_async(dispatch_get_main_queue(), ^{
+        completion(error);
+      });
+    }
+  };
+
+  NSError* error = nil;
+
+  if (self) {
+    NSData* data =
+        [NSKeyedArchiver archivedDataWithRootObject:self.memoryStorage
+                              requiringSecureCoding:YES
+                                              error:&error];
+    DCHECK(!error) << base::SysNSStringToUTF8(error.description);
+    if (error) {
+      executeCompletionIfPresent(error);
+      return;
+    }
+
+    [[NSFileManager defaultManager]
+               createDirectoryAtURL:self.fileURL.URLByDeletingLastPathComponent
+        withIntermediateDirectories:YES
+                         attributes:nil
+                              error:&error];
+
+    if (error) {
+      executeCompletionIfPresent(error);
+      return;
+    }
+
+    [data writeToURL:self.fileURL options:NSDataWritingAtomic error:&error];
+    DCHECK(!error) << base::SysNSStringToUTF8(error.description);
+  }
+
+  executeCompletionIfPresent(error);
 }
 
 @end

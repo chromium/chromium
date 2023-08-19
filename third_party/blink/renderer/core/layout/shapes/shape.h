@@ -32,6 +32,7 @@
 
 #include <memory>
 #include "third_party/blink/renderer/core/core_export.h"
+#include "third_party/blink/renderer/core/layout/geometry/logical_rect.h"
 #include "third_party/blink/renderer/core/style/basic_shapes.h"
 #include "third_party/blink/renderer/core/style/style_image.h"
 #include "third_party/blink/renderer/platform/geometry/layout_rect.h"
@@ -42,6 +43,7 @@
 namespace blink {
 
 class FloatRoundedRect;
+struct LogicalSize;
 
 struct LineSegment {
   STACK_ALLOCATED();
@@ -77,7 +79,7 @@ class CORE_EXPORT Shape {
     Path margin_shape;
   };
   static std::unique_ptr<Shape> CreateShape(const BasicShape*,
-                                            const LayoutSize& logical_box_size,
+                                            const LogicalSize& logical_box_size,
                                             WritingMode,
                                             float margin);
   static std::unique_ptr<Shape> CreateRasterShape(Image*,
@@ -93,7 +95,7 @@ class CORE_EXPORT Shape {
 
   virtual ~Shape() = default;
 
-  virtual LayoutRect ShapeMarginLogicalBoundingBox() const = 0;
+  virtual LogicalRect ShapeMarginLogicalBoundingBox() const = 0;
   virtual bool IsEmpty() const = 0;
   virtual LineSegment GetExcludedInterval(LayoutUnit logical_top,
                                           LayoutUnit logical_height) const = 0;
@@ -116,11 +118,13 @@ class CORE_EXPORT Shape {
 
   bool LineOverlapsBoundingBox(LayoutUnit line_top,
                                LayoutUnit line_height,
-                               const LayoutRect& rect) const {
+                               const LogicalRect& rect) const {
     if (rect.IsEmpty())
       return false;
-    return (line_top < rect.MaxY() && line_top + line_height > rect.Y()) ||
-           (!line_height && line_top == rect.Y());
+    const LayoutUnit rect_line_top = rect.offset.block_offset;
+    return (line_top < rect.BlockEndOffset() &&
+            line_top + line_height > rect_line_top) ||
+           (!line_height && line_top == rect_line_top);
   }
 
   WritingMode writing_mode_ = WritingMode::kHorizontalTb;

@@ -17,6 +17,7 @@
 #include "components/reporting/util/backoff_settings.h"
 #include "components/reporting/util/rate_limiter_interface.h"
 #include "net/base/backoff_entry.h"
+#include "report_queue_configuration.h"
 
 #define LOG_WITH_STATUS(LEVEL, MESSAGE, STATUS) \
   VLOG(LEVEL) << MESSAGE << " status=" << STATUS.status();
@@ -25,44 +26,28 @@ namespace reporting {
 
 // static
 void ReportQueueFactory::Create(
-    EventType event_type,
-    Destination destination,
-    SuccessCallback success_cb,
-    std::unique_ptr<RateLimiterInterface> rate_limiter,
-    int64_t reserved_space) {
-  DCHECK(base::SequencedTaskRunner::HasCurrentDefault());
-
-  auto config_result = ReportQueueConfiguration::Create(
-      event_type, destination,
-      base::BindRepeating([]() { return Status::StatusOK(); }),
-      std::move(rate_limiter), reserved_space);
+    ReportQueueConfiguration::Builder config_builder,
+    SuccessCallback done_cb) {
+  auto config_result = config_builder.Build();
   if (!config_result.ok()) {
     LOG_WITH_STATUS(1, "ReportQueueConfiguration is invalid.", config_result);
     return;
   }
 
   // Asynchronously create and try to set ReportQueue.
-  auto try_set_cb = CreateTrySetCallback(destination, std::move(success_cb),
-                                         GetBackoffEntry());
+  auto try_set_cb = CreateTrySetCallback(std::move(done_cb), GetBackoffEntry());
   base::ThreadPool::PostTask(
       FROM_HERE, base::BindOnce(ReportQueueProvider::CreateQueue,
                                 std::move(config_result.ValueOrDie()),
                                 std::move(try_set_cb)));
 }
 
-// static
+//  static
 std::unique_ptr<ReportQueue, base::OnTaskRunnerDeleter>
 ReportQueueFactory::CreateSpeculativeReportQueue(
-    EventType event_type,
-    Destination destination,
-    std::unique_ptr<RateLimiterInterface> rate_limiter,
-    int64_t reserved_space) {
-  DCHECK(base::SequencedTaskRunner::HasCurrentDefault());
-
-  auto config_result = ReportQueueConfiguration::Create(
-      event_type, destination,
-      base::BindRepeating([]() { return Status::StatusOK(); }),
-      std::move(rate_limiter), reserved_space);
+    ReportQueueConfiguration::Builder config_builder) {
+  CHECK(base::SequencedTaskRunner::HasCurrentDefault());
+  auto config_result = config_builder.Build();
   if (!config_result.ok()) {
     DVLOG(1)
         << "Cannot initialize report queue. Invalid ReportQueueConfiguration: "
@@ -85,9 +70,38 @@ ReportQueueFactory::CreateSpeculativeReportQueue(
   return std::move(speculative_queue_result.ValueOrDie());
 }
 
+// static
+void ReportQueueFactory::Create(
+    EventType event_type,
+    Destination destination,
+    SuccessCallback success_cb,
+    std::unique_ptr<RateLimiterInterface> rate_limiter,
+    int64_t reserved_space) {
+  CHECK(base::SequencedTaskRunner::HasCurrentDefault());
+  ReportQueueFactory::Create(
+      ReportQueueConfiguration::Create({.event_type = event_type,
+                                        .destination = destination,
+                                        .reserved_space = reserved_space})
+          .SetRateLimiter(std::move(rate_limiter)),
+      std::move(success_cb));
+}
+
+// static
+std::unique_ptr<ReportQueue, base::OnTaskRunnerDeleter>
+ReportQueueFactory::CreateSpeculativeReportQueue(
+    EventType event_type,
+    Destination destination,
+    std::unique_ptr<RateLimiterInterface> rate_limiter,
+    int64_t reserved_space) {
+  return ReportQueueFactory::CreateSpeculativeReportQueue(
+      ReportQueueConfiguration::Create({.event_type = event_type,
+                                        .destination = destination,
+                                        .reserved_space = reserved_space})
+          .SetRateLimiter(std::move(rate_limiter)));
+}
+
 ReportQueueFactory::TrySetReportQueueCallback
 ReportQueueFactory::CreateTrySetCallback(
-    Destination destination,
     SuccessCallback success_cb,
     std::unique_ptr<::net::BackoffEntry> backoff_entry) {
   return base::BindPostTaskToCurrentDefault(base::BindOnce(

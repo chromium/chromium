@@ -1,0 +1,63 @@
+// Copyright 2023 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+#include "chrome/browser/ash/nearby/quick_start_connectivity_service_impl.h"
+
+#include "base/memory/raw_ptr.h"
+#include "base/memory/weak_ptr.h"
+#include "chrome/browser/nearby_sharing/nearby_connections_manager_impl.h"
+#include "chrome/browser/nearby_sharing/public/cpp/nearby_connections_manager.h"
+#include "chromeos/ash/services/nearby/public/cpp/nearby_process_manager.h"
+#include "chromeos/ash/services/nearby/public/mojom/quick_start_decoder.mojom.h"
+#include "mojo/public/cpp/bindings/shared_remote.h"
+
+namespace ash::quick_start {
+
+namespace {
+
+constexpr char kServiceId[] = "com.google.android.gms.smartdevice.NC_ID";
+
+}  // namespace
+
+QuickStartConnectivityServiceImpl::QuickStartConnectivityServiceImpl(
+    nearby::NearbyProcessManager* nearby_process_manager)
+    : nearby_process_manager_(nearby_process_manager) {}
+
+QuickStartConnectivityServiceImpl::~QuickStartConnectivityServiceImpl() =
+    default;
+
+raw_ptr<NearbyConnectionsManager>
+QuickStartConnectivityServiceImpl::GetNearbyConnectionsManager() {
+  CHECK(nearby_process_manager_);
+
+  if (!nearby_connections_manager_) {
+    nearby_connections_manager_ =
+        std::make_unique<NearbyConnectionsManagerImpl>(nearby_process_manager_,
+                                                       kServiceId);
+  }
+
+  return nearby_connections_manager_.get();
+}
+
+mojo::SharedRemote<mojom::QuickStartDecoder>
+QuickStartConnectivityServiceImpl::GetQuickStartDecoder() {
+  CHECK(nearby_process_manager_);
+
+  if (!nearby_process_reference_) {
+    nearby_process_reference_ =
+        nearby_process_manager_->GetNearbyProcessReference(base::BindOnce(
+            &QuickStartConnectivityServiceImpl::OnNearbyProcessStopped,
+            weak_ptr_factory_.GetWeakPtr()));
+  }
+
+  return nearby_process_reference_->GetQuickStartDecoder();
+}
+
+void QuickStartConnectivityServiceImpl::OnNearbyProcessStopped(
+    nearby::NearbyProcessManager::NearbyProcessShutdownReason shutdown_reason) {
+  // TODO: b/280308935: Handle nearby process shutdown
+  nearby_process_reference_ = nullptr;
+}
+
+}  // namespace ash::quick_start

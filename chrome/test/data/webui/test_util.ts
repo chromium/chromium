@@ -84,3 +84,21 @@ export function isChildVisible(parentEl: Element, selector: string,
                                   parentEl.shadowRoot!.querySelector(selector);
   return isVisible(element);
 }
+
+/**
+ * Queries |selector| on |element|'s shadow root and returns the resulting
+ * element if there is any.
+ */
+export function $$<E extends HTMLElement = HTMLElement>(
+    element: HTMLElement, selector: string): E|null;
+export function $$(element: HTMLElement, selector: string) {
+  return element.shadowRoot!.querySelector(selector);
+}
+
+/**
+ * Returns whether the |element|'s style |property| matches the expected value.
+ */
+export function hasStyle(
+    element: Element, property: string, expected: string): boolean {
+  return expected === element.computedStyleMap().get(property)?.toString();
+}

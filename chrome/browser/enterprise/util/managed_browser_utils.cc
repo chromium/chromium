@@ -29,6 +29,7 @@
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
 #include "google_apis/gaia/gaia_auth_util.h"
+#include "net/base/host_port_pair.h"
 #include "net/cert/x509_certificate.h"
 #include "net/ssl/client_cert_identity.h"
 #include "url/gurl.h"
@@ -120,6 +121,10 @@ std::string GetDomainFromEmail(const std::string& email) {
     return std::string();
 
   return gaia::ExtractDomainName(email);
+}
+
+GURL GetRequestingUrl(const net::HostPortPair host_port_pair) {
+  return GURL("https://" + host_port_pair.ToString());
 }
 
 void AutoSelectCertificates(

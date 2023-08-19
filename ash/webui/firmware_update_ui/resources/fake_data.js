@@ -2,8 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import {stringToMojoString16} from 'chrome://resources/js/mojo_type_util.js';
+
 import {FirmwareUpdate, InstallationProgress, UpdatePriority, UpdateState} from './firmware_update_types.js';
-import {stringToMojoString16} from './mojo_utils.js';
 
 /** @type {!Array<!Array<!FirmwareUpdate>>} */
 export const fakeFirmwareUpdates = [[

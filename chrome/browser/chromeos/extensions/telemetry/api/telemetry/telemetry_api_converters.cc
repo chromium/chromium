@@ -17,7 +17,7 @@
 #include "chromeos/services/network_config/public/mojom/network_types.mojom.h"
 #include "chromeos/services/network_health/public/mojom/network_health_types.mojom.h"
 
-namespace chromeos::converters {
+namespace chromeos::converters::telemetry {
 
 namespace {
 
@@ -241,8 +241,8 @@ cx_telem::InternetConnectivityInfo UncheckedConvertPtr(
     bool has_mac_address_permission) {
   cx_telem::InternetConnectivityInfo result;
   for (auto& network : input->networks) {
-    auto converted_network = converters::ConvertPtr<cx_telem::NetworkInfo>(
-        std::move(network), has_mac_address_permission);
+    auto converted_network =
+        ConvertPtr(std::move(network), has_mac_address_permission);
 
     // Don't include networks with an undefined type.
     if (converted_network.type != cx_telem::NetworkType::kNone) {
@@ -317,15 +317,13 @@ cx_telem::TpmInfo UncheckedConvertPtr(crosapi::ProbeTpmInfoPtr input) {
   cx_telem::TpmInfo result;
 
   if (input->version) {
-    result.version =
-        ConvertPtr<cx_telem::TpmVersion>(std::move(input->version));
+    result.version = ConvertPtr(std::move(input->version));
   }
   if (input->status) {
-    result.status = ConvertPtr<cx_telem::TpmStatus>(std::move(input->status));
+    result.status = ConvertPtr(std::move(input->status));
   }
   if (input->dictionary_attack) {
-    result.dictionary_attack = ConvertPtr<cx_telem::TpmDictionaryAttack>(
-        std::move(input->dictionary_attack));
+    result.dictionary_attack = ConvertPtr(std::move(input->dictionary_attack));
   }
 
   return result;
@@ -385,8 +383,7 @@ cx_telem::UsbBusInfo UncheckedConvertPtr(crosapi::ProbeUsbBusInfoPtr input) {
         std::move(input->interfaces.value()));
   }
   result.fwupd_firmware_version_info =
-      ConvertPtr<cx_telem::FwupdFirmwareVersionInfo>(
-          std::move(input->fwupd_firmware_version_info));
+      ConvertPtr(std::move(input->fwupd_firmware_version_info));
   result.version = Convert(input->version);
   result.spec_speed = Convert(input->spec_speed);
 
@@ -409,6 +406,64 @@ chromeos::api::os_telemetry::VpdInfo UncheckedConvertPtr(
   return result;
 }
 
+cx_telem::DisplayInfo UncheckedConvertPtr(crosapi::ProbeDisplayInfoPtr input) {
+  cx_telem::DisplayInfo result;
+
+  result.embedded_display =
+      converters::telemetry::ConvertPtr(std::move(input->embedded_display));
+  if (input->external_displays.has_value()) {
+    result.external_displays =
+        converters::telemetry::ConvertPtrVector<cx_telem::ExternalDisplayInfo>(
+            std::move(input->external_displays.value()));
+  }
+
+  return result;
+}
+
+cx_telem::EmbeddedDisplayInfo UncheckedConvertPtr(
+    crosapi::ProbeEmbeddedDisplayInfoPtr input) {
+  cx_telem::EmbeddedDisplayInfo result;
+
+  result.privacy_screen_supported = std::move(input->privacy_screen_supported);
+  result.privacy_screen_enabled = std::move(input->privacy_screen_enabled);
+  result.display_width = std::move(input->display_width);
+  result.display_height = std::move(input->display_height);
+  result.resolution_horizontal = std::move(input->resolution_horizontal);
+  result.resolution_vertical = std::move(input->resolution_vertical);
+  result.refresh_rate = std::move(input->refresh_rate);
+  result.manufacturer = std::move(input->manufacturer);
+  result.model_id = std::move(input->model_id);
+  result.serial_number = std::move(input->serial_number);
+  result.manufacture_week = std::move(input->manufacture_week);
+  result.manufacture_year = std::move(input->manufacture_year);
+  result.edid_version = std::move(input->edid_version);
+  result.input_type = Convert(input->input_type);
+  result.display_name = (input->display_name);
+
+  return result;
+}
+
+cx_telem::ExternalDisplayInfo UncheckedConvertPtr(
+    crosapi::ProbeExternalDisplayInfoPtr input) {
+  cx_telem::ExternalDisplayInfo result;
+
+  result.display_width = std::move(input->display_width);
+  result.display_height = std::move(input->display_height);
+  result.resolution_horizontal = std::move(input->resolution_horizontal);
+  result.resolution_vertical = std::move(input->resolution_vertical);
+  result.refresh_rate = std::move(input->refresh_rate);
+  result.manufacturer = std::move(input->manufacturer);
+  result.model_id = std::move(input->model_id);
+  result.serial_number = std::move(input->serial_number);
+  result.manufacture_week = std::move(input->manufacture_week);
+  result.manufacture_year = std::move(input->manufacture_year);
+  result.edid_version = std::move(input->edid_version);
+  result.input_type = Convert(input->input_type);
+  result.display_name = std::move(input->display_name);
+
+  return result;
+}
+
 }  // namespace unchecked
 
 cx_telem::CpuArchitectureEnum Convert(crosapi::ProbeCpuArchitectureEnum input) {
@@ -422,7 +477,7 @@ cx_telem::CpuArchitectureEnum Convert(crosapi::ProbeCpuArchitectureEnum input) {
     case crosapi::ProbeCpuArchitectureEnum::kArmv7l:
       return cx_telem::CpuArchitectureEnum::kArmv7l;
   }
-  NOTREACHED();
+  NOTREACHED_NORETURN();
 }
 
 cx_telem::NetworkState Convert(
@@ -445,7 +500,7 @@ cx_telem::NetworkState Convert(
     case network_health::mojom::NetworkState::kOnline:
       return cx_telem::NetworkState::kOnline;
   }
-  NOTREACHED();
+  NOTREACHED_NORETURN();
 }
 
 cx_telem::NetworkType Convert(
@@ -472,7 +527,7 @@ cx_telem::NetworkType Convert(
     case network_config::mojom::NetworkType::kWiFi:
       return cx_telem::NetworkType::kWifi;
   }
-  NOTREACHED();
+  NOTREACHED_NORETURN();
 }
 
 cx_telem::TpmGSCVersion Convert(crosapi::ProbeTpmGSCVersion input) {
@@ -484,7 +539,7 @@ cx_telem::TpmGSCVersion Convert(crosapi::ProbeTpmGSCVersion input) {
     case crosapi::ProbeTpmGSCVersion::kTi50:
       return cx_telem::TpmGSCVersion::kTi50;
   }
-  NOTREACHED();
+  NOTREACHED_NORETURN();
 }
 
 cx_telem::FwupdVersionFormat Convert(crosapi::ProbeFwupdVersionFormat input) {
@@ -516,7 +571,7 @@ cx_telem::FwupdVersionFormat Convert(crosapi::ProbeFwupdVersionFormat input) {
     case crosapi::ProbeFwupdVersionFormat::kHex:
       return cx_telem::FwupdVersionFormat::kHex;
   }
-  NOTREACHED();
+  NOTREACHED_NORETURN();
 }
 
 cx_telem::UsbVersion Convert(crosapi::ProbeUsbVersion input) {
@@ -530,7 +585,7 @@ cx_telem::UsbVersion Convert(crosapi::ProbeUsbVersion input) {
     case crosapi::ProbeUsbVersion::kUsb3:
       return cx_telem::UsbVersion::kUsb3;
   }
-  NOTREACHED();
+  NOTREACHED_NORETURN();
 }
 
 cx_telem::UsbSpecSpeed Convert(crosapi::ProbeUsbSpecSpeed input) {
@@ -550,7 +605,19 @@ cx_telem::UsbSpecSpeed Convert(crosapi::ProbeUsbSpecSpeed input) {
     case crosapi::ProbeUsbSpecSpeed::k20Gbps:
       return cx_telem::UsbSpecSpeed::kN20Gbps;
   }
-  NOTREACHED();
+  NOTREACHED_NORETURN();
 }
 
-}  // namespace chromeos::converters
+cx_telem::DisplayInputType Convert(crosapi::ProbeDisplayInputType input) {
+  switch (input) {
+    case crosapi::ProbeDisplayInputType::kUnmappedEnumField:
+      return cx_telem::DisplayInputType::kUnknown;
+    case crosapi::ProbeDisplayInputType::kDigital:
+      return cx_telem::DisplayInputType::kDigital;
+    case crosapi::ProbeDisplayInputType::kAnalog:
+      return cx_telem::DisplayInputType::kAnalog;
+  }
+  NOTREACHED_NORETURN();
+}
+
+}  // namespace chromeos::converters::telemetry

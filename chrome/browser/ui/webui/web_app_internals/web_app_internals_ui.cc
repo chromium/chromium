@@ -8,6 +8,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/webui/web_app_internals/web_app_internals_handler.h"
 #include "chrome/browser/ui/webui/webui_util.h"
+#include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_dev_mode.h"
 #include "chrome/common/url_constants.h"
 #include "chrome/grit/web_app_internals_resources.h"
 #include "chrome/grit/web_app_internals_resources_map.h"
@@ -29,9 +30,12 @@ WebAppInternalsUI::WebAppInternalsUI(content::WebUI* web_ui)
       internals,
       base::make_span(kWebAppInternalsResources, kWebAppInternalsResourcesSize),
       IDR_WEB_APP_INTERNALS_WEB_APP_INTERNALS_HTML);
+  internals->UseStringsJs();
+  internals->AddBoolean(
+      "experimentalIsIwaDevModeEnabled",
+      web_app::IsIwaDevModeEnabled(Profile::FromWebUI(web_ui)));
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
-  internals->UseStringsJs();
   internals->AddBoolean(
       "experimentalIsolationEnabled",
       web_app::ResolveExperimentalWebAppIsolationFeature() !=

@@ -1,6 +1,6 @@
 This is a testharness.js-based test.
-Found 66 tests; 59 PASS, 7 FAIL, 0 TIMEOUT, 0 NOTRUN.
-FAIL Cookie with %x0 in value is rejected (DOM). assert_equals: The cookie was rejected. expected "" but got "test=0"
+Found 66 tests; 62 PASS, 4 FAIL, 0 TIMEOUT, 0 NOTRUN.
+PASS Cookie with %x0 in value is rejected (DOM).
 PASS Cookie with %x1 in value is rejected (DOM).
 PASS Cookie with %x2 in value is rejected (DOM).
 PASS Cookie with %x3 in value is rejected (DOM).
@@ -10,10 +10,10 @@ PASS Cookie with %x6 in value is rejected (DOM).
 PASS Cookie with %x7 in value is rejected (DOM).
 PASS Cookie with %x8 in value is rejected (DOM).
 FAIL Cookie with %x9 in value is accepted (DOM). assert_equals: The cookie was set as expected. expected "test=9\tvalue" but got ""
-FAIL Cookie with %xa in value is rejected (DOM). assert_equals: The cookie was rejected. expected "" but got "test=10"
+PASS Cookie with %xa in value is rejected (DOM).
 PASS Cookie with %xb in value is rejected (DOM).
 PASS Cookie with %xc in value is rejected (DOM).
-FAIL Cookie with %xd in value is rejected (DOM). assert_equals: The cookie was rejected. expected "" but got "test=13"
+PASS Cookie with %xd in value is rejected (DOM).
 PASS Cookie with %xe in value is rejected (DOM).
 PASS Cookie with %xf in value is rejected (DOM).
 PASS Cookie with %x10 in value is rejected (DOM).

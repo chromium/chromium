@@ -63,6 +63,9 @@ constexpr int kGroupContentsBetweenChildSpacingDp = 20;
 // The size of the gradient applied to the top and bottom of the scroll view.
 constexpr int kScrollViewGradientSize = 32;
 
+// Elevation for the grid label text's shadow.
+constexpr int kLabelTextShadowElevation = 4;
+
 // Insets of Library page scroll content view. Note: the bottom inset is there
 // to slightly adjust the otherwise vertically centered scroll content up a tad.
 constexpr gfx::Insets kLibraryPageScrollContentsInsets =
@@ -129,6 +132,10 @@ std::unique_ptr<views::View> GetLabelAndGridGroupContents() {
 std::unique_ptr<views::Label> MakeGridLabel(int label_string_id) {
   auto label = std::make_unique<views::Label>(
       l10n_util::GetStringUTF16(label_string_id));
+  gfx::ShadowValues shadows =
+      gfx::ShadowValue::MakeChromeOSSystemUIShadowValues(
+          kLabelTextShadowElevation);
+  label->SetShadows(shadows);
   TypographyProvider::Get()->StyleLabel(TypographyToken::kCrosTitle1, *label);
   label->SetEnabledColorId(cros_tokens::kCrosSysOnSurface);
   label->SetHorizontalAlignment(gfx::ALIGN_LEFT);
@@ -559,12 +566,16 @@ void SavedDeskLibraryView::Layout() {
 
   DCHECK_EQ(grid_views_.size(), grid_labels_.size());
   for (size_t i = 0; i != grid_views_.size(); ++i) {
-    // Make the grid label invisible if the corresponding grid view is
-    // empty. This will exclude it from the box layout.
-    grid_labels_[i]->SetVisible(!grid_views_[i]->grid_items().empty());
+    if (chromeos::features::IsJellyEnabled()) {
+      // Set label to be invisible to improve Jelly appearance(b/284210964).
+      grid_labels_[i]->SetVisible(false);
+    } else {
+      // Make the grid label invisible if the corresponding grid view is
+      // empty. This will exclude it from the box layout.
+      grid_labels_[i]->SetVisible(!grid_views_[i]->grid_items().empty());
+    }
     grid_labels_[i]->SetPreferredSize(landscape ? kLabelSizeLandscape
                                                 : kLabelSizePortrait);
-
     total_saved_desks += grid_views_[i]->grid_items().size();
   }
 

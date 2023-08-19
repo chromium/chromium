@@ -279,6 +279,10 @@
                 return 'FAIL';
             case 2:
                 return 'TIMEOUT';
+            case 3:
+                return 'NOTRUN';
+            case 4:
+                return 'PRECONDITION_FAILED';
             default:
                 return 'NOTRUN';
         }

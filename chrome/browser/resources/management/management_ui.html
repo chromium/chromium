@@ -163,11 +163,13 @@
       }
 
       .extension-name,
+      .application-name,
       .protection-name {
         width: 40%;
       }
 
-      .extension-name span {
+      .extension-name span,
+      .application-name span {
         max-width: 200px;
         overflow: hidden;
         text-overflow: ellipsis;
@@ -175,6 +177,7 @@
       }
 
       .extension-permissions,
+      .application-permissions,
       .protection-permissions {
         width: 60%;
       }
@@ -184,13 +187,15 @@
         vertical-align: top;
       }
 
-      .extension-name img {
+      .extension-name img,
+      .application-name img {
         height: 20px;
         margin-inline-end: 12px;
         width: 20px;
       }
 
       .extension-permissions ul,
+      .application-permissions ul,
       .report ul {
         list-style: none;
         margin: 0;
@@ -378,6 +383,41 @@
                   </div>
                 </template>
               </div>
+            </section>
+          </template>
+          <template is="dom-if"
+              if="[[showApplicationReportingInfo_(applications_)]]">
+            <section class="application-reporting">
+              <h2 class="cr-title-text">$i18n{applicationReporting}</h2>
+              <div class="subtitle">
+                [[applicationReportingSubtitle_]]
+              </div>
+              <table class="content-indented">
+                <tr>
+                  <th class="application-name">$i18n{applicationName}</th>
+                  <th class="extension-permissions">
+                    $i18n{applicationPermissions}
+                  </th>
+                </tr>
+                <template is="dom-repeat" items="[[applications_]]">
+                  <tr>
+                    <td class="application-name">
+                      <div title="[[item.name]]" role="presentation">
+                        <img src="[[item.icon]]" alt="" aria-hidden="true">
+                        <span>[[item.name]]</span>
+                      </div>
+                    </td>
+                    <td class="application-permissions">
+                      <ul>
+                        <template is="dom-repeat" items="[[item.permissions]]"
+                            as="permission">
+                          <li>[[permission]]</li>
+                        </template>
+                      </ul>
+                    </td>
+                  </tr>
+                </template>
+              </table>
             </section>
           </template>
         </div>

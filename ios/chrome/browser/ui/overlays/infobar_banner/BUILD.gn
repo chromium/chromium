@@ -8,8 +8,6 @@ source_set("coordinators") {
     "infobar_banner_overlay_coordinator.mm",
   ]
 
-  configs += [ "//build/config/compiler:enable_arc" ]
-
   deps = [
     ":mediators",
     "//base",
@@ -18,6 +16,8 @@ source_set("coordinators") {
     "//ios/chrome/browser/overlays",
     "//ios/chrome/browser/overlays/public/common/infobars",
     "//ios/chrome/browser/overlays/public/default",
+    "//ios/chrome/browser/shared/coordinator/layout_guide",
+    "//ios/chrome/browser/shared/public/features",
     "//ios/chrome/browser/shared/ui/util",
     "//ios/chrome/browser/ui/infobars:constants",
     "//ios/chrome/browser/ui/infobars/banners",
@@ -30,6 +30,7 @@ source_set("coordinators") {
     "//ios/chrome/browser/ui/overlays/infobar_banner/permissions",
     "//ios/chrome/browser/ui/overlays/infobar_banner/save_card",
     "//ios/chrome/browser/ui/overlays/infobar_banner/sync_error",
+    "//ios/chrome/browser/ui/overlays/infobar_banner/tab_pickup",
     "//ios/chrome/browser/ui/overlays/infobar_banner/tailored_security",
     "//ios/chrome/browser/ui/overlays/infobar_banner/translate:mediators",
   ]
@@ -41,8 +42,6 @@ source_set("mediators") {
     "infobar_banner_overlay_mediator.h",
     "infobar_banner_overlay_mediator.mm",
   ]
-
-  configs += [ "//build/config/compiler:enable_arc" ]
 
   deps = [
     "//base",
@@ -58,8 +57,6 @@ source_set("mediators") {
 source_set("unit_tests") {
   testonly = true
   sources = [ "infobar_banner_overlay_mediator_unittest.mm" ]
-
-  configs += [ "//build/config/compiler:enable_arc" ]
 
   deps = [
     ":mediators",

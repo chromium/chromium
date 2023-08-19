@@ -35,7 +35,7 @@ class DiagnosticsDialog : public SystemWebDialogDelegate {
 
   // |page| is the initial page shown when the app is opened.
   static void ShowDialog(DiagnosticsPage page = DiagnosticsPage::kDefault,
-                         gfx::NativeWindow parent = gfx::kNullNativeWindow);
+                         gfx::NativeWindow parent = gfx::NativeWindow());
 
   // Closes an existing Diagnostics dialog if it exists.
   static void MaybeCloseExistingDialog();

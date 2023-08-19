@@ -11,7 +11,6 @@ import android.view.ViewStub;
 
 import androidx.annotation.ColorInt;
 import androidx.annotation.NonNull;
-import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.Callback;
 import org.chromium.base.supplier.Supplier;
@@ -214,7 +213,6 @@ public class StatusIndicatorCoordinator {
         mResourceRegistered = false;
     }
 
-    @VisibleForTesting
     StatusIndicatorMediator getMediatorForTesting() {
         return mMediator;
     }

@@ -20,6 +20,7 @@ import android.view.ViewTreeObserver;
 
 import androidx.annotation.IntDef;
 import androidx.annotation.Nullable;
+import androidx.annotation.VisibleForTesting;
 
 import org.chromium.components.webapk.lib.common.WebApkMetaDataKeys;
 import org.chromium.webapk.lib.common.WebApkMetaDataUtils;
@@ -194,14 +195,20 @@ public class SplashActivity extends Activity {
     /**
      * Sets the the color of the status bar and status bar icons.
      */
-    private void updateStatusBar(Bundle metadata) {
+    @VisibleForTesting
+    void updateStatusBar(Bundle metadata) {
         int statusBarColor = (int) WebApkMetaDataUtils.getLongFromMetaData(
                 metadata, WebApkMetaDataKeys.THEME_COLOR, Color.WHITE);
-        WebApkUtils.setStatusBarColor(getWindow(), statusBarColor);
+        int defaultDarkStatusBarColor = (int) WebApkMetaDataUtils.getLongFromMetaData(
+                metadata, WebApkMetaDataKeys.THEME_COLOR, Color.BLACK);
+        int darkStatusBarColor = (int) WebApkMetaDataUtils.getLongFromMetaData(
+                metadata, WebApkMetaDataKeys.DARK_THEME_COLOR, defaultDarkStatusBarColor);
+        WebApkUtils.setStatusBarColor(
+                this, WebApkUtils.inDarkMode(this) ? darkStatusBarColor : statusBarColor);
         boolean needsDarkStatusBarIcons =
                 !WebApkUtils.shouldUseLightForegroundOnBackground(statusBarColor);
         WebApkUtils.setStatusBarIconColor(
-                getWindow().getDecorView().getRootView(), needsDarkStatusBarIcons);
+                getWindow().getDecorView().getRootView(), needsDarkStatusBarIcons, this);
     }
 
     /** Called once the host browser has been selected. */

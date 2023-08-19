@@ -14,10 +14,6 @@
 #import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 @interface CredentialProviderPromoSceneAgent ()
 
 // The PromosManager is used to register promos.
@@ -45,6 +41,7 @@
     transitionedToActivationLevel:(SceneActivationLevel)level {
   switch (level) {
     case SceneActivationLevelUnattached:
+    case SceneActivationLevelDisconnected:
       // no-op.
       break;
     case SceneActivationLevelBackground:

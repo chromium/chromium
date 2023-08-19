@@ -1,4 +1,4 @@
-    <style include="settings-shared cr-icons cr-nav-menu-item-style">
+    <style include="cr-hidden-style cr-icons cr-nav-menu-item-style">
       :host {
         box-sizing: border-box;
         display: block;
@@ -15,11 +15,6 @@
         display: flex;
         flex-direction: column;
         min-width: fit-content;
-      }
-
-      /* Needed to override the styles on a[href] from settings-shared. */
-      a[href] {
-        color: var(--cr-nav-menu-item-color);
       }
 
       #extensionsLink > .cr-icon {
@@ -44,6 +39,12 @@
         margin-inline-end: 20px;
         margin-inline-start: 0;
         width: var(--cr-icon-size);
+      }
+
+      @media (forced-colors: active) {
+        #aboutIcon {
+          background-color: ButtonText;
+        }
       }
 
       @media (prefers-color-scheme: dark) {

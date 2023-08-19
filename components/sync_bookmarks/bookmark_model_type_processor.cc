@@ -19,7 +19,6 @@
 #include "build/build_config.h"
 #include "components/bookmarks/browser/bookmark_model.h"
 #include "components/bookmarks/browser/bookmark_node.h"
-#include "components/sync/base/client_tag_hash.h"
 #include "components/sync/base/data_type_histogram.h"
 #include "components/sync/base/features.h"
 #include "components/sync/base/model_type.h"
@@ -124,10 +123,11 @@ size_t CountSyncableBookmarksFromModel(bookmarks::BookmarkModel* model) {
 
 BookmarkModelTypeProcessor::BookmarkModelTypeProcessor(
     BookmarkUndoService* bookmark_undo_service,
-    bool wipe_model_on_stopping_sync_with_clear_data)
+    syncer::WipeModelUponSyncDisabledBehavior
+        wipe_model_upon_sync_disabled_behavior)
     : bookmark_undo_service_(bookmark_undo_service),
-      wipe_model_on_stopping_sync_with_clear_data_(
-          wipe_model_on_stopping_sync_with_clear_data),
+      wipe_model_upon_sync_disabled_behavior_(
+          wipe_model_upon_sync_disabled_behavior),
       max_bookmarks_till_sync_enabled_(kDefaultMaxBookmarksTillSyncEnabled) {}
 
 BookmarkModelTypeProcessor::~BookmarkModelTypeProcessor() {
@@ -268,6 +268,11 @@ void BookmarkModelTypeProcessor::OnUpdateReceived(
 void BookmarkModelTypeProcessor::StorePendingInvalidations(
     std::vector<sync_pb::ModelTypeState::Invalidation> invalidations_to_store) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  if (!bookmark_tracker_) {
+    // It's possible to receive invalidations while bookmarks are not syncing,
+    // e.g. if invalidation system is initialized earlier than bookmark model.
+    return;
+  }
   sync_pb::ModelTypeState model_type_state =
       bookmark_tracker_->model_type_state();
   model_type_state.mutable_invalidations()->Assign(
@@ -304,10 +309,8 @@ std::string BookmarkModelTypeProcessor::EncodeSyncMetadata() const {
     model_metadata.SerializeToString(&metadata_str);
   } else if (last_initial_merge_remote_updates_exceeded_limit_) {
     sync_pb::BookmarkModelMetadata model_metadata;
-    // Only set this field in the metadata if set to allow for easier rollback
-    // of the feature. Moreover, setting this field explicitly even when the
-    // value is false somehow leads to a non-empty serialized output. Setting
-    // the field only when true allows for an empty serialized output otherwise.
+    // Setting the field only when true guarantees that the empty-string case
+    // is interpreted as no-metadata-to-clear.
     model_metadata.set_last_initial_merge_remote_updates_exceeded_limit(true);
     model_metadata.SerializeToString(&metadata_str);
   }
@@ -342,6 +345,14 @@ void BookmarkModelTypeProcessor::ModelReadyToSync(
     if (!metadata_str.empty()) {
       LogClearMetadataWhileStoppedHistogram(syncer::BOOKMARKS,
                                             /*is_delayed_call=*/true);
+      if (syncer::IsInitialSyncDone(
+              model_metadata.model_type_state().initial_sync_state())) {
+        // There used to be a tracker, which is dropped now due to
+        // `pending_clear_metadata_`. This isn't very different to
+        // ClearMetadataWhileStopped(), in the sense that the need to wipe the
+        // local model needs to be considered.
+        TriggerWipeModelUponSyncDisabledBehavior();
+      }
       schedule_save_closure_.Run();
     }
   } else if (model_metadata
@@ -373,6 +384,18 @@ void BookmarkModelTypeProcessor::ModelReadyToSync(
       // properly, e.g. auth error).
       schedule_save_closure_.Run();
     }
+  }
+
+  if (!bookmark_tracker_ &&
+      wipe_model_upon_sync_disabled_behavior_ ==
+          syncer::WipeModelUponSyncDisabledBehavior::kOnceIfTrackingMetadata) {
+    // Since the model isn't initially tracking metadata, move away from
+    // kOnceIfTrackingMetadata so the behavior doesn't kick in, in case sync is
+    // turned on later and back to off. This should be practically unreachable
+    // because usually ClearMetadataWhileStopped() would be invoked earlier,
+    // but let's be extra safe and avoid relying on this behavior.
+    wipe_model_upon_sync_disabled_behavior_ =
+        syncer::WipeModelUponSyncDisabledBehavior::kNever;
   }
 
   ConnectIfReady();
@@ -468,7 +491,6 @@ void BookmarkModelTypeProcessor::ConnectIfReady() {
 
   if (bookmark_tracker_ &&
       bookmark_tracker_->model_type_state().cache_guid() != cache_uuid_) {
-    // TODO(crbug.com/820049): Add basic unit testing.
     // In case of a cache uuid mismatch, treat it as a corrupted metadata and
     // start clean.
     StopTrackingMetadataAndResetTracker();
@@ -512,19 +534,13 @@ void BookmarkModelTypeProcessor::OnSyncStopping(
 
     case syncer::CLEAR_METADATA: {
       // Stop observing local changes. We'll start observing local changes again
-      // when Sync is (re)started in StartTrackingMetadata().
+      // when Sync is (re)started in StartTrackingMetadata(). This is only
+      // necessary if a tracker exists, which also means local changes are being
+      // tracked (see StartTrackingMetadata()).
       if (bookmark_tracker_) {
         StopTrackingMetadataAndResetTracker();
       }
       last_initial_merge_remote_updates_exceeded_limit_ = false;
-      if (wipe_model_on_stopping_sync_with_clear_data_) {
-        // `CLEAR_METADATA` indicates sync is permanently disabled. Since
-        // `wipe_model_on_stopping_sync_with_clear_data_` is `true`, the
-        // lifetime of local data (bookmarks) is coupled with sync metadata's,
-        // which means disabling sync requires that bookmarks in local storage
-        // are deleted.
-        bookmark_model_->RemoveAllUserBookmarks();
-      }
       schedule_save_closure_.Run();
       break;
     }
@@ -659,17 +675,18 @@ void BookmarkModelTypeProcessor::GetAllNodesForDebugging(
   base::Value::List all_nodes;
   // Create a permanent folder since sync server no longer create root folders,
   // and USS won't migrate root folders from directory, we create root folders.
-  base::Value::Dict root_node;
+
   // Function isTypeRootNode in sync_node_browser.js use PARENT_ID and
   // UNIQUE_SERVER_TAG to check if the node is root node. isChildOf in
   // sync_node_browser.js uses modelType to check if root node is parent of real
   // data node. NON_UNIQUE_NAME will be the name of node to display.
-  root_node.Set("ID", "BOOKMARKS_ROOT");
-  root_node.Set("PARENT_ID", "r");
-  root_node.Set("UNIQUE_SERVER_TAG", "Bookmarks");
-  root_node.Set("IS_DIR", true);
-  root_node.Set("modelType", "Bookmarks");
-  root_node.Set("NON_UNIQUE_NAME", "Bookmarks");
+  auto root_node = base::Value::Dict()
+                       .Set("ID", "BOOKMARKS_ROOT")
+                       .Set("PARENT_ID", "r")
+                       .Set("UNIQUE_SERVER_TAG", "Bookmarks")
+                       .Set("IS_DIR", true)
+                       .Set("modelType", "Bookmarks")
+                       .Set("NON_UNIQUE_NAME", "Bookmarks");
   all_nodes.Append(std::move(root_node));
 
   const bookmarks::BookmarkNode* model_root_node = bookmark_model_->root_node();
@@ -802,6 +819,28 @@ void BookmarkModelTypeProcessor::StopTrackingMetadataAndResetTracker() {
   bookmark_model_->RemoveObserver(bookmark_model_observer_.get());
   bookmark_model_observer_.reset();
   bookmark_tracker_.reset();
+
+  // Tracked sync metadata has just been thrown away. Depending on the current
+  // selected behavior, bookmarks themselves may need clearing too.
+  TriggerWipeModelUponSyncDisabledBehavior();
+}
+
+void BookmarkModelTypeProcessor::TriggerWipeModelUponSyncDisabledBehavior() {
+  switch (wipe_model_upon_sync_disabled_behavior_) {
+    case syncer::WipeModelUponSyncDisabledBehavior::kNever:
+      // Nothing to do.
+      break;
+    case syncer::WipeModelUponSyncDisabledBehavior::kOnceIfTrackingMetadata:
+      // Do it this time, but switch to kNever so it doesn't trigger next
+      // time.
+      syncer::SyncRecordModelClearedOnceHistogram(syncer::BOOKMARKS);
+      wipe_model_upon_sync_disabled_behavior_ =
+          syncer::WipeModelUponSyncDisabledBehavior::kNever;
+      [[fallthrough]];
+    case syncer::WipeModelUponSyncDisabledBehavior::kAlways:
+      bookmark_model_->RemoveAllUserBookmarks();
+      break;
+  }
 }
 
 }  // namespace sync_bookmarks

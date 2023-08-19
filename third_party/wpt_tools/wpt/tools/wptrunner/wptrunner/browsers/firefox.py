@@ -5,6 +5,7 @@ import os
 import platform
 import signal
 import subprocess
+import sys
 import tempfile
 import time
 from abc import ABCMeta, abstractmethod
@@ -71,6 +72,17 @@ def get_timeout_multiplier(test_type, run_info_data, **kwargs):
             return 4 * multiplier
         else:
             return 2 * multiplier
+    elif test_type == "wdspec":
+        if (run_info_data.get("asan") or
+            run_info_data.get("ccov") or
+            run_info_data.get("debug")):
+            return 4 * multiplier
+        elif run_info_data.get("tsan"):
+            return 8 * multiplier
+
+        if run_info_data["os"] == "android":
+            return 4 * multiplier
+        return 1 * multiplier
     elif (run_info_data["debug"] or
           run_info_data.get("asan") or
           run_info_data.get("tsan")):
@@ -93,34 +105,36 @@ def check_args(**kwargs):
 
 
 def browser_kwargs(logger, test_type, run_info_data, config, **kwargs):
-    return {"binary": kwargs["binary"],
-            "webdriver_binary": kwargs["webdriver_binary"],
-            "webdriver_args": kwargs["webdriver_args"],
-            "prefs_root": kwargs["prefs_root"],
-            "extra_prefs": kwargs["extra_prefs"],
-            "test_type": test_type,
-            "debug_info": kwargs["debug_info"],
-            "symbols_path": kwargs["symbols_path"],
-            "stackwalk_binary": kwargs["stackwalk_binary"],
-            "certutil_binary": kwargs["certutil_binary"],
-            "ca_certificate_path": config.ssl_config["ca_cert_path"],
-            "e10s": kwargs["gecko_e10s"],
-            "enable_fission": run_info_data["fission"],
-            "stackfix_dir": kwargs["stackfix_dir"],
-            "binary_args": kwargs["binary_args"],
-            "timeout_multiplier": get_timeout_multiplier(test_type,
-                                                         run_info_data,
-                                                         **kwargs),
-            "leak_check": run_info_data["debug"] and (kwargs["leak_check"] is not False),
-            "asan": run_info_data.get("asan"),
-            "stylo_threads": kwargs["stylo_threads"],
-            "chaos_mode_flags": kwargs["chaos_mode_flags"],
-            "config": config,
-            "browser_channel": kwargs["browser_channel"],
-            "headless": kwargs["headless"],
-            "preload_browser": kwargs["preload_browser"] and not kwargs["pause_after_test"] and not kwargs["num_test_groups"] == 1,
-            "specialpowers_path": kwargs["specialpowers_path"],
-            "debug_test": kwargs["debug_test"]}
+    browser_kwargs = {"binary": kwargs["binary"],
+                      "webdriver_binary": kwargs["webdriver_binary"],
+                      "webdriver_args": kwargs["webdriver_args"],
+                      "prefs_root": kwargs["prefs_root"],
+                      "extra_prefs": kwargs["extra_prefs"],
+                      "test_type": test_type,
+                      "debug_info": kwargs["debug_info"],
+                      "symbols_path": kwargs["symbols_path"],
+                      "stackwalk_binary": kwargs["stackwalk_binary"],
+                      "certutil_binary": kwargs["certutil_binary"],
+                      "ca_certificate_path": config.ssl_config["ca_cert_path"],
+                      "e10s": kwargs["gecko_e10s"],
+                      "enable_fission": run_info_data["fission"],
+                      "stackfix_dir": kwargs["stackfix_dir"],
+                      "binary_args": kwargs["binary_args"],
+                      "timeout_multiplier": get_timeout_multiplier(test_type,
+                                                                   run_info_data,
+                                                                   **kwargs),
+                      "leak_check": run_info_data["debug"] and (kwargs["leak_check"] is not False),
+                      "asan": run_info_data.get("asan"),
+                      "chaos_mode_flags": kwargs["chaos_mode_flags"],
+                      "config": config,
+                      "browser_channel": kwargs["browser_channel"],
+                      "headless": kwargs["headless"],
+                      "preload_browser": kwargs["preload_browser"] and not kwargs["pause_after_test"] and not kwargs["num_test_groups"] == 1,
+                      "specialpowers_path": kwargs["specialpowers_path"],
+                      "debug_test": kwargs["debug_test"]}
+    if test_type == "wdspec" and kwargs["binary"]:
+        browser_kwargs["webdriver_args"].extend(["--binary", kwargs["binary"]])
+    return browser_kwargs
 
 
 def executor_kwargs(logger, test_type, test_environment, run_info_data,
@@ -140,8 +154,6 @@ def executor_kwargs(logger, test_type, test_environment, run_info_data,
     if test_type == "wdspec":
         options = {"args": []}
         if kwargs["binary"]:
-            if "webdriver_args" not in executor_kwargs:
-                executor_kwargs["webdriver_args"] = []
             executor_kwargs["webdriver_args"].extend(["--binary", kwargs["binary"]])
         if kwargs["binary_args"]:
             options["args"] = kwargs["binary_args"]
@@ -202,7 +214,8 @@ def run_info_extras(**kwargs):
           "fission": enable_fission,
           "sessionHistoryInParent": (enable_fission or
                                      not get_bool_pref("fission.disableSessionHistoryInParent")),
-          "swgl": get_bool_pref("gfx.webrender.software")}
+          "swgl": get_bool_pref("gfx.webrender.software"),
+          "editorLegacyDirectionMode": get_bool_pref_if_exists("editor.join_split_direction.compatible_with_the_other_browsers") is False}
 
     rv.update(run_info_browser_version(**kwargs))
 
@@ -224,7 +237,7 @@ def run_info_browser_version(**kwargs):
 
 
 def update_properties():
-    return (["os", "debug", "fission", "processor", "swgl", "domstreams"],
+    return (["os", "debug", "fission", "processor", "swgl", "asan", "tsan", "editorLegacyDirectionMode"],
             {"os": ["version"], "processor": ["bits"]})
 
 
@@ -243,14 +256,22 @@ def log_gecko_crashes(logger, process, test, profile_dir, symbols_path, stackwal
         return False
 
 
-def get_environ(logger, binary, debug_info, stylo_threads, headless,
-                chaos_mode_flags=None):
-    env = test_environment(xrePath=os.path.abspath(os.path.dirname(binary)),
-                           debugger=debug_info is not None,
-                           useLSan=True,
-                           log=logger)
+def get_environ(logger, binary, debug_info, headless, chaos_mode_flags=None):
+    # Hack: test_environment expects a bin_suffix key in mozinfo that in gecko infrastructure
+    # is set in the build system. Set it manually here.
+    if "bin_suffix" not in mozinfo.info:
+        mozinfo.info["bin_suffix"] = (".exe" if sys.platform in ["win32", "msys", "cygwin"]
+                                      else "")
 
-    env["STYLO_THREADS"] = str(stylo_threads)
+    # test_environment has started returning None values for some environment variables
+    # that are only set in a gecko checkout
+    env = {key: value for key, value in
+           test_environment(xrePath=os.path.abspath(os.path.dirname(binary)),
+                            debugger=debug_info is not None,
+                            useLSan=True,
+                            log=logger).items()
+           if value is not None}
+
     # Disable window occlusion. Bug 1733955
     env["MOZ_WINDOW_OCCLUSION"] = "0"
     if chaos_mode_flags is not None:
@@ -279,7 +300,7 @@ class FirefoxInstanceManager:
     __metaclass__ = ABCMeta
 
     def __init__(self, logger, binary, binary_args, profile_creator, debug_info,
-                 chaos_mode_flags, headless, stylo_threads,
+                 chaos_mode_flags, headless,
                  leak_check, stackfix_dir, symbols_path, asan):
         """Object that manages starting and stopping instances of Firefox."""
         self.logger = logger
@@ -289,7 +310,6 @@ class FirefoxInstanceManager:
         self.debug_info = debug_info
         self.chaos_mode_flags = chaos_mode_flags
         self.headless = headless
-        self.stylo_threads = stylo_threads
         self.leak_check = leak_check
         self.stackfix_dir = stackfix_dir
         self.symbols_path = symbols_path
@@ -329,7 +349,7 @@ class FirefoxInstanceManager:
         marionette_port = get_free_port()
         profile.set_preferences({"marionette.port": marionette_port})
 
-        env = get_environ(self.logger, self.binary, self.debug_info, self.stylo_threads,
+        env = get_environ(self.logger, self.binary, self.debug_info,
                           self.headless, self.chaos_mode_flags)
 
         args = self.binary_args[:] if self.binary_args else []
@@ -659,7 +679,6 @@ class ProfileCreator:
             # TODO: Remove preferences once Firefox 64 is stable (Bug 905404)
             "network.proxy.type": 0,
             "places.history.enabled": False,
-            "network.preload": True,
         })
         if self.e10s:
             profile.set_preferences({"browser.tabs.remote.autostart": True})
@@ -742,7 +761,7 @@ class FirefoxBrowser(Browser):
                  symbols_path=None, stackwalk_binary=None, certutil_binary=None,
                  ca_certificate_path=None, e10s=False, enable_fission=True,
                  stackfix_dir=None, binary_args=None, timeout_multiplier=None, leak_check=False,
-                 asan=False, stylo_threads=1, chaos_mode_flags=None, config=None,
+                 asan=False, chaos_mode_flags=None, config=None,
                  browser_channel="nightly", headless=None, preload_browser=False,
                  specialpowers_path=None, debug_test=False, **kwargs):
         Browser.__init__(self, logger)
@@ -788,7 +807,6 @@ class FirefoxBrowser(Browser):
                                                      debug_info,
                                                      chaos_mode_flags,
                                                      headless,
-                                                     stylo_threads,
                                                      leak_check,
                                                      stackfix_dir,
                                                      symbols_path,
@@ -845,7 +863,7 @@ class FirefoxWdSpecBrowser(WebDriverBrowser):
                  extra_prefs=None, debug_info=None, symbols_path=None, stackwalk_binary=None,
                  certutil_binary=None, ca_certificate_path=None, e10s=False,
                  enable_fission=False, stackfix_dir=None, leak_check=False,
-                 asan=False, stylo_threads=1, chaos_mode_flags=None, config=None,
+                 asan=False, chaos_mode_flags=None, config=None,
                  browser_channel="nightly", headless=None, debug_test=False, **kwargs):
 
         super().__init__(logger, binary, webdriver_binary, webdriver_args)
@@ -860,7 +878,7 @@ class FirefoxWdSpecBrowser(WebDriverBrowser):
         self.leak_check = leak_check
         self.leak_report_file = None
 
-        self.env = self.get_env(binary, debug_info, stylo_threads, headless, chaos_mode_flags)
+        self.env = self.get_env(binary, debug_info, headless, chaos_mode_flags)
 
         profile_creator = ProfileCreator(logger,
                                          prefs_root,
@@ -878,11 +896,10 @@ class FirefoxWdSpecBrowser(WebDriverBrowser):
         self.profile = profile_creator.create()
         self.marionette_port = None
 
-    def get_env(self, binary, debug_info, stylo_threads, headless, chaos_mode_flags):
+    def get_env(self, binary, debug_info, headless, chaos_mode_flags):
         env = get_environ(self.logger,
                           binary,
                           debug_info,
-                          stylo_threads,
                           headless,
                           chaos_mode_flags)
         env["RUST_BACKTRACE"] = "1"

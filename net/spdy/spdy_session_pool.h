@@ -28,8 +28,6 @@
 #include "net/proxy_resolution/proxy_config.h"
 #include "net/socket/connect_job.h"
 #include "net/socket/ssl_client_socket.h"
-#include "net/spdy/http2_push_promise_index.h"
-#include "net/spdy/server_push_delegate.h"
 #include "net/spdy/spdy_session_key.h"
 #include "net/ssl/ssl_config_service.h"
 #include "net/third_party/quiche/src/quiche/quic/core/quic_versions.h"
@@ -291,12 +289,6 @@ class NET_EXPORT SpdySessionPool
     return http_server_properties_;
   }
 
-  Http2PushPromiseIndex* push_promise_index() { return &push_promise_index_; }
-
-  void set_server_push_delegate(ServerPushDelegate* push_delegate) {
-    push_delegate_ = push_delegate;
-  }
-
   // NetworkChangeNotifier::IPAddressObserver methods:
 
   // We flush all idle sessions and release references to the active ones so
@@ -313,7 +305,8 @@ class NET_EXPORT SpdySessionPool
   // Makes all sessions using |server|'s SSL configuration unavailable, meaning
   // they will not be used to service new streams. Does not close any existing
   // streams.
-  void OnSSLConfigForServerChanged(const HostPortPair& server) override;
+  void OnSSLConfigForServersChanged(
+      const base::flat_set<HostPortPair>& servers) override;
 
   void set_network_quality_estimator(
       NetworkQualityEstimator* network_quality_estimator) {
@@ -437,9 +430,6 @@ class NET_EXPORT SpdySessionPool
   // A map of DNS alias vectors by session keys.
   DnsAliasesBySessionKeyMap dns_aliases_by_session_key_;
 
-  // The index of all unclaimed pushed streams of all SpdySessions in this pool.
-  Http2PushPromiseIndex push_promise_index_;
-
   const raw_ptr<SSLClientContext> ssl_client_context_;
   const raw_ptr<HostResolver> resolver_;
 
@@ -498,7 +488,6 @@ class NET_EXPORT SpdySessionPool
   SpdySessionRequestMap spdy_session_request_map_;
 
   TimeFunc time_func_;
-  raw_ptr<ServerPushDelegate> push_delegate_ = nullptr;
 
   raw_ptr<NetworkQualityEstimator> network_quality_estimator_;
 

@@ -33,7 +33,6 @@ import android.widget.RelativeLayout;
 import androidx.annotation.ColorInt;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.annotation.VisibleForTesting;
 import androidx.recyclerview.widget.DefaultItemAnimator;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -44,7 +43,7 @@ import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.tab_ui.R;
 import org.chromium.ui.base.ViewUtils;
-import org.chromium.ui.interpolators.BakedBezierInterpolator;
+import org.chromium.ui.interpolators.Interpolators;
 import org.chromium.ui.modelutil.SimpleRecyclerViewAdapter;
 import org.chromium.ui.resources.dynamics.DynamicResourceLoader;
 import org.chromium.ui.resources.dynamics.DynamicResourceReadyOnceCallback;
@@ -157,6 +156,9 @@ class TabListRecyclerView
     // It is null when gts-tab animation is disabled or switching from Start surface to GTS.
     @Nullable
     private RecyclerView.ItemAnimator mOriginalAnimator;
+    // Null unless item animations are disabled.
+    @Nullable
+    private RecyclerView.ItemAnimator mDisabledAnimatorHolder;
     // Null if there is no runnable to execute on the next layout.
     @Nullable
     private Runnable mOnNextLayoutRunnable;
@@ -228,6 +230,19 @@ class TabListRecyclerView
         mListener = listener;
     }
 
+    void setDisableItemAnimations(boolean disable) {
+        if (disable) {
+            ItemAnimator animator = getItemAnimator();
+            if (animator == null) return;
+
+            mDisabledAnimatorHolder = animator;
+            setItemAnimator(null);
+        } else if (mDisabledAnimatorHolder != null) {
+            setItemAnimator(mDisabledAnimatorHolder);
+            mDisabledAnimatorHolder = null;
+        }
+    }
+
     void prepareTabSwitcherView() {
         endAllAnimations();
 
@@ -253,7 +268,7 @@ class TabListRecyclerView
         setAlpha(0);
         setVisibility(View.VISIBLE);
         mFadeInAnimator = ObjectAnimator.ofFloat(this, View.ALPHA, 1);
-        mFadeInAnimator.setInterpolator(BakedBezierInterpolator.FADE_IN_CURVE);
+        mFadeInAnimator.setInterpolator(Interpolators.LINEAR_OUT_SLOW_IN_INTERPOLATOR);
         mFadeInAnimator.setDuration(duration);
         mFadeInAnimator.start();
         mFadeInAnimator.addListener(new AnimatorListenerAdapter() {
@@ -436,13 +451,7 @@ class TabListRecyclerView
     }
 
     private float getMaxDutyCycle() {
-        String maxDutyCycle = ChromeFeatureList.getFieldTrialParamByFeature(
-                ChromeFeatureList.TAB_GRID_LAYOUT_ANDROID, MAX_DUTY_CYCLE_PARAM);
-        try {
-            return Float.valueOf(maxDutyCycle);
-        } catch (NumberFormatException e) {
-            return DEFAULT_MAX_DUTY_CYCLE;
-        }
+        return DEFAULT_MAX_DUTY_CYCLE;
     }
 
     private void registerDynamicView() {
@@ -524,7 +533,7 @@ class TabListRecyclerView
     private void hideAnimation(boolean animate) {
         mListener.startedHiding(animate);
         mFadeOutAnimator = ObjectAnimator.ofFloat(this, View.ALPHA, 0);
-        mFadeOutAnimator.setInterpolator(BakedBezierInterpolator.FADE_OUT_CURVE);
+        mFadeOutAnimator.setInterpolator(Interpolators.FAST_OUT_LINEAR_IN_INTERPOLATOR);
         mFadeOutAnimator.setDuration(BASE_ANIMATION_DURATION_MS);
         mFadeOutAnimator.addListener(new AnimatorListenerAdapter() {
             @Override
@@ -757,12 +766,10 @@ class TabListRecyclerView
                 || action == R.id.move_tab_up || action == R.id.move_tab_down;
     }
 
-    @VisibleForTesting
     ImageView getShadowImageViewForTesting() {
         return mShadowImageView;
     }
 
-    @VisibleForTesting
     int getToolbarHairlineColorForTesting() {
         return mToolbarHairlineColor;
     }

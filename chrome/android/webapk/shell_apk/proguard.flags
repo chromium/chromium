@@ -1,9 +1,6 @@
--keep class org.chromium.webapk.shell_apk.ShareActivity*
-
 # Classes which are referenced in the old-style or new-style AndroidManifest
 # but not both. The server currently uses the same classes.dex for both
 # old-style and new-style WebAPKs.
--keep class org.chromium.webapk.shell_apk.MainActivity
 -keep class org.chromium.webapk.shell_apk.NotificationPermissionRequestActivity
 -keep class org.chromium.webapk.shell_apk.TransparentLauncherActivity
 -keep class org.chromium.webapk.shell_apk.h2o.H2OMainActivity

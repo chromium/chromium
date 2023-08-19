@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+Copyright 2023 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+
+<resources>
+    <dimen name="mandatory_reauth_opt_in_bottom_sheet_icon_width">30dp</dimen>
+    <dimen name="mandatory_reauth_opt_in_bottom_sheet_icon_height">60dp</dimen>
+    <dimen name="mandatory_reauth_opt_in_bottom_sheet_horizontal_margin">24dp</dimen>
+</resources>

@@ -120,7 +120,7 @@ class ModemMessagingClientTest : public testing::Test {
   }
 
  protected:
-  raw_ptr<ModemMessagingClient, ExperimentalAsh> client_ =
+  raw_ptr<ModemMessagingClient, DanglingUntriaged | ExperimentalAsh> client_ =
       nullptr;  // Unowned convenience pointer.
   // A message loop to emulate asynchronous behavior.
   base::test::SingleThreadTaskEnvironment task_environment_;
@@ -133,7 +133,8 @@ class ModemMessagingClientTest : public testing::Test {
   // Expected argument for Delete method.
   dbus::ObjectPath expected_sms_path_;
   // Response returned by mock methods.
-  raw_ptr<dbus::Response, ExperimentalAsh> response_ = nullptr;
+  raw_ptr<dbus::Response, DanglingUntriaged | ExperimentalAsh> response_ =
+      nullptr;
 
  private:
   // Used to implement the mock proxy.

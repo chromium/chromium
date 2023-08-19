@@ -59,18 +59,13 @@ AuthHubModeLifecycle::~AuthHubModeLifecycle() = default;
 AuthHubModeLifecycle::Owner::~Owner() = default;
 
 void AuthHubModeLifecycle::SwitchToMode(AuthHubMode target) {
-  CHECK_NE(target, AuthHubMode::kNone);
-  SwitchToModeImpl(target);
-}
-
-void AuthHubModeLifecycle::Shutdown() {
-  SwitchToModeImpl(AuthHubMode::kNone);
-}
-
-void AuthHubModeLifecycle::SwitchToModeImpl(AuthHubMode target) {
   switch (stage_) {
     case Stage::kUninitialized:
       CHECK_EQ(mode_, AuthHubMode::kNone);
+      if (target == AuthHubMode::kNone) {
+        owner_->OnModeShutdown();
+        return;
+      }
       target_mode_ = target;
       initializing_for_mode_ = target_mode_;
       InitializeEnginesForMode();
@@ -248,10 +243,11 @@ void AuthHubModeLifecycle::CheckShutdownStatus() {
 
   if (all_stopped) {
     watchdog_.Stop();
-    engines_.clear();
+    // Let owner release references to engines.
     if (mode_ != AuthHubMode::kNone) {
       owner_->OnExitedMode(mode_);
     }
+    engines_.clear();
     mode_ = AuthHubMode::kNone;
     stage_ = Stage::kUninitialized;
     if (target_mode_ != AuthHubMode::kNone) {

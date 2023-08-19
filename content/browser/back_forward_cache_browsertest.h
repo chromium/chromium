@@ -36,6 +36,8 @@ using ReasonsMatcher = testing::Matcher<
     const blink::mojom::BackForwardCacheNotRestoredReasonsPtr&>;
 using SameOriginMatcher = testing::Matcher<
     const blink::mojom::SameOriginBfcacheNotRestoredDetailsPtr&>;
+using BlockingDetailsMatcher =
+    testing::Matcher<const blink::mojom::BlockingDetailsPtr&>;
 
 // Match RenderFrameHostImpl* that are in the BackForwardCache.
 MATCHER(InBackForwardCache, "") {
@@ -147,6 +149,12 @@ class BackForwardCacheBrowserTest
       const testing::Matcher<std::string>& url,
       const std::vector<testing::Matcher<std::string>>& reasons,
       const std::vector<ReasonsMatcher>& children);
+
+  BlockingDetailsMatcher MatchesBlockingDetails(
+      const absl::optional<testing::Matcher<std::string>>& url,
+      const absl::optional<testing::Matcher<std::string>>& function_name,
+      const testing::Matcher<uint64_t>& line,
+      const testing::Matcher<uint64_t>& column);
 
   // Access the tree result of NotRestoredReason for the last main frame
   // navigation.

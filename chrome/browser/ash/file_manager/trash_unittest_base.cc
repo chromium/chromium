@@ -43,8 +43,10 @@ void TrashBaseTest::SetUp() {
   auto user_manager = std::make_unique<ash::FakeChromeUserManager>();
   AccountId account_id =
       AccountId::FromUserEmailGaiaId(profile_->GetProfileUserName(), "12345");
-  user_manager->AddUser(account_id);
-  user_manager->LoginUser(account_id);
+  user_manager->AddUserWithAffiliationAndTypeAndProfile(
+      account_id, /*is_affiliated=*/false, user_manager::USER_TYPE_REGULAR,
+      profile_.get());
+  user_manager->LoginUser(account_id, true);
   scoped_user_manager_ = std::make_unique<user_manager::ScopedUserManager>(
       std::move(user_manager));
 

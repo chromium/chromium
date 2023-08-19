@@ -41,6 +41,8 @@ class DEVICE_BLUETOOTH_EXPORT FakeFlossAdapterClient
             const std::string& service_name,
             const int adapter_index,
             base::OnceClosure on_ready) override;
+  void SetName(ResponseCallback<Void> callback,
+               const std::string& name) override;
   void StartDiscovery(ResponseCallback<Void> callback) override;
   void CancelDiscovery(ResponseCallback<Void> callback) override;
   void CreateBond(ResponseCallback<bool> callback,
@@ -58,6 +60,9 @@ class DEVICE_BLUETOOTH_EXPORT FakeFlossAdapterClient
                           const FlossDeviceId& device) override;
   void GetRemoteUuids(
       ResponseCallback<device::BluetoothDevice::UUIDList> callback,
+      FlossDeviceId device) override;
+  void GetRemoteVendorProductInfo(
+      ResponseCallback<FlossAdapterClient::VendorProductInfo> callback,
       FlossDeviceId device) override;
   void GetBondState(ResponseCallback<uint32_t> callback,
                     const FlossDeviceId& device) override;
@@ -78,6 +83,9 @@ class DEVICE_BLUETOOTH_EXPORT FakeFlossAdapterClient
   // Helper for posting a delayed task.
   void PostDelayedTask(base::OnceClosure callback);
 
+  // Helper for setting the connection state for kBondedAddress1.
+  void SetAddress1Connected(bool connected);
+
   // Test utility to do fake notification to observers.
   void NotifyObservers(
       const base::RepeatingCallback<void(Observer*)>& notify) const;
@@ -86,6 +94,7 @@ class DEVICE_BLUETOOTH_EXPORT FakeFlossAdapterClient
   void FailNextDiscovery();
 
  private:
+  bool is_address1_connected_;
   absl::optional<bool> fail_discovery_;
   base::WeakPtrFactory<FakeFlossAdapterClient> weak_ptr_factory_{this};
 };

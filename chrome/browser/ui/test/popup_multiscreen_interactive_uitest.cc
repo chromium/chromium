@@ -125,7 +125,7 @@ IN_PROC_BROWSER_TEST_P(MAYBE_PopupMultiScreenTest, Basic) {
   for (const display::Display& opener_display : displays) {
     browser()->window()->SetBounds(opener_display.work_area());
     ASSERT_EQ(opener_display, GetDisplayNearestBrowser(browser()));
-    for (const char* url : {".", "about:blank"}) {
+    for (const char* url : {"/simple.html", "about:blank"}) {
       const std::string open_script =
           content::JsReplace("open($1, '', 'popup');", url);
       Browser* popup = OpenPopup(browser(), open_script);
@@ -154,7 +154,7 @@ IN_PROC_BROWSER_TEST_P(MAYBE_PopupMultiScreenTest, OpenOnAnotherScreen) {
     browser()->window()->SetBounds(opener_display.work_area());
     ASSERT_EQ(opener_display, GetDisplayNearestBrowser(browser()));
     for (const display::Display& target_display : displays) {
-      for (const char* url : {".", "about:blank"}) {
+      for (const char* url : {"/simple.html", "about:blank"}) {
         const std::string open_script = content::JsReplace(
             "open($1, '', 'left=$2,top=$3,width=200,height=200');", url,
             target_display.work_area().x(), target_display.work_area().y());
@@ -179,17 +179,9 @@ IN_PROC_BROWSER_TEST_P(MAYBE_PopupMultiScreenTest, OpenOnAnotherScreen) {
   }
 }
 
-#if BUILDFLAG(IS_CHROMEOS) && defined(ADDRESS_SANITIZER) && \
-    defined(LEAK_SANITIZER)
-#define MAYBE_MoveToAnotherScreen DISABLED_MoveToAnotherScreen
-#else
-#define MAYBE_MoveToAnotherScreen MoveToAnotherScreen
-#endif
-
 // Tests opening a popup on the same screen, then moving it to another screen.
-// TODO(crbug.com/1444721): Re-enable this test
-IN_PROC_BROWSER_TEST_P(MAYBE_PopupMultiScreenTest, MAYBE_MoveToAnotherScreen) {
-  content::WebContents* web_contents =
+IN_PROC_BROWSER_TEST_P(MAYBE_PopupMultiScreenTest, MoveToAnotherScreen) {
+  content::WebContents* opener_contents =
       browser()->tab_strip_model()->GetActiveWebContents();
   // Copy the display vector so references are not invalidated while looping.
   display::Screen* screen = display::Screen::GetScreen();
@@ -199,34 +191,26 @@ IN_PROC_BROWSER_TEST_P(MAYBE_PopupMultiScreenTest, MAYBE_MoveToAnotherScreen) {
     ASSERT_EQ(opener_display, GetDisplayNearestBrowser(browser()));
     gfx::Point opener_display_center = opener_display.work_area().CenterPoint();
     for (const display::Display& target_display : displays) {
-      for (const char* url : {".", "about:blank"}) {
+      for (const char* url : {"/simple.html", "about:blank"}) {
         const std::string open_script = content::JsReplace(
             "w = open($1, '', 'left=$2,top=$3,width=200,height=200');", url,
             opener_display_center.x() - 100, opener_display_center.y() - 100);
         Browser* popup = OpenPopup(browser(), open_script);
         EXPECT_EQ(opener_display, GetDisplayNearestBrowser(popup));
+        // Ensure the opener can access the popup window object.
+        ASSERT_NE("", EvalJs(opener_contents, "w.location.href"));
 
         // Have the opener try to move the popup to the target screen.
         const std::string move_script = content::JsReplace(
             "w.moveTo($1, $2);", target_display.work_area().x(),
             target_display.work_area().y());
         {
-          // TODO(crbug.com/1444721): Resolve any WaitForBoundsChange flakes.
-          auto log = [](const std::vector<display::Display>& displays) {
-            std::string log;
-            for (const display::Display& d : displays) {
-              log += "  " + d.ToString() + "\n";
-            }
-            return log;
-          };
           SCOPED_TRACE(
               testing::Message() << "\n"
               << "script: " << open_script << " " << move_script << "\n"
               << "opener: " << browser()->window()->GetBounds().ToString()
-              << " popup: " << popup->window()->GetBounds().ToString() << "\n"
-              << "cached displays:\n" << log(displays)
-              << "current displays:\n" << log(screen->GetAllDisplays()));
-          content::ExecuteScriptAsync(web_contents, move_script);
+              << " popup: " << popup->window()->GetBounds().ToString());
+          content::ExecuteScriptAsync(opener_contents, move_script);
           WaitForBoundsChange(popup, /*move_by=*/40, /*resize_by=*/0);
         }
         const display::Display popup_display = GetDisplayNearestBrowser(popup);
@@ -259,7 +243,8 @@ IN_PROC_BROWSER_TEST_P(MAYBE_PopupMultiScreenTest, CrossOriginIFrame) {
   ASSERT_TRUE(https_server.Start());
   content::WebContents* web_contents =
       browser()->tab_strip_model()->GetActiveWebContents();
-  ASSERT_TRUE(NavigateToURL(web_contents, https_server.GetURL("/simple.html")));
+  ASSERT_TRUE(NavigateToURL(web_contents,
+                            https_server.GetURL("a.com", "/simple.html")));
   EXPECT_TRUE(WaitForRenderFrameReady(web_contents->GetPrimaryMainFrame()));
   // Grant permission to the new origin after navigation.
   if (ShouldTestWindowManagement()) {
@@ -293,7 +278,7 @@ IN_PROC_BROWSER_TEST_P(MAYBE_PopupMultiScreenTest, CrossOriginIFrame) {
       ASSERT_NE(cross_origin_iframe->GetLastCommittedOrigin(),
                 web_contents->GetPrimaryMainFrame()->GetLastCommittedOrigin());
       for (const display::Display& target_display : displays) {
-        for (const char* url : {".", "about:blank"}) {
+        for (const char* url : {"/simple.html", "about:blank"}) {
           const std::string open_script = content::JsReplace(
               "w = open($1, '', 'left=$2,top=$3,width=200,height=200');", url,
               target_display.work_area().x(), target_display.work_area().y());

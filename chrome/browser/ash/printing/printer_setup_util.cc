@@ -18,7 +18,6 @@
 #include "base/threading/scoped_blocking_call.h"
 #include "chrome/browser/ash/printing/cups_printers_manager.h"
 #include "chrome/browser/ash/printing/cups_printers_manager_factory.h"
-#include "chrome/browser/ash/printing/printer_configurer.h"
 #include "chrome/browser/browser_process.h"
 #include "chromeos/printing/printer_configuration.h"
 #include "components/crash/core/common/crash_keys.h"
@@ -77,13 +76,13 @@ void LogPrinterSetup(const chromeos::Printer& printer,
     case PrinterSetupResult::kDbusNoReply:
     case PrinterSetupResult::kDbusTimeout:
     case PrinterSetupResult::kManualSetupRequired:
+    case PrinterSetupResult::kPrinterRemoved:
       LOG(ERROR) << ResultCodeToMessage(result);
       break;
     case PrinterSetupResult::kInvalidPrinterUpdate:
     case PrinterSetupResult::kEditSuccess:
     case PrinterSetupResult::kPrinterIsNotAutoconfigurable:
     case PrinterSetupResult::kComponentUnavailable:
-    case PrinterSetupResult::kMaxValue:
       LOG(ERROR) << "Unexpected error in printer setup: "
                  << ResultCodeToMessage(result);
       break;
@@ -196,7 +195,6 @@ void OnPrinterInstalled(
     std::move(cb).Run(absl::nullopt);
     return;
   }
-  printers_manager->PrinterInstalled(printer, /*is_automatic=*/true);
   // Fetch settings off of the UI thread and invoke callback.
   FetchCapabilities(printer.id(), std::move(cb));
 }
@@ -204,7 +202,6 @@ void OnPrinterInstalled(
 }  // namespace
 
 void SetUpPrinter(CupsPrintersManager* printers_manager,
-                  PrinterConfigurer* printer_configurer,
                   const chromeos::Printer& printer,
                   GetPrinterCapabilitiesCallback cb) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
@@ -221,9 +218,10 @@ void SetUpPrinter(CupsPrintersManager* printers_manager,
     return;
   }
 
-  printer_configurer->SetUpPrinter(
-      printer, base::BindOnce(OnPrinterInstalled, printers_manager, printer,
-                              std::move(cb)));
+  printers_manager->SetUpPrinter(
+      printer, /*is_automatic_installation=*/true,
+      base::BindOnce(OnPrinterInstalled, printers_manager, printer,
+                     std::move(cb)));
 }
 
 }  // namespace printing

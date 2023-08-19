@@ -5,8 +5,8 @@
 #ifndef CC_TREES_CLIP_NODE_H_
 #define CC_TREES_CLIP_NODE_H_
 
-#include "base/containers/stack_container.h"
 #include "cc/cc_export.h"
+#include "third_party/abseil-cpp/absl/container/inlined_vector.h"
 #include "ui/gfx/geometry/rect_f.h"
 
 namespace base {
@@ -55,7 +55,7 @@ struct CC_EXPORT ClipNode {
   // render target, the number of cached clip rects per node is 1.
   // Any more than 3, and this will overflow rects onto the heap, so this
   // number is a tradeoff of ClipNode size on average and access speed.
-  mutable base::StackVector<ClipRectData, 3> cached_clip_rects;
+  mutable absl::InlinedVector<ClipRectData, 3> cached_clip_rects;
 
   // This rect accumulates all clips from this node to the root in screen space.
   // It is used in the computation of layer's visible rect.

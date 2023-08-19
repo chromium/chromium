@@ -132,6 +132,13 @@
     --cr-customize-themes-icon-size: 36px;
   }
 
+  cr-theme-color-picker {
+    --cr-theme-color-padding: 6px;
+    --cr-theme-color-picker-column-width: 50px;
+    --cr-theme-color-picker-grid-gap: 7px;
+    --cr-theme-color-picker-grid-padding: 0;
+  }
+
   .action-container {
     padding: 0 16px 16px;
   }
@@ -225,9 +232,8 @@
   }
 </style>
 
-<cr-view-manager role="dialog" id="viewManager" aria-labelledby="title"
-    aria-describedby="content"
-    class$="[[getDialogDesignClass_(profileCustomizationInDialogDesign_)]]">
+<cr-view-manager role="dialog" id="viewManager" class="in-dialog-design"
+    aria-labelledby="title" aria-describedby="content">
   <div id="customizeDialog" slot="view" class="active">
     <!-- An extra wrapper is needed because cr-view-manager incorrectly
          displays views with display: flex -->
@@ -256,9 +262,6 @@
         <div id="title">
           [[welcomeTitle_]]
         </div>
-        <template is="dom-if" if="[[!profileCustomizationInDialogDesign_]]">
-          <div id="content">$i18n{profileCustomizationText}</div>
-        </template>
       </div>
 
       <cr-input id="nameInput" pattern=".*\\S.*" value="{{profileName_}}"
@@ -269,8 +272,13 @@
       </cr-input>
 
       <div id="pickThemeContainer">
-        <cr-customize-themes id="themeSelector">
-        </cr-customize-themes>
+        <template is="dom-if" if="[[isChromeRefresh2023_]]">
+          <cr-theme-color-picker columns="6"></cr-theme-color-picker>
+        </template>
+        <template is="dom-if" if="[[!isChromeRefresh2023_]]">
+          <cr-customize-themes id="themeSelector">
+          </cr-customize-themes>
+        </template>
       </div>
 
       <div class="action-container">

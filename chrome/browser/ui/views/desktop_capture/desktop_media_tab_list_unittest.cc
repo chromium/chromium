@@ -61,7 +61,7 @@ class DesktopMediaTabListTest : public testing::Test {
 
     tab_list_ =
         static_cast<DesktopMediaTabList*>(test_api_.GetSelectedListView());
-    list_ = tab_list_->list_;
+    list_ = tab_list_->table_;
     preview_ = tab_list_->preview_;
     preview_label_ = tab_list_->preview_label_;
 

@@ -33,6 +33,7 @@
 #include "content/public/browser/render_process_host.h"
 #include "content/public/browser/site_isolation_policy.h"
 #include "content/public/browser/storage_partition_config.h"
+#include "content/public/browser/web_exposed_isolation_level.h"
 #include "content/public/common/content_client.h"
 #include "content/public/common/content_features.h"
 #include "content/public/common/content_switches.h"
@@ -138,12 +139,14 @@ class IsolatedOriginTestBase : public ContentBrowserTest {
   ProcessLock ProcessLockFromUrl(const std::string& url) {
     BrowserContext* browser_context = web_contents()->GetBrowserContext();
     return ProcessLock::FromSiteInfo(SiteInfo(
-        GURL(url), GURL(url),
+        /*site_url=*/GURL(url),
+        /*process_lock_url=*/GURL(url),
         /*requires_origin_keyed_process=*/false,
         /*requires_origin_keyed_process_by_default=*/false,
         /*is_sandboxed=*/false, UrlInfo::kInvalidUniqueSandboxId,
         StoragePartitionConfig::CreateDefault(browser_context),
-        WebExposedIsolationInfo::CreateNonIsolated(), /*is_guest=*/false,
+        WebExposedIsolationInfo::CreateNonIsolated(),
+        WebExposedIsolationLevel::kNotIsolated, /*is_guest=*/false,
         /*does_site_request_dedicated_process_for_coop=*/false,
         /*is_jit_disabled=*/false, /*is_pdf=*/false,
         /*is_fenced=*/false));
@@ -164,12 +167,14 @@ class IsolatedOriginTestBase : public ContentBrowserTest {
     BrowserContext* browser_context = web_contents()->GetBrowserContext();
     GURL origin_url = url::Origin::Create(url).GetURL();
     return ProcessLock::FromSiteInfo(SiteInfo(
-        origin_url, origin_url,
+        /*site_url=*/origin_url,
+        /*process_lock_url=*/origin_url,
         /*requires_origin_keyed_process=*/false,
         /*requires_origin_keyed_process_by_default=*/false,
         /*is_sandboxed=*/false, UrlInfo::kInvalidUniqueSandboxId,
         StoragePartitionConfig::CreateDefault(browser_context),
-        WebExposedIsolationInfo::CreateNonIsolated(), /*is_guest=*/false,
+        WebExposedIsolationInfo::CreateNonIsolated(),
+        WebExposedIsolationLevel::kNotIsolated, /*is_guest=*/false,
         /*does_site_request_dedicated_process_for_coop=*/false,
         /*is_jit_disabled=*/false, /*is_pdf=*/false,
         /*is_fenced=*/false));
@@ -1575,16 +1580,18 @@ IN_PROC_BROWSER_TEST_F(OriginIsolationOptInHeaderTest,
       https_server()->GetURL("isolated.foo.com", "/isolate_origin"));
   GURL origin_url = url::Origin::Create(isolated_suborigin_url).GetURL();
   BrowserContext* browser_context = web_contents()->GetBrowserContext();
-  auto expected_isolated_suborigin_lock = ProcessLock::FromSiteInfo(
-      SiteInfo(origin_url, origin_url,
-               /*requires_origin_keyed_process=*/true,
-               /*requires_origin_keyed_process_by_default=*/false,
-               /*is_sandboxed=*/false, UrlInfo::kInvalidUniqueSandboxId,
-               StoragePartitionConfig::CreateDefault(browser_context),
-               WebExposedIsolationInfo::CreateNonIsolated(), /*is_guest=*/false,
-               /*does_site_request_dedicated_process_for_coop=*/false,
-               /*is_jit_disabled=*/false, /*is_pdf=*/false,
-               /*is_fenced=*/false));
+  auto expected_isolated_suborigin_lock = ProcessLock::FromSiteInfo(SiteInfo(
+      /*site_url=*/origin_url,
+      /*process_lock_url=*/origin_url,
+      /*requires_origin_keyed_process=*/true,
+      /*requires_origin_keyed_process_by_default=*/false,
+      /*is_sandboxed=*/false, UrlInfo::kInvalidUniqueSandboxId,
+      StoragePartitionConfig::CreateDefault(browser_context),
+      WebExposedIsolationInfo::CreateNonIsolated(),
+      WebExposedIsolationLevel::kNotIsolated, /*is_guest=*/false,
+      /*does_site_request_dedicated_process_for_coop=*/false,
+      /*is_jit_disabled=*/false, /*is_pdf=*/false,
+      /*is_fenced=*/false));
   EXPECT_TRUE(NavigateToURL(shell(), test_url));
   EXPECT_EQ(2u, CollectAllRenderFrameHosts(shell()->web_contents()).size());
 

@@ -202,6 +202,9 @@ system_display::DisplayUnitInfo GetDisplayUnitInfoFromMojo(
   }
   info.is_primary = mojo_info.is_primary;
   info.is_internal = mojo_info.is_internal;
+  info.active_state = mojo_info.is_detected
+                          ? system_display::ActiveState::kActive
+                          : system_display::ActiveState::kInactive;
   info.is_enabled = mojo_info.is_enabled;
   info.is_auto_rotation_allowed = mojo_info.is_auto_rotation_allowed;
   info.dpi_x = mojo_info.dpi_x;

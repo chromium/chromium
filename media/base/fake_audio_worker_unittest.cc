@@ -240,6 +240,7 @@ const base::TickClock* FakeAudioWorkerMockTaskTest::global_clock_ = nullptr;
 
 // This test is disabled because when late we skip reading to maintain
 // compatibility for input and output streams.
+// This test is designed to be manually executed.
 TEST_F(FakeAudioWorkerMockTaskTest, DISABLED_LateCallbackProducesCallback) {
   task_runner_->RunUntilIdle();
   EXPECT_THAT(callbacks_, SizeIs(1));

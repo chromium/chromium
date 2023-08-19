@@ -18,10 +18,6 @@
 #import "ios/chrome/grit/ios_strings.h"
 #import "ui/base/l10n/l10n_util.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 namespace {
 
 // Layout constants for the image.
@@ -43,45 +39,50 @@ UIImage* ConfirmationAlertImage() {
   CGRect frame = CGRectInset(tileFrame, -kTileShadowRadius, -kTileShadowRadius);
   // Recenter the tile frame.
   tileFrame = CGRectOffset(tileFrame, kTileShadowRadius, kTileShadowRadius);
-  UIGraphicsBeginImageContextWithOptions(frame.size, NO, 0);
 
-  // Draw the background with a shadow.
-  [[UIColor colorNamed:kBlue500Color] setFill];
-  UIBezierPath* path =
-      [UIBezierPath bezierPathWithRoundedRect:tileFrame
-                                 cornerRadius:kTileCornerRadius];
-  CGContextRef context = UIGraphicsGetCurrentContext();
-  CGContextSaveGState(context);
-  CGColorRef shadowColor =
-      [UIColor.blackColor colorWithAlphaComponent:kTileShadowOpacity].CGColor;
-  CGContextSetShadowWithColor(
-      context, CGSizeMake(kTileShadowOffsetX, kTileShadowOffsetY),
-      kTileShadowRadius, shadowColor);
-  [path fill];
-  CGContextRestoreGState(context);
+  UIGraphicsImageRendererFormat* format =
+      [UIGraphicsImageRendererFormat preferredFormat];
+  format.opaque = NO;
 
-  // Draw the icon.
-  [UIColor.whiteColor setFill];
-  UIImage* icon =
-      DefaultSymbolTemplateWithPointSize(kSquareOnSquareDashedSymbol, 0);
-  if (icon.size.width > icon.size.height) {
-    CGFloat ratio = icon.size.height / icon.size.width;
-    CGFloat drawingWidth = kTileSize - 2 * kIconPadding;
-    CGFloat drawingHeight = drawingWidth * ratio;
-    CGFloat verticalPadding = (kTileSize - drawingHeight) / 2;
-    [icon drawInRect:CGRectInset(tileFrame, kIconPadding, verticalPadding)];
-  } else {
-    CGFloat ratio = icon.size.width / icon.size.height;
-    CGFloat drawingHeight = kTileSize - 2 * kIconPadding;
-    CGFloat drawingWidth = drawingHeight * ratio;
-    CGFloat horizontalPadding = (kTileSize - drawingWidth) / 2;
-    [icon drawInRect:CGRectInset(tileFrame, horizontalPadding, kIconPadding)];
-  }
+  UIGraphicsImageRenderer* renderer =
+      [[UIGraphicsImageRenderer alloc] initWithSize:frame.size format:format];
 
-  // Render the image.
-  UIImage* image = UIGraphicsGetImageFromCurrentImageContext();
-  UIGraphicsEndImageContext();
-  return image;
+  return [renderer imageWithActions:^(
+                       UIGraphicsImageRendererContext* UIContext) {
+    CGContextRef context = UIContext.CGContext;
+
+    // Draw the background with a shadow.
+    [[UIColor colorNamed:kBlue500Color] setFill];
+    UIBezierPath* path =
+        [UIBezierPath bezierPathWithRoundedRect:tileFrame
+                                   cornerRadius:kTileCornerRadius];
+    CGContextSaveGState(context);
+    CGColorRef shadowColor =
+        [UIColor.blackColor colorWithAlphaComponent:kTileShadowOpacity].CGColor;
+    CGContextSetShadowWithColor(
+        context, CGSizeMake(kTileShadowOffsetX, kTileShadowOffsetY),
+        kTileShadowRadius, shadowColor);
+    [path fill];
+    CGContextRestoreGState(context);
+
+    // Draw the icon.
+    [UIColor.whiteColor setFill];
+    UIImage* icon =
+        DefaultSymbolTemplateWithPointSize(kSquareOnSquareDashedSymbol, 0);
+    if (icon.size.width > icon.size.height) {
+      CGFloat ratio = icon.size.height / icon.size.width;
+      CGFloat drawingWidth = kTileSize - 2 * kIconPadding;
+      CGFloat drawingHeight = drawingWidth * ratio;
+      CGFloat verticalPadding = (kTileSize - drawingHeight) / 2;
+      [icon drawInRect:CGRectInset(tileFrame, kIconPadding, verticalPadding)];
+    } else {
+      CGFloat ratio = icon.size.width / icon.size.height;
+      CGFloat drawingHeight = kTileSize - 2 * kIconPadding;
+      CGFloat drawingWidth = drawingHeight * ratio;
+      CGFloat horizontalPadding = (kTileSize - drawingWidth) / 2;
+      [icon drawInRect:CGRectInset(tileFrame, horizontalPadding, kIconPadding)];
+    }
+  }];
 }
 
 }  // namespace
@@ -121,19 +122,15 @@ UIImage* ConfirmationAlertImage() {
   _confirmationAlert.showDismissBarButton = NO;
   _confirmationAlert.actionHandler = self;
   _confirmationAlert.presentationController.delegate = self;
-  if (@available(iOS 15, *)) {
-    _confirmationAlert.modalPresentationStyle = UIModalPresentationPageSheet;
-    UISheetPresentationController* presentationController =
-        _confirmationAlert.sheetPresentationController;
-    presentationController.prefersEdgeAttachedInCompactHeight = YES;
-    presentationController.detents = @[
-      UISheetPresentationControllerDetent.mediumDetent,
-      UISheetPresentationControllerDetent.largeDetent
-    ];
-    presentationController.preferredCornerRadius = 20;
-  } else {
-    _confirmationAlert.modalPresentationStyle = UIModalPresentationFormSheet;
-  }
+  _confirmationAlert.modalPresentationStyle = UIModalPresentationPageSheet;
+  UISheetPresentationController* presentationController =
+      _confirmationAlert.sheetPresentationController;
+  presentationController.prefersEdgeAttachedInCompactHeight = YES;
+  presentationController.detents = @[
+    UISheetPresentationControllerDetent.mediumDetent,
+    UISheetPresentationControllerDetent.largeDetent
+  ];
+  presentationController.preferredCornerRadius = 20;
   _confirmationAlert.view.accessibilityIdentifier =
       kInactiveTabsUserEducationAccessibilityIdentifier;
 

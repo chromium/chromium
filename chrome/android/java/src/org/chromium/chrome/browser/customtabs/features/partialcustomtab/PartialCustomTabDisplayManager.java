@@ -108,8 +108,7 @@ public class PartialCustomTabDisplayManager
                 mCurrentPartialCustomTabType, false, sideSheetPosition, sideSheetAnimation);
     }
 
-    @PartialCustomTabType
-    public int getActiveStrategyType() {
+    public @PartialCustomTabType int getActiveStrategyType() {
         return mStrategy.getStrategyType();
     }
 
@@ -228,8 +227,6 @@ public class PartialCustomTabDisplayManager
     static @PartialCustomTabType int calculatePartialCustomTabType(Activity activity,
             int initialWidth, int initialHeight, Supplier<Integer> displayWidthDpSupplier,
             int breakPointDp) {
-        // TODO(crbug.com/1407227) Until we are able to handle multi-window case for both
-        // bottom-sheet and side-sheet we will display a full-size PCCT.
         if (MultiWindowUtils.getInstance().isInMultiWindowMode(activity)) {
             return PartialCustomTabType.FULL_SIZE;
         }
@@ -327,22 +324,18 @@ public class PartialCustomTabDisplayManager
 
     private void updatePosition() {}
 
-    @VisibleForTesting
     SizeStrategyCreator getSizeStrategyCreatorForTesting() {
         return mSizeStrategyCreator;
     }
 
-    @VisibleForTesting
     PartialCustomTabBaseStrategy getSizeStrategyForTesting() {
         return mStrategy;
     }
 
-    @VisibleForTesting
     int getBreakPointDpForTesting() {
         return mBreakPointDp;
     }
 
-    @VisibleForTesting
     void setMocksForTesting(ViewGroup coordinatorLayout, CustomTabToolbar toolbar,
             View toolbarCoordinator, PartialCustomTabHandleStrategyFactory handleStrategyFactory,
             SizeStrategyCreator sizeStrategyCreator) {

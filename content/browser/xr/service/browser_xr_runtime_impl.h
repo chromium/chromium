@@ -81,6 +81,10 @@ class BrowserXRRuntimeImpl : public content::BrowserXRRuntime,
     return presenting_service_;
   }
 
+  bool HasPendingImmersiveSessionRequest() {
+    return has_pending_immersive_session_request_;
+  }
+
   device::mojom::XRDeviceId GetId() const { return id_; }
 
 #if BUILDFLAG(IS_WIN)
@@ -128,6 +132,7 @@ class BrowserXRRuntimeImpl : public content::BrowserXRRuntime,
   std::unique_ptr<content::XrInstallHelper> install_helper_;
   std::unique_ptr<content::BrowserXRRuntime::Observer> runtime_observer_;
   base::OnceCallback<void(bool)> install_finished_callback_;
+  bool has_pending_immersive_session_request_ = false;
 
   base::WeakPtrFactory<BrowserXRRuntimeImpl> weak_ptr_factory_{this};
 };

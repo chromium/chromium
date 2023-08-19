@@ -25,10 +25,10 @@ class REMOTE_COCOA_BROWSER_EXPORT ApplicationHost {
     virtual void OnApplicationHostDestroying(ApplicationHost* host) = 0;
 
    protected:
-    ~Observer() override {}
+    ~Observer() override = default;
   };
 
-  ApplicationHost(
+  explicit ApplicationHost(
       mojo::PendingAssociatedReceiver<mojom::Application>* receiver);
   ~ApplicationHost();
 

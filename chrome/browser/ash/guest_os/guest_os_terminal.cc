@@ -401,6 +401,14 @@ void RecordTerminalSettingsChangesUMAs(Profile* profile) {
       {"allow-images-inline", TerminalSetting::kAllowImagesInline},
       {"theme", TerminalSetting::kTheme},
       {"theme-variations", TerminalSetting::kThemeVariations},
+      {"find-result-color", TerminalSetting::kFindResultColor},
+      {"find-result-selected-color", TerminalSetting::kFindResultSelectedColor},
+      {"line-height-padding-size", TerminalSetting::kLineHeightPaddingSize},
+      {"keybindings-os-defaults", TerminalSetting::kKeybindingsOsDefaults},
+      {"screen-padding-size", TerminalSetting::kScreenPaddingSize},
+      {"screen-border-size", TerminalSetting::kScreenBorderSize},
+      {"screen-border-color", TerminalSetting::kScreenBorderColor},
+      {"line-height", TerminalSetting::kLineHeight},
   });
 
   const base::Value::Dict& settings =

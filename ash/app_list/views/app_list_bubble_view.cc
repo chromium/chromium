@@ -24,6 +24,7 @@
 #include "ash/app_list/views/scrollable_apps_grid_view.h"
 #include "ash/app_list/views/search_box_view.h"
 #include "ash/app_list/views/search_result_page_dialog_controller.h"
+#include "ash/ash_element_identifiers.h"
 #include "ash/bubble/bubble_constants.h"
 #include "ash/constants/ash_features.h"
 #include "ash/keyboard/ui/keyboard_ui_controller.h"
@@ -67,6 +68,7 @@
 #include "ui/views/highlight_border.h"
 #include "ui/views/layout/box_layout.h"
 #include "ui/views/layout/fill_layout.h"
+#include "ui/views/view_class_properties.h"
 
 using views::BoxLayout;
 
@@ -198,6 +200,7 @@ AppListBubbleView::AppListBubbleView(
     : view_delegate_(view_delegate) {
   DCHECK(view_delegate);
   DCHECK(drag_and_drop_host);
+  SetProperty(views::kElementIdentifierKey, kAppListBubbleViewElementId);
 
   // Set up rounded corners and background blur, similar to TrayBubbleView.
   // Layer background is set in OnThemeChanged().
@@ -796,8 +799,13 @@ void AppListBubbleView::OnShowAnimationEnded(const gfx::Rect& layer_bounds) {
   layer()->SetBounds(layer_bounds);
 
   // Add a shadow.
-  view_shadow_ = std::make_unique<ViewShadow>(this, kShadowElevation);
-  view_shadow_->SetRoundedCornerRadius(kBubbleCornerRadius);
+  // TODO(b/292286998): The shadow is removed when jelly is enabled for
+  // consistency with bubbles in status area. Add it when status area bubbles
+  // get updated.
+  if (!chromeos::features::IsJellyEnabled()) {
+    view_shadow_ = std::make_unique<ViewShadow>(this, kShadowElevation);
+    view_shadow_->SetRoundedCornerRadius(kBubbleCornerRadius);
+  }
 }
 
 void AppListBubbleView::OnHideAnimationEnded(const gfx::Rect& layer_bounds) {

@@ -17,9 +17,16 @@
 struct SkGainmapInfo;
 struct SkHighContrastConfig;
 class SkColorSpace;
+namespace sktext::gpu {
+class Slug;
+}
 
 namespace gpu {
 struct Mailbox;
+}
+
+namespace gfx {
+struct HDRMetadata;
 }
 
 namespace cc {
@@ -70,7 +77,7 @@ class CC_PAINT_EXPORT PaintOpReader {
   void Read(PaintFlags* flags);
   void Read(PaintImage* image);
   void Read(sk_sp<SkData>* data);
-  void Read(sk_sp<GrSlug>* slug);
+  void Read(sk_sp<sktext::gpu::Slug>* slug);
   void Read(sk_sp<PaintFilter>* filter);
   void Read(sk_sp<PaintShader>* shader);
   void Read(SkMatrix* matrix);
@@ -84,6 +91,7 @@ class CC_PAINT_EXPORT PaintOpReader {
   void Read(SkYUVAInfo::Subsampling* subsampling);
   void Read(gpu::Mailbox* mailbox);
   void Read(SkHighContrastConfig* config);
+  void Read(gfx::HDRMetadata* hdr_metadata);
 
   void Read(scoped_refptr<SkottieWrapper>* skottie);
 
@@ -153,7 +161,7 @@ class CC_PAINT_EXPORT PaintOpReader {
     kInsufficientRemainingBytes_Read_SkData = 9,
     kInsufficientRemainingBytes_Read_SkPath = 10,
     kInsufficientRemainingBytes_Read_SkRegion = 11,
-    kInsufficientRemainingBytes_Read_GrSlug = 12,
+    kInsufficientRemainingBytes_Read_Slug = 12,
     kInsufficientRemainingBytes_ReadData = 13,
     kInsufficientRemainingBytes_ReadFlattenable = 14,
     kInsufficientRemainingBytes_ReadMatrixConvolutionPaintFilter = 15,
@@ -184,7 +192,7 @@ class CC_PAINT_EXPORT PaintOpReader {
     kSkPathEffectUnflattenFailure = 40,
     kSkPathReadFromMemoryFailure = 41,
     kSkRegionReadFromMemoryFailure = 42,
-    kGrSlugDeserializeFailure = 43,
+    kSlugDeserializeFailure = 43,
     kUnexpectedPaintShaderType = 44,
     kUnexpectedSerializedImageType = 45,
     kZeroMailbox = 46,
@@ -196,8 +204,10 @@ class CC_PAINT_EXPORT PaintOpReader {
     kZeroSkColorFilterBytes = 52,
     kInsufficientPixelData = 53,
     kSkGainmapInfoDeserializationFailure = 54,
+    kHdrMetadataDeserializeFailure = 55,
+    kNonFiniteSkColor4f = 56,
 
-    kMaxValue = kSkGainmapInfoDeserializationFailure
+    kMaxValue = kNonFiniteSkColor4f
   };
 
   template <typename T>

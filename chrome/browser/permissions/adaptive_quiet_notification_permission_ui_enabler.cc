@@ -11,6 +11,7 @@
 
 #include "base/auto_reset.h"
 #include "base/containers/adapters.h"
+#include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/json/values_util.h"
@@ -28,6 +29,7 @@
 #include "components/content_settings/core/browser/host_content_settings_map.h"
 #include "components/content_settings/core/common/pref_names.h"
 #include "components/keyed_service/content/browser_context_dependency_manager.h"
+#include "components/permissions/features.h"
 #include "components/permissions/permission_actions_history.h"
 #include "components/permissions/permission_request_enums.h"
 #include "components/permissions/permission_util.h"
@@ -112,7 +114,7 @@ AdaptiveQuietNotificationPermissionUiEnabler::Factory::Factory()
   DependsOn(HostContentSettingsMapFactory::GetInstance());
 }
 
-AdaptiveQuietNotificationPermissionUiEnabler::Factory::~Factory() {}
+AdaptiveQuietNotificationPermissionUiEnabler::Factory::~Factory() = default;
 
 KeyedService*
 AdaptiveQuietNotificationPermissionUiEnabler::Factory::BuildServiceInstanceFor(
@@ -227,6 +229,7 @@ AdaptiveQuietNotificationPermissionUiEnabler::
   }
 
   BackfillEnablingMethodIfMissing();
+  MigrateAdaptiveNotificationQuietingToCPSS();
 }
 
 AdaptiveQuietNotificationPermissionUiEnabler::
@@ -281,4 +284,37 @@ void AdaptiveQuietNotificationPermissionUiEnabler::
       prefs::kQuietNotificationPermissionUiEnablingMethod,
       static_cast<int>(has_enabled_adaptively ? EnablingMethod::kAdaptive
                                               : EnablingMethod::kManual));
+}
+
+void AdaptiveQuietNotificationPermissionUiEnabler::
+    MigrateAdaptiveNotificationQuietingToCPSS() {
+  if (!base::FeatureList::IsEnabled(
+          permissions::features::kPermissionDedicatedCpssSetting)) {
+    return;
+  }
+  if (profile_->GetPrefs()->GetBoolean(
+          prefs::kDidMigrateAdaptiveNotifiationQuietingToCPSS)) {
+    return;
+  }
+
+  const bool is_quiet_ui_enabled_in_prefs = profile_->GetPrefs()->GetBoolean(
+      prefs::kEnableQuietNotificationPermissionUi);
+  const EnablingMethod enabling_method =
+      QuietNotificationPermissionUiState::GetQuietUiEnablingMethod(profile_);
+  if (is_quiet_ui_enabled_in_prefs &&
+      enabling_method == EnablingMethod::kManual) {
+    profile_->GetPrefs()->SetBoolean(prefs::kEnableNotificationCPSS,
+                                     /*value=*/false);
+  } else {
+    profile_->GetPrefs()->SetBoolean(prefs::kEnableNotificationCPSS,
+                                     /*value=*/true);
+    profile_->GetPrefs()->SetBoolean(
+        prefs::kEnableQuietNotificationPermissionUi, /*value=*/false);
+  }
+
+  profile_->GetPrefs()->SetBoolean(
+      prefs::kDidMigrateAdaptiveNotifiationQuietingToCPSS,
+      /*value=*/true);
+  profile_->GetPrefs()->ClearPref(
+      prefs::kQuietNotificationPermissionUiEnablingMethod);
 }

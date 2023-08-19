@@ -9,6 +9,7 @@
 #include "base/functional/bind.h"
 #include "chrome/browser/ash/file_manager/fileapi_util.h"
 #include "chrome/browser/ash/fileapi/external_file_url_util.h"
+#include "chrome/browser/ash/fileapi/file_system_backend.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "content/public/browser/browser_task_traits.h"
@@ -19,7 +20,6 @@
 #include "net/http/http_request_headers.h"
 #include "net/http/http_util.h"
 #include "storage/browser/file_system/file_stream_reader.h"
-#include "storage/browser/file_system/file_system_backend.h"
 #include "storage/browser/file_system/file_system_context.h"
 #include "storage/browser/file_system/isolated_context.h"
 #include "url/gurl.h"
@@ -206,10 +206,11 @@ void ExternalFileResolver::OnHelperResultObtained(
 
   // Check if the entry has a redirect URL.
   file_system_context_ = std::move(file_system_context);
-  file_system_context_->external_backend()->GetRedirectURLForContents(
-      isolated_file_system_.url,
-      base::BindOnce(&ExternalFileResolver::OnRedirectURLObtained,
-                     weak_ptr_factory_.GetWeakPtr()));
+  ash::FileSystemBackend::Get(*file_system_context_)
+      ->GetRedirectURLForContents(
+          isolated_file_system_.url,
+          base::BindOnce(&ExternalFileResolver::OnRedirectURLObtained,
+                         weak_ptr_factory_.GetWeakPtr()));
 }
 
 void ExternalFileResolver::OnRedirectURLObtained(const GURL& redirect_url) {

@@ -116,12 +116,13 @@ class CONTENT_EXPORT ServiceWorkerControlleeRequestHandler final {
   void ContinueWithRegistration(
       // True when FindRegistrationForClientUrl() is called for navigation.
       bool is_for_navigation,
-      base::TimeTicks start_time,
+      base::TimeTicks find_registration_start_time,
       blink::ServiceWorkerStatusCode status,
       scoped_refptr<ServiceWorkerRegistration> registration);
   void ContinueWithActivatedVersion(
       scoped_refptr<ServiceWorkerRegistration> registration,
-      scoped_refptr<ServiceWorkerVersion> version);
+      scoped_refptr<ServiceWorkerVersion> version,
+      base::TimeTicks find_registration_start_time);
 
   // For forced update.
   void DidUpdateRegistration(
@@ -161,7 +162,7 @@ class CONTENT_EXPORT ServiceWorkerControlleeRequestHandler final {
   const bool skip_service_worker_;
 
   std::unique_ptr<ServiceWorkerMainResourceLoaderWrapper> loader_wrapper_;
-  raw_ptr<BrowserContext, DanglingUntriaged> browser_context_;
+  raw_ptr<BrowserContext, LeakedDanglingUntriaged> browser_context_;
   GURL stripped_url_;
   blink::StorageKey storage_key_;
   bool force_update_started_;

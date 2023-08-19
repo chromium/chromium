@@ -10,6 +10,7 @@
 namespace content {
 class ContentBrowserClient;
 class ContentClient;
+class ContentRendererClient;
 }  // namespace content
 
 namespace webui_examples {
@@ -26,9 +27,12 @@ class MainDelegate : public content::ContentMainDelegate {
   absl::optional<int> BasicStartupComplete() override;
   void PreSandboxStartup() override;
   content::ContentBrowserClient* CreateContentBrowserClient() override;
+  absl::optional<int> PreBrowserMain() override;
+  content::ContentRendererClient* CreateContentRendererClient() override;
 
   std::unique_ptr<content::ContentClient> content_client_;
   std::unique_ptr<content::ContentBrowserClient> content_browser_client_;
+  std::unique_ptr<content::ContentRendererClient> content_renderer_client_;
 };
 
 }  // namespace webui_examples

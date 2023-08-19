@@ -230,4 +230,12 @@ inline constexpr bool AnalyzerAssumeTrue(bool arg) {
 #define PA_GSL_POINTER
 #endif
 
+// Constexpr destructors were introduced in C++20. PartitionAlloc's minimum
+// supported C++ version is C++17.
+#if defined(__cpp_constexpr) && __cpp_constexpr >= 201907L
+#define PA_CONSTEXPR_DTOR constexpr
+#else
+#define PA_CONSTEXPR_DTOR
+#endif
+
 #endif  // BASE_ALLOCATOR_PARTITION_ALLOCATOR_PARTITION_ALLOC_BASE_COMPILER_SPECIFIC_H_

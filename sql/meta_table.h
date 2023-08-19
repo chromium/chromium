@@ -63,9 +63,9 @@ class COMPONENT_EXPORT(SQL) MetaTable {
   // TODO(crbug.com/1228463): Folding this into Init() would allow enforcing
   // the version constraint, but Init() is often called in a transaction.
   static constexpr int kNoLowestSupportedVersion = 0;
-  static bool RazeIfIncompatible(Database* db,
-                                 int lowest_supported_version,
-                                 int current_version);
+  [[nodiscard]] static bool RazeIfIncompatible(Database* db,
+                                               int lowest_supported_version,
+                                               int current_version);
 
   // Used to tuck some data into the meta table about mmap status. The value
   // represents how much data in bytes has successfully been read from the

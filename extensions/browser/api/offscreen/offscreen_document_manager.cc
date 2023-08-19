@@ -14,6 +14,7 @@
 #include "extensions/browser/api/offscreen/offscreen_document_lifetime_enforcer.h"
 #include "extensions/browser/extension_registry_factory.h"
 #include "extensions/browser/extension_util.h"
+#include "extensions/browser/extensions_browser_client.h"
 #include "extensions/browser/offscreen_document_host.h"
 #include "extensions/browser/process_manager.h"
 #include "extensions/browser/process_manager_factory.h"
@@ -65,7 +66,8 @@ OffscreenDocumentManagerFactory::GetBrowserContextToUse(
     content::BrowserContext* context) const {
   // Use the `context` passed in; this service has separate instances in
   // on-the-record and incognito.
-  return context;
+  return ExtensionsBrowserClient::Get()->GetContextOwnInstance(
+      context, /*force_guest_profile=*/true);
 }
 
 KeyedService* OffscreenDocumentManagerFactory::BuildServiceInstanceFor(

@@ -10,11 +10,12 @@
 
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
+#include "base/scoped_observation.h"
 #include "base/time/time.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_forward.h"
 #include "chrome/browser/ash/app_list/search/chrome_search_result.h"
 #include "chrome/browser/ash/app_list/search/search_provider.h"
-#include "chrome/browser/ui/webui/settings/ash/search/search.mojom.h"
+#include "chrome/browser/ui/webui/settings/ash/search/mojom/search.mojom.h"
 #include "components/services/app_service/public/cpp/app_registry_cache.h"
 #include "components/services/app_service/public/cpp/icon_types.h"
 #include "mojo/public/cpp/bindings/receiver.h"
@@ -26,9 +27,9 @@ class Hierarchy;
 class SearchHandler;
 }  // namespace ash::settings
 
-namespace gfx {
-class ImageSkia;
-}
+namespace ui {
+class ImageModel;
+}  // namespace ui
 
 namespace app_list {
 
@@ -38,7 +39,7 @@ class OsSettingsResult : public ChromeSearchResult {
   OsSettingsResult(Profile* profile,
                    const ash::settings::mojom::SearchResultPtr& result,
                    double relevance_score,
-                   const gfx::ImageSkia& icon,
+                   const ui::ImageModel& icon,
                    const std::u16string& query);
   ~OsSettingsResult() override;
 
@@ -61,8 +62,7 @@ class OsSettingsProvider : public SearchProvider,
  public:
   OsSettingsProvider(Profile* profile,
                      ash::settings::SearchHandler* search_handler,
-                     const ash::settings::Hierarchy* hierarchy,
-                     apps::AppServiceProxy* app_service_proxy);
+                     const ash::settings::Hierarchy* hierarchy);
   ~OsSettingsProvider() override;
 
   OsSettingsProvider(const OsSettingsProvider&) = delete;
@@ -121,13 +121,16 @@ class OsSettingsProvider : public SearchProvider,
   const raw_ptr<Profile, ExperimentalAsh> profile_;
   raw_ptr<ash::settings::SearchHandler, ExperimentalAsh> search_handler_;
   raw_ptr<const ash::settings::Hierarchy, ExperimentalAsh> hierarchy_;
-  raw_ptr<apps::AppServiceProxy, ExperimentalAsh> app_service_proxy_;
-  gfx::ImageSkia icon_;
+  ui::ImageModel icon_;
 
   // Last query. It is reset when view is closed.
   std::u16string last_query_;
   mojo::Receiver<ash::settings::mojom::SearchResultsObserver>
       search_results_observer_receiver_{this};
+
+  base::ScopedObservation<apps::AppRegistryCache,
+                          apps::AppRegistryCache::Observer>
+      app_registry_cache_observer_{this};
 
   base::WeakPtrFactory<OsSettingsProvider> weak_factory_{this};
 };

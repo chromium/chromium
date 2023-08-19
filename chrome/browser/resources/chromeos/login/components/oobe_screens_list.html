@@ -21,55 +21,82 @@
   }
 
   .screen-title {
+    color: var(--cros-text-color-primary);
+    font-weight: var(--oobe-header-font-weight);
+  }
+
+  :host-context(.jelly-enabled) .screen-title {
     color: var(--cros-sys-on_surface);
-    font: var(--cros-body-1-font);
+    font-weight: var(--cros-button-1-font-weight);
   }
 
   .screen-subtitle {
+    color: var(--cros-text-color-secondary);
+    font-weight: var(--oobe-default-font-weight);
+  }
+
+  :host-context(.jelly-enabled) .screen-subtitle {
     color: var(--cros-sys-on_surface_variant);
     font: var(--cros-body-2-font);
   }
 
   .screen-item {
-    background-color: var(--cros-sys-base_elevated);
+    background-color: var(--cros-bg-color-elevation-1);
     border-radius: 16px;
+    border-width: 0;
+    box-shadow: var(--cr-elevation-1);
     height: 80px;
-    margin-bottom: 16px;
+    margin-bottom: 8px;
+    margin-inline-end: 4px;
+    margin-inline-start: 4px;
+    margin-top: 8px;
     padding: 0;
     transition: color 250ms linear, background-color 250ms linear;
-    width: 100%;
+    width: calc(100% - 8px);
   }
 
-  .screen-icon  {
-    align-items: center;
-    align-self: center;
-    display: flex;
-    height: 32px;
-    margin-inline-end: 16px;
-    margin-inline-start: 16px ;
-    width: 32px;
+  :host-context(.jelly-enabled) .screen-item {
+    background-color: var(--cros-sys-base_elevated);
+    box-shadow: none;
+  }
+
+  :host-context(.jelly-enabled) .screen-item:hover {
+    background-color: var(--cros-sys-app_base_shaded);
   }
 
   .text-container {
-    display: block;
+    display: flex;
     flex-direction: column;
     justify-content: center;
     margin-inline-end: 16px;
   }
 
   .screen-item:focus {
+    border: 2px solid var(--cros-focus-ring-color);
+  }
+
+  :root.jelly-enabled .screen-item:focus {
     border: 2px solid var(--cros-sys-focus_ring);
   }
 
   .screen-item[checked=true] {
+    background-color: var(--cros-button-background-color-secondary-hover);
+  }
+
+  :host-context(.jelly-enabled) .screen-item[checked=true] {
     background-color: var(--cros-sys-primary_container);
   }
 
-  .screen-item[checked=true] .screen-title {
+  .screen-item[checked=true] .screen-title,
+  .screen-item[checked=true] .screen-subtitle {
+    color: var(--cros-color-prominent);
+  }
+
+  :host-context(.jelly-enabled) .screen-item[checked=true] .screen-title {
     color: var(--cros-sys-on_surface);
   }
 
-  .screen-item[checked=true] .screen-subtitle {
+  :host-context(.jelly-enabled) .screen-item[checked=true] .screen-subtitle {
     color: var(--cros-sys-on_surface_variant);
   }
 
@@ -80,45 +107,99 @@
   }
 
   .screen-item[visited] {
-    --cros-sys-inverse_primary : var(--cros-color-secondary-light);
-    --cros-sys-primary : var(--cros-color-secondary-light);
+    --cros-second-tone-opacity: 1;
     background-color: var(--cros-button-background-color-primary-disabled);
   }
 
-  :root.jelly-enabled .screen-item[visited] {
-    --cros-sys-inverse_primary : var(--cros-sys-secondary-light);
-    --cros-sys-primary : var(--cros-sys-secondary-light);
+  :host-context(.jelly-enabled) .screen-item[visited] {
     background-color: var(--cros-sys-hover_on_subtle);
   }
 
   .screen-item[visited] .screen-title {
+    color: var(--cros-text-color-secondary);
+  }
+
+  :host-context(.jelly-enabled) .screen-item[visited] .screen-title {
     color: var(--cros-sys-on_surface);
   }
 
   .screen-item[visited] .screen-subtitle {
+    color: var(--cros-text-color-secondary);
+  }
+
+  :host-context(.jelly-enabled) .screen-item[visited] .screen-subtitle {
     color: var(--cros-sys-on_surface_variant);
   }
 
   .screen-item[disabled] {
-    --cros-sys-inverse_primary : var(--cros-sys-disabled);
-    --cros-sys-primary : var(--cros-sys-disabled);
     background-color: var(--disabled-bg-action);
   }
 
-  :root.jelly-enabled .screen-item[disabled] {
-    --cros-sys-inverse_primary : var(--cros-sys-disabled);
-    --cros-sys-primary : var(--cros-sys-disabled);
+  :host-context(.jelly-enabled) .screen-item[disabled] {
     background-color: var(--cros-sys-disabled_container);
   }
 
-  .screen-item[disabled] .screen-title {
+  .screen-item[disabled] .screen-title,
+  .screen-item[disabled] .screen-subtitle {
+    color: var(--cros-color-disabled);
+  }
+
+  :host-context(.jelly-enabled) .screen-item[disabled] .screen-title,
+  :host-context(.jelly-enabled) .screen-item[disabled] .screen-subtitle {
     color: var(--cros-sys-disabled);
   }
 
-  .screen-item[disabled] .screen-subtitle {
-    color:  var(--cros-sys-disabled);
+  .sync {
+    --iron-icon-fill-color: var(--cros-color-secondary);
   }
 
+  /* Styles of icons in screen cards */
+  .screen-icon  {
+    align-items: center;
+    align-self: center;
+    display: flex;
+    height: 32px;
+    margin-inline-end: 16px;
+    margin-inline-start: 16px ;
+    width: 32px;
+    --oobe-duotone-primary: var(--oobe-adaptive-dialog-icon-fill-color);
+    --oobe-duotone-secondary: var(--oobe-adaptive-dialog-icon-fill-color);
+    --oobe-duotone-secondary-opacity: 0.3;
+    --oobe-duotone-bg: var(--oobe-adaptive-dialog-icon-fill-color);
+  }
+
+  :host-context(.jelly-enabled) .screen-icon {
+    --oobe-duotone-primary: var(--cros-sys-primary);
+    --oobe-duotone-secondary: var(--cros-sys-inverse_primary);
+    --oobe-duotone-cut-out: var(--cros-sys-primary);
+    --oobe-duotone-secondary-opacity: 1;
+  }
+
+  .screen-item[visited] .screen-icon {
+    --oobe-duotone-primary: var(--cros-icon-color-secondary);
+    --oobe-duotone-secondary: var(--cros-icon-color-secondary);
+    --oobe-duotone-cut-out: var(--oobe-bg-color);
+    --oobe-duotone-secondary-opacity: 1;
+  }
+
+  :host-context(.jelly-enabled) .screen-item[visited] .screen-icon {
+    --oobe-duotone-primary: var(--cros-sys-secondary);
+    --oobe-duotone-secondary: var(--cros-sys-secondary);
+    --oobe-duotone-cut-out: var(--cros-sys-base_elevated);
+  }
+
+  .screen-item[disabled] .screen-icon {
+    --oobe-duotone-primary: var(--cros-color-disabled);
+    --oobe-duotone-secondary: var(--cros-color-disabled);
+    --oobe-duotone-cut-out: var(--cros-color-disabled);
+  }
+
+  :host-context(.jelly-enabled) .screen-item[disabled] .screen-icon {
+    --oobe-duotone-primary: var(--cros-sys-disabled);
+    --oobe-duotone-secondary: var(--cros-sys-disabled);
+    --oobe-duotone-cut-out: var(--cros-sys-base_elevated);
+    --oobe-duotone-secondary-opacity: 1;
+  }
 </style>
 <div id="screensList">
   <template is="dom-repeat" items="{{screensList_}}" as="screen">
@@ -126,23 +207,39 @@
         visited$="[[isScreenVisited(screen.selected , screen.is_completed)]]"
         disabled="[[isScreenDisabled(screen.is_revisitable , screen.is_completed)]]"
         class="screen-item"
+        role="checkbox"
+        aria-checked="[[screen.selected]]"
+        aria-label$="[[getAriaLabelToggleButtons_(locale,
+                  screen.title ,
+                  screen.subtitle ,
+                  screen.is_synced ,
+                  screen.is_completed,
+                  screen.screenID,
+                  screen.selected)]]"
         on-click="onClick_">
       <div class="flex horizontal layout">
         <div class="icon">
           <iron-icon class="screen-icon" icon="[[screen.icon]]"></iron-icon>
         </div>
-        <div class="text-container">
+        <div class="text-container" aria-hidden="true">
           <div class="screen-title"> [[i18nDynamic(locale, screen.title)]]</div>
           <div class="screen-subtitle">[[getSubtitle_(locale, screen.subtitle,
                                               screen.screenID )]]</div>
         </div>
-        <div class="info-icon">
-          <iron-icon hidden="[[isSyncedIconHidden(screen.is_synced ,
+        <div class="info-icon" aria-hidden="true">
+          <iron-icon id="sync-icon"
+              hidden="[[isSyncedIconHidden(screen.is_synced ,
                                             screen.is_completed ,
                                             screen.selected)]]"
-              id="sync" icon="oobe-20:sync"></iron-icon>
+              class="sync" icon="oobe-20:sync"></iron-icon>
+          <paper-tooltip id="tooltip-element" position="left"
+              aria-hidden="true"
+              for="sync-icon"
+              animation-delay="0">
+            [[i18nDynamic(locale, 'choobeSyncedTile')]]
+          </paper-tooltip>
           <iron-icon hidden="[[!screen.selected]]"
-              id="selected" icon="oobe-20:selected"></iron-icon>
+              class="selected" icon="oobe-20:selected"></iron-icon>
         </div>
       </div>
     </cr-button>

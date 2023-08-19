@@ -62,6 +62,9 @@ void SetupWebUIDataSource(content::WebUIDataSource* source,
   source->AddResourcePath("", default_resource);
 }
 
+// There is another method, ash::EnableTrustedTypesCSP, used by ash-only WebUIs.
+// When adding a new policy here, consider whether to add it to that method as
+// well, as these methods should remain mostly the same.
 void EnableTrustedTypesCSP(content::WebUIDataSource* source) {
   source->OverrideContentSecurityPolicy(
       network::mojom::CSPDirectiveName::RequireTrustedTypesFor,

@@ -48,7 +48,7 @@ using DatabaseUpdatedCallback = base::RepeatingClosure;
 // Maps the ListIdentifiers to their corresponding in-memory stores, which
 // contain the hash prefixes for that ListIdentifier as well as manage their
 // storage on disk.
-using StoreMap = std::unordered_map<ListIdentifier, std::unique_ptr<V4Store>>;
+using StoreMap = std::unordered_map<ListIdentifier, V4StorePtr>;
 
 // Associates metadata for a list with its ListIdentifier.
 class ListInfo {
@@ -179,6 +179,10 @@ class V4Database {
   // with the combined size of all the stores.
   void RecordFileSizeHistograms();
 
+  // Returns the migration result of the stores in this database. If the
+  // migration results for all stores do not match, returns kUnknown.
+  HashPrefixMap::MigrateResult GetMigrateResult();
+
   // Populates the DatabaseInfo message of the safe_browsing_page proto.
   void CollectDatabaseInfo(DatabaseManagerInfo::DatabaseInfo* database_info);
 
@@ -231,8 +235,7 @@ class V4Database {
   // Callback called when a new store has been created and is ready to be used.
   // This method updates the store_map_ to point to the new store, which causes
   // the old store to get deleted.
-  void UpdatedStoreReady(ListIdentifier identifier,
-                         std::unique_ptr<V4Store> store);
+  void UpdatedStoreReady(ListIdentifier identifier, V4StorePtr store);
 
   // See |VerifyChecksum|.
   void OnChecksumVerified(

@@ -95,6 +95,8 @@
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "ash/constants/ash_features.h"
+#include "base/containers/extend.h"
+#include "chromeos/ash/components/standalone_browser/feature_refs.h"
 #endif
 
 using content::RenderFrameHost;
@@ -183,16 +185,16 @@ class HostedOrWebAppTest : public extensions::ExtensionBrowserTest,
   HostedOrWebAppTest()
       : app_browser_(nullptr),
         https_server_(net::EmbeddedTestServer::TYPE_HTTPS) {
-    scoped_feature_list_.InitWithFeatures(
-        /*enabled_features=*/{},
-        /*disabled_features=*/{
-          // TODO(crbug.com/1394910): Remove this and use HTTPS URLs in the
-          // tests.
-          features::kHttpsUpgrades,
+    std::vector<base::test::FeatureRef> disabled{
+        // TODO(crbug.com/1394910): Remove this and use HTTPS URLs in the
+        // tests.
+        features::kHttpsUpgrades,
+    };
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-              features::kWebAppsCrosapi, ash::features::kLacrosPrimary
+    // TODO(crbug.com/1462253): Also test with Lacros flags enabled.
+    base::Extend(disabled, ash::standalone_browser::GetFeatureRefs());
 #endif
-        });
+    scoped_feature_list_.InitWithFeatures(/*enabled_features=*/{}, disabled);
   }
 
   HostedOrWebAppTest(const HostedOrWebAppTest&) = delete;
@@ -216,7 +218,7 @@ class HostedOrWebAppTest : public extensions::ExtensionBrowserTest,
           base::StringPrintf(kAppDotComManifest, start_url.spec().c_str()));
       SetupApp(test_app_dir.UnpackedPath());
     } else {
-      auto web_app_info = std::make_unique<WebAppInstallInfo>();
+      auto web_app_info = std::make_unique<web_app::WebAppInstallInfo>();
       web_app_info->start_url = start_url;
       web_app_info->scope = start_url.GetWithoutFilename();
       web_app_info->user_display_mode =
@@ -327,7 +329,7 @@ class HostedOrWebAppTest : public extensions::ExtensionBrowserTest,
   apps::AppServiceTest& app_service_test() { return app_service_test_; }
 
   std::string app_id_;
-  raw_ptr<Browser, DanglingUntriaged> app_browser_;
+  raw_ptr<Browser, AcrossTasksDanglingUntriaged> app_browser_;
 
   AppType app_type() const { return app_type_; }
 

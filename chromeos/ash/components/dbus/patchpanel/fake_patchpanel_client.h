@@ -26,6 +26,15 @@ class COMPONENT_EXPORT(PATCHPANEL) FakePatchPanelClient
   void GetDevices(GetDevicesCallback callback) override;
   void AddObserver(Observer* observer) override;
   void RemoveObserver(Observer* observer) override;
+  void NotifyAndroidInteractiveState(bool interactive) override;
+  void NotifyAndroidWifiMulticastLockChange(bool is_held) override;
+
+  // Record of count of calling NotifyAndroidInteractiveState for testing
+  // purpose.
+  int GetAndroidInteractiveStateNotifyCount();
+  // Record of count of calling NotifyAndroidWifiMulticastLockChange for
+  // testing purpose.
+  int GetAndroidWifiMulticastLockChangeNotifyCount();
 
  protected:
   friend class PatchPanelClient;
@@ -40,6 +49,10 @@ class COMPONENT_EXPORT(PATCHPANEL) FakePatchPanelClient
 
   // List of observers.
   base::ObserverList<Observer> observer_list_;
+
+  int notify_android_interactive_state_count_;
+
+  int notify_android_wifi_multicast_lock_change_count_;
 };
 
 }  // namespace ash

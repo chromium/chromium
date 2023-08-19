@@ -27,7 +27,10 @@ if (safe_browsing_mode == 1) {
     if (is_mac) {
       deps += [ ":disk_image_type_sniffer_mac" ]
     }
-    public_deps = [ "//components/safe_browsing/core/common/proto:csd_proto" ]
+    public_deps = [
+      "//components/safe_browsing/content/common/proto:download_file_types_proto",
+      "//components/safe_browsing/core/common/proto:csd_proto",
+    ]
   }
 
   if (is_linux || is_win) {

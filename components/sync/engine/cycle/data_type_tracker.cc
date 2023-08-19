@@ -76,6 +76,7 @@ base::TimeDelta GetDefaultLocalChangeNudgeDelay(ModelType model_type) {
       return kMinLocalChangeNudgeDelay;
     case PASSWORDS:
     case AUTOFILL_PROFILE:
+    case AUTOFILL_WALLET_CREDENTIAL:
     case AUTOFILL_WALLET_DATA:
     case AUTOFILL_WALLET_METADATA:
     case AUTOFILL_WALLET_OFFER:
@@ -139,6 +140,7 @@ bool CanGetCommitsFromExtensions(ModelType model_type) {
     case SESSIONS:
     case PREFERENCES:
     case SHARING_MESSAGE:
+    case AUTOFILL_WALLET_CREDENTIAL:
     case AUTOFILL_WALLET_DATA:
     case AUTOFILL_WALLET_METADATA:
     case AUTOFILL_WALLET_OFFER:
@@ -201,8 +203,7 @@ DataTypeTracker::DataTypeTracker(ModelType type)
   // Sanity check the hardcode value for kMinLocalChangeNudgeDelay.
   DCHECK_GE(local_change_nudge_delay_, kMinLocalChangeNudgeDelay);
 
-  if (CanGetCommitsFromExtensions(type) &&
-      base::FeatureList::IsEnabled(kSyncExtensionTypesThrottling)) {
+  if (CanGetCommitsFromExtensions(type)) {
     quota_ = std::make_unique<CommitQuota>(kInitialTokensForExtensionTypes,
                                            kRefillIntervalForExtensionTypes);
   }

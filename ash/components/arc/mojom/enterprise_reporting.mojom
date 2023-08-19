@@ -5,20 +5,6 @@
 // Next MinVersion: 4
 module arc.mojom;
 
-// Enumerates the states that management can be in for a user.
-[Extensible]
-enum ManagementState {
-  // The user is not managed.
-  UNMANAGED = 0,
-
-  // The user is managed and the management infrastructure is working correctly.
-  MANAGED_OK = 1,
-
-  // The user is managed but managing app lost its Device Owner status and
-  // cannot set policies.
-  MANAGED_DO_LOST = 2
-};
-
 [Extensible]
 enum TimedCloudDpcOp {
   [Default] UNKNOWN_OP = 0,
@@ -38,11 +24,9 @@ enum TimedCloudDpcOp {
   SETUP_THIRD_PARTY_SIGNIN = 14
 };
 
+// Deprecated method IDs: 0
 // Next method ID: 2
 interface EnterpriseReportingHost {
-  // Reports the management status for the user.
-  ReportManagementState@0(ManagementState state);
-
   // Reports time in ms for a CloudDpc operation.
   [MinVersion=3] ReportCloudDpcOperationTime@1(int64 time_ms,
     TimedCloudDpcOp op, bool success);

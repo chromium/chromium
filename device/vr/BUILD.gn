@@ -187,6 +187,7 @@ if (enable_vr) {
         "openxr/openxr_extension_handle.h",
         "openxr/openxr_extension_helper.cc",
         "openxr/openxr_extension_helper.h",
+        "openxr/openxr_graphics_binding.cc",
         "openxr/openxr_graphics_binding.h",
         "openxr/openxr_input_helper.cc",
         "openxr/openxr_input_helper.h",
@@ -251,6 +252,8 @@ if (enable_vr) {
         ]
 
         configs += [ "//third_party/khronos:khronos_headers" ]
+
+        deps += [ "//device/vr/android:vr_android" ]
       }
 
       deps += [
@@ -383,6 +386,7 @@ if (enable_gvr_services) {
   }
 
   android_library("java") {
+    srcjar_deps = [ ":jni_headers" ]
     sources = java_sources_needing_jni
     deps = [
       "//base:base_java",
@@ -391,6 +395,5 @@ if (enable_gvr_services) {
       "//third_party/gvr-android-sdk:gvr_common_java",
       "//ui/android:ui_java",
     ]
-    annotation_processor_deps = [ "//base/android/jni_generator:jni_processor" ]
   }
 }

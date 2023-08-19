@@ -5,8 +5,8 @@
 package org.chromium.chrome.browser.incognito;
 
 import androidx.annotation.Nullable;
-import androidx.annotation.VisibleForTesting;
 
+import org.chromium.base.ResettersForTesting;
 import org.chromium.base.annotations.NativeMethods;
 import org.chromium.chrome.browser.profiles.OTRProfileID;
 import org.chromium.chrome.browser.profiles.Profile;
@@ -113,9 +113,9 @@ public class IncognitoUtils {
                 .getProfileKey();
     }
 
-    @VisibleForTesting
     public static void setEnabledForTesting(Boolean enabled) {
         sIsEnabledForTesting = enabled;
+        ResettersForTesting.register(() -> sIsEnabledForTesting = null);
     }
 
     @NativeMethods

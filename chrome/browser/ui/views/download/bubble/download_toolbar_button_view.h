@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_UI_VIEWS_DOWNLOAD_BUBBLE_DOWNLOAD_TOOLBAR_BUTTON_VIEW_H_
 
 #include "base/memory/raw_ptr.h"
+#include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "chrome/browser/download/bubble/download_display.h"
 #include "chrome/browser/download/bubble/download_icon_state.h"
@@ -24,9 +25,9 @@ class RenderText;
 class Browser;
 class BrowserView;
 class DownloadDisplayController;
+class DownloadBubbleContentsView;
 class DownloadBubbleUIController;
 class DownloadBubbleRowView;
-class DownloadBubbleSecurityView;
 
 class DownloadBubbleNavigationHandler {
  public:
@@ -35,6 +36,9 @@ class DownloadBubbleNavigationHandler {
   virtual void OpenSecurityDialog(DownloadBubbleRowView* download_row_view) = 0;
   virtual void CloseDialog(views::Widget::ClosedReason reason) = 0;
   virtual void ResizeDialog() = 0;
+  // Callback invoked when the dialog has been interacted with by hovering over
+  // or by focusing (on the partial view).
+  virtual void OnDialogInteracted() = 0;
   virtual base::WeakPtr<DownloadBubbleNavigationHandler> GetWeakPtr() = 0;
 };
 
@@ -49,6 +53,10 @@ class DownloadToolbarButtonView : public ToolbarButton,
                                   public BrowserListObserver {
  public:
   METADATA_HEADER(DownloadToolbarButtonView);
+
+  // Identifies the bubble dialog widget for testing.
+  static constexpr char kBubbleName[] = "DownloadBubbleDialog";
+
   explicit DownloadToolbarButtonView(BrowserView* browser_view);
   DownloadToolbarButtonView(const DownloadToolbarButtonView&) = delete;
   DownloadToolbarButtonView& operator=(const DownloadToolbarButtonView&) =
@@ -79,6 +87,7 @@ class DownloadToolbarButtonView : public ToolbarButton,
   void OpenSecurityDialog(DownloadBubbleRowView* download_row_view) override;
   void CloseDialog(views::Widget::ClosedReason reason) override;
   void ResizeDialog() override;
+  void OnDialogInteracted() override;
   base::WeakPtr<DownloadBubbleNavigationHandler> GetWeakPtr() override;
 
   // BrowserListObserver
@@ -118,7 +127,7 @@ class DownloadToolbarButtonView : public ToolbarButton,
                                 SkColor badge_text_color);
 
   void ButtonPressed();
-  void CreateBubbleDialogDelegate(std::unique_ptr<View> bubble_contents_view);
+  void CreateBubbleDialogDelegate();
   void OnBubbleClosing();
 
   // Callback invoked when the partial view is closed.
@@ -131,8 +140,9 @@ class DownloadToolbarButtonView : public ToolbarButton,
   // been deactivated.
   void AutoClosePartialView();
 
-  // Get the primary view, which may be the full or the partial view.
-  std::unique_ptr<View> GetPrimaryView();
+  // Get the models for the primary view, which may be the full or the partial
+  // view.
+  std::vector<DownloadUIModel::DownloadUIModelPtr> GetPrimaryViewModels();
 
   // If |has_pending_download_started_animation_| is true, shows an animation of
   // a download icon moving upwards towards the toolbar icon.
@@ -147,8 +157,7 @@ class DownloadToolbarButtonView : public ToolbarButton,
   // Controller for keeping track of items for both main view and partial view.
   std::unique_ptr<DownloadBubbleUIController> bubble_controller_;
   raw_ptr<views::BubbleDialogDelegate> bubble_delegate_ = nullptr;
-  raw_ptr<View> primary_view_ = nullptr;
-  raw_ptr<DownloadBubbleSecurityView> security_view_ = nullptr;
+  raw_ptr<DownloadBubbleContentsView> bubble_contents_ = nullptr;
 
   // Marks whether there is a pending download started animation. This is needed
   // because the animation should only be triggered after the view has been
@@ -164,6 +173,8 @@ class DownloadToolbarButtonView : public ToolbarButton,
   std::unique_ptr<base::RetainingOneShotTimer> auto_close_bubble_timer_;
   // Whether we are allowed to create the above timer, may be false in tests.
   bool create_auto_close_timer_ = true;
+
+  base::TimeTicks button_click_time_;
 
   // RenderTexts used for the number in the badge. Stores the text for "n" at
   // index n - 1, and stores the text for the placeholder ("9+") at index 0.

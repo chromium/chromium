@@ -12,24 +12,15 @@
 #include "base/path_service.h"
 #include "base/test/gmock_callback_support.h"
 #include "base/test/mock_callback.h"
-#include "base/test/test_future.h"
-#include "base/test/test_mock_time_task_runner.h"
-#include "chrome/browser/chromeos/policy/dlp/dlp_rules_manager.h"
-#include "chrome/browser/chromeos/policy/dlp/dlp_rules_manager_factory.h"
-#include "chrome/browser/chromeos/policy/dlp/mock_dlp_rules_manager.h"
-#include "chrome/browser/profiles/profile_manager.h"
+#include "chrome/browser/chromeos/policy/dlp/test/dlp_files_test_base.h"
 #include "chrome/common/chrome_paths_lacros.h"
-#include "chrome/test/base/testing_browser_process.h"
-#include "chrome/test/base/testing_profile.h"
-#include "chrome/test/base/testing_profile_manager.h"
-#include "content/public/test/browser_task_environment.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace policy {
 
 class DlpFilesControllerLacrosTest
-    : public testing::Test,
+    : public DlpFilesTestBase,
       public ::testing::WithParamInterface<
           std::tuple<std::string, absl::optional<data_controls::Component>>> {
  public:
@@ -38,21 +29,13 @@ class DlpFilesControllerLacrosTest
       delete;
 
  protected:
-  DlpFilesControllerLacrosTest()
-      : profile_manager_(TestingBrowserProcess::GetGlobal()) {}
+  DlpFilesControllerLacrosTest() = default;
   ~DlpFilesControllerLacrosTest() override = default;
 
   void SetUp() override {
-    ASSERT_TRUE(profile_manager_.SetUp());
-    profile_ = profile_manager_.CreateTestingProfile("user", true);
-
-    policy::DlpRulesManagerFactory::GetInstance()->SetTestingFactory(
-        profile_,
-        base::BindRepeating(&DlpFilesControllerLacrosTest::SetDlpRulesManager,
-                            base::Unretained(this)));
-
-    ASSERT_TRUE(policy::DlpRulesManagerFactory::GetForPrimaryProfile());
-    ASSERT_TRUE(rules_manager_);
+    DlpFilesTestBase::SetUp();
+    files_controller_ =
+        std::make_unique<DlpFilesControllerLacros>(*rules_manager_);
 
     base::PathService::Get(base::DIR_HOME, &my_files_dir_);
     ASSERT_TRUE(base::CreateDirectory(my_files_dir_));
@@ -70,27 +53,7 @@ class DlpFilesControllerLacrosTest
         preinstalled_web_app_extra_config_dir_);
   }
 
-  std::unique_ptr<KeyedService> SetDlpRulesManager(
-      content::BrowserContext* context) {
-    auto dlp_rules_manager = std::make_unique<MockDlpRulesManager>();
-    rules_manager_ = dlp_rules_manager.get();
-
-    files_controller_ =
-        std::make_unique<DlpFilesControllerLacros>(*rules_manager_);
-
-    task_runner_ = base::MakeRefCounted<base::TestMockTimeTaskRunner>();
-
-    return dlp_rules_manager;
-  }
-
-  content::BrowserTaskEnvironment task_environment_;
-
-  TestingProfileManager profile_manager_;
-  TestingProfile* profile_;
-
-  raw_ptr<MockDlpRulesManager, ExperimentalAsh> rules_manager_ = nullptr;
   std::unique_ptr<DlpFilesControllerLacros> files_controller_;
-  scoped_refptr<base::TestMockTimeTaskRunner> task_runner_;
 
   base::FilePath my_files_dir_;
 

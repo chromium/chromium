@@ -215,8 +215,8 @@ class TestRenderFrameObserver : public RenderFrameObserver {
   void ScriptedPrint(bool user_initiated) override {
     // This is using the main frame for the size, but maybe it should be using
     // the frame's size.
-    gfx::Size page_size_in_pixels =
-        frame_proxy()->GetLocalRootWebFrameWidget()->Size();
+    gfx::SizeF page_size_in_pixels(
+        frame_proxy()->GetLocalRootWebFrameWidget()->Size());
     if (page_size_in_pixels.IsEmpty())
       return;
     blink::WebPrintParams print_params(page_size_in_pixels);
@@ -550,9 +550,8 @@ void WebFrameTestProxy::PostAccessibilityEvent(const ui::AXEvent& event) {
     case ax::mojom::Event::kActiveDescendantChanged:
       event_name = "ActiveDescendantChanged";
       break;
-    case ax::mojom::Event::kAriaAttributeChanged:
-      event_name = "AriaAttributeChanged";
-      break;
+    case ax::mojom::Event::kAriaAttributeChangedDeprecated:
+      NOTREACHED_NORETURN();
     case ax::mojom::Event::kBlur:
       event_name = "Blur";
       break;

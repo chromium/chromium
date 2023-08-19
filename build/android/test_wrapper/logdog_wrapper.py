@@ -14,8 +14,6 @@ import signal
 import subprocess
 import sys
 
-import six
-
 _SRC_PATH = os.path.abspath(os.path.join(
     os.path.dirname(__file__), '..', '..', '..'))
 sys.path.append(os.path.join(_SRC_PATH, 'third_party', 'catapult', 'devil'))
@@ -33,10 +31,7 @@ LOGDOG_TERMINATION_TIMEOUT = 30
 
 def CommandParser():
   # Parses the command line arguments being passed in
-  if six.PY3:
-    parser = argparse.ArgumentParser(allow_abbrev=False)
-  else:
-    parser = argparse.ArgumentParser()
+  parser = argparse.ArgumentParser(allow_abbrev=False)
   wrapped = parser.add_mutually_exclusive_group()
   wrapped.add_argument(
       '--target',

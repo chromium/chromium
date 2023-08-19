@@ -45,7 +45,7 @@ const char kWebTestsResourcesDir[] = "web_tests/images/resources";
 
 std::unique_ptr<ImageDecoder> CreateDecoder() {
   return std::make_unique<GIFImageDecoder>(
-      ImageDecoder::kAlphaNotPremultiplied, ColorBehavior::TransformToSRGB(),
+      ImageDecoder::kAlphaNotPremultiplied, ColorBehavior::kTransformToSRGB,
       ImageDecoder::kNoDecodedImageByteLimit);
 }
 
@@ -390,7 +390,7 @@ TEST(GIFImageDecoderTest, repetitionCountChangesWhenSeen) {
       SharedBuffer::Create(full_data.data(), kTruncatedSize);
 
   std::unique_ptr<ImageDecoder> decoder = std::make_unique<GIFImageDecoder>(
-      ImageDecoder::kAlphaPremultiplied, ColorBehavior::TransformToSRGB(),
+      ImageDecoder::kAlphaPremultiplied, ColorBehavior::kTransformToSRGB,
       ImageDecoder::kNoDecodedImageByteLimit);
 
   decoder->SetData(partial_data.get(), false);
@@ -415,11 +415,11 @@ TEST(GIFImageDecoderTest, bitmapAlphaType) {
 
   std::unique_ptr<ImageDecoder> premul_decoder =
       std::make_unique<GIFImageDecoder>(ImageDecoder::kAlphaPremultiplied,
-                                        ColorBehavior::TransformToSRGB(),
+                                        ColorBehavior::kTransformToSRGB,
                                         ImageDecoder::kNoDecodedImageByteLimit);
   std::unique_ptr<ImageDecoder> unpremul_decoder =
       std::make_unique<GIFImageDecoder>(ImageDecoder::kAlphaNotPremultiplied,
-                                        ColorBehavior::TransformToSRGB(),
+                                        ColorBehavior::kTransformToSRGB,
                                         ImageDecoder::kNoDecodedImageByteLimit);
 
   // Partially decoded frame => the frame alpha type is unknown and should
@@ -458,7 +458,7 @@ namespace {
 class Allocator final : public SkBitmap::Allocator {
   bool allocPixelRef(SkBitmap* dst) override { return dst->tryAllocPixels(); }
 };
-}
+}  // namespace
 
 // Ensure that calling SetMemoryAllocator does not short-circuit
 // InitializeNewFrame.

@@ -181,16 +181,6 @@ TraceConfig BackgroundTracingConfigImpl::GetTraceConfig() const {
   return chrome_config;
 }
 
-size_t BackgroundTracingConfigImpl::GetTraceUploadLimitKb() const {
-#if BUILDFLAG(IS_ANDROID)
-  auto type = net::NetworkChangeNotifier::GetConnectionType();
-  if (net::NetworkChangeNotifier::IsConnectionCellular(type)) {
-    return upload_limit_network_kb_;
-  }
-#endif
-  return upload_limit_kb_;
-}
-
 // static
 std::unique_ptr<BackgroundTracingConfigImpl>
 BackgroundTracingConfigImpl::FromDict(base::Value::Dict&& dict) {

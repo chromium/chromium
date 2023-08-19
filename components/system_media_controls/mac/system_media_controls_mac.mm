@@ -4,20 +4,12 @@
 
 #include "components/system_media_controls/mac/system_media_controls_mac.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 namespace system_media_controls {
 
 // static
 std::unique_ptr<SystemMediaControls> SystemMediaControls::Create(
     const std::string& product_name) {
-  // The required APIs for interacting with the Now Playing Info Center only
-  // exist on 10.13.1 or later.
-  if (@available(macOS 10.13.1, *))
-    return std::make_unique<internal::SystemMediaControlsMac>();
-  return nullptr;
+  return std::make_unique<internal::SystemMediaControlsMac>();
 }
 
 namespace internal {

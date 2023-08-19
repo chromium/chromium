@@ -109,7 +109,7 @@ class ExtendedDragSource : public DataSourceObserver,
 
   // Created and destroyed at wayland/zcr_extended_drag.cc and its lifetime is
   // tied to the zcr_extended_drag_source_v1 object it's attached to.
-  const raw_ptr<Delegate, ExperimentalAsh> delegate_;
+  const raw_ptr<Delegate, DanglingUntriaged | ExperimentalAsh> delegate_;
 
   // The pointer location in screen coordinates.
   gfx::PointF pointer_location_;

@@ -12,6 +12,10 @@ namespace content {
 class WebContents;
 }  // namespace content
 
+namespace views {
+class View;
+}  // namespace views
+
 class MockShoppingListUiTabHelper : public commerce::ShoppingListUiTabHelper {
  public:
   static void CreateForWebContents(content::WebContents* content);
@@ -24,6 +28,7 @@ class MockShoppingListUiTabHelper : public commerce::ShoppingListUiTabHelper {
 
   MOCK_METHOD(const gfx::Image&, GetProductImage, ());
   MOCK_METHOD(bool, ShouldShowPriceTrackingIconView, ());
+  MOCK_METHOD(bool, ShouldShowPriceInsightsIconView, ());
   MOCK_METHOD(bool, IsPriceTracking, ());
   MOCK_METHOD(void,
               SetPriceTrackingState,
@@ -31,6 +36,13 @@ class MockShoppingListUiTabHelper : public commerce::ShoppingListUiTabHelper {
                bool is_new_bookmark,
                base::OnceCallback<void(bool)> callback),
               (override));
+  MOCK_METHOD(std::unique_ptr<views::View>,
+              CreateShoppingInsightsWebView,
+              (),
+              (override));
+  MOCK_METHOD(const absl::optional<commerce::PriceInsightsInfo>&,
+              GetPriceInsightsInfo,
+              ());
 
  private:
   gfx::Image valid_product_image_;

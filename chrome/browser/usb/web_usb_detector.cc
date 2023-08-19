@@ -194,9 +194,8 @@ void WebUsbDetector::Initialize() {
     return;
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-  // Delegate to the Lacros browser if it is primary to prevent duplicate
-  // notifications.
-  if (crosapi::browser_util::IsLacrosPrimaryBrowser()) {
+  if (crosapi::browser_util::IsLacrosEnabled()) {
+    // Delegate to the Lacros browser to prevent duplicate notifications.
     return;
   }
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)

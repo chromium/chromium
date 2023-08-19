@@ -26,7 +26,6 @@
 <translation id="2060505056492490888">"<ph name="DOT" />", "<ph name="INVALIDDOMAIN" />" adı içinde yanlış bir konumda kullanılmış.</translation>
 <translation id="2148716181193084225">Bugün</translation>
 <translation id="2226276347425096477">Lütfen bu metni <ph name="MAX_CHARACTERS" /> veya daha az karakter olacak şekilde kısaltın (şu anda <ph name="CURRENT_LENGTH" /> karakter kullanıyorsunuz).</translation>
-<translation id="2246498165605549352">Yerel Dosya</translation>
 <translation id="2247351761944213033"><ph name="WEEKNUMBER" />. hafta, <ph name="YEAR" /></translation>
 <translation id="2277199496770840904"><ph name="NUMBER" />. parça</translation>
 <translation id="2393030564806080191">On altılı renk değeri</translation>
@@ -89,6 +88,7 @@
 <translation id="5425179576310518467">şu anki tarih</translation>
 <translation id="5466621249238537318">Lütfen bir veya daha fazla dosya seçin.</translation>
 <translation id="5468998798572797635">tam ekrandan çık</translation>
+<translation id="5514612371225420585">Cihazınızdaki dosya</translation>
 <translation id="5516235301412634559">0,75</translation>
 <translation id="5537725057119320332">Yayınla</translation>
 <translation id="5546461542133609677">sesi aç</translation>
@@ -113,6 +113,7 @@
 <translation id="6398862346408813489">Ay seçim panelini göster</translation>
 <translation id="6404546809543547843">ses zaman çizelgesi temizleyici</translation>
 <translation id="6443871981718447451">altyazı menüsünü göster</translation>
+<translation id="6484738902856791350">Okunaklı hale getir</translation>
 <translation id="6550675742724504774">Seçenekler</translation>
 <translation id="6572309429103589720">Geçersiz dil bilgisi</translation>
 <translation id="658823671542763450">tam ekrana geç</translation>

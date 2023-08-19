@@ -56,7 +56,6 @@ class DrawFrame {
       height: parseInt(json.windowy),
     };
     this.logs_ = json.logs;
-    this.drawTexts_ = json.text;
     this.drawCalls_ = json.drawcalls.map(c => new DrawCall(c));
     this.buffer_map = json.buff_map;
 
@@ -129,7 +128,7 @@ class DrawFrame {
   }
 
   submissionCount() {
-    return this.drawCalls_.length + this.drawTexts_.length + this.logs_.length;
+    return this.drawCalls_.length + this.logs_.length;
   }
 
   submissionFreezeIndex() {
@@ -213,6 +212,10 @@ class DrawFrame {
     context.translate(-this.size_.width / 2, -this.size_.height / 2);
 
     for (const call of this.drawCalls_) {
+
+      // Assumed to be a positional text call.
+      if(call.text) continue;
+
       if (call.drawIndex_ > this.submissionFreezeIndex()) break;
 
       // If thread not enabled, then skip draw call from this thread.
@@ -240,33 +243,36 @@ class DrawFrame {
     }
 
 
-    for (const text of this.drawTexts_) {
+    for (const text of this.drawCalls_) {
+      // Not a positional text call.
+      if(!text.text) continue;
+
       // If thread not enabled, then skip text calls from this thread.
-      if (!this.threadMapping_[text.thread_id].threadEnabled) {
+      if (!this.threadMapping_[text.threadId_].threadEnabled) {
         continue;
       }
 
-      if (text.drawindex > this.submissionFreezeIndex()) break;
+      if (text.drawIndex_ > this.submissionFreezeIndex()) break;
 
       var color;
       // If thread is overriding, take thread color.
-      if (this.threadMapping_[text.thread_id].overrideFilters) {
-        color = this.threadMapping_[text.thread_id].threadColor;
+      if (this.threadMapping_[text.threadId_].overrideFilters) {
+        color = this.threadMapping_[text.threadId_].threadColor;
       }
       // Otherwise, take filter's color.
       else {
-        let filter = this.getFilter(text.source_index);
+        let filter = this.getFilter(text.sourceIndex_);
         if (!filter) continue;
 
         color = (filter && filter.drawColor) ?
-          filter.drawColor : text.option.color;
+          filter.drawColor : text.color_;
       }
       context.fillStyle = color;
       // TODO: This should also create some DrawText object or something.
       this.drawText(context,
                     text.text,
-                    text.pos[0],
-                    text.pos[1],
+                    text.pos_.x,
+                    text.pos_.y,
                     transformMatrix);
     }
   }

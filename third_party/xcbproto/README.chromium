@@ -4,8 +4,9 @@ URL: https://gitlab.freedesktop.org/xorg/proto/xcbproto
 Version: 842d91316243eb1f2e208231acc1512c2cf43a1f
 CPEPrefix: unknown
 Security Critical: no
+Shipped: no
 License: MIT
-License File: NOT_SHIPPED
+License File: src/COPYING
 
 Description:
 XML-XCB protocol descriptions

@@ -60,7 +60,8 @@ class CORE_EXPORT HTMLInputElement
   DEFINE_WRAPPERTYPEINFO();
 
  public:
-  HTMLInputElement(Document&, const CreateElementFlags);
+  explicit HTMLInputElement(Document&,
+                            const CreateElementFlags = CreateElementFlags());
   ~HTMLInputElement() override;
   void Trace(Visitor*) const override;
 
@@ -417,7 +418,7 @@ class CORE_EXPORT HTMLInputElement
   void FinishParsingChildren() final;
   void ParserDidSetAttributes() final;
 
-  void CloneNonAttributePropertiesFrom(const Element&, CloneChildrenFlag) final;
+  void CloneNonAttributePropertiesFrom(const Element&, NodeCloningData&) final;
 
   void AttachLayoutTree(AttachContext&) final;
 

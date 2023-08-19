@@ -178,6 +178,18 @@ export class ProgressCenterItem {
      * @type {?PolicyErrorType}
      */
     this.policyError = null;
+
+    /**
+     * The number of files with a policy restriction, if any.
+     * @type {?number}
+     */
+    this.policyFileCount = null;
+
+    /**
+     * The name of the first file with a policy restriction, if any.
+     * @type {?string}
+     */
+    this.policyFileName = null;
   }
 
   /**

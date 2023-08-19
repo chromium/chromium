@@ -142,9 +142,9 @@ void Animation::PushPropertiesTo(Animation* animation_impl) {
   keyframe_effect()->PushPropertiesTo(animation_impl->keyframe_effect());
 }
 
-void Animation::Tick(base::TimeTicks tick_time) {
+bool Animation::Tick(base::TimeTicks tick_time) {
   DCHECK(!IsWorkletAnimation());
-  keyframe_effect()->Tick(tick_time);
+  return keyframe_effect()->Tick(tick_time);
 }
 
 bool Animation::IsScrollLinkedAnimation() const {

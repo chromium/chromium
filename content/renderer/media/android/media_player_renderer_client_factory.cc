@@ -65,7 +65,7 @@ MediaPlayerRendererClientFactory::CreateRenderer(
 
 media::MediaResource::Type
 MediaPlayerRendererClientFactory::GetRequiredMediaResourceType() {
-  return media::MediaResource::Type::URL;
+  return media::MediaResource::Type::KUrl;
 }
 
 }  // namespace content

@@ -18,6 +18,7 @@
 #include "chrome/browser/chromeos/platform_keys/platform_keys.h"
 #include "chromeos/crosapi/mojom/keystore_error.mojom.h"
 #include "chromeos/crosapi/mojom/keystore_service.mojom.h"
+#include "extensions/common/extension_id.h"
 
 namespace extensions {
 class StateStore;
@@ -209,7 +210,7 @@ class ExtensionKeyPermissionsService {
       SetUserGrantedPermissionCallback callback,
       bool can_user_grant_permission);
 
-  const std::string extension_id_;
+  const extensions::ExtensionId extension_id_;
   raw_ptr<extensions::StateStore, FlakyDanglingUntriaged>
       extensions_state_store_ = nullptr;
   std::vector<KeyEntry> state_store_entries_;

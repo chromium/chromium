@@ -364,55 +364,6 @@ TEST_F(ArcAppInstallEventLogCollectorTest, ConnectivityChanges) {
   EXPECT_EQ(0, delegate()->add_count());
 }
 
-// Validates sequence of CloudDPS events.
-TEST_F(ArcAppInstallEventLogCollectorTest, CloudDPSEvent) {
-  std::unique_ptr<ArcAppInstallEventLogCollector> collector =
-      std::make_unique<ArcAppInstallEventLogCollector>(delegate(), profile(),
-                                                       packages_);
-
-  base::Time time = base::Time::Now();
-  collector->OnCloudDpsRequested(time, {kPackageName, kPackageName2});
-  ASSERT_EQ(2, delegate()->add_count());
-  ASSERT_EQ(0, delegate()->add_for_all_count());
-  EXPECT_EQ(TimeToTimestamp(time), delegate()->requests()[0].event.timestamp());
-  EXPECT_EQ(kPackageName, delegate()->requests()[0].package_name);
-  EXPECT_EQ(em::AppInstallReportLogEvent::CLOUDDPS_REQUEST,
-            delegate()->requests()[0].event.event_type());
-  EXPECT_FALSE(delegate()->requests()[0].event.has_clouddps_response());
-  EXPECT_EQ(TimeToTimestamp(time), delegate()->requests()[1].event.timestamp());
-  EXPECT_EQ(kPackageName2, delegate()->requests()[1].package_name);
-  EXPECT_EQ(em::AppInstallReportLogEvent::CLOUDDPS_REQUEST,
-            delegate()->requests()[1].event.event_type());
-  EXPECT_EQ(0, delegate()->requests()[1].event.clouddps_response());
-
-  // One package succeeded.
-  time += base::Seconds(1);
-  collector->OnCloudDpsSucceeded(time, {kPackageName});
-  ASSERT_EQ(3, delegate()->add_count());
-  ASSERT_EQ(0, delegate()->add_for_all_count());
-  EXPECT_EQ(TimeToTimestamp(time),
-            delegate()->last_request().event.timestamp());
-  EXPECT_EQ(kPackageName, delegate()->last_request().package_name);
-  EXPECT_EQ(em::AppInstallReportLogEvent::CLOUDDPS_RESPONSE,
-            delegate()->last_request().event.event_type());
-  EXPECT_FALSE(delegate()->requests()[0].event.has_clouddps_response());
-
-  // One package failed.
-  time += base::Seconds(1);
-  collector->OnCloudDpsFailed(time, kPackageName2,
-                              arc::mojom::InstallErrorReason::TIMEOUT);
-  ASSERT_EQ(4, delegate()->add_count());
-  ASSERT_EQ(0, delegate()->add_for_all_count());
-  EXPECT_EQ(TimeToTimestamp(time),
-            delegate()->last_request().event.timestamp());
-  EXPECT_EQ(kPackageName2, delegate()->last_request().package_name);
-  EXPECT_EQ(em::AppInstallReportLogEvent::CLOUDDPS_RESPONSE,
-            delegate()->last_request().event.event_type());
-  EXPECT_TRUE(delegate()->last_request().event.has_clouddps_response());
-  EXPECT_EQ(static_cast<int>(arc::mojom::InstallErrorReason::TIMEOUT),
-            delegate()->last_request().event.clouddps_response());
-}
-
 TEST_F(ArcAppInstallEventLogCollectorTest, InstallPackages) {
   arc::mojom::AppHost* const app_host = app_prefs();
 
@@ -460,16 +411,6 @@ TEST_F(ArcAppInstallEventLogCollectorTest, InstallPackages) {
             delegate()->last_event().event_type());
   EXPECT_EQ(kPackageName2, delegate()->last_request().package_name);
   EXPECT_TRUE(delegate()->last_request().add_disk_space_info);
-
-  base::Time time = base::Time::Now();
-  collector->OnReportForceInstallMainLoopFailed(time, {kPackageName2});
-  EXPECT_EQ(5, delegate()->add_count());
-  EXPECT_EQ(em::AppInstallReportLogEvent::CLOUDDPC_MAIN_LOOP_FAILED,
-            delegate()->last_event().event_type());
-  EXPECT_EQ(kPackageName2, delegate()->last_request().package_name);
-  EXPECT_TRUE(delegate()->last_request().add_disk_space_info);
-
-  EXPECT_EQ(0, delegate()->add_for_all_count());
 }
 
 TEST_F(ArcAppInstallEventLogCollectorTest, OnPlayStoreLocalPolicySet) {

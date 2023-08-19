@@ -13,6 +13,7 @@
 #include "base/containers/cxx20_erase_map.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
+#include "base/json/json_writer.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/stl_util.h"
 #include "base/strings/string_number_conversions.h"
@@ -179,8 +180,8 @@ bool ResponseValid(
 
     // PublicKeyUserEntity field in GetAssertion response is optional with the
     // following constraints:
-    // - If assertion has been made without user verification, user identifiable
-    //   information must not be included.
+    // - If assertion has been made without user verification on a
+    //   non-platform authenticator/security key.
     // - For resident key credentials, user id of the user entity is mandatory.
     // - When multiple accounts exist for specified RP ID, user entity is
     //   mandatory.
@@ -188,7 +189,8 @@ bool ResponseValid(
     const bool has_user_identifying_info =
         user_entity && (user_entity->display_name || user_entity->name);
     if (!response.authenticator_data.obtained_user_verification() &&
-        has_user_identifying_info) {
+        has_user_identifying_info &&
+        authenticator.GetType() == AuthenticatorType::kOther) {
       return false;
     }
 
@@ -380,6 +382,8 @@ GetAssertionRequestHandler::GetAssertionRequestHandler(
       options_(std::move(options)),
       allow_skipping_pin_touch_(allow_skipping_pin_touch) {
   transport_availability_info().request_type = FidoRequestType::kGetAssertion;
+  transport_availability_info().user_verification_requirement =
+      request_.user_verification;
   transport_availability_info().has_empty_allow_list =
       request_.allow_list.empty();
   transport_availability_info().is_only_hybrid_or_internal =
@@ -401,22 +405,28 @@ GetAssertionRequestHandler::GetAssertionRequestHandler(
                    std::vector{FidoTransportProtocol::kInternal};
           });
 
-  FIDO_LOG(EVENT) << "Starting GetAssertion flow";
+  std::string json_string;
+  if (!options_.json ||
+      !base::JSONWriter::WriteWithOptions(
+          *options_.json->value, base::JsonOptions::OPTIONS_PRETTY_PRINT,
+          &json_string)) {
+    json_string = "no JSON";
+  }
+  FIDO_LOG(EVENT) << "Starting GetAssertion flow: " << json_string;
   Start();
 }
 
 GetAssertionRequestHandler::~GetAssertionRequestHandler() = default;
 
 void GetAssertionRequestHandler::PreselectAccount(
-    std::vector<uint8_t> credential_id) {
+    PublicKeyCredentialDescriptor credential) {
   DCHECK(!preselected_credential_);
-  DCHECK(
-      request_.allow_list.empty() ||
-      std::any_of(request_.allow_list.begin(), request_.allow_list.end(),
-                  [credential_id](const PublicKeyCredentialDescriptor& desc) {
-                    return desc.id == credential_id;
-                  }));
-  preselected_credential_ = std::move(credential_id);
+  DCHECK(request_.allow_list.empty() ||
+         std::any_of(request_.allow_list.begin(), request_.allow_list.end(),
+                     [&credential](const PublicKeyCredentialDescriptor& desc) {
+                       return desc.id == credential.id;
+                     }));
+  preselected_credential_ = std::move(credential);
 }
 
 base::WeakPtr<GetAssertionRequestHandler>
@@ -511,14 +521,7 @@ void GetAssertionRequestHandler::DispatchRequest(
   }
 
   if (preselected_credential_) {
-    DCHECK(request_.allow_list.empty() ||
-           std::any_of(request_.allow_list.begin(), request_.allow_list.end(),
-                       [this](const PublicKeyCredentialDescriptor& desc) {
-                         return desc.id == preselected_credential_;
-                       }));
-    request.allow_list = {PublicKeyCredentialDescriptor(
-        CredentialType::kPublicKey, *preselected_credential_,
-        {FidoTransportProtocol::kInternal})};
+    request.allow_list = {*preselected_credential_};
   }
 
   ReportGetAssertionRequestTransport(authenticator);
@@ -548,7 +551,7 @@ void GetAssertionRequestHandler::AuthenticatorRemoved(
       state_ = State::kFinished;
       std::move(completion_callback_)
           .Run(GetAssertionStatus::kAuthenticatorRemovedDuringPINEntry,
-               absl::nullopt);
+               absl::nullopt, authenticator);
     }
   }
 }
@@ -637,7 +640,7 @@ void GetAssertionRequestHandler::HavePINUVAuthTokenResultForAuthenticator(
   DCHECK_EQ(selected_authenticator_for_pin_uv_auth_token_, authenticator);
   if (error) {
     state_ = State::kFinished;
-    std::move(completion_callback_).Run(*error, absl::nullopt);
+    std::move(completion_callback_).Run(*error, absl::nullopt, authenticator);
     return;
   }
 
@@ -693,20 +696,21 @@ void GetAssertionRequestHandler::HandleResponse(
     if (status != CtapDeviceResponseCode::kSuccess) {
       std::move(completion_callback_)
           .Run(WinCtapDeviceResponseCodeToGetAssertionStatus(status),
-               absl::nullopt);
+               absl::nullopt, authenticator);
       return;
     }
     if (!ResponseValid(*authenticator, request, options_, responses)) {
       FIDO_LOG(ERROR) << "Failing assertion request due to bad response from "
                       << authenticator->GetDisplayName();
       std::move(completion_callback_)
-          .Run(GetAssertionStatus::kWinNotAllowedError, absl::nullopt);
+          .Run(GetAssertionStatus::kWinNotAllowedError, absl::nullopt,
+               authenticator);
       return;
     }
 
     std::move(completion_callback_)
         .Run(WinCtapDeviceResponseCodeToGetAssertionStatus(status),
-             std::move(responses));
+             std::move(responses), authenticator);
     return;
   }
 #endif
@@ -742,8 +746,16 @@ void GetAssertionRequestHandler::HandleResponse(
   if (!maybe_result) {
     if (state_ == State::kWaitingForResponseWithToken) {
       std::move(completion_callback_)
-          .Run(GetAssertionStatus::kAuthenticatorResponseInvalid,
-               absl::nullopt);
+          .Run(GetAssertionStatus::kAuthenticatorResponseInvalid, absl::nullopt,
+               authenticator);
+    } else if (authenticator->GetType() == AuthenticatorType::kPhone &&
+               base::FeatureList::IsEnabled(kWebAuthnNewHybridUI)) {
+      FIDO_LOG(ERROR) << "Status " << static_cast<int>(status) << " from "
+                      << authenticator->GetDisplayName()
+                      << " is fatal to the request";
+      std::move(completion_callback_)
+          .Run(GetAssertionStatus::kHybridTransportError, absl::nullopt,
+               authenticator);
     } else {
       FIDO_LOG(ERROR) << "Ignoring status " << static_cast<int>(status)
                       << " from " << authenticator->GetDisplayName();
@@ -758,7 +770,8 @@ void GetAssertionRequestHandler::HandleResponse(
     FIDO_LOG(ERROR) << "Failing assertion request due to status "
                     << static_cast<int>(status) << " from "
                     << authenticator->GetDisplayName();
-    std::move(completion_callback_).Run(*maybe_result, absl::nullopt);
+    std::move(completion_callback_)
+        .Run(*maybe_result, absl::nullopt, authenticator);
     return;
   }
 
@@ -766,7 +779,8 @@ void GetAssertionRequestHandler::HandleResponse(
     FIDO_LOG(ERROR) << "Failing assertion request due to bad response from "
                     << authenticator->GetDisplayName();
     std::move(completion_callback_)
-        .Run(GetAssertionStatus::kAuthenticatorResponseInvalid, absl::nullopt);
+        .Run(GetAssertionStatus::kAuthenticatorResponseInvalid, absl::nullopt,
+             authenticator);
     return;
   }
 
@@ -776,13 +790,13 @@ void GetAssertionRequestHandler::HandleResponse(
     // selection dialog by setting the `userSelected` flag.
     DCHECK_EQ(responses.size(), 1u);
     DCHECK(responses.at(0).credential &&
-           responses.at(0).credential->id == preselected_credential_);
+           responses.at(0).credential->id == preselected_credential_->id);
     responses.at(0).user_selected = true;
   }
 
   ReportGetAssertionResponseTransport(authenticator);
   std::move(completion_callback_)
-      .Run(GetAssertionStatus::kSuccess, std::move(responses));
+      .Run(GetAssertionStatus::kSuccess, std::move(responses), authenticator);
 }
 
 void GetAssertionRequestHandler::TerminateUnsatisfiableRequestPostTouch(
@@ -794,7 +808,7 @@ void GetAssertionRequestHandler::TerminateUnsatisfiableRequestPostTouch(
   CancelActiveAuthenticators(authenticator->GetId());
   std::move(completion_callback_)
       .Run(GetAssertionStatus::kAuthenticatorMissingUserVerification,
-           absl::nullopt);
+           absl::nullopt, authenticator);
 }
 
 void GetAssertionRequestHandler::DispatchRequestWithToken(

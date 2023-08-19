@@ -15,11 +15,7 @@
 namespace gpu {
 namespace {
 
-#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_FUCHSIA)
-// On Android, semaphores are created with handle type
-// VK_EXTERNAL_SEMAPHORE_HANDLE_TYPE_SYNC_FD_BIT. With this handle type,
-// the semaphore will not be reset to un-signalled state after waiting,
-// so semaphores cannot be reused on Android.
+#if BUILDFLAG(IS_FUCHSIA)
 // On Fuchsia semaphores are passed to scenic as zx::event. Scenic doesn't reset
 // them after waiting, so they would have to be reset explicitly to be reused.
 // OTOH new semaphores are cheap, so reuse doesn't provide significant benefits.

@@ -140,7 +140,7 @@ void RecordCaptureModeBarButtonType(CaptureModeBarButtonType button_type);
 void RecordCaptureModeConfiguration(CaptureModeType type,
                                     CaptureModeSource source,
                                     RecordingType recording_type,
-                                    bool audio_on,
+                                    AudioRecordingMode audio_mode,
                                     const CaptureModeBehavior* behavior);
 
 // Records the percent ratio between the area of the user selected region to be

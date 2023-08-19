@@ -451,7 +451,7 @@ AXLanguageDetectionManager::GetLanguageAnnotationForStringAttribute(
   std::sort(
       language_annotation.begin(), language_annotation.end(),
       [](const AXLanguageSpan& left, const AXLanguageSpan& right) -> bool {
-        return left.start_index <= right.start_index;
+        return left.start_index < right.start_index;
       });
   // Ensure that AXLanguageSpans do not overlap.
   for (size_t i = 0; i < language_annotation.size(); ++i) {

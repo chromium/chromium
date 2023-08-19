@@ -21,7 +21,7 @@ class FakeInstallationState : public InstallationState {
   void AddChrome(bool system_install, base::Version* version) {
     FakeProductState chrome_state;
     chrome_state.set_version(version);
-    base::FilePath setup_exe(GetChromeInstallPath(system_install));
+    base::FilePath setup_exe(GetDefaultChromeInstallPath(system_install));
     setup_exe = setup_exe.AppendASCII(version->GetString())
                     .Append(kInstallerDir)
                     .Append(kSetupExe);

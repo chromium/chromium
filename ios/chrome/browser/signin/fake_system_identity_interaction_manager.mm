@@ -10,10 +10,6 @@
 #import "ios/chrome/browser/signin/test_constants.h"
 #import "ios/public/provider/chrome/browser/signin/signin_error_api.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 namespace {
 
 // Global used to store the +identity of FakeSystemIdentityInteractionManager.
@@ -98,6 +94,7 @@ id<SystemIdentity> gFakeSystemIdentityInteractionManagerIdentity = nil;
   SigninCompletionBlock _signinCompletion;
   FakeAuthActivityViewController* _authActivityViewController;
   BOOL _isActivityViewPresented;
+  NSString* _lastStartAuthActivityUserEmail;
 }
 
 - (instancetype)initWithManager:
@@ -142,6 +139,7 @@ id<SystemIdentity> gFakeSystemIdentityInteractionManagerIdentity = nil;
                                   userEmail:(NSString*)userEmail
                                  completion:(SigninCompletionBlock)completion {
   DCHECK(completion);
+  _lastStartAuthActivityUserEmail = userEmail;
   _signinCompletion = completion;
   _authActivityViewController =
       [[FakeAuthActivityViewController alloc] initWithManager:self];
@@ -167,6 +165,10 @@ id<SystemIdentity> gFakeSystemIdentityInteractionManagerIdentity = nil;
 
 - (BOOL)isActivityViewPresented {
   return _isActivityViewPresented;
+}
+
+- (NSString*)lastStartAuthActivityUserEmail {
+  return _lastStartAuthActivityUserEmail;
 }
 
 + (id<SystemIdentity>)identity {

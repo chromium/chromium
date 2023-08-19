@@ -52,7 +52,7 @@ static_assert(
 
 struct MergedEntry {
   size_t rank;
-  base::StringPiece value;
+  std::string_view value;
 };
 
 // A reference to an entry inside a dictionary.
@@ -80,13 +80,13 @@ class RankedDictEntryRef {
       }
       value_end++;
     }
-    value_ = base::StringPiece(data + value_start, value_end - value_start);
+    value_ = std::string_view(data + value_start, value_end - value_start);
   }
   RankedDictEntryRef(RankedDictEntryRef&) = delete;
   RankedDictEntryRef& operator=(const RankedDictEntryRef&) = delete;
 
   uint16_t rank() const { return rank_; }
-  base::StringPiece value() const { return value_; }
+  std::string_view value() const { return value_; }
 
   static void AppendToVector(MergedEntry entry, std::vector<char>& vec) {
     if (entry.rank > MarkedBigEndianU15::MAX_VALUE) {
@@ -99,7 +99,7 @@ class RankedDictEntryRef {
 
  private:
   size_t rank_;
-  base::StringPiece value_;
+  std::string_view value_;
 };
 
 // Helper function that does nothing with the RankedDicts apart from letting
@@ -120,11 +120,11 @@ RankedDicts::Datawrapper::Datawrapper(
       content_(std::move(map)) {}
 
 RankedDicts::RankedDicts(
-    const std::vector<std::vector<base::StringPiece>>& ordered_dicts) {
+    const std::vector<std::vector<std::string_view>>& ordered_dicts) {
   std::vector<MergedEntry> merged_dicts;
-  for (const std::vector<base::StringPiece>& strings : ordered_dicts) {
+  for (const std::vector<std::string_view>& strings : ordered_dicts) {
     size_t rank = 1;
-    for (const base::StringPiece& s : strings) {
+    for (const std::string_view& s : strings) {
       bool clean_string = true;
       for (char c : s) {
         if (MarkedBigEndianU15::IsPossibleMarkerByte(c)) {
@@ -168,7 +168,7 @@ RankedDicts::RankedDicts(std::unique_ptr<base::MemoryMappedFile> map)
 // To find an element in the middle between two others, we first locate the
 // *byte* in the middle, then seek forward until we hit a marker byte that
 // will only appear at the start of an allocation.
-absl::optional<rank_t> RankedDicts::Find(base::StringPiece needle) const {
+absl::optional<rank_t> RankedDicts::Find(std::string_view needle) const {
   // Special case for empty dictionary.
   size_t size = data_.size();
   if (size == 0) {
@@ -193,7 +193,7 @@ absl::optional<rank_t> RankedDicts::Find(base::StringPiece needle) const {
 
     // Perform the actual comparison.
     RankedDictEntryRef mid_entry(data_, adjusted_midpoint);
-    base::StringPiece mid_value = mid_entry.value();
+    std::string_view mid_value = mid_entry.value();
     int cmp_result = mid_value.compare(needle);
     if (cmp_result == 0)
       return mid_entry.rank();

@@ -3,8 +3,11 @@
 // found in the LICENSE file.
 
 import 'chrome://resources/cr_elements/cr_button/cr_button.js';
+import 'chrome://resources/cros_components/button/button.js';
 
 import {html} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+
+import {util} from '../../common/js/util.js';
 
 const htmlTemplate = html`{__html_template__}`;
 
@@ -51,9 +54,6 @@ export class PanelButton extends HTMLElement {
     const iconButton = this.shadowRoot.querySelector('cr-icon-button');
     if (name === 'data-category') {
       switch (newValue) {
-        case 'cancel':
-          iconButton.setAttribute('iron-icon', 'cr:clear');
-          break;
         case 'collapse':
         case 'expand':
           iconButton.setAttribute('iron-icon', 'cr:expand-less');
@@ -67,11 +67,16 @@ export class PanelButton extends HTMLElement {
    * @param {string} text The text to use on the extra button.
    */
   setExtraButtonText(text) {
-    const extraButton = this.shadowRoot.querySelector('#extra-button');
-    extraButton.innerText = text;
+    if (util.isCrosComponentsEnabled()) {
+      const extraButton = this.shadowRoot.querySelector('#extra-button-jelly');
+      extraButton.label = text;
+    } else {
+      const extraButton = this.shadowRoot.querySelector('#extra-button');
+      extraButton.innerText = text;
+    }
   }
 }
 
 window.customElements.define('xf-button', PanelButton);
 
-//# sourceURL=//ui/file_manager/file_manager/foreground/elements/xf_button.js
+// # sourceURL=//ui/file_manager/file_manager/foreground/elements/xf_button.js

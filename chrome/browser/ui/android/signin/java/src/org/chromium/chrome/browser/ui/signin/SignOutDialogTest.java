@@ -35,10 +35,10 @@ import org.mockito.junit.MockitoRule;
 import org.mockito.quality.Strictness;
 
 import org.chromium.base.test.BaseActivityTestRule;
+import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.base.test.util.JniMocker;
 import org.chromium.chrome.browser.preferences.Pref;
 import org.chromium.chrome.browser.profiles.Profile;
-import org.chromium.chrome.browser.profiles.ProfileAccountManagementMetrics;
 import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
 import org.chromium.chrome.browser.signin.services.SigninManager;
 import org.chromium.chrome.browser.signin.services.SigninMetricsUtils;
@@ -184,9 +184,6 @@ public class SignOutDialogTest {
 
         onView(withText(R.string.continue_button)).inRoot(isDialog()).perform(click());
 
-        verify(mSigninMetricsUtilsNativeMock)
-                .logProfileAccountManagementMenu(ProfileAccountManagementMetrics.SIGNOUT_SIGNOUT,
-                        GAIAServiceType.GAIA_SERVICE_TYPE_NONE);
         verify(mListenerMock).onSignOutClicked(false);
     }
 
@@ -210,9 +207,6 @@ public class SignOutDialogTest {
 
         onView(withText(R.string.continue_button)).inRoot(isDialog()).perform(click());
 
-        verify(mSigninMetricsUtilsNativeMock)
-                .logProfileAccountManagementMenu(ProfileAccountManagementMetrics.SIGNOUT_SIGNOUT,
-                        GAIAServiceType.GAIA_SERVICE_TYPE_NONE);
         verify(mListenerMock).onSignOutClicked(false);
     }
 
@@ -220,14 +214,14 @@ public class SignOutDialogTest {
     @MediumTest
     public void testPositiveButtonWhenAccountIsNotManagedAndRemoveLocalDataNotChecked() {
         mockAllowDeletingBrowserHistoryPref(true);
+        var histogramWatcher = HistogramWatcher.newSingleRecordWatcher(
+                "Signin.UserRequestedWipeDataOnSignout", false);
         showSignOutDialog();
         onView(withId(R.id.remove_local_data)).inRoot(isDialog()).check(matches(isDisplayed()));
 
         onView(withText(R.string.continue_button)).inRoot(isDialog()).perform(click());
 
-        verify(mSigninMetricsUtilsNativeMock)
-                .logProfileAccountManagementMenu(ProfileAccountManagementMetrics.SIGNOUT_SIGNOUT,
-                        GAIAServiceType.GAIA_SERVICE_TYPE_NONE);
+        histogramWatcher.assertExpected();
         verify(mListenerMock).onSignOutClicked(false);
     }
 
@@ -235,14 +229,14 @@ public class SignOutDialogTest {
     @MediumTest
     public void testPositiveButtonWhenAccountIsNotManagedAndRemoveLocalDataChecked() {
         mockAllowDeletingBrowserHistoryPref(true);
+        var histogramWatcher = HistogramWatcher.newSingleRecordWatcher(
+                "Signin.UserRequestedWipeDataOnSignout", true);
         showSignOutDialog();
 
         onView(withId(R.id.remove_local_data)).inRoot(isDialog()).perform(click());
         onView(withText(R.string.continue_button)).inRoot(isDialog()).perform(click());
 
-        verify(mSigninMetricsUtilsNativeMock)
-                .logProfileAccountManagementMenu(ProfileAccountManagementMetrics.SIGNOUT_SIGNOUT,
-                        GAIAServiceType.GAIA_SERVICE_TYPE_NONE);
+        histogramWatcher.assertExpected();
         verify(mListenerMock).onSignOutClicked(true);
     }
 
@@ -256,9 +250,6 @@ public class SignOutDialogTest {
         onView(withText(R.string.cancel)).inRoot(isDialog()).perform(click());
 
         verify(mListenerMock, never()).onSignOutClicked(anyBoolean());
-        verify(mSigninMetricsUtilsNativeMock)
-                .logProfileAccountManagementMenu(ProfileAccountManagementMetrics.SIGNOUT_CANCEL,
-                        GAIAServiceType.GAIA_SERVICE_TYPE_NONE);
     }
 
     @Test
@@ -270,9 +261,6 @@ public class SignOutDialogTest {
         onView(withText(R.string.cancel)).inRoot(isDialog()).perform(click());
 
         verify(mListenerMock, never()).onSignOutClicked(anyBoolean());
-        verify(mSigninMetricsUtilsNativeMock)
-                .logProfileAccountManagementMenu(ProfileAccountManagementMetrics.SIGNOUT_CANCEL,
-                        GAIAServiceType.GAIA_SERVICE_TYPE_NONE);
     }
 
     @Test
@@ -284,9 +272,6 @@ public class SignOutDialogTest {
         onView(isRoot()).perform(pressBack());
 
         verify(mListenerMock, never()).onSignOutClicked(anyBoolean());
-        verify(mSigninMetricsUtilsNativeMock)
-                .logProfileAccountManagementMenu(ProfileAccountManagementMetrics.SIGNOUT_CANCEL,
-                        GAIAServiceType.GAIA_SERVICE_TYPE_NONE);
     }
 
     private void showSignOutDialog() {
@@ -295,9 +280,6 @@ public class SignOutDialogTest {
                     mActivityTestRule.getActivity().getModalDialogManager(), mListenerMock,
                     ActionType.CLEAR_PRIMARY_ACCOUNT, GAIAServiceType.GAIA_SERVICE_TYPE_NONE);
         });
-        verify(mSigninMetricsUtilsNativeMock)
-                .logProfileAccountManagementMenu(ProfileAccountManagementMetrics.TOGGLE_SIGNOUT,
-                        GAIAServiceType.GAIA_SERVICE_TYPE_NONE);
     }
 
     private void mockAllowDeletingBrowserHistoryPref(boolean value) {

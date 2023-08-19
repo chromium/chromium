@@ -48,9 +48,6 @@ class MediaSessionPlayerObserver {
   // The given |player_id| has been requested picture-in-picture.
   virtual void OnEnterPictureInPicture(int player_id) = 0;
 
-  // The given |player_id| has been requested to exit picture-in-picture.
-  virtual void OnExitPictureInPicture(int player_id) = 0;
-
   // The given |player_id| has been requested to route audio output to the
   // specified audio device.
   virtual void OnSetAudioSinkId(int player_id,

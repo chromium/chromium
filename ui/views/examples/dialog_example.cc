@@ -43,6 +43,8 @@ class DialogExample::Delegate : public virtual DialogType {
                                    parent_->ok_button_label_->GetText());
     DialogDelegate::SetButtonLabel(ui::DIALOG_BUTTON_CANCEL,
                                    parent_->cancel_button_label_->GetText());
+    DialogDelegate::SetCloseCallback(base::BindRepeating(
+        &DialogExample::OnCloseCallback, base::Unretained(parent_)));
     WidgetDelegate::SetModalType(parent_->GetModalType());
   }
 
@@ -249,6 +251,10 @@ int DialogExample::GetDialogButtons() const {
   return buttons;
 }
 
+void DialogExample::OnCloseCallback() {
+  AllowDialogClose(false);
+}
+
 bool DialogExample::AllowDialogClose(bool accept) {
   PrintStatus("Dialog closed with %s.", accept ? "Accept" : "Cancel");
   last_dialog_ = nullptr;
@@ -285,7 +291,7 @@ void DialogExample::ShowButtonPressed() {
 
     // constrained_window::CreateBrowserModalDialogViews() allows dialogs to
     // be created as MODAL_TYPE_WINDOW without specifying a parent.
-    gfx::NativeView parent = nullptr;
+    gfx::NativeView parent = gfx::NativeView();
     if (mode_->GetSelectedIndex() != kFakeModeless)
       parent = example_view()->GetWidget()->GetNativeView();
 

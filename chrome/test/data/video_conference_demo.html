@@ -25,7 +25,7 @@
             audio_track.stop();
         }
         async function startScreenSharing() {
-            let stream = await navigator.mediaDevices.getDisplayMedia({ preferCurrentTab: true })
+            let stream = await navigator.mediaDevices.getDisplayMedia({video: true});
             screen_track = stream.getTracks()[0]
         }
         function stopScreenSharing() {

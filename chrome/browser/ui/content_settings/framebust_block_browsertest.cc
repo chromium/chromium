@@ -145,7 +145,7 @@ class FramebustBlockBrowserTest
   absl::optional<size_t> clicked_index_;
 
   base::OnceClosure blocked_url_added_closure_;
-  raw_ptr<Browser, DanglingUntriaged> current_browser_;
+  raw_ptr<Browser, AcrossTasksDanglingUntriaged> current_browser_;
 };
 
 // Tests that clicking an item in the list of blocked URLs trigger a navigation

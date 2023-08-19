@@ -13,19 +13,31 @@ Runs an `archivist-for-embedding` with custom protocol routing for tests
 that want to intercept events written to a `LogSink` by a component.
 
 #### chromium_test_facet.shard.test-cml
-Runs tests in the `chromium` test realm, which is mostly hermetic but has access
-to specific system services that cannot (currently) be faked. For more
+Runs tests in the `chromium` test realm, which is mostly hermetic but has
+access to specific system services that cannot (currently) be faked. For more
 information, see https://fxbug.dev/91934. This is generally required for all
 Chromium tests not using the
 [`chromium_system_test_facet`](#chromium_system_test_facetshardtest-cml).
 
 #### fonts.shard.test-cml
-For tests that test fonts by providing `fuchsia.fonts.Provider`. This shard
-runs an isolated font provider, but serves the fonts present on the system.
+For tests that need `fuchsia.fonts.Provider` to provide a basic set of fonts.
+This shard runs an isolated font provider with fonts bundled into the fonts
+package.
 
 #### test_fonts.shard.test-cml
-For tests that use the fonts in `//third_party/test_fonts` by way of
-`//skia:test_fonts_cfv2`.
+For tests that need `fuchsia.fonts.Provider` to provide a specific set of fonts
+(beyond that provided by `fonts.shard.test-cml`). This shard requires fonts to
+be provided as a directory. The directory must be named `config-data`, must
+contain the file named `all_font_manifest.json`, and all the font files named
+in it. For details see the [font manifest][fm] in Fuchsia documentation.
+
+[fm]: https://fuchsia.dev/fuchsia-src/development/internationalization/fonts/build?hl=en#:font_collection-outputs
+
+The user of this shard must provide a directory `/pkg/test_fonts`, which must
+contain all the files described above.
+
+Within Chromium, these fonts are usually provided via the target
+`//skia:test_fonts`.
 
 #### mark_vmo_executable.shard.test-cml
 Required by tests that execute JavaScript. Should only be required in a small

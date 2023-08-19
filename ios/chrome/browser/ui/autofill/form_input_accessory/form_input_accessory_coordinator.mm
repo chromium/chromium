@@ -6,9 +6,9 @@
 
 #import <vector>
 
+#import "base/apple/foundation_util.h"
 #import "base/functional/bind.h"
 #import "base/ios/ios_util.h"
-#import "base/mac/foundation_util.h"
 #import "base/metrics/histogram_macros.h"
 #import "base/metrics/user_metrics.h"
 #import "base/metrics/user_metrics_action.h"
@@ -42,6 +42,7 @@
 #import "ios/chrome/browser/shared/ui/util/layout_guide_names.h"
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
 #import "ios/chrome/browser/shared/ui/util/util_swift.h"
+#import "ios/chrome/browser/ui/autofill/branding/branding_coordinator.h"
 #import "ios/chrome/browser/ui/autofill/form_input_accessory/form_input_accessory_mediator.h"
 #import "ios/chrome/browser/ui/autofill/form_input_accessory/form_input_accessory_view_controller.h"
 #import "ios/chrome/browser/ui/autofill/manual_fill/address_coordinator.h"
@@ -49,6 +50,7 @@
 #import "ios/chrome/browser/ui/autofill/manual_fill/fallback_view_controller.h"
 #import "ios/chrome/browser/ui/autofill/manual_fill/manual_fill_accessory_view_controller.h"
 #import "ios/chrome/browser/ui/autofill/manual_fill/manual_fill_all_password_coordinator.h"
+#import "ios/chrome/browser/ui/autofill/manual_fill/manual_fill_all_password_coordinator_delegate.h"
 #import "ios/chrome/browser/ui/autofill/manual_fill/manual_fill_injection_handler.h"
 #import "ios/chrome/browser/ui/autofill/manual_fill/manual_fill_password_coordinator.h"
 #import "ios/chrome/browser/ui/bubble/bubble_view_controller_presenter.h"
@@ -58,10 +60,6 @@
 #import "ios/web/public/web_state.h"
 #import "ui/base/device_form_factor.h"
 #import "ui/base/l10n/l10n_util_mac.h"
-
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
 
 namespace {
 // Delay between the time the view is shown, and the time the suggestion label
@@ -83,12 +81,16 @@ const CGFloat kIPHVerticalOffset = -5;
     CardCoordinatorDelegate,
     FormInputAccessoryMediatorHandler,
     ManualFillAccessoryViewControllerDelegate,
+    ManualFillAllPasswordCoordinatorDelegate,
     PasswordCoordinatorDelegate,
     SecurityAlertCommands>
 
 // Coordinator in charge of the presenting password autofill options as a modal.
 @property(nonatomic, strong)
     ManualFillAllPasswordCoordinator* allPasswordCoordinator;
+
+// Coordinator in charge of the keyboar autofill branding.
+@property(nonatomic, strong) BrandingCoordinator* brandingCoordinator;
 
 // The Mediator for the input accessory view controller.
 @property(nonatomic, strong)
@@ -139,6 +141,9 @@ const CGFloat kIPHVerticalOffset = -5;
                              forProtocol:@protocol(SecurityAlertCommands)];
     __weak id<SecurityAlertCommands> securityAlertHandler =
         HandlerForProtocol(dispatcher, SecurityAlertCommands);
+    _brandingCoordinator =
+        [[BrandingCoordinator alloc] initWithBaseViewController:viewController
+                                                        browser:browser];
     _reauthenticationModule = [[ReauthenticationModule alloc] init];
     _injectionHandler = [[ManualFillInjectionHandler alloc]
           initWithWebStateList:browser->GetWebStateList()
@@ -153,9 +158,12 @@ const CGFloat kIPHVerticalOffset = -5;
 }
 
 - (void)start {
+  [self.brandingCoordinator start];
   self.formInputAccessoryViewController =
       [[FormInputAccessoryViewController alloc]
           initWithManualFillAccessoryViewControllerDelegate:self];
+  self.formInputAccessoryViewController.brandingViewController =
+      self.brandingCoordinator.viewController;
 
   LayoutGuideCenter* layoutGuideCenter =
       LayoutGuideCenterForBrowser(self.browser);
@@ -187,8 +195,6 @@ const CGFloat kIPHVerticalOffset = -5;
       reauthenticationModule:self.reauthenticationModule];
   self.formInputAccessoryViewController.formSuggestionClient =
       self.formInputAccessoryMediator;
-  self.formInputAccessoryViewController.brandingViewControllerDelegate =
-      self.formInputAccessoryMediator;
   [self.formInputAccessoryViewController.view
       addGestureRecognizer:self.formInputAccessoryTapRecognizer];
 
@@ -208,8 +214,9 @@ const CGFloat kIPHVerticalOffset = -5;
   [self.formInputAccessoryMediator disconnect];
   self.formInputAccessoryMediator = nil;
 
-  [self.allPasswordCoordinator stop];
-  self.allPasswordCoordinator = nil;
+  [self stopManualFillAllPasswordCoordinator];
+  [self.brandingCoordinator stop];
+  self.brandingCoordinator = nil;
   [self.layoutGuide.owningView removeLayoutGuide:self.layoutGuide];
   self.layoutGuide = nil;
 }
@@ -497,6 +504,17 @@ const CGFloat kIPHVerticalOffset = -5;
 
 #pragma mark - Private
 
+- (void)stopManualFillAllPasswordCoordinator {
+  [self.allPasswordCoordinator stop];
+  self.allPasswordCoordinator.manualFillAllPasswordCoordinatorDelegate = nil;
+  self.allPasswordCoordinator = nil;
+}
+
+- (void)dismissAlertCoordinator {
+  [self.alertCoordinator stop];
+  self.alertCoordinator = nil;
+}
+
 - (ChromeBrowserState*)browserState {
   return self.browser ? self.browser->GetBrowserState() : nullptr;
 }
@@ -535,11 +553,14 @@ const CGFloat kIPHVerticalOffset = -5;
                          browser:self.browser
                            title:title
                          message:message];
+  [self.childCoordinators addObject:self.alertCoordinator];
 
   __weak __typeof__(self) weakSelf = self;
 
   [self.alertCoordinator addItemWithTitle:l10n_util::GetNSString(IDS_CANCEL)
-                                   action:nil
+                                   action:^{
+                                     [weakSelf dismissAlertCoordinator];
+                                   }
                                     style:UIAlertActionStyleCancel];
 
   NSString* actionTitle =
@@ -547,6 +568,7 @@ const CGFloat kIPHVerticalOffset = -5;
   [self.alertCoordinator addItemWithTitle:actionTitle
                                    action:^{
                                      [weakSelf showAllPasswords];
+                                     [weakSelf dismissAlertCoordinator];
                                    }
                                     style:UIAlertActionStyleDefault];
 
@@ -560,6 +582,7 @@ const CGFloat kIPHVerticalOffset = -5;
       initWithBaseViewController:self.baseViewController
                          browser:self.browser
                 injectionHandler:self.injectionHandler];
+  self.allPasswordCoordinator.manualFillAllPasswordCoordinatorDelegate = self;
   [self.allPasswordCoordinator start];
 }
 
@@ -584,7 +607,7 @@ const CGFloat kIPHVerticalOffset = -5;
                       title:nil
                       image:nil
              arrowDirection:BubbleArrowDirectionDown
-                  alignment:BubbleAlignmentLeading
+                  alignment:BubbleAlignmentTopOrLeading
                  bubbleType:BubbleViewTypeWithClose
           dismissalCallback:dismissalCallback];
   bubbleViewControllerPresenter.voiceOverAnnouncement = l10n_util::GetNSString(
@@ -643,6 +666,13 @@ const CGFloat kIPHVerticalOffset = -5;
   [self.bubblePresenter presentInViewController:self.baseViewController
                                            view:self.baseViewController.view
                                     anchorPoint:anchorPoint];
+}
+
+#pragma mark - ManualFillAllPasswordCoordinatorDelegate
+
+- (void)manualFillAllPasswordCoordinatorWantsToBeDismissed:
+    (ManualFillAllPasswordCoordinator*)coordinator {
+  [self stopManualFillAllPasswordCoordinator];
 }
 
 @end

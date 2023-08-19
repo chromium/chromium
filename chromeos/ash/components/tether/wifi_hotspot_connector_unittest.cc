@@ -415,7 +415,8 @@ class WifiHotspotConnectorTest : public testing::Test {
   std::vector<std::string> connection_callback_responses_;
   TestNetworkStateHandlerObserver scan_observer_;
 
-  raw_ptr<base::MockOneShotTimer, ExperimentalAsh> mock_timer_;
+  raw_ptr<base::MockOneShotTimer, DanglingUntriaged | ExperimentalAsh>
+      mock_timer_;
   base::SimpleTestClock test_clock_;
   scoped_refptr<base::TestSimpleTaskRunner> test_task_runner_;
   std::unique_ptr<TestNetworkConnect> test_network_connect_;

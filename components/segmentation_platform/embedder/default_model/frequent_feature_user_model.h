@@ -11,7 +11,7 @@
 namespace segmentation_platform {
 
 // Provides a default model and metadata for the frequent feature user segment.
-class FrequentFeatureUserModel : public ModelProvider {
+class FrequentFeatureUserModel : public DefaultModelProvider {
  public:
   FrequentFeatureUserModel();
   ~FrequentFeatureUserModel() override = default;
@@ -23,11 +23,10 @@ class FrequentFeatureUserModel : public ModelProvider {
   static std::unique_ptr<Config> GetConfig();
 
   // ModelProvider implementation.
-  void InitAndFetchModel(
-      const ModelUpdatedCallback& model_updated_callback) override;
+  std::unique_ptr<ModelConfig> GetModelConfig() override;
+
   void ExecuteModelWithInput(const ModelProvider::Request& inputs,
                              ExecutionCallback callback) override;
-  bool ModelAvailable() override;
 };
 
 }  // namespace segmentation_platform

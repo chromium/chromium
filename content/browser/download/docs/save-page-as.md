@@ -1,6 +1,6 @@
 # High-level overview of Save-Page-As code
 
-This document describes code under `//content/browser/downloads`
+This document describes code under `//content/browser/download`
 restricting the scope only to code handling Save-Page-As functionality
 (i.e. leaving out other downloads-related code).
 This document focuses on high-level overview and aspects of the code that
@@ -113,11 +113,11 @@ Very high-level flow of saving a page as "HTML Only":
 Pointers to related code outside of `//content/browser/download`:
 
 * End-to-end tests:
-    * `//chrome/browser/downloads/save_page_browsertest.cc`
+    * `//chrome/browser/download/save_page_browsertest.cc`
     * `//chrome/test/data/save_page/...`
 
 * Other tests:
-    * `//content/browser/downloads/*test*.cc`
+    * `//content/browser/download/*test*.cc`
     * `//content/renderer/dom_serializer_browsertest.cc` - single process... :-/
 
 * Elsewhere in `//content`:

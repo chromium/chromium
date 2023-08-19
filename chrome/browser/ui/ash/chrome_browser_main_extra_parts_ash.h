@@ -19,6 +19,14 @@ class NightLightClient;
 class VideoConferenceTrayController;
 }  // namespace ash
 
+namespace chromeos::editor_menu {
+class EditorMenuController;
+}  // namespace chromeos::editor_menu
+
+namespace enterprise_connectors {
+class AshAttestationCleanupManager;
+}
+
 namespace game_mode {
 class GameModeController;
 }
@@ -122,6 +130,8 @@ class ChromeBrowserMainExtraPartsAsh : public ChromeBrowserMainExtraParts {
       network_portal_notification_controller_;
   std::unique_ptr<ash::VideoConferenceTrayController>
       video_conference_tray_controller_;
+  std::unique_ptr<enterprise_connectors::AshAttestationCleanupManager>
+      attestation_cleanup_manager_;
 
   std::unique_ptr<internal::ChromeShelfControllerInitializer>
       chrome_shelf_controller_initializer_;
@@ -137,6 +147,8 @@ class ChromeBrowserMainExtraPartsAsh : public ChromeBrowserMainExtraParts {
   std::unique_ptr<AppAccessNotifier> app_access_notifier_;
   std::unique_ptr<policy::DisplaySettingsHandler> display_settings_handler_;
   std::unique_ptr<AshWebViewFactoryImpl> ash_web_view_factory_;
+  std::unique_ptr<chromeos::editor_menu::EditorMenuController>
+      editor_menu_controller_;
 
   // Initialized in PostBrowserStart in all configs:
   std::unique_ptr<MobileDataNotifications> mobile_data_notifications_;

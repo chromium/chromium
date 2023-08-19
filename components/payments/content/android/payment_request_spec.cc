@@ -10,7 +10,7 @@
 #include "base/android/jni_array.h"
 #include "base/android/jni_string.h"
 #include "components/payments/content/android/byte_buffer_helper.h"
-#include "components/payments/content/android/jni_headers/PaymentRequestSpec_jni.h"
+#include "components/payments/content/android/minimal_jni/PaymentRequestSpec_jni.h"
 #include "third_party/blink/public/mojom/payments/payment_request.mojom.h"
 
 namespace payments {

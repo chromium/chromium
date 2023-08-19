@@ -4,10 +4,241 @@
 
 module ash.nearby.presence.mojom;
 
+import "mojo/public/mojom/base/file.mojom";
+import "mojo/public/mojom/base/read_only_file.mojom";
+
+// Request details to be passed to the Presence Library to inform the type of
+// scan to be run.
+struct ScanRequest {
+  string account_name;
+  array<IdentityType> identity_types;
+  array<PresenceScanFilter> scan_filters;
+};
+
+// TODO(b/276642472): Build out StatusCode to match
+// //third_party/abseil-cpp/absl/status/status.h and move it to
+// //mojo/public/mojom/base/ directory.
+enum StatusCode {
+  kOk = 0,
+  kFailure = 1,
+};
+
+// Presence Identity Types used for scanning, values come from
+// //third_party/nearby/src/internal/proto/credential.proto
+enum IdentityType {
+  kIdentityTypeUnspecified = 0,
+  kIdentityTypePrivate = 1,
+  kIdentityTypeTrusted = 2,
+  kIdentityTypePublic = 3,
+  kIdentityTypeProvisioned = 4,
+};
+
+// Private Credential encryption key descriptor, representing PrivateKey from
+// //third_party/nearby/src/internal/proto/local_credential.proto.
+struct PrivateKey {
+  string certificate_alias;
+  array<uint8> key;
+};
+
+// Presence filter used in the ScanRequest to specify the types of devices of
+// interest.
+struct PresenceScanFilter {
+  PresenceDeviceType device_type;
+};
+
+// Possible Presence Scan device types. These are defined in
+// //third_party/src/nearby/internal/proto/metadata.proto and should be kept
+// consistent with the types defined in `DeviceType`.
+enum PresenceDeviceType {
+  // The type of the device found during the scan is unknown.
+  kUnknown = 0,
+  kPhone = 1,
+  kTablet = 2,
+  kDisplay = 3,
+  kLaptop = 4,
+  kTv = 5,
+  kWatch = 6,
+  kChromeos = 7,
+  kFoldable = 8,
+};
+
+// ActionTypes are defined in //third_party/nearby/src/presence/data_element.h
+// and this enum should be kept consistent with the action types defined there
+// and in //chromeos/ash/components/nearby/presence/nearby_presence_service.h.
+enum ActionType {
+  kActiveUnlockAction = 8,
+  kNearbyShareAction = 9,
+  kInstantTetheringAction = 10,
+  kPhoneHubAction = 11,
+  kPresenceManagerAction = 12,
+  kFinderAction = 13,
+  kFastPairSassAction = 14,
+  kTapToTransferAction = 15,
+  kLastAction,
+};
+
+// Presence Device information to specify the device information when a device
+// is found/lost/changed during a scan.
+struct PresenceDevice {
+  string endpoint_id;
+  string device_name;
+  PresenceDeviceType device_type;
+  array<ActionType> actions;
+  string? stable_device_id;
+};
+
+// The metadata of a device. This struct represents
+// //third_party/nearby/src/internal/proto/metadata.proto.
+struct Metadata {
+  // The type of the device.
+  PresenceDeviceType device_type;
+  // The account name of the account who owns the device.
+  string account_name;
+  // The name of the local device to be returned through credentials.
+  string device_name;
+  // The name of the user who owns the device.
+  string user_name;
+  // The profile url of the device.
+  string device_profile_url;
+  // The Bluetooth MAC address of the device.
+  array<uint8> bluetooth_mac_address;
+};
+
+// The Nearby Presence library is responsible for generating and storing Shared
+// Credentials for the local device and remote devices. These credentials
+// are generated using information provided by ChromeOS. ChromeOS is responsible
+// for:
+//    1. Retrieving the local device's Shared Credentials from the Nearby
+//       Presence library and uploading them to the Nearby Presence server.
+//    2. Downloading remote devices' Shared Credentials from the Nearby Presence
+//       server and and saving them to the Nearby Presence library.
+//    3. Triggering (re)generation of Shared Credentials for the local device if
+//       device metadata changes.
+// The Nearby Presence library uses the Shared Credentials for decrypting
+// nearby devices' advertisements. This struct represents
+// //third_party/nearby/src/internal/proto/credential.proto.
+struct SharedCredential {
+  // The randomly generated unique id of the public credential.
+  array<uint8> secret_id;
+  // 32 bytes of secure random bytes used to derive any symmetric keys needed.
+  array<uint8, 32> key_seed;
+  // The time in millis from epoch when this credential becomes effective.
+  int64 start_time_millis;
+  // The time in millis from epoch when this credential expires.
+  int64 end_time_millis;
+  // The encrypted Metadata in bytes. Encrypted either by the v0 or v1
+  // metadata_encryption_key.
+  array<uint8> encrypted_metadata_bytes;
+  // The tag for verifying metadata_encryption_key.
+  array<uint8> metadata_encryption_key_tag;
+  // The public key is used to create a secure connection with the device.
+  array<uint8> connection_signature_verification_key;
+  // The public key is used to verify Advertisement Signature in BT5.0 (v1)
+  // specs.
+  array<uint8> advertisement_signature_verification_key;
+  // The trust type assigned to the credential. The credential is only
+  // accessible to contacts assigned with the same token. This field is only
+  // visible to the generating device and the server for distribution/provision
+  // purposes. Tokens are abstracted (with unnecessary details being removed)
+  // when returned to downloading devices.
+  IdentityType identity_type;
+  // The version number of this SharedCredential, matches the corresponding
+  // protocol version.
+  array<uint8> version;
+};
+
+// Local Credentials are stored on device, and are used to encrypt and salt
+// Nearby Presence advertisements. This struct represents
+// //third_party/nearby/src/internal/proto/local_credential.proto.
+struct LocalCredential {
+  // The unique id of (and hashed based on) a pair of Secret Key and
+  // X509Certificate's public key.
+  array<uint8> secret_id;
+  // Bytes representation of an AES Key owned by local device, to encrypt
+  // local device metadata.
+  array<uint8> key_seed;
+    // The time in millis from epoch when this credential becomes effective.
+  int64 start_time_millis;
+  // The 14 bytes aes key to encrypt metadata in SharedCredential.
+  array<uint8> metadata_encryption_key_v0;
+  // Used for signing advertisement.
+  PrivateKey advertisement_signing_key;
+  // Used for connection authentication.
+  PrivateKey connection_signing_key;
+  // The trust type assigned to the credential.
+  IdentityType identity_type;
+  // The set of 2-byte salts already used to encrypt the metadata key.
+  map<uint32, bool> consumed_salts;
+  // The 16 bytes aes key to encrypt metadata in SharedCredential.
+  array<uint8> metadata_encryption_key_v1;
+};
+
+// Intentionally left empty. The ScanSession remote is used by the client
+// application to alert when to stop a scan session. The client application
+// simply releases the ScanSession pointer to notify the utility process.
+interface ScanSession {};
+
+// Interface for the Presence Library to notify the client applications of
+// device updates.
+interface ScanObserver {
+  // Method for notifying that a device was found.
+  OnDeviceFound(PresenceDevice device);
+
+  // Method for notifying that a previously found device has new information
+  // available.
+  OnDeviceChanged(PresenceDevice device);
+
+  // Method for notify that a previously found device has been lost.
+  OnDeviceLost(PresenceDevice device);
+};
+
 // Main interface to control the NearbyPresence library. Implemented in a
 // sandboxed process. This interface is used by the NearbyPresenceService
 // running in the browser process to discover devices.
 interface NearbyPresence {
-// TODO(b/276642472): Add StartScan method and other related data structures as
-// detailed in go/cros-nearby-presence-service.
+  // Starts a scan for Nearby Presence devices. Multiple scans can be ongoing
+  // at the same time.
+  // scan_request    - Specifics of the scan used to determine what types of
+  //                   devices are being scanned for.
+  // scan_observer - Pending remote for the utility process to call with
+  //                   scan results.
+  StartScan(ScanRequest scan_request)
+      => (pending_remote<ScanSession>? scan_session, StatusCode status);
+
+  // Sets the scan observer for the utility process to use to pass devices
+  // back to the browser process.
+  SetScanObserver(pending_remote<ScanObserver> scan_observer);
+
+  // Updates the `metadata` used in the Nearby Presence library. The NP library
+  // requires `metadata` to be set on startup since the library does not persist
+  // the `metadata`, and requires this function call to access the `metadata`,
+  // from which point the library will store in memory to be used throughout
+  // its lifetime. Does NOT (re)generate credentials.
+  UpdateLocalDeviceMetadata(Metadata metadata);
+
+  // Updates the `metadata` used in the Nearby Presence library. The NP library
+  // requires `metadata` to be set on startup since the library does not persist
+  // the `metadata`, and requires this function call to access the `metadata`,
+  // from which point the library will store in memory to be used throughout
+  // its lifetime. Additionally, should be called whenever user metadata
+  // changes (e.g., user name change).
+  //
+  // Also (re)generates user's private and public credentials based on
+  // `metadata`. The generated private credentials will be saved to credentials
+  // storage, and the generated public credentials will be returned inside the
+  // callback for CrOS to upload to the web.
+  UpdateLocalDeviceMetadataAndGenerateCredentials(Metadata metadata)
+      => (array<SharedCredential> shared_credentials, StatusCode status);
+
+  // Updates the remote shared credentials downloaded from the NP server stored
+  // in the NP library.
+  UpdateRemoteSharedCredentials(array<SharedCredential> shared_credentials,
+                                string account_name)
+      => (StatusCode status);
+
+  // Retrieves the local shared credentials saved and generated by the NP
+  // library. Upon return, these will be uploaded to the NP server if they
+  // have changed.
+  GetLocalSharedCredentials(string account_name)
+      => (array<SharedCredential> shared_credentials, StatusCode status);
 };

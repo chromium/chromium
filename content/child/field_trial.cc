@@ -31,11 +31,10 @@ void InitializeFieldTrialAndFeatureList() {
   std::ignore = leaked_field_trial_list;
 
   // Ensure any field trials in browser are reflected into the child process.
-  base::FieldTrialList::CreateTrialsFromCommandLine(command_line,
-                                                    kFieldTrialDescriptor);
+  base::FieldTrialList::CreateTrialsInChildProcess(command_line,
+                                                   kFieldTrialDescriptor);
   std::unique_ptr<base::FeatureList> feature_list(new base::FeatureList);
-  base::FieldTrialList::CreateFeaturesFromCommandLine(command_line,
-                                                      feature_list.get());
+  base::FieldTrialList::ApplyFeatureOverridesInChildProcess(feature_list.get());
   // TODO(crbug.com/988603): This may be redundant. The way this is supposed to
   // work is that the parent process's state should be passed via command-line
   // to the child process, such that a feature explicitly enabled or disabled in

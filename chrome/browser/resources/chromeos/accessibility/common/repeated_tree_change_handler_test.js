@@ -10,6 +10,7 @@ AccessibilityExtensionRepeatedTreeChangeHandlerTest =
     class extends CommonE2ETestBase {
   /** @override */
   async setUpDeferred() {
+    await super.setUpDeferred();
     await importModule(
         'RepeatedTreeChangeHandler', '/common/repeated_tree_change_handler.js');
   }

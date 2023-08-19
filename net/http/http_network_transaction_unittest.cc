@@ -374,6 +374,7 @@ class SingleProxyDelegate : public ProxyDelegate {
 
   // ProxyDelegate implementation:
   void OnResolveProxy(const GURL& url,
+                      const GURL& top_frame_url,
                       const std::string& method,
                       const ProxyRetryInfoMap& proxy_retry_info,
                       ProxyInfo* result) override {
@@ -16470,6 +16471,7 @@ TEST_F(HttpNetworkTransactionTest, ProxyGet) {
   EXPECT_EQ(200, response->headers->response_code());
   EXPECT_EQ(100, response->headers->GetContentLength());
   EXPECT_TRUE(response->was_fetched_via_proxy);
+  EXPECT_FALSE(response->was_ip_protected);
   EXPECT_EQ(ProxyServer(ProxyServer::SCHEME_HTTP,
                         HostPortPair::FromString("myproxy:70")),
             response->proxy_server);
@@ -24105,6 +24107,56 @@ TEST_F(HttpNetworkTransactionTest, RequestWithNoAdditionalDnsAliases) {
   // Verify that the alias list was stored in the response info as expected.
   ASSERT_TRUE(response);
   EXPECT_THAT(response->dns_aliases, testing::ElementsAre("www.example.org"));
+}
+
+// Test behavior of SetProxyInfoInResponse with a direct connection.
+TEST_F(HttpNetworkTransactionTest, SetProxyInfoInResponse_Direct) {
+  ProxyInfo proxy_info;
+  proxy_info.UseDirect();
+  HttpResponseInfo response_info;
+  HttpNetworkTransaction::SetProxyInfoInResponse(proxy_info, &response_info);
+  EXPECT_EQ(response_info.was_fetched_via_proxy, false);
+  EXPECT_EQ(response_info.was_ip_protected, false);
+  EXPECT_EQ(response_info.proxy_server, ProxyServer::Direct());
+}
+
+// Test behavior of SetProxyInfoInResponse with a proxied connection.
+TEST_F(HttpNetworkTransactionTest, SetProxyInfoInResponse_Proxied) {
+  ProxyInfo proxy_info;
+  ProxyServer proxy_server =
+      ProxyServer::FromSchemeHostAndPort(ProxyServer::SCHEME_HTTPS, "prx", 443);
+  proxy_info.UseProxyServer(proxy_server);
+  HttpResponseInfo response_info;
+  HttpNetworkTransaction::SetProxyInfoInResponse(proxy_info, &response_info);
+  EXPECT_EQ(response_info.was_fetched_via_proxy, true);
+  EXPECT_EQ(response_info.was_ip_protected, false);
+  EXPECT_EQ(response_info.proxy_server, proxy_server);
+}
+
+// Test behavior of SetProxyInfoInResponse with an empty ProxyInfo.
+TEST_F(HttpNetworkTransactionTest, SetProxyInfoInResponse_Empty) {
+  ProxyInfo empty_proxy_info;
+  HttpResponseInfo response_info;
+  HttpNetworkTransaction::SetProxyInfoInResponse(empty_proxy_info,
+                                                 &response_info);
+  EXPECT_EQ(response_info.was_fetched_via_proxy, true);
+  EXPECT_EQ(response_info.was_ip_protected, false);
+  EXPECT_FALSE(response_info.proxy_server.is_valid());
+}
+
+// Test behavior of SetProxyInfoInResponse with a proxied connection for IP
+// protection.
+TEST_F(HttpNetworkTransactionTest, SetProxyInfoInResponse_IpProtection) {
+  ProxyInfo proxy_info;
+  ProxyServer proxy_server =
+      ProxyServer::FromSchemeHostAndPort(ProxyServer::SCHEME_HTTPS, "prx", 443);
+  proxy_info.UseProxyServer(proxy_server);
+  proxy_info.set_is_for_ip_protection(true);
+  HttpResponseInfo response_info;
+  HttpNetworkTransaction::SetProxyInfoInResponse(proxy_info, &response_info);
+  EXPECT_EQ(response_info.was_fetched_via_proxy, true);
+  EXPECT_EQ(response_info.was_ip_protected, true);
+  EXPECT_EQ(response_info.proxy_server, proxy_server);
 }
 
 }  // namespace net

@@ -243,7 +243,8 @@ class IpcDesktopEnvironmentTest : public testing::Test {
   std::string client_jid_;
 
   // Clipboard stub that receives clipboard events from the desktop process.
-  raw_ptr<protocol::ClipboardStub, DanglingUntriaged> clipboard_stub_;
+  raw_ptr<protocol::ClipboardStub, AcrossTasksDanglingUntriaged>
+      clipboard_stub_;
 
   // The daemons's end of the daemon-to-desktop channel.
   std::unique_ptr<IPC::ChannelProxy> desktop_channel_;
@@ -269,7 +270,8 @@ class IpcDesktopEnvironmentTest : public testing::Test {
   std::unique_ptr<DesktopProcess> desktop_process_;
 
   // Input injector owned by |desktop_process_|.
-  raw_ptr<MockInputInjector, DanglingUntriaged> remote_input_injector_;
+  raw_ptr<MockInputInjector, AcrossTasksDanglingUntriaged>
+      remote_input_injector_;
 
   // Will be transferred to the caller of
   // MockDesktopEnvironment::CreateUrlForwarderConfigurator().
@@ -278,7 +280,7 @@ class IpcDesktopEnvironmentTest : public testing::Test {
   // used.
   std::unique_ptr<MockUrlForwarderConfigurator>
       owned_remote_url_forwarder_configurator_;
-  raw_ptr<MockUrlForwarderConfigurator, DanglingUntriaged>
+  raw_ptr<MockUrlForwarderConfigurator, AcrossTasksDanglingUntriaged>
       remote_url_forwarder_configurator_;
   std::unique_ptr<UrlForwarderConfigurator> url_forwarder_configurator_;
 

@@ -65,6 +65,8 @@ COMPONENT_EXPORT(ASSISTANT_SERVICE_PUBLIC)
 extern const char kAssistantOnboardingMode[];
 COMPONENT_EXPORT(ASSISTANT_SERVICE_PUBLIC)
 extern const char kAssistantVoiceMatchEnabledDuringOobe[];
+COMPONENT_EXPORT(ASSISTANT_SERVICE_PUBLIC)
+extern const char kAssistantNumFailuresSinceLastServiceRun[];
 
 // Registers Assistant specific profile preferences for browser prefs.
 COMPONENT_EXPORT(ASSISTANT_SERVICE_PUBLIC)

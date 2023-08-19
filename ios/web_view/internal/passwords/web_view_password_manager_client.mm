@@ -26,10 +26,6 @@
 #include "net/cert/cert_status_flags.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 using password_manager::PasswordFormManagerForUI;
 using password_manager::PasswordManagerMetricsRecorder;
 using password_manager::PasswordStore;
@@ -310,11 +306,6 @@ bool WebViewPasswordManagerClient::IsIsolationForPasswordSitesEnabled() const {
 
 bool WebViewPasswordManagerClient::IsNewTabPage() const {
   return false;
-}
-
-password_manager::FieldInfoManager*
-WebViewPasswordManagerClient::GetFieldInfoManager() const {
-  return nullptr;
 }
 
 safe_browsing::PasswordProtectionService*

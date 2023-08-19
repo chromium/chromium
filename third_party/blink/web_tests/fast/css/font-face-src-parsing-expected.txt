@@ -21,6 +21,11 @@ Valid rules form the stylesheet:
 @font-face { src: local("w\\d w"); }
 @font-face { src: local(" x x\\9 x "); }
 @font-face { src: local("y y\\9 y"); }
+@font-face { src: url("font.ttf"); }
+@font-face { src: url("font.ttf"), local("font2"); }
+@font-face { src: local("font"); }
+@font-face { src: url("font.ttf"); }
+@font-face { src: url("foo.ttf"); }
 
 
 Expected result for valid rules:
@@ -45,6 +50,11 @@ Expected result for valid rules:
 @font-face { src: local("w\d w"); }
 @font-face { src: local(" x x\9 x "); }
 @font-face { src: local("y y\9 y"); }
+@font-face { src: url("font.ttf"); }
+@font-face { src: url("font.ttf"), local("font2"); }
+@font-face { src: local("font"); }
+@font-face { src: url("font.ttf"); }
+@font-face { src: url("foo.ttf"); }
 
 
 Invalid rules form the stylesheet:
@@ -56,16 +66,10 @@ Invalid rules form the stylesheet:
 @font-face { }
 @font-face { }
 @font-face { }
-@font-face { }
-@font-face { }
-@font-face { }
-@font-face { }
-@font-face { }
 
 
 Expected result for invalid rules:
 
-@font-face { }
 @font-face { }
 @font-face { }
 @font-face { }

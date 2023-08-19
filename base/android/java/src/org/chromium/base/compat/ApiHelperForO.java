@@ -19,7 +19,6 @@ import android.content.pm.PackageManager;
 import android.content.res.Configuration;
 import android.net.ConnectivityManager;
 import android.net.ConnectivityManager.NetworkCallback;
-import android.net.NetworkRequest;
 import android.os.Build;
 import android.os.Handler;
 import android.view.Display;
@@ -99,15 +98,6 @@ public final class ApiHelperForO {
         if (afm != null) {
             afm.notifyValueChanged(view);
         }
-    }
-
-    /**
-     * See {@link ConnectivityManager#registerNetworkCallback(NetworkRequest,
-     * ConnectivityManager.NetworkCallback, Handler) }.
-     */
-    public static void registerNetworkCallback(ConnectivityManager connectivityManager,
-            NetworkRequest networkRequest, NetworkCallback networkCallback, Handler handler) {
-        connectivityManager.registerNetworkCallback(networkRequest, networkCallback, handler);
     }
 
     /** See {@link ValueAnimator#areAnimatorsEnabled()}. */

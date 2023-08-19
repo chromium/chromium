@@ -287,26 +287,10 @@ bool HQPAlsoDoHUPLikeScoring();
 bool HUPSearchDatabase();
 
 // ---------------------------------------------------------
-// For the aggressive keyword matching experiment that's part of the bundled
-// omnibox field trial.
-
-// One function is missing from here to avoid a cyclic dependency
-// between search_engine and omnibox. In the search_engine component
-// there is a OmniboxFieldTrialKeywordRequiresRegistry function
-// that logically should be here.
-//
-// It returns whether KeywordProvider should consider the registry portion
-// (e.g., co.uk) of keywords that look like hostnames as an important part of
-// the keyword name for matching purposes.  Returns true if the experiment
-// isn't active.
-
-// Returns the relevance score that KeywordProvider should assign to keywords
-// with sufficiently-complete matches, i.e., the user has typed all of the
-// important part of the keyword.  Returns -1 if the experiment isn't active.
-int KeywordScoreForSufficientlyCompleteMatch();
-
-// ---------------------------------------------------------
 // For UI experiments.
+
+// Returns true if the OmniboxActionsUISimplification feature is enabled.
+bool IsActionsUISimplificationEnabled();
 
 // Returns true if the fuzzy URL suggestions feature is enabled.
 bool IsFuzzyUrlSuggestionsEnabled();
@@ -349,10 +333,6 @@ bool ShouldEncodeLeadingSpaceForOnDeviceTailSuggest();
 // Functions can be used in both non-incognito and incognito.
 std::string OnDeviceHeadModelLocaleConstraint(bool is_incognito);
 
-// If true, enables a "starter pack" of @history, @bookmarks, and @settings
-// scopes for Site Search.
-bool IsSiteSearchStarterPackEnabled();
-
 // Omnibox UI Simplification - Square icon backgrounds.
 // Blue rounded rect background icons for answers e.g. '1+1' and 'define x'.
 // Does not apply to weather answers. Also updates the shade of blue and the
@@ -377,13 +357,20 @@ extern const base::FeatureParam<int> kSuggestionRowHeight;
 // suggestions.
 extern const base::FeatureParam<int> kRichSuggestionVerticalMargin;
 
-// Omnibox GM3 - icons.
-// Returns true if the feature to enable GM3 icons is enabled.
+// Omnibox CR23 - icons.
+// Returns true if the feature to enable CR23 icons is enabled.
 bool IsChromeRefreshIconsEnabled();
-
 // Omnibox CR23 - suggestion icons.
 // Returns true if the feature to enable CR23 suggestion icons is enabled.
 bool IsChromeRefreshSuggestIconsEnabled();
+// Omnibox CR23 - action chip icons.
+// Returns true if the feature to enable CR23 action chip icons is enabled.
+bool IsChromeRefreshActionChipIconsEnabled();
+
+// Omnibox CR23 - suggestion hover fill shape.
+// Returns true if the feature to enable CR23 suggestion hover fill shape is
+// enabled.
+bool IsChromeRefreshSuggestHoverFillShapeEnabled();
 
 // Omnibox GM3 - text style.
 // Returns true if the feature to enable GM3 text styling is enabled.
@@ -396,6 +383,11 @@ extern const base::FeatureParam<int> kFontSizeNonTouchUI;
 // Omnibox CR23 - layout.
 // Returns true if `kExpandedLayout` is enabled.
 bool IsCr23LayoutEnabled();
+
+// Omnibox CR23 - steady state background color.
+// Returns true if the feature to enable CR23 omnibox steady state background
+// color is enabled.
+bool IsChromeRefreshSteadyStateBackgroundColorEnabled();
 
 // ---------------------------------------------------------
 // Clipboard URL suggestions:
@@ -426,11 +418,6 @@ extern const char kHQPNumTitleWordsRule[];
 extern const char kHQPAlsoDoHUPLikeScoringRule[];
 extern const char kHUPSearchDatabaseRule[];
 extern const char kPreventUWYTDefaultForNonURLInputsRule[];
-// kKeywordRequiresRegistryRule seemingly has no production uses, but the string
-// is actually used within TemplateURLService as a string to break a circular
-// omnibox -> search_engines -> omnibox dependency.
-extern const char kKeywordRequiresRegistryRule[];
-extern const char kKeywordScoreForSufficientlyCompleteMatchRule[];
 extern const char kHQPAllowDupMatchesForScoringRule[];
 extern const char kEmphasizeTitlesRule[];
 
@@ -510,14 +497,6 @@ bool IsZeroSuggestPrefetchingEnabled();
 bool IsZeroSuggestPrefetchingEnabledInContext(
     metrics::OmniboxEventProto::PageClassification page_classification);
 
-// Shortcut boost
-// The scores to use for boosting search and URL suggestions respectively.
-// Default to 1414 (`kScoreForBestInlineableResult` + 1). Setting to 0 will
-// prevent boosting.
-extern const base::FeatureParam<int> kShortcutBoostSearchScore;
-extern const base::FeatureParam<int> kShortcutBoostUrlScore;
-extern const base::FeatureParam<bool> kShortcutBoostCounterfactual;
-
 // Rich autocompletion.
 bool IsRichAutocompletionEnabled();
 bool RichAutocompletionShowAdditionalText();
@@ -594,6 +573,7 @@ extern const base::FeatureParam<bool> kDomainSuggestionsAlternativeScoring;
 // on the main thread. After that, it can be called from any thread.
 struct MLConfig {
   MLConfig();
+  MLConfig(const MLConfig&);
 
   // If true, logs Omnibox URL scoring signals to OmniboxEventProto.
   // Equivalent to omnibox::kLogUrlScoringSignals.
@@ -611,6 +591,9 @@ struct MLConfig {
   // If true, runs batch ML scoring of URL candidates.
   bool ml_batch_url_scoring{false};
 
+  // If true, runs sync batch ML scoring of URL candidates.
+  bool ml_sync_batch_url_scoring{false};
+
   // If true, runs the ML scoring model but does not assign new relevance scores
   // to the URL suggestions and does not rerank them.
   // Equivalent to OmniboxFieldTrial::kMlUrlScoringCounterfactual.
@@ -618,8 +601,9 @@ struct MLConfig {
 
   // If true, increases the number of candidates the URL autocomplete providers
   // pass to the controller beyond `provider_max_matches`.
-  // Equivalent to OmniboxFieldTrial::kMlUrlScoringIncreaseNumCandidates.
-  bool ml_url_scoring_increase_num_candidates{false};
+  // `ml_url_scoring_max_matches_by_provider` does nothing if this is true.
+  // Equivalent to OmniboxFieldTrial::kMlUrlScoringUnlimitedNumCandidates.
+  bool ml_url_scoring_unlimited_num_candidates{false};
 
   // If true, the ML model only re-scores and re-ranks the final set of matches
   // that would be shown in the legacy scoring system. The full legacy system
@@ -636,6 +620,13 @@ struct MLConfig {
   // If true, creates Omnibox autocompete URL scoring model.
   // Equivalent to omnibox::kUrlScoringModel.
   bool url_scoring_model{false};
+
+  // Sets the maximum matches provided by each provider.  See
+  // `OmniboxFieldTrial::GetProviderMaxMatches()` for more info. When ML Scoring
+  // is enabled, this param takes precedence over
+  // `OmniboxFieldTrial::kUIMaxAutocompleteMatchesByProviderParam`. This param
+  // has no effect if `ml_url_scoring_unlimited_num_candidates` is true.
+  std::string ml_url_scoring_max_matches_by_provider;
 };
 
 // A testing utility class for overriding the current configuration returned
@@ -673,8 +664,10 @@ bool AreScoringSignalsAnnotatorsEnabled();
 // URL suggestions and reranks them.
 bool IsMlUrlScoringEnabled();
 
-// Whether batch ML url scoring is enabled.
-bool IsMlBatchUrlScoringEnabled();
+// If enabled, runs synchronous batch ML scoring to assign new relevance scores
+// to the URL suggestions received in the sync pass of autocomplete and reranks
+// them.
+bool IsMlSyncBatchUrlScoringEnabled();
 
 // If true, runs the ML scoring model but does not assign new relevance scores
 // to URL suggestions.
@@ -682,7 +675,7 @@ bool IsMlUrlScoringCounterfactual();
 
 // If true, increases the number of candidates the url autocomplete providers
 // pass to the controller.
-bool IsMlUrlScoringIncreaseNumCandidatesEnabled();
+bool IsMlUrlScoringUnlimitedNumCandidatesEnabled();
 
 // Whether the URL scoring model is enabled.
 bool IsUrlScoringModelEnabled();
@@ -706,8 +699,15 @@ extern const base::FeatureParam<bool>
 
 // Specify number of additional Related and Trending queries appended to the
 // suggestion list, when the Inspire Me feature is enabled.
-extern const base::FeatureParam<int> kInspireMeAdditionalRelatedQueries;
-extern const base::FeatureParam<int> kInspireMeAdditionalTrendingQueries;
+constexpr base::FeatureParam<int> kInspireMeAdditionalRelatedQueries(
+    &omnibox::kInspireMe,
+    "AdditionalRelatedQueries",
+    0);
+
+constexpr base::FeatureParam<int> kInspireMeAdditionalTrendingQueries(
+    &omnibox::kInspireMe,
+    "AdditionalTrendingQueries",
+    10);
 
 // <- Inspire Me
 // ---------------------------------------------------------

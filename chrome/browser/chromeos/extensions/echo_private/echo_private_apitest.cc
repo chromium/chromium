@@ -121,7 +121,9 @@ class ExtensionEchoPrivateApiTest : public extensions::ExtensionApiTest {
       return false;
     }
 
-    return tab_strip->CloseWebContentsAt(tab_index, 0);
+    int previous_tab_count = tab_strip->count();
+    tab_strip->CloseWebContentsAt(tab_index, 0);
+    return (previous_tab_count - 1) == tab_strip->count();
   }
 
  protected:
@@ -267,19 +269,13 @@ IN_PROC_BROWSER_TEST_F(ExtensionEchoPrivateApiTest,
 }
 
 IN_PROC_BROWSER_TEST_F(ExtensionEchoPrivateApiTest, RemoveEmptyValueDicts) {
-  base::Value::Dict dict;
-
-  base::Value::Dict nested;
-  nested.Set("c", "d");
-  nested.Set("empty_value", base::Value::Dict());
-
-  base::Value::Dict nested_empty;
-  nested_empty.Set("empty_value", base::Value::Dict());
-
-  dict.Set("a", "b");
-  dict.Set("empty", base::Value::Dict());
-  dict.Set("nested", std::move(nested));
-  dict.Set("nested_empty", std::move(nested_empty));
+  auto dict = base::Value::Dict()
+                  .Set("a", "b")
+                  .Set("empty", base::Value::Dict())
+                  .Set("nested", base::Value::Dict().Set("c", "d").Set(
+                                     "empty_value", base::Value::Dict()))
+                  .Set("nested_empty", base::Value::Dict().Set(
+                                           "empty_value", base::Value::Dict()));
 
   // Remove nested dictionaries.
   chromeos::echo_offer::RemoveEmptyValueDicts(dict);

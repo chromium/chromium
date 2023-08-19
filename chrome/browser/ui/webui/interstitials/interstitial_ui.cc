@@ -34,6 +34,7 @@
 #include "components/safe_browsing/content/browser/safe_browsing_blocking_page.h"
 #include "components/safe_browsing/content/browser/ui_manager.h"
 #include "components/safe_browsing/core/browser/db/database_manager.h"
+#include "components/safe_browsing/core/browser/db/v4_protocol_manager_util.h"
 #include "components/security_interstitials/content/bad_clock_blocking_page.h"
 #include "components/security_interstitials/content/blocked_interception_blocking_page.h"
 #include "components/security_interstitials/content/https_only_mode_blocking_page.h"
@@ -321,9 +322,11 @@ CreateSafeBrowsingBlockingPage(content::WebContents* web_contents) {
   resource.threat_type = threat_type;
   resource.render_process_id = primary_main_frame_id.child_id;
   resource.render_frame_id = primary_main_frame_id.frame_routing_id;
-  resource.threat_source = g_browser_process->safe_browsing_service()
-                               ->database_manager()
-                               ->GetThreatSource();
+  resource.threat_source =
+      g_browser_process->safe_browsing_service()
+          ->database_manager()
+          ->GetBrowseUrlThreatSource(
+              safe_browsing::CheckBrowseUrlType::kHashDatabase);
 
   // Normally safebrowsing interstitial types which block the main page load
   // (SB_THREAT_TYPE_URL_MALWARE, SB_THREAT_TYPE_URL_PHISHING, and
@@ -364,9 +367,11 @@ std::unique_ptr<EnterpriseWarnPage> CreateEnterpriseWarnPage(
   resource.threat_type = safe_browsing::SB_THREAT_TYPE_MANAGED_POLICY_WARN;
   resource.render_process_id = primary_main_frame_id.child_id;
   resource.render_frame_id = primary_main_frame_id.frame_routing_id;
-  resource.threat_source = g_browser_process->safe_browsing_service()
-                               ->database_manager()
-                               ->GetThreatSource();
+  resource.threat_source =
+      g_browser_process->safe_browsing_service()
+          ->database_manager()
+          ->GetBrowseUrlThreatSource(
+              safe_browsing::CheckBrowseUrlType::kHashDatabase);
 
   return std::make_unique<EnterpriseWarnPage>(
       ui_manager, web_contents, kRequestUrl,
@@ -413,9 +418,11 @@ CreateSafeBrowsingQuietBlockingPage(content::WebContents* web_contents) {
   resource.threat_type = threat_type;
   resource.render_process_id = primary_main_frame_id.child_id;
   resource.render_frame_id = primary_main_frame_id.frame_routing_id;
-  resource.threat_source = g_browser_process->safe_browsing_service()
-                               ->database_manager()
-                               ->GetThreatSource();
+  resource.threat_source =
+      g_browser_process->safe_browsing_service()
+          ->database_manager()
+          ->GetBrowseUrlThreatSource(
+              safe_browsing::CheckBrowseUrlType::kHashDatabase);
 
   // Normally safebrowsing interstitial types which block the main page load
   // (SB_THREAT_TYPE_URL_MALWARE, SB_THREAT_TYPE_URL_PHISHING, and

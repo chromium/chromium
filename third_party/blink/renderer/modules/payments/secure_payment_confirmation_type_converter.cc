@@ -7,7 +7,9 @@
 #include <cstdint>
 
 #include "base/time/time.h"
+#include "third_party/blink/public/mojom/webauthn/authenticator.mojom-blink.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_union_arraybuffer_arraybufferview.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_authentication_extensions_client_inputs.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_payment_credential_instrument.h"
 #include "third_party/blink/renderer/modules/credentialmanagement/credential_manager_type_converters.h"
 #include "third_party/blink/renderer/platform/weborigin/kurl.h"
@@ -57,6 +59,12 @@ TypeConverter<payments::mojom::blink::SecurePaymentConfirmationRequestPtr,
   output->rp_id = input->rpId();
   if (input->hasPayeeName())
     output->payee_name = input->payeeName();
+
+  if (input->hasExtensions()) {
+    output->extensions =
+        ConvertTo<blink::mojom::blink::AuthenticationExtensionsClientInputsPtr>(
+            *input->extensions());
+  }
 
   output->show_opt_out = input->getShowOptOutOr(false);
 

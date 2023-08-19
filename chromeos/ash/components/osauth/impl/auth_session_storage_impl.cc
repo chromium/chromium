@@ -61,14 +61,28 @@ std::unique_ptr<UserContext> AuthSessionStorageImpl::Borrow(
   CHECK(data_it != std::end(tokens_));
   if (data_it->second->state == TokenState::kBorrowed) {
     LOG(ERROR) << "Context was already borrowed from "
-               << data_it->second->borrow_location.ToString();
+               << data_it->second->borrow_location.ToString()
+               << " when trying to borrow from " << borrow_location.ToString();
   }
-  CHECK(data_it->second->state == TokenState::kOwned);
+  CHECK(data_it->second->state == TokenState::kOwned)
+      << static_cast<int>(data_it->second->state);
   data_it->second->state = TokenState::kBorrowed;
   data_it->second->borrow_location = borrow_location;
 
   CHECK(data_it->second->context);
   return std::move(data_it->second->context);
+}
+
+UserContext* AuthSessionStorageImpl::Peek(const AuthProofToken& token) {
+  auto data_it = tokens_.find(token);
+  CHECK(data_it != std::end(tokens_));
+  if (data_it->second->state == TokenState::kBorrowed) {
+    LOG(ERROR) << "Context was already borrowed from "
+               << data_it->second->borrow_location.ToString();
+  }
+  CHECK(data_it->second->state == TokenState::kOwned);
+  CHECK(data_it->second->context);
+  return data_it->second->context.get();
 }
 
 void AuthSessionStorageImpl::Return(const AuthProofToken& token,

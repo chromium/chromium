@@ -32,10 +32,11 @@ def _SafeRead(path):
 
 @functools.lru_cache
 class _ComponentLookupContext:
-  def __init__(self, source_directory):
+  def __init__(self, source_directory, component_overrides):
     self._mixins_cache = {}
     self._dir_cache = _COMPONENT_DEFAULTS.copy()
     self._source_directory = source_directory
+    self._component_overrides = component_overrides
 
   def ComponentForSourcePath(self, source_path):
     return self._ComponentForDirectory(os.path.dirname(source_path))
@@ -81,9 +82,14 @@ class _ComponentLookupContext:
     if component is not None:
       return component
 
-    metadata_path = os.path.join(self._source_directory, directory,
-                                 _METADATA_FILENAME)
-    result = self._ParseComponentFromMetadata(metadata_path)
+    for prefix, component in self._component_overrides:
+      if directory.startswith(prefix):
+        result = component
+        break
+    else:
+      metadata_path = os.path.join(self._source_directory, directory,
+                                   _METADATA_FILENAME)
+      result = self._ParseComponentFromMetadata(metadata_path)
 
     if not result:
       parent_directory = os.path.dirname(directory)
@@ -94,7 +100,8 @@ class _ComponentLookupContext:
     return result
 
 
-def PopulateComponents(raw_symbols, source_directory, default_component):
+def PopulateComponents(raw_symbols, source_directory, component_overrides,
+                       default_component):
   """Populates the |component| field based on |source_path|.
 
   Symbols without a |source_path| are skipped.
@@ -102,9 +109,11 @@ def PopulateComponents(raw_symbols, source_directory, default_component):
   Args:
     raw_symbols: list of Symbol objects.
     source_directory: Directory to use as the root.
+    component_overrides: Tuple of (source path prefix, component) tuples.
     default_component: Component to use when none was found.
   """
-  context = _ComponentLookupContext(source_directory)
+  # Convert to tuple for lru_cache.
+  context = _ComponentLookupContext(source_directory, component_overrides)
   for symbol in raw_symbols:
     found_component = ''
     if symbol.source_path:

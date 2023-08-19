@@ -12,6 +12,7 @@ import android.os.Environment;
 import android.os.ParcelFileDescriptor;
 import android.os.Process;
 import android.os.RemoteException;
+import android.util.Log;
 
 import androidx.annotation.NonNull;
 import androidx.test.core.app.ApplicationProvider;
@@ -19,7 +20,10 @@ import androidx.test.platform.app.InstrumentationRegistry;
 import androidx.test.uiautomator.UiDevice;
 import androidx.test.uiautomator.UiObject2;
 
-import org.chromium.base.Log;
+import org.hamcrest.Matchers;
+
+import org.chromium.base.test.util.Criteria;
+import org.chromium.base.test.util.CriteriaHelper;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -30,6 +34,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import java.util.concurrent.Callable;
 
 /**
  *  Allows tests to perform UI actions.
@@ -40,6 +45,8 @@ public class UiAutomatorUtils {
     private static final int MAX_SWIPES = 30;
     private static final float DEFAULT_SWIPE_SECONDS_PER_PAGE = 0.2f;
     private static final float DEFAULT_SWIPE_SCREEN_FRACTION = 0.6f;
+    private static final long WAIT_TIMEOUT_MS = 20000L;
+    private static final long UI_CHECK_INTERVAL = 1000L;
     private static final long SHORT_CLICK_DURATION = 10L;
     private static final long LONG_CLICK_DURATION = 1000L;
     // Give applications more time to launch.
@@ -311,6 +318,38 @@ public class UiAutomatorUtils {
             // Just log any errors and move on, testing can still continue.
             Log.e(TAG, "Printing hierarchy", e);
         }
+    }
+
+    public void waitUntilAnyVisible(IUi2Locator... locators) {
+        CriteriaHelper.pollInstrumentationThread(
+                toNotSatisfiedRunnable(
+                        ()
+                                -> {
+                            for (IUi2Locator locator : locators) {
+                                if (mLocatorHelper.isOnScreen(locator)) {
+                                    return true;
+                                }
+                            }
+                            return false;
+                        },
+                        "No Chrome views on screen. (i.e. Chrome has crashed "
+                                + "on startup). Look at earlier logs for the actual "
+                                + "crash stacktrace."),
+                WAIT_TIMEOUT_MS, UI_CHECK_INTERVAL);
+    }
+
+    private static Runnable toNotSatisfiedRunnable(
+            Callable<Boolean> criteria, String failureReason) {
+        return () -> {
+            try {
+                boolean isSatisfied = criteria.call();
+                Criteria.checkThat(failureReason, isSatisfied, Matchers.is(true));
+            } catch (RuntimeException e) {
+                throw e;
+            } catch (Exception e) {
+                throw new RuntimeException(e);
+            }
+        };
     }
 
     private void launchApplication(String packageName, long timeout) {

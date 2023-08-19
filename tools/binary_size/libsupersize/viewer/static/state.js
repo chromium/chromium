@@ -73,10 +73,11 @@ class UiState {
 class QueryParamUiState extends UiState {
   /**
    * @param {string} name
-   * @param {?function(string): StateValue} parser
    * @param {!StateValue} defaultValue
+   * @param {?function(string): StateValue} parser
+   * @param {boolean} isHash
    */
-  constructor(name, defaultValue, parser) {
+  constructor(name, defaultValue, parser, isHash) {
     super(defaultValue);
 
     /** @public @const {string} */
@@ -84,6 +85,9 @@ class QueryParamUiState extends UiState {
 
     /** @private @const {?function(string): StateValue} null = identity. */
     this.parser = parser;
+
+    /** @public @const {boolean} */
+    this.isHash = isHash;
 
     /** @public {string} */
     this.hidden = false;
@@ -124,8 +128,9 @@ class ElementUiState extends QueryParamUiState {
   /**
    * @param {string} name
    * @param {!HasValue} elt
+   * @param {boolean} isHash
    */
-  constructor(name, elt) {
+  constructor(name, elt, isHash) {
     let parser = null;
     let readElt = () => elt.value;
     let writeElt = (v) => {
@@ -178,7 +183,7 @@ class ElementUiState extends QueryParamUiState {
       throw new Error('Unknown element type.');
     }
 
-    super(name, readElt(), parser);
+    super(name, readElt(), parser, isHash);
 
     /** @private @const {function(): StateValue} */
     this.readElt = readElt;
@@ -222,13 +227,14 @@ class MainState {
      * Instantiation helper that also pushes object to |uiStates|.
      * @param {string} name
      * @param {?HasValue} elt
+     * @param {boolean=} isHash
      */
-    const newUiState = (name, elt) => {
+    const newUiState = (name, elt, isHash = false) => {
       if (!elt) {
         // Assume string value with defaultValue == ''.
-        this.uiStates.push(new QueryParamUiState(name, '', null));
+        this.uiStates.push(new QueryParamUiState(name, '', null, isHash));
       } else {
-        this.uiStates.push(new ElementUiState(name, elt));
+        this.uiStates.push(new ElementUiState(name, elt, isHash));
       }
       return this.uiStates[this.uiStates.length - 1];
     };
@@ -269,6 +275,9 @@ class MainState {
     /** @public @const {!ElementUiState} */
     this.stFlagFilter = newUiState(STATE_KEY.FLAG_FILTER, g_el.rnlFlagFilter);
 
+    /** @public @const {!QueryParamUiState} */
+    this.stFocus = newUiState(STATE_KEY.FOCUS, null, true);
+
     /** @private {boolean} */
     this.diffMode = false;
   }
@@ -279,12 +288,15 @@ class MainState {
    * @private
    */
   toString() {
-    const params = new URLSearchParams();
+    const queryParams = new URLSearchParams();
+    const hashParams = new URLSearchParams();
     for (const st of this.uiStates) {
-      st.writeToSearchParams(params);
+      st.writeToSearchParams(st.isHash ? hashParams : queryParams);
     }
-    const queryString = params.toString();
-    return queryString.length > 0 ? `?${queryString}` : '';
+    const queryString = queryParams.toString();
+    const hashString = hashParams.toString();
+    return (queryString.length > 0 ? `?${queryString}` : '') +
+        (hashString.length > 0 ? `#${hashString}` : '');
   }
 
   /** @private */
@@ -361,9 +373,10 @@ class MainState {
 
   /** @public */
   init() {
-    const params = new URLSearchParams(location.search.slice(1));
+    const queryParams = new URLSearchParams(location.search.slice(1));
+    const hashParams = new URLSearchParams(location.hash.slice(1));
     for (const st of this.uiStates) {
-      st.readFromSearchParams(params);
+      st.readFromSearchParams(st.isHash ? hashParams : queryParams);
     }
     // At this point it's possible to update the URL to fix mistakes and
     // canonicalize (e.g., param ordering). However, we choose to NOT do this
@@ -394,6 +407,8 @@ class MainState {
       }
       this.updateUrlParams();
     });
+
+    this.stFocus.addObserver(() => this.updateUrlParams());
   }
 }
 
@@ -496,7 +511,7 @@ function _makeIconTemplateGetter() {
     r: getSymbolIcon('.readonlyicon'),
     t: getSymbolIcon('.codeicon'),
     R: getSymbolIcon('.relroicon'),
-    x: getSymbolIcon('.dexicon'),
+    x: getSymbolIcon('.dexothericon'),
     m: getSymbolIcon('.dexmethodicon'),
     p: getSymbolIcon('.localpakicon'),
     P: getSymbolIcon('.nonlocalpakicon'),
@@ -521,7 +536,7 @@ function _makeIconTemplateGetter() {
   const metricsIcons = {
     group: getSymbolIcon('.groupicon'),  // Reuse.
     elf: getMiscIcon('.elficon'),
-    dex: getSymbolIcon('.dexicon'),    // Reuse.
+    dex: getMiscIcon('.dexicon'),
     arsc: getSymbolIcon('.arscicon'),  // Reuse.
     metrics: getMiscIcon('.metricsicon'),
     other: getSymbolIcon('.othericon'),  // Reuse.

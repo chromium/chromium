@@ -12,10 +12,6 @@
 #import "ios/chrome/common/ui/util/dynamic_type_util.h"
 #import "ios/chrome/common/ui/util/ui_util.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 namespace {
 
 constexpr CGFloat kStepNumberLabelSize = 20;
@@ -235,11 +231,6 @@ UIView* CreateIconView(UIImage* icon) {
   line.tag = index;
   line.accessibilityIdentifier =
       InstructionViewRowAccessibilityIdentifier(index);
-  [line
-      addGestureRecognizer:[[UITapGestureRecognizer alloc]
-                               initWithTarget:self
-                                       action:@selector
-                                       (tappedOnALineWithGestureRecognizer:)]];
   // Don't set the accessibility traits indicating that it is tappable as we do
   // not actually expect any action, instead, we just want to measure how many
   // people believe it’s tappable.
@@ -303,11 +294,6 @@ UIView* CreateIconView(UIImage* icon) {
           [UIColor colorNamed:kPrimaryBackgroundColor].CGColor;
       break;
   }
-}
-
-- (void)tappedOnALineWithGestureRecognizer:
-    (UITapGestureRecognizer*)gestureRecognizer {
-  [self.tapListener tappedOnLineNumber:gestureRecognizer.view.tag];
 }
 
 @end

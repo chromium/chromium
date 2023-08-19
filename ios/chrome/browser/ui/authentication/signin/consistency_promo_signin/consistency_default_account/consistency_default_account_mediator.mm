@@ -6,34 +6,171 @@
 
 #import <UIKit/UIKit.h>
 
+#import "base/feature_list.h"
+#import "components/signin/public/base/signin_metrics.h"
+#import "components/strings/grit/components_strings.h"
+#import "components/sync/base/features.h"
+#import "components/sync/base/user_selectable_type.h"
+#import "components/sync/service/sync_service.h"
+#import "components/sync/service/sync_user_settings.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/signin/chrome_account_manager_service.h"
 #import "ios/chrome/browser/signin/chrome_account_manager_service_observer_bridge.h"
 #import "ios/chrome/browser/signin/system_identity.h"
 #import "ios/chrome/browser/ui/authentication/signin/consistency_promo_signin/consistency_default_account/consistency_default_account_consumer.h"
+#import "ios/chrome/grit/ios_chromium_strings.h"
+#import "ios/chrome/grit/ios_strings.h"
+#import "ui/base/l10n/l10n_util.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
+namespace {
+
+// The label the bottom sheet should display, or nil if there should be none.
+// The label should never promise "sign in to achieve X" if an enterprise
+// policy is preventing X, thus the 2 parameters:
+//   `sync_transport_disabled_by_policy`: Whether the sync-transport layer got
+//   completely nuked by the SyncDisabled policy.
+//   `sync_types_disabled_by_policy`: Any syncer::UserSelectableTypes disabled
+//   via the SyncTypesListDisabled policy.
+// Note: `sync_transport_disabled_by_policy` true is a different product state
+// from `sync_types_disabled_by_policy` containing all controllable types,
+// because some features are not gated behind a user-controllable toggle, e.g.
+// send-tab-to-self. That's why both parameters are required.
+NSString* GetPromoLabelString(
+    signin_metrics::AccessPoint access_point,
+    bool sync_transport_disabled_by_policy,
+    syncer::UserSelectableTypeSet sync_types_disabled_by_policy) {
+  // TODO(crbug.com/1468530): Convert DUMP_WILL_BE_CHECKs to CHECKs (some are
+  // probably failing now).
+  switch (access_point) {
+    case signin_metrics::AccessPoint::ACCESS_POINT_SEND_TAB_TO_SELF_PROMO:
+      // Sign-in shouldn't be offered if the feature doesn't work.
+      DUMP_WILL_BE_CHECK(!sync_transport_disabled_by_policy);
+      return l10n_util::GetNSString(IDS_SEND_TAB_TO_SELF_SIGN_IN_PROMO_LABEL);
+    case signin_metrics::AccessPoint::ACCESS_POINT_NTP_FEED_CARD_MENU_PROMO:
+      // Configuring feed interests is independent of sync.
+      return l10n_util::GetNSString(IDS_IOS_FEED_CARD_SIGN_IN_ONLY_PROMO_LABEL);
+    case signin_metrics::AccessPoint::ACCESS_POINT_WEB_SIGNIN:
+      if (!base::FeatureList::IsEnabled(
+              syncer::kReplaceSyncPromosWithSignInPromos)) {
+        return l10n_util::GetNSString(
+            IDS_IOS_CONSISTENCY_PROMO_DEFAULT_ACCOUNT_LABEL);
+      }
+      // This could check `sync_types_disabled_by_policy` only for the types
+      // mentioned in the regular string, but don't bother.
+      return sync_transport_disabled_by_policy ||
+                     !sync_types_disabled_by_policy.Empty()
+                 ? l10n_util::GetNSString(
+                       IDS_IOS_CONSISTENCY_PROMO_DEFAULT_ACCOUNT_LABEL)
+                 : l10n_util::GetNSString(
+                       IDS_IOS_SIGNIN_SHEET_LABEL_FOR_WEB_SIGNIN);
+    case signin_metrics::AccessPoint::ACCESS_POINT_NTP_SIGNED_OUT_ICON:
+      // This could check `sync_types_disabled_by_policy` only for the types
+      // mentioned in the regular string, but don't bother.
+      return sync_transport_disabled_by_policy ||
+                     !sync_types_disabled_by_policy.Empty()
+                 ? nil
+                 : l10n_util::GetNSString(
+                       IDS_IOS_IDENTITY_DISC_SIGN_IN_PROMO_LABEL);
+    case signin_metrics::AccessPoint::ACCESS_POINT_SET_UP_LIST:
+      // "Sync" is mentioned in the setup list (the card, not this sheet). So it
+      // was easier to hide it than come up with new strings. In the future, we
+      // could tweak the card strings and return nil here.
+      DUMP_WILL_BE_CHECK(!sync_transport_disabled_by_policy &&
+                         sync_types_disabled_by_policy.Empty());
+      return l10n_util::GetNSString(IDS_IOS_IDENTITY_DISC_SIGN_IN_PROMO_LABEL);
+    case signin_metrics::AccessPoint::ACCESS_POINT_NTP_FEED_TOP_PROMO:
+    case signin_metrics::AccessPoint::ACCESS_POINT_NTP_FEED_BOTTOM_PROMO:
+      // Feed personalization is independent of sync.
+      return l10n_util::GetNSString(IDS_IOS_SIGNIN_SHEET_LABEL_FOR_FEED_PROMO);
+    case signin_metrics::AccessPoint::ACCESS_POINT_RECENT_TABS:
+      // Sign-in shouldn't be offered if the feature doesn't work.
+      DUMP_WILL_BE_CHECK(!sync_transport_disabled_by_policy &&
+                         !sync_types_disabled_by_policy.Has(
+                             syncer::UserSelectableType::kTabs));
+      return l10n_util::GetNSString(IDS_IOS_SIGNIN_SHEET_LABEL_FOR_RECENT_TABS);
+    case signin_metrics::AccessPoint::ACCESS_POINT_SETTINGS:
+      // No text.
+      return nil;
+    case signin_metrics::AccessPoint::ACCESS_POINT_START_PAGE:
+    case signin_metrics::AccessPoint::ACCESS_POINT_NTP_LINK:
+    case signin_metrics::AccessPoint::ACCESS_POINT_MENU:
+    case signin_metrics::AccessPoint::ACCESS_POINT_SUPERVISED_USER:
+    case signin_metrics::AccessPoint::ACCESS_POINT_EXTENSION_INSTALL_BUBBLE:
+    case signin_metrics::AccessPoint::ACCESS_POINT_EXTENSIONS:
+    case signin_metrics::AccessPoint::ACCESS_POINT_BOOKMARK_BUBBLE:
+    case signin_metrics::AccessPoint::ACCESS_POINT_BOOKMARK_MANAGER:
+    case signin_metrics::AccessPoint::ACCESS_POINT_AVATAR_BUBBLE_SIGN_IN:
+    case signin_metrics::AccessPoint::ACCESS_POINT_USER_MANAGER:
+    case signin_metrics::AccessPoint::ACCESS_POINT_DEVICES_PAGE:
+    case signin_metrics::AccessPoint::ACCESS_POINT_CLOUD_PRINT:
+    case signin_metrics::AccessPoint::ACCESS_POINT_SIGNIN_PROMO:
+    case signin_metrics::AccessPoint::ACCESS_POINT_UNKNOWN:
+    case signin_metrics::AccessPoint::ACCESS_POINT_PASSWORD_BUBBLE:
+    case signin_metrics::AccessPoint::ACCESS_POINT_AUTOFILL_DROPDOWN:
+    case signin_metrics::AccessPoint::ACCESS_POINT_NTP_CONTENT_SUGGESTIONS:
+    case signin_metrics::AccessPoint::ACCESS_POINT_RESIGNIN_INFOBAR:
+    case signin_metrics::AccessPoint::ACCESS_POINT_TAB_SWITCHER:
+    case signin_metrics::AccessPoint::ACCESS_POINT_MACHINE_LOGON:
+    case signin_metrics::AccessPoint::ACCESS_POINT_GOOGLE_SERVICES_SETTINGS:
+    case signin_metrics::AccessPoint::ACCESS_POINT_SYNC_ERROR_CARD:
+    case signin_metrics::AccessPoint::ACCESS_POINT_FORCED_SIGNIN:
+    case signin_metrics::AccessPoint::ACCESS_POINT_ACCOUNT_RENAMED:
+    case signin_metrics::AccessPoint::ACCESS_POINT_SAFETY_CHECK:
+    case signin_metrics::AccessPoint::ACCESS_POINT_KALEIDOSCOPE:
+    case signin_metrics::AccessPoint::
+        ACCESS_POINT_ENTERPRISE_SIGNOUT_COORDINATOR:
+    case signin_metrics::AccessPoint::
+        ACCESS_POINT_SIGNIN_INTERCEPT_FIRST_RUN_EXPERIENCE:
+    case signin_metrics::AccessPoint::ACCESS_POINT_SETTINGS_SYNC_OFF_ROW:
+    case signin_metrics::AccessPoint::
+        ACCESS_POINT_POST_DEVICE_RESTORE_SIGNIN_PROMO:
+    case signin_metrics::AccessPoint::
+        ACCESS_POINT_POST_DEVICE_RESTORE_BACKGROUND_SIGNIN:
+    case signin_metrics::AccessPoint::ACCESS_POINT_DESKTOP_SIGNIN_MANAGER:
+    case signin_metrics::AccessPoint::ACCESS_POINT_FOR_YOU_FRE:
+    case signin_metrics::AccessPoint::ACCESS_POINT_CREATOR_FEED_FOLLOW:
+    case signin_metrics::AccessPoint::ACCESS_POINT_READING_LIST:
+    case signin_metrics::AccessPoint::ACCESS_POINT_REAUTH_INFO_BAR:
+    case signin_metrics::AccessPoint::ACCESS_POINT_ACCOUNT_CONSISTENCY_SERVICE:
+    case signin_metrics::AccessPoint::ACCESS_POINT_SEARCH_COMPANION:
+    case signin_metrics::AccessPoint::
+        ACCESS_POINT_PASSWORD_MIGRATION_WARNING_ANDROID:
+      // Nothing prevents instantiating ConsistencyDefaultAccountViewController
+      // with an arbitrary entry point, API-wise. In doubt, no label is a good,
+      // generic default that fits all entry points.
+      return nil;
+    case signin_metrics::AccessPoint::ACCESS_POINT_MAX:
+      NOTREACHED_NORETURN();
+  }
+}
+
+}  // namespace
 
 @interface ConsistencyDefaultAccountMediator () <
     ChromeAccountManagerServiceObserver> {
   std::unique_ptr<ChromeAccountManagerServiceObserverBridge>
       _accountManagerServiceObserver;
+  signin_metrics::AccessPoint _accessPoint;
 }
 
 @property(nonatomic, strong) UIImage* avatar;
 @property(nonatomic, assign) ChromeAccountManagerService* accountManagerService;
+@property(nonatomic, assign) syncer::SyncService* syncService;
 
 @end
 
 @implementation ConsistencyDefaultAccountMediator
 
 - (instancetype)initWithAccountManagerService:
-    (ChromeAccountManagerService*)accountManagerService {
+                    (ChromeAccountManagerService*)accountManagerService
+                                  syncService:(syncer::SyncService*)syncService
+                                  accessPoint:
+                                      (signin_metrics::AccessPoint)accessPoint {
   if (self = [super init]) {
     DCHECK(accountManagerService);
     _accountManagerService = accountManagerService;
+    _syncService = syncService;
+    _accessPoint = accessPoint;
     _accountManagerServiceObserver =
         std::make_unique<ChromeAccountManagerServiceObserverBridge>(
             self, _accountManagerService);
@@ -54,6 +191,28 @@
 
 - (void)setConsumer:(id<ConsistencyDefaultAccountConsumer>)consumer {
   _consumer = consumer;
+
+  syncer::UserSelectableTypeSet disabledTypes;
+  syncer::SyncUserSettings* syncSettings = _syncService->GetUserSettings();
+  for (syncer::UserSelectableType type :
+       syncSettings->GetRegisteredSelectableTypes()) {
+    if (syncSettings->IsTypeManagedByPolicy(type)) {
+      disabledTypes.Put(type);
+    }
+  }
+  NSString* labelText = GetPromoLabelString(
+      _accessPoint,
+      _syncService->HasDisableReason(
+          syncer::SyncService::DISABLE_REASON_ENTERPRISE_POLICY),
+      disabledTypes);
+  [_consumer setLabelText:labelText];
+
+  NSString* skipButtonText =
+      _accessPoint == signin_metrics::AccessPoint::ACCESS_POINT_WEB_SIGNIN
+          ? l10n_util::GetNSString(IDS_IOS_CONSISTENCY_PROMO_SKIP)
+          : l10n_util::GetNSString(IDS_CANCEL);
+  [_consumer setSkipButtonText:skipButtonText];
+
   [self selectSelectedIdentity];
 }
 

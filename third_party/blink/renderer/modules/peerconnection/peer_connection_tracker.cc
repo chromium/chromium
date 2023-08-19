@@ -1052,10 +1052,40 @@ void PeerConnectionTracker::TrackCreateDataChannel(
   int id = GetLocalIDForHandler(pc_handler);
   if (id == -1)
     return;
-  String value = "label: " + String::FromUTF8(data_channel->label()) +
-                 ", reliable: " + SerializeBoolean(data_channel->reliable());
+  // See https://w3c.github.io/webrtc-pc/#dom-rtcdatachannelinit
+  StringBuilder result;
+  result.Append("label: ");
+  result.Append(String::FromUTF8(data_channel->label()));
+  result.Append(", ordered: ");
+  result.Append(SerializeBoolean(data_channel->ordered()));
+  absl::optional<uint16_t> maxPacketLifeTime =
+      data_channel->maxPacketLifeTime();
+  if (maxPacketLifeTime.has_value()) {
+    result.Append(", maxPacketLifeTime: ");
+    result.Append(String::Number(*maxPacketLifeTime));
+  }
+  absl::optional<uint16_t> maxRetransmits = data_channel->maxRetransmitsOpt();
+  if (maxRetransmits.has_value()) {
+    result.Append(", maxRetransmits: ");
+    result.Append(String::Number(*maxRetransmits));
+  }
+  if (!data_channel->protocol().empty()) {
+    result.Append(", protocol: \"");
+    result.Append(String::FromUTF8(data_channel->protocol()));
+    result.Append("\"");
+  }
+  bool negotiated = data_channel->negotiated();
+  result.Append(", negotiated: ");
+  result.Append(SerializeBoolean(negotiated));
+  if (negotiated) {
+    result.Append(", id: ");
+    result.Append(String::Number(data_channel->id()));
+  }
+  // TODO(crbug.com/1455847): add priority
+  // https://w3c.github.io/webrtc-priority/#new-rtcdatachannelinit-member
   SendPeerConnectionUpdate(
-      id, source == kSourceLocal ? "createDataChannel" : "datachannel", value);
+      id, source == kSourceLocal ? "createDataChannel" : "datachannel",
+      result.ToString());
 }
 
 void PeerConnectionTracker::TrackClose(RTCPeerConnectionHandler* pc_handler) {

@@ -57,7 +57,6 @@ class ControllerDelegate {
   virtual void NotifyRelaunchRecommended() = 0;
   virtual void NotifyRelaunchRequired() = 0;
   virtual void Close() = 0;
-  virtual void SetDeadline(base::Time deadline) = 0;
   virtual void OnRelaunchDeadlineExpired() = 0;
 
  protected:
@@ -99,10 +98,6 @@ class FakeRelaunchNotificationController
 
   void Close() override { delegate_->Close(); }
 
-  void SetDeadline(base::Time deadline) override {
-    delegate_->SetDeadline(deadline);
-  }
-
   void OnRelaunchDeadlineExpired() override {
     delegate_->OnRelaunchDeadlineExpired();
   }
@@ -116,7 +111,6 @@ class MockControllerDelegate : public ControllerDelegate {
   MOCK_METHOD(void, NotifyRelaunchRecommended, (), (override));
   MOCK_METHOD(void, NotifyRelaunchRequired, (), (override));
   MOCK_METHOD(void, Close, (), (override));
-  MOCK_METHOD(void, SetDeadline, (base::Time), (override));
   MOCK_METHOD(void, OnRelaunchDeadlineExpired, (), (override));
 };
 
@@ -977,7 +971,8 @@ class RelaunchNotificationControllerPlatformImplTest : public ::testing::Test {
   content::BrowserTaskEnvironment task_environment_;
   RelaunchNotificationControllerPlatformImpl impl_;
   ash::AshTestHelper ash_test_helper_;
-  raw_ptr<ash::FakeChromeUserManager, ExperimentalAsh> user_manager_;
+  raw_ptr<ash::FakeChromeUserManager, DanglingUntriaged | ExperimentalAsh>
+      user_manager_;
   std::unique_ptr<user_manager::ScopedUserManager> scoped_user_manager_;
   std::unique_ptr<display::test::ActionLogger> logger_;
   raw_ptr<display::NativeDisplayDelegate, ExperimentalAsh>
@@ -1165,7 +1160,7 @@ TEST_F(RelaunchNotificationControllerPlatformImplTest,
   // Expect the platform_impl to show the notification synchronously.
   ::testing::StrictMock<base::MockOnceCallback<base::Time()>> callback;
 
-  base::Time deadline = base::Time::FromDeltaSinceWindowsEpoch(base::Hours(1));
+  base::Time deadline = base::Time::Now() + base::Hours(1);
 
   // There should be no query at the time of showing.
   platform_impl().NotifyRelaunchRequired(deadline, callback.Get());
@@ -1192,7 +1187,7 @@ TEST_F(RelaunchNotificationControllerPlatformImplTest,
 TEST_F(RelaunchNotificationControllerPlatformImplTest, MAYBE_DeferredDeadline) {
   ::testing::StrictMock<base::MockOnceCallback<base::Time()>> callback;
 
-  base::Time deadline = base::Time::FromDeltaSinceWindowsEpoch(base::Hours(1));
+  base::Time deadline = base::Time::Now() + base::Hours(1);
 
   // There should be no query because the browser isn't visible.
   platform_impl().NotifyRelaunchRequired(deadline, callback.Get());

@@ -10,8 +10,8 @@
 #include <memory>
 #include <utility>
 
-#include "base/mac/foundation_util.h"
-#include "base/mac/mach_logging.h"
+#include "base/apple/foundation_util.h"
+#include "base/apple/mach_logging.h"
 #include "base/mac/scoped_mach_msg_destroy.h"
 #include "base/strings/stringprintf.h"
 #include "chrome/common/mac/app_mode_common.h"
@@ -21,7 +21,7 @@ namespace apps {
 MachBootstrapAcceptor::MachBootstrapAcceptor(const std::string& name_fragment,
                                              Delegate* delegate)
     : server_name_(base::StringPrintf("%s.%s",
-                                      base::mac::BaseBundleID(),
+                                      base::apple::BaseBundleID(),
                                       name_fragment.c_str())
                        .c_str()),
       delegate_(delegate) {
@@ -80,7 +80,7 @@ void MachBootstrapAcceptor::HandleRequest() {
   pid_t sender_pid = audit_token_to_pid(request.trailer.msgh_audit);
 
   mojo::PlatformChannelEndpoint remote_endpoint(mojo::PlatformHandle(
-      base::mac::ScopedMachSendRight(request.header.msgh_remote_port)));
+      base::apple::ScopedMachSendRight(request.header.msgh_remote_port)));
   if (!remote_endpoint.is_valid()) {
     return;
   }

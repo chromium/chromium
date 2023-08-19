@@ -35,9 +35,7 @@ class CORE_EXPORT NGTableLayoutAlgorithm
   // Useful when trying to compute table's block sizes.
   // Table's css block size specifies size of the grid, not size
   // of the wrapper. Wrapper's block size = grid size + caption block size.
-  static LayoutUnit ComputeCaptionBlockSize(const NGTableNode& node,
-                                            const NGConstraintSpace& space,
-                                            const LayoutUnit table_inline_size);
+  LayoutUnit ComputeCaptionBlockSize();
 
   // In order to correctly determine the available block-size given to the
   // table-grid, we need to layout all the captions ahead of time. This struct

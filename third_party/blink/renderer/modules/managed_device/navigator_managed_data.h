@@ -24,7 +24,7 @@ class ScriptPromise;
 class ScriptState;
 
 class MODULES_EXPORT NavigatorManagedData final
-    : public EventTargetWithInlineData,
+    : public EventTarget,
       public ActiveScriptWrappable<NavigatorManagedData>,
       public Supplement<Navigator>,
       public mojom::blink::ManagedConfigurationObserver {
@@ -42,7 +42,7 @@ class MODULES_EXPORT NavigatorManagedData final
 
   void Trace(Visitor*) const override;
 
-  // EventTargetWithInlineData:
+  // EventTarget:
   const AtomicString& InterfaceName() const override;
   ExecutionContext* GetExecutionContext() const override;
   void AddedEventListener(

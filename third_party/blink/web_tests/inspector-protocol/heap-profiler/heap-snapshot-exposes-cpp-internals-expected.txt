@@ -1,0 +1,4 @@
+Tests whether a heap snapshot contains any "InternalNode" or "blink::" objects. This test is useful to check that cppgc_enable_object_names gn arg is enabled.
+InternalNode: Found
+Blink namespace: Not found
+

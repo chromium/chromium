@@ -2,18 +2,19 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import 'chrome://webui-test/mojo_webui_test_support.js';
 import 'chrome://customize-chrome-side-panel.top-chrome/categories.js';
 
 import {CategoriesElement, CHANGE_CHROME_THEME_CLASSIC_ELEMENT_ID, CHROME_THEME_COLLECTION_ELEMENT_ID} from 'chrome://customize-chrome-side-panel.top-chrome/categories.js';
 import {BackgroundCollection, CustomizeChromePageCallbackRouter, CustomizeChromePageHandlerRemote, CustomizeChromePageRemote} from 'chrome://customize-chrome-side-panel.top-chrome/customize_chrome.mojom-webui.js';
 import {CustomizeChromeApiProxy} from 'chrome://customize-chrome-side-panel.top-chrome/customize_chrome_api_proxy.js';
+import {WindowProxy} from 'chrome://customize-chrome-side-panel.top-chrome/window_proxy.js';
 import {assertDeepEquals, assertEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
+import {fakeMetricsPrivate, MetricsTracker} from 'chrome://webui-test/metrics_test_support.js';
 import {waitAfterNextRender} from 'chrome://webui-test/polymer_test_util.js';
 import {TestMock} from 'chrome://webui-test/test_mock.js';
 import {eventToPromise} from 'chrome://webui-test/test_util.js';
 
-import {createBackgroundImage, createTheme, installMock} from './test_support.js';
+import {$$, createBackgroundImage, createTheme, installMock} from './test_support.js';
 
 function createTestCollections(length: number): BackgroundCollection[] {
   const testCollections: BackgroundCollection[] = [];
@@ -29,8 +30,10 @@ function createTestCollections(length: number): BackgroundCollection[] {
 
 suite('CategoriesTest', () => {
   let categoriesElement: CategoriesElement;
+  let windowProxy: TestMock<WindowProxy>;
   let handler: TestMock<CustomizeChromePageHandlerRemote>;
   let callbackRouterRemote: CustomizeChromePageRemote;
+  let metrics: MetricsTracker;
 
   async function setInitialSettings(numCollections: number) {
     handler.setResultFor('getBackgroundCollections', Promise.resolve({
@@ -43,6 +46,7 @@ suite('CategoriesTest', () => {
 
   setup(async () => {
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
+    windowProxy = installMock(WindowProxy);
     handler = installMock(
         CustomizeChromePageHandlerRemote,
         (mock: CustomizeChromePageHandlerRemote) =>
@@ -50,6 +54,7 @@ suite('CategoriesTest', () => {
                 mock, new CustomizeChromePageCallbackRouter()));
     callbackRouterRemote = CustomizeChromeApiProxy.getInstance()
                                .callbackRouter.$.bindNewPipeAndPassRemote();
+    metrics = fakeMetricsPrivate();
   });
 
   test('hide collection elements when collections empty', async () => {
@@ -70,6 +75,27 @@ suite('CategoriesTest', () => {
         'collection_1', collections[0]!.querySelector('.label')!.textContent);
     assertEquals(
         'collection_2', collections[1]!.querySelector('.label')!.textContent);
+  });
+
+  test('collection preview images create metrics when loaded', async () => {
+    const startTime = 123.45;
+    windowProxy.setResultFor('now', startTime);
+    await setInitialSettings(1);
+    assertEquals(1, windowProxy.getCallCount('now'));
+    const imageLoadTime = 678.90;
+    windowProxy.setResultFor('now', imageLoadTime);
+
+    categoriesElement.shadowRoot!.querySelectorAll('.collection')[0]!
+        .querySelector('img')!.dispatchEvent(new Event('load'));
+
+    assertEquals(2, windowProxy.getCallCount('now'));
+    assertEquals(
+        1, metrics.count('NewTabPage.Images.ShownTime.CollectionPreviewImage'));
+    assertEquals(
+        1,
+        metrics.count(
+            'NewTabPage.Images.ShownTime.CollectionPreviewImage',
+            Math.floor(imageLoadTime - startTime)));
   });
 
   test('clicking collection sends event', async () => {
@@ -121,9 +147,15 @@ suite('CategoriesTest', () => {
   });
 
   test('clicking chrome colors sends event', async () => {
+    document.documentElement.toggleAttribute('chrome-refresh-2023', false);
+    await setInitialSettings(1);
     const eventPromise =
         eventToPromise('chrome-colors-select', categoriesElement);
-    categoriesElement.$.chromeColorsTile.click();
+    const chromeColorsTile =
+        categoriesElement.shadowRoot!.querySelector('#chromeColorsTile');
+    assertTrue(!!chromeColorsTile);
+
+    (chromeColorsTile as HTMLElement).click();
     const event = await eventPromise;
     assertTrue(!!event);
   });
@@ -220,5 +252,40 @@ suite('CategoriesTest', () => {
           [CHROME_THEME_COLLECTION_ELEMENT_ID, true],
         ],
     );
+  });
+
+  test('non-gm3 classic chrome tile shows correct image', async () => {
+    document.documentElement.toggleAttribute('chrome-refresh-2023', false);
+
+    await setInitialSettings(0);
+
+    assertEquals(
+        $$<HTMLImageElement>(
+            categoriesElement,
+            '#classicChromeTile #cornerNewTabPageTile #cornerNewTabPage')!.src,
+        'chrome://customize-chrome-side-panel.top-chrome/icons/' +
+            'corner_new_tab_page.svg');
+  });
+
+  test('gm3 classic chrome tile shows correct image', async () => {
+    document.documentElement.toggleAttribute('chrome-refresh-2023', true);
+
+    await setInitialSettings(0);
+
+    assertEquals(
+        $$<HTMLImageElement>(
+            categoriesElement,
+            '#classicChromeTile #cornerNewTabPageTile #cornerNewTabPage')!.src,
+        'chrome://customize-chrome-side-panel.top-chrome/icons/' +
+            'gm3_corner_new_tab_page.svg');
+  });
+
+  test('Hide chrome colors collection when GM3', async () => {
+    document.documentElement.toggleAttribute('chrome-refresh-2023', true);
+
+    await setInitialSettings(0);
+
+    assertTrue(
+        !categoriesElement.shadowRoot!.querySelector('#chromeColorsTile'));
   });
 });

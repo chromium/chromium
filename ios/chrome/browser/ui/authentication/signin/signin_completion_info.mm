@@ -4,10 +4,6 @@
 
 #import "ios/chrome/browser/ui/authentication/signin/signin_completion_info.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 @implementation SigninCompletionInfo
 
 + (instancetype)signinCompletionInfoWithIdentity:(id<SystemIdentity>)identity {

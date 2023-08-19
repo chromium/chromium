@@ -8,9 +8,7 @@
 
 #include <tuple>
 
-#include "base/metrics/histogram_functions.h"
 #include "net/cookies/cookie_util.h"
-#include "net/first_party_sets/same_party_context.h"
 
 namespace net {
 
@@ -101,8 +99,6 @@ CookieOptions CookieOptions::MakeAllInclusive() {
   options.set_include_httponly();
   options.set_same_site_cookie_context(SameSiteCookieContext::MakeInclusive());
   options.set_do_not_update_access_time();
-  options.set_same_party_context(SamePartyContext::MakeInclusive());
-  options.set_is_in_nontrivial_first_party_set(true);
   return options;
 }
 

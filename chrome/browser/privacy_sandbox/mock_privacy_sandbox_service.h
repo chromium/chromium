@@ -52,6 +52,31 @@ class MockPrivacySandboxService : public PrivacySandboxService {
               (const net::SchemefulSite& site),
               (override, const));
   MOCK_METHOD(bool, IsFirstPartySetsDataAccessManaged, (), (override, const));
+  MOCK_METHOD(void,
+              GetFledgeJoiningEtldPlusOneForDisplay,
+              (base::OnceCallback<void(std::vector<std::string>)>),
+              (override));
+  MOCK_METHOD(std::vector<std::string>,
+              GetBlockedFledgeJoiningTopFramesForDisplay,
+              (),
+              (const override));
+  MOCK_METHOD(void,
+              SetFledgeJoiningAllowed,
+              ((const std::string&), bool),
+              (const override));
+  MOCK_METHOD(std::vector<privacy_sandbox::CanonicalTopic>,
+              GetCurrentTopTopics,
+              (),
+              (const override));
+  MOCK_METHOD(std::vector<privacy_sandbox::CanonicalTopic>,
+              GetBlockedTopics,
+              (),
+              (const override));
+  MOCK_METHOD(void,
+              SetTopicAllowed,
+              (privacy_sandbox::CanonicalTopic, bool),
+              (override));
+  MOCK_METHOD(void, TopicsToggleChanged, (bool), (const override));
 };
 
 std::unique_ptr<KeyedService> BuildMockPrivacySandboxService(

@@ -192,17 +192,13 @@ void Checkbox::GetAccessibleNodeData(ui::AXNodeData* node_data) {
 }
 
 gfx::ImageSkia Checkbox::GetImage(ButtonState for_state) const {
-  int icon_state = 0;
-  if (GetChecked())
-    icon_state |= IconState::CHECKED;
-  if (for_state != STATE_DISABLED)
-    icon_state |= IconState::ENABLED;
+  const int icon_state = GetIconState(for_state);
 
   if (features::IsChromeRefresh2023()) {
-    const SkColor container_color = GetIconContainerColor(icon_state);
+    const SkColor container_color = GetIconImageColor(icon_state);
     if (GetChecked()) {
       const gfx::ImageSkia check_icon = gfx::CreateVectorIcon(
-          GetVectorIcon(), kCheckboxIconDipSize, GetIconImageColor(icon_state));
+          GetVectorIcon(), kCheckboxIconDipSize, GetIconCheckColor(icon_state));
 
       return gfx::ImageSkiaOperations::CreateImageWithRoundRectBackground(
           kCheckboxIconDipSize, kCheckboxIconCornerRadius, container_color,
@@ -231,10 +227,9 @@ void Checkbox::OnThemeChanged() {
 SkPath Checkbox::GetFocusRingPath() const {
   SkPath path;
   gfx::Rect bounds = image()->GetMirroredContentsBounds();
-  // Correct for slight discrepancy between visual image bounds and view bounds.
-  if (features::IsChromeRefresh2023()) {
-    bounds.Inset(2);
-  } else {
+  // Don't add extra insets in the ChromeRefresh case so that the focus ring can
+  // be drawn in the ChromeRefresh style.
+  if (!features::IsChromeRefresh2023()) {
     bounds.Inset(1);
   }
   path.addRect(RectToSkRect(bounds));
@@ -242,21 +237,27 @@ SkPath Checkbox::GetFocusRingPath() const {
 }
 
 SkColor Checkbox::GetIconImageColor(int icon_state) const {
+  if (features::IsChromeRefresh2023()) {
+    if (icon_state & IconState::CHECKED) {
+      return GetColorProvider()->GetColor(
+          (icon_state & IconState::ENABLED)
+              ? ui::kColorCheckboxContainer
+              : ui::kColorCheckboxContainerDisabled);
+    }
+    return GetColorProvider()->GetColor(
+        (icon_state & IconState::ENABLED) ? ui::kColorCheckboxOutline
+                                          : ui::kColorCheckboxOutlineDisabled);
+  }
+
   SkColor active_color =
       GetColorProvider()->GetColor((icon_state & IconState::CHECKED)
                                        ? ui::kColorCheckboxForegroundChecked
                                        : ui::kColorCheckboxForegroundUnchecked);
 
   // Use the overridden checked icon image color instead if set.
-  if (icon_state & IconState::CHECKED && checked_icon_image_color_.has_value())
+  if (icon_state & IconState::CHECKED &&
+      checked_icon_image_color_.has_value()) {
     active_color = checked_icon_image_color_.value();
-
-  // TODO(crbug.com/1394575): Replace return statement with the following once
-  // CR2023 is launched
-  if (features::IsChromeRefresh2023()) {
-    return (icon_state & IconState::ENABLED)
-               ? GetColorProvider()->GetColor(ui::kColorCheckboxCheck)
-               : GetColorProvider()->GetColor(ui::kColorCheckboxCheckDisabled);
   }
 
   return (icon_state & IconState::ENABLED)
@@ -265,16 +266,17 @@ SkColor Checkbox::GetIconImageColor(int icon_state) const {
                                                    gfx::kDisabledControlAlpha);
 }
 
-SkColor Checkbox::GetIconContainerColor(int icon_state) const {
-  if (icon_state & IconState::CHECKED) {
-    return GetColorProvider()->GetColor(
-        (icon_state & IconState::ENABLED)
-            ? ui::kColorCheckboxContainer
-            : ui::kColorCheckboxContainerDisabled);
+SkColor Checkbox::GetIconCheckColor(int icon_state) const {
+  DCHECK(GetChecked());
+
+  // Use the overridden checked icon image color instead if set.
+  if (checked_icon_image_color_.has_value()) {
+    return checked_icon_image_color_.value();
   }
+
   return GetColorProvider()->GetColor((icon_state & IconState::ENABLED)
-                                          ? ui::kColorCheckboxOutline
-                                          : ui::kColorCheckboxOutlineDisabled);
+                                          ? ui::kColorCheckboxCheck
+                                          : ui::kColorCheckboxCheckDisabled);
 }
 
 const gfx::VectorIcon& Checkbox::GetVectorIcon() const {
@@ -283,6 +285,17 @@ const gfx::VectorIcon& Checkbox::GetVectorIcon() const {
   }
 
   return GetChecked() ? kCheckboxActiveIcon : kCheckboxNormalIcon;
+}
+
+int Checkbox::GetIconState(ButtonState for_state) const {
+  int icon_state = 0;
+  if (GetChecked()) {
+    icon_state |= IconState::CHECKED;
+  }
+  if (for_state != STATE_DISABLED) {
+    icon_state |= IconState::ENABLED;
+  }
+  return icon_state;
 }
 
 void Checkbox::NotifyClick(const ui::Event& event) {
@@ -296,7 +309,7 @@ ui::NativeTheme::Part Checkbox::GetThemePart() const {
 
 void Checkbox::GetExtraParams(ui::NativeTheme::ExtraParams* params) const {
   LabelButton::GetExtraParams(params);
-  params->button.checked = GetChecked();
+  absl::get<ui::NativeTheme::ButtonExtraParams>(*params).checked = GetChecked();
 }
 
 BEGIN_METADATA(Checkbox, LabelButton)

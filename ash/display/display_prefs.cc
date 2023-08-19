@@ -13,6 +13,7 @@
 #include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"
 #include "ash/wm/tablet_mode/tablet_mode_controller.h"
+#include "base/check_is_test.h"
 #include "base/command_line.h"
 #include "base/containers/contains.h"
 #include "base/strings/string_number_conversions.h"
@@ -205,7 +206,7 @@ void LoadDisplayLayouts(PrefService* local_state) {
       continue;
     }
 
-    if (it.first.find(",") != std::string::npos) {
+    if (base::Contains(it.first, ",")) {
       std::vector<std::string> ids_str = base::SplitString(
           it.first, ",", base::TRIM_WHITESPACE, base::SPLIT_WANT_ALL);
       std::vector<int64_t> ids;
@@ -886,6 +887,11 @@ void DisplayPrefs::StoreDisplayPowerStateForTest(
 
 void DisplayPrefs::LoadTouchAssociationPreferenceForTest() {
   LoadDisplayTouchAssociations(local_state_);
+}
+
+void DisplayPrefs::LoadDisplayPrefsForTest() {
+  CHECK_IS_TEST();
+  LoadDisplayPreferences();
 }
 
 void DisplayPrefs::StoreLegacyTouchDataForTest(

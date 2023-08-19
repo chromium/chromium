@@ -87,10 +87,12 @@ const char kDefaultManufacturersJson[] = R"({
 // PpdProvider at construct time. Used throughout to activate testing
 // codepaths.
 struct PpdProviderComposedMembers {
-  raw_ptr<FakePrinterConfigCache, ExperimentalAsh> config_cache = nullptr;
-  raw_ptr<FakePrinterConfigCache, ExperimentalAsh> manager_config_cache =
-      nullptr;
-  raw_ptr<PpdMetadataManager, ExperimentalAsh> metadata_manager = nullptr;
+  raw_ptr<FakePrinterConfigCache, DanglingUntriaged | ExperimentalAsh>
+      config_cache = nullptr;
+  raw_ptr<FakePrinterConfigCache, DanglingUntriaged | ExperimentalAsh>
+      manager_config_cache = nullptr;
+  raw_ptr<PpdMetadataManager, DanglingUntriaged | ExperimentalAsh>
+      metadata_manager = nullptr;
 };
 
 class PpdProviderTest : public ::testing::Test {
@@ -358,6 +360,16 @@ class PpdProviderTest : public ::testing::Test {
              R"({
                 "ppdIndex": {
                   "Some other canonical reference": {
+                    "ppdMetadata": [ {
+                      "name": "unused.ppd"
+                    } ]
+                  }
+                }
+            })"},
+            {"metadata_v3/index-15.json",
+             R"({
+                "ppdIndex": {
+                  "zebra zpl label printer": {
                     "ppdMetadata": [ {
                       "name": "unused.ppd"
                     } ]
@@ -1139,6 +1151,39 @@ TEST_F(PpdProviderTest, ResolveUsbManufacturer) {
                PpdProvider::SUCCESS);
   // Unknown vendor id should result in an empty manufacturer string.
   EXPECT_TRUE(captured_resolve_ppd_references_[1].usb_manufacturer.empty());
+}
+
+TEST_F(PpdProviderTest, GenericZebraPpdResolution) {
+  auto provider =
+      CreateProvider({"en", PpdCacheRunLocation::kInBackgroundThreads,
+                      PropagateLocaleToMetadataManager::kDoPropagate});
+  StartFakePpdServer();
+
+  PrinterSearchData search_data;
+  search_data.discovery_type = PrinterDiscoveryType::kManual;
+  // Zebra and ZPL tell the resolver to search for the generic PPD, which
+  // should be found.
+  search_data.printer_id.set_make("Zebra");
+  search_data.printer_id.set_model("ZTC label printer 2000 ZPL");
+
+  provider->ResolvePpdReference(
+      search_data, base::BindOnce(&PpdProviderTest::CaptureResolvePpdReference,
+                                  base::Unretained(this)));
+
+  task_environment_.RunUntilIdle();
+
+  // No ZPL in the model name, so this PPD will not be found.
+  search_data.printer_id.set_model("ZTC label printer 4000");
+  provider->ResolvePpdReference(
+      search_data, base::BindOnce(&PpdProviderTest::CaptureResolvePpdReference,
+                                  base::Unretained(this)));
+
+  task_environment_.RunUntilIdle();
+
+  ASSERT_EQ(2UL, captured_resolve_ppd_references_.size());
+
+  EXPECT_EQ(PpdProvider::SUCCESS, captured_resolve_ppd_references_[0].code);
+  EXPECT_EQ(PpdProvider::NOT_FOUND, captured_resolve_ppd_references_[1].code);
 }
 
 }  // namespace

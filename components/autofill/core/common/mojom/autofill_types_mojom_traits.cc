@@ -403,7 +403,6 @@ bool StructTraits<autofill::mojom::PasswordGenerationUIDataDataView,
 
   return data.ReadGenerationElementId(&out->generation_element_id) &&
          data.ReadGenerationElement(&out->generation_element) &&
-         data.ReadUserTypedPassword(&out->user_typed_password) &&
          data.ReadTextDirection(&out->text_direction) &&
          data.ReadFormData(&out->form_data);
 }
@@ -416,23 +415,6 @@ bool StructTraits<
          data.ReadPasswordRendererId(&out->password_renderer_id) &&
          data.ReadNewPasswordRendererId(&out->new_password_renderer_id) &&
          data.ReadConfirmPasswordRendererId(&out->confirm_password_renderer_id);
-}
-
-bool StructTraits<autofill::mojom::AutoselectFirstSuggestionDataView,
-                  autofill::AutoselectFirstSuggestion>::
-    Read(autofill::mojom::AutoselectFirstSuggestionDataView data,
-         autofill::AutoselectFirstSuggestion* out) {
-  *out =
-      autofill::AutoselectFirstSuggestion(data.autoselect_first_suggestion());
-  return true;
-}
-
-bool StructTraits<autofill::mojom::FormElementWasClickedDataView,
-                  autofill::FormElementWasClicked>::
-    Read(autofill::mojom::FormElementWasClickedDataView data,
-         autofill::FormElementWasClicked* out) {
-  *out = autofill::FormElementWasClicked(data.form_element_was_clicked());
-  return true;
 }
 
 }  // namespace mojo

@@ -112,7 +112,11 @@ void EntityAnnotatorHolder::ResetEntityAnnotator() {
 
   if (entity_annotator_) {
     DCHECK(entity_annotator_native_library_);
-    entity_annotator_native_library_->DeleteEntityAnnotator(entity_annotator_);
+    // The `entity_annotator_` raw_ptr cannot be deleted through a custom
+    // deleter because it depends on `entity_annotator_native_library_`. See
+    // docs/dangling_ptr_guide.md.
+    entity_annotator_native_library_->DeleteEntityAnnotator(
+        entity_annotator_.ExtractAsDangling());
 
     entity_annotator_ = nullptr;
   }
@@ -237,9 +241,15 @@ void PageEntitiesModelHandlerImpl::OnEntityAnnotatorLibraryInitialized(
   optimization_guide_model_provider->AddObserverForOptimizationTargetModel(
       proto::OptimizationTarget::OPTIMIZATION_TARGET_PAGE_ENTITIES,
       any_metadata, this);
+  optimization_guide_model_provider_ = optimization_guide_model_provider;
 }
 
 PageEntitiesModelHandlerImpl::~PageEntitiesModelHandlerImpl() {
+  if (optimization_guide_model_provider_) {
+    optimization_guide_model_provider_
+        ->RemoveObserverForOptimizationTargetModel(
+            proto::OptimizationTarget::OPTIMIZATION_TARGET_PAGE_ENTITIES, this);
+  }
   // |entity_annotator_holder_|'s  WeakPtrs are used on the background thread,
   // so that is also where the class must be destroyed.
   background_task_runner_->DeleteSoon(FROM_HERE,
@@ -259,17 +269,21 @@ void PageEntitiesModelHandlerImpl::AddOnModelUpdatedCallback(
 
 void PageEntitiesModelHandlerImpl::OnModelUpdated(
     proto::OptimizationTarget optimization_target,
-    const ModelInfo& model_info) {
-  if (optimization_target != proto::OPTIMIZATION_TARGET_PAGE_ENTITIES)
+    base::optional_ref<const ModelInfo> model_info) {
+  if (optimization_target != proto::OPTIMIZATION_TARGET_PAGE_ENTITIES) {
     return;
+  }
+  if (!model_info.has_value()) {
+    return;
+  }
 
-  model_info_ = model_info;
+  model_info_ = *model_info;
 
   background_task_runner_->PostTask(
       FROM_HERE,
       base::BindOnce(
           &EntityAnnotatorHolder::CreateAndSetEntityAnnotatorOnBackgroundThread,
-          entity_annotator_holder_->GetBackgroundWeakPtr(), model_info));
+          entity_annotator_holder_->GetBackgroundWeakPtr(), *model_info));
 
   // Run any observing callbacks after the model file is posted to the
   // model executor thread so that any model execution requests are posted to

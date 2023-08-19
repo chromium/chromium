@@ -26,4 +26,8 @@ bool ShouldShowChromeLabsUI(const ChromeLabsModel* model, Profile* profile);
 bool AreNewChromeLabsExperimentsAvailable(const ChromeLabsModel* model,
                                           Profile* profile);
 
+// This returns true if Chrome Labs is enabled. 99% of clients on
+// pre-stable channels will have Chrome Labs enabled by default.
+bool IsChromeLabsEnabled();
+
 #endif  //  CHROME_BROWSER_UI_TOOLBAR_CHROME_LABS_UTILS_H_

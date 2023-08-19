@@ -107,6 +107,7 @@ class CORE_EXPORT ScrollManager : public GarbageCollected<ScrollManager>,
 
   // SnapFlingClient implementation.
   bool GetSnapFlingInfoAndSetAnimatingSnapTarget(
+      const gfx::Vector2dF& current_delta,
       const gfx::Vector2dF& natural_displacement,
       gfx::PointF* out_initial_position,
       gfx::PointF* out_target_position) const override;
@@ -207,8 +208,8 @@ class CORE_EXPORT ScrollManager : public GarbageCollected<ScrollManager>,
 
   std::unique_ptr<cc::SnapFlingController> snap_fling_controller_;
 
-  LayoutSize
-      offset_from_resize_corner_;  // In the coords of m_resizeScrollableArea.
+  // In the coords of resize_scrollable_area_.
+  gfx::Vector2d offset_from_resize_corner_;
 };
 
 }  // namespace blink

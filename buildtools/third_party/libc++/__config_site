@@ -27,11 +27,15 @@
 #define _LIBCPP_HAS_NO_VENDOR_AVAILABILITY_ANNOTATIONS
 /* #undef _LIBCPP_NO_VCRUNTIME */
 /* #undef _LIBCPP_TYPEINFO_COMPARISON_IMPLEMENTATION */
-/* #undef _LIBCPP_HAS_NO_FILESYSTEM_LIBRARY */
+/* #undef _LIBCPP_HAS_NO_FILESYSTEM */
 /* #undef _LIBCPP_HAS_PARALLEL_ALGORITHMS */
 /* #undef _LIBCPP_HAS_NO_RANDOM_DEVICE */
 /* #undef _LIBCPP_HAS_NO_LOCALIZATION */
 /* #undef _LIBCPP_HAS_NO_WIDE_CHARACTERS */
+
+// PSTL backends
+/* #undef _LIBCPP_PSTL_CPU_BACKEND_SERIAL */
+#define _LIBCPP_PSTL_CPU_BACKEND_THREAD
 
 // Settings below aren't part of __config_site upstream.
 // We set them here since we want them to take effect everywhere,
@@ -54,5 +58,11 @@
 // function because by default, this macro will does not call the verbose
 // termination function on Apple platforms.
 #define _LIBCPP_VERBOSE_ABORT(...) ::std::__libcpp_verbose_abort(__VA_ARGS__)
+
+// TODO(crbug.com/1455923) Link against compiler-rt's builtins library to
+// enable 128-arithmetic.
+#if defined(_WIN32)
+#define _LIBCPP_HAS_NO_INT128
+#endif
 
 #endif // _LIBCPP_CONFIG_SITE

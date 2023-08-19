@@ -204,10 +204,6 @@ class CORE_EXPORT TextFragmentSelectorGenerator final
 
   int num_range_words_ = 0;
 
-  // Indicates the Max Context Words allowed for the
-  // SharedHighlightsMaxContextWords experiment
-  int max_context_words_ = 10;
-
   int iteration_ = 0;
   base::TimeTicks generation_start_time_;
 

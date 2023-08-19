@@ -2,8 +2,9 @@ Name: libei
 URL: https://gitlab.freedesktop.org/libinput/libei
 Version: f9d691e98b515b544fb803a3c0c387621fd2d332
 License: BSD
+License File: LICENSE
 Security Critical: yes
-License Path: third_party/libei/LICENSE
+Shipped: yes
 
 Description:
 This directory contains a copy of libei obtained from gitlab.

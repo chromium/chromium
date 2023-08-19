@@ -157,7 +157,8 @@ class CORE_EXPORT ComputedStyleUtils {
   static CSSValue* ValueForAnimationDelayStart(const Timing::Delay& delay);
   static CSSValue* ValueForAnimationDelayEnd(const Timing::Delay& delay);
   static CSSValue* ValueForAnimationDirection(Timing::PlaybackDirection);
-  static CSSValue* ValueForAnimationDuration(const absl::optional<double>&);
+  static CSSValue* ValueForAnimationDuration(const absl::optional<double>&,
+                                             bool resolve_auto_to_zero);
   static CSSValue* ValueForAnimationFillMode(Timing::FillMode);
   static CSSValue* ValueForAnimationIterationCount(double iteration_count);
   static CSSValue* ValueForAnimationPlayState(EAnimPlayState);
@@ -174,7 +175,8 @@ class CORE_EXPORT ComputedStyleUtils {
   static CSSValue* ValueForAnimationDelayStartList(const CSSTimingData*);
   static CSSValue* ValueForAnimationDelayEndList(const CSSTimingData*);
   static CSSValue* ValueForAnimationDirectionList(const CSSAnimationData*);
-  static CSSValue* ValueForAnimationDurationList(const CSSAnimationData*);
+  static CSSValue* ValueForAnimationDurationList(const CSSAnimationData*,
+                                                 CSSValuePhase phase);
   static CSSValue* ValueForAnimationDurationList(const CSSTransitionData*);
   static CSSValue* ValueForAnimationFillModeList(const CSSAnimationData*);
   static CSSValue* ValueForAnimationIterationCountList(const CSSAnimationData*);
@@ -187,8 +189,7 @@ class CORE_EXPORT ComputedStyleUtils {
   static CSSValue* ValueForAnimationTimelineList(const CSSAnimationData*);
 
   static CSSValue* SingleValueForTimelineShorthand(const ScopedCSSName* name,
-                                                   TimelineAxis,
-                                                   TimelineAttachment);
+                                                   TimelineAxis);
   static CSSValueList* ValuesForBorderRadiusCorner(const LengthSize&,
                                                    const ComputedStyle&);
   static CSSValue* ValueForBorderRadiusCorner(const LengthSize&,
@@ -232,7 +233,10 @@ class CORE_EXPORT ComputedStyleUtils {
   static CSSValue* ResolvedTransform(const LayoutObject*, const ComputedStyle&);
   static CSSValue* CreateTransitionPropertyValue(
       const CSSTransitionData::TransitionProperty&);
+  static CSSValue* CreateTransitionBehaviorValue(
+      const CSSTransitionData::TransitionBehavior&);
   static CSSValue* ValueForTransitionProperty(const CSSTransitionData*);
+  static CSSValue* ValueForTransitionBehavior(const CSSTransitionData*);
   static CSSValue* ValueForContentData(const ComputedStyle&,
                                        bool allow_visited_style);
 
@@ -310,9 +314,8 @@ class CORE_EXPORT ComputedStyleUtils {
   static const CSSValue* ValueForStyleAutoColor(const ComputedStyle&,
                                                 const StyleAutoColor&,
                                                 CSSValuePhase);
-  static CSSValue* ValueForIntrinsicLength(
-      const ComputedStyle&,
-      const absl::optional<StyleIntrinsicLength>&);
+  static CSSValue* ValueForIntrinsicLength(const ComputedStyle&,
+                                           const StyleIntrinsicLength&);
   static CSSValue* ValueForScrollStart(const ComputedStyle&,
                                        const ScrollStartData&);
   static std::unique_ptr<CrossThreadStyleValue>

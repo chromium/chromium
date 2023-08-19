@@ -20,8 +20,10 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
+#include "base/time/time.h"
 #include "build/build_config.h"
 #include "ui/events/base_event_utils.h"
+#include "ui/events/event_constants.h"
 #include "ui/events/event_utils.h"
 #include "ui/events/keycodes/dom/dom_code.h"
 #include "ui/events/keycodes/dom/dom_key.h"
@@ -157,6 +159,17 @@ uint32_t ScanCodeFromNative(const PlatformEvent& native_event) {
 bool IsNearZero(const float num) {
   // Epsilon of 1e-10 at 0.
   return (std::fabs(num) < 1e-10);
+}
+
+bool IsRepeatedClickTimes(const base::TimeTicks& time_stamp1,
+                          const base::TimeTicks& time_stamp2) {
+  // The new event has been created from the same native event.
+  if (time_stamp1 == time_stamp2) {
+    return false;
+  }
+
+  base::TimeDelta time_difference = time_stamp2 - time_stamp1;
+  return time_difference <= base::Milliseconds(ui::kDoubleClickTimeMs);
 }
 
 }  // namespace
@@ -473,7 +486,6 @@ void MouseEvent::InitializeNative() {
 bool MouseEvent::IsRepeatedClickEvent(const MouseEvent& event1,
                                       const MouseEvent& event2) {
   // These values match the Windows defaults.
-  static const int kDoubleClickTimeMS = 500;
   static const int kDoubleClickWidth = 4;
   static const int kDoubleClickHeight = 4;
 
@@ -485,14 +497,9 @@ bool MouseEvent::IsRepeatedClickEvent(const MouseEvent& event1,
       (event2.flags() & ~EF_IS_DOUBLE_CLICK))
     return false;
 
-  // The new event has been created from the same native event.
-  if (event1.time_stamp() == event2.time_stamp())
+  if (!IsRepeatedClickTimes(event1.time_stamp(), event2.time_stamp())) {
     return false;
-
-  base::TimeDelta time_difference = event2.time_stamp() - event1.time_stamp();
-
-  if (time_difference.InMilliseconds() > kDoubleClickTimeMS)
-    return false;
+  }
 
   if (std::abs(event2.x() - event1.x()) > kDoubleClickWidth / 2)
     return false;
@@ -862,16 +869,12 @@ KeyEvent::KeyEvent(EventType type,
       is_char_(is_char),
       key_(key) {}
 
-KeyEvent::KeyEvent(char16_t character,
+KeyEvent::KeyEvent(EventType type,
                    KeyboardCode key_code,
                    DomCode code,
                    int flags,
                    base::TimeTicks time_stamp)
-    : Event(ET_KEY_PRESSED, time_stamp, flags),
-      key_code_(key_code),
-      code_(code),
-      is_char_(true),
-      key_(DomKey::FromCharacter(character)) {}
+    : Event(type, time_stamp, flags), key_code_(key_code), code_(code) {}
 
 KeyEvent::KeyEvent(const KeyEvent& rhs)
     : Event(rhs),
@@ -912,6 +915,15 @@ bool KeyEvent::IsSynthesizeKeyRepeatEnabled() {
 // static
 void KeyEvent::SetSynthesizeKeyRepeatEnabled(bool enabled) {
   synthesize_key_repeat_enabled_ = enabled;
+}
+
+KeyEvent KeyEvent::FromCharacter(char16_t character,
+                                 KeyboardCode key_code,
+                                 DomCode code,
+                                 int flags,
+                                 base::TimeTicks time_stamp) {
+  return KeyEvent(ET_KEY_PRESSED, key_code, code, flags,
+                  DomKey::FromCharacter(character), time_stamp, true);
 }
 
 void KeyEvent::InitializeNative() {

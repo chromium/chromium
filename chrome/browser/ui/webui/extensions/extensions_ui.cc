@@ -23,7 +23,9 @@
 #include "chrome/browser/ui/webui/favicon_source.h"
 #include "chrome/browser/ui/webui/managed_ui_handler.h"
 #include "chrome/browser/ui/webui/metrics_handler.h"
+#include "chrome/browser/ui/webui/plural_string_handler.h"
 #include "chrome/browser/ui/webui/webui_util.h"
+#include "chrome/common/chrome_features.h"
 #include "chrome/common/chrome_switches.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/common/url_constants.h"
@@ -128,9 +130,12 @@ content::WebUIDataSource* CreateAndAddExtensionsSource(Profile* profile,
     {"anonymousFunction", IDS_EXTENSIONS_ERROR_ANONYMOUS_FUNCTION},
     {"errorContext", IDS_EXTENSIONS_ERROR_CONTEXT},
     {"errorContextUnknown", IDS_EXTENSIONS_ERROR_CONTEXT_UNKNOWN},
+    {"safetyCheckExtensionsDetailPagePrimaryLabel",
+     IDS_EXTENSIONS_SAFETY_CHECK_PRIMARY_LABEL},
+    {"safetyCheckExtensionsKeep", IDS_CONFIRM_DOWNLOAD},
     {"stackTrace", IDS_EXTENSIONS_ERROR_STACK_TRACE},
     // TODO(dpapad): Unify with Settings' IDS_SETTINGS_WEB_STORE.
-    {"openChromeWebStore", IDS_EXTENSIONS_SIDEBAR_OPEN_CHROME_WEB_STORE},
+    {"sidebarDiscoverMore", IDS_EXTENSIONS_SIDEBAR_DISCOVER_MORE},
     {"keyboardShortcuts", IDS_EXTENSIONS_SIDEBAR_KEYBOARD_SHORTCUTS},
     {"incognitoInfoWarning", IDS_EXTENSIONS_INCOGNITO_WARNING},
     {"hostPermissionsDescription", IDS_EXTENSIONS_HOST_PERMISSIONS_DESCRIPTION},
@@ -341,7 +346,14 @@ content::WebUIDataSource* CreateAndAddExtensionsSource(Profile* profile,
     {"viewInactive", IDS_EXTENSIONS_VIEW_INACTIVE},
     {"viewIframe", IDS_EXTENSIONS_VIEW_IFRAME},
     {"viewServiceWorker", IDS_EXTENSIONS_SERVICE_WORKER_BACKGROUND},
-
+    {"safetyCheckKeepExtension", IDS_EXTENSIONS_SC_KEEP_EXT},
+    {"safetyCheckRemoveAll", IDS_EXTENSIONS_SC_REMOVE_ALL},
+    {"safetyCheckAllDoneForNow", IDS_EXTENSIONS_SC_ALL_DONE_FOR_NOW},
+    {"safetyCheckAllExtensions", IDS_EXTENSIONS_SC_ALL_EXTENSIONS},
+    {"safetyCheckRemoveButtonA11yLabel",
+     IDS_EXTENSIONS_SC_REMOVE_BUTTON_A11Y_LABEL},
+    {"safetyCheckOptionMenuA11yLabel",
+     IDS_EXTENSIONS_SC_OPTION_MENU_A11Y_LABEL},
 #if BUILDFLAG(IS_CHROMEOS_ASH)
     {"manageKioskApp", IDS_EXTENSIONS_MANAGE_KIOSK_APP},
     {"kioskAddApp", IDS_EXTENSIONS_KIOSK_ADD_APP},
@@ -403,6 +415,10 @@ content::WebUIDataSource* CreateAndAddExtensionsSource(Profile* profile,
 
   source->AddString(kLoadTimeClassesKey, GetLoadTimeClasses(in_dev_mode));
 
+  source->AddBoolean(
+      "safetyCheckExtensionsReviewEnabled",
+      base::FeatureList::IsEnabled(features::kSafetyCheckExtensions));
+
   source->AddBoolean(kEnableEnhancedSiteControls,
                      base::FeatureList::IsEnabled(
                          extensions_features::kExtensionsMenuAccessControl));
@@ -413,6 +429,9 @@ content::WebUIDataSource* CreateAndAddExtensionsSource(Profile* profile,
       "enableUserPermittedSites",
       base::FeatureList::IsEnabled(
           extensions_features::kExtensionsMenuAccessControlWithPermittedSites));
+  source->AddBoolean(
+      "safetyCheckShowReviewPanel",
+      base::FeatureList::IsEnabled(features::kSafetyCheckExtensions));
 
   return source;
 }
@@ -448,6 +467,14 @@ ExtensionsUI::ExtensionsUI(content::WebUI* web_ui)
   content::URLDataSource::Add(
       profile, std::make_unique<FaviconSource>(
                    profile, chrome::FaviconUrlFormat::kFavicon2));
+
+  // Add a handler to provide pluralized strings.
+  auto plural_string_handler = std::make_unique<PluralStringHandler>();
+  plural_string_handler->AddLocalizedString("safetyCheckTitle",
+                                            IDS_EXTENSIONS_SC_TITLE);
+  plural_string_handler->AddLocalizedString("safetyCheckDescription",
+                                            IDS_EXTENSIONS_SC_DESCRIPTION);
+  web_ui->AddMessageHandler(std::move(plural_string_handler));
 }
 
 ExtensionsUI::~ExtensionsUI() = default;

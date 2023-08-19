@@ -58,12 +58,15 @@ struct BlinkGCPluginOptions {
   // fields checker.
   bool forbid_associated_remote_receiver = false;
 
+  // Enables checks for GCed objects, Members, and pointers or references to
+  // GCed objects and in stl and WTF collections.
+  bool enable_off_heap_collections_of_gced_check = false;
+  bool enable_off_heap_collections_of_gced_check_pdfium = false;
+
   std::set<std::string> ignored_classes;
   std::set<std::string> checked_namespaces;
   std::vector<std::string> checked_directories;
   std::vector<std::string> ignored_directories;
-  // |allowed_directories| overrides |ignored_directories|.
-  std::vector<std::string> allowed_directories;
 };
 
 #endif  // TOOLS_BLINK_GC_PLUGIN_BLINK_GC_PLUGIN_OPTIONS_H_

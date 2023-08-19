@@ -12,10 +12,6 @@
 #include "net/base/auth.h"
 #include "net/url_request/url_request.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 // When the protocol is invalidated, no synchronization (lock) is needed:
 // - The actual calls to the protocol and its invalidation are all done on
 //   clientThread_ and thus are serialized.

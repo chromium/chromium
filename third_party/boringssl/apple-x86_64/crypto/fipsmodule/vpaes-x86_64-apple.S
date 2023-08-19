@@ -1,16 +1,9 @@
 // This file is generated from a similarly-named Perl script in the BoringSSL
 // source tree. Do not edit by hand.
 
-#if defined(__has_feature)
-#if __has_feature(memory_sanitizer) && !defined(OPENSSL_NO_ASM)
-#define OPENSSL_NO_ASM
-#endif
-#endif
+#include <openssl/asm_base.h>
 
-#if defined(__x86_64__) && !defined(OPENSSL_NO_ASM) && defined(__APPLE__)
-#if defined(BORINGSSL_PREFIX)
-#include <boringssl_prefix_symbols_asm.h>
-#endif
+#if !defined(OPENSSL_NO_ASM) && defined(OPENSSL_X86_64) && defined(__APPLE__)
 .text	
 
 
@@ -812,6 +805,7 @@ L$schedule_mangle_both:
 .p2align	4
 _vpaes_set_encrypt_key:
 
+_CET_ENDBR
 #ifdef BORINGSSL_DISPATCH_TEST
 
 	movb	$1,_BORINGSSL_function_hit+5(%rip)
@@ -836,6 +830,7 @@ _vpaes_set_encrypt_key:
 .p2align	4
 _vpaes_set_decrypt_key:
 
+_CET_ENDBR
 	movl	%esi,%eax
 	shrl	$5,%eax
 	addl	$5,%eax
@@ -860,6 +855,7 @@ _vpaes_set_decrypt_key:
 .p2align	4
 _vpaes_encrypt:
 
+_CET_ENDBR
 #ifdef BORINGSSL_DISPATCH_TEST
 
 	movb	$1,_BORINGSSL_function_hit+4(%rip)
@@ -878,6 +874,7 @@ _vpaes_encrypt:
 .p2align	4
 _vpaes_decrypt:
 
+_CET_ENDBR
 	movdqu	(%rdi),%xmm0
 	call	_vpaes_preheat
 	call	_vpaes_decrypt_core
@@ -891,6 +888,7 @@ _vpaes_decrypt:
 .p2align	4
 _vpaes_cbc_encrypt:
 
+_CET_ENDBR
 	xchgq	%rcx,%rdx
 	subq	$16,%rcx
 	jc	L$cbc_abort
@@ -934,6 +932,7 @@ L$cbc_abort:
 .p2align	4
 _vpaes_ctr32_encrypt_blocks:
 
+_CET_ENDBR
 
 	xchgq	%rcx,%rdx
 	testq	%rcx,%rcx
@@ -1129,8 +1128,4 @@ L$ctr_add_two:
 .p2align	6
 
 .text	
-#endif
-#if defined(__ELF__)
-// See https://www.airs.com/blog/archives/518.
-.section .note.GNU-stack,"",%progbits
 #endif

@@ -107,7 +107,7 @@ bool IsValidEnvVariableReference(CSSParserTokenRange range) {
     return true;
   }
 
-  if (RuntimeEnabledFeatures::CSSFoldablesEnabled()) {
+  if (RuntimeEnabledFeatures::ViewportSegmentsEnabled()) {
     // Consume any number of integer values that indicate the indices for a
     // multi-dimensional variable.
     token = range.ConsumeIncludingWhitespace();

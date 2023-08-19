@@ -75,9 +75,30 @@ void LoginPerformer::OnAuthSuccess(const UserContext& user_context) {
                                         /*is_new_user=*/!is_known_user,
                                         is_login_offline, is_ephemeral);
   VLOG(1) << "LoginSuccess hash: " << user_context.GetUserIDHash();
+
+  if (user_context.GetUserType() == user_manager::USER_TYPE_REGULAR ||
+      user_context.GetUserType() == user_manager::USER_TYPE_CHILD) {
+    LoadAndApplyEarlyPrefs(std::make_unique<UserContext>(user_context),
+                           base::BindOnce(&LoginPerformer::OnEarlyPrefsApplied,
+                                          weak_factory_.GetWeakPtr()));
+    return;
+  }
   base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE, base::BindOnce(&LoginPerformer::NotifyAuthSuccess,
                                 weak_factory_.GetWeakPtr(), user_context));
+}
+
+void LoginPerformer::OnEarlyPrefsApplied(
+    std::unique_ptr<UserContext> context,
+    absl::optional<AuthenticationError> error) {
+  if (error.has_value()) {
+    LOG(ERROR) << "Could not apply policies due to error:"
+               << error->ToDebugString();
+  }
+
+  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+      FROM_HERE, base::BindOnce(&LoginPerformer::NotifyAuthSuccess,
+                                weak_factory_.GetWeakPtr(), *context.get()));
 }
 
 void LoginPerformer::OnOffTheRecordAuthSuccess() {
@@ -91,6 +112,7 @@ void LoginPerformer::OnOffTheRecordAuthSuccess() {
 void LoginPerformer::OnPasswordChangeDetectedLegacy(
     const UserContext& user_context) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  auth_events_recorder_->OnPasswordChange();
   password_changed_ = true;
   password_changed_callback_count_++;
 
@@ -103,6 +125,7 @@ void LoginPerformer::OnPasswordChangeDetectedLegacy(
 void LoginPerformer::OnPasswordChangeDetected(
     std::unique_ptr<UserContext> user_context) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  auth_events_recorder_->OnPasswordChange();
   password_changed_ = true;
   DCHECK(user_context);
 

@@ -4,12 +4,9 @@
 
 #import "ios/web_view/internal/web_view_java_script_dialog_presenter.h"
 
+#import "base/functional/callback_helpers.h"
 #import "ios/web_view/public/cwv_ui_delegate.h"
 #import "net/base/mac/url_conversions.h"
-
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
 
 namespace ios_web_view {
 
@@ -31,15 +28,11 @@ void WebViewJavaScriptDialogPresenter::RunJavaScriptAlertDialog(
     std::move(callback).Run();
     return;
   }
-  __block base::OnceClosure scoped_callback = std::move(callback);
   [ui_delegate_ webView:web_view_
       runJavaScriptAlertPanelWithMessage:message_text
                                  pageURL:net::NSURLWithGURL(origin_url)
-                       completionHandler:^{
-                         if (!scoped_callback.is_null()) {
-                           std::move(scoped_callback).Run();
-                         }
-                       }];
+                       completionHandler:base::CallbackToBlock(
+                                             std::move(callback))];
 }
 
 void WebViewJavaScriptDialogPresenter::RunJavaScriptConfirmDialog(
@@ -53,16 +46,11 @@ void WebViewJavaScriptDialogPresenter::RunJavaScriptConfirmDialog(
     std::move(callback).Run(false);
     return;
   }
-  __block base::OnceCallback<void(bool success)> scoped_callback =
-      std::move(callback);
   [ui_delegate_ webView:web_view_
       runJavaScriptConfirmPanelWithMessage:message_text
                                    pageURL:net::NSURLWithGURL(origin_url)
-                         completionHandler:^(BOOL is_confirmed) {
-                           if (!scoped_callback.is_null()) {
-                             std::move(scoped_callback).Run(is_confirmed);
-                           }
-                         }];
+                         completionHandler:base::CallbackToBlock(
+                                               std::move(callback))];
 }
 
 void WebViewJavaScriptDialogPresenter::RunJavaScriptPromptDialog(
@@ -78,17 +66,12 @@ void WebViewJavaScriptDialogPresenter::RunJavaScriptPromptDialog(
     std::move(callback).Run(nil);
     return;
   }
-  __block base::OnceCallback<void(NSString * user_input)> scoped_callback =
-      std::move(callback);
   [ui_delegate_ webView:web_view_
       runJavaScriptTextInputPanelWithPrompt:message_text
                                 defaultText:default_prompt_text
                                     pageURL:net::NSURLWithGURL(origin_url)
-                          completionHandler:^(NSString* text_input) {
-                            if (!scoped_callback.is_null()) {
-                              std::move(scoped_callback).Run(text_input);
-                            }
-                          }];
+                          completionHandler:base::CallbackToBlock(
+                                                std::move(callback))];
 }
 
 void WebViewJavaScriptDialogPresenter::CancelDialogs(web::WebState* web_state) {

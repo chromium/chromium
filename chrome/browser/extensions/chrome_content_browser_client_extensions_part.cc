@@ -49,6 +49,7 @@
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/content_switches.h"
 #include "content/public/common/url_constants.h"
+#include "extensions/browser/api/automation_internal/automation_event_router.h"
 #include "extensions/browser/api/messaging/messaging_api_message_filter.h"
 #include "extensions/browser/api/web_request/web_request_api.h"
 #include "extensions/browser/api/web_request/web_request_api_helpers.h"
@@ -74,8 +75,10 @@
 #include "extensions/common/manifest_constants.h"
 #include "extensions/common/manifest_handlers/background_info.h"
 #include "extensions/common/manifest_handlers/web_accessible_resources_info.h"
+#include "extensions/common/mojom/automation_registry.mojom.h"
 #include "extensions/common/mojom/event_router.mojom.h"
 #include "extensions/common/mojom/guest_view.mojom.h"
+#include "extensions/common/mojom/manifest.mojom-shared.h"
 #include "extensions/common/mojom/renderer_host.mojom.h"
 #include "extensions/common/permissions/permissions_data.h"
 #include "extensions/common/switches.h"
@@ -84,6 +87,7 @@
 
 #if BUILDFLAG(IS_CHROMEOS)
 #include "chrome/browser/chromeos/extensions/vpn_provider/vpn_service_factory.h"
+#include "chromeos/constants/chromeos_features.h"
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
 using blink::web_pref::WebPreferences;
@@ -199,6 +203,33 @@ bool AllowServiceWorker(const GURL& scope,
   const std::string& sw_script =
       extensions::BackgroundInfo::GetBackgroundServiceWorkerScript(extension);
   return script_url == extension->GetResourceURL(sw_script);
+}
+
+// Returns the extension associated with the given `scope` if and only if it's
+// a service worker-based extension.
+const Extension* GetServiceWorkerBasedExtensionForScope(
+    const GURL& scope,
+    BrowserContext* browser_context) {
+  // We only care about extension urls.
+  if (!scope.SchemeIs(kExtensionScheme)) {
+    return nullptr;
+  }
+
+  const Extension* extension = ExtensionRegistry::Get(browser_context)
+                                   ->enabled_extensions()
+                                   .GetExtensionOrAppByURL(scope);
+  if (!extension) {
+    return nullptr;
+  }
+
+  // We only consider service workers that are root-scoped and for service
+  // worker-based extensions.
+  if (scope != extension->url() ||
+      !BackgroundInfo::IsServiceWorkerBased(extension)) {
+    return nullptr;
+  }
+
+  return extension;
 }
 
 // Returns the number of processes containing extension background pages across
@@ -579,32 +610,21 @@ bool ChromeContentBrowserClientExtensionsPart::AllowServiceWorker(
   return ::extensions::AllowServiceWorker(scope, script_url, extension);
 }
 
+// static
 bool ChromeContentBrowserClientExtensionsPart::
     MayDeleteServiceWorkerRegistration(
         const GURL& scope,
         content::BrowserContext* browser_context) {
-  // We only care about extension urls.
-  if (!scope.SchemeIs(kExtensionScheme)) {
-    return true;
-  }
-
   // Check if we're allowed to unregister this worker for testing purposes.
   if (g_allow_service_worker_unregistration_scope &&
       *g_allow_service_worker_unregistration_scope == scope) {
     return true;
   }
 
-  const Extension* extension = ExtensionRegistry::Get(browser_context)
-                                   ->enabled_extensions()
-                                   .GetExtensionOrAppByURL(scope);
-  if (!extension) {
-    return true;
-  }
+  const Extension* extension =
+      GetServiceWorkerBasedExtensionForScope(scope, browser_context);
 
-  // We only consider service workers that are root-scoped and for service
-  // worker-based extensions.
-  if (scope != extension->url() ||
-      !BackgroundInfo::IsServiceWorkerBased(extension)) {
+  if (!extension) {
     return true;
   }
 
@@ -624,6 +644,18 @@ bool ChromeContentBrowserClientExtensionsPart::
   // extension's enablement; it is unregistered when the extension is disabled
   // or uninstalled.
   return registered_version != extension->version();
+}
+
+bool ChromeContentBrowserClientExtensionsPart::
+    ShouldTryToUpdateServiceWorkerRegistration(
+        const GURL& scope,
+        content::BrowserContext* browser_context) {
+  const Extension* extension =
+      GetServiceWorkerBasedExtensionForScope(scope, browser_context);
+  // Only allow updates through the service worker layer for non-extension
+  // service workers. Extension service workers are updated through the
+  // extensions system, along with the rest of the extension.
+  return extension == nullptr;
 }
 
 // static
@@ -673,6 +705,19 @@ bool ChromeContentBrowserClientExtensionsPart::IsBuiltinComponent(
     return false;
 
   const auto& extension_id = origin.host();
+
+#if BUILDFLAG(IS_CHROMEOS)
+  // Check if the component is the ODFS external component extension.
+  if (chromeos::features::IsUploadOfficeToCloudEnabled() &&
+      extension_id == extension_misc::kODFSExtensionId &&
+      ExtensionRegistry::Get(browser_context)
+              ->GetInstalledExtension(extension_id)
+              ->location() == mojom::ManifestLocation::kExternalComponent) {
+    return true;
+  }
+#endif
+
+  // Check if the component is a loaded component extension.
   return ExtensionSystem::Get(browser_context)
       ->extension_service()
       ->component_loader()
@@ -697,6 +742,9 @@ void ChromeContentBrowserClientExtensionsPart::RenderProcessWillLaunch(
     content::RenderProcessHost* host) {
   int id = host->GetID();
   Profile* profile = Profile::FromBrowserContext(host->GetBrowserContext());
+  if (AreExtensionsDisabledForProfile(profile)) {
+    return;
+  }
 
   host->AddFilter(new ChromeExtensionMessageFilter(profile));
   host->AddFilter(new ExtensionMessageFilter(id, profile));
@@ -819,10 +867,18 @@ void ChromeContentBrowserClientExtensionsPart::
     AppendExtraRendererCommandLineSwitches(base::CommandLine* command_line,
                                            content::RenderProcessHost* process,
                                            Profile* profile) {
-  if (!process)
+  if (!process) {
     return;
+  }
+
   DCHECK(profile);
-  if (ProcessMap::Get(profile)->Contains(process->GetID())) {
+  if (AreExtensionsDisabledForProfile(profile)) {
+    return;
+  }
+
+  auto* process_map = ProcessMap::Get(profile);
+  CHECK(process_map);
+  if (process_map->Contains(process->GetID())) {
     command_line->AppendSwitch(switches::kExtensionProcess);
   }
 }
@@ -842,6 +898,10 @@ void ChromeContentBrowserClientExtensionsPart::ExposeInterfacesToRenderer(
       &RendererStartupHelper::BindForRenderer, host->GetID()));
   associated_registry->AddInterface<mojom::ServiceWorkerHost>(
       base::BindRepeating(&ServiceWorkerHost::BindReceiver, host->GetID()));
+  associated_registry
+      ->AddInterface<extensions::mojom::RendererAutomationRegistry>(
+          base::BindRepeating(&AutomationEventRouter::BindForRenderer,
+                              host->GetID()));
 }
 
 }  // namespace extensions

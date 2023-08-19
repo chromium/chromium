@@ -262,13 +262,10 @@ SVGAnimatedPropertyBase* SVGGeometryElement::PropertyFromAttribute(
   }
 }
 
-void SVGGeometryElement::SynchronizeSVGAttribute(
-    const QualifiedName& name) const {
-  if (name == AnyQName()) {
-    SVGAnimatedPropertyBase* attrs[]{path_length_.Get()};
-    SynchronizeAllSVGAttributes(attrs);
-  }
-  SVGGraphicsElement::SynchronizeSVGAttribute(name);
+void SVGGeometryElement::SynchronizeAllSVGAttributes() const {
+  SVGAnimatedPropertyBase* attrs[]{path_length_.Get()};
+  SynchronizeListOfSVGAttributes(attrs);
+  SVGGraphicsElement::SynchronizeAllSVGAttributes();
 }
 
 }  // namespace blink

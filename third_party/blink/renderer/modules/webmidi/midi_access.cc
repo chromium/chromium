@@ -224,7 +224,7 @@ void MIDIAccess::Trace(Visitor* visitor) const {
   visitor->Trace(dispatcher_);
   visitor->Trace(inputs_);
   visitor->Trace(outputs_);
-  EventTargetWithInlineData::Trace(visitor);
+  EventTarget::Trace(visitor);
   ExecutionContextLifecycleObserver::Trace(visitor);
 }
 

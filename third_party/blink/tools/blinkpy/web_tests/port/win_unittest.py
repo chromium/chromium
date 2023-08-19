@@ -66,7 +66,7 @@ class WinPortTest(port_testcase.PortTestCase):
 
     def test_versions(self):
         port = self.make_port()
-        self.assertIn(port.name(), ('win-win10.20h2', 'win-win11'))
+        self.assertIn(port.name(), ('win-win11'))
 
         self.assert_name(None, '10.20h2', 'win-win10.20h2')
         self.assert_name('win', '10.20h2', 'win-win10.20h2')
@@ -147,12 +147,10 @@ class WinPortTest(port_testcase.PortTestCase):
 
     def test_driver_name_option(self):
         self.assertTrue(
-            self.make_port()._path_to_driver().endswith('content_shell.exe'))
-        self.assertTrue(
-            self.make_port(
-                options=optparse.Values({
-                    'driver_name': 'OtherDriver'
-                }))._path_to_driver().endswith('OtherDriver.exe'))
+            self.make_port().path_to_driver().endswith('content_shell.exe'))
+        port = self.make_port(
+            options=optparse.Values({'driver_name': 'OtherDriver'}))
+        self.assertTrue(port.path_to_driver().endswith('OtherDriver.exe'))
 
     def test_path_to_image_diff(self):
         self.assertEqual(self.make_port()._path_to_image_diff(),

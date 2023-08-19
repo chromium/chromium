@@ -11,7 +11,6 @@
 #include <unordered_map>
 #include <utility>
 
-#include "base/auto_reset.h"
 #include "base/containers/adapters.h"
 #include "base/containers/contains.h"
 #include "base/containers/flat_map.h"
@@ -21,13 +20,11 @@
 #include "base/observer_list.h"
 #include "base/ranges/algorithm.h"
 #include "base/scoped_observation.h"
-#include "base/strings/string_util.h"
-#include "base/strings/utf_string_conversions.h"
+#include "base/trace_event/common/trace_event_common.h"
 #include "base/trace_event/trace_event.h"
 #include "build/build_config.h"
 #include "chrome/app/chrome_command_ids.h"
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
-#include "chrome/browser/defaults.h"
 #include "chrome/browser/extensions/tab_helper.h"
 #include "chrome/browser/lifetime/browser_shutdown.h"
 #include "chrome/browser/profiles/profile.h"
@@ -40,8 +37,6 @@
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/send_tab_to_self/send_tab_to_self_bubble.h"
-#include "chrome/browser/ui/side_panel/companion/companion_utils.h"
-#include "chrome/browser/ui/tab_ui_helper.h"
 #include "chrome/browser/ui/tabs/saved_tab_groups/saved_tab_group_keyed_service.h"
 #include "chrome/browser/ui/tabs/saved_tab_groups/saved_tab_group_service_factory.h"
 #include "chrome/browser/ui/tabs/tab.h"
@@ -51,18 +46,21 @@
 #include "chrome/browser/ui/tabs/tab_strip_model_delegate.h"
 #include "chrome/browser/ui/tabs/tab_strip_model_observer.h"
 #include "chrome/browser/ui/tabs/tab_utils.h"
+#include "chrome/browser/ui/thumbnails/thumbnail_tab_helper.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/user_notes/user_notes_controller.h"
 #include "chrome/browser/ui/web_applications/web_app_dialog_utils.h"
 #include "chrome/browser/ui/web_applications/web_app_launch_utils.h"
 #include "chrome/browser/ui/web_applications/web_app_tabbed_utils.h"
-#include "chrome/common/url_constants.h"
-#include "chrome/grit/generated_resources.h"
+#include "chrome/browser/web_applications/policy/web_app_policy_manager.h"
+#include "chrome/browser/web_applications/web_app_id.h"
+#include "chrome/browser/web_applications/web_app_provider.h"
+#include "chrome/browser/web_applications/web_app_tab_helper.h"
+#include "chrome/common/webui_url_constants.h"
 #include "components/content_settings/core/browser/host_content_settings_map.h"
 #include "components/feature_engagement/public/feature_constants.h"
 #include "components/reading_list/core/reading_list_model.h"
 #include "components/saved_tab_groups/saved_tab_group_model.h"
-#include "components/send_tab_to_self/metrics_util.h"
 #include "components/tab_groups/tab_group_id.h"
 #include "components/tab_groups/tab_group_visual_data.h"
 #include "components/web_modal/web_contents_modal_dialog_manager.h"
@@ -71,12 +69,11 @@
 #include "content/public/browser/render_widget_host_observer.h"
 #include "content/public/browser/render_widget_host_view.h"
 #include "content/public/browser/web_contents.h"
+#include "content/public/common/url_constants.h"
 #include "media/base/media_switches.h"
 #include "third_party/perfetto/include/perfetto/tracing/traced_value.h"
-#include "ui/base/l10n/l10n_util.h"
 #include "ui/base/page_transition_types.h"
 #include "ui/gfx/range/range.h"
-#include "ui/gfx/text_elider.h"
 
 using base::UserMetricsAction;
 using content::WebContents;
@@ -121,9 +118,9 @@ bool ShouldForgetOpenersForTransition(ui::PageTransition transition) {
                                       ui::PAGE_TRANSITION_AUTO_TOPLEVEL);
 }
 
-// Intalls RenderWidgetVisibilityTracker when the active tab has changed.
+// Installs RenderWidgetVisibilityTracker when the active tab has changed.
 std::unique_ptr<RenderWidgetHostVisibilityTracker>
-InstallRenderWigetVisibilityTracker(const TabStripSelectionChange& selection) {
+InstallRenderWidgetVisibilityTracker(const TabStripSelectionChange& selection) {
   if (!selection.active_tab_changed())
     return nullptr;
 
@@ -266,8 +263,8 @@ struct TabStripModel::DetachNotifications {
   //
   // Once the notification for change of active web contents has been sent,
   // this field is set to nullptr.
-  raw_ptr<WebContents, DanglingUntriaged> initially_active_web_contents =
-      nullptr;
+  raw_ptr<WebContents, AcrossTasksDanglingUntriaged>
+      initially_active_web_contents = nullptr;
 
   // The WebContents that were recently detached. Observers need to be notified
   // about these. These must be updated after construction.
@@ -525,7 +522,7 @@ void TabStripModel::SendDetachWebContentsNotifications(
       });
   {
     auto visibility_tracker =
-        empty() ? nullptr : InstallRenderWigetVisibilityTracker(selection);
+        empty() ? nullptr : InstallRenderWidgetVisibilityTracker(selection);
 
     OnChange(change, selection);
   }
@@ -666,12 +663,6 @@ void TabStripModel::UpdateWebContentsStateAt(int index,
   for (auto& observer : observers_) {
     observer.TabChangedAt(web_contents, index, change_type);
   }
-
-  // Maybe trigger side panel companion feature IPH if supported.
-  if (companion::IsSearchInCompanionSidePanelSupported(
-          chrome::FindBrowserWithWebContents(web_contents))) {
-    companion::MaybeTriggerCompanionFeaturePromo(web_contents);
-  }
 }
 
 void TabStripModel::SetTabNeedsAttentionAt(int index, bool attention) {
@@ -714,10 +705,10 @@ void TabStripModel::CloseAllTabsInGroup(const tab_groups::TabGroupId& group) {
   CloseTabs(closing_tabs, TabCloseTypes::CLOSE_CREATE_HISTORICAL_TAB);
 }
 
-bool TabStripModel::CloseWebContentsAt(int index, uint32_t close_types) {
+void TabStripModel::CloseWebContentsAt(int index, uint32_t close_types) {
   CHECK(ContainsIndex(index));
   WebContents* contents = GetWebContentsAt(index);
-  return CloseTabs(base::span<WebContents* const>(&contents, 1u), close_types);
+  CloseTabs(base::span<WebContents* const>(&contents, 1u), close_types);
 }
 
 bool TabStripModel::TabsAreLoading() const {
@@ -827,7 +818,11 @@ bool TabStripModel::IsTabBlocked(int index) const {
 }
 
 bool TabStripModel::IsTabClosable(int index) const {
-  return !web_app::IsPinnedHomeTab(this, index) || count() == 1;
+  return PolicyAllowsTabClosing(GetWebContentsAt(index));
+}
+
+bool TabStripModel::IsTabClosable(const content::WebContents* contents) const {
+  return IsTabClosable(GetIndexOfWebContents(contents));
 }
 
 absl::optional<tab_groups::TabGroupId> TabStripModel::GetTabGroupForTab(
@@ -1368,6 +1363,15 @@ bool TabStripModel::IsContextMenuCommandEnabled(
       DCHECK(delegate()->IsForWebApp());
       return true;
 
+    case CommandGoBack:
+      DCHECK(delegate()->IsForWebApp());
+      return delegate()->CanGoBack(GetWebContentsAt(context_index));
+
+    case CommandCloseAllTabs:
+      DCHECK(delegate()->IsForWebApp());
+      DCHECK(web_app::HasPinnedHomeTab(this));
+      return true;
+
     default:
       NOTREACHED();
   }
@@ -1575,6 +1579,27 @@ void TabStripModel::ExecuteContextMenuCommand(int context_index,
     case CommandCopyURL: {
       base::RecordAction(UserMetricsAction("TabContextMenu_CopyURL"));
       delegate()->CopyURL(GetWebContentsAt(context_index));
+      break;
+    }
+
+    case CommandGoBack: {
+      base::RecordAction(UserMetricsAction("TabContextMenu_Back"));
+      delegate()->GoBack(GetWebContentsAt(context_index));
+      break;
+    }
+
+    case CommandCloseAllTabs: {
+      // Closes all tabs except the pinned home tab.
+      base::RecordAction(UserMetricsAction("TabContextMenu_CloseAllTabs"));
+
+      std::vector<int> indices;
+      for (int i = count() - 1; i > 0; --i) {
+        indices.push_back(i);
+      }
+
+      CloseTabs(GetWebContentsesByIndices(indices),
+                TabCloseTypes::CLOSE_CREATE_HISTORICAL_TAB);
+
       break;
     }
 
@@ -1861,21 +1886,29 @@ int TabStripModel::InsertWebContentsAtImpl(
   return index;
 }
 
-bool TabStripModel::CloseTabs(base::span<content::WebContents* const> items,
+void TabStripModel::CloseTabs(base::span<content::WebContents* const> items,
                               uint32_t close_types) {
-  if (items.empty())
-    return true;
+  std::vector<content::WebContents*> filtered_items;
+  base::ranges::copy_if(items, std::back_inserter(filtered_items),
+                        [this](content::WebContents* const contents) {
+                          return IsTabClosable(contents);
+                        });
 
-  const bool closing_all = static_cast<int>(items.size()) == count();
+  if (filtered_items.empty()) {
+    return;
+  }
+
+  const bool closing_all = static_cast<int>(filtered_items.size()) == count();
   base::WeakPtr<TabStripModel> ref = weak_factory_.GetWeakPtr();
   if (closing_all) {
-    for (auto& observer : observers_)
+    for (auto& observer : observers_) {
       observer.WillCloseAllTabs(this);
+    }
   }
 
   DetachNotifications notifications(GetActiveWebContents(), selection_model_);
   const bool closed_all =
-      CloseWebContentses(items, close_types, &notifications);
+      CloseWebContentses(filtered_items, close_types, &notifications);
 
   // When unload handler is triggered for all items, we should wait for the
   // result.
@@ -1883,7 +1916,7 @@ bool TabStripModel::CloseTabs(base::span<content::WebContents* const> items,
     SendDetachWebContentsNotifications(&notifications);
 
   if (!ref)
-    return closed_all;
+    return;
   if (closing_all) {
     // CloseAllTabsStopped is sent with reason kCloseAllCompleted if
     // closed_all; otherwise kCloseAllCanceled is sent.
@@ -1892,8 +1925,6 @@ bool TabStripModel::CloseTabs(base::span<content::WebContents* const> items,
           this, closed_all ? TabStripModelObserver::kCloseAllCompleted
                            : TabStripModelObserver::kCloseAllCanceled);
   }
-
-  return closed_all;
 }
 
 bool TabStripModel::CloseWebContentses(
@@ -2042,7 +2073,7 @@ TabStripSelectionChange TabStripModel::SetSelection(
       }
     }
     TabStripModelChange change;
-    auto visibility_tracker = InstallRenderWigetVisibilityTracker(selection);
+    auto visibility_tracker = InstallRenderWidgetVisibilityTracker(selection);
     OnChange(change, selection);
   }
 
@@ -2592,6 +2623,19 @@ void TabStripModel::OnActiveTabChanged(
   if (old_contents) {
     int index = GetIndexOfWebContents(old_contents);
     if (index != TabStripModel::kNoTab) {
+      // When switching away from a tab, the tab preview system may want to
+      // capture an updated preview image. This must be done before any changes
+      // are made to the old contents, and while the contents are still visible.
+      //
+      // It's possible this could be done with a separate TabStripModelObserver,
+      // but then it would be possible for a different observer to jump in front
+      // and modify the WebContents, so for now, do it here.
+      auto* const thumbnail_helper =
+          ThumbnailTabHelper::FromWebContents(old_contents);
+      if (thumbnail_helper) {
+        thumbnail_helper->CaptureThumbnailOnTabBackgrounded();
+      }
+
       old_opener = GetOpenerOfWebContentsAt(index);
 
       // Forget the opener relationship if it needs to be reset whenever the
@@ -2613,6 +2657,24 @@ void TabStripModel::OnActiveTabChanged(
        old_opener != new_contents)) {
     ForgetAllOpeners();
   }
+}
+
+bool TabStripModel::PolicyAllowsTabClosing(
+    content::WebContents* contents) const {
+  if (!contents) {
+    return true;
+  }
+
+  web_app::WebAppProvider* provider =
+      web_app::WebAppProvider::GetForWebContents(contents);
+  // Can be null if there is no tab helper or app id.
+  const web_app::AppId* app_id = web_app::WebAppTabHelper::GetAppId(contents);
+  if (!app_id) {
+    return true;
+  }
+
+  return !delegate()->IsForWebApp() ||
+         !provider->policy_manager().IsPreventCloseEnabled(*app_id);
 }
 
 int TabStripModel::DetermineInsertionIndex(ui::PageTransition transition,

@@ -553,7 +553,7 @@ test(function() {
   }, 'Request with a url with another origin');
 
 test(function() {
-    var referrer = 'invali\0d';
+    var referrer = 'https://example[invalid].com/';
     assert_throws_js(TypeError,
         () => new Request(URL, {referrer: referrer}));
   }, 'Request with an invalid referrer');

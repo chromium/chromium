@@ -143,6 +143,7 @@ class MutatorHost {
   virtual bool HasSmilAnimation() const = 0;
   virtual bool HasViewTransition() const = 0;
   virtual bool HasScrollLinkedAnimation(ElementId for_scroller) const = 0;
+  virtual bool IsAutoScrolling() const = 0;
 
   // Iterates through all animations and returns the minimum tick interval.
   // Returns 0 if there is a continuous animation which should be ticked

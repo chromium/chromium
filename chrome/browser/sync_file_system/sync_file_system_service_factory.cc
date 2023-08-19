@@ -7,6 +7,7 @@
 #include <set>
 #include <utility>
 
+#include "base/check_is_test.h"
 #include "base/command_line.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/sync_file_system/local/local_file_sync_service.h"
@@ -25,17 +26,22 @@ SyncFileSystemService* SyncFileSystemServiceFactory::GetForProfile(
 
 // static
 SyncFileSystemServiceFactory* SyncFileSystemServiceFactory::GetInstance() {
-  return base::Singleton<SyncFileSystemServiceFactory>::get();
+  static base::NoDestructor<SyncFileSystemServiceFactory> instance;
+  return instance.get();
 }
 
-void SyncFileSystemServiceFactory::set_mock_local_file_service(
-    std::unique_ptr<LocalFileSyncService> mock_local_service) {
-  mock_local_file_service_ = std::move(mock_local_service);
-}
-
-void SyncFileSystemServiceFactory::set_mock_remote_file_service(
+// static
+std::unique_ptr<SyncFileSystemService>
+SyncFileSystemServiceFactory::BuildWithRemoteFileSyncServiceForTest(
+    content::BrowserContext* context,
     std::unique_ptr<RemoteFileSyncService> mock_remote_service) {
-  mock_remote_file_service_ = std::move(mock_remote_service);
+  CHECK_IS_TEST();
+  Profile* profile = Profile::FromBrowserContext(context);
+  auto service =
+      base::WrapUnique(new sync_file_system::SyncFileSystemService(profile));
+  service->Initialize(LocalFileSyncService::Create(profile),
+                      std::move(mock_remote_service));
+  return service;
 }
 
 SyncFileSystemServiceFactory::SyncFileSystemServiceFactory()
@@ -56,30 +62,16 @@ SyncFileSystemServiceFactory::SyncFileSystemServiceFactory()
   }
 }
 
-SyncFileSystemServiceFactory::~SyncFileSystemServiceFactory() {}
+SyncFileSystemServiceFactory::~SyncFileSystemServiceFactory() = default;
 
 KeyedService* SyncFileSystemServiceFactory::BuildServiceInstanceFor(
     content::BrowserContext* context) const {
   Profile* profile = Profile::FromBrowserContext(context);
 
   SyncFileSystemService* service = new SyncFileSystemService(profile);
-
-  std::unique_ptr<LocalFileSyncService> local_file_service;
-  if (mock_local_file_service_)
-    local_file_service = std::move(mock_local_file_service_);
-  else
-    local_file_service = LocalFileSyncService::Create(profile);
-
-  std::unique_ptr<RemoteFileSyncService> remote_file_service;
-  if (mock_remote_file_service_) {
-    remote_file_service = std::move(mock_remote_file_service_);
-  } else {
-    remote_file_service = RemoteFileSyncService::CreateForBrowserContext(
-        context, service->task_logger());
-  }
-
-  service->Initialize(std::move(local_file_service),
-                      std::move(remote_file_service));
+  service->Initialize(LocalFileSyncService::Create(profile),
+                      RemoteFileSyncService::CreateForBrowserContext(
+                          context, service->task_logger()));
   return service;
 }
 

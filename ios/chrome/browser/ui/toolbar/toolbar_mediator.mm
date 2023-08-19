@@ -4,480 +4,449 @@
 
 #import "ios/chrome/browser/ui/toolbar/toolbar_mediator.h"
 
-#import "base/memory/ptr_util.h"
-#import "base/metrics/user_metrics.h"
-#import "base/metrics/user_metrics_action.h"
-#import "base/strings/sys_string_conversions.h"
-#import "components/open_from_clipboard/clipboard_recent_content.h"
-#import "components/search_engines/template_url_service.h"
-#import "ios/chrome/browser/ntp/new_tab_page_util.h"
-#import "ios/chrome/browser/overlays/public/overlay_presenter.h"
-#import "ios/chrome/browser/overlays/public/overlay_presenter_observer_bridge.h"
-#import "ios/chrome/browser/policy/policy_util.h"
-#import "ios/chrome/browser/search_engines/search_engines_util.h"
-#import "ios/chrome/browser/shared/model/url/chrome_url_constants.h"
+#import "base/metrics/field_trial_params.h"
+#import "base/metrics/histogram_functions.h"
+#import "base/stl_util.h"
+#import "components/segmentation_platform/embedder/default_model/device_switcher_model.h"
+#import "components/segmentation_platform/embedder/default_model/device_switcher_result_dispatcher.h"
+#import "components/segmentation_platform/public/result.h"
+#import "ios/chrome/browser/first_run/first_run.h"
+#import "ios/chrome/browser/ntp/new_tab_page_tab_helper.h"
+#import "ios/chrome/browser/segmentation_platform/segmentation_platform_service_factory.h"
+#import "ios/chrome/browser/shared/model/prefs/pref_names.h"
+#import "ios/chrome/browser/shared/model/web_state_list/active_web_state_observation_forwarder.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list_observer_bridge.h"
-#import "ios/chrome/browser/shared/public/commands/application_commands.h"
-#import "ios/chrome/browser/shared/public/commands/load_query_commands.h"
-#import "ios/chrome/browser/shared/public/commands/open_new_tab_command.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
-#import "ios/chrome/browser/shared/ui/symbols/symbols.h"
-#import "ios/chrome/browser/ui/menu/browser_action_factory.h"
-#import "ios/chrome/browser/ui/toolbar/toolbar_consumer.h"
-#import "ios/chrome/browser/url_loading/image_search_param_generator.h"
-#import "ios/chrome/browser/url_loading/url_loading_browser_agent.h"
-#import "ios/chrome/browser/url_loading/url_loading_params.h"
-#import "ios/chrome/browser/web/web_navigation_browser_agent.h"
-#import "ios/chrome/common/ui/colors/semantic_color_names.h"
-#import "ios/chrome/grit/ios_strings.h"
-#import "ios/public/provider/chrome/browser/voice_search/voice_search_api.h"
-#import "ios/web/public/favicon/favicon_status.h"
-#import "ios/web/public/navigation/navigation_item.h"
-#import "ios/web/public/navigation/navigation_manager.h"
-#import "ios/web/public/web_client.h"
+#import "ios/chrome/browser/shared/public/features/system_flags.h"
+#import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
+#import "ios/chrome/browser/ui/settings/utils/pref_backed_boolean.h"
+#import "ios/chrome/browser/ui/toolbar/public/omnibox_position_metrics.h"
+#import "ios/chrome/browser/ui/toolbar/public/toolbar_omnibox_consumer.h"
+#import "ios/web/public/ui/crw_web_view_proxy.h"
 #import "ios/web/public/web_state.h"
 #import "ios/web/public/web_state_observer_bridge.h"
-#import "ui/base/l10n/l10n_util.h"
-#import "ui/gfx/image/image.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
+namespace {
 
-@interface ToolbarMediator () <CRWWebStateObserver,
-                               OverlayPresenterObserving,
+/// The time delta for a user to be considered as a new user.
+const base::TimeDelta kNewUserTimeDelta = base::Days(60);
+
+/// Returns whether it's first run.
+BOOL IsFirstRun() {
+  return FirstRun::IsChromeFirstRun() ||
+         experimental_flags::AlwaysDisplayFirstRun();
+}
+
+/// Returns wheter the user has seen first run recently (`kNewUserTimeDelta`).
+BOOL IsNewUser() {
+  // Use the first_run age to determine the user is new on this device.
+  if (IsFirstRun()) {
+    return YES;
+  }
+  absl::optional<base::File::Info> info = FirstRun::GetSentinelInfo();
+  if (!info.has_value()) {
+    return NO;
+  }
+  base::Time first_run_time = info.value().creation_time;
+  BOOL isFirstRunRecent =
+      base::Time::Now() - first_run_time < kNewUserTimeDelta;
+  return isFirstRunRecent;
+}
+
+/// Returns whether classification `result` should have bottom omnibox by
+/// default.
+BOOL ShouldSwitchOmniboxToBottom(
+    const segmentation_platform::ClassificationResult& result) {
+  CHECK(result.status == segmentation_platform::PredictionStatus::kSucceeded);
+  if (result.ordered_labels.empty()) {
+    DUMP_WILL_BE_CHECK(!result.ordered_labels.empty());
+    return NO;
+  }
+
+  if (!IsNewUser()) {
+    return NO;
+  }
+
+  std::vector<std::string> excludedLabels = {
+      segmentation_platform::DeviceSwitcherModel::kAndroidPhoneLabel,
+      segmentation_platform::DeviceSwitcherModel::kAndroidTabletLabel,
+      segmentation_platform::DeviceSwitcherModel::kIosPhoneChromeLabel,
+      segmentation_platform::DeviceSwitcherModel::kIosTabletLabel};
+  std::sort(excludedLabels.begin(), excludedLabels.end());
+
+  auto sortedLabels = std::vector<std::string>(result.ordered_labels);
+  std::sort(sortedLabels.begin(), sortedLabels.end());
+
+  std::vector<std::string> intersection =
+      base::STLSetIntersection<std::vector<std::string>>(sortedLabels,
+                                                         excludedLabels);
+  return intersection.empty();
+}
+
+}  // namespace
+
+@interface ToolbarMediator () <BooleanObserver,
+                               CRWWebStateObserver,
                                WebStateListObserving>
 
-// The current web state associated with the toolbar.
-@property(nonatomic, assign) web::WebState* webState;
-
-// Whether an overlay is currently presented over the web content area.
-@property(nonatomic, assign, getter=isWebContentAreaShowingOverlay)
-    BOOL webContentAreaShowingOverlay;
+/// Type of toolbar containing the omnibox. Unlike
+/// `steadyStateOmniboxPosition`, this tracks the omnibox position at all
+/// time.
+@property(nonatomic, assign) ToolbarType omniboxPosition;
+/// Type of the toolbar that contains the omnibox when it's not focused. The
+/// animation of focusing/defocusing the omnibox changes depending on this
+/// position.
+@property(nonatomic, assign) ToolbarType steadyStateOmniboxPosition;
 
 @end
 
 @implementation ToolbarMediator {
-  std::unique_ptr<web::WebStateObserverBridge> _webStateObserver;
-  std::unique_ptr<WebStateListObserverBridge> _webStateListObserver;
-  std::unique_ptr<OverlayPresenterObserverBridge> _overlayObserver;
-  BOOL _inBatchOperation;
+  /// Bridges C++ WebStateObserver methods to this mediator.
+  std::unique_ptr<web::WebStateObserverBridge> _webStateObserverBridge;
+
+  /// Forwards observer methods for active WebStates in the WebStateList to
+  /// this mediator.
+  std::unique_ptr<ActiveWebStateObservationForwarder>
+      _activeWebStateObservationForwarder;
+
+  /// Observes web state activation.
+  std::unique_ptr<WebStateListObserverBridge> _webStateListObserverBridge;
+
+  WebStateList* _webStateList;
+
+  /// Pref tracking if bottom omnibox is enabled.
+  PrefBackedBoolean* _bottomOmniboxEnabled;
+  /// Whether the omnibox is currently focused.
+  BOOL _locationBarFocused;
+  /// Whether the browser is incognito.
+  BOOL _isIncognito;
+  /// Whether the last navigated web state is NTP.
+  BOOL _isNTP;
+  /// Last trait collection of the toolbars.
+  UITraitCollection* _toolbarTraitCollection;
+  /// Preferred toolbar to contain the omnibox.
+  ToolbarType _preferredOmniboxPosition;
+
+  /// Whether SafariSwitcher should be checked on FRE.
+  BOOL _shouldCheckSafariSwitcherOnFRE;
+  /// Whether the NTP was shown in FRE.
+  BOOL _hasEnteredNTPOnFRE;
 }
 
-- (instancetype)init {
-  self = [super init];
-  if (self) {
-    _webStateObserver = std::make_unique<web::WebStateObserverBridge>(self);
-    _webStateListObserver = std::make_unique<WebStateListObserverBridge>(self);
-    _overlayObserver = std::make_unique<OverlayPresenterObserverBridge>(self);
+- (instancetype)initWithWebStateList:(WebStateList*)webStateList
+                         isIncognito:(BOOL)isIncognito {
+  if (self = [super init]) {
+    _webStateList = webStateList;
+    _isIncognito = isIncognito;
+
+    _webStateObserverBridge =
+        std::make_unique<web::WebStateObserverBridge>(self);
+    _activeWebStateObservationForwarder =
+        std::make_unique<ActiveWebStateObservationForwarder>(
+            webStateList, _webStateObserverBridge.get());
+    _webStateListObserverBridge =
+        std::make_unique<WebStateListObserverBridge>(self);
+    _webStateList->AddObserver(_webStateListObserverBridge.get());
+
+    if (IsBottomOmniboxSteadyStateEnabled()) {
+      std::string featureParam = base::GetFieldTrialParamValueByFeature(
+          kBottomOmniboxDefaultSetting, kBottomOmniboxDefaultSettingParam);
+      if (featureParam == kBottomOmniboxDefaultSettingParamSafariSwitcher) {
+        // Device switcher data is not available in incognito.
+        _shouldCheckSafariSwitcherOnFRE = !isIncognito && IsFirstRun();
+      }
+    }
   }
   return self;
 }
 
-- (void)dealloc {
-  [self disconnect];
-}
-
-#pragma mark - Public
-
-- (void)updateConsumerForWebState:(web::WebState*)webState {
-  [self updateNavigationBackAndForwardStateForWebState:webState];
-  [self updateShareMenuForWebState:webState];
-}
-
 - (void)disconnect {
-  self.webContentAreaOverlayPresenter = nullptr;
-  self.navigationBrowserAgent = nullptr;
+  _activeWebStateObservationForwarder = nullptr;
+  _webStateObserverBridge = nullptr;
+  _webStateList->RemoveObserver(_webStateListObserverBridge.get());
+  _webStateListObserverBridge = nullptr;
 
-  if (_webStateList) {
-    _webStateList->RemoveObserver(_webStateListObserver.get());
-    _webStateListObserver.reset();
-    _webStateList = nullptr;
+  _webStateList = nullptr;
+}
+
+- (void)setPrefService:(PrefService*)prefService {
+  _prefService = prefService;
+  if (IsBottomOmniboxSteadyStateEnabled() && _prefService) {
+    _bottomOmniboxEnabled =
+        [[PrefBackedBoolean alloc] initWithPrefService:_prefService
+                                              prefName:prefs::kBottomOmnibox];
+    [_bottomOmniboxEnabled setObserver:self];
+    // Initialize to the correct value.
+    [self booleanDidChange:_bottomOmniboxEnabled];
+    [self updateOmniboxDefaultPosition];
+    [self logOmniboxPosition];
   }
+}
 
-  if (_webState) {
-    _webState->RemoveObserver(_webStateObserver.get());
-    _webStateObserver.reset();
-    _webState = nullptr;
+- (void)locationBarFocusChangedTo:(BOOL)focused {
+  _locationBarFocused = focused;
+  if (IsBottomOmniboxSteadyStateEnabled()) {
+    [self updateOmniboxPosition];
   }
 }
 
-#pragma mark - CRWWebStateObserver
-
-- (void)webState:(web::WebState*)webState didLoadPageWithSuccess:(BOOL)success {
-  DCHECK_EQ(_webState, webState);
-  [self updateConsumer];
-}
-
-- (void)webState:(web::WebState*)webState
-    didStartNavigation:(web::NavigationContext*)navigation {
-  DCHECK_EQ(_webState, webState);
-  [self updateConsumer];
-}
-
-- (void)webState:(web::WebState*)webState
-    didFinishNavigation:(web::NavigationContext*)navigation {
-  DCHECK_EQ(_webState, webState);
-  [self updateConsumer];
-}
-
-- (void)webStateDidStartLoading:(web::WebState*)webState {
-  DCHECK_EQ(_webState, webState);
-  [self updateConsumer];
-}
-
-- (void)webStateDidStopLoading:(web::WebState*)webState {
-  DCHECK_EQ(_webState, webState);
-  [self updateConsumer];
-}
-
-- (void)webState:(web::WebState*)webState
-    didChangeLoadingProgress:(double)progress {
-  DCHECK_EQ(_webState, webState);
-  [self.consumer setLoadingProgressFraction:progress];
-}
-
-- (void)webStateDidChangeBackForwardState:(web::WebState*)webState {
-  DCHECK_EQ(_webState, webState);
-  [self updateConsumer];
-}
-
-- (void)webStateDidChangeVisibleSecurityState:(web::WebState*)webState {
-  DCHECK_EQ(_webState, webState);
-  [self updateConsumer];
-}
-
-- (void)webStateDestroyed:(web::WebState*)webState {
-  DCHECK_EQ(_webState, webState);
-  _webState->RemoveObserver(_webStateObserver.get());
-  _webState = nullptr;
-}
-
-#pragma mark - WebStateListObserving
-
-- (void)webStateList:(WebStateList*)webStateList
-    didInsertWebState:(web::WebState*)webState
-              atIndex:(int)index
-           activating:(BOOL)activating {
-  DCHECK_EQ(_webStateList, webStateList);
-  if (_inBatchOperation) {
-    return;
+- (void)toolbarTraitCollectionChangedTo:(UITraitCollection*)traitCollection {
+  _toolbarTraitCollection = traitCollection;
+  if (IsBottomOmniboxSteadyStateEnabled()) {
+    [self updateOmniboxPosition];
   }
-
-  [self.consumer setTabCount:_webStateList->count()
-           addedInBackground:!activating];
 }
 
-- (void)webStateList:(WebStateList*)webStateList
-    didDetachWebState:(web::WebState*)webState
-              atIndex:(int)index {
-  DCHECK_EQ(_webStateList, webStateList);
-  if (_inBatchOperation) {
-    return;
+- (void)setInitialOmniboxPosition {
+  [self updateOmniboxPosition];
+  [self.delegate transitionOmniboxToToolbarType:self.omniboxPosition];
+  [self.delegate transitionSteadyStateOmniboxToToolbarType:
+                     self.steadyStateOmniboxPosition];
+  [self.omniboxConsumer
+      steadyStateOmniboxMovedToToolbar:self.steadyStateOmniboxPosition];
+}
+
+- (void)didNavigateToNTPOnActiveWebState {
+  _isNTP = YES;
+  if (IsBottomOmniboxSteadyStateEnabled()) {
+    [self updateOmniboxPosition];
   }
-
-  [self.consumer setTabCount:_webStateList->count() addedInBackground:NO];
-}
-
-- (void)webStateList:(WebStateList*)webStateList
-    didChangeActiveWebState:(web::WebState*)newWebState
-                oldWebState:(web::WebState*)oldWebState
-                    atIndex:(int)atIndex
-                     reason:(ActiveWebStateChangeReason)reason {
-  DCHECK_EQ(_webStateList, webStateList);
-  self.webState = newWebState;
-}
-
-- (void)webStateListWillBeginBatchOperation:(WebStateList*)webStateList {
-  DCHECK_EQ(_webStateList, webStateList);
-  DCHECK(!_inBatchOperation);
-  _inBatchOperation = YES;
-}
-
-- (void)webStateListBatchOperationEnded:(WebStateList*)webStateList {
-  DCHECK_EQ(_webStateList, webStateList);
-  DCHECK(_inBatchOperation);
-  _inBatchOperation = NO;
-  [self.consumer setTabCount:_webStateList->count() addedInBackground:NO];
-}
-
-#pragma mark - AdaptiveToolbarMenusProvider
-
-- (UIMenu*)menuForButtonOfType:(AdaptiveToolbarButtonType)buttonType {
-  switch (buttonType) {
-    case AdaptiveToolbarButtonTypeBack:
-      return [self menuForNavigationItems:self.webState->GetNavigationManager()
-                                              ->GetBackwardItems()];
-
-    case AdaptiveToolbarButtonTypeForward:
-      return [self menuForNavigationItems:self.webState->GetNavigationManager()
-                                              ->GetForwardItems()];
-
-    case AdaptiveToolbarButtonTypeNewTab:
-      return [self menuForNewTabButton];
-
-    case AdaptiveToolbarButtonTypeTabGrid:
-      return [self menuForTabGridButton];
-  }
-  return nil;
 }
 
 #pragma mark - Setters
 
-- (void)setIncognito:(BOOL)incognito {
-  if (incognito == _incognito)
-    return;
-
-  _incognito = incognito;
-}
-
-- (void)setWebState:(web::WebState*)webState {
-  if (_webState) {
-    _webState->RemoveObserver(_webStateObserver.get());
-  }
-
-  _webState = webState;
-
-  if (_webState) {
-    _webState->AddObserver(_webStateObserver.get());
-
-    if (self.consumer) {
-      [self updateConsumer];
-    }
+- (void)setOmniboxPosition:(ToolbarType)omniboxPosition {
+  if (_omniboxPosition != omniboxPosition) {
+    _omniboxPosition = omniboxPosition;
+    [self.delegate transitionOmniboxToToolbarType:omniboxPosition];
   }
 }
 
-- (void)setConsumer:(id<ToolbarConsumer>)consumer {
-  _consumer = consumer;
-  [_consumer setVoiceSearchEnabled:ios::provider::IsVoiceSearchEnabled()];
-  if (self.webState) {
-    [self updateConsumer];
-  }
-  if (self.webStateList) {
-    [self.consumer setTabCount:_webStateList->count() addedInBackground:NO];
-  }
-}
-
-- (void)setWebStateList:(WebStateList*)webStateList {
-  if (_webStateList) {
-    _webStateList->RemoveObserver(_webStateListObserver.get());
-  }
-
-  // TODO(crbug.com/727427):Add support for DCHECK(webStateList).
-  _webStateList = webStateList;
-  self.webState = nil;
-
-  if (_webStateList) {
-    self.webState = self.webStateList->GetActiveWebState();
-    _webStateList->AddObserver(_webStateListObserver.get());
-
-    if (self.consumer) {
-      [self.consumer setTabCount:_webStateList->count() addedInBackground:NO];
-    }
-  } else {
-    // Clear the web navigation browser agent if the webStateList is nil.
-    self.navigationBrowserAgent = nil;
+- (void)setSteadyStateOmniboxPosition:(ToolbarType)steadyStateOmniboxPosition {
+  if (_steadyStateOmniboxPosition != steadyStateOmniboxPosition) {
+    _steadyStateOmniboxPosition = steadyStateOmniboxPosition;
+    [self.delegate
+        transitionSteadyStateOmniboxToToolbarType:steadyStateOmniboxPosition];
+    [self.omniboxConsumer
+        steadyStateOmniboxMovedToToolbar:steadyStateOmniboxPosition];
   }
 }
 
-- (void)setWebContentAreaOverlayPresenter:
-    (OverlayPresenter*)webContentAreaOverlayPresenter {
-  if (_webContentAreaOverlayPresenter)
-    _webContentAreaOverlayPresenter->RemoveObserver(_overlayObserver.get());
+#pragma mark - Boolean Observer
 
-  _webContentAreaOverlayPresenter = webContentAreaOverlayPresenter;
-
-  if (_webContentAreaOverlayPresenter)
-    _webContentAreaOverlayPresenter->AddObserver(_overlayObserver.get());
-}
-
-- (void)setWebContentAreaShowingOverlay:(BOOL)webContentAreaShowingOverlay {
-  if (_webContentAreaShowingOverlay == webContentAreaShowingOverlay)
-    return;
-  _webContentAreaShowingOverlay = webContentAreaShowingOverlay;
-  [self updateShareMenuForWebState:self.webState];
-}
-
-#pragma mark - Update helper methods
-
-// Updates the consumer to match the current WebState.
-- (void)updateConsumer {
-  DCHECK(self.webState);
-  DCHECK(self.consumer);
-  [self updateConsumerForWebState:self.webState];
-
-  BOOL isNTP = IsVisibleURLNewTabPage(self.webState);
-  [self.consumer setIsNTP:isNTP];
-  // Never show the loading UI for an NTP.
-  BOOL isLoading = self.webState->IsLoading() && !isNTP;
-  [self.consumer setLoadingState:isLoading];
-  if (isLoading) {
-    [self.consumer
-        setLoadingProgressFraction:self.webState->GetLoadingProgress()];
-  }
-  [self updateShareMenuForWebState:self.webState];
-}
-
-// Updates the consumer with the new forward and back states.
-- (void)updateNavigationBackAndForwardStateForWebState:
-    (web::WebState*)webState {
-  DCHECK(webState);
-  const id<ToolbarConsumer> consumer = self.consumer;
-  WebNavigationBrowserAgent* navigationBrowserAgent =
-      self.navigationBrowserAgent;
-  if (navigationBrowserAgent) {
-    [consumer setCanGoForward:navigationBrowserAgent->CanGoForward(webState)];
-    [consumer setCanGoBack:navigationBrowserAgent->CanGoBack(webState)];
+- (void)booleanDidChange:(id<ObservableBoolean>)observableBoolean {
+  if (observableBoolean == _bottomOmniboxEnabled) {
+    _preferredOmniboxPosition = _bottomOmniboxEnabled.value
+                                    ? ToolbarType::kSecondary
+                                    : ToolbarType::kPrimary;
+    [self updateOmniboxPosition];
   }
 }
 
-// Updates the Share Menu button of the consumer.
-- (void)updateShareMenuForWebState:(web::WebState*)webState {
-  if (!self.webState)
-    return;
-  const GURL& URL = webState->GetLastCommittedURL();
-  BOOL shareMenuEnabled =
-      URL.is_valid() && !web::GetWebClient()->IsAppSpecificURL(URL);
-  // Page sharing requires JavaScript execution, which is paused while overlays
-  // are displayed over the web content area.
-  [self.consumer setShareMenuEnabled:shareMenuEnabled &&
-                                     !self.webContentAreaShowingOverlay];
+#pragma mark - CRWWebStateObserver methods.
+
+- (void)webStateWasShown:(web::WebState*)webState {
+  [self updateForWebState:webState];
 }
 
-#pragma mark - OverlayPresesenterObserving
-
-- (void)overlayPresenter:(OverlayPresenter*)presenter
-    willShowOverlayForRequest:(OverlayRequest*)request
-          initialPresentation:(BOOL)initialPresentation {
-  self.webContentAreaShowingOverlay = YES;
+- (void)webState:(web::WebState*)webState
+    didStartNavigation:(web::NavigationContext*)navigation {
+  [self updateForWebState:webState];
 }
 
-- (void)overlayPresenter:(OverlayPresenter*)presenter
-    didHideOverlayForRequest:(OverlayRequest*)request {
-  self.webContentAreaShowingOverlay = NO;
+#pragma mark - WebStateListObserving
+
+- (void)didChangeWebStateList:(WebStateList*)webStateList
+                       change:(const WebStateListChange&)change
+                       status:(const WebStateListStatus&)status {
+  if (status.active_web_state_change() && status.new_active_web_state) {
+    [self updateForWebState:status.new_active_web_state];
+  }
 }
 
 #pragma mark - Private
 
-// Returns a menu for the `navigationItems`.
-- (UIMenu*)menuForNavigationItems:
-    (const std::vector<web::NavigationItem*>)navigationItems {
-  NSMutableArray<UIMenuElement*>* actions = [NSMutableArray array];
-  for (web::NavigationItem* navigationItem : navigationItems) {
-    NSString* title;
-    UIImage* image;
-    if ([self shouldUseIncognitoNTPResourcesForURL:navigationItem
-                                                       ->GetVirtualURL()]) {
-      title = l10n_util::GetNSStringWithFixup(IDS_IOS_NEW_INCOGNITO_TAB);
-      if (@available(iOS 15, *)) {
-        image =
-            SymbolWithPalette(CustomSymbolWithPointSize(
-                                  kIncognitoSymbol, kInfobarSymbolPointSize),
-                              @[ UIColor.whiteColor ]);
+/// Updates the state variables and toolbars with `webState`.
+- (void)updateForWebState:(web::WebState*)webState {
+  [self.delegate updateToolbar];
+  NewTabPageTabHelper* NTPHelper = NewTabPageTabHelper::FromWebState(webState);
+  _isNTP = NTPHelper && NTPHelper->IsActive();
+  if (IsBottomOmniboxSteadyStateEnabled()) {
+    if (_shouldCheckSafariSwitcherOnFRE) {
+      [self checkSafariSwitcherOnFRE];
+    }
+    [self updateOmniboxPosition];
+  }
+}
+
+/// Computes the toolbar that should contain the unfocused omnibox in the
+/// current state.
+- (ToolbarType)steadyStateOmniboxPositionInCurrentState {
+  CHECK(IsBottomOmniboxSteadyStateEnabled());
+  if (_preferredOmniboxPosition == ToolbarType::kPrimary ||
+      !IsSplitToolbarMode(_toolbarTraitCollection)) {
+    return ToolbarType::kPrimary;
+  }
+  if (_isNTP && !_isIncognito) {
+    return ToolbarType::kPrimary;
+  }
+  return _preferredOmniboxPosition;
+}
+
+/// Computes the toolbar that should contain the omnibox in the current state.
+- (ToolbarType)omniboxPositionInCurrentState {
+  CHECK(IsBottomOmniboxSteadyStateEnabled());
+  if (_locationBarFocused) {
+    return ToolbarType::kPrimary;
+  } else {
+    return [self steadyStateOmniboxPositionInCurrentState];
+  }
+}
+
+/// Updates the omnibox position to the correct toolbar.
+- (void)updateOmniboxPosition {
+  if (!IsBottomOmniboxSteadyStateEnabled()) {
+    [self.delegate transitionOmniboxToToolbarType:ToolbarType::kPrimary];
+    return;
+  }
+
+  self.omniboxPosition = [self omniboxPositionInCurrentState];
+  self.steadyStateOmniboxPosition =
+      [self steadyStateOmniboxPositionInCurrentState];
+}
+
+#pragma mark Default omnibox position
+
+/// Verifies if the user is a safari switcher on FRE.
+- (void)checkSafariSwitcherOnFRE {
+  CHECK(IsBottomOmniboxSteadyStateEnabled());
+  CHECK(_shouldCheckSafariSwitcherOnFRE);
+  CHECK(self.deviceSwitcherResultDispatcher);
+  CHECK(self.prefService);
+
+  if (_isNTP) {
+    _hasEnteredNTPOnFRE = YES;
+  } else if (_hasEnteredNTPOnFRE) {
+    // Check device switcher data when the user leaves NTP on FRE, as data is
+    // only available on sync and takes time to fetch. This is only executed
+    // once, if the data is unavailable user may still see the bottom omnibox on
+    // next restart (see. `updateOmniboxDefaultPosition`).
+    _shouldCheckSafariSwitcherOnFRE = NO;
+    segmentation_platform::ClassificationResult result =
+        self.deviceSwitcherResultDispatcher->GetCachedClassificationResult();
+    if (result.status == segmentation_platform::PredictionStatus::kSucceeded) {
+      if (ShouldSwitchOmniboxToBottom(result)) {
+        self.prefService->SetDefaultPrefValue(prefs::kBottomOmnibox,
+                                              base::Value(YES));
+        self.prefService->SetBoolean(prefs::kBottomOmniboxByDefault, YES);
+        base::UmaHistogramEnumeration(
+            kOmniboxDeviceSwitcherResultAtFRE,
+            OmniboxDeviceSwitcherResult::kBottomOmnibox);
       } else {
-        image = [UIImage imageNamed:@"incognito_badge_ios14"];
+        base::UmaHistogramEnumeration(kOmniboxDeviceSwitcherResultAtFRE,
+                                      OmniboxDeviceSwitcherResult::kTopOmnibox);
       }
     } else {
-      title = base::SysUTF16ToNSString(navigationItem->GetTitleForDisplay());
-      const gfx::Image& gfxImage = navigationItem->GetFaviconStatus().image;
-      if (!gfxImage.IsEmpty()) {
-        image = gfxImage.ToUIImage();
-      } else {
-        image = DefaultSymbolWithPointSize(kDocSymbol, kInfobarSymbolPointSize);
-      }
-    }
-
-    __weak __typeof(self) weakSelf = self;
-    UIAction* action =
-        [UIAction actionWithTitle:title
-                            image:image
-                       identifier:nil
-                          handler:^(UIAction* uiAction) {
-                            [weakSelf navigateToPageForItem:navigationItem];
-                          }];
-    [actions addObject:action];
-  }
-  return [UIMenu menuWithTitle:@"" children:actions];
-}
-
-// Returns YES if incognito NTP title and image should be used for back/forward
-// item associated with `URL`.
-- (BOOL)shouldUseIncognitoNTPResourcesForURL:(const GURL&)URL {
-  return URL.DeprecatedGetOriginAsURL() == kChromeUINewTabURL &&
-         self.isIncognito;
-}
-
-// Returns the menu for the new tab button.
-- (UIMenu*)menuForNewTabButton {
-  UIAction* QRCodeSearch = [self.actionFactory actionToShowQRScanner];
-  UIAction* voiceSearch = [self.actionFactory actionToStartVoiceSearch];
-  UIAction* newSearch = [self.actionFactory actionToStartNewSearch];
-  UIAction* newIncognitoSearch =
-      [self.actionFactory actionToStartNewIncognitoSearch];
-
-  NSArray* staticActions =
-      @[ newSearch, newIncognitoSearch, voiceSearch, QRCodeSearch ];
-
-  UIMenuElement* clipboardAction = [self menuElementForPasteboard];
-
-  if (clipboardAction) {
-    UIMenu* staticMenu = [UIMenu menuWithTitle:@""
-                                         image:nil
-                                    identifier:nil
-                                       options:UIMenuOptionsDisplayInline
-                                      children:staticActions];
-
-    return [UIMenu menuWithTitle:@"" children:@[ staticMenu, clipboardAction ]];
-  }
-  return [UIMenu menuWithTitle:@"" children:staticActions];
-}
-
-// Returns the menu for the TabGrid button.
-- (UIMenu*)menuForTabGridButton {
-  UIAction* openNewTab = [self.actionFactory actionToOpenNewTab];
-
-  UIAction* openNewIncognitoTab =
-      [self.actionFactory actionToOpenNewIncognitoTab];
-
-  UIAction* closeTab = [self.actionFactory actionToCloseCurrentTab];
-
-  return [UIMenu menuWithTitle:@""
-                      children:@[ closeTab, openNewTab, openNewIncognitoTab ]];
-}
-
-// Returns the UIMenuElement for the content of the pasteboard. Can return nil.
-- (UIMenuElement*)menuElementForPasteboard {
-  absl::optional<std::set<ClipboardContentType>> clipboardContentType =
-      ClipboardRecentContent::GetInstance()->GetCachedClipboardContentTypes();
-
-  if (clipboardContentType.has_value()) {
-    std::set<ClipboardContentType> clipboardContentTypeValues =
-        clipboardContentType.value();
-
-    if (search_engines::SupportsSearchByImage(self.templateURLService) &&
-        clipboardContentTypeValues.find(ClipboardContentType::Image) !=
-            clipboardContentTypeValues.end()) {
-      return [self.actionFactory actionToSearchCopiedImage];
-    } else if (clipboardContentTypeValues.find(ClipboardContentType::URL) !=
-               clipboardContentTypeValues.end()) {
-      return [self.actionFactory actionToSearchCopiedURL];
-    } else if (clipboardContentTypeValues.find(ClipboardContentType::Text) !=
-               clipboardContentTypeValues.end()) {
-      return [self.actionFactory actionToSearchCopiedText];
+      base::UmaHistogramEnumeration(kOmniboxDeviceSwitcherResultAtFRE,
+                                    OmniboxDeviceSwitcherResult::kUnavailable);
     }
   }
-  return nil;
 }
 
-// Navigates to the page associated with `item`.
-- (void)navigateToPageForItem:(web::NavigationItem*)item {
-  if (!self.webState)
+/// Returns whether user is a safari switcher at startup.
+/// Used to set the default omnibox position to bottom for `IsNewUser` that are
+/// not in FRE. If bottom omnibox is already default `bottomOmniboxIsDefault`,
+/// still log the status as bottom as the user was classified as safari switcher
+/// in a previous session.
+- (BOOL)isSafariSwitcherAtStartup:(BOOL)bottomOmniboxIsDefault {
+  CHECK(IsBottomOmniboxSteadyStateEnabled());
+  CHECK(self.prefService);
+
+  if (!IsNewUser()) {
+    base::UmaHistogramEnumeration(kOmniboxDeviceSwitcherResultAtStartup,
+                                  OmniboxDeviceSwitcherResult::kNotNewUser);
+    return NO;
+  }
+
+  if (bottomOmniboxIsDefault) {
+    base::UmaHistogramEnumeration(kOmniboxDeviceSwitcherResultAtStartup,
+                                  OmniboxDeviceSwitcherResult::kBottomOmnibox);
+    return YES;
+  }
+
+  segmentation_platform::ClassificationResult result =
+      self.deviceSwitcherResultDispatcher->GetCachedClassificationResult();
+  if (result.status != segmentation_platform::PredictionStatus::kSucceeded) {
+    base::UmaHistogramEnumeration(kOmniboxDeviceSwitcherResultAtStartup,
+                                  OmniboxDeviceSwitcherResult::kUnavailable);
+    return NO;
+  }
+
+  if (ShouldSwitchOmniboxToBottom(result)) {
+    base::UmaHistogramEnumeration(kOmniboxDeviceSwitcherResultAtStartup,
+                                  OmniboxDeviceSwitcherResult::kBottomOmnibox);
+    return YES;
+  }
+  base::UmaHistogramEnumeration(kOmniboxDeviceSwitcherResultAtStartup,
+                                OmniboxDeviceSwitcherResult::kTopOmnibox);
+  return NO;
+}
+
+/// Updates the default setting for bottom omnibox.
+- (void)updateOmniboxDefaultPosition {
+  CHECK(IsBottomOmniboxSteadyStateEnabled());
+  CHECK(self.prefService);
+
+  // This only needs to be executed once and deviceSwitcherResult are not
+  // available in incognito.
+  if (!self.deviceSwitcherResultDispatcher ||
+      self.prefService->GetUserPrefValue(prefs::kBottomOmnibox)) {
     return;
+  }
 
-  int index = self.webState->GetNavigationManager()->GetIndexOfItem(item);
-  DCHECK_NE(index, -1);
-  self.webState->GetNavigationManager()->GoToIndex(index);
+  BOOL bottomOmniboxEnabledByDefault = NO;
+  if (base::FeatureList::IsEnabled(kBottomOmniboxDefaultSetting)) {
+    bottomOmniboxEnabledByDefault =
+        self.prefService->GetBoolean(prefs::kBottomOmniboxByDefault);
+  }
+
+  std::string featureParam = base::GetFieldTrialParamValueByFeature(
+      kBottomOmniboxDefaultSetting, kBottomOmniboxDefaultSettingParam);
+  if (featureParam == kBottomOmniboxDefaultSettingParamBottom) {
+    bottomOmniboxEnabledByDefault = YES;
+  } else if (featureParam == kBottomOmniboxDefaultSettingParamSafariSwitcher) {
+    if ([self isSafariSwitcherAtStartup:bottomOmniboxEnabledByDefault]) {
+      bottomOmniboxEnabledByDefault = YES;
+    }
+  } else if (featureParam == kBottomOmniboxDefaultSettingParamTop) {
+    bottomOmniboxEnabledByDefault = NO;
+  }
+
+  // Make sure that users who have already seen the bottom omnibox by default
+  // keep it.
+  if (bottomOmniboxEnabledByDefault) {
+    self.prefService->SetBoolean(prefs::kBottomOmniboxByDefault, YES);
+  }
+
+  self.prefService->SetDefaultPrefValue(
+      prefs::kBottomOmnibox, base::Value(bottomOmniboxEnabledByDefault));
+}
+
+/// Logs preferred omnibox position.
+- (void)logOmniboxPosition {
+  CHECK(IsBottomOmniboxSteadyStateEnabled());
+  CHECK(self.prefService);
+
+  static dispatch_once_t once;
+  dispatch_once(&once, ^{
+    BOOL isBottomOmnibox = self.prefService->GetBoolean(prefs::kBottomOmnibox);
+    OmniboxPositionType positionType = isBottomOmnibox
+                                           ? OmniboxPositionType::kBottom
+                                           : OmniboxPositionType::kTop;
+    base::UmaHistogramEnumeration(kOmniboxSteadyStatePositionAtStartup,
+                                  positionType);
+  });
 }
 
 @end

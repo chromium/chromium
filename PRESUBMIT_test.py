@@ -184,11 +184,46 @@ class InvalidIfDefinedMacroNamesTest(unittest.TestCase):
 
   def testValidIfDefinedMacroNames(self):
     lines = ['#if defined(FOO)',
-             '#ifdef BAR']
+             '#ifdef BAR',
+             '#if TARGET_IPHONE_SIMULATOR']
     errors = PRESUBMIT._CheckForInvalidIfDefinedMacrosInFile(
         MockInputApi(), MockFile('some/path/source.cc', lines))
     self.assertEqual(0, len(errors))
 
+
+class CheckNoUNIT_TESTInSourceFilesTest(unittest.TestCase):
+  def testUnitTestMacros(self):
+    lines = ['#if defined(UNIT_TEST)',
+             '#if defined UNIT_TEST',
+             '#if !defined(UNIT_TEST)',
+             '#elif defined(UNIT_TEST)',
+             '#ifdef UNIT_TEST',
+             ' # ifdef UNIT_TEST',
+             '#ifndef UNIT_TEST',
+             '# if defined(VALID) || defined(UNIT_TEST)',
+             '# if defined(UNIT_TEST) && defined(VALID)',
+             '# else  // defined(UNIT_TEST)',
+             '#endif  // defined(UNIT_TEST)']
+    errors = PRESUBMIT._CheckNoUNIT_TESTInSourceFiles(
+        MockInputApi(), MockFile('some/path/source.cc', lines))
+    self.assertEqual(len(lines), len(errors))
+
+  def testNotUnitTestMacros(self):
+    lines = ['// Comment about "#if defined(UNIT_TEST)"',
+             '/* Comment about #if defined(UNIT_TEST)" */',
+             '#ifndef UNIT_TEST_H',
+             '#define UNIT_TEST_H',
+             '#ifndef TEST_UNIT_TEST',
+             '#define TEST_UNIT_TEST',
+             '#if defined(_UNIT_TEST)',
+             '#if defined(UNIT_TEST_)',
+             '#ifdef _UNIT_TEST',
+             '#ifdef UNIT_TEST_',
+             '#ifndef _UNIT_TEST',
+             '#ifndef UNIT_TEST_']
+    errors = PRESUBMIT._CheckNoUNIT_TESTInSourceFiles(
+        MockInputApi(), MockFile('some/path/source.cc', lines))
+    self.assertEqual(0, len(errors))
 
 class CheckAddedDepsHaveTestApprovalsTest(unittest.TestCase):
 
@@ -509,11 +544,10 @@ class UserMetricsActionTest(unittest.TestCase):
 
 class PydepsNeedsUpdatingTest(unittest.TestCase):
   class MockPopen:
-    def __init__(self, stdout_func):
-      self._stdout_func = stdout_func
+    def __init__(self, stdout):
+      self.stdout = io.StringIO(stdout)
 
     def wait(self):
-      self.stdout = io.StringIO(self._stdout_func())
       return 0
 
   class MockSubprocess:
@@ -527,7 +561,7 @@ class PydepsNeedsUpdatingTest(unittest.TestCase):
       self._popen_func = func
 
     def Popen(self, cmd, *args, **kwargs):
-      return PydepsNeedsUpdatingTest.MockPopen(lambda: self._popen_func(cmd))
+      return PydepsNeedsUpdatingTest.MockPopen(self._popen_func(cmd))
 
   def _MockParseGclientArgs(self, is_android=True):
     return lambda: {'checkout_android': 'true' if is_android else 'false' }
@@ -1047,7 +1081,8 @@ class AccessibilityEventsTestsAreIncludedForAndroidTest(unittest.TestCase):
     mock_input_api = MockInputApi()
 
     mock_input_api.files = [
-        MockAffectedFile('content/test/data/accessibility/event/foo.html',
+        MockAffectedFile(
+          'content/test/data/accessibility/event/foo-expected-mac.txt',
           [''], action='A'),
         MockAffectedFile(
           'accessibility/WebContentsAccessibilityEventsTest.java',
@@ -1059,21 +1094,6 @@ class AccessibilityEventsTestsAreIncludedForAndroidTest(unittest.TestCase):
     self.assertEqual(0, len(msgs),
                      'Expected %d messages, found %d: %s'
                      % (0, len(msgs), msgs))
-
-  # Test that a warning is raised when the Android file is not modified.
-  def testAndroidChangeMissing(self):
-    mock_input_api = MockInputApi()
-
-    mock_input_api.files = [
-        MockAffectedFile('content/test/data/accessibility/event/foo.html',
-          [''], action='A'),
-    ]
-
-    msgs = PRESUBMIT.CheckAccessibilityEventsTestsAreIncludedForAndroid(
-        mock_input_api, MockOutputApi())
-    self.assertEqual(1, len(msgs),
-                     'Expected %d messages, found %d: %s'
-                     % (1, len(msgs), msgs))
 
   # Test that Android change is not required when no html file is added/removed.
   def testIgnoreNonHtmlFiles(self):
@@ -1120,7 +1140,8 @@ class AccessibilityEventsTestsAreIncludedForAndroidTest(unittest.TestCase):
     mock_input_api = MockInputApi()
 
     mock_input_api.files = [
-        MockAffectedFile('content/test/data/accessibility/event/foo.html',
+        MockAffectedFile(
+          'content/test/data/accessibility/event/foo-expected-win.txt',
           [''], action='M')
     ]
 
@@ -1129,21 +1150,6 @@ class AccessibilityEventsTestsAreIncludedForAndroidTest(unittest.TestCase):
     self.assertEqual(0, len(msgs),
                      'Expected %d messages, found %d: %s'
                      % (0, len(msgs), msgs))
-
-  # Test that deleting an html file will trigger the warning.
-  def testAndroidChangeMissingOnDeletedFile(self):
-    mock_input_api = MockInputApi()
-
-    mock_input_api.files = [
-        MockAffectedFile('content/test/data/accessibility/event/foo.html',
-          [], action='D')
-    ]
-
-    msgs = PRESUBMIT.CheckAccessibilityEventsTestsAreIncludedForAndroid(
-        mock_input_api, MockOutputApi())
-    self.assertEqual(1, len(msgs),
-                     'Expected %d messages, found %d: %s'
-                     % (1, len(msgs), msgs))
 
 class AccessibilityTreeTestsAreIncludedForAndroidTest(unittest.TestCase):
   # Test that no warning is raised when the Android file is also modified.
@@ -1193,7 +1199,8 @@ class AccessibilityTreeTestsAreIncludedForAndroidTest(unittest.TestCase):
     mock_input_api = MockInputApi()
 
     mock_input_api.files = [
-        MockAffectedFile('content/test/data/accessibility/aria/foo.html',
+        MockAffectedFile(
+          'content/test/data/accessibility/aria/foo-expected-win.txt',
           [''], action='A'),
     ]
 
@@ -1203,12 +1210,17 @@ class AccessibilityTreeTestsAreIncludedForAndroidTest(unittest.TestCase):
                      'Expected %d messages, found %d: %s'
                      % (1, len(msgs), msgs))
 
-  # Test that Android change is not required when no html file is added/removed.
-  def testIgnoreNonHtmlFiles(self):
+  # Test that Android change is not required when no platform expectations files are changed.
+  def testAndroidChangNotMissing(self):
     mock_input_api = MockInputApi()
 
     mock_input_api.files = [
         MockAffectedFile('content/test/data/accessibility/accname/foo.txt',
+          [''], action='A'),
+        MockAffectedFile(
+          'content/test/data/accessibility/html/foo-expected-blink.txt',
+          [''], action='A'),
+        MockAffectedFile('content/test/data/accessibility/html/foo.html',
           [''], action='A'),
         MockAffectedFile('content/test/data/accessibility/aria/foo.cc',
           [''], action='A'),
@@ -1253,21 +1265,6 @@ class AccessibilityTreeTestsAreIncludedForAndroidTest(unittest.TestCase):
     self.assertEqual(0, len(msgs),
                      'Expected %d messages, found %d: %s'
                      % (0, len(msgs), msgs))
-
-  # Test that deleting an html file will trigger the warning.
-  def testAndroidChangeMissingOnDeletedFile(self):
-    mock_input_api = MockInputApi()
-
-    mock_input_api.files = [
-        MockAffectedFile('content/test/data/accessibility/accname/foo.html',
-          [], action='D')
-    ]
-
-    msgs = PRESUBMIT.CheckAccessibilityTreeTestsAreIncludedForAndroid(
-        mock_input_api, MockOutputApi())
-    self.assertEqual(1, len(msgs),
-                     'Expected %d messages, found %d: %s'
-                     % (1, len(msgs), msgs))
 
 class AndroidDeprecatedTestAnnotationTest(unittest.TestCase):
   def testCheckAndroidTestAnnotationUsage(self):
@@ -2325,6 +2322,34 @@ class CorrectProductNameInMessagesTest(unittest.TestCase):
     self.assertTrue(
         'chrome/app/google_chrome_strings.grd:2' in warnings[0].items[0])
 
+  def testChromeForTestingInChromium(self):
+    mock_input_api = MockInputApi()
+    mock_input_api.files = [
+      MockAffectedFile('chrome/app/chromium_strings.grd', [
+        '<message name="Bar" desc="Welcome to Chrome">',
+        '  Welcome to Chrome for Testing!',
+        '</message>',
+      ]),
+    ]
+    warnings = PRESUBMIT.CheckCorrectProductNameInMessages(
+        mock_input_api, MockOutputApi())
+    self.assertEqual(0, len(warnings))
+
+  def testChromeForTestingInChrome(self):
+    mock_input_api = MockInputApi()
+    mock_input_api.files = [
+      MockAffectedFile('chrome/app/google_chrome_strings.grd', [
+        '<message name="Bar" desc="Welcome to Chrome">',
+        '  Welcome to Chrome for Testing!',
+        '</message>',
+      ]),
+    ]
+    warnings = PRESUBMIT.CheckCorrectProductNameInMessages(
+        mock_input_api, MockOutputApi())
+    self.assertEqual(1, len(warnings))
+    self.assertTrue(
+        'chrome/app/google_chrome_strings.grd:2' in warnings[0].items[0])
+
   def testMultipleInstances(self):
     mock_input_api = MockInputApi()
     mock_input_api.files = [
@@ -3051,6 +3076,7 @@ class NoProductionCodeUsingTestOnlyFunctionsTest(unittest.TestCase):
       MockFile('some/path/foo.mm', ['FooForTesting() {']),
       MockFile('some/path/foo.cc', ['::FooForTests();']),
       MockFile('some/path/foo.cpp', ['// foo_for_test();']),
+      MockFile('some/path/foo.cxx', ['foo_for_test(); // IN-TEST']),
     ]
 
     results = PRESUBMIT.CheckNoProductionCodeUsingTestOnlyFunctions(
@@ -3115,6 +3141,7 @@ class NoProductionJavaCodeUsingTestOnlyFunctionsTest(unittest.TestCase):
         ' * Use FooForTest(); to obtain foo in tests.'
         ' */'
       ]),
+      MockFile('dir/java/src/bar6.java', ['FooForTesting(); // IN-TEST']),
     ]
 
     results = PRESUBMIT.CheckNoProductionCodeUsingTestOnlyFunctionsJava(
@@ -4779,7 +4806,7 @@ class CheckBatchAnnotation(unittest.TestCase):
                   'import org.chromium.base.test.BaseRobolectricTestRunner;',
                   'public class Three {']),
         MockFile('path/FourTest.java',
-                 ['@DoNotBatch(reason = "dummy reason 1")',
+                 ['@DoNotBatch(reason = "placeholder reason 1")',
                   'import org.chromium.base.test.BaseRobolectricTestRunner;',
                   'public class Four {']),
     ]
@@ -4800,7 +4827,7 @@ class CheckBatchAnnotation(unittest.TestCase):
         MockFile('path/OneTest.java',
                  ['@Batch(Batch.PER_CLASS)', 'public class One {']),
         MockFile('path/TwoTest.java',
-                 ['@DoNotBatch(reason = "dummy reasons.")', 'public class Two {'
+                 ['@DoNotBatch(reason = "placeholder reasons.")', 'public class Two {'
                  ]),
         MockFile('path/ThreeTest.java',
                  ['@Batch(Batch.PER_CLASS)',
@@ -4808,9 +4835,9 @@ class CheckBatchAnnotation(unittest.TestCase):
                  ['@Batch(Batch.PER_CLASS)',
                   'public class Three extends BaseTestB {']),
         MockFile('path/FourTest.java',
-                 ['@DoNotBatch(reason = "dummy reason 1")',
+                 ['@DoNotBatch(reason = "placeholder reason 1")',
                   'public class Four extends BaseTestA {'],
-                 ['@DoNotBatch(reason = "dummy reason 2")',
+                 ['@DoNotBatch(reason = "placeholder reason 2")',
                   'public class Four extends BaseTestB {']),
         MockFile('path/FiveTest.java',
                  ['import androidx.test.uiautomator.UiDevice;',
@@ -4833,7 +4860,9 @@ class CheckBatchAnnotation(unittest.TestCase):
         ),
         MockFile('path/PRESUBMIT.py',
                  ['@Batch(Batch.PER_CLASS)',
-                  '@DoNotBatch(reason = "dummy reason)']),
+                  '@DoNotBatch(reason = "placeholder reason)']),
+        MockFile('path/AnnotationTest.java',
+          ['public @interface SomeAnnotation {'],),
     ]
     errors = PRESUBMIT.CheckBatchAnnotation(mock_input, MockOutputApi())
     self.assertEqual(0, len(errors))

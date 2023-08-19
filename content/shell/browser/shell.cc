@@ -24,6 +24,7 @@
 #include "components/custom_handlers/protocol_handler_registry.h"
 #include "components/custom_handlers/simple_protocol_handler_registry_factory.h"
 #include "content/public/browser/browser_context.h"
+#include "content/public/browser/color_chooser.h"
 #include "content/public/browser/devtools_agent_host.h"
 #include "content/public/browser/file_select_listener.h"
 #include "content/public/browser/navigation_controller.h"
@@ -359,7 +360,7 @@ void Shell::ResizeWebContentForTests(const gfx::Size& content_size) {
 
 gfx::NativeView Shell::GetContentView() {
   if (!web_contents_)
-    return nullptr;
+    return gfx::NativeView();
   return web_contents_->GetNativeView();
 }
 
@@ -641,10 +642,35 @@ void Shell::ActivateContents(WebContents* contents) {
 #endif
 }
 
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_APPLE)
+std::unique_ptr<ColorChooser> Shell::OpenColorChooser(
+    WebContents* web_contents,
+    SkColor color,
+    const std::vector<blink::mojom::ColorSuggestionPtr>& suggestions) {
+  return g_platform->OpenColorChooser(web_contents, color, suggestions);
+}
+#endif
+
 void Shell::RunFileChooser(RenderFrameHost* render_frame_host,
                            scoped_refptr<FileSelectListener> listener,
                            const blink::mojom::FileChooserParams& params) {
-  g_platform->RunFileChooser(render_frame_host, std::move(listener), params);
+  run_file_chooser_count_++;
+  if (hold_file_chooser_) {
+    held_file_chooser_listener_ = std::move(listener);
+  } else {
+    g_platform->RunFileChooser(render_frame_host, std::move(listener), params);
+  }
+}
+
+void Shell::EnumerateDirectory(WebContents* web_contents,
+                               scoped_refptr<FileSelectListener> listener,
+                               const base::FilePath& path) {
+  run_file_chooser_count_++;
+  if (hold_file_chooser_) {
+    held_file_chooser_listener_ = std::move(listener);
+  } else {
+    listener->FileSelectionCanceled();
+  }
 }
 
 bool Shell::IsBackForwardCacheSupported() {

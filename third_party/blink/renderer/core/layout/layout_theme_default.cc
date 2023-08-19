@@ -192,8 +192,13 @@ void LayoutThemeDefault::AdjustInnerSpinButtonStyle(
       WebThemeEngine::kPartInnerSpinButton);
 
   float zoom_level = style.EffectiveZoom();
-  style.SetWidth(Length::Fixed(size.width() * zoom_level));
-  style.SetMinWidth(Length::Fixed(size.width() * zoom_level));
+  if (IsHorizontalWritingMode(style.GetWritingMode())) {
+    style.SetWidth(Length::Fixed(size.width() * zoom_level));
+    style.SetMinWidth(Length::Fixed(size.width() * zoom_level));
+  } else {
+    style.SetHeight(Length::Fixed(size.width() * zoom_level));
+    style.SetMinHeight(Length::Fixed(size.width() * zoom_level));
+  }
 }
 
 Color LayoutThemeDefault::PlatformFocusRingColor() const {

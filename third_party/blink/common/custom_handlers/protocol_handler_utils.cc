@@ -5,9 +5,11 @@
 #include "third_party/blink/public/common/custom_handlers/protocol_handler_utils.h"
 
 #include "base/containers/contains.h"
+#include "base/feature_list.h"
 #include "base/strings/string_piece.h"
 #include "base/strings/string_util.h"
 #include "services/network/public/cpp/is_potentially_trustworthy.h"
+#include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/scheme_registry.h"
 #include "url/gurl.h"
 
@@ -62,14 +64,26 @@ bool IsValidCustomHandlerScheme(const base::StringPiece scheme,
     }
     return true;
   }
-
   static constexpr const char* const kProtocolSafelist[] = {
       "bitcoin", "cabal",  "dat",    "did",  "doi",  "dweb", "ethereum",
       "geo",     "hyper",  "im",     "ipfs", "ipns", "irc",  "ircs",
       "magnet",  "mailto", "matrix", "mms",  "news", "nntp", "openpgp4fpr",
       "sip",     "sms",    "smsto",  "ssb",  "ssh",  "tel",  "urn",
       "webcal",  "wtai",   "xmpp"};
-  return base::Contains(kProtocolSafelist, base::ToLowerASCII(scheme));
+
+  static constexpr const char* const kProtocolSafelistFtpEnabled[] = {
+      "bitcoin",  "cabal",  "dat",   "did",  "doi",         "dweb",
+      "ethereum", "ftp",    "ftps",  "geo",  "hyper",       "im",
+      "ipfs",     "ipns",   "irc",   "ircs", "magnet",      "mailto",
+      "matrix",   "mms",    "news",  "nntp", "openpgp4fpr", "sftp",
+      "sip",      "sms",    "smsto", "ssb",  "ssh",         "tel",
+      "urn",      "webcal", "wtai",  "xmpp"};
+
+  return base::FeatureList::IsEnabled(
+             features::kSafelistFTPToRegisterProtocolHandler)
+             ? base::Contains(kProtocolSafelistFtpEnabled,
+                              base::ToLowerASCII(scheme))
+             : base::Contains(kProtocolSafelist, base::ToLowerASCII(scheme));
 }
 
 bool IsAllowedCustomHandlerURL(const GURL& url,

@@ -107,8 +107,6 @@ public class IncognitoReauthPromoMessageServiceUnitTest {
         when(mUserPrefsJniMock.get(mProfileMock)).thenReturn(mPrefServiceMock);
 
         IncognitoReauthManager.setIsIncognitoReauthFeatureAvailableForTesting(false);
-        IncognitoReauthSettingUtils.setIsDeviceScreenLockEnabledForTesting(false);
-        IncognitoReauthPromoMessageService.setIsPromoEnabledForTesting(null);
         mSharedPreferenceManager = SharedPreferencesManager.getInstance();
     }
 
@@ -126,7 +124,6 @@ public class IncognitoReauthPromoMessageServiceUnitTest {
 
     @After
     public void tearDown() {
-        Profile.setLastUsedProfileForTesting(null);
         verifyNoMoreInteractions(mProfileMock, mContextMock, mSnackbarManagerMock);
     }
 

@@ -10,7 +10,6 @@
 #include "base/sequence_checker.h"
 #include "base/thread_annotations.h"
 #include "base/timer/elapsed_timer.h"
-#include "content/browser/first_party_sets/first_party_set_parser.h"
 #include "content/browser/first_party_sets/local_set_declaration.h"
 #include "content/common/content_export.h"
 #include "net/first_party_sets/global_first_party_sets.h"
@@ -46,9 +45,6 @@ class CONTENT_EXPORT FirstPartySetsLoader {
   // Only the first call to SetComponentSets can have any effect; subsequent
   // invocations are ignored.
   void SetComponentSets(base::Version version, base::File sets_file);
-
-  // Close the file on thread pool that allows blocking.
-  void DisposeFile(base::File sets_file);
 
  private:
   // Parses the contents of `raw_sets` as a collection of First-Party Set

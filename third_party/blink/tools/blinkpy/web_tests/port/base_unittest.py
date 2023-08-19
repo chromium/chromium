@@ -1066,7 +1066,7 @@ class PortTest(LoggingTestCase):
     def test_is_slow_wpt_test_idlharness_with_dcheck(self):
         port = self.make_port(with_tests=True)
         add_manifest_to_mock_filesystem(port)
-        port.host.filesystem.write_text_file(port._build_path('args.gn'),
+        port.host.filesystem.write_text_file(port.build_path('args.gn'),
                                              'dcheck_always_on=true\n')
         # We always consider idlharness tests slow, even if they aren't marked
         # such in the manifest. See https://crbug.com/1047818
@@ -1472,7 +1472,7 @@ class PortTest(LoggingTestCase):
             'build_directory': 'xcodebuild'
         })
         self.assertEqual(
-            self.make_port(options=options)._build_path(),
+            self.make_port(options=options).build_path(),
             '/mock-checkout/xcodebuild/Release')
 
         # Test that "out" is used as the default.
@@ -1481,7 +1481,7 @@ class PortTest(LoggingTestCase):
             'build_directory': None
         })
         self.assertEqual(
-            self.make_port(options=options)._build_path(),
+            self.make_port(options=options).build_path(),
             '/mock-checkout/out/Release')
 
     def test_dont_require_http_server(self):
@@ -1595,25 +1595,40 @@ class PortTest(LoggingTestCase):
 
     def test_args_for_test(self):
         port = self.make_port(with_tests=True)
-        self.assertEqual([], port.args_for_test('non/virtual'))
-        self.assertEqual([], port.args_for_test('passes/text.html'))
-        self.assertEqual([],
-                         port.args_for_test('virtual/non-existing/test.html'))
+        self.assertEqual(
+            ['--disable-threaded-compositing', '--disable-threaded-animation'],
+            port.args_for_test('non/virtual'))
+        self.assertEqual(
+            ['--disable-threaded-compositing', '--disable-threaded-animation'],
+            port.args_for_test('passes/text.html'))
+        self.assertEqual(
+            ['--disable-threaded-compositing', '--disable-threaded-animation'],
+            port.args_for_test('virtual/non-existing/test.html'))
 
-        self.assertEqual(
-            ['--virtual-arg'],
-            port.args_for_test('virtual/virtual_passes/passes/text.html'))
-        self.assertEqual(
-            ['--virtual-arg'],
-            port.args_for_test('virtual/virtual_passes/passes/any.html'))
-        self.assertEqual(['--virtual-arg'],
-                         port.args_for_test('virtual/virtual_passes/passes/'))
-        self.assertEqual(['--virtual-arg'],
-                         port.args_for_test('virtual/virtual_passes/passes'))
-        self.assertEqual(['--virtual-arg'],
-                         port.args_for_test('virtual/virtual_passes/'))
-        self.assertEqual(['--virtual-arg'],
-                         port.args_for_test('virtual/virtual_passes'))
+        self.assertEqual([
+            '--virtual-arg', '--disable-threaded-compositing',
+            '--disable-threaded-animation'
+        ], port.args_for_test('virtual/virtual_passes/passes/text.html'))
+        self.assertEqual([
+            '--virtual-arg', '--disable-threaded-compositing',
+            '--disable-threaded-animation'
+        ], port.args_for_test('virtual/virtual_passes/passes/any.html'))
+        self.assertEqual([
+            '--virtual-arg', '--disable-threaded-compositing',
+            '--disable-threaded-animation'
+        ], port.args_for_test('virtual/virtual_passes/passes/'))
+        self.assertEqual([
+            '--virtual-arg', '--disable-threaded-compositing',
+            '--disable-threaded-animation'
+        ], port.args_for_test('virtual/virtual_passes/passes'))
+        self.assertEqual([
+            '--virtual-arg', '--disable-threaded-compositing',
+            '--disable-threaded-animation'
+        ], port.args_for_test('virtual/virtual_passes/'))
+        self.assertEqual([
+            '--virtual-arg', '--disable-threaded-compositing',
+            '--disable-threaded-animation'
+        ], port.args_for_test('virtual/virtual_passes'))
 
     def test_missing_virtual_test_suite_file(self):
         port = self.make_port()
@@ -1633,7 +1648,8 @@ class PortTest(LoggingTestCase):
             ' "args": ["-c"], "expires": "never"}'
             ']')
         fs.write_text_file(fs.join(web_tests_dir, 'test', 'test.html'), '')
-        self.assertTrue("virtual/v1/test/test.html" not in port.tests())
+        # expires won't have an effect when loading the tests
+        self.assertTrue("virtual/v1/test/test.html" in port.tests())
         self.assertTrue("virtual/v2/test/test.html" in port.tests())
         self.assertTrue("virtual/v3/test/test.html" in port.tests())
 
@@ -1690,6 +1706,56 @@ class PortTest(LoggingTestCase):
         self.assertTrue(
             port.skipped_due_to_exclusive_virtual_tests(
                 'virtual/v2/b2/test2.html'))
+
+    def test_virtual_skip_base_tests(self):
+        port = self.make_port()
+        fs = port.host.filesystem
+        web_tests_dir = port.web_tests_dir()
+        fs.write_text_file(
+            fs.join(web_tests_dir, 'VirtualTestSuites'), '['
+            '{"prefix": "v1", "platforms": ["Linux"], "bases": ["b1", "b2"],'
+            '"args": ["-a"], "expires": "never"},'
+            '{"prefix": "v2", "platforms": ["Linux"], "bases": ["b1"],'
+            '"skip_base_tests": "ALL",'
+            '"args": ["-a"], "expires": "never"}'
+            ']')
+        fs.write_text_file(fs.join(web_tests_dir, 'b1', 'test1.html'), '')
+        fs.write_text_file(fs.join(web_tests_dir, 'b2', 'test2.html'), '')
+
+        self.assertTrue(port.skipped_due_to_skip_base_tests('b1/test.html'))
+        self.assertFalse(
+            port.skipped_due_to_skip_base_tests('virtual/v1/b1/test1.html'))
+        self.assertFalse(port.skipped_due_to_skip_base_tests('b2/test2.html'))
+        self.assertFalse(
+            port.skipped_due_to_skip_base_tests('virtual/v1/b2/test2.html'))
+
+    # test.any.js shows up on the filesystem as one file but it effectively becomes two test files:
+    # test.any.html and test.any.worker.html. We should support skipping test.any.js.
+    def test_virtual_skip_base_tests_with_generated_tests(self):
+        port = self.make_port()
+        fs = port.host.filesystem
+        web_tests_dir = port.web_tests_dir()
+        fs.write_text_file(
+            fs.join(web_tests_dir, 'VirtualTestSuites'), '['
+            '{"prefix": "v", "platforms": ["Linux"], "bases": ["external/wpt/console/test.any.js"],'
+            '"skip_base_tests": "ALL",'
+            '"args": ["-a"], "expires": "never"}'
+            ']')
+        fs.write_text_file(
+            fs.join(web_tests_dir, 'external/wpt/console', 'test.any.js'), '')
+
+        self.assertTrue(
+            port.skipped_due_to_skip_base_tests(
+                'external/wpt/console/test.any.html'))
+        self.assertTrue(
+            port.skipped_due_to_skip_base_tests(
+                'external/wpt/console/test.any.worker.html'))
+        self.assertFalse(
+            port.skipped_due_to_skip_base_tests(
+                'virtual/v/external/wpt/console/test.any.html'))
+        self.assertFalse(
+            port.skipped_due_to_skip_base_tests(
+                'virtual/v/external/wpt/console/test.any.worker.html'))
 
     def test_default_results_directory(self):
         port = self.make_port(
@@ -1823,39 +1889,6 @@ class PortTest(LoggingTestCase):
             '# results: [ Skip ]\nfailures/expected/image.html [ Skip ]\n')
         self.assertTrue(port.skips_test('failures/expected/image.html'))
 
-    def test_split_webdriver_test_name(self):
-        self.assertEqual(
-            Port.split_webdriver_test_name(
-                "tests/accept_alert/accept.py>>foo"),
-            ("tests/accept_alert/accept.py", "foo"))
-        self.assertEqual(
-            Port.split_webdriver_test_name("tests/accept_alert/accept.py"),
-            ("tests/accept_alert/accept.py", None))
-
-    def test_split_webdriver_subtest_pytest_name(self):
-        self.assertEqual(
-            Port.split_webdriver_subtest_pytest_name(
-                "tests/accept_alert/accept.py::foo"),
-            ("tests/accept_alert/accept.py", "foo"))
-        self.assertEqual(
-            Port.split_webdriver_subtest_pytest_name(
-                "tests/accept_alert/accept.py"),
-            ("tests/accept_alert/accept.py", None))
-
-    def test_add_webdriver_subtest_suffix(self):
-        self.assertEqual(
-            Port.add_webdriver_subtest_suffix("abd", "bar"), "abd>>bar")
-        self.assertEqual(Port.add_webdriver_subtest_suffix("abd", None), "abd")
-
-    def test_add_webdriver_subtest_pytest_suffix(self):
-        wb_test_name = "abd"
-        sub_test_name = "bar"
-
-        full_webdriver_name = Port.add_webdriver_subtest_pytest_suffix(
-            wb_test_name, sub_test_name)
-
-        self.assertEqual(full_webdriver_name, "abd::bar")
-
     def test_disable_system_font_check_and_nocheck_sys_deps(self):
         port = self.make_port()
         self.assertNotIn('--disable-system-font-check',
@@ -1871,6 +1904,8 @@ class PortTest(LoggingTestCase):
         port = self.make_port(with_tests=True, options=options)
         with mock.patch('time.strftime', return_value='TIME'):
             self.assertEqual([
+                '--disable-threaded-compositing',
+                '--disable-threaded-animation',
                 '--trace-startup=*,-blink',
                 '--trace-startup-duration=0',
                 '--trace-startup-file=trace_layout_test_non_virtual_TIME.json',

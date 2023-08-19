@@ -5,9 +5,13 @@
 #include "components/media_message_center/media_squiggly_progress_view.h"
 
 #include "base/i18n/number_formatting.h"
+#include "base/i18n/rtl.h"
 #include "cc/paint/paint_flags.h"
+#include "components/strings/grit/components_strings.h"
 #include "services/media_session/public/mojom/media_session.mojom.h"
 #include "third_party/skia/include/core/SkPath.h"
+#include "ui/accessibility/ax_action_data.h"
+#include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/gfx/canvas.h"
 #include "ui/gfx/geometry/skia_conversions.h"
@@ -17,12 +21,13 @@ namespace media_message_center {
 
 namespace {
 
-// The width of stroke to paint the progress foreground and background lines.
-constexpr int kProgressStrokeWidth = 2;
+// The width of stroke to paint the progress foreground and background lines,
+// and also the focus ring.
+constexpr int kStrokeWidth = 2;
 
 // The height of squiggly progress that user can click to seek to a new media
 // position. This is slightly larger than the painted progress height.
-constexpr int kProgressClickHeight = 10;
+constexpr int kProgressClickHeight = 14;
 
 // Defines the x of where the painting of squiggly progress should start since
 // we own the OnPaint() function.
@@ -32,12 +37,16 @@ constexpr int kWidthInset = 8;
 constexpr int kProgressWavelength = 32;
 constexpr int kProgressAmplitude = 2;
 
-// The radius of the circle at the end of the foreground squiggly progress. This
-// should be larger than the progress amplitude to cover it.
-constexpr int kProgressCircleRadius = 5;
-
 // Progress wave speed in pixels per second.
 constexpr int kProgressPhaseSpeed = 28;
+
+// The size of the rounded rectangle indicator at the end of the foreground
+// squiggly progress.
+constexpr gfx::SizeF kProgressIndicatorSize =
+    gfx::SizeF(6, kProgressClickHeight);
+
+// The radius of the rounded rectangle indicator.
+constexpr float kProgressIndicatorRadius = 3.0;
 
 // Defines how long the animation for progress transitioning between squiggly
 // and straight lines will take.
@@ -49,6 +58,12 @@ constexpr base::TimeDelta kProgressUpdateFrequency = base::Milliseconds(100);
 // Used to set the height of the whole view.
 constexpr auto kInsideInsets = gfx::Insets::VH(16, 0);
 
+// Defines the radius of the focus ring around squiggly progress.
+constexpr float kFocusRingRadius = 18.0f;
+
+// Defines how much the current media position will change for increment.
+constexpr base::TimeDelta kCurrentPositionChange = base::Seconds(5);
+
 int RoundToPercent(double fractional_value) {
   return static_cast<int>(fractional_value * 100);
 }
@@ -58,14 +73,22 @@ int RoundToPercent(double fractional_value) {
 MediaSquigglyProgressView::MediaSquigglyProgressView(
     ui::ColorId foreground_color_id,
     ui::ColorId background_color_id,
+    ui::ColorId focus_ring_color_id,
+    base::RepeatingCallback<void(bool)> dragging_callback,
     base::RepeatingCallback<void(double)> seek_callback)
     : foreground_color_id_(foreground_color_id),
       background_color_id_(background_color_id),
+      focus_ring_color_id_(focus_ring_color_id),
+      dragging_callback_(std::move(dragging_callback)),
       seek_callback_(std::move(seek_callback)),
       slide_animation_(this) {
   SetInsideBorderInsets(kInsideInsets);
   SetFlipCanvasOnPaintForRTLUI(true);
-  SetAccessibilityProperties(ax::mojom::Role::kProgressIndicator);
+  SetAccessibilityProperties(
+      ax::mojom::Role::kProgressIndicator,
+      l10n_util::GetStringUTF16(
+          IDS_MEDIA_MESSAGE_CENTER_MEDIA_NOTIFICATION_TIME_SCRUBBER));
+  SetFocusBehavior(FocusBehavior::ALWAYS);
 
   slide_animation_.SetSlideDuration(kSlideAnimationDuration);
 }
@@ -85,10 +108,33 @@ void MediaSquigglyProgressView::AnimationProgressed(
 ///////////////////////////////////////////////////////////////////////////////
 // views::View implementations:
 
+gfx::Size MediaSquigglyProgressView::CalculatePreferredSize() const {
+  return GetContentsBounds().size();
+}
+
 void MediaSquigglyProgressView::GetAccessibleNodeData(
     ui::AXNodeData* node_data) {
   View::GetAccessibleNodeData(node_data);
   node_data->SetValue(base::FormatPercent(RoundToPercent(current_value_)));
+  node_data->AddAction(ax::mojom::Action::kIncrement);
+  node_data->AddAction(ax::mojom::Action::kDecrement);
+}
+
+bool MediaSquigglyProgressView::HandleAccessibleAction(
+    const ui::AXActionData& action_data) {
+  double new_value;
+  if (action_data.action == ax::mojom::Action::kIncrement) {
+    new_value = CalculateNewValue(current_position_ + kCurrentPositionChange);
+  } else if (action_data.action == ax::mojom::Action::kDecrement) {
+    new_value = CalculateNewValue(current_position_ - kCurrentPositionChange);
+  } else {
+    return views::View::HandleAccessibleAction(action_data);
+  }
+  if (new_value != current_value_) {
+    seek_callback_.Run(new_value);
+    return true;
+  }
+  return false;
 }
 
 void MediaSquigglyProgressView::VisibilityChanged(View* starting_from,
@@ -104,13 +150,12 @@ void MediaSquigglyProgressView::OnPaint(gfx::Canvas* canvas) {
   const auto* color_provider = GetColorProvider();
   const int view_width = GetContentsBounds().width() - kWidthInset * 2;
   const int view_height = GetContentsBounds().height();
-  const int progress_width =
-      static_cast<int>(view_width * std::min(current_value_, 1.0) + 0.5);
+  const int progress_width = static_cast<int>(view_width * current_value_);
 
   // Create the paint flags which will be reused for painting.
   cc::PaintFlags flags;
   flags.setStyle(cc::PaintFlags::kStroke_Style);
-  flags.setStrokeWidth(kProgressStrokeWidth);
+  flags.setStrokeWidth(kStrokeWidth);
   flags.setAntiAlias(true);
   flags.setColor(color_provider->GetColor(foreground_color_id_));
 
@@ -143,20 +188,49 @@ void MediaSquigglyProgressView::OnPaint(gfx::Canvas* canvas) {
   canvas->DrawPath(progress_path, flags);
   canvas->Restore();
 
-  // Paint the progress circle indicator.
+  // Paint the progress rectangle indicator.
   flags.setStyle(cc::PaintFlags::kFill_Style);
-  canvas->DrawCircle(gfx::Point(progress_width, view_height / 2),
-                     kProgressCircleRadius, flags);
+  canvas->DrawRoundRect(
+      gfx::RectF(
+          gfx::PointF(progress_width - kProgressIndicatorSize.width() / 2,
+                      (view_height - kProgressIndicatorSize.height()) / 2),
+          kProgressIndicatorSize),
+      kProgressIndicatorRadius, flags);
 
   // Paint the background straight line.
-  if (progress_width + kProgressCircleRadius < view_width) {
+  if (progress_width + kProgressIndicatorSize.width() / 2 < view_width) {
     flags.setStyle(cc::PaintFlags::kStroke_Style);
     flags.setColor(color_provider->GetColor(background_color_id_));
     canvas->DrawLine(
-        gfx::PointF(progress_width + kProgressCircleRadius, view_height / 2),
+        gfx::PointF(progress_width + kProgressIndicatorSize.width() / 2,
+                    view_height / 2),
         gfx::PointF(view_width, view_height / 2), flags);
   }
   canvas->Restore();
+
+  // Paint the focus ring in the end on the original canvas.
+  if (HasFocus()) {
+    cc::PaintFlags border;
+    border.setStyle(cc::PaintFlags::kStroke_Style);
+    border.setStrokeWidth(kStrokeWidth);
+    border.setAntiAlias(true);
+    border.setColor(color_provider->GetColor(focus_ring_color_id_));
+    canvas->DrawRoundRect(
+        gfx::Rect(kStrokeWidth, kStrokeWidth,
+                  GetContentsBounds().width() - kStrokeWidth * 2,
+                  GetContentsBounds().height() - kStrokeWidth * 2),
+        kFocusRingRadius, border);
+  }
+}
+
+void MediaSquigglyProgressView::OnFocus() {
+  views::View::OnFocus();
+  SchedulePaint();
+}
+
+void MediaSquigglyProgressView::OnBlur() {
+  views::View::OnBlur();
+  SchedulePaint();
 }
 
 bool MediaSquigglyProgressView::OnMousePressed(const ui::MouseEvent& event) {
@@ -165,8 +239,62 @@ bool MediaSquigglyProgressView::OnMousePressed(const ui::MouseEvent& event) {
     return false;
   }
 
-  HandleSeeking(event.location());
+  HandleSeeking(event.x());
+
+  // Pause the media if it is playing when the user starts dragging the progress
+  // line.
+  if (!is_paused_) {
+    dragging_callback_.Run(/*pause=*/true);
+    paused_for_dragging_ = true;
+  }
+
   return true;
+}
+
+bool MediaSquigglyProgressView::OnMouseDragged(const ui::MouseEvent& event) {
+  HandleSeeking(event.x());
+  return true;
+}
+
+void MediaSquigglyProgressView::OnMouseReleased(const ui::MouseEvent& event) {
+  HandleSeeking(event.x());
+
+  // Un-pause the media when the user finishes dragging the progress line if the
+  // media was playing before dragging.
+  if (paused_for_dragging_) {
+    dragging_callback_.Run(/*pause=*/false);
+    paused_for_dragging_ = false;
+  }
+}
+
+bool MediaSquigglyProgressView::OnKeyPressed(const ui::KeyEvent& event) {
+  if (is_live_) {
+    return false;
+  }
+  int direction = 1;
+  switch (event.key_code()) {
+    case ui::VKEY_LEFT:
+      direction = base::i18n::IsRTL() ? 1 : -1;
+      break;
+    case ui::VKEY_RIGHT:
+      direction = base::i18n::IsRTL() ? -1 : 1;
+      break;
+    case ui::VKEY_UP:
+      direction = 1;
+      break;
+    case ui::VKEY_DOWN:
+      direction = -1;
+      break;
+    default:
+      return false;
+  }
+  double new_value =
+      CalculateNewValue(current_position_ + direction * kCurrentPositionChange);
+  if (new_value != current_value_) {
+    seek_callback_.Run(new_value);
+    return true;
+  }
+  return false;
 }
 
 void MediaSquigglyProgressView::OnGestureEvent(ui::GestureEvent* event) {
@@ -175,7 +303,7 @@ void MediaSquigglyProgressView::OnGestureEvent(ui::GestureEvent* event) {
     return;
   }
 
-  HandleSeeking(event->location());
+  HandleSeeking(event->x());
   event->SetHandled();
 }
 
@@ -184,7 +312,9 @@ void MediaSquigglyProgressView::OnGestureEvent(ui::GestureEvent* event) {
 
 void MediaSquigglyProgressView::UpdateProgress(
     const media_session::MediaPosition& media_position) {
-  is_live_ = media_position.duration().is_max();
+  // Always stop the timer since it may have been triggered by an old media
+  // position and the timer will be re-started if needed.
+  update_progress_timer_.Stop();
 
   bool is_paused = media_position.playback_rate() == 0;
   if (is_paused_ != is_paused) {
@@ -200,20 +330,13 @@ void MediaSquigglyProgressView::UpdateProgress(
     is_paused_ = is_paused;
   }
 
-  // If the media is paused and |update_progress_timer_| is still running, stop
-  // the timer.
-  if (is_paused_ && update_progress_timer_.IsRunning()) {
-    update_progress_timer_.Stop();
-  }
+  current_position_ = media_position.GetPosition();
+  media_duration_ = media_position.duration();
+  is_live_ = media_duration_.is_max();
 
-  const base::TimeDelta current_position = media_position.GetPosition();
-  const base::TimeDelta duration = media_position.duration();
-  const double progress_value =
-      (is_live_ || duration.is_zero() || current_position > duration)
-          ? 1.0
-          : current_position / duration;
-  if (current_value_ != progress_value) {
-    current_value_ = progress_value;
+  double new_value = CalculateNewValue(current_position_);
+  if (new_value != current_value_) {
+    current_value_ = new_value;
     MaybeNotifyAccessibilityValueChanged();
     OnPropertyChanged(&current_value_, views::kPropertyEffectsPaint);
   }
@@ -230,8 +353,8 @@ void MediaSquigglyProgressView::UpdateProgress(
 
     update_progress_timer_.Start(
         FROM_HERE, kProgressUpdateFrequency,
-        base::BindRepeating(&MediaSquigglyProgressView::UpdateProgress,
-                            base::Unretained(this), media_position));
+        base::BindOnce(&MediaSquigglyProgressView::UpdateProgress,
+                       base::Unretained(this), media_position));
   }
 }
 
@@ -244,10 +367,23 @@ void MediaSquigglyProgressView::MaybeNotifyAccessibilityValueChanged() {
   NotifyAccessibilityEvent(ax::mojom::Event::kValueChanged, true);
 }
 
-void MediaSquigglyProgressView::HandleSeeking(const gfx::Point& location) {
-  double seek_to_progress = static_cast<double>(location.x() - kWidthInset) /
-                            (GetContentsBounds().width() - kWidthInset * 2);
+void MediaSquigglyProgressView::HandleSeeking(double location) {
+  double view_width = GetContentsBounds().width() - kWidthInset * 2;
+  double seek_to_progress =
+      std::min(view_width, std::max(0.0, location - kWidthInset)) / view_width;
   seek_callback_.Run(seek_to_progress);
+}
+
+double MediaSquigglyProgressView::CalculateNewValue(
+    base::TimeDelta new_position) {
+  double new_value = 0.0;
+  if (new_position >= media_duration_) {
+    new_value = 1.0;
+  } else if (!is_live_ && media_duration_.is_positive() &&
+             new_position.is_positive()) {
+    new_value = new_position / media_duration_;
+  }
+  return new_value;
 }
 
 bool MediaSquigglyProgressView::IsValidSeekPosition(int x, int y) {

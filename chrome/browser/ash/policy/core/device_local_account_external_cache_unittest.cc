@@ -147,8 +147,8 @@ class TrackingProxyTaskRunner : public base::SingleThreadTaskRunner {
 void AddExtensionToDictionary(const std::string& extension_id,
                               const std::string& update_url,
                               base::Value::Dict& dict) {
-  base::Value::Dict value;
-  value.Set(extensions::ExternalProviderImpl::kExternalUpdateUrl, update_url);
+  auto value = base::Value::Dict().Set(
+      extensions::ExternalProviderImpl::kExternalUpdateUrl, update_url);
   dict.Set(extension_id, std::move(value));
 }
 

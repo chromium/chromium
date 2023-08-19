@@ -90,7 +90,7 @@ int APIENTRY wWinMain(HINSTANCE hInstance,
   logging::SetEventSource("GCPW", GCPW_EXTENSION_CATEGORY, MSG_LOG_MESSAGE);
 
   if (GetGlobalFlagOrDefault(kRegEnableVerboseLogging, 0))
-    logging::SetMinLogLevel(logging::LOG_VERBOSE);
+    logging::SetMinLogLevel(logging::LOGGING_VERBOSE);
 
   // Make sure the process exits cleanly on unexpected errors.
   base::EnableTerminationOnHeapCorruption();

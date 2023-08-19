@@ -12,6 +12,7 @@
 #include "ui/aura/client/aura_constants.h"
 #include "ui/aura/env.h"
 #include "ui/aura/window.h"
+#include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/compositor/layer.h"
 #include "ui/compositor/layer_tree_owner.h"
 #include "ui/gfx/geometry/transform.h"
@@ -170,5 +171,8 @@ gfx::Rect WindowMirrorView::GetClientAreaBounds() const {
   views::View* client_view = widget->client_view();
   return client_view->ConvertRectToWidget(client_view->GetLocalBounds());
 }
+
+BEGIN_METADATA(WindowMirrorView, views::View)
+END_METADATA
 
 }  // namespace ash

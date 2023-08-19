@@ -25,15 +25,16 @@
 #import "ios/chrome/browser/tabs/inactive_tabs/features.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_collection_consumer.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/inactive_tabs/inactive_tabs_info_consumer.h"
+#import "ios/chrome/browser/ui/tab_switcher/tab_grid/toolbars/tab_grid_toolbars_configuration.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_utils.h"
 #import "ios/chrome/browser/ui/tab_switcher/web_state_tab_switcher_item.h"
 #import "ios/web/public/web_state.h"
 #import "ios/web/public/web_state_observer_bridge.h"
 #import "ui/base/device_form_factor.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
+// To get access to UseSessionSerializationOptimizations().
+// TODO(crbug.com/1383087): remove once the feature is fully launched.
+#import "ios/web/common/features.h"
 
 using ScopedWebStateListObservation =
     base::ScopedObservation<WebStateList, WebStateListObserver>;
@@ -131,7 +132,8 @@ void PopulateConsumerItems(id<TabCollectionConsumer> consumer,
   CHECK(IsInactiveTabsAvailable());
   CHECK(webStateList);
   CHECK(prefService);
-  CHECK(sessionRestorationAgent);
+  CHECK(sessionRestorationAgent ||
+        web::features::UseSessionSerializationOptimizations());
   CHECK(snapshotAgent);
   CHECK(snapshotAgent->snapshot_cache());
   CHECK(tabRestoreService);
@@ -246,98 +248,82 @@ void PopulateConsumerItems(id<TabCollectionConsumer> consumer,
 #pragma mark - SnapshotCacheObserver
 
 - (void)snapshotCache:(SnapshotCache*)snapshotCache
-    didUpdateSnapshotForIdentifier:(NSString*)identifier {
-  web::WebState* webState =
-      GetWebState(_webStateList, WebStateSearchCriteria{
-                                     .identifier = identifier,
-                                 });
+    didUpdateSnapshotForID:(NSString*)snapshotID {
+  web::WebState* webState = nullptr;
+  for (int i = 0; i < _webStateList->count(); i++) {
+    SnapshotTabHelper* snapshotTabHelper =
+        SnapshotTabHelper::FromWebState(_webStateList->GetWebStateAt(i));
+    if ([snapshotID isEqualToString:snapshotTabHelper->GetSnapshotID()]) {
+      webState = _webStateList->GetWebStateAt(i);
+      break;
+    }
+  }
   if (webState) {
     // It is possible to observe an updated snapshot for a WebState before
     // observing that the WebState has been added to the WebStateList. It is the
     // consumer's responsibility to ignore any updates before inserts.
     TabSwitcherItem* item =
         [[WebStateTabSwitcherItem alloc] initWithWebState:webState];
-    [_consumer replaceItemID:identifier withItem:item];
+    // Items are indexed with the stable identifier. Don't pass a snapshot ID
+    // here.
+    [_consumer replaceItemID:webState->GetStableIdentifier() withItem:item];
   }
 }
 
 #pragma mark - WebStateListObserving
 
-- (void)webStateList:(WebStateList*)webStateList
-    didInsertWebState:(web::WebState*)webState
-              atIndex:(int)index
-           activating:(BOOL)activating {
-  DCHECK_EQ(_webStateList, webStateList);
-  if (_webStateList->IsBatchInProgress()) {
-    // Updates are handled in the batch operation observer methods.
-    return;
-  }
-  // Insertions are only supported for iPad multiwindow support when changing
-  // the user settings for Inactive Tabs (i.e. when picking a longer inactivity
-  // threshold).
-  DCHECK_EQ(ui::GetDeviceFormFactor(), ui::DEVICE_FORM_FACTOR_TABLET);
-
-  TabSwitcherItem* item =
-      [[WebStateTabSwitcherItem alloc] initWithWebState:webState];
-  [_consumer insertItem:item atIndex:index selectedItemID:nil];
-
-  _scopedWebStateObservation->AddObservation(webState);
-}
-
-- (void)webStateList:(WebStateList*)webStateList
-     didMoveWebState:(web::WebState*)webState
-           fromIndex:(int)fromIndex
-             toIndex:(int)toIndex {
-  NOTREACHED_NORETURN();
-}
-
-- (void)webStateList:(WebStateList*)webStateList
-    didReplaceWebState:(web::WebState*)oldWebState
-          withWebState:(web::WebState*)newWebState
-               atIndex:(int)index {
-  NOTREACHED_NORETURN();
-}
-
-- (void)webStateList:(WebStateList*)webStateList
-    willDetachWebState:(web::WebState*)webState
-               atIndex:(int)index {
+- (void)willChangeWebStateList:(WebStateList*)webStateList
+                        change:(const WebStateListChangeDetach&)detachChange
+                        status:(const WebStateListStatus&)status {
   DCHECK_EQ(_webStateList, webStateList);
   if (_webStateList->IsBatchInProgress()) {
     // Updates are handled in the batch operation observer methods.
     return;
   }
 
-  [_consumer removeItemWithID:webState->GetStableIdentifier()
+  web::WebState* detachedWebState = detachChange.detached_web_state();
+  [_consumer removeItemWithID:detachedWebState->GetStableIdentifier()
                selectedItemID:nil];
 
-  _scopedWebStateObservation->RemoveObservation(webState);
+  _scopedWebStateObservation->RemoveObservation(detachedWebState);
 }
 
-- (void)webStateList:(WebStateList*)webStateList
-    didDetachWebState:(web::WebState*)webState
-              atIndex:(int)atIndex {
-  // No-op.
-}
+- (void)didChangeWebStateList:(WebStateList*)webStateList
+                       change:(const WebStateListChange&)change
+                       status:(const WebStateListStatus&)status {
+  DCHECK_EQ(_webStateList, webStateList);
+  if (_webStateList->IsBatchInProgress()) {
+    // Updates are handled in the batch operation observer methods.
+    return;
+  }
 
-- (void)webStateList:(WebStateList*)webStateList
-    willCloseWebState:(web::WebState*)webState
-              atIndex:(int)atIndex
-           userAction:(BOOL)userAction {
-  // No-op.
-}
+  switch (change.type()) {
+    case WebStateListChange::Type::kStatusOnly:
+      // Do nothing when the status in WebStateList is updated.
+      break;
+    case WebStateListChange::Type::kDetach:
+      // Do nothing when a WebState is detached.
+      break;
+    case WebStateListChange::Type::kMove:
+    case WebStateListChange::Type::kReplace:
+      NOTREACHED_NORETURN();
+    case WebStateListChange::Type::kInsert: {
+      // Insertions are only supported for iPad multiwindow support when
+      // changing the user settings for Inactive Tabs (i.e. when picking a
+      // longer inactivity threshold).
+      DCHECK_EQ(ui::GetDeviceFormFactor(), ui::DEVICE_FORM_FACTOR_TABLET);
 
-- (void)webStateList:(WebStateList*)webStateList
-    didChangeActiveWebState:(web::WebState*)newWebState
-                oldWebState:(web::WebState*)oldWebState
-                    atIndex:(int)atIndex
-                     reason:(ActiveWebStateChangeReason)reason {
-  // No-op.
-}
+      const WebStateListChangeInsert& insertChange =
+          change.As<WebStateListChangeInsert>();
+      web::WebState* insertedWebState = insertChange.inserted_web_state();
+      TabSwitcherItem* item =
+          [[WebStateTabSwitcherItem alloc] initWithWebState:insertedWebState];
+      [_consumer insertItem:item atIndex:status.index selectedItemID:nil];
 
-- (void)webStateList:(WebStateList*)webStateList
-    didChangePinnedStateForWebState:(web::WebState*)webState
-                            atIndex:(int)index {
-  NOTREACHED_NORETURN();
+      _scopedWebStateObservation->AddObservation(insertedWebState);
+      break;
+    }
+  }
 }
 
 - (void)webStateListWillBeginBatchOperation:(WebStateList*)webStateList {
@@ -393,7 +379,9 @@ void PopulateConsumerItems(id<TabCollectionConsumer> consumer,
   }
   // TODO(crbug.com/1418021): Add metrics when the user closes all inactive
   // tabs from regular tab grid.
-  _closedSessionWindow = SerializeWebStateList(_webStateList);
+  if (!web::features::UseSessionSerializationOptimizations()) {
+    _closedSessionWindow = SerializeWebStateList(_webStateList);
+  }
   int oldSize = _tabRestoreService ? _tabRestoreService->entries().size() : 0;
   _webStateList->CloseAllWebStates(WebStateList::CLOSE_USER_ACTION);
   _syncedClosedTabsCount =
@@ -406,10 +394,12 @@ void PopulateConsumerItems(id<TabCollectionConsumer> consumer,
   }
   // TODO(crbug.com/1418021): Add metrics when the user restores all inactive
   // tabs from regular tab grid.
-  _sessionRestorationAgent->RestoreSessionWindow(
-      _closedSessionWindow, SessionRestorationScope::kRegularOnly);
+  if (_sessionRestorationAgent) {
+    _sessionRestorationAgent->RestoreSessionWindow(
+        _closedSessionWindow, SessionRestorationScope::kRegularOnly);
+    _closedSessionWindow = nil;
+  }
 
-  _closedSessionWindow = nil;
   [self removeEntriesFromTabRestoreService];
   _syncedClosedTabsCount = 0;
 }
@@ -461,9 +451,9 @@ void PopulateConsumerItems(id<TabCollectionConsumer> consumer,
 
 - (void)closeItemWithID:(NSString*)itemID {
   // TODO(crbug.com/1418021): Add metrics when the user closes an inactive tab.
-  int index = GetTabIndex(_webStateList, WebStateSearchCriteria{
-                                             .identifier = itemID,
-                                         });
+  int index = GetWebStateIndex(_webStateList, WebStateSearchCriteria{
+                                                  .identifier = itemID,
+                                              });
   if (index != WebStateList::kInvalidIndex) {
     _webStateList->CloseWebStateAt(index, WebStateList::CLOSE_USER_ACTION);
   }
@@ -491,6 +481,21 @@ void PopulateConsumerItems(id<TabCollectionConsumer> consumer,
   for (const SessionID sessionID : identifiers) {
     _tabRestoreService->RemoveTabEntryById(sessionID);
   }
+}
+
+#pragma mark - GridToolbarsConfigurationProvider
+
+- (TabGridToolbarsConfiguration*)toolbarsConfiguration {
+  TabGridToolbarsConfiguration* toolbarsConfiguration =
+      [[TabGridToolbarsConfiguration alloc] init];
+  toolbarsConfiguration.closeAllButton = !_webStateList->empty();
+  toolbarsConfiguration.searchButton = YES;
+  toolbarsConfiguration.undoButton = [self didSavedClosedTabs];
+  return toolbarsConfiguration;
+}
+
+- (BOOL)didSavedClosedTabs {
+  return _closedSessionWindow != nil;
 }
 
 @end

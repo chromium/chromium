@@ -14,7 +14,6 @@
 #include "base/timer/timer.h"
 #include "chrome/browser/ash/app_list/search/search_provider.h"
 #include "chrome/browser/ash/app_list/search/system_info/battery_health.h"
-#include "chrome/browser/ash/app_list/search/system_info/cpu_data.h"
 #include "chrome/browser/ash/app_list/search/system_info/cpu_usage_data.h"
 #include "chrome/browser/ash/app_list/search/system_info/system_info_keyword_input.h"
 #include "chrome/browser/profiles/profile.h"
@@ -43,8 +42,10 @@ class SystemInfoCardProvider : public SearchProvider,
   // cpu usage of the device.
   class CpuDataObserver : public base::CheckedObserver {
    public:
-    virtual void OnCpuDataUpdated(const std::u16string& title,
-                                  const std::u16string& description) = 0;
+    virtual void OnCpuDataUpdated(
+        const std::u16string& title,
+        const std::u16string& description,
+        const std::u16string& accessibility_label) = 0;
   };
 
   // Implemented by clients that wish to be updated periodically about the
@@ -52,7 +53,8 @@ class SystemInfoCardProvider : public SearchProvider,
   class MemoryObserver : public base::CheckedObserver {
    public:
     virtual void OnMemoryUpdated(const double memory_usage_percentage,
-                                 const std::u16string& description) = 0;
+                                 const std::u16string& description,
+                                 const std::u16string& accessibility_label) = 0;
   };
 
   explicit SystemInfoCardProvider(Profile* profile);
@@ -137,8 +139,9 @@ class SystemInfoCardProvider : public SearchProvider,
       probe_service_;
   std::string chromeOS_version_{""};
   CpuUsageData previous_cpu_usage_data_{CpuUsageData()};
-  raw_ptr<ash::cros_healthd::mojom::MemoryInfo, ExperimentalAsh> memory_info_{
-      nullptr};
+  raw_ptr<ash::cros_healthd::mojom::MemoryInfo,
+          DanglingUntriaged | ExperimentalAsh>
+      memory_info_{nullptr};
   std::unique_ptr<BatteryHealth> battery_health_{nullptr};
   gfx::ImageSkia os_settings_icon_;
   gfx::ImageSkia diagnostics_icon_;

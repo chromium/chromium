@@ -26,6 +26,7 @@
 #include "extensions/common/manifest_handlers/automation.h"
 #include "extensions/common/manifest_handlers/background_info.h"
 #include "extensions/renderer/api/automation/automation_api_converters.h"
+#include "extensions/renderer/ipc_message_sender.h"
 #include "extensions/renderer/native_extension_bindings_system.h"
 #include "extensions/renderer/object_backed_native_handler.h"
 #include "extensions/renderer/script_context.h"
@@ -42,59 +43,6 @@
 #include "ui/base/l10n/l10n_util.h"
 
 namespace extensions {
-
-class AutomationMessageFilter : public IPC::MessageFilter {
- public:
-  AutomationMessageFilter(
-      AutomationInternalCustomBindings* owner,
-      scoped_refptr<base::SingleThreadTaskRunner> task_runner)
-      : owner_(owner), removed_(false), task_runner_(std::move(task_runner)) {
-    DCHECK(owner);
-    content::RenderThread::Get()->AddFilter(this);
-  }
-
-  AutomationMessageFilter(const AutomationMessageFilter&) = delete;
-  AutomationMessageFilter& operator=(const AutomationMessageFilter&) = delete;
-
-  void Detach() {
-    owner_ = nullptr;
-    Remove();
-  }
-
-  // IPC::MessageFilter
-  bool OnMessageReceived(const IPC::Message& message) override {
-    task_runner_->PostTask(
-        FROM_HERE,
-        base::BindOnce(
-            &AutomationMessageFilter::OnMessageReceivedOnRenderThread, this,
-            message));
-
-    // Always return false in case there are multiple
-    // AutomationInternalCustomBindings instances attached to the same thread.
-    return false;
-  }
-
-  void OnFilterRemoved() override { removed_ = true; }
-
- private:
-  void OnMessageReceivedOnRenderThread(const IPC::Message& message) {
-    if (owner_)
-      owner_->OnMessageReceived(message);
-  }
-
-  ~AutomationMessageFilter() override { Remove(); }
-
-  void Remove() {
-    if (!removed_) {
-      removed_ = true;
-      content::RenderThread::Get()->RemoveFilter(this);
-    }
-  }
-
-  AutomationInternalCustomBindings* owner_;
-  bool removed_;
-  scoped_refptr<base::SingleThreadTaskRunner> task_runner_;
-};
 
 AutomationInternalCustomBindings::AutomationInternalCustomBindings(
     ScriptContext* context,
@@ -117,16 +65,6 @@ AutomationInternalCustomBindings::AutomationInternalCustomBindings(
 
 AutomationInternalCustomBindings::~AutomationInternalCustomBindings() = default;
 
-void AutomationInternalCustomBindings::OnMessageReceived(
-    const IPC::Message& message) {
-  IPC_BEGIN_MESSAGE_MAP(AutomationInternalCustomBindings, message)
-    IPC_MESSAGE_HANDLER(ExtensionMsg_AccessibilityEventBundle,
-                        HandleAccessibilityEvents)
-    IPC_MESSAGE_HANDLER(ExtensionMsg_AccessibilityLocationChange,
-                        HandleAccessibilityLocationChange)
-  IPC_END_MESSAGE_MAP()
-}
-
 void AutomationInternalCustomBindings::AddRoutes() {
   automation_v8_bindings_->AddV8Routes();
 
@@ -140,10 +78,7 @@ void AutomationInternalCustomBindings::AddRoutes() {
 
 void AutomationInternalCustomBindings::Invalidate() {
   ObjectBackedNativeHandler::Invalidate();
-
-  if (message_filter_)
-    message_filter_->Detach();
-
+  receiver_.reset();
   AutomationTreeManagerOwner::Invalidate();
 }
 
@@ -166,38 +101,19 @@ void AutomationInternalCustomBindings::StartCachingAccessibilityTrees() {
   if (should_ignore_context_)
     return;
 
-  if (!message_filter_) {
-    scoped_refptr<base::SingleThreadTaskRunner> task_runner =
-        context()->web_frame()->GetTaskRunner(
-            blink::TaskType::kInternalDefault);
-    message_filter_ = base::MakeRefCounted<AutomationMessageFilter>(
-        this, std::move(task_runner));
+  if (!receiver_.is_bound()) {
+    bindings_system_->GetIPCMessageSender()->SendBindAutomationIPC(
+        context(), receiver_.BindNewEndpointAndPassRemote());
   }
 }
 
 void AutomationInternalCustomBindings::StopCachingAccessibilityTrees() {
-  if (message_filter_) {
-    message_filter_->Detach();
-    message_filter_.reset();
-  }
+  receiver_.reset();
 }
 
 //
 // Handle accessibility events from the browser process.
 //
-
-void AutomationInternalCustomBindings::HandleAccessibilityEvents(
-    const ExtensionMsg_AccessibilityEventBundleParams& event_bundle,
-    bool is_active_profile) {
-  OnAccessibilityEvents(event_bundle.tree_id, event_bundle.events,
-                        event_bundle.updates, event_bundle.mouse_location,
-                        is_active_profile);
-}
-
-void AutomationInternalCustomBindings::HandleAccessibilityLocationChange(
-    const ExtensionMsg_AccessibilityLocationChangeParams& params) {
-  OnAccessibilityLocationChange(params.tree_id, params.id, params.new_location);
-}
 
 void AutomationInternalCustomBindings::ThrowInvalidArgumentsException(
     bool is_fatal) const {

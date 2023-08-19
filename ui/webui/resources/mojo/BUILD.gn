@@ -37,6 +37,7 @@ mojo_js_files = [
 ]
 
 mojo_ts_files = [
+  "ui/base/mojom/themes.mojom-webui.ts",
   "ui/base/mojom/window_open_disposition.mojom-webui.ts",
   "ui/gfx/image/mojom/image.mojom-webui.ts",
 ]

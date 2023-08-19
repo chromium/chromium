@@ -14,7 +14,7 @@
 #include "ui/color/color_id.h"
 #include "ui/color/color_mixer.h"
 #include "ui/color/color_provider.h"
-#include "ui/color/color_provider_manager.h"
+#include "ui/color/color_provider_key.h"
 #include "ui/color/color_provider_utils.h"
 #include "ui/color/color_recipe.h"
 #include "ui/color/color_transform.h"
@@ -65,7 +65,7 @@ ui::ColorTransform GetToolbarTopSeparatorColorTransform(
 }  // namespace
 
 void AddNativeChromeColorMixer(ui::ColorProvider* provider,
-                               const ui::ColorProviderManager::Key& key) {
+                               const ui::ColorProviderKey& key) {
   if (key.system_theme == ui::SystemTheme::kDefault)
     return;
 
@@ -105,7 +105,7 @@ void AddNativeChromeColorMixer(ui::ColorProvider* provider,
   mixer[kColorToolbarTextDisabled] =
       ui::SetAlpha(kColorToolbarText, gfx::kDisabledControlAlpha);
   const bool high_contrast =
-      key.contrast_mode == ui::ColorProviderManager::ContrastMode::kHigh;
+      key.contrast_mode == ui::ColorProviderKey::ContrastMode::kHigh;
   mixer[kColorToolbarTopSeparatorFrameActive] =
       GetToolbarTopSeparatorColorTransform(ui::kColorNativeToolbarBackground,
                                            high_contrast);

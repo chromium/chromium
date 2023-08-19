@@ -9,6 +9,7 @@
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_process_host.h"
 #include "content/public/browser/web_contents.h"
+#include "extensions/browser/api/web_request/extension_web_request_event_router.h"
 #include "extensions/browser/api/web_request/web_request_api.h"
 #include "extensions/browser/api/web_request/web_request_info.h"
 #include "extensions/browser/browser_context_keyed_api_factory.h"
@@ -274,9 +275,13 @@ void StartWebRequestProxyingWebTransport(
   const int process_id = render_process_host.GetID();
   content::RenderFrameHost* frame =
       content::RenderFrameHost::FromID(process_id, frame_routing_id);
+  // Doesn't record UKMs if the frame is not given or in the prerendering state
+  // as the policy disallow it and GetPageUkmSourceId doesn't return a valid ID.
   const ukm::SourceIdObj& ukm_source_id =
-      frame ? ukm::SourceIdObj::FromInt64(frame->GetPageUkmSourceId())
-            : ukm::kInvalidSourceIdObj;
+      (frame && !frame->IsInLifecycleState(
+                    content::RenderFrameHost::LifecycleState::kPrerendering))
+          ? ukm::SourceIdObj::FromInt64(frame->GetPageUkmSourceId())
+          : ukm::kInvalidSourceIdObj;
 
   WebRequestInfoInitParams params =
       WebRequestInfoInitParams(request_id, process_id, frame_routing_id,

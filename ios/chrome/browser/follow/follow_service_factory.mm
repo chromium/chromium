@@ -14,10 +14,6 @@
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
 #import "ios/public/provider/chrome/browser/follow/follow_api.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 // static
 FollowService* FollowServiceFactory::GetForBrowserState(
     ChromeBrowserState* browser_state) {

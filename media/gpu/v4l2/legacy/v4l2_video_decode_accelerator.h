@@ -18,6 +18,14 @@
 #include <utility>
 #include <vector>
 
+#include "build/build_config.h"
+
+#if defined(ARCH_CPU_ARM_FAMILY)
+// The MT21C software decompressor is tightly coupled to the MT8173.
+// See mt21_decompressor.h
+#define SUPPORT_MT21_PIXEL_FORMAT_SOFTWARE_DECOMPRESSION
+#endif
+
 #include "base/cancelable_callback.h"
 #include "base/containers/queue.h"
 #include "base/functional/callback_forward.h"
@@ -32,6 +40,9 @@
 #include "media/gpu/chromeos/image_processor.h"
 #include "media/gpu/gpu_video_decode_accelerator_helpers.h"
 #include "media/gpu/media_gpu_export.h"
+#ifdef SUPPORT_MT21_PIXEL_FORMAT_SOFTWARE_DECOMPRESSION
+#include "media/gpu/v4l2/mt21/mt21_decompressor.h"
+#endif
 #include "media/gpu/v4l2/v4l2_device.h"
 #include "media/video/picture.h"
 #include "media/video/video_decode_accelerator.h"
@@ -614,6 +625,10 @@ class MEDIA_GPU_EXPORT V4L2VideoDecodeAccelerator
   scoped_refptr<V4L2Device> image_processor_device_;
   // Image processor. Accessed on |decoder_thread_|.
   std::unique_ptr<ImageProcessor> image_processor_;
+
+#ifdef SUPPORT_MT21_PIXEL_FORMAT_SOFTWARE_DECOMPRESSION
+  std::unique_ptr<MT21Decompressor> mt21_decompressor_;
+#endif
 
   // The format of EGLImage.
   absl::optional<Fourcc> egl_image_format_fourcc_;

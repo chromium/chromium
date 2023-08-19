@@ -40,9 +40,7 @@
 #include "net/socket/stream_socket.h"
 #include "net/spdy/buffered_spdy_framer.h"
 #include "net/spdy/http2_priority_dependencies.h"
-#include "net/spdy/http2_push_promise_index.h"
 #include "net/spdy/multiplexed_session.h"
-#include "net/spdy/server_push_delegate.h"
 #include "net/spdy/spdy_buffer.h"
 #include "net/spdy/spdy_session_pool.h"
 #include "net/spdy/spdy_stream.h"
@@ -304,8 +302,7 @@ class NET_EXPORT SpdySession
       public spdy::SpdyFramerDebugVisitorInterface,
       public MultiplexedSession,
       public HigherLayeredPool,
-      public NetworkChangeNotifier::DefaultNetworkActiveObserver,
-      public Http2PushPromiseIndex::Delegate {
+      public NetworkChangeNotifier::DefaultNetworkActiveObserver {
  public:
   // TODO(akalin): Use base::TickClock when it becomes available.
   typedef base::TimeTicks (*TimeFunc)();
@@ -342,7 +339,6 @@ class NET_EXPORT SpdySession
               bool http2_end_stream_with_data_frame,
               bool enable_priority_update,
               TimeFunc time_func,
-              ServerPushDelegate* push_delegate,
               NetworkQualityEstimator* network_quality_estimator,
               NetLog* net_log);
 
@@ -355,27 +351,6 @@ class NET_EXPORT SpdySession
     return spdy_session_key_.host_port_proxy_pair();
   }
   const SpdySessionKey& spdy_session_key() const { return spdy_session_key_; }
-
-  // Get a pushed stream for a given |url| with stream ID |pushed_stream_id|.
-  // The caller must have already claimed the stream from Http2PushPromiseIndex.
-  // |pushed_stream_id| must not be kNoPushedStreamFound.
-  //
-  // Returns ERR_CONNECTION_CLOSED if the connection is being closed.
-  // Returns ERR_HTTP2_PUSHED_STREAM_NOT_AVAILABLE if the pushed stream is not
-  //   available any longer, for example, if the server has reset it.
-  // Returns OK if the stream is still available, and returns the stream in
-  //   |*spdy_stream|.  If the stream is still open, updates its priority to
-  //   |priority|.
-  // TODO(https://crbug.com/1426477): Remove.
-  int GetPushedStream(const GURL& url,
-                      spdy::SpdyStreamId pushed_stream_id,
-                      RequestPriority priority,
-                      raw_ptr<SpdyStream>* spdy_stream);
-
-  // Called when the pushed stream should be cancelled. If the pushed stream is
-  // not claimed and active, sends RST to the server to cancel the stream.
-  // TODO(https://crbug.com/1426477): Remove.
-  void CancelPush(const GURL& url);
 
   // Initialize the session with the given connection.
   //
@@ -623,19 +598,11 @@ class NET_EXPORT SpdySession
   // standards for TLS.
   bool HasAcceptableTransportSecurity() const;
 
-  // Must be used only by |pool_| (including |pool_.push_promise_index_|).
+  // Must be used only by |pool_|.
   base::WeakPtr<SpdySession> GetWeakPtr();
 
   // HigherLayeredPool implementation:
   bool CloseOneIdleConnection() override;
-
-  // Http2PushPromiseIndex::Delegate implementation:
-  // TODO(https://crbug.com/1426477): Remove.
-  bool ValidatePushedStream(spdy::SpdyStreamId stream_id,
-                            const GURL& url,
-                            const HttpRequestInfo& request_info,
-                            const SpdySessionKey& key) const override;
-  base::WeakPtr<SpdySession> GetWeakPtrToSession() override;
 
   // Change this session's socket tag to |new_tag|. Returns true on success.
   bool ChangeSocketTag(const SocketTag& new_tag);
@@ -654,9 +621,6 @@ class NET_EXPORT SpdySession
   friend class SpdySessionPoolTest;
   friend class SpdySessionTest;
   friend class SpdyStreamRequest;
-
-  // TODO(https://crbug.com/1426477): Remove.
-  FRIEND_TEST_ALL_PREFIXES(RecordPushedStreamHistogramTest, VaryResponseHeader);
 
   using PendingStreamRequestQueue =
       base::circular_deque<base::WeakPtr<SpdyStreamRequest>>;
@@ -698,7 +662,6 @@ class NET_EXPORT SpdySession
   // |request->OnRequestComplete{Success,Failure}()| will be called
   // when the stream is created (unless it is cancelled). Otherwise,
   // no stream is created and the error is returned.
-  // TODO(https://crbug.com/1426477): Remove.
   int TryCreateStream(const base::WeakPtr<SpdyStreamRequest>& request,
                       base::WeakPtr<SpdyStream>* stream);
 
@@ -725,10 +688,6 @@ class NET_EXPORT SpdySession
   // was closed). Processes as many pending stream requests as
   // possible.
   void ProcessPendingStreamRequests();
-
-  void TryCreatePushStream(spdy::SpdyStreamId stream_id,
-                           spdy::SpdyStreamId associated_stream_id,
-                           spdy::Http2HeaderBlock headers);
 
   // Close the stream pointed to by the given iterator. Note that that
   // stream may hold the last reference to the session.
@@ -1079,19 +1038,15 @@ class NET_EXPORT SpdySession
 
   spdy::SpdyStreamId stream_hi_water_mark_;  // The next stream id to use.
 
-  // Used to ensure the server increments push stream ids correctly.
-  // TODO(https://crbug.com/1426477): Remove.
-  spdy::SpdyStreamId last_accepted_push_stream_id_ = 0;
-
   // Queue, for each priority, of pending stream requests that have
   // not yet been satisfied.
   PendingStreamRequestQueue pending_create_stream_queues_[NUM_PRIORITIES];
 
   // Map from stream id to all active streams.  Streams are active in the sense
   // that they have a consumer (typically SpdyNetworkTransaction and regardless
-  // of whether or not there is currently any ongoing IO [might be waiting for
-  // the server to start pushing the stream]) or there are still network events
-  // incoming even though the consumer has already gone away (cancellation).
+  // of whether or not there is currently any ongoing IO) or there are still
+  // network events incoming even though the consumer has already gone away
+  // (cancellation).
   //
   // |active_streams_| owns all its SpdyStream objects.
   //
@@ -1104,26 +1059,6 @@ class NET_EXPORT SpdySession
   //
   // |created_streams_| owns all its SpdyStream objects.
   CreatedStreamSet created_streams_;
-
-  // Number of pushed streams. All active streams are stored in
-  // |active_streams_|, but it's better to know the number of push streams
-  // without traversing the whole collection.
-  // TODO(https://crbug.com/1426477): Remove.
-  size_t num_pushed_streams_ = 0u;
-
-  // Number of active pushed streams in |active_streams_|, i.e. not in reserved
-  // remote state. Streams in reserved state are not counted towards any
-  // concurrency limits.
-  // TODO(https://crbug.com/1426477): Remove.
-  size_t num_active_pushed_streams_ = 0u;
-
-  // Number of bytes that has been pushed by the server.
-  // TODO(https://crbug.com/1426477): Remove.
-  uint64_t bytes_pushed_count_ = 0u;
-
-  // Number of bytes that has been pushed by the server but never claimed.
-  // TODO(https://crbug.com/1426477): Remove.
-  uint64_t bytes_pushed_and_unclaimed_count_ = 0u;
 
   // The write queue.
   SpdyWriteQueue write_queue_;
@@ -1206,15 +1141,9 @@ class NET_EXPORT SpdySession
 
   // Limits
   size_t max_concurrent_streams_;
-  // TODO(https://crbug.com/1426477): Remove.
-  size_t max_concurrent_pushed_streams_;
 
   // Some statistics counters for the session.
   int streams_initiated_count_ = 0;
-
-  // TODO(https://crbug.com/1426477): Remove.
-  int streams_pushed_count_ = 0;
-  int streams_pushed_and_claimed_count_ = 0;
 
   int streams_abandoned_count_ = 0;
 

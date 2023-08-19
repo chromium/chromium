@@ -30,6 +30,7 @@
 #include "components/services/app_service/public/cpp/intent.h"
 #include "components/services/app_service/public/cpp/intent_util.h"
 #include "components/services/app_service/public/cpp/share_target.h"
+#include "content/public/browser/notification_service.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
@@ -80,8 +81,8 @@ void RemoveWebShareDirectory(const base::FilePath& directory) {
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 base::FilePath StoreSharedFile(const base::FilePath& directory,
-                               const base::StringPiece& name,
-                               const base::StringPiece& content) {
+                               const base::StringPiece name,
+                               const base::StringPiece content) {
   const base::FilePath path = directory.Append(name);
   base::ScopedAllowBlockingForTesting allow_blocking;
   base::File file(path,

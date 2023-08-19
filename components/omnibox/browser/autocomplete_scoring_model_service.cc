@@ -18,8 +18,15 @@
 
 AutocompleteScoringModelService::AutocompleteScoringModelService(
     optimization_guide::OptimizationGuideModelProvider* model_provider) {
-  model_executor_task_runner_ = base::ThreadPool::CreateSequencedTaskRunner(
-      {base::MayBlock(), base::TaskPriority::BEST_EFFORT});
+  if (OmniboxFieldTrial::IsMlSyncBatchUrlScoringEnabled()) {
+    // Synchronous model execution requires that the model be executed on the
+    // same current thread.
+    model_executor_task_runner_ =
+        base::SequencedTaskRunner::GetCurrentDefault();
+  } else {
+    model_executor_task_runner_ = base::ThreadPool::CreateSequencedTaskRunner(
+        {base::MayBlock(), base::TaskPriority::BEST_EFFORT});
+  }
 
   if (OmniboxFieldTrial::IsUrlScoringModelEnabled()) {
     // Create a URL scoring model handler.
@@ -94,6 +101,32 @@ void AutocompleteScoringModelService::BatchScoreAutocompleteUrlMatches(
       *batch_model_input);
 }
 
+std::vector<AutocompleteScoringModelService::Result>
+AutocompleteScoringModelService::BatchScoreAutocompleteUrlMatchesSync(
+    const std::vector<const ScoringSignals*>& batch_scoring_signals,
+    const std::vector<std::string>& stripped_destination_urls) {
+  DCHECK(OmniboxFieldTrial::IsMlSyncBatchUrlScoringEnabled());
+  TRACE_EVENT0(
+      "omnibox",
+      "AutocompleteScoringModelService::BatchScoreAutocompleteUrlMatchesSync");
+  if (!UrlScoringModelAvailable()) {
+    return {};
+  }
+
+  absl::optional<std::vector<std::vector<float>>> batch_model_input =
+      url_scoring_model_handler_->GetBatchModelInput(batch_scoring_signals);
+  if (!batch_model_input) {
+    return {};
+  }
+
+  // Synchronous model execution.
+  const auto batch_model_outputs =
+      url_scoring_model_handler_->BatchExecuteModelWithInputSync(
+          *batch_model_input);
+  return GetBatchResultFromModelOutput(stripped_destination_urls,
+                                       batch_model_outputs);
+}
+
 bool AutocompleteScoringModelService::UrlScoringModelAvailable() {
   return url_scoring_model_handler_ &&
          url_scoring_model_handler_->ModelAvailable();
@@ -120,6 +153,15 @@ void AutocompleteScoringModelService::ProcessBatchModelOutput(
   TRACE_EVENT0("omnibox",
                "AutocompleteScoringModelService::ProcessBatchModelOutput");
 
+  std::vector<Result> batch_results = GetBatchResultFromModelOutput(
+      stripped_destination_urls, batch_model_output);
+  std::move(batch_result_callback).Run(std::move(batch_results));
+}
+
+std::vector<AutocompleteScoringModelService::Result>
+AutocompleteScoringModelService::GetBatchResultFromModelOutput(
+    const std::vector<std::string>& stripped_destination_urls,
+    const std::vector<absl::optional<ModelOutput>>& batch_model_output) {
   std::vector<Result> batch_results;
   batch_results.reserve(stripped_destination_urls.size());
   for (size_t i = 0; i < stripped_destination_urls.size(); i++) {
@@ -128,6 +170,5 @@ void AutocompleteScoringModelService::ProcessBatchModelOutput(
         model_output ? absl::make_optional(model_output->at(0)) : absl::nullopt,
         stripped_destination_urls.at(i));
   }
-
-  std::move(batch_result_callback).Run(std::move(batch_results));
+  return batch_results;
 }

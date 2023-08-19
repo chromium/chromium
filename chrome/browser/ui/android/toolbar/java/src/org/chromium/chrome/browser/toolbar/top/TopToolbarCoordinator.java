@@ -12,7 +12,6 @@ import android.view.ViewStub;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.Callback;
 import org.chromium.base.supplier.ObservableSupplier;
@@ -22,6 +21,7 @@ import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
 import org.chromium.chrome.browser.browser_controls.BrowserStateBrowserControlsVisibilityDelegate;
 import org.chromium.chrome.browser.device.DeviceClassManager;
+import org.chromium.chrome.browser.fullscreen.FullscreenManager;
 import org.chromium.chrome.browser.layouts.LayoutManager;
 import org.chromium.chrome.browser.layouts.LayoutStateProvider;
 import org.chromium.chrome.browser.layouts.LayoutType;
@@ -125,45 +125,56 @@ public class TopToolbarCoordinator implements Toolbar {
      * Creates a new {@link TopToolbarCoordinator}.
      * @param controlContainer The {@link ToolbarControlContainer} for the containing activity.
      * @param toolbarStub The stub for the tab switcher mode toolbar.
-     * @param fullscreenToolbarStub The stub for the fullscreen tab switcher mode toolbar.
      * @param toolbarLayout The {@link ToolbarLayout}.
+     * @param toolbarDataProvider The provider for toolbar data.
+     * @param tabController The controller that handles interactions with the tab.
      * @param userEducationHelper Helper class for showing in-product help text bubbles.
      * @param buttonDataProviders List of classes that wish to display an optional button in the
-     *         browsing mode toolbar.
+     *        browsing mode toolbar.
      * @param layoutStateProviderSupplier Supplier of the {@link LayoutStateProvider}.
      * @param normalThemeColorProvider The {@link ThemeColorProvider} for normal mode.
      * @param overviewThemeColorProvider The {@link ThemeColorProvider} for overview mode.
+     * @param browsingModeMenuButtonCoordinator Root component for app menu.
+     * @param overviewModeMenuButtonCoordinator Root component for tab switcher button.
+     * @param appMenuButtonHelperSupplier For specific handling of the app menu button.
      * @param tabModelSelectorSupplier Supplier of the {@link TabModelSelector}.
      * @param homepageEnabledSupplier Supplier of whether Home button is enabled.
      * @param identityDiscController The controller of the identity disc button.
-     * @param invalidatorCallback Callback that will be invoked  when the toolbar attempts to
-     *        invalidate the drawing surface.  This will give the object that registers as the host
+     * @param invalidatorCallback Callback that will be invoked when the toolbar attempts to
+     *        invalidate the drawing surface. This will give the object that registers as the host
      *        for the {@link Invalidator} a chance to defer the actual invalidate to sync drawing.
      * @param identityDiscButtonSupplier Supplier of Identity Disc button.
      * @param resourceManagerSupplier A supplier of a resource manager for native textures.
+     * @param isIncognitoModeEnabledSupplier A supplier for whether browsing is currently incognito.
      * @param isGridTabSwitcherEnabled Whether grid tab switcher is enabled via a feature flag.
      * @param isTabToGtsAnimationEnabled Whether Tab-to-GTS animation is enabled via a feature flag.
      * @param isStartSurfaceEnabled Whether start surface is enabled via a feature flag.
      * @param isTabGroupsAndroidContinuationEnabled Whether flag TabGroupsContinuationAndroid is
-     *         enabled.
+     *        enabled.
+     * @param historyDelegate Delegate used to display navigation history.
+     * @param partnerHomepageEnabledSupplier A supplier of a boolean indicating that partner
+     *        homepage is enabled.
+     * @param offlineDownloader Triggers downloading an offline page.
      * @param initializeWithIncognitoColors Whether the toolbar should be initialized with incognito
-     *         colors.
+     *        colors.
      * @param startSurfaceLogoClickedCallback The callback to be notified when the logo is clicked
-     *         on Start surface. On NTP, the logo is in the new tab page layout instead of the
-     *         toolbar and the logo click events are processed in NewTabPageLayout. So this callback
-     *         will only be called on Start surface.
+     *        on Start surface. On NTP, the logo is in the new tab page layout instead of the
+     *        toolbar and the logo click events are processed in NewTabPageLayout. So this callback
+     *        will only be called on Start surface.
+     * @param isStartSurfaceRefactorEnabled Whether Start surface refactoring is enabled.
      * @param constraintsSupplier Supplier for browser controls constraints.
      * @param compositorInMotionSupplier Whether there is an ongoing touch or gesture.
      * @param browserStateBrowserControlsVisibilityDelegate Used to keep controls locked when
-     *         captures are stale and not able to be taken.
+     *        captures are stale and not able to be taken.
      * @param shouldCreateLogoInStartToolbar Whether logo should be created in Start surface
-     *         toolbar. True if the logo should be created in the Start surface toolbar; False if
-     *         the logo should be shown in Start surface content.
+     *        toolbar. True if the logo should be created in the Start surface toolbar; False if
+     *        the logo should be shown in Start surface content.
+     * @param fullscreenManager Used to check whether in fullscreen.
      */
     public TopToolbarCoordinator(ToolbarControlContainer controlContainer, ViewStub toolbarStub,
-            ViewStub fullscreenToolbarStub, ToolbarLayout toolbarLayout,
-            ToolbarDataProvider toolbarDataProvider, ToolbarTabController tabController,
-            UserEducationHelper userEducationHelper, List<ButtonDataProvider> buttonDataProviders,
+            ToolbarLayout toolbarLayout, ToolbarDataProvider toolbarDataProvider,
+            ToolbarTabController tabController, UserEducationHelper userEducationHelper,
+            List<ButtonDataProvider> buttonDataProviders,
             OneshotSupplier<LayoutStateProvider> layoutStateProviderSupplier,
             ThemeColorProvider normalThemeColorProvider,
             ThemeColorProvider overviewThemeColorProvider,
@@ -185,7 +196,7 @@ public class TopToolbarCoordinator implements Toolbar {
             ObservableSupplier<Boolean> compositorInMotionSupplier,
             BrowserStateBrowserControlsVisibilityDelegate
                     browserStateBrowserControlsVisibilityDelegate,
-            boolean shouldCreateLogoInStartToolbar) {
+            boolean shouldCreateLogoInStartToolbar, FullscreenManager fullscreenManager) {
         mControlContainer = controlContainer;
         mToolbarLayout = toolbarLayout;
         mMenuButtonCoordinator = browsingModeMenuButtonCoordinator;
@@ -209,14 +220,15 @@ public class TopToolbarCoordinator implements Toolbar {
                     mToolbarColorObserverManager);
         } else if (mToolbarLayout instanceof ToolbarPhone
                 || mToolbarLayout instanceof ToolbarTablet) {
-            mTabSwitcherModeCoordinator = new TabSwitcherModeTTCoordinator(toolbarStub,
-                    fullscreenToolbarStub, overviewModeMenuButtonCoordinator,
-                    isGridTabSwitcherEnabled, isTabToGtsAnimationEnabled,
-                    isIncognitoModeEnabledSupplier, mToolbarColorObserverManager);
+            mTabSwitcherModeCoordinator =
+                    new TabSwitcherModeTTCoordinator(toolbarStub, overviewModeMenuButtonCoordinator,
+                            isGridTabSwitcherEnabled, isTabToGtsAnimationEnabled,
+                            isIncognitoModeEnabledSupplier, mToolbarColorObserverManager);
         }
         controlContainer.setPostInitializationDependencies(this, initializeWithIncognitoColors,
                 constraintsSupplier, toolbarDataProvider::getTab, compositorInMotionSupplier,
-                browserStateBrowserControlsVisibilityDelegate, layoutStateProviderSupplier);
+                browserStateBrowserControlsVisibilityDelegate, layoutStateProviderSupplier,
+                fullscreenManager);
         mToolbarLayout.initialize(toolbarDataProvider, tabController, mMenuButtonCoordinator,
                 historyDelegate, partnerHomepageEnabledSupplier, offlineDownloader);
         mToolbarLayout.setThemeColorProvider(normalThemeColorProvider);
@@ -334,6 +346,13 @@ public class TopToolbarCoordinator implements Toolbar {
      */
     public void addOnAttachStateChangeListener(View.OnAttachStateChangeListener listener) {
         mToolbarLayout.addOnAttachStateChangeListener(listener);
+    }
+
+    /**
+     * @see View#removeOnAttachStateChangeListener(View.OnAttachStateChangeListener)
+     */
+    public void removeOnAttachStateChangeListener(View.OnAttachStateChangeListener listener) {
+        mToolbarLayout.removeOnAttachStateChangeListener(listener);
     }
 
     /**
@@ -774,19 +793,16 @@ public class TopToolbarCoordinator implements Toolbar {
     }
 
     /** Returns the {@link OptionalBrowsingModeButtonController}. */
-    @VisibleForTesting
     public OptionalBrowsingModeButtonController getOptionalButtonControllerForTesting() {
         return mOptionalButtonController;
     }
 
     /** Returns the {@link ToolbarLayout} that constitutes the toolbar. */
-    @VisibleForTesting
     public ToolbarLayout getToolbarLayoutForTesting() {
         return mToolbarLayout;
     }
 
     /** Returns the {@link StartSurfaceToolbarCoordinator}. */
-    @VisibleForTesting
     public StartSurfaceToolbarCoordinator getStartSurfaceToolbarForTesting() {
         return mStartSurfaceToolbarCoordinator;
     }

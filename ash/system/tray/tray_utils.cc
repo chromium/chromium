@@ -140,25 +140,6 @@ int GetBubbleInsetHotseatCompensation(aura::Window* window) {
   return height_compensation;
 }
 
-gfx::Insets GetSecondaryBubbleInsets() {
-  Shelf* shelf = Shelf::ForWindow(Shell::GetPrimaryRootWindow());
-  gfx::Insets insets;
-
-  switch (shelf->alignment()) {
-    case ShelfAlignment::kBottom:
-    case ShelfAlignment::kBottomLocked:
-      insets.set_bottom(kBubbleMenuPadding);
-      break;
-    case ShelfAlignment::kLeft:
-      insets.set_left(kBubbleMenuPadding);
-      break;
-    case ShelfAlignment::kRight:
-      insets.set_right(kBubbleMenuPadding);
-      break;
-  }
-  return insets;
-}
-
 gfx::Insets GetInkDropInsets(TrayPopupInkDropStyle ink_drop_style) {
   if (ink_drop_style == TrayPopupInkDropStyle::HOST_CENTERED ||
       ink_drop_style == TrayPopupInkDropStyle::INSET_BOUNDS) {
@@ -205,6 +186,7 @@ TrayBubbleView::InitParams CreateInitParamsForTrayBubble(
   init_params.translucent = true;
   init_params.corner_radius = kTrayItemCornerRadius;
   init_params.reroute_event_handler = true;
+  init_params.anchor_to_shelf_corner = anchor_to_shelf_corner;
 
   return init_params;
 }

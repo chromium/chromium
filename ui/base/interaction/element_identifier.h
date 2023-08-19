@@ -304,20 +304,23 @@ class ClassPropertyCaster<ui::ElementIdentifier> {
 // This helper macro is required because of how __LINE__ is handled when passed
 // between macros, you need an intermediate macro in order to stringify it.
 // DO NOT CALL DIRECTLY; used by DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE().
-#define LOCAL_ELEMENT_IDENTIFIER_NAME_HELPER(File, Line, Name) \
+#define LOCAL_ELEMENT_IDENTIFIER_NAME(File, Line, Name) \
   File "::" #Line "::" #Name
 
-// Intermediate macro required to stringify __LINE__; see
-// LOCAL_ELEMENT_IDENTIFIER_NAME_HELPER().
-// DO NOT CALL DIRECTLY; used by DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE().
-#define LOCAL_ELEMENT_IDENTIFIER_NAME(File, Line, Name) \
-  LOCAL_ELEMENT_IDENTIFIER_NAME_HELPER(File, Line, Name)
-
-// Use this code to declare a local identifier in a function body.
-#define DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(IdentifierName)                 \
-  static constexpr ui::internal::ElementIdentifierImpl                        \
-      IdentifierName##Provider{                                               \
-          LOCAL_ELEMENT_IDENTIFIER_NAME(__FILE__, __LINE__, IdentifierName)}; \
+// Use this code to declare a local identifier from within a macro; you should
+// pass the __FILE__ and __LINE__ values for `File` and `Line`. The name will be
+// mangled with the file and line so that it can be used in local or module
+// scope (typically in tests) without having to worry about name collisions.
+#define DEFINE_MACRO_ELEMENT_IDENTIFIER_VALUE(File, Line, IdentifierName) \
+  static constexpr ui::internal::ElementIdentifierImpl                    \
+      IdentifierName##Provider{                                           \
+          LOCAL_ELEMENT_IDENTIFIER_NAME(File, Line, IdentifierName)};     \
   constexpr ui::ElementIdentifier IdentifierName(&IdentifierName##Provider)
+
+// Use this code to declare a local identifier in a function body or module
+// scope. The name will be mangled with the file and line so that it can be used
+// (typically in tests) without having to worry about name collisions.
+#define DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(IdentifierName) \
+  DEFINE_MACRO_ELEMENT_IDENTIFIER_VALUE(__FILE__, __LINE__, IdentifierName)
 
 #endif  // UI_BASE_INTERACTION_ELEMENT_IDENTIFIER_H_

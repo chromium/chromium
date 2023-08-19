@@ -335,6 +335,48 @@ error::Error RasterDecoderImpl::HandleWritePixelsINTERNALImmediate(
   return error::kNoError;
 }
 
+error::Error RasterDecoderImpl::HandleWritePixelsYUVINTERNALImmediate(
+    uint32_t immediate_data_size,
+    const volatile void* cmd_data) {
+  const volatile raster::cmds::WritePixelsYUVINTERNALImmediate& c =
+      *static_cast<
+          const volatile raster::cmds::WritePixelsYUVINTERNALImmediate*>(
+          cmd_data);
+  GLuint src_width = static_cast<GLuint>(c.src_width);
+  GLuint src_height = static_cast<GLuint>(c.src_height);
+  GLuint src_row_bytes_plane1 = static_cast<GLuint>(c.src_row_bytes_plane1);
+  GLuint src_row_bytes_plane2 = static_cast<GLuint>(c.src_row_bytes_plane2);
+  GLuint src_row_bytes_plane3 = static_cast<GLuint>(c.src_row_bytes_plane3);
+  GLuint src_row_bytes_plane4 = static_cast<GLuint>(c.src_row_bytes_plane4);
+  GLuint src_yuv_plane_config = static_cast<GLuint>(c.src_yuv_plane_config);
+  GLuint src_yuv_subsampling = static_cast<GLuint>(c.src_yuv_subsampling);
+  GLuint src_yuv_datatype = static_cast<GLuint>(c.src_yuv_datatype);
+  GLint shm_id = static_cast<GLint>(c.shm_id);
+  GLuint shm_offset = static_cast<GLuint>(c.shm_offset);
+  GLuint plane2_offset = static_cast<GLuint>(c.plane2_offset);
+  GLuint plane3_offset = static_cast<GLuint>(c.plane3_offset);
+  GLuint plane4_offset = static_cast<GLuint>(c.plane4_offset);
+  uint32_t mailbox_size;
+  if (!gles2::GLES2Util::ComputeDataSize<GLbyte, 16>(1, &mailbox_size)) {
+    return error::kOutOfBounds;
+  }
+  if (mailbox_size > immediate_data_size) {
+    return error::kOutOfBounds;
+  }
+  volatile const GLbyte* mailbox =
+      gles2::GetImmediateDataAs<volatile const GLbyte*>(c, mailbox_size,
+                                                        immediate_data_size);
+  if (mailbox == nullptr) {
+    return error::kOutOfBounds;
+  }
+  DoWritePixelsYUVINTERNAL(
+      src_width, src_height, src_row_bytes_plane1, src_row_bytes_plane2,
+      src_row_bytes_plane3, src_row_bytes_plane4, src_yuv_plane_config,
+      src_yuv_subsampling, src_yuv_datatype, shm_id, shm_offset, plane2_offset,
+      plane3_offset, plane4_offset, mailbox);
+  return error::kNoError;
+}
+
 error::Error RasterDecoderImpl::HandleReadbackARGBImagePixelsINTERNALImmediate(
     uint32_t immediate_data_size,
     const volatile void* cmd_data) {

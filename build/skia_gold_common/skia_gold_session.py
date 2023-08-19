@@ -3,6 +3,7 @@
 # found in the LICENSE file.
 """Class for interacting with the Skia Gold image diffing service."""
 
+import enum
 import logging
 import os
 import platform
@@ -11,6 +12,8 @@ import sys
 import tempfile
 import time
 from typing import Any, Dict, List, Optional, Tuple
+
+import dataclasses  # Built-in, but pylint gives an ordering false positive.
 
 from skia_gold_common import skia_gold_properties
 
@@ -34,7 +37,8 @@ StepRetVal = Tuple[int, Optional[str]]
 
 
 class SkiaGoldSession():
-  class StatusCodes():
+  @enum.unique
+  class StatusCodes(enum.IntEnum):
     """Status codes for RunComparison."""
     SUCCESS = 0
     AUTH_FAILURE = 1
@@ -44,16 +48,15 @@ class SkiaGoldSession():
     LOCAL_DIFF_FAILURE = 5
     NO_OUTPUT_MANAGER = 6
 
+  @dataclasses.dataclass
   class ComparisonResults():
     """Struct-like object for storing results of an image comparison."""
-
-    def __init__(self):
-      self.public_triage_link: Optional[str] = None
-      self.internal_triage_link: Optional[str] = None
-      self.triage_link_omission_reason: Optional[str] = None
-      self.local_diff_given_image: Optional[str] = None
-      self.local_diff_closest_image: Optional[str] = None
-      self.local_diff_diff_image: Optional[str] = None
+    public_triage_link: Optional[str] = None
+    internal_triage_link: Optional[str] = None
+    triage_link_omission_reason: Optional[str] = None
+    local_diff_given_image: Optional[str] = None
+    local_diff_closest_image: Optional[str] = None
+    local_diff_diff_image: Optional[str] = None
 
   def __init__(self,
                working_dir: str,
@@ -90,8 +93,8 @@ class SkiaGoldSession():
                                      dir=working_dir,
                                      delete=False) as triage_link_file:
       self._triage_link_file = triage_link_file.name
-    # A map of image name (string) to ComparisonResults for that image.
-    self._comparison_results = {}
+    # A map of image name to ComparisonResults for that image.
+    self._comparison_results: Dict[str, SkiaGoldSession.ComparisonResults] = {}
     self._authenticated = False
     self._initialized = False
 
@@ -103,7 +106,7 @@ class SkiaGoldSession():
   def RunComparison(self,
                     name: str,
                     png_file: str,
-                    output_manager: Any,
+                    output_manager: Optional[Any] = None,
                     inexact_matching_args: Optional[List[str]] = None,
                     use_luci: bool = True,
                     service_account: Optional[str] = None,
@@ -163,7 +166,7 @@ class SkiaGoldSession():
     if not self._gold_properties.local_pixel_tests:
       return self.StatusCodes.COMPARISON_FAILURE_REMOTE, compare_stdout
 
-    if not output_manager:
+    if self._RequiresOutputManager() and not output_manager:
       return (self.StatusCodes.NO_OUTPUT_MANAGER,
               'No output manager for local diff images')
 
@@ -561,6 +564,10 @@ class SkiaGoldSession():
           output image files where saved.
     """
     raise NotImplementedError()
+
+  def _RequiresOutputManager(self) -> bool:
+    """Whether this session implementation requires an output manager."""
+    return True
 
   @staticmethod
   def _RunCmdForRcAndOutput(cmd: List[str]) -> Tuple[int, str]:

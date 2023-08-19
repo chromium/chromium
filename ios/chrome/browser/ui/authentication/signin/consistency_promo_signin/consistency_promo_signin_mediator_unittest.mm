@@ -31,10 +31,6 @@
 #import "third_party/ocmock/OCMock/OCMock.h"
 #import "third_party/ocmock/gtest_support.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 // Subclass of ConsistencyPromoSigninMediator to override
 // `signinTimeoutDurationSeconds` property.
 @interface TestConsistencyPromoSigninMediator : ConsistencyPromoSigninMediator
@@ -90,7 +86,8 @@ class ConsistencyPromoSigninMediatorTest : public PlatformTest {
         browser_state_.get());
   }
 
-  TestConsistencyPromoSigninMediator* GetConsistencyPromoSigninMediator() {
+  TestConsistencyPromoSigninMediator* GetConsistencyPromoSigninMediator(
+      signin_metrics::AccessPoint access_point) {
     ChromeAccountManagerService* chromeAccountManagerService =
         ChromeAccountManagerServiceFactory::GetForBrowserState(
             browser_state_.get());
@@ -100,8 +97,7 @@ class ConsistencyPromoSigninMediatorTest : public PlatformTest {
                     authenticationService:GetAuthenticationService()
                           identityManager:GetIdentityManager()
                           userPrefService:&pref_service_
-                              accessPoint:signin_metrics::AccessPoint::
-                                              ACCESS_POINT_WEB_SIGNIN];
+                              accessPoint:access_point];
     mediator.delegate = mediator_delegate_mock_;
     return mediator;
   }
@@ -115,6 +111,11 @@ class ConsistencyPromoSigninMediatorTest : public PlatformTest {
     OCMExpect([mediator_delegate_mock_
         consistencyPromoSigninMediatorSignInDone:mediator
                                     withIdentity:identity]);
+    SimulateCookies(mediator, identity);
+  }
+
+  void SimulateCookies(ConsistencyPromoSigninMediator* mediator,
+                       id<SystemIdentity> identity) {
     id<IdentityManagerObserverBridgeDelegate>
         identityManagerObserverBridgeDelegate =
             (id<IdentityManagerObserverBridgeDelegate>)mediator;
@@ -203,8 +204,8 @@ class ConsistencyPromoSigninMediatorTest : public PlatformTest {
 // Tests start and cancel by user.
 TEST_F(ConsistencyPromoSigninMediatorTest, StartAndStopForCancel) {
   base::HistogramTester histogram_tester;
-  ConsistencyPromoSigninMediator* mediator =
-      GetConsistencyPromoSigninMediator();
+  ConsistencyPromoSigninMediator* mediator = GetConsistencyPromoSigninMediator(
+      signin_metrics::AccessPoint::ACCESS_POINT_WEB_SIGNIN);
   [mediator disconnectWithResult:SigninCoordinatorResultCanceledByUser];
 
   histogram_tester.ExpectTotalCount(
@@ -222,8 +223,8 @@ TEST_F(ConsistencyPromoSigninMediatorTest, StartAndStopForCancel) {
 // Tests start and interrupt.
 TEST_F(ConsistencyPromoSigninMediatorTest, StartAndStopForInterrupt) {
   base::HistogramTester histogram_tester;
-  ConsistencyPromoSigninMediator* mediator =
-      GetConsistencyPromoSigninMediator();
+  ConsistencyPromoSigninMediator* mediator = GetConsistencyPromoSigninMediator(
+      signin_metrics::AccessPoint::ACCESS_POINT_WEB_SIGNIN);
   [mediator disconnectWithResult:SigninCoordinatorResultInterrupted];
 
   histogram_tester.ExpectTotalCount(
@@ -243,8 +244,8 @@ TEST_F(ConsistencyPromoSigninMediatorTest,
        SigninCoordinatorResultSuccessWithDefaultIdentity) {
   base::HistogramTester histogram_tester;
   pref_service_.SetInteger(prefs::kSigninWebSignDismissalCount, 1);
-  ConsistencyPromoSigninMediator* mediator =
-      GetConsistencyPromoSigninMediator();
+  ConsistencyPromoSigninMediator* mediator = GetConsistencyPromoSigninMediator(
+      signin_metrics::AccessPoint::ACCESS_POINT_WEB_SIGNIN);
   OCMExpect([mediator_delegate_mock_
       consistencyPromoSigninMediatorSigninStarted:mediator]);
   SigninWithMediator(mediator, identity1_, /*signin_success=*/YES);
@@ -268,8 +269,8 @@ TEST_F(ConsistencyPromoSigninMediatorTest,
 TEST_F(ConsistencyPromoSigninMediatorTest,
        SigninCoordinatorResultSuccessWithSecondaryIdentity) {
   base::HistogramTester histogram_tester;
-  ConsistencyPromoSigninMediator* mediator =
-      GetConsistencyPromoSigninMediator();
+  ConsistencyPromoSigninMediator* mediator = GetConsistencyPromoSigninMediator(
+      signin_metrics::AccessPoint::ACCESS_POINT_WEB_SIGNIN);
   OCMExpect([mediator_delegate_mock_
       consistencyPromoSigninMediatorSigninStarted:mediator]);
   SigninWithMediator(mediator, identity2_, /*signin_success=*/YES);
@@ -297,8 +298,8 @@ TEST_F(ConsistencyPromoSigninMediatorTest,
                                      gaiaID:@"foo1ID3"
                                        name:@"Fake Foo 3"];
   GetSystemIdentityManager()->AddIdentity(identity3);
-  ConsistencyPromoSigninMediator* mediator =
-      GetConsistencyPromoSigninMediator();
+  ConsistencyPromoSigninMediator* mediator = GetConsistencyPromoSigninMediator(
+      signin_metrics::AccessPoint::ACCESS_POINT_WEB_SIGNIN);
   OCMExpect([mediator_delegate_mock_
       consistencyPromoSigninMediatorSigninStarted:mediator]);
   SigninWithMediator(mediator, identity3, /*signin_success=*/YES);
@@ -321,8 +322,8 @@ TEST_F(ConsistencyPromoSigninMediatorTest,
 // Tests start and sign-in with an error.
 TEST_F(ConsistencyPromoSigninMediatorTest, SigninCoordinatorWithError) {
   base::HistogramTester histogram_tester;
-  ConsistencyPromoSigninMediator* mediator =
-      GetConsistencyPromoSigninMediator();
+  ConsistencyPromoSigninMediator* mediator = GetConsistencyPromoSigninMediator(
+      signin_metrics::AccessPoint::ACCESS_POINT_WEB_SIGNIN);
   OCMExpect([mediator_delegate_mock_
       consistencyPromoSigninMediatorSigninStarted:mediator]);
   SigninWithMediator(mediator, identity1_, /*signin_success=*/YES);
@@ -350,7 +351,8 @@ TEST_F(ConsistencyPromoSigninMediatorTest, SigninCoordinatorWithError) {
 TEST_F(ConsistencyPromoSigninMediatorTest, SigninCoordinatorWithTimeoutError) {
   base::HistogramTester histogram_tester;
   TestConsistencyPromoSigninMediator* mediator =
-      GetConsistencyPromoSigninMediator();
+      GetConsistencyPromoSigninMediator(
+          signin_metrics::AccessPoint::ACCESS_POINT_WEB_SIGNIN);
   // Sets the timeout duration to 0, to trigger the timeout error without
   // waiting.
   mediator.signinTimeoutDurationSeconds = 0;
@@ -392,7 +394,8 @@ TEST_F(ConsistencyPromoSigninMediatorTest, SigninCoordinatorWithTimeoutError) {
 TEST_F(ConsistencyPromoSigninMediatorTest, SigninFailed) {
   base::HistogramTester histogram_tester;
   TestConsistencyPromoSigninMediator* mediator =
-      GetConsistencyPromoSigninMediator();
+      GetConsistencyPromoSigninMediator(
+          signin_metrics::AccessPoint::ACCESS_POINT_WEB_SIGNIN);
   // Sets the timeout duration to 0, to trigger the timeout error without
   // waiting.
   mediator.signinTimeoutDurationSeconds = 0;
@@ -423,4 +426,33 @@ TEST_F(ConsistencyPromoSigninMediatorTest, SigninFailed) {
   histogram_tester.ExpectBucketCount(
       "Signin.AccountConsistencyPromoAction.DismissedButton",
       signin_metrics::AccessPoint::ACCESS_POINT_WEB_SIGNIN, 1);
+}
+
+// Tests start and sign-in with default identity from Settings access point, and
+// then update the cookies. Related to crrev.com/1471140.
+TEST_F(ConsistencyPromoSigninMediatorTest, SigninWithoutCookies) {
+  base::HistogramTester histogram_tester;
+  pref_service_.SetInteger(prefs::kSigninWebSignDismissalCount, 1);
+  ConsistencyPromoSigninMediator* mediator = GetConsistencyPromoSigninMediator(
+      signin_metrics::AccessPoint::ACCESS_POINT_SETTINGS);
+  OCMExpect([mediator_delegate_mock_
+      consistencyPromoSigninMediatorSigninStarted:mediator]);
+  OCMExpect([mediator_delegate_mock_
+      consistencyPromoSigninMediatorSignInDone:mediator
+                                  withIdentity:identity1_]);
+  SigninWithMediator(mediator, identity1_, /*signin_success=*/YES);
+  SimulateCookies(mediator, identity1_);
+  EXPECT_EQ(1, pref_service_.GetInteger(prefs::kSigninWebSignDismissalCount));
+  [mediator disconnectWithResult:SigninCoordinatorResultSuccess];
+
+  histogram_tester.ExpectTotalCount(
+      "Signin.AccountConsistencyPromoAction.Shown", 1);
+  histogram_tester.ExpectBucketCount(
+      "Signin.AccountConsistencyPromoAction.Shown",
+      signin_metrics::AccessPoint::ACCESS_POINT_SETTINGS, 1);
+  histogram_tester.ExpectTotalCount(
+      "Signin.AccountConsistencyPromoAction.SignedInWithDefaultAccount", 1);
+  histogram_tester.ExpectBucketCount(
+      "Signin.AccountConsistencyPromoAction.SignedInWithDefaultAccount",
+      signin_metrics::AccessPoint::ACCESS_POINT_SETTINGS, 1);
 }

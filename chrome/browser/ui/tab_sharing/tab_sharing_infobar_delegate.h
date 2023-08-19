@@ -118,7 +118,7 @@ class TabSharingInfoBarDelegate : public ConfirmInfoBarDelegate {
   const std::u16string capturer_name_;
 
   // Creates and removes delegate's infobar; outlives delegate.
-  const raw_ptr<TabSharingUI, DanglingUntriaged> ui_;
+  const raw_ptr<TabSharingUI, AcrossTasksDanglingUntriaged> ui_;
 
   // TODO(crbug.com/1224363): Re-enable favicons by default or drop the code.
   const bool favicons_used_for_switch_to_tab_button_;

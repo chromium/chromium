@@ -103,7 +103,7 @@ class MEDIA_GPU_EXPORT H264Picture : public CodecPicture {
 // DPB - Decoded Picture Buffer.
 // Stores decoded pictures that will be used for future display
 // and/or reference.
-class H264DPB {
+class MEDIA_GPU_EXPORT H264DPB {
  public:
   H264DPB();
 

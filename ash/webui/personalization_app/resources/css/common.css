@@ -17,6 +17,8 @@
 }
 
 :host {
+  --personalization-app-breadcrumb-height: 56px;
+  --personalization-app-subpage-container-min-height: calc(100vh - var(--personalization-app-breadcrumb-height));
   --personalization-app-grid-item-background-color: var(--google-grey-100);
   --personalization-app-grid-item-border-radius: 12px;
   --personalization-app-grid-item-height: 120px;
@@ -48,10 +50,6 @@
     --personalization-app-grid-item-background-color:
         var(--cros-sys-secondary_container);
   }
-}
-
-iron-list {
-  height: 100%;
 }
 
 @keyframes ripple {
@@ -297,6 +295,12 @@ iron-list {
 
 .disabled {
   opacity: var(--cros-disabled-opacity);
+}
+
+.duration-description {
+  color: var(--cros-text-color-secondary);
+  font: var(--cros-body-2-font);
+  margin: 0 8px;
 }
 
 img.disabled {

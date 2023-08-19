@@ -15,8 +15,8 @@ class ASH_PUBLIC_EXPORT ArcNotificationManagerDelegate {
  public:
   virtual ~ArcNotificationManagerDelegate() = default;
 
-  // Whether the current user session is public session or kiosk.
-  virtual bool IsPublicSessionOrKiosk() const = 0;
+  // Whether the current user session is a managed guest session or kiosk.
+  virtual bool IsManagedGuestSessionOrKiosk() const = 0;
 
   // Shows the message center.
   virtual void ShowMessageCenter() = 0;

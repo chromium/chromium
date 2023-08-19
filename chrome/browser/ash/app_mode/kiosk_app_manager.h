@@ -108,11 +108,9 @@ class KioskAppManager : public KioskAppManagerBase,
         chromeos::ExternalCacheDelegate* delegate,
         bool always_check_updates) = 0;
 
-    // Creates an AppSessionAsh object that will maintain a started kiosk app
-    // session.
-    // Called when the KioskAppManager initializes the session.
-    // It can return nullptr.
-    virtual std::unique_ptr<AppSessionAsh> CreateAppSession() = 0;
+    // Creates a `KioskSystemSession` object. Called when the KioskAppManager
+    // initializes the session. It can return nullptr.
+    virtual std::unique_ptr<KioskSystemSession> CreateKioskSystemSession() = 0;
   };
 
   // Name of a dictionary that holds kiosk app info in Local State.
@@ -129,7 +127,7 @@ class KioskAppManager : public KioskAppManagerBase,
   static bool IsInitialized();
 
   // Initializes KioskAppManager for testing, injecting the provided overrides.
-  // |overrides| can be null, in which case KioskAppManager will use default
+  // `overrides` can be null, in which case KioskAppManager will use default
   // behavior.
   // Must be called before Get().
   static void InitializeForTesting(Overrides* overrides);
@@ -153,7 +151,7 @@ class KioskAppManager : public KioskAppManagerBase,
       GetConsumerKioskAutoLaunchStatusCallback callback);
 
   // Enables consumer kiosk mode app auto-launch feature. Upon completion,
-  // |callback| will be invoked with outcome of this operation.
+  // `callback` will be invoked with outcome of this operation.
   void EnableConsumerKioskAutoLaunch(EnableKioskAutoLaunchCallback callback);
 
   // Returns true if this device is consumer kiosk auto launch enabled.
@@ -162,7 +160,7 @@ class KioskAppManager : public KioskAppManagerBase,
   // Returns auto launcher app id or an empty string if there is none.
   std::string GetAutoLaunchApp() const;
 
-  // Sets |app_id| as the app to auto launch at start up.
+  // Sets `app_id` as the app to auto launch at start up.
   void SetAutoLaunchApp(const std::string& app_id,
                         OwnerSettingsServiceAsh* service);
 
@@ -188,17 +186,17 @@ class KioskAppManager : public KioskAppManagerBase,
   // Gets info of all apps that have no meta data load error.
   void GetApps(Apps* apps) const override;
 
-  // Gets app data for the given app id. Returns true if |app_id| is known and
-  // |app| is populated. Otherwise, return false.
+  // Gets app data for the given app id. Returns true if `app_id` is known and
+  // `app` is populated. Otherwise, return false.
   bool GetApp(const std::string& app_id, App* app) const;
 
   // Clears locally cached Gdata.
   void ClearAppData(const std::string& app_id);
 
-  // Updates app data from the |app| in |profile|. |app| is provided to cover
-  // the case of app update case where |app| is the new version and is not
+  // Updates app data from the `app` in `profile`. `app` is provided to cover
+  // the case of app update case where `app` is the new version and is not
   // finished installing (e.g. because old version is still running). Otherwise,
-  // |app| could be NULL and the current installed app in |profile| will be
+  // `app` could be NULL and the current installed app in `profile` will be
   // used.
   void UpdateAppDataFromProfile(const std::string& app_id,
                                 Profile* profile,
@@ -209,7 +207,7 @@ class KioskAppManager : public KioskAppManagerBase,
   // Returns true if the app is found in cache.
   bool HasCachedCrx(const std::string& app_id) const;
 
-  // Gets the path and version of the cached crx with |app_id|.
+  // Gets the path and version of the cached crx with `app_id`.
   // Returns true if the app is found in cache.
   bool GetCachedCrx(const std::string& app_id,
                     base::FilePath* file_path,
@@ -227,7 +225,7 @@ class KioskAppManager : public KioskAppManagerBase,
   void OnKioskAppCacheUpdated(const std::string& app_id);
 
   // Invoked when kiosk app updating from usb stick has been completed.
-  // |success| indicates if all the updates are completed successfully.
+  // `success` indicates if all the updates are completed successfully.
   void OnKioskAppExternalUpdateComplete(bool success);
 
   // Installs the validated external extension into cache.
@@ -255,8 +253,8 @@ class KioskAppManager : public KioskAppManagerBase,
   void SetExtensionDownloaderBackoffPolicy(
       absl::optional<net::BackoffEntry::Policy> backoff_policy);
 
-  // Initialize |app_session_|.
-  void InitSession(Profile* profile, const KioskAppId& app_id);
+  // Initialize `kiosk_system_session_`.
+  void InitKioskSystemSession(Profile* profile, const KioskAppId& app_id);
 
   // Adds an app with the given meta data directly and skips meta data fetching
   // for test.
@@ -283,10 +281,10 @@ class KioskAppManager : public KioskAppManagerBase,
   KioskAppData* GetAppDataMutable(const std::string& app_id);
 
   // KioskAppManagerBase:
-  // Updates app data |apps_| based on CrosSettings.
+  // Updates app data `apps_` based on CrosSettings.
   void UpdateAppsFromPolicy() override;
 
-  // Updates the prefs of |external_cache_| from |apps_|.
+  // Updates the prefs of `external_cache_` from `apps_`.
   void UpdateExternalCachePrefs();
 
   // chromeos::ExternalCacheDelegate:
@@ -319,9 +317,9 @@ class KioskAppManager : public KioskAppManagerBase,
 
   // Gets list of user switches that should be passed to Chrome in case current
   // session has to be restored, e.g. in case of a crash. The switches will be
-  // returned as |switches| command line arguments.
+  // returned as `switches` command line arguments.
   // Returns whether the set of switches would have to be changed in respect to
-  // the current set of switches - if that is not the case |switches| might not
+  // the current set of switches - if that is not the case `switches` might not
   // get populated.
   bool GetSwitchesForSessionRestore(const std::string& app_id,
                                     base::CommandLine* switches);

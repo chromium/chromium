@@ -324,7 +324,7 @@ class PermissionsData {
   bool IsPolicyBlockedHostUnsafe(const GURL& url) const;
 
   // The associated extension's id.
-  std::string extension_id_;
+  ExtensionId extension_id_;
 
   // The associated extension's manifest type.
   Manifest::Type manifest_type_;

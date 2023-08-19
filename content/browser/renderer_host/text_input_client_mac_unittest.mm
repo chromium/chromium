@@ -115,7 +115,7 @@ class TextInputClientMacTest : public content::RenderViewHostTestHarness {
  private:
   friend class ScopedTestingThread;
 
-  raw_ptr<RenderWidgetHost> widget_;
+  raw_ptr<RenderWidgetHost, DanglingUntriaged> widget_;
   std::unique_ptr<TextInputClientLocalFrame> local_frame_;
 
   base::Thread thread_;

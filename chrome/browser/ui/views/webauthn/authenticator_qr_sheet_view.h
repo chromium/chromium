@@ -7,11 +7,8 @@
 
 #include <memory>
 
-#include "base/memory/raw_ptr.h"
 #include "chrome/browser/ui/views/webauthn/authenticator_request_sheet_view.h"
 #include "chrome/browser/ui/webauthn/sheet_models.h"
-
-class AuthenticatorQRViewCentered;
 
 class AuthenticatorQRSheetView : public AuthenticatorRequestSheetView {
  public:
@@ -28,7 +25,6 @@ class AuthenticatorQRSheetView : public AuthenticatorRequestSheetView {
   std::pair<std::unique_ptr<views::View>, AutoFocus> BuildStepSpecificContent()
       override;
 
-  raw_ptr<AuthenticatorQRViewCentered> qr_view_ = nullptr;
   const std::string qr_string_;
 };
 

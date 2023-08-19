@@ -10,15 +10,15 @@ namespace blink {
 
 // static
 GPUPipelineError* GPUPipelineError::Create(
-    String message,
+    const String& message,
     const GPUPipelineErrorInit* options) {
-  return MakeGarbageCollected<GPUPipelineError>(std::move(message),
+  return MakeGarbageCollected<GPUPipelineError>(message,
                                                 options->reason().AsEnum());
 }
 
-GPUPipelineError::GPUPipelineError(String message,
+GPUPipelineError::GPUPipelineError(const String& message,
                                    V8GPUPipelineErrorReason::Enum reason)
-    : DOMException(DOMExceptionCode::kGPUPipelineError, std::move(message)),
+    : DOMException(DOMExceptionCode::kGPUPipelineError, message),
       reason_(reason) {}
 
 V8GPUPipelineErrorReason GPUPipelineError::reason() const {

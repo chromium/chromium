@@ -12,7 +12,6 @@ import android.view.Choreographer;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.BuildInfo;
 import org.chromium.base.Callback;
@@ -86,7 +85,6 @@ public class UpdateMenuItemHelper {
         }
     }
 
-    @VisibleForTesting
     public static void setInstanceForTesting(UpdateMenuItemHelper testingInstance) {
         sInstance = testingInstance;
         ResettersForTesting.register(() -> sInstance = null);
@@ -254,7 +252,6 @@ public class UpdateMenuItemHelper {
         return UserPrefs.get(Profile.getLastUsedRegularProfile());
     }
 
-    @VisibleForTesting
     boolean getMenuDismissedRunnableExecutedForTests() {
         return mMenuDismissedRunnableExecuted;
     }

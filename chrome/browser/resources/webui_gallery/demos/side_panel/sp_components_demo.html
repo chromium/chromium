@@ -29,18 +29,14 @@
     padding: 0;
   }
 
-  #singleCard .sp-card,
-  #multipleCards {
+  #scroller {
     display: flex;
     flex-direction: column;
+    height: 200px;
     min-height: 0;
   }
 
-  #multipleCards {
-    height: 200px;
-  }
-
-  .multiple-card-content {
+  .card-content {
     align-items: center;
     display: flex;
     height: 300px;
@@ -85,61 +81,33 @@
   </div>
 </div>
 
-<h2>With singular card</h2>
-<div id="singleCard" class="side-panel-demo">
+<h2>Scrollable container with cards</h2>
+<div id="scroller" class="side-panel-demo sp-scroller">
   <div class="sp-card">
     <sp-heading hide-back-button="[[hideBackButton_]]">
       <h3 slot="heading">Heading</h3>
-
-      <span slot="metadata">Metadata</span>
-      <cr-icon-button slot="buttons" iron-icon="sp:filter-list"
-          aria-label="Filter">
-      </cr-icon-button>
-      <cr-icon-button slot="buttons" iron-icon="cr:sync"
-          aria-label="Sync">
-      </cr-icon-button>
-      <cr-icon-button slot="buttons" iron-icon="cr:create"
-          aria-label="Create">
-      </cr-icon-button>
     </sp-heading>
-    <div class="sp-scroller">
-      <template is="dom-repeat" items="[[urls_]]">
-        <cr-url-list-item title="[[item.title]]"
-            description="[[item.url]]"
-            url="[[item.url]]"
-            size="[[itemSize_]]">
-          <template is="dom-if" if="[[showBadges_]]" restamp>
-            <sp-list-item-badge slot="badges">
-              <iron-icon icon="cr:info-outline"></iron-icon>
-              <span>2 Notes</span>
-            </sp-list-item-badge>
-          </template>
-        </cr-url-list-item>
-      </template>
-    </div>
-  </div>
-  <sp-footer pinned>
-    <cr-button class="floating-button">
-      <iron-icon slot="prefix-icon" icon="cr:add"></iron-icon>
-      Floating button
-    </cr-button>
-  </sp-footer>
-</div>
 
-<h2>Multiple cards</h2>
-<div id="multipleCards" class="side-panel-demo sp-scroller">
-  <div class="sp-card">
-    <sp-heading hide-back-button>
-      <h3 slot="heading">Heading</h3>
-    </sp-heading>
-    <div class="multiple-card-content">Some content</div>
+    <template is="dom-repeat" items="[[urls_]]">
+      <cr-url-list-item title="[[item.title]]"
+          description="[[item.url]]"
+          url="[[item.url]]"
+          size="[[itemSize_]]">
+        <template is="dom-if" if="[[showBadges_]]" restamp>
+          <sp-list-item-badge slot="badges">
+            <iron-icon icon="cr:info-outline"></iron-icon>
+            <span>2 Notes</span>
+          </sp-list-item-badge>
+        </template>
+      </cr-url-list-item>
+    </template>
   </div>
   <hr class="sp-cards-separator">
   <div class="sp-card">
     <sp-heading hide-back-button>
       <h3 slot="heading">Heading</h3>
     </sp-heading>
-    <div class="multiple-card-content">Some content</div>
+    <div class="card-content">Some content</div>
   </div>
 </div>
 

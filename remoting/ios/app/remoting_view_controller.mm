@@ -14,8 +14,8 @@
 #import <MaterialComponents/MaterialShadowLayer.h>
 #import <MaterialComponents/MaterialSnackbar.h>
 
+#include "base/apple/scoped_cftyperef.h"
 #import "base/functional/bind.h"
-#include "base/mac/scoped_cftyperef.h"
 #include "base/strings/sys_string_conversions.h"
 #include "remoting/base/oauth_token_getter.h"
 #include "remoting/base/string_resources.h"
@@ -35,10 +35,6 @@
 #include "remoting/ios/facade/host_list_service.h"
 #import "remoting/ios/facade/remoting_service.h"
 #include "ui/base/l10n/l10n_util.h"
-
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
 
 static CGFloat kHostInset = 5.f;
 

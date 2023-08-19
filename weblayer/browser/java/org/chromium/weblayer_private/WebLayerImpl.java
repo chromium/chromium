@@ -47,7 +47,6 @@ import org.chromium.base.annotations.JNINamespace;
 import org.chromium.base.annotations.NativeMethods;
 import org.chromium.base.library_loader.LibraryLoader;
 import org.chromium.base.library_loader.LibraryProcessType;
-import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.task.AsyncTask;
 import org.chromium.base.task.BackgroundOnlyAsyncTask;
 import org.chromium.base.task.PostTask;
@@ -63,7 +62,6 @@ import org.chromium.components.browser_ui.share.ShareImageFileUtils;
 import org.chromium.components.component_updater.ComponentLoaderPolicyBridge;
 import org.chromium.components.component_updater.EmbeddedComponentLoader;
 import org.chromium.components.embedder_support.application.ClassLoaderContextWrapperFactory;
-import org.chromium.components.embedder_support.application.FirebaseConfig;
 import org.chromium.components.payments.PaymentDetailsUpdateService;
 import org.chromium.components.webapk.lib.client.ChromeWebApkHostSignature;
 import org.chromium.components.webapk.lib.client.WebApkValidator;
@@ -296,8 +294,6 @@ public final class WebLayerImpl extends IWebLayer.Stub {
                 ChromeWebApkHostSignature.EXPECTED_SIGNATURE, ChromeWebApkHostSignature.PUBLIC_KEY);
 
         BuildInfo.setBrowserPackageInfo(packageInfo);
-        BuildInfo.setFirebaseAppId(
-                FirebaseConfig.getFirebaseAppIdForPackage(packageInfo.packageName));
 
         SelectionPopupController.setMustUseWebContentsContext();
         SelectionPopupController.setShouldGetReadbackViewFromWindowAndroid();
@@ -478,19 +474,6 @@ public final class WebLayerImpl extends IWebLayer.Stub {
     public void setClient(IWebLayerClient client) {
         StrictModeWorkaround.apply();
         sClient = client;
-
-        if (WebLayerFactoryImpl.getClientMajorVersion() >= 88) {
-            try {
-                RecordHistogram.recordTimesHistogram("WebLayer.Startup.ClassLoaderCreationTime",
-                        sClient.getClassLoaderCreationTime());
-                RecordHistogram.recordTimesHistogram(
-                        "WebLayer.Startup.ContextCreationTime", sClient.getContextCreationTime());
-                RecordHistogram.recordTimesHistogram("WebLayer.Startup.WebLayerLoaderCreationTime",
-                        sClient.getWebLayerLoaderCreationTime());
-            } catch (RemoteException e) {
-                throw new APICallException(e);
-            }
-        }
     }
 
     @Override

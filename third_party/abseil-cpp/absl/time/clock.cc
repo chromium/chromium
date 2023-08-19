@@ -48,16 +48,15 @@ Time Now() {
 ABSL_NAMESPACE_END
 }  // namespace absl
 
-// Decide if we should use the fast GetCurrentTimeNanos() algorithm
-// based on the cyclecounter, otherwise just get the time directly
-// from the OS on every call. This can be chosen at compile-time via
+// Decide if we should use the fast GetCurrentTimeNanos() algorithm based on the
+// cyclecounter, otherwise just get the time directly from the OS on every call.
+// By default, the fast algorithm based on the cyclecount is disabled because in
+// certain situations, for example, if the OS enters a "sleep" mode, it may
+// produce incorrect values immediately upon waking.
+// This can be chosen at compile-time via
 // -DABSL_USE_CYCLECLOCK_FOR_GET_CURRENT_TIME_NANOS=[0|1]
 #ifndef ABSL_USE_CYCLECLOCK_FOR_GET_CURRENT_TIME_NANOS
-#if ABSL_USE_UNSCALED_CYCLECLOCK
-#define ABSL_USE_CYCLECLOCK_FOR_GET_CURRENT_TIME_NANOS 1
-#else
 #define ABSL_USE_CYCLECLOCK_FOR_GET_CURRENT_TIME_NANOS 0
-#endif
 #endif
 
 #if defined(__APPLE__) || defined(_WIN32)

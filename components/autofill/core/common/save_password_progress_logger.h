@@ -53,7 +53,6 @@ class SavePasswordProgressLogger {
     STRING_CONFIRMATION_PASSWORD_ELEMENT_RENDERER_ID,
     STRING_PASSWORD_GENERATED,
     STRING_TIMES_USED,
-    STRING_PSL_MATCH,
     STRING_NAME_OR_ID,
     STRING_MESSAGE,
     STRING_SET_AUTH_METHOD,
@@ -78,6 +77,7 @@ class SavePasswordProgressLogger {
     STRING_BLOCK_PASSWORD_SAME_ORIGIN_INSECURE_SCHEME,
     STRING_ON_PASSWORD_FORMS_RENDERED_METHOD,
     STRING_ON_DYNAMIC_FORM_SUBMISSION,
+    STRING_ON_PASSWORD_FORM_CLEARED,
     STRING_ON_SUBFRAME_FORM_SUBMISSION,
     STRING_ON_ASK_USER_OR_SAVE_PASSWORD,
     STRING_CAN_PROVISIONAL_MANAGER_SAVE_METHOD,
@@ -156,7 +156,6 @@ class SavePasswordProgressLogger {
     STRING_USERNAME_FIRST_FLOW_VOTE,
     STRING_POSSIBLE_USERNAME_USED,
     STRING_POSSIBLE_USERNAME_NOT_USED,
-    STRING_LOCALLY_SAVED_PREDICTION,
     STRING_INVALID,  // Represents a string returned in a case of an error.
     STRING_MAX = STRING_INVALID
   };
@@ -181,16 +180,12 @@ class SavePasswordProgressLogger {
   void LogNumber(StringID label, size_t unsigned_number);
   void LogMessage(StringID message);
 
-  // Removes privacy sensitive parts of |url| (currently all but host and
+  // Returns a log string representing `field`.
+  static std::string GetFormFieldDataLogString(const FormFieldData& field);
+
+  // Removes privacy sensitive parts of `url` (currently all but host and
   // scheme).
   static std::string ScrubURL(const GURL& url);
-
- protected:
-  // Sends |log| immediately for display.
-  virtual void SendLog(const std::string& log) = 0;
-
-  // Converts |log| and its |label| to a string and calls SendLog on the result.
-  void LogValue(StringID label, const base::Value& log);
 
   // Replaces all characters satisfying IsUnwantedInElementID with a ' '.
   // This damages some valid HTML element IDs or names, but it is likely that it
@@ -204,6 +199,13 @@ class SavePasswordProgressLogger {
 
   // Translates the StringID values into the corresponding strings.
   static std::string GetStringFromID(SavePasswordProgressLogger::StringID id);
+
+ protected:
+  // Sends `log` immediately for display.
+  virtual void SendLog(const std::string& log) = 0;
+
+  // Converts `log` and its `label` to a string and calls SendLog on the result.
+  void LogValue(StringID label, const base::Value& log);
 };
 
 }  // namespace autofill

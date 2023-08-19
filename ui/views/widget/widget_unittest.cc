@@ -22,6 +22,7 @@
 #include "ui/base/hit_test.h"
 #include "ui/color/color_id.h"
 #include "ui/color/color_provider.h"
+#include "ui/color/color_provider_key.h"
 #include "ui/color/color_provider_manager.h"
 #include "ui/color/color_recipe.h"
 #include "ui/compositor/layer.h"
@@ -354,8 +355,7 @@ TEST_F(WidgetWithCustomParamsTest, SkottieColorsTest) {
       delegate1.SetContentsView(std::make_unique<ViewObservingSkottieColors>());
   SetInitFunction(base::BindLambdaForTesting([&](Widget::InitParams* params) {
     params->delegate = &delegate1;
-    params->background_elevation =
-        ui::ColorProviderManager::ElevationMode::kLow;
+    params->background_elevation = ui::ColorProviderKey::ElevationMode::kLow;
   }));
   std::unique_ptr<Widget> widget1 = CreateTestWidget();
   ASSERT_EQ(1u, contents1->history.size());
@@ -366,8 +366,7 @@ TEST_F(WidgetWithCustomParamsTest, SkottieColorsTest) {
       delegate2.SetContentsView(std::make_unique<ViewObservingSkottieColors>());
   SetInitFunction(base::BindLambdaForTesting([&](Widget::InitParams* params) {
     params->delegate = &delegate2;
-    params->background_elevation =
-        ui::ColorProviderManager::ElevationMode::kHigh;
+    params->background_elevation = ui::ColorProviderKey::ElevationMode::kHigh;
   }));
   std::unique_ptr<Widget> widget2 = CreateTestWidget();
   ASSERT_EQ(1u, contents2->history.size());
@@ -394,8 +393,7 @@ TEST_F(WidgetWithCustomParamsTest, SkottieColorsTest) {
       delegate3.SetContentsView(std::make_unique<ViewObservingSkottieColors>());
   SetInitFunction(base::BindLambdaForTesting([&](Widget::InitParams* params) {
     params->delegate = &delegate3;
-    params->background_elevation =
-        ui::ColorProviderManager::ElevationMode::kLow;
+    params->background_elevation = ui::ColorProviderKey::ElevationMode::kLow;
   }));
   std::unique_ptr<Widget> widget3 = CreateTestWidget();
   ASSERT_EQ(1u, contents3->history.size());
@@ -410,8 +408,7 @@ TEST_F(WidgetWithCustomParamsTest, SkottieColorsTest) {
       delegate4.SetContentsView(std::make_unique<ViewObservingSkottieColors>());
   SetInitFunction(base::BindLambdaForTesting([&](Widget::InitParams* params) {
     params->delegate = &delegate4;
-    params->background_elevation =
-        ui::ColorProviderManager::ElevationMode::kHigh;
+    params->background_elevation = ui::ColorProviderKey::ElevationMode::kHigh;
   }));
   std::unique_ptr<Widget> widget4 = CreateTestWidget();
   ASSERT_EQ(1u, contents4->history.size());
@@ -464,12 +461,11 @@ class WidgetColorModeTest : public WidgetTest {
 
  private:
   static void AddColor(ui::ColorProvider* provider,
-                       const ui::ColorProviderManager::Key& key) {
+                       const ui::ColorProviderKey& key) {
     ui::ColorMixer& mixer = provider->AddMixer();
     mixer[ui::kColorSysPrimary] = {
-        key.color_mode == ui::ColorProviderManager::ColorMode::kDark
-            ? kDarkColor
-            : kLightColor};
+        key.color_mode == ui::ColorProviderKey::ColorMode::kDark ? kDarkColor
+                                                                 : kLightColor};
   }
 };
 
@@ -491,7 +487,7 @@ TEST_F(WidgetColorModeTest, ColorModeOverride_DarkOverride) {
   test_theme.SetDarkMode(false);
   widget->SetNativeThemeForTest(&test_theme);
 
-  widget->SetColorModeOverride(ui::ColorProviderManager::ColorMode::kDark);
+  widget->SetColorModeOverride(ui::ColorProviderKey::ColorMode::kDark);
   // Verify that we resolve the light color even though the theme is dark.
   EXPECT_EQ(kDarkColor,
             widget->GetColorProvider()->GetColor(ui::kColorSysPrimary));
@@ -503,7 +499,7 @@ TEST_F(WidgetColorModeTest, ColorModeOverride_LightOverride) {
   test_theme.SetDarkMode(true);
   widget->SetNativeThemeForTest(&test_theme);
 
-  widget->SetColorModeOverride(ui::ColorProviderManager::ColorMode::kLight);
+  widget->SetColorModeOverride(ui::ColorProviderKey::ColorMode::kLight);
   // Verify that we resolve the light color even though the theme is dark.
   EXPECT_EQ(kLightColor,
             widget->GetColorProvider()->GetColor(ui::kColorSysPrimary));
@@ -558,13 +554,13 @@ TEST_F(WidgetColorModeTest, ChildInheritsColorMode_Overrides) {
 
   // Set the parent's override to light, then back to dark. the child should
   // follow the parent's overridden color mode.
-  widget->SetColorModeOverride(ui::ColorProviderManager::ColorMode::kLight);
+  widget->SetColorModeOverride(ui::ColorProviderKey::ColorMode::kLight);
   EXPECT_EQ(kLightColor,
             widget->GetColorProvider()->GetColor(ui::kColorSysPrimary));
   EXPECT_EQ(kLightColor,
             widget_child->GetColorProvider()->GetColor(ui::kColorSysPrimary));
 
-  widget->SetColorModeOverride(ui::ColorProviderManager::ColorMode::kDark);
+  widget->SetColorModeOverride(ui::ColorProviderKey::ColorMode::kDark);
   EXPECT_EQ(kDarkColor,
             widget->GetColorProvider()->GetColor(ui::kColorSysPrimary));
   EXPECT_EQ(kDarkColor,
@@ -572,8 +568,7 @@ TEST_F(WidgetColorModeTest, ChildInheritsColorMode_Overrides) {
 
   // Override the child's color mode to light. The parent should continue to
   // report a dark color mode.
-  widget_child->SetColorModeOverride(
-      ui::ColorProviderManager::ColorMode::kLight);
+  widget_child->SetColorModeOverride(ui::ColorProviderKey::ColorMode::kLight);
   EXPECT_EQ(kDarkColor,
             widget->GetColorProvider()->GetColor(ui::kColorSysPrimary));
   EXPECT_EQ(kLightColor,
@@ -1320,10 +1315,6 @@ TEST_P(WidgetWithDestroyedNativeViewOrNativeWidgetTest,
 
 TEST_P(WidgetWithDestroyedNativeViewOrNativeWidgetTest, Deactivate) {
   widget()->Deactivate();
-}
-
-TEST_P(WidgetWithDestroyedNativeViewOrNativeWidgetTest, DebugToggleFrameType) {
-  widget()->DebugToggleFrameType();
 }
 
 TEST_P(WidgetWithDestroyedNativeViewOrNativeWidgetTest, DraggedView) {
@@ -3160,9 +3151,8 @@ TEST_F(WidgetTest, MousePressCausesCapture) {
   event_count_view->SetBounds(0, 0, 300, 300);
 
   // No capture has been set.
-  EXPECT_EQ(
-      gfx::kNullNativeView,
-      internal::NativeWidgetPrivate::GetGlobalCapture(widget->GetNativeView()));
+  EXPECT_EQ(gfx::NativeView(), internal::NativeWidgetPrivate::GetGlobalCapture(
+                                   widget->GetNativeView()));
 
   MousePressEventConsumer consumer;
   event_count_view->AddPostTargetHandler(&consumer);
@@ -3225,9 +3215,8 @@ TEST_F(WidgetTest, CaptureDuringMousePressNotOverridden) {
       widget->GetRootView()->AddChildView(std::make_unique<EventCountView>());
   event_count_view->SetBounds(0, 0, 300, 300);
 
-  EXPECT_EQ(
-      gfx::kNullNativeView,
-      internal::NativeWidgetPrivate::GetGlobalCapture(widget->GetNativeView()));
+  EXPECT_EQ(gfx::NativeView(), internal::NativeWidgetPrivate::GetGlobalCapture(
+                                   widget->GetNativeView()));
 
   Widget* widget2 = CreateTopLevelNativeWidget();
   // Gives explicit capture to |widget2|
@@ -4906,7 +4895,7 @@ class ChildDesktopWidgetTest : public DesktopWidgetTest {
   }
 
  private:
-  gfx::NativeWindow context_ = nullptr;
+  gfx::NativeWindow context_ = gfx::NativeWindow();
 };
 
 // Verifies Widget::IsActive() invoked from

@@ -57,6 +57,8 @@ class CONTENT_EXPORT AuctionURLLoaderFactoryProxy
   // of not making unnecessary connections. Invoked immediately, if it's going
   // to be invoked at all.
   //
+  // `force_reload` if true, the request will be made bypassing the cache.
+  //
   // `frame_origin` is the origin of the frame running the auction. Used as the
   // initiator.
   //
@@ -79,6 +81,7 @@ class CONTENT_EXPORT AuctionURLLoaderFactoryProxy
       GetUrlLoaderFactoryCallback get_frame_url_loader_factory,
       GetUrlLoaderFactoryCallback get_trusted_url_loader_factory,
       PreconnectSocketCallback preconnect_socket_callback,
+      bool force_reload,
       const url::Origin& top_frame_origin,
       const url::Origin& frame_origin,
       absl::optional<int> renderer_process_id,
@@ -128,6 +131,7 @@ class CONTENT_EXPORT AuctionURLLoaderFactoryProxy
   const url::Origin frame_origin_;
   const absl::optional<int> renderer_process_id_;
   const bool is_for_seller_;
+  const bool force_reload_;
   const network::mojom::ClientSecurityStatePtr client_security_state_;
 
   // IsolationInfo used for requests using the trusted URLLoaderFactory. A

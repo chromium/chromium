@@ -14,7 +14,7 @@
 #include "base/functional/bind.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/test/bind.h"
-#include "base/test/repeating_test_future.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
 #include "content/public/test/browser_task_environment.h"
@@ -38,7 +38,6 @@
 namespace ash {
 namespace {
 
-using ::base::test::RepeatingTestFuture;
 using ::base::test::TestFuture;
 using ::google_apis::ApiErrorCode;
 using ::google_apis::util::FormatTimeAsString;
@@ -51,6 +50,7 @@ using ::testing::ByMove;
 using ::testing::Eq;
 using ::testing::Field;
 using ::testing::HasSubstr;
+using ::testing::Invoke;
 using ::testing::Not;
 using ::testing::Return;
 
@@ -92,7 +92,8 @@ constexpr char kDefaultTasksResponseContent[] = R"(
           "id": "zxc",
           "title": "Parent task 2, level 1",
           "status": "needsAction",
-          "links": [{"type": "email"}]
+          "links": [{"type": "email"}],
+          "notes": "Lorem ipsum dolor sit amet"
         }
       ]
     }
@@ -163,6 +164,7 @@ class GlanceablesTasksClientImplTest : public testing::Test {
   }
 
   GlanceablesTasksClientImpl* client() { return client_.get(); }
+  base::HistogramTester* histogram_tester() { return &histogram_tester_; }
   TestRequestHandler& request_handler() { return request_handler_; }
 
  private:
@@ -176,7 +178,11 @@ class GlanceablesTasksClientImplTest : public testing::Test {
   std::unique_ptr<GaiaUrlsOverriderForTesting> gaia_urls_overrider_;
   testing::StrictMock<TestRequestHandler> request_handler_;
   std::unique_ptr<GlanceablesTasksClientImpl> client_;
+  base::HistogramTester histogram_tester_;
 };
+
+// ----------------------------------------------------------------------------
+// Get task lists:
 
 TEST_F(GlanceablesTasksClientImplTest, GetTaskLists) {
   EXPECT_CALL(request_handler(), HandleRequest(_))
@@ -199,6 +205,17 @@ TEST_F(GlanceablesTasksClientImplTest, GetTaskLists) {
   EXPECT_EQ(task_lists->GetItemAt(1)->title, "My Tasks 2");
   EXPECT_EQ(FormatTimeAsString(task_lists->GetItemAt(1)->updated),
             "2022-12-21T23:38:22.590Z");
+
+  histogram_tester()->ExpectTotalCount(
+      "Ash.Glanceables.Api.Tasks.GetTaskLists.Latency", /*expected_count=*/1);
+  histogram_tester()->ExpectUniqueSample(
+      "Ash.Glanceables.Api.Tasks.GetTaskLists.Status",
+      ApiErrorCode::HTTP_SUCCESS,
+      /*expected_bucket_count=*/1);
+  histogram_tester()->ExpectUniqueSample(
+      "Ash.Glanceables.Api.Tasks.GetTaskLists.PagesCount",
+      /*sample=*/1,
+      /*expected_bucket_count=*/1);
 }
 
 TEST_F(GlanceablesTasksClientImplTest, GetTaskListsOnSubsequentCalls) {
@@ -206,8 +223,8 @@ TEST_F(GlanceablesTasksClientImplTest, GetTaskListsOnSubsequentCalls) {
       .WillOnce(Return(ByMove(TestRequestHandler::CreateSuccessfulResponse(
           kDefaultTaskListsResponseContent))));
 
-  RepeatingTestFuture<ui::ListModel<GlanceablesTaskList>*> future;
-  client()->GetTaskLists(future.GetCallback());
+  TestFuture<ui::ListModel<GlanceablesTaskList>*> future;
+  client()->GetTaskLists(future.GetRepeatingCallback());
   ASSERT_TRUE(future.Wait());
 
   const auto* const task_lists = future.Take();
@@ -217,6 +234,169 @@ TEST_F(GlanceablesTasksClientImplTest, GetTaskListsOnSubsequentCalls) {
   client()->GetTaskLists(future.GetCallback());
   ASSERT_TRUE(future.Wait());
   EXPECT_EQ(future.Take(), task_lists);
+}
+
+TEST_F(GlanceablesTasksClientImplTest, ConcurrentGetTaskListsCalls) {
+  EXPECT_CALL(request_handler(), HandleRequest(_))
+      .WillOnce(Return(ByMove(TestRequestHandler::CreateSuccessfulResponse(
+          kDefaultTaskListsResponseContent))));
+
+  TestFuture<ui::ListModel<GlanceablesTaskList>*> first_future;
+  client()->GetTaskLists(first_future.GetCallback());
+
+  TestFuture<ui::ListModel<GlanceablesTaskList>*> second_future;
+  client()->GetTaskLists(second_future.GetCallback());
+
+  ASSERT_TRUE(first_future.Wait());
+  ASSERT_TRUE(second_future.Wait());
+
+  const auto* const task_lists = first_future.Get();
+  EXPECT_EQ(task_lists, second_future.Get());
+  EXPECT_EQ(task_lists->item_count(), 2u);
+
+  EXPECT_EQ(task_lists->GetItemAt(0)->id, "qwerty");
+  EXPECT_EQ(task_lists->GetItemAt(1)->id, "asdfgh");
+
+  histogram_tester()->ExpectTotalCount(
+      "Ash.Glanceables.Api.Tasks.GetTaskLists.Latency", /*expected_count=*/1);
+  histogram_tester()->ExpectUniqueSample(
+      "Ash.Glanceables.Api.Tasks.GetTaskLists.Status",
+      ApiErrorCode::HTTP_SUCCESS,
+      /*expected_bucket_count=*/1);
+}
+
+TEST_F(GlanceablesTasksClientImplTest,
+       GetTaskListsOnSubsequentCallsAfterClosingGlanceablesBubble) {
+  EXPECT_CALL(request_handler(), HandleRequest(_))
+      .WillOnce(Return(ByMove(TestRequestHandler::CreateSuccessfulResponse(R"(
+          {
+            "kind": "tasks#taskLists",
+            "items": [{
+              "id": "qwerty",
+              "title": "My Tasks 1",
+              "updated": "2023-01-30T22:19:22.812Z"
+            }, {
+              "id": "asdfgh",
+              "title": "My Tasks 2",
+              "updated": "2022-12-21T23:38:22.590Z"
+            }]
+          })"))))
+      .WillOnce(Return(ByMove(TestRequestHandler::CreateSuccessfulResponse(R"(
+          {
+            "kind": "tasks#taskLists",
+            "items": [{
+              "id": "qwerty",
+              "title": "My Tasks 1",
+              "updated": "2023-01-30T22:19:22.812Z"
+            }, {
+              "id": "zxcvbn",
+              "title": "My Tasks 3",
+              "updated": "2022-12-21T23:38:22.590Z"
+            }]
+          })"))));
+
+  TestFuture<ui::ListModel<GlanceablesTaskList>*> future;
+  client()->GetTaskLists(future.GetRepeatingCallback());
+  ASSERT_TRUE(future.Wait());
+
+  const auto* const task_lists = future.Take();
+  EXPECT_EQ(task_lists->item_count(), 2u);
+  EXPECT_EQ(task_lists->GetItemAt(0)->id, "qwerty");
+  EXPECT_EQ(task_lists->GetItemAt(1)->id, "asdfgh");
+
+  client()->OnGlanceablesBubbleClosed();
+
+  // Request to get tasks after glanceables bubble was closed should trigger
+  // another fetch.
+  TestFuture<ui::ListModel<GlanceablesTaskList>*> refresh_future;
+  client()->GetTaskLists(refresh_future.GetCallback());
+  ASSERT_TRUE(refresh_future.Wait());
+
+  const auto* const refreshed_task_lists = refresh_future.Take();
+  EXPECT_EQ(refreshed_task_lists->item_count(), 2u);
+  EXPECT_EQ(refreshed_task_lists->GetItemAt(0)->id, "qwerty");
+  EXPECT_EQ(refreshed_task_lists->GetItemAt(1)->id, "zxcvbn");
+
+  TestFuture<ui::ListModel<GlanceablesTaskList>*> repeated_refresh_future;
+  client()->GetTaskLists(repeated_refresh_future.GetCallback());
+
+  const auto* const repeated_refreshed_task_lists =
+      repeated_refresh_future.Take();
+  EXPECT_EQ(repeated_refreshed_task_lists->item_count(), 2u);
+  EXPECT_EQ(repeated_refreshed_task_lists->GetItemAt(0)->id, "qwerty");
+  EXPECT_EQ(repeated_refreshed_task_lists->GetItemAt(1)->id, "zxcvbn");
+}
+
+TEST_F(GlanceablesTasksClientImplTest,
+       GlanceablesBubbleClosedWhileFetchingTaskLists) {
+  base::RunLoop first_request_waiter;
+  EXPECT_CALL(request_handler(), HandleRequest(_))
+      .WillOnce(Invoke([&first_request_waiter](const HttpRequest&) {
+        first_request_waiter.Quit();
+
+        return TestRequestHandler::CreateSuccessfulResponse(R"(
+          {
+            "kind": "tasks#taskLists",
+            "items": [{
+              "id": "qwerty",
+              "title": "My Tasks 1",
+              "updated": "2023-01-30T22:19:22.812Z"
+            }, {
+              "id": "asdfgh",
+              "title": "My Tasks 2",
+              "updated": "2022-12-21T23:38:22.590Z"
+            }]
+          })");
+      }))
+      .WillOnce(Return(ByMove(TestRequestHandler::CreateSuccessfulResponse(R"(
+          {
+            "kind": "tasks#taskLists",
+            "items": [{
+              "id": "qwerty",
+              "title": "My Tasks 1",
+              "updated": "2023-01-30T22:19:22.812Z"
+            }, {
+              "id": "zxcvbn",
+              "title": "My Tasks 3",
+              "updated": "2022-12-21T23:38:22.590Z"
+            }]
+          })"))));
+
+  TestFuture<ui::ListModel<GlanceablesTaskList>*> future;
+  client()->GetTaskLists(future.GetRepeatingCallback());
+
+  // Simulate bubble closure before first request response arives.
+  client()->OnGlanceablesBubbleClosed();
+
+  ASSERT_TRUE(future.Wait());
+
+  const auto* const task_lists = future.Take();
+  EXPECT_EQ(task_lists->item_count(), 0u);
+
+  // Wait for the first reqeust response to be generated before making the
+  // second request, to guard agains the case where second request gets handled
+  // by the test server before the first one.
+  first_request_waiter.Run();
+
+  // Request to get tasks after glanceables bubble was closed should trigger
+  // another fetch.
+  TestFuture<ui::ListModel<GlanceablesTaskList>*> refresh_future;
+  client()->GetTaskLists(refresh_future.GetCallback());
+  ASSERT_TRUE(refresh_future.Wait());
+
+  const auto* const refreshed_task_lists = refresh_future.Take();
+  EXPECT_EQ(refreshed_task_lists->item_count(), 2u);
+  EXPECT_EQ(refreshed_task_lists->GetItemAt(0)->id, "qwerty");
+  EXPECT_EQ(refreshed_task_lists->GetItemAt(1)->id, "zxcvbn");
+
+  TestFuture<ui::ListModel<GlanceablesTaskList>*> repeated_refresh_future;
+  client()->GetTaskLists(repeated_refresh_future.GetCallback());
+
+  const auto* const repeated_refreshed_task_lists =
+      repeated_refresh_future.Take();
+  EXPECT_EQ(repeated_refreshed_task_lists->item_count(), 2u);
+  EXPECT_EQ(repeated_refreshed_task_lists->GetItemAt(0)->id, "qwerty");
+  EXPECT_EQ(repeated_refreshed_task_lists->GetItemAt(1)->id, "zxcvbn");
 }
 
 TEST_F(GlanceablesTasksClientImplTest,
@@ -230,6 +410,13 @@ TEST_F(GlanceablesTasksClientImplTest,
 
   const auto* const task_lists = future.Get();
   EXPECT_EQ(task_lists->item_count(), 0u);
+
+  histogram_tester()->ExpectTotalCount(
+      "Ash.Glanceables.Api.Tasks.GetTaskLists.Latency", /*expected_count=*/1);
+  histogram_tester()->ExpectUniqueSample(
+      "Ash.Glanceables.Api.Tasks.GetTaskLists.Status",
+      ApiErrorCode::HTTP_INTERNAL_SERVER_ERROR,
+      /*expected_bucket_count=*/1);
 }
 
 TEST_F(GlanceablesTasksClientImplTest, GetTaskListsFetchesAllPages) {
@@ -272,7 +459,108 @@ TEST_F(GlanceablesTasksClientImplTest, GetTaskListsFetchesAllPages) {
   EXPECT_EQ(task_lists->GetItemAt(0)->id, "task-list-from-page-1");
   EXPECT_EQ(task_lists->GetItemAt(1)->id, "task-list-from-page-2");
   EXPECT_EQ(task_lists->GetItemAt(2)->id, "task-list-from-page-3");
+
+  histogram_tester()->ExpectUniqueSample(
+      "Ash.Glanceables.Api.Tasks.GetTaskLists.PagesCount",
+      /*sample=*/3,
+      /*expected_bucket_count=*/1);
 }
+
+TEST_F(GlanceablesTasksClientImplTest,
+       GlanceablesBubbleClosedWhileFetchingTaskListsPage) {
+  EXPECT_CALL(request_handler(),
+              HandleRequest(Field(&HttpRequest::relative_url,
+                                  Not(HasSubstr("pageToken")))))
+      .WillOnce(Return(ByMove(TestRequestHandler::CreateSuccessfulResponse(R"(
+          {
+            "kind": "tasks#taskLists",
+            "items": [{"id": "task-list-from-page-1"}],
+            "nextPageToken": "qwe"
+          }
+        )"))))
+      .WillOnce(Return(ByMove(TestRequestHandler::CreateSuccessfulResponse(R"(
+          {
+            "kind": "tasks#taskLists",
+            "items": [{"id": "task-list-from-page-1-2"}],
+            "nextPageToken": "qwe"
+          }
+        )"))));
+  EXPECT_CALL(request_handler(),
+              HandleRequest(Field(&HttpRequest::relative_url,
+                                  HasSubstr("pageToken=qwe"))))
+      .WillOnce(Return(ByMove(TestRequestHandler::CreateSuccessfulResponse(R"(
+          {
+            "kind": "tasks#taskLists",
+            "items": [{"id": "task-list-from-page-2"}],
+            "nextPageToken": "asd"
+          })"))))
+      .WillOnce(Return(ByMove(TestRequestHandler::CreateSuccessfulResponse(R"(
+          {
+            "kind": "tasks#taskLists",
+            "items": [{"id": "task-list-from-page-2-2"}],
+            "nextPageToken": "asd"
+          })"))));
+  EXPECT_CALL(request_handler(),
+              HandleRequest(Field(&HttpRequest::relative_url,
+                                  HasSubstr("pageToken=asd"))))
+      .WillOnce(Return(ByMove(TestRequestHandler::CreateSuccessfulResponse(R"(
+          {
+            "kind": "tasks#taskLists",
+            "items": [{"id": "task-list-from-page-3-2"}]
+          }
+        )"))));
+
+  // Set a test callback that simulates glanceables bubble closing just after
+  // requesting the second task lists page.
+  client()->set_task_lists_request_callback_for_testing(
+      base::BindLambdaForTesting([&](const std::string& page_token) {
+        if (page_token == "qwe") {
+          client()->OnGlanceablesBubbleClosed();
+        }
+      }));
+  TestFuture<ui::ListModel<GlanceablesTaskList>*> future;
+  client()->GetTaskLists(future.GetRepeatingCallback());
+
+  // Note that injected tasks lists request test callback simulates bubble
+  // closure before returning the second task lists page. The `GetTaskLists()`
+  // call should return, but it will contain empty tasks list, as closing the
+  // bubble cancels the fetch.
+  ASSERT_TRUE(future.Wait());
+
+  const auto* const task_lists = future.Take();
+  EXPECT_EQ(task_lists->item_count(), 0u);
+
+  client()->set_task_lists_request_callback_for_testing(
+      GlanceablesTasksClientImpl::TaskListsRequestCallback());
+
+  // Request to get tasks after glanceables bubble was closed should trigger
+  // another fetch.
+  TestFuture<ui::ListModel<GlanceablesTaskList>*> refresh_future;
+  client()->GetTaskLists(refresh_future.GetCallback());
+  ASSERT_TRUE(refresh_future.Wait());
+
+  const auto* const refreshed_task_lists = refresh_future.Take();
+  EXPECT_EQ(refreshed_task_lists->item_count(), 3u);
+  EXPECT_EQ(refreshed_task_lists->GetItemAt(0)->id, "task-list-from-page-1-2");
+  EXPECT_EQ(refreshed_task_lists->GetItemAt(1)->id, "task-list-from-page-2-2");
+  EXPECT_EQ(refreshed_task_lists->GetItemAt(2)->id, "task-list-from-page-3-2");
+
+  TestFuture<ui::ListModel<GlanceablesTaskList>*> repeated_refresh_future;
+  client()->GetTaskLists(repeated_refresh_future.GetCallback());
+
+  const auto* const repeated_refreshed_task_lists =
+      repeated_refresh_future.Take();
+  EXPECT_EQ(repeated_refreshed_task_lists->item_count(), 3u);
+  EXPECT_EQ(repeated_refreshed_task_lists->GetItemAt(0)->id,
+            "task-list-from-page-1-2");
+  EXPECT_EQ(repeated_refreshed_task_lists->GetItemAt(1)->id,
+            "task-list-from-page-2-2");
+  EXPECT_EQ(repeated_refreshed_task_lists->GetItemAt(2)->id,
+            "task-list-from-page-3-2");
+}
+
+// ----------------------------------------------------------------------------
+// Get tasks:
 
 TEST_F(GlanceablesTasksClientImplTest, GetTasks) {
   EXPECT_CALL(request_handler(), HandleRequest(_))
@@ -293,6 +581,7 @@ TEST_F(GlanceablesTasksClientImplTest, GetTasks) {
             "2023-04-19T00:00:00.000Z");
   EXPECT_TRUE(root_tasks->GetItemAt(0)->has_subtasks);
   EXPECT_FALSE(root_tasks->GetItemAt(0)->has_email_link);
+  EXPECT_FALSE(root_tasks->GetItemAt(0)->has_notes);
 
   EXPECT_EQ(root_tasks->GetItemAt(1)->id, "zxc");
   EXPECT_EQ(root_tasks->GetItemAt(1)->title, "Parent task 2, level 1");
@@ -300,6 +589,121 @@ TEST_F(GlanceablesTasksClientImplTest, GetTasks) {
   EXPECT_FALSE(root_tasks->GetItemAt(1)->due);
   EXPECT_FALSE(root_tasks->GetItemAt(1)->has_subtasks);
   EXPECT_TRUE(root_tasks->GetItemAt(1)->has_email_link);
+  EXPECT_TRUE(root_tasks->GetItemAt(1)->has_notes);
+
+  histogram_tester()->ExpectTotalCount(
+      "Ash.Glanceables.Api.Tasks.GetTasks.Latency", /*expected_count=*/1);
+  histogram_tester()->ExpectUniqueSample(
+      "Ash.Glanceables.Api.Tasks.GetTasks.Status", ApiErrorCode::HTTP_SUCCESS,
+      /*expected_bucket_count=*/1);
+  histogram_tester()->ExpectUniqueSample(
+      "Ash.Glanceables.Api.Tasks.GetTasks.PagesCount",
+      /*sample=*/1,
+      /*expected_bucket_count=*/1);
+}
+
+TEST_F(GlanceablesTasksClientImplTest, ConcurrentGetTasksCalls) {
+  EXPECT_CALL(request_handler(), HandleRequest(_))
+      .WillOnce(Return(ByMove(TestRequestHandler::CreateSuccessfulResponse(
+          kDefaultTasksResponseContent))));
+
+  TestFuture<ui::ListModel<GlanceablesTask>*> first_future;
+  client()->GetTasks("test-task-list-id", first_future.GetCallback());
+
+  TestFuture<ui::ListModel<GlanceablesTask>*> second_future;
+  client()->GetTasks("test-task-list-id", second_future.GetCallback());
+
+  ASSERT_TRUE(first_future.Wait());
+  ASSERT_TRUE(second_future.Wait());
+
+  const auto* const root_tasks = first_future.Get();
+  EXPECT_EQ(root_tasks, second_future.Get());
+
+  ASSERT_EQ(root_tasks->item_count(), 2u);
+
+  EXPECT_EQ(root_tasks->GetItemAt(0)->id, "asd");
+  EXPECT_EQ(root_tasks->GetItemAt(0)->title, "Parent task, level 1");
+  EXPECT_EQ(root_tasks->GetItemAt(0)->completed, false);
+  EXPECT_EQ(FormatTimeAsString(root_tasks->GetItemAt(0)->due.value()),
+            "2023-04-19T00:00:00.000Z");
+  EXPECT_TRUE(root_tasks->GetItemAt(0)->has_subtasks);
+  EXPECT_FALSE(root_tasks->GetItemAt(0)->has_email_link);
+
+  EXPECT_EQ(root_tasks->GetItemAt(1)->id, "zxc");
+  EXPECT_EQ(root_tasks->GetItemAt(1)->title, "Parent task 2, level 1");
+  EXPECT_EQ(root_tasks->GetItemAt(1)->completed, false);
+  EXPECT_FALSE(root_tasks->GetItemAt(1)->due);
+  EXPECT_FALSE(root_tasks->GetItemAt(1)->has_subtasks);
+  EXPECT_TRUE(root_tasks->GetItemAt(1)->has_email_link);
+
+  histogram_tester()->ExpectTotalCount(
+      "Ash.Glanceables.Api.Tasks.GetTasks.Latency", /*expected_count=*/1);
+  histogram_tester()->ExpectUniqueSample(
+      "Ash.Glanceables.Api.Tasks.GetTasks.Status", ApiErrorCode::HTTP_SUCCESS,
+      /*expected_bucket_count=*/1);
+}
+
+TEST_F(GlanceablesTasksClientImplTest,
+       ConcurrentGetTasksCallsForDifferentLists) {
+  EXPECT_CALL(request_handler(),
+              HandleRequest(Field(&HttpRequest::relative_url,
+                                  HasSubstr("test-task-list-1/tasks?"))))
+      .WillOnce(Return(ByMove(TestRequestHandler::CreateSuccessfulResponse(R"({
+          "kind": "tasks#tasks",
+          "items": [{
+            "id": "task-1-1",
+            "title": "Parent task, level 1",
+            "status": "needsAction",
+            "due": "2023-04-19T00:00:00.000Z"
+          }, {
+            "id": "task-1-2",
+            "title": "Parent task 2, level 1",
+            "status": "needsAction"
+          }]
+      })"))));
+  EXPECT_CALL(request_handler(),
+              HandleRequest(Field(&HttpRequest::relative_url,
+                                  HasSubstr("test-task-list-2/tasks?"))))
+      .WillOnce(Return(ByMove(TestRequestHandler::CreateSuccessfulResponse(R"({
+          "kind": "tasks#tasks",
+          "items": [{
+            "id": "task-2-1",
+            "title": "Parent task, level 1",
+            "status": "needsAction",
+            "due": "2023-04-19T00:00:00.000Z"
+          }, {
+            "id": "task-2-2",
+            "title": "Parent task 2, level 1",
+            "status": "needsAction"
+          }]
+      })"))));
+
+  TestFuture<ui::ListModel<GlanceablesTask>*> first_future;
+  client()->GetTasks("test-task-list-1", first_future.GetCallback());
+
+  TestFuture<ui::ListModel<GlanceablesTask>*> second_future;
+  client()->GetTasks("test-task-list-2", second_future.GetCallback());
+
+  ASSERT_TRUE(first_future.Wait());
+  ASSERT_TRUE(second_future.Wait());
+
+  const auto* const first_root_tasks = first_future.Get();
+  ASSERT_EQ(first_root_tasks->item_count(), 2u);
+
+  EXPECT_EQ(first_root_tasks->GetItemAt(0)->id, "task-1-1");
+  EXPECT_EQ(first_root_tasks->GetItemAt(1)->id, "task-1-2");
+
+  const auto* const second_root_tasks = second_future.Get();
+  ASSERT_EQ(second_root_tasks->item_count(), 2u);
+
+  EXPECT_EQ(second_root_tasks->GetItemAt(0)->id, "task-2-1");
+  EXPECT_EQ(second_root_tasks->GetItemAt(1)->id, "task-2-2");
+
+  histogram_tester()->ExpectTotalCount(
+      "Ash.Glanceables.Api.Tasks.GetTasks.Latency", /*expected_count=*/2);
+  histogram_tester()->ExpectUniqueSample(
+      "Ash.Glanceables.Api.Tasks.GetTasks.Status", ApiErrorCode::HTTP_SUCCESS,
+      /*expected_bucket_count=*/2);
 }
 
 TEST_F(GlanceablesTasksClientImplTest, GetTasksOnSubsequentCalls) {
@@ -307,8 +711,8 @@ TEST_F(GlanceablesTasksClientImplTest, GetTasksOnSubsequentCalls) {
       .WillOnce(Return(ByMove(TestRequestHandler::CreateSuccessfulResponse(
           kDefaultTasksResponseContent))));
 
-  RepeatingTestFuture<ui::ListModel<GlanceablesTask>*> future;
-  client()->GetTasks("test-task-list-id", future.GetCallback());
+  TestFuture<ui::ListModel<GlanceablesTask>*> future;
+  client()->GetTasks("test-task-list-id", future.GetRepeatingCallback());
   ASSERT_TRUE(future.Wait());
 
   const auto* const root_tasks = future.Take();
@@ -318,6 +722,146 @@ TEST_F(GlanceablesTasksClientImplTest, GetTasksOnSubsequentCalls) {
   client()->GetTasks("test-task-list-id", future.GetCallback());
   ASSERT_TRUE(future.Wait());
   EXPECT_EQ(future.Take(), root_tasks);
+}
+
+TEST_F(GlanceablesTasksClientImplTest,
+       GetTasksOnSubsequentCallsAfterClosingGlanceablesBubble) {
+  EXPECT_CALL(request_handler(), HandleRequest(_))
+      .WillOnce(Return(ByMove(TestRequestHandler::CreateSuccessfulResponse(R"({
+          "kind": "tasks#tasks",
+          "items": [{
+            "id": "asd",
+            "title": "Parent task, level 1",
+            "status": "needsAction",
+            "due": "2023-04-19T00:00:00.000Z"
+          }, {
+            "id": "qwe",
+            "title": "Parent task 2, level 1",
+            "status": "needsAction"
+          }]
+      })"))))
+      .WillOnce(Return(ByMove(TestRequestHandler::CreateSuccessfulResponse(R"({
+          "kind": "tasks#tasks",
+          "items": [{
+            "id": "asd",
+            "title": "Parent task, level 1",
+            "status": "needsAction",
+            "due": "2023-04-19T00:00:00.000Z"
+          }, {
+            "id": "zxc",
+            "title": "Parent task 3, level 1",
+            "status": "needsAction",
+            "links": [{"type": "email"}]
+          }]
+      })"))));
+
+  TestFuture<ui::ListModel<GlanceablesTask>*> future;
+  client()->GetTasks("test-task-list-id", future.GetRepeatingCallback());
+  ASSERT_TRUE(future.Wait());
+
+  const auto* const root_tasks = future.Take();
+  ASSERT_EQ(root_tasks->item_count(), 2u);
+
+  EXPECT_EQ(root_tasks->GetItemAt(0)->id, "asd");
+  EXPECT_EQ(root_tasks->GetItemAt(1)->id, "qwe");
+
+  // Simulate glanceables bubble closure, which should cause the next tasks call
+  // to fetch fresh list of tasks.
+  client()->OnGlanceablesBubbleClosed();
+
+  TestFuture<ui::ListModel<GlanceablesTask>*> refresh_future;
+  client()->GetTasks("test-task-list-id", refresh_future.GetCallback());
+  ASSERT_TRUE(refresh_future.Wait());
+
+  const auto* const refreshed_root_tasks = refresh_future.Take();
+  ASSERT_EQ(refreshed_root_tasks->item_count(), 2u);
+  EXPECT_EQ(refreshed_root_tasks->GetItemAt(0)->id, "asd");
+  EXPECT_EQ(refreshed_root_tasks->GetItemAt(1)->id, "zxc");
+
+  TestFuture<ui::ListModel<GlanceablesTask>*> repeated_refresh_future;
+  client()->GetTasks("test-task-list-id",
+                     repeated_refresh_future.GetCallback());
+  ASSERT_TRUE(repeated_refresh_future.Wait());
+
+  const auto* const repeated_refreshed_root_tasks =
+      repeated_refresh_future.Take();
+  ASSERT_EQ(repeated_refreshed_root_tasks->item_count(), 2u);
+  EXPECT_EQ(repeated_refreshed_root_tasks->GetItemAt(0)->id, "asd");
+  EXPECT_EQ(repeated_refreshed_root_tasks->GetItemAt(1)->id, "zxc");
+}
+
+TEST_F(GlanceablesTasksClientImplTest,
+       GlanceablesBubbleClosedWhileFetchingTasks) {
+  base::RunLoop first_request_waiter;
+  EXPECT_CALL(request_handler(), HandleRequest(_))
+      .WillOnce(Invoke([&first_request_waiter](const HttpRequest&) {
+        first_request_waiter.Quit();
+        return TestRequestHandler::CreateSuccessfulResponse(R"({
+          "kind": "tasks#tasks",
+          "items": [{
+            "id": "asd",
+            "title": "Parent task, level 1",
+            "status": "needsAction",
+            "due": "2023-04-19T00:00:00.000Z"
+          }, {
+            "id": "qwe",
+            "title": "Parent task 2, level 1",
+            "status": "needsAction"
+          }]
+        })");
+      }))
+      .WillOnce(Return(ByMove(TestRequestHandler::CreateSuccessfulResponse(R"({
+          "kind": "tasks#tasks",
+          "items": [{
+            "id": "asd",
+            "title": "Parent task, level 1",
+            "status": "needsAction",
+            "due": "2023-04-19T00:00:00.000Z"
+          }, {
+            "id": "zxc",
+            "title": "Parent task 3, level 1",
+            "status": "needsAction",
+            "links": [{"type": "email"}]
+          }]
+      })"))));
+
+  TestFuture<ui::ListModel<GlanceablesTask>*> future;
+  client()->GetTasks("test-task-list-id", future.GetRepeatingCallback());
+
+  // Simulate glanceables bubble closure, which should cause the next tasks call
+  // to fetch fresh list of tasks.
+  client()->OnGlanceablesBubbleClosed();
+  ASSERT_TRUE(future.Wait());
+
+  const auto* const root_tasks = future.Take();
+  // Glanceables bubble was closed before receiving tasks response, so
+  // `GetTasks()` should have returned an empty list.
+  ASSERT_EQ(root_tasks->item_count(), 0u);
+
+  // Wait for the first reqeust response to be generated before making the
+  // second request, to guard agains the case where second request gets handled
+  // by the test server before the first one.
+  first_request_waiter.Run();
+
+  TestFuture<ui::ListModel<GlanceablesTask>*> refresh_future;
+  client()->GetTasks("test-task-list-id", refresh_future.GetCallback());
+  ASSERT_TRUE(refresh_future.Wait());
+
+  const auto* const refreshed_root_tasks = refresh_future.Take();
+  ASSERT_EQ(refreshed_root_tasks->item_count(), 2u);
+  EXPECT_EQ(refreshed_root_tasks->GetItemAt(0)->id, "asd");
+  EXPECT_EQ(refreshed_root_tasks->GetItemAt(1)->id, "zxc");
+
+  TestFuture<ui::ListModel<GlanceablesTask>*> repeated_refresh_future;
+  client()->GetTasks("test-task-list-id",
+                     repeated_refresh_future.GetCallback());
+  ASSERT_TRUE(repeated_refresh_future.Wait());
+
+  const auto* const repeated_refreshed_root_tasks =
+      repeated_refresh_future.Take();
+  ASSERT_EQ(repeated_refreshed_root_tasks->item_count(), 2u);
+  EXPECT_EQ(repeated_refreshed_root_tasks->GetItemAt(0)->id, "asd");
+  EXPECT_EQ(repeated_refreshed_root_tasks->GetItemAt(1)->id, "zxc");
 }
 
 TEST_F(GlanceablesTasksClientImplTest, GetTasksReturnsEmptyVectorOnHttpError) {
@@ -330,6 +874,13 @@ TEST_F(GlanceablesTasksClientImplTest, GetTasksReturnsEmptyVectorOnHttpError) {
 
   const auto* const root_tasks = future.Get();
   EXPECT_EQ(root_tasks->item_count(), 0u);
+
+  histogram_tester()->ExpectTotalCount(
+      "Ash.Glanceables.Api.Tasks.GetTasks.Latency", /*expected_count=*/1);
+  histogram_tester()->ExpectUniqueSample(
+      "Ash.Glanceables.Api.Tasks.GetTasks.Status",
+      ApiErrorCode::HTTP_INTERNAL_SERVER_ERROR,
+      /*expected_bucket_count=*/1);
 }
 
 TEST_F(GlanceablesTasksClientImplTest, GetTasksFetchesAllPages) {
@@ -380,7 +931,135 @@ TEST_F(GlanceablesTasksClientImplTest, GetTasksFetchesAllPages) {
 
   EXPECT_EQ(root_tasks->GetItemAt(1)->id, "parent-task-from-page-3");
   EXPECT_FALSE(root_tasks->GetItemAt(1)->has_subtasks);
+
+  histogram_tester()->ExpectUniqueSample(
+      "Ash.Glanceables.Api.Tasks.GetTasks.PagesCount",
+      /*sample=*/3,
+      /*expected_bucket_count=*/1);
 }
+
+TEST_F(GlanceablesTasksClientImplTest,
+       GlanceablesBubbleClosedWhileFetchingTasksPage) {
+  EXPECT_CALL(request_handler(),
+              HandleRequest(Field(&HttpRequest::relative_url,
+                                  Not(HasSubstr("pageToken")))))
+      .WillOnce(Return(ByMove(TestRequestHandler::CreateSuccessfulResponse(R"(
+          {
+            "kind": "tasks#tasks",
+            "items": [{"id": "task-from-page-1"}],
+            "nextPageToken": "qwe"
+          }
+        )"))))
+      .WillOnce(Return(ByMove(TestRequestHandler::CreateSuccessfulResponse(R"(
+          {
+            "kind": "tasks#tasks",
+            "items": [{"id": "task-from-page-1-2"}],
+            "nextPageToken": "qwe"
+          }
+        )"))));
+
+  EXPECT_CALL(request_handler(),
+              HandleRequest(Field(&HttpRequest::relative_url,
+                                  HasSubstr("pageToken=qwe"))))
+      .WillOnce(Return(ByMove(TestRequestHandler::CreateSuccessfulResponse(R"(
+          {
+            "kind": "tasks#tasks",
+            "items": [{"id": "task-from-page-2"}],
+            "nextPageToken": "asd"
+          }
+        )"))))
+      .WillOnce(Return(ByMove(TestRequestHandler::CreateSuccessfulResponse(R"(
+          {
+            "kind": "tasks#tasks",
+            "items": [{"id": "task-from-page-2-2"}],
+            "nextPageToken": "asd"
+          }
+        )"))));
+  EXPECT_CALL(request_handler(),
+              HandleRequest(Field(&HttpRequest::relative_url,
+                                  HasSubstr("pageToken=asd"))))
+      .WillOnce(Return(ByMove(TestRequestHandler::CreateSuccessfulResponse(R"(
+          {
+            "kind": "tasks#tasks",
+            "items": [{"id": "task-from-page-3-2"}]
+          }
+        )"))));
+
+  // Inject a test callback that will simulate glanceables bubble closure after
+  // requesting second page of tasks.
+  client()->set_tasks_request_callback_for_testing(base::BindLambdaForTesting(
+      [&](const std::string& task_list_id, const std::string& page_token) {
+        ASSERT_EQ("test-task-list-id", task_list_id);
+        if (page_token == "qwe") {
+          client()->OnGlanceablesBubbleClosed();
+        }
+      }));
+
+  TestFuture<ui::ListModel<GlanceablesTask>*> future;
+  client()->GetTasks("test-task-list-id", future.GetCallback());
+  ASSERT_TRUE(future.Wait());
+
+  // Expect an empty list, given that the glanceables bubble got closed before
+  // all tasks were fetched, effectively cancelling the fetch.
+  const auto* const root_tasks = future.Get();
+  ASSERT_EQ(root_tasks->item_count(), 0u);
+
+  client()->set_tasks_request_callback_for_testing(
+      GlanceablesTasksClientImpl::TasksRequestCallback());
+
+  TestFuture<ui::ListModel<GlanceablesTask>*> refresh_future;
+  client()->GetTasks("test-task-list-id", refresh_future.GetCallback());
+  ASSERT_TRUE(refresh_future.Wait());
+
+  const auto* const refreshed_root_tasks = refresh_future.Take();
+  ASSERT_EQ(refreshed_root_tasks->item_count(), 3u);
+  EXPECT_EQ(refreshed_root_tasks->GetItemAt(0)->id, "task-from-page-1-2");
+  EXPECT_EQ(refreshed_root_tasks->GetItemAt(1)->id, "task-from-page-2-2");
+  EXPECT_EQ(refreshed_root_tasks->GetItemAt(2)->id, "task-from-page-3-2");
+
+  TestFuture<ui::ListModel<GlanceablesTask>*> repeated_refresh_future;
+  client()->GetTasks("test-task-list-id",
+                     repeated_refresh_future.GetCallback());
+  ASSERT_TRUE(repeated_refresh_future.Wait());
+
+  const auto* const repeated_refreshed_root_tasks =
+      repeated_refresh_future.Take();
+  ASSERT_EQ(repeated_refreshed_root_tasks->item_count(), 3u);
+  EXPECT_EQ(repeated_refreshed_root_tasks->GetItemAt(0)->id,
+            "task-from-page-1-2");
+  EXPECT_EQ(repeated_refreshed_root_tasks->GetItemAt(1)->id,
+            "task-from-page-2-2");
+  EXPECT_EQ(repeated_refreshed_root_tasks->GetItemAt(2)->id,
+            "task-from-page-3-2");
+}
+
+TEST_F(GlanceablesTasksClientImplTest, GetTasksSortsByPosition) {
+  EXPECT_CALL(request_handler(), HandleRequest(_))
+      .WillOnce(Return(ByMove(TestRequestHandler::CreateSuccessfulResponse(R"(
+          {
+            "kind": "tasks#tasks",
+            "items": [
+              {"title": "2nd", "position": "00000000000000000001"},
+              {"title": "3rd", "position": "00000000000000000002"},
+              {"title": "1st", "position": "00000000000000000000"}
+            ]
+          }
+        )"))));
+
+  TestFuture<ui::ListModel<GlanceablesTask>*> future;
+  client()->GetTasks("test-task-list-id", future.GetCallback());
+  ASSERT_TRUE(future.Wait());
+
+  const auto* const root_tasks = future.Get();
+  ASSERT_EQ(root_tasks->item_count(), 3u);
+
+  EXPECT_EQ(root_tasks->GetItemAt(0)->title, "1st");
+  EXPECT_EQ(root_tasks->GetItemAt(1)->title, "2nd");
+  EXPECT_EQ(root_tasks->GetItemAt(2)->title, "3rd");
+}
+
+// ----------------------------------------------------------------------------
+// Mark as completed:
 
 TEST_F(GlanceablesTasksClientImplTest, MarkAsCompleted) {
   EXPECT_CALL(
@@ -426,6 +1105,12 @@ TEST_F(GlanceablesTasksClientImplTest, MarkAsCompleted) {
   EXPECT_TRUE(mark_as_completed_future.Get());
   EXPECT_EQ(tasks->item_count(), 1u);
   EXPECT_EQ(tasks->GetItemAt(0)->id, "task-1");
+
+  histogram_tester()->ExpectTotalCount(
+      "Ash.Glanceables.Api.Tasks.PatchTask.Latency", /*expected_count=*/1);
+  histogram_tester()->ExpectUniqueSample(
+      "Ash.Glanceables.Api.Tasks.PatchTask.Status", ApiErrorCode::HTTP_SUCCESS,
+      /*expected_bucket_count=*/1);
 }
 
 TEST_F(GlanceablesTasksClientImplTest, MarkAsCompletedOnHttpError) {
@@ -466,6 +1151,12 @@ TEST_F(GlanceablesTasksClientImplTest, MarkAsCompletedOnHttpError) {
 
   EXPECT_FALSE(mark_as_completed_future.Get());
   EXPECT_EQ(tasks->item_count(), 2u);
+
+  histogram_tester()->ExpectTotalCount(
+      "Ash.Glanceables.Api.Tasks.PatchTask.Latency", /*expected_count=*/1);
+  histogram_tester()->ExpectUniqueSample(
+      "Ash.Glanceables.Api.Tasks.PatchTask.Status",
+      ApiErrorCode::HTTP_INTERNAL_SERVER_ERROR, /*expected_bucket_count=*/1);
 }
 
 }  // namespace ash

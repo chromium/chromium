@@ -32,7 +32,6 @@ public class TabSuggestionTest {
     private static final String TITLE = "title";
     private static final String TAB_URL = "url";
     private static final String ORIGINAL_URL = "original_url";
-    private static final String REFERRER_URL = "referrer_url";
     private static final long TIMESTAMP = 4352345L;
     private static final String VISIBLE_URL = "visible_url";
     private static final TabContext.TabInfo TAB_INFO =

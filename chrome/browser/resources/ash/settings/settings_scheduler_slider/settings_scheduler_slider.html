@@ -1,0 +1,195 @@
+<style>
+ :host {
+    cursor: default;
+    font-weight: 500;
+    text-align: center;
+    user-select: none;
+  }
+
+  #sliderContainer {
+    display: inline-block;
+    position: relative;
+    user-select: none;
+    width: 100%;
+  }
+
+  #sliderBar {
+    background-color: rgba(var(--cros-button-background-color-primary-rgb), .24);
+    background-size: 100%;
+    display: inline-block;
+    height: 2px;
+    position: relative;
+    width: inherit;
+  }
+
+  .knob {
+    height: 32px;
+    margin-inline-start: -16px;
+    margin-top: -15px;
+    position: absolute;
+    width: 32px;
+    z-index: 3;
+  }
+
+  .knob:focus {
+    outline: none;
+  }
+
+  .knob-inner {
+    background: var(--cros-button-background-color-primary);
+    border-radius: 6px;
+    height: 10px;
+    left: 0;
+    margin: 11px;
+    position: absolute;
+    width: 10px;
+    z-index: 3;
+  }
+
+  .knob-inner:focus {
+    outline: none;
+  }
+
+  #progressContainer {
+    height: 100%;
+    overflow: hidden;
+    position: absolute;
+    width: 100%;
+  }
+
+  .progress {
+    background: var(--cros-button-background-color-primary);
+    height: 100%;
+    position: absolute;
+    z-index: 1;
+  }
+
+  #labelContainer {
+    height: 1.75em;
+  }
+
+  .label {
+    background: var(--cros-button-background-color-primary);
+    border-radius: 14px;
+    color: var(--cros-bg-color);
+    font-size: 12px;
+    left: 0;
+    line-height: 1.5em;
+    margin-inline-start: -2.5em;
+    position: absolute;
+    text-align: center;
+    transition: margin-top 200ms cubic-bezier(0, 0, 0.2, 1);
+    vertical-align: middle;
+    width: 5em;
+  }
+
+  .end-label-overlap {
+    margin-top: -2em;
+  }
+
+  #markersContainer {
+    display: flex;
+    height: 100%;
+    left: 0;
+    position: absolute;
+    width: 100%;
+  }
+
+  .active-marker,
+  .inactive-marker {
+    border-radius: 50%;
+    display: block;
+    height: 100%;
+    margin-inline-start: -1px;
+    padding: 0;
+    position: absolute;
+    width: 2PX;
+    z-index: 2;
+  }
+
+  .active-marker {
+    background-color: rgba(var(--cros-bg-color-rgb), 0.6);
+  }
+
+  .inactive-marker {
+    --background-color-opacity: 0.6;
+    background-color: rgba(
+      var(--cros-button-background-color-primary-rgb),
+      var(--background-color-opacity));
+  }
+
+  @media(prefers-color-scheme: dark) {
+    .inactive-marker {
+      --background-color-opacity: 1;
+    }
+  }
+
+  #legendContainer {
+    height: 10px;
+    margin-bottom: 40px;
+    position: relative;
+    width: inherit;
+  }
+
+  #legendContainer > div {
+    color: var(--cros-text-color-secondary);
+    font-size: 12px;
+    margin-inline-start: -2.5em;
+    position: absolute;
+    text-align: center;
+    top: 5px;
+    width: 5em;
+  }
+
+  paper-ripple {
+    color: var(--cros-button-background-color-primary);
+  }
+</style>
+<div id="sliderContainer">
+  <div id="labelContainer">
+    <div id="startLabel" class="label" aria-hidden="true">
+      [[getTimeString_(prefStartTime.value, shouldUse24Hours_, prefs.*)]]
+    </div>
+    <div id="endLabel" class="label" aria-hidden="true">
+      [[getTimeString_(prefEndTime.value, shouldUse24Hours_, prefs.*)]]
+    </div>
+  </div>
+  <div id="sliderBar">
+    <div id="progressContainer">
+      <div id="endProgress" class="progress"></div>
+      <div id="startProgress" class="progress"></div>
+    </div>
+    <div id="markersContainer">
+    </div>
+    <div id="startKnob" class="knob" tabindex="1" on-down="startDrag_"
+        on-up="endDrag_" on-track="continueDrag_"
+        aria-label="[[getAriaLabelStartTime_(
+            prefStartTime, shouldUse24Hours_, prefs.*)]]">
+      <div class="knob-inner" tabindex="-1"></div>
+    </div>
+    <div id="endKnob" class="knob" tabindex="2" on-down="startDrag_"
+        on-up="endDrag_" on-track="continueDrag_"
+        aria-label="[[getAriaLabelEndTime_(
+            prefEndTime, shouldUse24Hours_, prefs.*)]]">
+      <div class="knob-inner" tabindex="-1"></div>
+    </div>
+  </div>
+  <div id="legendContainer">
+    <div style$="[[getLegendStyle_(0, isRTL_)]]">
+      [[getLocaleTimeString_(18, 0, shouldUse24Hours_)]]
+    </div>
+    <div style$="[[getLegendStyle_(25, isRTL_)]]">
+      [[getLocaleTimeString_(0, 0, shouldUse24Hours_)]]
+    </div>
+    <div style$="[[getLegendStyle_(50, isRTL_)]]">
+      [[getLocaleTimeString_(6, 0, shouldUse24Hours_)]]
+    </div>
+    <div style$="[[getLegendStyle_(75, isRTL_)]]">
+      [[getLocaleTimeString_(12, 0, shouldUse24Hours_)]]
+    </div>
+    <div style$="[[getLegendStyle_(100, isRTL_)]]">
+      [[getLocaleTimeString_(18, 0, shouldUse24Hours_)]]
+    </div>
+  </div>
+  <div id="dummyRippleContainer" hidden></div>
+</div>

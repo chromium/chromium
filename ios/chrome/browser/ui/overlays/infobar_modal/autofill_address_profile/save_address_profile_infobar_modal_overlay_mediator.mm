@@ -17,10 +17,6 @@
 #import "ios/chrome/browser/ui/overlays/infobar_modal/infobar_modal_overlay_coordinator+modal_configuration.h"
 #import "ios/chrome/browser/ui/overlays/overlay_request_mediator+subclassing.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 using autofill_address_profile_infobar_overlays::
     SaveAddressProfileModalRequestConfig;
 using save_address_profile_infobar_modal_responses::CancelViewAction;
@@ -68,8 +64,8 @@ using save_address_profile_infobar_modal_responses::NoThanksViewAction;
     kUpdateModalDescriptionKey :
         base::SysUTF16ToNSString(config->update_modal_description()),
     kIsMigrationToAccountKey : @(config->is_migration_to_account()),
-    kSyncingUserEmailKey : config->syncing_user_email()
-        ? base::SysUTF16ToNSString(config->syncing_user_email().value())
+    kUserEmailKey : config->user_email()
+        ? base::SysUTF16ToNSString(config->user_email().value())
         : @"",
     kIsProfileAnAccountProfileKey : @(config->is_profile_an_account_profile()),
     kProfileDescriptionForMigrationPromptKey : base::SysUTF16ToNSString(

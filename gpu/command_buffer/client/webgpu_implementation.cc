@@ -7,8 +7,6 @@
 #include <algorithm>
 #include <vector>
 
-#include <dawn/dawn_proc.h>
-
 #include "base/numerics/checked_math.h"
 #include "base/run_loop.h"
 #include "base/trace_event/trace_event.h"
@@ -138,11 +136,6 @@ gpu::ContextResult WebGPUImplementation::Initialize(
 #if BUILDFLAG(USE_DAWN)
   dawn_wire_ = base::MakeRefCounted<DawnWireServices>(
       this, helper_, mapped_memory_.get(), std::move(transfer_buffer));
-
-  // TODO(senorblanco): Do this only once per process. Doing it once per
-  // WebGPUImplementation is non-optimal but valid, since the returned
-  // procs are always the same.
-  dawnProcSetProcs(&dawn::wire::client::GetProcs());
 #endif
 
   return gpu::ContextResult::kSuccess;
@@ -295,11 +288,6 @@ void WebGPUImplementation::OnGpuControlReturnData(
   }
 #if BUILDFLAG(USE_DAWN)
 
-  static uint32_t return_trace_id = 0;
-  TRACE_EVENT_WITH_FLOW0(TRACE_DISABLED_BY_DEFAULT("gpu.dawn"),
-                         "DawnReturnCommands", return_trace_id++,
-                         TRACE_EVENT_FLAG_FLOW_IN);
-
   TRACE_EVENT1(TRACE_DISABLED_BY_DEFAULT("gpu.dawn"),
                "WebGPUImplementation::OnGpuControlReturnData", "bytes",
                data.size());
@@ -318,6 +306,12 @@ void WebGPUImplementation::OnGpuControlReturnData(
       if (dawn_wire_->IsDisconnected()) {
         break;
       }
+
+      TRACE_EVENT_WITH_FLOW0(
+          TRACE_DISABLED_BY_DEFAULT("gpu.dawn"), "DawnReturnCommands",
+          dawn_return_commands_info->header.return_data_header.trace_id,
+          TRACE_EVENT_FLAG_FLOW_IN);
+
       // TODO(enga): Instead of a CHECK, this could generate a device lost
       // event on just that device. It doesn't seem worth doing right now
       // since a failure here is likely not recoverable.

@@ -1,0 +1,36 @@
+<style include="settings-shared">
+  #pinKeyboardDiv {
+    justify-content: center;
+  };
+
+  #pinKeyboard {
+    --cr-input-placeholder-letter-spacing: normal;
+  }
+</style>
+<cr-dialog id="dialog" on-close="close"
+    close-text="$i18n{close}">
+  <div slot="title">[[getTitleMessage_(isConfirmStep_)]]</div>
+  <div slot="body">
+    <!-- PIN keyboard -->
+    <div id="pinKeyboardDiv" class="settings-box continuation">
+      <setup-pin-keyboard id="pinKeyboard"
+          enable-submit="{{enableSubmit_}}"
+          is-confirm-step="{{isConfirmStep_}}"
+          on-pin-submit="onPinSubmit_"
+          on-set-pin-done="onSetPinDone_"
+          auth-token="[[authToken]]"
+          quick-unlock-private="[[quickUnlockPrivate]]"
+          enable-placeholder>
+      </setup-pin-keyboard>
+    </div>
+  </div>
+  <div slot="button-container">
+    <cr-button class="cancel-button" on-click="onCancelClick_">
+      $i18n{cancel}
+    </cr-button>
+    <cr-button class="action-button" on-click="onPinSubmit_"
+        disabled$="[[!enableSubmit_]]">
+      <span>[[getContinueMessage_(isConfirmStep_)]]</span>
+    </cr-button>
+  </div>
+</cr-dialog>

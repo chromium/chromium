@@ -6,9 +6,11 @@
 
 #include <utility>
 
+#include "base/feature_list.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/time/time.h"
 #include "base/types/optional_util.h"
+#include "net/base/features.h"
 #include "net/base/schemeful_site.h"
 #include "net/first_party_sets/first_party_set_metadata.h"
 #include "net/first_party_sets/first_party_sets_cache_filter.h"
@@ -31,12 +33,14 @@ FirstPartySetsAccessDelegate::FirstPartySetsAccessDelegate(
     FirstPartySetsManager* const manager)
     : manager_(manager),
       enabled_(IsEnabled(params)),
+      wait_for_init_(base::FeatureList::IsEnabled(
+          net::features::kWaitForFirstPartySetsInit)),
       ready_event_(receiver.is_valid() && manager->is_enabled()
                        ? absl::nullopt
                        : absl::make_optional(
                              network::mojom::FirstPartySetsReadyEvent::New())),
       pending_queries_(
-          ready_event_.has_value()
+          ready_event_.has_value() || !wait_for_init_
               ? nullptr
               : std::make_unique<base::circular_deque<base::OnceClosure>>()) {
   if (receiver.is_valid())
@@ -65,7 +69,6 @@ absl::optional<net::FirstPartySetMetadata>
 FirstPartySetsAccessDelegate::ComputeMetadata(
     const net::SchemefulSite& site,
     const net::SchemefulSite* top_frame_site,
-    const std::set<net::SchemefulSite>& party_context,
     base::OnceCallback<void(net::FirstPartySetMetadata)> callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
@@ -73,18 +76,21 @@ FirstPartySetsAccessDelegate::ComputeMetadata(
     return {net::FirstPartySetMetadata()};
   }
   if (!ready_event_.has_value()) {
+    if (!wait_for_init_) {
+      return {net::FirstPartySetMetadata()};
+    }
     // base::Unretained() is safe because `this` owns `pending_queries_` and
     // `pending_queries_` will not run the enqueued callbacks after `this` is
     // destroyed.
     EnqueuePendingQuery(base::BindOnce(
         &FirstPartySetsAccessDelegate::ComputeMetadataAndInvoke,
         base::Unretained(this), site, base::OptionalFromPtr(top_frame_site),
-        party_context, std::move(callback)));
+        std::move(callback)));
     return absl::nullopt;
   }
 
-  return manager_->ComputeMetadata(site, top_frame_site, party_context,
-                                   *context_config(), std::move(callback));
+  return manager_->ComputeMetadata(site, top_frame_site, *context_config(),
+                                   std::move(callback));
 }
 
 absl::optional<FirstPartySetsAccessDelegate::EntriesResult>
@@ -98,6 +104,9 @@ FirstPartySetsAccessDelegate::FindEntries(
     return {{}};
 
   if (!ready_event_.has_value()) {
+    if (!wait_for_init_) {
+      return {{}};
+    }
     // base::Unretained() is safe because `this` owns `pending_queries_` and
     // `pending_queries_` will not run the enqueued callbacks after `this` is
     // destroyed.
@@ -121,6 +130,9 @@ FirstPartySetsAccessDelegate::GetCacheFilterMatchInfo(
     return {net::FirstPartySetsCacheFilter::MatchInfo()};
 
   if (!ready_event_.has_value()) {
+    if (!wait_for_init_) {
+      return {net::FirstPartySetsCacheFilter::MatchInfo()};
+    }
     // base::Unretained() is safe because `this` owns `pending_queries_` and
     // `pending_queries_` will not run the enqueued callbacks after `this` is
     // destroyed.
@@ -136,7 +148,6 @@ FirstPartySetsAccessDelegate::GetCacheFilterMatchInfo(
 void FirstPartySetsAccessDelegate::ComputeMetadataAndInvoke(
     const net::SchemefulSite& site,
     const absl::optional<net::SchemefulSite> top_frame_site,
-    const std::set<net::SchemefulSite>& party_context,
     base::OnceCallback<void(net::FirstPartySetMetadata)> callback) const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   CHECK(context_config());
@@ -151,8 +162,7 @@ void FirstPartySetsAccessDelegate::ComputeMetadataAndInvoke(
 
   absl::optional<net::FirstPartySetMetadata> sync_result =
       manager_->ComputeMetadata(site, base::OptionalToPtr(top_frame_site),
-                                party_context, *context_config(),
-                                std::move(callbacks.first));
+                                *context_config(), std::move(callbacks.first));
 
   if (sync_result.has_value())
     std::move(callbacks.second).Run(std::move(sync_result.value()));
@@ -199,7 +209,10 @@ void FirstPartySetsAccessDelegate::GetCacheFilterMatchInfoAndInvoke(
 void FirstPartySetsAccessDelegate::InvokePendingQueries() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   CHECK(ready_event_.has_value());
-  CHECK(pending_queries_);
+  // !wait_for_init_ implies (pending_queries == nullptr).
+  CHECK(wait_for_init_ || pending_queries_ == nullptr);
+  // !wait_for_init_ implies !first_async_query_timer_.has_value().
+  CHECK(wait_for_init_ || !first_async_query_timer_.has_value());
 
   UmaHistogramTimes(
       "Cookie.FirstPartySets.InitializationDuration."
@@ -215,6 +228,10 @@ void FirstPartySetsAccessDelegate::InvokePendingQueries() {
                               ? first_async_query_timer_->Elapsed()
                               : base::TimeDelta());
 
+  if (!pending_queries_) {
+    return;
+  }
+
   std::unique_ptr<base::circular_deque<base::OnceClosure>> queries;
   queries.swap(pending_queries_);
   while (!queries->empty()) {
@@ -229,6 +246,7 @@ void FirstPartySetsAccessDelegate::EnqueuePendingQuery(
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   CHECK(pending_queries_);
   CHECK(!ready_event_.has_value());
+  CHECK(wait_for_init_);
 
   if (!first_async_query_timer_.has_value())
     first_async_query_timer_ = {base::ElapsedTimer()};

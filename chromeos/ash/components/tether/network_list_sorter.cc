@@ -55,7 +55,7 @@ bool CompareStates(const std::unique_ptr<ManagedState>& first_state,
 
   // Priority 8: Alphabetize by GUID. GUID is not shown in the UI,
   // so this is just a tie-breaker. All networks have unique GUIDs.
-  DCHECK(first->guid() != second->guid());
+  DCHECK(first == second || first->guid() != second->guid());
   return first->guid() < second->guid();
 }
 

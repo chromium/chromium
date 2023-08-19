@@ -10,7 +10,7 @@ import SwiftUI
   @Published public var name: String
 
   /// The name of the symbol to be used.
-  @Published public var symbolName: String
+  @Published public var symbolName: String?
 
   /// Whether the symbol is a system one (or a custom one).
   @Published public var systemSymbol: Bool
@@ -30,8 +30,14 @@ import SwiftUI
   /// Closure to execute when item is selected.
   @Published public var handler: () -> Void
 
+  /// Whether the item is shown or hidden in the menu overall.
+  @Published public var shown = true
+
   public init(
-    name: String, symbolName: String, systemSymbol: Bool, monochromeSymbol: Bool,
+    name: String,
+    symbolName: String?,
+    systemSymbol: Bool,
+    monochromeSymbol: Bool,
     accessibilityIdentifier: String,
     enterpriseDisabled: Bool,
     displayNewLabelIcon: Bool,

@@ -156,10 +156,10 @@ class PasswordGenerationControllerTest
         .WillByDefault(Return(password_manager_.get()));
 
     password_manager_driver_ = std::make_unique<ContentPasswordManagerDriver>(
-        main_rfh(), test_pwd_manager_client_.get(), &test_autofill_client_);
+        main_rfh(), test_pwd_manager_client_.get());
     another_password_manager_driver_ =
         std::make_unique<ContentPasswordManagerDriver>(
-            main_rfh(), test_pwd_manager_client_.get(), &test_autofill_client_);
+            main_rfh(), test_pwd_manager_client_.get());
 
     // TODO(crbug.com/969051): Remove once kAutofillKeyboardAccessory is
     // enabled.
@@ -489,9 +489,10 @@ TEST_F(PasswordGenerationControllerTest,
   MockTouchToFillPasswordGenerationBridge* ttf_password_generation_bridge_ptr =
       ttf_password_generation_bridge.get();
   EXPECT_CALL(create_ttf_generation_controller_, Run)
-      .WillOnce(Return(
-          ByMove(controller()->CreateTouchToFillGenerationControllerForTesting(
-              std::move(ttf_password_generation_bridge)))));
+      .WillOnce([this, &ttf_password_generation_bridge]() {
+        return controller()->CreateTouchToFillGenerationControllerForTesting(
+            std::move(ttf_password_generation_bridge));
+      });
 
   // Keyboard accessory shouldn't show up.
   EXPECT_CALL(mock_manual_filling_controller_,
@@ -540,9 +541,10 @@ TEST_F(PasswordGenerationControllerTest,
       std::make_unique<MockTouchToFillPasswordGenerationBridge>();
   EXPECT_CALL(*ttf_password_generation_bridge, Show).WillOnce(Return(false));
   EXPECT_CALL(create_ttf_generation_controller_, Run)
-      .WillOnce(Return(
-          ByMove(controller()->CreateTouchToFillGenerationControllerForTesting(
-              std::move(ttf_password_generation_bridge)))));
+      .WillOnce([this, &ttf_password_generation_bridge]() {
+        return controller()->CreateTouchToFillGenerationControllerForTesting(
+            std::move(ttf_password_generation_bridge));
+      });
 
   // Keyboard accessory should show up.
   EXPECT_CALL(mock_manual_filling_controller_,
@@ -563,9 +565,10 @@ TEST_F(PasswordGenerationControllerTest,
   FakeTouchToFillPasswordGenerationBridge* ttf_password_generation_bridge_ptr =
       ttf_password_generation_bridge.get();
   EXPECT_CALL(create_ttf_generation_controller_, Run)
-      .WillOnce(Return(
-          ByMove(controller()->CreateTouchToFillGenerationControllerForTesting(
-              std::move(ttf_password_generation_bridge)))));
+      .WillOnce([this, &ttf_password_generation_bridge]() {
+        return controller()->CreateTouchToFillGenerationControllerForTesting(
+            std::move(ttf_password_generation_bridge));
+      });
 
   // Keyboard accessory shouldn't be called.
   EXPECT_CALL(mock_manual_filling_controller_,

@@ -1,0 +1,12 @@
+CONSOLE ERROR: Access to fetch at 'https://subdomain.cookies.not-example.test:8443/cookies/resources/echo-json.php' from origin 'https://cookies.not-example.test:8443' has been blocked by CORS policy: No 'Access-Control-Allow-Origin' header is present on the requested resource. If an opaque response serves your needs, set the request's mode to 'no-cors' to fetch the resource with CORS disabled.
+CONSOLE ERROR: Access to fetch at 'https://not-example.test:8443/cookies/resources/echo-json.php' from origin 'https://cookies.not-example.test:8443' has been blocked by CORS policy: No 'Access-Control-Allow-Origin' header is present on the requested resource. If an opaque response serves your needs, set the request's mode to 'no-cors' to fetch the resource with CORS disabled.
+CONSOLE ERROR: Access to fetch at 'https://example.test:8443/cookies/resources/echo-json.php' from origin 'https://cookies.not-example.test:8443' has been blocked by CORS policy: No 'Access-Control-Allow-Origin' header is present on the requested resource. If an opaque response serves your needs, set the request's mode to 'no-cors' to fetch the resource with CORS disabled.
+This is a testharness.js-based test.
+PASS Cookies can be set from DOM.
+FAIL SameSite set from DOM are sent via HTTPS. promise_test: Unhandled rejection with value: object "SyntaxError: Unexpected token '<', "<br />
+<b>"... is not valid JSON"
+FAIL Subdomains are same-site. promise_test: Unhandled rejection with value: object "TypeError: Failed to fetch"
+FAIL `not-example.test` is same-site but the cookies don't match it: 'samesite' doesn't override matching rules. promise_test: Unhandled rejection with value: object "TypeError: Failed to fetch"
+FAIL 'example.test' is not same-site with 'cookies.not-example.test', so samesite cookies are not sent. promise_test: Unhandled rejection with value: object "TypeError: Failed to fetch"
+Harness: the test ran to completion.
+

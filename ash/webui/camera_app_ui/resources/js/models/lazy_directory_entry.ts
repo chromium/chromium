@@ -13,9 +13,6 @@ import {
  * Gets directory entry by given |name| under |parentDir| directory. If the
  * directory does not exist, returns a lazy directory which will only be created
  * once there is any file written in it.
- *
- * @param parentDir Parent directory.
- * @param name Name of the target directory.
  */
 export async function getMaybeLazyDirectory(
     parentDir: DirectoryAccessEntry,
@@ -33,10 +30,6 @@ export async function getMaybeLazyDirectory(
 class LazyDirectoryEntry implements DirectoryAccessEntry {
   private directory: DirectoryAccessEntry|null = null;
 
-  /**
-   * @param parent The parent of the directory that will be lazily created.
-   * @param name The name of the directory that will be lazily created.
-   */
   constructor(
       private readonly parent: DirectoryAccessEntry, readonly name: string) {}
 
@@ -96,7 +89,7 @@ class LazyDirectoryEntry implements DirectoryAccessEntry {
   }
 
   /**
-   * Gets the directory which this entry points to. Create it if it does not
+   * Gets the directory which this entry points to. Creates it if it does not
    * exist.
    */
   private async getRealDirectory(): Promise<DirectoryAccessEntry> {

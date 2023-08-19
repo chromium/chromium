@@ -11,15 +11,12 @@
 #import "ios/chrome/browser/shared/coordinator/alert/alert_coordinator.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
+#import "ios/chrome/browser/ui/settings/autofill/autofill_add_credit_card_coordinator_delegate.h"
 #import "ios/chrome/browser/ui/settings/autofill/autofill_add_credit_card_mediator.h"
 #import "ios/chrome/browser/ui/settings/autofill/autofill_add_credit_card_mediator_delegate.h"
 #import "ios/chrome/browser/ui/settings/autofill/autofill_add_credit_card_view_controller.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ui/base/l10n/l10n_util_mac.h"
-
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
 
 @interface AutofillAddCreditCardCoordinator () <
     AddCreditCardMediatorDelegate,
@@ -72,13 +69,14 @@
       dismissViewControllerAnimated:YES
                          completion:nil];
   self.addCreditCardViewController = nil;
+  [self dismissActionSheetCoordinator];
   self.mediator = nil;
 }
 
 #pragma mark - AddCreditCardMediatorDelegate
 
 - (void)creditCardMediatorDidFinish:(AutofillAddCreditCardMediator*)mediator {
-  [self stop];
+  [self.delegate autofillAddCreditCardCoordinatorWantsToBeStopped:self];
 }
 
 - (void)creditCardMediatorHasInvalidCardNumber:
@@ -135,14 +133,19 @@
       addItemWithTitle:l10n_util::GetNSString(
                            IDS_IOS_VIEW_CONTROLLER_DISMISS_DISCARD_CHANGES)
                 action:^{
-                  [weakSelf stop];
+                  [weakSelf.delegate
+                      autofillAddCreditCardCoordinatorWantsToBeStopped:
+                          weakSelf];
+                  [weakSelf dismissActionSheetCoordinator];
                 }
                  style:UIAlertActionStyleDestructive];
 
   [self.actionSheetCoordinator
       addItemWithTitle:l10n_util::GetNSString(
                            IDS_IOS_VIEW_CONTROLLER_DISMISS_CANCEL_CHANGES)
-                action:nil
+                action:^{
+                  [weakSelf dismissActionSheetCoordinator];
+                }
                  style:UIAlertActionStyleCancel];
 
   [self.actionSheetCoordinator start];
@@ -157,6 +160,13 @@
                          message:nil];
 
   [self.alertCoordinator start];
+}
+
+#pragma mark - Private
+
+- (void)dismissActionSheetCoordinator {
+  [self.actionSheetCoordinator stop];
+  self.actionSheetCoordinator = nil;
 }
 
 @end

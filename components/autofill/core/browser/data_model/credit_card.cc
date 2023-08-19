@@ -128,25 +128,12 @@ std::u16string AddWhiteSpaceSeparatorForNumber(const std::u16string& number,
 
 }  // namespace
 
-namespace internal {
-
-std::u16string GetObfuscatedStringForCardDigits(const std::u16string& digits,
-                                                int obfuscation_length) {
-  std::u16string obfuscated_string =
-      CreditCard::GetMidlineEllipsisDots(obfuscation_length);
-  obfuscated_string.append(digits);
-  base::i18n::WrapStringWithLTRFormatting(&obfuscated_string);
-  return obfuscated_string;
-}
-
-}  // namespace internal
-
 // static
 CreditCard CreditCard::CreateVirtualCard(const CreditCard& card) {
   // Virtual cards can be created only from masked server cards.
-  DCHECK_EQ(card.record_type(), MASKED_SERVER_CARD);
+  DCHECK_EQ(card.record_type(), RecordType::kMaskedServerCard);
   CreditCard virtual_card = card;
-  virtual_card.set_record_type(VIRTUAL_CARD);
+  virtual_card.set_record_type(RecordType::kVirtualCard);
   return virtual_card;
 }
 
@@ -154,34 +141,47 @@ CreditCard CreditCard::CreateVirtualCard(const CreditCard& card) {
 std::unique_ptr<CreditCard> CreditCard::CreateVirtualCardWithGuidSuffix(
     const CreditCard& card) {
   // Virtual cards can be created only from masked server cards.
-  DCHECK_EQ(card.record_type(), MASKED_SERVER_CARD);
+  DCHECK_EQ(card.record_type(), RecordType::kMaskedServerCard);
   auto virtual_card = std::make_unique<CreditCard>(card);
-  virtual_card->set_record_type(VIRTUAL_CARD);
+  virtual_card->set_record_type(RecordType::kVirtualCard);
   // Add a suffix to the guid to help differentiate the virtual card from the
   // server card.
   virtual_card->set_guid(card.guid() + kVirtualCardIdentifierSuffix);
   return virtual_card;
 }
 
+// static
+std::u16string CreditCard::GetObfuscatedStringForCardDigits(
+    int obfuscation_length,
+    const std::u16string& digits) {
+  std::u16string obfuscated_string =
+      CreditCard::GetMidlineEllipsisDots(obfuscation_length);
+  obfuscated_string.append(digits);
+  base::i18n::WrapStringWithLTRFormatting(&obfuscated_string);
+  return obfuscated_string;
+}
+
 CreditCard::CreditCard(const std::string& guid, const std::string& origin)
     : AutofillDataModel(guid),
       origin_(origin),
-      record_type_(LOCAL_CARD),
+      record_type_(RecordType::kLocalCard),
       network_(kGenericCard),
       expiration_month_(0),
       expiration_year_(0),
-      card_issuer_(ISSUER_UNKNOWN),
+      card_issuer_(Issuer::kIssuerUnknown),
       instrument_id_(0) {}
 
 CreditCard::CreditCard(RecordType type, const std::string& server_id)
     : CreditCard() {
-  DCHECK(type == MASKED_SERVER_CARD || type == FULL_SERVER_CARD);
+  DCHECK(type == RecordType::kMaskedServerCard ||
+         type == RecordType::kFullServerCard);
   record_type_ = type;
   server_id_ = server_id;
 }
 
 CreditCard::CreditCard(RecordType type, int64_t instrument_id) : CreditCard() {
-  DCHECK(type == MASKED_SERVER_CARD || type == FULL_SERVER_CARD);
+  DCHECK(type == RecordType::kMaskedServerCard ||
+         type == RecordType::kFullServerCard);
   record_type_ = type;
   instrument_id_ = instrument_id;
 }
@@ -491,17 +491,17 @@ std::u16string CreditCard::GetMidlineEllipsisDots(size_t num_dots) {
 
 // static
 bool CreditCard::IsLocalCard(const CreditCard* card) {
-  return card && card->record_type() == CreditCard::LOCAL_CARD;
+  return card && card->record_type() == CreditCard::RecordType::kLocalCard;
 }
 
 void CreditCard::SetNetworkForMaskedCard(base::StringPiece network) {
-  DCHECK_EQ(MASKED_SERVER_CARD, record_type());
+  DCHECK_EQ(RecordType::kMaskedServerCard, record_type());
   network_ = std::string(network);
 }
 
 AutofillMetadata CreditCard::GetMetadata() const {
   AutofillMetadata metadata = AutofillDataModel::GetMetadata();
-  metadata.id = (record_type_ == LOCAL_CARD ? guid() : server_id_);
+  metadata.id = (record_type_ == RecordType::kLocalCard ? guid() : server_id_);
   metadata.billing_address_id = billing_address_id_;
   return metadata;
 }
@@ -510,7 +510,7 @@ double CreditCard::GetRankingScore(base::Time current_time) const {
   if (base::FeatureList::IsEnabled(
           features::kAutofillEnableRankingFormulaCreditCards)) {
     int virtual_card_boost =
-        virtual_card_enrollment_state_ != VirtualCardEnrollmentState::ENROLLED
+        virtual_card_enrollment_state_ != VirtualCardEnrollmentState::kEnrolled
             ? 0
             : features::kAutofillRankingFormulaVirtualCardBoost.Get() *
                   exp(-GetDaysSinceLastUse(current_time) /
@@ -532,8 +532,10 @@ double CreditCard::GetRankingScore(base::Time current_time) const {
 
 bool CreditCard::SetMetadata(const AutofillMetadata& metadata) {
   // Make sure the ids matches.
-  if (metadata.id != (record_type_ == LOCAL_CARD ? guid() : server_id_))
+  if (metadata.id !=
+      (record_type_ == RecordType::kLocalCard ? guid() : server_id_)) {
     return false;
+  }
 
   if (!AutofillDataModel::SetMetadata(metadata))
     return false;
@@ -590,8 +592,7 @@ std::u16string CreditCard::GetRawInfo(ServerFieldType type) const {
       return number_;
 
     case CREDIT_CARD_VERIFICATION_CODE:
-      // Chrome doesn't store credit card verification codes.
-      return std::u16string();
+      return cvc_;
 
     default:
       // ComputeDataPresentForArray will hit this repeatedly.
@@ -654,7 +655,7 @@ void CreditCard::SetRawInfoWithVerificationStatus(ServerFieldType type,
     }
 
     case CREDIT_CARD_VERIFICATION_CODE:
-      // Chrome doesn't store the credit card verification code.
+      cvc_ = value;
       break;
 
     default:
@@ -673,7 +674,7 @@ void CreditCard::GetMatchingTypes(const std::u16string& text,
   if (!card_number.empty()) {
     // We only have the last four digits for masked cards, so match against
     // that if |this| is a masked card.
-    bool numbers_match = record_type_ == MASKED_SERVER_CARD
+    bool numbers_match = record_type_ == RecordType::kMaskedServerCard
                              ? GetLastFourDigits(text) == LastFourDigits()
                              : StripSeparators(text) == card_number;
     if (numbers_match)
@@ -797,6 +798,11 @@ int CreditCard::Compare(const CreditCard& credit_card) const {
   if (comparison != 0)
     return comparison;
 
+  comparison = cvc_.compare(credit_card.cvc_);
+  if (comparison != 0) {
+    return comparison;
+  }
+
   if (static_cast<int>(card_issuer_) <
       static_cast<int>(credit_card.card_issuer_)) {
     return -1;
@@ -835,10 +841,14 @@ int CreditCard::Compare(const CreditCard& credit_card) const {
   // Do not distinguish masked server cards from full server cards as this is
   // not needed and not desired - we want to identify masked server card from
   // sync with the (potential) full server card stored locally.
-  if (record_type_ == LOCAL_CARD && credit_card.record_type_ != LOCAL_CARD)
+  if (record_type_ == RecordType::kLocalCard &&
+      credit_card.record_type_ != RecordType::kLocalCard) {
     return -1;
-  if (record_type_ != LOCAL_CARD && credit_card.record_type_ == LOCAL_CARD)
+  }
+  if (record_type_ != RecordType::kLocalCard &&
+      credit_card.record_type_ == RecordType::kLocalCard) {
     return 1;
+  }
   return 0;
 }
 
@@ -877,8 +887,8 @@ bool CreditCard::MatchingCardDetails(const CreditCard& other) const {
   // Masked cards are considered to have the same number if their last four
   // digits match and if any expiration date information available for both
   // cards matches.
-  if (record_type() == MASKED_SERVER_CARD ||
-      other.record_type() == MASKED_SERVER_CARD) {
+  if (record_type() == RecordType::kMaskedServerCard ||
+      other.record_type() == RecordType::kMaskedServerCard) {
     bool last_four_digits_match = HasSameNumberAs(other);
 
     bool months_match = expiration_month() == other.expiration_month() ||
@@ -895,8 +905,8 @@ bool CreditCard::MatchingCardDetails(const CreditCard& other) const {
 }
 
 bool CreditCard::HasSameNumberAs(const CreditCard& other) const {
-  if (record_type() == CreditCard::MASKED_SERVER_CARD ||
-      other.record_type() == CreditCard::MASKED_SERVER_CARD) {
+  if (record_type() == CreditCard::RecordType::kMaskedServerCard ||
+      other.record_type() == CreditCard::RecordType::kMaskedServerCard) {
     return LastFourDigits() == other.LastFourDigits();
   }
 
@@ -1047,8 +1057,7 @@ std::u16string CreditCard::NetworkForDisplay() const {
 
 std::u16string CreditCard::ObfuscatedNumberWithVisibleLastFourDigits(
     int obfuscation_length) const {
-  return internal::GetObfuscatedStringForCardDigits(LastFourDigits(),
-                                                    obfuscation_length);
+  return GetObfuscatedStringForCardDigits(obfuscation_length, LastFourDigits());
 }
 
 std::u16string
@@ -1074,7 +1083,7 @@ std::u16string CreditCard::NetworkAndLastFourDigits(
 
   // TODO(estade): i18n?
   const std::u16string obfuscated_string =
-      internal::GetObfuscatedStringForCardDigits(digits, obfuscation_length);
+      GetObfuscatedStringForCardDigits(obfuscation_length, digits);
   return network.empty() ? obfuscated_string
                          : network + u"  " + obfuscated_string;
 }
@@ -1089,7 +1098,7 @@ std::u16string CreditCard::CardNameAndLastFourDigits(
     return card_name;
 
   std::u16string obfuscated_last_four =
-      internal::GetObfuscatedStringForCardDigits(last_four, obfuscation_length);
+      GetObfuscatedStringForCardDigits(obfuscation_length, last_four);
   return card_name.empty()
              ? obfuscated_last_four
              : base::StrCat({card_name, u"  ", obfuscated_last_four});
@@ -1111,7 +1120,7 @@ std::u16string CreditCard::CardNameForAutofillDisplay(
 std::u16string CreditCard::CardIdentifierStringForManualFilling() const {
   std::u16string obfuscated_number =
       ObfuscatedNumberWithVisibleLastFourDigits();
-  if (record_type_ == VIRTUAL_CARD) {
+  if (record_type_ == RecordType::kVirtualCard) {
     return l10n_util::GetStringUTF16(
                IDS_AUTOFILL_VIRTUAL_CARD_SUGGESTION_OPTION_VALUE) +
            u" " + obfuscated_number;
@@ -1203,8 +1212,9 @@ std::u16string CreditCard::GetInfoImpl(const AutofillType& type,
   if (storable_type == CREDIT_CARD_NUMBER) {
     // Web pages should never actually be filled by a masked server card,
     // but this function is used at the preview stage.
-    if (record_type() == MASKED_SERVER_CARD)
+    if (record_type() == RecordType::kMaskedServerCard) {
       return NetworkAndLastFourDigits();
+    }
 
     return StripSeparators(number_);
   }
@@ -1246,8 +1256,7 @@ std::u16string CreditCard::NicknameAndLastFourDigits(
     return customized_nickname.empty() ? nickname_ : customized_nickname;
 
   return (customized_nickname.empty() ? nickname_ : customized_nickname) +
-         u"  " +
-         internal::GetObfuscatedStringForCardDigits(digits, obfuscation_length);
+         u"  " + GetObfuscatedStringForCardDigits(obfuscation_length, digits);
 }
 
 void CreditCard::SetNumber(const std::u16string& number) {
@@ -1255,14 +1264,16 @@ void CreditCard::SetNumber(const std::u16string& number) {
 
   // Set the type based on the card number, but only for full numbers, not
   // when we have masked cards from the server (last 4 digits).
-  if (record_type_ != MASKED_SERVER_CARD)
+  if (record_type_ != RecordType::kMaskedServerCard) {
     network_ = GetCardNetwork(StripSeparators(number_));
+  }
 }
 
 void CreditCard::RecordAndLogUse() {
   UMA_HISTOGRAM_COUNTS_1000("Autofill.DaysSinceLastUse.CreditCard",
                             (AutofillClock::Now() - use_date()).InDays());
-  RecordUse();
+  set_use_date(AutofillClock::Now());
+  set_use_count(use_count() + 1);
 }
 
 bool CreditCard::IsExpired(const base::Time& current_time) const {
@@ -1271,8 +1282,8 @@ bool CreditCard::IsExpired(const base::Time& current_time) const {
 }
 
 bool CreditCard::masked() const {
-  return record_type() == CreditCard::MASKED_SERVER_CARD ||
-         record_type() == CreditCard::VIRTUAL_CARD;
+  return record_type() == CreditCard::RecordType::kMaskedServerCard ||
+         record_type() == CreditCard::RecordType::kVirtualCard;
 }
 
 bool CreditCard::ShouldUpdateExpiration() const {
@@ -1287,7 +1298,7 @@ bool CreditCard::IsCompleteValidCard() const {
 // So we can compare CreditCards with EXPECT_EQ().
 std::ostream& operator<<(std::ostream& os, const CreditCard& credit_card) {
   return os << base::UTF16ToUTF8(credit_card.Label()) << " "
-            << (credit_card.record_type() == CreditCard::LOCAL_CARD
+            << (credit_card.record_type() == CreditCard::RecordType::kLocalCard
                     ? credit_card.guid()
                     : base::HexEncode(credit_card.server_id().data(),
                                       credit_card.server_id().size()))
@@ -1303,15 +1314,20 @@ std::ostream& operator<<(std::ostream& os, const CreditCard& credit_card) {
             << base::UTF16ToUTF8(
                    credit_card.GetRawInfo(CREDIT_CARD_EXP_4_DIGIT_YEAR))
             << " " << credit_card.bank_name() << " "
-            << " " << credit_card.record_type() << " "
+            << " " << base::to_underlying(credit_card.record_type()) << " "
             << credit_card.use_count() << " " << credit_card.use_date() << " "
             << credit_card.billing_address_id() << " " << credit_card.nickname()
-            << " " << credit_card.card_issuer() << " "
+            << " "
+            << static_cast<
+                   typename std::underlying_type<CreditCard::Issuer>::type>(
+                   credit_card.card_issuer())
+            << " "
             << " " << credit_card.issuer_id() << " "
             << credit_card.instrument_id() << " "
-            << credit_card.virtual_card_enrollment_state() << " "
-            << credit_card.card_art_url().spec() << " "
-            << base::UTF16ToUTF8(credit_card.product_description());
+            << base::to_underlying(credit_card.virtual_card_enrollment_state())
+            << " " << credit_card.card_art_url().spec() << " "
+            << base::UTF16ToUTF8(credit_card.product_description()) << " "
+            << credit_card.cvc();
 }
 
 void CreditCard::SetNameOnCardFromSeparateParts() {

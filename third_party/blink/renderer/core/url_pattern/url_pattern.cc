@@ -12,10 +12,13 @@
 #include "third_party/blink/renderer/bindings/core/v8/v8_url_pattern_init.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_url_pattern_options.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_url_pattern_result.h"
+#include "third_party/blink/renderer/core/execution_context/execution_context.h"
+#include "third_party/blink/renderer/core/frame/web_feature.h"
 #include "third_party/blink/renderer/core/url_pattern/url_pattern_canon.h"
 #include "third_party/blink/renderer/core/url_pattern/url_pattern_component.h"
 #include "third_party/blink/renderer/core/url_pattern/url_pattern_parser.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
+#include "third_party/blink/renderer/platform/instrumentation/use_counter.h"
 #include "third_party/blink/renderer/platform/weborigin/kurl.h"
 #include "third_party/blink/renderer/platform/weborigin/security_origin.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
@@ -274,7 +277,53 @@ URLPattern* URLPattern::Create(const V8URLPatternInput* input,
   if (base_url)
     init->setBaseURL(base_url);
 
-  return Create(init, parser.GetProtocolComponent(), options, exception_state);
+  URLPattern* result =
+      Create(init, parser.GetProtocolComponent(), options, exception_state);
+  if (result) {
+    URLPattern::ComponentSet present = parser.GetPresentComponents();
+    URLPattern::ComponentSet wildcard_with_string_format_change =
+        URLPattern::ComponentSet::All();
+    wildcard_with_string_format_change.RemoveAll(present);
+    if (present.Has(Component::Type::kUsername)) {
+      wildcard_with_string_format_change.RemoveAll({Component::Type::kProtocol,
+                                                    Component::Type::kHostname,
+                                                    Component::Type::kPort});
+    }
+    if (present.Has(Component::Type::kPassword)) {
+      wildcard_with_string_format_change.RemoveAll(
+          {Component::Type::kProtocol, Component::Type::kHostname,
+           Component::Type::kPort, Component::Type::kUsername});
+    }
+    if (present.Has(Component::Type::kHostname)) {
+      // As a special case, don't wildcard the port if the host is present, even
+      // with no path.
+      wildcard_with_string_format_change.RemoveAll(
+          {Component::Type::kProtocol, Component::Type::kPort});
+    }
+    if (present.Has(Component::Type::kPort)) {
+      wildcard_with_string_format_change.RemoveAll(
+          {Component::Type::kProtocol, Component::Type::kHostname});
+    }
+    if (present.Has(Component::Type::kPathname)) {
+      wildcard_with_string_format_change.RemoveAll({Component::Type::kProtocol,
+                                                    Component::Type::kHostname,
+                                                    Component::Type::kPort});
+    }
+    if (present.Has(Component::Type::kSearch)) {
+      wildcard_with_string_format_change.RemoveAll(
+          {Component::Type::kProtocol, Component::Type::kHostname,
+           Component::Type::kPort, Component::Type::kPathname});
+    }
+    if (present.Has(Component::Type::kHash)) {
+      wildcard_with_string_format_change.RemoveAll(
+          {Component::Type::kProtocol, Component::Type::kHostname,
+           Component::Type::kPort, Component::Type::kPathname,
+           Component::Type::kSearch});
+    }
+    result->wildcard_with_string_format_change_ =
+        wildcard_with_string_format_change;
+  }
+  return result;
 }
 
 URLPattern* URLPattern::Create(const V8URLPatternInput* input,
@@ -390,10 +439,41 @@ URLPattern* URLPattern::Create(const URLPatternInit* init,
   if (exception_state.HadException())
     return nullptr;
 
-  return MakeGarbageCollected<URLPattern>(
+  URLPattern* result = MakeGarbageCollected<URLPattern>(
       protocol_component, username_component, password_component,
       hostname_component, port_component, pathname_component, search_component,
       hash_component, base::PassKey<URLPattern>());
+  if (init->hasBaseURL()) {
+    auto& would_be_wildcard = result->wildcard_with_base_url_change_;
+    if (!init->hasUsername() &&
+        (init->hasProtocol() || init->hasHostname() || init->hasPort())) {
+      would_be_wildcard.Put(Component::Type::kUsername);
+    }
+    if (!init->hasPassword() && (init->hasProtocol() || init->hasHostname() ||
+                                 init->hasPort() || init->hasUsername())) {
+      would_be_wildcard.Put(Component::Type::kPassword);
+    }
+    if (!init->hasHostname() && init->hasProtocol()) {
+      would_be_wildcard.Put(Component::Type::kHostname);
+    }
+    if (!init->hasPort() && (init->hasProtocol() || init->hasHostname())) {
+      would_be_wildcard.Put(Component::Type::kPort);
+    }
+    if (!init->hasPathname() &&
+        (init->hasProtocol() || init->hasHostname() || init->hasPort())) {
+      would_be_wildcard.Put(Component::Type::kPathname);
+    }
+    if (!init->hasSearch() && (init->hasProtocol() || init->hasHostname() ||
+                               init->hasPort() || init->hasPathname())) {
+      would_be_wildcard.Put(Component::Type::kSearch);
+    }
+    if (!init->hasHash() &&
+        (init->hasProtocol() || init->hasHostname() || init->hasPort() ||
+         init->hasPathname() || init->hasSearch())) {
+      would_be_wildcard.Put(Component::Type::kHash);
+    }
+  }
+  return result;
 }
 
 URLPattern::URLPattern(Component* protocol,
@@ -646,16 +726,44 @@ bool URLPattern::Match(ScriptState* script_state,
   CHECK(search_);
   CHECK(hash_);
 
+  // This simply wraps the Match() function so that we can compare its result to
+  // what the result would have been with a couple proposed behavior changes.
+  bool affected_by_string_format_change = false;
+  bool affected_by_base_url_change = false;
+  auto match = [&](url_pattern::Component* component, WTF::StringView input,
+                   Vector<std::pair<String, String>>* group_list_ref) {
+    const bool matches = component->Match(input, group_list_ref);
+    if (!matches &&
+        wildcard_with_string_format_change_.Has(component->type())) {
+      affected_by_string_format_change = true;
+    }
+    if (!matches && wildcard_with_base_url_change_.Has(component->type())) {
+      affected_by_base_url_change = true;
+    }
+    return matches;
+  };
+
   // Each component of the pattern must match the corresponding component of
   // the input.
-  bool matched = protocol_->Match(protocol, protocol_group_list_ref) &&
-                 username_->Match(username, username_group_list_ref) &&
-                 password_->Match(password, password_group_list_ref) &&
-                 hostname_->Match(hostname, hostname_group_list_ref) &&
-                 port_->Match(port, port_group_list_ref) &&
-                 pathname_->Match(pathname, pathname_group_list_ref) &&
-                 search_->Match(search, search_group_list_ref) &&
-                 hash_->Match(hash, hash_group_list_ref);
+  bool matched = match(protocol_, protocol, protocol_group_list_ref) &&
+                 match(username_, username, username_group_list_ref) &&
+                 match(password_, password, password_group_list_ref) &&
+                 match(hostname_, hostname, hostname_group_list_ref) &&
+                 match(port_, port, port_group_list_ref) &&
+                 match(pathname_, pathname, pathname_group_list_ref) &&
+                 match(search_, search, search_group_list_ref) &&
+                 match(hash_, hash, hash_group_list_ref);
+
+  if (affected_by_string_format_change && script_state) {
+    UseCounter::Count(
+        ExecutionContext::From(script_state),
+        WebFeature::kURLPatternReliantOnImplicitURLComponentsInString);
+  }
+  if (affected_by_base_url_change && script_state) {
+    UseCounter::Count(
+        ExecutionContext::From(script_state),
+        WebFeature::kURLPatternReliantOnLaterComponentFromBaseURL);
+  }
 
   if (!matched || !result)
     return matched;

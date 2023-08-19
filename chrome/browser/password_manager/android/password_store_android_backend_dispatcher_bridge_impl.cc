@@ -7,10 +7,12 @@
 #include <jni.h>
 #include <cstdint>
 
+#include "base/android/build_info.h"
 #include "base/android/jni_android.h"
 #include "base/android/jni_array.h"
 #include "base/android/jni_string.h"
 #include "chrome/browser/password_manager/android/jni_headers/PasswordStoreAndroidBackendDispatcherBridgeImpl_jni.h"
+#include "components/password_manager/core/browser/features/password_features.h"
 #include "components/password_manager/core/browser/password_form.h"
 #include "components/password_manager/core/browser/protos/list_passwords_result.pb.h"
 #include "components/password_manager/core/browser/protos/password_with_local_data.pb.h"
@@ -22,6 +24,8 @@ namespace password_manager {
 namespace {
 
 using JobId = PasswordStoreAndroidBackendDispatcherBridge::JobId;
+
+constexpr int kGMSCoreMinVersionForGetAffiliatedAPI = 232012000;
 
 base::android::ScopedJavaLocalRef<jstring> GetJavaStringFromAccount(
     PasswordStoreAndroidBackendDispatcherBridgeImpl::Account account) {
@@ -48,6 +52,21 @@ PasswordStoreAndroidBackendDispatcherBridge::Create() {
 bool PasswordStoreAndroidBackendDispatcherBridge::CanCreateBackend() {
   return Java_PasswordStoreAndroidBackendDispatcherBridgeImpl_canCreateBackend(
       base::android::AttachCurrentThread());
+}
+
+bool PasswordStoreAndroidBackendDispatcherBridge::
+    CanUseGetAffiliatedPasswordsAPI() {
+  base::android::BuildInfo* info = base::android::BuildInfo::GetInstance();
+  int current_gms_core_version;
+  if (!base::StringToInt(info->gms_version_code(), &current_gms_core_version)) {
+    return false;
+  }
+  if (kGMSCoreMinVersionForGetAffiliatedAPI > current_gms_core_version) {
+    return false;
+  }
+
+  return base::FeatureList::IsEnabled(
+      password_manager::features::kFillingAcrossAffiliatedWebsitesAndroid);
 }
 
 PasswordStoreAndroidBackendDispatcherBridgeImpl::
@@ -91,6 +110,18 @@ void PasswordStoreAndroidBackendDispatcherBridgeImpl::GetLoginsForSignonRealm(
     Account account) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   Java_PasswordStoreAndroidBackendDispatcherBridgeImpl_getLoginsForSignonRealm(
+      base::android::AttachCurrentThread(), java_object_, job_id.value(),
+      base::android::ConvertUTF8ToJavaString(
+          base::android::AttachCurrentThread(), signon_realm),
+      GetJavaStringFromAccount(std::move(account)));
+}
+
+void PasswordStoreAndroidBackendDispatcherBridgeImpl::
+    GetAffiliatedLoginsForSignonRealm(JobId job_id,
+                                      const std::string& signon_realm,
+                                      Account account) {
+  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
+  Java_PasswordStoreAndroidBackendDispatcherBridgeImpl_getAffiliatedLoginsForSignonRealm(
       base::android::AttachCurrentThread(), java_object_, job_id.value(),
       base::android::ConvertUTF8ToJavaString(
           base::android::AttachCurrentThread(), signon_realm),

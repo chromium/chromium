@@ -4,7 +4,9 @@
 
 #include "chrome/browser/ui/webui/settings/ash/tts_handler.h"
 
+#include "ash/webui/settings/public/constants/routes.mojom.h"
 #include "base/functional/bind.h"
+#include "base/i18n/rtl.h"
 #include "base/json/json_reader.h"
 #include "base/values.h"
 #include "chrome/browser/browser_process.h"
@@ -12,7 +14,6 @@
 #include "chrome/browser/speech/extension_api/tts_engine_extension_api.h"
 #include "chrome/browser/speech/extension_api/tts_engine_extension_observer_chromeos.h"
 #include "chrome/browser/ui/chrome_pages.h"
-#include "chrome/browser/ui/webui/settings/chromeos/constants/routes.mojom.h"
 #include "chrome/common/extensions/extension_constants.h"
 #include "chrome/grit/generated_resources.h"
 #include "content/public/browser/tts_controller.h"
@@ -68,6 +69,29 @@ void TtsHandler::HandleGetTtsExtensions(const base::Value::List& args) {
   FireWebUIListener("tts-extensions-updated", responses);
 }
 
+void TtsHandler::HandleGetDisplayNameForLocale(const base::Value::List& args) {
+  CHECK_EQ(2U, args.size());
+  const std::string callback_id = args[0].GetString();
+  const std::string locale = args[1].GetString();
+
+  const std::u16string display_name = l10n_util::GetDisplayNameForLocale(
+      locale, g_browser_process->GetApplicationLocale(), true);
+
+  AllowJavascript();
+  ResolveJavascriptCallback(callback_id, base::UTF16ToUTF8(display_name));
+}
+
+void TtsHandler::HandleGetApplicationLocale(const base::Value::List& args) {
+  CHECK_EQ(1U, args.size());
+  const std::string callback_id = args[0].GetString();
+
+  const std::string& application_locale =
+      g_browser_process->GetApplicationLocale();
+
+  AllowJavascript();
+  ResolveJavascriptCallback(callback_id, application_locale);
+}
+
 void TtsHandler::OnVoicesChanged() {
   content::TtsController* tts_controller =
       content::TtsController::GetInstance();
@@ -111,6 +135,14 @@ void TtsHandler::RegisterMessages() {
   web_ui()->RegisterMessageCallback(
       "getTtsExtensions",
       base::BindRepeating(&TtsHandler::HandleGetTtsExtensions,
+                          base::Unretained(this)));
+  web_ui()->RegisterMessageCallback(
+      "getDisplayNameForLocale",
+      base::BindRepeating(&TtsHandler::HandleGetDisplayNameForLocale,
+                          base::Unretained(this)));
+  web_ui()->RegisterMessageCallback(
+      "getApplicationLocale",
+      base::BindRepeating(&TtsHandler::HandleGetApplicationLocale,
                           base::Unretained(this)));
   web_ui()->RegisterMessageCallback(
       "previewTtsVoice",

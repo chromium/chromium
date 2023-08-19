@@ -212,15 +212,24 @@ struct KeySystemConfigSelector::SelectionRequest {
   SelectConfigCB cb;
   bool was_permission_requested = false;
   bool is_permission_granted = false;
+  bool was_hardware_secure_decryption_preferences_requested = false;
+  bool is_hardware_secure_decryption_allowed = true;
 };
 
 // Accumulates configuration rules to determine if a feature (additional
 // configuration rule) can be added to an accumulated configuration.
 class KeySystemConfigSelector::ConfigState {
  public:
-  ConfigState(bool was_permission_requested, bool is_permission_granted)
+  ConfigState(bool was_permission_requested,
+              bool is_permission_granted,
+              bool was_hardware_secure_decryption_preferences_requested,
+              bool is_hardware_secure_decryption_allowed)
       : was_permission_requested_(was_permission_requested),
-        is_permission_granted_(is_permission_granted) {}
+        is_permission_granted_(is_permission_granted),
+        was_hardware_secure_decryption_preferences_requested_(
+            was_hardware_secure_decryption_preferences_requested),
+        is_hardware_secure_decryption_allowed_(
+            is_hardware_secure_decryption_allowed) {}
 
   bool IsPermissionGranted() const { return is_permission_granted_; }
 
@@ -243,6 +252,11 @@ class KeySystemConfigSelector::ConfigState {
 
   bool AreHwSecureCodesNotAllowed() const {
     return rules.hw_secure_codecs == EmeConfigRuleState::kNotAllowed;
+  }
+
+  bool IsHardwareSecureDecryptionAllowed() const {
+    return was_hardware_secure_decryption_preferences_requested_ &&
+           is_hardware_secure_decryption_allowed_;
   }
 
   // Checks whether a rule is compatible with all previously added rules.
@@ -364,6 +378,15 @@ class KeySystemConfigSelector::ConfigState {
   // Whether permission to use a distinctive identifier has been granted.
   // (Not changed by adding rules.)
   bool is_permission_granted_;
+
+  // Whether hardware secure decryption preferences was requested. If set,
+  // |is_hardware_secure_decryption_preferences_allowed_| represents the final
+  // decision. (Not changed by adding rules.)
+  bool was_hardware_secure_decryption_preferences_requested_ = false;
+
+  // Whether hardware secure decryption is allowed. (Not changed by
+  // adding rules.)
+  bool is_hardware_secure_decryption_allowed_ = true;
 
   EmeConfig rules = EmeConfig();
 };
@@ -717,10 +740,13 @@ KeySystemConfigSelector::GetSupportedConfiguration(
   //         return NotSupported.
   EmeFeatureSupport persistent_state_support =
       key_systems_->GetPersistentStateSupport(key_system);
-  // If preferences disallow local storage, then indicate persistent state is
-  // not supported.
+  // If preferences disallow storage access, then indicate persistent state is
+  // not supported. A quota managed storage type is used in lieu of a dedicated
+  // StorageType, as Media Licenses are a quota managed managed type.
+  // TODO(crbug.com/1465299): Simplify the WebContentSettingsClient::StorageType
+  // to remove unnecessary distinctions between storage types.
   if (!web_frame_delegate_->AllowStorageAccessSync(
-          WebContentSettingsClient::StorageType::kLocalStorage)) {
+          WebContentSettingsClient::StorageType::kIndexedDB)) {
     if (persistent_state_support == EmeFeatureSupport::ALWAYS_ENABLED)
       return CONFIGURATION_NOT_SUPPORTED;
     persistent_state_support = EmeFeatureSupport::NOT_SUPPORTED;
@@ -1041,6 +1067,7 @@ void KeySystemConfigSelector::SelectConfig(
   request->key_system = key_system_ascii;
   request->candidate_configurations = candidate_configurations;
   request->cb = std::move(cb);
+
   SelectConfigInternal(std::move(request));
 }
 
@@ -1061,8 +1088,10 @@ void KeySystemConfigSelector::SelectConfigInternal(
     //        configuration, and origin.
     // 6.3.3. If supported configuration is not NotSupported, [initialize
     //        and return a new MediaKeySystemAccess object.]
-    ConfigState config_state(request->was_permission_requested,
-                             request->is_permission_granted);
+    ConfigState config_state(
+        request->was_permission_requested, request->is_permission_granted,
+        request->was_hardware_secure_decryption_preferences_requested,
+        request->is_hardware_secure_decryption_allowed);
     WebMediaKeySystemConfiguration accumulated_configuration;
     media::CdmConfig cdm_config;
     ConfigurationSupport support = GetSupportedConfiguration(
@@ -1079,7 +1108,7 @@ void KeySystemConfigSelector::SelectConfigInternal(
         }
         DVLOG(3) << "Request permission.";
         media_permission_->RequestPermission(
-            media::MediaPermission::PROTECTED_MEDIA_IDENTIFIER,
+            media::MediaPermission::Type::kProtectedMediaIdentifier,
             base::BindOnce(&KeySystemConfigSelector::OnPermissionResult,
                            weak_factory_.GetWeakPtr(), std::move(request)));
         return;
@@ -1097,6 +1126,27 @@ void KeySystemConfigSelector::SelectConfigInternal(
              EmeFeatureRequirement::kRequired);
         cdm_config.use_hw_secure_codecs =
             config_state.AreHwSecureCodecsRequired();
+#if BUILDFLAG(IS_WIN)
+        // Check whether hardware secure decryption CDM should be disabled.
+        if (cdm_config.use_hw_secure_codecs &&
+            base::FeatureList::IsEnabled(
+                media::kHardwareSecureDecryptionFallback) &&
+            media::kHardwareSecureDecryptionFallbackPerSite.Get()) {
+          if (!request->was_hardware_secure_decryption_preferences_requested) {
+            media_permission_->IsHardwareSecureDecryptionAllowed(
+                base::BindOnce(&KeySystemConfigSelector::
+                                   OnHardwareSecureDecryptionAllowedResult,
+                               weak_factory_.GetWeakPtr(), std::move(request)));
+            return;
+          }
+
+          if (!config_state.IsHardwareSecureDecryptionAllowed()) {
+            DVLOG(2) << "Rejecting requested configuration because "
+                     << "Hardware secure decryption is not allowed.";
+            continue;
+          }
+        }
+#endif  // BUILDFLAG(IS_WIN)
 
         std::move(request->cb)
             .Run(Status::kSupported, &accumulated_configuration, &cdm_config);
@@ -1117,5 +1167,18 @@ void KeySystemConfigSelector::OnPermissionResult(
   request->is_permission_granted = is_permission_granted;
   SelectConfigInternal(std::move(request));
 }
+
+#if BUILDFLAG(IS_WIN)
+void KeySystemConfigSelector::OnHardwareSecureDecryptionAllowedResult(
+    std::unique_ptr<SelectionRequest> request,
+    bool is_hardware_secure_decryption_allowed) {
+  DVLOG(3) << __func__;
+
+  request->was_hardware_secure_decryption_preferences_requested = true;
+  request->is_hardware_secure_decryption_allowed =
+      is_hardware_secure_decryption_allowed;
+  SelectConfigInternal(std::move(request));
+}
+#endif  // BUILDFLAG(IS_WIN)
 
 }  // namespace blink

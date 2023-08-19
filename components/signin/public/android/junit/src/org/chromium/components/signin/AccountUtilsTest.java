@@ -46,14 +46,15 @@ public class AccountUtilsTest {
 
     @Test
     public void testChildAccountStatusWhenNoAccountsOnDevice() {
-        AccountUtils.checkChildAccountStatus(mFakeFacade, Collections.emptyList(), mListenerMock);
+        AccountUtils.checkChildAccountStatusLegacy(
+                mFakeFacade, Collections.<Account>emptyList(), mListenerMock);
         verify(mListenerMock).onStatusReady(/*is_child_account=*/false, null);
     }
 
     @Test
     public void testChildAccountStatusWhenFirstAccountIsChildAndSecondIsEdu() {
         // This is a supported configuration (where the second account might be an EDU account).
-        AccountUtils.checkChildAccountStatus(
+        AccountUtils.checkChildAccountStatusLegacy(
                 mFakeFacade, List.of(CHILD_ACCOUNT1, EDU_ACCOUNT), mListenerMock);
         verify(mListenerMock).onStatusReady(/*is_child_account=*/true, CHILD_ACCOUNT1);
     }
@@ -62,27 +63,29 @@ public class AccountUtilsTest {
     public void testChildAccountStatusWhenFirstAccountIsEduAndSecondIsChild() {
         // This is an unsupported configuration (the Kids Module ensures that if a child account
         // is present then it must be the default one).  This test is here for completeness.
-        AccountUtils.checkChildAccountStatus(
+        AccountUtils.checkChildAccountStatusLegacy(
                 mFakeFacade, List.of(EDU_ACCOUNT, CHILD_ACCOUNT1), mListenerMock);
         verify(mListenerMock).onStatusReady(/*is_child_account=*/false, null);
     }
 
     @Test
     public void testChildAccountStatusWhenTwoAdultAccountsOnDevice() {
-        AccountUtils.checkChildAccountStatus(
+        AccountUtils.checkChildAccountStatusLegacy(
                 mFakeFacade, List.of(ADULT_ACCOUNT1, ADULT_ACCOUNT2), mListenerMock);
         verify(mListenerMock).onStatusReady(/*is_child_account=*/false, null);
     }
 
     @Test
     public void testChildAccountStatusWhenOnlyOneAdultAccountOnDevice() {
-        AccountUtils.checkChildAccountStatus(mFakeFacade, List.of(ADULT_ACCOUNT1), mListenerMock);
+        AccountUtils.checkChildAccountStatusLegacy(
+                mFakeFacade, List.of(ADULT_ACCOUNT1), mListenerMock);
         verify(mListenerMock).onStatusReady(/*is_child_account=*/false, null);
     }
 
     @Test
     public void testChildAccountStatusWhenOnlyOneChildAccountOnDevice() {
-        AccountUtils.checkChildAccountStatus(mFakeFacade, List.of(CHILD_ACCOUNT1), mListenerMock);
+        AccountUtils.checkChildAccountStatusLegacy(
+                mFakeFacade, List.of(CHILD_ACCOUNT1), mListenerMock);
         verify(mListenerMock).onStatusReady(/*is_child_account=*/true, CHILD_ACCOUNT1);
     }
 }

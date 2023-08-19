@@ -23,6 +23,11 @@ void MockBrowsingDataQuotaHelper::DeleteHostData(
     const std::string& host,
     blink::mojom::StorageType type) {}
 
+void MockBrowsingDataQuotaHelper::DeleteStorageKeyData(
+    const blink::StorageKey& storage_key,
+    blink::mojom::StorageType type,
+    base::OnceClosure completed) {}
+
 void MockBrowsingDataQuotaHelper::AddHost(const blink::StorageKey& storage_key,
                                           int64_t temporary_usage,
                                           int64_t syncable_usage) {

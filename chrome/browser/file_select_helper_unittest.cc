@@ -27,7 +27,7 @@
 
 using blink::mojom::FileChooserParams;
 
-#if BUILDFLAG(FULL_SAFE_BROWSING)
+#if BUILDFLAG(ENTERPRISE_CLOUD_CONTENT_ANALYSIS)
 namespace {
 
 // A listener that remembers the list of files chosen.  The |files| argument
@@ -76,7 +76,7 @@ void PrepareContentAnalysisCompletionCallbackArgs(
 }
 
 }  // namespace
-#endif  // BUILDFLAG(FULL_SAFE_BROWSING)
+#endif  // BUILDFLAG(ENTERPRISE_CLOUD_CONTENT_ANALYSIS)
 
 class FileSelectHelperTest : public testing::Test {
  public:
@@ -240,8 +240,9 @@ TEST_F(FileSelectHelperTest, LastSelectedDirectory) {
   EXPECT_EQ(dir_path_1, profile.last_selected_directory());
 }
 
-// The following tests depend on the full safe browsing feature set.
-#if BUILDFLAG(FULL_SAFE_BROWSING)
+// The following tests depend on the enterprise cloud content analysis feature
+// set.
+#if BUILDFLAG(ENTERPRISE_CLOUD_CONTENT_ANALYSIS)
 
 TEST_F(FileSelectHelperTest, ContentAnalysisCompletionCallback_NoFiles) {
   content::BrowserTaskEnvironment task_environment;
@@ -445,19 +446,26 @@ TEST_F(FileSelectHelperTest,
   file_select_helper->SetFileSelectListenerForTesting(std::move(listener));
   file_select_helper->DontAbortOnMissingWebContentsForTesting();
 
+  std::vector<blink::mojom::FileChooserFileInfoPtr> orig_files;
   enterprise_connectors::ContentAnalysisDelegate::Data data;
   enterprise_connectors::ContentAnalysisDelegate::Result result;
 
+  // Set the dialog type to folder upload to test folder handling logic.
+  file_select_helper->dialog_type_ = ui::SelectFileDialog::SELECT_UPLOAD_FOLDER;
   PrepareContentAnalysisCompletionCallbackArgs(
       {data_dir_.AppendASCII("foo.doc"), data_dir_.AppendASCII("bar.doc")},
-      {true, true}, nullptr, &data, &result);
+      {true, true}, &orig_files, &data, &result);
 
-  EXPECT_FALSE(file_select_helper->IsDirectoryEnumerationStartedForTesting());
+  // Calling the content analysis completion callback would normally
+  // release `file_select_helper`, so we add a reference and validate that
+  // it goes down to 1 after the call.
+  file_select_helper->AddRef();
+  EXPECT_FALSE(file_select_helper->HasOneRef());
+  file_select_helper->ContentAnalysisCompletionCallback(std::move(orig_files),
+                                                        data, result);
 
-  file_select_helper->FolderUploadContentAnalysisCompletionCallback(
-      data_dir_, data, result);
-
-  EXPECT_TRUE(file_select_helper->IsDirectoryEnumerationStartedForTesting());
+  EXPECT_TRUE(file_select_helper->HasOneRef());
+  EXPECT_EQ(2u, files.size());
 }
 
 TEST_F(FileSelectHelperTest,
@@ -472,26 +480,25 @@ TEST_F(FileSelectHelperTest,
   file_select_helper->SetFileSelectListenerForTesting(std::move(listener));
   file_select_helper->DontAbortOnMissingWebContentsForTesting();
 
+  std::vector<blink::mojom::FileChooserFileInfoPtr> orig_files;
   enterprise_connectors::ContentAnalysisDelegate::Data data;
   enterprise_connectors::ContentAnalysisDelegate::Result result;
 
+  // Set the dialog type to folder upload to test folder handling logic.
+  file_select_helper->dialog_type_ = ui::SelectFileDialog::SELECT_UPLOAD_FOLDER;
   PrepareContentAnalysisCompletionCallbackArgs(
       {data_dir_.AppendASCII("foo.doc"), data_dir_.AppendASCII("bar.doc")},
-      {false, false}, nullptr, &data, &result);
-
-  EXPECT_FALSE(file_select_helper->IsDirectoryEnumerationStartedForTesting());
+      {false, false}, &orig_files, &data, &result);
 
   // Calling the content analysis completion callback would normally
   // release `file_select_helper`, so we add a reference and validate that
   // it goes down to 1 after the call.
   file_select_helper->AddRef();
   EXPECT_FALSE(file_select_helper->HasOneRef());
-
-  file_select_helper->FolderUploadContentAnalysisCompletionCallback(
-      data_dir_, data, result);
-
+  file_select_helper->ContentAnalysisCompletionCallback(std::move(orig_files),
+                                                        data, result);
   EXPECT_TRUE(file_select_helper->HasOneRef());
-  EXPECT_FALSE(file_select_helper->IsDirectoryEnumerationStartedForTesting());
+  EXPECT_EQ(0u, files.size());
 }
 
 TEST_F(FileSelectHelperTest,
@@ -506,74 +513,27 @@ TEST_F(FileSelectHelperTest,
   file_select_helper->SetFileSelectListenerForTesting(std::move(listener));
   file_select_helper->DontAbortOnMissingWebContentsForTesting();
 
+  std::vector<blink::mojom::FileChooserFileInfoPtr> orig_files;
   enterprise_connectors::ContentAnalysisDelegate::Data data;
   enterprise_connectors::ContentAnalysisDelegate::Result result;
 
+  // Set the dialog type to folder upload to test folder handling logic.
+  file_select_helper->dialog_type_ = ui::SelectFileDialog::SELECT_UPLOAD_FOLDER;
   PrepareContentAnalysisCompletionCallbackArgs(
       {data_dir_.AppendASCII("foo.doc"), data_dir_.AppendASCII("bar.doc")},
-      {true, false}, nullptr, &data, &result);
-
-  EXPECT_FALSE(file_select_helper->IsDirectoryEnumerationStartedForTesting());
+      {true, false}, &orig_files, &data, &result);
 
   // Calling the content analysis completion callback would normally
   // release `file_select_helper`, so we add a reference and validate that
   // it goes down to 1 after the call.
   file_select_helper->AddRef();
   EXPECT_FALSE(file_select_helper->HasOneRef());
-
-  EXPECT_FALSE(file_select_helper->HasOneRef());
-  file_select_helper->FolderUploadContentAnalysisCompletionCallback(
-      data_dir_, data, result);
+  file_select_helper->ContentAnalysisCompletionCallback(std::move(orig_files),
+                                                        data, result);
 
   EXPECT_TRUE(file_select_helper->HasOneRef());
-  EXPECT_FALSE(file_select_helper->IsDirectoryEnumerationStartedForTesting());
-}
-
-TEST_F(FileSelectHelperTest,
-       ContentAnalysisCompletionCallback_FolderUploadBlockedThenAllowed) {
-  content::BrowserTaskEnvironment task_environment;
-  TestingProfile profile;
-  scoped_refptr<FileSelectHelper> file_select_helper =
-      new FileSelectHelper(&profile);
-
-  std::vector<blink::mojom::FileChooserFileInfoPtr> files;
-  auto listener = base::MakeRefCounted<TestFileSelectListener>(&files);
-  file_select_helper->SetFileSelectListenerForTesting(std::move(listener));
-  file_select_helper->DontAbortOnMissingWebContentsForTesting();
-
-  enterprise_connectors::ContentAnalysisDelegate::Data data;
-  enterprise_connectors::ContentAnalysisDelegate::Result result;
-
-  // bar.doc has a blocking verdict, which blocks the entire folder.
-  PrepareContentAnalysisCompletionCallbackArgs(
-      {data_dir_.AppendASCII("foo.doc"), data_dir_.AppendASCII("bar.doc")},
-      {true, false}, nullptr, &data, &result);
-
-  EXPECT_FALSE(file_select_helper->IsDirectoryEnumerationStartedForTesting());
-
-  // Calling the content analysis completion callback would normally
-  // release `file_select_helper`, so we add a reference and validate that
-  // it goes down to 1 after the call.
-  file_select_helper->AddRef();
-  EXPECT_FALSE(file_select_helper->HasOneRef());
-
-  file_select_helper->FolderUploadContentAnalysisCompletionCallback(
-      data_dir_, data, result);
-
-  EXPECT_TRUE(file_select_helper->HasOneRef());
-  EXPECT_FALSE(file_select_helper->IsDirectoryEnumerationStartedForTesting());
-
-  // bar.doc now has a safe verdict, so the entire folder is allowed.
-  PrepareContentAnalysisCompletionCallbackArgs(
-      {data_dir_.AppendASCII("foo.doc"), data_dir_.AppendASCII("bar.doc")},
-      {true, true}, nullptr, &data, &result);
-
-  EXPECT_FALSE(file_select_helper->IsDirectoryEnumerationStartedForTesting());
-
-  file_select_helper->FolderUploadContentAnalysisCompletionCallback(
-      data_dir_, data, result);
-
-  EXPECT_TRUE(file_select_helper->IsDirectoryEnumerationStartedForTesting());
+  // Files should be cleared.
+  EXPECT_EQ(0u, files.size());
 }
 
 TEST_F(FileSelectHelperTest, GetFileTypesFromAcceptType) {
@@ -640,4 +600,4 @@ TEST_F(FileSelectHelperTest, MultipleFileExtensionsForMime) {
 }
 #endif
 
-#endif  // BUILDFLAG(FULL_SAFE_BROWSING)
+#endif  // BUILDFLAG(ENTERPRISE_CLOUD_CONTENT_ANALYSIS)

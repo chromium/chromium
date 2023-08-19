@@ -8,6 +8,7 @@
 
 #include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/style/ash_color_provider.h"
+#include "ash/system/power/power_status.h"
 #include "ui/gfx/canvas.h"
 #include "ui/gfx/geometry/rect_conversions.h"
 #include "ui/gfx/geometry/rect_f.h"
@@ -25,16 +26,6 @@ const int kMinVisualChargeLevel = 1;
 // that is "filled" to show battery charge percentage.
 constexpr gfx::RectF kDefaultFillRect = gfx::RectF(7, 6, 6, 10);
 
-inline SkColor GetBatteryBadgeColor() {
-  return ash::AshColorProvider::Get()->GetContentLayerColor(
-      ash::AshColorProvider::ContentLayerType::kBatteryBadgeColor);
-}
-
-inline SkColor GetAlertColor() {
-  return ash::AshColorProvider::Get()->GetContentLayerColor(
-      ash::AshColorProvider::ContentLayerType::kIconColorAlert);
-}
-
 }  // namespace
 
 namespace ash {
@@ -42,19 +33,17 @@ namespace ash {
 BatteryImageSource::BatteryImageSource(
     const PowerStatus::BatteryImageInfo& info,
     int height,
-    SkColor fg_color,
-    absl::optional<SkColor> badge_color)
+    const BatteryColors& resolved_colors)
     : gfx::CanvasImageSource(gfx::Size(height, height)),
       info_(info),
-      fg_color_(fg_color),
-      badge_color_(badge_color.value_or(
-          info.charge_percent > 50 ? GetBatteryBadgeColor() : fg_color)) {}
+      resolved_colors_(resolved_colors) {}
 
 BatteryImageSource::~BatteryImageSource() = default;
 
 void BatteryImageSource::Draw(gfx::Canvas* canvas) {
   // Draw the solid outline of the battery icon.
-  PaintVectorIcon(canvas, kBatteryIcon, size().height(), fg_color_);
+  PaintVectorIcon(canvas, kBatteryIcon, size().height(),
+                  resolved_colors_.foreground_color);
 
   canvas->Save();
 
@@ -89,10 +78,10 @@ void BatteryImageSource::Draw(gfx::Canvas* canvas) {
                        size().height() * dsf);
   canvas->ClipRect(clip_rect);
 
-  const SkColor alert_color = GetAlertColor();
   const bool use_alert_color =
       charge_level == min_charge_level && info_.alert_if_low;
-  flags.setColor(use_alert_color ? alert_color : fg_color_);
+  flags.setColor(use_alert_color ? resolved_colors_.alert_color
+                                 : resolved_colors_.foreground_color);
   canvas->DrawPath(path, flags);
 
   canvas->Restore();
@@ -110,7 +99,8 @@ void BatteryImageSource::Draw(gfx::Canvas* canvas) {
 
   // Paint the badge over top of the battery, if applicable.
   if (info_.icon_badge) {
-    const SkColor badge_color = use_alert_color ? alert_color : fg_color_;
+    const SkColor badge_color = use_alert_color ? resolved_colors_.alert_color
+                                                : resolved_colors_.badge_color;
     PaintVectorIcon(canvas, *info_.icon_badge, size().height(), badge_color);
   }
 }

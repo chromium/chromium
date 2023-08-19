@@ -97,7 +97,7 @@ class COMPONENT_EXPORT(BACKGROUND_TRACING_UTILS) BackgroundTracingStateManager {
 
   bool initialized_ = false;
 
-  raw_ptr<PrefService, DanglingUntriaged> local_state_ = nullptr;
+  raw_ptr<PrefService, LeakedDanglingUntriaged> local_state_ = nullptr;
 
   // Following are valid only when |initialized_| = true.
   BackgroundTracingState last_session_end_state_ =

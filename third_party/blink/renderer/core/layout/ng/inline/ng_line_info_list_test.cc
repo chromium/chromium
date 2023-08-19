@@ -13,7 +13,7 @@ namespace blink {
 class NGLineInfoListTest : public RenderingTest {};
 
 TEST_F(NGLineInfoListTest, Get) {
-  NGLineInfoList list;
+  NGLineInfoListOf<4> list;
   NGLineInfo& first = list.Append();
   EXPECT_EQ(list.Size(), 1u);
   EXPECT_EQ(&first, &list.Front());

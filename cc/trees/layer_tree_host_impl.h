@@ -382,7 +382,6 @@ class CC_EXPORT LayerTreeHostImpl : public TileManagerClient,
                                   bool animate) override;
   bool HasScrollLinkedAnimation(ElementId for_scroller) const override;
 
-  bool CanInjectJankOnMain() const;
   FrameSequenceTrackerCollection& frame_trackers() { return frame_trackers_; }
 
   // VisualDeviceViewportSize is the size of the global viewport across all
@@ -415,10 +414,6 @@ class CC_EXPORT LayerTreeHostImpl : public TileManagerClient,
   void SetTreeLayerScrollOffsetMutated(ElementId element_id,
                                        LayerTreeImpl* tree,
                                        const gfx::PointF& scroll_offset);
-  void SetNeedUpdateGpuRasterizationStatus();
-  bool NeedUpdateGpuRasterizationStatusForTesting() const {
-    return raster_caps().need_update_gpu_rasterization_status;
-  }
 
   // ProtectedSequenceSynchronizer implementation.
   bool IsOwnerThread() const override;
@@ -599,13 +594,8 @@ class CC_EXPORT LayerTreeHostImpl : public TileManagerClient,
   TileManager* tile_manager() { return &tile_manager_; }
 
   const RasterCapabilities& raster_caps() const { return raster_caps_; }
-  void GetGpuRasterizationCapabilities(RasterCapabilities& gpu_raster_caps);
   bool use_gpu_rasterization() const {
     return raster_caps().use_gpu_rasterization;
-  }
-
-  GpuRasterizationStatus gpu_rasterization_status() const {
-    return raster_caps().gpu_rasterization_status;
   }
 
   bool create_low_res_tiling() const {
@@ -915,8 +905,7 @@ class CC_EXPORT LayerTreeHostImpl : public TileManagerClient,
   void SetDownsampleMetricsForTesting(bool value) {
     downsample_metrics_ = value;
   }
-
-  std::string GetHungCommitDebugInfo() const;
+  const LayerTreeHostImplClient* client_for_testing() const { return client_; }
 
  protected:
   LayerTreeHostImpl(
@@ -979,9 +968,7 @@ class CC_EXPORT LayerTreeHostImpl : public TileManagerClient,
   // is available to raster the tree.
   void NotifyPendingTreeFullyPainted();
 
-  // Returns true if status changed.
-  bool UpdateGpuRasterizationStatus();
-  void UpdateTreeResourcesForGpuRasterizationIfNeeded();
+  void UpdateRasterCapabilities();
 
   bool AnimatePageScale(base::TimeTicks monotonic_time);
   bool AnimateScrollbars(base::TimeTicks monotonic_time);
@@ -1059,6 +1046,9 @@ class CC_EXPORT LayerTreeHostImpl : public TileManagerClient,
   // Registers callbacks, as needed, to track First Scroll Latency.
   void ApplyFirstScrollTracking(const ui::LatencyInfo& latency,
                                 uint32_t frame_token);
+
+  // Flush pending work if we are currently not visible.
+  void MaybeFlushPendingWork();
 
   // Once bound, this instance owns the InputHandler. However, an InputHandler
   // need not be bound so this should be null-checked before dereferencing.

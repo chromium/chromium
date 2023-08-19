@@ -14,6 +14,7 @@
 #include "chromeos/ash/components/dbus/hermes/hermes_response_status.h"
 #include "chromeos/ash/components/network/cellular_esim_profile_handler.h"
 #include "chromeos/ash/components/network/cellular_inhibitor.h"
+#include "dbus/dbus_result.h"
 
 namespace dbus {
 class ObjectPath;
@@ -66,19 +67,33 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) CellularESimInstaller {
 
   // Installs an ESim profile and network with given |activation_code|,
   // |confirmation_code| and |euicc_path|. This method will attempt to create
-  // the Shill configuration with given |new_shill_properties| and then enable
-  // the newly installed profile and connect to its network afterward.
-  // |is_initial_install| is only used for recording eSIM policy install
-  // metrics, indicating whether the current attempt is an initial attempt or
-  // not.
+  // a Shill configuration with the given |new_shill_properties|, and and will
+  // enable and attempt to connect to the installed profile afterward. Both
+  // |is_initial_install| and |is_install_via_qr_code| are used for recording
+  // eSIM policy installation metrics. This function expects an inhibit lock of
+  // the cellular device to be provided. Callers should use the corresponding
+  // LockAndInstallProfileFromActivationCode() function if they do not have an
+  // inhibit lock prior to invocation.
   void InstallProfileFromActivationCode(
       const std::string& activation_code,
       const std::string& confirmation_code,
       const dbus::ObjectPath& euicc_path,
       base::Value::Dict new_shill_properties,
       InstallProfileFromActivationCodeCallback callback,
-      bool is_initial_install = true,
-      bool is_install_via_qr_code = false);
+      bool is_initial_install,
+      bool is_install_via_qr_code,
+      std::unique_ptr<CellularInhibitor::InhibitLock> inhibit_lock);
+
+  // This is a helper function that will receive an inhibit lock of the cellular
+  // device before invoking LockAndInstallProfileFromActivationCode().
+  void LockAndInstallProfileFromActivationCode(
+      const std::string& activation_code,
+      const std::string& confirmation_code,
+      const dbus::ObjectPath& euicc_path,
+      base::Value::Dict new_shill_properties,
+      InstallProfileFromActivationCodeCallback callback,
+      bool is_initial_install,
+      bool is_install_via_qr_code);
 
   // Attempts to create a Shill service configuration with given
   // |new_shill_properties| for eSIM with |profile_path| and |euicc_path|.
@@ -90,6 +105,7 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) CellularESimInstaller {
 
  private:
   friend class CellularESimInstallerTest;
+  friend class CellularPolicyHandlerLegacyTest;
   friend class CellularPolicyHandlerTest;
   FRIEND_TEST_ALL_PREFIXES(CellularESimInstallerTest,
                            InstallProfileInvalidActivationCode);
@@ -102,9 +118,6 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) CellularESimInstaller {
                            InstallProfileViaQrCodeSuccess);
   FRIEND_TEST_ALL_PREFIXES(CellularESimInstallerTest,
                            InstallProfileAlreadyConnected);
-  FRIEND_TEST_ALL_PREFIXES(CellularPolicyHandlerTest, InstallProfileSuccess);
-  FRIEND_TEST_ALL_PREFIXES(CellularPolicyHandlerTest, InstallProfileFailure);
-  FRIEND_TEST_ALL_PREFIXES(CellularPolicyHandlerTest, RetryInstallProfile);
 
   // These values are persisted to logs. Entries should not be renumbered and
   // numeric values should never be reused.
@@ -142,6 +155,7 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) CellularESimInstaller {
       bool is_initial_install,
       bool is_install_via_qr_code,
       HermesResponseStatus status,
+      dbus::DBusResult dbus_result,
       const dbus::ObjectPath* object_path);
   void OnShillConfigurationCreationSuccess(
       ConfigureESimServiceCallback callback,
@@ -170,13 +184,14 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) CellularESimInstaller {
       const std::string& service_path,
       const std::string& error_name);
 
-  raw_ptr<CellularConnectionHandler, ExperimentalAsh>
+  raw_ptr<CellularConnectionHandler, DanglingUntriaged | ExperimentalAsh>
       cellular_connection_handler_;
   raw_ptr<CellularInhibitor, ExperimentalAsh> cellular_inhibitor_;
 
-  raw_ptr<NetworkConnectionHandler, ExperimentalAsh>
+  raw_ptr<NetworkConnectionHandler, DanglingUntriaged | ExperimentalAsh>
       network_connection_handler_;
-  raw_ptr<NetworkProfileHandler, ExperimentalAsh> network_profile_handler_;
+  raw_ptr<NetworkProfileHandler, DanglingUntriaged | ExperimentalAsh>
+      network_profile_handler_;
   raw_ptr<NetworkStateHandler, ExperimentalAsh> network_state_handler_;
 
   // Maps profile dbus paths to unique pointer of InhibitLocks that are

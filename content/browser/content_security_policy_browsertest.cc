@@ -416,6 +416,9 @@ IN_PROC_BROWSER_TEST_F(ContentSecurityPolicyIsolatedAppBrowserTest, Src) {
       // Script tags must be same-origin.
       {"script", kHttps, kAppHost, "/result_queue.js", "allowed"},
       {"script", kHttps, kNonAppHost, "/result_queue.js", "violation"},
+      // Stylesheets must be same-origin as per style-src CSP.
+      {"link", kHttps, kAppHost, "/empty-style.css", "allowed"},
+      {"link", kHttps, kNonAppHost, "/empty-style.css", "violation"},
   };
 
   for (const auto& test_case : test_cases) {
@@ -439,9 +442,17 @@ IN_PROC_BROWSER_TEST_F(ContentSecurityPolicyIsolatedAppBrowserTest, Src) {
         });
 
         let element = document.createElement($1);
-        // Not all elements being tested require Trusted Types, but
-        // passing src through the policy for all elements works.
-        element.src = policy.createScriptURL($2);
+
+        if($1 === 'link') {
+          // Stylesheets require `rel` and `href` instead of `src` to work.
+          element.rel = 'stylesheet';
+          element.href = $2;
+        } else {
+          // Not all elements being tested require Trusted Types, but passing
+          // src through the policy for all non-stylesheet elements works.
+          element.src = policy.createScriptURL($2);
+        }
+
         element.addEventListener('canplay', () => resolve('allowed'));
         element.addEventListener('load', () => resolve('allowed'));
         element.addEventListener('error', e => resolve('error'));
@@ -498,6 +509,29 @@ IN_PROC_BROWSER_TEST_F(ContentSecurityPolicyIsolatedAppBrowserTest, Wasm) {
             // (0, "A", "S", "M"), and the version (0x1).
             [0x00, 0x61, 0x73, 0x6d, 0x01, 0x00, 0x00, 0x00]));
         resolve('allowed');
+      } catch (e) {
+        resolve('exception: ' + e);
+      }
+    })
+  )"));
+}
+
+IN_PROC_BROWSER_TEST_F(ContentSecurityPolicyIsolatedAppBrowserTest,
+                       UnsafeInlineStyleSrc) {
+  EXPECT_TRUE(NavigateToURL(
+      shell(),
+      https_server()->GetURL(kAppHost, "/cross-origin-isolated.html")));
+
+  EXPECT_EQ("none", EvalJs(shell(), R"(
+    new Promise(async (resolve) => {
+      document.addEventListener('securitypolicyviolation', e => {
+        resolve('violation');
+      });
+
+      try {
+        document.body.setAttribute("style", "display: none;");
+        const bodyStyles = window.getComputedStyle(document.body);
+        resolve(bodyStyles.getPropertyValue("display"));
       } catch (e) {
         resolve('exception: ' + e);
       }

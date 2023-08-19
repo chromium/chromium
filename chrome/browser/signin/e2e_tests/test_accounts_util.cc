@@ -41,8 +41,8 @@ bool TestAccountsUtil::Init(const base::FilePath& config_path) {
   JSONFileValueDeserializer deserializer(config_path);
   std::unique_ptr<Value> content_json =
       deserializer.Deserialize(&error_code, &error_str);
-  CHECK(error_code == 0) << "Error reading json file. Error code: "
-                         << error_code << " " << error_str;
+  CHECK(error_code == 0) << "Error reading json file at " << config_path
+                         << ". Error code: " << error_code << " " << error_str;
   CHECK(content_json);
 
   // Only store platform specific users. If an account does not have

@@ -35,23 +35,48 @@ constexpr int kMainContainerWidth = 296;
 
 }  // namespace
 
-// static
-EditingList* EditingList::Show(DisplayOverlayController* controller) {
-  auto* parent = controller->GetOverlayWidgetContentsView();
-  auto* editing_list =
-      parent->AddChildView(std::make_unique<EditingList>(controller));
-  editing_list->Init();
-  editing_list->SetPosition(gfx::Point(24, 24));
-  return editing_list;
-}
-
 EditingList::EditingList(DisplayOverlayController* controller)
     : TouchInjectorObserver(), controller_(controller) {
   controller_->AddTouchInjectorObserver(this);
+  Init();
 }
 
 EditingList::~EditingList() {
   controller_->RemoveTouchInjectorObserver(this);
+}
+
+bool EditingList::OnMousePressed(const ui::MouseEvent& event) {
+  OnDragStart(event);
+  return true;
+}
+
+bool EditingList::OnMouseDragged(const ui::MouseEvent& event) {
+  OnDragUpdate(event);
+  return true;
+}
+
+void EditingList::OnMouseReleased(const ui::MouseEvent& event) {
+  OnDragEnd(event);
+}
+
+void EditingList::OnGestureEvent(ui::GestureEvent* event) {
+  switch (event->type()) {
+    case ui::ET_GESTURE_SCROLL_BEGIN:
+      OnDragStart(*event);
+      event->SetHandled();
+      break;
+    case ui::ET_GESTURE_SCROLL_UPDATE:
+      OnDragUpdate(*event);
+      event->SetHandled();
+      break;
+    case ui::ET_GESTURE_SCROLL_END:
+    case ui::ET_SCROLL_FLING_START:
+      OnDragEnd(*event);
+      event->SetHandled();
+      break;
+    default:
+      return;
+  }
 }
 
 void EditingList::Init() {
@@ -70,20 +95,28 @@ void EditingList::Init() {
 
   AddHeader(main_container);
 
+  scroll_content_ =
+      main_container->AddChildView(std::make_unique<views::View>());
+  scroll_content_
+      ->SetLayoutManager(std::make_unique<views::BoxLayout>(
+          views::BoxLayout::Orientation::kVertical,
+          /*inside_border_insets=*/gfx::Insets(),
+          /*between_child_spacing=*/8))
+      ->set_main_axis_alignment(views::BoxLayout::MainAxisAlignment::kCenter);
+
   // Add contents.
   if (HasControls()) {
-    AddControlListContent(main_container);
+    AddControlListContent();
   } else {
-    AddZeroStateContent(main_container);
+    AddZeroStateContent();
   }
 
   SizeToPreferredSize();
-  InvalidateLayout();
 }
 
 bool EditingList::HasControls() const {
   DCHECK(controller_);
-  return controller_->GetInputMappingListSize() != 0;
+  return controller_->GetActiveActionsSize() != 0;
 }
 
 void EditingList::AddHeader(views::View* container) {
@@ -119,9 +152,12 @@ void EditingList::AddHeader(views::View* container) {
       IDS_APP_LIST_FOLDER_NAME_PLACEHOLDER));
 }
 
-void EditingList::AddZeroStateContent(views::View* container) {
+void EditingList::AddZeroStateContent() {
+  is_zero_state_ = true;
+
+  DCHECK(scroll_content_);
   auto* content_container =
-      container->AddChildView(std::make_unique<ash::RoundedContainer>());
+      scroll_content_->AddChildView(std::make_unique<ash::RoundedContainer>());
   content_container->SetBackground(
       views::CreateThemedSolidBackground(cros_tokens::kCrosSysSystemOnBase));
   content_container->SetBorderInsets(gfx::Insets::VH(48, 32));
@@ -134,12 +170,7 @@ void EditingList::AddZeroStateContent(views::View* container) {
       content_container->AddChildView(std::make_unique<views::ImageView>());
   zero_banner->SetImage(
       ui::ResourceBundle::GetSharedInstance().GetImageSkiaNamed(
-          // TODO(b/270969479): Replace the image once the lottie json is
-          // ready.
-          IDS_ARC_INPUT_OVERLAY_ONBOARDING_ILLUSTRATION_DARK_JSON));
-  // TODO(b/270969479): The size will be removed once the right lottie json is
-  // added.
-  zero_banner->SetImageSize(gfx::Size(92, 92));
+          IDS_ARC_INPUT_OVERLAY_ZERO_STATE_ILLUSTRATION_JSON));
   zero_banner->SetProperty(views::kMarginsKey, gfx::Insets::TLBR(0, 0, 32, 0));
   content_container->AddChildView(ash::bubble_utils::CreateLabel(
       ash::TypographyToken::kCrosBody2,
@@ -147,7 +178,9 @@ void EditingList::AddZeroStateContent(views::View* container) {
       u"Your button will show up here.", cros_tokens::kCrosSysSecondary));
 }
 
-void EditingList::AddControlListContent(views::View* container) {
+void EditingList::AddControlListContent() {
+  is_zero_state_ = false;
+
   // Add list content as:
   // --------------------------
   // | ---------------------- |
@@ -158,25 +191,20 @@ void EditingList::AddControlListContent(views::View* container) {
   // | ---------------------- |
   // | ......                 |
   // --------------------------
-  // TODO(b/270969479): Wrap |scroll_content| in a scroll view.
-  auto* scroll_content =
-      container->AddChildView(std::make_unique<views::View>());
-  scroll_content
-      ->SetLayoutManager(std::make_unique<views::BoxLayout>(
-          views::BoxLayout::Orientation::kVertical,
-          /*inside_border_insets=*/gfx::Insets(),
-          /*between_child_spacing=*/8))
-      ->set_main_axis_alignment(views::BoxLayout::MainAxisAlignment::kCenter);
+  // TODO(b/270969479): Wrap `scroll_content` in a scroll view.
   DCHECK(controller_);
+  DCHECK(scroll_content_);
   for (const auto& action : controller_->touch_injector()->actions()) {
-    scroll_content->AddChildView(
+    if (action->IsDeleted()) {
+      continue;
+    }
+    scroll_content_->AddChildView(
         std::make_unique<ActionViewListItem>(controller_, action.get()));
   }
 }
 
 void EditingList::OnAddButtonPressed() {
-  // TODO(b/270969479): Implement the function for the button.
-  NOTIMPLEMENTED();
+  controller_->AddNewAction();
 }
 
 void EditingList::OnDoneButtonPressed() {
@@ -189,20 +217,91 @@ gfx::Size EditingList::CalculatePreferredSize() const {
   return gfx::Size(kMainContainerWidth, GetHeightForWidth(kMainContainerWidth));
 }
 
-void EditingList::OnActionAdded(const Action& action) {
-  NOTIMPLEMENTED();
+void EditingList::OnActionAdded(Action& action) {
+  DCHECK(scroll_content_);
+  if (controller_->GetActiveActionsSize() == 1u) {
+    // Clear the zero-state.
+    scroll_content_->RemoveAllChildViews();
+    controller_->TurnFlag(ash::ArcGameControlsFlag::kEmpty, /*turn_on=*/false);
+  }
+  scroll_content_->AddChildView(
+      std::make_unique<ActionViewListItem>(controller_, &action));
+
+  controller_->UpdateEditingListWidgetBounds();
 }
+
 void EditingList::OnActionRemoved(const Action& action) {
-  NOTIMPLEMENTED();
+  DCHECK(scroll_content_);
+  for (auto* child : scroll_content_->children()) {
+    auto* list_item = static_cast<ActionViewListItem*>(child);
+    DCHECK(list_item);
+    if (list_item->action() == &action) {
+      scroll_content_->RemoveChildViewT(list_item);
+      break;
+    }
+  }
+  // Set to zero-state if it is empty.
+  if (controller_->GetActiveActionsSize() == 0u) {
+    AddZeroStateContent();
+    controller_->TurnFlag(ash::ArcGameControlsFlag::kEmpty, /*turn_on=*/true);
+  }
+
+  controller_->UpdateEditingListWidgetBounds();
 }
 
-void EditingList::OnActionTypeChanged(const Action& action,
-                                      const Action& new_action) {
-  NOTIMPLEMENTED();
+void EditingList::OnActionTypeChanged(Action* action, Action* new_action) {
+  OnActionRemoved(*action);
+  OnActionAdded(*new_action);
+  controller_->UpdateEditingListWidgetBounds();
 }
 
-void EditingList::OnActionUpdated(const Action& action) {
-  NOTIMPLEMENTED();
+void EditingList::OnActionInputBindingUpdated(const Action& action) {
+  DCHECK(scroll_content_);
+  for (auto* child : scroll_content_->children()) {
+    auto* list_item = static_cast<ActionViewListItem*>(child);
+    DCHECK(list_item);
+    if (list_item->action() == &action) {
+      list_item->OnActionInputBindingUpdated();
+      break;
+    }
+  }
+}
+
+void EditingList::OnActionNameUpdated(const Action& action) {
+  DCHECK(scroll_content_);
+  for (auto* child : scroll_content_->children()) {
+    auto* list_item = static_cast<ActionViewListItem*>(child);
+    DCHECK(list_item);
+    if (list_item->action() == &action) {
+      list_item->OnActionNameUpdated();
+      break;
+    }
+  }
+}
+
+void EditingList::OnDragStart(const ui::LocatedEvent& event) {
+  start_drag_event_pos_ = event.location();
+  start_drag_pos_ = origin();
+  window_bounds_ = controller_->GetEditingListWidgetBoundsInRootWindow();
+}
+
+void EditingList::OnDragUpdate(const ui::LocatedEvent& event) {
+  auto target_position = origin() + (event.location() - start_drag_event_pos_);
+  ClampPosition(target_position);
+  SetPosition(target_position);
+}
+
+void EditingList::OnDragEnd(const ui::LocatedEvent& event) {
+  auto reposition_delta = origin() - start_drag_pos_;
+  controller_->UpdateEditingListWidgetPosition(reposition_delta);
+  SetPosition(gfx::Point(0, 0));
+}
+
+void EditingList::ClampPosition(gfx::Point& position) {
+  position.set_x(std::clamp(position.x(), window_bounds_.x(),
+                            window_bounds_.right() - width()));
+  position.set_y(std::clamp(position.y(), window_bounds_.y(),
+                            window_bounds_.bottom() - height()));
 }
 
 }  // namespace arc::input_overlay

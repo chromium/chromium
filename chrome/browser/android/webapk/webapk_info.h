@@ -35,6 +35,8 @@ struct WebApkInfo {
              device::mojom::ScreenOrientationLockType orientation,
              absl::optional<SkColor> theme_color,
              absl::optional<SkColor> background_color,
+             absl::optional<SkColor> dark_theme_color,
+             absl::optional<SkColor> dark_background_color,
              base::Time last_update_check_time,
              base::Time last_update_completion_time,
              bool relax_updates,
@@ -77,6 +79,8 @@ struct WebApkInfo {
   device::mojom::ScreenOrientationLockType orientation;
   absl::optional<SkColor> theme_color;
   absl::optional<SkColor> background_color;
+  absl::optional<SkColor> dark_theme_color;
+  absl::optional<SkColor> dark_background_color;
   base::Time last_update_check_time;
   base::Time last_update_completion_time;
   bool relax_updates;

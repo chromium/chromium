@@ -1248,12 +1248,18 @@ TEST(HlsTagsTest, ParseInfTag) {
   EXPECT_TRUE(RoughlyEqual(result.tag.duration, base::Seconds(12.0)));
   EXPECT_EQ(result.tag.title.Str(), "asdfsdf   ");
 
+  // By Spec, this should be an error, but alas, feral manifests exists and
+  // often lack the trailing comma emblematic of their domesticated brethren.
+  // ErrorTest<InfTag>("123", ParseStatusCode::kMalformedTag);
+  result = OkTest<InfTag>("123");
+  EXPECT_TRUE(RoughlyEqual(result.tag.duration, base::Seconds(123)));
+  EXPECT_EQ(result.tag.title.Str(), "");
+
   // Test some invalid tags
   ErrorTest<InfTag>(absl::nullopt, ParseStatusCode::kMalformedTag);
   ErrorTest<InfTag>("", ParseStatusCode::kMalformedTag);
   ErrorTest<InfTag>(",", ParseStatusCode::kMalformedTag);
   ErrorTest<InfTag>("-123,", ParseStatusCode::kMalformedTag);
-  ErrorTest<InfTag>("123", ParseStatusCode::kMalformedTag);
   ErrorTest<InfTag>("asdf,", ParseStatusCode::kMalformedTag);
 
   // Test max value

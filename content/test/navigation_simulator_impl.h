@@ -348,9 +348,9 @@ class NavigationSimulatorImpl : public NavigationSimulator,
 
   // The renderer associated with this navigation.
   // Note: this can initially be null for browser-initiated navigations.
-  raw_ptr<TestRenderFrameHost, DanglingUntriaged> render_frame_host_;
+  raw_ptr<TestRenderFrameHost, AcrossTasksDanglingUntriaged> render_frame_host_;
 
-  raw_ptr<FrameTreeNode, DanglingUntriaged> frame_tree_node_;
+  raw_ptr<FrameTreeNode, AcrossTasksDanglingUntriaged> frame_tree_node_;
 
   // The NavigationRequest associated with this navigation.
   raw_ptr<NavigationRequest> request_;

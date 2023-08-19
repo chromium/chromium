@@ -43,9 +43,9 @@ TEST_F(ConfirmQuitPanelControllerTest, ShowAndDismiss) {
 TEST_F(ConfirmQuitPanelControllerTest, KeyCombinationForMenuItem) {
   Class controller = [ConfirmQuitPanelController class];
 
-  NSMenuItem* item = [[[NSMenuItem alloc] initWithTitle:@""
-                                                 action:@selector(unused)
-                                          keyEquivalent:@""] autorelease];
+  NSMenuItem* item = [[NSMenuItem alloc] initWithTitle:@""
+                                                action:@selector(unused)
+                                         keyEquivalent:@""];
   item.keyEquivalent = @"q";
   item.keyEquivalentModifierMask = NSEventModifierFlagCommand;
   EXPECT_NSEQ(TestString(@"{Cmd}Q"),

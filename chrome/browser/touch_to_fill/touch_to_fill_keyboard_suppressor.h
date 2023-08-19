@@ -4,6 +4,7 @@
 #ifndef CHROME_BROWSER_TOUCH_TO_FILL_TOUCH_TO_FILL_KEYBOARD_SUPPRESSOR_H_
 #define CHROME_BROWSER_TOUCH_TO_FILL_TOUCH_TO_FILL_KEYBOARD_SUPPRESSOR_H_
 
+#include "base/memory/weak_ptr.h"
 #include "base/scoped_multi_source_observation.h"
 #include "base/scoped_observation.h"
 #include "base/time/time.h"
@@ -53,7 +54,12 @@ class ContentAutofillClient;
 // - The TTF controller must show the TTF only if `is_suppressing()` is true.
 // - The TTF controller must call `Unsuppress()` after the TTF was shown.
 //
-// TouchToFillKeyboardSuppressor observers all AutofillManagers of a given tab
+// The lifecycle of a TouchToFillKeyboardSuppressor must be aligned to the
+// lifecycle of a tab (represented here by a ContentAutofillClient).
+// It must be created before any ContentAutofillDrivers of the tab have been
+// created: it won't suppress the keyboard in frames that were created already.
+//
+// TouchToFillKeyboardSuppressor observes all AutofillManagers of a given tab
 // (represented by the ContentAutofillClient). The event structure is this:
 // 1. AutofillManager::Observer::OnBeforeAskForValuesToFill().
 // 2. Asynchronous parsing.
@@ -124,6 +130,8 @@ class TouchToFillKeyboardSuppressor
   // Unsuppresses the keyboard after `timeout_`.
   base::OneShotTimer unsuppress_timer_;
   base::TimeDelta timeout_;
+
+  base::WeakPtrFactory<TouchToFillKeyboardSuppressor> weak_ptr_factory_{this};
 };
 
 }  // namespace autofill

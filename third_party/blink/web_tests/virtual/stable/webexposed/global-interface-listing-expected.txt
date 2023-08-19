@@ -10,6 +10,7 @@ interface AbortController
     method constructor
 interface AbortSignal : EventTarget
     static method abort
+    static method any
     static method timeout
     attribute @@toStringTag
     getter aborted
@@ -698,6 +699,9 @@ interface CSSSkewY : CSSTransformComponent
     getter ay
     method constructor
     setter ay
+interface CSSStartingStyleRule : CSSGroupingRule
+    attribute @@toStringTag
+    method constructor
 interface CSSStyleDeclaration
     attribute @@toStringTag
     getter cssFloat
@@ -929,7 +933,7 @@ interface CanvasRenderingContext2D
     setter textBaseline
     setter textRendering
     setter wordSpacing
-interface CaptureController
+interface CaptureController : EventTarget
     attribute @@toStringTag
     method constructor
     method setFocusBehavior
@@ -1066,6 +1070,7 @@ interface CustomElementRegistry
     method constructor
     method define
     method get
+    method getName
     method upgrade
     method whenDefined
 interface CustomEvent : Event
@@ -1628,6 +1633,8 @@ interface Document : Node
     method getElementsByTagNameNS
     method getSelection
     method hasFocus
+    method hasPrivateToken
+    method hasRedemptionRecord
     method importNode
     method open
     method prepend
@@ -1793,6 +1800,17 @@ interface DocumentFragment : Node
     method querySelector
     method querySelectorAll
     method replaceChildren
+interface DocumentPictureInPicture : EventTarget
+    attribute @@toStringTag
+    getter onenter
+    getter window
+    method constructor
+    method requestWindow
+    setter onenter
+interface DocumentPictureInPictureEvent : Event
+    attribute @@toStringTag
+    getter window
+    method constructor
 interface DocumentTimeline : AnimationTimeline
     attribute @@toStringTag
     method constructor
@@ -3515,6 +3533,7 @@ interface HTMLIFrameElement : HTMLElement
     getter marginHeight
     getter marginWidth
     getter name
+    getter privateToken
     getter referrerPolicy
     getter sandbox
     getter scrolling
@@ -3536,6 +3555,7 @@ interface HTMLIFrameElement : HTMLElement
     setter marginHeight
     setter marginWidth
     setter name
+    setter privateToken
     setter referrerPolicy
     setter sandbox
     setter scrolling
@@ -4617,6 +4637,10 @@ interface IIRFilterNode : AudioNode
 interface IdentityCredential : Credential
     attribute @@toStringTag
     getter token
+    method constructor
+interface IdentityProvider
+    static method getUserInfo
+    attribute @@toStringTag
     method constructor
 interface IdleDeadline
     attribute @@toStringTag
@@ -6139,6 +6163,7 @@ interface PerformanceNavigation
 interface PerformanceNavigationTiming : PerformanceResourceTiming
     attribute @@toStringTag
     getter activationStart
+    getter criticalCHRestart
     getter domComplete
     getter domContentLoadedEventEnd
     getter domContentLoadedEventStart
@@ -6172,6 +6197,7 @@ interface PerformanceResourceTiming : PerformanceEntry
     getter connectEnd
     getter connectStart
     getter decodedBodySize
+    getter deliveryType
     getter domainLookupEnd
     getter domainLookupStart
     getter encodedBodySize
@@ -6641,7 +6667,10 @@ interface RTCRtpTransceiver
     getter sender
     getter stopped
     method constructor
+    method getHeaderExtensionsToNegotiate
+    method getNegotiatedHeaderExtensions
     method setCodecPreferences
+    method setHeaderExtensionsToNegotiate
     method stop
     setter direction
 interface RTCSctpTransport : EventTarget
@@ -10476,6 +10505,7 @@ interface XMLHttpRequest : XMLHttpRequestEventTarget
     method open
     method overrideMimeType
     method send
+    method setPrivateToken
     method setRequestHeader
     setter onreadystatechange
     setter responseType
@@ -11107,6 +11137,7 @@ namespace console
     getter customElements
     getter devicePixelRatio
     getter document
+    getter documentPictureInPicture
     getter event
     getter external
     getter frameElement

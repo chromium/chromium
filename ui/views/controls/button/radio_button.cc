@@ -25,9 +25,8 @@
 namespace views {
 
 namespace {
-
 constexpr int kFocusRingRadius = 16;
-
+constexpr int kRadioButtonIconDipSize = 16;
 }  // namespace
 
 RadioButton::RadioButton(const std::u16string& label, int group_id)
@@ -124,6 +123,11 @@ void RadioButton::SetChecked(bool checked) {
 
 const gfx::VectorIcon& RadioButton::GetVectorIcon() const {
   return GetChecked() ? kRadioButtonActiveIcon : kRadioButtonNormalIcon;
+}
+
+gfx::ImageSkia RadioButton::GetImage(ButtonState for_state) const {
+  return gfx::CreateVectorIcon(GetVectorIcon(), kRadioButtonIconDipSize,
+                               GetIconImageColor(GetIconState(for_state)));
 }
 
 SkPath RadioButton::GetFocusRingPath() const {

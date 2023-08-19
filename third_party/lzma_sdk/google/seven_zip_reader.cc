@@ -15,7 +15,6 @@
 #include "base/functional/callback.h"
 #include "base/functional/callback_helpers.h"
 #include "base/logging.h"
-#include "base/memory/free_deleter.h"
 #include "base/memory/ptr_util.h"
 #include "base/process/memory.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -78,14 +77,20 @@ class SevenZipReaderImpl {
  private:
   static Result SResToResult(SRes res);
 
+  // The SDK may allocate large buffers while extracting. Rather than crash,
+  // allow such allocations to fail. `SzArEx_Open` and `SzAr_DecodeFolder` will
+  // fail with `SZ_ERROR_MEM` if an allocation fails.
+  static void* AllocTemp(ISzAllocPtr p, size_t size);
+  static void FreeTemp(ISzAllocPtr p, void* address);
+
   Result ExtractIntoTempFile(size_t folder_index);
 
   const ISzAlloc alloc_{.Alloc = &SzAlloc, .Free = &SzFree};
-  const ISzAlloc alloc_temp_{.Alloc = &SzAllocTemp, .Free = &SzFreeTemp};
+  const ISzAlloc alloc_temp_{.Alloc = &AllocTemp, .Free = &FreeTemp};
   base::File temp_file_;
   FileSeekInStream stream_{};
   CLookToRead2 look_stream_{};
-  std::unique_ptr<uint8_t, base::FreeDeleter> look_stream_buffer_;
+  std::unique_ptr<uint8_t, base::UncheckedFreeDeleter> look_stream_buffer_;
   CSzArEx db_{};
 
   // The index of the folder that has been decoded into the temp file via
@@ -353,6 +358,20 @@ Result SevenZipReaderImpl::SResToResult(SRes res) {
     default:
       return Result::kMalformedArchive;
   }
+}
+
+// static
+void* SevenZipReaderImpl::AllocTemp(ISzAllocPtr p, size_t size) {
+  void* result = nullptr;
+  if (!base::UncheckedMalloc(size, &result)) {
+    result = nullptr;
+  }
+  return result;
+}
+
+// static
+void SevenZipReaderImpl::FreeTemp(ISzAllocPtr p, void* address) {
+  base::UncheckedFree(address);
 }
 
 Result SevenZipReaderImpl::ExtractIntoTempFile(size_t folder_index) {

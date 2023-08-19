@@ -17,7 +17,7 @@ namespace floss {
 int kDBusTimeoutMs = 2000;
 // Timeout for waiting HCI enabled changed. Make it longer since it takes longer
 // when there is a connected device.
-int kAdapterPowerTimeoutMs = 5000;
+int kAdapterEnabledTimeoutMs = 5000;
 
 // TODO(b/189499077) - Expose via floss package
 const char kAdapterService[] = "org.chromium.bluetooth";
@@ -29,6 +29,8 @@ const char kAdapterObjectFormat[] = "/org/chromium/bluetooth/hci%d/adapter";
 const char kAdminObjectFormat[] = "/org/chromium/bluetooth/hci%d/admin";
 const char kBatteryManagerObjectFormat[] =
     "/org/chromium/bluetooth/hci%d/battery_manager";
+const char kBluetoothTelephonyObjectFormat[] =
+    "/org/chromium/bluetooth/hci%d/telephony";
 const char kGattObjectFormat[] = "/org/chromium/bluetooth/hci%d/gatt";
 const char kManagerObject[] = "/org/chromium/bluetooth/Manager";
 const char kMediaObjectFormat[] = "/org/chromium/bluetooth/hci%d/media";
@@ -37,6 +39,8 @@ const char kAdapterInterface[] = "org.chromium.bluetooth.Bluetooth";
 const char kAdapterLoggingInterface[] = "org.chromium.bluetooth.Logging";
 const char kAdminInterface[] = "org.chromium.bluetooth.BluetoothAdmin";
 const char kBatteryManagerInterface[] = "org.chromium.bluetooth.BatteryManager";
+const char kBluetoothTelephonyInterface[] =
+    "org.chromium.bluetooth.BluetoothTelephony";
 const char kExperimentalInterface[] = "org.chromium.bluetooth.Experimental";
 const char kGattInterface[] = "org.chromium.bluetooth.BluetoothGatt";
 const char kManagerInterface[] = "org.chromium.bluetooth.Manager";
@@ -64,7 +68,9 @@ const char kGetBondState[] = "GetBondState";
 const char kConnectAllEnabledProfiles[] = "ConnectAllEnabledProfiles";
 const char kDisconnectAllEnabledProfiles[] = "DisconnectAllEnabledProfiles";
 const char kRegisterCallback[] = "RegisterCallback";
+const char kUnregisterCallback[] = "UnregisterCallback";
 const char kRegisterConnectionCallback[] = "RegisterConnectionCallback";
+const char kUnregisterConnectionCallback[] = "UnregisterConnectionCallback";
 const char kRegisterScanner[] = "RegisterScanner";
 const char kUnregisterScanner[] = "UnregisterScanner";
 const char kRegisterScannerCallback[] = "RegisterScannerCallback";
@@ -91,6 +97,7 @@ const char kOnNameChanged[] = "OnNameChanged";
 const char kOnDiscoverableChanged[] = "OnDiscoverableChanged";
 const char kOnDeviceFound[] = "OnDeviceFound";
 const char kOnDeviceCleared[] = "OnDeviceCleared";
+const char kOnDevicePropertiesChanged[] = "OnDevicePropertiesChanged";
 const char kOnDiscoveringChanged[] = "OnDiscoveringChanged";
 const char kOnSspRequest[] = "OnSspRequest";
 const char kOnPinDisplay[] = "OnPinDisplay";
@@ -126,6 +133,7 @@ const char kOnDefaultAdapterChanged[] = "OnDefaultAdapterChanged";
 
 namespace socket_manager {
 const char kRegisterCallback[] = "RegisterCallback";
+const char kUnregisterCallback[] = "UnregisterCallback";
 const char kListenUsingInsecureL2capChannel[] =
     "ListenUsingInsecureL2capChannel";
 const char kListenUsingInsecureL2capLeChannel[] =
@@ -224,6 +232,7 @@ const char kOnServerSubrateChange[] = "OnSubrateChange";
 
 namespace advertiser {
 const char kRegisterCallback[] = "RegisterAdvertiserCallback";
+const char kUnregisterCallback[] = "UnregisterAdvertiserCallback";
 const char kStartAdvertisingSet[] = "StartAdvertisingSet";
 const char kStopAdvertisingSet[] = "StopAdvertisingSet";
 const char kGetOwnAddress[] = "GetOwnAddress";
@@ -255,10 +264,15 @@ namespace battery_manager {
 const char kCallbackInterface[] =
     "org.chromium.bluetooth.BatteryManagerCallback";
 const char kRegisterBatteryCallback[] = "RegisterBatteryCallback";
+const char kUnregisterBatteryCallback[] = "UnregisterBatteryCallback";
 const char kGetBatteryInformation[] = "GetBatteryInformation";
 
 const char kOnBatteryInfoUpdated[] = "OnBatteryInfoUpdated";
 }  // namespace battery_manager
+
+namespace bluetooth_telephony {
+const char kSetPhoneOpsEnabled[] = "SetPhoneOpsEnabled";
+}  // namespace bluetooth_telephony
 
 namespace admin {
 const char kRegisterCallback[] = "RegisterAdminPolicyCallback";
@@ -437,6 +451,13 @@ dbus::ObjectPath FlossDBusClient::GenerateBatteryManagerPath(
     int adapter_index) {
   return dbus::ObjectPath(
       base::StringPrintf(kBatteryManagerObjectFormat, adapter_index));
+}
+
+// static
+dbus::ObjectPath FlossDBusClient::GenerateBluetoothTelephonyPath(
+    int adapter_index) {
+  return dbus::ObjectPath(
+      base::StringPrintf(kBluetoothTelephonyObjectFormat, adapter_index));
 }
 
 dbus::ObjectPath FlossDBusClient::GenerateAdminPath(int adapter_index) {

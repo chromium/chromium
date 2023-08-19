@@ -128,13 +128,13 @@ void WaitForPersonalDataManagerToBeLoaded(Profile* base_profile) {
 }
 
 void GenerateTestAutofillPopup(
-    AutofillExternalDelegate* autofill_external_delegate) {
+    AutofillExternalDelegate* autofill_external_delegate,
+    gfx::RectF element_bounds) {
   FormData form;
   form.url = GURL("https://foo.com/bar");
   form.fields.emplace_back();
   form.fields.front().is_focusable = true;
   form.fields.front().should_autocomplete = true;
-  gfx::RectF bounds(100.f, 100.f);
 
   ContentAutofillDriver* driver = static_cast<ContentAutofillDriver*>(
       absl::get<AutofillDriver*>(autofill_external_delegate->GetDriver()));
@@ -142,9 +142,9 @@ void GenerateTestAutofillPopup(
   mojom::AutofillDriver* mojo_driver = driver;
   TestAutofillManagerWaiter waiter(*manager,
                                    {AutofillManagerEvent::kAskForValuesToFill});
-  mojo_driver->AskForValuesToFill(form, form.fields.front(), bounds,
-                                  AutoselectFirstSuggestion(false),
-                                  FormElementWasClicked(false));
+  mojo_driver->AskForValuesToFill(
+      form, form.fields.front(), element_bounds,
+      AutofillSuggestionTriggerSource::kTextFieldDidChange);
   ASSERT_TRUE(waiter.Wait());
   ASSERT_EQ(1u, manager->form_structures().size());
   // `form.host_frame` and `form.url` have only been set by
@@ -154,7 +154,7 @@ void GenerateTestAutofillPopup(
   std::vector<Suggestion> suggestions = {Suggestion(u"Test suggestion")};
   autofill_external_delegate->OnSuggestionsReturned(
       form.fields.front().global_id(), suggestions,
-      AutoselectFirstSuggestion(false));
+      AutofillSuggestionTriggerSource::kFormControlElementClicked);
 }
 
 }  // namespace autofill

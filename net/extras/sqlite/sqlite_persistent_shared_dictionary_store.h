@@ -18,6 +18,7 @@
 #include "base/types/expected.h"
 #include "base/unguessable_token.h"
 #include "net/extras/shared_dictionary/shared_dictionary_info.h"
+#include "net/extras/shared_dictionary/shared_dictionary_usage_info.h"
 #include "url/origin.h"
 
 namespace base {
@@ -27,39 +28,75 @@ class SequencedTaskRunner;
 
 namespace net {
 
-class SharedDictionaryStorageIsolationKey;
+class SharedDictionaryIsolationKey;
 
 // This class is used for storing SharedDictionary information to the persistent
 // storage.
 class COMPONENT_EXPORT(NET_EXTRAS) SQLitePersistentSharedDictionaryStore {
  public:
+  // These values are persisted to logs. Entries should not be renumbered and
+  // numeric values should never be reused.
   enum class Error {
-    kOk,
-    kFailedToInitializeDatabase,
-    kInvalidSql,
-    kFailedToExecuteSql,
-    kFailedToBeginTransaction,
-    kFailedToCommitTransaction,
-    kInvalidTotalDictSize,
-    kFailedToGetTotalDictSize,
-    kFailedToSetTotalDictSize,
+    kOk = 0,
+    kFailedToInitializeDatabase = 1,
+    kInvalidSql = 2,
+    kFailedToExecuteSql = 3,
+    kFailedToBeginTransaction = 4,
+    kFailedToCommitTransaction = 5,
+    kInvalidTotalDictSize = 6,
+    kFailedToGetTotalDictSize = 7,
+    kFailedToSetTotalDictSize = 8,
+    kTooBigDictionary = 9,
+    kMaxValue = kTooBigDictionary
   };
-  struct RegisterDictionaryResult {
-    int64_t primary_key_in_database;
-    absl::optional<base::UnguessableToken> disk_cache_key_token_to_be_removed;
-    uint64_t total_dictionary_size;
+  class COMPONENT_EXPORT(NET_EXTRAS) RegisterDictionaryResult {
+   public:
+    RegisterDictionaryResult(
+        int64_t primary_key_in_database,
+        absl::optional<base::UnguessableToken> replaced_disk_cache_key_token,
+        std::set<base::UnguessableToken> evicted_disk_cache_key_tokens,
+        uint64_t total_dictionary_size,
+        uint64_t total_dictionary_count);
+    ~RegisterDictionaryResult();
+
+    RegisterDictionaryResult(const RegisterDictionaryResult& other);
+    RegisterDictionaryResult(RegisterDictionaryResult&& other);
+    RegisterDictionaryResult& operator=(const RegisterDictionaryResult& other);
+    RegisterDictionaryResult& operator=(RegisterDictionaryResult&& other);
+
+    int64_t primary_key_in_database() const { return primary_key_in_database_; }
+    const absl::optional<base::UnguessableToken>&
+    replaced_disk_cache_key_token() const {
+      return replaced_disk_cache_key_token_;
+    }
+    const std::set<base::UnguessableToken>& evicted_disk_cache_key_tokens()
+        const {
+      return evicted_disk_cache_key_tokens_;
+    }
+    uint64_t total_dictionary_size() const { return total_dictionary_size_; }
+    uint64_t total_dictionary_count() const { return total_dictionary_count_; }
+
+   private:
+    int64_t primary_key_in_database_;
+    absl::optional<base::UnguessableToken> replaced_disk_cache_key_token_;
+    std::set<base::UnguessableToken> evicted_disk_cache_key_tokens_;
+    uint64_t total_dictionary_size_;
+    uint64_t total_dictionary_count_;
   };
 
+  using SizeOrError = base::expected<uint64_t, Error>;
   using RegisterDictionaryResultOrError =
       base::expected<RegisterDictionaryResult, Error>;
   using DictionaryListOrError =
       base::expected<std::vector<SharedDictionaryInfo>, Error>;
-  using DictionaryMapOrError =
-      base::expected<std::map<SharedDictionaryStorageIsolationKey,
-                              std::vector<SharedDictionaryInfo>>,
-                     Error>;
+  using DictionaryMapOrError = base::expected<
+      std::map<SharedDictionaryIsolationKey, std::vector<SharedDictionaryInfo>>,
+      Error>;
   using UnguessableTokenSetOrError =
       base::expected<std::set<base::UnguessableToken>, Error>;
+  using UsageInfoOrError =
+      base::expected<std::vector<SharedDictionaryUsageInfo>, Error>;
+  using OriginListOrError = base::expected<std::vector<url::Origin>, Error>;
 
   SQLitePersistentSharedDictionaryStore(
       const base::FilePath& path,
@@ -73,32 +110,44 @@ class COMPONENT_EXPORT(NET_EXTRAS) SQLitePersistentSharedDictionaryStore {
 
   ~SQLitePersistentSharedDictionaryStore();
 
-  void GetTotalDictionarySize(
-      base::OnceCallback<void(base::expected<uint64_t, Error>)> callback);
+  void GetTotalDictionarySize(base::OnceCallback<void(SizeOrError)> callback);
   void RegisterDictionary(
-      const SharedDictionaryStorageIsolationKey& isolation_key,
+      const SharedDictionaryIsolationKey& isolation_key,
       SharedDictionaryInfo dictionary_info,
+      const uint64_t max_size_per_site,
+      const uint64_t max_count_per_site,
       base::OnceCallback<void(RegisterDictionaryResultOrError)> callback);
   void GetDictionaries(
-      const SharedDictionaryStorageIsolationKey& isolation_key,
+      const SharedDictionaryIsolationKey& isolation_key,
       base::OnceCallback<void(DictionaryListOrError)> callback);
   void GetAllDictionaries(
       base::OnceCallback<void(DictionaryMapOrError)> callback);
+  void GetUsageInfo(base::OnceCallback<void(UsageInfoOrError)> callback);
+  void GetOriginsBetween(const base::Time start_time,
+                         const base::Time end_time,
+                         base::OnceCallback<void(OriginListOrError)> callback);
   void ClearAllDictionaries(base::OnceCallback<void(Error)> callback);
   void ClearDictionaries(
       const base::Time start_time,
       const base::Time end_time,
       base::RepeatingCallback<bool(const GURL&)> url_matcher,
       base::OnceCallback<void(UnguessableTokenSetOrError)> callback);
+  void ClearDictionariesForIsolationKey(
+      const SharedDictionaryIsolationKey& isolation_key,
+      base::OnceCallback<void(UnguessableTokenSetOrError)> callback);
   void DeleteExpiredDictionaries(
       const base::Time now,
       base::OnceCallback<void(UnguessableTokenSetOrError)> callback);
   // Deletes dictionaries in order of `last_used_time` if the total size of all
-  // dictionaries exceeds `cache_max_size` until the total size reaches
-  // `low_watermark`.
+  // dictionaries exceeds `cache_max_size` or the total dictionary count exceeds
+  // `cache_max_count` until the total size reaches `size_low_watermark` and the
+  // total count reaches `count_low_watermark`. If `cache_max_size` is zero, the
+  // size limitation is ignored.
   void ProcessEviction(
       const uint64_t cache_max_size,
-      const uint64_t low_watermark,
+      const uint64_t size_low_watermark,
+      const uint64_t cache_max_count,
+      const uint64_t count_low_watermark,
       base::OnceCallback<void(UnguessableTokenSetOrError)> callback);
   void GetAllDiskCacheKeyTokens(
       base::OnceCallback<void(UnguessableTokenSetOrError)> callback);

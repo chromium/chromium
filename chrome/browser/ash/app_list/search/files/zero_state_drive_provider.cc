@@ -12,6 +12,7 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/time/time.h"
+#include "base/trace_event/trace_event.h"
 #include "chrome/browser/ash/app_list/search/search_controller.h"
 #include "chrome/browser/ash/drive/drive_integration_service.h"
 #include "chrome/browser/ash/file_suggest/file_suggest_keyed_service.h"
@@ -91,6 +92,7 @@ void ZeroStateDriveProvider::OnFileSystemMounted() {
 }
 
 void ZeroStateDriveProvider::OnSessionStateChanged() {
+  TRACE_EVENT0("ui", "ZeroStateDriveProvider::OnSessionStateChanged");
   // Update cache if the user has logged in.
   if (session_manager_->session_state() ==
       session_manager::SessionState::ACTIVE) {

@@ -359,7 +359,7 @@ bool IsMetricsReportingOptIn() {
 void CreateSentinelIfNeeded() {
   if (IsChromeFirstRun()) {
     auto sentinel_creation_result = CreateSentinel();
-    startup_metric_utils::RecordFirstRunSentinelCreation(
+    startup_metric_utils::GetBrowser().RecordFirstRunSentinelCreation(
         sentinel_creation_result);
   }
 

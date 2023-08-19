@@ -7,6 +7,7 @@
 
 #include <memory>
 
+#include "components/safe_browsing/core/common/safebrowsing_referral_methods.h"
 #include "components/security_interstitials/content/settings_page_helper.h"
 
 namespace content {
@@ -30,11 +31,13 @@ class ChromeSettingsPageHelper : public SettingsPageHelper {
   ChromeSettingsPageHelper(const ChromeSettingsPageHelper&) = delete;
   ChromeSettingsPageHelper& operator=(const ChromeSettingsPageHelper&) = delete;
 
-  // SettingsPageHelper:
+  // SettingsPageHelper::
   void OpenEnhancedProtectionSettings(
       content::WebContents* web_contents) const override;
   void OpenEnhancedProtectionSettingsWithIph(
-      content::WebContents* web_contents) const override;
+      content::WebContents* web_contents,
+      safe_browsing::SafeBrowsingSettingReferralMethod referral_method)
+      const override;
 };
 
 }  // namespace security_interstitials

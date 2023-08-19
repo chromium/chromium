@@ -91,13 +91,13 @@ bundle_data("remoting_host_resources") {
 }
 
 target("mac_app_bundle", "remoting_me2me_host") {
-  extra_configs = [ "//remoting/build/config:version" ]
+  configs += [ "//remoting/build/config:version" ]
   info_plist = "remoting_me2me_host-Info.plist"
   extra_substitutions = [
     "BUNDLE_ID=$host_bundle_id",
     "VERSION_FULL=$remoting_version_full",
     "VERSION_SHORT=$remoting_version_short",
-    "MACOSX_DEPLOYMENT_TARGET=10.7",
+    "MACOSX_DEPLOYMENT_TARGET=10.15",
   ]
 
   # TODO(joedow): Re-enable or replace with Crashpad: crbug.com/637884.
@@ -170,12 +170,12 @@ bundle_data("remoting_native_messaging_host_resources") {
 target("mac_app_bundle", "remoting_native_messaging_host") {
   output_name = "native_messaging_host"
   info_plist = "../setup/native_messaging_host-Info.plist"
-  extra_configs = [ "//build/config/compiler:wexit_time_destructors" ]
+  configs += [ "//build/config/compiler:wexit_time_destructors" ]
   extra_substitutions = [
     "BUNDLE_ID=$native_messaging_host_bundle_id",
     "VERSION_FULL=$remoting_version_full",
     "VERSION_SHORT=$remoting_version_short",
-    "MACOSX_DEPLOYMENT_TARGET=10.7",
+    "MACOSX_DEPLOYMENT_TARGET=10.15",
     "HOST_NAME=$host_name",
   ]
 

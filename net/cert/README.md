@@ -28,12 +28,15 @@ on worker threads.
 
 [CertVerifyProcBuiltin](cert_verify_proc_builtin.h) is a cross-platform
 implementation which implements path building internally. It only relies on
-platform integrations for obtaining the trusted root certificates.
+platform integrations for obtaining user and enterprise configured trusted root
+certificates. The publicly trusted root certificates are supplied by the
+[Chrome Root Store](../data/ssl/chrome_root_store/README.md).
 
 The other `CertVerifyProc` implementations are for integrating
-with the underlying platform's certificate verification library. For example,
-[CertVerifyProcWin](cert_verify_proc_win.h) delegates
-certificate verification to Windows' CryptoAPI.
+with the underlying platform's certificate verification library.
+There are 2 platform implementations:
+[CertVerifyProcAndroid](cert_verify_proc_android.h) and
+[CertVerifyProcIOS](cert_verify_proc_ios.h).
 
 Browser-specific policy checks are applied even when using the platform's
 certificate verifier. For instance, a certificate chain the OS deemed valid

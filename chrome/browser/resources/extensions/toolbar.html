@@ -69,9 +69,10 @@
     --cr-toolbar-field-width: 100%;
   }
 </style>
-<cr-toolbar page-name="$i18n{toolbarTitle}" search-prompt="$i18n{search}"
-    clear-label="$i18n{clearSearch}" menu-label="$i18n{mainMenu}" show-menu
-    autofocus narrow-threshold="1000">
+<cr-toolbar id="toolbar" page-name="$i18n{toolbarTitle}"
+    search-prompt="$i18n{search}" clear-label="$i18n{clearSearch}" autofocus
+    menu-label="$i18n{mainMenu}" narrow="{{narrow}}" narrow-threshold="1200"
+    show-menu="[[narrow]]">
   <div class="more-actions">
     <span id="devModeLabel">$i18n{toolbarDevMode}</span>
     <cr-tooltip-icon hidden="[[!shouldDisableDevMode_(

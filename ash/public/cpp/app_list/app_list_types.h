@@ -12,6 +12,9 @@
 #include "ash/public/cpp/app_list/app_list_metrics.h"
 #include "ash/public/cpp/ash_public_export.h"
 #include "ash/public/cpp/shelf_types.h"
+#include "base/files/file.h"
+#include "base/files/file_path.h"
+#include "base/task/thread_pool.h"
 #include "components/sync/model/string_ordinal.h"
 #include "components/sync/protocol/app_list_specifics.pb.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -41,6 +44,9 @@ ASH_PUBLIC_EXPORT extern const char kOemFolderId[];
 
 // The AppListItem ID of the "Linux apps" folder.
 ASH_PUBLIC_EXPORT extern const char kCrostiniFolderId[];
+
+// The AppListItem ID of the "Bruschetta apps" folder.
+ASH_PUBLIC_EXPORT extern const char kBruschettaFolderId[];
 
 // App list config types supported by AppListConfig.
 enum class AppListConfigType {
@@ -117,6 +123,11 @@ struct ASH_PUBLIC_EXPORT AppListItemMetadata {
   std::string id;    // Id of the app list item.
   std::string name;  // Corresponding app/folder's name of the item.
 
+  // Package Id for the item's app package, used to match an installed app item
+  // with its promise app item. In promise app items, this value is the same as
+  // the primary `id` field.
+  std::string promise_package_id;
+
   AppStatus app_status = AppStatus::kReady;  // App status.
 
   std::string folder_id;           // Id of folder where the item resides.
@@ -143,6 +154,9 @@ struct ASH_PUBLIC_EXPORT AppListItemMetadata {
   // Whether the item is ephemeral - i.e. an app or a folder that does not
   // persist across sessions.
   bool is_ephemeral = false;
+
+  // Applicable only for promise apps. Percentage of app installation completed.
+  float progress = -1;
 };
 
 // Where an app list item is being shown. Used for context menu.
@@ -439,19 +453,6 @@ enum class SearchResultIconShape {
   kCircle,
 };
 
-// The storage types that are available within the System Info Card storage type
-// answer card.
-enum class SearchResultSystemInfoStorageType {
-  kMyFiles,
-  kDriveOfflineFiles,
-  kBrowsingData,
-  kAppsExtensions,
-  kCrostini,
-  kOtherUsers,
-  kSystem,
-  kTotal
-};
-
 // The display type of the answer cards created by the System Info Provider. The
 // Text Card provides a similar UI to the omnibox answer cards while the bar
 // chart and multi element bar chart provide an additional bar chart with system
@@ -466,8 +467,8 @@ struct ASH_PUBLIC_EXPORT SearchResultIconInfo {
   SearchResultIconInfo();
   // TODO(crbug.com/1232897): Make the search backend explicitly set the shape
   // for all icons by removing the two-argument version of the constructor.
-  SearchResultIconInfo(gfx::ImageSkia icon, int dimension);
-  SearchResultIconInfo(gfx::ImageSkia icon,
+  SearchResultIconInfo(ui::ImageModel icon, int dimension);
+  SearchResultIconInfo(ui::ImageModel icon,
                        int dimension,
                        SearchResultIconShape shape);
 
@@ -476,7 +477,7 @@ struct ASH_PUBLIC_EXPORT SearchResultIconInfo {
   ~SearchResultIconInfo();
 
   // The icon itself.
-  gfx::ImageSkia icon;
+  ui::ImageModel icon;
 
   // The size to display the icon at, while preserving aspect ratio. Only
   // used for the results list view.
@@ -493,23 +494,69 @@ struct ASH_PUBLIC_EXPORT SystemInfoAnswerCardData {
   explicit SystemInfoAnswerCardData(
       SystemInfoAnswerCardDisplayType display_type);
   explicit SystemInfoAnswerCardData(double bar_chart_percentage);
-  explicit SystemInfoAnswerCardData(std::map<SearchResultSystemInfoStorageType,
-                                             int64_t> storage_type_to_size);
+
+  void SetDescriptionOnRight(const std::u16string& description_on_right);
+  void SetUpperLimitForBarChart(double upper_warning_limit_bar_chart);
+  void SetLowerLimitForBarChart(double lower_warning_limit_bar_chart);
+  void SetExtraDetails(const std::u16string& description_on_right);
+  void UpdateBarChartPercentage(double new_bar_chart_percentage);
 
   SystemInfoAnswerCardData(const SystemInfoAnswerCardData&);
-
   ~SystemInfoAnswerCardData();
 
   SystemInfoAnswerCardDisplayType display_type;
 
   // This stores the percentage of the bar chart to be filled for System Info
   // Answer card results which are a bar chart type. This will be a value
-  // between 0 and 100.
+  // between 0 and 100. This is only set if the answer card is of type bar
+  // chart.
   absl::optional<double> bar_chart_percentage;
 
-  // This stores the amount of space occupied by each storage type if this
-  // answer card is showing storage. All sizes are in bytes.
-  std::map<SearchResultSystemInfoStorageType, int64_t> storage_type_to_size;
+  // For System Info Answer Cards of bar chart type and upper or lower limit can
+  // be set. If the value of the bar chart goes above/ below this value then the
+  // bar chart turns from blue to red.
+  absl::optional<double> lower_warning_limit_bar_chart;
+  absl::optional<double> upper_warning_limit_bar_chart;
+
+  // This is only set if the description has 2 components to it. This
+  // description will be places on the right hand side of the details container.
+  absl::optional<std::u16string> extra_details;
+};
+
+// Data required for showing file info.
+struct ASH_PUBLIC_EXPORT FileMetadata {
+  FileMetadata();
+  FileMetadata(const FileMetadata&);
+  FileMetadata& operator=(const FileMetadata&);
+  ~FileMetadata();
+
+  base::File::Info file_info;
+  std::string mime_type;
+  base::FilePath file_path;
+  base::FilePath virtual_path;
+};
+
+class ASH_PUBLIC_EXPORT FileMetadataLoader {
+ public:
+  using MetadataLoaderCallback = base::RepeatingCallback<ash::FileMetadata()>;
+  using OnMetadataLoadedCallback =
+      base::RepeatingCallback<void(ash::FileMetadata)>;
+
+  FileMetadataLoader();
+  FileMetadataLoader(const FileMetadataLoader&);
+  FileMetadataLoader& operator=(const FileMetadataLoader&);
+  ~FileMetadataLoader();
+
+  // Requests the file metadata and triggers `on_loaded_callback` after loaded.
+  // The file requested is the file search result that owns this
+  // FileMetadataLoader instance in its metadata.
+  void RequestFileInfo(OnMetadataLoadedCallback on_loaded_callback);
+
+  void SetLoaderCallback(MetadataLoaderCallback callback);
+
+ private:
+  // Callback that is used to load the file metadata.
+  MetadataLoaderCallback loader_callback_;
 };
 
 // A tagged range in search result text.
@@ -722,6 +769,13 @@ struct ASH_PUBLIC_EXPORT SearchResultMetadata {
   // The details for an answer card result with System Information. This field
   // is only set for this specific result type.
   absl::optional<SystemInfoAnswerCardData> system_info_answer_card_data;
+
+  // The file path for this search result. This is set only if the search result
+  // is a file.
+  base::FilePath file_path;
+
+  // Details for file type results.
+  FileMetadataLoader file_metadata_loader;
 
   // The icon of this result in a smaller dimension to be rendered in suggestion
   // chip view.

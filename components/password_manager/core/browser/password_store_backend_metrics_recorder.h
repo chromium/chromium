@@ -9,8 +9,9 @@
 
 #include "base/strings/string_piece_forward.h"
 #include "base/time/time.h"
+#include "base/types/strong_alias.h"
 #include "components/password_manager/core/browser/android_backend_error.h"
-#include "components/password_manager/core/browser/password_store_util.h"
+#include "components/password_manager/core/browser/password_store_backend_error.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/abseil-cpp/absl/types/variant.h"
 

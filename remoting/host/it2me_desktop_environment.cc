@@ -12,11 +12,13 @@
 #include "base/memory/weak_ptr.h"
 #include "base/task/single_thread_task_runner.h"
 #include "build/build_config.h"
+#include "remoting/host/basic_desktop_environment.h"
 #include "remoting/host/client_session_control.h"
 #include "remoting/host/host_window.h"
 #include "remoting/host/host_window_proxy.h"
 #include "remoting/host/input_monitor/local_input_monitor.h"
 #include "remoting/host/session_terminator.h"
+#include "remoting/protocol/capability_names.h"
 #include "remoting/protocol/errors.h"
 
 #if BUILDFLAG(IS_POSIX)
@@ -119,6 +121,16 @@ void It2MeDesktopEnvironment::InitializeCurtainMode(
     }
   }
 #endif  // BUILDFLAG(IS_CHROMEOS)
+}
+
+std::string It2MeDesktopEnvironment::GetCapabilities() const {
+  std::string capabilities = BasicDesktopEnvironment::GetCapabilities();
+  if (desktop_environment_options().enable_file_transfer()) {
+    capabilities += " ";
+    capabilities += protocol::kFileTransferCapability;
+  }
+
+  return capabilities;
 }
 
 void It2MeDesktopEnvironment::InitializeCurtainModeIfNoUserLoggedIn(

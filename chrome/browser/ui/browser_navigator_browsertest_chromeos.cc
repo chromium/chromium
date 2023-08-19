@@ -26,8 +26,10 @@
 #include "ui/aura/window.h"
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
+#include "base/test/run_until.h"
+#include "base/test/test_future.h"
 #include "chromeos/crosapi/mojom/crosapi.mojom.h"
-#include "chromeos/crosapi/mojom/test_controller.mojom-test-utils.h"
+#include "chromeos/crosapi/mojom/test_controller.mojom.h"
 #include "chromeos/lacros/lacros_test_helper.h"
 #include "chromeos/startup/browser_init_params.h"
 #endif
@@ -211,11 +213,9 @@ IN_PROC_BROWSER_TEST_F(BrowserNavigatorTestChromeOS, OsSchemeRedirectFail) {
             browser()->tab_strip_model()->GetActiveWebContents()->GetURL());
 }
 
-// TODO(https://crbug.com/1417034): Test consistently fails on bots.
 // Verifies that the navigation of an os:// scheme page is opening an app on
 // the ash side and does not produce a navigation on the Lacros side.
-IN_PROC_BROWSER_TEST_F(BrowserNavigatorTestChromeOS,
-                       DISABLED_OsSchemeRedirectSucceed) {
+IN_PROC_BROWSER_TEST_F(BrowserNavigatorTestChromeOS, OsSchemeRedirectSucceed) {
   if (chromeos::LacrosService::Get()
           ->GetInterfaceVersion<crosapi::mojom::TestController>() <
       static_cast<int>(crosapi::mojom::TestController::MethodMinVersions::
@@ -224,20 +224,18 @@ IN_PROC_BROWSER_TEST_F(BrowserNavigatorTestChromeOS,
     return;
   }
 
-  crosapi::mojom::TestControllerAsyncWaiter waiter(
-      chromeos::LacrosService::Get()
-          ->GetRemote<crosapi::mojom::TestController>()
-          .get());
+  auto& test_controller = chromeos::LacrosService::Get()
+                              ->GetRemote<crosapi::mojom::TestController>();
 
   // Ash shouldn't have a browser window open by now.
-  uint32_t number = 1;
-  waiter.GetOpenAshBrowserWindows(&number);
-  EXPECT_EQ(0u, number);
+  base::test::TestFuture<uint32_t> window_count_future;
+  test_controller->GetOpenAshBrowserWindows(window_count_future.GetCallback());
+  EXPECT_EQ(0u, window_count_future.Take());
 
   // First we make sure that the GURL we are interested in is in our allow list.
   auto init_params = crosapi::mojom::BrowserInitParams::New();
   init_params->accepted_internal_ash_urls =
-      std::vector<GURL>{GURL(chrome::kOsUIFlagsURL)};
+      std::vector<GURL>{GURL(chrome::kChromeUIFlagsURL)};
   chromeos::BrowserInitParams::SetInitParamsForTests(std::move(init_params));
 
   EXPECT_EQ(1u, chrome::GetTotalBrowserCount());
@@ -264,21 +262,23 @@ IN_PROC_BROWSER_TEST_F(BrowserNavigatorTestChromeOS,
   // Clean up the window we have created.
 
   // Wait until we have the app running.
-  while (0 == number) {
-    usleep(25000);
-    waiter.GetOpenAshBrowserWindows(&number);
-  }
+  ASSERT_TRUE(base::test::RunUntil([&] {
+    test_controller->GetOpenAshBrowserWindows(
+        window_count_future.GetCallback());
+    return window_count_future.Take() > 0;
+  }));
 
   // Close it.
-  bool success = false;
-  waiter.CloseAllBrowserWindows(&success);
-  EXPECT_TRUE(success);
+  base::test::TestFuture<bool> success_future;
+  test_controller->CloseAllBrowserWindows(success_future.GetCallback());
+  EXPECT_TRUE(success_future.Get());
 
   // Wait until all are gone.
-  while (0 != number) {
-    usleep(25000);
-    waiter.GetOpenAshBrowserWindows(&number);
-  }
+  ASSERT_TRUE(base::test::RunUntil([&] {
+    test_controller->GetOpenAshBrowserWindows(
+        window_count_future.GetCallback());
+    return window_count_future.Take() == 0;
+  }));
 }
 
 #endif

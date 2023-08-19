@@ -261,12 +261,9 @@ void DefaultState::HandleWorkspaceEvents(WindowState* window_state,
       if (in_fullscreen && window_state->IsMaximized())
         return;
 
-      // TODO(b/272091660): Consider having a more graceful algorithm for
-      // floated windows as they may have been purposefully placed semi
-      // offscreen.
       UpdateBoundsForDisplayOrWorkAreaBoundsChange(
           window_state,
-          /*ensure_full_window_visibility=*/window_state->IsFloated());
+          /*ensure_full_window_visibility=*/false);
       return;
     }
     case WM_EVENT_SYSTEM_UI_AREA_CHANGED:
@@ -440,11 +437,13 @@ void DefaultState::HandleTransitionEvents(WindowState* window_state,
       window_state->RecordWindowSnapActionSource(
           static_cast<const WindowSnapWMEvent*>(event)->snap_action_source());
     }
-    EnterToNextState(window_state, next_state_type);
-    return;
   }
 
-  EnterToNextState(window_state, next_state_type);
+  absl::optional<chromeos::FloatStartLocation> float_start_location =
+      event->AsFloatEvent()
+          ? absl::make_optional(event->AsFloatEvent()->float_start_location())
+          : absl::nullopt;
+  EnterToNextState(window_state, next_state_type, float_start_location);
 }
 
 bool DefaultState::SetMaximizedOrFullscreenBounds(WindowState* window_state) {
@@ -490,12 +489,16 @@ void DefaultState::SetBounds(WindowState* window_state,
   }
 }
 
-void DefaultState::EnterToNextState(WindowState* window_state,
-                                    WindowStateType next_state_type) {
+void DefaultState::EnterToNextState(
+    WindowState* window_state,
+    WindowStateType next_state_type,
+    absl::optional<chromeos::FloatStartLocation> float_start_location) {
   if (!ShouldEnterNextState(state_type_, next_state_type, window_state)) {
     return;
   }
 
+  const bool is_previous_normal_type =
+      window_state->IsNonVerticalOrHorizontalMaximizedNormalState();
   WindowStateType previous_state_type = state_type_;
   state_type_ = next_state_type;
 
@@ -519,21 +522,45 @@ void DefaultState::EnterToNextState(WindowState* window_state,
   // This can happen during dragging.
   // TODO(oshima): This was added for DOCKED windows. Investigate if
   // we still need this.
+  gfx::Rect restore_bounds_in_screen;
   if (window_state->window()->parent()) {
-    // When restoring from a minimized state, we want to restore to the
-    // previous bounds. However, we want to maintain the restore bounds.
-    // (The restore bounds are set if a user maximized the window in one
-    // axis by double clicking the window border for example).
-    if (previous_state_type == WindowStateType::kMinimized &&
-        window_state->IsNormalStateType() && window_state->HasRestoreBounds() &&
-        !window_state->unminimize_to_restore_bounds()) {
+    // Save the current bounds as the restore bounds if changing from normal
+    // state (not horizontal/vertical maximized) to other non-minimized window
+    // states.
+    if (is_previous_normal_type && !window_state->IsMinimized() &&
+        !window_state->IsNormalStateType()) {
       window_state->SaveCurrentBoundsForRestore();
     }
 
-    UpdateBoundsFromState(window_state, previous_state_type);
+    // When restoring from the minimized state to horizontal/vertical maximized.
+    // We want to restore to the previous horizontal/vertical maximized bounds
+    // and keep its restore bounds.(E.g, double clicking the window border will
+    // set the window to be horizontal/vertical maximized and set the restore
+    // bounds).
+    if (previous_state_type == WindowStateType::kMinimized &&
+        window_state->IsVerticalOrHorizontalMaximized() &&
+        !window_state->unminimize_to_restore_bounds()) {
+      restore_bounds_in_screen = window_state->GetRestoreBoundsInScreen();
+      window_state->SaveCurrentBoundsForRestore();
+    }
+
+    UpdateBoundsFromState(window_state, previous_state_type,
+                          float_start_location);
     UpdateMinimizedState(window_state, previous_state_type);
   }
   window_state->NotifyPostStateTypeChange(previous_state_type);
+
+  if (!restore_bounds_in_screen.IsEmpty()) {
+    // Set the restore bounds back after unminimize the window to normal state.
+    // Usually normal state window should have no restore bounds unless it was
+    // horizontal/vertical maximized before minimize.
+    window_state->SetRestoreBoundsInScreen(restore_bounds_in_screen);
+  } else if (window_state->window_state_restore_history().empty()) {
+    // Clear the restore bounds when restore history stack has been cleared to
+    // keep them consistent. Do this after window state updates as restore
+    // history stack will be updated during the process.
+    window_state->ClearRestoreBounds();
+  }
 
   if (IsPinnedWindowStateType(next_state_type) ||
       IsPinnedWindowStateType(previous_state_type)) {
@@ -568,7 +595,8 @@ void DefaultState::ReenterToCurrentState(
     window_state->SetRestoreBoundsInParent(stored_bounds_);
   }
 
-  UpdateBoundsFromState(window_state, state_in_previous_mode->GetType());
+  UpdateBoundsFromState(window_state, state_in_previous_mode->GetType(),
+                        /*float_start_location=*/absl::nullopt);
   UpdateMinimizedState(window_state, state_in_previous_mode->GetType());
 
   // Then restore the restore bounds to their previous value.
@@ -580,8 +608,10 @@ void DefaultState::ReenterToCurrentState(
   window_state->NotifyPostStateTypeChange(previous_state_type);
 }
 
-void DefaultState::UpdateBoundsFromState(WindowState* window_state,
-                                         WindowStateType previous_state_type) {
+void DefaultState::UpdateBoundsFromState(
+    WindowState* window_state,
+    WindowStateType previous_state_type,
+    absl::optional<chromeos::FloatStartLocation> float_start_location) {
   aura::Window* window = window_state->window();
   gfx::Rect bounds_in_parent;
 
@@ -649,12 +679,14 @@ void DefaultState::UpdateBoundsFromState(WindowState* window_state,
       // When a floated window is previously minimized, un-minimize will restore
       // the float state with previous floated bounds, without re-calculating
       // preferred bounds.
-      bounds_in_parent =
-          previous_state_type == WindowStateType::kMinimized
-              ? window->bounds()
-              : Shell::Get()
-                    ->float_controller()
-                    ->GetPreferredFloatWindowClamshellBounds(window);
+      if (previous_state_type == WindowStateType::kMinimized) {
+        bounds_in_parent = window->bounds();
+      } else {
+        bounds_in_parent =
+            Shell::Get()->float_controller()->GetFloatWindowClamshellBounds(
+                window, float_start_location.value_or(
+                            chromeos::FloatStartLocation::kBottomRight));
+      }
       break;
     }
     case WindowStateType::kInactive:

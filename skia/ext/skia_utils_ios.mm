@@ -9,14 +9,10 @@
 #include <stddef.h>
 #include <stdint.h>
 
+#include "base/apple/scoped_cftyperef.h"
 #include "base/ios/ios_util.h"
 #include "base/logging.h"
-#include "base/mac/scoped_cftyperef.h"
 #include "third_party/skia/include/utils/mac/SkCGUtils.h"
-
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
 
 namespace {
 

@@ -6,10 +6,6 @@
 
 #import "base/time/time.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 namespace {
 // The duration of the period following a screen touch during which the user is
 // still considered to be interacting with the page.

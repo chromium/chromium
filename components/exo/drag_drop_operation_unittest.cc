@@ -180,8 +180,8 @@ class DragDropOperationTestWithWebUITabStripTest
   MockShellDelegate* mock_shell_delegate() { return mock_shell_delegate_; }
 
  private:
-  raw_ptr<NiceMock<MockShellDelegate>, ExperimentalAsh> mock_shell_delegate_ =
-      nullptr;
+  raw_ptr<NiceMock<MockShellDelegate>, DanglingUntriaged | ExperimentalAsh>
+      mock_shell_delegate_ = nullptr;
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 

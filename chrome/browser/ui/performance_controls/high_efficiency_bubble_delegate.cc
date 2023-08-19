@@ -24,20 +24,16 @@ HighEfficiencyBubbleDelegate::HighEfficiencyBubbleDelegate(
 void HighEfficiencyBubbleDelegate::OnSettingsClicked() {
   chrome::ShowSettingsSubPage(browser_, chrome::kPerformanceSubPage);
   close_action_ = HighEfficiencyBubbleActionType::kOpenSettings;
-  dialog_model()->host()->Close();
 }
 
-void HighEfficiencyBubbleDelegate::OnAddSiteToExclusionListButtonClicked() {
+void HighEfficiencyBubbleDelegate::OnAddSiteToExceptionsListClicked() {
   content::WebContents* const web_contents =
       browser_->tab_strip_model()->GetActiveWebContents();
   CHECK(web_contents);
   const std::string host = web_contents->GetURL().host();
   PrefService* const pref_service = browser_->profile()->GetPrefs();
   high_efficiency::AddSiteToExceptionsList(pref_service, host);
-  HighEfficiencyChipTabHelper* const tab_helper =
-      HighEfficiencyChipTabHelper::FromWebContents(web_contents);
-  CHECK(tab_helper);
-  tab_helper->SetSiteWasAddedToExclusionList();
+  close_action_ = HighEfficiencyBubbleActionType::kAddException;
 }
 
 void HighEfficiencyBubbleDelegate::OnDialogDestroy() {

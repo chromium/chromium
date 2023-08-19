@@ -6,6 +6,7 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
+#include "chrome/common/chrome_switches.h"
 #include "chrome/common/url_constants.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "content/public/browser/navigation_entry.h"
@@ -17,21 +18,17 @@
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "url/gurl.h"
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-#include "ash/constants/ash_switches.h"
-#endif
-
 class ViewExtensionSourceTest : public extensions::ExtensionBrowserTest {
  public:
   void SetUpCommandLine(base::CommandLine* command_line) override {
     extensions::ExtensionBrowserTest::SetUpCommandLine(command_line);
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
     // These tests use chrome:// URLs and are written on the assumption devtools
     // are always available, so guarantee that assumption holds. Tests that
     // check if devtools can be disabled should use a test fixture without the
     // kForceDevToolsAvailable switch set.
-    command_line->AppendSwitch(ash::switches::kForceDevToolsAvailable);
+    command_line->AppendSwitch(switches::kForceDevToolsAvailable);
 #endif
   }
 };

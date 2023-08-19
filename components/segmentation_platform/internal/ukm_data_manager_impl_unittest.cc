@@ -12,7 +12,7 @@
 #include "components/prefs/testing_pref_service.h"
 #include "components/segmentation_platform/internal/database/mock_ukm_database.h"
 #include "components/segmentation_platform/internal/database/ukm_types.h"
-#include "components/segmentation_platform/internal/execution/model_execution_manager_impl.h"
+#include "components/segmentation_platform/internal/execution/model_manager_impl.h"
 #include "components/segmentation_platform/internal/proto/model_prediction.pb.h"
 #include "components/segmentation_platform/internal/segmentation_platform_service_impl.h"
 #include "components/segmentation_platform/internal/segmentation_platform_service_test_base.h"

@@ -232,6 +232,9 @@ found in the LICENSE file.
       <message name="IDS_TOUCH_TO_FILL_PASSKEY_CREDENTIAL_ACCESSIBILITY_DESCRIPTION" desc="Content description for a passkey credential item on the sheet list. This is not visually displayed, but is audibly read by screen readers for accessibility purposes.">
         Passkey for <ph name="USERNAME">%1$s<ex>John.Doe@example.com</ex></ph>, use your screen lock.
       </message>
+      <message name="IDS_TOUCH_TO_FILL_USE_DEVICE_PASSKEY" desc="Title of a button at the end of a touch to fill sheet that will use a different device’s passkey. This string also exists for desktop password manager and translations should match. See IDS_PASSWORD_MANAGER_USE_DEVICE_PASSKEY in components/password_manager_strings.grdp.">
+        Use a passkey on a different device
+      </message>
     </messages>
   </release>
 </grit>

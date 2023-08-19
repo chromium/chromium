@@ -8,8 +8,12 @@ import collections
 import contextlib
 import json
 import logging
+import math
+import os
 import queue
+import signal
 import threading
+import time
 from typing import (
     Any,
     Dict,
@@ -26,12 +30,14 @@ from urllib.parse import urlsplit
 import mozinfo
 
 from blinkpy.common import path_finder
-from blinkpy.common.wpt_results_diff import wpt_results_diff
+from blinkpy.common import wpt_results_diff
 from blinkpy.common.memoized import memoized
 from blinkpy.common.system.filesystem import FileSystem
 from blinkpy.common.unified_diff import unified_diff
+from blinkpy.w3c.wpt_metadata import RunInfo
 from blinkpy.web_tests.port.base import Port
 from blinkpy.web_tests.models import test_failures
+from blinkpy.web_tests.models.test_run_results import convert_to_hierarchical_view
 from blinkpy.web_tests.models.typ_types import (
     Artifacts,
     Result,
@@ -41,8 +47,9 @@ from blinkpy.web_tests.models.typ_types import (
 
 path_finder.bootstrap_wpt_imports()
 from wptrunner import manifestexpected, wptmanifest
+from wptrunner.manifestexpected import TestNode
 from wptrunner.wptmanifest import node as wptnode
-from wptrunner.wptmanifest.backends.base import ManifestItem
+from wptrunner.wptmanifest.backends import static
 
 _log = logging.getLogger(__name__)
 
@@ -85,6 +92,8 @@ class WPTResult(Result):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.messages = []
+        self.has_stderr = False
+        self.image_diff_stats = None
         self._test_section = wptnode.DataNode(_test_basename(self.name))
 
     def _add_expected_status(self, section: wptnode.DataNode, status: str):
@@ -136,6 +145,7 @@ class WPTResult(Result):
                             message: Optional[str] = None):
         if message:
             self.messages.append('%s: %s\n' % (subtest, message))
+            self.has_stderr = True
         subtest_section = wptnode.DataNode(subtest)
         self._add_expected_status(subtest_section, status)
         self._test_section.append(subtest_section)
@@ -153,15 +163,25 @@ class WPTResult(Result):
                          message: Optional[str] = None):
         if message:
             self.messages.insert(0, 'Harness: %s\n' % message)
+            self.has_stderr = True
         self._add_expected_status(self._test_section, status)
         self._maybe_set_statuses(status, expected)
 
     @property
-    def actual_metadata(self):
+    def actual_metadata(self) -> str:
         return wptmanifest.serialize(self._test_section)
 
-    def test_section(self):
-        return self._test_section
+    def test_section(self, run_info: RunInfo) -> TestNode:
+        # Wrap the test AST node in a root node representing a metadata file,
+        # which is the shape `static.compile_ast(...)` expects.
+        root = wptnode.DataNode()
+        root.append(self._test_section)
+        test_file_expectations = static.compile_ast(
+            root,
+            run_info,
+            manifestexpected.data_cls_getter,
+            test_path=self.file_path)
+        return test_file_expectations.get_test(self._test_section.data)
 
 
 def _test_basename(test_id: str) -> str:
@@ -193,7 +213,7 @@ class StreamShutdown(Exception):
     """Exception to halt event processing."""
 
 
-def update_with_static_expectations(test_or_subtest: ManifestItem):
+def update_with_static_expectations(test_or_subtest: TestNode):
     """Update a (sub)test's metadata with evaluated expectations.
 
     wptrunner manages test expectations with a high-level API (i.e.,
@@ -253,7 +273,9 @@ class WPTResultsProcessor:
                  port: Port,
                  artifacts_dir: str = '',
                  sink: Optional[ResultSinkReporter] = None,
-                 test_name_prefix: str = ''):
+                 test_name_prefix: str = '',
+                 failure_threshold: Optional[int] = None,
+                 crash_timeout_threshold: Optional[int] = None):
         self.fs = fs
         self.port = port
         self.artifacts_dir = artifacts_dir
@@ -263,10 +285,8 @@ class WPTResultsProcessor:
         if test_name_prefix and not test_name_prefix.endswith('/'):
             test_name_prefix += '/'
         self.test_name_prefix = test_name_prefix
-        # Manifests should include `jsshell` tests, which wptrunner will report
-        # as skipped. See crbug.com/1431514#c3.
-        self.wpt_manifest = self.port.wpt_manifest('external/wpt', False)
-        self.internal_manifest = self.port.wpt_manifest('wpt_internal', False)
+        self.wpt_manifest = self.port.wpt_manifest('external/wpt')
+        self.internal_manifest = self.port.wpt_manifest('wpt_internal')
         self.path_finder = path_finder.PathFinder(self.fs)
         # Provide placeholder properties until the `suite_start` events are
         # processed.
@@ -274,7 +294,6 @@ class WPTResultsProcessor:
 
         self._iteration: int = 0
         self._results: Dict[str, WPTResult] = {}
-        self._leaves: Dict[str, Dict[str, Any]] = collections.defaultdict(dict)
         self._crash_log: List[str] = []
         self._event_handlers = {
             'suite_start': self.suite_start,
@@ -285,7 +304,16 @@ class WPTResultsProcessor:
             'shutdown': self.shutdown,
             'process_output': self.process_output,
         }
-        self.has_regressions: bool = False
+        self.num_regressions: int = 0
+        self.failure_threshold = failure_threshold or math.inf
+        self.crash_timeout_threshold = crash_timeout_threshold or math.inf
+        assert self.failure_threshold > 0
+        assert self.crash_timeout_threshold > 0
+
+        # Collects the number of failures by status (only from initial run).
+        self._num_failures_by_status = collections.defaultdict(int)
+        # Results includes retries, used for computing full_results.json
+        self._results_by_name = collections.defaultdict(list)
 
     def copy_results_viewer(self):
         files_to_copy = ['results.html', 'results.html.version']
@@ -294,69 +322,44 @@ class WPTResultsProcessor:
                 'blinkpy', 'web_tests', file)
             destination = self.fs.join(self.artifacts_dir, file)
             self.fs.copyfile(source, destination)
-            if file == 'results.html':
-                _log.info(f'View the test results at file://{destination}')
 
-    def process_results_json(self,
-                             raw_results_path,
-                             full_results_json=None,
-                             full_results_jsonp=None,
-                             failing_results_jsonp=None):
+    def process_results_json(self, json_test_results=None):
         """Postprocess the results JSON generated by wptrunner.
 
         Arguments:
-            raw_results_path (str): Path to a JSON results file, which contains
-                raw contents or points to artifacts that will be extracted into
-                their own files. These fields are removed from the test results
-                tree to avoid duplication. This method will overwrite the
-                original JSON file with the processed results.
-            full_results_json (str): Path to write processed JSON results to.
-            full_results_jsonp (str): Path to write processed JSONP results to.
-            failing_results_jsonp (str): Path to write failing JSONP results to.
+            json_test_results (str): An optional parameter which specifies path
+                to a JSON results file. This is specified by command line arg
+                '--json-test-results' and contains exact same data as full_results.json.
 
         See Also:
             https://chromium.googlesource.com/chromium/src/+/HEAD/docs/testing/json_test_results_format.md
         """
-        full_results_json = full_results_json or self.fs.join(
-            self.artifacts_dir, 'full_results.json')
-        full_results_jsonp = full_results_jsonp or self.fs.join(
-            self.artifacts_dir, 'full_results_jsonp.js')
-        # NOTE: Despite the name, this is actually a JSONP file.
-        # https://source.chromium.org/chromium/chromium/src/+/main:third_party/blink/tools/blinkpy/web_tests/controllers/manager.py;l=636;drc=3b93609b2498af0e9dc298f64e2b4f6204af68fa
-        failing_results_jsonp = failing_results_jsonp or self.fs.join(
-            self.artifacts_dir, 'failing_results.json')
-
-        # results is modified in place throughout this function.
-        with self.fs.open_text_file_for_reading(
-                raw_results_path) as results_file:
-            results = json.load(results_file)
-
-        metadata = results.get('metadata') or {}
-        if 'num_failures_by_type' in results and 'PASS' in results[
-                'num_failures_by_type']:
-            num_passes = results['num_failures_by_type']['PASS']
-            results['num_passes'] = num_passes
-
-        self._update_tests_trie(results['tests'],
-                                delim=results.get('path_delimiter', '/'))
-
-        results['num_regressions'] = self._count_regressions(results['tests'])
-
-        results_serialized = json.dumps(results)
+        final_result = self.create_final_results()
+        results_serialized = json.dumps(final_result)
+        full_results_json = self.fs.join(self.artifacts_dir,
+                                         'full_results.json')
         self.fs.write_text_file(full_results_json, results_serialized)
-        self.fs.copyfile(full_results_json, raw_results_path)
+        if json_test_results:
+            self.fs.copyfile(full_results_json, json_test_results)
 
         # JSONP paddings need to be the same as:
         # https://source.chromium.org/chromium/chromium/src/+/main:third_party/blink/tools/blinkpy/web_tests/controllers/manager.py;l=629;drc=3b93609b2498af0e9dc298f64e2b4f6204af68fa
+        full_results_jsonp = self.fs.join(self.artifacts_dir,
+                                          'full_results_jsonp.js')
         with self.fs.open_text_file_for_writing(full_results_jsonp) as dest:
             dest.write('ADD_FULL_RESULTS(')
             dest.write(results_serialized)
             dest.write(');')
 
-        self._trim_to_regressions(results['tests'])
+        self.trim_to_regressions(final_result['tests'])
+        # NOTE: Despite the name, this is actually a JSONP file.
+        # https://source.chromium.org/chromium/chromium/src/+/main:third_party/blink/tools/blinkpy/web_tests/controllers/manager.py;l=636;drc=3b93609b2498af0e9dc298f64e2b4f6204af68fa
+        failing_results_jsonp = self.fs.join(self.artifacts_dir,
+                                             'failing_results.json')
+
         with self.fs.open_text_file_for_writing(failing_results_jsonp) as dest:
             dest.write('ADD_RESULTS(')
-            json.dump(results, dest)
+            json.dump(final_result, dest)
             dest.write(');')
 
     @contextlib.contextmanager
@@ -377,7 +380,6 @@ class WPTResultsProcessor:
                 before this manager exited; a well-behaved caller should avoid
                 this.
         """
-        self.copy_results_viewer()
         events = queue.SimpleQueue()
         worker = threading.Thread(target=self._consume_events,
                                   args=(events, ),
@@ -389,6 +391,7 @@ class WPTResultsProcessor:
         finally:
             # Send a shutdown event, if one has not been sent already, to tell
             # the worker to exit.
+            _log.error('Send shutdown event to stop the workers...')
             events.put({'action': 'shutdown'}, timeout=timeout)
             worker.join(timeout=timeout)
 
@@ -401,16 +404,24 @@ class WPTResultsProcessor:
                 _log.info('Stopping results stream worker thread.')
                 return
             except Exception as error:
-                _log.error('Unable to process event %r: %s', event, error)
+                _log.exception('Unable to process event %r: %s', event, error)
 
     def process_event(self, raw_event: Dict[str, Any]):
         raw_event = dict(raw_event)
         event = Event(raw_event.pop('action'), raw_event.pop('time'),
                       raw_event.pop('thread'), raw_event.pop('pid'),
                       raw_event.pop('source'))
+        if (event.action in ['test_start', 'test_status', 'test_end']
+                and self.run_info.get('used_upstream')):
+            # Do not process test related events when run with
+            # --use-upstream-wpt. Only Wpt report is needed for such case.
+            return
         test = raw_event.pop('test', None)
+        subsuite = raw_event.pop('subsuite', '')
         if test:
-            raw_event['test'] = test[1:] if test.startswith('/') else test
+            test = test[1:] if test.startswith('/') else test
+            test = self._get_chromium_test_name(test, subsuite)
+            raw_event['test'] = test
         status = raw_event.get('status')
         if status:
             expected = {raw_event.get('expected', status)}
@@ -426,13 +437,20 @@ class WPTResultsProcessor:
 
     def suite_start(self,
                     event: Event,
-                    run_info: Optional[Dict[str, Any]] = None,
+                    run_info: Optional[RunInfo] = None,
                     **_):
         if run_info:
             self.run_info.update(run_info)
 
     def suite_end(self, event: Event, **_):
         self._iteration += 1
+
+    def _get_chromium_test_name(self, test: str, subsuite: str):
+        if not self.path_finder.is_wpt_internal_path(test):
+            test = self.path_finder.wpt_prefix() + test
+        if subsuite:
+            test = f'virtual/{subsuite}/{test}'
+        return test
 
     def test_start(self, event: Event, test: str, **_):
         self._results[test] = WPTResult(
@@ -451,25 +469,29 @@ class WPTResultsProcessor:
             path_from_test_root = self.internal_manifest.file_path_for_test_url(
                 test[len('wpt_internal/'):])
         else:
+            test = self.path_finder.strip_wpt_path(test)
             path_from_test_root = self.wpt_manifest.file_path_for_test_url(
                 test)
         return path_from_test_root
 
     @memoized
     def _file_path_for_test(self, test: str) -> str:
+        _, test = self.port.get_suite_name_and_base_test(test)
         path_from_test_root = self.get_path_from_test_root(test)
-        if self.path_finder.is_wpt_internal_path(test):
-            prefix = 'wpt_internal'
-        else:
-            prefix = self.path_finder.wpt_prefix()
         if not path_from_test_root:
             raise EventProcessingError(
                 'Test ID %r does not exist in the manifest' % test)
+        if self.path_finder.is_wpt_internal_path(test):
+            prefix = 'wpt_internal'
+        else:
+            prefix = self.fs.join('external', 'wpt')
         return self.path_finder.path_from_web_tests(prefix,
                                                     path_from_test_root)
 
-    def get_test_type(self, test_path: str) -> str:
-        if self.path_finder.is_wpt_internal_path(test_path):
+    def get_test_type(self, test: str) -> str:
+        _, test = self.port.get_suite_name_and_base_test(test)
+        test_path = self.get_path_from_test_root(test)
+        if self.path_finder.is_wpt_internal_path(test):
             return self.internal_manifest.get_test_type(test_path)
         else:
             return self.wpt_manifest.get_test_type(test_path)
@@ -500,31 +522,123 @@ class WPTResultsProcessor:
             raise EventProcessingError('Test not started: %s' % test)
         result.took = max(0, event.time - result.started) / 1000
         result.update_from_test(status, expected, message)
-        result.artifacts = self._extract_artifacts(result, extra).artifacts
-        if result.unexpected and result.actual not in {
-                ResultType.Pass, ResultType.Skip
-        }:
-            self.has_regressions = True
-        if not self.run_info.get('used_upstream'):
-            # We only need Wpt report when run with upstream
-            self.sink.report_individual_test_result(
-                test_name_prefix=self.test_name_prefix,
-                result=result,
-                artifact_output_dir=self.fs.dirname(self.artifacts_dir),
-                expectations=None,
-                test_file_location=result.file_path)
+        artifacts, image_diff_stats = self._extract_artifacts(result, extra)
+        result.artifacts = artifacts.artifacts
+        result.image_diff_stats = image_diff_stats
+        if result.unexpected:
+            self._handle_unexpected_result(result)
+        self.sink.report_individual_test_result(
+            test_name_prefix=self.test_name_prefix,
+            result=result,
+            artifact_output_dir=self.fs.dirname(self.artifacts_dir),
+            expectations=None,
+            test_file_location=result.file_path)
         _log.debug(
             'Reported result for %s, iteration %d (actual: %s, '
             'expected: %s, artifacts: %s)', result.name, self._iteration,
             result.actual, ', '.join(sorted(result.expected)), ', '.join(
                 sorted(result.artifacts)) if result.artifacts else '<none>')
 
+        if self._iteration == 0:
+            self._num_failures_by_status[result.actual] += 1
+
+        self._results_by_name[test].append(result)
+
+    def _handle_unexpected_result(self, result: WPTResult):
+        if result.actual == ResultType.Failure:
+            self.failure_threshold -= 1
+        elif result.actual in {ResultType.Crash, ResultType.Timeout}:
+            self.crash_timeout_threshold -= 1
+        if self.failure_threshold <= 0 or self.crash_timeout_threshold <= 0:
+            statuses = ('failures'
+                        if self.failure_threshold <= 0 else 'crashes/timeouts')
+            _log.error('Exiting early after exceeding threshold '
+                       f'for unexpected {statuses}.')
+            if self.port.host.platform.is_win():
+                signum = signal.CTRL_BREAK_EVENT
+            else:
+                signum = signal.SIGTERM
+            os.kill(os.getpid(), signum)
+
     def shutdown(self, event: Event, **_):
         if self._results:
             _log.warning('Some tests have unreported results:')
             for test in sorted(self._results):
                 _log.warning('  %s', test)
+
         raise StreamShutdown
+
+    def create_final_results(self):
+        # compute the tests dict
+        tests = {}
+        num_passes = 0
+        for test_name, results in self._results_by_name.items():
+            # TODO: the expected result calculated this way could change each time
+            expected = ' '.join(results[0].expected)
+            actual = [result.actual for result in results]
+            is_pass = results[-1].actual == ResultType.Pass
+            is_unexpected = results[-1].unexpected
+            if is_pass:
+                num_passes += 1
+
+            test_dict = {}
+            test_dict['expected'] = expected
+            test_dict['actual'] = ' '.join(actual)
+            test_dict['shard'] = self.port.get_option('shard_index')
+
+            # Fields below are optional. To avoid bloating the output results json
+            # too much, only add them when they are True or non-empty.
+            if len(set(actual)) > 1:
+                test_dict['is_flaky'] = True
+
+            rounded_run_time = round(results[0].took, 1)
+            if rounded_run_time:
+                test_dict['time'] = rounded_run_time
+
+            if self.port.is_slow_wpt_test(test_name):
+                test_dict['is_slow_test'] = True
+
+            if is_unexpected:
+                test_dict['is_unexpected'] = True
+                if not is_pass:
+                    test_dict['is_regression'] = True
+                    self.num_regressions += 1
+
+            if results[0].image_diff_stats:
+                test_dict['image_diff_stats'] = results[0].image_diff_stats
+
+            has_stderr = any([result.has_stderr for result in results])
+            artifacts_across_retries = test_dict.setdefault('artifacts', {})
+            for result in results:
+                for artifact_id, paths in result.artifacts.items():
+                    artifacts_across_retries.setdefault(artifact_id,
+                                                        []).extend(paths)
+
+            if has_stderr:
+                test_dict['has_stderr'] = True
+
+            # TODO: handle bugs, crash_site, has_repaint_overlay
+
+            convert_to_hierarchical_view(tests, test_name, test_dict)
+
+        # Create the final result dictionary
+        final_results = {
+            # There are some required fields that we just hard-code.
+            'version': 3,
+
+            # TODO: change this to the actual value
+            'interrupted': False,
+            'path_delimiter': "/",
+            'seconds_since_epoch': int(time.time()),
+            'layout_tests_dir': self.port.web_tests_dir(),
+            "flag_name": self.port.flag_specific_config_name() or '',
+            'num_failures_by_type': self._num_failures_by_status,
+            'num_passes': num_passes,
+            'skipped': self._num_failures_by_status[ResultType.Skip],
+            'num_regressions': self.num_regressions,
+            'tests': tests,
+        }
+        return final_results
 
     def process_output(self, event: Event, command: str, data: Any, **_):
         if not any(executable in command for executable in self._executables):
@@ -533,38 +647,8 @@ class WPTResultsProcessor:
             data = json.dumps(data, sort_keys=True)
         self._crash_log.append(data + '\n')
 
-    def _update_tests_trie(self,
-                           current_node,
-                           current_path: str = '',
-                           delim: str = '/'):
-        """Recursively update the test results trie.
-
-        The JSON results represent tests as the leaves of a trie (nested
-        objects). The trie's structure corresponds to the WPT directory
-        structure on disk. This method will traverse the trie's nodes, writing
-        files to the artifacts directory at leaf nodes and uploading them to
-        ResultSink.
-
-        Arguments:
-            current_node: The node in the trie to be processed.
-            current_path: The path constructed so far, which will become a test
-                name at a leaf node. An empty path represents the WPT root URL.
-            delim: Delimiter between components in test names. In practice, the
-                value is the POSIX directory separator.
-        """
-        if 'actual' in current_node:
-            # Leaf node detected.
-            current_node.update(self._leaves.get(current_path, {}))
-        else:
-            for component, child_node in current_node.items():
-                if current_path:
-                    child_path = current_path + delim + component
-                else:
-                    # At the web test root, do not include a leading slash.
-                    child_path = component
-                self._update_tests_trie(child_node, child_path, delim)
-
-    def _read_expected_metadata(self, test_name: str, file_path: str):
+    def _read_expected_metadata(self, test_name: str,
+                                file_path: str) -> TestNode:
         """Try to locate the expected output of this test, if it exists.
 
         The expected output of a test is checked in to the source tree beside
@@ -578,9 +662,7 @@ class WPTResultsProcessor:
             metadata_root = self.path_finder.path_from_web_tests(
                 'wpt_internal')
         else:
-            # TODO(crbug.com/1299650): Support virtual tests and metadata fallback.
-            metadata_root = self.path_finder.path_from_web_tests(
-                'external', 'wpt')
+            metadata_root = self.path_finder.path_from_wpt_tests()
         test_file_subpath = self.fs.relpath(file_path, metadata_root)
         manifest = manifestexpected.get_manifest(metadata_root,
                                                  test_file_subpath,
@@ -593,42 +675,38 @@ class WPTResultsProcessor:
         update_with_static_expectations(test_manifest)
         return test_manifest
 
-    def _write_text_results(self, test_name: str, artifacts: Artifacts,
-                            actual_text: str, file_path: str,
-                            actual_node: Any):
+    def _write_text_results(self, result: WPTResult, artifacts: Artifacts):
         """Write actual, expected, and diff text outputs to disk, if possible.
 
         If the expected output (WPT metadata) is missing, this method will not
         produce diff, but will still produce pretty diff.
 
         Arguments:
-            test_name: Web test name (a path).
+            result: WPT test result.
             artifacts: Artifact manager (note that this is not the artifact ID
                 to paths mapping itself).
-            actual_text: (Sub)test results in the WPT metadata format. There
-                should be no conditions (i.e., no `if <expr>: <value>`).
         """
         actual_subpath = self.port.output_filename(
-            test_name, test_failures.FILENAME_SUFFIX_ACTUAL, '.txt')
+            result.name, test_failures.FILENAME_SUFFIX_ACTUAL, '.txt')
+        actual_text = result.actual_metadata
         artifacts.CreateArtifact('actual_text', actual_subpath,
                                  actual_text.encode())
-        expected_file_exists = True
 
+        expected = None
         try:
-            expected_manifest = self._read_expected_metadata(
-                test_name, file_path)
+            expected = self._read_expected_metadata(result.name,
+                                                    result.file_path)
         except FileNotFoundError:
-            _log.debug('".ini" file for "%s" does not exist.', file_path)
-            expected_file_exists = False
+            _log.debug('".ini" file for "%s" does not exist.',
+                       result.file_path)
         except (ValueError, KeyError, wptmanifest.parser.ParseError) as error:
-            _log.warning('Unable to parse metadata for %s: %s', test_name,
+            _log.warning('Unable to parse metadata for %s: %s', result.name,
                          error)
-            expected_file_exists = False
 
-        if expected_file_exists:
-            expected_text = wptmanifest.serialize(expected_manifest.node)
+        if expected:
+            expected_text = wptmanifest.serialize(expected.node)
             expected_subpath = self.port.output_filename(
-                test_name, test_failures.FILENAME_SUFFIX_EXPECTED, '.txt')
+                result.name, test_failures.FILENAME_SUFFIX_EXPECTED, '.txt')
             artifacts.CreateArtifact('expected_text', expected_subpath,
                                      expected_text.encode())
 
@@ -639,22 +717,19 @@ class WPTResultsProcessor:
                 actual_subpath,
             )
             diff_subpath = self.port.output_filename(
-                test_name, test_failures.FILENAME_SUFFIX_DIFF, '.txt')
+                result.name, test_failures.FILENAME_SUFFIX_DIFF, '.txt')
             artifacts.CreateArtifact('text_diff', diff_subpath,
                                      diff_content.encode())
 
-        expected_node = None
-        if expected_file_exists:
-            expected_node = expected_manifest.node
+        test_type = self.get_test_type(result.name)
+        if not test_type:
+            raise EventProcessingError(f'Unknown test type: {result.name!r}')
+        actual = result.test_section(self.run_info)
+        html_diff_content = wpt_results_diff.wpt_results_diff(
+            actual, expected, test_type)
 
-        path_from_test_root = self.get_path_from_test_root(test_name)
-
-        test_type = self.get_test_type(path_from_test_root)
-
-        html_diff_content = wpt_results_diff(expected_node, actual_node,
-                                             file_path, test_type)
         html_diff_subpath = self.port.output_filename(
-            test_name, test_failures.FILENAME_SUFFIX_HTML_DIFF, '.html')
+            result.name, test_failures.FILENAME_SUFFIX_HTML_DIFF, '.html')
         artifacts.CreateArtifact('pretty_text_diff', html_diff_subpath,
                                  html_diff_content.encode())
 
@@ -672,6 +747,8 @@ class WPTResultsProcessor:
             The diff stats if the screenshots are different.
         """
         # Remember the two images so we can diff them later.
+        _, test_url = self.port.get_suite_name_and_base_test(test_name)
+        test_url = self.path_finder.strip_wpt_path(test_url)
         actual_image_bytes = b''
         expected_image_bytes = b''
 
@@ -688,7 +765,7 @@ class WPTResultsProcessor:
 
             screenshot_key = 'expected_image'
             file_suffix = test_failures.FILENAME_SUFFIX_EXPECTED
-            if test_name == url:
+            if url == test_url:
                 screenshot_key = 'actual_image'
                 file_suffix = test_failures.FILENAME_SUFFIX_ACTUAL
                 actual_image_bytes = image_bytes
@@ -722,7 +799,7 @@ class WPTResultsProcessor:
                                  ''.join(lines).encode())
         lines.clear()
 
-    def _extract_artifacts(self, result: WPTResult, extra) -> Artifacts:
+    def _extract_artifacts(self, result: WPTResult, extra) -> (Artifacts, str):
         # Ensure `artifacts_base_dir` (i.e., `layout-test-results`) is prepended
         # to `full_results_jsonp.js` paths so that `results.html` can correctly
         # fetch artifacts.
@@ -731,40 +808,26 @@ class WPTResultsProcessor:
                               iteration=self._iteration,
                               artifacts_base_dir=self.fs.basename(
                                   self.artifacts_dir))
-        leaf = self._leaves[result.name]
+        image_diff_stats = None
         if result.actual not in [ResultType.Pass, ResultType.Skip]:
-            self._write_text_results(result.name, artifacts,
-                                     result.actual_metadata, result.file_path,
-                                     result.test_section())
+            self._write_text_results(result, artifacts)
             screenshots = (extra or {}).get('reftest_screenshots') or []
             if screenshots:
-                diff_stats = self._write_screenshots(result.name, artifacts,
-                                                     screenshots)
-                leaf['image_diff_stats'] = diff_stats
+                image_diff_stats = self._write_screenshots(
+                    result.name, artifacts, screenshots)
 
         if result.messages:
             self._write_log(result.name, artifacts, 'stderr',
                             test_failures.FILENAME_SUFFIX_STDERR,
                             result.messages)
-            # Required by blinkpy/web_tests/results.html to show stderr.
-            leaf['has_stderr'] = True
         if self._crash_log:
             self._write_log(result.name, artifacts, 'crash_log',
                             test_failures.FILENAME_SUFFIX_CRASH_LOG,
                             self._crash_log)
 
-        artifacts_across_retries = leaf.setdefault('artifacts', {})
-        for artifact_id, paths in artifacts.artifacts.items():
-            artifacts_across_retries.setdefault(artifact_id, []).extend(paths)
-        return artifacts
+        return artifacts, image_diff_stats
 
-    def _count_regressions(self, current_node) -> int:
-        """Recursively count number of regressions from test results trie."""
-        if current_node.get('actual'):
-            return int(current_node.get('is_regression', 0))
-        return sum(map(self._count_regressions, current_node.values()))
-
-    def _trim_to_regressions(self, current_node):
+    def trim_to_regressions(self, current_node):
         """Recursively remove non-regressions from the test results trie.
 
         Returns:
@@ -778,7 +841,7 @@ class WPTResultsProcessor:
         # Not a leaf, recurse into the subtree. Note that we make a copy of the
         # items since we delete from the node during the loop.
         for component, child_node in list(current_node.items()):
-            if self._trim_to_regressions(child_node):
+            if self.trim_to_regressions(child_node):
                 del current_node[component]
 
         # Delete the current node if empty.
@@ -796,8 +859,6 @@ class WPTResultsProcessor:
             report['results'] = self._compact_wpt_results(report['results'])
         with self.fs.open_text_file_for_writing(artifact_path) as report_file:
             json.dump(report, report_file, separators=(',', ':'))
-        _log.info('Processed wpt report (%s -> %s)', report_path,
-                  artifact_path)
         self.sink.report_invocation_level_artifacts({
             report_filename: {
                 'filePath': artifact_path,

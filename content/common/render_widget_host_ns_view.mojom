@@ -165,7 +165,7 @@ interface RenderWidgetHostNSViewHost {
   ForwardKeyboardEventWithCommands(
       blink.mojom.Event event,
       array<uint8> native_event_data,
-      bool skip_in_browser,
+      bool skip_if_unhandled,
       array<blink.mojom.EditCommand> commands);
 
   // Forward events to the renderer or the input router, as appropriate.

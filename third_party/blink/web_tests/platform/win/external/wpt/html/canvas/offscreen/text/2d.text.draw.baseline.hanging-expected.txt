@@ -1,0 +1,4 @@
+This is a testharness.js-based test.
+PASS OffscreenCanvas test: 2d.text.draw.baseline.hanging
+Harness: the test ran to completion.
+

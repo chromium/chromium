@@ -26,7 +26,7 @@ CascadePriority CascadeMap::At(const CSSPropertyName& name) const {
 
 const CascadePriority* CascadeMap::Find(const CSSPropertyName& name) const {
   if (name.IsCustomProperty()) {
-    auto iter = custom_properties_.find(name);
+    auto iter = custom_properties_.find(name.ToAtomicString());
     if (iter != custom_properties_.end()) {
       return &iter->value.Top(backing_vector_);
     }
@@ -58,8 +58,9 @@ const CascadePriority* CascadeMap::Find(const CSSPropertyName& name,
   };
 
   if (name.IsCustomProperty()) {
-    DCHECK(custom_properties_.Contains(name));
-    return find_origin(custom_properties_.find(name)->value, origin);
+    DCHECK(custom_properties_.Contains(name.ToAtomicString()));
+    return find_origin(custom_properties_.find(name.ToAtomicString())->value,
+                       origin);
   }
 
   DCHECK(native_properties_.Bits().Has(name.Id()));
@@ -87,8 +88,9 @@ const CascadePriority* CascadeMap::FindRevertLayer(const CSSPropertyName& name,
   };
 
   if (name.IsCustomProperty()) {
-    DCHECK(custom_properties_.Contains(name));
-    return find_revert_layer(custom_properties_.find(name)->value, revert_from);
+    DCHECK(custom_properties_.Contains(name.ToAtomicString()));
+    return find_revert_layer(
+        custom_properties_.find(name.ToAtomicString())->value, revert_from);
   }
 
   DCHECK(native_properties_.Bits().Has(name.Id()));
@@ -97,38 +99,44 @@ const CascadePriority* CascadeMap::FindRevertLayer(const CSSPropertyName& name,
   return find_revert_layer(native_properties_.Buffer()[index], revert_from);
 }
 
-void CascadeMap::Add(const CSSPropertyName& name, CascadePriority priority) {
-  CascadePriorityList* list;
-  if (name.IsCustomProperty()) {
-    auto result = custom_properties_.insert(name, CascadePriorityList());
-    list = &result.stored_value->value;
-    if (list->IsEmpty()) {
-      list->Push(backing_vector_, priority);
-      return;
-    }
-  } else {
-    DCHECK(!CSSProperty::Get(name.Id()).IsSurrogate());
-
-    CSSPropertyID id = name.Id();
-    size_t index = static_cast<size_t>(id);
-    DCHECK_LT(index, static_cast<size_t>(kNumCSSProperties));
-
-    // Set bit in high_priority_, if appropriate.
-    static_assert(static_cast<int>(kLastHighPriorityCSSProperty) < 64,
-                  "CascadeMap supports at most 63 high-priority properties");
-    if (IsHighPriority(id)) {
-      high_priority_ |= (1ull << index);
-    }
-    has_important_ |= priority.IsImportant();
-
-    list = &native_properties_.Buffer()[index];
-    if (!native_properties_.Bits().Has(id)) {
-      native_properties_.Bits().Set(id);
-      new (list) CascadeMap::CascadePriorityList(backing_vector_, priority);
-      return;
-    }
+void CascadeMap::Add(const AtomicString& custom_property_name,
+                     CascadePriority priority) {
+  auto result =
+      custom_properties_.insert(custom_property_name, CascadePriorityList());
+  CascadePriorityList* list = &result.stored_value->value;
+  if (list->IsEmpty()) {
+    list->Push(backing_vector_, priority);
+    return;
   }
+  Add(list, priority);
+}
 
+void CascadeMap::Add(CSSPropertyID id, CascadePriority priority) {
+  DCHECK_NE(id, CSSPropertyID::kInvalid);
+  DCHECK_NE(id, CSSPropertyID::kVariable);
+  DCHECK(!CSSProperty::Get(id).IsSurrogate());
+
+  size_t index = static_cast<size_t>(static_cast<unsigned>(id));
+  DCHECK_LT(index, static_cast<size_t>(kNumCSSProperties));
+
+  // Set bit in high_priority_, if appropriate.
+  static_assert(static_cast<int>(kLastHighPriorityCSSProperty) < 64,
+                "CascadeMap supports at most 63 high-priority properties");
+  if (IsHighPriority(id)) {
+    high_priority_ |= (1ull << index);
+  }
+  has_important_ |= priority.IsImportant();
+
+  CascadePriorityList* list = &native_properties_.Buffer()[index];
+  if (!native_properties_.Bits().Has(id)) {
+    native_properties_.Bits().Set(id);
+    new (list) CascadeMap::CascadePriorityList(backing_vector_, priority);
+    return;
+  }
+  Add(list, priority);
+}
+
+void CascadeMap::Add(CascadePriorityList* list, CascadePriority priority) {
   CascadePriority& top = list->Top(backing_vector_);
   DCHECK(priority.ForLayerComparison() >= top.ForLayerComparison());
   if (top >= priority) {

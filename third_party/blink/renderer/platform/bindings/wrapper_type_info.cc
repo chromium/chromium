@@ -43,7 +43,7 @@ v8::Local<v8::Template> WrapperTypeInfo::GetV8ClassTemplate(
     case kIdlObservableArray:
       v8_template = v8::FunctionTemplate::New(isolate);
       break;
-    case kIdlSyncIterator:
+    case kIdlAsyncOrSyncIterator:
       v8_template = v8::FunctionTemplate::New(isolate);
       break;
     case kCustomWrappableKind:

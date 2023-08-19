@@ -22,10 +22,6 @@ public final class ScrollingStripStackerUnitTest {
     private static final float TAB_OFFSET_Y = 2;
     private static final float TAB_WIDTH = 25;
     private static final float CACHED_TAB_WIDTH = 30;
-    private static final float STRIP_WIDTH = 200;
-    private static final float TAB_OVERLAP = 5;
-    private static final float STRIP_MARGIN = 2;
-    private static final float BUTTON_WIDTH = 10;
 
     private ScrollingStripStacker mTarget = new ScrollingStripStacker();
     @Mock
@@ -66,8 +62,6 @@ public final class ScrollingStripStackerUnitTest {
             verify(tab).setDrawX(expected_x);
             verify(tab).setWidth(CACHED_TAB_WIDTH);
             verify(tab).setDrawY(TAB_OFFSET_Y);
-            verify(tab).setVisiblePercentage(1.f);
-            verify(tab).setContentOffsetX(0.f);
             expected_x += TAB_WIDTH;
         }
     }
@@ -78,8 +72,6 @@ public final class ScrollingStripStackerUnitTest {
 
         for (StripLayoutTab tab : mInput) {
             verify(tab).setDrawY(TAB_OFFSET_Y);
-            verify(tab).setVisiblePercentage(1.f);
-            verify(tab).setContentOffsetX(0.f);
             verify(tab).getOffsetY();
             verifyNoMoreInteractions(tab);
         }
@@ -95,8 +87,6 @@ public final class ScrollingStripStackerUnitTest {
             verify(tab).getOffsetX();
             verify(tab).setDrawX(expected_x);
             verify(tab).setDrawY(TAB_OFFSET_Y);
-            verify(tab).setVisiblePercentage(1.f);
-            verify(tab).setContentOffsetX(0.f);
             verify(tab).getOffsetY();
             verifyNoMoreInteractions(tab);
             expected_x += TAB_WIDTH;

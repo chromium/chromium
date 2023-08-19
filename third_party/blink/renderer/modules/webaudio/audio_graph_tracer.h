@@ -30,7 +30,7 @@ class MODULES_EXPORT AudioGraphTracer final
 
   static void ProvideAudioGraphTracerTo(Page&);
 
-  AudioGraphTracer();
+  AudioGraphTracer(Page& page);
 
   void Trace(Visitor*) const override;
 

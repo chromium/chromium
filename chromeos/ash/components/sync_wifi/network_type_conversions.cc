@@ -48,7 +48,7 @@ std::string DecodeHexString(const std::string& base_16) {
     return std::string();
   }
 
-  decoded.assign(reinterpret_cast<const char*>(&v[0]), v.size());
+  decoded.assign(reinterpret_cast<const char*>(v.data()), v.size());
   return decoded;
 }
 

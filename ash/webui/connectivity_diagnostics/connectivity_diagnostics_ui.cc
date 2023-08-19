@@ -6,6 +6,7 @@
 
 #include <utility>
 
+#include "ash/webui/common/trusted_types_util.h"
 #include "ash/webui/connectivity_diagnostics/url_constants.h"
 #include "ash/webui/grit/connectivity_diagnostics_resources.h"
 #include "ash/webui/grit/connectivity_diagnostics_resources_map.h"
@@ -111,7 +112,7 @@ ConnectivityDiagnosticsUI::ConnectivityDiagnosticsUI(
       "script-src chrome://resources chrome://test chrome://webui-test "
       "'self';");
 
-  source->DisableTrustedTypesCSP();
+  ash::EnableTrustedTypesCSP(source);
   source->UseStringsJs();
   source->EnableReplaceI18nInJS();
 

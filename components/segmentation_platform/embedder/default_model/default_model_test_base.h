@@ -22,7 +22,8 @@ namespace segmentation_platform {
 // work and write the tests only in the unit test class.
 class DefaultModelTestBase : public testing::Test {
  public:
-  explicit DefaultModelTestBase(std::unique_ptr<ModelProvider> model_provider);
+  explicit DefaultModelTestBase(
+      std::unique_ptr<DefaultModelProvider> model_provider);
   ~DefaultModelTestBase() override;
 
   void SetUp() override;
@@ -71,15 +72,10 @@ class DefaultModelTestBase : public testing::Test {
   }
 
   base::test::TaskEnvironment task_environment_;
-  std::unique_ptr<ModelProvider> model_;
+  std::unique_ptr<DefaultModelProvider> model_;
   absl::optional<proto::SegmentationModelMetadata> fetched_metadata_;
 
  private:
-  void OnInitFinishedCallback(base::RepeatingClosure closure,
-                              proto::SegmentId target,
-                              proto::SegmentationModelMetadata metadata,
-                              int64_t);
-
   void OnFinishedExpectExecutionWithInput(
       base::RepeatingClosure closure,
       bool expected_error,

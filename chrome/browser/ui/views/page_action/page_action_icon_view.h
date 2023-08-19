@@ -144,9 +144,6 @@ class PageActionIconView : public IconLabelBubbleView {
   // Returns true if the command is enabled.
   bool SetCommandEnabled(bool enabled) const;
 
-  // Sets the tooltip text.
-  void SetTooltipText(const std::u16string& tooltip);
-
   // Invoked prior to executing the command.
   virtual void OnExecuting(ExecuteSource execute_source) = 0;
 

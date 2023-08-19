@@ -13,6 +13,7 @@
 #include "components/feature_engagement/test/scoped_iph_feature_list.h"
 #include "components/user_education/test/mock_feature_promo_controller.h"
 #include "testing/gmock/include/gmock/gmock.h"
+#include "ui/base/ui_base_features.h"
 
 class CustomizeChromeFeaturePromoHelperTest : public BrowserWithTestWindowTest {
  protected:
@@ -27,11 +28,22 @@ class CustomizeChromeFeaturePromoHelperTest : public BrowserWithTestWindowTest {
     AddTab(browser(), GURL("chrome://newtab"));
     tab_ = browser()->tab_strip_model()->GetActiveWebContents();
 
+    helper_ = std::make_unique<CustomizeChromeFeaturePromoHelper>();
+
     mock_tracker_ =
         static_cast<testing::NiceMock<feature_engagement::test::MockTracker>*>(
             feature_engagement::TrackerFactory::GetForBrowserContext(
                 tab_->GetBrowserContext()));
   }
+
+  void SetChromeRefresh2023() {
+    iph_feature_list_.Reset();
+    iph_feature_list_.InitAndEnableFeatures(
+        {feature_engagement::kIPHDesktopCustomizeChromeRefreshFeature,
+         features::kChromeRefresh2023, features::kChromeWebuiRefresh2023});
+  }
+
+  CustomizeChromeFeaturePromoHelper* helper() { return helper_.get(); }
 
   std::unique_ptr<BrowserWindow> CreateBrowserWindow() override {
     auto test_window = std::make_unique<TestBrowserWindow>();
@@ -39,11 +51,11 @@ class CustomizeChromeFeaturePromoHelperTest : public BrowserWithTestWindowTest {
     // This test only supports one window.
     DCHECK(!mock_promo_controller_);
 
-    mock_promo_controller_ =
-        static_cast<user_education::test::MockFeaturePromoController*>(
-            test_window->SetFeaturePromoController(
-                std::make_unique<
-                    user_education::test::MockFeaturePromoController>()));
+    mock_promo_controller_ = static_cast<
+        testing::NiceMock<user_education::test::MockFeaturePromoController>*>(
+        test_window->SetFeaturePromoController(
+            std::make_unique<testing::NiceMock<
+                user_education::test::MockFeaturePromoController>>()));
     return test_window;
   }
 
@@ -69,8 +81,10 @@ class CustomizeChromeFeaturePromoHelperTest : public BrowserWithTestWindowTest {
   raw_ptr<testing::NiceMock<feature_engagement::test::MockTracker>,
           DanglingUntriaged>
       mock_tracker_;
-  raw_ptr<user_education::test::MockFeaturePromoController, DanglingUntriaged>
+  raw_ptr<testing::NiceMock<user_education::test::MockFeaturePromoController>,
+          DanglingUntriaged>
       mock_promo_controller_ = nullptr;
+  std::unique_ptr<CustomizeChromeFeaturePromoHelper> helper_;
 
   static std::unique_ptr<KeyedService> MakeTestTracker(
       content::BrowserContext* context) {
@@ -85,9 +99,7 @@ TEST_F(CustomizeChromeFeaturePromoHelperTest,
   EXPECT_CALL(*mock_tracker(),
               NotifyEvent(feature_engagement::events::kCustomizeChromeOpened))
       .Times(1);
-  CustomizeChromeFeaturePromoHelper customize_chrome_feature_promo_helper;
-  customize_chrome_feature_promo_helper.RecordCustomizeChromeFeatureUsage(
-      tab());
+  helper()->RecordCustomizeChromeFeatureUsage(tab());
 }
 
 TEST_F(CustomizeChromeFeaturePromoHelperTest,
@@ -96,12 +108,20 @@ TEST_F(CustomizeChromeFeaturePromoHelperTest,
       *mock_promo_controller(),
       MaybeShowPromo(
           testing::Ref(feature_engagement::kIPHDesktopCustomizeChromeFeature),
-          testing::_, testing::_))
+          testing::_, testing::_, testing::_))
       .Times(1)
       .WillOnce(testing::Return(true));
-  CustomizeChromeFeaturePromoHelper customize_chrome_feature_promo_helper;
-  customize_chrome_feature_promo_helper.MaybeShowCustomizeChromeFeaturePromo(
-      tab());
+  helper()->SetDefaultSearchProviderIsGoogleForTesting(true);
+  helper()->MaybeShowCustomizeChromeFeaturePromo(tab());
+}
+
+TEST_F(CustomizeChromeFeaturePromoHelperTest,
+       MaybeShowCustomizeChromeFeaturePromoHelperNonGoogle) {
+  EXPECT_CALL(*mock_promo_controller(),
+              MaybeShowPromo(testing::_, testing::_, testing::_, testing::_))
+      .Times(0);
+  helper()->SetDefaultSearchProviderIsGoogleForTesting(false);
+  helper()->MaybeShowCustomizeChromeFeaturePromo(tab());
 }
 
 TEST_F(CustomizeChromeFeaturePromoHelperTest,
@@ -111,6 +131,42 @@ TEST_F(CustomizeChromeFeaturePromoHelperTest,
                   feature_engagement::kIPHDesktopCustomizeChromeFeature)))
       .Times(1)
       .WillOnce(testing::Return(true));
-  CustomizeChromeFeaturePromoHelper customize_chrome_feature_promo_helper;
-  customize_chrome_feature_promo_helper.CloseCustomizeChromeFeaturePromo(tab());
+  helper()->CloseCustomizeChromeFeaturePromo(tab());
+}
+
+TEST_F(CustomizeChromeFeaturePromoHelperTest,
+       MaybeShowCustomizeChromeRefreshFeaturePromoHelper) {
+  SetChromeRefresh2023();
+  EXPECT_CALL(
+      *mock_promo_controller(),
+      MaybeShowPromo(
+          testing::Ref(
+              feature_engagement::kIPHDesktopCustomizeChromeRefreshFeature),
+          testing::_, testing::_, testing::_))
+      .Times(1)
+      .WillOnce(testing::Return(true));
+  helper()->SetDefaultSearchProviderIsGoogleForTesting(true);
+  helper()->MaybeShowCustomizeChromeFeaturePromo(tab());
+}
+
+TEST_F(CustomizeChromeFeaturePromoHelperTest,
+       MaybeShowCustomizeChromeRefreshFeaturePromoHelperNonGoogle) {
+  SetChromeRefresh2023();
+  EXPECT_CALL(*mock_promo_controller(),
+              MaybeShowPromo(testing::_, testing::_, testing::_, testing::_))
+      .Times(0);
+  helper()->SetDefaultSearchProviderIsGoogleForTesting(false);
+  helper()->MaybeShowCustomizeChromeFeaturePromo(tab());
+}
+
+TEST_F(CustomizeChromeFeaturePromoHelperTest,
+       CloseCustomizeChromeRefreshFeaturePromoHelper) {
+  SetChromeRefresh2023();
+  EXPECT_CALL(
+      *mock_promo_controller(),
+      EndPromo(testing::Ref(
+          feature_engagement::kIPHDesktopCustomizeChromeRefreshFeature)))
+      .Times(1)
+      .WillOnce(testing::Return(true));
+  helper()->CloseCustomizeChromeFeaturePromo(tab());
 }

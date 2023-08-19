@@ -9,6 +9,24 @@
     100% { top: 0; }
   }
 
+/* <if expr="is_chromeos"> */
+  :host([show-cros-printer-setup-info_]) .preview-area-message {
+    background: rgb(255, 255, 255);
+    border-radius: 16px;
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    justify-content: center;
+    margin: 16px;
+  }
+
+  @media (prefers-color-scheme: dark) {
+    :host([show-cros-printer-setup-info_]) .preview-area-message {
+      background: rgb(40, 41, 44);
+    }
+  }
+/* </if> */
+
   span.jumping-dots > span {
     animation: dancing-dots-jump 1800ms infinite;
     padding: 1px;
@@ -85,13 +103,23 @@
     aria-hidden$="[[getAriaHidden_(previewState)]]">
   <div class="preview-area-message">
     <div>
-      <span inner-h-t-m-l="[[currentMessage_(previewState)]]"></span>
+      <span
+          hidden$="[[showCrosPrinterSetupInfo_]]"
+          inner-h-t-m-l="[[currentMessage_(previewState)]]">
+      </span>
       <span class$="preview-area-loading-message-jumping-dots
                     [[getJumpingDots_(previewState)]]"
           hidden$="[[!isPreviewLoading_(previewState)]]">
           <span>.</span><span>.</span><span>.</span>
       </span>
     </div>
+    <if expr="is_chromeos">
+      <print-preview-printer-setup-info-cros
+          hidden$="[[!showCrosPrinterSetupInfo_]]"
+          message-type="[[printerOffline_]]"
+          metrics-source="[[previewAreaSource_]]">
+      </print-preview-printer-setup-info-cros>
+    </if>
   </div>
 </div>
 <div class="preview-area-plugin-wrapper"></div>

@@ -41,8 +41,6 @@ class HTMLDetailsElement final : public HTMLElement {
 
   void Trace(Visitor*) const override;
 
-  void DidMoveToNewTreeScope(TreeScope& old_scope);
-
   // Walks up the ancestor chain and expands all <details> elements found along
   // the way by setting the open attribute. If any were expanded, returns true.
   // This method may run script because of the mutation events fired when
@@ -52,16 +50,21 @@ class HTMLDetailsElement final : public HTMLElement {
  private:
   void DispatchPendingEvent(const AttributeModificationReason);
 
+  const AtomicString& GetName() const {
+    return FastGetAttribute(html_names::kNameAttr);
+  }
+
+  // Return all the <details> elements in the group created by the name
+  // attribute, excluding |this|, in tree order.  If there is no such group
+  // (e.g., because there is no name attribute), returns an empty list.
+  HeapVector<Member<HTMLDetailsElement>> OtherElementsInNameGroup();
+
   LayoutObject* CreateLayoutObject(const ComputedStyle&) override;
   void ParseAttribute(const AttributeModificationParams&) override;
   void DidAddUserAgentShadowRoot(ShadowRoot&) override;
   bool IsInteractiveContent() const override;
 
-  void AddNameToMap(TreeScope& tree_scope);
-  void RemoveNameFromMap(TreeScope& tree_scope);
-
   bool is_open_ = false;
-  AtomicString name_;
   TaskHandle pending_event_;
   Member<HTMLSlotElement> summary_slot_;
   Member<HTMLSlotElement> content_slot_;

@@ -88,7 +88,7 @@ class WindowsEventRouter : public AppWindowRegistry::Observer,
   // The profile the currently focused window belongs to; either the main or
   // incognito profile or NULL (none of the above). We remember this in order
   // to correctly handle focus changes between non-OTR and OTR windows.
-  raw_ptr<Profile, DanglingUntriaged> focused_profile_;
+  raw_ptr<Profile, AcrossTasksDanglingUntriaged> focused_profile_;
 
   // The currently focused window. We keep this so as to avoid sending multiple
   // windows.onFocusChanged events with the same windowId.

@@ -4,6 +4,8 @@
 
 #include "components/performance_manager/graph/page_node_impl.h"
 
+#include <string>
+
 #include "base/containers/contains.h"
 #include "base/memory/raw_ptr.h"
 #include "components/performance_manager/graph/frame_node_impl.h"
@@ -11,11 +13,13 @@
 #include "components/performance_manager/graph/process_node_impl.h"
 #include "components/performance_manager/public/freezing/freezing.h"
 #include "components/performance_manager/public/graph/page_node.h"
+#include "components/performance_manager/public/web_contents_proxy.h"
 #include "components/performance_manager/test_support/graph_test_harness.h"
 #include "components/performance_manager/test_support/mock_graphs.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
+#include "url/gurl.h"
 
 namespace performance_manager {
 
@@ -102,6 +106,31 @@ TEST_F(PageNodeImplTest, TimeSinceLastVisibilityChange) {
   EXPECT_EQ(base::Seconds(23),
             mock_graph.page->TimeSinceLastVisibilityChange());
   EXPECT_FALSE(mock_graph.page->is_visible());
+}
+
+TEST_F(PageNodeImplTest, TimeSinceLastAudibleChange) {
+  MockSinglePageInSingleProcessGraph mock_graph(graph());
+  EXPECT_FALSE(mock_graph.page->is_audible());
+  EXPECT_EQ(absl::nullopt, mock_graph.page->TimeSinceLastAudibleChange());
+
+  mock_graph.page->SetIsAudible(true);
+  EXPECT_TRUE(mock_graph.page->is_audible());
+  AdvanceClock(base::Seconds(42));
+  EXPECT_EQ(base::Seconds(42), mock_graph.page->TimeSinceLastAudibleChange());
+
+  mock_graph.page->SetIsAudible(false);
+  AdvanceClock(base::Seconds(23));
+  EXPECT_EQ(base::Seconds(23), mock_graph.page->TimeSinceLastAudibleChange());
+  EXPECT_FALSE(mock_graph.page->is_audible());
+
+  // Test a page that's audible at creation.
+  auto audible_page = CreateNode<PageNodeImpl>(
+      WebContentsProxy(), /*browser_context_id=*/std::string(), GURL(),
+      /*is_visible=*/false,
+      /*is_audible=*/true);
+  AdvanceClock(base::Seconds(56));
+  EXPECT_EQ(base::Seconds(56), audible_page->TimeSinceLastAudibleChange());
+  EXPECT_TRUE(audible_page->is_audible());
 }
 
 TEST_F(PageNodeImplTest, TimeSinceLastNavigation) {
@@ -242,6 +271,7 @@ class LenientMockObserver : public PageNodeImpl::Observer {
   MOCK_METHOD3(OnEmbedderFrameNodeChanged,
                void(const PageNode*, const FrameNode*, EmbeddingType));
   MOCK_METHOD2(OnTypeChanged, void(const PageNode*, PageType));
+  MOCK_METHOD1(OnIsFocusedChanged, void(const PageNode*));
   MOCK_METHOD1(OnIsVisibleChanged, void(const PageNode*));
   MOCK_METHOD1(OnIsAudibleChanged, void(const PageNode*));
   MOCK_METHOD2(OnLoadingStateChanged,
@@ -293,6 +323,11 @@ TEST_F(PageNodeImplTest, ObserverWorks) {
       .WillOnce(Invoke(&obs, &MockObserver::SetNotifiedPageNode));
   auto page_node = CreateNode<PageNodeImpl>();
   const PageNode* raw_page_node = page_node.get();
+  EXPECT_EQ(raw_page_node, obs.TakeNotifiedPageNode());
+
+  EXPECT_CALL(obs, OnIsFocusedChanged(_))
+      .WillOnce(Invoke(&obs, &MockObserver::SetNotifiedPageNode));
+  page_node->SetIsFocused(true);
   EXPECT_EQ(raw_page_node, obs.TakeNotifiedPageNode());
 
   EXPECT_CALL(obs, OnIsVisibleChanged(_))
@@ -370,6 +405,7 @@ TEST_F(PageNodeImplTest, PublicInterface) {
 
   EXPECT_EQ(page_node->browser_context_id(),
             public_page_node->GetBrowserContextID());
+  EXPECT_EQ(page_node->is_focused(), public_page_node->IsFocused());
   EXPECT_EQ(page_node->is_visible(), public_page_node->IsVisible());
   EXPECT_EQ(page_node->is_audible(), public_page_node->IsAudible());
   EXPECT_EQ(page_node->loading_state(), public_page_node->GetLoadingState());

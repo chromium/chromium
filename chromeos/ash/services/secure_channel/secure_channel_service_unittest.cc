@@ -9,6 +9,7 @@
 #include "base/functional/callback.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/raw_ptr_exclusion.h"
 #include "base/run_loop.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_simple_task_runner.h"
@@ -74,7 +75,9 @@ class FakeTimerFactoryFactory : public TimerFactoryImpl::Factory {
     return instance;
   }
 
-  FakeTimerFactory* instance_ = nullptr;
+  // This field is not a raw_ptr<> because it was filtered by the rewriter
+  // for: #constexpr-ctor-field-initializer
+  RAW_PTR_EXCLUSION FakeTimerFactory* instance_ = nullptr;
 };
 
 class TestRemoteDeviceCacheFactory
@@ -103,7 +106,9 @@ class TestRemoteDeviceCacheFactory
     return instance;
   }
 
-  multidevice::RemoteDeviceCache* instance_ = nullptr;
+  // This field is not a raw_ptr<> because it was filtered by the rewriter
+  // for: #constexpr-ctor-field-initializer
+  RAW_PTR_EXCLUSION multidevice::RemoteDeviceCache* instance_ = nullptr;
 };
 
 class FakeBluetoothHelperFactory : public BluetoothHelperImpl::Factory {
@@ -136,7 +141,8 @@ class FakeBluetoothHelperFactory : public BluetoothHelperImpl::Factory {
   raw_ptr<TestRemoteDeviceCacheFactory, ExperimentalAsh>
       test_remote_device_cache_factory_;
 
-  raw_ptr<FakeBluetoothHelper, ExperimentalAsh> instance_ = nullptr;
+  raw_ptr<FakeBluetoothHelper, DanglingUntriaged | ExperimentalAsh> instance_ =
+      nullptr;
 };
 
 class FakeBleSynchronizerFactory : public BleSynchronizer::Factory {
@@ -162,7 +168,9 @@ class FakeBleSynchronizerFactory : public BleSynchronizer::Factory {
     return instance;
   }
 
-  FakeBleSynchronizer* instance_ = nullptr;
+  // This field is not a raw_ptr<> because it was filtered by the rewriter
+  // for: #constexpr-ctor-field-initializer
+  RAW_PTR_EXCLUSION FakeBleSynchronizer* instance_ = nullptr;
 };
 
 class FakeBleScannerFactory : public BleScannerImpl::Factory {
@@ -196,7 +204,8 @@ class FakeBleScannerFactory : public BleScannerImpl::Factory {
     return instance;
   }
 
-  raw_ptr<FakeBleScanner, ExperimentalAsh> instance_ = nullptr;
+  raw_ptr<FakeBleScanner, DanglingUntriaged | ExperimentalAsh> instance_ =
+      nullptr;
 
   raw_ptr<FakeBluetoothHelperFactory, ExperimentalAsh>
       fake_bluetooth_helper_factory_;
@@ -226,7 +235,9 @@ class FakeSecureChannelDisconnectorFactory
     return instance;
   }
 
-  FakeSecureChannelDisconnector* instance_ = nullptr;
+  // This field is not a raw_ptr<> because it was filtered by the rewriter
+  // for: #constexpr-ctor-field-initializer
+  RAW_PTR_EXCLUSION FakeSecureChannelDisconnector* instance_ = nullptr;
 };
 
 class FakeBleConnectionManagerFactory
@@ -292,7 +303,8 @@ class FakeBleConnectionManagerFactory
       fake_secure_channel_disconnector_factory_;
   raw_ptr<FakeTimerFactoryFactory, ExperimentalAsh> fake_timer_factory_factory_;
 
-  raw_ptr<FakeBleConnectionManager, ExperimentalAsh> instance_ = nullptr;
+  raw_ptr<FakeBleConnectionManager, DanglingUntriaged | ExperimentalAsh>
+      instance_ = nullptr;
 };
 
 class FakeNearbyConnectionManagerFactory
@@ -334,7 +346,8 @@ class FakeNearbyConnectionManagerFactory
   raw_ptr<FakeSecureChannelDisconnectorFactory, ExperimentalAsh>
       fake_secure_channel_disconnector_factory_;
 
-  raw_ptr<FakeNearbyConnectionManager, ExperimentalAsh> instance_ = nullptr;
+  raw_ptr<FakeNearbyConnectionManager, DanglingUntriaged | ExperimentalAsh>
+      instance_ = nullptr;
 };
 
 class FakePendingConnectionManagerFactory
@@ -381,7 +394,8 @@ class FakePendingConnectionManagerFactory
   raw_ptr<FakeNearbyConnectionManagerFactory, ExperimentalAsh>
       fake_nearby_connection_manager_factory_;
 
-  raw_ptr<FakePendingConnectionManager, ExperimentalAsh> instance_ = nullptr;
+  raw_ptr<FakePendingConnectionManager, DanglingUntriaged | ExperimentalAsh>
+      instance_ = nullptr;
 };
 
 class FakeActiveConnectionManagerFactory
@@ -408,7 +422,9 @@ class FakeActiveConnectionManagerFactory
     return instance;
   }
 
-  FakeActiveConnectionManager* instance_ = nullptr;
+  // This field is not a raw_ptr<> because it was filtered by the rewriter
+  // for: #constexpr-ctor-field-initializer
+  RAW_PTR_EXCLUSION FakeActiveConnectionManager* instance_ = nullptr;
 };
 
 class TestSecureChannelInitializerFactory
@@ -442,7 +458,8 @@ class TestSecureChannelInitializerFactory
 
   scoped_refptr<base::TestSimpleTaskRunner> test_task_runner_;
 
-  raw_ptr<SecureChannelBase, ExperimentalAsh> instance_ = nullptr;
+  raw_ptr<SecureChannelBase, DanglingUntriaged | ExperimentalAsh> instance_ =
+      nullptr;
 };
 
 class FakeClientConnectionParametersFactory

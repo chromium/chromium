@@ -6,6 +6,7 @@
 
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
+#include "base/logging.h"
 #include "base/memory/ref_counted_memory.h"
 #include "base/memory/scoped_refptr.h"
 #include "third_party/skia/include/core/SkBitmap.h"
@@ -77,6 +78,7 @@ bool ResizeAndSaveWallpaper(const gfx::ImageSkia& image,
                             WallpaperLayout layout,
                             int preferred_width,
                             int preferred_height) {
+  DVLOG(3) << __func__ << " path=" << path;
   if (layout == WALLPAPER_LAYOUT_CENTER) {
     if (base::PathExists(path)) {
       base::DeleteFile(path);
@@ -89,8 +91,29 @@ bool ResizeAndSaveWallpaper(const gfx::ImageSkia& image,
     return false;
   }
 
-  // Saves |data| to |path| in local file system.
-  return base::WriteFile(path, base::make_span(data->front(), data->size()));
+  // Write to `temp_path` to reduce the chance of read/write
+  // collisions from different sequences. This avoids issues with policy
+  // wallpaper at login: b/280578317.
+  base::FilePath temp_path;
+  if (!base::CreateTemporaryFileInDir(path.DirName(), &temp_path)) {
+    LOG(WARNING) << "Failed to create temporary file";
+    return false;
+  }
+
+  if (!base::WriteFile(temp_path,
+                       base::make_span(data->front(), data->size()))) {
+    LOG(WARNING) << "Failed to write wallpaper data to temporary file";
+    base::DeleteFile(temp_path);
+    return false;
+  }
+
+  if (!base::Move(temp_path, path)) {
+    LOG(WARNING) << "Failed to copy temporary wallpaper data to " << path;
+    base::DeleteFile(temp_path);
+    return false;
+  }
+
+  return true;
 }
 
 }  // namespace ash

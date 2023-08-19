@@ -27,9 +27,6 @@ ViewShadow::~ViewShadow() {
 }
 
 void ViewShadow::SetRoundedCornerRadius(int corner_radius) {
-  if (!view_)
-    return;
-  view_->layer()->SetRoundedCornerRadius(gfx::RoundedCornersF(corner_radius));
   shadow_->SetRoundedCornerRadius(corner_radius);
 }
 
@@ -40,7 +37,7 @@ void ViewShadow::OnLayerRecreated(ui::Layer* old_layer) {
   view_->AddLayerToRegion(shadow_->layer(), views::LayerRegion::kBelow);
 }
 
-void ViewShadow::OnLayerTargetBoundsChanged(views::View* view) {
+void ViewShadow::OnViewLayerBoundsSet(views::View* view) {
   shadow_->SetContentBounds(view->layer()->bounds());
 }
 

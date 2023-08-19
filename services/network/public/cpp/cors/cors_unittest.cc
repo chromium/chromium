@@ -291,6 +291,11 @@ TEST_F(CorsTest, SafelistedSecCHPrefersReducedMotion) {
                                      "\"Prefers-Reduced-Motion!\""));
 }
 
+TEST_F(CorsTest, SafelistedSecCHUAFormFactor) {
+  EXPECT_TRUE(
+      IsCorsSafelistedHeader("Sec-CH-UA-Form-Factor", "\"Form Factor!\""));
+}
+
 TEST_F(CorsTest, SafelistedSecCHUA) {
   EXPECT_TRUE(IsCorsSafelistedHeader("Sec-CH-UA", "\"User Agent!\""));
   EXPECT_TRUE(IsCorsSafelistedHeader("Sec-CH-UA-Platform", "\"Platform!\""));
@@ -298,8 +303,6 @@ TEST_F(CorsTest, SafelistedSecCHUA) {
                                      "\"Platform-Version!\""));
   EXPECT_TRUE(IsCorsSafelistedHeader("Sec-CH-UA-Arch", "\"Architecture!\""));
   EXPECT_TRUE(IsCorsSafelistedHeader("Sec-CH-UA-Model", "\"Model!\""));
-  EXPECT_TRUE(IsCorsSafelistedHeader("Sec-CH-UA-Reduced", "\"?1\""));
-  EXPECT_TRUE(IsCorsSafelistedHeader("Sec-CH-UA-Full", "\"?1\""));
 
   // TODO(mkwst): Validate that `Sec-CH-UA-*` is a structured header.
   // https://crbug.com/924969

@@ -458,9 +458,7 @@ void FileSystemAccessUsageBubbleView::OnDialogCancelled() {
   if (!context)
     return;
 
-  context->RevokeGrants(
-      origin_, ChromeFileSystemAccessPermissionContext::
-                   PersistedPermissionOptions::kUpdatePersistedPermission);
+  context->RevokeGrants(origin_);
 }
 
 void FileSystemAccessUsageBubbleView::WindowClosing() {

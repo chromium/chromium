@@ -6,7 +6,7 @@
 #define CONTENT_BROWSER_RENDERER_HOST_EVENT_WITH_LATENCY_INFO_H_
 
 #include "content/common/input/event_with_latency_info.h"
-#include "content/public/browser/native_web_keyboard_event.h"
+#include "content/public/common/input/native_web_keyboard_event.h"
 
 namespace content {
 

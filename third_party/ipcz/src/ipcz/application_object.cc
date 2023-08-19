@@ -53,28 +53,28 @@ bool ApplicationObject::IsSerializable() const {
 Ref<ParcelWrapper> ApplicationObject::Serialize(NodeLink& link) {
   ABSL_ASSERT(IsSerializable());
 
-  Parcel parcel;
+  auto parcel = std::make_unique<Parcel>();
   size_t num_bytes = 0;
   size_t num_handles = 0;
   const IpczResult query_result =
       serializer_(object(), IPCZ_NO_FLAGS, nullptr, nullptr, &num_bytes,
                   nullptr, &num_handles);
   if (query_result == IPCZ_RESULT_RESOURCE_EXHAUSTED) {
-    parcel.AllocateData(num_bytes, /*allow_partial=*/false, &link.memory());
+    parcel->AllocateData(num_bytes, /*allow_partial=*/false, &link.memory());
     std::vector<IpczHandle> handles(num_handles);
-    const IpczResult serialize_result =
-        serializer_(object(), IPCZ_NO_FLAGS, nullptr, parcel.data_view().data(),
-                    &num_bytes, handles.data(), &num_handles);
+    const IpczResult serialize_result = serializer_(
+        object(), IPCZ_NO_FLAGS, nullptr, parcel->data_view().data(),
+        &num_bytes, handles.data(), &num_handles);
     if (serialize_result != IPCZ_RESULT_OK) {
       return nullptr;
     }
-    parcel.CommitData(num_bytes);
+    parcel->CommitData(num_bytes);
 
     std::vector<Ref<APIObject>> objects(num_handles);
     for (size_t i = 0; i < num_handles; ++i) {
       objects[i] = APIObject::TakeFromHandle(handles[i]);
     }
-    parcel.SetObjects(std::move(objects));
+    parcel->SetObjects(std::move(objects));
   } else if (query_result != IPCZ_RESULT_OK) {
     return nullptr;
   }

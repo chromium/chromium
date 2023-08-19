@@ -69,7 +69,10 @@ PowerButtonMenuView::PowerButtonMenuView(
   layer()->SetFillsBoundsOpaquely(false);
   layer()->SetRoundedCornerRadius(
       gfx::RoundedCornersF(kPowerButtonMenuCornerRadius));
-  layer()->SetBackgroundBlur(kPowerButtonMenuBlurType);
+  if (features::IsBackgroundBlurEnabled()) {
+    layer()->SetBackgroundBlur(kPowerButtonMenuBlurType);
+    layer()->SetBackdropFilterQuality(ColorProvider::kBackgroundBlurQuality);
+  }
   GetViewAccessibility().OverrideRole(ax::mojom::Role::kMenu);
   GetViewAccessibility().OverrideName(
       l10n_util::GetStringUTF16(IDS_ASH_POWER_BUTTON_MENU_ACCESSIBLE));
@@ -188,7 +191,8 @@ void PowerButtonMenuView::RecreateItems() {
                                   session_controller->CanLockScreen();
   const bool create_capture_mode =
       Shell::Get()->tablet_mode_controller()->InTabletMode() &&
-      !session_controller->IsUserSessionBlocked();
+      !session_controller->IsUserSessionBlocked() &&
+      login_status != LoginStatus::KIOSK_APP;
   const bool create_feedback = login_status != LoginStatus::LOCKED &&
                                login_status != LoginStatus::KIOSK_APP;
 

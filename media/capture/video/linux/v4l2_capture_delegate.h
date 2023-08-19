@@ -18,6 +18,7 @@
 #include "base/task/single_thread_task_runner.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
+#include "gpu/ipc/common/gpu_memory_buffer_support.h"
 #include "media/capture/video/linux/scoped_v4l2_device_fd.h"
 #include "media/capture/video/linux/v4l2_capture_device_impl.h"
 #include "media/capture/video/video_capture_device.h"
@@ -33,6 +34,10 @@ class Location;
 }  // namespace base
 
 namespace media {
+
+#if BUILDFLAG(IS_LINUX)
+class V4L2CaptureDelegateGpuHelper;
+#endif  // BUILDFLAG(IS_LINUX)
 
 // Class doing the actual Linux capture using V4L2 API. V4L2 SPLANE/MPLANE
 // capture specifics are implemented in derived classes. Created on the owner's
@@ -82,6 +87,9 @@ class CAPTURE_EXPORT V4L2CaptureDelegate final {
   static bool IsControllableControl(
       int control_id,
       const base::RepeatingCallback<int(int, void*)>& do_ioctl);
+
+  void SetGPUEnvironmentForTesting(
+      std::unique_ptr<gpu::GpuMemoryBufferSupport> gmb_support);
 
  private:
   friend class V4L2CaptureDelegateTest;
@@ -148,6 +156,14 @@ class CAPTURE_EXPORT V4L2CaptureDelegate final {
 
   // Clockwise rotation in degrees. This value should be 0, 90, 180, or 270.
   int rotation_;
+
+#if BUILDFLAG(IS_LINUX)
+  // Support GPU memory buffer.
+  bool use_gpu_buffer_;
+  std::unique_ptr<V4L2CaptureDelegateGpuHelper> v4l2_gpu_helper_;
+#endif  // BUILDFLAG(IS_LINUX)
+  // For GPU Environment Testing.
+  std::unique_ptr<gpu::GpuMemoryBufferSupport> gmb_support_test_;
 
   base::WeakPtrFactory<V4L2CaptureDelegate> weak_factory_{this};
 };

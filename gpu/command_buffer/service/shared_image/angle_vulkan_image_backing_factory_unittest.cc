@@ -23,8 +23,8 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "third_party/skia/include/core/SkColor.h"
-#include "third_party/skia/include/core/SkPromiseImageTexture.h"
 #include "third_party/skia/include/gpu/GrBackendSemaphore.h"
+#include "third_party/skia/include/private/chromium/GrPromiseImageTexture.h"
 #include "ui/gl/gl_implementation.h"
 #include "ui/gl/gl_switches.h"
 
@@ -186,7 +186,8 @@ const auto kFormats = ::testing::Values(viz::SinglePlaneFormat::kRGBA_8888,
                                         viz::SinglePlaneFormat::kR_8,
                                         viz::SinglePlaneFormat::kRG_88,
                                         viz::MultiPlaneFormat::kNV12,
-                                        viz::MultiPlaneFormat::kYV12);
+                                        viz::MultiPlaneFormat::kYV12,
+                                        viz::MultiPlaneFormat::kI420);
 
 INSTANTIATE_TEST_SUITE_P(,
                          AngleVulkanImageBackingFactoryTest,

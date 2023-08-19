@@ -3,13 +3,16 @@
 <translationbundle lang="pt-BR">
 <translation id="1016765312371154165">O Chrome não foi encerrado corretamente.</translation>
 <translation id="130631256467250065">As alterações entrarão em vigor na próxima vez que você reiniciar o dispositivo.</translation>
+<translation id="1555506416658437797">editar formas de pagamento.</translation>
 <translation id="1635457557763038537">As mudanças entrarão em vigor na próxima vez que você reinicializar o Chrome.</translation>
+<translation id="2399868464369312507">O Google Chrome está tentando editar formas de pagamento.</translation>
 <translation id="2447485272386224171">O Chrome tornou-se possível graças ao projeto de código aberto <ph name="BEGIN_LINK_CHROMIUM" />Chromium<ph name="END_LINK_CHROMIUM" /> e outros <ph name="BEGIN_LINK_OSS" />softwares de código aberto<ph name="END_LINK_OSS" />.</translation>
 <translation id="2588322182880276190">Logotipo do Google Chrome</translation>
 <translation id="3444832043240812445">Esta página mostra apenas informações sobre suas falhas recentes se você <ph name="BEGIN_LINK" />ativar relatórios de erros<ph name="END_LINK" />.</translation>
 <translation id="3875312571075912821">Permitir que o Chrome acesse a rede nas configurações do seu
           firewall ou antivírus.</translation>
 <translation id="5005121315113832363">Esta página foi bloqueada pelo Chrome</translation>
+<translation id="585620188971323280">modificar as configurações para preenchimento de formas de pagamento.</translation>
 <translation id="6011049234605203654">Vá para
           no menu do Google Chrome &gt;
           <ph name="SETTINGS_TITLE" />
@@ -42,4 +45,5 @@
           e desmarque todos os proxies que estiverem selecionados.</translation>
 <translation id="8232971017369963250">A criação do Chrome só foi possível graças ao projeto de código aberto do <ph name="BEGIN_LINK_CHROMIUM" />Chromium<ph name="END_LINK_CHROMIUM" />.</translation>
 <translation id="8279509328145658601">A criação do Chrome só foi possível graças a outro <ph name="BEGIN_LINK_OSS" />software de código aberto<ph name="END_LINK_OSS" />.</translation>
+<translation id="8544217240017914508">O Google Chrome está tentando modificar as configurações para preenchimento de formas de pagamento.</translation>
 </translationbundle>

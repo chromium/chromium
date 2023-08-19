@@ -3,6 +3,9 @@
 // found in the LICENSE file.
 
 package org.chromium.ui.test.util;
+import static androidx.test.espresso.Espresso.onView;
+import static androidx.test.espresso.matcher.ViewMatchers.isRoot;
+
 import static org.hamcrest.Matchers.greaterThan;
 import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.instanceOf;
@@ -23,14 +26,12 @@ import android.widget.TextView;
 
 import androidx.annotation.IntDef;
 import androidx.appcompat.content.res.AppCompatResources;
-import androidx.test.espresso.Espresso;
 import androidx.test.espresso.NoMatchingViewException;
 import androidx.test.espresso.UiController;
 import androidx.test.espresso.ViewAction;
 import androidx.test.espresso.ViewAssertion;
 import androidx.test.espresso.ViewInteraction;
 import androidx.test.espresso.matcher.BoundedMatcher;
-import androidx.test.espresso.matcher.ViewMatchers;
 
 import org.hamcrest.Description;
 import org.hamcrest.Matcher;
@@ -42,6 +43,8 @@ import org.chromium.base.test.util.CriteriaHelper;
 import java.lang.annotation.Retention;
 import java.util.ArrayList;
 import java.util.List;
+
+import javax.annotation.CheckReturnValue;
 
 /**
  * Collection of utilities helping to clarify expectations on views in tests.
@@ -116,8 +119,9 @@ public class ViewUtils {
 
     /**
      * Waits until a view matching the given matches any of the given {@link ExpectedViewState}s.
-     * Fails if the matcher applies to multiple views. Times out if no view was found while waiting
-     * up to {@link CriteriaHelper#DEFAULT_MAX_TIME_TO_POLL} milliseconds.
+     * Fails if the matcher applies to multiple views. Times out after
+     * {@link CriteriaHelper#DEFAULT_MAX_TIME_TO_POLL} milliseconds.
+     *
      * @param root The view group to search in.
      * @param viewMatcher The matcher matching the view that should be waited for.
      * @param viewState State that the matching view should be in. If multiple states are passed,
@@ -129,19 +133,52 @@ public class ViewUtils {
     }
 
     /**
-     * Waits until a view matching the given matches any of the given {@link ExpectedViewState}s.
-     * Fails if the matcher applies to multiple views. Times out if no view was found while waiting
-     * up to {@link CriteriaHelper#DEFAULT_MAX_TIME_TO_POLL} milliseconds.
-     * This should be used on {@link ViewInteraction#check} with a {@link ViewGroup}. For example,
-     * the following usage assumes the root view is a {@link ViewGroup}.
-     * <pre>
-     *   onView(isRoot()).check(waitForView(withId(R.id.example_id), VIEW_GONE));
-     * </pre>
+     * Waits until a view matches the given matcher and any of the given {@link ExpectedViewState}s.
+     * Fails if the matcher applies to multiple views. Times out after
+     * {@link CriteriaHelper#DEFAULT_MAX_TIME_TO_POLL} milliseconds.
+     *
      * @param viewMatcher The matcher matching the view that should be waited for.
      * @param viewState State that the matching view should be in. If multiple states are passed,
      *                  the waiting will stop if at least one applies.
      */
-    public static ViewAssertion waitForView(
+    public static void waitForViewCheckingState(
+            Matcher<View> viewMatcher, @ExpectedViewState int viewState) {
+        onView(isRoot()).check(withEventualExpectedViewState(viewMatcher, viewState));
+    }
+
+    /**
+     * Waits until a visible view matches the given matcher. Fails if the matcher applies to
+     * multiple views. Times out after {@link CriteriaHelper#DEFAULT_MAX_TIME_TO_POLL} milliseconds.
+     *
+     * @param viewMatcher The matcher matching the view that should be waited for.
+     */
+    public static void waitForVisibleView(Matcher<View> viewMatcher) {
+        waitForViewCheckingState(viewMatcher, VIEW_VISIBLE);
+    }
+
+    /**
+     * Returns a ViewAssertion that, upon being called, polls until either a view matches both the
+     * given |viewMatcher| and any of the given {@link ExpectedViewState}s - or the polling times
+     * out after {@link CriteriaHelper#DEFAULT_MAX_TIME_TO_POLL} milliseconds.
+     *
+     * Calling this and ignoring the return value does not do anything. This should be used on
+     * {@link ViewInteraction#check} with a {@link ViewGroup}. For example,
+     * the following usage assumes the root view is a {@link ViewGroup}.
+     * <pre>
+     *   onView(isRoot()).check(withEventualExpectedViewState(withId(R.id.example_id), VIEW_GONE));
+     * </pre>
+     *
+     * A convenience method is provided equivalent to the exact code above:
+     * <pre>
+     *   waitForViewCheckingState(withId(R.id.example_id), VIEW_GONE);
+     * </pre>
+     *
+     * @param viewMatcher The matcher matching the view that should be waited for.
+     * @param viewState State that the matching view should be in. If multiple states are passed,
+     *                  the waiting will stop if at least one applies.
+     */
+    @CheckReturnValue
+    public static ViewAssertion withEventualExpectedViewState(
             Matcher<View> viewMatcher, @ExpectedViewState int viewState) {
         return (View view, NoMatchingViewException noMatchException) -> {
             if (noMatchException != null) throw noMatchException;
@@ -152,8 +189,9 @@ public class ViewUtils {
 
     /**
      * Waits until a visible view matching the given matcher appears. Fails if the matcher applies
-     * to multiple views.  Times out if no view was found while waiting up to
-     * {@link CriteriaHelper#DEFAULT_MAX_TIME_TO_POLL} milliseconds.
+     * to multiple views. Times out after {@link CriteriaHelper#DEFAULT_MAX_TIME_TO_POLL}
+     * milliseconds.
+     *
      * @param root The view group to search in.
      * @param viewMatcher The matcher matching the view that should be waited for.
      */
@@ -163,34 +201,37 @@ public class ViewUtils {
 
     /**
      * Waits until a visible view matching the given matcher appears. Fails if the matcher applies
-     * to multiple views.  Times out if no view was found while waiting up to
-     * {@link CriteriaHelper#DEFAULT_MAX_TIME_TO_POLL} milliseconds.
+     * to multiple views. Times out after {@link CriteriaHelper#DEFAULT_MAX_TIME_TO_POLL}
+     * milliseconds.
+     *
      * @param viewMatcher The matcher matching the view that should be waited for.
      */
-    public static ViewAssertion waitForView(Matcher<View> viewMatcher) {
-        return waitForView(viewMatcher, VIEW_VISIBLE);
+    @CheckReturnValue
+    public static ViewAssertion isEventuallyVisible(Matcher<View> viewMatcher) {
+        return withEventualExpectedViewState(viewMatcher, VIEW_VISIBLE);
     }
 
     /**
      * Waits until a visible view matching the given matcher appears. Fails if the matcher applies
-     * to multiple views.  Times out if no view was found while waiting up to
-     * {@link CriteriaHelper#DEFAULT_MAX_TIME_TO_POLL} milliseconds.
+     * to multiple views. Times out after {@link CriteriaHelper#DEFAULT_MAX_TIME_TO_POLL}
+     * milliseconds.
+     *
      * @param viewMatcher The matcher matching the view that should be waited for.
      * @return An interaction on the matching view.
      */
     public static ViewInteraction onViewWaiting(Matcher<View> viewMatcher) {
         CriteriaHelper.pollInstrumentationThread(() -> {
-            Espresso.onView(ViewMatchers.isRoot())
-                    .check((View view, NoMatchingViewException noMatchException) -> {
-                        if (noMatchException != null) throw noMatchException;
-                        new ExpectedViewCriteria(viewMatcher, VIEW_VISIBLE, (ViewGroup) view).run();
-                    });
+            onView(isRoot()).check((View view, NoMatchingViewException noMatchException) -> {
+                if (noMatchException != null) throw noMatchException;
+                new ExpectedViewCriteria(viewMatcher, VIEW_VISIBLE, (ViewGroup) view).run();
+            });
         });
-        return Espresso.onView(viewMatcher);
+        return onView(viewMatcher);
     }
 
     /**
      * Wait until the specified view has finished layout updates.
+     *
      * @param view The specified view.
      */
     public static void waitForStableView(final View view) {
@@ -207,6 +248,7 @@ public class ViewUtils {
 
     /**
      * Creates a view matcher for the given color resource id.
+     *
      * @param colorResId The color resource id to be tested against the view.for the search engine
      *         icon.
      * @return Returns the view matcher.
@@ -239,6 +281,7 @@ public class ViewUtils {
 
     /**
      * Creates a {@link ViewAction} to click on a text view with one or more clickable spans.
+     *
      * @param spanIndex Index of clickable span to click on.
      * @return A {@link ViewAction} on the matching view.
      */

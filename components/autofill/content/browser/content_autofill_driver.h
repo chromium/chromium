@@ -168,7 +168,6 @@ class ContentAutofillDriver : public AutofillDriver,
   void HandleParsedForms(const std::vector<FormData>& forms) override {}
   void PopupHidden() override;
   net::IsolationInfo IsolationInfo() override;
-  void SetShouldSuppressKeyboard(bool suppress) override;
 
   // Called to inform the browser that in the field with `form_global_id` and
   // `field_global_id`, the context menu was triggered. This is different from
@@ -200,7 +199,6 @@ class ContentAutofillDriver : public AutofillDriver,
   // Callbacks that are called also in other functions by ContentAutofillRouter.
   void FocusNoLongerOnFormCallback(bool had_interacted_form);
   void UnsetKeyPressHandlerCallback();
-  void SetShouldSuppressKeyboardCallback(bool suppress);
   void OnContextMenuShownInFieldCallback(const FormGlobalId& form_global_id,
                                          const FieldGlobalId& field_global_id);
 
@@ -215,11 +213,16 @@ class ContentAutofillDriver : public AutofillDriver,
   // These events are private to avoid accidental use in the browser.
   // They can be accessed explicitly through browser_events().
   std::vector<FieldGlobalId> FillOrPreviewForm(
-      mojom::RendererFormDataAction action,
+      mojom::AutofillActionPersistence action_persistence,
       const FormData& data,
       const url::Origin& triggered_origin,
       const base::flat_map<FieldGlobalId, ServerFieldType>& field_type_map)
       override;
+  void UndoAutofill(mojom::AutofillActionPersistence action_persistence,
+                    const FormData& data,
+                    const url::Origin& triggered_origin,
+                    const base::flat_map<FieldGlobalId, ServerFieldType>&
+                        field_type_map) override;
   void SendAutofillTypePredictionsToRenderer(
       const std::vector<FormStructure*>& forms) override;
   void RendererShouldAcceptDataListSuggestion(
@@ -227,6 +230,9 @@ class ContentAutofillDriver : public AutofillDriver,
       const std::u16string& value) override;
   void RendererShouldClearFilledSection() override;
   void RendererShouldClearPreviewedForm() override;
+  void RendererShouldTriggerSuggestions(
+      const FieldGlobalId& field_id,
+      AutofillSuggestionTriggerSource trigger_source) override;
   void RendererShouldFillFieldWithValue(const FieldGlobalId& field_id,
                                         const std::u16string& value) override;
   void RendererShouldPreviewFieldWithValue(
@@ -277,8 +283,7 @@ class ContentAutofillDriver : public AutofillDriver,
       const FormData& form,
       const FormFieldData& field,
       const gfx::RectF& bounding_box,
-      AutoselectFirstSuggestion autoselect_first_suggestion,
-      FormElementWasClicked form_element_was_clicked) override;
+      AutofillSuggestionTriggerSource trigger_source) override;
   void HidePopup() override;
   void FocusNoLongerOnForm(bool had_interacted_form) override;
   void FocusOnFormField(const FormData& form,
@@ -288,7 +293,7 @@ class ContentAutofillDriver : public AutofillDriver,
                                base::TimeTicks timestamp) override;
   void DidPreviewAutofillFormData() override;
   void DidEndTextFieldEditing() override;
-  void SelectFieldOptionsDidChange(const FormData& form) override;
+  void SelectOrSelectListFieldOptionsDidChange(const FormData& form) override;
   void JavaScriptChangedAutofilledValue(
       const FormData& form,
       const FormFieldData& field,
@@ -339,11 +344,6 @@ class ContentAutofillDriver : public AutofillDriver,
   mojo::AssociatedReceiver<mojom::AutofillDriver> receiver_{this};
 
   mojo::AssociatedRemote<mojom::AutofillAgent> autofill_agent_;
-
-  bool should_suppress_keyboard_ = false;
-
-  content::RenderWidgetHost::SuppressShowingImeCallback
-      suppress_showing_ime_callback_;
 };
 
 }  // namespace autofill

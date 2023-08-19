@@ -764,7 +764,6 @@ export class NavigationListModel extends EventTarget {
       if (util.isOneDrive(provided.volumeInfo)) {
         this.navigationItems_.push(provided);
         provided.section = NavigationSection.ODFS;
-        break;
       }
     }
 

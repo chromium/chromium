@@ -196,8 +196,9 @@ void DeviceInfo::set_sharing_info(
   sharing_info_ = sharing_info;
 }
 
-void DeviceInfo::set_paask_info(PhoneAsASecurityKeyInfo&& paask_info) {
-  paask_info_.emplace(std::forward<PhoneAsASecurityKeyInfo>(paask_info));
+void DeviceInfo::set_paask_info(
+    absl::optional<PhoneAsASecurityKeyInfo>&& paask_info) {
+  paask_info_ = std::move(paask_info);
 }
 
 void DeviceInfo::set_client_name(const std::string& client_name) {

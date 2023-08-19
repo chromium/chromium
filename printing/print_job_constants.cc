@@ -116,6 +116,9 @@ const char kSettingMediaSizeVendorId[] = "vendor_id";
 // Key that specifies whether the requested media is a default one.
 const char kSettingMediaSizeIsDefault[] = "is_default";
 
+// Key that specifies the requested media type (plain, photo paper, etc.)
+const char kSettingMediaType[] = "mediaType";
+
 // Key that specifies the bottom margin of the page.
 const char kSettingMarginBottom[] = "marginBottom";
 

@@ -59,6 +59,7 @@ def is_testharness_output_passing(content_text):
             continue
         if (line.startswith('FAIL') or line.startswith('TIMEOUT')
                 or line.startswith('NOTRUN')
+                or line.startswith('PRECONDITION_FAILED')
                 or line.startswith('Harness Error.')):
             return False
 

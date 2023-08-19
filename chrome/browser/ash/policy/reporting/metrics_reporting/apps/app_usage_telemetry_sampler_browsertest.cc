@@ -4,12 +4,12 @@
 
 #include <memory>
 #include <string>
+#include <string_view>
 #include <tuple>
 #include <vector>
 
 #include "base/check.h"
 #include "base/functional/bind.h"
-#include "base/strings/string_piece_forward.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/time/time.h"
 #include "base/time/time_override.h"
@@ -69,7 +69,7 @@ namespace {
 constexpr char kDMToken[] = "token";
 
 // Standalone webapp start URL.
-constexpr char kWebAppUrl[] = "https://test.example.com";
+constexpr char kWebAppUrl[] = "https://test.example.com/";
 
 // App usage UKM entry name.
 constexpr char kAppUsageUKMEntryName[] = "ChromeOSApp.UsageTime";
@@ -84,19 +84,14 @@ constexpr base::TimeDelta kAppUsageUKMReportingInterval = base::Hours(2);
 // Used when validating reported app usage data.
 constexpr base::TimeDelta kWebAppUsageBufferPeriod = base::Seconds(5);
 
-// Assert app usage telemetry data in a record with relevant DM token and
-// returns the underlying `MetricData` object.
-const MetricData AssertAppUsageTelemetryData(Priority priority,
-                                             const Record& record) {
+void AssertRecordData(Priority priority, const Record& record) {
   EXPECT_THAT(priority, Eq(Priority::MANUAL_BATCH));
+  ASSERT_TRUE(record.has_destination());
   EXPECT_THAT(record.destination(), Eq(Destination::TELEMETRY_METRIC));
-
-  MetricData record_data;
-  EXPECT_TRUE(record_data.ParseFromString(record.data()));
-  EXPECT_TRUE(record_data.has_timestamp_ms());
-  EXPECT_TRUE(record.has_dm_token());
+  ASSERT_TRUE(record.has_dm_token());
   EXPECT_THAT(record.dm_token(), StrEq(kDMToken));
-  return record_data;
+  ASSERT_TRUE(record.has_source_info());
+  EXPECT_THAT(record.source_info().source(), Eq(SourceInfo::ASH));
 }
 
 // Returns true if the record includes app usage telemetry. False otherwise.
@@ -164,7 +159,7 @@ class AppUsageTelemetrySamplerBrowserTest
 
   // Helper that installs a standalone webapp with the specified start url.
   ::web_app::AppId InstallStandaloneWebApp(const GURL& start_url) {
-    auto web_app_info = std::make_unique<WebAppInstallInfo>();
+    auto web_app_info = std::make_unique<web_app::WebAppInstallInfo>();
     web_app_info->start_url = start_url;
     web_app_info->scope = start_url.GetWithoutFilename();
     web_app_info->display_mode = ::blink::mojom::DisplayMode::kStandalone;
@@ -190,9 +185,9 @@ class AppUsageTelemetrySamplerBrowserTest
   }
 
   void VerifyAppUsage(const AppUsageData::AppUsage& app_usage,
-                      const ::web_app::AppId& app_id,
                       const base::TimeDelta& running_time) {
     EXPECT_TRUE(app_usage.has_app_instance_id());
+    EXPECT_THAT(app_usage.app_id(), StrEq(kWebAppUrl));
     EXPECT_THAT(app_usage.app_type(),
                 Eq(::apps::ApplicationType::APPLICATION_TYPE_WEB));
 
@@ -216,7 +211,7 @@ class AppUsageTelemetrySamplerBrowserTest
     }
   }
 
-  void VerifyWebAppUsageUKM(base::StringPiece instance_id,
+  void VerifyWebAppUsageUKM(std::string_view instance_id,
                             const base::TimeDelta& running_time) {
     const auto entries =
         test_ukm_recorder_->GetEntriesByName(kAppUsageUKMEntryName);
@@ -297,7 +292,10 @@ IN_PROC_BROWSER_TEST_F(AppUsageTelemetrySamplerBrowserTest, ReportUsageData) {
   test::MockClock::Get().Advance(
       metrics::kDefaultAppUsageTelemetryCollectionRate);
   const auto [priority, record] = missive_observer.GetNextEnqueuedRecord();
-  const auto metric_data = AssertAppUsageTelemetryData(priority, record);
+  AssertRecordData(priority, record);
+  MetricData metric_data;
+  ASSERT_TRUE(metric_data.ParseFromString(record.data()));
+  EXPECT_TRUE(metric_data.has_timestamp_ms());
 
   // Data reported only includes usage from the web app. Derivative usage from
   // the native Chrome component application (since these leverage the browser)
@@ -305,8 +303,8 @@ IN_PROC_BROWSER_TEST_F(AppUsageTelemetrySamplerBrowserTest, ReportUsageData) {
   const auto& app_usage_data =
       metric_data.telemetry_data().app_telemetry().app_usage_data();
   ASSERT_THAT(app_usage_data.app_usage().size(), Eq(1));
-  const auto& app_usage = app_usage_data.app_usage().at(0);
-  VerifyAppUsage(app_usage, app_id, kAppUsageDuration);
+  const auto& app_usage = app_usage_data.app_usage(0);
+  VerifyAppUsage(app_usage, kAppUsageDuration);
 
   // Trigger upload to UKM by advancing the timer.
   test::MockClock::Get().Advance(kAppUsageUKMReportingInterval);
@@ -345,7 +343,10 @@ IN_PROC_BROWSER_TEST_F(AppUsageTelemetrySamplerBrowserTest,
   test::MockClock::Get().Advance(
       metrics::kDefaultAppUsageTelemetryCollectionRate);
   const auto [priority, record] = missive_observer.GetNextEnqueuedRecord();
-  const auto metric_data = AssertAppUsageTelemetryData(priority, record);
+  AssertRecordData(priority, record);
+  MetricData metric_data;
+  ASSERT_TRUE(metric_data.ParseFromString(record.data()));
+  EXPECT_TRUE(metric_data.has_timestamp_ms());
 
   // Data reported only includes usage from the web app. Derivative usage from
   // the native Chrome component application (since these leverage the browser)
@@ -353,7 +354,7 @@ IN_PROC_BROWSER_TEST_F(AppUsageTelemetrySamplerBrowserTest,
   const auto& app_usage_data =
       metric_data.telemetry_data().app_telemetry().app_usage_data();
   ASSERT_THAT(app_usage_data.app_usage().size(), Eq(1));
-  VerifyAppUsage(app_usage_data.app_usage().at(0), app_id, kAppUsageDuration);
+  VerifyAppUsage(app_usage_data.app_usage(0), kAppUsageDuration);
 
   // Advance timer and verify no data is reported to UKM.
   test::MockClock::Get().Advance(kAppUsageUKMReportingInterval);
@@ -408,7 +409,10 @@ IN_PROC_BROWSER_TEST_F(AppUsageTelemetrySamplerBrowserTest,
   ::ash::SessionTerminationManager::Get()->StopSession(
       ::login_manager::SessionStopReason::USER_REQUESTS_SIGNOUT);
   const auto [priority, record] = missive_observer.GetNextEnqueuedRecord();
-  const auto metric_data = AssertAppUsageTelemetryData(priority, record);
+  AssertRecordData(priority, record);
+  MetricData metric_data;
+  ASSERT_TRUE(metric_data.ParseFromString(record.data()));
+  EXPECT_TRUE(metric_data.has_timestamp_ms());
 
   // Data reported only includes usage from the web app. Derivative usage from
   // the native Chrome component application (since these leverage the browser)
@@ -416,8 +420,7 @@ IN_PROC_BROWSER_TEST_F(AppUsageTelemetrySamplerBrowserTest,
   const auto& app_usage_data =
       metric_data.telemetry_data().app_telemetry().app_usage_data();
   ASSERT_THAT(app_usage_data.app_usage().size(), Eq(1));
-  const auto& app_usage = app_usage_data.app_usage().at(0);
-  VerifyAppUsage(app_usage, app_id, kAppUsageDuration);
+  VerifyAppUsage(app_usage_data.app_usage(0), kAppUsageDuration);
 }
 
 }  // namespace

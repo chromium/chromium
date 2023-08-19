@@ -7,6 +7,7 @@ Revision: 9bfc955731213b299f893dbf4ca86874b31e6b18
 License: Apache 2.0
 License File: LICENSE
 Security Critical: yes
+Shipped: yes
 
 Description:
 This is the better together core repo, which contains cross platform libraries

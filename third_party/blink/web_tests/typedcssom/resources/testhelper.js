@@ -87,7 +87,8 @@ const gValidUnits = [
   'cm', 'mm', 'Q', 'in', 'pt',
   'pc', 'px', 'deg', 'grad', 'rad',
   'turn', 's', 'ms', 'Hz', 'kHz',
-  'dpi', 'dpcm', 'dppx', 'fr',
+  'dpi', 'dpcm', 'dppx', 'fr', 'rex',
+  'rch', 'ric', 'cap', 'rcap',
 ];
 
 // Creates a new div element with specified inline style |cssText|.

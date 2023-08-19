@@ -32,7 +32,6 @@
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/prefs/pref_change_registrar.h"
 #include "components/safe_browsing/content/browser/client_side_phishing_model.h"
-#include "components/safe_browsing/content/browser/client_side_phishing_model_optimization_guide.h"
 #include "components/safe_browsing/core/common/proto/csd.pb.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/notification_observer.h"
@@ -163,6 +162,12 @@ class ClientSideDetectionService
   // override it.
   virtual const base::File& GetVisualTfLiteModel();
 
+  // Returns the Image Embedding model file. Virtual so that mock implementation
+  // can override it.
+  virtual const base::File& GetImageEmbeddingModel();
+
+  virtual bool IsModelMetadataImageEmbeddingVersionMatching();
+
   // Returns the visual TFLite model thresholds from the model class
   virtual const base::flat_map<std::string, TfLiteModelMetadata::Threshold>&
   GetVisualTfLiteModelThresholds();
@@ -180,11 +185,16 @@ class ClientSideDetectionService
   // Returns a WeakPtr for this service.
   base::WeakPtr<ClientSideDetectionService> GetWeakPtr();
 
-  bool IsModelAvailable();
+  // Checks whether the model class has a model available or not. Virtual so
+  // that mock classes can override it.
+  virtual bool IsModelAvailable();
 
-  // For testing the model in browser test
+  // For testing the model in browser test.
   void SetModelAndVisualTfLiteForTesting(const base::FilePath& model,
                                          const base::FilePath& visual_tf_lite);
+
+  bool IsSubscribedToImageEmbeddingModelUpdates();
+  bool ShouldSendImageEmbeddingModelToRenderer();
 
  private:
   friend class ClientSideDetectionServiceTest;
@@ -293,8 +303,7 @@ class ClientSideDetectionService
 
   base::CallbackListSubscription update_model_subscription_;
 
-  std::unique_ptr<ClientSidePhishingModelOptimizationGuide>
-      client_side_phishing_model_optimization_guide_;
+  std::unique_ptr<ClientSidePhishingModel> client_side_phishing_model_;
 
   SEQUENCE_CHECKER(sequence_checker_);
 

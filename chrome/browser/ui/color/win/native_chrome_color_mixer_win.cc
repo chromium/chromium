@@ -16,7 +16,7 @@
 #include "ui/color/color_id.h"
 #include "ui/color/color_mixer.h"
 #include "ui/color/color_provider.h"
-#include "ui/color/color_provider_manager.h"
+#include "ui/color/color_provider_key.h"
 #include "ui/color/color_provider_utils.h"
 #include "ui/color/color_recipe.h"
 #include "ui/color/color_transform.h"
@@ -38,7 +38,7 @@ class FrameColorHelper {
   ~FrameColorHelper() = default;
 
   void AddNativeChromeColors(ui::ColorMixer& mixer,
-                             const ui::ColorProviderManager::Key& key) const;
+                             const ui::ColorProviderKey& key) const;
   void AddBorderAccentColors(ui::ColorMixer& mixer) const;
 
   static FrameColorHelper* Get();
@@ -46,8 +46,7 @@ class FrameColorHelper {
  private:
   // Returns the Tint for the given |id|. If there is no tint, the identity tint
   // {-1, -1, -1} is returned and won't tint the color on which it is used.
-  color_utils::HSL GetTint(int id,
-                           const ui::ColorProviderManager::Key& key) const;
+  color_utils::HSL GetTint(int id, const ui::ColorProviderKey& key) const;
 
   // Callback executed when the accent color is updated. This re-reads the
   // accent color and updates |dwm_frame_color_| and
@@ -78,9 +77,9 @@ FrameColorHelper::FrameColorHelper() {
 
 void FrameColorHelper::AddNativeChromeColors(
     ui::ColorMixer& mixer,
-    const ui::ColorProviderManager::Key& key) const {
+    const ui::ColorProviderKey& key) const {
   using TP = ThemeProperties;
-  using ColorMode = ui::ColorProviderManager::ColorMode;
+  using ColorMode = ui::ColorProviderKey::ColorMode;
 
   auto get_theme_color = [key](int id) -> absl::optional<SkColor> {
     SkColor theme_color;
@@ -100,34 +99,69 @@ void FrameColorHelper::AddNativeChromeColors(
       SkColorSetRGB(0xE8, 0xE8, 0xE8);
   constexpr SkColor kSystemMicaDarkFrameColor = SkColorSetRGB(0x20, 0x20, 0x20);
 
+  absl::optional<ui::ColorTransform> active_frame_transform;
   if (auto color = get_theme_color(TP::COLOR_FRAME_ACTIVE)) {
-    mixer[ui::kColorFrameActive] = {color.value()};
+    active_frame_transform = {color.value()};
   } else if (dwm_frame_color_) {
-    mixer[ui::kColorFrameActive] = {dwm_frame_color_.value()};
+    active_frame_transform = {dwm_frame_color_.value()};
   } else if (ShouldDefaultThemeUseMicaTitlebar()) {
-    mixer[ui::kColorFrameActive] = {key.color_mode == ColorMode::kDark
-                                        ? kSystemMicaDarkFrameColor
-                                        : kSystemMicaLightFrameColor};
+    active_frame_transform = {key.color_mode == ColorMode::kDark
+                                  ? kSystemMicaDarkFrameColor
+                                  : kSystemMicaLightFrameColor};
   }
 
+  absl::optional<ui::ColorTransform> inactive_frame_transform;
   if (auto color = get_theme_color(TP::COLOR_FRAME_INACTIVE)) {
-    mixer[ui::kColorFrameInactive] = {color.value()};
+    inactive_frame_transform = {color.value()};
   } else if (dwm_inactive_frame_color_) {
-    mixer[ui::kColorFrameInactive] = {dwm_inactive_frame_color_.value()};
+    inactive_frame_transform = {dwm_inactive_frame_color_.value()};
   } else if (dwm_frame_color_) {
-    mixer[ui::kColorFrameInactive] =
+    inactive_frame_transform =
         ui::HSLShift({dwm_frame_color_.value()},
                      GetTint(ThemeProperties::TINT_FRAME_INACTIVE, key));
   } else if (ShouldDefaultThemeUseMicaTitlebar()) {
-    mixer[ui::kColorFrameInactive] = {key.color_mode == ColorMode::kDark
-                                          ? kSystemMicaDarkFrameColor
-                                          : kSystemMicaLightFrameColor};
+    inactive_frame_transform = {key.color_mode == ColorMode::kDark
+                                    ? kSystemMicaDarkFrameColor
+                                    : kSystemMicaLightFrameColor};
+  }
+
+  // If setting custom window frame colors ensure we also update the
+  // corresponding sys header colors. Although this diverges from chrome's
+  // material spec these overrides are necessary to ensure UI assigned to these
+  // color roles can continue to work as expected while respecting platform
+  // frame overrides.
+  if (active_frame_transform) {
+    mixer[ui::kColorFrameActive] = active_frame_transform.value();
+    mixer[ui::kColorSysHeader] = active_frame_transform.value();
+    mixer[ui::kColorSysOnHeaderDivider] =
+        GetColorWithMaxContrast(ui::kColorSysHeader);
+    mixer[ui::kColorSysOnHeaderPrimary] =
+        GetColorWithMaxContrast(ui::kColorSysHeader);
+    mixer[ui::kColorSysStateHeaderHover] =
+        ui::AlphaBlend(ui::kColorSysBase, ui::kColorSysHeader,
+                       /* 40% opacity */ 0.4 * SK_AlphaOPAQUE);
+    mixer[ui::kColorSysHeaderContainer] = {ui::kColorSysBase};
+  }
+  if (inactive_frame_transform) {
+    mixer[ui::kColorFrameInactive] = inactive_frame_transform.value();
+    mixer[ui::kColorSysHeaderInactive] = inactive_frame_transform.value();
+    mixer[ui::kColorSysOnHeaderDividerInactive] =
+        GetColorWithMaxContrast(ui::kColorSysHeaderInactive);
+    mixer[ui::kColorSysOnHeaderPrimaryInactive] =
+        GetColorWithMaxContrast(ui::kColorSysHeaderInactive);
+    mixer[ui::kColorSysStateHeaderHoverInactive] =
+        ui::AlphaBlend(ui::kColorSysBase, ui::kColorSysHeaderInactive,
+                       /* 40% opacity */ 0.4 * SK_AlphaOPAQUE);
+    mixer[ui::kColorSysHeaderContainerInactive] = {ui::kColorSysBase};
   }
 
   if (ShouldDefaultThemeUseMicaTitlebar() && !key.app_controller) {
     mixer[kColorNewTabButtonBackgroundFrameActive] = {SK_ColorTRANSPARENT};
+    mixer[kColorNewTabButtonBackgroundFrameInactive] = {SK_ColorTRANSPARENT};
     mixer[kColorNewTabButtonInkDropFrameActive] =
         ui::GetColorWithMaxContrast(ui::kColorFrameActive);
+    mixer[kColorNewTabButtonInkDropFrameInactive] =
+        ui::GetColorWithMaxContrast(ui::kColorFrameInactive);
   }
 }
 
@@ -152,15 +186,15 @@ FrameColorHelper* FrameColorHelper::Get() {
 
 color_utils::HSL FrameColorHelper::GetTint(
     int id,
-    const ui::ColorProviderManager::Key& key) const {
+    const ui::ColorProviderKey& key) const {
   color_utils::HSL hsl;
   if (key.custom_theme && key.custom_theme->GetTint(id, &hsl))
     return hsl;
   // Always pass false for |incognito| here since the ColorProvider is treating
   // incognito mode as dark mode. If this needs to change, that information will
-  // need to propagate into the ColorProviderManager::Key.
+  // need to propagate into the ColorProviderKey.
   return ThemeProperties::GetDefaultTint(
-      id, false, key.color_mode == ui::ColorProviderManager::ColorMode::kDark);
+      id, false, key.color_mode == ui::ColorProviderKey::ColorMode::kDark);
 }
 
 void FrameColorHelper::OnAccentColorUpdated() {
@@ -199,7 +233,7 @@ ui::ColorTransform GetCaptionForegroundColor(
 }  // namespace
 
 void AddNativeChromeColorMixer(ui::ColorProvider* provider,
-                               const ui::ColorProviderManager::Key& key) {
+                               const ui::ColorProviderKey& key) {
   ui::ColorMixer& mixer = provider->AddMixer();
 
   // NOTE: These cases are always handled, even on Win7, in order to ensure the
@@ -231,13 +265,13 @@ void AddNativeChromeColorMixer(ui::ColorProvider* provider,
   mixer[kColorTryChromeForeground] = {SkColorSetA(SK_ColorWHITE, 0xAD)};
   mixer[kColorTryChromeHeaderForeground] = {SK_ColorWHITE};
 
-  if (key.color_mode == ui::ColorProviderManager::ColorMode::kLight) {
+  if (key.color_mode == ui::ColorProviderKey::ColorMode::kLight) {
     mixer[kColorNewTabPageBackground] = {ui::kColorNativeWindow};
     mixer[kColorNewTabPageLink] = {ui::kColorNativeHotlight};
     mixer[kColorNewTabPageText] = {ui::kColorNativeWindowText};
   }
 
-  if (key.contrast_mode != ui::ColorProviderManager::ContrastMode::kHigh) {
+  if (key.contrast_mode != ui::ColorProviderKey::ContrastMode::kHigh) {
     FrameColorHelper::Get()->AddNativeChromeColors(mixer, key);
     return;
   }

@@ -52,7 +52,7 @@ bool IsNewFunctionEnabled(NewEvFunction new_ev_function) {
 // be enabled
 BASE_FEATURE(kDeviceSignalsConsentDialog,
              "DeviceSignalsConsentDialog",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 bool IsConsentDialogEnabled() {
   return base::FeatureList::IsEnabled(kDeviceSignalsConsentDialog);

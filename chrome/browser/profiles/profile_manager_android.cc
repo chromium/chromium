@@ -7,7 +7,9 @@
 #include "chrome/browser/profiles/android/jni_headers/ProfileManager_jni.h"
 #include "chrome/browser/profiles/profile_android.h"
 
-ProfileManagerAndroid::ProfileManagerAndroid() = default;
+ProfileManagerAndroid::ProfileManagerAndroid(ProfileManager* manager) {
+  profile_manager_observation_.Observe(manager);
+}
 
 ProfileManagerAndroid::~ProfileManagerAndroid() = default;
 

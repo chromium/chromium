@@ -117,6 +117,13 @@ bool Subsumes(const mojom::ContentSecurityPolicy& policy_a,
 COMPONENT_EXPORT(NETWORK_CPP)
 std::string ToString(mojom::CSPDirectiveName name);
 
+// Return true if |request_origin| is allowed by Allow-CSP-From header. Note
+// that |allow_csp_from| can be a null pointer.
+COMPONENT_EXPORT(NETWORK_CPP)
+bool AllowCspFromAllowOrigin(
+    const url::Origin& request_origin,
+    const network::mojom::AllowCSPFromHeaderValue* allow_csp_from);
+
 // Return true if the response allows the embedder to enforce arbitrary policy
 // on its behalf. |required_csp| is modified so that its self_origin matches the
 // correct origin. Specification:

@@ -4,8 +4,8 @@
 
 #import "ios/web/test/web_int_test.h"
 
+#import "base/apple/foundation_util.h"
 #import "base/ios/block_types.h"
-#import "base/mac/foundation_util.h"
 #import "base/memory/ptr_util.h"
 #import "base/scoped_observation.h"
 #import "base/strings/sys_string_conversions.h"
@@ -20,10 +20,6 @@
 
 #if DCHECK_IS_ON()
 #import "ui/display/screen_base.h"
-#endif
-
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
 #endif
 
 using base::test::ios::kWaitForClearBrowsingDataTimeout;
@@ -90,7 +86,7 @@ void WebIntTest::TearDown() {
   // network process via private APIs.
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Wundeclared-selector"
-  WKWebView* web_view = base::mac::ObjCCast<WKWebView>(
+  WKWebView* web_view = base::apple::ObjCCast<WKWebView>(
       web::WebStateImpl::FromWebState(web_state())
           ->GetWebViewNavigationProxy());
   [web_view performSelector:@selector(_close)];
@@ -152,13 +148,9 @@ bool WebIntTest::LoadWithParams(
 void WebIntTest::RemoveWKWebViewCreatedData(WKWebsiteDataStore* data_store,
                                             NSSet* websiteDataTypes) {
   base::RunLoop run_loop;
-  __block base::OnceClosure quit_closure = run_loop.QuitClosure();
-
   [data_store removeDataOfTypes:websiteDataTypes
                   modifiedSince:NSDate.distantPast
-              completionHandler:^{
-                std::move(quit_closure).Run();
-              }];
+              completionHandler:base::CallbackToBlock(run_loop.QuitClosure())];
 
   // Wait until the data is removed. We increase the timeout to 90 seconds here
   // since this action has been timing out frequently on the bots.

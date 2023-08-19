@@ -24,6 +24,7 @@
 #include "third_party/blink/renderer/core/layout/svg/layout_svg_rect.h"
 #include "third_party/blink/renderer/core/svg/svg_animated_length.h"
 #include "third_party/blink/renderer/core/svg/svg_length.h"
+#include "third_party/blink/renderer/core/svg/svg_length_functions.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 
 namespace blink {
@@ -80,20 +81,20 @@ void SVGRectElement::Trace(Visitor* visitor) const {
 Path SVGRectElement::AsPath() const {
   Path path;
 
-  SVGLengthContext length_context(this);
+  const SVGViewportResolver viewport_resolver(*this);
   const ComputedStyle& style = ComputedStyleRef();
 
-  gfx::Vector2dF size = length_context.ResolveLengthPair(
-      style.UsedWidth(), style.UsedHeight(), style);
+  gfx::Vector2dF size = VectorForLengthPair(
+      style.UsedWidth(), style.UsedHeight(), viewport_resolver, style);
   if (size.x() < 0 || size.y() < 0 || size.IsZero())
     return path;
 
-  gfx::Vector2dF origin =
-      length_context.ResolveLengthPair(style.X(), style.Y(), style);
-  gfx::RectF rect(origin.x(), origin.y(), size.x(), size.y());
+  gfx::PointF origin =
+      PointForLengthPair(style.X(), style.Y(), viewport_resolver, style);
+  gfx::RectF rect(origin, gfx::SizeF(size.x(), size.y()));
 
   gfx::Vector2dF radii =
-      length_context.ResolveLengthPair(style.Rx(), style.Ry(), style);
+      VectorForLengthPair(style.Rx(), style.Ry(), viewport_resolver, style);
   // Apply the SVG corner radius constraints, per the rect section of the SVG
   // shapes spec: if one of radii.x() and radii.y() is auto or negative, then
   // the other corner radius value is used. If both are auto or negative, then
@@ -121,22 +122,22 @@ void SVGRectElement::CollectStyleForPresentationAttribute(
     MutableCSSPropertyValueSet* style) {
   SVGAnimatedPropertyBase* property = PropertyFromAttribute(name);
   if (property == x_) {
-    AddPropertyToPresentationAttributeStyle(style, property->CssPropertyId(),
+    AddPropertyToPresentationAttributeStyle(style, CSSPropertyID::kX,
                                             x_->CssValue());
   } else if (property == y_) {
-    AddPropertyToPresentationAttributeStyle(style, property->CssPropertyId(),
+    AddPropertyToPresentationAttributeStyle(style, CSSPropertyID::kY,
                                             y_->CssValue());
   } else if (property == width_) {
-    AddPropertyToPresentationAttributeStyle(style, property->CssPropertyId(),
+    AddPropertyToPresentationAttributeStyle(style, CSSPropertyID::kWidth,
                                             width_->CssValue());
   } else if (property == height_) {
-    AddPropertyToPresentationAttributeStyle(style, property->CssPropertyId(),
+    AddPropertyToPresentationAttributeStyle(style, CSSPropertyID::kHeight,
                                             height_->CssValue());
   } else if (property == rx_) {
-    AddPropertyToPresentationAttributeStyle(style, property->CssPropertyId(),
+    AddPropertyToPresentationAttributeStyle(style, CSSPropertyID::kRx,
                                             rx_->CssValue());
   } else if (property == ry_) {
-    AddPropertyToPresentationAttributeStyle(style, property->CssPropertyId(),
+    AddPropertyToPresentationAttributeStyle(style, CSSPropertyID::kRy,
                                             ry_->CssValue());
   } else {
     SVGGeometryElement::CollectStyleForPresentationAttribute(name, value,
@@ -189,13 +190,11 @@ SVGAnimatedPropertyBase* SVGRectElement::PropertyFromAttribute(
   }
 }
 
-void SVGRectElement::SynchronizeSVGAttribute(const QualifiedName& name) const {
-  if (name == AnyQName()) {
-    SVGAnimatedPropertyBase* attrs[]{x_.Get(),      y_.Get(),  width_.Get(),
-                                     height_.Get(), rx_.Get(), ry_.Get()};
-    SynchronizeAllSVGAttributes(attrs);
-  }
-  SVGGeometryElement::SynchronizeSVGAttribute(name);
+void SVGRectElement::SynchronizeAllSVGAttributes() const {
+  SVGAnimatedPropertyBase* attrs[]{x_.Get(),      y_.Get(),  width_.Get(),
+                                   height_.Get(), rx_.Get(), ry_.Get()};
+  SynchronizeListOfSVGAttributes(attrs);
+  SVGGeometryElement::SynchronizeAllSVGAttributes();
 }
 
 void SVGRectElement::CollectExtraStyleForPresentationAttribute(
@@ -203,8 +202,8 @@ void SVGRectElement::CollectExtraStyleForPresentationAttribute(
   for (auto* property :
        (SVGAnimatedPropertyBase*[]){x_.Get(), y_.Get(), width_.Get(),
                                     height_.Get(), rx_.Get(), ry_.Get()}) {
-    if (property->HasPresentationAttributeMapping() &&
-        property->IsAnimating()) {
+    DCHECK(property->HasPresentationAttributeMapping());
+    if (property->IsAnimating()) {
       CollectStyleForPresentationAttribute(property->AttributeName(),
                                            g_empty_atom, style);
     }

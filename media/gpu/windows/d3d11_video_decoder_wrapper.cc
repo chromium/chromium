@@ -7,9 +7,9 @@
 #include <d3d9.h>
 
 #include "base/check_op.h"
-#include "base/containers/stack_container.h"
 #include "base/strings/string_number_conversions.h"
 #include "media/gpu/windows/d3d11_picture_buffer.h"
+#include "third_party/abseil-cpp/absl/container/inlined_vector.h"
 
 namespace media {
 
@@ -45,15 +45,19 @@ class D3D11VideoDecoderWrapperImpl : public D3D11VideoDecoderWrapper {
         video_device_(std::move(video_device)),
         video_context_(std::move(video_context)),
         video_decoder_(std::move(video_decoder)) {}
-  ~D3D11VideoDecoderWrapperImpl() override = default;
+  ~D3D11VideoDecoderWrapperImpl() override {
+    // Release the scoped buffer before video_context_ and video_decoder_
+    // destructs.
+    if (bitstream_buffer_) {
+      bitstream_buffer_.reset();
+    }
+  }
 
   void Reset() override {
-    if (!bitstream_buffer_) {
-      return;
+    if (bitstream_buffer_) {
+      CHECK(bitstream_buffer_->Commit());
+      bitstream_buffer_.reset();
     }
-
-    CHECK(bitstream_buffer_->Commit());
-    bitstream_buffer_.reset();
   }
 
   bool WaitForFrameBegins(D3D11PictureBuffer* output_picture) override {
@@ -148,17 +152,17 @@ class D3D11VideoDecoderWrapperImpl : public D3D11VideoDecoderWrapper {
   ComD3D11VideoDevice video_device_;
   Microsoft::WRL::ComPtr<D3D11VideoContext> video_context_;
   ComD3D11VideoDecoder video_decoder_;
-  base::StackVector<D3D11VideoDecoderBufferDesc, 4> video_buffers_;
+  absl::InlinedVector<D3D11VideoDecoderBufferDesc, 4> video_buffers_;
 };
 
 template <>
 bool D3D11VideoDecoderWrapperImpl<
     ID3D11VideoContext,
     D3D11_VIDEO_DECODER_BUFFER_DESC>::SubmitDecoderBuffers() {
-  DCHECK_LE(video_buffers_->size(), 4ull);
+  DCHECK_LE(video_buffers_.size(), 4ull);
   HRESULT hr = video_context_->SubmitDecoderBuffers(
-      video_decoder_.Get(), video_buffers_->size(), video_buffers_->data());
-  video_buffers_->clear();
+      video_decoder_.Get(), video_buffers_.size(), video_buffers_.data());
+  video_buffers_.clear();
   if (FAILED(hr)) {
     RecordFailure("SubmitDecoderBuffers failed",
                   D3D11StatusCode::kSubmitDecoderBuffersFailed, hr);
@@ -172,10 +176,10 @@ template <>
 bool D3D11VideoDecoderWrapperImpl<
     ID3D11VideoContext1,
     D3D11_VIDEO_DECODER_BUFFER_DESC1>::SubmitDecoderBuffers() {
-  DCHECK_LE(video_buffers_->size(), 4ull);
+  DCHECK_LE(video_buffers_.size(), 4ull);
   HRESULT hr = video_context_->SubmitDecoderBuffers1(
-      video_decoder_.Get(), video_buffers_->size(), video_buffers_->data());
-  video_buffers_->clear();
+      video_decoder_.Get(), video_buffers_.size(), video_buffers_.data());
+  video_buffers_.clear();
   if (FAILED(hr)) {
     RecordFailure("SubmitDecoderBuffers failed",
                   D3D11StatusCode::kSubmitDecoderBuffersFailed, hr);
@@ -203,7 +207,7 @@ class ScopedD3D11DecoderBuffer : public ScopedD3DBuffer {
       D3D11StatusCode status_code = D3D11StatusCode::kOk;
       switch (type_) {
         case D3D11_VIDEO_DECODER_BUFFER_PICTURE_PARAMETERS:
-          status_code = D3D11StatusCode::kGetBitstreamBufferFailed;
+          status_code = D3D11StatusCode::kGetPicParamBufferFailed;
           break;
         case D3D11_VIDEO_DECODER_BUFFER_INVERSE_QUANTIZATION_MATRIX:
           status_code = D3D11StatusCode::kGetQuantBufferFailed;
@@ -229,7 +233,9 @@ class ScopedD3D11DecoderBuffer : public ScopedD3DBuffer {
   ScopedD3D11DecoderBuffer(const ScopedD3D11DecoderBuffer&) = delete;
   ScopedD3D11DecoderBuffer& operator=(const ScopedD3D11DecoderBuffer&) = delete;
 
-  bool Commit() override { return Commit(desired_size_); }
+  bool Commit() override {
+    return Commit(std::min(static_cast<size_t>(desired_size_), data_.size()));
+  }
 
   bool Commit(uint32_t written_size) override {
     if (data_.empty()) {
@@ -242,7 +248,7 @@ class ScopedD3D11DecoderBuffer : public ScopedD3DBuffer {
       D3D11StatusCode status_code = D3D11StatusCode::kOk;
       switch (type_) {
         case D3D11_VIDEO_DECODER_BUFFER_PICTURE_PARAMETERS:
-          status_code = D3D11StatusCode::kReleaseBitstreamBufferFailed;
+          status_code = D3D11StatusCode::kReleasePicParamBufferFailed;
           break;
         case D3D11_VIDEO_DECODER_BUFFER_INVERSE_QUANTIZATION_MATRIX:
           status_code = D3D11StatusCode::kReleaseQuantBufferFailed;
@@ -261,7 +267,7 @@ class ScopedD3D11DecoderBuffer : public ScopedD3DBuffer {
       return false;
     }
 
-    decoder_->video_buffers_->emplace_back(D3D11VideoDecoderBufferDesc{
+    decoder_->video_buffers_.emplace_back(D3D11VideoDecoderBufferDesc{
         .BufferType = type_,
         .DataOffset = 0,
         .DataSize = written_size,

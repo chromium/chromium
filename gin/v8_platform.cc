@@ -358,9 +358,25 @@ v8::ZoneBackingAllocator* V8Platform::GetZoneBackingAllocator() {
 #endif  // BUILDFLAG(USE_PARTITION_ALLOC)
 
 std::shared_ptr<v8::TaskRunner> V8Platform::GetForegroundTaskRunner(
-    v8::Isolate* isolate) {
+    v8::Isolate* isolate,
+    v8::TaskPriority priority) {
   PerIsolateData* data = PerIsolateData::From(isolate);
-  return data->task_runner();
+  if (!data->low_priority_task_runner()) {
+    return data->task_runner();
+  }
+
+  switch (priority) {
+    case v8::TaskPriority::kUserBlocking:
+      // blink::scheduler::TaskPriority::kDefaultPriority
+      return data->task_runner();
+    case v8::TaskPriority::kUserVisible:
+    case v8::TaskPriority::kBestEffort:
+      // blink::scheduler::TaskPriority::kLowPriority
+      return data->low_priority_task_runner();
+    default:
+      NOTREACHED() << "Unsupported TaskPriority.";
+      return data->task_runner();
+  }
 }
 
 int V8Platform::NumberOfWorkerThreads() {

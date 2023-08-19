@@ -7,12 +7,15 @@
 #include "base/files/scoped_temp_dir.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
+#include "base/test/metrics/histogram_tester.h"
+#include "base/test/scoped_feature_list.h"
 #include "chrome/browser/prefs/browser_prefs.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/safe_browsing/safe_browsing_service.h"
 #include "chrome/browser/signin/chrome_signin_client_factory.h"
 #include "chrome/browser/signin/chrome_signin_client_test_util.h"
 #include "chrome/browser/signin/identity_test_environment_profile_adaptor.h"
+#include "chrome/browser/sync/sync_service_factory.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/test/base/test_browser_window.h"
 #include "chrome/test/base/testing_browser_process.h"
@@ -22,8 +25,10 @@
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/testing_pref_service.h"
 #include "components/prefs/testing_pref_store.h"
+#include "components/safe_browsing/core/browser/tailored_security_service/tailored_security_notification_result.h"
 #include "components/safe_browsing/core/common/features.h"
 #include "components/safe_browsing/core/common/safe_browsing_prefs.h"
+#include "components/sync/test/test_sync_service.h"
 #include "components/sync_preferences/pref_model_associator_client.h"
 #include "components/sync_preferences/pref_service_syncable.h"
 #include "components/sync_preferences/testing_pref_service_syncable.h"
@@ -90,6 +95,8 @@ class TestChromeTailoredSecurityService : public ChromeTailoredSecurityService {
 };
 }  // namespace
 
+// TODO(crbug.com/1473470): Move tests related to base class behavior of
+// MaybeNotifySyncUser to the test suite for TailoredSecurityService.
 class ChromeTailoredSecurityServiceTest : public testing::Test {
  public:
   ChromeTailoredSecurityServiceTest()
@@ -103,6 +110,8 @@ class ChromeTailoredSecurityServiceTest : public testing::Test {
     identity_test_env_adaptor_ =
         std::make_unique<IdentityTestEnvironmentProfileAdaptor>(profile_);
     GetIdentityTestEnv()->SetTestURLLoaderFactory(&test_url_loader_factory_);
+    // TODO(crbug.com/1466447): `ConsentLevel::kSync` is deprecated and should
+    // be removed. See `ConsentLevel::kSync` documentation for details.
     GetIdentityTestEnv()->MakePrimaryAccountAvailable(
         "test@foo.com", signin::ConsentLevel::kSync);
     prefs_ = profile_->GetTestingPrefService();
@@ -124,6 +133,12 @@ class ChromeTailoredSecurityServiceTest : public testing::Test {
         ChromeSigninClientFactory::GetInstance(),
         base::BindRepeating(&BuildChromeSigninClientWithURLLoader,
                             &test_url_loader_factory_));
+    factories.emplace_back(
+        SyncServiceFactory::GetInstance(),
+        base::BindRepeating(
+            [](content::BrowserContext*) -> std::unique_ptr<KeyedService> {
+              return std::make_unique<syncer::TestSyncService>();
+            }));
     return factories;
   }
 
@@ -182,6 +197,11 @@ class ChromeTailoredSecurityServiceTest : public testing::Test {
 
   TestingProfile* profile() { return profile_; }
 
+  syncer::TestSyncService* sync_service() {
+    return static_cast<syncer::TestSyncService*>(
+        SyncServiceFactory::GetForProfile(profile()));
+  }
+
   signin::IdentityTestEnvironment* GetIdentityTestEnv() {
     DCHECK(identity_test_env_adaptor_);
     return identity_test_env_adaptor_->identity_test_env();
@@ -192,6 +212,8 @@ class ChromeTailoredSecurityServiceTest : public testing::Test {
     profile_ = nullptr;
     profile_manager_.DeleteTestingProfile("primary_account");
   }
+
+  base::test::ScopedFeatureList scoped_feature_list_;
 
  private:
   // Must be declared before anything that may make use of the
@@ -231,6 +253,63 @@ TEST_F(ChromeTailoredSecurityServiceTest,
   EXPECT_EQ(tailored_security_service()->times_dialog_displayed(),
             initial_times_displayed + 1);
   EXPECT_TRUE(tailored_security_service()->previous_show_enable_dialog_value());
+}
+
+TEST_F(ChromeTailoredSecurityServiceTest,
+       TailoredSecurityEnabledButHistorySyncDisabledDoesNotShowEnableDialog) {
+  SetSafeBrowsingState(prefs(), SafeBrowsingState::STANDARD_PROTECTION);
+  const GURL google_url("https://www.google.com");
+  AddTab(google_url);
+  int initial_times_displayed =
+      tailored_security_service()->times_dialog_displayed();
+
+  // disable history sync
+  sync_service()->GetUserSettings()->SetSelectedTypes(
+      /*sync_everything=*/false,
+      /*types=*/{});
+  tailored_security_service()->MaybeNotifySyncUser(kTailoredSecurityEnabled,
+                                                   base::Time::Now());
+
+  EXPECT_EQ(tailored_security_service()->times_dialog_displayed(),
+            initial_times_displayed);
+}
+
+TEST_F(ChromeTailoredSecurityServiceTest,
+       TailoredSecurityEnabledButHistorySyncDisabledLogsHistoryNotSynced) {
+  SetSafeBrowsingState(prefs(), SafeBrowsingState::STANDARD_PROTECTION);
+  const GURL google_url("https://www.google.com");
+  AddTab(google_url);
+
+  // disable history sync
+  sync_service()->GetUserSettings()->SetSelectedTypes(
+      /*sync_everything=*/false,
+      /*types=*/{});
+  base::HistogramTester tester;
+  tailored_security_service()->MaybeNotifySyncUser(kTailoredSecurityEnabled,
+                                                   base::Time::Now());
+
+  tester.ExpectBucketCount(
+      "SafeBrowsing.TailoredSecurity.SyncPromptEnabledNotificationResult2",
+      TailoredSecurityNotificationResult::kHistoryNotSynced, 1);
+}
+
+TEST_F(ChromeTailoredSecurityServiceTest,
+       TailoredSecurityEnabledButHistorySyncEnabledDoesNotLogHistoryNotSynced) {
+  SetSafeBrowsingState(prefs(), SafeBrowsingState::STANDARD_PROTECTION);
+  const GURL google_url("https://www.google.com");
+  AddTab(google_url);
+
+  // enable history sync
+  sync_service()->GetUserSettings()->SetSelectedTypes(
+      /*sync_everything=*/false,
+      /*types=*/{syncer::UserSelectableType::kHistory});
+  base::HistogramTester tester;
+  tailored_security_service()->MaybeNotifySyncUser(kTailoredSecurityEnabled,
+                                                   base::Time::Now());
+
+  tester.ExpectBucketCount(
+      "SafeBrowsing.TailoredSecurity.SyncPromptEnabledNotificationResult2",
+      TailoredSecurityNotificationResult::kHistoryNotSynced, 0);
 }
 
 TEST_F(ChromeTailoredSecurityServiceTest, TsEnabledEnablesEp) {
@@ -360,6 +439,33 @@ TEST_F(ChromeTailoredSecurityServiceTest,
   tailored_security_service()->MaybeNotifySyncUser(kTailoredSecurityDisabled,
                                                    base::Time::Now());
   EXPECT_TRUE(IsEnhancedProtectionEnabled(*prefs()));
+}
+
+TEST_F(ChromeTailoredSecurityServiceTest,
+       WhenRetryDisabledOnSuccessDoesNotUpdateRetryStatePref) {
+  scoped_feature_list_.InitAndDisableFeature(
+      kTailoredSecurityRetryForSyncUsers);
+  {
+    SetSafeBrowsingState(prefs(), SafeBrowsingState::STANDARD_PROTECTION);
+    auto original_value =
+        prefs()->GetInteger(prefs::kTailoredSecuritySyncFlowRetryState);
+    tailored_security_service()->MaybeNotifySyncUser(kTailoredSecurityEnabled,
+                                                     base::Time::Now());
+    EXPECT_EQ(prefs()->GetInteger(prefs::kTailoredSecuritySyncFlowRetryState),
+              original_value);
+  }
+}
+
+TEST_F(ChromeTailoredSecurityServiceTest,
+       WhenRetryEnabledOnSuccessStoresNoRetryNeeded) {
+  scoped_feature_list_.InitAndEnableFeature(kTailoredSecurityRetryForSyncUsers);
+  {
+    SetSafeBrowsingState(prefs(), SafeBrowsingState::STANDARD_PROTECTION);
+    tailored_security_service()->MaybeNotifySyncUser(kTailoredSecurityEnabled,
+                                                     base::Time::Now());
+    EXPECT_EQ(prefs()->GetInteger(prefs::kTailoredSecuritySyncFlowRetryState),
+              TailoredSecurityRetryState::NO_RETRY_NEEDED);
+  }
 }
 
 }  // namespace safe_browsing

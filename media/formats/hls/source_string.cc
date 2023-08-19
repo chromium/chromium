@@ -91,7 +91,8 @@ ParseStatus::Or<SourceString> SourceLineIterator::Next() {
 
   const auto line_end = source_.find_first_of("\r\n");
   if (line_end == base::StringPiece::npos) {
-    return ParseStatusCode::kInvalidEOL;
+    ParseStatus st = ParseStatusCode::kInvalidEOL;
+    return std::move(st).WithData("source", source_);
   }
 
   const auto line_content = source_.substr(0, line_end);

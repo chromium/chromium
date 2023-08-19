@@ -17,9 +17,8 @@ import org.junit.runner.RunWith;
 
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
-import org.chromium.base.test.util.DisableIf;
-import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Feature;
+import org.chromium.base.test.util.MaxAndroidSdkLevel;
 import org.chromium.chrome.browser.download.DownloadItem;
 import org.chromium.chrome.browser.download.DownloadManagerService;
 import org.chromium.chrome.browser.download.DownloadManagerService.DownloadObserver;
@@ -154,8 +153,8 @@ public class RuntimePermissionTest {
     @Test
     @MediumTest
     @Feature({"RuntimePermissions", "Downloads"})
-    @DisableIf.Build(sdk_is_greater_than = Build.VERSION_CODES.Q,
-            message = "WRITE_EXTERNAL_STORAGE is not supported starting in Android R")
+    @MaxAndroidSdkLevel(value = Build.VERSION_CODES.Q,
+            reason = "WRITE_EXTERNAL_STORAGE is not supported starting in Android R")
     public void
     testDenyRuntimeDownload() throws Exception {
         DownloadObserver observer = new DownloadObserver() {
@@ -297,7 +296,6 @@ public class RuntimePermissionTest {
     @MediumTest
     @Feature({"RuntimePermissions", "MediaPermissions"})
     @CommandLineFlags.Add(ContentSwitches.USE_FAKE_DEVICE_FOR_MEDIA_STREAM)
-    @DisabledTest(message = "crbug.com/1444217")
     public void testAllowRuntimeCameraIncognito() throws Exception {
         mPermissionTestRule.newIncognitoTabFromMenu();
 
@@ -315,7 +313,6 @@ public class RuntimePermissionTest {
     @MediumTest
     @Feature({"RuntimePermissions", "MediaPermissions"})
     @CommandLineFlags.Add(ContentSwitches.USE_FAKE_DEVICE_FOR_MEDIA_STREAM)
-    @DisabledTest(message = "crbug.com/1444217")
     public void testAllowRuntimeMicrophoneIncognito() throws Exception {
         mPermissionTestRule.newIncognitoTabFromMenu();
         String[] requestablePermission = new String[] {Manifest.permission.RECORD_AUDIO};

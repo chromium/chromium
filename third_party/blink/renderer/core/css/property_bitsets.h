@@ -16,18 +16,16 @@ namespace blink {
 // but faster.
 extern const CSSBitset kLogicalGroupProperties;
 
-// Properties that have a related visited-color property.
-// Equivalent to checking prop.GetVisitedProperty() != nullptr,
-// but faster.
-//
-// This is CORE_EXPORT only due to unit tests.
-CORE_EXPORT extern const CSSBitset kPropertiesWithVisited;
-
 // For properties that are not behind runtime flags (which are nearly all,
 // in practice), we can avoid resolving and looking them up to check the
 // exposure; we can just check this bitmap instead (which fits neatly into
 // two rather hot cache lines). This saves a little time in parsing.
 extern const CSSBitset kKnownExposedProperties;
+
+// Properties that have the IsSurrogate() bit set; i.e., they may need
+// to go through SurrogateFor() to be resolved against direction and
+// writing mode.
+extern const CSSBitset kSurrogateProperties;
 
 }  // namespace blink
 

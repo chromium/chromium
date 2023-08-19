@@ -323,7 +323,7 @@ class MockConnectionObserver : public ConnectionObserver {
   }
 
  private:
-  raw_ptr<Connection, ExperimentalAsh> connection_;
+  raw_ptr<Connection, DanglingUntriaged | ExperimentalAsh> connection_;
   std::string last_deserialized_message_;
   bool last_send_success_;
   int num_send_completed_;
@@ -674,7 +674,8 @@ class SecureChannelBluetoothLowEnergyWeaveClientConnectionTest
   const multidevice::ScopedDisableLoggingForTesting disable_logging_;
 
   scoped_refptr<device::MockBluetoothAdapter> adapter_;
-  raw_ptr<base::MockOneShotTimer, ExperimentalAsh> test_timer_;
+  raw_ptr<base::MockOneShotTimer, DanglingUntriaged | ExperimentalAsh>
+      test_timer_;
   scoped_refptr<base::TestSimpleTaskRunner> task_runner_;
 
   std::unique_ptr<device::MockBluetoothDevice> mock_bluetooth_device_;
@@ -686,9 +687,11 @@ class SecureChannelBluetoothLowEnergyWeaveClientConnectionTest
   int32_t rssi_for_channel_ = device::BluetoothDevice::kUnknownPower;
   bool last_wire_message_success_;
   bool has_verified_connection_result_;
-  raw_ptr<NiceMock<MockBluetoothLowEnergyWeavePacketGenerator>, ExperimentalAsh>
+  raw_ptr<NiceMock<MockBluetoothLowEnergyWeavePacketGenerator>,
+          DanglingUntriaged | ExperimentalAsh>
       generator_;
-  raw_ptr<NiceMock<MockBluetoothLowEnergyWeavePacketReceiver>, ExperimentalAsh>
+  raw_ptr<NiceMock<MockBluetoothLowEnergyWeavePacketReceiver>,
+          DanglingUntriaged | ExperimentalAsh>
       receiver_;
   std::unique_ptr<MockConnectionObserver> connection_observer_;
 

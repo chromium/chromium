@@ -19,7 +19,9 @@ class PrefService;
 
 namespace user_manager {
 
-class ScopedUserManager;
+namespace internal {
+class ScopedUserManagerImpl;
+}  // namespace internal
 
 // A list pref of the the regular users known on this device, arranged in LRU
 // order, stored in local state.
@@ -94,6 +96,10 @@ class USER_MANAGER_EXPORT UserManager {
     virtual void OnUserRemoved(const AccountId& account_id,
                                UserRemovalReason reason);
 
+    // Called when the first user that is not allowed in the session is
+    // detected.
+    virtual void OnUserNotAllowed(const std::string& user_email);
+
    protected:
     virtual ~Observer();
   };
@@ -105,6 +111,12 @@ class USER_MANAGER_EXPORT UserManager {
    public:
     // Called when active user has changed.
     virtual void ActiveUserChanged(User* active_user);
+
+    // Called when login state is updated.
+    // This looks very similar to ActiveUserChanged, so consider to merge
+    // in the future.
+    virtual void OnLoginStateUpdated(const User* active_user,
+                                     bool is_current_user_owner);
 
     // Called when another user got added to the existing session.
     virtual void UserAddedToSession(const User* added_user);
@@ -354,8 +366,8 @@ class USER_MANAGER_EXPORT UserManager {
   // Returns true if we're logged in as a child user.
   virtual bool IsLoggedInAsChildUser() const = 0;
 
-  // Returns true if we're logged in as a public account.
-  virtual bool IsLoggedInAsPublicAccount() const = 0;
+  // Returns true if we're logged in as a managed guest session.
+  virtual bool IsLoggedInAsManagedGuestSession() const = 0;
 
   // Returns true if we're logged in as a Guest.
   virtual bool IsLoggedInAsGuest() const = 0;
@@ -405,6 +417,7 @@ class USER_MANAGER_EXPORT UserManager {
   virtual void NotifyUserToBeRemoved(const AccountId& account_id) = 0;
   virtual void NotifyUserRemoved(const AccountId& account_id,
                                  UserRemovalReason reason) = 0;
+  virtual void NotifyUserNotAllowed(const std::string& user_email) = 0;
 
   // Returns true if guest user is allowed.
   virtual bool IsGuestSessionAllowed() const = 0;
@@ -429,12 +442,6 @@ class USER_MANAGER_EXPORT UserManager {
 
   // Returns "Local State" PrefService instance.
   virtual PrefService* GetLocalState() const = 0;
-
-  // Checks for platform-specific known users matching given |user_email|. If
-  // data matches a known account, fills |out_account_id| with account id and
-  // returns true.
-  virtual bool GetPlatformKnownUserId(const std::string& user_email,
-                                      AccountId* out_account_id) const = 0;
 
   // Returns account id of the Guest user.
   virtual const AccountId& GetGuestAccountId() const = 0;
@@ -496,7 +503,7 @@ class USER_MANAGER_EXPORT UserManager {
   static UserManager* instance;
 
  private:
-  friend class ScopedUserManager;
+  friend class internal::ScopedUserManagerImpl;
 
   // Same as Get() but doesn't won't crash is current instance is NULL.
   static UserManager* GetForTesting();

@@ -6,7 +6,7 @@
 
 #include "base/android/jni_android.h"
 #include "base/android/jni_string.h"
-#include "weblayer/browser/java/jni/ApplicationInfoHelper_jni.h"
+#include "weblayer/browser/java/base_module_jni/ApplicationInfoHelper_jni.h"
 
 namespace weblayer {
 

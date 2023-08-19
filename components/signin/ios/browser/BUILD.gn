@@ -5,13 +5,12 @@
 import("//build/config/features.gni")
 
 source_set("browser") {
-  configs += [ "//build/config/compiler:enable_arc" ]
   sources = [
     "account_consistency_service.h",
     "account_consistency_service.mm",
     "manage_accounts_delegate.h",
-    "wait_for_network_callback_helper.cc",
-    "wait_for_network_callback_helper.h",
+    "wait_for_network_callback_helper_ios.cc",
+    "wait_for_network_callback_helper_ios.h",
   ]
 
   deps = [
@@ -37,7 +36,6 @@ source_set("browser") {
 }
 
 source_set("features") {
-  configs += [ "//build/config/compiler:enable_arc" ]
   sources = [
     "features.cc",
     "features.h",
@@ -49,7 +47,6 @@ source_set("features") {
 }
 
 source_set("active_state_manager") {
-  configs += [ "//build/config/compiler:enable_arc" ]
   sources = [
     "active_state_manager.h",
     "active_state_manager_impl.h",
@@ -63,12 +60,11 @@ source_set("active_state_manager") {
 }
 
 source_set("unit_tests") {
-  configs += [ "//build/config/compiler:enable_arc" ]
   testonly = true
   sources = [
     "account_consistency_service_unittest.mm",
     "active_state_manager_impl_unittest.mm",
-    "wait_for_network_callback_helper_unittest.cc",
+    "wait_for_network_callback_helper_ios_unittest.cc",
   ]
 
   deps = [

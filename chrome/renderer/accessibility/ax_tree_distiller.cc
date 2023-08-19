@@ -12,6 +12,9 @@
 #include "base/containers/contains.h"
 #include "base/strings/utf_string_conversions.h"
 #include "content/public/renderer/render_frame.h"
+#include "content/public/renderer/render_thread.h"
+#include "services/metrics/public/cpp/mojo_ukm_recorder.h"
+#include "services/metrics/public/cpp/ukm_builders.h"
 #include "third_party/blink/public/common/browser_interface_broker_proxy.h"
 #include "ui/accessibility/accessibility_features.h"
 #include "ui/accessibility/ax_node.h"
@@ -91,16 +94,25 @@ AXTreeDistiller::AXTreeDistiller(
     content::RenderFrame* render_frame,
     OnAXTreeDistilledCallback on_ax_tree_distilled_callback)
     : render_frame_(render_frame),
-      on_ax_tree_distilled_callback_(on_ax_tree_distilled_callback) {}
+      on_ax_tree_distilled_callback_(on_ax_tree_distilled_callback) {
+  // TODO(crbug.com/1450930): Use a global ukm recorder instance instead.
+  mojo::Remote<ukm::mojom::UkmRecorderFactory> factory;
+  content::RenderThread::Get()->BindHostReceiver(
+      factory.BindNewPipeAndPassReceiver());
+  ukm_recorder_ = ukm::MojoUkmRecorder::Create(*factory);
+}
 
 AXTreeDistiller::~AXTreeDistiller() = default;
 
 void AXTreeDistiller::Distill(const ui::AXTree& tree,
                               const ui::AXTreeUpdate& snapshot,
-                              const ukm::SourceId& ukm_source_id) {
+                              const ukm::SourceId ukm_source_id) {
+#if BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
+  base::TimeTicks start_time = base::TimeTicks::Now();
+#endif
   // Try with the algorithm first.
   std::vector<ui::AXNodeID> content_node_ids;
-  DistillViaAlgorithm(tree, &content_node_ids);
+  DistillViaAlgorithm(tree, ukm_source_id, &content_node_ids);
 
   // If Read Anything with Screen 2x is enabled and the main content extractor
   // is bound, kick off Screen 2x run, which distills the AXTree in the
@@ -108,7 +120,8 @@ void AXTreeDistiller::Distill(const ui::AXTree& tree,
 #if BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
   if (features::IsReadAnythingWithScreen2xEnabled() &&
       main_content_extractor_.is_bound()) {
-    DistillViaScreen2x(tree, snapshot, ukm_source_id, &content_node_ids);
+    DistillViaScreen2x(tree, snapshot, ukm_source_id, start_time,
+                       &content_node_ids);
     return;
   }
 #endif
@@ -119,11 +132,35 @@ void AXTreeDistiller::Distill(const ui::AXTree& tree,
 
 void AXTreeDistiller::DistillViaAlgorithm(
     const ui::AXTree& tree,
+    const ukm::SourceId ukm_source_id,
     std::vector<ui::AXNodeID>* content_node_ids) {
+  base::TimeTicks start_time = base::TimeTicks::Now();
   std::vector<const ui::AXNode*> content_root_nodes;
   GetContentRootNodes(tree.root(), &content_root_nodes);
   for (const ui::AXNode* content_root_node : content_root_nodes) {
     AddContentNodesToVector(content_root_node, content_node_ids);
+  }
+  RecordRulesMetrics(ukm_source_id, base::TimeTicks::Now() - start_time,
+                     !content_node_ids->empty());
+}
+
+void AXTreeDistiller::RecordRulesMetrics(ukm::SourceId ukm_source_id,
+                                         base::TimeDelta elapsed_time,
+                                         bool success) {
+  if (success) {
+    base::UmaHistogramTimes(
+        "Accessibility.ReadAnything.RulesDistillationTime.Success",
+        elapsed_time);
+    ukm::builders::Accessibility_ReadAnything(ukm_source_id)
+        .SetRulesDistillationTime_Success(elapsed_time.InMilliseconds())
+        .Record(ukm_recorder_.get());
+  } else {
+    base::UmaHistogramTimes(
+        "Accessibility.ReadAnything.RulesDistillationTime.Failure",
+        elapsed_time);
+    ukm::builders::Accessibility_ReadAnything(ukm_source_id)
+        .SetRulesDistillationTime_Failure(elapsed_time.InMilliseconds())
+        .Record(ukm_recorder_.get());
   }
 }
 
@@ -131,7 +168,8 @@ void AXTreeDistiller::DistillViaAlgorithm(
 void AXTreeDistiller::DistillViaScreen2x(
     const ui::AXTree& tree,
     const ui::AXTreeUpdate& snapshot,
-    const ukm::SourceId& ukm_source_id,
+    const ukm::SourceId ukm_source_id,
+    base::TimeTicks start_time,
     std::vector<ui::AXNodeID>* content_node_ids_algorithm) {
   DCHECK(main_content_extractor_.is_bound());
   // Make a copy of |content_node_ids_algorithm| rather than sending a pointer.
@@ -139,11 +177,13 @@ void AXTreeDistiller::DistillViaScreen2x(
       snapshot, ukm_source_id,
       base::BindOnce(&AXTreeDistiller::ProcessScreen2xResult,
                      weak_ptr_factory_.GetWeakPtr(), tree.GetAXTreeID(),
-                     *content_node_ids_algorithm));
+                     ukm_source_id, start_time, *content_node_ids_algorithm));
 }
 
 void AXTreeDistiller::ProcessScreen2xResult(
     const ui::AXTreeID& tree_id,
+    const ukm::SourceId ukm_source_id,
+    base::TimeTicks start_time,
     std::vector<ui::AXNodeID> content_node_ids_algorithm,
     const std::vector<ui::AXNodeID>& content_node_ids_screen2x) {
   // Merge the results from the algorithm and from screen2x.
@@ -152,6 +192,8 @@ void AXTreeDistiller::ProcessScreen2xResult(
       content_node_ids_algorithm.push_back(content_node_id_screen2x);
     }
   }
+  RecordMergedMetrics(ukm_source_id, base::TimeTicks::Now() - start_time,
+                      !content_node_ids_algorithm.empty());
   on_ax_tree_distilled_callback_.Run(tree_id, content_node_ids_algorithm);
 
   // TODO(crbug.com/1266555): If no content nodes were identified, and
@@ -173,5 +215,25 @@ void AXTreeDistiller::ScreenAIServiceReady() {
 void AXTreeDistiller::OnMainContentExtractorDisconnected() {
   on_ax_tree_distilled_callback_.Run(ui::AXTreeIDUnknown(),
                                      std::vector<ui::AXNodeID>());
+}
+
+void AXTreeDistiller::RecordMergedMetrics(ukm::SourceId ukm_source_id,
+                                          base::TimeDelta elapsed_time,
+                                          bool success) {
+  if (success) {
+    base::UmaHistogramTimes(
+        "Accessibility.ReadAnything.MergedDistillationTime.Success",
+        elapsed_time);
+    ukm::builders::Accessibility_ReadAnything(ukm_source_id)
+        .SetMergedDistillationTime_Success(elapsed_time.InMilliseconds())
+        .Record(ukm_recorder_.get());
+  } else {
+    base::UmaHistogramTimes(
+        "Accessibility.ReadAnything.MergedDistillationTime.Failure",
+        elapsed_time);
+    ukm::builders::Accessibility_ReadAnything(ukm_source_id)
+        .SetMergedDistillationTime_Failure(elapsed_time.InMilliseconds())
+        .Record(ukm_recorder_.get());
+  }
 }
 #endif

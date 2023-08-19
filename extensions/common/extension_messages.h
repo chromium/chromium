@@ -48,7 +48,6 @@
 #include "ipc/ipc_message_macros.h"
 #include "ipc/ipc_message_start.h"
 #include "ipc/ipc_message_utils.h"
-#include "ui/accessibility/ax_param_traits.h"
 #include "url/gurl.h"
 #include "url/origin.h"
 
@@ -345,10 +344,6 @@ IPC_MESSAGE_ROUTED2(ExtensionHostMsg_ContentScriptsExecuting,
                     ExecutingScriptsMap,
                     GURL /* url of the _topmost_ frame */)
 
-// Optional Ack message sent to the browser to notify that the response to a
-// function has been processed.
-IPC_MESSAGE_ROUTED1(ExtensionHostMsg_ResponseAck, int /* request_id */)
-
 // Informs the browser to increment the keepalive count for the lazy background
 // page, keeping it alive.
 IPC_MESSAGE_ROUTED0(ExtensionHostMsg_IncrementLazyKeepaliveCount)
@@ -406,42 +401,5 @@ IPC_MESSAGE_CONTROL4(ExtensionHostMsg_EventAckWorker,
                      int64_t /* service_worker_version_id */,
                      int /* worker_thread_id */,
                      int /* event_id */)
-
-IPC_STRUCT_BEGIN(ExtensionMsg_AccessibilityEventBundleParams)
-  // ID of the accessibility tree that this event applies to.
-  IPC_STRUCT_MEMBER(ui::AXTreeID, tree_id)
-
-  // Zero or more updates to the accessibility tree to apply first.
-  IPC_STRUCT_MEMBER(std::vector<ui::AXTreeUpdate>, updates)
-
-  // Zero or more events to fire after the tree updates have been applied.
-  IPC_STRUCT_MEMBER(std::vector<ui::AXEvent>, events)
-
-  // The mouse location in screen coordinates.
-  IPC_STRUCT_MEMBER(gfx::Point, mouse_location)
-IPC_STRUCT_END()
-
-IPC_STRUCT_BEGIN(ExtensionMsg_AccessibilityLocationChangeParams)
-  // ID of the accessibility tree that this event applies to.
-  IPC_STRUCT_MEMBER(ui::AXTreeID, tree_id)
-
-  // ID of the object whose location is changing.
-  IPC_STRUCT_MEMBER(int, id)
-
-  // The object's new location info.
-  IPC_STRUCT_MEMBER(ui::AXRelativeBounds, new_location)
-IPC_STRUCT_END()
-
-// Forward an accessibility message to an extension process where an
-// extension is using the automation API to listen for accessibility events.
-IPC_MESSAGE_CONTROL2(ExtensionMsg_AccessibilityEventBundle,
-                     ExtensionMsg_AccessibilityEventBundleParams /* events */,
-                     bool /* is_active_profile */)
-
-// Forward an accessibility location change message to an extension process
-// where an extension is using the automation API to listen for
-// accessibility events.
-IPC_MESSAGE_CONTROL1(ExtensionMsg_AccessibilityLocationChange,
-                     ExtensionMsg_AccessibilityLocationChangeParams)
 
 #endif  // EXTENSIONS_COMMON_EXTENSION_MESSAGES_H_

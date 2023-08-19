@@ -133,6 +133,7 @@ def main():
       '--target',
       required=True,
       choices=[
+          'win-arm64',
           'win32',
           'win64',
           'mac',
@@ -141,6 +142,8 @@ def main():
           'lacros64',
           'lacros-arm',
           'lacros-arm64',
+          'android-arm32',
+          'android-arm64',
       ],
       help='Identifier of a specific target platform + architecture.')
   subparsers = parser.add_subparsers()

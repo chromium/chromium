@@ -1,0 +1,108 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+Copyright 2023 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+
+<org.chromium.chrome.features.tasks.TasksView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+  <com.google.android.material.appbar.AppBarLayout
+      android:id="@+id/task_surface_header"
+      android:layout_width="match_parent"
+      android:layout_height="wrap_content"
+      app:elevation="0dp">
+    <LinearLayout
+        android:id="@+id/top_toolbar_placeholder"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@android:color/transparent"
+        android:orientation="vertical"
+        app:layout_scrollFlags="scroll|snap">
+    </LinearLayout>
+    <LinearLayout
+        android:id="@+id/logo_container"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:visibility="gone"
+        app:layout_scrollFlags="scroll|snap">
+      <include layout="@layout/logo_view_layout" />
+    </LinearLayout>
+    <LinearLayout
+        android:id="@+id/fake_search_box"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        app:layout_scrollFlags="scroll">
+      <include layout="@layout/fake_search_box_layout"/>
+    </LinearLayout>
+    <FrameLayout android:id="@+id/query_tiles_container"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:paddingTop="6dp"
+        android:paddingStart="6dp"
+        android:paddingEnd="6dp"
+        android:visibility="gone"
+        app:layout_scrollFlags="scroll">
+      <include layout="@layout/query_tiles_layout" />
+    </FrameLayout>
+    <include layout="@layout/mv_tiles_container_polish" />
+    <LinearLayout
+        android:id="@+id/tab_switcher_title"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:paddingStart="16dp"
+        android:paddingEnd="4dp"
+        android:paddingTop="10dp"
+        android:paddingBottom="10dp"
+        android:visibility="gone"
+        android:orientation="horizontal"
+        app:layout_scrollFlags="scroll">
+      <TextView
+          android:id="@+id/tab_switcher_title_description"
+          android:layout_width="0dp"
+          android:layout_height="wrap_content"
+          android:layout_weight="1.0"
+          android:layout_gravity="center_vertical"
+          android:gravity="center_vertical|start"
+          android:singleLine="true"
+          android:textAlignment="viewStart"
+          android:text="@string/tab_switcher_carousel_title" />
+      <TextView
+          android:id="@+id/more_tabs"
+          android:layout_width="wrap_content"
+          android:layout_height="wrap_content"
+          android:layout_marginTop="-16dp"
+          android:layout_marginBottom="-16dp"
+          android:paddingTop="16dp"
+          android:paddingBottom="16dp"
+          android:paddingEnd="16dp"
+          android:text="@string/tab_switcher_carousel_view_all"/>
+    </LinearLayout>
+    <!-- TODO(crbug.com/982018): Make view stub to inflate only when needed. -->
+    <include layout="@layout/tab_switcher_module_container" />
+  </com.google.android.material.appbar.AppBarLayout>
+
+  <!-- This incognito_description_container_layout_stub and the below tasks_surface_body
+       should be mutually exclusive, otherwise they will overlap each other. -->
+  <ViewStub
+      android:id="@+id/incognito_description_container_layout_stub"
+      android:layout_width="match_parent"
+      android:layout_height="match_parent"
+      android:layout="@layout/incognito_description_container_layout"
+      app:layout_behavior="@string/appbar_scrolling_view_behavior" />
+
+  <!-- Note that this FrameLayout can not be added to NestedScrollView, otherwise the
+       RecyclerView added to this FrameLayout won't recycle. -->
+  <FrameLayout
+      android:id="@+id/tasks_surface_body"
+      android:layout_width="match_parent"
+      android:layout_height="match_parent"
+      app:layout_behavior="@string/appbar_scrolling_view_behavior" />
+</org.chromium.chrome.features.tasks.TasksView>

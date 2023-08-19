@@ -62,6 +62,7 @@ class LiveCaptionController : public KeyedService,
                              const media::SpeechRecognitionResult& result);
 
   void OnLanguageIdentificationEvent(
+      CaptionBubbleContext* caption_bubble_context,
       const media::mojom::LanguageIdentificationEventPtr& event);
 
   // Alerts the CaptionBubbleController that there is an error in the speech

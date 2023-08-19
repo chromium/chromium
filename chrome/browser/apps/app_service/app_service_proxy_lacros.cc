@@ -376,24 +376,6 @@ std::vector<IntentLaunchInfo> AppServiceProxyLacros::GetAppsForFiles(
       apps_util::MakeShareIntent(filesystem_urls, mime_types));
 }
 
-void AppServiceProxyLacros::AddPreferredApp(const std::string& app_id,
-                                            const GURL& url) {
-  AddPreferredApp(app_id, std::make_unique<apps::Intent>(
-                              apps_util::kIntentActionView, url));
-}
-
-void AppServiceProxyLacros::AddPreferredApp(const std::string& app_id,
-                                            const IntentPtr& intent) {
-  if (!remote_crosapi_app_service_proxy_) {
-    return;
-  }
-
-  DCHECK(!app_id.empty());
-
-  remote_crosapi_app_service_proxy_->AddPreferredApp(
-      app_id, apps_util::ConvertAppServiceToCrosapiIntent(intent, profile_));
-}
-
 void AppServiceProxyLacros::SetSupportedLinksPreference(
     const std::string& app_id) {
   DCHECK(!app_id.empty());
@@ -443,6 +425,12 @@ void AppServiceProxyLacros::SetWebsiteMetricsServiceForTesting(
     std::unique_ptr<apps::WebsiteMetricsServiceLacros>
         website_metrics_service) {
   metrics_service_ = std::move(website_metrics_service);
+}
+
+void AppServiceProxyLacros::SetBrowserAppInstanceTrackerForTesting(
+    std::unique_ptr<apps::BrowserAppInstanceTracker>
+        browser_app_instance_tracker) {
+  browser_app_instance_tracker_ = std::move(browser_app_instance_tracker);
 }
 
 crosapi::mojom::AppServiceSubscriber*

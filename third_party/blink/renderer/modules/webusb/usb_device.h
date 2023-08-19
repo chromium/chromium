@@ -91,7 +91,7 @@ class USBDevice : public ScriptWrappable,
                                    ExceptionState&);
   ScriptPromise controlTransferOut(ScriptState*,
                                    const USBControlTransferParameters* setup,
-                                   const DOMArrayPiece& data,
+                                   const DOMArrayPiece& optional_data,
                                    ExceptionState&);
   ScriptPromise clearHalt(ScriptState*,
                           String direction,

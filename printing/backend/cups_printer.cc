@@ -129,6 +129,17 @@ class CupsPrinterImpl : public CupsPrinter {
                             IPP_TAG_BEGIN_COLLECTION);
   }
 
+  // CupsOptionProvider
+  const char* GetLocalizedOptionValueName(const char* option_name,
+                                          const char* value) const override {
+    if (!EnsureDestInfo()) {
+      return nullptr;
+    }
+
+    return cupsLocalizeDestValue(cups_http_, destination_.get(),
+                                 dest_info_.get(), option_name, value);
+  }
+
   bool ToPrinterInfo(PrinterBasicInfo* printer_info) const override {
     const cups_dest_t* printer = destination_.get();
 
@@ -312,6 +323,10 @@ class CupsPrinterImpl : public CupsPrinter {
       printer_attributes_.reset();
       return false;
     }
+
+    // Go through all of our media-col-database entries and consolidate any that
+    // have custom size ranges.
+    FilterMediaColSizes(printer_attributes_);
 
     return true;
   }

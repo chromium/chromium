@@ -67,8 +67,7 @@ public class NightModeMetrics {
                 NightModeEnabledReason.NUM_ENTRIES);
     }
 
-    @NightModeEnabledReason
-    private static int calculateNightModeEnabledReason(
+    private static @NightModeEnabledReason int calculateNightModeEnabledReason(
             @ThemeType int theme, boolean powerSaveModeOn) {
         if (theme == ThemeType.DARK) {
             return NightModeEnabledReason.USER_PREFERENCE;

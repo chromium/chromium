@@ -7,6 +7,7 @@
 
 #include <stdint.h>
 
+#include <set>
 #include <vector>
 
 #include "base/files/file_path.h"
@@ -32,6 +33,10 @@ class Clock;
 namespace sql {
 class Statement;
 }  // namespace sql
+
+namespace url {
+class Origin;
+}  // namespace url
 
 namespace content {
 
@@ -91,6 +96,7 @@ class CONTENT_EXPORT AggregationServiceStorageSql
       base::Time delete_begin,
       base::Time delete_end,
       StoragePartition::StorageKeyMatcherFunction filter) override;
+  std::set<url::Origin> GetReportRequestReportingOrigins() override;
 
   void set_ignore_errors_for_testing(bool ignore_for_testing)
       VALID_CONTEXT_REQUIRED(sequence_checker_) {

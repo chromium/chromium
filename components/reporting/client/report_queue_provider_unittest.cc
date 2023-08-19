@@ -53,8 +53,6 @@ class ReportQueueProviderTest : public ::testing::Test {
 
   std::unique_ptr<MockReportQueueProvider> provider_;
   const Destination destination_ = Destination::UPLOAD_EVENTS;
-  ReportQueueConfiguration::PolicyCheckCallback policy_checker_callback_ =
-      base::BindRepeating([]() { return Status::StatusOK(); });
 };
 
 // Asynchronously creates ReportingQueue and enqueue message.
@@ -143,8 +141,10 @@ void CreateSpeculativeQueuePostData(
 
 TEST_F(ReportQueueProviderTest, CreateAndGetQueue) {
   // Create configuration.
-  auto config_result = ReportQueueConfiguration::Create(
-      EventType::kDevice, destination_, policy_checker_callback_);
+  auto config_result =
+      ReportQueueConfiguration::Create(
+          {.event_type = EventType::kDevice, .destination = destination_})
+          .Build();
   ASSERT_OK(config_result);
   EXPECT_CALL(*provider_.get(), OnInitCompletedMock()).Times(1);
   provider_->ExpectCreateNewQueueAndReturnNewMockQueue(1);
@@ -180,8 +180,10 @@ TEST_F(ReportQueueProviderTest, CreateMultipleQueues) {
   provider_->ExpectCreateNewQueueAndReturnNewMockQueue(send_as.size());
   for (const auto& s : send_as) {
     // Create configuration.
-    auto config_result = ReportQueueConfiguration::Create(
-        EventType::kDevice, /*destination=*/s.second, policy_checker_callback_);
+    auto config_result =
+        ReportQueueConfiguration::Create(
+            {.event_type = EventType::kDevice, .destination = s.second})
+            .Build();
     ASSERT_OK(config_result);
     // Compose the message.
     std::string message = std::string(kTestMessage)
@@ -229,8 +231,10 @@ TEST_F(ReportQueueProviderTest, CreateMultipleSpeculativeQueues) {
       send_as.size());
   for (const auto& s : send_as) {
     // Create configuration.
-    auto config_result = ReportQueueConfiguration::Create(
-        EventType::kDevice, /*destination=*/s.second, policy_checker_callback_);
+    auto config_result =
+        ReportQueueConfiguration::Create(
+            {.event_type = EventType::kDevice, .destination = s.second})
+            .Build();
     ASSERT_OK(config_result);
     // Compose the message.
     std::string message = std::string(kTestMessage)
@@ -260,8 +264,10 @@ TEST_F(ReportQueueProviderTest,
   feature_list.InitAndDisableFeature(kEncryptedReportingPipeline);
 
   // Create configuration
-  auto config_result = ReportQueueConfiguration::Create(
-      EventType::kDevice, destination_, policy_checker_callback_);
+  auto config_result =
+      ReportQueueConfiguration::Create(
+          {.event_type = EventType::kDevice, .destination = destination_})
+          .Build();
   ASSERT_OK(config_result);
 
   test::TestEvent<ReportQueueProvider::CreateReportQueueResponse> event;
@@ -279,8 +285,10 @@ TEST_F(ReportQueueProviderTest,
   feature_list.InitAndDisableFeature(kEncryptedReportingPipeline);
 
   // Create configuration
-  auto config_result = ReportQueueConfiguration::Create(
-      EventType::kDevice, destination_, policy_checker_callback_);
+  auto config_result =
+      ReportQueueConfiguration::Create(
+          {.event_type = EventType::kDevice, .destination = destination_})
+          .Build();
   ASSERT_OK(config_result);
 
   const auto result = ReportQueueProvider::CreateSpeculativeQueue(

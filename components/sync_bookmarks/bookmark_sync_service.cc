@@ -11,10 +11,10 @@ namespace sync_bookmarks {
 
 BookmarkSyncService::BookmarkSyncService(
     BookmarkUndoService* bookmark_undo_service,
-    bool wipe_model_on_stopping_sync_with_clear_data)
-    : bookmark_model_type_processor_(
-          bookmark_undo_service,
-          wipe_model_on_stopping_sync_with_clear_data) {}
+    syncer::WipeModelUponSyncDisabledBehavior
+        wipe_model_upon_sync_disabled_behavior)
+    : bookmark_model_type_processor_(bookmark_undo_service,
+                                     wipe_model_upon_sync_disabled_behavior) {}
 
 BookmarkSyncService::~BookmarkSyncService() = default;
 

@@ -10,7 +10,7 @@
 #import "base/path_service.h"
 #import "base/strings/string_split.h"
 #import "base/strings/sys_string_conversions.h"
-#import "ios/chrome/browser/paths/paths.h"
+#import "ios/chrome/browser/shared/model/paths/paths.h"
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ios/web/common/uikit_ui_util.h"
@@ -18,10 +18,6 @@
 #import "testing/platform_test.h"
 #import "third_party/ocmock/OCMock/OCMock.h"
 #import "ui/base/l10n/l10n_util_mac.h"
-
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
 
 namespace {
 
@@ -117,6 +113,10 @@ class OmniboxTextFieldExperimentalTest : public PlatformTest {
 #define MAYBE_SelectedRanges FLAKY_SelectedRanges
 #endif
 TEST_F(OmniboxTextFieldExperimentalTest, MAYBE_SelectedRanges) {
+  if (@available(iOS 17, *)) {
+    // TODO:(crbug.com/1468176): Failing on iOS17 beta 5.
+    return;
+  }
   base::FilePath test_data_directory;
   ASSERT_TRUE(base::PathService::Get(ios::DIR_TEST_DATA, &test_data_directory));
   base::FilePath test_file = test_data_directory.Append(

@@ -166,7 +166,7 @@ void RemoveUnreachableItemsFromDB(LevelDBWrapper* db,
 
       std::unique_ptr<FileTracker> tracker(new FileTracker);
       if (!tracker->ParseFromString(itr->value().ToString())) {
-        util::Log(logging::LOG_WARNING, FROM_HERE,
+        util::Log(logging::LOGGING_WARNING, FROM_HERE,
                   "Failed to parse a Tracker");
         continue;
       }
@@ -219,7 +219,7 @@ void RemoveUnreachableItemsFromDB(LevelDBWrapper* db,
 
       std::unique_ptr<FileTracker> tracker(new FileTracker);
       if (!tracker->ParseFromString(itr->value().ToString())) {
-        util::Log(logging::LOG_WARNING, FROM_HERE,
+        util::Log(logging::LOGGING_WARNING, FROM_HERE,
                   "Failed to parse a Tracker");
         continue;
       }
@@ -241,7 +241,7 @@ void RemoveUnreachableItemsFromDB(LevelDBWrapper* db,
 
       std::unique_ptr<FileMetadata> metadata(new FileMetadata);
       if (!metadata->ParseFromString(itr->value().ToString())) {
-        util::Log(logging::LOG_WARNING, FROM_HERE,
+        util::Log(logging::LOGGING_WARNING, FROM_HERE,
                   "Failed to parse a Tracker");
         continue;
       }
@@ -291,18 +291,16 @@ bool MetadataDatabaseIndexOnDisk::GetFileMetadata(
     return false;
 
   if (!status.ok()) {
-    util::Log(logging::LOG_WARNING, FROM_HERE,
+    util::Log(logging::LOGGING_WARNING, FROM_HERE,
               "LevelDB error (%s) in getting FileMetadata for ID: %s",
-              status.ToString().c_str(),
-              file_id.c_str());
+              status.ToString().c_str(), file_id.c_str());
     return false;
   }
 
   FileMetadata tmp_metadata;
   if (!tmp_metadata.ParseFromString(value)) {
-    util::Log(logging::LOG_WARNING, FROM_HERE,
-              "Failed to parse a FileMetadata for ID: %s",
-              file_id.c_str());
+    util::Log(logging::LOGGING_WARNING, FROM_HERE,
+              "Failed to parse a FileMetadata for ID: %s", file_id.c_str());
     return false;
   }
   if (metadata)
@@ -322,18 +320,16 @@ bool MetadataDatabaseIndexOnDisk::GetFileTracker(int64_t tracker_id,
     return false;
 
   if (!status.ok()) {
-    util::Log(logging::LOG_WARNING, FROM_HERE,
+    util::Log(logging::LOGGING_WARNING, FROM_HERE,
               "LevelDB error (%s) in getting FileTracker for ID: %" PRId64,
-              status.ToString().c_str(),
-              tracker_id);
+              status.ToString().c_str(), tracker_id);
     return false;
   }
 
   FileTracker tmp_tracker;
   if (!tmp_tracker.ParseFromString(value)) {
-    util::Log(logging::LOG_WARNING, FROM_HERE,
-              "Failed to parse a Tracker for ID: %" PRId64,
-              tracker_id);
+    util::Log(logging::LOGGING_WARNING, FROM_HERE,
+              "Failed to parse a Tracker for ID: %" PRId64, tracker_id);
     return false;
   }
   if (tracker)
@@ -412,18 +408,16 @@ int64_t MetadataDatabaseIndexOnDisk::GetAppRootTracker(
     return kInvalidTrackerID;
 
   if (!status.ok()) {
-    util::Log(logging::LOG_WARNING, FROM_HERE,
+    util::Log(logging::LOGGING_WARNING, FROM_HERE,
               "LevelDB error (%s) in getting AppRoot for AppID: %s",
-              status.ToString().c_str(),
-              app_id.c_str());
+              status.ToString().c_str(), app_id.c_str());
     return kInvalidTrackerID;
   }
 
   int64_t root_id;
   if (!base::StringToInt64(value, &root_id)) {
-    util::Log(logging::LOG_WARNING, FROM_HERE,
-              "Failed to parse a root ID (%s) for an App ID: %s",
-              value.c_str(),
+    util::Log(logging::LOGGING_WARNING, FROM_HERE,
+              "Failed to parse a root ID (%s) for an App ID: %s", value.c_str(),
               app_id.c_str());
     return kInvalidTrackerID;
   }
@@ -521,10 +515,9 @@ void MetadataDatabaseIndexOnDisk::DemoteDirtyTracker(int64_t tracker_id) {
   if (status.IsNotFound())
     return;
   if (!status.ok()) {
-    util::Log(logging::LOG_WARNING, FROM_HERE,
+    util::Log(logging::LOGGING_WARNING, FROM_HERE,
               "LevelDB error (%s) in getting a dirty tracker for ID: %" PRId64,
-              status.ToString().c_str(),
-              tracker_id);
+              status.ToString().c_str(), tracker_id);
     return;
   }
 
@@ -707,7 +700,7 @@ int64_t MetadataDatabaseIndexOnDisk::BuildTrackerIndexes() {
 
     FileTracker tracker;
     if (!tracker.ParseFromString(itr->value().ToString())) {
-      util::Log(logging::LOG_WARNING, FROM_HERE,
+      util::Log(logging::LOGGING_WARNING, FROM_HERE,
                 "Failed to parse a Tracker");
       continue;
     }

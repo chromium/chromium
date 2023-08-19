@@ -6,15 +6,11 @@
 
 #import <ScreenTime/ScreenTime.h>
 
-#include "base/mac/foundation_util.h"
+#include "base/apple/foundation_util.h"
 #include "base/memory/ptr_util.h"
 #include "base/notreached.h"
 #include "base/strings/sys_string_conversions.h"
 #include "net/base/mac/url_conversions.h"
-
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
 
 namespace screentime {
 
@@ -57,7 +53,7 @@ void HistoryDeleterImpl::DeleteHistoryForURL(const GURL& url) {
 HistoryDeleterImpl::HistoryDeleterImpl() {
   if (@available(macOS 12.1, *)) {
     NSError* error = nil;
-    NSString* bundle_id = base::SysUTF8ToNSString(base::mac::BaseBundleID());
+    NSString* bundle_id = base::SysUTF8ToNSString(base::apple::BaseBundleID());
     platform_deleter_ = [[STWebHistory alloc] initWithBundleIdentifier:bundle_id
                                                                  error:&error];
     DCHECK(!error);

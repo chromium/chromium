@@ -51,19 +51,22 @@ class HTMLIFrameElementTest : public testing::Test {
 // Test that the correct origin is used when constructing the container policy,
 // and that frames which should inherit their parent document's origin do so.
 TEST_F(HTMLIFrameElementTest, FramesUseCorrectOrigin) {
-  frame_element_->setAttribute(html_names::kSrcAttr, "about:blank");
+  frame_element_->setAttribute(html_names::kSrcAttr,
+                               AtomicString("about:blank"));
   scoped_refptr<const SecurityOrigin> effective_origin =
       GetOriginForPermissionsPolicy(frame_element_);
   EXPECT_TRUE(effective_origin->IsSameOriginWith(window_->GetSecurityOrigin()));
 
   frame_element_->setAttribute(
-      html_names::kSrcAttr, "data:text/html;base64,PHRpdGxlPkFCQzwvdGl0bGU+");
+      html_names::kSrcAttr,
+      AtomicString("data:text/html;base64,PHRpdGxlPkFCQzwvdGl0bGU+"));
   effective_origin = GetOriginForPermissionsPolicy(frame_element_);
   EXPECT_FALSE(
       effective_origin->IsSameOriginWith(window_->GetSecurityOrigin()));
   EXPECT_TRUE(effective_origin->IsOpaque());
 
-  frame_element_->setAttribute(html_names::kSrcAttr, "http://example.net/");
+  frame_element_->setAttribute(html_names::kSrcAttr,
+                               AtomicString("http://example.net/"));
   effective_origin = GetOriginForPermissionsPolicy(frame_element_);
   EXPECT_FALSE(
       effective_origin->IsSameOriginWith(window_->GetSecurityOrigin()));
@@ -73,15 +76,17 @@ TEST_F(HTMLIFrameElementTest, FramesUseCorrectOrigin) {
 // Test that a unique origin is used when constructing the container policy in a
 // sandboxed iframe.
 TEST_F(HTMLIFrameElementTest, SandboxFramesUseCorrectOrigin) {
-  frame_element_->setAttribute(html_names::kSandboxAttr, "");
-  frame_element_->setAttribute(html_names::kSrcAttr, "http://example.com/");
+  frame_element_->setAttribute(html_names::kSandboxAttr, g_empty_atom);
+  frame_element_->setAttribute(html_names::kSrcAttr,
+                               AtomicString("http://example.com/"));
   scoped_refptr<const SecurityOrigin> effective_origin =
       GetOriginForPermissionsPolicy(frame_element_);
   EXPECT_FALSE(
       effective_origin->IsSameOriginWith(window_->GetSecurityOrigin()));
   EXPECT_TRUE(effective_origin->IsOpaque());
 
-  frame_element_->setAttribute(html_names::kSrcAttr, "http://example.net/");
+  frame_element_->setAttribute(html_names::kSrcAttr,
+                               AtomicString("http://example.net/"));
   effective_origin = GetOriginForPermissionsPolicy(frame_element_);
   EXPECT_FALSE(
       effective_origin->IsSameOriginWith(window_->GetSecurityOrigin()));
@@ -91,8 +96,10 @@ TEST_F(HTMLIFrameElementTest, SandboxFramesUseCorrectOrigin) {
 // Test that a sandboxed iframe with the allow-same-origin sandbox flag uses the
 // parent document's origin for the container policy.
 TEST_F(HTMLIFrameElementTest, SameOriginSandboxFramesUseCorrectOrigin) {
-  frame_element_->setAttribute(html_names::kSandboxAttr, "allow-same-origin");
-  frame_element_->setAttribute(html_names::kSrcAttr, "http://example.com/");
+  frame_element_->setAttribute(html_names::kSandboxAttr,
+                               AtomicString("allow-same-origin"));
+  frame_element_->setAttribute(html_names::kSrcAttr,
+                               AtomicString("http://example.com/"));
   scoped_refptr<const SecurityOrigin> effective_origin =
       GetOriginForPermissionsPolicy(frame_element_);
   EXPECT_TRUE(effective_origin->IsSameOriginWith(window_->GetSecurityOrigin()));
@@ -102,7 +109,8 @@ TEST_F(HTMLIFrameElementTest, SameOriginSandboxFramesUseCorrectOrigin) {
 // Test that the parent document's origin is used when constructing the
 // container policy in a srcdoc iframe.
 TEST_F(HTMLIFrameElementTest, SrcdocFramesUseCorrectOrigin) {
-  frame_element_->setAttribute(html_names::kSrcdocAttr, "<title>title</title>");
+  frame_element_->setAttribute(html_names::kSrcdocAttr,
+                               AtomicString("<title>title</title>"));
   scoped_refptr<const SecurityOrigin> effective_origin =
       GetOriginForPermissionsPolicy(frame_element_);
   EXPECT_TRUE(effective_origin->IsSameOriginWith(window_->GetSecurityOrigin()));
@@ -111,8 +119,9 @@ TEST_F(HTMLIFrameElementTest, SrcdocFramesUseCorrectOrigin) {
 // Test that a unique origin is used when constructing the container policy in a
 // sandboxed iframe with a srcdoc.
 TEST_F(HTMLIFrameElementTest, SandboxedSrcdocFramesUseCorrectOrigin) {
-  frame_element_->setAttribute(html_names::kSandboxAttr, "");
-  frame_element_->setAttribute(html_names::kSrcdocAttr, "<title>title</title>");
+  frame_element_->setAttribute(html_names::kSandboxAttr, g_empty_atom);
+  frame_element_->setAttribute(html_names::kSrcdocAttr,
+                               AtomicString("<title>title</title>"));
   scoped_refptr<const SecurityOrigin> effective_origin =
       GetOriginForPermissionsPolicy(frame_element_);
   EXPECT_FALSE(
@@ -124,14 +133,15 @@ TEST_F(HTMLIFrameElementTest, SandboxedSrcdocFramesUseCorrectOrigin) {
 // relative to the parent document.
 TEST_F(HTMLIFrameElementTest, RelativeURLsUseCorrectOrigin) {
   // Host-relative URLs should resolve to the same domain as the parent.
-  frame_element_->setAttribute(html_names::kSrcAttr, "index2.html");
+  frame_element_->setAttribute(html_names::kSrcAttr,
+                               AtomicString("index2.html"));
   scoped_refptr<const SecurityOrigin> effective_origin =
       GetOriginForPermissionsPolicy(frame_element_);
   EXPECT_TRUE(effective_origin->IsSameOriginWith(window_->GetSecurityOrigin()));
 
   // Scheme-relative URLs should not resolve to the same domain as the parent.
   frame_element_->setAttribute(html_names::kSrcAttr,
-                               "//example.net/index2.html");
+                               AtomicString("//example.net/index2.html"));
   effective_origin = GetOriginForPermissionsPolicy(frame_element_);
   EXPECT_FALSE(
       effective_origin->IsSameOriginWith(window_->GetSecurityOrigin()));
@@ -142,7 +152,8 @@ TEST_F(HTMLIFrameElementTest, RelativeURLsUseCorrectOrigin) {
 
 // Test that the correct container policy is constructed on an iframe element.
 TEST_F(HTMLIFrameElementTest, DefaultContainerPolicy) {
-  frame_element_->setAttribute(html_names::kSrcAttr, "http://example.net/");
+  frame_element_->setAttribute(html_names::kSrcAttr,
+                               AtomicString("http://example.net/"));
   frame_element_->UpdateContainerPolicyForTests();
 
   const ParsedPermissionsPolicy& container_policy =
@@ -153,8 +164,10 @@ TEST_F(HTMLIFrameElementTest, DefaultContainerPolicy) {
 // Test that the allow attribute results in a container policy which is
 // restricted to the domain in the src attribute.
 TEST_F(HTMLIFrameElementTest, AllowAttributeContainerPolicy) {
-  frame_element_->setAttribute(html_names::kSrcAttr, "http://example.net/");
-  frame_element_->setAttribute(html_names::kAllowAttr, "fullscreen");
+  frame_element_->setAttribute(html_names::kSrcAttr,
+                               AtomicString("http://example.net/"));
+  frame_element_->setAttribute(html_names::kAllowAttr,
+                               AtomicString("fullscreen"));
   frame_element_->UpdateContainerPolicyForTests();
 
   const ParsedPermissionsPolicy& container_policy1 =
@@ -168,7 +181,8 @@ TEST_F(HTMLIFrameElementTest, AllowAttributeContainerPolicy) {
   EXPECT_EQ("http://example.net",
             container_policy1[0].allowed_origins.begin()->Serialize());
 
-  frame_element_->setAttribute(html_names::kAllowAttr, "payment; fullscreen");
+  frame_element_->setAttribute(html_names::kAllowAttr,
+                               AtomicString("payment; fullscreen"));
   frame_element_->UpdateContainerPolicyForTests();
 
   const ParsedPermissionsPolicy& container_policy2 =
@@ -202,7 +216,8 @@ TEST_F(HTMLIFrameElementTest, ConstructEmptyContainerPolicy) {
 // Test the ConstructContainerPolicy method when the "allow" attribute is used
 // to enable features in the frame.
 TEST_F(HTMLIFrameElementTest, ConstructContainerPolicy) {
-  frame_element_->setAttribute(html_names::kAllowAttr, "payment; usb");
+  frame_element_->setAttribute(html_names::kAllowAttr,
+                               AtomicString("payment; usb"));
   ParsedPermissionsPolicy container_policy =
       frame_element_->ConstructContainerPolicy();
   EXPECT_EQ(2UL, container_policy.size());
@@ -235,7 +250,7 @@ TEST_F(HTMLIFrameElementTest, ConstructContainerPolicyWithAllowFullscreen) {
 // Test the ConstructContainerPolicy method when the "allowpaymentrequest"
 // attribute is used to enable the paymentrequest API in the frame.
 TEST_F(HTMLIFrameElementTest, ConstructContainerPolicyWithAllowPaymentRequest) {
-  frame_element_->setAttribute(html_names::kAllowAttr, "usb");
+  frame_element_->setAttribute(html_names::kAllowAttr, AtomicString("usb"));
   frame_element_->SetBooleanAttribute(html_names::kAllowpaymentrequestAttr,
                                       true);
 
@@ -259,7 +274,8 @@ TEST_F(HTMLIFrameElementTest, ConstructContainerPolicyWithAllowPaymentRequest) {
 // only for the frame's origin, (since the allow attribute overrides
 // allowpaymentrequest,) while fullscreen should be enabled for all origins.
 TEST_F(HTMLIFrameElementTest, ConstructContainerPolicyWithAllowAttributes) {
-  frame_element_->setAttribute(html_names::kAllowAttr, "payment; usb");
+  frame_element_->setAttribute(html_names::kAllowAttr,
+                               AtomicString("payment; usb"));
   frame_element_->SetBooleanAttribute(html_names::kAllowfullscreenAttr, true);
   frame_element_->SetBooleanAttribute(html_names::kAllowpaymentrequestAttr,
                                       true);

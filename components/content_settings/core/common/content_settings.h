@@ -38,21 +38,14 @@ enum ContentSetting {
 // Range-checked conversion of an int to a ContentSetting, for use when reading
 // prefs off disk.
 ContentSetting IntToContentSetting(int content_setting);
-
-// Converts a given content setting to its histogram value, for use when saving
-// content settings types to UKM. For UMA use RecordContentSettingsHistogram.
-int ContentSettingTypeToHistogramValue(ContentSettingsType content_setting);
-// Records a linear histogram for |content_setting|.
-void RecordContentSettingsHistogram(const char* name,
-                                    ContentSettingsType content_setting);
-
 struct ContentSettingPatternSource {
   ContentSettingPatternSource(const ContentSettingsPattern& primary_pattern,
                               const ContentSettingsPattern& secondary_patttern,
                               base::Value setting_value,
                               const std::string& source,
                               bool incognito,
-                              content_settings::RuleMetaData metadata = {});
+                              content_settings::RuleMetaData metadata =
+                                  content_settings::RuleMetaData());
   ContentSettingPatternSource(const ContentSettingPatternSource& other);
   ContentSettingPatternSource();
   ContentSettingPatternSource& operator=(
@@ -60,6 +53,8 @@ struct ContentSettingPatternSource {
   ~ContentSettingPatternSource();
   ContentSetting GetContentSetting() const;
   bool IsExpired() const;
+
+  bool operator==(const ContentSettingPatternSource& other) const;
 
   ContentSettingsPattern primary_pattern;
   ContentSettingsPattern secondary_pattern;
@@ -90,6 +85,8 @@ struct RendererContentSettingRules {
       const RendererContentSettingRules& rules);
   RendererContentSettingRules& operator=(RendererContentSettingRules&& rules);
 
+  bool operator==(const RendererContentSettingRules& other) const;
+
   ContentSettingsForOneType image_rules;
   ContentSettingsForOneType script_rules;
   ContentSettingsForOneType popup_redirect_rules;
@@ -117,7 +114,7 @@ enum SettingSource {
 // contains the source of a value. |primary_pattern| and |secondary_pattern|
 // contains the patterns of the appling rule.
 struct SettingInfo {
-  SettingSource source;
+  SettingSource source = SETTING_SOURCE_NONE;
   ContentSettingsPattern primary_pattern;
   ContentSettingsPattern secondary_pattern;
   RuleMetaData metadata;

@@ -62,9 +62,12 @@ class ASH_EXPORT NightLightFeaturePodController
   // `tile_`.
   void UpdateTile();
 
-  const raw_ptr<UnifiedSystemTrayController, ExperimentalAsh> tray_controller_;
+  const raw_ptr<UnifiedSystemTrayController,
+                DanglingUntriaged | ExperimentalAsh>
+      tray_controller_;
   // Owned by the views hierarchy.
-  raw_ptr<FeaturePodButton, ExperimentalAsh> button_ = nullptr;
+  raw_ptr<FeaturePodButton, DanglingUntriaged | ExperimentalAsh> button_ =
+      nullptr;
   raw_ptr<FeatureTile, DanglingUntriaged | ExperimentalAsh> tile_ = nullptr;
 
   base::WeakPtrFactory<NightLightFeaturePodController> weak_factory_{this};

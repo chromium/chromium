@@ -10,6 +10,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
 #include "content/browser/loader/navigation_loader_interceptor.h"
+#include "content/browser/preloading/prefetch/prefetch_container.h"
 #include "content/common/content_export.h"
 #include "content/public/browser/global_routing_id.h"
 #include "services/network/public/cpp/resource_request.h"
@@ -18,6 +19,7 @@ namespace content {
 
 class BrowserContext;
 class PrefetchContainer;
+class PrefetchMatchResolver;
 
 // Intercepts navigations that can use prefetched resources.
 class CONTENT_EXPORT PrefetchURLLoaderInterceptor
@@ -53,13 +55,18 @@ class CONTENT_EXPORT PrefetchURLLoaderInterceptor
   // `PrefetchUrlLoaderHelper`.
   // The |get_prefetch_callback| is called with this associated prefetch.
   // Declared virtual only for testing.
+
+  // TODO(crbug.com/1462206): It might be better to store
+  // PrefetchMatchResolver as part of PrefetchUrlLoaderInterceptor
+  // as this is related to serving a navigation. It would simplify GetPrefetch
+  // call.
   virtual void GetPrefetch(
       const network::ResourceRequest& tentative_resource_request,
-      base::OnceCallback<void(base::WeakPtr<PrefetchContainer>)>
-          get_prefetch_callback) const;
+      PrefetchMatchResolver& potential_prefetch_matches_container,
+      base::OnceCallback<void(PrefetchContainer::Reader)> get_prefetch_callback)
+      const;
 
-  void OnGetPrefetchComplete(
-      base::WeakPtr<PrefetchContainer> prefetch_container);
+  void OnGetPrefetchComplete(PrefetchContainer::Reader reader);
 
   // The frame tree node |this| is associated with, used to retrieve
   // |PrefetchService|.
@@ -79,7 +86,7 @@ class CONTENT_EXPORT PrefetchURLLoaderInterceptor
   // The prefetch container that has already been used to serve a redirect. If
   // another request can be intercepted, this will be checked first to see if
   // its next redirect hop matches the request URL.
-  base::WeakPtr<PrefetchContainer> redirect_prefetch_container_;
+  PrefetchContainer::Reader redirect_reader_;
 
   SEQUENCE_CHECKER(sequence_checker_);
 

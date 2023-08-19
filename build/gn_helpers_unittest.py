@@ -3,10 +3,14 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import mock
+import os
+import pathlib
+import shutil
 import sys
+import tempfile
 import textwrap
 import unittest
+from unittest import mock
 
 import gn_helpers
 
@@ -310,6 +314,39 @@ class UnitTest(unittest.TestCase):
       parser = gn_helpers.GNValueParser(
           textwrap.dedent('import("some/relative/args/file.gni")'))
       parser.ReplaceImports()
+
+  def test_CreateBuildCommand(self):
+    with tempfile.TemporaryDirectory() as temp_dir:
+      suffix = '.bat' if sys.platform.startswith('win32') else ''
+      self.assertEqual(f'autoninja{suffix}',
+                       gn_helpers.CreateBuildCommand(temp_dir)[0])
+
+      siso_deps = pathlib.Path(temp_dir) / '.siso_deps'
+      siso_deps.touch()
+      self.assertEqual(f'autosiso{suffix}',
+                       gn_helpers.CreateBuildCommand(temp_dir)[0])
+
+      with mock.patch('shutil.which', lambda x: None):
+        cmd = gn_helpers.CreateBuildCommand(temp_dir)
+        self.assertIn('third_party', cmd[0])
+        self.assertIn(f'{os.sep}siso', cmd[0])
+        self.assertEqual(['ninja', '-C', temp_dir], cmd[1:])
+
+      ninja_deps = pathlib.Path(temp_dir) / '.ninja_deps'
+      ninja_deps.touch()
+
+      with self.assertRaisesRegex(Exception, 'Found both'):
+        gn_helpers.CreateBuildCommand(temp_dir)
+
+      siso_deps.unlink()
+      self.assertEqual(f'autoninja{suffix}',
+                       gn_helpers.CreateBuildCommand(temp_dir)[0])
+
+      with mock.patch('shutil.which', lambda x: None):
+        cmd = gn_helpers.CreateBuildCommand(temp_dir)
+        self.assertIn('third_party', cmd[0])
+        self.assertIn(f'{os.sep}ninja', cmd[0])
+        self.assertEqual(['-C', temp_dir], cmd[1:])
 
 
 if __name__ == '__main__':

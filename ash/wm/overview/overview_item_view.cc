@@ -251,6 +251,8 @@ gfx::Size OverviewItemView::GetPreviewViewSize() const {
   return gfx::ToRoundedSize(target_size);
 }
 
+void OverviewItemView::RefreshItemVisuals() {}
+
 views::View* OverviewItemView::GetView() {
   return this;
 }
@@ -302,6 +304,15 @@ bool OverviewItemView::OnMouseDragged(const ui::MouseEvent& event) {
   if (!overview_item_)
     return views::View::OnMouseDragged(event);
   overview_item_->HandleMouseEvent(event);
+  return true;
+}
+
+bool OverviewItemView::OnMouseWheel(const ui::MouseWheelEvent& event) {
+  if (!overview_item_) {
+    return false;
+  }
+  overview_item_->overview_grid()->HandleMouseWheelScrollEvent(
+      event.y_offset());
   return true;
 }
 

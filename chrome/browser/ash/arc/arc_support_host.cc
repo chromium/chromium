@@ -59,13 +59,9 @@ constexpr char kActionSetWindowBounds[] = "setWindowBounds";
 constexpr char kActionCloseWindow[] = "closeWindow";
 
 // Action to show a page. The message should have "page" field, which is one of
-// IDs for section div elements. For the "active-directory-auth" page, the
-// "federationUrl" and "deviceManagementUrlPrefix" options are required.
+// IDs for section div elements.
 constexpr char kActionShowPage[] = "showPage";
 constexpr char kPage[] = "page";
-constexpr char kOptions[] = "options";
-constexpr char kFederationUrl[] = "federationUrl";
-constexpr char kDeviceManagementUrlPrefix[] = "deviceManagementUrlPrefix";
 
 // Action to show the error page. The message should have "errorMessage",
 // which is a localized error text, and "shouldShowSendFeedback" boolean value.
@@ -86,13 +82,6 @@ constexpr char kEvent[] = "event";
 // "onWindowClosed" is fired when the extension window is closed.
 // No data will be provided.
 constexpr char kEventOnWindowClosed[] = "onWindowClosed";
-
-// "onAuthSucceeded" is fired when Active Directory authentication succeeds.
-constexpr char kEventOnAuthSucceeded[] = "onAuthSucceeded";
-
-// "onAuthFailed" is fired when Active Directory authentication failed.
-constexpr char kEventOnAuthFailed[] = "onAuthFailed";
-constexpr char kAuthErrorMessage[] = "errorMessage";
 
 // "onAgreed" is fired when a user clicks "Agree" button.
 // The message should have the following fields:
@@ -155,8 +144,6 @@ std::ostream& operator<<(std::ostream& os, ArcSupportHost::UIPage ui_page) {
       return os << "TERMS";
     case ArcSupportHost::UIPage::ARC_LOADING:
       return os << "ARC_LOADING";
-    case ArcSupportHost::UIPage::ACTIVE_DIRECTORY_AUTH:
-      return os << "ACTIVE_DIRECTORY_AUTH";
     case ArcSupportHost::UIPage::ERROR:
       return os << "ERROR";
   }
@@ -216,7 +203,6 @@ ArcSupportHost::ArcSupportHost(Profile* profile)
 
 ArcSupportHost::~ArcSupportHost() {
   // Delegates should have been reset to nullptr at this point.
-  DCHECK(!auth_delegate_);
   DCHECK(!tos_delegate_);
   DCHECK(!error_delegate_);
 
@@ -224,18 +210,8 @@ ArcSupportHost::~ArcSupportHost() {
     DisconnectMessageHost();
 }
 
-void ArcSupportHost::SetAuthDelegate(AuthDelegate* delegate) {
-  // Since AuthDelegate and TermsOfServiceDelegate should not have overlapping
-  // life cycle, both delegates can't be non-null at the same time.
-  DCHECK(!(delegate && tos_delegate_));
-  auth_delegate_ = delegate;
-}
-
 void ArcSupportHost::SetTermsOfServiceDelegate(
     TermsOfServiceDelegate* delegate) {
-  // Since AuthDelegate and TermsOfServiceDelegate should not have overlapping
-  // life cycle, both delegates can't be non-null at the same time.
-  DCHECK(!(delegate && auth_delegate_));
   tos_delegate_ = delegate;
 }
 
@@ -246,11 +222,13 @@ void ArcSupportHost::SetErrorDelegate(ErrorDelegate* delegate) {
 gfx::NativeWindow ArcSupportHost::GetNativeWindow() const {
   extensions::AppWindowRegistry* registry =
       extensions::AppWindowRegistry::Get(profile_);
-  if (!registry) return gfx::kNullNativeWindow;
+  if (!registry) {
+    return gfx::NativeWindow();
+  }
 
   extensions::AppWindow* window =
       registry->GetCurrentAppWindowForApp(arc::kPlayStoreAppId);
-  return window ? window->GetNativeWindow() : gfx::kNullNativeWindow;
+  return window ? window->GetNativeWindow() : gfx::NativeWindow();
 }
 
 bool ArcSupportHost::GetShouldShowRunNetworkTests() {
@@ -287,15 +265,6 @@ void ArcSupportHost::ShowArcLoading() {
   ShowPage(UIPage::ARC_LOADING);
 }
 
-void ArcSupportHost::ShowActiveDirectoryAuth(
-    const GURL& federation_url,
-    const std::string& device_management_url_prefix) {
-  active_directory_auth_federation_url_ = federation_url;
-  active_directory_auth_device_management_url_prefix_ =
-      device_management_url_prefix;
-  ShowPage(UIPage::ACTIVE_DIRECTORY_AUTH);
-}
-
 void ArcSupportHost::ShowPage(UIPage ui_page) {
   ui_page_ = ui_page;
   if (!message_host_) {
@@ -317,17 +286,6 @@ void ArcSupportHost::ShowPage(UIPage ui_page) {
       break;
     case UIPage::ARC_LOADING:
       message.Set(kPage, "arc-loading");
-      break;
-    case UIPage::ACTIVE_DIRECTORY_AUTH:
-      DCHECK(active_directory_auth_federation_url_.is_valid());
-      DCHECK(!active_directory_auth_device_management_url_prefix_.empty());
-      message.Set(kPage, "active-directory-auth");
-      message.SetByDottedPath(
-          base::JoinString({kOptions, kFederationUrl}, "."),
-          base::Value(active_directory_auth_federation_url_.spec()));
-      message.SetByDottedPath(
-          base::JoinString({kOptions, kDeviceManagementUrlPrefix}, "."),
-          base::Value(active_directory_auth_device_management_url_prefix_));
       break;
     default:
       NOTREACHED();
@@ -631,12 +589,6 @@ bool ArcSupportHost::Initialize() {
   loadtime_data.Set(
       "privacyPolicyLink",
       l10n_util::GetStringUTF16(IDS_ARC_OPT_IN_PRIVACY_POLICY_LINK));
-  loadtime_data.Set(
-      "activeDirectoryAuthTitle",
-      l10n_util::GetStringUTF16(IDS_ARC_OPT_IN_ACTIVE_DIRECTORY_AUTH_TITLE));
-  loadtime_data.Set(
-      "activeDirectoryAuthDesc",
-      l10n_util::GetStringUTF16(IDS_ARC_OPT_IN_ACTIVE_DIRECTORY_AUTH_DESC));
   loadtime_data.Set("overlayLoading",
                     l10n_util::GetStringUTF16(IDS_ARC_POPUP_HELP_LOADING));
 
@@ -697,21 +649,6 @@ void ArcSupportHost::OnMessage(const base::Value::Dict& message) {
       DCHECK(error_delegate_);
       error_delegate_->OnWindowClosed();
     }
-  } else if (*event == kEventOnAuthSucceeded) {
-    DCHECK(auth_delegate_);
-    auth_delegate_->OnAuthSucceeded();
-  } else if (*event == kEventOnAuthFailed) {
-    DCHECK(auth_delegate_);
-    const std::string* error_message = message.FindString(kAuthErrorMessage);
-    if (!error_message) {
-      NOTREACHED();
-      return;
-    }
-    // TODO(https://crbug.com/756144): Remove once reason for crash has been
-    // determined.
-    LOG_IF(ERROR, !auth_delegate_)
-        << "auth_delegate_ is NULL, error: " << *error_message;
-    auth_delegate_->OnAuthFailed(*error_message);
   } else if (*event == kEventOnAgreed || *event == kEventOnCanceled) {
     DCHECK(tos_delegate_);
     absl::optional<bool> tos_shown = message.FindBool(kTosShown);
@@ -806,17 +743,23 @@ void ArcSupportHost::OnMessage(const base::Value::Dict& message) {
     }
 
     if (accepted) {
+      // tos_delegate_->OnTermsAgreed() will free tos_delegate_. But will update
+      // optin UI async to loading page. It is possible that user can click the
+      // accept button again before optin UI is updated. b/284000632
+      if (!tos_delegate_) {
+        LOG(ERROR) << "tos_delegate_ has been freed.";
+        return;
+      }
+
       tos_delegate_->OnTermsAgreed(is_metrics_enabled.value(),
                                    is_backup_restore_enabled.value(),
                                    is_location_service_enabled.value());
     }
   } else if (*event == kEventOnRetryClicked) {
-    // If ToS negotiation or manual authentication is ongoing, call the
-    // corresponding delegate.  Otherwise, call the general retry function.
+    // If ToS negotiation is ongoing, call the corresponding delegate.
+    // Otherwise, call the general retry function.
     if (tos_delegate_) {
       tos_delegate_->OnTermsRetryClicked();
-    } else if (auth_delegate_) {
-      auth_delegate_->OnAuthRetryClicked();
     } else {
       DCHECK(error_delegate_);
       error_delegate_->OnRetryClicked();

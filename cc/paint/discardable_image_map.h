@@ -10,7 +10,6 @@
 #include <vector>
 
 #include "base/containers/flat_map.h"
-#include "base/containers/stack_container.h"
 #include "base/sequence_checker.h"
 #include "cc/base/rtree.h"
 #include "cc/paint/draw_image.h"
@@ -21,6 +20,7 @@
 #include "cc/paint/paint_image.h"
 #include "cc/paint/paint_shader.h"
 #include "cc/paint/paint_worklet_input.h"
+#include "third_party/abseil-cpp/absl/container/inlined_vector.h"
 #include "third_party/skia/include/core/SkCanvas.h"
 #include "third_party/skia/include/core/SkRefCnt.h"
 #include "ui/gfx/display_color_spaces.h"
@@ -36,7 +36,7 @@ class PaintOpBuffer;
 // rect and get back a list of DrawImages in that rect.
 class CC_PAINT_EXPORT DiscardableImageMap {
  public:
-  using Rects = base::StackVector<gfx::Rect, 1>;
+  using Rects = absl::InlinedVector<gfx::Rect, 1>;
 
   struct CC_PAINT_EXPORT AnimatedImageMetadata {
     AnimatedImageMetadata(

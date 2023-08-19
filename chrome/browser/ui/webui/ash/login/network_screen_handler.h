@@ -29,6 +29,8 @@ class NetworkScreenView : public base::SupportsWeakPtr<NetworkScreenView> {
 
   // Hides error messages showing no error state.
   virtual void ClearErrors() = 0;
+
+  virtual void SetQuickStartEnabled() = 0;
 };
 
 // WebUI implementation of NetworkScreenView. It is used to interact with
@@ -44,6 +46,8 @@ class NetworkScreenHandler : public NetworkScreenView,
   NetworkScreenHandler& operator=(const NetworkScreenHandler&) = delete;
 
   ~NetworkScreenHandler() override;
+
+  void SetQuickStartEnabled() override;
 
  private:
   // NetworkScreenView:

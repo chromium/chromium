@@ -8,6 +8,7 @@
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/style/color_util.h"
 #include "ash/style/style_util.h"
+#include "ash/style/typography.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/chromeos/styles/cros_tokens_color_mappings.h"
@@ -66,6 +67,7 @@ TabSliderButton::TabSliderButton(PressedCallback callback,
 
   // Configure the focus ring.
   auto* focus_ring = views::FocusRing::Get(this);
+  focus_ring->SetOutsetFocusRingDisabled(true);
   focus_ring->SetColorId(cros_tokens::kCrosSysFocusRing);
   const float halo_inset =
       focus_ring->GetHaloThickness() / 2.f + kFocusRingPadding;
@@ -141,6 +143,7 @@ IconSliderButton::IconSliderButton(PressedCallback callback,
   // Replace the pill shaped highlight path of focus ring with a circle shaped
   // highlight path.
   auto* focus_ring = views::FocusRing::Get(this);
+  focus_ring->SetOutsetFocusRingDisabled(true);
   focus_ring->SetPathGenerator(
       std::make_unique<views::CircleHighlightPathGenerator>(-gfx::Insets(
           focus_ring->GetHaloThickness() / 2 + kFocusRingPadding)));
@@ -192,6 +195,7 @@ LabelSliderButton::LabelSliderButton(PressedCallback callback,
   SetUseDefaultFillLayout(true);
   // Force the label to use requested colors.
   label_->SetAutoColorReadabilityEnabled(false);
+  TypographyProvider::Get()->StyleLabel(TypographyToken::kCrosButton2, *label_);
 }
 
 LabelSliderButton::~LabelSliderButton() = default;
@@ -270,6 +274,7 @@ IconLabelSliderButton::IconLabelSliderButton(
 
   // Force the label to use requested colors.
   label_->SetAutoColorReadabilityEnabled(false);
+  TypographyProvider::Get()->StyleLabel(TypographyToken::kCrosButton2, *label_);
 }
 
 IconLabelSliderButton::~IconLabelSliderButton() = default;

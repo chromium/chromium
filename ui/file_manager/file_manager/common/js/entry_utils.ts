@@ -4,7 +4,7 @@
 
 import {FilesAppEntry} from '../../externs/files_app_entry_interfaces.js';
 import {EntryType, FileData} from '../../externs/ts/state.js';
-import {driveRootEntryListKey, myFilesEntryListKey} from '../../state/reducers/volumes.js';
+import {driveRootEntryListKey, myFilesEntryListKey, trashRootKey} from '../../state/reducers/volumes.js';
 
 import {EntryList, FakeEntryImpl, VolumeEntry} from './files_app_entry_types.js';
 import {util} from './util.js';
@@ -49,6 +49,11 @@ export function getNativeEntry(fileData: FileData): Entry|null {
 export function isVolumeEntry(entry: Entry|
                               FilesAppEntry): entry is VolumeEntry {
   return 'volumeInfo' in entry;
+}
+
+/** Check if a entry is a trash entry or not. */
+export function isTrashEntry(entry: Entry|FilesAppEntry) {
+  return entry.toURL() === trashRootKey;
 }
 
 /**

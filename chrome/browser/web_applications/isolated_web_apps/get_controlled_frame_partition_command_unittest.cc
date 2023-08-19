@@ -7,6 +7,7 @@
 #include <string>
 #include <vector>
 
+#include "base/strings/strcat.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
 #include "base/types/expected.h"
@@ -134,7 +135,7 @@ TEST_F(GetControlledFramePartitionCommandTest, DuplicatePartitionsIgnored) {
                                    expected_config));
 }
 
-TEST_F(GetControlledFramePartitionCommandTest, InMemoryPartitionsNotSaved) {
+TEST_F(GetControlledFramePartitionCommandTest, InMemoryPartitionsIsSaved) {
   const GURL app_url(
       "isolated-app://"
       "berugqztij5biqquuk3mfwpsaibuegaqcitgfchwuosuofdjabzqaaic");
@@ -150,9 +151,79 @@ TEST_F(GetControlledFramePartitionCommandTest, InMemoryPartitionsNotSaved) {
 
   std::vector<content::StoragePartitionConfig> storage_partitions =
       registrar().GetIsolatedWebAppStoragePartitionConfigs(url_info.app_id());
+
+  EXPECT_EQ(2UL, storage_partitions.size());
   EXPECT_THAT(
       storage_partitions,
-      UnorderedElementsAre(url_info.storage_partition_config(profile())));
+      UnorderedElementsAre(expected_config,
+                           url_info.storage_partition_config(profile())));
+}
+
+TEST_F(GetControlledFramePartitionCommandTest, CorrectWithDifferentApps) {
+  // Set up IWA 1.
+  const GURL iwa_1_url(
+      "isolated-app://"
+      "berugqztij5biqquuk3mfwpsaibuegaqcitgfchwuosuofdjabzqaaic");
+  IsolatedWebAppUrlInfo iwa_1_url_info = InstallIsolatedWebApp(iwa_1_url);
+
+  auto expected_iwa_1_sp_base = content::StoragePartitionConfig::Create(
+      profile(), /*partition_domain=*/base::StrCat({"iwa-", iwa_1_url.host()}),
+      /*partition_name=*/"", /*in_memory=*/false);
+
+  content::StoragePartitionConfig output_iwa_1_sp_1 =
+      RunCommand(iwa_1_url_info, "partition_name", /*in_memory=*/true);
+  auto expected_iwa_1_sp_1 = content::StoragePartitionConfig::Create(
+      profile(), /*partition_domain=*/base::StrCat({"iwa-", iwa_1_url.host()}),
+      /*partition_name=*/"partition_name", /*in_memory=*/true);
+  ASSERT_EQ(expected_iwa_1_sp_1, output_iwa_1_sp_1);
+
+  content::StoragePartitionConfig output_iwa_1_sp_2 =
+      RunCommand(iwa_1_url_info, "partition_name", /*in_memory=*/false);
+  auto expected_iwa_1_sp_2 = content::StoragePartitionConfig::Create(
+      profile(), /*partition_domain=*/base::StrCat({"iwa-", iwa_1_url.host()}),
+      /*partition_name=*/"partition_name", /*in_memory=*/false);
+  ASSERT_EQ(expected_iwa_1_sp_2, output_iwa_1_sp_2);
+
+  // Set up IWA 2.
+  const GURL iwa_2_url(
+      "isolated-app://"
+      "4tkrnsmftl4ggvvdkfth3piainqragus2qbhf7rlz2a3wo3rh4wqaaic");
+  IsolatedWebAppUrlInfo iwa_2_url_info = InstallIsolatedWebApp(iwa_2_url);
+
+  auto expected_iwa_2_sp_base = content::StoragePartitionConfig::Create(
+      profile(), /*partition_domain=*/base::StrCat({"iwa-", iwa_2_url.host()}),
+      /*partition_name=*/"", /*in_memory=*/false);
+
+  content::StoragePartitionConfig output_iwa_2_sp_1 =
+      RunCommand(iwa_2_url_info, "partition_name", /*in_memory=*/true);
+  auto expected_iwa_2_sp_1 = content::StoragePartitionConfig::Create(
+      profile(), /*partition_domain=*/base::StrCat({"iwa-", iwa_2_url.host()}),
+      /*partition_name=*/"partition_name", /*in_memory=*/true);
+  ASSERT_EQ(expected_iwa_2_sp_1, output_iwa_2_sp_1);
+
+  content::StoragePartitionConfig output_iwa_2_sp_2 =
+      RunCommand(iwa_2_url_info, "partition_name", /*in_memory=*/false);
+  auto expected_iwa_2_sp_2 = content::StoragePartitionConfig::Create(
+      profile(), /*partition_domain=*/base::StrCat({"iwa-", iwa_2_url.host()}),
+      /*partition_name=*/"partition_name", /*in_memory=*/false);
+  ASSERT_EQ(expected_iwa_2_sp_2, output_iwa_2_sp_2);
+
+  // Check partitions
+  std::vector<content::StoragePartitionConfig> iwa_1_sps =
+      registrar().GetIsolatedWebAppStoragePartitionConfigs(
+          iwa_1_url_info.app_id());
+  ASSERT_EQ(3UL, iwa_1_sps.size());
+  EXPECT_THAT(iwa_1_sps, testing::UnorderedElementsAre(expected_iwa_1_sp_base,
+                                                       expected_iwa_1_sp_1,
+                                                       expected_iwa_1_sp_2));
+
+  std::vector<content::StoragePartitionConfig> iwa_2_sps =
+      registrar().GetIsolatedWebAppStoragePartitionConfigs(
+          iwa_2_url_info.app_id());
+  ASSERT_EQ(3UL, iwa_2_sps.size());
+  EXPECT_THAT(iwa_2_sps, testing::UnorderedElementsAre(expected_iwa_2_sp_base,
+                                                       expected_iwa_2_sp_1,
+                                                       expected_iwa_2_sp_2));
 }
 
 }  // namespace web_app

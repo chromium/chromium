@@ -56,8 +56,9 @@ RestrictedMGSPolicyProvider::~RestrictedMGSPolicyProvider() = default;
 // static
 std::unique_ptr<RestrictedMGSPolicyProvider>
 RestrictedMGSPolicyProvider::Create() {
-  if (!profiles::IsPublicSession())
+  if (!profiles::IsManagedGuestSession()) {
     return nullptr;
+  }
   std::unique_ptr<RestrictedMGSPolicyProvider> provider(
       new RestrictedMGSPolicyProvider());
   return provider;

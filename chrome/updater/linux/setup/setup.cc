@@ -30,6 +30,14 @@ int Setup(UpdaterScope scope) {
   if (!dest_path) {
     return kErrorFailedToGetVersionedInstallDirectory;
   }
+
+  if (base::PathExists(*dest_path)) {
+    if (!DeleteExcept(dest_path->Append("Crashpad"))) {
+      LOG(ERROR) << "Could not remove existing copy of this updater.";
+      return kErrorFailedToDeleteFolder;
+    }
+  }
+
   dest_path = dest_path->Append(GetExecutableRelativePath());
 
   base::FilePath exe_path;

@@ -33,10 +33,6 @@
 #import "net/cert/x509_certificate.h"
 #import "net/cert/x509_util.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 namespace {
 
 scoped_refptr<net::X509Certificate> CreateFakeCert() {

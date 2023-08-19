@@ -235,7 +235,8 @@ class OfflineContentProviderObserver final
 
   ItemsAddedCallback items_added_callback_;
   FinishedProcessingItemCallback finished_processing_item_callback_;
-  raw_ptr<BackgroundFetchDelegateImpl, DanglingUntriaged> delegate_ = nullptr;
+  raw_ptr<BackgroundFetchDelegateImpl, AcrossTasksDanglingUntriaged> delegate_ =
+      nullptr;
   bool pause_ = false;
   bool resume_ = false;
 
@@ -294,11 +295,8 @@ class BackgroundFetchBrowserTest : public InProcessBrowserTest {
 
     // Register the Service Worker that's required for Background Fetch. The
     // behaviour without an activated worker is covered by layout tests.
-    {
-      std::string script_result;
-      ASSERT_TRUE(RunScript("RegisterServiceWorker()", &script_result));
-      ASSERT_EQ("ok - service worker registered", script_result);
-    }
+    ASSERT_EQ("ok - service worker registered",
+              RunScript("RegisterServiceWorker()"));
 
     test_ukm_recorder_ = std::make_unique<ukm::TestAutoSetUkmRecorder>();
   }
@@ -316,7 +314,7 @@ class BackgroundFetchBrowserTest : public InProcessBrowserTest {
   // Test execution functions.
 
   // Runs the |script| and waits for one or more items to have been added to the
-  // offline items collection. Wrap in ASSERT_NO_FATAL_FAILURE().
+  // offline items collection.
   void RunScriptAndWaitForOfflineItems(const std::string& script,
                                        std::vector<OfflineItem>* items) {
     DCHECK(items);
@@ -326,20 +324,15 @@ class BackgroundFetchBrowserTest : public InProcessBrowserTest {
         base::BindOnce(&BackgroundFetchBrowserTest::DidAddItems,
                        base::Unretained(this), run_loop.QuitClosure(), items));
 
-    std::string result;
-    ASSERT_NO_FATAL_FAILURE(RunScript(script, &result));
-    ASSERT_EQ("ok", result);
+    ASSERT_EQ("ok", RunScript(script));
 
     run_loop.Run();
   }
 
-  // Runs the |script| and waits for a message.
-  // Wrap in ASSERT_NO_FATAL_FAILURE().
+  // Runs the |script| and checks the result.
   void RunScriptAndCheckResultingMessage(const std::string& script,
                                          const std::string& expected_message) {
-    std::string result;
-    ASSERT_NO_FATAL_FAILURE(RunScript(script, &result));
-    ASSERT_EQ(expected_message, result);
+    ASSERT_EQ(expected_message, RunScript(script));
   }
 
   void GetVisualsForOfflineItemSync(
@@ -359,21 +352,17 @@ class BackgroundFetchBrowserTest : public InProcessBrowserTest {
   // Helper functions.
 
   // Runs the |script| in the current tab and writes the output to |*result|.
-  bool RunScript(const std::string& script, std::string* result) {
-    *result = content::EvalJs(active_browser_->tab_strip_model()
-                                  ->GetActiveWebContents()
-                                  ->GetPrimaryMainFrame(),
-                              script)
-                  .ExtractString();
-    return true;
+  content::EvalJsResult RunScript(const std::string& script) {
+    return content::EvalJs(active_browser_->tab_strip_model()
+                               ->GetActiveWebContents()
+                               ->GetPrimaryMainFrame(),
+                           script);
   }
 
   // Runs the given |function| and asserts that it responds with "ok".
   // Must be wrapped with ASSERT_NO_FATAL_FAILURE().
   void RunScriptFunction(const std::string& function) {
-    std::string result;
-    ASSERT_TRUE(RunScript(function, &result));
-    ASSERT_EQ("ok", result);
+    ASSERT_EQ("ok", RunScript(function));
   }
 
   // Intercepts all requests.
@@ -473,8 +462,9 @@ class BackgroundFetchBrowserTest : public InProcessBrowserTest {
   net::EmbeddedTestServer* https_server() { return https_server_.get(); }
 
  protected:
-  raw_ptr<BackgroundFetchDelegateImpl, DanglingUntriaged> delegate_ = nullptr;
-  raw_ptr<download::BackgroundDownloadService, DanglingUntriaged>
+  raw_ptr<BackgroundFetchDelegateImpl, AcrossTasksDanglingUntriaged> delegate_ =
+      nullptr;
+  raw_ptr<download::BackgroundDownloadService, AcrossTasksDanglingUntriaged>
       download_service_ = nullptr;
   base::OnceClosure click_event_closure_;
 
@@ -504,7 +494,7 @@ class BackgroundFetchBrowserTest : public InProcessBrowserTest {
 
   std::unique_ptr<net::EmbeddedTestServer> https_server_;
 
-  raw_ptr<Browser, DanglingUntriaged> active_browser_ = nullptr;
+  raw_ptr<Browser, AcrossTasksDanglingUntriaged> active_browser_ = nullptr;
 };
 
 IN_PROC_BROWSER_TEST_F(BackgroundFetchBrowserTest, DownloadService_Acceptance) {
@@ -973,30 +963,17 @@ class BackgroundFetchFencedFrameBrowserTest
   }
 
   void RegisterServiceWorker(content::RenderFrameHost* render_frame_host) {
-    std::string script_result;
-    ASSERT_TRUE(RunScript("RegisterServiceWorker()", &script_result,
-                          render_frame_host));
-    ASSERT_EQ("ok - service worker registered", script_result);
+    ASSERT_EQ("ok - service worker registered",
+              content::EvalJs(render_frame_host, "RegisterServiceWorker()"));
   }
 
   void StartSingleFileDownload(content::RenderFrameHost* render_frame_host,
                                std::string expected_result) {
-    std::string script_result;
-    ASSERT_NO_FATAL_FAILURE(RunScript("StartSingleFileDownload()",
-                                      &script_result, render_frame_host));
-    ASSERT_EQ(expected_result, script_result);
+    ASSERT_EQ(expected_result,
+              content::EvalJs(render_frame_host, "StartSingleFileDownload()"));
   }
 
  private:
-  // Runs the `script` in `render_frame_host` and writes the output to
-  // `*result`.
-  bool RunScript(const std::string& script,
-                 std::string* result,
-                 content::RenderFrameHost* render_frame_host) {
-    *result = content::EvalJs(render_frame_host, script).ExtractString();
-    return true;
-  }
-
   content::test::FencedFrameTestHelper fenced_frame_test_helper_;
 };
 

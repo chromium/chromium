@@ -159,7 +159,8 @@ class MojoAudioDecoderTest : public ::testing::Test {
 
     mojo::MakeSelfOwnedReceiver(
         std::make_unique<MojoAudioDecoderService>(&mojo_media_client_,
-                                                  &mojo_cdm_service_context_),
+                                                  &mojo_cdm_service_context_,
+                                                  service_task_runner_),
         std::move(receiver));
   }
 
@@ -283,7 +284,7 @@ class MojoAudioDecoderTest : public ::testing::Test {
   // Service side mock.
   std::unique_ptr<MockAudioDecoder> owned_mock_audio_decoder_{
       std::make_unique<StrictMock<MockAudioDecoder>>()};
-  raw_ptr<MockAudioDecoder, DanglingUntriaged> mock_audio_decoder_{
+  raw_ptr<MockAudioDecoder, AcrossTasksDanglingUntriaged> mock_audio_decoder_{
       owned_mock_audio_decoder_.get()};
 
   int num_of_decodes_ = 0;

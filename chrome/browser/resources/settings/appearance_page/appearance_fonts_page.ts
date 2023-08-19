@@ -11,7 +11,6 @@ import '/shared/settings/controls/settings_dropdown_menu.js';
 import {FontsBrowserProxy, FontsBrowserProxyImpl, FontsData} from '/shared/settings/appearance_page/fonts_browser_proxy.js';
 import {DropdownMenuOptionList} from '/shared/settings/controls/settings_dropdown_menu.js';
 import {SliderTick} from 'chrome://resources/cr_elements/cr_slider/cr_slider.js';
-import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {getTemplate} from './appearance_fonts_page.html.js';
@@ -55,16 +54,6 @@ export class SettingsAppearanceFontsPageElement extends PolymerElement {
 
   static get properties() {
     return {
-      // The font appearance menu to configure the "math" generic family is only
-      // relevant if CSSFontFamilyMath is enabled. Also, it requires MathMLCore
-      // to be enabled in order to properly display the mathematical formula
-      // used in the preview. CSSFontFamilyMath is implied by MathMLCore so we
-      // just rely on the latter flag to decide when to enable the menu.
-      cssFontFamilyMathMenuEnabled_: {
-        type: Boolean,
-        value: () => loadTimeData.getBoolean('enableMathMLCore'),
-      },
-
       fontOptions_: Object,
 
       /** Common font sizes. */
@@ -98,7 +87,6 @@ export class SettingsAppearanceFontsPageElement extends PolymerElement {
   }
 
   prefs: Object;
-  private cssFontFamilyMathMenuEnabled_: boolean;
   private fontOptions_: DropdownMenuOptionList;
   private fontSizeRange_: SliderTick[];
   private minimumFontSizeRange_: SliderTick[];

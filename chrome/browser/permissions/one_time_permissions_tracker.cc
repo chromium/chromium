@@ -4,6 +4,8 @@
 
 #include "chrome/browser/permissions/one_time_permissions_tracker.h"
 
+#include <utility>
+
 #include "base/functional/bind.h"
 #include "base/location.h"
 #include "base/notreached.h"
@@ -59,7 +61,7 @@ void OneTimePermissionsTracker::WebContentsBackgrounded(
       HandleUserMediaState(origin, ContentSettingsType::MEDIASTREAM_CAMERA);
       HandleUserMediaState(origin, ContentSettingsType::MEDIASTREAM_MIC);
     } else {
-      origin_tracker_[origin].background_expiration_timer->AbandonAndStop();
+      origin_tracker_[origin].background_expiration_timer->Stop();
     }
   }
 }
@@ -69,7 +71,7 @@ void OneTimePermissionsTracker::WebContentsUnbackgrounded(
   if (!ShouldIgnoreOrigin(origin)) {
     origin_tracker_[origin].background_tab_counter--;
     // Since the tab has been unbackgrounded, the timer should be reset
-    origin_tracker_[origin].background_expiration_timer->AbandonAndStop();
+    origin_tracker_[origin].background_expiration_timer->Stop();
   }
 }
 
@@ -77,7 +79,7 @@ void OneTimePermissionsTracker::WebContentsLoadedOrigin(
     const url::Origin& origin) {
   if (!ShouldIgnoreOrigin(origin)) {
     origin_tracker_[origin].undiscarded_tab_counter++;
-    origin_tracker_[origin].background_expiration_timer->AbandonAndStop();
+    origin_tracker_[origin].background_expiration_timer->Stop();
   }
 }
 
@@ -143,7 +145,7 @@ void OneTimePermissionsTracker::HandleUserMediaState(
     } else {
       origin_tracker_[origin]
           .content_setting_specific_expiration_timer_map[content_setting]
-          ->AbandonAndStop();
+          ->Stop();
     }
   }
 }
@@ -180,6 +182,32 @@ void OneTimePermissionsTracker::CapturingAudioChanged(const url::Origin& origin,
     origin_tracker_[origin].content_setting_specific_counter_map
         [ContentSettingsType::MEDIASTREAM_MIC] += is_capturing_audio ? 1 : -1;
     HandleUserMediaState(origin, ContentSettingsType::MEDIASTREAM_MIC);
+  }
+}
+
+void OneTimePermissionsTracker::CleanupStateForExpiredContentSetting(
+    ContentSettingsType type,
+    ContentSettingsPattern primary_pattern,
+    ContentSettingsPattern secondary_pattern) {
+  std::vector<url::Origin> affected_origins;
+  for (const auto& entry : origin_tracker_) {
+    const GURL top_level_origin_as_gurl = entry.first.GetURL();
+    if (primary_pattern.Matches(top_level_origin_as_gurl) &&
+        secondary_pattern.Matches(top_level_origin_as_gurl)) {
+      affected_origins.push_back(entry.first);
+    }
+  }
+
+  for (const auto& origin : affected_origins) {
+    if (type == ContentSettingsType::GEOLOCATION) {
+      origin_tracker_[origin].background_expiration_timer->Stop();
+    } else {
+      origin_tracker_[origin]
+          .content_setting_specific_expiration_timer_map.erase(type);
+    }
+
+    origin_tracker_[origin].content_setting_specific_counter_map.erase(type);
+    origin_tracker_[origin].used_content_settings_set.erase(type);
   }
 }
 
@@ -226,7 +254,7 @@ void OneTimePermissionsTracker::NotifyBackgroundTimerExpired(
   for (auto& observer : observer_list_) {
     observer.OnAllTabsInBackgroundTimerExpired(origin);
   }
-  origin_tracker_[origin].background_expiration_timer->AbandonAndStop();
+  origin_tracker_[origin].background_expiration_timer->Stop();
 }
 
 void OneTimePermissionsTracker::NotifyCapturingVideoExpired(

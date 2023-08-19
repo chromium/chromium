@@ -19,6 +19,7 @@ import androidx.annotation.IntDef;
 
 import org.chromium.android_webview.autofill.ChromeAutocompleteSafeModeAction;
 import org.chromium.android_webview.common.AwFeatures;
+import org.chromium.android_webview.common.Lifetime;
 import org.chromium.android_webview.safe_browsing.AwSafeBrowsingConfigHelper;
 import org.chromium.android_webview.settings.ForceDarkBehavior;
 import org.chromium.android_webview.settings.ForceDarkMode;
@@ -43,6 +44,7 @@ import java.util.Set;
  * Methods in this class can be called from any thread, including threads created by
  * the client of WebView.
  */
+@Lifetime.WebView
 @JNINamespace("android_webview")
 public class AwSettings {
     private static final String TAG = "AwSettings";
@@ -314,7 +316,7 @@ public class AwSettings {
             mAllowFileUrlAccess =
                     ContextUtils.getApplicationContext().getApplicationInfo().targetSdkVersion
                     < Build.VERSION_CODES.R;
-            if (AwFeatureMap.getInstance().isEnabled(
+            if (AwFeatureMap.isEnabled(
                         AwFeatures.WEBVIEW_X_REQUESTED_WITH_HEADER_MANIFEST_ALLOW_LIST)) {
                 mRequestedWithHeaderAllowedOriginRules =
                         ManifestMetadataUtil.getXRequestedWithAllowList();
@@ -407,6 +409,8 @@ public class AwSettings {
      */
     public void setAcceptThirdPartyCookies(boolean accept) {
         if (TRACE) Log.i(TAG, "setAcceptThirdPartyCookies=" + accept);
+        RecordHistogram.recordBooleanHistogram(
+                "Android.WebView.SetAcceptThirdPartyCookies", accept);
         synchronized (mAwSettingsLock) {
             mAcceptThirdPartyCookies = accept;
             mEventHandler.updateCookiePolicyLocked();
@@ -1845,7 +1849,7 @@ public class AwSettings {
 
     @CalledByNative
     private boolean getAllowMixedContentAutoupgradesLocked() {
-        if (AwFeatureMap.getInstance().isEnabled(AwFeatures.WEBVIEW_MIXED_CONTENT_AUTOUPGRADES)) {
+        if (AwFeatureMap.isEnabled(AwFeatures.WEBVIEW_MIXED_CONTENT_AUTOUPGRADES)) {
             // We only allow mixed content autoupgrades (upgrading HTTP subresources to HTTPS in
             // HTTPS sites) when the mixed content mode is set to MIXED_CONTENT_COMPATIBILITY,
             // which keeps it in line with the behavior in Chrome. With
@@ -2015,22 +2019,6 @@ public class AwSettings {
         }
     }
 
-    /**
-     * Enable sensitive web content restrictions per WebView.
-     */
-    public void enableRestrictSensitiveWebContent() {
-        synchronized (mAwSettingsLock) {
-            mEventHandler.runOnUiThreadBlockingAndLocked(() -> {
-                assert Thread.holdsLock(mAwSettingsLock);
-                AwOriginVerificationScheduler.initAndScheduleAll(null);
-                if (mNativeAwSettings != 0) {
-                    AwSettingsJni.get().setRestrictSensitiveWebContentEnabled(
-                            mNativeAwSettings, AwSettings.this, true);
-                }
-            });
-        }
-    }
-
     @NativeMethods
     interface Natives {
         long init(AwSettings caller, WebContents webContents);
@@ -2056,7 +2044,5 @@ public class AwSettings {
         boolean getEnterpriseAuthenticationAppLinkPolicyEnabled(
                 long nativeAwSettings, AwSettings caller);
         String[] updateXRequestedWithAllowListOriginMatcher(long nativeAwSettings, String[] rules);
-        void setRestrictSensitiveWebContentEnabled(
-                long nativeAwSettings, AwSettings caller, boolean enabled);
     }
 }

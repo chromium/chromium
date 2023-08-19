@@ -11,11 +11,13 @@
 #include <string>
 
 #include "base/files/file_path.h"
+#include "base/functional/callback.h"
 #include "base/memory/singleton.h"
+#include "base/memory/weak_ptr.h"
+#include "base/scoped_multi_source_observation.h"
 #include "base/synchronization/lock.h"
-#include "content/public/browser/notification_observer.h"
-#include "content/public/browser/notification_registrar.h"
 #include "content/public/browser/plugin_service_filter.h"
+#include "content/public/browser/render_process_host_observer.h"
 
 class Profile;
 
@@ -26,7 +28,7 @@ class WebContents;
 // This class must be created (by calling the |GetInstance| method) on the UI
 // thread, but is safe to use on any thread after that.
 class ChromePluginServiceFilter : public content::PluginServiceFilter,
-                                  public content::NotificationObserver {
+                                  public content::RenderProcessHostObserver {
  public:
   static ChromePluginServiceFilter* GetInstance();
 
@@ -56,6 +58,16 @@ class ChromePluginServiceFilter : public content::PluginServiceFilter,
   bool CanLoadPlugin(int render_process_id,
                      const base::FilePath& path) override;
 
+  // RenderProcessHostObserver implementation.
+  void RenderProcessExited(
+      content::RenderProcessHost* host,
+      const content::ChildProcessTerminationInfo& info) override;
+
+  // Sets a callback to be called when `this` adds itself as an observer to a
+  // RenderProcessHost.
+  void NotifyIfObserverAddedForTesting(
+      base::RepeatingClosure observer_added_callback_for_testing);
+
  private:
   friend struct base::DefaultSingletonTraits<ChromePluginServiceFilter>;
   struct ContextInfo;
@@ -71,21 +83,23 @@ class ChromePluginServiceFilter : public content::PluginServiceFilter,
   ChromePluginServiceFilter();
   ~ChromePluginServiceFilter() override;
 
-  // content::NotificationObserver implementation:
-  void Observe(int type,
-               const content::NotificationSource& source,
-               const content::NotificationDetails& details) override;
-
   ProcessDetails* GetOrRegisterProcess(int render_process_id);
   const ProcessDetails* GetProcess(int render_process_id) const;
-
-  content::NotificationRegistrar registrar_;
+  void ObserveRenderProcessHost(int render_process_id);
 
   base::Lock lock_;  // Guards access to member variables.
 
   std::map<const void*, std::unique_ptr<ContextInfo>> browser_context_map_;
 
   std::map<int, ProcessDetails> plugin_details_;
+
+  base::ScopedMultiSourceObservation<content::RenderProcessHost,
+                                     content::RenderProcessHostObserver>
+      host_observation_{this};
+
+  base::RepeatingClosure observer_added_callback_for_testing_;
+
+  base::WeakPtrFactory<ChromePluginServiceFilter> weak_factory_{this};
 };
 
 #endif  // CHROME_BROWSER_PLUGINS_CHROME_PLUGIN_SERVICE_FILTER_H_

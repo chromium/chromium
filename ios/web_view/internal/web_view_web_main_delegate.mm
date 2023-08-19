@@ -9,10 +9,6 @@
 #include "base/logging.h"
 #include "components/component_updater/component_updater_paths.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 // Dummy class used to locate the containing NSBundle.
 @interface CWVBundleLocator : NSObject
 @end

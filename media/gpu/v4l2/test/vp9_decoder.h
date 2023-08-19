@@ -9,11 +9,6 @@
 
 #include <linux/v4l2-controls.h>
 
-// ChromeOS specific header; does not exist upstream
-#if BUILDFLAG(IS_CHROMEOS)
-#include <linux/media/vp9-ctrls-upstream.h>
-#endif
-
 #include <set>
 
 #include "base/files/memory_mapped_file.h"
@@ -40,11 +35,11 @@ class Vp9Decoder : public VideoDecoder {
   // Parses next frame from IVF stream and decodes the frame. This method will
   // place the Y, U, and V values into the respective vectors and update the
   // size with the display area size of the decoded frame.
-  VideoDecoder::Result DecodeNextFrame(std::vector<uint8_t>& y_plane,
+  VideoDecoder::Result DecodeNextFrame(const int frame_number,
+                                       std::vector<uint8_t>& y_plane,
                                        std::vector<uint8_t>& u_plane,
                                        std::vector<uint8_t>& v_plane,
-                                       gfx::Size& size,
-                                       const int frame_number) override;
+                                       gfx::Size& size) override;
 
  private:
   Vp9Decoder(std::unique_ptr<IvfParser> ivf_parser,

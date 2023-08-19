@@ -63,7 +63,8 @@ KeyboardEvent* CreateKeyboardEventWithLocation(
   key_event_init->setBubbles(true);
   key_event_init->setCancelable(true);
   key_event_init->setLocation(location);
-  return MakeGarbageCollected<KeyboardEvent>("keydown", key_event_init);
+  return MakeGarbageCollected<KeyboardEvent>(event_type_names::kKeydown,
+                                             key_event_init);
 }
 
 int GetModifiersForKeyLocationCode(KeyboardEvent::KeyLocationCode location) {

@@ -42,6 +42,8 @@ source_set("test_support") {
     "//testing/gtest",
   ]
   sources = [
+    "fake_disk_mount_manager.cc",
+    "fake_disk_mount_manager.h",
     "mock_disk_mount_manager.cc",
     "mock_disk_mount_manager.h",
   ]

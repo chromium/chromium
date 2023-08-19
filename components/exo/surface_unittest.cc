@@ -151,7 +151,8 @@ class SurfaceTest
   }
 
   const viz::CompositorFrame& GetFrameFromSurface(ShellSurface* shell_surface) {
-    viz::SurfaceId surface_id = shell_surface->host_window()->GetSurfaceId();
+    viz::SurfaceId surface_id =
+        *shell_surface->host_window()->layer()->GetSurfaceId();
     const viz::CompositorFrame& frame =
         GetSurfaceManager()->GetSurfaceForId(surface_id)->GetActiveFrame();
     return frame;
@@ -1601,10 +1602,9 @@ TEST_P(SurfaceTest, SubsurfaceClipRect) {
     EXPECT_EQ(absl::nullopt, quad_list.front()->shared_quad_state->clip_rect);
   }
 
-  int clip_size_px = 10;
-  float clip_size_dip = clip_size_px / device_scale_factor();
+  int clip_size = 10;
   absl::optional<gfx::RectF> clip_rect =
-      gfx::RectF(clip_size_dip, clip_size_dip, clip_size_dip, clip_size_dip);
+      gfx::RectF(clip_size, clip_size, clip_size, clip_size);
   sub_surface->SetClipRect(clip_rect);
   child_surface->Attach(child_buffer.get());
   child_surface->Commit();
@@ -1612,10 +1612,9 @@ TEST_P(SurfaceTest, SubsurfaceClipRect) {
   test::WaitForLastFrameAck(shell_surface.get());
 
   {
-    // Subsurface has a clip applied, and it is converted to px in the
-    // compositor frame.
+    // Subsurface has a clip applied.
     absl::optional<gfx::Rect> clip_rect_px =
-        gfx::Rect(clip_size_px, clip_size_px, clip_size_px, clip_size_px);
+        gfx::Rect(clip_size, clip_size, clip_size, clip_size);
 
     const viz::CompositorFrame& frame =
         GetFrameFromSurface(shell_surface.get());
@@ -1789,6 +1788,57 @@ TEST_P(SurfaceTest, LayerSharedQuadState) {
     auto const kExpectedNumSQSs = is_canonical_form ? 2u : 4u;
     ASSERT_EQ(kExpectedNumSQSs,
               frame.render_pass_list.back()->shared_quad_state_list.size());
+  }
+}
+
+// Tests that only apply if ExoReactiveFrameSubmission is enabled.
+class ReactiveFrameSubmissionSurfaceTest : public SurfaceTest {
+ public:
+  ReactiveFrameSubmissionSurfaceTest() {
+    DCHECK(reactive_frame_submission_enabled());
+  }
+
+  ReactiveFrameSubmissionSurfaceTest(
+      const ReactiveFrameSubmissionSurfaceTest&) = delete;
+  ReactiveFrameSubmissionSurfaceTest& operator=(
+      const ReactiveFrameSubmissionSurfaceTest&) = delete;
+
+  ~ReactiveFrameSubmissionSurfaceTest() override = default;
+};
+
+// Instantiate the values of device scale factor in the parameterized tests.
+INSTANTIATE_TEST_SUITE_P(All,
+                         ReactiveFrameSubmissionSurfaceTest,
+                         testing::Combine(testing::Values(true),
+                                          testing::Values(1.0f, 1.25f, 2.0f)));
+
+TEST_P(ReactiveFrameSubmissionSurfaceTest, FullDamageAfterDiscardingFrame) {
+  gfx::Size buffer_size(256, 256);
+  std::unique_ptr<Buffer> buffer(
+      new Buffer(exo_test_helper()->CreateGpuMemoryBuffer(buffer_size)));
+  std::unique_ptr<Surface> surface(new Surface);
+  auto shell_surface = std::make_unique<ShellSurface>(surface.get());
+
+  surface->Attach(buffer.get());
+
+  shell_surface->layer_tree_frame_sink_holder()
+      ->ClearPendingBeginFramesForTesting();
+
+  // This will result in a cached frame in LayerTreeFrameSinkHolder.
+  surface->Damage(gfx::Rect(10, 10, 10, 10));
+  surface->Commit();
+
+  // Commit a frame without any damage. It will cause the previously cached
+  // frame to be discarded.
+  // It is expected that the damage area of the new frame is expanded to full
+  // damage.
+  surface->Commit();
+  test::WaitForLastFrameAck(shell_surface.get());
+
+  {
+    const viz::CompositorFrame& frame =
+        GetFrameFromSurface(shell_surface.get());
+    EXPECT_EQ(ToPixel(gfx::Rect(buffer_size)), GetCompleteDamage(frame));
   }
 }
 

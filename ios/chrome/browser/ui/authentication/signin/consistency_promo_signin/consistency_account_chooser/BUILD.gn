@@ -5,7 +5,6 @@
 import("//build/config/chrome_build.gni")
 
 source_set("consistency_account_chooser") {
-  configs += [ "//build/config/compiler:enable_arc" ]
   sources = [
     "consistency_account_chooser_consumer.h",
     "consistency_account_chooser_coordinator.h",

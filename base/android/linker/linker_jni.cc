@@ -15,7 +15,6 @@
 #include <string.h>
 #include <sys/mman.h>
 #include <sys/stat.h>
-#include <time.h>
 #include <unistd.h>
 
 #include <memory>
@@ -149,54 +148,6 @@ bool FindRegionInOpenFile(int fd, uintptr_t* out_address, size_t* out_size) {
     pos = kMaxLineLength;
     bytes_requested = kReadSize;
   }
-}
-
-// Calls the Linker Java methods to record the time intervals in UMA. The calls
-// are made only once pre process, hence there is no need to cache the values
-// obtained from JNIEnv. The class must *not* be reused across different
-// Java->native calls because the |jclass| reference may become invalid in this
-// case.
-class LoadTimeReporterJni : public LoadTimeReporter {
- public:
-  LoadTimeReporterJni(JNIEnv* env, jclass linker_jni_class)
-      : env_(env), class_(linker_jni_class) {}
-
-  void reportDlopenExtTime(int64_t millis) const override {
-    env_->CallStaticVoidMethod(
-        class_, env_->GetStaticMethodID(class_, "reportDlopenExtTime", "(J)V"),
-        millis);
-  }
-
-  void reportIteratePhdrTime(int64_t millis) const override {
-    env_->CallStaticVoidMethod(
-        class_,
-        env_->GetStaticMethodID(class_, "reportIteratePhdrTime", "(J)V"),
-        millis);
-  }
-
- private:
-  // Not copyable or movable.
-  LoadTimeReporterJni(const LoadTimeReporterJni&) = delete;
-  LoadTimeReporterJni& operator=(const LoadTimeReporterJni&) = delete;
-
-  JNIEnv* env_;
-  jclass class_;
-};
-
-constexpr int64_t kMillisecondsPerSecond = 1'000;
-constexpr int64_t kNanosecondsPerMillisecond = 1'000'000;
-
-int64_t GetMillisNow() {
-  struct timespec ts;
-  if (clock_gettime(CLOCK_MONOTONIC, &ts) != 0) {
-    PLOG_ERROR("clock_gettime");
-    return 0;
-  }
-
-  int64_t result = ts.tv_sec;
-  result *= kMillisecondsPerSecond;
-  result += (ts.tv_nsec / kNanosecondsPerMillisecond);
-  return result;
 }
 
 // Invokes android_dlopen_ext() to load the library into a given address range.
@@ -491,9 +442,7 @@ bool NativeLibInfo::FindRelroAndLibraryRangesInElf() {
   return true;
 }
 
-bool NativeLibInfo::LoadWithDlopenExt(const String& path,
-                                      const LoadTimeReporter& reporter,
-                                      void** handle) {
+bool NativeLibInfo::LoadWithDlopenExt(const String& path, void** handle) {
   LOG_INFO("Entering");
 
   // The address range must be reserved during initialization in Linker.java.
@@ -508,7 +457,6 @@ bool NativeLibInfo::LoadWithDlopenExt(const String& path,
   auto* address = reinterpret_cast<void*>(load_address_);
 
   // Invoke android_dlopen_ext.
-  int64_t ticks_initial = GetMillisNow();
   void* local_handle = nullptr;
   if (!AndroidDlopenExt(address, reservation_size, path.c_str(),
                         &local_handle)) {
@@ -516,8 +464,10 @@ bool NativeLibInfo::LoadWithDlopenExt(const String& path,
     munmap(address, load_size_);
     return false;
   }
-  int64_t ticks_after_dlopen_ext = GetMillisNow();
-  reporter.reportDlopenExtTime(ticks_after_dlopen_ext - ticks_initial);
+
+  // Histogram ChromiumAndroidLinker.ModernLinkerDlopenExtTime that measured the
+  // amount of time the ModernLinker spends to run android_dlopen_ext() was
+  // removed in July 2023.
 
   // Determine the library address ranges and the RELRO region.
   if (!FindRelroAndLibraryRangesInElf()) {
@@ -526,7 +476,10 @@ bool NativeLibInfo::LoadWithDlopenExt(const String& path,
     LOG_ERROR("Could not find RELRO in the loaded library: %s", path.c_str());
     abort();
   }
-  reporter.reportIteratePhdrTime(GetMillisNow() - ticks_after_dlopen_ext);
+
+  // Histogram ChromiumAndroidLinker.ModernLinkerIteratePhdrTime that measured
+  // the amount of time the ModernLinker spends to find the RELRO region using
+  // dl_iterate_phdr() was removed in July 2023.
 
   // Release the unused parts of the memory reservation.
   TrimMapping(load_address_, reservation_size, load_size_);
@@ -623,11 +576,10 @@ bool NativeLibInfo::CopyFromJavaObject() {
 }
 
 bool NativeLibInfo::LoadLibrary(const String& library_path,
-                                bool spawn_relro_region,
-                                const LoadTimeReporter& reporter) {
+                                bool spawn_relro_region) {
   // Load the library.
   void* handle = nullptr;
-  if (!LoadWithDlopenExt(library_path, reporter, &handle)) {
+  if (!LoadWithDlopenExt(library_path, &handle)) {
     LOG_ERROR("Failed to load native library: %s", library_path.c_str());
     return false;
   }
@@ -812,8 +764,7 @@ Java_org_chromium_base_library_1loader_LinkerJni_nativeLoadLibrary(
     return false;
 
   String library_path(env, jdlopen_ext_path);
-  LoadTimeReporterJni reporter = {env, clazz};
-  if (!lib_info.LoadLibrary(library_path, spawn_relro_region, reporter)) {
+  if (!lib_info.LoadLibrary(library_path, spawn_relro_region)) {
     return false;
   }
   return true;

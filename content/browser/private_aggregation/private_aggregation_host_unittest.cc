@@ -19,7 +19,6 @@
 #include "base/time/clock.h"
 #include "base/time/time.h"
 #include "base/values.h"
-#include "components/aggregation_service/aggregation_service.mojom.h"
 #include "content/browser/aggregation_service/aggregatable_report.h"
 #include "content/browser/aggregation_service/aggregation_service_test_utils.h"
 #include "content/browser/private_aggregation/private_aggregation_budget_key.h"
@@ -126,7 +125,7 @@ TEST_F(PrivateAggregationHostTest,
               {blink::mojom::AggregatableReportHistogramContribution(
                   /*bucket=*/123, /*value=*/456)},
               blink::mojom::AggregationServiceMode::kDefault,
-              ::aggregation_service::mojom::AggregationCoordinator::kDefault),
+              /*aggregation_coordinator_origin=*/absl::nullopt),
           AggregatableReportSharedInfo(
               validated_request->shared_info().scheduled_report_time,
               validated_request->shared_info().report_id,

@@ -124,7 +124,7 @@ IN_PROC_BROWSER_TEST_F(WebAuthnMacAutofillIntegrationTest, SelectAccount) {
   autofill::Suggestion webauthn_entry;
   for (suggestion_index = 0; suggestion_index < suggestions.size();
        ++suggestion_index) {
-    if (suggestions[suggestion_index].frontend_id ==
+    if (suggestions[suggestion_index].popup_item_id ==
         autofill::PopupItemId::kWebauthnCredential) {
       webauthn_entry = suggestions[suggestion_index];
       break;
@@ -133,7 +133,8 @@ IN_PROC_BROWSER_TEST_F(WebAuthnMacAutofillIntegrationTest, SelectAccount) {
   ASSERT_LT(suggestion_index, suggestions.size()) << "WebAuthn entry not found";
   EXPECT_EQ(webauthn_entry.main_text.value, u"flandre");
   EXPECT_EQ(webauthn_entry.labels.at(0).at(0).value,
-            l10n_util::GetStringUTF16(IDS_PASSWORD_MANAGER_USE_TOUCH_ID));
+            l10n_util::GetStringUTF16(
+                IDS_PASSWORD_MANAGER_PASSKEY_FROM_CHROME_PROFILE));
   EXPECT_EQ(webauthn_entry.icon, "globeIcon");
 
   // Click the credential.

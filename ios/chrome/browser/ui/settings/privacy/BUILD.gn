@@ -3,7 +3,6 @@
 # found in the LICENSE file.
 
 source_set("privacy_ui") {
-  configs += [ "//build/config/compiler:enable_arc" ]
   sources = [
     "handoff_table_view_controller.h",
     "handoff_table_view_controller.mm",
@@ -32,10 +31,12 @@ source_set("privacy_ui") {
     "//components/safe_browsing/core/common",
     "//components/safe_browsing/core/common:safe_browsing_prefs",
     "//components/strings",
+    "//components/supervised_user/core/common",
     "//ios/chrome/app/strings",
     "//ios/chrome/browser/browsing_data:feature_flags",
     "//ios/chrome/browser/net:crurl",
     "//ios/chrome/browser/policy:policy_util",
+    "//ios/chrome/browser/settings/sync/utils",
     "//ios/chrome/browser/shared/coordinator/alert",
     "//ios/chrome/browser/shared/coordinator/chrome_coordinator",
     "//ios/chrome/browser/shared/model/application_context",
@@ -61,8 +62,8 @@ source_set("privacy_ui") {
     "//ios/chrome/browser/ui/settings/clear_browsing_data",
     "//ios/chrome/browser/ui/settings/elements:enterprise_info_popover_view_controller",
     "//ios/chrome/browser/ui/settings/elements:info_popover_view_controller",
+    "//ios/chrome/browser/ui/settings/privacy/lockdown_mode",
     "//ios/chrome/browser/ui/settings/privacy/safe_browsing",
-    "//ios/chrome/browser/ui/settings/sync/utils",
     "//ios/chrome/browser/ui/settings/utils",
     "//ios/chrome/browser/web:feature_flags",
     "//ios/chrome/common:string_util",
@@ -76,7 +77,6 @@ source_set("privacy_ui") {
 }
 
 source_set("privacy_constants") {
-  configs += [ "//build/config/compiler:enable_arc" ]
   sources = [
     "privacy_constants.h",
     "privacy_constants.mm",
@@ -84,7 +84,6 @@ source_set("privacy_constants") {
 }
 
 source_set("privacy") {
-  configs += [ "//build/config/compiler:enable_arc" ]
   sources = [
     "privacy_coordinator.h",
     "privacy_coordinator.mm",
@@ -104,6 +103,7 @@ source_set("privacy") {
     "//ios/chrome/browser/shared/ui/table_view/cells",
     "//ios/chrome/browser/ui/settings:settings_root",
     "//ios/chrome/browser/ui/settings/clear_browsing_data",
+    "//ios/chrome/browser/ui/settings/privacy/lockdown_mode",
     "//ios/chrome/browser/ui/settings/utils",
     "//ios/chrome/common/ui/reauthentication",
     "//ui/base",
@@ -112,7 +112,6 @@ source_set("privacy") {
 }
 
 source_set("unit_tests") {
-  configs += [ "//build/config/compiler:enable_arc" ]
   testonly = true
   sources = [
     "privacy_safe_browsing_mediator_unittest.mm",
@@ -134,7 +133,6 @@ source_set("unit_tests") {
     "//components/sync_preferences:test_support",
     "//ios/chrome/app/strings",
     "//ios/chrome/browser/browsing_data:feature_flags",
-    "//ios/chrome/browser/flags:system_flags",
     "//ios/chrome/browser/policy:policy_util",
     "//ios/chrome/browser/shared/model/application_context",
     "//ios/chrome/browser/shared/model/browser/test:test_support",
@@ -142,6 +140,7 @@ source_set("unit_tests") {
     "//ios/chrome/browser/shared/model/prefs:browser_prefs",
     "//ios/chrome/browser/shared/model/prefs:pref_names",
     "//ios/chrome/browser/shared/public/features",
+    "//ios/chrome/browser/shared/public/features:system_flags",
     "//ios/chrome/browser/shared/ui/list_model",
     "//ios/chrome/browser/shared/ui/table_view:test_support",
     "//ios/chrome/browser/shared/ui/table_view:utils",
@@ -161,10 +160,7 @@ source_set("unit_tests") {
 }
 
 source_set("eg2_tests") {
-  configs += [
-    "//build/config/compiler:enable_arc",
-    "//build/config/ios:xctest_config",
-  ]
+  configs += [ "//build/config/ios:xctest_config" ]
   testonly = true
   sources = [ "privacy_safe_browsing_egtest.mm" ]
   deps = [

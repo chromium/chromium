@@ -11,7 +11,7 @@
 #include "base/unguessable_token.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/view.h"
-#include "ui/views/view_targeter_delegate.h"
+#include "ui/views/view_observer.h"
 
 namespace views {
 class MenuItemView;
@@ -19,9 +19,7 @@ class MenuItemView;
 
 namespace ash {
 class ClipboardHistory;
-class ClipboardHistoryDeleteButton;
 class ClipboardHistoryItem;
-class ClipboardHistoryMainButton;
 
 // The base class for menu items of the clipboard history menu.
 class ASH_EXPORT ClipboardHistoryItemView : public views::View {
@@ -45,8 +43,9 @@ class ASH_EXPORT ClipboardHistoryItemView : public views::View {
 
   void HandleMainButtonPressEvent(const ui::Event& event);
 
-  // Initializes the menu item.
-  void Init();
+  // Makes the Ctrl+V label located underneath this item's contents visible.
+  // Will have no effect if called before `Init()`.
+  void ShowCtrlVLabel();
 
   // Attempts to handle the gesture event redirected from `main_button_`.
   void MaybeHandleGestureEventFromMainButton(ui::GestureEvent* event);
@@ -71,41 +70,31 @@ class ASH_EXPORT ClipboardHistoryItemView : public views::View {
   clipboard_history_util::Action action() const { return action_; }
 
  protected:
-  // Used by subclasses to draw contents, such as text or bitmaps.
-  class ContentsView : public views::View, public views::ViewTargeterDelegate {
+  // Used by subclasses to draw contents, such as text or bitmaps. When the
+  // clipboard history refresh is enabled, a `ContentsView` observes its sibling
+  // `ClipboardHistoryDeleteButton` so that it knows when to clip its contents.
+  class ContentsView : public views::View, public views::ViewObserver {
    public:
     METADATA_HEADER(ContentsView);
-    explicit ContentsView(ClipboardHistoryItemView* container);
+    ContentsView();
     ContentsView(const ContentsView& rhs) = delete;
     ContentsView& operator=(const ContentsView& rhs) = delete;
     ~ContentsView() override;
 
-    // Install DeleteButton on the contents view.
-    void InstallDeleteButton();
-
-    void OnHostPseudoFocusUpdated();
-
-    ClipboardHistoryDeleteButton* delete_button() { return delete_button_; }
-    const ClipboardHistoryDeleteButton* delete_button() const {
-      return delete_button_;
-    }
-
    protected:
-    virtual ClipboardHistoryDeleteButton* CreateDeleteButton() = 0;
+    // Returns the region to which this view's contents should be constrained.
+    virtual SkPath GetClipPath() = 0;
 
-    ClipboardHistoryItemView* container() { return container_; }
+    bool is_delete_button_visible() { return is_delete_button_visible_; }
 
    private:
-    // views::ViewTargeterDelegate:
-    bool DoesIntersectRect(const views::View* target,
-                           const gfx::Rect& rect) const override;
+    // views::ViewObserver:
+    void OnViewVisibilityChanged(views::View* observed_view,
+                                 views::View* starting_view) override;
 
-    // Owned by the view hierarchy.
-    raw_ptr<ClipboardHistoryDeleteButton, ExperimentalAsh> delete_button_ =
-        nullptr;
-
-    // The parent of ContentsView.
-    const raw_ptr<ClipboardHistoryItemView, ExperimentalAsh> container_;
+    // Determines whether the contents need to be clipped to avoid overlapping
+    // with the delete button.
+    bool is_delete_button_visible_ = false;
   };
 
   ClipboardHistoryItemView(const base::UnguessableToken& item_id,
@@ -137,15 +126,24 @@ class ASH_EXPORT ClipboardHistoryItemView : public views::View {
     kMaxValue = 3
   };
 
+  class DisplayView;
+
   // views::View:
   gfx::Size CalculatePreferredSize() const override;
   void GetAccessibleNodeData(ui::AXNodeData* data) override;
+
+  // Initializes the menu item after its construction.
+  void Init();
 
   // Activates the menu item with the specified action and event flags.
   void Activate(clipboard_history_util::Action action, int event_flags);
 
   // Calculates the action type when `main_button_` is clicked.
   clipboard_history_util::Action CalculateActionForMainButtonClick() const;
+
+  // Creates the delete button and any necessary containers for its formatting.
+  // Sets `delete_button_` in the process.
+  std::unique_ptr<views::View> CreateDeleteButton();
 
   bool ShouldShowDeleteButton() const;
 
@@ -163,9 +161,10 @@ class ASH_EXPORT ClipboardHistoryItemView : public views::View {
 
   const raw_ptr<views::MenuItemView, ExperimentalAsh> container_;
 
-  raw_ptr<ContentsView, ExperimentalAsh> contents_view_ = nullptr;
-
-  raw_ptr<ClipboardHistoryMainButton, ExperimentalAsh> main_button_ = nullptr;
+  // Owned by the view hierarchy.
+  raw_ptr<views::View, ExperimentalAsh> main_button_ = nullptr;
+  raw_ptr<views::View, ExperimentalAsh> ctrl_v_label_ = nullptr;
+  raw_ptr<views::View, ExperimentalAsh> delete_button_ = nullptr;
 
   PseudoFocus pseudo_focus_ = PseudoFocus::kEmpty;
 

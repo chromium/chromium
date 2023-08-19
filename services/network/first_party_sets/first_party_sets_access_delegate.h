@@ -62,7 +62,6 @@ class FirstPartySetsAccessDelegate
   [[nodiscard]] absl::optional<net::FirstPartySetMetadata> ComputeMetadata(
       const net::SchemefulSite& site,
       const net::SchemefulSite* top_frame_site,
-      const std::set<net::SchemefulSite>& party_context,
       base::OnceCallback<void(net::FirstPartySetMetadata)> callback);
 
   // Calls FirstPartySetsManager::FindEntries either asynchronously or
@@ -92,7 +91,6 @@ class FirstPartySetsAccessDelegate
   void ComputeMetadataAndInvoke(
       const net::SchemefulSite& site,
       const absl::optional<net::SchemefulSite> top_frame_site,
-      const std::set<net::SchemefulSite>& party_context,
       base::OnceCallback<void(net::FirstPartySetMetadata)> callback) const;
 
   // Same as `FindEntries`, but plumbs the result into the callback. Must only
@@ -135,6 +133,10 @@ class FirstPartySetsAccessDelegate
   // that this is unrelated to `manager_.is_enabled`. This may be reassigned via
   // `SetEnabled`.
   bool enabled_ GUARDED_BY_CONTEXT(sequence_checker_);
+
+  // Whether this instance should wait for First-Party Sets initialization (in
+  // the browser process) before responding to queries.
+  const bool wait_for_init_ GUARDED_BY_CONTEXT(sequence_checker_);
 
   // The first ReadyEvent received. This is set at most once, and is immutable
   // thereafter.

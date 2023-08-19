@@ -127,8 +127,10 @@ class CAPTURE_EXPORT VideoCaptureDeviceMFWin : public VideoCaptureDevice {
 
  private:
   class MFVideoCallback;
+  class MFActivitiesReportCallback;
 
   bool CreateMFCameraControlMonitor();
+  bool CreateMFSensorActivityMonitor();
   void DeinitVideoCallbacksControlsAndMonitors();
   HRESULT ExecuteHresultCallbackWithRetries(
       base::RepeatingCallback<HRESULT()> callback,
@@ -163,26 +165,30 @@ class CAPTURE_EXPORT VideoCaptureDeviceMFWin : public VideoCaptureDevice {
                const char* message);
   void SendOnStartedIfNotYetSent();
   HRESULT WaitOnCaptureEvent(GUID capture_event_guid);
-  HRESULT DeliverTextureToClient(ID3D11Texture2D* texture,
-                                 base::TimeTicks reference_time,
-                                 base::TimeDelta timestamp);
-  HRESULT DeliverExternalBufferToClient(ID3D11Texture2D* texture,
-                                        const gfx::Size& texture_size,
-                                        const VideoPixelFormat& pixel_format,
-                                        base::TimeTicks reference_time,
-                                        base::TimeDelta timestamp);
-  void OnCameraControlChangeInternal(REFGUID control_set, UINT32 id);
-  void OnIncomingCapturedDataInternal(
-      Microsoft::WRL::ComPtr<IMFMediaBuffer> buffer,
+  HRESULT DeliverTextureToClient(
+      Microsoft::WRL::ComPtr<IMFMediaBuffer> imf_buffer,
+      ID3D11Texture2D* texture,
       base::TimeTicks reference_time,
       base::TimeDelta timestamp);
+  HRESULT DeliverExternalBufferToClient(
+      Microsoft::WRL::ComPtr<IMFMediaBuffer> imf_buffer,
+      ID3D11Texture2D* texture,
+      const gfx::Size& texture_size,
+      const VideoPixelFormat& pixel_format,
+      base::TimeTicks reference_time,
+      base::TimeDelta timestamp);
+  void OnCameraControlChangeInternal(REFGUID control_set, UINT32 id);
+  void OnIncomingCapturedDataInternal();
   bool RecreateMFSource();
   void OnFrameDroppedInternal(VideoCaptureFrameDropReason reason);
   void ProcessEventError(HRESULT hr);
+  void OnCameraInUseReport(bool in_use, bool is_default_action);
 
   VideoCaptureDeviceDescriptor device_descriptor_;
   CreateMFPhotoCallbackCB create_mf_photo_callback_;
   scoped_refptr<MFVideoCallback> video_callback_;
+  scoped_refptr<MFActivitiesReportCallback> activities_report_callback_;
+  bool activity_report_pending_ = false;
   bool is_initialized_;
   int max_retry_count_;
   int retry_delay_in_ms_;
@@ -194,6 +200,7 @@ class CAPTURE_EXPORT VideoCaptureDeviceMFWin : public VideoCaptureDevice {
   Microsoft::WRL::ComPtr<IMFCameraControlMonitor> camera_control_monitor_;
   Microsoft::WRL::ComPtr<IMFExtendedCameraController>
       extended_camera_controller_;
+  Microsoft::WRL::ComPtr<IMFSensorActivityMonitor> activity_monitor_;
   Microsoft::WRL::ComPtr<IMFCaptureEngine> engine_;
   std::unique_ptr<CapabilityWin> selected_video_capability_;
   gfx::ColorSpace color_space_;
@@ -235,6 +242,15 @@ class CAPTURE_EXPORT VideoCaptureDeviceMFWin : public VideoCaptureDevice {
   media::VideoCaptureFeedback last_feedback_;
 
   SEQUENCE_CHECKER(sequence_checker_);
+
+  base::Lock queueing_lock_;
+  // Last input for the posted task OnIncomingCapturedDataInternal.
+  // If new input arrives while the task is pending, the input will be
+  // overridden. So only 2 IMFSampleBuffer would be used at any time.
+  Microsoft::WRL::ComPtr<IMFMediaBuffer> input_buffer_
+      GUARDED_BY(queueing_lock_);
+  base::TimeTicks input_reference_time_ GUARDED_BY(queueing_lock_);
+  base::TimeDelta input_timestamp_ GUARDED_BY(queueing_lock_);
 
   base::WeakPtrFactory<VideoCaptureDeviceMFWin> weak_factory_{this};
 };

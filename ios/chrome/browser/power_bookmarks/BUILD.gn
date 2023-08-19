@@ -16,6 +16,4 @@ static_library("power_bookmarks") {
     "//ios/chrome/browser/shared/model/browser_state",
     "//ios/web",
   ]
-
-  configs += [ "//build/config/compiler:enable_arc" ]
 }

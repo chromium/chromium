@@ -38,6 +38,10 @@ class CookieManager;
 }
 }  // namespace network
 
+namespace version_info {
+enum class Channel;
+}
+
 // An interface that needs to be supplied to the Signin component by its
 // embedder.
 class SigninClient : public KeyedService {
@@ -130,6 +134,9 @@ class SigninClient : public KeyedService {
   // Removes all accounts.
   virtual void RemoveAllAccounts() = 0;
 #endif
+
+  // Returns the channel for the client installation.
+  virtual version_info::Channel GetClientChannel() = 0;
 
  protected:
   absl::optional<SignoutDecision> is_clear_primary_account_allowed_for_testing_;

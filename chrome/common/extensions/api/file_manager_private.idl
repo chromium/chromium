@@ -388,13 +388,15 @@ enum PolicyDefaultHandlerStatus {
 };
 
 // Describes the stage the bulk pinning manager is in. This enum should be kept
-// in sync with chromeos/ash/components/drivefs/drivefs_pin_manager.h
+// in sync with chromeos/ash/components/drivefs/mojom/pin_manager_types.mojom.
 enum BulkPinStage {
   // Initial stage.
   stopped,
 
   // Paused because of unfavorable network conditions.
-  paused,
+  paused_offline,
+  // Paused due to battery saver mode active.
+  paused_battery_saver,
 
   // In-progress stages.
   getting_free_space,
@@ -405,9 +407,9 @@ enum BulkPinStage {
   success,
 
   // Final error stages.
+  not_enough_space,
   cannot_get_free_space,
   cannot_list_files,
-  not_enough_space,
   cannot_enable_docs_offline
 };
 
@@ -866,7 +868,7 @@ dictionary SearchMetadataParams {
 
   // Modified timestamp. The file must have modified timestamp more recent
   // than this to be included in results.
-  double? timestamp;
+  double? modifiedTimestamp;
 
   // The category of files to which the search is limited.
   FileCategory? category;
@@ -1072,6 +1074,16 @@ dictionary IOTaskParams {
   boolean? showNotification;
 };
 
+// Holds information about data protection policy errors, see file_manager::io_task::PolicyError.
+dictionary PolicyError {
+  // Type of the error.
+  PolicyErrorType type;
+  // The number of files blocked by the policy.
+  long policyFileCount;
+  // The name of the first blocked file. Used for notifications.
+  DOMString fileName;
+};
+
 // IO task state::PAUSED name conflict parameters, see file_manager::io_task::ConflictPauseParams.
 dictionary ConflictPauseParams {
   // The conflict file name.
@@ -1089,7 +1101,12 @@ dictionary ConflictPauseParams {
 
 // IO task state::PAUSED policy parameters, see file_manager::io_task::PolicyPauseParams.
 dictionary PolicyPauseParams {
+  // One of DLP or Enterprise Connectors.
   PolicyErrorType type;
+  // The number of files under warning restriction.
+  long policyFileCount;
+  // The name of the first file under warning restriction. Used for notifications.
+  DOMString fileName;
 };
 
 // IO task state::PAUSED parameters, see file_manager::io_task::PauseParams.
@@ -1134,7 +1151,7 @@ dictionary ProgressStatus {
 
   // Type of policy error that occurred, if any.
   // Used only if Data Leak Prevention or Enterprise Connectors policies apply.
-  PolicyErrorType? policyError;
+  PolicyError? policyError;
 
   // Name of the first source entry.
   DOMString sourceName;
@@ -1265,6 +1282,12 @@ dictionary BulkPinProgress {
 
   // Total number of files to pin.
   long filesToPin;
+
+  // Estimated time remaining to pin all the `bytesToPin`.
+  double remainingSeconds;
+
+  // Has the bulk-pinning manager ever emptied its set of tracked items?
+  boolean emptiedQueue;
 };
 
 // Callback that does not take arguments.
@@ -1409,10 +1432,6 @@ callback GetLinuxPackageInfoCallback =
 // |failure_reason| Reason for failure for a 'failed' status
 callback InstallLinuxPackageCallback = void(
     InstallLinuxPackageResponse response, DOMString failure_reason);
-
-// |thumbnailDataUrl| A data URL for the thumbnail; |thumbnailDataUrl| is empty
-// if no thumbnail was available.
-callback GetThumbnailCallback = void(DOMString thumbnailDataUrl);
 
 // |apps| List of Android picker apps.
 callback GetAndroidPickerAppsCallback = void(AndroidApp[] apps);
@@ -1822,35 +1841,6 @@ interface Functions {
   // apps and files.
   [nocompile]
   static void importCrostiniImage([instanceOf=Entry] object entry);
-
-  // For a file in DriveFS, retrieves its thumbnail. If |cropToSquare| is true,
-  // returns a thumbnail appropriate for file list or grid views; otherwise,
-  // returns a thumbnail appropriate for quickview.
-  [nocompile]
-  static void getDriveThumbnail([instanceOf=FileEntry] object entry,
-                                boolean cropToSquare,
-                                GetThumbnailCallback callback);
-
-  // For a local PDF file, retrieves its thumbnail with a given |width| and
-  // |height|.
-  [nocompile]
-  static void getPdfThumbnail([instanceOf=FileEntry] object entry,
-                              long width,
-                              long height,
-                              GetThumbnailCallback callback);
-
-  // Retrieves a thumbnail of an ARC DocumentsProvider file, closely matching
-  // the hinted size specified by |widthHint| and |heightHint|, but not
-  // necessarily the exact size. |callback| is called with thumbnail data
-  // encoded as a data URL. If the document does not support thumbnails,
-  // |callback| is called with an empty string.
-  // Note: The thumbnail data may originate from third-party application code,
-  // and is untrustworthy (Security).
-  [nocompile]
-  static void getArcDocumentsProviderThumbnail([instanceOf=FileEntry] object entry,
-                                               long widthHint,
-                                               long heightHint,
-                                               GetThumbnailCallback callback);
 
   // Returns a list of Android picker apps to be shown in file selector.
   static void getAndroidPickerApps(DOMString[] extensions,

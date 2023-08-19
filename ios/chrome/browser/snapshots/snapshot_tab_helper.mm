@@ -14,10 +14,6 @@
 #import "ios/web/public/web_client.h"
 #import "ios/web/public/web_state.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 namespace {
 // Possible results of snapshotting when the page has been loaded. These values
 // are persisted to logs. Entries should not be renumbered and numeric values
@@ -34,8 +30,8 @@ enum class PageLoadedSnapshotResult {
   kMaxValue = kSnapshotSucceeded,
 };
 
-// Generates an identifier for WebState's snapshot.
-NSString* GenerateSnapshotIdentifier(const web::WebState* web_state) {
+// Generates an ID for WebState's snapshot.
+NSString* GenerateSnapshotID(const web::WebState* web_state) {
   DCHECK(web_state->GetUniqueIdentifier().is_valid());
   DCHECK_GT(web_state->GetUniqueIdentifier().id(), 0);
 
@@ -108,16 +104,16 @@ void SnapshotTabHelper::SaveGreyInBackground() {
   [snapshot_generator_ saveGreyInBackground];
 }
 
-NSString* SnapshotTabHelper::GetSnapshotIdentifier() const {
-  return snapshot_generator_.snapshotIdentifier;
+NSString* SnapshotTabHelper::GetSnapshotID() const {
+  return snapshot_generator_.snapshotID;
 }
 
 SnapshotTabHelper::SnapshotTabHelper(web::WebState* web_state)
     : web_state_(web_state) {
   DCHECK(web_state_);
   snapshot_generator_ = [[SnapshotGenerator alloc]
-        initWithWebState:web_state_
-      snapshotIdentifier:GenerateSnapshotIdentifier(web_state_)];
+      initWithWebState:web_state_
+            snapshotID:GenerateSnapshotID(web_state_)];
   web_state_observation_.Observe(web_state_);
 }
 

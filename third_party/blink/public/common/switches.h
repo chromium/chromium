@@ -27,13 +27,14 @@ BLINK_COMMON_EXPORT extern const char kDarkModeSettings[];
 BLINK_COMMON_EXPORT extern const char kDataUrlInSvgUseEnabled[];
 BLINK_COMMON_EXPORT extern const char kDefaultTileHeight[];
 BLINK_COMMON_EXPORT extern const char kDefaultTileWidth[];
+BLINK_COMMON_EXPORT extern const char
+    kForcePermissionPolicyUnloadDefaultEnabled[];
 BLINK_COMMON_EXPORT extern const char kDisableImageAnimationResync[];
 BLINK_COMMON_EXPORT extern const char kDisableLowResTiling[];
 BLINK_COMMON_EXPORT extern const char kDisableNewBaseUrlInheritanceBehavior[];
 BLINK_COMMON_EXPORT extern const char kDisablePartialRaster[];
 BLINK_COMMON_EXPORT extern const char kDisablePreferCompositingToLCDText[];
 BLINK_COMMON_EXPORT extern const char kDisableRGBA4444Textures[];
-BLINK_COMMON_EXPORT extern const char kDisableThreadedScrolling[];
 BLINK_COMMON_EXPORT extern const char kDisableZeroCopy[];
 BLINK_COMMON_EXPORT extern const char kDumpRuntimeCallStats[];
 BLINK_COMMON_EXPORT extern const char
@@ -60,6 +61,7 @@ BLINK_COMMON_EXPORT extern const char
 BLINK_COMMON_EXPORT extern const char
     kIntensiveWakeUpThrottlingPolicy_ForceEnable[];
 BLINK_COMMON_EXPORT extern const char kIntensiveWakeUpThrottlingPolicy[];
+BLINK_COMMON_EXPORT extern const char kLegacyTechReportPolicyEnabled[];
 BLINK_COMMON_EXPORT extern const char kJavaScriptFlags[];
 BLINK_COMMON_EXPORT extern const char kMaxUntiledLayerHeight[];
 BLINK_COMMON_EXPORT extern const char kMaxUntiledLayerWidth[];

@@ -7,10 +7,6 @@
 #import "base/check.h"
 #import "ios/web/public/ui/crw_web_view_scroll_view_proxy.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 // TODO(crbug.com/1419001): These methods are defined in
 // crw_web_view_proxy_impl.h. Move them out of the category and into
 // the main class.

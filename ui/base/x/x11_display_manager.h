@@ -22,6 +22,7 @@ class DesktopScreenX11Test;
 }
 
 namespace ui {
+struct DisplayConfig;
 class X11ScreenOzoneTest;
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -97,7 +98,7 @@ class COMPONENT_EXPORT(UI_BASE_X) XDisplayManager::Delegate {
  public:
   virtual ~Delegate() = default;
   virtual void OnXDisplayListUpdated() = 0;
-  virtual float GetXDisplayScaleFactor() const = 0;
+  virtual const DisplayConfig& GetDisplayConfig() const = 0;
 };
 
 }  // namespace ui

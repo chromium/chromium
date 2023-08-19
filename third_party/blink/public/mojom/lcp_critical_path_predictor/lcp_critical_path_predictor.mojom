@@ -1,0 +1,23 @@
+// Copyright 2023 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module blink.mojom;
+
+import "mojo/public/mojom/base/byte_string.mojom";
+
+// Interface for LCP Critical Path Predictor from the renderer process.
+interface LCPCriticalPathPredictorHost {
+  // `lcp_element_locator` is a LCP ElementLocator information
+  // serialized in proto3 binary format.
+  SetLcpElementLocator(mojo_base.mojom.ByteString lcp_element_locator);
+};
+
+// LCP Critical Path Predictor hints provided at navigation time.
+// TODO(crbug.com/1419756): Populate actual hint data.
+struct LCPCriticalPathPredictorNavigationTimeHint {
+  // ElementLocators of LCP elements encountered in the past loads.
+  // Each ElementLocator is serialized in proto3 binary format.
+  // See third_party/blink/renderer/core/lcp_critical_path_predictor/element_locator.proto
+  array<mojo_base.mojom.ByteString> lcp_element_locators;
+};

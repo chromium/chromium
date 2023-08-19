@@ -384,8 +384,8 @@ void FuzzedCompositorFrameBuilder::ConfigureSharedQuadState(
 bool FuzzedCompositorFrameBuilder::TryReserveBitmapBytes(
     const gfx::Size& size) {
   uint64_t bitmap_bytes;
-  if (!ResourceSizes::MaybeSizeInBytes<uint64_t>(size, RGBA_8888,
-                                                 &bitmap_bytes) ||
+  if (!ResourceSizes::MaybeSizeInBytes<uint64_t>(
+          size, SinglePlaneFormat::kRGBA_8888, &bitmap_bytes) ||
       bitmap_bytes > kMaxTextureMemory - reserved_bytes_) {
     return false;
   }

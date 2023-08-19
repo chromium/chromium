@@ -5,22 +5,47 @@
   Until it is complete, cross-device-internals will be used as a part of the
   ui-triggers-tab.
 -->
-<style include="shared-style">
-  cr-button {
-    height: 35px;
-    padding: 5px;
-    width: 150px;
-  }
-</style>
+<style include="shared-style md-select cros-color-overrides"></style>
 
-<cr-button class="internals-button" on-click="onStartScanClicked">
-  Presence: Start scan
-</cr-button>
+<body>
+  <section id='controls'>
+    <header>
+      <div class='title'>Cross Device Internals</div>
+    </header>
+    <div id='controls-panel'>
+      <div class='control'>
 
-<cr-button class="internals-button" on-click="onSyncCredentialsClicked">
-  Presence: Sync Credentials
-</cr-button>
+        <div id="actions">
+          <div class="select-div">
+            <label id="ActionGroupLabel">Feature: </label>
+            <select aria-labelledby="ActionGroupLabel" name="ActionGroup"
+                id="actionGroup" class="md-select"
+                on-change="updateActionsSelect">
+              <template is="dom-repeat" items="[[featuresList]]">
+                <option
+                    value="[[item.value]]">
+                  [[item.name]]
+                </option>
+              </template>
+            </select>
+          </div>
+          <div class="select-div">
+            <label id="ActionSelectLabel">Action: </label>
+            <select aria-labelledby="ActionSelectLabel" name="Action"
+                id="actionSelect" class="md-select">
+              <template is="dom-repeat" items="{{actionsSelectList}}"
+                  as="action">
+                <option
+                    value="{{action.value}}">
+                    {{action.name}}
+                </option>
+              </template>
+            </select>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
 
-<cr-button class="internals-button" on-click="onFirstTimeFlowClicked">
-  Presence: First time flow
-</cr-button>
+  <logging-tab id="logs-panel" feature="nearby-share"></logging-tab>
+</body>

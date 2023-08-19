@@ -69,6 +69,9 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) BrokeredUdpClientSocket
   BrokeredUdpClientSocket& operator=(const BrokeredUdpClientSocket&) = delete;
 
   // DatagramClientSocket implementation.
+  // TODO(https://crbug.com/1444811): Remove Connect, ConnectUsingNetwork, and
+  // ConnectUsingDefaultNetwork once consumers have been migrated to only call
+  // Connect*Async methods.
   int Connect(const net::IPEndPoint& address) override;
   int ConnectUsingNetwork(net::handles::NetworkHandle network,
                           const net::IPEndPoint& address) override;
@@ -125,6 +128,10 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) BrokeredUdpClientSocket
   bool get_use_non_blocking_io_for_testing() {
     return socket_->get_use_non_blocking_io_for_testing();
   }
+  void SetBrokerHelperDelegateForTesting(
+      std::unique_ptr<BrokerHelperWin::Delegate> delegate) {
+    broker_helper_.SetDelegateForTesting(std::move(delegate));
+  }
 #endif
 
  private:
@@ -135,6 +142,11 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) BrokeredUdpClientSocket
                            WhichConnect which_connect,
                            net::handles::NetworkHandle network,
                            net::CompletionOnceCallback callback);
+  // Synchronously creates and connects a socket. This method can only be used
+  // on Windows if a connection does not need to be brokered.
+  int ConnectInternal(const net::IPEndPoint& address,
+                      WhichConnect which_connect,
+                      net::handles::NetworkHandle network);
   // Returns a net error result upon opening and connecting `socket_`. If a
   // connection needs to be brokered, the return value is ignored as callback is
   // run with the return value instead.

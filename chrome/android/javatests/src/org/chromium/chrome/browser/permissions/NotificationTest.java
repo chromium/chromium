@@ -12,7 +12,6 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import org.chromium.base.test.util.CommandLineFlags;
-import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Feature;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.permissions.PermissionTestRule.PermissionUpdateWaiter;
@@ -39,7 +38,6 @@ public class NotificationTest {
 
     @Test
     @MediumTest
-    @DisabledTest(message = "https://crbug.com/1435426")
     @Feature({"Notifications"})
     public void testNotificationDialog() throws Exception {
         Tab tab = mPermissionRule.getActivity().getActivityTab();

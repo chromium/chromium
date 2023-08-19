@@ -92,13 +92,13 @@ class ContentSettingsPref {
   ContentSettingsType content_type_;
 
   // Weak; owned by the Profile and reset in ShutdownOnUIThread.
-  raw_ptr<PrefService, DanglingUntriaged> prefs_;
+  raw_ptr<PrefService, AcrossTasksDanglingUntriaged> prefs_;
 
   // Owned by the PrefProvider.
   raw_ptr<PrefChangeRegistrar, DanglingUntriaged> registrar_;
 
   // Name of the dictionary preference managed by this class.
-  const raw_ref<const std::string, DanglingUntriaged> pref_name_;
+  const raw_ref<const std::string, LeakedDanglingUntriaged> pref_name_;
 
   bool off_the_record_;
 

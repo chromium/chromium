@@ -8,7 +8,6 @@
 #import <Cocoa/Cocoa.h>
 
 #include "base/component_export.h"
-#import "base/mac/scoped_nsobject.h"
 
 @protocol CommandDispatcherDelegate;
 @protocol CommandDispatchingWindow;
@@ -24,7 +23,7 @@
 COMPONENT_EXPORT(UI_BASE)
 @interface CommandDispatcher : NSObject
 
-@property(assign, nonatomic) id<CommandDispatcherDelegate> delegate;
+@property(weak) id<CommandDispatcherDelegate> delegate;
 
 - (instancetype)initWithOwner:(NSWindow<CommandDispatchingWindow>*)owner;
 
@@ -50,9 +49,6 @@ COMPONENT_EXPORT(UI_BASE)
 // this before a native -sendEvent:. Ensures that a redispatched event is not
 // reposted infinitely. Returns YES if the event is handled.
 - (BOOL)preSendEvent:(NSEvent*)event;
-
-// The parent to bubble events to, or nil.
-- (NSWindow<CommandDispatchingWindow>*)bubbleParent;
 
 // Dispatch a -commandDispatch: action either to |handler| or a parent window's
 // handler.
@@ -123,6 +119,9 @@ enum class PerformKeyEquivalentResult {
 // The set of methods an NSWindow subclass needs to implement to use
 // CommandDispatcher.
 @protocol CommandDispatchingWindow
+
+// Parent window to defer command dispatching to.
+- (NSWindow<CommandDispatchingWindow>*)commandDispatchParent;
 
 // If set, NSUserInterfaceItemValidations for -commandDispatch: and
 // -commandDispatchUsingKeyModifiers: will be redirected to the command handler.

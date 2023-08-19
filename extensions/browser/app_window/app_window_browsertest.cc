@@ -70,6 +70,24 @@ IN_PROC_BROWSER_TEST_F(AppWindowBrowserTest, FrameInsetsForNoFrame) {
   CloseAppWindow(app_window);
 }
 
+IN_PROC_BROWSER_TEST_F(AppWindowBrowserTest, IncognitoOpenUrl) {
+  AppWindow* app_window = CreateTestAppWindow("{}");
+
+  content::WebContents* app_contents =
+      app_window->app_window_contents_for_test()->GetWebContents();
+
+  content::OpenURLParams params(GURL(url::kAboutBlankURL), {},
+                                WindowOpenDisposition::OFF_THE_RECORD,
+                                ui::PAGE_TRANSITION_LINK, false);
+  content::WebContents* new_contents = app_contents->OpenURL(params);
+
+  Profile* profile =
+      Profile::FromBrowserContext(new_contents->GetBrowserContext());
+  EXPECT_TRUE(profile->IsOffTheRecord());
+
+  CloseAppWindow(app_window);
+}
+
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 
 // Disabled due to flake. https://crbug.com/1416579

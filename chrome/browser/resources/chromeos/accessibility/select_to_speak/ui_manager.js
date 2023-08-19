@@ -249,13 +249,15 @@ export class UiManager {
     const stackingOrder = panelVisible ?
         FocusRingStackingOrder.BELOW_ACCESSIBILITY_BUBBLES :
         FocusRingStackingOrder.ABOVE_ACCESSIBILITY_BUBBLES;
-    chrome.accessibilityPrivate.setFocusRings([{
-      rects,
-      type: chrome.accessibilityPrivate.FocusType.GLOW,
-      stackingOrder,
-      color: this.prefsManager_.focusRingColor(),
-      backgroundColor: color,
-    }]);
+    chrome.accessibilityPrivate.setFocusRings(
+        [{
+          rects,
+          type: chrome.accessibilityPrivate.FocusType.GLOW,
+          stackingOrder,
+          color: this.prefsManager_.focusRingColor(),
+          backgroundColor: color,
+        }],
+        chrome.accessibilityPrivate.AssistiveTechnologyType.SELECT_TO_SPEAK);
   }
 
   /**

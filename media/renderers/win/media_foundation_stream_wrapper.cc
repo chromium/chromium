@@ -12,7 +12,6 @@
 #include "media/base/media_switches.h"
 #include "media/base/video_codecs.h"
 #include "media/base/win/mf_helpers.h"
-#include "media/filters/win/media_foundation_utils.h"
 #include "media/renderers/win/media_foundation_audio_stream.h"
 #include "media/renderers/win/media_foundation_source_wrapper.h"
 #include "media/renderers/win/media_foundation_video_stream.h"
@@ -331,7 +330,14 @@ HRESULT MediaFoundationStreamWrapper::ServiceSampleRequest(
   DCHECK(task_runner_->RunsTasksInCurrentSequence());
   lock_.AssertAcquired();
 
-  if (buffer->end_of_stream()) {
+  const bool is_end_of_stream = buffer->end_of_stream();
+  const bool is_encrypted = !is_end_of_stream && buffer->decrypt_config();
+  const auto timestamp_us =
+      is_end_of_stream ? 0 : buffer->timestamp().InMicroseconds();
+  TRACE_EVENT2("media", "MediaFoundationStreamWrapper::ServiceSampleRequest",
+               "is_encrypted", is_encrypted, "timestamp_us", timestamp_us);
+
+  if (is_end_of_stream) {
     if (!enabled_) {
       DVLOG_FUNC(2) << "Ignoring EOS for disabled stream";
       // token not dropped to reflect an outstanding request that stream wrapper

@@ -56,6 +56,12 @@ class FullscreenMediator : public FullscreenModelObserver {
   void EnterFullscreen();
   void ExitFullscreen();
 
+  // Force enters fullscreen without animation. This enters fullscreen even when
+  // the model is disabled.
+  void ForceEnterFullscreen();
+  // Exits fullscreen without animation.
+  void ExitFullscreenWithoutAnimation();
+
   // Instructs the mediator to stop observing its model.
   void Disconnect();
 
@@ -97,7 +103,7 @@ class FullscreenMediator : public FullscreenModelObserver {
   bool scrolled_to_top_during_trait_collection_updates_ = false;
   // The FullscreenControllerObservers that need to get notified of model
   // changes.
-  base::ObserverList<FullscreenControllerObserver>::Unchecked observers_;
+  base::ObserverList<FullscreenControllerObserver> observers_;
 
   base::WeakPtrFactory<FullscreenMediator> weak_factory_{this};
 };

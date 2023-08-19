@@ -8,7 +8,7 @@
 
 #include "ash/constants/ash_features.h"
 #include "ash/public/cpp/app_list/app_list_metrics.h"
-#include "ash/system/federated/federated_service_controller.h"
+#include "ash/system/federated/test_federated_service_controller.h"
 #include "base/run_loop.h"
 #include "base/strings/strcat.h"
 #include "base/test/metrics/histogram_tester.h"
@@ -33,21 +33,9 @@ using ash::FederatedClient;
 using ash::federated::FakeServiceConnectionImpl;
 using ash::federated::ScopedFakeServiceConnectionForTest;
 using ash::federated::ServiceConnection;
+using ash::federated::TestFederatedServiceController;
 using federated::FederatedMetricsManager;
 using testing::HasSubstr;
-
-class TestFederatedServiceController
-    : public ash::federated::FederatedServiceController {
- public:
-  TestFederatedServiceController() = default;
-  TestFederatedServiceController(const TestFederatedServiceController&) =
-      delete;
-  TestFederatedServiceController& operator=(
-      const TestFederatedServiceController&) = delete;
-
-  // ash::federated::FederatedServiceController:
-  bool IsServiceAvailable() const override { return true; }
-};
 
 // Parameterized by feature kLauncherQueryFederatedAnalyticsPHH.
 class FederatedMetricsManagerTest : public testing::Test,
@@ -141,7 +129,11 @@ INSTANTIATE_TEST_SUITE_P(LauncherQueryFA,
 TEST_P(FederatedMetricsManagerTest, ChromeMetricsConsentDisabled) {
   SetChromeMetricsEnabled(false);
   InitFederatedMetricsManager();
-  ExpectInitLogsOk();
+
+  const bool launcher_fa_enabled = GetParam();
+  if (launcher_fa_enabled) {
+    ExpectInitLogsOk();
+  }
 
   // Simulate various user search activities.
   metrics_manager_->OnSearchSessionStarted();
@@ -163,7 +155,11 @@ TEST_P(FederatedMetricsManagerTest, ChromeMetricsConsentDisabled) {
 TEST_P(FederatedMetricsManagerTest, DefaultSearchEngine) {
   SetChromeMetricsEnabled(true);
   InitFederatedMetricsManager();
-  ExpectInitLogsOk();
+
+  const bool launcher_fa_enabled = GetParam();
+  if (launcher_fa_enabled) {
+    ExpectInitLogsOk();
+  }
 
   // Expect no logging on user action when default search engine is non-Google
   // search.
@@ -185,10 +181,15 @@ TEST_P(FederatedMetricsManagerTest, DefaultSearchEngine) {
   ExpectNoFederatedLogsOnUserAction();
   ChromeMetricsServiceAccessor::SetMetricsAndCrashReportingForTesting(nullptr);
 }
+
 TEST_P(FederatedMetricsManagerTest, Quit) {
   SetChromeMetricsEnabled(true);
   InitFederatedMetricsManager();
-  ExpectInitLogsOk();
+
+  const bool launcher_fa_enabled = GetParam();
+  if (launcher_fa_enabled) {
+    ExpectInitLogsOk();
+  }
 
   metrics_manager_->OnSearchSessionStarted();
   // Search session ends without user taking other action (e.g. without
@@ -196,7 +197,6 @@ TEST_P(FederatedMetricsManagerTest, Quit) {
   metrics_manager_->OnSearchSessionEnded(u"fake_query");
   base::RunLoop().RunUntilIdle();
 
-  const bool launcher_fa_enabled = GetParam();
   if (launcher_fa_enabled) {
     histogram_tester()->ExpectUniqueSample(
         app_list::federated::kHistogramInitStatus,
@@ -221,7 +221,11 @@ TEST_P(FederatedMetricsManagerTest, Quit) {
 TEST_P(FederatedMetricsManagerTest, Launch) {
   SetChromeMetricsEnabled(true);
   InitFederatedMetricsManager();
-  ExpectInitLogsOk();
+
+  const bool launcher_fa_enabled = GetParam();
+  if (launcher_fa_enabled) {
+    ExpectInitLogsOk();
+  }
 
   metrics_manager_->OnSearchSessionStarted();
   std::vector<Result> shown_results;
@@ -233,7 +237,6 @@ TEST_P(FederatedMetricsManagerTest, Launch) {
   metrics_manager_->OnSearchSessionEnded(query);
   base::RunLoop().RunUntilIdle();
 
-  const bool launcher_fa_enabled = GetParam();
   if (launcher_fa_enabled) {
     histogram_tester()->ExpectUniqueSample(
         app_list::federated::kHistogramSearchSessionConclusion,
@@ -253,7 +256,11 @@ TEST_P(FederatedMetricsManagerTest, Launch) {
 TEST_P(FederatedMetricsManagerTest, AnswerCardSeen) {
   SetChromeMetricsEnabled(true);
   InitFederatedMetricsManager();
-  ExpectInitLogsOk();
+
+  const bool launcher_fa_enabled = GetParam();
+  if (launcher_fa_enabled) {
+    ExpectInitLogsOk();
+  }
 
   metrics_manager_->OnSearchSessionStarted();
   std::vector<Result> shown_results;
@@ -263,7 +270,6 @@ TEST_P(FederatedMetricsManagerTest, AnswerCardSeen) {
   metrics_manager_->OnSearchSessionEnded(query);
   base::RunLoop().RunUntilIdle();
 
-  const bool launcher_fa_enabled = GetParam();
   if (launcher_fa_enabled) {
     histogram_tester()->ExpectUniqueSample(
         app_list::federated::kHistogramSearchSessionConclusion,
@@ -283,7 +289,11 @@ TEST_P(FederatedMetricsManagerTest, AnswerCardSeen) {
 TEST_P(FederatedMetricsManagerTest, AnswerCardSeenThenListResultLaunched) {
   SetChromeMetricsEnabled(true);
   InitFederatedMetricsManager();
-  ExpectInitLogsOk();
+
+  const bool launcher_fa_enabled = GetParam();
+  if (launcher_fa_enabled) {
+    ExpectInitLogsOk();
+  }
 
   // Tests that a Launch event takes precedence over an AnswerCardSeen event,
   // within the same search session.
@@ -300,7 +310,6 @@ TEST_P(FederatedMetricsManagerTest, AnswerCardSeenThenListResultLaunched) {
   metrics_manager_->OnSearchSessionEnded(query);
   base::RunLoop().RunUntilIdle();
 
-  const bool launcher_fa_enabled = GetParam();
   if (launcher_fa_enabled) {
     histogram_tester()->ExpectUniqueSample(
         app_list::federated::kHistogramSearchSessionConclusion,
@@ -320,7 +329,11 @@ TEST_P(FederatedMetricsManagerTest, AnswerCardSeenThenListResultLaunched) {
 TEST_P(FederatedMetricsManagerTest, ZeroState) {
   SetChromeMetricsEnabled(true);
   InitFederatedMetricsManager();
-  ExpectInitLogsOk();
+
+  const bool launcher_fa_enabled = GetParam();
+  if (launcher_fa_enabled) {
+    ExpectInitLogsOk();
+  }
 
   // Note: metrics_manager_->OnSearchSession{Started,Ended}() are not expected
   // to be called during zero state search.

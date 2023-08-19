@@ -4,6 +4,7 @@
 
 #include "chromeos/components/onc/onc_signature.h"
 
+#include "base/memory/raw_ptr_exclusion.h"
 #include "components/onc/onc_constants.h"
 
 using base::Value;
@@ -256,6 +257,7 @@ const OncFieldSignature wifi_fields[] = {
     {::onc::wifi::kAllowGatewayARPPolling, &kBoolSignature},
     {::onc::wifi::kAutoConnect, &kBoolSignature},
     {::onc::wifi::kBSSIDAllowlist, &kStringListSignature},
+    {::onc::wifi::kBSSIDRequested, &kStringSignature},
     {::onc::wifi::kEAP, &kEAPSignature},
     {::onc::wifi::kHexSSID, &kStringSignature},
     {::onc::wifi::kHiddenSSID, &kBoolSignature},
@@ -397,6 +399,8 @@ const OncFieldSignature network_with_state_fields[] = {
 const OncFieldSignature global_network_configuration_fields[] = {
     {::onc::global_network_config::kAllowCellularSimLock, &kBoolSignature,
      []() { return base::Value(true); }},
+    {::onc::global_network_config::kAllowCellularHotspot, &kBoolSignature,
+     []() { return base::Value(true); }},
     {::onc::global_network_config::kAllowOnlyPolicyCellularNetworks,
      &kBoolSignature},
     {::onc::global_network_config::kAllowOnlyPolicyNetworksToAutoconnect,
@@ -405,6 +409,7 @@ const OncFieldSignature global_network_configuration_fields[] = {
      &kBoolSignature},
     {::onc::global_network_config::kAllowOnlyPolicyWiFiToConnectIfAvailable,
      &kBoolSignature},
+    {::onc::global_network_config::kAllowTextMessages, &kStringSignature},
     {/* Deprecated */ ::onc::global_network_config::kBlacklistedHexSSIDs,
      &kStringListSignature},
     {::onc::global_network_config::kBlockedHexSSIDs, &kStringListSignature},
@@ -558,7 +563,9 @@ const OncFieldSignature* GetFieldSignature(const OncValueSignature& signature,
 namespace {
 
 struct CredentialEntry {
-  const OncValueSignature* value_signature;
+  // This field is not a raw_ptr<> because it was filtered by the rewriter
+  // for: #global-scope
+  RAW_PTR_EXCLUSION const OncValueSignature* value_signature;
   const char* field_name;
 };
 

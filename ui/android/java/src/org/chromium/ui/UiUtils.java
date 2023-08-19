@@ -6,9 +6,11 @@ package org.chromium.ui;
 
 import android.content.Context;
 import android.content.res.ColorStateList;
+import android.content.res.Configuration;
 import android.content.res.TypedArray;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
+import android.graphics.Color;
 import android.graphics.Typeface;
 import android.graphics.drawable.Drawable;
 import android.os.Build;
@@ -19,6 +21,8 @@ import android.view.SurfaceView;
 import android.view.View;
 import android.view.View.MeasureSpec;
 import android.view.ViewGroup;
+import android.view.Window;
+import android.view.WindowManager;
 import android.view.inputmethod.InputMethodInfo;
 import android.view.inputmethod.InputMethodManager;
 import android.view.inputmethod.InputMethodSubtype;
@@ -32,6 +36,8 @@ import androidx.annotation.StyleableRes;
 import androidx.appcompat.content.res.AppCompatResources;
 import androidx.core.graphics.drawable.DrawableCompat;
 
+import org.chromium.base.BuildInfo;
+import org.chromium.base.ContextUtils;
 import org.chromium.base.Log;
 
 import java.io.File;
@@ -422,5 +428,52 @@ public class UiUtils {
             systemUiVisibility &= ~View.SYSTEM_UI_FLAG_LIGHT_NAVIGATION_BAR;
         }
         rootView.setSystemUiVisibility(systemUiVisibility);
+    }
+
+    /**
+     * @see android.view.Window#setStatusBarColor(int color).
+     */
+    public static void setStatusBarColor(Window window, int statusBarColor) {
+        if (0
+                == (window.getAttributes().flags
+                        & WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS)) {
+            window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
+        }
+        // The status bar should always be black in automotive devices to match the black back
+        // button toolbar.
+        if (BuildInfo.getInstance().isAutomotive) {
+            window.setStatusBarColor(Color.BLACK);
+        } else {
+            window.setStatusBarColor(statusBarColor);
+        }
+    }
+
+    /**
+     * Sets the status bar icons to dark or light. Note that this is only valid for
+     * Android M+.
+     *
+     * TODO: migrate to WindowInsetsController API for Android R+ (API 30+)
+     *
+     * @param rootView The root view used to request updates to the system UI theming.
+     * @param useDarkIcons Whether the status bar icons should be dark.
+     */
+    public static void setStatusBarIconColor(View rootView, boolean useDarkIcons) {
+        int systemUiVisibility = rootView.getSystemUiVisibility();
+        // The status bar should always be black in automotive devices to match the black back
+        // button toolbar, so we should use dark theme icons.
+        if (useDarkIcons || BuildInfo.getInstance().isAutomotive) {
+            systemUiVisibility |= View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR;
+        } else {
+            systemUiVisibility &= ~View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR;
+        }
+        rootView.setSystemUiVisibility(systemUiVisibility);
+    }
+
+    /**
+     * @return True if a hardware keyboard is detected.
+     */
+    public static boolean isHardwareKeyboardAttached() {
+        return ContextUtils.getApplicationContext().getResources().getConfiguration().keyboard
+                != Configuration.KEYBOARD_NOKEYS;
     }
 }

@@ -3,4 +3,5 @@ URL: https://crates.io/crates/serde_json
 Description: A JSON serialization file format
 Version: 1.0.78
 Security Critical: no
+Shipped: no
 License: Apache 2.0

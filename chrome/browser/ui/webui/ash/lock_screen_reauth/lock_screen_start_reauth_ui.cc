@@ -7,6 +7,7 @@
 #include <memory>
 
 #include "ash/constants/ash_features.h"
+#include "ash/webui/common/trusted_types_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/profiles/profile.h"
@@ -14,9 +15,12 @@
 #include "chrome/browser/ui/webui/ash/lock_screen_reauth/lock_screen_reauth_handler.h"
 #include "chrome/browser/ui/webui/ash/login/oobe_ui.h"
 #include "chrome/browser/ui/webui/metrics_handler.h"
+#include "chrome/browser/ui/webui/webui_util.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/grit/browser_resources.h"
+#include "chrome/grit/gaia_action_buttons_resources.h"
+#include "chrome/grit/gaia_action_buttons_resources_map.h"
 #include "chrome/grit/gaia_auth_host_resources_map.h"
 #include "chrome/grit/generated_resources.h"
 #include "chrome/grit/lock_screen_reauth_resources.h"
@@ -47,14 +51,12 @@ LockScreenStartReauthUI::LockScreenStartReauthUI(content::WebUI* web_ui)
 
   content::WebUIDataSource* source = content::WebUIDataSource::CreateAndAdd(
       profile, chrome::kChromeUILockScreenStartReauthHost);
+  ash::EnableTrustedTypesCSP(source);
 
   auto main_handler = std::make_unique<LockScreenReauthHandler>(email);
   main_handler_ = main_handler.get();
   web_ui->AddMessageHandler(std::move(main_handler));
   web_ui->AddMessageHandler(std::make_unique<MetricsHandler>());
-
-  // TODO(crbug.com/1400799): Enable TrustedTypes.
-  source->DisableTrustedTypesCSP();
 
   source->EnableReplaceI18nInJS();
   source->UseStringsJs();
@@ -138,6 +140,8 @@ LockScreenStartReauthUI::LockScreenStartReauthUI(content::WebUI* web_ui)
 
   source->AddResourcePaths(base::make_span(kLockScreenReauthResources,
                                            kLockScreenReauthResourcesSize));
+  source->AddResourcePaths(base::make_span(kGaiaActionButtonsResources,
+                                           kGaiaActionButtonsResourcesSize));
   source->SetDefaultResource(
       IDR_LOCK_SCREEN_REAUTH_LOCK_SCREEN_REAUTH_APP_HTML);
 

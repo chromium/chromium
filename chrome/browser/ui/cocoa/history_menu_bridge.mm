@@ -7,8 +7,8 @@
 #include <stddef.h>
 #include <string>
 
+#include "base/apple/foundation_util.h"
 #include "base/functional/bind.h"
-#include "base/mac/foundation_util.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 #include "base/strings/sys_string_conversions.h"
@@ -56,21 +56,12 @@ const unsigned int kRecentlyClosedCount = 10;
 }  // namespace
 
 HistoryMenuBridge::HistoryItem::HistoryItem()
-    : icon_requested(false),
-      icon_task_id(base::CancelableTaskTracker::kBadTaskId),
-      menu_item(nil),
-      session_id(SessionID::InvalidValue()) {}
+    : session_id(SessionID::InvalidValue()) {}
 
 HistoryMenuBridge::HistoryItem::HistoryItem(const HistoryItem& copy)
-    : title(copy.title),
-      url(copy.url),
-      icon_requested(false),
-      icon_task_id(base::CancelableTaskTracker::kBadTaskId),
-      menu_item(nil),
-      session_id(copy.session_id) {}
+    : title(copy.title), url(copy.url), session_id(copy.session_id) {}
 
-HistoryMenuBridge::HistoryItem::~HistoryItem() {
-}
+HistoryMenuBridge::HistoryItem::~HistoryItem() = default;
 
 HistoryMenuBridge::HistoryMenuBridge(Profile* profile)
     : controller_([[HistoryMenuCocoaController alloc] initWithBridge:this]),
@@ -129,8 +120,7 @@ HistoryMenuBridge::HistoryMenuBridge(Profile* profile)
     }
   }
 
-  default_favicon_.reset(
-      [rb.GetNativeImageNamed(IDR_DEFAULT_FAVICON).ToNSImage() retain]);
+  default_favicon_ = rb.GetNativeImageNamed(IDR_DEFAULT_FAVICON).ToNSImage();
 
   [HistoryMenu() setDelegate:controller_];
 }
@@ -251,7 +241,7 @@ NSMenu* HistoryMenuBridge::HistoryMenu() {
 
 void HistoryMenuBridge::ClearMenuSection(NSMenu* menu, NSInteger tag) {
   for (NSMenuItem* menu_item in [menu itemArray]) {
-    if ([menu_item tag] == tag  && [menu_item target] == controller_.get()) {
+    if ([menu_item tag] == tag && [menu_item target] == controller_) {
       // This is an item that should be removed, so find the corresponding model
       // item.
       HistoryItem* item = HistoryItemForMenuItem(menu_item);
@@ -284,17 +274,18 @@ NSMenuItem* HistoryMenuBridge::AddItemToMenu(std::unique_ptr<HistoryItem> item,
   const std::u16string& title =
       full_title.empty() ? base::UTF8ToUTF16(url) : full_title;
 
-  item->menu_item.reset(
+  item->menu_item =
       [[NSMenuItem alloc] initWithTitle:base::SysUTF16ToNSString(title)
                                  action:nil
-                          keyEquivalent:@""]);
+                          keyEquivalent:@""];
   [item->menu_item setTarget:controller_];
   [item->menu_item setAction:@selector(openHistoryMenuItem:)];
   [item->menu_item setTag:tag];
-  if (item->icon.get())
-    [item->menu_item setImage:item->icon.get()];
-  else if (item->tabs.empty())
-    [item->menu_item setImage:default_favicon_.get()];
+  if (item->icon) {
+    [item->menu_item setImage:item->icon];
+  } else if (item->tabs.empty()) {
+    [item->menu_item setImage:default_favicon_];
+  }
 
   // Add a tooltip if the history item is for a single tab.
   if (item->tabs.empty()) {
@@ -303,9 +294,9 @@ NSMenuItem* HistoryMenuBridge::AddItemToMenu(std::unique_ptr<HistoryItem> item,
     [item->menu_item setToolTip:tooltip];
   }
 
-  [menu insertItem:item->menu_item.get() atIndex:index];
+  [menu insertItem:item->menu_item atIndex:index];
 
-  NSMenuItem* menu_item = item->menu_item.get();
+  NSMenuItem* menu_item = item->menu_item;
   auto it = menu_item_map_.emplace(menu_item, std::move(item));
   CHECK(it.second);
   return menu_item;
@@ -329,8 +320,8 @@ bool HistoryMenuBridge::AddWindowEntryToMenu(
   item->session_id = window->id;
 
   // Create the submenu.
-  base::scoped_nsobject<NSMenu> submenu([[NSMenu alloc] init]);
-  int added_count = AddTabsToSubmenu(submenu.get(), item.get(), tabs);
+  NSMenu* submenu = [[NSMenu alloc] init];
+  int added_count = AddTabsToSubmenu(submenu, item.get(), tabs);
 
   // Sometimes it is possible for there to not be any subitems for a given
   // window; if that is the case, do not add the entry to the main menu.
@@ -344,7 +335,7 @@ bool HistoryMenuBridge::AddWindowEntryToMenu(
 
   // Create the menu item parent.
   NSMenuItem* parent_item = AddItemToMenu(std::move(item), menu, tag, index);
-  [parent_item setSubmenu:submenu.get()];
+  parent_item.submenu = submenu;
   return true;
 }
 
@@ -382,16 +373,16 @@ bool HistoryMenuBridge::AddGroupEntryToMenu(
       kTabGroupIcon, gfx::kFaviconSize, color_provider.GetColor(color_id));
 
   // Create the submenu.
-  base::scoped_nsobject<NSMenu> submenu([[NSMenu alloc] init]);
-  AddTabsToSubmenu(submenu.get(), item.get(), tabs);
+  NSMenu* submenu = [[NSMenu alloc] init];
+  AddTabsToSubmenu(submenu, item.get(), tabs);
 
   NSImage* image = NSImageFromImageSkia(group_icon);
-  item->icon.reset([image retain]);
-  [item->menu_item setImage:item->icon.get()];
+  item->icon = image;
+  [item->menu_item setImage:item->icon];
 
   // Create the menu item parent.
   NSMenuItem* parent_item = AddItemToMenu(std::move(item), menu, tag, index);
-  [parent_item setSubmenu:submenu.get()];
+  [parent_item setSubmenu:submenu];
   return true;
 }
 
@@ -407,13 +398,13 @@ int HistoryMenuBridge::AddTabsToSubmenu(
   auto restore_item = std::make_unique<HistoryItem>(*item);
   NSString* restore_title =
       l10n_util::GetNSString(IDS_HISTORY_CLOSED_RESTORE_WINDOW_MAC);
-  restore_item->menu_item.reset([[NSMenuItem alloc]
-      initWithTitle:restore_title
-             action:@selector(openHistoryMenuItem:)
-      keyEquivalent:@""]);
+  restore_item->menu_item =
+      [[NSMenuItem alloc] initWithTitle:restore_title
+                                 action:@selector(openHistoryMenuItem:)
+                          keyEquivalent:@""];
   NSMenuItem* restore_menu_item = restore_item->menu_item;
   [restore_menu_item setTag:kRecentlyClosed + 1];  // +1 for submenu item.
-  [restore_menu_item setTarget:controller_.get()];
+  [restore_menu_item setTarget:controller_];
   auto it = menu_item_map_.emplace(restore_menu_item, std::move(restore_item));
   CHECK(it.second);
   [submenu addItem:restore_menu_item];
@@ -555,8 +546,8 @@ void HistoryMenuBridge::GotFaviconData(
 
   NSImage* image = image_result.image.AsNSImage();
   if (image) {
-    item->icon.reset([image retain]);
-    [item->menu_item setImage:item->icon.get()];
+    item->icon = image;
+    [item->menu_item setImage:item->icon];
   }
 }
 

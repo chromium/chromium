@@ -9,7 +9,6 @@
 
 #include <string.h>
 
-#include "base/mac/scoped_nsobject.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/ui/webui/help/version_updater.h"
@@ -18,7 +17,7 @@
 
 @class KeystoneObserver;
 
-// OS X implementation of version update functionality, used by the WebUI
+// macOS implementation of version update functionality, used by the WebUI
 // About/Help page.
 class VersionUpdaterMac : public VersionUpdater {
  public:
@@ -61,8 +60,8 @@ class VersionUpdaterMac : public VersionUpdater {
   // The visible state of the promote button.
   bool show_promote_button_;
 
-  // The observer that will receive keystone status updates.
-  base::scoped_nsobject<KeystoneObserver> keystone_observer_;
+  // The observer that will receive Keystone status updates.
+  KeystoneObserver* __strong keystone_observer_;
 
   base::WeakPtrFactory<VersionUpdaterMac> weak_factory_{this};
 };

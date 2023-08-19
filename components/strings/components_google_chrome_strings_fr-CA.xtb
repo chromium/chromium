@@ -3,13 +3,16 @@
 <translationbundle lang="fr-CA">
 <translation id="1016765312371154165">Chrome n'a pas été fermé correctement.</translation>
 <translation id="130631256467250065">Vos modifications prendront effet au prochain redémarrage de votre appareil.</translation>
+<translation id="1555506416658437797">modifier les modes de paiement</translation>
 <translation id="1635457557763038537">Vos modifications seront appliquées au prochain redémarrage de Chrome.</translation>
+<translation id="2399868464369312507">Google Chrome essaie de modifier les modes de paiement.</translation>
 <translation id="2447485272386224171">Chrome fonctionne grâce au projet de logiciel libre <ph name="BEGIN_LINK_CHROMIUM" />Chromium<ph name="END_LINK_CHROMIUM" /> ainsi qu'à d'autres <ph name="BEGIN_LINK_OSS" />logiciels libres<ph name="END_LINK_OSS" />.</translation>
 <translation id="2588322182880276190">Logo de Google Chrome</translation>
 <translation id="3444832043240812445">Cette page affiche uniquement de l'information sur les erreurs récentes si vous <ph name="BEGIN_LINK" />activez la génération de rapports d'erreur<ph name="END_LINK" />.</translation>
 <translation id="3875312571075912821">Autorisez Chrome à accéder au réseau dans les paramètres de votre pare-feu
         ou de votre antivirus.</translation>
 <translation id="5005121315113832363">Chrome a bloqué cette page</translation>
+<translation id="585620188971323280">modifier les paramètres de remplissage des modes de paiement.</translation>
 <translation id="6011049234605203654">Accédez au
           menu Chrome &gt;
           <ph name="SETTINGS_TITLE" />
@@ -42,4 +45,5 @@
           désélectionnez tous les serveurs mandataires qui ont été sélectionnés.</translation>
 <translation id="8232971017369963250">Chrome est rendu possible par le projet de logiciel libre <ph name="BEGIN_LINK_CHROMIUM" />Chromium<ph name="END_LINK_CHROMIUM" />.</translation>
 <translation id="8279509328145658601">Chrome est également rendu possible par d'autres <ph name="BEGIN_LINK_OSS" />logiciels libres<ph name="END_LINK_OSS" />.</translation>
+<translation id="8544217240017914508">Google Chrome tente de modifier les paramètres de remplissage des modes de paiement.</translation>
 </translationbundle>

@@ -3,7 +3,6 @@
 # found in the LICENSE file.
 
 source_set("chromium_context_menu") {
-  configs += [ "//build/config/compiler:enable_arc" ]
   sources = [ "chromium_context_menu.mm" ]
   deps =
       [ "//ios/public/provider/chrome/browser/context_menu:context_menu_api" ]

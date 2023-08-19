@@ -342,8 +342,13 @@ void CellularESimUninstallHandler::OnUninstallProfile(
   }
 
   if (managed_cellular_pref_handler_) {
-    for (const auto& iccid : removed_iccids)
-      managed_cellular_pref_handler_->RemovePairWithIccid(iccid);
+    for (const auto& iccid : removed_iccids) {
+      if (ash::features::IsSmdsSupportEuiccUploadEnabled()) {
+        managed_cellular_pref_handler_->RemoveESimMetadata(iccid);
+      } else {
+        managed_cellular_pref_handler_->RemovePairWithIccid(iccid);
+      }
+    }
   }
   TransitionToUninstallState(UninstallState::kRemovingShillService);
   AttemptRemoveShillService();

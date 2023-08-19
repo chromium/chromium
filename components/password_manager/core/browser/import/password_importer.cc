@@ -15,6 +15,7 @@
 #include "base/metrics/histogram_macros.h"
 #include "base/task/thread_pool.h"
 #include "base/types/expected.h"
+#include "base/types/expected_macros.h"
 #include "components/password_manager/core/browser/import/csv_password.h"
 #include "components/password_manager/core/browser/import/csv_password_sequence.h"
 #include "components/password_manager/core/browser/password_form.h"
@@ -174,16 +175,15 @@ CSVPasswordToCredentialUIEntry(const CSVPassword& csv_password,
     return base::unexpected(with_status(ImportEntry::Status::LONG_NOTE));
   }
 
-  auto url = csv_password.GetURL();
-  if (!url.has_value()) {
-    return base::unexpected(
-        with_status(url.error().empty() ? ImportEntry::Status::MISSING_URL
-                                        : ImportEntry::Status::INVALID_URL));
-  }
-  if (url->spec().length() > 2048) {
+  ASSIGN_OR_RETURN(
+      GURL url, csv_password.GetURL(), [&](const std::string& error) {
+        return with_status(error.empty() ? ImportEntry::Status::MISSING_URL
+                                         : ImportEntry::Status::INVALID_URL);
+      });
+  if (url.spec().length() > 2048) {
     return base::unexpected(with_status(ImportEntry::Status::LONG_URL));
   }
-  if (!password_manager_util::IsValidPasswordURL(*url)) {
+  if (!password_manager_util::IsValidPasswordURL(url)) {
     return base::unexpected(with_status(ImportEntry::Status::INVALID_URL));
   }
 

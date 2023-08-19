@@ -4,10 +4,10 @@
 
 import("//build/config/features.gni")
 
-# TODO(crbug.com/1414153): this should be removed once there is a unified
-# approach to TimeTicks::Now on iOS.
+# TODO(crbug.com/1414153): this should be removed once the use of mach absolute
+# time ticks is successfully launched on iOS.
 declare_args() {
   # use_blink currently assumes mach absolute time ticks (eg, to ensure that
   # trace events cohere).
-  enable_mach_absolute_time_ticks = is_mac || use_blink
+  enable_mach_absolute_time_ticks = true
 }

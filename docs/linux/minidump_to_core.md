@@ -46,6 +46,9 @@ but debugging options will be limited:
 $ cgdb -c foo.core
 ```
 
+If symbols do not seem to work, see
+[Advanced module loading](#advanced-module-loading) below.
+
 ## Loading the core file into Qtcreator
 
 Qtcreator is a full GUI wrapper for gdb and it can also load Chrome's core
@@ -118,6 +121,41 @@ Now add the two addresses: `7fe749a90000 + 5282c0 = 7fe749fb82c0` and in gdb, ru
 ```
 
 Then use gdb as normal.
+
+## Using minidump_stackwalk instead of gdb
+
+If all you need is a stack trace, you can use minidump_stackwalk instead
+of gdb as follows:
+
+* Compile minidump_stackwalk: `autoninja -C out/Default minidump_stackwalk`
+* Download `breakpad_info.zip` for the correct version from
+    [go/chromesymbols](https://goto.google.com/chromesymbols) (Googlers only).
+
+    You can instead generate the .sym files yourself, if you have a build with
+    symbols: `out/Default/dump_syms chrome > chrome.sym`
+* minidump_stackwalk expects a directory structure like
+    `debugfile/BUILDID/debugfile.sym`. On Linux and macOS debugfile is just the
+    name of the executable; on Windows, debugfile is that plus a `.pdb` extension.
+
+    The buildid is in the first line of the breakpad info file:
+    ```none
+    $ head -1 chrome.breakpad.x64
+    MODULE Linux x86_64 0ACBB4D08FB145E1656ADD88DF70B1320 chrome.debug
+    ```
+
+    So for this specific example, you'd do:
+    ```sh
+    mkdir -p symbols/chrome/0ACBB4D08FB145E1656ADD88DF70B1320
+    mv chrome.breakpad.x64 symbols/chrome/0ACBB4D08FB145E1656ADD88DF70B1320
+    ```
+* Now you can run minidump_stackwalk:
+    ```none
+    $ out/Default/minidump_stackwalk 5aeb7476-3200-41ed-8db8-b5d71bea28d3.dmp symbols/
+    [...]
+    Thread 0 (crashed)
+      0  chrome!content::protocol::FedCmHandler::OnDialogShown() [vector : 1434 + 0x0]
+         rax = 0x00003b2401be0720   rdx = 0x000000000000002e
+    ```
 
 ## Other resources
 

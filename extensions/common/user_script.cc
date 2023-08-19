@@ -12,13 +12,18 @@
 
 #include "base/atomic_sequence_num.h"
 #include "base/command_line.h"
+#include "base/notreached.h"
 #include "base/pickle.h"
 #include "base/strings/pattern.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
+#include "extensions/common/mojom/host_id.mojom.h"
 #include "extensions/common/switches.h"
 
 namespace {
+
+// The length of all internally appended prefixes for a UserScript's ID.
+const size_t kIDPrefixLength = 4;
 
 // This cannot be a plain int or int64_t because we need to generate unique IDs
 // from multiple threads.
@@ -35,6 +40,24 @@ bool UrlMatchesGlobs(const std::vector<std::string>* globs,
   return false;
 }
 
+constexpr const char* kAllPrefixes[] = {
+    extensions::UserScript::kManifestContentScriptPrefix,
+    extensions::UserScript::kDynamicContentScriptPrefix,
+    extensions::UserScript::kDynamicUserScriptPrefix,
+};
+
+constexpr bool ValidatePrefixes() {
+  for (const char* prefix : kAllPrefixes) {
+    if (prefix[0] != extensions::UserScript::kReservedScriptIDPrefix ||
+        std::char_traits<char>::length(prefix) != kIDPrefixLength) {
+      return false;
+    }
+  }
+  return true;
+}
+
+static_assert(ValidatePrefixes(), "At least one prefix is invalid.");
+
 }  // namespace
 
 namespace extensions {
@@ -48,18 +71,19 @@ enum {
 };
 
 // static
-const char UserScript::kFileExtension[] = ".user.js";
-
-// static
-const char UserScript::kGeneratedIDPrefix = '_';
-
-// static
 std::string UserScript::GenerateUserScriptID() {
   // This could just as easily use a GUID. The actual value of the id is not
   // important as long a unique id is generated for each UserScript.
-  return "_" + base::NumberToString(g_user_script_id_generator.GetNext());
+  return kManifestContentScriptPrefix +
+         base::NumberToString(g_user_script_id_generator.GetNext());
 }
 
+// static
+std::string UserScript::TrimPrefixFromScriptID(const std::string& script_id) {
+  return script_id.substr(kIDPrefixLength);
+}
+
+// static
 bool UserScript::IsURLUserScript(const GURL& url,
                                  const std::string& mime_type) {
   return base::EndsWith(url.ExtractFileName(), kFileExtension,
@@ -79,10 +103,9 @@ int UserScript::ValidUserScriptSchemes(bool can_execute_script_everywhere) {
   return valid_schemes;
 }
 
-// static
-bool UserScript::IsIDGenerated(const std::string& id) {
-  return !id.empty() && id[0] == kGeneratedIDPrefix;
-}
+// namespace {
+
+// }  // namespace
 
 UserScript::File::File(const base::FilePath& extension_root,
                        const base::FilePath& relative_path,
@@ -146,6 +169,31 @@ void UserScript::add_url_pattern(const URLPattern& pattern) {
 
 void UserScript::add_exclude_url_pattern(const URLPattern& pattern) {
   exclude_url_set_.AddPattern(pattern);
+}
+
+std::string UserScript::GetIDWithoutPrefix() const {
+  return TrimPrefixFromScriptID(user_script_id_);
+}
+
+UserScript::Source UserScript::GetSource() const {
+  if (host_id_.type == mojom::HostID::HostType::kWebUi) {
+    return Source::kWebUIScript;
+  }
+
+  if (base::StartsWith(user_script_id_, kManifestContentScriptPrefix)) {
+    return Source::kStaticContentScript;
+  }
+
+  if (base::StartsWith(user_script_id_, kDynamicContentScriptPrefix)) {
+    return Source::kDynamicContentScript;
+  }
+
+  if (base::StartsWith(user_script_id_, kDynamicUserScriptPrefix)) {
+    return Source::kDynamicUserScript;
+  }
+
+  NOTREACHED();
+  return Source::kStaticContentScript;
 }
 
 bool UserScript::MatchesURL(const GURL& url) const {
@@ -283,11 +331,6 @@ void UserScript::Unpickle(const base::Pickle& pickle,
   UnpickleURLPatternSet(pickle, iter, &exclude_url_set_);
   UnpickleScripts(pickle, iter, &js_scripts_);
   UnpickleScripts(pickle, iter, &css_scripts_);
-}
-
-bool UserScript::IsIDGenerated() const {
-  CHECK(!user_script_id_.empty());
-  return IsIDGenerated(user_script_id_);
 }
 
 void UserScript::UnpickleGlobs(const base::Pickle& pickle,

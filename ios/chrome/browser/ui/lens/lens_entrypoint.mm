@@ -4,8 +4,4 @@
 
 #import "ios/chrome/browser/ui/lens/lens_entrypoint.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 const char kIOSLensEntrypoint[] = "ContextMenu.iOS.LensEntrypoint";

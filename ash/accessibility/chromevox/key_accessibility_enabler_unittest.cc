@@ -53,7 +53,8 @@ class KeyAccessibilityEnablerTest : public AshTestBase,
   void OnAccessibilityStatusChanged() override { run_loop_->Quit(); }
 
   std::unique_ptr<base::RunLoop> run_loop_;
-  raw_ptr<KeyAccessibilityEnabler, ExperimentalAsh> key_accessibility_enabler_;
+  raw_ptr<KeyAccessibilityEnabler, DanglingUntriaged | ExperimentalAsh>
+      key_accessibility_enabler_;
   base::SimpleTestTickClock clock_;
 };
 

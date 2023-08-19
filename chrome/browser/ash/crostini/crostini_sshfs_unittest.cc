@@ -150,7 +150,8 @@ class CrostiniSshfsHelperTest : public testing::Test {
   }
 
   content::BrowserTaskEnvironment task_environment_;
-  raw_ptr<ash::disks::MockDiskMountManager, ExperimentalAsh> disk_manager_;
+  raw_ptr<ash::disks::MockDiskMountManager, DanglingUntriaged | ExperimentalAsh>
+      disk_manager_;
   std::unique_ptr<TestingProfile> profile_;
   std::unique_ptr<CrostiniTestHelper> crostini_test_helper_;
   const std::string kMountName = "crostini_test_termina_penguin";

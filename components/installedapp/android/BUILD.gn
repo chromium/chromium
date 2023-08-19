@@ -15,13 +15,12 @@ source_set("android") {
 }
 
 android_library("java") {
+  srcjar_deps = [ ":jni_headers" ]
   sources = [
     "java/src/org/chromium/components/installedapp/InstalledAppProviderImpl.java",
     "java/src/org/chromium/components/installedapp/PackageHash.java",
     "java/src/org/chromium/components/installedapp/PackageManagerDelegate.java",
   ]
-
-  annotation_processor_deps = [ "//base/android/jni_generator:jni_processor" ]
 
   deps = [
     "//base:base_java",
@@ -52,6 +51,7 @@ android_library("unit_device_javatests") {
     ":java",
     "//base:base_java",
     "//base:base_java_test_support",
+    "//base:jni_java",
     "//content/public/android:content_java",
     "//content/public/test/android:content_java_test_support",
     "//third_party/androidx:androidx_test_runner_java",

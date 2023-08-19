@@ -48,6 +48,8 @@ int GetIconIdAndroid(RequestType type) {
       return IDR_ANDROID_INFOBAR_IDLE_DETECTION;
     case RequestType::kMicStream:
       return IDR_ANDROID_INFOBAR_MEDIA_STREAM_MIC;
+    case RequestType::kMidi:
+      // kMidi and kMidiSysex share the same Android icon ID.
     case RequestType::kMidiSysex:
       return IDR_ANDROID_INFOBAR_MIDI;
     case RequestType::kMultipleDownloads:
@@ -99,6 +101,8 @@ const gfx::VectorIcon& GetIconIdDesktop(RequestType type) {
     case RequestType::kMicStream:
       return cr23 ? vector_icons::kMicChromeRefreshIcon
                   : vector_icons::kMicIcon;
+    case RequestType::kMidi:
+      // kMidi and kMidiSysex share the same desktop icon ID.
     case RequestType::kMidiSysex:
       return cr23 ? vector_icons::kMidiChromeRefreshIcon
                   : vector_icons::kMidiIcon;
@@ -116,14 +120,9 @@ const gfx::VectorIcon& GetIconIdDesktop(RequestType type) {
 #endif
     case RequestType::kRegisterProtocolHandler:
       return vector_icons::kProtocolHandlerIcon;
-    case RequestType::kSecurityAttestation:
-      return kUsbSecurityKeyIcon;
-    case RequestType::kU2fApiRequest:
-      return kUsbSecurityKeyIcon;
     case RequestType::kStorageAccess:
     case RequestType::kTopLevelStorageAccess:
-      return cr23 ? vector_icons::kCookieChromeRefreshIcon
-                  : vector_icons::kCookieIcon;
+      return vector_icons::kStorageAccessIcon;
     case RequestType::kWindowManagement:
       return cr23 ? vector_icons::kSelectWindowChromeRefreshIcon
                   : vector_icons::kSelectWindowIcon;
@@ -157,11 +156,13 @@ const gfx::VectorIcon& GetBlockedIconIdDesktop(RequestType type) {
     case RequestType::kMicStream:
       return cr23 ? vector_icons::kMicOffChromeRefreshIcon
                   : vector_icons::kMicOffIcon;
+    case RequestType::kMidi:
+      // kMidi and kMidiSysex share the same desktop block icon ID.
     case RequestType::kMidiSysex:
       return cr23 ? vector_icons::kMidiOffChromeRefreshIcon
                   : vector_icons::kMidiOffIcon;
     case RequestType::kStorageAccess:
-      return vector_icons::kCookieOffChromeRefreshIcon;
+      return vector_icons::kStorageAccessOffIcon;
     default:
       NOTREACHED();
   }
@@ -195,6 +196,12 @@ absl::optional<RequestType> ContentSettingsTypeToRequestTypeIfExists(
       return RequestType::kIdleDetection;
     case ContentSettingsType::MEDIASTREAM_MIC:
       return RequestType::kMicStream;
+    case ContentSettingsType::MIDI:
+      if (base::FeatureList::IsEnabled(features::kBlockMidiByDefault)) {
+        return RequestType::kMidi;
+      } else {
+        return absl::nullopt;
+      }
     case ContentSettingsType::MIDI_SYSEX:
       return RequestType::kMidiSysex;
     case ContentSettingsType::NOTIFICATIONS:
@@ -261,6 +268,12 @@ absl::optional<ContentSettingsType> RequestTypeToContentSettingsType(
       return ContentSettingsType::IDLE_DETECTION;
     case RequestType::kMicStream:
       return ContentSettingsType::MEDIASTREAM_MIC;
+    case RequestType::kMidi:
+      if (base::FeatureList::IsEnabled(features::kBlockMidiByDefault)) {
+        return ContentSettingsType::MIDI;
+      } else {
+        return absl::nullopt;
+      }
     case RequestType::kMidiSysex:
       return ContentSettingsType::MIDI_SYSEX;
 #if BUILDFLAG(IS_ANDROID)
@@ -345,6 +358,12 @@ const char* PermissionKeyForRequestType(permissions::RequestType request_type) {
       return "idle_detection";
     case permissions::RequestType::kMicStream:
       return "mic_stream";
+    case permissions::RequestType::kMidi:
+      if (base::FeatureList::IsEnabled(features::kBlockMidiByDefault)) {
+        return "midi";
+      } else {
+        return nullptr;
+      }
     case permissions::RequestType::kMidiSysex:
       return "midi_sysex";
     case permissions::RequestType::kMultipleDownloads:
@@ -362,17 +381,11 @@ const char* PermissionKeyForRequestType(permissions::RequestType request_type) {
 #if !BUILDFLAG(IS_ANDROID)
     case permissions::RequestType::kRegisterProtocolHandler:
       return "register_protocol_handler";
-    case permissions::RequestType::kSecurityAttestation:
-      return "security_attestation";
 #endif
     case permissions::RequestType::kStorageAccess:
       return "storage_access";
     case permissions::RequestType::kTopLevelStorageAccess:
       return "top_level_storage_access";
-#if !BUILDFLAG(IS_ANDROID)
-    case permissions::RequestType::kU2fApiRequest:
-      return "u2f_api_request";
-#endif
     case permissions::RequestType::kVrSession:
       return "vr_session";
 #if !BUILDFLAG(IS_ANDROID)

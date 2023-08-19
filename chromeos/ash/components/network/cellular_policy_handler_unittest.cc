@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors
+// Copyright 2023 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,645 +7,1176 @@
 #include <memory>
 
 #include "ash/constants/ash_features.h"
+#include "base/logging.h"
+#include "base/rand_util.h"
 #include "base/run_loop.h"
 #include "base/strings/stringprintf.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "chromeos/ash/components/dbus/hermes/hermes_clients.h"
-#include "chromeos/ash/components/dbus/hermes/hermes_response_status.h"
-#include "chromeos/ash/components/dbus/shill/shill_clients.h"
-#include "chromeos/ash/components/dbus/shill/shill_device_client.h"
-#include "chromeos/ash/components/dbus/shill/shill_manager_client.h"
-#include "chromeos/ash/components/network/cellular_connection_handler.h"
 #include "chromeos/ash/components/network/cellular_esim_installer.h"
 #include "chromeos/ash/components/network/cellular_inhibitor.h"
-#include "chromeos/ash/components/network/fake_network_connection_handler.h"
+#include "chromeos/ash/components/network/cellular_utils.h"
 #include "chromeos/ash/components/network/managed_cellular_pref_handler.h"
-#include "chromeos/ash/components/network/managed_network_configuration_handler.h"
-#include "chromeos/ash/components/network/network_configuration_handler.h"
-#include "chromeos/ash/components/network/network_connection_handler.h"
-#include "chromeos/ash/components/network/network_device_handler.h"
-#include "chromeos/ash/components/network/network_profile_handler.h"
+#include "chromeos/ash/components/network/metrics/cellular_network_metrics_logger.h"
+#include "chromeos/ash/components/network/network_handler.h"
+#include "chromeos/ash/components/network/network_handler_test_helper.h"
 #include "chromeos/ash/components/network/network_state_handler.h"
-#include "chromeos/ash/components/network/shill_property_util.h"
-#include "chromeos/ash/components/network/test_cellular_esim_profile_handler.h"
+#include "chromeos/ash/components/network/technology_state_controller.h"
 #include "chromeos/components/onc/onc_utils.h"
+#include "components/onc/onc_constants.h"
 #include "components/prefs/testing_pref_service.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
+#include "third_party/cros_system_api/dbus/hermes/dbus-constants.h"
 #include "third_party/cros_system_api/dbus/shill/dbus-constants.h"
 
 namespace ash {
-
 namespace {
 
-const char kTestEuiccPath[] = "/org/chromium/Hermes/Euicc/0";
-const char kTestEuiccPath2[] = "/org/chromium/Hermes/Euicc/1";
-const char kTestESimProfilePath[] =
-    "/org/chromium/Hermes/Euicc/1/Profile/1000000000000000002";
-const char kTestServicePath[] = "/service/cellular102";
-const char kTestEid[] = "12345678901234567890123456789012";
-const char kTestEid2[] = "12345678901234567890123456789000";
-const char kCellularGuid[] = "cellular_guid";
-const char kICCID[] = "1000000000000000002";
+// EUICC constants
+const char kTestEuiccPath0[] = "/org/chromium/Hermes/Euicc/0";
+const char kTestEuiccPath1[] = "/org/chromium/Hermes/Euicc/1";
+const char kTestEid0[] = "00000000000000000000000000000000";
+const char kTestEid1[] = "11111111111111111111111111111111";
+
+// Profile constants
+const char kTestProfilePath0[] =
+    "/org/chromium/Hermes/Euicc/0/Profile/0000000000000000000";
+const char kTestProfileIccid0[] = "0000000000000000000";
+const char kTestProfileName0[] = "Name";
+const char kTestProfileNickname0[] = "Nickname";
+const char kTestProfileServiceProvider0[] = "Service Provider";
+
+// Shill constants
+const char kTestCellularDevicePath[] = "/device/cellular";
+const char kTestCellularDevicePathName[] = "stub_cellular_device";
+const char kTestProfileServicePath0[] = "/service/profile0";
+
+const char kCellularPolicyPattern[] =
+    R"({
+      "GUID": "Cellular-%lu",
+      "Type": "Cellular",
+      "Name": "Cellular",
+      "Cellular": %s
+    })";
+const char kCellularPolicyCellularTypePattern[] =
+    R"({
+      "%s": "%s"
+    })";
+const char kCellularPolicyCellularTypeWithIccidPattern[] =
+    R"({
+      "%s": "%s",
+      "ICCID": "%s"
+    })";
+
 const char kInstallViaPolicyOperationHistogram[] =
     "Network.Cellular.ESim.Policy.ESimInstall.OperationResult";
 const char kInstallViaPolicyInitialOperationHistogram[] =
     "Network.Cellular.ESim.Policy.ESimInstall.OperationResult.InitialAttempt";
 const char kInstallViaPolicyRetryOperationHistogram[] =
     "Network.Cellular.ESim.Policy.ESimInstall.OperationResult.Retry";
-const char kUnmanagedCellularServicePath[] = "cellular_service_path";
-const char kUnmanagedCellularGuid[] = "unmanaged_cellular_guid";
-const char kUnmanagedCellularName[] = "unmanaged_cellular";
-const char kWifiServicePath[] = "wifi_service_path";
-const char kWifiGuid[] = "wifi_guid";
-const char kWifiName[] = "wifi";
-const base::TimeDelta kInstallationRetryDelay = base::Days(1);
-const base::TimeDelta kInstallationRetryDelayExponential = base::Minutes(12);
-
-void CheckShillConfiguration(bool is_installed) {
-  std::string service_path =
-      ShillServiceClient::Get()->GetTestInterface()->FindServiceMatchingGUID(
-          kCellularGuid);
-  const base::Value::Dict* properties =
-      ShillServiceClient::Get()->GetTestInterface()->GetServiceProperties(
-          service_path);
-
-  if (!is_installed) {
-    EXPECT_EQ(properties, nullptr);
-    return;
-  }
-  const std::string* guid = properties->FindString(shill::kGuidProperty);
-  EXPECT_EQ(kCellularGuid, *guid);
-  // UIData should not be empty if cellular service is configured.
-  const std::string* ui_data_value =
-      properties->FindString(shill::kUIDataProperty);
-  EXPECT_NE(*ui_data_value, std::string());
-  const std::string* iccid = properties->FindString(shill::kIccidProperty);
-  EXPECT_EQ(kICCID, *iccid);
-}
 
 std::string GenerateCellularPolicy(
-    const std::string& smdp_address,
+    const policy_util::SmdxActivationCode& activation_code,
     absl::optional<std::string> iccid = absl::nullopt) {
-  if (!iccid) {
-    return base::StringPrintf(
-        R"({"GUID": "%s", "Type": "Cellular",
-                          "Name": "cellular1",
-                          "Cellular": { "SMDPAddress": "%s"}})",
-        kCellularGuid, smdp_address.c_str());
-  }
-
-  return base::StringPrintf(
-      R"({"GUID": "%s", "Type": "Cellular",
-                        "Name": "cellular1",
-                        "Cellular": { "ICCID": "%s", "SMDPAddress": "%s"}})",
-      kCellularGuid, iccid->c_str(), smdp_address.c_str());
+  const char* const activation_code_type =
+      activation_code.type() == policy_util::SmdxActivationCode::Type::SMDP
+          ? onc::cellular::kSMDPAddress
+          : onc::cellular::kSMDSAddress;
+  const std::string cellular_type =
+      iccid.has_value()
+          ? base::StringPrintf(kCellularPolicyCellularTypeWithIccidPattern,
+                               activation_code_type,
+                               activation_code.value().c_str(), iccid->c_str())
+          : base::StringPrintf(kCellularPolicyCellularTypePattern,
+                               activation_code_type,
+                               activation_code.value().c_str());
+  return base::StringPrintf(kCellularPolicyPattern, base::RandUint64(),
+                            cellular_type.c_str());
 }
 
 }  // namespace
 
+class CellularInhibitorObserver : public CellularInhibitor::Observer {
+ public:
+  CellularInhibitorObserver() {
+    session_observation_.Observe(NetworkHandler::Get()->cellular_inhibitor());
+  }
+
+  void OnInhibitStateChanged() override {
+    absl::optional<CellularInhibitor::InhibitReason> inhibit_reason =
+        NetworkHandler::Get()->cellular_inhibitor()->GetInhibitReason();
+    if (inhibit_reason.has_value()) {
+      last_inhibit_reason_ = inhibit_reason;
+    }
+  }
+
+  void CheckLastInhibitReason(
+      CellularInhibitor::InhibitReason last_inhibit_reason) {
+    EXPECT_TRUE(last_inhibit_reason_.has_value() &&
+                last_inhibit_reason_.value() == last_inhibit_reason);
+  }
+
+ private:
+  absl::optional<CellularInhibitor::InhibitReason> last_inhibit_reason_;
+  base::ScopedObservation<CellularInhibitor, CellularInhibitor::Observer>
+      session_observation_{this};
+};
+
 class CellularPolicyHandlerTest : public testing::Test {
  protected:
-  CellularPolicyHandlerTest() = default;
+  // This struct is used to simplify checking the metrics associated with the
+  // tests below.
+  struct ExpectedHistogramState {
+    size_t success_initial_count = 0u;
+    size_t success_retry_count = 0u;
+    size_t inhibit_failed_initial_count = 0u;
+    size_t inhibit_failed_retry_count = 0u;
+    size_t hermes_install_failed_initial_count = 0u;
+    size_t hermes_install_failed_retry_count = 0u;
+    size_t smds_scan_profile_total_count = 0u;
+    size_t smds_scan_profile_sum = 0u;
+    size_t install_method_via_smdp_count = 0u;
+    size_t install_method_via_smds_count = 0u;
+  };
+
+  CellularPolicyHandlerTest(
+      const std::vector<base::test::FeatureRef>& enabled_features,
+      const std::vector<base::test::FeatureRef>& disabled_features) {
+    feature_list_.InitWithFeatures(enabled_features, disabled_features);
+  }
   ~CellularPolicyHandlerTest() override = default;
 
-  // testing::Test
   void SetUp() override {
-    shill_clients::InitializeFakes();
-    hermes_clients::InitializeFakes();
+    network_handler_test_helper_ = std::make_unique<NetworkHandlerTestHelper>();
+    network_handler_test_helper_->ResetDevicesAndServices();
+    network_handler_test_helper_->RegisterPrefs(profile_prefs_.registry(),
+                                                device_prefs_.registry());
+    network_handler_test_helper_->InitializePrefs(&profile_prefs_,
+                                                  &device_prefs_);
+    cellular_policy_handler_ = NetworkHandler::Get()->cellular_policy_handler();
+    base::RunLoop().RunUntilIdle();
 
-    network_state_handler_ = NetworkStateHandler::InitializeForTest();
-    network_device_handler_ = NetworkDeviceHandler::InitializeForTesting(
-        network_state_handler_.get());
-    network_profile_handler_ = NetworkProfileHandler::InitializeForTesting();
-    network_connection_handler_ =
-        std::make_unique<FakeNetworkConnectionHandler>();
-    cellular_inhibitor_ = std::make_unique<CellularInhibitor>();
-    cellular_inhibitor_->Init(network_state_handler_.get(),
-                              network_device_handler_.get());
-    cellular_esim_profile_handler_ =
-        std::make_unique<TestCellularESimProfileHandler>();
-    cellular_esim_profile_handler_->Init(network_state_handler_.get(),
-                                         cellular_inhibitor_.get());
-    cellular_connection_handler_ =
-        std::make_unique<CellularConnectionHandler>();
-    cellular_connection_handler_->Init(network_state_handler_.get(),
-                                       cellular_inhibitor_.get(),
-                                       cellular_esim_profile_handler_.get());
-    cellular_esim_installer_ = std::make_unique<CellularESimInstaller>();
-    cellular_esim_installer_->Init(
-        cellular_connection_handler_.get(), cellular_inhibitor_.get(),
-        network_connection_handler_.get(), network_profile_handler_.get(),
-        network_state_handler_.get());
-    network_configuration_handler_ =
-        NetworkConfigurationHandler::InitializeForTest(
-            network_state_handler_.get(), network_device_handler_.get());
-    managed_network_configuration_handler_ =
-        ManagedNetworkConfigurationHandler::InitializeForTesting(
-            network_state_handler_.get(), network_profile_handler_.get(),
-            network_device_handler_.get(), network_configuration_handler_.get(),
-            /*UIProxyConfigService=*/nullptr);
-    managed_cellular_pref_handler_ =
-        std::make_unique<ManagedCellularPrefHandler>();
-    managed_cellular_pref_handler_->Init(network_state_handler_.get());
-    ManagedCellularPrefHandler::RegisterLocalStatePrefs(
-        device_prefs_.registry());
-    managed_cellular_pref_handler_->SetDevicePrefs(&device_prefs_);
-    cellular_policy_handler_ = std::make_unique<CellularPolicyHandler>();
-    cellular_policy_handler_->Init(
-        cellular_esim_profile_handler_.get(), cellular_esim_installer_.get(),
-        network_profile_handler_.get(), network_state_handler_.get(),
-        managed_cellular_pref_handler_.get(),
-        managed_network_configuration_handler_.get());
+    cellular_policy_handler_ = NetworkHandler::Get()->cellular_policy_handler();
   }
 
-  void SetupEuicc() {
+  void TearDown() override { network_handler_test_helper_.reset(); }
+
+  // There are multiple dependencies/requirements for installing an eSIM
+  // profile. This function wraps all of the setup into a single method for
+  // convenience.
+  void SetupGolden() {
+    AddCellularDevice();
+    AddEuiccs();
+    AddWiFi();
+  }
+
+  void AddCellularDevice() {
+    network_handler_test_helper_->device_test()->AddDevice(
+        kTestCellularDevicePath, shill::kTypeCellular,
+        kTestCellularDevicePathName);
+    base::RunLoop().RunUntilIdle();
+  }
+
+  void AddEuiccs() {
     HermesManagerClient::Get()->GetTestInterface()->ClearEuiccs();
     HermesManagerClient::Get()->GetTestInterface()->AddEuicc(
-        dbus::ObjectPath(kTestEuiccPath), kTestEid, /*is_active=*/true,
+        dbus::ObjectPath(kTestEuiccPath0), kTestEid0, /*is_active=*/true,
         /*physical_slot=*/0);
-    cellular_esim_profile_handler_->SetHasRefreshedProfilesForEuicc(
-        kTestEid, dbus::ObjectPath(kTestEuiccPath), /*has_refreshed=*/true);
-    base::RunLoop().RunUntilIdle();
-  }
-
-  void SetupEuicc2() {
     HermesManagerClient::Get()->GetTestInterface()->AddEuicc(
-        dbus::ObjectPath(kTestEuiccPath2), kTestEid2, /*is_active=*/true,
+        dbus::ObjectPath(kTestEuiccPath1), kTestEid1, /*is_active=*/false,
         /*physical_slot=*/1);
-    cellular_esim_profile_handler_->SetHasRefreshedProfilesForEuicc(
-        kTestEid2, dbus::ObjectPath(kTestEuiccPath2), /*has_refreshed=*/true);
     base::RunLoop().RunUntilIdle();
   }
 
-  void SetupESimProfile() {
-    HermesEuiccClient::Get()->GetTestInterface()->AddCarrierProfile(
-        dbus::ObjectPath(kTestESimProfilePath),
-        dbus::ObjectPath(kTestEuiccPath), kICCID, /*name=*/std::string(),
-        /*nickname=*/std::string(),
-        /*service_provider=*/std::string(), /*activation_code=*/std::string(),
-        kTestServicePath, hermes::profile::State::kInactive,
-        hermes::profile::ProfileClass::kOperational,
-        HermesEuiccClient::TestInterface::AddCarrierProfileBehavior::
-            kAddProfileWithoutService);
+  void AddWiFi() {
+    network_handler_test_helper_->ConfigureWiFi(shill::kStateOnline);
     base::RunLoop().RunUntilIdle();
   }
 
-  // testing::Test
-  void TearDown() override {
-    cellular_policy_handler_.reset();
-    cellular_esim_installer_.reset();
-    cellular_esim_profile_handler_.reset();
-    cellular_connection_handler_.reset();
-    cellular_inhibitor_.reset();
-    network_configuration_handler_.reset();
-    managed_network_configuration_handler_.reset();
-    managed_cellular_pref_handler_.reset();
-    network_profile_handler_.reset();
-    network_device_handler_.reset();
-    network_state_handler_.reset();
-    network_connection_handler_.reset();
-
-    hermes_clients::Shutdown();
-    shill_clients::Shutdown();
-  }
-
-  void InstallESimPolicy(const std::string& onc_json,
-                         const std::string& activation_code,
-                         bool expect_install_success,
-                         bool auto_connect = false) {
-    absl::optional<base::Value::Dict> policy =
-        chromeos::onc::ReadDictionaryFromJson(onc_json);
-    ASSERT_TRUE(policy.has_value());
-    cellular_policy_handler_->InstallESim(activation_code, *policy);
-    FastForwardProfileRefreshDelay();
+  void InstallProfile(const base::Value::Dict& onc_config) {
+    cellular_policy_handler()->InstallESim(onc_config);
     base::RunLoop().RunUntilIdle();
 
-    if (!expect_install_success) {
-      EXPECT_LE(0u, network_connection_handler_->connect_calls().size());
-      return;
-    }
-    FastForwardAutoConnectWaiting(auto_connect);
-    base::RunLoop().RunUntilIdle();
-    if (!auto_connect) {
-      EXPECT_LE(1u, network_connection_handler_->connect_calls().size());
-      network_connection_handler_->connect_calls()
-          .back()
-          .InvokeSuccessCallback();
-    }
-    base::RunLoop().RunUntilIdle();
+    FastForwardRefreshDelay();
   }
 
-  void CheckIccidSmdpPairInPref(bool is_installed) {
-    const std::string* smdp_address =
-        managed_cellular_pref_handler_->GetSmdpAddressFromIccid(kICCID);
-    if (!is_installed) {
-      EXPECT_FALSE(smdp_address);
-      return;
-    }
-    ASSERT_TRUE(smdp_address);
-    EXPECT_FALSE(smdp_address->empty());
-  }
-
-  void FastForwardProfileRefreshDelay() {
-    const base::TimeDelta kProfileRefreshCallbackDelay =
-        base::Milliseconds(150);
-    // Connect can result in two profile refresh calls before and after
-    // enabling profile. Fast forward by delay after refresh.
-    FastForwardBy(2 * kProfileRefreshCallbackDelay);
-  }
-
-  void FastForwardAutoConnectWaiting(bool auto_connect) {
-    if (auto_connect) {
-      task_environment_.FastForwardBy(base::Seconds(10));
-      ShillServiceClient::Get()->GetTestInterface()->SetServiceProperty(
-          kTestServicePath, shill::kStateProperty,
-          base::Value(shill::kStateOnline));
-      return;
+  HermesProfileClient::Properties* FindProfileProperties(
+      const std::string& activation_code_value) {
+    absl::optional<dbus::ObjectPath> euicc_path =
+        cellular_utils::GetCurrentEuiccPath();
+    if (!euicc_path.has_value()) {
+      return nullptr;
     }
 
-    task_environment_.FastForwardBy(
-        CellularConnectionHandler::kWaitingForAutoConnectTimeout);
+    HermesEuiccClient::Properties* euicc_properties =
+        HermesEuiccClient::Get()->GetProperties(*euicc_path);
+    if (!euicc_properties) {
+      return nullptr;
+    }
+
+    for (auto profile : euicc_properties->profiles().value()) {
+      HermesProfileClient::Properties* profile_properties =
+          HermesProfileClient::Get()->GetProperties(profile);
+      if (profile_properties && profile_properties->activation_code().value() ==
+                                    activation_code_value) {
+        return profile_properties;
+      }
+    }
+    return nullptr;
+  }
+
+  bool IsProfileInstalled(const base::Value::Dict& onc_config,
+                          const std::string& activation_code_value,
+                          bool check_for_service) {
+    HermesProfileClient::Properties* profile_properties =
+        FindProfileProperties(activation_code_value);
+    if (!profile_properties) {
+      LOG(INFO) << "Failed to find Hermes profile properties";
+      return false;
+    }
+
+    if (profile_properties->state().value() ==
+        hermes::profile::State::kPending) {
+      LOG(INFO) << "Hermes profile is in the pending state";
+      return false;
+    }
+
+    const std::string* guid =
+        onc_config.FindString(::onc::network_config::kGUID);
+    const std::string& iccid = profile_properties->iccid().value();
+    if (iccid.empty() || !guid || guid->empty()) {
+      LOG(INFO) << "Missing ICCID or GUID";
+      return false;
+    }
+
+    return !check_for_service || HasShillConfiguration(*guid, iccid);
+  }
+
+  bool HasShillConfiguration(const std::string& guid,
+                             const std::string& iccid) {
+    const std::string shill_service_path =
+        ShillServiceClient::Get()->GetTestInterface()->FindServiceMatchingGUID(
+            guid);
+    const base::Value::Dict* properties =
+        ShillServiceClient::Get()->GetTestInterface()->GetServiceProperties(
+            shill_service_path);
+
+    if (!properties) {
+      LOG(INFO) << "Failed to find Shill service properties";
+      return false;
+    }
+
+    const std::string* shill_guid =
+        properties->FindString(shill::kGuidProperty);
+    if (!shill_guid || guid != *shill_guid) {
+      LOG(INFO) << "Missing or mismatched GUID";
+      return false;
+    }
+
+    const std::string* shill_iccid =
+        properties->FindString(shill::kIccidProperty);
+    if (!shill_iccid || iccid != *shill_iccid) {
+      LOG(INFO) << "Missing or mismatched ICCID";
+      return false;
+    }
+
+    // UI data should not be empty for configured cellular services.
+    return properties->FindString(shill::kUIDataProperty);
+  }
+
+  bool HasESimMetadata(const std::string& activation_code_value) {
+    HermesProfileClient::Properties* profile_properties =
+        FindProfileProperties(activation_code_value);
+    if (!profile_properties) {
+      LOG(INFO) << "Failed to find Hermes profile properties";
+      return false;
+    }
+    return NetworkHandler::Get()
+               ->managed_cellular_pref_handler()
+               ->GetESimMetadata(profile_properties->iccid().value()) !=
+           nullptr;
+  }
+
+  void CheckCurrentEuiccSlot(int32_t physical_slot) {
+    absl::optional<dbus::ObjectPath> euicc_path =
+        cellular_utils::GetCurrentEuiccPath();
+    ASSERT_TRUE(euicc_path.has_value());
+
+    HermesEuiccClient::Properties* euicc_properties =
+        HermesEuiccClient::Get()->GetProperties(*euicc_path);
+    ASSERT_TRUE(euicc_properties);
+    EXPECT_EQ(physical_slot, euicc_properties->physical_slot().value());
+  }
+
+  void CheckHistogramState(const ExpectedHistogramState& state) {
+    CheckHistogram(
+        kInstallViaPolicyOperationHistogram,
+        /*success_count=*/state.success_initial_count +
+            state.success_retry_count,
+        /*inhibit_failed_count=*/state.inhibit_failed_initial_count +
+            state.inhibit_failed_retry_count,
+        /*hermes_install_failed=*/state.hermes_install_failed_initial_count +
+            state.hermes_install_failed_retry_count);
+    CheckHistogram(
+        kInstallViaPolicyInitialOperationHistogram,
+        /*success_count=*/state.success_initial_count,
+        /*inhibit_failed_count=*/state.inhibit_failed_initial_count,
+        /*hermes_install_failed=*/state.hermes_install_failed_initial_count);
+    CheckHistogram(
+        kInstallViaPolicyRetryOperationHistogram,
+        /*success_count=*/state.success_retry_count,
+        /*inhibit_failed_count=*/state.inhibit_failed_retry_count,
+        /*hermes_install_failed=*/state.hermes_install_failed_retry_count);
+    histogram_tester_.ExpectTotalCount(
+        CellularNetworkMetricsLogger::kSmdsScanProfileCount,
+        /*expected_count=*/state.smds_scan_profile_total_count);
+    EXPECT_EQ(static_cast<int64_t>(state.smds_scan_profile_sum),
+              histogram_tester_.GetTotalSum(
+                  CellularNetworkMetricsLogger::kSmdsScanProfileCount));
+    histogram_tester_.ExpectBucketCount(
+        CellularNetworkMetricsLogger::kESimPolicyInstallMethod,
+        CellularNetworkMetricsLogger::ESimPolicyInstallMethod::kViaSmdp,
+        /*expected_count=*/state.install_method_via_smdp_count);
+    histogram_tester_.ExpectBucketCount(
+        CellularNetworkMetricsLogger::kESimPolicyInstallMethod,
+        CellularNetworkMetricsLogger::ESimPolicyInstallMethod::kViaSmds,
+        /*expected_count=*/state.install_method_via_smds_count);
+  }
+
+  // This functionality was explicitly separated from InstallProfile() since
+  // multiple tests involve attempting, and failing, to install an eSIM profile.
+  // By separating the installation and auto-connect logic we can simply call
+  // this method specifically when we expect the installation to succeed.
+  void CompleteShillServiceAutoConnect(const base::Value::Dict& onc_config) {
+    const std::string* shill_guid = onc_config.FindString(shill::kGuidProperty);
+    ASSERT_TRUE(shill_guid);
+
+    const std::string shill_service_path =
+        ShillServiceClient::Get()->GetTestInterface()->FindServiceMatchingGUID(
+            *shill_guid);
+    EXPECT_FALSE(shill_service_path.empty());
+
+    ShillServiceClient::Get()->GetTestInterface()->SetServiceProperty(
+        shill_service_path, shill::kStateProperty,
+        base::Value(shill::kStateOnline));
+    base::RunLoop().RunUntilIdle();
   }
 
   void FastForwardBy(base::TimeDelta delay) {
     task_environment_.FastForwardBy(delay);
   }
 
+  void FastForwardRefreshDelay() {
+    // TODO(crbug.com/1216693): Update when a more robust way of waiting for
+    // eSIM profile objects to be loaded is available.
+    FastForwardBy(base::Seconds(1));
+  }
+
+  CellularPolicyHandler* cellular_policy_handler() {
+    return cellular_policy_handler_;
+  }
+
+  NetworkHandlerTestHelper* network_handler_test_helper() {
+    return network_handler_test_helper_.get();
+  }
+
  private:
+  void CheckHistogram(const char* histogram,
+                      size_t success_count,
+                      size_t inhibit_failed_count,
+                      size_t hermes_install_failed_count) {
+    using InstallESimProfileResult =
+        CellularESimInstaller::InstallESimProfileResult;
+    histogram_tester_.ExpectBucketCount(histogram,
+                                        InstallESimProfileResult::kSuccess,
+                                        /*expected_count=*/success_count);
+    histogram_tester_.ExpectBucketCount(
+        histogram, InstallESimProfileResult::kInhibitFailed,
+        /*expected_count=*/inhibit_failed_count);
+    histogram_tester_.ExpectBucketCount(
+        histogram, InstallESimProfileResult::kHermesInstallFailed,
+        /*expected_count=*/hermes_install_failed_count);
+  }
+
   base::test::TaskEnvironment task_environment_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
 
-  std::unique_ptr<NetworkStateHandler> network_state_handler_;
-  std::unique_ptr<NetworkDeviceHandler> network_device_handler_;
-  std::unique_ptr<CellularConnectionHandler> cellular_connection_handler_;
-  std::unique_ptr<CellularInhibitor> cellular_inhibitor_;
-  std::unique_ptr<TestCellularESimProfileHandler>
-      cellular_esim_profile_handler_;
-  std::unique_ptr<FakeNetworkConnectionHandler> network_connection_handler_;
-  std::unique_ptr<CellularESimInstaller> cellular_esim_installer_;
-  std::unique_ptr<NetworkProfileHandler> network_profile_handler_;
-  std::unique_ptr<NetworkConfigurationHandler> network_configuration_handler_;
-  std::unique_ptr<ManagedCellularPrefHandler> managed_cellular_pref_handler_;
-  std::unique_ptr<ManagedNetworkConfigurationHandler>
-      managed_network_configuration_handler_;
-  std::unique_ptr<CellularPolicyHandler> cellular_policy_handler_;
+  base::HistogramTester histogram_tester_;
+  base::test::ScopedFeatureList feature_list_;
+  raw_ptr<CellularPolicyHandler, DanglingUntriaged | ExperimentalAsh>
+      cellular_policy_handler_;
+  std::unique_ptr<NetworkHandlerTestHelper> network_handler_test_helper_;
+  TestingPrefServiceSimple profile_prefs_;
   TestingPrefServiceSimple device_prefs_;
 };
 
-TEST_F(CellularPolicyHandlerTest, InstallProfileSuccess) {
-  SetupEuicc();
-  const std::string policy =
-      GenerateCellularPolicy(HermesEuiccClient::Get()
-                                 ->GetTestInterface()
-                                 ->GenerateFakeActivationCode());
-  // Verify esim profile get installed successfully when installing policy esim
-  // with a fake SMDP address.
-  base::HistogramTester histogram_tester;
-  InstallESimPolicy(policy,
-                    HermesEuiccClient::Get()
-                        ->GetTestInterface()
-                        ->GenerateFakeActivationCode(),
-                    /*expect_install_success=*/true,
-                    /*auto_connect=*/true);
-  CheckShillConfiguration(/*is_installed=*/true);
-  CheckIccidSmdpPairInPref(/*is_installed=*/true);
+class CellularPolicyHandlerTest_SmdsSupportEnabled_SecondEuiccDisabled
+    : public CellularPolicyHandlerTest {
+ public:
+  CellularPolicyHandlerTest_SmdsSupportEnabled_SecondEuiccDisabled(
+      const CellularPolicyHandlerTest_SmdsSupportEnabled_SecondEuiccDisabled&) =
+      delete;
+  CellularPolicyHandlerTest_SmdsSupportEnabled_SecondEuiccDisabled& operator=(
+      const CellularPolicyHandlerTest_SmdsSupportEnabled_SecondEuiccDisabled&) =
+      delete;
 
-  histogram_tester.ExpectBucketCount(
-      kInstallViaPolicyOperationHistogram,
-      CellularESimInstaller::InstallESimProfileResult::kSuccess,
-      /*expected_count=*/1);
-  histogram_tester.ExpectBucketCount(
-      kInstallViaPolicyInitialOperationHistogram,
-      CellularESimInstaller::InstallESimProfileResult::kSuccess,
-      /*expected_count=*/1);
-  histogram_tester.ExpectBucketCount(
-      kInstallViaPolicyRetryOperationHistogram,
-      CellularESimInstaller::InstallESimProfileResult::kSuccess,
-      /*expected_count=*/0);
+ protected:
+  CellularPolicyHandlerTest_SmdsSupportEnabled_SecondEuiccDisabled()
+      : CellularPolicyHandlerTest(
+            /*enabled_features=*/{ash::features::kSmdsDbusMigration,
+                                  ash::features::kSmdsSupport,
+                                  ash::features::kSmdsSupportEuiccUpload},
+            /*disabled_features=*/{ash::features::kCellularUseSecondEuicc}) {}
+  ~CellularPolicyHandlerTest_SmdsSupportEnabled_SecondEuiccDisabled() override =
+      default;
+};
+
+class CellularPolicyHandlerTest_SmdsSupportEnabled_SecondEuiccEnabled
+    : public CellularPolicyHandlerTest {
+ public:
+  CellularPolicyHandlerTest_SmdsSupportEnabled_SecondEuiccEnabled(
+      const CellularPolicyHandlerTest_SmdsSupportEnabled_SecondEuiccEnabled&) =
+      delete;
+  CellularPolicyHandlerTest_SmdsSupportEnabled_SecondEuiccEnabled& operator=(
+      const CellularPolicyHandlerTest_SmdsSupportEnabled_SecondEuiccEnabled&) =
+      delete;
+
+ protected:
+  CellularPolicyHandlerTest_SmdsSupportEnabled_SecondEuiccEnabled()
+      : CellularPolicyHandlerTest(
+            /*enabled_features=*/{ash::features::kCellularUseSecondEuicc,
+                                  ash::features::kSmdsDbusMigration,
+                                  ash::features::kSmdsSupport,
+                                  ash::features::kSmdsSupportEuiccUpload},
+            /*disabled_features=*/{}) {}
+  ~CellularPolicyHandlerTest_SmdsSupportEnabled_SecondEuiccEnabled() override =
+      default;
+};
+
+TEST_F(CellularPolicyHandlerTest_SmdsSupportEnabled_SecondEuiccDisabled,
+       InstallSuccess_SMDP) {
+  SetupGolden();
+
+  // We sanity check that the current EUICC has the expected slot in these core
+  // installation success tests.
+  CheckCurrentEuiccSlot(0);
+
+  ExpectedHistogramState expected_state;
+  CheckHistogramState(expected_state);
+
+  const policy_util::SmdxActivationCode activation_code(
+      policy_util::SmdxActivationCode::Type::SMDP,
+      HermesEuiccClient::Get()
+          ->GetTestInterface()
+          ->GenerateFakeActivationCode());
+
+  absl::optional<base::Value::Dict> onc_config =
+      chromeos::onc::ReadDictionaryFromJson(
+          GenerateCellularPolicy(activation_code));
+  ASSERT_TRUE(onc_config.has_value());
+
+  {
+    CellularInhibitorObserver cellular_inhibitor_observer;
+    InstallProfile(*onc_config);
+    cellular_inhibitor_observer.CheckLastInhibitReason(
+        CellularInhibitor::InhibitReason::kRequestingAvailableProfiles);
+  }
+
+  CompleteShillServiceAutoConnect(*onc_config);
+
+  EXPECT_TRUE(IsProfileInstalled(*onc_config, activation_code.value(),
+                                 /*check_for_service=*/true));
+  EXPECT_TRUE(HasESimMetadata(activation_code.value()));
+  expected_state.success_initial_count++;
+  expected_state.install_method_via_smdp_count++;
+  CheckHistogramState(expected_state);
 }
 
-TEST_F(CellularPolicyHandlerTest, InstallWaitForDeviceState) {
-  SetupEuicc();
-  ShillManagerClient::Get()->GetTestInterface()->ClearDevices();
+TEST_F(CellularPolicyHandlerTest_SmdsSupportEnabled_SecondEuiccDisabled,
+       InstallSuccess_SMDS) {
+  SetupGolden();
+
+  // We sanity check that the current EUICC has the expected slot in these core
+  // installation success tests.
+  CheckCurrentEuiccSlot(0);
+
+  ExpectedHistogramState expected_state;
+  CheckHistogramState(expected_state);
+
+  // A different value is used to more accurately simulate what will happen when
+  // installing a profile via SM-DS; the activation code used for the SM-DS scan
+  // are different than the activation codes of the available profiles.
+  const std::string different_activation_code_value =
+      HermesEuiccClient::Get()
+          ->GetTestInterface()
+          ->GenerateFakeActivationCode();
+
+  HermesEuiccClient::Get()->GetTestInterface()->AddCarrierProfile(
+      dbus::ObjectPath(kTestProfilePath0), dbus::ObjectPath(kTestEuiccPath0),
+      kTestProfileIccid0, kTestProfileName0, kTestProfileNickname0,
+      kTestProfileServiceProvider0, different_activation_code_value,
+      kTestProfileServicePath0, hermes::profile::State::kPending,
+      hermes::profile::ProfileClass::kOperational,
+      HermesEuiccClient::TestInterface::AddCarrierProfileBehavior::
+          kAddProfileWithService);
   base::RunLoop().RunUntilIdle();
 
-  const std::string policy =
-      GenerateCellularPolicy(HermesEuiccClient::Get()
-                                 ->GetTestInterface()
-                                 ->GenerateFakeActivationCode());
-  // Verify the configuration is created automatically after device state
-  // becomes available.
-  InstallESimPolicy(policy,
-                    HermesEuiccClient::Get()
-                        ->GetTestInterface()
-                        ->GenerateFakeActivationCode(),
-                    /*expect_install_success=*/false);
-  CheckShillConfiguration(/*is_installed=*/false);
-
-  ShillDeviceClient::Get()->GetTestInterface()->AddDevice(
-      "/device/cellular1", shill::kTypeCellular, "TestCellular");
-  FastForwardProfileRefreshDelay();
-  FastForwardAutoConnectWaiting(/*auto_connect=*/false);
-  base::RunLoop().RunUntilIdle();
-  CheckShillConfiguration(/*is_installed=*/true);
-}
-
-TEST_F(CellularPolicyHandlerTest, InstallWaitForEuicc) {
-  HermesManagerClient::Get()->GetTestInterface()->ClearEuiccs();
-  const std::string policy =
-      GenerateCellularPolicy(HermesEuiccClient::Get()
-                                 ->GetTestInterface()
-                                 ->GenerateFakeActivationCode());
-  // Verify the configuration is created automatically after EUICC becomes
-  // available.
-  InstallESimPolicy(policy,
-                    HermesEuiccClient::Get()
-                        ->GetTestInterface()
-                        ->GenerateFakeActivationCode(),
-                    /*expect_install_success=*/false);
-  CheckShillConfiguration(/*is_installed=*/false);
-  SetupEuicc();
-  FastForwardProfileRefreshDelay();
-  FastForwardAutoConnectWaiting(/*auto_connect=*/false);
-  base::RunLoop().RunUntilIdle();
-  CheckShillConfiguration(/*is_installed=*/true);
-  CheckIccidSmdpPairInPref(/*is_installed=*/true);
-}
-
-TEST_F(CellularPolicyHandlerTest, RetryInstallProfile) {
-  SetupEuicc();
-
-  base::HistogramTester histogram_tester;
-
-  const std::string policy =
-      GenerateCellularPolicy(HermesEuiccClient::Get()
-                                 ->GetTestInterface()
-                                 ->GenerateFakeActivationCode());
-
-  // Make the first installation attempt fail due to an user error
   HermesEuiccClient::Get()
       ->GetTestInterface()
-      ->SetNextInstallProfileFromActivationCodeResult(
-          HermesResponseStatus::kErrorAlreadyDisabled);
-  InstallESimPolicy(policy,
-                    HermesEuiccClient::Get()
-                        ->GetTestInterface()
-                        ->GenerateFakeActivationCode(),
-                    /*expect_install_success=*/false);
+      ->SetNextRefreshSmdxProfilesResult({dbus::ObjectPath(kTestProfilePath0)});
 
-  FastForwardBy(kInstallationRetryDelay + base::Minutes(5));
+  const policy_util::SmdxActivationCode activation_code(
+      policy_util::SmdxActivationCode::Type::SMDS,
+      HermesEuiccClient::Get()
+          ->GetTestInterface()
+          ->GenerateFakeActivationCode());
 
-  // As this is an user error, retry shouldn't happen
-  histogram_tester.ExpectBucketCount(
-      kInstallViaPolicyOperationHistogram,
-      CellularESimInstaller::InstallESimProfileResult::kSuccess,
-      /*expected_count=*/0);
+  absl::optional<base::Value::Dict> onc_config =
+      chromeos::onc::ReadDictionaryFromJson(
+          GenerateCellularPolicy(activation_code));
+  ASSERT_TRUE(onc_config.has_value());
 
-  // Make the second installation attempt fail due to a dependency error
+  {
+    CellularInhibitorObserver cellular_inhibitor_observer;
+    InstallProfile(*onc_config);
+    cellular_inhibitor_observer.CheckLastInhibitReason(
+        CellularInhibitor::InhibitReason::kRequestingAvailableProfiles);
+  }
+
+  CompleteShillServiceAutoConnect(*onc_config);
+
+  EXPECT_TRUE(IsProfileInstalled(*onc_config, different_activation_code_value,
+                                 /*check_for_service=*/true));
+  EXPECT_TRUE(HasESimMetadata(different_activation_code_value));
+  expected_state.success_initial_count++;
+  expected_state.smds_scan_profile_total_count++;
+  expected_state.smds_scan_profile_sum++;
+  expected_state.install_method_via_smds_count++;
+  CheckHistogramState(expected_state);
+}
+
+TEST_F(CellularPolicyHandlerTest_SmdsSupportEnabled_SecondEuiccDisabled,
+       InstalledButFailedToEnable) {
+  SetupGolden();
+
+  ExpectedHistogramState expected_state;
+  CheckHistogramState(expected_state);
+
+  const policy_util::SmdxActivationCode activation_code(
+      policy_util::SmdxActivationCode::Type::SMDP,
+      HermesEuiccClient::Get()
+          ->GetTestInterface()
+          ->GenerateFakeActivationCode());
+
+  absl::optional<base::Value::Dict> onc_config =
+      chromeos::onc::ReadDictionaryFromJson(
+          GenerateCellularPolicy(activation_code));
+  ASSERT_TRUE(onc_config.has_value());
+
+  // Set the result of the next attempt to enable a carrier profile to match
+  // what would be returned when a profile was successfully installed, but
+  // failed to become enabled.
+  HermesProfileClient::Get()
+      ->GetTestInterface()
+      ->SetNextEnableCarrierProfileResult(
+          HermesResponseStatus::kErrorWrongState);
+
+  {
+    CellularInhibitorObserver cellular_inhibitor_observer;
+    InstallProfile(*onc_config);
+    cellular_inhibitor_observer.CheckLastInhibitReason(
+        CellularInhibitor::InhibitReason::kRequestingAvailableProfiles);
+  }
+
+  EXPECT_TRUE(IsProfileInstalled(*onc_config, activation_code.value(),
+                                 /*check_for_service=*/true));
+  EXPECT_TRUE(HasESimMetadata(activation_code.value()));
+  expected_state.success_initial_count++;
+  expected_state.install_method_via_smdp_count++;
+  CheckHistogramState(expected_state);
+}
+
+TEST_F(CellularPolicyHandlerTest_SmdsSupportEnabled_SecondEuiccDisabled,
+       InstallSuccess_SMDSMultipleProfiles) {
+  SetupGolden();
+
+  ExpectedHistogramState expected_state;
+  CheckHistogramState(expected_state);
+
+  // A different value is used to more accurately simulate what will happen when
+  // installing a profile via SM-DS; the activation code used for the SM-DS scan
+  // are different than the activation codes of the available profiles.
+  const std::string different_activation_code_value =
+      HermesEuiccClient::Get()
+          ->GetTestInterface()
+          ->GenerateFakeActivationCode();
+
+  // Add a profile that is already installed and active.
+  const dbus::ObjectPath profile_path0 =
+      HermesEuiccClient::Get()->GetTestInterface()->AddFakeCarrierProfile(
+          dbus::ObjectPath(kTestEuiccPath0), hermes::profile::State::kActive,
+          HermesEuiccClient::Get()
+              ->GetTestInterface()
+              ->GenerateFakeActivationCode(),
+          HermesEuiccClient::TestInterface::AddCarrierProfileBehavior::
+              kAddProfileWithService);
+
+  // Add a profile that is already installed and inactive.
+  const dbus::ObjectPath profile_path1 =
+      HermesEuiccClient::Get()->GetTestInterface()->AddFakeCarrierProfile(
+          dbus::ObjectPath(kTestEuiccPath0), hermes::profile::State::kInactive,
+          HermesEuiccClient::Get()
+              ->GetTestInterface()
+              ->GenerateFakeActivationCode(),
+          HermesEuiccClient::TestInterface::AddCarrierProfileBehavior::
+              kAddProfileWithService);
+
+  // Add a profile that is pending but not expected to be installed since it
+  // does not have an activation code.
+  const dbus::ObjectPath profile_path2 =
+      HermesEuiccClient::Get()->GetTestInterface()->AddFakeCarrierProfile(
+          dbus::ObjectPath(kTestEuiccPath0), hermes::profile::State::kActive,
+          /*activation_code=*/"",
+          HermesEuiccClient::TestInterface::AddCarrierProfileBehavior::
+              kAddProfileWithService);
+
+  // Add the pending profile that we expect will be installed. This should be
+  // the third profile returned, and should be chosen because it is the first
+  // profile that is pending and has a valid activation code.
+  HermesEuiccClient::Get()->GetTestInterface()->AddCarrierProfile(
+      dbus::ObjectPath(kTestProfilePath0), dbus::ObjectPath(kTestEuiccPath0),
+      kTestProfileIccid0, kTestProfileName0, kTestProfileNickname0,
+      kTestProfileServiceProvider0, different_activation_code_value,
+      kTestProfileServicePath0, hermes::profile::State::kPending,
+      hermes::profile::ProfileClass::kOperational,
+      HermesEuiccClient::TestInterface::AddCarrierProfileBehavior::
+          kAddProfileWithService);
+
+  // Add a profile that is pending but not expected to be installed since only
+  // the first profile returned that is pending and has a valid activation code
+  // should be installed.
+  const dbus::ObjectPath profile_path3 =
+      HermesEuiccClient::Get()->GetTestInterface()->AddFakeCarrierProfile(
+          dbus::ObjectPath(kTestEuiccPath0), hermes::profile::State::kActive,
+          HermesEuiccClient::Get()
+              ->GetTestInterface()
+              ->GenerateFakeActivationCode(),
+          HermesEuiccClient::TestInterface::AddCarrierProfileBehavior::
+              kAddProfileWithService);
+  base::RunLoop().RunUntilIdle();
+
   HermesEuiccClient::Get()
       ->GetTestInterface()
-      ->SetNextInstallProfileFromActivationCodeResult(
-          HermesResponseStatus::kErrorSendHttpsFailure);
-  InstallESimPolicy(policy,
-                    HermesEuiccClient::Get()
-                        ->GetTestInterface()
-                        ->GenerateFakeActivationCode(),
-                    /*expect_install_success=*/false);
+      ->SetNextRefreshSmdxProfilesResult({
+          profile_path0,
+          profile_path1,
+          profile_path2,
+          dbus::ObjectPath(kTestProfilePath0),
+          profile_path3,
+      });
 
-  FastForwardBy(kInstallationRetryDelay + base::Minutes(5));
+  const policy_util::SmdxActivationCode activation_code(
+      policy_util::SmdxActivationCode::Type::SMDS,
+      HermesEuiccClient::Get()
+          ->GetTestInterface()
+          ->GenerateFakeActivationCode());
 
-  // For dependency errors, retry should happen after the wait time of one day
-  histogram_tester.ExpectBucketCount(
-      kInstallViaPolicyOperationHistogram,
-      CellularESimInstaller::InstallESimProfileResult::kSuccess,
-      /*expected_count=*/1);
+  absl::optional<base::Value::Dict> onc_config =
+      chromeos::onc::ReadDictionaryFromJson(
+          GenerateCellularPolicy(activation_code));
+  ASSERT_TRUE(onc_config.has_value());
 
-  // Make the third installation attempt fail due to an internal error
+  InstallProfile(*onc_config);
+
+  CompleteShillServiceAutoConnect(*onc_config);
+
+  EXPECT_TRUE(IsProfileInstalled(*onc_config, different_activation_code_value,
+                                 /*check_for_service=*/true));
+  EXPECT_TRUE(HasESimMetadata(different_activation_code_value));
+  expected_state.success_initial_count++;
+  expected_state.smds_scan_profile_total_count++;
+  expected_state.smds_scan_profile_sum = 5;
+  expected_state.install_method_via_smds_count++;
+  CheckHistogramState(expected_state);
+}
+
+TEST_F(CellularPolicyHandlerTest_SmdsSupportEnabled_SecondEuiccDisabled,
+       InstallSuccess_RequireCellularDevice) {
+  AddEuiccs();
+  AddWiFi();
+
+  ExpectedHistogramState expected_state;
+  CheckHistogramState(expected_state);
+
+  const policy_util::SmdxActivationCode activation_code(
+      policy_util::SmdxActivationCode::Type::SMDP,
+      HermesEuiccClient::Get()
+          ->GetTestInterface()
+          ->GenerateFakeActivationCode());
+
+  absl::optional<base::Value::Dict> onc_config =
+      chromeos::onc::ReadDictionaryFromJson(
+          GenerateCellularPolicy(activation_code));
+  ASSERT_TRUE(onc_config.has_value());
+
+  InstallProfile(*onc_config);
+
+  EXPECT_FALSE(IsProfileInstalled(*onc_config, activation_code.value(),
+                                  /*check_for_service=*/true));
+  EXPECT_FALSE(HasESimMetadata(activation_code.value()));
+  CheckHistogramState(expected_state);
+
+  AddCellularDevice();
+
+  FastForwardRefreshDelay();
+
+  CompleteShillServiceAutoConnect(*onc_config);
+
+  EXPECT_TRUE(IsProfileInstalled(*onc_config, activation_code.value(),
+                                 /*check_for_service=*/true));
+  EXPECT_TRUE(HasESimMetadata(activation_code.value()));
+  expected_state.success_initial_count++;
+  expected_state.install_method_via_smdp_count++;
+  CheckHistogramState(expected_state);
+}
+
+TEST_F(CellularPolicyHandlerTest_SmdsSupportEnabled_SecondEuiccDisabled,
+       InstallSuccess_RequireEuicc) {
+  AddCellularDevice();
+  AddWiFi();
+
+  ExpectedHistogramState expected_state;
+  CheckHistogramState(expected_state);
+
+  const policy_util::SmdxActivationCode activation_code(
+      policy_util::SmdxActivationCode::Type::SMDP,
+      HermesEuiccClient::Get()
+          ->GetTestInterface()
+          ->GenerateFakeActivationCode());
+
+  absl::optional<base::Value::Dict> onc_config =
+      chromeos::onc::ReadDictionaryFromJson(
+          GenerateCellularPolicy(activation_code));
+  ASSERT_TRUE(onc_config.has_value());
+
+  InstallProfile(*onc_config);
+
+  EXPECT_FALSE(IsProfileInstalled(*onc_config, activation_code.value(),
+                                  /*check_for_service=*/true));
+  EXPECT_FALSE(HasESimMetadata(activation_code.value()));
+  CheckHistogramState(expected_state);
+
+  AddEuiccs();
+
+  FastForwardRefreshDelay();
+
+  CompleteShillServiceAutoConnect(*onc_config);
+
+  EXPECT_TRUE(IsProfileInstalled(*onc_config, activation_code.value(),
+                                 /*check_for_service=*/true));
+  EXPECT_TRUE(HasESimMetadata(activation_code.value()));
+  expected_state.success_initial_count++;
+  expected_state.install_method_via_smdp_count++;
+  CheckHistogramState(expected_state);
+}
+
+TEST_F(CellularPolicyHandlerTest_SmdsSupportEnabled_SecondEuiccDisabled,
+       InstallSuccess_RequireNonCellularConnection) {
+  AddCellularDevice();
+  AddEuiccs();
+
+  ExpectedHistogramState expected_state;
+  CheckHistogramState(expected_state);
+
+  const policy_util::SmdxActivationCode activation_code(
+      policy_util::SmdxActivationCode::Type::SMDP,
+      HermesEuiccClient::Get()
+          ->GetTestInterface()
+          ->GenerateFakeActivationCode());
+
+  absl::optional<base::Value::Dict> onc_config =
+      chromeos::onc::ReadDictionaryFromJson(
+          GenerateCellularPolicy(activation_code));
+  ASSERT_TRUE(onc_config.has_value());
+
+  InstallProfile(*onc_config);
+
+  // When there is no non-cellular connectivity the installation attempt is
+  // considered failed, and will be retried after a delay.
+  EXPECT_FALSE(IsProfileInstalled(*onc_config, activation_code.value(),
+                                  /*check_for_service=*/true));
+  EXPECT_FALSE(HasESimMetadata(activation_code.value()));
+  CheckHistogramState(expected_state);
+
+  AddWiFi();
+
+  // The delay for the first failure is 10 minutes. Fast forward to just before
+  // the next installation attempt should be.
+  FastForwardBy(base::Minutes(9));
+
+  EXPECT_FALSE(IsProfileInstalled(*onc_config, activation_code.value(),
+                                  /*check_for_service=*/true));
+  EXPECT_FALSE(HasESimMetadata(activation_code.value()));
+  CheckHistogramState(expected_state);
+
+  FastForwardBy(base::Minutes(1));
+
+  CompleteShillServiceAutoConnect(*onc_config);
+
+  EXPECT_TRUE(IsProfileInstalled(*onc_config, activation_code.value(),
+                                 /*check_for_service=*/true));
+  EXPECT_TRUE(HasESimMetadata(activation_code.value()));
+  expected_state.success_retry_count++;
+  CheckHistogramState(expected_state);
+}
+
+TEST_F(CellularPolicyHandlerTest_SmdsSupportEnabled_SecondEuiccDisabled,
+       InstallSuccess_ExistingIccid) {
+  SetupGolden();
+
+  ExpectedHistogramState expected_state;
+  CheckHistogramState(expected_state);
+
+  const policy_util::SmdxActivationCode activation_code(
+      policy_util::SmdxActivationCode::Type::SMDP,
+      HermesEuiccClient::Get()
+          ->GetTestInterface()
+          ->GenerateFakeActivationCode());
+  absl::optional<base::Value::Dict> onc_config =
+      chromeos::onc::ReadDictionaryFromJson(
+          GenerateCellularPolicy(activation_code, kTestProfileIccid0));
+  ASSERT_TRUE(onc_config.has_value());
+
+  // Add a profile the same ICCID as |onc_config|.
+  HermesEuiccClient::Get()->GetTestInterface()->AddCarrierProfile(
+      dbus::ObjectPath(kTestProfilePath0), dbus::ObjectPath(kTestEuiccPath0),
+      kTestProfileIccid0, kTestProfileName0, kTestProfileNickname0,
+      kTestProfileServiceProvider0, activation_code.value(),
+      kTestProfileServicePath0, hermes::profile::State::kActive,
+      hermes::profile::ProfileClass::kOperational,
+      HermesEuiccClient::TestInterface::AddCarrierProfileBehavior::
+          kAddProfileWithService);
+  base::RunLoop().RunUntilIdle();
+
+  EXPECT_TRUE(IsProfileInstalled(*onc_config, activation_code.value(),
+                                 /*check_for_service=*/false));
+  EXPECT_FALSE(HasESimMetadata(activation_code.value()));
+
+  const base::Value::Dict* properties =
+      network_handler_test_helper()->service_test()->GetServiceProperties(
+          kTestProfileServicePath0);
+  ASSERT_TRUE(properties);
+
+  const std::string* iccid = properties->FindString(shill::kIccidProperty);
+  EXPECT_TRUE(iccid && *iccid == kTestProfileIccid0);
+
+  cellular_policy_handler()->InstallESim(*onc_config);
+
+  FastForwardRefreshDelay();
+
+  CompleteShillServiceAutoConnect(*onc_config);
+
+  EXPECT_TRUE(HasESimMetadata(activation_code.value()));
+
+  CheckHistogramState(expected_state);
+}
+
+TEST_F(CellularPolicyHandlerTest_SmdsSupportEnabled_SecondEuiccDisabled,
+       InstallFailure_NoActivationCodeProvided) {
+  SetupGolden();
+
+  ExpectedHistogramState expected_state;
+  CheckHistogramState(expected_state);
+
+  absl::optional<base::Value::Dict> onc_config =
+      chromeos::onc::ReadDictionaryFromJson(
+          base::StringPrintf(kCellularPolicyPattern, base::RandUint64(), "{}"));
+  ASSERT_TRUE(onc_config.has_value());
+
+  cellular_policy_handler()->InstallESim(*onc_config);
+
+  FastForwardRefreshDelay();
+
+  CheckHistogramState(expected_state);
+}
+
+TEST_F(CellularPolicyHandlerTest_SmdsSupportEnabled_SecondEuiccDisabled,
+       InstallFailure_ProfileMissingActivationCode) {
+  SetupGolden();
+
+  ExpectedHistogramState expected_state;
+  CheckHistogramState(expected_state);
+
+  // Configure a profile with no activation code.
+  HermesEuiccClient::Get()->GetTestInterface()->AddCarrierProfile(
+      dbus::ObjectPath(kTestProfilePath0), dbus::ObjectPath(kTestEuiccPath0),
+      kTestProfileIccid0, kTestProfileName0, kTestProfileNickname0,
+      kTestProfileServiceProvider0, /*activation_code=*/"",
+      kTestProfileServicePath0, hermes::profile::State::kPending,
+      hermes::profile::ProfileClass::kOperational,
+      HermesEuiccClient::TestInterface::AddCarrierProfileBehavior::
+          kAddProfileWithService);
+  base::RunLoop().RunUntilIdle();
+
+  HermesEuiccClient::Get()
+      ->GetTestInterface()
+      ->SetNextRefreshSmdxProfilesResult({dbus::ObjectPath(kTestProfilePath0)});
+
+  const policy_util::SmdxActivationCode activation_code(
+      policy_util::SmdxActivationCode::Type::SMDS,
+      HermesEuiccClient::Get()
+          ->GetTestInterface()
+          ->GenerateFakeActivationCode());
+
+  absl::optional<base::Value::Dict> onc_config =
+      chromeos::onc::ReadDictionaryFromJson(
+          GenerateCellularPolicy(activation_code));
+  ASSERT_TRUE(onc_config.has_value());
+
+  InstallProfile(*onc_config);
+
+  EXPECT_FALSE(IsProfileInstalled(*onc_config, activation_code.value(),
+                                  /*check_for_service=*/true));
+  EXPECT_FALSE(HasESimMetadata(activation_code.value()));
+  expected_state.smds_scan_profile_total_count++;
+  expected_state.smds_scan_profile_sum++;
+  CheckHistogramState(expected_state);
+}
+
+TEST_F(CellularPolicyHandlerTest_SmdsSupportEnabled_SecondEuiccDisabled,
+       InstallFailure_InternalErrorRetry) {
+  SetupGolden();
+
+  ExpectedHistogramState expected_state;
+  CheckHistogramState(expected_state);
+
+  const policy_util::SmdxActivationCode activation_code(
+      policy_util::SmdxActivationCode::Type::SMDP,
+      HermesEuiccClient::Get()
+          ->GetTestInterface()
+          ->GenerateFakeActivationCode());
+
+  absl::optional<base::Value::Dict> onc_config =
+      chromeos::onc::ReadDictionaryFromJson(
+          GenerateCellularPolicy(activation_code));
+  ASSERT_TRUE(onc_config.has_value());
+
   HermesEuiccClient::Get()
       ->GetTestInterface()
       ->SetNextInstallProfileFromActivationCodeResult(
           HermesResponseStatus::kErrorUnknown);
-  InstallESimPolicy(policy,
-                    HermesEuiccClient::Get()
-                        ->GetTestInterface()
-                        ->GenerateFakeActivationCode(),
-                    /*expect_install_success=*/false);
 
-  FastForwardBy(kInstallationRetryDelayExponential);
+  InstallProfile(*onc_config);
 
-  // For internal errors, retry should follow an exponential backoff with the
-  // initial delay of 5 minutes.
-  histogram_tester.ExpectBucketCount(
-      kInstallViaPolicyOperationHistogram,
-      CellularESimInstaller::InstallESimProfileResult::kSuccess,
-      /*expected_count=*/2);
+  EXPECT_FALSE(IsProfileInstalled(*onc_config, activation_code.value(),
+                                  /*check_for_service=*/true));
+  EXPECT_FALSE(HasESimMetadata(activation_code.value()));
+  expected_state.hermes_install_failed_initial_count++;
+  expected_state.install_method_via_smdp_count++;
+  CheckHistogramState(expected_state);
+
+  // Failures due to Hermes are considered transient and the installation will
+  // be retried after a delay. Fast forward to just before we expect the retry.
+  FastForwardBy(base::Minutes(9));
+
+  CheckHistogramState(expected_state);
+
+  HermesEuiccClient::Get()
+      ->GetTestInterface()
+      ->SetNextInstallProfileFromActivationCodeResult(
+          HermesResponseStatus::kErrorUnknown);
+
+  FastForwardBy(base::Minutes(1));
+
+  EXPECT_FALSE(IsProfileInstalled(*onc_config, activation_code.value(),
+                                  /*check_for_service=*/true));
+  EXPECT_FALSE(HasESimMetadata(activation_code.value()));
+  expected_state.hermes_install_failed_retry_count++;
+  CheckHistogramState(expected_state);
+
+  HermesEuiccClient::Get()
+      ->GetTestInterface()
+      ->SetNextInstallProfileFromActivationCodeResult(
+          HermesResponseStatus::kErrorUnknown);
+
+  // We don't know how much time has passed since the first retry, so instead of
+  // checking before and after when we expect the retry to happen we simply skip
+  // forward to when we know the next retry should happen.
+  FastForwardBy(base::Minutes(20));
+
+  EXPECT_FALSE(IsProfileInstalled(*onc_config, activation_code.value(),
+                                  /*check_for_service=*/true));
+  EXPECT_FALSE(HasESimMetadata(activation_code.value()));
+  expected_state.hermes_install_failed_retry_count++;
+  CheckHistogramState(expected_state);
+
+  // Please see the comment above for more context.
+  FastForwardBy(base::Minutes(40));
+
+  CompleteShillServiceAutoConnect(*onc_config);
+
+  EXPECT_TRUE(IsProfileInstalled(*onc_config, activation_code.value(),
+                                 /*check_for_service=*/true));
+  EXPECT_TRUE(HasESimMetadata(activation_code.value()));
+  expected_state.success_retry_count++;
+  CheckHistogramState(expected_state);
 }
 
-TEST_F(CellularPolicyHandlerTest, InstallProfileFailure) {
-  SetupEuicc();
+TEST_F(CellularPolicyHandlerTest_SmdsSupportEnabled_SecondEuiccDisabled,
+       InstallFailure_OtherErrorRetry) {
+  SetupGolden();
 
-  base::HistogramTester histogram_tester;
+  ExpectedHistogramState expected_state;
+  CheckHistogramState(expected_state);
 
-  // Make the first installation attempt fail, resulting in an immediate retry
-  // delay of |kInstallationRetryDelay|.
+  const policy_util::SmdxActivationCode activation_code(
+      policy_util::SmdxActivationCode::Type::SMDP,
+      HermesEuiccClient::Get()
+          ->GetTestInterface()
+          ->GenerateFakeActivationCode());
+
+  absl::optional<base::Value::Dict> onc_config =
+      chromeos::onc::ReadDictionaryFromJson(
+          GenerateCellularPolicy(activation_code));
+  ASSERT_TRUE(onc_config.has_value());
+
   HermesEuiccClient::Get()
       ->GetTestInterface()
       ->SetNextInstallProfileFromActivationCodeResult(
           HermesResponseStatus::kErrorSendHttpsFailure);
 
-  const std::string policy =
-      GenerateCellularPolicy(HermesEuiccClient::Get()
-                                 ->GetTestInterface()
-                                 ->GenerateFakeActivationCode());
-  InstallESimPolicy(policy,
-                    HermesEuiccClient::Get()
-                        ->GetTestInterface()
-                        ->GenerateFakeActivationCode(),
-                    /*expect_install_success=*/false);
+  InstallProfile(*onc_config);
 
-  histogram_tester.ExpectBucketCount(
-      kInstallViaPolicyOperationHistogram,
-      CellularESimInstaller::InstallESimProfileResult::kSuccess,
-      /*expected_count=*/0);
-  histogram_tester.ExpectBucketCount(
-      kInstallViaPolicyOperationHistogram,
-      CellularESimInstaller::InstallESimProfileResult::kHermesInstallFailed,
-      /*expected_count=*/1);
-  histogram_tester.ExpectBucketCount(
-      kInstallViaPolicyInitialOperationHistogram,
-      CellularESimInstaller::InstallESimProfileResult::kHermesInstallFailed,
-      /*expected_count=*/1);
-  histogram_tester.ExpectBucketCount(
-      kInstallViaPolicyRetryOperationHistogram,
-      CellularESimInstaller::InstallESimProfileResult::kHermesInstallFailed,
-      /*expected_count=*/0);
-  CheckShillConfiguration(/*is_installed=*/false);
-  CheckIccidSmdpPairInPref(/*is_installed=*/false);
+  EXPECT_FALSE(IsProfileInstalled(*onc_config, activation_code.value(),
+                                  /*check_for_service=*/true));
+  EXPECT_FALSE(HasESimMetadata(activation_code.value()));
+  expected_state.hermes_install_failed_initial_count++;
+  expected_state.install_method_via_smdp_count++;
+  CheckHistogramState(expected_state);
 
-  // Fast forward by |kInstallationRetryDelay| to trigger a retry. We use some
-  // buffer time since the retry mechanism doesn't happen synchronously.
-  FastForwardBy(kInstallationRetryDelay + base::Minutes(5));
-  histogram_tester.ExpectBucketCount(
-      kInstallViaPolicyOperationHistogram,
-      CellularESimInstaller::InstallESimProfileResult::kSuccess,
-      /*expected_count=*/1);
-  histogram_tester.ExpectBucketCount(
-      kInstallViaPolicyOperationHistogram,
-      CellularESimInstaller::InstallESimProfileResult::kHermesInstallFailed,
-      /*expected_count=*/1);
-  histogram_tester.ExpectBucketCount(
-      kInstallViaPolicyInitialOperationHistogram,
-      CellularESimInstaller::InstallESimProfileResult::kHermesInstallFailed,
-      /*expected_count=*/1);
-  histogram_tester.ExpectBucketCount(
-      kInstallViaPolicyRetryOperationHistogram,
-      CellularESimInstaller::InstallESimProfileResult::kHermesInstallFailed,
-      /*expected_count=*/0);
-  CheckShillConfiguration(/*is_installed=*/true);
-  CheckIccidSmdpPairInPref(/*is_installed=*/true);
+  // Failures that are not due to Hermes or user behavior are not considered
+  // transient and the installation will only be retried after an entire day.
+  FastForwardBy(base::Hours(23));
+
+  CheckHistogramState(expected_state);
+
+  HermesEuiccClient::Get()
+      ->GetTestInterface()
+      ->SetNextInstallProfileFromActivationCodeResult(
+          HermesResponseStatus::kErrorSendHttpsFailure);
+
+  FastForwardBy(base::Hours(1));
+
+  EXPECT_FALSE(IsProfileInstalled(*onc_config, activation_code.value(),
+                                  /*check_for_service=*/true));
+  EXPECT_FALSE(HasESimMetadata(activation_code.value()));
+  expected_state.hermes_install_failed_retry_count++;
+  CheckHistogramState(expected_state);
+
+  for (int i = 0; i < 2; ++i) {
+    HermesEuiccClient::Get()
+        ->GetTestInterface()
+        ->SetNextInstallProfileFromActivationCodeResult(
+            HermesResponseStatus::kErrorSendHttpsFailure);
+
+    // We don't know how much time has passed since the first retry, so instead
+    // of checking before and after when we expect the retry to happen we simply
+    // skip forward to when we know the next retry should happen.
+    FastForwardBy(base::Days(1));
+
+    EXPECT_FALSE(IsProfileInstalled(*onc_config, activation_code.value(),
+                                    /*check_for_service=*/true));
+    EXPECT_FALSE(HasESimMetadata(activation_code.value()));
+    expected_state.hermes_install_failed_retry_count++;
+    CheckHistogramState(expected_state);
+  }
+
+  // Failures that are not due to Hermes or user behavior have limit to how many
+  // times we will retry the installation. Fast forward an entire week to ensure
+  // that we don't continue attempting to install the profile.
+  FastForwardBy(base::Days(7));
+
+  EXPECT_FALSE(IsProfileInstalled(*onc_config, activation_code.value(),
+                                  /*check_for_service=*/true));
+  EXPECT_FALSE(HasESimMetadata(activation_code.value()));
+  CheckHistogramState(expected_state);
 }
 
-TEST_F(CellularPolicyHandlerTest, InstallOnSecondEUICC) {
-  SetupEuicc();
-  // Verify esim profile get installed successfully when installing policy
-  // on the external EUICC.
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(features::kCellularUseSecondEuicc);
-  SetupEuicc2();
-  const std::string policy =
-      GenerateCellularPolicy(HermesEuiccClient::Get()
-                                 ->GetTestInterface()
-                                 ->GenerateFakeActivationCode());
-  InstallESimPolicy(policy,
-                    HermesEuiccClient::Get()
-                        ->GetTestInterface()
-                        ->GenerateFakeActivationCode(),
-                    /*expect_install_success=*/true);
-  CheckShillConfiguration(/*is_installed=*/true);
-  CheckIccidSmdpPairInPref(/*is_installed=*/true);
+TEST_F(CellularPolicyHandlerTest_SmdsSupportEnabled_SecondEuiccDisabled,
+       InstallFailure_UserError) {
+  SetupGolden();
+
+  ExpectedHistogramState expected_state;
+  CheckHistogramState(expected_state);
+
+  const policy_util::SmdxActivationCode activation_code(
+      policy_util::SmdxActivationCode::Type::SMDP,
+      HermesEuiccClient::Get()
+          ->GetTestInterface()
+          ->GenerateFakeActivationCode());
+
+  absl::optional<base::Value::Dict> onc_config =
+      chromeos::onc::ReadDictionaryFromJson(
+          GenerateCellularPolicy(activation_code));
+  ASSERT_TRUE(onc_config.has_value());
+
+  HermesEuiccClient::Get()
+      ->GetTestInterface()
+      ->SetNextInstallProfileFromActivationCodeResult(
+          HermesResponseStatus::kErrorInvalidActivationCode);
+
+  InstallProfile(*onc_config);
+
+  EXPECT_FALSE(IsProfileInstalled(*onc_config, activation_code.value(),
+                                  /*check_for_service=*/true));
+  EXPECT_FALSE(HasESimMetadata(activation_code.value()));
+  expected_state.hermes_install_failed_initial_count++;
+  expected_state.install_method_via_smdp_count++;
+  CheckHistogramState(expected_state);
+
+  // Failures that are due to user behavior are not considered transient and the
+  // installation will not be retried.
+  FastForwardBy(base::Days(7));
+
+  EXPECT_FALSE(IsProfileInstalled(*onc_config, activation_code.value(),
+                                  /*check_for_service=*/true));
+  EXPECT_FALSE(HasESimMetadata(activation_code.value()));
+  CheckHistogramState(expected_state);
 }
 
-TEST_F(CellularPolicyHandlerTest, InstallNoEUICCAvailable) {
-  SetupEuicc();
-  // Verify esim profile doesn't get installed when installing policy esim
-  // with no available EUICC.
-  HermesManagerClient::Get()->GetTestInterface()->ClearEuiccs();
-  base::RunLoop().RunUntilIdle();
-  const std::string policy =
-      GenerateCellularPolicy(HermesEuiccClient::Get()
-                                 ->GetTestInterface()
-                                 ->GenerateFakeActivationCode());
-  InstallESimPolicy(policy,
-                    HermesEuiccClient::Get()
-                        ->GetTestInterface()
-                        ->GenerateFakeActivationCode(),
-                    /*expect_install_success=*/false);
-  CheckShillConfiguration(/*is_installed=*/false);
-  CheckIccidSmdpPairInPref(/*is_installed=*/false);
-}
+TEST_F(CellularPolicyHandlerTest_SmdsSupportEnabled_SecondEuiccEnabled,
+       InstallSuccess) {
+  SetupGolden();
 
-TEST_F(CellularPolicyHandlerTest, UpdateSMDPAddress) {
-  SetupEuicc();
-  // Verify that the first request should be invalidated when the second
-  // request is queued.
-  std::string policy = GenerateCellularPolicy("000");
-  InstallESimPolicy(policy,
-                    /*activation_code=*/"000",
-                    /*expect_install_success=*/false);
-  policy = GenerateCellularPolicy(HermesEuiccClient::Get()
-                                      ->GetTestInterface()
-                                      ->GenerateFakeActivationCode());
+  CheckCurrentEuiccSlot(1);
 
-  InstallESimPolicy(policy,
-                    HermesEuiccClient::Get()
-                        ->GetTestInterface()
-                        ->GenerateFakeActivationCode(),
-                    /*expect_install_success=*/true);
-  CheckShillConfiguration(/*is_installed=*/true);
-  CheckIccidSmdpPairInPref(/*is_installed=*/true);
-}
+  ExpectedHistogramState expected_state;
+  CheckHistogramState(expected_state);
 
-TEST_F(CellularPolicyHandlerTest, InstallExistingESimProfileSuccess) {
-  SetupEuicc();
-  SetupESimProfile();
+  const policy_util::SmdxActivationCode activation_code(
+      policy_util::SmdxActivationCode::Type::SMDP,
+      HermesEuiccClient::Get()
+          ->GetTestInterface()
+          ->GenerateFakeActivationCode());
 
-  const std::string policy =
-      GenerateCellularPolicy(HermesEuiccClient::Get()
-                                 ->GetTestInterface()
-                                 ->GenerateFakeActivationCode(),
-                             kICCID);
-  InstallESimPolicy(policy,
-                    HermesEuiccClient::Get()
-                        ->GetTestInterface()
-                        ->GenerateFakeActivationCode(),
-                    /*expect_install_success=*/false);
-  CheckShillConfiguration(/*is_installed=*/true);
-  CheckIccidSmdpPairInPref(/*is_installed=*/true);
-}
+  absl::optional<base::Value::Dict> onc_config =
+      chromeos::onc::ReadDictionaryFromJson(
+          GenerateCellularPolicy(activation_code));
+  ASSERT_TRUE(onc_config.has_value());
 
-TEST_F(CellularPolicyHandlerTest, InstallExistingESimProfileFailure) {
-  SetupEuicc();
-  SetupESimProfile();
-  ShillManagerClient::Get()->GetTestInterface()->SetSimulateConfigurationResult(
-      FakeShillSimulatedResult::kFailure);
-  const std::string policy =
-      GenerateCellularPolicy(HermesEuiccClient::Get()
-                                 ->GetTestInterface()
-                                 ->GenerateFakeActivationCode(),
-                             kICCID);
-  InstallESimPolicy(policy,
-                    HermesEuiccClient::Get()
-                        ->GetTestInterface()
-                        ->GenerateFakeActivationCode(),
-                    /*expect_install_success=*/false);
-  FastForwardBy(kInstallationRetryDelay);
-  CheckShillConfiguration(/*is_installed=*/false);
-  CheckIccidSmdpPairInPref(/*is_installed=*/false);
-}
+  InstallProfile(*onc_config);
 
-TEST_F(CellularPolicyHandlerTest, NoInternetConnection) {
-  SetupEuicc();
-  auto* shill_service = ShillServiceClient::Get()->GetTestInterface();
-  shill_service->ClearServices();
-  base::RunLoop().RunUntilIdle();
-  // Verify that when no internet connection, the installation will keep
-  // retrying until the internet is available.
-  const std::string policy =
-      GenerateCellularPolicy(HermesEuiccClient::Get()
-                                 ->GetTestInterface()
-                                 ->GenerateFakeActivationCode());
-  InstallESimPolicy(policy,
-                    HermesEuiccClient::Get()
-                        ->GetTestInterface()
-                        ->GenerateFakeActivationCode(),
-                    /*expect_install_success=*/false);
-  // Fast forward 6 minutes since the first retry should happen in 5 minutes.
-  FastForwardBy(base::Minutes(6));
-  CheckShillConfiguration(/*is_installed=*/false);
-  CheckIccidSmdpPairInPref(/*is_installed=*/false);
-  // Verify that cellular type of internet connectivity should not trigger the
-  // installation.
-  shill_service->AddService(kUnmanagedCellularServicePath,
-                            kUnmanagedCellularGuid, kUnmanagedCellularName,
-                            shill::kTypeCellular, shill::kStateOnline,
-                            /*visible=*/true);
-  base::RunLoop().RunUntilIdle();
-  // Fast forward 11 minutes since the first retry should happen in 10 minutes.
-  FastForwardBy(base::Minutes(11));
-  CheckShillConfiguration(/*is_installed=*/false);
-  CheckIccidSmdpPairInPref(/*is_installed=*/false);
-  // Verify that installation succeeds when a non-cellular type internet is
-  // available.
-  shill_service->AddService(kWifiServicePath, kWifiGuid, kWifiName,
-                            shill::kTypeWifi, shill::kStateOnline,
-                            /*visible=*/true);
-  base::RunLoop().RunUntilIdle();
-  // Fast forward 21 minutes since the first retry should happen in 20 minutes.
-  FastForwardBy(base::Minutes(21));
-  CheckShillConfiguration(/*is_installed=*/true);
-  CheckIccidSmdpPairInPref(/*is_installed=*/true);
+  CompleteShillServiceAutoConnect(*onc_config);
+
+  EXPECT_TRUE(IsProfileInstalled(*onc_config, activation_code.value(),
+                                 /*check_for_service=*/true));
+  EXPECT_TRUE(HasESimMetadata(activation_code.value()));
+  expected_state.success_initial_count++;
+  expected_state.install_method_via_smdp_count++;
+  CheckHistogramState(expected_state);
 }
 
 }  // namespace ash

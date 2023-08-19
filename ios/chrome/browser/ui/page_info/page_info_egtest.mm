@@ -24,10 +24,6 @@
 #import "net/test/embedded_test_server/embedded_test_server.h"
 #import "ui/base/l10n/l10n_util.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 namespace {
 
 using ::base::test::ios::kWaitForUIElementTimeout;
@@ -273,6 +269,34 @@ id<GREYMatcher> MicrophonePermissionsSwitch(BOOL isOn) {
       @(web::PermissionMicrophone) : @(web::PermissionStateAllowed)
     }];
   }
+}
+
+// Tests that rotating the device will not dismiss the navigation bar.
+- (void)testShowPageInfoTitleRotation {
+  GREYAssertTrue(self.testServer->Start(), @"Test server failed to start.");
+  [ChromeEarlGrey loadURL:self.testServer->GetURL("/")];
+  [ChromeEarlGreyUI openPageInfo];
+
+  // Check that the navigation bar is visible.
+  [[EarlGrey selectElementWithMatcher:
+                 grey_accessibilityID(
+                     kPageInfoViewNavigationBarAccessibilityIdentifier)]
+      assertWithMatcher:grey_sufficientlyVisible()];
+
+  // Rotate to landscape mode and check the navigation bar is still visible.
+  [EarlGrey rotateDeviceToOrientation:UIDeviceOrientationLandscapeRight
+                                error:nil];
+  [[EarlGrey selectElementWithMatcher:
+                 grey_accessibilityID(
+                     kPageInfoViewNavigationBarAccessibilityIdentifier)]
+      assertWithMatcher:grey_sufficientlyVisible()];
+
+  // Rotate back to portrait mode and check the navigation bar is still visible.
+  [EarlGrey rotateDeviceToOrientation:UIDeviceOrientationPortrait error:nil];
+  [[EarlGrey selectElementWithMatcher:
+                 grey_accessibilityID(
+                     kPageInfoViewNavigationBarAccessibilityIdentifier)]
+      assertWithMatcher:grey_sufficientlyVisible()];
 }
 
 @end

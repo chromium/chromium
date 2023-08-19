@@ -424,7 +424,7 @@ TEST_F(AppServiceProxyPreferredAppsTest, UpdatedOnUninstall) {
     apps.push_back(std::move(app));
 
     OnApps(std::move(apps), AppType::kWeb);
-    proxy()->AddPreferredApp(kTestAppId, kTestUrl);
+    proxy()->SetSupportedLinksPreference(kTestAppId);
 
     absl::optional<std::string> preferred_app =
         proxy()->PreferredAppsList().FindPreferredAppForUrl(kTestUrl);
@@ -516,78 +516,6 @@ TEST_F(AppServiceProxyPreferredAppsTest, SetPreferredApp) {
 
   ASSERT_EQ(absl::nullopt,
             proxy()->PreferredAppsList().FindPreferredAppForUrl(kTestUrl1));
-}
-
-// Using AddPreferredApp to set a supported link should enable all supported
-// links for that app.
-TEST_F(AppServiceProxyPreferredAppsTest, AddPreferredAppForLink) {
-  constexpr char kTestAppId[] = "aaa";
-  const GURL kTestUrl1 = GURL("https://www.foo.com/");
-  const GURL kTestUrl2 = GURL("https://www.bar.com/");
-  auto url_filter_1 = apps_util::MakeIntentFilterForUrlScope(kTestUrl1);
-  auto url_filter_2 = apps_util::MakeIntentFilterForUrlScope(kTestUrl2);
-
-  std::vector<AppPtr> apps;
-  AppPtr app1 = std::make_unique<App>(AppType::kWeb, kTestAppId);
-  app1->readiness = Readiness::kReady;
-  app1->intent_filters.push_back(url_filter_1->Clone());
-  app1->intent_filters.push_back(url_filter_2->Clone());
-  apps.push_back(std::move(app1));
-  OnApps(std::move(apps), AppType::kWeb);
-
-  proxy()->AddPreferredApp(kTestAppId, GURL("https://www.foo.com/something/"));
-
-  ASSERT_EQ(kTestAppId,
-            proxy()->PreferredAppsList().FindPreferredAppForUrl(kTestUrl1));
-  ASSERT_EQ(kTestAppId,
-            proxy()->PreferredAppsList().FindPreferredAppForUrl(kTestUrl2));
-}
-
-TEST_F(AppServiceProxyPreferredAppsTest, AddPreferredAppBrowser) {
-  constexpr char kTestAppId1[] = "aaa";
-  constexpr char kTestAppId2[] = "bbb";
-  const GURL kTestUrl1 = GURL("https://www.foo.com/");
-  const GURL kTestUrl2 = GURL("https://www.bar.com/");
-  const GURL kTestUrl3 = GURL("https://www.baz.com/");
-
-  auto url_filter_1 = apps_util::MakeIntentFilterForUrlScope(kTestUrl1);
-  auto url_filter_2 = apps_util::MakeIntentFilterForUrlScope(kTestUrl2);
-  auto url_filter_3 = apps_util::MakeIntentFilterForUrlScope(kTestUrl3);
-
-  std::vector<AppPtr> apps;
-  AppPtr app1 = std::make_unique<App>(AppType::kWeb, kTestAppId1);
-  app1->readiness = Readiness::kReady;
-  app1->intent_filters.push_back(url_filter_1->Clone());
-  app1->intent_filters.push_back(url_filter_2->Clone());
-  apps.push_back(std::move(app1));
-
-  AppPtr app2 = std::make_unique<App>(AppType::kWeb, kTestAppId2);
-  app2->readiness = Readiness::kReady;
-  app2->intent_filters.push_back(url_filter_3->Clone());
-  apps.push_back(std::move(app2));
-
-  OnApps(std::move(apps), AppType::kWeb);
-
-  proxy()->AddPreferredApp(kTestAppId1, kTestUrl1);
-
-  // Setting "use browser" for a URL currently handled by App 1 should unset
-  // both of App 1's links.
-  proxy()->AddPreferredApp(apps_util::kUseBrowserForLink, kTestUrl1);
-
-  ASSERT_EQ(apps_util::kUseBrowserForLink,
-            proxy()->PreferredAppsList().FindPreferredAppForUrl(kTestUrl1));
-  ASSERT_EQ(absl::nullopt,
-            proxy()->PreferredAppsList().FindPreferredAppForUrl(kTestUrl2));
-
-  proxy()->AddPreferredApp(apps_util::kUseBrowserForLink, kTestUrl3);
-  ASSERT_EQ(apps_util::kUseBrowserForLink,
-            proxy()->PreferredAppsList().FindPreferredAppForUrl(kTestUrl3));
-
-  // Changing the setting back from "use browser" to App 1 should only update
-  // that "use-browser" setting, settings for other URLs are unchanged.
-  proxy()->AddPreferredApp(kTestAppId1, kTestUrl1);
-  ASSERT_EQ(apps_util::kUseBrowserForLink,
-            proxy()->PreferredAppsList().FindPreferredAppForUrl(kTestUrl3));
 }
 
 // Tests that writing a preferred app value before the PreferredAppsList is
@@ -732,13 +660,13 @@ TEST_F(AppServiceProxyPreferredAppsTest, PreferredAppsOverlapSupportedLink) {
   auto intent_filter_1 = apps_util::MakeIntentFilterForUrlScope(filter_url_1);
   apps_util::AddConditionValue(ConditionType::kScheme, filter_url_2.scheme(),
                                PatternMatchType::kLiteral, intent_filter_1);
-  apps_util::AddConditionValue(ConditionType::kHost, filter_url_2.host(),
+  apps_util::AddConditionValue(ConditionType::kAuthority, filter_url_2.host(),
                                PatternMatchType::kLiteral, intent_filter_1);
 
   auto intent_filter_2 = apps_util::MakeIntentFilterForUrlScope(filter_url_3);
   apps_util::AddConditionValue(ConditionType::kScheme, filter_url_2.scheme(),
                                PatternMatchType::kLiteral, intent_filter_2);
-  apps_util::AddConditionValue(ConditionType::kHost, filter_url_2.host(),
+  apps_util::AddConditionValue(ConditionType::kAuthority, filter_url_2.host(),
                                PatternMatchType::kLiteral, intent_filter_2);
 
   auto intent_filter_3 = apps_util::MakeIntentFilterForUrlScope(filter_url_1);

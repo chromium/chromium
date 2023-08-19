@@ -514,29 +514,31 @@ ExtensionFunction::ResponseAction WindowsGetLastFocusedFunction::Run() {
   EXTENSION_FUNCTION_VALIDATE(params);
 
   ApiParameterExtractor<windows::GetLastFocused::Params> extractor(params);
-  // The WindowControllerList should contain a list of application,
-  // browser and devtools windows.
-  Browser* browser = nullptr;
-  for (auto* controller : WindowControllerList::GetInstance()->windows()) {
-    if (controller->GetBrowser() &&
-        windows_util::CanOperateOnWindow(this, controller,
+
+  Browser* last_focused_browser = nullptr;
+  BrowserList* const browser_list = BrowserList::GetInstance();
+  for (auto browser_iterator =
+           browser_list->begin_browsers_ordered_by_activation();
+       browser_iterator != browser_list->end_browsers_ordered_by_activation();
+       ++browser_iterator) {
+    Browser* browser = *browser_iterator;
+    if (windows_util::CanOperateOnWindow(this,
+                                         browser->extension_window_controller(),
                                          extractor.type_filters())) {
-      // TODO(devlin): Doesn't this mean that we'll use the last window in the
-      // list if there is no active window? That seems wrong.
-      // See https://crbug.com/809822.
-      browser = controller->GetBrowser();
-      if (controller->window()->IsActive())
-        break;  // Use focused window.
+      last_focused_browser = browser;
+      break;
     }
   }
-  if (!browser)
+  if (!last_focused_browser) {
     return RespondNow(Error(tabs_constants::kNoLastFocusedWindowError));
+  }
 
   ExtensionTabUtil::PopulateTabBehavior populate_tab_behavior =
       extractor.populate_tabs() ? ExtensionTabUtil::kPopulateTabs
                                 : ExtensionTabUtil::kDontPopulateTabs;
   base::Value::Dict windows = ExtensionTabUtil::CreateWindowValueForExtension(
-      *browser, extension(), populate_tab_behavior, source_context_type());
+      *last_focused_browser, extension(), populate_tab_behavior,
+      source_context_type());
   return RespondNow(WithArguments(std::move(windows)));
 }
 
@@ -1611,12 +1613,6 @@ bool TabsUpdateFunction::UpdateURL(const std::string& url_string,
     return false;
   }
 
-  // JavaScript URLs are forbidden in chrome.tabs.update().
-  if (url->SchemeIs(url::kJavaScriptScheme)) {
-    *error = tabs_constants::kJavaScriptUrlsNotAllowedInTabsUpdate;
-    return false;
-  }
-
   NavigationController::LoadURLParams load_params(*url);
 
   // Treat extension-initiated navigations as renderer-initiated so that the URL
@@ -2418,9 +2414,9 @@ bool ExecuteCodeInTabFunction::CanExecuteScriptOnPage(std::string* error) {
 
   int frame_id = details_->frame_id ? *details_->frame_id
                                     : ExtensionApiFrameIdMap::kTopFrameId;
-  content::RenderFrameHost* rfh =
+  content::RenderFrameHost* render_frame_host =
       ExtensionApiFrameIdMap::GetRenderFrameHostById(contents, frame_id);
-  if (!rfh) {
+  if (!render_frame_host) {
     *error = ErrorUtils::FormatErrorMessage(
         tabs_constants::kFrameNotFoundError, base::NumberToString(frame_id),
         base::NumberToString(execute_tab_id_));
@@ -2430,11 +2426,12 @@ bool ExecuteCodeInTabFunction::CanExecuteScriptOnPage(std::string* error) {
   // Content scripts declared in manifest.json can access frames at about:-URLs
   // if the extension has permission to access the frame's origin, so also allow
   // programmatic content scripts at about:-URLs for allowed origins.
-  GURL effective_document_url(rfh->GetLastCommittedURL());
+  GURL effective_document_url(render_frame_host->GetLastCommittedURL());
   bool is_about_url = effective_document_url.SchemeIs(url::kAboutScheme);
   if (is_about_url && details_->match_about_blank &&
       *details_->match_about_blank) {
-    effective_document_url = GURL(rfh->GetLastCommittedOrigin().Serialize());
+    effective_document_url =
+        GURL(render_frame_host->GetLastCommittedOrigin().Serialize());
   }
 
   if (!effective_document_url.is_valid()) {
@@ -2452,8 +2449,8 @@ bool ExecuteCodeInTabFunction::CanExecuteScriptOnPage(std::string* error) {
             mojom::APIPermissionID::kTab)) {
       *error = ErrorUtils::FormatErrorMessage(
           manifest_errors::kCannotAccessAboutUrl,
-          rfh->GetLastCommittedURL().spec(),
-          rfh->GetLastCommittedOrigin().Serialize());
+          render_frame_host->GetLastCommittedURL().spec(),
+          render_frame_host->GetLastCommittedOrigin().Serialize());
     }
     return false;
   }

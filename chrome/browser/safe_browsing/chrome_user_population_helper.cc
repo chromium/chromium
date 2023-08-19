@@ -4,7 +4,6 @@
 
 #include "chrome/browser/safe_browsing/chrome_user_population_helper.h"
 
-#include "base/metrics/field_trial.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/no_destructor.h"
 #include "build/chromeos_buildflags.h"
@@ -69,8 +68,8 @@ ChromeUserPopulation GetUserPopulationForProfile(Profile* profile) {
     return ChromeUserPopulation();
 
   syncer::SyncService* sync = SyncServiceFactory::GetForProfile(profile);
-  bool is_history_sync_enabled =
-      sync && sync->IsSyncFeatureActive() && !sync->IsLocalSyncEnabled() &&
+  bool is_history_sync_active =
+      sync && !sync->IsLocalSyncEnabled() &&
       sync->GetActiveDataTypes().Has(syncer::HISTORY_DELETE_DIRECTIVES);
   signin::IdentityManager* identity_manager =
       IdentityManagerFactory::GetForProfile(profile);
@@ -105,7 +104,7 @@ ChromeUserPopulation GetUserPopulationForProfile(Profile* profile) {
   }
 
   ChromeUserPopulation population = GetUserPopulation(
-      profile->GetPrefs(), profile->IsOffTheRecord(), is_history_sync_enabled,
+      profile->GetPrefs(), profile->IsOffTheRecord(), is_history_sync_active,
       is_signed_in, is_under_advanced_protection,
       g_browser_process->browser_policy_connector(), std::move(num_profiles),
       std::move(num_loaded_profiles), std::move(num_open_profiles));
@@ -133,24 +132,6 @@ ChromeUserPopulation GetUserPopulationForProfileWithCookieTheftExperiments(
   }
 
   return population;
-}
-
-void GetExperimentStatus(const std::vector<const base::Feature*>& experiments,
-                         ChromeUserPopulation* population) {
-  for (const base::Feature* feature : experiments) {
-    base::FieldTrial* field_trial = base::FeatureList::GetFieldTrial(*feature);
-    if (!field_trial) {
-      continue;
-    }
-    const std::string& trial = field_trial->trial_name();
-    const std::string& group = field_trial->GetGroupNameWithoutActivation();
-    bool is_experimental = group.find("Enabled") != std::string::npos ||
-                           group.find("Control") != std::string::npos;
-    bool is_preperiod = group.find("Preperiod") != std::string::npos;
-    if (is_experimental && !is_preperiod) {
-      population->add_finch_active_groups(trial + "." + group);
-    }
-  }
 }
 
 ChromeUserPopulation::PageLoadToken GetPageLoadTokenForURL(Profile* profile,

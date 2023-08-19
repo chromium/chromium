@@ -11,6 +11,8 @@
 #include "ash/style/typography.h"
 #include "chrome/browser/ash/arc/input_overlay/actions/action.h"
 #include "chrome/browser/ash/arc/input_overlay/display_overlay_controller.h"
+#include "chrome/browser/ash/arc/input_overlay/ui/edit_labels.h"
+#include "chrome/browser/ash/arc/input_overlay/ui/name_tag.h"
 #include "chrome/browser/ash/arc/input_overlay/ui/ui_utils.h"
 #include "ui/chromeos/styles/cros_tokens_color_mappings.h"
 #include "ui/views/background.h"
@@ -22,6 +24,18 @@ ActionViewListItem::ActionViewListItem(DisplayOverlayController* controller,
                                        Action* action)
     : controller_(controller), action_(action) {
   Init();
+}
+
+ActionViewListItem::~ActionViewListItem() = default;
+
+void ActionViewListItem::OnActionInputBindingUpdated() {
+  labels_view_->OnActionInputBindingUpdated();
+}
+
+void ActionViewListItem::OnActionNameUpdated() {
+  auto action_name = GetActionNameAtIndex(controller_->action_name_list(),
+                                          action_->name_label_index());
+  name_tag_->SetTitle(action_name);
 }
 
 void ActionViewListItem::Init() {
@@ -43,39 +57,12 @@ void ActionViewListItem::Init() {
                  /*fixed_width=*/0, /*min_width=*/0)
       .AddRows(1, /*vertical_resize=*/views::TableLayout::kFixedSize);
 
-  switch (action_->GetType()) {
-    case ActionType::TAP:
-      SetActionTapListItem(container);
-      break;
-    case ActionType::MOVE:
-      SetActionMoveListItem(container);
-      break;
-    default:
-      NOTREACHED();
-  }
-}
-
-ActionViewListItem::~ActionViewListItem() = default;
-
-void ActionViewListItem::SetActionTapListItem(views::View* container) {
-  // Set list item as:
-  // --------------------------
-  // | |Name tag|         |a| |
-  // --------------------------
   // TODO(b/270969479): Replace the hardcoded string.
-  container->AddChildView(CreateNameTag(u"title", u"sub-title"));
-  container->AddChildView(CreateActionTapEditForKeyboard(action_));
-}
-
-void ActionViewListItem::SetActionMoveListItem(views::View* container) {
-  // Set list item as:
-  // -----------------------------
-  // | |Name tag|           |w|  |
-  // |                    |a|s|d||
-  // -----------------------------
-  // TODO(b/270969479): Replace the hardcoded string.
-  container->AddChildView(CreateNameTag(u"title", u"sub-title"));
-  container->AddChildView(CreateActionMoveEditForKeyboard(action_));
+  auto title_string = GetActionNameAtIndex(controller_->action_name_list(),
+                                           action_->name_label_index());
+  name_tag_ = container->AddChildView(NameTag::CreateNameTag(title_string));
+  labels_view_ = container->AddChildView(EditLabels::CreateEditLabels(
+      controller_, action_, name_tag_, /*set_title=*/true));
 }
 
 }  // namespace arc::input_overlay

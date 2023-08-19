@@ -1,7 +1,7 @@
 include_rules = [
-  "+components/invalidation",
   "+components/pref_registry",
   "+components/prefs",
+  "+components/signin/public/base",
   "+components/sync/protocol",
   "+third_party/zlib",  # For UniquePosition compression
   "+net/base/net_errors.h",

@@ -266,6 +266,11 @@ message TrustStoreNSSDebugInfo {
   optional SlotFilterType slot_filter_type = 3;
 }
 
+message AiaFetchDebugInfo {
+  optional int32 aia_fetch_failure = 1;
+  optional int32 aia_fetch_success = 2;
+}
+
 // Contains the results of verification by the trial verifier. All fields
 // have the same meaning as those of the same name in CertLoggerRequest.
 message TrialVerificationInfo {
@@ -362,4 +367,12 @@ message TrialVerificationInfo {
 
   // The Linux distribution name, if report is from Linux.
   optional string linux_distro = 19;
+
+  // Information about AIA fetching from the trial cert verifier reports.
+  // TODO(hchao): primary AIA fetching information should probably go in
+  // CertLoggerRequest, but the code currently only provides this information if
+  // we're running a Trial Cert Verifier. If this changes, move the primary
+  // information out of here into CertLoggerRequest.
+  optional AiaFetchDebugInfo primary_aia_fetch_debug_info = 20;
+  optional AiaFetchDebugInfo trial_aia_fetch_debug_info = 21;
 }

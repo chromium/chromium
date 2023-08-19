@@ -27,12 +27,13 @@ import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.multiwindow.MultiWindowUtils;
 import org.chromium.chrome.test.util.browser.Features;
+import org.chromium.chrome.test.util.browser.Features.EnableFeatures;
 
 /** Tests for {@link PartialCustomTabFullSizeStrategy}. */
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
 @LooperMode(LooperMode.Mode.PAUSED)
-@Features.EnableFeatures({ChromeFeatureList.CCT_RESIZABLE_SIDE_SHEET})
+@EnableFeatures({ChromeFeatureList.CCT_RESIZABLE_SIDE_SHEET})
 public class PartialCustomTabFullSizeStrategyTest {
     private boolean mFullscreen;
 
@@ -94,3 +95,4 @@ public class PartialCustomTabFullSizeStrategyTest {
         clearInvocations(mPCCTTestRule.mOnActivityLayoutCallback);
     }
 }
+ 

@@ -10,6 +10,7 @@
 #include "ash/constants/ash_features.h"
 #include "ash/projector/projector_metrics.h"
 #include "ash/webui/projector_app/public/cpp/projector_app_constants.h"
+#include "ash/webui/projector_app/public/mojom/projector_types.mojom-forward.h"
 #include "base/check.h"
 #include "base/files/file_enumerator.h"
 #include "base/files/file_path.h"
@@ -604,16 +605,18 @@ void PendingScreencastManager::SendDrivePatchRequest(
         ash::ProjectorAppClient::Get()->GetUrlLoaderFactory());
   }
 
+  // TODO(b/288457397): Pass the primary account email after email become
+  // required to send request with OAuth token.
   xhr_sender_->Send(
       GURL(base::StrCat({ash::kDriveV3BaseUrl, file_id})),
       ash::projector::mojom::RequestType::kPatch, request_body,
       /*use_credentials=*/false,
       /*use_api_key=*/false,
-      base::BindOnce([](const std::string& response_body,
-                        ash::projector::mojom::XhrResponseCode response_code) {
-        if (response_code != ash::projector::mojom::XhrResponseCode::kSuccess) {
+      base::BindOnce([](ash::projector::mojom::XhrResponsePtr xhr_response) {
+        if (xhr_response->response_code !=
+            ash::projector::mojom::XhrResponseCode::kSuccess) {
           LOG(ERROR) << "Failed to send Drive patch request for file."
-                     << " Error: " << response_code;
+                     << " Error: " << xhr_response->response_code;
         }
       }));
 }

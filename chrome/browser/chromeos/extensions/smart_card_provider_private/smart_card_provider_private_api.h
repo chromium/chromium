@@ -12,6 +12,7 @@
 #include "base/types/id_type.h"
 #include "extensions/browser/browser_context_keyed_api_factory.h"
 #include "extensions/browser/extension_function.h"
+#include "mojo/public/cpp/bindings/associated_receiver_set.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"
@@ -28,7 +29,8 @@ class SmartCardProviderPrivateAPI
     : public BrowserContextKeyedAPI,
       public device::mojom::SmartCardContextFactory,
       public device::mojom::SmartCardContext,
-      public device::mojom::SmartCardConnection {
+      public device::mojom::SmartCardConnection,
+      public device::mojom::SmartCardTransaction {
  public:
   // Uniquely identifies a request sent by this class to the PC/SC provider
   // extension.
@@ -39,6 +41,12 @@ class SmartCardProviderPrivateAPI
   // extension.
   using Handle = base::IdType32<class SmartCardHandleClass>;
 
+  // Extra arguments of a smartCardProviderPrivate.reportStatusResult() call.
+  using StatusResultArgs = std::tuple<std::string,
+                                      device::mojom::SmartCardConnectionState,
+                                      device::mojom::SmartCardProtocol,
+                                      std::vector<uint8_t>>;
+
   using ResultArgs = std::variant<
       std::monostate,            // ReleaseContext, Cancel
       ContextId,                 // EstablishContext
@@ -46,7 +54,8 @@ class SmartCardProviderPrivateAPI
       std::vector<
           device::mojom::SmartCardReaderStateOutPtr>,        // GetStatusChange
       std::tuple<Handle, device::mojom::SmartCardProtocol>,  // Connect
-      std::vector<uint8_t>>;                                 // Transmit
+      std::vector<uint8_t>,                                  // Transmit
+      StatusResultArgs>;
 
   // Common to Transmit, Control and GetAttrib.
   using DataCallback =
@@ -62,7 +71,9 @@ class SmartCardProviderPrivateAPI
                                          GetStatusChangeCallback,
                                          ConnectCallback,
                                          CreateContextCallback,
-                                         DataCallback>;
+                                         DataCallback,
+                                         StatusCallback,
+                                         BeginTransactionCallback>;
 
   using ProcessResultCallback = base::OnceCallback<
       void(ResultArgs, device::mojom::SmartCardResultPtr, SmartCardCallback)>;
@@ -109,6 +120,12 @@ class SmartCardProviderPrivateAPI
   void SetAttrib(uint32_t id,
                  const std::vector<uint8_t>& data,
                  SetAttribCallback callback) override;
+  void Status(StatusCallback callback) override;
+  void BeginTransaction(BeginTransactionCallback callback) override;
+
+  // device::mojom::SmartCardTransaction overrides:
+  void EndTransaction(device::mojom::SmartCardDisposition disposition,
+                      EndTransactionCallback callback) override;
 
   // Called by extension functions:
   void ReportResult(RequestId request_id,
@@ -153,6 +170,14 @@ class SmartCardProviderPrivateAPI
   void ProcessDataResult(ResultArgs result_args,
                          device::mojom::SmartCardResultPtr result,
                          SmartCardCallback callback);
+  void ProcessStatusResult(ResultArgs result_args,
+                           device::mojom::SmartCardResultPtr result,
+                           SmartCardCallback callback);
+  void ProcessBeginTransactionResult(ContextId scard_context,
+                                     Handle handle,
+                                     ResultArgs result_args,
+                                     device::mojom::SmartCardResultPtr result,
+                                     SmartCardCallback callback);
 
   // If the context is free the request is run immediately.
   // Otherwise it is put in a task queue.
@@ -194,6 +219,16 @@ class SmartCardProviderPrivateAPI
                      uint32_t id,
                      const std::vector<uint8_t>& data,
                      SetAttribCallback callback);
+  void SendStatus(ContextId scard_context,
+                  Handle handle,
+                  StatusCallback callback);
+  void SendBeginTransaction(ContextId scard_context,
+                            Handle handle,
+                            BeginTransactionCallback callback);
+  void SendEndTransaction(ContextId scard_context,
+                          Handle handle,
+                          device::mojom::SmartCardDisposition disposition,
+                          EndTransactionCallback callback);
 
   // Called when a device::mojom::SmartCardContext loses its mojo connection.
   // eg: because its mojo Remote was destroyed.
@@ -202,6 +237,12 @@ class SmartCardProviderPrivateAPI
   // Called when a device::mojom::SmartCardConnection loses its mojo connection.
   // eg: because its mojo Remote was destroyed.
   void OnMojoConnectionDisconnected();
+
+  // Called when a device::mojom::SmartCardTransaction loses its mojo
+  // connection.  eg: because its mojo Remote was destroyed.
+  void OnMojoTransactionDisconnected();
+
+  void OnEndTransactionDone(device::mojom::SmartCardResultPtr result);
 
   void OnScardHandleDisconnected(device::mojom::SmartCardResultPtr result);
 
@@ -231,6 +272,12 @@ class SmartCardProviderPrivateAPI
                           RequestId request_id);
   void OnSetAttribTimeout(const std::string& provider_extension_id,
                           RequestId request_id);
+  void OnStatusTimeout(const std::string& provider_extension_id,
+                       RequestId request_id);
+  void OnBeginTransactionTimeout(const std::string& provider_extension_id,
+                                 RequestId request_id);
+  void OnEndTransactionTimeout(const std::string& provider_extension_id,
+                               RequestId request_id);
 
   template <typename ResultPtr>
   void DispatchEventWithTimeout(
@@ -249,6 +296,10 @@ class SmartCardProviderPrivateAPI
       Handle handle,
       device::mojom::SmartCardProtocol active_protocol);
 
+  device::mojom::SmartCardTransactionResultPtr CreateSmartCardTransaction(
+      ContextId scard_context,
+      Handle handle);
+
   struct ContextData;
 
   ContextData& GetContextData(ContextId scard_context);
@@ -257,6 +308,12 @@ class SmartCardProviderPrivateAPI
   // of a request sent on that context. Ie, we have a pending result on that
   // context.
   bool IsContextBusy(ContextId scard_context) const;
+
+  void EndTransactionInternal(ContextId scard_context,
+                              Handle handle,
+                              ContextData& context_data,
+                              device::mojom::SmartCardDisposition disposition,
+                              EndTransactionCallback callback);
 
   SEQUENCE_CHECKER(sequence_checker_);
 
@@ -280,6 +337,10 @@ class SmartCardProviderPrivateAPI
   mojo::ReceiverSet<device::mojom::SmartCardConnection,
                     std::tuple<ContextId, Handle>>
       connection_receivers_;
+
+  mojo::AssociatedReceiverSet<device::mojom::SmartCardTransaction,
+                              std::tuple<ContextId, Handle>>
+      transaction_receivers_;
 
   DisconnectObserver disconnect_observer_;
 
@@ -364,6 +425,17 @@ class SmartCardProviderPrivateReportDataResultFunction
 
   DECLARE_EXTENSION_FUNCTION("smartCardProviderPrivate.reportDataResult",
                              SMARTCARDPROVIDERPRIVATE_REPORTDATARESULT)
+};
+
+class SmartCardProviderPrivateReportStatusResultFunction
+    : public ExtensionFunction {
+ private:
+  // ExtensionFunction:
+  ~SmartCardProviderPrivateReportStatusResultFunction() override;
+  ResponseAction Run() override;
+
+  DECLARE_EXTENSION_FUNCTION("smartCardProviderPrivate.reportStatusResult",
+                             SMARTCARDPROVIDERPRIVATE_REPORTSTATUSRESULT)
 };
 
 }  // namespace extensions

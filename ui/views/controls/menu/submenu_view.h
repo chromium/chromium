@@ -25,12 +25,9 @@ struct OwnedWindowAnchor;
 
 namespace views {
 
+class MenuControllerTest;
 class MenuItemView;
 class MenuScrollViewContainer;
-
-namespace test {
-class MenuControllerTest;
-}  // namespace test
 
 // SubmenuView is the parent of all menu items.
 //
@@ -53,8 +50,6 @@ class VIEWS_EXPORT SubmenuView : public View,
  public:
   METADATA_HEADER(SubmenuView);
 
-  using MenuItems = std::vector<MenuItemView*>;
-
   // Creates a SubmenuView for the specified menu item.
   explicit SubmenuView(MenuItemView* parent);
 
@@ -63,19 +58,21 @@ class VIEWS_EXPORT SubmenuView : public View,
 
   ~SubmenuView() override;
 
-  // Returns true if the submenu has at least one empty menu item.
-  bool HasEmptyMenuItemView() const;
-
-  // Returns true if the submenu has at least one visible child item.
-  bool HasVisibleChildren() const;
-
   // Returns the children which are menu items.
-  MenuItems GetMenuItems() const;
+  std::vector<MenuItemView*> GetMenuItems();
+  std::vector<const MenuItemView*> GetMenuItems() const;
 
   // Returns the MenuItemView at the specified index.
   MenuItemView* GetMenuItemAt(size_t index);
 
+  // The preferred height, in DIPs, of a "standard" (i.e. empty) menu item.
+  int GetPreferredItemHeight() const;
+
   PrefixSelector* GetPrefixSelector();
+
+  // Sets various menu metrics based on the current children. For example, this
+  // reserves space for menu icons iff any children have icons.
+  void UpdateMenuPartSizes();
 
   // Positions and sizes the child views. This tiles the views vertically,
   // giving each child the available width.
@@ -168,6 +165,11 @@ class VIEWS_EXPORT SubmenuView : public View,
   // references to the MenuHost as the MenuHost is about to be deleted.
   void MenuHostDestroyed();
 
+  int icon_area_width() const { return icon_area_width_; }
+  int min_icon_height() const { return min_icon_height_; }
+  int label_start() const { return label_start_; }
+  int trailing_padding() const { return trailing_padding_; }
+
   // Max width of minor text (accelerator or subtitle) in child menu items. This
   // doesn't include children's children, only direct children.
   int max_minor_text_width() const { return max_minor_text_width_; }
@@ -184,6 +186,7 @@ class VIEWS_EXPORT SubmenuView : public View,
     resize_open_menu_ = resize_open_menu;
   }
   MenuHost* host() { return host_; }
+  const MenuHost* host() const { return host_; }
 
   void SetBorderColorId(absl::optional<ui::ColorId> color_id);
 
@@ -195,7 +198,7 @@ class VIEWS_EXPORT SubmenuView : public View,
   void ChildPreferredSizeChanged(View* child) override;
 
  private:
-  friend class test::MenuControllerTest;
+  friend class MenuControllerTest;
 
   void SchedulePaintForDropIndicator(MenuItemView* item,
                                      MenuDelegate::DropPosition position);
@@ -212,17 +215,38 @@ class VIEWS_EXPORT SubmenuView : public View,
 
   // Widget subclass used to show the children. This is deleted when we invoke
   // |DestroyMenuHost|, or |MenuHostDestroyed| is invoked back on us.
-  raw_ptr<MenuHost> host_;
+  raw_ptr<MenuHost> host_ = nullptr;
 
   // If non-null, indicates a drop is in progress and drop_item is the item
   // the drop is over.
-  raw_ptr<MenuItemView> drop_item_;
+  raw_ptr<MenuItemView> drop_item_ = nullptr;
 
   // Position of the drop.
   MenuDelegate::DropPosition drop_position_ = MenuDelegate::DropPosition::kNone;
 
   // Ancestor of the SubmenuView, lazily created.
-  raw_ptr<MenuScrollViewContainer, DanglingUntriaged> scroll_view_container_;
+  std::unique_ptr<MenuScrollViewContainer> scroll_view_container_;
+
+  // Width of a menu icon area.
+  int icon_area_width_ = 0;
+
+  // The minimum height items should reserve for icons. If any item has icons,
+  // checks, or radios, this is set to kMenuCheckSize, which is also the
+  // common-case size for icons. This ensures that
+  //   * When no items have icons etc., we don't add unnecessary padding.
+  //   * When some items have icons, we make ~all items "the same size"; but --
+  //   * If any items have especially large icons, we don't add _too_ much
+  //     padding to every item.
+  // In other words, this tries to "have roughly consistent height" without
+  // incurring a lot of extra padding that makes the menu look spaced-out.
+  int min_icon_height_ = 0;
+
+  // X-coordinate of where the label starts.
+  int label_start_ = 0;
+
+  // The width of the padding after the minor text. If there is a dedicated
+  // submenu arrow column, it fits inside this.
+  int trailing_padding_ = 0;
 
   // See description above getter.
   mutable int max_minor_text_width_ = 0;
@@ -234,7 +258,8 @@ class VIEWS_EXPORT SubmenuView : public View,
   bool resize_open_menu_ = false;
 
   // The submenu's scroll animator
-  std::unique_ptr<ScrollAnimator> scroll_animator_;
+  std::unique_ptr<ScrollAnimator> scroll_animator_{
+      std::make_unique<ScrollAnimator>(this)};
 
   // Difference between current position and cumulative deltas passed to
   // OnScroll.
@@ -242,7 +267,7 @@ class VIEWS_EXPORT SubmenuView : public View,
   // is enabled. See crbug.com/329354.
   float roundoff_error_ = 0;
 
-  PrefixSelector prefix_selector_;
+  PrefixSelector prefix_selector_{this, this};
 
   absl::optional<ui::ColorId> border_color_id_;
 };

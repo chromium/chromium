@@ -101,10 +101,11 @@ void SSLClientSessionCache::ClearEarlyData(const Key& cache_key) {
   }
 }
 
-void SSLClientSessionCache::FlushForServer(const HostPortPair& server) {
+void SSLClientSessionCache::FlushForServers(
+    const base::flat_set<HostPortPair>& servers) {
   auto iter = cache_.begin();
   while (iter != cache_.end()) {
-    if (iter->first.server == server) {
+    if (servers.contains(iter->first.server)) {
       iter = cache_.Erase(iter);
     } else {
       ++iter;

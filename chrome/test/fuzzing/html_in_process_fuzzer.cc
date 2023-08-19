@@ -18,7 +18,7 @@
 class HtmlInProcessFuzzer : virtual public InProcessFuzzer {
  public:
   HtmlInProcessFuzzer()
-      : https_test_server_(net::EmbeddedTestServer::TYPE_HTTPS) {}
+      : http_test_server_(net::EmbeddedTestServer::TYPE_HTTP) {}
 
   void SetUpOnMainThread() override;
   int Fuzz(const uint8_t* data, size_t size) override;
@@ -26,7 +26,7 @@ class HtmlInProcessFuzzer : virtual public InProcessFuzzer {
       base::WeakPtr<HtmlInProcessFuzzer> fuzzer_weak,
       const net::test_server::HttpRequest& request);
 
-  net::EmbeddedTestServer https_test_server_;
+  net::EmbeddedTestServer http_test_server_;
   std::string current_fuzz_case_;
   base::WeakPtrFactory<HtmlInProcessFuzzer> weak_ptr_factory_{this};
 };
@@ -36,10 +36,14 @@ REGISTER_IN_PROCESS_FUZZER(HtmlInProcessFuzzer)
 void HtmlInProcessFuzzer::SetUpOnMainThread() {
   InProcessFuzzer::SetUpOnMainThread();
   host_resolver()->AddRule("*", "127.0.0.1");
-  https_test_server_.SetSSLConfig(net::EmbeddedTestServer::CERT_OK);
-  https_test_server_.RegisterRequestHandler(base::BindRepeating(
+  // Previous versions of this fuzzer used HTTPS, but on ClusterFuzz,
+  // data_deps are not available and thus the SSL config did not work.
+  // For now, use simple HTTP.
+  // TODO(crbug.com/1463972)
+  // http_test_server_.SetSSLConfig(net::EmbeddedTestServer::CERT_OK);
+  http_test_server_.RegisterRequestHandler(base::BindRepeating(
       &HtmlInProcessFuzzer::HandleHTTPRequest, weak_ptr_factory_.GetWeakPtr()));
-  ASSERT_TRUE(https_test_server_.Start());
+  ASSERT_TRUE(http_test_server_.Start());
 }
 
 std::unique_ptr<net::test_server::HttpResponse>
@@ -74,7 +78,7 @@ HtmlInProcessFuzzer::HandleHTTPRequest(
 int HtmlInProcessFuzzer::Fuzz(const uint8_t* data, size_t size) {
   std::string html_string(reinterpret_cast<const char*>(data), size);
   current_fuzz_case_ = html_string;
-  GURL test_url = https_test_server_.GetURL("/test.html");
+  GURL test_url = http_test_server_.GetURL("/test.html");
 
   base::RunLoop run_loop;
   base::RepeatingCallback<void()> run_fuzz_case_lambda =

@@ -8,6 +8,7 @@
 #include <cstddef>
 #include <vector>
 
+#include "base/containers/contains.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/hash/md5_constexpr.h"
@@ -284,10 +285,10 @@ void Scheduler::Sequence::SetLastTaskFirstDependencyTimeIfNeeded() {
 void Scheduler::Sequence::AddWaitFence(const SyncToken& sync_token,
                                        uint32_t order_num,
                                        SequenceId release_sequence_id) {
-  auto it =
-      wait_fences_.find(WaitFence{sync_token, order_num, release_sequence_id});
-  if (it != wait_fences_.end())
+  WaitFence wait_fence{sync_token, order_num, release_sequence_id};
+  if (base::Contains(wait_fences_, wait_fence)) {
     return;
+  }
 
   // |release_sequence| can be nullptr if we wait on SyncToken from sequence
   // that is not in this scheduler. It can happen on WebView when compositing

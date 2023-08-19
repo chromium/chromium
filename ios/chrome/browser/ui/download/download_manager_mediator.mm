@@ -6,11 +6,10 @@
 
 #import <UIKit/UIKit.h>
 
+#import "base/apple/foundation_util.h"
 #import "base/files/file_path.h"
 #import "base/files/file_util.h"
 #import "base/functional/bind.h"
-#import "base/strings/sys_string_conversions.h"
-#import "base/strings/utf_string_conversions.h"
 #import "base/task/thread_pool.h"
 #import "ios/chrome/browser/download/download_directory_util.h"
 #import "ios/chrome/browser/download/external_app_util.h"
@@ -18,10 +17,6 @@
 #import "ios/web/public/download/download_task.h"
 #import "net/base/net_errors.h"
 #import "ui/base/l10n/l10n_util.h"
-
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
 
 DownloadManagerMediator::DownloadManagerMediator() : weak_ptr_factory_(this) {}
 DownloadManagerMediator::~DownloadManagerMediator() {
@@ -96,7 +91,7 @@ void DownloadManagerMediator::UpdateConsumer() {
   [consumer_ setProgress:GetDownloadManagerProgress()];
 
   base::FilePath filename = task_->GenerateFileName();
-  [consumer_ setFileName:base::SysUTF8ToNSString(filename.AsUTF8Unsafe())];
+  [consumer_ setFileName:base::apple::FilePathToNSString(filename)];
 
   int a11y_announcement = GetDownloadManagerA11yAnnouncement();
   if (a11y_announcement != -1) {

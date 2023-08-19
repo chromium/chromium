@@ -44,7 +44,10 @@ void PromiseAppRegistryCache::OnPromiseApp(PromiseAppPtr delta) {
     observer.OnPromiseAppUpdate(PromiseAppUpdate(state, delta.get()));
   }
 
-  if (state) {
+  if (delta->status == PromiseStatus::kRemove &&
+      promise_app_map_.contains(delta->package_id)) {
+    promise_app_map_.erase(delta->package_id);
+  } else if (state) {
     // Update the existing promise app if it exists.
     PromiseAppUpdate::Merge(state, delta.get());
   } else {
@@ -68,9 +71,23 @@ bool PromiseAppRegistryCache::HasPromiseApp(const PackageId& package_id) {
   return FindPromiseApp(package_id) != nullptr;
 }
 
-const PromiseApp* PromiseAppRegistryCache::GetPromiseAppForTesting(
+const PromiseApp* PromiseAppRegistryCache::GetPromiseApp(
     const PackageId& package_id) const {
   return FindPromiseApp(package_id);
+}
+
+const PromiseApp* PromiseAppRegistryCache::GetPromiseAppForStringPackageId(
+    const std::string& string_package_id) const {
+  absl::optional<apps::PackageId> package_id =
+      apps::PackageId::FromString(string_package_id);
+  if (!package_id.has_value()) {
+    return nullptr;
+  }
+  const PromiseApp* promise_app = GetPromiseApp(package_id.value());
+  if (!promise_app) {
+    return nullptr;
+  }
+  return promise_app;
 }
 
 PromiseApp* PromiseAppRegistryCache::FindPromiseApp(

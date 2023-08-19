@@ -41,7 +41,6 @@ class CONTENT_EXPORT FrameNavigationEntry
   // The value of bindings() before it is set during commit.
   enum : int { kInvalidBindings = -1 };
 
-  FrameNavigationEntry();
   FrameNavigationEntry(
       const std::string& frame_unique_name,
       int64_t item_sequence_number,

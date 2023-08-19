@@ -14,6 +14,12 @@
 
 namespace base {
 
+#if defined(__cpp_lib_ranges)
+TEST(CheckedContiguousIterator, SatisfiesContiguousIteratorConcept) {
+  static_assert(std::contiguous_iterator<CheckedContiguousIterator<int>>);
+}
+#endif
+
 // Checks that constexpr CheckedContiguousConstIterators can be compared at
 // compile time.
 TEST(CheckedContiguousIterator, StaticComparisonOperators) {

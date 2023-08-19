@@ -1350,7 +1350,8 @@ class FetchHandlerInstanceClient : public FakeEmbeddedWorkerInstanceClient {
   void EvaluateScript() override {
     host()->OnScriptEvaluationStart();
     host()->OnStarted(blink::mojom::ServiceWorkerStartStatus::kNormalCompletion,
-                      fetch_handler_type_, helper()->GetNextThreadId(),
+                      fetch_handler_type_, /*has_hid_event_handlers=*/false,
+                      helper()->GetNextThreadId(),
                       blink::mojom::EmbeddedWorkerStartTiming::New());
   }
 
@@ -1545,7 +1546,7 @@ class UpdateJobTestHelper : public EmbeddedWorkerTestHelper,
       host()->OnStarted(
           blink::mojom::ServiceWorkerStartStatus::kAbruptCompletion,
           blink::mojom::ServiceWorkerFetchHandlerType::kNoHandler,
-          helper()->GetNextThreadId(),
+          /*has_hid_event_handlers=*/false, helper()->GetNextThreadId(),
           blink::mojom::EmbeddedWorkerStartTiming::New());
     }
 
@@ -1572,7 +1573,8 @@ class UpdateJobTestHelper : public EmbeddedWorkerTestHelper,
     }
 
    private:
-    raw_ptr<ScriptFailureEmbeddedWorkerInstanceClient, DanglingUntriaged>
+    raw_ptr<ScriptFailureEmbeddedWorkerInstanceClient,
+            AcrossTasksDanglingUntriaged>
         client_;
   };
 
@@ -1683,7 +1685,7 @@ class UpdateJobTestHelper : public EmbeddedWorkerTestHelper,
     update_found_ = true;
   }
 
-  raw_ptr<FakeEmbeddedWorkerInstanceClient, DanglingUntriaged>
+  raw_ptr<FakeEmbeddedWorkerInstanceClient, AcrossTasksDanglingUntriaged>
       initial_embedded_worker_instance_client_ = nullptr;
   scoped_refptr<ServiceWorkerRegistration> observed_registration_;
   std::vector<AttributeChangeLogEntry> attribute_change_log_;
@@ -2044,7 +2046,9 @@ TEST_F(ServiceWorkerUpdateJobTest, Update_ScriptUrlChanged) {
   registration->SetTaskRunnerForTest(runner);
 
   // Queue an Update. When this runs, it will use the waiting version's script.
-  job_coordinator()->Update(registration.get(), false);
+  job_coordinator()->Update(registration.get(), false, false,
+                            blink::mojom::FetchClientSettingsObject::New(),
+                            base::NullCallback());
 
   // Add a waiting version with a new script.
   scoped_refptr<ServiceWorkerVersion> version = new ServiceWorkerVersion(
@@ -2152,7 +2156,9 @@ TEST_F(ServiceWorkerUpdateJobTest, Update_UninstallingRegistration) {
                          run_loop.QuitClosure()));
 
   // Update should abort after it starts and sees uninstalling.
-  job_coordinator()->Update(registration.get(), false);
+  job_coordinator()->Update(registration.get(), false, false,
+                            blink::mojom::FetchClientSettingsObject::New(),
+                            base::NullCallback());
 
   run_loop.Run();
 

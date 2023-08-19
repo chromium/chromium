@@ -4,6 +4,8 @@
 
 module ash.mojom;
 
+import "ash/public/mojom/accelerator_actions.mojom";
+import "ash/public/mojom/accelerator_keys.mojom";
 import "mojo/public/mojom/base/time.mojom";
 import "ui/events/ash/mojom/modifier_key.mojom";
 import "ui/events/ash/mojom/simulate_right_click_modifier.mojom";
@@ -193,4 +195,59 @@ struct PointingStickSettings {
   uint8 sensitivity;
   // Controls whether acceleration is enabled.
   bool acceleration_enabled;
+};
+
+// Contains all information needed to display, apply, and update stylus
+// settings.
+// TODO(wangdanny): add `settings` and other missing fields to
+// `mojom::Stylus` struct.
+struct Stylus {
+};
+
+// Contains all information needed to display, apply, and update graphics
+// tablet settings.
+// TODO(wangdanny): add `settings` and other missing fields to
+// `mojom::GraphicsTablet` struct.
+struct GraphicsTablet {
+};
+
+// Contains all information needed to apply remappings from a button to
+// either an action or key event and display it within the settings app.
+struct ButtonRemapping {
+  // Human-readable label of the button remapping which user can rename.
+  string name;
+  Button button;
+  RemappingAction? remapping_action;
+};
+
+// Represents the remapping action which can be either a key event or action.
+union RemappingAction {
+  ash.mojom.AcceleratorAction action;
+  KeyEvent key_event;
+};
+
+// Represents the key event the button remaps to.
+struct KeyEvent {
+  ash.mojom.VKey vkey;
+  uint32 dom_code;
+  uint32 dom_key;
+  uint32 modifiers;
+};
+
+// Represents the button to remap which can be either a virtual key or
+// customizable button.
+union Button {
+  ash.mojom.VKey vkey;
+  CustomizableButton customizable_button;
+};
+
+// Contains the valid set of customizable buttons on the mouse.
+enum CustomizableButton {
+  kLeft = 0,
+  kRight = 1,
+  kMiddle = 2,
+  kForward = 3,
+  kBack = 4,
+  kExtra = 5,
+  kSide = 6,
 };

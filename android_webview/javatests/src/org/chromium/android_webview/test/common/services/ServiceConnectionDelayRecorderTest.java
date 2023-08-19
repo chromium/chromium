@@ -22,9 +22,9 @@ import org.chromium.android_webview.test.AwJUnit4ClassRunner;
 import org.chromium.android_webview.test.OnlyRunIn;
 import org.chromium.android_webview.test.services.MockVariationsSeedServer;
 import org.chromium.base.ContextUtils;
-import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.DoNotBatch;
+import org.chromium.base.test.util.HistogramWatcher;
 
 /**
  * Unit tests for {@link ServiceConnectionDelayRecorder}.
@@ -80,12 +80,14 @@ public class ServiceConnectionDelayRecorderTest {
     public void testRecordDelayTwice() throws Throwable {
         final String expectedHistogramName =
                 "Android.WebView.Startup.NonblockingServiceConnectionDelay.MockVariationsSeedServer";
-        final int exepectedHistogramValue = 2000;
+        final int expectedHistogramValue = 2000;
         final Intent intent =
                 new Intent(ContextUtils.getApplicationContext(), MockVariationsSeedServer.class);
 
         try (TestServiceConnectionDelayRecorder recorderConnection =
                         new TestServiceConnectionDelayRecorder()) {
+            HistogramWatcher histogramExpectation = HistogramWatcher.newSingleRecordWatcher(
+                    expectedHistogramName, expectedHistogramValue);
             CallbackHelper helper = recorderConnection.getOnServiceConnectedListener();
             int onServiceConnectedInitCount = helper.getCallCount();
 
@@ -95,25 +97,18 @@ public class ServiceConnectionDelayRecorderTest {
 
             helper.waitForCallback(onServiceConnectedInitCount, 1);
 
-            Assert.assertEquals("Histogram should be recorded once", 1,
-                    RecordHistogram.getHistogramTotalCountForTesting(expectedHistogramName));
-            Assert.assertEquals(
-                    "Histogram should be have sample value of " + exepectedHistogramValue, 1,
-                    RecordHistogram.getHistogramValueCountForTesting(
-                            expectedHistogramName, exepectedHistogramValue));
+            histogramExpectation.assertExpected();
 
+            // Expect no record for re-establishment.
+            HistogramWatcher histogramNoExpectation =
+                    HistogramWatcher.newBuilder().expectNoRecords(expectedHistogramName).build();
             // When the connection is lost and then restablished by the system, onServiceConnected
             // will be called again. Simulate that by directly calling onServiceConnected.
             onServiceConnectedInitCount = helper.getCallCount();
             recorderConnection.onServiceConnected(null, null);
             helper.waitForCallback(onServiceConnectedInitCount, 1);
 
-            Assert.assertEquals("Histogram should be recorded once", 1,
-                    RecordHistogram.getHistogramTotalCountForTesting(expectedHistogramName));
-            Assert.assertEquals(
-                    "Histogram should be have sample value of " + exepectedHistogramValue, 1,
-                    RecordHistogram.getHistogramValueCountForTesting(
-                            expectedHistogramName, exepectedHistogramValue));
+            histogramNoExpectation.assertExpected();
         }
     }
 }

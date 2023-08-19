@@ -53,9 +53,9 @@ function test() {
         // The real file paths cannot be read from the file chooser element, but
         // we can verify that the path was restored properly by reading the
         // file.
-        expectFileContents(document.getElementById("file-input").files[0], "Hello");
-        expectFileContents(document.getElementById("multiple-file-input").files[0], "Hello");
-        expectFileContents(document.getElementById("multiple-file-input").files[1], "Another");
+        expectFileContents("file-input", 0, "Hello");
+        expectFileContents("multiple-file-input", 0, "Hello");
+        expectFileContents("multiple-file-input", 1, "Another");
     }
 }
 
@@ -70,20 +70,35 @@ function navigateBack() {
 }
 
 var filesRead = 0;
+var fileContents = [];
 
-function checkFileContents(expected, evt) {
-    document.readFileContents = evt.target.result;
-    shouldBeEqualToString("document.readFileContents", expected);
+function verifyFileContents() {
+    fileContents.sort((lhs, rhs) => {
+        if (lhs.id !== rhs.id) {
+            return lhs.id < rhs.id ? -1 : 1;
+        }
+        return lhs.index - rhs.index;
+    });
+    shouldBeEqualToString("fileContents[0].actual", fileContents[0].expected);
+    shouldBeEqualToString("fileContents[1].actual", fileContents[1].expected);
+    shouldBeEqualToString("fileContents[2].actual", fileContents[2].expected);
+}
+
+function fileContentsReceived(id, index, expected, evt) {
+    var actual = evt.target.result;
+    fileContents.push({id, index, expected, actual});
     ++filesRead;
     if (filesRead == 3) {
+        verifyFileContents();
         finishJSTest();
     }
 }
 
-function expectFileContents(file, contents) {
+function expectFileContents(id, index, contents) {
     var reader = new FileReader();
+    var file = document.getElementById(id).files[index];
     reader.readAsText(file, "UTF-8");
-    reader.onload = checkFileContents.bind(undefined, contents);
+    reader.onload = fileContentsReceived.bind(undefined, id, index, contents);
 }
 </script>
 </body>

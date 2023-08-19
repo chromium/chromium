@@ -141,8 +141,7 @@ void WorkerOrWorkletScriptController::Initialize(const KURL& url_for_debugger) {
   }
   DCHECK(!context.IsEmpty());
 
-  script_state_ =
-      MakeGarbageCollected<ScriptState>(context, world_, global_scope_);
+  script_state_ = ScriptState::Create(context, world_, global_scope_);
 
   ScriptState::Scope scope(script_state_);
 

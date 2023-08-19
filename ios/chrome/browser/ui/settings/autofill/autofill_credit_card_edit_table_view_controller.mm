@@ -4,9 +4,9 @@
 
 #import "ios/chrome/browser/ui/settings/autofill/autofill_credit_card_edit_table_view_controller.h"
 
+#import "base/apple/foundation_util.h"
 #import "base/format_macros.h"
 #import "base/ios/block_types.h"
-#import "base/mac/foundation_util.h"
 #import "base/strings/sys_string_conversions.h"
 #import "components/autofill/core/browser/autofill_data_util.h"
 #import "components/autofill/core/browser/data_model/credit_card.h"
@@ -34,10 +34,6 @@
 #import "ios/chrome/grit/ios_strings.h"
 #import "ui/base/l10n/l10n_util.h"
 #import "url/gurl.h"
-
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
 
 namespace {
 using ::AutofillTypeFromAutofillUIType;
@@ -98,8 +94,10 @@ typedef NS_ENUM(NSInteger, ItemType) {
 
 - (void)editButtonPressed {
   // In the case of server cards, open the Payments editing page instead.
-  if (_creditCard.record_type() == autofill::CreditCard::FULL_SERVER_CARD ||
-      _creditCard.record_type() == autofill::CreditCard::MASKED_SERVER_CARD) {
+  if (_creditCard.record_type() ==
+          autofill::CreditCard::RecordType::kFullServerCard ||
+      _creditCard.record_type() ==
+          autofill::CreditCard::RecordType::kMaskedServerCard) {
     GURL paymentsURL = autofill::payments::GetManageInstrumentsUrl();
     OpenNewTabCommand* command =
         [OpenNewTabCommand commandWithURLFromChrome:paymentsURL];
@@ -125,7 +123,7 @@ typedef NS_ENUM(NSInteger, ItemType) {
     for (NSInteger itemIndex = 0; itemIndex < itemCount; ++itemIndex) {
       NSIndexPath* path = [NSIndexPath indexPathForItem:itemIndex
                                               inSection:section];
-      AutofillEditItem* item = base::mac::ObjCCastStrict<AutofillEditItem>(
+      AutofillEditItem* item = base::apple::ObjCCastStrict<AutofillEditItem>(
           [model itemAtIndexPath:path]);
       if ([self.tableViewModel itemTypeForIndexPath:path] == ItemTypeNickname) {
         NSString* trimmedNickname = [item.textFieldValue
@@ -173,7 +171,8 @@ typedef NS_ENUM(NSInteger, ItemType) {
     [model addItem:item toSectionWithIdentifier:SectionIdentifierFields];
   }
 
-  if (_creditCard.record_type() == autofill::CreditCard::FULL_SERVER_CARD) {
+  if (_creditCard.record_type() ==
+      autofill::CreditCard::RecordType::kFullServerCard) {
     // Add CopiedToChrome cell in its own section.
     [model addSectionWithIdentifier:SectionIdentifierCopiedToChrome];
     CopiedToChromeItem* copiedToChromeItem =
@@ -272,7 +271,7 @@ typedef NS_ENUM(NSInteger, ItemType) {
 
   NSInteger itemType = [self.tableViewModel itemTypeForIndexPath:indexPath];
   TableViewTextEditCell* editCell =
-      base::mac::ObjCCast<TableViewTextEditCell>(cell);
+      base::apple::ObjCCast<TableViewTextEditCell>(cell);
   editCell.textField.delegate = self;
   switch (itemType) {
     case ItemTypeCardholderName:
@@ -283,7 +282,7 @@ typedef NS_ENUM(NSInteger, ItemType) {
       break;
     case ItemTypeCopiedToChrome: {
       CopiedToChromeCell* copiedToChromeCell =
-          base::mac::ObjCCastStrict<CopiedToChromeCell>(cell);
+          base::apple::ObjCCastStrict<CopiedToChromeCell>(cell);
       [copiedToChromeCell.button addTarget:self
                                     action:@selector(buttonTapped:)
                           forControlEvents:UIControlEventTouchUpInside];
@@ -310,7 +309,7 @@ typedef NS_ENUM(NSInteger, ItemType) {
   if (self.tableView.editing) {
     UITableViewCell* cell = [self.tableView cellForRowAtIndexPath:indexPath];
     TableViewTextEditCell* textFieldCell =
-        base::mac::ObjCCastStrict<TableViewTextEditCell>(cell);
+        base::apple::ObjCCastStrict<TableViewTextEditCell>(cell);
     [textFieldCell.textField becomeFirstResponder];
   }
 }
@@ -345,7 +344,8 @@ typedef NS_ENUM(NSInteger, ItemType) {
   _personalDataManager->ResetFullServerCard(_creditCard.guid());
 
   // Reset the copy of the card data used for display immediately.
-  _creditCard.set_record_type(autofill::CreditCard::MASKED_SERVER_CARD);
+  _creditCard.set_record_type(
+      autofill::CreditCard::RecordType::kMaskedServerCard);
   _creditCard.SetNumber(_creditCard.LastFourDigits());
   [self reloadData];
 }
@@ -468,7 +468,7 @@ typedef NS_ENUM(NSInteger, ItemType) {
   NSIndexPath* indexPath =
       [self.tableViewModel indexPathForItemType:itemType
                               sectionIdentifier:SectionIdentifierFields];
-  AutofillEditItem* item = base::mac::ObjCCastStrict<AutofillEditItem>(
+  AutofillEditItem* item = base::apple::ObjCCastStrict<AutofillEditItem>(
       [self.tableViewModel itemAtIndexPath:indexPath]);
   return item.textFieldValue;
 }

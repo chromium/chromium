@@ -21,7 +21,9 @@ class BatteryAnswerResult : public SystemInfoAnswerResult,
                       double relevance_score,
                       const std::u16string& title,
                       const std::u16string& description,
+                      const std::u16string& accessibility_label,
                       SystemInfoCategory system_info_category,
+                      SystemInfoCardType system_info_card_type,
                       const ash::SystemInfoAnswerCardData& answer_card_info);
 
   ~BatteryAnswerResult() override;

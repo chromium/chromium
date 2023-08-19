@@ -6,10 +6,6 @@
 
 #import "ios/chrome/browser/ui/recent_tabs/recent_tabs_table_view_controller.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 @interface SCDarkThemeRecentTabsCoordinator ()
 @property(nonatomic, strong) RecentTabsTableViewController* viewController;
 @end
@@ -23,6 +19,10 @@
   self.viewController.title = @"Dark Theme Recent Tabs";
   [self.baseViewController setHidesBarsOnSwipe:NO];
   [self.baseViewController pushViewController:self.viewController animated:YES];
+}
+
+- (void)stop {
+  [self.viewController dismissModals];
 }
 
 @end

@@ -80,8 +80,6 @@ class CrashAnalyzer {
       gwp_asan::Crash* proto);
 
  private:
-  using SlotMetadata = AllocatorState::SlotMetadata;
-
   // Given an ExceptionSnapshot, return the address of where the exception
   // occurred (or null if it was not a data access exception.)
   static crashpad::VMAddress GetAccessAddress(
@@ -111,11 +109,12 @@ class CrashAnalyzer {
       gwp_asan::Crash* proto);
 
   // This method fills out an AllocationInfo protobuf from a stack trace
-  // and a SlotMetadata::AllocationInfo struct.
-  static void ReadAllocationInfo(const uint8_t* stack_trace,
-                                 size_t stack_trace_offset,
-                                 const SlotMetadata::AllocationInfo& slot_info,
-                                 gwp_asan::Crash_AllocationInfo* proto_info);
+  // and a AllocatorState::AllocationInfo struct.
+  static void ReadAllocationInfo(
+      const uint8_t* stack_trace,
+      size_t stack_trace_offset,
+      const AllocatorState::AllocationInfo& slot_info,
+      gwp_asan::Crash_AllocationInfo* proto_info);
 
   // This method analyzes the AllocatorState of the crashing process. If the
   // exception is related to the Lightweight UAF Detector it fills out the

@@ -1,7 +1,7 @@
 include_rules = [
   "-android_webview",
   "+android_webview/common",
-  "+android_webview/common_jni_headers",
+  "+android_webview/common_jni",
   "+components/cdm/common",
   "+components/embedder_support/origin_trials",
   "+components/gwp_asan/common/crash_key_name.h"

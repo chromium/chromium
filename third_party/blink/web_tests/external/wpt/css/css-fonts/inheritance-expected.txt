@@ -16,7 +16,7 @@ PASS Property font-stretch has initial value 100%
 PASS Property font-stretch inherits
 PASS Property font-style has initial value normal
 PASS Property font-style inherits
-PASS Property font-synthesis has initial value weight style small-caps
+FAIL Property font-synthesis has initial value weight style small-caps position assert_equals: expected "weight style small-caps position" but got "weight style small-caps"
 PASS Property font-synthesis inherits
 PASS Property font-variant has initial value normal
 PASS Property font-variant inherits

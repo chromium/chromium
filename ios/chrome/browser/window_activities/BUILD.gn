@@ -6,7 +6,6 @@ import("//build/buildflag_header.gni")
 import("//ios/build/chrome_build.gni")
 
 source_set("window_activities") {
-  configs += [ "//build/config/compiler:enable_arc" ]
   sources = [
     "window_activity_helpers.h",
     "window_activity_helpers.mm",

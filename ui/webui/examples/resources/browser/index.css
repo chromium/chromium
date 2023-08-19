@@ -1,0 +1,25 @@
+/* Copyright 2023 The Chromium Authors
+ * Use of this source code is governed by a BSD-style license that can be
+ * found in the LICENSE file. */
+
+html, body {
+  height: 100%;
+}
+
+body {
+  display: flex;
+  flex-direction: column;
+ }
+
+#navbar {
+  display: flex;
+  flex: none;
+}
+
+#navbar #address {
+  flex: 1;
+}
+
+webview {
+  flex: 1;
+}

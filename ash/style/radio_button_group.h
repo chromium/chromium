@@ -30,7 +30,8 @@ class ASH_EXPORT RadioButtonGroup : public OptionButtonGroup,
                    int between_child_spacing,
                    RadioButton::IconDirection icon_direction,
                    RadioButton::IconType icon_type,
-                   const gfx::Insets& radio_button_padding);
+                   const gfx::Insets& radio_button_padding,
+                   int image_label_spacing);
   RadioButtonGroup(const RadioButtonGroup&) = delete;
   RadioButtonGroup& operator=(const RadioButtonGroup&) = delete;
   ~RadioButtonGroup() override;

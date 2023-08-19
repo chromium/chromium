@@ -4,9 +4,7 @@ Use of this source code is governed by a BSD-style license that can be
 found in the LICENSE file.
 -->
 
-
-
-<style include="oobe-dialog-host-styles">
+<style include="oobe-dialog-host-styles cros-color-overrides">
   #legalFooter {
     margin-top: 20px;
   }
@@ -17,9 +15,9 @@ found in the LICENSE file.
 
   :host {
     --marketing-opt-in-dialog-list-item-border:
-      1px solid var(--cros-separator-color);
+      1px solid var(--cros-sys-separator);
     --oobe-a11y-dialog-list-item-border:
-      1px solid var(--cros-separator-color);
+      1px solid var(--cros-sys-separator);
     --marketing-opt-in-row-height: 50px;
     --marketing-opt-in-line-height: 20px;
   }
@@ -36,8 +34,24 @@ found in the LICENSE file.
     color: var(--cros-text-color-secondary);
   }
 
+  :host-context(.jelly-enabled) .legal-info {
+    color: var(--oobe-subheader-text-color);
+    font-family: var(--oobe-marketing-opt-in-legal-info-font-family);
+    font-size: var(--oobe-marketing-opt-in-legal-info-font-size);
+    font-weight: var(--oobe-marketing-opt-in-legal-info-font-weight);
+    line-height: var(--oobe-marketing-opt-in-legal-info-line-height);
+  }
+
   .toggle-title {
     color: var(--cros-text-color-primary);
+  }
+
+  :host-context(.jelly-enabled) .toggle-title {
+    color: var(--oobe-text-color);
+    font-family: var(--oobe-marketing-opt-in-legal-title-font-family);
+    font-size: var(--oobe-marketing-opt-in-legal-title-font-size);
+    font-weight: var(--oobe-marketing-opt-in-legal-title-font-weight);
+    line-height: var(--oobe-marketing-opt-in-legal-title-line-height);
   }
 
   #toggleRow {
@@ -68,8 +82,16 @@ found in the LICENSE file.
     padding-inline-end: 16px;
   }
 
+  :host-context(.jelly-enabled) #toggleRowIcon {
+    --iron-icon-fill-color: var(--oobe-adaptive-dialog-icon-fill-color);
+  }
+
   #googleUrl {
     color: var(--cros-color-prominent);
+  }
+
+  :host-context(.jelly-enabled) #googleUrl {
+    color: var(--cros-sys-primary);
   }
 
   #finalAccessibilityPage oobe-a11y-option {
@@ -79,17 +101,6 @@ found in the LICENSE file.
 
   #finalAccessibilityPage oobe-a11y-option:last-of-type {
     border-bottom: var(--oobe-a11y-dialog-list-item-border);
-  }
-
-  h1 {
-    color: var(--cros-text-color-primary);
-  }
-
-  #marketingOptInGameDeviceSubtitle,
-  #marketingOptInSubtitleWithDeviceName,
-  #marketingOptInSubtitle,
-  #chromebookUpdatesOptionLabel {
-    color: var(--cros-text-color-secondary);
   }
 
 </style>
@@ -130,7 +141,7 @@ found in the LICENSE file.
     <!-- Toggle row -->
     <div class="layout horizontal center"
         hidden="[[!marketingOptInVisible_]]"
-        id="toggleRow" style="[[getMarginTop_(isCloudGamingDevice_)]]">
+        id="toggleRow">
       <iron-icon id="toggleRowIcon" icon="oobe-32:chromebook"></iron-icon>
       <div id="chromebookUpdatesOptionLabel" class="flex layout vertical"
           aria-hidden="true">
@@ -165,19 +176,17 @@ found in the LICENSE file.
         slot="content" class="layout flex vertical">
     <!-- Animation -->
     <div  class="marketing-animation-content">
-      <iron-media-query query="(prefers-color-scheme: dark)"
-          query-matches="{{isDarkModeActive_}}">
-      </iron-media-query>
       <oobe-cr-lottie id="animation"
-          animation-url="[[getAnimationUrl_(isDarkModeActive_)]]"
+          animation-url="animations/all_set.json"
           singleLoop="true">
       </oobe-cr-lottie>
     </div>
   </div>
   <div hidden="[[!isCloudGamingDevice_]]" slot="content"
         class="flex layout vertical center-justified center">
-    <img class="oobe-illustration"
-        srcset="[[getImageSource_(isDarkModeActive_)]]" aria-hidden="true">
+    <iron-icon icon="oobe-illos:blazey-illo"
+        class="illustration-jelly">
+    </iron-icon>
   </div>
   <oobe-icon-button slot="bottom-buttons"
       hidden="[[!isA11ySettingsButtonVisible_]]"
@@ -227,4 +236,3 @@ found in the LICENSE file.
     </oobe-text-button>
   </div>
 </oobe-adaptive-dialog>
- 

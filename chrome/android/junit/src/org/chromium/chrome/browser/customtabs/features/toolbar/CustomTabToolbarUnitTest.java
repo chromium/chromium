@@ -156,7 +156,7 @@ public class CustomTabToolbarUnitTest {
         mToolbar.initialize(mToolbarDataProvider, mTabController, mMenuButtonCoordinator,
                 mHistoryDelegate, mPartnerHomepageEnabledSupplier, mOfflineDownloader);
         mLocationBar = (CustomTabLocationBar) mToolbar.createLocationBar(mLocationBarModel,
-                mActionModeCallback, () -> null, () -> null, mControlsVisibleDelegate);
+                mActionModeCallback, () -> null, () -> null, mControlsVisibleDelegate, null);
         mUrlBar = mToolbar.findViewById(R.id.url_bar);
         mTitleBar = mToolbar.findViewById(R.id.title_bar);
         mLocationBar.setAnimDelegateForTesting(mAnimationDelegate);
@@ -166,7 +166,6 @@ public class CustomTabToolbarUnitTest {
     public void tearDown() {
         mActivity.finish();
         ShadowPostTask.reset();
-        ChromeFeatureList.sCctBrandTransparency.setForTesting(null);
     }
 
     @Test
@@ -183,52 +182,7 @@ public class CustomTabToolbarUnitTest {
     }
 
     @Test
-    public void testShowBranding_DomainOnly() {
-        assertUrlAndTitleVisible(/*titleVisible=*/false, /*urlVisible=*/true);
-        mLocationBar.showBranding();
-        ShadowLooper.idleMainLooper();
-        verify(mLocationBarModel, never()).notifyTitleChanged();
-        verify(mAnimationDelegate, never()).prepareTitleAnim(mUrlBar, mTitleBar);
-        verify(mAnimationDelegate, never()).startTitleAnimation(any());
-        assertUrlAndTitleVisible(/*titleVisible=*/false, /*urlVisible=*/true);
-        assertBrandingTextShowingOnUrlBar();
-
-        // Run all UI tasks, until the branding is finished.
-        ShadowLooper.runUiThreadTasksIncludingDelayedTasks();
-        verify(mLocationBarModel, never()).notifyTitleChanged();
-        verify(mLocationBarModel).notifySecurityStateChanged();
-        assertUrlBarShowingText(TEST_URL);
-    }
-
-    @Test
-    public void testShowBranding_DomainAndTitle() {
-        // Set title before the branding starts, so the state is domain and title.
-        mLocationBar.setShowTitle(true);
-        ShadowLooper.idleMainLooper();
-        verify(mLocationBarModel).notifyTitleChanged();
-        verify(mAnimationDelegate).prepareTitleAnim(mUrlBar, mTitleBar);
-        // Animation not started since branding is not completed.
-        verify(mAnimationDelegate, never()).startTitleAnimation(any());
-
-        // Title should be hidden, title animation is not necessary yet.
-        mLocationBar.showBranding();
-        ShadowLooper.idleMainLooper();
-        verify(mLocationBarModel, times(2)).notifyTitleChanged();
-        assertUrlAndTitleVisible(/*titleVisible=*/false, /*urlVisible=*/true);
-        assertBrandingTextShowingOnUrlBar();
-
-        // Run all UI tasks, until the branding is finished.
-        ShadowLooper.runUiThreadTasksIncludingDelayedTasks();
-        verify(mLocationBarModel, times(3)).notifyTitleChanged();
-        verify(mLocationBarModel).notifySecurityStateChanged();
-        verify(mAnimationDelegate, times(2)).prepareTitleAnim(mUrlBar, mTitleBar);
-        assertUrlBarShowingText(TEST_URL);
-    }
-
-    @Test
     public void testToolbarBrandingDelegateImpl_EmptyToRegular() {
-        ChromeFeatureList.sCctBrandTransparency.setForTesting(true);
-
         assertUrlAndTitleVisible(/*titleVisible=*/false, /*urlVisible=*/true);
         mLocationBar.showEmptyLocationBar();
         assertUrlAndTitleVisible(/*titleVisible=*/false, /*urlVisible=*/false);
@@ -259,8 +213,6 @@ public class CustomTabToolbarUnitTest {
     }
 
     private void doTestToolbarBrandingDelegateImpl_EmptyToBranding(boolean animateIconTransition) {
-        ChromeFeatureList.sCctBrandTransparency.setForTesting(true);
-
         assertUrlAndTitleVisible(/*titleVisible=*/false, /*urlVisible=*/true);
         mLocationBar.showEmptyLocationBar();
         assertUrlAndTitleVisible(/*titleVisible=*/false, /*urlVisible=*/false);
@@ -381,15 +333,13 @@ public class CustomTabToolbarUnitTest {
     }
 
     @Test
-    @Features.EnableFeatures({ChromeFeatureList.CCT_RESIZABLE_SIDE_SHEET})
+    @EnableFeatures({ChromeFeatureList.CCT_RESIZABLE_SIDE_SHEET})
     public void testMaximizeButton() {
         assertFalse(mToolbar.isMaximizeButtonEnabledForTesting());
         mToolbar.initSideSheetMaximizeButton(/*maximizedOnInit=*/false, () -> true);
         assertTrue(mToolbar.isMaximizeButtonEnabledForTesting());
         var maximizeButton =
                 (ImageButton) mToolbar.findViewById(R.id.custom_tabs_sidepanel_maximize);
-        assertEquals("Maximize button should be invisible upon start", View.GONE,
-                maximizeButton.getVisibility());
 
         mToolbar.onFinishInflate();
         View titleUrlContainer = Mockito.mock(View.class);
@@ -420,7 +370,7 @@ public class CustomTabToolbarUnitTest {
     }
 
     @Test
-    @Features.EnableFeatures({ChromeFeatureList.CCT_RESIZABLE_SIDE_SHEET})
+    @EnableFeatures({ChromeFeatureList.CCT_RESIZABLE_SIDE_SHEET})
     public void testHandleStrategy_ClickCloseListener() {
         var strategy1 = new SimpleHandleStrategy(r -> {});
         mToolbar.setHandleStrategy(strategy1);

@@ -220,11 +220,6 @@ class AppServiceProxyLacros : public KeyedService,
       const std::vector<GURL>& filesystem_urls,
       const std::vector<std::string>& mime_types);
 
-  // Adds a preferred app for |url|.
-  void AddPreferredApp(const std::string& app_id, const GURL& url);
-  // Adds a preferred app for |intent|.
-  void AddPreferredApp(const std::string& app_id, const IntentPtr& intent);
-
   // Sets |app_id| as the preferred app for all of its supported links ('view'
   // intent filters with a scheme and host). Any existing preferred apps for
   // those links will have all their supported links unset, as if
@@ -245,6 +240,10 @@ class AppServiceProxyLacros : public KeyedService,
   void SetWebsiteMetricsServiceForTesting(
       std::unique_ptr<apps::WebsiteMetricsServiceLacros>
           website_metrics_service);
+
+  void SetBrowserAppInstanceTrackerForTesting(
+      std::unique_ptr<apps::BrowserAppInstanceTracker>
+          browser_app_instance_tracker);
 
   // Exposes AppServiceSubscriber methods to allow tests to fake calls that
   // would normally come from Ash via the mojo interface.

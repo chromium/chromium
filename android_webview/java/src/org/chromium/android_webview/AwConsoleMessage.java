@@ -6,12 +6,15 @@ package org.chromium.android_webview;
 
 import androidx.annotation.IntDef;
 
+import org.chromium.android_webview.common.Lifetime;
+
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 
 /**
  *
  * See {@link android.webkit.ConsoleMessage}. */
+@Lifetime.Temporary
 public class AwConsoleMessage {
     @Retention(RetentionPolicy.SOURCE)
     @IntDef({MESSAGE_LEVEL_TIP, MESSAGE_LEVEL_LOG, MESSAGE_LEVEL_WARNING, MESSAGE_LEVEL_ERROR,

@@ -282,8 +282,7 @@ bool PerUserStateManagerChromeOS::IsUserAllowedToChangeConsent(
   if (!GetDeviceMetricsConsent())
     return false;
 
-  return user_type == user_manager::USER_TYPE_REGULAR ||
-         user_type == user_manager::USER_TYPE_ACTIVE_DIRECTORY;
+  return user_type == user_manager::USER_TYPE_REGULAR;
 }
 
 base::CallbackListSubscription PerUserStateManagerChromeOS::AddObserver(
@@ -352,12 +351,12 @@ bool PerUserStateManagerChromeOS::IsDeviceOwned() const {
   DCHECK(IsDeviceStatusKnown());
 
   return ash::DeviceSettingsService::Get()->GetOwnershipStatus() ==
-         ash::DeviceSettingsService::OwnershipStatus::OWNERSHIP_TAKEN;
+         ash::DeviceSettingsService::OwnershipStatus::kOwnershipTaken;
 }
 
 bool PerUserStateManagerChromeOS::IsDeviceStatusKnown() const {
   return ash::DeviceSettingsService::Get()->GetOwnershipStatus() !=
-         ash::DeviceSettingsService::OwnershipStatus::OWNERSHIP_UNKNOWN;
+         ash::DeviceSettingsService::OwnershipStatus::kOwnershipUnknown;
 }
 
 void PerUserStateManagerChromeOS::ActiveUserChanged(user_manager::User* user) {
@@ -404,7 +403,8 @@ void PerUserStateManagerChromeOS::WaitForOwnershipStatus() {
 
 void PerUserStateManagerChromeOS::InitializeProfileMetricsState(
     ash::DeviceSettingsService::OwnershipStatus status) {
-  DCHECK_NE(status, ash::DeviceSettingsService::OWNERSHIP_UNKNOWN);
+  DCHECK_NE(status,
+            ash::DeviceSettingsService::OwnershipStatus::kOwnershipUnknown);
   DCHECK_EQ(state_, State::USER_LOGIN);
 
   state_ = State::USER_PROFILE_READY;

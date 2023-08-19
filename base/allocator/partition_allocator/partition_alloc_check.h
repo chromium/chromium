@@ -16,9 +16,6 @@
 #include "base/allocator/partition_allocator/partition_alloc_buildflags.h"
 #include "build/build_config.h"
 
-#define PA_STRINGIFY_IMPL(s) #s
-#define PA_STRINGIFY(s) PA_STRINGIFY_IMPL(s)
-
 // When PartitionAlloc is used as the default allocator, we cannot use the
 // regular (D)CHECK() macros, as they allocate internally. When an assertion is
 // triggered, they format strings, leading to reentrancy in the code, which none
@@ -30,7 +27,7 @@
 // - Otherwise, crash immediately. This provides worse error messages though.
 #if BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
 // For official build discard log strings to reduce binary bloat.
-#if !CHECK_WILL_STREAM()
+#if !PA_BASE_CHECK_WILL_STREAM()
 // See base/check.h for implementation details.
 #define PA_CHECK(condition)                        \
   PA_UNLIKELY(!(condition)) ? PA_IMMEDIATE_CRASH() \
@@ -118,21 +115,23 @@
 
 namespace partition_alloc::internal {
 
+static constexpr size_t kDebugKeyMaxLength = 8ull;
+
 // Used for PA_DEBUG_DATA_ON_STACK, below.
 struct PA_DEBUGKV_ALIGN DebugKv {
   // 16 bytes object aligned on 16 bytes, to make it easier to see in crash
   // reports.
-  char k[8] = {};  // Not necessarily 0-terminated.
+  char k[kDebugKeyMaxLength] = {};  // Not necessarily 0-terminated.
   uint64_t v = 0;
 
   DebugKv(const char* key, uint64_t value) : v(value) {
     // Fill with ' ', so that the stack dump is nicer to read.  Not using
     // memset() on purpose, this header is included from *many* places.
-    for (int index = 0; index < 8; index++) {
+    for (size_t index = 0; index < sizeof k; index++) {
       k[index] = ' ';
     }
 
-    for (int index = 0; index < 8; index++) {
+    for (size_t index = 0; index < sizeof k; index++) {
       k[index] = key[index];
       if (key[index] == '\0') {
         break;
@@ -166,6 +165,8 @@ struct PA_DEBUGKV_ALIGN DebugKv {
 // x/8g <STACK_POINTER>
 // to see the data. With lldb, "x <STACK_POINTER> <FRAME_POJNTER>" can be used.
 #define PA_DEBUG_DATA_ON_STACK(name, value)                               \
+  static_assert(sizeof name <=                                            \
+                ::partition_alloc::internal::kDebugKeyMaxLength + 1);     \
   ::partition_alloc::internal::DebugKv PA_DEBUG_UNIQUE_NAME{name, value}; \
   ::partition_alloc::internal::base::debug::Alias(&PA_DEBUG_UNIQUE_NAME);
 

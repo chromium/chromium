@@ -20,7 +20,6 @@ import org.chromium.base.task.TaskTraits;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
-import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Feature;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
@@ -45,7 +44,7 @@ import java.util.List;
  */
 @RunWith(ChromeJUnit4ClassRunner.class)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
-@DisableFeatures({ChromeFeatureList.MESSAGES_FOR_ANDROID_INFRASTRUCTURE})
+@DisableFeatures(ChromeFeatureList.MESSAGES_FOR_ANDROID_INFRASTRUCTURE)
 public class PopupTest {
     @Rule
     public ChromeTabbedActivityTestRule mActivityTestRule = new ChromeTabbedActivityTestRule();
@@ -77,7 +76,6 @@ public class PopupTest {
 
     @After
     public void tearDown() {
-        mTestServer.stopAndDestroyServer();
         MockSafetyNetApiHandler.clearMockResponses();
     }
 
@@ -148,7 +146,6 @@ public class PopupTest {
     @Test
     @MediumTest
     @Feature({"Popup"})
-    @DisabledTest(message = "https://crbug.com/1262445")
     public void testPopupWindowsAppearWhenAllowed() {
         final TabModelSelector selector = mActivityTestRule.getActivity().getTabModelSelector();
 

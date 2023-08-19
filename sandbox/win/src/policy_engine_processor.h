@@ -137,7 +137,7 @@ class PolicyProcessor {
   // Sets the currently matching action result.
   void SetInternalState(size_t index, EvalResult result);
 
-  raw_ptr<PolicyBuffer> policy_;
+  raw_ptr<PolicyBuffer, DanglingUntriaged> policy_;
 };
 
 }  // namespace sandbox

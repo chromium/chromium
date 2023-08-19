@@ -14,11 +14,13 @@
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/synchronization/waitable_event.h"
-#include "base/task/single_thread_task_runner.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/task/thread_pool.h"
 #include "base/task/thread_pool/thread_pool_instance.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
+#include "base/uuid.h"
 #include "components/autofill/core/browser/data_model/autofill_profile.h"
 #include "components/autofill/core/browser/data_model/credit_card.h"
 #include "components/autofill/core/browser/geo/autofill_country.h"
@@ -38,6 +40,8 @@
 #include "testing/gtest/include/gtest/gtest.h"
 
 using base::ASCIIToUTF16;
+using base::Bucket;
+using base::BucketsAre;
 using base::Time;
 using base::WaitableEvent;
 using testing::_;
@@ -102,12 +106,8 @@ class WebDataServiceTest : public testing::Test {
  public:
   WebDataServiceTest()
       : task_environment_(base::test::TaskEnvironment::MainThreadType::UI),
-        // TODO(pkasting): http://crbug.com/740773 This should likely be
-        // sequenced, not single-threaded; it's also possible the various uses
-        // of this below should each use their own sequences instead of sharing
-        // this one.
-        db_task_runner_(base::ThreadPool::CreateSingleThreadTaskRunner(
-            {base::MayBlock()})) {}
+        db_task_runner_(
+            base::ThreadPool::CreateSequencedTaskRunner({base::MayBlock()})) {}
 
  protected:
   void SetUp() override {
@@ -116,14 +116,12 @@ class WebDataServiceTest : public testing::Test {
     OSCryptMocker::SetUp();
 
     wdbs_ = new WebDatabaseService(
-        path, base::SingleThreadTaskRunner::GetCurrentDefault(),
-        db_task_runner_);
+        path, base::SequencedTaskRunner::GetCurrentDefault(), db_task_runner_);
     wdbs_->AddTable(std::make_unique<AutofillTable>());
     wdbs_->LoadDatabase();
 
     wds_ = new AutofillWebDataService(
-        wdbs_, base::SingleThreadTaskRunner::GetCurrentDefault(),
-        db_task_runner_);
+        wdbs_, base::SequencedTaskRunner::GetCurrentDefault(), db_task_runner_);
     wds_->Init(base::NullCallback());
   }
 
@@ -140,7 +138,7 @@ class WebDataServiceTest : public testing::Test {
 
   base::test::TaskEnvironment task_environment_;
   base::FilePath profile_dir_;
-  scoped_refptr<base::SingleThreadTaskRunner> db_task_runner_;
+  scoped_refptr<base::SequencedTaskRunner> db_task_runner_;
   scoped_refptr<WebDatabaseService> wdbs_;
   scoped_refptr<AutofillWebDataService> wds_;
 };
@@ -286,7 +284,7 @@ TEST_F(WebDataServiceAutofillTest, ProfileAdd) {
 
   // Check that GUID-based notification was sent.
   const AutofillProfileChange expected_change(AutofillProfileChange::ADD,
-                                              profile.guid(), &profile);
+                                              profile.guid(), profile);
   EXPECT_CALL(observer_, AutofillProfileChanged(expected_change))
       .WillOnce(SignalEvent(&done_event_));
 
@@ -323,7 +321,7 @@ TEST_F(WebDataServiceAutofillTest, ProfileRemove) {
 
   // Check that GUID-based notification was sent.
   const AutofillProfileChange expected_change(AutofillProfileChange::REMOVE,
-                                              profile.guid(), &profile);
+                                              profile.guid(), profile);
   EXPECT_CALL(observer_, AutofillProfileChanged(expected_change))
       .WillOnce(SignalEvent(&done_event_));
 
@@ -372,7 +370,7 @@ TEST_F(WebDataServiceAutofillTest, ProfileUpdate) {
   AutofillProfile profile2_changed(profile2);
   profile2_changed.SetRawInfo(NAME_FIRST, u"Bill");
   const AutofillProfileChange expected_change(
-      AutofillProfileChange::UPDATE, profile2.guid(), &profile2_changed);
+      AutofillProfileChange::UPDATE, profile2.guid(), profile2_changed);
 
   EXPECT_CALL(observer_, AutofillProfileChanged(expected_change))
       .WillOnce(SignalEvent(&done_event_));
@@ -496,7 +494,7 @@ TEST_F(WebDataServiceAutofillTest, AutofillRemoveModifiedBetween) {
 
   // Check that GUID-based notification was sent for the profile.
   const AutofillProfileChange expected_profile_change(
-      AutofillProfileChange::REMOVE, profile.guid(), &profile);
+      AutofillProfileChange::REMOVE, profile.guid(), profile);
   EXPECT_CALL(observer_, AutofillProfileChanged(expected_profile_change))
       .WillOnce(SignalEvent(&done_event_));
 
@@ -518,6 +516,54 @@ TEST_F(WebDataServiceAutofillTest, AutofillRemoveModifiedBetween) {
   handle2 = wds_->GetCreditCards(&card_consumer2);
   EXPECT_EQ(handle2, card_consumer2.WaitForHandle());
   ASSERT_EQ(0U, card_consumer2.result().size());
+}
+
+// Verify that WebDatabase.AutofillWebDataBackendImpl.OperationSuccess records
+// success and failures in the methods of AutofillWebDataBackendImpl.
+TEST_F(WebDataServiceAutofillTest, SuccessReporting) {
+  auto add_card_synchronously = [&](const CreditCard& card) {
+    wds_->AddCreditCard(card);
+
+    // Wait that card was added by enqueuing a lookup which is handled on the
+    // same SequencedTaskRunner as the previous `AddCreditCard` operation and
+    // waiting for the result.
+    AutofillWebDataServiceWaiter<std::vector<std::unique_ptr<CreditCard>>>
+        consumer;
+    WebDataServiceBase::Handle handle = wds_->GetCreditCards(&consumer);
+    EXPECT_EQ(handle, consumer.WaitForHandle());
+  };
+
+  // Values are taken from enum Result in autofill_webdata_backend_impl.cc.
+  constexpr int kAddCreditCard_Success = 70;
+  constexpr int kRemoveCreditCard_ReadFailure = 91;
+
+  // Verify that success is reported correctly.
+  {
+    base::HistogramTester histogram_tester;
+    add_card_synchronously(CreditCard());
+    EXPECT_THAT(histogram_tester.GetAllSamples(
+                    "WebDatabase.AutofillWebDataBackendImpl.OperationResult"),
+                BucketsAre(Bucket(kAddCreditCard_Success, 1)));
+  }
+
+  // Verify that failure is reported correctly.
+  {
+    base::HistogramTester histogram_tester;
+    // Asynchronously delete a non-existing card which should trigger a failure
+    // report.
+    std::string non_existing_guid =
+        base::Uuid::GenerateRandomV4().AsLowercaseString();
+    wds_->RemoveCreditCard(non_existing_guid);
+
+    // Add a second card just to ensure that the delete operation has been fully
+    // processed.
+    add_card_synchronously(CreditCard());
+
+    EXPECT_THAT(histogram_tester.GetAllSamples(
+                    "WebDatabase.AutofillWebDataBackendImpl.OperationResult"),
+                BucketsAre(Bucket(kRemoveCreditCard_ReadFailure, 1),
+                           Bucket(kAddCreditCard_Success, 1)));
+  }
 }
 
 }  // namespace autofill

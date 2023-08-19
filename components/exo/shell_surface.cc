@@ -21,6 +21,7 @@
 #include "components/exo/custom_window_state_delegate.h"
 #include "components/exo/shell_surface_util.h"
 #include "components/exo/window_properties.h"
+#include "components/viz/common/surfaces/local_surface_id.h"
 #include "ui/aura/client/aura_constants.h"
 #include "ui/aura/client/cursor_client.h"
 #include "ui/aura/client/screen_position_client.h"
@@ -70,12 +71,14 @@ struct ShellSurface::Config {
   Config(uint32_t serial,
          const gfx::Vector2d& origin_offset,
          int resize_component,
+         const viz::LocalSurfaceId& viz_surface_id,
          std::unique_ptr<ui::CompositorLock> compositor_lock);
   ~Config() = default;
 
   uint32_t serial;
   gfx::Vector2d origin_offset;
   int resize_component;
+  const viz::LocalSurfaceId viz_surface_id;
   std::unique_ptr<ui::CompositorLock> compositor_lock;
 };
 
@@ -83,10 +86,12 @@ ShellSurface::Config::Config(
     uint32_t serial,
     const gfx::Vector2d& origin_offset,
     int resize_component,
+    const viz::LocalSurfaceId& viz_surface_id,
     std::unique_ptr<ui::CompositorLock> compositor_lock)
     : serial(serial),
       origin_offset(origin_offset),
       resize_component(resize_component),
+      viz_surface_id(viz_surface_id),
       compositor_lock(std::move(compositor_lock)) {}
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -259,6 +264,22 @@ void ShellSurface::SetPopup() {
   is_popup_ = true;
 }
 
+void ShellSurface::AckRotateFocus(uint32_t serial, bool handled) {
+  CHECK(!rotate_focus_inflight_requests_.empty())
+      << "unexpected ack received, no requests currently inflight";
+
+  auto request = rotate_focus_inflight_requests_.front();
+  rotate_focus_inflight_requests_.pop();
+  CHECK(request.serial == serial)
+      << "unexpected ack requests, expected acks to be received in order. Got: "
+      << serial << ", expected: " << request.serial;
+
+  if (!handled) {
+    ash::Shell::Get()->focus_cycler()->RotateFocus(
+        request.direction, /*move_to_next_widget=*/true);
+  }
+}
+
 void ShellSurface::Grab() {
   DCHECK(is_popup_);
   DCHECK(!widget_);
@@ -272,6 +293,25 @@ void ShellSurface::StartMove() {
     return;
 
   AttemptToStartDrag(HTCAPTION);
+}
+
+bool ShellSurface::RotatePaneFocusFromView(views::View* focused_view,
+                                           bool forward,
+                                           bool enable_wrapping) {
+  if (rotate_focus_callback_.is_null()) {
+    VLOG(1) << "no callback provided, falling back to default behaviour";
+    return WidgetDelegate::RotatePaneFocusFromView(focused_view, forward,
+                                                   enable_wrapping);
+  }
+
+  auto direction =
+      forward ? ash::FocusCycler::FORWARD : ash::FocusCycler::BACKWARD;
+  auto serial = rotate_focus_callback_.Run(direction, enable_wrapping);
+  rotate_focus_inflight_requests_.push({
+      serial,
+      direction,
+  });
+  return true;
 }
 
 void ShellSurface::StartResize(int component) {
@@ -332,7 +372,7 @@ void ShellSurface::OnSetParent(Surface* parent, const gfx::Point& position) {
       base::AutoReset<bool> notify_bounds_changes(&notify_bounds_changes_,
                                                   false);
       widget_->SetBounds(new_widget_bounds);
-      UpdateSurfaceBounds();
+      UpdateHostWindowOrigin();
     }
   } else {
     SetParentWindow(nullptr);
@@ -437,6 +477,7 @@ void ShellSurface::OnWindowBoundsChanged(aura::Window* window,
     if (new_bounds.size() == old_bounds.size()) {
       if (!origin_change_callback_.is_null())
         origin_change_callback_.Run(GetClientBoundsInScreen(widget_).origin());
+      UpdateHostWindowOrigin();
       return;
     }
 
@@ -447,7 +488,7 @@ void ShellSurface::OnWindowBoundsChanged(aura::Window* window,
     origin_offset_ -= delta;
     pending_origin_offset_accumulator_ += delta;
 
-    UpdateSurfaceBounds();
+    UpdateHostWindowOrigin();
 
     // The shadow size may be updated to match the widget. Change it back
     // to the shadow content size. Note that this relies on wm::ShadowController
@@ -477,7 +518,7 @@ void ShellSurface::OnWindowAddedToRootWindow(aura::Window* window) {
     old_screen_bounds_for_pending_move_ = gfx::Rect();
     origin_offset_ -= delta;
     pending_origin_offset_accumulator_ += delta;
-    UpdateSurfaceBounds();
+    UpdateHostWindowOrigin();
     UpdateShadow();
 
     if (!window_state_is_changing_)
@@ -649,7 +690,7 @@ void ShellSurface::SetWidgetBounds(const gfx::Rect& bounds,
   } else {
     widget_->SetBounds(bounds);
   }
-  UpdateSurfaceBounds();
+  UpdateHostWindowOrigin();
 
   notify_bounds_changes_ = true;
 }
@@ -676,6 +717,9 @@ bool ShellSurface::OnPreWidgetCommit() {
   // Update resize direction to reflect acknowledged configure requests.
   resize_component_ = pending_resize_component_;
 
+  if (config_waiting_for_commit_) {
+    UpdateLocalSurfaceIdFromParent(config_waiting_for_commit_->viz_surface_id);
+  }
   config_waiting_for_commit_.reset();
 
   return true;
@@ -758,12 +802,10 @@ void ShellSurface::Configure(bool ends_drag) {
                                        IsResizing(), widget_->IsActive(),
                                        origin_offset, pending_raster_scale_);
     } else {
-      gfx::Rect bounds;
-      if (initial_bounds_)
-        bounds.set_origin(initial_bounds_->origin());
-      serial = configure_callback_.Run(
-          bounds, chromeos::WindowStateType::kNormal, false, false,
-          origin_offset, pending_raster_scale_);
+      auto state = chromeos::ToWindowStateType(initial_show_state_);
+      gfx::Rect bounds = GetInitialBoundsForState(state);
+      serial = configure_callback_.Run(bounds, state, false, false,
+                                       origin_offset, pending_raster_scale_);
     }
   }
 
@@ -775,8 +817,12 @@ void ShellSurface::Configure(bool ends_drag) {
 
   // Apply origin offset and resize component at the first Commit() after this
   // configure request has been acknowledged.
+  // `host_window()` is changing the window properties of `shell_surface`,
+  // controlled by a wayland client. `shell_surface` needs to know that the
+  // advanced LocalSurfaceId can be embedded, by looking at the config `serial`.
   pending_configs_.push_back(
       std::make_unique<Config>(serial, origin_offset, resize_component,
+                               host_window()->GetLocalSurfaceId(),
                                std::move(configure_compositor_lock_)));
   LOG_IF(WARNING, pending_configs_.size() > 100)
       << "Number of pending configure acks for shell surface has reached: "
@@ -834,6 +880,32 @@ void ShellSurface::AttemptToStartDrag(int component) {
 void ShellSurface::EndDrag() {
   if (!IsMoveComponent(resize_component_))
     Configure(/*ends_drag=*/true);
+}
+
+gfx::Rect ShellSurface::GetInitialBoundsForState(
+    const chromeos::WindowStateType state) const {
+  if (state == chromeos::WindowStateType::kMaximized) {
+    return GetDisplayForInitialBounds().work_area();
+  }
+  if (IsFullscreenOrPinnedWindowStateType(state)) {
+    return GetDisplayForInitialBounds().bounds();
+  }
+  if (initial_bounds_) {
+    // TODO(oshima): Consider just using the `initial_bounds_`.
+    return gfx::Rect(initial_bounds_->origin(), {});
+  }
+  return gfx::Rect();
+}
+
+display::Display ShellSurface::GetDisplayForInitialBounds() const {
+  auto* screen = display::Screen::GetScreen();
+  display::Display display = screen->GetDisplayForNewWindows();
+  // Use `pending_display_id_` as this is called before first commit.
+  if (!screen->GetDisplayWithDisplayId(pending_display_id_, &display) &&
+      initial_bounds_ && !initial_bounds_->IsEmpty()) {
+    display = screen->GetDisplayMatching(*initial_bounds_);
+  }
+  return display;
 }
 
 }  // namespace exo

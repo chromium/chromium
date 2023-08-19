@@ -5,10 +5,10 @@
 #include "components/autofill/core/browser/form_parsing/standalone_cvc_field.h"
 
 #include "components/autofill/core/browser/autofill_field.h"
-#include "components/autofill/core/browser/autofill_regex_constants.h"
-#include "components/autofill/core/browser/autofill_regexes.h"
 #include "components/autofill/core/browser/form_parsing/autofill_scanner.h"
 #include "components/autofill/core/common/autofill_payments_features.h"
+#include "components/autofill/core/common/autofill_regex_constants.h"
+#include "components/autofill/core/common/autofill_regexes.h"
 
 namespace autofill {
 
@@ -30,7 +30,7 @@ std::unique_ptr<FormField> StandaloneCvcField::Parse(
     return nullptr;
   }
 
-  AutofillField* field;
+  raw_ptr<AutofillField> field;
   base::span<const MatchPatternRef> cvc_patterns = GetMatchPatterns(
       CREDIT_CARD_VERIFICATION_CODE, page_language, pattern_source);
 
@@ -63,9 +63,15 @@ bool StandaloneCvcField::MatchGiftCard(AutofillScanner* scanner,
   base::span<const MatchPatternRef> gift_card_patterns =
       GetMatchPatterns("GIFT_CARD", page_language, pattern_source);
 
-  return ParseFieldSpecifics(scanner, kGiftCardRe, kMatchFieldType,
-                             gift_card_patterns, nullptr,
-                             {log_manager, "kGiftCardRe"});
+  size_t saved_cursor = scanner->SaveCursor();
+  const bool gift_card_match = ParseFieldSpecifics(
+      scanner, kGiftCardRe, kMatchFieldType, gift_card_patterns, nullptr,
+      {log_manager, "kGiftCardRe"});
+  // MatchGiftCard only wants to test the presence of a gift card but not
+  // consume the field.
+  scanner->RewindTo(saved_cursor);
+
+  return gift_card_match;
 }
 
 StandaloneCvcField::StandaloneCvcField(const AutofillField* field)

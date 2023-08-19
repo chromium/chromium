@@ -888,6 +888,24 @@ EScrollbarWidth Scrollbar::CSSScrollbarWidth() const {
   return EScrollbarWidth::kAuto;
 }
 
+absl::optional<blink::Color> Scrollbar::ScrollbarThumbColor() const {
+  if (style_source_ && style_source_->GetLayoutObject()) {
+    return style_source_->GetLayoutObject()
+        ->Style()
+        ->ScrollbarThumbColorResolved();
+  }
+  return absl::nullopt;
+}
+
+absl::optional<blink::Color> Scrollbar::ScrollbarTrackColor() const {
+  if (style_source_ && style_source_->GetLayoutObject()) {
+    return style_source_->GetLayoutObject()
+        ->Style()
+        ->ScrollbarTrackColorResolved();
+  }
+  return absl::nullopt;
+}
+
 mojom::blink::ColorScheme Scrollbar::UsedColorScheme() const {
   return scrollable_area_->UsedColorSchemeScrollbars();
 }

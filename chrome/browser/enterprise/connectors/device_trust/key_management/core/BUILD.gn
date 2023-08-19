@@ -49,6 +49,7 @@ source_set("unit_tests") {
     ":core",
     ":util",
     "//base",
+    "//chrome/browser/enterprise/connectors/device_trust/key_management/common",
     "//chrome/browser/enterprise/connectors/device_trust/key_management/core/persistence:test_support",
     "//crypto",
     "//crypto:test_support",

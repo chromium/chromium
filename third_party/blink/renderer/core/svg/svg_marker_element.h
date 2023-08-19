@@ -87,7 +87,7 @@ class SVGMarkerElement final : public SVGElement, public SVGFitToViewBox {
 
   SVGAnimatedPropertyBase* PropertyFromAttribute(
       const QualifiedName& attribute_name) const override;
-  void SynchronizeSVGAttribute(const QualifiedName& name) const override;
+  void SynchronizeAllSVGAttributes() const override;
 
   Member<SVGAnimatedLength> ref_x_;
   Member<SVGAnimatedLength> ref_y_;

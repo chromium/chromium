@@ -1310,10 +1310,10 @@ bool BrowserDataBackMigrator::IsBackMigrationEnabled(
     return false;
   }
 
-  bool isFeatureEnabled = base::FeatureList::IsEnabled(
+  bool is_feature_enabled = base::FeatureList::IsEnabled(
       ash::features::kLacrosProfileBackwardMigration);
-  VLOG(1) << "Lacros backward migration feature flag is " << isFeatureEnabled;
-  return isFeatureEnabled;
+  VLOG(1) << "Lacros backward migration feature flag is " << is_feature_enabled;
+  return is_feature_enabled;
 }
 
 // static

@@ -101,11 +101,10 @@ constexpr base::TimeDelta kTimeOutForCommitUpdate = base::Milliseconds(1000);
 // Appends the common switches to each shell link.
 void AppendCommonSwitches(const base::FilePath& cmd_line_profile_dir,
                           ShellLinkItem* shell_link) {
-  const char* kSwitchNames[] = { switches::kUserDataDir };
+  static constexpr const char* kSwitchNames[] = {switches::kUserDataDir};
   const base::CommandLine& command_line =
       *base::CommandLine::ForCurrentProcess();
-  shell_link->GetCommandLine()->CopySwitchesFrom(command_line, kSwitchNames,
-                                                 std::size(kSwitchNames));
+  shell_link->GetCommandLine()->CopySwitchesFrom(command_line, kSwitchNames);
   if (!cmd_line_profile_dir.empty()) {
     shell_link->GetCommandLine()->AppendSwitchPath(switches::kProfileDirectory,
                                                    cmd_line_profile_dir);
@@ -170,7 +169,7 @@ bool UpdateTaskCategory(
   if (!base::PathService::Get(base::FILE_EXE, &chrome_path))
     return false;
 
-  int icon_index = install_static::GetIconResourceIndex();
+  int icon_index = install_static::GetAppIconResourceIndex();
 
   ShellLinkItemList items;
 

@@ -8,6 +8,8 @@
 #include "base/memory/raw_ptr.h"
 #include "gpu/command_buffer/service/shared_image/shared_image_representation.h"
 
+#include <webgpu/webgpu_cpp.h>
+
 namespace gpu {
 // This is a wrapper class for SkiaGraphiteImageRepresentation to be used in
 // Dawn mode.
@@ -20,7 +22,9 @@ class GPU_GLES2_EXPORT SkiaGraphiteDawnImageRepresentation
       skgpu::graphite::Recorder* recorder,
       SharedImageManager* manager,
       SharedImageBacking* backing,
-      MemoryTypeTracker* tracker);
+      MemoryTypeTracker* tracker,
+      int plane_index = 0,
+      bool is_yuv_plane = false);
 
   ~SkiaGraphiteDawnImageRepresentation() override;
 
@@ -40,13 +44,21 @@ class GPU_GLES2_EXPORT SkiaGraphiteDawnImageRepresentation
       scoped_refptr<SharedContextState> context_state,
       SharedImageManager* manager,
       SharedImageBacking* backing,
-      MemoryTypeTracker* tracker);
+      MemoryTypeTracker* tracker,
+      int plane_index,
+      bool is_yuv_plane);
+
+  std::vector<skgpu::graphite::BackendTexture> CreateBackendTextures(
+      wgpu::Texture texture);
 
   std::unique_ptr<DawnImageRepresentation> dawn_representation_;
   std::unique_ptr<DawnImageRepresentation::ScopedAccess> dawn_scoped_access_;
   scoped_refptr<SharedContextState> context_state_;
-  raw_ptr<skgpu::graphite::Recorder> recorder_ = nullptr;
+  const raw_ptr<skgpu::graphite::Recorder> recorder_;
+  const int plane_index_;
+  const bool is_yuv_plane_;
   RepresentationAccessMode mode_ = RepresentationAccessMode::kNone;
+  std::vector<wgpu::TextureView> plane_views_;
 };
 
 }  // namespace gpu

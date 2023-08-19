@@ -8,22 +8,15 @@
 #import <Foundation/Foundation.h>
 #import <UserNotifications/UserNotifications.h>
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
-API_AVAILABLE(macosx(10.14))
 @interface FakeUNNotification : NSObject
 @property(nonatomic, strong, nullable) UNNotificationRequest* request;
 @end
 
-API_AVAILABLE(macosx(10.14))
 @interface FakeUNNotificationSettings : NSObject
 @property(nonatomic, assign) UNAlertStyle alertStyle;
 @property(nonatomic, assign) UNAuthorizationStatus authorizationStatus;
 @end
 
-API_AVAILABLE(macosx(10.14))
 @interface FakeUNUserNotificationCenter : NSObject
 - (nullable instancetype)init;
 - (void)setDelegate:(id<UNUserNotificationCenterDelegate> _Nullable)delegate;

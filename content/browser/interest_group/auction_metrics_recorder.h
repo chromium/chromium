@@ -13,6 +13,7 @@
 #include "content/browser/interest_group/auction_worklet_manager.h"
 #include "content/common/content_export.h"
 #include "content/services/auction_worklet/public/mojom/bidder_worklet.mojom-shared.h"
+#include "content/services/auction_worklet/public/mojom/seller_worklet.mojom.h"
 #include "services/metrics/public/cpp/ukm_builders.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
 #include "url/origin.h"
@@ -85,6 +86,11 @@ class CONTENT_EXPORT AuctionMetricsRecorder {
   // Records the k-anonymity mode used for this auction.
   void SetKAnonymityBidMode(auction_worklet::mojom::KAnonymityBidMode bid_mode);
 
+  // Records the total number of config promises for this auction. For a
+  // multi-seller auction, this includes promises from both the top-level
+  // auction and all component auctions within.
+  void SetNumConfigPromises(int64_t num_config_promises);
+
   // Records outcomes on the boundary between GenerateBid and ScoreAd.
   // Each of these is called once for each InterestGroup for which we called
   // GenerateBid.
@@ -112,6 +118,17 @@ class CONTENT_EXPORT AuctionMetricsRecorder {
   void RecordTopLevelBidQueuedWaitingForSellerWorklet(base::TimeDelta delay);
   void RecordBidQueuedWaitingForConfigPromises(base::TimeDelta delay);
   void RecordBidQueuedWaitingForSellerWorklet(base::TimeDelta delay);
+
+  // Latency of the entire ScoreAd flow, including signals requests, for
+  // a given Bid.
+  void RecordScoreAdFlowLatency(base::TimeDelta latency);
+  // Latency of just the call to ScoreAd.
+  void RecordScoreAdLatency(base::TimeDelta latency);
+
+  // Records latencies and critical path latencies of ScoreAd dependencies.
+  void RecordScoreAdDependencyLatencies(
+      const auction_worklet::mojom::ScoreAdDependencyLatencies&
+          score_ad_dependency_latencies);
 
  private:
   using UkmEntry = ukm::builders::AdsInterestGroup_AuctionLatency_V2;
@@ -169,6 +186,24 @@ class CONTENT_EXPORT AuctionMetricsRecorder {
   void RecordGenerateBidDependencyLatencyCriticalPath(
       GenerateBidDependencyCriticalPath& critical_path);
 
+  struct ScoreAdDependencyCriticalPath {
+    enum class Dependency {
+      kCodeReady = 0,
+      kDirectFromSellerSignals = 2,
+      kTrustedScoringSignals = 3,
+    };
+    absl::optional<Dependency> last_resolved_dependency;
+    base::TimeDelta last_resolved_dependency_latency;
+    base::TimeDelta penultimate_resolved_dependency_latency;
+  };
+  void MaybeRecordScoreAdDependencyLatency(
+      ScoreAdDependencyCriticalPath::Dependency dependency,
+      absl::optional<base::TimeDelta> latency,
+      LatencyAggregator& aggregator,
+      ScoreAdDependencyCriticalPath& critical_path);
+  void RecordScoreAdDependencyLatencyCriticalPath(
+      ScoreAdDependencyCriticalPath& critical_path);
+
   // The data structure we'll eventually record via the UkmRecorder.
   // We incrementally build this in all of the methods of this class.
   UkmEntry builder_;
@@ -204,6 +239,7 @@ class CONTENT_EXPORT AuctionMetricsRecorder {
   // Various latency measurements.
   LatencyAggregator component_auction_latency_aggregator_;
 
+  // GenerateBid latencies.
   LatencyAggregator bid_for_one_interest_group_latency_aggregator_;
   LatencyAggregator generate_single_bid_latency_aggregator_;
 
@@ -226,6 +262,21 @@ class CONTENT_EXPORT AuctionMetricsRecorder {
       top_level_bid_queued_waiting_for_config_promises_aggregator_;
   LatencyAggregator bid_queued_waiting_for_seller_worklet_aggregator_;
   LatencyAggregator bid_queued_waiting_for_config_promises_aggregator_;
+
+  // ScoreAd latencies
+  LatencyAggregator score_ad_flow_latency_aggregator_;
+  LatencyAggregator score_ad_latency_aggregator_;
+
+  // Aggregated latencies of ScoreAd dependencies.
+  LatencyAggregator score_ad_code_ready_latency_aggregator_;
+  LatencyAggregator score_ad_direct_from_seller_signals_latency_aggregator_;
+  LatencyAggregator score_ad_trusted_scoring_signals_latency_aggregator_;
+
+  // Aggregated critical path latencies of ScoreAd dependencies.
+  LatencyAggregator score_ad_code_ready_critical_path_aggregator_;
+  LatencyAggregator
+      score_ad_direct_from_seller_signals_critical_path_aggregator_;
+  LatencyAggregator score_ad_trusted_scoring_signals_critical_path_aggregator_;
 };
 
 }  // namespace content

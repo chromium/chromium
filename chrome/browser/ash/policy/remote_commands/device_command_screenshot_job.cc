@@ -63,9 +63,17 @@ std::string CreatePayload(ResultCode result_code) {
     root_dict.Set(kResultFieldName, result_code);
   }
 
-  std::string payload;
-  base::JSONWriter::Write(root_dict, &payload);
-  return payload;
+  return base::WriteJson(root_dict).value();
+}
+
+ResultCode ToResultCode(UploadJob::ErrorCode error_code) {
+  switch (error_code) {
+    case UploadJob::AUTHENTICATION_ERROR:
+      return ResultCode::FAILURE_AUTHENTICATION;
+    case UploadJob::NETWORK_ERROR:
+    case UploadJob::SERVER_ERROR:
+      return ResultCode::FAILURE_SERVER;
+  }
 }
 
 }  // namespace
@@ -89,27 +97,12 @@ enterprise_management::RemoteCommand_Type DeviceCommandScreenshotJob::GetType()
 
 void DeviceCommandScreenshotJob::OnSuccess() {
   SYSLOG(INFO) << "Upload successful.";
-  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
-      FROM_HERE, base::BindOnce(std::move(result_callback_),
-                                ResultType::kSuccess, CreatePayload(SUCCESS)));
+  ReportResult(ResultType::kSuccess, ResultCode::SUCCESS);
 }
 
 void DeviceCommandScreenshotJob::OnFailure(UploadJob::ErrorCode error_code) {
   SYSLOG(ERROR) << "Upload failure: " << error_code;
-  ResultCode result_code = FAILURE_CLIENT;
-  switch (error_code) {
-    case UploadJob::AUTHENTICATION_ERROR:
-      result_code = FAILURE_AUTHENTICATION;
-      break;
-    case UploadJob::NETWORK_ERROR:
-    case UploadJob::SERVER_ERROR:
-      result_code = FAILURE_SERVER;
-      break;
-  }
-  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
-      FROM_HERE,
-      base::BindOnce(std::move(result_callback_), ResultType::kFailure,
-                     CreatePayload(result_code)));
+  ReportResult(ResultType::kFailure, ToResultCode(error_code));
 }
 
 bool DeviceCommandScreenshotJob::ParseCommandPayload(
@@ -168,6 +161,13 @@ void DeviceCommandScreenshotJob::StartScreenshotUpload(
   upload_job_->Start();
 }
 
+void DeviceCommandScreenshotJob::ReportResult(ResultType result_type,
+                                              ResultCode result_code) {
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
+      FROM_HERE, base::BindOnce(std::move(result_callback_), result_type,
+                                CreatePayload(result_code)));
+}
+
 void DeviceCommandScreenshotJob::RunImpl(CallbackWithResult result_callback) {
   result_callback_ = std::move(result_callback);
 
@@ -176,10 +176,8 @@ void DeviceCommandScreenshotJob::RunImpl(CallbackWithResult result_callback) {
   // Fail if the delegate says screenshots are not allowed in this session.
   if (!screenshot_delegate_->IsScreenshotAllowed()) {
     SYSLOG(ERROR) << "Screenshots are not allowed.";
-    base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
-        FROM_HERE,
-        base::BindOnce(std::move(result_callback_), ResultType::kFailure,
-                       CreatePayload(FAILURE_USER_INPUT)));
+    ReportResult(ResultType::kFailure, ResultCode::FAILURE_USER_INPUT);
+    return;
   }
 
   aura::Window::Windows root_windows = ash::Shell::GetAllRootWindows();
@@ -187,20 +185,15 @@ void DeviceCommandScreenshotJob::RunImpl(CallbackWithResult result_callback) {
   // Immediately fail if the upload url is invalid.
   if (!upload_url_.is_valid()) {
     SYSLOG(ERROR) << upload_url_ << " is not a valid URL.";
-    base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
-        FROM_HERE,
-        base::BindOnce(std::move(result_callback_), ResultType::kFailure,
-                       CreatePayload(FAILURE_INVALID_URL)));
+    ReportResult(ResultType::kFailure, ResultCode::FAILURE_INVALID_URL);
     return;
   }
 
   // Immediately fail if there are no attached screens.
   if (root_windows.size() == 0) {
     SYSLOG(ERROR) << "No attached screens.";
-    base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
-        FROM_HERE,
-        base::BindOnce(std::move(result_callback_), ResultType::kFailure,
-                       CreatePayload(FAILURE_SCREENSHOT_ACQUISITION)));
+    ReportResult(ResultType::kFailure,
+                 ResultCode::FAILURE_SCREENSHOT_ACQUISITION);
     return;
   }
 

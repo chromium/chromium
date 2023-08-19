@@ -8,7 +8,10 @@
 
 #include "base/memory/ptr_util.h"
 #include "base/time/time.h"
+#include "chrome/browser/apps/app_service/app_service_proxy_ash.h"
+#include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
 #include "chrome/browser/apps/app_service/metrics/app_platform_metrics.h"
+#include "chrome/browser/ash/policy/reporting/metrics_reporting/apps/app_metric_reporting_utils.h"
 #include "chrome/browser/ash/policy/reporting/metrics_reporting/apps/app_platform_metrics_retriever.h"
 #include "chrome/browser/ash/policy/reporting/metrics_reporting/metric_reporting_prefs.h"
 #include "chrome/browser/chromeos/reporting/metric_default_utils.h"
@@ -18,6 +21,7 @@
 #include "components/services/app_service/public/cpp/app_types.h"
 #include "components/services/app_service/public/protos/app_types.pb.h"
 #include "content/public/browser/browser_thread.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace reporting {
 
@@ -119,6 +123,7 @@ void AppUsageObserver::CreateOrUpdateAppUsageEntry(
         ::apps::GetAppTypeName(profile_.get(), app_type, app_id,
                                ::apps::LaunchContainer::kLaunchContainerNone);
     usage_time.reporting_usage_time = running_time;
+    MaybeSetAppPublisherId(usage_time);
     usage_dict_pref->SetByDottedPath(instance_id_string,
                                      usage_time.ConvertToDict());
     return;
@@ -128,8 +133,24 @@ void AppUsageObserver::CreateOrUpdateAppUsageEntry(
   ::apps::AppPlatformMetrics::UsageTime usage_time(
       *usage_dict_pref->FindByDottedPath(instance_id_string));
   usage_time.reporting_usage_time += running_time;
+  MaybeSetAppPublisherId(usage_time);
   usage_dict_pref->SetByDottedPath(instance_id_string,
                                    usage_time.ConvertToDict());
+}
+
+void AppUsageObserver::MaybeSetAppPublisherId(
+    ::apps::AppPlatformMetrics::UsageTime& usage_time) {
+  DCHECK_CURRENTLY_ON(::content::BrowserThread::UI);
+  DCHECK(profile_);
+  if (!usage_time.app_publisher_id.empty()) {
+    // We are already tracking the app publisher id.
+    return;
+  }
+  if (const absl::optional<std::string> app_publisher_id =
+          GetPublisherIdForApp(usage_time.app_id, profile_.get());
+      app_publisher_id.has_value()) {
+    usage_time.app_publisher_id = app_publisher_id.value();
+  }
 }
 
 }  // namespace reporting

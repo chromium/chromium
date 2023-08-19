@@ -3,6 +3,8 @@
 // found in the LICENSE file.
 
 #include "components/content_settings/core/common/content_settings_mojom_traits.h"
+#include "components/content_settings/core/common/content_settings_constraints.h"
+#include "components/content_settings/core/common/content_settings_metadata.h"
 
 namespace mojo {
 
@@ -81,6 +83,66 @@ bool EnumTraits<content_settings::mojom::ContentSetting, ContentSetting>::
 }
 
 // static
+content_settings::mojom::SessionModel EnumTraits<
+    content_settings::mojom::SessionModel,
+    content_settings::SessionModel>::ToMojom(content_settings::SessionModel
+                                                 model) {
+  switch (model) {
+    case content_settings::SessionModel::Durable:
+      return content_settings::mojom::SessionModel::DURABLE;
+    case content_settings::SessionModel::UserSession:
+      return content_settings::mojom::SessionModel::USER_SESSION;
+    case content_settings::SessionModel::NonRestorableUserSession:
+      return content_settings::mojom::SessionModel::NON_RESTORABLE_USER_SESSION;
+    case content_settings::SessionModel::OneTime:
+      return content_settings::mojom::SessionModel::ONE_TIME;
+  }
+}
+
+// static
+bool EnumTraits<content_settings::mojom::SessionModel,
+                content_settings::SessionModel>::
+    FromMojom(content_settings::mojom::SessionModel model,
+              content_settings::SessionModel* out) {
+  switch (model) {
+    case content_settings::mojom::SessionModel::DURABLE:
+      *out = content_settings::SessionModel::Durable;
+      return true;
+    case content_settings::mojom::SessionModel::USER_SESSION:
+      *out = content_settings::SessionModel::UserSession;
+      return true;
+    case content_settings::mojom::SessionModel::NON_RESTORABLE_USER_SESSION:
+      *out = content_settings::SessionModel::NonRestorableUserSession;
+      return true;
+    case content_settings::mojom::SessionModel::ONE_TIME:
+      *out = content_settings::SessionModel::OneTime;
+      return true;
+  }
+}
+
+// static
+bool StructTraits<content_settings::mojom::RuleMetaDataDataView,
+                  content_settings::RuleMetaData>::
+    Read(content_settings::mojom::RuleMetaDataDataView data,
+         content_settings::RuleMetaData* out) {
+  base::Time expiration;
+  base::TimeDelta lifetime;
+  if (!data.ReadExpiration(&expiration) || !data.ReadLifetime(&lifetime)) {
+    return false;
+  }
+  if (lifetime.is_zero() != expiration.is_null() ||
+      lifetime < base::TimeDelta()) {
+    return false;
+  }
+  out->SetExpirationAndLifetime(expiration, lifetime);
+
+  return data.ReadLastModified(&out->last_modified_) &&
+         data.ReadLastUsed(&out->last_used_) &&
+         data.ReadLastVisited(&out->last_visited_) &&
+         data.ReadSessionModel(&out->session_model_);
+}
+
+// static
 bool StructTraits<content_settings::mojom::ContentSettingPatternSourceDataView,
                   ContentSettingPatternSource>::
     Read(content_settings::mojom::ContentSettingPatternSourceDataView data,
@@ -89,8 +151,7 @@ bool StructTraits<content_settings::mojom::ContentSettingPatternSourceDataView,
   return data.ReadPrimaryPattern(&out->primary_pattern) &&
          data.ReadSecondaryPattern(&out->secondary_pattern) &&
          data.ReadSettingValue(&out->setting_value) &&
-         data.ReadExpiration(&out->metadata.expiration) &&
-         data.ReadSource(&out->source);
+         data.ReadMetadata(&out->metadata) && data.ReadSource(&out->source);
 }
 
 // static

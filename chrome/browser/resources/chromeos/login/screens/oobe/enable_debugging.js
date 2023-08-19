@@ -6,6 +6,7 @@
  * @fileoverview Enable developer features screen implementation.
  */
 
+import '//resources/cr_elements/chromeos/cros_color_overrides.css.js';
 import '//resources/cr_elements/action_link.css.js';
 import '//resources/cr_elements/cr_input/cr_input.js';
 import '//resources/js/action_link.js';

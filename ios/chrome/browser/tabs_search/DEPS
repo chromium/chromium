@@ -1,3 +1,12 @@
+include_rules = [
+  "+ios/chrome/browser/history",
+  "+ios/chrome/browser/synced_sessions",
+  "+ios/chrome/browser/sessions",
+  "+ios/chrome/browser/tabs",
+  "+ios/chrome/browser/signin",
+  "+ios/chrome/browser/sync",
+]
+
 specific_include_rules = {
   # TODO(crbug.com/1294160): Remove these dependencies.
   "^tabs_search_service.h": [

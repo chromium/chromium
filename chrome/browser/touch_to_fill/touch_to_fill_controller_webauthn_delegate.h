@@ -27,7 +27,8 @@ class TouchToFillControllerWebAuthnDelegate
     : public TouchToFillControllerDelegate {
  public:
   explicit TouchToFillControllerWebAuthnDelegate(
-      WebAuthnRequestDelegateAndroid* delegate);
+      WebAuthnRequestDelegateAndroid* delegate,
+      bool should_show_hybrid_option);
 
   TouchToFillControllerWebAuthnDelegate(
       const TouchToFillControllerWebAuthnDelegate&) = delete;
@@ -47,14 +48,18 @@ class TouchToFillControllerWebAuthnDelegate
       base::OnceClosure action_completed) override;
   void OnManagePasswordsSelected(bool passkeys_shown,
                                  base::OnceClosure action_completed) override;
+  void OnHybridSignInSelected(base::OnceClosure action_completed) override;
   void OnDismiss(base::OnceClosure action_completed) override;
   const GURL& GetFrameUrl() override;
   bool ShouldTriggerSubmission() override;
+  bool ShouldShowHybridOption() override;
   gfx::NativeView GetNativeView() override;
 
  private:
   // Raw pointer to the request delegate that owns this.
   raw_ptr<WebAuthnRequestDelegateAndroid> request_delegate_ = nullptr;
+
+  bool should_show_hybrid_option_;
 };
 
 #endif  // CHROME_BROWSER_TOUCH_TO_FILL_TOUCH_TO_FILL_CONTROLLER_WEBAUTHN_DELEGATE_H_

@@ -199,8 +199,8 @@ MATCHER_P2(AddChange, key, data, "") {
     *result_listener << "key " << arg.key() << " does not match expected "
                      << key;
   }
-  if (*arg.data_model() != data) {
-    *result_listener << "data " << *arg.data_model()
+  if (arg.data_model() != data) {
+    *result_listener << "data " << arg.data_model()
                      << " does not match expected " << data;
   }
   return true;
@@ -419,16 +419,16 @@ TEST_F(AutofillWalletSyncBridgeTest,
   table()->SetServerProfiles({address1, address2});
   CreditCard card1 = test::GetMaskedServerCard();
   // Set the card issuer to Google.
-  card1.set_card_issuer(CreditCard::Issuer::GOOGLE);
+  card1.set_card_issuer(CreditCard::Issuer::kGoogle);
   card1.set_virtual_card_enrollment_state(
-      CreditCard::VirtualCardEnrollmentState::UNENROLLED);
+      CreditCard::VirtualCardEnrollmentState::kUnenrolled);
   card1.set_card_art_url(GURL("https://www.example.com/card.png"));
   CreditCard card2 = test::GetMaskedServerCardAmex();
   CreditCard card_with_nickname = test::GetMaskedServerCardWithNickname();
   card2.set_virtual_card_enrollment_state(
-      CreditCard::VirtualCardEnrollmentState::ENROLLED);
+      CreditCard::VirtualCardEnrollmentState::kEnrolled);
   card2.set_virtual_card_enrollment_type(
-      CreditCard::VirtualCardEnrollmentType::NETWORK);
+      CreditCard::VirtualCardEnrollmentType::kNetwork);
   table()->SetServerCreditCards({card1, card2, card_with_nickname});
   PaymentsCustomerData customer_data{/*customer_id=*/kCustomerDataId};
   table()->SetPaymentsCustomerData(&customer_data);
@@ -521,7 +521,7 @@ TEST_F(AutofillWalletSyncBridgeTest,
   table()->SetServerProfiles({address1});
   CreditCard card1 = test::GetMaskedServerCard();
   card1.set_virtual_card_enrollment_state(
-      CreditCard::VirtualCardEnrollmentState::UNENROLLED);
+      CreditCard::VirtualCardEnrollmentState::kUnenrolled);
   card1.set_card_art_url(GURL("https://www.example.com/card.png"));
   table()->SetServerCreditCards({card1});
   PaymentsCustomerData customer_data{/*customer_id=*/kCustomerDataId};
@@ -536,7 +536,7 @@ TEST_F(AutofillWalletSyncBridgeTest,
   SetAutofillWalletSpecificsFromServerProfile(address2, &profile_specifics2);
   CreditCard card2 = test::GetMaskedServerCardAmex();
   card2.set_virtual_card_enrollment_state(
-      CreditCard::VirtualCardEnrollmentState::ENROLLED);
+      CreditCard::VirtualCardEnrollmentState::kEnrolled);
   card2.set_card_art_url(GURL("https://www.test.com/card.png"));
   AutofillWalletSpecifics card_specifics2;
   SetAutofillWalletSpecificsFromServerCard(card2, &card_specifics2);
@@ -755,7 +755,7 @@ TEST_F(
   table()->SetServerProfiles({profile});
   CreditCard card = test::GetMaskedServerCard();
   card.set_virtual_card_enrollment_state(
-      CreditCard::VirtualCardEnrollmentState::UNENROLLED);
+      CreditCard::VirtualCardEnrollmentState::kUnenrolled);
   card.set_card_art_url(GURL("https://www.example.com/card.png"));
   table()->SetServerCreditCards({card});
   PaymentsCustomerData customer_data{/*customer_id=*/kCustomerDataId};
@@ -899,9 +899,9 @@ TEST_F(AutofillWalletSyncBridgeTest, MergeFullSyncData_SetsAllWalletCardData) {
   CreditCard card = test::GetMaskedServerCard();
   card.SetNickname(u"Grocery card");
   // Set the card issuer to Google.
-  card.set_card_issuer(CreditCard::Issuer::GOOGLE);
+  card.set_card_issuer(CreditCard::Issuer::kGoogle);
   card.set_virtual_card_enrollment_state(
-      CreditCard::VirtualCardEnrollmentState::UNENROLLED);
+      CreditCard::VirtualCardEnrollmentState::kUnenrolled);
   card.set_card_art_url(GURL("https://www.example.com/card.png"));
   AutofillWalletSpecifics card_specifics;
   SetAutofillWalletSpecificsFromServerCard(card, &card_specifics);
@@ -1040,19 +1040,19 @@ TEST_F(AutofillWalletSyncBridgeTest, SetWalletCards_LogVirtualMetadataSynced) {
   // Card 1: has virtual cards.
   CreditCard card1 = test::GetMaskedServerCard();
   card1.set_virtual_card_enrollment_state(
-      CreditCard::VirtualCardEnrollmentState::ENROLLED);
+      CreditCard::VirtualCardEnrollmentState::kEnrolled);
   card1.set_server_id("card1_server_id");
   card1.set_card_art_url(GURL("https://www.example.com/card1.png"));
   // Card 2: has virtual cards.
   CreditCard card2 = test::GetMaskedServerCard();
   card2.set_virtual_card_enrollment_state(
-      CreditCard::VirtualCardEnrollmentState::ENROLLED);
+      CreditCard::VirtualCardEnrollmentState::kEnrolled);
   card2.set_server_id("card2_server_id");
   card2.set_card_art_url(GURL("https://www.example.com/card2.png"));
   // Card 3: has no virtual cards
   CreditCard card3 = test::GetMaskedServerCard();
   card3.set_virtual_card_enrollment_state(
-      CreditCard::VirtualCardEnrollmentState::UNENROLLED);
+      CreditCard::VirtualCardEnrollmentState::kUnenrolled);
   card3.set_server_id("card3_server_id");
 
   table()->SetServerCreditCards({card1, card2, card3});
@@ -1069,14 +1069,14 @@ TEST_F(AutofillWalletSyncBridgeTest, SetWalletCards_LogVirtualMetadataSynced) {
   // card.
   AutofillWalletSpecifics card3_specifics;
   card3.set_virtual_card_enrollment_state(
-      CreditCard::VirtualCardEnrollmentState::ENROLLED);
+      CreditCard::VirtualCardEnrollmentState::kEnrolled);
   card3.set_card_art_url(GURL("https://www.example.com/card3.png"));
   SetAutofillWalletSpecificsFromServerCard(card3, &card3_specifics);
   // Card 4: New card enrolled in virtual cards; should log for new card
   AutofillWalletSpecifics card4_specifics;
   CreditCard card4 = test::GetMaskedServerCard();
   card4.set_virtual_card_enrollment_state(
-      CreditCard::VirtualCardEnrollmentState::ENROLLED);
+      CreditCard::VirtualCardEnrollmentState::kEnrolled);
   card4.set_server_id("card4_server_id");
   card4.set_card_art_url(GURL("https://www.example.com/card4.png"));
   SetAutofillWalletSpecificsFromServerCard(card4, &card4_specifics);

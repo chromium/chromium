@@ -22,6 +22,12 @@ struct MEDIA_EXPORT AudioGlitchInfo {
   // Stringifies the info for human-readable logging.
   std::string ToString() const;
 
+  enum class Direction { kRender, kCapture };
+  // Creates a glitch with duration clamped to between 0 and 1 seconds. Also
+  // logs the glitch duration to a UMA-histogram.
+  static AudioGlitchInfo SingleBoundedGlitch(const base::TimeDelta duration,
+                                             const Direction direction);
+
   AudioGlitchInfo& operator+=(const AudioGlitchInfo& other);
 
   class MEDIA_EXPORT Accumulator;

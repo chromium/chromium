@@ -7,10 +7,6 @@
 #import "base/metrics/histogram_functions.h"
 #import "ios/chrome/browser/first_run/first_run_metrics.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 @interface FirstRunSigninLogger ()
 
 // Presenter for showing sync-related UI.

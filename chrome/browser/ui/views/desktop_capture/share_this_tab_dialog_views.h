@@ -59,8 +59,7 @@ class ShareThisTabDialogView : public views::DialogDelegateView {
   // or a throbber while the dialog is not yet activated.
   raw_ptr<ShareThisTabSourceView> source_view_ = nullptr;
 
-  raw_ptr<views::ToggleButton, DanglingUntriaged> audio_toggle_button_ =
-      nullptr;
+  raw_ptr<views::ToggleButton> audio_toggle_button_ = nullptr;
 
   // Timer for an initial delay during which the allow-button is disabled.
   base::OneShotTimer activation_timer_;

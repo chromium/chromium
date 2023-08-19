@@ -273,7 +273,7 @@ class SyncSchedulerImpl : public SyncScheduler {
   // Invoked to run through the sync cycle.
   const std::unique_ptr<Syncer> syncer_;
 
-  raw_ptr<SyncCycleContext> cycle_context_;
+  const raw_ptr<SyncCycleContext> cycle_context_;
 
   // TryJob might get called for multiple reasons. It should only call
   // DoPollSyncCycleJob after some time since the last attempt.

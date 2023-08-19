@@ -58,6 +58,8 @@ public class LensMetrics {
             AmbientSearchEntryPoint.CONTEXT_MENU_SEARCH_WEB_FOR, AmbientSearchEntryPoint.OMNIBOX,
             AmbientSearchEntryPoint.NEW_TAB_PAGE,
             AmbientSearchEntryPoint.QUICK_ACTION_SEARCH_WIDGET, AmbientSearchEntryPoint.KEYBOARD,
+            AmbientSearchEntryPoint.SPOTLIGHT, AmbientSearchEntryPoint.APP_ICON_LONG_PRESS,
+            AmbientSearchEntryPoint.PLUS_BUTTON, AmbientSearchEntryPoint.WEB_SEARCH_BAR,
             AmbientSearchEntryPoint.NUM_ENTRIES})
     @Retention(RetentionPolicy.SOURCE)
     public static @interface AmbientSearchEntryPoint {
@@ -70,14 +72,20 @@ public class LensMetrics {
         int NEW_TAB_PAGE = 6;
         int QUICK_ACTION_SEARCH_WIDGET = 7;
         int KEYBOARD = 8;
-        int NUM_ENTRIES = 9;
+        int SPOTLIGHT = 9;
+        int APP_ICON_LONG_PRESS = 10;
+        int PLUS_BUTTON = 11;
+        int WEB_SEARCH_BAR = 12;
+        int NUM_ENTRIES = 13;
     }
 
     // Note: These values must match the CameraOpenEntryPoint enum in enums.xml.
     // Only add new values at the end, right before NUM_ENTRIES.
     @IntDef({CameraOpenEntryPoint.OMNIBOX, CameraOpenEntryPoint.NEW_TAB_PAGE,
             CameraOpenEntryPoint.QUICK_ACTION_SEARCH_WIDGET, CameraOpenEntryPoint.TASKS_SURFACE,
-            CameraOpenEntryPoint.KEYBOARD, CameraOpenEntryPoint.NUM_ENTRIES})
+            CameraOpenEntryPoint.KEYBOARD, CameraOpenEntryPoint.SPOTLIGHT,
+            CameraOpenEntryPoint.APP_ICON_LONG_PRESS, CameraOpenEntryPoint.PLUS_BUTTON,
+            CameraOpenEntryPoint.WEB_SEARCH_BAR, CameraOpenEntryPoint.NUM_ENTRIES})
     @Retention(RetentionPolicy.SOURCE)
     public static @interface CameraOpenEntryPoint {
         int OMNIBOX = 0;
@@ -85,7 +93,11 @@ public class LensMetrics {
         int QUICK_ACTION_SEARCH_WIDGET = 2;
         int TASKS_SURFACE = 3;
         int KEYBOARD = 4;
-        int NUM_ENTRIES = 5;
+        int SPOTLIGHT = 5;
+        int APP_ICON_LONG_PRESS = 6;
+        int PLUS_BUTTON = 7;
+        int WEB_SEARCH_BAR = 8;
+        int NUM_ENTRIES = 9;
     }
 
     /**

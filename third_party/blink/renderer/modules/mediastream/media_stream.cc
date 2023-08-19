@@ -437,8 +437,7 @@ bool MediaStream::AddEventListenerInternal(
                       WebFeature::kMediaStreamOnInactive);
   }
 
-  return EventTargetWithInlineData::AddEventListenerInternal(event_type,
-                                                             listener, options);
+  return EventTarget::AddEventListenerInternal(event_type, listener, options);
 }
 
 const AtomicString& MediaStream::InterfaceName() const {
@@ -577,7 +576,7 @@ void MediaStream::Trace(Visitor* visitor) const {
   visitor->Trace(observers_);
   visitor->Trace(scheduled_event_timer_);
   visitor->Trace(scheduled_events_);
-  EventTargetWithInlineData::Trace(visitor);
+  EventTarget::Trace(visitor);
   ExecutionContextClient::Trace(visitor);
   MediaStreamDescriptorClient::Trace(visitor);
 }

@@ -99,11 +99,11 @@ class BaselineOptimizerTest(BaselineTest):
                 'specifiers': ['Win11', 'Release']
             },
             'Fake Test Linux': {
-                'port_name': 'linux-trusty',
+                'port_name': 'linux',
                 'specifiers': ['Trusty', 'Release']
             },
             'Fake Test Linux HighDPI': {
-                'port_name': 'linux-trusty',
+                'port_name': 'linux',
                 'specifiers': ['Trusty', 'Release'],
                 'steps': {
                     'high_dpi_blink_web_tests (with patch)': {
@@ -127,22 +127,13 @@ class BaselineOptimizerTest(BaselineTest):
                 'port_name': 'mac-mac10.15',
                 'specifiers': ['Mac10.15', 'Release']
             },
-            'Fake Test Mac10.14': {
-                'port_name': 'mac-mac10.14',
-                'specifiers': ['Mac10.14', 'Release']
-            },
-            'Fake Test Mac10.13': {
-                'port_name': 'mac-mac10.13',
-                'specifiers': ['Mac10.13', 'Release']
-            },
         })
         # Note: this is a pre-assumption of the tests in this file. If this
         # assertion fails, port configurations are likely changed, and the
         # tests need to be adjusted accordingly.
         self.assertEqual(sorted(self.host.port_factory.all_port_names()), [
-            'linux-trusty', 'mac-mac10.13', 'mac-mac10.14', 'mac-mac10.15',
-            'mac-mac11', 'mac-mac12', 'mac-mac13', 'win-win10.20h2',
-            'win-win11'
+            'linux', 'mac-mac10.15', 'mac-mac11', 'mac-mac12', 'mac-mac13',
+            'win-win10.20h2', 'win-win11'
         ])
 
     def _assert_optimization(self,
@@ -160,19 +151,22 @@ class BaselineOptimizerTest(BaselineTest):
                 'gpu',
                 'platforms': ['Linux', 'Mac', 'Win'],
                 'bases': [
+                    'webexposed',
                     'fast/canvas',
                     'slow/canvas/mock-test.html',
                     'virtual/virtual_empty_bases/',
                 ],
                 'args': ['--foo'],
-                'expires':
-                'never',
             }, {
                 'prefix': 'virtual_empty_bases',
                 'platforms': ['Linux', 'Mac', 'Win'],
                 'bases': [],
                 'args': ['--foo'],
-                'expires': 'never',
+            }, {
+                'prefix': 'stable',
+                'platforms': ['Linux', 'Mac', 'Win'],
+                'bases': ['webexposed'],
+                'args': ['--stable-release-mode'],
             }]))
         self.fs.write_text_file(
             self.finder.path_from_web_tests('FlagSpecificConfig'),
@@ -180,7 +174,7 @@ class BaselineOptimizerTest(BaselineTest):
         )
         self.fs.write_text_file(
             self.finder.path_from_web_tests('NeverFixTests'),
-            '# tags: [ Linux Mac Mac10.13 Mac10.14 Mac10.15 Mac11 Mac12 Mac13 Win Win10.20h2 Win11 ]\n'
+            '# tags: [ Linux Mac Mac10.15 Mac11 Mac12 Mac13 Win Win10.20h2 Win11 ]\n'
             '# results: [ Skip Pass ]\n'
             '[ Win10.20h2 ] virtual/gpu/fast/canvas/mock-test.html [ Skip ] \n'
         )
@@ -268,24 +262,24 @@ class BaselineOptimizerTest(BaselineTest):
             {
                 'platform/mac': '1',
                 'platform/linux': '1',
-                'platform/mac-mac10.14': '1',
+                'platform/mac-mac12': '1',
             }, {
                 'platform/mac': '1',
                 'platform/linux': '1',
-                'platform/mac-mac10.14': None,
+                'platform/mac-mac12': None,
             })
 
     def test_local_optimization_skipping_a_port_in_the_middle(self):
-        # mac-mac10.13 -> mac-mac10.14 -> mac
+        # mac-mac11 -> mac-mac12 -> mac
         self._assert_optimization(
             {
                 'platform/mac': '1',
                 'platform/linux': '1',
-                'platform/mac-mac10.13': '1',
+                'platform/mac-mac11': '1',
             }, {
                 'platform/mac': '1',
                 'platform/linux': '1',
-                'platform/mac-mac10.13': None,
+                'platform/mac-mac11': None,
             })
 
     def test_baseline_redundant_with_root(self):
@@ -738,6 +732,25 @@ class BaselineOptimizerTest(BaselineTest):
                 'fast/canvas': '3',
             },
             baseline_dirname='virtual/gpu/fast/canvas')
+
+    def test_virtual_stable_webexposed_preserved(self):
+        self._assert_optimization(
+            {
+                'platform/mac/virtual/gpu/webexposed': '1',
+                'platform/win/virtual/gpu/webexposed': '1',
+                'platform/mac/virtual/stable/webexposed': '1',
+                'platform/win/virtual/stable/webexposed': '1',
+                'platform/mac/webexposed': '1',
+                'platform/win/webexposed': '1',
+            },
+            {
+                'webexposed': '1',
+                # Baselines are optimized among platforms, but not between the
+                # virtual/nonvirtual trees for the "stable" suite, so this
+                # virtual root should still exist.
+                'virtual/stable/webexposed': '1',
+            },
+            baseline_dirname='webexposed')
 
     def test_extra_png_for_reftest_at_root(self):
         self._assert_reftest_optimization({'': 'extra'}, {'': None})

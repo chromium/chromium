@@ -92,6 +92,11 @@ class ChromeTableViewControllerTest : public BlockCleanupTest {
                                       int section,
                                       int item);
 
+  // Verifies that the URL cell at `item` in `section` has a title property
+  // only which match strings for `expected_title`. It should not have a
+  // detailsText.
+  void CheckURLCellTitle(NSString* expected_title, int section, int item);
+
   // Verifies that the text cell at `item` in `section` has a text and
   // detailText properties which match strings for `expected_text` and
   // `expected_detail_text`, respectively.

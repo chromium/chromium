@@ -40,6 +40,7 @@ enum DataCollectorType {
   CHROMEOS_VIRTUAL_KEYBOARD = 22;
   CHROMEOS_NETWORK_HEALTH = 23;
   PERFORMANCE = 24;
+  SIGN_IN_STATE = 25;
 }
 
 // PiiType represent the different known categories of PII that can exist in

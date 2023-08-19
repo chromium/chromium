@@ -45,16 +45,7 @@ void GeolocationManager::SetInstance(
   CheckedAccessWrapper::GetInstance().SetManager(std::move(manager));
 }
 
-#if BUILDFLAG(IS_APPLE) || BUILDFLAG(IS_CHROMEOS)
-
-void GeolocationManager::AppAttemptsToUseGeolocation() {
-  system_geolocation_source_->AppAttemptsToUseGeolocation();
-}
-
-void GeolocationManager::AppCeasesToUseGeolocation() {
-  system_geolocation_source_->AppCeasesToUseGeolocation();
-}
-
+#if BUILDFLAG(IS_APPLE) || BUILDFLAG(OS_LEVEL_GEOLOCATION_PERMISSION_SUPPORTED)
 GeolocationManager::GeolocationManager(
     std::unique_ptr<SystemGeolocationSource> system_geolocation_source)
     : system_geolocation_source_(std::move(system_geolocation_source)),
@@ -109,12 +100,24 @@ SystemGeolocationSource& GeolocationManager::SystemGeolocationSourceForTest() {
   return *system_geolocation_source_;
 }
 
-#else
-
-void GeolocationManager::AppAttemptsToUseGeolocation() {}
-
-void GeolocationManager::AppCeasesToUseGeolocation() {}
-
 #endif
+
+void GeolocationManager::TrackGeolocationAttempted() {
+#if BUILDFLAG(IS_APPLE) || BUILDFLAG(OS_LEVEL_GEOLOCATION_PERMISSION_SUPPORTED)
+  system_geolocation_source_->TrackGeolocationAttempted();
+#endif
+}
+
+void GeolocationManager::TrackGeolocationRelinquished() {
+#if BUILDFLAG(IS_APPLE) || BUILDFLAG(OS_LEVEL_GEOLOCATION_PERMISSION_SUPPORTED)
+  system_geolocation_source_->TrackGeolocationRelinquished();
+#endif
+}
+
+void GeolocationManager::RequestSystemPermission() {
+#if BUILDFLAG(IS_APPLE)
+  system_geolocation_source_->RequestPermission();
+#endif
+}
 
 }  // namespace device

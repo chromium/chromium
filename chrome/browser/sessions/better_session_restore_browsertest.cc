@@ -62,7 +62,7 @@
 #include "services/network/test/test_utils.h"
 
 #if BUILDFLAG(IS_MAC)
-#include "base/mac/scoped_nsautorelease_pool.h"
+#include "base/apple/scoped_nsautorelease_pool.h"
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)

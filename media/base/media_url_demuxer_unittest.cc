@@ -55,7 +55,7 @@ class MediaUrlDemuxerTest : public testing::Test {
 TEST_F(MediaUrlDemuxerTest, BaseCase) {
   InitializeTest();
 
-  EXPECT_EQ(MediaResource::Type::URL, demuxer_->GetType());
+  EXPECT_EQ(MediaResource::Type::KUrl, demuxer_->GetType());
 
   const MediaUrlParams& params = demuxer_->GetMediaUrlParams();
   EXPECT_EQ(default_media_url_, params.media_url);

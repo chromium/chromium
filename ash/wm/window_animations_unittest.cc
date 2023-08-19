@@ -85,7 +85,7 @@ class MinimizeAnimationObserver : public ui::LayerAnimationObserver {
   void OnLayerAnimationAborted(ui::LayerAnimationSequence* sequence) override {}
 
  private:
-  raw_ptr<ui::LayerAnimator, ExperimentalAsh> animator_;
+  raw_ptr<ui::LayerAnimator, DanglingUntriaged | ExperimentalAsh> animator_;
   base::TimeDelta duration_;
 };
 

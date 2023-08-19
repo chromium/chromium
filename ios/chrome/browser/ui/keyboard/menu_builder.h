@@ -9,11 +9,6 @@
 #import <UIKit/UIKit.h>
 
 // Builds a non-contextual menu of keyboard commands during application launch.
-//
-// Note: The OS API to build the menu is only available in iOS 15+. On iOS 14,
-// each view controller returns key commands via -keyCommands. These are all
-// bundled together in the iOS 9-to-14-style menu.
-API_AVAILABLE(ios(15.0))
 @interface MenuBuilder : NSObject
 
 // Configures the builder with the relevant keyboard commands.

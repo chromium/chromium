@@ -74,9 +74,6 @@
       ]
     }
   },
-  "$build/flakiness": {
-    "check_for_flakiness": true
-  },
   "$build/reclient": {
     "instance": "rbe-chromium-untrusted",
     "metrics_project": "chromium-reclient-metrics",

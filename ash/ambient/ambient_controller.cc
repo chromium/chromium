@@ -18,6 +18,7 @@
 #include "ash/ambient/managed/screensaver_images_policy_handler.h"
 #include "ash/ambient/metrics/ambient_metrics.h"
 #include "ash/ambient/metrics/ambient_session_metrics_recorder.h"
+#include "ash/ambient/metrics/managed_screensaver_metrics.h"
 #include "ash/ambient/model/ambient_animation_photo_config.h"
 #include "ash/ambient/model/ambient_backend_model_observer.h"
 #include "ash/ambient/model/ambient_slideshow_photo_config.h"
@@ -48,6 +49,7 @@
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/system/power/power_status.h"
 #include "base/check.h"
+#include "base/check_deref.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
@@ -192,6 +194,20 @@ class AmbientWidgetDelegate : public views::WidgetDelegate {
   }
 };
 
+void RecordManagedScreensaverEnabledPref() {
+  if (!ash::features::IsAmbientModeManagedScreensaverEnabled()) {
+    return;
+  }
+
+  if (PrefService* pref_service = GetActivePrefService();
+      pref_service &&
+      pref_service->IsManagedPreference(
+          ambient::prefs::kAmbientModeManagedScreensaverEnabled)) {
+    RecordManagedScreensaverEnabled(pref_service->GetBoolean(
+        ambient::prefs::kAmbientModeManagedScreensaverEnabled));
+  }
+}
+
 }  // namespace
 
 // static
@@ -254,11 +270,9 @@ void AmbientController::RegisterProfilePrefs(PrefRegistrySimple* registry) {
       ambient::prefs::kAmbientModeManagedScreensaverImageDisplayIntervalSeconds,
       kManagedScreensaverImageRefreshInterval.InSeconds());
 
-  if (ash::features::IsScreenSaverDurationEnabled()) {
-    registry->RegisterIntegerPref(
-        ambient::prefs::kAmbientModeRunningDurationMinutes,
-        kDefaultScreenSaverDuration.InMinutes());
-  }
+  registry->RegisterIntegerPref(
+      ambient::prefs::kAmbientModeRunningDurationMinutes,
+      kDefaultScreenSaverDuration.InMinutes());
 }
 
 AmbientController::AmbientController(
@@ -285,11 +299,12 @@ void AmbientController::OnAmbientUiVisibilityChanged(
       // Cancels the timer upon shown.
       inactivity_timer_.Stop();
 
-      if (ash::features::IsScreenSaverDurationEnabled()) {
-        StartTimerToReleaseWakeLock();
-      } else if (IsChargerConnected()) {
+      if (IsChargerConnected()) {
         // Requires wake lock to prevent display from sleeping.
         AcquireWakeLock();
+        if (ash::features::IsScreenSaverDurationEnabled()) {
+          StartTimerToReleaseWakeLock();
+        }
       }
       // Observes the |PowerStatus| on the battery charging status change for
       // the current ambient session.
@@ -311,10 +326,6 @@ void AmbientController::OnAmbientUiVisibilityChanged(
 
       // Should do nothing if the wake lock has already been released.
       ReleaseWakeLock();
-
-      if (ash::features::IsScreenSaverDurationEnabled()) {
-        screensaver_running_timer_.Stop();
-      }
 
       ClearPreTargetHandler();
 
@@ -350,7 +361,7 @@ void AmbientController::OnAutoShowTimeOut() {
   DCHECK(IsUiHidden(ambient_ui_model_.ui_visibility()));
 
   // Show ambient screen after time out.
-  SetUiVisibilityShown();
+  SetUiVisibilityShouldShow();
 }
 
 void AmbientController::OnLoginOrLockScreenCreated() {
@@ -537,7 +548,7 @@ void AmbientController::ScreenIdleStateChanged(
       return;
     }
 
-    SetUiVisibilityShown();
+    SetUiVisibilityShouldShow();
     return;
   }
 
@@ -647,7 +658,7 @@ void AmbientController::OnInteractionStateChanged(
   }
 }
 
-void AmbientController::SetUiVisibilityShown() {
+void AmbientController::SetUiVisibilityShouldShow() {
   DVLOG(1) << __func__;
 
   // TODO(meilinw): move the eligibility check to the idle entry point once
@@ -706,6 +717,11 @@ void AmbientController::SetUiVisibilityHidden() {
 
 void AmbientController::SetUiVisibilityClosed(bool immediately) {
   DVLOG(1) << __func__;
+  // Early return if the UI is already closed to make sure we do not change the
+  // cursor visibility when it is not required.
+  if (ambient_ui_model_.ui_visibility() == AmbientUiVisibility::kClosed) {
+    return;
+  }
 
   close_widgets_immediately_ = immediately;
   ambient_ui_model_.SetUiVisibility(AmbientUiVisibility::kClosed);
@@ -724,7 +740,8 @@ void AmbientController::SetScreenSaverDuration(int minutes) {
 }
 
 void AmbientController::StartTimerToReleaseWakeLock() {
-  AcquireWakeLock();
+  DCHECK(ash::features::IsScreenSaverDurationEnabled());
+  DCHECK(!screensaver_running_timer_.IsRunning());
 
   auto* pref_service = GetPrimaryUserPrefService();
   if (!pref_service) {
@@ -804,6 +821,7 @@ void AmbientController::ReleaseWakeLock() {
   VLOG(1) << "Released wake lock";
 
   delayed_lock_timer_.Stop();
+  screensaver_running_timer_.Stop();
 }
 
 void AmbientController::CloseAllWidgets(bool immediately) {
@@ -942,6 +960,8 @@ void AmbientController::AddConsumerPrefObservers() {
 }
 
 void AmbientController::OnEnabledPrefChanged() {
+  RecordManagedScreensaverEnabledPref();
+
   if (!IsAmbientModeEnabled()) {
     DVLOG(1) << "Ambient mode disabled";
     ResetAmbientControllerResources();

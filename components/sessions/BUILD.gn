@@ -48,7 +48,6 @@ if (!is_ios) {
   }
 } else {
   source_set("sessions") {
-    configs += [ "//build/config/compiler:enable_arc" ]
     sources = [
       "ios/ios_live_tab.h",
       "ios/ios_live_tab.mm",
@@ -207,7 +206,6 @@ source_set("unit_tests") {
       "ios/ios_serialized_navigation_builder_unittest.mm",
       "ios/ios_serialized_navigation_driver_unittest.cc",
     ]
-    configs += [ "//build/config/compiler:enable_arc" ]
   }
 
   public_deps = [ ":sessions" ]

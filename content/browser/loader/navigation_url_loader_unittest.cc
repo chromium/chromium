@@ -134,12 +134,13 @@ class NavigationURLLoaderTest : public testing::Test {
             false /* is_pdf */,
             content::WeakDocumentPtr() /* initiator_document */,
             GlobalRenderFrameHostId() /* previous_render_frame_host_id */,
-            false /* allow_cookies_from_browser */));
+            false /* allow_cookies_from_browser */, 0 /* navigation_id */));
     return NavigationURLLoader::Create(
         browser_context_.get(), storage_partition, std::move(request_info),
         nullptr, nullptr, nullptr, delegate,
         NavigationURLLoader::LoaderType::kRegular, mojo::NullRemote(),
         /* trust_token_observer=*/mojo::NullRemote(),
+        /* shared_dictionary_observer=*/mojo::NullRemote(),
         /* url_loader_network_observer */ mojo::NullRemote(),
         /*devtools_observer=*/mojo::NullRemote());
   }

@@ -28,7 +28,7 @@ class PostTaskAndReplyTaskRunner : public internal::PostTaskAndReplyImpl {
   bool PostTask(const Location& from_here, OnceClosure task) override;
 
   // Non-owning.
-  raw_ptr<TaskRunner, DanglingUntriaged> destination_;
+  raw_ptr<TaskRunner, AcrossTasksDanglingUntriaged> destination_;
 };
 
 PostTaskAndReplyTaskRunner::PostTaskAndReplyTaskRunner(

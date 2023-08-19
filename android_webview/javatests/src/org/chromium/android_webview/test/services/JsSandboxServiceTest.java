@@ -1200,31 +1200,6 @@ public class JsSandboxServiceTest {
 
     @Test
     @LargeTest
-    public void testLargeScriptByteArrayJsEvaluation() throws Throwable {
-        final String longString = "a".repeat(2000000);
-        final String codeString = ""
-                + "let " + longString + " = 0;"
-                + "\"PASS\"";
-        final byte[] code = codeString.getBytes(StandardCharsets.UTF_8);
-        final String expected = "PASS";
-        Context context = ContextUtils.getApplicationContext();
-
-        ListenableFuture<JavaScriptSandbox> jsSandboxFuture =
-                JavaScriptSandbox.createConnectedInstanceForTestingAsync(context);
-        try (JavaScriptSandbox jsSandbox = jsSandboxFuture.get(5, TimeUnit.SECONDS)) {
-            Assume.assumeTrue(jsSandbox.isFeatureSupported(
-                    JavaScriptSandbox.JS_FEATURE_EVALUATE_WITHOUT_TRANSACTION_LIMIT));
-            try (JavaScriptIsolate jsIsolate = jsSandbox.createIsolate()) {
-                ListenableFuture<String> resultFuture = jsIsolate.evaluateJavaScriptAsync(code);
-                String result = resultFuture.get(10, TimeUnit.SECONDS);
-
-                Assert.assertEquals(expected, result);
-            }
-        }
-    }
-
-    @Test
-    @LargeTest
     public void testLargeReturn() throws Throwable {
         final String longString = "a".repeat(2000000);
         final String code = "'a'.repeat(2000000);";
@@ -1410,34 +1385,12 @@ public class JsSandboxServiceTest {
             Assume.assumeTrue(jsSandbox.isFeatureSupported(
                     JavaScriptSandbox.JS_FEATURE_EVALUATE_WITHOUT_TRANSACTION_LIMIT));
             // Test evaluation using String
-            {
-                final ListenableFuture<String> resultFuture =
-                        jsIsolate.evaluateJavaScriptAsync(JS_UNICODE_TEST_STRING);
-                final String result = resultFuture.get(5, TimeUnit.SECONDS);
+            final ListenableFuture<String> resultFuture =
+                    jsIsolate.evaluateJavaScriptAsync(JS_UNICODE_TEST_STRING);
+            final String result = resultFuture.get(5, TimeUnit.SECONDS);
 
-                Assert.assertEquals(UNICODE_TEST_STRING, result);
-            }
+            Assert.assertEquals(UNICODE_TEST_STRING, result);
 
-            // Test evaluation using UTF-8 byte[]
-            {
-                final byte[] codeBytes = JS_UNICODE_TEST_STRING.getBytes(StandardCharsets.UTF_8);
-                final ListenableFuture<String> resultFuture =
-                        jsIsolate.evaluateJavaScriptAsync(codeBytes);
-                final String result = resultFuture.get(5, TimeUnit.SECONDS);
-
-                Assert.assertEquals(UNICODE_TEST_STRING, result);
-            }
-
-            // Assert that the byte[] API treats ISO_8859_1 (Latin-1) encoded Latin-1
-            // supplement characters as invalid UTF-8. (Replaced by U+FFFD replacement character.)
-            {
-                final byte[] codeBytes = "'Hell\u00f3'".getBytes(StandardCharsets.ISO_8859_1);
-                final ListenableFuture<String> resultFuture =
-                        jsIsolate.evaluateJavaScriptAsync(codeBytes);
-                final String result = resultFuture.get(5, TimeUnit.SECONDS);
-
-                Assert.assertEquals("Hell\ufffd", result);
-            }
         }
     }
 

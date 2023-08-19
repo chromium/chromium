@@ -146,7 +146,8 @@ class VIZ_SERVICE_EXPORT FrameSinkManagerImpl
       mojo::PendingReceiver<mojom::FrameSinkVideoCapturer> receiver) override;
   void EvictSurfaces(const std::vector<SurfaceId>& surface_ids) override;
   void RequestCopyOfOutput(const SurfaceId& surface_id,
-                           std::unique_ptr<CopyOutputRequest> request) override;
+                           std::unique_ptr<CopyOutputRequest> request,
+                           bool capture_exact_surface_id) override;
   void CacheBackBuffer(uint32_t cache_id,
                        const FrameSinkId& root_frame_sink_id) override;
   void EvictBackBuffer(uint32_t cache_id,

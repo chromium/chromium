@@ -2,7 +2,9 @@ Name: libbrlapi
 URL: http://brltty.app
 Version: 0.8
 License: LGPL 2.1
+License File: LICENSE
 Security Critical: yes
+Shipped: yes
 CPEPrefix: cpe:/a:mielke:brltty:3.7.2
 
 Description:

@@ -1651,16 +1651,7 @@ TEST_P(ReportingCacheTest, EvictLeastImportantEndpoint) {
   EXPECT_TRUE(FindEndpointInCache(kGroupKey12_, kEndpoint1_));
 }
 
-// Test is flaky on Linux (https://crbug.com/1358967)
-#if BUILDFLAG(IS_LINUX)
-#define MAYBE_EvictEndpointsOverGlobalLimitFromStalestClient \
-  DISABLED_EvictEndpointsOverGlobalLimitFromStalestClient
-#else
-#define MAYBE_EvictEndpointsOverGlobalLimitFromStalestClient \
-  EvictEndpointsOverGlobalLimitFromStalestClient
-#endif
-TEST_P(ReportingCacheTest,
-       MAYBE_EvictEndpointsOverGlobalLimitFromStalestClient) {
+TEST_P(ReportingCacheTest, EvictEndpointsOverGlobalLimitFromStalestClient) {
   LoadReportingClients();
 
   // Set enough endpoints to reach the global endpoint limit.

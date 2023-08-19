@@ -19,16 +19,13 @@
 #import "ios/chrome/common/ui/util/button_util.h"
 #import "ios/chrome/common/ui/util/image_util.h"
 #import "ios/chrome/common/ui/util/pointer_interaction_util.h"
+#import "ios/chrome/common/ui/util/sdk_forward_declares.h"
 #import "ios/chrome/common/ui/util/text_view_util.h"
 #import "ios/chrome/grit/ios_google_chrome_strings.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ios/public/provider/chrome/browser/password_auto_fill/password_auto_fill_api.h"
 #import "ui/base/device_form_factor.h"
 #import "ui/base/l10n/l10n_util.h"
-
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
 
 namespace {
 CGFloat const kCaptionTextViewOffset = 16;
@@ -435,18 +432,23 @@ CGFloat const kContentOptimalWidth = 327;
   if (!_actionButton) {
     _actionButton = [[HighlightButton alloc] initWithFrame:CGRectZero];
 
-    // TODO(crbug.com/1418068): Simplify after minimum version required is >=
-    // iOS 15.
-    if (base::ios::IsRunningOnIOS15OrLater() &&
-        IsUIButtonConfigurationEnabled()) {
-      if (@available(iOS 15, *)) {
-        UIButtonConfiguration* buttonConfiguration =
-            [UIButtonConfiguration plainButtonConfiguration];
-        buttonConfiguration.contentInsets = NSDirectionalEdgeInsetsMake(
-            kButtonVerticalInsets, kButtonHorizontalMargin,
-            kButtonVerticalInsets, kButtonHorizontalMargin);
-        _actionButton.configuration = buttonConfiguration;
-      }
+    if (IsUIButtonConfigurationEnabled()) {
+      UIButtonConfiguration* buttonConfiguration =
+          [UIButtonConfiguration plainButtonConfiguration];
+      buttonConfiguration.contentInsets = NSDirectionalEdgeInsetsMake(
+          kButtonVerticalInsets, kButtonHorizontalMargin, kButtonVerticalInsets,
+          kButtonHorizontalMargin);
+      buttonConfiguration.background.backgroundColor =
+          [UIColor colorNamed:kGroupedSecondaryBackgroundColor];
+      buttonConfiguration.baseForegroundColor = [UIColor colorNamed:kBlueColor];
+
+      UIFont* font = [UIFont preferredFontForTextStyle:UIFontTextStyleHeadline];
+      NSAttributedString* attributedTitle = [[NSAttributedString alloc]
+          initWithString:self.actionString
+              attributes:@{NSFontAttributeName : font}];
+      buttonConfiguration.attributedTitle = attributedTitle;
+      buttonConfiguration.titleLineBreakMode = NSLineBreakByTruncatingTail;
+      _actionButton.configuration = buttonConfiguration;
     } else {
       UIEdgeInsets contentEdgeInsets =
           UIEdgeInsetsMake(kButtonVerticalInsets, 0, kButtonVerticalInsets, 0);
@@ -454,28 +456,26 @@ CGFloat const kContentOptimalWidth = 327;
           0, kButtonHorizontalMargin, 0, kButtonHorizontalMargin);
       SetContentEdgeInsets(_actionButton, contentEdgeInsets);
       SetTitleEdgeInsets(_actionButton, titleEdgeInsets);
+      [_actionButton
+          setBackgroundColor:[UIColor
+                                 colorNamed:kGroupedSecondaryBackgroundColor]];
+      UIColor* titleColor = [UIColor colorNamed:kBlueColor];
+      [_actionButton setTitleColor:titleColor forState:UIControlStateNormal];
+      _actionButton.titleLabel.font =
+          [UIFont preferredFontForTextStyle:UIFontTextStyleHeadline];
+      [_actionButton setTitle:self.actionString forState:UIControlStateNormal];
+      _actionButton.titleLabel.adjustsFontForContentSizeCategory = YES;
+      _actionButton.titleLabel.lineBreakMode = NSLineBreakByTruncatingTail;
     }
 
-    [_actionButton
-        setBackgroundColor:[UIColor
-                               colorNamed:kGroupedSecondaryBackgroundColor]];
-    UIColor* titleColor = [UIColor colorNamed:kBlueColor];
-    [_actionButton setTitleColor:titleColor forState:UIControlStateNormal];
-    _actionButton.titleLabel.font =
-        [UIFont preferredFontForTextStyle:UIFontTextStyleHeadline];
     _actionButton.layer.cornerRadius = kPrimaryButtonCornerRadius;
     _actionButton.translatesAutoresizingMaskIntoConstraints = NO;
-
     _actionButton.pointerInteractionEnabled = YES;
     _actionButton.pointerStyleProvider =
         CreateOpaqueButtonPointerStyleProvider();
-
-    [_actionButton setTitle:self.actionString forState:UIControlStateNormal];
-    _actionButton.titleLabel.adjustsFontForContentSizeCategory = YES;
     _actionButton.accessibilityIdentifier =
         kPasswordsInOtherAppsActionAccessibilityIdentifier;
 
-    _actionButton.titleLabel.lineBreakMode = NSLineBreakByTruncatingTail;
     [_actionButton addTarget:self
                       action:@selector(didTapActionButton)
             forControlEvents:UIControlEventTouchUpInside];

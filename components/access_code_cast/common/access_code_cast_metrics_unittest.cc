@@ -353,3 +353,38 @@ TEST(AccessCodeCastMetricsTest, CheckMetricsEnums) {
          "access_code_cast_metrics.h. Please update the entry in "
          "enums.xml to match.";
 }
+
+TEST(AccessCodeCastMetricsTest, RecordSavedDeviceConnectDuration) {
+  base::HistogramTester histogram_tester;
+  char histogram[] = "AccessCodeCast.Session.SavedDeviceRouteCreationDuration";
+
+  AccessCodeCastMetrics::RecordSavedDeviceConnectDuration(
+      base::Milliseconds(1));
+  histogram_tester.ExpectTimeBucketCount(histogram, base::Milliseconds(1), 1);
+
+  AccessCodeCastMetrics::RecordSavedDeviceConnectDuration(
+      base::Milliseconds(500));
+  histogram_tester.ExpectTimeBucketCount(histogram, base::Milliseconds(500), 1);
+
+  AccessCodeCastMetrics::RecordSavedDeviceConnectDuration(base::Hours(10));
+  histogram_tester.ExpectTimeBucketCount(histogram, base::Seconds(180), 1);
+
+  histogram_tester.ExpectTotalCount(histogram, 3);
+}
+
+TEST(AccessCodeCastMetricsTest, RecordNewDeviceConnectDuration) {
+  base::HistogramTester histogram_tester;
+  char histogram[] = "AccessCodeCast.Session.NewDeviceRouteCreationDuration";
+
+  AccessCodeCastMetrics::RecordNewDeviceConnectDuration(base::Milliseconds(1));
+  histogram_tester.ExpectTimeBucketCount(histogram, base::Milliseconds(1), 1);
+
+  AccessCodeCastMetrics::RecordNewDeviceConnectDuration(
+      base::Milliseconds(500));
+  histogram_tester.ExpectTimeBucketCount(histogram, base::Milliseconds(500), 1);
+
+  AccessCodeCastMetrics::RecordNewDeviceConnectDuration(base::Hours(10));
+  histogram_tester.ExpectTimeBucketCount(histogram, base::Seconds(180), 1);
+
+  histogram_tester.ExpectTotalCount(histogram, 3);
+}

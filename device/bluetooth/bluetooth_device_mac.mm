@@ -16,8 +16,7 @@ namespace device {
 BluetoothDeviceMac::BluetoothDeviceMac(BluetoothAdapter* adapter)
     : BluetoothDevice(adapter) {}
 
-BluetoothDeviceMac::~BluetoothDeviceMac() {
-}
+BluetoothDeviceMac::~BluetoothDeviceMac() = default;
 
 NSError* BluetoothDeviceMac::GetNSErrorFromConnectErrorCode(
     BluetoothDevice::ConnectErrorCode error_code) {

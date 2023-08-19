@@ -58,7 +58,7 @@ class V8NotificationPermissionCallback;
 class TimestampTrigger;
 
 class MODULES_EXPORT Notification final
-    : public EventTargetWithInlineData,
+    : public EventTarget,
       public ActiveScriptWrappable<Notification>,
       public ExecutionContextLifecycleObserver,
       public mojom::blink::NonPersistentNotificationListener {

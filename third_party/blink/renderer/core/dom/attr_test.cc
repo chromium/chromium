@@ -27,11 +27,11 @@ class AttrTest : public testing::Test {
 
 void AttrTest::SetUp() {
   document_ = Document::CreateForTest(execution_context_.GetExecutionContext());
-  value_ = "value";
+  value_ = AtomicString("value");
 }
 
 Attr* AttrTest::CreateAttribute() {
-  return document_->createAttribute("name", ASSERT_NO_EXCEPTION);
+  return document_->createAttribute(AtomicString("name"), ASSERT_NO_EXCEPTION);
 }
 
 TEST_F(AttrTest, InitialValueState) {

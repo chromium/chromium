@@ -1,4 +1,4 @@
 This is a testharness.js-based test.
-FAIL Test tab-size measurements assert_approx_equals: expected 4.03125 +/- 0.02 but got 23.40625
+FAIL Test tab-size measurements assert_approx_equals: expected 3.9296875 +/- 0.02 but got 23.484375
 Harness: the test ran to completion.
 

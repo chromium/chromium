@@ -253,7 +253,7 @@ void SafeBrowsingNavigationObserver::MaybeRecordNewWebContentsForPortalContents(
     content::RenderFrameHost* initiator_frame_host =
         navigation_handle->GetInitiatorFrameToken().has_value()
             ? content::RenderFrameHost::FromFrameToken(
-                  navigation_handle->GetInitiatorProcessID(),
+                  navigation_handle->GetInitiatorProcessId(),
                   navigation_handle->GetInitiatorFrameToken().value())
             : nullptr;
 
@@ -377,7 +377,7 @@ void SafeBrowsingNavigationObserver::SetNavigationOutermostMainFrameIds(
     auto* initiator_frame_host =
         navigation_handle->GetInitiatorFrameToken().has_value()
             ? content::RenderFrameHost::FromFrameToken(
-                  navigation_handle->GetInitiatorProcessID(),
+                  navigation_handle->GetInitiatorProcessId(),
                   navigation_handle->GetInitiatorFrameToken().value())
             : nullptr;
     if (initiator_frame_host) {

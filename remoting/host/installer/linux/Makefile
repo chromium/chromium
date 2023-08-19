@@ -62,6 +62,19 @@ install:
 	  "$(INSTALL_DIR)/configure-url-forwarder"
 
 	install -m 0644 \
+	  "$(SRC_DIR)/remoting/host/linux/pipewire.conf.template" \
+	  "$(INSTALL_DIR)/pipewire.conf.template"
+	install -m 0644 \
+	  "$(SRC_DIR)/remoting/host/linux/pipewire-media-session.conf.template" \
+	  "$(INSTALL_DIR)/pipewire-media-session.conf.template"
+	install -m 0644 \
+	  "$(SRC_DIR)/remoting/host/linux/pipewire-pulse.conf.template" \
+	  "$(INSTALL_DIR)/pipewire-pulse.conf.template"
+	install -m 0644 \
+	  "$(SRC_DIR)/remoting/host/linux/wireplumber.conf.template" \
+	  "$(INSTALL_DIR)/wireplumber.conf.template"
+
+	install -m 0644 \
 	  "$(BUILD_DIR)/remoting/com.google.chrome.remote_desktop.json" \
 	  "$(CHROME_NATIVE_MESSAGING_DIR)/com.google.chrome.remote_desktop.json"
 	install -m 0644 \

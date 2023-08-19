@@ -89,6 +89,7 @@ class DualReadingListModel : public ReadingListModel,
                                      base::Time distilation_time) override;
   void AddObserver(ReadingListModelObserver* observer) override;
   void RemoveObserver(ReadingListModelObserver* observer) override;
+  void RecordCountMetricsOnUMAUpload() const override;
 
   // ReadingListModelObserver overrides.
   void ReadingListModelBeganBatchUpdates(

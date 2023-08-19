@@ -6,7 +6,10 @@
 
 #include <signal.h>
 
+#include <algorithm>
 #include <memory>
+#include <string>
+#include <vector>
 
 #include "base/allocator/partition_allocator/partition_alloc_buildflags.h"
 #include "base/allocator/partition_allocator/tagging.h"
@@ -34,6 +37,7 @@
 #include "base/process/process.h"
 #include "base/process/process_handle.h"
 #include "base/strings/string_piece.h"
+#include "base/strings/utf_string_conversions.h"
 #include "base/task/thread_pool/thread_pool_instance.h"
 #include "base/test/gtest_xml_unittest_result_printer.h"
 #include "base/test/gtest_xml_util.h"
@@ -54,7 +58,7 @@
 #include "testing/multiprocess_func_list.h"
 
 #if BUILDFLAG(IS_APPLE)
-#include "base/mac/scoped_nsautorelease_pool.h"
+#include "base/apple/scoped_nsautorelease_pool.h"
 #endif  // BUILDFLAG(IS_APPLE)
 
 #if BUILDFLAG(IS_IOS)
@@ -176,12 +180,12 @@ class FeatureListScopedToEachTest : public testing::EmptyTestEventListener {
 
     *CommandLine::ForCurrentProcess() = new_command_line;
 
-    // TODO(https://crbug.com/1400059): Enable dangling pointer detector.
     // TODO(https://crbug.com/1413674): Enable PartitionAlloc in unittests with
     // ASAN.
 #if BUILDFLAG(USE_PARTITION_ALLOC) && !defined(ADDRESS_SANITIZER)
     allocator::PartitionAllocSupport::Get()->ReconfigureAfterFeatureListInit(
-        "", /*configure_dangling_pointer_detector=*/false);
+        "",
+        /*configure_dangling_pointer_detector=*/true);
 #endif
   }
 
@@ -211,6 +215,7 @@ class CheckForLeakedGlobals : public testing::EmptyTestEventListener {
     DCHECK_EQ(thread_pool_set_before_test_, ThreadPoolInstance::Get())
         << " in test " << test.test_case_name() << "." << test.name();
     feature_list_set_before_test_ = nullptr;
+    thread_pool_set_before_test_ = nullptr;
   }
 
   // Check for leaks in test cases (consisting of one or more tests).
@@ -224,6 +229,7 @@ class CheckForLeakedGlobals : public testing::EmptyTestEventListener {
     DCHECK_EQ(thread_pool_set_before_case_, ThreadPoolInstance::Get())
         << " in case " << test_case.name();
     feature_list_set_before_case_ = nullptr;
+    thread_pool_set_before_case_ = nullptr;
   }
 
  private:
@@ -254,7 +260,7 @@ class CheckProcessPriority : public testing::EmptyTestEventListener {
 
  private:
   bool IsProcessBackgrounded() const {
-    return Process::Current().IsProcessBackgrounded();
+    return Process::Current().GetPriority() == Process::Priority::kBestEffort;
   }
 };
 #endif  // !BUILDFLAG(IS_APPLE)
@@ -289,6 +295,36 @@ void InitializeLogging() {
 #endif  // !BUILDFLAG(IS_ANDROID)
 }
 
+#if BUILDFLAG(IS_WIN)
+// Handlers for invalid parameter, pure call, and abort. They generate a
+// breakpoint to ensure that we get a call stack on these failures.
+// These functions should be written to be unique in order to avoid confusing
+// call stacks from /OPT:ICF function folding. Printing a unique message or
+// returning a unique value will do this. Note that for best results they need
+// to be unique from *all* functions in Chrome.
+void InvalidParameter(const wchar_t* expression,
+                      const wchar_t* function,
+                      const wchar_t* file,
+                      unsigned int line,
+                      uintptr_t reserved) {
+  // CRT printed message is sufficient.
+  __debugbreak();
+  _exit(1);
+}
+
+void PureCall() {
+  fprintf(stderr, "Pure-virtual function call. Terminating.\n");
+  __debugbreak();
+  _exit(1);
+}
+
+void AbortHandler(int signal) {
+  // Print EOL after the CRT abort message.
+  fprintf(stderr, "\n");
+  __debugbreak();
+}
+#endif
+
 }  // namespace
 
 int RunUnitTestsUsingBaseTestSuite(int argc, char** argv) {
@@ -297,21 +333,24 @@ int RunUnitTestsUsingBaseTestSuite(int argc, char** argv) {
                          BindOnce(&TestSuite::Run, Unretained(&test_suite)));
 }
 
-TestSuite::TestSuite(int argc, char** argv) {
+TestSuite::TestSuite(int argc, char** argv) : argc_(argc), argv_(argv) {
   PreInitialize();
-  InitializeFromCommandLine(argc, argv);
-  // Logging must be initialized before any thread has a chance to call logging
-  // functions.
-  InitializeLogging();
 }
 
 #if BUILDFLAG(IS_WIN)
-TestSuite::TestSuite(int argc, wchar_t** argv) {
+TestSuite::TestSuite(int argc, wchar_t** argv) : argc_(argc) {
+  argv_as_strings_.reserve(argc);
+  argv_as_pointers_.reserve(argc + 1);
+  std::for_each(argv, argv + argc, [this](wchar_t* arg) {
+    argv_as_strings_.push_back(WideToUTF8(arg));
+    // Have to use .data() here to get a mutable pointer.
+    argv_as_pointers_.push_back(argv_as_strings_.back().data());
+  });
+  // `argv` is specified as containing `argc + 1` pointers, of which the last is
+  // null.
+  argv_as_pointers_.push_back(nullptr);
+  argv_ = argv_as_pointers_.data();
   PreInitialize();
-  InitializeFromCommandLine(argc, argv);
-  // Logging must be initialized before any thread has a chance to call logging
-  // functions.
-  InitializeLogging();
 }
 #endif  // BUILDFLAG(IS_WIN)
 
@@ -320,103 +359,11 @@ TestSuite::~TestSuite() {
     CommandLine::Reset();
 }
 
-void TestSuite::InitializeFromCommandLine(int argc, char** argv) {
-  initialized_command_line_ = CommandLine::Init(argc, argv);
-  testing::InitGoogleTest(&argc, argv);
-  testing::InitGoogleMock(&argc, argv);
-
-#if BUILDFLAG(IS_IOS)
-  InitIOSArgs(argc, argv);
-#endif
-}
-
-#if BUILDFLAG(IS_WIN)
-void TestSuite::InitializeFromCommandLine(int argc, wchar_t** argv) {
-  // Windows CommandLine::Init ignores argv anyway.
-  initialized_command_line_ = CommandLine::Init(argc, NULL);
-  testing::InitGoogleTest(&argc, argv);
-  testing::InitGoogleMock(&argc, argv);
-}
-#endif  // BUILDFLAG(IS_WIN)
-
-void TestSuite::PreInitialize() {
-  DCHECK(!is_initialized_);
-
-#if BUILDFLAG(IS_WIN)
-  base::debug::HandleHooks::PatchLoadedModules();
-#endif  // BUILDFLAG(IS_WIN)
-
-  // The default death_test_style of "fast" is a frequent source of subtle test
-  // flakiness. And on some platforms like macOS, use of system libraries after
-  // fork() but before exec() is unsafe. Using the threadsafe style by default
-  // alleviates these concerns.
-  //
-  // However, the threasafe style does not work reliably on Android, so that
-  // will keep the default of "fast". See https://crbug.com/815537,
-  // https://github.com/google/googletest/issues/1496, and
-  // https://github.com/google/googletest/issues/2093.
-  // TODO(danakj): Determine if all death tests should be skipped on Android
-  // (many already are, such as for DCHECK-death tests).
-#if !BUILDFLAG(IS_ANDROID)
-  testing::GTEST_FLAG(death_test_style) = "threadsafe";
-#endif
-
-#if BUILDFLAG(IS_WIN)
-  testing::GTEST_FLAG(catch_exceptions) = false;
-#endif
-  EnableTerminationOnHeapCorruption();
-#if (BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)) && defined(USE_AURA)
-  // When calling native char conversion functions (e.g wrctomb) we need to
-  // have the locale set. In the absence of such a call the "C" locale is the
-  // default. In the gtk code (below) gtk_init() implicitly sets a locale.
-  setlocale(LC_ALL, "");
-  // We still need number to string conversions to be locale insensitive.
-  setlocale(LC_NUMERIC, "C");
-#endif  // (BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)) && defined(USE_AURA)
-
-  // On Android, AtExitManager is created in
-  // testing/android/native_test_wrapper.cc before main() is called.
-#if !BUILDFLAG(IS_ANDROID)
-  at_exit_manager_ = std::make_unique<AtExitManager>();
-#endif
-
-  // Don't add additional code to this function.  Instead add it to
-  // Initialize().  See bug 6436.
-}
-
-void TestSuite::AddTestLauncherResultPrinter() {
-  // Only add the custom printer if requested.
-  if (!CommandLine::ForCurrentProcess()->HasSwitch(
-          switches::kTestLauncherOutput)) {
-    return;
-  }
-
-  FilePath output_path(CommandLine::ForCurrentProcess()->GetSwitchValuePath(
-      switches::kTestLauncherOutput));
-
-  // Do not add the result printer if output path already exists. It's an
-  // indicator there is a process printing to that file, and we're likely
-  // its child. Do not clobber the results in that case.
-  if (PathExists(output_path)) {
-    LOG(WARNING) << "Test launcher output path " << output_path.AsUTF8Unsafe()
-                 << " exists. Not adding test launcher result printer.";
-    return;
-  }
-
-  printer_ = new XmlUnitTestResultPrinter;
-  CHECK(printer_->Initialize(output_path))
-      << "Output path is " << output_path.AsUTF8Unsafe()
-      << " and PathExists(output_path) is " << PathExists(output_path);
-  testing::TestEventListeners& listeners =
-      testing::UnitTest::GetInstance()->listeners();
-  listeners.Append(printer_);
-}
-
 // Don't add additional code to this method.  Instead add it to
 // Initialize().  See bug 6436.
 int TestSuite::Run() {
 #if BUILDFLAG(IS_APPLE)
-  mac::ScopedNSAutoreleasePool scoped_pool;
+  apple::ScopedNSAutoreleasePool scoped_pool;
 #endif
 
   std::string client_func =
@@ -456,7 +403,7 @@ int TestSuite::Run() {
     // is not needed.
 #endif
 
-  int result = RUN_ALL_TESTS();
+  int result = RunAllTests();
 
 #if BUILDFLAG(IS_APPLE)
   // This MUST happen before Shutdown() since Shutdown() tears down
@@ -470,14 +417,14 @@ int TestSuite::Run() {
   return result;
 }
 
-void TestSuite::DisableCheckForLeakedGlobals() {
-  DCHECK(!is_initialized_);
-  check_for_leaked_globals_ = false;
-}
-
 void TestSuite::DisableCheckForThreadAndProcessPriority() {
   DCHECK(!is_initialized_);
   check_for_thread_and_process_priority_ = false;
+}
+
+void TestSuite::DisableCheckForLeakedGlobals() {
+  DCHECK(!is_initialized_);
+  check_for_leaked_globals_ = false;
 }
 
 void TestSuite::UnitTestAssertHandler(const char* file,
@@ -513,40 +460,6 @@ void TestSuite::UnitTestAssertHandler(const char* file,
   _exit(1);
 }
 
-#if BUILDFLAG(IS_WIN)
-namespace {
-
-// Handlers for invalid parameter, pure call, and abort. They generate a
-// breakpoint to ensure that we get a call stack on these failures.
-// These functions should be written to be unique in order to avoid confusing
-// call stacks from /OPT:ICF function folding. Printing a unique message or
-// returning a unique value will do this. Note that for best results they need
-// to be unique from *all* functions in Chrome.
-void InvalidParameter(const wchar_t* expression,
-                      const wchar_t* function,
-                      const wchar_t* file,
-                      unsigned int line,
-                      uintptr_t reserved) {
-  // CRT printed message is sufficient.
-  __debugbreak();
-  _exit(1);
-}
-
-void PureCall() {
-  fprintf(stderr, "Pure-virtual function call. Terminating.\n");
-  __debugbreak();
-  _exit(1);
-}
-
-void AbortHandler(int signal) {
-  // Print EOL after the CRT abort message.
-  fprintf(stderr, "\n");
-  __debugbreak();
-}
-
-}  // namespace
-#endif
-
 void TestSuite::SuppressErrorDialogs() {
 #if BUILDFLAG(IS_WIN)
   UINT new_flags =
@@ -576,6 +489,12 @@ void TestSuite::SuppressErrorDialogs() {
 
 void TestSuite::Initialize() {
   DCHECK(!is_initialized_);
+
+  InitializeFromCommandLine(&argc_, argv_);
+
+  // Logging must be initialized before any thread has a chance to call logging
+  // functions.
+  InitializeLogging();
 
   // The AsanService causes ASAN errors to emit additional information. It is
   // helpful on its own. It is also required by ASAN BackupRefPtr when
@@ -636,13 +555,16 @@ void TestSuite::Initialize() {
         BindRepeating(&TestSuite::UnitTestAssertHandler, Unretained(this)));
   }
 
-  test::InitializeICUForTesting();
+  // Child processes generally do not need ICU.
+  if (!command_line->HasSwitch("test-child-process")) {
+    test::InitializeICUForTesting();
 
-  // A number of tests only work if the locale is en_US. This can be an issue
-  // on all platforms. To fix this we force the default locale to en_US. This
-  // does not affect tests that explicitly overrides the locale for testing.
-  // TODO(jshin): Should we set the locale via an OS X locale API here?
-  i18n::SetICUDefaultLocale("en_US");
+    // A number of tests only work if the locale is en_US. This can be an issue
+    // on all platforms. To fix this we force the default locale to en_US. This
+    // does not affect tests that explicitly overrides the locale for testing.
+    // TODO(jshin): Should we set the locale via an OS X locale API here?
+    i18n::SetICUDefaultLocale("en_US");
+  }
 
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
   test_fonts::SetUpFontconfig();
@@ -677,9 +599,100 @@ void TestSuite::Initialize() {
   is_initialized_ = true;
 }
 
+void TestSuite::InitializeFromCommandLine(int* argc, char** argv) {
+  // CommandLine::Init() is called earlier from PreInitialize().
+  testing::InitGoogleTest(argc, argv);
+  testing::InitGoogleMock(argc, argv);
+
+#if BUILDFLAG(IS_IOS)
+  InitIOSArgs(*argc, argv);
+#endif
+}
+
+int TestSuite::RunAllTests() {
+  return RUN_ALL_TESTS();
+}
+
 void TestSuite::Shutdown() {
   DCHECK(is_initialized_);
   debug::StopProfiling();
+}
+
+void TestSuite::PreInitialize() {
+  DCHECK(!is_initialized_);
+
+#if BUILDFLAG(IS_WIN)
+  base::debug::HandleHooks::PatchLoadedModules();
+#endif  // BUILDFLAG(IS_WIN)
+
+  // The default death_test_style of "fast" is a frequent source of subtle test
+  // flakiness. And on some platforms like macOS, use of system libraries after
+  // fork() but before exec() is unsafe. Using the threadsafe style by default
+  // alleviates these concerns.
+  //
+  // However, the threasafe style does not work reliably on Android, so that
+  // will keep the default of "fast". See https://crbug.com/815537,
+  // https://github.com/google/googletest/issues/1496, and
+  // https://github.com/google/googletest/issues/2093.
+  // TODO(danakj): Determine if all death tests should be skipped on Android
+  // (many already are, such as for DCHECK-death tests).
+#if !BUILDFLAG(IS_ANDROID)
+  testing::GTEST_FLAG(death_test_style) = "threadsafe";
+#endif
+
+#if BUILDFLAG(IS_WIN)
+  testing::GTEST_FLAG(catch_exceptions) = false;
+#endif
+  EnableTerminationOnHeapCorruption();
+#if (BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)) && defined(USE_AURA)
+  // When calling native char conversion functions (e.g wrctomb) we need to
+  // have the locale set. In the absence of such a call the "C" locale is the
+  // default. In the gtk code (below) gtk_init() implicitly sets a locale.
+  setlocale(LC_ALL, "");
+  // We still need number to string conversions to be locale insensitive.
+  setlocale(LC_NUMERIC, "C");
+#endif  // (BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)) && defined(USE_AURA)
+
+  // On Android, AtExitManager is created in
+  // testing/android/native_test_wrapper.cc before main() is called.
+#if !BUILDFLAG(IS_ANDROID)
+  at_exit_manager_ = std::make_unique<AtExitManager>();
+#endif
+
+  // This needs to be done during construction as some users of this class rely
+  // on the constructor to initialise the CommandLine.
+  initialized_command_line_ = CommandLine::Init(argc_, argv_);
+
+  // Don't add additional code to this function.  Instead add it to
+  // Initialize().  See bug 6436.
+}
+
+void TestSuite::AddTestLauncherResultPrinter() {
+  // Only add the custom printer if requested.
+  if (!CommandLine::ForCurrentProcess()->HasSwitch(
+          switches::kTestLauncherOutput)) {
+    return;
+  }
+
+  FilePath output_path(CommandLine::ForCurrentProcess()->GetSwitchValuePath(
+      switches::kTestLauncherOutput));
+
+  // Do not add the result printer if output path already exists. It's an
+  // indicator there is a process printing to that file, and we're likely
+  // its child. Do not clobber the results in that case.
+  if (PathExists(output_path)) {
+    LOG(WARNING) << "Test launcher output path " << output_path.AsUTF8Unsafe()
+                 << " exists. Not adding test launcher result printer.";
+    return;
+  }
+
+  printer_ = new XmlUnitTestResultPrinter;
+  CHECK(printer_->Initialize(output_path))
+      << "Output path is " << output_path.AsUTF8Unsafe()
+      << " and PathExists(output_path) is " << PathExists(output_path);
+  testing::TestEventListeners& listeners =
+      testing::UnitTest::GetInstance()->listeners();
+  listeners.Append(printer_);
 }
 
 }  // namespace base

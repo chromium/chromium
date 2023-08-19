@@ -175,8 +175,12 @@
   }
 
   @media (prefers-color-scheme: light) {
-    .is-active :-webkit-any(#name, #file-link, #show) {
+    .is-active :-webkit-any(#file-link, #show) {
       color: var(--google-blue-600);
+    }
+
+    .is-active #name {
+      color: var(--cr-primary-text-color);
     }
   }
 
@@ -205,13 +209,13 @@
   }
 
   #progress,
-  #description:not(:empty),
+  .description:not(:empty),
   .controls {
     margin-top: 16px;
   }
 
   @media (prefers-color-scheme: light) {
-    .is-active #description {
+    .is-active .description {
       color: #616161;
     }
   }
@@ -297,9 +301,9 @@
   <div id="file-icon-wrapper" class="icon-wrapper" aria-hidden="true">
     <img class="icon" id="file-icon" alt="" hidden="[[!useFileIcon_]]"
     icon-color$="[[computeIconColor_(isDangerous_, data.dangerType,
-    useFileIcon_)]]">
+    useFileIcon_, updateDeepScanningUx_)]]">
     <iron-icon class="icon" icon$="[[computeIcon_(
-        isDangerous_, data.dangerType, useFileIcon_)]]"
+        isDangerous_, data.dangerType, useFileIcon_, updateDeepScanningUx_)]]"
         hidden="[[useFileIcon_]]" icon-color$="[[computeIconColor_(isDangerous_,
         data.dangerType, useFileIcon_)]]"></iron-icon>
   </div>
@@ -310,10 +314,10 @@
       --><a is="action-link" id="file-link" href="[[data.url]]"
           on-click="onFileLinkClick_" focus-row-control
           focus-type="fileLink"
-          hidden="[[!completelyOnDisk_]]">[[data.fileName]]</a><!--
+          hidden="[[!shouldLinkFilename_]]">[[data.fileName]]</a><!--
       Before #name.
       --><span id="name"
-          hidden="[[completelyOnDisk_]]">[[data.fileName]]</span>
+          hidden="[[shouldLinkFilename_]]">[[data.fileName]]</span>
       <span id="tag">[[computeTag_(data.state,
                                    data.lastReasonText,
                                    data.fileExternallyRemoved)]]</span>
@@ -324,20 +328,28 @@
           focus-type="url">[[chopUrl_(data.url)]]</a>
     </div>
 
-    <div id="description" role="gridcell"
+    <div class="description" role="gridcell"
         hidden$="[[!computeDescriptionVisible_(data.*)]]">
       [[computeDescription_(
           data.state,
           data.dangerType,
           data.fileName,
-          data.progressStatusText)]]
+          data.progressStatusText,
+          updateDeepScanningUx_)]]
+    </div>
+
+    <div class="description" role="gridcell"
+        hidden="[[!computeSecondLineVisible_(data.state,
+        updateDeepScanningUx_)]]">
+      $i18n{asyncScanningDownloadDescSecond}
     </div>
 
     <template is="dom-if" if="[[showProgress_]]">
       <div role="gridcell">
         <paper-progress id="progress"
-            indeterminate="[[isIndeterminate_(data.percent)]]"
-            value="[[data.percent]]"></paper-progress>
+            indeterminate="[[isIndeterminate_(data.percent,
+            updateDeepScanningUx_)]]" value="[[data.percent]]">
+        </paper-progress>
       </div>
     </template>
 
@@ -391,6 +403,14 @@
           <cr-button on-click="onCancelClick_" focus-row-control
               focus-type="cancel">
             $i18n{controlCancel}
+          </cr-button>
+        </span>
+      </template>
+      <template is="dom-if" if="[[showOpenAnyway_]]">
+        <span role="gridcell">
+          <cr-button on-click="onOpenAnywayClick_" id="openAnyway"
+              focus-row-control focus-type="open">
+            $i18n{controlOpenAnyway}
           </cr-button>
         </span>
       </template>

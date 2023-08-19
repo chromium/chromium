@@ -39,6 +39,7 @@
 #include "services/network/public/cpp/simple_url_loader_stream_consumer.h"
 #include "services/network/public/mojom/url_loader_factory.mojom.h"
 #include "services/network/public/mojom/url_response_head.mojom.h"
+#include "storage/browser/file_system/native_file_util.h"
 #include "third_party/blink/public/common/storage_key/storage_key.h"
 #include "url/gurl.h"
 #include "url/origin.h"
@@ -288,7 +289,7 @@ void SaveFileManager::SaveURL(
       factory_remote.Bind(CreateFileSystemURLLoaderFactory(
           rfh->GetProcess()->GetID(), rfh->GetFrameTreeNodeId(),
           storage_partition->GetFileSystemContext(), partition_domain,
-          static_cast<RenderFrameHostImpl*>(rfh)->storage_key()));
+          static_cast<RenderFrameHostImpl*>(rfh)->GetStorageKey()));
       factory = factory_remote.get();
     } else if (rfh && url.SchemeIs(content::kChromeUIScheme)) {
       factory_remote.Bind(CreateWebUIURLLoaderFactory(rfh, url.scheme(), {}));
@@ -548,8 +549,12 @@ void SaveFileManager::RenameAllFiles(const FinalNamesMap& final_names,
                                      SavePackageId save_package_id) {
   DCHECK(download::GetDownloadTaskRunner()->RunsTasksInCurrentSequence());
 
-  if (!resource_dir.empty() && !base::PathExists(resource_dir))
-    base::CreateDirectory(resource_dir);
+  if (!resource_dir.empty() && !base::PathExists(resource_dir)) {
+    // Use `NativeFileUtil::CreateDirectory` instead of `base::CreateDirectory`
+    // to set the correct permissions on ChromeOS.
+    storage::NativeFileUtil::CreateDirectory(resource_dir, /*exclusive=*/false,
+                                             /*recursive=*/true);
+  }
 
   for (const auto& i : final_names) {
     SaveItemId save_item_id = i.first;

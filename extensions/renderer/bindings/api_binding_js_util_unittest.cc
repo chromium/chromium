@@ -124,6 +124,33 @@ TEST_F(APIBindingJSUtilUnittest, TestHasLastError) {
   EXPECT_EQ("false", V8ToString(has_error, context));
 }
 
+TEST_F(APIBindingJSUtilUnittest, TestGetLastError) {
+  v8::HandleScope handle_scope(isolate());
+  v8::Local<v8::Context> context = MainContext();
+
+  gin::Handle<APIBindingJSUtil> util = CreateUtil();
+  v8::Local<v8::Object> v8_util = util.ToV8().As<v8::Object>();
+
+  EXPECT_FALSE(last_error()->HasError(context));
+  EXPECT_EQ("[undefined]", GetExposedError(context));
+  const char kGetLastError[] = "return obj.getLastErrorMessage();";
+  v8::Local<v8::Value> error_message =
+      CallFunctionOnObject(context, v8_util, kGetLastError);
+  EXPECT_TRUE(error_message->IsUndefined());
+
+  last_error()->SetError(context, "an error");
+  EXPECT_TRUE(last_error()->HasError(context));
+  EXPECT_EQ(R"("an error")", GetExposedError(context));
+  error_message = CallFunctionOnObject(context, v8_util, kGetLastError);
+  EXPECT_EQ(R"("an error")", V8ToString(error_message, context));
+
+  last_error()->ClearError(context, false);
+  EXPECT_FALSE(last_error()->HasError(context));
+  EXPECT_EQ("[undefined]", GetExposedError(context));
+  error_message = CallFunctionOnObject(context, v8_util, kGetLastError);
+  EXPECT_TRUE(error_message->IsUndefined());
+}
+
 TEST_F(APIBindingJSUtilUnittest, TestRunWithLastError) {
   v8::HandleScope handle_scope(isolate());
   v8::Local<v8::Context> context = MainContext();

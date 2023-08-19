@@ -5,6 +5,7 @@ accesses, JavaScript cookies, XMLHttpRequest calls, and more.
 DOM checker was written by Michal Zalewski and Filipe Almeida of Google.
 
 Version: 1.01
+Shipped: no
 
 Modifications:
   - Modified dom_config.js to work with the test configuration setup.

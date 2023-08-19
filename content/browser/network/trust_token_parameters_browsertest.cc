@@ -43,7 +43,7 @@ class TrustTokenParametersBrowsertest
     auto& field_trial_param =
         network::features::kTrustTokenOperationsRequiringOriginTrial;
     features_.InitAndEnableFeatureWithParameters(
-        network::features::kPrivateStateTokens,
+        network::features::kFledgePst,
         {{field_trial_param.name,
           field_trial_param.GetName(
               network::features::TrustTokenOriginTrialSpec::

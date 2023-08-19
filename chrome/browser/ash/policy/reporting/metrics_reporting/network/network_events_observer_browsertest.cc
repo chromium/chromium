@@ -149,6 +149,8 @@ IN_PROC_BROWSER_TEST_F(NetworkEventsBrowserTest,
 
   const Record& record =
       GetNextRecord(&missive_event_observer, Priority::SLOW_BATCH);
+  ASSERT_TRUE(record.has_source_info());
+  EXPECT_THAT(record.source_info().source(), Eq(SourceInfo::ASH));
   MetricData record_data;
 
   ASSERT_TRUE(record_data.ParseFromString(record.data()));
@@ -180,6 +182,8 @@ IN_PROC_BROWSER_TEST_F(NetworkEventsBrowserTest,
       base::Value(kSignalStrength));
 
   Record record = GetNextRecord(&missive_event_observer, Priority::SLOW_BATCH);
+  ASSERT_TRUE(record.has_source_info());
+  EXPECT_THAT(record.source_info().source(), Eq(SourceInfo::ASH));
   MetricData event_record_data;
 
   ASSERT_TRUE(event_record_data.ParseFromString(record.data()));
@@ -187,6 +191,8 @@ IN_PROC_BROWSER_TEST_F(NetworkEventsBrowserTest,
               Eq(MetricEventType::WIFI_SIGNAL_STRENGTH_LOW));
 
   record = GetNextRecord(&missive_telemetry_observer, Priority::MANUAL_BATCH);
+  ASSERT_TRUE(record.has_source_info());
+  EXPECT_THAT(record.source_info().source(), Eq(SourceInfo::ASH));
   MetricData telemetry_record_data;
 
   ASSERT_TRUE(telemetry_record_data.ParseFromString(record.data()));

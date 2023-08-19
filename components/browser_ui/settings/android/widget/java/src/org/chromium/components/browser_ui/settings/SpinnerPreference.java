@@ -13,7 +13,6 @@ import android.widget.ArrayAdapter;
 import android.widget.Spinner;
 import android.widget.TextView;
 
-import androidx.annotation.VisibleForTesting;
 import androidx.preference.Preference;
 import androidx.preference.PreferenceViewHolder;
 
@@ -63,7 +62,6 @@ public class SpinnerPreference extends Preference {
     /**
      * Returns the Spinner instance for introspection during tests.
      */
-    @VisibleForTesting(otherwise = VisibleForTesting.NONE)
     public Spinner getSpinnerForTesting() {
         return mSpinner;
     }

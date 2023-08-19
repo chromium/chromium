@@ -16007,9 +16007,9 @@ static_assert(
     offsetof(ReadbackARGBImagePixelsINTERNAL, mailbox_offset) == 52,
     "offset of ReadbackARGBImagePixelsINTERNAL mailbox_offset should be 52");
 
-struct WritePixelsINTERNAL {
-  typedef WritePixelsINTERNAL ValueType;
-  static const CommandId kCmdId = kWritePixelsINTERNAL;
+struct WritePixelsYUVINTERNAL {
+  typedef WritePixelsYUVINTERNAL ValueType;
+  static const CommandId kCmdId = kWritePixelsYUVINTERNAL;
   static const cmd::ArgFlags kArgFlags = cmd::kFixed;
   static const uint8_t cmd_flags = CMD_FLAG_SET_TRACE_LEVEL(2);
 
@@ -16019,96 +16019,126 @@ struct WritePixelsINTERNAL {
 
   void SetHeader() { header.SetCmd<ValueType>(); }
 
-  void Init(GLint _x_offset,
-            GLint _y_offset,
-            GLint _plane_index,
-            GLuint _src_width,
+  void Init(GLuint _src_width,
             GLuint _src_height,
-            GLuint _src_row_bytes,
-            GLuint _src_sk_color_type,
-            GLuint _src_sk_alpha_type,
+            GLuint _src_row_bytes_plane1,
+            GLuint _src_row_bytes_plane2,
+            GLuint _src_row_bytes_plane3,
+            GLuint _src_row_bytes_plane4,
+            GLuint _src_yuv_plane_config,
+            GLuint _src_yuv_subsampling,
+            GLuint _src_yuv_datatype,
             GLint _shm_id,
             GLuint _shm_offset,
-            GLuint _pixels_offset,
-            GLuint _mailbox_offset) {
+            GLuint _pixels_offset_plane1,
+            GLuint _pixels_offset_plane2,
+            GLuint _pixels_offset_plane3,
+            GLuint _pixels_offset_plane4) {
     SetHeader();
-    x_offset = _x_offset;
-    y_offset = _y_offset;
-    plane_index = _plane_index;
     src_width = _src_width;
     src_height = _src_height;
-    src_row_bytes = _src_row_bytes;
-    src_sk_color_type = _src_sk_color_type;
-    src_sk_alpha_type = _src_sk_alpha_type;
+    src_row_bytes_plane1 = _src_row_bytes_plane1;
+    src_row_bytes_plane2 = _src_row_bytes_plane2;
+    src_row_bytes_plane3 = _src_row_bytes_plane3;
+    src_row_bytes_plane4 = _src_row_bytes_plane4;
+    src_yuv_plane_config = _src_yuv_plane_config;
+    src_yuv_subsampling = _src_yuv_subsampling;
+    src_yuv_datatype = _src_yuv_datatype;
     shm_id = _shm_id;
     shm_offset = _shm_offset;
-    pixels_offset = _pixels_offset;
-    mailbox_offset = _mailbox_offset;
+    pixels_offset_plane1 = _pixels_offset_plane1;
+    pixels_offset_plane2 = _pixels_offset_plane2;
+    pixels_offset_plane3 = _pixels_offset_plane3;
+    pixels_offset_plane4 = _pixels_offset_plane4;
   }
 
   void* Set(void* cmd,
-            GLint _x_offset,
-            GLint _y_offset,
-            GLint _plane_index,
             GLuint _src_width,
             GLuint _src_height,
-            GLuint _src_row_bytes,
-            GLuint _src_sk_color_type,
-            GLuint _src_sk_alpha_type,
+            GLuint _src_row_bytes_plane1,
+            GLuint _src_row_bytes_plane2,
+            GLuint _src_row_bytes_plane3,
+            GLuint _src_row_bytes_plane4,
+            GLuint _src_yuv_plane_config,
+            GLuint _src_yuv_subsampling,
+            GLuint _src_yuv_datatype,
             GLint _shm_id,
             GLuint _shm_offset,
-            GLuint _pixels_offset,
-            GLuint _mailbox_offset) {
+            GLuint _pixels_offset_plane1,
+            GLuint _pixels_offset_plane2,
+            GLuint _pixels_offset_plane3,
+            GLuint _pixels_offset_plane4) {
     static_cast<ValueType*>(cmd)->Init(
-        _x_offset, _y_offset, _plane_index, _src_width, _src_height,
-        _src_row_bytes, _src_sk_color_type, _src_sk_alpha_type, _shm_id,
-        _shm_offset, _pixels_offset, _mailbox_offset);
+        _src_width, _src_height, _src_row_bytes_plane1, _src_row_bytes_plane2,
+        _src_row_bytes_plane3, _src_row_bytes_plane4, _src_yuv_plane_config,
+        _src_yuv_subsampling, _src_yuv_datatype, _shm_id, _shm_offset,
+        _pixels_offset_plane1, _pixels_offset_plane2, _pixels_offset_plane3,
+        _pixels_offset_plane4);
     return NextCmdAddress<ValueType>(cmd);
   }
 
   gpu::CommandHeader header;
-  int32_t x_offset;
-  int32_t y_offset;
-  int32_t plane_index;
   uint32_t src_width;
   uint32_t src_height;
-  uint32_t src_row_bytes;
-  uint32_t src_sk_color_type;
-  uint32_t src_sk_alpha_type;
+  uint32_t src_row_bytes_plane1;
+  uint32_t src_row_bytes_plane2;
+  uint32_t src_row_bytes_plane3;
+  uint32_t src_row_bytes_plane4;
+  uint32_t src_yuv_plane_config;
+  uint32_t src_yuv_subsampling;
+  uint32_t src_yuv_datatype;
   int32_t shm_id;
   uint32_t shm_offset;
-  uint32_t pixels_offset;
-  uint32_t mailbox_offset;
+  uint32_t pixels_offset_plane1;
+  uint32_t pixels_offset_plane2;
+  uint32_t pixels_offset_plane3;
+  uint32_t pixels_offset_plane4;
 };
 
-static_assert(sizeof(WritePixelsINTERNAL) == 52,
-              "size of WritePixelsINTERNAL should be 52");
-static_assert(offsetof(WritePixelsINTERNAL, header) == 0,
-              "offset of WritePixelsINTERNAL header should be 0");
-static_assert(offsetof(WritePixelsINTERNAL, x_offset) == 4,
-              "offset of WritePixelsINTERNAL x_offset should be 4");
-static_assert(offsetof(WritePixelsINTERNAL, y_offset) == 8,
-              "offset of WritePixelsINTERNAL y_offset should be 8");
-static_assert(offsetof(WritePixelsINTERNAL, plane_index) == 12,
-              "offset of WritePixelsINTERNAL plane_index should be 12");
-static_assert(offsetof(WritePixelsINTERNAL, src_width) == 16,
-              "offset of WritePixelsINTERNAL src_width should be 16");
-static_assert(offsetof(WritePixelsINTERNAL, src_height) == 20,
-              "offset of WritePixelsINTERNAL src_height should be 20");
-static_assert(offsetof(WritePixelsINTERNAL, src_row_bytes) == 24,
-              "offset of WritePixelsINTERNAL src_row_bytes should be 24");
-static_assert(offsetof(WritePixelsINTERNAL, src_sk_color_type) == 28,
-              "offset of WritePixelsINTERNAL src_sk_color_type should be 28");
-static_assert(offsetof(WritePixelsINTERNAL, src_sk_alpha_type) == 32,
-              "offset of WritePixelsINTERNAL src_sk_alpha_type should be 32");
-static_assert(offsetof(WritePixelsINTERNAL, shm_id) == 36,
-              "offset of WritePixelsINTERNAL shm_id should be 36");
-static_assert(offsetof(WritePixelsINTERNAL, shm_offset) == 40,
-              "offset of WritePixelsINTERNAL shm_offset should be 40");
-static_assert(offsetof(WritePixelsINTERNAL, pixels_offset) == 44,
-              "offset of WritePixelsINTERNAL pixels_offset should be 44");
-static_assert(offsetof(WritePixelsINTERNAL, mailbox_offset) == 48,
-              "offset of WritePixelsINTERNAL mailbox_offset should be 48");
+static_assert(sizeof(WritePixelsYUVINTERNAL) == 64,
+              "size of WritePixelsYUVINTERNAL should be 64");
+static_assert(offsetof(WritePixelsYUVINTERNAL, header) == 0,
+              "offset of WritePixelsYUVINTERNAL header should be 0");
+static_assert(offsetof(WritePixelsYUVINTERNAL, src_width) == 4,
+              "offset of WritePixelsYUVINTERNAL src_width should be 4");
+static_assert(offsetof(WritePixelsYUVINTERNAL, src_height) == 8,
+              "offset of WritePixelsYUVINTERNAL src_height should be 8");
+static_assert(
+    offsetof(WritePixelsYUVINTERNAL, src_row_bytes_plane1) == 12,
+    "offset of WritePixelsYUVINTERNAL src_row_bytes_plane1 should be 12");
+static_assert(
+    offsetof(WritePixelsYUVINTERNAL, src_row_bytes_plane2) == 16,
+    "offset of WritePixelsYUVINTERNAL src_row_bytes_plane2 should be 16");
+static_assert(
+    offsetof(WritePixelsYUVINTERNAL, src_row_bytes_plane3) == 20,
+    "offset of WritePixelsYUVINTERNAL src_row_bytes_plane3 should be 20");
+static_assert(
+    offsetof(WritePixelsYUVINTERNAL, src_row_bytes_plane4) == 24,
+    "offset of WritePixelsYUVINTERNAL src_row_bytes_plane4 should be 24");
+static_assert(
+    offsetof(WritePixelsYUVINTERNAL, src_yuv_plane_config) == 28,
+    "offset of WritePixelsYUVINTERNAL src_yuv_plane_config should be 28");
+static_assert(
+    offsetof(WritePixelsYUVINTERNAL, src_yuv_subsampling) == 32,
+    "offset of WritePixelsYUVINTERNAL src_yuv_subsampling should be 32");
+static_assert(offsetof(WritePixelsYUVINTERNAL, src_yuv_datatype) == 36,
+              "offset of WritePixelsYUVINTERNAL src_yuv_datatype should be 36");
+static_assert(offsetof(WritePixelsYUVINTERNAL, shm_id) == 40,
+              "offset of WritePixelsYUVINTERNAL shm_id should be 40");
+static_assert(offsetof(WritePixelsYUVINTERNAL, shm_offset) == 44,
+              "offset of WritePixelsYUVINTERNAL shm_offset should be 44");
+static_assert(
+    offsetof(WritePixelsYUVINTERNAL, pixels_offset_plane1) == 48,
+    "offset of WritePixelsYUVINTERNAL pixels_offset_plane1 should be 48");
+static_assert(
+    offsetof(WritePixelsYUVINTERNAL, pixels_offset_plane2) == 52,
+    "offset of WritePixelsYUVINTERNAL pixels_offset_plane2 should be 52");
+static_assert(
+    offsetof(WritePixelsYUVINTERNAL, pixels_offset_plane3) == 56,
+    "offset of WritePixelsYUVINTERNAL pixels_offset_plane3 should be 56");
+static_assert(
+    offsetof(WritePixelsYUVINTERNAL, pixels_offset_plane4) == 60,
+    "offset of WritePixelsYUVINTERNAL pixels_offset_plane4 should be 60");
 
 struct EnableiOES {
   typedef EnableiOES ValueType;

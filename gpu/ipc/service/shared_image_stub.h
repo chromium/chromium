@@ -8,13 +8,13 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "build/build_config.h"
-#include "components/viz/common/resources/resource_format.h"
 #include "gpu/command_buffer/service/memory_tracking.h"
 #include "gpu/command_buffer/service/sequence_id.h"
 #include "gpu/command_buffer/service/sync_point_manager.h"
 #include "gpu/ipc/common/command_buffer_id.h"
 #include "gpu/ipc/common/gpu_channel.mojom.h"
 #include "gpu/ipc/service/gpu_ipc_service_export.h"
+#include "ui/gfx/gpu_extra_info.h"
 
 namespace gpu {
 class SharedContextState;
@@ -49,6 +49,9 @@ class GPU_IPC_SERVICE_EXPORT SharedImageStub : public MemoryTracker {
   SharedImageDestructionCallback GetSharedImageDestructionCallback(
       const Mailbox& mailbox);
 
+  // NOTE: The below method is DEPRECATED for single planar formats eg. RGB
+  // BufferFormats. Please use the equivalent method below it taking in single
+  // planar SharedImageFormat with GpuMemoryBufferHandle.
   bool CreateSharedImage(const Mailbox& mailbox,
                          gfx::GpuMemoryBufferHandle handle,
                          gfx::BufferFormat format,
@@ -80,10 +83,14 @@ class GPU_IPC_SERVICE_EXPORT SharedImageStub : public MemoryTracker {
                                       bool register_with_image_pipe);
 #endif  // BUILDFLAG(IS_FUCHSIA)
 
+  void SetGpuExtraInfo(const gfx::GpuExtraInfo& gpu_extra_info);
+
  private:
   SharedImageStub(GpuChannel* channel, int32_t route_id);
 
   void OnCreateSharedImage(mojom::CreateSharedImageParamsPtr params);
+  void OnCreateSharedImageBackedByBuffer(
+      mojom::CreateSharedImageBackedByBufferParamsPtr params);
   void OnCreateSharedImageWithData(
       mojom::CreateSharedImageWithDataParamsPtr params);
   void OnCreateSharedImageWithBuffer(

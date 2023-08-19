@@ -33,8 +33,6 @@ namespace vr {
 class GraphicsDelegateWin : public GraphicsDelegate {
  public:
   using Transform = float[16];
-  using TexturesInitializedCallback = base::OnceCallback<
-      void(GlTextureLocation, unsigned int, unsigned int, unsigned int)>;
   GraphicsDelegateWin();
   ~GraphicsDelegateWin() override;
 

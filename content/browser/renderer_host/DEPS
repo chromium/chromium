@@ -42,9 +42,11 @@ specific_include_rules = {
     "+ui/ozone/public/ozone_switches.h",
   ],
   "render_widget_host_view_mac\.mm": [
+    "+components/device_event_log/device_event_log.h",
     "+content/public/browser/web_contents.h",
   ],
   "popup_menu_helper_mac.mm": [
     "+content/app_shim_remote_cocoa/render_widget_host_view_cocoa.h",
+    "+content/public/browser/web_contents.h",
   ]
 }

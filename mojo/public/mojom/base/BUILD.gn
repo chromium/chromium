@@ -7,6 +7,7 @@ import("//mojo/public/tools/bindings/mojom.gni")
 mojom_component("base") {
   generate_java = true
   sources = [
+    "absl_status.mojom",
     "application_state.mojom",
     "big_buffer.mojom",
     "big_string.mojom",
@@ -34,6 +35,7 @@ mojom_component("base") {
     "time.mojom",
     "token.mojom",
     "unguessable_token.mojom",
+    "uuid.mojom",
     "values.mojom",
     "version.mojom",
   ]
@@ -304,6 +306,19 @@ mojom_component("base") {
       ]
       traits_headers =
           [ "//mojo/public/cpp/base/unguessable_token_mojom_traits.h" ]
+      traits_public_deps = [
+        "//base",
+        "//mojo/public/cpp/base:shared_typemap_traits",
+      ]
+    },
+    {
+      types = [
+        {
+          mojom = "mojo_base.mojom.Uuid"
+          cpp = "::base::Uuid"
+        },
+      ]
+      traits_headers = [ "//mojo/public/cpp/base/uuid_mojom_traits.h" ]
       traits_public_deps = [
         "//base",
         "//mojo/public/cpp/base:shared_typemap_traits",

@@ -23,7 +23,9 @@ namespace ash {
 class AppListViewDelegate;
 class ResultSelectionController;
 class SearchBoxView;
+class SearchNotifierController;
 class SearchResultPageDialogController;
+class SearchResultImageListView;
 
 // The search results view for productivity launcher. Contains a scrolling list
 // of search results. Does not include the search box, which is owned by a
@@ -79,7 +81,14 @@ class ASH_EXPORT AppListSearchView : public views::View,
 
   SearchBoxView* search_box_view() { return search_box_view_.get(); }
 
+  SearchNotifierController* search_notifier_controller() const {
+    return search_notifier_controller_.get();
+  }
+
  private:
+  // views::View:
+  void OnBoundsChanged(const gfx::Rect& previous_bounds) override;
+
   // Passed to |result_selection_controller_| as a callback that gets called
   // when the currently selected result changes.
   // Scrolls the list view to the newly selected result.
@@ -130,12 +139,20 @@ class ASH_EXPORT AppListSearchView : public views::View,
   // views hierarchy. Used by result_selection_controller_.
   std::vector<SearchResultContainerView*> result_container_views_;
 
+  // The container of the image search results. This is owned by the views
+  // hierarchy and is an element in result_container_views_;
+  raw_ptr<SearchResultImageListView, ExperimentalAsh> image_search_container_ =
+      nullptr;
+
   // Cache of the last shown search results' animation metadata.
   std::vector<SearchResultContainerView::SearchResultAimationMetadata>
       last_result_metadata_;
 
   // Handles search result selection.
   std::unique_ptr<ResultSelectionController> result_selection_controller_;
+
+  // Handles the search notifiers in launcher search.
+  std::unique_ptr<SearchNotifierController> search_notifier_controller_;
 
   // Timer used to delay calls to NotifyA11yResultsChanged().
   base::OneShotTimer notify_a11y_results_changed_timer_;

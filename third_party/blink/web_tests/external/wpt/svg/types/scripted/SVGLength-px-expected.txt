@@ -5,6 +5,7 @@ FAIL SVGLength, converting from 'px' to other units (detached), ems Failed to ex
 FAIL SVGLength, converting from 'px' to other units (detached), exs Failed to execute 'convertToSpecifiedUnits' on 'SVGLength': Could not resolve relative length.
 PASS SVGLength, converting from 'px' to other units (detached), cm
 PASS SVGLength, converting from 'px' to other units (detached), mm
+FAIL SVGLength, converting from 'px' to other units (detached), q assert_approx_equals: expected 45.3438 +/- 0.01 but got 45.354331970214844
 PASS SVGLength, converting from 'px' to other units (detached), in
 PASS SVGLength, converting from 'px' to other units (detached), pt
 PASS SVGLength, converting from 'px' to other units (detached), pc

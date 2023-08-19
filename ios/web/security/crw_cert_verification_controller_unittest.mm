@@ -7,6 +7,7 @@
 #import "base/apple/bridging.h"
 #import "base/strings/sys_string_conversions.h"
 #import "base/test/ios/wait_util.h"
+#import "base/test/test_timeouts.h"
 #import "ios/web/public/session/session_certificate_policy_cache.h"
 #import "ios/web/public/test/fakes/fake_web_state.h"
 #import "ios/web/public/test/web_test.h"
@@ -17,10 +18,6 @@
 #import "net/cert/x509_util_apple.h"
 #import "net/test/cert_test_util.h"
 #import "net/test/test_data_directory.h"
-
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
 
 namespace web {
 
@@ -70,11 +67,10 @@ class CRWCertVerificationControllerTest : public web::WebTest {
                  *status = callback_status;
                  completion_handler_called = true;
                }];
-    base::test::ios::WaitUntilCondition(
-        ^{
+    ASSERT_TRUE(base::test::ios::WaitUntilConditionOrTimeout(
+        TestTimeouts::action_timeout(), true, ^{
           return completion_handler_called;
-        },
-        true, base::TimeDelta());
+        }));
   }
 
   // Synchronously returns result of
@@ -92,11 +88,10 @@ class CRWCertVerificationControllerTest : public web::WebTest {
                         *status = callback_status;
                         completion_handler_called = true;
                       }];
-    base::test::ios::WaitUntilCondition(
-        ^{
+    ASSERT_TRUE(base::test::ios::WaitUntilConditionOrTimeout(
+        TestTimeouts::action_timeout(), true, ^{
           return completion_handler_called;
-        },
-        true, base::TimeDelta());
+        }));
   }
 
   scoped_refptr<net::X509Certificate> cert_;

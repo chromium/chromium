@@ -40,6 +40,14 @@
     box-sizing: border-box;
     position: absolute;
     width: 100%;
+    /* Hotfix for cases where the linkData checkbox may be pushed under the action container
+       so that it remains clickable. */
+    pointer-events: none;
+  }
+
+  .action-container cr-button {
+    /* Reverts inherited pointer-events value from .action-container. */
+    pointer-events: all;
   }
 
   .action-container.dialog {

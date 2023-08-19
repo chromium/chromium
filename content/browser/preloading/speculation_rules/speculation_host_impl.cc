@@ -6,8 +6,11 @@
 
 #include <functional>
 
+#include "base/feature_list.h"
 #include "content/browser/preloading/prefetch/prefetch_document_manager.h"
 #include "content/browser/preloading/preloading_decider.h"
+#include "content/public/browser/web_contents.h"
+#include "content/public/browser/web_contents_delegate.h"
 #include "third_party/blink/public/common/features.h"
 
 namespace content {
@@ -79,8 +82,21 @@ void SpeculationHostImpl::EnableNoVarySearchSupport() {
   auto* prefetch_document_manager =
       PrefetchDocumentManager::GetOrCreateForCurrentDocument(
           &render_frame_host());
-  DCHECK(prefetch_document_manager);
+  CHECK(prefetch_document_manager);
   prefetch_document_manager->EnableNoVarySearchSupport();
+}
+
+void SpeculationHostImpl::InitiatePreview(const GURL& url) {
+  if (base::FeatureList::IsEnabled(blink::features::kLinkPreview)) {
+    mojo::ReportBadMessage("SH_PREVIEW");
+    return;
+  }
+  WebContents* web_contents =
+      WebContents::FromRenderFrameHost(&render_frame_host());
+  CHECK(web_contents);
+  WebContentsDelegate* delegate = web_contents->GetDelegate();
+  CHECK(delegate);
+  delegate->InitiatePreview(*web_contents, url);
 }
 
 }  // namespace content

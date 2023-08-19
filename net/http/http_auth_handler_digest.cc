@@ -10,10 +10,12 @@
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
 #include "base/rand_util.h"
+#include "base/strings/string_number_conversions.h"
 #include "base/strings/string_piece.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
+#include "net/base/features.h"
 #include "net/base/net_errors.h"
 #include "net/base/net_string_util.h"
 #include "net/base/url_util.h"
@@ -23,12 +25,13 @@
 #include "net/http/http_auth_scheme.h"
 #include "net/http/http_request_info.h"
 #include "net/http/http_util.h"
+#include "third_party/boringssl/src/include/openssl/digest.h"
 #include "url/gurl.h"
 
 namespace net {
 
-// Digest authentication is specified in RFC 2617.
-// The expanded derivations are listed in the tables below.
+// Digest authentication is specified in RFC 7616.
+// The expanded derivations for algorithm=MD5 are listed in the tables below.
 
 //==========+==========+==========================================+
 //    qop   |algorithm |               response                   |
@@ -64,15 +67,15 @@ std::string HttpAuthHandlerDigest::DynamicNonceGenerator::GenerateNonce()
   static const char domain[] = "0123456789abcdef";
   std::string cnonce;
   cnonce.reserve(16);
-  for (int i = 0; i < 16; ++i)
+  for (int i = 0; i < 16; ++i) {
     cnonce.push_back(domain[base::RandInt(0, 15)]);
+  }
   return cnonce;
 }
 
 HttpAuthHandlerDigest::FixedNonceGenerator::FixedNonceGenerator(
     const std::string& nonce)
-    : nonce_(nonce) {
-}
+    : nonce_(nonce) {}
 
 std::string HttpAuthHandlerDigest::FixedNonceGenerator::GenerateNonce() const {
   return nonce_;
@@ -144,8 +147,9 @@ HttpAuth::AuthorizationResult HttpAuthHandlerDigest::HandleAnotherChallengeImpl(
   // to differentiate between stale and rejected responses.
   // Note that the state of the current handler is not mutated - this way if
   // there is a rejection the realm hasn't changed.
-  if (challenge->auth_scheme() != kDigestAuthScheme)
+  if (challenge->auth_scheme() != kDigestAuthScheme) {
     return HttpAuth::AUTHORIZATION_RESULT_INVALID;
+  }
 
   HttpUtil::NameValuePairsIterator parameters = challenge->param_pairs();
 
@@ -154,16 +158,17 @@ HttpAuth::AuthorizationResult HttpAuthHandlerDigest::HandleAnotherChallengeImpl(
   std::string original_realm;
   while (parameters.GetNext()) {
     if (base::EqualsCaseInsensitiveASCII(parameters.name_piece(), "stale")) {
-      if (base::EqualsCaseInsensitiveASCII(parameters.value_piece(), "true"))
+      if (base::EqualsCaseInsensitiveASCII(parameters.value_piece(), "true")) {
         return HttpAuth::AUTHORIZATION_RESULT_STALE;
+      }
     } else if (base::EqualsCaseInsensitiveASCII(parameters.name_piece(),
                                                 "realm")) {
       original_realm = parameters.value();
     }
   }
-  return (original_realm_ != original_realm) ?
-      HttpAuth::AUTHORIZATION_RESULT_DIFFERENT_REALM :
-      HttpAuth::AUTHORIZATION_RESULT_REJECT;
+  return (original_realm_ != original_realm)
+             ? HttpAuth::AUTHORIZATION_RESULT_DIFFERENT_REALM
+             : HttpAuth::AUTHORIZATION_RESULT_REJECT;
 }
 
 HttpAuthHandlerDigest::HttpAuthHandlerDigest(
@@ -201,13 +206,14 @@ bool HttpAuthHandlerDigest::ParseChallenge(
 
   // Initialize to defaults.
   stale_ = false;
-  algorithm_ = ALGORITHM_UNSPECIFIED;
+  algorithm_ = Algorithm::UNSPECIFIED;
   qop_ = QOP_UNSPECIFIED;
   realm_ = original_realm_ = nonce_ = domain_ = opaque_ = std::string();
 
   // FAIL -- Couldn't match auth-scheme.
-  if (challenge->auth_scheme() != kDigestAuthScheme)
+  if (challenge->auth_scheme() != kDigestAuthScheme) {
     return false;
+  }
 
   HttpUtil::NameValuePairsIterator parameters = challenge->param_pairs();
 
@@ -215,17 +221,20 @@ bool HttpAuthHandlerDigest::ParseChallenge(
   while (parameters.GetNext()) {
     // FAIL -- couldn't parse a property.
     if (!ParseChallengeProperty(parameters.name_piece(),
-                                parameters.value_piece()))
+                                parameters.value_piece())) {
       return false;
+    }
   }
 
   // Check if tokenizer failed.
-  if (!parameters.valid())
+  if (!parameters.valid()) {
     return false;
+  }
 
   // Check that a minimum set of properties were provided.
-  if (nonce_.empty())
+  if (nonce_.empty()) {
     return false;
+  }
 
   return true;
 }
@@ -234,8 +243,9 @@ bool HttpAuthHandlerDigest::ParseChallengeProperty(base::StringPiece name,
                                                    base::StringPiece value) {
   if (base::EqualsCaseInsensitiveASCII(name, "realm")) {
     std::string realm;
-    if (!ConvertToUtf8AndNormalize(value, kCharsetLatin1, &realm))
+    if (!ConvertToUtf8AndNormalize(value, kCharsetLatin1, &realm)) {
       return false;
+    }
     realm_ = realm;
     original_realm_ = std::string(value);
   } else if (base::EqualsCaseInsensitiveASCII(name, "nonce")) {
@@ -250,13 +260,25 @@ bool HttpAuthHandlerDigest::ParseChallengeProperty(base::StringPiece name,
   } else if (base::EqualsCaseInsensitiveASCII(name, "algorithm")) {
     // Parse the algorithm.
     if (base::EqualsCaseInsensitiveASCII(value, "md5")) {
-      algorithm_ = ALGORITHM_MD5;
+      algorithm_ = Algorithm::MD5;
     } else if (base::EqualsCaseInsensitiveASCII(value, "md5-sess")) {
-      algorithm_ = ALGORITHM_MD5_SESS;
+      algorithm_ = Algorithm::MD5_SESS;
+    } else if (base::EqualsCaseInsensitiveASCII(value, "sha-256") &&
+               base::FeatureList::IsEnabled(
+                   features::kDigestAuthEnableSecureAlgorithms)) {
+      algorithm_ = Algorithm::SHA256;
+    } else if (base::EqualsCaseInsensitiveASCII(value, "sha-256-sess") &&
+               base::FeatureList::IsEnabled(
+                   features::kDigestAuthEnableSecureAlgorithms)) {
+      algorithm_ = Algorithm::SHA256_SESS;
     } else {
       DVLOG(1) << "Unknown value of algorithm";
       return false;  // FAIL -- unsupported value of algorithm.
     }
+  } else if (base::EqualsCaseInsensitiveASCII(name, "userhash") &&
+             base::FeatureList::IsEnabled(
+                 features::kDigestAuthEnableSecureAlgorithms)) {
+    userhash_ = base::EqualsCaseInsensitiveASCII(value, "true");
   } else if (base::EqualsCaseInsensitiveASCII(name, "qop")) {
     // Parse the comma separated list of qops.
     // auth is the only supported qop, and all other values are ignored.
@@ -277,6 +299,7 @@ bool HttpAuthHandlerDigest::ParseChallengeProperty(base::StringPiece name,
     DVLOG(1) << "Skipping unrecognized digest property";
     // TODO(eroman): perhaps we should fail instead of silently skipping?
   }
+
   return true;
 }
 
@@ -294,15 +317,18 @@ std::string HttpAuthHandlerDigest::QopToString(QualityOfProtection qop) {
 }
 
 // static
-std::string HttpAuthHandlerDigest::AlgorithmToString(
-    DigestAlgorithm algorithm) {
+std::string HttpAuthHandlerDigest::AlgorithmToString(Algorithm algorithm) {
   switch (algorithm) {
-    case ALGORITHM_UNSPECIFIED:
+    case Algorithm::UNSPECIFIED:
       return std::string();
-    case ALGORITHM_MD5:
+    case Algorithm::MD5:
       return "MD5";
-    case ALGORITHM_MD5_SESS:
+    case Algorithm::MD5_SESS:
       return "MD5-sess";
+    case Algorithm::SHA256:
+      return "SHA-256";
+    case Algorithm::SHA256_SESS:
+      return "SHA-256-sess";
     default:
       NOTREACHED();
       return std::string();
@@ -327,30 +353,80 @@ void HttpAuthHandlerDigest::GetRequestMethodAndPath(
   }
 }
 
+class HttpAuthHandlerDigest::DigestContext {
+ public:
+  explicit DigestContext(HttpAuthHandlerDigest::Algorithm algo) {
+    switch (algo) {
+      case HttpAuthHandlerDigest::Algorithm::MD5:
+      case HttpAuthHandlerDigest::Algorithm::MD5_SESS:
+      case HttpAuthHandlerDigest::Algorithm::UNSPECIFIED:
+        CHECK(EVP_DigestInit(md_ctx_.get(), EVP_md5()));
+        out_len_ = 16;
+        break;
+      case HttpAuthHandlerDigest::Algorithm::SHA256:
+      case HttpAuthHandlerDigest::Algorithm::SHA256_SESS:
+        CHECK(EVP_DigestInit(md_ctx_.get(), EVP_sha256()));
+        out_len_ = 32;
+        break;
+    }
+  }
+  void Update(base::StringPiece s) {
+    CHECK(EVP_DigestUpdate(md_ctx_.get(), s.data(), s.size()));
+  }
+  void Update(std::initializer_list<base::StringPiece> sps) {
+    for (const auto sp : sps) {
+      Update(sp);
+    }
+  }
+  std::string HexDigest() {
+    uint8_t md_value[EVP_MAX_MD_SIZE] = {};
+    unsigned int md_len = sizeof(md_value);
+    CHECK(EVP_DigestFinal_ex(md_ctx_.get(), md_value, &md_len));
+    CHECK_LE(out_len_, md_len);
+    return base::ToLowerASCII(base::HexEncode(md_value, out_len_));
+  }
+
+ private:
+  bssl::ScopedEVP_MD_CTX md_ctx_;
+  size_t out_len_;
+};
+
 std::string HttpAuthHandlerDigest::AssembleResponseDigest(
     const std::string& method,
     const std::string& path,
     const AuthCredentials& credentials,
     const std::string& cnonce,
     const std::string& nc) const {
-  // ha1 = MD5(A1)
-  // TODO(eroman): is this the right encoding?
-  std::string ha1 = base::MD5String(base::UTF16ToUTF8(credentials.username()) +
-                                    ":" + original_realm_ + ":" +
-                                    base::UTF16ToUTF8(credentials.password()));
-  if (algorithm_ == HttpAuthHandlerDigest::ALGORITHM_MD5_SESS)
-    ha1 = base::MD5String(ha1 + ":" + nonce_ + ":" + cnonce);
+  // ha1 = H(A1)
+  DigestContext ha1_ctx(algorithm_);
+  ha1_ctx.Update({base::UTF16ToUTF8(credentials.username()), ":",
+                  original_realm_, ":",
+                  base::UTF16ToUTF8(credentials.password())});
+  std::string ha1 = ha1_ctx.HexDigest();
 
-  // ha2 = MD5(A2)
-  // TODO(eroman): need to add MD5(req-entity-body) for qop=auth-int.
-  std::string ha2 = base::MD5String(method + ":" + path);
-
-  std::string nc_part;
-  if (qop_ != HttpAuthHandlerDigest::QOP_UNSPECIFIED) {
-    nc_part = nc + ":" + cnonce + ":" + QopToString(qop_) + ":";
+  if (algorithm_ == HttpAuthHandlerDigest::Algorithm::MD5_SESS ||
+      algorithm_ == HttpAuthHandlerDigest::Algorithm::SHA256_SESS) {
+    DigestContext sess_ctx(algorithm_);
+    sess_ctx.Update({ha1, ":", nonce_, ":", cnonce});
+    ha1 = sess_ctx.HexDigest();
   }
 
-  return base::MD5String(ha1 + ":" + nonce_ + ":" + nc_part + ha2);
+  // ha2 = H(A2)
+  // TODO(eroman): need to add H(req-entity-body) for qop=auth-int.
+  DigestContext ha2_ctx(algorithm_);
+  ha2_ctx.Update({method, ":", path});
+  const std::string ha2 = ha2_ctx.HexDigest();
+
+  DigestContext resp_ctx(algorithm_);
+  resp_ctx.Update({ha1, ":", nonce_, ":"});
+
+  if (qop_ != HttpAuthHandlerDigest::QOP_UNSPECIFIED) {
+    resp_ctx.Update({nc, ":", cnonce, ":", QopToString(qop_), ":"});
+  }
+
+  resp_ctx.Update(ha2);
+
+  return resp_ctx.HexDigest();
 }
 
 std::string HttpAuthHandlerDigest::AssembleCredentials(
@@ -363,18 +439,24 @@ std::string HttpAuthHandlerDigest::AssembleCredentials(
   std::string nc = base::StringPrintf("%08x", nonce_count);
 
   // TODO(eroman): is this the right encoding?
-  std::string authorization = (std::string("Digest username=") +
-                               HttpUtil::Quote(
-                                   base::UTF16ToUTF8(credentials.username())));
+  std::string username = base::UTF16ToUTF8(credentials.username());
+  if (userhash_) {  // https://www.rfc-editor.org/rfc/rfc7616#section-3.4.4
+    DigestContext uh_ctx(algorithm_);
+    uh_ctx.Update({username, ":", realm_});
+    username = uh_ctx.HexDigest();
+  }
+
+  std::string authorization =
+      (std::string("Digest username=") + HttpUtil::Quote(username));
   authorization += ", realm=" + HttpUtil::Quote(original_realm_);
   authorization += ", nonce=" + HttpUtil::Quote(nonce_);
   authorization += ", uri=" + HttpUtil::Quote(path);
 
-  if (algorithm_ != ALGORITHM_UNSPECIFIED) {
+  if (algorithm_ != Algorithm::UNSPECIFIED) {
     authorization += ", algorithm=" + AlgorithmToString(algorithm_);
   }
-  std::string response = AssembleResponseDigest(method, path, credentials,
-                                                cnonce, nc);
+  std::string response =
+      AssembleResponseDigest(method, path, credentials, cnonce, nc);
   // No need to call HttpUtil::Quote() as the response digest cannot contain
   // any characters needing to be escaped.
   authorization += ", response=\"" + response + "\"";
@@ -387,6 +469,9 @@ std::string HttpAuthHandlerDigest::AssembleCredentials(
     authorization += ", qop=" + QopToString(qop_);
     authorization += ", nc=" + nc;
     authorization += ", cnonce=" + HttpUtil::Quote(cnonce);
+  }
+  if (userhash_) {
+    authorization += ", userhash=true";
   }
 
   return authorization;

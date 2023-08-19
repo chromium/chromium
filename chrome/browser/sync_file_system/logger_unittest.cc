@@ -13,9 +13,9 @@ namespace {
 
 // Logs one event at each supported LogSeverity level.
 void LogSampleEvents() {
-  util::Log(logging::LOG_INFO, FROM_HERE, "Info test message");
-  util::Log(logging::LOG_WARNING, FROM_HERE, "Warning test message");
-  util::Log(logging::LOG_ERROR, FROM_HERE, "Error test message");
+  util::Log(logging::LOGGING_INFO, FROM_HERE, "Info test message");
+  util::Log(logging::LOGGING_WARNING, FROM_HERE, "Warning test message");
+  util::Log(logging::LOGGING_ERROR, FROM_HERE, "Error test message");
 }
 
 bool ContainsString(const std::string& contains_string,

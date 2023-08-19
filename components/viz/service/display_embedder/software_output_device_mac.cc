@@ -7,7 +7,7 @@
 #include <memory>
 #include <utility>
 
-#include "base/mac/foundation_util.h"
+#include "base/apple/foundation_util.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/trace_event/trace_event.h"
 #include "third_party/skia/include/core/SkCanvas.h"
@@ -126,8 +126,8 @@ SkCanvas* SoftwareOutputDeviceMac::BeginPaint(
   // it with complete damage.
   if (!current_paint_buffer_) {
     std::unique_ptr<Buffer> new_buffer(new Buffer);
-    new_buffer->io_surface.reset(
-        gfx::CreateIOSurface(pixel_size_, gfx::BufferFormat::BGRA_8888));
+    new_buffer->io_surface =
+        gfx::CreateIOSurface(pixel_size_, gfx::BufferFormat::BGRA_8888);
     if (!new_buffer->io_surface)
       return nullptr;
     // Set the initial damage to be the full buffer.

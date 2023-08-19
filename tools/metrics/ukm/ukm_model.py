@@ -73,7 +73,7 @@ _AGGREGATION_TYPE =  models.ObjectNodeType(
 _METRIC_TYPE =  models.ObjectNodeType(
     'metric',
     attributes=[
-      ('name', str, r'^[A-Za-z0-9_.]+$'),
+      ('name', str, r'^[A-Za-z][A-Za-z0-9_.]*$'),
       ('semantic_type', str, None),
       ('enum', str, None),
     ],
@@ -94,7 +94,7 @@ _METRIC_TYPE =  models.ObjectNodeType(
 _EVENT_TYPE = models.ObjectNodeType(
     'event',
     attributes=[
-        ('name', str, r'^[A-Za-z0-9.]+$'),
+        ('name', str, r'^[A-Za-z][A-Za-z0-9.]*$'),
         ('singular', str, r'(?i)^(|true|false)$'),
         # This event will be omitted from the generated readable_event.proto
         # file if skip_proto_reason is a non-empty string.

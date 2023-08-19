@@ -98,12 +98,6 @@ class MockFactory final : public web_package::mojom::WebBundleParserFactory {
 
  private:
   // web_package::mojom::WebBundleParserFactory implementation.
-  void GetParserForFile(
-      mojo::PendingReceiver<web_package::mojom::WebBundleParser> receiver,
-      const absl::optional<GURL>& base_url,
-      base::File file) override {
-    parser_ = std::make_unique<MockParser>(std::move(receiver));
-  }
   void GetParserForDataSource(
       mojo::PendingReceiver<web_package::mojom::WebBundleParser> receiver,
       const absl::optional<GURL>& base_url,
@@ -111,6 +105,9 @@ class MockFactory final : public web_package::mojom::WebBundleParserFactory {
       override {
     parser_ = std::make_unique<MockParser>(std::move(receiver));
   }
+  void BindFileDataSource(
+      mojo::PendingReceiver<web_package::mojom::BundleDataSource> receiver,
+      base::File file) override {}
 
   std::unique_ptr<MockParser> parser_;
   mojo::ReceiverSet<web_package::mojom::WebBundleParserFactory> receivers_;

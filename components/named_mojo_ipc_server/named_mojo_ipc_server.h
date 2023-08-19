@@ -5,8 +5,6 @@
 #ifndef COMPONENTS_NAMED_MOJO_IPC_SERVER_NAMED_MOJO_IPC_SERVER_H_
 #define COMPONENTS_NAMED_MOJO_IPC_SERVER_NAMED_MOJO_IPC_SERVER_H_
 
-#include <stdint.h>
-
 #include <memory>
 #include <utility>
 
@@ -14,23 +12,14 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/functional/callback_helpers.h"
-#include "base/memory/raw_ptr.h"
-#include "base/memory/ref_counted.h"
-#include "base/memory/weak_ptr.h"
 #include "base/process/process_handle.h"
 #include "base/sequence_checker.h"
-#include "base/task/sequenced_task_runner.h"
-#include "base/threading/sequence_bound.h"
-#include "base/timer/timer.h"
 #include "components/named_mojo_ipc_server/endpoint_options.h"
 #include "components/named_mojo_ipc_server/ipc_server.h"
-#include "components/named_mojo_ipc_server/named_mojo_server_endpoint_connector.h"
+#include "components/named_mojo_ipc_server/named_mojo_message_pipe_server.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"
-#include "mojo/public/cpp/platform/named_platform_channel.h"
-#include "mojo/public/cpp/platform/platform_channel_endpoint.h"
 #include "mojo/public/cpp/system/message_pipe.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace mojo {
 class IsolatedConnection;
@@ -52,7 +41,8 @@ class NamedMojoIpcServerBase : public IpcServer {
   // only.
   void set_on_server_endpoint_created_callback_for_testing(
       const base::RepeatingClosure& callback) {
-    on_server_endpoint_created_callback_for_testing_ = callback;
+    message_pipe_server_.set_on_server_endpoint_created_callback_for_testing(
+        callback);
   }
 
  protected:
@@ -78,37 +68,19 @@ class NamedMojoIpcServerBase : public IpcServer {
   base::RepeatingClosure disconnect_handler_;
 
  private:
-  class DelegateProxy;
-
-  void OnEndpointConnectorStarted(
-      base::SequenceBound<NamedMojoServerEndpointConnector> endpoint_connector);
-  void OnClientConnected(mojo::PlatformChannelEndpoint endpoint,
-                         std::unique_ptr<ConnectionInfo> info);
-  void OnServerEndpointCreated();
+  void OnMessagePipeReady(mojo::ScopedMessagePipeHandle message_pipe,
+                          base::ProcessId peer_pid,
+                          void* context,
+                          std::unique_ptr<mojo::IsolatedConnection> connection);
 
   using ActiveConnectionMap =
       base::flat_map<mojo::ReceiverId,
                      std::unique_ptr<mojo::IsolatedConnection>>;
 
-  EndpointOptions options_;
-  base::RepeatingCallback<void*(std::unique_ptr<ConnectionInfo>)>
-      impl_provider_;
-
-  bool server_started_ = false;
-
-  // A task runner to run blocking jobs.
-  scoped_refptr<base::SequencedTaskRunner> io_sequence_;
-
-  base::SequenceBound<NamedMojoServerEndpointConnector> endpoint_connector_;
+  NamedMojoMessagePipeServer message_pipe_server_;
 
   // This is only populated if the server uses isolated connections.
   ActiveConnectionMap active_connections_;
-
-  base::OneShotTimer restart_endpoint_timer_;
-
-  base::RepeatingClosure on_server_endpoint_created_callback_for_testing_;
-
-  base::WeakPtrFactory<NamedMojoIpcServerBase> weak_factory_{this};
 };
 
 // A helper that uses a NamedPlatformChannel to send out mojo invitations and

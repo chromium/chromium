@@ -16,6 +16,7 @@ import './tab_search_search_field.js';
 import './title_item.js';
 import './strings.m.js';
 
+import {ColorChangeUpdater} from '//resources/cr_components/color_change_listener/colors_css_updater.js';
 import {assert} from 'chrome://resources/js/assert_ts.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {MetricsReporter, MetricsReporterImpl} from 'chrome://resources/js/metrics_reporter/metrics_reporter.js';
@@ -144,6 +145,7 @@ export class TabSearchAppElement extends PolymerElement {
 
   constructor() {
     super();
+    ColorChangeUpdater.forDocument().start();
 
     this.visibilityChangedListener_ = () => {
       // Refresh Tab Search's tab data when transitioning into a visible state.
@@ -515,6 +517,9 @@ export class TabSearchAppElement extends PolymerElement {
     this.recentlyClosedTitleItem_.expanded =
         profileData.recentlyClosedSectionExpanded;
 
+    this.$.tabsList.setAttribute(
+        'expanded-list', profileData.recentlyClosedSectionExpanded.toString());
+
     this.updateFilteredTabs_();
   }
 
@@ -535,6 +540,8 @@ export class TabSearchAppElement extends PolymerElement {
     const titleItem = e.model.item;
     titleItem.expanded = expanded;
     this.apiProxy_.saveRecentlyClosedExpandedPref(expanded);
+
+    this.$.tabsList.setAttribute('expanded-list', expanded.toString());
 
     this.updateFilteredTabs_();
 

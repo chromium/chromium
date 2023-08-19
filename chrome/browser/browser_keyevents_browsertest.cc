@@ -157,18 +157,17 @@ class BrowserKeyEventsTest : public InProcessBrowserTest {
     SuppressEvents(tab_index, suppress, suppress, suppress, suppress);
   }
 
-  void GetResultLength(int tab_index, int* length) {
-    ASSERT_LT(tab_index, browser()->tab_strip_model()->count());
-    *length = content::EvalJs(
-                  browser()->tab_strip_model()->GetWebContentsAt(tab_index),
-                  kGetResultLengthJS)
-                  .ExtractInt();
+  int GetResultLength(int tab_index) {
+    CHECK_LT(tab_index, browser()->tab_strip_model()->count());
+    return content::EvalJs(
+               browser()->tab_strip_model()->GetWebContentsAt(tab_index),
+               kGetResultLengthJS)
+        .ExtractInt();
   }
 
   void CheckResult(int tab_index, int length, const char* const result[]) {
     ASSERT_LT(tab_index, browser()->tab_strip_model()->count());
-    int actual_length;
-    ASSERT_NO_FATAL_FAILURE(GetResultLength(tab_index, &actual_length));
+    int actual_length = GetResultLength(tab_index);
     ASSERT_GE(actual_length, length);
     for (int i = 0; i < actual_length; ++i) {
       std::string actual =
@@ -642,9 +641,7 @@ IN_PROC_BROWSER_TEST_F(BrowserKeyEventsTest, ReservedAccelerators) {
   EXPECT_NO_FATAL_FAILURE(TestKeyEvent(0, kTestCtrlOrCmdT));
   wait_for_new_tab.Wait();
 
-  int result_length;
-  ASSERT_NO_FATAL_FAILURE(GetResultLength(0, &result_length));
-  EXPECT_EQ(1, result_length);
+  EXPECT_EQ(1, GetResultLength(0));
 
   EXPECT_EQ(2, browser()->tab_strip_model()->count());
   ASSERT_EQ(1, browser()->tab_strip_model()->active_index());

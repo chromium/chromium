@@ -1,0 +1,16 @@
+[package]
+name = "rustc-demangle-capi"
+version = "0.1.0"
+authors = ["Torste Aikio <zokier@gmail.com>"]
+description = """
+C API for the `rustc-demangle` crate
+"""
+license = "MIT/Apache-2.0"
+repository = "https://github.com/alexcrichton/rustc-demangle"
+
+[lib]
+name = "rustc_demangle"
+crate-type = ["staticlib", "cdylib"]
+
+[dependencies]
+rustc-demangle = { version = "0.1.16", path = "../.." }

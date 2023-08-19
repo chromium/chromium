@@ -74,9 +74,10 @@ void ObjectPainter::AddURLRectIfNeeded(const PaintInfo& paint_info,
 
   auto outline_rects = layout_object_.OutlineRects(
       nullptr, paint_offset, NGOutlineType::kIncludeBlockVisualOverflow);
-  gfx::Rect rect = ToPixelSnappedRect(UnionRect(outline_rects));
-  if (rect.IsEmpty())
+  gfx::Rect bounding_rect = ToPixelSnappedRect(UnionRect(outline_rects));
+  if (bounding_rect.IsEmpty()) {
     return;
+  }
 
   if (DrawingRecorder::UseCachedDrawingIfPossible(
           paint_info.context, layout_object_,
@@ -84,16 +85,27 @@ void ObjectPainter::AddURLRectIfNeeded(const PaintInfo& paint_info,
     return;
 
   DrawingRecorder recorder(paint_info.context, layout_object_,
-                           DisplayItem::kPrintedContentPDFURLRect, rect);
+                           DisplayItem::kPrintedContentPDFURLRect,
+                           bounding_rect);
+
+  Document& document = layout_object_.GetDocument();
+  String fragment_name;
   if (url.HasFragmentIdentifier() &&
-      EqualIgnoringFragmentIdentifier(url,
-                                      layout_object_.GetDocument().BaseURL())) {
-    String fragment_name = url.FragmentIdentifier();
-    if (layout_object_.GetDocument().FindAnchor(fragment_name))
-      paint_info.context.SetURLFragmentForRect(fragment_name, rect);
-    return;
+      EqualIgnoringFragmentIdentifier(url, document.BaseURL())) {
+    fragment_name = url.FragmentIdentifier();
+    if (!document.FindAnchor(fragment_name)) {
+      return;
+    }
   }
-  paint_info.context.SetURLForRect(url, rect);
+
+  for (auto physical_rect : outline_rects) {
+    gfx::Rect rect = ToPixelSnappedRect(physical_rect);
+    if (fragment_name) {
+      paint_info.context.SetURLFragmentForRect(fragment_name, rect);
+    } else {
+      paint_info.context.SetURLForRect(url, rect);
+    }
+  }
 }
 
 void ObjectPainter::PaintAllPhasesAtomically(const PaintInfo& paint_info) {
@@ -120,6 +132,80 @@ void ObjectPainter::PaintAllPhasesAtomically(const PaintInfo& paint_info) {
   layout_object_.Paint(info);
   info.phase = PaintPhase::kOutline;
   layout_object_.Paint(info);
+}
+
+void ObjectPainter::RecordHitTestData(
+    const PaintInfo& paint_info,
+    const gfx::Rect& paint_rect,
+    const DisplayItemClient& background_client) {
+  // When HitTestOpaqueness is not enabled, we only need to record hit test
+  // data for scrolling background when there are special hit test data.
+  if (!RuntimeEnabledFeatures::HitTestOpaquenessEnabled() &&
+      paint_info.IsPaintingBackgroundInContentsSpace() &&
+      !ShouldRecordSpecialHitTestData(paint_info)) {
+    return;
+  }
+
+  // Hit test data are only needed for compositing. This flag is used for for
+  // printing and drag images which do not need hit testing.
+  if (paint_info.ShouldOmitCompositingInfo()) {
+    return;
+  }
+
+  // If an object is not visible, it does not participate in painting or hit
+  // testing. TODO(crbug.com/1471738): Some pointer-events values actually
+  // allow hit testing with visibility:hidden.
+  if (layout_object_.StyleRef().Visibility() != EVisibility::kVisible) {
+    return;
+  }
+
+  // Effects (e.g. clip-path and mask) are not checked here even if they
+  // affects hit test. They are checked during PaintArtifactCompositor update
+  // based on paint properties.
+  auto hit_test_opaqueness = cc::HitTestOpaqueness::kMixed;
+  if (RuntimeEnabledFeatures::HitTestOpaquenessEnabled()) {
+    if (!layout_object_.VisibleToHitTesting()) {
+      hit_test_opaqueness = cc::HitTestOpaqueness::kTransparent;
+    } else {
+      // Border radius is not considered opaque for hit test because the hit
+      // test may be inside or outside of the rounded corner.
+      // SVG children are not considered opaque for hit test because SVG has
+      // special hit test rules for stroke/fill/etc, and the children may
+      // overflow the root.
+      if (!layout_object_.StyleRef().HasBorderRadius() &&
+          !layout_object_.IsSVGChild()) {
+        hit_test_opaqueness = cc::HitTestOpaqueness::kOpaque;
+      }
+    }
+  }
+  paint_info.context.GetPaintController().RecordHitTestData(
+      background_client, paint_rect,
+      layout_object_.EffectiveAllowedTouchAction(),
+      layout_object_.InsideBlockingWheelEventHandler(), hit_test_opaqueness);
+}
+
+bool ObjectPainter::ShouldRecordSpecialHitTestData(
+    const PaintInfo& paint_info) {
+  if (layout_object_.EffectiveAllowedTouchAction() != TouchAction::kAuto) {
+    return true;
+  }
+  if (layout_object_.InsideBlockingWheelEventHandler()) {
+    return true;
+  }
+  if (RuntimeEnabledFeatures::HitTestOpaquenessEnabled()) {
+    if (layout_object_.StyleRef().UsedPointerEvents() ==
+        EPointerEvents::kNone) {
+      return true;
+    }
+    if (paint_info.context.GetPaintController()
+            .CurrentChunkIsNonEmptyAndTransparentToHitTest()) {
+      // A non-none value of pointer-events will make a transparent paint chunk
+      // (due to pointer-events: none on an ancestor painted into the current
+      // paint chunk) not transparent.
+      return true;
+    }
+  }
+  return false;
 }
 
 }  // namespace blink

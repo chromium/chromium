@@ -12,4 +12,8 @@ Demuxer::Demuxer() = default;
 
 Demuxer::~Demuxer() = default;
 
+// Most Demuxer implementations don't need to disable canChangeType.
+// Do nothing by default.
+void Demuxer::DisableCanChangeType() {}
+
 }  // namespace media

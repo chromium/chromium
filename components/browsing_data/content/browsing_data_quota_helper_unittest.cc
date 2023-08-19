@@ -11,6 +11,7 @@
 #include "base/functional/callback_helpers.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
+#include "base/test/gmock_expected_support.h"
 #include "base/test/test_future.h"
 #include "components/browsing_data/content/browsing_data_quota_helper_impl.h"
 #include "components/services/storage/public/cpp/buckets/bucket_init_params.h"
@@ -108,10 +109,9 @@ class BrowsingDataQuotaHelperTest : public testing::Test {
           storage::BucketInitParams::ForDefaultBucket(
               blink::StorageKey::CreateFromStringForTesting(data.origin)),
           data.type, future.GetCallback());
-      auto bucket = future.Take();
-      ASSERT_TRUE(bucket.has_value());
+      ASSERT_OK_AND_ASSIGN(auto bucket, future.Take());
       buckets_data.insert(std::pair<storage::BucketLocator, int64_t>(
-          bucket->ToBucketLocator(), data.usage));
+          bucket.ToBucketLocator(), data.usage));
     }
     mock_quota_client_ptr->AddBucketsData(buckets_data);
   }
@@ -236,6 +236,7 @@ TEST_F(BrowsingDataQuotaHelperTest, DeleteHostData) {
   EXPECT_TRUE(expected == actual);
 
   DeleteHostData("example2.com", StorageType::kTemporary);
+  content::RunAllTasksUntilIdle();
 
   StartFetching();
   content::RunAllTasksUntilIdle();
@@ -250,5 +251,6 @@ TEST_F(BrowsingDataQuotaHelperTest, DeleteHostData) {
   expected.insert(QuotaInfo(
       blink::StorageKey::CreateFromStringForTesting("https://example.com"), 10,
       0));
+
   EXPECT_TRUE(expected == actual);
 }

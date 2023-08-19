@@ -740,6 +740,53 @@ Additional details:
     Refresh Logs
   </message>
 
+<!-- Strings for chrome://policy/test -->
+  <message name="IDS_POLICY_TEST_TITLE" desc="Title for the page.">
+    Policy Tests
+  </message>
+  <message name="IDS_POLICY_TEST_RESTART_AND_APPLY" desc="Label for the restart-browser button">
+    Restart and apply policies
+  </message>
+  <message name="IDS_POLICY_TEST_APPLY" desc="Label for the apply-policies button.">
+    Apply policies
+  </message>
+  <message name="IDS_POLICY_TEST_IMPORT" desc="Label for the import-policies-json button.">
+    Import from JSON
+  </message>
+  <message name="IDS_POLICY_TEST_DESC" desc="Text for the page description.">
+    You cannot use this page from a managed acount on this unmanaged device. All managed accounts will be locked if you use this page, except accounts managed by the same entity as this device (affiliated accounts).
+  </message>
+  <message name="IDS_POLICY_TEST_REVERT" desc="Text for the Reset policies button.">
+    Revert applied policies
+  </message>
+  <message name="IDS_POLICY_TEST_TABLE_SCOPE" desc="Text for the column of the policy table for the policy scope.">
+    Scope
+  </message>
+  <message name="IDS_POLICY_TEST_ADD" desc="Label for the add-policy-btn button.">
+    Add policy
+  </message>
+  <message name="IDS_POLICY_SELECT_NAME" desc="Text for the default option in the policy name dropdown menu.">
+    Select policy name
+  </message>
+  <message name="IDS_POLICY_TEST_TABLE_PRESET" desc="Text for the preset column of the policy test table.">
+    Preset
+  </message>
+  <message name="IDS_LOCAL_TEST_POLICIES_ENABLED" desc="Text for banner warning user of test policies being applied">
+    Test policies have been applied. Review and reset them at chrome://policy/test. Admin policies will not be applied.
+  </message>
+  <message name="IDS_POLICY_TEST_PRESET_CUSTOM" desc="Text for the custom option of the preset dropdown in the policy test table.">
+    Custom
+  </message>
+  <message name="IDS_POLICY_TEST_PRESET_LOCAL_MACHINE" desc="Text for the local machine option of the preset dropdown in the policy test table.">
+    Local machine
+  </message>
+  <message name="IDS_POLICY_TEST_PRESET_CLOUD_ACCOUNT" desc="Text for the cloud account option of the preset dropdown in the policy test table.">
+    Cloud account
+  </message>
+  <message name="IDS_POLICY_TEST_USER_AFFILIATED" desc="Text for checkbox to select user affiliation in the policy test table.">
+  User affiliated
+  </message>
+
   <!-- Strings for Disabled chrome://.* screen -->
   <message name="IDS_CHROME_URLS_DISABLED_PAGE_HEADER" desc="A heading for the user when the application is blocked.">
     Application is blocked
@@ -881,6 +928,24 @@ Additional details:
           =1 {Open confidential file?}
           other {Open confidential files?}}
   </message>
+  <message name="IDS_POLICY_DLP_FILES_DOWNLOAD_REVIEW_TITLE" desc="The title for notification/dialog informing the user that downloading selected files is not recommended.">
+    Review is required before downloading
+  </message>
+  <message name="IDS_POLICY_DLP_FILES_TRANSFER_REVIEW_TITLE" desc="The title for notification/dialog informing the user that transferring selected files is not recommended.">
+    Review is required before transferring
+  </message>
+  <message name="IDS_POLICY_DLP_FILES_UPLOAD_REVIEW_TITLE" desc="The title for notification/dialog informing the user that uploading selected files is not recommended.">
+    Review is required before uploading
+  </message>
+  <message name="IDS_POLICY_DLP_FILES_MOVE_REVIEW_TITLE" desc="The title for notification/dialog informing the user that moving selected files is not recommended.">
+    Review is required before moving
+  </message>
+  <message name="IDS_POLICY_DLP_FILES_COPY_REVIEW_TITLE" desc="The title for notification/dialog informing the user that copying selected files is not recommended.">
+    Review is required before copying
+  </message>
+  <message name="IDS_POLICY_DLP_FILES_OPEN_REVIEW_TITLE" desc="The title for notification/dialog informing the user that opening selected files is not recommended.">
+    Review is required before opening
+  </message>
   <message name="IDS_POLICY_DLP_FILES_DOWNLOAD_WARN_MESSAGE" desc="The message for notification informing the user that downloading files is not recommended.">
         {0, plural,
                 =1 {Administrator policy doesn’t recommend downloading this file to <ph name="DESTINATION_NAME">$1<ex>External storage</ex></ph>}
@@ -911,6 +976,11 @@ Additional details:
                 =1 {Administrator policy doesn’t recommend opening this file in <ph name="DESTINATION_NAME">$1<ex>External storage</ex></ph>}
                 other {Administrator policy doesn’t recommend opening these files in <ph name="DESTINATION_NAME">$1<ex>External storage</ex></ph>}}
   </message>
+  <message name="IDS_POLICY_DLP_FILES_WARN_MESSAGE" desc="The message for notification/dialog warning the user that the selected file(s) might contain sensitive content and need to be reviewed before performing an action (e.g. open, upload).">
+        {0, plural,
+                =1 {<ph name="FILE_NAME">$1<ex>Example.txt</ex></ph> may contain sensitive content}
+                other {<ph name="FILE_COUNT">$1<ex>5</ex></ph> files may contain sensitive content}}
+  </message>
   <message name="IDS_POLICY_DLP_FILES_DOWNLOAD_WARN_CONTINUE_BUTTON" desc="Continue dialog button label for warning before downloading files.">
     Download anyway
   </message>
@@ -931,6 +1001,15 @@ Additional details:
   </message>
   <message name="IDS_POLICY_DLP_FILES_DESTINATION_REMOVABLE_STORAGE" desc="A label for the 'Removable storage' files transfer destination.">
     Removable storage
+  </message>
+  <message name="IDS_POLICY_DLP_FILES_REVIEW_BUTTON" desc="The label of the warn or block notification 'Review' button, shown when some files action is under a policy restriction, that allows the user to open a dialog with more information.">
+    Review
+  </message>
+  <message name="IDS_POLICY_DLP_FILES_DISMISS_BUTTON" desc="The label of the block notification 'Dismiss' button, shown when some files action was blocked due to policy.">
+    Dismiss
+  </message>
+  <message name="IDS_POLICY_DLP_FILES_OK_BUTTON" desc="The label of the block dialog 'OK' button, shown when some files action was blocked due to policy.">
+    OK
   </message>
   <message name="IDS_POLICY_DLP_WARN_CANCEL_BUTTON" desc="Cancel dialog button label for warning.">
     Cancel
@@ -959,6 +1038,85 @@ Additional details:
      {0, plural,
                 =1 {Opening this file is blocked by administrator policy}
                 other {Opening # files is blocked by administrator policy}}
+  </message>
+  <message name="IDS_POLICY_DLP_FILES_DOWNLOAD_BLOCKED_TITLE" desc="The title of the notification/dialog informing the user that downloading files is blocked.">
+     {0, plural,
+                =1 {File blocked from downloading}
+                other {<ph name="FILE_COUNT">$1<ex>5</ex></ph> files blocked from downloading}}
+  </message>
+  <message name="IDS_POLICY_DLP_FILES_TRANSFER_BLOCKED_TITLE" desc="The title of the notification/dialog informing the user that transferring files is blocked.">
+     {0, plural,
+                =1 {File blocked from transferring}
+                other {<ph name="FILE_COUNT">$1<ex>5</ex></ph> files blocked from transferring}}
+  </message>
+  <message name="IDS_POLICY_DLP_FILES_UPLOAD_BLOCKED_TITLE" desc="The title of the notification/dialog informing the user that uploading files is blocked.">
+     {0, plural,
+                =1 {File blocked from uploading}
+                other {<ph name="FILE_COUNT">$1<ex>5</ex></ph> files blocked from uploading}}
+  </message>
+  <message name="IDS_POLICY_DLP_FILES_MOVE_BLOCKED_TITLE" desc="The title of the notification/dialog informing the user that moving files is blocked.">
+     {0, plural,
+                =1 {File blocked from moving}
+                other {<ph name="FILE_COUNT">$1<ex>5</ex></ph> files blocked from moving}}
+  </message>
+  <message name="IDS_POLICY_DLP_FILES_COPY_BLOCKED_TITLE" desc="The title of the notification/dialog informing the user that copying files is blocked.">
+     {0, plural,
+                =1 {File blocked from copying}
+                other {<ph name="FILE_COUNT">$1<ex>5</ex></ph> files blocked from copying}}
+  </message>
+  <message name="IDS_POLICY_DLP_FILES_OPEN_BLOCKED_TITLE" desc="The title of the notification/dialog informing the user that opening files is blocked.">
+     {0, plural,
+                =1 {File blocked from opening}
+                other {<ph name="FILE_COUNT">$1<ex>5</ex></ph> files blocked from opening}}
+  </message>
+  <message name="IDS_POLICY_DLP_FILES_POLICY_BLOCK_MESSAGE" desc="The message for notification/dialog informing the user an action (e.g. open, upload) of the selected file(s) is blocked because of policy.">
+        {0, plural,
+                =1 {<ph name="FILE_NAME">$1<ex>Example.txt</ex></ph> was blocked because of policy}
+                other {<ph name="FILE_COUNT">$1<ex>5</ex></ph> files were blocked because of policy}}
+  </message>
+  <message name="IDS_POLICY_DLP_FILES_CONTENT_BLOCK_MESSAGE" desc="The message for notification/dialog informing the user an action (e.g. open, upload) of the selected file(s) is blocked because of sensitive content.">
+        {0, plural,
+                =1 {<ph name="FILE_NAME">$1<ex>Example.txt</ex></ph> was blocked because of content}
+                other {<ph name="FILE_COUNT">$1<ex>5</ex></ph> files were blocked because of content}}
+  </message>
+  <message name="IDS_POLICY_DLP_FILES_BLOCK_MESSAGE" desc="The message for notification shown when an action (e.g. open, upload) of several files was blocked, that the user can review in more detail by opening a dialog.">
+    Review for further details
+  </message>
+  <message name="IDS_POLICY_DLP_FILES_DOWNLOAD_TIMEOUT_TITLE" desc="The title for notification shown after a DLP files warning times out.">
+    Downloading timed out
+  </message>
+  <message name="IDS_POLICY_DLP_FILES_TRANSFER_TIMEOUT_TITLE" desc="The title for notification shown after a DLP files warning times out.">
+    Transferring timed out
+  </message>
+  <message name="IDS_POLICY_DLP_FILES_UPLOAD_TIMEOUT_TITLE" desc="The title for notification shown after a DLP files warning times out.">
+    Uploading timed out
+  </message>
+  <message name="IDS_POLICY_DLP_FILES_MOVE_TIMEOUT_TITLE" desc="The title for notification shown after a DLP files warning times out.">
+    Moving timed out
+  </message>
+  <message name="IDS_POLICY_DLP_FILES_COPY_TIMEOUT_TITLE" desc="The title for notification shown after a DLP files warning times out.">
+    Copying timed out
+  </message>
+  <message name="IDS_POLICY_DLP_FILES_OPEN_TIMEOUT_TITLE" desc="The title for notification shown after a DLP files warning times out.">
+    Opening timed out
+  </message>
+  <message name="IDS_POLICY_DLP_FILES_DOWNLOAD_TIMEOUT_MESSAGE" desc="The message for notification shown after a DLP files warning times out.">
+    Try downloading your files again
+  </message>
+  <message name="IDS_POLICY_DLP_FILES_TRANSFER_TIMEOUT_MESSAGE" desc="The message for notification shown after a DLP files warning times out.">
+    Try transferring your files again
+  </message>
+  <message name="IDS_POLICY_DLP_FILES_UPLOAD_TIMEOUT_MESSAGE" desc="The message for notification shown after a DLP files warning times out.">
+    Try uploading your files again
+  </message>
+  <message name="IDS_POLICY_DLP_FILES_MOVE_TIMEOUT_MESSAGE" desc="The message for notification shown after a DLP files warning times out.">
+    Try moving your files again
+  </message>
+  <message name="IDS_POLICY_DLP_FILES_COPY_TIMEOUT_MESSAGE" desc="The message for notification shown after a DLP files warning times out.">
+    Try copying your files again
+  </message>
+  <message name="IDS_POLICY_DLP_FILES_OPEN_TIMEOUT_MESSAGE" desc="The message for notification shown after a DLP files warning times out.">
+    Try opening your files again
   </message>
   <message name="IDS_POLICY_DEVICE_SCHEDULED_REBOOT_TITLE" desc="The title for notification informing the user that the device will restart soon.">
     Device will restart very soon

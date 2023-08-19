@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import {loadTimeData} from 'chrome://resources/ash/common/load_time_data.m.js';
+import {getTrustedHTML} from 'chrome://resources/js/static_types.js';
 import {assertEquals} from 'chrome://webui-test/chromeos/chai_assert.js';
 
 import {MockVolumeManager} from '../../../background/js/mock_volume_manager.js';
@@ -34,16 +36,15 @@ let a11y;
  * @return {!HTMLElement}
  */
 function setupBody() {
-  const style = `
-      <style>
-        grid {
-          display: block;
-          height: 200px;
-          width: 800px;
-        }
-       </style>
-      `;
-  document.body.innerHTML = style;
+  document.body.innerHTML = getTrustedHTML`
+    <style>
+      grid {
+        display: block;
+        height: 200px;
+        width: 800px;
+      }
+    </style>
+  `;
 
   const element = document.createElement('div');
   document.body.appendChild(element);
@@ -52,6 +53,9 @@ function setupBody() {
 
 // Set up test components.
 export function setUp() {
+  loadTimeData.overrideValues({
+    JELLY: true,
+  });
   // Setup mock components.
   volumeManager = new MockVolumeManager();
   metadataModel = new MockMetadataModel({});
@@ -423,8 +427,10 @@ export function testItemHeightForGroupByModificationTime() {
   groupByModificationTime(grid.dataModel);
 
   // We are testing the logic in getGroupHeadingHeight_(), so we should use
-  // the real MODIFICATION_TIME_GROUP_HEADING_HEIGHT(57) from file_grid.
-  assertEquals(grid.getGroupHeadingHeight_(), 57);
+  // the real MODIFICATION_TIME_GROUP_HEADING_HEIGHT(57) and
+  // GROUP_MARGIN_TOP(16) from file_grid.
+  assertEquals(grid.getGroupHeadingHeight_(0), 57);
+  assertEquals(grid.getGroupHeadingHeight_(1), 57 + 16);
   for (let i = 0; i < 20; i++) {
     assertEquals(grid.getItemHeightByIndex_(i), FILE_ITEM_HEIGHT);
   }
@@ -439,8 +445,10 @@ export function testItemHeightForGroupByDirectory() {
   groupByDirectory(grid.dataModel);
 
   // We are testing the logic in getGroupHeadingHeight_(), so we should use
-  // the real DIRECTORY_GROUP_HEADING_HEIGHT(40) from file_grid.
-  assertEquals(grid.getGroupHeadingHeight_(), 40);
+  // the real DIRECTORY_GROUP_HEADING_HEIGHT(40) and GROUP_MARGIN_TOP(16)
+  // from file_grid.
+  assertEquals(grid.getGroupHeadingHeight_(0), 40);
+  assertEquals(grid.getGroupHeadingHeight_(1), 40 + 16);
   for (let i = 0; i < 20; i++) {
     // index 3 is the last item for folders
     assertEquals(

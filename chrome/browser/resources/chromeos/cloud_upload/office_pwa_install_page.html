@@ -1,4 +1,3 @@
-<!-- TODO(b/254586358): Use localized strings -->
 <style>
   div[slot=button-container] {
     display: flex;
@@ -85,18 +84,13 @@
   }
 </style>
 <svg slot="header-image" viewBox="0 0 448 200">
-  <use href="images/install_office.svg#EXPORT_image"></use>
+  <use href="images/install_office_pwa.svg#EXPORT_image"></use>
 </svg>
-<div slot="title">
-  Install the Microsoft 365 app
-</div>
+<div slot="title">$i18n{installPWATitle}</div>
 <div slot="body">
-  <p>
-    Open, edit, and save Word, Excel, and PowerPoint files.
-    A subscription may be required for some features.
-  </p>
+  <p>$i18n{installPWABodyText}</p>
 </div>
 <div slot="button-container">
   <cr-button class="cancel-button">$i18n{cancel}</cr-button>
-  <cr-button class="action-button icon-button install">Install</cr-button>
+  <cr-button class="action-button icon-button install">$i18n{install}</cr-button>
 </div>

@@ -1,0 +1,25 @@
+This is a testharness.js-based test.
+PASS Loading data…
+FAIL URL: Setting <file://localhost/>.protocol = 'http' Can’t switch from file URL with no host assert_equals: expected "file:///" but got "http://localhost/"
+PASS URL: Setting <file:///test>.protocol = 'https'
+PASS URL: Setting <file:>.protocol = 'wss'
+PASS URL: Setting <file://hi/path>.protocol = 's'
+PASS URL: Setting <file:///home/you/index.html>.username = 'me' No host means no username
+PASS URL: Setting <file://test/>.username = 'test'
+PASS URL: Setting <file:///home/me/index.html>.password = 'secret' No host means no password
+PASS URL: Setting <file://test/>.password = 'test'
+FAIL URL: Setting <file://y/>.host = 'x:123' assert_equals: expected "file://y/" but got "file://x/"
+FAIL URL: Setting <file://y/>.host = 'loc%41lhost' assert_equals: expected "file:///" but got "file://localhost/"
+FAIL URL: Setting <file://hi/x>.host = '' assert_equals: expected "file:///x" but got "file://hi/x"
+PASS URL: Setting <file://y/>.hostname = 'x:123'
+FAIL URL: Setting <file://y/>.hostname = 'loc%41lhost' assert_equals: expected "file:///" but got "file://localhost/"
+FAIL URL: Setting <file://hi/x>.hostname = '' assert_equals: expected "file:///x" but got "file://hi/x"
+PASS URL: Setting <file://test/>.port = '12'
+FAIL URL: Setting <file://localhost/>.port = '12' assert_equals: expected "file:///" but got "file://localhost/"
+PASS URL: Setting <file:///some/path>.pathname = '' Special URLs cannot have their paths erased
+PASS URL: Setting <file://monkey/>.pathname = '\\' File URLs and (back)slashes
+PASS URL: Setting <file:///unicorn>.pathname = '//\/' File URLs and (back)slashes
+PASS URL: Setting <file:///unicorn>.pathname = '//monkey/..//' File URLs and (back)slashes
+PASS URL: Setting <file:///var/log/system.log>.href = 'http://0300.168.0xF0'
+Harness: the test ran to completion.
+

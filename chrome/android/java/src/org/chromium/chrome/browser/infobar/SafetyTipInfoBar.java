@@ -21,7 +21,6 @@ import org.chromium.ui.text.NoUnderlineClickableSpan;
  * a description as well as a title.
  */
 public class SafetyTipInfoBar extends ConfirmInfoBar {
-    private static final String TAG = "SafetyTipInfoBar";
     private String mDescription;
     private String mLearnMoreLinkText;
 

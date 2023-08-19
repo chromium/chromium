@@ -22,31 +22,36 @@
 
 namespace apps {
 
-// Caches all of the apps::AppPtr. AppServiceProxy sees a stream of "deltas", or
-// changes in app state. This cache also keeps the "sum" of those previous
-// deltas, so that observers of this object are presented with AppUpdate's, i.e.
-// "state-and-delta"s.
+// An in-memory cache of all the metadata about installed apps known to App
+// Service. Can be queried synchronously for information about the current
+// state, and can be observed to receive updates about changes to that app
+// state.
 //
-// It can also be queried synchronously, providing answers from its in-memory
-// cache. Synchronous APIs can be more suitable for e.g. UI programming that
-// should not block an event loop on I/O.
+// AppServiceProxy sees a stream of `apps::AppPtr` "deltas", or changes in app
+// state, received from publishers. This cache stores the "sum" of those
+// previous deltas. When a new delta is received, observers are presented with
+// an `apps:::AppUpdate` containing information about what has changed, and
+// then the new delta is "added" to the stored state.
 //
 // This class is not thread-safe.
 //
 // See components/services/app_service/README.md for more details.
 class COMPONENT_EXPORT(APP_UPDATE) AppRegistryCache {
  public:
+  // Observer for changes to app state in the AppRegistryCache.
   class COMPONENT_EXPORT(APP_UPDATE) Observer : public base::CheckedObserver {
    public:
     Observer(const Observer&) = delete;
     Observer& operator=(const Observer&) = delete;
 
-    // The apps::AppUpdate argument shouldn't be accessed after OnAppUpdate
-    // returns.
+    // Called whenever AppRegistryCache receives an update for any app. `update`
+    // exposes the latest field values and whether they have changed in this
+    // update (as per the docs on `apps::AppUpdate`). The `update` argument
+    // shouldn't be accessed after OnAppUpdate returns.
     virtual void OnAppUpdate(const AppUpdate& update) {}
 
     // Called when the AppRegistryCache first receives a set of apps for
-    // |app_type|. This is usually when a publisher first publishes its apps but
+    // `app_type`. This is usually when a publisher first publishes its apps but
     // may also happen if the AppRegistryCache gets instantiated after this
     // event (e.g. after a Lacros restart).
     // Note that this will not be called for app types initialized prior to this
@@ -56,30 +61,15 @@ class COMPONENT_EXPORT(APP_UPDATE) AppRegistryCache {
     virtual void OnAppTypeInitialized(apps::AppType app_type) {}
 
     // Called when the AppRegistryCache object (the thing that this observer
-    // observes) will be destroyed. In response, the observer, |this|, should
+    // observes) will be destroyed. In response, the observer, `this`, should
     // call "cache->RemoveObserver(this)", whether directly or indirectly (e.g.
-    // via base::ScopedObservation::Remove or via Observe(nullptr)).
+    // via base::ScopedObservation::Reset).
     virtual void OnAppRegistryCacheWillBeDestroyed(AppRegistryCache* cache) = 0;
 
    protected:
-    // Use this constructor when the observer |this| is tied to a single
-    // AppRegistryCache for its entire lifetime, or until the observee (the
-    // AppRegistryCache) is destroyed, whichever comes first.
-    explicit Observer(AppRegistryCache* cache);
-
-    // Use this constructor when the observer |this| wants to observe a
-    // AppRegistryCache for part of its lifetime. It can then call Observe() to
-    // start and stop observing.
     Observer();
 
     ~Observer() override;
-
-    // Start observing a different AppRegistryCache. |cache| may be nullptr,
-    // meaning to stop observing.
-    void Observe(AppRegistryCache* cache);
-
-   private:
-    raw_ptr<AppRegistryCache> cache_ = nullptr;
   };
 
   AppRegistryCache();
@@ -89,6 +79,7 @@ class COMPONENT_EXPORT(APP_UPDATE) AppRegistryCache {
 
   ~AppRegistryCache();
 
+  // Prefer using a base::ScopedObservation for idiomatic observer behavior.
   void AddObserver(Observer* observer);
   void RemoveObserver(Observer* observer);
 

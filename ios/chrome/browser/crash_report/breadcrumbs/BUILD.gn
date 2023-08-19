@@ -31,8 +31,6 @@ source_set("breadcrumbs") {
     "breadcrumb_manager_tab_helper.h",
     "breadcrumb_manager_tab_helper.mm",
   ]
-
-  configs += [ "//build/config/compiler:enable_arc" ]
 }
 
 source_set("application_breadcrumbs_logger") {
@@ -40,8 +38,6 @@ source_set("application_breadcrumbs_logger") {
     "application_breadcrumbs_logger.h",
     "application_breadcrumbs_logger.mm",
   ]
-
-  configs += [ "//build/config/compiler:enable_arc" ]
 
   deps = [
     ":breadcrumbs",
@@ -54,7 +50,6 @@ source_set("application_breadcrumbs_logger") {
 }
 
 source_set("unit_tests") {
-  configs += [ "//build/config/compiler:enable_arc" ]
   testonly = true
   deps = [
     ":application_breadcrumbs_logger",

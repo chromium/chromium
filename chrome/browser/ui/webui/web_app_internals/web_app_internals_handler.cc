@@ -16,6 +16,7 @@
 #include "base/values.h"
 #include "build/build_config.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_update_manager.h"
 #include "chrome/browser/web_applications/locks/web_app_lock_manager.h"
 #include "chrome/browser/web_applications/preinstalled_web_app_manager.h"
 #include "chrome/browser/web_applications/web_app.h"
@@ -48,7 +49,11 @@ constexpr char kInstalledWebApps[] = "InstalledWebApps";
 constexpr char kPreinstalledWebAppConfigs[] = "PreinstalledWebAppConfigs";
 constexpr char kUserUninstalledPreinstalledWebAppPrefs[] =
     "UserUninstalledPreinstalledWebAppPrefs";
-constexpr char kExternallyManagedWebAppPrefs[] = "ExternallyManagedWebAppPrefs";
+constexpr char kWebAppPreferences[] = "WebAppPreferences";
+constexpr char kWebAppIphPreferences[] = "WebAppIphPreferences";
+constexpr char kWebAppMlPreferences[] = "WebAppMlPreferences";
+constexpr char kShouldGarbageCollectStoragePartitions[] =
+    "ShouldGarbageCollectStoragePartitions";
 constexpr char kLockManager[] = "LockManager";
 constexpr char kCommandManager[] = "CommandManager";
 constexpr char kIconErrorLog[] = "IconErrorLog";
@@ -57,6 +62,9 @@ constexpr char kInstallationProcessErrorLog[] = "InstallationProcessErrorLog";
 constexpr char kAppShimRegistryLocalStorage[] = "AppShimRegistryLocalStorage";
 #endif
 constexpr char kWebAppDirectoryDiskState[] = "WebAppDirectoryDiskState";
+#if BUILDFLAG(IS_CHROMEOS)
+constexpr char kIsolatedWebAppUpdateManager[] = "IsolatedWebAppUpdateManager";
+#endif
 
 constexpr char kNeedsRecordWebAppDebugInfo[] =
     "No debugging info available! Please enable: "
@@ -76,13 +84,19 @@ base::Value::Dict BuildIndexJson() {
   index.Append(kInstalledWebApps);
   index.Append(kPreinstalledWebAppConfigs);
   index.Append(kUserUninstalledPreinstalledWebAppPrefs);
-  index.Append(kExternallyManagedWebAppPrefs);
+  index.Append(kWebAppPreferences);
+  index.Append(kWebAppIphPreferences);
+  index.Append(kWebAppMlPreferences);
+  index.Append(kShouldGarbageCollectStoragePartitions);
   index.Append(kLockManager);
   index.Append(kCommandManager);
   index.Append(kIconErrorLog);
   index.Append(kInstallationProcessErrorLog);
 #if BUILDFLAG(IS_MAC)
   index.Append(kAppShimRegistryLocalStorage);
+#endif
+#if BUILDFLAG(IS_CHROMEOS)
+  index.Append(kIsolatedWebAppUpdateManager);
 #endif
   index.Append(kWebAppDirectoryDiskState);
 
@@ -91,9 +105,7 @@ base::Value::Dict BuildIndexJson() {
 
 base::Value::Dict BuildInstalledWebAppsJson(web_app::WebAppProvider& provider) {
   base::Value::Dict root;
-
   root.Set(kInstalledWebApps, provider.registrar_unsafe().AsDebugValue());
-
   return root;
 }
 
@@ -163,13 +175,6 @@ base::Value::Dict BuildPreinstalledWebAppConfigsJson(
   return root;
 }
 
-base::Value::Dict BuildExternallyManagedWebAppPrefsJson(Profile* profile) {
-  base::Value::Dict root;
-  root.Set(kExternallyManagedWebAppPrefs,
-           profile->GetPrefs()->GetDict(prefs::kWebAppsExtensionIDs).Clone());
-  return root;
-}
-
 base::Value::Dict BuildUserUninstalledPreinstalledWebAppPrefsJson(
     Profile* profile) {
   base::Value::Dict root;
@@ -177,6 +182,38 @@ base::Value::Dict BuildUserUninstalledPreinstalledWebAppPrefsJson(
            profile->GetPrefs()
                ->GetDict(prefs::kUserUninstalledPreinstalledWebAppPref)
                .Clone());
+  return root;
+}
+
+base::Value::Dict BuildWebAppsPrefsJson(Profile* profile) {
+  base::Value::Dict root;
+  root.Set(kWebAppPreferences,
+           profile->GetPrefs()->GetDict(prefs::kWebAppsPreferences).Clone());
+  return root;
+}
+
+base::Value::Dict BuildWebAppIphPrefsJson(Profile* profile) {
+  base::Value::Dict root;
+  root.Set(
+      kWebAppIphPreferences,
+      profile->GetPrefs()->GetDict(prefs::kWebAppsAppAgnosticIphState).Clone());
+  return root;
+}
+
+base::Value::Dict BuildWebAppMlPrefsJson(Profile* profile) {
+  base::Value::Dict root;
+  root.Set(
+      kWebAppMlPreferences,
+      profile->GetPrefs()->GetDict(prefs::kWebAppsAppAgnosticMlState).Clone());
+  return root;
+}
+
+base::Value::Dict BuildShouldGarbageCollectStoragePartitionsPrefsJson(
+    Profile* profile) {
+  base::Value::Dict root;
+  root.Set(kShouldGarbageCollectStoragePartitions,
+           profile->GetPrefs()->GetBoolean(
+               prefs::kShouldGarbageCollectStoragePartitions));
   return root;
 }
 
@@ -239,6 +276,15 @@ base::Value::Dict BuildAppShimRegistryLocalStorageJson() {
   root.Set(kAppShimRegistryLocalStorage,
            AppShimRegistry::Get()->AsDebugDict().Clone());
   return root;
+}
+#endif
+
+#if BUILDFLAG(IS_CHROMEOS)
+base::Value BuildIsolatedWebAppUpdaterManagerJson(
+    web_app::WebAppProvider& provider) {
+  return base::Value(
+      base::Value::Dict().Set(kIsolatedWebAppUpdateManager,
+                              provider.iwa_update_manager().AsDebugValue()));
 }
 #endif
 
@@ -323,13 +369,19 @@ void WebAppInternalsHandler::BuildDebugInfo(
   root.Append(BuildInstalledWebAppsJson(*provider));
   root.Append(BuildPreinstalledWebAppConfigsJson(*provider));
   root.Append(BuildUserUninstalledPreinstalledWebAppPrefsJson(profile));
-  root.Append(BuildExternallyManagedWebAppPrefsJson(profile));
+  root.Append(BuildWebAppsPrefsJson(profile));
+  root.Append(BuildWebAppIphPrefsJson(profile));
+  root.Append(BuildWebAppMlPrefsJson(profile));
+  root.Append(BuildShouldGarbageCollectStoragePartitionsPrefsJson(profile));
   root.Append(BuildLockManagerJson(*provider));
   root.Append(BuildCommandManagerJson(*provider));
   root.Append(BuildIconErrorLogJson(*provider));
   root.Append(BuildInstallProcessErrorLogJson(*provider));
 #if BUILDFLAG(IS_MAC)
   root.Append(BuildAppShimRegistryLocalStorageJson());
+#endif
+#if BUILDFLAG(IS_CHROMEOS)
+  root.Append(BuildIsolatedWebAppUpdaterManagerJson(*provider));
 #endif
   base::ThreadPool::PostTaskAndReplyWithResult(
       FROM_HERE, {base::TaskPriority::USER_VISIBLE, base::MayBlock()},
@@ -360,6 +412,46 @@ void WebAppInternalsHandler::GetDebugInfoAsJsonString(
       FROM_HERE,
       base::BindOnce(&WebAppInternalsHandler::BuildDebugInfo, profile_,
                      std::move(value_to_string).Then(std::move(callback))));
+}
+
+void WebAppInternalsHandler::InstallIsolatedWebAppFromDevProxy(
+    const GURL& url,
+    InstallIsolatedWebAppFromDevProxyCallback callback) {
+  if (!web_app::AreWebAppsEnabled(profile_)) {
+    ::mojom::InstallIsolatedWebAppFromDevProxyResult mojo_result;
+    mojo_result.success = false;
+    mojo_result.error = std::string("web apps not enabled");
+    std::move(callback).Run(mojo_result.Clone());
+    return;
+  }
+
+  auto* provider = web_app::WebAppProvider::GetForWebApps(profile_);
+  if (!provider) {
+    ::mojom::InstallIsolatedWebAppFromDevProxyResult mojo_result;
+    mojo_result.success = false;
+    mojo_result.error = std::string("could not get web app provider");
+    std::move(callback).Run(mojo_result.Clone());
+    return;
+  }
+
+  auto& manager = provider->iwa_command_line_install_manager();
+  manager.InstallIsolatedWebAppFromDevModeProxy(
+      url, base::BindOnce(
+               &WebAppInternalsHandler::OnInstallIsolatedWebAppFromDevModeProxy,
+               weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
+}
+
+void WebAppInternalsHandler::OnInstallIsolatedWebAppFromDevModeProxy(
+    WebAppInternalsHandler::InstallIsolatedWebAppFromDevProxyCallback callback,
+    web_app::MaybeInstallIsolatedWebAppCommandSuccess result) {
+  ::mojom::InstallIsolatedWebAppFromDevProxyResult mojo_result;
+  if (result.has_value()) {
+    mojo_result.success = true;
+  } else {
+    mojo_result.success = false;
+    mojo_result.error = result.error();
+  }
+  std::move(callback).Run(mojo_result.Clone());
 }
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)

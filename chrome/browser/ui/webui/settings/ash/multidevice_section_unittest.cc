@@ -69,6 +69,7 @@ class MockWebUIDataSource : public content::WebUIDataSource {
   void EnableReplaceI18nInJS() override {}
   std::string GetSource() override { return ""; }
   void AddFrameAncestor(const GURL& frame_ancestor) override {}
+  void SetSupportedScheme(base::StringPiece scheme) override {}
 };
 
 class MultiDeviceSectionTest : public testing::Test {

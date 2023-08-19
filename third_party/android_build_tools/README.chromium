@@ -2,9 +2,9 @@ Name: Android SDK related build tools
 Short Name:  Android tools
 Version: 0
 License: Apache Version 2.0
-License File: NOT_SHIPPED
 URL: https://developer.android.com/studio
 Security Critical: No
+Shipped: no
 
 Description: The tools in this directory either require more recent
 versions than are provided by the Android SDK used by internal or

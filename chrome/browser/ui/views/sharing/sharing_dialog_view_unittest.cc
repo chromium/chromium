@@ -122,8 +122,8 @@ class SharingDialogViewTest : public TestWithBrowserView {
   testing::MockFunction<void(const SharingApp&)> app_callback_;
 
  private:
-  raw_ptr<content::WebContents> web_contents_ = nullptr;
-  raw_ptr<SharingDialogView> dialog_ = nullptr;
+  raw_ptr<content::WebContents, DanglingUntriaged> web_contents_ = nullptr;
+  raw_ptr<SharingDialogView, DanglingUntriaged> dialog_ = nullptr;
 };
 
 TEST_F(SharingDialogViewTest, PopulateDialogView) {

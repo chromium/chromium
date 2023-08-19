@@ -57,13 +57,6 @@
 @font-face {
     src: local('y y\\9 y');
 }
-</style>
-
-<!-- Invalid src descriptor rules. -->
-<style>
-@font-face {
-    src: url(font.ttf invalid);
-}
 @font-face {
     src: url(font.ttf),;
 }
@@ -77,11 +70,17 @@
     src: url(font.ttf), invalid();
 }
 @font-face {
-    src: url(foo.ttf) invalid;
-}
-
-@font-face {
     src: url(foo.ttf), invalid;
+}
+</style>
+
+<!-- Invalid src descriptor rules. -->
+<style>
+@font-face {
+    src: url(font.ttf invalid);
+}
+@font-face {
+    src: url(foo.ttf) invalid;
 }
 @font-face {
     src: url(foo.ttf) "invalid";
@@ -126,6 +125,11 @@
 @font-face { src: local("w\d w"); }
 @font-face { src: local(" x x\9 x "); }
 @font-face { src: local("y y\9 y"); }
+@font-face { src: url("font.ttf"); }
+@font-face { src: url("font.ttf"), local("font2"); }
+@font-face { src: local("font"); }
+@font-face { src: url("font.ttf"); }
+@font-face { src: url("foo.ttf"); }
 </pre>
 
 <p>Invalid rules form the stylesheet:</p>
@@ -133,7 +137,6 @@
 
 <p>Expected result for invalid rules:</p>
 <pre id="invalidExpected">@font-face { }
-@font-face { }
 @font-face { }
 @font-face { }
 @font-face { }

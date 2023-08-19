@@ -5,10 +5,10 @@
 // https://gpuweb.github.io/gpuweb/
 
 [
-    Exposed(Window WebGPU, DedicatedWorker WebGPU),
+    Exposed=(Window, DedicatedWorker),
     SecureContext
 ] interface GPUQueue {
-    void submit(sequence<GPUCommandBuffer> buffers);
+    [CallWith=ScriptState] void submit(sequence<GPUCommandBuffer> buffers);
 
     [CallWith=ScriptState] Promise<void> onSubmittedWorkDone();
 

@@ -210,8 +210,8 @@ scoped_refptr<const ComputedStyle> PseudoElement::LayoutStyleForDisplayContents(
   // observable inline box for pseudo elements to be able to locate the
   // anonymous layout objects for generated content during DetachLayoutTree().
   ComputedStyleBuilder builder =
-      GetDocument().GetStyleResolver().CreateComputedStyleBuilder();
-  builder.InheritFrom(style);
+      GetDocument().GetStyleResolver().CreateComputedStyleBuilderInheritingFrom(
+          style);
   builder.SetContent(style.GetContentData());
   builder.SetDisplay(EDisplay::kInline);
   builder.SetStyleType(pseudo_id_);
@@ -307,7 +307,7 @@ void PseudoElement::AttachLayoutTree(AttachContext& context) {
           StyleContainmentScope* scope =
               tree.FindOrCreateEnclosingScopeForElement(*this);
           scope->AttachQuote(*To<LayoutQuote>(child));
-          tree.UpdateOutermostDirtyScope(scope);
+          tree.UpdateOutermostQuotesDirtyScope(scope);
         }
       } else {
         child->Destroy();

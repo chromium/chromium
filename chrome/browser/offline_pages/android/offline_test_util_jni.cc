@@ -17,7 +17,6 @@
 #include "chrome/browser/offline_pages/android/offline_page_bridge.h"
 #include "chrome/browser/offline_pages/android/request_coordinator_bridge.h"
 #include "chrome/browser/offline_pages/offline_page_model_factory.h"
-#include "chrome/browser/offline_pages/prefetch/prefetch_service_factory.h"
 #include "chrome/browser/offline_pages/request_coordinator_factory.h"
 #include "chrome/browser/profiles/profile_android.h"
 #include "chrome/browser/profiles/profile_key.h"

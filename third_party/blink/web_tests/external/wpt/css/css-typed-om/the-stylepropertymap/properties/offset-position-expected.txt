@@ -5,6 +5,7 @@ PASS Can set 'offset-position' to CSS-wide keywords: inherit
 PASS Can set 'offset-position' to CSS-wide keywords: unset
 PASS Can set 'offset-position' to CSS-wide keywords: revert
 PASS Can set 'offset-position' to var() references:  var(--A)
+PASS Can set 'offset-position' to the 'normal' keyword: normal
 PASS Can set 'offset-position' to the 'auto' keyword: auto
 Harness: the test ran to completion.
 

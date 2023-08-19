@@ -115,7 +115,6 @@ class SystemWebAppBackgroundTask {
   void MaybeOpenPage();
 
   void NavigateBackgroundPage();
-  void OnLoaderReady(web_app::WebAppUrlLoader::Result);
   void OnPageReady(web_app::WebAppUrlLoader::Result);
 
   void CloseWebContents(content::WebContents* contents);

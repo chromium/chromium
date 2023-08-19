@@ -39,8 +39,8 @@ TEST(DocumentPaintDefinitionTest, NativeInvalidationProperties) {
 TEST(DocumentPaintDefinitionTest, CustomInvalidationProperties) {
   Vector<CSSPropertyID> native_invalidation_properties;
   Vector<AtomicString> custom_invalidation_properties = {
-      "--my-property",
-      "--another-property",
+      AtomicString("--my-property"),
+      AtomicString("--another-property"),
   };
   Vector<CSSSyntaxDefinition> input_argument_types;
 

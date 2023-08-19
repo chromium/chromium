@@ -51,18 +51,19 @@ class MultiDeviceSection
       eche_app::EcheAppManager* eche_app_manager);
   ~MultiDeviceSection() override;
 
- private:
-  friend class MultiDeviceSectionTest;
   // OsSettingsSection:
   void AddLoadTimeData(content::WebUIDataSource* html_source) override;
   void AddHandlers(content::WebUI* web_ui) override;
   int GetSectionNameMessageId() const override;
   chromeos::settings::mojom::Section GetSection() const override;
   mojom::SearchResultIcon GetSectionIcon() const override;
-  std::string GetSectionPath() const override;
+  const char* GetSectionPath() const override;
   bool LogMetric(chromeos::settings::mojom::Setting setting,
                  base::Value& value) const override;
   void RegisterHierarchy(HierarchyGenerator* generator) const override;
+
+ private:
+  friend class MultiDeviceSectionTest;
 
   // multidevice_setup::MultiDeviceSetupClient::Observer:
   void OnHostStatusChanged(
@@ -104,7 +105,8 @@ class MultiDeviceSection
   raw_ptr<PrefService, ExperimentalAsh> pref_service_;
   PrefChangeRegistrar pref_change_registrar_;
   raw_ptr<eche_app::EcheAppManager, ExperimentalAsh> eche_app_manager_;
-  raw_ptr<content::WebUIDataSource, ExperimentalAsh> html_source_;
+  raw_ptr<content::WebUIDataSource, DanglingUntriaged | ExperimentalAsh>
+      html_source_;
 };
 
 }  // namespace settings

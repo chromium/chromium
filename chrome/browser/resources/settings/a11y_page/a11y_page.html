@@ -67,6 +67,26 @@
             sub-label="$i18n{pdfOcrSubtitle}">
         </settings-toggle-button>
 </if>
+<if expr="is_win or is_linux">
+        <settings-toggle-button
+            class="hr"
+            hidden$="[[!showOverscrollHistoryNavigationToggle_]]"
+            pref="{{prefs.settings.a11y.overscroll_history_navigation}}"
+            label="$i18n{overscrollHistoryNavigationTitle}"
+            sub-label="$i18n{overscrollHistoryNavigationSubtitle}">
+        </settings-toggle-button>
+</if>
+<if expr="is_macosx">
+        <cr-link-row
+            class="hr"
+            hidden$="[[!showOverscrollHistoryNavigationToggle_]]"
+            on-click="onMacTrackpadGesturesLinkClick_"
+            button-aria-description="$i18n{opensInNewTab}"
+            label="$i18n{overscrollHistoryNavigationTitle}"
+            sub-label="$i18n{overscrollHistoryNavigationSubtitle}"
+            external>
+        </cr-link-row>
+</if>
         <cr-link-row class="hr" label="$i18n{moreFeaturesLink}"
             on-click="onMoreFeaturesLinkClick_" sub-label="$i18n{a11yWebStore}"
             button-aria-description="$i18n{opensInNewTab}"

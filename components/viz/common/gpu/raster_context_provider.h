@@ -16,6 +16,7 @@
 #include "base/synchronization/lock.h"
 #include "components/viz/common/gpu/context_cache_controller.h"
 #include "components/viz/common/gpu/context_lost_observer.h"
+#include "components/viz/common/resources/shared_image_format.h"
 #include "components/viz/common/viz_common_export.h"
 #include "gpu/command_buffer/common/capabilities.h"
 #include "gpu/command_buffer/common/context_result.h"
@@ -87,8 +88,8 @@ class VIZ_COMMON_EXPORT RasterContextProvider {
   // threads. This can be called on any thread.
   // Returns null if the context does not support locking and must be used from
   // the same thread.
-  // NOTE: Helper method for ScopedContextLock. Use that instead of calling this
-  // directly.
+  // NOTE: Helper method for ScopedRasterContextLock. Use that instead of
+  // calling this directly.
   virtual base::Lock* GetLock() = 0;
 
   // Get a CacheController interface to the 3d context.  The context provider
@@ -124,6 +125,9 @@ class VIZ_COMMON_EXPORT RasterContextProvider {
   // Get a Raster interface to the 3d context.  The context provider must have
   // been successfully bound to a thread before calling this.
   virtual gpu::raster::RasterInterface* RasterInterface() = 0;
+
+  // Returns the format that should be used for GL texture storage.
+  virtual unsigned int GetGrGLTextureFormat(SharedImageFormat format) const = 0;
 
  protected:
   virtual ~RasterContextProvider() = default;

@@ -3,12 +3,10 @@
 # found in the LICENSE file.
 
 source_set("prerender_pref") {
-  configs += [ "//build/config/compiler:enable_arc" ]
   public = [ "prerender_pref.h" ]
 }
 
 source_set("prerender") {
-  configs += [ "//build/config/compiler:enable_arc" ]
   public = [
     "preload_controller_delegate.h",
     "prerender_service.h",
@@ -32,6 +30,8 @@ source_set("prerender") {
     "//components/prefs",
     "//components/prefs/ios",
     "//components/signin/ios/browser",
+    "//components/supervised_user/core/browser",
+    "//components/supervised_user/core/common",
     "//ios/chrome/browser/app_launcher:app_launcher",
     "//ios/chrome/browser/crash_report:crash_report_internal",
     "//ios/chrome/browser/download:mime_types",
@@ -47,15 +47,16 @@ source_set("prerender") {
     "//ios/chrome/browser/shared/model/prefs:pref_names",
     "//ios/chrome/browser/shared/model/web_state_list",
     "//ios/chrome/browser/signin",
+    "//ios/chrome/browser/supervised_user",
     "//ios/chrome/browser/tabs",
     "//ios/chrome/browser/web",
+    "//ios/web/common:features",
     "//ui/base",
     "//url",
   ]
 }
 
 source_set("test_support") {
-  configs += [ "//build/config/compiler:enable_arc" ]
   sources = [
     "fake_prerender_service.h",
     "fake_prerender_service.mm",
@@ -65,7 +66,6 @@ source_set("test_support") {
 }
 
 source_set("unit_tests") {
-  configs += [ "//build/config/compiler:enable_arc" ]
   testonly = true
 
   sources = [
@@ -77,6 +77,8 @@ source_set("unit_tests") {
     ":prerender_pref",
     "//base",
     "//components/prefs",
+    "//components/supervised_user/core/browser:supervised_user_preferences",
+    "//components/supervised_user/core/common:features",
     "//ios/chrome/browser/shared/model/browser_state:test_support",
     "//ios/chrome/browser/shared/model/prefs:pref_names",
     "//ios/web/public/test",
@@ -87,10 +89,7 @@ source_set("unit_tests") {
 }
 
 source_set("eg2_tests") {
-  configs += [
-    "//build/config/compiler:enable_arc",
-    "//build/config/ios:xctest_config",
-  ]
+  configs += [ "//build/config/ios:xctest_config" ]
   testonly = true
   sources = [ "prerender_egtest.mm" ]
   deps = [

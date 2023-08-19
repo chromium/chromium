@@ -193,7 +193,7 @@ class CompositedScrollingMetricTest : public CompositedScrollingBrowserTest,
     if (enable_composited_scrolling)
       cmd->AppendSwitch(blink::switches::kEnablePreferCompositingToLCDText);
     else
-      cmd->AppendSwitch(blink::switches::kDisableThreadedScrolling);
+      cmd->AppendSwitch(blink::switches::kDisablePreferCompositingToLCDText);
   }
 
   bool CompositingEnabled() { return GetParam(); }

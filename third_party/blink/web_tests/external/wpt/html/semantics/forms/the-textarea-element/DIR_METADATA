@@ -2,4 +2,6 @@ monorail {
   component: "Blink>Forms>Textarea"
 }
 team_email: "dom-dev@chromium.org"
-
+wpt {
+  notify: YES
+}

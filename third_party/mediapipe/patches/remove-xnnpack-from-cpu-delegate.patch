@@ -1,0 +1,53 @@
+From d745a6a96ee3aa35b7a05dacdd5585e53dbdfb9a Mon Sep 17 00:00:00 2001
+From: Robert Ogden <robertogden@chromium.org>
+Date: Fri, 14 Jul 2023 14:42:11 -0700
+Subject: [PATCH] remove xnnpack from cpu delegate
+
+---
+ .../tensor/inference_calculator_cpu.cc           | 16 ----------------
+ 1 file changed, 16 deletions(-)
+
+diff --git a/third_party/mediapipe/src/mediapipe/calculators/tensor/inference_calculator_cpu.cc b/third_party/mediapipe/src/mediapipe/calculators/tensor/inference_calculator_cpu.cc
+index 0c22fc7a10ada..366e7e82bd7d4 100644
+--- a/third_party/mediapipe/src/mediapipe/calculators/tensor/inference_calculator_cpu.cc
++++ b/third_party/mediapipe/src/mediapipe/calculators/tensor/inference_calculator_cpu.cc
+@@ -28,7 +28,6 @@
+ #if defined(MEDIAPIPE_ANDROID)
+ #include "tensorflow/lite/delegates/nnapi/nnapi_delegate.h"
+ #endif  // ANDROID
+-#include "tensorflow/lite/delegates/xnnpack/xnnpack_delegate.h"
+ 
+ namespace mediapipe {
+ namespace api2 {
+@@ -104,7 +103,6 @@ InferenceCalculatorCpuImpl::MaybeCreateDelegate(CalculatorContext* cc) {
+         input_side_packet_delegate = kDelegate(cc).Get();
+     RET_CHECK(
+         input_side_packet_delegate.has_tflite() ||
+-        input_side_packet_delegate.has_xnnpack() ||
+         input_side_packet_delegate.has_nnapi() ||
+         input_side_packet_delegate.delegate_case() ==
+             mediapipe::InferenceCalculatorOptions::Delegate::DELEGATE_NOT_SET)
+@@ -141,20 +139,6 @@ InferenceCalculatorCpuImpl::MaybeCreateDelegate(CalculatorContext* cc) {
+   }
+ #endif  // MEDIAPIPE_ANDROID
+ 
+-#if defined(__EMSCRIPTEN__)
+-  const bool use_xnnpack = true;
+-#else
+-  const bool use_xnnpack = opts_has_delegate && opts_delegate.has_xnnpack();
+-#endif  // defined(__EMSCRIPTEN__)
+-
+-  if (use_xnnpack) {
+-    auto xnnpack_opts = TfLiteXNNPackDelegateOptionsDefault();
+-    xnnpack_opts.num_threads =
+-        GetXnnpackNumThreads(opts_has_delegate, opts_delegate);
+-    return TfLiteDelegatePtr(TfLiteXNNPackDelegateCreate(&xnnpack_opts),
+-                             &TfLiteXNNPackDelegateDelete);
+-  }
+-
+   return nullptr;
+ }
+ 
+-- 
+2.41.0.255.g8b1d071c50-goog
+

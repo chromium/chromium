@@ -62,10 +62,6 @@ component("webview") {
       sources += [ "unhandled_keyboard_event_handler_default.cc" ]
     }
   }
-
-  if (is_mac) {
-    deps += [ "//base:base_arc" ]
-  }
 }
 
 static_library("test_support") {

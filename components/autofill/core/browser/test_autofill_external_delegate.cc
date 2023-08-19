@@ -13,9 +13,8 @@ namespace autofill {
 
 TestAutofillExternalDelegate::TestAutofillExternalDelegate(
     BrowserAutofillManager* autofill_manager,
-    AutofillDriver* autofill_driver,
     bool call_parent_methods)
-    : AutofillExternalDelegate(autofill_manager, autofill_driver),
+    : AutofillExternalDelegate(autofill_manager),
       call_parent_methods_(call_parent_methods) {}
 
 TestAutofillExternalDelegate::~TestAutofillExternalDelegate() {}
@@ -47,20 +46,19 @@ void TestAutofillExternalDelegate::OnQuery(const FormData& form,
 void TestAutofillExternalDelegate::OnSuggestionsReturned(
     FieldGlobalId field_id,
     const std::vector<Suggestion>& suggestions,
-    AutoselectFirstSuggestion autoselect_first_suggestion,
+    AutofillSuggestionTriggerSource trigger_source,
     bool is_all_server_suggestions) {
   on_suggestions_returned_seen_ = true;
   field_id_ = field_id;
   suggestions_ = suggestions;
-  autoselect_first_suggestion_ = autoselect_first_suggestion;
+  trigger_source_ = trigger_source;
   is_all_server_suggestions_ = is_all_server_suggestions;
 
   // If necessary, call the superclass's OnSuggestionsReturned in order to
   // execute logic relating to showing the popup or not.
   if (call_parent_methods_)
-    AutofillExternalDelegate::OnSuggestionsReturned(field_id, suggestions,
-                                                    autoselect_first_suggestion,
-                                                    is_all_server_suggestions);
+    AutofillExternalDelegate::OnSuggestionsReturned(
+        field_id, suggestions, trigger_source, is_all_server_suggestions);
 }
 
 bool TestAutofillExternalDelegate::HasActiveScreenReader() const {
@@ -99,7 +97,8 @@ void TestAutofillExternalDelegate::CheckSuggestions(
               suggestions_[i].minor_text.value);
     EXPECT_EQ(expected_suggestions[i].labels, suggestions_[i].labels);
     EXPECT_EQ(expected_suggestions[i].icon, suggestions_[i].icon);
-    EXPECT_EQ(expected_suggestions[i].frontend_id, suggestions_[i].frontend_id);
+    EXPECT_EQ(expected_suggestions[i].popup_item_id,
+              suggestions_[i].popup_item_id);
   }
   ASSERT_EQ(expected_num_suggestions, suggestions_.size());
 }
@@ -126,9 +125,9 @@ bool TestAutofillExternalDelegate::on_suggestions_returned_seen() const {
   return on_suggestions_returned_seen_;
 }
 
-AutoselectFirstSuggestion
-TestAutofillExternalDelegate::autoselect_first_suggestion() const {
-  return autoselect_first_suggestion_;
+AutofillSuggestionTriggerSource TestAutofillExternalDelegate::trigger_source()
+    const {
+  return trigger_source_;
 }
 
 bool TestAutofillExternalDelegate::is_all_server_suggestions() const {

@@ -46,17 +46,6 @@ class BookmarkNode : public ui::TreeNode<BookmarkNode>, public TitledUrlNode {
 
   typedef base::flat_map<std::string, std::string> MetaInfoMap;
 
-  // TODO(crbug.com/1026195): Make these constants of type base::Uuid once there
-  // exists a constexpr constructor.
-  static const char kRootNodeUuid[];
-  static const char kBookmarkBarNodeUuid[];
-  static const char kOtherBookmarksNodeUuid[];
-  static const char kMobileBookmarksNodeUuid[];
-  static const char kManagedNodeUuid[];
-
-  // A bug in sync caused some problematic UUIDs to be produced.
-  static const char kBannedUuidDueToPastSyncBug[];
-
   // Creates a new node with |id|, |uuid| and |url|.
   BookmarkNode(int64_t id, const base::Uuid& uuid, const GURL& url);
 

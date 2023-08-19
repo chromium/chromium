@@ -15,7 +15,9 @@ _GPU_DATA_RELATIVE_PATH_COMPONENTS = ('content', 'test', 'data', 'gpu')
 GPU_DATA_RELATIVE_PATH = os.path.join(*_GPU_DATA_RELATIVE_PATH_COMPONENTS)
 GPU_DATA_DIR = os.path.join(CHROMIUM_SRC_DIR,
                             *_GPU_DATA_RELATIVE_PATH_COMPONENTS)
-GPU_EXPECTATIONS_DIR = os.path.join(GPU_DIR, 'gpu_tests', 'test_expectations')
+GPU_TESTS_DIR = os.path.join(GPU_DIR, 'gpu_tests')
+GPU_EXPECTATIONS_DIR = os.path.join(GPU_TESTS_DIR, 'test_expectations')
+GPU_TEST_HARNESS_JAVASCRIPT_DIR = os.path.join(GPU_TESTS_DIR, 'javascript')
 
 TOOLS_PERF_DIR = os.path.join(CHROMIUM_SRC_DIR, 'tools', 'perf')
 

@@ -30,7 +30,6 @@ std::unique_ptr<IDBValue> CreateNullIDBValueForTesting(v8::Isolate* isolate) {
                                               Vector<WebBlobInfo>());
   idb_value->SetInjectedPrimaryKey(IDBKey::CreateNumber(42.0),
                                    IDBKeyPath(String("primaryKey")));
-  idb_value->SetIsolate(isolate);
   return idb_value;
 }
 
@@ -46,8 +45,9 @@ std::unique_ptr<IDBValue> CreateIDBValueForTesting(v8::Isolate* isolate,
   IDBValueWrapper wrapper(isolate, v8_array,
                           SerializedScriptValue::SerializeOptions::kSerialize,
                           non_throwable_exception_state);
+  wrapper.set_wrapping_threshold_for_test(
+      create_wrapped_value ? 0 : 1024 * element_count);
   wrapper.DoneCloning();
-  wrapper.WrapIfBiggerThan(create_wrapped_value ? 0 : 1024 * element_count);
 
   Vector<scoped_refptr<BlobDataHandle>> blob_data_handles =
       wrapper.TakeBlobDataHandles();
@@ -58,7 +58,6 @@ std::unique_ptr<IDBValue> CreateIDBValueForTesting(v8::Isolate* isolate,
                                               std::move(blob_infos));
   idb_value->SetInjectedPrimaryKey(IDBKey::CreateNumber(42.0),
                                    IDBKeyPath(String("primaryKey")));
-  idb_value->SetIsolate(isolate);
 
   DCHECK_EQ(create_wrapped_value,
             IDBValueUnwrapper::IsWrapped(idb_value.get()));

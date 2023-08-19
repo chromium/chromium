@@ -43,6 +43,8 @@ struct COMPONENT_EXPORT(AX_PLATFORM) AXLegacyHypertext {
   ~AXLegacyHypertext();
   AXLegacyHypertext(const AXLegacyHypertext& other);
   AXLegacyHypertext& operator=(const AXLegacyHypertext& other);
+  AXLegacyHypertext(AXLegacyHypertext&& other) noexcept;
+  AXLegacyHypertext& operator=(AXLegacyHypertext&& other);
 
   // A flag that should be set if the hypertext information in this struct is
   // out-of-date and needs to be updated. This flag should always be set upon

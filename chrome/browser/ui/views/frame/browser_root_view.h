@@ -138,7 +138,7 @@ class BrowserRootView : public views::internal::RootView {
       std::unique_ptr<ui::LayerTreeOwner> drag_image_layer_owner);
 
   // The BrowserView.
-  raw_ptr<BrowserView, DanglingUntriaged> browser_view_ = nullptr;
+  raw_ptr<BrowserView, AcrossTasksDanglingUntriaged> browser_view_ = nullptr;
 
   // Used to calculate partial offsets in scrolls that occur for a smooth
   // scroll device.

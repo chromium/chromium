@@ -148,10 +148,8 @@ static_library("hook_util") {
     "hook_util/hook_util.h",
   ]
   deps = [
-    ":nt_registry",  # utils
     "//base:base_static",  # pe_image
   ]
-  public_deps = [ "//sandbox" ]
 }
 
 # This target contains utility functions which must only depend on
@@ -211,6 +209,10 @@ source_set("third_party_dlls") {
     "third_party_dlls/main.h",
     "third_party_dlls/packed_list_file.cc",
     "third_party_dlls/packed_list_file.h",
+  ]
+  deps = [
+    "//base:base_static",
+    "//sandbox/win:service_resolver",
   ]
   public_deps = [
     ":constants",
@@ -278,7 +280,6 @@ test("chrome_elf_unittests") {
     "//chrome/install_static:install_static_util",
     "//chrome/install_static/test:test_support",
     "//components/crash/core/app:test_support",
-    "//sandbox",
     "//testing/gtest",
   ]
   data_deps = [

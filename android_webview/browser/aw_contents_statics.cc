@@ -46,7 +46,7 @@ void ClientCertificatesCleared(const JavaRef<jobject>& callback) {
 
 void NotifyClientCertificatesChanged() {
   DCHECK_CURRENTLY_ON(BrowserThread::IO);
-  net::CertDatabase::GetInstance()->NotifyObserversCertDBChanged();
+  net::CertDatabase::GetInstance()->NotifyObserversClientCertStoreChanged();
 }
 
 void SafeBrowsingAllowlistAssigned(const JavaRef<jobject>& callback,

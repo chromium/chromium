@@ -1,0 +1,21 @@
+# Copyright 2023 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//mojo/public/tools/bindings/mojom.gni")
+import("//third_party/protobuf/proto_library.gni")
+
+source_set("visual_search") {
+  sources = []
+
+  deps = [ ":mojo_bindings" ]
+}
+
+mojom("mojo_bindings") {
+  sources = [ "visual_search.mojom" ]
+  public_deps = [
+    "//mojo/public/mojom/base",
+    "//skia/public/mojom",
+    "//ui/base/mojom",
+  ]
+}

@@ -3,8 +3,6 @@
 <translationbundle lang="sq">
 <translation id="1075622780330595106"><ph name="NUMBER_OF_TABS" /> nga skedat e tua nuk janë përdorur së fundi. Do t'i mbyllësh ato?</translation>
 <translation id="125153950246128346">Trokit për të parë një skedë tjetër</translation>
-<translation id="1403228085774130835">Skedat e mbyllura mund t'i gjesh në "Skedat e fundit" te menyja kryesore e Chrome</translation>
-<translation id="1455506303394048917">Aktiviteti yt në këto skeda "të fshehta" do të pastrohet nga kjo pajisje</translation>
 <translation id="1499635324672558517">Të mbyllen të gjitha skedat "e fshehta"?</translation>
 <translation id="1657719826150349398">Lëviz skedën poshtë</translation>
 <translation id="1869137256605757565">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> skedë}other{<ph name="TABS_COUNT_MANY" /> skeda}}</translation>
@@ -47,6 +45,7 @@
 <translation id="5073204694187207510">Fshih rrjetën me ekran të plotë</translation>
 <translation id="5076161749301278626">Të shihen komentet e dyqanit?</translation>
 <translation id="5082793167783849073">Krahaso me shpejtësi faqet duke krijuar një grup. Për të filluar, prek dhe mbaj të shtypur një lidhje.</translation>
+<translation id="5339733443032484186">Skeda jote e fundit</translation>
 <translation id="5490235265819901748">Grupi i skedave u zgjerua</translation>
 <translation id="5494920125229734069">Zgjidh të gjitha</translation>
 <translation id="5556417849629758491">Shiko informacionet e dyqanit. Opsioni ofrohet pranë kreut të ekranit</translation>
@@ -62,10 +61,12 @@
 <translation id="6228793724645064692">(vlerësimi i dyqanit)</translation>
 <translation id="6333260925957816943">Informacioni për këtë dyqan</translation>
 <translation id="639823877092900621">{TABS_COUNT,plural, =1{Anulo grupimin për <ph name="TABS_COUNT_ONE" /> skedë të zgjedhur}other{Anulo grupimin për <ph name="TABS_COUNT_MANY" /> skeda të zgjedhura}}</translation>
+<translation id="6421412308143682486">{INCOGNITO_TABS_COUNT,plural, =1{Skedat e mbyllura mund t'i gjesh në "Skedat e fundit" te menyja kryesore e Chrome. Skeda "e fshehtë" nuk do të ofrohet.}other{Skedat e mbyllura mund t'i gjesh në "Skedat e fundit" te menyja kryesore e Chrome. # skedat "e fshehta" nuk do të ofrohen.}}</translation>
 <translation id="6422650314852876533">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> skedë}other{<ph name="TABS_COUNT_MANY" /> skeda}}</translation>
 <translation id="6549021453810473782">Shiko informacionet për dyqanin</translation>
 <translation id="6562820390860419811">Lëviz skedën majtas</translation>
 <translation id="6615455863669487791">Ma trego</translation>
+<translation id="661742612106409204">Skedat e mbyllura mund t'i gjesh në "Skedat e fundit" te menyja kryesore e Chrome.</translation>
 <translation id="6840760312327750441">Për t'i grupuar skedat, prek dhe mbaje të shtypur një skedë. Më pas zvarrite atë te një skedë tjetër.</translation>
 <translation id="6856809498882026482">Fshih modalitetin e zgjedhjes së shumëfishtë</translation>
 <translation id="7100731960740376323">{TABS_COUNT,plural, =1{Ndaj skedën}other{Ndaj skedat}}</translation>

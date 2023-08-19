@@ -28,6 +28,7 @@ const uint32 CAMERA_DEVICE_API_VERSION_3_2 = 0x302;
 const uint32 CAMERA_DEVICE_API_VERSION_3_3 = 0x303;
 const uint32 CAMERA_DEVICE_API_VERSION_3_4 = 0x304;
 const uint32 CAMERA_DEVICE_API_VERSION_3_5 = 0x305;
+const uint32 CAMERA_DEVICE_API_VERSION_3_6 = 0x306;
 
 struct CameraInfo {
   CameraFacing facing;

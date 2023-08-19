@@ -12,6 +12,7 @@
 #include "ash/public/cpp/style/dark_light_mode_controller.h"
 #include "ash/public/cpp/system_notification_builder.h"
 #include "ash/style/dark_light_mode_controller_impl.h"
+#include "base/command_line.h"
 #include "base/functional/bind.h"
 #include "base/i18n/time_formatting.h"
 #include "base/time/default_clock.h"
@@ -192,7 +193,7 @@ void EolNotification::CreateNotification(base::Time eol_date, base::Time now) {
           .SetDelegate(
               base::MakeRefCounted<message_center::ThunkNotificationDelegate>(
                   weak_ptr_factory_.GetWeakPtr()))
-          .Build(),
+          .Build(false),
       /*metadata=*/nullptr);
 
   eol_incentive_util::RecordShowSourceHistogram(
@@ -441,7 +442,7 @@ void EolNotification::ShowIncentiveNotification(
           .SetDelegate(
               base::MakeRefCounted<message_center::ThunkNotificationDelegate>(
                   weak_ptr_factory_.GetWeakPtr()))
-          .Build(),
+          .Build(false),
       /*metadata=*/nullptr);
 
   if (incentive_type == eol_incentive_util::EolIncentiveType::kEolApproaching) {

@@ -447,8 +447,9 @@ mojo_base::mojom::blink::TextDirection StyleCommands::TextDirectionForSelection(
       if (!node.IsStyledElement())
         continue;
 
+      Element& element = To<Element>(node);
       const CSSComputedStyleDeclaration& style =
-          *MakeGarbageCollected<CSSComputedStyleDeclaration>(&node);
+          *MakeGarbageCollected<CSSComputedStyleDeclaration>(&element);
       const CSSValue* unicode_bidi =
           style.GetPropertyCSSValue(CSSPropertyID::kUnicodeBidi);
       auto* unicode_bidi_identifier_value =

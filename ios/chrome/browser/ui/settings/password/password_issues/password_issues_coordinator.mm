@@ -4,7 +4,7 @@
 
 #import "ios/chrome/browser/ui/settings/password/password_issues/password_issues_coordinator.h"
 
-#import "base/mac/foundation_util.h"
+#import "base/apple/foundation_util.h"
 #import "base/memory/raw_ptr.h"
 #import "base/memory/scoped_refptr.h"
 #import "ios/chrome/browser/favicon/favicon_loader.h"
@@ -25,12 +25,9 @@
 #import "ios/chrome/browser/ui/settings/password/password_issues/password_issues_mediator.h"
 #import "ios/chrome/browser/ui/settings/password/password_issues/password_issues_presenter.h"
 #import "ios/chrome/browser/ui/settings/password/password_issues/password_issues_table_view_controller.h"
+#import "ios/chrome/browser/ui/settings/utils/password_utils.h"
 #import "ios/chrome/common/ui/reauthentication/reauthentication_module.h"
 #import "ui/base/l10n/l10n_util.h"
-
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
 
 using password_manager::WarningType;
 
@@ -128,8 +125,8 @@ DetailsContext ComputeDetailsContextFromWarningType(WarningType warning_type) {
   // If reauthentication module was not provided, coordinator will create its
   // own.
   if (!self.reauthModule) {
-    self.reauthModule = [[ReauthenticationModule alloc]
-        initWithSuccessfulReauthTimeAccessor:self.mediator];
+    self.reauthModule = password_manager::BuildReauthenticationModule(
+        /*successfulReauthTimeAccessor=*/self.mediator);
   }
 
   self.mediator.consumer = self.viewController;

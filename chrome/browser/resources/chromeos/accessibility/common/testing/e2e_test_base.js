@@ -26,11 +26,13 @@ E2ETestBase = class extends AccessibilityTestBase {
   async setUpDeferred() {
     await super.setUpDeferred();
 
-    // Alphabetical by file path.
-    await importModule('AsyncUtil', '/common/async_util.js');
-    await importModule('EventGenerator', '/common/event_generator.js');
-    await importModule('KeyCode', '/common/key_code.js');
-    await importModule('constants', '/common/constants.js');
+    await Promise.all([
+      // Alphabetical by file path.
+      importModule('AsyncUtil', '/common/async_util.js'),
+      importModule('EventGenerator', '/common/event_generator.js'),
+      importModule('KeyCode', '/common/key_code.js'),
+      importModule('constants', '/common/constants.js'),
+    ]);
   }
 
   /** @override */
@@ -43,6 +45,7 @@ E2ETestBase = class extends AccessibilityTestBase {
   #include "base/containers/flat_set.h"
   #include "chrome/browser/ash/accessibility/accessibility_manager.h"
   #include "chrome/browser/ash/crosapi/browser_manager.h"
+  #include "chrome/browser/ash/system_web_apps/system_web_app_manager.h"
   #include "chrome/browser/speech/extension_api/tts_engine_extension_api.h"
   #include "chrome/browser/ui/browser.h"
   #include "chrome/common/extensions/extension_constants.h"
@@ -61,6 +64,10 @@ E2ETestBase = class extends AccessibilityTestBase {
       crosapi::BrowserManager::Get()->NewTab();
       ASSERT_TRUE(crosapi::BrowserManager::Get()->IsRunning());
     }
+    // For ChromeVoxBackgroundTest.NewWindowWebSpeech:
+    // chrome.runtime.openOptionsPage opens a SWA when Lacros is enabled.
+    ash::SystemWebAppManager::GetForTest(browser()->profile())
+      ->InstallSystemAppsForTesting();
       `);
   }
 
@@ -316,6 +323,31 @@ E2ETestBase = class extends AccessibilityTestBase {
         });
       }
     }));
+  }
+
+  /**
+   * Gets the desktop from the automation API and launches new tabs with
+   * the given url, returns when load complete has fired on each document.
+   * @param {Array<string>} urls HTML snippets to open in the URLs.
+   * @return {!Promise}
+   */
+  async runWithLoadedTabs(urls) {
+    console.assert(urls.length !== 0);
+    const hasLacrosChromePath = await new Promise(
+        r => chrome.commandLinePrivate.hasSwitch('lacros-chrome-path', r));
+    if (!hasLacrosChromePath) {
+      for (const url of urls) {
+        await this.runWithLoadedTree(url);
+      }
+      return;
+    }
+    await this.runWithLoadedTree(urls[0]);
+    for (let i = 1; i < urls.length; i++) {
+      // Open a new tab with ctrl+t.
+      EventGenerator.sendKeyPress(KeyCode.T, {ctrl: true});
+      // Open the URL in the new tab.
+      await this.runWithLoadedTree(urls[i]);
+    }
   }
 
   /**

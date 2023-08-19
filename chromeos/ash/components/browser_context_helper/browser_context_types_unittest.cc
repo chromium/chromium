@@ -24,6 +24,9 @@ TEST(BrowserContextTypeTest, Test) {
   auto lock_screen_browser_context =
       std::make_unique<content::TestBrowserContext>(
           base::FilePath(kLockScreenBrowserContextBaseName));
+  auto shimless_rma_app_browser_context =
+      std::make_unique<content::TestBrowserContext>(
+          base::FilePath(kShimlessRmaAppBrowserContextBaseName));
   auto user_browser_context = std::make_unique<content::TestBrowserContext>(
       base::FilePath("test-user"));
 
@@ -31,6 +34,7 @@ TEST(BrowserContextTypeTest, Test) {
   EXPECT_TRUE(IsSigninBrowserContext(signin_browser_context.get()));
   EXPECT_FALSE(IsSigninBrowserContext(lock_screen_app_browser_context.get()));
   EXPECT_FALSE(IsSigninBrowserContext(lock_screen_browser_context.get()));
+  EXPECT_FALSE(IsSigninBrowserContext(shimless_rma_app_browser_context.get()));
   EXPECT_FALSE(IsSigninBrowserContext(user_browser_context.get()));
 
   EXPECT_FALSE(IsLockScreenAppBrowserContext(nullptr));
@@ -39,6 +43,8 @@ TEST(BrowserContextTypeTest, Test) {
       IsLockScreenAppBrowserContext(lock_screen_app_browser_context.get()));
   EXPECT_FALSE(
       IsLockScreenAppBrowserContext(lock_screen_browser_context.get()));
+  EXPECT_FALSE(
+      IsLockScreenAppBrowserContext(shimless_rma_app_browser_context.get()));
   EXPECT_FALSE(IsLockScreenAppBrowserContext(user_browser_context.get()));
 
   EXPECT_FALSE(IsLockScreenBrowserContext(nullptr));
@@ -46,12 +52,25 @@ TEST(BrowserContextTypeTest, Test) {
   EXPECT_FALSE(
       IsLockScreenBrowserContext(lock_screen_app_browser_context.get()));
   EXPECT_TRUE(IsLockScreenBrowserContext(lock_screen_browser_context.get()));
+  EXPECT_FALSE(
+      IsLockScreenBrowserContext(shimless_rma_app_browser_context.get()));
   EXPECT_FALSE(IsLockScreenBrowserContext(user_browser_context.get()));
+
+  EXPECT_FALSE(IsShimlessRmaAppBrowserContext(nullptr));
+  EXPECT_FALSE(IsShimlessRmaAppBrowserContext(signin_browser_context.get()));
+  EXPECT_FALSE(
+      IsShimlessRmaAppBrowserContext(lock_screen_app_browser_context.get()));
+  EXPECT_FALSE(
+      IsShimlessRmaAppBrowserContext(lock_screen_browser_context.get()));
+  EXPECT_TRUE(
+      IsShimlessRmaAppBrowserContext(shimless_rma_app_browser_context.get()));
+  EXPECT_FALSE(IsShimlessRmaAppBrowserContext(user_browser_context.get()));
 
   EXPECT_FALSE(IsUserBrowserContext(nullptr));
   EXPECT_FALSE(IsUserBrowserContext(signin_browser_context.get()));
   EXPECT_FALSE(IsUserBrowserContext(lock_screen_app_browser_context.get()));
   EXPECT_FALSE(IsUserBrowserContext(lock_screen_browser_context.get()));
+  EXPECT_FALSE(IsUserBrowserContext(shimless_rma_app_browser_context.get()));
   EXPECT_TRUE(IsUserBrowserContext(user_browser_context.get()));
 
   EXPECT_FALSE(IsUserBrowserContextBaseName(
@@ -60,6 +79,8 @@ TEST(BrowserContextTypeTest, Test) {
       lock_screen_app_browser_context->GetPath().BaseName()));
   EXPECT_FALSE(IsUserBrowserContextBaseName(
       lock_screen_browser_context->GetPath().BaseName()));
+  EXPECT_FALSE(IsUserBrowserContextBaseName(
+      shimless_rma_app_browser_context->GetPath().BaseName()));
   EXPECT_TRUE(
       IsUserBrowserContextBaseName(user_browser_context->GetPath().BaseName()));
 }

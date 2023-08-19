@@ -24,9 +24,9 @@ class COMPONENT_EXPORT(UI_BASE) DialogModelMenuModelAdapter final
   // DialogModelHost:
   void Close() override;
   void OnFieldAdded(DialogModelField* field) override;
+  void OnFieldChanged(DialogModelField* field) override;
 
   // MenuModel:
-  bool HasIcons() const override;
   size_t GetItemCount() const override;
   ItemType GetTypeAt(size_t index) const override;
   ui::MenuSeparatorType GetSeparatorTypeAt(size_t index) const override;

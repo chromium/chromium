@@ -72,39 +72,38 @@ class OfferNotificationBubbleViewsInteractiveUiTest
   }
 
   void ShowBubbleForCardLinkedOfferAndVerify() {
-    NavigateTo(chrome::kChromeUINewTabPageURL);
+    NavigateTo(GURL(chrome::kChromeUINewTabPageURL));
     // Set the initial origin that the bubble will be displayed on.
-    SetUpCardLinkedOfferDataWithDomains(
-        {GURL("https://www.merchantsite1.com/"),
-         GURL("https://www.merchantsite2.com/")});
+    SetUpCardLinkedOfferDataWithDomains({GetUrl("www.merchantsite1.com", "/"),
+                                         GetUrl("www.merchantsite2.com", "/")});
     ResetEventWaiterForSequence({DialogEvent::BUBBLE_SHOWN});
-    NavigateTo("https://www.merchantsite1.com/first");
+    NavigateToAndWaitForForm(GetUrl("www.merchantsite1.com", "/first"));
     ASSERT_TRUE(WaitForObservedEvent());
     EXPECT_TRUE(IsIconVisible());
     EXPECT_TRUE(GetOfferNotificationBubbleViews());
   }
 
   void ShowBubbleForFreeListingCouponOfferAndVerify() {
-    NavigateTo(chrome::kChromeUINewTabPageURL);
+    NavigateTo(GURL(chrome::kChromeUINewTabPageURL));
     // Set the initial origin that the bubble will be displayed on.
     SetUpFreeListingCouponOfferDataWithDomains(
-        {GURL("https://www.merchantsite1.com/"),
-         GURL("https://www.merchantsite2.com/")});
+        {GetUrl("www.merchantsite1.com", "/"),
+         GetUrl("www.merchantsite2.com", "/")});
     ResetEventWaiterForSequence({DialogEvent::BUBBLE_SHOWN});
-    NavigateTo("https://www.merchantsite1.com/first");
+    NavigateToAndWaitForForm(GetUrl("www.merchantsite1.com", "/first"));
     ASSERT_TRUE(WaitForObservedEvent());
     EXPECT_TRUE(IsIconVisible());
     EXPECT_TRUE(GetOfferNotificationBubbleViews());
   }
 
   void ShowBubbleForGPayPromoCodeOfferAndVerify() {
-    NavigateTo(chrome::kChromeUINewTabPageURL);
+    NavigateTo(GURL(chrome::kChromeUINewTabPageURL));
     // Set the initial origin that the bubble will be displayed on.
     SetUpGPayPromoCodeOfferDataWithDomains(
-        {GURL("https://www.merchantsite1.com/"),
-         GURL("https://www.merchantsite2.com/")});
+        {GetUrl("www.merchantsite1.com", "/"),
+         GetUrl("www.merchantsite2.com", "/")});
     ResetEventWaiterForSequence({DialogEvent::BUBBLE_SHOWN});
-    NavigateTo("https://www.merchantsite1.com/first");
+    NavigateToAndWaitForForm(GetUrl("www.merchantsite1.com", "/first"));
     ASSERT_TRUE(WaitForObservedEvent());
     EXPECT_TRUE(IsIconVisible());
     EXPECT_TRUE(GetOfferNotificationBubbleViews());
@@ -175,46 +174,64 @@ INSTANTIATE_TEST_SUITE_P(
 #endif
 IN_PROC_BROWSER_TEST_P(OfferNotificationBubbleViewsInteractiveUiTest,
                        MAYBE_Navigation) {
+  GURL::Replacements replace_scheme;
+  replace_scheme.SetSchemeStr("http");
+
   static const struct {
-    std::string url_navigated_to;
+    GURL url_navigated_to;
     bool bubble_should_be_visible;
   } test_cases[] = {
       // Different page on same domain keeps bubble.
-      {"https://www.merchantsite1.com/second/", true},
+      {GetUrl("www.merchantsite1.com", "/second/"), true},
       // Different domain not in offer's list dismisses bubble.
-      {"https://www.about.com/", false},
+      {GetUrl("www.about.com", "/"), false},
       // Subdomain not in offer's list dismisses bubble.
-      {"https://support.merchantsite1.com/first/", false},
+      {GetUrl("support.merchantsite1.com", "/first/"), false},
       // http vs. https mismatch dismisses bubble.
-      {"http://www.merchantsite1.com/first/", false},
+      {GetUrl("www.merchantsite1.com", "/first/")
+           .ReplaceComponents(replace_scheme),
+       false},
       // Different domain in the offer's list keeps bubble.
-      {"https://www.merchantsite2.com/first/", true},
+      {GetUrl("www.merchantsite2.com", "/first/"), true},
   };
 
   // Set the initial origin that the bubble will be displayed on.
   SetUpOfferDataWithDomains(test_offer_type_,
-                            {GURL("https://www.merchantsite1.com/"),
-                             GURL("https://www.merchantsite2.com/")});
+                            {GetUrl("www.merchantsite1.com", "/"),
+                             GetUrl("www.merchantsite2.com", "/")});
 
   for (const auto& test_case : test_cases) {
+    SCOPED_TRACE(base::StrCat(
+        {test_case.url_navigated_to.spec(), ", bubble should be=",
+         test_case.bubble_should_be_visible ? "visible" : "invisible"}));
     ClearNotificationActiveDomainsForTesting();
-    NavigateTo(chrome::kChromeUINewTabPageURL);
+    NavigateTo(GURL(chrome::kChromeUINewTabPageURL));
 
     ResetEventWaiterForSequence({DialogEvent::BUBBLE_SHOWN});
-    NavigateTo("https://www.merchantsite1.com/first");
+    NavigateToAndWaitForForm(GetUrl("www.merchantsite1.com", "/first"));
     ASSERT_TRUE(WaitForObservedEvent());
 
     // Bubble should be visible.
     ASSERT_TRUE(IsIconVisible());
     ASSERT_TRUE(GetOfferNotificationBubbleViews());
 
+    auto navigate = [&]() {
+      // The test only spins up an HTTPS server, so there's no form to wait for
+      // if it's a HTTP address.
+      if (test_case.url_navigated_to.SchemeIs("https")) {
+        NavigateToAndWaitForForm(test_case.url_navigated_to);
+      } else {
+        NavigateTo(test_case.url_navigated_to);
+      }
+    };
+
     // Navigate to a different url, and verify bubble/icon visibility.
     if (test_case.bubble_should_be_visible) {
-      NavigateTo(test_case.url_navigated_to);
+      navigate();
     } else {
       views::test::WidgetDestroyedWaiter destroyed_waiter(
           GetOfferNotificationBubbleViews()->GetWidget());
-      NavigateTo(test_case.url_navigated_to);
+      navigate();
       destroyed_waiter.Wait();
     }
 
@@ -240,15 +257,15 @@ IN_PROC_BROWSER_TEST_P(OfferNotificationBubbleViewsInteractiveUiTest,
 IN_PROC_BROWSER_TEST_P(OfferNotificationBubbleViewsInteractiveUiTest,
                        CrossTabTracking) {
   SetUpOfferDataWithDomains(test_offer_type_,
-                            {GURL("https://www.merchantsite1.com/"),
-                             GURL("https://www.merchantsite2.com/")});
+                            {GetUrl("www.merchantsite1.com", "/"),
+                             GetUrl("www.merchantsite2.com", "/")});
 
   // Makes sure the foreground tab is a blank site.
-  NavigateTo("about:blank");
+  NavigateTo(GURL("about:blank"));
 
   // Creates first background tab.
   ui_test_utils::NavigateToURLWithDisposition(
-      browser(), GURL("https://www.merchantsite1.com/"),
+      browser(), GetUrl("www.merchantsite1.com", "/"),
       WindowOpenDisposition::NEW_BACKGROUND_TAB,
       ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
   OfferNotificationBubbleControllerImpl* controller =
@@ -260,7 +277,7 @@ IN_PROC_BROWSER_TEST_P(OfferNotificationBubbleViewsInteractiveUiTest,
 
   // Creates another merchant website in a second background tab.
   ui_test_utils::NavigateToURLWithDisposition(
-      browser(), GURL("https://www.merchantsite2.com/"),
+      browser(), GetUrl("www.merchantsite2.com", "/"),
       WindowOpenDisposition::NEW_BACKGROUND_TAB,
       ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
   controller = static_cast<OfferNotificationBubbleControllerImpl*>(
@@ -313,12 +330,12 @@ IN_PROC_BROWSER_TEST_P(OfferNotificationBubbleViewsInteractiveUiTest,
   CloseBubbleWithReason(views::Widget::ClosedReason::kAcceptButtonClicked);
 
   // Navigates to another valid domain will not reshow the bubble.
-  NavigateTo("https://www.merchantsite1.com/second");
+  NavigateToAndWaitForForm(GetUrl("www.merchantsite1.com", "/second"));
   EXPECT_FALSE(GetOfferNotificationBubbleViews());
   EXPECT_TRUE(IsIconVisible());
 
   // Navigates to an invalid domain will dismiss the icon.
-  NavigateTo("https://www.about.com/");
+  NavigateToAndWaitForForm(GetUrl("www.about.com", "/"));
   EXPECT_FALSE(GetOfferNotificationBubbleViews());
   EXPECT_FALSE(IsIconVisible());
 }
@@ -613,14 +630,14 @@ IN_PROC_BROWSER_TEST_P(
   test_clock_.Advance(kAutofillBubbleSurviveNavigationTime);
 
   // Navigates to another valid domain will not reshow the bubble.
-  NavigateTo("https://www.merchantsite1.com/second");
+  NavigateToAndWaitForForm(GetUrl("www.merchantsite1.com", "/second"));
   EXPECT_FALSE(GetOfferNotificationBubbleViews());
   EXPECT_TRUE(IsIconVisible());
   histogram_tester.ExpectBucketCount(
       "Autofill.PageLoadsWithOfferIconShowing.FreeListingCouponOffer", true, 2);
 
   // Navigates to an invalid domain will dismiss the icon.
-  NavigateTo("https://www.about.com/");
+  NavigateToAndWaitForForm(GetUrl("www.about.com", "/"));
   EXPECT_FALSE(GetOfferNotificationBubbleViews());
   EXPECT_FALSE(IsIconVisible());
   histogram_tester.ExpectBucketCount(

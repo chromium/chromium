@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "chrome/browser/ash/crosapi/wallpaper_ash.h"
+
 #include <memory>
 
 #include "base/memory/ptr_util.h"
@@ -19,6 +20,7 @@
 #include "chrome/test/base/testing_profile_manager.h"
 #include "chromeos/ash/components/login/login_state/login_state.h"
 #include "chromeos/crosapi/mojom/wallpaper.mojom.h"
+#include "components/crash/core/common/crash_key.h"
 #include "components/user_manager/scoped_user_manager.h"
 #include "components/user_manager/user_manager.h"
 #include "components/user_manager/user_names.h"
@@ -75,9 +77,12 @@ class WallpaperAshTest : public testing::Test {
         WallpaperControllerClientImpl>(
         std::make_unique<wallpaper_handlers::TestWallpaperFetcherDelegate>());
     wallpaper_controller_client_->InitForTesting(&test_wallpaper_controller_);
+
+    crash_reporter::InitializeCrashKeysForTesting();
   }
 
   void TearDown() override {
+    crash_reporter::ResetCrashKeysForTesting();
     ash::LoginState::Shutdown();
     wallpaper_controller_client_.reset();
   }
@@ -87,53 +92,14 @@ class WallpaperAshTest : public testing::Test {
   content::BrowserTaskEnvironment task_environment_;
   WallpaperAsh wallpaper_ash_;
   data_decoder::test::InProcessDataDecoder data_decoder_;
-  const raw_ptr<ash::FakeChromeUserManager, ExperimentalAsh> user_manager_;
+  const raw_ptr<ash::FakeChromeUserManager, DanglingUntriaged | ExperimentalAsh>
+      user_manager_;
   user_manager::ScopedUserManager user_manager_enabler_;
-  raw_ptr<TestingProfile, ExperimentalAsh> testing_profile_;
+  raw_ptr<TestingProfile, DanglingUntriaged | ExperimentalAsh> testing_profile_;
   TestingProfileManager testing_profile_manager_;
   TestWallpaperController test_wallpaper_controller_;
   std::unique_ptr<WallpaperControllerClientImpl> wallpaper_controller_client_;
 };
-
-// TODO(b/258819982): Remove in M115.
-TEST_F(WallpaperAshTest, SetWallpaperDeprecated) {
-  crosapi::mojom::WallpaperSettingsPtr settings =
-      crosapi::mojom::WallpaperSettings::New();
-  settings->data = CreateJpeg();
-  test_wallpaper_controller_.SetCurrentUser(user_manager::StubAccountId());
-
-  base::RunLoop loop;
-  wallpaper_ash_.SetWallpaperDeprecated(
-      std::move(settings), "extension_id", "extension_name",
-      base::BindLambdaForTesting(
-          [&loop](const std::vector<uint8_t>& thumbnail_data) {
-            ASSERT_FALSE(thumbnail_data.empty());
-            loop.Quit();
-          }));
-  loop.Run();
-
-  ASSERT_EQ(1, test_wallpaper_controller_.get_third_party_wallpaper_count());
-}
-
-// TODO(b/258819982): Remove in M115.
-TEST_F(WallpaperAshTest, SetWallpaperDeprecated_InvalidWallpaper) {
-  crosapi::mojom::WallpaperSettingsPtr settings =
-      crosapi::mojom::WallpaperSettings::New();
-  test_wallpaper_controller_.SetCurrentUser(user_manager::StubAccountId());
-  // Created invalid data by not adding a wallpaper image to the settings data.
-
-  base::RunLoop loop;
-  wallpaper_ash_.SetWallpaperDeprecated(
-      std::move(settings), "extension_id", "extension_name",
-      base::BindLambdaForTesting(
-          [&loop](const std::vector<uint8_t>& thumbnail_data) {
-            ASSERT_TRUE(thumbnail_data.empty());
-            loop.Quit();
-          }));
-  loop.Run();
-
-  ASSERT_EQ(0, test_wallpaper_controller_.get_third_party_wallpaper_count());
-}
 
 TEST_F(WallpaperAshTest, SetWallpaper) {
   crosapi::mojom::WallpaperSettingsPtr settings =
@@ -196,4 +162,58 @@ TEST_F(WallpaperAshTest, SetWallpaper_InvalidUser) {
 
   ASSERT_EQ(0, test_wallpaper_controller_.get_third_party_wallpaper_count());
 }
+
+TEST_F(WallpaperAshTest, SetWallpaper_CrashKeys_OnSuccess) {
+  test_wallpaper_controller_.SetCurrentUser(user_manager::StubAccountId());
+
+  // Create valid settings.
+  crosapi::mojom::WallpaperSettingsPtr settings =
+      crosapi::mojom::WallpaperSettings::New();
+  settings->data = CreateJpeg();
+
+  // Invoke SetWallpaper(). It will respond with success.
+  base::RunLoop loop;
+  wallpaper_ash_.SetWallpaper(
+      std::move(settings), "extension_id", "extension_name",
+      base::BindLambdaForTesting(
+          [&loop](const crosapi::mojom::SetWallpaperResultPtr result) {
+            ASSERT_FALSE(result->is_error_message());
+            loop.Quit();
+          }));
+
+  // Crash key is set when function starts running.
+  using crash_reporter::GetCrashKeyValue;
+  EXPECT_EQ(GetCrashKeyValue("extension-function-caller-1"), "extension_id");
+
+  // Crash key is cleared after function completes.
+  loop.Run();
+  EXPECT_EQ(GetCrashKeyValue("extension-function-caller-1"), "");
+}
+
+TEST_F(WallpaperAshTest, SetWallpaper_CrashKeys_OnError) {
+  test_wallpaper_controller_.SetCurrentUser(user_manager::StubAccountId());
+
+  // Create invalid data by not adding a wallpaper image to the settings data.
+  crosapi::mojom::WallpaperSettingsPtr settings =
+      crosapi::mojom::WallpaperSettings::New();
+
+  // Invoke SetWallpaper(). It will respond with an error.
+  base::RunLoop loop;
+  wallpaper_ash_.SetWallpaper(
+      std::move(settings), "extension_id", "extension_name",
+      base::BindLambdaForTesting(
+          [&loop](const crosapi::mojom::SetWallpaperResultPtr result) {
+            ASSERT_TRUE(result->is_error_message());
+            loop.Quit();
+          }));
+
+  // Crash key is set when function starts running.
+  using crash_reporter::GetCrashKeyValue;
+  EXPECT_EQ(GetCrashKeyValue("extension-function-caller-1"), "extension_id");
+
+  // Crash key is cleared after function completes.
+  loop.Run();
+  EXPECT_EQ(GetCrashKeyValue("extension-function-caller-1"), "");
+}
+
 }  // namespace crosapi

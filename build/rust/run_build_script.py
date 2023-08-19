@@ -145,7 +145,8 @@ def main():
                           env=env,
                           cwd=args.src_dir,
                           encoding='utf8',
-                          capture_output=True)
+                          stdout=subprocess.PIPE,
+                          stderr=subprocess.PIPE)
 
     if proc.stderr.rstrip():
       print(proc.stderr.rstrip(), file=sys.stderr)

@@ -2,6 +2,11 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+declare_args() {
+  # Enable V8 to produce hints regarding which functions to compile eagerly.
+  produce_v8_compile_hints = !is_android
+}
+
 # The database file produced by
 # "//third_party/blink/renderer/bindings:web_idl_database".
 web_idl_database_filepath =
@@ -24,12 +29,6 @@ blink_core_sources_bindings =
                     "core/v8/callback_promise_adapter.h",
                     "core/v8/capture_source_location.cc",
                     "core/v8/capture_source_location.h",
-                    "core/v8/custom/v8_dev_tools_host_custom.cc",
-                    "core/v8/custom/v8_html_all_collection_custom.cc",
-                    "core/v8/custom/v8_html_plugin_element_custom.cc",
-                    "core/v8/custom/v8_promise_rejection_event_custom.cc",
-                    "core/v8/custom/v8_window_custom.cc",
-                    "core/v8/custom/v8_xml_http_request_custom.cc",
                     "core/v8/dictionary.cc",
                     "core/v8/dictionary.h",
                     "core/v8/dictionary_helper_for_core.cc",
@@ -99,6 +98,8 @@ blink_core_sources_bindings =
                     "core/v8/script_regexp.cc",
                     "core/v8/script_regexp.h",
                     "core/v8/script_source_location_type.h",
+                    "core/v8/script_state_impl.cc",
+                    "core/v8/script_state_impl.h",
                     "core/v8/script_streamer.cc",
                     "core/v8/script_streamer.h",
                     "core/v8/script_value.cc",
@@ -135,8 +136,10 @@ blink_core_sources_bindings =
                     "core/v8/v8_custom_element_constructor_hash.h",
                     "core/v8/v8_code_cache.cc",
                     "core/v8/v8_code_cache.h",
-                    "core/v8/v8_compile_hints.cc",
-                    "core/v8/v8_compile_hints.h",
+                    "core/v8/v8_compile_hints_hashing.cc",
+                    "core/v8/v8_compile_hints_hashing.h",
+                    "core/v8/v8_compile_hints_producer.cc",
+                    "core/v8/v8_compile_hints_producer.h",
                     "core/v8/v8_context_snapshot.cc",
                     "core/v8/v8_context_snapshot.h",
                     "core/v8/v8_ctype_traits.h",
@@ -180,11 +183,6 @@ blink_core_sources_bindings =
                     "core/v8/world_safe_v8_reference.h",
                   ],
                   "abspath")
-
-declare_args() {
-  # Enable V8 to produce hints regarding which functions to compile eagerly.
-  enable_v8_compile_hints = !is_android
-}
 
 # Source files to be part of
 # "//third_party/blink/renderer/modules:modules".

@@ -78,8 +78,9 @@ class HistogramSignalHandler {
 
   // Tracks the histogram names we are currently listening to along with their
   // corresponding observers.
+  using HistogramSignal = std::pair<std::string, proto::SignalType>;
   std::map<
-      std::string,
+      HistogramSignal,
       std::unique_ptr<base::StatisticsRecorder::ScopedHistogramSampleObserver>>
       histogram_observers_;
 

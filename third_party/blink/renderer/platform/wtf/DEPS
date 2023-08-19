@@ -2,14 +2,14 @@ include_rules = [
     # To only allow a subset of base/ in Blink, we explicitly list all
     # directories and files instead of writing 'base/'.
     "+base/apple/bridging.h",
+    "+base/apple/scoped_cftyperef.h",
     "+base/atomic_ref_count.h",
     "+base/auto_reset.h",
     "+base/bits.h",
     "+base/compiler_specific.h",
     "+base/functional/bind.h",
     "+base/logging.h",
-    "+base/mac/foundation_util.h",
-    "+base/mac/scoped_cftyperef.h",
+    "+base/apple/foundation_util.h",
     "+base/memory/ptr_util.h",
     "+base/memory/ref_counted.h",
     "+base/memory/weak_ptr.h",

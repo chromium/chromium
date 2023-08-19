@@ -7,6 +7,7 @@
 
 #include "ui/base/resource/resource_bundle.h"
 #include "ui/color/color_id.h"
+#include "ui/gfx/platform_font.h"
 #include "ui/views/views_export.h"
 
 namespace gfx {
@@ -26,6 +27,9 @@ enum TextContext {
 
   // Text that appears on a views::Badge. Always 9pt.
   CONTEXT_BADGE = VIEWS_TEXT_CONTEXT_START,
+
+  // Text that appears over the slightly shaded background of a bubble footer.
+  CONTEXT_BUBBLE_FOOTER,
 
   // Text that appears on a button control. Usually 12pt. This includes controls
   // with button-like behavior, such as Checkbox.
@@ -114,6 +118,40 @@ enum TextStyle {
 
   // Active tab in a tabbed pane.
   STYLE_TAB_ACTIVE,
+
+  // CR2023 typography tokens.
+  // These styles override the style specified by TextContext.
+  STYLE_OVERRIDE_TYPOGRAPHY_START,
+  STYLE_HEADLINE_1,
+  STYLE_HEADLINE_2,
+  STYLE_HEADLINE_3,
+  STYLE_HEADLINE_4,
+  STYLE_HEADLINE_5,
+  STYLE_BODY_1,
+  STYLE_BODY_1_EMPHASIS,
+  STYLE_BODY_1_MEDIUM = STYLE_BODY_1_EMPHASIS,
+  STYLE_BODY_1_BOLD,
+  STYLE_BODY_2,
+  STYLE_BODY_2_EMPHASIS,
+  STYLE_BODY_2_MEDIUM = STYLE_BODY_2_EMPHASIS,
+  STYLE_BODY_2_BOLD,
+  STYLE_BODY_3,
+  STYLE_BODY_3_EMPHASIS,
+  STYLE_BODY_3_MEDIUM = STYLE_BODY_3_EMPHASIS,
+  STYLE_BODY_3_BOLD,
+  STYLE_BODY_4,
+  STYLE_BODY_4_EMPHASIS,
+  STYLE_BODY_4_MEDIUM = STYLE_BODY_4_EMPHASIS,
+  STYLE_BODY_4_BOLD,
+  STYLE_BODY_5,
+  STYLE_BODY_5_EMPHASIS,
+  STYLE_BODY_5_MEDIUM = STYLE_BODY_5_EMPHASIS,
+  STYLE_BODY_5_BOLD,
+  STYLE_CAPTION,
+  STYLE_CAPTION_EMPHASIS,
+  STYLE_CAPTION_MEDIUM = STYLE_CAPTION_EMPHASIS,
+  STYLE_CAPTION_BOLD,
+  STYLE_OVERRIDE_TYPOGRAPHY_END,
 
   // Embedders must start TextStyle enum values from here.
   VIEWS_TEXT_STYLE_END

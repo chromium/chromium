@@ -286,7 +286,7 @@ bool FakeUserManager::IsLoggedInAsUserWithGaiaAccount() const {
   return true;
 }
 
-bool FakeUserManager::IsLoggedInAsPublicAccount() const {
+bool FakeUserManager::IsLoggedInAsManagedGuestSession() const {
   const User* active_user = GetActiveUser();
   return active_user && active_user->GetType() == USER_TYPE_PUBLIC_ACCOUNT;
 }
@@ -340,13 +340,14 @@ bool FakeUserManager::IsUserAllowed(const User& user) const {
   return true;
 }
 
-bool FakeUserManager::IsEphemeralAccountId(const AccountId& account_id) const {
-  return GetEphemeralModeConfig().IsAccountIdIncluded(account_id);
-}
-
 void FakeUserManager::SetEphemeralModeConfig(
     EphemeralModeConfig ephemeral_mode_config) {
   UserManagerBase::SetEphemeralModeConfig(std::move(ephemeral_mode_config));
+}
+
+bool FakeUserManager::IsEphemeralAccountIdByPolicy(
+    const AccountId& account_id) const {
+  return GetEphemeralModeConfig().IsAccountIdIncluded(account_id);
 }
 
 const std::string& FakeUserManager::GetApplicationLocale() const {
@@ -360,24 +361,6 @@ bool FakeUserManager::IsEnterpriseManaged() const {
 
 bool FakeUserManager::IsDeviceLocalAccountMarkedForRemoval(
     const AccountId& account_id) const {
-  return false;
-}
-
-void FakeUserManager::UpdateLoginState(const User* active_user,
-                                       const User* primary_user,
-                                       bool is_current_user_owner) const {}
-
-bool FakeUserManager::GetPlatformKnownUserId(const std::string& user_email,
-                                             AccountId* out_account_id) const {
-  if (user_email == kStubUserEmail) {
-    *out_account_id = StubAccountId();
-    return true;
-  }
-
-  if (user_email == kGuestUserName) {
-    *out_account_id = GuestAccountId();
-    return true;
-  }
   return false;
 }
 

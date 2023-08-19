@@ -38,7 +38,7 @@ class InputDeviceSettingsProvider
       override;
   void ObserveMouseSettings(
       mojo::PendingRemote<mojom::MouseSettingsObserver> observer) override;
-  void RestoreDefaultKeyboardModifierRemappings(uint32_t device_id) override;
+  void RestoreDefaultKeyboardRemappings(uint32_t device_id) override;
   void SetKeyboardSettings(uint32_t device_id,
                            ::ash::mojom::KeyboardSettingsPtr settings) override;
   void SetPointingStickSettings(

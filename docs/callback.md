@@ -17,7 +17,7 @@ different MessageLoops.
 
 A callback with no unbound input parameters (`base::OnceCallback<void()>`) is
 called a `base::OnceClosure`. The same pattern exists for
-base::RepeatingCallback, as base::RepeatingClosure. Note that this is NOT the
+base::RepeatingCallback, as `base::RepeatingClosure`. Note that this is NOT the
 same as what other languages refer to as a closure -- it does not retain a
 reference to its enclosing environment.
 
@@ -304,7 +304,7 @@ void Collect(base::OnceCallback<void(Data)> collect_and_merge) {
 
 CollectAndMerge() {
   const auto collect_and_merge =
-      base::BarrierCallback<Image>(sources_.size(), base::BindOnce(&Merge));
+      base::BarrierCallback<Data>(sources_.size(), base::BindOnce(&Merge));
   for (const auto& source : sources_) {
     // Copy the barrier callback for asynchronous data collection.
     // Once all sources have called `collect_and_merge` with their respective

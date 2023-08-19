@@ -1,4 +1,0 @@
-Tests the Timeline API instrumentation of a gc event
-
-SUCCESS: Found expected GC event record
-

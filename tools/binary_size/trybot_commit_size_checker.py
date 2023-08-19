@@ -199,41 +199,46 @@ def _CreateUncompressedPakSizeDeltas(symbols):
   ]
 
 
-def _ExtractForTestingSymbolsFromSingleMapping(mapping_path):
-  with open(mapping_path) as f:
-    proguard_mapping_lines = f.readlines()
-    current_class_orig = None
-    for line in proguard_mapping_lines:
-      if line.isspace() or '#' in line:
-        continue
-      if not line.startswith(' '):
-        match = _PROGUARD_CLASS_MAPPING_RE.search(line)
-        if match is None:
-          raise Exception('Malformed class mapping')
-        current_class_orig = match.group('original_name')
-        continue
-      assert current_class_orig is not None
-      line = line.strip()
-      match = _PROGUARD_METHOD_MAPPING_RE.search(line)
-      if (match is not None
-          and match.group('original_method_name').find('ForTest') > -1):
-        method_symbol = '{}#{}'.format(
-            match.group('original_method_class') or current_class_orig,
-            match.group('original_method_name'))
-        yield method_symbol
+def _IsForTestSymbol(value):
+  return 'ForTest' in value or 'FOR_TEST' in value
 
-      match = _PROGUARD_FIELD_MAPPING_RE.search(line)
-      if (match is not None
-          and match.group('original_name').find('ForTest') > -1):
-        field_symbol = '{}#{}'.format(current_class_orig,
-                                      match.group('original_name'))
-        yield field_symbol
+
+def IterForTestingSymbolsFromMapping(contents):
+  current_class_orig = None
+  for line in contents.splitlines(keepends=True):
+    if line.isspace() or '#' in line:
+      continue
+    if not line.startswith(' '):
+      match = _PROGUARD_CLASS_MAPPING_RE.search(line)
+      if match is None:
+        raise Exception('Malformed class mapping')
+      current_class_orig = match.group('original_name')
+      if _IsForTestSymbol(current_class_orig):
+        yield current_class_orig
+      continue
+
+    assert current_class_orig is not None
+    line = line.strip()
+    match = _PROGUARD_METHOD_MAPPING_RE.search(line)
+    if match:
+      method_name = match.group('original_method_name')
+      class_name = match.group('original_method_class') or current_class_orig
+      if _IsForTestSymbol(method_name) or _IsForTestSymbol(class_name):
+        yield f'{class_name}#{method_name}'
+      continue
+
+    match = _PROGUARD_FIELD_MAPPING_RE.search(line)
+    if match:
+      field_name = match.group('original_name')
+      if _IsForTestSymbol(field_name) or _IsForTestSymbol(current_class_orig):
+        yield f'{current_class_orig}#{field_name}'
 
 
 def _ExtractForTestingSymbolsFromMappings(mapping_paths):
   symbols = set()
   for mapping_path in mapping_paths:
-    symbols.update(_ExtractForTestingSymbolsFromSingleMapping(mapping_path))
+    with open(mapping_path) as f:
+      symbols.update(IterForTestingSymbolsFromMapping(f.read()))
   return symbols
 
 

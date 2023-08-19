@@ -518,7 +518,8 @@ DOMException* AuthenticatorStatusToDOMException(
   return nullptr;
 }
 
-// Abort an ongoing FederatedCredential login() operation.
+// Abort an ongoing IdentityCredential request. This will only be called before
+// the request finishes due to `scoped_abort_state`.
 void AbortIdentityCredentialRequest(ScriptState* script_state) {
   if (!script_state->ContextIsValid())
     return;
@@ -533,7 +534,8 @@ void OnRequestToken(ScriptPromiseResolver* resolver,
                     const CredentialRequestOptions* options,
                     RequestTokenStatus status,
                     const absl::optional<KURL>& selected_idp_config_url,
-                    const WTF::String& token) {
+                    const WTF::String& token,
+                    bool is_auto_reauthn) {
   switch (status) {
     case RequestTokenStatus::kErrorTooManyRequests: {
       resolver->Reject(MakeGarbageCollected<DOMException>(
@@ -543,8 +545,16 @@ void OnRequestToken(ScriptPromiseResolver* resolver,
       return;
     }
     case RequestTokenStatus::kErrorCanceled: {
-      resolver->Reject(MakeGarbageCollected<DOMException>(
-          DOMExceptionCode::kAbortError, "The request has been aborted."));
+      AbortSignal* signal =
+          scoped_abort_state ? scoped_abort_state->Signal() : nullptr;
+      if (signal && signal->aborted()) {
+        auto* script_state = resolver->GetScriptState();
+        ScriptState::Scope script_state_scope(script_state);
+        resolver->Reject(signal->reason(script_state));
+      } else {
+        resolver->Reject(MakeGarbageCollected<DOMException>(
+            DOMExceptionCode::kAbortError, "The request has been aborted."));
+      }
       return;
     }
     case RequestTokenStatus::kError: {
@@ -553,7 +563,8 @@ void OnRequestToken(ScriptPromiseResolver* resolver,
       return;
     }
     case RequestTokenStatus::kSuccess: {
-      IdentityCredential* credential = IdentityCredential::Create(token);
+      IdentityCredential* credential =
+          IdentityCredential::Create(token, is_auto_reauthn);
       resolver->Resolve(credential);
       return;
     }
@@ -1004,6 +1015,17 @@ bool IsPaymentExtensionValid(const CredentialCreationOptions* options,
   return true;
 }
 
+const char* validatePRFInputs(
+    const blink::AuthenticationExtensionsPRFValues& values) {
+  constexpr size_t kMaxInputSize = 256;
+  if (DOMArrayPiece(values.first()).ByteLength() > kMaxInputSize ||
+      (values.hasSecond() &&
+       DOMArrayPiece(values.second()).ByteLength() > kMaxInputSize)) {
+    return "'prf' extension contains excessively large input";
+  }
+  return nullptr;
+}
+
 const char* validateGetPublicKeyCredentialPRFExtension(
     const AuthenticationExtensionsPRFInputs& prf,
     const HeapVector<Member<PublicKeyCredentialDescriptor>>&
@@ -1019,6 +1041,13 @@ const char* validateGetPublicKeyCredentialPRFExtension(
     return std::lexicographical_compare(a.begin(), a.end(), b.begin(), b.end());
   };
   std::sort(cred_ids.begin(), cred_ids.end(), compare);
+
+  if (prf.hasEval()) {
+    const char* error = validatePRFInputs(*prf.eval());
+    if (error != nullptr) {
+      return error;
+    }
+  }
 
   if (prf.hasEvalByCredential()) {
     for (const auto& pair : prf.evalByCredential()) {
@@ -1037,6 +1066,10 @@ const char* validateGetPublicKeyCredentialPRFExtension(
                               compare)) {
         return "'prf' extension contains 'evalByCredential' key that doesn't "
                "match any in allowedCredentials";
+      }
+      const char* error = validatePRFInputs(*pair.second);
+      if (error != nullptr) {
+        return error;
       }
     }
   }
@@ -1130,8 +1163,7 @@ ScriptPromise CredentialsContainer::get(ScriptState* script_state,
     required_origin_type = RequiredOriginType::
         kSecureAndPermittedByWebOTPAssertionPermissionsPolicy;
   } else if (options->hasIdentity() && options->identity()->hasProviders() &&
-             options->identity()->providers().size() == 1 &&
-             RuntimeEnabledFeatures::FedCmIframeSupportEnabled(context)) {
+             options->identity()->providers().size() == 1) {
     required_origin_type =
         RequiredOriginType::kSecureAndPermittedByFederatedPermissionsPolicy;
   }
@@ -1339,11 +1371,6 @@ ScriptPromise CredentialsContainer::get(ScriptState* script_state,
     // TODO(https://crbug.com/1441075): Ideally the logic should be handled in
     // CredentialManager via Get. However currently it's only for password
     // management and we should refactor the logic to make it generic.
-    if (!RuntimeEnabledFeatures::FedCmEnabled(context)) {
-      resolver->Reject(MakeGarbageCollected<DOMException>(
-          DOMExceptionCode::kNotSupportedError, "FedCM is not supported"));
-      return promise;
-    }
 
     ContentSecurityPolicy* policy =
         resolver->GetExecutionContext()
@@ -1369,11 +1396,16 @@ ScriptPromise CredentialsContainer::get(ScriptState* script_state,
       UseCounter::Count(resolver->GetExecutionContext(),
                         WebFeature::kFedCmIframe);
     }
+    // Track when websites use FedCM with the IDP sign-in status opt-in
+    if (RuntimeEnabledFeatures::FedCmIdpSigninStatusEnabled(
+            resolver->GetExecutionContext())) {
+      UseCounter::Count(resolver->GetExecutionContext(),
+                        WebFeature::kFedCmIdpSigninStatusApi);
+    }
     int provider_index = 0;
     Vector<mojom::blink::IdentityProviderPtr> identity_provider_ptrs;
     for (const auto& provider : options->identity()->providers()) {
-      if (RuntimeEnabledFeatures::FedCmLoginHintEnabled() &&
-          provider->hasLoginHint()) {
+      if (provider->hasLoginHint()) {
         UseCounter::Count(resolver->GetExecutionContext(),
                           WebFeature::kFedCmLoginHint);
       }
@@ -1415,28 +1447,14 @@ ScriptPromise CredentialsContainer::get(ScriptState* script_state,
       identity_provider_ptrs.push_back(std::move(identity_provider));
     }
 
-    std::unique_ptr<ScopedAbortState> scoped_abort_state = nullptr;
-    if (auto* signal = options->getSignalOr(nullptr)) {
-      if (signal->aborted()) {
-        resolver->Reject(MakeGarbageCollected<DOMException>(
-            DOMExceptionCode::kAbortError, "Request has been aborted."));
-        return promise;
-      }
-      auto* handle = signal->AddAlgorithm(WTF::BindOnce(
-          &AbortIdentityCredentialRequest, WrapPersistent(script_state)));
-      scoped_abort_state = std::make_unique<ScopedAbortState>(signal, handle);
-    }
-
     mojom::blink::RpContext rp_context = mojom::blink::RpContext::kSignIn;
-    if (RuntimeEnabledFeatures::FedCmRpContextEnabled()) {
-      if (options->identity()->hasContext()) {
-        UseCounter::Count(resolver->GetExecutionContext(),
-                          WebFeature::kFedCmRpContext);
-        rp_context = mojo::ConvertTo<mojom::blink::RpContext>(
-            options->identity()->context());
-      }
-      base::UmaHistogramEnumeration("Blink.FedCm.RpContext", rp_context);
+    if (options->identity()->hasContext()) {
+      UseCounter::Count(resolver->GetExecutionContext(),
+                        WebFeature::kFedCmRpContext);
+      rp_context = mojo::ConvertTo<mojom::blink::RpContext>(
+          options->identity()->context());
     }
+    base::UmaHistogramEnumeration("Blink.FedCm.RpContext", rp_context);
 
     CredentialMediationRequirement mediation_requirement;
     if (options->mediation() == "conditional") {
@@ -1457,6 +1475,27 @@ ScriptPromise CredentialsContainer::get(ScriptState* script_state,
     if (!web_identity_requester_) {
       web_identity_requester_ = MakeGarbageCollected<WebIdentityRequester>(
           WrapPersistent(context), mediation_requirement);
+    }
+
+    std::unique_ptr<ScopedAbortState> scoped_abort_state;
+    if (auto* signal = options->getSignalOr(nullptr)) {
+      if (signal->aborted()) {
+        resolver->Reject(MakeGarbageCollected<DOMException>(
+            DOMExceptionCode::kAbortError, "Request has been aborted."));
+        return promise;
+      }
+
+      auto callback =
+          !RuntimeEnabledFeatures::FedCmMultipleIdentityProvidersEnabled(
+              context)
+              ? WTF::BindOnce(&AbortIdentityCredentialRequest,
+                              WrapPersistent(script_state))
+              : WTF::BindOnce(&WebIdentityRequester::AbortRequest,
+                              WrapPersistent(web_identity_requester_.Get()),
+                              WrapPersistent(script_state));
+
+      auto* handle = signal->AddAlgorithm(std::move(callback));
+      scoped_abort_state = std::make_unique<ScopedAbortState>(signal, handle);
     }
 
     if (!RuntimeEnabledFeatures::FedCmMultipleIdentityProvidersEnabled(

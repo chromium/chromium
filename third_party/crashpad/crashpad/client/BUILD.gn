@@ -89,6 +89,10 @@ crashpad_static_library("client") {
     cflags = [ "/wd4201" ]  # nonstandard extension used : nameless struct/union
   }
 
+  if (crashpad_is_apple) {
+    deps += [ "../build:apple_enable_arc" ]
+  }
+
   if (crashpad_is_ios) {
     deps += [
       "../handler:common",
@@ -127,7 +131,7 @@ static_library("common") {
     "simple_string_dictionary.h",
   ]
 
-  if (crashpad_is_mac || crashpad_is_ios) {
+  if (crashpad_is_apple) {
     sources += [ "crash_report_database_mac.mm" ]
   }
   if (crashpad_is_win) {
@@ -147,17 +151,19 @@ static_library("common") {
   ]
   deps = [ "../util" ]
   configs += [ "../build:flock_always_supported_defines" ]
+
+  if (crashpad_is_apple) {
+    deps += [ "../build:apple_enable_arc" ]
+  }
 }
 
 crashpad_executable("ring_buffer_annotation_load_test") {
   testonly = true
-  sources = [
-    "ring_buffer_annotation_load_test_main.cc",
-  ]
+  sources = [ "ring_buffer_annotation_load_test_main.cc" ]
   deps = [
     ":client",
-    "../tools:tool_support",
     "$mini_chromium_source_parent:base",
+    "../tools:tool_support",
   ]
 }
 
@@ -210,6 +216,10 @@ source_set("client_test") {
 
   if (!crashpad_is_ios && !crashpad_is_fuchsia) {
     data_deps = [ "../handler:crashpad_handler" ]
+  }
+
+  if (crashpad_is_apple) {
+    deps += [ "../build:apple_enable_arc" ]
   }
 
   if (crashpad_is_win) {

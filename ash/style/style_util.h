@@ -8,8 +8,13 @@
 #include "ash/ash_export.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/color/color_id.h"
+#include "ui/compositor_extra/shadow.h"
 #include "ui/gfx/color_palette.h"
 #include "ui/gfx/geometry/insets.h"
+
+namespace ui {
+class ColorProvider;
+}  // namespace ui
 
 namespace views {
 class Background;
@@ -94,6 +99,10 @@ class ASH_EXPORT StyleUtil {
       views::View* view,
       absl::optional<int> halo_inset = absl::nullopt);
 
+  static void InstallRoundedCornerHighlightPathGenerator(
+      views::View* view,
+      const gfx::RoundedCornersF& corners);
+
   // Creates a background that fills the canvas with a fully rounded rect whose
   // rounded corner radius is set to the half of the minimum dimension of view's
   // local bounds. The background is painted in the color specified by the
@@ -103,6 +112,10 @@ class ASH_EXPORT StyleUtil {
 
   static std::unique_ptr<views::corewm::TooltipViewAura>
   CreateAshStyleTooltipView();
+
+  // Creates a shadow colors map with given color provider.
+  static ui::Shadow::ElevationToColorsMap CreateShadowElevationToColorsMap(
+      const ui::ColorProvider* color_provider);
 
  private:
   StyleUtil() = default;

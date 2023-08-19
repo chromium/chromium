@@ -14,20 +14,18 @@
 #include <unordered_map>
 #include <vector>
 
+#include "base/containers/id_map.h"
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
-#include "base/memory/ref_counted.h"
+#include "base/memory/scoped_refptr.h"
 #include "components/services/filesystem/public/mojom/types.mojom.h"
 #include "content/common/content_export.h"
-#include "content/public/browser/browser_message_filter.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"
 #include "mojo/public/cpp/bindings/unique_receiver_set.h"
 #include "storage/browser/file_system/file_system_context.h"
 #include "storage/browser/file_system/file_system_operation_runner.h"
-#include "storage/browser/file_system/file_system_url.h"
-#include "storage/common/file_system/file_system_types.h"
 #include "third_party/blink/public/common/storage_key/storage_key.h"
 #include "third_party/blink/public/mojom/filesystem/file_system.mojom.h"
 
@@ -39,13 +37,11 @@ class FilePath;
 
 namespace storage {
 class FileSystemURL;
-class FileSystemOperationRunner;
 struct FileSystemInfo;
 class ShareableFileReference;
 }  // namespace storage
 
 namespace content {
-class ChildProcessSecurityPolicyImpl;
 class ChromeBlobStorageContext;
 
 // All methods for this class are expected to be called on the IO thread,
@@ -104,14 +100,14 @@ class CONTENT_EXPORT FileSystemManagerImpl
   void ReadDirectorySync(const GURL& path,
                          ReadDirectorySyncCallback callback) override;
   void Write(const GURL& file_path,
-             const std::string& blob_uuid,
+             mojo::PendingRemote<blink::mojom::Blob> blob,
              int64_t position,
              mojo::PendingReceiver<blink::mojom::FileSystemCancellableOperation>
                  op_receiver,
              mojo::PendingRemote<blink::mojom::FileSystemOperationListener>
                  pending_listener) override;
   void WriteSync(const GURL& file_path,
-                 const std::string& blob_uuid,
+                 mojo::PendingRemote<blink::mojom::Blob> blob,
                  int64_t position,
                  WriteSyncCallback callback) override;
   void Truncate(
@@ -182,19 +178,22 @@ class CONTENT_EXPORT FileSystemManagerImpl
   void ContinueReadDirectorySync(const storage::FileSystemURL& url,
                                  ReadDirectorySyncCallback callback,
                                  bool security_check_success);
+  void ResolveBlobForWrite(
+      mojo::PendingRemote<blink::mojom::Blob> blob,
+      base::OnceCallback<void(std::unique_ptr<storage::BlobDataHandle>)>
+          callback,
+      bool security_check_success);
   void ContinueWrite(
       const storage::FileSystemURL& url,
-      const std::string& blob_uuid,
       int64_t position,
       mojo::PendingReceiver<blink::mojom::FileSystemCancellableOperation>
           op_receiver,
       mojo::Remote<blink::mojom::FileSystemOperationListener> listener,
-      bool security_check_success);
+      std::unique_ptr<storage::BlobDataHandle> blob);
   void ContinueWriteSync(const storage::FileSystemURL& url,
-                         const std::string& blob_uuid,
                          int64_t position,
                          WriteSyncCallback callback,
-                         bool security_check_success);
+                         std::unique_ptr<storage::BlobDataHandle> blob);
   void ContinueTruncate(
       const storage::FileSystemURL& url,
       int64_t length,
@@ -299,8 +298,6 @@ class CONTENT_EXPORT FileSystemManagerImpl
 
   const int process_id_;
   const scoped_refptr<storage::FileSystemContext> context_;
-  const raw_ptr<ChildProcessSecurityPolicyImpl, DanglingUntriaged>
-      security_policy_;
   const scoped_refptr<ChromeBlobStorageContext> blob_storage_context_;
   std::unique_ptr<storage::FileSystemOperationRunner> operation_runner_;
 

@@ -183,7 +183,7 @@ ScreenOrientationController* ScreenOrientation::Controller() {
 }
 
 void ScreenOrientation::Trace(Visitor* visitor) const {
-  EventTargetWithInlineData::Trace(visitor);
+  EventTarget::Trace(visitor);
   ExecutionContextClient::Trace(visitor);
 }
 

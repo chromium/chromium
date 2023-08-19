@@ -55,8 +55,10 @@ class ManifestDemuxerTest : public ::testing::Test {
     auto mock_engine = std::make_unique<MockEngine>();
     mock_engine_ = mock_engine.get();
     manifest_demuxer_ = std::make_unique<ManifestDemuxer>(
-        task_environment_.GetMainThreadTaskRunner(), std::move(mock_engine),
-        media_log_.get());
+        task_environment_.GetMainThreadTaskRunner(),
+        base::BindRepeating(&ManifestDemuxerTest::DemuxerRequestsSeek,
+                            base::Unretained(this)),
+        std::move(mock_engine), media_log_.get());
   }
 
   ~ManifestDemuxerTest() override {
@@ -66,6 +68,7 @@ class ManifestDemuxerTest : public ::testing::Test {
     base::RunLoop().RunUntilIdle();
   }
 
+  MOCK_METHOD(void, DemuxerRequestsSeek, (base::TimeDelta), ());
   MOCK_METHOD(void, MockInitComplete, (PipelineStatus status), ());
   MOCK_METHOD(void, MockSeekComplete, (PipelineStatus status), ());
 

@@ -14,6 +14,7 @@
 #include "chrome/browser/ash/login/test/oobe_base_test.h"
 #include "chrome/browser/ash/login/test/oobe_screen_exit_waiter.h"
 #include "chrome/browser/ash/login/test/oobe_screen_waiter.h"
+#include "chrome/browser/ash/login/test/oobe_screens_utils.h"
 #include "chrome/browser/ash/login/wizard_controller.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/ui/webui/ash/login/choobe_screen_handler.h"
@@ -68,6 +69,7 @@ class ChoobeScreenTest : public OobeBaseTest {
     LoginDisplayHost::default_host()->GetWizardContext()->is_branded_build =
         true;
 
+    test::SetFakeTouchpadDevice();
     original_callback_ = choobe_screen->get_exit_callback_for_testing();
     choobe_screen->set_exit_callback_for_testing(base::BindRepeating(
         &ChoobeScreenTest::HandleScreenExit, base::Unretained(this)));

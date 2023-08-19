@@ -75,7 +75,7 @@ public abstract class FeedbackCollector<T> implements Runnable {
                     identityManager.getPrimaryAccountInfo(ConsentLevel.SIGNIN));
         }
 
-        // Sanity check in case a source is added to the wrong list.
+        // Validation check in case a source is added to the wrong list.
         for (FeedbackSource source : mSynchronousSources) {
             assert !(source instanceof AsyncFeedbackSource);
         }
@@ -92,7 +92,7 @@ public abstract class FeedbackCollector<T> implements Runnable {
         // 4. Kick off a task to timeout the async sources.
         ThreadUtils.postOnUiThreadDelayed(this, TIMEOUT_MS);
 
-        // 5. Sanity check in case everything finished or we have no sources.
+        // 5. Validation check in case everything finished or we have no sources.
         checkIfReady();
     }
 

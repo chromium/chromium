@@ -56,9 +56,9 @@ class GameProvider : public SearchProvider {
       std::u16string query,
       std::vector<std::pair<const apps::Result*, double>> matches);
 
-  const raw_ptr<Profile, ExperimentalAsh> profile_;
+  const raw_ptr<Profile, DanglingUntriaged | ExperimentalAsh> profile_;
   const raw_ptr<AppListControllerDelegate, ExperimentalAsh> list_controller_;
-  const raw_ptr<apps::AppDiscoveryService, ExperimentalAsh>
+  const raw_ptr<apps::AppDiscoveryService, DanglingUntriaged | ExperimentalAsh>
       app_discovery_service_;
 
   GameIndex game_index_;

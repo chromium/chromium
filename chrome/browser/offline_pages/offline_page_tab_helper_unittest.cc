@@ -11,7 +11,6 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "build/build_config.h"
-#include "chrome/browser/offline_pages/prefetch/prefetch_service_factory.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/back_forward_cache/back_forward_cache_disable.h"
 #include "components/keyed_service/core/simple_key_map.h"

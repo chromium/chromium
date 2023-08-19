@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "chrome/browser/ui/views/borealis/borealis_splash_screen_view.h"
+#include <memory>
 
 #include "ash/public/cpp/window_properties.h"
 #include "base/files/file_util.h"
@@ -15,28 +16,30 @@
 #include "chrome/browser/ash/borealis/borealis_window_manager.h"
 #include "chrome/browser/ui/browser_dialogs.h"
 #include "chrome/browser/ui/color/chrome_color_id.h"
+#include "chrome/browser/ui/views/borealis/borealis_beta_badge.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "chrome/grit/chrome_unscaled_resources.h"
 #include "chrome/grit/generated_resources.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/color/color_provider_key.h"
+#include "ui/gfx/geometry/insets.h"
 #include "ui/views/controls/image_view.h"
 #include "ui/views/controls/message_box_view.h"
 #include "ui/views/controls/throbber.h"
 #include "ui/views/layout/box_layout.h"
-
-namespace {
-
-borealis::BorealisSplashScreenView* g_delegate = nullptr;
-
-const SkColor background_color = SkColorSetARGB(255, 53, 51, 50);
-const SkColor text_color = SkColorSetARGB(255, 209, 208, 207);
-const int icon_width = 252;
-const int icon_height = 77;
-
-}  // namespace
+#include "ui/views/layout/layout_provider.h"
+#include "ui/views/style/typography.h"
 
 namespace borealis {
+
+namespace {
+borealis::BorealisSplashScreenView* g_delegate = nullptr;
+
+constexpr int kCornerRadius = 24;
+constexpr int kOuterPadding = 48;
+constexpr int kInnerPadding = 40;
+}  // namespace
 
 void ShowBorealisSplashScreenView(Profile* profile) {
   return BorealisSplashScreenView::Show(profile);
@@ -55,8 +58,14 @@ void BorealisSplashScreenView::Show(Profile* profile) {
     g_delegate = delegate.get();
     views::DialogDelegate::CreateDialogWidget(std::move(delegate), nullptr,
                                               nullptr);
+    g_delegate->UpdateColors();
     g_delegate->GetWidget()->GetNativeWindow()->SetProperty(
-        ash::kShelfIDKey, ash::ShelfID(borealis::kInstallerAppId).Serialize());
+        ash::kShelfIDKey, ash::ShelfID(borealis::kClientAppId).Serialize());
+    // Override the widget to be dark-mode permanently.
+    // This UI has custom colors to match Steam's and those are close to ash's
+    // dark mode.
+    g_delegate->GetWidget()->SetColorModeOverride(
+        {ui::ColorProviderKey::ColorMode::kDark});
   }
   g_delegate->GetWidget()->Show();
 }
@@ -68,57 +77,61 @@ BorealisSplashScreenView::BorealisSplashScreenView(Profile* profile)
       ->WindowManager()
       .AddObserver(this);
 
+  SetTitle(IDS_BOREALIS_SPLASHSCREEN_TITLE);
   SetShowCloseButton(false);
   SetHasWindowSizeControls(false);
   SetButtons(ui::DIALOG_BUTTON_NONE);
-  views::LayoutProvider* provider = views::LayoutProvider::Get();
-
-  std::unique_ptr<views::BoxLayout> layout = std::make_unique<views::BoxLayout>(
-      views::BoxLayout::Orientation::kVertical,
-      gfx::Insets().set_top(150).set_bottom(100), 100);
-  layout->set_cross_axis_alignment(
-      views::BoxLayout::CrossAxisAlignment::kCenter);
-  SetLayoutManager(std::move(layout));
-
+  set_margins(gfx::Insets(kOuterPadding));
+  set_corner_radius(kCornerRadius);
   set_use_custom_frame(true);
   SetBackground(
       views::CreateThemedSolidBackground(kColorBorealisSplashScreenBackground));
 
-  set_corner_radius(15);
-  set_fixed_width(600);
+  views::LayoutProvider* provider = views::LayoutProvider::Get();
 
-  std::unique_ptr<views::ImageView> image_view =
-      std::make_unique<views::ImageView>();
-  constexpr gfx::Size kRegularImageSize(icon_width, icon_height);
-  image_view->SetImage(
-      ui::ResourceBundle::GetSharedInstance().GetImageSkiaNamed(
-          IDR_LOGO_BOREALIS_SPLASH));
-  image_view->SetImageSize(kRegularImageSize);
+  std::unique_ptr<views::BoxLayout> layout = std::make_unique<views::BoxLayout>(
+      views::BoxLayout::Orientation::kVertical);
+  layout->set_cross_axis_alignment(
+      views::BoxLayout::CrossAxisAlignment::kCenter);
+  layout->set_between_child_spacing(kInnerPadding);
+  SetLayoutManager(std::move(layout));
 
-  std::unique_ptr<views::BoxLayoutView> image_container =
-      std::make_unique<views::BoxLayoutView>();
-  image_container->AddChildView(std::move(image_view));
-  AddChildViewAt(std::move(image_container), 0);
-
-  views::BoxLayoutView* text_view =
+  views::BoxLayoutView* upper_container =
       AddChildView(std::make_unique<views::BoxLayoutView>());
-  text_view->SetOrientation(views::BoxLayout::Orientation::kHorizontal);
-  text_view->SetBetweenChildSpacing(
-      provider->GetDistanceMetric(views::DISTANCE_RELATED_CONTROL_HORIZONTAL));
-  text_view->SetCrossAxisAlignment(
+  upper_container->SetOrientation(views::BoxLayout::Orientation::kHorizontal);
+  upper_container->SetBetweenChildSpacing(
+      provider->GetDistanceMetric(views::DISTANCE_RELATED_LABEL_HORIZONTAL));
+  upper_container->SetCrossAxisAlignment(
       views::BoxLayout::CrossAxisAlignment::kCenter);
 
-  std::unique_ptr<views::Throbber> spinner =
-      std::make_unique<views::Throbber>();
-  spinner->Start();
-  text_view->AddChildView(std::move(spinner));
+  title_label_ = upper_container->AddChildView(std::make_unique<views::Label>(
+      l10n_util::GetStringUTF16(IDS_BOREALIS_SPLASHSCREEN_TITLE),
+      // TODO(b/284389804): Use TypographyToken::kCrosDisplay7
+      views::Label::CustomFont{gfx::FontList({"Google Sans", "Roboto"},
+                                             gfx::Font::NORMAL, 18,
+                                             gfx::Font::Weight::MEDIUM)}));
 
-  starting_label_ = text_view->AddChildView(std::make_unique<views::Label>(
-      l10n_util::GetStringUTF16(IDS_BOREALIS_SPLASHSCREEN_MESSAGE),
-      views::Label::CustomFont{gfx::FontList({"Google Sans"}, gfx::Font::NORMAL,
-                                             18, gfx::Font::Weight::NORMAL)}));
-  starting_label_->SetEnabledColor(text_color);
-  starting_label_->SetBackgroundColor(background_color);
+  upper_container->AddChildView(std::make_unique<views::BorealisBetaBadge>());
+
+  views::BoxLayoutView* lower_container =
+      AddChildView(std::make_unique<views::BoxLayoutView>());
+  lower_container->SetOrientation(views::BoxLayout::Orientation::kHorizontal);
+  lower_container->SetBetweenChildSpacing(
+      provider->GetDistanceMetric(views::DISTANCE_RELATED_CONTROL_HORIZONTAL));
+  lower_container->SetCrossAxisAlignment(
+      views::BoxLayout::CrossAxisAlignment::kCenter);
+
+  views::Throbber* spinner =
+      lower_container->AddChildView(std::make_unique<views::Throbber>());
+  spinner->Start();
+
+  starting_label_ =
+      lower_container->AddChildView(std::make_unique<views::Label>(
+          l10n_util::GetStringUTF16(IDS_BOREALIS_SPLASHSCREEN_MESSAGE),
+          // TODO(b/284389804): Use TypographyToken::kCrosBody1
+          views::Label::CustomFont{gfx::FontList({"Google Sans", "Roboto"},
+                                                 gfx::Font::NORMAL, 14,
+                                                 gfx::Font::Weight::NORMAL)}));
 }
 
 void BorealisSplashScreenView::OnSessionStarted() {
@@ -134,10 +147,11 @@ void BorealisSplashScreenView::OnWindowManagerDeleted(
 }
 
 BorealisSplashScreenView::~BorealisSplashScreenView() {
-  if (profile_)
+  if (profile_) {
     borealis::BorealisService::GetForProfile(profile_)
         ->WindowManager()
         .RemoveObserver(this);
+  }
   g_delegate = nullptr;
 }
 
@@ -147,13 +161,24 @@ BorealisSplashScreenView* BorealisSplashScreenView::GetActiveViewForTesting() {
 
 void BorealisSplashScreenView::OnThemeChanged() {
   views::DialogDelegateView::OnThemeChanged();
+  // The splash screen defies dark/light mode, so re-update the colour after
+  // views changes it.
+  UpdateColors();
+}
 
+bool BorealisSplashScreenView::ShouldShowWindowTitle() const {
+  return false;
+}
+
+void BorealisSplashScreenView::UpdateColors() {
   const auto* const color_provider = GetColorProvider();
   const SkColor background_color =
       color_provider->GetColor(kColorBorealisSplashScreenBackground);
   const SkColor foreground_color =
       color_provider->GetColor(kColorBorealisSplashScreenForeground);
   GetBubbleFrameView()->SetBackgroundColor(background_color);
+  title_label_->SetBackgroundColor(background_color);
+  title_label_->SetEnabledColor(foreground_color);
   starting_label_->SetBackgroundColor(background_color);
   starting_label_->SetEnabledColor(foreground_color);
 }

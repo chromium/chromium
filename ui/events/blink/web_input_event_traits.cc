@@ -14,7 +14,6 @@
 #include "third_party/blink/public/common/input/web_touch_event.h"
 
 using base::StringAppendF;
-using base::SStringPrintf;
 using blink::WebGestureEvent;
 using blink::WebInputEvent;
 using blink::WebKeyboardEvent;
@@ -57,15 +56,15 @@ void ApppendEventDetails(const WebMouseWheelEvent& event, std::string* result) {
 }
 
 void ApppendEventDetails(const WebGestureEvent& event, std::string* result) {
-  StringAppendF(result,
-                "{\n Pos: (%f, %f)\n GlobalPos: (%f, %f)\n SourceDevice: %d\n"
-                " RawData: (%f, %f, %f, %f)\n}",
-                event.PositionInWidget().x(), event.PositionInWidget().y(),
-                event.PositionInScreen().x(), event.PositionInScreen().y(),
-                event.SourceDevice(), event.data.scroll_update.delta_x,
-                event.data.scroll_update.delta_y,
-                event.data.scroll_update.velocity_x,
-                event.data.scroll_update.velocity_y);
+  StringAppendF(
+      result,
+      "{\n Pos: (%f, %f)\n GlobalPos: (%f, %f)\n SourceDevice: %d\n"
+      " RawData: (%f, %f, %f, %f)\n}",
+      event.PositionInWidget().x(), event.PositionInWidget().y(),
+      event.PositionInScreen().x(), event.PositionInScreen().y(),
+      static_cast<int>(event.SourceDevice()), event.data.scroll_update.delta_x,
+      event.data.scroll_update.delta_y, event.data.scroll_update.velocity_x,
+      event.data.scroll_update.velocity_y);
 }
 
 void ApppendTouchPointDetails(const WebTouchPoint& point, std::string* result) {
@@ -73,18 +72,19 @@ void ApppendTouchPointDetails(const WebTouchPoint& point, std::string* result) {
                 "  (ID: %d, State: %d, ScreenPos: (%f, %f), Pos: (%f, %f),"
                 " Radius: (%f, %f), Rot: %f, Force: %f,"
                 " Tilt: (%d, %d), Twist: %d, TangentialPressure: %f),\n",
-                point.id, point.state, point.PositionInScreen().x(),
-                point.PositionInScreen().y(), point.PositionInWidget().x(),
-                point.PositionInWidget().y(), point.radius_x, point.radius_y,
-                point.rotation_angle, point.force, point.tilt_x, point.tilt_y,
-                point.twist, point.tangential_pressure);
+                point.id, static_cast<int>(point.state),
+                point.PositionInScreen().x(), point.PositionInScreen().y(),
+                point.PositionInWidget().x(), point.PositionInWidget().y(),
+                point.radius_x, point.radius_y, point.rotation_angle,
+                point.force, point.tilt_x, point.tilt_y, point.twist,
+                point.tangential_pressure);
 }
 
 void ApppendEventDetails(const WebTouchEvent& event, std::string* result) {
   StringAppendF(result,
                 "{\n Touches: %u, DispatchType: %d, CausesScrolling: %d,"
                 " Hovering: %d, uniqueTouchEventId: %u\n[\n",
-                event.touches_length, event.dispatch_type,
+                event.touches_length, static_cast<int>(event.dispatch_type),
                 event.moved_beyond_slop_region, event.hovering,
                 event.unique_touch_event_id);
   for (unsigned i = 0; i < event.touches_length; ++i)
@@ -106,47 +106,37 @@ void ApppendEventDetails(const WebPointerEvent& event, std::string* result) {
       event.rotation_angle, event.tilt_x, event.tilt_y);
 }
 
-struct WebInputEventToString {
-  template <class EventType>
-  bool Execute(const WebInputEvent& event, std::string* result) const {
-    SStringPrintf(result, "%s (Time: %lf, Modifiers: %d)\n",
-                  WebInputEvent::GetName(event.GetType()),
-                  event.TimeStamp().since_origin().InSecondsF(),
-                  event.GetModifiers());
-    const EventType& typed_event = static_cast<const EventType&>(event);
-    ApppendEventDetails(typed_event, result);
-    return true;
-  }
-};
-
-template <typename Operator, typename ArgIn, typename ArgOut>
-bool Apply(Operator op,
-           WebInputEvent::Type type,
-           const ArgIn& arg_in,
-           ArgOut* arg_out) {
-  if (WebInputEvent::IsPointerEventType(type))
-    return op.template Execute<WebPointerEvent>(arg_in, arg_out);
-  else if (WebInputEvent::IsMouseEventType(type))
-    return op.template Execute<WebMouseEvent>(arg_in, arg_out);
-  else if (type == WebInputEvent::Type::kMouseWheel)
-    return op.template Execute<WebMouseWheelEvent>(arg_in, arg_out);
-  else if (WebInputEvent::IsKeyboardEventType(type))
-    return op.template Execute<WebKeyboardEvent>(arg_in, arg_out);
-  else if (WebInputEvent::IsTouchEventType(type))
-    return op.template Execute<WebTouchEvent>(arg_in, arg_out);
-  else if (WebInputEvent::IsGestureEventType(type))
-    return op.template Execute<WebGestureEvent>(arg_in, arg_out);
-
-  NOTREACHED() << "Unknown webkit event type " << type;
-  return false;
+template <typename EventType>
+std::string Execute(const WebInputEvent& event) {
+  std::string result = base::StringPrintf(
+      "%s (Time: %lf, Modifiers: %d)\n",
+      WebInputEvent::GetName(event.GetType()),
+      event.TimeStamp().since_origin().InSecondsF(), event.GetModifiers());
+  ApppendEventDetails(static_cast<const EventType&>(event), &result);
+  return result;
 }
 
 }  // namespace
 
 std::string WebInputEventTraits::ToString(const WebInputEvent& event) {
-  std::string result;
-  Apply(WebInputEventToString(), event.GetType(), event, &result);
-  return result;
+  const WebInputEvent::Type type = event.GetType();
+  if (WebInputEvent::IsPointerEventType(type)) {
+    return Execute<WebPointerEvent>(event);
+  }
+  if (WebInputEvent::IsMouseEventType(type)) {
+    return Execute<WebMouseEvent>(event);
+  }
+  if (type == WebInputEvent::Type::kMouseWheel) {
+    return Execute<WebMouseWheelEvent>(event);
+  }
+  if (WebInputEvent::IsKeyboardEventType(type)) {
+    return Execute<WebKeyboardEvent>(event);
+  }
+  if (WebInputEvent::IsTouchEventType(type)) {
+    return Execute<WebTouchEvent>(event);
+  }
+  CHECK(WebInputEvent::IsGestureEventType(type));
+  return Execute<WebGestureEvent>(event);
 }
 
 bool WebInputEventTraits::ShouldBlockEventStream(const WebInputEvent& event) {

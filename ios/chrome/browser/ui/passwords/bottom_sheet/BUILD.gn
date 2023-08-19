@@ -3,24 +3,20 @@
 # found in the LICENSE file.
 
 source_set("bottom_sheet") {
-  configs += [ "//build/config/compiler:enable_arc" ]
   sources = [
-    "password_suggestion_bottom_sheet_consumer.h",
     "password_suggestion_bottom_sheet_coordinator.h",
     "password_suggestion_bottom_sheet_coordinator.mm",
-    "password_suggestion_bottom_sheet_delegate.h",
+    "password_suggestion_bottom_sheet_coordinator_delegate.h",
     "password_suggestion_bottom_sheet_exit_reason.h",
-    "password_suggestion_bottom_sheet_handler.h",
     "password_suggestion_bottom_sheet_mediator.h",
     "password_suggestion_bottom_sheet_mediator.mm",
-    "password_suggestion_bottom_sheet_view_controller.h",
-    "password_suggestion_bottom_sheet_view_controller.mm",
   ]
   deps = [
+    ":bottom_sheet_ui",
     ":common",
-    ":constants",
-    "//components/autofill/ios/browser",
+    "//base",
     "//components/autofill/ios/form_util",
+    "//components/keyed_service/core",
     "//components/password_manager/core/browser",
     "//components/password_manager/ios",
     "//components/prefs",
@@ -28,36 +24,54 @@ source_set("bottom_sheet") {
     "//ios/chrome/browser/autofill",
     "//ios/chrome/browser/autofill/bottom_sheet",
     "//ios/chrome/browser/autofill/manual_fill",
-    "//ios/chrome/browser/browser_state",
     "//ios/chrome/browser/default_browser:utils",
     "//ios/chrome/browser/favicon",
-    "//ios/chrome/browser/passwords",
     "//ios/chrome/browser/passwords:password_controller_delegate",
-    "//ios/chrome/browser/passwords:passwords",
+    "//ios/chrome/browser/passwords:store_factory",
     "//ios/chrome/browser/shared/coordinator/chrome_coordinator",
     "//ios/chrome/browser/shared/model/browser",
     "//ios/chrome/browser/shared/model/browser_state",
     "//ios/chrome/browser/shared/model/prefs:pref_names",
     "//ios/chrome/browser/shared/model/web_state_list",
     "//ios/chrome/browser/shared/ui/symbols",
-    "//ios/chrome/browser/shared/ui/table_view",
+    "//ios/chrome/common/ui/favicon",
+    "//ios/chrome/common/ui/favicon:favicon_constants",
+    "//ios/chrome/common/ui/reauthentication",
+    "//ios/web/public",
+    "//ui/base",
+    "//url",
+  ]
+}
+
+source_set("bottom_sheet_ui") {
+  sources = [
+    "password_suggestion_bottom_sheet_consumer.h",
+    "password_suggestion_bottom_sheet_delegate.h",
+    "password_suggestion_bottom_sheet_handler.h",
+    "password_suggestion_bottom_sheet_view_controller.h",
+    "password_suggestion_bottom_sheet_view_controller.mm",
+  ]
+  deps = [
+    ":constants",
+    "//base",
+    "//components/autofill/ios/browser",
+    "//components/password_manager/core/browser",
+    "//components/password_manager/ios",
+    "//ios/chrome/app/strings",
+    "//ios/chrome/browser/favicon",
+    "//ios/chrome/browser/shared/ui/bottom_sheet",
+    "//ios/chrome/browser/shared/ui/symbols",
     "//ios/chrome/browser/shared/ui/table_view/cells",
-    "//ios/chrome/browser/shared/ui/util",
-    "//ios/chrome/browser/ui/settings/password:common",
     "//ios/chrome/browser/ui/settings/password:title_view",
     "//ios/chrome/common/ui/colors",
     "//ios/chrome/common/ui/confirmation_alert",
     "//ios/chrome/common/ui/favicon",
-    "//ios/chrome/common/ui/favicon:favicon_constants",
-    "//ios/chrome/common/ui/reauthentication",
     "//ios/chrome/common/ui/table_view:cells_constants",
-    "//ios/web/public",
-    "//ios/web/public/js_messaging",
+    "//ui/base",
   ]
 }
 
 source_set("common") {
-  configs += [ "//build/config/compiler:enable_arc" ]
   sources = [
     "scoped_password_suggestion_bottom_sheet_reauth_module_override.h",
     "scoped_password_suggestion_bottom_sheet_reauth_module_override.mm",
@@ -69,7 +83,6 @@ source_set("common") {
 }
 
 source_set("constants") {
-  configs += [ "//build/config/compiler:enable_arc" ]
   sources = [
     "password_suggestion_bottom_sheet_constants.h",
     "password_suggestion_bottom_sheet_constants.mm",
@@ -77,10 +90,7 @@ source_set("constants") {
 }
 
 source_set("eg2_tests") {
-  configs += [
-    "//build/config/compiler:enable_arc",
-    "//build/config/ios:xctest_config",
-  ]
+  configs += [ "//build/config/ios:xctest_config" ]
   testonly = true
   sources = [ "password_suggestion_bottom_sheet_egtest.mm" ]
   deps = [
@@ -91,6 +101,8 @@ source_set("eg2_tests") {
     "//ios/chrome/browser/passwords:eg_test_support+eg2",
     "//ios/chrome/browser/signin:fake_system_identity",
     "//ios/chrome/browser/ui/authentication:eg_test_support+eg2",
+    "//ios/chrome/browser/ui/settings/password:eg_test_support+eg2",
+    "//ios/chrome/browser/ui/settings/password:features",
     "//ios/chrome/browser/ui/settings/password:password_constants",
     "//ios/chrome/test/earl_grey:eg_test_support+eg2",
     "//ios/testing/earl_grey:eg_test_support+eg2",
@@ -102,10 +114,7 @@ source_set("eg2_tests") {
 }
 
 source_set("eg_app_support+eg2") {
-  configs += [
-    "//build/config/compiler:enable_arc",
-    "//build/config/ios:xctest_config",
-  ]
+  configs += [ "//build/config/ios:xctest_config" ]
   testonly = true
   sources = [
     "password_suggestion_bottom_sheet_app_interface.h",
@@ -123,10 +132,7 @@ source_set("eg_app_support+eg2") {
 }
 
 source_set("eg_test_support+eg2") {
-  configs += [
-    "//build/config/compiler:enable_arc",
-    "//build/config/ios:xctest_config",
-  ]
+  configs += [ "//build/config/ios:xctest_config" ]
   testonly = true
 
   sources = [
@@ -140,11 +146,11 @@ source_set("eg_test_support+eg2") {
 }
 
 source_set("unit_tests") {
-  configs += [ "//build/config/compiler:enable_arc" ]
   testonly = true
   sources = [ "password_suggestion_bottom_sheet_mediator_unittest.mm" ]
   deps = [
     ":bottom_sheet",
+    ":bottom_sheet_ui",
     "//components/autofill/ios/browser",
     "//components/autofill/ios/form_util",
     "//components/password_manager/core/browser:test_support",

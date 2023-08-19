@@ -41,18 +41,6 @@ std::string ToHistogramSuffix(SchedulerClientType client_type) {
   }
 }
 
-// Returns the string representing database type.
-std::string ToDbTypeString(DatabaseType type) {
-  switch (type) {
-    case DatabaseType::kImpressionDb:
-      return "ImpressionDb";
-    case DatabaseType::kNotificationDb:
-      return "NotificationDb";
-    case DatabaseType::kIconDb:
-      return "IconDb";
-  }
-}
-
 // Logs a histogram enumeration with client type suffix.
 template <typename T>
 void LogHistogramEnumWithSuffix(const std::string& name,
@@ -90,50 +78,10 @@ void LogUserAction(const UserActionData& action_data) {
   }
 }
 
-void LogBackgroundTaskEvent(BackgroundTaskEvent event) {
-  UMA_HISTOGRAM_ENUMERATION("Notifications.Scheduler.BackgroundTask.Event",
-                            event);
-
-  if (event == BackgroundTaskEvent::kStart) {
-    base::Time::Exploded explode;
-    base::Time::Now().LocalExplode(&explode);
-    UMA_HISTOGRAM_EXACT_LINEAR("Notifications.Scheduler.BackgroundTask.Start",
-                               explode.hour, 24);
-  }
-}
-
 void LogBackgroundTaskNotificationShown(int shown_count) {
   UMA_HISTOGRAM_CUSTOM_COUNTS(
       "Notifications.Scheduler.BackgroundTask.NotificationShown", shown_count,
       0, 10, 11);
-}
-
-void LogDbInit(DatabaseType type, bool success, int entry_count) {
-  std::string prefix("Notifications.Scheduler.");
-  prefix.append(ToDbTypeString(type));
-  std::string init_histogram_name = prefix;
-  init_histogram_name.append(".InitResult");
-  base::UmaHistogramBoolean(init_histogram_name, success);
-
-  std::string record_count_name = prefix;
-  record_count_name.append(".RecordCount");
-  base::UmaHistogramCounts100(record_count_name, entry_count);
-}
-
-void LogDbOperation(DatabaseType type, bool success) {
-  std::string name("Notifications.Scheduler.");
-  name.append(ToDbTypeString(type)).append(".OperationResult");
-  base::UmaHistogramBoolean(name, success);
-}
-
-void LogImpressionCount(int impression_count, SchedulerClientType type) {
-  std::string name("Notifications.Scheduler.Impression.Count.");
-  name.append(ToHistogramSuffix(type));
-  base::UmaHistogramCounts100(name, impression_count);
-}
-
-void LogImpressionEvent(ImpressionEvent event) {
-  UMA_HISTOGRAM_ENUMERATION("Notifications.Scheduler.Impression.Event", event);
 }
 
 void LogNotificationShow(const NotificationData& notification_data,
@@ -160,16 +108,6 @@ void LogNotificationLifeCycleEvent(NotificationLifeCycleEvent event,
                                    SchedulerClientType client_type) {
   LogHistogramEnumWithSuffix(
       "Notifications.Scheduler.NotificationLifeCycleEvent", event, client_type);
-}
-
-void LogPngIconConverterEncodeResult(bool success) {
-  UMA_HISTOGRAM_BOOLEAN("Notifications.Scheduler.PngIconConverter.EncodeResult",
-                        success);
-}
-
-void LogPngIconConverterDecodeResult(bool success) {
-  UMA_HISTOGRAM_BOOLEAN("Notifications.Scheduler.PngIconConverter.DecodeResult",
-                        success);
 }
 }  // namespace stats
 }  // namespace notifications

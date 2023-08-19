@@ -26,7 +26,7 @@ AppDiscoveryMetrics::AppDiscoveryMetrics(
     : profile_(profile), app_platform_metrics_(app_platform_metrics) {
   DCHECK(app_platform_metrics);
 
-  apps::InstanceRegistry::Observer::Observe(&instance_registry);
+  instance_registry_observation_.Observe(&instance_registry);
   app_platform_metrics_->AddObserver(this);
 }
 
@@ -134,7 +134,7 @@ void AppDiscoveryMetrics::OnInstanceUpdate(
 
 void AppDiscoveryMetrics::OnInstanceRegistryWillBeDestroyed(
     InstanceRegistry* cache) {
-  apps::InstanceRegistry::Observer::Observe(nullptr);
+  instance_registry_observation_.Reset();
 }
 
 bool AppDiscoveryMetrics::IsAppSyncEnabled() {

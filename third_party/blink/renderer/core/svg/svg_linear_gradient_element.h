@@ -54,7 +54,7 @@ class SVGLinearGradientElement final : public SVGGradientElement {
 
   SVGAnimatedPropertyBase* PropertyFromAttribute(
       const QualifiedName& attribute_name) const override;
-  void SynchronizeSVGAttribute(const QualifiedName& name) const override;
+  void SynchronizeAllSVGAttributes() const override;
 
   Member<SVGAnimatedLength> x1_;
   Member<SVGAnimatedLength> y1_;

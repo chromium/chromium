@@ -23,7 +23,6 @@ import org.chromium.components.browser_ui.site_settings.WebsitePermissionsFetche
 import org.chromium.components.browsing_data.DeleteBrowsingDataAction;
 import org.chromium.components.content_settings.ContentSettingsType;
 import org.chromium.components.embedder_support.util.Origin;
-import org.chromium.components.page_info.PageInfoDiscoverabilityMetrics.DiscoverabilityAction;
 import org.chromium.content_public.browser.BrowserContextHandle;
 
 import java.util.Collection;
@@ -54,8 +53,6 @@ public class PageInfoPermissionsController
     private int mHighlightedPermission;
     @ColorRes
     private int mHighlightColor;
-    private final PageInfoDiscoverabilityMetrics mDiscoverabilityMetrics =
-            new PageInfoDiscoverabilityMetrics();
 
     public PageInfoPermissionsController(PageInfoMainController mainController,
             PageInfoRowView view, PageInfoControllerDelegate delegate,
@@ -71,10 +68,6 @@ public class PageInfoPermissionsController
     }
 
     private void launchSubpage() {
-        if (mHighlightedPermission != ContentSettingsType.DEFAULT) {
-            mDiscoverabilityMetrics.recordDiscoverabilityAction(
-                    DiscoverabilityAction.PERMISSIONS_OPENED);
-        }
         mMainController.recordAction(PageInfoAction.PAGE_INFO_PERMISSION_DIALOG_OPENED);
         mMainController.launchSubpage(this);
     }
@@ -227,10 +220,6 @@ public class PageInfoPermissionsController
 
     @Override
     public void onPermissionChanged() {
-        if (mHighlightedPermission != ContentSettingsType.DEFAULT) {
-            mDiscoverabilityMetrics.recordDiscoverabilityAction(
-                    DiscoverabilityAction.PERMISSION_CHANGED);
-        }
         mMainController.recordAction(PageInfoAction.PAGE_INFO_CHANGED_PERMISSION);
         mDataIsStale = true;
     }

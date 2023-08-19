@@ -35,7 +35,7 @@ using url_formatter::top_domains::TopDomainStateGenerator;
 
 namespace {
 
-const char* kTop500Separator = "###END_TOP_500###";
+const char* kTopBucketSeparator = "###END_TOP_BUCKET###";
 
 // Print the command line help.
 void PrintHelp() {
@@ -55,7 +55,7 @@ std::unique_ptr<TopDomainEntry> MakeEntry(
     const std::string& hostname,
     const std::string& skeleton,
     url_formatter::SkeletonType skeleton_type,
-    bool is_top_500,
+    bool is_top_bucket,
     std::set<std::string>* all_skeletons) {
   auto entry = std::make_unique<TopDomainEntry>();
   // Another site has the same skeleton. This is low proability so stop now.
@@ -73,7 +73,7 @@ std::unique_ptr<TopDomainEntry> MakeEntry(
   const GURL domain(std::string("http://") + hostname);
   entry->top_domain = domain.host();
 
-  entry->is_top_500 = is_top_500;
+  entry->is_top_bucket = is_top_bucket;
   entry->skeleton_type = skeleton_type;
 
   CheckName(entry->skeleton);
@@ -126,14 +126,14 @@ int main(int argc, char* argv[]) {
   std::vector<std::string> lines = base::SplitString(
       input_text, "\n", base::TRIM_WHITESPACE, base::SPLIT_WANT_NONEMPTY);
 
-  bool is_top_500 = true;
+  bool is_top_bucket = true;
   TopDomainEntries entries;
   std::set<std::string> all_skeletons;
   for (std::string line : lines) {
     base::TrimWhitespaceASCII(line, base::TRIM_ALL, &line);
 
-    if (line == kTop500Separator) {
-      is_top_500 = false;
+    if (line == kTopBucketSeparator) {
+      is_top_bucket = false;
       continue;
     }
 
@@ -143,23 +143,23 @@ int main(int argc, char* argv[]) {
 
     std::vector<std::string> tokens = base::SplitString(
         line, ",", base::TRIM_WHITESPACE, base::SPLIT_WANT_NONEMPTY);
-    // Top 500 domains will have full skeletons as well as skeletons without
-    // label separators (e.g. '.' and '-').
-    if (is_top_500) {
+    // Domains in the top bucket will have full skeletons as well as skeletons
+    // without label separators (e.g. '.' and '-').
+    if (is_top_bucket) {
       CHECK_EQ(3u, tokens.size()) << "Invalid line: " << tokens[0];
 
       entries.push_back(MakeEntry(tokens[2], tokens[0],
                                   url_formatter::SkeletonType::kFull,
-                                  /*is_top_500=*/true, &all_skeletons));
+                                  /*is_top_bucket=*/true, &all_skeletons));
       entries.push_back(MakeEntry(
           tokens[2], tokens[1], url_formatter::SkeletonType::kSeparatorsRemoved,
-          /*is_top_500=*/true, &all_skeletons));
+          /*is_top_bucket=*/true, &all_skeletons));
     } else {
       CHECK_EQ(2u, tokens.size()) << "Invalid line: " << tokens[0];
 
       entries.push_back(MakeEntry(tokens[1], tokens[0],
                                   url_formatter::SkeletonType::kFull,
-                                  /*is_top_500=*/false, &all_skeletons));
+                                  /*is_top_bucket=*/false, &all_skeletons));
     }
   }
 

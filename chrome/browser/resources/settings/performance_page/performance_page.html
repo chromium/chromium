@@ -5,6 +5,25 @@
     padding: 0 var(--cr-section-padding);
   }
 
+  .badge {
+    align-items: center;
+    background: var(--google-grey-600);
+    border-radius: 4px;
+    color: white;
+    display: inline-flex;
+    font-size: 10px;
+    height: 15px;
+    margin-inline-start: 15px;
+    padding: 0 4px;
+  }
+
+  @media (prefers-color-scheme: dark) {
+    .badge {
+      background: var(--google-grey-500);
+      color: var(--google-grey-900);
+    }
+  }
+
   #enabledOnTimerButton::part(labelWrapper) {
     align-items: center;
     display: flex;
@@ -32,6 +51,10 @@
             label="$i18n{highEfficiencyModeHeuristicsLabel}"
             name="[[highEfficiencyModeStateEnum_.ENABLED]]"
             pref="[[prefs.performance_tuning.high_efficiency_mode.state]]">
+          <div class="badge"
+              hidden$="[[!showHighEfficiencyHeuristicModeRecommendedBadge_]]">
+            $i18n{highEfficiencyModeRecommendedBadge}
+          </div>
         </controlled-radio-button>
         <controlled-radio-button id="enabledOnTimerButton"
             label="$i18n{highEfficiencyModeOnTimerLabel}"
@@ -39,7 +62,7 @@
             pref="[[prefs.performance_tuning.high_efficiency_mode.state]]"
             exportparts="labelWrapper">
           <settings-dropdown-menu id="discardTimeDropdown"
-              label="$i18n{highEfficiencyModeOnTimerLabel}"
+              label="$i18n{highEfficiencyChooseDiscardTimeAriaLabel}"
               disabled="[[!isHighEfficiencyModeEnabledOnTimer_(
                   prefs.performance_tuning.high_efficiency_mode.state.value)]]"
               pref="{{prefs.performance_tuning.high_efficiency_mode.time_before_discard_in_minutes}}"

@@ -185,9 +185,9 @@ TEST_F(AttributionReportNetworkSenderTest,
                         .Build(),
                     SourceBuilder(base::Time::UnixEpoch())
                         .SetSourceEventId(100)
+                        .SetRandomizedResponseRate(0.2)
                         .BuildStored())
           .SetTriggerData(5)
-          .SetRandomizedTriggerRate(0.2)
           .SetReportTime(base::Time::UnixEpoch() + base::Hours(1))
           .Build();
 

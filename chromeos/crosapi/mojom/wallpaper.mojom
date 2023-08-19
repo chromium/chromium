@@ -40,8 +40,8 @@ struct WallpaperSettings {
 // Next method id: 2
 [Stable, Uuid="e2529a0d-9b3d-4ca3-9cca-23bc94a709e9"]
 interface Wallpaper {
-  // Sets the wallpaper. Deprecated in M112. Use SetWallpaper instead.
-  // TODO(b/258819982): Remove SetWallpaperDeprecated in M115.
+  // Unimplemented and unused since M116. Use SetWallpaper instead.
+  // Delete this once deletion is supported. https://crbug.com/1156872.
   SetWallpaperDeprecated@0(WallpaperSettings wallpaper, string extension_id,
                   string extension_name) => (array<uint8> thumbnail_data);
 

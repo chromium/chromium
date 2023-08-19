@@ -90,6 +90,9 @@ class PowerBookmarkSyncBridge : public syncer::ModelTypeSyncBridge {
   void SendPowerToSync(const Power& power);
   void NotifySyncForDeletion(const std::string& guid);
 
+  void ReportError(const syncer::ModelError& error);
+  bool initialized() { return initialized_; }
+
  private:
   // Create a change list to store metadata inside the power bookmark database.
   // This method should be called inside a transaction because Chrome sync
@@ -110,6 +113,7 @@ class PowerBookmarkSyncBridge : public syncer::ModelTypeSyncBridge {
 
   const raw_ptr<PowerBookmarkSyncMetadataDatabase, DanglingUntriaged> meta_db_;
   const raw_ptr<Delegate> delegate_;
+  bool initialized_ = false;
 };
 
 }  // namespace power_bookmarks

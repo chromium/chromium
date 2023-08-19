@@ -154,11 +154,23 @@ bool SchemefulSite::operator<(const SchemefulSite& other) const {
 
 // static
 absl::optional<SchemefulSite> SchemefulSite::DeserializeWithNonce(
+    base::PassKey<NetworkAnonymizationKey>,
+    const std::string& value) {
+  return DeserializeWithNonce(value);
+}
+
+// static
+absl::optional<SchemefulSite> SchemefulSite::DeserializeWithNonce(
     const std::string& value) {
   absl::optional<url::Origin> result = url::Origin::Deserialize(value);
   if (!result)
     return absl::nullopt;
   return SchemefulSite(result.value());
+}
+
+absl::optional<std::string> SchemefulSite::SerializeWithNonce(
+    base::PassKey<NetworkAnonymizationKey>) {
+  return SerializeWithNonce();
 }
 
 absl::optional<std::string> SchemefulSite::SerializeWithNonce() {

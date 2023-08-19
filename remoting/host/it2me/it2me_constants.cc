@@ -21,6 +21,7 @@ const char kSuppressNotifications[] = "suppressNotifications";
 const char kCurtainLocalUserSession[] = "curtainLocalUserSession";
 const char kTerminateUponInput[] = "terminateUponInput";
 const char kAllowTroubleshootingTools[] = "allowTroubleshootingTools";
+const char kShowTroubleshootingTools[] = "showTroubleshootingTools";
 const char kAllowReconnections[] = "allowReconnections";
 const char kAllowFileTransfer[] = "allowFileTransfer";
 const char kUseElevatedHost[] = "useElevatedHost";

@@ -21,18 +21,16 @@
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "ash/constants/ash_features.h"
 #include "chrome/browser/ash/arc/arc_util.h"
+#include "chromeos/strings/grit/chromeos_strings.h"
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 namespace {
 
 // Jelly colors should only be considered enabled when jelly styling is
-// enabled for OS Feedback and the OS Feedback app is being used. Listener is
-// added here to enable correct coloring in child web dialogs when launched
-// from OS Feedback.
+// enabled for Feedback on ChromeOS.
 bool IsJellyColorsEnabled() {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-  return ash::features::IsJellyEnabledForOsFeedback() &&
-         base::FeatureList::IsEnabled(ash::features::kOsFeedback);
+  return ash::features::IsJellyEnabledForOsFeedback();
 #else
   return false;
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
@@ -80,6 +78,8 @@ void AddStringResources(content::WebUIDataSource* source,
 
   source->AddLocalizedStrings(kStrings);
 #if BUILDFLAG(IS_CHROMEOS_ASH)
+  source->AddLocalizedString("mayBeSharedWithPartnerNote",
+                             IDS_FEEDBACK_TOOL_MAY_BE_SHARED_NOTE);
   source->AddLocalizedString(
       "sysInfo",
       arc::IsArcPlayStoreEnabledForProfile(profile)

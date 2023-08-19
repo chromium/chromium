@@ -14,10 +14,6 @@
 #include "net/http/http_cache.h"
 #include "net/http/http_response_info.h"
 
-namespace crypto {
-class SecureHash;
-}
-
 namespace net {
 
 class HttpResponseInfo;
@@ -139,12 +135,10 @@ class NET_EXPORT_PRIVATE HttpCache::Writers {
   LoadState GetLoadState() const;
 
   // Sets the network transaction argument to |network_transaction_|. Must be
-  // invoked before Read can be invoked. If |checksum| is set it will be
-  // validated and the cache entry will be marked unusable if it doesn't match.
+  // invoked before Read can be invoked.
   void SetNetworkTransaction(
       Transaction* transaction,
-      std::unique_ptr<HttpTransaction> network_transaction,
-      std::unique_ptr<crypto::SecureHash> checksum);
+      std::unique_ptr<HttpTransaction> network_transaction);
 
   // Resets the network transaction to nullptr. Required for range requests as
   // they might use the current network transaction only for part of the
@@ -166,8 +160,6 @@ class NET_EXPORT_PRIVATE HttpCache::Writers {
     NETWORK_READ_COMPLETE,
     CACHE_WRITE_DATA,
     CACHE_WRITE_DATA_COMPLETE,
-    MARK_SINGLE_KEYED_CACHE_ENTRY_UNUSABLE,
-    MARK_SINGLE_KEYED_CACHE_ENTRY_UNUSABLE_COMPLETE,
   };
 
   // These transactions are waiting on Read. After the active transaction
@@ -197,8 +189,6 @@ class NET_EXPORT_PRIVATE HttpCache::Writers {
   int DoNetworkReadComplete(int result);
   int DoCacheWriteData(int num_bytes);
   int DoCacheWriteDataComplete(int result);
-  int DoMarkSingleKeyedCacheEntryUnusable();
-  int DoMarkSingleKeyedCacheEntryUnusableComplete(int result);
 
   // Helper functions for callback.
   void OnNetworkReadFailure(int result);
@@ -294,11 +284,6 @@ class NET_EXPORT_PRIVATE HttpCache::Writers {
 
   // The latest time `this` starts writing data to the disk cache.
   base::TimeTicks last_disk_cache_access_start_time_;
-
-  // Set if we are currently calculating a checksum of the resource to validate
-  // it against the expected checksum for the single-keyed cache. Initialised
-  // with selected headers and accumulates the body of the response.
-  std::unique_ptr<crypto::SecureHash> checksum_;
 
   CompletionOnceCallback callback_;  // Callback for active_transaction_.
 

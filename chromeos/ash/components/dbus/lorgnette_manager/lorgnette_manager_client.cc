@@ -8,11 +8,13 @@
 #include <string>
 #include <utility>
 
+#include "ash/constants/ash_features.h"
 #include "base/containers/contains.h"
 #include "base/containers/flat_map.h"
 #include "base/files/scoped_file.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
+#include "base/functional/callback_forward.h"
 #include "base/functional/callback_helpers.h"
 #include "base/location.h"
 #include "base/logging.h"
@@ -23,6 +25,7 @@
 #include "chromeos/ash/components/dbus/lorgnette/lorgnette_service.pb.h"
 #include "chromeos/ash/components/dbus/lorgnette_manager/fake_lorgnette_manager_client.h"
 #include "chromeos/dbus/common/pipe_reader.h"
+#include "components/device_event_log/device_event_log.h"
 #include "dbus/bus.h"
 #include "dbus/message.h"
 #include "dbus/object_path.h"
@@ -34,6 +37,7 @@ namespace ash {
 namespace {
 
 LorgnetteManagerClient* g_instance = nullptr;
+constexpr char kListScannersDiscoveryClientId[] = "ListScanners";
 
 // The LorgnetteManagerClient implementation used in production.
 class LorgnetteManagerClientImpl : public LorgnetteManagerClient {
@@ -47,6 +51,26 @@ class LorgnetteManagerClientImpl : public LorgnetteManagerClient {
   void ListScanners(
       chromeos::DBusMethodCallback<lorgnette::ListScannersResponse> callback)
       override {
+    if (features::IsAsynchronousScannerDiscoveryEnabled()) {
+      lorgnette::StartScannerDiscoveryRequest request;
+      // ListScanners doesn't support concurrent calls and completes the session
+      // before it finishes, so hardcoding a single client id shouldn't cause
+      // cross-caller interference.
+      request.set_client_id(kListScannersDiscoveryClientId);
+      request.set_preferred_only(true);
+
+      StartScannerDiscovery(
+          std::move(request),
+          base::BindRepeating(
+              &LorgnetteManagerClientImpl::ListScannersDiscoveryScannersUpdated,
+              weak_ptr_factory_.GetWeakPtr()),
+          base::BindOnce(
+              &LorgnetteManagerClientImpl::OnListScannersDiscoverySession,
+              weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
+
+      return;
+    }
+
     dbus::MethodCall method_call(lorgnette::kManagerServiceInterface,
                                  lorgnette::kListScannersMethod);
     lorgnette_daemon_proxy_->CallMethod(
@@ -112,6 +136,68 @@ class LorgnetteManagerClientImpl : public LorgnetteManagerClient {
                                   std::move(cancel_callback)));
   }
 
+  void StartScannerDiscovery(
+      const lorgnette::StartScannerDiscoveryRequest& request,
+      base::RepeatingCallback<void(lorgnette::ScannerListChangedSignal)>
+          signal_callback,
+      chromeos::DBusMethodCallback<lorgnette::StartScannerDiscoveryResponse>
+          response_callback) override {
+    CHECK(features::IsAsynchronousScannerDiscoveryEnabled());
+    dbus::MethodCall method_call(lorgnette::kManagerServiceInterface,
+                                 lorgnette::kStartScannerDiscoveryMethod);
+    dbus::MessageWriter writer(&method_call);
+    if (!writer.AppendProtoAsArrayOfBytes(request)) {
+      LOG(ERROR) << "Failed to encode StartScannerDiscoveryRequest protobuf";
+
+      lorgnette::StartScannerDiscoveryResponse response;
+      response.set_started(false);
+
+      base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
+          FROM_HERE,
+          base::BindOnce(std::move(response_callback), std::move(response)));
+      return;
+    }
+
+    PRINTER_LOG(USER) << "Starting scanner discovery for client "
+                      << request.client_id()
+                      << ", local_only=" << request.local_only()
+                      << ", preferred_only=" << request.preferred_only();
+
+    lorgnette_daemon_proxy_->CallMethod(
+        &method_call, dbus::ObjectProxy::TIMEOUT_USE_DEFAULT,
+        base::BindOnce(
+            &LorgnetteManagerClientImpl::OnStartScannerDiscoveryResponse,
+            weak_ptr_factory_.GetWeakPtr(), std::move(signal_callback),
+            std::move(response_callback)));
+  }
+
+  void StopScannerDiscovery(
+      const lorgnette::StopScannerDiscoveryRequest& request,
+      chromeos::DBusMethodCallback<lorgnette::StopScannerDiscoveryResponse>
+          callback) override {
+    CHECK(features::IsAsynchronousScannerDiscoveryEnabled());
+    dbus::MethodCall method_call(lorgnette::kManagerServiceInterface,
+                                 lorgnette::kStopScannerDiscoveryMethod);
+    dbus::MessageWriter writer(&method_call);
+    if (!writer.AppendProtoAsArrayOfBytes(request)) {
+      LOG(ERROR) << "Failed to encode StopScannerDiscoveryRequest protobuf";
+
+      lorgnette::StopScannerDiscoveryResponse response;
+      response.set_stopped(false);
+
+      base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
+          FROM_HERE, base::BindOnce(std::move(callback), std::move(response)));
+      return;
+    }
+
+    lorgnette_daemon_proxy_->CallMethod(
+        &method_call, dbus::ObjectProxy::TIMEOUT_USE_DEFAULT,
+        base::BindOnce(
+            &LorgnetteManagerClientImpl::OnStopScannerDiscoveryResponse,
+            weak_ptr_factory_.GetWeakPtr(), request.session_id(),
+            std::move(callback)));
+  }
+
   void Init(dbus::Bus* bus) override {
     lorgnette_daemon_proxy_ =
         bus->GetObjectProxy(lorgnette::kManagerServiceName,
@@ -122,7 +208,15 @@ class LorgnetteManagerClientImpl : public LorgnetteManagerClient {
         base::BindRepeating(
             &LorgnetteManagerClientImpl::ScanStatusChangedReceived,
             weak_ptr_factory_.GetWeakPtr()),
-        base::BindOnce(&LorgnetteManagerClientImpl::ScanStatusChangedConnected,
+        base::BindOnce(&LorgnetteManagerClientImpl::LorgnetteSignalConnected,
+                       weak_ptr_factory_.GetWeakPtr()));
+    lorgnette_daemon_proxy_->ConnectToSignal(
+        lorgnette::kManagerServiceInterface,
+        lorgnette::kScannerListChangedSignal,
+        base::BindRepeating(
+            &LorgnetteManagerClientImpl::ScannerListChangedReceived,
+            weak_ptr_factory_.GetWeakPtr()),
+        base::BindOnce(&LorgnetteManagerClientImpl::LorgnetteSignalConnected,
                        weak_ptr_factory_.GetWeakPtr()));
   }
 
@@ -203,6 +297,17 @@ class LorgnetteManagerClientImpl : public LorgnetteManagerClient {
     base::RepeatingCallback<void(std::string, uint32_t)> page_callback;
     chromeos::VoidDBusMethodCallback cancel_callback;
     std::unique_ptr<ScanDataReader> scan_data_reader;
+  };
+
+  struct DiscoverySessionState {
+    absl::optional<
+        chromeos::DBusMethodCallback<lorgnette::ListScannersResponse>>
+        session_end_callback;
+    absl::optional<
+        base::RepeatingCallback<void(lorgnette::ScannerListChangedSignal)>>
+        signal_callback;
+    std::string session_id;
+    lorgnette::ListScannersResponse response;
   };
 
   // Helper function to send a GetNextImage request to lorgnette for the scan
@@ -464,6 +569,84 @@ class LorgnetteManagerClientImpl : public LorgnetteManagerClient {
     }
   }
 
+  void OnStartScannerDiscoveryResponse(
+      base::RepeatingCallback<void(lorgnette::ScannerListChangedSignal)>
+          signal_callback,
+      chromeos::DBusMethodCallback<lorgnette::StartScannerDiscoveryResponse>
+          response_callback,
+      dbus::Response* dbus_response) {
+    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+    if (!dbus_response) {
+      LOG(ERROR) << "Failed to obtain StartScannerDiscoveryResponse";
+      std::move(response_callback).Run(absl::nullopt);
+      return;
+    }
+
+    lorgnette::StartScannerDiscoveryResponse response;
+    dbus::MessageReader reader(dbus_response);
+    if (!reader.PopArrayOfBytesAsProto(&response)) {
+      LOG(ERROR) << "Failed to decode StartScannerDiscoveryResponse proto";
+      std::move(response_callback).Run(absl::nullopt);
+      return;
+    }
+
+    if (!response.started()) {
+      LOG(ERROR) << "Scanner discovery session was not started";
+      std::move(response_callback).Run(absl::nullopt);
+      return;
+    }
+
+    DiscoverySessionState session;
+    session.session_id = response.session_id();
+    session.signal_callback = std::move(signal_callback);
+    discovery_sessions_[response.session_id()] = std::move(session);
+
+    std::move(response_callback).Run(std::move(response));
+  }
+
+  void OnListScannersDiscoverySession(
+      chromeos::DBusMethodCallback<lorgnette::ListScannersResponse> callback,
+      absl::optional<lorgnette::StartScannerDiscoveryResponse> response) {
+    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+    if (!response.has_value()) {
+      std::move(callback).Run(absl::nullopt);
+      return;
+    }
+
+    // This will have been created already by OnStartScannerDiscoveryResponse,
+    // so no need to search for it first.
+    DCHECK(base::Contains(discovery_sessions_, response->session_id()));
+    discovery_sessions_[response->session_id()].session_end_callback =
+        std::move(callback);
+  }
+
+  void OnStopScannerDiscoveryResponse(
+      std::string session_id,
+      chromeos::DBusMethodCallback<lorgnette::StopScannerDiscoveryResponse>
+          callback,
+      dbus::Response* dbus_response) {
+    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+    if (!dbus_response) {
+      LOG(ERROR) << "Failed to obtain StopScannerDiscoveryResponse";
+      std::move(callback).Run(absl::nullopt);
+      return;
+    }
+
+    lorgnette::StopScannerDiscoveryResponse response;
+    dbus::MessageReader reader(dbus_response);
+    if (!reader.PopArrayOfBytesAsProto(&response)) {
+      LOG(ERROR) << "Failed to decode StopScannerDiscoveryResponse proto";
+      std::move(callback).Run(absl::nullopt);
+      return;
+    }
+
+    PRINTER_LOG(DEBUG) << "Scanner discovery session " << session_id
+                       << (response.stopped() ? " was " : " was not ")
+                       << "stopped.";
+    std::move(callback).Run(response);
+  }
+
   void ScanStatusChangedReceived(dbus::Signal* signal) {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
     dbus::MessageReader reader(signal);
@@ -510,11 +693,67 @@ class LorgnetteManagerClientImpl : public LorgnetteManagerClient {
     }
   }
 
-  void ScanStatusChangedConnected(const std::string& interface_name,
-                                  const std::string& signal_name,
-                                  bool success) {
+  void ScannerListChangedReceived(dbus::Signal* dbus_signal) {
+    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+    dbus::MessageReader reader(dbus_signal);
+    lorgnette::ScannerListChangedSignal signal;
+    if (!reader.PopArrayOfBytesAsProto(&signal)) {
+      LOG(ERROR) << "Failed to decode ScannerListChangedSignal proto";
+      return;
+    }
+
+    if (!base::Contains(discovery_sessions_, signal.session_id())) {
+      LOG(ERROR) << "Received signal for unrecognized discovery session: "
+                 << signal.session_id();
+      return;
+    }
+    DiscoverySessionState& session = discovery_sessions_[signal.session_id()];
+
+    if (!session.signal_callback) {
+      LOG(WARNING) << "Scanner discovery session " << signal.session_id()
+                   << " does not have a signal handler registered";
+      return;
+    }
+    session.signal_callback->Run(std::move(signal));
+  }
+
+  void ListScannersDiscoveryScannersUpdated(
+      lorgnette::ScannerListChangedSignal signal) {
+    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+    DCHECK(base::Contains(discovery_sessions_, signal.session_id()));
+    DiscoverySessionState& session = discovery_sessions_[signal.session_id()];
+
+    switch (signal.event_type()) {
+      case lorgnette::ScannerListChangedSignal::SCANNER_ADDED:
+        PRINTER_LOG(EVENT) << "Discovered SANE scanner: "
+                           << signal.scanner().name();
+        *session.response.add_scanners() = std::move(signal.scanner());
+        break;
+      case lorgnette::ScannerListChangedSignal::SCANNER_REMOVED:
+        break;
+      case lorgnette::ScannerListChangedSignal::ENUM_COMPLETE: {
+        lorgnette::StopScannerDiscoveryRequest request;
+        request.set_session_id(session.session_id);
+        StopScannerDiscovery(request, base::DoNothing());
+        break;
+      }
+      case lorgnette::ScannerListChangedSignal::SESSION_ENDING:
+        DCHECK(session.session_end_callback);
+        std::move(*session.session_end_callback)
+            .Run(std::move(session.response));
+        discovery_sessions_.erase(session.session_id);
+        break;
+      default:
+        NOTREACHED();
+    }
+  }
+
+  void LorgnetteSignalConnected(const std::string& interface_name,
+                                const std::string& signal_name,
+                                bool success) {
     LOG_IF(WARNING, !success)
-        << "Failed to connect to ScanStatusChanged signal.";
+        << "Failed to connect to lorgnette " << interface_name
+        << "::" << signal_name << " signal.";
   }
 
   raw_ptr<dbus::ObjectProxy, ExperimentalAsh> lorgnette_daemon_proxy_ = nullptr;
@@ -523,8 +762,12 @@ class LorgnetteManagerClientImpl : public LorgnetteManagerClient {
   // progress and completion.
   base::flat_map<std::string, ScanJobState> scan_job_state_
       GUARDED_BY_CONTEXT(sequence_checker_);
+  // Map from discovery session IDs to a DiscoverySessionState tracking the
+  // state and callbacks for that session.
+  base::flat_map<std::string, DiscoverySessionState> discovery_sessions_
+      GUARDED_BY_CONTEXT(sequence_checker_);
   // Ensures that all callbacks are handled on the same sequence, so that it is
-  // safe to access scan_job_state_ without a lock.
+  // safe to access scan_job_state_ and discovery_sessions_ without a lock.
   SEQUENCE_CHECKER(sequence_checker_);
 
   base::WeakPtrFactory<LorgnetteManagerClientImpl> weak_ptr_factory_{this};

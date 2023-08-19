@@ -1,8 +1,0 @@
-This is a testharness.js-based test.
-PASS detaching the iframe during the cancel event
-PASS detaching the iframe during the close event
-PASS detaching the iframe then calling destroy()
-PASS detaching the iframe then calling close()
-PASS detaching the iframe then constructing a CloseWatcher
-Harness: the test ran to completion.
-

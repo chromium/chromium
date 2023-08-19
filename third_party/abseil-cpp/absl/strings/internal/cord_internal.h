@@ -157,20 +157,19 @@ class RefcountAndFlags {
   // false will be visible to a thread that just observed this method returning
   // false.  Always returns false when the immortal bit is set.
   inline bool Decrement() {
-    int32_t refcount = count_.load(std::memory_order_acquire) & kRefcountMask;
-    assert(refcount > 0 || refcount & kImmortalFlag);
+    int32_t refcount = count_.load(std::memory_order_acquire);
+    assert((refcount & kRefcountMask) > 0 || refcount & kImmortalFlag);
     return refcount != kRefIncrement &&
            (count_.fetch_sub(kRefIncrement, std::memory_order_acq_rel) &
-            kRefcountMask) != kRefIncrement;
+            kHighRefcountMask) != 0;
   }
 
   // Same as Decrement but expect that refcount is greater than 1.
   inline bool DecrementExpectHighRefcount() {
     int32_t refcount =
-        count_.fetch_sub(kRefIncrement, std::memory_order_acq_rel) &
-        kRefcountMask;
-    assert(refcount > 0 || refcount & kImmortalFlag);
-    return refcount != kRefIncrement;
+        count_.fetch_sub(kRefIncrement, std::memory_order_acq_rel);
+    assert((refcount & kRefcountMask) > 0 || refcount & kImmortalFlag);
+    return (refcount & kHighRefcountMask) != 0;
   }
 
   // Returns the current reference count using acquire semantics.
@@ -214,6 +213,15 @@ class RefcountAndFlags {
     // purposes of equality.  (A refcount of 0 or 1 does not count as 0 or 1
     // if the immortal bit is set.)
     kRefcountMask = ~kReservedFlag,
+
+    // Bitmask to use when checking if refcount is equal to 1 and not
+    // immortal when decrementing the refcount. This masks out kRefIncrement and
+    // all flags except kImmortalFlag. If the masked RefcountAndFlags is 0, we
+    // assume the refcount is equal to 1, since we know it's not immortal and
+    // not greater than 1. If the masked RefcountAndFlags is not 0, we can
+    // assume the refcount is not equal to 1 since either a higher bit in the
+    // refcount is set, or kImmortal is set.
+    kHighRefcountMask = kRefcountMask & ~kRefIncrement,
   };
 
   std::atomic<int32_t> count_;

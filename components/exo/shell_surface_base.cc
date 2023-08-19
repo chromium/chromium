@@ -4,9 +4,6 @@
 
 #include "components/exo/shell_surface_base.h"
 
-#include <algorithm>
-
-#include "ash/constants/ash_constants.h"
 #include "ash/display/screen_orientation_controller.h"
 #include "ash/frame/non_client_frame_view_ash.h"
 #include "ash/metrics/login_unlock_throughput_recorder.h"
@@ -32,8 +29,8 @@
 #include "chromeos/ui/base/chromeos_ui_constants.h"
 #include "chromeos/ui/base/window_pin_type.h"
 #include "chromeos/ui/base/window_properties.h"
-#include "chromeos/ui/base/window_state_type.h"
 #include "chromeos/ui/frame/caption_buttons/snap_controller.h"
+#include "chromeos/ui/frame/frame_utils.h"
 #include "chromeos/ui/frame/multitask_menu/float_controller_base.h"
 #include "components/app_restore/app_restore_utils.h"
 #include "components/app_restore/window_properties.h"
@@ -136,6 +133,20 @@ class CustomFrameView : public ash::NonClientFrameViewAsh {
       return ash::NonClientFrameViewAsh::GetBoundsForClientView();
     return bounds();
   }
+
+  // Overridden from views::NonClientFrameView:
+  void UpdateWindowRoundedCorners() override {
+    if (!GetFrameEnabled()) {
+      return;
+    }
+
+    // TODO(zoraiznaeem): Get frame radius from client.
+    header_view_->SetHeaderCornerRadius(
+        chromeos::GetFrameCornerRadius(frame()->GetNativeWindow()));
+
+    // TODO(crbug/1415486): Apply rounded corners to exo’s root surface.
+  }
+
   gfx::Rect GetWindowBoundsForClientBounds(
       const gfx::Rect& client_bounds) const override {
     if (GetFrameEnabled()) {
@@ -208,6 +219,11 @@ class CustomWindowTargeter : public aura::WindowTargeter {
     gfx::Point local_point =
         ConvertEventLocationToWindowCoordinates(window, event);
 
+    if (shell_surface_->shape_dp() &&
+        !shell_surface_->shape_dp()->Contains(local_point)) {
+      return false;
+    }
+
     if (IsInResizeHandle(window, event, local_point))
       return true;
 
@@ -267,7 +283,7 @@ class CustomWindowTargeter : public aura::WindowTargeter {
   }
 
   raw_ptr<ShellSurfaceBase, ExperimentalAsh> shell_surface_;
-  const raw_ptr<views::Widget, ExperimentalAsh> widget_;
+  const raw_ptr<views::Widget, DanglingUntriaged | ExperimentalAsh> widget_;
 };
 
 void CloseAllShellSurfaceTransientChildren(aura::Window* window) {
@@ -429,6 +445,11 @@ void ShellSurfaceBase::SetSystemModal(bool system_modal) {
   non_system_modal_window_was_active_ = non_system_modal_window_was_active;
 }
 
+void ShellSurfaceBase::SetTopInset(int height) {
+  TRACE_EVENT1("exo", "ShellSurfaceBase::SetTopInset", "height", height);
+  pending_top_inset_height_ = height;
+}
+
 void ShellSurfaceBase::SetBoundsForShadows(
     const absl::optional<gfx::Rect>& shadow_bounds) {
   if (shadow_bounds_ != shadow_bounds) {
@@ -460,22 +481,28 @@ void ShellSurfaceBase::UpdateSystemModal() {
 }
 
 void ShellSurfaceBase::UpdateShape() {
-  if (!host_window() || !host_window()->layer()) {
+  auto* widget_window = widget_->GetNativeWindow();
+  if (!widget_window || !widget_window->layer()) {
     return;
   }
 
-  if (!shape_rects_dp_.has_value()) {
-    host_window()->layer()->SetAlphaShape(nullptr);
+  if (!shape_dp_.has_value()) {
+    widget_window->layer()->SetAlphaShape(nullptr);
     return;
   }
 
-  auto scaled_rects = std::make_unique<std::vector<gfx::Rect>>();
-  for (const gfx::Rect& rect_dp : shape_rects_dp_.value()) {
-    const float scale_factor = host_window()->layer()->device_scale_factor();
-    scaled_rects->push_back(gfx::ScaleToEnclosedRect(rect_dp, scale_factor));
+  // TODO(crbug.com/1465999): The current implementation of window shape must
+  // only be used on frameless windows with shadows disabled, otherwise we risk
+  // the layer bounds not matching the bounds of the root surface. This needs to
+  // be updated such that the shape is applied to the root surface's geometry.
+  DCHECK_EQ(frame_type_, SurfaceFrameType::NONE);
+
+  auto shape_rects_dp = std::make_unique<ui::Layer::ShapeRects>();
+  for (gfx::Rect rect : shape_dp_.value()) {
+    shape_rects_dp->push_back(std::move(rect));
   }
 
-  host_window()->layer()->SetAlphaShape(std::move(scaled_rects));
+  widget_window->layer()->SetAlphaShape(std::move(shape_rects_dp));
 }
 
 void ShellSurfaceBase::SetApplicationId(const char* application_id) {
@@ -544,8 +571,10 @@ void ShellSurfaceBase::SetSnapSecondary(float snap_ratio) {
 }
 
 void ShellSurfaceBase::UnsetSnap() {
-  CommitSnap(widget_->GetNativeWindow(), chromeos::SnapDirection::kNone,
-             chromeos::kDefaultSnapRatio);
+  if (widget_ && widget_->GetNativeWindow()) {
+    CommitSnap(widget_->GetNativeWindow(), chromeos::SnapDirection::kNone,
+               chromeos::kDefaultSnapRatio);
+  }
 }
 
 void ShellSurfaceBase::SetCanGoBack() {
@@ -650,6 +679,21 @@ void ShellSurfaceBase::UpdatePinned() {
   }
 }
 
+void ShellSurfaceBase::UpdateTopInset() {
+  if (!widget_) {
+    // It is possible to get here before the widget has actually been created.
+    // The state will be set once the widget gets created.
+    return;
+  }
+
+  // Apply new top inset height.
+  if (pending_top_inset_height_ != top_inset_height_) {
+    widget_->GetNativeWindow()->SetProperty(aura::client::kTopViewInset,
+                                            pending_top_inset_height_);
+    top_inset_height_ = pending_top_inset_height_;
+  }
+}
+
 void ShellSurfaceBase::SetChildAxTreeId(ui::AXTreeID child_ax_tree_id) {
   GetViewAccessibility().OverrideChildTreeID(child_ax_tree_id);
   this->NotifyAccessibilityEvent(ax::mojom::Event::kChildrenChanged, false);
@@ -742,19 +786,12 @@ void ShellSurfaceBase::SetRestoreInfoWithWindowIdSource(
 }
 
 void ShellSurfaceBase::SetFloat() {
-  aura::Window* window = widget_->GetNativeWindow();
-  if (window->GetProperty(chromeos::kWindowStateTypeKey) !=
-      chromeos::WindowStateType::kFloated) {
-    chromeos::FloatControllerBase::Get()->ToggleFloat(window);
-  }
+  chromeos::FloatControllerBase::Get()->SetFloat(
+      widget_->GetNativeWindow(), chromeos::FloatStartLocation::kBottomRight);
 }
 
 void ShellSurfaceBase::UnsetFloat() {
-  aura::Window* window = widget_->GetNativeWindow();
-  if (window->GetProperty(chromeos::kWindowStateTypeKey) ==
-      chromeos::WindowStateType::kFloated) {
-    chromeos::FloatControllerBase::Get()->ToggleFloat(window);
-  }
+  chromeos::FloatControllerBase::Get()->UnsetFloat(widget_->GetNativeWindow());
 }
 
 void ShellSurfaceBase::SetDisplay(int64_t display_id) {
@@ -967,10 +1004,18 @@ void ShellSurfaceBase::OnSurfaceCommit() {
   // SetShadowBounds requires synchronizing shadow bounds with the next frame,
   // so submit the next frame to a new surface and let the host window use the
   // new surface.
-  if (shadow_bounds_changed_)
-    host_window()->AllocateLocalSurfaceId();
+  if (shadow_bounds_changed_) {
+    AllocateLocalSurfaceId();
+  }
+
+  const gfx::Rect old_content_bounds =
+      root_surface()->surface_hierarchy_content_bounds();
 
   root_surface()->CommitSurfaceHierarchy(false);
+
+  set_bounds_is_dirty(bounds_is_dirty() ||
+                      old_content_bounds !=
+                          root_surface()->surface_hierarchy_content_bounds());
 
   if (!OnPreWidgetCommit())
     return;
@@ -1033,7 +1078,7 @@ void ShellSurfaceBase::OnSetFrame(SurfaceFrameType frame_type) {
   // window is animating.
   set_bounds_is_dirty(true);
   UpdateWidgetBounds();
-  UpdateSurfaceBounds();
+  UpdateHostWindowOrigin();
 }
 
 void ShellSurfaceBase::OnSetFrameColors(SkColor active_color,
@@ -1092,9 +1137,6 @@ void ShellSurfaceBase::OnSurfaceDestroying(Surface* surface) {
   SetRootSurface(nullptr);
 
   overlay_widget_.reset();
-
-  if (widget_)
-    SetShellRootSurface(widget_->GetNativeWindow(), nullptr);
 
   // Hide widget before surface is destroyed. This allows hide animations to
   // run using the current surface contents.
@@ -1161,6 +1203,13 @@ bool ShellSurfaceBase::WidgetHasHitTestMask() const {
 }
 
 void ShellSurfaceBase::GetWidgetHitTestMask(SkPath* mask) const {
+  // If a window shape is applied set the hit test mask to the boundary path
+  // of the masked region.
+  if (shape_dp_) {
+    shape_dp_->GetBoundaryPath(mask);
+    return;
+  }
+
   GetHitTestMask(mask);
 
   gfx::Point origin = host_window()->bounds().origin();
@@ -1522,6 +1571,8 @@ void ShellSurfaceBase::CreateShellSurfaceWidget(
   else
     params.bounds = gfx::Rect(origin_, gfx::Size());
 
+  params.name = base::StringPrintf("ExoShellSurface-%d", shell_id++);
+
   WMHelper::AppPropertyResolver::Params property_resolver_params;
   if (application_id_)
     property_resolver_params.app_id = *application_id_;
@@ -1586,13 +1637,14 @@ void ShellSurfaceBase::CreateShellSurfaceWidget(
   // As setting the pinned mode may have come in earlier we apply it now.
   UpdatePinned();
 
+  UpdateTopInset();
+
   aura::Window* window = widget_->GetNativeWindow();
-  window->SetName(base::StringPrintf("ExoShellSurface-%d", shell_id++));
   window->AddChild(host_window());
   window->SetEventTargetingPolicy(
       aura::EventTargetingPolicy::kTargetAndDescendants);
   if (is_menu_) {
-    // Sets menu config id to kGroupintPropertyKey if the window is menu.
+    // Sets menu config id to kGroupingPropertyKey if the window is menu.
     window->SetNativeWindowProperty(
         views::TooltipManager::kGroupingPropertyKey,
         reinterpret_cast<void*>(views::MenuConfig::kMenuControllerGroupingId));
@@ -1602,12 +1654,11 @@ void ShellSurfaceBase::CreateShellSurfaceWidget(
   // Start tracking changes to window bounds and window state.
   window->AddObserver(this);
   ash::WindowState* window_state = ash::WindowState::Get(window);
-  // Skip initializing window state when it is menu.
-  // TODO(crbug.com/1338597): Remove `window_state` condition when tooltip fix
-  // is done. Without the fix, window_state can be null when  it is tooltip and
-  // the parent window is menu, so add null check of `window_state` here.
-  if (!is_menu_ && window_state)
+  // Skip initializing window state when `window_state` is null.
+  // This happesn when the window type is popup.
+  if (window_state) {
     InitializeWindowState(window_state);
+  }
 
   SetShellUseImmersiveForFullscreen(window, immersive_implied_by_fullscreen_);
 
@@ -1721,12 +1772,18 @@ void ShellSurfaceBase::UpdateWidgetBounds() {
   SetWidgetBounds(adjusted_bounds, adjusted_bounds != *bounds);
 }
 
-void ShellSurfaceBase::UpdateSurfaceBounds() {
+void ShellSurfaceBase::UpdateHostWindowOrigin() {
   gfx::Point origin = GetClientViewBounds().origin();
 
   origin += GetSurfaceOrigin().OffsetFromOrigin();
-  origin -= ToFlooredVector2d(ScaleVector2d(
-      root_surface_origin().OffsetFromOrigin(), 1.f / GetScale()));
+  const gfx::Vector2dF scaled_root_origin = ScaleVector2d(
+      root_surface_origin().OffsetFromOrigin(), 1.f / GetScaleFactor());
+  origin -= ToFlooredVector2d(scaled_root_origin);
+  // Set subpixel offset to the diff between the scaled origin in float and its
+  // floored value to adjust root surface origin to be at the same position.
+  host_window()->layer()->SetSubpixelPositionOffset(
+      ToFlooredVector2d(scaled_root_origin) - scaled_root_origin);
+
   gfx::Rect surface_bounds(origin, host_window()->bounds().size());
   if (host_window()->bounds() == surface_bounds)
     return;
@@ -1742,7 +1799,7 @@ void ShellSurfaceBase::UpdateShadow() {
   aura::Window* window = widget_->GetNativeWindow();
 
   // Window shadows should be disabled if a window shape has been set.
-  if (!shadow_bounds_ || shape_rects_dp_.has_value()) {
+  if (!shadow_bounds_ || shape_dp_.has_value()) {
     wm::SetShadowElevation(window, wm::kShadowElevationNone);
   } else {
     // Use a small style shadow for popup surface.
@@ -1761,8 +1818,6 @@ void ShellSurfaceBase::UpdateShadow() {
 
     if (!window->GetProperty(aura::client::kUseWindowBoundsForShadow)) {
       origin += GetSurfaceOrigin().OffsetFromOrigin();
-      origin -= ToFlooredVector2d(ScaleVector2d(
-          root_surface_origin().OffsetFromOrigin(), 1.f / GetScale()));
       if (origin.x() != 0 || origin.y() != 0) {
         shadow_bounds.set_origin(origin);
         if (widget_) {
@@ -1915,6 +1970,8 @@ void ShellSurfaceBase::OnPostWidgetCommit() {
   // in a single commit process, we need to ensure that it's not reset halfway
   // in the current commit by resetting it here.
   shadow_bounds_changed_ = false;
+
+  UpdateTopInset();
 }
 
 void ShellSurfaceBase::SetContainerInternal(int container) {
@@ -1950,7 +2007,7 @@ void ShellSurfaceBase::CommitWidget() {
   // Apply new window geometry.
   geometry_ = pending_geometry_;
   display_id_ = pending_display_id_;
-  shape_rects_dp_ = pending_shape_rects_dp_;
+  shape_dp_ = pending_shape_dp_;
 
   // Apply new minimum/maximium size.
   minimum_size_ = pending_minimum_size_;
@@ -1972,7 +2029,7 @@ void ShellSurfaceBase::CommitWidget() {
   // type (e.g. caption height).
   UpdateFrameType();
   UpdateWidgetBounds();
-  SurfaceTreeHost::UpdateHostWindowBounds();
+  UpdateHostWindowSizeAndRootSurfaceOrigin();
   gfx::Rect bounds = geometry_;
   if (!bounds.IsEmpty() && !widget_->GetNativeWindow()->GetProperty(
                                aura::client::kUseWindowBoundsForShadow)) {
@@ -2004,7 +2061,7 @@ void ShellSurfaceBase::CommitWidget() {
     }
   }
 
-  UpdateSurfaceBounds();
+  UpdateHostWindowOrigin();
   UpdateShape();
 
   // Don't show yet if the shell surface doesn't have content or is minimized
@@ -2029,9 +2086,10 @@ void ShellSurfaceBase::CommitWidget() {
     auto* window = widget_->GetNativeWindow();
     auto* window_state = ash::WindowState::Get(window);
 
-    // TODO(crbug.com/1261321): correct the initial origin once lacros can
-    // communicate it instead of centering.
-    if (window_state && window_state->IsMaximizedOrFullscreenOrPinned()) {
+    // TODO(oshima): This should be set to the
+    // `views::Widget::InitParams.bounds`
+    if (window_state && window_state->IsMaximizedOrFullscreenOrPinned() &&
+        (!initial_bounds_ || initial_bounds_->IsEmpty())) {
       gfx::Size current_content_size = CalculatePreferredSize();
       gfx::Rect restore_bounds = display::Screen::GetScreen()
                                      ->GetDisplayNearestWindow(window)
@@ -2062,6 +2120,7 @@ void ShellSurfaceBase::CommitWidget() {
     }
 
     if (initially_activated_) {
+      // Widget will minimize itself if the initial state is minimized.
       widget_->Show();
     } else {
       widget_->ShowInactive();
@@ -2114,17 +2173,28 @@ void ShellSurfaceBase::SetZOrder(ui::ZOrderLevel z_order) {
 }
 
 void ShellSurfaceBase::SetShape(absl::optional<cc::Region> shape) {
-  pending_shape_rects_dp_.reset();
   if (!shape) {
+    pending_shape_dp_.reset();
     return;
   }
 
-  ShapeRects shape_rects_dp;
-  for (gfx::Rect rect : shape.value()) {
-    shape_rects_dp.push_back(std::move(rect));
+  if (frame_enabled()) {
+    LOG(ERROR) << "SetShape() is not supported for windows with frame enabled.";
+    return;
   }
 
-  pending_shape_rects_dp_ = std::move(shape_rects_dp);
+  // SetShape() may be called some time after a window has been created. In case
+  // server_side_resize_ has been set we disable it here.
+  server_side_resize_ = false;
+
+  // Although window shape is only supported for frameless windows we must also
+  // ensure window shadows are disabled as shadows can contribute to the widget
+  // window's layer bounds.
+  // TODO(crbug.com/1465999): This will not be necessary once the implementation
+  // is updated to use the root surface's geometry.
+  OnSetFrame(SurfaceFrameType::NONE);
+
+  pending_shape_dp_ = std::move(shape);
 }
 
 // static

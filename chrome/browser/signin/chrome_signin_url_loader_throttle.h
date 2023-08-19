@@ -57,7 +57,11 @@ class URLLoaderThrottle : public blink::URLLoaderThrottle,
 
   // Information about the current request.
   GURL request_url_;
+  // Refers to the "last" referrer in the redirect chain.
   GURL request_referrer_;
+  // The origin that initiated the request. May be empty for browser-initiated
+  // requests. See network::ResourceRequest::request_initiator for details.
+  absl::optional<url::Origin> request_initiator_;
   net::HttpRequestHeaders request_headers_;
   net::HttpRequestHeaders request_cors_exempt_headers_;
   network::mojom::RequestDestination request_destination_ =

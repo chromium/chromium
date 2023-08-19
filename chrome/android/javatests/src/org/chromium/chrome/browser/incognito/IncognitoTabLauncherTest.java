@@ -36,7 +36,8 @@ import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
-import org.chromium.chrome.test.util.browser.Features;
+import org.chromium.chrome.test.util.browser.Features.DisableFeatures;
+import org.chromium.chrome.test.util.browser.Features.EnableFeatures;
 import org.chromium.components.externalauth.ExternalAuthUtils;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 
@@ -47,7 +48,7 @@ import java.util.concurrent.TimeoutException;
  */
 @RunWith(ChromeJUnit4ClassRunner.class)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
-@Features.EnableFeatures({ChromeFeatureList.ALLOW_NEW_INCOGNITO_TAB_INTENTS})
+@EnableFeatures({ChromeFeatureList.ALLOW_NEW_INCOGNITO_TAB_INTENTS})
 // clang-format off
 @DisableIf.
     Build(sdk_is_greater_than = Build.VERSION_CODES.O, message = "Flaky, see crbug.com/1246132")
@@ -113,7 +114,7 @@ public class IncognitoTabLauncherTest {
     @Feature("Incognito")
     @MediumTest
     @DisabledTest(message = "crbug.com/1237504")
-    @Features.DisableFeatures({ChromeFeatureList.FOCUS_OMNIBOX_IN_INCOGNITO_TAB_INTENTS})
+    @DisableFeatures({ChromeFeatureList.FOCUS_OMNIBOX_IN_INCOGNITO_TAB_INTENTS})
     public void testLaunchIncognitoNewTab_omniboxFocused_disabled_firstParty()
             throws TimeoutException {
         ChromeTabbedActivity activity = launchIncognitoTab(true);
@@ -124,7 +125,7 @@ public class IncognitoTabLauncherTest {
     @Feature("Incognito")
     @MediumTest
     @DisabledTest(message = "crbug.com/1237504")
-    @Features.DisableFeatures({ChromeFeatureList.FOCUS_OMNIBOX_IN_INCOGNITO_TAB_INTENTS})
+    @DisableFeatures({ChromeFeatureList.FOCUS_OMNIBOX_IN_INCOGNITO_TAB_INTENTS})
     public void testLaunchIncognitoNewTab_omniboxFocused_disabled_thirdParty()
             throws TimeoutException {
         ChromeTabbedActivity activity = launchIncognitoTab(false);
@@ -135,7 +136,7 @@ public class IncognitoTabLauncherTest {
     @Feature("Incognito")
     @MediumTest
     @DisabledTest(message = "crbug.com/1237504")
-    @Features.EnableFeatures({ChromeFeatureList.FOCUS_OMNIBOX_IN_INCOGNITO_TAB_INTENTS})
+    @EnableFeatures({ChromeFeatureList.FOCUS_OMNIBOX_IN_INCOGNITO_TAB_INTENTS})
     public void testLaunchIncognitoNewTab_omniboxFocused_enabled_thirdParty()
             throws TimeoutException {
         ChromeTabbedActivity activity = launchIncognitoTab(false);
@@ -146,7 +147,7 @@ public class IncognitoTabLauncherTest {
     @Feature("Incognito")
     @MediumTest
     @DisabledTest(message = "crbug.com/1237504")
-    @Features.EnableFeatures({ChromeFeatureList.FOCUS_OMNIBOX_IN_INCOGNITO_TAB_INTENTS})
+    @EnableFeatures({ChromeFeatureList.FOCUS_OMNIBOX_IN_INCOGNITO_TAB_INTENTS})
     public void testLaunchIncognitoNewTab_omniboxFocused_enabled_firstParty()
             throws TimeoutException {
         ChromeTabbedActivity activity = launchIncognitoTab(true);

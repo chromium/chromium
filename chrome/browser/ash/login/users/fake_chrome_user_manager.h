@@ -41,7 +41,6 @@ class FakeChromeUserManager : public ChromeUserManager {
   user_manager::User* AddArcKioskAppUser(const AccountId& account_id);
   user_manager::User* AddWebKioskAppUser(const AccountId& account_id);
   user_manager::User* AddPublicAccountUser(const AccountId& account_id);
-  user_manager::User* AddActiveDirectoryUser(const AccountId& account_id);
 
   // Calculates the user name hash and calls UserLoggedIn to login a user.
   // Sets the user as having its profile created if `set_profile_created_flag`
@@ -113,7 +112,7 @@ class FakeChromeUserManager : public ChromeUserManager {
   bool IsUserLoggedIn() const override;
   bool IsLoggedInAsUserWithGaiaAccount() const override;
   bool IsLoggedInAsChildUser() const override;
-  bool IsLoggedInAsPublicAccount() const override;
+  bool IsLoggedInAsManagedGuestSession() const override;
   bool IsLoggedInAsGuest() const override;
   bool IsLoggedInAsKioskApp() const override;
   bool IsLoggedInAsArcKioskApp() const override;
@@ -125,7 +124,6 @@ class FakeChromeUserManager : public ChromeUserManager {
   bool IsGuestSessionAllowed() const override;
   bool IsGaiaUserAllowed(const user_manager::User& user) const override;
   bool IsUserAllowed(const user_manager::User& user) const override;
-  bool IsEphemeralAccountId(const AccountId& account_id) const override;
   const AccountId& GetGuestAccountId() const override;
   void AsyncRemoveCryptohome(const AccountId& account_id) const override;
   bool IsGuestAccountId(const AccountId& account_id) const override;
@@ -196,6 +194,9 @@ class FakeChromeUserManager : public ChromeUserManager {
   void SetMockUserImageManagerForTesting() {
     mock_user_image_manager_enabled_ = true;
   }
+
+ protected:
+  bool IsEphemeralAccountIdByPolicy(const AccountId& account_id) const override;
 
  private:
   using UserImageManagerMap =

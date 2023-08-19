@@ -30,7 +30,6 @@
 #include "base/timer/timer.h"
 #include "build/build_config.h"
 #include "cc/mojom/render_frame_metadata.mojom.h"
-#include "components/power_scheduler/power_mode_voter.h"
 #include "components/viz/common/surfaces/frame_sink_id.h"
 #include "content/browser/renderer_host/agent_scheduling_group_host.h"
 #include "content/browser/renderer_host/event_with_latency_info.h"
@@ -450,6 +449,11 @@ class CONTENT_EXPORT RenderWidgetHostImpl
   void LostFocus();
   void LostCapture();
 
+  // Used by the RenderFrameHost to help with verifying changes in focus. Tells
+  // whether LostFocus() was called after any frame on this page was focused.
+  bool HasLostFocus() const { return has_lost_focus_; }
+  void ResetLostFocus() { has_lost_focus_ = false; }
+
   // Indicates whether the RenderWidgetHost thinks it is focused.
   // This is different from RenderWidgetHostView::HasFocus() in the sense that
   // it reflects what the renderer process knows: it saves the state that is
@@ -756,7 +760,9 @@ class CONTENT_EXPORT RenderWidgetHostImpl
     return &render_frame_metadata_provider_;
   }
 
+  // SyntheticGestureController::Delegate overrides.
   bool HasGestureStopped() override;
+  bool IsHidden() const override;
 
   // Signals that a frame with token |frame_token| was finished processing. If
   // there are any queued messages belonging to it, they will be processed.
@@ -773,7 +779,8 @@ class CONTENT_EXPORT RenderWidgetHostImpl
   blink::mojom::WidgetInputHandler* GetWidgetInputHandler() override;
   void OnImeCompositionRangeChanged(
       const gfx::Range& range,
-      const std::vector<gfx::Rect>& character_bounds) override;
+      const absl::optional<std::vector<gfx::Rect>>& character_bounds,
+      const absl::optional<std::vector<gfx::Rect>>& line_bounds) override;
   void OnImeCancelComposition() override;
   RenderWidgetHostViewBase* GetRenderWidgetHostViewBase() override;
   void OnStartStylusWriting() override;
@@ -1170,7 +1177,7 @@ class CONTENT_EXPORT RenderWidgetHostImpl
   // An expiry time for resetting the pending_user_activation_timer_.
   static const base::TimeDelta kActivationNotificationExpireTime;
 
-  raw_ptr<FrameTree> frame_tree_;
+  raw_ptr<FrameTree, LeakedDanglingUntriaged> frame_tree_;
 
   // RenderWidgetHost are either:
   // - Owned by RenderViewHostImpl.
@@ -1212,7 +1219,8 @@ class CONTENT_EXPORT RenderWidgetHostImpl
   // dynamically fetching it from `site_instance_group_` since its
   // value gets cleared early in `SiteInstanceGroup` via
   // RenderProcessHostDestroyed before this object is destroyed.
-  const raw_ref<AgentSchedulingGroupHost> agent_scheduling_group_;
+  const raw_ref<AgentSchedulingGroupHost, LeakedDanglingUntriaged>
+      agent_scheduling_group_;
 
   // The SiteInstanceGroup this RenderWidgetHost belongs to.
   // TODO(https://crbug.com/1420333) Turn this into base::SafeRef
@@ -1237,6 +1245,13 @@ class CONTENT_EXPORT RenderWidgetHostImpl
   // One side of a pipe that is held open while the pointer is locked.
   // The other side is held be the renderer.
   mojo::Receiver<blink::mojom::PointerLockContext> mouse_lock_context_{this};
+
+  // Tracks if LostFocus() has been called on this RenderWidgetHost since the
+  // previous change in focus. This tracks behaviors like a user clicking out of
+  // the page and into a UI element when verifying if a change in focus is
+  // allowed. The value will be reset after a RFHI gets focus. The RFHI will
+  // then keep track of this value to handle passing focus to other frames.
+  bool has_lost_focus_ = false;
 
 #if BUILDFLAG(IS_ANDROID)
   // Tracks the current importance of widget.
@@ -1492,8 +1507,6 @@ class CONTENT_EXPORT RenderWidgetHostImpl
 
   mojo::Remote<blink::mojom::WidgetCompositor> widget_compositor_;
 
-  std::unique_ptr<power_scheduler::PowerModeVoter> power_mode_input_voter_;
-  std::unique_ptr<power_scheduler::PowerModeVoter> power_mode_loading_voter_;
   absl::optional<BrowserUIThreadScheduler::UserInputActiveHandle>
       user_input_active_handle_;
 

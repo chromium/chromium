@@ -14,7 +14,7 @@ from blinkpy.common import path_finder
 from blinkpy.common.system.log_testing import LoggingTestCase
 from blinkpy.tool.mock_tool import MockBlinkTool
 from blinkpy.tool.commands.lint_wpt import LintError, LintWPT
-from blinkpy.tool.commands.update_metadata import TestConfigurations
+from blinkpy.w3c.wpt_metadata import TestConfigurations
 
 path_finder.bootstrap_wpt_imports()
 from wptrunner import metadata
@@ -225,6 +225,35 @@ class LintWPTTest(LoggingTestCase):
             'WPT metadata file could not be parsed: Junk before EOL u')
         # Note the 1-indexed convention.
         self.assertEqual(line, 2)
+
+    def test_disable_one_rule(self):
+        (error, ) = self._check_metadata(
+            """\
+            [variant.html?foo=baz]
+              [subtest2]  # lint-wpt: disable=META-SINGLE-ELEM-LIST
+                expected: [FAIL]
+              [subtest1]
+                expected: FAIL
+            """, 'variant.html.ini')
+        name, description, path, _ = error
+        self.assertEqual(name, 'META-UNSORTED-SECTION')
+        self.assertEqual(path, 'variant.html.ini')
+        self.assertEqual(
+            description,
+            'Section contains unsorted keys or subsection headings: '
+            "'[subtest1]' should precede '[subtest2]'")
+
+    def test_disable_all_rules(self):
+        errors = self._check_metadata(
+            """\
+            # lint-wpt:  disable= *; TODO(crbug.com/1): reformat file
+            [variant.html?foo=baz]
+              [subtest2]
+                expected: [FAIL]
+              [subtest1]
+                expected: FAIL
+            """, 'variant.html.ini')
+        self.assertEqual(errors, [])
 
     def test_metadata_unsorted_sections(self):
         out_of_order_subtests, out_of_order_tests = self._check_metadata(

@@ -13,6 +13,7 @@
 #include "build/chromeos_buildflags.h"
 #include "gpu/vulkan/vulkan_device_queue.h"
 #include "gpu/vulkan/vulkan_function_pointers.h"
+#include "gpu/vulkan/vulkan_util.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace gpu {
@@ -375,55 +376,16 @@ bool VulkanImage::InitializeWithExternalMemory(
   constexpr auto kHandleType = VK_EXTERNAL_MEMORY_HANDLE_TYPE_OPAQUE_FD_BIT;
 #endif
 
-  VkPhysicalDeviceImageFormatInfo2 format_info_2 = {
-      .sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_IMAGE_FORMAT_INFO_2,
-      .format = format,
-      .type = VK_IMAGE_TYPE_2D,
-      .tiling = image_tiling,
-      .usage = usage,
-      .flags = flags,
-  };
-
-  VkPhysicalDeviceExternalImageFormatInfo external_info = {
-      .sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_EXTERNAL_IMAGE_FORMAT_INFO,
-      .handleType = kHandleType,
-  };
-  format_info_2.pNext = &external_info;
-
-// TODO(crbug.com/1052397): Revisit once build flag switch of lacros-chrome is
-// complete.
-#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)
-  VkPhysicalDeviceImageDrmFormatModifierInfoEXT modifier_info = {
-      .sType =
-          VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_IMAGE_DRM_FORMAT_MODIFIER_INFO_EXT,
-      .sharingMode = VK_SHARING_MODE_EXCLUSIVE,
-  };
-  // If image_tiling is VK_IMAGE_TILING_DRM_FORMAT_MODIFIER_EXT, a modifier_info
-  // struct has to be appended.
-  if (image_tiling == VK_IMAGE_TILING_DRM_FORMAT_MODIFIER_EXT)
-    external_info.pNext = &modifier_info;
-#endif
-
-  VkImageFormatProperties2 image_format_properties_2 = {
-      .sType = VK_STRUCTURE_TYPE_IMAGE_FORMAT_PROPERTIES_2,
-  };
-  VkExternalImageFormatProperties external_image_format_properties = {
-      .sType = VK_STRUCTURE_TYPE_EXTERNAL_IMAGE_FORMAT_PROPERTIES,
-  };
-  image_format_properties_2.pNext = &external_image_format_properties;
-
-  auto result = vkGetPhysicalDeviceImageFormatProperties2(
-      device_queue->GetVulkanPhysicalDevice(), &format_info_2,
-      &image_format_properties_2);
+  VkExternalMemoryProperties external_format_properties;
+  VkResult result = QueryVkExternalMemoryProperties(
+      device_queue->GetVulkanPhysicalDevice(), format, VK_IMAGE_TYPE_2D,
+      image_tiling, usage, flags, kHandleType, &external_format_properties);
   if (result != VK_SUCCESS) {
     DLOG(ERROR) << "External memory is not supported."
                 << " format:" << format << " image_tiling:" << image_tiling
                 << " usage:" << usage << " flags:" << flags;
     return false;
   }
-
-  const auto& external_format_properties =
-      external_image_format_properties.externalMemoryProperties;
   if (!(external_format_properties.externalMemoryFeatures &
         VK_EXTERNAL_MEMORY_FEATURE_EXPORTABLE_BIT)) {
     DLOG(ERROR) << "External memory cannot be exported."

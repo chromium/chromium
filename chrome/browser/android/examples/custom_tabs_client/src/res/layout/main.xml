@@ -141,6 +141,21 @@
                 android:enabled="true" />
 
             <Button
+                android:id="@+id/result_launch_button"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_margin="3dp"
+                android:textAllCaps="false"
+                android:text="@string/result_launch_button_text"
+                android:enabled="true" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="3dp"
+            android:orientation="horizontal">
+            <Button
                 android:id="@+id/test_asm_button"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -148,6 +163,15 @@
                 android:textAllCaps="false"
                 android:text="@string/test_asm_text"
                 android:enabled="true" />
+
+            <Button
+                android:id="@+id/engagement_signals_button"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_margin="3dp"
+                android:textAllCaps="false"
+                android:text="@string/engagement_signals_button_text"
+                android:enabled="false" />
         </LinearLayout>
 
         <View

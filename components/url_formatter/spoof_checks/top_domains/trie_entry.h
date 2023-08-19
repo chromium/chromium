@@ -35,9 +35,15 @@ const uint8_t kSkeletonTypeBitLength = 1;
 namespace top_domains {
 
 struct TopDomainEntry {
+  // Skeleton of the domain.
   std::string skeleton;
+  // The domain in ASCII (punycode for IDN).
   std::string top_domain;
-  bool is_top_500;
+  // True if the domain is in the top bucket (i.e. in the most popular subset of
+  // top domains). These domains can have additional skeletons associated with
+  // them.
+  bool is_top_bucket;
+  // Type of the skeleton stored in the trie node.
   SkeletonType skeleton_type;
 };
 

@@ -13,8 +13,6 @@ namespace scheduler {
 
 namespace {
 
-std::atomic_bool disable_align_wake_ups{false};
-
 struct FeatureNames {
   std::string short_name;
   std::string human_readable;
@@ -23,11 +21,17 @@ struct FeatureNames {
 FeatureNames FeatureToNames(WebSchedulerTrackedFeature feature) {
   switch (feature) {
     case WebSchedulerTrackedFeature::kWebSocket:
-      return {"WebSocket", "WebSocket"};
+      return {"WebSocket", "WebSocket live connection"};
+    case WebSchedulerTrackedFeature::kWebSocketSticky:
+      return {"WebSocketSticky", "WebSocket used"};
     case WebSchedulerTrackedFeature::kWebTransport:
-      return {"WebTransport", "WebTransport"};
+      return {"WebTransport", "WebTransport live connection"};
+    case WebSchedulerTrackedFeature::kWebTransportSticky:
+      return {"WebTransportSticky", "WebTransport used"};
     case WebSchedulerTrackedFeature::kWebRTC:
-      return {"WebRTC", "WebRTC"};
+      return {"WebRTC", "WebRTC live connection"};
+    case WebSchedulerTrackedFeature::kWebRTCSticky:
+      return {"WebRTCSticky", "WebRTC used"};
     case WebSchedulerTrackedFeature::kMainResourceHasCacheControlNoCache:
       return {"MainResourceHasCacheControlNoCache",
               "main resource has Cache-Control: No-Cache"};
@@ -58,9 +62,6 @@ FeatureNames FeatureToNames(WebSchedulerTrackedFeature feature) {
     case WebSchedulerTrackedFeature::kOutstandingNetworkRequestOthers:
       return {"OutstandingNetworkRequestOthers",
               "outstanding network request (others)"};
-    case WebSchedulerTrackedFeature::kOutstandingIndexedDBTransaction:
-      return {"OutstandingIndexedDBTransaction",
-              "outstanding IndexedDB transaction"};
     case WebSchedulerTrackedFeature::kRequestedMIDIPermission:
       return {"RequestedMIDIPermission", "requested midi permission"};
     case WebSchedulerTrackedFeature::kRequestedAudioCapturePermission:
@@ -77,8 +78,6 @@ FeatureNames FeatureToNames(WebSchedulerTrackedFeature feature) {
               "requested background work permission"};
     case WebSchedulerTrackedFeature::kBroadcastChannel:
       return {"BroadcastChannel", "requested broadcast channel permission"};
-    case WebSchedulerTrackedFeature::kIndexedDBConnection:
-      return {"IndexedDBConnection", "IndexedDB connection present"};
     case WebSchedulerTrackedFeature::kWebXR:
       return {"WebXR", "WebXR"};
     case WebSchedulerTrackedFeature::kWebLocks:
@@ -123,10 +122,15 @@ FeatureNames FeatureToNames(WebSchedulerTrackedFeature feature) {
       return {"KeepaliveRequest", "requests with keepalive set"};
     case WebSchedulerTrackedFeature::kDummy:
       return {"Dummy", "Dummy for testing"};
-    case WebSchedulerTrackedFeature::kAuthorizationHeader:
-      return {"AuthorizationHeader", "Authorization header used"};
+    case WebSchedulerTrackedFeature::
+        kJsNetworkRequestReceivedCacheControlNoStoreResource:
+      return {"JsNetworkRequestReceivedCacheControlNoStoreResource",
+              "JavaScript network request received Cache-Control: no-store "
+              "resource"};
     case WebSchedulerTrackedFeature::kIndexedDBEvent:
       return {"IndexedDBEvent", "IndexedDB event is pending"};
+    case WebSchedulerTrackedFeature::kWebSerial:
+      return {"WebSerial", "Serial port open"};
   }
   return {};
 }
@@ -190,42 +194,53 @@ bool IsFeatureSticky(WebSchedulerTrackedFeature feature) {
 }
 
 WebSchedulerTrackedFeatures StickyFeatures() {
-  constexpr WebSchedulerTrackedFeatures features = {
-      WebSchedulerTrackedFeature::kMainResourceHasCacheControlNoStore,
-      WebSchedulerTrackedFeature::kMainResourceHasCacheControlNoCache,
-      WebSchedulerTrackedFeature::kSubresourceHasCacheControlNoStore,
-      WebSchedulerTrackedFeature::kSubresourceHasCacheControlNoCache,
-      WebSchedulerTrackedFeature::kContainsPlugins,
-      WebSchedulerTrackedFeature::kDocumentLoaded,
-      WebSchedulerTrackedFeature::kRequestedMIDIPermission,
-      WebSchedulerTrackedFeature::kRequestedAudioCapturePermission,
-      WebSchedulerTrackedFeature::kRequestedVideoCapturePermission,
-      WebSchedulerTrackedFeature::kRequestedBackForwardCacheBlockedSensors,
-      WebSchedulerTrackedFeature::kRequestedBackgroundWorkPermission,
-      WebSchedulerTrackedFeature::kWebLocks,
-      WebSchedulerTrackedFeature::kRequestedStorageAccessGrant,
-      WebSchedulerTrackedFeature::kWebNfc,
-      WebSchedulerTrackedFeature::kPrinting,
-      WebSchedulerTrackedFeature::kPictureInPicture,
-      WebSchedulerTrackedFeature::kIdleManager,
-      WebSchedulerTrackedFeature::kPaymentManager,
-      WebSchedulerTrackedFeature::kWebOTPService,
-      WebSchedulerTrackedFeature::kInjectedJavascript,
-      WebSchedulerTrackedFeature::kInjectedStyleSheet,
-      WebSchedulerTrackedFeature::kKeepaliveRequest,
-      WebSchedulerTrackedFeature::kDummy,
-      WebSchedulerTrackedFeature::kAuthorizationHeader};
-  return features;
+  return {WebSchedulerTrackedFeature::kMainResourceHasCacheControlNoStore,
+          WebSchedulerTrackedFeature::kMainResourceHasCacheControlNoCache,
+          WebSchedulerTrackedFeature::kSubresourceHasCacheControlNoStore,
+          WebSchedulerTrackedFeature::kSubresourceHasCacheControlNoCache,
+          WebSchedulerTrackedFeature::kContainsPlugins,
+          WebSchedulerTrackedFeature::kDocumentLoaded,
+          WebSchedulerTrackedFeature::kRequestedMIDIPermission,
+          WebSchedulerTrackedFeature::kRequestedAudioCapturePermission,
+          WebSchedulerTrackedFeature::kRequestedVideoCapturePermission,
+          WebSchedulerTrackedFeature::kRequestedBackForwardCacheBlockedSensors,
+          WebSchedulerTrackedFeature::kRequestedBackgroundWorkPermission,
+          WebSchedulerTrackedFeature::kWebLocks,
+          WebSchedulerTrackedFeature::kRequestedStorageAccessGrant,
+          WebSchedulerTrackedFeature::kWebNfc,
+          WebSchedulerTrackedFeature::kPrinting,
+          WebSchedulerTrackedFeature::kPictureInPicture,
+          WebSchedulerTrackedFeature::kIdleManager,
+          WebSchedulerTrackedFeature::kPaymentManager,
+          WebSchedulerTrackedFeature::kWebOTPService,
+          WebSchedulerTrackedFeature::kInjectedJavascript,
+          WebSchedulerTrackedFeature::kInjectedStyleSheet,
+          WebSchedulerTrackedFeature::kKeepaliveRequest,
+          WebSchedulerTrackedFeature::kDummy,
+          WebSchedulerTrackedFeature::
+              kJsNetworkRequestReceivedCacheControlNoStoreResource,
+          WebSchedulerTrackedFeature::kWebRTCSticky,
+          WebSchedulerTrackedFeature::kWebSocketSticky,
+          WebSchedulerTrackedFeature::kWebTransportSticky};
 }
 
 // static
-void DisableAlignWakeUpsForProcess() {
-  disable_align_wake_ups.store(true, std::memory_order_relaxed);
-}
-
-// static
-bool IsAlignWakeUpsDisabledForProcess() {
-  return disable_align_wake_ups.load(std::memory_order_relaxed);
+std::vector<uint64_t> ToEnumBitMasks(WebSchedulerTrackedFeatures features) {
+  // We need one mask per 64 values, so the length of the mask should be
+  // kValueCount / 64 (round up).
+  std::vector<uint64_t> masks(
+      (WebSchedulerTrackedFeatures::kValueCount + 63u) / 64u, 0);
+  // It's guaranteed that `kValueCount` will be positive, so the size of the
+  // `masks` will be at least 1.
+  // See `//base/containers/enum_set.h`.
+  CHECK_GT(masks.size(), 0u);
+  for (auto feature : features) {
+    uint32_t value =
+        static_cast<std::underlying_type_t<WebSchedulerTrackedFeature>>(
+            feature);
+    masks[value / 64] |= 1ull << (value % 64);
+  }
+  return masks;
 }
 
 }  // namespace scheduler

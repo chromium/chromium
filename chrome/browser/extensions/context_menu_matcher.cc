@@ -92,7 +92,7 @@ void ContextMenuMatcher::AppendExtensionItems(
 
   // Extensions (other than platform apps) are only allowed one top-level slot
   // (and it can't be a radio or checkbox item because we are going to put the
-  // extension icon next to it), unless the context menu is an an action menu.
+  // extension icon next to it), unless the context menu is an action menu.
   // Action menus do not include the extension action, and they only include
   // items from one extension, so they are not placed within a submenu.
   // Otherwise, we automatically push them into a submenu if there is more than
@@ -113,8 +113,14 @@ void ContextMenuMatcher::AppendExtensionItems(
     MenuItem::List submenu_items;
 
     if (items.size() > 1 || items[0]->type() != MenuItem::NORMAL) {
-      if (prepend_separator)
+      // Only add a separator if the menu has at least one visible child. If it
+      // doesn't, it won't be shown at all (as part of the views code), so we
+      // don't want an unnecessary separator causing a visually empty section.
+      bool has_visible_child = any_of(begin(items), end(items),
+                                      [](MenuItem* m) { return m->visible(); });
+      if (prepend_separator && has_visible_child) {
         menu_model_->AddSeparator(ui::NORMAL_SEPARATOR);
+      }
       title = base::UTF8ToUTF16(extension->name());
       submenu_items = items;
     } else {
@@ -208,7 +214,7 @@ bool ContextMenuMatcher::IsCommandIdVisible(int command_id) const {
   // extension's name, that is a container of an extension's menu items. This
   // top-level menu item is not added to the context menu, so checking its
   // visibility is a special case handled below. This top-level menu item should
-  // be displayed only if it has an invisible submenu item.
+  // be displayed only if it has any visible submenu items.
   if (!item && ContextMenuMatcher::IsExtensionsCustomCommandId(command_id)) {
     ui::MenuModel* model = menu_model_;
     size_t index = 0;

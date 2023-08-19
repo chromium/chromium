@@ -31,7 +31,7 @@
 #include "chrome/browser/prefs/profile_pref_store_manager.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/sync/glue/sync_start_util.h"
-#include "chrome/browser/ui/profile_error_dialog.h"
+#include "chrome/browser/ui/profiles/profile_error_dialog.h"
 #include "chrome/common/buildflags.h"
 #include "chrome/common/chrome_constants.h"
 #include "chrome/common/chrome_paths.h"
@@ -222,13 +222,7 @@ enum SettingsEnforcementGroup {
 SettingsEnforcementGroup GetSettingsEnforcementGroup() {
 #if BUILDFLAG(IS_WIN)
   if (!g_disable_domain_check_for_testing) {
-    static bool first_call = true;
     static const bool is_domain_joined = base::IsEnterpriseDevice();
-    if (first_call) {
-      UMA_HISTOGRAM_BOOLEAN("Settings.TrackedPreferencesNoEnforcementOnDomain",
-                            is_domain_joined);
-      first_call = false;
-    }
     if (is_domain_joined)
       return GROUP_NO_ENFORCEMENT;
   }

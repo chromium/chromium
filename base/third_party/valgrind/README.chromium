@@ -1,6 +1,8 @@
 Name: valgrind
 URL: http://valgrind.org
 License: BSD
+License File: LICENSE
+Shipped: yes
 
 Header files in this directory define runtime macros that determine whether the
 current process is running under Valgrind and tell Memcheck tool about custom

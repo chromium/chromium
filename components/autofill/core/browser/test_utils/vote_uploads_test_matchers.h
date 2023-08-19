@@ -25,10 +25,6 @@ using ::testing::Field;
 using ::testing::Property;
 using ::testing::ResultOf;
 
-inline FormStructureTestApi test_api(const FormStructure* form) {
-  return FormStructureTestApi(const_cast<FormStructure*>(form));
-}
-
 inline auto SignatureIsSameAs(const FormData& form) {
   return Property("form_signature", &FormStructure::form_signature,
                   CalculateFormSignature(form));
@@ -40,9 +36,17 @@ inline auto SignatureIs(FormSignature sig) {
 
 inline auto SubmissionEventIsSameAs(mojom::SubmissionIndicatorEvent exp) {
   auto get_submission_event = [](const FormStructure& form) {
-    return test_api(&form).get_submission_event();
+    return test_api(const_cast<FormStructure&>(form)).get_submission_event();
   };
   return ResultOf("get_submission_event", get_submission_event, exp);
+}
+
+inline auto UsernameVoteTypeIsSameAs(auto expected_type) {
+  auto get_username_vote_type = [](const FormStructure& form) {
+    return test_api(const_cast<FormStructure&>(form)).get_username_vote_type();
+  };
+  return ResultOf("get_username_vote_type", get_username_vote_type,
+                  expected_type);
 }
 
 inline auto UploadedAutofillTypesAre(

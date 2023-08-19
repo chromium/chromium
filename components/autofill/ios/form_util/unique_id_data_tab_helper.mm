@@ -4,10 +4,6 @@
 
 #include "components/autofill/ios/form_util/unique_id_data_tab_helper.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 UniqueIDDataTabHelper::~UniqueIDDataTabHelper() = default;
 
 uint32_t UniqueIDDataTabHelper::GetNextAvailableRendererID() const {
@@ -25,11 +21,11 @@ UniqueIDDataTabHelper::GetFieldDataManager() {
 
 UniqueIDDataTabHelper::UniqueIDDataTabHelper(web::WebState* web_state) {
   field_data_manager_ = base::MakeRefCounted<autofill::FieldDataManager>();
-  web_state->AddObserver(this);
+  web_state_observation_.Observe(web_state);
 }
 
 void UniqueIDDataTabHelper::WebStateDestroyed(web::WebState* web_state) {
-  web_state->RemoveObserver(this);
+  web_state_observation_.Reset();
 }
 
 WEB_STATE_USER_DATA_KEY_IMPL(UniqueIDDataTabHelper)

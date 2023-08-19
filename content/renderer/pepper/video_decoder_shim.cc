@@ -12,6 +12,7 @@
 #include <utility>
 
 #include "base/check_op.h"
+#include "base/containers/contains.h"
 #include "base/containers/queue.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
@@ -575,15 +576,16 @@ void VideoDecoderShim::AssignPictureBuffers(
 void VideoDecoderShim::ReusePictureBuffer(int32_t picture_buffer_id) {
   DCHECK(RenderThreadImpl::current());
   uint32_t texture_id = static_cast<uint32_t>(picture_buffer_id);
-  if (textures_to_dismiss_.find(texture_id) != textures_to_dismiss_.end()) {
+  if (base::Contains(textures_to_dismiss_, texture_id)) {
     DismissTexture(texture_id);
-  } else if (texture_mailbox_map_.find(texture_id) !=
-             texture_mailbox_map_.end()) {
+    return;
+  }
+  if (base::Contains(texture_mailbox_map_, texture_id)) {
     available_textures_.insert(texture_id);
     SendPictures();
-  } else {
-    NOTREACHED();
+    return;
   }
+  NOTREACHED();
 }
 
 void VideoDecoderShim::Flush() {
@@ -815,7 +817,7 @@ void VideoDecoderShim::NotifyCompletedDecodes() {
 void VideoDecoderShim::DismissTexture(uint32_t texture_id) {
   DCHECK(host_);
   textures_to_dismiss_.erase(texture_id);
-  DCHECK(texture_mailbox_map_.find(texture_id) != texture_mailbox_map_.end());
+  DCHECK(base::Contains(texture_mailbox_map_, texture_id));
   texture_mailbox_map_.erase(texture_id);
   host_->DismissPictureBuffer(texture_id);
 }

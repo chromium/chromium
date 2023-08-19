@@ -7,9 +7,9 @@
 #import <CoreFoundation/CoreFoundation.h>
 #include <stddef.h>
 
+#include "base/apple/scoped_cftyperef.h"
 #include "base/logging.h"
 #include "base/mac/mac_util.h"
-#include "base/mac/scoped_cftyperef.h"
 #include "base/memory/ptr_util.h"
 #include "base/ranges/algorithm.h"
 #include "base/strings/string_number_conversions.h"
@@ -28,12 +28,12 @@ BluetoothLowEnergyDeviceMac::BluetoothLowEnergyDeviceMac(
     BluetoothAdapter* adapter,
     CBPeripheral* peripheral)
     : BluetoothDeviceMac(adapter),
-      peripheral_(peripheral, base::scoped_policy::RETAIN),
+      peripheral_(peripheral),
       connected_(false),
       discovery_pending_count_(0) {
   DCHECK(peripheral_);
-  peripheral_delegate_.reset([[BluetoothLowEnergyPeripheralDelegate alloc]
-      initWithBluetoothLowEnergyDeviceMac:this]);
+  peripheral_delegate_ = [[BluetoothLowEnergyPeripheralDelegate alloc]
+      initWithBluetoothLowEnergyDeviceMac:this];
   [peripheral_ setDelegate:peripheral_delegate_];
   identifier_ = GetPeripheralIdentifier(peripheral);
   hash_address_ = GetPeripheralHashAddress(peripheral);
@@ -255,8 +255,8 @@ void BluetoothLowEnergyDeviceMac::DidDiscoverPrimaryServices(NSError* error) {
     }
   }
   if (discovery_pending_count_ == 0) {
-    for (auto it = gatt_services_.begin(); it != gatt_services_.end(); ++it) {
-      BluetoothRemoteGattService* gatt_service = it->second.get();
+    for (auto& it : gatt_services_) {
+      BluetoothRemoteGattService* gatt_service = it.second.get();
       BluetoothRemoteGattServiceMac* gatt_service_mac =
           static_cast<BluetoothRemoteGattServiceMac*>(gatt_service);
       gatt_service_mac->DiscoverCharacteristics();
@@ -472,8 +472,8 @@ CBPeripheral* BluetoothLowEnergyDeviceMac::GetPeripheral() {
 BluetoothRemoteGattServiceMac*
 BluetoothLowEnergyDeviceMac::GetBluetoothRemoteGattServiceMac(
     CBService* cb_service) const {
-  for (auto it = gatt_services_.begin(); it != gatt_services_.end(); ++it) {
-    BluetoothRemoteGattService* gatt_service = it->second.get();
+  for (const auto& it : gatt_services_) {
+    BluetoothRemoteGattService* gatt_service = it.second.get();
     BluetoothRemoteGattServiceMac* gatt_service_mac =
         static_cast<BluetoothRemoteGattServiceMac*>(gatt_service);
     if (gatt_service_mac->GetService() == cb_service)

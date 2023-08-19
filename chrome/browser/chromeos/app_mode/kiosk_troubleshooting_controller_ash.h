@@ -23,7 +23,7 @@ class KioskTroubleshootingControllerAsh
  public:
   KioskTroubleshootingControllerAsh(
       PrefService* pref_service,
-      base::OnceClosure shutdown_app_session_callback);
+      base::OnceClosure shutdown_kiosk_browser_session_callback);
   KioskTroubleshootingControllerAsh(const KioskTroubleshootingControllerAsh&) =
       delete;
   KioskTroubleshootingControllerAsh& operator=(

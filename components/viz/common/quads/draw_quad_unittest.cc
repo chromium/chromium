@@ -196,7 +196,7 @@ TEST(DrawQuadTest, CopyRenderPassDrawQuad) {
   ResourceId mask_resource_id(78);
   gfx::RectF mask_uv_rect(0, 0, 33.f, 19.f);
   gfx::Size mask_texture_size(128, 134);
-  gfx::Vector2dF filters_scale;
+  gfx::Vector2dF filters_scale(1.0f, 1.0f);
   gfx::PointF filters_origin;
   gfx::RectF tex_coord_rect(1, 1, 255, 254);
   bool force_anti_aliasing_off = false;

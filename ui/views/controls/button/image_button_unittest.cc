@@ -5,7 +5,6 @@
 #include "ui/views/controls/button/image_button.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/skia/include/core/SkBitmap.h"
-#include "ui/base/layout.h"
 #include "ui/views/border.h"
 #include "ui/views/style/platform_style.h"
 #include "ui/views/test/views_test_base.h"

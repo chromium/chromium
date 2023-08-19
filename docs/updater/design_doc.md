@@ -82,6 +82,19 @@ Instances of the updater are installed in one of the following ways:
     macOS.)
 *   The updater downloads an update for itself and installs it.
 
+The updater installer calls GetVersion to discover the active version. If it
+gets no response or the response indicates the installed updater is a lower
+version, it installs the updater. If it had gotten no GetVersion response
+at all, it immediately wakes it.
+
+Each updater instance is unpacked into a version-specific subdirectory of the
+main updater installation path. If the installer discovers it is about to
+install into a versioned directory that already exists, it deletes everything
+except the `Crashpad/` subtree (if any) in that directory before unpacking
+the new installation. This clears out any "broken" prior installation while
+preserving crash reports and updater-specific crash-reporting opt-in flags.
+
+
 #### Updater States
 ![Updater state flowchart](images/updater_states.svg)
 
@@ -110,7 +123,7 @@ The updater also performs other basic health checks during qualification, which
 are detailed in the platform-specific sections.
 
 Qualification is skipped (along with any other pre-active states) if there is
-no active instance of the updater.
+no active instance of the updater, or if this instance of the updater is active.
 
 ##### Activation
 When an instance transitions to the active state, it acquires the updater's
@@ -121,6 +134,11 @@ with its own. Then, it clears the "swapping" bit, flushes the prefs file again,
 and starts listening for instructions on the RPC channels. The swapping bit
 ensures that the an updater will recover and restart activation if the program
 is interrupted mid-activation.
+
+After activating, the server resets its own qualification state to
+"unqualified". If somehow the active version of the updater decreases (most
+likely due to unexpected user intervention), the instance will have to qualify
+itself again before reactivating.
 
 ##### Deactivation
 When a newer instance of the updater activates, formerly active instances will
@@ -365,9 +383,9 @@ An example offline install command line on Windows platform:
 
 ```
 updater.exe /handoff "&appguid={8A69D345-D564-463C-AFF1-A69D9E530F96}&appname=MyApp&needsadmin=True&installdataindex =verboselog"
-Â  Â  Â  Â  Â  Â /installsource offline
-Â  Â  Â  Â  Â  Â /sessionid "{E85204C6-6F2F-40BF-9E6C-4952208BB977}"
-Â  Â  Â  Â  Â  Â /offlinedir "C:\Users\chrome-bot\AppData\Local\ForgedPath"]
+            /installsource offline
+            /sessionid "{E85204C6-6F2F-40BF-9E6C-4952208BB977}"
+            /offlinedir "C:\Users\chrome-bot\AppData\Local\ForgedPath"]
 ```
 DOS style command line switches are also supported for backward compatibility.
 
@@ -423,13 +441,13 @@ installer. See [installdataindex](#installdataindex) below for details.
 
 ##### Steps to create a tagged metainstaller
 
-A tagged metainstaller can be created using the signing tool
+A tagged EXE metainstaller can be created using the signing tool
 [sign.py](https://source.chromium.org/chromium/chromium/src/+/main:chrome/updater/win/signing/sign.py)
 and the metainstaller tagging tool
-[tag.py](https://source.chromium.org/chromium/chromium/src/+/main:chrome/updater/tools/tag.py).
+[tag.exe](https://source.chromium.org/chromium/chromium/src/+/main:chrome/updater/tools/BUILD.gn?q=%5C%22tag%5C%22).
 
 Here are the steps to create a tagged metainstaller for the following tag:
-`--tag="appguid=FOO_BAR_APP_ID&appname=SomeName&needsadmin=prefers"`
+`"appguid=FOO_BAR_APP_ID&appname=SomeName&needsadmin=prefers"`
 
 The source file is the untagged metainstaller `out\Default\UpdaterSetup.exe`,
 and the final tagged file will be `out\Default\Tagged_UpdaterSetup.signed.exe`.
@@ -451,22 +469,32 @@ python3 C:\src\chromium\src\chrome\updater\win\signing\sign.py --in_file
  --lzma_7z "C:\Program Files\7-Zip\7z.exe"
  --signtool c:\windows_sdk_10\files\bin\10.0.22000.0\x64\signtool.exe
  --identity id@domain.tld
- --certificate_tag C:\src\chromium\src\out\Default\certificate_tag.exe
+ --tagging_exe C:\src\chromium\src\out\Default\tag.exe
 ```
 *
 ```
-python3 C:\src\chromium\src\chrome\updater\tools\tag.py
- --certificate_tag=C:\src\chromium\src\out\Default\certificate_tag.exe
- --in_file=C:\src\chromium\src\out\Default\UpdaterSetup.signed.exe
- --out_file=out\Default\Tagged_UpdaterSetup.signed.exe
- --tag="appguid=FOO_BAR_APP_ID&appname=SomeName&needsadmin=prefers"
+C:\src\chromium\src\out\Default\tag.exe
+ --set-tag="appguid=FOO_BAR_APP_ID&appname=SomeName&needsadmin=prefers"
+ --out=C:\src\chromium\src\out\Default\Tagged_UpdaterSetup.signed.exe
+ C:\src\chromium\src\out\Default\UpdaterSetup.signed.exe
 ```
+
+For MSI installers (development in progress), the tagging is done using the same
+`tag.exe` tool:
+*
+```
+C:\src\chromium\src\out\Default\tag.exe
+ --set-tag="appguid=FOO_BAR_APP_ID&appname=SomeName&needsadmin=prefers"
+ --out=C:\src\chromium\src\out\Default\Tagged_UpdaterSetup.signed.msi
+ C:\src\chromium\src\out\Default\UpdaterSetup.signed.msi
+```
+
 
 ##### `needsadmin`
 
 `needsadmin` is one of the install parameters that can be specified for
 first installs via the
-[metainstaller tag](https://source.chromium.org/chromium/chromium/src/+/main:chrome/updater/tools/tag.py).
+[metainstaller tag](#Steps-to-create-a-tagged-metainstaller).
 `needsadmin` is used to indicate whether the application needs admin rights to
 install.
 
@@ -502,7 +530,7 @@ elevation fails however, runs the application installer as the current user.
 
 `installdataindex` is one of the install parameters that can be specified for
 first installs on the command line or via the
-[metainstaller tag](https://source.chromium.org/chromium/chromium/src/+/main:chrome/updater/tools/tag.py).
+[metainstaller tag](#Steps-to-create-a-tagged-metainstaller).
 
 For example, here is a typical command line for the Updater on Windows:
 ```

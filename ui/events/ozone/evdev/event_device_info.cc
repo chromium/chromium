@@ -12,9 +12,12 @@
 #include "base/feature_list.h"
 #include "base/files/file_path.h"
 #include "base/logging.h"
+#include "base/metrics/histogram_functions.h"
+#include "base/no_destructor.h"
 #include "base/notreached.h"
 #include "base/threading/thread_restrictions.h"
 #include "ui/events/devices/device_util_linux.h"
+#include "ui/events/ozone/evdev/keyboard_mouse_combo_device_metrics.h"
 #include "ui/events/ozone/features.h"
 
 #if !defined(EVIOCGMTSLOTS)
@@ -81,9 +84,10 @@ constexpr auto kKeyboardBlocklist = base::MakeFixedFlatSet<DeviceId>({
     {0x046d, 0xb024},  // Logitech G604 Lightspeed Gaming Mouse (Bluetooth)
     {0x046d, 0xb503},  // Logitech Spotlight Presentation Remote (Bluetooth)
     {0x046d, 0xb505},  // Logitech R500 (Bluetooth)
+    {0x046d, 0xc088},  // Logitech G Pro Wireless (USB)
     {0x046d, 0xc08b},  // Logitech G502 Hero
     {0x046d, 0xc093},  // Logitech M500s
-    {0x046d, 0xc534},  // Logitech M170
+    {0x046d, 0xc094},  // Logitech G Pro Wireless X Superlight (USB)
     {0x046d, 0xc53e},  // Logitech Spotlight Presentation Remote (USB dongle)
     {0x04b4, 0x121f},  // SteelSeries Ikari
     {0x056e, 0x0134},  // Elecom Enelo IR LED Mouse 350
@@ -243,6 +247,7 @@ constexpr auto kKeyboardBlocklist = base::MakeFixedFlatSet<DeviceId>({
     {0x1532, 0x007a},  // Razer Viper Ultimate (Wired)
     {0x1532, 0x007b},  // Razer Viper Ultimate (Wireless)
     {0x1532, 0x008a},  // Razer Viper Mini
+    {0x1532, 0x0094},  // Razer Orochi V2 (USB dongle)
     {0x1532, 0x009a},  // Razer Pro Click Mini (Dongle)
     {0x1532, 0x009b},  // Razer Pro Click Mini (Bluetooth)
     {0x17ef, 0x60be},  // Lenovo Legion M200 RGB Gaming Mouse
@@ -744,9 +749,25 @@ bool EventDeviceInfo::UseLibinput() const {
   return useLibinput;
 }
 
+void RecordBlocklistedKeyboardMetric(input_id input_id_) {
+  static base::NoDestructor<base::flat_set<DeviceId>> logged_devices;
+  auto [_, inserted] =
+      logged_devices->insert({input_id_.vendor, input_id_.product});
+  if (inserted) {
+    base::UmaHistogramEnumeration(
+        "ChromeOS.Inputs.ComboDeviceClassification",
+        ComboDeviceClassification::kKnownKeyboardImposter);
+  }
+}
+
 bool IsInKeyboardBlockList(input_id input_id_) {
   DeviceId id = {input_id_.vendor, input_id_.product};
-  return kKeyboardBlocklist.contains(id);
+  if (kKeyboardBlocklist.contains(id)) {
+    RecordBlocklistedKeyboardMetric(input_id_);
+    return true;
+  }
+
+  return false;
 }
 
 bool EventDeviceInfo::HasKeyboard() const {

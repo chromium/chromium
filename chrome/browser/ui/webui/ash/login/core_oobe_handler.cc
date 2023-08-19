@@ -13,6 +13,7 @@
 #include "base/values.h"
 #include "chrome/browser/ash/login/configuration_keys.h"
 #include "chrome/browser/ash/login/demo_mode/demo_setup_controller.h"
+#include "chrome/browser/ash/login/oobe_screen.h"
 #include "chrome/browser/ash/login/ui/login_display_host.h"
 #include "chrome/browser/ash/policy/enrollment/enrollment_requisition_manager.h"
 #include "chrome/browser/ui/ash/ash_util.h"
@@ -95,8 +96,9 @@ void CoreOobeHandler::ShowScreenWithData(
     const OobeScreenId& screen,
     absl::optional<base::Value::Dict> data) {
   const bool is_safe_priority_call =
-      IsPriorityScreen(screen.name) &&
-      ui_init_state_ == UiState::kPriorityScreensLoaded;
+      ui_init_state_ == UiState::kPriorityScreensLoaded &&
+      PriorityScreenChecker::IsPriorityScreen(screen);
+
   CHECK(ui_init_state_ == UiState::kFullyInitialized || is_safe_priority_call);
 
   base::Value::Dict screen_params;
@@ -167,16 +169,6 @@ void CoreOobeHandler::SetOsVersionLabelText(const std::string& label_text) {
 void CoreOobeHandler::SetBluetoothDeviceInfo(
     const std::string& bluetooth_name) {
   CallJS("cr.ui.Oobe.setBluetoothDeviceInfo", bluetooth_name);
-}
-
-bool CoreOobeHandler::IsPriorityScreen(const std::string& screen_name) {
-  // List of screens that are supported for prioritization. Currently, only the
-  // Welcome Screen ('connect') is supported.
-  const std::vector<std::string> supported_screens{"connect"};
-
-  const auto iter = std::find(supported_screens.begin(),
-                              supported_screens.end(), screen_name);
-  return iter != supported_screens.end();
 }
 
 void CoreOobeHandler::HandleInitializeCoreHandler() {

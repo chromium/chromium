@@ -149,7 +149,8 @@ class ASH_EXPORT ShelfView : public views::AccessiblePaneView,
 
   // ShelfTooltipDelegate:
   bool ShouldShowTooltipForView(const views::View* view) const override;
-  bool ShouldHideTooltip(const gfx::Point& cursor_location) const override;
+  bool ShouldHideTooltip(const gfx::Point& cursor_location,
+                         views::View* delegate_view) const override;
   const std::vector<aura::Window*> GetOpenWindowsForView(
       views::View* view) override;
   std::u16string GetTitleForView(const views::View* view) const override;
@@ -161,6 +162,7 @@ class ASH_EXPORT ShelfView : public views::AccessiblePaneView,
 
   // views::View:
   gfx::Size CalculatePreferredSize() const override;
+  gfx::Rect GetAnchorBoundsInScreen() const override;
   void OnThemeChanged() override;
   void OnBoundsChanged(const gfx::Rect& previous_bounds) override;
   FocusTraversable* GetPaneFocusTraversable() override;
@@ -312,6 +314,10 @@ class ASH_EXPORT ShelfView : public views::AccessiblePaneView,
 
   void set_default_last_focusable_child(bool default_last_focusable_child) {
     default_last_focusable_child_ = default_last_focusable_child;
+  }
+
+  ui::LayerTreeOwner* drag_image_layer_for_test() {
+    return drag_image_layer_.get();
   }
 
   ShelfAppButton* drag_view() { return drag_view_; }
@@ -565,17 +571,6 @@ class ASH_EXPORT ShelfView : public views::AccessiblePaneView,
   // and on-going bounds animations on |child|.
   gfx::Rect GetChildViewTargetMirroredBounds(const views::View* child) const;
 
-  // Updates the visibility, position, and transform of
-  // `all_pinned_items_are_partying_label_`.
-  void UpdateAllPinnedItemsArePartyingLabel();
-
-  // Returns true if `all_pinned_items_are_partying_label_` should be visible.
-  bool ShouldShowAllPinnedItemsArePartyingLabel() const;
-
-  // Returns the space occupied by `all_pinned_items_are_partying_label_`,
-  // including the gap between that label and the first item, in DIPs.
-  int AllPinnedItemsArePartyingLabelSpace() const;
-
   // Removes and reset |current_ghost_view| and |last_ghost_view|.
   void RemoveGhostView();
 
@@ -718,10 +713,6 @@ class ASH_EXPORT ShelfView : public views::AccessiblePaneView,
   // A view used to make accessibility announcements (changes in the shelf's
   // alignment or auto-hide state).
   raw_ptr<views::View, ExperimentalAsh> announcement_view_ =
-      nullptr;  // Owned by ShelfView
-
-  // A view used to indicate that all pinned items are partying.
-  raw_ptr<views::View, ExperimentalAsh> all_pinned_items_are_partying_label_ =
       nullptr;  // Owned by ShelfView
 
   // For dragging: -1 if scrolling back, 1 if scrolling forward, 0 if neither.

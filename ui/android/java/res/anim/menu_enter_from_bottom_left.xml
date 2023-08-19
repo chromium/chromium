@@ -6,20 +6,20 @@ found in the LICENSE file.
 -->
 
 <set xmlns:android="http://schemas.android.com/apk/res/android" android:shareInterpolator="false">
-    <scale android:interpolator="@android:anim/accelerate_decelerate_interpolator"
+    <scale android:interpolator="@anim/emphasized"
         android:fromXScale="0"
         android:toXScale="1"
         android:fromYScale="0"
         android:toYScale="1"
         android:pivotX="@fraction/menu_start_animation_pivot_x"
         android:pivotY="100%"
-        android:duration="200" />
-    <alpha android:interpolator="@android:anim/linear_interpolator"
+        android:duration="250" />
+    <alpha android:interpolator="@anim/emphasized"
         android:fromAlpha="0" android:toAlpha="1"
-        android:duration="200" />
-    <translate android:interpolator="@android:anim/accelerate_decelerate_interpolator"
+        android:duration="250" />
+    <translate android:interpolator="@anim/emphasized"
         android:fromYDelta="@dimen/menu_negative_software_vertical_offset"
         android:toYDelta="0"
         android:toXDelta="0"
-        android:duration="200" />
+        android:duration="250" />
 </set>

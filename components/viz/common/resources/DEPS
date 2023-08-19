@@ -16,3 +16,11 @@ include_rules = [
   "+third_party/skia",
   "+third_party/vulkan-deps/vulkan-headers/src",
 ]
+
+specific_include_rules = {
+  "shared_image_format.h": [
+    # This file contains an enum intended for internal usage by
+    # SharedImageFormat.
+    "+services/viz/public/mojom/compositing/internal/singleplanar_format.mojom.h",
+  ]
+}

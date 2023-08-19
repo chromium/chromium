@@ -1,0 +1,12 @@
+# Copyright 2023 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+declare_args() {
+  # This should only be changed in a local args.gn file for now. This library is
+  # not ready to be built into Chromium yet.
+  #
+  # MediaPipe support is under development, but should work on Linux and Windows
+  # Intel chips.
+  build_with_mediapipe_lib = false
+}

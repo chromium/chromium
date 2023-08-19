@@ -53,8 +53,8 @@
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-#include "chrome/browser/chromeos/policy/dlp/dlp_content_manager_test_helper.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_content_restriction_set.h"
+#include "chrome/browser/chromeos/policy/dlp/test/dlp_content_manager_test_helper.h"
 #endif
 
 namespace {
@@ -864,7 +864,7 @@ class GetDisplayMediaVideoTrackBrowserTest
   const DisplaySurfaceType display_surface_type_;
 
  private:
-  raw_ptr<content::WebContents, DanglingUntriaged> tab_ = nullptr;
+  raw_ptr<content::WebContents, AcrossTasksDanglingUntriaged> tab_ = nullptr;
 };
 
 INSTANTIATE_TEST_SUITE_P(
@@ -1002,7 +1002,7 @@ class GetDisplayMediaHiDpiBrowserTest
 
   base::test::ScopedFeatureList feature_list_;
   const TestConfigForHiDpi test_config_;
-  raw_ptr<content::WebContents, DanglingUntriaged> tab_ = nullptr;
+  raw_ptr<content::WebContents, AcrossTasksDanglingUntriaged> tab_ = nullptr;
 };
 
 IN_PROC_BROWSER_TEST_P(GetDisplayMediaHiDpiBrowserTest, Capture) {

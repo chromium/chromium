@@ -144,6 +144,7 @@ class SpeechRecognitionServiceTest
 
   // InProcessBrowserTest
   void SetUp() override;
+  void TearDownOnMainThread() override;
 
   // media::mojom::SpeechRecognitionRecognizerClient
   void OnSpeechRecognitionRecognitionEvent(
@@ -194,12 +195,19 @@ class SpeechRecognitionServiceTest
 
   std::vector<std::string> recognition_results_;
 
+  std::unique_ptr<ChromeSpeechRecognitionService> service_;
+
   bool is_client_requesting_speech_recognition_ = true;
 };
 
 void SpeechRecognitionServiceTest::SetUp() {
   ASSERT_TRUE(base::PathService::Get(base::DIR_SOURCE_ROOT, &test_data_dir_));
   InProcessBrowserTest::SetUp();
+}
+
+void SpeechRecognitionServiceTest::TearDownOnMainThread() {
+  // The ChromeSpeechRecognitionService must be destroyed on the main thread.
+  service_.reset();
 }
 
 void SpeechRecognitionServiceTest::OnSpeechRecognitionRecognitionEvent(
@@ -258,9 +266,9 @@ void SpeechRecognitionServiceTest::LaunchService() {
   // Launch the Speech Recognition service.
   auto* browser_context =
       static_cast<content::BrowserContext*>(browser()->profile());
-  auto* service = new ChromeSpeechRecognitionService(browser_context);
+  service_ = std::make_unique<ChromeSpeechRecognitionService>(browser_context);
 
-  service->BindSpeechRecognitionContext(
+  service_->BindSpeechRecognitionContext(
       speech_recognition_context_.BindNewPipeAndPassReceiver());
 
   bool is_multichannel_supported = true;
@@ -290,9 +298,9 @@ void SpeechRecognitionServiceTest::LaunchServiceWithAudioSourceFetcher() {
   // Launch the Speech Recognition service.
   auto* browser_context =
       static_cast<content::BrowserContext*>(browser()->profile());
-  auto* service = new ChromeSpeechRecognitionService(browser_context);
+  service_ = std::make_unique<ChromeSpeechRecognitionService>(browser_context);
 
-  service->BindAudioSourceSpeechRecognitionContext(
+  service_->BindAudioSourceSpeechRecognitionContext(
       audio_source_speech_recognition_context_.BindNewPipeAndPassReceiver());
 
   bool is_multichannel_supported = true;
@@ -531,8 +539,8 @@ IN_PROC_BROWSER_TEST_F(SpeechRecognitionServiceTest, CompromisedRenderer) {
   // Launch the Speech Recognition service.
   auto* browser_context =
       static_cast<content::BrowserContext*>(browser()->profile());
-  auto* service = new ChromeSpeechRecognitionService(browser_context);
-  service->BindSpeechRecognitionContext(
+  service_ = std::make_unique<ChromeSpeechRecognitionService>(browser_context);
+  service_->BindSpeechRecognitionContext(
       speech_recognition_context_.BindNewPipeAndPassReceiver());
 
   // Bind the recognizer pipes used to send audio and receive results.

@@ -43,8 +43,7 @@ public final class SuggestionsConfig {
     /**
      * Returns the current tile style, that depends on the enabled features and the screen size.
      */
-    @TileStyle
-    public static int getTileStyle(UiConfig uiConfig) {
+    public static @TileStyle int getTileStyle(UiConfig uiConfig) {
         return uiConfig.getCurrentDisplayStyle().isSmall() ? TileStyle.MODERN_CONDENSED
                                                            : TileStyle.MODERN;
     }

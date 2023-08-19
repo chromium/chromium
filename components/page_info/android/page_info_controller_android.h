@@ -38,7 +38,6 @@ class PageInfoControllerAndroid : public PageInfoUI {
                          const base::android::JavaParamRef<jobject>& obj);
 
   // PageInfoUI implementations.
-  void SetCookieInfo(const CookieInfoList& cookie_info_list) override;
   void SetPermissionInfo(const PermissionInfoList& permission_info_list,
                          ChosenObjectInfoList chosen_object_info_list) override;
   void SetIdentityInfo(const IdentityInfo& identity_info) override;

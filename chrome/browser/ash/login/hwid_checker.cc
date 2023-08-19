@@ -41,16 +41,14 @@ std::string CalculateHWIDv2Checksum(base::StringPiece data) {
 bool IsCorrectHWIDv2(base::StringPiece hwid) {
   std::string body;
   std::string checksum;
-  if (!RE2::FullMatch(re2::StringPiece(hwid.data(), hwid.length()),
-                      "([\\s\\S]*) (\\d{4})", &body, &checksum)) {
+  if (!RE2::FullMatch(hwid, "([\\s\\S]*) (\\d{4})", &body, &checksum)) {
     return false;
   }
   return CalculateHWIDv2Checksum(body) == checksum;
 }
 
 bool IsExceptionalHWID(base::StringPiece hwid) {
-  return RE2::PartialMatch(re2::StringPiece(hwid.data(), hwid.length()),
-                           "^(SPRING [A-D])|(FALCO A)");
+  return RE2::PartialMatch(hwid, "^(SPRING [A-D])|(FALCO A)");
 }
 
 std::string CalculateExceptionalHWIDChecksum(base::StringPiece data) {
@@ -68,8 +66,8 @@ bool IsCorrectExceptionalHWID(base::StringPiece hwid) {
   if (!IsExceptionalHWID(hwid))
     return false;
   std::string bom;
-  if (!RE2::FullMatch(re2::StringPiece(hwid.data(), hwid.length()),
-                      "[A-Z0-9]+ ((?:[A-Z2-7]{4}-)*[A-Z2-7]{1,4})", &bom)) {
+  if (!RE2::FullMatch(hwid, "[A-Z0-9]+ ((?:[A-Z2-7]{4}-)*[A-Z2-7]{1,4})",
+                      &bom)) {
     return false;
   }
   if (bom.length() < 2)

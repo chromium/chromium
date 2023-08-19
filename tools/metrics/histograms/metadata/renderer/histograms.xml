@@ -45,7 +45,7 @@ chromium-metrics-reviews@google.com.
 </variants>
 
 <histogram name="Renderer.BrowserLaunchToRunLoopStart" units="ms"
-    expires_after="2023-10-08">
+    expires_after="2024-02-11">
   <owner>sky@chromium.org</owner>
   <owner>jam@chromium.org</owner>
   <summary>
@@ -56,7 +56,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Renderer.Core.Timing.Performance.SwapsPerPerformanceEntryInsertion"
-    units="swaps" expires_after="2023-11-12">
+    units="swaps" expires_after="2024-01-14">
   <owner>iclelland@chromium.org</owner>
   <owner>speed-metrics-dev@chromium.org</owner>
   <summary>
@@ -69,7 +69,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Renderer.CriticalFonts.BlockingResourcesLoadTime" units="ms"
-    expires_after="2023-11-12">
+    expires_after="2024-01-14">
   <owner>yoavweiss@chromium.org</owner>
   <owner>speed-metrics-dev@chromium.org</owner>
   <summary>
@@ -81,7 +81,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Renderer.CriticalFonts.CriticalFontDelay" units="ms"
-    expires_after="2023-11-12">
+    expires_after="2024-01-14">
   <owner>yoavweiss@chromium.org</owner>
   <owner>speed-metrics-dev@chromium.org</owner>
   <summary>
@@ -94,7 +94,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Renderer.CriticalFonts.PreloadedFontsLoadTime" units="ms"
-    expires_after="2023-11-12">
+    expires_after="2024-01-14">
   <owner>yoavweiss@chromium.org</owner>
   <owner>speed-metrics-dev@chromium.org</owner>
   <summary>
@@ -301,10 +301,9 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Renderer.Font.PrimaryFont.DomContentLoaded" units="ms"
-    expires_after="2023-10-08">
+    expires_after="2024-02-11">
   <owner>kojii@chromium.org</owner>
   <owner>tkent@chromium.org</owner>
-  <owner>yosin@chromium.org</owner>
   <owner>layout-dev@chromium.org</owner>
   <summary>
     The time spent acquiring the primary font consumed in the main tread before
@@ -314,10 +313,9 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Renderer.Font.PrimaryFont.DomContentLoaded.Style" units="ms"
-    expires_after="2023-08-20">
+    expires_after="2023-12-10">
   <owner>kojii@chromium.org</owner>
   <owner>tkent@chromium.org</owner>
-  <owner>yosin@chromium.org</owner>
   <owner>layout-dev@chromium.org</owner>
   <summary>
     The time spent acquiring the primary font consumed in style recalc, in the
@@ -327,10 +325,9 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Renderer.Font.PrimaryFont.FCP" units="ms"
-    expires_after="2023-10-22">
+    expires_after="2024-02-11">
   <owner>kojii@chromium.org</owner>
   <owner>tkent@chromium.org</owner>
-  <owner>yosin@chromium.org</owner>
   <owner>layout-dev@chromium.org</owner>
   <summary>
     The time spent acquiring the primary font consumed in the main tread before
@@ -340,10 +337,9 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Renderer.Font.PrimaryFont.FCP.Style" units="ms"
-    expires_after="2023-06-18">
+    expires_after="2023-12-10">
   <owner>kojii@chromium.org</owner>
   <owner>tkent@chromium.org</owner>
-  <owner>yosin@chromium.org</owner>
   <owner>layout-dev@chromium.org</owner>
   <summary>
     The time spent acquiring the primary font consumed in style recalc, in the
@@ -353,10 +349,9 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Renderer.Font.SystemFallback.DomContentLoaded" units="ms"
-    expires_after="2023-08-08">
+    expires_after="2023-12-10">
   <owner>kojii@chromium.org</owner>
   <owner>tkent@chromium.org</owner>
-  <owner>yosin@chromium.org</owner>
   <owner>layout-dev@chromium.org</owner>
   <summary>
     The time spent finding the system fallback font consumed in the main tread
@@ -366,10 +361,9 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Renderer.Font.SystemFallback.FCP" units="ms"
-    expires_after="2023-06-25">
+    expires_after="2024-02-11">
   <owner>kojii@chromium.org</owner>
   <owner>tkent@chromium.org</owner>
-  <owner>yosin@chromium.org</owner>
   <owner>layout-dev@chromium.org</owner>
   <summary>
     The time spent finding the system fallback font consumed in the main tread
@@ -379,7 +373,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Renderer.Images.HasOverfetchedCappedPixels" enum="Boolean"
-    expires_after="2023-11-12">
+    expires_after="2024-01-14">
   <owner>yoavweiss@chromium.org</owner>
   <owner>speed-metrics-dev@chromium.org</owner>
   <summary>
@@ -423,7 +417,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Renderer.Images.OverfetchedPixels" units="px^2"
-    expires_after="2023-11-12">
+    expires_after="2024-01-14">
   <owner>yoavweiss@chromium.org</owner>
   <owner>speed-metrics-dev@chromium.org</owner>
   <summary>
@@ -446,14 +440,14 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Renderer.Layout.TextWrapBalance" units="ms"
-    expires_after="2023-10-20">
+    expires_after="2023-12-24">
   <owner>kojii@chromium.org</owner>
   <owner>layout-dev@chromium.org</owner>
   <summary>The time spent to balance lines of paragraphs.</summary>
 </histogram>
 
 <histogram name="Renderer.Layout.TextWrapBalance.Fail" units="ms"
-    expires_after="2023-10-20">
+    expires_after="2023-12-24">
   <owner>kojii@chromium.org</owner>
   <owner>layout-dev@chromium.org</owner>
   <summary>
@@ -461,8 +455,22 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Renderer.Layout.TextWrapPretty" units="ms"
+    expires_after="2024-02-05">
+  <owner>kojii@chromium.org</owner>
+  <owner>layout-dev@chromium.org</owner>
+  <summary>The time spent to optimize line breaks.</summary>
+</histogram>
+
+<histogram name="Renderer.Layout.TextWrapPretty.Fail" units="ms"
+    expires_after="2024-02-05">
+  <owner>kojii@chromium.org</owner>
+  <owner>layout-dev@chromium.org</owner>
+  <summary>The time spent to try optimizing lines breaks but failed.</summary>
+</histogram>
+
 <histogram name="Renderer.PaintPreview.Capture.MainFrameBlinkCaptureDuration"
-    units="ms" expires_after="2023-11-12">
+    units="ms" expires_after="2024-01-14">
   <owner>ckitagawa@chromium.org</owner>
   <owner>fredmello@chromium.org</owner>
   <owner>chrome-fdt@google.com</owner>
@@ -527,8 +535,22 @@ chromium-metrics-reviews@google.com.
   <token key="RendererHostedContentType" variants="RendererHostedContentType"/>
 </histogram>
 
+<histogram name="Renderer.ReduceSubresourceResponseIPC.DidNotifyBrowser"
+    enum="Boolean" expires_after="2023-12-24">
+  <owner>amanvr@chromium.org</owner>
+  <owner>carlscab@chromium.org</owner>
+  <owner>woa-performance@google.com</owner>
+  <summary>
+    The histogram is being used to track the number of messages
+    (content::mojom::FrameHost::SubresourceResponseStarted IPCs) being sent by
+    the RenderFrameImpl to notify RenderFrameHostImpl of starting subresource
+    responses, versus the number of times it was deemed unnecessary due to the
+    kReduceSubresourceResponseStartedIPC feature.
+  </summary>
+</histogram>
+
 <histogram name="Renderer.RenderThreadImpl.Init" units="ms"
-    expires_after="2023-10-22">
+    expires_after="2023-12-24">
   <owner>jam@chromium.org</owner>
   <owner>sky@chromium.org</owner>
   <summary>
@@ -576,7 +598,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="RendererScheduler.RendererMainThreadLoad5" units="%"
-    expires_after="2023-11-05">
+    expires_after="2024-01-07">
   <owner>altimin@chromium.org</owner>
   <summary>
     Renderer main thread load (percentage of time spent in tasks), reported in
@@ -587,21 +609,6 @@ chromium-metrics-reviews@google.com.
     This metric is emitted when the renderer main thread task is completed or
     renderer is backgrounded or foregrounded, at most once per second per
     renderer amortized.
-  </summary>
-</histogram>
-
-<histogram base="true" name="RendererScheduler.TaskDurationPerFrameOriginType2"
-    enum="RendererSchedulerFrameOriginType" expires_after="M85">
-  <owner>altimin@chromium.org</owner>
-  <summary>
-    Total cpu time (reported in full seconds) of renderer tasks split by per
-    frame origin type (main frame vs same-origin frame vs cross-origin frame).
-    Note that partial seconds are rounded up/down so that they average to the
-    correct value when many reports are added. For more details, check
-    base::ScaledLinearHistogram.
-
-    Note that this metric discards tasks longer than 30 seconds because they are
-    considered to be a result of measurement glitch.
   </summary>
 </histogram>
 

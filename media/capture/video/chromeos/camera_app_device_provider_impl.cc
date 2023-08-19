@@ -77,4 +77,23 @@ void CameraAppDeviceProviderImpl::SetVirtualDeviceEnabledWithDeviceId(
   bridge_->SetVirtualDeviceEnabled(*device_id, enabled, std::move(callback));
 }
 
+void CameraAppDeviceProviderImpl::IsDeviceInUse(
+    const std::string& source_id,
+    IsDeviceInUseCallback callback) {
+  mapping_callback_.Run(
+      source_id, base::BindPostTaskToCurrentDefault(base::BindOnce(
+                     &CameraAppDeviceProviderImpl::IsDeviceInUseWithDeviceId,
+                     weak_ptr_factory_.GetWeakPtr(), std::move(callback))));
+}
+
+void CameraAppDeviceProviderImpl::IsDeviceInUseWithDeviceId(
+    IsDeviceInUseCallback callback,
+    const absl::optional<std::string>& device_id) {
+  if (!device_id.has_value()) {
+    std::move(callback).Run(false);
+    return;
+  }
+  bridge_->IsDeviceInUse(*device_id, std::move(callback));
+}
+
 }  // namespace media

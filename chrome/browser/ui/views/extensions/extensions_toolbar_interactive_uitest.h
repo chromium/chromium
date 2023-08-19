@@ -120,7 +120,7 @@ class ExtensionsToolbarUITest : public DialogBrowserTest {
   void WaitForAnimation();
 
  private:
-  raw_ptr<Browser, DanglingUntriaged> incognito_browser_ = nullptr;
+  raw_ptr<Browser, AcrossTasksDanglingUntriaged> incognito_browser_ = nullptr;
   std::vector<scoped_refptr<const extensions::Extension>> extensions_;
 };
 

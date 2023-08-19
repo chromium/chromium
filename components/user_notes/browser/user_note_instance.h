@@ -97,7 +97,7 @@ class UserNoteInstance : public blink::mojom::AnnotationAgentHost {
 
   // A ref to the backing model of this note instance. The model is owned by
   // |UserNoteService|. The model is expected to outlive this class.
-  base::SafeRef<UserNote> model_;
+  base::SafeRef<UserNote, base::SafeRefDanglingUntriaged> model_;
 
   // The owning note manager.
   raw_ptr<UserNoteManager> parent_manager_;

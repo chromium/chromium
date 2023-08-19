@@ -65,7 +65,12 @@ class CertNotificationForwarder : public NSSCertDatabase::Observer {
 
   ~CertNotificationForwarder() override = default;
 
-  void OnCertDBChanged() override { cert_db_->NotifyObserversCertDBChanged(); }
+  void OnTrustStoreChanged() override {
+    cert_db_->NotifyObserversTrustStoreChanged();
+  }
+  void OnClientCertStoreChanged() override {
+    cert_db_->NotifyObserversClientCertStoreChanged();
+  }
 
  private:
   raw_ptr<CertDatabase> cert_db_;
@@ -210,8 +215,9 @@ bool NSSCertDatabase::SetCertTrust(CERTCertificate* cert,
                                    CertType type,
                                    TrustBits trust_bits) {
   bool success = psm::SetCertTrust(cert, type, trust_bits);
-  if (success)
-    NotifyObserversCertDBChanged();
+  if (success) {
+    NotifyObserversTrustStoreChanged();
+  }
 
   return success;
 }
@@ -225,8 +231,9 @@ int NSSCertDatabase::ImportFromPKCS12(
   int result =
       psm::nsPKCS12Blob_Import(slot_info, data.data(), data.size(), password,
                                is_extractable, imported_certs);
-  if (result == OK)
-    NotifyObserversCertDBChanged();
+  if (result == OK) {
+    NotifyObserversClientCertStoreChanged();
+  }
 
   return result;
 }
@@ -272,8 +279,9 @@ int NSSCertDatabase::ImportUserCert(const std::string& data) {
 
   int result = psm::ImportUserCert(certificates[0].get());
 
-  if (result == OK)
-    NotifyObserversCertDBChanged();
+  if (result == OK) {
+    NotifyObserversClientCertStoreChanged();
+  }
 
   return result;
 }
@@ -281,8 +289,9 @@ int NSSCertDatabase::ImportUserCert(const std::string& data) {
 int NSSCertDatabase::ImportUserCert(CERTCertificate* cert) {
   int result = psm::ImportUserCert(cert);
 
-  if (result == OK)
-    NotifyObserversCertDBChanged();
+  if (result == OK) {
+    NotifyObserversClientCertStoreChanged();
+  }
 
   return result;
 }
@@ -296,8 +305,9 @@ bool NSSCertDatabase::ImportCACerts(
 
   bool success = psm::ImportCACerts(slot.get(), certificates, root, trust_bits,
                                     not_imported);
-  if (success)
-    NotifyObserversCertDBChanged();
+  if (success) {
+    NotifyObserversTrustStoreChanged();
+  }
 
   return success;
 }
@@ -309,6 +319,9 @@ bool NSSCertDatabase::ImportServerCert(
   crypto::ScopedPK11Slot slot(GetPublicSlot());
   return psm::ImportServerCert(slot.get(), certificates, trust_bits,
                                not_imported);
+  // TODO(mattm): should generate OnTrustStoreChanged notification? The ability
+  // to set a server cert as trusted isn't hooked up anywhere currently, but
+  // technically we should generate a notification.
 }
 
 NSSCertDatabase::TrustBits NSSCertDatabase::GetCertTrust(
@@ -359,10 +372,21 @@ NSSCertDatabase::TrustBits NSSCertDatabase::GetCertTrust(
 }
 
 bool NSSCertDatabase::DeleteCertAndKey(CERTCertificate* cert) {
-  if (!DeleteCertAndKeyImpl(cert))
-    return false;
-  NotifyObserversCertDBChanged();
-  return true;
+  // This makes the assumption that if there was a matching private key, the
+  // cert was probably a client cert, and if not, it may have been a trust
+  // anchor or intemediate CA cert. This is used as a simple approximation as
+  // otherwise this requires checking and combining multiple things
+  // (basicConstraints if present, trust settings, etc).
+  switch (DeleteCertAndKeyImpl(cert)) {
+    case DeleteCertAndKeyResult::OK_NO_KEY:
+      NotifyObserversTrustStoreChanged();
+      return true;
+    case DeleteCertAndKeyResult::OK_FOUND_KEY:
+      NotifyObserversClientCertStoreChanged();
+      return true;
+    case DeleteCertAndKeyResult::ERROR:
+      return false;
+  }
 }
 
 void NSSCertDatabase::DeleteCertAndKeyAsync(ScopedCERTCertificate cert,
@@ -589,19 +613,38 @@ NSSCertDatabase::CertInfoList NSSCertDatabase::ListCertsInfoImpl(
   }
 }
 
-void NSSCertDatabase::NotifyCertRemovalAndCallBack(DeleteCertCallback callback,
-                                                   bool success) {
-  if (success)
-    NotifyObserversCertDBChanged();
-  std::move(callback).Run(success);
+void NSSCertDatabase::NotifyCertRemovalAndCallBack(
+    DeleteCertCallback callback,
+    DeleteCertAndKeyResult result) {
+  // This makes the assumption that if there was a matching private key, the
+  // cert was probably a client cert, and if not, it may have been a trust
+  // anchor or intemediate CA cert.
+  switch (result) {
+    case DeleteCertAndKeyResult::OK_NO_KEY:
+      NotifyObserversTrustStoreChanged();
+      std::move(callback).Run(true);
+      break;
+    case DeleteCertAndKeyResult::OK_FOUND_KEY:
+      NotifyObserversClientCertStoreChanged();
+      std::move(callback).Run(true);
+      break;
+    case DeleteCertAndKeyResult::ERROR:
+      std::move(callback).Run(false);
+      break;
+  }
 }
 
-void NSSCertDatabase::NotifyObserversCertDBChanged() {
-  observer_list_->Notify(FROM_HERE, &Observer::OnCertDBChanged);
+void NSSCertDatabase::NotifyObserversTrustStoreChanged() {
+  observer_list_->Notify(FROM_HERE, &Observer::OnTrustStoreChanged);
+}
+
+void NSSCertDatabase::NotifyObserversClientCertStoreChanged() {
+  observer_list_->Notify(FROM_HERE, &Observer::OnClientCertStoreChanged);
 }
 
 // static
-bool NSSCertDatabase::DeleteCertAndKeyImpl(CERTCertificate* cert) {
+NSSCertDatabase::DeleteCertAndKeyResult NSSCertDatabase::DeleteCertAndKeyImpl(
+    CERTCertificate* cert) {
   // This method may acquire the NSS lock or reenter this code via extension
   // hooks (such as smart card UI). To ensure threads are not starved or
   // deadlocked, the base::ScopedBlockingCall below increments the thread pool
@@ -618,19 +661,21 @@ bool NSSCertDatabase::DeleteCertAndKeyImpl(CERTCertificate* cert) {
     SECKEY_DestroyPrivateKey(privKey);
     if (PK11_DeleteTokenCertAndKey(cert, nullptr)) {
       LOG(ERROR) << "PK11_DeleteTokenCertAndKey failed: " << PORT_GetError();
-      return false;
+      return DeleteCertAndKeyResult::ERROR;
     }
+    return DeleteCertAndKeyResult::OK_FOUND_KEY;
   } else {
     if (SEC_DeletePermCertificate(cert)) {
       LOG(ERROR) << "SEC_DeletePermCertificate failed: " << PORT_GetError();
-      return false;
+      return DeleteCertAndKeyResult::ERROR;
     }
+    return DeleteCertAndKeyResult::OK_NO_KEY;
   }
-  return true;
 }
 
 // static
-bool NSSCertDatabase::DeleteCertAndKeyImplScoped(ScopedCERTCertificate cert) {
+NSSCertDatabase::DeleteCertAndKeyResult
+NSSCertDatabase::DeleteCertAndKeyImplScoped(ScopedCERTCertificate cert) {
   return NSSCertDatabase::DeleteCertAndKeyImpl(cert.get());
 }
 

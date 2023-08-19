@@ -23,7 +23,13 @@ interface AutofillAgent {
   // Instructs the renderer to fill or preview the active form with the given
   // form data.
   FillOrPreviewForm(FormData form,
-                    RendererFormDataAction action);
+                    AutofillActionPersistence action);
+
+  // Fill the active form with some of `forms` data. This operation is ran
+  // with the specific intention to "undo" the last autofill operation that
+  // affected the field on which Undo was triggered. `renderer_action` denotes
+  // whether the renderer should actually fill or preview those changes.
+  UndoAutofill(FormData form, AutofillActionPersistence renderer_action);
 
   // Sends the heuristic and server field type predictions to the renderer.
   FieldTypePredictionsAvailable(array<FormDataPredictions> forms);
@@ -35,6 +41,20 @@ interface AutofillAgent {
 
   // Tells the renderer that the Autofill previewed form should be cleared.
   ClearPreviewedForm();
+
+  // Tells the renderer to trigger Autofill suggestions on the `field`, as if
+  // triggered through the provided `trigger_source`.
+  // For the most part, suggestions are triggered through Blink events on the
+  // renderer-side. However, manual fallbacks from the context menu are
+  // triggered from the browser processes. They need to make another round-trip
+  // to the renderer, since rendering suggestions relies on the `field`'s
+  // position. Since the browser process doesn't have up-to-date coordinates,
+  // suggestions are triggered through the renderer, which causes the field and
+  // its coordinates to be re-extracted.
+  // Assuming the `field` is found, the driver's `AskForValuesToFill()` will be
+  // called.
+  TriggerSuggestions(FieldRendererId field,
+                     AutofillSuggestionTriggerSource trigger_source);
 
   // Sets the value of |field| (if it is still the currently selected node).
   FillFieldWithValue(FieldRendererId field, mojo_base.mojom.String16 value);
@@ -51,11 +71,6 @@ interface AutofillAgent {
   // to the given data list value.
   AcceptDataListSuggestion(FieldRendererId field,
                            mojo_base.mojom.String16 value);
-
-  // Tells the renderer to fill the username and password with with given
-  // values.
-  FillPasswordSuggestion(mojo_base.mojom.String16 username,
-                         mojo_base.mojom.String16 password);
 
   // Tells the renderer to preview the username and password with the given
   // values.
@@ -108,6 +123,11 @@ interface PasswordAutofillAgent {
   // the popup UI.
   SetPasswordFillData(PasswordFormFillData form_data);
 
+  // Tells the renderer to fill the username and password with with given
+  // values.
+  FillPasswordSuggestion(mojo_base.mojom.String16 username,
+                         mojo_base.mojom.String16 password);
+
   // Lets the renderer know that there are no saved credentials for filling.
   // This is the "no results" equivalent of SetPasswordFillData.
   InformNoSavedCredentials(bool should_show_popup_without_passwords);
@@ -121,6 +141,8 @@ interface PasswordAutofillAgent {
 
   // Informs the renderer that the Keyboard Replacing Surface has been closed.
   // Indicates whether the virtual keyboard should be shown instead.
+  // TODO(crbug/1462532): Remove this API once PasswordSuggestionBottomSheetV2
+  // is launched.
   [EnableIf=is_android]
   KeyboardReplacingSurfaceClosed(bool show_virtual_keyboard);
 

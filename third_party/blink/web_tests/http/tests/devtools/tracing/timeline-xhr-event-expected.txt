@@ -14,7 +14,7 @@ XHRReadyStateChange Properties:
     startTime : <number>
     type : "XHRReadyStateChange"
 }
-Text details for XHRReadyStateChange: :8000/devtools/tracing/network/resources/resource.php
+Text details for XHRReadyStateChange: resource.php
 XHRReadyStateChange Properties:
 {
     data : {
@@ -27,7 +27,7 @@ XHRReadyStateChange Properties:
     startTime : <number>
     type : "XHRReadyStateChange"
 }
-Text details for XHRReadyStateChange: :8000/devtools/tracing/network/resources/resource.php
+Text details for XHRReadyStateChange: resource.php
 XHRReadyStateChange Properties:
 {
     data : {
@@ -40,7 +40,7 @@ XHRReadyStateChange Properties:
     startTime : <number>
     type : "XHRReadyStateChange"
 }
-Text details for XHRReadyStateChange: :8000/devtools/tracing/network/resources/resource.php
+Text details for XHRReadyStateChange: resource.php
 XHRReadyStateChange Properties:
 {
     data : {
@@ -53,7 +53,7 @@ XHRReadyStateChange Properties:
     startTime : <number>
     type : "XHRReadyStateChange"
 }
-Text details for XHRReadyStateChange: :8000/devtools/tracing/network/resources/resource.php
+Text details for XHRReadyStateChange: resource.php
 XHRLoad Properties:
 {
     data : {
@@ -65,5 +65,5 @@ XHRLoad Properties:
     startTime : <number>
     type : "XHRLoad"
 }
-Text details for XHRLoad: :8000/devtools/tracing/network/resources/resource.php
+Text details for XHRLoad: resource.php
 

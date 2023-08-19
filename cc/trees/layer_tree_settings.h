@@ -8,6 +8,7 @@
 #include <stddef.h>
 
 #include "base/time/time.h"
+#include "cc/base/features.h"
 #include "cc/cc_export.h"
 #include "cc/debug/layer_tree_debug_state.h"
 #include "cc/scheduler/scheduler_settings.h"
@@ -15,7 +16,6 @@
 #include "cc/tiles/tile_manager_settings.h"
 #include "cc/trees/managed_memory_policy.h"
 #include "components/viz/common/display/renderer_settings.h"
-#include "components/viz/common/resources/resource_format.h"
 #include "components/viz/common/resources/resource_settings.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/gfx/geometry/size.h"
@@ -58,7 +58,6 @@ class CC_EXPORT LayerTreeSettings {
   bool scrollbar_flash_after_any_scroll_update = false;
   SkColor4f solid_color_scrollbar_color = SkColors::kWhite;
   base::TimeDelta scroll_animation_duration_for_testing;
-  bool timeout_and_draw_when_animation_checkerboards = true;
   bool layers_always_allowed_lcd_text = false;
   float low_res_contents_scale_factor = 0.25f;
   float top_controls_show_threshold = 0.5f;
@@ -73,13 +72,20 @@ class CC_EXPORT LayerTreeSettings {
   // sane minimum for now, but we might want to tune this for low-end.
   int min_height_for_gpu_raster_tile = 256;
   gfx::Size minimum_occlusion_tracking_size;
-  // 3000 pixels should give sufficient area for prepainting.
   // Note this value is specified with an ideal contents scale in mind. That
   // is, the ideal tiling would use this value as the padding.
   // TODO(vmpstr): Figure out a better number that doesn't depend on scale.
-  int tiling_interest_area_padding = 3000;
+  constexpr static int kDefaultSkewportExtrapolationLimitInScrenPixels = 2000;
+  int tiling_interest_area_padding = features::kDefaultInterestAreaSizeInPixels;
+  // Note: only used for software raster, otherwise
+  // |gpu_rasterization_skewport_target_time_in_seconds| is used.
   float skewport_target_time_in_seconds = 1.0f;
-  int skewport_extrapolation_limit_in_screen_pixels = 2000;
+  int skewport_extrapolation_limit_in_screen_pixels =
+      kDefaultSkewportExtrapolationLimitInScrenPixels;
+  static_assert(kDefaultSkewportExtrapolationLimitInScrenPixels <=
+                    features::kDefaultInterestAreaSizeInPixels,
+                "Skewport size must be smaller than the interest area to "
+                "prevent prepainted tiles from being discarded.");
   size_t max_memory_for_prepaint_percentage = 100;
   bool use_zero_copy = false;
   bool use_partial_raster = false;
@@ -172,10 +178,6 @@ class CC_EXPORT LayerTreeSettings {
   // go away and CC should send Blink fractional values:
   // https://crbug.com/414283.
   bool commit_fractional_scroll_deltas = false;
-
-  // When false, we do not check for occlusion and all quads are drawn.
-  // Defaults to true.
-  bool enable_occlusion = true;
 
   // Whether the compositor should attempt to sync with the scroll handlers
   // before submitting a frame.

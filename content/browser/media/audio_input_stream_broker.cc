@@ -126,7 +126,7 @@ void AudioInputStreamBroker::CreateStream(
   factory->CreateInputStream(
       std::move(stream_receiver), std::move(client), std::move(observer),
       MediaInternals::GetInstance()->CreateMojoAudioLog(
-          media::AudioLogFactory::AudioComponent::AUDIO_INPUT_CONTROLLER,
+          media::AudioLogFactory::AudioComponent::kAudioInputController,
           log_component_id, render_process_id(), render_frame_id()),
       device_id_, params_, shared_memory_count_, enable_agc_,
       std::move(key_press_count_buffer), std::move(processing_config_),

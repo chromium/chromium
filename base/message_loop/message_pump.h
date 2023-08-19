@@ -13,7 +13,6 @@
 #include "base/check_op.h"
 #include "base/memory/raw_ptr_exclusion.h"
 #include "base/message_loop/message_pump_type.h"
-#include "base/message_loop/timer_slack.h"
 #include "base/sequence_checker.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
@@ -252,9 +251,6 @@ class BASE_EXPORT MessagePump {
   // entered.
   virtual void ScheduleDelayedWork(
       const Delegate::NextWorkInfo& next_work_info) = 0;
-
-  // Sets the timer slack to the specified value.
-  virtual void SetTimerSlack(TimerSlack timer_slack);
 };
 
 }  // namespace base

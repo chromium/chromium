@@ -15,7 +15,6 @@
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/metrics/histogram_tester.h"
-#include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
 #include "chrome/renderer/autofill/fake_mojo_password_manager_driver.h"
 #include "chrome/renderer/autofill/fake_password_generation_driver.h"
@@ -52,6 +51,7 @@ using blink::WebNode;
 using blink::WebString;
 using testing::_;
 using testing::AnyNumber;
+using testing::AtLeast;
 using testing::AtMost;
 using testing::Eq;
 
@@ -118,8 +118,7 @@ class FakeContentAutofillDriver : public mojom::AutofillDriver {
       const FormData& form,
       const FormFieldData& field,
       const gfx::RectF& bounding_box,
-      AutoselectFirstSuggestion autoselect_first_suggestion,
-      FormElementWasClicked form_element_was_clicked) override {}
+      AutofillSuggestionTriggerSource trigger_source) override {}
 
   void HidePopup() override {}
 
@@ -136,7 +135,8 @@ class FakeContentAutofillDriver : public mojom::AutofillDriver {
 
   void DidEndTextFieldEditing() override {}
 
-  void SelectFieldOptionsDidChange(const autofill::FormData& form) override {}
+  void SelectOrSelectListFieldOptionsDidChange(
+      const autofill::FormData& form) override {}
 
   std::unique_ptr<base::RunLoop> forms_seen_run_loop_ =
       std::make_unique<base::RunLoop>();
@@ -363,10 +363,7 @@ WebElement PasswordGenerationAgentTest::GetElementById(
 }
 
 void PasswordGenerationAgentTest::FocusField(const char* element_id) {
-  GetElementById(element_id);  // Just check the element exists.
-  ExecuteJavaScriptForTests(
-      base::StringPrintf("document.getElementById('%s').focus();", element_id)
-          .c_str());
+  SimulateElementClick(element_id);
 #if BUILDFLAG(IS_ANDROID)
   // TODO(crbug.com/1293802): On Android, the JS above doesn't trigger the
   // method below.
@@ -382,7 +379,9 @@ void PasswordGenerationAgentTest::ExpectAutomaticGenerationAvailable(
   if (status == kNotReported) {
     EXPECT_CALL(fake_pw_client_, AutomaticGenerationAvailable(_)).Times(0);
   } else {
-    EXPECT_CALL(fake_pw_client_, AutomaticGenerationAvailable(_));
+    // TODO(crbug.com/1473553): Expect the call precisely once.
+    EXPECT_CALL(fake_pw_client_, AutomaticGenerationAvailable(_))
+        .Times(testing::AtLeast(1));
   }
 
   FocusField(element_id);
@@ -629,7 +628,8 @@ TEST_F(PasswordGenerationAgentTest, EditingTest) {
   std::u16string edited_password = base::ASCIIToUTF16(edited_password_ascii);
   EXPECT_CALL(fake_pw_client_,
               PresaveGeneratedPassword(_, Eq(edited_password)));
-  EXPECT_CALL(fake_pw_client_, ShowPasswordEditingPopup(_, _, _, _));
+  EXPECT_CALL(fake_pw_client_, ShowPasswordEditingPopup).Times(AtLeast(1));
+  FocusField("first_password");
   SimulateUserInputChangeForElement(&first_password_element,
                                     edited_password_ascii);
   EXPECT_EQ(edited_password, first_password_element.Value().Utf16());
@@ -643,12 +643,6 @@ TEST_F(PasswordGenerationAgentTest, EditingTest) {
   EXPECT_THAT(FindFieldById(*fake_driver_.form_data_maybe_submitted(),
                             "second_password"),
               testing::Field(&FormFieldData::value, edited_password));
-#if BUILDFLAG(IS_ANDROID)
-  // TODO(crbug.com/1293802): On Android, |SimulateUserInputChangeForElement|
-  // doesn't trigger focusing events and |ShowPasswordEditingPopup| expectation
-  // is unfulfilled. So, trigger it explicitly.
-  FocusField("first_password");
-#endif
   base::RunLoop().RunUntilIdle();
   testing::Mock::VerifyAndClearExpectations(&fake_pw_client_);
 
@@ -686,8 +680,9 @@ TEST_F(PasswordGenerationAgentTest, EditingEventsTest) {
 
   // Start removing characters one by one and observe the events sent to the
   // browser.
-  EXPECT_CALL(fake_pw_client_, ShowPasswordEditingPopup(_, _, _, _));
+  EXPECT_CALL(fake_pw_client_, ShowPasswordEditingPopup).Times(AtLeast(1));
   FocusField("first_password");
+  SimulateUserTypingASCIICharacter(ui::VKEY_END, true);
   fake_pw_client_.Flush();
   testing::Mock::VerifyAndClearExpectations(&fake_pw_client_);
   size_t max_chars_to_delete_before_editing =
@@ -785,7 +780,8 @@ TEST_F(PasswordGenerationAgentTest, MaximumCharsForGenerationOffer) {
   fake_pw_client_.Flush();
 
   // Focusing the password field will bring up the generation UI again.
-  EXPECT_CALL(fake_pw_client_, AutomaticGenerationAvailable(_));
+  EXPECT_CALL(fake_pw_client_, AutomaticGenerationAvailable(_))
+      .Times(AtLeast(1));
   FocusField("first_password");
   fake_pw_client_.Flush();
   testing::Mock::VerifyAndClearExpectations(&fake_pw_client_);
@@ -799,46 +795,6 @@ TEST_F(PasswordGenerationAgentTest, MaximumCharsForGenerationOffer) {
   histogram_tester.ExpectBucketCount(
       "PasswordGeneration.Event",
       autofill::password_generation::GENERATION_POPUP_SHOWN, 1);
-}
-
-TEST_F(PasswordGenerationAgentTest,
-       MaximumCharsForGenerationOfferIgnoredWithEnabledStrengthIndicator) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(
-      password_manager::features::kPasswordStrengthIndicator);
-
-  LoadHTMLWithUserGesture(kAccountCreationFormHTML);
-  SetFoundFormEligibleForGeneration(
-      password_generation_, GetMainFrame()->GetDocument(),
-      /*new_password_id=*/"first_password", /*confirm_password_id=*/nullptr);
-  ExpectAutomaticGenerationAvailable("first_password", kAvailable);
-
-  WebDocument document = GetMainFrame()->GetDocument();
-  WebElement element =
-      document.GetElementById(WebString::FromUTF8("first_password"));
-  ASSERT_FALSE(element.IsNull());
-  WebInputElement first_password_element = element.To<WebInputElement>();
-
-  // Dropdown should not be hidden with more characters than maximum for
-  // generation when strength indicator feature is enabled.
-  EXPECT_CALL(fake_pw_client_, AutomaticGenerationAvailable(_))
-      .Times(AtMost(1));
-  SimulateUserInputChangeForElement(
-      &first_password_element,
-      std::string(PasswordGenerationAgent::kMaximumCharsForGenerationOffer + 1,
-                  'a'));
-  testing::Mock::VerifyAndClearExpectations(&fake_pw_client_);
-
-  // Dropdown should be hidden when focus changes.
-  EXPECT_CALL(fake_pw_client_, GenerationElementLostFocus());
-  FocusField("username");
-  fake_pw_client_.Flush();
-
-  // Focusing the password field should bring the generation dropdown again.
-  EXPECT_CALL(fake_pw_client_, AutomaticGenerationAvailable(_));
-  FocusField("first_password");
-  fake_pw_client_.Flush();
-  testing::Mock::VerifyAndClearExpectations(&fake_pw_client_);
 }
 
 TEST_F(PasswordGenerationAgentTest, MinimumLengthForEditedPassword) {
@@ -857,9 +813,10 @@ TEST_F(PasswordGenerationAgentTest, MinimumLengthForEditedPassword) {
   testing::Mock::VerifyAndClearExpectations(&fake_pw_client_);
 
   // Delete most of the password.
-  EXPECT_CALL(fake_pw_client_, ShowPasswordEditingPopup(_, _, _, _));
+  EXPECT_CALL(fake_pw_client_, ShowPasswordEditingPopup).Times(AtLeast(1));
   EXPECT_CALL(fake_pw_client_, AutomaticGenerationAvailable(_)).Times(0);
   FocusField("first_password");
+  SimulateUserTypingASCIICharacter(ui::VKEY_END, false);
   size_t max_chars_to_delete =
       password.length() -
       PasswordGenerationAgent::kMinimumLengthForEditedPassword;
@@ -1060,7 +1017,7 @@ TEST_F(PasswordGenerationAgentTest, PresavingGeneratedPassword) {
     password_generation_->GeneratedPasswordAccepted(password);
     base::RunLoop().RunUntilIdle();
 
-    EXPECT_CALL(fake_pw_client_, ShowPasswordEditingPopup(_, _, _, _));
+    EXPECT_CALL(fake_pw_client_, ShowPasswordEditingPopup).Times(AtLeast(1));
     FocusField(test_case.generation_element);
     EXPECT_CALL(fake_pw_client_, PresaveGeneratedPassword(_, _));
     SimulateUserTypingASCIICharacter('a', true);
@@ -1073,8 +1030,9 @@ TEST_F(PasswordGenerationAgentTest, PresavingGeneratedPassword) {
     base::RunLoop().RunUntilIdle();
     testing::Mock::VerifyAndClearExpectations(&fake_pw_client_);
 
-    EXPECT_CALL(fake_pw_client_, ShowPasswordEditingPopup(_, _, _, _));
+    EXPECT_CALL(fake_pw_client_, ShowPasswordEditingPopup).Times(AtLeast(1));
     FocusField(test_case.generation_element);
+    SimulateUserTypingASCIICharacter(ui::VKEY_END, false);
     EXPECT_CALL(fake_pw_client_, PasswordNoLongerGenerated(testing::_));
     for (size_t i = 0; i < password.length(); ++i)
       SimulateUserTypingASCIICharacter(ui::VKEY_BACK, false);
@@ -1110,6 +1068,21 @@ TEST_F(PasswordGenerationAgentTest, FallbackForSaving) {
   EXPECT_EQ(2, fake_driver_.called_inform_about_user_input_count());
 }
 
+TEST_F(PasswordGenerationAgentTest, AcceptAfterNavigation) {
+  LoadHTMLWithUserGesture(kAccountCreationFormHTML);
+  SetFoundFormEligibleForGeneration(
+      password_generation_, GetMainFrame()->GetDocument(),
+      /*new_password_id=*/"first_password", /*confirm_password_id=*/nullptr);
+  ExpectAutomaticGenerationAvailable("first_password", kAvailable);
+
+  // Navigation happens. Then browser UI accepts the generated password. It
+  // should not crash.
+  EXPECT_CALL(fake_pw_client_, GenerationElementLostFocus());
+  LoadHTMLWithUserGesture(kSigninFormHTML);
+  EXPECT_CALL(fake_pw_client_, PresaveGeneratedPassword).Times(0);
+  password_generation_->GeneratedPasswordAccepted(u"random_password");
+}
+
 TEST_F(PasswordGenerationAgentTest, FormClassifierDisabled) {
   LoadHTMLWithUserGesture(kSigninFormHTML);
   ExpectFormClassifierVoteReceived(false /* vote is not expected */,
@@ -1135,7 +1108,7 @@ TEST_F(PasswordGenerationAgentTest, RevealPassword) {
   for (bool clickOnInputField : {false, true}) {
     SCOPED_TRACE(testing::Message("clickOnInputField = ") << clickOnInputField);
     // Click on the generation field to reveal the password value.
-    EXPECT_CALL(fake_pw_client_, ShowPasswordEditingPopup(_, _, _, _));
+    EXPECT_CALL(fake_pw_client_, ShowPasswordEditingPopup).Times(AtLeast(1));
     FocusField(kGenerationElementId);
     fake_pw_client_.Flush();
 
@@ -1156,7 +1129,8 @@ TEST_F(PasswordGenerationAgentTest, RevealPassword) {
   }
 }
 
-TEST_F(PasswordGenerationAgentTest, JavascriptClearedTheField) {
+TEST_F(PasswordGenerationAgentTest,
+       DoesNotResetGenerationWhenJavascriptClearedTheField) {
   LoadHTMLWithUserGesture(kAccountCreationFormHTML);
   SetFoundFormEligibleForGeneration(
       password_generation_, GetMainFrame()->GetDocument(),
@@ -1168,12 +1142,64 @@ TEST_F(PasswordGenerationAgentTest, JavascriptClearedTheField) {
   EXPECT_CALL(fake_pw_client_, PresaveGeneratedPassword(_, Eq(password)));
   password_generation_->GeneratedPasswordAccepted(password);
 
-  EXPECT_CALL(fake_pw_client_, PasswordNoLongerGenerated(testing::_));
-  EXPECT_CALL(fake_pw_client_, AutomaticGenerationAvailable(_));
+  // Should not reset the password generation as this is not drived by user.
+  // Some websites might clear the user data right before submission.
+  EXPECT_CALL(fake_pw_client_, PasswordNoLongerGenerated(_)).Times(0);
+  EXPECT_CALL(fake_pw_client_, AutomaticGenerationAvailable(_)).Times(0);
   ExecuteJavaScriptForTests(
       "document.getElementById('first_password').value = '';");
-  FocusField(kGenerationElementId);
   base::RunLoop().RunUntilIdle();
+}
+
+TEST_F(PasswordGenerationAgentTest,
+       ResetsGenerationWhenUserFocusesFieldClearedByJavascript) {
+  LoadHTMLWithUserGesture(kAccountCreationFormHTML);
+  SetFoundFormEligibleForGeneration(
+      password_generation_, GetMainFrame()->GetDocument(),
+      /*new_password_id=*/"first_password", /*confirm_password_id=*/nullptr);
+
+  const char kGenerationElementId[] = "first_password";
+  ExpectAutomaticGenerationAvailable(kGenerationElementId, kAvailable);
+  std::u16string password = u"long_pwd";
+  EXPECT_CALL(fake_pw_client_, PresaveGeneratedPassword(_, Eq(password)));
+  password_generation_->GeneratedPasswordAccepted(password);
+
+  // Should not reset the password generation as this is not drived by user.
+  // Some websites might clear the user data right before submission.
+  EXPECT_CALL(fake_pw_client_, PasswordNoLongerGenerated(testing::_)).Times(0);
+  EXPECT_CALL(fake_pw_client_, AutomaticGenerationAvailable(_)).Times(0);
+  ExecuteJavaScriptForTests(
+      "document.getElementById('first_password').value = '';");
+  base::RunLoop().RunUntilIdle();
+
+  // Should reset the password generation now, when user focuses an empty
+  // password field. Now we are sure that the form with the previously generated
+  // password won't be submitted.
+  EXPECT_CALL(fake_pw_client_, PasswordNoLongerGenerated(_)).Times(AtLeast(1));
+  EXPECT_CALL(fake_pw_client_, AutomaticGenerationAvailable(_))
+      .Times(AtLeast(1));
+  FocusField("first_password");
+}
+
+TEST_F(PasswordGenerationAgentTest, JavascriptClearedThePassword_TypeUsername) {
+  LoadHTMLWithUserGesture(kAccountCreationFormHTML);
+  constexpr char kGenerationElementId[] = "first_password";
+  SetFoundFormEligibleForGeneration(password_generation_,
+                                    GetMainFrame()->GetDocument(),
+                                    /*new_password_id=*/kGenerationElementId,
+                                    /*confirm_password_id=*/nullptr);
+
+  ExpectAutomaticGenerationAvailable(kGenerationElementId, kAvailable);
+  std::u16string password = u"long_pwd";
+  EXPECT_CALL(fake_pw_client_, PresaveGeneratedPassword(_, Eq(password)));
+  password_generation_->GeneratedPasswordAccepted(password);
+
+  // Edit some other field.
+  EXPECT_CALL(fake_pw_client_, PasswordNoLongerGenerated(testing::_));
+  ExecuteJavaScriptForTests(
+      "document.getElementById('first_password').value = '';");
+  FocusField("username");
+  SimulateUserTypingASCIICharacter('a', true);
 }
 
 TEST_F(PasswordGenerationAgentTest, GenerationFallback_NoFocusedElement) {
@@ -1225,8 +1251,9 @@ TEST_F(PasswordGenerationAgentTest, PasswordUnmaskedUntilCompleteDeletion) {
 
   // Delete characters of the generated password until only
   // |kMinimumLengthForEditedPassword| - 1 chars remain.
-  EXPECT_CALL(fake_pw_client_, ShowPasswordEditingPopup(_, _, _, _));
+  EXPECT_CALL(fake_pw_client_, ShowPasswordEditingPopup).Times(AtLeast(1));
   FocusField(kGenerationElementId);
+  SimulateUserTypingASCIICharacter(ui::VKEY_END, false);
   EXPECT_CALL(fake_pw_client_, PasswordNoLongerGenerated(testing::_));
   EXPECT_CALL(fake_pw_client_, AutomaticGenerationAvailable(_));
   size_t max_chars_to_delete =
@@ -1276,7 +1303,7 @@ TEST_F(PasswordGenerationAgentTest, ShortPasswordMaskedAfterChangingFocus) {
 
   // Delete characters of the generated password until only
   // |kMinimumLengthForEditedPassword| - 1 chars remain.
-  EXPECT_CALL(fake_pw_client_, ShowPasswordEditingPopup(_, _, _, _));
+  EXPECT_CALL(fake_pw_client_, ShowPasswordEditingPopup).Times(AtLeast(1));
   FocusField(kGenerationElementId);
   EXPECT_CALL(fake_pw_client_, PasswordNoLongerGenerated(testing::_));
   size_t max_chars_to_delete =

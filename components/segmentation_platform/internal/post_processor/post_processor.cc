@@ -72,11 +72,11 @@ std::vector<std::string> PostProcessor::GetMultiClassClassifierResults(
                                  model_scores[index]);
   }
   // Sort the labels in descending order of score.
-  std::sort(labeled_results.begin(), labeled_results.end(),
-            [](const std::pair<std::string, float>& a,
-               const std::pair<std::string, float>& b) {
-              return a.second > b.second;
-            });
+  std::stable_sort(labeled_results.begin(), labeled_results.end(),
+                   [](const std::pair<std::string, float>& a,
+                      const std::pair<std::string, float>& b) {
+                     return a.second > b.second;
+                  });
   float threshold = multi_class_classifier.threshold();
   int top_k_outputs = multi_class_classifier.top_k_outputs();
 

@@ -69,6 +69,62 @@ If another Cargo.toml is required in the future, and not part of the workspace
 it would produce missing dependencies, and the set of directories in
 `build_rust.py` would need to be updated.
 
+### Possible failure: Missing sources or inputs
+
+A build error when building the stdlib in Chromium may look like:
+```
+FAILED: local_rustc_sysroot/lib/rustlib/x86_64-unknown-linux-gnu/lib/libstd.rlib
+...build command...
+ERROR: file not in GN sources: ../../third_party/rust-toolchain/lib/rustlib/src/rust/library/std/src/../../portable-simd/crates/std_float/src/lib.rs
+```
+
+Or:
+```
+FAILED: local_rustc_sysroot/lib/rustlib/x86_64-unknown-linux-gnu/lib/libstd.rlib
+...build command...
+ERROR: file not in GN inputs: ../../third_party/rust-toolchain/lib/rustlib/src/rust/library/std/src/../../stdarch/crates/core_arch/src/core_arch_docs.md
+```
+
+When building the stdlib in Chromium, the GN rules must have every rust source
+or other input file that makes up the crate listed in the `sources` and
+`inputs` GN variables. gnrt will walk the directory tree from the root of the
+crate and put every relevant file into the set. But sometimes a crate includes
+modules from paths outside the crate root's directory tree, with a path
+directive such as
+```rs
+#[path = "../../stuff.rs"]
+mod stuff;
+```
+or will `include!()` a file from another path, which is common for `.md` files:
+```rs
+include!("../../other_place.md")
+```
+
+The first error is saying the source file `std_float/src/lib.rs` did not
+appear in the `sources` variable. The `../../` part of the path shows that
+this is outside the crate root's directory tree. The second error is saying
+that `core_arch/src/core_arch_docs.md` did not appear in the `inputs` variable.
+
+To fix the error:
+* Determine the path that is missing, relative to the crate root. In the above
+  example this is `../../portable-simd/crates/std_float/src`. We could also use
+  `../../portable-simd` or anything in between, though that would add a lot
+  more sources to the GN rules than is necessary in this case. It's best to
+  point to the directory of the module root (where the `lib.rs` or `mod.rs`
+  is located).
+* Find the failing build target crate's rules in
+  `//build/rust/std/gnrt_config.toml`. The failing crate in the above example
+  is `libstd.rlib`, so we want the `[crate.std]` section of the config file.
+* Determine if the missing file should go in `sources` or `inputs`.
+  * For `sources`, add the path to a `extra_src_roots` list in the crate's
+    rules. For the above example, we could add
+    `extra_src_roots = ['../../portable-simd/crates/std_float/src']`.
+  * For `inputs`, add the path to a `extra_input_roots` list in the crate's
+    rules. For the above example, we could add
+    `extra_input_roots = ['../../stdarch/crates/core_arch/src']`.
+* Run `tools/rust/gnrt_stdlib.py` to use gnrt to rebuild the stdlib GN rules
+  using the updated config.
+
 ### Local development
 
 To build the Rust toolchain locally, run `//tools/rust/build_rust.py`. It

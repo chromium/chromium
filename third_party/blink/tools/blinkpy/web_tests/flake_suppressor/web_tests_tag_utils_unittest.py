@@ -1,4 +1,3 @@
-#!/usr/bin/env vpython3
 # Copyright 2021 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
@@ -13,7 +12,3 @@ class RemoveIgnoredTagsUnittest(unittest.TestCase):
         tags = ['win', 'x86', 'release']
         filtered_tags = tag_utils.WebTestsTagUtils().RemoveIgnoredTags(tags)
         self.assertEqual(filtered_tags, ('release', 'win'))
-
-
-if __name__ == '__main__':
-    unittest.main(verbosity=2)

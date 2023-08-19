@@ -85,23 +85,39 @@ class TabHelperDelegateInstaller {
 
    private:
     // WebStateListObserver:
-    void WebStateInsertedAt(WebStateList* web_state_list,
-                            web::WebState* web_state,
-                            int index,
-                            bool activating) override {
-      SetTabHelperDelegate(web_state, delegate_);
+    void WebStateListWillChange(WebStateList* web_state_list,
+                                const WebStateListChangeDetach& detach_change,
+                                const WebStateListStatus& status) override {
+      SetTabHelperDelegate(detach_change.detached_web_state(), nullptr);
     }
-    void WebStateReplacedAt(WebStateList* web_state_list,
-                            web::WebState* old_web_state,
-                            web::WebState* new_web_state,
-                            int index) override {
-      SetTabHelperDelegate(old_web_state, nullptr);
-      SetTabHelperDelegate(new_web_state, delegate_);
-    }
-    void WillDetachWebStateAt(WebStateList* web_state_list,
-                              web::WebState* web_state,
-                              int index) override {
-      SetTabHelperDelegate(web_state, nullptr);
+
+    void WebStateListDidChange(WebStateList* web_state_list,
+                               const WebStateListChange& change,
+                               const WebStateListStatus& status) override {
+      switch (change.type()) {
+        case WebStateListChange::Type::kStatusOnly:
+          // Do nothing when a WebState is selected and its status is updated.
+          break;
+        case WebStateListChange::Type::kDetach:
+          // Do nothing when a WebState is detached.
+          break;
+        case WebStateListChange::Type::kMove:
+          // Do nothing when a WebState is moved.
+          break;
+        case WebStateListChange::Type::kReplace: {
+          const WebStateListChangeReplace& replace_change =
+              change.As<WebStateListChangeReplace>();
+          SetTabHelperDelegate(replace_change.replaced_web_state(), nullptr);
+          SetTabHelperDelegate(replace_change.inserted_web_state(), delegate_);
+          break;
+        }
+        case WebStateListChange::Type::kInsert: {
+          const WebStateListChangeInsert& insert_change =
+              change.As<WebStateListChangeInsert>();
+          SetTabHelperDelegate(insert_change.inserted_web_state(), delegate_);
+          break;
+        }
+      }
     }
 
     // Sets the delegate for `web_state`'s Helper to `delegate`.

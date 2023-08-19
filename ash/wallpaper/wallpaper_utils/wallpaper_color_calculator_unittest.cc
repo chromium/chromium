@@ -116,11 +116,11 @@ void WallpaperColorCalculatorTest::InstallTaskRunner(
 
 void WallpaperColorCalculatorTest::CreateCalculator(
     const gfx::ImageSkia& image) {
+  calculator_ = std::make_unique<WallpaperColorCalculator>(image);
   std::vector<color_utils::ColorProfile> color_profiles;
   color_profiles.emplace_back(color_utils::LumaRange::NORMAL,
                               color_utils::SaturationRange::VIBRANT);
-  calculator_ =
-      std::make_unique<WallpaperColorCalculator>(image, color_profiles);
+  calculator_->SetColorProfiles(color_profiles);
 }
 
 // Used to group the asynchronous calculation tests.

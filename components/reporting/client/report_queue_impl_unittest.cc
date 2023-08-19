@@ -36,6 +36,8 @@ using ::testing::Eq;
 using ::testing::Invoke;
 using ::testing::MockFunction;
 using ::testing::NiceMock;
+using ::testing::Not;
+using ::testing::NotNull;
 using ::testing::Property;
 using ::testing::Return;
 using ::testing::StrEq;
@@ -71,10 +73,11 @@ class ReportQueueImplTest : public testing::Test {
     ON_CALL(mocked_policy_check_, Call())
         .WillByDefault(Return(Status::StatusOK()));
 
-    StatusOr<std::unique_ptr<ReportQueueConfiguration>> config_result =
-        ReportQueueConfiguration::Create(dm_token_, destination_,
-                                         policy_check_callback_);
-
+    auto config_result =
+        ReportQueueConfiguration::Create({.destination = destination_})
+            .SetDMToken(dm_token_)
+            .SetPolicyCheckCallback(policy_check_callback_)
+            .Build();
     ASSERT_OK(config_result) << config_result.status();
 
     test::TestEvent<StatusOr<std::unique_ptr<ReportQueue>>> report_queue_event;
@@ -87,9 +90,9 @@ class ReportQueueImplTest : public testing::Test {
   }
 
   TestStorageModule* test_storage_module() const {
-    TestStorageModule* test_storage_module =
+    TestStorageModule* const test_storage_module =
         google::protobuf::down_cast<TestStorageModule*>(storage_module_.get());
-    DCHECK(test_storage_module);
+    EXPECT_THAT(test_storage_module, NotNull());
     return test_storage_module;
   }
 
@@ -162,11 +165,12 @@ TEST_F(ReportQueueImplTest, SuccessfulProtoRecord) {
 TEST_F(ReportQueueImplTest, SuccessfulProtoRecordWithRateLimiter) {
   auto rate_limiter = std::make_unique<MockRateLimiter>();
   auto* const mock_rate_limiter = rate_limiter.get();
-  StatusOr<std::unique_ptr<ReportQueueConfiguration>> config_result =
-      ReportQueueConfiguration::Create(dm_token_, destination_,
-                                       policy_check_callback_,
-                                       std::move(rate_limiter));
-
+  auto config_result =
+      ReportQueueConfiguration::Create({.destination = destination_})
+          .SetDMToken(dm_token_)
+          .SetPolicyCheckCallback(policy_check_callback_)
+          .SetRateLimiter(std::move(rate_limiter))
+          .Build();
   ASSERT_OK(config_result) << config_result.status();
 
   test::TestEvent<StatusOr<std::unique_ptr<ReportQueue>>> report_queue_event;
@@ -212,11 +216,12 @@ TEST_F(ReportQueueImplTest, SuccessfulProtoRecordWithRateLimiter) {
 
 TEST_F(ReportQueueImplTest, SuccessfulProtoRecordWithReservedSpace) {
   static constexpr int64_t kReservedSpace = 12345L;
-  StatusOr<std::unique_ptr<ReportQueueConfiguration>> config_result =
+  auto config_result =
       ReportQueueConfiguration::Create(
-          dm_token_, destination_, policy_check_callback_,
-          /*rate_limiter=*/nullptr, kReservedSpace);
-
+          {.destination = destination_, .reserved_space = kReservedSpace})
+          .SetDMToken(dm_token_)
+          .SetPolicyCheckCallback(policy_check_callback_)
+          .Build();
   ASSERT_OK(config_result) << config_result.status();
 
   test::TestEvent<StatusOr<std::unique_ptr<ReportQueue>>> report_queue_event;
@@ -243,6 +248,83 @@ TEST_F(ReportQueueImplTest, SuccessfulProtoRecordWithReservedSpace) {
   ASSERT_TRUE(
       result_message.ParseFromString(test_storage_module()->record().data()));
   ASSERT_EQ(result_message.test(), test_message.test());
+}
+
+TEST_F(ReportQueueImplTest, SuccessfulProtoRecordWithSource) {
+  SourceInfo source_info;
+  source_info.set_source(SourceInfo::ASH);
+  auto config_result =
+      ReportQueueConfiguration::Create({.destination = destination_})
+          .SetDMToken(dm_token_)
+          .SetPolicyCheckCallback(policy_check_callback_)
+          .SetSourceInfo(source_info)
+          .Build();
+  ASSERT_OK(config_result) << config_result.status();
+
+  test::TestEvent<StatusOr<std::unique_ptr<ReportQueue>>> report_queue_event;
+  ReportQueueImpl::Create(std::move(config_result.ValueOrDie()),
+                          storage_module_, report_queue_event.cb());
+  auto report_queue_result = report_queue_event.result();
+  ASSERT_OK(report_queue_result) << report_queue_result.status();
+  report_queue_ = std::move(report_queue_result.ValueOrDie());
+
+  test::TestMessage test_message;
+  test_message.set_test(kTestMessage);
+  test::TestEvent<Status> a;
+  report_queue_->Enqueue(std::make_unique<test::TestMessage>(test_message),
+                         priority_, a.cb());
+  const auto a_result = a.result();
+  EXPECT_OK(a_result) << a_result;
+
+  EXPECT_THAT(test_storage_module()->priority(), Eq(priority_));
+  EXPECT_THAT(test_storage_module()->record().reserved_space(), Eq(0L));
+  EXPECT_THAT(test_storage_module()->record().source_info().source(),
+              Eq(source_info.source()));
+
+  test::TestMessage result_message;
+  ASSERT_TRUE(
+      result_message.ParseFromString(test_storage_module()->record().data()));
+  EXPECT_THAT(result_message.test(), StrEq(test_message.test()));
+}
+
+TEST_F(ReportQueueImplTest, SuccessfulProtoRecordWithSourceVersion) {
+  SourceInfo source_info;
+  source_info.set_source(SourceInfo::ASH);
+  source_info.set_source_version("1.0.0");
+  auto config_result =
+      ReportQueueConfiguration::Create({.destination = destination_})
+          .SetDMToken(dm_token_)
+          .SetPolicyCheckCallback(policy_check_callback_)
+          .SetSourceInfo(source_info)
+          .Build();
+  ASSERT_OK(config_result) << config_result.status();
+
+  test::TestEvent<StatusOr<std::unique_ptr<ReportQueue>>> report_queue_event;
+  ReportQueueImpl::Create(std::move(config_result.ValueOrDie()),
+                          storage_module_, report_queue_event.cb());
+  auto report_queue_result = report_queue_event.result();
+  ASSERT_OK(report_queue_result) << report_queue_result.status();
+  report_queue_ = std::move(report_queue_result.ValueOrDie());
+
+  test::TestMessage test_message;
+  test_message.set_test(kTestMessage);
+  test::TestEvent<Status> a;
+  report_queue_->Enqueue(std::make_unique<test::TestMessage>(test_message),
+                         priority_, a.cb());
+  const auto a_result = a.result();
+  EXPECT_OK(a_result) << a_result;
+
+  EXPECT_THAT(test_storage_module()->priority(), Eq(priority_));
+  EXPECT_THAT(test_storage_module()->record().reserved_space(), Eq(0L));
+  EXPECT_THAT(test_storage_module()->record().source_info().source(),
+              Eq(source_info.source()));
+  EXPECT_THAT(test_storage_module()->record().source_info().source_version(),
+              Eq(source_info.source_version()));
+
+  test::TestMessage result_message;
+  ASSERT_TRUE(
+      result_message.ParseFromString(test_storage_module()->record().data()));
+  EXPECT_THAT(result_message.test(), StrEq(test_message.test()));
 }
 
 // The call to enqueue should succeed, indicating that the storage operation has
@@ -362,11 +444,12 @@ TEST_F(ReportQueueImplTest, SuccessfulSpeculativeStringRecord) {
 TEST_F(ReportQueueImplTest, SuccessfulSpeculativeStringRecordWithRateLimiter) {
   auto rate_limiter = std::make_unique<MockRateLimiter>();
   auto* const mock_rate_limiter = rate_limiter.get();
-  StatusOr<std::unique_ptr<ReportQueueConfiguration>> config_result =
-      ReportQueueConfiguration::Create(dm_token_, destination_,
-                                       policy_check_callback_,
-                                       std::move(rate_limiter));
-
+  auto config_result =
+      ReportQueueConfiguration::Create({.destination = destination_})
+          .SetDMToken(dm_token_)
+          .SetPolicyCheckCallback(policy_check_callback_)
+          .SetRateLimiter(std::move(rate_limiter))
+          .Build();
   ASSERT_OK(config_result) << config_result.status();
 
   test::TestEvent<StatusOr<std::unique_ptr<ReportQueue>>> report_queue_event;
@@ -413,11 +496,12 @@ TEST_F(ReportQueueImplTest, SuccessfulSpeculativeStringRecordWithRateLimiter) {
 TEST_F(ReportQueueImplTest,
        SuccessfulSpeculativeStringRecordWithReservedSpace) {
   static constexpr int64_t kReservedSpace = 12345L;
-  StatusOr<std::unique_ptr<ReportQueueConfiguration>> config_result =
+  auto config_result =
       ReportQueueConfiguration::Create(
-          dm_token_, destination_, policy_check_callback_,
-          /*rate_limiter=*/nullptr, kReservedSpace);
-
+          {.destination = destination_, .reserved_space = kReservedSpace})
+          .SetDMToken(dm_token_)
+          .SetPolicyCheckCallback(policy_check_callback_)
+          .Build();
   ASSERT_OK(config_result) << config_result.status();
 
   test::TestEvent<StatusOr<std::unique_ptr<ReportQueue>>> report_queue_event;
@@ -446,6 +530,86 @@ TEST_F(ReportQueueImplTest,
   EXPECT_THAT(test_storage_module()->record().data(), StrEq(kTestMessage));
   EXPECT_THAT(test_storage_module()->record().reserved_space(),
               Eq(kReservedSpace));
+}
+
+TEST_F(ReportQueueImplTest, SuccessfulSpeculativeStringRecordWithSource) {
+  SourceInfo source_info;
+  source_info.set_source(SourceInfo::ASH);
+  auto config_result =
+      ReportQueueConfiguration::Create({.destination = destination_})
+          .SetDMToken(dm_token_)
+          .SetPolicyCheckCallback(policy_check_callback_)
+          .SetSourceInfo(source_info)
+          .Build();
+  ASSERT_OK(config_result) << config_result.status();
+
+  test::TestEvent<StatusOr<std::unique_ptr<ReportQueue>>> report_queue_event;
+  ReportQueueImpl::Create(std::move(config_result.ValueOrDie()),
+                          storage_module_, report_queue_event.cb());
+  auto report_queue_result = report_queue_event.result();
+  ASSERT_OK(report_queue_result) << report_queue_result.status();
+  report_queue_ = std::move(report_queue_result.ValueOrDie());
+
+  test::TestEvent<Status> a;
+  auto speculative_report_queue = SpeculativeReportQueueImpl::Create();
+  speculative_report_queue->Enqueue(std::string(kTestMessage), priority_,
+                                    a.cb());
+
+  // Enqueue would not end until actual queue is attached.
+  speculative_report_queue->PrepareToAttachActualQueue().Run(
+      std::move(report_queue_));
+  const auto a_result = a.result();
+  EXPECT_OK(a_result) << a_result;
+
+  // Let everything ongoing to finish.
+  task_environment_.RunUntilIdle();
+  EXPECT_THAT(test_storage_module()->priority(), Eq(priority_));
+  EXPECT_THAT(test_storage_module()->record().data(), StrEq(kTestMessage));
+  EXPECT_THAT(test_storage_module()->record().reserved_space(), Eq(0L));
+  EXPECT_THAT(test_storage_module()->record().source_info().source(),
+              Eq(source_info.source()));
+}
+
+TEST_F(ReportQueueImplTest,
+       SuccessfulSpeculativeStringRecordWithSourceVersion) {
+  SourceInfo source_info;
+  source_info.set_source(SourceInfo::ASH);
+  source_info.set_source_version("1.0.0");
+  auto config_result =
+      ReportQueueConfiguration::Create({.destination = destination_})
+          .SetDMToken(dm_token_)
+          .SetPolicyCheckCallback(policy_check_callback_)
+          .SetSourceInfo(source_info)
+          .Build();
+  ASSERT_OK(config_result) << config_result.status();
+
+  test::TestEvent<StatusOr<std::unique_ptr<ReportQueue>>> report_queue_event;
+  ReportQueueImpl::Create(std::move(config_result.ValueOrDie()),
+                          storage_module_, report_queue_event.cb());
+  auto report_queue_result = report_queue_event.result();
+  ASSERT_OK(report_queue_result) << report_queue_result.status();
+  report_queue_ = std::move(report_queue_result.ValueOrDie());
+
+  test::TestEvent<Status> a;
+  auto speculative_report_queue = SpeculativeReportQueueImpl::Create();
+  speculative_report_queue->Enqueue(std::string(kTestMessage), priority_,
+                                    a.cb());
+
+  // Enqueue would not end until actual queue is attached.
+  speculative_report_queue->PrepareToAttachActualQueue().Run(
+      std::move(report_queue_));
+  const auto a_result = a.result();
+  EXPECT_OK(a_result) << a_result;
+
+  // Let everything ongoing to finish.
+  task_environment_.RunUntilIdle();
+  EXPECT_THAT(test_storage_module()->priority(), Eq(priority_));
+  EXPECT_THAT(test_storage_module()->record().data(), StrEq(kTestMessage));
+  EXPECT_THAT(test_storage_module()->record().reserved_space(), Eq(0L));
+  EXPECT_THAT(test_storage_module()->record().source_info().source(),
+              Eq(source_info.source()));
+  EXPECT_THAT(test_storage_module()->record().source_info().source_version(),
+              StrEq(source_info.source_version()));
 }
 
 TEST_F(ReportQueueImplTest, SpeculativeQueueMultipleRecordsAfterCreation) {

@@ -17,7 +17,8 @@ PermissionActionsHistoryFactory::GetForProfile(Profile* profile) {
 // static
 PermissionActionsHistoryFactory*
 PermissionActionsHistoryFactory::GetInstance() {
-  return base::Singleton<PermissionActionsHistoryFactory>::get();
+  static base::NoDestructor<PermissionActionsHistoryFactory> instance;
+  return instance.get();
 }
 
 PermissionActionsHistoryFactory::PermissionActionsHistoryFactory()

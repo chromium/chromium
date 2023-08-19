@@ -13,7 +13,7 @@ interface mixin GPURenderEncoderBase {
                         optional GPUSize64 size);
 
     [NoAllocDirectCall] void setVertexBuffer(GPUIndex32 slot,
-                                             GPUBuffer buffer,
+                                             GPUBuffer? buffer,
                                              optional GPUSize64 offset = 0,
                                              optional GPUSize64 size);
 

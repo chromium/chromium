@@ -165,6 +165,13 @@ void ChromeFeaturesServiceProvider::Start(
                           weak_ptr_factory_.GetWeakPtr()),
       base::BindRepeating(&ChromeFeaturesServiceProvider::OnExported,
                           weak_ptr_factory_.GetWeakPtr()));
+  exported_object->ExportMethod(
+      chromeos::kChromeFeaturesServiceInterface,
+      chromeos::kChromeFeaturesServiceIsSuspendToDiskEnabledMethod,
+      base::BindRepeating(&ChromeFeaturesServiceProvider::IsSuspendToDiskEnabled,
+                          weak_ptr_factory_.GetWeakPtr()),
+      base::BindRepeating(&ChromeFeaturesServiceProvider::OnExported,
+                          weak_ptr_factory_.GetWeakPtr()));
 }
 
 void ChromeFeaturesServiceProvider::OnExported(
@@ -187,6 +194,7 @@ void ChromeFeaturesServiceProvider::IsFeatureEnabled(
       &features::kSessionManagerLongKillTimeout,
       &features::kSessionManagerLivenessCheck,
       &features::kVmPerBootShaderCache,
+      &features::kBorealisProvision,
   };
 
   dbus::MessageReader reader(method_call);
@@ -428,6 +436,13 @@ void ChromeFeaturesServiceProvider::IsDnsProxyEnabled(
     dbus::ExportedObject::ResponseSender response_sender) {
   SendResponse(method_call, std::move(response_sender),
                !base::FeatureList::IsEnabled(features::kDisableDnsProxy));
+}
+
+void ChromeFeaturesServiceProvider::IsSuspendToDiskEnabled(
+    dbus::MethodCall* method_call,
+    dbus::ExportedObject::ResponseSender response_sender) {
+  SendResponse(method_call, std::move(response_sender),
+               base::FeatureList::IsEnabled(features::kSuspendToDisk));
 }
 
 }  // namespace ash

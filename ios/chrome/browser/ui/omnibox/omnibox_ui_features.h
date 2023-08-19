@@ -25,4 +25,13 @@ BASE_DECLARE_FEATURE(kOmniboxTailSuggest);
 
 // Returns if kEnablePopoutOmniboxIpad feature is enabled.
 bool IsIpadPopoutOmniboxEnabled();
+
+// Feature flag to enable improved RTL layout of the suggestions.
+BASE_DECLARE_FEATURE(kOmniboxSuggestionsRTLImprovements);
+
+// Kill switch to revert the removal of lock icon. When this feature is
+// enabled, the lock icon is shown in the omnibox for secure pages. When
+// disabled, no icon is shown for secure pages.
+BASE_DECLARE_FEATURE(kOmniboxLockIconEnabled);
+
 #endif  // IOS_CHROME_BROWSER_UI_OMNIBOX_OMNIBOX_UI_FEATURES_H_

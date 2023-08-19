@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+Copyright 2023 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_height="wrap_content"
+    android:layout_width="wrap_content"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <org.chromium.components.browser_ui.widget.RadioButtonWithDescriptionLayout
+            android:id="@+id/autofill_third_party_radio_group"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent" >
+
+        <org.chromium.components.browser_ui.widget.RadioButtonWithDescription
+          android:id="@+id/autofill_third_party_filling_default"
+          android:layout_width="match_parent"
+          android:layout_height="wrap_content"
+          android:checked="true"
+          app:primaryText="@string/autofill_third_party_filling_default"
+          app:descriptionText="@string/autofill_third_party_filling_default_description"/>
+
+        <org.chromium.components.browser_ui.widget.RadioButtonWithDescription
+          android:id="@+id/autofill_third_party_filling_opt_in"
+          android:layout_width="match_parent"
+          android:layout_height="wrap_content"
+          app:primaryText="@string/autofill_third_party_filling_opt_in"
+          app:descriptionText="@string/autofill_third_party_filling_opt_in_description"/>
+
+    </org.chromium.components.browser_ui.widget.RadioButtonWithDescriptionLayout>
+</FrameLayout>

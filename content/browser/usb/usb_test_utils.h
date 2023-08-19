@@ -36,10 +36,10 @@ class MockUsbDelegate : public UsbDelegate {
 
   // Simulates opening the USB device chooser dialog and selecting an item. The
   // chooser automatically selects the item returned by RunChooserInternal,
-  // which may be mocked. Returns `nullptr`. `filters` is ignored.
+  // which may be mocked. Returns `nullptr`. `options` is ignored.
   std::unique_ptr<UsbChooser> RunChooser(
       RenderFrameHost& frame,
-      std::vector<device::mojom::UsbDeviceFilterPtr> filters,
+      blink::mojom::WebUsbRequestDeviceOptionsPtr options,
       blink::mojom::WebUsbService::GetPermissionCallback callback) override;
 
   void AddObserver(BrowserContext* browser_context,
@@ -58,6 +58,7 @@ class MockUsbDelegate : public UsbDelegate {
                     const url::Origin&,
                     RenderFrameHost*,
                     std::vector<uint8_t>&));
+  MOCK_METHOD1(PageMayUseUsb, bool(Page&));
   MOCK_METHOD2(CanRequestDevicePermission,
                bool(BrowserContext*, const url::Origin&));
   MOCK_METHOD3(RevokeDevicePermissionWebInitiated,
@@ -85,6 +86,10 @@ class MockUsbDelegate : public UsbDelegate {
                     mojo::PendingRemote<device::mojom::UsbDeviceManager>
                         device_manager));
   MOCK_METHOD1(IsServiceWorkerAllowedForOrigin, bool(const url::Origin&));
+  MOCK_METHOD2(IncrementConnectionCount,
+               void(BrowserContext*, const url::Origin&));
+  MOCK_METHOD2(DecrementConnectionCount,
+               void(BrowserContext*, const url::Origin&));
 
  private:
   base::ObserverList<UsbDelegate::Observer> observer_list_;

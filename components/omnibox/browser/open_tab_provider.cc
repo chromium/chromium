@@ -137,8 +137,7 @@ void OpenTabProvider::Start(const AutocompleteInput& input,
   // If there were no open tab results found, and we're in keyword mode,
   // generate a NULL_RESULT_MESSAGE suggestion to keep the user in keyword mode
   // and display a no results message.
-  if (OmniboxFieldTrial::IsSiteSearchStarterPackEnabled() &&
-      InKeywordMode(adjusted_input) && matches_.empty()) {
+  if (InKeywordMode(adjusted_input) && matches_.empty()) {
     matches_.push_back(
         CreateNullResultMessageMatch(adjusted_input, template_url));
   }

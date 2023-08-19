@@ -6,10 +6,10 @@ if (is_android) {
   import("//build/config/android/rules.gni")
 }
 
-static_library("family_preferences_service") {
+static_library("supervised_user_preferences") {
   sources = [
-    "family_preferences_service.cc",
-    "family_preferences_service.h",
+    "supervised_user_preferences.cc",
+    "supervised_user_preferences.h",
   ]
 
   deps = [
@@ -28,12 +28,25 @@ static_library("list_family_members_service") {
   ]
 
   deps = [
+    ":fetcher",
+    ":fetcher_config",
     "//base",
     "//components/keyed_service/core",
     "//components/prefs",
     "//components/signin/public/identity_manager",
-    "//components/supervised_user/core/browser:fetcher",
     "//components/supervised_user/core/browser/proto",
+    "//components/supervised_user/core/common:features",
+  ]
+}
+
+static_library("fetcher_config") {
+  sources = [
+    "fetcher_config.cc",
+    "fetcher_config.h",
+  ]
+  deps = [
+    "//google_apis",
+    "//net/traffic_annotation",
   ]
 }
 
@@ -41,15 +54,17 @@ static_library("fetcher") {
   sources = [
     "api_access_token_fetcher.cc",
     "api_access_token_fetcher.h",
-    "fetcher_config.cc",
-    "fetcher_config.h",
     "proto_fetcher.cc",
     "proto_fetcher.h",
   ]
   deps = [
+    ":fetcher_config",
     "//base",
     "//components/signin/public/identity_manager",
     "//components/supervised_user/core/browser/proto",
+
+    # TODO(b/293824572): Remove when all templated code is in headers.
+    "//components/supervised_user/core/browser/proto:test_support",
     "//components/supervised_user/core/common",
     "//google_apis",
     "//net/traffic_annotation",
@@ -59,6 +74,8 @@ static_library("fetcher") {
 
 static_library("browser") {
   sources = [
+    "child_account_service.cc",
+    "child_account_service.h",
     "kids_chrome_management_client.cc",
     "kids_chrome_management_client.h",
     "kids_management_url_checker_client.cc",
@@ -66,8 +83,12 @@ static_library("browser") {
     "parental_control_metrics.cc",
     "parental_control_metrics.h",
     "permission_request_creator.h",
+    "permission_request_creator_impl.cc",
+    "permission_request_creator_impl.h",
     "remote_web_approvals_manager.cc",
     "remote_web_approvals_manager.h",
+    "supervised_user_content_settings_provider.cc",
+    "supervised_user_content_settings_provider.h",
     "supervised_user_error_page.cc",
     "supervised_user_error_page.h",
     "supervised_user_interstitial.cc",
@@ -103,7 +124,11 @@ static_library("browser") {
 
   deps = [
     ":fetcher",
+    ":fetcher_config",
+    ":list_family_members_service",
+    ":supervised_user_preferences",
     "//base",
+    "//components/content_settings/core/browser",
     "//components/feed/core/shared_prefs:feed_shared_prefs",
     "//components/google/core/common",
     "//components/prefs",
@@ -124,36 +149,22 @@ static_library("browser") {
   ]
 }
 
-source_set("test_support") {
-  testonly = true
-  sources = [
-    "fetcher_config_test_utils.cc",
-    "fetcher_config_test_utils.h",
-    "kids_chrome_management_test_utils.cc",
-    "kids_chrome_management_test_utils.h",
-  ]
-  deps = [
-    ":fetcher",
-    "//base",
-    "//components/supervised_user/core/browser/proto",
-    "//net/traffic_annotation",
-    "//url",
-  ]
-}
-
 source_set("unit_tests") {
   testonly = true
   sources = [
     "api_access_token_fetcher_unittest.cc",
-    "family_preferences_service_unittest.cc",
+    "child_account_service_unittest.cc",
     "kids_management_url_checker_client_unittest.cc",
     "list_family_members_service_unittest.cc",
     "parental_control_metrics_unittest.cc",
     "proto_fetcher_unittest.cc",
     "remote_web_approvals_manager_unittest.cc",
+    "supervised_user_content_settings_provider_unittest.cc",
     "supervised_user_error_page_unittest.cc",
     "supervised_user_metrics_service_unittest.cc",
     "supervised_user_pref_store_unittest.cc",
+    "supervised_user_preferences_unittest.cc",
+    "supervised_user_service_unittest.cc",
     "supervised_user_settings_service_unittest.cc",
     "supervised_user_sync_model_type_controller_unittest.cc",
     "supervised_user_url_filter_unittest.cc",
@@ -161,19 +172,27 @@ source_set("unit_tests") {
 
   deps = [
     ":browser",
-    ":family_preferences_service",
     ":fetcher",
+    ":fetcher_config",
     ":list_family_members_service",
-    ":test_support",
+    ":supervised_user_preferences",
     "//base",
     "//base/test:test_support",
+    "//components/content_settings/core/browser:test_support",
     "//components/prefs:test_support",
     "//components/resources:components_resources",
+    "//components/signin/public/base",
+    "//components/signin/public/base:test_support",
+    "//components/signin/public/identity_manager",
     "//components/signin/public/identity_manager:test_support",
     "//components/strings:components_strings_grit",
     "//components/supervised_user/core/browser/proto",
+    "//components/supervised_user/core/browser/proto:test_support",
     "//components/supervised_user/core/common",
+    "//components/supervised_user/test_support",
+    "//components/supervised_user/test_support",
     "//components/sync:test_support",
+    "//components/sync_preferences:test_support",
     "//services/network:test_support",
     "//testing/gmock",
     "//testing/gtest",

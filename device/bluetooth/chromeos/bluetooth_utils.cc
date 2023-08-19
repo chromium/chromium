@@ -22,6 +22,8 @@
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_switches.h"
+#include "chromeos/ash/services/nearby/public/cpp/nearby_client_uuids.h"
+#include "chromeos/ash/services/secure_channel/public/cpp/shared/ble_constants.h"
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
@@ -212,8 +214,9 @@ device::BluetoothAdapter::DeviceList FilterBluetoothDeviceList(
 
 bool IsUnsupportedDevice(const device::BluetoothDevice* device) {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-  if (ash::switches::IsUnfilteredBluetoothDevicesEnabled())
+  if (ash::switches::IsUnfilteredBluetoothDevicesEnabled()) {
     return false;
+  }
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
@@ -227,14 +230,23 @@ bool IsUnsupportedDevice(const device::BluetoothDevice* device) {
   // Never filter out Poly devices; this requires a special case since these
   // devices often identify themselves as phones, which are disallowed below.
   // See b/228118615.
-  if (IsPolyDevice(device))
+  if (IsPolyDevice(device)) {
     return false;
+  }
+#endif
+
+#if BUILDFLAG(IS_CHROMEOS)
+  // Always allow bonded devices to appear in the UI.
+  if (device->IsBonded()) {
+    return false;
+  }
 #endif
 
   // Always filter out laptops, etc. There is no intended use case or
   // Bluetooth profile in this context.
-  if (device->GetDeviceType() == BluetoothDeviceType::COMPUTER)
+  if (device->GetDeviceType() == BluetoothDeviceType::COMPUTER) {
     return true;
+  }
 
   // Always filter out phones. There is no intended use case or Bluetooth
   // profile in this context.
@@ -243,12 +255,24 @@ bool IsUnsupportedDevice(const device::BluetoothDevice* device) {
     return true;
   }
 
-#if BUILDFLAG(IS_CHROMEOS)
-  // Allow bonded devices which are not filtered above to appear in the UI.
-  if (device->IsBonded()) {
-    return false;
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  const BluetoothDevice::UUIDSet& uuids = device->GetUUIDs();
+
+  // These UUIDs are specific to Nearby Share and Phone Hub and are used to
+  // identify devices that should be filtered from the UI that otherwise would
+  // not have been correctly identified. These devices should always be filtered
+  // from the UI. For more information see b/219627324.
+  for (const auto& uuid : ash::nearby::GetNearbyClientUuids()) {
+    if (uuids.contains(uuid)) {
+      return true;
+    }
   }
-#else
+  if (uuids.contains(BluetoothUUID(ash::secure_channel::kGattServerUuid))) {
+    return true;
+  }
+#endif
+
+#if !BUILDFLAG(IS_CHROMEOS)
   // Allow paired devices which are not filtered above to appear in the UI.
   if (device->IsPaired()) {
     return false;
@@ -273,8 +297,9 @@ bool IsUnsupportedDevice(const device::BluetoothDevice* device) {
     // the device could have an unknown or even known type and still also
     // provide audio/HID functionality.
     case BLUETOOTH_TRANSPORT_CLASSIC:
-      if (device->GetName())
+      if (device->GetName()) {
         return false;
+      }
       break;
     // For dual mode devices, a device::BluetoothDevice object without a name
     // and type/appearance most likely signals that it is truly only a LE
@@ -283,8 +308,9 @@ bool IsUnsupportedDevice(const device::BluetoothDevice* device) {
     // provide a type/appearance; this means they've become pairable. See
     // https://crbug.com/1656971 for more.
     case BLUETOOTH_TRANSPORT_DUAL:
-      if (device->GetName())
+      if (device->GetName()) {
         return device->GetDeviceType() == BluetoothDeviceType::UNKNOWN;
+      }
       break;
   }
 

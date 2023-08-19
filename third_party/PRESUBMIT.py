@@ -89,6 +89,9 @@ def CheckThirdPartyReadmesUpdated(input_api, output_api):
   shortname_pattern = input_api.re.compile(
     r'^Short Name: [a-zA-Z0-9_\-\.]+\r?$',
     input_api.re.IGNORECASE | input_api.re.MULTILINE)
+  url_pattern = input_api.re.compile(
+    r'^URL: (.+)\r?$',
+    input_api.re.IGNORECASE | input_api.re.MULTILINE)
   version_pattern = input_api.re.compile(
     r'^Version: [a-zA-Z0-9_\-\+\.:/]+\r?$',
     input_api.re.IGNORECASE | input_api.re.MULTILINE)
@@ -98,8 +101,16 @@ def CheckThirdPartyReadmesUpdated(input_api, output_api):
   license_pattern = input_api.re.compile(
     r'^License: (.+)\r?$',
     input_api.re.IGNORECASE | input_api.re.MULTILINE)
-  not_shipped_pattern = input_api.re.compile(
+  # Using NOT_SHIPPED in a License File field is deprecated.
+  # Please use the 'Shipped' field instead.
+  old_shipped_pattern = input_api.re.compile(
     r'^License File: NOT_SHIPPED\r?$',
+    input_api.re.IGNORECASE | input_api.re.MULTILINE)
+  license_file_pattern = input_api.re.compile(
+    r'^License File: (.+)\r?$',
+    input_api.re.IGNORECASE | input_api.re.MULTILINE)
+  shipped_pattern = input_api.re.compile(
+    r'^Shipped: (yes|no)\r?$',
     input_api.re.IGNORECASE | input_api.re.MULTILINE)
   license_android_compatible_pattern = input_api.re.compile(
     r'^License Android Compatible: (yes|no)\r?$',
@@ -118,6 +129,15 @@ def CheckThirdPartyReadmesUpdated(input_api, output_api):
         'a \'Name\' which is the name under which the package is\n'
         'distributed. Check README.chromium.template for details.',
         [f]))
+    if not url_pattern.search(contents):
+      # TODO: This should be changed to `PresubmitError` once all existing
+      # README.chromium files contain a URL field. Until then it needs to be a
+      # warning to not make the linux-presubmit CI job fail.
+      errors.append(output_api.PresubmitPromptWarning(
+        'Third party README files should contain a \'URL\' field.\n'
+        'This field specifies the URL where the package lives. Check\n'
+        'README.chromium.template for details.',
+        [f]))
     if not version_pattern.search(contents):
       errors.append(output_api.PresubmitError(
         'Third party README files should contain a \'Version\' field.\n'
@@ -128,8 +148,8 @@ def CheckThirdPartyReadmesUpdated(input_api, output_api):
     if not release_pattern.search(contents):
       errors.append(output_api.PresubmitError(
         'Third party README files should contain a \'Security Critical\'\n'
-        'field. This field specifies whether the package is built with\n'
-        'Chromium. Check README.chromium.template for details.',
+        'field. This field specifies the security impact of vulnerabilities.\n'
+        'Check README.chromium.template for details.',
         [f]))
     license_match = license_pattern.search(contents)
     if not license_match:
@@ -138,16 +158,44 @@ def CheckThirdPartyReadmesUpdated(input_api, output_api):
         'This field specifies the license used by the package. Check\n'
         'README.chromium.template for details.',
         [f]))
-    not_shipped_match = not_shipped_pattern.search(contents)
+    # TODO: The check for this field should be upgraded to PresubmitError
+    # when the changes to all files transitioned away from NOT_SHIPPED
+    # to the new field.
+    shipped_match = shipped_pattern.search(contents)
+    if not shipped_match:
+      errors.append(output_api.PresubmitPromptWarning(
+        'Third party README files should contain a \'Shipped\' field.\n'
+        'This field specifies whether the package is shipped as part of\n'
+        'a release. Check README.chromium.template for details.',
+        [f]))
+    # Default to Shipped if not specified. This will flag a license check or
+    # be overwritten if the README is still using the deprecated NOT_SHIPPED
+    # value.
+    is_shipped = (shipped_match is None) or ("yes" in shipped_match.group(1))
+    # Check for dependencies using the old NOT_SHIPPED pattern and issue a warning
+    deprecated_not_shipped = old_shipped_pattern.search(contents)
+    if deprecated_not_shipped:
+        is_shipped = False
+        errors.append(output_api.PresubmitPromptWarning(
+          'Using NOT_SHIPPED in the \'License File:\' is deprecated\n'
+          'behavior. Please use the \'Shipped\' field instead. Refer to\n'
+          'README.chromium.template for more details.',
+          [f]))
     android_compatible_match = (
         license_android_compatible_pattern.search(contents))
-    if (not not_shipped_match and not android_compatible_match and
+    if (is_shipped and not android_compatible_match and
         not LicenseIsCompatibleWithAndroid(input_api, license_match.group(1))):
       errors.append(output_api.PresubmitPromptWarning(
         'Cannot determine whether specified license is compatible with\n' +
         'the Android licensing requirements. Please check that the license\n' +
         'name is spelled according to third_party/PRESUBMIT.py. Please see\n' +
         'README.chromium.template for details.',
+        [f]))
+    license_file_match = license_file_pattern.search(contents)
+    if is_shipped and not license_file_match:
+      errors.append(output_api.PresubmitError(
+        'Packages marked as shipped must provide a path to a license file.\n'
+        'Check README.chromium.template for details.',
         [f]))
   return errors
 

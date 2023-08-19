@@ -1111,6 +1111,38 @@ policies:
   1110: RSAKeyUsageForLocalAnchorsEnabled
   1111: BeforeunloadEventCancelByPreventDefaultEnabled
   1112: PolicyTestPageEnabled
+  1113: UrlKeyedMetricsAllowed
+  1114: AllowBackForwardCacheForCacheControlNoStorePageEnabled
+  1115: DeviceLoginScreenWebHidAllowDevicesForUrls
+  1116: SafeBrowsingProxiedRealTimeChecksAllowed
+  1117: PostQuantumKeyAgreementEnabled
+  1118: PhysicalKeyboardAutocorrect
+  1119: PhysicalKeyboardPredictiveWriting
+  1120: ColorCorrectionEnabled
+  1121: NativeClientForceAllowed
+  1122: EmojiPickerGifSupportEnabled
+  1123: DeviceChargingSoundsEnabled
+  1124: DeviceLowBatterySoundEnabled
+  1125: ArcVmDataMigrationStrategy
+  1126: AccessibilityPerformanceFilteringAllowed
+  1127: RemoteAccessHostAllowEnterpriseFileTransfer
+  1128: DefaultMidiSetting
+  1129: MidiAllowedForUrls
+  1130: MidiBlockedForUrls
+  1131: GlanceablesEnabled
+  1132: DeviceAuthenticationURLBlocklist
+  1133: DeviceAuthenticationURLAllowlist
+  1134: DeviceReportRuntimeCounters
+  1135: DeviceReportRuntimeCountersCheckingRateMs
+  1136: BruschettaInstallerConfiguration
+  1137: ForcePermissionPolicyUnloadDefaultEnabled
+  1138: ReportWebsiteActivityAllowlist
+  1139: ReportWebsiteTelemetryAllowlist
+  1140: ReportWebsiteTelemetryCollectionRateMs
+  1141: SafeBrowsingSurveysEnabled
+  1142: BlockTruncatedCookies
+  1143: ReportWebsiteTelemetry
+  1144: CompressionDictionaryTransportEnabled
 atomic_groups:
   1: Homepage
   2: RemoteAccess
@@ -1159,3 +1191,4 @@ atomic_groups:
   45: PrivacySandbox
   46: KerberosPrefilledConfig
   47: ThirdPartyStoragePartitioningSettings
+  48: MidiSettings

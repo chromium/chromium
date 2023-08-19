@@ -3,10 +3,10 @@
 # found in the LICENSE file.
 
 source_set("autofill") {
-  configs += [ "//build/config/compiler:enable_arc" ]
   sources = [
     "autofill_add_credit_card_coordinator.h",
     "autofill_add_credit_card_coordinator.mm",
+    "autofill_add_credit_card_coordinator_delegate.h",
     "autofill_add_credit_card_mediator.h",
     "autofill_add_credit_card_mediator.mm",
     "autofill_add_credit_card_mediator_delegate.h",
@@ -31,6 +31,7 @@ source_set("autofill") {
   ]
   deps = [
     ":constants",
+    ":shared_ui",
     "//components/autofill/core/browser",
     "//components/autofill/core/common",
     "//components/autofill/ios/browser",
@@ -67,19 +68,23 @@ source_set("autofill") {
     "//ios/chrome/common/ui/elements:form_input_accessory",
     "//ios/chrome/common/ui/table_view:cells_constants",
     "//ios/chrome/common/ui/util",
+    "//ui/strings",
   ]
 }
 
 source_set("constants") {
-  configs += [ "//build/config/compiler:enable_arc" ]
   sources = [
     "autofill_constants.h",
     "autofill_constants.mm",
   ]
 }
 
+source_set("shared_ui") {
+  sources =
+      [ "autofill_settings_profile_edit_table_view_controller_delegate.h" ]
+}
+
 source_set("unit_tests") {
-  configs += [ "//build/config/compiler:enable_arc" ]
   testonly = true
   sources = [
     "autofill_add_credit_card_mediator_unittest.mm",
@@ -110,6 +115,7 @@ source_set("unit_tests") {
     "//ios/chrome/browser/ui/settings:settings_root",
     "//ios/chrome/browser/ui/settings:test_support",
     "//ios/chrome/browser/ui/settings/autofill/cells",
+    "//ios/chrome/browser/ui/settings/cells",
     "//ios/chrome/browser/webdata_services",
     "//ios/chrome/test:test_support",
     "//ios/web/public/test",
@@ -119,10 +125,7 @@ source_set("unit_tests") {
 }
 
 source_set("eg2_tests") {
-  configs += [
-    "//build/config/compiler:enable_arc",
-    "//build/config/ios:xctest_config",
-  ]
+  configs += [ "//build/config/ios:xctest_config" ]
   testonly = true
   sources = [
     "autofill_add_credit_card_egtest.mm",
@@ -135,8 +138,11 @@ source_set("eg2_tests") {
     "//base",
     "//components/autofill/core/browser:test_support",
     "//components/strings",
+    "//components/sync/base:features",
     "//ios/chrome/app/strings",
     "//ios/chrome/browser/shared/ui/elements:eg_test_support+eg2",
+    "//ios/chrome/browser/signin:fake_system_identity",
+    "//ios/chrome/browser/ui/authentication:eg_test_support+eg2",
     "//ios/chrome/browser/ui/autofill:eg_test_support+eg2",
     "//ios/chrome/test/earl_grey:eg_test_support+eg2",
     "//ios/testing/earl_grey:eg_test_support+eg2",

@@ -6,25 +6,21 @@
 
 #include <algorithm>
 
-#include "base/check_op.h"
+#include "third_party/boringssl/src/include/openssl/base.h"
 
 namespace net::der {
 
-Input::Input(std::string_view in)
-    : data_(reinterpret_cast<const uint8_t*>(in.data())), len_(in.length()) {}
-
-Input::Input(const std::string* s) : Input(std::string_view(*s)) {}
-
 std::string Input::AsString() const {
-  return std::string(reinterpret_cast<const char*>(data_), len_);
+  return std::string(reinterpret_cast<const char*>(data_.data()), data_.size());
 }
 
 std::string_view Input::AsStringView() const {
-  return std::string_view(reinterpret_cast<const char*>(data_), len_);
+  return std::string_view(reinterpret_cast<const char*>(data_.data()),
+                          data_.size());
 }
 
-base::span<const uint8_t> Input::AsSpan() const {
-  return base::make_span(data_, len_);
+bssl::Span<const uint8_t> Input::AsSpan() const {
+  return data_;
 }
 
 bool operator==(const Input& lhs, const Input& rhs) {
@@ -63,7 +59,7 @@ bool ByteReader::HasMore() {
 }
 
 void ByteReader::Advance(size_t len) {
-  CHECK_LE(len, len_);
+  BSSL_CHECK(len <= len_);
   data_ += len;
   len_ -= len;
 }

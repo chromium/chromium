@@ -272,16 +272,13 @@ net::CacheType GetCacheTypeAndPrint(
     case disk_cache_fuzzer::FuzzCommands::APP_CACHE:
       MAYBE_PRINT << "Cache type = APP_CACHE." << std::endl;
       return net::CacheType::APP_CACHE;
-      break;
     case disk_cache_fuzzer::FuzzCommands::REMOVED_MEDIA_CACHE:
       // Media cache no longer in use; handle as HTTP_CACHE
       MAYBE_PRINT << "Cache type = REMOVED_MEDIA_CACHE." << std::endl;
       return net::CacheType::DISK_CACHE;
-      break;
     case disk_cache_fuzzer::FuzzCommands::SHADER_CACHE:
       MAYBE_PRINT << "Cache type = SHADER_CACHE." << std::endl;
       return net::CacheType::SHADER_CACHE;
-      break;
     case disk_cache_fuzzer::FuzzCommands::PNACL_CACHE:
       // Simple cache won't handle PNACL_CACHE.
       if (backend == disk_cache_fuzzer::FuzzCommands::SIMPLE) {
@@ -290,19 +287,15 @@ net::CacheType GetCacheTypeAndPrint(
       }
       MAYBE_PRINT << "Cache type = PNACL_CACHE." << std::endl;
       return net::CacheType::PNACL_CACHE;
-      break;
     case disk_cache_fuzzer::FuzzCommands::GENERATED_BYTE_CODE_CACHE:
       MAYBE_PRINT << "Cache type = GENERATED_BYTE_CODE_CACHE." << std::endl;
       return net::CacheType::GENERATED_BYTE_CODE_CACHE;
-      break;
     case disk_cache_fuzzer::FuzzCommands::GENERATED_NATIVE_CODE_CACHE:
       MAYBE_PRINT << "Cache type = GENERATED_NATIVE_CODE_CACHE." << std::endl;
       return net::CacheType::GENERATED_NATIVE_CODE_CACHE;
-      break;
     case disk_cache_fuzzer::FuzzCommands::DISK_CACHE:
       MAYBE_PRINT << "Cache type = DISK_CACHE." << std::endl;
       return net::CacheType::DISK_CACHE;
-      break;
   }
 }
 
@@ -1123,7 +1116,6 @@ void DiskCacheLPMFuzzer::RunCommands(
       }
       case disk_cache_fuzzer::FuzzCommand::FUZZ_COMMAND_ONEOF_NOT_SET: {
         continue;
-        break;
       }
     }
   }

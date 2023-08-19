@@ -8,10 +8,6 @@
 #import "base/strings/sys_string_conversions.h"
 #import "net/base/net_errors.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 @implementation FakeNativeTaskBridge {
   void (^_startDownloadBlock)(NSURL*);
   BOOL _observingDownloadProgress;

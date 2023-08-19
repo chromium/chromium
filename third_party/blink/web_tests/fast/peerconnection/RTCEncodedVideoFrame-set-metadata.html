@@ -49,17 +49,17 @@ promise_test(async t => {
   const result = await senderReader.read();
   const metadata = result.value.getMetadata();
   const clone = result.value.clone();
-  metadata['contributingSources'] = [13];
-  assert_throws_dom('InvalidModificationError', () => clone.setMetadata(metadata), "For field \"contributingSources\",");
-}, "setMetadata() does not allow changes to contributingSources without a flag");
+  metadata.frameId = 2;
+  metadata.dependencies = [1];
+  clone.setMetadata(metadata);
+ }, "setMetadata() does allow changes to frameId and dependencies without a flag");
 
+
+// TODO(crbug.com/1464855) : Add test for decodeTargetIndications and codecSpecifics.
 promise_test(async t => {
   const senderReader = await setupLoopbackWithCodecAndGetReader(t, 'VP8');
   const result = await senderReader.read();
   const field_values = {
-    'decodeTargetIndications':['required'],
-    'dependencies':[1],
-    'frameId':2,
     'frameType':'delta',
     'height':600,
     'isLastFrameInPicture':false,
@@ -68,6 +68,7 @@ promise_test(async t => {
     'spatialIndex':4,
     'synchronizationSource':17,
     'temporalIndex':5,
+    'contributingSources' : [13],
     'width':800
   }
   for (const field in field_values) {
@@ -92,7 +93,7 @@ promise_test(async t => {
     metadata.codecSpecifics[field] = codec_specific_field_values_vp8[field];
     assert_throws_dom('InvalidModificationError', () => clone.setMetadata(metadata), "For field \"codecSpecifics." + field + "\",");
   }
-}, "setMetadata() does not allow changes to fields other than contributingSources without a flag");
+}, "setMetadata() does not allow changes to fields without a flag");
 
 promise_test(async t => {
   const senderReader = await setupLoopbackWithCodecAndGetReader(t, 'VP8');
@@ -153,29 +154,21 @@ promise_test(async t => {
   const cloneFrame = originalFrame.clone();
 
   metadata.frameId = undefined;
-
-  cloneFrame.setMetadata(metadata);
-}, "setMetadata() allows metadata with no generic dependency descriptor - ie no frameId");
+  metadata.dependencies = [1];
+  assert_throws_dom('InvalidModificationError', () => cloneFrame.setMetadata(metadata), "frameID missing, but has dependencies in RTCEncodedVideoFrameMetadata.");
+}, "setMetadata() does not allow metadata with dependencies but no frameId");
 
 promise_test(async t => {
-  const {senderStreams, receiverStreams} =
-    await setupLoopbackWithCodedAndGetStreams(t, 'VP8');
+  const senderReader = await setupLoopbackWithCodecAndGetReader(t, 'VP8');
+  const result = await senderReader.read();
+  const originalFrame = result.value;
 
-  let csrcs = [123, 321, 456, 654];
+  const metadata = originalFrame.getMetadata();
+  const cloneFrame = originalFrame.clone();
 
-  const receiverReaderPromise = receiverStreams.readable.getReader().read();
+  metadata.frameId = 2;
+  metadata.dependencies = undefined;
 
-  // Modify the CSRCs on a sent frame.
-  let sendFrame = (await senderStreams.readable.getReader().read()).value;
-  const metadata = sendFrame.getMetadata();
-  metadata.contributingSources = csrcs;
-  sendFrame.setMetadata(metadata);
-  await senderStreams.writable.getWriter().write(sendFrame);
-
-  // Assert the received frame has the modified CSRCs
-  const receivedFrame = (await receiverReaderPromise).value;
-
-  assert_array_equals(receivedFrame.getMetadata().contributingSources, csrcs,
-                        "First modified CSRCS match");
-}, "modified csrcs are propagated over a PeerConnection");
+  cloneFrame.setMetadata(metadata);
+}, "setMetadata() does allow metadata with no dependencies but a frameId");
 </script>

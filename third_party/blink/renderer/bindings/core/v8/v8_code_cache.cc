@@ -65,6 +65,14 @@ bool IsResourceHotForCaching(const CachedMetadataHandler* cache_handler) {
   return (base::TimeTicks::Now() - time_stamp) < kHotHours;
 }
 
+// Flags that can be set in the CacheMetadata header, describing how the code
+// cache data was produced so that the consumer can generate better trace
+// messages.
+enum class DetailFlags : uint64_t {
+  kNone = 0,
+  kFull = 1,
+};
+
 }  // namespace
 
 bool V8CodeCache::HasCodeCache(
@@ -232,6 +240,11 @@ V8CodeCache::GetCompileOptions(mojom::blink::V8CacheOptions cache_options,
   return std::make_tuple(no_code_cache_compile_options,
                          ProduceCacheOptions::kNoProduceCache,
                          v8::ScriptCompiler::kNoCacheNoReason);
+}
+
+bool V8CodeCache::IsFull(const CachedMetadata* metadata) {
+  const uint64_t full_flag = static_cast<uint64_t>(DetailFlags::kFull);
+  return (metadata->tag() & full_flag) != 0;
 }
 
 template <typename UnboundScript>
@@ -404,9 +417,9 @@ scoped_refptr<CachedMetadata> V8CodeCache::GenerateFullCodeCache(
     std::unique_ptr<v8::ScriptCompiler::CachedData> cached_data(
         v8::ScriptCompiler::CreateCodeCache(unbound_script));
     if (cached_data && cached_data->length) {
-      cached_metadata =
-          CachedMetadata::Create(CacheTag(kCacheTagCode, encoding.GetName()),
-                                 cached_data->data, cached_data->length);
+      cached_metadata = CachedMetadata::Create(
+          CacheTag(kCacheTagCode, encoding.GetName()), cached_data->data,
+          cached_data->length, static_cast<uint64_t>(DetailFlags::kFull));
     }
 
     TRACE_EVENT_END1(kTraceEventCategoryGroup, "v8.produceCache", "data",

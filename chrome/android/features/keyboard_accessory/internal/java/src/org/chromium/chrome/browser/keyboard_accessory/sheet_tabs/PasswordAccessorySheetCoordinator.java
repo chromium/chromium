@@ -12,7 +12,6 @@ import android.view.ViewGroup;
 import androidx.annotation.Nullable;
 import androidx.recyclerview.widget.RecyclerView;
 
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.keyboard_accessory.AccessoryAction;
 import org.chromium.chrome.browser.keyboard_accessory.AccessoryTabType;
 import org.chromium.chrome.browser.keyboard_accessory.R;
@@ -37,7 +36,7 @@ public class PasswordAccessorySheetCoordinator extends AccessorySheetTabCoordina
      */
     public PasswordAccessorySheetCoordinator(
             Context context, @Nullable RecyclerView.OnScrollListener scrollListener) {
-        super(context.getString(R.string.password_settings_title),
+        super(context.getString(R.string.password_list_title),
                 IconProvider.getIcon(context, R.drawable.ic_vpn_key_grey),
                 context.getString(R.string.password_accessory_sheet_toggle),
                 R.layout.password_accessory_sheet, AccessoryTabType.PASSWORDS, scrollListener);
@@ -49,12 +48,8 @@ public class PasswordAccessorySheetCoordinator extends AccessorySheetTabCoordina
     @Override
     public void onTabCreated(ViewGroup view) {
         super.onTabCreated(view);
-        if (ChromeFeatureList.isEnabled(ChromeFeatureList.AUTOFILL_KEYBOARD_ACCESSORY)) {
-            PasswordAccessorySheetModernViewBinder.initializeView(
-                    (RecyclerView) view, mModel.get(ITEMS));
-        } else {
-            PasswordAccessorySheetViewBinder.initializeView((RecyclerView) view, mModel.get(ITEMS));
-        }
+        PasswordAccessorySheetModernViewBinder.initializeView(
+                (RecyclerView) view, mModel.get(ITEMS));
     }
 
     @Override

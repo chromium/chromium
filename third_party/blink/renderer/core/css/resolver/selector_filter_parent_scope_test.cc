@@ -30,8 +30,9 @@ class SelectorFilterParentScopeTest : public testing::Test {
 
 TEST_F(SelectorFilterParentScopeTest, ParentScope) {
   HeapVector<CSSSelector> arena;
-  GetDocument().body()->setAttribute(html_names::kClassAttr, "match");
-  GetDocument().documentElement()->SetIdAttribute("myId");
+  GetDocument().body()->setAttribute(html_names::kClassAttr,
+                                     AtomicString("match"));
+  GetDocument().documentElement()->SetIdAttribute(AtomicString("myId"));
   auto* div = GetDocument().CreateRawElement(html_names::kDivTag);
   GetDocument().body()->appendChild(div);
   SelectorFilter& filter = GetDocument().GetStyleResolver().GetSelectorFilter();
@@ -57,8 +58,8 @@ TEST_F(SelectorFilterParentScopeTest, ParentScope) {
       for (const CSSSelector* selector = selectors->First(); selector;
            selector = CSSSelectorList::Next(*selector)) {
         unsigned selector_hashes[max_identifier_hashes];
-        filter.CollectIdentifierHashes(*selector, selector_hashes,
-                                       max_identifier_hashes);
+        filter.CollectIdentifierHashes(*selector, /* style_scope */ nullptr,
+                                       selector_hashes, max_identifier_hashes);
         EXPECT_NE(selector_hashes[0], 0u);
         EXPECT_FALSE(
             filter.FastRejectSelector<max_identifier_hashes>(selector_hashes));
@@ -76,7 +77,8 @@ TEST_F(SelectorFilterParentScopeTest, RootScope) {
   SelectorFilter& filter = GetDocument().GetStyleResolver().GetSelectorFilter();
   GetDocument().Lifecycle().AdvanceTo(DocumentLifecycle::kInStyleRecalc);
 
-  SelectorFilterRootScope span_scope(GetDocument().getElementById("y"));
+  SelectorFilterRootScope span_scope(
+      GetDocument().getElementById(AtomicString("y")));
   SelectorFilterParentScope::EnsureParentStackIsPushed();
 
   HeapVector<CSSSelector> arena;
@@ -91,8 +93,8 @@ TEST_F(SelectorFilterParentScopeTest, RootScope) {
   for (const CSSSelector* selector = selectors->First(); selector;
        selector = CSSSelectorList::Next(*selector)) {
     unsigned selector_hashes[max_identifier_hashes];
-    filter.CollectIdentifierHashes(*selector, selector_hashes,
-                                   max_identifier_hashes);
+    filter.CollectIdentifierHashes(*selector, /* style_scope */ nullptr,
+                                   selector_hashes, max_identifier_hashes);
     EXPECT_NE(selector_hashes[0], 0u);
     EXPECT_FALSE(
         filter.FastRejectSelector<max_identifier_hashes>(selector_hashes));
@@ -148,8 +150,8 @@ TEST_F(SelectorFilterParentScopeTest, AttributeFilter) {
   for (const CSSSelector* selector = selectors->First(); selector;
        selector = CSSSelectorList::Next(*selector)) {
     unsigned selector_hashes[max_identifier_hashes];
-    filter.CollectIdentifierHashes(*selector, selector_hashes,
-                                   max_identifier_hashes);
+    filter.CollectIdentifierHashes(*selector, /* style_scope */ nullptr,
+                                   selector_hashes, max_identifier_hashes);
     EXPECT_NE(selector_hashes[0], 0u);
     EXPECT_FALSE(
         filter.FastRejectSelector<max_identifier_hashes>(selector_hashes));

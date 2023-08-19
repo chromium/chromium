@@ -9,10 +9,6 @@
 #import "base/files/file_path.h"
 #import "ios/chrome/browser/download/download_directory_util.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 NSString* const kGoogleDriveITunesItemIdentifier = @"507874739";
 NSString* const kGoogleDriveAppURLScheme = @"googledrive";
 NSString* const kGoogleDriveAppBundleID = @"com.google.Drive";

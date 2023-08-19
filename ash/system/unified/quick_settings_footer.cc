@@ -8,6 +8,7 @@
 #include <memory>
 #include <numeric>
 
+#include "ash/ash_element_identifiers.h"
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_pref_names.h"
 #include "ash/constants/quick_settings_catalogs.h"
@@ -21,21 +22,26 @@
 #include "ash/system/power/adaptive_charging_controller.h"
 #include "ash/system/tray/tray_popup_utils.h"
 #include "ash/system/unified/buttons.h"
+#include "ash/system/unified/detailed_view_controller.h"
 #include "ash/system/unified/power_button.h"
 #include "ash/system/unified/quick_settings_metrics_util.h"
 #include "ash/system/unified/unified_system_tray_controller.h"
+#include "ash/system/unified/user_chooser_detailed_view_controller.h"
 #include "ash/system/user/login_status.h"
 #include "chromeos/constants/chromeos_features.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
 #include "components/vector_icons/vector_icons.h"
+#include "third_party/skia/include/core/SkColor.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/chromeos/styles/cros_tokens_color_mappings.h"
 #include "ui/color/color_provider.h"
+#include "ui/gfx/geometry/insets.h"
 #include "ui/gfx/paint_vector_icon.h"
 #include "ui/views/controls/button/button.h"
 #include "ui/views/layout/box_layout.h"
 #include "ui/views/view.h"
+#include "ui/views/view_class_properties.h"
 
 namespace ash {
 namespace {
@@ -57,10 +63,30 @@ bool ShouldShowSignOutButton() {
       session_controller->IsUserPublicAccount()) {
     return true;
   }
-  // For regular accounts, only show if there is more than one account on the
-  // device.
-  absl::optional<int> user_count = session_controller->GetExistingUsersCount();
-  return user_count.has_value() && user_count.value() > 1;
+
+  // More than one user logged in.
+  if (session_controller->NumberOfLoggedInUsers() > 1) {
+    // In this state, UX wants to only show the user avatar button.
+    return false;
+  }
+
+  absl::optional<int> number_of_users_that_could_be_logged_in =
+      session_controller->GetExistingUsersCount();
+  const bool multiple_past_accounts =
+      number_of_users_that_could_be_logged_in.has_value() &&
+      number_of_users_that_could_be_logged_in.value() > 1;
+
+  // Show the sign out button if only one account is logged in, but multiple are
+  // on the device.
+  return multiple_past_accounts;
+}
+
+bool ShouldShowAvatar() {
+  // Only show the avatar if there are multiple logged in users, and we are
+  // logged in.
+  return Shell::Get()->session_controller()->login_status() !=
+             LoginStatus::NOT_LOGGED_IN &&
+         Shell::Get()->session_controller()->NumberOfLoggedInUsers() > 1;
 }
 
 }  // namespace
@@ -114,71 +140,88 @@ void QsBatteryInfoViewBase::OnPowerStatusChanged() {
   Update();
 }
 
-QsBatteryLabelView::QsBatteryLabelView(UnifiedSystemTrayController* controller)
-    : QsBatteryInfoViewBase(controller) {
-  SetID(VIEW_ID_QS_BATTERY_BUTTON);
-  views::FocusRing::Get(/*host=*/this)
-      ->SetColorId(cros_tokens::kCrosSysFocusRing);
-
-  // Sets the text.
+void QsBatteryInfoViewBase::OnThemeChanged() {
+  PillButton::OnThemeChanged();
   Update();
 }
 
-QsBatteryLabelView::~QsBatteryLabelView() = default;
+void QsBatteryInfoViewBase::UpdateIconAndText(bool bsm_active) {
+  // Change to icon type if battery saver mode is enabled with
+  // QsBatteryLabelView.
+  SetPillButtonType(Type::kPrimaryWithIconLeading);
+  SetButtonTextColorId(bsm_active
+                           ? cros_tokens::kCrosSysSystemOnWarningContainer
+                           : cros_tokens::kCrosSysOnPositiveContainer);
+  SetBackgroundColorId(bsm_active ? cros_tokens::kCrosSysSystemWarningContainer
+                                  : cros_tokens::kCrosSysPositiveContainer);
 
-void QsBatteryLabelView::OnThemeChanged() {
-  PillButton::OnThemeChanged();
-
-  SetButtonTextColorId(cros_tokens::kCrosSysOnSurface);
-}
-
-void QsBatteryLabelView::Update() {
-  const std::u16string status_string =
-      PowerStatus::Get()->GetInlinedStatusString();
-  SetText(status_string);
-  SetVisible(!status_string.empty());
-}
-
-QsBatteryIconView::QsBatteryIconView(UnifiedSystemTrayController* controller)
-    : QsBatteryInfoViewBase(controller, Type::kPrimaryWithIconLeading) {
-  SetID(VIEW_ID_QS_BATTERY_BUTTON);
-
-  // Sets the text and icon.
-  Update();
-}
-
-QsBatteryIconView::~QsBatteryIconView() = default;
-
-void QsBatteryIconView::OnThemeChanged() {
-  PillButton::OnThemeChanged();
-
-  SetButtonTextColorId(cros_tokens::kCrosSysOnPositiveContainer);
-  SetBackgroundColorId(cros_tokens::kCrosSysPositiveContainer);
-  ConfigureIcon();
-}
-
-void QsBatteryIconView::Update() {
   const std::u16string percentage_text =
       PowerStatus::Get()->GetStatusStrings().first;
   SetText(percentage_text);
   SetVisible(!percentage_text.empty());
 
   if (GetColorProvider()) {
-    ConfigureIcon();
+    ConfigureIcon(bsm_active);
   }
 }
 
-void QsBatteryIconView::ConfigureIcon() {
-  const SkColor battery_icon_color =
-      GetColorProvider()->GetColor(cros_tokens::kCrosSysOnPositiveContainer);
+void QsBatteryInfoViewBase::ConfigureIcon(bool bsm_active) {
+  const SkColor battery_icon_color = GetColorProvider()->GetColor(
+      bsm_active ? cros_tokens::kCrosSysSystemOnWarningContainer
+                 : cros_tokens::kCrosSysOnPositiveContainer);
+  const absl::optional<SkColor> battery_badge_color =
+      bsm_active ? absl::optional<SkColor>(GetColorProvider()->GetColor(
+                       cros_tokens::kCrosSysSystemWarningContainer))
+                 : absl::nullopt;
 
   PowerStatus::BatteryImageInfo info =
-      PowerStatus::Get()->GetBatteryImageInfo();
+      PowerStatus::Get()->GenerateBatteryImageInfo(battery_icon_color,
+                                                   battery_badge_color);
   info.alert_if_low = false;
+  if (bsm_active) {
+    // Use solid battery icon for battery saver mode enabled.
+    info.charge_percent = 100;
+  }
 
   SetImageModel(ButtonState::STATE_NORMAL,
                 ui::ImageModel::FromImageSkia(PowerStatus::GetBatteryImage(
-                    info, kUnifiedTrayBatteryIconSize, battery_icon_color)));
+                    info, kUnifiedTrayBatteryIconSize, GetColorProvider())));
+}
+
+QsBatteryLabelView::QsBatteryLabelView(UnifiedSystemTrayController* controller)
+    : QsBatteryInfoViewBase(controller) {
+  SetID(VIEW_ID_QS_BATTERY_BUTTON);
+  views::FocusRing::Get(/*host=*/this)
+      ->SetColorId(cros_tokens::kCrosSysFocusRing);
+  Update();
+}
+
+QsBatteryLabelView::~QsBatteryLabelView() = default;
+
+void QsBatteryLabelView::Update() {
+  if (PowerStatus::Get()->IsBatterySaverActive()) {
+    UpdateIconAndText(true);
+  } else {
+    SetButtonTextColorId(cros_tokens::kCrosSysOnSurface);
+
+    const std::u16string status_string =
+        PowerStatus::Get()->GetInlinedStatusString();
+    SetText(status_string);
+    SetVisible(!status_string.empty());
+  }
+}
+
+QsBatteryIconView::QsBatteryIconView(UnifiedSystemTrayController* controller)
+    : QsBatteryInfoViewBase(controller, Type::kPrimaryWithIconLeading) {
+  SetID(VIEW_ID_QS_BATTERY_BUTTON);
+  // Sets the text and icon.
+  Update();
+}
+
+QsBatteryIconView::~QsBatteryIconView() = default;
+
+void QsBatteryIconView::Update() {
+  UpdateIconAndText(PowerStatus::Get()->IsBatterySaverActive());
 }
 
 QuickSettingsFooter::QuickSettingsFooter(
@@ -200,6 +243,20 @@ QuickSettingsFooter::QuickSettingsFooter(
 
   power_button_ = front_buttons_container->AddChildView(
       std::make_unique<PowerButton>(controller));
+
+  if (ShouldShowAvatar()) {
+    auto* user_avatar_button = front_buttons_container->AddChildView(
+        std::make_unique<UserAvatarButton>(base::BindRepeating(
+            [](UnifiedSystemTrayController* controller) {
+              quick_settings_metrics_util::RecordQsButtonActivated(
+                  QsButtonCatalogName::kAvatarButton);
+              controller->ShowUserChooserView();
+            },
+            base::Unretained(controller))));
+    user_avatar_button->SetEnabled(
+        UserChooserDetailedViewController::IsUserChooserEnabled());
+    user_avatar_button->SetID(VIEW_ID_QS_USER_AVATAR_BUTTON);
+  }
 
   if (ShouldShowSignOutButton()) {
     sign_out_button_ =
@@ -225,7 +282,9 @@ QuickSettingsFooter::QuickSettingsFooter(
   auto* spacing = AddChildView(std::make_unique<views::View>());
   layout->SetFlexForView(spacing, 1);
 
+  views::View* end_container = nullptr;
   if (PowerStatus::Get()->IsBatteryPresent()) {
+    end_container = CreateEndContainer();
     const bool use_smart_charging_ui =
         ash::features::IsAdaptiveChargingEnabled() &&
         Shell::Get()
@@ -233,14 +292,19 @@ QuickSettingsFooter::QuickSettingsFooter(
             ->is_adaptive_delaying_charge();
 
     if (use_smart_charging_ui) {
-      AddChildView(std::make_unique<QsBatteryIconView>(controller));
+      end_container->AddChildView(
+          std::make_unique<QsBatteryIconView>(controller));
     } else {
-      AddChildView(std::make_unique<QsBatteryLabelView>(controller));
+      end_container->AddChildView(
+          std::make_unique<QsBatteryLabelView>(controller));
     }
   }
 
   if (TrayPopupUtils::CanOpenWebUISettings()) {
-    settings_button_ = AddChildView(std::make_unique<IconButton>(
+    if (!end_container) {
+      end_container = CreateEndContainer();
+    }
+    settings_button_ = end_container->AddChildView(std::make_unique<IconButton>(
         base::BindRepeating(
             [](UnifiedSystemTrayController* controller) {
               quick_settings_metrics_util::RecordQsButtonActivated(
@@ -251,6 +315,8 @@ QuickSettingsFooter::QuickSettingsFooter(
         IconButton::Type::kMedium, &vector_icons::kSettingsOutlineIcon,
         IDS_ASH_STATUS_TRAY_SETTINGS));
     settings_button_->SetID(VIEW_ID_QS_SETTINGS_BUTTON);
+    settings_button_->SetProperty(views::kElementIdentifierKey,
+                                  kQuickSettingsSettingsButtonElementId);
 
     local_state_pref_change_registrar_.Init(Shell::Get()->local_state());
     local_state_pref_change_registrar_.Add(
@@ -277,6 +343,17 @@ void QuickSettingsFooter::UpdateSettingsButtonState() {
   settings_button_->SetState(settings_icon_enabled
                                  ? views::Button::STATE_NORMAL
                                  : views::Button::STATE_DISABLED);
+}
+
+views::View* QuickSettingsFooter::CreateEndContainer() {
+  auto* end_container = AddChildView(std::make_unique<views::View>());
+  auto* end_container_layout =
+      end_container->SetLayoutManager(std::make_unique<views::BoxLayout>(
+          views::BoxLayout::Orientation::kHorizontal, gfx::Insets(),
+          kQuickSettingFooterItemBetweenSpacing));
+  end_container_layout->set_main_axis_alignment(
+      views::BoxLayout::MainAxisAlignment::kEnd);
+  return end_container;
 }
 
 BEGIN_METADATA(QuickSettingsFooter, views::View)

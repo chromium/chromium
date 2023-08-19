@@ -5,8 +5,9 @@ MD5: 98492e965963f852ab29f9e61b2ad700 *apr-1.5.2.tar.gz
 Version: 1.5.2
 Date: April 29, 2015
 License: Apache 2.0
-License File: NOT_SHIPPED
+License File: LICENSE
 Security Critical: no
+Shipped: no
 The library is not security critical because it is used for tests only.
 Do not link it into production code.
 

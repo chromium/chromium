@@ -8,11 +8,11 @@
 #import <UIKit/UIKit.h>
 #import <stddef.h>
 
+#import "base/apple/foundation_util.h"
 #import "base/check.h"
 #import "base/functional/bind.h"
 #import "base/json/json_reader.h"
 #import "base/location.h"
-#import "base/mac/foundation_util.h"
 #import "base/strings/sys_string_conversions.h"
 #import "base/task/sequenced_task_runner.h"
 #import "base/time/time.h"
@@ -24,10 +24,6 @@
 #import "components/policy/core/common/schema.h"
 #import "components/policy/core/common/schema_registry.h"
 #import "components/policy/policy_constants.h"
-
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
 
 namespace {
 

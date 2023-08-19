@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<title>Test crashing media foundation cdm removes it from available key systems</title>
+<div id="console"></div>
+<script src='eme_player_js/app_loader.js' type='text/javascript'></script>
+<script type='text/javascript'>
+
+  // Special key id that invokes crash in Media Foundation Clear Key CDM.
+  const crashKeyId = 'crash-crashcrash';
+
+  // This test only uses |keySystem|.
+  var testConfig = new TestConfig();
+  testConfig.loadQueryParams();
+
+
+  const initDataType = 'keyids';
+  const initData = Utils.createKeyIdsInitializationData(crashKeyId)
+
+  // Use the default KEY as specified in eme_player_js/globals.js.
+  const key = KEY;
+
+  const config = [{
+    initDataTypes: [initDataType],
+    audioCapabilities: [
+      { contentType: 'audio/mp4; codecs="mp4a.40.2"' },
+    ],
+    videoCapabilities: [{ contentType: MEDIA_TYPES['MP4 - Video Only'] }],
+    persistentState: 'optional',
+    sessionTypes: ['temporary'],
+  }];
+
+  var mediaKeys;
+  var mediaKeySession;
+  var mediaKeySessionId;
+
+  async function createSessionAndGenerateRequestWithCrashKeyId() {
+    let access = await navigator.requestMediaKeySystemAccess(testConfig.keySystem, config);
+
+    Utils.timeLog('Creating session');
+    mediaKeys = await access.createMediaKeys();
+    mediaKeySession = await mediaKeys.createSession();
+    await mediaKeySession.generateRequest(initDataType, initData);
+
+    const waitForKeyStatusChangePromise =
+      Utils.waitForEvent(mediaKeySession, 'keystatuseschange');
+    Utils.timeLog('Calling update()');
+    const jwkSet = Utils.createJWKData(crashKeyId, key);
+    return Promise.all([
+      mediaKeySession.update(jwkSet),
+      waitForKeyStatusChangePromise,
+    ]);
+  }
+
+  async function RunTest() {
+    // Create first session.
+    await createSessionAndGenerateRequestWithCrashKeyId();
+
+    // Create second session.
+    await createSessionAndGenerateRequestWithCrashKeyId();
+
+    // Third session should not be allowed as fallback should be on.
+    createSessionAndGenerateRequestWithCrashKeyId()
+      .then(function () {
+        Utils.failTest('Key system should not be supported due to fallback after multiple crashes');
+      })
+      .catch(function (error) {
+        Utils.timeLog('Successfully failed with error: ' + error);
+        Utils.setResultInTitle('ENDED');
+      });
+  }
+
+  RunTest();
+
+</script>
+
+</html>

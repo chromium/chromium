@@ -114,6 +114,11 @@ std::unique_ptr<TrustTokenKeyCommitments> CreateTestTrustTokenKeyCommitments(
     mojom::TrustTokenProtocolVersion protocol_version,
     GURL issuer_url);
 
+std::string SerializeStructureHeaderListOfStrings(
+    const std::vector<std::string>& strings);
+std::vector<const std::string> DeserializeStructuredHeaderListOfStrings(
+    base::StringPiece header);
+
 }  // namespace network
 
 #endif  // SERVICES_NETWORK_ATTRIBUTION_ATTRIBUTION_TEST_UTILS_H_

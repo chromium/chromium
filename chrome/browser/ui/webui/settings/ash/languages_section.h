@@ -31,18 +31,18 @@ class LanguagesSection : public OsSettingsSection,
                    PrefService* pref_service);
   ~LanguagesSection() override;
 
- private:
   // OsSettingsSection:
   void AddLoadTimeData(content::WebUIDataSource* html_source) override;
   void AddHandlers(content::WebUI* web_ui) override;
   int GetSectionNameMessageId() const override;
   chromeos::settings::mojom::Section GetSection() const override;
   mojom::SearchResultIcon GetSectionIcon() const override;
-  std::string GetSectionPath() const override;
+  const char* GetSectionPath() const override;
   bool LogMetric(chromeos::settings::mojom::Setting setting,
                  base::Value& value) const override;
   void RegisterHierarchy(HierarchyGenerator* generator) const override;
 
+ private:
   bool IsEmojiSuggestionAllowed() const;
   bool IsSpellCheckEnabled() const;
   void UpdateSpellCheckSearchTags();

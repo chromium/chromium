@@ -7,6 +7,7 @@
 #include <vector>
 
 #include "base/containers/span.h"
+#include "chrome/browser/enterprise/connectors/device_trust/key_management/common/key_types.h"
 #include "chrome/browser/enterprise/connectors/device_trust/key_management/core/persistence/mock_key_persistence_delegate.h"
 #include "chrome/browser/enterprise/connectors/device_trust/key_management/core/persistence/scoped_key_persistence_delegate_factory.h"
 #include "crypto/unexportable_key.h"
@@ -53,7 +54,7 @@ class SigningKeyUtilTest : public testing::Test {
 
     auto* mock_delegate_ptr = mocked_delegate.get();
     factory_.set_next_instance(std::move(mocked_delegate));
-    EXPECT_CALL(*mock_delegate_ptr, LoadKeyPair());
+    EXPECT_CALL(*mock_delegate_ptr, LoadKeyPair(KeyStorageType::kPermanent));
 
     auto key_pair = LoadPersistedKey();
     ValidateSigningKey(key_pair.get(), trust_level);

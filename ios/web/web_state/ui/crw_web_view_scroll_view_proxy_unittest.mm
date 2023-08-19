@@ -14,10 +14,6 @@
 #import "third_party/ocmock/OCMock/OCMock.h"
 #import "third_party/ocmock/gtest_support.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 // TODO(crbug.com/1030168): Rewrite tests Delegate, MultipleScrollView,
 // DelegateClearingUp not to depend on this, and delete this.
 @interface CRWWebViewScrollViewProxy (Testing)

@@ -1,0 +1,28 @@
+caption: Enable compression dictionary transport support
+default: true
+desc: |-
+  This feature enables the use of dictionary-specific content encodings in the Accept-Encoding request header ("sbr" and "zst-d") when dictionaries are available for use.
+
+  Setting the policy to Enabled or leaving it unset means <ph name="PRODUCT_NAME">$1<ex>Google Chrome</ex></ph> will accept web contents using the compression dictionary transport feature.
+  Setting the policy to Disabled turns off the compression dictionary transport feature.
+example_value: true
+features:
+  dynamic_refresh: false
+  per_profile: true
+items:
+- caption: Accept web contents use compression dictionary transport feature
+  value: true
+- caption: Do not allow using compression dictionary transport feature
+  value: false
+owners:
+- horo@chromium.org
+- file://services/network/OWNERS
+future_on:
+- fuchsia
+schema:
+  type: boolean
+supported_on:
+- chrome.*:118-
+- chrome_os:118-
+tags: []
+type: main

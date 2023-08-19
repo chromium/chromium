@@ -13,16 +13,18 @@
 #include "ash/shelf/shelf.h"
 #include "ash/shell.h"
 #include "ash/strings/grit/ash_strings.h"
-#include "ash/style/ash_color_provider.h"
+#include "ash/style/ash_color_id.h"
 #include "ash/system/privacy/privacy_indicators_controller.h"
 #include "ash/system/tray/tray_item_view.h"
 #include "base/check.h"
 #include "base/check_op.h"
-#include "base/containers/flat_set.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
+#include "chromeos/constants/chromeos_features.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/base/models/image_model.h"
+#include "ui/chromeos/styles/cros_tokens_color_mappings.h"
 #include "ui/color/color_id.h"
 #include "ui/color/color_provider.h"
 #include "ui/compositor/animation_throughput_reporter.h"
@@ -34,7 +36,6 @@
 #include "ui/gfx/animation/tween.h"
 #include "ui/gfx/geometry/insets.h"
 #include "ui/gfx/geometry/size.h"
-#include "ui/gfx/paint_vector_icon.h"
 #include "ui/views/animation/animation_builder.h"
 #include "ui/views/controls/image_view.h"
 #include "ui/views/layout/box_layout.h"
@@ -190,6 +191,8 @@ PrivacyIndicatorsTrayItemView::PrivacyIndicatorsTrayItemView(Shelf* shelf)
   UpdateIcons();
   TooltipTextChanged();
 
+  UpdateVisibility();
+
   Shell::Get()->session_controller()->AddObserver(this);
 }
 
@@ -305,7 +308,17 @@ void PrivacyIndicatorsTrayItemView::UpdateVisibility() {
   SetVisible(visible);
 
   if (!visible) {
+    if (IsInPrimaryDisplay(GetWidget())) {
+      base::UmaHistogramLongTimes(
+          "Ash.PrivacyIndicators.IndicatorShowsDuration",
+          base::Time::Now() - start_showing_time_);
+    }
     return;
+  }
+
+  // Only record this metric on primary screen.
+  if (IsInPrimaryDisplay(GetWidget())) {
+    start_showing_time_ = base::Time::Now();
   }
 
   ++count_visible_per_session_;
@@ -497,17 +510,19 @@ void PrivacyIndicatorsTrayItemView::OnSessionStateChanged(
 }
 
 void PrivacyIndicatorsTrayItemView::UpdateIcons() {
-  const SkColor icon_color = AshColorProvider::Get()->GetContentLayerColor(
-      AshColorProvider::ContentLayerType::kIconColorPrimary);
+  const ui::ColorId icon_color_id =
+      chromeos::features::IsJellyrollEnabled()
+          ? cros_tokens::kCrosSysSystemOnPrimaryContainer
+          : static_cast<ui::ColorId>(kColorAshButtonIconColorPrimary);
 
-  camera_icon_->SetImage(gfx::CreateVectorIcon(
-      kPrivacyIndicatorsCameraIcon, kPrivacyIndicatorsIconSize, icon_color));
-  microphone_icon_->SetImage(
-      gfx::CreateVectorIcon(kPrivacyIndicatorsMicrophoneIcon,
-                            kPrivacyIndicatorsIconSize, icon_color));
-  screen_share_icon_->SetImage(
-      gfx::CreateVectorIcon(kPrivacyIndicatorsScreenShareIcon,
-                            kPrivacyIndicatorsIconSize, icon_color));
+  camera_icon_->SetImage(ui::ImageModel::FromVectorIcon(
+      kPrivacyIndicatorsCameraIcon, icon_color_id, kPrivacyIndicatorsIconSize));
+  microphone_icon_->SetImage(ui::ImageModel::FromVectorIcon(
+      kPrivacyIndicatorsMicrophoneIcon, icon_color_id,
+      kPrivacyIndicatorsIconSize));
+  screen_share_icon_->SetImage(ui::ImageModel::FromVectorIcon(
+      kPrivacyIndicatorsScreenShareIcon, icon_color_id,
+      kPrivacyIndicatorsIconSize));
 }
 
 void PrivacyIndicatorsTrayItemView::UpdateBoundsInset() {

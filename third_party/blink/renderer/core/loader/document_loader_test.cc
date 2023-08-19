@@ -65,11 +65,10 @@ class DecodedBodyLoader : public StaticDataNavigationBodyLoader {
         int64_t total_encoded_data_length,
         int64_t total_encoded_body_length,
         int64_t total_decoded_body_length,
-        bool should_report_corb_blocking,
         const absl::optional<WebURLError>& error) override {
-      client_->BodyLoadingFinished(
-          completion_time, total_encoded_data_length, total_encoded_body_length,
-          total_decoded_body_length, should_report_corb_blocking, error);
+      client_->BodyLoadingFinished(completion_time, total_encoded_data_length,
+                                   total_encoded_body_length,
+                                   total_decoded_body_length, error);
     }
 
    private:
@@ -138,17 +137,17 @@ class DocumentLoaderTest : public testing::TestWithParam<bool> {
         url_test_helpers::ToKURL("http://192.168.1.1/foo.html"),
         test::CoreTestDataPath("foo.html"), WebString::FromUTF8("text/html"),
         URLLoaderMockFactory::GetSingletonInstance(),
-        network::mojom::IPAddressSpace::kLocal);
+        network::mojom::IPAddressSpace::kPrivate);
     url_test_helpers::RegisterMockedURLLoad(
         url_test_helpers::ToKURL("https://192.168.1.1/foo.html"),
         test::CoreTestDataPath("foo.html"), WebString::FromUTF8("text/html"),
         URLLoaderMockFactory::GetSingletonInstance(),
-        network::mojom::IPAddressSpace::kLocal);
+        network::mojom::IPAddressSpace::kPrivate);
     url_test_helpers::RegisterMockedURLLoad(
         url_test_helpers::ToKURL("http://somethinglocal/foo.html"),
         test::CoreTestDataPath("foo.html"), WebString::FromUTF8("text/html"),
         URLLoaderMockFactory::GetSingletonInstance(),
-        network::mojom::IPAddressSpace::kLoopback);
+        network::mojom::IPAddressSpace::kLocal);
   }
 
   void TearDown() override {

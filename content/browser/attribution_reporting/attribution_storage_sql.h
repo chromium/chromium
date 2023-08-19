@@ -19,6 +19,7 @@
 #include "content/browser/attribution_reporting/attribution_storage.h"
 #include "content/browser/attribution_reporting/attribution_trigger.h"
 #include "content/browser/attribution_reporting/rate_limit_table.h"
+#include "content/browser/attribution_reporting/store_source_result.mojom-forward.h"
 #include "content/browser/attribution_reporting/stored_source.h"
 #include "content/common/content_export.h"
 #include "content/public/browser/attribution_data_model.h"
@@ -34,6 +35,7 @@ class StatementID;
 namespace content {
 
 class AttributionStorageDelegate;
+class StorableSource;
 struct AttributionInfo;
 
 enum class RateLimitResult : int;
@@ -44,11 +46,11 @@ enum class RateLimitResult : int;
 class CONTENT_EXPORT AttributionStorageSql : public AttributionStorage {
  public:
   // Version number of the database.
-  static constexpr int kCurrentVersionNumber = 54;
+  static constexpr int kCurrentVersionNumber = 56;
 
   // Earliest version which can use a `kCurrentVersionNumber` database
   // without failing.
-  static constexpr int kCompatibleVersionNumber = 54;
+  static constexpr int kCompatibleVersionNumber = 56;
 
   // Latest version of the database that cannot be upgraded to
   // `kCurrentVersionNumber` without razing the database.
@@ -83,6 +85,8 @@ class CONTENT_EXPORT AttributionStorageSql : public AttributionStorage {
   };
 
  private:
+  struct StoredSourceData;
+
   enum class DbStatus {
     // The database has never been created, i.e. there is no database file at
     // all.
@@ -123,6 +127,11 @@ class CONTENT_EXPORT AttributionStorageSql : public AttributionStorage {
                  base::Time delete_end,
                  StoragePartition::StorageKeyMatcherFunction filter,
                  bool delete_rate_limit_data) override;
+  void SetDelegate(std::unique_ptr<AttributionStorageDelegate>) override;
+
+  [[nodiscard]] attribution_reporting::mojom::StoreSourceResult
+  CheckDestinationRateLimit(const StorableSource& source,
+                            base::Time source_time);
 
   void ClearAllDataAllTime(bool delete_rate_limit_data)
       VALID_CONTEXT_REQUIRED(sequence_checker_);
@@ -178,6 +187,7 @@ class CONTENT_EXPORT AttributionStorageSql : public AttributionStorage {
   MaybeReplaceLowerPriorityEventLevelReport(
       const AttributionReport& report,
       int num_conversions,
+      int max_event_level_reports,
       int64_t conversion_priority,
       absl::optional<AttributionReport>& replaced_report)
       VALID_CONTEXT_REQUIRED(sequence_checker_);
@@ -197,6 +207,12 @@ class CONTENT_EXPORT AttributionStorageSql : public AttributionStorage {
 
   absl::optional<AttributionReport> ReadReportFromStatement(sql::Statement&)
       VALID_CONTEXT_REQUIRED(sequence_checker_);
+
+  absl::optional<StoredSourceData> ReadSourceFromStatement(sql::Statement&)
+      VALID_CONTEXT_REQUIRED(sequence_checker_);
+
+  absl::optional<StoredSourceData> ReadSourceToAttribute(
+      StoredSource::Id source_id) VALID_CONTEXT_REQUIRED(sequence_checker_);
 
   std::vector<AttributionReport> GetReportsInternal(base::Time max_report_time,
                                                     int limit)

@@ -13,13 +13,10 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.robolectric.annotation.Config;
-import org.robolectric.annotation.Implementation;
-import org.robolectric.annotation.Implements;
 
 import org.chromium.base.LocaleUtils;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.JniMocker;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.language.AppLanguagePromoDialog.LanguageItemAdapter;
 import org.chromium.chrome.browser.language.settings.LanguageItem;
 import org.chromium.chrome.browser.translate.FakeTranslateBridgeJni;
@@ -34,8 +31,7 @@ import java.util.LinkedHashSet;
  * Tests for the AppPromoDialog class.
  */
 @RunWith(BaseRobolectricTestRunner.class)
-@Config(manifest = Config.NONE,
-        shadows = {AppLanguagePromoDialogTest.ShadowChromeFeatureList.class})
+@Config(manifest = Config.NONE)
 public class AppLanguagePromoDialogTest {
     @Rule
     public JniMocker mJniMocker = new JniMocker();
@@ -49,28 +45,6 @@ public class AppLanguagePromoDialogTest {
     LanguageItem mLangZu;
     // List of potential UI languages.
     LinkedHashSet<LanguageItem> mUiLanguages;
-
-    /**
-     * Shadow class to control app language prompt features.
-     */
-    @Implements(ChromeFeatureList.class)
-    static class ShadowChromeFeatureList {
-        static boolean sEnableForceAppLanguagePrompt;
-        static boolean sEnableAppLanguagePrompt;
-        static boolean sEnableAppLanguagePromptULP;
-
-        @Implementation
-        public static boolean isEnabled(String featureName) {
-            if (featureName.equals(ChromeFeatureList.FORCE_APP_LANGUAGE_PROMPT)) {
-                return sEnableForceAppLanguagePrompt;
-            } else if (featureName.equals(ChromeFeatureList.APP_LANGUAGE_PROMPT)) {
-                return sEnableAppLanguagePrompt;
-            } else if (featureName.equals(ChromeFeatureList.APP_LANGUAGE_PROMPT_ULP)) {
-                return sEnableAppLanguagePromptULP;
-            }
-            return false;
-        }
-    }
 
     FakeLanguageBridgeJni mFakeLanguageBridge;
     FakeTranslateBridgeJni mFakeTranslateBridge;
@@ -283,19 +257,10 @@ public class AppLanguagePromoDialogTest {
     @Test
     @SmallTest
     public void testShouldShowPrompt() {
-        mFakeLanguageBridge.setULPLanguages(Arrays.asList("en-US"));
         final boolean online = true;
-        // With feature disabled prompt is not shown.
-        Assert.assertFalse(AppLanguagePromoDialog.shouldShowPrompt(online));
 
-        // With feature enabled ONLINE status is returned.
-        ShadowChromeFeatureList.sEnableAppLanguagePrompt = true;
-        Assert.assertTrue(AppLanguagePromoDialog.shouldShowPrompt(online));
-        Assert.assertFalse(AppLanguagePromoDialog.shouldShowPrompt(!online));
-
-        // With ULP match feature enabled the prompt should not be shown if the top ULP has a
-        // base match with the current default locale ("en-US" in tests).
-        ShadowChromeFeatureList.sEnableAppLanguagePromptULP = true;
+        // Prompt should not be shown if the top ULP has a base match with the current default
+        // locale ("en-US" in tests).
         mFakeLanguageBridge.setULPLanguages(Arrays.asList("en-AU"));
         Assert.assertFalse(AppLanguagePromoDialog.shouldShowPrompt(online));
         mFakeLanguageBridge.setULPLanguages(Arrays.asList("fr"));
@@ -303,20 +268,18 @@ public class AppLanguagePromoDialogTest {
         mFakeLanguageBridge.setULPLanguages(Arrays.asList("fr", "en-US"));
         Assert.assertTrue(AppLanguagePromoDialog.shouldShowPrompt(online));
 
+        // Prompt should not be shown if not online.
+        Assert.assertFalse(AppLanguagePromoDialog.shouldShowPrompt(!online));
+
         // Prompt should not be shown if ULP languages are empty.
         mFakeLanguageBridge.setULPLanguages(new ArrayList<>());
         Assert.assertFalse(AppLanguagePromoDialog.shouldShowPrompt(online));
 
-        ShadowChromeFeatureList.sEnableAppLanguagePromptULP = false;
-
         // Prompt is not shown if it has been shown before.
+        mFakeLanguageBridge.setULPLanguages(Arrays.asList("fr"));
         Assert.assertTrue(AppLanguagePromoDialog.shouldShowPrompt(online));
         mFakeTranslateBridge.setAppLanguagePromptShown(true);
         Assert.assertFalse(AppLanguagePromoDialog.shouldShowPrompt(online));
-
-        // Prompt is shown if it is forced on for testing.
-        ShadowChromeFeatureList.sEnableForceAppLanguagePrompt = true;
-        Assert.assertTrue(AppLanguagePromoDialog.shouldShowPrompt(online));
     }
 
     private static LanguageItemAdapter makeLanguageItemAdapter(

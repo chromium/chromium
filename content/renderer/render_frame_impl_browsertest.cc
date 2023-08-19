@@ -399,7 +399,7 @@ TEST_F(RenderFrameImplTest, NoCrashWhenDeletingFrameDuringFind) {
       false /* async */);
 
   static_cast<mojom::Frame*>(frame())->Delete(
-      mojom::FrameDeleteIntention::kNotMainFrame);
+      mojom::FrameDeleteIntention::kNotMainFrame, mojo::NullRemote());
 }
 
 TEST_F(RenderFrameImplTest, AutoplayFlags) {
@@ -1117,6 +1117,14 @@ TEST_F(RenderFrameImplTest, SendUpdateCancelsPending) {
   EXPECT_TRUE(main_frame->delayed_state_sync_timer_.IsRunning());
   main_frame->SendUpdateState();
   EXPECT_FALSE(main_frame->delayed_state_sync_timer_.IsRunning());
+}
+
+TEST_F(RenderFrameImplTest, DebugHelperForCrbug1425281) {
+  mojo::PendingReceiver<mojom::DebugHelperForCrbug1425281> receiver;
+  static_cast<mojom::Frame*>(GetMainRenderFrame())
+      ->Delete(mojom::FrameDeleteIntention::
+                   kSpeculativeMainFrameForNavigationCancelled,
+               receiver.InitWithNewPipeAndPassRemote());
 }
 
 }  // namespace content

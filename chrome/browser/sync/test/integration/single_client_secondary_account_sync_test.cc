@@ -8,7 +8,6 @@
 #include "base/threading/thread_restrictions.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
-#include "chrome/browser/defaults.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/sync/test/integration/secondary_account_helper.h"
 #include "chrome/browser/sync/test/integration/sync_service_impl_harness.h"
@@ -23,14 +22,23 @@ namespace {
 
 #if !BUILDFLAG(IS_CHROMEOS_ASH)
 syncer::ModelTypeSet AllowedTypesInStandaloneTransportMode() {
-  // Only some special whitelisted types (and control types) are allowed in
-  // standalone transport mode.
-  syncer::ModelTypeSet allowed_types = {
-      syncer::DEVICE_INFO, syncer::USER_CONSENTS, syncer::SECURITY_EVENTS,
-      syncer::AUTOFILL_WALLET_DATA, syncer::SHARING_MESSAGE};
+  static_assert(49 == syncer::GetNumModelTypes(),
+                "Add new types below if they can run in transport mode");
+  // Only some types will run by default in transport mode (i.e. without their
+  // own separate opt-in).
+  syncer::ModelTypeSet allowed_types = {syncer::AUTOFILL_WALLET_CREDENTIAL,
+                                        syncer::AUTOFILL_WALLET_DATA,
+                                        syncer::AUTOFILL_WALLET_METADATA,
+                                        syncer::AUTOFILL_WALLET_OFFER,
+                                        syncer::AUTOFILL_WALLET_USAGE,
+                                        syncer::CONTACT_INFO,
+                                        syncer::DEVICE_INFO,
+                                        syncer::READING_LIST,
+                                        syncer::SECURITY_EVENTS,
+                                        syncer::SEND_TAB_TO_SELF,
+                                        syncer::SHARING_MESSAGE,
+                                        syncer::USER_CONSENTS};
   allowed_types.PutAll(syncer::ControlTypes());
-  allowed_types.Put(syncer::SEND_TAB_TO_SELF);
-  allowed_types.Put(syncer::READING_LIST);
   return allowed_types;
 }
 

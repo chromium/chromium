@@ -1,4 +1,18 @@
 {
+  "chromeos-betty-pi-arc-chrome-accessibility-fyi": {
+    "args_file": "//build/args/chromeos/betty-pi-arc.gni",
+    "gn_args": {
+      "also_build_lacros_chrome_for_architecture": "amd64",
+      "dcheck_always_on": true,
+      "exclude_unwind_tables": false,
+      "is_chrome_branded": true,
+      "is_chromeos_device": true,
+      "is_official_build": true,
+      "ozone_platform_headless": true,
+      "use_real_dbus_clients": false,
+      "use_remoteexec": true
+    }
+  },
   "chromeos-betty-pi-arc-chrome-dchecks": {
     "args_file": "//build/args/chromeos/betty-pi-arc.gni",
     "gn_args": {
@@ -42,18 +56,6 @@
   },
   "chromeos-jacuzzi-chrome-skylab-fyi": {
     "args_file": "//build/args/chromeos/jacuzzi.gni",
-    "gn_args": {
-      "dcheck_always_on": true,
-      "exclude_unwind_tables": false,
-      "is_chrome_branded": true,
-      "is_chromeos_device": true,
-      "is_official_build": true,
-      "is_skylab": true,
-      "use_remoteexec": true
-    }
-  },
-  "chromeos-kevin-chrome-skylab-fyi": {
-    "args_file": "//build/args/chromeos/kevin.gni",
     "gn_args": {
       "dcheck_always_on": true,
       "exclude_unwind_tables": false,

@@ -129,6 +129,8 @@ export class FakeNetworkConfig {
           allow_only_policy_networks_to_autoconnect: false,
           allow_only_policy_wifi_networks_to_connect: false,
           allow_only_policy_wifi_networks_to_connect_if_available: false,
+          dns_queries_monitored: false,
+          report_xdr_events_enabled: false,
           blocked_hex_ssids: [],
         });
 

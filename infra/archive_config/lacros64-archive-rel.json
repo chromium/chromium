@@ -21,6 +21,7 @@
          "file_globs": [
             "locales/*.pak"
          ],
+         "dirs": ["resources/accessibility"],
          "gcs_bucket":"chromium-browser-snapshots",
          "gcs_path":"lacros64/{%position%}/lacros.zip",
          "archive_type":"ARCHIVE_TYPE_ZIP"

@@ -1,0 +1,37 @@
+<style include="settings-shared input-device-settings-shared">
+  #header {
+    display: flex;
+    height: 24px;
+    padding: 12px 0;
+  }
+
+  .subsection {
+    margin-bottom: 0;
+    margin-top: 8px;
+  }
+
+  #description {
+    color: var(--cr-secondary-text-color);
+    margin-inline-start: 20px;
+  }
+</style>
+<template is="dom-repeat" items="[[graphicsTablets]]"
+    as="graphicsTablet" index-as="index" restamp>
+    <div class="device" data-evdev-id$="[[graphicsTablet.id]]">
+      <h2 class="subsection-header" id="graphicsTabletName">
+        [[graphicsTablet.name]]
+      </h2>
+      <div class="subsection">
+        <cr-link-row id="customizeTabletButtons"
+            class="bottom-divider" on-click="onCustomizeTabletButtonsClick"
+            aria-describedby="graphicsTabletName"
+            label="$i18n{customizeTabletButtonsLabel}">
+        </cr-link-row>
+        <cr-link-row id="customizePenButtons"
+            class="hr bottom-divider" on-click="onCustomizePenButtonsClick"
+            aria-describedby="graphicsTabletName"
+            label="$i18n{customizePenButtonsLabel}">
+        </cr-link-row>
+      </div>
+    </div>
+</template>

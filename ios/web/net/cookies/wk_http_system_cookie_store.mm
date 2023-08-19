@@ -16,10 +16,6 @@
 #import "net/cookies/cookie_constants.h"
 #import "url/gurl.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 namespace web {
 namespace {
 
@@ -58,9 +54,8 @@ bool ShouldIncludeForRequestUrl(NSHTTPCookie* cookie, const GURL& url) {
 
   // No extra trustworthy URLs.
   bool delegate_treats_url_as_trustworthy = false;
-  net::CookieAccessParams params = {
-      cookie_access_semantics, delegate_treats_url_as_trustworthy,
-      net::CookieSamePartyStatus::kNoSamePartyEnforcement};
+  net::CookieAccessParams params = {cookie_access_semantics,
+                                    delegate_treats_url_as_trustworthy};
   return canonical_cookie->IncludeForRequestURL(url, options, params)
       .status.IsInclude();
 }

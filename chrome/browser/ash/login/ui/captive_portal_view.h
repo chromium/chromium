@@ -35,7 +35,7 @@ class CaptivePortalView : public SimpleWebViewDialog {
  private:
   // Contains CaptivePortalWindowProxy to be notified when redirection state is
   // resolved.
-  raw_ptr<CaptivePortalWindowProxy, ExperimentalAsh> proxy_;
+  raw_ptr<CaptivePortalWindowProxy, DanglingUntriaged | ExperimentalAsh> proxy_;
 
   bool redirected_;
 };

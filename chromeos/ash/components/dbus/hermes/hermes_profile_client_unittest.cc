@@ -51,7 +51,7 @@ class HermesProfileClientTest : public HermesClientTestBase {
 
  protected:
   scoped_refptr<dbus::MockObjectProxy> proxy_;
-  raw_ptr<HermesProfileClient, ExperimentalAsh> client_;
+  raw_ptr<HermesProfileClient, DanglingUntriaged | ExperimentalAsh> client_;
 };
 
 TEST_F(HermesProfileClientTest, TestEnableProfile) {

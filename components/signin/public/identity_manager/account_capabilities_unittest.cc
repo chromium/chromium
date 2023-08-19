@@ -58,18 +58,18 @@ TEST_F(AccountCapabilitiesTest, CanRunChromePrivacySandboxTrials) {
             signin::Tribool::kFalse);
 }
 
-TEST_F(AccountCapabilitiesTest, CanStopParentalSupervision) {
+TEST_F(AccountCapabilitiesTest, IsOptedInToParentalSupervision) {
   AccountCapabilities capabilities;
-  EXPECT_EQ(capabilities.can_stop_parental_supervision(),
+  EXPECT_EQ(capabilities.is_opted_in_to_parental_supervision(),
             signin::Tribool::kUnknown);
 
   AccountCapabilitiesTestMutator mutator(&capabilities);
-  mutator.set_can_stop_parental_supervision(true);
-  EXPECT_EQ(capabilities.can_stop_parental_supervision(),
+  mutator.set_is_opted_in_to_parental_supervision(true);
+  EXPECT_EQ(capabilities.is_opted_in_to_parental_supervision(),
             signin::Tribool::kTrue);
 
-  mutator.set_can_stop_parental_supervision(false);
-  EXPECT_EQ(capabilities.can_stop_parental_supervision(),
+  mutator.set_is_opted_in_to_parental_supervision(false);
+  EXPECT_EQ(capabilities.is_opted_in_to_parental_supervision(),
             signin::Tribool::kFalse);
 }
 
@@ -83,6 +83,21 @@ TEST_F(AccountCapabilitiesTest, CanToggleAutoUpdates) {
 
   mutator.set_can_toggle_auto_updates(false);
   EXPECT_EQ(capabilities.can_toggle_auto_updates(), signin::Tribool::kFalse);
+}
+
+TEST_F(AccountCapabilitiesTest, CanUseChromeIpProtection) {
+  AccountCapabilities capabilities;
+  EXPECT_EQ(capabilities.can_use_chrome_ip_protection(),
+            signin::Tribool::kUnknown);
+
+  AccountCapabilitiesTestMutator mutator(&capabilities);
+  mutator.set_can_use_chrome_ip_protection(true);
+  EXPECT_EQ(capabilities.can_use_chrome_ip_protection(),
+            signin::Tribool::kTrue);
+
+  mutator.set_can_use_chrome_ip_protection(false);
+  EXPECT_EQ(capabilities.can_use_chrome_ip_protection(),
+            signin::Tribool::kFalse);
 }
 
 TEST_F(AccountCapabilitiesTest, IsAllowedForMachineLearning) {

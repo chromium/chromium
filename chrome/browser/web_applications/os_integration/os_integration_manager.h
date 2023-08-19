@@ -15,7 +15,6 @@
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
 #include "base/strings/string_piece_forward.h"
-#include "chrome/browser/web_applications/app_registrar_observer.h"
 #include "chrome/browser/web_applications/os_integration/os_integration_sub_manager.h"
 #include "chrome/browser/web_applications/os_integration/url_handler_manager.h"
 #include "chrome/browser/web_applications/os_integration/web_app_file_handler_manager.h"
@@ -28,6 +27,7 @@
 #include "chrome/browser/web_applications/web_app_constants.h"
 #include "chrome/browser/web_applications/web_app_id.h"
 #include "chrome/browser/web_applications/web_app_install_info.h"
+#include "chrome/browser/web_applications/web_app_registrar_observer.h"
 #include "components/custom_handlers/protocol_handler.h"
 #include "components/services/app_service/public/cpp/file_handler.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -37,10 +37,7 @@ class Profile;
 namespace web_app {
 
 class FakeOsIntegrationManager;
-class WebAppIconManager;
-class WebAppRegistrar;
-class WebAppSyncBridge;
-class WebAppUiManager;
+class WebAppProvider;
 
 // Returns if the sub-manager architecture is enabled. This means that they are
 // writing the expected os integration state to disk. See
@@ -93,7 +90,7 @@ using BarrierCallback =
 // all OS hooks during Web App lifecycle.
 // It contains individual OS integration managers and takes
 // care of inter-dependencies among them.
-class OsIntegrationManager : public AppRegistrarObserver {
+class OsIntegrationManager : public WebAppRegistrarObserver {
  public:
   // Used to suppress OS hooks during this object's lifetime.
   class ScopedSuppressForTesting {
@@ -118,10 +115,10 @@ class OsIntegrationManager : public AppRegistrarObserver {
   static base::RepeatingCallback<void(OsHooksErrors)> GetBarrierForSynchronize(
       AnyOsHooksErrorCallback errors_callback);
 
-  virtual void SetSubsystems(WebAppSyncBridge* sync_bridge,
-                             WebAppRegistrar* registrar,
-                             WebAppUiManager* ui_manager,
-                             WebAppIconManager* icon_manager);
+  // Sets internal WebAppProvider reference and threads it through to all sub
+  // managers.
+  virtual void SetProvider(base::PassKey<WebAppProvider>,
+                           WebAppProvider& provider);
 
   virtual void Start();
 
@@ -231,7 +228,7 @@ class OsIntegrationManager : public AppRegistrarObserver {
                                base::StringPiece old_name,
                                ResultCallback callback);
 
-  // AppRegistrarObserver:
+  // WebAppRegistrarObserver:
   void OnWebAppProfileWillBeDeleted(const AppId& app_id) override;
   void OnAppRegistrarDestroyed() override;
 
@@ -365,9 +362,7 @@ class OsIntegrationManager : public AppRegistrarObserver {
       base::OnceClosure update_finished_callback);
 
   const raw_ptr<Profile> profile_;
-  raw_ptr<WebAppRegistrar, DanglingUntriaged> registrar_ = nullptr;
-  raw_ptr<WebAppUiManager, DanglingUntriaged> ui_manager_ = nullptr;
-  raw_ptr<WebAppSyncBridge, DanglingUntriaged> sync_bridge_ = nullptr;
+  raw_ptr<WebAppProvider> provider_ = nullptr;
 
   std::unique_ptr<WebAppShortcutManager> shortcut_manager_;
   std::unique_ptr<WebAppFileHandlerManager> file_handler_manager_;
@@ -375,10 +370,10 @@ class OsIntegrationManager : public AppRegistrarObserver {
   std::unique_ptr<UrlHandlerManager> url_handler_manager_;
 
   std::vector<std::unique_ptr<OsIntegrationSubManager>> sub_managers_;
-  bool set_subsystems_called_ = false;
+  bool set_provider_called_ = false;
   bool first_synchronize_called_ = false;
 
-  base::ScopedObservation<WebAppRegistrar, AppRegistrarObserver>
+  base::ScopedObservation<WebAppRegistrar, WebAppRegistrarObserver>
       registrar_observation_{this};
 
   base::WeakPtrFactory<OsIntegrationManager> weak_ptr_factory_{this};

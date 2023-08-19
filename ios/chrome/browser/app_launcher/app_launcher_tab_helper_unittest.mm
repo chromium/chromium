@@ -32,30 +32,48 @@
 #import "testing/platform_test.h"
 #import "url/gurl.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 namespace {
 // An fake AppLauncherTabHelperDelegate for tests.
 class FakeAppLauncherTabHelperDelegate : public AppLauncherTabHelperDelegate {
  public:
-  GURL last_launched_app_url() { return last_launched_app_url_; }
-  size_t app_launch_count() { return app_launch_count_; }
-  size_t alert_shown_count() { return alert_shown_count_; }
-  void set_should_accept_prompt(bool should_accept_prompt) {
+  GURL GetLastLaunchedAppUrl() { return last_launched_app_url_; }
+  size_t GetAppLaunchCount() { return app_launch_count_; }
+  size_t GetAlertShownCount() { return alert_shown_count_; }
+  void SetShouldAcceptPrompt(bool should_accept_prompt) {
     should_accept_prompt_ = should_accept_prompt;
   }
-  bool should_accept_prompt() { return should_accept_prompt_; }
+  bool ShouldAcceptPrompt() { return should_accept_prompt_; }
+  void SetShouldCompleteAppLaunchImmediately(
+      bool should_complete_app_launch_immediately) {
+    should_complete_app_launch_immediately_ =
+        should_complete_app_launch_immediately;
+  }
+  bool ShouldCompleteAppLaunchImmediately() {
+    return should_complete_app_launch_immediately_;
+  }
+  void CompleteAppLaunch() {
+    if (app_launch_completion_) {
+      std::move(app_launch_completion_).Run();
+    }
+  }
+  bool IsAppLaunchCompletionPending() const { return !!app_launch_completion_; }
 
   // AppLauncherTabHelperDelegate:
   void LaunchAppForTabHelper(AppLauncherTabHelper* tab_helper,
                              const GURL& url,
                              bool link_transition,
                              base::OnceClosure completion) override {
-    ++app_launch_count_;
-    last_launched_app_url_ = url;
-    std::move(completion).Run();
+    const GURL app_url = url;
+    void (^block_completion)() = base::CallbackToBlock(std::move(completion));
+    app_launch_completion_ = base::BindOnce(^{
+      last_launched_app_url_ = app_url;
+      ++app_launch_count_;
+      block_completion();
+    });
+
+    if (should_complete_app_launch_immediately_) {
+      CompleteAppLaunch();
+    }
   }
   void ShowRepeatedAppLaunchAlert(
       AppLauncherTabHelper* tab_helper,
@@ -74,6 +92,11 @@ class FakeAppLauncherTabHelperDelegate : public AppLauncherTabHelperDelegate {
   // Simulates the user tapping the accept button when prompted via
   // `-appLauncherTabHelper:showAlertOfRepeatedLaunchesWithCompletionHandler`.
   bool should_accept_prompt_ = false;
+  // Completion to be called once the app has been launched.
+  base::OnceClosure app_launch_completion_;
+  // Whether to call `complete_app_launch()` immediately at the end of
+  // `LaunchAppForTabHelper()`.
+  bool should_complete_app_launch_immediately_ = true;
 };
 // A fake NavigationManager to be used by the WebState object for the
 // AppLauncher.
@@ -212,8 +235,64 @@ TEST_F(AppLauncherTabHelperTest, MAYBE_AbuseDetectorPolicyAllowedForValidUrl) {
                                       /*target_frame_is_main=*/true,
                                       /*target_frame_is_cross_origin=*/false,
                                       /*has_user_gesture=*/false));
-  EXPECT_EQ(1U, delegate_.app_launch_count());
-  EXPECT_EQ(GURL("valid://1234"), delegate_.last_launched_app_url());
+  EXPECT_EQ(1U, delegate_.GetAppLaunchCount());
+  EXPECT_EQ(GURL("valid://1234"), delegate_.GetLastLaunchedAppUrl());
+}
+
+// Tests that AppLauncherTabHelper waits for any pending app launch completion
+// before calling policy decision callbacks for subsequent navigation requests.
+// TODO(crbug.com/1172516): The test fails on device.
+#if TARGET_IPHONE_SIMULATOR
+#define MAYBE_ShouldAllowRequestWhileAppLaunchPending \
+  ShouldAllowRequestWhileAppLaunchPending
+#else
+#define MAYBE_ShouldAllowRequestWhileAppLaunchPending \
+  DISABLED_ShouldAllowRequestWhileAppLaunchPending
+#endif
+TEST_F(AppLauncherTabHelperTest,
+       MAYBE_ShouldAllowRequestWhileAppLaunchPending) {
+  delegate_.SetShouldCompleteAppLaunchImmediately(false);
+
+  // Should not allow navigation request with App-URL.
+  EXPECT_FALSE(TestShouldAllowRequest(@"valid://1234",
+                                      /*target_frame_is_main=*/true,
+                                      /*target_frame_is_cross_origin=*/false,
+                                      /*has_user_gesture=*/false));
+  // App launch should not be completed yet.
+  EXPECT_TRUE(delegate_.IsAppLaunchCompletionPending());
+  EXPECT_EQ(0U, delegate_.GetAppLaunchCount());
+
+  // Start another non-App URL request while app launch is still pending.
+  NSURL* url =
+      [NSURL URLWithString:@"http://itunes.apple.com/us/app/appname/id123"];
+  const web::WebStatePolicyDecider::RequestInfo request_info(
+      ui::PageTransition::PAGE_TRANSITION_CLIENT_REDIRECT,
+      /*target_frame_is_main=*/true, /*target_frame_is_cross_origin=*/false,
+      /*has_user_gesture=*/false);
+  __block bool callback_called = false;
+  __block web::WebStatePolicyDecider::PolicyDecision policy_decision =
+      web::WebStatePolicyDecider::PolicyDecision::Cancel();
+  auto callback =
+      base::BindOnce(^(web::WebStatePolicyDecider::PolicyDecision decision) {
+        policy_decision = decision;
+        callback_called = true;
+      });
+  tab_helper_->ShouldAllowRequest([NSURLRequest requestWithURL:url],
+                                  request_info, std::move(callback));
+  base::RunLoop().RunUntilIdle();
+
+  // Policy decision should wait for app launch completion.
+  EXPECT_FALSE(callback_called);
+  EXPECT_EQ(0U, delegate_.GetAppLaunchCount());
+
+  // After app launch completion, policy decision should be received with
+  // navigation allowed.
+  delegate_.CompleteAppLaunch();
+  EXPECT_FALSE(delegate_.IsAppLaunchCompletionPending());
+  EXPECT_TRUE(callback_called);
+  EXPECT_EQ(1U, delegate_.GetAppLaunchCount());
+  EXPECT_EQ(GURL("valid://1234"), delegate_.GetLastLaunchedAppUrl());
+  EXPECT_TRUE(policy_decision.ShouldAllowNavigation());
 }
 
 // Tests that a valid URL does not launch app when launch policy is to block.
@@ -223,8 +302,8 @@ TEST_F(AppLauncherTabHelperTest, AbuseDetectorPolicyBlockedForValidUrl) {
                                       /*target_frame_is_main=*/true,
                                       /*target_frame_is_cross_origin=*/false,
                                       /*has_user_gesture=*/false));
-  EXPECT_EQ(0U, delegate_.alert_shown_count());
-  EXPECT_EQ(0U, delegate_.app_launch_count());
+  EXPECT_EQ(0U, delegate_.GetAlertShownCount());
+  EXPECT_EQ(0U, delegate_.GetAppLaunchCount());
 }
 
 // Tests that a valid URL shows an alert and launches app when launch policy is
@@ -237,15 +316,15 @@ TEST_F(AppLauncherTabHelperTest, AbuseDetectorPolicyBlockedForValidUrl) {
 #endif
 TEST_F(AppLauncherTabHelperTest, MAYBE_ValidUrlPromptUserAccepts) {
   abuse_detector_.policy = ExternalAppLaunchPolicyPrompt;
-  delegate_.set_should_accept_prompt(true);
+  delegate_.SetShouldAcceptPrompt(true);
   EXPECT_FALSE(TestShouldAllowRequest(@"valid://1234",
                                       /*target_frame_is_main=*/true,
                                       /*target_frame_is_cross_origin=*/false,
                                       /*has_user_gesture=*/false));
 
-  EXPECT_EQ(1U, delegate_.alert_shown_count());
-  EXPECT_EQ(1U, delegate_.app_launch_count());
-  EXPECT_EQ(GURL("valid://1234"), delegate_.last_launched_app_url());
+  EXPECT_EQ(1U, delegate_.GetAlertShownCount());
+  EXPECT_EQ(1U, delegate_.GetAppLaunchCount());
+  EXPECT_EQ(GURL("valid://1234"), delegate_.GetLastLaunchedAppUrl());
 }
 
 // Tests that a valid URL does not launch app when launch policy is to prompt
@@ -256,7 +335,7 @@ TEST_F(AppLauncherTabHelperTest, ValidUrlPromptUserRejects) {
                                       /*target_frame_is_main=*/true,
                                       /*target_frame_is_cross_origin=*/false,
                                       /*has_user_gesture=*/false));
-  EXPECT_EQ(0U, delegate_.app_launch_count());
+  EXPECT_EQ(0U, delegate_.GetAppLaunchCount());
 }
 
 // Tests that ShouldAllowRequest only launches apps for App Urls in main frame,
@@ -272,24 +351,24 @@ TEST_F(AppLauncherTabHelperTest, MAYBE_ShouldAllowRequestWithAppUrl) {
   EXPECT_FALSE(TestShouldAllowRequest(url_string, /*target_frame_is_main=*/true,
                                       /*target_frame_is_cross_origin=*/false,
                                       /*has_user_gesture=*/false));
-  EXPECT_EQ(1U, delegate_.app_launch_count());
+  EXPECT_EQ(1U, delegate_.GetAppLaunchCount());
 
   EXPECT_FALSE(TestShouldAllowRequest(url_string, /*target_frame_is_main=*/true,
                                       /*target_frame_is_cross_origin=*/false,
                                       /*has_user_gesture=*/true));
-  EXPECT_EQ(2U, delegate_.app_launch_count());
+  EXPECT_EQ(2U, delegate_.GetAppLaunchCount());
 
   EXPECT_FALSE(TestShouldAllowRequest(url_string,
                                       /*target_frame_is_main=*/false,
                                       /*target_frame_is_cross_origin=*/false,
                                       /*has_user_gesture=*/false));
-  EXPECT_EQ(2U, delegate_.app_launch_count());
+  EXPECT_EQ(2U, delegate_.GetAppLaunchCount());
 
   EXPECT_FALSE(TestShouldAllowRequest(url_string,
                                       /*target_frame_is_main=*/false,
                                       /*target_frame_is_cross_origin=*/false,
                                       /*has_user_gesture=*/true));
-  EXPECT_EQ(3U, delegate_.app_launch_count());
+  EXPECT_EQ(3U, delegate_.GetAppLaunchCount());
 }
 
 // Tests that ShouldAllowRequest always allows requests and does not launch
@@ -315,7 +394,7 @@ TEST_F(AppLauncherTabHelperTest, ShouldAllowRequestWithNonAppUrl) {
                                      /*target_frame_is_main=*/false,
                                      /*target_frame_is_cross_origin=*/false,
                                      /*has_user_gesture=*/true));
-  EXPECT_EQ(0U, delegate_.app_launch_count());
+  EXPECT_EQ(0U, delegate_.GetAppLaunchCount());
 }
 
 // Tests that invalid Urls are completely blocked.
@@ -328,7 +407,7 @@ TEST_F(AppLauncherTabHelperTest, InvalidUrls) {
                                       /*target_frame_is_main=*/true,
                                       /*target_frame_is_cross_origin=*/false,
                                       /*has_user_gesture=*/false));
-  EXPECT_EQ(0U, delegate_.app_launch_count());
+  EXPECT_EQ(0U, delegate_.GetAppLaunchCount());
 }
 
 // Tests that when the last committed URL is invalid, the URL is only opened
@@ -351,14 +430,14 @@ TEST_F(AppLauncherTabHelperTest, MAYBE_ValidUrlInvalidCommittedURL) {
                                       /*target_frame_is_main=*/true,
                                       /*target_frame_is_cross_origin=*/false,
                                       /*has_user_gesture=*/false));
-  EXPECT_EQ(0U, delegate_.app_launch_count());
+  EXPECT_EQ(0U, delegate_.GetAppLaunchCount());
 
   navigation_manager_->SetLastCommittedItem(nullptr);
   EXPECT_FALSE(TestShouldAllowRequest(url_string,
                                       /*target_frame_is_main=*/true,
                                       /*target_frame_is_cross_origin=*/false,
                                       /*has_user_gesture=*/false));
-  EXPECT_EQ(1U, delegate_.app_launch_count());
+  EXPECT_EQ(1U, delegate_.GetAppLaunchCount());
 }
 
 // Tests that URLs with schemes that might be a security risk are blocked.
@@ -367,7 +446,7 @@ TEST_F(AppLauncherTabHelperTest, InsecureUrls) {
                                       /*target_frame_is_main=*/true,
                                       /*target_frame_is_cross_origin=*/false,
                                       /*has_user_gesture=*/false));
-  EXPECT_EQ(0U, delegate_.app_launch_count());
+  EXPECT_EQ(0U, delegate_.GetAppLaunchCount());
 }
 
 // Tests that tel: URLs are blocked when the target frame is cross-origin
@@ -383,25 +462,25 @@ TEST_F(AppLauncherTabHelperTest, MAYBE_TelUrls) {
                                       /*target_frame_is_main=*/true,
                                       /*target_frame_is_cross_origin=*/true,
                                       /*has_user_gesture=*/false));
-  EXPECT_EQ(0U, delegate_.app_launch_count());
+  EXPECT_EQ(0U, delegate_.GetAppLaunchCount());
 
   EXPECT_FALSE(TestShouldAllowRequest(@"tel:+12345551212",
                                       /*target_frame_is_main=*/true,
                                       /*target_frame_is_cross_origin=*/true,
                                       /*has_user_gesture=*/true));
-  EXPECT_EQ(0U, delegate_.app_launch_count());
+  EXPECT_EQ(0U, delegate_.GetAppLaunchCount());
 
   EXPECT_FALSE(TestShouldAllowRequest(@"tel:+12345551212",
                                       /*target_frame_is_main=*/false,
                                       /*target_frame_is_cross_origin=*/true,
                                       /*has_user_gesture=*/true));
-  EXPECT_EQ(0U, delegate_.app_launch_count());
+  EXPECT_EQ(0U, delegate_.GetAppLaunchCount());
 
   EXPECT_FALSE(TestShouldAllowRequest(@"tel:+12345551212",
                                       /*target_frame_is_main=*/true,
                                       /*target_frame_is_cross_origin=*/false,
                                       /*has_user_gesture=*/false));
-  EXPECT_EQ(1U, delegate_.app_launch_count());
+  EXPECT_EQ(1U, delegate_.GetAppLaunchCount());
 }
 
 // Tests that URLs with Chrome Bundle schemes are blocked on iframes.
@@ -419,20 +498,20 @@ TEST_F(AppLauncherTabHelperTest, MAYBE_ChromeBundleUrlScheme) {
                                       /*target_frame_is_main=*/false,
                                       /*target_frame_is_cross_origin=*/false,
                                       /*has_user_gesture=*/false));
-  EXPECT_EQ(0U, delegate_.app_launch_count());
+  EXPECT_EQ(0U, delegate_.GetAppLaunchCount());
 
   EXPECT_FALSE(TestShouldAllowRequest(url,
                                       /*target_frame_is_main=*/false,
                                       /*target_frame_is_cross_origin=*/false,
                                       /*has_user_gesture=*/true));
-  EXPECT_EQ(0U, delegate_.app_launch_count());
+  EXPECT_EQ(0U, delegate_.GetAppLaunchCount());
 
   // Chrome Bundle URL scheme is only allowed from main frames.
   EXPECT_FALSE(TestShouldAllowRequest(url,
                                       /*target_frame_is_main=*/true,
                                       /*target_frame_is_cross_origin=*/false,
                                       /*has_user_gesture=*/false));
-  EXPECT_EQ(1U, delegate_.app_launch_count());
+  EXPECT_EQ(1U, delegate_.GetAppLaunchCount());
 }
 
 // Tests that ShouldAllowRequest updates the reading list correctly for non-link
@@ -449,23 +528,23 @@ TEST_F(AppLauncherTabHelperTest, MAYBE_UpdatingTheReadingList) {
   EXPECT_TRUE(TestReadingListUpdate(/*is_app_blocked=*/true,
                                     /*is_link_transition*/ false,
                                     /*expected_read_status*/ true));
-  EXPECT_EQ(0U, delegate_.app_launch_count());
+  EXPECT_EQ(0U, delegate_.GetAppLaunchCount());
 
   EXPECT_TRUE(TestReadingListUpdate(/*is_app_blocked=*/false,
                                     /*is_link_transition*/ false,
                                     /*expected_read_status*/ true));
-  EXPECT_EQ(1U, delegate_.app_launch_count());
+  EXPECT_EQ(1U, delegate_.GetAppLaunchCount());
 
   // Don't update reading list if the transition is a link transition.
   EXPECT_TRUE(TestReadingListUpdate(/*is_app_blocked=*/true,
                                     /*is_link_transition*/ true,
                                     /*expected_read_status*/ false));
-  EXPECT_EQ(1U, delegate_.app_launch_count());
+  EXPECT_EQ(1U, delegate_.GetAppLaunchCount());
 
   EXPECT_TRUE(TestReadingListUpdate(/*is_app_blocked=*/false,
                                     /*is_link_transition*/ true,
                                     /*expected_read_status*/ false));
-  EXPECT_EQ(2U, delegate_.app_launch_count());
+  EXPECT_EQ(2U, delegate_.GetAppLaunchCount());
 }
 
 // Tests that launching a SMS URL via a JavaScript redirect in the main frame
@@ -486,7 +565,7 @@ TEST_F(AppLauncherTabHelperTest, MAYBE_LaunchSmsApp_JavaScriptRedirect) {
       TestShouldAllowRequest(sms_url_string, /*target_frame_is_main=*/true,
                              /*target_frame_is_cross_origin=*/false,
                              /*has_user_gesture=*/false, page_transition));
-  EXPECT_EQ(1U, delegate_.app_launch_count());
+  EXPECT_EQ(1U, delegate_.GetAppLaunchCount());
 }
 
 // Test fixture for testing the app launcher interaction with enterprise policy
@@ -532,7 +611,7 @@ TEST_F(BlockedUrlPolicyAppLauncherTabHelperTest, BlockedUrl) {
   EXPECT_FALSE(TestShouldAllowRequest(url_string, /*target_frame_is_main=*/true,
                                       /*target_frame_is_cross_origin=*/false,
                                       /*has_user_gesture=*/false));
-  EXPECT_EQ(0U, delegate_.app_launch_count());
+  EXPECT_EQ(0U, delegate_.GetAppLaunchCount());
 }
 
 // Tests that URLs to non-blocked domains are able to open native apps when
@@ -548,6 +627,6 @@ TEST_F(BlockedUrlPolicyAppLauncherTabHelperTest, MAYBE_AllowedUrl) {
                                       /*target_frame_is_main=*/true,
                                       /*target_frame_is_cross_origin=*/false,
                                       /*has_user_gesture=*/false));
-  EXPECT_EQ(1U, delegate_.app_launch_count());
-  EXPECT_EQ(GURL("valid://1234"), delegate_.last_launched_app_url());
+  EXPECT_EQ(1U, delegate_.GetAppLaunchCount());
+  EXPECT_EQ(GURL("valid://1234"), delegate_.GetLastLaunchedAppUrl());
 }

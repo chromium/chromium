@@ -13,7 +13,6 @@
 #include "base/strings/stringprintf.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/test/metrics/histogram_tester.h"
-#include "base/test/scoped_feature_list.h"
 #include "base/threading/thread_restrictions.h"
 #include "chrome/browser/download/download_prefs.h"
 #include "chrome/browser/predictors/loading_predictor_config.h"
@@ -106,11 +105,7 @@ class NetworkRequestMetricsBrowserTest
     : public InProcessBrowserTest,
       public testing::WithParamInterface<RequestType> {
  public:
-  NetworkRequestMetricsBrowserTest() {
-    scoped_feature_list_.InitAndDisableFeature(
-        predictors::kSpeculativePreconnectFeature);
-  }
-  ~NetworkRequestMetricsBrowserTest() override {}
+  ~NetworkRequestMetricsBrowserTest() override = default;
 
   // ContentBrowserTest implementation:
   void SetUpOnMainThread() override {
@@ -187,8 +182,6 @@ class NetworkRequestMetricsBrowserTest
     metrics::SubprocessMetricsProvider::MergeHistogramDeltasForTesting();
 
     if (GetParam() == RequestType::kMainFrame) {
-      histograms_->ExpectTotalCount("Net.ErrorCodesForImages2", 0);
-
       histograms_->ExpectUniqueSample("Net.ErrorCodesForMainFrame4",
                                       -expected_net_error, 1);
 
@@ -237,13 +230,6 @@ class NetworkRequestMetricsBrowserTest
     }
     EXPECT_TRUE(found_expected_load);
 
-    if (GetParam() != RequestType::kImage) {
-      histograms_->ExpectTotalCount("Net.ErrorCodesForImages2", 0);
-    } else {
-      histograms_->ExpectUniqueSample("Net.ErrorCodesForImages2",
-                                      -expected_net_error, 1);
-    }
-
     // A subresource load requires a main frame load, which is only logged for
     // network URLs.
     if (network_accessed == NetworkAccessed::kNetworkAccessed) {
@@ -276,8 +262,6 @@ class NetworkRequestMetricsBrowserTest
     if (GetParam() == RequestType::kMainFrame) {
       // Can't check Net.ErrorCodesForSubresources3, due to the favicon, which
       // Chrome may or may not have attempted to load.
-      histograms_->ExpectTotalCount("Net.ErrorCodesForImages2", 0);
-
       histograms_->ExpectTotalCount("Net.ErrorCodesForMainFrame4", 1);
       EXPECT_EQ(1, histograms_->GetBucketCount("Net.ErrorCodesForMainFrame4",
                                                -net::ERR_ABORTED));
@@ -309,13 +293,6 @@ class NetworkRequestMetricsBrowserTest
           << "Found unexpected load with result: " << bucket.min;
     }
     EXPECT_TRUE(found_expected_load);
-
-    if (GetParam() != RequestType::kImage) {
-      histograms_->ExpectTotalCount("Net.ErrorCodesForImages2", 0);
-    } else {
-      histograms_->ExpectUniqueSample("Net.ErrorCodesForImages2",
-                                      -net::ERR_ABORTED, 1);
-    }
   }
 
   // Send headers and a partial body to |interesting_http_response_|. Doesn't
@@ -347,7 +324,6 @@ class NetworkRequestMetricsBrowserTest
   base::HistogramTester* histograms() { return histograms_.get(); }
 
  private:
-  base::test::ScopedFeatureList scoped_feature_list_;
   std::unique_ptr<net::test_server::ControllableHttpResponse>
       uninteresting_main_frame_response_;
   std::unique_ptr<net::test_server::ControllableHttpResponse>
@@ -507,7 +483,6 @@ IN_PROC_BROWSER_TEST_P(NetworkRequestMetricsBrowserTest, Download) {
   metrics::SubprocessMetricsProvider::MergeHistogramDeltasForTesting();
 
   if (GetParam() == RequestType::kMainFrame) {
-    histograms()->ExpectTotalCount("Net.ErrorCodesForImages2", 0);
     histograms()->ExpectTotalCount("Net.ErrorCodesForMainFrame4", 0);
     histograms()->ExpectTotalCount("Net.ConnectionInfo.MainFrame", 0);
     // Favicon may or may not have been loaded.

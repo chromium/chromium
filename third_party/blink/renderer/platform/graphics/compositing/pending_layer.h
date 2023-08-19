@@ -59,6 +59,9 @@ class PLATFORM_EXPORT PendingLayer {
     return change_of_decomposited_transforms_;
   }
   CompositingType GetCompositingType() const { return compositing_type_; }
+  cc::HitTestOpaqueness GetHitTestOpaqueness() const {
+    return hit_test_opaqueness_;
+  }
 
   void SetCompositingType(CompositingType new_type) {
     compositing_type_ = new_type;
@@ -167,6 +170,15 @@ class PLATFORM_EXPORT PendingLayer {
       const PropertyTreeState& guest_state,
       IsCompositedScrollFunction is_comosited_scroll) const;
 
+  bool CanMerge(const PendingLayer& guest,
+                LCDTextPreference lcd_text_preference,
+                IsCompositedScrollFunction,
+                gfx::RectF& merged_bounds,
+                PropertyTreeState& merged_state,
+                gfx::RectF& merged_rect_known_to_be_opaque,
+                bool& merged_text_known_to_be_on_opaque_background,
+                cc::HitTestOpaqueness& merged_hit_test_opaqueness) const;
+
   gfx::RectF MapRectKnownToBeOpaque(
       const PropertyTreeState& new_state,
       const FloatClipRect& mapped_layer_bounds) const;
@@ -202,6 +214,8 @@ class PLATFORM_EXPORT PendingLayer {
   PaintPropertyChangeType change_of_decomposited_transforms_ =
       PaintPropertyChangeType::kUnchanged;
   CompositingType compositing_type_ = kOther;
+  cc::HitTestOpaqueness hit_test_opaqueness_ =
+      cc::HitTestOpaqueness::kTransparent;
 
   // This is set to non-null after layerization if ChunkRequiresOwnLayer() or
   // UsesSolidColorLayer() is true.

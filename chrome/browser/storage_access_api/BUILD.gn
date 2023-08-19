@@ -2,8 +2,17 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-source_set("permissions") {
+source_set("storage_access_api") {
   sources = [
+    "site_pair_cache.cc",
+    "site_pair_cache.h",
+    "storage_access_api_service.h",
+    "storage_access_api_service_factory.cc",
+    "storage_access_api_service_factory.h",
+    "storage_access_api_service_impl.cc",
+    "storage_access_api_service_impl.h",
+    "storage_access_api_tab_helper.cc",
+    "storage_access_api_tab_helper.h",
     "storage_access_grant_permission_context.cc",
     "storage_access_grant_permission_context.h",
   ]

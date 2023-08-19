@@ -7,7 +7,7 @@
 #include "build/build_config.h"
 #include "components/autofill/core/common/save_password_progress_logger.h"
 #include "components/password_manager/core/browser/browser_save_password_progress_logger.h"
-#include "components/password_manager/core/browser/form_parsing/form_parser.h"
+#include "components/password_manager/core/browser/form_parsing/form_data_parser.h"
 #include "components/password_manager/core/browser/leak_detection/leak_detection_check.h"
 #include "components/password_manager/core/browser/leak_detection/leak_detection_check_factory_impl.h"
 #include "components/password_manager/core/browser/leak_detection_delegate_helper.h"
@@ -125,10 +125,6 @@ void LeakDetectionDelegate::OnShowLeakDetectionNotification(
   CredentialLeakType leak_type =
       CreateLeakType(IsSaved(in_stores != PasswordForm::Store::kNotSet),
                      is_reused, is_syncing);
-  base::UmaHistogramBoolean("PasswordManager.LeakDetection.IsPasswordSaved",
-                            IsPasswordSaved(leak_type));
-  base::UmaHistogramBoolean("PasswordManager.LeakDetection.IsPasswordReused",
-                            IsPasswordUsedOnOtherSites(leak_type));
   client_->NotifyUserCredentialsWereLeaked(leak_type, url, username);
 }
 

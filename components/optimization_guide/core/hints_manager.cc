@@ -303,6 +303,7 @@ HintsManager::HintsManager(
           GetPendingOptimizationHintsComponentVersionFromPref(pref_service)),
       is_off_the_record_(is_off_the_record),
       application_locale_(application_locale),
+      oauth_scopes_(features::OAuthScopesForPersonalizedMetadata()),
       pref_service_(pref_service),
       hint_cache_(
           std::make_unique<HintCache>(hint_store,
@@ -758,6 +759,7 @@ void HintsManager::FetchHintsForActiveTabs() {
   active_tabs_batch_update_hints_fetcher_->FetchOptimizationGuideServiceHints(
       top_hosts, active_tab_urls_to_refresh, registered_optimization_types_,
       proto::CONTEXT_BATCH_UPDATE_ACTIVE_TABS, application_locale_,
+      absl::nullopt,
       /*skip_cache=*/false,
       base::BindOnce(&HintsManager::OnHintsForActiveTabsFetched,
                      weak_ptr_factory_.GetWeakPtr(), top_hosts_set,
@@ -930,6 +932,7 @@ void HintsManager::FetchHintsForURLs(const std::vector<GURL>& urls,
   request_id_and_fetcher.second->FetchOptimizationGuideServiceHints(
       target_hosts.vector(), target_urls.vector(),
       registered_optimization_types_, request_context, application_locale_,
+      absl::nullopt,
       /*skip_cache=*/false,
       base::BindOnce(
           &HintsManager::OnBatchUpdateHintsFetched,
@@ -1122,12 +1125,17 @@ void HintsManager::CanApplyOptimizationOnDemand(
                              urls_to_fetch.vector(), hosts_to_fetch.vector(),
                              optimization_guide_logger_);
 
+  absl::optional<std::string> access_token;
+  if (!features::EnabledPersonalizedMetadata(request_context) &&
+      !oauth_scopes_.empty()) {
+    // TODO(b/280082735): Get access token and include here.
+  }
   // Fetch the data for the entries we don't have all information for.
   std::pair<int32_t, HintsFetcher*> request_id_and_fetcher =
       CreateAndTrackBatchUpdateHintsFetcher();
   request_id_and_fetcher.second->FetchOptimizationGuideServiceHints(
       hosts_to_fetch.vector(), urls_to_fetch.vector(), optimization_types,
-      request_context, application_locale_, /*skip_cache=*/true,
+      request_context, application_locale_, access_token, /*skip_cache=*/true,
       base::BindOnce(&HintsManager::OnBatchUpdateHintsFetched,
                      weak_ptr_factory_.GetWeakPtr(),
                      request_id_and_fetcher.first, request_context,
@@ -1348,7 +1356,7 @@ void HintsManager::CanApplyOptimizationAsync(
       HasAllInformationForDecisionAvailable(navigation_url,
                                             optimization_type)) {
     base::UmaHistogramEnumeration(
-        "OptimizationGuide.ApplyDecisionAsync." +
+        "OptimizationGuide.ApplyDecision." +
             GetStringNameForOptimizationType(optimization_type),
         type_decision);
     std::move(callback).Run(decision, metadata);
@@ -1555,7 +1563,7 @@ void HintsManager::OnReadyToInvokeRegisteredCallbacks(
           GetOptimizationGuideDecisionFromOptimizationTypeDecision(
               type_decision);
       base::UmaHistogramEnumeration(
-          "OptimizationGuide.ApplyDecisionAsync." +
+          "OptimizationGuide.ApplyDecision." +
               GetStringNameForOptimizationType(opt_type),
           type_decision);
       std::move(callback).Run(decision, metadata);
@@ -1673,7 +1681,8 @@ void HintsManager::MaybeFetchHintsForNavigation(
                              optimization_guide_logger_);
   bool fetch_attempted = it->second->FetchOptimizationGuideServiceHints(
       hosts, urls, registered_optimization_types_,
-      proto::CONTEXT_PAGE_NAVIGATION, application_locale_, /*skip_cache=*/false,
+      proto::CONTEXT_PAGE_NAVIGATION, application_locale_, absl::nullopt,
+      /*skip_cache=*/false,
       base::BindOnce(&HintsManager::OnPageNavigationHintsFetched,
                      weak_ptr_factory_.GetWeakPtr(),
                      navigation_data->GetWeakPtr(), url,

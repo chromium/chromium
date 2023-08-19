@@ -6,17 +6,14 @@ source_set("pinned_tabs") {
   sources = [
     "pinned_tabs_mediator.h",
     "pinned_tabs_mediator.mm",
-    "pinned_web_state_tab_switcher_item.h",
-    "pinned_web_state_tab_switcher_item.mm",
   ]
-
-  configs += [ "//build/config/compiler:enable_arc" ]
 
   deps = [
     ":constants",
     ":pinned_tabs_ui",
     "//base",
     "//components/favicon/ios:ios",
+    "//ios/chrome/browser/default_browser:utils",
     "//ios/chrome/browser/drag_and_drop",
     "//ios/chrome/browser/main",
     "//ios/chrome/browser/shared/model/browser_state",
@@ -36,7 +33,6 @@ source_set("pinned_tabs") {
 }
 
 source_set("constants") {
-  configs += [ "//build/config/compiler:enable_arc" ]
   sources = [
     "pinned_tabs_constants.h",
     "pinned_tabs_constants.mm",
@@ -45,7 +41,6 @@ source_set("constants") {
 }
 
 source_set("pinned_tabs_ui") {
-  configs += [ "//build/config/compiler:enable_arc" ]
   sources = [
     "pinned_cell.h",
     "pinned_cell.mm",

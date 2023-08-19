@@ -24,6 +24,8 @@ class Window;
 
 namespace ash {
 
+class ScopedToastPause;
+
 namespace eche_app {
 class LaunchAppHelperTest;
 }
@@ -53,6 +55,7 @@ class ASH_EXPORT ToastManagerImpl : public ToastManager,
   bool MaybeActivateHighlightedDismissButtonOnActiveToast(
       const std::string& id) override;
   bool IsRunning(const std::string& id) const override;
+  std::unique_ptr<ScopedToastPause> CreateScopedPause() override;
 
   // ToastOverlay::Delegate overrides:
   void OnClosed() override;
@@ -69,6 +72,7 @@ class ASH_EXPORT ToastManagerImpl : public ToastManager,
   friend class BluetoothNotificationControllerTest;
   friend class DesksTestApi;
   friend class ToastManagerImplTest;
+  friend class BatterySaverControllerTest;
   friend class eche_app::LaunchAppHelperTest;
   friend class video_conference::VideoConferenceIntegrationTest;
 
@@ -98,6 +102,10 @@ class ASH_EXPORT ToastManagerImpl : public ToastManager,
   void OnRootWindowAdded(aura::Window* root_window) override;
   void OnRootWindowWillShutdown(aura::Window* root_window) override;
 
+  // ToastManager:
+  void Pause() override;
+  void Resume() override;
+
   // Data of the toast which is currently shown. Empty if no toast is visible.
   absl::optional<ToastData> current_toast_data_;
 
@@ -113,6 +121,9 @@ class ASH_EXPORT ToastManagerImpl : public ToastManager,
   // Tracks active toast overlays and their corresponding root windows.
   base::flat_map<aura::Window*, std::unique_ptr<ToastOverlay>>
       root_window_to_overlay_;
+
+  // Keeps track of the number of `ScopedToastPause`.
+  int pause_counter_ = 0;
 
   ScopedSessionObserver scoped_session_observer_{this};
   base::WeakPtrFactory<ToastManagerImpl> weak_ptr_factory_{this};

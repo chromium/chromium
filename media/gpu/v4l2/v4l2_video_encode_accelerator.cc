@@ -33,6 +33,7 @@
 #include "media/base/color_plane_layout.h"
 #include "media/base/media_log.h"
 #include "media/base/media_switches.h"
+#include "media/base/media_util.h"
 #include "media/base/scopedfd_helper.h"
 #include "media/base/video_frame_layout.h"
 #include "media/base/video_types.h"
@@ -212,7 +213,7 @@ bool V4L2VideoEncodeAccelerator::Initialize(
   client_ = client_ptr_factory_->GetWeakPtr();
 
   output_format_fourcc_ =
-      V4L2Device::VideoCodecProfileToV4L2PixFmt(config.output_profile, false);
+      VideoCodecProfileToV4L2PixFmt(config.output_profile, false);
   if (output_format_fourcc_ == V4L2_PIX_FMT_INVALID) {
     MEDIA_LOG(ERROR, media_log.get())
         << "invalid output_profile=" << GetProfileName(config.output_profile);
@@ -454,7 +455,7 @@ bool V4L2VideoEncodeAccelerator::CreateImageProcessor(
 
   image_processor_ = ImageProcessorFactory::Create(
       *input_config, *output_config, ImageProcessor::OutputMode::IMPORT,
-      kImageProcBufferCount, VIDEO_ROTATION_0, encoder_task_runner_,
+      kImageProcBufferCount, encoder_task_runner_,
       base::BindRepeating(&V4L2VideoEncodeAccelerator::ImageProcessorError,
                           weak_this_));
   if (!image_processor_) {
@@ -641,10 +642,7 @@ bool V4L2VideoEncodeAccelerator::IsFlushSupported() {
 
 VideoEncodeAccelerator::SupportedProfiles
 V4L2VideoEncodeAccelerator::GetSupportedProfiles() {
-  scoped_refptr<V4L2Device> device = V4L2Device::Create();
-  if (!device)
-    return SupportedProfiles();
-
+  auto device = base::MakeRefCounted<V4L2Device>();
   return device->GetSupportedEncodeProfiles();
 }
 
@@ -657,6 +655,10 @@ void V4L2VideoEncodeAccelerator::FrameProcessed(
   DVLOGF(4) << "force_keyframe=" << force_keyframe
             << ", output_buffer_index=" << output_buffer_index;
   DCHECK_GE(output_buffer_index, 0u);
+  TRACE_EVENT_NESTABLE_ASYNC_END2(
+      "media,gpu", "V4L2VEA::ImageProcessor::Process",
+      timestamp.InMicroseconds(), "timestamp", timestamp.InMicroseconds(),
+      "output_size", image_processor_->output_config().size.ToString());
 
   encoder_input_queue_.emplace(std::move(frame), force_keyframe,
                                output_buffer_index);
@@ -778,6 +780,8 @@ void V4L2VideoEncodeAccelerator::EncodeTask(scoped_refptr<VideoFrame> frame,
   }
 
   if (frame) {
+    TRACE_EVENT1("media,gpu", "V4L2VEA::EncodeTask", "timestamp",
+                 frame->timestamp().InMicroseconds());
     // |frame| can be nullptr to indicate a flush.
     const bool is_expected_storage_type =
         native_input_mode_
@@ -953,11 +957,13 @@ void V4L2VideoEncodeAccelerator::InputImageProcessorTask() {
   auto frame = std::move(frame_info.frame);
   const bool force_keyframe = frame_info.force_keyframe;
   auto timestamp = frame->timestamp();
+  TRACE_EVENT_NESTABLE_ASYNC_BEGIN1(
+      "media,gpu", "V4L2VEA::ImageProcessor::Process",
+      timestamp.InMicroseconds(), "timestamp", timestamp.InMicroseconds());
   if (image_processor_->output_mode() == ImageProcessor::OutputMode::IMPORT) {
     const auto& buf = image_processor_output_buffers_[output_buffer_index];
     auto output_frame = VideoFrame::WrapVideoFrame(
         buf, buf->format(), buf->visible_rect(), buf->natural_size());
-
     if (!image_processor_->Process(
             std::move(frame), std::move(output_frame),
             base::BindOnce(&V4L2VideoEncodeAccelerator::FrameProcessed,
@@ -1240,6 +1246,13 @@ void V4L2VideoEncodeAccelerator::Dequeue() {
       break;
     }
 
+    const uint64_t timestamp_us =
+        ret.second->GetTimeStamp().tv_usec +
+        ret.second->GetTimeStamp().tv_sec * base::Time::kMicrosecondsPerSecond;
+    TRACE_EVENT_NESTABLE_ASYNC_END2(
+        "media,gpu", "PlatformEncoding.Encode", timestamp_us, "timestamp",
+        timestamp_us, "size", encoder_input_visible_rect_.size().ToString());
+
     output_buffer_queue_.push_back(std::move(ret.second));
     buffer_dequeued = true;
   }
@@ -1277,15 +1290,17 @@ void V4L2VideoEncodeAccelerator::PumpBitstreamBuffers() {
       DVLOGF(4) << "returning buffer_id=" << buffer_id
                 << ", size=" << output_data_size
                 << ", key_frame=" << output_buf->IsKeyframe();
+      const int64_t timestamp_us = output_buf->GetTimeStamp().tv_usec +
+                                   output_buf->GetTimeStamp().tv_sec *
+                                       base::Time::kMicrosecondsPerSecond;
+      TRACE_EVENT2("media,gpu", "V4L2VEA::BitstreamBufferReady", "timestamp",
+                   timestamp_us, "bitstream_buffer_id", buffer_id);
       child_task_runner_->PostTask(
           FROM_HERE,
-          base::BindOnce(
-              &Client::BitstreamBufferReady, client_, buffer_id,
-              BitstreamBufferMetadata(
-                  output_data_size, output_buf->IsKeyframe(),
-                  base::Microseconds(output_buf->GetTimeStamp().tv_usec +
-                                     output_buf->GetTimeStamp().tv_sec *
-                                         base::Time::kMicrosecondsPerSecond))));
+          base::BindOnce(&Client::BitstreamBufferReady, client_, buffer_id,
+                         BitstreamBufferMetadata(
+                             output_data_size, output_buf->IsKeyframe(),
+                             base::Microseconds(timestamp_us))));
     }
 
     if ((encoder_state_ == kFlushing) && output_buf->IsLast()) {
@@ -1347,7 +1362,7 @@ bool V4L2VideoEncodeAccelerator::EnqueueInputRecord(
   input_buf.SetTimeStamp(timestamp);
 
   DCHECK_EQ(device_input_layout_->format(), frame->format());
-  size_t num_planes = V4L2Device::GetNumPlanesOfV4L2PixFmt(
+  size_t num_planes = GetNumPlanesOfV4L2PixFmt(
       Fourcc::FromVideoPixelFormat(device_input_layout_->format(),
                                    !device_input_layout_->is_multi_planar())
           ->ToV4L2PixFmt());
@@ -1404,6 +1419,11 @@ bool V4L2VideoEncodeAccelerator::EnqueueInputRecord(
 
     input_buf.SetPlaneBytesUsed(i, bytesused);
   }
+
+  TRACE_EVENT_NESTABLE_ASYNC_BEGIN1("media,gpu", "PlatformEncoding.Encode",
+                                    frame->timestamp().InMicroseconds(),
+                                    "timestamp",
+                                    frame->timestamp().InMicroseconds());
 
   switch (input_buf.Memory()) {
     case V4L2_MEMORY_USERPTR: {
@@ -1703,7 +1723,7 @@ V4L2VideoEncodeAccelerator::NegotiateInputFormat(VideoPixelFormat input_format,
       continue;
 
     DVLOGF(3) << "Success: S_FMT with " << FourccToString(pix_fmt);
-    device_input_layout_ = V4L2Device::V4L2FormatToVideoFrameLayout(*format);
+    device_input_layout_ = V4L2FormatToVideoFrameLayout(*format);
     if (!device_input_layout_) {
       LOG(ERROR) << "Invalid device_input_layout_";
       return absl::nullopt;

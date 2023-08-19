@@ -535,7 +535,7 @@ bool OriginTrialContext::CanEnableTrialFromName(const StringView& trial_name) {
 
   if (trial_name == "CompressionDictionaryTransport") {
     return base::FeatureList::IsEnabled(
-        features::kCompressionDictionaryTransport);
+        network::features::kCompressionDictionaryTransportBackend);
   }
 
   if (trial_name == "AttributionReportingCrossAppWeb") {
@@ -546,6 +546,10 @@ bool OriginTrialContext::CanEnableTrialFromName(const StringView& trial_name) {
 
   if (trial_name == "ComputePressure_v2") {
     return base::FeatureList::IsEnabled(features::kComputePressure);
+  }
+
+  if (trial_name == "WebEnvironmentIntegrity") {
+    return base::FeatureList::IsEnabled(features::kWebEnvironmentIntegrity);
   }
 
   return true;

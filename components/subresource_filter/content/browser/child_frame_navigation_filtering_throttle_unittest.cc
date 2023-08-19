@@ -33,19 +33,6 @@
 
 namespace subresource_filter {
 
-const char kCnameAliasHadAliasesHistogram[] =
-    "SubresourceFilter.CnameAlias.Browser.HadAliases";
-const char kCnameAliasIsInvalidCountHistogram[] =
-    "SubresourceFilter.CnameAlias.Browser.InvalidCount";
-const char kCnameAliasIsRedundantCountHistogram[] =
-    "SubresourceFilter.CnameAlias.Browser.RedundantCount";
-const char kCnameAliasListLengthHistogram[] =
-    "SubresourceFilter.CnameAlias.Browser.ListLength";
-const char kCnameAliasWasAdTaggedCountHistogram[] =
-    "SubresourceFilter.CnameAlias.Browser.WasAdTaggedBasedOnAliasCount";
-const char kCnameAliasWasBlockedCountHistogram[] =
-    "SubresourceFilter.CnameAlias.Browser.WasBlockedBasedOnAliasCount";
-
 class ChildFrameNavigationFilteringThrottleTest
     : public content::RenderViewHostTestHarness,
       public content::WebContentsObserver {
@@ -362,27 +349,6 @@ class ChildFrameNavigationFilteringThrottleDnsAliasTest
 
   ~ChildFrameNavigationFilteringThrottleDnsAliasTest() override = default;
 
-  void ExpectHistogramsMatching(CnameAliasMetricInfo info) {
-    bool has_aliases = info.list_length > 0;
-    histogram_tester_.ExpectUniqueSample(kCnameAliasHadAliasesHistogram,
-                                         has_aliases, 1);
-
-    if (has_aliases) {
-      histogram_tester_.ExpectUniqueSample(kCnameAliasListLengthHistogram,
-                                           info.list_length, 1);
-      histogram_tester_.ExpectUniqueSample(
-          kCnameAliasWasAdTaggedCountHistogram,
-          info.was_ad_tagged_based_on_alias_count, 1);
-      histogram_tester_.ExpectUniqueSample(
-          kCnameAliasWasBlockedCountHistogram,
-          info.was_blocked_based_on_alias_count, 1);
-      histogram_tester_.ExpectUniqueSample(kCnameAliasIsInvalidCountHistogram,
-                                           info.invalid_count, 1);
-      histogram_tester_.ExpectUniqueSample(kCnameAliasIsRedundantCountHistogram,
-                                           info.redundant_count, 1);
-    }
-  }
-
  private:
   base::test::ScopedFeatureList feature_list_;
   base::HistogramTester histogram_tester_;
@@ -405,14 +371,6 @@ TEST_F(ChildFrameNavigationFilteringThrottleDnsAliasTest,
             SimulateCommitAndGetResult(navigation_simulator()));
   EXPECT_TRUE(
       base::Contains(GetConsoleMessages(), GetFilterConsoleMessage(url)));
-
-  CnameAliasMetricInfo info = {.list_length = 7,
-                               .was_ad_tagged_based_on_alias_count = 0,
-                               .was_blocked_based_on_alias_count = 2,
-                               .invalid_count = 2,
-                               .redundant_count = 1};
-
-  ExpectHistogramsMatching(info);
 }
 
 TEST_F(ChildFrameNavigationFilteringThrottleDnsAliasTest,
@@ -433,14 +391,6 @@ TEST_F(ChildFrameNavigationFilteringThrottleDnsAliasTest,
             SimulateCommitAndGetResult(navigation_simulator()));
   EXPECT_FALSE(
       base::Contains(GetConsoleMessages(), GetFilterConsoleMessage(url)));
-
-  CnameAliasMetricInfo info = {.list_length = 6,
-                               .was_ad_tagged_based_on_alias_count = 3,
-                               .was_blocked_based_on_alias_count = 0,
-                               .invalid_count = 1,
-                               .redundant_count = 0};
-
-  ExpectHistogramsMatching(info);
 }
 
 TEST_F(ChildFrameNavigationFilteringThrottleDnsAliasTest, EnabledNoAliases) {
@@ -458,10 +408,6 @@ TEST_F(ChildFrameNavigationFilteringThrottleDnsAliasTest, EnabledNoAliases) {
             SimulateCommitAndGetResult(navigation_simulator()));
   EXPECT_FALSE(
       base::Contains(GetConsoleMessages(), GetFilterConsoleMessage(url)));
-
-  CnameAliasMetricInfo info;
-
-  ExpectHistogramsMatching(info);
 }
 
 }  // namespace subresource_filter

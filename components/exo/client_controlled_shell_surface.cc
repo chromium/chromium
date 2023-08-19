@@ -223,7 +223,9 @@ class ClientControlledWindowStateDelegate : public ash::WindowStateDelegate {
 
  private:
   raw_ptr<ClientControlledShellSurface, ExperimentalAsh> shell_surface_;
-  raw_ptr<ash::ClientControlledState::Delegate, ExperimentalAsh> delegate_;
+  raw_ptr<ash::ClientControlledState::Delegate,
+          DanglingUntriaged | ExperimentalAsh>
+      delegate_;
 };
 
 bool IsPinned(const ash::WindowState* window_state) {
@@ -350,6 +352,7 @@ ClientControlledShellSurface::ClientControlledShellSurface(
       use_default_scale_cancellation_(default_scale_cancellation),
       supports_floated_state_(supports_floated_state) {
   server_side_resize_ = true;
+  set_client_submits_surfaces_in_pixel_coordinates(true);
 }
 
 ClientControlledShellSurface::~ClientControlledShellSurface() {
@@ -372,21 +375,7 @@ void ClientControlledShellSurface::SetBounds(int64_t display_id,
     return;
   }
 
-  // When use_default_scale_cancellation_ is false, the client is scale-aware
-  // and we expect that the |bounds| has been calculated by the client based
-  // on the device_scale_factor of the display with |display_id|.
-  // If the display has been changed before |SetBounds()| is called, for some
-  // cases(eg. move ARC window between displays with shortcut), |pending_scale_|
-  // may be stale and tied the old pending_display. Therefore, we re-initialize
-  // it to 0.0 here to force an update on the value in |EnsurePendingScale()|.
-  // Also need to note that we only want to commit |pending_scale_| in the cases
-  // where it hasn't been initialized before this method call.
-  bool const commit_immediately = pending_scale_ == 0.0;
-  if (!use_default_scale_cancellation_ && display_id != pending_display_id_)
-    pending_scale_ = 0.0;
-
   SetDisplay(display_id);
-  EnsurePendingScale(commit_immediately);
 
   const gfx::Rect bounds_dp =
       gfx::ScaleToRoundedRect(bounds, GetClientToDpPendingScale());
@@ -398,7 +387,6 @@ void ClientControlledShellSurface::SetBoundsOrigin(int64_t display_id,
   TRACE_EVENT2("exo", "ClientControlledShellSurface::SetBoundsOrigin",
                "display_id", display_id, "origin", origin.ToString());
   SetDisplay(display_id);
-  EnsurePendingScale(/*commit_immediately=*/true);
   const gfx::Point origin_dp =
       gfx::ScaleToRoundedPoint(origin, GetClientToDpPendingScale());
   pending_geometry_.set_origin(origin_dp);
@@ -413,7 +401,6 @@ void ClientControlledShellSurface::SetBoundsSize(const gfx::Size& size) {
     return;
   }
 
-  EnsurePendingScale(/*commit_immediately=*/true);
   const gfx::Size size_dp =
       gfx::ScaleToRoundedSize(size, GetClientToDpPendingScale());
   pending_geometry_.set_size(size_dp);
@@ -490,36 +477,6 @@ void ClientControlledShellSurface::SetShadowBounds(const gfx::Rect& bounds) {
     shadow_bounds_ = shadow_bounds;
     shadow_bounds_changed_ = true;
   }
-}
-
-void ClientControlledShellSurface::SetScale(double scale) {
-  TRACE_EVENT1("exo", "ClientControlledShellSurface::SetScale", "scale", scale);
-
-  if (scale <= 0.0) {
-    DLOG(WARNING) << "Surface scale must be greater than 0";
-    return;
-  }
-
-  pending_scale_ = scale;
-}
-
-void ClientControlledShellSurface::CommitPendingScale() {
-  if (pending_scale_ == scale_ || pending_scale_ == 0.0)
-    return;
-
-  gfx::Transform transform;
-  transform.Scale(1.0 / pending_scale_, 1.0 / pending_scale_);
-  host_window()->SetTransform(transform);
-  scale_ = pending_scale_;
-  set_bounds_is_dirty(true);
-  UpdateCornerRadius();
-}
-
-void ClientControlledShellSurface::SetTopInset(int height) {
-  TRACE_EVENT1("exo", "ClientControlledShellSurface::SetTopInset", "height",
-               height);
-
-  pending_top_inset_height_ = height;
 }
 
 void ClientControlledShellSurface::OnWindowStateChangeEvent(
@@ -667,8 +624,7 @@ void ClientControlledShellSurface::OnBoundsChangeEvent(
   bool is_resize = client_bounds.size() != current_size &&
                    !widget_->IsMaximized() && !widget_->IsFullscreen();
 
-  // Make sure to use the up-to-date scale factor. At this point, |scale_| or
-  // |pending_scale_| may not be updated yet.
+  // Make sure to use the up-to-date scale factor.
   display::Display display;
   const bool display_exists =
       display::Screen::GetScreen()->GetDisplayWithDisplayId(display_id,
@@ -720,7 +676,7 @@ float ClientControlledShellSurface::GetClientToDpScale() const {
   // we expect the client will already send bounds in DP.
   if (use_default_scale_cancellation_)
     return 1.f;
-  return 1.f / scale_;
+  return 1.f / GetScale();
 }
 
 void ClientControlledShellSurface::SetResizeLockType(
@@ -889,15 +845,6 @@ gfx::Size ClientControlledShellSurface::GetMaximumSize() const {
 
 void ClientControlledShellSurface::OnDeviceScaleFactorChanged(float old_dsf,
                                                               float new_dsf) {
-  if (!use_default_scale_cancellation_) {
-    SetScale(new_dsf);
-    // Commit scale changes immediately if we expect that the window will not be
-    // resized.
-    if (widget_->IsMaximized() || widget_->IsFullscreen() ||
-        WMHelper::GetInstance()->InTabletMode())
-      CommitPendingScale();
-  }
-
   views::View::OnDeviceScaleFactorChanged(old_dsf, new_dsf);
 
   UpdateFrameWidth();
@@ -934,16 +881,6 @@ void ClientControlledShellSurface::OnDisplayMetricsChanged(
     return;
 
   bool in_tablet_mode = WMHelper::GetInstance()->InTabletMode();
-
-  if (!use_default_scale_cancellation_ &&
-      changed_metrics &
-          display::DisplayObserver::DISPLAY_METRIC_DEVICE_SCALE_FACTOR) {
-    SetScale(new_display.device_scale_factor());
-    // Commit scale changes immediately if we expect that the window will not be
-    // resized.
-    if (widget_->IsMaximized() || widget_->IsFullscreen() || in_tablet_mode)
-      CommitPendingScale();
-  }
 
   if (!in_tablet_mode || !widget_->IsActive() ||
       !(changed_metrics & display::DisplayObserver::DISPLAY_METRIC_ROTATION)) {
@@ -1015,13 +952,6 @@ void ClientControlledShellSurface::SetWidgetBounds(const gfx::Rect& bounds,
     preserve_widget_bounds_ = false;
   }
 
-  if (!use_default_scale_cancellation_) {
-    bool needs_initial_commit = pending_scale_ == 0.0;
-    SetScale(current_display.device_scale_factor());
-    if (needs_initial_commit)
-      CommitPendingScale();
-  }
-
   // Calculate a minimum window visibility required bounds.
   // TODO(oshima): Move this to ComputeAdjustedBounds.
   gfx::Rect adjusted_bounds = bounds;
@@ -1032,15 +962,27 @@ void ClientControlledShellSurface::SetWidgetBounds(const gfx::Rect& bounds,
     ash::ClientControlledState::AdjustBoundsForMinimumWindowVisibility(
         restriction, &adjusted_bounds);
     // Collision detection to the bounds set by Android should be applied only
-    // to initial bounds. Do not adjust new bounds as it can be obsolete or in
-    // transit during animation, which results in incorrect resting postiion.
-    // The resting position should be fully controlled by chrome afterwards
-    // because Android isn't aware of Chrome OS System UI.
+    // to initial bounds and any client-requested bounds (I.E. Double-Tap to
+    // resize). Do not adjust new bounds for fling/display rotation as it can be
+    // obsolete or in transit during animation, which results in incorrect
+    // resting postiion. The resting position should be fully controlled by
+    // chrome afterwards because Android isn't aware of Chrome OS System UI.
+    bool is_resizing_without_rotation =
+        !display_rotating_with_pip_ &&
+        GetWindowState()->GetCurrentBoundsInScreen().size() != bounds.size();
     if (GetWindowState()->IsPip() &&
-        !ash::PipPositioner::HasSnapFraction(GetWindowState())) {
+        (!ash::PipPositioner::HasSnapFraction(GetWindowState()) ||
+         is_resizing_without_rotation)) {
       adjusted_bounds = ash::CollisionDetectionUtils::GetRestingPosition(
           target_display, adjusted_bounds,
           ash::CollisionDetectionUtils::RelativePriority::kPictureInPicture);
+
+      // Only if the window is resizing the bounds should be applied via a
+      // scaling animation, position changes will be applied via kAnimate
+      if (is_resizing_without_rotation) {
+        client_controlled_state_->set_next_bounds_change_animation_type(
+            ash::WindowState::BoundsChangeAnimationType::kCrossFade);
+      }
     }
   }
 
@@ -1063,7 +1005,7 @@ void ClientControlledShellSurface::SetWidgetBounds(const gfx::Rect& bounds,
       ScopedSetBoundsLocally scoped_set_bounds(this);
       window->SetBounds(gfx::Rect(origin, adjusted_bounds.size()));
     }
-    UpdateSurfaceBounds();
+    UpdateHostWindowOrigin();
     return;
   }
 
@@ -1084,7 +1026,7 @@ void ClientControlledShellSurface::SetWidgetBounds(const gfx::Rect& bounds,
                         adjusted_bounds_in_display, 0);
   }
 
-  UpdateSurfaceBounds();
+  UpdateHostWindowOrigin();
 }
 
 gfx::Rect ClientControlledShellSurface::GetShadowBounds() const {
@@ -1147,7 +1089,7 @@ void ClientControlledShellSurface::InitializeWindowState(
 }
 
 float ClientControlledShellSurface::GetScale() const {
-  return scale_;
+  return GetScaleFactor();
 }
 
 absl::optional<gfx::Rect> ClientControlledShellSurface::GetWidgetBounds()
@@ -1288,10 +1230,6 @@ void ClientControlledShellSurface::OnPostWidgetCommit() {
     top_inset_height_ = pending_top_inset_height_;
   }
 
-  // Update surface scale.
-  if (use_default_scale_cancellation_)
-    CommitPendingScale();
-
   widget_->GetNativeWindow()->SetProperty(aura::client::kZOrderingKey,
                                           pending_always_on_top_
                                               ? ui::ZOrderLevel::kFloatingWindow
@@ -1318,10 +1256,6 @@ void ClientControlledShellSurface::OnSurfaceDestroying(Surface* surface) {
     client_controlled_state_ = nullptr;
   }
   ShellSurfaceBase::OnSurfaceDestroying(surface);
-}
-
-void ClientControlledShellSurface::OnContentSizeChanged(Surface* surface) {
-  CommitPendingScale();
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -1414,7 +1348,7 @@ void ClientControlledShellSurface::UpdateFrameWidth() {
   if (shadow_bounds_) {
     float device_scale_factor =
         GetWidget()->GetNativeWindow()->layer()->device_scale_factor();
-    float dsf_to_default_dsf = device_scale_factor / scale_;
+    float dsf_to_default_dsf = device_scale_factor / GetScale();
     width = base::ClampRound(shadow_bounds_->width() * dsf_to_default_dsf);
   }
   static_cast<chromeos::HeaderView*>(GetFrameView()->GetHeaderView())
@@ -1443,7 +1377,7 @@ void ClientControlledShellSurface::UpdateFrameType() {
   UpdateAutoHideFrame();
 
   if (suppress_mouse_event)
-    UpdateSurfaceBounds();
+    UpdateHostWindowOrigin();
 }
 
 bool ClientControlledShellSurface::GetCanResizeFromSizeConstraints() const {
@@ -1488,29 +1422,14 @@ const ash::NonClientFrameViewAsh* ClientControlledShellSurface::GetFrameView()
       widget_->non_client_view()->frame_view());
 }
 
-void ClientControlledShellSurface::EnsurePendingScale(bool commit_immediately) {
-  // Handle the case where we receive bounds from the client before the initial
-  // scale has been set or |pending_scale_| is stale due to change of displays.
-  if (pending_scale_ == 0.0) {
-    DCHECK(!use_default_scale_cancellation_);
-    display::Display display;
-    if (display::Screen::GetScreen()->GetDisplayWithDisplayId(
-            pending_display_id_, &display)) {
-      SetScale(display.device_scale_factor());
-      if (commit_immediately)
-        CommitPendingScale();
-    }
-  }
-}
-
 float ClientControlledShellSurface::GetClientToDpPendingScale() const {
   // When the client is scale-aware, we expect that it will resize windows when
   // reacting to scale changes. Since we do not commit the scale until the
   // buffer size changes, any bounds sent after a scale change and before the
   // scale commit will result in mismatched sizes between widget and the buffer.
-  // To work around this, we use pending_scale_ to calculate bounds in DP
+  // To work around this, we use pending scale factor to calculate bounds in DP
   // instead of GetClientToDpScale().
-  return use_default_scale_cancellation_ ? 1.f : 1.f / pending_scale_;
+  return use_default_scale_cancellation_ ? 1.f : 1.f / GetPendingScaleFactor();
 }
 
 gfx::Rect

@@ -9,7 +9,6 @@ import './animation_theme_item_element.js';
 import '../../css/common.css.js';
 
 import {IronListElement} from 'chrome://resources/polymer/v3_0/iron-list/iron-list.js';
-import {afterNextRender} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {AnimationTheme} from '../../personalization_app.mojom-webui.js';
 import {isTimeOfDayScreenSaverEnabled} from '../load_time_booleans.js';
@@ -53,12 +52,6 @@ export class AnimationThemeList extends WithPersonalizationStore {
 
   animationThemes: AnimationTheme[];
   selectedAnimationTheme: AnimationTheme;
-
-  override ready() {
-    super.ready();
-    /** When element is ready, force rendering iron-list */
-    afterNextRender(this, () => this.$.grid.fire('iron-resize'));
-  }
 
   private getAriaChecked_(
       animationTheme: AnimationTheme,

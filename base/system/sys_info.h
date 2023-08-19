@@ -14,6 +14,7 @@
 #include "base/base_export.h"
 #include "base/functional/callback_forward.h"
 #include "base/gtest_prod_util.h"
+#include "base/metrics/field_trial_params.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -53,7 +54,7 @@ class BASE_EXPORT SysInfo {
   // Returns the number of processors/cores available for the current
   // application. This is typically the number of logical cores installed on the
   // system, but could instead be the number of physical cores when
-  // SetIsCpuSecurityMitigationsEnabled() has been invoked to indicate that CPU
+  // SetCpuSecurityMitigationsEnabled() has been invoked to indicate that CPU
   // security mitigations are enabled on Mac.
   static int NumberOfProcessors();
 
@@ -250,12 +251,17 @@ class BASE_EXPORT SysInfo {
   //   true when the physical memory of the device is 4gb or 6gb and
   //             the feature: kPartialLowEndModeOnMidEndDevices() is enabled.
   static bool IsLowEndDeviceOrPartialLowEndModeEnabled();
+  static bool IsLowEndDeviceOrPartialLowEndModeEnabled(
+      const FeatureParam<bool>& param_for_exclusion);
 
 #if BUILDFLAG(IS_MAC)
-  // Sets whether CPU security mitigations are enabled for the current process.
-  // This is used to control the behavior of NumberOfProcessors(), see comment
-  // on that method.
-  static void SetIsCpuSecurityMitigationsEnabled(bool is_enabled);
+  // Indicates that CPU security mitigations are enabled for the current
+  // process. This is used to control the behavior of NumberOfProcessors(), see
+  // comment on that method.
+  static void SetCpuSecurityMitigationsEnabled();
+
+  // Resets all state associated with CPU security mitigations.
+  static void ResetCpuSecurityMitigationsEnabledForTesting();
 #endif
 
  private:

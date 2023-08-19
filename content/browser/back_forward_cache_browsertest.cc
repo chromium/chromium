@@ -470,6 +470,31 @@ SameOriginMatcher BackForwardCacheBrowserTest::MatchesSameOriginDetails(
           testing::ElementsAreArray(children))));
 }
 
+BlockingDetailsMatcher BackForwardCacheBrowserTest::MatchesBlockingDetails(
+    const absl::optional<testing::Matcher<std::string>>& url,
+    const absl::optional<testing::Matcher<std::string>>& function_name,
+    const testing::Matcher<uint64_t>& line_number,
+    const testing::Matcher<uint64_t>& column_number) {
+  return testing::Pointee(testing::AllOf(
+      url.has_value()
+          ? testing::Field("url", &blink::mojom::BlockingDetails::url,
+                           testing::Optional(url.value()))
+          : testing::Field("url", &blink::mojom::BlockingDetails::url,
+                           absl::optional<std::string>(absl::nullopt)),
+      function_name.has_value()
+          ? testing::Field("function_name",
+                           &blink::mojom::BlockingDetails::function_name,
+                           testing::Optional(function_name.value()))
+          : testing::Field("function_name",
+                           &blink::mojom::BlockingDetails::function_name,
+                           absl::optional<std::string>(absl::nullopt)),
+      testing::Field("line_number", &blink::mojom::BlockingDetails::line_number,
+                     line_number),
+      testing::Field("column_number",
+                     &blink::mojom::BlockingDetails::column_number,
+                     column_number)));
+}
+
 void BackForwardCacheUnloadBrowserTest::SetUpCommandLine(
     base::CommandLine* command_line) {
   BackForwardCacheBrowserTest::SetUpCommandLine(command_line);
@@ -796,6 +821,13 @@ IN_PROC_BROWSER_TEST_F(HighCacheSizeBackForwardCacheBrowserTest,
   // 5) Trigger a back navigation to B. This will create a BFCache restore
   // navigation to B, but will wait for C's beforeunload handler to finish
   // running before continuing.
+  // The BFCache entry will be evicted before the back navigation completes, so
+  // the old navigation will be reset and a new navigation will be restarted.
+  // This observer is waiting for the two navigation requests to complete.
+  TestNavigationObserver observer(web_contents(),
+                                  /* expected_number_of_navigations= */ 2,
+                                  MessageLoopRunner::QuitMode::IMMEDIATE,
+                                  /* ignore_uncommitted_navigations= */ false);
   web_contents()->GetController().GoBack();
 
   // 6) Post a task to run BeforeUnloadCompleted (task #2). This will continue
@@ -825,7 +857,7 @@ IN_PROC_BROWSER_TEST_F(HighCacheSizeBackForwardCacheBrowserTest,
   // NavigationRequest to replace the previous NavigationRequest to B.
   // - Task #4 from step 7 to destroy evicted entries runs and won't destroy
   // any entry since there's no longer any entry in the back/forward cache.
-  EXPECT_TRUE(WaitForLoadStop(shell()->web_contents()));
+  observer.Wait();
   EXPECT_EQ(web_contents()->GetLastCommittedURL(), url_b);
   ExpectNotRestored({BackForwardCacheMetrics::NotRestoredReason::
                          kDisableForRenderFrameHostCalled},
@@ -946,8 +978,9 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest, CacheHTTPDocumentOnly) {
 // alive in the same BrowsingInstance does not cause anything to blow up.
 
 // TODO(crbug.com/1127979, crbug.com/1446206): Flaky on Linux, Windows and
-// ChromeOS
-#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_CHROMEOS)
+// ChromeOS, iOS, and Mac.
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_CHROMEOS) || \
+    BUILDFLAG(IS_MAC) || BUILDFLAG(IS_IOS)
 #define MAYBE_NavigateToTwoPagesOnSameSite DISABLED_NavigateToTwoPagesOnSameSite
 #else
 #define MAYBE_NavigateToTwoPagesOnSameSite NavigateToTwoPagesOnSameSite

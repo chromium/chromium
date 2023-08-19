@@ -384,7 +384,7 @@ class CronetContext {
 
   // |network_tasks_| is owned by |this|. It is created off the network thread,
   // but invoked and destroyed on network thread.
-  raw_ptr<NetworkTasks, DanglingUntriaged> network_tasks_;
+  raw_ptr<NetworkTasks, AcrossTasksDanglingUntriaged> network_tasks_;
 
   // Network thread is destroyed from client thread.
   std::unique_ptr<base::Thread> network_thread_;

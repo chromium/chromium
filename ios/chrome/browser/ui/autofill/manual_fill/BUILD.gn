@@ -18,6 +18,7 @@ source_set("manual_fill") {
     "manual_fill_address_mediator.mm",
     "manual_fill_all_password_coordinator.h",
     "manual_fill_all_password_coordinator.mm",
+    "manual_fill_all_password_coordinator_delegate.h",
     "manual_fill_card_mediator.h",
     "manual_fill_card_mediator.mm",
     "manual_fill_credential+PasswordForm.h",
@@ -69,7 +70,6 @@ source_set("manual_fill") {
     "//ui/base",
   ]
   frameworks = [ "UIKit.framework" ]
-  configs += [ "//build/config/compiler:enable_arc" ]
 }
 
 source_set("manual_fill_ui") {
@@ -138,13 +138,12 @@ source_set("manual_fill_ui") {
     "//ui/base:base",
   ]
   frameworks = [ "UIKit.framework" ]
-  configs += [ "//build/config/compiler:enable_arc" ]
 }
 
 source_set("unit_tests") {
-  configs += [ "//build/config/compiler:enable_arc" ]
   testonly = true
   sources = [
+    "fallback_view_controller_unittest.mm",
     "form_observer_helper_unittest.mm",
     "full_card_requester_unittest.mm",
     "manual_fill_address+AutofillProfile_unittest.mm",
@@ -174,6 +173,7 @@ source_set("unit_tests") {
     "//ios/chrome/browser/shared/model/browser_state:test_support",
     "//ios/chrome/browser/shared/model/web_state_list:web_state_list",
     "//ios/chrome/browser/shared/model/web_state_list/test:test_support",
+    "//ios/chrome/browser/shared/ui/table_view:test_support",
     "//ios/chrome/browser/ui/autofill",
     "//ios/chrome/browser/ui/autofill:bridges",
     "//ios/chrome/test:test_support",
@@ -208,14 +208,10 @@ source_set("requesters") {
     "//ui/base",
   ]
   frameworks = [ "UIKit.framework" ]
-  configs += [ "//build/config/compiler:enable_arc" ]
 }
 
 source_set("eg2_tests") {
-  configs += [
-    "//build/config/compiler:enable_arc",
-    "//build/config/ios:xctest_config",
-  ]
+  configs += [ "//build/config/ios:xctest_config" ]
   testonly = true
   sources = [
     "address_view_controller_egtest.mm",
@@ -236,6 +232,7 @@ source_set("eg2_tests") {
     "//ios/chrome/browser/signin:fake_system_identity",
     "//ios/chrome/browser/ui/authentication:eg_test_support+eg2",
     "//ios/chrome/browser/ui/autofill:eg_test_support+eg2",
+    "//ios/chrome/browser/ui/settings/password:eg_test_support+eg2",
     "//ios/chrome/browser/ui/settings/password:password_constants",
     "//ios/chrome/test:eg_test_support+eg2",
     "//ios/chrome/test/earl_grey:eg_test_support+eg2",

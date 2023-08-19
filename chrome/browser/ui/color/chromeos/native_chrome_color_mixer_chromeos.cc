@@ -7,11 +7,11 @@
 #include "chrome/browser/ui/color/chrome_color_id.h"
 #include "ui/color/color_mixer.h"
 #include "ui/color/color_provider.h"
-#include "ui/color/color_provider_manager.h"
+#include "ui/color/color_provider_key.h"
 #include "ui/color/color_recipe.h"
 
 void AddNativeChromeColorMixer(ui::ColorProvider* provider,
-                               const ui::ColorProviderManager::Key& key) {
+                               const ui::ColorProviderKey& key) {
   ui::ColorMixer& mixer = provider->AddMixer();
 
   mixer[kColorBorealisSplashScreenBackground] = {
@@ -19,7 +19,7 @@ void AddNativeChromeColorMixer(ui::ColorProvider* provider,
   mixer[kColorBorealisSplashScreenForeground] = {
       SkColorSetRGB(0xD1, 0xD0, 0xCF)};
   mixer[kColorCaptionForeground] = {
-      (key.color_mode == ui::ColorProviderManager::ColorMode::kLight)
+      (key.color_mode == ui::ColorProviderKey::ColorMode::kLight)
           ? SkColorSetRGB(0x28, 0x28, 0x28)
           : SK_ColorWHITE};
   mixer[kColorSharesheetTargetButtonIconShadow] = {

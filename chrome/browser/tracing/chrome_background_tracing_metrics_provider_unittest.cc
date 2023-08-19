@@ -38,7 +38,9 @@ const char kDummyTrace[] = "Trace bytes as serialized proto";
 class ChromeBackgroundTracingMetricsProviderTest : public testing::Test {
  public:
   ChromeBackgroundTracingMetricsProviderTest()
-      : local_state_(TestingBrowserProcess::GetGlobal()) {}
+      : background_tracing_manager_(
+            content::BackgroundTracingManager::CreateInstance()),
+        local_state_(TestingBrowserProcess::GetGlobal()) {}
 
   void SetUp() override {
     base::Value::Dict dict;
@@ -68,6 +70,8 @@ class ChromeBackgroundTracingMetricsProviderTest : public testing::Test {
 
  private:
   content::BrowserTaskEnvironment task_environment_;
+  std::unique_ptr<content::BackgroundTracingManager>
+      background_tracing_manager_;
   ScopedTestingLocalState local_state_;
 };
 
@@ -88,6 +92,7 @@ TEST_F(ChromeBackgroundTracingMetricsProviderTest, UploadsTraceLog) {
   uma_proto.set_client_id(100);
   uma_proto.set_session_id(15);
   provider.ProvideIndependentMetrics(
+      base::DoNothing(),
       base::BindOnce([](bool success) { EXPECT_TRUE(success); }), &uma_proto,
       /* snapshot_manager=*/nullptr);
 
@@ -113,6 +118,7 @@ TEST_F(ChromeBackgroundTracingMetricsProviderTest, HandleMissingTrace) {
   uma_proto.set_client_id(100);
   uma_proto.set_session_id(15);
   provider.ProvideIndependentMetrics(
+      base::DoNothing(),
       base::BindOnce([](bool success) { EXPECT_FALSE(success); }), &uma_proto,
       /* snapshot_manager=*/nullptr);
 
@@ -181,7 +187,7 @@ TEST_F(ChromeBackgroundTracingMetricsProviderChromeOSTest, HardwareClass) {
   {
     base::RunLoop run_loop;
     provider.ProvideIndependentMetrics(
-        base::BindLambdaForTesting([&](bool success) {
+        base::DoNothing(), base::BindLambdaForTesting([&](bool success) {
           EXPECT_TRUE(success);
           run_loop.Quit();
         }),

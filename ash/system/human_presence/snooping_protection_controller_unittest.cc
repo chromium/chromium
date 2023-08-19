@@ -97,8 +97,10 @@ class SnoopingProtectionControllerTestBase : public NoSessionAshTestBase {
   const bool service_state_;
   const std::map<std::string, std::string> params_;
 
-  raw_ptr<FakeHumanPresenceDBusClient, ExperimentalAsh> dbus_client_ = nullptr;
-  raw_ptr<SnoopingProtectionController, ExperimentalAsh> controller_ = nullptr;
+  raw_ptr<FakeHumanPresenceDBusClient, DanglingUntriaged | ExperimentalAsh>
+      dbus_client_ = nullptr;
+  raw_ptr<SnoopingProtectionController, DanglingUntriaged | ExperimentalAsh>
+      controller_ = nullptr;
 
   // Simulates a login. This will trigger a DBus call if and only if logging in
   // was the final precondition required for the feature. Hence we wait for any

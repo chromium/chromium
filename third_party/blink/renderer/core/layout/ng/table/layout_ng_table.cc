@@ -20,6 +20,7 @@
 #include "third_party/blink/renderer/core/layout/ng/table/ng_table_layout_algorithm_utils.h"
 #include "third_party/blink/renderer/core/paint/ng/ng_box_fragment_painter.h"
 #include "third_party/blink/renderer/core/paint/ng/ng_table_painters.h"
+#include "third_party/blink/renderer/platform/geometry/infinite_int_rect.h"
 
 namespace blink {
 
@@ -252,16 +253,6 @@ bool LayoutNGTable::HasBackgroundForPaint() const {
   return false;
 }
 
-void LayoutNGTable::UpdateBlockLayout() {
-  NOT_DESTROYED();
-
-  if (IsOutOfFlowPositioned()) {
-    UpdateOutOfFlowBlockLayout();
-    return;
-  }
-  UpdateInFlowBlockLayout();
-}
-
 void LayoutNGTable::AddChild(LayoutObject* child, LayoutObject* before_child) {
   NOT_DESTROYED();
   TableGridStructureChanged();
@@ -356,7 +347,7 @@ PhysicalRect LayoutNGTable::OverflowClipRect(
   if (StyleRef().BorderCollapse() == EBorderCollapse::kCollapse) {
     clip_rect = PhysicalRect(location, Size());
     const auto overflow_clip = GetOverflowClipAxes();
-    gfx::Rect infinite_rect = PhysicalRect::InfiniteIntRect();
+    gfx::Rect infinite_rect = InfiniteIntRect();
     if ((overflow_clip & kOverflowClipX) == kNoOverflowClip) {
       clip_rect.offset.left = LayoutUnit(infinite_rect.x());
       clip_rect.size.width = LayoutUnit(infinite_rect.width());
@@ -472,17 +463,6 @@ LayoutUnit LayoutNGTable::PaddingRight() const {
   if (ShouldCollapseBorders())
     return LayoutUnit();
   return LayoutNGMixin<LayoutBlock>::PaddingRight();
-}
-
-NGPhysicalBoxStrut LayoutNGTable::BorderBoxOutsets() const {
-  NOT_DESTROYED();
-  // DCHECK(cached_table_borders_.get())
-  // ScrollAnchoring fails this DCHECK.
-  if (PhysicalFragmentCount() > 0) {
-    return GetPhysicalFragment(0)->Borders();
-  }
-  NOTREACHED();
-  return {};
 }
 
 // Effective column index is index of columns with mergeable

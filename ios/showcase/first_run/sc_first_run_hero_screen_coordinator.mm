@@ -6,10 +6,6 @@
 
 #import "ios/showcase/first_run/sc_first_run_hero_screen_view_controller.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 NSString* const kLabelContinueAs = @"Continue as Name";
 NSString* const kLabelAddAccount = @"Add Account";
 

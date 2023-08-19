@@ -9,6 +9,7 @@
 #include "ash/system/phonehub/phone_hub_view_ids.h"
 #include "ash/system/phonehub/quick_action_item.h"
 #include "ash/system/phonehub/silence_phone_quick_action_controller.h"
+#include "chromeos/constants/chromeos_features.h"
 #include "ui/views/layout/box_layout.h"
 
 namespace ash {
@@ -53,6 +54,16 @@ void QuickActionsView::InitQuickActionItems() {
 
   quick_action_controllers_.push_back(std::move(silence_phone_controller));
   quick_action_controllers_.push_back(std::move(locate_phone_controller));
+}
+
+void QuickActionsView::OnThemeChanged() {
+  views::View::OnThemeChanged();
+  if (!chromeos::features::IsJellyrollEnabled()) {
+    return;
+  }
+  for (auto& controller : quick_action_controllers_) {
+    controller->UpdateQuickActionItemUi();
+  }
 }
 
 }  // namespace ash

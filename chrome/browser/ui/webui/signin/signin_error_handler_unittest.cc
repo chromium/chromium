@@ -115,7 +115,7 @@ class SigninErrorHandlerTest : public BrowserWithTestWindowTest {
  private:
   std::unique_ptr<content::TestWebUI> web_ui_;
   std::unique_ptr<SigninErrorUI> signin_error_ui_;
-  raw_ptr<TestingSigninErrorHandler> handler_;  // Not owned.
+  raw_ptr<TestingSigninErrorHandler, DanglingUntriaged> handler_;  // Not owned.
 };
 
 TEST_F(SigninErrorHandlerTest, InBrowserHandleLearnMore) {

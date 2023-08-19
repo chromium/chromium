@@ -23,7 +23,7 @@ def main():
   for data_file in args:
     title = os.path.basename(os.path.splitext(data_file)[0]).title()
     var_name = 'k' + title.replace('_', '')
-    with open(data_file, 'r') as f:
+    with open(data_file, 'r', encoding='utf-8') as f:
       contents = f.read()
     global_string_map[var_name] = contents
 

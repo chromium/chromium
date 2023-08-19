@@ -4,10 +4,6 @@
 
 #import "ios/web/web_state/ui/crw_touch_tracking_recognizer.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 @interface CRWTouchTrackingRecognizer () <UIGestureRecognizerDelegate>
 @end
 

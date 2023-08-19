@@ -292,7 +292,8 @@ class CONTENT_EXPORT PepperTCPSocketMessageFilter
   // Non-owning ptr.
   raw_ptr<BrowserPpapiHostImpl, DanglingUntriaged> host_;
   // Non-owning ptr.
-  raw_ptr<ContentBrowserPepperHostFactory, DanglingUntriaged> factory_;
+  raw_ptr<ContentBrowserPepperHostFactory, AcrossTasksDanglingUntriaged>
+      factory_;
   PP_Instance instance_;
 
   // The following fields are used only on the UI thread.

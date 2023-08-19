@@ -20,10 +20,10 @@
 #include "chrome/browser/ui/hats/trust_safety_sentiment_service_factory.h"
 #include "chrome/browser/ui/views/controls/hover_button.h"
 #include "chrome/browser/ui/views/controls/page_switcher_view.h"
+#include "chrome/browser/ui/views/controls/rich_controls_container_view.h"
 #include "chrome/browser/ui/views/controls/rich_hover_button.h"
 #include "chrome/browser/ui/views/page_info/chosen_object_view.h"
 #include "chrome/browser/ui/views/page_info/page_info_main_view.h"
-#include "chrome/browser/ui/views/page_info/page_info_row_view.h"
 #include "chrome/browser/ui/views/page_info/page_info_security_content_view.h"
 #include "chrome/browser/ui/views/page_info/page_info_view_factory.h"
 #include "chrome/browser/ui/views/page_info/permission_toggle_row_view.h"
@@ -35,6 +35,7 @@
 #include "chrome/test/base/testing_profile.h"
 #include "chrome/test/base/testing_profile_manager.h"
 #include "chrome/test/views/chrome_test_views_delegate.h"
+#include "components/content_settings/core/browser/content_settings_uma_util.h"
 #include "components/content_settings/core/browser/host_content_settings_map.h"
 #include "components/content_settings/core/common/pref_names.h"
 #include "components/history/core/browser/history_service.h"
@@ -248,7 +249,7 @@ class PageInfoBubbleViewTestApi {
   }
 
   std::u16string GetPermissionLabelTextAt(int index) {
-    return GetPermissionToggleRowAt(index)->row_view_->title_->GetText();
+    return GetPermissionToggleRowAt(index)->row_view_->GetTitleForTesting();
   }
 
   bool GetPermissionToggleIsOnAt(int index) {
@@ -271,11 +272,6 @@ class PageInfoBubbleViewTestApi {
       --actual_count;
 
     return actual_count;
-  }
-
-  // Simulates updating the number of cookies.
-  void SetCookieInfo(const CookieInfoList& list) {
-    presenter_->ui_for_testing()->SetCookieInfo(list);
   }
 
   // Simulates updating the number of blocked and allowed sites and fps info.
@@ -501,9 +497,9 @@ TEST_F(PageInfoBubbleViewTest, NotificationPermissionRevokeUkm) {
   ukm_recorder.ExpectEntrySourceHasUrl(entry, origin_url);
   EXPECT_EQ(*ukm_recorder.GetEntryMetric(entry, "Source"),
             static_cast<int64_t>(permissions::PermissionSourceUI::OIB));
-  EXPECT_EQ(
-      *ukm_recorder.GetEntryMetric(entry, "PermissionType"),
-      ContentSettingTypeToHistogramValue(ContentSettingsType::NOTIFICATIONS));
+  EXPECT_EQ(*ukm_recorder.GetEntryMetric(entry, "PermissionType"),
+            content_settings_uma_util::ContentSettingTypeToHistogramValue(
+                ContentSettingsType::NOTIFICATIONS));
   EXPECT_EQ(*ukm_recorder.GetEntryMetric(entry, "Action"),
             static_cast<int64_t>(permissions::PermissionAction::REVOKED));
 }
@@ -951,7 +947,8 @@ TEST_F(PageInfoBubbleViewTest, UpdatingSiteDataRetainsLayout) {
   // Create a fake cookies info.
   PageInfoUI::CookiesNewInfo cookies;
   cookies.allowed_sites_count = 10;
-  cookies.blocked_sites_count = 32;
+  cookies.allowed_third_party_sites_count = 8;
+  cookies.blocked_third_party_sites_count = 32;
   cookies.status = CookieControlsStatus::kDisabled;
   cookies.enforcement = CookieControlsEnforcement::kNoEnforcement;
 
@@ -1131,9 +1128,7 @@ class PageInfoBubbleViewCookiesSubpageTest : public PageInfoBubbleViewTest {
  public:
   PageInfoBubbleViewCookiesSubpageTest() {
     feature_list.InitWithFeatures(
-        {page_info::kPageInfoCookiesSubpage,
-         privacy_sandbox::kPrivacySandboxFirstPartySetsUI},
-        {});
+        {privacy_sandbox::kPrivacySandboxFirstPartySetsUI}, {});
   }
 
   void ExpectViewContainsText(views::View* view, const std::u16string& text) {
@@ -1154,7 +1149,8 @@ TEST_F(PageInfoBubbleViewCookiesSubpageTest, TextsOnButtonsAreCorrect) {
   base::HistogramTester histogram_tester;
   // Create fake cookie information.
   PageInfoUI::CookiesNewInfo cookie_info;
-  cookie_info.blocked_sites_count = 10;
+  cookie_info.blocked_third_party_sites_count = 10;
+  cookie_info.allowed_third_party_sites_count = 1;
   cookie_info.allowed_sites_count = 3;
   cookie_info.status = CookieControlsStatus::kEnabled;
   cookie_info.enforcement = CookieControlsEnforcement::kNoEnforcement;
@@ -1189,7 +1185,7 @@ TEST_F(PageInfoBubbleViewCookiesSubpageTest, TextsOnButtonsAreCorrect) {
   ExpectViewContainsText(api_->blocking_third_party_cookies_subtitle(),
                          l10n_util::GetPluralStringFUTF16(
                              IDS_PAGE_INFO_COOKIES_BLOCKED_SITES_COUNT,
-                             cookie_info.blocked_sites_count));
+                             cookie_info.blocked_third_party_sites_count));
 
   EXPECT_TRUE(blocking_third_party_cookies_row->GetVisible());
   EXPECT_TRUE(fps_button->GetVisible());

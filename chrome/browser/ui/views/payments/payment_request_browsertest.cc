@@ -106,7 +106,14 @@ IN_PROC_BROWSER_TEST_F(PaymentRequestNoShippingTest,
                            /*wait_for_animation=*/false);
 }
 
-IN_PROC_BROWSER_TEST_F(PaymentRequestNoShippingTest, InactiveBrowserWindow) {
+// TODO(crbug.com/1468503): Re-enable this test on Mac, Linux and Lacros
+#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)
+#define MAYBE_InactiveBrowserWindow DISABLED_InactiveBrowserWindow
+#else
+#define MAYBE_InactiveBrowserWindow InactiveBrowserWindow
+#endif
+IN_PROC_BROWSER_TEST_F(PaymentRequestNoShippingTest,
+                       MAYBE_InactiveBrowserWindow) {
   std::string a_method_name;
   InstallPaymentApp("a.com", "/payment_request_success_responder.js",
                     &a_method_name);

@@ -87,8 +87,7 @@ void MathMLPaddedElement::CollectStyleForPresentationAttribute(
 
 LayoutObject* MathMLPaddedElement::CreateLayoutObject(
     const ComputedStyle& style) {
-  if (!RuntimeEnabledFeatures::MathMLCoreEnabled() ||
-      !style.IsDisplayMathType()) {
+  if (!style.IsDisplayMathType()) {
     return MathMLElement::CreateLayoutObject(style);
   }
   return MakeGarbageCollected<LayoutNGMathMLBlockWithAnonymousMrow>(this);

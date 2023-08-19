@@ -18,6 +18,10 @@
 #include "sql/database.h"
 #include "sql/error_delegate_util.h"
 
+#if BUILDFLAG(IS_WIN)
+#include <windows.h>
+#endif  // BUILDFLAG(IS_WIN)
+
 namespace net {
 
 SQLitePersistentStoreBackendBase::SQLitePersistentStoreBackendBase(
@@ -107,12 +111,16 @@ bool SQLitePersistentStoreBackendBase::InitializeDatabase() {
   // because the file cannot be opened again to preload it. In this case,
   // preload before opening the database.
   if (enable_exclusive_access_) {
-    // See coments in Database::Preload for explanation of these values.
-    constexpr int kPreReadSize = 128 * 1024 * 1024;  // 128 MB
-    // TODO(crbug.com/1434166): Consider moving preload behind a database
-    // option.
-    base::PreReadFile(path_, /*is_executable=*/false, kPreReadSize);
     has_been_preloaded = true;
+
+    // Can only attempt to preload before Open if the file exists.
+    if (base::PathExists(path_)) {
+      // See comments in Database::Preload for explanation of these values.
+      constexpr int kPreReadSize = 128 * 1024 * 1024;  // 128 MB
+      // TODO(crbug.com/1434166): Consider moving preload behind a database
+      // option.
+      base::PreReadFile(path_, /*is_executable=*/false, kPreReadSize);
+    }
   }
 
   if (!db_->Open(path_)) {
@@ -261,6 +269,15 @@ void SQLitePersistentStoreBackendBase::DatabaseErrorCallback(
     return;
 
   corruption_detected_ = true;
+
+  if (!initialized_) {
+    sql::UmaHistogramSqliteResult(histogram_tag_ + ".ErrorInitializeDB", error);
+
+#if BUILDFLAG(IS_WIN)
+    base::UmaHistogramSparse(histogram_tag_ + ".WinGetLastErrorInitializeDB",
+                             ::GetLastError());
+#endif  // BUILDFLAG(IS_WIN)
+  }
 
   // Don't just do the close/delete here, as we are being called by |db| and
   // that seems dangerous.

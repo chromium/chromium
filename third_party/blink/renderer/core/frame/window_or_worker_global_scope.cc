@@ -49,7 +49,6 @@
 namespace blink {
 
 void WindowOrWorkerGlobalScope::reportError(ScriptState* script_state,
-                                            ExecutionContext&,
                                             const ScriptValue& e) {
   if (!script_state->ContextIsValid()) {
     return;
@@ -58,8 +57,7 @@ void WindowOrWorkerGlobalScope::reportError(ScriptState* script_state,
   V8ScriptRunner::ReportException(script_state->GetIsolate(), e.V8Value());
 }
 
-String WindowOrWorkerGlobalScope::btoa(ExecutionContext&,
-                                       const String& string_to_encode,
+String WindowOrWorkerGlobalScope::btoa(const String& string_to_encode,
                                        ExceptionState& exception_state) {
   if (string_to_encode.IsNull())
     return String();
@@ -76,8 +74,7 @@ String WindowOrWorkerGlobalScope::btoa(ExecutionContext&,
       base::as_bytes(base::make_span(string_to_encode.Latin1())));
 }
 
-String WindowOrWorkerGlobalScope::atob(ExecutionContext&,
-                                       const String& encoded_string,
+String WindowOrWorkerGlobalScope::atob(const String& encoded_string,
                                        ExceptionState& exception_state) {
   if (encoded_string.IsNull())
     return String();
@@ -100,17 +97,15 @@ String WindowOrWorkerGlobalScope::atob(ExecutionContext&,
   return String(out.data(), out.size());
 }
 
-bool WindowOrWorkerGlobalScope::crossOriginIsolated(
-    const ExecutionContext& execution_context) {
-  return execution_context.CrossOriginIsolatedCapability();
+bool WindowOrWorkerGlobalScope::crossOriginIsolated() {
+  return GetExecutionContext()->CrossOriginIsolatedCapability();
 }
 
 // See https://github.com/whatwg/html/issues/7912
 // static
-String WindowOrWorkerGlobalScope::crossOriginEmbedderPolicy(
-    const ExecutionContext& execution_context) {
+String WindowOrWorkerGlobalScope::crossOriginEmbedderPolicy() {
   const PolicyContainer* policy_container =
-      execution_context.GetPolicyContainer();
+      GetExecutionContext()->GetPolicyContainer();
   CHECK(policy_container);
   switch (policy_container->GetPolicies().cross_origin_embedder_policy.value) {
     case network::mojom::CrossOriginEmbedderPolicyValue::kNone:
@@ -124,7 +119,6 @@ String WindowOrWorkerGlobalScope::crossOriginEmbedderPolicy(
 
 ScriptValue WindowOrWorkerGlobalScope::structuredClone(
     ScriptState* script_state,
-    ExecutionContext&,
     const ScriptValue& message,
     const StructuredSerializeOptions* options,
     ExceptionState& exception_state) {

@@ -34,7 +34,9 @@ struct WaylandOverlayConfig {
   int z_order = 0;
 
   // Specifies how the buffer is to be transformed during composition.
-  gfx::OverlayTransform transform =
+  // Note: A |gfx::OverlayTransform| transforms the buffer within its bounds and
+  // does not affect |bounds_rect|.
+  absl::variant<gfx::OverlayTransform, gfx::Transform> transform =
       gfx::OverlayTransform::OVERLAY_TRANSFORM_NONE;
 
   // Specifies if alpha blending, with premultiplied alpha should be applied at

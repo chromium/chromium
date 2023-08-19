@@ -19,7 +19,7 @@ extern "C" int LLVMFuzzerInitialize(int* argc, char*** argv) {
   base::CommandLine::Init(*argc, *argv);
   logging::LoggingSettings settings;
   settings.logging_dest = logging::LOG_NONE;
-  logging::SetMinLogLevel(logging::LOG_FATAL);
+  logging::SetMinLogLevel(logging::LOGGING_FATAL);
   return InitLogging(settings);
 }
 

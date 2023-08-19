@@ -12,6 +12,7 @@
 #include "base/logging.h"
 #include "base/memory/ref_counted.h"
 #include "base/metrics/histogram_macros.h"
+#include "base/no_destructor.h"
 #include "base/strings/stringprintf.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/task/task_runner.h"
@@ -200,6 +201,23 @@ LargeIconServiceImpl::GetLargeIconImageOrFallbackStyleForPageUrl(
   return GetLargeIconOrFallbackStyleImpl(
       page_url, min_source_size_in_pixel, desired_size_in_pixel,
       favicon_base::LargeIconCallback(), std::move(image_callback), tracker);
+}
+
+base::CancelableTaskTracker::TaskId
+LargeIconServiceImpl::GetLargeIconRawBitmapForPageUrl(
+    const GURL& page_url,
+    int min_source_size_in_pixel,
+    favicon_base::FaviconRawBitmapCallback callback,
+    base::CancelableTaskTracker* tracker) {
+  static const base::NoDestructor<std::vector<favicon_base::IconTypeSet>>
+      icon_types({{favicon_base::IconType::kWebManifestIcon},
+                  {favicon_base::IconType::kFavicon},
+                  {favicon_base::IconType::kTouchIcon},
+                  {favicon_base::IconType::kTouchPrecomposedIcon}});
+
+  return favicon_service_->GetLargestRawFaviconForPageURL(
+      page_url, *icon_types, min_source_size_in_pixel, std::move(callback),
+      tracker);
 }
 
 base::CancelableTaskTracker::TaskId

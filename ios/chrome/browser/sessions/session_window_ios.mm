@@ -4,15 +4,11 @@
 
 #import "ios/chrome/browser/sessions/session_window_ios.h"
 
+#import "base/apple/foundation_util.h"
 #import "base/check.h"
 #import "base/format_macros.h"
-#import "base/mac/foundation_util.h"
 #import "base/strings/sys_string_conversions.h"
 #import "ios/chrome/browser/sessions/NSCoder+Compatibility.h"
-
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
 
 namespace {
 // Serialization keys.
@@ -59,7 +55,7 @@ BOOL IsIndexValidForSessionCount(NSUInteger index, NSUInteger session_count) {
 - (instancetype)initWithCoder:(NSCoder*)aDecoder {
   NSUInteger selectedIndex = [aDecoder cr_decodeIndexForKey:kSelectedIndexKey];
   NSArray<CRWSessionStorage*>* sessions =
-      base::mac::ObjCCast<NSArray<CRWSessionStorage*>>(
+      base::apple::ObjCCast<NSArray<CRWSessionStorage*>>(
           [aDecoder decodeObjectForKey:kSessionsKey]);
 
   if (!sessions) {

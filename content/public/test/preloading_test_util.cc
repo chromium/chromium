@@ -6,6 +6,8 @@
 
 #include "base/strings/stringprintf.h"
 #include "content/browser/preloading/preloading_attempt_impl.h"
+#include "content/browser/preloading/preloading_config.h"
+#include "preloading_test_util.h"
 #include "services/metrics/public/cpp/metrics_utils.h"
 #include "services/metrics/public/cpp/ukm_builders.h"
 
@@ -25,6 +27,7 @@ const std::vector<std::string> kPreloadingAttemptUkmMetrics{
     Preloading_Attempt::kAccurateTriggeringName,
     Preloading_Attempt::kReadyTimeName,
     Preloading_Attempt::kTimeToNextNavigationName,
+    Preloading_Attempt::kSpeculationEagernessName,
 };
 
 const std::vector<std::string> kPreloadingPredictionUkmMetrics{
@@ -46,7 +49,8 @@ UkmEntry PreloadingAttemptUkmEntryBuilder::BuildEntry(
     PreloadingTriggeringOutcome triggering_outcome,
     PreloadingFailureReason failure_reason,
     bool accurate,
-    absl::optional<base::TimeDelta> ready_time) const {
+    absl::optional<base::TimeDelta> ready_time,
+    absl::optional<blink::mojom::SpeculationEagerness> eagerness) const {
   std::map<std::string, int64_t> metrics = {
       {Preloading_Attempt::kPreloadingTypeName,
        static_cast<int64_t>(preloading_type)},
@@ -67,6 +71,10 @@ UkmEntry PreloadingAttemptUkmEntryBuilder::BuildEntry(
     metrics.insert({Preloading_Attempt::kReadyTimeName,
                     ukm::GetExponentialBucketMinForCounts1000(
                         ready_time->InMilliseconds())});
+  }
+  if (eagerness) {
+    metrics.insert({Preloading_Attempt::kSpeculationEagernessName,
+                    static_cast<int64_t>(eagerness.value())});
   }
   return UkmEntry{source_id, std::move(metrics)};
 }
@@ -138,6 +146,34 @@ PreloadingTriggeringOutcome PreloadingAttemptAccessor::GetTriggeringOutcome() {
 PreloadingFailureReason PreloadingAttemptAccessor::GetFailureReason() {
   return static_cast<PreloadingAttemptImpl*>(preloading_attempt_)
       ->failure_reason_;
+}
+
+PreloadingConfigOverride::PreloadingConfigOverride() {
+  preloading_config_ = std::make_unique<PreloadingConfig>();
+  overridden_config_ =
+      PreloadingConfig::OverrideForTesting(preloading_config_.get());
+}
+
+PreloadingConfigOverride::~PreloadingConfigOverride() {
+  raw_ptr<PreloadingConfig> uninstalled_override =
+      PreloadingConfig::OverrideForTesting(overridden_config_);
+  // Make sure the override we uninstalled is the one we installed in the
+  // constructor.
+  CHECK_EQ(uninstalled_override.get(), preloading_config_.get());
+}
+
+void PreloadingConfigOverride::SetHoldback(PreloadingType preloading_type,
+                                           PreloadingPredictor predictor,
+                                           bool holdback) {
+  preloading_config_->SetHoldbackForTesting(preloading_type, predictor,
+                                            holdback);
+}
+
+void PreloadingConfigOverride::SetHoldback(std::string_view preloading_type,
+                                           std::string_view predictor,
+                                           bool holdback) {
+  preloading_config_->SetHoldbackForTesting(preloading_type, predictor,
+                                            holdback);
 }
 
 }  // namespace content::test

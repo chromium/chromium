@@ -1,0 +1,21 @@
+This is a testharness.js-based test.
+PASS Test isConfigSupported()
+PASS Test isConfigSupported() with 1080p crop
+PASS Test that isConfigSupported() returns a parsed configuration
+PASS Test invalid configs
+PASS Test configure()
+PASS Decode a key frame
+PASS Decode a non key frame first fails
+PASS Verify reset() suppresses outputs
+PASS Test unconfigured VideoDecoder operations
+PASS Test closed VideoDecoder operations
+FAIL Decode empty frame assert_equals: expected 0 but got 1
+FAIL Decode corrupt frame assert_equals: expected 0 but got 1
+PASS Close while decoding corrupt frame
+PASS Test decoding after flush
+PASS Test decoding a with negative timestamp
+PASS Test reset during flush
+PASS Test low-latency decoding
+PASS VideoDecoder decodeQueueSize test
+Harness: the test ran to completion.
+

@@ -54,6 +54,7 @@ void BasicVulkanTest::TearDown() {
     window_ = gfx::kNullAcceleratedWidget;
   }
   device_queue_->Destroy();
+  device_queue_.reset();
   vulkan_implementation_.reset();
 }
 

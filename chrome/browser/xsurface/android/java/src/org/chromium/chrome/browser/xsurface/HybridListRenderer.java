@@ -21,8 +21,7 @@ public interface HybridListRenderer {
      * @return a View that the HybridListRenderer is managing, which can then be
      * attached to other view
      */
-    @Nullable
-    default View bind(ListContentManager manager) {
+    default @Nullable View bind(ListContentManager manager) {
         return null;
     }
 
@@ -37,8 +36,7 @@ public interface HybridListRenderer {
      *         be set via ListLayoutHelper#setSpanCount()
      * @return
      */
-    @Nullable
-    default View bind(ListContentManager manager, @Nullable ViewGroup viewport,
+    default @Nullable View bind(ListContentManager manager, @Nullable ViewGroup viewport,
             boolean shouldUseStaggeredLayout) {
         return bind(manager);
     }
@@ -79,7 +77,13 @@ public interface HybridListRenderer {
     /**
      * Called when a pull to refresh is initiated by the user.
      */
+    @Deprecated
     default void onPullToRefreshStarted() {}
+
+    /**
+     * Called when a manual refresh is initiated by the user.
+     */
+    default void onManualRefreshStarted() {}
 
     /**
      * Returns helper to manager the list layout.

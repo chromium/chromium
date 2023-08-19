@@ -47,13 +47,12 @@ import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
-import org.chromium.base.test.util.DisableIf;
-import org.chromium.base.test.util.DisabledTest;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.theme.ThemeUtils;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.R;
 import org.chromium.chrome.test.util.browser.Features;
+import org.chromium.chrome.test.util.browser.Features.EnableFeatures;
 import org.chromium.components.browser_ui.styles.ChromeColors;
 import org.chromium.components.browser_ui.styles.SemanticColorUtils;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
@@ -66,7 +65,6 @@ import org.chromium.ui.test.util.BlankUiTestActivityTestCase;
  * Tests for {@link TabListRecyclerView} and {@link TabListContainerViewBinder}
  */
 @RunWith(ChromeJUnit4ClassRunner.class)
-@Features.EnableFeatures({ChromeFeatureList.TAB_GRID_LAYOUT_ANDROID})
 @Batch(Batch.PER_CLASS)
 public class TabListContainerViewBinderTest extends BlankUiTestActivityTestCase {
     /**
@@ -164,9 +162,7 @@ public class TabListContainerViewBinderTest extends BlankUiTestActivityTestCase 
     @Test
     @MediumTest
     // clang-format off
-    @Features.EnableFeatures(ChromeFeatureList.TAB_TO_GTS_ANIMATION)
-    @DisableIf.Build(hardware_is = "bullhead", message = "Flaky on CFI bot. " +
-            "https://crbug.com/954145")
+    @EnableFeatures(ChromeFeatureList.TAB_TO_GTS_ANIMATION)
     public void testShowWithAnimation() {
         // clang-format on
         TestThreadUtils.runOnUiThreadBlocking(() -> {
@@ -190,7 +186,7 @@ public class TabListContainerViewBinderTest extends BlankUiTestActivityTestCase 
     @Test
     @MediumTest
     @UiThreadTest
-    @Features.EnableFeatures(ChromeFeatureList.TAB_TO_GTS_ANIMATION)
+    @EnableFeatures(ChromeFeatureList.TAB_TO_GTS_ANIMATION)
     public void testShowWithoutAnimation() {
         mContainerModel.set(
                 TabListContainerProperties.VISIBILITY_LISTENER, mMockVisibilityListener);
@@ -208,9 +204,7 @@ public class TabListContainerViewBinderTest extends BlankUiTestActivityTestCase 
     @Test
     @MediumTest
     // clang-format off
-    @Features.EnableFeatures(ChromeFeatureList.TAB_TO_GTS_ANIMATION)
-    @DisableIf.Build(hardware_is = "bullhead", message = "Flaky on CFI bot. " +
-        "https://crbug.com/954145")
+    @EnableFeatures(ChromeFeatureList.TAB_TO_GTS_ANIMATION)
     public void testShowWithAnimation_showShadow() {
         // clang-format on
         mShouldShowShadow = true;
@@ -239,8 +233,7 @@ public class TabListContainerViewBinderTest extends BlankUiTestActivityTestCase 
 
     @Test
     @MediumTest
-    @Features.EnableFeatures(ChromeFeatureList.TAB_TO_GTS_ANIMATION)
-    @DisabledTest(message = "https://crbug.com/1182554")
+    @EnableFeatures(ChromeFeatureList.TAB_TO_GTS_ANIMATION)
     public void testHidesWithAnimation() {
         TestThreadUtils.runOnUiThreadBlocking(() -> {
             mContainerModel.set(
@@ -274,7 +267,7 @@ public class TabListContainerViewBinderTest extends BlankUiTestActivityTestCase 
     @Test
     @MediumTest
     @UiThreadTest
-    @Features.EnableFeatures(ChromeFeatureList.TAB_TO_GTS_ANIMATION)
+    @EnableFeatures(ChromeFeatureList.TAB_TO_GTS_ANIMATION)
     public void testHidesWithoutAnimation() {
         mContainerModel.set(
                 TabListContainerProperties.VISIBILITY_LISTENER, mMockVisibilityListener);

@@ -36,6 +36,9 @@ class InputMethod;
 class InputController;
 class KeyEvent;
 class OverlayManagerOzone;
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+class PalmDetector;
+#endif
 class PlatformClipboard;
 class PlatformGLEGLUtility;
 class PlatformGlobalShortcutListener;
@@ -156,6 +159,8 @@ class COMPONENT_EXPORT(OZONE) OzonePlatform {
 
   // Groups platform properties that can only be known at run time.
   struct PlatformRuntimeProperties {
+    PlatformRuntimeProperties();
+
     // Values to override the value of the
     // supports_server_side_window_decorations property in tests.
     enum class SupportsSsdForTest {
@@ -181,6 +186,10 @@ class COMPONENT_EXPORT(OZONE) OzonePlatform {
     // without a backing image via a wayland protocol.
     bool supports_non_backed_solid_color_buffers = false;
 
+    // Wayland only: determines whether single pixel buffer protocol is
+    // supported.
+    bool supports_single_pixel_buffer = false;
+
     // Indicates whether the platform supports native pixmaps.
     bool supports_native_pixmaps = false;
 
@@ -189,16 +198,23 @@ class COMPONENT_EXPORT(OZONE) OzonePlatform {
     bool needs_background_image = false;
 
     // Wayland only: determines whether clip rects can be delegated via the
-    // wayland protocol.
+    // wayland protocol when no quad is out of window.
     bool supports_clip_rect = false;
 
     // Wayland only: determine whether toplevel surfaces can be activated and
     // deactivated.
     bool supports_activation = false;
 
-    // Wayland only: determines whether tooltip can be delegated via wayland
-    // protocol.
-    bool supports_tooltip = false;
+    // Wayland only: determines whether non axis-aligned 2d transforms can be
+    // delegated via the wayland protocol.
+    bool supports_affine_transform = false;
+
+    // Wayland only: determines whether clip rects can be delegated via the
+    // wayland protocol when some quads are out of window.
+    // TODO(crbug.com/1470024): The flag is currently disabled by default since
+    // there is a bug. Set this flag to enabled in GPU process when the
+    // remaining issues are resolved.
+    bool supports_out_of_window_clip_rect = false;
   };
 
   // Corresponds to chrome_browser_main_extra_parts.h.
@@ -343,6 +359,19 @@ class COMPONENT_EXPORT(OZONE) OzonePlatform {
   virtual std::unique_ptr<PlatformUserInputMonitor> GetPlatformUserInputMonitor(
       const scoped_refptr<base::SingleThreadTaskRunner>& io_task_runner);
 
+  virtual void DumpState(std::ostream& out) const {}
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  // Sets the proper PalmDetector implementation from outside Ozone. This is
+  // used for touch screen palm rejection on ChromeOS, so this interface should
+  // be only used from ChromeOS. We use this interface instead of directly
+  // creating the implementation because we don't want Ozone code to depend on
+  // ChromeOS code to avoid circular dependency.
+  void SetPalmDetector(std::unique_ptr<PalmDetector> params);
+
+  PalmDetector* GetPalmDetector();
+#endif
+
  protected:
   bool has_initialized_ui() const { return initialized_ui_; }
   bool has_initialized_gpu() const { return initialized_gpu_; }
@@ -379,6 +408,10 @@ class COMPONENT_EXPORT(OZONE) OzonePlatform {
   // modifications to |single_process_| visible by other threads. Mutex is not
   // needed since it's set before other threads are started.
   volatile bool single_process_ = false;
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  std::unique_ptr<PalmDetector> palm_detector_;
+#endif
 };
 
 }  // namespace ui

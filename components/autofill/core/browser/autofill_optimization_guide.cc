@@ -12,7 +12,7 @@
 #include "components/autofill/core/browser/form_structure.h"
 #include "components/autofill/core/browser/personal_data_manager.h"
 #include "components/autofill/core/common/autofill_payments_features.h"
-#include "components/optimization_guide/core/new_optimization_guide_decider.h"
+#include "components/optimization_guide/core/optimization_guide_decider.h"
 #include "components/optimization_guide/proto/hints.pb.h"
 
 namespace autofill {
@@ -22,13 +22,15 @@ namespace {
 optimization_guide::proto::OptimizationType
 GetVcnMerchantOptOutOptimizationTypeForCard(const CreditCard* card) {
   // If `card` is not enrolled into VCN, do not return an optimization type.
-  if (card->virtual_card_enrollment_state() != CreditCard::ENROLLED) {
+  if (card->virtual_card_enrollment_state() !=
+      CreditCard::VirtualCardEnrollmentState::kEnrolled) {
     return optimization_guide::proto::TYPE_UNSPECIFIED;
   }
 
   // If `card` is not a network-level enrollment, do not return an optimization
   // type.
-  if (card->virtual_card_enrollment_type() != CreditCard::NETWORK) {
+  if (card->virtual_card_enrollment_type() !=
+      CreditCard::VirtualCardEnrollmentType::kNetwork) {
     return optimization_guide::proto::TYPE_UNSPECIFIED;
   }
 
@@ -47,7 +49,7 @@ GetVcnMerchantOptOutOptimizationTypeForCard(const CreditCard* card) {
 }  // namespace
 
 AutofillOptimizationGuide::AutofillOptimizationGuide(
-    optimization_guide::NewOptimizationGuideDecider* decider)
+    optimization_guide::OptimizationGuideDecider* decider)
     : decider_(decider) {}
 
 AutofillOptimizationGuide::~AutofillOptimizationGuide() = default;
@@ -60,16 +62,12 @@ void AutofillOptimizationGuide::OnDidParseForm(
   base::flat_set<optimization_guide::proto::OptimizationType>
       optimization_types;
 
-  if (base::FeatureList::IsEnabled(
-          features::kAutofillEnableIbanClientSideUrlFiltering)) {
-    bool has_iban_field =
-        base::ranges::any_of(form_structure, [](const auto& field) {
-          return field->Type().GetStorableType() == IBAN_VALUE;
-        });
-    if (has_iban_field) {
-      optimization_types.insert(
-          optimization_guide::proto::IBAN_AUTOFILL_BLOCKED);
-    }
+  bool has_iban_field =
+      base::ranges::any_of(form_structure, [](const auto& field) {
+        return field->Type().GetStorableType() == IBAN_VALUE;
+      });
+  if (has_iban_field) {
+    optimization_types.insert(optimization_guide::proto::IBAN_AUTOFILL_BLOCKED);
   }
 
   if (base::FeatureList::IsEnabled(
@@ -107,9 +105,7 @@ bool AutofillOptimizationGuide::ShouldBlockSingleFieldSuggestions(
     AutofillField* field) const {
   // If the field's storable type is `IBAN_VALUE`, check whether IBAN
   // suggestions should be blocked based on `url`.
-  if (base::FeatureList::IsEnabled(
-          features::kAutofillEnableIbanClientSideUrlFiltering) &&
-      field->Type().GetStorableType() == IBAN_VALUE) {
+  if (field->Type().GetStorableType() == IBAN_VALUE) {
     optimization_guide::OptimizationGuideDecision decision =
         decider_->CanApplyOptimization(
             url, optimization_guide::proto::IBAN_AUTOFILL_BLOCKED,

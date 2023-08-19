@@ -138,9 +138,10 @@ class PrintPreviewDialogControllerBrowserTest : public InProcessBrowserTest {
 
   std::unique_ptr<printing::TestPrintPreviewDialogClonedObserver>
       cloned_tab_observer_;
-  raw_ptr<printing::TestPrintViewManagerForRequestPreview, DanglingUntriaged>
+  raw_ptr<printing::TestPrintViewManagerForRequestPreview,
+          AcrossTasksDanglingUntriaged>
       test_print_view_manager_;
-  raw_ptr<WebContents, DanglingUntriaged> initiator_ = nullptr;
+  raw_ptr<WebContents, AcrossTasksDanglingUntriaged> initiator_ = nullptr;
 };
 
 // Test to verify that when a initiator navigates, we can create a new preview

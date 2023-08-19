@@ -19,7 +19,6 @@ import android.os.Process;
 import android.preference.PreferenceManager;
 
 import androidx.annotation.Nullable;
-import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.annotations.JNINamespace;
 import org.chromium.base.compat.ApiHelperForM;
@@ -115,7 +114,6 @@ public class ContextUtils {
      *
      * @param appContext The new application context.
      */
-    @VisibleForTesting
     public static void initApplicationContextForTests(Context appContext) {
         initJavaSideApplicationContext(appContext);
         Holder.sSharedPreferences = fetchAppSharedPreferences();
@@ -125,7 +123,6 @@ public class ContextUtils {
      * Tests that use the applicationContext may unintentionally use the Context
      * set by a previously run test.
      */
-    @VisibleForTesting
     public static void clearApplicationContextForTests() {
         sApplicationContext = null;
         Holder.sSharedPreferences = null;

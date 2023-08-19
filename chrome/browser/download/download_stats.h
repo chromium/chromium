@@ -159,11 +159,6 @@ void RecordDownloadStartPerProfileType(Profile* profile);
 void RecordDownloadPromptStatus(DownloadPromptStatus status);
 #endif  // BUILDFLAG(IS_ANDROID)
 
-#if BUILDFLAG(IS_CHROMEOS)
-// Records that a notification for a download was suppressed.
-void RecordDownloadNotificationSuppressed();
-#endif  // BUILDFLAG(IS_CHROMEOS)
-
 enum class DownloadShelfContextMenuAction {
   // Drop down button for download shelf context menu is visible
   kDropDownShown = 0,

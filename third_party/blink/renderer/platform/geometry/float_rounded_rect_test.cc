@@ -30,7 +30,7 @@
 #include "third_party/blink/renderer/platform/geometry/float_rounded_rect.h"
 
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/blink/renderer/platform/geometry/layout_rect.h"
+#include "third_party/blink/renderer/platform/geometry/infinite_int_rect.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 #include "ui/gfx/geometry/quad_f.h"
 
@@ -357,7 +357,7 @@ TEST(FloatRoundedRectTest, ToString) {
   EXPECT_EQ("3,5 7x11 radii:(tl:1x2; tr:1x2; bl:1x2; br:1x2)",
             rounded_rect.ToString());
 
-  FloatRoundedRect infinite((gfx::RectF(LayoutRect::InfiniteIntRect())));
+  FloatRoundedRect infinite((gfx::RectF(InfiniteIntRect())));
   EXPECT_EQ("InfiniteIntRect", infinite.ToString());
 
   FloatRoundedRect rect_without_radii(gfx::RectF(1, 3, 5, 7));

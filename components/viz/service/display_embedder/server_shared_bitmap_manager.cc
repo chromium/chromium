@@ -121,8 +121,7 @@ std::unique_ptr<SharedBitmap> ServerSharedBitmapManager::GetSharedBitmapFromId(
   BitmapData* data = it->second.get();
 
   size_t bitmap_size;
-  if (!ResourceSizes::MaybeSizeInBytes(size, format.resource_format(),
-                                       &bitmap_size) ||
+  if (!ResourceSizes::MaybeSizeInBytes(size, format, &bitmap_size) ||
       bitmap_size > data->GetSize()) {
     return nullptr;
   }

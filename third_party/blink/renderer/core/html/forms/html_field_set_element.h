@@ -60,6 +60,7 @@ class CORE_EXPORT HTMLFieldSetElement final : public HTMLFormControlElement {
   bool AreAuthorShadowsAllowed() const override { return false; }
   bool IsSubmittableElement() override;
   bool AlwaysCreateUserAgentShadowRoot() const override { return false; }
+  bool MatchesEnabledPseudoClass() const final;
 
   Element* InvalidateDescendantDisabledStateAndFindFocusedOne(Element& base);
 };

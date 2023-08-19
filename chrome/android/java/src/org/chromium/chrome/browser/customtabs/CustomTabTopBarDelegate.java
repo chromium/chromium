@@ -67,16 +67,14 @@ public class CustomTabTopBarDelegate {
     /**
      * Gets the height of the top bar, or null if it is not specified.
      */
-    @Nullable
-    public Integer getTopBarHeight() {
+    public @Nullable Integer getTopBarHeight() {
         return mTopBarHeight;
     }
 
     /**
      * Gets the top bar content view, or null if it is not specified.
      */
-    @Nullable
-    public View getTopBarContentView() {
+    public @Nullable View getTopBarContentView() {
         return mTopBarContentView;
     }
 

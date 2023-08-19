@@ -40,7 +40,7 @@
     border-radius: 0 12px 12px 0;
   }
 
-  #privacyNote {
+  .privacy-note {
     color: var(--cros-color-secondary);
     font-size: 13px;
     font-weight: 400;
@@ -323,6 +323,14 @@
               inner-h-t-m-l="[[bluetoothLogsCheckboxLabel_]]"></div>
         </cr-checkbox>
       </div>
+      <!-- Link Cross Device Doogfood Feedback (Googler Internal Only) -->
+      <div id="linkCrossDeviceDogfoodFeedbackCheckboxContainer" class="checkbox-field-container"
+          hidden="[[!shouldShowLinkCrossDeviceDogfoodFeedbackCheckbox]]">
+        <cr-checkbox id="linkCrossDeviceDogfoodFeedbackCheckbox" aria-labelledby="linkCrossDeviceDogfoodFeedbackInfoLabel" checked>
+          <div id="linkCrossDeviceDogfoodFeedbackInfoLabel" class="checkbox-label"
+              inner-h-t-m-l="[[linkCrossDeviceDogfoodFeedbackCheckboxLabel_]]"></div>
+        </cr-checkbox>
+      </div>
       <!-- Performance trace -->
       <div id="performanceTraceContainer" class="checkbox-field-container"
           hidden="[[!shouldShowPerformanceTraceCheckbox_(feedbackContext)]]">
@@ -335,7 +343,10 @@
       </div>
     </div>
     <!-- Privacy note -->
-    <div id="privacyNote" inner-h-t-m-l="[[privacyNote_]]"></div>
+    <div id="privacyNote" inner-h-t-m-l="[[privacyNote_]]" class="privacy-note">
+    </div>
+    <div id="shareWithPartnerNote" class="privacy-note">
+      [[i18n('mayBeShareWithPartnerNote')]]</div>
     <div id="shadowShield"></div>
   </div>
   <div id="separator"></div>
@@ -375,6 +386,17 @@
   <div slot="button-container">
     <cr-button id="bluetoothDialogDoneButton" class="action-button"
         on-click="handleCloseBluetoothDialogClicked_">
+      [[i18n('buttonDone')]]
+    </cr-button>
+  </div>
+</cr-dialog>
+<cr-dialog id="linkCrossDeviceDogfoodFeedbackDialog">
+  <div slot="body">
+    [[i18n('linkCrossDeviceDogfoodFeedbackMessage')]]
+  </div>
+  <div slot="button-container">
+    <cr-button id="linkCrossDeviceDogfoodFeedbackDialogDoneButton" class="action-button"
+        on-click="handleCloseLinkCrossDeviceDogfoodFeedbackDialogClicked_">
       [[i18n('buttonDone')]]
     </cr-button>
   </div>

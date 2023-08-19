@@ -29,10 +29,6 @@
 #import "ui/base/l10n/l10n_util_mac.h"
 #import "url/gurl.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 namespace {
 
 // Vertical margin the main title and the identity picker.
@@ -183,14 +179,10 @@ const char* const kSettingsSyncURL = "internal://settings-sync";
   [container addSubview:self.identityButtonControl];
 
   // Sync title and subtitle.
-  int stringId = IDS_IOS_ACCOUNT_UNIFIED_CONSENT_SYNC_MANAGED_TITLE;
-  if (!self.delegate.unifiedConsentCoordinatorHasManagedSyncDataType) {
-    stringId =
-        base::FeatureList::IsEnabled(
-            password_manager::features::kEnablePasswordsAccountStorage)
-            ? IDS_IOS_ACCOUNT_UNIFIED_CONSENT_SYNC_TITLE_WITHOUT_PASSWORDS
-            : IDS_IOS_ACCOUNT_UNIFIED_CONSENT_SYNC_TITLE;
-  }
+  int stringId =
+      self.delegate.unifiedConsentCoordinatorHasManagedSyncDataType
+          ? IDS_IOS_ACCOUNT_UNIFIED_CONSENT_SYNC_MANAGED_TITLE
+          : IDS_IOS_ACCOUNT_UNIFIED_CONSENT_SYNC_TITLE_WITHOUT_PASSWORDS;
   UILabel* syncTitleLabel =
       [self addLabelWithStringId:stringId
                        fontStyle:UIFontTextStyleSubheadline

@@ -132,20 +132,20 @@ size_t DeskModelWrapper::GetMaxDeskTemplateEntryCount() const {
          policy_entries_.size();
 }
 
-std::vector<base::Uuid> DeskModelWrapper::GetAllEntryUuids() const {
-  std::vector<base::Uuid> keys;
+std::set<base::Uuid> DeskModelWrapper::GetAllEntryUuids() const {
+  std::set<base::Uuid> keys;
 
   for (const auto& it : policy_entries_)
-    keys.push_back(it.get()->uuid());
+    keys.emplace(it.get()->uuid());
 
   for (const auto& save_and_recall_uuid :
        save_and_recall_desks_model_->GetAllEntryUuids()) {
-    keys.emplace_back(save_and_recall_uuid);
+    keys.emplace(save_and_recall_uuid);
   }
 
   for (const auto& desk_template_uuid :
        GetDeskTemplateModel()->GetAllEntryUuids()) {
-    keys.emplace_back(desk_template_uuid);
+    keys.emplace(desk_template_uuid);
   }
   return keys;
 }

@@ -32,11 +32,12 @@
 #include "chrome/browser/ash/file_manager/volume_manager.h"
 #include "chrome/browser/ash/file_system_provider/icon_set.h"
 #include "chrome/browser/ash/file_system_provider/provided_file_system_info.h"
+#include "chrome/browser/ash/fileapi/file_system_backend.h"
 #include "chrome/browser/ash/policy/dlp/dlp_files_controller_ash.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_rules_manager.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_rules_manager_factory.h"
-#include "chrome/browser/chromeos/policy/dlp/mock_dlp_rules_manager.h"
+#include "chrome/browser/chromeos/policy/dlp/test/mock_dlp_rules_manager.h"
 #include "chrome/browser/extensions/extension_apitest.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/ui/browser_list.h"
@@ -58,7 +59,6 @@
 #include "extensions/common/install_warning.h"
 #include "google_apis/common/test_util.h"
 #include "storage/browser/file_system/external_mount_points.h"
-#include "storage/browser/file_system/file_system_backend.h"
 
 using ::testing::_;
 using ::testing::ReturnRef;
@@ -773,8 +773,8 @@ class FileManagerPrivateApiDlpTest : public FileManagerPrivateApiTest {
 
  protected:
   base::ScopedTempDir drive_path_;
-  raw_ptr<policy::MockDlpRulesManager, ExperimentalAsh> mock_rules_manager_ =
-      nullptr;
+  raw_ptr<policy::MockDlpRulesManager, DanglingUntriaged | ExperimentalAsh>
+      mock_rules_manager_ = nullptr;
   std::unique_ptr<policy::DlpFilesControllerAsh> files_controller_;
   base::test::ScopedFeatureList scoped_feature_list_;
 };
@@ -809,12 +809,14 @@ IN_PROC_BROWSER_TEST_F(FileManagerPrivateApiDlpTest, DlpBlockCopy) {
 
   auto* file_system_context =
       file_manager::util::GetFileManagerFileSystemContext(browser()->profile());
-  file_system_context->external_backend()->GrantFileAccessToOrigin(
-      url::Origin::Create(
-          GURL("chrome-extension://"
-               "pkplfbidichfdicaijlchgnapepdginl/")),  // Testing
-                                                       // extension
-      base::FilePath(base::StrCat({kLocalMountPointName, "/", kTestFileName})));
+  ash::FileSystemBackend::Get(*file_system_context)
+      ->GrantFileAccessToOrigin(
+          url::Origin::Create(
+              GURL("chrome-extension://"
+                   "pkplfbidichfdicaijlchgnapepdginl/")),  // Testing
+                                                           // extension
+          base::FilePath(
+              base::StrCat({kLocalMountPointName, "/", kTestFileName})));
 
   storage::ExternalMountPoints::GetSystemInstance()->RegisterFileSystem(
       "drivefs-delayed_mount_2", storage::kFileSystemTypeDriveFs,
@@ -879,15 +881,16 @@ IN_PROC_BROWSER_TEST_F(FileManagerPrivateApiDlpTest, DlpMetadata) {
     ASSERT_TRUE(untracked_test_file.IsValid());
   }
 
-  base::MockCallback<chromeos::DlpClient::AddFileCallback> add_file_cb;
-  EXPECT_CALL(add_file_cb, Run).Times(2);
-  dlp::AddFileRequest request;
-  request.set_file_path(blocked_file_path.value());
-  request.set_source_url("https://example1.com");
-  chromeos::DlpClient::Get()->AddFile(request, add_file_cb.Get());
-  request.set_file_path(unrestricted_file_path.value());
-  request.set_source_url("https://example2.com");
-  chromeos::DlpClient::Get()->AddFile(request, add_file_cb.Get());
+  base::MockCallback<chromeos::DlpClient::AddFilesCallback> add_files_cb;
+  EXPECT_CALL(add_files_cb, Run).Times(1);
+  dlp::AddFilesRequest request;
+  dlp::AddFileRequest* file_request1 = request.add_add_file_requests();
+  file_request1->set_file_path(blocked_file_path.value());
+  file_request1->set_source_url("https://example1.com");
+  dlp::AddFileRequest* file_request2 = request.add_add_file_requests();
+  file_request2->set_file_path(unrestricted_file_path.value());
+  file_request2->set_source_url("https://example2.com");
+  chromeos::DlpClient::Get()->AddFiles(request, add_files_cb.Get());
 
   EXPECT_CALL(*mock_rules_manager_, IsRestrictedByAnyRule)
       .WillOnce(testing::Return(policy::DlpRulesManager::Level::kBlock))
@@ -986,12 +989,13 @@ IN_PROC_BROWSER_TEST_F(FileManagerPrivateApiDlpTest, DlpMetadata_Disabled) {
     ASSERT_TRUE(blocked_test_file.IsValid());
   }
 
-  base::MockCallback<chromeos::DlpClient::AddFileCallback> add_file_cb;
-  EXPECT_CALL(add_file_cb, Run).Times(1);
-  dlp::AddFileRequest request;
-  request.set_file_path(blocked_file_path.value());
-  request.set_source_url("https://example1.com");
-  chromeos::DlpClient::Get()->AddFile(request, add_file_cb.Get());
+  base::MockCallback<chromeos::DlpClient::AddFilesCallback> add_files_cb;
+  EXPECT_CALL(add_files_cb, Run).Times(1);
+  dlp::AddFilesRequest request;
+  dlp::AddFileRequest* file_request = request.add_add_file_requests();
+  file_request->set_file_path(blocked_file_path.value());
+  file_request->set_source_url("https://example1.com");
+  chromeos::DlpClient::Get()->AddFiles(request, add_files_cb.Get());
 
   EXPECT_TRUE(RunExtensionTest("file_browser/dlp_metadata",
                                {.custom_arg = "disabled"},
@@ -1020,12 +1024,13 @@ IN_PROC_BROWSER_TEST_F(FileManagerPrivateApiDlpTest, DlpMetadata_Error) {
     ASSERT_TRUE(blocked_test_file.IsValid());
   }
 
-  base::MockCallback<chromeos::DlpClient::AddFileCallback> add_file_cb;
-  EXPECT_CALL(add_file_cb, Run).Times(1);
-  dlp::AddFileRequest request;
-  request.set_file_path(blocked_file_path.value());
-  request.set_source_url("https://example1.com");
-  chromeos::DlpClient::Get()->AddFile(request, add_file_cb.Get());
+  base::MockCallback<chromeos::DlpClient::AddFilesCallback> add_files_cb;
+  EXPECT_CALL(add_files_cb, Run).Times(1);
+  dlp::AddFilesRequest request;
+  dlp::AddFileRequest* file_request = request.add_add_file_requests();
+  file_request->set_file_path(blocked_file_path.value());
+  file_request->set_source_url("https://example1.com");
+  chromeos::DlpClient::Get()->AddFiles(request, add_files_cb.Get());
 
   EXPECT_TRUE(RunExtensionTest("file_browser/dlp_metadata",
                                {.custom_arg = "error"},

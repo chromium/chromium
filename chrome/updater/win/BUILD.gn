@@ -61,13 +61,15 @@ executable("updater_test") {
 
 copy("signing") {
   sources = [
-    "$root_out_dir/certificate_tag.exe",
+    "$root_out_dir/tag.exe",
     "//chrome/tools/build/win/resedit.py",
     "//third_party/lzma_sdk/bin/win64/7zr.exe",
+    "signing/enterprise_standalone_installer.wxs.xml",
+    "signing/msi_from_standalone.py",
     "signing/sign.py",
   ]
 
-  deps = [ "//chrome/updater/tools:certificate_tag" ]
+  deps = [ "//chrome/updater/tools:tag" ]
 
   outputs = [ "$root_out_dir/UpdaterSigning/{{source_file_part}}" ]
 }
@@ -123,31 +125,4 @@ process_version_rc_template("version_resources_test") {
     "-e",
     "PRODUCT_FULLNAME=\"$_product_fullname\"",
   ]
-}
-
-source_set("tag_extractor") {
-  public = [ "tag_extractor.h" ]
-
-  sources = [
-    "tag_extractor.cc",
-    "tag_extractor_impl.h",
-  ]
-
-  friend = [
-    "//chrome/updater:updater_test_sources",
-    ":updater_fuzzer",
-  ]
-
-  # In the future, we want to rely on the base numerics headers and
-  # PeImageReader directly, but right now that isn't possible due to the
-  # visibility of the lib, so we depend on the entire base temporarily.
-  deps = [ "//base" ]
-}
-
-fuzzer_test("updater_fuzzer") {
-  sources = [ "tag_extractor_fuzzer.cc" ]
-
-  deps = [ ":tag_extractor" ]
-
-  seed_corpus = "../test/data/tag_extractor_corpus/"
 }

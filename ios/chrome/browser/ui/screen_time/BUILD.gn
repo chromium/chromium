@@ -22,7 +22,6 @@ source_set("screen_time") {
     "UIKit.framework",
     "ScreenTime.framework",
   ]
-  configs += [ "//build/config/compiler:enable_arc" ]
   deps = [
     "//base",
     "//ios/chrome/browser/screen_time",

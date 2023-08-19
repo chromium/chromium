@@ -1,0 +1,12 @@
+
+"trace_id","jank","step","next_step","ancestor_end","maybe_next_ancestor_ts","queuing_time_ns"
+34577,0,"AsyncBegin","Begin",0,0,0
+34577,0,"Begin","End",1000000,11000000,10000000
+34577,0,"End","AsyncBegin",12000000,"[NULL]","[NULL]"
+34578,1,"AsyncBegin","Begin",16000000,16000000,0
+34578,1,"Begin","End",17000000,50000000,33000000
+34578,1,"End","AsyncBegin",51000000,"[NULL]","[NULL]"
+34579,0,"AsyncBegin","Begin",55000000,55000000,0
+34579,0,"Begin","STEP_SEND_INPUT_EVENT_UI",56000000,87000000,31000000
+34579,0,"STEP_SEND_INPUT_EVENT_UI","End",88000000,89000000,1000000
+34579,0,"End","[NULL]",90000000,"[NULL]","[NULL]"

@@ -53,6 +53,30 @@ found in the LICENSE file.
         <item name="dualControlLayoutHorizontalPadding">@dimen/modal_dialog_control_horizontal_padding_filled</item>
     </style>
 
+    <style name="ThemeOverlay.BrowserUI.ModalDialog.TextPrimaryButton.Fullscreen.Dark" tools:targetApi="28" parent="ThemeOverlay.BrowserUI.ModalDialog.TextPrimaryButton.Fullscreen">
+        <item name="android:statusBarColor">@color/toolbar_background_primary_dark</item>
+        <item name="android:windowLightStatusBar">false</item>
+        <item name="android:navigationBarColor">@color/toolbar_background_primary_dark</item>
+        <item name="android:navigationBarDividerColor">@color/bottom_system_nav_divider_color_light</item>
+        <item name="android:windowLightNavigationBar">false</item>
+    </style>
+
+    <style name="ThemeOverlay.BrowserUI.ModalDialog.FilledPrimaryButton.Fullscreen.Dark" tools:targetApi="28" parent="ThemeOverlay.BrowserUI.ModalDialog.FilledPrimaryButton.Fullscreen">
+        <item name="android:statusBarColor">@color/toolbar_background_primary_dark</item>
+        <item name="android:windowLightStatusBar">false</item>
+        <item name="android:navigationBarColor">@color/toolbar_background_primary_dark</item>
+        <item name="android:navigationBarDividerColor">@color/bottom_system_nav_divider_color_light</item>
+        <item name="android:windowLightNavigationBar">false</item>
+    </style>
+
+    <style name="ThemeOverlay.BrowserUI.ModalDialog.FilledNegativeButton.Fullscreen.Dark" tools:targetApi="28" parent="ThemeOverlay.BrowserUI.ModalDialog.FilledNegativeButton.Fullscreen">
+        <item name="android:statusBarColor">@color/toolbar_background_primary_dark</item>
+        <item name="android:windowLightStatusBar">false</item>
+        <item name="android:navigationBarColor">@color/toolbar_background_primary_dark</item>
+        <item name="android:navigationBarDividerColor">@color/bottom_system_nav_divider_color_light</item>
+        <item name="android:windowLightNavigationBar">false</item>
+    </style>
+
     <style name="ThemeOverlay.BrowserUI.ModalDialog.TextPrimaryButton.DialogWhenLarge" parent="ThemeOverlay.BrowserUI.Fullscreen.DialogWhenLarge">
         <item name="buttonBarButtonStyle">@style/TextButton</item>
         <item name="dualControlLayoutVerticalPadding">@dimen/modal_dialog_control_vertical_padding</item>

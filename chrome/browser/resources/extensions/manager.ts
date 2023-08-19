@@ -19,6 +19,7 @@ import './item_util.js';
 import './keyboard_shortcuts.js';
 import './load_error.js';
 import './options_dialog.js';
+import './shared_vars.css.js';
 import './sidebar.js';
 import './site_permissions.js';
 import './site_permissions_by_site.js';
@@ -28,6 +29,7 @@ import './kiosk_dialog.js';
 
 // </if>
 
+import {CrContainerShadowMixin} from 'chrome://resources/cr_elements/cr_container_shadow_mixin.js';
 import {CrViewManagerElement} from 'chrome://resources/cr_elements/cr_view_manager/cr_view_manager.js';
 import {assert, assertNotReached} from 'chrome://resources/js/assert_ts.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
@@ -43,6 +45,7 @@ import {KioskBrowserProxyImpl} from './kiosk_browser_proxy.js';
 import {getTemplate} from './manager.html.js';
 import {Dialog, navigation, Page, PageState} from './navigation_helper.js';
 import {Service} from './service.js';
+import {ExtensionsToolbarElement} from './toolbar.js';
 
 /**
  * Compares two extensions to determine which should come first in the list.
@@ -74,18 +77,23 @@ function compareExtensions(
 
 declare global {
   interface HTMLElementEventMap {
-    'load-error': CustomEvent<chrome.developerPrivate.LoadError>;
+    'load-error': CustomEvent<Error|chrome.developerPrivate.LoadError>;
   }
 }
 
 export interface ExtensionsManagerElement {
   $: {
+    toolbar: ExtensionsToolbarElement,
     viewManager: CrViewManagerElement,
     'items-list': ExtensionsItemListElement,
   };
 }
 
-export class ExtensionsManagerElement extends PolymerElement {
+// TODO(crbug.com/1450101): Always show a top shadow for the DETAILS, ERRORS and
+// SITE_PERMISSIONS_ALL_SITES pages.
+const ExtensionsManagerElementBase = CrContainerShadowMixin(PolymerElement);
+
+export class ExtensionsManagerElement extends ExtensionsManagerElementBase {
   static get is() {
     return 'extensions-manager';
   }
@@ -176,6 +184,11 @@ export class ExtensionsManagerElement extends PolymerElement {
         value: false,
       },
 
+      narrow_: {
+        type: Boolean,
+        observer: 'onNarrowChanged_',
+      },
+
       showDrawer_: Boolean,
 
       showLoadErrorDialog_: Boolean,
@@ -222,6 +235,7 @@ export class ExtensionsManagerElement extends PolymerElement {
   private extensions_: chrome.developerPrivate.ExtensionInfo[];
   private apps_: chrome.developerPrivate.ExtensionInfo[];
   private didInitPage_: boolean;
+  private narrow_: boolean;
   private showDrawer_: boolean;
   private showLoadErrorDialog_: boolean;
   private showInstallWarningsDialog_: boolean;
@@ -335,6 +349,16 @@ export class ExtensionsManagerElement extends PolymerElement {
     this.pageInitializedResolver_.resolve();
   }
 
+  private onNarrowChanged_() {
+    const drawer = this.shadowRoot!.querySelector('cr-drawer');
+    if (!this.narrow_ && drawer && drawer.open) {
+      drawer.close();
+    }
+
+    // TODO(crbug.com/c/1451985): Handle changing focus if focus is on the
+    // sidebar or menu when it's about to disappear when `this.narrow_` changes.
+  }
+
   private onItemStateChanged_(eventData: chrome.developerPrivate.EventData) {
     const EventType = chrome.developerPrivate.EventType;
     switch (eventData.event_type) {
@@ -377,6 +401,15 @@ export class ExtensionsManagerElement extends PolymerElement {
         break;
       case EventType.UNINSTALLED:
         this.removeItem_(eventData.item_id);
+        break;
+      case EventType.CONFIGURATION_CHANGED:
+        const index = this.getIndexInList_('extensions_', eventData.item_id);
+        this.updateItem_(
+            'extensions_', index,
+            Object.assign({}, this.getData_(eventData.item_id), {
+              acknowledgeSafetyCheckWarning:
+                  eventData.extensionInfo?.acknowledgeSafetyCheckWarning,
+            }));
         break;
       default:
         assertNotReached();
@@ -526,7 +559,8 @@ export class ExtensionsManagerElement extends PolymerElement {
     }
   }
 
-  private onLoadError_(e: CustomEvent<chrome.developerPrivate.LoadError>) {
+  private onLoadError_(
+      e: CustomEvent<Error|chrome.developerPrivate.LoadError>) {
     this.showLoadErrorDialog_ = true;
     setTimeout(() => {
       const dialog = this.shadowRoot!.querySelector('extensions-load-error')!;
@@ -596,7 +630,7 @@ export class ExtensionsManagerElement extends PolymerElement {
     }
 
     if (fromPage !== toPage) {
-      this.$.viewManager.switchView(toPage);
+      this.$.viewManager.switchView(toPage, 'no-animation', 'no-animation');
     }
 
     if (newPage.subpage) {

@@ -123,9 +123,8 @@ void TextTrackContainer::UpdateDefaultFontSize(
   // for lack of per-spec vh/vw support) but the whole media element is used
   // for cue rendering. This is inconsistent. See also the somewhat related
   // spec bug: https://www.w3.org/Bugs/Public/show_bug.cgi?id=28105
-  LayoutSize video_size = To<LayoutBox>(media_layout_object)->ContentSize();
-  LayoutUnit smallest_dimension =
-      std::min(video_size.Height(), video_size.Width());
+  PhysicalSize video_size = To<LayoutBox>(media_layout_object)->ContentSize();
+  LayoutUnit smallest_dimension = std::min(video_size.height, video_size.width);
   float font_size = smallest_dimension * 0.05f;
   if (media_layout_object->GetFrame())
     font_size /= media_layout_object->GetFrame()->PageZoomFactor();

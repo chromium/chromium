@@ -10,6 +10,7 @@
 #include "base/functional/callback_forward.h"
 #include "components/autofill/core/browser/ui/popup_types.h"
 #include "components/autofill/core/browser/ui/suggestion.h"
+#include "components/autofill/core/common/aliases.h"
 #include "third_party/abseil-cpp/absl/types/variant.h"
 
 namespace password_manager {
@@ -32,25 +33,24 @@ class AutofillPopupDelegate {
 
   virtual void OnPopupSuppressed() = 0;
 
-  // Called when the autofill suggestion indicated by |frontend_id| has been
-  // temporarily selected (e.g., hovered).
-  // |value| is the suggestion's value, and is usually the main text to be
-  // shown. |frontend_id| is the frontend id of the suggestion. |backend_id| is
-  // the guid of the backend data model.
-  virtual void DidSelectSuggestion(const std::u16string& value,
-                                   Suggestion::FrontendId frontend_id,
-                                   const Suggestion::BackendId& backend_id) = 0;
+  // Called when the autofill `suggestion` has been temporarily selected (e.g.,
+  // hovered).
+  virtual void DidSelectSuggestion(
+      const Suggestion& suggestion,
+      AutofillSuggestionTriggerSource trigger_source) = 0;
 
   // Informs the delegate that a row in the popup has been chosen. |suggestion|
   // is the suggestion that was chosen in the popup. |position| refers to the
   // index of the suggestion in the suggestion list.
-  virtual void DidAcceptSuggestion(const Suggestion& suggestion,
-                                   int position) = 0;
+  virtual void DidAcceptSuggestion(
+      const Suggestion& suggestion,
+      int position,
+      AutofillSuggestionTriggerSource trigger_source) = 0;
 
   // Returns whether the given value can be deleted, and if true,
   // fills out |title| and |body|.
   virtual bool GetDeletionConfirmationText(const std::u16string& value,
-                                           Suggestion::FrontendId frontend_id,
+                                           PopupItemId popup_item_id,
                                            Suggestion::BackendId backend_id,
                                            std::u16string* title,
                                            std::u16string* body) = 0;
@@ -58,7 +58,7 @@ class AutofillPopupDelegate {
   // Delete the described suggestion. Returns true if something was deleted,
   // or false if deletion is not allowed.
   virtual bool RemoveSuggestion(const std::u16string& value,
-                                Suggestion::FrontendId frontend_id,
+                                PopupItemId popup_item_id,
                                 Suggestion::BackendId backend_id) = 0;
 
   // Informs the delegate that the Autofill previewed form should be cleared.

@@ -12,14 +12,17 @@
 #include "base/containers/contains.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
-#include "base/metrics/histogram_functions.h"
 #include "base/ranges/algorithm.h"
 #include "base/strings/string_number_conversions.h"
 #include "build/build_config.h"
+#include "chrome/browser/platform_util.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/ui/browser_finder.h"
+#include "chrome/browser/ui/chrome_pages.h"
 #include "chrome/browser/ui/webui/settings/settings_page_ui_handler.h"
 #include "chrome/browser/webauthn/cablev2_devices.h"
 #include "chrome/browser/webauthn/local_credential_management.h"
+#include "chrome/common/webui_url_constants.h"
 #include "chrome/grit/generated_resources.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/web_contents.h"
@@ -1119,12 +1122,18 @@ PasskeysHandler::PasskeysHandler(
 PasskeysHandler::~PasskeysHandler() = default;
 
 void PasskeysHandler::OnJavascriptAllowed() {}
-void PasskeysHandler::OnJavascriptDisallowed() {}
+void PasskeysHandler::OnJavascriptDisallowed() {
+  weak_factory_.InvalidateWeakPtrs();
+}
 
 void PasskeysHandler::RegisterMessages() {
   web_ui()->RegisterMessageCallback(
       "passkeysHasPasskeys",
       base::BindRepeating(&PasskeysHandler::HandleHasPasskeys,
+                          base::Unretained(this)));
+  web_ui()->RegisterMessageCallback(
+      "passkeysManagePasskeys",
+      base::BindRepeating(&PasskeysHandler::HandleManagePasskeys,
                           base::Unretained(this)));
   web_ui()->RegisterMessageCallback(
       "passkeysEnumerate",
@@ -1157,6 +1166,30 @@ void PasskeysHandler::OnHasPasskeysComplete(std::string callback_id,
                                             bool has_passkeys) {
   ResolveJavascriptCallback(base::Value(std::move(callback_id)),
                             base::Value(has_passkeys));
+}
+
+void PasskeysHandler::HandleManagePasskeys(const base::Value::List& args) {
+  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  DCHECK_EQ(0u, args.size());
+
+  AllowJavascript();
+
+#if BUILDFLAG(IS_WIN)
+  auto* windows_api = device::WinWebAuthnApi::GetDefault();
+  // webauthn.dll version six includes management support, so if at least that
+  // version is found then Windows does management natively.
+  constexpr int kWebAuthnDLLWithManagementSupport = 6;
+  if (windows_api->IsAvailable() &&
+      windows_api->Version() >= kWebAuthnDLLWithManagementSupport) {
+    platform_util::OpenExternal(GURL("ms-settings:savedpasskeys"));
+    return;
+  }
+#endif
+
+  // If no system management exists, fall back to Chrome's own settings UI.
+  chrome::ShowSettingsSubPage(
+      chrome::FindBrowserWithWebContents(web_ui()->GetWebContents()),
+      chrome::kPasskeysSubPage);
 }
 
 void PasskeysHandler::HandleEnumerate(const base::Value::List& args) {
@@ -1207,6 +1240,7 @@ void PasskeysHandler::HandleDelete(const base::Value::List& args) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   DCHECK_EQ(2u, args.size());
 
+  AllowJavascript();
   std::vector<uint8_t> credential_id;
   const bool ok = base::HexStringToBytes(args[1].GetString(), &credential_id);
   DCHECK(ok);
@@ -1218,7 +1252,6 @@ void PasskeysHandler::HandleDelete(const base::Value::List& args) {
 }
 
 void PasskeysHandler::OnDeleteComplete(std::string callback_id, bool ok) {
-  base::UmaHistogramBoolean("WebAuthentication.PasskeyManagement.Delete", ok);
   // The ok parameter is ignored. If it were false, it would mean
   // Windows/Mac failed to delete the passkey. This can happen if API support
   // is missing but no passkeys will be shown at all in that case so that
@@ -1232,6 +1265,7 @@ void PasskeysHandler::HandleEdit(const base::Value::List& args) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   DCHECK_EQ(3u, args.size());
 
+  AllowJavascript();
   std::vector<uint8_t> credential_id;
   const bool ok = base::HexStringToBytes(args[1].GetString(), &credential_id);
   DCHECK(ok);
@@ -1244,7 +1278,6 @@ void PasskeysHandler::HandleEdit(const base::Value::List& args) {
 }
 
 void PasskeysHandler::OnEditComplete(std::string callback_id, bool ok) {
-  base::UmaHistogramBoolean("WebAuthentication.PasskeyManagement.Edit", ok);
   // The ok parameter is ignored. If it were false, it would mean
   // Windows/Mac failed to edit the passkey.
   DoEnumerate(std::move(callback_id));

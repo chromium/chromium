@@ -307,7 +307,7 @@ public class OmniboxResourceProviderTest {
     }
 
     @Test
-    @EnableFeatures({ChromeFeatureList.OMNIBOX_CACHE_SUGGESTION_RESOURCES})
+    @EnableFeatures(ChromeFeatureList.OMNIBOX_CACHE_SUGGESTION_RESOURCES)
     public void getDrawableCached() {
         Drawable drawable =
                 OmniboxResourceProvider.getDrawable(mActivity, R.drawable.btn_suggestion_refine);
@@ -322,7 +322,7 @@ public class OmniboxResourceProviderTest {
     }
 
     @Test
-    @EnableFeatures({ChromeFeatureList.OMNIBOX_CACHE_SUGGESTION_RESOURCES})
+    @EnableFeatures(ChromeFeatureList.OMNIBOX_CACHE_SUGGESTION_RESOURCES)
     public void getStringCached() {
         String refineString = OmniboxResourceProvider.getString(
                 mActivity, R.string.accessibility_omnibox_btn_refine, "foobar");
@@ -341,7 +341,7 @@ public class OmniboxResourceProviderTest {
     }
 
     @Test
-    @EnableFeatures({ChromeFeatureList.OMNIBOX_CACHE_SUGGESTION_RESOURCES})
+    @EnableFeatures(ChromeFeatureList.OMNIBOX_CACHE_SUGGESTION_RESOURCES)
     public void invalidateDrawableCache() {
         Drawable drawable =
                 OmniboxResourceProvider.getDrawable(mActivity, R.drawable.btn_suggestion_refine);

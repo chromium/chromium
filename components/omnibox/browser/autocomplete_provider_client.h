@@ -20,7 +20,6 @@ struct AutocompleteMatch;
 class AutocompleteClassifier;
 class AutocompleteSchemeClassifier;
 class RemoteSuggestionsService;
-class DocumentSuggestionsService;
 class GURL;
 class InMemoryURLIndex;
 class KeywordExtensionsDelegate;
@@ -87,8 +86,6 @@ class AutocompleteProviderClient : public OmniboxAction::Client {
   virtual TemplateURLService* GetTemplateURLService() = 0;
   virtual const TemplateURLService* GetTemplateURLService() const = 0;
   virtual RemoteSuggestionsService* GetRemoteSuggestionsService(
-      bool create_if_necessary) const = 0;
-  virtual DocumentSuggestionsService* GetDocumentSuggestionsService(
       bool create_if_necessary) const = 0;
   virtual ZeroSuggestCacheService* GetZeroSuggestCacheService() = 0;
   virtual const ZeroSuggestCacheService* GetZeroSuggestCacheService() const = 0;

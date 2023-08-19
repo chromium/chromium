@@ -15,6 +15,12 @@
 #include "chrome/browser/ui/browser_tabstrip.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/tabs/tab_strip_model_delegate.h"
+#include "chrome/browser/ui/web_applications/app_browser_controller.h"
+#include "chrome/browser/ui/web_applications/web_app_tabbed_utils.h"
+#include "chrome/browser/web_applications/policy/web_app_policy_manager.h"
+#include "chrome/browser/web_applications/web_app_id.h"
+#include "chrome/browser/web_applications/web_app_provider.h"
+#include "chrome/browser/web_applications/web_app_tab_helper.h"
 #include "components/tab_groups/tab_group_id.h"
 #include "content/public/browser/render_view_host.h"
 #include "content/public/browser/web_contents.h"
@@ -46,7 +52,8 @@ bool UnloadController::CanCloseContents(content::WebContents* contents) {
   if (is_attempting_to_close_browser_)
     ClearUnloadState(contents, true);
 
-  if (!browser_->tab_strip_model()->IsTabClosable(
+  if (!web_app::IsTabClosable(
+          browser_->tab_strip_model(),
           browser_->tab_strip_model()->GetIndexOfWebContents(contents))) {
     return false;
   }
@@ -144,8 +151,13 @@ bool UnloadController::BeforeUnloadFired(content::WebContents* contents,
 }
 
 bool UnloadController::ShouldCloseWindow() {
-  if (HasCompletedUnloadProcessing())
+  if (IsUnclosableApp()) {
+    return false;
+  }
+
+  if (HasCompletedUnloadProcessing()) {
     return true;
+  }
 
   // Special case for when we quit an application. The devtools window can
   // close if it's beforeunload event has already fired which will happen due
@@ -411,4 +423,19 @@ void UnloadController::ClearUnloadState(content::WebContents* web_contents,
                                     weak_factory_.GetWeakPtr(), false));
     }
   }
+}
+
+bool UnloadController::IsUnclosableApp() const {
+  if (!web_app::AppBrowserController::IsWebApp(browser_.get())) {
+    return false;
+  }
+
+  content::WebContents* const active_web_contents =
+      browser_->tab_strip_model()->GetActiveWebContents();
+  if (!active_web_contents) {
+    return false;
+  }
+  return web_app::WebAppProvider::GetForWebContents(active_web_contents)
+      ->policy_manager()
+      .IsPreventCloseEnabled(browser_->app_controller()->app_id());
 }

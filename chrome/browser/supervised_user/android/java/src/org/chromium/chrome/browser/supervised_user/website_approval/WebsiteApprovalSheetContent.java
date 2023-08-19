@@ -27,7 +27,6 @@ import org.chromium.url.GURL;
  * Bottom sheet content for the screen which allows a parent to approve or deny a website.
  */
 class WebsiteApprovalSheetContent implements BottomSheetContent {
-    private static final String TAG = "WebsiteApprovalSheetContent";
     private static final String ELLIPSIS = "...";
     static final int MAX_HOST_SIZE = 256;
     static final int SUBSTRING_LIMIT = 256;
@@ -58,8 +57,7 @@ class WebsiteApprovalSheetContent implements BottomSheetContent {
     }
 
     @Override
-    @Nullable
-    public View getToolbarView() {
+    public @Nullable View getToolbarView() {
         return null;
     }
 
@@ -87,8 +85,7 @@ class WebsiteApprovalSheetContent implements BottomSheetContent {
     public void destroy() {}
 
     @Override
-    @ContentPriority
-    public int getPriority() {
+    public @ContentPriority int getPriority() {
         return ContentPriority.HIGH;
     }
 

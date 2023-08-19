@@ -95,8 +95,7 @@ class MerchantTrustMessageViewModel {
                 .build();
     }
 
-    @Nullable
-    public static Spannable getMessageDescription(
+    public static @Nullable Spannable getMessageDescription(
             Context context, MerchantInfo merchantInfo, int descriptionUI) {
         if (descriptionUI == MessageDescriptionUI.NONE) return null;
 
@@ -165,15 +164,13 @@ class MerchantTrustMessageViewModel {
         return ratingBarSpan;
     }
 
-    @DrawableRes
-    private static int getIconRes() {
+    private static @DrawableRes int getIconRes() {
         return MerchantViewerConfig.doesTrustSignalsMessageUseGoogleIcon()
                 ? R.drawable.ic_logo_googleg_24dp
                 : R.drawable.ic_storefront_blue;
     }
 
-    @StringRes
-    private static int getTitleStringRes() {
+    private static @StringRes int getTitleStringRes() {
         int titleUI = MerchantViewerConfig.getTrustSignalsMessageTitleUI();
         if (titleUI == MessageTitleUI.SEE_STORE_REVIEWS) {
             return R.string.merchant_viewer_message_title_see_reviews;

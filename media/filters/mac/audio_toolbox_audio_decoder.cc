@@ -4,10 +4,10 @@
 
 #include "media/filters/mac/audio_toolbox_audio_decoder.h"
 
+#include "base/apple/osstatus_logging.h"
 #include "base/auto_reset.h"
 #include "base/functional/bind.h"
 #include "base/logging.h"
-#include "base/mac/mac_logging.h"
 #include "base/memory/raw_ptr.h"
 #include "base/ranges/algorithm.h"
 #include "base/sys_byteorder.h"
@@ -38,11 +38,9 @@ bool CanUseAudioToolbox(const AudioDecoderConfig& config) {
     return true;
   }
 #endif
-  // We only use AudioToolbox for decoding xHE-AAC content and that's only
-  // available on macOS 10.15 or higher.
-  if (__builtin_available(macOS 10.15, *))
-    return config.profile() == AudioCodecProfile::kXHE_AAC;
-  return false;
+  // We use AudioToolbox for decoding xHE-AAC content and that's available on
+  // macOS 10.15 or higher.
+  return config.profile() == AudioCodecProfile::kXHE_AAC;
 }
 
 struct InputData {

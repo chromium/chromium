@@ -122,6 +122,44 @@ TEST_F(CompanionMetricsLoggerTest, RecordPhFeedback) {
 
   ExpectUkmEntry(ukm::builders::Companion_PageView::kPH_FeedbackName,
                  static_cast<int>(PhFeedback::kThumbsDown));
+  histogram_tester.ExpectBucketCount("Companion.PHFeedback.Result",
+                                     PhFeedback::kThumbsDown, 1);
+}
+
+TEST_F(CompanionMetricsLoggerTest, RecordVQSResultCount) {
+  VisualSuggestionsMetrics metrics;
+  metrics.results_count = 6;
+  metrics.eligible_count = 200;
+  metrics.shoppy_count = 100;
+  metrics.sensitive_count = 65;
+  metrics.shoppy_nonsensitive_count = 17;
+  logger_->OnVisualSuggestionsResult(metrics);
+
+  // Bucketed counts of the above metrics with 1.3 exponential factor,
+  // rounded down to uint32.
+  uint32_t result_bucketed = 5;
+  uint32_t eligible_bucketed = 191;
+  uint32_t shoppy_bucketed = 87;
+  uint32_t sensitive_bucketed = 52;
+  uint32_t shoppy_nonsensitive_bucketed = 14;
+
+  // Destroy the logger. Verify that UKM event is recorded.
+  logger_.reset();
+
+  ExpectUkmEntry(
+      ukm::builders::Companion_PageView::kVQS_VisualSearchTriggeredCountName,
+      static_cast<unsigned int>(result_bucketed));
+  ExpectUkmEntry(
+      ukm::builders::Companion_PageView::kVQS_VisualEligibleImagesCountName,
+      static_cast<unsigned int>(eligible_bucketed));
+  ExpectUkmEntry(ukm::builders::Companion_PageView::kVQS_ImageShoppyCountName,
+                 static_cast<unsigned int>(shoppy_bucketed));
+  ExpectUkmEntry(
+      ukm::builders::Companion_PageView::kVQS_ImageSensitiveCountName,
+      static_cast<unsigned int>(sensitive_bucketed));
+  ExpectUkmEntry(
+      ukm::builders::Companion_PageView::kVQS_ImageShoppyNotSensitiveCountName,
+      static_cast<unsigned int>(shoppy_nonsensitive_bucketed));
 }
 
 TEST_F(CompanionMetricsLoggerTest, TwoSurfaces_PH_and_CQ) {
@@ -145,6 +183,8 @@ TEST_F(CompanionMetricsLoggerTest, TwoSurfaces_PH_and_CQ) {
                                      /*sample=*/true, /*expected_count=*/1);
   histogram_tester.ExpectBucketCount("Companion.CQ.ClickPosition",
                                      /*sample=*/2, /*expected_count=*/1);
+  histogram_tester.ExpectBucketCount("Companion.CQ.ChildElementCount",
+                                     /*sample=*/3, /*expected_count=*/1);
 
   // Destroy the logger. Verify that UKM event is recorded.
   logger_.reset();
@@ -182,6 +222,8 @@ TEST_F(CompanionMetricsLoggerTest, VQ) {
                                      /*sample=*/true, /*expected_count=*/1);
   histogram_tester.ExpectBucketCount("Companion.VQ.ClickPosition",
                                      /*sample=*/2, /*expected_count=*/1);
+  histogram_tester.ExpectBucketCount("Companion.VQ.ChildElementCount",
+                                     /*sample=*/3, /*expected_count=*/1);
 
   // Destroy the logger. Verify that UKM event is recorded.
   logger_.reset();
@@ -213,6 +255,8 @@ TEST_F(CompanionMetricsLoggerTest, RelQr) {
                                      /*sample=*/true, /*expected_count=*/1);
   histogram_tester.ExpectBucketCount("Companion.RelQr.ClickPosition",
                                      /*sample=*/2, /*expected_count=*/1);
+  histogram_tester.ExpectBucketCount("Companion.RelQr.ChildElementCount",
+                                     /*sample=*/3, /*expected_count=*/1);
 
   // Destroy the logger. Verify that UKM event is recorded.
   logger_.reset();
@@ -246,6 +290,8 @@ TEST_F(CompanionMetricsLoggerTest, RelQs) {
                                      /*sample=*/true, /*expected_count=*/1);
   histogram_tester.ExpectBucketCount("Companion.RelQs.ClickPosition",
                                      /*sample=*/2, /*expected_count=*/1);
+  histogram_tester.ExpectBucketCount("Companion.RelQs.ChildElementCount",
+                                     /*sample=*/3, /*expected_count=*/1);
 
   // Destroy the logger. Verify that UKM event is recorded.
   logger_.reset();
@@ -281,6 +327,8 @@ TEST_F(CompanionMetricsLoggerTest, PageEntities) {
                                      /*sample=*/true, /*expected_count=*/1);
   histogram_tester.ExpectBucketCount("Companion.PageEntities.ClickPosition",
                                      /*sample=*/2, /*expected_count=*/1);
+  histogram_tester.ExpectBucketCount("Companion.PageEntities.ChildElementCount",
+                                     /*sample=*/3, /*expected_count=*/1);
 
   // Destroy the logger. Verify that UKM event is recorded.
   logger_.reset();
@@ -342,6 +390,45 @@ TEST_F(CompanionMetricsLoggerTest, RecordPromoEvent) {
   TestPromoEvent(PromoType::kExps, PromoAction::kRejected,
                  PromoEvent::kExpsRejected);
   TestPromoEvent(PromoType::kExps, PromoAction::kShown, PromoEvent::kExpsShown);
+}
+
+TEST_F(CompanionMetricsLoggerTest, PHShown) {
+  base::HistogramTester histogram_tester;
+
+  logger_->RecordUiSurfaceShown(UiSurface::kPH, /*ui_surface_position=*/2,
+                                /*child_element_available_count=*/-1,
+                                /*child_element_shown_count=*/-1);
+  logger_->RecordUiSurfaceShown(UiSurface::kPHResult, /*ui_surface_position=*/2,
+                                /*child_element_available_count=*/3,
+                                /*child_element_shown_count=*/1);
+  logger_->RecordUiSurfaceClicked(UiSurface::kPHResult, /*click_position=*/1);
+
+  // Verify histograms for click and shown events.
+  histogram_tester.ExpectBucketCount("Companion.PH.Shown",
+                                     /*sample=*/true, /*expected_count=*/1);
+  histogram_tester.ExpectBucketCount("Companion.PHResult.Shown",
+                                     /*sample=*/true, /*expected_count=*/1);
+  histogram_tester.ExpectBucketCount("Companion.PHResult.Clicked",
+                                     /*sample=*/true, /*expected_count=*/1);
+
+  // Destroy the logger. Verify that UKM event is recorded.
+  logger_.reset();
+
+  // PH metrics.
+  ExpectUkmEntry(ukm::builders::Companion_PageView::kPH_LastEventName,
+                 static_cast<int>(UiEvent::kShown));
+  ExpectUkmEntry(ukm::builders::Companion_PageView::kPH_ComponentPositionName,
+                 2);
+  ExpectUkmEntry(ukm::builders::Companion_PageView::kPHResult_LastEventName,
+                 static_cast<int>(UiEvent::kClicked));
+  ExpectUkmEntry(
+      ukm::builders::Companion_PageView::kPHResult_ComponentPositionName, 2);
+  ExpectUkmEntry(
+      ukm::builders::Companion_PageView::kPHResult_NumEntriesAvailableName, 3);
+  ExpectUkmEntry(
+      ukm::builders::Companion_PageView::kPHResult_NumEntriesShownName, 1);
+  ExpectUkmEntry(ukm::builders::Companion_PageView::kPHResult_ClickPositionName,
+                 1);
 }
 
 }  // namespace companion

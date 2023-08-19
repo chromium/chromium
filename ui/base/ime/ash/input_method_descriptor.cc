@@ -10,6 +10,7 @@
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/ime/ash/extension_ime_util.h"
 #include "url/gurl.h"
 
@@ -24,7 +25,8 @@ InputMethodDescriptor::InputMethodDescriptor(
     const std::vector<std::string>& language_codes,
     bool is_login_keyboard,
     const GURL& options_page_url,
-    const GURL& input_view_url)
+    const GURL& input_view_url,
+    const absl::optional<std::string>& handwriting_language)
     : id_(id),
       name_(name),
       keyboard_layout_(keyboard_layout),
@@ -32,7 +34,8 @@ InputMethodDescriptor::InputMethodDescriptor(
       indicator_(indicator),
       is_login_keyboard_(is_login_keyboard),
       options_page_url_(options_page_url),
-      input_view_url_(input_view_url) {}
+      input_view_url_(input_view_url),
+      handwriting_language_(handwriting_language) {}
 
 InputMethodDescriptor::InputMethodDescriptor(
     const InputMethodDescriptor& other) = default;

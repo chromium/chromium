@@ -204,7 +204,8 @@ class RequestManager {
 
   raw_ptr<Profile> profile_;  // Not owned.
   std::map<int, std::unique_ptr<Request>> requests_;
-  raw_ptr<NotificationManagerInterface> notification_manager_;  // Not owned.
+  raw_ptr<NotificationManagerInterface, DanglingUntriaged>
+      notification_manager_;  // Not owned.
   int next_id_;
   base::TimeDelta timeout_;
   base::ObserverList<Observer>::Unchecked observers_;

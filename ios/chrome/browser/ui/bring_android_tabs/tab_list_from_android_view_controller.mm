@@ -4,9 +4,9 @@
 
 #import "ios/chrome/browser/ui/bring_android_tabs/tab_list_from_android_view_controller.h"
 
+#import "base/apple/foundation_util.h"
 #import "base/check_op.h"
 #import "base/i18n/message_formatter.h"
-#import "base/mac/foundation_util.h"
 #import "base/strings/sys_string_conversions.h"
 #import "ios/chrome/browser/net/crurl.h"
 #import "ios/chrome/browser/shared/ui/list_model/list_model.h"
@@ -20,10 +20,6 @@
 #import "ios/chrome/common/ui/favicon/favicon_view.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ui/base/l10n/l10n_util.h"
-
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
 
 namespace {
 
@@ -135,9 +131,9 @@ typedef NS_ENUM(NSInteger, SectionIdentifier) {
   CHECK(item);
   CHECK(cell);
   TabListFromAndroidTableViewItem* tabListItem =
-      base::mac::ObjCCastStrict<TabListFromAndroidTableViewItem>(item);
+      base::apple::ObjCCastStrict<TabListFromAndroidTableViewItem>(item);
   TabListFromAndroidTableViewCell* tabListCell =
-      base::mac::ObjCCastStrict<TabListFromAndroidTableViewCell>(cell);
+      base::apple::ObjCCastStrict<TabListFromAndroidTableViewCell>(cell);
 
   NSString* itemIdentifier = tabListItem.uniqueIdentifier;
   [_faviconDataSource

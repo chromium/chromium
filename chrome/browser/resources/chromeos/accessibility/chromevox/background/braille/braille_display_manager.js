@@ -5,19 +5,20 @@
 /**
  * @fileoverview Puts text on a braille display.
  */
-import {LocalStorage} from '../../../common/local_storage.js';
 import {BrailleDisplayState, BrailleKeyCommand, BrailleKeyEvent} from '../../common/braille/braille_key_types.js';
 import {NavBraille} from '../../common/braille/nav_braille.js';
 import {SettingsManager} from '../../common/settings_manager.js';
 
-import {BrailleCaptionsBackground} from './braille_captions_background.js';
+import {BrailleCaptionsBackground, BrailleCaptionsListener} from './braille_captions_background.js';
 import {BrailleTranslatorManager} from './braille_translator_manager.js';
 import {ExpandingBrailleTranslator} from './expanding_braille_translator.js';
 import {PanStrategy} from './pan_strategy.js';
 import {ValueSpan} from './spans.js';
 
-export class BrailleDisplayManager {
+export class BrailleDisplayManager extends BrailleCaptionsListener {
   constructor() {
+    super();
+
     /** @private {number|undefined} */
     this.blinkerId_;
 
@@ -34,11 +35,8 @@ export class BrailleDisplayManager {
      * the same object as realDisplayState_.
      * @private {!BrailleDisplayState}
      */
-    this.displayState_ = {
-      available: false,
-      textRowCount: 0,
-      textColumnCount: 0,
-    };
+    this.displayState_ =
+        {available: false, textRowCount: 0, textColumnCount: 0, cellSize: 0};
 
     /** @private {!ExpandingBrailleTranslator.ExpansionType} valueExpansion */
     this.expansionType_ = ExpandingBrailleTranslator.ExpansionType.SELECTION;
@@ -64,13 +62,13 @@ export class BrailleDisplayManager {
     SettingsManager.addListenerForKey(
         'brailleWordWrap', wrap => this.updatePanStrategy_(wrap));
     SettingsManager.addListenerForKey(
-        'virtualBrailleRows', () => this.onCaptionsStateChanged_());
+        'virtualBrailleRows', () => this.onBrailleCaptionsStateChanged());
     SettingsManager.addListenerForKey(
-        'virtualBrailleColumns', () => this.onCaptionsStateChanged_());
+        'virtualBrailleColumns', () => this.onBrailleCaptionsStateChanged());
 
     this.updatePanStrategy_(SettingsManager.getBoolean('brailleWordWrap'));
 
-    BrailleCaptionsBackground.init(() => this.onCaptionsStateChanged_());
+    BrailleCaptionsBackground.init(this);
     if (goog.isDef(chrome.brailleDisplayPrivate)) {
       const onDisplayStateChanged = newState =>
           this.refreshDisplayState_(newState);
@@ -82,7 +80,7 @@ export class BrailleDisplayManager {
     } else {
       // Get the initial captions state since we won't refresh the display
       // state in an API callback in this case.
-      this.onCaptionsStateChanged_();
+      this.onBrailleCaptionsStateChanged();
     }
   }
 
@@ -91,6 +89,129 @@ export class BrailleDisplayManager {
       throw new Error('Cannot create two BrailleDisplayManager instances');
     }
     BrailleDisplayManager.instance = new BrailleDisplayManager();
+  }
+
+  /**
+   * Takes an image, in the form of a data url, and converts it to braille.
+   * @param {string} imageUrl The image, in the form of a data url.
+   * @param {!BrailleDisplayState} displayState
+   * @return {!Promise<!ArrayBuffer>} The image, encoded in binary form,
+   *     suitable for writing to a braille display.
+   */
+  static async convertImageDataUrlToBraille(imageUrl, displayState) {
+    // The number of dots in a braille cell.
+    // All known displays have a cell width of 2.
+    const cellWidth = 2;
+    // Derive the cell height from the display's cell size and the width above
+    // e.g. 8 / 2 = 4.
+    let cellHeight = displayState.cellSize / cellWidth;
+
+    // Sanity check.
+    if (cellHeight === 0) {
+      // Set the height to a reasonable min.
+      cellHeight = 3;
+    }
+
+    // All known displays don't exceed a cell height of 4.
+    const maxCellHeight = 4;
+
+    const rows = displayState.textRowCount;
+    const columns = displayState.textColumnCount;
+    const imageDataUrl = imageUrl;
+
+    return new Promise(resolve => {
+      const imgElement = document.createElement('img');
+      imgElement.src = imageDataUrl;
+      imgElement.onload = () => {
+        const canvas = document.createElement('canvas');
+        const context = canvas.getContext('2d');
+        canvas.width = columns * cellWidth;
+        canvas.height = rows * cellHeight;
+        context.drawImage(imgElement, 0, 0, canvas.width, canvas.height);
+        const imageData =
+            context.getImageData(0, 0, canvas.width, canvas.height);
+        const brailleBuf = BrailleDisplayManager.convertImageDataToBraille(
+            imageData.data,
+            {rows, columns, cellWidth, cellHeight, maxCellHeight});
+        resolve(brailleBuf);
+      };
+    });
+  }
+
+  /**
+   * @param {!Uint8ClampedArray} data Encodes pixel data p_1, ..., p_n in
+   *     groupings of RGBA. For example, for pixel 1, p_1_r, p_1_g, p_1_b,
+   *     p_1_a. 1 ... n go from left to right, top to bottom.
+   *
+   * The array looks like:
+   * [p_1_r, p_1_g, p_1_b, p_1_a, ... p_n_r, p_n_g, p_n_b, p_n_a].
+   * @param {{rows: number,
+   *          columns: number,
+   *          cellWidth: number,
+   *          cellHeight: number,
+   *          maxCellHeight: number}} state Dimensions of the braille display in
+   * cell units (number of rows, columns) and dot units (cell*).
+   * @return {!ArrayBuffer} a buffer encoding the braille dots according to that
+   *     expected by BRLTTY.
+   */
+  static convertImageDataToBraille(data, state) {
+    const {rows, columns, cellWidth, cellHeight, maxCellHeight} = state;
+    const outputData = [];
+
+    // The data should have groupings of 4 i.e. visible by 4.
+    if (data.length % 4 !== 0) {
+      return new ArrayBuffer(0);
+    }
+
+    // Convert image to black and white by thresholding the luminance for
+    // all opaque (non-transparent) pixels.
+    for (let i = 0; i < data.length; i += 4) {
+      const red = data[i];
+      const green = data[i + 1];
+      const blue = data[i + 2];
+      const alpha = data[i + 3];
+      const luminance = 0.2126 * red + 0.7152 * green + 0.0722 * blue;
+
+      // TODO(accessibility): this is a naive way to threshold. Consider
+      // computing a global threshold based on an average of the top two most
+      // frequent values using a histogram.
+
+      // Show braille pin if the alpha is greater than the threshold and
+      // the luminance is less than the threshold.
+      const show =
+          (alpha >= BrailleDisplayManager.ALPHA_THRESHOLD_ &&
+           luminance < BrailleDisplayManager.LUMINANCE_THRESHOLD_);
+      outputData.push(show);
+    }
+
+    // Pick the mapping for the given cell height (default to 6-dot).
+    const DOT_MAP = cellHeight === 4 ?
+        BrailleDisplayManager.COORDS_TO_BRAILLE_8DOT_ :
+        BrailleDisplayManager.COORDS_TO_BRAILLE_6DOT_;
+
+    // Convert black-and-white array to the proper encoding for Braille
+    // cells.
+    const brailleBuf = new ArrayBuffer(rows * columns);
+    const view = new Uint8Array(brailleBuf);
+    for (let i = 0; i < rows; i++) {
+      for (let j = 0; j < columns; j++) {
+        // Index in braille array.
+        const brailleIndex = i * columns + j;
+        for (let cellColumn = 0; cellColumn < cellWidth; cellColumn++) {
+          for (let cellRow = 0; cellRow < cellHeight; cellRow++) {
+            const bitmapIndex =
+                (i * columns * cellHeight + j + cellRow * columns) * cellWidth +
+                cellColumn;
+
+            if (outputData[bitmapIndex]) {
+              const index = cellColumn * maxCellHeight + cellRow;
+              view[brailleIndex] += DOT_MAP[index];
+            }
+          }
+        }
+      }
+    }
+    return brailleBuf;
   }
 
   /**
@@ -114,78 +235,20 @@ export class BrailleDisplayManager {
       return;
     }
 
-    // The number of dots in a braille cell.
-    // TODO: Both multi-line braille displays we're testing with
-    // are 6-dot (2 x 3), but we should switch to detecting this with
-    // BRLAPI_PARAM_DEVICE_CELL_SIZE from brlapi instead.
-    const cellWidth = 2;
-    const cellHeight = 3;
-    const maxCellHeight = 4;
-
-    const rows = this.displayState_.textRowCount;
-    const columns = this.displayState_.textColumnCount;
-    const imageDataUrl = imageUrl;
-    const imgElement = document.createElement('img');
-    imgElement.src = imageDataUrl;
-    imgElement.onload = () => {
-      const canvas = document.createElement('canvas');
-      const context = canvas.getContext('2d');
-      canvas.width = columns * cellWidth;
-      canvas.height = rows * cellHeight;
-      context.drawImage(imgElement, 0, 0, canvas.width, canvas.height);
-      const imageData = context.getImageData(0, 0, canvas.width, canvas.height);
-      const data = imageData.data;
-      const outputData = [];
-
-      // Convert image to black and white by thresholding the luminance for
-      // all opaque (non-transparent) pixels.
-      for (let i = 0; i < data.length; i += 4) {
-        const red = data[i];
-        const green = data[i + 1];
-        const blue = data[i + 2];
-        const alpha = data[i + 3];
-        const luminance = 0.2126 * red + 0.7152 * green + 0.0722 * blue;
-        // Show braille pin if the alpha is greater than the threshold and
-        // the luminance is less than the threshold.
-        const show =
-            (alpha >= BrailleDisplayManager.ALPHA_THRESHOLD_ &&
-             luminance < BrailleDisplayManager.LUMINANCE_THRESHOLD_);
-        outputData.push(show);
-      }
-
-      // Convert black-and-white array to the proper encoding for Braille
-      // cells.
-      const brailleBuf = new ArrayBuffer(rows * columns);
-      const view = new Uint8Array(brailleBuf);
-      for (let i = 0; i < rows; i++) {
-        for (let j = 0; j < columns; j++) {
-          // Index in braille array
-          const brailleIndex = i * columns + j;
-          for (let cellColumn = 0; cellColumn < cellWidth; cellColumn++) {
-            for (let cellRow = 0; cellRow < cellHeight; cellRow++) {
-              const bitmapIndex =
-                  (i * columns * cellHeight + j + cellRow * columns) *
-                      cellWidth +
-                  cellColumn;
-              if (outputData[bitmapIndex]) {
-                const index = cellColumn * maxCellHeight + cellRow;
-                view[brailleIndex] +=
-                    BrailleDisplayManager.COORDS_TO_BRAILLE_DOT_[index];
-              }
-            }
+    BrailleDisplayManager
+        .convertImageDataUrlToBraille(imageUrl, this.displayState_)
+        .then((brailleBuf) => {
+          if (this.realDisplayState_.available) {
+            chrome.brailleDisplayPrivate.writeDots(
+                brailleBuf, this.displayState_.textColumnCount,
+                this.displayState_.textRowCount);
           }
-        }
-      }
-
-      if (this.realDisplayState_.available) {
-        chrome.brailleDisplayPrivate.writeDots(
-            brailleBuf, this.displayState_.textColumnCount,
-            this.displayState_.textRowCount);
-      }
-      if (BrailleCaptionsBackground.isEnabled()) {
-        BrailleCaptionsBackground.setImageContent(brailleBuf, rows, columns);
-      }
-    };
+          if (BrailleCaptionsBackground.isEnabled()) {
+            BrailleCaptionsBackground.setImageContent(
+                brailleBuf, this.displayState_.textRowCount,
+                this.displayState_.textColumnCount);
+          }
+        });
   }
 
   /**
@@ -219,12 +282,17 @@ export class BrailleDisplayManager {
   refreshDisplayState_(newState) {
     const oldColumnCount = this.displayState_.textColumnCount || 0;
     const oldRowCount = this.displayState_.textRowCount || 0;
+    const oldCellSize = this.displayState_.cellSize || 0;
     const processDisplayState = displayState => {
       this.displayState_ = displayState;
       const newColumnCount = displayState.textColumnCount || 0;
       const newRowCount = displayState.textRowCount || 0;
+      const newCellSize = displayState.cellSize || 0;
 
-      if (oldColumnCount !== newColumnCount || oldRowCount !== newRowCount) {
+      if (oldColumnCount !== newColumnCount || oldRowCount !== newRowCount ||
+          oldCellSize !== newCellSize) {
+        // TODO(accessibility): Audit whether changes in cellSize need to be
+        // communicated to PanStrategy.
         this.panStrategy_.setDisplaySize(newRowCount, newColumnCount);
       }
       this.refresh_();
@@ -233,6 +301,7 @@ export class BrailleDisplayManager {
       available: newState.available,
       textRowCount: newState.textRowCount || 0,
       textColumnCount: newState.textColumnCount || 0,
+      cellSize: newState.cellSize || 0,
     };
     if (newState.available) {
       // Update the dimensions of the virtual braille captions display to those
@@ -247,9 +316,9 @@ export class BrailleDisplayManager {
 
   /**
    * Called when the state of braille captions changes.
-   * @private
+   * @override
    */
-  onCaptionsStateChanged_() {
+  onBrailleCaptionsStateChanged() {
     // Force reevaluation of the display state based on our stored real
     // hardware display state, meaning that if a real display is connected,
     // that takes precedence over the state from the captions 'virtual' display.
@@ -295,7 +364,8 @@ export class BrailleDisplayManager {
     const textBuf = this.panStrategy_.getCurrentTextViewportContents();
     if (this.realDisplayState_.available) {
       chrome.brailleDisplayPrivate.writeDots(
-          brailleBuf, brailleBuf.byteLength, 1);
+          brailleBuf, this.realDisplayState_.textColumnCount,
+          this.realDisplayState_.textRowCount);
     }
     if (BrailleCaptionsBackground.isEnabled()) {
       BrailleCaptionsBackground.setContent(
@@ -510,6 +580,15 @@ BrailleDisplayManager.ALPHA_THRESHOLD_ = 255;
  */
 BrailleDisplayManager.LUMINANCE_THRESHOLD_ = 128;
 
+/**
+ * Array mapping an index in a 6-dot braille cell, in column-first order,
+ * to its corresponding bit mask in the standard braille cell encoding.
+ * @const
+ * @private
+ */
+BrailleDisplayManager.COORDS_TO_BRAILLE_6DOT_ =
+    [0x1, 0x2, 0x4, 0x8, 0x10, 0x20];
+
 
 /**
  * Array mapping an index in an 8-dot braille cell, in column-first order,
@@ -517,9 +596,8 @@ BrailleDisplayManager.LUMINANCE_THRESHOLD_ = 128;
  * @const
  * @private
  */
-BrailleDisplayManager.COORDS_TO_BRAILLE_DOT_ =
+BrailleDisplayManager.COORDS_TO_BRAILLE_8DOT_ =
     [0x1, 0x2, 0x4, 0x40, 0x8, 0x10, 0x20, 0x80];
-
 
 /**
  * Time elapsed before a cursor changes state. This results in a blinking

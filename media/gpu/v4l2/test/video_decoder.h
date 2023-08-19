@@ -23,6 +23,10 @@ static_assert(kNumberOfBuffersInOutputQueue == 1,
 uint32_t FileFourccToDriverFourcc(uint32_t header_fourcc);
 
 // VideoDecoder decodes encoded video streams using v4l2 ioctl calls.
+// To implement a decoder, implement the following:
+// 1. A factory function, such as:
+//   std::unique_ptr<VideoDecoder> Create(const base::MemoryMappedFile& stream)
+// 2. DecodeNextFrame
 class VideoDecoder {
  public:
   // Result of decoding the current frame.
@@ -45,11 +49,14 @@ class VideoDecoder {
   void CreateOUTPUTQueue(uint32_t compressed_fourcc);
   void CreateCAPTUREQueue(uint32_t num_buffers);
 
-  virtual Result DecodeNextFrame(std::vector<uint8_t>& y_plane,
+  // Decoders implement this. The function writes the next displayed picture
+  // into the output plane buffers |y_plane|, |u_plane|, and |v_plane|. |size|
+  // is the visible picture size.
+  virtual Result DecodeNextFrame(const int frame_number,
+                                 std::vector<uint8_t>& y_plane,
                                  std::vector<uint8_t>& u_plane,
                                  std::vector<uint8_t>& v_plane,
-                                 gfx::Size& size,
-                                 const int frame_number) = 0;
+                                 gfx::Size& size) = 0;
 
   // Handles dynamic resolution change with new resolution parsed from frame
   // header.
@@ -90,9 +97,6 @@ class VideoDecoder {
 
   // resolution from the bitstream header
   gfx::Size display_resolution_;
-
-  // Whether V4L2_CTRL_WHICH_CUR_VAL is implemented correctly
-  bool cur_val_is_supported_ = true;
 };
 
 }  // namespace v4l2_test

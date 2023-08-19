@@ -49,7 +49,7 @@
 {
   const RESOURCES_PATH =
       '/html/browsers/browsing-the-web/remote-context-helper/resources';
-  const WINDOW_EXECUTOR_PATH = `${RESOURCES_PATH}/executor.sub.html`;
+  const WINDOW_EXECUTOR_PATH = `${RESOURCES_PATH}/executor-window.py`;
   const WORKER_EXECUTOR_PATH = `${RESOURCES_PATH}/executor-worker.js`;
 
   /**
@@ -180,9 +180,13 @@
      * access to it.
      * @private
      * @param {Object} options
-     * @param {(url: string) => Promise<undefined>} options.executorCreator A
+     * @param {(url: string) => Promise<undefined>} [options.executorCreator] A
      *     function that takes a URL and causes the browser to navigate some
-     *     window to that URL, e.g. via an iframe or a new window.
+     *     window to that URL, e.g. via an iframe or a new window. If this is
+     *     not supplied, then the returned RemoteContextWrapper won't actually
+     *     be communicating with something yet, and something will need to
+     *     navigate to it using its `url` property, before communication can be
+     *     established.
      * @param {RemoteContextConfig|object} [options.extraConfig] If supplied,
      *     extra configuration for this remote context to be merged with
      *     `this`'s existing config. If it's not a `RemoteContextConfig`, it
@@ -216,7 +220,10 @@
         url.searchParams.append('startOn', config.startOn);
       }
 
-      await executorCreator(url.href);
+      if (executorCreator) {
+        await executorCreator(url.href);
+      }
+
       return new RemoteContextWrapper(new RemoteContext(uuid), this, url.href);
     }
 
@@ -236,15 +243,6 @@
         executorCreator: windowExecutorCreator(options),
         extraConfig,
       });
-    }
-
-    async createContextWithUrl(extraConfig) {
-      let saveUrl;
-      let wrapper = await this.createContext({
-        executorCreator: (url) => {saveUrl = url},
-        extraConfig,
-      });
-      return [wrapper, saveUrl];
     }
   }
   // Export this class.
@@ -314,9 +312,10 @@
      * This should only be constructed by `RemoteContextHelper`.
      * @private
      */
-    constructor(context, helper) {
+    constructor(context, helper, url) {
       this.context = context;
       this.helper = helper;
+      this.url = url;
     }
 
     /**
@@ -382,6 +381,26 @@
         extraConfig,
         isWorker: true,
       });
+    }
+
+    /**
+     * Gets a `Headers` object containing the request headers that were used
+     * when the browser requested this document.
+     *
+     * Currently, this only works for `RemoteContextHelper`s representing
+     * windows, not workers.
+     * @returns {Promise<Headers>}
+     */
+    async getRequestHeaders() {
+      // This only works in window environments for now. We could make it work
+      // for workers too; if you have a need, just share or duplicate the code
+      // that's in executor-window.py. Anyway, we explicitly use `window` in
+      // the script so that we get a clear error if you try using it on a
+      // worker.
+
+      // We need to serialize and deserialize the `Headers` object manually.
+      const asNestedArrays = await this.executeScript(() => [...window.__requestHeaders]);
+      return new Headers(asNestedArrays);
     }
 
     /**

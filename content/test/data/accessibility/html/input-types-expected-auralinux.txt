@@ -1,52 +1,52 @@
 [document web]
 ++[section]
-++++[label] label-for
+++++[label] label-for=[entry]
 ++++++[static] name='Default: '
-++++++[entry] name='Default:' selectable-text labelled-by text-input-type:text
-++++[label] label-for
+++++++[entry] name='Default:' selectable-text labelled-by=[label] text-input-type:text
+++++[label] label-for=[push button]
 ++++++[static] name='Button: '
-++++++[push button] name='Button:' labelled-by
+++++++[push button] name='Button:' labelled-by=[label]
 ++++[check box] name='Checkbox:' checkable:true
-++++[label] label-for
+++++[label] label-for=[push button]
 ++++++[static] name='Color: '
-++++++[push button] name='Color:' labelled-by
-++++[label] label-for
+++++++[push button] name='Color:' labelled-by=[label]
+++++[label] label-for=[entry]
 ++++++[static] name='Email: '
-++++++[entry] name='Email:' selectable-text labelled-by text-input-type:email
-++++[label] label-for
+++++++[entry] name='Email:' selectable-text labelled-by=[label] text-input-type:email
+++++[label] label-for=[push button]
 ++++++[static] name='File: '
-++++++[push button] name='File:: No file chosen' labelled-by
+++++++[push button] name='File:: No file chosen' labelled-by=[label]
 ++++++++[push button] name='Choose File'
-++++[label] label-for
+++++[label] label-for=[push button]
 ++++++[static] name='Image: '
-++++++[push button] name='Image:' labelled-by
+++++++[push button] name='Image:' labelled-by=[label]
 ++++++++[image]
 ++++++++[static] name='Submit'
-++++[label] label-for
+++++[label] label-for=[spin button]
 ++++++[static] name='Number: '
-++++++[spin button] name='Number:' selectable-text labelled-by text-input-type:number current=0.000000 minimum=0.000000 maximum=0.000000
-++++[label] label-for
+++++++[spin button] name='Number:' selectable-text labelled-by=[label] text-input-type:number current=0.000000 minimum=0.000000 maximum=0.000000
+++++[label] label-for=[password text]
 ++++++[static] name='Password: '
-++++++[password text] name='Password:' selectable-text labelled-by text-input-type:password
+++++++[password text] name='Password:' selectable-text labelled-by=[label] text-input-type:password
 ++++[radio button] name='Radio:' checkable:true
-++++[label] label-for
+++++[label] label-for=[slider]
 ++++++[static] name='Range: '
-++++++[slider] name='Range:' horizontal labelled-by current=50.000000 minimum=0.000000 maximum=100.000000
-++++[label] label-for
+++++++[slider] name='Range:' horizontal labelled-by=[label] current=50.000000 minimum=0.000000 maximum=100.000000
+++++[label] label-for=[push button]
 ++++++[static] name='Reset: '
-++++++[push button] name='Reset:' labelled-by
-++++[label] label-for
+++++++[push button] name='Reset:' labelled-by=[label]
+++++[label] label-for=[entry]
 ++++++[static] name='Search: '
-++++++[entry] name='Search:' selectable-text labelled-by text-input-type:search
-++++[label] label-for
+++++++[entry] name='Search:' selectable-text labelled-by=[label] text-input-type:search
+++++[label] label-for=[push button]
 ++++++[static] name='Submit: '
-++++++[push button] name='Submit:' labelled-by
-++++[label] label-for
+++++++[push button] name='Submit:' labelled-by=[label]
+++++[label] label-for=[entry]
 ++++++[static] name='Tel: '
-++++++[entry] name='Tel:' selectable-text labelled-by text-input-type:tel
-++++[label] label-for
+++++++[entry] name='Tel:' selectable-text labelled-by=[label] text-input-type:tel
+++++[label] label-for=[entry]
 ++++++[static] name='Text: '
-++++++[entry] name='Text:' selectable-text labelled-by text-input-type:text
-++++[label] label-for
+++++++[entry] name='Text:' selectable-text labelled-by=[label] text-input-type:text
+++++[label] label-for=[entry]
 ++++++[static] name='Url: '
-++++++[entry] name='Url:' selectable-text labelled-by text-input-type:url
+++++++[entry] name='Url:' selectable-text labelled-by=[label] text-input-type:url

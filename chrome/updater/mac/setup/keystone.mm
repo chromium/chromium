@@ -8,13 +8,13 @@
 #include <vector>
 
 #include "base/apple/bundle_locations.h"
+#include "base/apple/foundation_util.h"
 #include "base/command_line.h"
 #include "base/files/file.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/functional/callback.h"
 #include "base/logging.h"
-#include "base/mac/foundation_util.h"
 #include "base/process/launch.h"
 #include "base/process/process.h"
 #include "base/strings/string_split.h"
@@ -30,10 +30,6 @@
 #include "chrome/updater/util/posix_util.h"
 #include "chrome/updater/util/util.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
-
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
 
 // Class to read the Keystone apps' client-regulated-counting data.
 @interface CountingMetricsStore : NSObject {
@@ -51,7 +47,7 @@
 
 + (instancetype)storeAtPath:(const base::FilePath&)path {
   return [[CountingMetricsStore alloc]
-      initWithURL:[base::mac::FilePathToNSURL(path)
+      initWithURL:[base::apple::FilePathToNSURL(path)
                       URLByAppendingPathComponent:@"CountingMetrics.plist"]];
 }
 
@@ -318,7 +314,7 @@ bool MigrateKeystoneApps(
       }
       if (ticket.existenceChecker) {
         registration.existence_checker_path =
-            base::mac::NSStringToFilePath(ticket.existenceChecker.path);
+            base::apple::NSStringToFilePath(ticket.existenceChecker.path);
       }
       registration.brand_code =
           base::SysNSStringToUTF8([ticket determineBrand]);
@@ -326,7 +322,7 @@ bool MigrateKeystoneApps(
         // New updater only supports hard-coded brandKey, only migrate brand
         // path if the key matches.
         registration.brand_path =
-            base::mac::NSStringToFilePath(ticket.brandPath);
+            base::apple::NSStringToFilePath(ticket.brandPath);
       }
       registration.ap = base::SysNSStringToUTF8([ticket determineTag]);
 

@@ -1,4 +1,4 @@
-Test for event dispatching by spin buttons in a type=number input.
+Test for event dispatching by spin buttons in a input[type=number] with writing-mode: horizontal-tb.
 
 On success, you will see a series of "PASS" messages, followed by "TEST COMPLETE".
 

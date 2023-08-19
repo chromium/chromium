@@ -21,29 +21,32 @@
 #include "chrome/browser/data_saver/data_saver.h"
 #include "chrome/browser/devtools/devtools_window.h"
 #include "chrome/browser/devtools/protocol/devtools_protocol_test_support.h"
-#include "chrome/browser/dips/dips_features.h"
 #include "chrome/browser/dips/dips_service.h"
 #include "chrome/browser/dips/dips_storage.h"
 #include "chrome/browser/extensions/extension_service.h"
 #include "chrome/browser/extensions/extension_util.h"
 #include "chrome/browser/extensions/unpacked_installer.h"
 #include "chrome/browser/prefetch/prefetch_prefs.h"
-#include "chrome/browser/privacy_sandbox/privacy_sandbox_settings_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/common/chrome_paths.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/test/base/ui_test_utils.h"
+#include "components/content_settings/core/browser/cookie_settings.h"
+#include "components/content_settings/core/common/pref_names.h"
 #include "components/custom_handlers/protocol_handler_registry.h"
 #include "components/infobars/content/content_infobar_manager.h"
 #include "components/infobars/core/infobar.h"
 #include "components/infobars/core/infobar_delegate.h"
-#include "components/privacy_sandbox/privacy_sandbox_settings.h"
+#include "components/privacy_sandbox/privacy_sandbox_attestations/privacy_sandbox_attestations.h"
+#include "components/privacy_sandbox/privacy_sandbox_attestations/scoped_privacy_sandbox_attestations.h"
 #include "content/public/browser/navigation_entry.h"
 #include "content/public/browser/ssl_status.h"
 #include "content/public/browser/web_contents.h"
+#include "content/public/common/content_features.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
+#include "content/public/test/preloading_test_util.h"
 #include "content/public/test/prerender_test_util.h"
 #include "extensions/browser/extension_host.h"
 #include "extensions/browser/extension_system.h"
@@ -223,9 +226,24 @@ IN_PROC_BROWSER_TEST_F(DevToolsProtocolTest,
   EXPECT_EQ(nullptr, DevToolsWindow::FindDevToolsWindow(agent_host_.get()));
 }
 
-IN_PROC_BROWSER_TEST_F(DevToolsProtocolTest, CheckReportedPreloadingState) {
+IN_PROC_BROWSER_TEST_F(DevToolsProtocolTest,
+                       PreloadEnabledStateUpdatedDefault) {
   Attach();
-  SendCommandSync("Runtime.enable");
+
+  SendCommandAsync("Preload.enable");
+  const base::Value::Dict result =
+      WaitForNotification("Preload.preloadEnabledStateUpdated", true);
+
+  EXPECT_THAT(result.FindBool("disabledByPreference"), false);
+  EXPECT_THAT(result.FindBool("disabledByHoldbackPrefetchSpeculationRules"),
+              false);
+  EXPECT_THAT(result.FindBool("disabledByHoldbackPrerenderSpeculationRules"),
+              false);
+}
+
+IN_PROC_BROWSER_TEST_F(DevToolsProtocolTest,
+                       PreloadEnabledStateUpdatedDisabledByPreference) {
+  Attach();
 
   prefetch::SetPreloadPagesState(browser()->profile()->GetPrefs(),
                                  prefetch::PreloadPagesState::kNoPreloading);
@@ -235,6 +253,42 @@ IN_PROC_BROWSER_TEST_F(DevToolsProtocolTest, CheckReportedPreloadingState) {
       WaitForNotification("Preload.preloadEnabledStateUpdated", true);
 
   EXPECT_THAT(result.FindBool("disabledByPreference"), true);
+}
+
+class DevToolsProtocolTest_PreloadEnabledStateUpdatedDisabledByHoldback
+    : public DevToolsProtocolTest {
+ protected:
+  void SetUp() override {
+    // This holds back speculation rules prefetch and prerender. Note that
+    // directly using enums (instead of strings) in the call to SetHoldback is
+    // usually preferred, but this is not possible here because
+    // content::content_preloading_predictor::kSpeculationRules, which is not
+    // exposed outside of content.
+    preloading_config_override_.SetHoldback("Prefetch", "SpeculationRules",
+                                            true);
+    preloading_config_override_.SetHoldback("Prerender", "SpeculationRules",
+                                            true);
+
+    DevToolsProtocolTest::SetUp();
+  }
+
+ private:
+  content::test::PreloadingConfigOverride preloading_config_override_;
+};
+
+IN_PROC_BROWSER_TEST_F(
+    DevToolsProtocolTest_PreloadEnabledStateUpdatedDisabledByHoldback,
+    PreloadEnabledStateUpdatedDisabledByHoldback) {
+  Attach();
+
+  SendCommandAsync("Preload.enable");
+  const base::Value::Dict result =
+      WaitForNotification("Preload.preloadEnabledStateUpdated", true);
+
+  EXPECT_THAT(result.FindBool("disabledByHoldbackPrefetchSpeculationRules"),
+              true);
+  EXPECT_THAT(result.FindBool("disabledByHoldbackPrerenderSpeculationRules"),
+              true);
 }
 
 IN_PROC_BROWSER_TEST_F(
@@ -342,10 +396,18 @@ class DevToolsProtocolTest_BounceTrackingMitigations
  protected:
   void SetUp() override {
     scoped_feature_list_.InitAndEnableFeatureWithParameters(
-        dips::kFeature,
+        features::kDIPS,
         {{"delete", "true"}, {"triggering_action", "stateful_bounce"}});
 
     DevToolsProtocolTest::SetUp();
+  }
+
+  void SetBlockThirdPartyCookies(bool value) {
+    browser()->profile()->GetPrefs()->SetInteger(
+        prefs::kCookieControlsMode,
+        static_cast<int>(
+            value ? content_settings::CookieControlsMode::kBlockThirdParty
+                  : content_settings::CookieControlsMode::kOff));
   }
 
  private:
@@ -354,6 +416,7 @@ class DevToolsProtocolTest_BounceTrackingMitigations
 
 IN_PROC_BROWSER_TEST_F(DevToolsProtocolTest_BounceTrackingMitigations,
                        RunBounceTrackingMitigations) {
+  SetBlockThirdPartyCookies(true);
   ASSERT_TRUE(embedded_test_server()->Start());
   const GURL url(embedded_test_server()->GetURL("/empty.html"));
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
@@ -390,13 +453,13 @@ class DIPSStatusDevToolsProtocolTest
     : public DevToolsProtocolTest,
       public testing::WithParamInterface<std::tuple<bool, bool, std::string>> {
   // The fields of `GetParam()` indicate/control the following:
-  //   `std::get<0>(GetParam())` => `dips::kFeature`
-  //   `std::get<1>(GetParam())` => `dips::kDeletionEnabled`
-  //   `std::get<2>(GetParam())` => `dips::kTriggeringAction`
+  //   `std::get<0>(GetParam())` => `features::kDIPS`
+  //   `std::get<1>(GetParam())` => `features::kDIPSDeletionEnabled`
+  //   `std::get<2>(GetParam())` => `features::kDIPSTriggeringAction`
   //
-  // In order for Bounce Tracking Mitigations to take effect, `kFeature` must
-  // be true/enabled, `kDeletionEnabled` must be true, and `kTriggeringAction`
-  // must NOT be `none`.
+  // In order for Bounce Tracking Mitigations to take effect, `features::kDIPS`
+  // must be true/enabled, `kDeletionEnabled` must be true, and
+  // `kTriggeringAction` must NOT be `none`.
   //
   // Note: Bounce Tracking Mitigations issues only report sites that would
   // be affected when `kTriggeringAction` is set to 'stateful_bounce'.
@@ -405,11 +468,11 @@ class DIPSStatusDevToolsProtocolTest
   void SetUp() override {
     if (std::get<0>(GetParam())) {
       scoped_feature_list_.InitAndEnableFeatureWithParameters(
-          dips::kFeature,
+          features::kDIPS,
           {{"delete", (std::get<1>(GetParam()) ? "true" : "false")},
            {"triggering_action", std::get<2>(GetParam())}});
     } else {
-      scoped_feature_list_.InitAndDisableFeature(dips::kFeature);
+      scoped_feature_list_.InitAndDisableFeature(features::kDIPS);
     }
 
     DevToolsProtocolTest::SetUp();
@@ -920,25 +983,42 @@ IN_PROC_BROWSER_TEST_F(PrerenderDataSaverProtocolTest,
       /*PrerenderFinalStatus::kDataSaverEnabled=*/38, 1);
 }
 
-IN_PROC_BROWSER_TEST_F(DevToolsProtocolTest, PrivacySandboxEnrollmentOverride) {
+class PrivacySandboxAttestationsOverrideTest : public DevToolsProtocolTest {
+ public:
+  PrivacySandboxAttestationsOverrideTest() = default;
+
+  void SetUpOnMainThread() override {
+    // `PrivacySandboxAttestations` has a member of type
+    // `scoped_refptr<base::SequencedTaskRunner>`, its initialization must be
+    // done after a browser process is created.
+    DevToolsProtocolTest::SetUpOnMainThread();
+    scoped_attestations_ =
+        std::make_unique<privacy_sandbox::ScopedPrivacySandboxAttestations>(
+            privacy_sandbox::PrivacySandboxAttestations::CreateForTesting());
+  }
+
+ private:
+  std::unique_ptr<privacy_sandbox::ScopedPrivacySandboxAttestations>
+      scoped_attestations_;
+};
+
+IN_PROC_BROWSER_TEST_F(PrivacySandboxAttestationsOverrideTest,
+                       PrivacySandboxEnrollmentOverride) {
   Attach();
 
   base::Value::Dict paramsDIPS;
   const std::string attestation_url = "https://google.com";
   paramsDIPS.Set("url", attestation_url);
-  const net::SchemefulSite expected_site =
-      net::SchemefulSite(GURL(attestation_url));
 
   SendCommand("Browser.addPrivacySandboxEnrollmentOverride",
               std::move(paramsDIPS));
-  privacy_sandbox::PrivacySandboxSettings* settings =
-      PrivacySandboxSettingsFactory::GetForProfile(browser()->profile());
 
-  EXPECT_THAT(settings->GetAttestationOverridesForTesting(),
-              testing::ElementsAre(expected_site));
+  EXPECT_TRUE(
+      privacy_sandbox::PrivacySandboxAttestations::GetInstance()->IsOverridden(
+          net::SchemefulSite(GURL(attestation_url))));
 }
 
-IN_PROC_BROWSER_TEST_F(DevToolsProtocolTest,
+IN_PROC_BROWSER_TEST_F(PrivacySandboxAttestationsOverrideTest,
                        PrivacySandboxEnrollmentOverrideInvalidUrl) {
   Attach();
 
@@ -948,12 +1028,11 @@ IN_PROC_BROWSER_TEST_F(DevToolsProtocolTest,
 
   SendCommand("Browser.addPrivacySandboxEnrollmentOverride",
               std::move(paramsDIPS));
-  privacy_sandbox::PrivacySandboxSettings* settings =
-      PrivacySandboxSettingsFactory::GetForProfile(browser()->profile());
 
   EXPECT_TRUE(error());
-  EXPECT_THAT(settings->GetAttestationOverridesForTesting(),
-              testing::IsEmpty());
+  EXPECT_FALSE(
+      privacy_sandbox::PrivacySandboxAttestations::GetInstance()->IsOverridden(
+          net::SchemefulSite(GURL(attestation_url))));
 }
 
 }  // namespace

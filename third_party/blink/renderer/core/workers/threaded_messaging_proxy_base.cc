@@ -41,9 +41,7 @@ ThreadedMessagingProxyBase::ThreadedMessagingProxyBase(
           base::WaitableEvent::ResetPolicy::MANUAL,
           base::WaitableEvent::InitialState::NOT_SIGNALED),
       feature_handle_for_scheduler_(
-          (base::FeatureList::IsEnabled(
-               features::kBackForwardCacheDedicatedWorker) ||
-           !execution_context)
+          !execution_context
               ? FrameOrWorkerScheduler::SchedulingAffectingFeatureHandle()
               : execution_context->GetScheduler()->RegisterFeature(
                     SchedulingPolicy::Feature::kDedicatedWorkerOrWorklet,

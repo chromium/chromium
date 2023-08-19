@@ -18,7 +18,7 @@ void DisplayUtil::DisplayToScreenInfo(ScreenInfo* screen_info,
   // TODO(husky): Remove any Android system controls from availableRect.
   screen_info->available_rect = display.work_area();
   screen_info->device_scale_factor = display.device_scale_factor();
-  screen_info->display_color_spaces = display.color_spaces();
+  screen_info->display_color_spaces = display.GetColorSpaces();
   screen_info->depth = display.color_depth();
   screen_info->depth_per_component = display.depth_per_component();
   screen_info->is_monochrome = display.is_monochrome();
@@ -61,7 +61,7 @@ void DisplayUtil::DisplayToScreenInfo(ScreenInfo* screen_info,
 
 // static
 void DisplayUtil::GetDefaultScreenInfo(ScreenInfo* screen_info) {
-  return GetNativeViewScreenInfo(screen_info, nullptr);
+  return GetNativeViewScreenInfo(screen_info, gfx::NativeView());
 }
 
 // static

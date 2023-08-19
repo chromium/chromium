@@ -8,7 +8,7 @@ import android.os.Bundle;
 
 import androidx.browser.customtabs.CustomTabsSessionToken;
 
-import org.chromium.chrome.browser.metrics.PageLoadMetrics;
+import org.chromium.chrome.browser.page_load_metrics.PageLoadMetrics;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.content_public.browser.WebContents;
 

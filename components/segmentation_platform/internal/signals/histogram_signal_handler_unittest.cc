@@ -79,6 +79,28 @@ TEST_F(HistogramSignalHandlerTest, HistogramsAreRecorded) {
   task_environment_.RunUntilIdle();
 }
 
+TEST_F(HistogramSignalHandlerTest, HistogramAsValueAndEnum) {
+  histogram_signal_handler_->EnableMetrics(true);
+
+  // Add the same histogram as enum and as value type, the observer should write
+  // 2 samples to database.
+  std::set<std::pair<std::string, proto::SignalType>> histograms;
+  histograms.insert(
+      std::make_pair(kExpectedHistogram, proto::SignalType::HISTOGRAM_ENUM));
+  histograms.insert(
+      std::make_pair(kExpectedHistogram, proto::SignalType::HISTOGRAM_VALUE));
+  histogram_signal_handler_->SetRelevantHistograms(histograms);
+
+  // Record a registered histogram sample. It should be recorded.
+  EXPECT_CALL(*signal_database_, WriteSample(proto::SignalType::HISTOGRAM_ENUM,
+                                             kExpectedHash, Eq(1), _));
+  EXPECT_CALL(*signal_database_, WriteSample(proto::SignalType::HISTOGRAM_VALUE,
+                                             kExpectedHash, Eq(1), _));
+
+  UMA_HISTOGRAM_BOOLEAN(kExpectedHistogram, true);
+  task_environment_.RunUntilIdle();
+}
+
 TEST_F(HistogramSignalHandlerTest, DisableMetrics) {
   SetupHistograms();
 

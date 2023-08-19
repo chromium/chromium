@@ -37,52 +37,6 @@ namespace {
   " cluster_id,visit_id,score,engagement_score,url_for_deduping," \
   "normalized_url,url_for_display,interaction_state "
 
-// Converts the serialized categories into a vector of (`id`, `weight`)
-// pairs.
-std::vector<VisitContentModelAnnotations::Category>
-GetCategoriesFromStringColumn(const std::string& column_value) {
-  std::vector<VisitContentModelAnnotations::Category> categories;
-
-  std::vector<std::string> category_strings = base::SplitString(
-      column_value, ",", base::TRIM_WHITESPACE, base::SPLIT_WANT_NONEMPTY);
-  for (const auto& category_string : category_strings) {
-    std::vector<std::string> category_parts = base::SplitString(
-        category_string, ":", base::TRIM_WHITESPACE, base::SPLIT_WANT_NONEMPTY);
-
-    auto category = VisitContentModelAnnotations::Category::FromStringVector(
-        category_parts);
-    if (category)
-      categories.emplace_back(*category);
-  }
-  return categories;
-}
-
-// Converts categories to something that can be stored in the database.
-std::string ConvertCategoriesToStringColumn(
-    const std::vector<VisitContentModelAnnotations::Category>& categories) {
-  std::vector<std::string> serialized_categories;
-  for (const auto& category : categories) {
-    serialized_categories.emplace_back(category.ToString());
-  }
-  return base::JoinString(serialized_categories, ",");
-}
-
-// Converts a serialized db string into a vector of strings.
-std::vector<std::string> DeserializeFromStringColumn(
-    const std::string& column_value) {
-  using std::string_literals::operator""s;
-  return base::SplitString(column_value, "\0"s, base::TRIM_WHITESPACE,
-                           base::SPLIT_WANT_NONEMPTY);
-}
-
-// Serializes a vector of strings into a string that can be stored in the db.
-std::string SerializeToStringColumn(
-    const std::vector<std::string>& related_searches) {
-  // Use the Null character as the separator to serialize the related searches.
-  using std::string_literals::operator""s;
-  return base::JoinString(related_searches, "\0"s);
-}
-
 VisitContextAnnotations::BrowserType BrowserTypeFromInt(int type) {
   VisitContextAnnotations::BrowserType converted =
       static_cast<VisitContextAnnotations::BrowserType>(type);
@@ -1152,6 +1106,29 @@ void VisitAnnotationsDatabase::DeleteClusters(
   }
 }
 
+void VisitAnnotationsDatabase::UpdateVisitsInteractionState(
+    const std::vector<VisitID>& visit_ids,
+    ClusterVisit::InteractionState interaction_state) {
+  if (visit_ids.empty()) {
+    return;
+  }
+
+  sql::Statement statement(
+      GetDB().GetCachedStatement(SQL_FROM_HERE,
+                                 "UPDATE clusters_and_visits "
+                                 "SET interaction_state=? WHERE visit_id=?"));
+  for (auto visit_id : visit_ids) {
+    statement.Reset(true);
+    statement.BindInt(0,
+                      ClusterVisit::InteractionStateToInt(interaction_state));
+    statement.BindInt64(1, visit_id);
+    if (!statement.Run()) {
+      DVLOG(0) << "Failed to execute visit hide statement:  "
+               << "visit_id = " << visit_id;
+    }
+  }
+}
+
 bool VisitAnnotationsDatabase::MigrateFlocAllowedToAnnotationsTable() {
   if (!GetDB().DoesTableExist("content_annotations")) {
     NOTREACHED() << " content_annotations table should exist before migration";
@@ -1526,6 +1503,61 @@ bool VisitAnnotationsDatabase::CreateClustersAndVisitsTableAndIndex() {
          GetDB().Execute(
              "CREATE INDEX IF NOT EXISTS clusters_for_visit ON "
              "clusters_and_visits(visit_id)");
+}
+
+// Converts categories to something that can be stored in the database. As the
+// serialized format is already being synced, the implementation of these
+// functions should not be changed.
+std::string VisitAnnotationsDatabase::ConvertCategoriesToStringColumn(
+    const std::vector<VisitContentModelAnnotations::Category>& categories) {
+  std::vector<std::string> serialized_categories;
+  for (const auto& category : categories) {
+    serialized_categories.emplace_back(category.ToString());
+  }
+  return base::JoinString(serialized_categories, ",");
+}
+
+// Converts serialized categories into a vector of (`id`, `weight`) pairs. As
+// the serialized format is already being synced, the implementation of these
+// functions should not be changed.
+std::vector<VisitContentModelAnnotations::Category>
+VisitAnnotationsDatabase::GetCategoriesFromStringColumn(
+    const std::string& column_value) {
+  std::vector<VisitContentModelAnnotations::Category> categories;
+
+  std::vector<std::string> category_strings = base::SplitString(
+      column_value, ",", base::TRIM_WHITESPACE, base::SPLIT_WANT_NONEMPTY);
+  for (const auto& category_string : category_strings) {
+    std::vector<std::string> category_parts = base::SplitString(
+        category_string, ":", base::TRIM_WHITESPACE, base::SPLIT_WANT_NONEMPTY);
+
+    auto category = VisitContentModelAnnotations::Category::FromStringVector(
+        category_parts);
+    if (category) {
+      categories.emplace_back(*category);
+    }
+  }
+  return categories;
+}
+
+// Serializes a vector of strings into a string that can be stored in the db.
+// As the serialized format is already being synced, the implementation of
+// these functions should not be changed.
+std::string VisitAnnotationsDatabase::SerializeToStringColumn(
+    const std::vector<std::string>& related_searches) {
+  // Use the Null character as the separator to serialize the related searches.
+  using std::string_literals::operator""s;
+  return base::JoinString(related_searches, "\0"s);
+}
+
+// Converts a serialized db string into a vector of strings. As the serialized
+// format is already being synced, the implementation of these functions
+// should not be changed.
+std::vector<std::string> VisitAnnotationsDatabase::DeserializeFromStringColumn(
+    const std::string& column_value) {
+  using std::string_literals::operator""s;
+  return base::SplitString(column_value, "\0"s, base::TRIM_WHITESPACE,
+                           base::SPLIT_WANT_NONEMPTY);
 }
 
 }  // namespace history

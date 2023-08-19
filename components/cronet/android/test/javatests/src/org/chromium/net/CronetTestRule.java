@@ -8,13 +8,15 @@ import static com.google.common.truth.Truth.assertThat;
 
 import static org.junit.Assume.assumeTrue;
 
+import static org.chromium.net.truth.UrlResponseInfoSubject.assertThat;
+
 import android.content.Context;
+import android.content.MutableContextWrapper;
 import android.os.Build;
 import android.os.StrictMode;
 
 import androidx.test.core.app.ApplicationProvider;
 
-import org.junit.Assert;
 import org.junit.rules.TestRule;
 import org.junit.runner.Description;
 import org.junit.runners.model.Statement;
@@ -22,7 +24,6 @@ import org.junit.runners.model.Statement;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.Log;
 import org.chromium.base.PathUtils;
-import org.chromium.net.impl.JavaCronetEngine;
 import org.chromium.net.impl.JavaCronetProvider;
 import org.chromium.net.impl.NativeCronetProvider;
 import org.chromium.net.impl.UserAgent;
@@ -33,8 +34,6 @@ import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
-import java.net.URL;
-import java.net.URLStreamHandlerFactory;
 
 /**
  * Custom TestRule for Cronet instrumentation tests.
@@ -44,77 +43,60 @@ public class CronetTestRule implements TestRule {
     private static final String TAG = "CronetTestRule";
 
     private CronetTestFramework mCronetTestFramework;
-    private boolean mTestingSystemHttpURLConnection;
-    private boolean mTestingJavaImpl;
-    private StrictMode.VmPolicy mOldVmPolicy;
+    private CronetImplementation mImplementation;
+
+    private final EngineStartupMode mEngineStartupMode;
+
+    private CronetTestRule(EngineStartupMode engineStartupMode) {
+        this.mEngineStartupMode = engineStartupMode;
+    }
 
     /**
-     * Creates and holds pointer to CronetEngine.
+     * Requires the user to call {@code CronetTestFramework.startEngine()} but allows to customize
+     * the builder parameters.
      */
-    public static class CronetTestFramework {
-        public ExperimentalCronetEngine mCronetEngine;
-        public ExperimentalCronetEngine.Builder mBuilder;
+    public static CronetTestRule withManualEngineStartup() {
+        return new CronetTestRule(EngineStartupMode.MANUAL);
+    }
 
-        private Context mContext;
-        private boolean mIsTestingJavaImpl;
+    /**
+     * Starts the Cronet engine automatically for each test case, but doesn't allow any
+     * customizations to the builder.
+     */
+    public static CronetTestRule withAutomaticEngineStartup() {
+        return new CronetTestRule(EngineStartupMode.AUTOMATIC);
+    }
 
-        private CronetTestFramework(Context context, boolean isTestingJavaImpl) {
-            mContext = context;
-            mIsTestingJavaImpl = isTestingJavaImpl;
-            mBuilder = mIsTestingJavaImpl ? createJavaEngineBuilder() : createNativeEngineBuilder();
-        }
+    public CronetTestFramework getTestFramework() {
+        return mCronetTestFramework;
+    }
 
-        private static CronetTestFramework createUsingJavaImpl(Context context) {
-            return new CronetTestFramework(context, true /* isTestingJavaImpl */);
-        }
-
-        private static CronetTestFramework createUsingNativeImpl(Context context) {
-            return new CronetTestFramework(context, false /* isTestingJavaImpl */);
-        }
-
-        public ExperimentalCronetEngine startEngine() {
-            assert mCronetEngine == null;
-
-            mCronetEngine = mBuilder.build();
-            if (mIsTestingJavaImpl) {
-                // Make sure that the instantiated engine is JavaCronetEngine.
-                assert mCronetEngine.getClass() == JavaCronetEngine.class;
-            }
-
-            // Start collecting metrics.
-            mCronetEngine.getGlobalMetricsDeltas();
-
-            return mCronetEngine;
-        }
-
-        public void shutdownEngine() {
-            if (mCronetEngine == null) return;
-            mCronetEngine.shutdown();
-            mCronetEngine = null;
-        }
-
-        private ExperimentalCronetEngine.Builder createJavaEngineBuilder() {
-            return CronetTestRule.createJavaEngineBuilder(mContext)
-                    .setUserAgent(UserAgent.from(getContext()))
-                    .enableQuic(true);
-        }
-
-        private ExperimentalCronetEngine.Builder createNativeEngineBuilder() {
-            return CronetTestRule.createNativeEngineBuilder(mContext).enableQuic(true);
+    public void assertResponseEquals(UrlResponseInfo expected, UrlResponseInfo actual) {
+        assertThat(actual).hasHeadersThat().isEqualTo(expected.getAllHeaders());
+        assertThat(actual).hasHeadersListThat().isEqualTo(expected.getAllHeadersAsList());
+        assertThat(actual).hasHttpStatusCodeThat().isEqualTo(expected.getHttpStatusCode());
+        assertThat(actual).hasHttpStatusTextThat().isEqualTo(expected.getHttpStatusText());
+        assertThat(actual).hasUrlChainThat().isEqualTo(expected.getUrlChain());
+        assertThat(actual).hasUrlThat().isEqualTo(expected.getUrl());
+        // Transferred bytes and proxy server are not supported in pure java
+        if (!testingJavaImpl()) {
+            assertThat(actual).hasReceivedByteCountThat().isEqualTo(
+                    expected.getReceivedByteCount());
+            assertThat(actual).hasProxyServerThat().isEqualTo(expected.getProxyServer());
+            // This is a place where behavior intentionally differs between native and java
+            assertThat(actual).hasNegotiatedProtocolThat().isEqualTo(
+                    expected.getNegotiatedProtocol());
         }
     }
 
-    public static Context getContext() {
-        return ApplicationProvider.getApplicationContext();
-    }
-
-    int getMaximumAvailableApiLevel() {
-        // Prior to M59 the ApiVersion.getMaximumAvailableApiLevel API didn't exist
-        int cronetMajorVersion = Integer.parseInt(ApiVersion.getCronetVersion().split("\\.")[0]);
-        if (cronetMajorVersion < 59) {
-            return 3;
-        }
-        return ApiVersion.getMaximumAvailableApiLevel();
+    /**
+     * Returns {@code true} when test is being run against the java implementation of CronetEngine.
+     *
+     * @deprecated use the implementation enum
+     */
+    @Deprecated
+    public boolean testingJavaImpl() {
+        return mImplementation.equals(CronetImplementation.FALLBACK);
     }
 
     @Override
@@ -122,37 +104,18 @@ public class CronetTestRule implements TestRule {
         return new Statement() {
             @Override
             public void evaluate() throws Throwable {
-                setUp();
-                try {
-                    runBase(base, desc);
-                } finally {
-                    tearDown();
-                }
+                runBase(base, desc);
             }
         };
     }
 
-    /**
-     * Returns {@code true} when test is being run against system HttpURLConnection implementation.
-     */
-    public boolean testingSystemHttpURLConnection() {
-        return mTestingSystemHttpURLConnection;
-    }
-
-    /**
-     * Returns {@code true} when test is being run against the java implementation of CronetEngine.
-     */
-    public boolean testingJavaImpl() {
-        return mTestingJavaImpl;
-    }
-
     // TODO(yolandyan): refactor this using parameterize framework
     private void runBase(Statement base, Description desc) throws Throwable {
-        setTestingSystemHttpURLConnection(false);
-        setTestingJavaImpl(false);
+        setImplementationUnderTest(CronetImplementation.STATICALLY_LINKED);
         String packageName = desc.getTestClass().getPackage().getName();
 
-        boolean onlyRunTestForNative = desc.getAnnotation(OnlyRunNativeCronet.class) != null;
+        boolean onlyRunTestForNative = desc.getAnnotation(OnlyRunNativeCronet.class) != null
+                || desc.getTestClass().getAnnotation(OnlyRunNativeCronet.class) != null;
         boolean onlyRunTestForJava = desc.getAnnotation(OnlyRunJavaCronet.class) != null;
         if (onlyRunTestForNative && onlyRunTestForJava) {
             throw new IllegalArgumentException(desc.getMethodName()
@@ -164,7 +127,7 @@ public class CronetTestRule implements TestRule {
 
         // Find the API version required by the test.
         int requiredApiVersion = getMaximumAvailableApiLevel();
-        int requiredAndroidApiVersion = Build.VERSION_CODES.KITKAT;
+        int requiredAndroidApiVersion = Build.VERSION_CODES.LOLLIPOP;
         for (Annotation a : desc.getTestClass().getAnnotations()) {
             if (a instanceof RequiresMinApi) {
                 requiredApiVersion = ((RequiresMinApi) a).value();
@@ -191,174 +154,57 @@ public class CronetTestRule implements TestRule {
                         + Build.VERSION.SDK_INT,
                 Build.VERSION.SDK_INT >= requiredAndroidApiVersion);
 
-        if (packageName.equals("org.chromium.net.urlconnection")) {
-            if (desc.getAnnotation(CompareDefaultWithCronet.class) != null) {
-                try {
-                    // Run with the default HttpURLConnection implementation first.
-                    setTestingSystemHttpURLConnection(true);
-                    base.evaluate();
-                    // Use Cronet's implementation, and run the same test.
-                    setTestingSystemHttpURLConnection(false);
-                    base.evaluate();
-                } catch (Throwable e) {
-                    Log.e(TAG, "CronetTestBase#runTest failed for %s implementation.",
-                            testingSystemHttpURLConnection() ? "System" : "Cronet");
-                    throw e;
-                }
-            } else {
-                // For all other tests.
-                base.evaluate();
-            }
-        } else if (packageName.startsWith("org.chromium.net")) {
+        if (packageName.startsWith("org.chromium.net")) {
             try {
                 if (doRunTestForNative) {
                     Log.i(TAG, "Running test against Native implementation.");
-                    base.evaluate();
+                    evaluateWithFramework(base);
                 }
                 if (doRunTestForJava) {
                     Log.i(TAG, "Running test against Java implementation.");
-                    setTestingJavaImpl(true);
-                    base.evaluate();
+                    setImplementationUnderTest(CronetImplementation.FALLBACK);
+                    evaluateWithFramework(base);
                 }
             } catch (Throwable e) {
-                Log.e(TAG, "CronetTestBase#runTest failed for %s implementation.",
-                        testingJavaImpl() ? "Java" : "Native");
+                Log.e(TAG, "CronetTestBase#runTest failed for %s implementation.", mImplementation);
                 throw e;
             }
         } else {
-            base.evaluate();
+            evaluateWithFramework(base);
         }
     }
 
-    private void setUp() throws Exception {
-        System.loadLibrary("cronet_tests");
-        ContextUtils.initApplicationContext(getContext().getApplicationContext());
-        PathUtils.setPrivateDataDirectorySuffix(PRIVATE_DATA_DIRECTORY_SUFFIX);
-        prepareTestStorage(getContext());
-        mOldVmPolicy = StrictMode.getVmPolicy();
-        // Only enable StrictMode testing after leaks were fixed in crrev.com/475945
-        if (getMaximumAvailableApiLevel() >= 7) {
-            StrictMode.setVmPolicy(new StrictMode.VmPolicy.Builder()
-                                           .detectLeakedClosableObjects()
-                                           .penaltyLog()
-                                           .penaltyDeath()
-                                           .build());
-        }
-    }
-
-    private void tearDown() throws Exception {
-        try {
-            // Run GC and finalizers a few times to pick up leaked closeables
-            for (int i = 0; i < 10; i++) {
-                System.gc();
-                System.runFinalization();
-            }
-            System.gc();
-            System.runFinalization();
+    private void evaluateWithFramework(Statement statement) throws Throwable {
+        try (CronetTestFramework framework = createCronetTestFramework()) {
+            statement.evaluate();
         } finally {
-            StrictMode.setVmPolicy(mOldVmPolicy);
+            mCronetTestFramework = null;
         }
     }
 
     private CronetTestFramework createCronetTestFramework() {
-        mCronetTestFramework = testingJavaImpl()
-                ? CronetTestFramework.createUsingJavaImpl(getContext())
-                : CronetTestFramework.createUsingNativeImpl(getContext());
+        mCronetTestFramework = new CronetTestFramework(mImplementation);
+        if (mEngineStartupMode.equals(EngineStartupMode.AUTOMATIC)) {
+            mCronetTestFramework.startEngine();
+        }
         return mCronetTestFramework;
     }
 
-    /**
-     * Builds and starts the CronetTest framework.
-     */
-    public CronetTestFramework startCronetTestFramework() {
-        createCronetTestFramework();
-        mCronetTestFramework.startEngine();
-        return mCronetTestFramework;
-    }
-
-    /**
-     * Builds the CronetTest framework.
-     */
-    public CronetTestFramework buildCronetTestFramework() {
-        return createCronetTestFramework();
-    }
-
-    /**
-     * Creates and returns {@link ExperimentalCronetEngine.Builder} that creates
-     * Java (platform) based {@link CronetEngine.Builder}.
-     *
-     * @return the {@code CronetEngine.Builder} that builds Java-based {@code Cronet engine}.
-     */
-    public static ExperimentalCronetEngine.Builder createJavaEngineBuilder(Context context) {
-        return (ExperimentalCronetEngine.Builder) new JavaCronetProvider(context).createBuilder();
-    }
-
-    /**
-     * Creates and returns {@link ExperimentalCronetEngine.Builder} that creates
-     * Chromium (native) based {@link CronetEngine.Builder}.
-     *
-     * @return the {@code CronetEngine.Builder} that builds Chromium-based {@code Cronet engine}.
-     */
-    public static ExperimentalCronetEngine.Builder createNativeEngineBuilder(Context context) {
-        return (ExperimentalCronetEngine.Builder) new NativeCronetProvider(context).createBuilder();
-    }
-
-    public void assertResponseEquals(UrlResponseInfo expected, UrlResponseInfo actual) {
-        assertThat(actual.getAllHeaders()).isEqualTo(expected.getAllHeaders());
-        assertThat(actual.getAllHeadersAsList()).isEqualTo(expected.getAllHeadersAsList());
-        assertThat(actual.getHttpStatusCode()).isEqualTo(expected.getHttpStatusCode());
-        assertThat(actual.getHttpStatusText()).isEqualTo(expected.getHttpStatusText());
-        assertThat(actual.getUrlChain()).isEqualTo(expected.getUrlChain());
-        assertThat(actual.getUrl()).isEqualTo(expected.getUrl());
-        // Transferred bytes and proxy server are not supported in pure java
-        if (!testingJavaImpl()) {
-            assertThat(actual.getReceivedByteCount()).isEqualTo(expected.getReceivedByteCount());
-            assertThat(actual.getProxyServer()).isEqualTo(expected.getProxyServer());
-            // This is a place where behavior intentionally differs between native and java
-            assertThat(actual.getNegotiatedProtocol()).isEqualTo(expected.getNegotiatedProtocol());
+    static int getMaximumAvailableApiLevel() {
+        // Prior to M59 the ApiVersion.getMaximumAvailableApiLevel API didn't exist
+        int cronetMajorVersion = Integer.parseInt(ApiVersion.getCronetVersion().split("\\.")[0]);
+        if (cronetMajorVersion < 59) {
+            return 3;
         }
-    }
-
-    public CronetEngine.Builder enableDiskCache(CronetEngine.Builder cronetEngineBuilder) {
-        cronetEngineBuilder.setStoragePath(getTestStorage(getContext()));
-        cronetEngineBuilder.enableHttpCache(CronetEngine.Builder.HTTP_CACHE_DISK, 1000 * 1024);
-        return cronetEngineBuilder;
+        return ApiVersion.getMaximumAvailableApiLevel();
     }
 
     /**
-     * Sets the {@link URLStreamHandlerFactory} from {@code cronetEngine}.  This should be called
-     * during setUp() and is installed by {@link runTest()} as the default when Cronet is tested.
+     * Annotation for test classes or methods in org.chromium.net package that disables rerunning
+     * the test against the Java-only implementation. When this annotation is present the test is
+     * only run against the native implementation.
      */
-    public void setStreamHandlerFactory(CronetEngine cronetEngine) {
-        if (!testingSystemHttpURLConnection()) {
-            URL.setURLStreamHandlerFactory(cronetEngine.createURLStreamHandlerFactory());
-        }
-    }
-
-    /**
-     * Annotation for test methods in org.chromium.net.urlconnection pacakage that runs them
-     * against both Cronet's HttpURLConnection implementation, and against the system's
-     * HttpURLConnection implementation.
-     */
-    @Target(ElementType.METHOD)
-    @Retention(RetentionPolicy.RUNTIME)
-    public @interface CompareDefaultWithCronet {}
-
-    /**
-     * Annotation for test methods in org.chromium.net.urlconnection pacakage that runs them
-     * only against Cronet's HttpURLConnection implementation, and not against the system's
-     * HttpURLConnection implementation.
-     */
-    @Target(ElementType.METHOD)
-    @Retention(RetentionPolicy.RUNTIME)
-    public @interface OnlyRunCronetHttpURLConnection {}
-
-    /**
-     * Annotation for test methods in org.chromium.net package that disables rerunning the test
-     * against the Java-only implementation. When this annotation is present the test is only run
-     * against the native implementation.
-     */
-    @Target(ElementType.METHOD)
+    @Target({ElementType.TYPE, ElementType.METHOD})
     @Retention(RetentionPolicy.RUNTIME)
     public @interface OnlyRunNativeCronet {}
 
@@ -403,7 +249,7 @@ public class CronetTestRule implements TestRule {
     public static void prepareTestStorage(Context context) {
         File storage = new File(getTestStorageDirectory());
         if (storage.exists()) {
-            Assert.assertTrue(recursiveDelete(storage));
+            assertThat(recursiveDelete(storage)).isTrue();
         }
         ensureTestStorageExists();
     }
@@ -431,7 +277,7 @@ public class CronetTestRule implements TestRule {
     private static void ensureTestStorageExists() {
         File storage = new File(getTestStorageDirectory());
         if (!storage.exists()) {
-            Assert.assertTrue(storage.mkdir());
+            assertThat(storage.mkdir()).isTrue();
         }
     }
 
@@ -446,11 +292,232 @@ public class CronetTestRule implements TestRule {
         return path.delete();
     }
 
-    private void setTestingSystemHttpURLConnection(boolean value) {
-        mTestingSystemHttpURLConnection = value;
+    private void setImplementationUnderTest(CronetImplementation implementation) {
+        mImplementation = implementation;
     }
 
-    private void setTestingJavaImpl(boolean value) {
-        mTestingJavaImpl = value;
+    /**
+     * Creates and holds pointer to CronetEngine.
+     */
+    public static class CronetTestFramework implements AutoCloseable {
+        private final CronetImplementation mImplementation;
+        private final ExperimentalCronetEngine.Builder mBuilder;
+        private final MutableContextWrapper mContextWrapper;
+        private final StrictMode.VmPolicy mOldVmPolicy;
+
+        private ExperimentalCronetEngine mCronetEngine;
+        private boolean mClosed;
+
+        private CronetTestFramework(CronetImplementation implementation) {
+            this.mContextWrapper =
+                    new MutableContextWrapper(ApplicationProvider.getApplicationContext());
+            this.mBuilder = implementation.createBuilder(mContextWrapper)
+                                    .setUserAgent(UserAgent.from(mContextWrapper))
+                                    .enableQuic(true);
+            this.mImplementation = implementation;
+
+            System.loadLibrary("cronet_tests");
+            ContextUtils.initApplicationContext(getContext().getApplicationContext());
+            PathUtils.setPrivateDataDirectorySuffix(PRIVATE_DATA_DIRECTORY_SUFFIX);
+            prepareTestStorage(getContext());
+            mOldVmPolicy = StrictMode.getVmPolicy();
+            // Only enable StrictMode testing after leaks were fixed in crrev.com/475945
+            if (getMaximumAvailableApiLevel() >= 7) {
+                StrictMode.setVmPolicy(new StrictMode.VmPolicy.Builder()
+                                               .detectLeakedClosableObjects()
+                                               .penaltyLog()
+                                               .penaltyDeath()
+                                               .build());
+            }
+        }
+
+        /**
+         * Replaces the {@link Context} implementation that the Cronet engine calls into. Useful for
+         * faking/mocking Android context calls.
+         *
+         * @throws IllegalStateException if called after the Cronet engine has already been built.
+         * Intercepting context calls while the code under test is running is racy and runs the risk
+         * that the code under test will not pick up the change.
+         */
+        public void interceptContext(ContextInterceptor contextInterceptor) {
+            checkNotClosed();
+
+            if (mCronetEngine != null) {
+                throw new IllegalStateException(
+                        "Refusing to intercept context after the Cronet engine has been built");
+            }
+
+            mContextWrapper.setBaseContext(
+                    contextInterceptor.interceptContext(mContextWrapper.getBaseContext()));
+        }
+
+        /**
+         * @return the context to be used by the Cronet engine
+         *
+         * @see #interceptContext
+         */
+        public Context getContext() {
+            checkNotClosed();
+            return mContextWrapper;
+        }
+
+        public CronetEngine.Builder enableDiskCache(CronetEngine.Builder cronetEngineBuilder) {
+            cronetEngineBuilder.setStoragePath(getTestStorage(getContext()));
+            cronetEngineBuilder.enableHttpCache(CronetEngine.Builder.HTTP_CACHE_DISK, 1000 * 1024);
+            return cronetEngineBuilder;
+        }
+
+        public ExperimentalCronetEngine startEngine() {
+            checkNotClosed();
+
+            if (mCronetEngine != null) {
+                throw new IllegalStateException("Engine is already started!");
+            }
+
+            mCronetEngine = mBuilder.build();
+            mImplementation.verifyCronetEngineInstance(mCronetEngine);
+
+            // Start collecting metrics.
+            mCronetEngine.getGlobalMetricsDeltas();
+
+            return mCronetEngine;
+        }
+
+        public ExperimentalCronetEngine getEngine() {
+            checkNotClosed();
+
+            if (mCronetEngine == null) {
+                throw new IllegalStateException("Engine not started yet!");
+            }
+
+            return mCronetEngine;
+        }
+
+        /**
+         * Applies the given patch to the primary Cronet Engine builder associated with this run.
+         */
+        public void applyEngineBuilderPatch(CronetBuilderPatch patch) {
+            checkNotClosed();
+
+            if (mCronetEngine != null) {
+                throw new IllegalStateException("The engine was already built!");
+            }
+
+            try {
+                patch.apply(mBuilder);
+            } catch (Exception e) {
+                throw new IllegalArgumentException("Cannot apply the given patch!", e);
+            }
+        }
+
+        /**
+         * Returns a new instance of a Cronet builder corresponding to the implementation under
+         * test.
+         *
+         * <p>Some test cases need to create multiple instances of Cronet engines to test
+         * interactions between them, so we provide the capability to do so and reliably obtain
+         * the correct Cronet implementation.
+         *
+         * <p>Note that this builder and derived Cronet engine is not managed by the framework! The
+         * caller is responsible for cleaning up resources (e.g. calling {@code engine.shutdown()}
+         * at the end of the test).
+         *
+         */
+        public ExperimentalCronetEngine.Builder createNewSecondaryBuilder(Context context) {
+            return mImplementation.createBuilder(context);
+        }
+
+        @Override
+        public void close() {
+            if (mClosed) {
+                return;
+            }
+            shutdownEngine();
+            mClosed = true;
+
+            try {
+                // Run GC and finalizers a few times to pick up leaked closeables
+                for (int i = 0; i < 10; i++) {
+                    System.gc();
+                    System.runFinalization();
+                }
+            } finally {
+                StrictMode.setVmPolicy(mOldVmPolicy);
+            }
+        }
+
+        private void shutdownEngine() {
+            if (mCronetEngine == null) {
+                return;
+            }
+            try {
+                mCronetEngine.shutdown();
+            } catch (IllegalStateException e) {
+                if (e.getMessage().contains("Engine is shut down")) {
+                    // We're trying to shut the engine down repeatedly. Make such calls idempotent
+                    // instead of failing, as there's no API to query whether an engine is shut down
+                    // and some tests shut the engine down deliberately (e.g. to make sure
+                    // everything is flushed properly).
+                    Log.d(TAG, "Cronet engine already shut down by the test.", e);
+                } else {
+                    throw e;
+                }
+            }
+            mCronetEngine = null;
+        }
+
+        private void checkNotClosed() {
+            if (mClosed) {
+                throw new IllegalStateException(
+                        "Unable to interact with a closed CronetTestFramework!");
+            }
+        }
+    }
+
+    /**
+     * A functional interface that allows Cronet tests to modify parameters of the Cronet engine
+     * provided by {@code CronetTestFramework}.
+     *
+     * <p>The builder itself isn't exposed directly as a getter to tests to stress out ownership
+     * and make accidental local access less likely.
+     */
+    public static interface CronetBuilderPatch {
+        public void apply(ExperimentalCronetEngine.Builder builder) throws Exception;
+    }
+
+    private enum EngineStartupMode {
+        MANUAL,
+        AUTOMATIC,
+    }
+
+    // This is a replacement for java.util.function.Function as Function is only available
+    // starting android API level 24.
+    private interface EngineBuilderSupplier {
+        ExperimentalCronetEngine.Builder getCronetEngineBuilder(Context context);
+    }
+
+    public enum CronetImplementation {
+        STATICALLY_LINKED(context
+                -> (ExperimentalCronetEngine.Builder) new NativeCronetProvider(context)
+                           .createBuilder()),
+        FALLBACK((context)
+                         -> (ExperimentalCronetEngine.Builder) new JavaCronetProvider(context)
+                                    .createBuilder()),
+        AOSP_PLATFORM(
+                (context) -> { throw new UnsupportedOperationException("Not implemented yet"); });
+
+        private final EngineBuilderSupplier mEngineSupplier;
+
+        private CronetImplementation(EngineBuilderSupplier engineSupplier) {
+            this.mEngineSupplier = engineSupplier;
+        }
+
+        ExperimentalCronetEngine.Builder createBuilder(Context context) {
+            return mEngineSupplier.getCronetEngineBuilder(context);
+        }
+
+        private void verifyCronetEngineInstance(CronetEngine engine) {
+            // TODO(danstahr): Add assertions for expected class
+        }
     }
 }

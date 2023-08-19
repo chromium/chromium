@@ -115,8 +115,9 @@ class AnsibleManagementServiceTest : public testing::Test,
   }
 
  private:
-  raw_ptr<CrostiniManager, ExperimentalAsh> crostini_manager_;
-  raw_ptr<AnsibleManagementService, ExperimentalAsh>
+  raw_ptr<CrostiniManager, DanglingUntriaged | ExperimentalAsh>
+      crostini_manager_;
+  raw_ptr<AnsibleManagementService, DanglingUntriaged | ExperimentalAsh>
       ansible_management_service_;
   bool is_install_ansible_success_;
   bool is_apply_ansible_success_;

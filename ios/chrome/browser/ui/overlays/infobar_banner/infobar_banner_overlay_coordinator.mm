@@ -4,8 +4,8 @@
 
 #import "ios/chrome/browser/ui/overlays/infobar_banner/infobar_banner_overlay_coordinator.h"
 
+#import "base/apple/foundation_util.h"
 #import "base/check.h"
-#import "base/mac/foundation_util.h"
 #import "ios/chrome/browser/infobars/infobar_ios.h"
 #import "ios/chrome/browser/infobars/infobar_type.h"
 #import "ios/chrome/browser/overlays/public/common/infobars/infobar_overlay_request_config.h"
@@ -13,7 +13,10 @@
 #import "ios/chrome/browser/overlays/public/overlay_request.h"
 #import "ios/chrome/browser/overlays/public/overlay_request_support.h"
 #import "ios/chrome/browser/overlays/public/overlay_response.h"
-#import "ios/chrome/browser/shared/ui/util/named_guide.h"
+#import "ios/chrome/browser/shared/coordinator/layout_guide/layout_guide_util.h"
+#import "ios/chrome/browser/shared/public/features/features.h"
+#import "ios/chrome/browser/shared/ui/util/layout_guide_names.h"
+#import "ios/chrome/browser/shared/ui/util/util_swift.h"
 #import "ios/chrome/browser/ui/infobars/banners/infobar_banner_accessibility_util.h"
 #import "ios/chrome/browser/ui/infobars/banners/infobar_banner_view_controller.h"
 #import "ios/chrome/browser/ui/infobars/infobar_constants.h"
@@ -26,15 +29,12 @@
 #import "ios/chrome/browser/ui/overlays/infobar_banner/permissions/permissions_infobar_banner_overlay_mediator.h"
 #import "ios/chrome/browser/ui/overlays/infobar_banner/save_card/save_card_infobar_banner_overlay_mediator.h"
 #import "ios/chrome/browser/ui/overlays/infobar_banner/sync_error/sync_error_infobar_banner_overlay_mediator.h"
+#import "ios/chrome/browser/ui/overlays/infobar_banner/tab_pickup/tab_pickup_infobar_banner_overlay_mediator.h"
 #import "ios/chrome/browser/ui/overlays/infobar_banner/tailored_security/tailored_security_infobar_banner_overlay_mediator.h"
 #import "ios/chrome/browser/ui/overlays/infobar_banner/translate/translate_infobar_banner_overlay_mediator.h"
 #import "ios/chrome/browser/ui/overlays/overlay_request_coordinator+subclassing.h"
 #import "ios/chrome/browser/ui/overlays/overlay_request_coordinator_delegate.h"
 #import "ios/chrome/browser/ui/overlays/overlay_request_mediator_util.h"
-
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
 
 @interface InfobarBannerOverlayCoordinator () <InfobarBannerPositioner>
 // The list of supported mediator classes.
@@ -60,6 +60,7 @@
     [PermissionsBannerOverlayMediator class],
     [TailoredSecurityInfobarBannerOverlayMediator class],
     [SyncErrorInfobarBannerOverlayMediator class],
+    [TabPickupBannerOverlayMediator class],
   ];
 }
 
@@ -76,13 +77,24 @@
 #pragma mark - InfobarBannerPositioner
 
 - (CGFloat)bannerYPosition {
-  NamedGuide* omniboxGuide =
-      [NamedGuide guideWithName:kOmniboxGuide
-                           view:self.baseViewController.view];
-  UIView* owningView = omniboxGuide.owningView;
-  CGRect omniboxFrame = [owningView convertRect:omniboxGuide.layoutFrame
-                                         toView:owningView.window];
-  return CGRectGetMaxY(omniboxFrame);
+  LayoutGuideCenter* layoutGuideCenter =
+      LayoutGuideCenterForBrowser(self.browser);
+  UIView* topOmnibox =
+      [layoutGuideCenter referencedViewUnderName:kTopOmniboxGuide];
+  CGRect omniboxFrame = [topOmnibox convertRect:topOmnibox.bounds toView:nil];
+  CGFloat omniboxMaxY = CGRectGetMaxY(omniboxFrame);
+
+  // Use the top toolbar's layout guide when the omnibox is at the bottom.
+  if (IsBottomOmniboxSteadyStateEnabled() && topOmnibox.hidden) {
+    UIView* topToolbar =
+        [layoutGuideCenter referencedViewUnderName:kPrimaryToolbarGuide];
+    CGRect topToolbarFrame = [topToolbar convertRect:topToolbar.bounds
+                                              toView:nil];
+    CGFloat topToolbarMaxY =
+        CGRectGetMaxY(topToolbarFrame) + kInfobarTopPaddingBottomOmnibox;
+    return topToolbarMaxY;
+  }
+  return omniboxMaxY;
 }
 
 - (UIView*)bannerView {
@@ -168,7 +180,7 @@
 // Called when the dismissal of the banner UI is finished.
 - (void)finishDismissal {
   InfobarBannerOverlayMediator* mediator =
-      base::mac::ObjCCast<InfobarBannerOverlayMediator>(self.mediator);
+      base::apple::ObjCCast<InfobarBannerOverlayMediator>(self.mediator);
   [mediator finishDismissal];
   self.bannerViewController = nil;
   self.mediator = nil;
@@ -192,7 +204,7 @@
   }
 
   InfobarBannerOverlayMediator* mediator =
-      base::mac::ObjCCast<InfobarBannerOverlayMediator>(GetMediatorForRequest(
+      base::apple::ObjCCast<InfobarBannerOverlayMediator>(GetMediatorForRequest(
           [self class].supportedMediatorClasses, self.request));
   DCHECK(mediator) << "None of the supported mediator classes support request.";
   return mediator;
@@ -210,6 +222,21 @@
       break;
     case InfobarType::kInfobarTypePermissions:
       mediatorClass = [PermissionsBannerOverlayMediator class];
+      break;
+    case InfobarType::kInfobarTypeTailoredSecurityService:
+      mediatorClass = [TailoredSecurityInfobarBannerOverlayMediator class];
+      break;
+    case InfobarType::kInfobarTypeSaveCard:
+      mediatorClass = [SaveCardInfobarBannerOverlayMediator class];
+      break;
+    case InfobarType::kInfobarTypeSyncError:
+      mediatorClass = [SyncErrorInfobarBannerOverlayMediator class];
+      break;
+    case InfobarType::kInfobarTypeTranslate:
+      mediatorClass = [TranslateInfobarBannerOverlayMediator class];
+      break;
+    case InfobarType::kInfobarTypeTabPickup:
+      mediatorClass = [TabPickupBannerOverlayMediator class];
       break;
     default:
       NOTREACHED_NORETURN() << "Received unsupported infobarType.";

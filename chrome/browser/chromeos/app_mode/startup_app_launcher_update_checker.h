@@ -15,7 +15,7 @@ namespace base {
 class Version;
 }
 
-namespace ash {
+namespace chromeos {
 
 // Used by StartupAppLauncher to check for available extension updates for
 // extensions other than the primary kiosk app - in particular for the secondary
@@ -31,11 +31,11 @@ class StartupAppLauncherUpdateChecker {
 
   using UpdateCheckCallback = base::OnceCallback<void(bool updates_found)>;
   // Runs the extension update check.
-  // |callback| is called when the update check completes, with a boolean value
+  // `callback` is called when the update check completes, with a boolean value
   // indicating whether an update for an extension was found.
   // Returns whether the update check has successfully started - callback will
   // eventually be run only if the return value is true.
-  // It is safe to delete |this| before the update check is done - in that case
+  // It is safe to delete `this` before the update check is done - in that case
   // the callback will never run.
   bool Run(UpdateCheckCallback callback);
 
@@ -54,6 +54,6 @@ class StartupAppLauncherUpdateChecker {
   base::WeakPtrFactory<StartupAppLauncherUpdateChecker> weak_ptr_factory_{this};
 };
 
-}  // namespace ash
+}  // namespace chromeos
 
 #endif  // CHROME_BROWSER_CHROMEOS_APP_MODE_STARTUP_APP_LAUNCHER_UPDATE_CHECKER_H_

@@ -103,10 +103,6 @@ export class PasswordDetailsSectionElement extends
         Router.getInstance().currentRoute.queryParameters);
   }
 
-  private getGroupName_(): string {
-    return this.selectedGroup_ ? this.selectedGroup_!.name : '';
-  }
-
   private async assignMatchingGroup(groupName: string) {
     const groups =
         await PasswordManagerImpl.getInstance().getCredentialGroups();

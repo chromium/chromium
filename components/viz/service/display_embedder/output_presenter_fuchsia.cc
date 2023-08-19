@@ -13,7 +13,6 @@
 #include "base/notreached.h"
 #include "components/viz/common/features.h"
 #include "components/viz/common/gpu/vulkan_context_provider.h"
-#include "components/viz/common/resources/resource_format_utils.h"
 #include "components/viz/service/display_embedder/skia_output_surface_dependency.h"
 #include "gpu/command_buffer/service/external_semaphore.h"
 #include "ui/gfx/geometry/rect_conversions.h"
@@ -155,9 +154,8 @@ void OutputPresenterFuchsia::ScheduleOverlayPlane(
     overlay.pixmap = std::move(pixmap);
     overlay.overlay_plane_data = gfx::OverlayPlaneData(
         overlay_plane_candidate.plane_z_order,
-        absl::get<gfx::OverlayTransform>(overlay_plane_candidate.transform),
-        overlay_plane_candidate.display_rect, overlay_plane_candidate.uv_rect,
-        !overlay_plane_candidate.is_opaque,
+        overlay_plane_candidate.transform, overlay_plane_candidate.display_rect,
+        overlay_plane_candidate.uv_rect, !overlay_plane_candidate.is_opaque,
         gfx::ToRoundedRect(overlay_plane_candidate.damage_rect),
         overlay_plane_candidate.opacity, overlay_plane_candidate.priority_hint,
         overlay_plane_candidate.rounded_corners,

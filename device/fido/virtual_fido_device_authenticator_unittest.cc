@@ -12,6 +12,10 @@
 #include "device/fido/ctap_get_assertion_request.h"
 #include "device/fido/discoverable_credential_metadata.h"
 #include "device/fido/fido_request_handler_base.h"
+#include "device/fido/fido_types.h"
+#include "device/fido/public_key.h"
+#include "device/fido/public_key_credential_descriptor.h"
+#include "device/fido/public_key_credential_user_entity.h"
 #include "device/fido/test_callback_receiver.h"
 #include "device/fido/virtual_ctap2_device.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -90,7 +94,7 @@ TEST_F(VirtualFidoDeviceAuthenticatorTest,
     authenticator_state_->registrations.clear();
   }
   {
-    // A non-resident credential.
+    // A non-resident credential with an empty allow-list.
     ASSERT_TRUE(authenticator_state_->InjectRegistration(
         std::vector<uint8_t>{1, 2, 3, 4}, kRpId));
     CredentialInfoCallback callback;
@@ -102,6 +106,27 @@ TEST_F(VirtualFidoDeviceAuthenticatorTest,
     EXPECT_EQ(
         std::get<1>(*callback.result()),
         FidoRequestHandlerBase::RecognizedCredential::kNoRecognizedCredential);
+    authenticator_state_->registrations.clear();
+  }
+  {
+    // A non-resident credential that matches the allow-list.
+    std::vector<uint8_t> credential_id = {1, 2, 3, 4};
+    ASSERT_TRUE(authenticator_state_->InjectRegistration(credential_id, kRpId));
+    CredentialInfoCallback callback;
+    CtapGetAssertionRequest allow_list_request = request;
+    allow_list_request.allow_list.emplace_back(
+        CredentialType::kPublicKey, std::vector<uint8_t>{1, 2, 3, 4});
+    authenticator_->GetPlatformCredentialInfoForRequest(
+        allow_list_request, CtapGetAssertionOptions(), callback.callback());
+    callback.WaitForCallback();
+    DiscoverableCredentialMetadata expected = DiscoverableCredentialMetadata(
+        AuthenticatorType::kOther, kRpId, credential_id,
+        PublicKeyCredentialUserEntity());
+    EXPECT_THAT(std::get<0>(*callback.result()),
+                testing::UnorderedElementsAre(expected));
+    EXPECT_EQ(
+        std::get<1>(*callback.result()),
+        FidoRequestHandlerBase::RecognizedCredential::kHasRecognizedCredential);
     authenticator_state_->registrations.clear();
   }
   {

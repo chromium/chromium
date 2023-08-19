@@ -24,7 +24,7 @@ struct VersionInfo {
   // The ash Chrome browser version of the device. e.g. "107.0.5296.0"
   std::string ash_chrome;
   // The ChromeOS platform version of the device. e.g. "15088.0.0"
-  // The value is set to "unknown" if the version was not known.
+  // The value is empty if the version is not known.
   std::string platform;
   // The channel of the build.
   version_info::Channel channel = version_info::Channel::UNKNOWN;
@@ -50,8 +50,8 @@ struct DeviceInfo {
   // The model of the device. e.g. "taniks"
   std::string model;
 
-  // The HWID which identifies the hardware configuration of the device. Set to
-  // "unknown" if not running on a ChromeOS device. e.g.
+  // The HWID which identifies the hardware configuration of the device. Can be
+  // empty if not running on a ChromeOS device. e.g.
   // "REDRIX-CLQY C4B-G4H-D3D-U7F-X54-I9N".
   std::string hardware_id;
 
@@ -98,7 +98,7 @@ class DeviceInfoManager {
                    DeviceInfo device_info,
                    base::SysInfo::HardwareInfo hardware_info);
 
-  raw_ptr<Profile> profile_;
+  raw_ptr<Profile, DanglingUntriaged> profile_;
 
   // |weak_ptr_factory_| must be the last member of this class.
   base::WeakPtrFactory<DeviceInfoManager> weak_ptr_factory_{this};

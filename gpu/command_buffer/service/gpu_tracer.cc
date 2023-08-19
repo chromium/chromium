@@ -330,7 +330,10 @@ void GPUTracer::ProcessTraces() {
     }
   }
 
-  DCHECK(GL_NO_ERROR == glGetError());
+  // When `can_trace_dev_` is false, there might be no current context and
+  // calling `glGetError()` might lead to a crash. To avoid that, skip calling
+  // the function in that case.
+  DCHECK(!can_trace_dev_ || GL_NO_ERROR == glGetError());
 }
 
 bool GPUTracer::IsTracing() {

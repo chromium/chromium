@@ -5,6 +5,7 @@ Revision: 0581bc3dfacd34e40381e9cf45a15070b3868ba7
 License: Apache 2.0
 License File: LICENSE
 Security Critical: yes
+Shipped: yes
 
 Description:
 This library provides APIs that turn Motion Interchange motion specifications

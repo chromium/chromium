@@ -11,8 +11,6 @@
 #include "base/feature_list.h"
 #include "base/files/file_path.h"
 #include "base/functional/bind.h"
-#include "base/functional/callback.h"
-#include "base/functional/callback_helpers.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/no_destructor.h"
 #include "base/strings/strcat.h"
@@ -31,6 +29,7 @@
 #include "chrome/browser/ash/guest_os/guest_os_session_tracker.h"
 #include "chrome/browser/ash/guest_os/guest_os_share_path.h"
 #include "chrome/browser/ash/guest_os/guest_os_terminal.h"
+#include "chrome/browser/ash/guest_os/public/types.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/ash/shelf/app_service/app_service_app_window_crostini_tracker.h"
@@ -40,9 +39,7 @@
 #include "chrome/browser/ui/ash/shelf/shelf_spinner_item_controller.h"
 #include "chrome/browser/ui/views/crostini/crostini_recovery_view.h"
 #include "chrome/browser/ui/webui/ash/crostini_upgrader/crostini_upgrader_dialog.h"
-#include "chrome/browser/ui/webui/ash/system_web_dialog_delegate.h"
 #include "chrome/common/chrome_features.h"
-#include "chrome/common/webui_url_constants.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/prefs/pref_service.h"
 #include "components/user_manager/user.h"
@@ -147,7 +144,7 @@ void LaunchApplication(
     guest_os::GuestOsRegistryService::Registration registration,
     const guest_os::GuestId& container_id,
     int64_t display_id,
-    const std::vector<LaunchArg>& args,
+    const std::vector<guest_os::LaunchArg>& args,
     crostini::CrostiniSuccessCallback callback) {
   ChromeShelfController* chrome_shelf_controller =
       ChromeShelfController::instance();
@@ -163,49 +160,37 @@ void LaunchApplication(
 
   crostini_tracker->OnAppLaunchRequested(app_id, display_id);
 
-  auto* share_path = guest_os::GuestOsSharePath::GetForProfile(profile);
-  const auto vm_name = registration.VmName();
+  // Get vm_info because we need seneschal_server_handle.
+  const std::string& vm_name = registration.VmName();
   auto vm_info =
-      crostini::CrostiniManager::GetForProfile(profile)->GetVmInfo(vm_name);
+      guest_os::GuestOsSessionTracker::GetForProfile(profile)->GetVmInfo(
+          vm_name);
   if (!vm_info) {
     return OnLaunchFailed(app_id, std::move(callback),
-                          "VM not running: " + vm_name,
+                          "Crostini VM not running: " + vm_name,
                           CrostiniResult::SHARE_PATHS_FAILED);
   }
 
   // Share any paths not in crostini.  The user will see the spinner while this
   // is happening.
-  std::vector<base::FilePath> paths_to_share;
-  std::vector<std::string> launch_args;
-  launch_args.reserve(args.size());
-  for (const auto& arg : args) {
-    if (absl::holds_alternative<std::string>(arg)) {
-      launch_args.push_back(absl::get<std::string>(arg));
-      continue;
-    }
-    const storage::FileSystemURL& url = absl::get<storage::FileSystemURL>(arg);
-    base::FilePath path;
-    if (!file_manager::util::ConvertFileSystemURLToPathInsideCrostini(
-            profile, url, &path)) {
-      return OnLaunchFailed(
-          app_id, std::move(callback),
-          "Cannot share file with crostini: " + url.DebugString(),
-          CrostiniResult::SHARE_PATHS_FAILED);
-    }
-    if (url.mount_filesystem_id() !=
-            file_manager::util::GetCrostiniMountPointName(profile) &&
-        !share_path->IsPathShared(vm_name, url.path())) {
-      paths_to_share.push_back(url.path());
-    }
-    launch_args.push_back(path.value());
+  auto* share_path = guest_os::GuestOsSharePath::GetForProfile(profile);
+  auto paths_or_error = share_path->ConvertArgsToPathsToShare(
+      registration, args, crostini::ContainerChromeOSBaseDirectory(),
+      /*map_crostini_home=*/true);
+  if (absl::holds_alternative<std::string>(paths_or_error)) {
+    OnLaunchFailed(app_id, std::move(callback),
+                   absl::get<std::string>(paths_or_error),
+                   CrostiniResult::SHARE_PATHS_FAILED);
+    return;
   }
-
+  const auto& paths =
+      absl::get<guest_os::GuestOsSharePath::PathsToShare>(paths_or_error);
   share_path->SharePaths(
-      vm_name, vm_info->info.seneschal_server_handle(),
-      std::move(paths_to_share),
+      vm_name, vm_info->seneschal_server_handle(),
+      std::move(paths.paths_to_share),
       base::BindOnce(OnSharePathForLaunchApplication, profile, app_id,
                      std::move(registration), container_id, display_id,
-                     std::move(launch_args), std::move(callback)));
+                     std::move(paths.launch_args), std::move(callback)));
 }
 
 }  // namespace
@@ -218,8 +203,9 @@ bool IsUninstallable(Profile* profile, const std::string& app_id) {
       guest_os::GuestOsRegistryServiceFactory::GetForProfile(profile);
   absl::optional<guest_os::GuestOsRegistryService::Registration> registration =
       registry_service->GetRegistration(app_id);
-  if (registration)
+  if (registration) {
     return registration->CanUninstall();
+  }
   return false;
 }
 
@@ -262,7 +248,7 @@ void LaunchCrostiniAppImpl(
     guest_os::GuestOsRegistryService::Registration registration,
     const guest_os::GuestId& container_id,
     int64_t display_id,
-    const std::vector<LaunchArg>& args,
+    const std::vector<guest_os::LaunchArg>& args,
     CrostiniSuccessCallback callback) {
   auto* crostini_manager = crostini::CrostiniManager::GetForProfile(profile);
   auto* registry_service =
@@ -281,14 +267,14 @@ void LaunchCrostiniAppImpl(
           [](Profile* profile, const std::string& app_id,
              guest_os::GuestOsRegistryService::Registration registration,
              const guest_os::GuestId& container_id, int64_t display_id,
-             const std::vector<LaunchArg> args,
+             const std::vector<guest_os::LaunchArg> args,
              crostini::CrostiniSuccessCallback callback,
              crostini::CrostiniResult result) {
             if (result != crostini::CrostiniResult::SUCCESS) {
               OnLaunchFailed(app_id, std::move(callback),
                              base::StringPrintf(
                                  "crostini restart to launch app %s failed: %d",
-                                 app_id.c_str(), result),
+                                 app_id.c_str(), static_cast<int>(result)),
                              result);
               return;
             }
@@ -310,7 +296,7 @@ void LaunchCrostiniAppWithIntent(Profile* profile,
                                  const std::string& app_id,
                                  int64_t display_id,
                                  apps::IntentPtr intent,
-                                 const std::vector<LaunchArg>& args,
+                                 const std::vector<guest_os::LaunchArg>& args,
                                  CrostiniSuccessCallback callback) {
   // Policies can change under us, and crostini may now be forbidden.
   std::string reason;
@@ -360,7 +346,7 @@ void LaunchCrostiniAppWithIntent(Profile* profile,
 void LaunchCrostiniApp(Profile* profile,
                        const std::string& app_id,
                        int64_t display_id,
-                       const std::vector<LaunchArg>& args,
+                       const std::vector<guest_os::LaunchArg>& args,
                        CrostiniSuccessCallback callback) {
   LaunchCrostiniAppWithIntent(profile, app_id, display_id, nullptr, args,
                               std::move(callback));
@@ -458,29 +444,13 @@ bool IsContainerVersionExpired(Profile* profile,
                                const guest_os::GuestId& container_id) {
   auto* value = GetContainerPrefValue(profile, container_id,
                                       guest_os::prefs::kContainerOsVersionKey);
-  if (!value)
+  if (!value) {
     return false;
+  }
 
   auto version = static_cast<ContainerOsVersion>(value->GetInt());
-  return version == ContainerOsVersion::kDebianStretch;
-}
-
-bool ShouldWarnAboutExpiredVersion(Profile* profile,
-                                   const guest_os::GuestId& container_id) {
-  if (!CrostiniFeatures::Get()->IsContainerUpgradeUIAllowed(profile)) {
-    return false;
-  }
-  if (container_id != DefaultContainerId()) {
-    return false;
-  }
-  // If the warning dialog is already open we can add more callbacks to it, but
-  // if we've moved to the upgrade dialog proper we should run them now as they
-  // may be part of the upgrade process.
-  if (ash::SystemWebDialogDelegate::FindInstance(
-          GURL{chrome::kChromeUICrostiniUpgraderUrl}.spec())) {
-    return false;
-  }
-  return IsContainerVersionExpired(profile, container_id);
+  return version == ContainerOsVersion::kDebianStretch ||
+         version == ContainerOsVersion::kDebianBuster;
 }
 
 std::u16string GetTimeRemainingMessage(base::TimeTicks start, int percent) {

@@ -347,6 +347,14 @@ void MediaController::RequestMediaRemoting() {
     session_->ipc()->RequestMediaRemoting();
 }
 
+void MediaController::EnterAutoPictureInPicture() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  if (session_) {
+    session_->ipc()->EnterAutoPictureInPicture();
+  }
+}
+
 void MediaController::SetMediaSession(AudioFocusRequest* session) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 

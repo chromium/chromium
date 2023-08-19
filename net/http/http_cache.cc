@@ -39,7 +39,6 @@
 #include "net/base/network_isolation_key.h"
 #include "net/base/upload_data_stream.h"
 #include "net/disk_cache/disk_cache.h"
-#include "net/http/http_cache_lookup_manager.h"
 #include "net/http/http_cache_transaction.h"
 #include "net/http/http_cache_writers.h"
 #include "net/http/http_network_layer.h"
@@ -70,8 +69,6 @@ bool g_enable_split_cache = false;
 const char HttpCache::kDoubleKeyPrefix[] = "_dk_";
 const char HttpCache::kDoubleKeySeparator[] = " ";
 const char HttpCache::kSubframeDocumentResourcePrefix[] = "s_";
-const char HttpCache::kSingleKeyPrefix[] = "_sk_";
-const char HttpCache::kSingleKeySeparator[] = " ";
 
 HttpCache::DefaultBackend::DefaultBackend(
     CacheType type,
@@ -157,7 +154,7 @@ struct HttpCache::PendingOp {
   PendingOp() = default;
   ~PendingOp() = default;
 
-  raw_ptr<disk_cache::Entry, DanglingUntriaged> entry = nullptr;
+  raw_ptr<disk_cache::Entry, AcrossTasksDanglingUntriaged> entry = nullptr;
   bool entry_opened = false;  // rather than created.
 
   std::unique_ptr<disk_cache::Backend> backend;
@@ -194,7 +191,7 @@ class HttpCache::WorkItem {
     if (entry_)
       *entry_ = entry;
     if (transaction_)
-      transaction_->io_callback().Run(result);
+      transaction_->cache_io_callback().Run(result);
   }
 
   // Notifies the caller about the operation completion. Returns true if the
@@ -243,9 +240,6 @@ HttpCache::HttpCache(std::unique_ptr<HttpTransactionFactory> network_layer,
     return;
 
   net_log_ = session->net_log();
-
-  session->SetServerPushDelegate(
-      std::make_unique<HttpCacheLookupManager>(this));
 }
 
 HttpCache::~HttpCache() {
@@ -370,8 +364,7 @@ void HttpCache::OnExternalCacheHit(
       request_info.load_flags |= ~LOAD_DO_NOT_SAVE_COOKIES;
   }
 
-  std::string key = *GenerateCacheKeyForRequest(
-      &request_info, /*use_single_keyed_cache=*/false);
+  std::string key = *GenerateCacheKeyForRequest(&request_info);
   disk_cache_->OnExternalCacheHit(key);
 }
 
@@ -443,11 +436,6 @@ std::string HttpCache::GetResourceURLFromHttpCacheKey(const std::string& key) {
     DCHECK_NE(pos, std::string::npos);
     pos += strlen(kDoubleKeySeparator);
     DCHECK_LE(pos, key.size() - 1);
-  } else if (pos == key.find(kSingleKeyPrefix, pos)) {
-    pos = key.rfind(kSingleKeySeparator);
-    DCHECK_NE(pos, std::string::npos);
-    pos += strlen(kSingleKeySeparator);
-    DCHECK_LE(pos, key.size() - 1);
   }
   return key.substr(pos);
 }
@@ -459,32 +447,18 @@ absl::optional<std::string> HttpCache::GenerateCacheKey(
     int load_flags,
     const NetworkIsolationKey& network_isolation_key,
     int64_t upload_data_identifier,
-    bool is_subframe_document_resource,
-    bool use_single_keyed_cache,
-    const std::string& single_key_checksum) {
+    bool is_subframe_document_resource) {
   // The first character of the key may vary depending on whether or not sending
   // credentials is permitted for this request. This only happens if the
-  // SplitCacheByIncludeCredentials feature is enabled, or if the single-keyed
-  // cache is enabled. The single-keyed cache must always be split by
-  // credentials in order to make coep:credentialless work safely.
-  const char credential_key =
-      ((base::FeatureList::IsEnabled(
-            features::kSplitCacheByIncludeCredentials) ||
-        use_single_keyed_cache) &&
-       (load_flags & LOAD_DO_NOT_SAVE_COOKIES))
-          ? '0'
-          : '1';
+  // SplitCacheByIncludeCredentials feature is enabled.
+  const char credential_key = (base::FeatureList::IsEnabled(
+                                   features::kSplitCacheByIncludeCredentials) &&
+                               (load_flags & LOAD_DO_NOT_SAVE_COOKIES))
+                                  ? '0'
+                                  : '1';
 
   std::string isolation_key;
-  if (use_single_keyed_cache) {
-    DCHECK(IsSplitCacheEnabled());
-    DCHECK(!(load_flags &
-             (net::LOAD_VALIDATE_CACHE | net::LOAD_BYPASS_CACHE |
-              net::LOAD_SKIP_CACHE_VALIDATION | net::LOAD_ONLY_FROM_CACHE |
-              net::LOAD_DISABLE_CACHE | net::LOAD_SKIP_VARY_CHECK)));
-    isolation_key = base::StrCat(
-        {kSingleKeyPrefix, single_key_checksum, kSingleKeySeparator});
-  } else if (IsSplitCacheEnabled()) {
+  if (IsSplitCacheEnabled()) {
     // Prepend the key with |kDoubleKeyPrefix| = "_dk_" to mark it as
     // double-keyed (and makes it an invalid url so that it doesn't get
     // confused with a single-keyed entry). Separate the origin and url
@@ -511,16 +485,14 @@ absl::optional<std::string> HttpCache::GenerateCacheKey(
 
 // static
 absl::optional<std::string> HttpCache::GenerateCacheKeyForRequest(
-    const HttpRequestInfo* request,
-    bool use_single_keyed_cache) {
+    const HttpRequestInfo* request) {
   DCHECK(request);
   const int64_t upload_data_identifier =
       request->upload_data_stream ? request->upload_data_stream->identifier()
                                   : int64_t(0);
   return GenerateCacheKey(
       request->url, request->load_flags, request->network_isolation_key,
-      upload_data_identifier, request->is_subframe_document_resource,
-      use_single_keyed_cache, request->checksum);
+      upload_data_identifier, request->is_subframe_document_resource);
 }
 
 // static
@@ -698,11 +670,7 @@ void HttpCache::DoomMainEntryForUrl(const GURL& url,
       net::NetworkAnonymizationKey::CreateFromNetworkIsolationKey(
           isolation_key);
   temp_info.is_subframe_document_resource = is_subframe_document_resource;
-  // This method is always used for "POST" requests, which never use the
-  // single-keyed cache, so therefore it is correct that use_single_keyed_cache
-  // be false.
-  std::string key =
-      *GenerateCacheKeyForRequest(&temp_info, /*use_single_keyed_cache=*/false);
+  std::string key = *GenerateCacheKeyForRequest(&temp_info);
 
   // Defer to DoomEntry if there is an active entry, otherwise call
   // AsyncDoomEntry without triggering a callback.
@@ -890,7 +858,10 @@ int HttpCache::AddTransactionToEntry(ActiveEntry* entry,
   DCHECK(entry->GetEntry());
   // Always add a new transaction to the queue to maintain FIFO order.
   entry->add_to_entry_queue.push_back(transaction);
-  ProcessQueuedTransactions(entry);
+  // Don't process the transaction if the lock timeout handling is being tested.
+  if (!bypass_lock_for_test_) {
+    ProcessQueuedTransactions(entry);
+  }
   return ERR_IO_PENDING;
 }
 
@@ -1045,7 +1016,7 @@ void HttpCache::DoomEntryValidationNoMatch(ActiveEntry* entry) {
     transaction->ResetCachePendingState();
     base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE,
-        base::BindOnce(transaction->io_callback(), net::ERR_CACHE_RACE));
+        base::BindOnce(transaction->cache_io_callback(), net::ERR_CACHE_RACE));
   }
   entry->add_to_entry_queue.clear();
 }
@@ -1082,7 +1053,7 @@ void HttpCache::ProcessEntryFailure(ActiveEntry* entry) {
   }
   // ERR_CACHE_RACE causes the transaction to restart the whole process.
   for (auto* queued_transaction : list)
-    queued_transaction->io_callback().Run(net::ERR_CACHE_RACE);
+    queued_transaction->cache_io_callback().Run(net::ERR_CACHE_RACE);
 }
 
 void HttpCache::RestartHeadersPhaseTransactions(ActiveEntry* entry) {
@@ -1093,7 +1064,7 @@ void HttpCache::RestartHeadersPhaseTransactions(ActiveEntry* entry) {
   while (it != entry->done_headers_queue.end()) {
     Transaction* done_headers_transaction = *it;
     it = entry->done_headers_queue.erase(it);
-    done_headers_transaction->io_callback().Run(net::ERR_CACHE_RACE);
+    done_headers_transaction->cache_io_callback().Run(net::ERR_CACHE_RACE);
   }
 }
 
@@ -1120,6 +1091,20 @@ void HttpCache::ProcessQueuedTransactions(ActiveEntry* entry) {
 }
 
 void HttpCache::ProcessAddToEntryQueue(ActiveEntry* entry) {
+  if (delay_add_transaction_to_entry_for_test_) {
+    // Post a task to put the AddTransactionToEntry handling at the back of
+    // the task queue. This allows other tasks (like network IO) to jump
+    // ahead and simulate different callback ordering for testing.
+    base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
+        FROM_HERE,
+        base::BindOnce(&HttpCache::ProcessAddToEntryQueueImpl, GetWeakPtr(),
+                       base::UnsafeDanglingUntriaged(entry)));
+  } else {
+    ProcessAddToEntryQueueImpl(entry);
+  }
+}
+
+void HttpCache::ProcessAddToEntryQueueImpl(ActiveEntry* entry) {
   DCHECK(!entry->add_to_entry_queue.empty());
 
   // Note the entry may be new or may already have a response body written to
@@ -1132,7 +1117,7 @@ void HttpCache::ProcessAddToEntryQueue(ActiveEntry* entry) {
   entry->add_to_entry_queue.erase(entry->add_to_entry_queue.begin());
   entry->headers_transaction = transaction;
 
-  transaction->io_callback().Run(OK);
+  transaction->cache_io_callback().Run(OK);
 }
 
 HttpCache::ParallelWritingPattern HttpCache::CanTransactionJoinExistingWriters(
@@ -1198,7 +1183,7 @@ void HttpCache::ProcessDoneHeadersQueue(ActiveEntry* entry) {
   ProcessQueuedTransactions(entry);
 
   entry->done_headers_queue.erase(entry->done_headers_queue.begin());
-  transaction->io_callback().Run(OK);
+  transaction->cache_io_callback().Run(OK);
 }
 
 void HttpCache::AddTransactionToWriters(

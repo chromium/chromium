@@ -78,9 +78,9 @@ export class OptionsPage {
         }
       }
     }
-    if (SettingsManager.get('capitalStrategy')) {
+    if (SettingsManager.getString('capitalStrategy')) {
       for (let i = 0, opt; opt = $('capitalStrategy').options[i]; ++i) {
-        if (opt.id === SettingsManager.get('capitalStrategy')) {
+        if (opt.id === SettingsManager.getString('capitalStrategy')) {
           opt.setAttribute('selected', '');
         }
       }

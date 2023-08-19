@@ -28,10 +28,6 @@ class AppLaunchSplashScreenView {
 
     // Invoked when the network config did prepare network and is closed.
     virtual void OnNetworkConfigFinished() {}
-
-    // Invoked when network state is changed. `online` is true if the device
-    // is connected to the Internet.
-    virtual void OnNetworkStateChanged(bool online) {}
   };
 
   enum class AppLaunchState {
@@ -48,7 +44,7 @@ class AppLaunchSplashScreenView {
   inline constexpr static StaticOobeScreenId kScreenId{"app-launch-splash",
                                                        "AppLaunchSplashScreen"};
 
-  virtual ~AppLaunchSplashScreenView() {}
+  virtual ~AppLaunchSplashScreenView() = default;
 
   // Sets screen controller this view belongs to.
   virtual void SetDelegate(Delegate* delegate) = 0;
@@ -66,26 +62,19 @@ class AppLaunchSplashScreenView {
   virtual void ToggleNetworkConfig(bool visible) = 0;
 
   // Shows the network error and configure UI.
-  virtual void ShowNetworkConfigureUI() = 0;
+  virtual void ShowNetworkConfigureUI(NetworkStateInformer::State state,
+                                      const std::string& network_name) = 0;
 
   // Show a notification bar with error message.
   virtual void ShowErrorMessage(KioskAppLaunchError::Error error) = 0;
 
-  // Returns true if the default network has Internet access.
-  virtual bool IsNetworkReady() = 0;
-
   // Continues app launch after error screen is shown.
   virtual void ContinueAppLaunch() = 0;
-
-  // Tells the splash screen view that network is required.
-  virtual void SetNetworkRequired() = 0;
 };
 
 // A class that handles the WebUI hooks for the app launch splash screen.
-class AppLaunchSplashScreenHandler
-    : public BaseScreenHandler,
-      public AppLaunchSplashScreenView,
-      public NetworkStateInformer::NetworkStateInformerObserver {
+class AppLaunchSplashScreenHandler : public BaseScreenHandler,
+                                     public AppLaunchSplashScreenView {
  public:
   using TView = AppLaunchSplashScreenView;
 
@@ -110,14 +99,10 @@ class AppLaunchSplashScreenHandler
   void ToggleNetworkConfig(bool visible) override;
   void UpdateAppLaunchState(AppLaunchState state) override;
   void SetDelegate(Delegate* controller) override;
-  void ShowNetworkConfigureUI() override;
+  void ShowNetworkConfigureUI(NetworkStateInformer::State state,
+                              const std::string& network_name) override;
   void ShowErrorMessage(KioskAppLaunchError::Error error) override;
-  bool IsNetworkReady() override;
   void ContinueAppLaunch() override;
-  void SetNetworkRequired() override;
-
-  // NetworkStateInformer::NetworkStateInformerObserver implementation:
-  void UpdateState(NetworkError::ErrorReason reason) override;
 
  private:
   void SetLaunchText(const std::string& text);
@@ -127,10 +112,8 @@ class AppLaunchSplashScreenHandler
 
   raw_ptr<Delegate, ExperimentalAsh> delegate_ = nullptr;
   bool is_shown_ = false;
-  bool is_network_required_ = false;
   AppLaunchState state_ = AppLaunchState::kPreparingProfile;
 
-  scoped_refptr<NetworkStateInformer> network_state_informer_;
   raw_ptr<ErrorScreen, DanglingUntriaged | ExperimentalAsh> error_screen_;
 
   // Whether network configure UI is being shown.

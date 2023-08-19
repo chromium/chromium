@@ -20,6 +20,9 @@
 #include "media/gpu/v4l2/test/av1_decoder.h"
 #endif
 #include "media/gpu/v4l2/test/h264_decoder.h"
+#if BUILDFLAG(ENABLE_HEVC_PARSER_AND_HW_DECODER)
+#include "media/gpu/v4l2/test/h265_decoder.h"
+#endif
 #include "media/gpu/v4l2/test/video_decoder.h"
 #include "media/gpu/v4l2/test/vp8_decoder.h"
 #include "media/gpu/v4l2/test/vp9_decoder.h"
@@ -29,6 +32,9 @@
 using media::v4l2_test::Av1Decoder;
 #endif
 using media::v4l2_test::H264Decoder;
+#if BUILDFLAG(ENABLE_HEVC_PARSER_AND_HW_DECODER)
+using media::v4l2_test::H265Decoder;
+#endif
 using media::v4l2_test::VideoDecoder;
 using media::v4l2_test::Vp8Decoder;
 using media::v4l2_test::Vp9Decoder;
@@ -49,7 +55,7 @@ constexpr char kUsageMsg[] =
 constexpr char kHelpMsg[] =
     "This binary decodes the IVF video in <video> path with specified \n"
     "video <profile> via thinly wrapped v4l2 calls.\n"
-    "Supported codecs: VP9 (profile 0), and AV1 (profile 0)\n"
+    "Supported codecs: VP9 (profile 0), AV1 (profile 0), and H.265\n"
     "\nThe following arguments are supported:\n"
     "    --video=<path>\n"
     "        Required. Path to IVF-formatted video to decode.\n"
@@ -115,6 +121,12 @@ std::unique_ptr<VideoDecoder> CreateVideoDecoder(
 
   if (!decoder)
     decoder = Vp8Decoder::Create(stream);
+
+#if BUILDFLAG(ENABLE_HEVC_PARSER_AND_HW_DECODER)
+  if (!decoder) {
+    decoder = H265Decoder::Create(stream);
+  }
+#endif
 
   return decoder;
 }
@@ -192,7 +204,7 @@ int main(int argc, char** argv) {
     std::vector<uint8_t> v_plane;
     gfx::Size size;
     const VideoDecoder::Result res =
-        dec->DecodeNextFrame(y_plane, u_plane, v_plane, size, i);
+        dec->DecodeNextFrame(i, y_plane, u_plane, v_plane, size);
     if (res == VideoDecoder::kEOStream) {
       LOG(INFO) << "End of stream.";
       break;

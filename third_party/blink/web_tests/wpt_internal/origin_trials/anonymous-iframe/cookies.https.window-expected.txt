@@ -1,4 +1,0 @@
-This is a testharness.js-based test.
-FAIL cookies assert_false: credentialless iframe is disabled by default expected false got true
-Harness: the test ran to completion.
-

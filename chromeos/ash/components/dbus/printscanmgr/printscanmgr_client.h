@@ -5,14 +5,11 @@
 #ifndef CHROMEOS_ASH_COMPONENTS_DBUS_PRINTSCANMGR_PRINTSCANMGR_CLIENT_H_
 #define CHROMEOS_ASH_COMPONENTS_DBUS_PRINTSCANMGR_PRINTSCANMGR_CLIENT_H_
 
-#include <stdint.h>
-
-#include <string>
-#include <vector>
-
 #include "base/component_export.h"
 #include "base/functional/callback.h"
+#include "chromeos/ash/components/dbus/printscanmgr/printscanmgr_service.pb.h"
 #include "chromeos/dbus/common/dbus_client.h"
+#include "chromeos/dbus/common/dbus_method_call_status.h"
 #include "dbus/bus.h"
 
 namespace ash {
@@ -38,51 +35,33 @@ class COMPONENT_EXPORT(PRINTSCANMGR) PrintscanmgrClient
 
   ~PrintscanmgrClient() override;
 
-  // A callback to handle the result of CupsAdd[Auto|Manually]ConfiguredPrinter.
-  // A negative value denotes a D-Bus library error while non-negative values
-  // denote a response from printscanmgr.
-  using CupsAddPrinterCallback = base::OnceCallback<void(int32_t)>;
-
-  // Calls CupsAddManuallyConfiguredPrinter. `name` is the printer name. `uri`
-  // is the device. `ppd_contents` is the contents of the PPD file used to drive
-  // the device. Refer to the comment for `CupsAddPrinterCallback` for details
-  // on the format of `callback`.
+  // Requests that cupsd adds a printer which needs to be manually configured.
   virtual void CupsAddManuallyConfiguredPrinter(
-      const std::string& name,
-      const std::string& uri,
-      const std::string& ppd_contents,
-      CupsAddPrinterCallback callback) = 0;
+      const printscanmgr::CupsAddManuallyConfiguredPrinterRequest& request,
+      chromeos::DBusMethodCallback<
+          printscanmgr::CupsAddManuallyConfiguredPrinterResponse> callback) = 0;
 
-  // Calls CupsAddAutoConfiguredPrinter. `name` is the printer name. `uri` is
-  // the device. Refer to the comment for `CupsAddPrinterCallback` for details
-  // on the format of `callback`.
+  // Requests that cupsd adds a printer which can be autoconfigured.
   virtual void CupsAddAutoConfiguredPrinter(
-      const std::string& name,
-      const std::string& uri,
-      CupsAddPrinterCallback callback) = 0;
+      const printscanmgr::CupsAddAutoConfiguredPrinterRequest& request,
+      chromeos::DBusMethodCallback<
+          printscanmgr::CupsAddAutoConfiguredPrinterResponse> callback) = 0;
 
-  // A callback to handle the result of CupsRemovePrinter.
-  using CupsRemovePrinterCallback = base::OnceCallback<void(bool success)>;
+  // Requests that cupsd removes a printer. `error_callback` will be called if
+  // there was an error communicating with printscanmgr or encoding the request.
+  virtual void CupsRemovePrinter(
+      const printscanmgr::CupsRemovePrinterRequest& request,
+      chromeos::DBusMethodCallback<printscanmgr::CupsRemovePrinterResponse>
+          callback,
+      base::OnceClosure error_callback) = 0;
 
-  // Calls CupsRemovePrinter. `name` is the printer name as registered in CUPS.
-  // `callback` is called with true if removing the printer from CUPS was
-  // successful and false if there was an error. `error_callback` will be called
-  // if there was an error communicating with printscanmgr.
-  virtual void CupsRemovePrinter(const std::string& name,
-                                 CupsRemovePrinterCallback callback,
-                                 base::OnceClosure error_callback) = 0;
-
-  // A callback to handle the result of CupsRetrievePrinterPpd.
-  using CupsRetrievePrinterPpdCallback =
-      base::OnceCallback<void(const std::vector<uint8_t>& ppd)>;
-
-  // Calls the printscanmgr method to retrieve a PPD. `name` is the printer name
-  // as registered in CUPS. `callback` is called with a string containing the
-  // PPD data. `error_callback` will be called if there was an error retrieving
-  // the PPD.
-  virtual void CupsRetrievePrinterPpd(const std::string& name,
-                                      CupsRetrievePrinterPpdCallback callback,
-                                      base::OnceClosure error_callback) = 0;
+  // Retrieves the requested PPD. `error_callback` will be called if there was
+  // an error retrieving the PPD or encoding the request.
+  virtual void CupsRetrievePrinterPpd(
+      const printscanmgr::CupsRetrievePpdRequest& request,
+      chromeos::DBusMethodCallback<printscanmgr::CupsRetrievePpdResponse>
+          callback,
+      base::OnceClosure error_callback) = 0;
 
  protected:
   // Initialize() should be used instead.

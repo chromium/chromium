@@ -15,7 +15,7 @@
 #include "chrome/browser/ui/views/chrome_typography.h"
 #include "components/constrained_window/constrained_window_views.h"
 #include "content/public/browser/web_contents.h"
-#include "ui/color/color_provider.h"
+#include "ui/color/color_id.h"
 #include "ui/views/border.h"
 #include "ui/views/bubble/bubble_frame_view.h"
 #include "ui/views/controls/link.h"
@@ -40,7 +40,7 @@ CardUnmaskOtpInputDialogViews::CardUnmaskOtpInputDialogViews(
   SetModalType(ui::MODAL_TYPE_CHILD);
   SetShowCloseButton(false);
   set_fixed_width(ChromeLayoutProvider::Get()->GetDistanceMetric(
-      ChromeDistanceMetric::DISTANCE_LARGE_MODAL_DIALOG_PREFERRED_WIDTH));
+      views::DISTANCE_MODAL_DIALOG_PREFERRED_WIDTH));
   set_margins(ChromeLayoutProvider::Get()->GetDialogInsetsForContentType(
       views::DialogContentType::kControl, views::DialogContentType::kText));
   InitViews();
@@ -112,24 +112,14 @@ std::u16string CardUnmaskOtpInputDialogViews::GetWindowTitle() const {
 }
 
 void CardUnmaskOtpInputDialogViews::AddedToWidget() {
-  GetBubbleFrameView()->SetTitleView(
-      std::make_unique<TitleWithIconAndSeparatorView>(
-          GetWindowTitle(), TitleWithIconAndSeparatorView::Icon::GOOGLE_PAY));
+  GetBubbleFrameView()->SetTitleView(CreateTitleView(
+      GetWindowTitle(), TitleWithIconAndSeparatorView::Icon::GOOGLE_PAY));
 }
 
 bool CardUnmaskOtpInputDialogViews::Accept() {
   controller_->OnOkButtonClicked(otp_input_textfield_->GetText());
   ShowPendingState();
   return false;
-}
-
-void CardUnmaskOtpInputDialogViews::OnThemeChanged() {
-  views::DialogDelegateView::OnThemeChanged();
-
-  // We need to ensure |progress_label_|'s color matches the color of the
-  // throbber above it.
-  progress_label_->SetEnabledColor(
-      GetColorProvider()->GetColor(ui::kColorThrobber));
 }
 
 views::View* CardUnmaskOtpInputDialogViews::GetInitiallyFocusedView() {
@@ -246,9 +236,12 @@ void CardUnmaskOtpInputDialogViews::CreateHiddenProgressView() {
       throbber_view->AddChildView(std::make_unique<views::Throbber>());
 
   // Adds label under progress throbber.
-  progress_label_ = progress_view_->AddChildView(
-      std::make_unique<views::Label>(controller_->GetProgressLabel()));
-  progress_label_->SetMultiLine(true);
+  progress_label_ =
+      progress_view_->AddChildView(views::Builder<views::Label>()
+                                       .SetText(controller_->GetProgressLabel())
+                                       .SetMultiLine(true)
+                                       .SetEnabledColorId(ui::kColorThrobber)
+                                       .Build());
 }
 
 void CardUnmaskOtpInputDialogViews::HideInvalidState() {

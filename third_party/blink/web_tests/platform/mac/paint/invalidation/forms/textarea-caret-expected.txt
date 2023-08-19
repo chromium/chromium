@@ -35,21 +35,18 @@
     {
       "name": "LayoutNGTextControlMultiLine TEXTAREA id='editor'",
       "position": [1, 1],
-      "bounds": [470, 19],
+      "bounds": [472, 19],
       "backgroundColor": "#FFFFFF",
       "invalidations": [
-        [0, 0, 470, 19]
+        [0, 0, 472, 19]
       ],
       "transform": 2
     },
     {
       "name": "Caret",
-      "position": [470, 3],
+      "position": [471, 3],
       "bounds": [1, 15],
       "contentsOpaque": true,
-      "invalidations": [
-        [0, 0, 1, 15]
-      ],
       "transform": 2
     },
     {
@@ -79,7 +76,7 @@
         [1, 0, 0, 0],
         [0, 1, 0, 0],
         [0, 0, 1, 0],
-        [-291, 0, 0, 1]
+        [-293, 0, 0, 1]
       ]
     }
   ]

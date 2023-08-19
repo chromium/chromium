@@ -21,12 +21,9 @@
  */
 
 // https://dom.spec.whatwg.org/#interface-childnode
-
-[
-    LegacyTreatAsPartialInterface
-] interface mixin ChildNode {
-    [Unscopable, RaisesException, CEReactions] void before((Node or DOMString or TrustedScript) ... nodes);
-    [Unscopable, RaisesException, CEReactions] void after((Node or DOMString or TrustedScript)... nodes);
-    [Unscopable, RaisesException, CEReactions] void replaceWith((Node or DOMString or TrustedScript)... nodes);
-    [Unscopable, RaisesException, CEReactions] void remove();
+interface mixin ChildNode {
+  [Unscopable, RaisesException, CEReactions] void before((Node or DOMString or TrustedScript) ... nodes);
+  [Unscopable, RaisesException, CEReactions] void after((Node or DOMString or TrustedScript)... nodes);
+  [Unscopable, RaisesException, CEReactions] void replaceWith((Node or DOMString or TrustedScript)... nodes);
+  [Unscopable, RaisesException, CEReactions] void remove();
 };

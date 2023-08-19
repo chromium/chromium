@@ -17,11 +17,16 @@
 #include <atomic>
 #include <cstdio>
 
+#if defined(__EMSCRIPTEN__)
+#include <emscripten/console.h>
+#endif
+
 #include "absl/base/attributes.h"
 #include "absl/base/config.h"
 #include "absl/base/internal/raw_logging.h"
 #include "absl/base/log_severity.h"
 #include "absl/strings/string_view.h"
+#include "absl/strings/strip.h"
 #include "absl/time/time.h"
 
 namespace absl {
@@ -55,9 +60,24 @@ void SetInitialized() {
 }
 
 void WriteToStderr(absl::string_view message, absl::LogSeverity severity) {
+  if (message.empty()) return;
+#if defined(__EMSCRIPTEN__)
+  // In WebAssembly, bypass filesystem emulation via fwrite.
+  // Skip a trailing newline character as emscripten_errn adds one itself.
+  const auto message_minus_newline = absl::StripSuffix(message, "\n");
+  // emscripten_errn was introduced in 3.1.41 but broken in standalone mode
+  // until 3.1.43.
+#if ABSL_INTERNAL_EMSCRIPTEN_VERSION >= 3001043
+  emscripten_errn(message_minus_newline.data(), message_minus_newline.size());
+#else
+  std::string null_terminated_message(message_minus_newline);
+  _emscripten_err(null_terminated_message.c_str());
+#endif
+#else
   // Avoid using std::cerr from this module since we may get called during
   // exit code, and cerr may be partially or fully destroyed by then.
   std::fwrite(message.data(), message.size(), 1, stderr);
+#endif
 
 #if defined(_WIN64) || defined(_WIN32) || defined(_WIN16)
   // C99 requires stderr to not be fully-buffered by default (7.19.3.7), but

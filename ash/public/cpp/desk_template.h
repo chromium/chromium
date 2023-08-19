@@ -10,8 +10,10 @@
 #include "ash/public/cpp/ash_public_export.h"
 #include "base/time/time.h"
 #include "base/uuid.h"
+#include "base/values.h"
 #include "components/app_restore/restore_data.h"
 #include "components/sync_device_info/device_info.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace aura {
 class Window;
@@ -58,13 +60,14 @@ class ASH_PUBLIC_EXPORT DeskTemplate {
                const base::Time created_time,
                DeskTemplateType type);
 
-  // Admin template constructor.
+  // Alternative constructor used if template is defined via policy.
   DeskTemplate(base::Uuid uuid,
                DeskTemplateSource source,
                const std::string& name,
                const base::Time created_time,
                DeskTemplateType type,
-               bool should_launch_on_startup);
+               bool should_launch_on_startup,
+               base::Value policy);
 
   DeskTemplate(const DeskTemplate&) = delete;
   DeskTemplate& operator=(const DeskTemplate&) = delete;
@@ -147,6 +150,12 @@ class ASH_PUBLIC_EXPORT DeskTemplate {
   // Sets `desk_uuid` as the desk to launch on for all windows in the template.
   void SetDeskUuid(base::Uuid desk_uuid);
 
+  // Retrieves the base::Value policy definition for this template if it exists.
+  // This is used by desks storage to verify that new policies should overwrite
+  // stored ones.  Empty values imply user created template, this method will
+  // return a base::value::Dict if policy is defined.
+  const base::Value& policy_definition() const { return policy_definition_; }
+
   // Returns `this` in string format. Used for feedback logs.
   std::string ToString() const;
 
@@ -196,6 +205,10 @@ class ASH_PUBLIC_EXPORT DeskTemplate {
   // create a new desk instance with the same set of apps/windows specified in
   // it.
   std::unique_ptr<::app_restore::RestoreData> desk_restore_data_;
+
+  // If this template was originally defined by a policy, store the policy in
+  // this field. See GetPolicy for more information.
+  base::Value policy_definition_;
 };
 
 }  // namespace ash

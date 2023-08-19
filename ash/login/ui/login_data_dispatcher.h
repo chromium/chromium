@@ -105,12 +105,6 @@ class ASH_EXPORT LoginDataDispatcher : public LoginScreenModel {
     // Called when the lock screen note state changes.
     virtual void OnLockScreenNoteStateChanged(mojom::TrayActionState state);
 
-    // TODO(https://crbug.com/1233614): Delete this method in favor of
-    // OnSmartLockStateChanged once SmartLock UI revamp is enabled. Called when
-    // an easy unlock icon should be displayed.
-    virtual void OnShowEasyUnlockIcon(const AccountId& user,
-                                      const EasyUnlockIconInfo& icon_info);
-
     // Called when a warning message should be displayed, or hidden if |message|
     // is empty.
     virtual void OnWarningMessageUpdated(const std::u16string& message);
@@ -207,10 +201,6 @@ class ASH_EXPORT LoginDataDispatcher : public LoginScreenModel {
                                     bool enabled) override;
   void ForceOnlineSignInForUser(const AccountId& user) override;
   void SetLockScreenNoteState(mojom::TrayActionState state);
-  // TODO(https://crbug.com/1233614): Delete ShowEasyUnlockIcon in favor of
-  // SetSmartLockState once SmartLock UI revamp is enabled.
-  void ShowEasyUnlockIcon(const AccountId& user,
-                          const EasyUnlockIconInfo& icon_info) override;
   void UpdateWarningMessage(const std::u16string& message) override;
   void SetSystemInfo(bool show,
                      bool enforced,

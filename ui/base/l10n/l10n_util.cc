@@ -67,9 +67,12 @@ static const char* const kAcceptLanguageList[] = {
 #endif                 // defined(ENABLE_PSEUDOLOCALES)
     "as",              // Assamese
     "ast",             // Asturian
+    "ay",              // Aymara
     "az",              // Azerbaijani
     "be",              // Belarusian
     "bg",              // Bulgarian
+    "bho",             // Bhojpuri
+    "bm",              // Bambara
     "bn",              // Bengali
     "br",              // Breton
     "bs",              // Bosnian
@@ -86,6 +89,8 @@ static const char* const kAcceptLanguageList[] = {
     "de-CH",           // German (Switzerland)
     "de-DE",           // German (Germany)
     "de-LI",           // German (Liechtenstein)
+    "doi",             // Dogri
+    "dv",              // Dhivehi
     "ee",              // Ewe
     "el",              // Greek
     "en",              // English
@@ -103,139 +108,145 @@ static const char* const kAcceptLanguageList[] = {
     "en-ZA",  // English (South Africa)
     "eo",     // Esperanto
     "es",     // Spanish
-    "es-419",  // Spanish (Latin America)
-    "es-AR",   // Spanish (Argentina)
-    "es-CL",   // Spanish (Chile)
-    "es-CO",   // Spanish (Colombia)
-    "es-CR",   // Spanish (Costa Rica)
-    "es-ES",   // Spanish (Spain)
-    "es-HN",   // Spanish (Honduras)
-    "es-MX",   // Spanish (Mexico)
-    "es-PE",   // Spanish (Peru)
-    "es-US",   // Spanish (US)
-    "es-UY",   // Spanish (Uruguay)
-    "es-VE",   // Spanish (Venezuela)
-    "et",      // Estonian
-    "eu",      // Basque
-    "fa",      // Persian
-    "fi",      // Finnish
-    "fil",     // Filipino
-    "fo",      // Faroese
-    "fr",      // French
-    "fr-CA",   // French (Canada)
-    "fr-CH",   // French (Switzerland)
-    "fr-FR",   // French (France)
-    "fy",      // Frisian
-    "ga",      // Irish
-    "gd",      // Scots Gaelic
-    "gl",      // Galician
-    "gn",      // Guarani
-    "gu",      // Gujarati
-    "ha",      // Hausa
-    "haw",     // Hawaiian
-    "he",      // Hebrew
-    "hi",      // Hindi
-    "hmn",     // Hmong
-    "hr",      // Croatian
-    "ht",      // Haitian Creole
-    "hu",      // Hungarian
-    "hy",      // Armenian
-    "ia",      // Interlingua
-    "id",      // Indonesian
-    "ig",      // Igbo
-    "is",      // Icelandic
-    "it",      // Italian
-    "it-CH",   // Italian (Switzerland)
-    "it-IT",   // Italian (Italy)
-    "ja",      // Japanese
-    "jv",      // Javanese
-    "ka",      // Georgian
-    "kk",      // Kazakh
-    "km",      // Cambodian
-    "kn",      // Kannada
-    "ko",      // Korean
-    "kok",     // Konkani
-    "kri",     // Krio
-    "ku",      // Kurdish
-    "ky",      // Kyrgyz
-    "la",      // Latin
-    "lb",      // Luxembourgish
-    "lg",      // Luganda
-    "ln",      // Lingala
-    "lo",      // Laothian
-    "lt",      // Lithuanian
-    "lv",      // Latvian
-    "mg",      // Malagasy
-    "mi",      // Maori
-    "mk",      // Macedonian
-    "ml",      // Malayalam
-    "mn",      // Mongolian
-    "mo",      // Moldavian
-    "mr",      // Marathi
-    "ms",      // Malay
-    "mt",      // Maltese
-    "my",      // Burmese
-    "nb",      // Norwegian (Bokmal)
-    "ne",      // Nepali
-    "nl",      // Dutch
-    "nn",      // Norwegian (Nynorsk)
-    "no",      // Norwegian
-    "nso",     // Sepedi
-    "ny",      // Nyanja
-    "oc",      // Occitan
-    "om",      // Oromo
-    "or",      // Odia (Oriya)
-    "pa",      // Punjabi
-    "pl",      // Polish
-    "ps",      // Pashto
-    "pt",      // Portuguese
-    "pt-BR",   // Portuguese (Brazil)
-    "pt-PT",   // Portuguese (Portugal)
-    "qu",      // Quechua
-    "rm",      // Romansh
-    "ro",      // Romanian
-    "ru",      // Russian
-    "rw",      // Kinyarwanda
-    "sd",      // Sindhi
-    "sh",      // Serbo-Croatian
-    "si",      // Sinhalese
-    "sk",      // Slovak
-    "sl",      // Slovenian
-    "sm",      // Samoan
-    "sn",      // Shona
-    "so",      // Somali
-    "sq",      // Albanian
-    "sr",      // Serbian
-    "st",      // Sesotho
-    "su",      // Sundanese
-    "sv",      // Swedish
-    "sw",      // Swahili
-    "ta",      // Tamil
-    "te",      // Telugu
-    "tg",      // Tajik
-    "th",      // Thai
-    "ti",      // Tigrinya
-    "tk",      // Turkmen
-    "tn",      // Tswana
-    "to",      // Tonga
-    "tr",      // Turkish
-    "tt",      // Tatar
-    "tw",      // Twi
-    "ug",      // Uyghur
-    "uk",      // Ukrainian
-    "ur",      // Urdu
-    "uz",      // Uzbek
-    "vi",      // Vietnamese
-    "wa",      // Walloon
-    "wo",      // Wolof
-    "xh",      // Xhosa
-    "yi",      // Yiddish
-    "yo",      // Yoruba
-    "zh",      // Chinese
-    "zh-CN",   // Chinese (China)
-    "zh-HK",   // Chinese (Hong Kong)
-    "zh-TW",   // Chinese (Taiwan)
-    "zu",      // Zulu
+    "es-419",    // Spanish (Latin America)
+    "es-AR",     // Spanish (Argentina)
+    "es-CL",     // Spanish (Chile)
+    "es-CO",     // Spanish (Colombia)
+    "es-CR",     // Spanish (Costa Rica)
+    "es-ES",     // Spanish (Spain)
+    "es-HN",     // Spanish (Honduras)
+    "es-MX",     // Spanish (Mexico)
+    "es-PE",     // Spanish (Peru)
+    "es-US",     // Spanish (US)
+    "es-UY",     // Spanish (Uruguay)
+    "es-VE",     // Spanish (Venezuela)
+    "et",        // Estonian
+    "eu",        // Basque
+    "fa",        // Persian
+    "fi",        // Finnish
+    "fil",       // Filipino
+    "fo",        // Faroese
+    "fr",        // French
+    "fr-CA",     // French (Canada)
+    "fr-CH",     // French (Switzerland)
+    "fr-FR",     // French (France)
+    "fy",        // Frisian
+    "ga",        // Irish
+    "gd",        // Scots Gaelic
+    "gl",        // Galician
+    "gn",        // Guarani
+    "gu",        // Gujarati
+    "ha",        // Hausa
+    "haw",       // Hawaiian
+    "he",        // Hebrew
+    "hi",        // Hindi
+    "hmn",       // Hmong
+    "hr",        // Croatian
+    "ht",        // Haitian Creole
+    "hu",        // Hungarian
+    "hy",        // Armenian
+    "ia",        // Interlingua
+    "id",        // Indonesian
+    "ig",        // Igbo
+    "ilo",       // Ilocano
+    "is",        // Icelandic
+    "it",        // Italian
+    "it-CH",     // Italian (Switzerland)
+    "it-IT",     // Italian (Italy)
+    "ja",        // Japanese
+    "jv",        // Javanese
+    "ka",        // Georgian
+    "kk",        // Kazakh
+    "km",        // Cambodian
+    "kn",        // Kannada
+    "ko",        // Korean
+    "kok",       // Konkani
+    "kri",       // Krio
+    "ku",        // Kurdish
+    "ky",        // Kyrgyz
+    "la",        // Latin
+    "lb",        // Luxembourgish
+    "lg",        // Luganda
+    "ln",        // Lingala
+    "lo",        // Laothian
+    "lt",        // Lithuanian
+    "lus",       // Mizo
+    "lv",        // Latvian
+    "mai",       // Maithili
+    "mg",        // Malagasy
+    "mi",        // Maori
+    "mk",        // Macedonian
+    "ml",        // Malayalam
+    "mn",        // Mongolian
+    "mni-Mtei",  // Manipuri (Meitei Mayek)
+    "mo",        // Moldavian
+    "mr",        // Marathi
+    "ms",        // Malay
+    "mt",        // Maltese
+    "my",        // Burmese
+    "nb",        // Norwegian (Bokmal)
+    "ne",        // Nepali
+    "nl",        // Dutch
+    "nn",        // Norwegian (Nynorsk)
+    "no",        // Norwegian
+    "nso",       // Sepedi
+    "ny",        // Nyanja
+    "oc",        // Occitan
+    "om",        // Oromo
+    "or",        // Odia (Oriya)
+    "pa",        // Punjabi
+    "pl",        // Polish
+    "ps",        // Pashto
+    "pt",        // Portuguese
+    "pt-BR",     // Portuguese (Brazil)
+    "pt-PT",     // Portuguese (Portugal)
+    "qu",        // Quechua
+    "rm",        // Romansh
+    "ro",        // Romanian
+    "ru",        // Russian
+    "rw",        // Kinyarwanda
+    "sa",        // Sanskrit
+    "sd",        // Sindhi
+    "sh",        // Serbo-Croatian
+    "si",        // Sinhalese
+    "sk",        // Slovak
+    "sl",        // Slovenian
+    "sm",        // Samoan
+    "sn",        // Shona
+    "so",        // Somali
+    "sq",        // Albanian
+    "sr",        // Serbian
+    "st",        // Sesotho
+    "su",        // Sundanese
+    "sv",        // Swedish
+    "sw",        // Swahili
+    "ta",        // Tamil
+    "te",        // Telugu
+    "tg",        // Tajik
+    "th",        // Thai
+    "ti",        // Tigrinya
+    "tk",        // Turkmen
+    "tn",        // Tswana
+    "to",        // Tonga
+    "tr",        // Turkish
+    "ts",        // Tsonga
+    "tt",        // Tatar
+    "tw",        // Twi
+    "ug",        // Uyghur
+    "uk",        // Ukrainian
+    "ur",        // Urdu
+    "uz",        // Uzbek
+    "vi",        // Vietnamese
+    "wa",        // Walloon
+    "wo",        // Wolof
+    "xh",        // Xhosa
+    "yi",        // Yiddish
+    "yo",        // Yoruba
+    "zh",        // Chinese
+    "zh-CN",     // Chinese (China)
+    "zh-HK",     // Chinese (Hong Kong)
+    "zh-TW",     // Chinese (Taiwan)
+    "zu",        // Zulu
 };
 
 // The list of locales that expected on the current platform, generated from the
@@ -626,16 +637,20 @@ std::u16string GetDisplayNameForLocale(const std::string& locale,
   // Internally, we use the language code of zh-CN and zh-TW, but we want the
   // display names to be Chinese (Simplified) and Chinese (Traditional) instead
   // of Chinese (China) and Chinese (Taiwan).
-  // Translate uses "tl" (Tagalog) to mean "fil" (Filipino) until Google
-  // translate is changed to understand "fil". Make "tl" alias to "fil".
-  if (locale_code == "zh-CN")
-    locale_code = "zh-Hans";
-  else if (locale_code == "zh-TW")
-    locale_code = "zh-Hant";
-  else if (locale_code == "tl")
-    locale_code = "fil";
-  else if (locale_code == "mo")
+  // Translate uses "tl" (Tagalog) to mean "fil" (Filipino). Until Google
+  // translate is changed to understand "fil", make "tl" alias to "fil".
+  // Translate also uses "gom" (Goan Konkani) for "kok" (Konkani).
+  if (locale_code == "gom") {
+    locale_code = "kok";
+  } else if (locale_code == "mo") {
     locale_code = "ro-MD";
+  } else if (locale_code == "tl") {
+    locale_code = "fil";
+  } else if (locale_code == "zh-CN") {
+    locale_code = "zh-Hans";
+  } else if (locale_code == "zh-TW") {
+    locale_code = "zh-Hant";
+  }
 
   std::u16string display_name;
 
@@ -1025,11 +1040,9 @@ void GetAcceptLanguages(std::vector<std::string>* locale_codes) {
 
 bool IsLanguageAccepted(const std::string& display_locale,
                         const std::string& locale) {
-  for (const char* accept_language : kAcceptLanguageList) {
-    if (accept_language == locale &&
-        l10n_util::IsLocaleNameTranslated(locale.c_str(), display_locale)) {
-      return true;
-    }
+  if (std::binary_search(std::begin(kAcceptLanguageList),
+                         std::end(kAcceptLanguageList), locale)) {
+    return l10n_util::IsLocaleNameTranslated(locale.c_str(), display_locale);
   }
   return false;
 }

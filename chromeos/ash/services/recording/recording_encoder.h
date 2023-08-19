@@ -31,6 +31,13 @@ enum class RecordingStatus;
 using OnFailureCallback =
     base::OnceCallback<void(mojom::RecordingStatus status)>;
 
+// Defines a callback that can be retrieved from the encoder in order to be
+// called repeatedly by the client to provide the audio buses along with their
+// timestamps so that they can get encoded and muxed with the video frames.
+using EncodeAudioCallback =
+    base::RepeatingCallback<void(std::unique_ptr<media::AudioBus> audio_bus,
+                                 base::TimeTicks audio_capture_time)>;
+
 // Defines a common interface for encoding audio and video frames. The concrete
 // implementation classes decides how encoding is done, and the type of the
 // underlying actual encoders.
@@ -78,11 +85,12 @@ class RecordingEncoder : public RecordingFileIoHelper::Delegate {
   // Encodes and muxes the given video `frame`.
   virtual void EncodeVideo(scoped_refptr<media::VideoFrame> frame) = 0;
 
-  // Encodes and muxes the given audio frame in `audio_bus` captured at
-  // `capture_time`. Note that the underlying encoder type may not support
-  // encoding audio (e.g. the GIF encoder).
-  virtual void EncodeAudio(std::unique_ptr<media::AudioBus> audio_bus,
-                           base::TimeTicks capture_time) = 0;
+  // Returns a callback bound to this object that can be called repeatedly by
+  // the client to provide the audio buses along with their timestamps so that
+  // they can get encoded and muxed by the encoder.
+  // Note that the underlying encoder type may not support encoding audio (e.g.
+  // the GIF encoder).
+  virtual EncodeAudioCallback GetEncodeAudioCallback() = 0;
 
   // Audio and video encoders as well as the WebmMuxer may buffer several frames
   // before they're processed. It is important to flush all those buffers before

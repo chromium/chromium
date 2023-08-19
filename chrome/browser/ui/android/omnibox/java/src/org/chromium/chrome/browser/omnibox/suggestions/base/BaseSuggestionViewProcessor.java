@@ -16,8 +16,9 @@ import androidx.annotation.Nullable;
 
 import org.chromium.chrome.browser.omnibox.MatchClassificationStyle;
 import org.chromium.chrome.browser.omnibox.R;
+import org.chromium.chrome.browser.omnibox.styles.OmniboxDrawableState;
+import org.chromium.chrome.browser.omnibox.styles.OmniboxImageSupplier;
 import org.chromium.chrome.browser.omnibox.styles.OmniboxResourceProvider;
-import org.chromium.chrome.browser.omnibox.suggestions.FaviconFetcher;
 import org.chromium.chrome.browser.omnibox.suggestions.SuggestionHost;
 import org.chromium.chrome.browser.omnibox.suggestions.SuggestionProcessor;
 import org.chromium.chrome.browser.omnibox.suggestions.base.BaseSuggestionViewProperties.Action;
@@ -36,7 +37,7 @@ public abstract class BaseSuggestionViewProcessor implements SuggestionProcessor
     protected final @NonNull Context mContext;
     protected final @NonNull SuggestionHost mSuggestionHost;
     private final @NonNull ActionChipsProcessor mActionChipsProcessor;
-    private final @Nullable FaviconFetcher mFaviconFetcher;
+    private final @Nullable OmniboxImageSupplier mImageSupplier;
     private final int mDesiredFaviconWidthPx;
     private final int mDecorationImageSizePx;
     private final int mSuggestionSizePx;
@@ -44,13 +45,13 @@ public abstract class BaseSuggestionViewProcessor implements SuggestionProcessor
     /**
      * @param context Current context.
      * @param host A handle to the object using the suggestions.
-     * @param faviconFetcher A mechanism to use to retrieve favicons.
+     * @param imageSupplier A mechanism to use to retrieve favicons.
      */
     public BaseSuggestionViewProcessor(@NonNull Context context, @NonNull SuggestionHost host,
-            @Nullable FaviconFetcher faviconFetcher) {
+            @Nullable OmniboxImageSupplier imageSupplier) {
         mContext = context;
         mSuggestionHost = host;
-        mFaviconFetcher = faviconFetcher;
+        mImageSupplier = imageSupplier;
         mDesiredFaviconWidthPx = mContext.getResources().getDimensionPixelSize(
                 R.dimen.omnibox_suggestion_favicon_size);
         mDecorationImageSizePx = mContext.getResources().getDimensionPixelSize(
@@ -74,23 +75,44 @@ public abstract class BaseSuggestionViewProcessor implements SuggestionProcessor
         return mDecorationImageSizePx;
     }
 
+    /**
+     * Return whether this suggestion can host OmniboxAction chips.
+     */
+    protected boolean allowOmniboxActions() {
+        return true;
+    }
+
     @Override
     public int getMinimumViewHeight() {
         return mSuggestionSizePx;
     }
 
     /**
-     * Specify SuggestionDrawableState for suggestion decoration.
+     * Retrieve fallback icon for a given suggestion.
+     * Must be completed synchromously.
      *
-     * @param decoration SuggestionDrawableState object defining decoration for the suggestion.
+     * @param suggestion AutocompleteMatch instance to retrieve fallback icon for
+     * @return OmniboxDrawableState that can be immediately applied to suggestion view
      */
-    protected void setSuggestionDrawableState(
-            PropertyModel model, SuggestionDrawableState decoration) {
+    protected @NonNull OmniboxDrawableState getFallbackIcon(@NonNull AutocompleteMatch match) {
+        int icon = match.isSearchSuggestion() ? R.drawable.ic_suggestion_magnifier
+                                              : R.drawable.ic_globe_24dp;
+        return OmniboxDrawableState.forDefaultIcon(mContext, icon, true);
+    }
+
+    /**
+     * Specify OmniboxDrawableState for suggestion decoration.
+     *
+     * @param model the PropertyModel to apply the decoration to
+     * @param decoration the OmniboxDrawableState to apply
+     */
+    protected void setOmniboxDrawableState(
+            PropertyModel model, @NonNull OmniboxDrawableState decoration) {
         model.set(BaseSuggestionViewProperties.ICON, decoration);
     }
 
     /**
-     * Specify SuggestionDrawableState for action button.
+     * Specify OmniboxDrawableState for action button.
      *
      * @param model Property model to update.
      * @param actions List of actions for the suggestion.
@@ -124,12 +146,8 @@ public abstract class BaseSuggestionViewProcessor implements SuggestionProcessor
             action = () -> mSuggestionHost.onRefineSuggestion(suggestion);
         }
         setActionButtons(model,
-                Arrays.asList(
-                        new Action(SuggestionDrawableState.Builder.forDrawableRes(mContext, icon)
-                                           .setLarge(true)
-                                           .setAllowTint(true)
-                                           .build(),
-                                iconString, action)));
+                Arrays.asList(new Action(OmniboxDrawableState.forDefaultIcon(mContext, icon, true),
+                        iconString, action)));
     }
 
     /**
@@ -164,6 +182,13 @@ public abstract class BaseSuggestionViewProcessor implements SuggestionProcessor
 
         if (allowOmniboxActions()) {
             mActionChipsProcessor.populateModel(suggestion, model, position);
+        }
+
+        var icon = getFallbackIcon(suggestion);
+        assert icon != null;
+        setOmniboxDrawableState(model, icon);
+        if (suggestion.isSearchSuggestion()) {
+            fetchImage(model, suggestion.getImageUrl());
         }
     }
 
@@ -223,12 +248,27 @@ public abstract class BaseSuggestionViewProcessor implements SuggestionProcessor
      * @param url Target URL the suggestion points to.
      */
     protected void fetchSuggestionFavicon(PropertyModel model, GURL url) {
-        assert mFaviconFetcher != null : "You must supply the FaviconFetcher in order to use it";
-        mFaviconFetcher.fetchFaviconWithBackoff(url, false, (icon, type) -> {
+        if (mImageSupplier == null) return;
+
+        mImageSupplier.fetchFavicon(url, icon -> {
             if (icon != null) {
-                setSuggestionDrawableState(
-                        model, SuggestionDrawableState.Builder.forBitmap(mContext, icon).build());
+                setOmniboxDrawableState(model, OmniboxDrawableState.forFavIcon(mContext, icon));
             }
+        });
+    }
+
+    /**
+     * Fetch suggestion image.
+     * Updates icon decoration in supplied |model| if |imageUrl| is valid, points to an image, and
+     * was successfully retrieved and decompressed.
+     *
+     * @param model the PropertyModel to update with retrieved image
+     * @param imageUrl the URL of the image to retrieve and decode
+     */
+    protected void fetchImage(PropertyModel model, GURL imageUrl) {
+        if (mImageSupplier == null) return;
+        mImageSupplier.fetchImage(imageUrl, bitmap -> {
+            setOmniboxDrawableState(model, OmniboxDrawableState.forImage(mContext, bitmap));
         });
     }
 }

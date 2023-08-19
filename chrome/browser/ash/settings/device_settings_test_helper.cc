@@ -119,11 +119,8 @@ void DeviceSettingsTestBase::InitOwner(const AccountId& account_id,
   if (!user) {
     user = user_manager_->AddUser(account_id);
     profile_->set_profile_name(account_id.GetUserEmail());
-
     ProfileHelper::Get()->SetUserToProfileMappingForTesting(user,
                                                             profile_.get());
-    ProfileHelper::Get()->SetProfileToUserMappingForTesting(
-        const_cast<user_manager::User*>(user));
   }
   OwnerSettingsServiceAsh* service =
       OwnerSettingsServiceAshFactory::GetForBrowserContext(profile_.get());

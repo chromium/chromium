@@ -52,7 +52,7 @@ CertificateManagerDialogUI::CertificateManagerDialogUI(content::WebUI* web_ui)
   source->AddBoolean(
       "isGuest",
       user_manager::UserManager::Get()->IsLoggedInAsGuest() ||
-          user_manager::UserManager::Get()->IsLoggedInAsPublicAccount());
+          user_manager::UserManager::Get()->IsLoggedInAsManagedGuestSession());
   source->AddBoolean(
       "isKiosk", user_manager::UserManager::Get()->IsLoggedInAsAnyKioskApp());
 

@@ -94,7 +94,8 @@ int main(int argc, char** argv) {
   std::unique_ptr<base::FieldTrialList> field_trial_list =
       std::make_unique<base::FieldTrialList>();
   // Create field trials according to --force-fieldtrials param.
-  base::FieldTrialList::CreateTrialsFromCommandLine(*command_line, -1);
+  base::FieldTrialList::CreateTrialsFromString(
+      command_line->GetSwitchValueASCII(::switches::kForceFieldTrials));
   // Enable and disable features according to --enable-features and
   // --disable-features.
   std::unique_ptr<base::FeatureList> feature_list =

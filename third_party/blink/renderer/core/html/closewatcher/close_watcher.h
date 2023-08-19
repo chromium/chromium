@@ -21,8 +21,7 @@ class LocalDOMWindow;
 class KeyboardEvent;
 class HTMLDialogElement;
 
-class CloseWatcher final : public EventTargetWithInlineData,
-                           public ExecutionContextClient {
+class CloseWatcher final : public EventTarget, public ExecutionContextClient {
   DEFINE_WRAPPERTYPEINFO();
 
  public:
@@ -33,12 +32,14 @@ class CloseWatcher final : public EventTargetWithInlineData,
   // We have a few use counters which we trigger only for the <dialog> case,
   // where we're trying to determine whether it's web-compatible or not to use
   // CloseWatcher rules for <dialog>s. (Namely, sometimes closing multiple
-  // <dialog>s with a single close signal, and sometimes skipping cancel
+  // <dialog>s with a single close request, and sometimes skipping cancel
   // events.) This argument should be removed after web-compatibility is
   // determined; ultimately the CloseWatcher code should not be aware of the
   // existence of <dialog>, for good layering.
   static CloseWatcher* Create(LocalDOMWindow*,
                               HTMLDialogElement* dialog_for_use_counters);
+
+  static CloseWatcher* Create(LocalDOMWindow*);
 
   explicit CloseWatcher(LocalDOMWindow*,
                         HTMLDialogElement* dialog_for_use_counters);
@@ -47,20 +48,21 @@ class CloseWatcher final : public EventTargetWithInlineData,
   bool IsClosed() const { return state_ == State::kClosed; }
   bool IsGroupedWithPrevious() const { return grouped_with_previous_; }
 
-  void close(bool* cancel_skipped = nullptr);
+  void requestClose(bool* cancel_skipped = nullptr);
+  void close();
   void destroy();
 
   DEFINE_ATTRIBUTE_EVENT_LISTENER(cancel, kCancel)
   DEFINE_ATTRIBUTE_EVENT_LISTENER(close, kClose)
 
-  // EventTargetWithInlineData overrides:
+  // EventTarget overrides:
   const AtomicString& InterfaceName() const final;
   ExecutionContext* GetExecutionContext() const final {
     return ExecutionContextClient::GetExecutionContext();
   }
 
   // If multiple CloseWatchers are active in a given window, they form a
-  // stack, and a close signal will pop the top watcher. If the stack is empty,
+  // stack, and a close request will pop the top watcher. If the stack is empty,
   // the first CloseWatcher is "free", but creating a new
   // CloseWatcher when the stack is non-empty requires a user activation.
   class WatcherStack final : public GarbageCollected<WatcherStack>,

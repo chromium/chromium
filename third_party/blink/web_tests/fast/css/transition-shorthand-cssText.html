@@ -22,7 +22,9 @@ shouldBe("rule.cssText","'#target { transition-duration: 1s; transition-delay: 0
 rule.style.setProperty('transition-property', 'all');
 shouldBe("rule.cssText","'#target { transition-duration: 1s; transition-delay: 0s; transition-property: all; }'");
 rule.style.setProperty('transition-timing-function', 'ease');
-shouldBe("rule.cssText","'#target { transition: all 1s ease 0s; }'");
+shouldBe("rule.cssText","'#target { transition-duration: 1s; transition-delay: 0s; transition-property: all; transition-timing-function: ease; }'");
+rule.style.setProperty('transition-behavior', 'allow-discrete');
+shouldBe("rule.cssText","'#target { transition: all 1s ease 0s allow-discrete; }'");
 
 </script>
 

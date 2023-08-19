@@ -5,6 +5,7 @@
 #include "chrome/browser/ui/views/passwords/password_bubble_view_base.h"
 
 #include <memory>
+#include <string>
 #include <utility>
 
 #include "base/command_line.h"
@@ -30,9 +31,12 @@
 #include "chrome/browser/ui/views/passwords/manage_passwords_view_ids.h"
 #include "chrome/browser/ui/views/passwords/password_auto_sign_in_view.h"
 #include "chrome/browser/ui/views/passwords/password_save_update_view.h"
+#include "chrome/browser/ui/views/passwords/shared_passwords_notification_view.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_view.h"
 #include "chrome/test/base/interactive_test_utils.h"
 #include "chrome/test/base/ui_test_utils.h"
+#include "components/password_manager/core/browser/features/password_features.h"
+#include "components/password_manager/core/browser/password_form.h"
 #include "components/password_manager/core/browser/password_manager_metrics_util.h"
 #include "components/password_manager/core/common/password_manager_features.h"
 #include "content/public/browser/render_view_host.h"
@@ -51,6 +55,7 @@ using base::Bucket;
 using net::test_server::BasicHttpResponse;
 using net::test_server::HttpRequest;
 using net::test_server::HttpResponse;
+using password_manager::PasswordForm;
 using testing::_;
 using testing::ElementsAre;
 using testing::Eq;
@@ -86,6 +91,21 @@ void ClickOnView(views::View* view) {
   view->OnMouseReleased(released_event);
 }
 
+PasswordForm CreateSharedCredentials(
+    const GURL& url,
+    const std::u16string& username = u"username",
+    const std::u16string& sender_name = u"Elisa Becket") {
+  PasswordForm shared_credentials;
+  shared_credentials.signon_realm = url.GetWithEmptyPath().spec();
+  shared_credentials.url = url;
+  shared_credentials.username_value = username;
+  shared_credentials.password_value = u"12345";
+  shared_credentials.match_type = PasswordForm::MatchType::kExact;
+  shared_credentials.type = PasswordForm::Type::kReceivedViaSharing;
+  shared_credentials.sender_name = sender_name;
+  return shared_credentials;
+}
+
 }  // namespace
 
 namespace metrics_util = password_manager::metrics_util;
@@ -100,16 +120,6 @@ class PasswordBubbleInteractiveUiTest : public ManagePasswordsTest {
       const PasswordBubbleInteractiveUiTest&) = delete;
 
   ~PasswordBubbleInteractiveUiTest() override {}
-};
-
-class PasswordManagementRevampedBubbleInteractiveUiTest
-    : public PasswordBubbleInteractiveUiTest {
- public:
-  ~PasswordManagementRevampedBubbleInteractiveUiTest() override = default;
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_{
-      password_manager::features::kRevampedPasswordManagementBubble};
 };
 
 IN_PROC_BROWSER_TEST_F(PasswordBubbleInteractiveUiTest, BasicOpenAndClose) {
@@ -150,16 +160,7 @@ IN_PROC_BROWSER_TEST_F(PasswordBubbleInteractiveUiTest, CommandControlsBubble) {
   EXPECT_FALSE(IsBubbleShowing());
   ExecuteManagePasswordsCommand();
   EXPECT_TRUE(IsBubbleShowing());
-  if (!base::FeatureList::IsEnabled(
-          password_manager::features::kRevampedPasswordManagementBubble)) {
-    // The new management bubble does not have an OK button. This part of the
-    // test is only relevant for legacy management bubble.
-    const LocationBarBubbleDelegateView* bubble =
-        PasswordBubbleViewBase::manage_password_bubble();
-    EXPECT_TRUE(bubble->GetOkButton());
-    EXPECT_EQ(bubble->GetOkButton(),
-              bubble->GetFocusManager()->GetFocusedView());
-  }
+
   PasswordBubbleViewBase::CloseCurrentBubble();
   EXPECT_FALSE(IsBubbleShowing());
   // Drain message pump to ensure the bubble view is cleared so that it can be
@@ -393,7 +394,9 @@ IN_PROC_BROWSER_TEST_F(PasswordBubbleInteractiveUiTest,
   EXPECT_TRUE(IsBubbleShowing());
 
   // Close the tab.
-  ASSERT_TRUE(tab_model->CloseWebContentsAt(0, 0));
+  int previous_tab_count = tab_model->count();
+  tab_model->CloseWebContentsAt(0, 0);
+  ASSERT_EQ(previous_tab_count - 1, tab_model->count());
   EXPECT_FALSE(IsBubbleShowing());
 
   // The bubble is now hidden, but not destroyed. However, the WebContents _is_
@@ -483,7 +486,7 @@ IN_PROC_BROWSER_TEST_F(PasswordBubbleInteractiveUiTest, SaveUiDismissalReason) {
       password_manager::metrics_util::CLICKED_ACCEPT, 1);
 }
 
-IN_PROC_BROWSER_TEST_F(PasswordManagementRevampedBubbleInteractiveUiTest,
+IN_PROC_BROWSER_TEST_F(PasswordBubbleInteractiveUiTest,
                        ClosesBubbleOnNavigationToFullPasswordManager) {
   base::HistogramTester histogram_tester;
 
@@ -504,7 +507,7 @@ IN_PROC_BROWSER_TEST_F(PasswordManagementRevampedBubbleInteractiveUiTest,
       1);
 }
 
-IN_PROC_BROWSER_TEST_F(PasswordManagementRevampedBubbleInteractiveUiTest,
+IN_PROC_BROWSER_TEST_F(PasswordBubbleInteractiveUiTest,
                        ClosesBubbleOnClickingGooglePasswordManagerLink) {
   base::HistogramTester histogram_tester;
 
@@ -512,22 +515,30 @@ IN_PROC_BROWSER_TEST_F(PasswordManagementRevampedBubbleInteractiveUiTest,
   EXPECT_FALSE(IsBubbleShowing());
   ExecuteManagePasswordsCommand();
   ASSERT_TRUE(IsBubbleShowing());
+  // Navigate to the details view, and click on the Edit Note button to display
+  // the footer.
+  auto* bubble = PasswordBubbleViewBase::manage_password_bubble();
+  static_cast<ManagePasswordsView*>(bubble)->DisplayDetailsOfPasswordForTesting(
+      *test_form());
+  ClickOnView(bubble->GetViewByID(static_cast<int>(
+      password_manager::ManagePasswordsViewIDs::kEditNoteButton)));
 
   views::View* footnote_view = PasswordBubbleViewBase::manage_password_bubble()
                                    ->GetFootnoteViewForTesting();
+  ASSERT_TRUE(footnote_view);
   views::Link* link =
       static_cast<views::StyledLabel*>(footnote_view)->GetFirstLinkForTesting();
   ClickOnView(link);
   EXPECT_FALSE(IsBubbleShowing());
 
-  histogram_tester.ExpectUniqueSample(
+  histogram_tester.ExpectBucketCount(
       "PasswordManager.PasswordManagementBubble.UserAction",
       password_manager::metrics_util::PasswordManagementBubbleInteractions::
           kGooglePasswordManagerLinkClicked,
       1);
 }
 
-IN_PROC_BROWSER_TEST_F(PasswordManagementRevampedBubbleInteractiveUiTest,
+IN_PROC_BROWSER_TEST_F(PasswordBubbleInteractiveUiTest,
                        CopiesPasswordDetailsToClipboardOnCopyButtonClicks) {
   ui::Clipboard* clipboard = ui::Clipboard::GetForCurrentThread();
   std::u16string clipboard_text;
@@ -568,7 +579,7 @@ IN_PROC_BROWSER_TEST_F(PasswordManagementRevampedBubbleInteractiveUiTest,
                                  1)));
 }
 
-IN_PROC_BROWSER_TEST_F(PasswordManagementRevampedBubbleInteractiveUiTest,
+IN_PROC_BROWSER_TEST_F(PasswordBubbleInteractiveUiTest,
                        RevealPasswordOnEyeIconClicks) {
   base::HistogramTester histogram_tester;
 
@@ -604,7 +615,7 @@ IN_PROC_BROWSER_TEST_F(PasswordManagementRevampedBubbleInteractiveUiTest,
       1);
 }
 
-IN_PROC_BROWSER_TEST_F(PasswordManagementRevampedBubbleInteractiveUiTest,
+IN_PROC_BROWSER_TEST_F(PasswordBubbleInteractiveUiTest,
                        DisplaysNewUsernameAfterEditing) {
   base::HistogramTester histogram_tester;
 
@@ -655,7 +666,7 @@ IN_PROC_BROWSER_TEST_F(PasswordManagementRevampedBubbleInteractiveUiTest,
                  1)));
 }
 
-IN_PROC_BROWSER_TEST_F(PasswordManagementRevampedBubbleInteractiveUiTest,
+IN_PROC_BROWSER_TEST_F(PasswordBubbleInteractiveUiTest,
                        DisplaysCorrectTextAfterAddingNote) {
   base::HistogramTester histogram_tester;
 
@@ -706,7 +717,7 @@ IN_PROC_BROWSER_TEST_F(PasswordManagementRevampedBubbleInteractiveUiTest,
                  1)));
 }
 
-IN_PROC_BROWSER_TEST_F(PasswordManagementRevampedBubbleInteractiveUiTest,
+IN_PROC_BROWSER_TEST_F(PasswordBubbleInteractiveUiTest,
                        DisplaysCorrectTextAfterEditingNote) {
   base::HistogramTester histogram_tester;
 
@@ -758,7 +769,7 @@ IN_PROC_BROWSER_TEST_F(PasswordManagementRevampedBubbleInteractiveUiTest,
                  1)));
 }
 
-IN_PROC_BROWSER_TEST_F(PasswordManagementRevampedBubbleInteractiveUiTest,
+IN_PROC_BROWSER_TEST_F(PasswordBubbleInteractiveUiTest,
                        DisplaysCorrectTextAfterDeletingNote) {
   base::HistogramTester histogram_tester;
 
@@ -810,7 +821,7 @@ IN_PROC_BROWSER_TEST_F(PasswordManagementRevampedBubbleInteractiveUiTest,
                  1)));
 }
 
-IN_PROC_BROWSER_TEST_F(PasswordManagementRevampedBubbleInteractiveUiTest,
+IN_PROC_BROWSER_TEST_F(PasswordBubbleInteractiveUiTest,
                        RecordsMetricsForCopyingFullNoteWithKeyboardShortcuts) {
   base::HistogramTester histogram_tester;
 
@@ -844,7 +855,7 @@ IN_PROC_BROWSER_TEST_F(PasswordManagementRevampedBubbleInteractiveUiTest,
 }
 
 IN_PROC_BROWSER_TEST_F(
-    PasswordManagementRevampedBubbleInteractiveUiTest,
+    PasswordBubbleInteractiveUiTest,
     RecordsMetricsForCopyingFullNoteWithSelectAllAndCopyCommands) {
   base::HistogramTester histogram_tester;
 
@@ -877,7 +888,7 @@ IN_PROC_BROWSER_TEST_F(
                  1)));
 }
 
-IN_PROC_BROWSER_TEST_F(PasswordManagementRevampedBubbleInteractiveUiTest,
+IN_PROC_BROWSER_TEST_F(PasswordBubbleInteractiveUiTest,
                        RecordsMetricsForCopyingFullNoteAfterMouseSelection) {
   base::HistogramTester histogram_tester;
 
@@ -918,7 +929,7 @@ IN_PROC_BROWSER_TEST_F(PasswordManagementRevampedBubbleInteractiveUiTest,
                  2)));
 }
 
-IN_PROC_BROWSER_TEST_F(PasswordManagementRevampedBubbleInteractiveUiTest,
+IN_PROC_BROWSER_TEST_F(PasswordBubbleInteractiveUiTest,
                        RecordsMetricsForCopyingPartOfNoteAfterMouseSelection) {
   base::HistogramTester histogram_tester;
 
@@ -960,7 +971,7 @@ IN_PROC_BROWSER_TEST_F(PasswordManagementRevampedBubbleInteractiveUiTest,
                  2)));
 }
 
-IN_PROC_BROWSER_TEST_F(PasswordManagementRevampedBubbleInteractiveUiTest,
+IN_PROC_BROWSER_TEST_F(PasswordBubbleInteractiveUiTest,
                        NavigateToManagementDetailsViewAndTakeScreenshot) {
   const char kFirstCredentialsRow[] = "FirstCredentialsRow";
 
@@ -983,4 +994,128 @@ IN_PROC_BROWSER_TEST_F(PasswordManagementRevampedBubbleInteractiveUiTest,
                       "Screenshot can only run in pixel_tests on Windows."),
                   Screenshot(ManagePasswordsDetailsView::kTopView,
                              std::string(), "4385094"));
+}
+
+class SharedPasswordsNotificationBubbleInteractiveUiTest
+    : public PasswordBubbleInteractiveUiTest {
+ public:
+  ~SharedPasswordsNotificationBubbleInteractiveUiTest() override = default;
+  auto ScreenshotSharedPasswordsNotificationRootView(const char* baseline);
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_{
+      password_manager::features::kSharedPasswordNotificationUI};
+};
+
+auto SharedPasswordsNotificationBubbleInteractiveUiTest::
+    ScreenshotSharedPasswordsNotificationRootView(const char* baseline) {
+  constexpr char kRootViewName[] = "ScreenshotRootView";
+  return Steps(
+      NameViewRelative(
+          SharedPasswordsNotificationView::kTopView, kRootViewName,
+          [](views::View* view) { return view->GetWidget()->GetRootView(); }),
+      Screenshot(kRootViewName,
+                 /*screenshot_name=*/std::string(), baseline));
+}
+
+IN_PROC_BROWSER_TEST_F(SharedPasswordsNotificationBubbleInteractiveUiTest,
+                       SharedPasswordNotificationUIShowsUpAndTakeScreenshot) {
+  GURL test_url = GURL("https://example.com");
+  PasswordForm shared_credentials = CreateSharedCredentials(test_url);
+  shared_credentials.sharing_notification_displayed = false;
+
+  std::vector<const password_manager::PasswordForm*> forms = {
+      &shared_credentials};
+
+  auto setup_shared_passwords = [&]() {
+    GetController()->OnPasswordAutofilled(forms, url::Origin::Create(test_url),
+                                          /*federated_matches=*/nullptr);
+  };
+
+  RunTestSequence(Do(setup_shared_passwords),
+                  WaitForShow(SharedPasswordsNotificationView::kTopView),
+                  // Screenshots are supposed only on Windows.
+                  SetOnIncompatibleAction(
+                      OnIncompatibleAction::kIgnoreAndContinue,
+                      "Screenshot can only run in pixel_tests on Windows."),
+                  ScreenshotSharedPasswordsNotificationRootView("4783493"));
+}
+
+IN_PROC_BROWSER_TEST_F(
+    SharedPasswordsNotificationBubbleInteractiveUiTest,
+    MultipleSharedPasswordsNotificationUIShowsUpAndTakeScreenshot) {
+  GURL test_url = GURL("https://example.com");
+  PasswordForm shared_credentials1 =
+      CreateSharedCredentials(test_url, u"username1");
+  shared_credentials1.sharing_notification_displayed = false;
+
+  PasswordForm shared_credentials2 =
+      CreateSharedCredentials(test_url, u"username2");
+  shared_credentials2.sharing_notification_displayed = false;
+
+  std::vector<const password_manager::PasswordForm*> forms = {
+      &shared_credentials1, &shared_credentials2};
+
+  auto setup_shared_passwords = [&]() {
+    GetController()->OnPasswordAutofilled(forms, url::Origin::Create(test_url),
+                                          /*federated_matches=*/nullptr);
+  };
+
+  RunTestSequence(Do(setup_shared_passwords),
+                  WaitForShow(SharedPasswordsNotificationView::kTopView),
+                  // Screenshots are supposed only on Windows.
+                  SetOnIncompatibleAction(
+                      OnIncompatibleAction::kIgnoreAndContinue,
+                      "Screenshot can only run in pixel_tests on Windows."),
+                  ScreenshotSharedPasswordsNotificationRootView("4783493"));
+}
+
+// Tests the case when there are multiple shared passwords, but only one is not
+// notified yet.
+IN_PROC_BROWSER_TEST_F(
+    SharedPasswordsNotificationBubbleInteractiveUiTest,
+    OnlyUnnotifiedPasswordsNotificationUIShowsUpAndTakeScreenshot) {
+  GURL test_url = GURL("https://example.com");
+  PasswordForm shared_credentials1 =
+      CreateSharedCredentials(test_url, u"username1", u"Sender One");
+  shared_credentials1.sharing_notification_displayed = true;
+
+  PasswordForm shared_credentials2 =
+      CreateSharedCredentials(test_url, u"username2", u"Sender Two");
+  shared_credentials2.sharing_notification_displayed = false;
+
+  std::vector<const password_manager::PasswordForm*> forms = {
+      &shared_credentials1, &shared_credentials2};
+
+  auto setup_shared_passwords = [&]() {
+    GetController()->OnPasswordAutofilled(forms, url::Origin::Create(test_url),
+                                          /*federated_matches=*/nullptr);
+  };
+
+  RunTestSequence(Do(setup_shared_passwords),
+                  WaitForShow(SharedPasswordsNotificationView::kTopView),
+                  // Screenshots are supposed only on Windows.
+                  SetOnIncompatibleAction(
+                      OnIncompatibleAction::kIgnoreAndContinue,
+                      "Screenshot can only run in pixel_tests on Windows."),
+                  ScreenshotSharedPasswordsNotificationRootView("4783493"));
+}
+
+IN_PROC_BROWSER_TEST_F(
+    SharedPasswordsNotificationBubbleInteractiveUiTest,
+    SharedPasswordNotificationUIShouldNotShowIfNotifiedAlready) {
+  GURL test_url = GURL("https://example.com");
+  PasswordForm shared_credentials = CreateSharedCredentials(test_url);
+  shared_credentials.sharing_notification_displayed = true;
+
+  std::vector<const password_manager::PasswordForm*> forms = {
+      &shared_credentials};
+
+  auto setup_shared_passwords = [&]() {
+    GetController()->OnPasswordAutofilled(forms, url::Origin::Create(test_url),
+                                          /*/*federated_matches=*/nullptr);
+  };
+
+  RunTestSequence(Do(setup_shared_passwords),
+                  EnsureNotPresent(SharedPasswordsNotificationView::kTopView));
 }

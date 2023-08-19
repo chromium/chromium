@@ -116,7 +116,7 @@ void LayoutSVGPath::UpdateMarkers() {
     }
   }
 
-  stroke_bounding_box_.Union(boundaries);
+  decorated_bounding_box_.Union(boundaries);
 }
 
 }  // namespace blink

@@ -11,6 +11,7 @@
 #include "chrome/browser/apps/app_service/app_launch_params.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/menu_util.h"
+#include "chrome/browser/apps/app_service/publishers/guest_os_apps.h"
 #include "chrome/browser/ash/borealis/borealis_app_launcher.h"
 #include "chrome/browser/ash/borealis/borealis_app_uninstaller.h"
 #include "chrome/browser/ash/borealis/borealis_context_manager.h"
@@ -20,6 +21,7 @@
 #include "chrome/browser/ash/borealis/borealis_util.h"
 #include "chrome/browser/ash/guest_os/guest_os_registry_service.h"
 #include "chrome/browser/ash/guest_os/guest_os_registry_service_factory.h"
+#include "chrome/browser/ash/guest_os/public/types.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/grit/chrome_unscaled_resources.h"
 #include "chrome/grit/generated_resources.h"
@@ -47,7 +49,7 @@ const char* PermissionToPrefName(apps::PermissionType permission) {
 }
 
 // Helper method to set up an apps visibility in all the major UI surfaces.
-void InitializeApp(apps::App& app, bool visible) {
+void SetAppVisibility(apps::App& app, bool visible) {
   app.recommendable = visible;
   app.searchable = visible;
   app.show_in_launcher = visible;
@@ -61,9 +63,7 @@ apps::Permissions CreatePermissions(Profile* profile) {
   apps::Permissions permissions;
   for (const PermissionInfo& info : permission_infos) {
     permissions.push_back(std::make_unique<apps::Permission>(
-        info.permission,
-        std::make_unique<apps::PermissionValue>(
-            profile->GetPrefs()->GetBoolean(info.pref_name)),
+        info.permission, profile->GetPrefs()->GetBoolean(info.pref_name),
         /*is_managed=*/false));
   }
   return permissions;
@@ -73,14 +73,11 @@ apps::Permissions CreatePermissions(Profile* profile) {
 
 namespace apps {
 
-BorealisApps::BorealisApps(AppServiceProxy* proxy)
-    : AppPublisher(proxy), profile_(proxy->profile()) {
-  Registry()->AddObserver(this);
-
+BorealisApps::BorealisApps(AppServiceProxy* proxy) : GuestOSApps(proxy) {
   anonymous_app_observation_.Observe(
-      &borealis::BorealisService::GetForProfile(profile_)->WindowManager());
+      &borealis::BorealisService::GetForProfile(profile())->WindowManager());
 
-  pref_registrar_.Init(profile_->GetPrefs());
+  pref_registrar_.Init(profile()->GetPrefs());
 
   for (const PermissionInfo& info : permission_infos) {
     pref_registrar_.Add(
@@ -101,13 +98,12 @@ BorealisApps::BorealisApps(AppServiceProxy* proxy)
 }
 
 BorealisApps::~BorealisApps() {
-  Registry()->RemoveObserver(this);
   pref_registrar_.RemoveAll();
 }
 
 void BorealisApps::CallWithBorealisAllowed(
     base::OnceCallback<void(bool)> callback) {
-  borealis::BorealisService::GetForProfile(profile_)->Features().IsAllowed(
+  borealis::BorealisService::GetForProfile(profile())->Features().IsAllowed(
       base::BindOnce(
           [](base::OnceCallback<void(bool)> callback,
              borealis::BorealisFeatures::AllowStatus allow_status) {
@@ -120,7 +116,7 @@ void BorealisApps::CallWithBorealisAllowed(
 
 void BorealisApps::SetUpSpecialApps(bool allowed) {
   // The special apps are only shown if borealis isn't installed and it can be.
-  bool installed = borealis::BorealisService::GetForProfile(profile_)
+  bool installed = borealis::BorealisService::GetForProfile(profile())
                        ->Features()
                        .IsEnabled();
   bool shown = allowed && !installed;
@@ -132,7 +128,7 @@ void BorealisApps::SetUpSpecialApps(bool allowed) {
       shown ? apps::Readiness::kReady : apps::Readiness::kDisabledByPolicy,
       l10n_util::GetStringUTF8(IDS_BOREALIS_INSTALLER_APP_NAME),
       apps::InstallReason::kDefault, apps::InstallSource::kSystem);
-  InitializeApp(*installer_app, shown);
+  SetAppVisibility(*installer_app, shown);
   installer_app->icon_key = apps::IconKey(apps::IconKey::kDoesNotChangeOverTime,
                                           IDR_LOGO_BOREALIS_STEAM_PENDING_192,
                                           apps::IconEffects::kNone);
@@ -153,7 +149,7 @@ void BorealisApps::SetUpSpecialApps(bool allowed) {
       shown ? apps::Readiness::kReady : apps::Readiness::kDisabledByPolicy,
       l10n_util::GetStringUTF8(IDS_BOREALIS_INSTALLER_APP_NAME),
       apps::InstallReason::kDefault, apps::InstallSource::kSystem);
-  InitializeApp(*initial_steam_app, shown);
+  SetAppVisibility(*initial_steam_app, shown);
   initial_steam_app->icon_key =
       apps::IconKey(apps::IconKey::kDoesNotChangeOverTime,
                     IDR_LOGO_BOREALIS_STEAM_192, apps::IconEffects::kNone);
@@ -161,113 +157,79 @@ void BorealisApps::SetUpSpecialApps(bool allowed) {
   initial_steam_app->show_in_management = false;
   initial_steam_app->allow_uninstall = false;
   AppPublisher::Publish(std::move(initial_steam_app));
-
-  // TODO(crbug.com/1253250): Add other fields for the App struct.
 }
 
-guest_os::GuestOsRegistryService* BorealisApps::Registry() {
-  guest_os::GuestOsRegistryService* registry =
-      guest_os::GuestOsRegistryServiceFactory::GetForProfile(profile_);
-  // The GuestOsRegistryService is a dependant of the apps service itself, so it
-  // is not possible for the apps service to be in a valid state while this is
-  // null.
-  DCHECK(registry);
-  return registry;
+bool BorealisApps::CouldBeAllowed() const {
+  // Borealis's permission check is actually dynamic, so instead of performing
+  // it here we just pretend that borealis is always allowed.
+  //
+  // For Borealis this is useful, we still want to allow uninstall when
+  // disallowed (to clean up the disk) but that requires us to provide an app
+  // which the user can right click on and uninstall.
+  return true;
 }
 
-AppPtr BorealisApps::CreateApp(
-    const guest_os::GuestOsRegistryService::Registration& registration,
-    bool generate_new_icon_key) {
-  // We must only convert borealis apps.
-  DCHECK_EQ(registration.VmType(), guest_os::VmType::BOREALIS);
+apps::AppType BorealisApps::AppType() const {
+  return apps::AppType::kBorealis;
+}
 
-  // The special apps are not GuestOs apps, they don't have a registration and
-  // can't be converted.
-  DCHECK_NE(registration.app_id(), borealis::kInstallerAppId);
-  DCHECK_NE(registration.app_id(), borealis::kLauncherSearchAppId);
-
-  bool shown = !registration.NoDisplay();
-  auto app = AppPublisher::MakeApp(
-      AppType::kBorealis, registration.app_id(),
-      shown ? apps::Readiness::kReady : apps::Readiness::kDisabledByPolicy,
-      registration.Name(), InstallReason::kUser, InstallSource::kUnknown);
-  InitializeApp(*app, shown);
-
-  const std::string& executable_file_name = registration.ExecutableFileName();
-  if (!executable_file_name.empty()) {
-    app->additional_search_terms.push_back(executable_file_name);
-  }
-
-  for (const std::string& keyword : registration.Keywords()) {
-    app->additional_search_terms.push_back(keyword);
-  }
-
-  if (generate_new_icon_key) {
-    app->icon_key = std::move(
-        *icon_key_factory_.CreateIconKey(IconEffects::kCrOsStandardIcon));
-  }
-
-  app->last_launch_time = registration.LastLaunchTime();
-  app->install_time = registration.InstallTime();
-
-  if (registration.app_id() == borealis::kClientAppId) {
-    app->permissions = CreatePermissions(profile_);
-  }
-
-  // TODO(crbug.com/1253250): Add other fields for the App struct.
-  return app;
+guest_os::VmType BorealisApps::VmType() const {
+  return guest_os::VmType::BOREALIS;
 }
 
 void BorealisApps::Initialize() {
-  RegisterPublisher(AppType::kBorealis);
-
-  std::vector<AppPtr> apps;
-  for (const auto& pair :
-       Registry()->GetRegisteredApps(guest_os::VmType::BOREALIS)) {
-    const guest_os::GuestOsRegistryService::Registration& registration =
-        pair.second;
-    apps.push_back(CreateApp(registration, /*generate_new_icon_key=*/true));
-  }
-  AppPublisher::Publish(std::move(apps), AppType::kBorealis,
-                        /*should_notify_initialized=*/true);
+  GuestOSApps::Initialize();
 
   CallWithBorealisAllowed(base::BindOnce(&BorealisApps::SetUpSpecialApps,
                                          weak_factory_.GetWeakPtr()));
 }
 
-void BorealisApps::LoadIcon(const std::string& app_id,
-                            const IconKey& icon_key,
-                            IconType icon_type,
-                            int32_t size_hint_in_dip,
-                            bool allow_placeholder_icon,
-                            apps::LoadIconCallback callback) {
-  Registry()->LoadIcon(app_id, icon_key, icon_type, size_hint_in_dip,
-                       allow_placeholder_icon, IconKey::kInvalidResourceId,
-                       std::move(callback));
+void BorealisApps::CreateAppOverrides(
+    const guest_os::GuestOsRegistryService::Registration& registration,
+    App* app) {
+  // The special apps are not GuestOs apps, they don't have a registration and
+  // can't be converted.
+  DCHECK_NE(registration.app_id(), borealis::kInstallerAppId);
+  DCHECK_NE(registration.app_id(), borealis::kLauncherSearchAppId);
+
+  // Borealis apps don't handle intents (like "open with").
+  app->handles_intents = false;
+  // Borealis apps are normal apps per apps-management.
+  app->show_in_management = true;
+  // Borealis supports uninstall per-app
+  app->allow_uninstall = true;
+
+  // Hide some known spurious "apps" from the user.
+  if (borealis::ShouldHideIrrelevantApp(registration.Name())) {
+    SetAppVisibility(*app, false);
+  }
+
+  // Special handling for the steam client itself.
+  if (registration.app_id() == borealis::kClientAppId) {
+    app->permissions = CreatePermissions(profile());
+  }
 }
 
-void BorealisApps::GetCompressedIconData(const std::string& app_id,
-                                         int32_t size_in_dip,
-                                         ui::ResourceScaleFactor scale_factor,
-                                         LoadIconCallback callback) {
-  GetGuestOSAppCompressedIconData(profile_, app_id, size_in_dip, scale_factor,
-                                  std::move(callback));
+int BorealisApps::DefaultIconResourceId() const {
+  return IDR_LOGO_BOREALIS_DEFAULT_192;
 }
 
 void BorealisApps::Launch(const std::string& app_id,
                           int32_t event_flags,
                           LaunchSource launch_source,
                           WindowInfoPtr window_info) {
-  borealis::BorealisService::GetForProfile(profile_)->AppLauncher().Launch(
-      app_id, base::DoNothing());
+  LaunchAppWithIntent(app_id, event_flags, /*intent=*/nullptr, launch_source,
+                      std::move(window_info), base::DoNothing());
 }
 
-void BorealisApps::LaunchAppWithParams(AppLaunchParams&& params,
+void BorealisApps::LaunchAppWithIntent(const std::string& app_id,
+                                       int32_t event_flags,
+                                       IntentPtr intent,
+                                       LaunchSource launch_source,
+                                       WindowInfoPtr window_info,
                                        LaunchCallback callback) {
-  Launch(params.app_id, ui::EF_NONE, LaunchSource::kUnknown, nullptr);
-
-  // TODO(crbug.com/1244506): Add launch return value.
-  std::move(callback).Run(LaunchResult());
+  borealis::BorealisService::GetForProfile(profile())->AppLauncher().Launch(
+      app_id, base::DoNothing());
 }
 
 void BorealisApps::SetPermission(const std::string& app_id,
@@ -277,15 +239,15 @@ void BorealisApps::SetPermission(const std::string& app_id,
   if (!pref_name) {
     return;
   }
-  profile_->GetPrefs()->SetBoolean(pref_name,
-                                   permission_ptr->IsPermissionEnabled());
+  profile()->GetPrefs()->SetBoolean(pref_name,
+                                    permission_ptr->IsPermissionEnabled());
 }
 
 void BorealisApps::Uninstall(const std::string& app_id,
                              UninstallSource uninstall_source,
                              bool clear_site_data,
                              bool report_abuse) {
-  borealis::BorealisService::GetForProfile(profile_)
+  borealis::BorealisService::GetForProfile(profile())
       ->AppUninstaller()
       .Uninstall(app_id, base::DoNothing());
 }
@@ -298,14 +260,14 @@ void BorealisApps::GetMenuModel(const std::string& app_id,
 
   // Apps should only be uninstallable if we can run the VM, but the vm itself
   // should always be uninstallable.
-  if (borealis::BorealisService::GetForProfile(profile_)
+  if (borealis::BorealisService::GetForProfile(profile())
           ->Features()
           .IsEnabled() ||
       app_id == borealis::kClientAppId) {
     AddCommandItem(ash::UNINSTALL, IDS_APP_LIST_UNINSTALL_ITEM, menu_items);
   }
 
-  if (ShouldAddCloseItem(app_id, menu_type, profile_)) {
+  if (ShouldAddCloseItem(app_id, menu_type, profile())) {
     AddCommandItem(ash::MENU_CLOSE, IDS_SHELF_CONTEXT_MENU_CLOSE, menu_items);
   }
 
@@ -314,40 +276,9 @@ void BorealisApps::GetMenuModel(const std::string& app_id,
   std::move(callback).Run(std::move(menu_items));
 }
 
-void BorealisApps::OnRegistryUpdated(
-    guest_os::GuestOsRegistryService* registry_service,
-    guest_os::VmType vm_type,
-    const std::vector<std::string>& updated_apps,
-    const std::vector<std::string>& removed_apps,
-    const std::vector<std::string>& inserted_apps) {
-  if (vm_type != guest_os::VmType::BOREALIS) {
-    return;
-  }
-
-  for (const std::string& app_id : updated_apps) {
-    if (auto registration = registry_service->GetRegistration(app_id)) {
-      AppPublisher::Publish(
-          CreateApp(*registration, /*generate_new_icon_key=*/false));
-    }
-  }
-
-  for (const std::string& app_id : removed_apps) {
-    auto app = std::make_unique<App>(AppType::kBorealis, app_id);
-    app->readiness = Readiness::kUninstalledByUser;
-    AppPublisher::Publish(std::move(app));
-  }
-
-  for (const std::string& app_id : inserted_apps) {
-    if (auto registration = registry_service->GetRegistration(app_id)) {
-      AppPublisher::Publish(
-          CreateApp(*registration, /*generate_new_icon_key=*/true));
-    }
-  }
-}
-
 void BorealisApps::OnPermissionChanged() {
   auto app = std::make_unique<App>(AppType::kBorealis, borealis::kClientAppId);
-  app->permissions = CreatePermissions(profile_);
+  app->permissions = CreatePermissions(profile());
   AppPublisher::Publish(std::move(app));
 }
 
@@ -361,7 +292,7 @@ void BorealisApps::OnAnonymousAppAdded(const std::string& shelf_app_id,
   auto app = AppPublisher::MakeApp(
       AppType::kBorealis, shelf_app_id, Readiness::kReady, shelf_app_name,
       InstallReason::kUser, InstallSource::kUnknown);
-  InitializeApp(*app, /*visible=*/false);
+  SetAppVisibility(*app, /*visible=*/false);
 
   app->icon_key = IconKey(IconKey::kDoesNotChangeOverTime,
                           IDR_LOGO_BOREALIS_DEFAULT_192, IconEffects::kNone);

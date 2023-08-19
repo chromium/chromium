@@ -8,6 +8,7 @@
 
 #include "base/check.h"
 #include "base/check_op.h"
+#include "base/memory/ptr_util.h"
 #include "ui/aura/window.h"
 #include "ui/aura/window_observer.h"
 #include "ui/gfx/geometry/insets.h"
@@ -103,7 +104,9 @@ class FakeFolderSelectionDialog : public ui::SelectFileDialog {
 
 // static
 void FakeFolderSelectionDialogFactory::Start() {
-  ui::SelectFileDialog::SetFactory(new FakeFolderSelectionDialogFactory());
+  ui::SelectFileDialog::SetFactory(
+      // Private constructor.
+      base::WrapUnique(new FakeFolderSelectionDialogFactory()));
 }
 
 // static

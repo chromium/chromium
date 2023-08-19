@@ -124,7 +124,7 @@ void DownloadUrlSBClient::ReportMalware(SBThreatType threat_type) {
   hit_report->referrer_url = referrer_url_;
   hit_report->is_subresource = true;
   hit_report->threat_type = threat_type;
-  hit_report->threat_source = database_manager_->GetThreatSource();
+  hit_report->threat_source = database_manager_->GetNonBrowseUrlThreatSource();
   hit_report->post_data = post_data;
   hit_report->extended_reporting_level = extended_reporting_level_;
   hit_report->is_enhanced_protection = is_enhanced_protection_;

@@ -23,10 +23,6 @@
 #import "url/gurl.h"
 #import "url/origin.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 namespace {
 
 // Histogram name that logs permission requests.
@@ -104,7 +100,7 @@ enum class PermissionRequest {
       break;
   }
   base::UmaHistogramEnumeration(kPermissionRequestsHistogram, request);
-  if (web::features::IsFullscreenAPIEnabled()) {
+  if (web::GetWebClient()->EnableFullscreenAPI()) {
     if (@available(iOS 16, *)) {
       if (webView.fullscreenState == WKFullscreenStateInFullscreen ||
           webView.fullscreenState == WKFullscreenStateEnteringFullscreen) {

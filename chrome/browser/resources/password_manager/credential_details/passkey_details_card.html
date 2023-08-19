@@ -1,18 +1,14 @@
 <style include="shared-style cr-input-style cr-shared-style
-                credential-details-card">
+                credential-details-card cr-icons">
 </style>
 <div class="card">
   <div class="credential-container">
-    <!-- TODO(crbug.com/1432717): i18n title when UI approved -->
-    <h4 class="card-title"></h4>
-    <div class="cr-secondary-text label">[[getPasskeyUsageInfoString_()]]</div>
     <div class="row-container">
       <div class="column-container">
-        <!-- TODO(crbug.com/1432717): i18n labels for 'copy display name' and
-             'display name copied' -->
         <credential-field value="[[getDisplayNameValue_(passkey)]]"
-            id="displayNameValue" label=" "
-            copy-button-label=" " value-copied-toast-label=" "
+            id="displayNameValue" label="$i18n{displayNameLabel}"
+            copy-button-label="$i18n{copyDisplayName}"
+            value-copied-toast-label="$i18n{displayNameCopiedToClipboard}"
             interaction-id="[[
                 interactions_.PASSKEY_DISPLAY_NAME_COPY_BUTTON_CLICKED]]">
         </credential-field>
@@ -40,18 +36,32 @@
             interaction-id="[[interactions_.USERNAME_COPY_BUTTON_CLICKED]]">
         </credential-field>
       </div>
-      <div class="column-container">
-        <credential-note note="[[passkey.note]]" id="noteValue">
-        </credential-note>
+    </div>
+    <div class="row-container">
+      <div class="cr-secondary-text">
+        <iron-icon icon="passwords-icon:passkey"></iron-icon>
+        $i18n{passkeyManagementInfoLabel}
       </div>
     </div>
   </div>
   <div class="button-container">
     <cr-button id="editButton" class="edit-button" on-click="onEditClicked_">
-      $i18n{editPassword}
+      $i18n{edit}
     </cr-button>
     <cr-button id="deleteButton" on-click="onDeleteClick_">
-      $i18n{deletePassword}
+      $i18n{delete}
     </cr-button>
   </div>
 </div>
+<template is="dom-if" if="[[showEditPasskeyDialog_]]" restamp
+          id="editPasskeyTemplate">
+  <edit-passkey-dialog on-close="onEditPasskeyDialogClosed_"
+      id="editPasskeyDialog" passkey="{{passkey}}">
+  </edit-passkey-dialog>
+</template>
+<template is="dom-if" if="[[showDeletePasskeyDialog_]]" restamp
+          id="deletePasskeyTemplate">
+  <delete-passkey-dialog on-close="onDeletePasskeyDialogClosed_"
+      id="deletePasskeyDialog" passkey="{{passkey}}">
+  </delete-passkey-dialog>
+</template>

@@ -417,7 +417,7 @@ TEST_F(DragControllerTest, DragImageOffsetWithPageScaleFactor) {
 
   auto& drag_state = GetFrame().GetPage()->GetDragController().GetDragState();
   drag_state.drag_type_ = kDragSourceActionSelection;
-  drag_state.drag_src_ = GetDocument().getElementById("drag");
+  drag_state.drag_src_ = GetDocument().getElementById(AtomicString("drag"));
   drag_state.drag_data_transfer_ = DataTransfer::Create(
       DataTransfer::kDragAndDrop, DataTransferAccessPolicy::kWritable,
       DataObject::Create());
@@ -461,7 +461,7 @@ TEST_F(DragControllerTest, DragLinkWithPageScaleFactor) {
 
   auto& drag_state = GetFrame().GetPage()->GetDragController().GetDragState();
   drag_state.drag_type_ = kDragSourceActionLink;
-  drag_state.drag_src_ = GetDocument().getElementById("drag");
+  drag_state.drag_src_ = GetDocument().getElementById(AtomicString("drag"));
   drag_state.drag_data_transfer_ = DataTransfer::Create(
       DataTransfer::kDragAndDrop, DataTransferAccessPolicy::kWritable,
       DataObject::Create());

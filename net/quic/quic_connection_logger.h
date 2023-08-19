@@ -51,7 +51,8 @@ class NET_EXPORT_PRIVATE QuicConnectionLogger
                     quic::EncryptionLevel encryption_level,
                     const quic::QuicFrames& retransmittable_frames,
                     const quic::QuicFrames& nonretransmittable_frames,
-                    quic::QuicTime sent_time) override;
+                    quic::QuicTime sent_time,
+                    uint32_t batch_id) override;
   void OnIncomingAck(quic::QuicPacketNumber ack_packet_number,
                      quic::EncryptionLevel ack_decrypted_level,
                      const quic::QuicAckFrame& frame,

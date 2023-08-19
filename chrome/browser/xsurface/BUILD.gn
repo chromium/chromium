@@ -6,9 +6,7 @@ import("//build/config/android/rules.gni")
 
 android_library("java") {
   sources = [
-    "android/java/src/org/chromium/chrome/browser/xsurface/FeedLaunchReliabilityLogger.java",
-    "android/java/src/org/chromium/chrome/browser/xsurface/FeedNetworkRequestReliabilityLogger.java",
-    "android/java/src/org/chromium/chrome/browser/xsurface/FeedUserInteractionReliabilityLogger.java",
+    "android/java/src/org/chromium/chrome/browser/xsurface/ColorProvider.java",
     "android/java/src/org/chromium/chrome/browser/xsurface/HybridListRenderer.java",
     "android/java/src/org/chromium/chrome/browser/xsurface/ImageCacheHelper.java",
     "android/java/src/org/chromium/chrome/browser/xsurface/ImageFetchClient.java",
@@ -33,8 +31,11 @@ android_library("java") {
     "android/java/src/org/chromium/chrome/browser/xsurface/feed/FeedSurfaceScopeDependencyProvider.java",
     "android/java/src/org/chromium/chrome/browser/xsurface/feed/FeedUserInteractionReliabilityLogger.java",
     "android/java/src/org/chromium/chrome/browser/xsurface/feed/ReliabilityLoggingTestUtil.java",
+    "android/java/src/org/chromium/chrome/browser/xsurface/feed/ResourceFetcher.java",
     "android/java/src/org/chromium/chrome/browser/xsurface/feed/StreamType.java",
     "android/java/src/org/chromium/chrome/browser/xsurface/pageinsights/PageInsightsActionsHandler.java",
+    "android/java/src/org/chromium/chrome/browser/xsurface/pageinsights/PageInsightsEvent.java",
+    "android/java/src/org/chromium/chrome/browser/xsurface/pageinsights/PageInsightsLoggingParameters.java",
     "android/java/src/org/chromium/chrome/browser/xsurface/pageinsights/PageInsightsSurfaceRenderer.java",
     "android/java/src/org/chromium/chrome/browser/xsurface/pageinsights/PageInsightsSurfaceScope.java",
     "android/java/src/org/chromium/chrome/browser/xsurface/pageinsights/PageInsightsSurfaceScopeDependencyProvider.java",

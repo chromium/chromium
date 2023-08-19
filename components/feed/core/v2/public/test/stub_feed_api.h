@@ -30,8 +30,13 @@ class StubPersistentKeyValueStore : public PersistentKeyValueStore {
 class StubFeedApi : public FeedApi {
  public:
   WebFeedSubscriptions& subscriptions() override;
-  void AttachSurface(FeedStreamSurface*) override {}
-  void DetachSurface(FeedStreamSurface*) override {}
+
+  SurfaceId CreateSurface(const StreamType& type,
+                          SingleWebFeedEntryPoint entry_point) override;
+  void DestroySurface(SurfaceId surface) override {}
+  void AttachSurface(SurfaceId surface_id, SurfaceRenderer* renderer) override {
+  }
+  void DetachSurface(SurfaceId surface_id) override {}
   void UpdateUserProfileOnLinkClick(
       const GURL& url,
       const std::vector<int64_t>& entity_mids) override {}
@@ -42,9 +47,9 @@ class StubFeedApi : public FeedApi {
   bool IsArticlesListVisible() override;
   std::string GetSessionId() const override;
   void ExecuteRefreshTask(RefreshTaskId task_id) override {}
-  void LoadMore(const FeedStreamSurface& surface,
+  void LoadMore(SurfaceId surface_id,
                 base::OnceCallback<void(bool)> callback) override {}
-  void ManualRefresh(const StreamType& stream_type,
+  void ManualRefresh(SurfaceId surface_id,
                      base::OnceCallback<void(bool)> callback) override {}
   ImageFetchId FetchImage(
       const GURL& url,
@@ -52,17 +57,17 @@ class StubFeedApi : public FeedApi {
   void CancelImageFetch(ImageFetchId id) override {}
   PersistentKeyValueStore& GetPersistentKeyValueStore() override;
   void ExecuteOperations(
-      const StreamType& stream_type,
+      SurfaceId surface_id,
       std::vector<feedstore::DataOperation> operations) override {}
   EphemeralChangeId CreateEphemeralChange(
-      const StreamType& stream_type,
+      SurfaceId surface_id,
       std::vector<feedstore::DataOperation> operations) override;
   EphemeralChangeId CreateEphemeralChangeFromPackedData(
-      const StreamType& stream_type,
+      SurfaceId surface_id,
       base::StringPiece data) override;
-  bool CommitEphemeralChange(const StreamType& stream_type,
+  bool CommitEphemeralChange(SurfaceId surface_id,
                              EphemeralChangeId id) override;
-  bool RejectEphemeralChange(const StreamType& stream_type,
+  bool RejectEphemeralChange(SurfaceId surface_id,
                              EphemeralChangeId id) override;
   void ProcessThereAndBackAgain(
       base::StringPiece data,
@@ -72,42 +77,42 @@ class StubFeedApi : public FeedApi {
   }
   bool WasUrlRecentlyNavigatedFromFeed(const GURL& url) override;
   void InvalidateContentCacheFor(StreamKind stream_kind) override {}
-  void RecordContentViewed(uint64_t docid) override {}
+  void RecordContentViewed(SurfaceId surface_id, uint64_t docid) override {}
   void ReportSliceViewed(SurfaceId surface_id,
-                         const StreamType& stream_type,
                          const std::string& slice_id) override {}
-  void ReportFeedViewed(const StreamType& stream_type,
-                        SurfaceId surface_id) override {}
-  void ReportPageLoaded() override {}
+  void ReportFeedViewed(SurfaceId surface_id) override {}
+  void ReportPageLoaded(SurfaceId surface_id) override {}
   void ReportOpenAction(const GURL& url,
-                        const StreamType& stream_type,
+                        SurfaceId surface_id,
                         const std::string& slice_id,
                         OpenActionType action_type) override {}
-  void ReportOpenVisitComplete(base::TimeDelta visit_time) override {}
-  void ReportStreamScrolled(const StreamType& stream_type,
-                            int distance_dp) override {}
-  void ReportStreamScrollStart() override {}
+  void ReportOpenVisitComplete(SurfaceId surface_id,
+                               base::TimeDelta visit_time) override {}
+  void ReportStreamScrolled(SurfaceId surface_id, int distance_dp) override {}
+  void ReportStreamScrollStart(SurfaceId surface_id) override {}
+  void ReportOtherUserAction(SurfaceId surface_id,
+                             FeedUserActionType action_type) override {}
   void ReportOtherUserAction(const StreamType& stream_type,
                              FeedUserActionType action_type) override {}
-  void ReportInfoCardTrackViewStarted(const StreamType& stream_type,
+  void ReportInfoCardTrackViewStarted(SurfaceId surface_id,
                                       int info_card_type) override {}
-  void ReportInfoCardViewed(const StreamType& stream_type,
+  void ReportInfoCardViewed(SurfaceId surface_id,
                             int info_card_type,
                             int minimum_view_interval_seconds) override {}
-  void ReportInfoCardClicked(const StreamType& stream_type,
+  void ReportInfoCardClicked(SurfaceId surface_id,
                              int info_card_type) override {}
-  void ReportInfoCardDismissedExplicitly(const StreamType& stream_type,
+  void ReportInfoCardDismissedExplicitly(SurfaceId surface_id,
                                          int info_card_type) override {}
-  void ResetInfoCardStates(const StreamType& stream_type,
-                           int info_card_type) override {}
+  void ResetInfoCardStates(SurfaceId surface_id, int info_card_type) override {}
   void ReportContentSliceVisibleTimeForGoodVisits(
+      SurfaceId surface_id,
       base::TimeDelta elapsed) override {}
   DebugStreamData GetDebugStreamData() override;
   void ForceRefreshForDebugging(const StreamType& stream_type) override {}
   std::string DumpStateForDebugging() override;
   void SetForcedStreamUpdateForDebugging(
       const feedui::StreamUpdate& stream_update) override {}
-  base::Time GetLastFetchTime(const StreamType& stream_type) override;
+  base::Time GetLastFetchTime(SurfaceId surface_id) override;
   void SetContentOrder(const StreamType& stream_type,
                        ContentOrder content_order) override {}
   ContentOrder GetContentOrder(const StreamType& stream_type) const override;

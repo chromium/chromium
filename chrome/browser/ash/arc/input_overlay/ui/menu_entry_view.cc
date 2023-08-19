@@ -164,7 +164,7 @@ void MenuEntryView::Init() {
   SetImageHorizontalAlignment(views::ImageButton::ALIGN_CENTER);
   SetImageVerticalAlignment(views::ImageButton::ALIGN_MIDDLE);
 
-  // Set up focus ring for |menu_entry_|.
+  // Set up focus ring for `menu_entry_`.
   views::InstallRoundRectHighlightPathGenerator(this, gfx::Insets(),
                                                 kMenuEntryCornerRadius);
   ash::StyleUtil::SetUpInkDropForButton(this, gfx::Insets(),
@@ -183,7 +183,7 @@ gfx::Point MenuEntryView::CalculatePosition() const {
   const auto* touch_injector = display_overlay_controller_->touch_injector();
   auto normalized_location = touch_injector->menu_entry_location();
   if (normalized_location) {
-    auto content_bounds = touch_injector->content_bounds();
+    auto content_bounds = touch_injector->content_bounds_f();
     return gfx::Point(static_cast<int>(std::round(normalized_location->x() *
                                                   content_bounds.width())),
                       static_cast<int>(std::round(normalized_location->y() *

@@ -44,6 +44,7 @@ namespace {
 
 constexpr char kTestUserEmail[] = "test@test.com";
 constexpr char kTestAppId[] = "TestApp";
+constexpr char kTestAppPublisherId[] = "com.google.test";
 
 // Checks equality of the two protos in an std::tuple. Useful for matching two
 // two protos using ::testing::Pointwise or ::testing::UnorderedPointwise.
@@ -95,6 +96,7 @@ class AppUsageTelemetrySamplerTest : public ::testing::Test {
       // Create a new entry in the pref store with the specified running time.
       ::apps::AppPlatformMetrics::UsageTime usage_time;
       usage_time.app_id = kTestAppId;
+      usage_time.app_publisher_id = kTestAppPublisherId;
       usage_time.reporting_usage_time = usage_duration;
       usage_dict_pref->SetByDottedPath(instance_id_string,
                                        usage_time.ConvertToDict());
@@ -131,7 +133,7 @@ class AppUsageTelemetrySamplerTest : public ::testing::Test {
       const base::UnguessableToken& instance_id,
       const base::TimeDelta& running_time) const {
     AppUsageData::AppUsage app_usage;
-    app_usage.set_app_id(kTestAppId);
+    app_usage.set_app_id(kTestAppPublisherId);
     app_usage.set_app_type(::apps::ApplicationType::APPLICATION_TYPE_UNKNOWN);
     app_usage.set_app_instance_id(instance_id.ToString());
     app_usage.set_running_time_ms(running_time.InMilliseconds());
@@ -144,7 +146,7 @@ class AppUsageTelemetrySamplerTest : public ::testing::Test {
   std::unique_ptr<AppUsageTelemetrySampler> app_usage_telemetry_sampler_;
 
  private:
-  raw_ptr<::ash::FakeChromeUserManager> fake_user_manager_;
+  raw_ptr<::ash::FakeChromeUserManager, DanglingUntriaged> fake_user_manager_;
   std::unique_ptr<::user_manager::ScopedUserManager> scoped_user_manager_;
 };
 

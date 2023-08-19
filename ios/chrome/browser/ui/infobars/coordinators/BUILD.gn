@@ -3,7 +3,6 @@
 # found in the LICENSE file.
 
 source_set("coordinators") {
-  configs += [ "//build/config/compiler:enable_arc" ]
   sources = [
     "infobar_coordinator+subclassing.h",
     "infobar_coordinator.h",
@@ -15,8 +14,10 @@ source_set("coordinators") {
     "//components/infobars/core",
     "//ios/chrome/browser/infobars:public",
     "//ios/chrome/browser/shared/coordinator/chrome_coordinator",
+    "//ios/chrome/browser/shared/coordinator/layout_guide",
     "//ios/chrome/browser/shared/model/browser",
     "//ios/chrome/browser/shared/public/commands",
+    "//ios/chrome/browser/shared/public/features",
     "//ios/chrome/browser/shared/ui/util",
     "//ios/chrome/browser/ui/fullscreen",
     "//ios/chrome/browser/ui/infobars:constants",
@@ -31,10 +32,10 @@ source_set("coordinators") {
 }
 
 source_set("translate_public") {
-  configs += [ "//build/config/compiler:enable_arc" ]
   sources = [
     "infobar_translate_language_selection_consumer.h",
     "infobar_translate_modal_consumer.h",
+    "infobar_translate_modal_consumer.mm",
   ]
   deps = []
 }

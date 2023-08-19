@@ -76,7 +76,6 @@ public class PriceDropMetricsLogger {
                 metrics.containsPriceDrop);
     }
 
-    @VisibleForTesting
     protected MetricsResult getMetricsResultForTesting() {
         return deriveMetrics();
     }

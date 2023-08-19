@@ -1,4 +1,4 @@
-<style include="cr-hidden-style cr-icons">
+<style include="cr-hidden-style cr-icons sp-shared-style">
   #editThemeButton {
     margin: 0 16px 24px;
     width: calc(100% - 32px);
@@ -34,8 +34,58 @@
   managed-dialog {
     --cr-dialog-width: min(calc(100% - 32px), 512px);
   }
+
+  customize-color-scheme-mode,
+  .sp-hr {
+    display: none;
+    width: calc(100% - 32px);
+  }
+
+  .sp-hr {
+    margin: 0 16px;
+  }
+
+  customize-color-scheme-mode {
+    margin: 16px;
+  }
+
+  :host-context([chrome-refresh-2023]) cr-theme-color-picker {
+    display: block;
+    margin-bottom: 16px;
+  }
+
+  :host-context([chrome-refresh-2023]) customize-color-scheme-mode,
+  :host-context([chrome-refresh-2023]) .sp-hr {
+    display: block;
+  }
+
+  :host-context([chrome-refresh-2023]) #thirdPartyLinkButton {
+    margin-top: 16px;
+  }
+
+  :host-context([chrome-refresh-2023]):host([third-party-theme-id_]) #editThemeButton {
+    margin: 20px 16px;
+  }
+
+  :host-context([chrome-refresh-2023]) #editThemeButton {
+    margin-bottom: 16px;
+  }
+
+  #followThemeToggle {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin: 8px 0;
+    padding: 10px var(--sp-card-inline-padding);
+  }
+
+  #followThemeToggleTitle {
+    font-size: inherit;
+    line-height: inherit;
+  }
 </style>
 <customize-chrome-theme-snapshot id="themeSnapshot"
+    on-edit-theme-click="onEditThemeClicked_"
     hidden$="[[!showFirstPartyThemeView_]]">
 </customize-chrome-theme-snapshot>
 <customize-chrome-hover-button id="thirdPartyLinkButton"
@@ -48,9 +98,20 @@
   <div id="imageIcon" class="cr-icon" slot="prefix-icon"></div>
   $i18n{changeTheme}
 </cr-button>
-<customize-chrome-colors id="chromeColors"
+<hr class="sp-hr">
+<customize-color-scheme-mode>
+</customize-color-scheme-mode>
+<cr-theme-color-picker id="chromeColors"
     hidden$="[[!showFirstPartyThemeView_]]">
-</customize-chrome-colors>
+</cr-theme-color-picker>
+<hr class="sp-hr">
+<div id="followThemeToggle" class="sp-card-content"
+    hidden$="[[!showDeviceThemeToggle_]]">
+  <div id="followThemeToggleTitle">$i18n{followThemeToggle}</div>
+  <cr-toggle id="followThemeToggleControl" title="$i18n{followThemeToggle}"
+      checked="[[theme_.followDeviceTheme]]"
+      on-change="onFollowThemeToggleChange_">
+  </cr-toggle>
 </div>
 <customize-chrome-hover-button id="setClassicChromeButton"
     hidden$="[[!showClassicChromeButton_]]"

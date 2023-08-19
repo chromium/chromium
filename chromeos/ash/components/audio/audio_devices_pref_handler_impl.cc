@@ -393,6 +393,16 @@ void AudioDevicesPrefHandlerImpl::SetNoiseCancellationState(
                            noise_cancellation_state);
 }
 
+bool AudioDevicesPrefHandlerImpl::GetForceRespectUiGainsState() {
+  return local_state_->GetBoolean(prefs::kInputForceRespectUiGainsEnabled);
+}
+
+void AudioDevicesPrefHandlerImpl::SetForceRespectUiGainsState(
+    bool force_respect_ui_gains_state) {
+  local_state_->SetBoolean(prefs::kInputForceRespectUiGainsEnabled,
+                           force_respect_ui_gains_state);
+}
+
 AudioDevicesPrefHandlerImpl::AudioDevicesPrefHandlerImpl(
     PrefService* local_state)
     : local_state_(local_state) {
@@ -546,6 +556,8 @@ void AudioDevicesPrefHandlerImpl::RegisterPrefs(PrefRegistrySimple* registry) {
   registry->RegisterDictionaryPref(prefs::kAudioOutputDevicesUserPriority);
 
   registry->RegisterDictionaryPref(prefs::kAudioDevicesLastSeen);
+
+  registry->RegisterBooleanPref(prefs::kInputForceRespectUiGainsEnabled, false);
 }
 
 }  // namespace ash

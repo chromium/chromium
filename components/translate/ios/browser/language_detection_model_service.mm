@@ -10,10 +10,6 @@
 #include "base/task/sequenced_task_runner.h"
 #include "components/translate/core/language_detection/language_detection_model.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 namespace translate {
 
 class LanguageDetectionModelContainer

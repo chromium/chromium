@@ -19,6 +19,4 @@ source_set("webui") {
     "web_ui_ios_data_source.h",
     "web_ui_ios_message_handler.h",
   ]
-
-  configs += [ "//build/config/compiler:enable_arc" ]
 }

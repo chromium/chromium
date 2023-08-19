@@ -12,9 +12,9 @@
 #include <utility>
 #include <vector>
 
+#include "base/apple/foundation_util.h"
 #include "base/component_export.h"
 #include "base/functional/callback.h"
-#include "base/mac/foundation_util.h"
 #include "base/memory/raw_ptr.h"
 #include "device/fido/mac/authenticator_config.h"
 #include "device/fido/mac/credential_metadata.h"
@@ -26,19 +26,6 @@
 #if defined(__OBJC__)
 @class LAContext;
 #endif
-
-// This enum represents the error or success statuses of calling
-// TouchIdCredentialStore.UpdateCredential.
-// This enum is used for UMA histograms and the values should not be
-// reassigned. New error statuses should be reflected in the
-// WebAuthenticationTouchIdCredentialStoreUpdateCredentialStatus enum.
-enum class TouchIdCredentialStoreUpdateCredentialStatus {
-  kUpdateCredentialSuccess = 0,
-  kNoCredentialsFound = 1,
-  kNoMatchingCredentialId = 2,
-  kSecItemUpdateFailure = 3,
-  kMaxValue = kSecItemUpdateFailure,
-};
 
 namespace device::fido::mac {
 

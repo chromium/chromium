@@ -9,6 +9,7 @@
 #include "base/test/bind.h"
 #include "base/test/gtest_util.h"
 #include "base/test/mock_callback.h"
+#include "base/test/scoped_run_loop_timeout.h"
 #include "base/test/task_environment.h"
 #include "components/strings/grit/components_strings.h"
 #include "components/user_education/common/help_bubble_factory_registry.h"
@@ -18,13 +19,14 @@
 #include "components/user_education/common/tutorial_registry.h"
 #include "components/user_education/common/tutorial_service.h"
 #include "components/user_education/test/test_help_bubble.h"
-#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/interaction/element_identifier.h"
 #include "ui/base/interaction/element_test_util.h"
 #include "ui/base/interaction/element_tracker.h"
 #include "ui/base/interaction/expect_call_in_scope.h"
 #include "ui/base/interaction/interaction_sequence.h"
+#include "ui/base/interaction/interactive_test.h"
 #include "ui/base/l10n/l10n_util.h"
 
 namespace user_education {
@@ -34,6 +36,7 @@ namespace {
 DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kTestIdentifier1);
 DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kTestIdentifier2);
 DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kTestIdentifier3);
+DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kTestIdentifier4);
 DEFINE_LOCAL_CUSTOM_ELEMENT_EVENT_TYPE(kCustomEventType1);
 
 const char kTestElementName1[] = "ELEMENT_NAME_1";
@@ -121,43 +124,43 @@ TEST_F(TutorialTest, TutorialBuilder) {
   TestTutorialService service(&registry, bubble_factory_registry.get());
 
   Tutorial::Builder builder;
+  int current_progress = 0;
 
   // build a step with an ElementID
-  std::unique_ptr<ui::InteractionSequence::Step> step1 =
-      Tutorial::StepBuilder()
-          .SetAnchorElementID(kTestIdentifier1)
-          .Build(&service);
+  auto step1 = Tutorial::Builder::BuildFromDescriptionStep(
+      TutorialDescription::BubbleStep(kTestIdentifier1)
+          .SetBubbleBodyText(IDS_OK),
+      2, current_progress, false, false, &service);
 
   // build a step that names an element
-  std::unique_ptr<ui::InteractionSequence::Step> step2 =
-      Tutorial::StepBuilder()
-          .SetAnchorElementID(kTestIdentifier1)
-          .SetNameElementsCallback(
-              base::BindRepeating([](ui::InteractionSequence* sequence,
-                                     ui::TrackedElement* element) {
-                sequence->NameElement(element, "TEST ELEMENT");
-                return true;
-              }))
-          .Build(&service);
+  auto step2 = Tutorial::Builder::BuildFromDescriptionStep(
+      TutorialDescription::HiddenStep::WaitForShown(kTestIdentifier1)
+          .NameElement(kTestElementName1),
+      2, current_progress, false, false, &service);
 
   // build a step with a named element
-  std::unique_ptr<ui::InteractionSequence::Step> step3 =
-      Tutorial::StepBuilder()
-          .SetAnchorElementName(std::string(kTestElementName1))
-          .Build(&service);
+  auto step3 = Tutorial::Builder::BuildFromDescriptionStep(
+      TutorialDescription::BubbleStep(kTestElementName1)
+          .SetBubbleBodyText(IDS_OK),
+      2, current_progress, false, false, &service);
 
   // transition event
-  std::unique_ptr<ui::InteractionSequence::Step> step4 =
-      Tutorial::StepBuilder()
-          .SetAnchorElementID(kTestIdentifier1)
-          .SetTransitionOnlyOnEvent(true)
-          .Build(&service);
+  auto step4 = Tutorial::Builder::BuildFromDescriptionStep(
+      TutorialDescription::HiddenStep::WaitForShowEvent(kTestIdentifier1), 2,
+      current_progress, false, false, &service);
+
+  // final bubble
+  auto step5 = Tutorial::Builder::BuildFromDescriptionStep(
+      TutorialDescription::BubbleStep(kTestIdentifier1)
+          .SetBubbleBodyText(IDS_OK),
+      2, current_progress, true, false, &service);
 
   builder.SetContext(kTestContext1)
       .AddStep(std::move(step1))
       .AddStep(std::move(step2))
       .AddStep(std::move(step3))
       .AddStep(std::move(step4))
+      .AddStep(std::move(step5))
       .Build();
 }
 
@@ -168,8 +171,8 @@ TEST_F(TutorialTest, RegisterTutorial) {
   {
     TutorialDescription description;
     description.steps.emplace_back(
-        0, IDS_OK, ui::InteractionSequence::StepType::kShown, kTestIdentifier1,
-        std::string(), HelpBubbleArrow::kNone);
+        TutorialDescription::BubbleStep(kTestIdentifier1)
+            .SetBubbleBodyText(IDS_OK));
     description.can_be_restarted = true;
     registry->AddTutorial(kTestTutorial1, std::move(description));
   }
@@ -184,9 +187,8 @@ TEST_F(TutorialTest, RegisterMultipleTutorials) {
   std::unique_ptr<TutorialRegistry> registry =
       std::make_unique<TutorialRegistry>();
 
-  TutorialDescription::Step step(
-      0, IDS_OK, ui::InteractionSequence::StepType::kShown, kTestIdentifier1,
-      std::string(), HelpBubbleArrow::kNone);
+  const auto step = TutorialDescription::BubbleStep(kTestIdentifier1)
+                        .SetBubbleBodyText(IDS_OK);
 
   TutorialDescription description1;
   description1.steps.push_back(step);
@@ -206,9 +208,8 @@ TEST_F(TutorialTest, RegisterSameTutorialTwice) {
   std::unique_ptr<TutorialRegistry> registry =
       std::make_unique<TutorialRegistry>();
 
-  TutorialDescription::Step step(
-      0, IDS_OK, ui::InteractionSequence::StepType::kShown, kTestIdentifier1,
-      std::string(), HelpBubbleArrow::kNone);
+  const auto step = TutorialDescription::BubbleStep(kTestIdentifier1)
+                        .SetBubbleBodyText(IDS_OK);
 
   TutorialDescription description1;
   description1.steps.push_back(step);
@@ -227,9 +228,8 @@ TEST_F(TutorialTest, RegisterTutorialsWithAndWithoutHistograms) {
   std::unique_ptr<TutorialRegistry> registry =
       std::make_unique<TutorialRegistry>();
 
-  TutorialDescription::Step step(
-      0, IDS_OK, ui::InteractionSequence::StepType::kShown, kTestIdentifier1,
-      std::string(), HelpBubbleArrow::kNone);
+  const auto step = TutorialDescription::BubbleStep(kTestIdentifier1)
+                        .SetBubbleBodyText(IDS_OK);
 
   TutorialDescription description1;
   description1.steps.push_back(step);
@@ -261,9 +261,8 @@ TEST_F(TutorialTest, MAYBE_RegisterDifferentTutorialsWithSameHistogram) {
   std::unique_ptr<TutorialRegistry> registry =
       std::make_unique<TutorialRegistry>();
 
-  TutorialDescription::Step step(
-      0, IDS_OK, ui::InteractionSequence::StepType::kShown, kTestIdentifier1,
-      std::string(), HelpBubbleArrow::kNone);
+  const auto step = TutorialDescription::BubbleStep(kTestIdentifier1)
+                        .SetBubbleBodyText(IDS_OK);
 
   TutorialDescription description1;
   description1.steps.push_back(step);
@@ -284,9 +283,8 @@ TEST_F(TutorialTest, RegisterSameTutorialInMultipleRegistries) {
   std::unique_ptr<TutorialRegistry> registry2 =
       std::make_unique<TutorialRegistry>();
 
-  TutorialDescription::Step step(
-      0, IDS_OK, ui::InteractionSequence::StepType::kShown, kTestIdentifier1,
-      std::string(), HelpBubbleArrow::kNone);
+  const auto step = TutorialDescription::BubbleStep(kTestIdentifier1)
+                        .SetBubbleBodyText(IDS_OK);
 
   TutorialDescription description1;
   description1.steps.push_back(step);
@@ -316,9 +314,10 @@ TEST_F(TutorialTest, SingleInteractionTutorialRuns) {
 
   // Build the tutorial Description
   TutorialDescription description;
-  description.steps.emplace_back(IDS_OK, IDS_OK,
-                                 ui::InteractionSequence::StepType::kShown,
-                                 kTestIdentifier1, "", HelpBubbleArrow::kNone);
+  description.steps.emplace_back(
+      TutorialDescription::BubbleStep(kTestIdentifier1)
+          .SetBubbleTitleText(IDS_OK)
+          .SetBubbleBodyText(IDS_OK));
   registry.AddTutorial(kTestTutorial1, std::move(description));
 
   service.StartTutorial(kTestTutorial1, element_1.context(), completed.Get());
@@ -416,12 +415,14 @@ TEST_F(TutorialTest, StartTutorialAbortsExistingTutorial) {
   // Build the tutorial Description. This has two steps, the second of which
   // will not
   TutorialDescription description;
-  description.steps.emplace_back(IDS_OK, IDS_OK,
-                                 ui::InteractionSequence::StepType::kShown,
-                                 kTestIdentifier1, "", HelpBubbleArrow::kNone);
-  description.steps.emplace_back(IDS_OK, IDS_OK,
-                                 ui::InteractionSequence::StepType::kShown,
-                                 kTestIdentifier2, "", HelpBubbleArrow::kNone);
+  description.steps.emplace_back(
+      TutorialDescription::BubbleStep(kTestIdentifier1)
+          .SetBubbleTitleText(IDS_OK)
+          .SetBubbleBodyText(IDS_OK));
+  description.steps.emplace_back(
+      TutorialDescription::BubbleStep(kTestIdentifier2)
+          .SetBubbleTitleText(IDS_OK)
+          .SetBubbleBodyText(IDS_OK));
   registry.AddTutorial(kTestTutorial1, std::move(description));
 
   service.StartTutorial(kTestTutorial1, element_1.context(), completed.Get(),
@@ -447,9 +448,10 @@ TEST_F(TutorialTest, StartTutorialCompletesExistingTutorial) {
   // Build the tutorial Description. This has two steps, the second of which
   // will not
   TutorialDescription description;
-  description.steps.emplace_back(IDS_OK, IDS_OK,
-                                 ui::InteractionSequence::StepType::kShown,
-                                 kTestIdentifier1, "", HelpBubbleArrow::kNone);
+  description.steps.emplace_back(
+      TutorialDescription::BubbleStep(kTestIdentifier1)
+          .SetBubbleTitleText(IDS_OK)
+          .SetBubbleBodyText(IDS_OK));
   registry.AddTutorial(kTestTutorial1, std::move(description));
 
   service.StartTutorial(kTestTutorial1, element_1.context(), completed.Get(),
@@ -475,8 +477,10 @@ TEST_F(TutorialTest, TutorialWithCustomEvent) {
   // Build the tutorial Description
   TutorialDescription description;
   description.steps.emplace_back(
-      IDS_OK, IDS_OK, ui::InteractionSequence::StepType::kCustomEvent,
-      kTestIdentifier1, "", HelpBubbleArrow::kNone, kCustomEventType1);
+      TutorialDescription::EventStep(kCustomEventType1, kTestIdentifier1));
+  description.steps.emplace_back(
+      TutorialDescription::BubbleStep(kTestIdentifier1)
+          .SetBubbleBodyText(IDS_OK));
   registry.AddTutorial(kTestTutorial1, std::move(description));
 
   service.StartTutorial(kTestTutorial1, element_1.context(), completed.Get());
@@ -506,16 +510,10 @@ TEST_F(TutorialTest, TutorialWithNamedElement) {
   // Build the tutorial description.
   TutorialDescription description;
   description.steps.emplace_back(
-      IDS_OK, IDS_OK, ui::InteractionSequence::StepType::kShown,
-      kTestIdentifier1, std::string(), HelpBubbleArrow::kNone,
-      ui::CustomElementEventType(),
-      /* must_remain_visible =*/true,
-      /* transition_only_on_event =*/false,
-      base::BindLambdaForTesting(
-          [](ui::InteractionSequence* sequence, ui::TrackedElement* element) {
-            sequence->NameElement(element, base::StringPiece(kElementName1));
-            return true;
-          }));
+      TutorialDescription::BubbleStep(kTestIdentifier1)
+          .SetBubbleTitleText(IDS_OK)
+          .SetBubbleBodyText(IDS_OK)
+          .NameElement(kElementName1));
   description.steps.emplace_back(
       TutorialDescription::HiddenStep::WaitForShown(kElementName1)
           .NameElement(kElementName2));
@@ -526,9 +524,9 @@ TEST_F(TutorialTest, TutorialWithNamedElement) {
                 sequence->NameElement(el, base::StringPiece(kElementName3));
                 return true;
               })));
-  description.steps.emplace_back(
-      IDS_OK, IDS_OK, ui::InteractionSequence::StepType::kShown,
-      ui::ElementIdentifier(), kElementName3, HelpBubbleArrow::kNone);
+  description.steps.emplace_back(TutorialDescription::BubbleStep(kElementName3)
+                                     .SetBubbleTitleText(IDS_OK)
+                                     .SetBubbleBodyText(IDS_OK));
   registry.AddTutorial(kTestTutorial1, std::move(description));
 
   service.StartTutorial(kTestTutorial1, element_1.context(), completed.Get());
@@ -592,9 +590,10 @@ TEST_F(TutorialTest, SingleStepRestartTutorial) {
 
   // Build the tutorial Description
   TutorialDescription description;
-  description.steps.emplace_back(IDS_OK, IDS_OK,
-                                 ui::InteractionSequence::StepType::kShown,
-                                 kTestIdentifier1, "", HelpBubbleArrow::kNone);
+  description.steps.emplace_back(
+      TutorialDescription::BubbleStep(kTestIdentifier1)
+          .SetBubbleTitleText(IDS_OK)
+          .SetBubbleBodyText(IDS_OK));
   description.can_be_restarted = true;
   registry.AddTutorial(kTestTutorial1, std::move(description));
 
@@ -627,15 +626,18 @@ TEST_F(TutorialTest, MultiStepRestartTutorialWithCloseOnComplete) {
 
   // Build the tutorial Description
   TutorialDescription description;
-  description.steps.emplace_back(IDS_OK, IDS_OK,
-                                 ui::InteractionSequence::StepType::kShown,
-                                 kTestIdentifier1, "", HelpBubbleArrow::kNone);
-  description.steps.emplace_back(IDS_OK, IDS_OK,
-                                 ui::InteractionSequence::StepType::kShown,
-                                 kTestIdentifier2, "", HelpBubbleArrow::kNone);
-  description.steps.emplace_back(IDS_OK, IDS_OK,
-                                 ui::InteractionSequence::StepType::kShown,
-                                 kTestIdentifier3, "", HelpBubbleArrow::kNone);
+  description.steps.emplace_back(
+      TutorialDescription::BubbleStep(kTestIdentifier1)
+          .SetBubbleTitleText(IDS_OK)
+          .SetBubbleBodyText(IDS_OK));
+  description.steps.emplace_back(
+      TutorialDescription::BubbleStep(kTestIdentifier2)
+          .SetBubbleTitleText(IDS_OK)
+          .SetBubbleBodyText(IDS_OK));
+  description.steps.emplace_back(
+      TutorialDescription::BubbleStep(kTestIdentifier3)
+          .SetBubbleTitleText(IDS_OK)
+          .SetBubbleBodyText(IDS_OK));
   description.can_be_restarted = true;
   registry.AddTutorial(kTestTutorial1, std::move(description));
 
@@ -675,15 +677,18 @@ TEST_F(TutorialTest, MultiStepRestartTutorialWithDismissAfterRestart) {
 
   // Build the tutorial Description
   TutorialDescription description;
-  description.steps.emplace_back(IDS_OK, IDS_OK,
-                                 ui::InteractionSequence::StepType::kShown,
-                                 kTestIdentifier1, "", HelpBubbleArrow::kNone);
-  description.steps.emplace_back(IDS_OK, IDS_OK,
-                                 ui::InteractionSequence::StepType::kShown,
-                                 kTestIdentifier2, "", HelpBubbleArrow::kNone);
-  description.steps.emplace_back(IDS_OK, IDS_OK,
-                                 ui::InteractionSequence::StepType::kShown,
-                                 kTestIdentifier3, "", HelpBubbleArrow::kNone);
+  description.steps.emplace_back(
+      TutorialDescription::BubbleStep(kTestIdentifier1)
+          .SetBubbleTitleText(IDS_OK)
+          .SetBubbleBodyText(IDS_OK));
+  description.steps.emplace_back(
+      TutorialDescription::BubbleStep(kTestIdentifier2)
+          .SetBubbleTitleText(IDS_OK)
+          .SetBubbleBodyText(IDS_OK));
+  description.steps.emplace_back(
+      TutorialDescription::BubbleStep(kTestIdentifier3)
+          .SetBubbleTitleText(IDS_OK)
+          .SetBubbleBodyText(IDS_OK));
   description.can_be_restarted = true;
   registry.AddTutorial(kTestTutorial1, std::move(description));
 
@@ -723,12 +728,14 @@ TEST_F(TutorialTest, BubbleClosingProgrammaticallyOnlyEndsTutorialOnLastStep) {
 
   // Build the tutorial Description
   TutorialDescription description;
-  description.steps.emplace_back(IDS_OK, IDS_OK,
-                                 ui::InteractionSequence::StepType::kShown,
-                                 kTestIdentifier1, "", HelpBubbleArrow::kNone);
-  description.steps.emplace_back(IDS_OK, IDS_OK,
-                                 ui::InteractionSequence::StepType::kShown,
-                                 kTestIdentifier2, "", HelpBubbleArrow::kNone);
+  description.steps.emplace_back(
+      TutorialDescription::BubbleStep(kTestIdentifier1)
+          .SetBubbleTitleText(IDS_OK)
+          .SetBubbleBodyText(IDS_OK));
+  description.steps.emplace_back(
+      TutorialDescription::BubbleStep(kTestIdentifier2)
+          .SetBubbleTitleText(IDS_OK)
+          .SetBubbleBodyText(IDS_OK));
   description.can_be_restarted = true;
   registry.AddTutorial(kTestTutorial1, std::move(description));
 
@@ -753,9 +760,10 @@ TEST_F(TutorialTest, TimeoutBeforeFirstBubble) {
   ui::test::TestElement el(kTestIdentifier1, kTestContext1);
 
   TutorialDescription description;
-  description.steps.emplace_back(IDS_OK, IDS_OK,
-                                 ui::InteractionSequence::StepType::kShown,
-                                 kTestIdentifier1, "", HelpBubbleArrow::kNone);
+  description.steps.emplace_back(
+      TutorialDescription::BubbleStep(kTestIdentifier1)
+          .SetBubbleTitleText(IDS_OK)
+          .SetBubbleBodyText(IDS_OK));
   registry.AddTutorial(kTestTutorial1, std::move(description));
 
   service.StartTutorial(kTestTutorial1, el.context(), completed.Get(),
@@ -780,12 +788,14 @@ TEST_F(TutorialTest, TimeoutBetweenBubbles) {
 
   TutorialDescription description;
   description.steps.emplace_back(
-      IDS_OK, IDS_OK, ui::InteractionSequence::StepType::kShown,
-      kTestIdentifier1, "", HelpBubbleArrow::kNone,
-      ui::CustomElementEventType(), /* must_remain_visible */ false);
-  description.steps.emplace_back(IDS_OK, IDS_OK,
-                                 ui::InteractionSequence::StepType::kShown,
-                                 kTestIdentifier2, "", HelpBubbleArrow::kNone);
+      TutorialDescription::BubbleStep(kTestIdentifier1)
+          .SetBubbleTitleText(IDS_OK)
+          .SetBubbleBodyText(IDS_OK)
+          .AbortIfVisibilityLost(false));
+  description.steps.emplace_back(
+      TutorialDescription::BubbleStep(kTestIdentifier2)
+          .SetBubbleTitleText(IDS_OK)
+          .SetBubbleBodyText(IDS_OK));
   registry.AddTutorial(kTestTutorial1, std::move(description));
 
   service.StartTutorial(kTestTutorial1, el1.context(), completed.Get(),
@@ -812,12 +822,14 @@ TEST_F(TutorialTest, NoTimeoutIfBubbleShowing) {
   el1.Show();
 
   TutorialDescription description;
-  description.steps.emplace_back(IDS_OK, IDS_OK,
-                                 ui::InteractionSequence::StepType::kShown,
-                                 kTestIdentifier1, "", HelpBubbleArrow::kNone);
-  description.steps.emplace_back(IDS_OK, IDS_OK,
-                                 ui::InteractionSequence::StepType::kShown,
-                                 kTestIdentifier2, "", HelpBubbleArrow::kNone);
+  description.steps.emplace_back(
+      TutorialDescription::BubbleStep(kTestIdentifier1)
+          .SetBubbleTitleText(IDS_OK)
+          .SetBubbleBodyText(IDS_OK));
+  description.steps.emplace_back(
+      TutorialDescription::BubbleStep(kTestIdentifier2)
+          .SetBubbleTitleText(IDS_OK)
+          .SetBubbleBodyText(IDS_OK));
   registry.AddTutorial(kTestTutorial1, std::move(description));
 
   service.StartTutorial(kTestTutorial1, el1.context(), completed.Get(),
@@ -878,6 +890,291 @@ TEST_F(TutorialTest, RegisterTutorialWithCreateFromVector) {
       std::make_unique<HelpBubbleFactoryRegistry>();
 
   EXPECT_TRUE(registry->IsTutorialRegistered(kTestTutorial1));
+}
+
+// Test where the parameter is a bitfield describing choices the test will make
+// at each branch.
+class ConditionalTutorialTest : public ui::test::InteractiveTestT<TutorialTest>,
+                                public testing::WithParamInterface<int> {
+ public:
+  ConditionalTutorialTest() = default;
+  ~ConditionalTutorialTest() override = default;
+
+  void SetUp() override {
+    InteractiveTestT<TutorialTest>::SetUp();
+    EXPECT_CALL(completed_, Run).Times(1);
+    first_anchor_.Show();
+  }
+
+ protected:
+  using BubbleStep = TutorialDescription::BubbleStep;
+  using IfStep = TutorialDescription::If;
+
+  // Gets whether the `n`th branch should be active.
+  bool GetBranchValue(int n) const { return 0 != (GetParam() & (1 << n)); }
+
+  // Gets the condition function for the `n`th branch.
+  TutorialDescription::ConditionalCallback Branch(int n) const {
+    const bool result = GetBranchValue(n);
+    return base::BindLambdaForTesting(
+        [result](const ui::TrackedElement* el) { return result; });
+  }
+
+  template <typename... Args>
+  auto StartTutorial(Args... steps) {
+    tutorial_registry_.AddTutorial(
+        kTestTutorial1, TutorialDescription::Create<kHistogramName1>(steps...));
+    return Do([this]() {
+      tutorial_service_.StartTutorial(kTestTutorial1, first_anchor_.context(),
+                                      completed_.Get(), aborted_.Get());
+    });
+  }
+
+  // Closes a help bubble. The bubble must already be visible.
+  auto CloseHelpBubble() {
+    return Steps(FlushEvents(),
+                 WithElement(test::TestHelpBubble::kElementId,
+                             [](ui::TrackedElement* el) {
+                               el->AsA<test::TestHelpBubbleElement>()
+                                   ->bubble()
+                                   ->SimulateDismiss();
+                             }),
+                 WaitForHide(test::TestHelpBubble::kElementId));
+  }
+
+  auto VerifyHelpBubble(std::map<int, int> expected_strings,
+                        absl::optional<std::pair<int, int>> progress) {
+    const int id = expected_strings.size() == 1U
+                       ? expected_strings.begin()->second
+                       : expected_strings[GetParam()];
+    return Steps(
+        std::move(CheckElement(
+                      test::TestHelpBubble::kElementId,
+                      [](ui::TrackedElement* el) {
+                        return el->AsA<test::TestHelpBubbleElement>()
+                            ->bubble()
+                            ->params()
+                            .body_text;
+                      },
+                      l10n_util::GetStringUTF16(id))
+                      .FormatDescription("%s - Body text must match.")),
+        std::move(CheckElement(
+                      test::TestHelpBubble::kElementId,
+                      [](ui::TrackedElement* el) {
+                        return el->AsA<test::TestHelpBubbleElement>()
+                            ->bubble()
+                            ->params()
+                            .buttons.empty();
+                      },
+                      progress.has_value())
+                      .FormatDescription(
+                          "%s - Only final bubble should have buttons.")),
+        std::move(
+            CheckElement(
+                test::TestHelpBubble::kElementId,
+                [](ui::TrackedElement* el) {
+                  return el->AsA<test::TestHelpBubbleElement>()
+                      ->bubble()
+                      ->params()
+                      .progress;
+                },
+                progress)
+                .SetMustRemainVisible(false)
+                .FormatDescription("%s - Progress indicators should match.")));
+  }
+
+  TutorialRegistry tutorial_registry_;
+  std::unique_ptr<HelpBubbleFactoryRegistry> help_bubble_registry_ =
+      CreateTestTutorialBubbleFactoryRegistry();
+  TestTutorialService tutorial_service_{&tutorial_registry_,
+                                        help_bubble_registry_.get()};
+  base::test::ScopedRunLoopTimeout timeout_{FROM_HERE, base::Seconds(30)};
+  testing::StrictMock<base::MockCallback<TutorialService::CompletedCallback>>
+      completed_;
+  testing::StrictMock<base::MockCallback<TutorialService::AbortedCallback>>
+      aborted_;
+  ui::test::TestElement first_anchor_{kTestIdentifier1, kTestContext1};
+};
+
+using ConditionalTutorialTest1 = ConditionalTutorialTest;
+INSTANTIATE_TEST_SUITE_P(, ConditionalTutorialTest1, testing::Range(0, 2));
+
+TEST_P(ConditionalTutorialTest1, ConditionalAtStartOfTutorial) {
+  ui::test::TestElement el2(kTestIdentifier2, kTestContext1);
+
+  RunTestSequenceInContext(
+      first_anchor_.context(),
+      StartTutorial(
+          IfStep(kTestIdentifier1, Branch(0))
+              .Then(BubbleStep(kTestIdentifier1).SetBubbleBodyText(IDS_OK))
+              .Else(BubbleStep(kTestIdentifier1).SetBubbleBodyText(IDS_CANCEL)),
+          BubbleStep(kTestIdentifier2).SetBubbleBodyText(IDS_CLEAR)),
+      VerifyHelpBubble({{0, IDS_CANCEL}, {1, IDS_OK}}, std::make_pair(1, 1)),
+      Do([&]() { el2.Show(); }),
+      WaitForShow(test::TestHelpBubble::kElementId)
+          .SetTransitionOnlyOnEvent(true),
+      VerifyHelpBubble({{-1, IDS_CLEAR}}, absl::nullopt), CloseHelpBubble());
+}
+
+TEST_P(ConditionalTutorialTest1, ConditionalInMiddleOfTutorial) {
+  ui::test::TestElement el2(kTestIdentifier2, kTestContext1);
+  ui::test::TestElement el3(kTestIdentifier3, kTestContext1);
+
+  RunTestSequenceInContext(
+      first_anchor_.context(),
+      StartTutorial(
+          BubbleStep(kTestIdentifier1).SetBubbleBodyText(IDS_DONE),
+          IfStep(kTestIdentifier2, Branch(0))
+              .Then(BubbleStep(kTestIdentifier2).SetBubbleBodyText(IDS_OK))
+              .Else(BubbleStep(kTestIdentifier2).SetBubbleBodyText(IDS_CANCEL)),
+          BubbleStep(kTestIdentifier3).SetBubbleBodyText(IDS_CLEAR)),
+      VerifyHelpBubble({{-1, IDS_DONE}}, std::make_pair(1, 2)),
+      Do([&]() { el2.Show(); }),
+      WaitForShow(test::TestHelpBubble::kElementId)
+          .SetTransitionOnlyOnEvent(true),
+      VerifyHelpBubble({{0, IDS_CANCEL}, {1, IDS_OK}}, std::make_pair(2, 2)),
+      Do([&]() { el3.Show(); }),
+      WaitForShow(test::TestHelpBubble::kElementId)
+          .SetTransitionOnlyOnEvent(true),
+      VerifyHelpBubble({{-1, IDS_CLEAR}}, absl::nullopt), CloseHelpBubble());
+}
+
+TEST_P(ConditionalTutorialTest1, ConditionalAtEndOfTutorial) {
+  ui::test::TestElement el2(kTestIdentifier2, kTestContext1);
+
+  RunTestSequenceInContext(
+      first_anchor_.context(),
+      StartTutorial(
+          BubbleStep(kTestIdentifier1).SetBubbleBodyText(IDS_DONE),
+          IfStep(kTestIdentifier2, Branch(0))
+              .Then(BubbleStep(kTestIdentifier2).SetBubbleBodyText(IDS_OK))
+              .Else(
+                  BubbleStep(kTestIdentifier2).SetBubbleBodyText(IDS_CANCEL))),
+      VerifyHelpBubble({{-1, IDS_DONE}}, std::make_pair(1, 1)),
+      Do([&]() { el2.Show(); }),
+      WaitForShow(test::TestHelpBubble::kElementId)
+          .SetTransitionOnlyOnEvent(true),
+      VerifyHelpBubble({{0, IDS_CANCEL}, {1, IDS_OK}}, absl::nullopt),
+      CloseHelpBubble());
+}
+
+TEST_P(ConditionalTutorialTest1, ConditionalAtEndOfTutorialUnevenSteps) {
+  ui::test::TestElement el2(kTestIdentifier2, kTestContext1);
+  ui::test::TestElement el3(kTestIdentifier3, kTestContext1);
+
+  RunTestSequenceInContext(
+      first_anchor_.context(),
+      StartTutorial(
+          BubbleStep(kTestIdentifier1).SetBubbleBodyText(IDS_DONE),
+          IfStep(kTestIdentifier2, Branch(0))
+              .Then(BubbleStep(kTestIdentifier2).SetBubbleBodyText(IDS_OK))
+              .Else(
+                  BubbleStep(kTestIdentifier2).SetBubbleBodyText(IDS_CLEAR),
+                  BubbleStep(kTestIdentifier3).SetBubbleBodyText(IDS_CANCEL))),
+      VerifyHelpBubble({{-1, IDS_DONE}}, std::make_pair(1, 2)),
+      Do([&]() { el2.Show(); }),
+      If([this]() { return !GetBranchValue(0); },
+         Steps(std::move(WaitForShow(test::TestHelpBubble::kElementId)
+                             .SetTransitionOnlyOnEvent(true)),
+               VerifyHelpBubble({{-1, IDS_CLEAR}}, std::make_pair(2, 2)))),
+      Do([&]() { el3.Show(); }),
+      WaitForShow(test::TestHelpBubble::kElementId)
+          .SetTransitionOnlyOnEvent(true),
+      VerifyHelpBubble({{0, IDS_CANCEL}, {1, IDS_OK}}, absl::nullopt),
+      CloseHelpBubble());
+}
+
+TEST_P(ConditionalTutorialTest1, OptionalStep) {
+  ui::test::TestElement el2(kTestIdentifier2, kTestContext1);
+  ui::test::TestElement el3(kTestIdentifier3, kTestContext1);
+
+  RunTestSequenceInContext(
+      first_anchor_.context(),
+      StartTutorial(
+          BubbleStep(kTestIdentifier1).SetBubbleBodyText(IDS_DONE),
+          IfStep(kTestIdentifier2, Branch(0))
+              .Then(BubbleStep(kTestIdentifier2).SetBubbleBodyText(IDS_OK)),
+          BubbleStep(kTestIdentifier3).SetBubbleBodyText(IDS_CLEAR)),
+      VerifyHelpBubble({{-1, IDS_DONE}}, std::make_pair(1, 2)),
+      If([this]() { return GetBranchValue(0); },
+         Steps(Do([&]() { el2.Show(); }),
+               std::move(WaitForShow(test::TestHelpBubble::kElementId)
+                             .SetTransitionOnlyOnEvent(true)),
+               VerifyHelpBubble({{1, IDS_OK}}, std::make_pair(2, 2)))),
+      Do([&]() { el3.Show(); }),
+      WaitForShow(test::TestHelpBubble::kElementId)
+          .SetTransitionOnlyOnEvent(true),
+      VerifyHelpBubble({{-1, IDS_CLEAR}}, absl::nullopt), CloseHelpBubble());
+}
+
+TEST_P(ConditionalTutorialTest1, WaitForAnyOf) {
+  ui::test::TestElement el2(kTestIdentifier2, kTestContext1);
+  ui::test::TestElement el3(kTestIdentifier3, kTestContext1);
+  ui::test::TestElement el4(kTestIdentifier4, kTestContext1);
+
+  RunTestSequenceInContext(
+      first_anchor_.context(),
+      StartTutorial(
+          BubbleStep(kTestIdentifier1).SetBubbleBodyText(IDS_DONE),
+          TutorialDescription::WaitForAnyOf(kTestIdentifier2)
+              .Or(kTestIdentifier3),
+          IfStep(kTestIdentifier2)
+              .Then(BubbleStep(kTestIdentifier2).SetBubbleBodyText(IDS_OK))
+              .Else(BubbleStep(kTestIdentifier3).SetBubbleBodyText(IDS_CANCEL)),
+          BubbleStep(kTestIdentifier4).SetBubbleBodyText(IDS_CLEAR)),
+      VerifyHelpBubble({{-1, IDS_DONE}}, std::make_pair(1, 2)),
+      If([this]() { return GetBranchValue(0); },
+         Steps(Do([&]() { el2.Show(); }),
+               std::move(WaitForShow(test::TestHelpBubble::kElementId)
+                             .SetTransitionOnlyOnEvent(true)),
+               VerifyHelpBubble({{-1, IDS_OK}}, std::make_pair(2, 2))),
+         Steps(Do([&]() { el3.Show(); }),
+               std::move(WaitForShow(test::TestHelpBubble::kElementId)
+                             .SetTransitionOnlyOnEvent(true)),
+               VerifyHelpBubble({{-1, IDS_CANCEL}}, std::make_pair(2, 2)))),
+      Do([&]() { el4.Show(); }),
+      WaitForShow(test::TestHelpBubble::kElementId)
+          .SetTransitionOnlyOnEvent(true),
+      VerifyHelpBubble({{-1, IDS_CLEAR}}, absl::nullopt), CloseHelpBubble());
+}
+
+using ConditionalTutorialTest2 = ConditionalTutorialTest;
+INSTANTIATE_TEST_SUITE_P(, ConditionalTutorialTest2, testing::Range(0, 4));
+
+TEST_P(ConditionalTutorialTest2, NestedConditionals) {
+  ui::test::TestElement el2(kTestIdentifier2, kTestContext1);
+  ui::test::TestElement el3(kTestIdentifier3, kTestContext1);
+
+  RunTestSequenceInContext(
+      first_anchor_.context(),
+      StartTutorial(
+          IfStep(kTestIdentifier1, Branch(0))
+              .Then(BubbleStep(kTestIdentifier1).SetBubbleBodyText(IDS_OK),
+                    IfStep(kTestIdentifier2, Branch(1))
+                        .Then(BubbleStep(kTestIdentifier2)
+                                  .SetBubbleBodyText(IDS_DONE))
+                        .Else(BubbleStep(kTestIdentifier2)
+                                  .SetBubbleBodyText(IDS_CLEAR)))
+              .Else(BubbleStep(kTestIdentifier1).SetBubbleBodyText(IDS_CANCEL),
+                    IfStep(kTestIdentifier2, Branch(1))
+                        .Then(BubbleStep(kTestIdentifier2)
+                                  .SetBubbleBodyText(IDS_ADD))
+                        .Else(BubbleStep(kTestIdentifier2)
+                                  .SetBubbleBodyText(IDS_REMOVE))),
+          BubbleStep(kTestIdentifier3).SetBubbleBodyText(IDS_SAVE)),
+      VerifyHelpBubble(
+          {{0, IDS_CANCEL}, {1, IDS_OK}, {2, IDS_CANCEL}, {3, IDS_OK}},
+          std::make_pair(1, 2)),
+      Do([&]() { el2.Show(); }),
+      WaitForShow(test::TestHelpBubble::kElementId)
+          .SetTransitionOnlyOnEvent(true),
+      VerifyHelpBubble(
+          {{0, IDS_REMOVE}, {1, IDS_CLEAR}, {2, IDS_ADD}, {3, IDS_DONE}},
+          std::make_pair(2, 2)),
+      Do([&]() { el3.Show(); }),
+      WaitForShow(test::TestHelpBubble::kElementId)
+          .SetTransitionOnlyOnEvent(true),
+      VerifyHelpBubble({{-1, IDS_SAVE}}, absl::nullopt), CloseHelpBubble());
 }
 
 }  // namespace user_education

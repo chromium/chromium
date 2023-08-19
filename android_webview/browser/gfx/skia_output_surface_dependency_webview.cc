@@ -73,7 +73,7 @@ SkiaOutputSurfaceDependencyWebView::GetVulkanContextProvider() {
   return shared_context_state_->vk_context_provider();
 }
 
-viz::DawnContextProvider*
+gpu::DawnContextProvider*
 SkiaOutputSurfaceDependencyWebView::GetDawnContextProvider() {
   return nullptr;
 }
@@ -93,7 +93,7 @@ gpu::MailboxManager* SkiaOutputSurfaceDependencyWebView::GetMailboxManager() {
 }
 
 void SkiaOutputSurfaceDependencyWebView::ScheduleGrContextCleanup() {
-  // There is no way to access the gpu thread here, so leave it no-op for now.
+  shared_context_state_->ScheduleGrContextCleanup();
 }
 
 scoped_refptr<base::TaskRunner>

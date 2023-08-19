@@ -41,8 +41,6 @@ namespace blink {
 class HistoryItem;
 class PageState;
 class WebHTTPBody;
-template <typename T>
-class WebVector;
 
 // Represents a frame-level navigation entry in session history.
 //
@@ -68,11 +66,7 @@ class BLINK_EXPORT WebHistoryItem {
                  int64_t document_sequence_number,
                  const WebString& navigation_api_state);
 
-  PageState ToPageState();
-
   bool IsNull() const { return private_.IsNull(); }
-
-  void SetTarget(const WebString&);
 
   int64_t ItemSequenceNumber() const;
   int64_t DocumentSequenceNumber() const;
@@ -88,11 +82,8 @@ class BLINK_EXPORT WebHistoryItem {
  private:
   void Reset();
   void Assign(const WebHistoryItem&);
-  WebVector<WebString> GetReferencedFilePaths() const;
 
-  WebPrivatePtr<HistoryItem> private_;
-  // TODO(dcheng): Remove this, since unique name is no longer a Blink concept.
-  WebString target_;
+  WebPrivatePtrForGC<HistoryItem> private_;
 };
 
 }  // namespace blink

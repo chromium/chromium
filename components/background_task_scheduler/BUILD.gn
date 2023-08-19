@@ -95,6 +95,7 @@ if (is_android) {
     deps = [
       ":public_java",
       "internal:internal_java",
+      "//base:base_java",
       "//third_party/androidx:androidx_annotation_annotation_java",
     ]
   }

@@ -1195,6 +1195,10 @@ TEST_F(AutocompleteResultTest, SortAndCullAllowsNonMatchingZeroSuggestions) {
       {"http://history-title/", AutocompleteMatchType::HISTORY_TITLE},
   };
 
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeaturesAndParameters(
+      {}, {omnibox::kGroupingFrameworkForZPS});
+
   PopulateAutocompleteMatchesFromTestData(data, std::size(data), &matches);
 
   // On-focus suggestions (ZeroSuggest) is allowed to have the input scheme
@@ -1932,7 +1936,7 @@ TEST_F(AutocompleteResultTest, SortAndCull_DemoteSuggestionGroups_ExceedLimit) {
         {{OmniboxFieldTrial::kUIMaxAutocompleteMatchesParam, "6"}}},
        {omnibox::kMaxZeroSuggestMatches,
         {{OmniboxFieldTrial::kMaxZeroSuggestMatchesParam, "5"}}}},
-      {omnibox::kDynamicMaxAutocomplete});
+      {omnibox::kDynamicMaxAutocomplete, omnibox::kGroupingFrameworkForZPS});
 
   const auto group_1 = omnibox::GROUP_PREVIOUS_SEARCH_RELATED;
   const auto group_2 = omnibox::GROUP_PREVIOUS_SEARCH_RELATED_ENTITY_CHIPS;
@@ -2879,29 +2883,6 @@ TEST_F(AutocompleteResultTest, Android_InspireMe) {
   // The tests below verify the behavior with the Grouping Framework for ZPS
   // enabled. This is intentional: Suggestion Groups make no sense outside of
   // the grouping framework.
-
-  {
-    SCOPED_TRACE("Inspire Me Disabled");
-    base::test::ScopedFeatureList feature_list;
-    feature_list.InitWithFeatures(
-        {omnibox::kGroupingFrameworkForZPS},
-        {omnibox::kGroupingFrameworkForNonZPS, omnibox::kInspireMe});
-    AutocompleteResult result;
-    result.MergeSuggestionGroupsMap(suggestion_groups_map);
-    result.AppendMatches(matches);
-    result.SortAndCull(zero_input, template_url_service_.get(),
-                       triggered_feature_service());
-
-    const std::array<TestData, 3> expected_data{{
-        // Default suggestion comes 1st.
-        {1, 1, 490, true, {}, AutocompleteMatchType::SEARCH_SUGGEST, group1},
-        // Other types follow. Inspire me does not include trends or queries
-        // related to recent search.
-        {0, 1, 500, false, {}, AutocompleteMatchType::SEARCH_SUGGEST, group1},
-        {2, 1, 480, false, {}, AutocompleteMatchType::SEARCH_SUGGEST, group1},
-    }};
-    AssertResultMatches(result, expected_data.begin(), expected_data.size());
-  }
 
   {
     SCOPED_TRACE("Inspire Me Enabled with no queries");

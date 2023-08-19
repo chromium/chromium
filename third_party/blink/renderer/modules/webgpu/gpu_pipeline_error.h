@@ -18,10 +18,11 @@ class MODULES_EXPORT GPUPipelineError : public DOMException {
 
  public:
   // Constructor exposed to script. Called by the V8 bindings.
-  static GPUPipelineError* Create(String message,
+  static GPUPipelineError* Create(const String& message,
                                   const GPUPipelineErrorInit* options);
 
-  GPUPipelineError(String message, V8GPUPipelineErrorReason::Enum reason);
+  GPUPipelineError(const String& message,
+                   V8GPUPipelineErrorReason::Enum reason);
 
   V8GPUPipelineErrorReason reason() const;
 

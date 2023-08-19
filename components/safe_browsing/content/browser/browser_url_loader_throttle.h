@@ -11,6 +11,8 @@
 #include "base/memory/ref_counted.h"
 #include "base/strings/strcat.h"
 #include "base/time/time.h"
+#include "components/safe_browsing/core/browser/hashprefix_realtime/hash_realtime_utils.h"
+#include "components/safe_browsing/core/browser/safe_browsing_url_checker_impl.h"
 #include "content/public/browser/browser_thread.h"
 #include "services/network/public/mojom/fetch_api.mojom-shared.h"
 #include "third_party/blink/public/common/loader/url_loader_throttle.h"
@@ -27,7 +29,6 @@ class HttpRequestHeaders;
 namespace safe_browsing {
 
 class UrlCheckerDelegate;
-class SafeBrowsingUrlCheckerImpl;
 class SafeBrowsingLookupMechanismExperimenter;
 
 class RealTimeUrlLookupServiceBase;
@@ -48,11 +49,11 @@ class BrowserURLLoaderThrottle : public blink::URLLoaderThrottle {
   using GetDelegateCallback =
       base::OnceCallback<scoped_refptr<UrlCheckerDelegate>()>;
 
-  using NativeUrlCheckNotifier =
-      base::OnceCallback<void(bool /* proceed */,
-                              bool /* showed_interstitial */,
-                              bool /* did_perform_url_real_time_check */,
-                              bool /* did_check_url_real_time_allowlist */)>;
+  using NativeUrlCheckNotifier = base::OnceCallback<void(
+      bool /* proceed */,
+      bool /* showed_interstitial */,
+      SafeBrowsingUrlCheckerImpl::PerformedCheck /* performed_check */,
+      bool /* did_check_url_real_time_allowlist */)>;
 
   // CheckerOnSB handles calling methods on SafeBrowsingUrlCheckerImpl, which
   // must be called on the IO thread. The results are synced back to the
@@ -76,7 +77,7 @@ class BrowserURLLoaderThrottle : public blink::URLLoaderThrottle {
         base::WeakPtr<HashRealTimeService> hash_realtime_service,
         base::WeakPtr<PingManager> ping_manager,
         bool is_mechanism_experiment_allowed,
-        bool hash_real_time_lookup_enabled);
+        hash_realtime_utils::HashRealTimeSelection hash_realtime_selection);
 
     ~CheckerOnSB();
 
@@ -104,19 +105,21 @@ class BrowserURLLoaderThrottle : public blink::URLLoaderThrottle {
     // required to get the final result. In that case, the rest of the callback
     // arguments should be ignored. This method sets the |slow_check_notifier|
     // output parameter to a callback to receive the final result.
-    void OnCheckUrlResult(NativeUrlCheckNotifier* slow_check_notifier,
-                          bool proceed,
-                          bool showed_interstitial,
-                          bool did_perform_url_real_time_check,
-                          bool did_check_url_real_time_allowlist);
+    void OnCheckUrlResult(
+        NativeUrlCheckNotifier* slow_check_notifier,
+        bool proceed,
+        bool showed_interstitial,
+        SafeBrowsingUrlCheckerImpl::PerformedCheck performed_check,
+        bool did_check_url_real_time_allowlist);
 
     // |slow_check| indicates whether it reports the result of a slow check.
     // (Please see comments of OnCheckUrlResult() for what slow check means).
-    void OnCompleteCheck(bool slow_check,
-                         bool proceed,
-                         bool showed_interstitial,
-                         bool did_perform_url_real_time_check,
-                         bool did_check_url_real_time_allowlist);
+    void OnCompleteCheck(
+        bool slow_check,
+        bool proceed,
+        bool showed_interstitial,
+        SafeBrowsingUrlCheckerImpl::PerformedCheck performed_check,
+        bool did_check_url_real_time_allowlist);
 
     // The following member stays valid until |url_checker_| is created.
     GetDelegateCallback delegate_getter_;
@@ -139,7 +142,8 @@ class BrowserURLLoaderThrottle : public blink::URLLoaderThrottle {
     base::WeakPtr<HashRealTimeService> hash_realtime_service_;
     base::WeakPtr<PingManager> ping_manager_;
     bool is_mechanism_experiment_allowed_ = false;
-    bool hash_real_time_lookup_enabled_ = false;
+    hash_realtime_utils::HashRealTimeSelection hash_realtime_selection_ =
+        hash_realtime_utils::HashRealTimeSelection::kNone;
     base::TimeTicks creation_time_;
   };
 
@@ -150,7 +154,8 @@ class BrowserURLLoaderThrottle : public blink::URLLoaderThrottle {
       int frame_tree_node_id,
       base::WeakPtr<RealTimeUrlLookupServiceBase> url_lookup_service,
       base::WeakPtr<HashRealTimeService> hash_realtime_service,
-      base::WeakPtr<PingManager> ping_manager);
+      base::WeakPtr<PingManager> ping_manager,
+      hash_realtime_utils::HashRealTimeSelection hash_realtime_selection);
 
   BrowserURLLoaderThrottle(const BrowserURLLoaderThrottle&) = delete;
   BrowserURLLoaderThrottle& operator=(const BrowserURLLoaderThrottle&) = delete;
@@ -184,16 +189,23 @@ class BrowserURLLoaderThrottle : public blink::URLLoaderThrottle {
       int frame_tree_node_id,
       base::WeakPtr<RealTimeUrlLookupServiceBase> url_lookup_service,
       base::WeakPtr<HashRealTimeService> hash_realtime_service,
-      base::WeakPtr<PingManager> ping_manager);
+      base::WeakPtr<PingManager> ping_manager,
+      hash_realtime_utils::HashRealTimeSelection hash_realtime_selection);
 
   // |slow_check| indicates whether it reports the result of a slow check.
   // (Please see comments of CheckerOnSB::OnCheckUrlResult() for what slow check
   // means).
-  void OnCompleteCheck(bool slow_check,
-                       bool proceed,
-                       bool showed_interstitial,
-                       bool did_perform_url_real_time_check,
-                       bool did_check_url_real_time_allowlist);
+  void OnCompleteCheck(
+      bool slow_check,
+      bool proceed,
+      bool showed_interstitial,
+      SafeBrowsingUrlCheckerImpl::PerformedCheck performed_check,
+      bool did_check_url_real_time_allowlist);
+
+  // Returns the suffixed to be used for the TotalDelay2 metrics that specifies
+  // which type of check was performed.
+  std::string GetUrlCheckTypeForLogging(
+      SafeBrowsingUrlCheckerImpl::PerformedCheck performed_check);
 
   // Called to skip future safe browsing checks and resume the request if
   // necessary.
@@ -205,10 +217,6 @@ class BrowserURLLoaderThrottle : public blink::URLLoaderThrottle {
   // Destroys |sb_checker_| on the IO thread, or UI thread if
   // kSafeBrowsingOnUIThread is enabled.
   void DeleteCheckerOnSB();
-
-  // Whether the hash-prefix real-time lookup is enabled. For now, this is
-  // always disabled.
-  bool IsHashRealTimeLookupEnabled();
 
   size_t pending_checks_ = 0;
   // How many slow checks that haven't received results.
@@ -224,12 +232,9 @@ class BrowserURLLoaderThrottle : public blink::URLLoaderThrottle {
   bool deferred_ = false;
   // Whether the response loaded is from cache.
   bool is_response_from_cache_ = false;
-  network::mojom::RequestDestination request_destination_;
 
   // The total delay caused by SafeBrowsing deferring the resource load.
   base::TimeDelta total_delay_;
-
-  GURL original_url_;
 
   // Whether future safe browsing checks should be skipped.
   bool skip_checks_ = false;

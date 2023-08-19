@@ -1,0 +1,18 @@
+This is a testharness.js-based test.
+PASS Declarations are serialized on one line, rules on two.
+FAIL Mixed declarations/rules are on two lines. assert_equals: Mixed declarations/rules are on two lines. expected "div {\n  @media screen {\n  & { color: red; background-color: green; }\n}\n}" but got "div {\n  @media screen { color: red; background-color: green; }\n}"
+FAIL Implicit rule is serialized assert_equals: Implicit rule is serialized expected "div {\n  @supports selector(&) {\n  & { color: red; background-color: green; }\n}\n  &:hover { color: navy; }\n}" but got "div {\n  @supports selector(&) { color: red; background-color: green; }\n  &:hover { color: navy; }\n}"
+FAIL Implicit rule not removed assert_equals: Implicit rule not removed expected "div {\n  @media screen {\n  & { color: red; }\n}\n}" but got "div {\n  @media screen { color: red; }\n}"
+PASS Implicit + empty hover rule
+PASS Implicit like rule not in first position
+FAIL Two implicit-like rules assert_equals: Two implicit-like rules expected "div {\n  @media screen {\n  & { color: red; }\n  & { color: red; }\n}\n}" but got "div {\n  @media screen {\n  color: red;\n  & { color: red; }\n}\n}"
+FAIL Implicit like rule after decls assert_equals: Implicit like rule after decls expected "div {\n  @media screen {\n  & { color: red; }\n  & { color: red; }\n}\n}" but got "div {\n  @media screen {\n  color: red;\n  & { color: red; }\n}\n}"
+FAIL Implicit like rule after decls, missing closing braces assert_equals: Implicit like rule after decls, missing closing braces expected "div {\n  @media screen {\n  & { color: red; }\n  & { color: blue; }\n}\n}" but got "div {\n  @media screen {\n  color: red;\n  & { color: blue; }\n}\n}"
+PASS Implicit like rule with other selectors
+PASS Implicit-like rule in style rule
+PASS Empty conditional rule
+PASS Empty style rule
+PASS Empty conditional inside style rule
+PASS Empty style inside conditional
+Harness: the test ran to completion.
+

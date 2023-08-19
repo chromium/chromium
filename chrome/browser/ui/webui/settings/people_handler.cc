@@ -34,14 +34,13 @@
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/chrome_pages.h"
-#include "chrome/browser/ui/signin_view_controller.h"
+#include "chrome/browser/ui/signin/signin_view_controller.h"
 #include "chrome/browser/ui/singleton_tabs.h"
 #include "chrome/browser/ui/webui/signin/login_ui_service.h"
 #include "chrome/browser/ui/webui/signin/login_ui_service_factory.h"
 #include "chrome/common/url_constants.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/grit/generated_resources.h"
-#include "components/autofill/core/common/autofill_prefs.h"
 #include "components/prefs/pref_service.h"
 #include "components/signin/core/browser/signin_error_controller.h"
 #include "components/signin/public/base/consent_level.h"
@@ -100,15 +99,13 @@ struct SyncConfigInfo {
 
   bool sync_everything;
   syncer::UserSelectableTypeSet selected_types;
-  bool payments_integration_enabled;
 };
 
 bool IsSyncSubpage(const GURL& current_url) {
   return current_url == chrome::GetSettingsUrl(chrome::kSyncSetupSubPage);
 }
 
-SyncConfigInfo::SyncConfigInfo()
-    : sync_everything(false), payments_integration_enabled(false) {}
+SyncConfigInfo::SyncConfigInfo() : sync_everything(false) {}
 
 SyncConfigInfo::~SyncConfigInfo() {}
 
@@ -126,15 +123,6 @@ bool GetConfiguration(const std::string& json, SyncConfigInfo* config) {
     return false;
   }
   config->sync_everything = *sync_everything;
-
-  absl::optional<bool> payments_integration_enabled =
-      root.FindBool("paymentsIntegrationEnabled");
-  if (!payments_integration_enabled.has_value()) {
-    DLOG(ERROR) << "GetConfiguration() not passed a paymentsIntegrationEnabled "
-                << "value";
-    return false;
-  }
-  config->payments_integration_enabled = *payments_integration_enabled;
 
   for (syncer::UserSelectableType type : syncer::UserSelectableTypeSet::All()) {
     std::string key_name =
@@ -408,9 +396,6 @@ void PeopleHandler::HandleSetDatatypes(const base::Value::List& args) {
   const base::Value* callback_id = nullptr;
   ParseConfigurationArguments(args, &configuration, &callback_id);
 
-  autofill::prefs::SetPaymentsIntegrationEnabled(
-      profile_->GetPrefs(), configuration.payments_integration_enabled);
-
   // Start configuring the SyncService using the configuration passed to us from
   // the JS layer.
   syncer::SyncService* service = GetSyncService();
@@ -433,10 +418,6 @@ void PeopleHandler::HandleSetDatatypes(const base::Value::List& args) {
 
   // Choosing data types to sync never fails.
   ResolveJavascriptCallback(*callback_id, base::Value(kConfigurePageStatus));
-
-  ProfileMetrics::LogProfileSyncInfo(ProfileMetrics::SYNC_CUSTOMIZE);
-  if (!configuration.sync_everything)
-    ProfileMetrics::LogProfileSyncInfo(ProfileMetrics::SYNC_CHOOSE);
 }
 
 void PeopleHandler::HandleGetStoredAccounts(const base::Value::List& args) {
@@ -546,8 +527,6 @@ void PeopleHandler::HandleSetEncryptionPassphrase(
   } else {
     sync_user_settings->SetEncryptionPassphrase(passphrase);
     successfully_set = true;
-    ProfileMetrics::LogProfileSyncInfo(
-        ProfileMetrics::SYNC_CREATED_NEW_PASSPHRASE);
   }
   ResolveJavascriptCallback(callback_id, base::Value(successfully_set));
 }
@@ -573,10 +552,6 @@ void PeopleHandler::HandleSetDecryptionPassphrase(
   bool successfully_set = false;
   if (!passphrase.empty() && sync_user_settings->IsPassphraseRequired()) {
     successfully_set = sync_user_settings->SetDecryptionPassphrase(passphrase);
-    if (successfully_set) {
-      ProfileMetrics::LogProfileSyncInfo(
-          ProfileMetrics::SYNC_ENTERED_EXISTING_PASSPHRASE);
-    }
   }
   ResolveJavascriptCallback(callback_id, base::Value(successfully_set));
 }
@@ -995,7 +970,6 @@ void PeopleHandler::PushSyncPrefs() {
   //   syncAllDataTypes: true if the user wants to sync everything
   //   <data_type>Registered: true if the associated data type is supported
   //   <data_type>Synced: true if the user wants to sync that specific data type
-  //   paymentsIntegrationEnabled: true if the user wants Payments integration
   //   customPassphraseAllowed: true if sync allows setting a custom passphrase
   //                            to encrypt data.
   //   encryptAllData: true if user wants to encrypt all data (not just
@@ -1020,10 +994,10 @@ void PeopleHandler::PushSyncPrefs() {
     const std::string type_name = syncer::GetUserSelectableTypeName(type);
     args.Set(type_name + "Registered", registered_types.Has(type));
     args.Set(type_name + "Synced", selected_types.Has(type));
+    args.Set(type_name + "Managed",
+             sync_user_settings->IsTypeManagedByPolicy(type));
   }
   args.Set("syncAllDataTypes", sync_user_settings->IsSyncEverythingEnabled());
-  args.Set("paymentsIntegrationEnabled",
-           autofill::prefs::IsPaymentsIntegrationEnabled(profile_->GetPrefs()));
   args.Set("encryptAllData", sync_user_settings->IsEncryptEverythingEnabled());
   args.Set("customPassphraseAllowed",
            sync_user_settings->IsCustomPassphraseAllowed());
@@ -1091,7 +1065,7 @@ void PeopleHandler::MarkFirstSetupComplete() {
   }
 
   unified_consent::metrics::RecordSyncSetupDataTypesHistrogam(
-      service->GetUserSettings(), profile_->GetPrefs());
+      service->GetUserSettings());
 
   // We're done configuring, so notify SyncService that it is OK to start
   // syncing.

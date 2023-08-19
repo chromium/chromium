@@ -13,10 +13,10 @@
 #include "base/strings/string_piece_forward.h"
 #include "base/types/expected.h"
 #include "base/values.h"
-#include "components/aggregation_service/aggregation_service.mojom.h"
 #include "components/attribution_reporting/aggregatable_values.h"
 #include "components/attribution_reporting/filters.h"
 #include "components/attribution_reporting/source_registration_time_config.mojom.h"
+#include "components/attribution_reporting/suitable_origin.h"
 #include "components/attribution_reporting/trigger_registration_error.mojom-forward.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
@@ -46,8 +46,7 @@ struct COMPONENT_EXPORT(ATTRIBUTION_REPORTING) TriggerRegistration {
       std::vector<AggregatableTriggerData> aggregatable_trigger_data,
       AggregatableValues aggregatable_values,
       bool debug_reporting,
-      aggregation_service::mojom::AggregationCoordinator
-          aggregation_coordinator,
+      absl::optional<SuitableOrigin> aggregation_coordinator_origin,
       mojom::SourceRegistrationTimeConfig source_registration_time_config);
 
   ~TriggerRegistration();
@@ -67,11 +66,13 @@ struct COMPONENT_EXPORT(ATTRIBUTION_REPORTING) TriggerRegistration {
   std::vector<AggregatableTriggerData> aggregatable_trigger_data;
   AggregatableValues aggregatable_values;
   bool debug_reporting = false;
-  aggregation_service::mojom::AggregationCoordinator aggregation_coordinator =
-      aggregation_service::mojom::AggregationCoordinator::kDefault;
+  absl::optional<SuitableOrigin> aggregation_coordinator_origin;
   attribution_reporting::mojom::SourceRegistrationTimeConfig
       source_registration_time_config =
-          attribution_reporting::mojom::SourceRegistrationTimeConfig::kInclude;
+          attribution_reporting::mojom::SourceRegistrationTimeConfig::kExclude;
+
+  // When adding new members, the corresponding `operator==()` definition in
+  // `test_utils.h` should also be updated.
 };
 
 }  // namespace attribution_reporting

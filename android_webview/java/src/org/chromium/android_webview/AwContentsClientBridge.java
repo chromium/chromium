@@ -18,11 +18,11 @@ import org.chromium.android_webview.safe_browsing.AwSafeBrowsingConversionHelper
 import org.chromium.android_webview.safe_browsing.AwSafeBrowsingResponse;
 import org.chromium.base.Callback;
 import org.chromium.base.Log;
+import org.chromium.base.TraceEvent;
 import org.chromium.base.annotations.CalledByNative;
 import org.chromium.base.annotations.CalledByNativeUnchecked;
 import org.chromium.base.annotations.JNINamespace;
 import org.chromium.base.annotations.NativeMethods;
-import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.task.PostTask;
 import org.chromium.base.task.TaskTraits;
 import org.chromium.components.embedder_support.util.WebResourceResponseInfo;
@@ -223,13 +223,16 @@ public class AwContentsClientBridge {
 
         }
 
-        final ClientCertificateRequestCallback callback =
-                new ClientCertificateRequestCallback(id, host, port);
-        mClient.onReceivedClientCertRequest(callback, keyTypes, principals, host, port);
+        try (TraceEvent event =
+                        TraceEvent.scoped("WebView.APICallback.ON_RECEIVED_CLIENT_CERT_REQUEST")) {
+            final ClientCertificateRequestCallback callback =
+                    new ClientCertificateRequestCallback(id, host, port);
+            mClient.onReceivedClientCertRequest(callback, keyTypes, principals, host, port);
 
-        // Record UMA for onReceivedClientCertRequest.
-        AwHistogramRecorder.recordCallbackInvocation(
-                AwHistogramRecorder.WebViewCallbackType.ON_RECEIVED_CLIENT_CERT_REQUEST);
+            // Record UMA for onReceivedClientCertRequest.
+            AwHistogramRecorder.recordCallbackInvocation(
+                    AwHistogramRecorder.WebViewCallbackType.ON_RECEIVED_CLIENT_CERT_REQUEST);
+        }
     }
 
     @CalledByNative
@@ -284,21 +287,26 @@ public class AwContentsClientBridge {
     @CalledByNative
     private void newDownload(String url, String userAgent, String contentDisposition,
             String mimeType, long contentLength) {
-        mClient.getCallbackHelper().postOnDownloadStart(
-                url, userAgent, contentDisposition, mimeType, contentLength);
+        try (TraceEvent event = TraceEvent.scoped("WebView.APICallback.ON_DOWNLOAD_START")) {
+            mClient.getCallbackHelper().postOnDownloadStart(
+                    url, userAgent, contentDisposition, mimeType, contentLength);
 
-        // Record UMA for onDownloadStart.
-        AwHistogramRecorder.recordCallbackInvocation(
-                AwHistogramRecorder.WebViewCallbackType.ON_DOWNLOAD_START);
+            // Record UMA for onDownloadStart.
+            AwHistogramRecorder.recordCallbackInvocation(
+                    AwHistogramRecorder.WebViewCallbackType.ON_DOWNLOAD_START);
+        }
     }
 
     @CalledByNative
     private void newLoginRequest(String realm, String account, String args) {
-        mClient.getCallbackHelper().postOnReceivedLoginRequest(realm, account, args);
+        try (TraceEvent event =
+                        TraceEvent.scoped("WebView.APICallback.ON_RECEIVED_LOGIN_REQUEST")) {
+            mClient.getCallbackHelper().postOnReceivedLoginRequest(realm, account, args);
 
-        // Record UMA for onReceivedLoginRequest.
-        AwHistogramRecorder.recordCallbackInvocation(
-                AwHistogramRecorder.WebViewCallbackType.ON_RECEIVED_LOGIN_REQUEST);
+            // Record UMA for onReceivedLoginRequest.
+            AwHistogramRecorder.recordCallbackInvocation(
+                    AwHistogramRecorder.WebViewCallbackType.ON_RECEIVED_LOGIN_REQUEST);
+        }
     }
 
     @CalledByNative
@@ -405,10 +413,6 @@ public class AwContentsClientBridge {
         WebResourceResponseInfo response = new WebResourceResponseInfo(
                 mimeType, encoding, null, statusCode, reasonPhrase, responseHeaders);
         mClient.getCallbackHelper().postOnReceivedHttpError(request, response);
-
-        // Record UMA on http response status.
-        RecordHistogram.recordSparseHistogram(
-                "Android.WebView.onReceivedHttpError.StatusCode", statusCode);
     }
 
     @CalledByNativeUnchecked

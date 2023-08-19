@@ -196,7 +196,8 @@ class ShareOperationUnitTest : public ChromeRenderViewHostTestHarness {
   }
 
  private:
-  raw_ptr<FakeDataTransferManager> fake_data_transfer_manager_ = nullptr;
+  raw_ptr<FakeDataTransferManager, DanglingUntriaged>
+      fake_data_transfer_manager_ = nullptr;
   base::test::ScopedFeatureList feature_list_;
   ScopedShareOperationFakeComponents scoped_fake_components_;
 };

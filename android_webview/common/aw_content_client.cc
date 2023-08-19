@@ -9,6 +9,8 @@
 #include "android_webview/common/aw_resource.h"
 #include "android_webview/common/crash_reporter/crash_keys.h"
 #include "android_webview/common/url_constants.h"
+#include "android_webview/common_jni/DisableOriginTrialsSafeModeUtils_jni.h"
+#include "base/android/jni_android.h"
 #include "base/command_line.h"
 #include "base/debug/crash_logging.h"
 #include "base/functional/bind.h"
@@ -121,7 +123,19 @@ blink::OriginTrialPolicy* AwContentClient::GetOriginTrialPolicy() {
   if (!origin_trial_policy_)
     origin_trial_policy_ =
         std::make_unique<embedder_support::OriginTrialPolicyImpl>();
+  // If we turn on the Disable Origin Trial SafeMode on we will set the policy
+  // flag to true after construction. This will work because trial token
+  // validator will always get the current instance of policy when needed.
+  if (IsDisableOriginTrialsSafeModeActionOn()) {
+    origin_trial_policy_->SetAllowOnlyDeprecationTrials(true);
+  }
   return origin_trial_policy_.get();
+}
+
+jboolean IsDisableOriginTrialsSafeModeActionOn() {
+  JNIEnv* env = base::android::AttachCurrentThread();
+  return Java_DisableOriginTrialsSafeModeUtils_isDisableOriginTrialsEnabled(
+      env);
 }
 
 }  // namespace android_webview

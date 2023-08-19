@@ -68,10 +68,7 @@ public class ContextMenuUtils {
     private static ContextMenuCoordinator openContextMenuByJs(Tab tab, String jsCode)
             throws TimeoutException {
         final OnContextMenuShownHelper helper = new OnContextMenuShownHelper();
-        ContextMenuHelper.setMenuShownCallbackForTests((coordinator) -> {
-            helper.notifyCalled(coordinator);
-            ContextMenuHelper.setMenuShownCallbackForTests(null);
-        });
+        ContextMenuHelper.setMenuShownCallbackForTests(helper::notifyCalled);
 
         int callCount = helper.getCallCount();
         DOMUtils.longPressNodeByJs(tab.getWebContents(), jsCode);

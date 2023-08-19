@@ -6,10 +6,6 @@
 
 #import "base/notreached.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 NSString* const kContentSuggestionsCollectionIdentifier =
     @"ContentSuggestionsCollectionIdentifier";
 
@@ -27,6 +23,8 @@ NSString* const kMagicStackScrollViewAccessibilityIdentifier =
 const CGFloat kMagicStackWideWidth = 430;
 
 const CGFloat kMostVisitedBottomMargin = 13;
+
+const CGFloat kMagicStackFaviconWidth = 28;
 
 const int kTileAblationImpressionThresholdMinutes = 5;
 const int kTileAblationMinimumUseThresholdInDays = 7;
@@ -49,6 +47,8 @@ ContentSuggestionsModuleType SetUpListModuleTypeForSetUpListType(
       return ContentSuggestionsModuleType::kSetUpListDefaultBrowser;
     case SetUpListItemType::kAutofill:
       return ContentSuggestionsModuleType::kSetUpListAutofill;
+    case SetUpListItemType::kAllSet:
+      return ContentSuggestionsModuleType::kSetUpListAllSet;
     default:
       NOTREACHED_NORETURN();
   }

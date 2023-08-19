@@ -299,12 +299,12 @@ bool DOMStorageContextWrapper::IsRequestValid(
     }
     switch (type) {
       case StorageType::kLocalStorage: {
-        host_storage_key_did_not_match = host->storage_key() != storage_key;
+        host_storage_key_did_not_match = host->GetStorageKey() != storage_key;
         break;
       }
       case StorageType::kSessionStorage: {
         host_storage_key_did_not_match =
-            host->frame_tree()->GetSessionStorageKey(host->storage_key()) !=
+            host->frame_tree()->GetSessionStorageKey(host->GetStorageKey()) !=
             storage_key;
         break;
       }

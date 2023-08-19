@@ -32,6 +32,8 @@ void FakeExportMethod(
 
 namespace floss {
 
+const uint32_t kTestCallbackId = 42;
+
 class FlossBatteryManagerClientTest : public testing::Test,
                                       public FlossBatteryManagerClientObserver {
  public:
@@ -85,7 +87,7 @@ class FlossBatteryManagerClientTest : public testing::Test,
       ::dbus::ObjectProxy::ResponseOrErrorCallback* cb) {
     auto response = ::dbus::Response::CreateEmpty();
     ::dbus::MessageWriter msg(response.get());
-    msg.AppendUint32(42);
+    msg.AppendUint32(kTestCallbackId);
 
     std::move(*cb).Run(response.get(), nullptr);
   }
@@ -125,7 +127,21 @@ class FlossBatteryManagerClientTest : public testing::Test,
         .Times(1);
     client_->Init(bus_.get(), kBatteryManagerInterface, adapter_index_,
                   base::DoNothing());
-    EXPECT_EQ(client_->battery_manager_callback_id_, static_cast<uint32_t>(42));
+    EXPECT_EQ(client_->battery_manager_callback_id_, kTestCallbackId);
+    // Expected call to UnregisterCallback when client is destroyed
+    EXPECT_CALL(*battery_manager_object_proxy_.get(),
+                DoCallMethodWithErrorResponse(
+                    HasMemberOf(battery_manager::kUnregisterBatteryCallback),
+                    testing::_, testing::_))
+        .WillOnce([](::dbus::MethodCall* method_call, int timeout_ms,
+                     ::dbus::ObjectProxy::ResponseOrErrorCallback* cb) {
+          dbus::MessageReader msg(method_call);
+          // D-Bus method call should have 1 parameter.
+          uint32_t param1;
+          ASSERT_TRUE(FlossDBusClient::ReadAllDBusParams(&msg, &param1));
+          EXPECT_EQ(kTestCallbackId, param1);
+          EXPECT_FALSE(msg.HasMoreData());
+        });
   }
 
   void TestForwardsCallbacks() {

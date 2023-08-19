@@ -138,10 +138,9 @@ std::unique_ptr<PatternData> LayoutSVGResourcePattern::BuildPatternData(
     return pattern_data;
 
   // Compute tile metrics.
-  gfx::RectF tile_bounds = SVGLengthContext::ResolveRectangle(
-      GetElement(), attributes.PatternUnits(), object_bounding_box,
-      *attributes.X(), *attributes.Y(), *attributes.Width(),
-      *attributes.Height());
+  gfx::RectF tile_bounds = ResolveRectangle(
+      attributes.PatternUnits(), object_bounding_box, *attributes.X(),
+      *attributes.Y(), *attributes.Width(), *attributes.Height());
   if (tile_bounds.IsEmpty())
     return pattern_data;
 

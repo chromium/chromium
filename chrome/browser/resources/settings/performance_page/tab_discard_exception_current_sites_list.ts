@@ -2,10 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import 'chrome://resources/cr_elements/cr_checkbox/cr_checkbox.js';
 import 'chrome://resources/polymer/v3_0/iron-list/iron-list.js';
-import '../settings_shared.css.js';
 import '../site_favicon.js';
+import './tab_discard_exception_current_sites_entry.js';
 
 import {PrefsMixin, PrefsMixinInterface} from 'chrome://resources/cr_components/settings_prefs/prefs_mixin.js';
 import {CrScrollableMixin, CrScrollableMixinInterface} from 'chrome://resources/cr_elements/cr_scrollable_mixin.js';
@@ -52,6 +51,18 @@ export class TabDiscardExceptionCurrentSitesListElement extends
         computed: 'computeSubmitDisabled_(selectedSites_.length)',
         notify: true,
       },
+
+      updateIntervalMS_: {
+        type: Number,
+        value: 1000,
+      },
+
+      // whether the current sites list is visible according to its parent
+      visible: {
+        type: Boolean,
+        value: true,
+        observer: 'onVisibilityChanged_',
+      },
     };
   }
 
@@ -63,22 +74,74 @@ export class TabDiscardExceptionCurrentSitesListElement extends
   private currentSites_: string[];
   private selectedSites_: string[];
   private submitDisabled: boolean;
+  private updateIntervalMS_: number;
+  visible: boolean;
+
+  private onVisibilityChangedListener_: () => void;
+  private updateIntervalID_: number|undefined = undefined;
 
   override async connectedCallback() {
     super.connectedCallback();
 
-    const currentRules = await this.browserProxy_.getCurrentOpenSites();
-    const existingRules =
-        new Set(this.getPref(TAB_DISCARD_EXCEPTIONS_PREF).value);
-    this.updateList(
-        'currentSites_', x => x,
-        currentRules.filter(rule => !existingRules.has(rule)));
-    if (this.currentSites_.length) {
-      this.updateScrollableContents();
-    }
+    await this.updateCurrentSites_();
     this.dispatchEvent(new CustomEvent('sites-populated', {
       detail: {length: this.currentSites_.length},
     }));
+
+    this.onVisibilityChanged_();
+    this.onVisibilityChangedListener_ = this.onVisibilityChanged_.bind(this);
+    document.addEventListener(
+        'visibilitychange', this.onVisibilityChangedListener_);
+  }
+
+  override disconnectedCallback() {
+    document.removeEventListener(
+        'visibilitychange', this.onVisibilityChangedListener_);
+    this.stopUpdatingCurrentSites_();
+  }
+
+  private onVisibilityChanged_() {
+    if (this.visible && document.visibilityState === 'visible') {
+      this.startUpdatingCurrentSites_();
+    } else {
+      this.stopUpdatingCurrentSites_();
+    }
+  }
+
+  private startUpdatingCurrentSites_() {
+    if (this.updateIntervalID_ === undefined) {
+      this.updateCurrentSites_().then(() => {
+        this.updateIntervalID_ = setInterval(
+            this.updateCurrentSites_.bind(this), this.updateIntervalMS_);
+      });
+    }
+  }
+
+  private stopUpdatingCurrentSites_() {
+    if (this.updateIntervalID_ !== undefined) {
+      clearInterval(this.updateIntervalID_);
+      this.updateIntervalID_ = undefined;
+    }
+  }
+
+  setUpdateIntervalForTesting(updateIntervalMS: number) {
+    this.updateIntervalMS_ = updateIntervalMS;
+  }
+
+  getIsUpdatingForTesting() {
+    return this.updateIntervalID_ !== undefined;
+  }
+
+  private async updateCurrentSites_() {
+    const currentSites = await this.browserProxy_.getCurrentOpenSites();
+    const existingSites =
+        new Set(this.getPref(TAB_DISCARD_EXCEPTIONS_PREF).value);
+    this.updateList(
+        'currentSites_', x => x,
+        currentSites.filter(rule => !existingSites.has(rule)));
+    if (this.currentSites_.length) {
+      this.updateScrollableContents();
+    }
   }
 
   private computeSubmitDisabled_() {
@@ -89,17 +152,13 @@ export class TabDiscardExceptionCurrentSitesListElement extends
     this.$.list.toggleSelectionForIndex(e.model.index);
   }
 
-  private getAriaRowindex_(index: number): number {
-    return index + 1;
-  }
-
   submit() {
     assert(!this.submitDisabled);
     this.selectedSites_.forEach(rule => {
       this.appendPrefListItem(TAB_DISCARD_EXCEPTIONS_PREF, rule);
     });
     this.metricsProxy_.recordExceptionListAction(
-        HighEfficiencyModeExceptionListAction.ADD);
+        HighEfficiencyModeExceptionListAction.ADD_FROM_CURRENT);
   }
 }
 

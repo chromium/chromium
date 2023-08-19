@@ -63,14 +63,15 @@ TEST(SyncPolicyHandlerTest, SyncTypesListDisabled) {
   prefs.SetBoolean(prefs::internal::kSyncReadingList, true);
   prefs.SetBoolean(prefs::internal::kSyncPreferences, true);
   prefs.SetBoolean(prefs::internal::kSyncAutofill, true);
+  prefs.SetBoolean(prefs::internal::kSyncPayments, true);
   prefs.SetBoolean(prefs::internal::kSyncThemes, true);
 
   // Create a policy that disables some types.
   policy::PolicyMap policy;
-  base::Value::List disabled_types;
-  disabled_types.Append("bookmarks");
-  disabled_types.Append("readingList");
-  disabled_types.Append("preferences");
+  auto disabled_types = base::Value::List()
+                            .Append("bookmarks")
+                            .Append("readingList")
+                            .Append("preferences");
   policy.Set(policy::key::kSyncTypesListDisabled,
              policy::POLICY_LEVEL_MANDATORY, policy::POLICY_SCOPE_USER,
              policy::POLICY_SOURCE_CLOUD,
@@ -90,6 +91,47 @@ TEST(SyncPolicyHandlerTest, SyncTypesListDisabled) {
   // Prefs that are not part of the policy are still enabled.
   ASSERT_TRUE(prefs.GetBoolean(prefs::internal::kSyncAutofill, &enabled));
   EXPECT_TRUE(enabled);
+  ASSERT_TRUE(prefs.GetBoolean(prefs::internal::kSyncPayments, &enabled));
+  EXPECT_TRUE(enabled);
+  ASSERT_TRUE(prefs.GetBoolean(prefs::internal::kSyncThemes, &enabled));
+  EXPECT_TRUE(enabled);
+}
+
+// Same as SyncTypesListDisabled but tests autofill specifically.
+TEST(SyncPolicyHandlerTest, SyncTypesListDisabledAutofill) {
+  // Start with prefs enabled so we can sense that they have changed.
+  PrefValueMap prefs;
+  prefs.SetBoolean(prefs::internal::kSyncBookmarks, true);
+  prefs.SetBoolean(prefs::internal::kSyncReadingList, true);
+  prefs.SetBoolean(prefs::internal::kSyncPreferences, true);
+  prefs.SetBoolean(prefs::internal::kSyncAutofill, true);
+  prefs.SetBoolean(prefs::internal::kSyncPayments, true);
+  prefs.SetBoolean(prefs::internal::kSyncThemes, true);
+
+  // Create a policy that disables autofill.
+  policy::PolicyMap policy;
+  auto disabled_types = base::Value::List().Append("autofill");
+  policy.Set(policy::key::kSyncTypesListDisabled,
+             policy::POLICY_LEVEL_MANDATORY, policy::POLICY_SCOPE_USER,
+             policy::POLICY_SOURCE_CLOUD,
+             base::Value(std::move(disabled_types)), nullptr);
+  SyncPolicyHandler handler;
+  handler.ApplyPolicySettings(policy, &prefs);
+
+  // Prefs in the policy should be disabled.
+  bool enabled;
+  ASSERT_TRUE(prefs.GetBoolean(prefs::internal::kSyncAutofill, &enabled));
+  EXPECT_FALSE(enabled);
+  ASSERT_TRUE(prefs.GetBoolean(prefs::internal::kSyncPayments, &enabled));
+  EXPECT_FALSE(enabled);
+
+  // Prefs that are not part of the policy are still enabled.
+  ASSERT_TRUE(prefs.GetBoolean(prefs::internal::kSyncBookmarks, &enabled));
+  EXPECT_TRUE(enabled);
+  ASSERT_TRUE(prefs.GetBoolean(prefs::internal::kSyncReadingList, &enabled));
+  EXPECT_TRUE(enabled);
+  ASSERT_TRUE(prefs.GetBoolean(prefs::internal::kSyncPreferences, &enabled));
+  EXPECT_TRUE(enabled);
   ASSERT_TRUE(prefs.GetBoolean(prefs::internal::kSyncThemes, &enabled));
   EXPECT_TRUE(enabled);
 }
@@ -105,10 +147,10 @@ TEST(SyncPolicyHandlerOsTest, SyncTypesListDisabled_OsTypes) {
 
   // Create a policy that disables the types.
   policy::PolicyMap policy;
-  base::Value::List disabled_types;
-  disabled_types.Append("osApps");
-  disabled_types.Append("osPreferences");
-  disabled_types.Append("osWifiConfigurations");
+  auto disabled_types = base::Value::List()
+                            .Append("osApps")
+                            .Append("osPreferences")
+                            .Append("osWifiConfigurations");
   policy.Set(policy::key::kSyncTypesListDisabled,
              policy::POLICY_LEVEL_MANDATORY, policy::POLICY_SCOPE_USER,
              policy::POLICY_SOURCE_CLOUD,
@@ -136,10 +178,10 @@ TEST(SyncPolicyHandlerOsTest, SyncTypesListDisabled_MigratedTypes) {
   // Create a policy that disables the types, but using the original browser
   // policy names from before the SplitSettingsSync launch.
   policy::PolicyMap policy;
-  base::Value::List disabled_types;
-  disabled_types.Append("apps");
-  disabled_types.Append("wifiConfigurations");
-  disabled_types.Append("preferences");
+  auto disabled_types = base::Value::List()
+                            .Append("apps")
+                            .Append("wifiConfigurations")
+                            .Append("preferences");
   policy.Set(policy::key::kSyncTypesListDisabled,
              policy::POLICY_LEVEL_MANDATORY, policy::POLICY_SCOPE_USER,
              policy::POLICY_SOURCE_CLOUD,

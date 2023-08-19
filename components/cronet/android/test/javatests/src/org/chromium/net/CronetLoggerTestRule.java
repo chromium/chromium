@@ -18,8 +18,6 @@ import org.chromium.net.impl.CronetLoggerFactory.SwapLoggerForTesting;
  * @param <T> The actual type of the class extending CronetLogger.
  */
 public class CronetLoggerTestRule<T extends CronetLogger> implements TestRule {
-    private static final String TAG = CronetLoggerTestRule.class.getSimpleName();
-
     private Class<T> mTestLoggerClazz;
 
     // Expose the fake logger to the test.

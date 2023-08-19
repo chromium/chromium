@@ -12,6 +12,8 @@
 #include <string>
 #include <utility>
 
+#include "base/apple/foundation_util.h"
+#include "base/apple/scoped_cftyperef.h"
 #include "base/command_line.h"
 #include "base/files/file_enumerator.h"
 #include "base/files/file_path.h"
@@ -20,9 +22,7 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/logging.h"
-#include "base/mac/foundation_util.h"
 #include "base/mac/mac_util.h"
-#include "base/mac/scoped_cftyperef.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/process/launch.h"
@@ -35,10 +35,6 @@
 #include "chrome/updater/mac/privileged_helper/service_protocol.h"
 #include "chrome/updater/updater_branding.h"
 #include "chrome/updater/util/util.h"
-
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
 
 @interface PrivilegedHelperServiceImpl
     : NSObject <PrivilegedHelperServiceProtocol> {
@@ -197,7 +193,7 @@ bool VerifyUpdaterSignature(const base::FilePath& updater_app_bundle) {
   base::ScopedCFTypeRef<SecStaticCodeRef> code;
   base::ScopedCFTypeRef<CFErrorRef> errors;
   if (SecStaticCodeCreateWithPath(
-          base::mac::FilePathToCFURL(updater_app_bundle), kSecCSDefaultFlags,
+          base::apple::FilePathToCFURL(updater_app_bundle), kSecCSDefaultFlags,
           code.InitializeInto()) != errSecSuccess) {
     return false;
   }
@@ -219,9 +215,7 @@ bool VerifyUpdaterSignature(const base::FilePath& updater_app_bundle) {
   return true;
 }
 
-PrivilegedHelperService::PrivilegedHelperService()
-    : main_task_runner_(base::SequencedTaskRunner::GetCurrentDefault()) {}
-
+PrivilegedHelperService::PrivilegedHelperService() = default;
 PrivilegedHelperService::~PrivilegedHelperService() = default;
 
 void PrivilegedHelperService::SetupSystemUpdater(

@@ -4,28 +4,33 @@
 
 #include "base/files/file_path_watcher.h"
 
+#include <list>
 #include <memory>
-#include <set>
 #include <string>
 #include <vector>
 
+#include "base/atomic_sequence_num.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/functional/bind.h"
-#include "base/functional/callback_helpers.h"
 #include "base/location.h"
 #include "base/logging.h"
 #include "base/run_loop.h"
+#include "base/sequence_checker.h"
 #include "base/strings/stringprintf.h"
-#include "base/synchronization/waitable_event.h"
+#include "base/task/bind_post_task.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/test/bind.h"
+#include "base/test/run_until.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_file_util.h"
 #include "base/test/test_timeouts.h"
+#include "base/thread_annotations.h"
 #include "base/threading/thread.h"
 #include "build/build_config.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 #if BUILDFLAG(IS_WIN)
@@ -53,68 +58,95 @@ namespace base {
 
 namespace {
 
-class TestDelegate;
+AtomicSequenceNumber g_next_delegate_id;
 
-#if BUILDFLAG(IS_FUCHSIA)
-// FilePatchWatcherImpl is not implemented (see crbug.com/851641).
-// Disable all tests.
-#define FilePathWatcherTest DISABLED_FilePathWatcherTest
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_ANDROID)
+// inotify fires two events - one for each file creation + modification.
+constexpr size_t kExpectedEventsForNewFileWrite = 2;
+#else
+constexpr size_t kExpectedEventsForNewFileWrite = 1;
 #endif
 
-// Aggregates notifications from the test delegates and breaks the run loop
-// the test thread is waiting on once they all came in.
-class NotificationCollector
-    : public base::RefCountedThreadSafe<NotificationCollector> {
+enum class ExpectedEventsSinceLastWait { kNone, kSome };
+
+struct Event {
+  FilePath path;
+  bool error;
+  // TODO(https://crbug.com/1425601): Support change types.
+
+  bool operator==(const Event& other) const {
+    return error == other.error && path == other.path;
+  }
+};
+
+std::ostream& operator<<(std::ostream& os, const Event& event) {
+  return os << "Event{ error: " << (event.error ? "true" : "false")
+            << ", path: " << event.path << " }";
+}
+
+using EventListMatcher = testing::Matcher<std::list<Event>>;
+
+void SpinEventLoopForABit() {
+  base::RunLoop loop;
+  SequencedTaskRunner::GetCurrentDefault()->PostDelayedTask(
+      FROM_HERE, loop.QuitClosure(), TestTimeouts::tiny_timeout());
+  loop.Run();
+}
+
+// Returns the reason why `value` matches, or doesn't match, `matcher`.
+template <typename MatcherType, typename Value>
+std::string Explain(const MatcherType& matcher, const Value& value) {
+  testing::StringMatchResultListener listener;
+  testing::ExplainMatchResult(matcher, value, &listener);
+  return listener.str();
+}
+
+// Enables an accumulative, add-as-you-go pattern for expecting events:
+//   - Do something that should fire `event1` on `delegate`
+//   - Add `event1` to an `accumulated_event_expecter`
+//   - Wait until `delegate` matches { `event1` }
+//   - Do something that should fire `event2` on `delegate`
+//   - Add `event2` to an `accumulated_event_expecter`
+//   - Wait until `delegate` matches { `event1`, `event2` }
+//   - ...
+//
+// These tests use an accumulative pattern due to the potential for
+// false-positives, given that all we know is the number of changes at a given
+// path (which is often fixed) and whether or not an error occurred (which is
+// rare).
+//
+// TODO(https://crbug.com/1425601): This is not a common pattern. Generally,
+// expectations are specified all-in-one at the start of a test, like so:
+//   - Expect events { `event1`, `event2` }
+//   - Do something that should fire `event1` on `delegate`
+//   - Do something that should fire `event2` on `delegate`
+//   - Wait until `delegate` matches { `event1`, `event2` }
+//
+// The potential for false-positives is much less if event types are known. We
+// should consider moving towards the latter pattern once that is supported.
+class AccumulatingEventExpecter {
  public:
-  NotificationCollector()
-      : task_runner_(SingleThreadTaskRunner::GetCurrentDefault()) {}
-
-  // Called from the file thread by the delegates.
-  void OnChange(TestDelegate* delegate) {
-    task_runner_->PostTask(
-        FROM_HERE, base::BindOnce(&NotificationCollector::RecordChange, this,
-                                  base::Unretained(delegate)));
+  EventListMatcher GetMatcher() {
+    return testing::ContainerEq(expected_events_);
   }
 
-  void Register(TestDelegate* delegate) {
-    delegates_.insert(delegate);
+  ExpectedEventsSinceLastWait GetAndResetExpectedEventsSinceLastWait() {
+    auto temp = expected_events_since_last_wait_;
+    expected_events_since_last_wait_ = ExpectedEventsSinceLastWait::kNone;
+    return temp;
   }
 
-  void Reset(base::OnceClosure signal_closure) {
-    signal_closure_ = std::move(signal_closure);
-    signaled_.clear();
-  }
-
-  bool Success() {
-    return signaled_ == delegates_;
+  // TODO(https://crbug.com/1425601): Add a version of this method which
+  // includes the type of change.
+  void AddExpectedEventForPath(const FilePath& path, bool error = false) {
+    expected_events_.emplace_back(path, error);
+    expected_events_since_last_wait_ = ExpectedEventsSinceLastWait::kSome;
   }
 
  private:
-  friend class base::RefCountedThreadSafe<NotificationCollector>;
-  ~NotificationCollector() = default;
-
-  void RecordChange(TestDelegate* delegate) {
-    // Warning: |delegate| is Unretained. Do not dereference.
-    ASSERT_TRUE(task_runner_->BelongsToCurrentThread());
-    ASSERT_TRUE(delegates_.count(delegate));
-    signaled_.insert(delegate);
-
-    // Check whether all delegates have been signaled.
-    if (signal_closure_ && signaled_ == delegates_)
-      std::move(signal_closure_).Run();
-  }
-
-  // Set of registered delegates.
-  std::set<TestDelegate*> delegates_;
-
-  // Set of signaled delegates.
-  std::set<TestDelegate*> signaled_;
-
-  // The loop we should break after all delegates signaled.
-  scoped_refptr<base::SingleThreadTaskRunner> task_runner_;
-
-  // Closure to run when all delegates have signaled.
-  base::OnceClosure signal_closure_;
+  std::list<Event> expected_events_;
+  ExpectedEventsSinceLastWait expected_events_since_last_wait_ =
+      ExpectedEventsSinceLastWait::kNone;
 };
 
 class TestDelegateBase : public SupportsWeakPtr<TestDelegateBase> {
@@ -127,43 +159,78 @@ class TestDelegateBase : public SupportsWeakPtr<TestDelegateBase> {
   virtual void OnFileChanged(const FilePath& path, bool error) = 0;
 };
 
-// A mock class for testing. Gmock is not appropriate because it is not
-// thread-safe for setting expectations. Thus the test code cannot safely
-// reset expectations while the file watcher is running.
-// Instead, TestDelegate gets the notifications from FilePathWatcher and uses
-// NotificationCollector to aggregate the results.
+// Receives and accumulates notifications from a specific `FilePathWatcher`.
+// This class is not thread safe. All methods must be called from the sequence
+// the instance is constructed on.
 class TestDelegate : public TestDelegateBase {
  public:
-  explicit TestDelegate(NotificationCollector* collector)
-      : collector_(collector) {
-    collector_->Register(this);
-  }
+  TestDelegate() : id_(g_next_delegate_id.GetNext()) {}
   TestDelegate(const TestDelegate&) = delete;
   TestDelegate& operator=(const TestDelegate&) = delete;
   ~TestDelegate() override = default;
 
-  // Configure this delegate so that it expects an error.
-  void set_expect_error() { expect_error_ = true; }
-  // Returns observed paths for each invocation of OnFileChanged.
-  std::vector<FilePath> get_observed_paths() const { return observed_paths_; }
-
   // TestDelegateBase:
   void OnFileChanged(const FilePath& path, bool error) override {
-    observed_paths_.push_back(path);
+    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+    received_events_.emplace_back(path, error);
+  }
 
-    if (error != expect_error_) {
-      ADD_FAILURE() << "Unexpected change for \"" << path
-                    << "\" with |error| = " << (error ? "true" : "false");
-    } else {
-      collector_->OnChange(this);
+  // Gives all in-flight events a chance to arrive, then forgets all events that
+  // have been received by this delegate. This method may be a useful reset
+  // after performing a file system operation that may result in a variable
+  // sequence of events.
+  void SpinAndDiscardAllReceivedEvents() {
+    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+    SpinEventLoopForABit();
+    received_events_.clear();
+  }
+
+  // Spin the event loop until `received_events_` match `matcher`, or we time
+  // out.
+  void RunUntilEventsMatch(
+      const EventListMatcher& matcher,
+      ExpectedEventsSinceLastWait expected_events_since_last_wait,
+      const Location& location = FROM_HERE) {
+    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+    if (expected_events_since_last_wait == ExpectedEventsSinceLastWait::kNone) {
+      // Give unexpected events a chance to arrive.
+      SpinEventLoopForABit();
     }
+
+    EXPECT_TRUE(test::RunUntil([&]() {
+      DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+      return testing::Matches(matcher)(received_events_);
+    })) << "Timed out attemping to match events at "
+        << location.file_name() << ":" << location.line_number() << std::endl
+        << Explain(matcher, received_events_);
+  }
+  // Convenience method for above.
+  void RunUntilEventsMatch(AccumulatingEventExpecter& event_expecter,
+                           const Location& location = FROM_HERE) {
+    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+    return RunUntilEventsMatch(
+        event_expecter.GetMatcher(),
+        event_expecter.GetAndResetExpectedEventsSinceLastWait(), location);
   }
 
  private:
-  scoped_refptr<NotificationCollector> collector_;
-  bool expect_error_ = false;
-  std::vector<FilePath> observed_paths_;
+  SEQUENCE_CHECKER(sequence_checker_);
+
+  // Uniquely generated ID used to tie events to this delegate.
+  const size_t id_;
+
+  std::list<Event> received_events_ GUARDED_BY_CONTEXT(sequence_checker_);
 };
+
+}  // namespace
+
+#if BUILDFLAG(IS_FUCHSIA)
+// FilePatchWatcherImpl is not implemented (see crbug.com/851641).
+// Disable all tests.
+#define FilePathWatcherTest DISABLED_FilePathWatcherTest
+#endif
 
 class FilePathWatcherTest : public testing::Test {
  public:
@@ -191,7 +258,6 @@ class FilePathWatcherTest : public testing::Test {
 #else   // BUILDFLAG(IS_ANDROID)
     ASSERT_TRUE(temp_dir_.CreateUniqueTempDir());
 #endif  // BUILDFLAG(IS_ANDROID)
-    collector_ = new NotificationCollector();
   }
 
   void TearDown() override { RunLoop().RunUntilIdle(); }
@@ -204,47 +270,29 @@ class FilePathWatcherTest : public testing::Test {
     return temp_dir_.GetPath().AppendASCII("FilePathWatcherTest.lnk");
   }
 
-  [[nodiscard]] bool SetupWatch(const FilePath& target,
-                                FilePathWatcher* watcher,
-                                TestDelegateBase* delegate,
-                                FilePathWatcher::Type watch_type);
+  bool SetupWatch(const FilePath& target,
+                  FilePathWatcher* watcher,
+                  TestDelegateBase* delegate,
+                  FilePathWatcher::Type watch_type);
 
-  [[nodiscard]] bool SetupWatchWithOptions(
-      const FilePath& target,
-      FilePathWatcher* watcher,
-      TestDelegateBase* delegate,
-      FilePathWatcher::WatchOptions watch_options);
-
-  [[nodiscard]] bool WaitForEvent() {
-    return WaitForEventWithTimeout(TestTimeouts::action_timeout());
-  }
-
-  [[nodiscard]] bool WaitForEventWithTimeout(TimeDelta timeout) {
-    RunLoop run_loop;
-    collector_->Reset(run_loop.QuitClosure());
-
-    // Make sure we timeout if we don't get notified.
-    SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
-        FROM_HERE, run_loop.QuitClosure(), timeout);
-    run_loop.Run();
-    return collector_->Success();
-  }
-
-  NotificationCollector* collector() { return collector_.get(); }
+  bool SetupWatchWithOptions(const FilePath& target,
+                             FilePathWatcher* watcher,
+                             TestDelegateBase* delegate,
+                             FilePathWatcher::WatchOptions watch_options);
 
   test::TaskEnvironment task_environment_;
 
   ScopedTempDir temp_dir_;
-  scoped_refptr<NotificationCollector> collector_;
 };
 
 bool FilePathWatcherTest::SetupWatch(const FilePath& target,
                                      FilePathWatcher* watcher,
                                      TestDelegateBase* delegate,
                                      FilePathWatcher::Type watch_type) {
-  return watcher->Watch(target, watch_type,
-                        base::BindRepeating(&TestDelegateBase::OnFileChanged,
-                                            delegate->AsWeakPtr()));
+  return watcher->Watch(
+      target, watch_type,
+      BindPostTaskToCurrentDefault(BindRepeating(
+          &TestDelegateBase::OnFileChanged, delegate->AsWeakPtr())));
 }
 
 bool FilePathWatcherTest::SetupWatchWithOptions(
@@ -254,19 +302,23 @@ bool FilePathWatcherTest::SetupWatchWithOptions(
     FilePathWatcher::WatchOptions watch_options) {
   return watcher->WatchWithOptions(
       target, watch_options,
-      base::BindRepeating(&TestDelegateBase::OnFileChanged,
-                          delegate->AsWeakPtr()));
+      BindPostTaskToCurrentDefault(BindRepeating(
+          &TestDelegateBase::OnFileChanged, delegate->AsWeakPtr())));
 }
 
 // Basic test: Create the file and verify that we notice.
 TEST_F(FilePathWatcherTest, NewFile) {
   FilePathWatcher watcher;
-  std::unique_ptr<TestDelegate> delegate(new TestDelegate(collector()));
-  ASSERT_TRUE(SetupWatch(test_file(), &watcher, delegate.get(),
+  TestDelegate delegate;
+  AccumulatingEventExpecter event_expecter;
+  ASSERT_TRUE(SetupWatch(test_file(), &watcher, &delegate,
                          FilePathWatcher::Type::kNonRecursive));
 
   ASSERT_TRUE(WriteFile(test_file(), "content"));
-  ASSERT_TRUE(WaitForEvent());
+  for (size_t i = 0; i < kExpectedEventsForNewFileWrite; ++i) {
+    event_expecter.AddExpectedEventForPath(test_file());
+  }
+  delegate.RunUntilEventsMatch(event_expecter);
 }
 
 // Verify that modifying the file is caught.
@@ -274,13 +326,15 @@ TEST_F(FilePathWatcherTest, ModifiedFile) {
   ASSERT_TRUE(WriteFile(test_file(), "content"));
 
   FilePathWatcher watcher;
-  std::unique_ptr<TestDelegate> delegate(new TestDelegate(collector()));
-  ASSERT_TRUE(SetupWatch(test_file(), &watcher, delegate.get(),
+  TestDelegate delegate;
+  AccumulatingEventExpecter event_expecter;
+  ASSERT_TRUE(SetupWatch(test_file(), &watcher, &delegate,
                          FilePathWatcher::Type::kNonRecursive));
 
   // Now make sure we get notified if the file is modified.
   ASSERT_TRUE(WriteFile(test_file(), "new content"));
-  ASSERT_TRUE(WaitForEvent());
+  event_expecter.AddExpectedEventForPath(test_file());
+  delegate.RunUntilEventsMatch(event_expecter);
 }
 
 // Verify that moving the file into place is caught.
@@ -289,33 +343,39 @@ TEST_F(FilePathWatcherTest, MovedFile) {
   ASSERT_TRUE(WriteFile(source_file, "content"));
 
   FilePathWatcher watcher;
-  std::unique_ptr<TestDelegate> delegate(new TestDelegate(collector()));
-  ASSERT_TRUE(SetupWatch(test_file(), &watcher, delegate.get(),
+  TestDelegate delegate;
+  AccumulatingEventExpecter event_expecter;
+  ASSERT_TRUE(SetupWatch(test_file(), &watcher, &delegate,
                          FilePathWatcher::Type::kNonRecursive));
 
-  // Now make sure we get notified if the file is modified.
-  ASSERT_TRUE(base::Move(source_file, test_file()));
-  ASSERT_TRUE(WaitForEvent());
+  // Now make sure we get notified if the file is moved.
+  ASSERT_TRUE(Move(source_file, test_file()));
+  event_expecter.AddExpectedEventForPath(test_file());
+  delegate.RunUntilEventsMatch(event_expecter);
 }
 
 TEST_F(FilePathWatcherTest, DeletedFile) {
   ASSERT_TRUE(WriteFile(test_file(), "content"));
 
   FilePathWatcher watcher;
-  std::unique_ptr<TestDelegate> delegate(new TestDelegate(collector()));
-  ASSERT_TRUE(SetupWatch(test_file(), &watcher, delegate.get(),
+  TestDelegate delegate;
+  AccumulatingEventExpecter event_expecter;
+  ASSERT_TRUE(SetupWatch(test_file(), &watcher, &delegate,
                          FilePathWatcher::Type::kNonRecursive));
 
   // Now make sure we get notified if the file is deleted.
-  base::DeleteFile(test_file());
-  ASSERT_TRUE(WaitForEvent());
+  DeleteFile(test_file());
+  event_expecter.AddExpectedEventForPath(test_file());
+  delegate.RunUntilEventsMatch(event_expecter);
 }
+
+namespace {
 
 // Used by the DeleteDuringNotify test below.
 // Deletes the FilePathWatcher when it's notified.
 class Deleter : public TestDelegateBase {
  public:
-  explicit Deleter(base::OnceClosure done_closure)
+  explicit Deleter(OnceClosure done_closure)
       : watcher_(std::make_unique<FilePathWatcher>()),
         done_closure_(std::move(done_closure)) {}
   Deleter(const Deleter&) = delete;
@@ -331,12 +391,14 @@ class Deleter : public TestDelegateBase {
 
  private:
   std::unique_ptr<FilePathWatcher> watcher_;
-  base::OnceClosure done_closure_;
+  OnceClosure done_closure_;
 };
+
+}  // namespace
 
 // Verify that deleting a watcher during the callback doesn't crash.
 TEST_F(FilePathWatcherTest, DeleteDuringNotify) {
-  base::RunLoop run_loop;
+  RunLoop run_loop;
   Deleter deleter(run_loop.QuitClosure());
   ASSERT_TRUE(SetupWatch(test_file(), deleter.watcher(), &deleter,
                          FilePathWatcher::Type::kNonRecursive));
@@ -352,24 +414,30 @@ TEST_F(FilePathWatcherTest, DeleteDuringNotify) {
 // Verify that deleting the watcher works even if there is a pending
 // notification.
 TEST_F(FilePathWatcherTest, DestroyWithPendingNotification) {
-  std::unique_ptr<TestDelegate> delegate(new TestDelegate(collector()));
+  TestDelegate delegate;
   FilePathWatcher watcher;
-  ASSERT_TRUE(SetupWatch(test_file(), &watcher, delegate.get(),
+  ASSERT_TRUE(SetupWatch(test_file(), &watcher, &delegate,
                          FilePathWatcher::Type::kNonRecursive));
   ASSERT_TRUE(WriteFile(test_file(), "content"));
 }
 
 TEST_F(FilePathWatcherTest, MultipleWatchersSingleFile) {
   FilePathWatcher watcher1, watcher2;
-  std::unique_ptr<TestDelegate> delegate1(new TestDelegate(collector()));
-  std::unique_ptr<TestDelegate> delegate2(new TestDelegate(collector()));
-  ASSERT_TRUE(SetupWatch(test_file(), &watcher1, delegate1.get(),
+  TestDelegate delegate1, delegate2;
+  AccumulatingEventExpecter event_expecter1, event_expecter2;
+  ASSERT_TRUE(SetupWatch(test_file(), &watcher1, &delegate1,
                          FilePathWatcher::Type::kNonRecursive));
-  ASSERT_TRUE(SetupWatch(test_file(), &watcher2, delegate2.get(),
+  ASSERT_TRUE(SetupWatch(test_file(), &watcher2, &delegate2,
                          FilePathWatcher::Type::kNonRecursive));
 
+  // Expect to be notified for writing to a new file for each delegate.
   ASSERT_TRUE(WriteFile(test_file(), "content"));
-  ASSERT_TRUE(WaitForEvent());
+  for (size_t i = 0; i < kExpectedEventsForNewFileWrite; ++i) {
+    event_expecter1.AddExpectedEventForPath(test_file());
+    event_expecter2.AddExpectedEventForPath(test_file());
+  }
+  delegate1.RunUntilEventsMatch(event_expecter1);
+  delegate2.RunUntilEventsMatch(event_expecter2);
 }
 
 // Verify that watching a file whose parent directory doesn't exist yet works if
@@ -378,24 +446,34 @@ TEST_F(FilePathWatcherTest, NonExistentDirectory) {
   FilePathWatcher watcher;
   FilePath dir(temp_dir_.GetPath().AppendASCII("dir"));
   FilePath file(dir.AppendASCII("file"));
-  std::unique_ptr<TestDelegate> delegate(new TestDelegate(collector()));
-  ASSERT_TRUE(SetupWatch(file, &watcher, delegate.get(),
+  TestDelegate delegate;
+  ASSERT_TRUE(SetupWatch(file, &watcher, &delegate,
                          FilePathWatcher::Type::kNonRecursive));
 
-  ASSERT_TRUE(base::CreateDirectory(dir));
+  // The delegate is only watching the file. Parent directory creation should
+  // not trigger an event.
+  ASSERT_TRUE(CreateDirectory(dir));
+  // TODO(https://crbug.com/1432064): Expect that no events are fired.
 
+  // It may take some time for `watcher` to re-construct its watch list, so it's
+  // possible an event is missed. _At least_ one event should be fired, though.
   ASSERT_TRUE(WriteFile(file, "content"));
-
   VLOG(1) << "Waiting for file creation";
-  ASSERT_TRUE(WaitForEvent());
+  delegate.RunUntilEventsMatch(testing::Not(testing::IsEmpty()),
+                               ExpectedEventsSinceLastWait::kSome);
+
+  delegate.SpinAndDiscardAllReceivedEvents();
+  AccumulatingEventExpecter event_expecter;
 
   ASSERT_TRUE(WriteFile(file, "content v2"));
   VLOG(1) << "Waiting for file change";
-  ASSERT_TRUE(WaitForEvent());
+  event_expecter.AddExpectedEventForPath(file);
+  delegate.RunUntilEventsMatch(event_expecter);
 
-  ASSERT_TRUE(base::DeleteFile(file));
+  ASSERT_TRUE(DeleteFile(file));
   VLOG(1) << "Waiting for file deletion";
-  ASSERT_TRUE(WaitForEvent());
+  event_expecter.AddExpectedEventForPath(file);
+  delegate.RunUntilEventsMatch(event_expecter);
 }
 
 // Exercises watch reconfiguration for the case that directories on the path
@@ -404,187 +482,273 @@ TEST_F(FilePathWatcherTest, DirectoryChain) {
   FilePath path(temp_dir_.GetPath());
   std::vector<std::string> dir_names;
   for (int i = 0; i < 20; i++) {
-    std::string dir(base::StringPrintf("d%d", i));
+    std::string dir(StringPrintf("d%d", i));
     dir_names.push_back(dir);
     path = path.AppendASCII(dir);
   }
 
   FilePathWatcher watcher;
   FilePath file(path.AppendASCII("file"));
-  std::unique_ptr<TestDelegate> delegate(new TestDelegate(collector()));
-  ASSERT_TRUE(SetupWatch(file, &watcher, delegate.get(),
+  TestDelegate delegate;
+  ASSERT_TRUE(SetupWatch(file, &watcher, &delegate,
                          FilePathWatcher::Type::kNonRecursive));
 
   FilePath sub_path(temp_dir_.GetPath());
   for (std::vector<std::string>::const_iterator d(dir_names.begin());
        d != dir_names.end(); ++d) {
     sub_path = sub_path.AppendASCII(*d);
-    ASSERT_TRUE(base::CreateDirectory(sub_path));
+    ASSERT_TRUE(CreateDirectory(sub_path));
+    // TODO(https://crbug.com/1432064): Expect that no events are fired.
   }
+
+  // It may take some time for `watcher` to re-construct its watch list, so it's
+  // possible an event is missed. _At least_ one event should be fired, though.
   VLOG(1) << "Create File";
   ASSERT_TRUE(WriteFile(file, "content"));
-  VLOG(1) << "Waiting for file creation";
-  ASSERT_TRUE(WaitForEvent());
+  VLOG(1) << "Waiting for file creation + modification";
+  delegate.RunUntilEventsMatch(testing::Not(testing::IsEmpty()),
+                               ExpectedEventsSinceLastWait::kSome);
+
+  delegate.SpinAndDiscardAllReceivedEvents();
+  AccumulatingEventExpecter event_expecter;
 
   ASSERT_TRUE(WriteFile(file, "content v2"));
   VLOG(1) << "Waiting for file modification";
-  ASSERT_TRUE(WaitForEvent());
+  event_expecter.AddExpectedEventForPath(file);
+  delegate.RunUntilEventsMatch(event_expecter);
 }
 
 TEST_F(FilePathWatcherTest, DisappearingDirectory) {
   FilePathWatcher watcher;
   FilePath dir(temp_dir_.GetPath().AppendASCII("dir"));
   FilePath file(dir.AppendASCII("file"));
-  ASSERT_TRUE(base::CreateDirectory(dir));
+  ASSERT_TRUE(CreateDirectory(dir));
   ASSERT_TRUE(WriteFile(file, "content"));
-  std::unique_ptr<TestDelegate> delegate(new TestDelegate(collector()));
-  ASSERT_TRUE(SetupWatch(file, &watcher, delegate.get(),
+  TestDelegate delegate;
+  AccumulatingEventExpecter event_expecter;
+  ASSERT_TRUE(SetupWatch(file, &watcher, &delegate,
                          FilePathWatcher::Type::kNonRecursive));
 
-  ASSERT_TRUE(base::DeletePathRecursively(dir));
-  ASSERT_TRUE(WaitForEvent());
+  ASSERT_TRUE(DeletePathRecursively(dir));
+  event_expecter.AddExpectedEventForPath(file);
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_ANDROID)
+  // TODO(https://crbug.com/1432044): Figure out why this may fire two events on
+  // inotify. Only the file is being watched, so presumably there should only be
+  // one deletion event.
+  event_expecter.AddExpectedEventForPath(file);
+#endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) ||
+        // BUILDFLAG(IS_ANDROID)
+  delegate.RunUntilEventsMatch(event_expecter);
 }
 
 // Tests that a file that is deleted and reappears is tracked correctly.
 TEST_F(FilePathWatcherTest, DeleteAndRecreate) {
   ASSERT_TRUE(WriteFile(test_file(), "content"));
   FilePathWatcher watcher;
-  std::unique_ptr<TestDelegate> delegate(new TestDelegate(collector()));
-  ASSERT_TRUE(SetupWatch(test_file(), &watcher, delegate.get(),
+  TestDelegate delegate;
+  AccumulatingEventExpecter event_expecter;
+  ASSERT_TRUE(SetupWatch(test_file(), &watcher, &delegate,
                          FilePathWatcher::Type::kNonRecursive));
 
-  ASSERT_TRUE(base::DeleteFile(test_file()));
+  ASSERT_TRUE(DeleteFile(test_file()));
   VLOG(1) << "Waiting for file deletion";
-  ASSERT_TRUE(WaitForEvent());
+  event_expecter.AddExpectedEventForPath(test_file());
+  delegate.RunUntilEventsMatch(event_expecter);
 
   ASSERT_TRUE(WriteFile(test_file(), "content"));
-  VLOG(1) << "Waiting for file creation";
-  ASSERT_TRUE(WaitForEvent());
+  VLOG(1) << "Waiting for file creation + modification";
+  for (size_t i = 0; i < kExpectedEventsForNewFileWrite; ++i) {
+    event_expecter.AddExpectedEventForPath(test_file());
+  }
+  delegate.RunUntilEventsMatch(event_expecter);
 }
 
+// TODO(https://crbug.com/1432064): Split into smaller tests.
 TEST_F(FilePathWatcherTest, WatchDirectory) {
   FilePathWatcher watcher;
   FilePath dir(temp_dir_.GetPath().AppendASCII("dir"));
   FilePath file1(dir.AppendASCII("file1"));
   FilePath file2(dir.AppendASCII("file2"));
-  std::unique_ptr<TestDelegate> delegate(new TestDelegate(collector()));
-  ASSERT_TRUE(SetupWatch(dir, &watcher, delegate.get(),
+  TestDelegate delegate;
+  AccumulatingEventExpecter event_expecter;
+  ASSERT_TRUE(SetupWatch(dir, &watcher, &delegate,
                          FilePathWatcher::Type::kNonRecursive));
 
-  ASSERT_TRUE(base::CreateDirectory(dir));
+  ASSERT_TRUE(CreateDirectory(dir));
   VLOG(1) << "Waiting for directory creation";
-  ASSERT_TRUE(WaitForEvent());
+  event_expecter.AddExpectedEventForPath(dir);
+  delegate.RunUntilEventsMatch(event_expecter);
 
   ASSERT_TRUE(WriteFile(file1, "content"));
-  VLOG(1) << "Waiting for file1 creation";
-  ASSERT_TRUE(WaitForEvent());
+  VLOG(1) << "Waiting for file1 creation + modification";
+  for (size_t i = 0; i < kExpectedEventsForNewFileWrite; ++i) {
+    event_expecter.AddExpectedEventForPath(dir);
+  }
+  delegate.RunUntilEventsMatch(event_expecter);
 
 #if !BUILDFLAG(IS_APPLE)
-  // Mac implementation does not detect files modified in a directory.
   ASSERT_TRUE(WriteFile(file1, "content v2"));
+  // Mac implementation does not detect files modified in a directory.
+  // TODO(https://crbug.com/1432064): Expect that no events are fired on Mac.
+  // TODO(https://crbug.com/1019297): Consider using FSEvents to support
+  // watching a directory and its immediate children, as Type::kNonRecursive
+  // does on other platforms.
   VLOG(1) << "Waiting for file1 modification";
-  ASSERT_TRUE(WaitForEvent());
+  event_expecter.AddExpectedEventForPath(dir);
+  delegate.RunUntilEventsMatch(event_expecter);
 #endif  // !BUILDFLAG(IS_APPLE)
 
-  ASSERT_TRUE(base::DeleteFile(file1));
+  ASSERT_TRUE(DeleteFile(file1));
   VLOG(1) << "Waiting for file1 deletion";
-  ASSERT_TRUE(WaitForEvent());
+  event_expecter.AddExpectedEventForPath(dir);
+  delegate.RunUntilEventsMatch(event_expecter);
 
   ASSERT_TRUE(WriteFile(file2, "content"));
-  VLOG(1) << "Waiting for file2 creation";
-  ASSERT_TRUE(WaitForEvent());
+  VLOG(1) << "Waiting for file2 creation + modification";
+  for (size_t i = 0; i < kExpectedEventsForNewFileWrite; ++i) {
+    event_expecter.AddExpectedEventForPath(dir);
+  }
+  delegate.RunUntilEventsMatch(event_expecter);
 }
 
 TEST_F(FilePathWatcherTest, MoveParent) {
-  FilePathWatcher file_watcher;
-  FilePathWatcher subdir_watcher;
+  FilePathWatcher file_watcher, subdir_watcher;
+  TestDelegate file_delegate, subdir_delegate;
+  AccumulatingEventExpecter file_event_expecter, subdir_event_expecter;
   FilePath dir(temp_dir_.GetPath().AppendASCII("dir"));
   FilePath dest(temp_dir_.GetPath().AppendASCII("dest"));
   FilePath subdir(dir.AppendASCII("subdir"));
   FilePath file(subdir.AppendASCII("file"));
-  std::unique_ptr<TestDelegate> file_delegate(new TestDelegate(collector()));
-  ASSERT_TRUE(SetupWatch(file, &file_watcher, file_delegate.get(),
+  ASSERT_TRUE(SetupWatch(file, &file_watcher, &file_delegate,
                          FilePathWatcher::Type::kNonRecursive));
-  std::unique_ptr<TestDelegate> subdir_delegate(new TestDelegate(collector()));
-  ASSERT_TRUE(SetupWatch(subdir, &subdir_watcher, subdir_delegate.get(),
+  ASSERT_TRUE(SetupWatch(subdir, &subdir_watcher, &subdir_delegate,
                          FilePathWatcher::Type::kNonRecursive));
+
+  // TODO(https://crbug.com/1432064): Add a test asserting that creation of the
+  // parent directory does not trigger an event.
 
   // Setup a directory hierarchy.
-  ASSERT_TRUE(base::CreateDirectory(subdir));
-  ASSERT_TRUE(WriteFile(file, "content"));
-  VLOG(1) << "Waiting for file creation";
-  ASSERT_TRUE(WaitForEvent());
+  // We should only get notified on `subdir_delegate` of its creation.
+  ASSERT_TRUE(CreateDirectory(subdir));
+  subdir_event_expecter.AddExpectedEventForPath(subdir);
+  // TODO(https://crbug.com/1432064): Expect that no events are fired on the
+  // file delegate.
+  subdir_delegate.RunUntilEventsMatch(subdir_event_expecter);
 
-  // Move the parent directory.
-  base::Move(dir, dest);
+  ASSERT_TRUE(WriteFile(file, "content"));
+  VLOG(1) << "Waiting for file creation + modification";
+  for (size_t i = 0; i < kExpectedEventsForNewFileWrite; ++i) {
+    file_event_expecter.AddExpectedEventForPath(file);
+    subdir_event_expecter.AddExpectedEventForPath(subdir);
+  }
+  file_delegate.RunUntilEventsMatch(file_event_expecter);
+  subdir_delegate.RunUntilEventsMatch(subdir_event_expecter);
+
+  Move(dir, dest);
   VLOG(1) << "Waiting for directory move";
-  ASSERT_TRUE(WaitForEvent());
+  file_event_expecter.AddExpectedEventForPath(file);
+  subdir_event_expecter.AddExpectedEventForPath(subdir);
+  file_delegate.RunUntilEventsMatch(file_event_expecter);
+  subdir_delegate.RunUntilEventsMatch(subdir_event_expecter);
 }
 
 TEST_F(FilePathWatcherTest, RecursiveWatch) {
   FilePathWatcher watcher;
   FilePath dir(temp_dir_.GetPath().AppendASCII("dir"));
-  std::unique_ptr<TestDelegate> delegate(new TestDelegate(collector()));
-  bool setup_result = SetupWatch(dir, &watcher, delegate.get(),
-                                 FilePathWatcher::Type::kRecursive);
+  TestDelegate delegate;
+  AccumulatingEventExpecter event_expecter;
+  bool setup_result =
+      SetupWatch(dir, &watcher, &delegate, FilePathWatcher::Type::kRecursive);
   if (!FilePathWatcher::RecursiveWatchAvailable()) {
     ASSERT_FALSE(setup_result);
     return;
   }
   ASSERT_TRUE(setup_result);
 
+  // TODO(https://crbug.com/1432064): Create a version of this test which also
+  // verifies that the events occur on the correct file path if the watcher is
+  // set up to record the target of the event.
+
   // Main directory("dir") creation.
-  ASSERT_TRUE(base::CreateDirectory(dir));
-  ASSERT_TRUE(WaitForEvent());
+  ASSERT_TRUE(CreateDirectory(dir));
+  event_expecter.AddExpectedEventForPath(dir);
+  delegate.RunUntilEventsMatch(event_expecter);
 
   // Create "$dir/file1".
   FilePath file1(dir.AppendASCII("file1"));
   ASSERT_TRUE(WriteFile(file1, "content"));
-  ASSERT_TRUE(WaitForEvent());
+  for (size_t i = 0; i < kExpectedEventsForNewFileWrite; ++i) {
+    event_expecter.AddExpectedEventForPath(dir);
+  }
+  delegate.RunUntilEventsMatch(event_expecter);
 
   // Create "$dir/subdir".
   FilePath subdir(dir.AppendASCII("subdir"));
-  ASSERT_TRUE(base::CreateDirectory(subdir));
-  ASSERT_TRUE(WaitForEvent());
+  ASSERT_TRUE(CreateDirectory(subdir));
+  event_expecter.AddExpectedEventForPath(dir);
+  delegate.RunUntilEventsMatch(event_expecter);
 
   // Create "$dir/subdir/subdir2".
   FilePath subdir2(subdir.AppendASCII("subdir2"));
-  ASSERT_TRUE(base::CreateDirectory(subdir2));
-  ASSERT_TRUE(WaitForEvent());
+  ASSERT_TRUE(CreateDirectory(subdir2));
+  event_expecter.AddExpectedEventForPath(dir);
+  delegate.RunUntilEventsMatch(event_expecter);
 
   // Rename "$dir/subdir/subdir2" to "$dir/subdir/subdir2b".
   FilePath subdir2b(subdir.AppendASCII("subdir2b"));
-  base::Move(subdir2, subdir2b);
-  ASSERT_TRUE(WaitForEvent());
+  Move(subdir2, subdir2b);
+  event_expecter.AddExpectedEventForPath(dir);
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_ANDROID)
+  // inotify generates separate IN_MOVED_TO and IN_MOVED_FROM events for a
+  // rename. Since both the source and destination are within the scope of this
+  // watch, both events should be received.
+  event_expecter.AddExpectedEventForPath(dir);
+#endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) ||
+        // BUILDFLAG(IS_ANDROID)
+  delegate.RunUntilEventsMatch(event_expecter);
 
 // Mac and Win don't generate events for Touch.
+// TODO(https://crbug.com/1432064): Add explicit expectations for Mac and Win.
 // Android TouchFile returns false.
 #if !(BUILDFLAG(IS_APPLE) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_ANDROID))
   // Touch "$dir".
   Time access_time;
   ASSERT_TRUE(Time::FromString("Wed, 16 Nov 1994, 00:00:00", &access_time));
-  ASSERT_TRUE(base::TouchFile(dir, access_time, access_time));
-  ASSERT_TRUE(WaitForEvent());
+  ASSERT_TRUE(TouchFile(dir, access_time, access_time));
+  // TODO(https://crbug.com/1432044): Investigate why we're getting two events
+  // here from inotify.
+  event_expecter.AddExpectedEventForPath(dir);
+  event_expecter.AddExpectedEventForPath(dir);
+  delegate.RunUntilEventsMatch(event_expecter);
+  // TODO(https://crbug.com/1432064): Add a test touching `subdir`.
 #endif  // !(BUILDFLAG(IS_APPLE) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_ANDROID))
 
   // Create "$dir/subdir/subdir_file1".
   FilePath subdir_file1(subdir.AppendASCII("subdir_file1"));
   ASSERT_TRUE(WriteFile(subdir_file1, "content"));
-  ASSERT_TRUE(WaitForEvent());
+  for (size_t i = 0; i < kExpectedEventsForNewFileWrite; ++i) {
+    event_expecter.AddExpectedEventForPath(dir);
+  }
+  delegate.RunUntilEventsMatch(event_expecter);
 
   // Create "$dir/subdir/subdir_child_dir".
   FilePath subdir_child_dir(subdir.AppendASCII("subdir_child_dir"));
-  ASSERT_TRUE(base::CreateDirectory(subdir_child_dir));
-  ASSERT_TRUE(WaitForEvent());
+  ASSERT_TRUE(CreateDirectory(subdir_child_dir));
+  event_expecter.AddExpectedEventForPath(dir);
+  delegate.RunUntilEventsMatch(event_expecter);
 
   // Create "$dir/subdir/subdir_child_dir/child_dir_file1".
   FilePath child_dir_file1(subdir_child_dir.AppendASCII("child_dir_file1"));
   ASSERT_TRUE(WriteFile(child_dir_file1, "content v2"));
-  ASSERT_TRUE(WaitForEvent());
+  for (size_t i = 0; i < kExpectedEventsForNewFileWrite; ++i) {
+    event_expecter.AddExpectedEventForPath(dir);
+  }
+  delegate.RunUntilEventsMatch(event_expecter);
 
   // Write into "$dir/subdir/subdir_child_dir/child_dir_file1".
   ASSERT_TRUE(WriteFile(child_dir_file1, "content"));
-  ASSERT_TRUE(WaitForEvent());
+  event_expecter.AddExpectedEventForPath(dir);
+  delegate.RunUntilEventsMatch(event_expecter);
 
 // Apps cannot change file attributes on Android in /sdcard as /sdcard uses the
 // "fuse" file system, while /data uses "ext4".  Running these tests in /data
@@ -593,17 +757,20 @@ TEST_F(FilePathWatcherTest, RecursiveWatch) {
 // the |temp_dir_| in /data.
 #if !BUILDFLAG(IS_ANDROID)
   // Modify "$dir/subdir/subdir_child_dir/child_dir_file1" attributes.
-  ASSERT_TRUE(base::MakeFileUnreadable(child_dir_file1));
-  ASSERT_TRUE(WaitForEvent());
-#endif
+  ASSERT_TRUE(MakeFileUnreadable(child_dir_file1));
+  event_expecter.AddExpectedEventForPath(dir);
+  delegate.RunUntilEventsMatch(event_expecter);
+#endif  // !BUILDFLAG(IS_ANDROID))
 
   // Delete "$dir/subdir/subdir_file1".
-  ASSERT_TRUE(base::DeleteFile(subdir_file1));
-  ASSERT_TRUE(WaitForEvent());
+  ASSERT_TRUE(DeleteFile(subdir_file1));
+  event_expecter.AddExpectedEventForPath(dir);
+  delegate.RunUntilEventsMatch(event_expecter);
 
   // Delete "$dir/subdir/subdir_child_dir/child_dir_file1".
-  ASSERT_TRUE(base::DeleteFile(child_dir_file1));
-  ASSERT_TRUE(WaitForEvent());
+  ASSERT_TRUE(DeleteFile(child_dir_file1));
+  event_expecter.AddExpectedEventForPath(dir);
+  delegate.RunUntilEventsMatch(event_expecter);
 }
 
 #if BUILDFLAG(IS_POSIX) && !BUILDFLAG(IS_ANDROID)
@@ -615,48 +782,69 @@ TEST_F(FilePathWatcherTest, RecursiveWatch) {
 //
 // This test is disabled on Fuchsia since it doesn't support symlinking.
 TEST_F(FilePathWatcherTest, RecursiveWithSymLink) {
-  if (!FilePathWatcher::RecursiveWatchAvailable())
+  if (!FilePathWatcher::RecursiveWatchAvailable()) {
     return;
+  }
 
   FilePathWatcher watcher;
   FilePath test_dir(temp_dir_.GetPath().AppendASCII("test_dir"));
-  ASSERT_TRUE(base::CreateDirectory(test_dir));
+  ASSERT_TRUE(CreateDirectory(test_dir));
   FilePath symlink(test_dir.AppendASCII("symlink"));
-  std::unique_ptr<TestDelegate> delegate(new TestDelegate(collector()));
-  ASSERT_TRUE(SetupWatch(symlink, &watcher, delegate.get(),
+  TestDelegate delegate;
+  AccumulatingEventExpecter event_expecter;
+  ASSERT_TRUE(SetupWatch(symlink, &watcher, &delegate,
                          FilePathWatcher::Type::kRecursive));
+
+  // TODO(https://crbug.com/1432064): Figure out what the intended behavior here
+  // is. Many symlink operations don't seem to be supported on Mac, while in
+  // other cases Mac fires more events than expected.
 
   // Link creation.
   FilePath target1(temp_dir_.GetPath().AppendASCII("target1"));
-  ASSERT_TRUE(base::CreateSymbolicLink(target1, symlink));
-  ASSERT_TRUE(WaitForEvent());
+  ASSERT_TRUE(CreateSymbolicLink(target1, symlink));
+  event_expecter.AddExpectedEventForPath(symlink);
+  delegate.RunUntilEventsMatch(event_expecter);
 
   // Target1 creation.
-  ASSERT_TRUE(base::CreateDirectory(target1));
-  ASSERT_TRUE(WaitForEvent());
+  ASSERT_TRUE(CreateDirectory(target1));
+  event_expecter.AddExpectedEventForPath(symlink);
+  delegate.RunUntilEventsMatch(event_expecter);
 
   // Create a file in target1.
   FilePath target1_file(target1.AppendASCII("file"));
   ASSERT_TRUE(WriteFile(target1_file, "content"));
-  ASSERT_TRUE(WaitForEvent());
+  for (size_t i = 0; i < kExpectedEventsForNewFileWrite; ++i) {
+    event_expecter.AddExpectedEventForPath(symlink);
+  }
+  delegate.RunUntilEventsMatch(event_expecter);
 
   // Link change.
   FilePath target2(temp_dir_.GetPath().AppendASCII("target2"));
-  ASSERT_TRUE(base::CreateDirectory(target2));
-  ASSERT_TRUE(base::DeleteFile(symlink));
-  ASSERT_TRUE(base::CreateSymbolicLink(target2, symlink));
-  ASSERT_TRUE(WaitForEvent());
+  ASSERT_TRUE(CreateDirectory(target2));
+  // TODO(https://crbug.com/1432064): Expect that no events are fired.
+
+  ASSERT_TRUE(DeleteFile(symlink));
+  event_expecter.AddExpectedEventForPath(symlink);
+  delegate.RunUntilEventsMatch(event_expecter);
+
+  ASSERT_TRUE(CreateSymbolicLink(target2, symlink));
+  event_expecter.AddExpectedEventForPath(symlink);
+  delegate.RunUntilEventsMatch(event_expecter);
 
   // Create a file in target2.
   FilePath target2_file(target2.AppendASCII("file"));
   ASSERT_TRUE(WriteFile(target2_file, "content"));
-  ASSERT_TRUE(WaitForEvent());
+  for (size_t i = 0; i < kExpectedEventsForNewFileWrite; ++i) {
+    event_expecter.AddExpectedEventForPath(symlink);
+  }
+  delegate.RunUntilEventsMatch(event_expecter);
 }
 #endif  // BUILDFLAG(IS_POSIX) && !BUILDFLAG(IS_ANDROID)
 
 TEST_F(FilePathWatcherTest, MoveChild) {
-  FilePathWatcher file_watcher;
-  FilePathWatcher subdir_watcher;
+  FilePathWatcher file_watcher, subdir_watcher;
+  TestDelegate file_delegate, subdir_delegate;
+  AccumulatingEventExpecter file_event_expecter, subdir_event_expecter;
   FilePath source_dir(temp_dir_.GetPath().AppendASCII("source"));
   FilePath source_subdir(source_dir.AppendASCII("subdir"));
   FilePath source_file(source_subdir.AppendASCII("file"));
@@ -665,19 +853,20 @@ TEST_F(FilePathWatcherTest, MoveChild) {
   FilePath dest_file(dest_subdir.AppendASCII("file"));
 
   // Setup a directory hierarchy.
-  ASSERT_TRUE(base::CreateDirectory(source_subdir));
+  ASSERT_TRUE(CreateDirectory(source_subdir));
   ASSERT_TRUE(WriteFile(source_file, "content"));
 
-  std::unique_ptr<TestDelegate> file_delegate(new TestDelegate(collector()));
-  ASSERT_TRUE(SetupWatch(dest_file, &file_watcher, file_delegate.get(),
+  ASSERT_TRUE(SetupWatch(dest_file, &file_watcher, &file_delegate,
                          FilePathWatcher::Type::kNonRecursive));
-  std::unique_ptr<TestDelegate> subdir_delegate(new TestDelegate(collector()));
-  ASSERT_TRUE(SetupWatch(dest_subdir, &subdir_watcher, subdir_delegate.get(),
+  ASSERT_TRUE(SetupWatch(dest_subdir, &subdir_watcher, &subdir_delegate,
                          FilePathWatcher::Type::kNonRecursive));
 
   // Move the directory into place, s.t. the watched file appears.
-  ASSERT_TRUE(base::Move(source_dir, dest_dir));
-  ASSERT_TRUE(WaitForEvent());
+  ASSERT_TRUE(Move(source_dir, dest_dir));
+  file_event_expecter.AddExpectedEventForPath(dest_file);
+  subdir_event_expecter.AddExpectedEventForPath(dest_subdir);
+  file_delegate.RunUntilEventsMatch(file_event_expecter);
+  subdir_delegate.RunUntilEventsMatch(subdir_event_expecter);
 }
 
 // Verify that changing attributes on a file is caught
@@ -692,13 +881,15 @@ TEST_F(FilePathWatcherTest, MoveChild) {
 TEST_F(FilePathWatcherTest, FileAttributesChanged) {
   ASSERT_TRUE(WriteFile(test_file(), "content"));
   FilePathWatcher watcher;
-  std::unique_ptr<TestDelegate> delegate(new TestDelegate(collector()));
-  ASSERT_TRUE(SetupWatch(test_file(), &watcher, delegate.get(),
+  TestDelegate delegate;
+  AccumulatingEventExpecter event_expecter;
+  ASSERT_TRUE(SetupWatch(test_file(), &watcher, &delegate,
                          FilePathWatcher::Type::kNonRecursive));
 
   // Now make sure we get notified if the file is modified.
-  ASSERT_TRUE(base::MakeFileUnreadable(test_file()));
-  ASSERT_TRUE(WaitForEvent());
+  ASSERT_TRUE(MakeFileUnreadable(test_file()));
+  event_expecter.AddExpectedEventForPath(test_file());
+  delegate.RunUntilEventsMatch(event_expecter);
 }
 
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
@@ -706,15 +897,17 @@ TEST_F(FilePathWatcherTest, FileAttributesChanged) {
 // Verify that creating a symlink is caught.
 TEST_F(FilePathWatcherTest, CreateLink) {
   FilePathWatcher watcher;
-  std::unique_ptr<TestDelegate> delegate(new TestDelegate(collector()));
+  TestDelegate delegate;
+  AccumulatingEventExpecter event_expecter;
   // Note that we are watching the symlink
-  ASSERT_TRUE(SetupWatch(test_link(), &watcher, delegate.get(),
+  ASSERT_TRUE(SetupWatch(test_link(), &watcher, &delegate,
                          FilePathWatcher::Type::kNonRecursive));
 
   // Now make sure we get notified if the link is created.
   // Note that test_file() doesn't have to exist.
   ASSERT_TRUE(CreateSymbolicLink(test_file(), test_link()));
-  ASSERT_TRUE(WaitForEvent());
+  event_expecter.AddExpectedEventForPath(test_link());
+  delegate.RunUntilEventsMatch(event_expecter);
 }
 
 // Verify that deleting a symlink is caught.
@@ -724,13 +917,15 @@ TEST_F(FilePathWatcherTest, DeleteLink) {
   ASSERT_TRUE(WriteFile(test_file(), "content"));
   ASSERT_TRUE(CreateSymbolicLink(test_file(), test_link()));
   FilePathWatcher watcher;
-  std::unique_ptr<TestDelegate> delegate(new TestDelegate(collector()));
-  ASSERT_TRUE(SetupWatch(test_link(), &watcher, delegate.get(),
+  TestDelegate delegate;
+  AccumulatingEventExpecter event_expecter;
+  ASSERT_TRUE(SetupWatch(test_link(), &watcher, &delegate,
                          FilePathWatcher::Type::kNonRecursive));
 
   // Now make sure we get notified if the link is deleted.
-  ASSERT_TRUE(base::DeleteFile(test_link()));
-  ASSERT_TRUE(WaitForEvent());
+  ASSERT_TRUE(DeleteFile(test_link()));
+  event_expecter.AddExpectedEventForPath(test_link());
+  delegate.RunUntilEventsMatch(event_expecter);
 }
 
 // Verify that modifying a target file that a link is pointing to
@@ -739,14 +934,16 @@ TEST_F(FilePathWatcherTest, ModifiedLinkedFile) {
   ASSERT_TRUE(WriteFile(test_file(), "content"));
   ASSERT_TRUE(CreateSymbolicLink(test_file(), test_link()));
   FilePathWatcher watcher;
-  std::unique_ptr<TestDelegate> delegate(new TestDelegate(collector()));
+  TestDelegate delegate;
+  AccumulatingEventExpecter event_expecter;
   // Note that we are watching the symlink.
-  ASSERT_TRUE(SetupWatch(test_link(), &watcher, delegate.get(),
+  ASSERT_TRUE(SetupWatch(test_link(), &watcher, &delegate,
                          FilePathWatcher::Type::kNonRecursive));
 
   // Now make sure we get notified if the file is modified.
   ASSERT_TRUE(WriteFile(test_file(), "new content"));
-  ASSERT_TRUE(WaitForEvent());
+  event_expecter.AddExpectedEventForPath(test_link());
+  delegate.RunUntilEventsMatch(event_expecter);
 }
 
 // Verify that creating a target file that a link is pointing to
@@ -754,14 +951,18 @@ TEST_F(FilePathWatcherTest, ModifiedLinkedFile) {
 TEST_F(FilePathWatcherTest, CreateTargetLinkedFile) {
   ASSERT_TRUE(CreateSymbolicLink(test_file(), test_link()));
   FilePathWatcher watcher;
-  std::unique_ptr<TestDelegate> delegate(new TestDelegate(collector()));
+  TestDelegate delegate;
+  AccumulatingEventExpecter event_expecter;
   // Note that we are watching the symlink.
-  ASSERT_TRUE(SetupWatch(test_link(), &watcher, delegate.get(),
+  ASSERT_TRUE(SetupWatch(test_link(), &watcher, &delegate,
                          FilePathWatcher::Type::kNonRecursive));
 
   // Now make sure we get notified if the target file is created.
   ASSERT_TRUE(WriteFile(test_file(), "content"));
-  ASSERT_TRUE(WaitForEvent());
+  for (size_t i = 0; i < kExpectedEventsForNewFileWrite; ++i) {
+    event_expecter.AddExpectedEventForPath(test_link());
+  }
+  delegate.RunUntilEventsMatch(event_expecter);
 }
 
 // Verify that deleting a target file that a link is pointing to
@@ -770,14 +971,16 @@ TEST_F(FilePathWatcherTest, DeleteTargetLinkedFile) {
   ASSERT_TRUE(WriteFile(test_file(), "content"));
   ASSERT_TRUE(CreateSymbolicLink(test_file(), test_link()));
   FilePathWatcher watcher;
-  std::unique_ptr<TestDelegate> delegate(new TestDelegate(collector()));
+  TestDelegate delegate;
+  AccumulatingEventExpecter event_expecter;
   // Note that we are watching the symlink.
-  ASSERT_TRUE(SetupWatch(test_link(), &watcher, delegate.get(),
+  ASSERT_TRUE(SetupWatch(test_link(), &watcher, &delegate,
                          FilePathWatcher::Type::kNonRecursive));
 
   // Now make sure we get notified if the target file is deleted.
-  ASSERT_TRUE(base::DeleteFile(test_file()));
-  ASSERT_TRUE(WaitForEvent());
+  ASSERT_TRUE(DeleteFile(test_file()));
+  event_expecter.AddExpectedEventForPath(test_link());
+  delegate.RunUntilEventsMatch(event_expecter);
 }
 
 // Verify that watching a file whose parent directory is a link that
@@ -788,55 +991,78 @@ TEST_F(FilePathWatcherTest, LinkedDirectoryPart1) {
   FilePath link_dir(temp_dir_.GetPath().AppendASCII("dir.lnk"));
   FilePath file(dir.AppendASCII("file"));
   FilePath linkfile(link_dir.AppendASCII("file"));
-  std::unique_ptr<TestDelegate> delegate(new TestDelegate(collector()));
+  TestDelegate delegate;
+  AccumulatingEventExpecter event_expecter;
   // dir/file should exist.
-  ASSERT_TRUE(base::CreateDirectory(dir));
+  ASSERT_TRUE(CreateDirectory(dir));
   ASSERT_TRUE(WriteFile(file, "content"));
   // Note that we are watching dir.lnk/file which doesn't exist yet.
-  ASSERT_TRUE(SetupWatch(linkfile, &watcher, delegate.get(),
+  ASSERT_TRUE(SetupWatch(linkfile, &watcher, &delegate,
                          FilePathWatcher::Type::kNonRecursive));
 
   ASSERT_TRUE(CreateSymbolicLink(dir, link_dir));
   VLOG(1) << "Waiting for link creation";
-  ASSERT_TRUE(WaitForEvent());
+  event_expecter.AddExpectedEventForPath(linkfile);
+  delegate.RunUntilEventsMatch(event_expecter);
+
+  ASSERT_TRUE(WriteFile(file, "content v2"));
+  VLOG(1) << "Waiting for file creation + modification";
+  // TODO(https://crbug.com/1432064): Should this fire two events on inotify?
+  event_expecter.AddExpectedEventForPath(linkfile);
+  delegate.RunUntilEventsMatch(event_expecter);
 
   ASSERT_TRUE(WriteFile(file, "content v2"));
   VLOG(1) << "Waiting for file change";
-  ASSERT_TRUE(WaitForEvent());
+  event_expecter.AddExpectedEventForPath(linkfile);
+  delegate.RunUntilEventsMatch(event_expecter);
 
-  ASSERT_TRUE(base::DeleteFile(file));
+  ASSERT_TRUE(DeleteFile(file));
   VLOG(1) << "Waiting for file deletion";
-  ASSERT_TRUE(WaitForEvent());
+  event_expecter.AddExpectedEventForPath(linkfile);
+  delegate.RunUntilEventsMatch(event_expecter);
 }
 
 // Verify that watching a file whose parent directory is a
 // dangling symlink works if the directory is created eventually.
+// TODO(https://crbug.com/1432064): Add test coverage for symlinked file
+// creation independent of a corresponding write.
 TEST_F(FilePathWatcherTest, LinkedDirectoryPart2) {
   FilePathWatcher watcher;
   FilePath dir(temp_dir_.GetPath().AppendASCII("dir"));
   FilePath link_dir(temp_dir_.GetPath().AppendASCII("dir.lnk"));
   FilePath file(dir.AppendASCII("file"));
   FilePath linkfile(link_dir.AppendASCII("file"));
-  std::unique_ptr<TestDelegate> delegate(new TestDelegate(collector()));
+  TestDelegate delegate;
+  // AccumulatingEventExpecter event_expecter;
   // Now create the link from dir.lnk pointing to dir but
   // neither dir nor dir/file exist yet.
   ASSERT_TRUE(CreateSymbolicLink(dir, link_dir));
   // Note that we are watching dir.lnk/file.
-  ASSERT_TRUE(SetupWatch(linkfile, &watcher, delegate.get(),
+  ASSERT_TRUE(SetupWatch(linkfile, &watcher, &delegate,
                          FilePathWatcher::Type::kNonRecursive));
 
-  ASSERT_TRUE(base::CreateDirectory(dir));
+  ASSERT_TRUE(CreateDirectory(dir));
+  // TODO(https://crbug.com/1432064): Expect that no events are fired.
+
+  // It may take some time for `watcher` to re-construct its watch list, so it's
+  // possible an event is missed. _At least_ one event should be fired, though.
   ASSERT_TRUE(WriteFile(file, "content"));
-  VLOG(1) << "Waiting for dir/file creation";
-  ASSERT_TRUE(WaitForEvent());
+  VLOG(1) << "Waiting for file creation";
+  delegate.RunUntilEventsMatch(testing::Not(testing::IsEmpty()),
+                               ExpectedEventsSinceLastWait::kSome);
+
+  delegate.SpinAndDiscardAllReceivedEvents();
+  AccumulatingEventExpecter event_expecter;
 
   ASSERT_TRUE(WriteFile(file, "content v2"));
   VLOG(1) << "Waiting for file change";
-  ASSERT_TRUE(WaitForEvent());
+  event_expecter.AddExpectedEventForPath(linkfile);
+  delegate.RunUntilEventsMatch(event_expecter);
 
-  ASSERT_TRUE(base::DeleteFile(file));
+  ASSERT_TRUE(DeleteFile(file));
   VLOG(1) << "Waiting for file deletion";
-  ASSERT_TRUE(WaitForEvent());
+  event_expecter.AddExpectedEventForPath(linkfile);
+  delegate.RunUntilEventsMatch(event_expecter);
 }
 
 // Verify that watching a file with a symlink on the path
@@ -847,45 +1073,53 @@ TEST_F(FilePathWatcherTest, LinkedDirectoryPart3) {
   FilePath link_dir(temp_dir_.GetPath().AppendASCII("dir.lnk"));
   FilePath file(dir.AppendASCII("file"));
   FilePath linkfile(link_dir.AppendASCII("file"));
-  std::unique_ptr<TestDelegate> delegate(new TestDelegate(collector()));
-  ASSERT_TRUE(base::CreateDirectory(dir));
+  TestDelegate delegate;
+  AccumulatingEventExpecter event_expecter;
+  ASSERT_TRUE(CreateDirectory(dir));
   ASSERT_TRUE(CreateSymbolicLink(dir, link_dir));
   // Note that we are watching dir.lnk/file but the file doesn't exist yet.
-  ASSERT_TRUE(SetupWatch(linkfile, &watcher, delegate.get(),
+  ASSERT_TRUE(SetupWatch(linkfile, &watcher, &delegate,
                          FilePathWatcher::Type::kNonRecursive));
 
   ASSERT_TRUE(WriteFile(file, "content"));
   VLOG(1) << "Waiting for file creation";
-  ASSERT_TRUE(WaitForEvent());
+  for (size_t i = 0; i < kExpectedEventsForNewFileWrite; ++i) {
+    event_expecter.AddExpectedEventForPath(linkfile);
+  }
+  delegate.RunUntilEventsMatch(event_expecter);
 
   ASSERT_TRUE(WriteFile(file, "content v2"));
   VLOG(1) << "Waiting for file change";
-  ASSERT_TRUE(WaitForEvent());
+  event_expecter.AddExpectedEventForPath(linkfile);
+  delegate.RunUntilEventsMatch(event_expecter);
 
-  ASSERT_TRUE(base::DeleteFile(file));
+  ASSERT_TRUE(DeleteFile(file));
   VLOG(1) << "Waiting for file deletion";
-  ASSERT_TRUE(WaitForEvent());
+  event_expecter.AddExpectedEventForPath(linkfile);
+  delegate.RunUntilEventsMatch(event_expecter);
 }
 
 // Regression tests that FilePathWatcherImpl does not leave its reference in
 // `g_inotify_reader` due to a race in recursive watch.
 // See https://crbug.com/990004.
 TEST_F(FilePathWatcherTest, RacyRecursiveWatch) {
-  if (!FilePathWatcher::RecursiveWatchAvailable())
+  if (!FilePathWatcher::RecursiveWatchAvailable()) {
     GTEST_SKIP();
+  }
 
   FilePath dir(temp_dir_.GetPath().AppendASCII("dir"));
 
   // Create and delete many subdirs. 20 is an arbitrary number big enough
   // to have more chances to make FilePathWatcherImpl leak watchers.
   std::vector<FilePath> subdirs;
-  for (int i = 0; i < 20; ++i)
-    subdirs.emplace_back(dir.AppendASCII(base::StringPrintf("subdir_%d", i)));
+  for (int i = 0; i < 20; ++i) {
+    subdirs.emplace_back(dir.AppendASCII(StringPrintf("subdir_%d", i)));
+  }
 
   Thread subdir_updater("SubDir Updater");
   ASSERT_TRUE(subdir_updater.Start());
 
-  auto subdir_update_task = base::BindLambdaForTesting([&]() {
+  auto subdir_update_task = BindLambdaForTesting([&]() {
     for (const auto& subdir : subdirs) {
       // First update event to trigger watch callback.
       ASSERT_TRUE(CreateDirectory(subdir));
@@ -911,7 +1145,7 @@ TEST_F(FilePathWatcherTest, RacyRecursiveWatch) {
     // Otherwise, accessing `run_loop` as part of the lamda capture would be
     // use-after-free under asan.
     auto watcher_callback =
-        base::BindLambdaForTesting([&](const FilePath& path, bool error) {
+        BindLambdaForTesting([&](const FilePath& path, bool error) {
           // Release watchers in callback so that the leaked watchers of
           // the subdir stays. Otherwise, when the subdir is deleted,
           // its delete event would clean up leaked watchers in
@@ -947,16 +1181,16 @@ TEST_F(FilePathWatcherTest, InotifyLimitInWatch) {
   // dir components ("/" + 3 named parts). "Watch()" creates inotify watches
   // for each dir component of the given dir. It would fail with limit set to 1.
   ScopedMaxNumberOfInotifyWatchesOverrideForTest max_inotify_watches(1);
-  ASSERT_FALSE(watcher->Watch(
-      test_file(), FilePathWatcher::Type::kNonRecursive,
-      base::BindLambdaForTesting(
-          [&](const FilePath& path, bool error) { ADD_FAILURE(); })));
+  ASSERT_FALSE(
+      watcher->Watch(test_file(), FilePathWatcher::Type::kNonRecursive,
+                     BindLambdaForTesting([&](const FilePath& path,
+                                              bool error) { ADD_FAILURE(); })));
 
   // Triggers update but callback should not be invoked.
   ASSERT_TRUE(WriteFile(test_file(), "content"));
 
   // Ensures that the callback did not happen.
-  base::RunLoop().RunUntilIdle();
+  RunLoop().RunUntilIdle();
 }
 
 // Verify that "error=true" callback happens when limit is hit during update.
@@ -973,22 +1207,24 @@ TEST_F(FilePathWatcherTest, InotifyLimitInUpdate) {
   for (auto callback_type : {kDestroyWatcher, kDoNothing}) {
     SCOPED_TRACE(testing::Message() << "type=" << callback_type);
 
-    base::RunLoop run_loop;
+    RunLoop run_loop;
     auto watcher = std::make_unique<FilePathWatcher>();
 
     bool error_callback_called = false;
     auto watcher_callback =
-        base::BindLambdaForTesting([&](const FilePath& path, bool error) {
+        BindLambdaForTesting([&](const FilePath& path, bool error) {
           // No callback should happen after "error=true" one.
           ASSERT_FALSE(error_callback_called);
 
-          if (!error)
+          if (!error) {
             return;
+          }
 
           error_callback_called = true;
 
-          if (callback_type == kDestroyWatcher)
+          if (callback_type == kDestroyWatcher) {
             watcher.reset();
+          }
 
           run_loop.Quit();
         });
@@ -1004,7 +1240,7 @@ TEST_F(FilePathWatcherTest, InotifyLimitInUpdate) {
 
     // More update but no more callback should happen.
     ASSERT_TRUE(DeleteFile(test_file()));
-    base::RunLoop().RunUntilIdle();
+    RunLoop().RunUntilIdle();
   }
 }
 
@@ -1024,22 +1260,24 @@ TEST_F(FilePathWatcherTest, InotifyLimitInUpdateRecursive) {
   for (auto callback_type : {kDestroyWatcher, kDoNothing}) {
     SCOPED_TRACE(testing::Message() << "type=" << callback_type);
 
-    base::RunLoop run_loop;
+    RunLoop run_loop;
     auto watcher = std::make_unique<FilePathWatcher>();
 
     bool error_callback_called = false;
     auto watcher_callback =
-        base::BindLambdaForTesting([&](const FilePath& path, bool error) {
+        BindLambdaForTesting([&](const FilePath& path, bool error) {
           // No callback should happen after "error=true" one.
           ASSERT_FALSE(error_callback_called);
 
-          if (!error)
+          if (!error) {
             return;
+          }
 
           error_callback_called = true;
 
-          if (callback_type == kDestroyWatcher)
+          if (callback_type == kDestroyWatcher) {
             watcher.reset();
+          }
 
           run_loop.Quit();
         });
@@ -1052,8 +1290,7 @@ TEST_F(FilePathWatcherTest, InotifyLimitInUpdateRecursive) {
 
     // Triggers updates and over limit.
     for (size_t i = 0; i < kMaxLimit; ++i) {
-      base::FilePath subdir =
-          dir.AppendASCII(base::StringPrintf("subdir_%" PRIuS, i));
+      FilePath subdir = dir.AppendASCII(StringPrintf("subdir_%" PRIuS, i));
       ASSERT_TRUE(CreateDirectory(subdir));
     }
 
@@ -1061,11 +1298,10 @@ TEST_F(FilePathWatcherTest, InotifyLimitInUpdateRecursive) {
 
     // More update but no more callback should happen.
     for (size_t i = 0; i < kMaxLimit; ++i) {
-      base::FilePath subdir =
-          dir.AppendASCII(base::StringPrintf("subdir_%" PRIuS, i));
+      FilePath subdir = dir.AppendASCII(StringPrintf("subdir_%" PRIuS, i));
       ASSERT_TRUE(DeleteFile(subdir));
     }
-    base::RunLoop().RunUntilIdle();
+    RunLoop().RunUntilIdle();
   }
 }
 
@@ -1081,29 +1317,31 @@ TEST_F(FilePathWatcherTest, ReturnFullPath_RecursiveInRootFolder) {
 
   ASSERT_TRUE(CreateDirectory(watched_folder));
 
-  auto delegate = std::make_unique<TestDelegate>(collector());
-  ASSERT_TRUE(
-      SetupWatchWithOptions(watched_folder, &directory_watcher, delegate.get(),
-                            {.type = base::FilePathWatcher::Type::kRecursive,
-                             .report_modified_path = true}));
+  TestDelegate delegate;
+  AccumulatingEventExpecter event_expecter;
+  ASSERT_TRUE(SetupWatchWithOptions(watched_folder, &directory_watcher,
+                                    &delegate,
+                                    {.type = FilePathWatcher::Type::kRecursive,
+                                     .report_modified_path = true}));
 
-  // Triggers three events:
-  // create on /watched_folder/file
+  // Triggers two events:
+  // create on /watched_folder/file.
   // modify on /watched_folder/file.
   ASSERT_TRUE(WriteFile(file, "test"));
-  ASSERT_TRUE(WaitForEvent());
-  ASSERT_TRUE(WaitForEvent());
+  for (size_t i = 0; i < kExpectedEventsForNewFileWrite; ++i) {
+    event_expecter.AddExpectedEventForPath(file);
+  }
+  delegate.RunUntilEventsMatch(event_expecter);
 
   // Expects modify on /watched_folder/file.
   ASSERT_TRUE(WriteFile(file, "test123"));
-  ASSERT_TRUE(WaitForEvent());
+  event_expecter.AddExpectedEventForPath(file);
+  delegate.RunUntilEventsMatch(event_expecter);
 
   // Expects delete on /watched_folder/file.
   ASSERT_TRUE(DeleteFile(file));
-  ASSERT_TRUE(WaitForEvent());
-
-  std::vector<base::FilePath> expected_paths{file, file, file, file};
-  EXPECT_EQ(delegate->get_observed_paths(), expected_paths);
+  event_expecter.AddExpectedEventForPath(file);
+  delegate.RunUntilEventsMatch(event_expecter);
 }
 
 TEST_F(FilePathWatcherTest, ReturnFullPath_RecursiveInNestedFolder) {
@@ -1114,38 +1352,41 @@ TEST_F(FilePathWatcherTest, ReturnFullPath_RecursiveInNestedFolder) {
 
   ASSERT_TRUE(CreateDirectory(watched_folder));
 
-  auto delegate = std::make_unique<TestDelegate>(collector());
-  ASSERT_TRUE(
-      SetupWatchWithOptions(watched_folder, &directory_watcher, delegate.get(),
-                            {.type = base::FilePathWatcher::Type::kRecursive,
-                             .report_modified_path = true}));
+  TestDelegate delegate;
+  AccumulatingEventExpecter event_expecter;
+  ASSERT_TRUE(SetupWatchWithOptions(watched_folder, &directory_watcher,
+                                    &delegate,
+                                    {.type = FilePathWatcher::Type::kRecursive,
+                                     .report_modified_path = true}));
 
   // Expects create on /watched_folder/subfolder.
   ASSERT_TRUE(CreateDirectory(subfolder));
-  ASSERT_TRUE(WaitForEvent());
+  event_expecter.AddExpectedEventForPath(subfolder);
+  delegate.RunUntilEventsMatch(event_expecter);
 
   // Triggers two events:
   // create on /watched_folder/subfolder/file.
   // modify on /watched_folder/subfolder/file.
   ASSERT_TRUE(WriteFile(file, "test"));
-  ASSERT_TRUE(WaitForEvent());
-  ASSERT_TRUE(WaitForEvent());
+  for (size_t i = 0; i < kExpectedEventsForNewFileWrite; ++i) {
+    event_expecter.AddExpectedEventForPath(file);
+  }
+  delegate.RunUntilEventsMatch(event_expecter);
 
   // Expects modify on /watched_folder/subfolder/file.
   ASSERT_TRUE(WriteFile(file, "test123"));
-  ASSERT_TRUE(WaitForEvent());
+  event_expecter.AddExpectedEventForPath(file);
+  delegate.RunUntilEventsMatch(event_expecter);
 
   // Expects delete on /watched_folder/subfolder/file.
   ASSERT_TRUE(DeleteFile(file));
-  ASSERT_TRUE(WaitForEvent());
+  event_expecter.AddExpectedEventForPath(file);
+  delegate.RunUntilEventsMatch(event_expecter);
 
   // Expects delete on /watched_folder/subfolder.
   ASSERT_TRUE(DeleteFile(subfolder));
-  ASSERT_TRUE(WaitForEvent());
-
-  std::vector<base::FilePath> expected_paths{subfolder, file, file,
-                                             file,      file, subfolder};
-  EXPECT_EQ(delegate->get_observed_paths(), expected_paths);
+  event_expecter.AddExpectedEventForPath(subfolder);
+  delegate.RunUntilEventsMatch(event_expecter);
 }
 
 TEST_F(FilePathWatcherTest, ReturnFullPath_NonRecursiveInRootFolder) {
@@ -1153,31 +1394,33 @@ TEST_F(FilePathWatcherTest, ReturnFullPath_NonRecursiveInRootFolder) {
   FilePath watched_folder(temp_dir_.GetPath().AppendASCII("watched_folder"));
   FilePath file(watched_folder.AppendASCII("file"));
 
-  ASSERT_TRUE(base::CreateDirectory(watched_folder));
+  ASSERT_TRUE(CreateDirectory(watched_folder));
 
-  auto delegate = std::make_unique<TestDelegate>(collector());
+  TestDelegate delegate;
+  AccumulatingEventExpecter event_expecter;
   ASSERT_TRUE(
-      SetupWatchWithOptions(watched_folder, &directory_watcher, delegate.get(),
-                            {.type = base::FilePathWatcher::Type::kNonRecursive,
+      SetupWatchWithOptions(watched_folder, &directory_watcher, &delegate,
+                            {.type = FilePathWatcher::Type::kNonRecursive,
                              .report_modified_path = true}));
 
-  // Triggers three events:
+  // Triggers two events:
   // create on /watched_folder/file.
   // modify on /watched_folder/file.
   ASSERT_TRUE(WriteFile(file, "test"));
-  ASSERT_TRUE(WaitForEvent());
-  ASSERT_TRUE(WaitForEvent());
+  for (size_t i = 0; i < kExpectedEventsForNewFileWrite; ++i) {
+    event_expecter.AddExpectedEventForPath(file);
+  }
+  delegate.RunUntilEventsMatch(event_expecter);
 
   // Expects modify on /watched_folder/file.
   ASSERT_TRUE(WriteFile(file, "test123"));
-  ASSERT_TRUE(WaitForEvent());
+  event_expecter.AddExpectedEventForPath(file);
+  delegate.RunUntilEventsMatch(event_expecter);
 
   // Expects delete on /watched_folder/file.
   ASSERT_TRUE(DeleteFile(file));
-  ASSERT_TRUE(WaitForEvent());
-
-  std::vector<base::FilePath> expected_paths{file, file, file, file};
-  EXPECT_EQ(delegate->get_observed_paths(), expected_paths);
+  event_expecter.AddExpectedEventForPath(file);
+  delegate.RunUntilEventsMatch(event_expecter);
 }
 
 TEST_F(FilePathWatcherTest, ReturnFullPath_NonRecursiveRemoveEnclosingFolder) {
@@ -1187,26 +1430,26 @@ TEST_F(FilePathWatcherTest, ReturnFullPath_NonRecursiveRemoveEnclosingFolder) {
   FilePath watched_folder(folder.AppendASCII("watched_folder"));
   FilePath file(watched_folder.AppendASCII("file"));
 
-  ASSERT_TRUE(base::CreateDirectory(watched_folder));
+  ASSERT_TRUE(CreateDirectory(watched_folder));
   ASSERT_TRUE(WriteFile(file, "test"));
 
-  auto delegate = std::make_unique<TestDelegate>(collector());
+  TestDelegate delegate;
+  AccumulatingEventExpecter event_expecter;
   ASSERT_TRUE(
-      SetupWatchWithOptions(watched_folder, &directory_watcher, delegate.get(),
-                            {.type = base::FilePathWatcher::Type::kNonRecursive,
+      SetupWatchWithOptions(watched_folder, &directory_watcher, &delegate,
+                            {.type = FilePathWatcher::Type::kNonRecursive,
                              .report_modified_path = true}));
 
-  // Triggers four events:
+  // Triggers three events:
   // delete on /watched_folder/file.
   // delete on /watched_folder twice.
+  // TODO(https://crbug.com/1432044): Figure out why duplicate events are fired
+  // on `watched_folder`.
   ASSERT_TRUE(DeletePathRecursively(folder));
-  ASSERT_TRUE(WaitForEvent());
-  ASSERT_TRUE(WaitForEvent());
-  ASSERT_TRUE(WaitForEvent());
-
-  std::vector<base::FilePath> expected_paths{file, watched_folder,
-                                             watched_folder};
-  EXPECT_EQ(delegate->get_observed_paths(), expected_paths);
+  event_expecter.AddExpectedEventForPath(file);
+  event_expecter.AddExpectedEventForPath(watched_folder);
+  event_expecter.AddExpectedEventForPath(watched_folder);
+  delegate.RunUntilEventsMatch(event_expecter);
 }
 
 TEST_F(FilePathWatcherTest, ReturnWatchedPath_RecursiveInRootFolder) {
@@ -1214,31 +1457,32 @@ TEST_F(FilePathWatcherTest, ReturnWatchedPath_RecursiveInRootFolder) {
   FilePath watched_folder(temp_dir_.GetPath().AppendASCII("watched_folder"));
   FilePath file(watched_folder.AppendASCII("file"));
 
-  ASSERT_TRUE(base::CreateDirectory(watched_folder));
+  ASSERT_TRUE(CreateDirectory(watched_folder));
 
-  auto delegate = std::make_unique<TestDelegate>(collector());
+  TestDelegate delegate;
+  AccumulatingEventExpecter event_expecter;
   ASSERT_TRUE(
-      SetupWatchWithOptions(watched_folder, &directory_watcher, delegate.get(),
-                            {.type = base::FilePathWatcher::Type::kRecursive}));
+      SetupWatchWithOptions(watched_folder, &directory_watcher, &delegate,
+                            {.type = FilePathWatcher::Type::kRecursive}));
 
-  // Triggers three events:
+  // Triggers two events:
   // create on /watched_folder.
   // modify on /watched_folder.
   ASSERT_TRUE(WriteFile(file, "test"));
-  ASSERT_TRUE(WaitForEvent());
-  ASSERT_TRUE(WaitForEvent());
+  for (size_t i = 0; i < kExpectedEventsForNewFileWrite; ++i) {
+    event_expecter.AddExpectedEventForPath(watched_folder);
+  }
+  delegate.RunUntilEventsMatch(event_expecter);
 
   // Expects modify on /watched_folder.
   ASSERT_TRUE(WriteFile(file, "test123"));
-  ASSERT_TRUE(WaitForEvent());
+  event_expecter.AddExpectedEventForPath(watched_folder);
+  delegate.RunUntilEventsMatch(event_expecter);
 
   // Expects delete on /watched_folder.
   ASSERT_TRUE(DeleteFile(file));
-  ASSERT_TRUE(WaitForEvent());
-
-  std::vector<base::FilePath> expected_paths{watched_folder, watched_folder,
-                                             watched_folder, watched_folder};
-  EXPECT_EQ(delegate->get_observed_paths(), expected_paths);
+  event_expecter.AddExpectedEventForPath(watched_folder);
+  delegate.RunUntilEventsMatch(event_expecter);
 }
 
 TEST_F(FilePathWatcherTest, ReturnWatchedPath_NonRecursiveInRootFolder) {
@@ -1246,47 +1490,48 @@ TEST_F(FilePathWatcherTest, ReturnWatchedPath_NonRecursiveInRootFolder) {
   FilePath watched_folder(temp_dir_.GetPath().AppendASCII("watched_folder"));
   FilePath file(watched_folder.AppendASCII("file"));
 
-  ASSERT_TRUE(base::CreateDirectory(watched_folder));
+  ASSERT_TRUE(CreateDirectory(watched_folder));
 
-  auto delegate = std::make_unique<TestDelegate>(collector());
-  ASSERT_TRUE(SetupWatchWithOptions(
-      watched_folder, &directory_watcher, delegate.get(),
-      {.type = base::FilePathWatcher::Type::kNonRecursive}));
+  TestDelegate delegate;
+  AccumulatingEventExpecter event_expecter;
+  ASSERT_TRUE(
+      SetupWatchWithOptions(watched_folder, &directory_watcher, &delegate,
+                            {.type = FilePathWatcher::Type::kNonRecursive}));
 
-  // Triggers three events:
+  // Triggers two events:
   // Expects create /watched_folder.
   // Expects modify /watched_folder.
   ASSERT_TRUE(WriteFile(file, "test"));
-  ASSERT_TRUE(WaitForEvent());
-  ASSERT_TRUE(WaitForEvent());
+  for (size_t i = 0; i < kExpectedEventsForNewFileWrite; ++i) {
+    event_expecter.AddExpectedEventForPath(watched_folder);
+  }
+  delegate.RunUntilEventsMatch(event_expecter);
 
   // Expects modify on /watched_folder.
   ASSERT_TRUE(WriteFile(file, "test123"));
-  ASSERT_TRUE(WaitForEvent());
+  event_expecter.AddExpectedEventForPath(watched_folder);
+  delegate.RunUntilEventsMatch(event_expecter);
 
   // Expects delete on /watched_folder.
   ASSERT_TRUE(DeleteFile(file));
-  ASSERT_TRUE(WaitForEvent());
-
-  std::vector<base::FilePath> expected_paths {watched_folder, watched_folder,
-                              watched_folder, watched_folder};
-  EXPECT_EQ(delegate->get_observed_paths(), expected_paths);
+  event_expecter.AddExpectedEventForPath(watched_folder);
+  delegate.RunUntilEventsMatch(event_expecter);
 }
+
 #endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) ||
         // BUILDFLAG(IS_ANDROID)
 
-enum Permission {
-  Read,
-  Write,
-  Execute
-};
+namespace {
+
+enum Permission { Read, Write, Execute };
 
 #if BUILDFLAG(IS_APPLE)
 bool ChangeFilePermissions(const FilePath& path, Permission perm, bool allow) {
   struct stat stat_buf;
 
-  if (stat(path.value().c_str(), &stat_buf) != 0)
+  if (stat(path.value().c_str(), &stat_buf) != 0) {
     return false;
+  }
 
   mode_t mode = 0;
   switch (perm) {
@@ -1312,6 +1557,8 @@ bool ChangeFilePermissions(const FilePath& path, Permission perm, bool allow) {
 }
 #endif  // BUILDFLAG(IS_APPLE)
 
+}  // namespace
+
 #if BUILDFLAG(IS_APPLE)
 // Linux implementation of FilePathWatcher doesn't catch attribute changes.
 // http://crbug.com/78043
@@ -1326,26 +1573,30 @@ TEST_F(FilePathWatcherTest, DirAttributesChanged) {
   FilePath test_dir2(test_dir1.AppendASCII("DirAttributesChangedDir2"));
   FilePath test_file(test_dir2.AppendASCII("DirAttributesChangedFile"));
   // Setup a directory hierarchy.
-  ASSERT_TRUE(base::CreateDirectory(test_dir1));
-  ASSERT_TRUE(base::CreateDirectory(test_dir2));
+  ASSERT_TRUE(CreateDirectory(test_dir1));
+  ASSERT_TRUE(CreateDirectory(test_dir2));
   ASSERT_TRUE(WriteFile(test_file, "content"));
 
   FilePathWatcher watcher;
-  std::unique_ptr<TestDelegate> delegate(new TestDelegate(collector()));
-  ASSERT_TRUE(SetupWatch(test_file, &watcher, delegate.get(),
+  TestDelegate delegate;
+  AccumulatingEventExpecter event_expecter;
+  ASSERT_TRUE(SetupWatch(test_file, &watcher, &delegate,
                          FilePathWatcher::Type::kNonRecursive));
 
   // We should not get notified in this case as it hasn't affected our ability
   // to access the file.
   ASSERT_TRUE(ChangeFilePermissions(test_dir1, Read, false));
-  ASSERT_FALSE(WaitForEventWithTimeout(TestTimeouts::tiny_timeout()));
   ASSERT_TRUE(ChangeFilePermissions(test_dir1, Read, true));
+  // TODO(https://crbug.com/1432064): Expect that no events are fired.
 
   // We should get notified in this case because filepathwatcher can no
-  // longer access the file
+  // longer access the file.
   ASSERT_TRUE(ChangeFilePermissions(test_dir1, Execute, false));
-  ASSERT_TRUE(WaitForEvent());
+  event_expecter.AddExpectedEventForPath(test_file);
+  delegate.RunUntilEventsMatch(event_expecter);
+
   ASSERT_TRUE(ChangeFilePermissions(test_dir1, Execute, true));
+  // TODO(https://crbug.com/1432064): Expect that no events are fired.
 }
 
 #endif  // BUILDFLAG(IS_APPLE)
@@ -1358,8 +1609,8 @@ TEST_F(FilePathWatcherTest, TrivialNoDir) {
   const FilePath non_existent = tmp_dir.Append(FILE_PATH_LITERAL("nope"));
 
   FilePathWatcher watcher;
-  auto delegate = std::make_unique<TestDelegate>(collector());
-  ASSERT_FALSE(SetupWatch(non_existent, &watcher, delegate.get(),
+  TestDelegate delegate;
+  ASSERT_FALSE(SetupWatch(non_existent, &watcher, &delegate,
                           FilePathWatcher::Type::kTrivial));
 }
 
@@ -1368,8 +1619,8 @@ TEST_F(FilePathWatcherTest, TrivialDirStart) {
   const FilePath tmp_dir = temp_dir_.GetPath();
 
   FilePathWatcher watcher;
-  auto delegate = std::make_unique<TestDelegate>(collector());
-  ASSERT_TRUE(SetupWatch(tmp_dir, &watcher, delegate.get(),
+  TestDelegate delegate;
+  ASSERT_TRUE(SetupWatch(tmp_dir, &watcher, &delegate,
                          FilePathWatcher::Type::kTrivial));
 }
 
@@ -1378,12 +1629,14 @@ TEST_F(FilePathWatcherTest, TrivialDirChange) {
   const FilePath tmp_dir = temp_dir_.GetPath();
 
   FilePathWatcher watcher;
-  auto delegate = std::make_unique<TestDelegate>(collector());
-  ASSERT_TRUE(SetupWatch(tmp_dir, &watcher, delegate.get(),
+  TestDelegate delegate;
+  AccumulatingEventExpecter event_expecter;
+  ASSERT_TRUE(SetupWatch(tmp_dir, &watcher, &delegate,
                          FilePathWatcher::Type::kTrivial));
 
-  ASSERT_TRUE(TouchFile(tmp_dir, base::Time::Now(), base::Time::Now()));
-  ASSERT_TRUE(WaitForEvent());
+  ASSERT_TRUE(TouchFile(tmp_dir, Time::Now(), Time::Now()));
+  event_expecter.AddExpectedEventForPath(tmp_dir);
+  delegate.RunUntilEventsMatch(event_expecter);
 }
 
 // Observe no change when a parent is modified.
@@ -1396,13 +1649,14 @@ TEST_F(FilePathWatcherTest, TrivialParentDirChange) {
   ASSERT_TRUE(CreateDirectory(sub_dir2));
 
   FilePathWatcher watcher;
-  auto delegate = std::make_unique<TestDelegate>(collector());
-  ASSERT_TRUE(SetupWatch(sub_dir2, &watcher, delegate.get(),
+  TestDelegate delegate;
+  AccumulatingEventExpecter event_expecter;
+  ASSERT_TRUE(SetupWatch(sub_dir2, &watcher, &delegate,
                          FilePathWatcher::Type::kTrivial));
 
   // There should be no notification for a change to |sub_dir2|'s parent.
   ASSERT_TRUE(Move(sub_dir1, tmp_dir.Append(FILE_PATH_LITERAL("over_here"))));
-  ASSERT_FALSE(WaitForEventWithTimeout(TestTimeouts::tiny_timeout()));
+  delegate.RunUntilEventsMatch(event_expecter);
 }
 
 // Do not crash when a directory is moved; https://crbug.com/1156603.
@@ -1413,17 +1667,16 @@ TEST_F(FilePathWatcherTest, TrivialDirMove) {
   ASSERT_TRUE(CreateDirectory(sub_dir));
 
   FilePathWatcher watcher;
-  auto delegate = std::make_unique<TestDelegate>(collector());
-  delegate->set_expect_error();
-  ASSERT_TRUE(SetupWatch(sub_dir, &watcher, delegate.get(),
+  TestDelegate delegate;
+  AccumulatingEventExpecter event_expecter;
+  ASSERT_TRUE(SetupWatch(sub_dir, &watcher, &delegate,
                          FilePathWatcher::Type::kTrivial));
 
   ASSERT_TRUE(Move(sub_dir, tmp_dir.Append(FILE_PATH_LITERAL("over_here"))));
-  ASSERT_TRUE(WaitForEvent());
+  event_expecter.AddExpectedEventForPath(sub_dir, /**error=*/true);
+  delegate.RunUntilEventsMatch(event_expecter);
 }
 
 #endif  // BUILDFLAG(IS_APPLE)
-
-}  // namespace
 
 }  // namespace base

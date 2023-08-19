@@ -299,39 +299,31 @@ bool IsFingerprintEnabled(Profile* profile, Purpose purpose) {
 }
 
 void AddFingerprintResources(content::WebUIDataSource* html_source) {
-  int resource_id_dark;
-  int resource_id_light;
+  int resource_id;
   switch (GetFingerprintLocation()) {
     case FingerprintLocation::TABLET_POWER_BUTTON:
-      resource_id_dark = IDR_FINGERPRINT_TABLET_ANIMATION_DARK;
-      resource_id_light = IDR_FINGERPRINT_TABLET_ANIMATION_LIGHT;
+      resource_id = IDR_FINGERPRINT_TABLET_ANIMATION;
       break;
     case FingerprintLocation::KEYBOARD_BOTTOM_RIGHT:
-      resource_id_dark = IDR_FINGERPRINT_LAPTOP_BOTTOM_RIGHT_ANIMATION_DARK;
-      resource_id_light = IDR_FINGERPRINT_LAPTOP_BOTTOM_RIGHT_ANIMATION_LIGHT;
+      resource_id = IDR_FINGERPRINT_LAPTOP_BOTTOM_RIGHT_ANIMATION;
       break;
     case FingerprintLocation::KEYBOARD_BOTTOM_LEFT:
-      resource_id_dark = IDR_FINGERPRINT_LAPTOP_BOTTOM_LEFT_ANIMATION_DARK;
-      resource_id_light = IDR_FINGERPRINT_LAPTOP_BOTTOM_LEFT_ANIMATION_LIGHT;
+      resource_id = IDR_FINGERPRINT_LAPTOP_BOTTOM_LEFT_ANIMATION;
       break;
     case FingerprintLocation::LEFT_OF_POWER_BUTTON_TOP_RIGHT:
-      resource_id_dark =
-          IDR_FINGERPRINT_LAPTOP_LEFT_OF_POWER_BUTTON_TOP_RIGHT_ANIMATION_DARK;
-      resource_id_light =
-          IDR_FINGERPRINT_LAPTOP_LEFT_OF_POWER_BUTTON_TOP_RIGHT_ANIMATION_LIGHT;
+      resource_id =
+          IDR_FINGERPRINT_LAPTOP_LEFT_OF_POWER_BUTTON_TOP_RIGHT_ANIMATION;
       break;
     case FingerprintLocation::KEYBOARD_TOP_RIGHT:
     case FingerprintLocation::RIGHT_SIDE:
     case FingerprintLocation::LEFT_SIDE:
     case FingerprintLocation::UNKNOWN:
-      resource_id_dark = IDR_FINGERPRINT_DEFAULT_ANIMATION_DARK;
-      resource_id_light = IDR_FINGERPRINT_DEFAULT_ANIMATION_LIGHT;
+      resource_id = IDR_FINGERPRINT_DEFAULT_ANIMATION;
       break;
   }
-  html_source->AddResourcePath("fingerprint_scanner_animation_dark.json",
-                               resource_id_dark);
-  html_source->AddResourcePath("fingerprint_scanner_animation_light.json",
-                               resource_id_light);
+
+  html_source->AddResourcePath("fingerprint_scanner_animation.json",
+                               resource_id);
 
   // To use lottie, the worker-src CSP needs to be updated for the web ui
   // that is using it. Since as of now there are only a couple of webuis

@@ -228,6 +228,7 @@ extern const char kManifestEnabledRulesCountHistogram[];
 extern const char kUpdateDynamicRulesStatusHistogram[];
 extern const char kReadDynamicRulesJSONStatusHistogram[];
 extern const char kIsLargeRegexHistogram[];
+extern const char kRegexRuleSizeHistogram[];
 extern const char kLoadRulesetResultHistogram[];
 
 // Placeholder text to use for getBadgeText extension function call, when the
@@ -272,6 +273,7 @@ constexpr auto kDNRRequestHeaderAppendAllowList =
          {"trailer", ""},
          {"transfer-encoding", ", "},
          {"upgrade", ", "},
+         {"user-agent", " "},
          {"via", ", "},
          {"want-digest", ", "},
          {"x-forwarded-for", ", "}});

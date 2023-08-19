@@ -31,10 +31,6 @@
 #import "ios/web/web_thread_impl.h"
 #import "ios/web/webui/url_data_manager_ios.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 namespace web {
 
 // The currently-running WebMainLoop.  There can be one or zero.

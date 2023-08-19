@@ -24,6 +24,9 @@
 class TreeUi {
   /** @param {!HTMLUListElement} rootElt */
   constructor(rootElt) {
+    /** @protected @const {!HTMLUListElement} rootElt */
+    this.rootElt = rootElt;
+
     /**
      * @protected {HTMLCollectionOf<!TreeNodeElement>} Collection of all tree
      * node elements. Updates itself automatically.
@@ -125,6 +128,44 @@ class TreeUi {
   }
 
   /**
+   * @param {!HTMLAnchorElement} link
+   * @return {!HTMLLIElement}
+   * @protected
+   */
+  getTreeItemFromLink(link) {
+    // Canonical structure:
+    // <li>                       <!-- |treeitem| -->
+    //   <a class="node">...</a>  <!-- |link| -->
+    //   <ul>...</ul>             <!-- |group| -->
+    // </li>
+    return /** @type {!HTMLLIElement} */ (link.parentElement);
+  }
+
+  /**
+   * @param {!HTMLAnchorElement} link
+   * @return {!HTMLUListElement}
+   * @protected
+   */
+  getGroupFromLink(link) {
+    return /** @type {!HTMLUListElement} */ (link.nextElementSibling);
+  }
+
+  /**
+   * @param {!HTMLElement} link
+   * @param {!Array<DocumentFragment>} childrenElements
+   * @protected
+   */
+  autoExpandAttentionWorthyChild(link, childrenElements) {
+    if (childrenElements.length === 1) {
+      // Open inner element if it only has a single child; this ensures nodes
+      // like "java"->"com"->"google" are opened all at once.
+      const node = /** @type {!TreeNodeElement} */ (
+          childrenElements[0].querySelector('.node'));
+      node.click();
+    }
+  }
+
+  /**
    * Populates |link| with
    * @param {!HTMLAnchorElement} link
    * @protected
@@ -132,16 +173,10 @@ class TreeUi {
   async expandGroupElement(link) {
     const childrenData = await this.getGroupChildrenData(link);
     const newElements = childrenData.map((data) => this.makeNodeElement(data));
-    if (newElements.length === 1) {
-      // Open inner element if it only has a single child; this ensures nodes
-      // like "java"->"com"->"google" are opened all at once.
-      /** @type {!TreeNodeElement} */
-      const childLink = newElements[0].querySelector('.node');
-      childLink.click();  // Can trigger further expansion.
-    }
+    this.autoExpandAttentionWorthyChild(link, newElements);
     const newElementsFragment = dom.createFragment(newElements);
     requestAnimationFrame(() => {
-      link.nextElementSibling.appendChild(newElementsFragment);
+      this.getGroupFromLink(link).appendChild(newElementsFragment);
     });
   }
 
@@ -152,15 +187,9 @@ class TreeUi {
    */
   async toggleGroupElement(event) {
     event.preventDefault();
-
-    // Canonical structure:
-    // <li>                       <!-- |treeitem| -->
-    //   <a class="node">...</a>  <!-- |link| -->
-    //   <ul>...</ul>             <!-- |group| -->
-    // </li>
     const link = /** @type {!HTMLAnchorElement} */ (event.currentTarget);
-    const treeitem = /** @type {!HTMLLIElement} */ (link.parentElement);
-    const group = /** @type {!HTMLUListElement} */ (link.nextElementSibling);
+    const treeitem = this.getTreeItemFromLink(link);
+    const group = this.getGroupFromLink(link);
 
     const isExpanded = treeitem.getAttribute('aria-expanded') === 'true';
     if (isExpanded) {
@@ -282,6 +311,35 @@ class TreeUi {
     return false;
   }
 
+  /**
+   * Handler for gaining focus relative to other TreeUi instances.
+   * @protected
+   */
+  onTreeFocus() {}
+
+  /**
+   * Handler for losing focus relative to other TreeUi instances, i.e., this
+   * does NOT fire when non-TreeUi UI elements gain focus.
+   * @protected
+   */
+  onTreeBlur() {}
+
   /** @public */
-  init() {}
+  focus() {
+    if (TreeUi.activeTreeUi !== this) {
+      if (TreeUi.activeTreeUi)
+        TreeUi.activeTreeUi.onTreeBlur();
+      TreeUi.activeTreeUi = this;
+      TreeUi.activeTreeUi.onTreeFocus();
+    }
+  }
+
+  /** @public */
+  init() {
+    // Each instance contributes to managing focus / blur dynamics.
+    this.rootElt.addEventListener('click', () => this.focus());
+  }
 }
+
+/** @type {?TreeUi} */
+TreeUi.activeTreeUi = null;

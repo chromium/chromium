@@ -10,6 +10,7 @@ import android.util.ArrayMap;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
+import org.chromium.chrome.browser.omnibox.OmniboxMetrics;
 import org.chromium.chrome.browser.omnibox.suggestions.SuggestionHost;
 import org.chromium.components.browser_ui.widget.chips.ChipProperties;
 import org.chromium.components.omnibox.AutocompleteMatch;
@@ -40,12 +41,17 @@ public class ActionChipsProcessor {
     }
 
     public void onUrlFocusChange(boolean hasFocus) {
-        if (hasFocus) {
+        // Note: do not record any histograms if we did not show Actions.
+        if (hasFocus || mVisibleActions.isEmpty()) {
             return;
         }
+
         mVisibleActions.forEach((OmniboxAction action, Integer position) -> {
-            action.recordActionShown(position, action == mExecutedAction);
+            var wasValid = action.recordActionShown(position, action == mExecutedAction);
+            OmniboxMetrics.recordOmniboxActionIsValid(wasValid);
         });
+
+        OmniboxMetrics.recordOmniboxActionIsUsed(mExecutedAction != null);
         mVisibleActions.clear();
     }
 
@@ -61,7 +67,7 @@ public class ActionChipsProcessor {
      * @param position The position of the suggestion with OmniboxAction(s) on the suggestion list.
      */
     public void populateModel(AutocompleteMatch suggestion, PropertyModel model, int position) {
-        if (!doesProcessSuggestion(suggestion, position)) {
+        if (suggestion.getActions().isEmpty()) {
             model.set(ActionChipsProperties.ACTION_CHIPS, null);
             return;
         }
@@ -85,10 +91,6 @@ public class ActionChipsProcessor {
         }
 
         model.set(ActionChipsProperties.ACTION_CHIPS, modelList);
-    }
-
-    private boolean doesProcessSuggestion(AutocompleteMatch suggestion, int position) {
-        return !suggestion.getActions().isEmpty();
     }
 
     /**

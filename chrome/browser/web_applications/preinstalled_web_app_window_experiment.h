@@ -10,10 +10,10 @@
 #include "base/memory/weak_ptr.h"
 #include "base/one_shot_event.h"
 #include "base/scoped_observation.h"
-#include "chrome/browser/web_applications/app_registrar_observer.h"
 #include "chrome/browser/web_applications/mojom/user_display_mode.mojom-forward.h"
 #include "chrome/browser/web_applications/web_app_id.h"
 #include "chrome/browser/web_applications/web_app_registrar.h"
+#include "chrome/browser/web_applications/web_app_registrar_observer.h"
 #include "components/services/app_service/public/cpp/preferred_apps_list_handle.h"
 
 class Profile;
@@ -38,7 +38,7 @@ BASE_DECLARE_FEATURE(kWebAppWindowExperimentCleanup);
 // - Can be deleted once the experiment has run (likely by late 2023). See
 //   http://crbug.com/1385246 for details.
 class PreinstalledWebAppWindowExperiment
-    : public AppRegistrarObserver,
+    : public WebAppRegistrarObserver,
       public apps::PreferredAppsListHandle::Observer {
  public:
   explicit PreinstalledWebAppWindowExperiment(Profile* profile);
@@ -73,7 +73,7 @@ class PreinstalledWebAppWindowExperiment
   void StartOverridesAndObservations();
   void CleanUp();
 
-  // AppRegistrarObserver:
+  // WebAppRegistrarObserver:
   void OnAppRegistrarDestroyed() override;
   void OnWebAppUserDisplayModeChanged(
       const AppId& app_id,
@@ -96,7 +96,7 @@ class PreinstalledWebAppWindowExperiment
 
   base::OneShotEvent setup_done_for_testing_;
 
-  base::ScopedObservation<WebAppRegistrar, AppRegistrarObserver>
+  base::ScopedObservation<WebAppRegistrar, WebAppRegistrarObserver>
       registrar_observation_{this};
 
   base::ScopedObservation<apps::PreferredAppsListHandle,

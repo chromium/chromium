@@ -1,5 +1,0 @@
-Tests the Timeline API instrumentation of a network resource received data
-
-Script evaluated.
-Resource received data has length, test passed.
-

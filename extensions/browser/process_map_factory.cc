@@ -43,7 +43,8 @@ KeyedService* ProcessMapFactory::BuildServiceInstanceFor(
 BrowserContext* ProcessMapFactory::GetBrowserContextToUse(
     BrowserContext* context) const {
   // Redirected in incognito.
-  return ExtensionsBrowserClient::Get()->GetOriginalContext(context);
+  return ExtensionsBrowserClient::Get()->GetContextRedirectedToOriginal(
+      context, /*force_guest_profile=*/true);
 }
 
 }  // namespace extensions

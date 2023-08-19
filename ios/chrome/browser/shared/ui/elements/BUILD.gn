@@ -3,7 +3,6 @@
 # found in the LICENSE file.
 
 source_set("elements") {
-  configs += [ "//build/config/compiler:enable_arc" ]
   sources = [
     "crossfade_label.h",
     "crossfade_label.mm",
@@ -41,7 +40,6 @@ source_set("elements") {
 }
 
 source_set("activity_overlay") {
-  configs += [ "//build/config/compiler:enable_arc" ]
   sources = [
     "activity_overlay_coordinator.h",
     "activity_overlay_coordinator.mm",
@@ -55,7 +53,6 @@ source_set("activity_overlay") {
 }
 
 source_set("constants") {
-  configs += [ "//build/config/compiler:enable_arc" ]
   sources = [
     "elements_constants.h",
     "elements_constants.mm",
@@ -64,7 +61,6 @@ source_set("constants") {
 }
 
 source_set("unit_tests") {
-  configs += [ "//build/config/compiler:enable_arc" ]
   testonly = true
   sources = [
     "activity_overlay_coordinator_unittest.mm",
@@ -91,7 +87,6 @@ source_set("unit_tests") {
 }
 
 source_set("elements_internal") {
-  configs += [ "//build/config/compiler:enable_arc" ]
   sources = [
     "activity_overlay_view.h",
     "activity_overlay_view.mm",
@@ -118,10 +113,7 @@ source_set("elements_internal") {
 }
 
 source_set("eg_test_support+eg2") {
-  configs += [
-    "//build/config/compiler:enable_arc",
-    "//build/config/ios:xctest_config",
-  ]
+  configs += [ "//build/config/ios:xctest_config" ]
   testonly = true
   sources = [
     "activity_overlay_egtest_util.h",

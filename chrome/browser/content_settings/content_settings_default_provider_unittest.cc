@@ -6,10 +6,10 @@
 
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
-#include "chrome/browser/content_settings/content_settings_mock_observer.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/content_settings/core/browser/content_settings_default_provider.h"
+#include "components/content_settings/core/browser/content_settings_mock_observer.h"
 #include "components/content_settings/core/browser/content_settings_observer.h"
 #include "components/content_settings/core/browser/content_settings_utils.h"
 #include "components/content_settings/core/browser/website_settings_info.h"
@@ -175,62 +175,6 @@ TEST_F(ContentSettingsDefaultProviderTest, DiscardObsoletePreferences) {
   EXPECT_TRUE(prefs->HasPrefPath(kGeolocationPrefPath));
   EXPECT_EQ(CONTENT_SETTING_BLOCK, prefs->GetInteger(kGeolocationPrefPath));
 }
-
-#if BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_WIN)
-// Tests that the protected media identifier setting is migrated.
-TEST_F(ContentSettingsDefaultProviderTest,
-       MigrateProtectedMediaIdentifierPreferenceBlock) {
-  static const char kDeprecatedEnableDRM[] = "settings.privacy.drm_enabled";
-
-  PrefService* prefs = profile_.GetPrefs();
-  // Set some pref data.
-  prefs->SetBoolean(kDeprecatedEnableDRM, false);
-
-  // Instantiate a new DefaultProvider; can't use |provider_| because we want to
-  // test the constructor's behavior after setting the above.
-  DefaultProvider provider(prefs, false, false);
-
-  // Check that the setting has been migrated.
-  EXPECT_FALSE(prefs->HasPrefPath(kDeprecatedEnableDRM));
-
-  WebsiteSettingsRegistry* website_settings =
-      WebsiteSettingsRegistry::GetInstance();
-  EXPECT_TRUE(prefs->HasPrefPath(
-      website_settings->Get(ContentSettingsType::PROTECTED_MEDIA_IDENTIFIER)
-          ->default_value_pref_name()));
-  EXPECT_EQ(
-      CONTENT_SETTING_BLOCK,
-      prefs->GetInteger(
-          website_settings->Get(ContentSettingsType::PROTECTED_MEDIA_IDENTIFIER)
-              ->default_value_pref_name()));
-}
-TEST_F(ContentSettingsDefaultProviderTest,
-       MigrateProtectedMediaIdentifierPreferenceAllow) {
-  static const char kDeprecatedEnableDRM[] = "settings.privacy.drm_enabled";
-
-  PrefService* prefs = profile_.GetPrefs();
-  // Set some pref data.
-  prefs->SetBoolean(kDeprecatedEnableDRM, true);
-
-  // Instantiate a new DefaultProvider; can't use |provider_| because we want to
-  // test the constructor's behavior after setting the above.
-  DefaultProvider provider(prefs, false, false);
-
-  // Check that the setting has been migrated.
-  EXPECT_FALSE(prefs->HasPrefPath(kDeprecatedEnableDRM));
-
-  WebsiteSettingsRegistry* website_settings =
-      WebsiteSettingsRegistry::GetInstance();
-  EXPECT_TRUE(prefs->HasPrefPath(
-      website_settings->Get(ContentSettingsType::PROTECTED_MEDIA_IDENTIFIER)
-          ->default_value_pref_name()));
-  EXPECT_EQ(
-      CONTENT_SETTING_ALLOW,
-      prefs->GetInteger(
-          website_settings->Get(ContentSettingsType::PROTECTED_MEDIA_IDENTIFIER)
-              ->default_value_pref_name()));
-}
-#endif  // BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_WIN)
 
 TEST_F(ContentSettingsDefaultProviderTest, OffTheRecord) {
   DefaultProvider otr_provider(profile_.GetPrefs(), true /* incognito */,

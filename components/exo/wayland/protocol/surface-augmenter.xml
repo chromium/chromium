@@ -24,7 +24,7 @@
     DEALINGS IN THE SOFTWARE.
   </copyright>
 
-  <interface name="surface_augmenter" version="6">
+  <interface name="surface_augmenter" version="8">
     <description summary="surface composition delegation">
       The global interface exposing surface delegated composition
       capabilities is used to instantiate an interface extension for a
@@ -89,7 +89,7 @@
     </request>
   </interface>
 
-  <interface name="augmented_surface" version="6">
+  <interface name="augmented_surface" version="8">
     <description summary="delegate composition of a wl_surface">
       An additional interface to a wl_surface object, which allows the
       client to specify the delegated composition of the surface
@@ -113,7 +113,9 @@
     <!-- Note that this might be moved to a different protocol if there is
       usage for it outside of Chrome OS -->
       <description summary="set the surface rounded corners">
-        [Deprecated] Informs the server that it must apply the rounded corners
+        [Deprecated]. Use set_rounded_corners_clip_bounds request below.
+
+        Informs the server that it must apply the rounded corners
         mask filter that shall be applied on next commit. Use
         set_rounded_corners_bounds instead.
       </description>
@@ -138,6 +140,8 @@
     <!-- Note that this might be moved to a different protocol if there is
       usage for it outside of Chrome OS -->
       <description summary="set the surface rounded clip bounds">
+        [Deprecated]. Use set_rounded_corners_clip_bounds request below.
+
         Informs the server that it must apply the rounded clipping mask filter
         that shall be applied on next commit. The mask can be uniform for
         several surfaces and applied uniformally so that two or more
@@ -184,6 +188,50 @@
       </description>
       <arg name="enabled" type="int"/>
     </request>
+
+    <!-- Version 7 additions -->
+
+    <request name="set_rounded_corners_clip_bounds" since="7">
+    <!-- Note that this might be moved to a different protocol if there is
+      usage for it outside of Chrome OS -->
+      <description summary="set the surface rounded corners clip bounds">
+        Informs the server that it must apply the rounded clipping mask filter
+        that shall be applied on next commit. The mask can be uniform for
+        several surfaces and applied uniformally so that two or more
+        surfaces visually look as a single surface with rounded corners.
+        Please note this is can only be used on surfaces that are used as
+        overlays, which must not have any subtrees. The rounding will be
+        ignored if the bounds are outside of the surface.
+      </description>
+      <arg name="x" type="fixed"/>
+      <arg name="y" type="fixed"/>
+      <arg name="width" type="fixed"/>
+      <arg name="height" type="fixed"/>
+      <arg name="top_left" type="fixed" summary="top left corner"/>
+      <arg name="top_right" type="fixed" summary="top right corner"/>
+      <arg name="bottom_right" type="fixed" summary="bottom right corner"/>
+      <arg name="bottom_left" type="fixed" summary="bottom left corner"/>
+    </request>
+
+    <!-- Version 8 additions -->
+
+    <request name="set_clip_rect" since="8">
+      <description summary="sets a subsurface clip rect on surface local coordinates">
+  This schedules a clip rect to be applied when drawing this sub-surface.
+  The clip will be placed with its origin (top left corner pixel) at the
+  location x, y of the surface local coordinate system. The coordinates are not
+  restricted to the surface area. Negative x and y values are allowed.
+
+  If all of x, y, width and height are -1.0, the clip rect is unset instead.
+
+  Initially, surfaces have no clip set.
+  This state is double-buffered, and is applied on the next wl_surface.commit.
+      </description>
+      <arg name="x" type="fixed" summary="x coordinate in the surface local coordinates"/>
+      <arg name="y" type="fixed" summary="y coordinate in the surface local coordinates"/>
+      <arg name="width" type="fixed" summary="width of the clip rect"/>
+      <arg name="height" type="fixed" summary="height of the clip rect"/>
+    </request>
   </interface>
 
   <interface name="augmented_sub_surface" version="5">
@@ -223,6 +271,7 @@
     </request>
     <request name="set_clip_rect" since="4">
       <description summary="sets a subsurface clip rect with subpixel accuracy">
+  [Deprecated] Use set_clip_rect on augmented_surface instead.
   This schedules a clip rect to be applied when drawing this sub-surface.
   The clip will be placed with its origin (top left corner pixel) at the
   location x, y of the parent surface coordinate system. The coordinates are not

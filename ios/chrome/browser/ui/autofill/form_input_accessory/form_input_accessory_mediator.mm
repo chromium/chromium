@@ -4,11 +4,10 @@
 
 #import "ios/chrome/browser/ui/autofill/form_input_accessory/form_input_accessory_mediator.h"
 
+#import "base/apple/foundation_util.h"
 #import "base/ios/block_types.h"
 #import "base/ios/ios_util.h"
-#import "base/mac/foundation_util.h"
 #import "base/metrics/histogram_functions.h"
-#import "base/metrics/user_metrics.h"
 #import "base/strings/sys_string_conversions.h"
 #import "components/autofill/core/browser/personal_data_manager.h"
 #import "components/autofill/core/common/autofill_features.h"
@@ -17,15 +16,12 @@
 #import "components/autofill/ios/browser/personal_data_manager_observer_bridge.h"
 #import "components/autofill/ios/form_util/form_activity_observer_bridge.h"
 #import "components/autofill/ios/form_util/form_activity_params.h"
-#import "components/prefs/pref_service.h"
 #import "ios/chrome/browser/autofill/form_input_accessory_view_handler.h"
 #import "ios/chrome/browser/autofill/form_input_suggestions_provider.h"
 #import "ios/chrome/browser/autofill/form_suggestion_tab_helper.h"
 #import "ios/chrome/browser/autofill/manual_fill/passwords_fetcher.h"
 #import "ios/chrome/browser/default_browser/utils.h"
 #import "ios/chrome/browser/shared/coordinator/chrome_coordinator/chrome_coordinator.h"
-#import "ios/chrome/browser/shared/model/application_context/application_context.h"
-#import "ios/chrome/browser/shared/model/prefs/pref_names.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/shared/public/commands/security_alert_commands.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
@@ -42,10 +38,6 @@
 #import "ios/web/public/js_messaging/web_frames_manager.h"
 #import "ios/web/public/web_state.h"
 #import "ui/base/l10n/l10n_util_mac.h"
-
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
 
 using base::UmaHistogramEnumeration;
 
@@ -218,7 +210,11 @@ using base::UmaHistogramEnumeration;
 }
 
 - (void)dealloc {
-  [self disconnect];
+  // TODO(crbug.com/1454777)
+  DUMP_WILL_BE_CHECK(!_formActivityObserverBridge.get());
+  DUMP_WILL_BE_CHECK(!_personalDataManager);
+  DUMP_WILL_BE_CHECK(!_webState);
+  DUMP_WILL_BE_CHECK(!_webStateList);
 }
 
 - (void)disconnect {
@@ -226,6 +222,7 @@ using base::UmaHistogramEnumeration;
   if (_personalDataManager && _personalDataManagerObserver.get()) {
     _personalDataManager->RemoveObserver(_personalDataManagerObserver.get());
     _personalDataManagerObserver.reset();
+    _personalDataManager = nullptr;
   }
   if (_webState) {
     _webState->RemoveObserver(_webStateObserverBridge.get());
@@ -342,26 +339,6 @@ using base::UmaHistogramEnumeration;
   return ChromiumAccessoryViewTextData();
 }
 
-#pragma mark - BrandingViewControllerDelegate
-
-- (void)brandingIconPressed {
-  base::RecordAction(base::UserMetricsAction("Autofill_BrandingTapped"));
-}
-
-- (BOOL)brandingIconShouldPerformPopAnimation {
-  return GetApplicationContext()->GetLocalState()->GetInteger(
-             prefs::kAutofillBrandingIconAnimationRemainingCountPrefName) > 0;
-}
-
-- (void)brandingIconDidPerformPopAnimation {
-  PrefService* local_state = GetApplicationContext()->GetLocalState();
-  const int current_remaining_count = local_state->GetInteger(
-      prefs::kAutofillBrandingIconAnimationRemainingCountPrefName);
-  local_state->SetInteger(
-      prefs::kAutofillBrandingIconAnimationRemainingCountPrefName,
-      current_remaining_count - 1);
-}
-
 #pragma mark - CRWWebStateObserver
 
 - (void)webStateWasShown:(web::WebState*)webState {
@@ -385,15 +362,15 @@ using base::UmaHistogramEnumeration;
   [self detachFromWebState];
 }
 
-#pragma mark - CRWWebStateListObserver
+#pragma mark - WebStateListObserving
 
-- (void)webStateList:(WebStateList*)webStateList
-    didChangeActiveWebState:(web::WebState*)newWebState
-                oldWebState:(web::WebState*)oldWebState
-                    atIndex:(int)atIndex
-                     reason:(ActiveWebStateChangeReason)reason {
-  [self reset];
-  [self updateWithNewWebState:newWebState];
+- (void)didChangeWebStateList:(WebStateList*)webStateList
+                       change:(const WebStateListChange&)change
+                       status:(const WebStateListStatus&)status {
+  if (status.active_web_state_change()) {
+    [self reset];
+    [self updateWithNewWebState:status.new_active_web_state];
+  }
 }
 
 #pragma mark - Public
@@ -552,6 +529,8 @@ using base::UmaHistogramEnumeration;
 - (void)didSelectSuggestion:(FormSuggestion*)formSuggestion {
   UmaHistogramEnumeration("IOS.Reauth.Password.Autofill",
                           ReauthenticationEvent::kAttempt);
+  LogAutofillUseForDefaultBrowserPromo();
+
   __weak __typeof(self) weakSelf = self;
   auto suggestionHandler = ^() {
     __typeof(self) strongSelf = weakSelf;
@@ -598,6 +577,12 @@ using base::UmaHistogramEnumeration;
                             ReauthenticationEvent::kMissingPasscode);
     suggestionHandler();
   }
+}
+
+- (void)didSelectSuggestion:(FormSuggestion*)formSuggestion
+                     params:(const autofill::FormActivityParams&)params {
+  CHECK(_lastSeenParams == params);
+  [self didSelectSuggestion:formSuggestion];
 }
 
 #pragma mark - PasswordFetcherDelegate

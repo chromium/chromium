@@ -66,7 +66,8 @@ class FakeCryptAuthKeyCreatorFactory : public CryptAuthKeyCreatorImpl::Factory {
   // CryptAuthKeyCreatorImpl::Factory:
   std::unique_ptr<CryptAuthKeyCreator> CreateInstance() override;
 
-  raw_ptr<FakeCryptAuthKeyCreator, ExperimentalAsh> instance_ = nullptr;
+  raw_ptr<FakeCryptAuthKeyCreator, DanglingUntriaged | ExperimentalAsh>
+      instance_ = nullptr;
 };
 
 }  // namespace device_sync

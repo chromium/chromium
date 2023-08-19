@@ -14,7 +14,7 @@
 #include <string>
 #include <vector>
 
-#include "base/mac/scoped_cftyperef.h"
+#include "base/apple/scoped_cftyperef.h"
 #include "base/memory/raw_ptr.h"
 
 namespace safe_browsing {

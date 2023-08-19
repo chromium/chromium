@@ -13,10 +13,6 @@
 #import "ios/chrome/browser/default_browser/utils.h"
 #import "services/metrics/public/cpp/ukm_builders.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 namespace {
 
 void ProvideUmaHistograms() {

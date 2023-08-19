@@ -17,6 +17,7 @@
 #include "chromeos/ash/components/login/auth/auth_status_consumer.h"
 #include "chromeos/ash/components/login/auth/authenticator.h"
 #include "chromeos/ash/components/login/auth/extended_authenticator.h"
+#include "chromeos/ash/components/login/auth/public/auth_callbacks.h"
 #include "chromeos/ash/components/login/auth/public/auth_failure.h"
 #include "chromeos/ash/components/login/auth/public/user_context.h"
 #include "components/user_manager/user_type.h"
@@ -137,6 +138,9 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_LOGIN_AUTH) LoginPerformer
       bool* wildcard_match,
       const absl::optional<user_manager::UserType>& user_type) = 0;
 
+  virtual void LoadAndApplyEarlyPrefs(std::unique_ptr<UserContext> context,
+                                      AuthOperationCallback callback) = 0;
+
  protected:
   // Platform-dependant methods to be implemented by concrete class.
 
@@ -195,11 +199,15 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_LOGIN_AUTH) LoginPerformer
                                    bool has_incomplete_migration);
   void NotifyAllowlistCheckFailure();
 
+  // Callback passed to `LoadAndApplyEarlyPrefs`.
+  void OnEarlyPrefsApplied(std::unique_ptr<UserContext> context,
+                           absl::optional<AuthenticationError> error);
+
   // Used for logging in.
   scoped_refptr<Authenticator> authenticator_;
 
   // Used for metric reporting.
-  const raw_ptr<AuthEventsRecorder, DanglingUntriaged> auth_events_recorder_;
+  const raw_ptr<AuthEventsRecorder> auth_events_recorder_;
 
   // Represents last login failure that was encountered when communicating to
   // sign-in server. AuthFailure.LoginFailureNone() by default.

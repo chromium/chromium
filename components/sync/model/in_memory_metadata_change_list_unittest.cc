@@ -95,13 +95,19 @@ TEST(InMemoryMetadataChangeListTest, ShouldTransferMultipleChanges) {
   state.set_encryption_key_name("ekn");
   cl.UpdateModelTypeState(state);
 
-  sync_pb::EntityMetadata metadata;
-  metadata.set_client_tag_hash("some_hash");
-  cl.UpdateMetadata("client_tag", metadata);
+  sync_pb::EntityMetadata metadata1;
+  metadata1.set_client_tag_hash("some_hash1");
+  cl.UpdateMetadata("client_tag1", metadata1);
+
+  sync_pb::EntityMetadata metadata2;
+  metadata2.set_client_tag_hash("some_hash2");
+  cl.UpdateMetadata("client_tag2", metadata2);
 
   EXPECT_CALL(mock_change_list, UpdateModelTypeState(EqualsProto(state)));
   EXPECT_CALL(mock_change_list,
-              UpdateMetadata("client_tag", EqualsProto(metadata)));
+              UpdateMetadata("client_tag1", EqualsProto(metadata1)));
+  EXPECT_CALL(mock_change_list,
+              UpdateMetadata("client_tag2", EqualsProto(metadata2)));
   cl.TransferChangesTo(&mock_change_list);
 }
 
@@ -125,6 +131,31 @@ TEST(InMemoryMetadataChangeListTest, ShouldTransferClearDespitePriorUpdates) {
 
   EXPECT_CALL(mock_change_list, ClearModelTypeState());
   EXPECT_CALL(mock_change_list, ClearMetadata("client_tag"));
+  cl.TransferChangesTo(&mock_change_list);
+}
+
+TEST(InMemoryMetadataChangeListTest, ShouldDropMetadataChange) {
+  StrictMock<MockMetadataChangeList> mock_change_list;
+  InMemoryMetadataChangeList cl;
+
+  sync_pb::ModelTypeState state;
+  state.set_encryption_key_name("ekn");
+  cl.UpdateModelTypeState(state);
+
+  sync_pb::EntityMetadata metadata1;
+  metadata1.set_client_tag_hash("some_hash1");
+  cl.UpdateMetadata("client_tag1", metadata1);
+
+  sync_pb::EntityMetadata metadata2;
+  metadata2.set_client_tag_hash("some_hash2");
+  cl.UpdateMetadata("client_tag2", metadata2);
+
+  // client_tag1 is not transferred because it was dropped.
+  cl.DropMetadataChangeForStorageKey("client_tag1");
+
+  EXPECT_CALL(mock_change_list, UpdateModelTypeState(EqualsProto(state)));
+  EXPECT_CALL(mock_change_list,
+              UpdateMetadata("client_tag2", EqualsProto(metadata2)));
   cl.TransferChangesTo(&mock_change_list);
 }
 

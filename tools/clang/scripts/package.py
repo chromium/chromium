@@ -336,9 +336,6 @@ def main():
     want.extend([
         # pylint: disable=line-too-long
 
-        # Copy the stdlibc++.so.6 we linked the binaries against.
-        'lib/libstdc++.so.6',
-
         # Add llvm-objcopy for partition extraction on Android.
         'bin/llvm-objcopy',
 
@@ -457,10 +454,12 @@ def main():
         # Builtins for C/C++.
         'lib/clang/$V/lib/windows/clang_rt.builtins-i386.lib',
         'lib/clang/$V/lib/windows/clang_rt.builtins-x86_64.lib',
+        'lib/clang/$V/lib/windows/clang_rt.builtins-aarch64.lib',
 
         # Profile runtime (used by profiler and code coverage).
         'lib/clang/$V/lib/windows/clang_rt.profile-i386.lib',
         'lib/clang/$V/lib/windows/clang_rt.profile-x86_64.lib',
+        'lib/clang/$V/lib/windows/clang_rt.profile-aarch64.lib',
 
         # UndefinedBehaviorSanitizer C runtime (pure C won't link with *_cxx).
         'lib/clang/$V/lib/windows/clang_rt.ubsan_standalone-x86_64.lib',

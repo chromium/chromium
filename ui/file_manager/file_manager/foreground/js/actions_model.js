@@ -828,6 +828,11 @@ export class ActionsModel extends EventTarget {
                             constants.FSP_ACTION_HIDDEN_ONEDRIVE_USER_EMAIL) {
                           return;
                         }
+                        if (action.id ===
+                            constants
+                                .FSP_ACTION_HIDDEN_ONEDRIVE_REAUTHENTICATION_REQUIRED) {
+                          return;
+                        }
                         actions[action.id] = new CustomAction(
                             this.entries_, action.id, action.title || null,
                             this.invalidate_.bind(this));

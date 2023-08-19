@@ -64,7 +64,7 @@ class ArcPlayStoreSearchResult : public ChromeSearchResult,
   std::unique_ptr<arc::IconDecodeRequest> icon_decode_request_;
 
   // |profile_| is owned by ProfileInfo.
-  const raw_ptr<AppListControllerDelegate, ExperimentalAsh>
+  const raw_ptr<AppListControllerDelegate, DanglingUntriaged | ExperimentalAsh>
       list_controller_;  // Owned by AppListClient.
 
   base::WeakPtrFactory<ArcPlayStoreSearchResult> weak_ptr_factory_{this};

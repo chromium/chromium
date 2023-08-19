@@ -6,7 +6,6 @@ package org.chromium.chrome.browser.ui.messages.snackbar;
 
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
-import android.animation.AnimatorSet;
 import android.animation.ObjectAnimator;
 import android.app.Activity;
 import android.graphics.Rect;
@@ -30,11 +29,10 @@ import androidx.annotation.Nullable;
 import org.chromium.base.ApiCompatibilityUtils;
 import org.chromium.chrome.ui.messages.R;
 import org.chromium.components.browser_ui.styles.SemanticColorUtils;
-import org.chromium.components.browser_ui.widget.animation.Interpolators;
 import org.chromium.components.browser_ui.widget.text.TemplatePreservingTextView;
 import org.chromium.ui.base.DeviceFormFactor;
 import org.chromium.ui.base.WindowAndroid;
-import org.chromium.ui.interpolators.BakedBezierInterpolator;
+import org.chromium.ui.interpolators.Interpolators;
 
 /**
  * Visual representation of a snackbar. On phone it matches the width of the activity; on tablet it
@@ -112,7 +110,7 @@ public class SnackbarView {
                 mContainerView.removeOnLayoutChangeListener(this);
                 mContainerView.setTranslationY(getYPositionForMoveAnimation());
                 Animator animator = ObjectAnimator.ofFloat(mContainerView, View.TRANSLATION_Y, 0);
-                animator.setInterpolator(Interpolators.DECELERATE_INTERPOLATOR);
+                animator.setInterpolator(Interpolators.STANDARD_INTERPOLATOR);
                 animator.setDuration(mAnimationDuration);
                 startAnimatorOnSurfaceView(animator);
             }
@@ -123,23 +121,18 @@ public class SnackbarView {
         // Prevent clicks during dismissal animations. Intentionally not using setEnabled(false) to
         // avoid unnecessary text color changes in this transitory state.
         mActionButtonView.setOnClickListener(null);
-        AnimatorSet animatorSet = new AnimatorSet();
-        animatorSet.setDuration(mAnimationDuration);
-        animatorSet.addListener(new AnimatorListenerAdapter() {
+        Animator moveAnimator = ObjectAnimator.ofFloat(
+                mContainerView, View.TRANSLATION_Y, getYPositionForMoveAnimation());
+        moveAnimator.setInterpolator(Interpolators.DECELERATE_INTERPOLATOR);
+        moveAnimator.setDuration(mAnimationDuration);
+        moveAnimator.addListener(new AnimatorListenerAdapter() {
             @Override
             public void onAnimationEnd(Animator animation) {
                 mRootContentView.removeOnLayoutChangeListener(mLayoutListener);
                 mParent.removeView(mContainerView);
             }
         });
-        Animator moveAnimator = ObjectAnimator.ofFloat(
-                mContainerView, View.TRANSLATION_Y, getYPositionForMoveAnimation());
-        moveAnimator.setInterpolator(Interpolators.DECELERATE_INTERPOLATOR);
-        Animator fadeOut = ObjectAnimator.ofFloat(mContainerView, View.ALPHA, 0f);
-        fadeOut.setInterpolator(BakedBezierInterpolator.FADE_OUT_CURVE);
-
-        animatorSet.playTogether(fadeOut, moveAnimator);
-        startAnimatorOnSurfaceView(animatorSet);
+        startAnimatorOnSurfaceView(moveAnimator);
     }
 
     /**

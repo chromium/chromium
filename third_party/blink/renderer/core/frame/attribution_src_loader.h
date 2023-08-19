@@ -7,7 +7,7 @@
 
 #include <stdint.h>
 
-#include "components/attribution_reporting/registration_type.mojom-blink-forward.h"
+#include "components/attribution_reporting/registration_eligibility.mojom-blink-forward.h"
 #include "services/network/public/cpp/attribution_reporting_runtime_features.h"
 #include "services/network/public/mojom/attribution.mojom-forward.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -77,13 +77,15 @@ class CORE_EXPORT AttributionSrcLoader
   [[nodiscard]] absl::optional<Impression> RegisterNavigation(
       const KURL& navigation_url,
       const AtomicString& attribution_src,
-      HTMLAnchorElement* element);
+      HTMLAnchorElement* element,
+      bool has_transient_user_activation);
 
   // Same as the above, but uses an already-tokenized attribution src for use
   // with `window.open`.
   [[nodiscard]] absl::optional<Impression> RegisterNavigation(
       const KURL& navigation_url,
-      const WebVector<WebString>& attribution_srcs);
+      const WebVector<WebString>& attribution_srcs,
+      bool has_transient_user_activation);
 
   // Returns true if `url` can be used as an attributionsrc: its scheme is HTTP
   // or HTTPS, its origin is potentially trustworthy, the document's permission
@@ -114,7 +116,8 @@ class CORE_EXPORT AttributionSrcLoader
   [[nodiscard]] absl::optional<Impression> RegisterNavigationInternal(
       const KURL& navigation_url,
       Vector<KURL> attribution_src_urls,
-      HTMLAnchorElement*);
+      HTMLAnchorElement*,
+      bool has_transient_user_activation);
 
   // Returns the reporting origin corresponding to `url` if its protocol is in
   // the HTTP family, its origin is potentially trustworthy, and attribution is
@@ -133,10 +136,10 @@ class CORE_EXPORT AttributionSrcLoader
   struct AttributionHeaders;
 
   void RegisterAttributionHeaders(
-      attribution_reporting::mojom::blink::RegistrationType,
+      attribution_reporting::mojom::blink::RegistrationEligibility,
       attribution_reporting::SuitableOrigin reporting_origin,
       const AttributionHeaders&,
-      const absl::optional<network::TriggerVerification>&);
+      const Vector<network::TriggerVerification>&);
 
   const Member<LocalFrame> local_frame_;
 };

@@ -5,7 +5,7 @@
 import 'chrome://os-settings/lazy_load.js';
 
 import {SettingsUsersAddUserDialogElement} from 'chrome://os-settings/lazy_load.js';
-import {CrInputElement} from 'chrome://resources/cr_elements/cr_input/cr_input.js';
+import {CrInputElement} from 'chrome://os-settings/os_settings.js';
 import {assertEquals, assertFalse, assertNotEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {waitAfterNextRender} from 'chrome://webui-test/polymer_test_util.js';
 

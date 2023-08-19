@@ -53,7 +53,7 @@ class CONTENT_EXPORT FileChooserImpl : public blink::mojom::FileChooser,
     ~FileSelectListenerImpl() override;
 
    private:
-    raw_ptr<FileChooserImpl, DanglingUntriaged> owner_;
+    raw_ptr<FileChooserImpl, AcrossTasksDanglingUntriaged> owner_;
     base::ScopedClosureRunner fullscreen_block_;
 #if DCHECK_IS_ON()
     bool was_file_select_listener_function_called_ = false;

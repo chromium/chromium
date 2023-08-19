@@ -193,7 +193,7 @@ TEST_P(NGBoxFragmentPainterTest, ClippedText) {
   )HTML");
   // Initially all the texts are painted.
   auto num_all_display_items = ContentDisplayItems().size();
-  auto* target = GetDocument().getElementById("target");
+  auto* target = GetDocument().getElementById(AtomicString("target"));
 
   target->SetInlineStyleProperty(CSSPropertyID::kHeight, "0px");
   UpdateAllLifecyclePhasesForTest();
@@ -219,11 +219,13 @@ TEST_P(NGBoxFragmentPainterTest, NodeAtPointWithSvgInline) {
 </svg>)HTML");
   UpdateAllLifecyclePhasesForTest();
 
-  auto* root = GetDocument().getElementById("svg")->GetLayoutBox();
+  auto* root =
+      GetDocument().getElementById(AtomicString("svg"))->GetLayoutBox();
   HitTestResult result;
   root->NodeAtPoint(result, HitTestLocation(gfx::PointF(256, 192)),
                     PhysicalOffset(0, 0), HitTestPhase::kForeground);
-  EXPECT_EQ(GetDocument().getElementById("pass"), result.InnerElement());
+  EXPECT_EQ(GetDocument().getElementById(AtomicString("pass")),
+            result.InnerElement());
 }
 
 }  // namespace blink

@@ -66,11 +66,10 @@ base::Value::Dict ManagedOncCreatePasswordDict(const base::Value::Dict& network,
     source = onc::kAugmentationSharedSetting;
   }
 
-  base::Value::Dict password_dict;
-  password_dict.Set(onc::kAugmentationActiveSetting, password);
-  password_dict.Set(onc::kAugmentationEffectiveSetting, source);
-  password_dict.Set(source, password);
-  return password_dict;
+  return base::Value::Dict()
+      .Set(onc::kAugmentationActiveSetting, password)
+      .Set(onc::kAugmentationEffectiveSetting, source)
+      .Set(source, password);
 }
 
 }  // namespace

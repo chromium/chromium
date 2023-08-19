@@ -43,20 +43,22 @@ void ExtensionsGuestView::CreateForExtensions(
 }
 
 std::unique_ptr<guest_view::GuestViewManagerDelegate>
-ExtensionsGuestView::CreateGuestViewManagerDelegate(
-    content::BrowserContext* context) const {
-  return ExtensionsAPIClient::Get()->CreateGuestViewManagerDelegate(context);
+ExtensionsGuestView::CreateGuestViewManagerDelegate() const {
+  return ExtensionsAPIClient::Get()->CreateGuestViewManagerDelegate();
 }
 
 void ExtensionsGuestView::ReadyToCreateMimeHandlerView(int32_t render_frame_id,
                                                        bool success) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-  auto* rfh =
+  auto* render_frame_host =
       content::RenderFrameHost::FromID(render_process_id(), render_frame_id);
-  if (!rfh)
+  if (!render_frame_host) {
     return;
-  if (auto* mhve = MimeHandlerViewEmbedder::Get(rfh->GetFrameTreeNodeId()))
+  }
+  if (auto* mhve = MimeHandlerViewEmbedder::Get(
+          render_frame_host->GetFrameTreeNodeId())) {
     mhve->ReadyToCreateMimeHandlerView(success);
+  }
 }
 
 void ExtensionsGuestView::CanExecuteContentScript(

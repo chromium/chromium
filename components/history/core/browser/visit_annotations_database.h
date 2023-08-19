@@ -144,6 +144,35 @@ class VisitAnnotationsDatabase {
   // Delete `Cluster`s from the table.
   void DeleteClusters(const std::vector<int64_t>& cluster_ids);
 
+  // Update the interaction state of cluster visits.
+  void UpdateVisitsInteractionState(
+      const std::vector<VisitID>& visit_ids,
+      ClusterVisit::InteractionState interaction_state);
+
+  // Converts categories to something that can be stored in the database eg:
+  // "mid1:score1,mid2:score2". As the serialized format is already being
+  // synced, the implementation of these functions should not be changed.
+  static std::string ConvertCategoriesToStringColumn(
+      const std::vector<VisitContentModelAnnotations::Category>& categories);
+
+  // Converts serialized categories into a vector of (`id`, `weight`) pairs. As
+  // the serialized format is already being synced, the implementation of these
+  // functions should not be changed.
+  static std::vector<VisitContentModelAnnotations::Category>
+  GetCategoriesFromStringColumn(const std::string& column_value);
+
+  // Serializes a vector of strings into a string separated by null character
+  // that can be stored in the db. As the serialized format is already being
+  // synced, the implementation of these functions should not be changed.
+  static std::string SerializeToStringColumn(
+      const std::vector<std::string>& related_searches);
+
+  // Converts a serialized db string separated by null character into a vector
+  // of strings. As the serialized format is already being synced, the
+  // implementation of these functions should not be changed.
+  static std::vector<std::string> DeserializeFromStringColumn(
+      const std::string& column_value);
+
  protected:
   // Returns the database for the functions in this interface.
   virtual sql::Database& GetDB() = 0;

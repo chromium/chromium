@@ -42,12 +42,12 @@
 #include "net/first_party_sets/first_party_set_metadata.h"
 #include "net/http/http_auth_preferences.h"
 #include "net/net_buildflags.h"
-#include "services/network/cache_transparency_settings.h"
 #include "services/network/cors/preflight_controller.h"
 #include "services/network/first_party_sets/first_party_sets_access_delegate.h"
 #include "services/network/http_cache_data_counter.h"
 #include "services/network/http_cache_data_remover.h"
 #include "services/network/network_qualities_pref_delegate.h"
+#include "services/network/network_service_proxy_allow_list.h"
 #include "services/network/oblivious_http_request_handler.h"
 #include "services/network/public/cpp/cors/origin_access_list.h"
 #include "services/network/public/cpp/network_service_buildflags.h"
@@ -515,6 +515,23 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) NetworkContext
       base::Time end_time,
       mojom::ClearDataFilterPtr filter,
       ClearSharedDictionaryCacheCallback callback) override;
+  void ClearSharedDictionaryCacheForIsolationKey(
+      const net::SharedDictionaryIsolationKey& isolation_key,
+      ClearSharedDictionaryCacheForIsolationKeyCallback callback) override;
+  void GetSharedDictionaryUsageInfo(
+      GetSharedDictionaryUsageInfoCallback callback) override;
+  void GetSharedDictionaryInfo(
+      const net::SharedDictionaryIsolationKey& isolation_key,
+      GetSharedDictionaryInfoCallback callback) override;
+  void GetSharedDictionaryOriginsBetween(
+      base::Time start_time,
+      base::Time end_time,
+      GetSharedDictionaryOriginsBetweenCallback callback) override;
+  void ResourceSchedulerClientVisibilityChanged(
+      const base::UnguessableToken& client_token,
+      bool visible) override;
+  void VerifyIpProtectionAuthTokenGetterForTesting(
+      VerifyIpProtectionAuthTokenGetterForTestingCallback callback) override;
 
   // Destroys |request| when a proxy lookup completes.
   void OnProxyLookupComplete(ProxyLookupRequest* proxy_lookup_request);
@@ -642,11 +659,10 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) NetworkContext
       const std::vector<net::ReportingEndpoint>& endpoints) override;
 #endif  // BUILDFLAG(ENABLE_REPORTING)
 
-  const CacheTransparencySettings* cache_transparency_settings() const {
-    return &cache_transparency_settings_;
-  }
-
  private:
+  // To be called back from CookieManager on settings change.
+  void OnCookieManagerSettingsChanged();
+
   URLRequestContextOwner MakeURLRequestContext(
       mojo::PendingRemote<mojom::URLLoaderFactory>
           url_loader_factory_for_cert_net_fetcher,
@@ -733,11 +749,22 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) NetworkContext
   bool IsAllowedToUseAllHttpAuthSchemes(
       const url::SchemeHostPort& scheme_host_port);
 
+  void OnIpProtectionAuthTokenAvailableForTesting(
+      VerifyIpProtectionAuthTokenGetterForTestingCallback callback);
+
   const raw_ptr<NetworkService> network_service_;
 
   mojo::Remote<mojom::NetworkContextClient> client_;
 
   std::unique_ptr<ResourceScheduler> resource_scheduler_;
+
+  // Used only when network::features::kCompressionDictionaryTransportBackend is
+  // enabled.
+  // Note: `url_request_context_owner_` indirectly holds a pointer to
+  // `shared_dictionary_manager_` via URLRequestContext and HttpCache and
+  // SharedDictionaryNetworkTransactionFactory. So `url_request_context_owner_`
+  // needs to be defined after `shared_dictionary_manager_`.
+  std::unique_ptr<SharedDictionaryManager> shared_dictionary_manager_;
 
   // Holds owning pointer to |url_request_context_|. Will contain a nullptr for
   // |url_request_context| when the NetworkContextImpl doesn't own its own
@@ -789,9 +816,9 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) NetworkContext
   // PrivacySandboxSettings service.
   bool block_trust_tokens_ = false;
 
-#if !BUILDFLAG(IS_IOS)
+#if BUILDFLAG(ENABLE_WEBSOCKETS)
   std::unique_ptr<WebSocketFactory> websocket_factory_;
-#endif  // !BUILDFLAG(IS_IOS)
+#endif  // BUILDFLAG(ENABLE_WEBSOCKETS)
 
   // These must be below the URLRequestContext, so they're destroyed before it
   // is.
@@ -826,8 +853,6 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) NetworkContext
            base::UniquePtrComparator>
       restricted_cookie_managers_;
 
-  ResourceScheduler::ClientId current_resource_scheduler_client_id_{0};
-
   // Owned by the URLRequestContext
   raw_ptr<net::StaticHttpUserAgentSettings> user_agent_settings_ = nullptr;
 
@@ -847,8 +872,8 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) NetworkContext
 #endif  // BUILDFLAG(IS_CT_SUPPORTED)
 
 #if BUILDFLAG(IS_CHROMEOS)
-  raw_ptr<CertVerifierWithTrustAnchors> cert_verifier_with_trust_anchors_ =
-      nullptr;
+  raw_ptr<CertVerifierWithTrustAnchors, DanglingUntriaged>
+      cert_verifier_with_trust_anchors_ = nullptr;
 #endif
 
 #if BUILDFLAG(IS_DIRECTORY_TRANSFER_REQUIRED)
@@ -931,6 +956,10 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) NetworkContext
   // according to the spec.
   bool acam_preflight_spec_conformant_ = true;
 
+  // True once the destructor has been called. Used to guard against re-entrant
+  // calls to DestroyURLLoaderFactory().
+  bool is_destructing_ = false;
+
   // Indicating whether
   // https://fetch.spec.whatwg.org/#cors-non-wildcard-request-header-name is
   // supported.
@@ -939,13 +968,8 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) NetworkContext
 
   // CorsURLLoaderFactory assumes that fields owned by the NetworkContext always
   // live longer than the factory.  Therefore we want the factories to be
-  // destroyed before other fields above.  In particular:
-  // - This must be below |url_request_context_| so that the URLRequestContext
-  //   outlives all the URLLoaderFactories and URLLoaders that depend on it;
-  //   for the same reason, it must also be below |network_context_|.
-  // - This must be below |loader_count_per_process_| that is touched by
-  //   CorsURLLoaderFactory::DestroyURLLoader (see also
-  //   https://crbug.com/1174943).
+  // destroyed before other fields above.  This is accomplished by explicitly
+  // clearing `url_loader_factories_` in the destructor.
   std::set<std::unique_ptr<cors::CorsURLLoaderFactory>,
            base::UniquePtrComparator>
       url_loader_factories_;
@@ -954,12 +978,6 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) NetworkContext
 
   scoped_refptr<MojoBackendFileOperationsFactory>
       http_cache_file_operations_factory_;
-
-  const CacheTransparencySettings cache_transparency_settings_;
-
-  // Used only when blink::features::kCompressionDictionaryTransportBackend is
-  // enabled.
-  std::unique_ptr<SharedDictionaryManager> shared_dictionary_manager_;
 
   SEQUENCE_CHECKER(sequence_checker_);
 

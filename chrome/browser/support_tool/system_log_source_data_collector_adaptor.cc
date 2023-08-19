@@ -15,6 +15,7 @@
 #include "base/functional/bind.h"
 #include "base/location.h"
 #include "base/memory/scoped_refptr.h"
+#include "base/strings/strcat.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
@@ -181,8 +182,9 @@ void SystemLogSourceDataCollectorAdaptor::OnFilesWritten(
     DataCollectorDoneCallback on_exported_callback,
     bool success) {
   if (!success) {
-    SupportToolError error = {SupportToolErrorCode::kDataCollectorError,
-                              "Failed on data export."};
+    SupportToolError error = {
+        SupportToolErrorCode::kDataCollectorError,
+        base::StrCat({GetName(), "failed on data export."})};
     std::move(on_exported_callback).Run(error);
     return;
   }

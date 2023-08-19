@@ -9,6 +9,11 @@
 
 #include "components/attribution_reporting/filters.h"
 #include "components/attribution_reporting/source_type.mojom-forward.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
+
+namespace base {
+class TimeDelta;
+}  // namespace base
 
 namespace attribution_reporting {
 
@@ -16,20 +21,26 @@ class AggregatableTriggerData;
 class AggregatableValues;
 class AggregationKeys;
 class DestinationSet;
+class EventReportWindows;
 class SuitableOrigin;
 
 struct AggregatableDedupKey;
 struct EventTriggerData;
+struct OsRegistrationItem;
 struct SourceRegistration;
 struct TriggerRegistration;
 
-FiltersDisjunction FiltersForSourceType(mojom::SourceType);
+FiltersDisjunction FiltersForSourceType(
+    mojom::SourceType,
+    absl::optional<base::TimeDelta> lookback_window = absl::nullopt);
 
 bool operator==(const AggregationKeys&, const AggregationKeys&);
 
 std::ostream& operator<<(std::ostream&, const AggregationKeys&);
 
 bool operator==(const FilterData&, const FilterData&);
+
+bool operator==(const FilterConfig&, const FilterConfig&);
 
 std::ostream& operator<<(std::ostream&, const FilterData&);
 
@@ -40,6 +51,10 @@ std::ostream& operator<<(std::ostream&, const FilterPair&);
 bool operator==(const DestinationSet&, const DestinationSet&);
 
 std::ostream& operator<<(std::ostream&, const DestinationSet&);
+
+bool operator==(const EventReportWindows&, const EventReportWindows&);
+
+std::ostream& operator<<(std::ostream&, const EventReportWindows&);
 
 bool operator==(const SourceRegistration&, const SourceRegistration&);
 
@@ -68,6 +83,10 @@ std::ostream& operator<<(std::ostream&, const SuitableOrigin&);
 bool operator==(const AggregatableDedupKey&, const AggregatableDedupKey&);
 
 std::ostream& operator<<(std::ostream&, const AggregatableDedupKey&);
+
+bool operator==(const OsRegistrationItem&, const OsRegistrationItem&);
+
+std::ostream& operator<<(std::ostream&, const OsRegistrationItem&);
 
 }  // namespace attribution_reporting
 

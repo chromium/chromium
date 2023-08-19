@@ -7,6 +7,21 @@
 
 namespace segmentation_platform {
 
+namespace {
+
+std::string StatusToString(PredictionStatus status) {
+  switch (status) {
+    case PredictionStatus::kNotReady:
+      return "Not ready";
+    case PredictionStatus::kFailed:
+      return "Failed";
+    case PredictionStatus::kSucceeded:
+      return "Succeeded";
+  }
+}
+
+}  // namespace
+
 ClassificationResult::ClassificationResult(PredictionStatus status)
     : status(status) {}
 
@@ -20,19 +35,7 @@ ClassificationResult& ClassificationResult::operator=(
 
 std::string ClassificationResult::ToDebugString() const {
   std::stringstream debug_string;
-  debug_string << "Status: ";
-
-  switch (status) {
-    case segmentation_platform::PredictionStatus::kNotReady:
-      debug_string << "Not ready";
-      break;
-    case segmentation_platform::PredictionStatus::kFailed:
-      debug_string << "Failed";
-      break;
-    case segmentation_platform::PredictionStatus::kSucceeded:
-      debug_string << "Succeeded";
-      break;
-  }
+  debug_string << "Status: " << StatusToString(status);
 
   for (unsigned i = 0; i < ordered_labels.size(); ++i) {
     debug_string << " output " << i << ": " << ordered_labels.at(i);
@@ -68,6 +71,17 @@ absl::optional<float> AnnotatedNumericResult::GetResultForLabel(
     }
   }
   return absl::nullopt;
+}
+
+std::string AnnotatedNumericResult::ToDebugString() const {
+  std::stringstream debug_string;
+  debug_string << "Status: " << StatusToString(status);
+
+  for (int i = 0; i < result.result_size(); ++i) {
+    debug_string << " output " << i << ": " << result.result(i);
+  }
+
+  return debug_string.str();
 }
 
 }  // namespace segmentation_platform

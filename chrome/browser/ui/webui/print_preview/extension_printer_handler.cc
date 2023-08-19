@@ -9,6 +9,7 @@
 
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
+#include "base/json/json_reader.h"
 #include "base/location.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/ref_counted_memory.h"
@@ -37,6 +38,7 @@
 #include "printing/pwg_raster_settings.h"
 #include "services/device/public/mojom/usb_device.mojom.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
+#include "ui/gfx/geometry/size.h"
 
 using extensions::DevicePermissionsManager;
 using extensions::Extension;
@@ -103,6 +105,37 @@ extensions::PrinterProviderAPI* GetPrinterProviderAPI(Profile* profile) {
       ->GetForBrowserContext(profile);
 }
 
+struct ExtensionPrinterSettings {
+  ExtensionPrinterSettings() = default;
+  ExtensionPrinterSettings(ExtensionPrinterSettings&&) noexcept = default;
+  ExtensionPrinterSettings& operator=(ExtensionPrinterSettings&&) noexcept =
+      default;
+  ~ExtensionPrinterSettings() = default;
+
+  std::string destination_id;
+  std::string capabilities;
+  gfx::Size page_size;
+  base::Value::Dict ticket;
+};
+
+// Parses print job `settings` for an extension printer and returns the parsed
+// output. Note that `settings` is created by the Print Preview TS code, so if
+// this function triggers a crash, that means the TS code and the C++ code are
+// out of sync.
+ExtensionPrinterSettings ParseExtensionPrinterSettings(
+    const base::Value::Dict& settings) {
+  ExtensionPrinterSettings parsed_settings;
+  parsed_settings.destination_id = *settings.FindString(kSettingDeviceName);
+  parsed_settings.capabilities = *settings.FindString(kSettingCapabilities);
+  parsed_settings.page_size.SetSize(
+      settings.FindInt(kSettingPageWidth).value_or(0),
+      settings.FindInt(kSettingPageHeight).value_or(0));
+  CHECK(!parsed_settings.page_size.IsEmpty());
+  parsed_settings.ticket =
+      *base::JSONReader::ReadDict(*settings.FindString(kSettingTicket));
+  return parsed_settings;
+}
+
 }  // namespace
 
 ExtensionPrinterHandler::ExtensionPrinterHandler(Profile* profile)
@@ -167,18 +200,16 @@ void ExtensionPrinterHandler::StartPrint(
     base::Value::Dict settings,
     scoped_refptr<base::RefCountedMemory> print_data,
     PrintCallback callback) {
+  ExtensionPrinterSettings parsed_settings =
+      ParseExtensionPrinterSettings(settings);
+
   auto print_job = std::make_unique<extensions::PrinterProviderPrintJob>();
+  print_job->printer_id = std::move(parsed_settings.destination_id);
   print_job->job_title = job_title;
-  std::string capabilities;
-  gfx::Size page_size;
-  if (!ParseSettings(settings, &print_job->printer_id, &capabilities,
-                     &page_size, &print_job->ticket)) {
-    std::move(callback).Run(base::Value("Invalid settings"));
-    return;
-  }
+  print_job->ticket = std::move(parsed_settings.ticket);
 
   cloud_devices::CloudDeviceDescription printer_description;
-  printer_description.InitFromString(capabilities);
+  printer_description.InitFromString(parsed_settings.capabilities);
 
   cloud_devices::printer::ContentTypesCapability content_types;
   content_types.LoadFrom(printer_description);
@@ -201,7 +232,8 @@ void ExtensionPrinterHandler::StartPrint(
 
   print_job->content_type = kContentTypePWGRaster;
   ConvertToPWGRaster(
-      print_data, printer_description, ticket, page_size, std::move(print_job),
+      print_data, printer_description, ticket, parsed_settings.page_size,
+      std::move(print_job),
       base::BindOnce(&ExtensionPrinterHandler::DispatchPrintJob,
                      weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
 }

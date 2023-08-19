@@ -420,6 +420,16 @@ enum ShutdownMethod {
   kBatteryCutoff = 3,
 };
 
+// This must remain in sync with UpdateDeviceInfoState::FeatureLevel in
+// //third_party/cros_system_api/dbus/rmad/rmad.proto.
+// See shimless_rma_mojom_traits.cc\h.
+enum FeatureLevel {
+  kRmadFeatureLevelUnsupported = 0,
+  kRmadFeatureLevelUnknown = 1,
+  kRmadFeatureLevel0 = 2,
+  kRmadFeatureLevel1 = 3,
+};
+
 // Implemented by clients to receive errors from the rmad service.
 // rmad runs a lot of asynchronous processing and errors can occur at any time.
 interface ErrorObserver {
@@ -682,11 +692,14 @@ interface ShimlessRmaService {
   GetOriginalWhiteLabel() => (int32 white_label_index);
   // Get the device dram part number at RMA start.
   GetOriginalDramPartNumber() => (string dram_part_number);
+  // Get the device feature level at RMA start.
+  GetOriginalFeatureLevel() => (FeatureLevel original_feature_level);
   // Attempt to set device info and transition to the next state.
   // Returns the next state to display and an error code.
   SetDeviceInformation(
       string serial_number, int32 region_index, int32 sku_index,
-      int32 white_label_index, string dram_part_number)
+      int32 white_label_index, string dram_part_number, bool is_chassis_branded,
+      int32 hw_compliance_version)
           => (StateResult state_result);
 
   ///////////////////////////////////////

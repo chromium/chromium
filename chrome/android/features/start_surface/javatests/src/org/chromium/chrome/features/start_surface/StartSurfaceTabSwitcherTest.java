@@ -23,7 +23,6 @@ import static org.chromium.chrome.features.start_surface.StartSurfaceTestUtils.S
 import static org.chromium.chrome.features.start_surface.StartSurfaceTestUtils.START_SURFACE_TEST_SINGLE_ENABLED_PARAMS;
 import static org.chromium.chrome.features.start_surface.StartSurfaceTestUtils.sClassParamsForStartSurfaceTest;
 import static org.chromium.ui.test.util.ViewUtils.onViewWaiting;
-import static org.chromium.ui.test.util.ViewUtils.waitForView;
 
 import android.view.KeyEvent;
 import android.view.View;
@@ -39,6 +38,8 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.Mock;
+import org.mockito.MockitoAnnotations;
 
 import org.chromium.base.test.params.ParameterAnnotations;
 import org.chromium.base.test.params.ParameterAnnotations.UseRunnerDelegate;
@@ -52,6 +53,7 @@ import org.chromium.base.test.util.DoNotBatch;
 import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.Restriction;
 import org.chromium.chrome.browser.ChromeTabbedActivity;
+import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.layouts.LayoutStateProvider;
@@ -67,6 +69,7 @@ import org.chromium.chrome.test.R;
 import org.chromium.chrome.test.util.browser.Features.EnableFeatures;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.ui.test.util.UiRestriction;
+import org.chromium.ui.test.util.ViewUtils;
 
 import java.io.IOException;
 import java.util.List;
@@ -78,7 +81,8 @@ import java.util.List;
 @UseRunnerDelegate(ChromeJUnit4RunnerDelegate.class)
 @Restriction(
         {UiRestriction.RESTRICTION_TYPE_PHONE, Restriction.RESTRICTION_TYPE_NON_LOW_END_DEVICE})
-@EnableFeatures({ChromeFeatureList.START_SURFACE_ANDROID + "<Study"})
+@EnableFeatures(
+        {ChromeFeatureList.START_SURFACE_ANDROID + "<Study", ChromeFeatureList.EMPTY_STATES})
 @DoNotBatch(reason = "StartSurface*Test tests startup behaviours and thus can't be batched.")
 @CommandLineFlags.
 Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE, "force-fieldtrials=Study/Group"})
@@ -88,6 +92,9 @@ public class StartSurfaceTabSwitcherTest {
 
     @Rule
     public ChromeTabbedActivityTestRule mActivityTestRule = new ChromeTabbedActivityTestRule();
+
+    @Mock
+    private BrowserControlsStateProvider mBrowserControlsStateProvider;
 
     /**
      * Whether feature {@link ChromeFeatureList#INSTANT_START} is enabled.
@@ -114,6 +121,7 @@ public class StartSurfaceTabSwitcherTest {
 
     @Before
     public void setUp() throws IOException {
+        MockitoAnnotations.initMocks(this);
         StartSurfaceTestUtils.setUpStartSurfaceTests(mImmediateReturn, mActivityTestRule);
 
         mLayoutChangedCallbackHelper = new CallbackHelper();
@@ -199,13 +207,12 @@ public class StartSurfaceTabSwitcherTest {
     @MediumTest
     @Feature({"StartSurface", "TabGroup"})
     @CommandLineFlags.Add({START_SURFACE_TEST_SINGLE_ENABLED_PARAMS})
-    @EnableFeatures({ChromeFeatureList.TAB_GROUPS_ANDROID})
     @DisabledTest(message = "https://crbug.com/1232695")
     public void testCreateTabWithinTabGroup() throws Exception {
         // Create tab state files for a group with two tabs.
         TabUiTestHelper.finishActivity(mActivityTestRule.getActivity());
-        StartSurfaceTestUtils.createThumbnailBitmapAndWriteToFile(0);
-        StartSurfaceTestUtils.createThumbnailBitmapAndWriteToFile(1);
+        StartSurfaceTestUtils.createThumbnailBitmapAndWriteToFile(0, mBrowserControlsStateProvider);
+        StartSurfaceTestUtils.createThumbnailBitmapAndWriteToFile(1, mBrowserControlsStateProvider);
         TabAttributeCache.setRootIdForTesting(0, 0);
         TabAttributeCache.setRootIdForTesting(1, 0);
         StartSurfaceTestUtils.createTabStateFile(new int[] {0, 1});
@@ -238,7 +245,8 @@ public class StartSurfaceTabSwitcherTest {
 
         // Verify a tab is created within the group by checking the tab strip and tab model.
         onView(withId(R.id.toolbar_container_view))
-                .check(waitForView(allOf(withId(R.id.tab_list_view), isCompletelyDisplayed())));
+                .check(ViewUtils.isEventuallyVisible(
+                        allOf(withId(R.id.tab_list_view), isCompletelyDisplayed())));
         onView(allOf(withId(R.id.tab_list_view), withParent(withId(R.id.toolbar_container_view))))
                 .check(TabUiTestHelper.ChildrenCountAssertion.havingTabCount(3));
         assertEquals(1, filter.getTabGroupCount());
@@ -255,7 +263,8 @@ public class StartSurfaceTabSwitcherTest {
 
         // Verify a tab is created within the group by checking the tab strip and tab model.
         onView(withId(R.id.toolbar_container_view))
-                .check(waitForView(allOf(withId(R.id.tab_list_view), isCompletelyDisplayed())));
+                .check(ViewUtils.isEventuallyVisible(
+                        allOf(withId(R.id.tab_list_view), isCompletelyDisplayed())));
         onView(allOf(withId(R.id.tab_list_view), withParent(withId(R.id.toolbar_container_view))))
                 .check(TabUiTestHelper.ChildrenCountAssertion.havingTabCount(4));
         assertEquals(4, cta.getTabModelSelector().getCurrentModel().getCount());
@@ -288,7 +297,7 @@ public class StartSurfaceTabSwitcherTest {
         // Returns to the Start surface.
         StartSurfaceTestUtils.pressHomePageButton(cta);
         StartSurfaceTestUtils.waitForStartSurfaceVisible(cta);
-        waitForView(allOf(withParent(withId(R.id.tab_switcher_module_container)),
+        ViewUtils.waitForVisibleView(allOf(withParent(withId(R.id.tab_switcher_module_container)),
                 withId(R.id.tab_list_view)));
 
         RecyclerView recyclerView =
@@ -320,7 +329,6 @@ public class StartSurfaceTabSwitcherTest {
     @Test
     @LargeTest
     @Feature({"StartSurface"})
-    @EnableFeatures(ChromeFeatureList.TAB_GROUPS_ANDROID)
     // clang-format off
     @CommandLineFlags.Add({START_SURFACE_TEST_BASE_PARAMS
         + "show_tabs_in_mru_order/true/open_ntp_instead_of_start/false/open_start_as_homepage/true",
@@ -330,6 +338,7 @@ public class StartSurfaceTabSwitcherTest {
         tabSwitcher_AlwaysShowTabsInGridTabSwitcherInCreationOrderImpl();
     }
 
+    @SuppressWarnings("CheckReturnValue")
     private void tabSwitcher_AlwaysShowTabsInGridTabSwitcherInCreationOrderImpl() {
         if (!mImmediateReturn) {
             StartSurfaceTestUtils.pressHomePageButton(mActivityTestRule.getActivity());
@@ -360,7 +369,9 @@ public class StartSurfaceTabSwitcherTest {
         int parentViewId = TabUiTestHelper.getIsStartSurfaceRefactorEnabledFromUIThread(cta)
                 ? R.id.compositor_view_holder
                 : R.id.secondary_tasks_surface_view;
-        waitForView(allOf(withParent(withId(parentViewId)), withId(R.id.tab_list_view)));
+        // TODO(crbug.com/1469988): This is a no-op, replace with ViewUtils.waitForVisibleView().
+        ViewUtils.isEventuallyVisible(
+                allOf(withParent(withId(parentViewId)), withId(R.id.tab_list_view)));
 
         RecyclerView recyclerView = cta.findViewById(parentViewId).findViewById(R.id.tab_list_view);
         CriteriaHelper.pollUiThread(() -> 2 == recyclerView.getChildCount());

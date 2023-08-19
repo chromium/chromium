@@ -11,9 +11,11 @@
 #include "base/json/json_writer.h"
 #include "base/run_loop.h"
 #include "base/test/bind.h"
+#include "base/test/gmock_expected_support.h"
 #include "base/test/task_environment.h"
 #include "base/values.h"
 #include "services/data_decoder/public/cpp/test_support/in_process_data_decoder.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace data_decoder {
@@ -22,9 +24,9 @@ namespace {
 // Verifies that |json| can be sanitized by JsonSanitizer, and that the output
 // JSON is parsed to the same exact value as the original JSON.
 void CheckSuccess(const std::string& json) {
-  auto original_parse =
-      base::JSONReader::ReadAndReturnValueWithError(json, base::JSON_PARSE_RFC);
-  ASSERT_TRUE(original_parse.has_value());
+  ASSERT_OK_AND_ASSIGN(base::Value original_parse,
+                       base::JSONReader::ReadAndReturnValueWithError(
+                           json, base::JSON_PARSE_RFC));
 
   base::RunLoop loop;
   bool result_received = false;
@@ -32,10 +34,10 @@ void CheckSuccess(const std::string& json) {
       json, base::BindLambdaForTesting([&](JsonSanitizer::Result result) {
         result_received = true;
         ASSERT_TRUE(result.has_value());
-        auto reparse = base::JSONReader::ReadAndReturnValueWithError(
-            *result, base::JSON_PARSE_RFC);
-        ASSERT_TRUE(reparse.has_value());
-        EXPECT_EQ(*reparse, *original_parse);
+        EXPECT_THAT(base::JSONReader::ReadAndReturnValueWithError(
+                        *result, base::JSON_PARSE_RFC),
+                    base::test::ValueIs(
+                        ::testing::Eq(::testing::ByRef(original_parse))));
         loop.Quit();
       }));
 
@@ -64,7 +66,7 @@ void CheckError(const std::string& json) {
 
 class DataDecoderJsonSanitizerTest : public ::testing::Test {
  private:
-  base::test::SingleThreadTaskEnvironment task_environment_;
+  base::test::TaskEnvironment task_environment_;
   test::InProcessDataDecoder in_process_data_decoder_;
 };
 

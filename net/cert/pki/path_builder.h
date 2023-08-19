@@ -222,7 +222,7 @@ class NET_EXPORT CertPathBuilder {
   Result out_result_;
 
   std::unique_ptr<CertPathIter> cert_path_iter_;
-  raw_ptr<CertPathBuilderDelegate> delegate_;
+  CertPathBuilderDelegate* delegate_;
   const der::GeneralizedTime time_;
   const KeyPurpose key_purpose_;
   const InitialExplicitPolicy initial_explicit_policy_;

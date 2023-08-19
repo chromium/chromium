@@ -445,7 +445,7 @@ class ExtensionBrowserTest : virtual public InProcessBrowserTest,
 #endif
 
   // The default profile to be used.
-  raw_ptr<Profile, DanglingUntriaged> profile_;
+  raw_ptr<Profile, AcrossTasksDanglingUntriaged> profile_;
 
   // Cache cache implementation.
   std::unique_ptr<ExtensionCacheFake> test_extension_cache_;

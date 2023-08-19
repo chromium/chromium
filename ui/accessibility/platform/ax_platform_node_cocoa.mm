@@ -7,8 +7,8 @@
 #import <Cocoa/Cocoa.h>
 #include <Foundation/Foundation.h>
 
+#include "base/apple/foundation_util.h"
 #include "base/logging.h"
-#include "base/mac/foundation_util.h"
 #include "base/mac/mac_util.h"
 #include "base/memory/raw_ptr_exclusion.h"
 #include "base/no_destructor.h"
@@ -27,10 +27,6 @@
 #include "ui/base/l10n/l10n_util.h"
 #import "ui/gfx/mac/coordinate_conversion.h"
 #include "ui/strings/grit/ax_strings.h"
-
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
 
 using AXRange = ui::AXPlatformNodeDelegate::AXRange;
 
@@ -63,7 +59,7 @@ RoleMap BuildSubroleMap() {
   const RoleMap::value_type subroles[] = {
       {ax::mojom::Role::kAlert, @"AXApplicationAlert"},
       {ax::mojom::Role::kAlertDialog, @"AXApplicationAlertDialog"},
-      {ax::mojom::Role::kApplication, @"AXLandmarkApplication"},
+      {ax::mojom::Role::kApplication, @"AXWebApplication"},
       {ax::mojom::Role::kArticle, @"AXDocumentArticle"},
       {ax::mojom::Role::kBanner, @"AXLandmarkBanner"},
       {ax::mojom::Role::kCode, @"AXCodeStyleGroup"},
@@ -299,6 +295,14 @@ void CollectAncestorRoles(
   if (labelName.empty())
     return nil;
 
+  // In the case where we have a radio button or a checked box, no title UI
+  // element. This goes against Apple's documentation for AXTitleUIElement,
+  // but is consistent with Safari+Voiceover behavior.
+  // See crbug.com/1430419
+  ax::mojom::Role role = _node->GetRole();
+  if (ui::IsRadio(role) || ui::IsCheckBox(role))
+    return nil;
+
   return label->GetNativeViewAccessible();
 }
 
@@ -330,6 +334,26 @@ void CollectAncestorRoles(
   // VoiceOver computes the wrong description for a link.
   if (ui::IsLink(role))
     return true;
+
+  // If a radiobutton or checkbox has a single label, we are consistent
+  // with Safari+Voiceover and expose it via AccessibilityLabel.
+  // Note: Safari+Voiceover is inconsistent with Apple's documentation,
+  // which suggests this should be exposed via AXTitleUIElement. See
+  // crbug.com/1430419
+  if (ui::IsRadio(role) || ui::IsCheckBox(role)) {
+    std::vector<int32_t> labelledby_ids =
+        _node->GetIntListAttribute(ax::mojom::IntListAttribute::kLabelledbyIds);
+    if (labelledby_ids.size() == 1) {
+      ui::AXPlatformNode* label =
+          _node->GetDelegate()->GetFromNodeID(labelledby_ids[0]);
+      if (label) {
+        // No title UI element if the label's name is empty.
+        std::string labelName = label->GetDelegate()->GetName();
+        if (!labelName.empty())
+          return true;
+      }
+    }
+  }
 
   // VoiceOver will not read the label of these roles unless it is
   // exposed in the description instead of the title.
@@ -1252,6 +1276,12 @@ void CollectAncestorRoles(
   if (_node->HasHtmlAttribute("aria-dropeffect"))
     [axAttributes addObject:NSAccessibilityDropEffectsAttribute];
 
+  // Error messages.
+  if (_node->HasIntListAttribute(
+          ax::mojom::IntListAttribute::kErrormessageIds)) {
+    [axAttributes addObject:NSAccessibilityErrorMessageElementsAttribute];
+  }
+
   // Grabbed
   if (_node->HasHtmlAttribute("aria-grabbed"))
     [axAttributes addObject:NSAccessibilityGrabbedAttribute];
@@ -1332,15 +1362,16 @@ void CollectAncestorRoles(
   if ([attribute isEqualToString:NSAccessibilityValueAttribute]) {
     [self setAccessibilityValue:value];
   } else if ([attribute isEqualToString:NSAccessibilitySelectedTextAttribute]) {
-    [self setAccessibilitySelectedText:base::mac::ObjCCastStrict<NSString>(
+    [self setAccessibilitySelectedText:base::apple::ObjCCastStrict<NSString>(
                                            value)];
   } else if ([attribute
                  isEqualToString:NSAccessibilitySelectedTextRangeAttribute]) {
-    [self setAccessibilitySelectedTextRange:base::mac::ObjCCastStrict<NSValue>(
-                                                value)
-                                                .rangeValue];
+    [self
+        setAccessibilitySelectedTextRange:base::apple::ObjCCastStrict<NSValue>(
+                                              value)
+                                              .rangeValue];
   } else if ([attribute isEqualToString:NSAccessibilityFocusedAttribute]) {
-    [self setAccessibilityFocused:base::mac::ObjCCastStrict<NSNumber>(value)
+    [self setAccessibilityFocused:base::apple::ObjCCastStrict<NSNumber>(value)
                                       .boolValue];
   }
 }
@@ -1603,6 +1634,23 @@ void CollectAncestorRoles(
   if (![self instanceActive])
     return nil;
   return @(_node->GetBoolAttribute(ax::mojom::BoolAttribute::kBusy));
+}
+
+- (NSArray*)AXErrorMessageElements {
+  if (![self instanceActive]) {
+    return nil;
+  }
+
+  NSMutableArray* elements = [NSMutableArray array];
+  for (ui::AXNodeID id : _node->GetIntListAttribute(
+           ax::mojom::IntListAttribute::kErrormessageIds)) {
+    AXPlatformNodeCocoa* node = [self fromNodeID:id];
+    if (node) {
+      [elements addObject:node];
+    }
+  }
+
+  return elements.count ? elements : nil;
 }
 
 - (NSNumber*)AXGrabbed {
@@ -2039,7 +2087,12 @@ void CollectAncestorRoles(
   if (axRange.IsNull())
     return nil;
 
-  NSString* text = base::SysUTF16ToNSString(axRange.GetText());
+  NSString* text = base::SysUTF16ToNSString(
+      axRange.GetText(ui::AXTextConcatenationBehavior::kWithoutParagraphBreaks,
+                      ui::AXEmbeddedObjectBehavior::kExposeCharacter,
+                      // Constrain the amount of text retrieved for performance.
+                      /* max_count =*/200));
+
   if (text.length == 0) {
     return nil;
   }

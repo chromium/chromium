@@ -104,6 +104,7 @@ class SubSurface : public SurfaceDelegate,
   void Pin(bool trusted) override {}
   void Unpin() override {}
   void SetSystemModal(bool system_modal) override {}
+  void SetTopInset(int height) override {}
   SecurityDelegate* GetSecurityDelegate() override;
 
   // Overridden from SurfaceObserver:

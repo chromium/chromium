@@ -7,6 +7,7 @@
 #include "ash/constants/ash_features.h"
 #include "base/check.h"
 #include "base/command_line.h"
+#include "base/containers/flat_map.h"
 #include "base/logging.h"
 #include "base/ranges/algorithm.h"
 #include "base/strings/string_util.h"
@@ -14,8 +15,10 @@
 #include "base/task/single_thread_task_runner.h"
 #include "base/values.h"
 #include "chromeos/ash/components/dbus/hermes/hermes_euicc_client.h"
+#include "chromeos/ash/components/dbus/hermes/hermes_manager_client.h"
 #include "chromeos/ash/components/dbus/hermes/hermes_profile_client.h"
 #include "chromeos/ash/components/dbus/hermes/hermes_response_status.h"
+#include "chromeos/ash/components/dbus/shill/shill_device_client.h"
 #include "chromeos/ash/components/dbus/shill/shill_profile_client.h"
 #include "chromeos/ash/components/dbus/shill/shill_service_client.h"
 #include "chromeos/dbus/constants/dbus_switches.h"
@@ -29,6 +32,7 @@ namespace {
 
 const char* kDefaultMccMnc = "310999";
 const char* kFakeActivationCodePrefix = "1$SMDP.GSMA.COM$00000-00000-00000-000";
+const char* kActivationCodeToTriggerDBusError = "no_memory";
 const char* kFakeProfilePathPrefix = "/org/chromium/Hermes/Profile/";
 const char* kFakeIccidPrefix = "10000000000000000";
 const char* kFakeProfileNamePrefix = "FakeCellularNetwork_";
@@ -86,6 +90,26 @@ dbus::ObjectPath PopPendingProfileWithActivationCode(
     }
   }
   return dbus::ObjectPath();
+}
+
+base::Value::List ExtractPSimSlotInfo(const base::Value* sim_slot_info_list) {
+  base::Value::List psim_slot_info_list;
+
+  if (!sim_slot_info_list || !sim_slot_info_list->is_list()) {
+    return psim_slot_info_list;
+  }
+
+  for (const auto& sim_slot_info : *sim_slot_info_list->GetIfList()) {
+    if (!sim_slot_info.is_dict()) {
+      continue;
+    }
+    const std::string* eid =
+        sim_slot_info.GetIfDict()->FindString(shill::kSIMSlotInfoEID);
+    if (!eid || eid->empty()) {
+      psim_slot_info_list.Append(sim_slot_info.Clone());
+    }
+  }
+  return psim_slot_info_list;
 }
 
 }  // namespace
@@ -254,6 +278,67 @@ bool FakeHermesEuiccClient::RemoveCarrierProfile(
   return true;
 }
 
+void FakeHermesEuiccClient::UpdateShillDeviceSimSlotInfo() {
+  ShillDeviceClient::TestInterface* device_test =
+      ShillDeviceClient::Get()->GetTestInterface();
+  DCHECK(device_test);
+
+  const std::string device_path =
+      device_test->GetDevicePathForType(shill::kTypeCellular);
+  if (device_path.empty()) {
+    return;
+  }
+
+  HermesManagerClient* manager_client = HermesManagerClient::Get();
+  DCHECK(manager_client);
+  HermesProfileClient* profile_client = HermesProfileClient::Get();
+  DCHECK(profile_client);
+
+  // The list of SIM slot information is expected to be in ascending order by
+  // the physical slot of the EUICCs.
+  base::flat_map<int32_t, HermesEuiccClient::Properties*>
+      physical_slot_to_properties;
+  for (const auto& euicc_path : manager_client->GetAvailableEuiccs()) {
+    HermesEuiccClient::Properties* euicc_properties = GetProperties(euicc_path);
+    DCHECK(euicc_properties);
+    physical_slot_to_properties.insert_or_assign(
+        euicc_properties->physical_slot().value(), euicc_properties);
+  }
+
+  // Check if there is already an entry for SIM slot information and copy the
+  // pSIM information if it is available.
+  base::Value::List sim_slot_info_list = ExtractPSimSlotInfo(
+      device_test->GetDeviceProperty(device_path, shill::kSIMSlotInfoProperty));
+
+  for (auto [physical_slot, euicc_properties] : physical_slot_to_properties) {
+    std::string iccid;
+    for (const auto& profile_path :
+         GetInstalledProfiles(euicc_properties).value()) {
+      HermesProfileClient::Properties* profile_properties =
+          profile_client->GetProperties(profile_path);
+      DCHECK(profile_properties);
+
+      const dbus::Property<hermes::profile::State>& state =
+          profile_properties->state();
+      if (state.value() == hermes::profile::State::kActive) {
+        iccid = profile_properties->iccid().value();
+        break;
+      }
+    }
+
+    base::Value::Dict sim_slot_info;
+    sim_slot_info.Set(shill::kSIMSlotInfoEID, euicc_properties->eid().value());
+    sim_slot_info.Set(shill::kSIMSlotInfoICCID, iccid);
+    sim_slot_info.Set(shill::kSIMSlotInfoPrimary,
+                      euicc_properties->is_active().value());
+    sim_slot_info_list.Append(std::move(sim_slot_info));
+  }
+
+  device_test->SetDeviceProperty(device_path, shill::kSIMSlotInfoProperty,
+                                 base::Value(std::move(sim_slot_info_list)),
+                                 /*notify_changed=*/true);
+}
+
 void FakeHermesEuiccClient::QueueHermesErrorStatus(
     HermesResponseStatus status) {
   error_status_queue_.push(status);
@@ -265,6 +350,11 @@ void FakeHermesEuiccClient::SetNextInstallProfileFromActivationCodeResult(
   next_install_profile_result_ = status;
 }
 
+void FakeHermesEuiccClient::SetNextRefreshSmdxProfilesResult(
+    std::vector<dbus::ObjectPath> profiles) {
+  next_refresh_smdx_profiles_result_ = std::move(profiles);
+}
+
 void FakeHermesEuiccClient::SetInteractiveDelay(base::TimeDelta delay) {
   interactive_delay_ = delay;
 }
@@ -272,6 +362,10 @@ void FakeHermesEuiccClient::SetInteractiveDelay(base::TimeDelta delay) {
 std::string FakeHermesEuiccClient::GenerateFakeActivationCode() {
   return base::StringPrintf("%s-%04d", kFakeActivationCodePrefix,
                             fake_profile_counter_++);
+}
+
+std::string FakeHermesEuiccClient::GetDBusErrorActivationCode() {
+  return kActivationCodeToTriggerDBusError;
 }
 
 bool FakeHermesEuiccClient::GetLastRefreshProfilesRestoreSlotArg() {
@@ -285,6 +379,7 @@ void FakeHermesEuiccClient::InstallProfileFromActivationCode(
     InstallCarrierProfileCallback callback) {
   if (next_install_profile_result_.has_value()) {
     std::move(callback).Run(next_install_profile_result_.value(),
+                            dbus::DBusResult::kSuccess,
                             /*carrier_profile_path=*/nullptr);
     next_install_profile_result_ = absl::nullopt;
     return;
@@ -403,15 +498,22 @@ void FakeHermesEuiccClient::DoInstallProfileFromActivationCode(
   DVLOG(1) << "Installing profile from activation code: code="
            << activation_code << ", confirmation_code=" << confirmation_code;
   if (!error_status_queue_.empty()) {
-    std::move(callback).Run(error_status_queue_.front(), nullptr);
+    std::move(callback).Run(error_status_queue_.front(),
+                            dbus::DBusResult::kSuccess, nullptr);
     error_status_queue_.pop();
+    return;
+  }
+
+  if (activation_code == kActivationCodeToTriggerDBusError) {
+    std::move(callback).Run(HermesResponseStatus::kErrorUnknownResponse,
+                            dbus::DBusResult::kErrorNoMemory, nullptr);
     return;
   }
 
   if (!base::StartsWith(activation_code, kFakeActivationCodePrefix,
                         base::CompareCase::SENSITIVE)) {
     std::move(callback).Run(HermesResponseStatus::kErrorInvalidActivationCode,
-                            nullptr);
+                            dbus::DBusResult::kSuccess, nullptr);
     return;
   }
 
@@ -437,7 +539,8 @@ void FakeHermesEuiccClient::DoInstallProfileFromActivationCode(
   }
   CreateCellularService(euicc_path, profile_path);
 
-  std::move(callback).Run(HermesResponseStatus::kSuccess, &profile_path);
+  std::move(callback).Run(HermesResponseStatus::kSuccess,
+                          dbus::DBusResult::kSuccess, &profile_path);
 }
 
 void FakeHermesEuiccClient::DoInstallPendingProfile(
@@ -508,21 +611,49 @@ void FakeHermesEuiccClient::DoRefreshSmdxProfiles(
 
   DVLOG(1) << "Refresh SM-DX Profiles Requested";
 
-  std::vector<dbus::ObjectPath> profile_paths;
-
+  HermesResponseStatus status = HermesResponseStatus::kSuccess;
   if (!error_status_queue_.empty()) {
-    std::move(callback).Run(error_status_queue_.front(), profile_paths);
+    status = error_status_queue_.front();
     error_status_queue_.pop();
+  }
+
+  if (next_refresh_smdx_profiles_result_.has_value()) {
+    std::move(callback).Run(status, next_refresh_smdx_profiles_result_.value());
+    next_refresh_smdx_profiles_result_ = absl::nullopt;
     return;
   }
 
-  // Configure a single profile that uses the activation code that was provided
-  // and immediately return the path to this profile.
-  profile_paths.push_back(AddFakeCarrierProfile(
-      euicc_path, hermes::profile::State::kPending, activation_code,
-      AddCarrierProfileBehavior::kAddProfileWithService));
+  std::vector<dbus::ObjectPath> profile_paths;
 
-  std::move(callback).Run(HermesResponseStatus::kSuccess, profile_paths);
+  if (status != HermesResponseStatus::kSuccess) {
+    std::move(callback).Run(error_status_queue_.front(), profile_paths);
+    return;
+  }
+
+  Properties* euicc_properties = GetProperties(euicc_path);
+  DCHECK(euicc_properties);
+
+  // Collect all of the existing, pending profiles that have an activation code
+  // that matches |activation_code| to be returned.
+  for (const auto& profile_path :
+       GetPendingProfiles(euicc_properties).value()) {
+    HermesProfileClient::Properties* properties =
+        HermesProfileClient::Get()->GetProperties(profile_path);
+    if (properties &&
+        properties->activation_code().value() == activation_code &&
+        properties->state().value() == hermes::profile::State::kPending) {
+      profile_paths.push_back(profile_path);
+    }
+  }
+
+  // If no pending profiles exist with a matching activation code, create one.
+  if (profile_paths.empty()) {
+    profile_paths.push_back(AddFakeCarrierProfile(
+        euicc_path, hermes::profile::State::kPending, activation_code,
+        AddCarrierProfileBehavior::kAddProfileWithService));
+  }
+
+  std::move(callback).Run(status, profile_paths);
 }
 
 void FakeHermesEuiccClient::DoRequestPendingProfiles(
@@ -634,6 +765,12 @@ void FakeHermesEuiccClient::CallNotifyPropertyChanged(
 void FakeHermesEuiccClient::NotifyPropertyChanged(
     const dbus::ObjectPath& object_path,
     const std::string& property_name) {
+  if (property_name == hermes::euicc::kInstalledProfilesProperty ||
+      property_name == hermes::euicc::kPendingProfilesProperty ||
+      property_name == hermes::euicc::kProfilesProperty) {
+    UpdateShillDeviceSimSlotInfo();
+  }
+
   DVLOG(1) << "Property changed path=" << object_path.value()
            << ", property=" << property_name;
   for (auto& observer : observers()) {

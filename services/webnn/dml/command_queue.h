@@ -10,8 +10,10 @@
 #include <deque>
 #include <vector>
 
+#include "base/containers/span.h"
 #include "base/functional/callback_forward.h"
 #include "base/gtest_prod_util.h"
+#include "base/memory/ref_counted.h"
 #include "base/win/object_watcher.h"
 #include "base/win/scoped_handle.h"
 
@@ -21,33 +23,41 @@ using Microsoft::WRL::ComPtr;
 
 // The CommandQueue is a wrapper of an ID3D12CommandQueue and contains a fence
 // which is signaled when the execution on GPU is completed.
-class CommandQueue : public base::win::ObjectWatcher::Delegate {
+class CommandQueue : public base::win::ObjectWatcher::Delegate,
+                     public base::RefCounted<CommandQueue> {
  public:
-  static std::unique_ptr<CommandQueue> Create(ID3D12Device* d3d12_device);
+  static scoped_refptr<CommandQueue> Create(ID3D12Device* d3d12_device);
 
   CommandQueue(const CommandQueue&) = delete;
   CommandQueue& operator=(const CommandQueue&) = delete;
-  ~CommandQueue() override;
 
-  HRESULT ExecuteCommandLists(
-      const std::vector<ID3D12CommandList*>& command_lists);
+  HRESULT ExecuteCommandList(ID3D12CommandList* command_list);
+  HRESULT ExecuteCommandLists(base::span<ID3D12CommandList*> command_lists);
 
   // It's a synchronous method only for testing, which will block the CPU until
   // the fence is signaled with the last fence value. Calling it on the GPU main
   // thread may block the UI.
   HRESULT WaitSyncForTesting();
+
+  using OnWaitAyncCallback = base::OnceCallback<void(HRESULT hr)>;
   // It's an asynchronous method for DirectML graph implementation, which will
-  // not block the CPU.
-  HRESULT WaitAsync(base::OnceClosure callback);
+  // not block the CPU. In case this method fails internally, the
+  // OnWaitAyncCallback accepts a HRESULT from it to handle.
+  void WaitAsync(OnWaitAyncCallback callback);
 
   void ReferenceUntilCompleted(ComPtr<IUnknown> object);
   void ReleaseCompletedResources();
 
+  uint64_t GetCompletedValue() const;
+  uint64_t GetLastFenceValue() const;
+
  private:
   FRIEND_TEST_ALL_PREFIXES(WebNNCommandQueueTest, ReferenceAndRelease);
 
+  friend class base::RefCounted<CommandQueue>;
   CommandQueue(ComPtr<ID3D12CommandQueue> command_queue,
                ComPtr<ID3D12Fence> fence);
+  ~CommandQueue() override;
 
   struct QueuedObject {
     QueuedObject() = delete;

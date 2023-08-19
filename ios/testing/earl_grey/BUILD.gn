@@ -3,7 +3,6 @@
 # found in the LICENSE file.
 
 source_set("eg_app_support+eg2") {
-  configs += [ "//build/config/compiler:enable_arc" ]
   testonly = true
 
   deps = [
@@ -26,15 +25,11 @@ source_set("eg_app_support+eg2") {
 }
 
 source_set("eg_test_support+eg2") {
-  configs += [
-    "//build/config/compiler:enable_arc",
-    "//build/config/ios:xctest_config",
-  ]
+  configs += [ "//build/config/ios:xctest_config" ]
   testonly = true
 
   sources = [
     "app_launch_configuration.h",
-    "app_launch_configuration.mm",
     "app_launch_manager.h",
     "app_launch_manager.mm",
     "app_launch_manager_app_interface.h",
@@ -57,7 +52,6 @@ source_set("eg_test_support+eg2") {
 
   deps = [
     "//base",
-    "//base/ios",
     "//base/test:test_support",
     "//components/variations",
     "//ios/testing:system_alert_handler",

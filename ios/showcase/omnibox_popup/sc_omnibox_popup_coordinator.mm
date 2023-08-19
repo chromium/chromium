@@ -11,10 +11,6 @@
 #import "ios/showcase/omnibox_popup/sc_omnibox_popup_container_view_controller.h"
 #import "ios/showcase/omnibox_popup/sc_omnibox_popup_mediator.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 @interface SCOmniboxPopupCoordinator () <Coordinator>
 
 @property(nonatomic, strong) OmniboxPopupViewController* popupViewController;

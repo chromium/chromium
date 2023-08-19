@@ -6,8 +6,8 @@
 
 #import <memory>
 
+#import "base/apple/foundation_util.h"
 #import "base/files/scoped_temp_dir.h"
-#import "base/mac/foundation_util.h"
 #import "base/strings/sys_string_conversions.h"
 #import "base/strings/utf_string_conversions.h"
 #import "base/test/ios/wait_util.h"
@@ -28,10 +28,6 @@
 #import "ios/web/public/test/web_task_environment.h"
 #import "testing/gtest/include/gtest/gtest.h"
 #import "testing/gtest_mac.h"
-
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
 
 using TemplateURLPrepopulateData::GetAllPrepopulatedEngines;
 using TemplateURLPrepopulateData::PrepopulatedEngine;
@@ -72,7 +68,7 @@ class SearchEngineTableViewControllerTest
 
   void TearDown() override {
     DefaultSearchManager::SetFallbackSearchEnginesDisabledForTesting(false);
-    [base::mac::ObjCCastStrict<SearchEngineTableViewController>(controller())
+    [base::apple::ObjCCastStrict<SearchEngineTableViewController>(controller())
         settingsWillBeDismissed];
     ChromeTableViewControllerTest::TearDown();
   }
@@ -130,7 +126,7 @@ class SearchEngineTableViewControllerTest
                  int section,
                  int row,
                  bool enabled) {
-    SearchEngineItem* item = base::mac::ObjCCastStrict<SearchEngineItem>(
+    SearchEngineItem* item = base::apple::ObjCCastStrict<SearchEngineItem>(
         GetTableViewItem(section, row));
     EXPECT_NSEQ(expected_text, item.text);
     EXPECT_NSEQ(expected_detail_text, item.detailText);

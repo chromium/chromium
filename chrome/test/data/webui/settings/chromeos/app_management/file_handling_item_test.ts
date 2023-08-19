@@ -2,10 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {AppManagementStore, updateSelectedAppId} from 'chrome://os-settings/os_settings.js';
+import {AppManagementFileHandlingItemElement, AppManagementStore, AppManagementToggleRowElement, updateSelectedAppId} from 'chrome://os-settings/os_settings.js';
 import {AppType} from 'chrome://resources/cr_components/app_management/app_management.mojom-webui.js';
-import {AppManagementFileHandlingItemElement} from 'chrome://resources/cr_components/app_management/file_handling_item.js';
-import {AppManagementToggleRowElement} from 'chrome://resources/cr_components/app_management/toggle_row.js';
 import {assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
 

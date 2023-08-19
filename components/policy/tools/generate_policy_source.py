@@ -25,19 +25,7 @@ import re
 import sys
 import textwrap
 
-sys.path.insert(
-    0,
-    os.path.join(os.path.dirname(__file__), os.pardir, os.pardir, os.pardir,
-                 'third_party', 'six', 'src'))
-
-import six
-
 from xml.sax.saxutils import escape as xml_escape
-
-if sys.version_info.major == 2:
-  string_type = basestring
-else:
-  string_type = str
 
 CHROME_POLICY_KEY = 'SOFTWARE\\\\Policies\\\\Google\\\\Chrome'
 CHROMIUM_POLICY_KEY = 'SOFTWARE\\\\Policies\\\\Chromium'
@@ -457,7 +445,7 @@ COMMENT_WRAPPER.replace_whitespace = False
 
 # Writes a comment, each line prefixed by // and wrapped to 80 spaces.
 def _OutputComment(f, comment):
-  for line in six.ensure_text(comment).splitlines():
+  for line in comment.splitlines():
     if len(line) == 0:
       f.write('//')
     else:
@@ -558,10 +546,6 @@ const internal::SchemaData* GetChromeSchemaData();
 ''')
   f.write('// Key names for the policy settings.\n' 'namespace key {\n\n')
   for policy in policies:
-    # TODO(joaodasilva): Include only supported policies in
-    # configuration_policy_handler.cc and configuration_policy_handler_list.cc
-    # so that these names can be conditional on 'policy.is_supported'.
-    # http://crbug.com/223616
     f.write('extern const char k' + policy.name + '[];\n')
   f.write('\n}  // namespace key\n\n')
 
@@ -809,7 +793,7 @@ class SchemaNodesGenerator:
     if '$ref' in schema:
       if 'id' in schema:
         raise RuntimeError("Schemas with a $ref can't have an id")
-      if not isinstance(schema['$ref'], string_type):
+      if not isinstance(schema['$ref'], str):
         raise RuntimeError("$ref attribute must be a string")
       return schema['$ref']
 
@@ -997,7 +981,7 @@ class SchemaNodesGenerator:
     f.write('  return &kChromeSchemaData;\n' '}\n\n')
 
   def GetByID(self, id_str):
-    if not isinstance(id_str, string_type):
+    if not isinstance(id_str, str):
       return id_str
     if id_str not in self.id_map:
       raise RuntimeError('Invalid $ref: ' + id_str)

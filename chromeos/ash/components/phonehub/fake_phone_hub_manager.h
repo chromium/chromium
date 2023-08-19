@@ -163,10 +163,11 @@ class FakePhoneHubManager : public PhoneHubManager {
   FakePingManager fake_ping_manager_;
   FakeIconDecoder fake_icon_decoder_;
   AppStreamManager app_stream_manager_;
-  raw_ptr<eche_app::EcheConnectionStatusHandler, ExperimentalAsh>
+  raw_ptr<eche_app::EcheConnectionStatusHandler,
+          DanglingUntriaged | ExperimentalAsh>
       eche_connection_status_handler_ = nullptr;
-  raw_ptr<eche_app::SystemInfoProvider, ExperimentalAsh> system_info_provider_ =
-      nullptr;
+  raw_ptr<eche_app::SystemInfoProvider, DanglingUntriaged | ExperimentalAsh>
+      system_info_provider_ = nullptr;
   absl::optional<base::Time> host_last_seen_timestamp_ = absl::nullopt;
 };
 

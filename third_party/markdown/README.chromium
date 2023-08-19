@@ -6,8 +6,9 @@ CPEPrefix: cpe:/a:cebe:markdown:2.3.1
 Date: March 22, 2013
 Revision: commit 0ea0bac85a749a13381b721cde44214d9193406c
 License: BSD 3-Clause
-License File: NOT_SHIPPED
+License File: LICENSE
 Security Critical: no
+Shipped: no
 
 Description:
 Markdown allows you to write using an easy-to-read, easy-to-write plain text format, then convert it to structurally valid XHTML (or HTML).

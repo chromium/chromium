@@ -122,13 +122,7 @@ void AboutThisSideSidePanelCoordinator::DidFinishNavigation(
     return;
   }
 
-  if (!page_info::IsKeepSidePanelOnSameTabNavsFeatureEnabled() &&
-      navigation_handle->IsSameDocument()) {
-    return;
-  }
-
-  if (page_info::IsKeepSidePanelOnSameTabNavsFeatureEnabled() &&
-      navigation_handle->IsSameDocument() &&
+  if (navigation_handle->IsSameDocument() &&
       web_contents()->GetLastCommittedURL().GetWithoutRef() ==
           last_url_info_->context_url.GetWithoutRef()) {
     return;
@@ -139,30 +133,12 @@ void AboutThisSideSidePanelCoordinator::DidFinishNavigation(
     return;
   }
 
-  // If the side panel is open and shows the AboutThisSide panel, close it.
-  if (!page_info::IsKeepSidePanelOnSameTabNavsFeatureEnabled() &&
-      about_this_site_side_panel_view_ &&
-      side_panel_ui->GetCurrentEntryId() ==
-          SidePanelEntry::Id::kAboutThisSite) {
-    side_panel_ui->Close();
-  }
-
   auto* registry = SidePanelRegistry::Get(web_contents());
   SidePanelEntry::Key key(SidePanelEntry::Id::kAboutThisSite);
-  // If the user navigates to a different page than the one we have data for
-  // we need to remove the SidePanel registration. We might already have
-  // data from cacao for the current pageload if it was locally cached.
-  if (!page_info::IsKeepSidePanelOnSameTabNavsFeatureEnabled() &&
-      registry->GetEntryForKey(key) &&
-      web_contents()->GetLastCommittedURL() != last_url_info_->context_url) {
-    registry->Deregister(key);
-    last_url_info_.reset();
-  }
 
   // Update the SidePanel when a user navigates to another url with the
   // correct Diner URL.
-  if (page_info::IsKeepSidePanelOnSameTabNavsFeatureEnabled() &&
-      about_this_site_side_panel_view_ &&
+  if (about_this_site_side_panel_view_ &&
       side_panel_ui->GetCurrentEntryId() ==
           SidePanelEntry::Id::kAboutThisSite) {
     page_info::AboutThisSiteService::OnSameTabNavigation();

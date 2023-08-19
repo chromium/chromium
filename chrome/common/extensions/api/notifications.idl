@@ -6,27 +6,30 @@
 // using templates and show these notifications to users in the system tray.
 namespace notifications {
   [noinline_doc] enum TemplateType {
-    // icon, title, message, expandedMessage, up to two buttons
+    // Contains an icon, title, message, expandedMessage, and up to two
+    // buttons.
     basic,
 
-    // icon, title, message, expandedMessage, image, up to two buttons
+    // Contains an icon, title, message, expandedMessage, image, and up
+    //  to two buttons.
     [deprecated="The image is not visible for Mac OS X users."]
     image,
 
-    // icon, title, message, items, up to two buttons. Users on Mac OS X only
-    // see the first item.
+    // Contains an icon, title, message, items, and up to two buttons.
+    // Users on Mac OS X only see the first item.
     list,
 
-    // icon, title, message, progress, up to two buttons
+    // Contains an icon, title, message, progress, and up to two buttons.
     progress
   };
 
   enum PermissionLevel {
-    // User has elected to show notifications from the app or extension.
-    // This is the default at install time.
+    // Specifies that the user has elected to show notifications
+    // from the app or extension. This is the default at install time.
     granted,
 
-    // User has elected not to show notifications from the app or extension.
+    // Specifies that the user has elected not to show notifications
+    // from the app or extension.
     denied
   };
 
@@ -151,9 +154,9 @@ namespace notifications {
     // that represents the created notification.
     //
     // The callback is required before Chrome 42.
-    static void create(optional DOMString notificationId,
-                       NotificationOptions options,
-                       optional CreateCallback callback);
+    [supportsPromises] static void create(optional DOMString notificationId,
+                                          NotificationOptions options,
+                                          optional CreateCallback callback);
 
     // Updates an existing notification.
     // |notificationId|: The id of the notification to be updated. This is
@@ -162,9 +165,9 @@ namespace notifications {
     // |callback|: Called to indicate whether a matching notification existed.
     //
     // The callback is required before Chrome 42.
-    static void update(DOMString notificationId,
-                       NotificationOptions options,
-                       optional UpdateCallback callback);
+    [supportsPromises] static void update(DOMString notificationId,
+                                          NotificationOptions options,
+                                          optional UpdateCallback callback);
 
     // Clears the specified notification.
     // |notificationId|: The id of the notification to be cleared. This is
@@ -172,17 +175,18 @@ namespace notifications {
     // |callback|: Called to indicate whether a matching notification existed.
     //
     // The callback is required before Chrome 42.
-    static void clear(DOMString notificationId,
-                      optional ClearCallback callback);
+    [supportsPromises] static void clear(DOMString notificationId,
+                                         optional ClearCallback callback);
 
     // Retrieves all the notifications of this app or extension.
     // |callback|: Returns the set of notification_ids currently in the system.
-    static void getAll(GetAllCallback callback);
+    [supportsPromises] static void getAll(GetAllCallback callback);
 
     // Retrieves whether the user has enabled notifications from this app
     // or extension.
     // |callback|: Returns the current permission level.
-    static void getPermissionLevel(PermissionLevelCallback callback);
+    [supportsPromises] static void getPermissionLevel(
+        PermissionLevelCallback callback);
   };
 
   interface Events {

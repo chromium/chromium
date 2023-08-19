@@ -57,6 +57,9 @@
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
 #include "chrome/browser/apps/app_service/browser_app_launcher.h"
 #include "chrome/browser/ash/app_list/search/chrome_search_result.h"
+#include "chrome/browser/ash/app_list/search/local_image_search/local_image_search_service.h"
+#include "chrome/browser/ash/app_list/search/local_image_search/local_image_search_service_factory.h"
+#include "chrome/browser/ash/app_list/search/search_features.h"
 #include "chrome/browser/ash/arc/fileapi/arc_documents_provider_util.h"
 #include "chrome/browser/ash/arc/fileapi/arc_media_view_util.h"
 #include "chrome/browser/ash/base/locale_util.h"
@@ -91,6 +94,7 @@
 #include "chrome/browser/notifications/notification_display_service_tester.h"
 #include "chrome/browser/platform_util.h"
 #include "chrome/browser/sync_file_system/mock_remote_file_sync_service.h"
+#include "chrome/browser/sync_file_system/sync_file_system_service.h"
 #include "chrome/browser/sync_file_system/sync_file_system_service_factory.h"
 #include "chrome/browser/ui/ash/system_web_apps/system_web_app_ui_utils.h"
 #include "chrome/browser/ui/browser.h"
@@ -107,6 +111,7 @@
 #include "chrome/test/base/test_switches.h"
 #include "chromeos/ash/components/dbus/cros_disks/cros_disks_client.h"
 #include "chromeos/ash/components/dbus/cros_disks/fake_cros_disks_client.h"
+#include "chromeos/ash/components/dbus/shill/shill_service_client.h"
 #include "chromeos/ash/components/dbus/spaced/fake_spaced_client.h"
 #include "chromeos/ash/components/dbus/vm_concierge/concierge_service.pb.h"
 #include "chromeos/ash/components/disks/mount_point.h"
@@ -441,6 +446,7 @@ struct AddEntriesMessage {
     EntryCapabilities capabilities;   // Entry permissions.
     EntryFolderFeature folder_feature;  // Entry folder feature.
     bool pinned = false;                // Whether the file should be pinned.
+    bool dirty = false;                 // Whether the file is dirty.
     bool available_offline = false;  // Whether the file is available_offline.
     std::string alternate_url;       // Entry's alternate URL on Drive.
     bool can_pin = true;             // Whether the file can be pinned.
@@ -492,6 +498,11 @@ struct AddEntriesMessage {
       return *this;
     }
 
+    TestEntryInfo& SetDirty(bool is_dirty) {
+      dirty = is_dirty;
+      return *this;
+    }
+
     TestEntryInfo& SetAvailableOffline(bool is_available_offline) {
       available_offline = is_available_offline;
       return *this;
@@ -529,6 +540,7 @@ struct AddEntriesMessage {
       converter->RegisterNestedField("folderFeature",
                                      &TestEntryInfo::folder_feature);
       converter->RegisterBoolField("pinned", &TestEntryInfo::pinned);
+      converter->RegisterBoolField("dirty", &TestEntryInfo::dirty);
       converter->RegisterBoolField("availableOffline",
                                    &TestEntryInfo::available_offline);
       converter->RegisterStringField("alternateUrl",
@@ -854,6 +866,7 @@ ash::LoggedInUserMixin::LogInType LogInTypeFor(
       // TODO(crbug.com/1061742): `base::ImmediateCrash` is necessary.
       base::ImmediateCrash();
     case kEnterprise:
+    case kGoogler:
       return ash::LoggedInUserMixin::LogInType::kRegular;
     case kChild:
       return ash::LoggedInUserMixin::LogInType::kChild;
@@ -874,9 +887,10 @@ absl::optional<AccountId> AccountIdFor(TestAccountType test_account_type) {
       return AccountId::FromUserEmailGaiaId(
           FakeGaiaMixin::kEnterpriseUser1,
           FakeGaiaMixin::kEnterpriseUser1GaiaId);
+    case kGoogler:
+      return AccountId::FromUserEmailGaiaId(
+          "user@google.com", FakeGaiaMixin::kEnterpriseUser1GaiaId);
     case kChild:
-      // Use the default account provided by `LoggedInUserMixin`.
-      return absl::nullopt;
     case kNonManaged:
     case kNonManagedNonOwner:
       // Use the default account provided by `LoggedInUserMixin`.
@@ -1074,6 +1088,10 @@ class DownloadsTestVolume : public LocalTestVolume {
   // rolled out.
   base::FilePath base_path() const { return root_path().Append("Downloads"); }
 
+  base::FilePath GetFilePath(const std::string relative_path) const {
+    return base_path().Append(relative_path);
+  }
+
   bool Mount(Profile* profile) override {
     if (!CreateRootDirectory(profile)) {
       return false;
@@ -1084,7 +1102,7 @@ class DownloadsTestVolume : public LocalTestVolume {
   }
 
   void CreateEntry(const AddEntriesMessage::TestEntryInfo& entry) override {
-    base::FilePath target_path = base_path().Append(entry.target_path);
+    base::FilePath target_path = GetFilePath(entry.target_path);
     CreateEntryImpl(entry, target_path);
   }
 
@@ -1373,6 +1391,7 @@ class DriveFsTestVolume : public TestVolume {
     metadata.path = relative_path;
     metadata.mime_type = entry.mime_type;
     metadata.original_name = original_name.value();
+    metadata.dirty = entry.dirty;
     metadata.pinned = entry.pinned;
     metadata.available_offline = entry.available_offline;
     metadata.shared =
@@ -1392,7 +1411,10 @@ class DriveFsTestVolume : public TestVolume {
     metadata.folder_feature.is_external_media =
         entry.folder_feature.is_external_media;
     metadata.alternate_url = entry.alternate_url;
-    metadata.shortcut = (entry.entry_type == AddEntriesMessage::LINK);
+    if (entry.entry_type == AddEntriesMessage::LINK) {
+      metadata.shortcut = true;
+      metadata.shortcut_target_path = target_path;
+    }
     metadata.can_pin = entry.can_pin;
     fake_drivefs_helper_->fake_drivefs().SetMetadata(std::move(metadata));
 
@@ -1506,6 +1528,13 @@ class DriveFsTestVolume : public TestVolume {
                               metadata.value().stable_id);
     auto& drivefs_delegate = fake_drivefs_helper_->fake_drivefs().delegate();
     drivefs_delegate->OnFilesChanged(std::move(file_changes));
+  }
+
+  void SetPooledStorageQuotaUsage(int64_t used_user_bytes,
+                                  int64_t total_user_bytes,
+                                  bool organization_limit_exceeded) {
+    fake_drivefs_helper_->fake_drivefs().SetPooledStorageQuotaUsage(
+        used_user_bytes, total_user_bytes, organization_limit_exceeded);
   }
 
  private:
@@ -2000,7 +2029,8 @@ static bool ShouldInspect(content::DevToolsAgentHost* host) {
   // TODO(crbug.com/v8/10820): Add background_page back in once
   // coverage can be collected when a background_page and app
   // share the same v8 isolate.
-  if (host->GetTitle() == "Files" && host->GetType() == "app") {
+  if (host->GetURL().host() == ash::file_manager::kChromeUIFileManagerHost &&
+      host->GetType() == "page") {
     return true;
   }
 
@@ -2022,16 +2052,7 @@ void FileManagerBrowserTestBase::DevToolsAgentHostCreated(
 }
 
 void FileManagerBrowserTestBase::DevToolsAgentHostAttached(
-    content::DevToolsAgentHost* host) {
-  if (auto* content = host->GetWebContents()) {
-    auto* manager = extensions::ProcessManager::Get(profile());
-    if (auto* extension = manager->GetExtensionForWebContents(content)) {
-      LOG(INFO) << "DevToolsAgentHostAttached: " << extension->name();
-      manager->IncrementLazyKeepaliveCount(
-          extension, extensions::Activity::Type::DEV_TOOLS, "");
-    }
-  }
-}
+    content::DevToolsAgentHost* host) {}
 
 void FileManagerBrowserTestBase::DevToolsAgentHostNavigated(
     content::DevToolsAgentHost* host) {
@@ -2143,6 +2164,12 @@ void FileManagerBrowserTestBase::SetUpCommandLine(
     disabled_features.push_back(features::kDataLeakPreventionFilesRestriction);
   }
 
+  if (options.enable_files_policy_new_ux) {
+    enabled_features.push_back(features::kNewFilesPolicyUX);
+  } else {
+    disabled_features.push_back(features::kNewFilesPolicyUX);
+  }
+
   if (options.enable_mirrorsync) {
     enabled_features.push_back(ash::features::kDriveFsMirroring);
   } else {
@@ -2191,6 +2218,16 @@ void FileManagerBrowserTestBase::SetUpCommandLine(
     disabled_features.push_back(ash::features::kFilesSearchV2);
   }
 
+  if (options.enable_image_content_search) {
+    enabled_features.push_back(search_features::kLauncherImageSearch);
+    enabled_features.push_back(search_features::kLauncherImageSearchIca);
+    enabled_features.push_back(search_features::kLauncherImageSearchOcr);
+  } else {
+    disabled_features.push_back(search_features::kLauncherImageSearch);
+    disabled_features.push_back(search_features::kLauncherImageSearchIca);
+    disabled_features.push_back(search_features::kLauncherImageSearchOcr);
+  }
+
   if (options.enable_os_feedback) {
     enabled_features.push_back(ash::features::kOsFeedback);
   } else {
@@ -2217,6 +2254,20 @@ void FileManagerBrowserTestBase::SetUpCommandLine(
     enabled_features.push_back(ash::features::kFilesDriveShortcuts);
   } else {
     disabled_features.push_back(ash::features::kFilesDriveShortcuts);
+  }
+
+  if (options.enable_jellybean) {
+    enabled_features.push_back(chromeos::features::kJelly);
+  } else {
+    disabled_features.push_back(chromeos::features::kJelly);
+  }
+
+  if (options.enable_cros_components) {
+    enabled_features.push_back(chromeos::features::kCrosComponents);
+    DCHECK(options.enable_jellybean)
+        << "Cannot enable cros-components without jellybean";
+  } else {
+    disabled_features.push_back(chromeos::features::kCrosComponents);
   }
 
   if (options.feature_ids.size() > 0) {
@@ -2273,13 +2324,17 @@ void FileManagerBrowserTestBase::SetUpInProcessBrowserTestFixture() {
 void FileManagerBrowserTestBase::SetUpOnMainThread() {
   const Options options = GetOptions();
 
-  // Must happen after the browser process is created because instantiating
-  // the factory will instantiate ExtensionSystemFactory which depends on
-  // ExtensionsBrowserClient setup in BrowserProcessImpl.
+  // Override factory to inject a test RemoteFileSyncService.
   sync_file_system::SyncFileSystemServiceFactory::GetInstance()
-      ->set_mock_remote_file_service(
-          std::make_unique<::testing::NiceMock<
-              sync_file_system::MockRemoteFileSyncService>>());
+      ->SetTestingFactory(
+          profile(), base::BindRepeating([](content::BrowserContext* context)
+                                             -> std::unique_ptr<KeyedService> {
+            return sync_file_system::SyncFileSystemServiceFactory::
+                BuildWithRemoteFileSyncServiceForTest(
+                    context,
+                    std::make_unique<::testing::NiceMock<
+                        sync_file_system::MockRemoteFileSyncService>>());
+          }));
 
   extensions::MixinBasedExtensionApiTest::SetUpOnMainThread();
 
@@ -2417,8 +2472,10 @@ void FileManagerBrowserTestBase::SetUpOnMainThread() {
     EnableVirtualKeyboard();
   }
 
-  select_factory_ = new SelectFileDialogExtensionTestFactory();
-  ui::SelectFileDialog::SetFactory(select_factory_);
+  auto select_factory =
+      std::make_unique<SelectFileDialogExtensionTestFactory>();
+  select_factory_ = select_factory.get();
+  ui::SelectFileDialog::SetFactory(std::move(select_factory));
 }
 
 void FileManagerBrowserTestBase::TearDownOnMainThread() {
@@ -2454,7 +2511,7 @@ void FileManagerBrowserTestBase::StartTest() {
   base::ScopedAllowBlockingForTesting allow_blocking;
 
   base::FilePath store =
-      devtools_code_coverage_dir_.AppendASCII("devtools_code_coverage");
+      devtools_code_coverage_dir_.AppendASCII("webui_javascript_code_coverage");
   coverage::DevToolsListener::SetupCoverageStore(store);
 
   for (auto& agent : devtools_agent_) {
@@ -3213,7 +3270,7 @@ void FileManagerBrowserTestBase::OnCommand(const std::string& name,
         drive::DriveIntegrationServiceFactory::FindForProfile(profile());
     ASSERT_NE(integration_service, nullptr);
     ASSERT_NE(integration_service->GetPinManager(), nullptr);
-    integration_service->GetPinManager()->CalculateRequiredSpace();
+    ASSERT_TRUE(integration_service->GetPinManager()->CalculateRequiredSpace());
     return;
   }
 
@@ -3234,6 +3291,19 @@ void FileManagerBrowserTestBase::OnCommand(const std::string& name,
     ASSERT_NE(integration_service->GetPinManager(), nullptr);
     auto progress = integration_service->GetPinManager()->GetProgress();
     *output = base::NumberToString(progress.required_space);
+    return;
+  }
+
+  if (name == "setBulkPinningShouldPinFiles") {
+    absl::optional<bool> enabled = value.FindBool("enabled");
+    ASSERT_TRUE(enabled.has_value())
+        << "enabled must be sent with setBulkPiningDontPinFiles";
+    auto* integration_service =
+        drive::DriveIntegrationServiceFactory::FindForProfile(profile());
+    ASSERT_NE(integration_service, nullptr);
+    ASSERT_NE(integration_service->GetPinManager(), nullptr);
+    integration_service->GetPinManager()->SetShouldPinFilesForTesting(
+        enabled.value());
     return;
   }
 
@@ -3433,6 +3503,11 @@ void FileManagerBrowserTestBase::OnCommand(const std::string& name,
 
   if (name == "isOsFeedbackEnabled") {
     *output = options.enable_os_feedback ? "true" : "false";
+    return;
+  }
+
+  if (name == "isFilesExperimentalEnabled") {
+    *output = options.files_experimental ? "true" : "false";
     return;
   }
 
@@ -3636,10 +3711,61 @@ void FileManagerBrowserTestBase::OnCommand(const std::string& name,
     return;
   }
 
+  if (name == "setPooledStorageQuotaUsage") {
+    absl::optional<int64_t> used_user_bytes = value.FindInt("usedUserBytes");
+    ASSERT_TRUE(used_user_bytes.has_value())
+        << "Need usedUserBytes to set pooled storage quota used";
+    absl::optional<int64_t> total_user_bytes = value.FindInt("totalUserBytes");
+    ASSERT_TRUE(total_user_bytes.has_value())
+        << "Need totalUserBytes to set pooled storage quota used";
+    absl::optional<bool> organization_limit_exceeded =
+        value.FindBool("organizationLimitExceeded");
+    ASSERT_TRUE(organization_limit_exceeded.has_value())
+        << "Need organizationLimitExceeded to set pooled storage quota used";
+    drive_volume_->SetPooledStorageQuotaUsage(
+        used_user_bytes.value(), total_user_bytes.value(),
+        organization_limit_exceeded.value());
+    return;
+  }
+
   if (name == "sendDriveCloudDeleteEvent") {
     const std::string* path = value.FindString("path");
     ASSERT_TRUE(path) << "No supplied path to sendDriveFilesChangedEvent";
     drive_volume_->SendCloudDeleteEvent(*path);
+    return;
+  }
+
+  if (name == "isJellybean") {
+    *output = options.enable_jellybean ? "true" : "false";
+    return;
+  }
+
+  if (name == "isCrosComponents") {
+    *output = options.enable_cros_components ? "true" : "false";
+    return;
+  }
+
+  if (name == "setDeviceOffline") {
+    ash::ShillServiceClient::Get()->GetTestInterface()->ClearServices();
+    content::NetworkConnectionChangeSimulator().SetConnectionType(
+        network::mojom::ConnectionType::CONNECTION_NONE);
+    return;
+  }
+
+  if (name == "setupImageTerms") {
+    const std::string* path = value.FindString("path");
+    ASSERT_TRUE(path) << "Missing file path for setupImageTerms";
+    const std::string* terms = value.FindString("terms");
+    ASSERT_TRUE(terms) << "Missing terms for setupImageTerms";
+
+    base::FilePath file_path = local_volume_->GetFilePath(*path);
+    std::vector<std::string> tokens = base::SplitString(
+        *terms, ",", base::TRIM_WHITESPACE, base::SPLIT_WANT_NONEMPTY);
+    std::set<std::string> unique_terms(tokens.begin(), tokens.end());
+    app_list::ImageInfo image_info(unique_terms, file_path, base::Time::Now(),
+                                   false);
+    app_list::LocalImageSearchServiceFactory::GetForBrowserContext(profile())
+        ->Insert(image_info);
     return;
   }
 
@@ -3856,7 +3982,7 @@ FileManagerBrowserTestBase::GetLastOpenWindowWebContents() {
 }
 
 bool FileManagerBrowserTestBase::PostKeyEvent(ui::KeyEvent* key_event) {
-  gfx::NativeWindow native_window = nullptr;
+  gfx::NativeWindow native_window = gfx::NativeWindow();
 
   content::WebContents* web_contents = GetLastOpenWindowWebContents();
   if (!web_contents && swa_web_contents_.size() > 0) {

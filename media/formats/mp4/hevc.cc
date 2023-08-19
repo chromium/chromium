@@ -251,12 +251,11 @@ bool HEVCDecoderConfigurationRecord::ParseInternal(BufferReader* reader,
         for (auto& sei_msg : sei.msgs) {
           switch (sei_msg.type) {
             case H265SEIMessage::kSEIContentLightLevelInfo:
-              sei_msg.content_light_level_info.PopulateHDRMetadata(
-                  hdr_metadata);
+              hdr_metadata.cta_861_3 = sei_msg.content_light_level_info.ToGfx();
               break;
             case H265SEIMessage::kSEIMasteringDisplayInfo:
-              sei_msg.mastering_display_info.PopulateColorVolumeMetadata(
-                  hdr_metadata.smpte_st_2086);
+              hdr_metadata.smpte_st_2086 =
+                  sei_msg.mastering_display_info.ToGfx();
               break;
             case H265SEIMessage::kSEIAlphaChannelInfo:
               alpha_mode =

@@ -82,6 +82,7 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/metrics/user_action_tester.h"
 #include "base/test/scoped_feature_list.h"
+#include "chromeos/constants/chromeos_features.h"
 #include "chromeos/ui/base/window_properties.h"
 #include "components/prefs/pref_service.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -252,7 +253,11 @@ class AutoHideStateDetector : public ShelfLayoutManagerObserver {
 
 class ShelfLayoutManagerTest : public ShelfLayoutManagerTestBase {
  public:
-  ShelfLayoutManagerTest() = default;
+  ShelfLayoutManagerTest() {
+    // TODO(b/293400777): Test currently crashes when Jelly is enabled because
+    // of a crash in ShellTestApi. Remove when that is fixed.
+    scoped_features_.InitAndDisableFeature(chromeos::features::kJelly);
+  }
 
   void SetUpKioskSession() {
     SessionInfo info;
@@ -260,6 +265,9 @@ class ShelfLayoutManagerTest : public ShelfLayoutManagerTestBase {
     info.state = session_manager::SessionState::ACTIVE;
     Shell::Get()->session_controller()->SetSessionInfo(info);
   }
+
+ private:
+  base::test::ScopedFeatureList scoped_features_;
 };
 
 // Makes sure SetVisible updates work area and widget appropriately.
@@ -665,6 +673,7 @@ TEST_F(ShelfLayoutManagerTest, VisibleInOverview) {
       ui::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
 
   std::unique_ptr<aura::Window> window(CreateTestWindow());
+  window->SetBounds({0, 0, 120, 320});
   window->Show();
   Shelf* shelf = GetPrimaryShelf();
   shelf->SetAutoHideBehavior(ShelfAutoHideBehavior::kAlways);
@@ -2940,7 +2949,8 @@ class ShelfLayoutManagerDragDropTest
   }
 
  private:
-  raw_ptr<ui::test::EventGenerator, ExperimentalAsh> generator_;
+  raw_ptr<ui::test::EventGenerator, DanglingUntriaged | ExperimentalAsh>
+      generator_;
 };
 
 INSTANTIATE_TEST_SUITE_P(All,
@@ -4582,7 +4592,8 @@ TEST_F(NoSessionShelfLayoutManagerTest, UpdateShelfVisibilityAfterLogin) {
 
   // Setup autohide shelf pref.
   auto pref_service = std::make_unique<TestingPrefServiceSimple>();
-  RegisterUserProfilePrefs(pref_service->registry(), /*for_test=*/true);
+  RegisterUserProfilePrefs(pref_service->registry(), /*country=*/"",
+                           /*for_test=*/true);
   SetShelfAutoHideBehaviorPref(pref_service.get(),
                                WindowTreeHostManager::GetPrimaryDisplayId(),
                                ShelfAutoHideBehavior::kAlways);

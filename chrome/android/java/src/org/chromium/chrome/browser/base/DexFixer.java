@@ -69,8 +69,7 @@ public class DexFixer {
 
     @WorkerThread
     @VisibleForTesting
-    @DexFixerReason
-    static int fixDexIfNecessary(Runtime runtime) {
+    static @DexFixerReason int fixDexIfNecessary(Runtime runtime) {
         ApplicationInfo appInfo = ContextUtils.getApplicationContext().getApplicationInfo();
         @DexFixerReason
         int reason = needsDexCompile(appInfo);

@@ -36,7 +36,10 @@ class NET_EXPORT ParsedCookie {
   // informative exclusion reasons if the resulting ParsedCookie is invalid.
   // The CookieInclusionStatus will not be altered if the resulting ParsedCookie
   // is valid.
+  // `block_truncated` indicates whether cookies containing '\00', '\r', or '\n'
+  // characters should be treated as invalid.
   explicit ParsedCookie(const std::string& cookie_line,
+                        bool block_truncated = true,
                         CookieInclusionStatus* status_out = nullptr);
 
   ParsedCookie(const ParsedCookie&) = delete;
@@ -174,6 +177,7 @@ class NET_EXPORT ParsedCookie {
 
  private:
   void ParseTokenValuePairs(const std::string& cookie_line,
+                            bool block_truncated,
                             CookieInclusionStatus& status_out);
   void SetupAttributes();
 

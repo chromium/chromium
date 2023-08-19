@@ -2,6 +2,9 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+# @generated from third_party/rust/BUILD.gn.hbs by tools/crates/gnrt.
+# Do not edit!
+
 import("//build/rust/cargo_crate.gni")
 
 cargo_crate("lib") {
@@ -13,10 +16,45 @@ cargo_crate("lib") {
   # third_party.toml to use it from first-party code.
   visibility = [ "//third_party/rust/*" ]
   crate_root = "crate/src/lib.rs"
+  sources = [
+    "//third_party/rust/getrandom/v0_2/crate/benches/buffer.rs",
+    "//third_party/rust/getrandom/v0_2/crate/src/3ds.rs",
+    "//third_party/rust/getrandom/v0_2/crate/src/apple-other.rs",
+    "//third_party/rust/getrandom/v0_2/crate/src/bsd_arandom.rs",
+    "//third_party/rust/getrandom/v0_2/crate/src/custom.rs",
+    "//third_party/rust/getrandom/v0_2/crate/src/dragonfly.rs",
+    "//third_party/rust/getrandom/v0_2/crate/src/emscripten.rs",
+    "//third_party/rust/getrandom/v0_2/crate/src/error.rs",
+    "//third_party/rust/getrandom/v0_2/crate/src/error_impls.rs",
+    "//third_party/rust/getrandom/v0_2/crate/src/espidf.rs",
+    "//third_party/rust/getrandom/v0_2/crate/src/fuchsia.rs",
+    "//third_party/rust/getrandom/v0_2/crate/src/hermit.rs",
+    "//third_party/rust/getrandom/v0_2/crate/src/js.rs",
+    "//third_party/rust/getrandom/v0_2/crate/src/lib.rs",
+    "//third_party/rust/getrandom/v0_2/crate/src/linux_android.rs",
+    "//third_party/rust/getrandom/v0_2/crate/src/macos.rs",
+    "//third_party/rust/getrandom/v0_2/crate/src/openbsd.rs",
+    "//third_party/rust/getrandom/v0_2/crate/src/rdrand.rs",
+    "//third_party/rust/getrandom/v0_2/crate/src/solaris_illumos.rs",
+    "//third_party/rust/getrandom/v0_2/crate/src/solid.rs",
+    "//third_party/rust/getrandom/v0_2/crate/src/use_file.rs",
+    "//third_party/rust/getrandom/v0_2/crate/src/util.rs",
+    "//third_party/rust/getrandom/v0_2/crate/src/util_libc.rs",
+    "//third_party/rust/getrandom/v0_2/crate/src/vxworks.rs",
+    "//third_party/rust/getrandom/v0_2/crate/src/wasi.rs",
+    "//third_party/rust/getrandom/v0_2/crate/src/windows.rs",
+    "//third_party/rust/getrandom/v0_2/crate/tests/common/mod.rs",
+    "//third_party/rust/getrandom/v0_2/crate/tests/custom.rs",
+    "//third_party/rust/getrandom/v0_2/crate/tests/normal.rs",
+    "//third_party/rust/getrandom/v0_2/crate/tests/rdrand.rs",
+  ]
+  inputs = [
+    "//third_party/rust/getrandom/v0_2/crate/CHANGELOG.md",
+    "//third_party/rust/getrandom/v0_2/crate/README.md",
+  ]
 
   # Unit tests skipped. Generate with --with-tests to include them.
   build_native_rust_unit_tests = false
-  sources = [ "crate/src/lib.rs" ]
   edition = "2018"
   cargo_pkg_version = "0.2.9"
   cargo_pkg_authors = "The Rand Project Developers"

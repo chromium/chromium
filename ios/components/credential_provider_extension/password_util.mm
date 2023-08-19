@@ -8,10 +8,6 @@
 
 #import "base/logging.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 namespace credential_provider_extension {
 
 NSString* PasswordWithKeychainIdentifier(NSString* identifier) {

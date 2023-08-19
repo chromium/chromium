@@ -24,15 +24,13 @@
         },
         "swarming": {
           "can_use_on_swarming_builders": true,
-          "dimension_sets": [
-            {
-              "device_os": "OPM1.171019.021",
-              "device_os_flavor": "google",
-              "device_type": "walleye",
-              "os": "Android",
-              "pool": "chrome.tests.perf"
-            }
-          ],
+          "dimensions": {
+            "device_os": "OPM1.171019.021",
+            "device_os_flavor": "google",
+            "device_type": "walleye",
+            "os": "Android",
+            "pool": "chrome.tests.perf"
+          },
           "expiration": 7200,
           "hard_timeout": 21600,
           "io_timeout": 21600,
@@ -75,14 +73,12 @@
         },
         "swarming": {
           "can_use_on_swarming_builders": true,
-          "dimension_sets": [
-            {
-              "gpu": "10de:1cb3-440.100",
-              "os": "Ubuntu-18.04",
-              "pool": "chrome.tests.perf",
-              "synthetic_product_name": "PowerEdge R230 (Dell Inc.)"
-            }
-          ],
+          "dimensions": {
+            "gpu": "10de:1cb3-440.100",
+            "os": "Ubuntu-18.04",
+            "pool": "chrome.tests.perf",
+            "synthetic_product_name": "PowerEdge R230 (Dell Inc.)"
+          },
           "expiration": 7200,
           "hard_timeout": 21600,
           "io_timeout": 21600,

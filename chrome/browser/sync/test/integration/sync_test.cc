@@ -25,6 +25,7 @@
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
 #include "base/test/test_timeouts.h"
+#include "base/test/to_vector.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/bookmarks/bookmark_model_factory.h"
@@ -32,7 +33,6 @@
 #include "chrome/browser/browser_process_platform_part.h"
 #include "chrome/browser/gcm/gcm_profile_service_factory.h"
 #include "chrome/browser/gcm/instance_id/instance_id_profile_service_factory.h"
-#include "chrome/browser/invalidation/profile_invalidation_provider_factory.h"
 #include "chrome/browser/net/system_network_context_manager.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/profiles/profile_test_util.h"
@@ -58,22 +58,12 @@
 #include "components/gcm_driver/instance_id/instance_id.h"
 #include "components/gcm_driver/instance_id/instance_id_driver.h"
 #include "components/gcm_driver/instance_id/instance_id_profile_service.h"
-#include "components/invalidation/impl/fake_invalidation_service.h"
-#include "components/invalidation/impl/fcm_invalidation_service.h"
-#include "components/invalidation/impl/fcm_network_handler.h"
-#include "components/invalidation/impl/invalidation_prefs.h"
-#include "components/invalidation/impl/invalidation_switches.h"
-#include "components/invalidation/impl/per_user_topic_subscription_manager.h"
-#include "components/invalidation/impl/profile_identity_provider.h"
-#include "components/invalidation/impl/profile_invalidation_provider.h"
-#include "components/invalidation/public/invalidation_service.h"
 #include "components/keyed_service/content/browser_context_dependency_manager.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/os_crypt/sync/os_crypt_mocker.h"
 #include "components/prefs/scoped_user_pref_update.h"
 #include "components/signin/public/base/consent_level.h"
 #include "components/sync/base/command_line_switches.h"
-#include "components/sync/base/invalidation_helper.h"
 #include "components/sync/base/model_type.h"
 #include "components/sync/engine/sync_scheduler_impl.h"
 #include "components/sync/invalidations/sync_invalidations_service_impl.h"
@@ -81,7 +71,6 @@
 #include "components/sync/service/sync_service_impl.h"
 #include "components/sync/service/sync_user_settings.h"
 #include "components/sync/test/fake_server_network_resources.h"
-#include "components/trusted_vault/command_line_switches.h"
 #include "content/public/browser/navigation_entry.h"
 #include "content/public/browser/network_service_instance.h"
 #include "content/public/browser/storage_partition.h"
@@ -122,14 +111,12 @@
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/webui/signin/login_ui_service.h"
 #include "chrome/browser/ui/webui/signin/login_ui_service_factory.h"
+#include "components/trusted_vault/command_line_switches.h"
 #endif  // BUILDFLAG(IS_ANDROID)
 
 using syncer::SyncServiceImpl;
 
 namespace {
-
-// Sender ID coming from the Firebase console.
-const char kInvalidationGCMSenderId[] = "8181035976";
 
 void SetURLLoaderFactoryForTest(
     Profile* profile,
@@ -150,63 +137,6 @@ void SetURLLoaderFactoryForTest(
   if (account_manager)
     account_manager->SetUrlLoaderFactoryForTests(url_loader_factory);
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
-}
-
-class FakePerUserTopicSubscriptionManager
-    : public invalidation::PerUserTopicSubscriptionManager {
- public:
-  explicit FakePerUserTopicSubscriptionManager(PrefService* local_state)
-      : invalidation::PerUserTopicSubscriptionManager(
-            /*identity_provider=*/nullptr,
-            /*pref_service=*/local_state,
-            /*url_loader_factory=*/nullptr,
-            /*project_id*/ kInvalidationGCMSenderId) {}
-
-  FakePerUserTopicSubscriptionManager(
-      const FakePerUserTopicSubscriptionManager&) = delete;
-  FakePerUserTopicSubscriptionManager& operator=(
-      const FakePerUserTopicSubscriptionManager&) = delete;
-
-  ~FakePerUserTopicSubscriptionManager() override = default;
-
-  void UpdateSubscribedTopics(const invalidation::Topics& topics,
-                              const std::string& instance_id_token) override {}
-};
-
-std::unique_ptr<invalidation::FCMNetworkHandler> CreateFCMNetworkHandler(
-    Profile* profile,
-    std::map<const Profile*, invalidation::FCMNetworkHandler*>*
-        profile_to_fcm_network_handler_map,
-    gcm::GCMDriver* gcm_driver,
-    instance_id::InstanceIDDriver* instance_id_driver,
-    const std::string& sender_id,
-    const std::string& app_id) {
-  auto handler = std::make_unique<invalidation::FCMNetworkHandler>(
-      gcm_driver, instance_id_driver, sender_id, app_id);
-  (*profile_to_fcm_network_handler_map)[profile] = handler.get();
-  return handler;
-}
-
-std::unique_ptr<invalidation::PerUserTopicSubscriptionManager>
-CreatePerUserTopicSubscriptionManager(PrefService* local_state,
-                                      const std::string& project_id) {
-  return std::make_unique<FakePerUserTopicSubscriptionManager>(local_state);
-}
-
-invalidation::FCMNetworkHandler* GetFCMNetworkHandler(
-    Profile* profile,
-    std::map<const Profile*, invalidation::FCMNetworkHandler*>*
-        profile_to_fcm_network_handler_map) {
-  // Delivering FCM notifications does not work if explicitly signed-out.
-  signin::IdentityManager* identity_manager =
-      IdentityManagerFactory::GetForProfile(profile);
-  if (!identity_manager ||
-      !identity_manager->HasPrimaryAccount(signin::ConsentLevel::kSignin)) {
-    return nullptr;
-  }
-
-  auto it = profile_to_fcm_network_handler_map->find(profile);
-  return it != profile_to_fcm_network_handler_map->end() ? it->second : nullptr;
 }
 
 }  // namespace
@@ -353,6 +283,7 @@ void SyncTest::SetUpCommandLine(base::CommandLine* cl) {
     cl->AppendSwitch(switches::kAllowProfilesOutsideUserDir);
   }
 
+#if !BUILDFLAG(IS_ANDROID)
   if (cl->HasSwitch(syncer::kSyncServiceURL)) {
     // TODO(crbug.com/1243653): setup real SecurityDomainService if
     // server_type_ == EXTERNAL_LIVE_SERVER.
@@ -361,6 +292,7 @@ void SyncTest::SetUpCommandLine(base::CommandLine* cl) {
     cl->AppendSwitchASCII(trusted_vault::kTrustedVaultServiceURLSwitch,
                           "broken_url");
   }
+#endif
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   cl->AppendSwitch(ash::switches::kIgnoreUserProfileMappingForTests);
@@ -521,11 +453,8 @@ const SyncServiceImplHarness* SyncTest::GetClient(int index) const {
 }
 
 std::vector<SyncServiceImplHarness*> SyncTest::GetSyncClients() {
-  std::vector<SyncServiceImplHarness*> clients(clients_.size());
-  for (size_t i = 0; i < clients_.size(); ++i) {
-    clients[i] = clients_[i].get();
-  }
-  return clients;
+  return base::test::ToVector(clients_,
+                              &std::unique_ptr<SyncServiceImplHarness>::get);
 }
 
 SyncServiceImpl* SyncTest::GetSyncService(int index) const {
@@ -592,7 +521,6 @@ bool SyncTest::SetupClients() {
   // Create the required number of sync profiles, browsers and clients.
   profiles_.resize(num_clients_);
   clients_.resize(num_clients_);
-  fake_server_invalidation_observers_.resize(num_clients_);
 
   auto* cl = base::CommandLine::ForCurrentProcess();
   if (!cl->HasSwitch(syncer::kSyncDeferredStartupTimeoutSeconds)) {
@@ -606,14 +534,14 @@ bool SyncTest::SetupClients() {
   }
 
   // Uses a fake app list model updater to avoid interacting with Ash.
-  model_updater_factory_ = std::make_unique<
-      app_list::AppListSyncableService::ScopedModelUpdaterFactoryForTest>(
-      base::BindRepeating(
-          [](app_list::reorder::AppListReorderDelegate* reorder_delegate)
-              -> std::unique_ptr<AppListModelUpdater> {
-            return std::make_unique<FakeAppListModelUpdater>(
-                /*profile=*/nullptr, reorder_delegate);
-          }));
+  model_updater_factory_scope_ =
+      app_list::AppListSyncableService::SetScopedModelUpdaterFactoryForTest(
+          base::BindRepeating(
+              [](app_list::reorder::AppListReorderDelegate* reorder_delegate)
+                  -> std::unique_ptr<AppListModelUpdater> {
+                return std::make_unique<FakeAppListModelUpdater>(
+                    /*profile=*/nullptr, reorder_delegate);
+              }));
 #endif
 
   for (int i = 0; i < num_clients_; ++i) {
@@ -666,7 +594,6 @@ void SyncTest::InitializeProfile(int index, Profile* profile) {
   profiles_[index] = profile;
   profile->AddObserver(this);
 
-  SetUpInvalidations(index);
 #if !BUILDFLAG(IS_ANDROID)
   browsers_.push_back(Browser::Create(Browser::CreateParams(profile, true)));
   DCHECK_EQ(static_cast<size_t>(index), browsers_.size() - 1);
@@ -703,61 +630,9 @@ void SyncTest::InitializeProfile(int index, Profile* profile) {
   EXPECT_NE(nullptr, GetClient(index)) << "Could not create Client " << index;
 }
 
-void SyncTest::DisableNotificationsForClient(int index) {
-  fake_server_->RemoveObserver(
-      fake_server_invalidation_observers_[index].get());
-}
-
 void SyncTest::SetupMockGaiaResponsesForProfile(Profile* profile) {
   SetURLLoaderFactoryForTest(profile,
                              test_url_loader_factory_.GetSafeWeakWrapper());
-}
-
-void SyncTest::SetUpInvalidations(int index) {
-  switch (server_type_) {
-    case EXTERNAL_LIVE_SERVER:
-      // DO NOTHING. External live sync servers use GCM to notify profiles of
-      // any invalidations in sync'ed data. In this case, to notify other
-      // profiles of invalidations, we use sync refresh notifications instead.
-      break;
-
-    case IN_PROCESS_FAKE_SERVER: {
-      const std::string client_id = "Client " + base::NumberToString(index);
-      // Listen for fake server changes.
-      fake_server_invalidation_observers_[index] =
-          std::make_unique<fake_server::FakeServerInvalidationSender>(
-              client_id, TestUsesSelfNotifications(),
-              base::BindRepeating(&GetFCMNetworkHandler, GetProfile(index),
-                                  &profile_to_fcm_network_handler_map_));
-      fake_server_->AddObserver(
-          fake_server_invalidation_observers_[index].get());
-
-      // Store in prefs the mapping between public and private topics names. In
-      // real clients, those are stored upon subscription with the
-      // per-user-topic server. The pref name is defined in
-      // per_user_topic_subscription_manager.cc.
-      ScopedDictPrefUpdate update(
-          GetProfile(index)->GetPrefs(),
-          "invalidation.per_sender_registered_for_invalidation");
-      update->Set(kInvalidationGCMSenderId, base::Value::Dict());
-      for (syncer::ModelType model_type :
-           GetSyncService(index)->GetPreferredDataTypes()) {
-        std::string notification_type;
-        if (!RealModelTypeToNotificationType(model_type, &notification_type)) {
-          continue;
-        }
-        update->FindDict(kInvalidationGCMSenderId)
-            ->Set(notification_type,
-                  "/private/" + notification_type + "-topic_server_user_id");
-      }
-      ScopedDictPrefUpdate update_client_id(
-          GetProfile(index)->GetPrefs(),
-          invalidation::prefs::kInvalidationClientIDCache);
-
-      update_client_id->Set(kInvalidationGCMSenderId, client_id);
-      break;
-    }
-  }
 }
 
 void SyncTest::SetupSyncInternal(SetupSyncMode setup_mode) {
@@ -768,9 +643,6 @@ void SyncTest::SetupSyncInternal(SetupSyncMode setup_mode) {
     }
   }
 
-  // TODO(crbug.com/801482): If we ever start running tests against external
-  // servers again, we might have to find a way to clear any pre-existing data
-  // from the test account.
   if (server_type_ == EXTERNAL_LIVE_SERVER) {
     LOG(ERROR) << "WARNING: Running against external servers with an existing "
                   "account. If there is any pre-existing data in the account, "
@@ -812,6 +684,9 @@ void SyncTest::SetupSyncInternal(SetupSyncMode setup_mode) {
         ASSERT_TRUE(WaitForAsyncChangesToBeCommitted(client_index));
         break;
     }
+
+    LOG(INFO) << "SetupSync for client " << client_index << " finished, "
+              << "cache guid: " << GetCacheGuid(client_index);
   }
 }
 
@@ -840,10 +715,10 @@ bool SyncTest::SetupSync(SetupSyncMode setup_mode) {
   SetupSyncInternal(setup_mode);
 
   // Because clients may modify sync data as part of startup (for example
-  // local session-releated data is rewritten), we need to ensure all
+  // local session-related data is rewritten), we need to ensure all
   // startup-based changes have propagated between the clients.
   //
-  // Tests that don't use self-notifications can't await quiescense.  They'll
+  // Tests that don't use self-notifications can't await quiescence.  They'll
   // have to find their own way of waiting for an initial state if they really
   // need such guarantees.
   if (setup_mode != NO_WAITING && TestUsesSelfNotifications()) {
@@ -895,10 +770,6 @@ void SyncTest::TearDownOnMainThread() {
   }
 
   if (fake_server_.get()) {
-    for (const std::unique_ptr<fake_server::FakeServerInvalidationSender>&
-             observer : fake_server_invalidation_observers_) {
-      fake_server_->RemoveObserver(observer.get());
-    }
     fake_server_sync_invalidation_sender_.reset();
     fake_server_.reset();
   }
@@ -974,52 +845,9 @@ void SyncTest::OnWillCreateBrowserContextServices(
     // factory for ProfileInvalidationProvider and SyncInvalidationsService.
     return;
   }
-  invalidation::ProfileInvalidationProviderFactory::GetInstance()
-      ->SetTestingFactory(
-          context,
-          base::BindRepeating(&SyncTest::CreateProfileInvalidationProvider,
-                              &profile_to_fcm_network_handler_map_));
   gcm::GCMProfileServiceFactory::GetInstance()->SetTestingFactory(
       context, base::BindRepeating(&SyncTest::CreateGCMProfileService,
                                    base::Unretained(this)));
-}
-
-// static
-std::unique_ptr<KeyedService> SyncTest::CreateProfileInvalidationProvider(
-    std::map<const Profile*, invalidation::FCMNetworkHandler*>*
-        profile_to_fcm_network_handler_map,
-    content::BrowserContext* context) {
-  Profile* profile = Profile::FromBrowserContext(context);
-  gcm::GCMProfileService* gcm_profile_service =
-      gcm::GCMProfileServiceFactory::GetForProfile(profile);
-  instance_id::InstanceIDDriver* instance_id_driver =
-      instance_id::InstanceIDProfileServiceFactory::GetForProfile(profile)
-          ->driver();
-
-  auto profile_identity_provider =
-      std::make_unique<invalidation::ProfileIdentityProvider>(
-          IdentityManagerFactory::GetForProfile(profile));
-
-  auto fcm_invalidation_service =
-      std::make_unique<invalidation::FCMInvalidationService>(
-          profile_identity_provider.get(),
-          base::BindRepeating(&CreateFCMNetworkHandler, profile,
-                              profile_to_fcm_network_handler_map,
-                              gcm_profile_service->driver(),
-                              instance_id_driver),
-          base::BindRepeating(&CreatePerUserTopicSubscriptionManager,
-                              profile->GetPrefs()),
-          instance_id_driver, profile->GetPrefs(), kInvalidationGCMSenderId);
-  fcm_invalidation_service->Init();
-
-  return std::make_unique<invalidation::ProfileInvalidationProvider>(
-      std::move(fcm_invalidation_service), std::move(profile_identity_provider),
-      /*custom_sender_invalidation_service_factory=*/
-      base::BindRepeating(
-          [](const std::string&)
-              -> std::unique_ptr<invalidation::InvalidationService> {
-            return std::make_unique<invalidation::FakeInvalidationService>();
-          }));
 }
 
 std::unique_ptr<KeyedService> SyncTest::CreateGCMProfileService(

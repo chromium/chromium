@@ -21,6 +21,7 @@ WebAppPreloadInstallerLacrosBrowserTest*
 WebAppProviderBridgeBrowserTest*
 WebKioskAcceleratorLacrosTest*
 WebKioskLacrosTest*
+CrosapiSystemLogSourceTest*
 # TODO(b/262789941) Enable more accessibility tests.
 -ChromeVoxBackgroundTest.TabSwitchAndRefreshRecovery
 -ChromeVoxBackgroundTest.TextSelectionAndLiveRegion
@@ -34,7 +35,7 @@ WebKioskLacrosTest*
 -ChromeVoxPanelTest.LinkMenu
 -ChromeVoxPortalsTest.PortalName
 -ChromeVoxPortalsTest.ShouldFocusPortal
-# TODO(crbug.com/1378396) Remove once ash extension context menus are passed through to lacros
+# TODO(crbug.com/1378396) Flaky due to Lacros failure to start up.
 -SelectToSpeakContextMenuTest.*
 -SelectToSpeakEnhancedNetworkTtsVoicesTest.*
 -SelectToSpeakNavigationControlTest.*
@@ -104,8 +105,6 @@ WebKioskLacrosTest*
 -SelectToSpeakKeystrokeSelectionTest.contentEditableExternallySelected
 -SelectToSpeakMouseSelectionTest.SpeaksNodeWhenClicked
 -SelectToSpeakMouseSelectionTest.VoiceSwitching
-# TODO(b/268056158) Flaky
--SelectToSpeakTestWithVoiceSwitching.BreaksAtLanguageBounds
 # TODO(b/277821091) Flaky
 -ChromeVoxBackgroundTest.NavigationEscapesEdit
 -ChromeVoxBackgroundTest.NavigationIgnoresLabels
@@ -122,3 +121,13 @@ WebKioskLacrosTest*
 -DictationUIE2ETest.HintsTimeoutWithChromeVox
 # TODO(b/262789941): Flaky
 -MagnifierE2ETest.IgnoresRootNodeFocus
+
+# The following tests have no dependency on Lacros browser, do not run these tests
+# as browser_tests_require_lacros.
+# TODO(b/290096429): Audit these tests, re-work to run these tests against Lacros
+# browser if necessary.
+-AutoclickBrowserTest*
+-FullscreenMagnifierControllerTest*
+-MagnificationManagerTest*
+-SelectToSpeakTest*
+-SwitchAccessTest*

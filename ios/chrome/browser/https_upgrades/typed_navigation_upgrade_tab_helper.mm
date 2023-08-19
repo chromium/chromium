@@ -20,10 +20,6 @@
 #import "net/base/mac/url_conversions.h"
 #import "ui/base/window_open_disposition.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 using security_interstitials::omnibox_https_upgrades::Event;
 using security_interstitials::omnibox_https_upgrades::kEventHistogram;
 

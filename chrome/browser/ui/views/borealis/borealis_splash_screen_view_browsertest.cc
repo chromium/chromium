@@ -17,7 +17,7 @@
 #include "chrome/browser/ash/borealis/borealis_task.h"
 #include "chrome/browser/ash/borealis/borealis_util.h"
 #include "chrome/browser/ash/borealis/borealis_window_manager_mock.h"
-#include "chrome/browser/ash/borealis/borealis_window_manager_test_helper.h"
+#include "chrome/browser/ash/borealis/testing/windows.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/test/test_browser_dialog.h"
@@ -117,8 +117,11 @@ IN_PROC_BROWSER_TEST_F(BorealisSplashScreenViewBrowserTest,
   launcher.Launch("foo.desktop", callback_check.BindOnce());
   base::RunLoop().RunUntilIdle();
 
-  EXPECT_FALSE(VerifyUi());
+  // The splash screen should have disappeared.
   EXPECT_EQ(nullptr, BorealisSplashScreenView::GetActiveViewForTesting());
+
+  // We should now see an error dialog instead.
+  EXPECT_TRUE(VerifyUi());
 }
 
 }  // namespace

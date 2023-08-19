@@ -60,32 +60,37 @@ PrintServersPolicyProvider::CreateForTesting(
                                                       device_policy_provider);
 }
 
-void PrintServersPolicyProvider::SetListener(
-    const OnPrintServersChanged& callback) {
-  callback_ = std::make_unique<OnPrintServersChanged>(callback);
+void PrintServersPolicyProvider::SetListener(OnPrintServersChanged callback) {
+  callback_ = std::move(callback);
+  RecalculateServersAndNotifyListener();
 }
 
 void PrintServersPolicyProvider::OnServersChanged(
     bool unused_complete,
     const std::vector<PrintServer>& unused_servers) {
-  if (callback_) {
-    std::map<GURL, PrintServer> all_servers;
-    auto device_servers = device_policy_provider_->GetPrintServers();
-    if (device_servers.has_value()) {
-      for (const auto& server : device_servers.value()) {
-        all_servers.emplace(server.GetUrl(), server);
-      }
-    }
-    auto user_servers = user_policy_provider_->GetPrintServers();
-    if (user_servers.has_value()) {
-      for (const auto& server : user_servers.value()) {
-        all_servers.emplace(server.GetUrl(), server);
-      }
-    }
-    bool is_complete = user_servers.has_value() || device_servers.has_value();
-    ServerPrintersFetchingMode fetching_mode = GetFetchingMode(all_servers);
-    callback_->Run(is_complete, all_servers, fetching_mode);
+  RecalculateServersAndNotifyListener();
+}
+
+void PrintServersPolicyProvider::RecalculateServersAndNotifyListener() {
+  if (!callback_) {
+    return;
   }
+  std::map<GURL, PrintServer> all_servers;
+  auto device_servers = device_policy_provider_->GetPrintServers();
+  if (device_servers.has_value()) {
+    for (const auto& server : device_servers.value()) {
+      all_servers.emplace(server.GetUrl(), server);
+    }
+  }
+  auto user_servers = user_policy_provider_->GetPrintServers();
+  if (user_servers.has_value()) {
+    for (const auto& server : user_servers.value()) {
+      all_servers.emplace(server.GetUrl(), server);
+    }
+  }
+  bool is_complete = user_servers.has_value() || device_servers.has_value();
+  ServerPrintersFetchingMode fetching_mode = GetFetchingMode(all_servers);
+  callback_.Run(is_complete, all_servers, fetching_mode);
 }
 
 ServerPrintersFetchingMode PrintServersPolicyProvider::GetFetchingMode(

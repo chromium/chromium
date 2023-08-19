@@ -49,6 +49,7 @@ class SafeBrowsingServiceImpl : public SafeBrowsingService {
   scoped_refptr<network::SharedURLLoaderFactory> GetURLLoaderFactory() override;
   scoped_refptr<safe_browsing::SafeBrowsingDatabaseManager> GetDatabaseManager()
       override;
+  network::mojom::NetworkContext* GetNetworkContext() override;
   void ClearCookies(const net::CookieDeletionInfo::TimeRange& creation_range,
                     base::OnceClosure callback) override;
 
@@ -141,6 +142,11 @@ class SafeBrowsingServiceImpl : public SafeBrowsingService {
 
   // The URLLoaderFactory used for Safe Browsing network requests.
   mojo::Remote<network::mojom::URLLoaderFactory> url_loader_factory_;
+
+  // A PendingReceiver for `url_loader_factory_`, used during service
+  // initialization.
+  mojo::PendingReceiver<network::mojom::URLLoaderFactory>
+      url_loader_factory_pending_reciever_;
 
   // A SharedURLLoaderFactory that wraps `url_loader_factory_`.
   scoped_refptr<network::WeakWrapperSharedURLLoaderFactory>

@@ -174,8 +174,7 @@ void InspectorTraceEvents::DidFinishLoading(uint64_t identifier,
                                             DocumentLoader* loader,
                                             base::TimeTicks finish_time,
                                             int64_t encoded_data_length,
-                                            int64_t decoded_body_length,
-                                            bool should_report_corb_blocking) {
+                                            int64_t decoded_body_length) {
   DEVTOOLS_TIMELINE_TRACE_EVENT_INSTANT(
       "ResourceFinish", inspector_resource_finish_event::Data, loader,
       identifier, finish_time, false, encoded_data_length, decoded_body_length);
@@ -387,6 +386,8 @@ const char* PseudoTypeToString(CSSSelector::PseudoType pseudo_type) {
     DEFINE_STRING_MAPPING(PseudoMultiSelectFocus)
     DEFINE_STRING_MAPPING(PseudoOpen)
     DEFINE_STRING_MAPPING(PseudoClosed)
+    DEFINE_STRING_MAPPING(PseudoDialogInTopLayer)
+    DEFINE_STRING_MAPPING(PseudoPopoverInTopLayer)
     DEFINE_STRING_MAPPING(PseudoPopoverOpen)
     DEFINE_STRING_MAPPING(PseudoHostHasAppearance)
     DEFINE_STRING_MAPPING(PseudoVideoPersistent)
@@ -405,6 +406,8 @@ const char* PseudoTypeToString(CSSSelector::PseudoType pseudo_type) {
     DEFINE_STRING_MAPPING(PseudoViewTransitionImagePair);
     DEFINE_STRING_MAPPING(PseudoViewTransitionNew);
     DEFINE_STRING_MAPPING(PseudoViewTransitionOld);
+    DEFINE_STRING_MAPPING(PseudoDetailsContent)
+    DEFINE_STRING_MAPPING(PseudoDetailsSummary)
     DEFINE_STRING_MAPPING(PseudoParent);
     DEFINE_STRING_MAPPING(PseudoUnparsed)
 #undef DEFINE_STRING_MAPPING
@@ -1239,8 +1242,9 @@ void inspector_deserialize_script_event::Data(perfetto::TracedValue context,
 
 inspector_compile_script_event::V8ConsumeCacheResult::V8ConsumeCacheResult(
     int cache_size,
-    bool rejected)
-    : cache_size(cache_size), rejected(rejected) {}
+    bool rejected,
+    bool full)
+    : cache_size(cache_size), rejected(rejected), full(full) {}
 
 void inspector_compile_script_event::Data(
     perfetto::TracedValue context,
@@ -1256,6 +1260,7 @@ void inspector_compile_script_event::Data(
   if (consume_cache_result) {
     dict.Add("consumedCacheSize", consume_cache_result->cache_size);
     dict.Add("cacheRejected", consume_cache_result->rejected);
+    dict.Add("cacheKind", consume_cache_result->full ? "full" : "normal");
   }
   if (eager) {
     // Eager compilation is rare so only add this key when it's set.

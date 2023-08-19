@@ -226,7 +226,9 @@ export class FocusRingManager {
     }
 
     const focusRings = Object.values(this.rings_);
-    chrome.accessibilityPrivate.setFocusRings(focusRings);
+    chrome.accessibilityPrivate.setFocusRings(
+        focusRings,
+        chrome.accessibilityPrivate.AssistiveTechnologyType.SWITCH_ACCESS);
   }
 
   /**

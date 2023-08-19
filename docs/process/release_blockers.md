@@ -150,6 +150,10 @@ are some general guidelines to follow:
 *   The release management team (release engineers and TPMs) have the final say
     when it comes to release blocking issues - they can tag, and untag, issues
     as they see fit.
+*   For fixing your release blockers, please consider a revert of the culprit CL as
+    your first option if it is safe to do so. 
+
+
 
 ## Other Considerations
 

@@ -9,6 +9,7 @@
 #include "chrome/browser/safe_browsing/advanced_protection_status_manager_factory.h"
 #include "chrome/browser/signin/identity_test_environment_profile_adaptor.h"
 #include "chrome/browser/ssl/stateful_ssl_host_state_delegate_factory.h"
+#include "chrome/common/pref_names.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/security_interstitials/content/stateful_ssl_host_state_delegate.h"
 #include "components/security_interstitials/core/https_only_mode_metrics.h"
@@ -80,7 +81,7 @@ TEST_F(HttpsFirstModeSettingsTrackerTest, SiteEngagementHeuristic) {
   GURL http_url("http://example.com");
 
   // Step 1: HFM should initially be disabled on this site by default.
-  service->MaybeEnableHttpsFirstModeForUrl(profile(), https_url);
+  service->MaybeEnableHttpsFirstModeForUrl(https_url);
   EXPECT_FALSE(state->IsHttpsEnforcedForHost(
       "example.com", profile()->GetDefaultStoragePartition()));
   histograms.ExpectTotalCount(kSiteEngagementHeuristicStateHistogram, 0);
@@ -92,7 +93,7 @@ TEST_F(HttpsFirstModeSettingsTrackerTest, SiteEngagementHeuristic) {
 
   // Step 2: Increase the score, should now enable HFM.
   engagement_service->ResetBaseScoreForURL(https_url, 90);
-  service->MaybeEnableHttpsFirstModeForUrl(profile(), https_url);
+  service->MaybeEnableHttpsFirstModeForUrl(https_url);
   EXPECT_TRUE(state->IsHttpsEnforcedForHost(
       "example.com", profile()->GetDefaultStoragePartition()));
   // Check events.
@@ -123,7 +124,7 @@ TEST_F(HttpsFirstModeSettingsTrackerTest, SiteEngagementHeuristic) {
   // Step 3: Decrease the score, but only slightly. This shouldn't result in HFM
   // being disabled.
   engagement_service->ResetBaseScoreForURL(https_url, 85);
-  service->MaybeEnableHttpsFirstModeForUrl(profile(), https_url);
+  service->MaybeEnableHttpsFirstModeForUrl(https_url);
   EXPECT_TRUE(state->IsHttpsEnforcedForHost(
       "example.com", profile()->GetDefaultStoragePartition()));
   // Check events.
@@ -151,7 +152,7 @@ TEST_F(HttpsFirstModeSettingsTrackerTest, SiteEngagementHeuristic) {
   // disabled. Also move the time forward.
   clock_ptr->Advance(base::Hours(1));
   engagement_service->ResetBaseScoreForURL(https_url, 25);
-  service->MaybeEnableHttpsFirstModeForUrl(profile(), https_url);
+  service->MaybeEnableHttpsFirstModeForUrl(https_url);
   EXPECT_FALSE(state->IsHttpsEnforcedForHost(
       "example.com", profile()->GetDefaultStoragePartition()));
   // Check events.
@@ -184,7 +185,7 @@ TEST_F(HttpsFirstModeSettingsTrackerTest, SiteEngagementHeuristic) {
   // Step 5: Increase the score again and re-enable HFM.
   clock_ptr->Advance(base::Hours(2));
   engagement_service->ResetBaseScoreForURL(https_url, 90);
-  service->MaybeEnableHttpsFirstModeForUrl(profile(), https_url);
+  service->MaybeEnableHttpsFirstModeForUrl(https_url);
   EXPECT_TRUE(state->IsHttpsEnforcedForHost(
       "example.com", profile()->GetDefaultStoragePartition()));
   // Check state.
@@ -217,7 +218,7 @@ TEST_F(HttpsFirstModeSettingsTrackerTest, SiteEngagementHeuristic) {
   // Step 6: Also increase the HTTP score. This should disable HFM even though
   // the HTTPS score is still high.
   engagement_service->ResetBaseScoreForURL(http_url, 20);
-  service->MaybeEnableHttpsFirstModeForUrl(profile(), https_url);
+  service->MaybeEnableHttpsFirstModeForUrl(https_url);
   EXPECT_FALSE(state->IsHttpsEnforcedForHost(
       "example.com", profile()->GetDefaultStoragePartition()));
   // Check state.
@@ -254,7 +255,7 @@ TEST_F(HttpsFirstModeSettingsTrackerTest, SiteEngagementHeuristic) {
   // over time.
   engagement_service->ResetBaseScoreForURL(https_url, 0);
   engagement_service->ResetBaseScoreForURL(http_url, 100);
-  service->MaybeEnableHttpsFirstModeForUrl(profile(), https_url);
+  service->MaybeEnableHttpsFirstModeForUrl(https_url);
   EXPECT_FALSE(state->IsHttpsEnforcedForHost(
       "example.com", profile()->GetDefaultStoragePartition()));
   // Check state.
@@ -287,4 +288,175 @@ TEST_F(HttpsFirstModeSettingsTrackerTest, SiteEngagementHeuristic) {
       kSiteEngagementHeuristicEnforcementDurationHistogram, base::Hours(2), 1);
 
   service->Shutdown();
+}
+
+// Tests for the Typically Secure User heuristic. This test repeatedly calls
+// MaybeEnableHttpsFirstModeForUser which is normally called from HTTPS-Upgrade
+// fallbacks in production code. It then checks if the HTTPS-First Mode pref
+// is enabled.
+TEST_F(HttpsFirstModeSettingsTrackerTest, TypicallySecureUserPref) {
+  HttpsFirstModeService* service =
+      HttpsFirstModeServiceFactory::GetForProfile(profile());
+  ASSERT_TRUE(service);
+
+  // Typically Secure User heuristic requires a minimum total site engagement
+  // score.
+  site_engagement::SiteEngagementService* engagement_service =
+      site_engagement::SiteEngagementService::Get(profile());
+  ASSERT_TRUE(engagement_service);
+  engagement_service->ResetBaseScoreForURL(GURL("https://google.com"), 90);
+
+  base::SimpleTestClock clock;
+  base::Time now = base::Time::NowFromSystemTime();
+  clock.SetNow(now);
+  service->SetClockForTesting(&clock);
+
+  EXPECT_FALSE(
+      profile()->GetPrefs()->HasPrefPath(prefs::kHttpsOnlyModeEnabled));
+  EXPECT_FALSE(
+      profile()->GetPrefs()->HasPrefPath(prefs::kHttpsOnlyModeAutoEnabled));
+
+  // Fallback #1. There are no previous HTTPS upgrade fallbacks (i.e.
+  // would-be warnings), so this would normally auto-enable HFM, but the profile
+  // age is not old enough.
+  EXPECT_FALSE(
+      service->MaybeEnableHttpsFirstModeForUser(/*add_fallback_entry=*/true));
+  EXPECT_FALSE(
+      service->MaybeEnableHttpsFirstModeForUser(/*add_fallback_entry=*/false));
+  // Prefs shouldn't be modified yet.
+  EXPECT_FALSE(
+      profile()->GetPrefs()->HasPrefPath(prefs::kHttpsOnlyModeEnabled));
+  EXPECT_FALSE(
+      profile()->GetPrefs()->HasPrefPath(prefs::kHttpsOnlyModeAutoEnabled));
+
+  // Move the clock so that the profile is old enough. This also drops entry #1
+  // since it's now too old.
+  clock.SetNow(now + base::Days(10));
+  // Fallback #2. There's now only one would-be warning, HFM is auto-enabled.
+  EXPECT_TRUE(
+      service->MaybeEnableHttpsFirstModeForUser(/*add_fallback_entry=*/true));
+  EXPECT_TRUE(
+      service->MaybeEnableHttpsFirstModeForUser(/*add_fallback_entry=*/false));
+  // Prefs are now set.
+  EXPECT_TRUE(profile()->GetPrefs()->GetBoolean(prefs::kHttpsOnlyModeEnabled));
+  EXPECT_TRUE(
+      profile()->GetPrefs()->GetBoolean(prefs::kHttpsOnlyModeAutoEnabled));
+
+  // Fallback #3. There is now two recent would-be warnings. HFM is still
+  // auto-enabled.
+  EXPECT_TRUE(
+      service->MaybeEnableHttpsFirstModeForUser(/*add_fallback_entry=*/true));
+  EXPECT_TRUE(
+      service->MaybeEnableHttpsFirstModeForUser(/*add_fallback_entry=*/false));
+  // Prefs are still set.
+  EXPECT_TRUE(profile()->GetPrefs()->GetBoolean(prefs::kHttpsOnlyModeEnabled));
+  EXPECT_TRUE(
+      profile()->GetPrefs()->GetBoolean(prefs::kHttpsOnlyModeAutoEnabled));
+
+  // Fallback #4. There is now three recent would-be warnings. HFM is no longer
+  // auto-enabled.
+  clock.SetNow(now + base::Days(11));
+  EXPECT_FALSE(
+      service->MaybeEnableHttpsFirstModeForUser(/*add_fallback_entry=*/true));
+  EXPECT_FALSE(
+      service->MaybeEnableHttpsFirstModeForUser(/*add_fallback_entry=*/false));
+  // Prefs are still set. We don't auto-disable the user pref once it's
+  // auto-enabled.
+  EXPECT_TRUE(profile()->GetPrefs()->GetBoolean(prefs::kHttpsOnlyModeEnabled));
+  EXPECT_TRUE(
+      profile()->GetPrefs()->GetBoolean(prefs::kHttpsOnlyModeAutoEnabled));
+
+  // Fallback #5. No change the next day.
+  clock.SetNow(now + base::Days(12));
+  EXPECT_FALSE(
+      service->MaybeEnableHttpsFirstModeForUser(/*add_fallback_entry=*/true));
+  EXPECT_FALSE(
+      service->MaybeEnableHttpsFirstModeForUser(/*add_fallback_entry=*/false));
+  // Prefs are still set. We don't auto-disable the user pref once it's
+  // auto-enabled.
+  EXPECT_TRUE(profile()->GetPrefs()->GetBoolean(prefs::kHttpsOnlyModeEnabled));
+  EXPECT_TRUE(
+      profile()->GetPrefs()->GetBoolean(prefs::kHttpsOnlyModeAutoEnabled));
+
+  // Fallback #6 on the 17th day.
+  clock.SetNow(now + base::Days(17));
+  EXPECT_FALSE(
+      service->MaybeEnableHttpsFirstModeForUser(/*add_fallback_entry=*/true));
+  EXPECT_FALSE(
+      service->MaybeEnableHttpsFirstModeForUser(/*add_fallback_entry=*/false));
+  // Prefs are still set. We don't auto-disable the user pref once it's
+  // auto-enabled.
+  EXPECT_TRUE(profile()->GetPrefs()->GetBoolean(prefs::kHttpsOnlyModeEnabled));
+  EXPECT_TRUE(
+      profile()->GetPrefs()->GetBoolean(prefs::kHttpsOnlyModeAutoEnabled));
+
+  // Fallback #7 on the 18th day. This drops previous entries (2, 3 and 4). We
+  // now have entries 5, 6 and 7. This is still too many would-be warnings to
+  // auto-enable HFM.
+  clock.SetNow(now + base::Days(18));
+  EXPECT_FALSE(
+      service->MaybeEnableHttpsFirstModeForUser(/*add_fallback_entry=*/true));
+  EXPECT_FALSE(
+      service->MaybeEnableHttpsFirstModeForUser(/*add_fallback_entry=*/false));
+  // Prefs are still set. We don't auto-disable the user pref once it's
+  // auto-enabled.
+  EXPECT_TRUE(profile()->GetPrefs()->GetBoolean(prefs::kHttpsOnlyModeEnabled));
+  EXPECT_TRUE(
+      profile()->GetPrefs()->GetBoolean(prefs::kHttpsOnlyModeAutoEnabled));
+
+  // Fallback #8 on the 25th day. This drops entries 5 and 6. We have 7 and 8.
+  // HFM is now auto-enabled.
+  clock.SetNow(now + base::Days(25));
+  EXPECT_TRUE(
+      service->MaybeEnableHttpsFirstModeForUser(/*add_fallback_entry=*/true));
+  EXPECT_TRUE(
+      service->MaybeEnableHttpsFirstModeForUser(/*add_fallback_entry=*/false));
+  // Prefs are still set. We don't auto-disable the user pref once it's
+  // auto-enabled.
+  EXPECT_TRUE(profile()->GetPrefs()->GetBoolean(prefs::kHttpsOnlyModeEnabled));
+  EXPECT_TRUE(
+      profile()->GetPrefs()->GetBoolean(prefs::kHttpsOnlyModeAutoEnabled));
+
+  // Fallback #9 on the 40th day. This drops all previous entries. Since there
+  // is only one entry now, this auto-enables HFM.
+  clock.SetNow(now + base::Days(40));
+  EXPECT_TRUE(
+      service->MaybeEnableHttpsFirstModeForUser(/*add_fallback_entry=*/true));
+  EXPECT_TRUE(
+      service->MaybeEnableHttpsFirstModeForUser(/*add_fallback_entry=*/false));
+  // Prefs are still set. We don't auto-disable the user pref once it's
+  // auto-enabled.
+  EXPECT_TRUE(profile()->GetPrefs()->GetBoolean(prefs::kHttpsOnlyModeEnabled));
+  EXPECT_TRUE(
+      profile()->GetPrefs()->GetBoolean(prefs::kHttpsOnlyModeAutoEnabled));
+
+  // Fallback #10 on the 41st day. HFM is still auto-enabled.
+  clock.SetNow(now + base::Days(41));
+  EXPECT_TRUE(
+      service->MaybeEnableHttpsFirstModeForUser(/*add_fallback_entry=*/true));
+  EXPECT_TRUE(
+      service->MaybeEnableHttpsFirstModeForUser(/*add_fallback_entry=*/false));
+  // Prefs are still set. We don't auto-disable the user pref once it's
+  // auto-enabled.
+  EXPECT_TRUE(profile()->GetPrefs()->GetBoolean(prefs::kHttpsOnlyModeEnabled));
+  EXPECT_TRUE(
+      profile()->GetPrefs()->GetBoolean(prefs::kHttpsOnlyModeAutoEnabled));
+
+  // Fallback #11 on the 42st day. There's now three would-be warnings (9, 10,
+  // 11). HFM is not auto-enabled.
+  clock.SetNow(now + base::Days(42));
+  EXPECT_FALSE(
+      service->MaybeEnableHttpsFirstModeForUser(/*add_fallback_entry=*/true));
+  EXPECT_FALSE(
+      service->MaybeEnableHttpsFirstModeForUser(/*add_fallback_entry=*/false));
+  // Prefs are still set. We don't auto-disable the user pref once it's
+  // auto-enabled.
+  EXPECT_TRUE(profile()->GetPrefs()->GetBoolean(prefs::kHttpsOnlyModeEnabled));
+  EXPECT_TRUE(
+      profile()->GetPrefs()->GetBoolean(prefs::kHttpsOnlyModeAutoEnabled));
+
+  // Disable the HFM pref. This should also disable auto-enable pref.
+  profile()->GetPrefs()->SetBoolean(prefs::kHttpsOnlyModeEnabled, false);
+  EXPECT_FALSE(
+      profile()->GetPrefs()->GetBoolean(prefs::kHttpsOnlyModeAutoEnabled));
 }

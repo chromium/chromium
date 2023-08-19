@@ -10,6 +10,7 @@
 #include "base/strings/string_piece.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/gtest_util.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/third_party/mozilla/url_parse.h"
@@ -335,13 +336,10 @@ TEST_P(URLCanonHostTest, Host) {
        L"bar.com",
        "www.foo.bar.com", Component(0, 15), CanonHostInfo::NEUTRAL, -1, ""},
       // Invalid unicode characters should fail...
-      // ...In wide input, ICU will barf and we'll end up with the input as
-      //    escaped UTF-8 (the invalid character should be replaced with the
-      //    replacement character).
-      {"\xef\xb7\x90zyx.com", L"\xfdd0zyx.com", "%EF%BF%BDzyx.com",
+      {"\xef\xb7\x90zyx.com", L"\xfdd0zyx.com", "%EF%B7%90zyx.com",
        Component(0, 16), CanonHostInfo::BROKEN, -1, ""},
       // ...This is the same as previous but with with escaped.
-      {"%ef%b7%90zyx.com", L"%ef%b7%90zyx.com", "%EF%BF%BDzyx.com",
+      {"%ef%b7%90zyx.com", L"%ef%b7%90zyx.com", "%EF%B7%90zyx.com",
        Component(0, 16), CanonHostInfo::BROKEN, -1, ""},
       // Test name prepping, fullwidth input should be converted to ASCII and
       // NOT
@@ -1083,7 +1081,7 @@ TEST(URLCanonTest, CanonicalizeHostSubstring) {
         test_utils::TruncateWStringToUTF16(L"\xfdd0zyx.com").c_str(),
         Component(0, 8), &output));
     output.Complete();
-    EXPECT_EQ("%EF%BF%BDzyx.com", out_str);
+    EXPECT_EQ("%EF%B7%90zyx.com", out_str);
   }
 
   // Should return true for empty input strings.
@@ -1282,8 +1280,8 @@ DualComponentCase kCommonPathCases[] = {
     // Funny characters that are unescaped should be escaped
     {"/foo\x09\x91%91", nullptr, "/foo%09%91%91", Component(0, 13), true},
     {nullptr, L"/foo\x09\x91%91", "/foo%09%C2%91%91", Component(0, 16), true},
-    // Invalid characters that are escaped should cause a failure.
-    {"/foo%00%51", L"/foo%00%51", "/foo%00Q", Component(0, 8), false},
+    // %00 should not cause failures.
+    {"/foo%00%51", L"/foo%00%51", "/foo%00Q", Component(0, 8), true},
     // Some characters should be passed through unchanged regardless of esc.
     {"/(%28:%3A%29)", L"/(%28:%3A%29)", "/(%28:%3A%29)", Component(0, 13),
      true},
@@ -1325,10 +1323,9 @@ DualComponentCase kCommonPathCases[] = {
     {"/\xe4\xbd\xa0\xe5\xa5\xbd\xe4\xbd\xa0\xe5\xa5\xbd",
      L"/\x4f60\x597d\x4f60\x597d", "/%E4%BD%A0%E5%A5%BD%E4%BD%A0%E5%A5%BD",
      Component(0, 37), true},
-    // Invalid unicode characters should fail. We only do validation on
-    // UTF-16 input, so this doesn't happen on 8-bit.
+    // Unicode Noncharacter (U+FDD0) should not fail.
     {"/\xef\xb7\x90zyx", nullptr, "/%EF%B7%90zyx", Component(0, 13), true},
-    {nullptr, L"/\xfdd0zyx", "/%EF%BF%BDzyx", Component(0, 13), false},
+    {nullptr, L"/\xfdd0zyx", "/%EF%B7%90zyx", Component(0, 13), true},
 };
 
 typedef bool (*CanonFunc8Bit)(const char*,
@@ -1390,7 +1387,7 @@ TEST(URLCanonTest, Path) {
              CanonicalizePath);
 
   // Manual test: embedded NULLs should be escaped and the URL should be marked
-  // as invalid.
+  // as valid.
   const char path_with_null[] = "/ab\0c";
   Component in_comp(0, 5);
   Component out_comp;
@@ -1399,7 +1396,7 @@ TEST(URLCanonTest, Path) {
   StdStringCanonOutput output(&out_str);
   bool success = CanonicalizePath(path_with_null, in_comp, &output, &out_comp);
   output.Complete();
-  EXPECT_FALSE(success);
+  EXPECT_TRUE(success);
   EXPECT_EQ("/ab%00c", out_str);
 }
 
@@ -1507,7 +1504,7 @@ TEST(URLCanonTest, Ref) {
       {"\xc2", nullptr, "#%EF%BF%BD", Component(1, 9), true},
       {nullptr, L"\xd800\x597d", "#%EF%BF%BD%E5%A5%BD", Component(1, 18), true},
       // Test a Unicode invalid character.
-      {"a\xef\xb7\x90", L"a\xfdd0", "#a%EF%BF%BD", Component(1, 10), true},
+      {"a\xef\xb7\x90", L"a\xfdd0", "#a%EF%B7%90", Component(1, 10), true},
       // Refs can have # signs and we should preserve them.
       {"asdf#qwer", L"asdf#qwer", "#asdf#qwer", Component(1, 9), true},
       {"#asdf", L"#asdf", "##asdf", Component(1, 5), true},
@@ -2129,9 +2126,9 @@ TEST(URLCanonTest, CanonicalizePathURL) {
       {"JavaScript:Foo", "javascript:Foo"},
       {"Foo:\":This /is interesting;?#", "foo:\":This /is interesting;?#"},
 
-      // Validation errors should not cause failure. See
+      // Unicode invalid characters should not cause failure. See
       // https://crbug.com/925614.
-      {"javascript:\uFFFF", "javascript:%EF%BF%BD"},
+      {"javascript:\uFFFF", "javascript:%EF%BF%BF"},
   };
 
   for (size_t i = 0; i < std::size(path_cases); i++) {
@@ -2169,7 +2166,7 @@ TEST(URLCanonTest, CanonicalizePathURLPath) {
       {"Foo", L"Foo", "Foo"},
       {"\":This /is interesting;?#", L"\":This /is interesting;?#",
        "\":This /is interesting;?#"},
-      {"\uFFFF", L"\uFFFF", "%EF%BF%BD"},
+      {"\uFFFF", L"\uFFFF", "%EF%BF%BF"},
   };
 
   for (size_t i = 0; i < std::size(path_cases); i++) {
@@ -2743,6 +2740,29 @@ TEST(URLCanonTest, IDNToASCII) {
   str = u"xn--1⁄4";
   EXPECT_FALSE(IDNToASCII(str.data(), str.length(), &output));
   output.set_length(0);
+}
+
+TEST(URLCanonTest, UnescapePathCharHistogram) {
+  struct TestCase {
+    base::StringPiece path;
+    base::HistogramBase::Count cnt;
+  } cases[] = {
+      {"/a", 0},
+      {"/%61", 1},
+      {"/%61%61", 1},
+  };
+
+  for (const auto& c : cases) {
+    base::HistogramTester histogram_tester;
+    Component in_comp(0, c.path.size());
+    Component out_comp;
+    std::string out_str;
+    StdStringCanonOutput output(&out_str);
+    bool success = CanonicalizePath(c.path.data(), in_comp, &output, &out_comp);
+    ASSERT_TRUE(success);
+    histogram_tester.ExpectBucketCount("URL.Path.UnescapeEscapedChar", 1,
+                                       c.cnt);
+  }
 }
 
 }  // namespace url

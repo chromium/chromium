@@ -82,8 +82,7 @@ class MainThreadWorkletTest : public PageTestBase {
         nullptr /* parent_permissions_policy */, window->GetAgentClusterID(),
         ukm::kInvalidSourceId, window->GetExecutionContextToken());
     global_scope_ = MakeGarbageCollected<FakeWorkletGlobalScope>(
-        std::move(creation_params), *reporting_proxy_, &GetFrame(),
-        false /* create_microtask_queue */);
+        std::move(creation_params), *reporting_proxy_, &GetFrame());
     EXPECT_TRUE(global_scope_->IsMainThreadWorkletGlobalScope());
     EXPECT_FALSE(global_scope_->IsThreadedWorkletGlobalScope());
   }

@@ -15,13 +15,8 @@
 #include "base/command_line.h"
 #include "base/containers/flat_set.h"
 #include "base/functional/bind.h"
-#include "base/functional/callback.h"
-#include "base/functional/callback_helpers.h"
-#include "base/location.h"
 #include "base/memory/raw_ptr.h"
-#include "base/memory/ref_counted.h"
 #include "base/run_loop.h"
-#include "base/strings/string_piece.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/bind.h"
@@ -31,7 +26,6 @@
 #include "base/values.h"
 #include "chrome/browser/ash/attestation/mock_machine_certificate_uploader.h"
 #include "chrome/browser/ash/attestation/tpm_challenge_key.h"
-#include "chrome/browser/ash/login/existing_user_controller.h"
 #include "chrome/browser/ash/login/lock/screen_locker_tester.h"
 #include "chrome/browser/ash/login/saml/fake_saml_idp_mixin.h"
 #include "chrome/browser/ash/login/saml/lockscreen_reauth_dialog_test_helper.h"
@@ -44,25 +38,23 @@
 #include "chrome/browser/ash/login/test/oobe_base_test.h"
 #include "chrome/browser/ash/login/test/oobe_screen_waiter.h"
 #include "chrome/browser/ash/login/test/session_manager_state_waiter.h"
+#include "chrome/browser/ash/login/test/test_predicate_waiter.h"
 #include "chrome/browser/ash/login/ui/login_display_host.h"
 #include "chrome/browser/ash/login/users/chrome_user_manager.h"
 #include "chrome/browser/ash/login/users/test_users.h"
-#include "chrome/browser/ash/login/wizard_controller.h"
 #include "chrome/browser/ash/policy/affiliation/affiliation_test_helper.h"
-#include "chrome/browser/ash/policy/core/device_policy_builder.h"
-#include "chrome/browser/ash/policy/core/device_policy_cros_browser_test.h"
+#include "chrome/browser/ash/policy/core/device_policy_cros_test_helper.h"
 #include "chrome/browser/ash/policy/test_support/embedded_policy_test_server_mixin.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
-#include "chrome/browser/ash/settings/cros_settings.h"
 #include "chrome/browser/ash/settings/scoped_testing_cros_settings.h"
 #include "chrome/browser/ash/settings/stub_cros_settings_provider.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
-#include "chrome/browser/enterprise/connectors/connectors_prefs.h"
 #include "chrome/browser/enterprise/connectors/device_trust/common/metrics_utils.h"
 #include "chrome/browser/enterprise/connectors/device_trust/device_trust_features.h"
 #include "chrome/browser/media/webrtc/media_capture_devices_dispatcher.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/profiles/profile_key.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/login/login_handler.h"
 #include "chrome/browser/ui/login/login_handler_test_utils.h"
@@ -71,19 +63,14 @@
 #include "chrome/browser/ui/webui/ash/login/saml_confirm_password_handler.h"
 #include "chrome/browser/ui/webui/ash/login/signin_fatal_error_screen_handler.h"
 #include "chrome/browser/ui/webui/signin/signin_utils.h"
-#include "chrome/common/chrome_constants.h"
-#include "chrome/common/chrome_switches.h"
 #include "chrome/grit/generated_resources.h"
 #include "chrome/test/base/fake_gaia_mixin.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chromeos/ash/components/attestation/mock_attestation_flow.h"
+#include "chromeos/ash/components/browser_context_helper/browser_context_helper.h"
 #include "chromeos/ash/components/cryptohome/system_salt_getter.h"
-#include "chromeos/ash/components/dbus/attestation/fake_attestation_client.h"
 #include "chromeos/ash/components/dbus/attestation/interface.pb.h"
 #include "chromeos/ash/components/dbus/constants/attestation_constants.h"
-#include "chromeos/ash/components/dbus/cryptohome/key.pb.h"
-#include "chromeos/ash/components/dbus/cryptohome/rpc.pb.h"
-#include "chromeos/ash/components/dbus/session_manager/fake_session_manager_client.h"
 #include "chromeos/ash/components/dbus/session_manager/session_manager_client.h"
 #include "chromeos/ash/components/dbus/shill/shill_manager_client.h"
 #include "chromeos/ash/components/dbus/userdataauth/fake_cryptohome_misc_client.h"
@@ -99,31 +86,28 @@
 #include "components/policy/core/browser/browser_policy_connector.h"
 #include "components/policy/core/common/mock_configuration_policy_provider.h"
 #include "components/policy/core/common/policy_map.h"
+#include "components/policy/core/common/policy_pref_names.h"
 #include "components/policy/core/common/policy_switches.h"
 #include "components/policy/core/common/policy_types.h"
 #include "components/policy/policy_constants.h"
 #include "components/policy/proto/chrome_device_policy.pb.h"
 #include "components/policy/proto/device_management_backend.pb.h"
+#include "components/strings/grit/components_strings.h"
 #include "components/user_manager/known_user.h"
 #include "components/user_manager/user.h"
 #include "components/user_manager/user_manager.h"
-#include "content/public/browser/browser_task_traits.h"
-#include "content/public/browser/browser_thread.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/storage_partition.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "extensions/browser/guest_view/web_view/web_view_guest.h"
-#include "extensions/common/features/feature_channel.h"
 #include "google_apis/gaia/fake_gaia.h"
 #include "google_apis/gaia/gaia_constants.h"
-#include "google_apis/gaia/gaia_switches.h"
 #include "google_apis/gaia/gaia_urls.h"
 #include "net/cookies/canonical_cookie.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
 
-#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "url/gurl.h"
@@ -159,6 +143,7 @@ constexpr test::UIPath kSamlBackButton = {"gaia-signin", "signin-frame-dialog",
 const test::UIPath kGaiaLoading = {"gaia-signin", "step-loading"};
 constexpr test::UIPath kFatalErrorActionButton = {"signin-fatal-error",
                                                   "actionButton"};
+constexpr test::UIPath kErrorPage = {"main-frame-error"};
 
 constexpr char kGAIASIDCookieName[] = "SID";
 constexpr char kGAIALSIDCookieName[] = "LSID";
@@ -191,6 +176,11 @@ constexpr char kDeviceTrustMatchHistogramName[] =
     "Enterprise.VerifiedAccess.SAML.DeviceTrustMatchesEndpoints";
 constexpr char kDeviceTrustAttestationFunnelStep[] =
     "Enterprise.DeviceTrust.Attestation.Funnel";
+
+constexpr char kSAMLLink[] = "link";
+constexpr char kSAMLLinkedPageURLPattern[] =
+    "*"
+    "/linked";
 
 // A FakeUserDataAuthClient that stores the salted and hashed secret passed
 // to AddAuthFactor().
@@ -357,7 +347,8 @@ class SamlTestBase : public OobeBaseTest {
   FakeSamlIdpMixin* fake_saml_idp() { return &fake_saml_idp_mixin_; }
 
  protected:
-  raw_ptr<SecretInterceptingFakeUserDataAuthClient, ExperimentalAsh>
+  raw_ptr<SecretInterceptingFakeUserDataAuthClient,
+          DanglingUntriaged | ExperimentalAsh>
       cryptohome_client_;
 
   FakeGaiaMixin fake_gaia_{&mixin_host_};
@@ -1734,6 +1725,51 @@ IN_PROC_BROWSER_TEST_F(SAMLPolicyTest, SsoProfileInAddNewUserFlow) {
   test::WaitForPrimaryUserSessionStart();
 }
 
+IN_PROC_BROWSER_TEST_F(SAMLPolicyTest, SAMLBlocklistNavigationDisallowed) {
+  fake_saml_idp()->SetLoginHTMLTemplate("saml_login_link.html");
+  SetLoginBehaviorPolicyToSAMLInterstitial();
+
+  // TODO(https://issuetracker.google.com/290830337): Make this test class
+  // support propagating device policies to prefs with the logic in
+  // `LoginProfilePolicyProvider`, and instead of setting prefs here directly,
+  // just set the right device policies using
+  // `DeviceStateMixin::RequestDevicePolicyUpdate`.
+  // TODO(https://issuetracker.google.com/290821299): Add browser tests for
+  // allowlisting.
+  Profile::FromBrowserContext(
+      BrowserContextHelper::Get()->GetSigninBrowserContext())
+      ->GetPrefs()
+      ->SetList(policy::policy_prefs::kUrlBlocklist,
+                base::Value::List().Append(kSAMLLinkedPageURLPattern));
+
+  ShowSAMLLoginForm();
+
+  test::TestPredicateWaiter(base::BindRepeating([]() {
+    return LoginDisplayHost::default_host()
+        ->GetOobeUI()
+        ->GetHandler<GaiaScreenHandler>()
+        ->IsLoadedForTesting();
+  })).Wait();
+
+  SigninFrameJS().CreateVisibilityWaiter(true, kSAMLLink)->Wait();
+  SigninFrameJS().TapOn(kSAMLLink);
+  WaitForLoadStop(SigninFrameJS().web_contents());
+
+  SigninFrameJS()
+      .CreateElementTextContentWaiter(
+          l10n_util::GetStringUTF8(
+              IDS_ERRORPAGES_SUMMARY_BLOCKED_BY_ADMINISTRATOR),
+          kErrorPage)
+      ->Wait();
+
+  test::TestPredicateWaiter(base::BindRepeating([]() {
+    return LoginDisplayHost::default_host()
+        ->GetOobeUI()
+        ->GetHandler<GaiaScreenHandler>()
+        ->IsNavigationBlockedForTesting();
+  })).Wait();
+}
+
 // Pushes DeviceLoginScreenLocales into the device policy.
 class SAMLLocalesTest : public SamlTestBase {
  public:
@@ -2013,26 +2049,9 @@ IN_PROC_BROWSER_TEST_F(SAMLDeviceAttestationTest,
   ASSERT_FALSE(fake_saml_idp()->IsLastChallengeResponseExists());
 }
 
-// Verify that device attestation is not available when device attestation is
-// not enabled.
-IN_PROC_BROWSER_TEST_F(SAMLDeviceAttestationEnrolledTest,
-                       DeviceAttestationNotEnabledError) {
-  SetAllowedUrlsPolicy({fake_saml_idp()->GetIdpHost()});
-
-  StartSamlAndWaitForIdpPageLoad(
-      saml_test_users::kFourthUserCorpExampleTestEmail);
-
-  if (Test::HasFailure()) {
-    return;
-  }
-
-  ASSERT_FALSE(fake_saml_idp()->IsLastChallengeResponseExists());
-}
-
 // Verify that device attestation works when all policies configured correctly.
 IN_PROC_BROWSER_TEST_F(SAMLDeviceAttestationEnrolledTest, Success) {
   SetAllowedUrlsPolicy({fake_saml_idp()->GetIdpHost()});
-  settings_provider_->SetBoolean(kDeviceAttestationEnabled, true);
 
   StartSamlAndWaitForIdpPageLoad(
       saml_test_users::kFourthUserCorpExampleTestEmail);
@@ -2052,7 +2071,6 @@ IN_PROC_BROWSER_TEST_F(SAMLDeviceAttestationEnrolledTest, Success) {
 // allowed URLs list.
 IN_PROC_BROWSER_TEST_F(SAMLDeviceAttestationEnrolledTest, PolicyNoMatchError) {
   SetAllowedUrlsPolicy({fake_saml_idp()->GetIdpDomain()});
-  settings_provider_->SetBoolean(kDeviceAttestationEnabled, true);
 
   StartSamlAndWaitForIdpPageLoad(
       saml_test_users::kFourthUserCorpExampleTestEmail);
@@ -2070,7 +2088,6 @@ IN_PROC_BROWSER_TEST_F(SAMLDeviceAttestationEnrolledTest, PolicyNoMatchError) {
 // from allowed URLs list.
 IN_PROC_BROWSER_TEST_F(SAMLDeviceAttestationEnrolledTest, PolicyRegexSuccess) {
   SetAllowedUrlsPolicy({"[*.]" + fake_saml_idp()->GetIdpDomain()});
-  settings_provider_->SetBoolean(kDeviceAttestationEnabled, true);
 
   StartSamlAndWaitForIdpPageLoad(
       saml_test_users::kFourthUserCorpExampleTestEmail);
@@ -2091,7 +2108,6 @@ IN_PROC_BROWSER_TEST_F(SAMLDeviceAttestationEnrolledTest, PolicyRegexSuccess) {
 IN_PROC_BROWSER_TEST_F(SAMLDeviceAttestationEnrolledTest,
                        PolicyTwoEntriesSuccess) {
   SetAllowedUrlsPolicy({"example2.com", fake_saml_idp()->GetIdpHost()});
-  settings_provider_->SetBoolean(kDeviceAttestationEnabled, true);
 
   StartSamlAndWaitForIdpPageLoad(
       saml_test_users::kFourthUserCorpExampleTestEmail);
@@ -2115,7 +2131,6 @@ IN_PROC_BROWSER_TEST_F(SAMLDeviceAttestationEnrolledTest,
   SetAllowedUrlsPolicy({fake_saml_idp()->GetIdpHost()});
   SetDeviceContextAwareAccessSignalsAllowlistPolicy(
       {fake_saml_idp()->GetIdpHost()});
-  settings_provider_->SetBoolean(kDeviceAttestationEnabled, true);
 
   StartSamlAndWaitForIdpPageLoad(
       saml_test_users::kFourthUserCorpExampleTestEmail);
@@ -2139,7 +2154,6 @@ IN_PROC_BROWSER_TEST_F(SAMLDeviceAttestationEnrolledTest,
 
 IN_PROC_BROWSER_TEST_F(SAMLDeviceAttestationEnrolledTest, TimeoutError) {
   SetAllowedUrlsPolicy({"example2.com", fake_saml_idp()->GetIdpHost()});
-  settings_provider_->SetBoolean(kDeviceAttestationEnabled, true);
 
   AttestationClient::Get()
       ->GetTestInterface()
@@ -2174,12 +2188,6 @@ class SAMLDeviceTrustTest : public SAMLDeviceAttestationTest,
   SAMLDeviceTrustTest() {
     device_state_.SetState(
         DeviceStateMixin::State::OOBE_COMPLETED_CLOUD_ENROLLED);
-  }
-
-  void SetUpInProcessBrowserTestFixture() override {
-    SAMLDeviceAttestationTest::SetUpInProcessBrowserTestFixture();
-    // Enable device trust feature.
-    settings_provider_->SetBoolean(kDeviceAttestationEnabled, true);
   }
 
   void ExpectDeviceTrustSuccessful(bool expected) {
@@ -2247,24 +2255,6 @@ IN_PROC_BROWSER_TEST_P(SAMLDeviceTrustEnrolledTest, EmptyPolicy) {
       saml_test_users::kSixthUserCorpExampleTestEmail);
 
   ASSERT_FALSE(fake_saml_idp()->DeviceTrustHeaderRecieved());
-}
-
-// Verify that device trust is not available when device trust is
-// not enabled.
-IN_PROC_BROWSER_TEST_P(SAMLDeviceTrustEnrolledTest,
-                       DeviceTrustNotEnabledError) {
-  SetDeviceContextAwareAccessSignalsAllowlistPolicy(
-      {fake_saml_idp()->GetIdpHost()});
-  settings_provider_->SetBoolean(kDeviceAttestationEnabled, false);
-
-  StartSamlAndWaitForIdpPageLoad(
-      saml_test_users::kSixthUserCorpExampleTestEmail);
-
-  if (Test::HasFailure()) {
-    return;
-  }
-
-  ASSERT_FALSE(fake_saml_idp()->IsLastChallengeResponseExists());
 }
 
 // Verify that device trust is available for URLs that match a pattern

@@ -74,37 +74,23 @@ OpenXrPlatformHelperWindows::GetGraphicsBinding(
       texture_helper, weak_ptr_factory_.GetWeakPtr());
 }
 
-const void* OpenXrPlatformHelperWindows::GetPlatformCreateInfo(
-    const OpenXrCreateInfo& create_info) {
+void OpenXrPlatformHelperWindows::GetPlatformCreateInfo(
+    const device::OpenXrCreateInfo& create_info,
+    PlatformCreateInfoReadyCallback callback) {
   // We have nothing we need to add to the "next" chain.
-  return nullptr;
+  std::move(callback).Run(nullptr);
 }
 
 device::mojom::XRDeviceData OpenXrPlatformHelperWindows::GetXRDeviceData() {
   device::mojom::XRDeviceData device_data;
-  device_data.is_ar_blend_mode_supported = IsArBlendModeSupported();
+  device_data.is_ar_blend_mode_supported =
+      IsArBlendModeSupported(GetOrCreateXrInstance());
   // Only set the LUID if it exists and is nonzero.
   if (LUID luid; TryGetLuid(&luid)) {
     device_data.luid = CHROME_LUID{luid.LowPart, luid.HighPart};
   }
 
   return device_data;
-}
-
-bool OpenXrPlatformHelperWindows::IsArBlendModeSupported() {
-  XrSystemId system;
-  if (XR_FAILED(
-          OpenXrApiWrapper::GetSystem(GetOrCreateXrInstance(), &system))) {
-    return false;
-  }
-
-  std::vector<XrEnvironmentBlendMode> environment_blend_modes =
-      OpenXrApiWrapper::GetSupportedBlendModes(GetOrCreateXrInstance(), system);
-
-  return base::Contains(environment_blend_modes,
-                        XR_ENVIRONMENT_BLEND_MODE_ADDITIVE) ||
-         base::Contains(environment_blend_modes,
-                        XR_ENVIRONMENT_BLEND_MODE_ALPHA_BLEND);
 }
 
 // Returns the LUID of the adapter the OpenXR runtime is on. Returns false and
@@ -161,9 +147,8 @@ bool OpenXrPlatformHelperWindows::Initialize() {
   return true;
 }
 
-XrResult OpenXrPlatformHelperWindows::CreateInstance(
-    XrInstance* instance,
-    absl::optional<OpenXrCreateInfo> create_info) {
+XrResult OpenXrPlatformHelperWindows::CreateInstance(XrInstance* instance,
+                                                     void* create_info) {
   CHECK(instance);
 
   // The base-class expects CreatInstance to be called exactly once without a
@@ -198,7 +183,7 @@ XrInstance OpenXrPlatformHelperWindows::GetOrCreateXrInstance() {
   // CreateInstance fails, we'll just end up returning XR_NULL_HANDLE which is
   // fine. We don't actually need anything from the OpenXrCreateInfo to create
   // an instance on Windows.
-  (void)CreateInstance(&instance, absl::nullopt);
+  (void)CreateInstance(&instance, nullptr);
   return instance;
 }
 

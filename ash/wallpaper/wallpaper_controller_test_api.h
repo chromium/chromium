@@ -6,6 +6,7 @@
 #define ASH_WALLPAPER_WALLPAPER_CONTROLLER_TEST_API_H_
 
 #include "ash/ash_export.h"
+#include "ash/public/cpp/wallpaper/wallpaper_info.h"
 #include "ash/wallpaper/wallpaper_utils/wallpaper_calculated_colors.h"
 #include "base/memory/raw_ptr.h"
 #include "components/account_id/account_id.h"
@@ -43,8 +44,14 @@ class ASH_EXPORT WallpaperControllerTestApi {
   // Set a default wallpaper info to simplify testing.
   void SetDefaultWallpaper(const AccountId& account_id);
 
+  // Shows a solid color wallpaper associated with `wallpaper_info`.
+  void ShowWallpaperImage(const WallpaperInfo& wallpaper_info,
+                          bool preview_mode,
+                          bool is_override);
+
  private:
-  raw_ptr<WallpaperControllerImpl, ExperimentalAsh> controller_;
+  raw_ptr<WallpaperControllerImpl, DanglingUntriaged | ExperimentalAsh>
+      controller_;
 };
 
 }  // namespace ash

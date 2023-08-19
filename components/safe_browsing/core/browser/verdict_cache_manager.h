@@ -26,6 +26,7 @@
 #include "url/gurl.h"
 
 class HostContentSettingsMap;
+class SafeBrowsingServiceTest;
 
 namespace safe_browsing {
 
@@ -131,17 +132,20 @@ class VerdictCacheManager : public history::HistoryServiceObserver,
   // Called by browsing data remover.
   void OnCookiesDeleted();
 
-  // Returns true if an artificial unsafe URL has been provided using
-  // command-line flags.
-  static bool has_artificial_unsafe_url();
+  // Returns true if an artificial URL has been provided either using
+  // command-line flags or through a test.
+  static bool has_artificial_cached_url();
 
   void StopCleanUpTimerForTesting();
   void SetPageLoadTokenForTesting(const GURL& url,
                                   ChromeUserPopulation::PageLoadToken token);
 
  private:
+  friend class ::SafeBrowsingServiceTest;
   friend class SafeBrowsingBlockingPageRealTimeUrlCheckTest;
+  friend class SafeBrowsingBlockingPageHashRealTimeCheckTest;
   friend class VerdictCacheManagerTest;
+  friend class ArtificialHashRealTimeVerdictCacheManagerTest;
   FRIEND_TEST_ALL_PREFIXES(VerdictCacheManagerTest, TestCleanUpExpiredVerdict);
   FRIEND_TEST_ALL_PREFIXES(VerdictCacheManagerTest,
                            TestCleanUpExpiredVerdictWithInvalidEntry);
@@ -154,6 +158,8 @@ class VerdictCacheManager : public history::HistoryServiceObserver,
                            TestCleanUpExpiredVerdictInBackground);
   FRIEND_TEST_ALL_PREFIXES(VerdictCacheManagerTest,
                            TestCleanUpVerdictOlderThanUpperBound);
+  FRIEND_TEST_ALL_PREFIXES(ArtificialHashRealTimeVerdictCacheManagerTest,
+                           TestCachePopulated);
 
   // Enum representing the reason why page load tokens are cleared. Used to log
   // histograms. Entries must not be removed or reordered.
@@ -196,12 +202,32 @@ class VerdictCacheManager : public history::HistoryServiceObserver,
   size_t GetStoredRealTimeUrlCheckVerdictCount();
 
   // This adds a cached verdict for a URL that has artificially been marked as
-  // unsafe using the command line flag "mark_as_real_time_phishing".
-  void CacheArtificialRealTimeUrlVerdict();
+  // unsafe using the command line flag "mark_as_real_time_phishing". This
+  // applies to URL real-time lookups.
+  void CacheArtificialUnsafeRealTimeUrlVerdictFromSwitch();
 
   // This adds a cached verdict for a URL that has artificially been marked as
-  // unsafe using the command line flag "mark_as_phish_guard_phishing".
-  void CacheArtificialPhishGuardVerdict();
+  // unsafe using the command line flag "mark_as_phish_guard_phishing". This
+  // applies to Phishguard pings.
+  void CacheArtificialUnsafePhishGuardVerdictFromSwitch();
+
+  // This adds a cached verdict for a URL that has artificially been marked as
+  // unsafe using the command line flag
+  // "mark_as_hash_prefix_real_time_phishing". This applies to hash-prefix
+  // real-time lookups.
+  void CacheArtificialUnsafeHashRealTimeLookupVerdictFromSwitch();
+
+  // This adds a cached verdict for a URL that has artificially been marked as
+  // safe or unsafe (depending on |is_unsafe|). This applies to hash-prefix
+  // real-time lookups.
+  void CacheArtificialHashRealTimeLookupVerdict(const std::string& url_spec,
+                                                bool is_unsafe);
+
+  // Resets the value of |has_artificial_cached_url_| back to false. If a unit
+  // test sets an artificial URL, it is responsible for resetting the value
+  // when the test completes so that it's not still true when later unit tests
+  // run.
+  static void ResetHasArtificialCachedUrlForTesting();
 
   // Number of verdict stored for this profile for password on focus pings.
   absl::optional<size_t> stored_verdict_count_password_on_focus_;
@@ -241,7 +267,7 @@ class VerdictCacheManager : public history::HistoryServiceObserver,
 
   base::WeakPtrFactory<VerdictCacheManager> weak_factory_{this};
 
-  static bool has_artificial_unsafe_url_;
+  static bool has_artificial_cached_url_;
 };
 
 }  // namespace safe_browsing

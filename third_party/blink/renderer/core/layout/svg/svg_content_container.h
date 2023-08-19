@@ -34,9 +34,12 @@ class SVGContentContainer {
 
   bool UpdateBoundingBoxes(bool& object_bounding_box_valid);
   const gfx::RectF& ObjectBoundingBox() const { return object_bounding_box_; }
-  const gfx::RectF& StrokeBoundingBox() const { return stroke_bounding_box_; }
+  const gfx::RectF& DecoratedBoundingBox() const {
+    return decorated_bounding_box_;
+  }
 
   bool ComputeHasNonIsolatedBlendingDescendants() const;
+  gfx::RectF ComputeStrokeBoundingBox() const;
 
   LayoutObjectChildList& Children() { return children_; }
   const LayoutObjectChildList& Children() const { return children_; }
@@ -47,7 +50,7 @@ class SVGContentContainer {
   LayoutObjectChildList children_;
 
   gfx::RectF object_bounding_box_;
-  gfx::RectF stroke_bounding_box_;
+  gfx::RectF decorated_bounding_box_;
 };
 
 }  // namespace blink

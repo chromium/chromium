@@ -22,8 +22,8 @@ bool RefCountedThreadSafeBase::HasAtLeastOneRef() const {
 
 #if BUILDFLAG(PA_DCHECK_IS_ON)
 RefCountedThreadSafeBase::~RefCountedThreadSafeBase() {
-  PA_DCHECK(in_dtor_) << "RefCountedThreadSafe object deleted without "
-                         "calling Release()";
+  PA_BASE_DCHECK(in_dtor_) << "RefCountedThreadSafe object deleted without "
+                              "calling Release()";
 }
 #endif
 

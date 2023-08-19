@@ -26,6 +26,7 @@ class UrlHandlerAsh : public mojom::UrlHandler {
 
   // Returns |false| when the URL was invalid and will not get processed and
   // |true| when the URL will get processed (synchronous or asynchronously).
+  // For testing only.
   bool OpenUrlInternal(const GURL& url);
 
  private:

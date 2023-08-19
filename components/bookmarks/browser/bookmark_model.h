@@ -180,23 +180,29 @@ class BookmarkModel final : public BookmarkUndoProvider,
             const BookmarkNode* new_parent,
             size_t index);
 
+  // TODO(crbug.com/1453250): Change this function to be invoked on the
+  //                          destination model rather than on the source one.
+  //
   // Moves `node` to another instance of `BookmarkModel` as determined by
   // `dest_model`, where it is inserted under `dest_parent` as a last child.
   // If `node` is a folder, all descendants (if any) are also moved, maintaining
   // the same hierarchy.
-  // Please note that `BookmarkNode` objects that are `node` descendants are not
-  // reused. Instead, the hierarchy is cloned (and new IDs are generated) and
-  // this cloned hierarchy is added to `dest_model`.
+  // Please note that `BookmarkNode` objects representing `node` itself and its
+  // descendants are not reused. Instead, the hierarchy is cloned (and new IDs
+  // are generated) and this cloned hierarchy is added to `dest_model`.
   //
   // `node` must belong to this model, while `dest_parent` must belong to
   // `dest_model` (which must be different from `this`).
   //
+  // Returns a pointer to the new node in the destination model.
+  //
   // Calling this will send `OnWillRemoveBookmarks` and `BookmarkNodeRemoved`
   // for observers of this model and `BookmarkNodeAdded` for observers of
   // `dest_model`.
-  void MoveToOtherModelWithNewNodeIdsAndUuids(const BookmarkNode* node,
-                                              BookmarkModel* dest_model,
-                                              const BookmarkNode* dest_parent);
+  const BookmarkNode* MoveToOtherModelWithNewNodeIdsAndUuids(
+      const BookmarkNode* node,
+      BookmarkModel* dest_model,
+      const BookmarkNode* dest_parent);
 
   // Returns the favicon for |node|. If the favicon has not yet been loaded,
   // a load will be triggered and the observer of the model notified when done.
@@ -303,13 +309,13 @@ class BookmarkModel final : public BookmarkUndoProvider,
   // combobox of most recently modified folders.
   void ResetDateFolderModified(const BookmarkNode* node);
 
-  // Updates the last used `time` for the given `id` / `url`. `just_opened`
+  // Updates the last used `time` for the given `node`. `just_opened`
   // indicates whether this is being called as a result of the bookmark being
-  // opened.`just_opened` being false means that this update didn't come from
-  // a user such as sync or history updating a node automatically.
+  // opened. `just_opened` being false means that this update didn't come from
+  // a user, such as sync updating a node automatically.
   void UpdateLastUsedTime(const BookmarkNode* node,
                           const base::Time time,
-                          bool just_opened = false);
+                          bool just_opened);
 
   // Clears the last used time for the given time range. Called when the user
   // clears their history. Time() and Time::Max() are used for min/max values.
@@ -464,8 +470,6 @@ class BookmarkModel final : public BookmarkUndoProvider,
                                          const base::Time delete_begin,
                                          const base::Time delete_end);
 
-  const std::unique_ptr<BookmarkClient> client_;
-
   // Whether the initial set of data has been loaded.
   bool loaded_ = false;
 
@@ -477,18 +481,27 @@ class BookmarkModel final : public BookmarkUndoProvider,
   // |owned_root_|. Once loading has completed, |owned_root_| is destroyed and
   // this is set to url_index_->root(). |owned_root_| is done as lots of
   // existing code assumes the root is non-null while loading.
-  raw_ptr<BookmarkNode, DanglingUntriaged> root_ = nullptr;
+  raw_ptr<BookmarkNode, AcrossTasksDanglingUntriaged> root_ = nullptr;
 
-  raw_ptr<BookmarkPermanentNode, DanglingUntriaged> bookmark_bar_node_ =
+  raw_ptr<BookmarkPermanentNode, AcrossTasksDanglingUntriaged>
+      bookmark_bar_node_ = nullptr;
+  raw_ptr<BookmarkPermanentNode, AcrossTasksDanglingUntriaged> other_node_ =
       nullptr;
-  raw_ptr<BookmarkPermanentNode, DanglingUntriaged> other_node_ = nullptr;
-  raw_ptr<BookmarkPermanentNode, DanglingUntriaged> mobile_node_ = nullptr;
+  raw_ptr<BookmarkPermanentNode, AcrossTasksDanglingUntriaged> mobile_node_ =
+      nullptr;
 
   // The maximum ID assigned to the bookmark nodes in the model.
   int64_t next_node_id_ = 1;
 
   // The observers.
-  base::ObserverList<BookmarkModelObserver>::Unchecked observers_;
+#if BUILDFLAG(IS_IOS)
+  // TODO(crbug.com/1470748) Set the parameter to `true` on all platforms.
+  base::ObserverList<BookmarkModelObserver, true> observers_;
+#else
+  base::ObserverList<BookmarkModelObserver> observers_;
+#endif
+
+  std::unique_ptr<BookmarkClient> client_;
 
   // Used for loading favicons.
   base::CancelableTaskTracker cancelable_task_tracker_;

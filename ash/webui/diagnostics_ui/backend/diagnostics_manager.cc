@@ -47,7 +47,7 @@ InputDataProvider* DiagnosticsManager::GetInputDataProvider() {
   // Do not construct the InputDataProvider until it is requested;
   // performing this in the constructor is too early, and the native
   // window will not be available.
-  if (features::IsInputInDiagnosticsAppEnabled() && !input_data_provider_) {
+  if (!input_data_provider_) {
     input_data_provider_ = std::make_unique<InputDataProvider>(
         webui_->GetWebContents()->GetTopLevelNativeWindow());
   }

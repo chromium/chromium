@@ -4,10 +4,6 @@
 
 #import "ios/chrome/common/ui/util/text_view_util.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 // TODO(crbug.com/1335912): On iOS 16, EG is unable to tap links in
 // TextKit2-based UITextViews. Fall back to TextKit1 until this issue
 // is resolved.

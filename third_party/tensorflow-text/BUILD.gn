@@ -5,7 +5,10 @@
 import("//build/config/sanitizers/sanitizers.gni")
 
 config("tensorflow-text-config") {
-  include_dirs = [ "src" ]
+  include_dirs = [
+    "src",
+    "shims",
+  ]
 }
 
 config("tensorflow-text-flags") {

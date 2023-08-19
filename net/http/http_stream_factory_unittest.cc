@@ -179,6 +179,8 @@ class MockWebSocketHandshakeStream : public WebSocketHandshakeStreamBase {
 
   std::unique_ptr<WebSocketStream> Upgrade() override { return nullptr; }
 
+  bool CanReadFromStream() const override { return true; }
+
   base::WeakPtr<WebSocketHandshakeStreamBase> GetWeakPtr() override {
     return weak_ptr_factory_.GetWeakPtr();
   }

@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "third_party/blink/renderer/core/speculation_rules/speculation_rules_header.h"
+
 #include "base/test/metrics/histogram_tester.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -31,6 +32,20 @@ class ScopedRegisterMockedURLLoads {
         KURL("https://thirdparty-speculationrules.test/"
              "single_url_prefetch.json"),
         test::CoreTestDataPath("speculation_rules/single_url_prefetch.json"),
+        "application/speculationrules+json");
+    url_test_helpers::RegisterMockedURLLoad(
+        KURL("https://thirdparty-speculationrules.test/"
+             "single_url_prefetch_not_a_string_no_vary_search_hint.json"),
+        test::CoreTestDataPath(
+            "speculation_rules/"
+            "single_url_prefetch_not_a_string_no_vary_search_hint.json"),
+        "application/speculationrules+json");
+    url_test_helpers::RegisterMockedURLLoad(
+        KURL("https://thirdparty-speculationrules.test/"
+             "single_url_prefetch_invalid_no_vary_search_hint.json"),
+        test::CoreTestDataPath(
+            "speculation_rules/"
+            "single_url_prefetch_invalid_no_vary_search_hint.json"),
         "application/speculationrules+json");
   }
 
@@ -65,8 +80,8 @@ TEST(SpeculationRulesHeaderTest, NoMetricsWithoutHeader) {
 
   ResourceResponse document_response(KURL("https://speculation-rules.test/"));
   document_response.SetHttpStatusCode(200);
-  document_response.SetMimeType("text/html");
-  document_response.SetTextEncodingName("UTF-8");
+  document_response.SetMimeType(AtomicString("text/html"));
+  document_response.SetTextEncodingName(AtomicString("UTF-8"));
   SpeculationRulesHeader::ProcessHeadersForDocumentResponse(
       document_response, *page_holder.GetFrame().DomWindow());
 
@@ -86,9 +101,10 @@ TEST(SpeculationRulesHeaderTest, UnparseableHeader) {
 
   ResourceResponse document_response(KURL("https://speculation-rules.test/"));
   document_response.SetHttpStatusCode(200);
-  document_response.SetMimeType("text/html");
-  document_response.SetTextEncodingName("UTF-8");
-  document_response.AddHttpHeaderField(http_names::kSpeculationRules, "_:");
+  document_response.SetMimeType(AtomicString("text/html"));
+  document_response.SetTextEncodingName(AtomicString("UTF-8"));
+  document_response.AddHttpHeaderField(http_names::kSpeculationRules,
+                                       AtomicString("_:"));
   SpeculationRulesHeader::ProcessHeadersForDocumentResponse(
       document_response, *page_holder.GetFrame().DomWindow());
 
@@ -109,9 +125,10 @@ TEST(SpeculationRulesHeaderTest, EmptyHeader) {
 
   ResourceResponse document_response(KURL("https://speculation-rules.test/"));
   document_response.SetHttpStatusCode(200);
-  document_response.SetMimeType("text/html");
-  document_response.SetTextEncodingName("UTF-8");
-  document_response.AddHttpHeaderField(http_names::kSpeculationRules, "");
+  document_response.SetMimeType(AtomicString("text/html"));
+  document_response.SetTextEncodingName(AtomicString("UTF-8"));
+  document_response.AddHttpHeaderField(http_names::kSpeculationRules,
+                                       g_empty_atom);
   SpeculationRulesHeader::ProcessHeadersForDocumentResponse(
       document_response, *page_holder.GetFrame().DomWindow());
 
@@ -130,10 +147,11 @@ TEST(SpeculationRulesHeaderTest, InvalidItem) {
 
   ResourceResponse document_response(KURL("https://speculation-rules.test/"));
   document_response.SetHttpStatusCode(200);
-  document_response.SetMimeType("text/html");
-  document_response.SetTextEncodingName("UTF-8");
-  document_response.AddHttpHeaderField(http_names::kSpeculationRules,
-                                       "42, :aGVsbG8=:, ?1, \"://\"");
+  document_response.SetMimeType(AtomicString("text/html"));
+  document_response.SetTextEncodingName(AtomicString("UTF-8"));
+  document_response.AddHttpHeaderField(
+      http_names::kSpeculationRules,
+      AtomicString("42, :aGVsbG8=:, ?1, \"://\""));
   SpeculationRulesHeader::ProcessHeadersForDocumentResponse(
       document_response, *page_holder.GetFrame().DomWindow());
 
@@ -157,11 +175,12 @@ TEST(SpeculationRulesHeaderTest, ValidURL) {
 
   ResourceResponse document_response(KURL("https://speculation-rules.test/"));
   document_response.SetHttpStatusCode(200);
-  document_response.SetMimeType("text/html");
-  document_response.SetTextEncodingName("UTF-8");
+  document_response.SetMimeType(AtomicString("text/html"));
+  document_response.SetTextEncodingName(AtomicString("UTF-8"));
   document_response.AddHttpHeaderField(
       http_names::kSpeculationRules,
-      "\"https://thirdparty-speculationrules.test/single_url_prefetch.json\"");
+      AtomicString("\"https://thirdparty-speculationrules.test/"
+                   "single_url_prefetch.json\""));
   SpeculationRulesHeader::ProcessHeadersForDocumentResponse(
       document_response, *page_holder.GetFrame().DomWindow());
   url_test_helpers::ServeAsynchronousRequests();
@@ -174,6 +193,75 @@ TEST(SpeculationRulesHeaderTest, ValidURL) {
   EXPECT_THAT(chrome_client->ConsoleMessages(),
               Not(Contains(ResultOf([](const auto& m) { return m.Utf8(); },
                                     HasSubstr("Speculation-Rules")))));
+}
+
+TEST(SpeculationRulesHeaderTest, InvalidNvsHintError) {
+  ScopedSpeculationRulesFetchFromHeaderForTest enable_fetch_from_header(true);
+  ScopedSpeculationRulesNoVarySearchHintForTest enable_no_vary_search_hint{
+      true};
+  base::HistogramTester histogram_tester;
+  auto* chrome_client = MakeGarbageCollected<ConsoleCapturingChromeClient>();
+  DummyPageHolder page_holder(/*initial_view_size=*/{}, chrome_client);
+  ScopedRegisterMockedURLLoads mock_url_loads;
+
+  ResourceResponse document_response(KURL("https://speculation-rules.test/"));
+  document_response.SetHttpStatusCode(200);
+  document_response.SetMimeType(AtomicString("text/html"));
+  document_response.SetTextEncodingName(AtomicString("UTF-8"));
+  document_response.AddHttpHeaderField(
+      http_names::kSpeculationRules,
+      AtomicString(
+          "\"https://thirdparty-speculationrules.test/"
+          "single_url_prefetch_not_a_string_no_vary_search_hint.json\""));
+  SpeculationRulesHeader::ProcessHeadersForDocumentResponse(
+      document_response, *page_holder.GetFrame().DomWindow());
+  url_test_helpers::ServeAsynchronousRequests();
+
+  EXPECT_TRUE(page_holder.GetDocument().IsUseCounted(
+      WebFeature::kSpeculationRulesHeader));
+  histogram_tester.ExpectUniqueSample("Blink.SpeculationRules.LoadOutcome",
+                                      SpeculationRulesLoadOutcome::kSuccess, 1);
+  histogram_tester.ExpectTotalCount("Blink.SpeculationRules.FetchTime", 1);
+
+  EXPECT_THAT(
+      chrome_client->ConsoleMessages(),
+      Contains(ResultOf(
+          [](const auto& m) { return m.Utf8(); },
+          HasSubstr("expects_no_vary_search's value must be a string"))));
+}
+
+TEST(SpeculationRulesHeaderTest, InvalidNvsHintWarning) {
+  ScopedSpeculationRulesFetchFromHeaderForTest enable_fetch_from_header(true);
+  ScopedSpeculationRulesNoVarySearchHintForTest enable_no_vary_search_hint{
+      true};
+  base::HistogramTester histogram_tester;
+  auto* chrome_client = MakeGarbageCollected<ConsoleCapturingChromeClient>();
+  DummyPageHolder page_holder(/*initial_view_size=*/{}, chrome_client);
+  ScopedRegisterMockedURLLoads mock_url_loads;
+
+  ResourceResponse document_response(KURL("https://speculation-rules.test/"));
+  document_response.SetHttpStatusCode(200);
+  document_response.SetMimeType(AtomicString("text/html"));
+  document_response.SetTextEncodingName(AtomicString("UTF-8"));
+  document_response.AddHttpHeaderField(
+      http_names::kSpeculationRules,
+      AtomicString("\"https://thirdparty-speculationrules.test/"
+                   "single_url_prefetch_invalid_no_vary_search_hint.json\""));
+  SpeculationRulesHeader::ProcessHeadersForDocumentResponse(
+      document_response, *page_holder.GetFrame().DomWindow());
+  url_test_helpers::ServeAsynchronousRequests();
+
+  EXPECT_TRUE(page_holder.GetDocument().IsUseCounted(
+      WebFeature::kSpeculationRulesHeader));
+  histogram_tester.ExpectUniqueSample("Blink.SpeculationRules.LoadOutcome",
+                                      SpeculationRulesLoadOutcome::kSuccess, 1);
+  histogram_tester.ExpectTotalCount("Blink.SpeculationRules.FetchTime", 1);
+
+  EXPECT_THAT(chrome_client->ConsoleMessages(),
+              Contains(ResultOf(
+                  [](const auto& m) { return m.Utf8(); },
+                  HasSubstr("contains a \"params\" dictionary value"
+                            " that is not a list of strings or a boolean"))));
 }
 
 }  // namespace

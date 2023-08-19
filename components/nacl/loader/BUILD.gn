@@ -52,7 +52,6 @@ if (current_cpu != "arm64") {
 
     if (is_mac) {
       sources += [ "nacl_main_platform_delegate_mac.mm" ]
-      configs += [ "//build/config/compiler:enable_arc" ]
     }
 
     if (is_linux || is_chromeos) {

@@ -42,6 +42,11 @@ void SyncRecordModelTypeCountHistogram(ModelType model_type, size_t count);
 // distribution of entity sizes.
 void SyncRecordModelTypeEntitySizeHistogram(ModelType model_type, size_t bytes);
 
+// Records when the model (including both data and metadata) was cleared for a
+// given `model_type` due to
+// `WipeModelUponSyncDisabledBehavior::kOnceIfTrackingMetadata`.
+void SyncRecordModelClearedOnceHistogram(ModelType model_type);
+
 }  // namespace syncer
 
 #endif  // COMPONENTS_SYNC_BASE_DATA_TYPE_HISTOGRAM_H_

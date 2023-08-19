@@ -48,6 +48,19 @@ std::string GetServerModelCacheKeyHash(
   return client_model_cache_key_hash;
 }
 
+absl::optional<proto::OptimizationTarget> ParseOptimizationTarget(
+    const std::string& optimization_target_str) {
+  int optimization_target_number;
+  if (!base::StringToInt(optimization_target_str,
+                         &optimization_target_number)) {
+    return absl::nullopt;
+  }
+  if (!proto::OptimizationTarget_IsValid(optimization_target_number)) {
+    return absl::nullopt;
+  }
+  return static_cast<proto::OptimizationTarget>(optimization_target_number);
+}
+
 }  // namespace
 
 // static
@@ -169,8 +182,15 @@ ModelStoreMetadataEntryUpdater::PurgeAllInactiveMetadata(
                                prefs::localstate::kModelStoreMetadata);
   std::vector<std::pair<std::string, std::string>> entries_to_remove;
   std::vector<base::FilePath> inactive_model_dirs;
+  auto killswitch_model_versions =
+      features::GetPredictionModelVersionsInKillSwitch();
   for (auto optimization_target_entry : *updater) {
     if (!optimization_target_entry.second.is_dict()) {
+      continue;
+    }
+    auto optimization_target =
+        ParseOptimizationTarget(optimization_target_entry.first);
+    if (!optimization_target) {
       continue;
     }
     for (auto model_cache_key_hash :
@@ -188,7 +208,17 @@ ModelStoreMetadataEntryUpdater::PurgeAllInactiveMetadata(
           metadata.GetExpiryTime() <= base::Time::Now()) {
         should_remove_model = true;
         RecordPredictionModelStoreModelRemovalVersionHistogram(
+            *optimization_target,
             PredictionModelStoreModelRemovalReason::kModelExpired);
+      }
+      if (!should_remove_model && metadata.GetVersion() &&
+          IsPredictionModelVersionInKillSwitch(killswitch_model_versions,
+                                               *optimization_target,
+                                               *metadata.GetVersion())) {
+        should_remove_model = true;
+        RecordPredictionModelStoreModelRemovalVersionHistogram(
+            *optimization_target,
+            PredictionModelStoreModelRemovalReason::kModelInKillSwitchList);
       }
 
       if (should_remove_model) {

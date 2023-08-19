@@ -137,7 +137,7 @@ SequenceManager::MetricRecordingSettings InitializeMetricRecordingSettings(
 // Writes |address| in hexadecimal ("0x11223344") form starting from |output|
 // and moving backwards in memory. Returns a pointer to the first digit of the
 // result. Does *not* NUL-terminate the number.
-#if !BUILDFLAG(IS_NACL)
+#if !BUILDFLAG(IS_NACL) && !BUILDFLAG(IS_ANDROID)
 char* PrependHexAddress(char* output, const void* address) {
   uintptr_t value = reinterpret_cast<uintptr_t>(address);
   static const char kHexChars[] = "0123456789ABCDEF";
@@ -149,7 +149,7 @@ char* PrependHexAddress(char* output, const void* address) {
   *output = '0';
   return output;
 }
-#endif  // !BUILDFLAG(IS_NACL)
+#endif  // !BUILDFLAG(IS_NACL) && !BUILDFLAG(IS_ANDROID)
 
 // Controls whether canceled tasks are removed from the front of the queue when
 // deciding when the next wake up should happen.
@@ -162,7 +162,7 @@ std::atomic_bool g_no_wake_ups_for_canceled_tasks{true};
 std::atomic_bool g_record_crash_keys = false;
 
 #if BUILDFLAG(IS_WIN)
-bool g_explicit_high_resolution_timer_win = false;
+bool g_explicit_high_resolution_timer_win = true;
 #endif  // BUILDFLAG(IS_WIN)
 
 }  // namespace
@@ -955,11 +955,6 @@ void SequenceManagerImpl::SetWorkBatchSize(int work_batch_size) {
   controller_->SetWorkBatchSize(work_batch_size);
 }
 
-void SequenceManagerImpl::SetTimerSlack(TimerSlack timer_slack) {
-  DCHECK_CALLED_ON_VALID_THREAD(associated_thread_->thread_checker);
-  controller_->SetTimerSlack(timer_slack);
-}
-
 void SequenceManagerImpl::AddTaskObserver(TaskObserver* task_observer) {
   DCHECK_CALLED_ON_VALID_THREAD(associated_thread_->thread_checker);
   main_thread_only().task_observers.AddObserver(task_observer);
@@ -1136,9 +1131,10 @@ size_t SequenceManagerImpl::GetPendingTaskCountForTesting() const {
   return total;
 }
 
-scoped_refptr<TaskQueue> SequenceManagerImpl::CreateTaskQueue(
+TaskQueue::Handle SequenceManagerImpl::CreateTaskQueue(
     const TaskQueue::Spec& spec) {
-  return WrapRefCounted(new TaskQueue(CreateTaskQueueImpl(spec), spec));
+  return TaskQueue::Handle(
+      std::make_unique<TaskQueue>(CreateTaskQueueImpl(spec), spec));
 }
 
 std::string SequenceManagerImpl::DescribeAllPendingTasks() const {
@@ -1193,17 +1189,17 @@ bool SequenceManagerImpl::IsType(MessagePumpType type) const {
 
 void SequenceManagerImpl::EnableCrashKeys(const char* async_stack_crash_key) {
   DCHECK(!main_thread_only().async_stack_crash_key);
-#if !BUILDFLAG(IS_NACL)
+#if !BUILDFLAG(IS_NACL) && !BUILDFLAG(IS_ANDROID)
   main_thread_only().async_stack_crash_key = debug::AllocateCrashKeyString(
       async_stack_crash_key, debug::CrashKeySize::Size64);
   static_assert(sizeof(main_thread_only().async_stack_buffer) ==
                     static_cast<size_t>(debug::CrashKeySize::Size64),
                 "Async stack buffer size must match crash key size.");
-#endif  // BUILDFLAG(IS_NACL)
+#endif  // !BUILDFLAG(IS_NACL) && !BUILDFLAG(IS_ANDROID)
 }
 
 void SequenceManagerImpl::RecordCrashKeys(const PendingTask& pending_task) {
-#if !BUILDFLAG(IS_NACL)
+#if !BUILDFLAG(IS_NACL) && !BUILDFLAG(IS_ANDROID)
   // SetCrashKeyString is a no-op even if the crash key is null, but we'd still
   // have construct the StringPiece that is passed in.
   if (!main_thread_only().async_stack_crash_key)
@@ -1234,7 +1230,7 @@ void SequenceManagerImpl::RecordCrashKeys(const PendingTask& pending_task) {
   debug::SetCrashKeyString(
       main_thread_only().async_stack_crash_key,
       StringPiece(pos, static_cast<size_t>(buffer_end - pos)));
-#endif  // BUILDFLAG(IS_NACL)
+#endif  // !BUILDFLAG(IS_NACL) && !BUILDFLAG(IS_ANDROID)
 }
 
 internal::TaskQueueImpl* SequenceManagerImpl::currently_executing_task_queue()

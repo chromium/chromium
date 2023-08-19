@@ -18,6 +18,7 @@ class PrefRegistrySimple;
 class PrefService;
 
 namespace base {
+class Time;
 class Version;
 }  // namespace base
 
@@ -123,6 +124,11 @@ class PersistedData {
   std::string GetFingerprint(const std::string& id) const;
   void SetFingerprint(const std::string& id, const std::string& fingerprint);
 
+  // These functions get and set the time after which update checks are allowed.
+  // To clear the throttle, pass base::Time().
+  base::Time GetThrottleUpdatesUntil() const;
+  void SetThrottleUpdatesUntil(const base::Time& time);
+
  private:
   // Returns nullptr if the app key does not exist.
   const base::Value::Dict* GetAppKey(const std::string& id) const;
@@ -147,7 +153,7 @@ class PersistedData {
                              const std::set<std::string>& active_ids);
 
   SEQUENCE_CHECKER(sequence_checker_);
-  raw_ptr<PrefService, DanglingUntriaged> pref_service_;
+  raw_ptr<PrefService, LeakedDanglingUntriaged> pref_service_;
   raw_ptr<ActivityDataService, DanglingUntriaged> activity_data_service_;
 };
 

@@ -10,6 +10,7 @@
 
 #include "base/values.h"
 #include "extensions/common/dom_action_types.h"
+#include "extensions/common/extension_id.h"
 #include "extensions/common/mojom/renderer_host.mojom.h"
 #include "mojo/public/cpp/bindings/associated_remote.h"
 #include "third_party/blink/public/web/web_dom_activity_logger.h"
@@ -72,7 +73,7 @@ class DOMActivityLogger: public blink::WebDOMActivityLogger {
   mojom::RendererHost* GetRendererHost();
 
   // The id of the extension with which this logger is associated.
-  std::string extension_id_;
+  ExtensionId extension_id_;
 
   mojo::AssociatedRemote<mojom::RendererHost> renderer_host_;
 };

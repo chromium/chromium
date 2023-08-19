@@ -5,6 +5,7 @@
 #import <XCTest/XCTest.h>
 
 #import "ios/chrome/browser/shared/ui/table_view/table_view_navigation_controller_constants.h"
+#import "ios/chrome/browser/ui/bookmarks/bookmark_earl_grey.h"
 #import "ios/chrome/browser/ui/bookmarks/bookmark_ui_constants.h"
 #import "ios/chrome/browser/ui/popup_menu/popup_menu_constants.h"
 #import "ios/chrome/grit/ios_strings.h"
@@ -14,10 +15,6 @@
 #import "ios/chrome/test/earl_grey/chrome_test_case.h"
 #import "ios/testing/earl_grey/earl_grey_test.h"
 #import "net/test/embedded_test_server/embedded_test_server.h"
-
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
 
 using chrome_test_util::BookmarksNavigationBarDoneButton;
 using chrome_test_util::RecentTabsDestinationButton;
@@ -117,8 +114,8 @@ using chrome_test_util::SettingsDoneButton;
 // Tests that keyboard commands are not registered when the bookmark UI is
 // shown.
 - (void)testKeyboardCommandsNotRegistered_AddBookmarkPresented {
-  [ChromeEarlGrey waitForBookmarksToFinishLoading];
-  [ChromeEarlGrey clearBookmarks];
+  [BookmarkEarlGrey waitForBookmarkModelsLoaded];
+  [BookmarkEarlGrey clearBookmarks];
 
   // Load a webpage because the NTP is not always bookmarkable.
   GREYAssertTrue(self.testServer->Start(), @"Test server failed to start.");

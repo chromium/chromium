@@ -1,0 +1,67 @@
+// Copyright 2023 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module blink.mojom;
+
+// Structure representing a URLPattern as described in:
+// https://wicg.github.io/urlpattern/.
+// Due to a security concern, it won't support regex pattern.
+struct SafeUrlPattern {
+  array<SafeUrlPatternPart> protocol;
+  array<SafeUrlPatternPart> username;
+  array<SafeUrlPatternPart> password;
+  array<SafeUrlPatternPart> hostname;
+  array<SafeUrlPatternPart> port;
+  array<SafeUrlPatternPart> pathname;
+  array<SafeUrlPatternPart> search;
+  array<SafeUrlPatternPart> hash;
+
+  SafeUrlPatternOptions options;
+};
+
+// Represents a fixed string part of a URLPattern as described in:
+// https://wicg.github.io/urlpattern/#part-type-fixed-text
+struct FixedPattern {
+  string value;
+};
+
+// Represents either a segment wildcard part or a full wildcard
+// part of a URLPattern as described in:
+// https://wicg.github.io/urlpattern/#parts
+struct WildcardPattern {
+  string name;
+  string prefix;
+  string value;
+  string suffix;
+};
+
+// The kRegex PartType is disallowed due to the security concerns of this
+// being used in the browser process.
+union PatternTemplate {
+  FixedPattern fixed;
+  WildcardPattern full_wildcard;
+  WildcardPattern segment_wildcard;
+};
+
+enum Modifier {
+  kZeroOrMore,
+  kOptional,
+  kOneOrMore,
+  kNone,
+};
+
+// A part of a UrlPattern as described in:
+// https://wicg.github.io/urlpattern/#parts.
+// Strings are limited to 4 x 1024 characters.
+struct SafeUrlPatternPart {
+  PatternTemplate pattern;
+
+  Modifier modifier;
+};
+
+// URLPatternOptions described in:
+// https://wicg.github.io/urlpattern/#dictdef-urlpatternoptions
+struct SafeUrlPatternOptions {
+  bool ignore_case = false;
+};

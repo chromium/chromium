@@ -3,15 +3,25 @@
 # found in the LICENSE file.
 
 import("//build/config/android/config.gni")
+import("//testing/test.gni")
 
 config("pthreadpool_config") {
   include_dirs = [
     "src/include",
     "src/src",
   ]
-  defines = [ "PTHREADPOOL_USE_GCD=0" ]
+
+  # The platform-specific synchronizations are not needed for Chromium Jobs
+  # API integration.
+  defines = [
+    "PTHREADPOOL_USE_EVENT=0",
+    "PTHREADPOOL_USE_FUTEX=0",
+    "PTHREADPOOL_USE_GCD=0",
+    "PTHREADPOOL_USE_CONDVAR=0",
+  ]
 }
 
+# This is a target that depends on //base.
 source_set("pthreadpool") {
   public = [ "src/include/pthreadpool.h" ]
 
@@ -25,19 +35,41 @@ source_set("pthreadpool") {
     "src/src/threadpool-utils.h",
   ]
 
-  if (is_win) {
-    sources += [ "src/src/windows.c" ]
-  } else {
-    sources += [ "src/src/pthreads.c" ]
-  }
+  # Use Chromium Jobs API.
+  sources += [ "chromium/jobs.cc" ]
 
   configs -= [ "//build/config/compiler:chromium_code" ]
   configs += [ "//build/config/compiler:no_chromium_code" ]
-  configs += [ "//build/config/sanitizers:cfi_icall_disable" ]
 
   public_configs = [ ":pthreadpool_config" ]
 
-  deps = [ "//third_party/fxdiv" ]
+  deps = [
+    "//base",
+    "//third_party/fxdiv",
+  ]
+}
+
+test("pthreadpool_unittests") {
+  testonly = true
+
+  sources = [ "chromium/pthreadpool_unittests.cc" ]
+
+  public_configs = [ ":pthreadpool_config" ]
+
+  deps = [
+    ":pthreadpool",
+    "//base/test:run_all_unittests",
+    "//base/test:test_support",
+    "//testing/gtest",
+  ]
+}
+
+config("pthreadpool_standalone_config") {
+  include_dirs = [
+    "src/include",
+    "src/src",
+  ]
+  defines = [ "PTHREADPOOL_USE_GCD=0" ]
 }
 
 # This is a target that cannot depend on //base.
@@ -68,7 +100,7 @@ source_set("pthreadpool_standalone") {
   configs += [ "//build/config/compiler:no_chromium_code" ]
   configs += [ "//build/config/sanitizers:cfi_icall_disable" ]
 
-  public_configs = [ ":pthreadpool_config" ]
+  public_configs = [ ":pthreadpool_standalone_config" ]
 
   deps = [ "//third_party/fxdiv" ]
 }

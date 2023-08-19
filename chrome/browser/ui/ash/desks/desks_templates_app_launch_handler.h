@@ -64,6 +64,9 @@ class DesksTemplatesAppLaunchHandler : public ash::AppLaunchHandler {
   // chromeos::AppLaunchHandler:
   void RecordRestoredAppLaunch(apps::AppTypeName app_type_name) override;
 
+  // Checks to see if the browser app with `app_name` is installed.
+  bool IsBrowserAppInstalled(const std::string& app_name);
+
   // Cached convenience pointer to the desk template read handler.
   const raw_ptr<app_restore::DeskTemplateReadHandler, ExperimentalAsh>
       read_handler_;

@@ -16,24 +16,24 @@ found in the LICENSE file.
     <color name="default_chip_assistive_text_color">@color/default_text_color_baseline</color>
     <color name="default_chip_ripple_color">@color/default_bg_color_elev_2_baseline</color>
     <!-- Same as ?attr/colorSecondaryContainer -->
-    <color name="chip_bg_selected_color_light">@color/baseline_secondary_100</color>
-    <color name="chip_bg_selected_color_dark">@color/baseline_secondary_700</color>
+    <color name="chip_bg_selected_color_light">@color/baseline_secondary_90</color>
+    <color name="chip_bg_selected_color_dark">@color/baseline_secondary_30</color>
     <color name="chip_bg_selected_color_baseline" tools:ignore="UnusedResources">@color/chip_bg_selected_color_light</color>
     <!-- Same as ?attr/colorOnSurfaceVariant -->
-    <color name="chip_state_layer_color_dark">@color/baseline_neutral_variant_700</color>
-    <color name="chip_state_layer_color_light">@color/baseline_neutral_variant_200</color>
+    <color name="chip_state_layer_color_dark">@color/baseline_neutral_variant_30</color>
+    <color name="chip_state_layer_color_light">@color/baseline_neutral_variant_80</color>
     <color name="chip_state_layer_color_baseline" tools:ignore="UnusedResources">@color/chip_state_layer_color_dark</color>
     <!-- Same as ?attr/colorOnSecondaryContainer -->
-    <color name="chip_state_layer_selected_color_dark">@color/baseline_secondary_900</color>
-    <color name="chip_state_layer_selected_color_light">@color/baseline_secondary_100</color>
+    <color name="chip_state_layer_selected_color_dark">@color/baseline_secondary_10</color>
+    <color name="chip_state_layer_selected_color_light">@color/baseline_secondary_90</color>
     <color name="chip_state_layer_selected_color_baseline" tools:ignore="UnusedResources">@color/chip_state_layer_selected_color_dark</color>
     <!-- Same as ?attr/colorOutline. -->
-    <color name="default_chip_outline_color_light">@color/baseline_neutral_variant_400</color>
-    <color name="default_chip_outline_color_dark">@color/baseline_neutral_variant_500</color>
+    <color name="default_chip_outline_color_light">@color/baseline_neutral_variant_60</color>
+    <color name="default_chip_outline_color_dark">@color/baseline_neutral_variant_50</color>
     <color name="default_chip_outline_color" tools:ignore="UnusedResources">@color/default_chip_outline_color_dark</color>
     <!-- Same as ?attr/colorOnSurface -->
-    <color name="chip_outline_focused_color_dark">@color/baseline_neutral_900</color>
-    <color name="chip_outline_focused_color_light">@color/baseline_neutral_100</color>
+    <color name="chip_outline_focused_color_dark">@color/baseline_neutral_10</color>
+    <color name="chip_outline_focused_color_light">@color/baseline_neutral_90</color>
     <color name="chip_outline_focused_color_baseline" tools:ignore="UnusedResources">@color/chip_outline_focused_color_dark</color>
 
     <color name="menu_chip_background_color_dark">@color/modern_blue_600_alpha_6</color>

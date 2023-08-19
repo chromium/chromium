@@ -14,4 +14,7 @@ specific_include_rules = {
   "secure_payment_confirmation_authenticator_browsertest\.cc": [
     "+device/fido/virtual_fido_device_factory.h",
   ],
+  ".*PaymentRequestIntegrationTest.java": [
+    "+content/public/android/java/src/org/chromium/content/browser/webcontents/WebContentsImpl.java",
+  ],
 }

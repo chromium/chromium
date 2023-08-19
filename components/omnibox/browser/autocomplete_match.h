@@ -274,7 +274,10 @@ struct AutocompleteMatch {
   // AutocompleteMatch is likely that 1) this info is not used elsewhere in the
   // Autocomplete machinery except before displaying the match and 2) obtaining
   // this info is trivially done by calling BookmarkModel::IsBookmarked().
-  const gfx::VectorIcon& GetVectorIcon(bool is_bookmark) const;
+  // `turl` is used to identify the proper vector icon associated with a given
+  // starter pack suggestion (e.g. @tabs, @history, @bookmarks, etc.).
+  const gfx::VectorIcon& GetVectorIcon(bool is_bookmark,
+                                       const TemplateURL* turl = nullptr) const;
 #endif
 
   // Comparison function for determining whether the first match is better than
@@ -486,9 +489,18 @@ struct AutocompleteMatch {
   // dictionary.  Returns the empty string if no such value exists.
   std::string GetAdditionalInfo(const std::string& property) const;
 
-  // Returns the enum equivalent to the type of this autocomplete match.
-  metrics::OmniboxEventProto::Suggestion::ResultType AsOmniboxEventResultType()
-      const;
+  // Returns the provider type selected from this match, which is by default
+  // taken from the match `provider` type but may be a (pseudo-)provider
+  // associated with one of the match's action types if one of the match's
+  // actions are chosen with `action_index`.
+  metrics::OmniboxEventProto::ProviderType GetOmniboxEventProviderType(
+      int action_index = -1) const;
+
+  // Returns the result type selected from this match, which is by default
+  // equivalent to the match type but may be one of the match's action
+  // types if one of the match's actions are chosen with `action_index`.
+  metrics::OmniboxEventProto::Suggestion::ResultType GetOmniboxEventResultType(
+      int action_index = -1) const;
 
   // Returns whether this match is a "verbatim" match: a URL navigation directly
   // to the user's input, a search for the user's input with the default search
@@ -507,6 +519,9 @@ struct AutocompleteMatch {
   // Returns whether this match is a search suggestion provided by on device
   // providers.
   bool IsOnDeviceSearchSuggestion() const;
+
+  // Returns true if the match is eligible to be re-scored by ML Url scoring.
+  bool IsUrlScoringEligible() const;
 
   // Filter OmniboxActions based on the supplied qualifiers.
   // The order of the supplied qualifiers determines the preference.
@@ -625,6 +640,10 @@ struct AutocompleteMatch {
   // its value is -1.  At the time of writing this comment, it is only
   // set for matches from HistoryURL and HistoryQuickProvider.
   int typed_count = -1;
+
+  // The percentage deducted from the relevance score by the history fuzzy
+  // provider.  This is currently used to re-apply the penalty after ML scoring.
+  int fuzzy_match_penalty = 0;
 
   // True if the user should be able to delete this match.
   bool deletable = false;
@@ -853,6 +872,12 @@ struct AutocompleteMatch {
   // this flag is true, this match is an "extra" suggestion that would've
   // originally been culled by the provider.
   bool culled_by_provider = false;
+
+  // True for shortcut suggestions that were boosted. Used for grouping logic.
+  // TODO(manukh): Remove this field and use `suggestion_group_id` once grouping
+  //   launches. In the meantime, shortcut grouping won't work for users in the
+  //   grouping experiments.
+  bool shortcut_boosted = false;
 
   // So users of AutocompleteMatch can use the same ellipsis that it uses.
   static const char16_t kEllipsis[];

@@ -125,10 +125,11 @@ bool SuspiciousSiteTrigger::MaybeStartReport() {
 void SuspiciousSiteTrigger::FinishReport() {
   SBErrorOptions error_options =
       TriggerManager::GetSBErrorDisplayOptions(*prefs_, web_contents());
-  if (trigger_manager_->FinishCollectingThreatDetails(
-          TriggerType::SUSPICIOUS_SITE, GetWebContentsKey(web_contents()),
-          base::TimeDelta(),
-          /*did_proceed=*/false, /*num_visits=*/0, error_options)) {
+  auto result = trigger_manager_->FinishCollectingThreatDetails(
+      TriggerType::SUSPICIOUS_SITE, GetWebContentsKey(web_contents()),
+      base::TimeDelta(),
+      /*did_proceed=*/false, /*num_visits=*/0, error_options);
+  if (result.IsReportSent()) {
     UMA_HISTOGRAM_ENUMERATION(kSuspiciousSiteTriggerEventMetricName,
                               SuspiciousSiteTriggerEvent::REPORT_FINISHED);
   } else {

@@ -8,6 +8,7 @@
 
 #include "base/no_destructor.h"
 #include "chromeos/ash/services/auth_factor_config/auth_factor_config.h"
+#include "chromeos/ash/services/auth_factor_config/password_factor_editor.h"
 #include "chromeos/ash/services/auth_factor_config/pin_factor_editor.h"
 #include "chromeos/ash/services/auth_factor_config/public/mojom/auth_factor_config.mojom-test-utils.h"
 #include "chromeos/ash/services/auth_factor_config/recovery_factor_editor.h"
@@ -34,6 +35,13 @@ PinFactorEditor& GetPinFactorEditorImpl(QuickUnlockStorageDelegate& storage,
   static base::NoDestructor<PinFactorEditor> pin_factor_editor(
       &GetAuthFactorConfigImpl(storage), &pin_backend, &storage);
   return *pin_factor_editor;
+}
+
+PasswordFactorEditor& GetPasswordFactorEditorImpl(
+    QuickUnlockStorageDelegate& storage) {
+  static base::NoDestructor<PasswordFactorEditor> password_factor_editor(
+      &GetAuthFactorConfigImpl(storage), &storage);
+  return *password_factor_editor;
 }
 
 }  // namespace
@@ -66,6 +74,12 @@ void BindToPinFactorEditor(
     PinBackendDelegate& pin_backend) {
   GetPinFactorEditorImpl(storage, pin_backend)
       .BindReceiver(std::move(receiver));
+}
+
+void BindToPasswordFactorEditor(
+    mojo::PendingReceiver<mojom::PasswordFactorEditor> receiver,
+    QuickUnlockStorageDelegate& storage) {
+  GetPasswordFactorEditorImpl(storage).BindReceiver(std::move(receiver));
 }
 
 }  // namespace ash::auth

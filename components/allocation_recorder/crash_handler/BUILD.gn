@@ -27,6 +27,7 @@ source_set("unit_tests") {
   testonly = true
 
   sources = [
+    "allocation_recorder_holder_unittest.cc",
     "stream_data_source_factory_unittest.cc",
     "user_stream_data_source_unittest.cc",
   ]

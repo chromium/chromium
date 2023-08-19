@@ -11,9 +11,9 @@ import android.util.AttributeSet;
 import android.view.View;
 
 import androidx.annotation.VisibleForTesting;
-import androidx.core.content.ContextCompat;
 
 import org.chromium.base.Callback;
+import org.chromium.base.ResettersForTesting;
 import org.chromium.base.TraceEvent;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.Supplier;
@@ -41,9 +41,6 @@ public class HomeButton extends ListMenuButton {
 
     public HomeButton(Context context, AttributeSet attrs) {
         super(context, attrs);
-
-        final int homeButtonIcon = R.drawable.btn_toolbar_home;
-        setImageDrawable(ContextCompat.getDrawable(context, homeButtonIcon));
     }
 
     /**
@@ -119,15 +116,14 @@ public class HomeButton extends ListMenuButton {
     /**
      * @param saveContextMenuForTests Whether we want to store the context menu for testing
      */
-    @VisibleForTesting
     public static void setSaveContextMenuForTests(boolean saveContextMenuForTests) {
         sSaveContextMenuForTests = saveContextMenuForTests;
+        ResettersForTesting.register(() -> sSaveContextMenuForTests = false);
     }
 
     /**
      * @return Latest context menu created.
      */
-    @VisibleForTesting
     public ModelList getMenuForTests() {
         return mMenuForTests;
     }

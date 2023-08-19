@@ -9,7 +9,7 @@
 #include "base/android/jni_string.h"
 #include "base/functional/bind.h"
 #include "components/bookmarks/browser/bookmark_node.h"
-#include "components/commerce/core/shopping_service_jni_headers/ShoppingService_jni.h"
+#include "components/commerce/core/android/core_jni/ShoppingService_jni.h"
 #include "components/commerce/core/subscriptions/commerce_subscription.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/android/gurl_android.h"

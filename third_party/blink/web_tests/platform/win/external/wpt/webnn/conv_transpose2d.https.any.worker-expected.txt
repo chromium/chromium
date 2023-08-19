@@ -16,6 +16,9 @@ FAIL convTranspose2d float32 4D input and filter tensors options.inputLayout=nhw
 FAIL convTranspose2d float32 4D input and filter tensors options.filterLayout=iohw / sync Failed to execute 'buildSync' on 'MLGraphBuilder': The input layout nchw is not supported.
 FAIL convTranspose2d float32 4D input and filter tensors options.filterLayout=hwoi / sync Failed to execute 'buildSync' on 'MLGraphBuilder': The input layout nchw is not supported.
 FAIL convTranspose2d float32 4D input and filter tensors options.filterLayout=ohwi / sync Failed to execute 'buildSync' on 'MLGraphBuilder': The input layout nchw is not supported.
+FAIL convTranspose2d float32 4D input and filter tensors options.inputLayout=nhwc options.filterLayout=iohw / sync Failed to execute 'buildSync' on 'MLGraphBuilder': The filter layout iohw is not supported.
+FAIL convTranspose2d float32 4D input and filter tensors options.inputLayout=nhwc options.filterLayout=hwoi / sync Failed to execute 'buildSync' on 'MLGraphBuilder': The filter layout hwoi is not supported.
+PASS convTranspose2d float32 4D input and filter tensors options.inputLayout=nhwc options.filterLayout=ohwi / sync
 FAIL convTranspose2d float32 4D input and filter tensors options.bias / sync Failed to execute 'buildSync' on 'MLGraphBuilder': The input layout nchw is not supported.
 FAIL convTranspose2d float32 4D input and filter tensors, both negative input tensor and options.bias / sync Failed to execute 'buildSync' on 'MLGraphBuilder': The input layout nchw is not supported.
 FAIL convTranspose2d float32 4D input and filter tensors options.activation=relu / sync Failed to execute 'buildSync' on 'MLGraphBuilder': The input layout nchw is not supported.
@@ -36,6 +39,9 @@ FAIL convTranspose2d float32 4D input and filter tensors options.inputLayout=nhw
 FAIL convTranspose2d float32 4D input and filter tensors options.filterLayout=iohw / async promise_test: Unhandled rejection with value: object "TypeError: builder.build is not a function"
 FAIL convTranspose2d float32 4D input and filter tensors options.filterLayout=hwoi / async promise_test: Unhandled rejection with value: object "TypeError: builder.build is not a function"
 FAIL convTranspose2d float32 4D input and filter tensors options.filterLayout=ohwi / async promise_test: Unhandled rejection with value: object "TypeError: builder.build is not a function"
+FAIL convTranspose2d float32 4D input and filter tensors options.inputLayout=nhwc options.filterLayout=iohw / async promise_test: Unhandled rejection with value: object "TypeError: builder.build is not a function"
+FAIL convTranspose2d float32 4D input and filter tensors options.inputLayout=nhwc options.filterLayout=hwoi / async promise_test: Unhandled rejection with value: object "TypeError: builder.build is not a function"
+FAIL convTranspose2d float32 4D input and filter tensors options.inputLayout=nhwc options.filterLayout=ohwi / async promise_test: Unhandled rejection with value: object "TypeError: builder.build is not a function"
 FAIL convTranspose2d float32 4D input and filter tensors options.bias / async promise_test: Unhandled rejection with value: object "TypeError: builder.build is not a function"
 FAIL convTranspose2d float32 4D input and filter tensors, both negative input tensor and options.bias / async promise_test: Unhandled rejection with value: object "TypeError: builder.build is not a function"
 FAIL convTranspose2d float32 4D input and filter tensors options.activation=relu / async promise_test: Unhandled rejection with value: object "TypeError: builder.build is not a function"

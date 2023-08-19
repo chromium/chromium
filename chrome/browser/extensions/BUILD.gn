@@ -185,8 +185,6 @@ static_library("extensions") {
     "api/identity/identity_launch_web_auth_flow_function.h",
     "api/identity/identity_mint_queue.cc",
     "api/identity/identity_mint_queue.h",
-    "api/identity/identity_private_api.cc",
-    "api/identity/identity_private_api.h",
     "api/identity/identity_remove_cached_auth_token_function.cc",
     "api/identity/identity_remove_cached_auth_token_function.h",
     "api/identity/identity_token_cache.cc",
@@ -290,6 +288,14 @@ static_library("extensions") {
     "api/proxy/proxy_api_constants.h",
     "api/proxy/proxy_api_helpers.cc",
     "api/proxy/proxy_api_helpers.h",
+    "api/reading_list/reading_list_api.cc",
+    "api/reading_list/reading_list_api.h",
+    "api/reading_list/reading_list_api_constants.cc",
+    "api/reading_list/reading_list_api_constants.h",
+    "api/reading_list/reading_list_event_router.cc",
+    "api/reading_list/reading_list_event_router.h",
+    "api/reading_list/reading_list_util.cc",
+    "api/reading_list/reading_list_util.h",
     "api/resources_private/resources_private_api.cc",
     "api/resources_private/resources_private_api.h",
     "api/runtime/chrome_runtime_api_delegate.cc",
@@ -566,6 +572,8 @@ static_library("extensions") {
     "extension_system_impl.h",
     "extension_tab_util.cc",
     "extension_tab_util.h",
+    "extension_telemetry_service_verdict_handler.cc",
+    "extension_telemetry_service_verdict_handler.h",
     "extension_ui_util.cc",
     "extension_ui_util.h",
     "extension_uninstall_dialog.cc",
@@ -735,6 +743,13 @@ static_library("extensions") {
     ]
   }
 
+  if (is_chromeos_ash) {
+    sources += [
+      "file_handlers/web_file_handlers_permission_handler.cc",
+      "file_handlers/web_file_handlers_permission_handler.h",
+    ]
+  }
+
   configs += [
     "//build/config:precompiled_headers",
     "//build/config/compiler:wexit_time_destructors",
@@ -811,7 +826,6 @@ static_library("extensions") {
     "//chrome/browser/safe_browsing:metrics_collector",
     "//chrome/browser/ui/tabs:tab_enums",
     "//chrome/browser/web_applications",
-    "//chromeos/components/kiosk",
     "//components/cbor:cbor",
     "//components/commerce/core:pref_names",
     "//components/device_reauth",
@@ -865,6 +879,7 @@ static_library("extensions") {
     "//components/language/core/common",
     "//components/language/core/language_model",
     "//components/live_caption:constants",
+    "//components/media_device_salt",
     "//components/nacl/common:buildflags",
     "//components/navigation_interception",
     "//components/net_log",
@@ -875,6 +890,8 @@ static_library("extensions") {
     "//components/password_manager/core/browser",
     "//components/password_manager/core/browser:affiliation",
     "//components/password_manager/core/browser:import_results",
+    "//components/password_manager/core/browser/features:password_features",
+    "//components/password_manager/core/browser/import:importer",
     "//components/password_manager/core/browser/leak_detection",
     "//components/payments/core",
     "//components/performance_manager",
@@ -884,6 +901,7 @@ static_library("extensions") {
     "//components/pref_registry",
     "//components/privacy_sandbox:privacy_sandbox_prefs",
     "//components/proxy_config",
+    "//components/reading_list/core",
     "//components/resources",
     "//components/safe_browsing:buildflags",
     "//components/safe_browsing/content/browser/web_ui:web_ui",
@@ -892,7 +910,7 @@ static_library("extensions") {
     "//components/safe_browsing/core/common:safe_browsing_prefs",
     "//components/safe_browsing/core/common/proto:csd_proto",
     "//components/search_engines",
-    "//components/services/app_service/public/cpp:app_types",
+    "//components/services/app_service",
     "//components/services/patch/content",
     "//components/services/unzip/content",
     "//components/services/unzip/public/cpp",
@@ -924,7 +942,6 @@ static_library("extensions") {
     "//device/fido",
     "//extensions:extensions_resources",
     "//extensions/browser",
-    "//extensions/browser/api:async_api_function",
     "//extensions/browser/updater",
     "//extensions/browser/updater:keepalive",
     "//extensions/buildflags",
@@ -1171,14 +1188,15 @@ static_library("extensions") {
       "//ash/webui/camera_app_ui:mojo_bindings",
       "//ash/webui/file_manager/untrusted_resources:file_manager_untrusted_resources",
       "//ash/webui/resources:media_app_bundle_resources_grit",
+      "//ash/webui/settings/public/constants:mojom",
       "//chrome/browser/ash/crosapi",
       "//chrome/browser/ash/crostini:crostini_installer_types_mojom",
       "//chrome/browser/devtools",
       "//chrome/browser/nearby_sharing/common",
-      "//chrome/browser/ui/webui/settings/chromeos/constants:mojom",
       "//chromeos/ash/components/attestation",
       "//chromeos/ash/components/cryptohome",
       "//chromeos/ash/components/dbus",
+      "//chromeos/ash/components/dbus/attestation:attestation_proto",
       "//chromeos/ash/components/dbus/cicerone:cicerone",
       "//chromeos/ash/components/dbus/cicerone:cicerone_proto",
       "//chromeos/ash/components/dbus/constants",
@@ -1193,6 +1211,7 @@ static_library("extensions") {
       "//chromeos/ash/components/login/auth",
       "//chromeos/ash/components/login/login_state",
       "//chromeos/ash/components/network",
+      "//chromeos/ash/components/osauth/public",
       "//chromeos/ash/components/proximity_auth",
       "//chromeos/ash/components/settings",
       "//chromeos/ash/components/system",
@@ -1286,7 +1305,6 @@ static_library("extensions") {
       "system_display/display_info_provider_mac.cc",
       "system_display/display_info_provider_mac.h",
     ]
-    configs += [ "//build/config/compiler:enable_arc" ]
   }
 
   if (is_linux || is_chromeos_lacros) {

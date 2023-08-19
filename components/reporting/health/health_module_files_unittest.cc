@@ -32,7 +32,7 @@ constexpr char kHexCharLookup[0x10] = {
     '8', '9', 'A', 'B', 'C', 'D', 'E', 'F',
 };
 
-std::string BytesToHexString(base::StringPiece bytes) {
+std::string BytesToHexString(std::string_view bytes) {
   std::string result;
   for (char byte : bytes) {
     result.push_back(kHexCharLookup[(byte >> 4) & 0xf]);

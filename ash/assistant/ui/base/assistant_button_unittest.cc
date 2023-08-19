@@ -109,29 +109,34 @@ TEST_F(AssistantButtonTest, IconColorType) {
           nullptr, vector_icons::kKeyboardIcon,
           AssistantButtonId::kKeyboardInputToggle, std::move(params)));
 
-  const SkBitmap light_mode_expected_image =
+  auto icon_color = button->GetColorProvider()->GetColor(
+      static_cast<ui::ColorId>(cros_tokens::kColorPrimary));
+  const SkBitmap initial_expected_image =
       *gfx::CreateVectorIcon(vector_icons::kKeyboardIcon, kIconSizeInDip,
-                             gfx::kGoogleGrey900)
-           .bitmap();
-  const SkBitmap dark_mode_expected_image =
-      *gfx::CreateVectorIcon(vector_icons::kKeyboardIcon, kIconSizeInDip,
-                             gfx::kGoogleGrey200)
+                             icon_color)
            .bitmap();
   const bool initial_dark_mode_status =
       dark_light_mode_controller->IsDarkModeEnabled();
 
   EXPECT_TRUE(gfx::test::AreBitmapsEqual(
-      initial_dark_mode_status ? dark_mode_expected_image
-                               : light_mode_expected_image,
+      initial_expected_image,
       *button->GetImage(views::Button::STATE_NORMAL).bitmap()));
 
   // Switch the color mode.
   dark_light_mode_controller->ToggleColorMode();
   const bool dark_mode_status = dark_light_mode_controller->IsDarkModeEnabled();
   ASSERT_NE(initial_dark_mode_status, dark_mode_status);
+
+  icon_color = button->GetColorProvider()->GetColor(
+      static_cast<ui::ColorId>(cros_tokens::kColorPrimary));
+  const SkBitmap expected_image =
+      *gfx::CreateVectorIcon(vector_icons::kKeyboardIcon, kIconSizeInDip,
+                             icon_color)
+           .bitmap();
+  EXPECT_FALSE(
+      gfx::test::AreBitmapsEqual(expected_image, initial_expected_image));
   EXPECT_TRUE(gfx::test::AreBitmapsEqual(
-      dark_mode_status ? dark_mode_expected_image : light_mode_expected_image,
-      *button->GetImage(views::Button::STATE_NORMAL).bitmap()));
+      expected_image, *button->GetImage(views::Button::STATE_NORMAL).bitmap()));
 }
 
 TEST_F(AssistantButtonTest, FocusAndHoverColorDarkLightMode) {
@@ -154,23 +159,18 @@ TEST_F(AssistantButtonTest, FocusAndHoverColorDarkLightMode) {
 
   gfx::Canvas canvas(gfx::Size(kSizeInDip, kSizeInDip), /*image_scale=*/1.0f,
                      /*is_opaque=*/true);
-  const SkColor light_icon_color = gfx::kGoogleGrey900;
-  const SkColor dark_icon_color = gfx::kGoogleGrey200;
 
   const bool initial_dark_mode_status =
       dark_light_mode_controller->IsDarkModeEnabled();
+  auto icon_color = button->GetColorProvider()->GetColor(
+      static_cast<ui::ColorId>(cros_tokens::kColorPrimary));
+  auto focus_ring_color = button->GetColorProvider()->GetColor(
+      static_cast<ui::ColorId>(cros_tokens::kFocusRingColor));
+  SkBitmap initial_button_image_with_focus =
+      CreateExpectedImageWithFocus(icon_color, focus_ring_color);
 
-  SkBitmap dark_light_mode_button_image_with_focus =
-      CreateExpectedImageWithFocus(
-          /*icon_color=*/initial_dark_mode_status ? dark_icon_color
-                                                  : light_icon_color,
-          /*focus_color=*/ColorProvider::Get()->GetControlsLayerColor(
-              ColorProvider::ControlsLayerType::kFocusRingColor));
-
-  SkBitmap dark_light_mode_button_image_without_focus =
-      CreateExpectedImageWithoutFocus(
-          /*icon_color=*/initial_dark_mode_status ? dark_icon_color
-                                                  : light_icon_color);
+  SkBitmap initial_button_image_without_focus =
+      CreateExpectedImageWithoutFocus(icon_color);
 
   button->RequestFocus();
   ASSERT_TRUE(button->HasFocus());
@@ -178,8 +178,8 @@ TEST_F(AssistantButtonTest, FocusAndHoverColorDarkLightMode) {
   // Expect focus ring to be shown when keyboard traversal is enabled.
   AssistantUiController::Get()->SetKeyboardTraversalMode(true);
   button->OnPaint(&canvas);
-  EXPECT_TRUE(gfx::test::AreBitmapsEqual(
-      dark_light_mode_button_image_with_focus, canvas.GetBitmap()));
+  EXPECT_TRUE(gfx::test::AreBitmapsEqual(initial_button_image_with_focus,
+                                         canvas.GetBitmap()));
 
   canvas.RecreateBackingCanvas(gfx::Size(kSizeInDip, kSizeInDip),
                                /*image_scale=*/1.0f, /*is_opaque=*/true);
@@ -190,8 +190,8 @@ TEST_F(AssistantButtonTest, FocusAndHoverColorDarkLightMode) {
   // Expect focus ring to be hidden when keyboard traversal mode is disabled.
   AssistantUiController::Get()->SetKeyboardTraversalMode(false);
   button->OnPaint(&canvas);
-  EXPECT_TRUE(gfx::test::AreBitmapsEqual(
-      dark_light_mode_button_image_without_focus, canvas.GetBitmap()));
+  EXPECT_TRUE(gfx::test::AreBitmapsEqual(initial_button_image_without_focus,
+                                         canvas.GetBitmap()));
 
   // Switch the color mode.
   dark_light_mode_controller->ToggleColorMode();
@@ -201,13 +201,15 @@ TEST_F(AssistantButtonTest, FocusAndHoverColorDarkLightMode) {
   canvas.RecreateBackingCanvas(gfx::Size(kSizeInDip, kSizeInDip),
                                /*image_scale=*/1.0f, /*is_opaque=*/true);
 
-  dark_light_mode_button_image_with_focus = CreateExpectedImageWithFocus(
-      /*icon_color=*/dark_mode_status ? dark_icon_color : light_icon_color,
-      /*focus_color=*/ColorProvider::Get()->GetControlsLayerColor(
-          ColorProvider::ControlsLayerType::kFocusRingColor));
+  icon_color = button->GetColorProvider()->GetColor(
+      static_cast<ui::ColorId>(cros_tokens::kColorPrimary));
+  focus_ring_color = button->GetColorProvider()->GetColor(
+      static_cast<ui::ColorId>(cros_tokens::kFocusRingColor));
+  SkBitmap button_image_with_focus =
+      CreateExpectedImageWithFocus(icon_color, focus_ring_color);
 
-  dark_light_mode_button_image_without_focus = CreateExpectedImageWithoutFocus(
-      /*icon_color=*/dark_mode_status ? dark_icon_color : light_icon_color);
+  SkBitmap button_image_without_focus =
+      CreateExpectedImageWithoutFocus(icon_color);
 
   button->RequestFocus();
   ASSERT_TRUE(button->HasFocus());
@@ -215,8 +217,10 @@ TEST_F(AssistantButtonTest, FocusAndHoverColorDarkLightMode) {
   // Expect focus ring to be shown when keyboard traversal is enabled.
   AssistantUiController::Get()->SetKeyboardTraversalMode(true);
   button->OnPaint(&canvas);
-  EXPECT_TRUE(gfx::test::AreBitmapsEqual(
-      dark_light_mode_button_image_with_focus, canvas.GetBitmap()));
+  EXPECT_FALSE(gfx::test::AreBitmapsEqual(initial_button_image_with_focus,
+                                          button_image_with_focus));
+  EXPECT_TRUE(
+      gfx::test::AreBitmapsEqual(button_image_with_focus, canvas.GetBitmap()));
 
   canvas.RecreateBackingCanvas(gfx::Size(kSizeInDip, kSizeInDip),
                                /*image_scale=*/1.0f, /*is_opaque=*/true);
@@ -227,7 +231,9 @@ TEST_F(AssistantButtonTest, FocusAndHoverColorDarkLightMode) {
   // Expect focus ring to be hidden when keyboard traversal mode is disabled.
   AssistantUiController::Get()->SetKeyboardTraversalMode(false);
   button->OnPaint(&canvas);
-  EXPECT_TRUE(gfx::test::AreBitmapsEqual(
-      dark_light_mode_button_image_without_focus, canvas.GetBitmap()));
+  EXPECT_FALSE(gfx::test::AreBitmapsEqual(initial_button_image_without_focus,
+                                          button_image_without_focus));
+  EXPECT_TRUE(gfx::test::AreBitmapsEqual(button_image_without_focus,
+                                         canvas.GetBitmap()));
 }
 }  // namespace ash

@@ -1,26 +1,23 @@
-Name: Checkstyle is a development tool to help programmers write Java code that
-      adheres to a coding standard.
+Name: Checkstyle
 Short Name: checkstyle
 URL: https://github.com/checkstyle/checkstyle
-Version: 8.15
-CPEPrefix: cpe:/a:checkstyle:checkstyle:8.15
-License: LGPL 2.1
-License File: NOT_SHIPPED
+Version: 10.12.1
+License: Apache 2.0 and LGPL 2.1
+License File: LICENSE.apache20, LICENSE
 Security Critical: no
+Shipped: no
 
 Description:
 Checkstyle is used to validate Java code style on Chromium PRESUBMIT step.
+See //tools/android/checkstyle.
 
 Local Modifications:
 None
 
 Update instructions (requires @google.com account):
-- Download fat jar from https://github.com/checkstyle/checkstyle/releases/
-- Rename the file to checkstyle-all.jar
-- Verify locally that checkstyle works
-- Follow the comments in cipd.yaml to upload the new version
-- Update the version in this file
-- Before submitting the change, verify presubmit works fine by:
-  1) modifying a Java file and including it in the patch
-  2) running the chromium_presubmit trybot in the CQ on the patch
-  3) reverting the Java file change
+- Find latest version available via https://ci.chromium.org/ui/p/chromium/builders/ci/3pp-linux-amd64-packager
+- Update DEPS and the version in this README.chromium.
+- Run gclient sync and verify locally that checkstyle works:
+  1) Modify a Java file and including it in the patch
+  2) Run "git cl presubmit"
+  3) Revert the Java file change

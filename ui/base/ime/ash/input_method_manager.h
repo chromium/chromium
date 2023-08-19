@@ -13,6 +13,7 @@
 #include <vector>
 
 #include "base/component_export.h"
+#include "base/containers/span.h"
 #include "base/memory/ref_counted.h"
 #include "chromeos/ash/services/ime/public/mojom/ime_service.mojom.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
@@ -207,7 +208,7 @@ class COMPONENT_EXPORT(UI_BASE_IME_ASH) InputMethodManager {
         const std::string& input_method_id) const = 0;
 
     // Sets the list of extension IME ids which should be enabled.
-    virtual void SetEnabledExtensionImes(std::vector<std::string>* ids) = 0;
+    virtual void SetEnabledExtensionImes(base::span<const std::string> ids) = 0;
 
     // Sets current input method to login default (first owners, then hardware).
     virtual void SetInputMethodLoginDefault() = 0;

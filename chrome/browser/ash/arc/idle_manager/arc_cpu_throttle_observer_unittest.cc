@@ -74,12 +74,14 @@ class ArcCpuThrottleObserverTest : public testing::Test {
  private:
   content::BrowserTaskEnvironment task_environment_;
   TestingPrefServiceSimple local_state_;
-  raw_ptr<ArcMetricsService, ExperimentalAsh> arc_metrics_service_ = nullptr;
+  raw_ptr<ArcMetricsService, DanglingUntriaged | ExperimentalAsh>
+      arc_metrics_service_ = nullptr;
   ArcCpuThrottleObserver cpu_throttle_observer_;
   std::unique_ptr<ArcServiceManager> service_manager_;
   std::unique_ptr<ArcSessionManager> session_manager_;
   std::unique_ptr<TestingProfile> testing_profile_;
-  raw_ptr<ArcInstanceThrottle, ExperimentalAsh> test_instance_throttle_;
+  raw_ptr<ArcInstanceThrottle, DanglingUntriaged | ExperimentalAsh>
+      test_instance_throttle_;
 };
 
 TEST_F(ArcCpuThrottleObserverTest, TestConstructDestruct) {}

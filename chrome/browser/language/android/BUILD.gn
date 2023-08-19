@@ -24,9 +24,9 @@ android_library("base_module_java") {
 }
 
 android_library("java") {
+  srcjar_deps = [ ":jni_headers" ]
   sources = [
     "java/src/org/chromium/chrome/browser/language/AppLanguagePromoDialog.java",
-    "java/src/org/chromium/chrome/browser/language/LanguageAskPrompt.java",
     "java/src/org/chromium/chrome/browser/language/LanguageBridge.java",
     "java/src/org/chromium/chrome/browser/language/settings/AlwaysTranslateListFragment.java",
     "java/src/org/chromium/chrome/browser/language/settings/AppLanguagePreferenceDelegate.java",
@@ -77,7 +77,6 @@ android_library("java") {
     "//ui/android:ui_no_recycler_view_java",
   ]
   resources_package = "org.chromium.chrome.browser.language"
-  annotation_processor_deps = [ "//base/android/jni_generator:jni_processor" ]
 }
 
 generate_jni("jni_headers") {
@@ -96,8 +95,6 @@ android_resources("java_resources") {
     "java/res/layout/app_language_prompt_content.xml",
     "java/res/layout/app_language_prompt_more_languages.xml",
     "java/res/layout/app_language_prompt_row.xml",
-    "java/res/layout/language_ask_prompt_content.xml",
-    "java/res/layout/language_ask_prompt_row.xml",
     "java/res/layout/language_ask_prompt_row_separator.xml",
     "java/res/layout/language_list_with_add_button.xml",
     "java/res/layout/languages_preference.xml",
@@ -183,11 +180,13 @@ robolectric_library("junit") {
     "//base:base_java",
     "//base:base_java_test_support",
     "//base:base_junit_test_support",
+    "//base:jni_java",
     "//chrome/android:base_module_java",
     "//chrome/browser/flags:java",
     "//chrome/browser/language/android:java",
     "//chrome/browser/preferences:java",
     "//chrome/test/android:chrome_java_unit_test_support",
+    "//content/public/android:content_java",
     "//content/public/test/android:content_java_test_support",
     "//third_party/androidx:androidx_test_runner_java",
     "//third_party/junit",

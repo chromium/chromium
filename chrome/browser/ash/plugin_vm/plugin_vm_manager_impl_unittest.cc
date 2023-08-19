@@ -155,7 +155,8 @@ class PluginVmManagerImplTest : public testing::Test {
   std::unique_ptr<TestingProfile> testing_profile_;
   std::unique_ptr<PluginVmTestHelper> test_helper_;
   std::unique_ptr<NotificationDisplayServiceTester> display_service_;
-  raw_ptr<PluginVmManagerImpl, ExperimentalAsh> plugin_vm_manager_;
+  raw_ptr<PluginVmManagerImpl, DanglingUntriaged | ExperimentalAsh>
+      plugin_vm_manager_;
   std::unique_ptr<ash::ShelfModel> shelf_model_;
   std::unique_ptr<ChromeShelfController> chrome_shelf_controller_;
   std::unique_ptr<base::HistogramTester> histogram_tester_;

@@ -57,9 +57,6 @@ public interface AutocompleteEditTextModelBase {
          */
         void replaceAllTextFromAutocomplete(String text);
 
-        /** @return Whether accessibility is enabled. */
-        boolean isAccessibilityEnabled();
-
         /**
          * This is called when autocomplete text state changes.
          * @param updateDisplay True if string is changed.
@@ -174,4 +171,9 @@ public interface AutocompleteEditTextModelBase {
      * @return Whether accessibility event should be ignored.
      */
     boolean shouldIgnoreAccessibilityEvent();
+
+    /**
+     * Set whether layout (and text) direction is Left-To-Right.
+     */
+    void setLayoutDirectionIsLtr(boolean isLtr);
 }

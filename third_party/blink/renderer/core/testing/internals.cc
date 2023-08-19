@@ -105,7 +105,7 @@
 #include "third_party/blink/renderer/core/html/forms/form_controller.h"
 #include "third_party/blink/renderer/core/html/forms/html_input_element.h"
 #include "third_party/blink/renderer/core/html/forms/html_select_element.h"
-#include "third_party/blink/renderer/core/html/forms/html_select_menu_element.h"
+#include "third_party/blink/renderer/core/html/forms/html_select_list_element.h"
 #include "third_party/blink/renderer/core/html/forms/html_text_area_element.h"
 #include "third_party/blink/renderer/core/html/forms/text_control_inner_elements.h"
 #include "third_party/blink/renderer/core/html/html_iframe_element.h"
@@ -133,6 +133,7 @@
 #include "third_party/blink/renderer/core/page/scrolling/root_scroller_controller.h"
 #include "third_party/blink/renderer/core/page/scrolling/scroll_state.h"
 #include "third_party/blink/renderer/core/page/spatial_navigation_controller.h"
+#include "third_party/blink/renderer/core/page/touch_adjustment.h"
 #include "third_party/blink/renderer/core/page/validation_message_client.h"
 #include "third_party/blink/renderer/core/page/viewport_description.h"
 #include "third_party/blink/renderer/core/paint/paint_layer.h"
@@ -904,19 +905,26 @@ bool Internals::isLoadingFromMemoryCache(const String& url) {
 
 ScriptPromise Internals::getInitialResourcePriority(ScriptState* script_state,
                                                     const String& url,
-                                                    Document* document) {
+                                                    Document* document,
+                                                    bool new_load_only) {
   ScriptPromiseResolver* resolver =
       MakeGarbageCollected<ScriptPromiseResolver>(script_state);
   ScriptPromise promise = resolver->Promise();
   KURL resource_url = url_test_helpers::ToKURL(url.Utf8());
-  DCHECK(document);
 
   auto callback = WTF::BindOnce(&Internals::ResolveResourcePriority,
                                 WrapPersistent(this), WrapPersistent(resolver));
-  ResourceFetcher::AddPriorityObserverForTesting(resource_url,
-                                                 std::move(callback));
+  document->Fetcher()->AddPriorityObserverForTesting(
+      resource_url, std::move(callback), new_load_only);
 
   return promise;
+}
+
+ScriptPromise Internals::getInitialResourcePriorityOfNewLoad(
+    ScriptState* script_state,
+    const String& url,
+    Document* document) {
+  return getInitialResourcePriority(script_state, url, document, true);
 }
 
 bool Internals::doesWindowHaveUrlFragment(DOMWindow* window) {
@@ -1919,9 +1927,6 @@ String Internals::rangeAsText(const Range* range) {
   return range->GetText();
 }
 
-// FIXME: The next four functions are very similar - combine them once
-// bestClickableNode/bestContextMenuNode have been combined..
-
 void Internals::HitTestRect(HitTestLocation& location,
                             HitTestResult& result,
                             int x,
@@ -1939,6 +1944,8 @@ void Internals::HitTestRect(HitTestLocation& location,
       location, HitTestRequest::kReadOnly | HitTestRequest::kActive |
                     HitTestRequest::kListBased);
 }
+
+// TODO(mustaq): The next 5 functions are very similar, can we combine them?
 
 DOMPoint* Internals::touchPositionAdjustedToBestClickableNode(
     int x,
@@ -1961,8 +1968,9 @@ DOMPoint* Internals::touchPositionAdjustedToBestClickableNode(
   gfx::Point adjusted_point;
 
   EventHandler& event_handler = document->GetFrame()->GetEventHandler();
-  bool found_node = event_handler.BestClickableNodeForHitTestResult(
-      location, result, adjusted_point, target_node);
+  bool found_node = event_handler.BestNodeForHitTestResult(
+      TouchAdjustmentCandidateType::kClickable, location, result,
+      adjusted_point, target_node);
   if (found_node)
     return DOMPoint::Create(adjusted_point.x(), adjusted_point.y());
 
@@ -1988,8 +1996,9 @@ Node* Internals::touchNodeAdjustedToBestClickableNode(
   HitTestRect(location, result, x, y, width, height, document);
   Node* target_node = nullptr;
   gfx::Point adjusted_point;
-  document->GetFrame()->GetEventHandler().BestClickableNodeForHitTestResult(
-      location, result, adjusted_point, target_node);
+  document->GetFrame()->GetEventHandler().BestNodeForHitTestResult(
+      TouchAdjustmentCandidateType::kClickable, location, result,
+      adjusted_point, target_node);
   return target_node;
 }
 
@@ -2014,8 +2023,9 @@ DOMPoint* Internals::touchPositionAdjustedToBestContextMenuNode(
   gfx::Point adjusted_point;
 
   EventHandler& event_handler = document->GetFrame()->GetEventHandler();
-  bool found_node = event_handler.BestContextMenuNodeForHitTestResult(
-      location, result, adjusted_point, target_node);
+  bool found_node = event_handler.BestNodeForHitTestResult(
+      TouchAdjustmentCandidateType::kContextMenu, location, result,
+      adjusted_point, target_node);
   if (found_node)
     return DOMPoint::Create(adjusted_point.x(), adjusted_point.y());
 
@@ -2041,8 +2051,9 @@ Node* Internals::touchNodeAdjustedToBestContextMenuNode(
   HitTestRect(location, result, x, y, width, height, document);
   Node* target_node = nullptr;
   gfx::Point adjusted_point;
-  document->GetFrame()->GetEventHandler().BestContextMenuNodeForHitTestResult(
-      location, result, adjusted_point, target_node);
+  document->GetFrame()->GetEventHandler().BestNodeForHitTestResult(
+      TouchAdjustmentCandidateType::kContextMenu, location, result,
+      adjusted_point, target_node);
   return target_node;
 }
 
@@ -2065,10 +2076,9 @@ Node* Internals::touchNodeAdjustedToBestStylusWritableNode(
   HitTestRect(location, result, x, y, width, height, document);
   Node* target_node = nullptr;
   gfx::Point adjusted_point;
-  document->GetFrame()
-      ->GetEventHandler()
-      .BestStylusWritableNodeForHitTestResult(location, result, adjusted_point,
-                                              target_node);
+  document->GetFrame()->GetEventHandler().BestNodeForHitTestResult(
+      TouchAdjustmentCandidateType::kStylusWritable, location, result,
+      adjusted_point, target_node);
   return target_node;
 }
 
@@ -2535,7 +2545,12 @@ unsigned Internals::numberOfScrollableAreas(Document* document) {
 
 bool Internals::isPageBoxVisible(Document* document, int page_number) {
   DCHECK(document);
-  return document->IsPageBoxVisible(page_number);
+  // Named pages aren't supported here, because this function may be called
+  // without laying out first.
+  scoped_refptr<const ComputedStyle> style =
+      document->StyleForPage(page_number, /* page_name */ AtomicString());
+  return style->Visibility() !=
+         EVisibility::kHidden;  // display property doesn't apply to @page.
 }
 
 String Internals::layerTreeAsText(Document* document,
@@ -3377,10 +3392,10 @@ void Internals::resetTypeAheadSession(HTMLSelectElement* select) {
   select->ResetTypeAheadSessionForTesting();
 }
 
-void Internals::resetSelectMenuTypeAheadSession(
-    HTMLSelectMenuElement* selectmenu) {
-  DCHECK(selectmenu);
-  selectmenu->ResetTypeAheadSessionForTesting();
+void Internals::resetSelectListTypeAheadSession(
+    HTMLSelectListElement* selectlist) {
+  DCHECK(selectlist);
+  selectlist->ResetTypeAheadSessionForTesting();
 }
 
 void Internals::forceCompositingUpdate(Document* document,
@@ -3401,6 +3416,8 @@ void Internals::setForcedColorsAndDarkPreferredColorScheme(Document* document) {
   color_scheme_helper.SetPreferredColorScheme(
       mojom::blink::PreferredColorScheme::kDark);
   color_scheme_helper.SetForcedColors(*document, ForcedColors::kActive);
+  color_scheme_helper.SetEmulatedForcedColors(*document,
+                                              /*is_dark_theme=*/false);
   document->GetFrame()->View()->UpdateAllLifecyclePhasesForTest();
 }
 

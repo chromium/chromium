@@ -3,6 +3,6 @@ PASS SameOrigin
 PASS SameSite
 PASS CrossSite
 PASS beforeunload
-NOTRUN unload Could have been BFCached but actually wasn't
+PRECONDITION_FAILED unload Could have been BFCached but actually wasn't
 Harness: the test ran to completion.
 

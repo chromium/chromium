@@ -57,10 +57,11 @@
 <translation id="3566302376254083266">Po zhvendoset majtas për lart</translation>
 <translation id="3573890771273113519">Kalo te modaliteti i skanimit</translation>
 <translation id="3583444040776960729">Këndi poshtë majtas i dokumentit</translation>
+<translation id="3642192109456033823">Videoja po përpunohet...</translation>
 <translation id="3789724198583203151">Rrotulloje 90 gradë në drejtim të kundërt të akrepave të orës</translation>
 <translation id="3810838688059735925">Video</translation>
 <translation id="3892148308691398805">Kopjo tekstin</translation>
-<translation id="4060608699153044055">Nuk mund të regjistrosh për shkak të nivelit të ulët të hapësirës ruajtëse të pajisjes. Për të filluar të regjistrosh, duhet të lirosh hapësirën në pajisjen tënde.</translation>
+<translation id="4060608699153044055">Nuk mund të regjistrosh për shkak të nivelit të ulët të hapësirës ruajtëse të pajisjes. Që të fillosh të regjistrosh, duhet të lirosh hapësirën në pajisjen tënde.</translation>
 <translation id="4061162772429051350"><ph name="MAGAPIXELS_AMOUNT" /> MP</translation>
 <translation id="4118525110028899586">Vendose në pauzë regjistrimin</translation>
 <translation id="4121305183798804752">U zbulua një dokument</translation>
@@ -87,6 +88,7 @@
 <translation id="5057360777601936059">Kamera jote nuk ofrohet aktualisht.
         Kontrollo nëse kamera është lidhur si duhet.</translation>
 <translation id="5163387177077603948">Po zhvendoset djathtas</translation>
+<translation id="5219374179772385066">Modaliteti i "Regjistrimit me intervale" ofrohet tani!</translation>
 <translation id="5235304959032763950">16 me 9</translation>
 <translation id="5266635337630551423">Këndi lart majtas i dokumentit</translation>
 <translation id="5317780077021120954">Ruaj</translation>
@@ -105,7 +107,7 @@
 <translation id="5975083100439434680">Zvogëlo</translation>
 <translation id="5976160379964388480">Të tjera</translation>
 <translation id="6073451960410192870">Ndalo regjistrimin</translation>
-<translation id="6197807149213783179">Ruaj të dhënat meta</translation>
+<translation id="6197807149213783179">Ruaj metadatat</translation>
 <translation id="6233780560267770709">3 me 3</translation>
 <translation id="6243827288366940320">Raporti i artë</translation>
 <translation id="6248749904681914629">Kamera e jashtme</translation>
@@ -156,7 +158,7 @@ Nëse komentet e tua janë për cilësinë e imazhit ose të videos, bashkëngji
 <translation id="8629662593426079630">360p</translation>
 <translation id="8711011893539266636">Aktivizo/çaktivizo audion e mikrofonit. Opsioni i çaktivizimit të zërit është aktiv</translation>
 <translation id="8730621377337864115">U krye</translation>
-<translation id="8732462232047530626">Shiko paraprakisht të dhënat meta</translation>
+<translation id="8732462232047530626">Shiko paraprakisht metadatat</translation>
 <translation id="8815966864175525708">Kalo te nxjerrja e fotografisë portret</translation>
 <translation id="8828441885228359828">Rifillo regjistrimin</translation>
 <translation id="8870695351537079478">Regjistrimi nuk mund të fillojë</translation>

@@ -6,10 +6,6 @@
 
 #import "ios/web/js_messaging/web_view_js_utils.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 @interface CRWScriptMessageHandler : NSObject <WKScriptMessageHandler>
 
 - (instancetype)init NS_UNAVAILABLE;

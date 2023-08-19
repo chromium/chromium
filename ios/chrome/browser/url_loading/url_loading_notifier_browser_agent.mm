@@ -6,10 +6,6 @@
 
 #import "ios/chrome/browser/url_loading/url_loading_observer_bridge.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 BROWSER_USER_DATA_KEY_IMPL(UrlLoadingNotifierBrowserAgent)
 
 UrlLoadingNotifierBrowserAgent::UrlLoadingNotifierBrowserAgent(

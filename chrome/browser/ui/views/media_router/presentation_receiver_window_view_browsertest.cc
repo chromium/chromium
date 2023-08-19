@@ -110,8 +110,8 @@ class PresentationReceiverWindowViewBrowserTest : public InProcessBrowserTest {
 
   const gfx::Rect bounds_{100, 100};
   std::unique_ptr<FakeReceiverDelegate> fake_delegate_;
-  raw_ptr<PresentationReceiverWindowView, DanglingUntriaged> receiver_view_ =
-      nullptr;
+  raw_ptr<PresentationReceiverWindowView, AcrossTasksDanglingUntriaged>
+      receiver_view_ = nullptr;
 };
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)

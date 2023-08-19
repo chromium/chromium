@@ -3,10 +3,15 @@
 // found in the LICENSE file.
 
 #include "ash/constants/ash_features.h"
+#include "ash/public/cpp/system/toast_data.h"
+#include "ash/public/cpp/system/toast_manager.h"
 #include "ash/wm/desks/desks_controller.h"
+#include "ash/wm/desks/desks_test_api.h"
 #include "ash/wm/desks/desks_test_util.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "base/test/spin_wait.h"
+#include "base/time/time.h"
 #include "base/uuid.h"
 #include "build/build_config.h"
 #include "chrome/browser/chromeos/extensions/wm/wm_desks_private_api.h"
@@ -69,7 +74,8 @@ IN_PROC_BROWSER_TEST_F(WmDesksPrivateApiTest, LaunchAndCloseDeskTest) {
       base::MakeRefCounted<WmDesksPrivateRemoveDeskFunction>();
   api_test_utils::RunFunctionAndReturnSingleResult(
       remove_desk_function.get(),
-      R"([")" + desk_id->GetString() + R"(", { "combineDesks": false }])",
+      R"([")" + desk_id->GetString() +
+          R"(", { "combineDesks": false, "allowUndo":false }])",
       browser()->profile());
 
   histogram_tester.ExpectBucketCount("Ash.DeskApi.RemoveDesk.Result", 1, 1);
@@ -77,6 +83,207 @@ IN_PROC_BROWSER_TEST_F(WmDesksPrivateApiTest, LaunchAndCloseDeskTest) {
   if (ash::DesksController::Get()->AreDesksBeingModified()) {
     remove_waiter.Wait();
   }
+}
+
+// Tests launch and removal of a desk. Makes sure desk cannot be undone after
+// time has passed.
+IN_PROC_BROWSER_TEST_F(WmDesksPrivateApiTest, LaunchAndAttemptUndo) {
+  // Launch a desk.
+  auto launch_desk_function =
+      base::MakeRefCounted<WmDesksPrivateLaunchDeskFunction>();
+
+  ash::DeskSwitchAnimationWaiter launch_waiter;
+  base::HistogramTester histogram_tester;
+  // The RunFunctionAndReturnSingleResult already asserts no error
+  auto desk_id = api_test_utils::RunFunctionAndReturnSingleResult(
+      launch_desk_function.get(), R"([{"deskName":"test"}])",
+      browser()->profile());
+  EXPECT_TRUE(desk_id->is_string());
+  EXPECT_TRUE(
+      base::Uuid::ParseCaseInsensitive(desk_id->GetString()).is_valid());
+
+  histogram_tester.ExpectBucketCount("Ash.DeskApi.LaunchDesk.Result", 1, 1);
+  // Waiting for desk launch animation to settle
+  // The check is necessary as both desk animation and extension function is
+  // async. There is no guarantee which ones execute first.
+  if (ash::DesksController::Get()->AreDesksBeingModified()) {
+    launch_waiter.Wait();
+  }
+
+  ash::DeskSwitchAnimationWaiter remove_waiter;
+  // Remove a desk.
+  auto remove_desk_function =
+      base::MakeRefCounted<WmDesksPrivateRemoveDeskFunction>();
+  api_test_utils::RunFunctionAndReturnSingleResult(
+      remove_desk_function.get(),
+      R"([")" + desk_id->GetString() +
+          R"(", { "combineDesks": false, "allowUndo": true }])",
+      browser()->profile());
+
+  //   Waiting for desk removal animation to settle
+  if (ash::DesksController::Get()->AreDesksBeingModified()) {
+    remove_waiter.Wait();
+  }
+
+  EXPECT_TRUE(ash::DesksTestApi::DesksControllerCanUndoDeskRemoval());
+
+  // Checks for if there are any other toasts running besides
+  // the undo toast. Waits for other toasts to expire.
+  if (!ash::ToastManager::Get()->IsRunning("UndoCloseAllToast_1")) {
+    LOG(INFO) << "Non-undo toast running, must wait for other toasts :(";
+    SPIN_FOR_TIMEDELTA_OR_UNTIL_TRUE(
+        base::Seconds(45),
+        ash::ToastManager::Get()->IsRunning("UndoCloseAllToast_1"));
+  }
+
+  ash::WaitForMilliseconds(
+      ash::ToastData::kDefaultToastDuration.InMilliseconds() +
+      ash::DesksController::kCloseAllWindowCloseTimeout.InMilliseconds());
+
+  EXPECT_FALSE(ash::DesksTestApi::DesksControllerCanUndoDeskRemoval());
+  histogram_tester.ExpectBucketCount("Ash.DeskApi.RemoveDesk.Result", 1, 1);
+}
+
+// TODO(crbug.com/1474001): Re-enable test that flakily fails
+#if defined(ADDRESS_SANITIZER) && defined(LEAK_SANITIZER)
+#define MAYBE_LaunchAndUndo DISABLED_LaunchAndUndo
+#else
+#define MAYBE_LaunchAndUndo LaunchAndUndo
+#endif
+// Tests launch and removal of a desk. Tries to undo the removal.
+IN_PROC_BROWSER_TEST_F(WmDesksPrivateApiTest, MAYBE_LaunchAndUndo) {
+  // Launch a desk.
+  auto launch_desk_function =
+      base::MakeRefCounted<WmDesksPrivateLaunchDeskFunction>();
+
+  ash::DeskSwitchAnimationWaiter launch_waiter;
+  base::HistogramTester histogram_tester;
+  // The RunFunctionAndReturnSingleResult already asserts no error
+  auto desk_id = api_test_utils::RunFunctionAndReturnSingleResult(
+      launch_desk_function.get(), R"([{"deskName":"test"}])",
+      browser()->profile());
+  EXPECT_TRUE(desk_id->is_string());
+  EXPECT_TRUE(
+      base::Uuid::ParseCaseInsensitive(desk_id->GetString()).is_valid());
+
+  histogram_tester.ExpectBucketCount("Ash.DeskApi.LaunchDesk.Result", 1, 1);
+  // Waiting for desk launch animation to settle
+  // The check is necessary as both desk animation and extension function is
+  // async. There is no guarantee which ones execute first.
+  if (ash::DesksController::Get()->AreDesksBeingModified()) {
+    launch_waiter.Wait();
+  }
+
+  ash::DeskSwitchAnimationWaiter remove_waiter;
+  // Remove a desk.
+  auto remove_desk_function =
+      base::MakeRefCounted<WmDesksPrivateRemoveDeskFunction>();
+  api_test_utils::RunFunctionAndReturnSingleResult(
+      remove_desk_function.get(),
+      R"([")" + desk_id->GetString() +
+          R"(", { "combineDesks": false, "allowUndo": true }])",
+      browser()->profile());
+
+  //   Waiting for desk removal animation to settle
+  if (ash::DesksController::Get()->AreDesksBeingModified()) {
+    remove_waiter.Wait();
+  }
+
+  histogram_tester.ExpectBucketCount("Ash.DeskApi.RemoveDesk.Result", 1, 1);
+  EXPECT_TRUE(ash::DesksTestApi::DesksControllerCanUndoDeskRemoval());
+
+  ash::DesksController::Get()->MaybeCancelDeskRemoval();
+  EXPECT_FALSE(ash::DesksTestApi::DesksControllerCanUndoDeskRemoval());
+  EXPECT_EQ(2, ash::DesksController::Get()->GetNumberOfDesks());
+}
+
+// Tests launch and removal of a desk. Should combine desks if both allowUndo
+// and combineDesks are true.
+IN_PROC_BROWSER_TEST_F(WmDesksPrivateApiTest, LaunchAndCombineUndoTrue) {
+  // Launch a desk.
+  auto launch_desk_function =
+      base::MakeRefCounted<WmDesksPrivateLaunchDeskFunction>();
+
+  ash::DeskSwitchAnimationWaiter launch_waiter;
+  base::HistogramTester histogram_tester;
+  // The RunFunctionAndReturnSingleResult already asserts no error
+  auto desk_id = api_test_utils::RunFunctionAndReturnSingleResult(
+      launch_desk_function.get(), R"([{"deskName":"test"}])",
+      browser()->profile());
+  EXPECT_TRUE(desk_id->is_string());
+  EXPECT_TRUE(
+      base::Uuid::ParseCaseInsensitive(desk_id->GetString()).is_valid());
+
+  histogram_tester.ExpectBucketCount("Ash.DeskApi.LaunchDesk.Result", 1, 1);
+  // Waiting for desk launch animation to settle
+  // The check is necessary as both desk animation and extension function is
+  // async. There is no guarantee which ones execute first.
+  if (ash::DesksController::Get()->AreDesksBeingModified()) {
+    launch_waiter.Wait();
+  }
+
+  ash::DeskSwitchAnimationWaiter remove_waiter;
+  // Remove a desk.
+  auto remove_desk_function =
+      base::MakeRefCounted<WmDesksPrivateRemoveDeskFunction>();
+  api_test_utils::RunFunctionAndReturnSingleResult(
+      remove_desk_function.get(),
+      R"([")" + desk_id->GetString() +
+          R"(", { "combineDesks": true, "allowUndo": true }])",
+      browser()->profile());
+
+  //   Waiting for desk removal animation to settle
+  if (ash::DesksController::Get()->AreDesksBeingModified()) {
+    remove_waiter.Wait();
+  }
+
+  histogram_tester.ExpectBucketCount("Ash.DeskApi.RemoveDesk.Result", 1, 1);
+  EXPECT_FALSE(ash::DesksTestApi::DesksControllerCanUndoDeskRemoval());
+  EXPECT_EQ(1, ash::DesksController::Get()->GetNumberOfDesks());
+}
+
+// Tests launch and removal of a desk. Desk removal results in desks combining.
+IN_PROC_BROWSER_TEST_F(WmDesksPrivateApiTest, LaunchAndRemoveCombine) {
+  // Launch a desk.
+  auto launch_desk_function =
+      base::MakeRefCounted<WmDesksPrivateLaunchDeskFunction>();
+
+  ash::DeskSwitchAnimationWaiter launch_waiter;
+  base::HistogramTester histogram_tester;
+  // The RunFunctionAndReturnSingleResult already asserts no error
+  auto desk_id = api_test_utils::RunFunctionAndReturnSingleResult(
+      launch_desk_function.get(), R"([{"deskName":"test"}])",
+      browser()->profile());
+  EXPECT_TRUE(desk_id->is_string());
+  EXPECT_TRUE(
+      base::Uuid::ParseCaseInsensitive(desk_id->GetString()).is_valid());
+
+  histogram_tester.ExpectBucketCount("Ash.DeskApi.LaunchDesk.Result", 1, 1);
+  // Waiting for desk launch animation to settle
+  // The check is necessary as both desk animation and extension function is
+  // async. There is no guarantee which ones execute first.
+  if (ash::DesksController::Get()->AreDesksBeingModified()) {
+    launch_waiter.Wait();
+  }
+
+  ash::DeskSwitchAnimationWaiter remove_waiter;
+  // Remove a desk.
+  auto remove_desk_function =
+      base::MakeRefCounted<WmDesksPrivateRemoveDeskFunction>();
+  api_test_utils::RunFunctionAndReturnSingleResult(
+      remove_desk_function.get(),
+      R"([")" + desk_id->GetString() +
+          R"(", { "combineDesks": true, "allowUndo": false }])",
+      browser()->profile());
+
+  //   Waiting for desk removal animation to settle
+  if (ash::DesksController::Get()->AreDesksBeingModified()) {
+    remove_waiter.Wait();
+  }
+
+  histogram_tester.ExpectBucketCount("Ash.DeskApi.RemoveDesk.Result", 1, 1);
+
+  EXPECT_EQ(1, ash::DesksController::Get()->GetNumberOfDesks());
 }
 
 // Tests launch and list all desk.

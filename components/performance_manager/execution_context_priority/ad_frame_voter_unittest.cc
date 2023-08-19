@@ -40,10 +40,10 @@ class GraphOwnedWrapper : public GraphOwned {
 
   // GraphOwned:
   void OnPassedToGraph(Graph* graph) override {
-    graph->AddFrameNodeObserver(&ad_frame_voter_);
+    graph->AddInitializingFrameNodeObserver(&ad_frame_voter_);
   }
   void OnTakenFromGraph(Graph* graph) override {
-    graph->RemoveFrameNodeObserver(&ad_frame_voter_);
+    graph->RemoveInitializingFrameNodeObserver(&ad_frame_voter_);
   }
 
   // Exposes the DummyVoteObserver to validate expectations.

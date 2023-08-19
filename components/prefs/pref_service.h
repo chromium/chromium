@@ -80,6 +80,12 @@ class COMPONENTS_PREFS_EXPORT PrefService {
     EXCLUDE_DEFAULTS,
   };
 
+  struct COMPONENTS_PREFS_EXPORT PreferenceValueAndStore {
+    std::string name;
+    base::Value value;
+    PrefValueStore::PrefStoreType store;
+  };
+
   // A helper class to store all the information associated with a preference.
   class COMPONENTS_PREFS_EXPORT Preference {
    public:
@@ -274,7 +280,7 @@ class COMPONENTS_PREFS_EXPORT PrefService {
   void SetBoolean(const std::string& path, bool value);
   void SetInteger(const std::string& path, int value);
   void SetDouble(const std::string& path, double value);
-  void SetString(const std::string& path, const std::string& value);
+  void SetString(const std::string& path, base::StringPiece value);
   void SetDict(const std::string& path, base::Value::Dict dict);
   void SetList(const std::string& path, base::Value::List list);
   void SetFilePath(const std::string& path, const base::FilePath& value);
@@ -336,6 +342,10 @@ class COMPONENTS_PREFS_EXPORT PrefService {
   // dictionary.
   base::Value::Dict GetPreferenceValues(IncludeDefaults include_defaults) const;
 
+  // Returns a map of the preference values by their path including prefs that
+  // have their default value.
+  std::vector<PreferenceValueAndStore> GetPreferencesValueAndStore() const;
+
   bool ReadOnly() const;
 
   // Returns the initialization state, taking only user prefs into account.
@@ -381,7 +391,7 @@ class COMPONENTS_PREFS_EXPORT PrefService {
   //
   // AVOID ADDING THESE. These are low-level observer notifications that are
   // called for every pref change. This can lead to inefficiency, and the lack
-  // of a "registrar" model makes it easy to forget to undregister. It is
+  // of a "registrar" model makes it easy to forget to unregister. It is
   // really designed for integrating other notification systems, not for normal
   // observation.
   void AddPrefObserverAllPrefs(PrefObserver* obs);

@@ -59,7 +59,6 @@ class CONTENT_EXPORT BackgroundTracingConfigImpl
     return enabled_data_sources_;
   }
 
-  size_t GetTraceUploadLimitKb() const;
   int interning_reset_interval_ms() const {
     return interning_reset_interval_ms_;
   }
@@ -68,6 +67,11 @@ class CONTENT_EXPORT BackgroundTracingConfigImpl
     requires_anonymized_data_ = value;
   }
   bool requires_anonymized_data() const { return requires_anonymized_data_; }
+
+  absl::optional<size_t> upload_limit_network_kb() const {
+    return upload_limit_network_kb_;
+  }
+  absl::optional<size_t> upload_limit_kb() const { return upload_limit_kb_; }
 
   static std::unique_ptr<BackgroundTracingConfigImpl> PreemptiveFromDict(
       const base::Value::Dict& dict);
@@ -91,12 +95,8 @@ class CONTENT_EXPORT BackgroundTracingConfigImpl
 
 #if BUILDFLAG(IS_ANDROID)
   constexpr static int kMaxBufferSizeKb = 4 * 1024;
-  // ~1MB compressed size.
-  constexpr static int kUploadLimitKb = 5 * 1024;
 #else
   constexpr static int kMaxBufferSizeKb = 25 * 1024;
-  // Less than 10MB compressed size.
-  constexpr static int kUploadLimitKb = 30 * 1024;
 #endif
 
   static base::trace_event::TraceConfig GetConfigForCategoryPreset(
@@ -127,11 +127,8 @@ class CONTENT_EXPORT BackgroundTracingConfigImpl
   int mobile_network_buffer_size_kb_ = 300;
   int max_buffer_size_kb_ = kMaxBufferSizeKb;
 
-  // All the upload limits below are set for uncompressed trace log. On
-  // compression the data size usually reduces by 3x for size < 10MB, and the
-  // compression ratio grows up to 8x if the buffer size is around 100MB.
-  int upload_limit_network_kb_ = 1024;
-  int upload_limit_kb_ = kUploadLimitKb;
+  absl::optional<size_t> upload_limit_network_kb_;
+  absl::optional<size_t> upload_limit_kb_;
   int interning_reset_interval_ms_ = 5000;
 };
 

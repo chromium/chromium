@@ -573,9 +573,9 @@ cc_test(
     ],
 )
 
-cc_binary(
+cc_test(
     name = "log_benchmark",
-    testonly = 1,
+    size = "small",
     srcs = ["log_benchmark.cc"],
     copts = ABSL_TEST_COPTS,
     linkopts = ABSL_DEFAULT_LINKOPTS,

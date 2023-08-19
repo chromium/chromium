@@ -87,7 +87,7 @@ GetCurrentThreadPriorityForPlatformForTest() {
 }  // namespace internal
 
 void PlatformThread::SetName(const std::string& name) {
-  ThreadIdNameManager::GetInstance()->SetName(name);
+  SetNameCommon(name);
 
   // Like linux, on android we can get the thread names to show up in the
   // debugger by setting the process name for the LWP.

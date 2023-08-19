@@ -46,13 +46,15 @@ void AggregationPassData::Reset() {
   *this = AggregationPassData();
 }
 
-ParentClipData::ParentClipData() = default;
-ParentClipData::ParentClipData(ParentClipData&& other) = default;
-ParentClipData& ParentClipData::operator=(ParentClipData& other) = default;
-ParentClipData& ParentClipData::operator=(const ParentClipData& other) =
+PersistentPassData::PersistentPassData() = default;
+PersistentPassData::PersistentPassData(PersistentPassData&& other) = default;
+PersistentPassData& PersistentPassData::operator=(PersistentPassData& other) =
     default;
-ParentClipData& ParentClipData::operator=(ParentClipData&& other) = default;
-ParentClipData::~ParentClipData() = default;
+PersistentPassData& PersistentPassData::operator=(
+    const PersistentPassData& other) = default;
+PersistentPassData& PersistentPassData::operator=(PersistentPassData&& other) =
+    default;
+PersistentPassData::~PersistentPassData() = default;
 
 ResolvedPassData::ResolvedPassData(FixedPassData fixed_data)
     : fixed_(std::move(fixed_data)) {}
@@ -61,9 +63,9 @@ ResolvedPassData::ResolvedPassData(ResolvedPassData&& other) = default;
 ResolvedPassData& ResolvedPassData::operator=(ResolvedPassData&& other) =
     default;
 
-void ResolvedPassData::CopyAndResetParentClipData() {
-  previous_parent_clip_data_ = current_parent_clip_data_;
-  current_parent_clip_data_ = ParentClipData();
+void ResolvedPassData::CopyAndResetPersistentPassData() {
+  previous_persistent_data_ = current_persistent_data_;
+  current_persistent_data_ = PersistentPassData();
 }
 
 ResolvedFrameData::ResolvedFrameData(DisplayResourceProvider* resource_provider,
@@ -212,8 +214,8 @@ void ResolvedFrameData::UpdateForActiveFrame(
   frame_index_ = surface_->GetActiveFrameIndex();
   DCHECK_NE(frame_index_, 0u);
 
-  // Get parent_clip_data from the previous frame to the current frame.
-  MoveParentClipDataFromPreviousFrame(previous_resolved_passes);
+  // Get persistent_data from the previous frame to the current frame.
+  MovePersistentPassDataFromPreviousFrame(previous_resolved_passes);
   previous_resolved_passes.clear();
 
   // Clear id mappings that weren't used in this frame.
@@ -249,7 +251,7 @@ void ResolvedFrameData::ResetAfterAggregation() {
   // Reset aggregation scoped data.
   for (auto& resolved_pass : resolved_passes_) {
     resolved_pass.aggregation().Reset();
-    resolved_pass.CopyAndResetParentClipData();
+    resolved_pass.CopyAndResetPersistentPassData();
   }
 
   previous_frame_index_ = frame_index_;
@@ -324,16 +326,16 @@ void ResolvedFrameData::RegisterWithResourceProvider() {
       surface_id_);
 }
 
-void ResolvedFrameData::MoveParentClipDataFromPreviousFrame(
+void ResolvedFrameData::MovePersistentPassDataFromPreviousFrame(
     const std::vector<ResolvedPassData>& previous_resolved_passes) {
   for (const auto& previous_resolved_pass : previous_resolved_passes) {
     auto render_pass_id = previous_resolved_pass.render_pass_id();
-    // iter to |current_parent_clip_data_|
+    // iter to |current_persistent_data_|
     auto iter = render_pass_id_map_.find(render_pass_id);
 
     if (iter != render_pass_id_map_.end()) {
-      iter->second->previous_parent_clip_data() =
-          previous_resolved_pass.previous_parent_clip_data();
+      iter->second->previous_persistent_data() =
+          previous_resolved_pass.previous_persistent_data();
     }
   }
 }

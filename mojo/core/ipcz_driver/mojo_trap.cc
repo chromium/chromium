@@ -531,7 +531,7 @@ void MojoTrap::DispatchOrQueueEvent(Trigger& trigger,
   if (dispatching_thread_ == base::PlatformThread::CurrentRef()) {
     // This thread is already dispatching an event, so queue this one. It will
     // be dispatched before the thread fully unwinds from its current dispatch.
-    pending_mojo_events_->emplace_back(base::WrapRefCounted(&trigger), event);
+    pending_mojo_events_.emplace_back(base::WrapRefCounted(&trigger), event);
     return;
   }
 
@@ -548,13 +548,13 @@ void MojoTrap::DispatchOrQueueEvent(Trigger& trigger,
 
   // NOTE: This vector is only shrunk by the clear() below, but it may
   // accumulate more events during each iteration. Hence we iterate by index.
-  for (size_t i = 0; i < pending_mojo_events_->size(); ++i) {
+  for (size_t i = 0; i < pending_mojo_events_.size(); ++i) {
     if (!pending_mojo_events_[i].trigger->removed ||
         pending_mojo_events_[i].event.result == MOJO_RESULT_CANCELLED) {
       DispatchEvent(pending_mojo_events_[i].event);
     }
   }
-  pending_mojo_events_->clear();
+  pending_mojo_events_.clear();
 
   // We're done. Give other threads a chance.
   dispatching_thread_.reset();

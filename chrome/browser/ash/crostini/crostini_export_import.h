@@ -123,10 +123,18 @@ class CrostiniExportImport : public KeyedService,
   void ExportContainer(guest_os::GuestId container_id,
                        base::FilePath path,
                        CrostiniManager::CrostiniResultCallback callback);
+
   // Import |container_id| from |path| and invoke |callback| when complete.
   void ImportContainer(guest_os::GuestId container_id,
                        base::FilePath path,
                        CrostiniManager::CrostiniResultCallback callback);
+
+  // Create a new container with |container_id| from |path| and invoke
+  // |callback| when complete.
+  void CreateContainerFromImport(
+      guest_os::GuestId container_id,
+      base::FilePath path,
+      CrostiniManager::CrostiniResultCallback callback);
 
   // Export |container_id| showing FileDialog, and using |tracker_factory| for
   // status tracking.
@@ -197,12 +205,14 @@ class CrostiniExportImport : public KeyedService,
 
   void Start(OperationData* params,
              base::FilePath path,
+             bool create_new_container,
              CrostiniManager::CrostiniResultCallback callback);
 
   // Restart VM with LXD if required and share the file path with VM.
   void EnsureLxdStartedThenSharePath(
       const guest_os::GuestId& container_id,
       const base::FilePath& path,
+      bool create_new_container,
       bool persist,
       guest_os::GuestOsSharePath::SharePathCallback callback);
 

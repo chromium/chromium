@@ -49,6 +49,17 @@ bool MemoryPressureListenerRegistry::
          base::SysInfo::IsLowEndDeviceOrPartialLowEndModeEnabled();
 }
 
+bool MemoryPressureListenerRegistry::
+    IsLowEndDeviceOrPartialLowEndModeEnabledIncludingCanvasFontCache() {
+#if BUILDFLAG(IS_ANDROID)
+  return is_low_end_device_ ||
+         base::SysInfo::IsLowEndDeviceOrPartialLowEndModeEnabled(
+             blink::features::kPartialLowEndModeExcludeCanvasFontCache);
+#else
+  return IsLowEndDeviceOrPartialLowEndModeEnabled();
+#endif
+}
+
 // static
 bool MemoryPressureListenerRegistry::IsCurrentlyLowMemory() {
 #if BUILDFLAG(IS_ANDROID)

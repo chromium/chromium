@@ -3,6 +3,7 @@
 # found in the LICENSE file.
 """Custom data types for the web test stale expectation remover."""
 
+import datetime
 import fnmatch
 from typing import Any, Dict, List, Union
 
@@ -51,16 +52,16 @@ class WebTestResult(data_types.BaseResult):
     """
     def __init__(self, *args, **kwargs):
         super(WebTestResult, self).__init__(*args, **kwargs)
-        self._duration = 0
+        self._duration = datetime.timedelta(0)
         self.is_slow_result = False
 
-    def SetDuration(self, duration: Union[float, str],
-                    timeout: Union[float, str]) -> None:
-        self._duration = float(duration)
+    def SetDuration(self, duration: datetime.timedelta,
+                    timeout: datetime.timedelta) -> None:
+        self._duration = duration
         # According to //third_party/blink/web_tests/SlowTests, as tests is
         # considered slow if it is slower than ~30% of its timeout since test
         # times can vary by up to 3x.
-        threshold = 0.3 * float(timeout)
+        threshold = 0.3 * timeout
         self.is_slow_result = (self._duration > threshold)
 
 

@@ -13,7 +13,7 @@
 
 namespace apps {
 
-struct COMPONENT_EXPORT(ICON_TYPES) IconKey {
+struct COMPONENT_EXPORT(APP_TYPES) IconKey {
   IconKey();
   IconKey(uint64_t timeline, int32_t resource_id, uint32_t icon_effects);
 
@@ -89,7 +89,7 @@ enum class IconType {
 // The return value for the App Service LoadIcon method. The icon will be
 // provided in either an uncompressed representation (gfx::ImageSkia), or a
 // compressed representation (PNG-encoded bytes) depending on |icon_type|.
-struct COMPONENT_EXPORT(ICON_TYPES) IconValue {
+struct COMPONENT_EXPORT(APP_TYPES) IconValue {
   IconValue();
 
   IconValue(const IconValue&) = delete;

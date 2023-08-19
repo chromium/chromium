@@ -1,0 +1,364 @@
+<style include="cups-printer-shared action-link iron-flex
+    iron-flex-alignment">
+  .custom-list-item-bottom {
+    border-bottom: var(--cr-separator-line);
+    min-height: var(--cr-section-min-height);
+  }
+
+  .custom-list-item-top {
+    min-height: var(--cr-section-min-height);
+  }
+
+  :host(:not([nearby-printers-empty_])) .custom-list-item-top {
+    border-top: var(--cr-separator-line);
+  }
+
+  .padded {
+    padding: 20px;
+  }
+
+  #addPrinterText {
+    flex: 1;
+  }
+
+  .add-manual-printer-icon {
+    --cr-icon-button-fill-color: var(--cros-button-icon-color-secondary);
+    --cr-icon-button-margin-end: 0;
+  }
+
+  :host-context(body.jelly-enabled) .add-manual-printer-icon {
+    --cr-icon-button-fill-color: var(--cros-sys-primary);
+  }
+
+  #cloudOffIcon {
+    --iron-icon-fill-color: var(--cros-icon-color-secondary);
+    margin-top: 10px;
+  }
+
+  #connectionMessage {
+    padding-inline-start: 20px;
+  }
+
+  #noConnectivityContentContainer {
+    border-bottom: var(--cr-separator-line);
+    padding-inline-start: 20px;
+  }
+
+  #noSearchResultsMessage {
+    color: var(--md-loading-message-color);
+    font-size: 16px;
+    font-weight: 500;
+    margin-top: 80px;
+    text-align: center;
+  }
+
+  #savedPrintersContainer {
+    border-bottom: var(--cr-separator-line);
+    padding-bottom: 8px;
+  }
+
+  :host([is-printer-settings-revamp-enabled_]) #savedPrintersContainer {
+    padding-inline-start: var(--cr-section-padding);
+  }
+
+  #savedPrintersDescription {
+    height: 64px;
+    margin-bottom: 8px;
+  }
+
+  :host([is-printer-settings-revamp-enabled_]) #savedPrintersDescription {
+    padding-inline-start: 0;
+  }
+
+  #enterprisePrintersContainer {
+    border-top: var(--cr-separator-line);
+  }
+
+  :host([is-printer-settings-revamp-enabled_]) #enterprisePrintersContainer {
+    padding-inline-start: var(--cr-section-padding);
+  }
+
+  :host(:not([has-active-network-connection])) .add-printer-section,
+  :host(:not([has-active-network-connection])) .nearby-printers-section {
+    opacity: var(--cr-disabled-opacity);
+    pointer-events: none;
+  }
+
+  #nearbyPrintersRevamp {
+    display: flex;
+  }
+
+  #nearbyPrintersDescription {
+    flex: 1;
+  }
+
+  #nearbyPrinterToggleButton {
+    margin: 0;
+  }
+
+  :host([is-printer-settings-revamp-enabled_]) #collapsibleSection {
+    padding-inline-end: 0;
+    padding-inline-start: 20px;
+    padding-bottom: 20px;
+    padding-top: 0;
+  }
+
+  #helpSection {
+    align-items: center;
+    border: 1px solid var(--cros-separator-color);
+    border-radius: 12px;
+    display: flex;
+    margin-bottom: 8px;
+    margin-inline: -6px 14px;
+    padding: 16px 12px;
+  }
+
+  /* TODO(b/276493795): Clean up post Jelly launch. */
+  :host-context(body.jelly-enabled) #helpSection {
+    background-color: var(--cros-sys-app_base_shaded);
+    border: none;
+  }
+
+  #helpIconSection {
+    --iron-icon-height: 48px;
+    --iron-icon-width: 48px;
+    flex-basis: 48px;
+  }
+
+  #helpSectionText {
+    flex: 1;
+    margin-inline-start: 12px;
+  }
+
+  .help-title {
+    margin-bottom: 5px;
+  }
+
+  /* TODO(b/276493795): Clean up post Jelly launch. */
+  :host-context(body.jelly-enabled) .help-title {
+    color: var(--cros-text-color-primary);
+    font: var(--cros-button-1-font);
+  }
+
+  #noSavedPrinters {
+    align-items: center;
+    display: flex;
+    height: 48px;
+    margin: 8px 0;
+    padding-inline-start: 20px;
+  }
+
+  #addPrinterSectionRevamp {
+    height: 64px;
+    padding-inline: 0;
+  }
+
+  #addPrinterSectionRevampContainer {
+    padding-inline-start: 20px;
+    padding-top: 8px;
+  }
+
+  cr-button {
+    border-radius: 18px;
+  }
+
+  cr-button.prefix-icon {
+    padding-inline: 12px 16px;
+  }
+
+  :host([is-printer-settings-revamp-enabled_]) .section-title {
+    font: var(--cros-button-2-font);
+  }
+</style>
+
+<template is="dom-if" if="[[!hasActiveNetworkConnection]]">
+  <div id="noConnectivityContentContainer"
+      class="layout horizontal padded">
+    <iron-icon id="cloudOffIcon" icon="settings20:cloud-off"></iron-icon>
+    <div id="connectionMessage" class="layout vertical">
+      <div class="section-title">$i18n{noInternetConnection}</div>
+      <div class="secondary">$i18n{checkNetworkAndTryAgain}</div>
+    </div>
+  </div>
+</template>
+
+<template is="dom-if" if="[[showSavedPrintersSection_(savedPrinters_)]]"
+    restamp>
+  <div id="savedPrintersContainer">
+    <div id="savedPrintersDescription" class="settings-box first">
+      <div class="start">
+        <span aria-label$="[[savedPrintersAriaLabel_]]" class="section-title">
+          $i18n{savedPrintersTitle}
+        </span>
+        <div class="secondary" hidden="[[!isPrinterSettingsRevampEnabled_]]"
+            aria-hidden="true">
+          $i18n{savedPrintersSubtext}
+        </div>
+      </div>
+    </div>
+    <div id="noSavedPrinters" class="list-frame secondary"
+        hidden="[[doesAccountHaveSavedPrinters_(savedPrinters_)]]">
+      $i18n{noSavedPrinters}
+    </div>
+
+    <settings-cups-saved-printers id="savedPrinters"
+        active-printer="{{activePrinter}}"
+        search-term="[[searchTerm]]"
+        printers-count="{{savedPrinterCount_}}">
+    </settings-cups-saved-printers>
+  </div>
+</template>
+<template is="dom-if" if="[[attemptedLoadingPrinters_]]">
+  <div id="nearbyPrinters" class="padded first nearby-printers-section"
+      hidden="[[isPrinterSettingsRevampEnabled_]]">
+    <div aria-label$="[[nearbyPrintersAriaLabel_]]" class="section-title">
+      $i18n{nearbyPrintersListTitle}
+    </div>
+    <localized-link class="secondary"
+        localized-string="$i18n{nearbyPrintersListDescription}"
+        link-url="$i18n{printingCUPSPrintLearnMoreUrl}">
+    </localized-link>
+    <template is="dom-if" if="[[!addPrinterButtonActive_(
+        hasActiveNetworkConnection,
+        prefs.native_printing.user_native_printers_allowed.value)]]">
+      <cr-policy-pref-indicator
+          pref="[[prefs.native_printing.user_native_printers_allowed]]"
+          icon-aria-label="$i18n{printingPageTitle}">
+      </cr-policy-pref-indicator>
+    </template>
+  </div>
+  <div id="nearbyPrintersRevamp" class="padded first nearby-printers-section"
+      hidden="[[!showNearbyPrintersRevampSection_(
+          isPrinterSettingsRevampEnabled_, hasActiveNetworkConnection)]]">
+    <div id="nearbyPrintersDescription" aria-hidden="true">
+      <div id="availablePrintersReadyTitle"
+          aria-label$="[[nearbyPrintersAriaLabel_]]"
+          class="section-title">
+        $i18n{availablePrintersReadyTitle}
+      </div>
+      <div id="availablePrintersReadySubtext" class="secondary"
+          hidden="[[!nearbyPrintersExpanded_]]">
+        $i18n{availablePrintersReadySubtext}
+      </div>
+    </div>
+    <span id="nearbyPrintersAriaLabel" hidden>
+      [[nearbyPrintersAriaLabel_]]
+    </span>
+    <cr-icon-button id="nearbyPrinterToggleButton" on-click="toggleClicked_"
+        iron-icon="[[getIconDirection_(nearbyPrintersExpanded_)]]"
+        aria-expanded="[[nearbyPrintersExpanded_]]"
+        aria-label="$i18n{availablePrintersReadyTitle}"
+        aria-describedby="availablePrintersReadySubtext
+            nearbyPrintersAriaLabel">
+    </cr-icon-button>
+    <cr-policy-pref-indicator
+        pref="[[prefs.native_printing.user_native_printers_allowed]]"
+        icon-aria-label="$i18n{printingPageTitle}">
+    </cr-policy-pref-indicator>
+  </div>
+
+  <!-- When the revamp flag is enabled hide this Add printer section so
+        the revamp Add printer section will be shown in the correct order. -->
+  <div id="addPrinterSection" class="list-frame add-printer-section"
+      hidden="[[isPrinterSettingsRevampEnabled_]]">
+    <div class="layout horizontal center custom-list-item-bottom">
+      <div id="addPrinterText" aria-hidden="true">
+        $i18n{addCupsPrinter}
+      </div>
+      <cr-icon-button id="addManualPrinterIcon"
+          class="action-button add-manual-printer-icon"
+          iron-icon="os-settings:printer-add"
+          on-click="onAddPrinterClick_"
+          disabled="[[!addPrinterButtonActive_(hasActiveNetworkConnection,
+              prefs.native_printing.user_native_printers_allowed.value)]]"
+          title="$i18n{addCupsPrinter}"
+          deep-link-focus-id$="[[Setting.kAddPrinter]]">
+      </cr-icon-button>
+    </div>
+  </div>
+
+  <template is="dom-if" if="[[hasActiveNetworkConnection]]" restamp>
+    <div id="collapsibleSection"
+        hidden="[[!nearbyPrintersExpanded_]]">
+      <div id="helpSection" hidden="[[!isPrinterSettingsRevampEnabled_]]">
+        <div id="helpIconSection">
+          <iron-icon icon="os-settings:printer-setup"></iron-icon>
+        </div>
+        <div id="helpSectionText">
+          <div class="help-title">
+            $i18n{helpSectionTitle}
+          </div>
+          <div class="secondary">
+            <localized-link id="helpLink" class="secondary"
+                localized-string="$i18n{helpSectionDescription}"
+                link-url="$i18n{printingCUPSPrintLearnMoreUrl}"
+                on-link-clicked="onHelpLinkClicked_">
+            </localized-link>
+          </div>
+        </div>
+      </div>
+      <settings-cups-nearby-printers search-term="[[searchTerm]]"
+          user-printers-allowed="[[!prefs.native_printing.
+              user_native_printers_allowed.value]]"
+          active-printer="{{activePrinter}}"
+          printers-count="{{nearbyPrinterCount_}}">
+      </settings-cups-nearby-printers>
+      <div id="addPrinterSectionRevamp" class="list-frame add-printer-section"
+          hidden="[[!isPrinterSettingsRevampEnabled_]]">
+        <div id="addPrinterSectionRevampContainer"
+            class="layout horizontal center custom-list-item-top">
+          <cr-button class="prefix-icon" on-click="onAddPrinterClick_"
+              disabled="[[!addPrinterButtonActive_(hasActiveNetworkConnection,
+                  prefs.native_printing.user_native_printers_allowed.value)]]"
+              deep-link-focus-id$="[[Setting.kAddPrinter]]">
+            <iron-icon icon="cr:add" slot="prefix-icon"></iron-icon>
+            $i18n{addCupsPrinterManually}
+          </cr-button>
+        </div>
+      </div>
+    </div>
+  </template>
+</template>
+
+<template is="dom-if"
+    if="[[doesAccountHaveEnterprisePrinters_(enterprisePrinters_)]]"
+    restamp>
+  <div id="enterprisePrintersContainer">
+    <div class="settings-box first">
+      <div class="start">
+        <span aria-label$="[[enterprisePrintersAriaLabel_]]">
+          $i18n{enterprisePrintersTitle}
+        </span>
+      </div>
+    </div>
+    <settings-cups-enterprise-printers
+        id="enterprisePrinters"
+        active-printer="{{activePrinter}}"
+        search-term="[[searchTerm]]"
+        printers-count="{{enterprisePrinterCount_}}">
+    </settings-cups-enterprise-printers>
+  </div>
+</template>
+
+<settings-cups-add-printer-dialog id="addPrinterDialog"
+    on-close="onAddPrinterDialogClose_">
+</settings-cups-add-printer-dialog>
+
+<template is="dom-if" if="[[showCupsEditPrinterDialog_]]" restamp>
+  <settings-cups-edit-printer-dialog id="editPrinterDialog"
+      active-printer="{{activePrinter}}"
+      on-close="onEditPrinterDialogClose_">
+  </settings-cups-edit-printer-dialog>
+</template>
+
+<cr-toast id="errorToast" duration="3000">
+  <div class="error-message" id="addPrinterDoneMessage">
+    [[addPrinterResultText_]]
+  </div>
+</cr-toast>
+
+<cr-toast id="printServerErrorToast" duration="3000">
+  <div class="error-message" id="addPrintServerDoneMessage">
+    [[addPrintServerResultText_]]
+  </div>
+</cr-toast>

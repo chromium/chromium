@@ -5,7 +5,7 @@
 #ifndef CHROME_BROWSER_PERMISSIONS_PERMISSION_MANAGER_FACTORY_H_
 #define CHROME_BROWSER_PERMISSIONS_PERMISSION_MANAGER_FACTORY_H_
 
-#include "base/memory/singleton.h"
+#include "base/no_destructor.h"
 #include "chrome/browser/profiles/profile_keyed_service_factory.h"
 
 namespace content {
@@ -27,7 +27,7 @@ class PermissionManagerFactory : public ProfileKeyedServiceFactory {
   PermissionManagerFactory& operator=(const PermissionManagerFactory&) = delete;
 
  private:
-  friend struct base::DefaultSingletonTraits<PermissionManagerFactory>;
+  friend base::NoDestructor<PermissionManagerFactory>;
 
   PermissionManagerFactory();
   ~PermissionManagerFactory() override;

@@ -8,9 +8,10 @@
 #include "base/memory/ref_counted.h"
 #include "build/build_config.h"
 #include "chrome/updater/constants.h"
-#include "chrome/updater/util/unittest_util.h"
+#include "chrome/updater/util/unit_test_util.h"
 #include "components/policy/proto/device_management_backend.pb.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace updater {
 
@@ -102,6 +103,18 @@ const uint8_t kOmahaPolicyResponseData[] = {
 #endif  // BUILDFLAG(IS_MAC)
 
 }  // namespace
+
+TEST(DMPolicyManager, DeviceManagementOverride) {
+  ::wireless_android_enterprise_devicemanagement::OmahaSettingsClientProto
+      omaha_settings;
+
+  auto policy_manager =
+      base::MakeRefCounted<DMPolicyManager>(omaha_settings, true);
+  EXPECT_TRUE(policy_manager->HasActiveDevicePolicies());
+
+  policy_manager = base::MakeRefCounted<DMPolicyManager>(omaha_settings, false);
+  EXPECT_FALSE(policy_manager->HasActiveDevicePolicies());
+}
 
 TEST(DMPolicyManager, PolicyManagerFromEmptyProto) {
   ::wireless_android_enterprise_devicemanagement::OmahaSettingsClientProto
@@ -213,7 +226,8 @@ TEST(DMPolicyManager, PolicyManagerFromProto) {
 
   EXPECT_EQ(policy_manager->GetPackageCacheSizeLimitMBytes(), absl::nullopt);
   EXPECT_EQ(policy_manager->GetPackageCacheExpirationTimeDays(), absl::nullopt);
-  EXPECT_EQ(policy_manager->GetForceInstallApps(), absl::nullopt);
+  EXPECT_EQ(policy_manager->GetForceInstallApps(),
+            std::vector<std::string>({kApp2}));
   EXPECT_EQ(policy_manager->GetAppsWithPolicy(),
             std::vector<std::string>({test::kChromeAppId, kApp1, kApp2}));
 

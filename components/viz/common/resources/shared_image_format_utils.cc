@@ -4,13 +4,69 @@
 
 #include "components/viz/common/resources/shared_image_format_utils.h"
 
+#include <GLES2/gl2.h>
+#include <GLES2/gl2ext.h>
+#include <GLES2/gl2extchromium.h>
+
 #include "base/check_op.h"
 #include "base/logging.h"
 #include "base/notreached.h"
-#include "components/viz/common/resources/resource_format.h"
-#include "components/viz/common/resources/resource_format_utils.h"
 
 namespace viz {
+
+namespace {
+
+#if BUILDFLAG(ENABLE_VULKAN)
+VkFormat ToVkFormatInternal(SharedImageFormat format) {
+  CHECK(format.is_single_plane());
+  if (format == SinglePlaneFormat::kRGBA_8888) {
+    return VK_FORMAT_R8G8B8A8_UNORM;  // or VK_FORMAT_R8G8B8A8_SRGB
+  } else if (format == SinglePlaneFormat::kRGBA_4444) {
+    return VK_FORMAT_R4G4B4A4_UNORM_PACK16;
+  } else if (format == SinglePlaneFormat::kBGRA_8888) {
+    return VK_FORMAT_B8G8R8A8_UNORM;
+  } else if (format == SinglePlaneFormat::kR_8) {
+    return VK_FORMAT_R8_UNORM;
+  } else if (format == SinglePlaneFormat::kRGB_565) {
+    return VK_FORMAT_R5G6B5_UNORM_PACK16;
+  } else if (format == SinglePlaneFormat::kBGR_565) {
+    return VK_FORMAT_B5G6R5_UNORM_PACK16;
+  } else if (format == SinglePlaneFormat::kRG_88) {
+    return VK_FORMAT_R8G8_UNORM;
+  } else if (format == SinglePlaneFormat::kRGBA_F16) {
+    return VK_FORMAT_R16G16B16A16_SFLOAT;
+  } else if (format == SinglePlaneFormat::kR_16) {
+    return VK_FORMAT_R16_UNORM;
+  } else if (format == SinglePlaneFormat::kRG_1616) {
+    return VK_FORMAT_R16G16_UNORM;
+  } else if (format == SinglePlaneFormat::kRGBX_8888) {
+    return VK_FORMAT_R8G8B8A8_UNORM;
+  } else if (format == SinglePlaneFormat::kBGRX_8888) {
+    return VK_FORMAT_B8G8R8A8_UNORM;
+  } else if (format == SinglePlaneFormat::kRGBA_1010102) {
+    return VK_FORMAT_A2B10G10R10_UNORM_PACK32;
+  } else if (format == SinglePlaneFormat::kBGRA_1010102) {
+    return VK_FORMAT_A2R10G10B10_UNORM_PACK32;
+  } else if (format == SinglePlaneFormat::kALPHA_8) {
+    return VK_FORMAT_R8_UNORM;
+  } else if (format == SinglePlaneFormat::kLUMINANCE_8) {
+    return VK_FORMAT_R8_UNORM;
+  } else if (format == LegacyMultiPlaneFormat::kYV12) {
+    return VK_FORMAT_G8_B8_R8_3PLANE_420_UNORM;
+  } else if (format == LegacyMultiPlaneFormat::kNV12) {
+    return VK_FORMAT_G8_B8R8_2PLANE_420_UNORM;
+  } else if (format == SinglePlaneFormat::kETC1) {
+    return VK_FORMAT_ETC2_R8G8B8_UNORM_BLOCK;
+  } else if (format == SinglePlaneFormat::kLUMINANCE_F16) {
+    return VK_FORMAT_R16_SFLOAT;
+  } else if (format == LegacyMultiPlaneFormat::kP010) {
+    return VK_FORMAT_G10X6_B10X6R10X6_2PLANE_420_UNORM_3PACK16;
+  }
+  return VK_FORMAT_UNDEFINED;
+}
+#endif
+
+}  // namespace
 
 SkColorType ToClosestSkColorType(bool gpu_compositing,
                                  SharedImageFormat format) {
@@ -25,61 +81,60 @@ SkColorType ToClosestSkColorType(bool gpu_compositing,
     return kN32_SkColorType;
   }
 
-  switch (format.resource_format()) {
-    case RGBA_4444:
-      return kARGB_4444_SkColorType;
-    case RGBA_8888:
-      return kRGBA_8888_SkColorType;
-    case BGRA_8888:
-      return kBGRA_8888_SkColorType;
-    case ALPHA_8:
-      return kAlpha_8_SkColorType;
-    case BGR_565:
-    case RGB_565:
-      return kRGB_565_SkColorType;
-    case LUMINANCE_8:
-      return kGray_8_SkColorType;
-    case RGBX_8888:
-    case BGRX_8888:
-    case ETC1:
-      return kRGB_888x_SkColorType;
-    case P010:
+  if (format == SinglePlaneFormat::kRGBA_4444) {
+    return kARGB_4444_SkColorType;
+  } else if (format == SinglePlaneFormat::kRGBA_8888) {
+    return kRGBA_8888_SkColorType;
+  } else if (format == SinglePlaneFormat::kBGRA_8888) {
+    return kBGRA_8888_SkColorType;
+  } else if (format == SinglePlaneFormat::kALPHA_8) {
+    return kAlpha_8_SkColorType;
+  } else if (format == SinglePlaneFormat::kBGR_565 ||
+             format == SinglePlaneFormat::kRGB_565) {
+    return kRGB_565_SkColorType;
+  } else if (format == SinglePlaneFormat::kLUMINANCE_8) {
+    return kGray_8_SkColorType;
+  } else if (format == SinglePlaneFormat::kRGBX_8888 ||
+             format == SinglePlaneFormat::kBGRX_8888 ||
+             format == SinglePlaneFormat::kETC1) {
+    return kRGB_888x_SkColorType;
+  } else if (format == LegacyMultiPlaneFormat::kP010) {
 #if BUILDFLAG(IS_APPLE)
-      DLOG(ERROR) << "Sampling of P010 resources must be done per-plane.";
+    DLOG(ERROR) << "Sampling of P010 resources must be done per-plane.";
 #endif
-      return kRGBA_1010102_SkColorType;
-    case RGBA_1010102:
-    // This intentionally returns kRGBA_1010102_SkColorType for BGRA_1010102
-    // even though kBGRA_1010102_SkColorType exists. It should only be used on
-    // macOS (outside of tests).
-    case BGRA_1010102:
-      return kRGBA_1010102_SkColorType;
+    return kRGBA_1010102_SkColorType;
+  } else if (format == SinglePlaneFormat::kRGBA_1010102 ||
+             // This intentionally returns kRGBA_1010102_SkColorType for
+             // BGRA_1010102 even though kBGRA_1010102_SkColorType exists. It
+             // should only be used on macOS (outside of tests).
+             format == SinglePlaneFormat::kBGRA_1010102) {
+    return kRGBA_1010102_SkColorType;
 
+  } else if (format == LegacyMultiPlaneFormat::kYV12 ||
+             format == LegacyMultiPlaneFormat::kNV12) {
+#if BUILDFLAG(IS_APPLE)
+    DLOG(ERROR) << "Sampling of YUV_420 resources must be done per-plane.";
+#endif
     // YUV images are sampled as RGB.
-    case YVU_420:
-    case YUV_420_BIPLANAR:
+    return kRGB_888x_SkColorType;
+  } else if (format == LegacyMultiPlaneFormat::kNV12A) {
 #if BUILDFLAG(IS_APPLE)
-      DLOG(ERROR) << "Sampling of YUV_420 resources must be done per-plane.";
+    DLOG(ERROR) << "Sampling of YUVA_420 resources must be done per-plane.";
 #endif
-      return kRGB_888x_SkColorType;
-    case YUVA_420_TRIPLANAR:
-#if BUILDFLAG(IS_APPLE)
-      DLOG(ERROR) << "Sampling of YUVA_420 resources must be done per-plane.";
-#endif
-      return kRGBA_8888_SkColorType;
-    case RED_8:
-      return kAlpha_8_SkColorType;
-    case R16_EXT:
-      return kA16_unorm_SkColorType;
-    case RG16_EXT:
-      return kR16G16_unorm_SkColorType;
+    return kRGBA_8888_SkColorType;
+  } else if (format == SinglePlaneFormat::kR_8) {
+    return kAlpha_8_SkColorType;
+  } else if (format == SinglePlaneFormat::kR_16) {
+    return kA16_unorm_SkColorType;
+  } else if (format == SinglePlaneFormat::kRG_1616) {
+    return kR16G16_unorm_SkColorType;
     // Use kN32_SkColorType if there is no corresponding SkColorType.
-    case LUMINANCE_F16:
-      return kN32_SkColorType;
-    case RG_88:
-      return kR8G8_unorm_SkColorType;
-    case RGBA_F16:
-      return kRGBA_F16_SkColorType;
+  } else if (format == SinglePlaneFormat::kLUMINANCE_F16) {
+    return kN32_SkColorType;
+  } else if (format == SinglePlaneFormat::kRG_88) {
+    return kR8G8_unorm_SkColorType;
+  } else if (format == SinglePlaneFormat::kRGBA_F16) {
+    return kRGBA_F16_SkColorType;
   }
   NOTREACHED_NORETURN();
 }
@@ -100,38 +155,21 @@ SkColorType ToClosestSkColorType(bool gpu_compositing,
     return ToClosestSkColorType(gpu_compositing, format);
   }
 
-  auto plane_config = format.plane_config();
-  auto channel_format = format.channel_format();
-  if (format.PrefersExternalSampler()) {
-    switch (channel_format) {
-      case SharedImageFormat::ChannelFormat::k8:
-        return plane_config == SharedImageFormat::PlaneConfig::kY_UV_A
-                   ? kRGBA_8888_SkColorType
-                   : kRGB_888x_SkColorType;
-      case SharedImageFormat::ChannelFormat::k10:
-        return kRGBA_1010102_SkColorType;
-      case SharedImageFormat::ChannelFormat::k16:
-        return kR16G16B16A16_unorm_SkColorType;
-      case SharedImageFormat::ChannelFormat::k16F:
-        return kRGBA_F16_SkColorType;
-    }
-  } else {
-    // No external sampling, format is per plane.
-    int num_channels = format.NumChannelsInPlane(plane_index);
-    DCHECK_GT(num_channels, 0);
-    DCHECK_LE(num_channels, 2);
-    switch (channel_format) {
-      case SharedImageFormat::ChannelFormat::k8:
-        return num_channels == 1 ? kAlpha_8_SkColorType
-                                 : kR8G8_unorm_SkColorType;
-      case SharedImageFormat::ChannelFormat::k10:
-      case SharedImageFormat::ChannelFormat::k16:
-        return num_channels == 1 ? kA16_unorm_SkColorType
-                                 : kR16G16_unorm_SkColorType;
-      case SharedImageFormat::ChannelFormat::k16F:
-        return num_channels == 1 ? kA16_float_SkColorType
-                                 : kR16G16_float_SkColorType;
-    }
+  // No external sampling, format is per plane.
+  CHECK(!format.PrefersExternalSampler());
+  int num_channels = format.NumChannelsInPlane(plane_index);
+  DCHECK_GT(num_channels, 0);
+  DCHECK_LE(num_channels, 2);
+  switch (format.channel_format()) {
+    case SharedImageFormat::ChannelFormat::k8:
+      return num_channels == 1 ? kAlpha_8_SkColorType : kR8G8_unorm_SkColorType;
+    case SharedImageFormat::ChannelFormat::k10:
+    case SharedImageFormat::ChannelFormat::k16:
+      return num_channels == 1 ? kA16_unorm_SkColorType
+                               : kR16G16_unorm_SkColorType;
+    case SharedImageFormat::ChannelFormat::k16F:
+      return num_channels == 1 ? kA16_float_SkColorType
+                               : kR16G16_float_SkColorType;
   }
 }
 
@@ -179,37 +217,48 @@ SharedImageFormat SkColorTypeToSinglePlaneSharedImageFormat(
   NOTREACHED_NORETURN();
 }
 
-bool HasEquivalentBufferFormat(SharedImageFormat format) {
-  if (format.is_single_plane()) {
-    switch (format.resource_format()) {
-      case BGRA_8888:
-      case RED_8:
-      case R16_EXT:
-      case RG16_EXT:
-      case RGBA_4444:
-      case RGBA_8888:
-      case RGBA_F16:
-      case BGR_565:
-      case RG_88:
-      case RGBX_8888:
-      case BGRX_8888:
-      case RGBA_1010102:
-      case BGRA_1010102:
-      case YVU_420:
-      case YUV_420_BIPLANAR:
-      case YUVA_420_TRIPLANAR:
-      case P010:
-        return true;
-      case ETC1:
-      case ALPHA_8:
-      case LUMINANCE_8:
-      case RGB_565:
-      case LUMINANCE_F16:
-        return false;
-    }
-  }
+bool CanCreateGpuMemoryBufferForSinglePlaneSharedImageFormat(
+    SharedImageFormat format) {
+  CHECK(format.is_single_plane());
+  return (format == SinglePlaneFormat::kBGRA_8888 ||
+#if !BUILDFLAG(IS_CHROMEOS_LACROS)
+          // TODO(crbug.com/1307837): On ARM devices LaCrOS can't create RED_8
+          // GpuMemoryBuffer Objects with GBM device. This capability should be
+          // plumbed and known by clients requesting shared images as overlay
+          // candidate.
+          format == SinglePlaneFormat::kR_8 ||
+#endif
+#if BUILDFLAG(IS_APPLE)
+          format == SinglePlaneFormat::kBGRX_8888 ||
+          format == SinglePlaneFormat::kRGBX_8888 ||
+#endif
+          format == SinglePlaneFormat::kR_16 ||
+          format == SinglePlaneFormat::kRGBA_4444 ||
+          format == SinglePlaneFormat::kRGBA_8888 ||
+          format == SinglePlaneFormat::kRGBA_1010102 ||
+          format == SinglePlaneFormat::kBGRA_1010102 ||
+          format == SinglePlaneFormat::kRGBA_F16);
+}
 
-  return format == MultiPlaneFormat::kYV12 ||
+bool HasEquivalentBufferFormat(SharedImageFormat format) {
+  return format == SinglePlaneFormat::kBGRA_8888 ||
+         format == SinglePlaneFormat::kR_8 ||
+         format == SinglePlaneFormat::kR_16 ||
+         format == SinglePlaneFormat::kRG_1616 ||
+         format == SinglePlaneFormat::kRGBA_4444 ||
+         format == SinglePlaneFormat::kRGBA_8888 ||
+         format == SinglePlaneFormat::kRGBA_F16 ||
+         format == SinglePlaneFormat::kBGR_565 ||
+         format == SinglePlaneFormat::kRG_88 ||
+         format == SinglePlaneFormat::kRGBX_8888 ||
+         format == SinglePlaneFormat::kBGRX_8888 ||
+         format == SinglePlaneFormat::kRGBA_1010102 ||
+         format == SinglePlaneFormat::kBGRA_1010102 ||
+         format == LegacyMultiPlaneFormat::kYV12 ||
+         format == LegacyMultiPlaneFormat::kNV12 ||
+         format == LegacyMultiPlaneFormat::kNV12A ||
+         format == LegacyMultiPlaneFormat::kP010 ||
+         format == MultiPlaneFormat::kYV12 ||
          format == MultiPlaneFormat::kNV12 ||
          format == MultiPlaneFormat::kNV12A ||
          format == MultiPlaneFormat::kP010;
@@ -218,54 +267,48 @@ bool HasEquivalentBufferFormat(SharedImageFormat format) {
 gfx::BufferFormat SinglePlaneSharedImageFormatToBufferFormat(
     SharedImageFormat format) {
   CHECK(format.is_single_plane());
-  switch (format.resource_format()) {
-    case BGRA_8888:
-      return gfx::BufferFormat::BGRA_8888;
-    case RED_8:
-      return gfx::BufferFormat::R_8;
-    case R16_EXT:
-      return gfx::BufferFormat::R_16;
-    case RG16_EXT:
-      return gfx::BufferFormat::RG_1616;
-    case RGBA_4444:
-      return gfx::BufferFormat::RGBA_4444;
-    case RGBA_8888:
-      return gfx::BufferFormat::RGBA_8888;
-    case RGBA_F16:
-      return gfx::BufferFormat::RGBA_F16;
-    case BGR_565:
-      return gfx::BufferFormat::BGR_565;
-    case RG_88:
-      return gfx::BufferFormat::RG_88;
-    case RGBX_8888:
-      return gfx::BufferFormat::RGBX_8888;
-    case BGRX_8888:
-      return gfx::BufferFormat::BGRX_8888;
-    case RGBA_1010102:
-      return gfx::BufferFormat::RGBA_1010102;
-    case BGRA_1010102:
-      return gfx::BufferFormat::BGRA_1010102;
-    case YVU_420:
-      return gfx::BufferFormat::YVU_420;
-    case YUV_420_BIPLANAR:
-      return gfx::BufferFormat::YUV_420_BIPLANAR;
-    case YUVA_420_TRIPLANAR:
-      return gfx::BufferFormat::YUVA_420_TRIPLANAR;
-    case P010:
-      return gfx::BufferFormat::P010;
-    case ETC1:
-    case ALPHA_8:
-    case LUMINANCE_8:
-    case RGB_565:
-    case LUMINANCE_F16:
-      // These types not allowed by IsGpuMemoryBufferFormatSupported(), so
-      // give a default value that will not be used.
-      break;
+  if (format == SinglePlaneFormat::kBGRA_8888) {
+    return gfx::BufferFormat::BGRA_8888;
+  } else if (format == SinglePlaneFormat::kR_8) {
+    return gfx::BufferFormat::R_8;
+  } else if (format == SinglePlaneFormat::kR_16) {
+    return gfx::BufferFormat::R_16;
+  } else if (format == SinglePlaneFormat::kRG_1616) {
+    return gfx::BufferFormat::RG_1616;
+  } else if (format == SinglePlaneFormat::kRGBA_4444) {
+    return gfx::BufferFormat::RGBA_4444;
+  } else if (format == SinglePlaneFormat::kRGBA_8888) {
+    return gfx::BufferFormat::RGBA_8888;
+  } else if (format == SinglePlaneFormat::kRGBA_F16) {
+    return gfx::BufferFormat::RGBA_F16;
+  } else if (format == SinglePlaneFormat::kBGR_565) {
+    return gfx::BufferFormat::BGR_565;
+  } else if (format == SinglePlaneFormat::kRG_88) {
+    return gfx::BufferFormat::RG_88;
+  } else if (format == SinglePlaneFormat::kRGBX_8888) {
+    return gfx::BufferFormat::RGBX_8888;
+  } else if (format == SinglePlaneFormat::kBGRX_8888) {
+    return gfx::BufferFormat::BGRX_8888;
+  } else if (format == SinglePlaneFormat::kRGBA_1010102) {
+    return gfx::BufferFormat::RGBA_1010102;
+  } else if (format == SinglePlaneFormat::kBGRA_1010102) {
+    return gfx::BufferFormat::BGRA_1010102;
+  } else if (format == LegacyMultiPlaneFormat::kYV12) {
+    return gfx::BufferFormat::YVU_420;
+  } else if (format == LegacyMultiPlaneFormat::kNV12) {
+    return gfx::BufferFormat::YUV_420_BIPLANAR;
+  } else if (format == LegacyMultiPlaneFormat::kNV12A) {
+    return gfx::BufferFormat::YUVA_420_TRIPLANAR;
+  } else if (format == LegacyMultiPlaneFormat::kP010) {
+    return gfx::BufferFormat::P010;
+  } else {
+    // CanCreateGpuMemoryBufferForSinglePlaneSharedImageFormat() returns
+    // false for all other types, so give a default value that will not be used.
+    return gfx::BufferFormat::RGBA_8888;
   }
-  return gfx::BufferFormat::RGBA_8888;
 }
 
-SharedImageFormat GetSharedImageFormat(gfx::BufferFormat format) {
+SharedImageFormat GetSinglePlaneSharedImageFormat(gfx::BufferFormat format) {
   switch (format) {
     case gfx::BufferFormat::BGRA_8888:
       return SinglePlaneFormat::kBGRA_8888;
@@ -304,5 +347,150 @@ SharedImageFormat GetSharedImageFormat(gfx::BufferFormat format) {
   }
   NOTREACHED_NORETURN();
 }
+
+// static
+unsigned int SharedImageFormatRestrictedSinglePlaneUtils::ToGLDataFormat(
+    SharedImageFormat format) {
+  CHECK(format.is_single_plane());
+  if (format == SinglePlaneFormat::kRGBA_8888 ||
+      format == SinglePlaneFormat::kRGBA_4444 ||
+      format == SinglePlaneFormat::kRGBA_F16 ||
+      format == SinglePlaneFormat::kRGBA_1010102 ||
+      format == SinglePlaneFormat::kBGRA_1010102) {
+    return GL_RGBA;
+  } else if (format == SinglePlaneFormat::kBGRA_8888) {
+    return GL_BGRA_EXT;
+  } else if (format == SinglePlaneFormat::kALPHA_8) {
+    return GL_ALPHA;
+  } else if (format == SinglePlaneFormat::kLUMINANCE_8 ||
+             format == SinglePlaneFormat::kLUMINANCE_F16) {
+    return GL_LUMINANCE;
+  } else if (format == SinglePlaneFormat::kRGB_565 ||
+             format == SinglePlaneFormat::kBGR_565 ||
+             format == SinglePlaneFormat::kETC1 ||
+             format == SinglePlaneFormat::kRGBX_8888 ||
+             format == SinglePlaneFormat::kBGRX_8888) {
+    return GL_RGB;
+  } else if (format == SinglePlaneFormat::kR_8 ||
+             format == SinglePlaneFormat::kR_16) {
+    return GL_RED_EXT;
+  } else if (format == SinglePlaneFormat::kRG_88 ||
+             format == SinglePlaneFormat::kRG_1616) {
+    return GL_RG_EXT;
+  }
+
+  return GL_ZERO;
+}
+
+// static
+unsigned int SharedImageFormatRestrictedSinglePlaneUtils::ToGLDataType(
+    SharedImageFormat format) {
+  CHECK(format.is_single_plane());
+
+  if (format == SinglePlaneFormat::kRGBA_8888 ||
+      format == SinglePlaneFormat::kBGRA_8888 ||
+      format == SinglePlaneFormat::kALPHA_8 ||
+      format == SinglePlaneFormat::kLUMINANCE_8 ||
+      format == SinglePlaneFormat::kETC1 || format == SinglePlaneFormat::kR_8 ||
+      format == SinglePlaneFormat::kRG_88 ||
+      format == SinglePlaneFormat::kRGBX_8888 ||
+      format == SinglePlaneFormat::kBGRX_8888) {
+    return GL_UNSIGNED_BYTE;
+  } else if (format == SinglePlaneFormat::kRGBA_4444) {
+    return GL_UNSIGNED_SHORT_4_4_4_4;
+  } else if (format == SinglePlaneFormat::kRGB_565 ||
+             format == SinglePlaneFormat::kRGB_565) {
+    return GL_UNSIGNED_SHORT_5_6_5;
+  } else if (format == SinglePlaneFormat::kLUMINANCE_F16 ||
+             format == SinglePlaneFormat::kRGBA_F16) {
+    return GL_HALF_FLOAT_OES;
+  } else if (format == SinglePlaneFormat::kR_16 ||
+             format == SinglePlaneFormat::kRG_1616) {
+    return GL_UNSIGNED_SHORT;
+  } else if (format == SinglePlaneFormat::kRGBA_1010102 ||
+             format == SinglePlaneFormat::kBGRA_1010102) {
+    return GL_UNSIGNED_INT_2_10_10_10_REV_EXT;
+  }
+
+  return GL_ZERO;
+}
+
+// static
+unsigned int
+SharedImageFormatRestrictedSinglePlaneUtils::ToGLTextureStorageFormat(
+    SharedImageFormat format,
+    bool use_angle_rgbx_format) {
+  CHECK(format.is_single_plane());
+  if (format == SinglePlaneFormat::kRGBA_8888) {
+    return GL_RGBA8_OES;
+  } else if (format == SinglePlaneFormat::kBGRA_8888) {
+    return GL_BGRA8_EXT;
+  } else if (format == SinglePlaneFormat::kRGBA_F16) {
+    return GL_RGBA16F_EXT;
+  } else if (format == SinglePlaneFormat::kRGBA_4444) {
+    return GL_RGBA4;
+  } else if (format == SinglePlaneFormat::kALPHA_8) {
+    return GL_ALPHA8_EXT;
+  } else if (format == SinglePlaneFormat::kLUMINANCE_8) {
+    return GL_LUMINANCE8_EXT;
+  } else if (format == SinglePlaneFormat::kBGR_565 ||
+             format == SinglePlaneFormat::kRGB_565) {
+    return GL_RGB565;
+  } else if (format == SinglePlaneFormat::kR_8) {
+    return GL_R8_EXT;
+  } else if (format == SinglePlaneFormat::kRG_88) {
+    return GL_RG8_EXT;
+  } else if (format == SinglePlaneFormat::kLUMINANCE_F16) {
+    return GL_LUMINANCE16F_EXT;
+  } else if (format == SinglePlaneFormat::kR_16) {
+    return GL_R16_EXT;
+  } else if (format == SinglePlaneFormat::kRG_1616) {
+    return GL_RG16_EXT;
+  } else if (format == SinglePlaneFormat::kRGBX_8888 ||
+             format == SinglePlaneFormat::kBGRX_8888) {
+    return use_angle_rgbx_format ? GL_RGBX8_ANGLE : GL_RGB8_OES;
+  } else if (format == SinglePlaneFormat::kETC1) {
+    return GL_ETC1_RGB8_OES;
+  } else if (format == LegacyMultiPlaneFormat::kP010) {
+#if BUILDFLAG(IS_APPLE)
+    DLOG(ERROR) << "Sampling of P010 resources must be done per-plane.";
+#endif
+    return GL_RGB10_A2_EXT;
+  } else if (format == SinglePlaneFormat::kRGBA_1010102 ||
+             format == SinglePlaneFormat::kBGRA_1010102) {
+    return GL_RGB10_A2_EXT;
+  } else if (format == LegacyMultiPlaneFormat::kYV12 ||
+             format == LegacyMultiPlaneFormat::kNV12) {
+#if BUILDFLAG(IS_APPLE)
+    DLOG(ERROR) << "Sampling of YUV_420 resources must be done per-plane.";
+#endif
+    return GL_RGB8_OES;
+  } else if (format == LegacyMultiPlaneFormat::kNV12A) {
+#if BUILDFLAG(IS_APPLE)
+    DLOG(ERROR) << "Sampling of YUVA_420 resources must be done per-plane.";
+#endif
+    return GL_RGBA8_OES;
+  }
+  NOTREACHED();
+  return GL_RGBA8_OES;
+}
+
+#if BUILDFLAG(ENABLE_VULKAN)
+// static
+bool SharedImageFormatRestrictedSinglePlaneUtils::HasVkFormat(
+    SharedImageFormat format) {
+  CHECK(format.is_single_plane());
+  return ToVkFormatInternal(format) != VK_FORMAT_UNDEFINED;
+}
+// static
+VkFormat SharedImageFormatRestrictedSinglePlaneUtils::ToVkFormat(
+    SharedImageFormat format) {
+  CHECK(format.is_single_plane());
+  auto result = ToVkFormatInternal(format);
+  DCHECK_NE(result, VK_FORMAT_UNDEFINED)
+      << "Unsupported format " << format.ToString();
+  return result;
+}
+#endif
 
 }  // namespace viz

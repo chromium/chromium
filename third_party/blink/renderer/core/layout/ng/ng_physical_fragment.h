@@ -24,7 +24,9 @@
 #include "third_party/blink/renderer/core/layout/ng/ng_ink_overflow.h"
 #include "third_party/blink/renderer/core/layout/ng/ng_link.h"
 #include "third_party/blink/renderer/core/layout/ng/ng_style_variant.h"
+#include "third_party/blink/renderer/core/scroll/scroll_start_targets.h"
 #include "third_party/blink/renderer/platform/graphics/touch_action.h"
+#include "third_party/blink/renderer/platform/heap/collection_support/heap_hash_set.h"
 
 namespace blink {
 
@@ -80,6 +82,25 @@ class CORE_EXPORT NGPhysicalFragment
     // formatting context root, or before otherwise. See
     // IsFormattingContextRoot().
     kMinimumFormattingContextRoot = kAtomicInline
+  };
+
+  struct PropagatedData : public GarbageCollected<PropagatedData> {
+   public:
+    PropagatedData(
+        const HeapVector<Member<LayoutBoxModelObject>>* sticky_descendants,
+        const HeapHashSet<Member<LayoutBox>>* snap_areas,
+        const ScrollStartTargetCandidates* scroll_start_targets)
+        : sticky_descendants(sticky_descendants),
+          snap_areas(snap_areas),
+          scroll_start_targets(scroll_start_targets) {}
+    void Trace(Visitor* visitor) const {
+      visitor->Trace(sticky_descendants);
+      visitor->Trace(snap_areas);
+      visitor->Trace(scroll_start_targets);
+    }
+    Member<const HeapVector<Member<LayoutBoxModelObject>>> sticky_descendants;
+    Member<const HeapHashSet<Member<LayoutBox>>> snap_areas;
+    Member<const ScrollStartTargetCandidates> scroll_start_targets;
   };
 
   NGPhysicalFragment(NGFragmentBuilder* builder,
@@ -153,8 +174,17 @@ class CORE_EXPORT NGPhysicalFragment
       return layout_object->IsPositioned();
     return false;
   }
+  bool HasStickyConstrainedPosition() const {
+    return IsCSSBox() &&
+           layout_object_->StyleRef().HasStickyConstrainedPosition();
+  }
   bool IsInitialLetterBox() const {
     return IsCSSBox() && layout_object_->IsInitialLetterBox();
+  }
+  bool IsSnapArea() const {
+    return IsCSSBox() && IsA<LayoutBox>(layout_object_.Get()) &&
+           layout_object_->StyleRef().GetScrollSnapAlign() !=
+               cc::ScrollSnapAlign();
   }
   // Return true if this is the legend child of a fieldset that gets special
   // treatment (i.e. placed over the block-start border).
@@ -237,9 +267,6 @@ class CORE_EXPORT NGPhysicalFragment
            GetDocument().Printing();
   }
 
-  // Returns whether the fragment is legacy layout root.
-  bool IsLegacyLayoutRoot() const { return is_legacy_layout_root_; }
-
   // Returns whether the fragment should be atomically painted.
   bool IsPaintedAtomically() const { return is_painted_atomically_; }
 
@@ -247,8 +274,7 @@ class CORE_EXPORT NGPhysicalFragment
   bool HasCollapsedBorders() const { return has_collapsed_borders_; }
 
   bool IsFormattingContextRoot() const {
-    return (IsBox() && BoxType() >= NGBoxType::kMinimumFormattingContextRoot) ||
-           IsLegacyLayoutRoot();
+    return IsBox() && BoxType() >= NGBoxType::kMinimumFormattingContextRoot;
   }
 
   // Returns true if we have a descendant within this formatting context, which
@@ -475,13 +501,6 @@ class CORE_EXPORT NGPhysicalFragment
       TextHeightType height_type,
       PhysicalRect* overflow) const;
 
-  // The allowed touch action is the union of the effective touch action
-  // (from style) and blocking touch event handlers.
-  TouchAction EffectiveAllowedTouchAction() const;
-
-  // Returns if this fragment is inside a non-passive wheel event handler.
-  bool InsideBlockingWheelEventHandler() const;
-
   // Helper functions to convert between |PhysicalRect| and |LogicalRect| of a
   // child.
   LogicalRect ConvertChildToLogical(const PhysicalRect& physical_rect) const;
@@ -630,6 +649,35 @@ class CORE_EXPORT NGPhysicalFragment
   void SetChildrenInvalid() const;
   bool ChildrenValid() const { return children_valid_; }
 
+  const HeapVector<Member<LayoutBoxModelObject>>* StickyDescendants() const {
+    return propagated_data_ ? propagated_data_->sticky_descendants.Get()
+                            : nullptr;
+  }
+  const HeapVector<Member<LayoutBoxModelObject>>* PropagatedStickyDescendants()
+      const {
+    return IsScrollContainer() ? nullptr : StickyDescendants();
+  }
+
+  const ScrollStartTargetCandidates* ScrollStartTargets() const {
+    return propagated_data_ ? propagated_data_->scroll_start_targets.Get()
+                            : nullptr;
+  }
+  const ScrollStartTargetCandidates* PropagatedScrollStartTargets() const {
+    return IsScrollContainer() ? nullptr : ScrollStartTargets();
+  }
+
+  const HeapHashSet<Member<LayoutBox>>* SnapAreas() const {
+    return propagated_data_ ? propagated_data_->snap_areas.Get() : nullptr;
+  }
+  const HeapHashSet<Member<LayoutBox>>* PropagatedSnapAreas() const {
+    return IsScrollContainer() ? nullptr : SnapAreas();
+  }
+
+  bool HasPropagatedLayoutObjects() const {
+    return PropagatedStickyDescendants() || PropagatedScrollStartTargets() ||
+           PropagatedSnapAreas();
+  }
+
   struct OutOfFlowData : public GarbageCollected<OutOfFlowData> {
    public:
     virtual ~OutOfFlowData() = default;
@@ -749,7 +797,6 @@ class CORE_EXPORT NGPhysicalFragment
   // for all types to allow methods using them to be inlined.
   unsigned is_fieldset_container_ : 1;
   unsigned is_table_ng_part_ : 1;
-  unsigned is_legacy_layout_root_ : 1;
   unsigned is_painted_atomically_ : 1;
   unsigned has_collapsed_borders_ : 1;
   unsigned has_first_baseline_ : 1;
@@ -762,6 +809,7 @@ class CORE_EXPORT NGPhysicalFragment
   // The following are only used by NGPhysicalLineBoxFragment.
   unsigned base_direction_ : 1;  // TextDirection
 
+  Member<const PropagatedData> propagated_data_;
   Member<const NGBreakToken> break_token_;
   Member<OutOfFlowData> oof_data_;
 };

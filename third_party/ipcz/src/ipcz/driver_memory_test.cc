@@ -133,8 +133,8 @@ TEST_F(DriverMemoryTest, Map) {
   DriverMemory memory(test::kMockDriver, kSize);
 
   EXPECT_CALL(driver(), MapSharedMemory(kHandle, _, _, _, _))
-      .WillOnce([&](IpczDriverHandle memory, uint32_t, const void*, void** addr,
-                    IpczDriverHandle* mapping) {
+      .WillOnce([&](IpczDriverHandle memory, uint32_t, const void*,
+                    volatile void** addr, IpczDriverHandle* mapping) {
         *addr = kMappingAddress;
         *mapping = kMapping;
         return IPCZ_RESULT_OK;

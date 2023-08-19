@@ -9,10 +9,10 @@
 
 #include "base/gtest_prod_util.h"
 #include "base/no_destructor.h"
+#include "base/scoped_multi_source_observation.h"
 #include "base/sequence_checker.h"
-#include "content/public/browser/notification_observer.h"
-#include "content/public/browser/notification_registrar.h"
-#include "content/public/browser/notification_service.h"
+#include "content/public/browser/render_process_host_creation_observer.h"
+#include "content/public/browser/render_process_host_observer.h"
 #include "content/public/test/browser_test_utils.h"
 
 namespace content {
@@ -52,11 +52,8 @@ class ScopedAllowRendererCrashes {
 
 // Helper that BrowserTestBase can use to start monitoring for renderer crashes
 // (triggering a test failure when a renderer crash happens).
-//
-// TODO(lukasza): https://crbug.com/972220: Actually start using this class,
-// by constructing it from BrowserTestBase::ProxyRunTestOnMainThreadLoop
-// (before calling PreRunTestOnMainThread).
-class NoRendererCrashesAssertion : public NotificationObserver {
+class NoRendererCrashesAssertion : public RenderProcessHostCreationObserver,
+                                   public RenderProcessHostObserver {
  public:
   NoRendererCrashesAssertion();
 
@@ -67,11 +64,17 @@ class NoRendererCrashesAssertion : public NotificationObserver {
   ~NoRendererCrashesAssertion() override;
 
  private:
-  void Observe(int type,
-               const content::NotificationSource& source,
-               const content::NotificationDetails& details) override;
+  // RenderProcessHostCreationObserver:
+  void OnRenderProcessHostCreated(RenderProcessHost* host) override;
 
-  NotificationRegistrar registrar_;
+  // RenderProcessHostObserver:
+  void RenderProcessExited(RenderProcessHost* host,
+                           const ChildProcessTerminationInfo& info) override;
+  void RenderProcessHostDestroyed(RenderProcessHost* host) override;
+
+  base::ScopedMultiSourceObservation<RenderProcessHost,
+                                     RenderProcessHostObserver>
+      process_observations_{this};
 
   // Internal helper class for keeping track of suspensions that should cause
   // us to ignore crashes in a specific renderer process.

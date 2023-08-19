@@ -57,7 +57,8 @@ struct DIPSRedirectInfo {
                    ukm::SourceId source_id,
                    base::Time time,
                    base::TimeDelta client_bounce_delay,
-                   bool has_sticky_activation);
+                   bool has_sticky_activation,
+                   bool web_authn_assertion_request_succeeded);
   ~DIPSRedirectInfo();
 
   // These properties are required for all redirects:
@@ -81,6 +82,9 @@ struct DIPSRedirectInfo {
   const base::TimeDelta client_bounce_delay;
   // For client redirects, whether the user ever interacted with the page.
   const bool has_sticky_activation;
+  // For client redirects, whether the user ever triggered a web authn assertion
+  // call.
+  const bool web_authn_assertion_request_succeeded;
 };
 
 // a movable DIPSRedirectInfo, essentially

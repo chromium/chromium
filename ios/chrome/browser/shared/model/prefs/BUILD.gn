@@ -3,7 +3,6 @@
 # found in the LICENSE file.
 
 source_set("pref_names") {
-  configs += [ "//build/config/compiler:enable_arc" ]
   sources = [
     "pref_names.cc",
     "pref_names.h",
@@ -11,7 +10,6 @@ source_set("pref_names") {
 }
 
 source_set("browser_prefs") {
-  configs += [ "//build/config/compiler:enable_arc" ]
   sources = [
     "browser_prefs.h",
     "browser_prefs.mm",
@@ -55,6 +53,9 @@ source_set("browser_prefs") {
     "//components/sessions",
     "//components/signin/public/identity_manager",
     "//components/strings",
+    "//components/supervised_user/core/browser",
+    "//components/supervised_user/core/common",
+    "//components/supervised_user/core/common:buildflags",
     "//components/sync",
     "//components/sync_sessions",
     "//components/translate/core/browser",
@@ -73,6 +74,7 @@ source_set("browser_prefs") {
     "//ios/chrome/browser/policy:policy_util",
     "//ios/chrome/browser/prerender:prerender_pref",
     "//ios/chrome/browser/push_notification:push_notification_service",
+    "//ios/chrome/browser/safety_check:constants",
     "//ios/chrome/browser/shared/model/browser_state",
     "//ios/chrome/browser/shared/public/features",
     "//ios/chrome/browser/signin",

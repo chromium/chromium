@@ -130,17 +130,14 @@ public class LongScreenshotsCompositor {
         return sCompositorDelegateFactory;
     }
 
-    @Nullable
-    public Size getContentSize() {
+    public @Nullable Size getContentSize() {
         return mContentSize;
     }
 
-    @Nullable
-    public Point getScrollOffset() {
+    public @Nullable Point getScrollOffset() {
         return mScrollOffset;
     }
 
-    @VisibleForTesting
     public static void overrideCompositorDelegateFactoryForTesting(
             PlayerCompositorDelegate.Factory factory) {
         sCompositorDelegateFactory = factory; // IN-TEST

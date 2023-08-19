@@ -478,7 +478,6 @@ benchmarks/media.py
 benchmarks/memory.py
 benchmarks/octane.py
 benchmarks/power.py
-benchmarks/power_mobile.py
 benchmarks/press.py
 benchmarks/rasterize_and_record_micro.py
 benchmarks/rendering.py
@@ -490,7 +489,6 @@ benchmarks/system_health.py
 benchmarks/system_health_load_tests_smoke_test.py
 benchmarks/system_health_smoke_test.py
 benchmarks/system_health_unittest.py
-benchmarks/tab_switching.py
 benchmarks/v8.py
 benchmarks/v8_browsing.py
 benchmarks/v8_helper.py
@@ -501,9 +499,6 @@ chrome_telemetry_build/__init__.py
 chrome_telemetry_build/chromium_config.py
 contrib/PRESUBMIT.py
 contrib/__init__.py
-contrib/blink_layoutng_perf/__init__.py
-contrib/blink_layoutng_perf/blink_layoutng_perf.py
-contrib/blink_layoutng_perf/loading_layout_ng.py
 contrib/blink_perf_cmdline/__init__.py
 contrib/blink_perf_cmdline/blink_perf_cmdline.py
 contrib/blink_perf_xml_http_request/__init__.py
@@ -610,7 +605,9 @@ page_sets/companion/__init__.py
 page_sets/companion/basic_companion_story.py
 page_sets/companion/browser_element_identifiers.py
 page_sets/companion/companion_stories.py
+page_sets/companion/histograms.py
 page_sets/cros_ui_cases.py
+page_sets/data/companion_test_sites.py
 page_sets/desktop_power.py
 page_sets/desktop_ui/__init__.py
 page_sets/desktop_ui/browser_element_identifiers.py
@@ -642,7 +639,6 @@ page_sets/intl_ja_zh.py
 page_sets/intl_ko_th_vi.py
 page_sets/jetstream2_pages.py
 page_sets/key_mobile_sites_smooth.py
-page_sets/loading_desktop.py
 page_sets/loading_mobile.py
 page_sets/login_helpers/__init__.py
 page_sets/login_helpers/autocad_login.py
@@ -703,7 +699,6 @@ page_sets/system_health/chrome_stories.py
 page_sets/system_health/loading_stories.py
 page_sets/system_health/long_running_stories.py
 page_sets/system_health/media_stories.py
-page_sets/system_health/multi_tab_stories.py
 page_sets/system_health/platforms.py
 page_sets/system_health/story_tags.py
 page_sets/system_health/system_health_stories.py

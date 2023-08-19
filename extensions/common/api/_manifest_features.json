@@ -39,14 +39,16 @@
     "channel": "stable",
     "extension_types": ["platform_app"]
   },
-  "automation": [{
-    "channel": "dev",
-    "extension_types": ["extension", "legacy_packaged_app", "platform_app"]
-  }, {
+  "automation": {
     "channel": "stable",
-    "extension_types": ["extension", "legacy_packaged_app"],
-    "allowlist": [ "2FCBCE08B34CCA1728A85F1EFBD9A34DD2558B2E" ]
-  }],
+    "extension_types": ["extension", "legacy_packaged_app", "platform_app"],
+    "allowlist": [
+      "2FCBCE08B34CCA1728A85F1EFBD9A34DD2558B2E",
+      "05D1DBD6E8B9C4690FFA7D50E6F60C5290DC662A", // http://crbug.com/941107
+      "0D209B5E4401BB8E7873B5AB5B1346A1CB067015", // http://crbug.com/654525
+      "93CFDA3681E923AD7AB291CEDD98248396B5496C"  // http://crbug.com/803543
+    ]
+  },
   "background": {
     "channel": "stable",
     "extension_types": [
@@ -169,7 +171,7 @@
       ]
     },
     {
-      "channel": "dev",
+      "channel": "beta",
       "extension_types": ["extension"],
       "min_manifest_version": 3
     }
@@ -339,10 +341,6 @@
       "login_screen_extension",
       "chromeos_system_extension"
     ]
-  },
-  "replacement_android_app": {
-    "channel": "trunk",
-    "extension_types": ["platform_app"]
   },
   "replacement_web_app": {
     "channel": "stable",

@@ -29,13 +29,30 @@ component("features") {
   public_deps = [ "//base" ]
 }
 
+source_set("privacy_sandbox_settings_headers") {
+  sources = [
+    "privacy_sandbox_settings.h",
+    "privacy_sandbox_settings_impl.h",
+  ]
+
+  deps = [
+    "//components/browsing_topics/common:common",
+    "//components/keyed_service/core:core",
+    "//components/pref_registry:pref_registry",
+    "//components/prefs",
+    "//content/public/browser",
+    "//third_party/blink/public/common",
+    "//url:url",
+  ]
+
+  public_deps = [ "//base" ]
+}
+
 source_set("privacy_sandbox") {
   sources = [
     "canonical_topic.cc",
     "canonical_topic.h",
-    "privacy_sandbox_settings.h",
     "privacy_sandbox_settings_impl.cc",
-    "privacy_sandbox_settings_impl.h",
   ]
 
   deps = [
@@ -57,7 +74,7 @@ source_set("privacy_sandbox") {
 
   public_deps = [
     ":features",
-    "//base",
+    ":privacy_sandbox_settings_headers",
   ]
 }
 
@@ -77,6 +94,8 @@ source_set("unit_tests") {
     "//components/content_settings/core/browser:browser",
     "//components/content_settings/core/test:test_support",
     "//components/prefs:test_support",
+    "//components/privacy_sandbox/privacy_sandbox_attestations",
+    "//components/privacy_sandbox/privacy_sandbox_attestations:test_support",
     "//components/strings:components_strings_grit",
     "//components/sync_preferences:test_support",
     "//content/public/browser",
@@ -103,6 +122,8 @@ source_set("test_support") {
     "//components/content_settings/core/common:common",
     "//components/content_settings/core/test:test_support",
     "//components/prefs:test_support",
+    "//components/privacy_sandbox/privacy_sandbox_attestations",
+    "//components/privacy_sandbox/privacy_sandbox_attestations:test_support",
     "//components/sync_preferences:test_support",
     "//content/test:test_support",
     "//testing/gmock",

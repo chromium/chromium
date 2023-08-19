@@ -217,7 +217,7 @@
       </message>
       <if expr="_google_chrome">
         <message name="IDS_REVAMPED_INCOGNITO_NTP_DOES_DESCRIPTION" desc="Paragraph that informs users about Incognito's functionalities: browsing activity, search history and information entered in forms are not saved locally, they are cleared after closing all Incognito tabs. 'Browsing activity' refers to the browsing history (list of visited websites) and the cookies (data saved by websites on the user's device such as: sign-in state, preferences, etc.). 'Search history from this device' means that searches will not be saved locally or used as search suggestions in the future. 'Information entered in forms' refers to names, addresses, passwords etc. that users enter into forms on the web." formatter_data="android_java">
-          When you close all Chrome Incognito tabs, your activity in those tabs is cleared from this device:
+          When you close all Chrome Incognito tabs, your activity in those tabs is removed from this device:
           <ph name="BEGIN_LIST">&lt;ul&gt;</ph>
             <ph name="LIST_ITEM">&lt;li&gt;</ph>Browsing activity<ph name="END_LIST_ITEM">&lt;/li&gt;</ph>
             <ph name="LIST_ITEM">&lt;li&gt;</ph>Search history<ph name="END_LIST_ITEM">&lt;/li&gt;</ph>
@@ -227,7 +227,7 @@
       </if>
       <if expr="not _google_chrome">
         <message name="IDS_REVAMPED_INCOGNITO_NTP_DOES_DESCRIPTION" desc="Paragraph that informs users about Incognito's functionalities: browsing activity, search history and information entered in forms are not saved locally, they are cleared after closing all Incognito tabs. 'Browsing activity' refers to the browsing history (list of visited websites) and the cookies (data saved by websites on the user's device such as: sign-in state, preferences, etc.). 'Search history from this device' means that searches will not be saved locally or used as search suggestions in the future. 'Information entered in forms' refers to names, addresses, passwords etc. that users enter into forms on the web." formatter_data="android_java">
-          When you close all Chromium Incognito tabs, your activity in those tabs is cleared from this device:
+          When you close all Chromium Incognito tabs, your activity in those tabs is removed from this device:
           <ph name="BEGIN_LIST">&lt;ul&gt;</ph>
             <ph name="LIST_ITEM">&lt;li&gt;</ph>Browsing activity<ph name="END_LIST_ITEM">&lt;/li&gt;</ph>
             <ph name="LIST_ITEM">&lt;li&gt;</ph>Search history<ph name="END_LIST_ITEM">&lt;/li&gt;</ph>

@@ -8,9 +8,9 @@ import android.os.SystemClock;
 import android.util.Pair;
 
 import androidx.annotation.IntDef;
-import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.Log;
+import org.chromium.base.ResettersForTesting;
 import org.chromium.base.StreamUtil;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.chrome.browser.crypto.CipherFactory;
@@ -396,8 +396,8 @@ public class TabStateFileManager {
      * Overrides the channel name for testing.
      * @param name Channel to use.
      */
-    @VisibleForTesting
     public static void setChannelNameOverrideForTest(String name) {
         sChannelNameOverrideForTest = name;
+        ResettersForTesting.register(() -> sChannelNameOverrideForTest = null);
     }
 }

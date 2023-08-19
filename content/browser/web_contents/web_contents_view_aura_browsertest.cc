@@ -829,6 +829,42 @@ IN_PROC_BROWSER_TEST_F(WebContentsViewAuraTest,
   EXPECT_FALSE(controller.CanGoForward());
 }
 
+class OverscrollWebContentsDelegate : public WebContentsDelegate {
+ public:
+  void SetCanOverscrollContent(bool can_overscroll_content) {
+    can_overscroll_content_ = can_overscroll_content;
+  }
+
+  // WebContentsDelegate:
+  bool CanOverscrollContent() override { return can_overscroll_content_; }
+
+ private:
+  bool can_overscroll_content_ = true;
+};
+
+IN_PROC_BROWSER_TEST_F(WebContentsViewAuraTest, RenderViewHostChanged) {
+  ASSERT_NO_FATAL_FAILURE(StartTestWithPage("/overscroll_navigation.html"));
+
+  WebContentsImpl* contents =
+      static_cast<WebContentsImpl*>(shell()->web_contents());
+  WebContentsViewAura* view =
+      static_cast<WebContentsViewAura*>(contents->GetView());
+  OverscrollWebContentsDelegate delegate;
+  contents->SetDelegate(&delegate);
+
+  delegate.SetCanOverscrollContent(false);
+  view->RenderViewHostChanged(nullptr, nullptr);
+  EXPECT_FALSE(
+      !!static_cast<RenderWidgetHostViewAura*>(GetRenderWidgetHostView())
+            ->overscroll_controller());
+
+  delegate.SetCanOverscrollContent(true);
+  view->RenderViewHostChanged(nullptr, nullptr);
+  EXPECT_TRUE(
+      !!static_cast<RenderWidgetHostViewAura*>(GetRenderWidgetHostView())
+            ->overscroll_controller());
+}
+
 // Ensure that SnapToPhysicalPixelBoundary() is called on WebContentsView parent
 // change. This is a regression test for http://crbug.com/388908.
 // Disabled due to flakiness: https://crbug.com/807107.

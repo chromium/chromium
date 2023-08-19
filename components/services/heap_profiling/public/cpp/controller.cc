@@ -4,6 +4,9 @@
 
 #include "components/services/heap_profiling/public/cpp/controller.h"
 
+#include <utility>
+
+#include "base/functional/callback.h"
 #include "components/services/heap_profiling/public/cpp/settings.h"
 
 namespace heap_profiling {
@@ -22,14 +25,16 @@ Controller::~Controller() = default;
 void Controller::StartProfilingClient(
     mojo::PendingRemote<mojom::ProfilingClient> client,
     base::ProcessId pid,
-    mojom::ProcessType process_type) {
+    mojom::ProcessType process_type,
+    base::OnceClosure started_profiling_closure) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   mojom::ProfilingParamsPtr params = mojom::ProfilingParams::New();
   params->sampling_rate = sampling_rate_;
   params->stack_mode = stack_mode_;
-  heap_profiling_service_->AddProfilingClient(pid, std::move(client),
-                                              process_type, std::move(params));
+  heap_profiling_service_->AddProfilingClient(
+      pid, std::move(client), process_type, std::move(params),
+      std::move(started_profiling_closure));
 }
 
 void Controller::GetProfiledPids(GetProfiledPidsCallback callback) {

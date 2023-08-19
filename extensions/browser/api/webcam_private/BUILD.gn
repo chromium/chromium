@@ -27,6 +27,7 @@ source_set("webcam_private") {
 
   deps = [
     "//chromeos/dbus/ip_peripheral",
+    "//components/media_device_salt",
     "//extensions/browser/api/serial",
     "//extensions/common",
     "//extensions/common/api",

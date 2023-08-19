@@ -15,6 +15,7 @@
 #include "media/base/bitrate.h"
 #include "media/base/bitstream_buffer.h"
 #include "media/base/media_util.h"
+#include "media/base/video_encoder_metrics_provider.h"
 #include "media/base/video_frame.h"
 #include "media/video/gpu_video_accelerator_factories.h"
 #include "third_party/blink/public/platform/platform.h"
@@ -113,7 +114,8 @@ void VEAEncoder::BitstreamBufferReady(
   }
 
   on_encoded_video_cb_.Run(front_frame.first, std::move(data), std::string(),
-                           front_frame.second, metadata.key_frame);
+                           absl::nullopt, front_frame.second,
+                           metadata.key_frame);
 
   UseOutputBitstreamBufferId(bitstream_buffer_id);
 }
@@ -124,12 +126,14 @@ void VEAEncoder::NotifyErrorStatus(const media::EncoderStatus& status) {
   DLOG(ERROR) << "NotifyErrorStatus() is called with code="
               << static_cast<int>(status.code())
               << ", message=" << status.message();
+  metrics_provider_->SetError(status);
   on_error_cb_.Run();
   error_notified_ = true;
 }
 
 void VEAEncoder::UseOutputBitstreamBufferId(int32_t bitstream_buffer_id) {
   DVLOG(3) << __func__;
+  metrics_provider_->IncrementEncodedFrameCount();
 
   video_encoder_->UseOutputBitstreamBuffer(media::BitstreamBuffer(
       bitstream_buffer_id,
@@ -295,6 +299,8 @@ void VEAEncoder::ConfigureEncoder(const gfx::Size& size,
         base::strict_cast<uint32_t>(peak_bps.ValueOrDefault(max_peak_bps)));
   }
 
+  metrics_provider_->Initialize(codec_, input_visible_size_,
+                                /*is_hardware_encoder=*/true);
   // TODO(b/181797390): Use VBR bitrate mode.
   // TODO(crbug.com/1289907): remove the cast to uint32_t once
   // |bits_per_second_| is stored as uint32_t.

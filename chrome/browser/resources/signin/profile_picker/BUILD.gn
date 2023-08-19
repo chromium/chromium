@@ -16,7 +16,6 @@ build_webui("build") {
   web_component_files = [
     "profile_card_menu.ts",
     "profile_card.ts",
-    "profile_creation_flow/local_profile_customization.ts",
     "profile_creation_flow/profile_type_choice.ts",
     "profile_picker_app.ts",
     "profile_picker_main_view.ts",
@@ -29,6 +28,7 @@ build_webui("build") {
   }
 
   non_web_component_files = [
+    "drag_drop_reorder_tile_list_delegate.ts",
     "ensure_lazy_loaded.ts",
     "lazy_load.ts",
     "manage_profiles_browser_proxy.ts",

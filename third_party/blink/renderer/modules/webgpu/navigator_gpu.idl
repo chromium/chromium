@@ -8,5 +8,5 @@
     Exposed=Window,
     ImplementedAs=GPU
 ] partial interface Navigator {
-    [SameObject, SecureContext, RuntimeEnabled=WebGPU] readonly attribute GPU gpu;
+    [SameObject, SecureContext] readonly attribute GPU gpu;
 };

@@ -1,0 +1,4 @@
+This is a testharness.js-based test.
+FAIL sending 50 messages of size 65536 with backpressure applied should not hang assert_true: connection should have been opened expected true got false
+Harness: the test ran to completion.
+

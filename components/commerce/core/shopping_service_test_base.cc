@@ -15,13 +15,16 @@
 #include "components/commerce/core/commerce_feature_list.h"
 #include "components/commerce/core/pref_names.h"
 #include "components/commerce/core/proto/merchant_trust.pb.h"
+#include "components/commerce/core/proto/price_insights.pb.h"
 #include "components/commerce/core/proto/price_tracking.pb.h"
 #include "components/optimization_guide/core/optimization_guide_switches.h"
 #include "components/optimization_guide/proto/common_types.pb.h"
 #include "components/optimization_guide/proto/hints.pb.h"
+#include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/testing_pref_service.h"
 #include "components/signin/public/identity_manager/identity_test_environment.h"
 #include "components/sync/test/test_sync_service.h"
+#include "components/unified_consent/pref_names.h"
 #include "services/network/public/cpp/weak_wrapper_shared_url_loader_factory.h"
 #include "services/network/test/test_url_loader_factory.h"
 
@@ -124,7 +127,8 @@ OptimizationMetadata MockOptGuideDecider::BuildPriceTrackingResponse(
     const uint64_t product_cluster_id,
     const std::string& country_code,
     const int64_t amount_micros,
-    const std::string& currency_code) {
+    const std::string& currency_code,
+    const std::string& gpc_title) {
   OptimizationMetadata meta;
 
   PriceTrackingData price_tracking_data;
@@ -133,6 +137,10 @@ OptimizationMetadata MockOptGuideDecider::BuildPriceTrackingResponse(
 
   if (!title.empty())
     buyable_product->set_title(title);
+
+  if (!gpc_title.empty()) {
+    buyable_product->set_gpc_title(gpc_title);
+  }
 
   if (!image_url.empty())
     buyable_product->set_image_url(image_url);
@@ -202,10 +210,68 @@ OptimizationMetadata MockOptGuideDecider::BuildMerchantTrustResponse(
   return meta;
 }
 
+OptimizationMetadata MockOptGuideDecider::BuildPriceInsightsResponse(
+    const uint64_t product_cluster_id,
+    const std::string& price_range_currency_code,
+    const int64_t low_typical_price_micros,
+    const int64_t high_typical_price_micros,
+    const std::string& price_history_currency_code,
+    const std::string& attributes,
+    const std::vector<std::tuple<std::string, int64_t>>& history_prices,
+    const std::string& jackpot_url,
+    const PriceBucket& price_bucket,
+    const bool has_multiple_catalogs) {
+  OptimizationMetadata meta;
+
+  PriceInsightsData price_insights_data;
+
+  price_insights_data.set_product_cluster_id(product_cluster_id);
+
+  PriceRange* price_range = price_insights_data.mutable_price_range();
+  price_range->set_currency_code(price_range_currency_code);
+  price_range->set_lowest_typical_price_micros(low_typical_price_micros);
+  price_range->set_highest_typical_price_micros(high_typical_price_micros);
+
+  PriceHistory* price_history = price_insights_data.mutable_price_history();
+  price_history->set_currency_code(price_history_currency_code);
+  price_history->set_attributes(attributes);
+  for (auto price : history_prices) {
+    PricePoint* price_point = price_history->add_price_points();
+    price_point->set_date(std::get<0>(price));
+    price_point->set_min_price_micros(std::get<1>(price));
+  }
+  price_history->set_jackpot_url(jackpot_url);
+
+  PriceInsightsData_PriceBucket bucket = PriceInsightsData_PriceBucket_UNKNOWN;
+  if (price_bucket == PriceBucket::kLowPrice) {
+    bucket = PriceInsightsData_PriceBucket_LOW_PRICE;
+  } else if (price_bucket == PriceBucket::kTypicalPrice) {
+    bucket = PriceInsightsData_PriceBucket_TYPICAL_PRICE;
+  } else if (price_bucket == PriceBucket::kHighPrice) {
+    bucket = PriceInsightsData_PriceBucket_HIGH_PRICE;
+  }
+
+  price_insights_data.set_price_bucket(bucket);
+  price_insights_data.set_has_multiple_catalogs(has_multiple_catalogs);
+
+  Any any;
+  any.set_type_url(price_insights_data.GetTypeName());
+  price_insights_data.SerializeToString(any.mutable_value());
+  meta.set_any_metadata(any);
+
+  return meta;
+}
+
 MockWebWrapper::MockWebWrapper(const GURL& last_committed_url,
                                bool is_off_the_record)
+    : MockWebWrapper(last_committed_url, is_off_the_record, nullptr) {}
+
+MockWebWrapper::MockWebWrapper(const GURL& last_committed_url,
+                               bool is_off_the_record,
+                               base::Value* result)
     : last_committed_url_(last_committed_url),
-      is_off_the_record_(is_off_the_record) {}
+      is_off_the_record_(is_off_the_record),
+      mock_js_result_(result) {}
 
 MockWebWrapper::~MockWebWrapper() = default;
 
@@ -238,10 +304,6 @@ void MockWebWrapper::RunJavascript(
       FROM_HERE, base::BindOnce(std::move(callback), mock_js_result_->Clone()));
 }
 
-void MockWebWrapper::SetMockJavaScriptResult(base::Value* result) {
-  mock_js_result_ = result;
-}
-
 ShoppingServiceTestBase::ShoppingServiceTestBase()
     : bookmark_model_(bookmarks::TestBookmarkClient::CreateModel()),
       opt_guide_(std::make_unique<MockOptGuideDecider>()),
@@ -253,6 +315,8 @@ ShoppingServiceTestBase::ShoppingServiceTestBase()
   base::CommandLine::ForCurrentProcess()->AppendSwitch(
       optimization_guide::switches::kDisableCheckingUserPermissionsForTesting);
   RegisterPrefs(pref_service_->registry());
+  pref_service_->registry()->RegisterBooleanPref(
+      unified_consent::prefs::kUrlKeyedAnonymizedDataCollectionEnabled, false);
 }
 
 ShoppingServiceTestBase::~ShoppingServiceTestBase() = default;

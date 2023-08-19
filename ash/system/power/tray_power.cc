@@ -7,6 +7,7 @@
 #include <utility>
 
 #include "ash/accessibility/accessibility_delegate.h"
+#include "ash/constants/ash_features.h"
 #include "ash/public/cpp/shelf_config.h"
 #include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/shell.h"
@@ -14,6 +15,7 @@
 #include "ash/style/ash_color_id.h"
 #include "ash/system/power/battery_notification.h"
 #include "ash/system/power/dual_role_notification.h"
+#include "ash/system/power/power_status.h"
 #include "ash/system/time/time_view.h"
 #include "ash/system/tray/tray_constants.h"
 #include "ash/system/tray/tray_item_view.h"
@@ -21,10 +23,13 @@
 #include "base/command_line.h"
 #include "base/metrics/histogram.h"
 #include "base/time/time.h"
+#include "chromeos/constants/chromeos_features.h"
 #include "ui/accessibility/ax_enums.mojom.h"
 #include "ui/accessibility/ax_node_data.h"
 #include "ui/base/resource/resource_bundle.h"
 #include "ui/chromeos/devicetype_utils.h"
+#include "ui/chromeos/styles/cros_styles.h"
+#include "ui/gfx/color_palette.h"
 #include "ui/gfx/color_utils.h"
 #include "ui/gfx/image/image_skia_source.h"
 #include "ui/gfx/paint_vector_icon.h"
@@ -43,6 +48,7 @@ namespace ash {
 PowerTrayView::PowerTrayView(Shelf* shelf) : TrayItemView(shelf) {
   CreateImageView();
 
+  previous_battery_saver_state_ = PowerStatus::Get()->IsBatterySaverActive();
   PowerStatus::Get()->AddObserver(this);
 }
 
@@ -56,7 +62,9 @@ gfx::Size PowerTrayView::CalculatePreferredSize() const {
   gfx::Size standard_size = TrayItemView::CalculatePreferredSize();
   if (IsHorizontalAlignment())
     return gfx::Size(kUnifiedTrayBatteryWidth, standard_size.height());
-  return standard_size;
+
+  // Ensure battery isn't too tall in side shelf.
+  return gfx::Size(standard_size.width(), kUnifiedTrayIconSize);
 }
 
 void PowerTrayView::GetAccessibleNodeData(ui::AXNodeData* node_data) {
@@ -79,20 +87,38 @@ const char* PowerTrayView::GetClassName() const {
 
 void PowerTrayView::OnThemeChanged() {
   TrayItemView::OnThemeChanged();
-  UpdateStatus();
+  UpdateStatus(false);
   UpdateImage(/*icon_color_changed=*/true);
 }
 
 void PowerTrayView::HandleLocaleChange() {
-  UpdateStatus();
+  UpdateStatus(false);
+}
+
+void PowerTrayView::UpdateLabelOrImageViewColor(bool active) {
+  if (!chromeos::features::IsJellyEnabled()) {
+    return;
+  }
+  TrayItemView::UpdateLabelOrImageViewColor(active);
+
+  const SkColor icon_fg_color = GetColorProvider()->GetColor(
+      active ? cros_tokens::kCrosSysSystemOnPrimaryContainer
+             : cros_tokens::kCrosSysOnSurface);
+  PowerStatus::BatteryImageInfo info =
+      PowerStatus::Get()->GenerateBatteryImageInfo(icon_fg_color);
+
+  image_view()->SetImage(PowerStatus::GetBatteryImage(
+      info, kUnifiedTrayBatteryIconSize, GetColorProvider()));
 }
 
 void PowerTrayView::OnPowerStatusChanged() {
-  UpdateStatus();
+  const bool bsm_active = PowerStatus::Get()->IsBatterySaverActive();
+  UpdateStatus(bsm_active != previous_battery_saver_state_);
+  previous_battery_saver_state_ = bsm_active;
 }
 
-void PowerTrayView::UpdateStatus() {
-  UpdateImage(/*icon_color_changed=*/false);
+void PowerTrayView::UpdateStatus(bool icon_color_changed) {
+  UpdateImage(icon_color_changed);
   SetVisible(PowerStatus::Get()->IsBatteryPresent());
   SetAccessibleName(PowerStatus::Get()->GetAccessibleNameString(true));
   tooltip_ = PowerStatus::Get()->GetInlinedStatusString();
@@ -102,19 +128,44 @@ void PowerTrayView::UpdateStatus() {
 }
 
 void PowerTrayView::UpdateImage(bool icon_color_changed) {
-  const PowerStatus::BatteryImageInfo& info =
-      PowerStatus::Get()->GetBatteryImageInfo();
+  SkColor prev_foreground_color = SK_ColorWHITE,
+          prev_badge_color = SK_ColorWHITE;
+  if (info_) {
+    prev_foreground_color = info_->battery_color_preferences.foreground_color;
+    prev_badge_color =
+        info_->battery_color_preferences.badge_color.value_or(SK_ColorWHITE);
+  }
+
+  PowerStatus::BatteryImageInfo info =
+      PowerStatus::Get()->GenerateBatteryImageInfo(prev_foreground_color,
+                                                   prev_badge_color);
+
   // Only change the image when the info changes or the icon color has
   // changed. http://crbug.com/589348
   if (info_ && info_->ApproximatelyEqual(info) && !icon_color_changed)
     return;
   info_ = info;
 
-  // Note: The icon color changes when the UI is in OOBE mode.
-  const SkColor icon_fg_color =
-      GetColorProvider()->GetColor(kColorAshIconColorPrimary);
-  image_view()->SetImage(PowerStatus::GetBatteryImage(
-      info, kUnifiedTrayBatteryIconSize, icon_fg_color));
+  if (!chromeos::features::IsJellyEnabled()) {
+    // Note: The icon color changes when the UI is in OOBE mode.
+    const SkColor icon_fg_color =
+        GetColorProvider()->GetColor(kColorAshIconColorPrimary);
+    absl::optional<SkColor> badge_color;
+
+    if (features::IsBatterySaverAvailable() &&
+        PowerStatus::Get()->IsBatterySaverActive()) {
+      badge_color = cros_styles::DarkModeEnabled() ? gfx::kGoogleYellow700
+                                                   : gfx::kGoogleYellow800;
+    }
+
+    info = PowerStatus::Get()->GenerateBatteryImageInfo(icon_fg_color,
+                                                        badge_color);
+    info_ = info;
+    image_view()->SetImage(PowerStatus::GetBatteryImage(
+        info, kUnifiedTrayBatteryIconSize, GetColorProvider()));
+    return;
+  }
+  UpdateLabelOrImageViewColor(is_active());
 }
 
 }  // namespace ash

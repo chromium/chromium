@@ -13,6 +13,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.android_webview.AwBrowserProcess;
+import org.chromium.android_webview.common.Lifetime;
 import org.chromium.android_webview.common.SafeModeAction;
 import org.chromium.android_webview.common.VariationsFastFetchModeUtils;
 import org.chromium.android_webview.common.variations.VariationsUtils;
@@ -36,6 +37,7 @@ import java.util.concurrent.TimeUnit;
  * This is the browser-process counterpart to {@link
  * org.chromium.android_webview.services.NonEmbeddedFastVariationsSeedSafeModeAction}.
  */
+@Lifetime.Singleton
 public class FastVariationsSeedSafeModeAction implements SafeModeAction {
     private static final String TAG = "FastVariationsSeed";
     // This ID should not be reused.

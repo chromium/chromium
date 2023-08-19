@@ -41,6 +41,9 @@ BLINK_COMMON_EXPORT bool IsTrialEnabledForBrowserProcessReadAccess(
 BLINK_COMMON_EXPORT bool IsTrialPersistentToNextResponse(
     base::StringPiece trial_name);
 
+// Return true if |trial_name| is a deprecation trial.
+BLINK_COMMON_EXPORT bool IsDeprecationTrial(base::StringPiece trial_name);
+
 // Returns the trial type of the given |feature|.
 BLINK_COMMON_EXPORT OriginTrialType GetTrialType(OriginTrialFeature feature);
 

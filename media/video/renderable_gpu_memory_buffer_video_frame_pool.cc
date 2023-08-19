@@ -21,6 +21,7 @@
 #include "gpu/command_buffer/client/shared_image_interface.h"
 #include "gpu/command_buffer/common/gpu_memory_buffer_support.h"
 #include "gpu/command_buffer/common/shared_image_usage.h"
+#include "media/base/media_switches.h"
 #include "media/base/video_frame.h"
 
 namespace media {
@@ -172,9 +173,9 @@ bool FrameResources::Initialize() {
 
   // Align number of rows to 2, because it's required by YUV_420_BIPLANAR
   // buffer allocation code.
-  // Align buffer stride to 4, because our rendering code at
-  // GLImageMemory::Initialize() requires it, since it sometimes treats
-  // Y-planes are 4 bytes per pixel textures.
+  // Align buffer stride to 4, because our SharedImage shared memory backing
+  // code requires it, since it sometimes treats Y-planes are 4 bytes per pixel
+  // textures.
   gfx::Size buffer_size_in_pixels(base::bits::AlignUp(coded_size_.width(), 4),
                                   base::bits::AlignUp(coded_size_.height(), 2));
 
@@ -190,10 +191,6 @@ bool FrameResources::Initialize() {
 
   gpu_memory_buffer_->SetColorSpace(color_space_);
 
-  // Bind SharedImages to each plane.
-  constexpr size_t kNumPlanes = 2;
-  constexpr gfx::BufferPlane kPlanes[kNumPlanes] = {gfx::BufferPlane::Y,
-                                                    gfx::BufferPlane::UV};
   constexpr uint32_t kSharedImageUsage =
 #if BUILDFLAG(IS_MAC)
       gpu::SHARED_IMAGE_USAGE_MACOS_VIDEO_TOOLBOX |
@@ -206,6 +203,21 @@ bool FrameResources::Initialize() {
   // TODO(https://crbug.com/1311844): Use gpu::GetBufferTextureTarget() instead.
   texture_target = gpu::GetPlatformSpecificTextureTarget();
 #endif
+
+  if (IsMultiPlaneFormatForHardwareVideoEnabled()) {
+    context->CreateSharedImage(
+        gpu_memory_buffer_.get(), viz::MultiPlaneFormat::kNV12, color_space_,
+        kTopLeft_GrSurfaceOrigin, kPremul_SkAlphaType, kSharedImageUsage,
+        mailbox_holders_[0].mailbox, mailbox_holders_[0].sync_token);
+    mailbox_holders_[0].texture_target = texture_target;
+    return true;
+  }
+
+  // Bind SharedImages to each plane.
+  constexpr size_t kNumPlanes = 2;
+  constexpr gfx::BufferPlane kPlanes[kNumPlanes] = {gfx::BufferPlane::Y,
+                                                    gfx::BufferPlane::UV};
+
   for (size_t plane = 0; plane < kNumPlanes; ++plane) {
     context->CreateSharedImage(
         gpu_memory_buffer_.get(), kPlanes[plane], color_space_,
@@ -238,6 +250,15 @@ FrameResources::CreateVideoFrameAndTakeGpuMemoryBuffer() {
   // TODO(https://crbug.com/1191956): This should depend on the platform and
   // format.
   video_frame->metadata().allow_overlay = true;
+
+  if (IsMultiPlaneFormatForHardwareVideoEnabled()) {
+    // Tag this frame as having used a single SharedImage for multiplanar
+    // formats (by default it sets this field to `kLegacy`, which causes the
+    // rest of the system to assume that this frame has been created with one
+    // SharedImage per plane for multiplanar formats).
+    video_frame->set_shared_image_format_type(
+        SharedImageFormatType::kSharedImageFormat);
+  }
 
   // Only native (non shared memory) GMBs require waiting on GPU fences.
   const bool has_native_gmb =

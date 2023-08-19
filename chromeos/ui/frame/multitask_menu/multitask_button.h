@@ -33,7 +33,6 @@ class MultitaskButton : public views::Button {
 
   // views::Button:
   void PaintButtonContents(gfx::Canvas* canvas) override;
-  void OnThemeChanged() override;
 
  private:
   const Type type_;

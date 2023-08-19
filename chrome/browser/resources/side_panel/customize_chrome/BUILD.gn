@@ -23,8 +23,6 @@ build_webui("build") {
     "categories.ts",
     "check_mark_wrapper.ts",
     "chrome_colors.ts",
-    "color.ts",
-    "colors.ts",
     "hover_button.ts",
     "shortcuts.ts",
     "themes.ts",
@@ -33,8 +31,8 @@ build_webui("build") {
 
   non_web_component_files = [
     "chrome_cart_proxy.ts",
-    "color_utils.ts",
     "customize_chrome_api_proxy.ts",
+    "window_proxy.ts",
   ]
 
   mojo_files_deps = [
@@ -53,6 +51,7 @@ build_webui("build") {
     "//ui/webui/resources/cr_components/color_change_listener:build_ts",
     "//ui/webui/resources/cr_components/help_bubble:build_ts",
     "//ui/webui/resources/cr_components/managed_dialog:build_ts",
+    "//ui/webui/resources/cr_components/theme_color_picker:build_ts",
     "//ui/webui/resources/cr_elements:build_ts",
     "//ui/webui/resources/js:build_ts",
     "//ui/webui/resources/mojo:build_ts",

@@ -73,12 +73,13 @@ static bool AllowAtomicWaits(
 
 V8PerIsolateData::V8PerIsolateData(
     scoped_refptr<base::SingleThreadTaskRunner> task_runner,
+    scoped_refptr<base::SingleThreadTaskRunner> low_priority_task_runner,
     V8ContextSnapshotMode v8_context_snapshot_mode,
     v8::CreateHistogramCallback create_histogram_callback,
     v8::AddHistogramSampleCallback add_histogram_sample_callback)
     : v8_context_snapshot_mode_(v8_context_snapshot_mode),
       isolate_holder_(
-          task_runner,
+          std::move(task_runner),
           gin::IsolateHolder::kSingleThread,
           AllowAtomicWaits(v8_context_snapshot_mode)
               ? gin::IsolateHolder::kAllowAtomicsWait
@@ -90,7 +91,8 @@ V8PerIsolateData::V8PerIsolateData(
               ? gin::IsolateHolder::IsolateCreationMode::kCreateSnapshot
               : gin::IsolateHolder::IsolateCreationMode::kNormal,
           create_histogram_callback,
-          add_histogram_sample_callback),
+          add_histogram_sample_callback,
+          std::move(low_priority_task_runner)),
       string_cache_(std::make_unique<StringCache>(GetIsolate())),
       private_property_(std::make_unique<V8PrivateProperty>()),
       constructor_mode_(ConstructorMode::kCreateNewObject),
@@ -117,14 +119,15 @@ v8::Isolate* V8PerIsolateData::MainThreadIsolate() {
 
 v8::Isolate* V8PerIsolateData::Initialize(
     scoped_refptr<base::SingleThreadTaskRunner> task_runner,
+    scoped_refptr<base::SingleThreadTaskRunner> low_priority_task_runner,
     V8ContextSnapshotMode context_mode,
     v8::CreateHistogramCallback create_histogram_callback,
     v8::AddHistogramSampleCallback add_histogram_sample_callback) {
   TRACE_EVENT1("v8", "V8PerIsolateData::Initialize", "V8ContextSnapshotMode",
                context_mode);
-  V8PerIsolateData* data =
-      new V8PerIsolateData(task_runner, context_mode, create_histogram_callback,
-                           add_histogram_sample_callback);
+  V8PerIsolateData* data = new V8PerIsolateData(
+      std::move(task_runner), std::move(low_priority_task_runner), context_mode,
+      create_histogram_callback, add_histogram_sample_callback);
   DCHECK(data);
 
   v8::Isolate* isolate = data->GetIsolate();
@@ -300,7 +303,7 @@ v8::Local<v8::Context> V8PerIsolateData::EnsureScriptRegexpContext() {
   if (!script_regexp_script_state_) {
     LEAK_SANITIZER_DISABLED_SCOPE;
     v8::Local<v8::Context> context(v8::Context::New(GetIsolate()));
-    script_regexp_script_state_ = MakeGarbageCollected<ScriptState>(
+    script_regexp_script_state_ = ScriptState::Create(
         context,
         DOMWrapperWorld::Create(GetIsolate(),
                                 DOMWrapperWorld::WorldType::kRegExp),

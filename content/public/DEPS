@@ -9,6 +9,7 @@ include_rules = [
   # All code in content/public can use these headers.
   "+content/public/common",
   "+content/public/android/content_jni_headers",
+  "+content/public/android/content_main_dex_jni",
 
   # This file does not belong in content/public as it should not be
   # included directly by embedders of content/.  It must however be

@@ -73,7 +73,8 @@ class LoginPinInputViewTest
     ExpectAttribute(value, ax::mojom::StringAttribute::kValue);
   }
 
-  raw_ptr<LoginPinInputView, ExperimentalAsh> view_ = nullptr;
+  raw_ptr<LoginPinInputView, DanglingUntriaged | ExperimentalAsh> view_ =
+      nullptr;
   int length_ = 0;
 
   // Generated during the callback response.

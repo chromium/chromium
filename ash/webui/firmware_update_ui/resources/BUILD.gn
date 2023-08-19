@@ -34,7 +34,6 @@ generate_grd("build_grd") {
     "firmware_update_types.js",
     "index.html",
     "mojo_interface_provider.js",
-    "mojo_utils.js",
   ]
   input_files_base_dir = rebase_path(".", "//")
   deps = [
@@ -65,17 +64,13 @@ js_type_check("closure_compile") {
     ":firmware_update_app",
     ":firmware_update_types",
     ":mojo_interface_provider",
-    ":mojo_utils",
     ":peripheral_updates_list",
     ":update_card",
   ]
 }
 
 js_library("fake_data") {
-  deps = [
-    ":firmware_update_types",
-    ":mojo_utils",
-  ]
+  deps = [ ":firmware_update_types" ]
 }
 
 js_library("fake_update_controller") {
@@ -108,7 +103,6 @@ js_library("firmware_update_app") {
 js_library("firmware_confirmation_dialog") {
   deps = [
     ":firmware_update_types",
-    ":mojo_utils",
     "//ash/webui/common/resources:i18n_behavior",
     "//ash/webui/firmware_update_ui/mojom:mojom_js_library_for_compile",
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
@@ -118,7 +112,6 @@ js_library("firmware_confirmation_dialog") {
 js_library("firmware_update_dialog") {
   deps = [
     ":firmware_update_types",
-    ":mojo_utils",
     "//ash/webui/common/resources:i18n_behavior",
     "//ash/webui/firmware_update_ui/mojom:mojom_js_library_for_compile",
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
@@ -137,9 +130,6 @@ js_library("mojo_interface_provider") {
     ":firmware_update_types",
     "//ash/webui/common/resources:cr.m",
   ]
-}
-
-js_library("mojo_utils") {
 }
 
 js_library("peripheral_updates_list") {

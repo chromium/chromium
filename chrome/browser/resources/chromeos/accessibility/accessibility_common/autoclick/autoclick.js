@@ -104,12 +104,14 @@ export class Autoclick {
   setFocusRings_(rects) {
     // TODO(katie): Add a property to FocusRingInfo to set FocusRingBehavior
     // to fade out.
-    chrome.accessibilityPrivate.setFocusRings([{
-      rects,
-      type: chrome.accessibilityPrivate.FocusType.SOLID,
-      color: AUTOCLICK_FOCUS_RING_COLOR,
-      secondaryColor: AUTOCLICK_FOCUS_RING_COLOR,
-    }]);
+    chrome.accessibilityPrivate.setFocusRings(
+        [{
+          rects,
+          type: chrome.accessibilityPrivate.FocusType.SOLID,
+          color: AUTOCLICK_FOCUS_RING_COLOR,
+          secondaryColor: AUTOCLICK_FOCUS_RING_COLOR,
+        }],
+        chrome.accessibilityPrivate.AssistiveTechnologyType.AUTO_CLICK);
   }
 
   /**

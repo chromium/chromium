@@ -215,7 +215,7 @@ suite('ZoneCustomizationElementTest', function() {
         KeyboardBacklightActionName.SET_CURRENT_BACKLIGHT_STATE);
 
     // Selects wallpaper color, color of zone 2 should change to wallpaper.
-    (colorContainers[7] as HTMLElement).click();
+    (colorContainers[7]!.querySelector('color-icon') as HTMLElement).click();
 
     await keyboardBacklightProvider.whenCalled('setBacklightZoneColor');
     const action =
@@ -266,7 +266,7 @@ suite('ZoneCustomizationElementTest', function() {
         KeyboardBacklightActionName.SET_CURRENT_BACKLIGHT_STATE);
 
     // Selects wallpaper color, color of zone 2 should change to wallpaper.
-    (colorContainers[7] as HTMLElement).click();
+    (colorContainers[7]!.querySelector('color-icon') as HTMLElement).click();
 
     await keyboardBacklightProvider.whenCalled('setBacklightZoneColor');
     assertDeepEquals(

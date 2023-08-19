@@ -49,6 +49,7 @@ void SpeechMonitor::Speak(int utterance_id,
          "empty string in a test, that's probably not the correct way to "
          "achieve stopping speech. If it is unintended, it indicates a deeper "
          "underlying issue.";
+  text_params_[utterance] = params;
   content::TtsController::GetInstance()->OnTtsEvent(
       utterance_id, content::TTS_EVENT_START, 0,
       static_cast<int>(utterance.size()), std::string());
@@ -56,6 +57,7 @@ void SpeechMonitor::Speak(int utterance_id,
       utterance_id, content::TTS_EVENT_END, static_cast<int>(utterance.size()),
       0, std::string());
   std::move(on_speak_finished).Run(true);
+
   time_of_last_utterance_ = std::chrono::steady_clock::now();
 }
 
@@ -80,6 +82,13 @@ void SpeechMonitor::GetVoices(std::vector<content::VoiceData>* out_voices) {
 void SpeechMonitor::WillSpeakUtteranceWithVoice(
     content::TtsUtterance* utterance,
     const content::VoiceData& voice_data) {
+  if (!utterance_queue_.empty() &&
+      utterance_queue_.back().text == utterance->GetText() &&
+      std::find(repeated_speech_.begin(), repeated_speech_.end(),
+                utterance->GetText()) == repeated_speech_.end()) {
+    repeated_speech_.push_back(utterance->GetText());
+  }
+
   utterance_queue_.emplace_back(utterance->GetText(), utterance->GetLang());
   delay_for_last_utterance_ms_ = CalculateUtteranceDelayMS();
   MaybeContinueReplay();
@@ -206,6 +215,13 @@ void SpeechMonitor::ExpectNextSpeechIsNotPattern(
                                "\") " + location.ToString()});
 }
 
+void SpeechMonitor::ExpectHadNoRepeatedSpeech(const base::Location& location) {
+  CHECK(!replay_loop_runner_.get());
+  replay_queue_.push_back(
+      {[this]() { return repeated_speech_.empty(); },
+       "ExpectHadNoRepeatedSpeech() " + location.ToString()});
+}
+
 void SpeechMonitor::Call(std::function<void()> func,
                          const base::Location& location) {
   CHECK(!replay_loop_runner_.get());
@@ -278,13 +294,37 @@ void SpeechMonitor::MaybePrintExpectations() {
   for (const auto& item : utterance_queue_)
     utterance_queue_descriptions.push_back("\"" + item.text + "\"");
 
-  LOG(ERROR) << "Still waiting for expectation(s).\n"
-             << "Unsatisfied expectations...\n"
-             << base::JoinString(replay_queue_descriptions, "\n") << "\n\n"
-             << "pending speech utterances...\n"
-             << base::JoinString(utterance_queue_descriptions, "\n") << "\n\n"
-             << "Satisfied expectations...\n"
-             << base::JoinString(replayed_queue_, "\n");
+  std::stringstream output;
+  output << "Still waiting for expectation(s).\n";
+  if (!replay_queue_descriptions.empty()) {
+    output << "Unsatisfied expectations...\n"
+           << base::JoinString(replay_queue_descriptions, "\n");
+  }
+  if (!utterance_queue_descriptions.empty()) {
+    output << "\n\npending speech utterances...\n"
+           << base::JoinString(utterance_queue_descriptions, "\n");
+  }
+  if (!replayed_queue_.empty()) {
+    output << "\n\nSatisfied expectations...\n"
+           << base::JoinString(replayed_queue_, "\n");
+  }
+  if (!repeated_speech_.empty()) {
+    output << "\n\nRepeated speech...\n"
+           << base::JoinString(repeated_speech_, "\n");
+  }
+
+  LOG(ERROR) << output.str();
+}
+
+absl::optional<content::UtteranceContinuousParameters>
+SpeechMonitor::GetParamsForPreviouslySpokenTextPattern(
+    const std::string& pattern) {
+  for (const auto& [text, params] : text_params_) {
+    if (base::MatchPattern(text, pattern)) {
+      return params;
+    }
+  }
+  return absl::nullopt;
 }
 
 }  // namespace test

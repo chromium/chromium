@@ -2,9 +2,19 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-if (!is_android) {
-  static_library("trusted_vault") {
-    sources = [
+static_library("trusted_vault") {
+  sources = [
+    "trusted_vault_client.h",
+    "trusted_vault_service.cc",
+    "trusted_vault_service.h",
+  ]
+  public_deps = [
+    "//base",
+    "//components/keyed_service/core",
+  ]
+
+  if (!is_android) {
+    sources += [
       "command_line_switches.cc",
       "command_line_switches.h",
       "download_keys_response_handler.cc",
@@ -43,10 +53,6 @@ if (!is_android) {
       "trusted_vault_server_constants.cc",
       "trusted_vault_server_constants.h",
     ]
-    public_deps = [
-      "//base",
-      "//components/sync/service",
-    ]
     deps = [
       "//components/os_crypt/sync",
       "//components/signin/public/identity_manager",
@@ -58,7 +64,9 @@ if (!is_android) {
       "//third_party/boringssl",
     ]
   }
+}
 
+if (!is_android) {
   source_set("unit_tests") {
     testonly = true
     sources = [

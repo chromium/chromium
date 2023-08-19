@@ -97,6 +97,10 @@ uint64_t D3DSharedFence::GetFenceValue() const {
   return fence_value_;
 }
 
+Microsoft::WRL::ComPtr<ID3D11Device> D3DSharedFence::GetD3D11Device() const {
+  return d3d11_device_;
+}
+
 bool D3DSharedFence::IsSameFenceAsHandle(HANDLE shared_handle) const {
   using PFN_COMPARE_OBJECT_HANDLES =
       BOOL(WINAPI*)(HANDLE hFirstObjectHandle, HANDLE hSecondObjectHandle);

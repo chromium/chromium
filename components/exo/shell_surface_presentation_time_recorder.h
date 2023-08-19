@@ -80,7 +80,8 @@ class ShellSurfacePresentationTimeRecorder
                                 const gfx::PresentationFeedback& feedback);
 
  private:
-  raw_ptr<ShellSurface, ExperimentalAsh> shell_surface_ = nullptr;
+  raw_ptr<ShellSurface, DanglingUntriaged | ExperimentalAsh> shell_surface_ =
+      nullptr;
   std::unique_ptr<Reporter> reporter_;
 
   uint64_t next_request_id_ = 0u;

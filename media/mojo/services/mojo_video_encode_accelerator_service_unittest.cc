@@ -191,8 +191,8 @@ TEST_F(MojoVideoEncodeAcceleratorServiceTest, EncodeOneFrame) {
     EXPECT_CALL(*mock_mojo_vea_client(),
                 BitstreamBufferReady(kBitstreamBufferId, _));
 
-    mojo_vea_service()->Encode(video_frame, true /* is_keyframe */,
-                               base::DoNothing());
+    media::VideoEncoder::EncodeOptions options(/* key_frame */ true);
+    mojo_vea_service()->Encode(video_frame, options, base::DoNothing());
     base::RunLoop().RunUntilIdle();
   }
 }
@@ -331,8 +331,8 @@ TEST_F(MojoVideoEncodeAcceleratorServiceTest, EncodeWithWrongSizeFails) {
 
   EXPECT_CALL(*mock_mojo_vea_client(), NotifyErrorStatus);
 
-  mojo_vea_service()->Encode(video_frame, true /* is_keyframe */,
-                             base::DoNothing());
+  media::VideoEncoder::EncodeOptions options(/* key_frame */ true);
+  mojo_vea_service()->Encode(video_frame, options, base::DoNothing());
   base::RunLoop().RunUntilIdle();
 }
 
@@ -343,8 +343,8 @@ TEST_F(MojoVideoEncodeAcceleratorServiceTest, CallsBeforeInitializeAreIgnored) {
   CreateMojoVideoEncodeAccelerator();
   {
     const auto video_frame = VideoFrame::CreateBlackFrame(kInputVisibleSize);
-    mojo_vea_service()->Encode(video_frame, true /* is_keyframe */,
-                               base::DoNothing());
+    media::VideoEncoder::EncodeOptions options(/* key_frame */ true);
+    mojo_vea_service()->Encode(video_frame, options, base::DoNothing());
     base::RunLoop().RunUntilIdle();
   }
   {

@@ -3,7 +3,6 @@
 # found in the LICENSE file.
 
 source_set("passwords_in_other_apps") {
-  configs += [ "//build/config/compiler:enable_arc" ]
   sources = [
     "passwords_in_other_apps_coordinator.h",
     "passwords_in_other_apps_coordinator.mm",
@@ -11,7 +10,6 @@ source_set("passwords_in_other_apps") {
     "passwords_in_other_apps_mediator.mm",
   ]
   deps = [
-    ":histograms",
     ":passwords_in_other_apps_ui",
     "//base",
     "//ios/chrome/browser/shared/coordinator/chrome_coordinator",
@@ -21,7 +19,6 @@ source_set("passwords_in_other_apps") {
 }
 
 source_set("passwords_in_other_apps_ui") {
-  configs += [ "//build/config/compiler:enable_arc" ]
   sources = [
     "passwords_in_other_apps_consumer.h",
     "passwords_in_other_apps_view_controller.h",
@@ -54,7 +51,6 @@ source_set("passwords_in_other_apps_ui") {
 }
 
 source_set("constants") {
-  configs += [ "//build/config/compiler:enable_arc" ]
   sources = [
     "constants.h",
     "constants.mm",
@@ -62,20 +58,7 @@ source_set("constants") {
   frameworks = [ "Foundation.framework" ]
 }
 
-source_set("histograms") {
-  configs += [ "//build/config/compiler:enable_arc" ]
-  sources = [
-    "histograms.h",
-    "histograms.mm",
-  ]
-  deps = [
-    "//base",
-    "//ios/chrome/browser/ui/settings/utils",
-  ]
-}
-
 source_set("unit_tests") {
-  configs += [ "//build/config/compiler:enable_arc" ]
   testonly = true
   sources = [ "passwords_in_other_apps_mediator_unittest.mm" ]
   deps = [
@@ -88,10 +71,7 @@ source_set("unit_tests") {
 }
 
 source_set("eg_app_support+eg2") {
-  configs += [
-    "//build/config/compiler:enable_arc",
-    "//build/config/ios:xctest_config",
-  ]
+  configs += [ "//build/config/ios:xctest_config" ]
   testonly = true
   sources = [
     "passwords_in_other_apps_app_interface.h",
@@ -105,10 +85,7 @@ source_set("eg_app_support+eg2") {
 }
 
 source_set("eg_test_support+eg2") {
-  configs += [
-    "//build/config/compiler:enable_arc",
-    "//build/config/ios:xctest_config",
-  ]
+  configs += [ "//build/config/ios:xctest_config" ]
   testonly = true
   sources = [
     "passwords_in_other_apps_app_interface.h",
@@ -118,10 +95,7 @@ source_set("eg_test_support+eg2") {
 }
 
 source_set("eg2_tests") {
-  configs += [
-    "//build/config/compiler:enable_arc",
-    "//build/config/ios:xctest_config",
-  ]
+  configs += [ "//build/config/ios:xctest_config" ]
   testonly = true
   sources = [ "passwords_in_other_apps_egtest.mm" ]
   deps = [
@@ -131,6 +105,7 @@ source_set("eg2_tests") {
     "//ios/chrome/app/strings",
     "//ios/chrome/browser/shared/public/features",
     "//ios/chrome/browser/ui/settings:settings_root_constants",
+    "//ios/chrome/browser/ui/settings/password:eg_test_support+eg2",
     "//ios/chrome/browser/ui/settings/password:password_constants",
     "//ios/chrome/browser/ui/settings/password/password_settings:password_settings_constants",
     "//ios/chrome/test/earl_grey:eg_test_support+eg2",

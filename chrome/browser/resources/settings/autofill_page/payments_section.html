@@ -32,15 +32,26 @@
     pref="{{prefs.autofill.credit_card_enabled}}">
 </settings-toggle-button>
 <if expr="is_win or is_macosx">
-  <template is="dom-if" if="[[shouldShowMandatoryAuthToggle_(deviceAuthAvailable_, prefs.autofill.credit_card_enabled.value, prefs.autofill.payment_methods_mandatory_reauth.value)]]">
+  <template is="dom-if" if="[[mandatoryReauthFeatureEnabled_]]">
     <settings-toggle-button id="mandatoryAuthToggle"
         no-extension-indicator label="$i18n{enableMandatoryAuthToggleLabel}"
         sub-label="$i18n{enableMandatoryAuthToggleSublabel}"
         pref="{{prefs.autofill.payment_methods_mandatory_reauth}}"
+        disabled="[[shouldDisableAuthToggle_(
+                  prefs.autofill.credit_card_enabled.value, deviceAuthAvailable_)]]"
         on-settings-boolean-control-change="onMandatoryAuthToggleChange_">
     </settings-toggle-button>
   </template>
 </if>
+<template is="dom-if" if="[[cvcStorageAvailable_]]">
+  <settings-toggle-button id="cvcStorageToggle"
+        no-extension-indicator label="$i18n{enableCvcStorageLabel}"
+        sub-label-with-link="$i18n{enableCvcStorageDeleteDataSublabel}"
+        disabled="[[!prefs.autofill.credit_card_enabled.value]]"
+        on-sub-label-link-clicked="onBulkRemoveCvcClick_"
+        pref="{{prefs.autofill.payment_cvc_storage}}">
+    </settings-toggle-button>
+</template>
 <settings-toggle-button id="canMakePaymentToggle"
     aria-label="$i18n{canMakePaymentToggleLabel}"
     label="$i18n{canMakePaymentToggleLabel}"
@@ -50,7 +61,7 @@
 <template is="dom-if"
     if="[[shouldShowFidoToggle_(
         prefs.autofill.credit_card_enabled.value,
-        userIsFidoVerifiable_)]]">
+        userIsFidoVerifiable_, mandatoryReauthFeatureEnabled_)]]">
   <settings-toggle-button
       id="autofillCreditCardFIDOAuthToggle"
       aria-label="$i18n{creditCards}" no-extension-indicator
@@ -121,8 +132,7 @@
     label="$i18n{migrateCreditCardsLabel}"
     sub-label="[[migratableCreditCardsInfo_]]"></cr-link-row>
 <settings-payments-list id="paymentsList"
-    class$="list-frame [[computeCssClass_(
-        removeCardExpirationAndTypeTitlesEnabled_)]]"
+    class="list-frame payment-list-margin-start"
     credit-cards="[[creditCards]]" ibans="[[ibans]]" upi-ids="[[upiIds]]"
     on-dots-iban-menu-click="onDotsIbanMenuClick_"
     on-dots-card-menu-click="onCreditCardDotsMenuClick_"
@@ -206,5 +216,14 @@
       body-text="$i18n{removeLocalPaymentMethodConfirmationDescription}"
       confirm-text="$i18n{delete}"
       on-close="onLocalIbanRemoveConfirmationDialogClose_">
+  </settings-simple-confirmation-dialog>
+</template>
+
+<template is="dom-if" if="[[showBulkRemoveCvcConfirmationDialog_]]" restamp>
+  <settings-simple-confirmation-dialog id="bulkDeleteCvcConfirmDialog"
+      title-text="$i18n{bulkRemoveCvcConfirmationTitle}"
+      body-text="$i18n{bulkRemoveCvcConfirmationDescription}"
+      confirm-text="$i18n{delete}"
+      on-close="onShowBulkRemoveCvcConfirmationDialogClose_">
   </settings-simple-confirmation-dialog>
 </template>

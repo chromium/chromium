@@ -16,7 +16,7 @@ import org.chromium.base.ContextUtils;
 import org.chromium.chrome.browser.DragAndDropLauncherActivity;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.multiwindow.MultiWindowUtils;
-import org.chromium.content_public.browser.ContentFeatureList;
+import org.chromium.content_public.browser.ContentFeatureMap;
 import org.chromium.content_public.common.ContentFeatures;
 import org.chromium.ui.dragdrop.DragAndDropBrowserDelegate;
 import org.chromium.ui.dragdrop.DropDataProviderImpl;
@@ -39,12 +39,12 @@ public class ChromeDragAndDropBrowserDelegate implements DragAndDropBrowserDeleg
      */
     public ChromeDragAndDropBrowserDelegate(Context context) {
         mContext = context;
-        mSupportDropInChrome = ContentFeatureList.getFieldTrialParamByFeatureAsBoolean(
+        mSupportDropInChrome = ContentFeatureMap.getInstance().getFieldTrialParamByFeatureAsBoolean(
                 ContentFeatures.TOUCH_DRAG_AND_CONTEXT_MENU, PARAM_DROP_IN_CHROME, false);
         mSupportAnimatedImageDragShadow =
                 ChromeFeatureList.isEnabled(ChromeFeatureList.ANIMATED_IMAGE_DRAG_SHADOW);
 
-        int delay = ContentFeatureList.getFieldTrialParamByFeatureAsInt(
+        int delay = ContentFeatureMap.getInstance().getFieldTrialParamByFeatureAsInt(
                 ContentFeatures.TOUCH_DRAG_AND_CONTEXT_MENU, PARAM_CLEAR_CACHE_DELAYED_MS,
                 DropDataProviderImpl.DEFAULT_CLEAR_CACHED_DATA_INTERVAL_MS);
         DropDataProviderUtils.setClearCachedDataIntervalMs(delay);

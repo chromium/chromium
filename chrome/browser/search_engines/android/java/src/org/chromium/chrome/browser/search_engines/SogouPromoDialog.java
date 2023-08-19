@@ -57,8 +57,7 @@ public class SogouPromoDialog extends PromoDialog {
 
     private final ClickableSpan mSpan;
 
-    @UserChoice
-    private int mChoice = UserChoice.BACK_KEY;
+    private @UserChoice int mChoice = UserChoice.BACK_KEY;
 
     /**
      * Creates an instance of the dialog.

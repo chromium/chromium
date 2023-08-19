@@ -8,6 +8,9 @@ import android.content.Context;
 import android.content.res.Configuration;
 import android.graphics.Color;
 
+import androidx.annotation.ColorInt;
+import androidx.annotation.IntRange;
+
 import org.chromium.base.MathUtils;
 
 /**
@@ -172,5 +175,15 @@ public class ColorUtils {
             return Color.argb(alpha, red, green, blue);
         }
         return Color.rgb(red, green, blue);
+    }
+
+    /**
+     * Pass through to {@link androidx.core.graphics.ColorUtils#setAlphaComponent(int, int)} so
+     * callers that need methods out of this class don't need to bother importing two versions of
+     * classes named "ColorUtils".
+     */
+    public static @ColorInt int setAlphaComponent(
+            @ColorInt int color, @IntRange(from = 0L, to = 255L) int alpha) {
+        return androidx.core.graphics.ColorUtils.setAlphaComponent(color, alpha);
     }
 }

@@ -3,15 +3,12 @@
 # found in the LICENSE file.
 
 source_set("scene_state_observer") {
-  configs += [ "//build/config/compiler:enable_arc" ]
   sources = [ "scene_state_observer.h" ]
 
   frameworks = [ "UIKit.framework" ]
 }
 
 source_set("observing_scene_agent") {
-  configs += [ "//build/config/compiler:enable_arc" ]
-
   sources = [
     "observing_scene_state_agent.h",
     "observing_scene_state_agent.mm",
@@ -26,7 +23,6 @@ source_set("observing_scene_agent") {
 }
 
 source_set("scene_state_header") {
-  configs += [ "//build/config/compiler:enable_arc" ]
   sources = [
     "connection_information.h",
     "scene_controller.h",
@@ -51,7 +47,6 @@ source_set("scene_testing") {
 }
 
 source_set("scene") {
-  configs += [ "//build/config/compiler:enable_arc" ]
   sources = [
     "scene_controller.mm",
     "scene_delegate.h",
@@ -61,10 +56,11 @@ source_set("scene") {
 
   deps = [
     ":scene_state_browser_agent",
+    ":scene_util",
     "//base",
-    "//base/ios",
+    "//components/autofill/core/browser",
     "//components/breadcrumbs/core",
-    "//components/breadcrumbs/core:feature_flags",
+    "//components/breadcrumbs/core:status",
     "//components/feature_engagement/public",
     "//components/infobars/core",
     "//components/password_manager/core/common:features",
@@ -100,19 +96,20 @@ source_set("scene") {
     "//ios/chrome/browser/main",
     "//ios/chrome/browser/ntp",
     "//ios/chrome/browser/ntp:features",
-    "//ios/chrome/browser/paths",
+    "//ios/chrome/browser/passwords",
+    "//ios/chrome/browser/passwords:password_checkup_utils",
     "//ios/chrome/browser/policy",
     "//ios/chrome/browser/policy:policy_util",
     "//ios/chrome/browser/promos_manager:factory",
     "//ios/chrome/browser/promos_manager:features",
     "//ios/chrome/browser/screenshot",
-    "//ios/chrome/browser/sessions:scene_util",
     "//ios/chrome/browser/sessions:session_saving",
     "//ios/chrome/browser/sessions:session_service",
     "//ios/chrome/browser/shared/coordinator/default_browser_promo",
     "//ios/chrome/browser/shared/coordinator/layout_guide:layout_guide_scene_agent",
     "//ios/chrome/browser/shared/model/application_context",
     "//ios/chrome/browser/shared/model/browser_state",
+    "//ios/chrome/browser/shared/model/paths",
     "//ios/chrome/browser/shared/model/prefs:pref_names",
     "//ios/chrome/browser/shared/model/url",
     "//ios/chrome/browser/shared/model/url:constants",
@@ -149,13 +146,14 @@ source_set("scene") {
     "//ios/chrome/browser/ui/promos_manager:promos_manager_scene_agent",
     "//ios/chrome/browser/ui/scoped_ui_blocker",
     "//ios/chrome/browser/ui/settings:settings_root",
+    "//ios/chrome/browser/ui/settings/password",
+    "//ios/chrome/browser/ui/settings/password/password_checkup",
     "//ios/chrome/browser/ui/settings/sync",
+    "//ios/chrome/browser/ui/settings/utils",
     "//ios/chrome/browser/ui/start_surface",
     "//ios/chrome/browser/ui/start_surface:feature_flags",
     "//ios/chrome/browser/ui/tab_switcher:tab_utils",
     "//ios/chrome/browser/ui/tab_switcher/tab_grid",
-    "//ios/chrome/browser/ui/thumb_strip:feature_flags",
-    "//ios/chrome/browser/ui/whats_new:util",
     "//ios/chrome/browser/ui/whats_new/promo",
     "//ios/chrome/browser/url_loading",
     "//ios/chrome/browser/web:page_placeholder",
@@ -164,9 +162,11 @@ source_set("scene") {
     "//ios/chrome/browser/window_activities",
     "//ios/chrome/common/ui/reauthentication",
     "//ios/chrome/common/ui/util",
+    "//ios/public/provider/chrome/browser/signin:choice_api",
     "//ios/public/provider/chrome/browser/ui_utils:ui_utils_api",
     "//ios/public/provider/chrome/browser/user_feedback:user_feedback_api",
     "//ios/third_party/material_components_ios",
+    "//ios/web/common:features",
     "//ui/base:base",
   ]
   public_deps = [ ":scene_state_header" ]
@@ -178,8 +178,25 @@ source_set("scene") {
   frameworks = [ "UIKit.framework" ]
 }
 
+source_set("scene_util") {
+  sources = [
+    "scene_util.h",
+    "scene_util.mm",
+  ]
+  deps = [ "//base" ]
+  frameworks = [ "UIKit.framework" ]
+}
+
+source_set("scene_util_test_support") {
+  testonly = true
+  sources = [
+    "scene_util_test_support.h",
+    "scene_util_test_support.mm",
+  ]
+  frameworks = [ "UIKit.framework" ]
+}
+
 source_set("scene_state_browser_agent") {
-  configs += [ "//build/config/compiler:enable_arc" ]
   sources = [
     "scene_state_browser_agent.h",
     "scene_state_browser_agent.mm",
@@ -190,19 +207,22 @@ source_set("scene_state_browser_agent") {
 }
 
 source_set("unit_tests") {
-  configs += [ "//build/config/compiler:enable_arc" ]
   testonly = true
   sources = [
     "scene_controller_unittest.mm",
     "scene_state_browser_agent_unittest.mm",
+    "scene_util_unittest.mm",
   ]
   deps = [
     ":scene_state_browser_agent",
     ":scene_state_header",
+    ":scene_util",
+    ":scene_util_test_support",
     "//ios/chrome/browser/shared/model/browser",
     "//ios/chrome/browser/shared/model/browser/test:test_support",
     "//ios/chrome/browser/shared/model/browser_state:test_support",
     "//ios/web/public/test",
     "//testing/gtest",
+    "//third_party/ocmock",
   ]
 }

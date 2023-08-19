@@ -38,6 +38,7 @@
 #include "chrome/browser/ui/webui/webui_util.h"
 #include "chrome/common/url_constants.h"
 #include "chrome/common/webui_url_constants.h"
+#include "chrome/grit/browser_resources.h"
 #include "chrome/grit/chromium_strings.h"
 #include "chrome/grit/generated_resources.h"
 #include "chromeos/ash/components/account_manager/account_manager_factory.h"
@@ -50,8 +51,6 @@
 #include "components/prefs/pref_service.h"
 #include "components/strings/grit/components_strings.h"
 #include "components/sync/base/features.h"
-#include "components/sync/service/sync_service.h"
-#include "components/sync/service/sync_user_settings.h"
 #include "components/user_manager/user.h"
 #include "components/user_manager/user_manager.h"
 #include "content/public/browser/web_ui.h"
@@ -252,10 +251,16 @@ void AddLockScreenPageStrings(content::WebUIDataSource* html_source,
       {"lockScreenEditFingerprints",
        IDS_SETTINGS_PEOPLE_LOCK_SCREEN_EDIT_FINGERPRINTS},
       {"lockScreenPasswordOnly", IDS_SETTINGS_PEOPLE_LOCK_SCREEN_PASSWORD_ONLY},
+      {"lockScreenChangePasswordButton",
+       IDS_SETTINGS_PEOPLE_LOCK_SCREEN_CHANGE_PASSWORD_BUTTON},
       {"lockScreenChangePinButton",
        IDS_SETTINGS_PEOPLE_LOCK_SCREEN_CHANGE_PIN_BUTTON},
+      {"lockScreenDevicePasswordOptionLabel",
+       IDS_SETTINGS_PEOPLE_LOCK_SCREEN_DEVICE_PASSWORD_OPTION_LABEL},
       {"lockScreenEditFingerprintsDescription",
        IDS_SETTINGS_PEOPLE_LOCK_SCREEN_EDIT_FINGERPRINTS_DESCRIPTION},
+      {"lockScreenGoogleAccountPasswordOptionLabel",
+       IDS_SETTINGS_PEOPLE_LOCK_SCREEN_GOOGLE_ACCOUNT_PASSWORD_OPTION_LABEL},
       {"lockScreenNone", IDS_SETTINGS_PEOPLE_LOCK_SCREEN_NONE},
       {"lockScreenFingerprintNewName",
        IDS_SETTINGS_PEOPLE_LOCK_SCREEN_NEW_FINGERPRINT_DEFAULT_NAME},
@@ -264,8 +269,19 @@ void AddLockScreenPageStrings(content::WebUIDataSource* html_source,
       {"lockScreenOptionsLock", IDS_SETTINGS_PEOPLE_LOCK_SCREEN_OPTIONS_LOCK},
       {"lockScreenOptionsLoginLock",
        IDS_SETTINGS_PEOPLE_LOCK_SCREEN_OPTIONS_LOGIN_LOCK},
+      {"lockScreenRemovePinButton",
+       IDS_SETTINGS_PEOPLE_LOCK_SCREEN_REMOVE_PIN_BUTTON},
+      {"lockScreenPasswordLabel",
+       IDS_SETTINGS_PEOPLE_LOCK_SCREEN_PASSWORD_LABEL},
+      {"lockScreenPasswordDescription",
+       IDS_SETTINGS_PEOPLE_LOCK_SCREEN_PASSWORD_DESCRIPTION},
+      {"lockScreenPinLabel", IDS_SETTINGS_PEOPLE_LOCK_SCREEN_PIN_LABEL},
+      {"lockScreenSetupPasswordButton",
+       IDS_SETTINGS_PEOPLE_LOCK_SCREEN_SETUP_PASSWORD_BUTTON},
       {"lockScreenSetupPinButton",
        IDS_SETTINGS_PEOPLE_LOCK_SCREEN_SETUP_PIN_BUTTON},
+      {"lockScreenSignInOptions",
+       IDS_SETTINGS_PEOPLE_LOCK_SCREEN_SIGN_IN_OPTIONS},
       {"lockScreenTitleLock", IDS_SETTINGS_PEOPLE_LOCK_SCREEN_TITLE_LOCK},
       {"lockScreenTitleLoginLock",
        IDS_SETTINGS_PEOPLE_LOCK_SCREEN_TITLE_LOGIN_LOCK_V2},
@@ -329,6 +345,9 @@ void AddFingerprintResources(content::WebUIDataSource* html_source,
                              bool are_fingerprint_settings_allowed) {
   html_source->AddBoolean("fingerprintUnlockEnabled",
                           are_fingerprint_settings_allowed);
+
+  html_source->AddResourcePath("fingerprint_scanner_animation.json",
+                               IDR_FINGERPRINT_DEFAULT_ANIMATION);
 
   if (are_fingerprint_settings_allowed)
     quick_unlock::AddFingerprintResources(html_source);
@@ -427,6 +446,10 @@ void AddSyncControlsStrings(content::WebUIDataSource* html_source) {
       base::FeatureList::IsEnabled(syncer::kSyncChromeOSAppsToggleSharing) &&
           crosapi::browser_util::IsLacrosEnabled());
 
+  html_source->AddBoolean(
+      "osDeprecateSyncMetricsToggle",
+      ash::features::IsOsSettingsDeprecateSyncMetricsToggleEnabled());
+
   // This handler is for chrome://os-settings.
   html_source->AddBoolean("isOSSettings", true);
 }
@@ -468,9 +491,6 @@ void AddParentalControlStrings(content::WebUIDataSource* html_source,
 
   html_source->AddBoolean("showParentalControls",
                           are_parental_control_settings_allowed);
-
-  bool is_child = user_manager::UserManager::Get()->IsLoggedInAsChildUser();
-  html_source->AddBoolean("isChild", is_child);
 }
 
 bool IsSameAccount(const ::account_manager::AccountKey& account_key,
@@ -487,10 +507,8 @@ bool IsSameAccount(const ::account_manager::AccountKey& account_key,
 
 }  // namespace
 
-// TODO(https://crbug.com/1274802): Remove sync_service param.
 PeopleSection::PeopleSection(Profile* profile,
                              SearchTagRegistry* search_tag_registry,
-                             syncer::SyncService* sync_service,
                              signin::IdentityManager* identity_manager,
                              PrefService* pref_service)
     : OsSettingsSection(profile, search_tag_registry),
@@ -649,7 +667,7 @@ mojom::SearchResultIcon PeopleSection::GetSectionIcon() const {
   return mojom::SearchResultIcon::kAvatar;
 }
 
-std::string PeopleSection::GetSectionPath() const {
+const char* PeopleSection::GetSectionPath() const {
   return mojom::kPeopleSectionPath;
 }
 

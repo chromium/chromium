@@ -33,6 +33,7 @@
 #include "base/synchronization/lock.h"
 #include "base/thread_annotations.h"
 #include "base/types/pass_key.h"
+#include "third_party/abseil-cpp/absl/synchronization/mutex.h"
 
 namespace base {
 
@@ -56,8 +57,19 @@ class BASE_EXPORT StatisticsRecorder {
   // histograms from providers when necessary.
   class HistogramProvider {
    public:
-    // Merges all histogram information into the global versions.
-    virtual void MergeHistogramDeltas() = 0;
+    // Merges all histogram information into the global versions. If |async| is
+    // true, the work may be done asynchronously (though this is not mandatory).
+    // If false, the work must be done ASAP/synchronously (e.g., because the
+    // browser is shutting down). |done_callback| should be called on the
+    // calling thread when all work is finished, regardless of the value of
+    // |async|.
+    //
+    // NOTE: It is possible for this to be called with |async| set to false
+    // even before a previous call with |async| set to true has finished. Hence,
+    // if the implementation allows for asynchronous work, ensure that it is
+    // done in a thread-safe way.
+    virtual void MergeHistogramDeltas(bool async,
+                                      OnceClosure done_callback) = 0;
   };
 
   // OnSampleCallback is a convenient callback type that provides information
@@ -162,7 +174,7 @@ class BASE_EXPORT StatisticsRecorder {
   //
   // This method is thread safe.
   static Histograms GetHistograms(bool include_persistent = true)
-      LOCKS_EXCLUDED(lock_.Pointer());
+      LOCKS_EXCLUDED(GetLock());
 
   // Gets BucketRanges used by all histograms registered. The order of returned
   // BucketRanges is not guaranteed.
@@ -176,10 +188,18 @@ class BASE_EXPORT StatisticsRecorder {
   // This method is thread safe.
   static HistogramBase* FindHistogram(base::StringPiece name);
 
-  // Imports histograms from providers.
+  // Imports histograms from providers. If |async| is true, the providers may do
+  // the work asynchronously (though this is not guaranteed and it is up to the
+  // providers to decide). If false, the work will be done synchronously.
+  // |done_callback| is called on the calling thread when all providers have
+  // finished.
   //
   // This method must be called on the UI thread.
-  static void ImportProvidedHistograms();
+  static void ImportProvidedHistograms(bool async, OnceClosure done_callback);
+
+  // Convenience function that calls ImportProvidedHistograms() with |async|
+  // set to false, and with a no-op |done_callback|.
+  static void ImportProvidedHistogramsSync();
 
   // Snapshots all histogram deltas via |snapshot_manager|. This marks the
   // deltas as logged. |include_persistent| determines whether histograms held
@@ -304,6 +324,24 @@ class BASE_EXPORT StatisticsRecorder {
   }
 
  private:
+  // Most platforms should use a Read/Write lock to access the internal
+  // histogram map, but on iOS, we have seen hangs when using Absl's
+  // implementation. So, use a "normal" fully exclusive lock instead.
+  // TODO(crbug.com/1123627): Consider using std::shared_mutex.
+#if !BUILDFLAG(IS_IOS)
+  using SrLock = absl::Mutex;
+  using SrAutoReaderLock = absl::ReaderMutexLock;
+  using SrAutoWriterLock = absl::MutexLock;
+  static SrLock* GetLock() { return lock_.Pointer(); }
+  static void AssertLockHeld() { lock_.Get().AssertHeld(); }
+#else
+  using SrLock = Lock;
+  using SrAutoReaderLock = AutoLock;
+  using SrAutoWriterLock = AutoLock;
+  static SrLock& GetLock() { return lock_.Get(); }
+  static void AssertLockHeld() { lock_.Get().AssertAcquired(); }
+#endif  // !BUILDFLAG(IS_IOS)
+
   // Adds an observer to be notified when a new sample is recorded on the
   // histogram referred to by |histogram_name|. Can be called before or after
   // the histogram is created.
@@ -339,9 +377,8 @@ class BASE_EXPORT StatisticsRecorder {
 
   // Initializes the global recorder if it doesn't already exist. Safe to call
   // multiple times.
-  //
-  // Precondition: The global lock is already acquired.
-  static void EnsureGlobalRecorderWhileLocked();
+  static void EnsureGlobalRecorderWhileLocked()
+      EXCLUSIVE_LOCKS_REQUIRED(GetLock());
 
   // Gets histogram providers.
   //
@@ -349,9 +386,7 @@ class BASE_EXPORT StatisticsRecorder {
   static HistogramProviders GetHistogramProviders();
 
   // Imports histograms from global persistent memory.
-  //
-  // Precondition: The global lock must not be held during this call.
-  static void ImportGlobalPersistentHistograms();
+  static void ImportGlobalPersistentHistograms() LOCKS_EXCLUDED(GetLock());
 
   // Constructs a new StatisticsRecorder and sets it as the current global
   // recorder.
@@ -359,15 +394,12 @@ class BASE_EXPORT StatisticsRecorder {
   // This singleton instance should be started during the single-threaded
   // portion of startup and hence it is not thread safe. It initializes globals
   // to provide support for all future calls.
-  //
-  // Precondition: The global lock is already acquired.
-  StatisticsRecorder();
+  StatisticsRecorder() EXCLUSIVE_LOCKS_REQUIRED(GetLock());
 
   // Initialize implementation but without lock. Caller should guard
   // StatisticsRecorder by itself if needed (it isn't in unit tests).
-  //
-  // Precondition: The global lock is already acquired.
-  static void InitLogOnShutdownWhileLocked();
+  static void InitLogOnShutdownWhileLocked()
+      EXCLUSIVE_LOCKS_REQUIRED(GetLock());
 
   HistogramMap histograms_;
   ObserverMap observers_;
@@ -379,7 +411,7 @@ class BASE_EXPORT StatisticsRecorder {
   raw_ptr<StatisticsRecorder> previous_ = nullptr;
 
   // Global lock for internal synchronization.
-  static LazyInstance<Lock>::Leaky lock_;
+  static LazyInstance<SrLock>::Leaky lock_;
 
   // Global lock for internal synchronization of histogram snapshots.
   static LazyInstance<base::Lock>::Leaky snapshot_lock_;
@@ -393,7 +425,7 @@ class BASE_EXPORT StatisticsRecorder {
   // Current global recorder. This recorder is used by static methods. When a
   // new global recorder is created by CreateTemporaryForTesting(), then the
   // previous global recorder is referenced by top_->previous_.
-  static StatisticsRecorder* top_;
+  static StatisticsRecorder* top_ GUARDED_BY(GetLock());
 
   // Tracks whether InitLogOnShutdownWhileLocked() has registered a logging
   // function that will be called when the program finishes.

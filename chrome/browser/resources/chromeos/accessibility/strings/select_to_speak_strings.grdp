@@ -6,99 +6,6 @@
 <message desc="The description for Select-to-speak." name="IDS_SELECT_TO_SPEAK_DESCRIPTION">
 
 </message>
-<message desc="The title of the Select-to-speak options page." name="IDS_SELECT_TO_SPEAK_OPTIONS_PAGE_TITLE">
-  Select-to-speak Settings
-</message>
-<message desc="Section of the Select-to-speak options dialog where the user can adjust synthesized speech properties." name="IDS_SELECT_TO_SPEAK_OPTIONS_SPEECH">
-  Speech
-</message>
-<message desc="Label for the control in the Select-to-speak options dialog where the user can choose a voice from a list." name="IDS_SELECT_TO_SPEAK_OPTIONS_VOICES_DESCRIPTION">
-  Select a voice:
-</message>
-<message desc="Label for the control in the Select-to-speak options dialog where the user can choose a language from a list." name="IDS_SELECT_TO_SPEAK_OPTIONS_LANGUAGES_DESCRIPTION">
-  Language
-</message>
-<message desc="The option in the language list where the default language of the device is used as the speech language." name="IDS_SELECT_TO_SPEAK_OPTIONS_DEVICE_LANGUAGE">
-  Device language
-</message>
-<message desc="Label for the control in the Select-to-speak options dialog where the user can choose a preferred voice for the chosen language from a list." name="IDS_SELECT_TO_SPEAK_OPTIONS_PREFERRED_VOICE_DESCRIPTION">
-  Preferred voice
-</message>
-<message desc="Label for the control in the Select-to-speak options dialog where the user can enable support for high-quality voices streamed from the interent when the device is online." name="IDS_SELECT_TO_SPEAK_OPTIONS_USE_NATURAL_VOICES">
-  Use natural voice when device is online
-</message>
-<message desc="Informational text related to the Select-to-speak control that enables support for high-quality voices, mentioning that enabling these voices will send text to Google for processing and generating audio." name="IDS_SELECT_TO_SPEAK_OPTIONS_NATURAL_VOICES_EXPLANATION">
-  Text will be sent to Google for processing.
-</message>
-<message desc="Label of link to more information about high-quality voices in Select-to-speak, mentioning that enabling these voices will send text to Google for processing and generating audio." name="IDS_SELECT_TO_SPEAK_OPTIONS_NATURAL_VOICES_EXPLANATION_MORE">
-  Learn more
-</message>
-<message desc="Label for the control in the Select-to-speak options dialog where the user can choose a high-quality voice to be streamed from the internet from a list." name="IDS_SELECT_TO_SPEAK_OPTIONS_NATURAL_VOICE">
-  Natural voice
-</message>
-<message desc="Label for the control in the Select-to-speak options dialog where the user can listen to a preview of the selected high-quality voice." name="IDS_SELECT_TO_SPEAK_OPTIONS_NATURAL_VOICE_PREVIEW">
-  Voice preview
-</message>
-<message desc="Example text to preview the selected high-quality voice." name="IDS_SELECT_TO_SPEAK_OPTIONS_NATURAL_VOICES_EXAMPLE">
-  Hi there! I'm your text-to-speech voice.
-</message>
-<message desc="Label for the button in the Select-to-speak options dialog to preview the selected high-quality voice." name="IDS_SELECT_TO_SPEAK_OPTIONS_PLAY_BUTTON">
-  Play
-</message>
-<message desc="Group of options controlling highlighting." name="IDS_SELECT_TO_SPEAK_OPTIONS_HIGHLIGHT">
-  Highlighting
-</message>
-<message desc="Label for option to highlight spoken words rather than spoken nodes." name="IDS_SELECT_TO_SPEAK_OPTIONS_HIGHLIGHT_DESCRIPTION">
-  Highlight each word as it is spoken
-</message>
-<message desc="Label for option to pick word highlight color." name="IDS_SELECT_TO_SPEAK_OPTIONS_HIGHLIGHT_COLOR_DESCRIPTION">
-  Color for word highlights:
-</message>
-<message desc="Label for a blue highlight color in the Select-to-speak options dialog." name="IDS_SELECT_TO_SPEAK_OPTIONS_HIGHLIGHT_COLOR_BLUE">
-  Blue
-</message>
-<message desc="Label for a orange highlight color in the Select-to-speak options dialog." name="IDS_SELECT_TO_SPEAK_OPTIONS_HIGHLIGHT_COLOR_ORANGE">
-  Orange
-</message>
-<message desc="Label for a yellow highlight color in the Select-to-speak options dialog." name="IDS_SELECT_TO_SPEAK_OPTIONS_HIGHLIGHT_COLOR_YELLOW">
-  Yellow
-</message>
-<message desc="Label for a green highlight color in the Select-to-speak options dialog." name="IDS_SELECT_TO_SPEAK_OPTIONS_HIGHLIGHT_COLOR_GREEN">
-  Green
-</message>
-<message desc="Label for a pink highlight color in the Select-to-speak options dialog." name="IDS_SELECT_TO_SPEAK_OPTIONS_HIGHLIGHT_COLOR_PINK">
-  Pink
-</message>
-<message desc="Example of a word highlight on a dark background in the Select-to-speak options dialog." name="IDS_SELECT_TO_SPEAK_OPTIONS_HIGHLIGHT_DARK">
-  Dark background
-</message>
-<message desc="Example of a word highlight on a light background in the Select-to-speak options dialog." name="IDS_SELECT_TO_SPEAK_OPTIONS_HIGHLIGHT_LIGHT">
-  Light background
-</message>
-<message desc="Label for option to fade the background outside of the focus ring to improve focus on what is being spoken." name="IDS_SELECT_TO_SPEAK_OPTIONS_BACKGROUND_SHADING_DESCRIPTION">
-  Shade background content
-</message>
-<message desc="Label for option to show navigation controls, such as going to the previous or next paragraph, when Select-to-speak is activated." name="IDS_SELECT_TO_SPEAK_OPTIONS_NAVIGATION_CONTROLS_DESCRIPTION">
-  Enable navigation controls
-</message>
-<message desc="Subtitle for option to show navigation controls, such as going to the previous or next paragraph, when Select-to-speak is activated." name="IDS_SELECT_TO_SPEAK_OPTIONS_NAVIGATION_CONTROLS_SUBTITLE">
-  Provides controls to speed up, slow down, and pause the reading voice
-</message>
-<message desc="Link to the Text-to-Speech settings page." name="IDS_SELECT_TO_SPEAK_OPTIONS_TEXT_TO_SPEECH_SETTINGS">
-  Personalize Text-to-Speech settings
-</message>
-<message desc="Link to the Text-to-Speech settings page." name="IDS_SELECT_TO_SPEAK_OPTIONS_TEXT_TO_SPEECH_SETTINGS_LINK">
-  Text-to-Speech settings
-</message>
-<message desc="Voice name for the system default Text-to-Speech voice" name="IDS_SELECT_TO_SPEAK_SYSTEM_VOICE">
-  System Text-to-Speech voice
-</message>
-<message desc="Label for the natural voices option that uses a default, server-supplied Text-to-Speech voice" name="IDS_SELECT_TO_SPEAK_DEFAULT_NETWORK_VOICE">
-  Default natural voice
-</message>
-<message desc="Voice name of a natural voice, generated by combining a localized language name like English (US) with a serial number" name="IDS_SELECT_TO_SPEAK_NATURAL_VOICE_NAME">
-  <ph name="DISPLAY_NAME">$1<ex>English (United States)</ex></ph> Voice <ph name="COUNT">$2<ex>2</ex></ph>
-</message>
 <message desc="Description of a checkbox that is not checked" name="IDS_SELECT_TO_SPEAK_CHECKBOX_UNCHECKED">
   unchecked
 </message>
@@ -120,16 +27,13 @@
 <message desc="Description of a radio button that is selected" name="IDS_SELECT_TO_SPEAK_RADIOBUTTON_MIXED">
   partially selected
 </message>
-<message desc="Sample text around which will be drawn a Select to Speak visual preview. This should be less than one line long." name="IDS_SELECT_TO_SPEAK_OPTIONS_SAMPLE_TEXT">
-  The quick brown fox jumped over the lazy dog.
-</message>
 <message desc="Title of the dialog shown to users the first time they use Select to speak after the natural voices update." name="IDS_SELECT_TO_SPEAK_NATURAL_VOICE_DIALOG_TITLE">
   Use natural voice?
 </message>
 <message desc="Content of the dialog shown to users the first time they use Select to speak after the natural voices update." name="IDS_SELECT_TO_SPEAK_NATURAL_VOICE_DIALOG_DESCRIPTION">
   You can use a natural, human-like voice when your device is online. Text will be sent to Google for processing. You can turn this off any time in Settings.
 </message>
-<message desc="Label for the control in the Select-to-speak options dialog where the user can toggle automatic voice switching." name="IDS_SELECT_TO_SPEAK_OPTIONS_VOICE_SWITCHING_DESCRIPTION">
-  Automatically change language to match selected content
+<message desc="Cancel button for the dialog shown to users the first time they use Select to speak. Clicking this button will result in using the system voices rather than natural voices." name="IDS_SELECT_TO_SPEAK_NATURAL_VOICE_DIALOG_CANCEL">
+  Use system voice
 </message>
 </grit-part>

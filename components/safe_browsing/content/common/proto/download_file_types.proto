@@ -8,7 +8,7 @@ option optimize_for = LITE_RUNTIME;
 
 package safe_browsing;
 
-// See //chrome/browser/resources/safe_browsing/README.md for guidelines
+// See //components/safe_browsing/content/resources/README.md for guidelines
 // on how to set fields in this file.
 
 // Next id: 7

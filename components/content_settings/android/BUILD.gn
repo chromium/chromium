@@ -12,6 +12,7 @@ generate_jni("content_settings_jni_headers") {
 }
 
 android_library("java") {
+  srcjar_deps = [ ":content_settings_jni_headers" ]
   sources = [
     "java/src/org/chromium/components/content_settings/ContentSettingsObserver.java",
     "java/src/org/chromium/components/content_settings/CookieControlsBridge.java",
@@ -24,7 +25,6 @@ android_library("java") {
     "//content/public/android:content_java",
     "//third_party/androidx:androidx_annotation_annotation_java",
   ]
-  annotation_processor_deps = [ "//base/android/jni_generator:jni_processor" ]
 }
 
 source_set("android") {
@@ -56,6 +56,7 @@ java_cpp_enum("content_settings_enums_javagen") {
     "../core/browser/cookie_settings.h",
     "../core/common/content_settings.h",
     "../core/common/content_settings_types.h",
+    "../core/common/cookie_controls_breakage_confidence_level.h",
     "../core/common/cookie_controls_enforcement.h",
     "../core/common/cookie_controls_status.h",
   ]

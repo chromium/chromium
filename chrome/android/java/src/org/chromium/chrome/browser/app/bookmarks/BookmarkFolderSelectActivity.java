@@ -19,7 +19,6 @@ import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
 
-import androidx.annotation.VisibleForTesting;
 import androidx.appcompat.content.res.AppCompatResources;
 import androidx.appcompat.widget.Toolbar;
 import androidx.core.view.ViewCompat;
@@ -34,7 +33,6 @@ import org.chromium.chrome.browser.bookmarks.BookmarkModelObserver;
 import org.chromium.chrome.browser.bookmarks.BookmarkUiPrefs.BookmarkRowDisplayPref;
 import org.chromium.chrome.browser.bookmarks.BookmarkUtils;
 import org.chromium.chrome.browser.profiles.Profile;
-import org.chromium.chrome.browser.read_later.ReadingListUtils;
 import org.chromium.components.bookmarks.BookmarkId;
 import org.chromium.components.bookmarks.BookmarkItem;
 import org.chromium.components.browser_ui.util.TraceEventVectorDrawableCompat;
@@ -106,11 +104,8 @@ public class BookmarkFolderSelectActivity
             Context context, boolean createFolder, BookmarkId... bookmarks) {
         Intent intent = new Intent(context, BookmarkFolderSelectActivity.class);
         intent.putExtra(INTENT_IS_CREATING_FOLDER, createFolder);
-        ArrayList<String> bookmarkStrings = new ArrayList<>(bookmarks.length);
-        for (BookmarkId id : bookmarks) {
-            bookmarkStrings.add(id.toString());
-        }
-        intent.putStringArrayListExtra(INTENT_BOOKMARKS_TO_MOVE, bookmarkStrings);
+        intent.putStringArrayListExtra(
+                INTENT_BOOKMARKS_TO_MOVE, BookmarkUtils.bookmarkIdsToStringList(bookmarks));
         return intent;
     }
 
@@ -142,7 +137,6 @@ public class BookmarkFolderSelectActivity
         mModel = BookmarkModel.getForProfile(Profile.getLastUsedRegularProfile());
         List<String> stringList =
                 IntentUtils.safeGetStringArrayListExtra(getIntent(), INTENT_BOOKMARKS_TO_MOVE);
-        mBookmarksToMove = new ArrayList<>(stringList.size());
 
         // If the intent does not contain a list of bookmarks to move, return early. See
         // crbug.com/728244. If the bookmark model is not loaded, return early to avoid crashing
@@ -155,18 +149,12 @@ public class BookmarkFolderSelectActivity
             return;
         }
 
-        mModel.addObserver(mBookmarkModelObserver);
-
-        for (String string : stringList) {
-            BookmarkId bookmarkId = BookmarkId.getBookmarkIdFromString(string);
-            if (mModel.doesBookmarkExist(bookmarkId)) {
-                mBookmarksToMove.add(bookmarkId);
-            }
-        }
+        mBookmarksToMove = BookmarkUtils.stringListToBookmarkIds(mModel, stringList);
         if (mBookmarksToMove.isEmpty()) {
             finish();
             return;
         }
+        mModel.addObserver(mBookmarkModelObserver);
 
         mIsCreatingFolder = getIntent().getBooleanExtra(INTENT_IS_CREATING_FOLDER, false);
         if (mIsCreatingFolder) {
@@ -188,8 +176,7 @@ public class BookmarkFolderSelectActivity
         updateFolderList();
 
         View shadow = findViewById(R.id.shadow);
-        int listPaddingTop =
-                getResources().getDimensionPixelSize(R.dimen.bookmark_list_view_padding_top);
+        int listPaddingTop = getResources().getDimensionPixelSize(R.dimen.toolbar_height_no_shadow);
         mBookmarkIdsList.getViewTreeObserver().addOnScrollChangedListener(() -> {
             if (mBookmarkIdsList.getChildCount() < 1) return;
 
@@ -289,13 +276,9 @@ public class BookmarkFolderSelectActivity
     }
 
     private void moveBookmarksAndFinish(List<BookmarkId> bookmarks, BookmarkId parent) {
-        List<BookmarkId> movedBookmarks = new ArrayList<>();
-        ReadingListUtils.typeSwapBookmarksIfNecessary(
-                mModel, mBookmarksToMove, movedBookmarks, parent);
-        mModel.moveBookmarks(mBookmarksToMove, parent);
-        movedBookmarks.addAll(mBookmarksToMove);
+        mModel.moveBookmarks(bookmarks, parent);
         BookmarkUtils.setLastUsedParent(this, parent);
-        finishActivity(movedBookmarks);
+        finishActivity(bookmarks);
     }
 
     private void finishActivity(List<BookmarkId> bookmarks) {
@@ -444,7 +427,6 @@ public class BookmarkFolderSelectActivity
         }
     }
 
-    @VisibleForTesting
     int getFolderPositionForTesting(BookmarkId bookmarkId) {
         for (int i = 0; i < mBookmarkIdsAdapter.mEntryList.size(); i++) {
             FolderListEntry entry = mBookmarkIdsAdapter.mEntryList.get(i);
@@ -453,7 +435,6 @@ public class BookmarkFolderSelectActivity
         return -1;
     }
 
-    @VisibleForTesting
     void performClickForTesting(int adapterPosition) {
         onItemClick(mBookmarkIdsList, null, adapterPosition, adapterPosition);
     }

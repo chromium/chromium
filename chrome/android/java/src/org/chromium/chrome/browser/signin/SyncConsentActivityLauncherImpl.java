@@ -8,8 +8,8 @@ import android.content.Intent;
 import android.os.Bundle;
 
 import androidx.annotation.Nullable;
-import androidx.annotation.VisibleForTesting;
 
+import org.chromium.base.ResettersForTesting;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
@@ -36,9 +36,10 @@ public final class SyncConsentActivityLauncherImpl implements SyncConsentActivit
         return sLauncher;
     }
 
-    @VisibleForTesting
     public static void setLauncherForTest(@Nullable SyncConsentActivityLauncher launcher) {
+        var oldValue = sLauncher;
         sLauncher = launcher;
+        ResettersForTesting.register(() -> sLauncher = oldValue);
     }
 
     private SyncConsentActivityLauncherImpl() {}

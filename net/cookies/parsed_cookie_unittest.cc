@@ -385,7 +385,7 @@ TEST(ParsedCookieTest, EnforceSizeConstraints) {
   EXPECT_TRUE(pc2.IsValid());
   EXPECT_EQ(max_name, pc2.Name());
 
-  ParsedCookie pc3(max_name + "X=", &status);
+  ParsedCookie pc3(max_name + "X=", /*block_truncated=*/true, &status);
   EXPECT_FALSE(pc3.IsValid());
   EXPECT_TRUE(status.HasOnlyExclusionReason(
       CookieInclusionStatus::ExclusionReason::
@@ -399,7 +399,7 @@ TEST(ParsedCookieTest, EnforceSizeConstraints) {
   EXPECT_TRUE(pc5.IsValid());
   EXPECT_EQ(max_value, pc5.Value());
 
-  ParsedCookie pc6("=" + max_value + "X", &status);
+  ParsedCookie pc6("=" + max_value + "X", /*block_truncated=*/true, &status);
   EXPECT_FALSE(pc6.IsValid());
   EXPECT_TRUE(status.HasOnlyExclusionReason(
       CookieInclusionStatus::ExclusionReason::
@@ -415,7 +415,7 @@ TEST(ParsedCookieTest, EnforceSizeConstraints) {
   EXPECT_EQ(almost_max_name, pc8.Name());
   EXPECT_EQ("x", pc8.Value());
 
-  ParsedCookie pc9(almost_max_name + "=xX", &status);
+  ParsedCookie pc9(almost_max_name + "=xX", /*block_truncated=*/true, &status);
   EXPECT_FALSE(pc9.IsValid());
   EXPECT_TRUE(status.HasOnlyExclusionReason(
       CookieInclusionStatus::ExclusionReason::
@@ -431,7 +431,8 @@ TEST(ParsedCookieTest, EnforceSizeConstraints) {
   EXPECT_EQ("x", pc11.Name());
   EXPECT_EQ(almost_max_value, pc11.Value());
 
-  ParsedCookie pc12("xX=" + almost_max_value, &status);
+  ParsedCookie pc12("xX=" + almost_max_value, /*block_truncated=*/true,
+                    &status);
   EXPECT_FALSE(pc12.IsValid());
   EXPECT_TRUE(status.HasOnlyExclusionReason(
       CookieInclusionStatus::ExclusionReason::
@@ -448,7 +449,8 @@ TEST(ParsedCookieTest, EnforceSizeConstraints) {
   EXPECT_TRUE(pc20.HasPath());
   EXPECT_EQ("/" + almost_max_path, pc20.Path());
 
-  ParsedCookie pc21("name=value; path=" + too_long_path, &status);
+  ParsedCookie pc21("name=value; path=" + too_long_path,
+                    /*block_truncated=*/true, &status);
   EXPECT_TRUE(pc21.IsValid());
   EXPECT_FALSE(pc21.HasPath());
   EXPECT_TRUE(status.HasWarningReason(
@@ -558,18 +560,47 @@ TEST(ParsedCookieTest, EnforceSizeConstraints) {
 }
 
 TEST(ParsedCookieTest, EmbeddedTerminator) {
-  ParsedCookie pc1("AAA=BB\0ZYX");
-  ParsedCookie pc2("AAA=BB\rZYX");
-  ParsedCookie pc3("AAA=BB\nZYX");
-  EXPECT_TRUE(pc1.IsValid());
-  EXPECT_EQ("AAA", pc1.Name());
-  EXPECT_EQ("BB", pc1.Value());
-  EXPECT_TRUE(pc2.IsValid());
-  EXPECT_EQ("AAA", pc2.Name());
-  EXPECT_EQ("BB", pc2.Value());
-  EXPECT_TRUE(pc3.IsValid());
-  EXPECT_EQ("AAA", pc3.Name());
-  EXPECT_EQ("BB", pc3.Value());
+  using std::string_literals::operator""s;
+
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(net::features::kBlockTruncatedCookies);
+
+  for (const bool block_truncated : {true, false}) {
+    SCOPED_TRACE(testing::Message()
+                 << "Using block_trucated == " << block_truncated);
+
+    CookieInclusionStatus status1;
+    CookieInclusionStatus status2;
+    CookieInclusionStatus status3;
+    ParsedCookie pc1("AAA=BB\0ZYX"s, block_truncated, &status1);
+    ParsedCookie pc2("AAA=BB\rZYX"s, block_truncated, &status2);
+    ParsedCookie pc3("AAA=BB\nZYX"s, block_truncated, &status3);
+
+    if (block_truncated) {
+      EXPECT_FALSE(pc1.IsValid());
+      EXPECT_FALSE(pc2.IsValid());
+      EXPECT_FALSE(pc3.IsValid());
+      EXPECT_TRUE(status1.HasOnlyExclusionReason(
+          CookieInclusionStatus::ExclusionReason::
+              EXCLUDE_DISALLOWED_CHARACTER));
+      EXPECT_TRUE(status2.HasOnlyExclusionReason(
+          CookieInclusionStatus::ExclusionReason::
+              EXCLUDE_DISALLOWED_CHARACTER));
+      EXPECT_TRUE(status3.HasOnlyExclusionReason(
+          CookieInclusionStatus::ExclusionReason::
+              EXCLUDE_DISALLOWED_CHARACTER));
+    } else {
+      ASSERT_TRUE(pc1.IsValid());
+      EXPECT_EQ("AAA", pc1.Name());
+      EXPECT_EQ("BB", pc1.Value());
+      ASSERT_TRUE(pc2.IsValid());
+      EXPECT_EQ("AAA", pc2.Name());
+      EXPECT_EQ("BB", pc2.Value());
+      ASSERT_TRUE(pc3.IsValid());
+      EXPECT_EQ("AAA", pc3.Name());
+      EXPECT_EQ("BB", pc3.Value());
+    }
+  }
 }
 
 TEST(ParsedCookieTest, ParseTokensAndValues) {
@@ -1083,84 +1114,35 @@ TEST(ParsedCookieTest, SameSiteValues) {
 }
 
 TEST(ParsedCookieTest, InvalidNonAlphanumericChars) {
-  ParsedCookie pc1("name=\x05");
-  ParsedCookie pc2(
-      "name=foo"
-      "\x1c"
-      "bar");
-  ParsedCookie pc3(
-      "name=foobar"
-      "\x11");
-  ParsedCookie pc4(
-      "name=\x02"
-      "foobar");
+  // clang-format off
+  const char* cases[] = {
+      "name=\x05",
+      "name=foo\x1c" "bar",
+      "name=foobar\x11",
+      "name=\x02" "foobar",
+      "\x05=value",
+      "foo\x05" "bar=value",
+      "foobar\x05" "=value",
+      "\x05" "foobar=value",
+      "foo\x05" "bar=foo\x05" "bar",
+      "foo=ba,ba\x05" "z=boo",
+      "foo=ba,baz=bo\x05" "o",
+      "foo=ba,ba\05" "z=bo\x05" "o",
+      "foo=ba,ba\x7F" "z=bo",
+      "fo\x7F" "o=ba,z=bo",
+      "foo=bar\x7F" ";z=bo",
+  };
+  // clang-format on
 
-  ParsedCookie pc5("\x05=value");
-  ParsedCookie pc6(
-      "foo"
-      "\x05"
-      "bar=value");
-  ParsedCookie pc7(
-      "foobar"
-      "\x05"
-      "=value");
-  ParsedCookie pc8(
-      "\x05"
-      "foobar"
-      "=value");
-
-  ParsedCookie pc9(
-      "foo"
-      "\x05"
-      "bar"
-      "=foo"
-      "\x05"
-      "bar");
-
-  ParsedCookie pc10(
-      "foo=bar;ba"
-      "\x05"
-      "z=boo");
-  ParsedCookie pc11(
-      "foo=bar;baz=bo"
-      "\x05"
-      "o");
-  ParsedCookie pc12(
-      "foo=bar;ba"
-      "\05"
-      "z=bo"
-      "\x05"
-      "o");
-
-  ParsedCookie pc13(
-      "foo=bar;ba"
-      "\x7F"
-      "z=bo");
-  ParsedCookie pc14(
-      "fo"
-      "\x7F"
-      "o=bar;"
-      "z=bo");
-  ParsedCookie pc15(
-      "foo=bar"
-      "\x7F"
-      ";z=bo");
-
-  EXPECT_FALSE(pc1.IsValid());
-  EXPECT_FALSE(pc2.IsValid());
-  EXPECT_FALSE(pc3.IsValid());
-  EXPECT_FALSE(pc4.IsValid());
-  EXPECT_FALSE(pc5.IsValid());
-  EXPECT_FALSE(pc6.IsValid());
-  EXPECT_FALSE(pc7.IsValid());
-  EXPECT_FALSE(pc8.IsValid());
-  EXPECT_FALSE(pc9.IsValid());
-  EXPECT_FALSE(pc10.IsValid());
-  EXPECT_FALSE(pc11.IsValid());
-  EXPECT_FALSE(pc12.IsValid());
-  EXPECT_FALSE(pc13.IsValid());
-  EXPECT_FALSE(pc14.IsValid());
-  EXPECT_FALSE(pc15.IsValid());
+  for (size_t i = 0; i < std::size(cases); i++) {
+    SCOPED_TRACE(testing::Message()
+                 << "Test case #" << base::NumberToString(i + 1));
+    CookieInclusionStatus status;
+    ParsedCookie pc(cases[i], /*block_truncated=*/true, &status);
+    EXPECT_FALSE(pc.IsValid());
+    EXPECT_TRUE(status.HasOnlyExclusionReason(
+        CookieInclusionStatus::ExclusionReason::EXCLUDE_DISALLOWED_CHARACTER));
+  }
 }
 
 TEST(ParsedCookieTest, ValidNonAlphanumericChars) {
@@ -1237,6 +1219,9 @@ TEST(ParsedCookieTest, ValidNonAlphanumericChars) {
 TEST(ParsedCookieTest, TruncatingCharInCookieLine) {
   using std::string_literals::operator""s;
 
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(net::features::kBlockTruncatedCookies);
+
   // Test scenarios where a control char may appear at start, middle and end of
   // a cookie line. Control char array with NULL (\x0), CR (\xD), LF (xA),
   // HT (\x9) and BS (\x1B).
@@ -1251,35 +1236,72 @@ TEST(ParsedCookieTest, TruncatingCharInCookieLine) {
       {'\x9', TruncatingCharacterInCookieStringType::kTruncatingCharNone},
       {'\x1B', TruncatingCharacterInCookieStringType::kTruncatingCharNone}};
 
-  for (const auto& test : kTests) {
-    std::string ctl_string(1, test.ctlChar);
-    std::string ctl_at_start_cookie_string = ctl_string + "foo=bar"s;
-    ParsedCookie ctl_at_start_cookie(ctl_at_start_cookie_string);
-    EXPECT_EQ(ctl_at_start_cookie.GetTruncatingCharacterInCookieStringType(),
-              test.expectedTruncatingCharInCookieStringType);
+  for (const bool block_truncated : {true, false}) {
+    SCOPED_TRACE(testing::Message()
+                 << "Using block_trucated == " << block_truncated);
 
-    std::string ctl_at_middle_cookie_string =
-        "foo=bar;"s + ctl_string + "secure"s;
-    ParsedCookie ctl_at_middle_cookie(ctl_at_start_cookie_string);
-    EXPECT_EQ(ctl_at_middle_cookie.GetTruncatingCharacterInCookieStringType(),
-              test.expectedTruncatingCharInCookieStringType);
+    for (const auto& test : kTests) {
+      SCOPED_TRACE(testing::Message() << "Using test.ctlChar == "
+                                      << base::NumberToString(test.ctlChar));
+      const bool would_be_truncated =
+          test.expectedTruncatingCharInCookieStringType !=
+          TruncatingCharacterInCookieStringType::kTruncatingCharNone;
+      std::string ctl_string(1, test.ctlChar);
+      std::string ctl_at_start_cookie_string = ctl_string + "foo=bar"s;
+      ParsedCookie ctl_at_start_cookie(ctl_at_start_cookie_string,
+                                       block_truncated);
+      EXPECT_EQ(ctl_at_start_cookie.GetTruncatingCharacterInCookieStringType(),
+                test.expectedTruncatingCharInCookieStringType);
+      // Lots of factors determine whether IsValid() is true here:
+      //
+      //  - For the tab character ('\x9), leading whitespace is valid and the
+      //  spec indicates that it should just be removed and the cookie parsed
+      //  normally. Thus, in this case the cookie is valid regardless of whether
+      //  `block_truncated` is true.
+      //
+      //  - For control characters that would truncate the cookie, they either
+      //  cause the cookie to be invalid if `block_truncated` is true or they
+      //  cause cookie truncation which results in an empty cookie, which is
+      //  also treated as invalid.
+      //
+      //  - For the other control character case the cookie is always just
+      //  treated as invalid.
+      EXPECT_EQ(ctl_at_start_cookie.IsValid(), test.ctlChar == '\x9');
 
-    std::string ctl_at_end_cookie_string =
-        "foo=bar;"s + "secure;"s + ctl_string;
-    ParsedCookie ctl_at_end_cookie(ctl_at_start_cookie_string);
-    EXPECT_EQ(ctl_at_end_cookie.GetTruncatingCharacterInCookieStringType(),
-              test.expectedTruncatingCharInCookieStringType);
+      std::string ctl_at_middle_cookie_string =
+          "foo=bar;"s + ctl_string + "secure"s;
+      ParsedCookie ctl_at_middle_cookie(ctl_at_middle_cookie_string,
+                                        block_truncated);
+      EXPECT_EQ(ctl_at_middle_cookie.GetTruncatingCharacterInCookieStringType(),
+                test.expectedTruncatingCharInCookieStringType);
+      if (would_be_truncated) {
+        EXPECT_EQ(ctl_at_middle_cookie.IsValid(), !block_truncated);
+      }
+
+      std::string ctl_at_end_cookie_string =
+          "foo=bar;"s + "secure;"s + ctl_string;
+      ParsedCookie ctl_at_end_cookie(ctl_at_end_cookie_string, block_truncated);
+      EXPECT_EQ(ctl_at_end_cookie.GetTruncatingCharacterInCookieStringType(),
+                test.expectedTruncatingCharInCookieStringType);
+      if (would_be_truncated) {
+        EXPECT_EQ(ctl_at_end_cookie.IsValid(), !block_truncated);
+      }
+    }
+
+    // Test if there are multiple control characters that terminate.
+    std::string ctls_cookie_string = "foo=bar;\xA\xD"s;
+    ParsedCookie ctls_cookie(ctls_cookie_string, block_truncated);
+    EXPECT_EQ(ctls_cookie.GetTruncatingCharacterInCookieStringType(),
+              TruncatingCharacterInCookieStringType::kTruncatingCharLineFeed);
+    EXPECT_EQ(ctls_cookie.IsValid(), !block_truncated);
+
+    // Test with no control characters.
+    std::string cookie_string = "foo=bar;"s;
+    ParsedCookie cookie(cookie_string, block_truncated);
+    EXPECT_EQ(cookie.GetTruncatingCharacterInCookieStringType(),
+              TruncatingCharacterInCookieStringType::kTruncatingCharNone);
+    EXPECT_TRUE(cookie.IsValid());
   }
-  // Test if there are multiple control characters that terminate.
-  std::string ctls_cookie_string = "foo=bar;\xA\xD"s;
-  ParsedCookie ctls_cookie(ctls_cookie_string);
-  EXPECT_EQ(ctls_cookie.GetTruncatingCharacterInCookieStringType(),
-            TruncatingCharacterInCookieStringType::kTruncatingCharLineFeed);
-  // Test with no control characters.
-  std::string cookie_string = "foo=bar;"s;
-  ParsedCookie cookie(cookie_string);
-  EXPECT_EQ(cookie.GetTruncatingCharacterInCookieStringType(),
-            TruncatingCharacterInCookieStringType::kTruncatingCharNone);
 }
 
 TEST(ParsedCookieTest, HtabInNameOrValue) {

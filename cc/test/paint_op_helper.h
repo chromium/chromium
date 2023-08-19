@@ -707,7 +707,8 @@ class PaintOpHelper {
         const auto& filter =
             static_cast<const MagnifierPaintFilter&>(base_filter);
         str << "MagnifierPaintFilter("
-            << "src_rect=" << ToString(filter.src_rect())
+            << "lens_bounds=" << ToString(filter.lens_bounds())
+            << ", zoom_amount=" << ToString(filter.zoom_amount())
             << ", inset=" << ToString(filter.inset())
             << ", input=" << ToString(filter.input())
             << ", crop_rect=" << ToString(filter.GetCropRect()) << ")";
@@ -727,8 +728,6 @@ class PaintOpHelper {
             static_cast<const AlphaThresholdPaintFilter&>(base_filter);
         str << "AlphaThresholdPaintFilter("
             << "region=" << ToString(filter.region())
-            << ", inner_min=" << ToString(filter.inner_min())
-            << ", outer_max=" << ToString(filter.outer_max())
             << ", input=" << ToString(filter.input())
             << ", crop_rect=" << ToString(filter.GetCropRect()) << ")";
         break;

@@ -18,59 +18,67 @@ async_test((t) => {
     function accessibleElementById(id) {
         return accessibilityController.accessibleElementById(id);
     }
-    window.setTimeout(t.step_func(() => {
-        assert_unreached('Did not receive all expected notifications within 1000ms');
-    }), 1000);
+    accessibilityController.addNotificationListener(t.step_func((target, notification) => {
+        if (notification == "LoadComplete") {
+            // Wait until LoadComplete so that we don't process MarkDirty events
+            // related to document load.
+            window.setTimeout(t.step_func(() => {
+                assert_unreached('Did not receive all expected notifications within 1000ms');
+            }), 1000);
 
-    var expectedNotifications = [ 'aria-busy',
-                                  'aria-disabled',
-                                  'aria-readonly',
-                                  'aria-required' ];
+            var expectedNotifications = ['aria-busy',
+                'aria-disabled',
+                'aria-readonly',
+                'aria-required'
+            ];
 
-    var gotSuccessfulNotification = t.step_func((id) => {
-        console.log('gotSuccessfulNotification: ' + id);
-        assert_not_equals(expectedNotifications.length, 0);
-        assert_equals(id, expectedNotifications.shift());
+            var gotSuccessfulNotification = t.step_func((id) => {
+                console.log('gotSuccessfulNotification: ' + id);
+                assert_not_equals(expectedNotifications.length, 0);
+                assert_equals(id, expectedNotifications.shift());
 
-        if (expectedNotifications.length > 0)
-            return;
+                if (expectedNotifications.length > 0)
+                    return;
 
-        console.log('All notifications received successfully.');
-        accessibleElementById('aria-busy').removeNotificationListener();
-        accessibleElementById('aria-disabled').removeNotificationListener();
-        accessibleElementById('aria-readonly').removeNotificationListener();
-        accessibleElementById('aria-required').removeNotificationListener();
+                console.log('All notifications received successfully.');
+                accessibleElementById('aria-busy').removeNotificationListener();
+                accessibleElementById('aria-disabled').removeNotificationListener();
+                accessibleElementById('aria-readonly').removeNotificationListener();
+                accessibleElementById('aria-required').removeNotificationListener();
 
-        t.done();
-    });
+                t.done();
+            });
 
-    accessibleElementById('aria-busy').addNotificationListener(t.step_func((notification) => {
-        console.log('Got ' + notification + ' notification on aria-busy');
-        if (notification === 'AriaAttributeChanged')
-          gotSuccessfulNotification('aria-busy');
+            accessibleElementById('aria-busy').addNotificationListener(t.step_func((notification) => {
+                console.log('Got ' + notification + ' notification on aria-busy');
+                if (notification === 'MarkDirty')
+                    gotSuccessfulNotification('aria-busy');
+            }));
+            document.getElementById('aria-busy').setAttribute('aria-busy', 'true');
+
+            accessibleElementById('aria-disabled').addNotificationListener(t.step_func((notification) => {
+                console.log('Got ' + notification + ' notification on aria-disabled');
+                if (notification === 'MarkDirty')
+                    gotSuccessfulNotification('aria-disabled');
+            }));
+            document.getElementById('aria-disabled').setAttribute('aria-disabled', 'true');
+
+            accessibleElementById('aria-readonly').addNotificationListener(t.step_func((notification) => {
+                console.log('Got ' + notification + ' notification on aria-readonly');
+                if (notification === 'MarkDirty')
+                    gotSuccessfulNotification('aria-readonly');
+            }));
+            document.getElementById('aria-readonly').setAttribute('aria-readonly', 'true');
+
+            accessibleElementById('aria-required').addNotificationListener(t.step_func((notification) => {
+                console.log('Got ' + notification + ' notification on aria-required');
+                if (notification === 'MarkDirty')
+                    gotSuccessfulNotification('aria-required');
+            }));
+            document.getElementById('aria-required').setAttribute('aria-required', 'true');
+
+        }
     }));
-    document.getElementById('aria-busy').setAttribute('aria-busy', 'true');
-
-    accessibleElementById('aria-disabled').addNotificationListener(t.step_func((notification) => {
-        console.log('Got ' + notification + ' notification on aria-disabled');
-        if (notification === 'AriaAttributeChanged')
-          gotSuccessfulNotification('aria-disabled');
-    }));
-    document.getElementById('aria-disabled').setAttribute('aria-disabled', 'true');
-
-    accessibleElementById('aria-readonly').addNotificationListener(t.step_func((notification) => {
-        console.log('Got ' + notification + ' notification on aria-readonly');
-        if (notification === 'AriaAttributeChanged')
-          gotSuccessfulNotification('aria-readonly');
-    }));
-    document.getElementById('aria-readonly').setAttribute('aria-readonly', 'true');
-
-    accessibleElementById('aria-required').addNotificationListener(t.step_func((notification) => {
-        console.log('Got ' + notification + ' notification on aria-required');
-        if (notification === 'AriaAttributeChanged')
-          gotSuccessfulNotification('aria-required');
-    }));
-    document.getElementById('aria-required').setAttribute('aria-required', 'true');
 }, "This test ensures that a change to any ARIA attribute, not just a state, sends a notification.");
 
 

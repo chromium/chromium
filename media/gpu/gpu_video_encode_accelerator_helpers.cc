@@ -59,6 +59,7 @@ size_t GetMaxEncodeBitstreamBufferSize(const gfx::Size& size) {
     return kMaxBitstreamBufferSizeInBytes * 2;
   return kMaxBitstreamBufferSizeInBytes;
 }
+}  // namespace
 
 // This function sets the peak equal to the target. The peak can then be
 // updated by callers.
@@ -99,7 +100,6 @@ VideoBitrateAllocation AllocateBitrateForDefaultEncodingWithBitrates(
 
   return bitrate_allocation;
 }
-}  // namespace
 
 size_t GetEncodeBitstreamBufferSize(const gfx::Size& size,
                                     uint32_t bitrate,
@@ -163,6 +163,10 @@ std::vector<uint8_t> GetFpsAllocation(size_t num_temporal_layers) {
 
 VideoBitrateAllocation AllocateBitrateForDefaultEncoding(
     const VideoEncodeAccelerator::Config& config) {
+  if (config.bitrate.mode() == Bitrate::Mode::kExternal) {
+    return VideoBitrateAllocation(Bitrate::Mode::kExternal);
+  }
+
   VideoBitrateAllocation allocation;
   const bool use_vbr = config.bitrate.mode() == Bitrate::Mode::kVariable;
   if (config.spatial_layers.empty()) {

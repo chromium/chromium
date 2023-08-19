@@ -27,7 +27,8 @@ TEST_F(LinkElementLoadingTest,
   css_resource.Start();
 
   // Remove a link element from a document
-  auto* link = To<HTMLLinkElement>(GetDocument().getElementById("link"));
+  auto* link =
+      To<HTMLLinkElement>(GetDocument().getElementById(AtomicString("link")));
   EXPECT_NE(nullptr, link);
   link->remove();
 

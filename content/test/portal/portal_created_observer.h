@@ -67,7 +67,7 @@ class PortalCreatedObserver
       swapped_impl_;
   base::OnceCallback<void(Portal*)> created_cb_;
   raw_ptr<base::RunLoop> run_loop_ = nullptr;
-  raw_ptr<Portal, DanglingUntriaged> portal_ = nullptr;
+  raw_ptr<Portal, AcrossTasksDanglingUntriaged> portal_ = nullptr;
 };
 
 }  // namespace content

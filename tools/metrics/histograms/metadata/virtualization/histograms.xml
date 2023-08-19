@@ -1,0 +1,60 @@
+<!--
+Copyright 2023 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+
+<!--
+This file is used to generate a comprehensive list of Virtualization system related,
+i.e. the stack common to all Guests running on Chrome OS, histograms along with a detailed
+description for each histogram.
+
+For best practices on writing histogram descriptions, see
+https://chromium.googlesource.com/chromium/src.git/+/HEAD/tools/metrics/histograms/README.md
+
+Please follow the instructions in the OWNERS file in this directory to find a
+reviewer. If no OWNERS file exists, please consider signing up at
+go/reviewing-metrics (Googlers only), as all subdirectories are expected to
+have an OWNERS file. As a last resort you can send the CL to
+chromium-metrics-reviews@google.com.
+-->
+
+<histogram-configuration>
+
+<histograms>
+
+<variants name="VmName">
+  <variant name="ARCVM" summary="ARCVM"/>
+  <variant name="BOREALIS" summary="BOREALIS"/>
+  <variant name="BRUSCHETTA" summary="BRUSCHETTA"/>
+  <variant name="PLUGIN_VM" summary="PLUGIN_VM"/>
+  <variant name="TERMINA" summary="TERMINA"/>
+</variants>
+
+<histogram name="Virtualization.{Name}.StartDuration" units="Milliseconds"
+    expires_after="2024-01-31">
+  <owner>abhishekbh@google.com</owner>
+  <owner>uekawa@google.com</owner>
+  <summary>
+    The time taken to start a {Name} VM in milliseconds. This metric is emitted
+    at the end of a StartVmRequest for {Name} VM by the Concierge daemon in
+    Chrome OS.
+  </summary>
+  <token key="Name" variants="VmName"/>
+</histogram>
+
+<histogram name="Virtualization.{Name}.StopDuration" units="Milliseconds"
+    expires_after="2024-01-31">
+  <owner>abhishekbh@google.com</owner>
+  <owner>uekawa@google.com</owner>
+  <summary>
+    The time taken to stop a {Name} VM in milliseconds. This metric is emitted
+    at the end of a StopVmRequest for {Name} VM by the Concierge daemon in
+    Chrome OS.
+  </summary>
+  <token key="Name" variants="VmName"/>
+</histogram>
+
+</histograms>
+
+</histogram-configuration>

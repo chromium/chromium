@@ -43,17 +43,6 @@ class TextFragmentHandlerTest : public SimTest {
     WebView().MainFrameViewWidget()->Resize(gfx::Size(800, 600));
   }
 
-  void BeginEmptyFrame() {
-    // If a test case doesn't find a match and therefore doesn't schedule the
-    // beforematch event, we should still render a second frame as if we did
-    // schedule the event to retain test coverage.
-    // When the beforematch event is not scheduled, a DCHECK will fail on
-    // BeginFrame() because no event was scheduled, so we schedule an empty task
-    // here.
-    GetDocument().EnqueueAnimationFrameTask(WTF::BindOnce([]() {}));
-    Compositor().BeginFrame();
-  }
-
   void RunAsyncMatchingTasks() {
     ThreadScheduler::Current()
         ->ToMainThreadScheduler()
@@ -141,9 +130,9 @@ class TextFragmentHandlerTest : public SimTest {
     auto* buffer =
         MakeGarbageCollected<V8UnionArrayBufferOrArrayBufferViewOrString>(
             DOMArrayBuffer::Create(shared_buffer));
-    FontFace* ahem =
-        FontFace::Create(GetDocument().GetExecutionContext(), "Ahem", buffer,
-                         FontFaceDescriptors::Create());
+    FontFace* ahem = FontFace::Create(GetDocument().GetExecutionContext(),
+                                      AtomicString("Ahem"), buffer,
+                                      FontFaceDescriptors::Create());
 
     ScriptState* script_state =
         ToScriptStateForMainWorld(GetDocument().GetFrame());
@@ -196,7 +185,6 @@ TEST_F(TextFragmentHandlerTest, RemoveTextFragments) {
   RunAsyncMatchingTasks();
 
   // Render two frames to handle the async step added by the beforematch event.
-  Compositor().BeginFrame();
   Compositor().BeginFrame();
 
   EXPECT_EQ(2u, GetDocument().Markers().Markers().size());
@@ -361,6 +349,7 @@ TEST_F(TextFragmentHandlerTest, ExtractFirstTextFragmentRect) {
   LoadURL(
       "https://example.com/"
       "test.html#:~:text=This,page");
+  LoadAhem();
   request.Complete(R"HTML(
     <!DOCTYPE html>
     <meta name="viewport" content="width=device-width">
@@ -369,13 +358,13 @@ TEST_F(TextFragmentHandlerTest, ExtractFirstTextFragmentRect) {
     <p id="second">with some more text</p>
   )HTML");
   RunAsyncMatchingTasks();
-  LoadAhem();
 
   Compositor().BeginFrame();
 
   EXPECT_EQ(1u, GetDocument().Markers().Markers().size());
 
-  Node* first_paragraph = GetDocument().getElementById("first")->firstChild();
+  Node* first_paragraph =
+      GetDocument().getElementById(AtomicString("first"))->firstChild();
   const auto& start = Position(first_paragraph, 0);
   const auto& end = Position(first_paragraph, 19);
   ASSERT_EQ("This is a test page", PlainText(EphemeralRange(start, end)));
@@ -402,6 +391,7 @@ TEST_F(TextFragmentHandlerTest, ExtractFirstTextFragmentRectScroll) {
   SimRequest request("https://example.com/test.html#:~:text=test,page",
                      "text/html");
   LoadURL("https://example.com/test.html#:~:text=test,page");
+  LoadAhem();
   request.Complete(R"HTML(
     <!DOCTYPE html>
     <meta name="viewport" content="initial-scale=4">
@@ -418,13 +408,13 @@ TEST_F(TextFragmentHandlerTest, ExtractFirstTextFragmentRectScroll) {
     <p id="first">This is a test page</p>
   )HTML");
   RunAsyncMatchingTasks();
-  LoadAhem();
 
   Compositor().BeginFrame();
 
   EXPECT_EQ(1u, GetDocument().Markers().Markers().size());
 
-  Node* first_paragraph = GetDocument().getElementById("first")->firstChild();
+  Node* first_paragraph =
+      GetDocument().getElementById(AtomicString("first"))->firstChild();
   const auto& start = Position(first_paragraph, 10);
   const auto& end = Position(first_paragraph, 19);
   ASSERT_EQ("test page", PlainText(EphemeralRange(start, end)));
@@ -448,6 +438,7 @@ TEST_F(TextFragmentHandlerTest, ExtractFirstTextFragmentRectMultipleHighlight) {
   LoadURL(
       "https://example.com/"
       "test.html#:~:text=test%20page&text=more%20text");
+  LoadAhem();
   request.Complete(R"HTML(
     <!DOCTYPE html>
     <meta name="viewport" content="width=device-width">
@@ -467,13 +458,13 @@ TEST_F(TextFragmentHandlerTest, ExtractFirstTextFragmentRectMultipleHighlight) {
     <p id="second">With some more text</p>
   )HTML");
   RunAsyncMatchingTasks();
-  LoadAhem();
 
   Compositor().BeginFrame();
 
   EXPECT_EQ(2u, GetDocument().Markers().Markers().size());
 
-  Node* first_paragraph = GetDocument().getElementById("first")->firstChild();
+  Node* first_paragraph =
+      GetDocument().getElementById(AtomicString("first"))->firstChild();
   const auto& start = Position(first_paragraph, 10);
   const auto& end = Position(first_paragraph, 19);
   ASSERT_EQ("test page", PlainText(EphemeralRange(start, end)));
@@ -498,6 +489,7 @@ TEST_F(TextFragmentHandlerTest,
   LoadURL(
       "https://example.com/"
       "test.html#:~:text=fake&text=test%20page");
+  LoadAhem();
   request.Complete(R"HTML(
     <!DOCTYPE html>
     <meta name="viewport" content="width=device-width">
@@ -516,13 +508,13 @@ TEST_F(TextFragmentHandlerTest,
     <p id="first">This is a test page</p>
   )HTML");
   RunAsyncMatchingTasks();
-  LoadAhem();
 
   Compositor().BeginFrame();
 
   EXPECT_EQ(1u, GetDocument().Markers().Markers().size());
 
-  Node* first_paragraph = GetDocument().getElementById("first")->firstChild();
+  Node* first_paragraph =
+      GetDocument().getElementById(AtomicString("first"))->firstChild();
   const auto& start = Position(first_paragraph, 10);
   const auto& end = Position(first_paragraph, 19);
   ASSERT_EQ("test page", PlainText(EphemeralRange(start, end)));
@@ -546,6 +538,7 @@ TEST_F(TextFragmentHandlerTest, RejectExtractFirstTextFragmentRect) {
   LoadURL(
       "https://example.com/"
       "test.html#:~:text=not%20on%20the%20page");
+  LoadAhem();
   request.Complete(R"HTML(
     <!DOCTYPE html>
     <meta name="viewport" content="width=device-width">
@@ -565,7 +558,6 @@ TEST_F(TextFragmentHandlerTest, RejectExtractFirstTextFragmentRect) {
     <p id="second">With some more text</p>
   )HTML");
   RunAsyncMatchingTasks();
-  LoadAhem();
 
   Compositor().BeginFrame();
 
@@ -585,7 +577,8 @@ TEST_F(TextFragmentHandlerTest, CheckPreemptiveGeneration) {
     <p id='first'>First paragraph</p>
     )HTML");
 
-  Node* first_paragraph = GetDocument().getElementById("first")->firstChild();
+  Node* first_paragraph =
+      GetDocument().getElementById(AtomicString("first"))->firstChild();
   const auto& selected_start = Position(first_paragraph, 0);
   const auto& selected_end = Position(first_paragraph, 5);
   ASSERT_EQ("First", PlainText(EphemeralRange(selected_start, selected_end)));
@@ -608,7 +601,8 @@ TEST_F(TextFragmentHandlerTest, CheckNoPreemptiveGenerationBlocklist) {
     <p id='first'>First paragraph</p>
     )HTML");
 
-  Node* first_paragraph = GetDocument().getElementById("first")->firstChild();
+  Node* first_paragraph =
+      GetDocument().getElementById(AtomicString("first"))->firstChild();
   const auto& selected_start = Position(first_paragraph, 0);
   const auto& selected_end = Position(first_paragraph, 5);
   ASSERT_EQ("First", PlainText(EphemeralRange(selected_start, selected_end)));
@@ -631,9 +625,9 @@ TEST_F(TextFragmentHandlerTest, CheckNoPreemptiveGenerationEditable) {
     <input type="text" id="input" value="default text in input">
     )HTML");
 
-  Node* input_text =
-      FlatTreeTraversal::Next(*GetDocument().getElementById("input"))
-          ->firstChild();
+  Node* input_text = FlatTreeTraversal::Next(
+                         *GetDocument().getElementById(AtomicString("input")))
+                         ->firstChild();
   const auto& selected_start = Position(input_text, 0);
   const auto& selected_end = Position(input_text, 12);
   ASSERT_EQ("default text",
@@ -659,7 +653,7 @@ TEST_F(TextFragmentHandlerTest, SecondGenerationCrash) {
   <p id='p'>First paragraph text</p>
   )HTML");
   GetDocument().UpdateStyleAndLayoutTree();
-  Node* p = GetDocument().getElementById("p");
+  Node* p = GetDocument().getElementById(AtomicString("p"));
   const auto& start = Position(p->lastChild(), 0);
   const auto& end = Position(p->lastChild(), 15);
   ASSERT_EQ("First paragraph", PlainText(EphemeralRange(start, end)));
@@ -689,7 +683,8 @@ TEST_F(TextFragmentHandlerTest, CheckMetrics_Success) {
     <p id='first'>First paragraph text that is longer than 20 chars</p>
     <p id='second'>Second paragraph text</p>
   )HTML");
-  Node* first_paragraph = GetDocument().getElementById("first")->firstChild();
+  Node* first_paragraph =
+      GetDocument().getElementById(AtomicString("first"))->firstChild();
   const auto& selected_start = Position(first_paragraph, 0);
   const auto& selected_end = Position(first_paragraph, 28);
   ASSERT_EQ("First paragraph text that is",
@@ -712,7 +707,8 @@ TEST_F(TextFragmentHandlerTest, CheckMetrics_Failure) {
     <p id='second'>Second paragraph prefix one two three four five six seven
      eight nine ten to not unique snippet of text followed by suffix</p>
   )HTML");
-  Node* first_paragraph = GetDocument().getElementById("first")->firstChild();
+  Node* first_paragraph =
+      GetDocument().getElementById(AtomicString("first"))->firstChild();
   const auto& selected_start = Position(first_paragraph, 80);
   const auto& selected_end = Position(first_paragraph, 106);
   ASSERT_EQ("not unique snippet of text",
@@ -723,9 +719,6 @@ TEST_F(TextFragmentHandlerTest, CheckMetrics_Failure) {
 
 TEST_F(TextFragmentHandlerTest,
        ShouldCreateTextFragmentHandlerAndRemoveHighlightForIframes) {
-  base::test::ScopedFeatureList feature_list_;
-  feature_list_.InitAndEnableFeature(
-      shared_highlighting::kSharedHighlightingAmp);
   SimRequest main_request("https://example.com/test.html", "text/html");
   SimRequest child_request("https://example.com/child.html", "text/html");
   LoadURL("https://example.com/test.html");
@@ -750,11 +743,9 @@ TEST_F(TextFragmentHandlerTest,
   )HTML");
   RunAsyncMatchingTasks();
 
-  // Render two frames to handle the async step added by the beforematch event.
   Compositor().BeginFrame();
-  BeginEmptyFrame();
 
-  Element* iframe = GetDocument().getElementById("iframe");
+  Element* iframe = GetDocument().getElementById(AtomicString("iframe"));
   auto* child_frame =
       To<LocalFrame>(To<HTMLFrameOwnerElement>(iframe)->ContentFrame());
 
@@ -791,7 +782,6 @@ TEST_F(TextFragmentHandlerTest, NonMatchingTextDirectiveCreatesHandler) {
   SetLocationHash(GetDocument(), ":~:text=non%20existent%20text");
 
   Compositor().BeginFrame();
-  BeginEmptyFrame();
   RunAsyncMatchingTasks();
 
   ASSERT_EQ(0u, GetDocument().Markers().Markers().size());
@@ -888,7 +878,8 @@ TEST_F(TextFragmentHandlerTest,
     <p id='second'>Second paragraph text</p>
   )HTML");
 
-  Node* first_paragraph = GetDocument().getElementById("first")->firstChild();
+  Node* first_paragraph =
+      GetDocument().getElementById(AtomicString("first"))->firstChild();
   const auto& selected_start = Position(first_paragraph, 0);
   const auto& selected_end = Position(first_paragraph, 28);
   ASSERT_EQ("First paragraph text that is",
@@ -960,9 +951,8 @@ TEST_F(TextFragmentHandlerTest,
 
   // Render two frames to handle the async step added by the beforematch event.
   Compositor().BeginFrame();
-  BeginEmptyFrame();
 
-  Element* iframe = GetDocument().getElementById("iframe");
+  Element* iframe = GetDocument().getElementById(AtomicString("iframe"));
   auto* child_frame =
       To<LocalFrame>(To<HTMLFrameOwnerElement>(iframe)->ContentFrame());
   auto* main_frame = GetDocument().GetFrame();
@@ -1017,7 +1007,8 @@ TEST_F(TextFragmentHandlerTest, IfGeneratorResetShouldRecordCorrectError) {
     <p id='second'>Second paragraph text</p>
   )HTML");
 
-  Node* first_paragraph = GetDocument().getElementById("first")->firstChild();
+  Node* first_paragraph =
+      GetDocument().getElementById(AtomicString("first"))->firstChild();
   const auto& selected_start = Position(first_paragraph, 5);
   const auto& selected_end = Position(first_paragraph, 6);
   ASSERT_EQ(" ", PlainText(EphemeralRange(selected_start, selected_end)));
@@ -1047,7 +1038,8 @@ TEST_F(TextFragmentHandlerTest, NotGenerated) {
     <p id='second'>Second paragraph text</p>
   )HTML");
 
-  Node* first_paragraph = GetDocument().getElementById("first")->firstChild();
+  Node* first_paragraph =
+      GetDocument().getElementById(AtomicString("first"))->firstChild();
   const auto& selected_start = Position(first_paragraph, 5);
   const auto& selected_end = Position(first_paragraph, 6);
   ASSERT_EQ(" ", PlainText(EphemeralRange(selected_start, selected_end)));
@@ -1088,13 +1080,11 @@ TEST_F(TextFragmentHandlerTest, InvalidateOverflowOnRemoval) {
   )HTML");
   RunAsyncMatchingTasks();
 
-  // Render two frames to handle the async step added by the beforematch event.
-  Compositor().BeginFrame();
   Compositor().BeginFrame();
 
   EXPECT_EQ(1u, GetDocument().Markers().Markers().size());
-  Text* first_paragraph =
-      To<Text>(GetDocument().getElementById("first")->firstChild());
+  Text* first_paragraph = To<Text>(
+      GetDocument().getElementById(AtomicString("first"))->firstChild());
   LayoutText* layout_text = first_paragraph->GetLayoutObject();
   PhysicalRect marker_rect = layout_text->PhysicalVisualOverflowRect();
 

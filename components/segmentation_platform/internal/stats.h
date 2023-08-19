@@ -12,7 +12,6 @@
 #include "components/segmentation_platform/public/model_provider.h"
 #include "components/segmentation_platform/public/proto/segmentation_platform.pb.h"
 #include "components/segmentation_platform/public/proto/types.pb.h"
-#include "components/segmentation_platform/public/result.h"
 #include "components/segmentation_platform/public/segment_selection_result.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
@@ -87,27 +86,35 @@ void RecordMaintenanceCompactionResult(proto::SignalType signal_type,
 void RecordMaintenanceSignalIdentifierCount(size_t count);
 
 // Model Delivery metrics.
-// Records whether any incoming ML model had metadata attached that we were able
-// to parse.
+// Records whether any incoming ML had metadata attached that
+// we were able to parse.
 void RecordModelDeliveryHasMetadata(SegmentId segment_id, bool has_metadata);
-// Records the number of tensor features an updated ML model has.
+// Records the number of tensor features an updated server or embedded model
+// has.
 void RecordModelDeliveryMetadataFeatureCount(SegmentId segment_id,
+                                             proto::ModelSource model_source,
                                              size_t count);
-// Records the result of validating the metadata of an incoming ML model.
-// Recorded before and after it has been merged with the already stored
-// metadata.
+// Records the result of validating the metadata of an incoming server or
+// embedded model. Recorded before and after it has been merged with the already
+// stored metadata.
 void RecordModelDeliveryMetadataValidation(
     SegmentId segment_id,
+    proto::ModelSource model_source,
     bool processed,
     metadata_utils::ValidationResult validation_result);
-// Record what type of model metadata we received.
-void RecordModelDeliveryReceived(SegmentId segment_id);
-// Records the result of attempting to save an updated version of the model
-// metadata.
-void RecordModelDeliverySaveResult(SegmentId segment_id, bool success);
+// Record what type of server or embedded model metadata we received .
+void RecordModelDeliveryReceived(SegmentId segment_id,
+                                 proto::ModelSource model_source);
+// Records the result of attempting to save an updated version of the server or
+// embedded model metadata.
+void RecordModelDeliverySaveResult(SegmentId segment_id,
+                                   proto::ModelSource model_source,
+                                   bool success);
 // Records whether the currently stored segment_id matches the incoming
-// segment_id, as these are expected to match.
-void RecordModelDeliverySegmentIdMatches(SegmentId segment_id, bool matches);
+// segment_id for a particular model_source, as these are expected to match.
+void RecordModelDeliverySegmentIdMatches(SegmentId segment_id,
+                                         proto::ModelSource model_source,
+                                         bool matches);
 
 // Model Execution metrics.
 // Records the duration of processing a single ML feature. This only takes into
@@ -132,14 +139,13 @@ void RecordModelExecutionDurationTotal(SegmentId segment_id,
 // Records the total duration for GetClassificationResult API starting from the
 // time request arrives in segmentation service until the result has been
 // returned. It includes feature processing and model execution as well.
-void RecordClassificationRequestTotalDuration(
-    const std::string& segmentation_key,
-    base::TimeDelta duration);
+void RecordClassificationRequestTotalDuration(const Config& config,
+                                              base::TimeDelta duration);
 
 // Records the total duration of on-demand segment selection which includes
 // running all the models associated with the client and computing result.
 void RecordOnDemandSegmentSelectionDuration(
-    const std::string& segmentation_key,
+    const Config& config,
     const SegmentSelectionResult& result,
     base::TimeDelta duration);
 // Records the result value after successfully executing an ML model.
@@ -225,10 +231,6 @@ enum class SegmentationSelectionFailureReason {
 void RecordSegmentSelectionFailure(const Config& config,
                                    SegmentationSelectionFailureReason reason);
 
-// Records the reason for failure or success to compute a segment selection.
-void RecordSegmentSelectionFailure(const std::string& segmentation_key,
-                                   SegmentationSelectionFailureReason reason);
-
 // Keep in sync with SegmentationPlatformFeatureProcessingError in
 // //tools/metrics/histograms/enums.xml.
 enum class FeatureProcessingError {
@@ -239,7 +241,8 @@ enum class FeatureProcessingError {
   kSqlBindValuesError = 4,
   kSqlQueryRunError = 5,
   kResultTensorError = 6,
-  kMaxValue = kResultTensorError,
+  kSuccess = 7,
+  kMaxValue = kSuccess,
 };
 
 // Return a string display for the given FeatureProcessingError.
@@ -289,7 +292,9 @@ enum class TrainingDataCollectionEvent {
   kDisallowedForRecording = 17,
   kObservationDisallowed = 18,
   kTrainingDataMissing = 19,
-  kMaxValue = kTrainingDataMissing,
+  kOnDecisionTimeTypeMistmatch = 20,
+  kDelayTriggerSampled = 21,
+  kMaxValue = kDelayTriggerSampled,
 };
 
 // Records analytics for training data collection.

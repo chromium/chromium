@@ -21,6 +21,7 @@ class MockSyncInvalidationsService : public SyncInvalidationsService {
   MOCK_METHOD(void, StopListening, ());
   MOCK_METHOD(void, StopListeningPermanently, ());
   MOCK_METHOD(void, AddListener, (InvalidationsListener * listener));
+  MOCK_METHOD(bool, HasListener, (InvalidationsListener * listener));
   MOCK_METHOD(void, RemoveListener, (InvalidationsListener * listener));
   MOCK_METHOD(void,
               AddTokenObserver,

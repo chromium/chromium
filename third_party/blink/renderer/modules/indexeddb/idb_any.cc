@@ -80,11 +80,6 @@ const Vector<std::unique_ptr<IDBValue>>& IDBAny::Values() const {
   return idb_values_;
 }
 
-const Vector<Vector<std::unique_ptr<IDBValue>>>& IDBAny::ValuesArray() const {
-  DCHECK_EQ(type_, kIDBValueArrayArrayType);
-  return idb_values_array_;
-}
-
 int64_t IDBAny::Integer() const {
   DCHECK_EQ(type_, kIntegerType);
   return integer_;
@@ -100,10 +95,6 @@ IDBAny::IDBAny(IDBDatabase* value)
 
 IDBAny::IDBAny(Vector<std::unique_ptr<IDBValue>> values)
     : type_(kIDBValueArrayType), idb_values_(std::move(values)) {}
-
-IDBAny::IDBAny(Vector<Vector<std::unique_ptr<IDBValue>>> all_values)
-    : type_(kIDBValueArrayArrayType),
-      idb_values_array_(std::move(all_values)) {}
 
 IDBAny::IDBAny(std::unique_ptr<IDBValue> value)
     : type_(kIDBValueType), idb_value_(std::move(value)) {}

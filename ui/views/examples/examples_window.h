@@ -34,7 +34,7 @@ VIEWS_EXAMPLES_EXPORT Widget* GetExamplesWidget();
 VIEWS_EXAMPLES_EXPORT void ShowExamplesWindow(
     base::OnceClosure on_close,
     ExampleVector examples = CreateExamples(),
-    gfx::NativeWindow window_context = nullptr);
+    gfx::NativeWindow window_context = gfx::NativeWindow());
 
 // Prints |string| in the status area, at the bottom of the window.
 VIEWS_EXAMPLES_EXPORT void LogStatus(const std::string& string);

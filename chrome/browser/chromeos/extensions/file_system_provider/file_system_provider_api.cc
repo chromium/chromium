@@ -116,7 +116,7 @@ std::string FileSystemProviderBase::GetProviderId() const {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   // Terminal app is the only non-extension to use fsp.
   if (!extension()) {
-    CHECK(url::IsSameOriginWith(GURL(source_url()),
+    CHECK(url::IsSameOriginWith(source_url(),
                                 GURL(chrome::kChromeUIUntrustedTerminalURL)));
     return guest_os::kTerminalSystemAppId;
   }

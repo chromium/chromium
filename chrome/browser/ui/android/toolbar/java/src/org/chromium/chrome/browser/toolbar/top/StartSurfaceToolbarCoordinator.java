@@ -11,7 +11,6 @@ import android.view.ViewStub;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.Callback;
 import org.chromium.base.CallbackController;
@@ -302,7 +301,6 @@ public class StartSurfaceToolbarCoordinator {
         return mStub.getResources().getDimensionPixelOffset(id);
     }
 
-    @VisibleForTesting
     public TabCountProvider getIncognitoToggleTabCountProviderForTesting() {
         return mPropertyModel.get(StartSurfaceToolbarProperties.INCOGNITO_TAB_COUNT_PROVIDER);
     }

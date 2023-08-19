@@ -1,8 +1,8 @@
 # General reviewers:
 aleventhal@chromium.org
 benjamin.beaudry@microsoft.com
-dlibby@microsoft.com
 dtseng@chromium.org
+janewman@microsoft.com
 kschmi@microsoft.com
 nektar@chromium.org
 # For changes that are pure code refactoring or DOM/layout integration:

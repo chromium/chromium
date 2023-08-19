@@ -28,6 +28,8 @@ enum class WebApkUpdateReason {
   WEB_SHARE_TARGET_DIFFERS,
   MANUALLY_TRIGGERED,
   SHORTCUTS_DIFFER,
+  DARK_BACKGROUND_COLOR_DIFFERS,
+  DARK_THEME_COLOR_DIFFERS,
 };
 
 // A Java counterpart will be generated for this enum.

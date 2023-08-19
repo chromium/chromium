@@ -71,6 +71,7 @@ body {
   display: flex;
   flex: auto;
   flex-direction: column;
+  overflow: hidden;
 }
 
 /* Directory tree at the left. */
@@ -1201,8 +1202,7 @@ body.check-select .breadcrumbs {
   padding-inline: 16px 12px;
 }
 
-body.check-select #read-only-indicator,
-body.check-select #offline-folder-indicator {
+body.check-select #read-only-indicator {
   display: none;
 }
 
@@ -1409,45 +1409,27 @@ body.files-ng .thumbnail-frame > .img-container {
   position: relative;
 }
 
-#list-container.thumbnail-view .inline-status,
-#list-container.thumbnail-view .inline-status .progress,
-#list-container.thumbnail-view .inline-status xf-icon {
-  display: none;
-  height: 16px;
-  width: 16px;
-}
-
-#list-container.thumbnail-view .inline-status {
+#list-container.thumbnail-view xf-inline-status {
   align-items: center;
-  justify-content: center;
+  display: flex;
   position: absolute;
-  right: 4px;
-  top: 4px;
+  right: 5px;
+  top: 5px;
 }
 
-#list-container.thumbnail-view li.directory .inline-status {
+#list-container.thumbnail-view li.directory xf-inline-status {
   height: 100%;
+  right: 10px;
   top: 0;
 }
 
-#list-container.thumbnail-view li.pinned:not([renaming]):not(.dim-offline) .inline-status,
-#list-container.thumbnail-view li.pinned:not([renaming]):not(.dim-offline)[data-sync-status=not_found] .inline-status xf-icon,
-#list-container.thumbnail-view li:not([renaming])[data-sync-status]:not([data-sync-status=not_found]) .inline-status,
-#list-container.thumbnail-view li:not([renaming])[data-sync-status]:not([data-sync-status=not_found]) .inline-status .progress,
-#list-container.thumbnail-view li.cant-pin:not([renaming]) .inline-status,
-#list-container.thumbnail-view li.cant-pin:not([renaming]) .inline-status xf-icon[type=cant-pin] {
-  display: flex;
-}
-
-#list-container.thumbnail-view li.pinned .inline-status xf-icon[type=offline],
-#list-container.thumbnail-view li.cant-pin .inline-status xf-icon[type=cant-pin] {
-  --xf-icon-color: var(--cros-icon-color-secondary);
+/* Hide inline status when renaming directories in grid view. */
+#list-container.thumbnail-view li.directory[renaming] xf-inline-status {
+  display: none;
 }
 
 /* Only display outlines for entries with thumbnails. */
-#list-container.thumbnail-view li:has(.thumbnail) .inline-status .progress,
-#list-container.thumbnail-view li.pinned:has(.thumbnail) .inline-status xf-icon[type=offline],
-#list-container.thumbnail-view li.cant-pin:has(.thumbnail) .inline-status xf-icon[type=cant-pin] {
+#list-container.thumbnail-view li:has(.thumbnail) xf-inline-status {
   --xf-icon-color-outline: var(--cros-bg-color);
 }
 
@@ -1976,15 +1958,39 @@ li[renaming=''] .filename-label {
 /* The managed icon in the details list for DLP restricted files. */
 .dlp-managed-icon {
   -webkit-mask-image: url(chrome://resources/images/business.svg);
+}
+
+/* The encrypted icon in the details list for Google Drive CSE files. */
+.encrypted-icon {
+  -webkit-mask-image: url(../images/files/ui/encrypted.svg);
+}
+
+.dlp-managed-icon,
+.encrypted-icon {
   -webkit-mask-position: right center;
   -webkit-mask-repeat: no-repeat;
   -webkit-mask-size: 16px 16px;
   background-color: currentColor;
-  color: var(--cros-icon-color-primary);
+  color: var(--cros-icon-color-secondary);
   height: 24px;
   margin-inline-end: 10px;
   margin-inline-start: auto;
   width: 24px;
+}
+
+.dlp-managed-icon {
+  visibility: hidden;
+}
+
+.dlp-managed-icon.is-dlp-restricted {
+  visibility: visible;
+}
+
+body.files-ng.check-select #list-container list:focus li[selected]
+.table-row-cell .dlp-managed-icon,
+body.files-ng.check-select #list-container list:focus li[selected]
+.table-row-cell .encrypted-icon {
+  color: var(--cros-icon-color-selection);
 }
 
 body.files-ng #list-container list li .detail-icon {
@@ -2373,44 +2379,9 @@ body.files-ng #list-container li .detail-thumbnail {
   width: 32px;
 }
 
-#list-container .list .encryption-status,
-#list-container .list .encryption-status xf-icon,
-#list-container .list .inline-status,
-#list-container .list .inline-status .progress,
-#list-container .list .inline-status xf-icon {
+/* Hide inline status when renaming in the list view. */
+#list-container .list li[renaming] xf-inline-status {
   display: none;
-  height: 16px;
-  width: 16px;
-}
-
-#list-container .list .inline-status {
-  align-items: center;
-  justify-content: center;
-}
-
-#list-container .list li.encrypted:not([renaming]) .encryption-status,
-#list-container .list li.encrypted:not([renaming]) .encryption-status xf-icon[type=encrypted],
-#list-container .list li.pinned:not([renaming]):not(.dim-offline) .inline-status,
-#list-container .list li.pinned:not([renaming]):not(.dim-offline)[data-sync-status=not_found] .inline-status xf-icon,
-#list-container .list li:not([renaming])[data-sync-status]:not([data-sync-status=not_found]) .inline-status,
-#list-container .list li:not([renaming])[data-sync-status]:not([data-sync-status=not_found]) .inline-status .progress,
-#list-container .list li.cant-pin:not([renaming]) .inline-status,
-#list-container .list li.cant-pin:not([renaming]) .inline-status xf-icon[type=cant-pin] {
-  display: flex;
-}
-
-#list-container .list li.encrypted .encryption-status xf-icon[type=encrypted],
-#list-container .list li.pinned .inline-status xf-icon[type=offline],
-#list-container .list li.cant-pin .inline-status xf-icon[type=cant-pin] {
-  --xf-icon-color: var(--cros-icon-color-secondary);
-}
-
-#list-container .list li.encrypted:not([renaming]) .filename-label {
-  flex-grow: 0;
-}
-
-#list-container .list li.encrypted:not([renaming]) .encryption-status {
-  flex-grow: 1;
 }
 
 #new-folder-button {
@@ -2655,7 +2626,8 @@ files-tooltip:not(:defined) {
   overflow: hidden;
 }
 
-.table-row-cell > .dateholder > .dlp-managed-icon {
+.table-row-cell > .dateholder > .dlp-managed-icon,
+.table-row-cell > .dateholder > .encrypted-icon {
   flex: 0 0 24px;
   margin-inline-start: 8px;
 }

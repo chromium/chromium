@@ -51,7 +51,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="ExtensionBlacklist.BlockCRX" enum="ExtensionLocation"
-    expires_after="2023-11-18">
+    expires_after="2024-01-28">
   <owner>anunoy@chromium.org</owner>
   <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>
@@ -62,7 +62,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="ExtensionBlacklist.SilentInstall" enum="ExtensionLocation"
-    expires_after="2023-11-18">
+    expires_after="2024-02-11">
   <owner>anunoy@chromium.org</owner>
   <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>
@@ -75,7 +75,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="ExtensionBlacklist.UnblacklistInstalled"
-    enum="ExtensionLocation" expires_after="2023-11-18">
+    enum="ExtensionLocation" expires_after="2024-01-21">
   <owner>anunoy@chromium.org</owner>
   <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>
@@ -129,7 +129,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Extensions.ActiveScriptController.DeniedExtensions"
-    units="Extension Count" expires_after="2023-10-01">
+    units="Extension Count" expires_after="2023-12-04">
   <owner>rdevlin.cronin@chromium.org</owner>
   <owner>extensions-core@chromium.org</owner>
   <summary>
@@ -139,7 +139,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Extensions.ActiveScriptController.PermittedExtensions"
-    units="Extension Count" expires_after="2023-11-05">
+    units="Extension Count" expires_after="2024-01-07">
   <owner>rdevlin.cronin@chromium.org</owner>
   <owner>extensions-core@chromium.org</owner>
   <summary>
@@ -150,6 +150,9 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Extensions.AlarmManager.AlarmsLoadedCount" units="alarms"
     expires_after="2023-12-01">
+  <obsolete>
+    Code removed 2023/06.
+  </obsolete>
   <owner>dbertoni@chromium.org</owner>
   <owner>extensions-core@chromium.org</owner>
   <summary>
@@ -158,7 +161,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Extensions.AppLaunch" enum="AppLaunch"
-    expires_after="2023-10-08">
+    expires_after="2024-02-11">
   <owner>benwells@chromium.org</owner>
   <owner>dominickn@chromium.org</owner>
   <owner>tapted@chromium.org</owner>
@@ -189,16 +192,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Extensions.AppLocation" enum="ExtensionLocation"
-    expires_after="2022-06-30">
-  <owner>benwells@chromium.org</owner>
-  <owner>tapted@chromium.org</owner>
-  <summary>
-    The number of apps loaded on profile open time grouped by
-    Extension::Location.
-  </summary>
-</histogram>
-
 <histogram name="Extensions.AppLocation2" enum="ExtensionLocation"
     expires_after="2024-01-01">
   <owner>benwells@chromium.org</owner>
@@ -206,16 +199,6 @@ chromium-metrics-reviews@google.com.
   <summary>
     The number of apps loaded on profile open time grouped by
     Extension::Location.
-  </summary>
-</histogram>
-
-<histogram name="Extensions.AppsPromo" enum="AppPromoAction"
-    expires_after="2022-06-30">
-  <owner>benwells@chromium.org</owner>
-  <owner>tapted@chromium.org</owner>
-  <summary>
-    The actions taken in the NTP apps promo grouped by
-    extension_misc::AppsPromoBuckets.
   </summary>
 </histogram>
 
@@ -244,7 +227,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Extensions.BackgroundHostCreatedForExtension"
-    enum="BackgroundHostCreatedForExtensionValues" expires_after="2023-11-12">
+    enum="BackgroundHostCreatedForExtensionValues" expires_after="2024-01-14">
   <owner>fdoray@chromium.org</owner>
   <owner>catan-team@chromium.org</owner>
   <summary>
@@ -265,7 +248,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Extensions.BackgroundPageLoadTime2" units="ms"
-    expires_after="2023-10-08">
+    expires_after="2024-02-11">
   <owner>rdevlin.cronin@chromium.org</owner>
   <owner>extensions-core@chromium.org</owner>
   <summary>
@@ -411,6 +394,19 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Extensions.ContentScripts.ScriptsWithoutPrefixRetrieved"
+    enum="Boolean" expires_after="2024-07-02">
+  <owner>kelvinjiang@chromium.org</owner>
+  <owner>extensions-core@chromium.org</owner>
+  <summary>
+    Logged when at least one of an extension's dynamic content scripts is
+    retrieved from the StateStore and the script's id is not prefixed, so a
+    prefix will be added, since content script Objects should have a prefix to
+    their ids to indicate their source. Will be removed if this histogram is not
+    emitted for an extended period of time.
+  </summary>
+</histogram>
+
 <histogram name="Extensions.ContentVerification.ComputeHashesOnInstallResult"
     enum="BooleanSuccess" expires_after="2023-12-01">
   <owner>vkovalova@google.com</owner>
@@ -459,7 +455,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Extensions.ContentVerification.FetchResult"
-    enum="BooleanSuccess" expires_after="2023-11-12">
+    enum="BooleanSuccess" expires_after="2024-01-14">
   <owner>vkovalova@google.com</owner>
   <owner>lazyboy@chromium.org</owner>
   <owner>rdevlin.cronin@chromium.org</owner>
@@ -660,15 +656,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Extensions.Database.Database.Restore"
-    enum="LevelDBDatabaseCorruptionRestoreValue" expires_after="M85">
-  <owner>cmumford@chromium.org</owner>
-  <summary>
-    The result of an attempt to recover from an attempt to open a database that
-    failed as a result of corruption.
-  </summary>
-</histogram>
-
 <histogram name="Extensions.Database.Open{ExtensionsDatabaseOpen}"
     enum="LevelDBStatus" expires_after="never">
 <!-- expires-never: core storage metric; consumed in separate dashboard (go/chrome-storage-dashboard) -->
@@ -687,14 +674,6 @@ chromium-metrics-reviews@google.com.
     <variant name=".State" summary="State backing stores"/>
     <variant name=".WebAppsLockScreen" summary="Web apps lock screen stores"/>
   </token>
-</histogram>
-
-<histogram name="Extensions.Database.Value.Restore"
-    enum="LevelDBValueCorruptionDeleteValue" expires_after="M85">
-  <owner>cmumford@chromium.org</owner>
-  <summary>
-    The result of an attempt to delete a corrupted value from a database.
-  </summary>
 </histogram>
 
 <histogram name="Extensions.Debugger.UserIsInDeveloperMode"
@@ -733,7 +712,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Extensions.DeclarativeNetRequest.CreateVerifiedMatcherTime"
-    units="ms" expires_after="2023-11-12">
+    units="ms" expires_after="2024-01-14">
   <owner>kelvinjiang@chromium.org</owner>
   <owner>src/extensions/OWNERS</owner>
   <summary>
@@ -746,7 +725,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Extensions.DeclarativeNetRequest.EvaluateBeforeRequestTime.SingleExtension2"
-    units="microseconds" expires_after="2023-10-01">
+    units="microseconds" expires_after="2024-02-04">
   <owner>kelvinjiang@chromium.org</owner>
   <owner>src/extensions/OWNERS</owner>
   <summary>
@@ -759,7 +738,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Extensions.DeclarativeNetRequest.EvaluateRequestTime.AllExtensions3"
-    units="microseconds" expires_after="2023-10-01">
+    units="microseconds" expires_after="2024-02-04">
   <owner>kelvinjiang@chromium.org</owner>
   <owner>src/extensions/OWNERS</owner>
   <summary>
@@ -784,7 +763,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Extensions.DeclarativeNetRequest.IsLargeRegexRule"
-    enum="RegexRuleStatus" expires_after="2023-11-14">
+    enum="RegexRuleStatus" expires_after="2024-01-14">
   <owner>kelvinjiang@chromium.org</owner>
   <owner>src/extensions/OWNERS</owner>
   <summary>
@@ -804,7 +783,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Extensions.DeclarativeNetRequest.ManifestEnabledRulesCount2"
-    units="rules" expires_after="2023-10-22">
+    units="rules" expires_after="2023-12-24">
   <owner>kelvinjiang@chromium.org</owner>
   <owner>src/extensions/OWNERS</owner>
   <summary>
@@ -823,6 +802,17 @@ chromium-metrics-reviews@google.com.
     the disk. Logged whenever an extension calls the getDynamicRules extension
     function or when it updates the dynamic rules through a call to
     addDynamicRules or removeDynamicRules.
+  </summary>
+</histogram>
+
+<histogram name="Extensions.DeclarativeNetRequest.RegexRuleSize" units="bytes"
+    expires_after="2024-06-01">
+  <owner>kelvinjiang@chromium.org</owner>
+  <owner>src/extensions/OWNERS</owner>
+  <summary>
+    Logs the size of a regex rule in bytes, including rules that exceed the
+    per-rule memory limit that aren't indexed. Note that any rules above 100Kb
+    are recorded as 100Kb. Emitted for every regex rule an extension adds.
   </summary>
 </histogram>
 
@@ -899,7 +889,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Extensions.DeclarativeNetRequest.RulesetReindexSuccessful"
-    enum="BooleanSuccess" expires_after="2023-07-31">
+    enum="BooleanSuccess" expires_after="2024-02-04">
   <owner>lazyboy@chromium.org</owner>
   <owner>src/extensions/OWNERS</owner>
   <summary>
@@ -953,6 +943,22 @@ chromium-metrics-reviews@google.com.
     to a change to our analysis algorithm. The new algorithm renders the icon
     against the toolbar background color and determines how visible the
     resulting pixels are.
+  </summary>
+</histogram>
+
+<histogram name="Extensions.DeprecatedDisableReasonsObserved"
+    enum="ExtensionDisableReason" expires_after="2024-06-01">
+  <owner>anunoy@chromium.org</owner>
+  <owner>chrome-counter-abuse-alerts@google.com</owner>
+  <summary>
+    Emitted each time deprecated disable reason(s) are observed for an extension
+    when extension metrics are being collected (see GetDisableReasons in
+    //c/b/m/extension_metrics_provider.cc). The value recorded is a bitmask with
+    a bit set in the position of each deprecated disable reason. Most of the
+    time there will only be one bit set and should correspond to the enum value.
+    It is possible that there are multiple bits set, however, in which case
+    those corresponding values will show up as missing buckets in the UMA
+    dashboard.
   </summary>
 </histogram>
 
@@ -1236,6 +1242,26 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram
+    name="Extensions.Events.DidDispatchToAckSucceed.{BackgroundContextType}"
+    units="Boolean" expires_after="never">
+<!-- expires-never: Monitors core extension system health. -->
+
+  <owner>jlulejian@chromium.org</owner>
+  <owner>extensions-core@chromium.org</owner>
+  <summary>
+    Records whether an event dispatched through the event router was acked by
+    the renderer within a 5 minute threshold for background context of type
+    {BackgroundContextType}. Emits true shortly after extensions browser code
+    receives the ack from the renderer if within that threshold. Emits false if
+    that ack hasn't occurred within the threshold. The 5 minute upper bound was
+    chosen based on when the majority of events are ack'd.
+  </summary>
+  <token key="BackgroundContextType">
+    <variant name="ExtensionServiceWorker" summary="service worker."/>
+  </token>
+</histogram>
+
 <histogram name="Extensions.Events.Dispatch" enum="ExtensionEvents"
     expires_after="never">
 <!-- expires-never: Monitoring core extensions platform behavior. -->
@@ -1243,6 +1269,73 @@ chromium-metrics-reviews@google.com.
   <owner>rdevlin.cronin@chromium.org</owner>
   <owner>extensions-core@chromium.org</owner>
   <summary>Recorded every time an event is dispatched to an extension.</summary>
+</histogram>
+
+<histogram
+    name="Extensions.Events.DispatchToAckLongTime.{BackgroundContextType}"
+    units="ms" expires_after="never">
+<!-- expires-never: Monitors core extension system health. -->
+
+  <owner>jlulejian@chromium.org</owner>
+  <owner>extensions-core@chromium.org</owner>
+  <summary>
+    Records the time it took for the event to be sent to the event router for
+    dispatch for background page of type {BackgroundContextType}. Reports
+    samples at milliseconds granualarity up to 1 day. This is meant to
+    investigate an appropriate time maximum for
+    Extensions.Events.DispatchToAckTime.{BackgroundContextType}. It does not
+    include any requests that utilize the EventRouter::DispatchEventToSender()
+    event routing flow (some web request API, and web view API events).
+  </summary>
+  <token key="BackgroundContextType">
+    <variant name="ExtensionServiceWorker2"
+        summary="service worker. Emitted shortly after extensions browser
+                 code receives the ack from the renderer that it fired the
+                 event in the service worker. &quot;shortly&quot; because
+                 there is a function call between the receipt by the browser
+                 and recording the value. Note: this may include some amount
+                 of execution time of the extension service worker JS
+                 listener. Replaced previous version because values were
+                 inaccurate due to a bug with recording the dispatch start
+                 time 2023-08"/>
+  </token>
+</histogram>
+
+<histogram name="Extensions.Events.DispatchToAckTime.{BackgroundContextType}"
+    units="microseconds" expires_after="never">
+<!-- expires-never: Monitors core extension system health. -->
+
+  <owner>jlulejian@chromium.org</owner>
+  <owner>extensions-core@chromium.org</owner>
+  <summary>
+    Records the time it took for the event to be sent to the event router for
+    dispatch for background page of type {BackgroundContextType}. Reports
+    samples at microseconds granualarity up to 5 minutes. Values over 5 minutes
+    are bucketed together since no ack is expected to take longer than that. 5
+    minutes was decided since that is the maximum for extension service worker
+    event lifetime. This is recorded only for clients with high-resolution
+    clocks. It does not include any requests that utilize the
+    EventRouter::DispatchEventToSender() event routing flow (some web request
+    API, and web view API events).
+  </summary>
+  <token key="BackgroundContextType">
+    <variant name="ExtensionEventPage2"
+        summary="event page. Emitted when extensions browser code receives
+                 receives an ack from the renderer that it fired the event in
+                 the event page. Replaced previous version because values
+                 were inaccurate due to a bug with recording the dispatch
+                 start time 2023-08"/>
+    <variant name="ExtensionServiceWorker2"
+        summary="service worker. Emitted shortly after extensions browser
+                 code receives the ack from the renderer that it fired the
+                 event in the service worker. &quot;shortly&quot; because
+                 there is a function call between the receipt by the browser
+                 and recording the value. Note: this may include some amount
+                 of execution time of the extension service worker JS
+                 listener. Replaced previous version because values were
+                 inaccurate due to a bug with recording the dispatch start
+                 time 2023-08"/>
+  </token>
 </histogram>
 
 <histogram name="Extensions.Events.DispatchToComponent" enum="ExtensionEvents"
@@ -1316,7 +1409,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Extensions.ExtensionAddDisabledRemotelyReason2"
-    enum="ExtensionUpdateCheckDataKey" expires_after="2023-08-11">
+    enum="ExtensionUpdateCheckDataKey" expires_after="2024-08-11">
   <owner>anunoy@chromium.org</owner>
   <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>
@@ -1351,7 +1444,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Extensions.ExtensionDisabledRemotely2"
-    enum="ExtensionUpdateCheckDataKey" expires_after="2023-08-11">
+    enum="ExtensionUpdateCheckDataKey" expires_after="2024-08-11">
   <owner>anunoy@chromium.org</owner>
   <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>
@@ -1404,7 +1497,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Extensions.ExtensionReenabledRemotely" units="count"
-    expires_after="2023-10-15">
+    expires_after="2023-12-31">
   <owner>anunoy@chromium.org</owner>
   <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>
@@ -1588,7 +1681,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Extensions.ForceInstalledAndBlockListed" units="count"
-    expires_after="2023-12-01">
+    expires_after="2024-02-04">
   <owner>vkovalova@google.com</owner>
   <owner>burunduk@chromium.org</owner>
   <owner>managed-devices@google.com</owner>
@@ -1601,7 +1694,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Extensions.ForceInstalledCacheStatus"
     enum="ExtensionInstallationDownloadingCacheStatus"
-    expires_after="2023-12-01">
+    expires_after="2024-02-04">
   <owner>vkovalova@google.com</owner>
   <owner>burunduk@chromium.org</owner>
   <owner>poromov@chromium.org</owner>
@@ -1612,7 +1705,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Extensions.ForceInstalledCreationStage"
-    enum="ExtensionInstallCreationStage" expires_after="2023-12-01">
+    enum="ExtensionInstallCreationStage" expires_after="2024-02-04">
   <owner>vkovalova@google.com</owner>
   <owner>burunduk@chromium.org</owner>
   <owner>managed-devices@google.com</owner>
@@ -1627,7 +1720,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Extensions.ForceInstalledDownloadingStage"
-    enum="ExtensionInstallationDownloadingStage" expires_after="2023-12-01">
+    enum="ExtensionInstallationDownloadingStage" expires_after="2024-02-04">
   <owner>vkovalova@google.com</owner>
   <owner>burunduk@chromium.org</owner>
   <owner>managed-devices@google.com</owner>
@@ -1643,7 +1736,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Extensions.ForceInstalledFailureCacheStatus"
     enum="ExtensionInstallationDownloadingCacheStatus"
-    expires_after="2023-12-01">
+    expires_after="2024-02-04">
   <owner>vkovalova@google.com</owner>
   <owner>burunduk@chromium.org</owner>
   <owner>managed-devices@google.com</owner>
@@ -1657,7 +1750,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Extensions.ForceInstalledFailureCrxInstallError"
-    enum="ExtensionInstallationCrxInstallError" expires_after="2023-12-01">
+    enum="ExtensionInstallationCrxInstallError" expires_after="2024-02-04">
   <owner>vkovalova@google.com</owner>
   <owner>burunduk@chromium.org</owner>
   <owner>managed-devices@google.com</owner>
@@ -1670,7 +1763,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Extensions.ForceInstalledFailureManifestInvalidAppStatusError"
-    enum="ManifestInvalidAppStatusError" expires_after="2023-12-01">
+    enum="ManifestInvalidAppStatusError" expires_after="2024-02-04">
   <owner>vkovalova@google.com</owner>
   <owner>burunduk@chromium.org</owner>
   <owner>managed-devices@google.com</owner>
@@ -1685,7 +1778,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Extensions.ForceInstalledFailureNoUpdatesInfo"
-    enum="ExtensionNoUpdatesInfo" expires_after="2023-12-01">
+    enum="ExtensionNoUpdatesInfo" expires_after="2024-02-04">
   <owner>vkovalova@google.com</owner>
   <owner>burunduk@chromium.org</owner>
   <owner>managed-devices@google.com</owner>
@@ -1700,7 +1793,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Extensions.ForceInstalledFailureReason3"
-    enum="ExtensionInstallationFailureReason" expires_after="2023-12-01">
+    enum="ExtensionInstallationFailureReason" expires_after="2024-02-04">
 <!-- Name completed by histogram_suffixes name="ExtensionSource" -->
 
   <owner>vkovalova@google.com</owner>
@@ -1719,7 +1812,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Extensions.ForceInstalledFailureSandboxUnpackFailureReason2"
-    enum="ExtensionUnpackFailureReason" expires_after="2023-12-01">
+    enum="ExtensionUnpackFailureReason" expires_after="2024-02-04">
   <owner>vkovalova@google.com</owner>
   <owner>burunduk@chromium.org</owner>
   <owner>managed-devices@google.com</owner>
@@ -1760,7 +1853,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Extensions.ForceInstalledFailureStuckInInitialCreationStageAreExtensionsEnabled"
-    enum="BooleanEnabled" expires_after="2023-12-01">
+    enum="BooleanEnabled" expires_after="2024-02-04">
   <owner>vkovalova@google.com</owner>
   <owner>burunduk@chromium.org</owner>
   <owner>managed-devices@google.com</owner>
@@ -1780,7 +1873,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Extensions.ForceInstalledFailureWithCrxHeaderInvalidIsCWS"
     enum="IsForceInstalledExtensionFailedWithCrxHeaderInvalidFromCWSBoolean"
-    expires_after="2023-12-01">
+    expires_after="2024-02-04">
   <owner>vkovalova@google.com</owner>
   <owner>burunduk@chromium.org</owner>
   <owner>managed-devices@google.com</owner>
@@ -1794,7 +1887,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Extensions.ForceInstalledFailureWithCrxHeaderInvalidIsFromCache"
-    enum="BooleanCacheHit" expires_after="2023-12-01">
+    enum="BooleanCacheHit" expires_after="2024-02-04">
   <owner>vkovalova@google.com</owner>
   <owner>burunduk@chromium.org</owner>
   <owner>managed-devices@google.com</owner>
@@ -1807,7 +1900,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Extensions.ForceInstalledLoadTime" units="ms"
-    expires_after="2023-12-01">
+    expires_after="2024-02-04">
   <owner>vkovalova@google.com</owner>
   <owner>burunduk@chromium.org</owner>
   <owner>managed-devices@google.com</owner>
@@ -1818,7 +1911,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Extensions.ForceInstalledNotLoadedDisableReason"
-    enum="ExtensionDisableReason" expires_after="2023-12-01">
+    enum="ExtensionDisableReason" expires_after="2024-02-04">
   <owner>vkovalova@google.com</owner>
   <owner>burunduk@chromium.org</owner>
   <owner>managed-devices@google.com</owner>
@@ -1843,7 +1936,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Extensions.ForceInstalledSessionsWithNonMisconfigurationFailureOccured"
-    enum="Boolean" expires_after="2023-12-01">
+    enum="Boolean" expires_after="2024-02-04">
   <owner>vkovalova@google.com</owner>
   <owner>burunduk@chromium.org</owner>
   <owner>managed-devices@google.com</owner>
@@ -1877,7 +1970,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Extensions.ForceInstalledTimedOutAndNotInstalledCount"
-    units="units" expires_after="2023-12-01">
+    units="units" expires_after="2024-02-04">
   <owner>vkovalova@google.com</owner>
   <owner>burunduk@chromium.org</owner>
   <owner>managed-devices@google.com</owner>
@@ -1888,7 +1981,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Extensions.ForceInstalledTimedOutCount" units="units"
-    expires_after="2023-12-01">
+    expires_after="2024-02-04">
   <owner>vkovalova@google.com</owner>
   <owner>burunduk@chromium.org</owner>
   <owner>managed-devices@google.com</owner>
@@ -1931,7 +2024,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Extensions.ForceInstalledTotalCandidateCount" units="units"
-    expires_after="2023-12-01">
+    expires_after="2024-02-04">
   <owner>vkovalova@google.com</owner>
   <owner>burunduk@chromium.org</owner>
   <owner>managed-devices@google.com</owner>
@@ -2059,7 +2152,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Extensions.Functions.ExtensionMV3Calls"
-    enum="ExtensionFunctions" expires_after="2023-10-01">
+    enum="ExtensionFunctions" expires_after="2024-02-04">
   <owner>tjudkins@chromium.org</owner>
   <owner>rdevlin.cronin@chromium.org</owner>
   <owner>extensions-core@chromium.org</owner>
@@ -2174,7 +2267,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Extensions.Functions.SucceededTotalExecutionTime" units="ms"
-    expires_after="2023-11-05">
+    expires_after="2024-01-07">
   <owner>rdevlin.cronin@chromium.org</owner>
   <owner>extensions-core@chromium.org</owner>
   <summary>
@@ -2187,7 +2280,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Extensions.Functions.SynchronousExecutionTime" units="ms"
-    expires_after="2023-11-12">
+    expires_after="2024-01-14">
   <owner>rdevlin.cronin@chromium.org</owner>
   <owner>extensions-core@chromium.org</owner>
   <summary>
@@ -2238,7 +2331,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Extensions.Greylist.Disabled" enum="ExtensionLocation"
-    expires_after="2023-09-07">
+    expires_after="2024-09-07">
   <owner>anunoy@chromium.org</owner>
   <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>
@@ -2249,7 +2342,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Extensions.Greylist.Enabled" enum="ExtensionLocation"
-    expires_after="2023-09-07">
+    expires_after="2024-09-07">
   <owner>anunoy@chromium.org</owner>
   <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>
@@ -2260,7 +2353,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Extensions.GuestView.ChangeOwnerWebContentsOnAttach"
-    enum="Boolean" expires_after="2023-10-15">
+    enum="Boolean" expires_after="2023-12-17">
   <owner>mcnee@chromium.org</owner>
   <owner>src/components/guest_view/OWNERS</owner>
   <summary>
@@ -2686,7 +2779,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Extensions.InstallFrictionDialogAction"
-    enum="ExtensionInstallFrictionDialogAction" expires_after="2023-10-01">
+    enum="ExtensionInstallFrictionDialogAction" expires_after="2024-02-04">
   <owner>jeffcyr@google.com</owner>
   <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>
@@ -3455,6 +3548,36 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Extensions.ManifestVersionByLocation.{ManifestLocation}"
+    units="manifest version" expires_after="2024-08-14">
+  <owner>rdevlin.cronin@chromium.org</owner>
+  <owner>extensions-core@chromium.org</owner>
+  <summary>
+    The manifest version of an enabled {ManifestLocation}. Emitted for every
+    enabled extension (not for other extension-y items, like platform apps) on
+    profile startup for user profiles (profiles where users can install
+    extensions, specifically profiles that can have non-component extensions
+    installed).
+  </summary>
+  <token key="ManifestLocation">
+    <variant name="Component"
+        summary="component extension (ManifestLocations kComponent and
+                 kExternalComponent)"/>
+    <variant name="External"
+        summary="external extension (ManifestLocations, kExternalPref,
+                 kExternalPrefDownload, and kExternalRegistry)"/>
+    <variant name="Internal"
+        summary="internal extension (ManifestLocation::kInternal; likely
+                 user-installed)"/>
+    <variant name="Policy"
+        summary="policy-installed extension (ManifestLocations
+                 kExternalPolicy and kExternalPolicyDownload)"/>
+    <variant name="Unpacked"
+        summary="unpacked and developer extension (ManifestLocations
+                 kCommandLine and kUnpacked)"/>
+  </token>
+</histogram>
+
 <histogram
     name="Extensions.Messaging.ExtensionPortsCreated{ExtensionMessagingPortCreationTime}"
     units="number of ports" expires_after="M85">
@@ -4010,6 +4133,49 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram
+    name="Extensions.ServiceWorkerBackground.ProcessManagerFinishedExternalRequestResultWithSuccessfulStart"
+    enum="ServiceWorkerExternalRequestResult" expires_after="2024-08-01">
+  <owner>rdevlin.cronin@chromium.org</owner>
+  <owner>extensions-core@chromium.org</owner>
+  <summary>
+    The result from the extension process manager notifying the
+    ServiceWorkerContext of a service worker-based extension that an external
+    request that started with a result of &quot;OK&quot; has finished. Emitted
+    immediately after the call to notify the ServiceWorkerContext is made as
+    part of decrementing the service worker keepalive count.
+  </summary>
+</histogram>
+
+<histogram
+    name="Extensions.ServiceWorkerBackground.ProcessManagerFinishedExternalRequestResultWithUnsuccessfulStart"
+    enum="ServiceWorkerExternalRequestResult" expires_after="2024-08-01">
+  <owner>rdevlin.cronin@chromium.org</owner>
+  <owner>extensions-core@chromium.org</owner>
+  <summary>
+    The result from the extension process manager notifying the
+    ServiceWorkerContext of a service worker-based extension that an external
+    request that started with a result of anything other than &quot;OK&quot; has
+    finished. Emitted immediately after the call to notify the
+    ServiceWorkerContext is made as part of decrementing the service worker
+    keepalive count.
+  </summary>
+</histogram>
+
+<histogram
+    name="Extensions.ServiceWorkerBackground.ProcessManagerStartingExternalRequestResult"
+    enum="ServiceWorkerExternalRequestResult" expires_after="2024-08-01">
+  <owner>rdevlin.cronin@chromium.org</owner>
+  <owner>extensions-core@chromium.org</owner>
+  <summary>
+    The result from the extension process manager notifying the
+    ServiceWorkerContext of a service worker-based extension that an external
+    request has started as part of incrementing the service worker keepalive
+    count. Emitted immediately after the call to to notify the
+    ServiceWorkerContext is made.
+  </summary>
+</histogram>
+
+<histogram
     name="Extensions.ServiceWorkerBackground.RegistrationMismatchLocation"
     enum="ExtensionLocation" expires_after="2023-04-01">
   <owner>lazyboy@chromium.org</owner>
@@ -4072,7 +4238,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Extensions.ServiceWorkerBackground.StartWorkerStatus"
-    enum="Boolean" expires_after="2023-10-22">
+    enum="Boolean" expires_after="2023-12-24">
   <owner>jlulejian@chromium.org</owner>
   <owner>extensions-core@chromium.org</owner>
   <summary>
@@ -4100,6 +4266,28 @@ chromium-metrics-reviews@google.com.
     The amount of time it takes to start the background service worker of an
     extension that failed in starting. Logged when we've confirmed the service
     worker has failed for extension tasks to run.
+  </summary>
+</histogram>
+
+<histogram name="Extensions.ServiceWorkerBackground.WorkerCountAfterAdd"
+    units="registered workers" expires_after="2024-08-01">
+  <owner>rdevlin.cronin@chromium.org</owner>
+  <owner>extensions-core@chromium.org</owner>
+  <summary>
+    The count of active workers registered in the extension ProcessManager for a
+    given service worker-based extension. Reported immediately after a new
+    worker is registered for the extension.
+  </summary>
+</histogram>
+
+<histogram name="Extensions.ServiceWorkerBackground.WorkerCountAfterRemove"
+    units="registered workers" expires_after="2024-08-01">
+  <owner>rdevlin.cronin@chromium.org</owner>
+  <owner>extensions-core@chromium.org</owner>
+  <summary>
+    The count of active workers registered in the extension ProcessManager for a
+    given service worker-based extension. Reported immediately after a worker
+    for the extension is removed from the active set.
   </summary>
 </histogram>
 
@@ -4237,8 +4425,18 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Extensions.Toolbar.ExtensionsActivatedFromRequestAccessButton"
+    units="Extension Count" expires_after="2024-02-11">
+  <owner>emiliapaz@chromium.org</owner>
+  <owner>extensions-core@chromium.org</owner>
+  <summary>
+    The number of extensions in the request access button that were granted site
+    access after the user clicked on the request access button.
+  </summary>
+</histogram>
+
 <histogram name="Extensions.Toolbar.InvocationSource"
-    enum="ExtensionActionInvocationSource" expires_after="2023-10-08">
+    enum="ExtensionActionInvocationSource" expires_after="2024-02-11">
   <owner>rdevlin.cronin@chromium.org</owner>
   <owner>extensions-core@chromium.org</owner>
   <summary>
@@ -4342,7 +4540,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Extensions.WebRequest.BeforeRequestDeclarativeNetRequestEvaluationTime"
-    units="ms" expires_after="2023-12-01">
+    units="ms" expires_after="2024-02-04">
   <owner>rdevlin.cronin@chromium.org</owner>
   <owner>src/extensions/OWNERS</owner>
   <summary>
@@ -4354,7 +4552,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Extensions.WebRequest.BeforeRequestDeclarativeNetRequestEvaluationTimeInMicroseconds"
-    units="microseconds" expires_after="2023-12-01">
+    units="microseconds" expires_after="2024-02-04">
   <owner>rdevlin.cronin@chromium.org</owner>
   <owner>src/extensions/OWNERS</owner>
   <summary>
@@ -4628,7 +4826,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Extensions.WebStoreInstall.EsbAllowlistParameter"
-    enum="WebStoreInstallAllowlistParameter" expires_after="2023-10-01">
+    enum="WebStoreInstallAllowlistParameter" expires_after="2024-02-04">
   <owner>jeffcyr@google.com</owner>
   <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>
@@ -4639,7 +4837,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Extensions.WebStoreInstall.NotAllowlistedInstalledWithFriction"
-    enum="Boolean" expires_after="2023-10-01">
+    enum="Boolean" expires_after="2024-02-04">
   <owner>jeffcyr@google.com</owner>
   <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>
@@ -4652,7 +4850,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Extensions.WebStoreInstall.NotAllowlistedInstalledWithoutFriction"
-    enum="Boolean" expires_after="2023-10-01">
+    enum="Boolean" expires_after="2024-02-04">
   <owner>jeffcyr@google.com</owner>
   <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>

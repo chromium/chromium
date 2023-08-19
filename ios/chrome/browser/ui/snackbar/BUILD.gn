@@ -3,7 +3,6 @@
 # found in the LICENSE file.
 
 source_set("snackbar") {
-  configs += [ "//build/config/compiler:enable_arc" ]
   sources = [
     "snackbar_coordinator.h",
     "snackbar_coordinator.mm",
@@ -14,6 +13,7 @@ source_set("snackbar") {
     "//ios/chrome/browser/shared/model/browser",
     "//ios/chrome/browser/shared/public/commands",
     "//ios/chrome/browser/shared/ui/util",
+    "//ios/public/provider/chrome/browser/material:material_branding_api",
     "//ios/third_party/material_components_ios",
   ]
   frameworks = [ "UIKit.framework" ]

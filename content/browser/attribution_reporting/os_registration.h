@@ -16,14 +16,18 @@ namespace content {
 
 struct CONTENT_EXPORT OsRegistration {
   GURL registration_url;
+  bool debug_reporting;
   url::Origin top_level_origin;
   // If `absl::nullopt`, represents an OS trigger. Otherwise, represents an OS
   // source.
   absl::optional<AttributionInputEvent> input_event;
+  bool is_within_fenced_frame;
 
   OsRegistration(GURL registration_url,
+                 bool debug_reporting,
                  url::Origin top_level_origin,
-                 absl::optional<AttributionInputEvent> input_event);
+                 absl::optional<AttributionInputEvent> input_event,
+                 bool is_within_fenced_frame);
 
   ~OsRegistration();
 
@@ -33,7 +37,7 @@ struct CONTENT_EXPORT OsRegistration {
   OsRegistration(OsRegistration&&);
   OsRegistration& operator=(OsRegistration&&);
 
-  attribution_reporting::mojom::OsRegistrationType GetType() const;
+  attribution_reporting::mojom::RegistrationType GetType() const;
 };
 
 }  // namespace content

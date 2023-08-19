@@ -110,7 +110,8 @@ class SimpleWebViewDialog : public views::View,
   raw_ptr<views::ImageButton, ExperimentalAsh> forward_ = nullptr;
   raw_ptr<ReloadButton, ExperimentalAsh> reload_ = nullptr;
   raw_ptr<LocationBarView, ExperimentalAsh> location_bar_ = nullptr;
-  raw_ptr<views::WebView, ExperimentalAsh> web_view_ = nullptr;
+  raw_ptr<views::WebView, DanglingUntriaged | ExperimentalAsh> web_view_ =
+      nullptr;
 
   // Will own the `web_view_` until it is added as a child to the to the simple
   // web view dialog.

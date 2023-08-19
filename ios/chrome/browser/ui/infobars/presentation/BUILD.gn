@@ -3,7 +3,6 @@
 # found in the LICENSE file.
 
 source_set("presentation") {
-  configs += [ "//build/config/compiler:enable_arc" ]
   sources = [
     "infobar_banner_animator.h",
     "infobar_banner_animator.mm",
@@ -33,7 +32,6 @@ source_set("presentation") {
 }
 
 source_set("positioner") {
-  configs += [ "//build/config/compiler:enable_arc" ]
   sources = [
     "infobar_banner_positioner.h",
     "infobar_modal_positioner.h",

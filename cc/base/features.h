@@ -6,6 +6,7 @@
 #define CC_BASE_FEATURES_H_
 
 #include "base/feature_list.h"
+#include "base/metrics/field_trial_params.h"
 #include "build/build_config.h"
 #include "cc/base/base_export.h"
 
@@ -28,29 +29,9 @@ CC_BASE_EXPORT BASE_DECLARE_FEATURE(kRemoveMobileViewportDoubleTap);
 // https://docs.google.com/document/d/1smLAXs-DSLLmkEt4FIPP7PVglJXOcwRc7A5G0SEwxaY/edit
 CC_BASE_EXPORT BASE_DECLARE_FEATURE(kScrollUnification);
 
-// Sets raster tree priority to NEW_CONTENT_TAKES_PRIORITY when performing a
-// unified scroll with main-thread repaint reasons.
-CC_BASE_EXPORT BASE_DECLARE_FEATURE(kMainRepaintScrollPrefersNewContent);
-
-// Flush pending GPU raster work before running the LTHI::DrawLayers stage.
-CC_BASE_EXPORT BASE_DECLARE_FEATURE(kFlushGpuAtDraw);
-
-// When enabled, wheel scrolls trigger smoothness mode. When disabled,
-// smoothness mode is limited to non-animated (precision) scrolls, such as
-// touch scrolling.
-CC_BASE_EXPORT BASE_DECLARE_FEATURE(kSchedulerSmoothnessForAnimatedScrolls);
-
 // When enabled, cc will show blink's Web-Vital metrics inside its heads up
 // display.
 CC_BASE_EXPORT BASE_DECLARE_FEATURE(kHudDisplayForPerformanceMetrics);
-
-// When enabled, some jank is injected to the animation/scrolling pipeline.
-CC_BASE_EXPORT BASE_DECLARE_FEATURE(kJankInjectionAblationFeature);
-
-// When enabled, scheduler tree priority will change to
-// NEW_CONTENT_TAKES_PRIORITY if during a scrollbar scroll, CC has to
-// checkerboard.
-CC_BASE_EXPORT BASE_DECLARE_FEATURE(kPreferNewContentForCheckerboardedScrolls);
 
 // When enabled, CompositorTimingHistory will directly record the timing history
 // that is used to calculate main thread timing estimates, and use the
@@ -87,12 +68,6 @@ CC_BASE_EXPORT BASE_DECLARE_FEATURE(kUseDMSAAForTiles);
 // compositor thread. Previously this proxied through the renderer main thread.
 CC_BASE_EXPORT BASE_DECLARE_FEATURE(kUpdateBrowserControlsWithoutProxy);
 
-// Fix the SMOOTHNESS_TAKES_PRIORITY queue priorities used in
-// RasterTilePriorityQueueAll::GetNextQueues(). By fixing the bug which fails to
-// schedule raster tasks for Pending SOON tiles, it reduces checkerboarding and
-// improves the rendering.desktop tough_scrolling benchmark.
-CC_BASE_EXPORT BASE_DECLARE_FEATURE(kRasterTilePriorityQueue);
-
 // Enables shared image cache for gpu used by CC instances instantiated for UI.
 // TODO(https://crbug.com/c/1378251): this shall also be possible to use by
 // renderers.
@@ -102,6 +77,10 @@ CC_BASE_EXPORT BASE_DECLARE_FEATURE(kUIEnableSharedImageCacheForGpu);
 // flush to actually reclaim resources.
 CC_BASE_EXPORT BASE_DECLARE_FEATURE(kReclaimResourcesFlushInBackground);
 
+// When LayerTreeHostImpl::ReclaimResources() is called in background, trigger a
+// additional delayed flush to reclaim resources.
+CC_BASE_EXPORT BASE_DECLARE_FEATURE(kReclaimResourcesDelayedFlushInBackground);
+
 // Try to play a longer list of ops before giving up in solid color analysis for
 // tiles.
 CC_BASE_EXPORT BASE_DECLARE_FEATURE(kMoreAggressiveSolidColorDetection);
@@ -109,6 +88,27 @@ CC_BASE_EXPORT BASE_DECLARE_FEATURE(kMoreAggressiveSolidColorDetection);
 // Allow CC FrameRateEstimater to reduce the frame rate to half of the default
 // if the condition meets the requirement.
 CC_BASE_EXPORT BASE_DECLARE_FEATURE(kReducedFrameRateEstimation);
+
+// Use 4x MSAA (vs 8) on High DPI screens.
+CC_BASE_EXPORT BASE_DECLARE_FEATURE(kDetectHiDpiForMsaa);
+
+// When no frames are produced in a certain time interval, reclaim prepaint
+// tiles.
+CC_BASE_EXPORT BASE_DECLARE_FEATURE(kReclaimPrepaintTilesWhenIdle);
+
+// Feature to reduce the area in which invisible tiles are kept around.
+CC_BASE_EXPORT BASE_DECLARE_FEATURE(kSmallerInterestArea);
+
+constexpr static int kDefaultInterestAreaSizeInPixels = 3000;
+CC_BASE_EXPORT extern const base::FeatureParam<int> kInterestAreaSizeInPixels;
+
+// Whether images marked "no-cache" are cached. When disabled, they are.
+CC_BASE_EXPORT BASE_DECLARE_FEATURE(kImageCacheNoCache);
+
+// When enabled, old prepaint tiles in the "eventually" region get reclaimed
+// after some time.
+CC_BASE_EXPORT BASE_DECLARE_FEATURE(kReclaimOldPrepaintTiles);
+CC_BASE_EXPORT extern const base::FeatureParam<int> kReclaimDelayInSeconds;
 
 }  // namespace features
 

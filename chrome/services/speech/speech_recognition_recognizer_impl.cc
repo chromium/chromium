@@ -4,6 +4,7 @@
 
 #include "chrome/services/speech/speech_recognition_recognizer_impl.h"
 
+#include <algorithm>
 #include <string>
 #include <utility>
 
@@ -20,6 +21,7 @@
 #include "base/task/task_runner.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
+#include "base/time/time.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/services/speech/soda/proto/soda_api.pb.h"
@@ -96,7 +98,9 @@ void OnSodaResponse(const char* serialized_proto,
         ->language_identification_event_callback()
         .Run(std::string(event.language()),
              static_cast<media::mojom::ConfidenceLevel>(
-                 event.confidence_level()));
+                 event.confidence_level()),
+             static_cast<media::mojom::AsrSwitchResult>(
+                 event.asr_switch_result()));
   }
 
   if (response.soda_type() == soda::chrome::SodaResponse::STOP) {
@@ -128,6 +132,16 @@ SpeechRecognitionRecognizerImpl::~SpeechRecognitionRecognizerImpl() {
       session_contains_speech_);
   RecordDuration();
   soda_client_.reset();
+
+  if (speech_recognition_service_) {
+    speech_recognition_service_->RemoveObserver(this);
+  }
+}
+
+void SpeechRecognitionRecognizerImpl::OnLanguagePackInstalled(
+    base::flat_map<std::string, base::FilePath> config_paths) {
+  config_paths_ = config_paths;
+  ResetSoda();
 }
 
 void SpeechRecognitionRecognizerImpl::Create(
@@ -136,11 +150,14 @@ void SpeechRecognitionRecognizerImpl::Create(
     media::mojom::SpeechRecognitionOptionsPtr options,
     const base::FilePath& binary_path,
     const base::flat_map<std::string, base::FilePath>& config_paths,
-    const std::string& primary_language_name) {
+    const std::string& primary_language_name,
+    const bool mask_offensive_words,
+    base::WeakPtr<SpeechRecognitionServiceImpl> speech_recognition_service) {
   mojo::MakeSelfOwnedReceiver(
       std::make_unique<SpeechRecognitionRecognizerImpl>(
           std::move(remote), std::move(options), binary_path, config_paths,
-          primary_language_name),
+          primary_language_name, mask_offensive_words,
+          speech_recognition_service),
       std::move(receiver));
 }
 
@@ -171,11 +188,12 @@ void SpeechRecognitionRecognizerImpl::
 
 void SpeechRecognitionRecognizerImpl::OnLanguageIdentificationEvent(
     const std::string& language,
-    const media::mojom::ConfidenceLevel confidence_level) {
+    const media::mojom::ConfidenceLevel confidence_level,
+    const media::mojom::AsrSwitchResult asr_switch_result) {
   if (client_remote_.is_bound()) {
     client_remote_->OnLanguageIdentificationEvent(
-        media::mojom::LanguageIdentificationEvent::New(language,
-                                                       confidence_level));
+        media::mojom::LanguageIdentificationEvent::New(
+            language, confidence_level, asr_switch_result));
   }
 }
 
@@ -190,11 +208,15 @@ SpeechRecognitionRecognizerImpl::SpeechRecognitionRecognizerImpl(
     media::mojom::SpeechRecognitionOptionsPtr options,
     const base::FilePath& binary_path,
     const base::flat_map<std::string, base::FilePath>& config_paths,
-    const std::string& primary_language_name)
+    const std::string& primary_language_name,
+    const bool mask_offensive_words,
+    base::WeakPtr<SpeechRecognitionServiceImpl> speech_recognition_service)
     : options_(std::move(options)),
       client_remote_(std::move(remote)),
       config_paths_(config_paths),
-      primary_language_name_(primary_language_name) {
+      primary_language_name_(primary_language_name),
+      mask_offensive_words_(mask_offensive_words),
+      speech_recognition_service_(speech_recognition_service) {
   recognition_event_callback_ = base::BindPostTaskToCurrentDefault(
       base::BindRepeating(&SpeechRecognitionRecognizerImpl::OnRecognitionEvent,
                           weak_factory_.GetWeakPtr()));
@@ -210,6 +232,10 @@ SpeechRecognitionRecognizerImpl::SpeechRecognitionRecognizerImpl(
   client_remote_.set_disconnect_handler(
       base::BindOnce(&SpeechRecognitionRecognizerImpl::OnClientHostDisconnected,
                      weak_factory_.GetWeakPtr()));
+
+  if (speech_recognition_service_) {
+    speech_recognition_service_->AddObserver(this);
+  }
 
 #if !BUILDFLAG(IS_CHROMEOS_ASH)
   // On Chrome OS Ash, soda_client_ is not used, so don't try to create it
@@ -267,6 +293,21 @@ void SpeechRecognitionRecognizerImpl::SendAudioToSpeechRecognitionService(
            .AssignIfValid(&buffer_size)) {
     mojo::ReportBadMessage(kInvalidAudioDataError);
     return;
+  }
+
+  // Skip this buffer if there has been no nonzero data for several seconds.
+  if (options_->skip_continuously_empty_audio) {
+    const bool buffer_is_zero =
+        std::all_of(buffer->data.begin(), buffer->data.end(),
+                    [](int16_t x) { return x == 0; });
+    const base::Time now = base::Time::Now();
+    if (!buffer_is_zero) {
+      last_non_empty_audio_time_ = now;
+    }
+    if (now - last_non_empty_audio_time_ > base::Seconds(10)) {
+      // No nonzero data for several seconds. Don't send this buffer of zeroes.
+      return;
+    }
   }
 
   // OK, everything is verified, let's send the audio.
@@ -357,6 +398,12 @@ void SpeechRecognitionRecognizerImpl::OnLanguageChanged(
                      language_component_config.value().language_name));
 }
 
+void SpeechRecognitionRecognizerImpl::OnMaskOffensiveWordsChanged(
+    bool mask_offensive_words) {
+  mask_offensive_words_ = mask_offensive_words;
+  ResetSoda();
+}
+
 void SpeechRecognitionRecognizerImpl::ResetSodaWithNewLanguage(
     base::FilePath config_path,
     std::string language_name,
@@ -411,6 +458,7 @@ void SpeechRecognitionRecognizerImpl::ResetSoda() {
   config_msg.set_enable_formatting(options_->enable_formatting);
   config_msg.set_enable_speaker_change_detection(
       base::FeatureList::IsEnabled(media::kSpeakerChangeDetection));
+  config_msg.set_mask_offensive_words(mask_offensive_words_);
   if (base::FeatureList::IsEnabled(media::kLiveCaptionMultiLanguage) &&
       config_paths_.size() > 0) {
     auto* multilang_config = config_msg.mutable_multilang_config();

@@ -179,21 +179,22 @@ IN_PROC_BROWSER_TEST_F(AddSupervisionBrowserTest, ShowConfirmSignoutDialog) {
   EXPECT_TRUE(content::WaitForLoadStop(contents()));
 
   // Request that the dialog close before supervision has been enabled.
-  ASSERT_TRUE(
-      content::ExecJs(contents(), std::string(kGetAddSupervisionUIElementJS) +
-                                      std::string(".server.requestClose()")));
+  ASSERT_TRUE(content::ExecJs(
+      contents(), std::string(kGetAddSupervisionUIElementJS) +
+                      std::string(".getAPIServerForTest().requestClose()")));
   // Confirm that the signout dialog isn't showing
   ASSERT_FALSE(ConfirmSignoutDialog::IsShowing());
 
   // Simulate supervision being enabled.
   ASSERT_TRUE(content::ExecJs(
-      contents(), std::string(kGetAddSupervisionUIElementJS) +
-                      std::string(".server.notifySupervisionEnabled()")));
+      contents(),
+      std::string(kGetAddSupervisionUIElementJS) +
+          std::string(".getAPIServerForTest().notifySupervisionEnabled()")));
 
   // Request that the dialog is closed again.
-  ASSERT_TRUE(
-      content::ExecJs(contents(), std::string(kGetAddSupervisionUIElementJS) +
-                                      std::string(".server.requestClose()")));
+  ASSERT_TRUE(content::ExecJs(
+      contents(), std::string(kGetAddSupervisionUIElementJS) +
+                      std::string(".getAPIServerForTest().requestClose()")));
 
   // Confirm that the dialog is showing.
   ASSERT_TRUE(ConfirmSignoutDialog::IsShowing());
@@ -218,8 +219,9 @@ IN_PROC_BROWSER_TEST_F(AddSupervisionBrowserTest, UMATest) {
 
   // Simulate supervision being enabled.
   ASSERT_TRUE(content::ExecJs(
-      contents(), std::string(kGetAddSupervisionUIElementJS) +
-                      std::string(".server.notifySupervisionEnabled()")));
+      contents(),
+      std::string(kGetAddSupervisionUIElementJS) +
+          std::string(".getAPIServerForTest().notifySupervisionEnabled()")));
 
   // Should see 1 Add Supervision process completed.
   histogram_tester.ExpectUniqueSample(

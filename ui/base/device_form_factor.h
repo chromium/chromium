@@ -12,7 +12,9 @@ namespace ui {
 enum DeviceFormFactor {
   DEVICE_FORM_FACTOR_DESKTOP = 0,
   DEVICE_FORM_FACTOR_PHONE = 1,
-  DEVICE_FORM_FACTOR_TABLET = 2
+  DEVICE_FORM_FACTOR_TABLET = 2,
+  DEVICE_FORM_FACTOR_TV = 3,
+  DEVICE_FORM_FACTOR_AUTOMOTIVE = 4,
 };
 
 // Returns the form factor of current device. For platforms other than Android

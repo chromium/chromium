@@ -7,13 +7,23 @@
 
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
+#include "base/memory/scoped_refptr.h"
 #include "build/build_config.h"
 #include "chrome/updater/device_management/dm_cached_policy_info.h"
 #include "chrome/updater/device_management/dm_storage.h"
 #include "chrome/updater/protos/omaha_settings.pb.h"
-#include "chrome/updater/util/unittest_util.h"
+#include "chrome/updater/test_scope.h"
+#include "chrome/updater/updater_scope.h"
+#include "chrome/updater/util/unit_test_util.h"
 #include "components/policy/proto/device_management_backend.pb.h"
 #include "testing/gtest/include/gtest/gtest.h"
+
+#if BUILDFLAG(IS_WIN)
+#include "base/test/test_reg_util_win.h"
+#include "base/win/registry.h"
+#include "chrome/updater/util/win_util.h"
+#include "chrome/updater/win/win_constants.h"
+#endif  // BUILDFLAG(IS_WIN)
 
 namespace updater {
 
@@ -36,6 +46,8 @@ class TestTokenService : public TokenServiceInterface {
     enrollment_token_ = enrollment_token;
     return true;
   }
+
+  bool DeleteEnrollmentToken() override { return StoreEnrollmentToken(""); }
 
   std::string GetEnrollmentToken() const override { return enrollment_token_; }
 
@@ -97,14 +109,113 @@ std::string CannedOmahaPolicyFetchResponse() {
 }  // namespace
 
 #if BUILDFLAG(IS_MAC)
-
 TEST(DMStorage, LoadDeviceID) {
   auto storage = base::MakeRefCounted<DMStorage>(
       base::FilePath(FILE_PATH_LITERAL("/TestPolicyCacheRoot")));
   EXPECT_FALSE(storage->GetDeviceID().empty());
 }
-
 #endif  // BUILDFLAG(IS_MAC)
+
+#if BUILDFLAG(IS_WIN)
+TEST(DMStorage, LoadEnrollmentToken) {
+  registry_util::RegistryOverrideManager registry_overrides;
+  ASSERT_NO_FATAL_FAILURE(
+      registry_overrides.OverrideRegistry(HKEY_LOCAL_MACHINE));
+
+  base::ScopedTempDir cache_root;
+  ASSERT_TRUE(cache_root.CreateUniqueTempDir());
+  auto storage = base::MakeRefCounted<DMStorage>(cache_root.GetPath());
+  EXPECT_TRUE(storage->GetEnrollmentToken().empty());
+
+  base::win::RegKey legacy_key;
+  EXPECT_EQ(
+      legacy_key.Create(HKEY_LOCAL_MACHINE, kRegKeyCompanyLegacyCloudManagement,
+                        Wow6432(KEY_WRITE)),
+      ERROR_SUCCESS);
+  EXPECT_EQ(legacy_key.WriteValue(kRegValueCloudManagementEnrollmentToken,
+                                  L"legacy_test_enrollment_token"),
+            ERROR_SUCCESS);
+  EXPECT_EQ(storage->GetEnrollmentToken(), "legacy_test_enrollment_token");
+
+  base::win::RegKey key;
+  EXPECT_EQ(key.Create(HKEY_LOCAL_MACHINE, kRegKeyCompanyCloudManagement,
+                       Wow6432(KEY_WRITE)),
+            ERROR_SUCCESS);
+  EXPECT_EQ(key.WriteValue(kRegValueEnrollmentToken, L"test_enrollment_token"),
+            ERROR_SUCCESS);
+  EXPECT_EQ(storage->GetEnrollmentToken(), "test_enrollment_token");
+}
+
+TEST(DMStorage, StoreEnrollmentToken) {
+  registry_util::RegistryOverrideManager registry_overrides;
+  ASSERT_NO_FATAL_FAILURE(
+      registry_overrides.OverrideRegistry(HKEY_LOCAL_MACHINE));
+
+  base::ScopedTempDir cache_root;
+  ASSERT_TRUE(cache_root.CreateUniqueTempDir());
+  auto storage = base::MakeRefCounted<DMStorage>(cache_root.GetPath());
+  EXPECT_TRUE(storage->GetEnrollmentToken().empty());
+
+  EXPECT_TRUE(storage->StoreEnrollmentToken("enrollment_token"));
+  EXPECT_EQ(storage->GetEnrollmentToken(), "enrollment_token");
+
+  EXPECT_TRUE(storage->StoreEnrollmentToken("new_enrollment_token"));
+  EXPECT_EQ(storage->GetEnrollmentToken(), "new_enrollment_token");
+}
+
+TEST(DMStorage, DeleteEnrollmentToken) {
+  registry_util::RegistryOverrideManager registry_overrides;
+  ASSERT_NO_FATAL_FAILURE(
+      registry_overrides.OverrideRegistry(HKEY_LOCAL_MACHINE));
+
+  base::ScopedTempDir cache_root;
+  ASSERT_TRUE(cache_root.CreateUniqueTempDir());
+  auto storage = base::MakeRefCounted<DMStorage>(cache_root.GetPath());
+  EXPECT_TRUE(storage->GetEnrollmentToken().empty());
+
+  EXPECT_TRUE(storage->StoreEnrollmentToken("test_token"));
+  base::win::RegKey legacy_key;
+  EXPECT_EQ(
+      legacy_key.Create(HKEY_LOCAL_MACHINE, kRegKeyCompanyLegacyCloudManagement,
+                        Wow6432(KEY_WRITE)),
+      ERROR_SUCCESS);
+  EXPECT_EQ(legacy_key.WriteValue(kRegValueCloudManagementEnrollmentToken,
+                                  L"legacy_test_token"),
+            ERROR_SUCCESS);
+
+  EXPECT_TRUE(storage->DeleteEnrollmentToken());
+  EXPECT_EQ(storage->GetEnrollmentToken(), "");
+}
+#else
+TEST(DMStorage, StoreEnrollmentToken) {
+  base::ScopedTempDir cache_root;
+  ASSERT_TRUE(cache_root.CreateUniqueTempDir());
+  const base::FilePath cache_root_path = cache_root.GetPath();
+  auto storage = base::MakeRefCounted<DMStorage>(
+      cache_root_path, cache_root_path.AppendASCII("enrollment_token_file"),
+      cache_root_path.AppendASCII("dm_token_file"));
+  EXPECT_TRUE(storage->GetEnrollmentToken().empty());
+
+  EXPECT_TRUE(storage->StoreEnrollmentToken("enrollment_token"));
+  EXPECT_EQ(storage->GetEnrollmentToken(), "enrollment_token");
+
+  EXPECT_TRUE(storage->StoreEnrollmentToken("new_enrollment_token"));
+  EXPECT_EQ(storage->GetEnrollmentToken(), "new_enrollment_token");
+}
+
+TEST(DMStorage, DeleteEnrollmentToken) {
+  base::ScopedTempDir cache_root;
+  ASSERT_TRUE(cache_root.CreateUniqueTempDir());
+  const base::FilePath cache_root_path = cache_root.GetPath();
+  auto storage = base::MakeRefCounted<DMStorage>(
+      cache_root_path, cache_root_path.AppendASCII("enrollment_token_file"),
+      cache_root_path.AppendASCII("dm_token_file"));
+  EXPECT_TRUE(storage->GetEnrollmentToken().empty());
+  EXPECT_TRUE(storage->StoreEnrollmentToken("test_token"));
+  EXPECT_TRUE(storage->DeleteEnrollmentToken());
+  EXPECT_EQ(storage->GetEnrollmentToken(), "");
+}
+#endif  // BUILDFLAG(IS_WIN)
 
 TEST(DMStorage, DMToken) {
   base::ScopedTempDir cache_root;

@@ -10,7 +10,6 @@ import android.provider.Settings;
 import android.text.TextUtils;
 
 import androidx.annotation.Nullable;
-import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.ApplicationState;
 import org.chromium.base.ApplicationStatus;
@@ -114,8 +113,7 @@ public class ChromeActivitySessionTracker {
     /**
      * @return The latest country according to the current variations state. Null if not available.
      */
-    @Nullable
-    public String getVariationsLatestCountry() {
+    public @Nullable String getVariationsLatestCountry() {
         return mVariationsSession.getLatestCountry();
     }
 
@@ -273,7 +271,6 @@ public class ChromeActivitySessionTracker {
     /**
      * @return The {@link OmahaServiceStartDelayer} for the browser process.
      */
-    @VisibleForTesting
     public OmahaServiceStartDelayer getOmahaServiceStartDelayerForTesting() {
         return mOmahaServiceStartDelayer;
     }

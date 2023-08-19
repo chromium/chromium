@@ -111,7 +111,8 @@ class UI_CHROMEOS_EXPORT SuggestionWindowView
                                bool highlighted);
 
   // The delegate to handle events from this class.
-  const raw_ptr<AssistiveDelegate, ExperimentalAsh> delegate_;
+  const raw_ptr<AssistiveDelegate, DanglingUntriaged | ExperimentalAsh>
+      delegate_;
 
   // The view containing all the suggestions if multiple candidates are
   // visible.

@@ -41,6 +41,7 @@
 #include "ash/wm/overview/overview_grid.h"
 #include "ash/wm/overview/overview_highlight_controller.h"
 #include "ash/wm/overview/overview_item.h"
+#include "ash/wm/overview/overview_item_view.h"
 #include "ash/wm/overview/overview_utils.h"
 #include "ash/wm/overview/overview_window_drag_controller.h"
 #include "ash/wm/overview/scoped_float_container_stacker.h"
@@ -170,6 +171,8 @@ OverviewSession::~OverviewSession() {
 // constructed object.
 void OverviewSession::Init(const WindowList& windows,
                            const WindowList& hide_windows) {
+  TRACE_EVENT0("ui", "OverviewSession::Init");
+
   Shell::Get()->AddShellObserver(this);
 
   if (saved_desk_util::IsSavedDesksEnabled()) {
@@ -232,8 +235,14 @@ void OverviewSession::Init(const WindowList& windows,
       // Exit only types should not appear here:
       DCHECK_NE(enter_exit_overview_type_, OverviewEnterExitType::kFadeOutExit);
 
-      overview_grid->PositionWindows(/*animate=*/true, /*ignored_items=*/{},
-                                     OverviewTransition::kEnter);
+      // If the feature ContinuousOverviewScrollAnimation is enabled, don't
+      // animate overview items for starting a continuous scroll as we will
+      // place them during future scroll updates.
+      if (enter_exit_overview_type_ !=
+          OverviewEnterExitType::kContinuousAnimationEnterOnScrollUpdate) {
+        overview_grid->PositionWindows(/*animate=*/true, /*ignored_items=*/{},
+                                       OverviewTransition::kEnter);
+      }
     }
   }
 
@@ -277,6 +286,8 @@ void OverviewSession::Init(const WindowList& windows,
 // may cause other, unrelated classes, to make indirect calls to
 // `restoring_minimized_windows()` on a partially destructed object.
 void OverviewSession::Shutdown() {
+  TRACE_EVENT0("ui", "OverviewSession::Shutdown");
+
   bool was_saved_desk_library_showing = false;
   for (auto& grid : grid_list_) {
     if (grid->IsShowingSavedDeskLibrary()) {
@@ -1040,6 +1051,44 @@ bool OverviewSession::IsWindowActiveWindowBeforeOverview(
     aura::Window* window) const {
   DCHECK(window);
   return window == active_window_before_overview_;
+}
+
+bool OverviewSession::HandleContinuousScrollIntoOverview(float y_offset) {
+  // If a scroll has ended, reset the opacity of minimized windows before
+  // animating all windows into their final positions.
+  if (!Shell::Get()
+           ->overview_controller()
+           ->is_continuous_scroll_in_progress()) {
+    for (std::unique_ptr<OverviewGrid>& overview_grid : grid_list_) {
+      for (size_t i = 0; i < overview_grid->window_list().size(); ++i) {
+        OverviewItem* window_item = overview_grid->window_list()[i].get();
+        // TODO(b/292125336): Animate the opacity change.
+        if (WindowState::Get(window_item->GetWindow())->IsMinimized()) {
+          window_item->overview_item_view()->layer()->SetOpacity(1.f);
+        } else {
+          // Remove shadow bounds so that the entry animation looks smoother and
+          // does not show an unnecessary shadow.
+          window_item->SetShadowBounds(absl::nullopt);
+        }
+      }
+      overview_grid->PositionWindows(/*animate=*/true, /*ignored_item=*/{},
+                                     /*transition=*/OverviewTransition::kEnter);
+
+      // Move the desk bar back to its final position.
+      // TODO(b/292125336): Animate the desk bar transformation.
+      if (auto* desks_bar = overview_grid->desks_bar_view()) {
+        desks_bar->layer()->SetTransform({});
+      }
+    }
+    return true;
+  }
+  // If a scroll is in progress, position the windows continuously.
+  CHECK_EQ(enter_exit_overview_type_,
+           OverviewEnterExitType::kContinuousAnimationEnterOnScrollUpdate);
+  for (std::unique_ptr<OverviewGrid>& overview_grid : grid_list_) {
+    overview_grid->PositionWindowsContinuously(y_offset);
+  }
+  return true;
 }
 
 void OverviewSession::ShowSavedDeskLibrary(

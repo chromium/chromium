@@ -128,6 +128,26 @@ TEST_F(ChromeInternalLogSourceTest, KnowledgeFactorAuthFailuresPresent) {
 
   EXPECT_EQ(knowledge_factor_auth_failure_count, "1");
 }
+
+TEST_F(ChromeInternalLogSourceTest, RecordedAuthEventsPresent) {
+  auth_events_recorder_->OnAuthenticationSurfaceChange(
+      ash::AuthEventsRecorder::AuthenticationSurface::kLogin);
+  auth_events_recorder_->OnLockContentsViewUpdate();
+  auth_events_recorder_->OnAuthSubmit();
+  auth_events_recorder_->OnLoginSuccess(ash::SuccessReason::OFFLINE_ONLY,
+                                        /*is_new_user=*/false,
+                                        /*is_login_offline=*/true,
+                                        /*is_ephemeral=*/false);
+  auth_events_recorder_->OnExistingUserLoginScreenExit(
+      ash::AuthEventsRecorder::AuthenticationOutcome::kSuccess, 1);
+
+  std::unique_ptr<SystemLogsResponse> response = GetChromeInternalLogs();
+  auto auth_events = response->at("RECORDED_AUTH_EVENTS");
+
+  EXPECT_EQ(auth_events,
+            "auth_surface_change_Login,update_lock_screen_view,auth_submit,"
+            "login_offline,login_screen_exit_success,");
+}
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 }  // namespace

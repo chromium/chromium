@@ -162,6 +162,23 @@ void CellularNetworkMetricsLogger::LogManagedCustomApnMigrationType(
   base::UmaHistogramEnumeration(kCustomApnsManagedMigrationTypeHistogram, type);
 }
 
+// static
+void CellularNetworkMetricsLogger::LogSmdsScanProfileCount(size_t count) {
+  base::UmaHistogramCounts100(kSmdsScanProfileCount, count);
+}
+
+// static
+void CellularNetworkMetricsLogger::LogESimUserInstallMethod(
+    ESimUserInstallMethod method) {
+  base::UmaHistogramEnumeration(kESimUserInstallMethod, method);
+}
+
+// static
+void CellularNetworkMetricsLogger::LogESimPolicyInstallMethod(
+    ESimPolicyInstallMethod method) {
+  base::UmaHistogramEnumeration(kESimPolicyInstallMethod, method);
+}
+
 void CellularNetworkMetricsLogger::OnConnectionResult(
     const std::string& guid,
     const absl::optional<std::string>& shill_error) {

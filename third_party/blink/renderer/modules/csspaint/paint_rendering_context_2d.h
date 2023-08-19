@@ -16,7 +16,6 @@
 
 namespace blink {
 
-class CanvasImageSource;
 class Color;
 
 // In our internal implementation, there are different kinds of canvas such as
@@ -52,7 +51,6 @@ class MODULES_EXPORT PaintRenderingContext2D : public ScriptWrappable,
   // is always clean, and unable to taint it.
   bool OriginClean() const final { return true; }
   void SetOriginTainted() final {}
-  bool WouldTaintOrigin(CanvasImageSource*) final { return false; }
 
   int Width() const final;
   int Height() const final;

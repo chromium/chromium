@@ -6,6 +6,10 @@
 
 #import "base/command_line.h"
 #import "base/logging.h"
+#import "components/password_manager/ios/fake_bulk_leak_check_service.h"
+#import "components/signin/internal/identity_manager/fake_profile_oauth2_token_service.h"
+#import "components/signin/internal/identity_manager/profile_oauth2_token_service.h"
+#import "components/signin/internal/identity_manager/profile_oauth2_token_service_delegate.h"
 #import "ios/chrome/browser/flags/chrome_switches.h"
 #import "ios/chrome/browser/policy/test_platform_policy_provider.h"
 #import "ios/chrome/browser/signin/fake_system_identity.h"
@@ -14,10 +18,6 @@
 #import "ios/chrome/test/app/chrome_test_util.h"
 #import "ios/chrome/test/app/signin_test_util.h"
 #import "ios/chrome/test/earl_grey/test_switches.h"
-
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
 
 namespace tests_hook {
 
@@ -49,6 +49,24 @@ bool DisableGeolocation() {
 bool DisablePromoManagerFullScreenPromos() {
   return !base::CommandLine::ForCurrentProcess()->HasSwitch(
       switches::kEnablePromoManagerFullscreenPromos);
+}
+
+std::unique_ptr<ProfileOAuth2TokenService> GetOverriddenTokenService(
+    PrefService* user_prefs,
+    std::unique_ptr<ProfileOAuth2TokenServiceDelegate> delegate) {
+  // Do not fake account tracking and authentication services if the user has
+  // requested a real identity manager.
+  if (base::CommandLine::ForCurrentProcess()->HasSwitch(
+          test_switches::kForceRealSystemIdentityManager)) {
+    return nullptr;
+  }
+  std::unique_ptr<FakeProfileOAuth2TokenService> token_service =
+      std::make_unique<FakeProfileOAuth2TokenService>(user_prefs,
+                                                      std::move(delegate));
+  // Posts auth token requests immediately on request instead of waiting for an
+  // explicit `IssueTokenForScope` call.
+  token_service->set_auto_post_fetch_response_on_message_loop(true);
+  return token_service;
 }
 
 bool DisableUpgradeSigninPromo() {
@@ -107,6 +125,11 @@ std::unique_ptr<SystemIdentityManager> CreateSystemIdentityManager() {
   }
 
   return system_identity_manager;
+}
+
+std::unique_ptr<password_manager::BulkLeakCheckServiceInterface>
+GetOverriddenBulkLeakCheckService() {
+  return std::make_unique<password_manager::FakeBulkLeakCheckService>();
 }
 
 void SetUpTestsIfPresent() {

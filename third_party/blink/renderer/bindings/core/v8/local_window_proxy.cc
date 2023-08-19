@@ -56,6 +56,8 @@
 #include "third_party/blink/renderer/core/inspector/inspector_task_runner.h"
 #include "third_party/blink/renderer/core/inspector/main_thread_debugger.h"
 #include "third_party/blink/renderer/core/loader/frame_loader.h"
+#include "third_party/blink/renderer/core/page/chrome_client.h"
+#include "third_party/blink/renderer/core/page/page.h"
 #include "third_party/blink/renderer/core/probe/core_probes.h"
 #include "third_party/blink/renderer/core/script/modulator.h"
 #include "third_party/blink/renderer/platform/bindings/dom_wrapper_world.h"
@@ -210,9 +212,6 @@ void LocalWindowProxy::CreateContext() {
                GetFrame()->IsMainFrame(), "IsOutermostMainFrame",
                GetFrame()->IsOutermostMainFrame());
 
-  // TODO(yukishiino): Remove this CHECK once crbug.com/713699 gets fixed.
-  CHECK(IsMainThread());
-
   v8::ExtensionConfiguration extension_configuration =
       ScriptController::ExtensionsFor(GetFrame()->DomWindow());
 
@@ -251,8 +250,7 @@ void LocalWindowProxy::CreateContext() {
   DidAttachGlobalObject();
 #endif
 
-  script_state_ = MakeGarbageCollected<ScriptState>(context, world_,
-                                                    GetFrame()->DomWindow());
+  script_state_ = ScriptState::Create(context, world_, GetFrame()->DomWindow());
 
   DCHECK(lifecycle_ == Lifecycle::kContextIsUninitialized ||
          lifecycle_ == Lifecycle::kGlobalObjectIsDetached);
@@ -322,10 +320,12 @@ void LocalWindowProxy::SetupWindowPrototypeChain() {
       GetIsolate(), V8PrivateProperty::CachedAccessor::kWindowProxy)
       .Set(window_wrapper, global_proxy);
 
-  // TODO(yukishiino): Remove installPagePopupController and implement
-  // PagePopupController in another way.
-  V8PagePopupControllerBinding::InstallPagePopupController(context,
-                                                           window_wrapper);
+  if (GetFrame()->GetPage()->GetChromeClient().IsPopup()) {
+    // TODO(yukishiino): Remove installPagePopupController and implement
+    // PagePopupController in another way.
+    V8PagePopupControllerBinding::InstallPagePopupController(context,
+                                                             window_wrapper);
+  }
 }
 
 void LocalWindowProxy::UpdateDocumentProperty() {
@@ -519,10 +519,13 @@ void LocalWindowProxy::NamedItemAdded(HTMLDocument* document,
   ScriptState::Scope scope(script_state_);
   v8::Local<v8::Object> document_wrapper =
       world_->DomDataStore().Get(document, GetIsolate());
-  document_wrapper
-      ->SetAccessor(GetIsolate()->GetCurrentContext(),
-                    V8String(GetIsolate(), name), Getter)
-      .ToChecked();
+  // When a non-configurable own property (e.g. unforgeable attribute) already
+  // exists, `SetAccessor` fails and throws. Ignore the exception because own
+  // properties have priority over named properties.
+  // https://webidl.spec.whatwg.org/#dfn-named-property-visibility
+  v8::TryCatch try_block(GetIsolate());
+  std::ignore = document_wrapper->SetAccessor(
+      GetIsolate()->GetCurrentContext(), V8String(GetIsolate(), name), Getter);
 }
 
 void LocalWindowProxy::NamedItemRemoved(HTMLDocument* document,

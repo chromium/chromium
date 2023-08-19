@@ -41,7 +41,7 @@ namespace blink {
 class EventQueue;
 class SourceBuffer;
 
-class SourceBufferList final : public EventTargetWithInlineData,
+class SourceBufferList final : public EventTarget,
                                public ExecutionContextClient {
   DEFINE_WRAPPERTYPEINFO();
 

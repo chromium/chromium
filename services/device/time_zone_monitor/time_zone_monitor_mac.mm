@@ -10,10 +10,6 @@
 #include "services/device/time_zone_monitor/time_zone_monitor.h"
 #include "third_party/icu/source/i18n/unicode/timezone.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 namespace device {
 
 class TimeZoneMonitorMac : public TimeZoneMonitor {

@@ -66,7 +66,7 @@ TEST_P(MouseEventLayerPositionTest, LayerPositionAsExpected) {
   MouseEventInit& mouse_event_init = *MouseEventInit::Create();
   mouse_event_init.setClientX(input_layer_location.x());
   mouse_event_init.setClientY(input_layer_location.y());
-  MouseEvent mouse_event("mousedown", &mouse_event_init);
+  MouseEvent mouse_event(event_type_names::kMousedown, &mouse_event_init);
 
   ASSERT_EQ(mouse_event.layerX(), expected_layer_location.x());
   ASSERT_EQ(mouse_event.layerY(), expected_layer_location.y());
@@ -103,10 +103,10 @@ TEST_F(MouseEventTest, LayerXY) {
         )HTML");
   UpdateAllLifecyclePhasesForTest();
 
-  Node* target = GetDocument().getElementById("target");
+  Node* target = GetDocument().getElementById(AtomicString("target"));
 
   MouseEventInit& mouse_event_init = *MouseEventInit::Create();
-  MouseEvent mouse_event("mousedown", &mouse_event_init);
+  MouseEvent mouse_event(event_type_names::kMousedown, &mouse_event_init);
   mouse_event.SetTarget(target);
   EXPECT_EQ(mouse_event.layerX(), 0);
   EXPECT_EQ(mouse_event.layerY(), 0);

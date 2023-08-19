@@ -2,13 +2,19 @@ include_rules = [
   "+components/bookmarks/browser",
   "+components/commerce/core/proto",
   "+components/session_proto_db",
-  "+ios/chrome/browser/power_bookmarks"
+  "+ios/chrome/browser/power_bookmarks",
+  "+ios/chrome/browser/signin",
+  "+ios/chrome/browser/sync",
+  "+ios/chrome/browser/optimization_guide",
+  "+ios/chrome/browser/bookmarks",
+  "+ios/chrome/browser/feature_engagement",
+  "+ios/chrome/browser/push_notification",
+  "+ios/chrome/browser/url_loading",
 ]
 
 specific_include_rules = {
-  # TODO(crbug.com/1294160): Remove this dependency.
-  "^price_alert_util.mm": [
-    "+ios/chrome/browser/ui/ui_feature_flags.h",
-  ],
+  "commerce_push_notification_client.mm": [
+    "+ios/chrome/browser/shared/coordinator/scene/scene_state.h",
+    "+ios/chrome/browser/shared/coordinator/scene/scene_state_browser_agent.h",
+  ]
 }
-

@@ -49,6 +49,7 @@ import org.chromium.chrome.browser.browser_controls.BrowserControlsUtils;
 import org.chromium.chrome.browser.compositor.layouts.LayoutManagerImpl;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.fullscreen.BrowserControlsManager;
+import org.chromium.chrome.browser.layouts.EventFilter.EventType;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tabmodel.TabModelSelectorTabObserver;
 import org.chromium.chrome.browser.toolbar.top.ToolbarControlContainer;
@@ -82,6 +83,9 @@ public class CompositorViewHolderUnitTest {
             MotionEvent.obtain(TOUCH_TIME, TOUCH_TIME, MotionEvent.ACTION_DOWN, 1, 1, 0);
     private static final MotionEvent MOTION_EVENT_UP =
             MotionEvent.obtain(TOUCH_TIME, TOUCH_TIME, MotionEvent.ACTION_UP, 1, 1, 0);
+
+    private static final MotionEvent MOTION_ACTION_HOVER_ENTER =
+            MotionEvent.obtain(TOUCH_TIME, TOUCH_TIME, MotionEvent.ACTION_HOVER_ENTER, 1, 1, 0);
 
     enum EventSource {
         IN_MOTION,
@@ -162,7 +166,7 @@ public class CompositorViewHolderUnitTest {
 
         when(mCompositorView.getResourceManager()).thenReturn(mResourceManager);
 
-        mCompositorViewHolder = spy(new CompositorViewHolder(mContext));
+        mCompositorViewHolder = spy(new CompositorViewHolder(mContext, null));
         mCompositorViewHolder.setLayoutManager(mLayoutManager);
         mCompositorViewHolder.setControlContainer(mControlContainer);
         mCompositorViewHolder.setCompositorViewForTesting(mCompositorView);
@@ -552,6 +556,31 @@ public class CompositorViewHolderUnitTest {
         mCompositorViewHolder.requestDisallowInterceptTouchEvent(true);
         mCompositorViewHolder.dispatchTouchEvent(MOTION_EVENT_UP);
         Assert.assertFalse(mCompositorViewHolder.getInMotionSupplier().get());
+    }
+
+    @Test
+    public void testOnInterceptHoverEvent() {
+        when(mMockKeyboard.isKeyboardShowing(any(), any())).thenReturn(false);
+        when(mLayoutManager.onInterceptMotionEvent(
+                     MOTION_ACTION_HOVER_ENTER, false, EventType.HOVER))
+                .thenReturn(true);
+        boolean intercepted =
+                mCompositorViewHolder.onInterceptHoverEvent(MOTION_ACTION_HOVER_ENTER);
+        verify(mLayoutManager)
+                .onInterceptMotionEvent(MOTION_ACTION_HOVER_ENTER, false, EventType.HOVER);
+        Assert.assertTrue(
+                "#onInterceptHoverEvent should return true if the LayoutManager intercepts the event.",
+                intercepted);
+    }
+
+    @Test
+    public void testOnHoverEvent() {
+        when(mLayoutManager.onHoverEvent(MOTION_ACTION_HOVER_ENTER)).thenReturn(true);
+        boolean consumed = mCompositorViewHolder.onHoverEvent(MOTION_ACTION_HOVER_ENTER);
+        verify(mLayoutManager).onHoverEvent(MOTION_ACTION_HOVER_ENTER);
+        Assert.assertTrue(
+                "#onHoverEvent should return true if the LayoutManager consumes the event.",
+                consumed);
     }
 
     @Test

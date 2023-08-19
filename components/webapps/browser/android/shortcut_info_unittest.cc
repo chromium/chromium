@@ -74,6 +74,14 @@ TEST_F(ShortcutInfoTest, AllAttributesUpdate) {
   manifest_.has_background_color = true;
   manifest_.background_color = 0xffbb0000;
 
+  info_.dark_theme_color = 0x000000;
+  manifest_.has_dark_theme_color = true;
+  manifest_.dark_theme_color = 0x7a7a7a;
+
+  info_.dark_background_color = 0x000000;
+  manifest_.has_dark_background_color = true;
+  manifest_.dark_background_color = 0x7a7a7a;
+
   info_.icon_urls.push_back("https://old.com/icon.png");
   blink::Manifest::ImageResource icon;
   icon.src = GURL("https://new.com/icon.png");
@@ -88,8 +96,47 @@ TEST_F(ShortcutInfoTest, AllAttributesUpdate) {
   ASSERT_EQ(manifest_.display, info_.display);
   ASSERT_EQ(manifest_.theme_color, info_.theme_color);
   ASSERT_EQ(manifest_.background_color, info_.background_color);
+  ASSERT_EQ(manifest_.dark_theme_color, info_.dark_theme_color);
+  ASSERT_EQ(manifest_.dark_background_color, info_.dark_background_color);
   ASSERT_EQ(1u, info_.icon_urls.size());
   ASSERT_EQ(manifest_.icons[0].src, GURL(info_.icon_urls[0]));
+}
+
+TEST_F(ShortcutInfoTest, UpdateFromWebPageMetadata) {
+  info_ = ShortcutInfo(GURL());
+  webapps::mojom::WebPageMetadataPtr metadata =
+      webapps::mojom::WebPageMetadata::New();
+  metadata->application_name = u"new title";
+  metadata->description = u"new description";
+  metadata->application_url = GURL("https://new.com/start");
+  metadata->mobile_capable = mojom::WebPageMobileCapable::ENABLED;
+
+  info_.UpdateFromWebPageMetadata(*metadata);
+
+  ASSERT_EQ(metadata->application_name, info_.user_title);
+  ASSERT_EQ(metadata->application_name, info_.name);
+  ASSERT_EQ(metadata->application_name, info_.short_name);
+  ASSERT_EQ(metadata->description, info_.description);
+  ASSERT_EQ(metadata->application_url, info_.url);
+  ASSERT_EQ(metadata->application_url, info_.scope);
+  ASSERT_EQ(blink::mojom::DisplayMode::kStandalone, info_.display);
+}
+
+TEST_F(ShortcutInfoTest, UpdateFromEmptyMetadata) {
+  GURL test_url("https://example.com");
+  info_ = ShortcutInfo(test_url);
+  info_.user_title = u"old title";
+  webapps::mojom::WebPageMetadataPtr metadata =
+      webapps::mojom::WebPageMetadata::New();
+
+  info_.UpdateFromWebPageMetadata(*metadata);
+
+  ASSERT_EQ(u"old title", info_.user_title);
+  ASSERT_EQ(u"old title", info_.name);
+  ASSERT_EQ(u"old title", info_.short_name);
+  ASSERT_TRUE(info_.description.empty());
+  ASSERT_EQ(test_url, info_.url);
+  ASSERT_EQ(blink::mojom::DisplayMode::kBrowser, info_.display);
 }
 
 TEST_F(ShortcutInfoTest, GetAllWebApkIcons) {

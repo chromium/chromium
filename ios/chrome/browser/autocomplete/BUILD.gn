@@ -24,8 +24,6 @@ source_set("autocomplete") {
     "zero_suggest_cache_service_factory.h",
   ]
 
-  configs += [ "//build/config/compiler:enable_arc" ]
-
   deps = [
     "//base",
     "//components/browser_sync",

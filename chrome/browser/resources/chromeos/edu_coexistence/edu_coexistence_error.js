@@ -7,32 +7,40 @@ import './edu_coexistence_template.js';
 import './edu_coexistence_button.js';
 import './supervision/supervised_user_error.js';
 
-import {html, Polymer} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {EduCoexistenceBrowserProxyImpl} from './edu_coexistence_browser_proxy.js';
 
+class EduCoexistenceError extends PolymerElement {
+  static get is() {
+    return 'edu-coexistence-error';
+  }
 
-Polymer({
-  is: 'edu-coexistence-error',
-
-  _template: html`{__html_template__}`,
-
-  listeners: {
-    'go-action': 'closeDialog_',
-  },
+  static get template() {
+    return html`{__html_template__}`;
+  }
 
   /** @override */
   ready() {
-    this.$$('edu-coexistence-button').newOobeStyleEnabled = true;
-    this.$$('edu-coexistence-template').showButtonFooter(true);
-  },
+    super.ready();
+    this.shadowRoot.querySelector('edu-coexistence-button')
+        .newOobeStyleEnabled = true;
+    this.shadowRoot.querySelector('edu-coexistence-template')
+        .showButtonFooter(true);
+
+    this.addEventListener('go-action', () => {
+      this.closeDialog_();
+    });
+  }
 
   /**
-   * Attempts to close the dialog.  In OOBE, this will move on
+   * Attempts to close the dialog. In OOBE, this will move on
    * to the next screen of OOBE (not the next screen of this flow).
    * @private
    */
   closeDialog_() {
     EduCoexistenceBrowserProxyImpl.getInstance().dialogClose();
-  },
-});
+  }
+}
+
+customElements.define(EduCoexistenceError.is, EduCoexistenceError);

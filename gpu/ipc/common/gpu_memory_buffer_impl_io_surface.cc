@@ -104,7 +104,7 @@ base::OnceClosure GpuMemoryBufferImplIOSurface::AllocateForTesting(
   gfx::GpuMemoryBufferId kBufferId(1);
   handle->type = gfx::IO_SURFACE_BUFFER;
   handle->id = kBufferId;
-  handle->io_surface.reset(gfx::CreateIOSurface(size, format));
+  handle->io_surface = gfx::CreateIOSurface(size, format);
   DCHECK(handle->io_surface);
   return base::DoNothing();
 }

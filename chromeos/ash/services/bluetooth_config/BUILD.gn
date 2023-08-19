@@ -49,6 +49,7 @@ static_library("bluetooth_config") {
     "discovery_session_manager_impl.h",
     "discovery_session_status_notifier.cc",
     "discovery_session_status_notifier.h",
+    "fast_pair_delegate.cc",
     "fast_pair_delegate.h",
     "initializer.h",
     "initializer_impl.cc",

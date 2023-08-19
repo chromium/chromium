@@ -11,19 +11,15 @@
 #include <utility>
 
 #include "base/command_line.h"
-#include "base/metrics/field_trial.h"
-#include "base/metrics/field_trial_params.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/task_environment.h"
 #include "components/omnibox/browser/autocomplete_match.h"
 #include "components/omnibox/browser/autocomplete_scheme_classifier.h"
 #include "components/omnibox/browser/mock_autocomplete_provider_client.h"
-#include "components/omnibox/browser/omnibox_field_trial.h"
 #include "components/search_engines/search_engines_switches.h"
 #include "components/search_engines/template_url.h"
 #include "components/search_engines/template_url_service.h"
-#include "components/variations/variations_associated_data.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/metrics_proto/omnibox_event.pb.h"
@@ -63,18 +59,10 @@ class KeywordProviderTest : public testing::Test {
     const MatchType<ResultType> output[3];
   };
 
-  KeywordProviderTest() : kw_provider_(nullptr) {
-    variations::testing::ClearAllVariationParams();
-  }
-  ~KeywordProviderTest() override {}
+  KeywordProviderTest() : kw_provider_(nullptr) {}
+  ~KeywordProviderTest() override = default;
 
-  // Should be called at least once during a test case.  This is a separate
-  // function from SetUp() because the client may want to set parameters
-  // (e.g., field trials) before initializing TemplateURLService and the
-  // related internal variables here.
-  void SetUpClientAndKeywordProvider();
-
-  void TearDown() override;
+  void SetUp() override;
 
   template<class ResultType>
   void RunTest(TestData<ResultType>* keyword_cases,
@@ -85,8 +73,8 @@ class KeywordProviderTest : public testing::Test {
   static const TemplateURLService::Initializer kTestData[];
 
   base::test::TaskEnvironment task_environment_;
-  scoped_refptr<KeywordProvider> kw_provider_;
   std::unique_ptr<MockAutocompleteProviderClient> client_;
+  scoped_refptr<KeywordProvider> kw_provider_;
 };
 
 // static
@@ -126,16 +114,11 @@ const TemplateURLService::Initializer KeywordProviderTest::kTestData[] = {
      "clean v8 slash"},
 };
 
-void KeywordProviderTest::SetUpClientAndKeywordProvider() {
+void KeywordProviderTest::SetUp() {
   client_ = std::make_unique<MockAutocompleteProviderClient>();
   client_->set_template_url_service(
       std::make_unique<TemplateURLService>(kTestData, std::size(kTestData)));
   kw_provider_ = new KeywordProvider(client_.get(), nullptr);
-}
-
-void KeywordProviderTest::TearDown() {
-  client_.reset();
-  kw_provider_ = nullptr;
 }
 
 template<class ResultType>
@@ -232,46 +215,6 @@ TEST_F(KeywordProviderTest, Edit) {
       {u"nonsub", 1, {{u"nonsub", true}, kEmptyMatch, kEmptyMatch}},
   };
 
-  SetUpClientAndKeywordProvider();
-  RunTest<std::u16string>(edit_cases, std::size(edit_cases),
-                          &AutocompleteMatch::fill_into_edit);
-}
-
-TEST_F(KeywordProviderTest, IgnoreRegistryForScoring) {
-  const MatchType<std::u16string> kEmptyMatch = {std::u16string(), false};
-  TestData<std::u16string> edit_cases[] = {
-      // Matches should be limited to three and sorted in quality order.
-      // When ignoring the registry length, this order of suggestions should
-      // result (sorted by keyword length sans registry).  The "Edit" test case
-      // has this exact test for when not ignoring the registry to check that
-      // the other order (shorter full keyword) results there.
-      {u"foo hello",
-       2,
-       {{u"foolong.co.uk hello", false},
-        {u"fooshort.com hello", false},
-        kEmptyMatch}},
-
-      // Keywords that don't have full hostnames should keep the same order
-      // as normal.
-      {u"aaa", 2, {{u"aaaa ", false}, {u"aaaaa ", false}, kEmptyMatch}},
-      {u"a 1 2 3",
-       3,
-       {{u"aa 1 2 3", false}, {u"ab 1 2 3", false}, {u"aaaa 1 2 3", false}}},
-      {u"www.a", 3, {{u"aa ", false}, {u"ab ", false}, {u"aaaa ", false}}},
-  };
-
-  // Add a rule to make matching in the registry portion of a keyword
-  // unimportant.
-  {
-    std::map<std::string, std::string> params;
-    params[OmniboxFieldTrial::kKeywordRequiresRegistryRule] = "false";
-    ASSERT_TRUE(base::AssociateFieldTrialParams(
-        OmniboxFieldTrial::kBundledExperimentFieldTrialName, "A", params));
-  }
-  base::FieldTrialList::CreateFieldTrial(
-      OmniboxFieldTrial::kBundledExperimentFieldTrialName, "A");
-
-  SetUpClientAndKeywordProvider();
   RunTest<std::u16string>(edit_cases, std::size(edit_cases),
                           &AutocompleteMatch::fill_into_edit);
 }
@@ -309,7 +252,6 @@ TEST_F(KeywordProviderTest, URL) {
         {GURL("http://www.cleantestv2.com/?q=w"), false}}},
   };
 
-  SetUpClientAndKeywordProvider();
   RunTest<GURL>(url_cases, std::size(url_cases),
                 &AutocompleteMatch::destination_url);
 }
@@ -350,13 +292,11 @@ TEST_F(KeywordProviderTest, Contents) {
        {{u"1 2+ 3", false}, {u"1 2+ 3", false}, {u"1 2+ 3", false}}},
   };
 
-  SetUpClientAndKeywordProvider();
   RunTest<std::u16string>(contents_cases, std::size(contents_cases),
                           &AutocompleteMatch::contents);
 }
 
 TEST_F(KeywordProviderTest, AddKeyword) {
-  SetUpClientAndKeywordProvider();
   TemplateURLData data;
   data.SetShortName(u"Test");
   std::u16string keyword(u"foo");
@@ -370,7 +310,6 @@ TEST_F(KeywordProviderTest, AddKeyword) {
 }
 
 TEST_F(KeywordProviderTest, RemoveKeyword) {
-  SetUpClientAndKeywordProvider();
   TemplateURLService* template_url_service = client_->GetTemplateURLService();
   std::u16string url(u"http://aaaa/?aaaa=1&b={searchTerms}&c");
   template_url_service->Remove(
@@ -380,7 +319,6 @@ TEST_F(KeywordProviderTest, RemoveKeyword) {
 }
 
 TEST_F(KeywordProviderTest, GetKeywordForInput) {
-  SetUpClientAndKeywordProvider();
   EXPECT_EQ(u"aa", kw_provider_->GetKeywordForText(u"aa"));
   EXPECT_EQ(std::u16string(), kw_provider_->GetKeywordForText(u"aafoo"));
   EXPECT_EQ(u"aa", kw_provider_->GetKeywordForText(u"aa foo"));
@@ -459,7 +397,6 @@ TEST_F(KeywordProviderTest, GetSubstitutingTemplateURLForInput) {
       {"aa foo", std::u16string::npos, false, "", "aa foo",
        std::u16string::npos},
   };
-  SetUpClientAndKeywordProvider();
   for (size_t i = 0; i < std::size(cases); i++) {
     AutocompleteInput input(
         ASCIIToUTF16(cases[i].text), cases[i].cursor_position,
@@ -491,13 +428,11 @@ TEST_F(KeywordProviderTest, ExtraQueryParams) {
         {GURL("http://aaaa/?aaaa=1&b=1+2+3&c"), false}}},
   };
 
-  SetUpClientAndKeywordProvider();
   RunTest<GURL>(url_cases, std::size(url_cases),
                 &AutocompleteMatch::destination_url);
 }
 
 TEST_F(KeywordProviderTest, DoesNotProvideMatchesOnFocus) {
-  SetUpClientAndKeywordProvider();
   AutocompleteInput input(u"aaa", metrics::OmniboxEventProto::OTHER,
                           TestingSchemeClassifier());
   input.set_focus_type(metrics::OmniboxFocusType::INTERACTION_FOCUS);

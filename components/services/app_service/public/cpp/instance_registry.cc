@@ -19,30 +19,8 @@ InstanceParams::InstanceParams(const std::string& app_id, aura::Window* window)
 
 InstanceParams::~InstanceParams() = default;
 
-InstanceRegistry::Observer::Observer(InstanceRegistry* instance_registry) {
-  Observe(instance_registry);
-}
-
-InstanceRegistry::Observer::Observer() = default;
 InstanceRegistry::Observer::~Observer() {
-  if (instance_registry_) {
-    instance_registry_->RemoveObserver(this);
-  }
-}
-
-void InstanceRegistry::Observer::Observe(InstanceRegistry* instance_registry) {
-  if (instance_registry == instance_registry_) {
-    return;
-  }
-
-  if (instance_registry_) {
-    instance_registry_->RemoveObserver(this);
-  }
-
-  instance_registry_ = instance_registry;
-  if (instance_registry_) {
-    instance_registry_->AddObserver(this);
-  }
+  CHECK(!IsInObserverList());
 }
 
 InstanceRegistry::InstanceRegistry() = default;

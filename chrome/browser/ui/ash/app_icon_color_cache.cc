@@ -6,6 +6,7 @@
 
 #include "base/functional/callback.h"
 #include "base/no_destructor.h"
+#include "base/trace_event/trace_event.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "ui/gfx/color_analysis.h"
 #include "ui/gfx/image/image_skia.h"
@@ -14,6 +15,8 @@ namespace {
 
 // Uses the icon image to calculate the light vibrant color.
 absl::optional<SkColor> CalculateLightVibrantColor(gfx::ImageSkia image) {
+  TRACE_EVENT0("ui",
+               "app_icon_color_cache::{anonynous}::CalculateLightVibrantColor");
   const SkBitmap* source = image.bitmap();
   if (!source || source->empty() || source->isNull())
     return absl::nullopt;

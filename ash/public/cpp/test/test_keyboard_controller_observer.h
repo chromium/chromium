@@ -46,7 +46,7 @@ class TestKeyboardControllerObserver : public KeyboardControllerObserver {
   int destroyed_count() const { return destroyed_count_; }
 
  private:
-  raw_ptr<KeyboardController, ExperimentalAsh> controller_;
+  raw_ptr<KeyboardController, DanglingUntriaged | ExperimentalAsh> controller_;
   std::set<keyboard::KeyboardEnableFlag> enable_flags_;
   keyboard::KeyboardConfig config_;
   int destroyed_count_ = 0;

@@ -10,10 +10,6 @@
 #import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
 #import "ios/chrome/browser/signin/chrome_account_manager_service.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 ChromeAccountManagerService*
 ChromeAccountManagerServiceFactory::GetForBrowserState(
     ChromeBrowserState* browser_state) {

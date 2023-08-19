@@ -10,8 +10,10 @@
 #include <vector>
 
 #include "base/component_export.h"
+#include "base/feature_list.h"
 #include "base/gtest_prod_util.h"
 #include "base/memory/ref_counted.h"
+#include "build/chromeos_buildflags.h"
 #include "google_apis/gaia/oauth2_access_token_consumer.h"
 #include "google_apis/gaia/oauth2_access_token_fetcher.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
@@ -23,6 +25,10 @@ namespace network {
 class SimpleURLLoader;
 class SharedURLLoaderFactory;
 }
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+COMPONENT_EXPORT(GOOGLE_APIS) BASE_DECLARE_FEATURE(kIgnoreRaptErrors);
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 // Abstracts the details to get OAuth2 access token from OAuth2 refresh token.
 // See general document about Oauth2 in https://tools.ietf.org/html/rfc6749.
@@ -123,9 +129,15 @@ class COMPONENT_EXPORT(GOOGLE_APIS) OAuth2AccessTokenFetcherImpl
       const std::string& response_body,
       OAuth2AccessTokenConsumer::TokenResponse* token_response);
 
+  // Parses `response_body` as JSON and populates the corresponding output
+  // pointers. Returns true if parsing was successful, false otherwise. Note:
+  // `error_subtype` and `error_description` are optional fields - an empty
+  // string is returned if they are not present in `response_body`.
   static bool ParseGetAccessTokenFailureResponse(
       const std::string& response_body,
-      std::string* error);
+      std::string* error,
+      std::string* error_subtype,
+      std::string* error_description);
 
   // State that is set during construction.
   scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory_;
@@ -158,6 +170,10 @@ class COMPONENT_EXPORT(GOOGLE_APIS) OAuth2AccessTokenFetcherImpl
                            ParseGetAccessTokenFailure);
   FRIEND_TEST_ALL_PREFIXES(OAuth2AccessTokenFetcherImplTest,
                            ParseGetAccessTokenFailureInvalidError);
+  FRIEND_TEST_ALL_PREFIXES(OAuth2AccessTokenFetcherImplTest,
+                           ParseGetAccessTokenFailureForMissingRaptError);
+  FRIEND_TEST_ALL_PREFIXES(OAuth2AccessTokenFetcherImplTest,
+                           ParseGetAccessTokenFailureForInvalidRaptError);
 };
 
 #endif  // GOOGLE_APIS_GAIA_OAUTH2_ACCESS_TOKEN_FETCHER_IMPL_H_

@@ -370,7 +370,8 @@ class ClusterCallbackContext {
     for (unsigned j = 0; j < graphemes_in_cluster; ++j) {
       // Do not put emphasis marks on space, separator, and control
       // characters.
-      if (Character::CanReceiveTextEmphasis(text[character_index])) {
+      if (Character::CanReceiveTextEmphasis(
+              text.CodepointAt(character_index))) {
         bloberizer->AddEmphasisMark(emphasis_data, canvas_rotation,
                                     glyph_center,
                                     advance_so_far + glyph_advance_x / 2);

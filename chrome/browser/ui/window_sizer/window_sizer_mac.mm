@@ -17,8 +17,8 @@ const int WindowSizer::kWindowMaxDefaultWidth = 1200;
 
 // static
 gfx::Point WindowSizer::GetDefaultPopupOrigin(const gfx::Size& size) {
-  NSRect work_area = [[NSScreen mainScreen] visibleFrame];
-  NSRect main_area = [[[NSScreen screens] firstObject] frame];
+  NSRect work_area = NSScreen.mainScreen.visibleFrame;
+  NSRect main_area = NSScreen.screens.firstObject.frame;
   NSPoint corner = NSMakePoint(NSMinX(work_area), NSMaxY(work_area));
 
   if (Browser* browser = chrome::FindLastActive()) {

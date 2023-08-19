@@ -40,14 +40,14 @@ public class GeolocationTest {
     public AwActivityTestRule mActivityTestRule = new AwActivityTestRule() {
         @Override
         public TestDependencyFactory createTestDependencyFactory() {
-            return mOverridenFactory == null ? new TestDependencyFactory() : mOverridenFactory;
+            return mOverriddenFactory == null ? new TestDependencyFactory() : mOverriddenFactory;
         }
     };
 
     private TestAwContentsClient mContentsClient;
     private AwContents mAwContents;
     private MockLocationProvider mMockLocationProvider;
-    private TestDependencyFactory mOverridenFactory;
+    private TestDependencyFactory mOverriddenFactory;
 
     private static final String RAW_HTML =
             "<!DOCTYPE html>\n"
@@ -111,7 +111,7 @@ public class GeolocationTest {
     @After
     public void tearDown() {
         mMockLocationProvider.stopUpdates();
-        mOverridenFactory = null;
+        mOverriddenFactory = null;
     }
 
     private int getPositionCountFromJS() {
@@ -291,7 +291,7 @@ public class GeolocationTest {
     @Feature({"AndroidWebView"})
     @SmallTest
     public void testDenyOnInsecureOrigins() throws Throwable {
-        mOverridenFactory = new GeolocationOnInsecureOriginsTestDependencyFactory(false);
+        mOverriddenFactory = new GeolocationOnInsecureOriginsTestDependencyFactory(false);
         initAwContents(new GrantPermisionAwContentClient());
         mActivityTestRule.loadDataWithBaseUrlSync(mAwContents,
                 mContentsClient.getOnPageFinishedHelper(), RAW_HTML, "text/html", false,

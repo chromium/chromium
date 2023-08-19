@@ -4,6 +4,7 @@
 
 module extensions.mojom;
 
+import "mojo/public/mojom/base/uuid.mojom";
 import "extensions/common/mojom/code_injection.mojom";
 import "extensions/common/mojom/extra_response_data.mojom";
 import "extensions/common/mojom/host_id.mojom";
@@ -156,6 +157,11 @@ interface LocalFrameHost {
           mojo_base.mojom.ListValue response_wrapper,
           string error,
           ExtraResponseData? extra_data);
+
+  // An "ack" sent from the renderer that it received the response.
+  // This is only sent for certain API functions (where the browser needs to
+  // know the renderer received the response).
+  ResponseAck(mojo_base.mojom.Uuid request_uuid);
 
   // Notifies the browser process that a tab has started or stopped matching
   // certain conditions.  This method is called by response to several events:

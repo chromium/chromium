@@ -7,10 +7,6 @@
 #import "base/metrics/histogram_functions.h"
 #import "ios/chrome/browser/ntp/set_up_list_item_type.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 namespace set_up_list_metrics {
 
 void RecordDisplayed() {

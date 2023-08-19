@@ -17,6 +17,9 @@ class GURL;
 // Notifies the delegate that the user tapped a link with a `URL`.
 - (void)didTapLinkWithURL:(const GURL&)URL;
 
+// Returns true if the disabled tab view is subject to parental controls.
+- (bool)isViewControllerSubjectToParentalControls;
+
 @end
 
 // View controller representing a view without tab grids when any of the

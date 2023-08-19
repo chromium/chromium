@@ -35,6 +35,8 @@ class CONTENT_EXPORT SyntheticGestureController {
     // Returns whether any gesture created by dispatched input events has
     // completed or not.
     virtual bool HasGestureStopped() = 0;
+
+    virtual bool IsHidden() const = 0;
   };
   SyntheticGestureController(
       Delegate* delegate,
@@ -66,6 +68,14 @@ class CONTENT_EXPORT SyntheticGestureController {
   void UpdateSyntheticGestureTarget(
       std::unique_ptr<SyntheticGestureTarget> gesture_target,
       Delegate* delegate);
+
+  // Returns true if the current gesture requires the RenderWidgetHost to be
+  // visible in order to correctly dispatch events to it and the RWH is
+  // currently hidden.
+  bool IsHiddenAndNeedsVisible() const;
+
+  // If a gesture start was deferred, this will start it.
+  void StartIfNeeded();
 
   base::WeakPtr<SyntheticGestureController> GetWeakPtr() {
     return weak_ptr_factory_.GetWeakPtr();
@@ -114,6 +124,9 @@ class CONTENT_EXPORT SyntheticGestureController {
       result_of_current_gesture_ = SyntheticGesture::GESTURE_RUNNING;
     }
     SyntheticGesture* FrontGesture() { return gestures_.front().get(); }
+    const SyntheticGesture* FrontGesture() const {
+      return gestures_.front().get();
+    }
     OnGestureCompleteCallback FrontCallback() {
       // TODO(dtapuska): This is odd moving the top callback. Pop really
       // should be rewritten to take two output parameters then we can
@@ -160,6 +173,11 @@ class CONTENT_EXPORT SyntheticGestureController {
   // generated. We should be waiting for hit test data to be available to be
   // truly robust. https://crbug.com/985374.
   bool renderer_known_to_be_initialized_ = false;
+
+  // Set when StartGesture was called but had to be deferred due to the
+  // RenderWidgetHost being hidden. Deferred gestures will be started when the
+  // widget becomes visible via StartIfNeeded().
+  bool deferred_start_ = false;
 
   base::MetronomeTimer dispatch_timer_;
   base::WeakPtrFactory<SyntheticGestureController> weak_ptr_factory_{this};

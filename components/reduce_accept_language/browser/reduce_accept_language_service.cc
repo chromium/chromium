@@ -11,6 +11,7 @@
 #include "base/metrics/histogram_macros.h"
 #include "base/strings/string_split.h"
 #include "base/time/time.h"
+#include "components/content_settings/core/browser/content_settings_utils.h"
 #include "components/content_settings/core/browser/host_content_settings_map.h"
 #include "components/content_settings/core/common/content_settings_constraints.h"
 #include "components/content_settings/core/common/content_settings_types.h"
@@ -110,13 +111,12 @@ void ReduceAcceptLanguageService::PersistReducedLanguage(
       network::features::kReduceAcceptLanguageCacheDuration.Get();
 
   accept_language_dictionary.Set(kReduceAcceptLanguageSettingKey, language);
+  content_settings::ContentSettingConstraints constraints;
+  constraints.set_lifetime(cache_duration);
+  constraints.set_session_model(content_settings::SessionModel::Durable);
   settings_map_->SetWebsiteSettingDefaultScope(
       url, GURL(), ContentSettingsType::REDUCED_ACCEPT_LANGUAGE,
-      base::Value(std::move(accept_language_dictionary)),
-      {cache_duration.is_zero()
-           ? base::Time()
-           : content_settings::GetConstraintExpiration(cache_duration),
-       content_settings::SessionModel::Durable});
+      base::Value(std::move(accept_language_dictionary)), constraints);
 
   // Record the time spent getting the reduce accept language.
   base::TimeDelta duration = base::TimeTicks::Now() - start_time;

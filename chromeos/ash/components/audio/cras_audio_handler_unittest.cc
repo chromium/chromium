@@ -287,6 +287,8 @@ class TestObserver : public CrasAudioHandler::AudioObserver {
     ++nonchrome_output_stopped_change_count_;
   }
 
+  void OnForceRespectUiGainsStateChanged() override {}
+
  private:
   int active_output_node_changed_count_ = 0;
   int active_input_node_changed_count_ = 0;
@@ -383,6 +385,11 @@ class CrasAudioHandlerTest : public testing::TestWithParam<int> {
     CrasAudioHandler::Shutdown();
     audio_pref_handler_ = nullptr;
     CrasAudioClient::Shutdown();
+
+    // We can't delete the `MicrophoneMuteSwitchMonitor` singleton, so we
+    // must reset it to a predictable state to prevent the tests from
+    // influencing each other.
+    ui::MicrophoneMuteSwitchMonitor::Get()->SetMicrophoneMuteSwitchValue(false);
   }
 
   AudioNode GenerateAudioNode(const AudioNodeInfo* node_info) {
@@ -566,8 +573,8 @@ class CrasAudioHandlerTest : public testing::TestWithParam<int> {
   base::test::SingleThreadTaskEnvironment task_environment_;
   base::SystemMonitor system_monitor_;
   SystemMonitorObserver system_monitor_observer_;
-  raw_ptr<CrasAudioHandler, ExperimentalAsh> cras_audio_handler_ =
-      nullptr;  // Not owned.
+  raw_ptr<CrasAudioHandler, DanglingUntriaged | ExperimentalAsh>
+      cras_audio_handler_ = nullptr;  // Not owned.
   std::unique_ptr<TestObserver> test_observer_;
   scoped_refptr<AudioDevicesPrefHandlerStub> audio_pref_handler_;
   std::unique_ptr<FakeMediaControllerManager> fake_manager_;
@@ -1005,26 +1012,31 @@ TEST_P(CrasAudioHandlerTest, NumberNonChromeOutputs) {
   // start at 0.
   EXPECT_EQ(test_observer_->nonchrome_output_started_change_count(), 0);
   EXPECT_EQ(test_observer_->nonchrome_output_stopped_change_count(), 0);
-
+  EXPECT_EQ(cras_audio_handler_->NumberOfNonChromeOutputStreams(), 0);
   fake_cras_audio_client()->SetNumberOfNonChromeOutputStreams(1);
   EXPECT_EQ(test_observer_->nonchrome_output_started_change_count(), 1);
   EXPECT_EQ(test_observer_->nonchrome_output_stopped_change_count(), 0);
+  EXPECT_EQ(cras_audio_handler_->NumberOfNonChromeOutputStreams(), 1);
   // And again, to 2. No change expected.
   fake_cras_audio_client()->SetNumberOfNonChromeOutputStreams(2);
   EXPECT_EQ(test_observer_->nonchrome_output_started_change_count(), 1);
   EXPECT_EQ(test_observer_->nonchrome_output_stopped_change_count(), 0);
+  EXPECT_EQ(cras_audio_handler_->NumberOfNonChromeOutputStreams(), 2);
   // Down to 0? it gets stopped.
   fake_cras_audio_client()->SetNumberOfNonChromeOutputStreams(0);
   EXPECT_EQ(test_observer_->nonchrome_output_started_change_count(), 1);
   EXPECT_EQ(test_observer_->nonchrome_output_stopped_change_count(), 1);
+  EXPECT_EQ(cras_audio_handler_->NumberOfNonChromeOutputStreams(), 0);
   // Down to 0 again for some reason: already stopped.
   fake_cras_audio_client()->SetNumberOfNonChromeOutputStreams(0);
   EXPECT_EQ(test_observer_->nonchrome_output_started_change_count(), 1);
   EXPECT_EQ(test_observer_->nonchrome_output_stopped_change_count(), 1);
+  EXPECT_EQ(cras_audio_handler_->NumberOfNonChromeOutputStreams(), 0);
   // And again, to 2. Up we go.
   fake_cras_audio_client()->SetNumberOfNonChromeOutputStreams(2);
   EXPECT_EQ(test_observer_->nonchrome_output_started_change_count(), 2);
   EXPECT_EQ(test_observer_->nonchrome_output_stopped_change_count(), 1);
+  EXPECT_EQ(cras_audio_handler_->NumberOfNonChromeOutputStreams(), 2);
 }
 
 TEST_P(CrasAudioHandlerTest, InitializeWithHDMIOutput) {
@@ -5043,6 +5055,68 @@ TEST_P(CrasAudioHandlerTest, MicrophoneMuteKeyboardSwitchTest) {
   EXPECT_TRUE(cras_audio_handler_->IsInputMuted());
   EXPECT_EQ(input_mute_changed_counter,
             test_observer_->input_mute_changed_count());
+}
+
+TEST_P(CrasAudioHandlerTest,
+       InputShouldBeForcefullyMutedBySecurityCurtainMode) {
+  AudioNodeList audio_nodes = GenerateAudioNodeList({kInternalMic, kMicJack});
+  SetUpCrasAudioHandler(audio_nodes);
+
+  for (bool previous_value : {true, false}) {
+    cras_audio_handler_->SetInputMute(
+        previous_value,
+        CrasAudioHandler::InputMuteChangeMethod::kKeyboardButton);
+
+    // Force enable input muting.
+    cras_audio_handler_->SetInputMuteLockedBySecurityCurtain(true);
+    EXPECT_TRUE(cras_audio_handler_->IsInputMutedBySecurityCurtain());
+    EXPECT_TRUE(cras_audio_handler_->IsInputMuted());
+
+    // Trying to unmute should now be blocked.
+    cras_audio_handler_->SetInputMute(
+        false, CrasAudioHandler::InputMuteChangeMethod::kKeyboardButton);
+    EXPECT_TRUE(cras_audio_handler_->IsInputMutedBySecurityCurtain());
+    EXPECT_TRUE(cras_audio_handler_->IsInputMuted());
+
+    // Stop force enabling input muting - the device should go to unmuted state.
+    cras_audio_handler_->SetInputMuteLockedBySecurityCurtain(false);
+    EXPECT_FALSE(cras_audio_handler_->IsInputMutedBySecurityCurtain());
+    EXPECT_FALSE(cras_audio_handler_->IsInputMuted());
+  }
+}
+
+TEST_P(CrasAudioHandlerTest,
+       HwSwitchInputMutingShouldNotBeBrokenBySecurityCurtain) {
+  AudioNodeList audio_nodes = GenerateAudioNodeList({kInternalMic, kMicJack});
+  SetUpCrasAudioHandler(audio_nodes);
+
+  // Simulate hw microphone mute switch toggle.
+  ui::MicrophoneMuteSwitchMonitor::Get()->SetMicrophoneMuteSwitchValue(true);
+
+  // Now enabling and disabling security input muting should not unmute the
+  // device
+
+  cras_audio_handler_->SetInputMuteLockedBySecurityCurtain(true);
+  EXPECT_TRUE(cras_audio_handler_->IsInputMuted());
+
+  cras_audio_handler_->SetInputMuteLockedBySecurityCurtain(false);
+  EXPECT_TRUE(cras_audio_handler_->IsInputMuted());
+}
+
+TEST_P(CrasAudioHandlerTest,
+       SecurityCurtainInputMutingShouldNotBeBrokenByHwSwitch) {
+  AudioNodeList audio_nodes = GenerateAudioNodeList({kInternalMic, kMicJack});
+  SetUpCrasAudioHandler(audio_nodes);
+
+  // Force enable input muting through security curtain
+  cras_audio_handler_->SetInputMuteLockedBySecurityCurtain(true);
+
+  // Now toggling the hw microphone mute switch should not unmute the system.
+  ui::MicrophoneMuteSwitchMonitor::Get()->SetMicrophoneMuteSwitchValue(true);
+  EXPECT_TRUE(cras_audio_handler_->IsInputMuted());
+
+  ui::MicrophoneMuteSwitchMonitor::Get()->SetMicrophoneMuteSwitchValue(false);
+  EXPECT_TRUE(cras_audio_handler_->IsInputMuted());
 }
 
 TEST_P(CrasAudioHandlerTest, IsNoiseCancellationSupportedForDeviceNoNC) {

@@ -16,7 +16,7 @@
 namespace ui {
 
 void AddNativeCoreColorMixer(ColorProvider* provider,
-                             const ColorProviderManager::Key& key) {
+                             const ColorProviderKey& key) {
   ColorMixer& mixer = provider->AddMixer();
   mixer[kColorAshSystemUIMenuBackground] = {kColorMenuBackground};
   mixer[kColorAshSystemUIMenuIcon] = {kColorMenuIcon};
@@ -25,10 +25,11 @@ void AddNativeCoreColorMixer(ColorProvider* provider,
   mixer[kColorAshSystemUIMenuSeparator] = {kColorMenuSeparator};
   mixer[kColorMultitaskMenuNudgePulse] = {kColorEndpointForeground};
 
-  bool dark_mode = key.color_mode == ColorProviderManager::ColorMode::kDark;
+  bool dark_mode = key.color_mode == ColorProviderKey::ColorMode::kDark;
 
   // Add color initializations for highlight border.
   {
+    // TODO(b/291622042): Delete when Jelly is fully launched.
     const ui::ColorTransform light_border = {SkColorSetA(SK_ColorBLACK, 0x0F)};
     const auto default_background_color =
         ui::GetEndpointColorWithMinContrast({ui::kColorPrimaryBackground});
@@ -50,9 +51,20 @@ void AddNativeCoreColorMixer(ColorProvider* provider,
     mixer[kColorHighlightBorderHighlight3] = {kColorHighlightBorderHighlight1};
   }
 
+  // This matches cros.sys.system-highlight
+  mixer[kColorCrosSystemHighlight] =
+      ui::SetAlpha(ui::kColorRefNeutral100, dark_mode ? 0x0F : 0x28);
+  // This matches cros.sys.system-highlight-border
+  mixer[kColorCrosSystemHighlightBorder] =
+      ui::SetAlpha(ui::kColorRefNeutral0, 0x14);
+  // This matches cros.sys.system-highlight-border1
+  mixer[kColorCrosSystemHighlightBorder1] =
+      ui::SetAlpha(ui::kColorRefNeutral0, dark_mode ? 0x14 : 0x0F);
+
+  // TODO(b/291622042): Delete once Jelly is fully launched.
   if (dark_mode) {
     const bool high_elevation =
-        key.elevation_mode == ColorProviderManager::ElevationMode::kHigh;
+        key.elevation_mode == ColorProviderKey::ElevationMode::kHigh;
     const SkColor base_color =
         high_elevation
             ? color_utils::AlphaBlend(SK_ColorWHITE, gfx::kGoogleGrey900, 0.08f)

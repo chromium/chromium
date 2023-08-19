@@ -31,7 +31,7 @@ public class ChromeWebApkHost {
                 ChromeWebApkHostSignature.PUBLIC_KEY);
         if (CommandLine.getInstance().hasSwitch(SKIP_WEBAPK_VERIFICATION)) {
             // Tell the WebApkValidator to work for all WebAPKs.
-            WebApkValidator.setDisableValidationForTesting(true);
+            WebApkValidator.setDisableValidation(true);
         }
     }
 

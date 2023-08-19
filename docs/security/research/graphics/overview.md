@@ -16,7 +16,7 @@ with unfamiliar graphics features.
 The diagram below is a simplified view of WebGL and WebGPU with a focus on
 components of particular interest to attackers.
 
-![](resources/chrome_gfx_overview.svg)
+![Chrome Graphics Architecture Overview](resources/chrome_gfx_overview.png)
 
 Note: Skia and Canvas APIs are omitted and may be incorporated in a future
 iteration.

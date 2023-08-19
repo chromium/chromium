@@ -41,6 +41,10 @@
     }
   },
   "$build/reclient": {
+    "bootstrap_env": {
+      "GOMA_DEPS_CACHE_TABLE_THRESHOLD": "40000",
+      "RBE_fast_log_collection": "true"
+    },
     "ensure_verified": true,
     "instance": "rbe-chromium-trusted-test",
     "metrics_project": "chromium-reclient-metrics",
@@ -49,7 +53,8 @@
       "RBE_canonicalize_working_dir": "true",
       "RBE_compare": "true",
       "RBE_compression_threshold": "4000000"
-    }
+    },
+    "scandeps_server": true
   },
   "$recipe_engine/resultdb/test_presentation": {
     "column_keys": [],

@@ -99,6 +99,14 @@ export interface PaymentsManagerProxy {
    * for local card if the auth is successful.
    */
   authenticateUserToEditLocalCard(): Promise<boolean>;
+
+  // <if expr="is_win or is_macosx">
+  /**
+   * Returns true if there is authentication available on this device (biometric
+   * or screen lock), false otherwise.
+   */
+  checkIfDeviceAuthAvailable(): Promise<boolean>;
+  // </if>
 }
 
 /**
@@ -185,6 +193,12 @@ export class PaymentsManagerImpl implements PaymentsManagerProxy {
   authenticateUserToEditLocalCard() {
     return chrome.autofillPrivate.authenticateUserToEditLocalCard();
   }
+
+  // <if expr="is_win or is_macosx">
+  checkIfDeviceAuthAvailable() {
+    return chrome.autofillPrivate.checkIfDeviceAuthAvailable();
+  }
+  // </if>
 
   static getInstance(): PaymentsManagerProxy {
     return instance || (instance = new PaymentsManagerImpl());

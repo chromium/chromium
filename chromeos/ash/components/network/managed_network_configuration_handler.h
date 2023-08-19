@@ -14,6 +14,7 @@
 #include "chromeos/ash/components/network/client_cert_util.h"
 #include "chromeos/ash/components/network/network_handler.h"
 #include "chromeos/ash/components/network/network_handler_callbacks.h"
+#include "chromeos/ash/components/network/text_message_suppression_state.h"
 #include "components/onc/onc_constants.h"
 
 namespace base {
@@ -227,6 +228,9 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) ManagedNetworkConfigurationHandler {
   // Return true if AllowCellularSimLock policy is enabled.
   virtual bool AllowCellularSimLock() const = 0;
 
+  // Return true if AllowCellularHotspot policy is enabled.
+  virtual bool AllowCellularHotspot() const = 0;
+
   // Return true if AllowOnlyPolicyCellularNetworks policy is enabled.
   virtual bool AllowOnlyPolicyCellularNetworks() const = 0;
 
@@ -240,8 +244,15 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) ManagedNetworkConfigurationHandler {
   // Return true if the AllowOnlyPolicyNetworksToAutoconnect policy is enabled.
   virtual bool AllowOnlyPolicyNetworksToAutoconnect() const = 0;
 
+  // Returns the value for the AllowTextMessages policy.
+  virtual PolicyTextMessageSuppressionState GetAllowTextMessages() const = 0;
+
   // Return the list of blocked WiFi networks (identified by HexSSIDs).
   virtual std::vector<std::string> GetBlockedHexSSIDs() const = 0;
+
+  // Called after either secure DNS status or deviceReportXDREvents policy is
+  // updated.
+  virtual void OnEnterpriseMonitoredWebPoliciesApplied() const = 0;
 
   // Called just before destruction to give observers a chance to remove
   // themselves and disable any networking.

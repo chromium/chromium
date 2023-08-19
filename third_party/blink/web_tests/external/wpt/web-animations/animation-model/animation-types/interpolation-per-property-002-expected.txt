@@ -1,5 +1,5 @@
 This is a testharness.js-based test.
-Found 364 tests; 353 PASS, 11 FAIL, 0 TIMEOUT, 0 NOTRUN.
+Found 371 tests; 357 PASS, 14 FAIL, 0 TIMEOUT, 0 NOTRUN.
 PASS Setup
 PASS isolation (type: discrete) has testInterpolation function
 PASS isolation uses discrete animation when animating between "auto" and "isolate" with linear easing
@@ -161,6 +161,13 @@ PASS scroll-behavior (type: discrete) has testInterpolation function
 PASS scroll-behavior uses discrete animation when animating between "auto" and "smooth" with linear easing
 PASS scroll-behavior uses discrete animation when animating between "auto" and "smooth" with effect easing
 PASS scroll-behavior uses discrete animation when animating between "auto" and "smooth" with keyframe easing
+PASS scrollbar-color (type: colorPair) has testInterpolation function
+FAIL scrollbar-color supports animating as color pair of rgb() assert_equals: The value should be rgb(128, 0, 128) rgb(0, 128, 128) at 500ms expected "rgb(128, 0, 128) rgb(0, 128, 128)" but got "rgb(0, 0, 255) rgb(0, 255, 0)"
+FAIL scrollbar-color supports animating as color pair of #RGB assert_equals: The value should be rgb(128, 0, 128) rgb(128, 128, 0) at 500ms expected "rgb(128, 0, 128) rgb(128, 128, 0)" but got "rgb(0, 0, 255) rgb(255, 0, 0)"
+FAIL scrollbar-color supports animating as color pair of hsl() assert_equals: The value should be rgb(128, 0, 128) rgb(255, 0, 0) at 500ms expected "rgb(128, 0, 128) rgb(255, 0, 0)" but got "rgb(0, 0, 255) rgb(255, 0, 0)"
+FAIL scrollbar-color supports animating as color pair of #RGBa assert_equals: The value should be rgba(85, 0, 170, 0.6) rgba(85, 170, 0, 0.6) at 500ms expected "rgba(85, 0, 170, 0.6) rgba(85, 170, 0, 0.6)" but got "rgba(0, 0, 255, 0.8) rgba(0, 255, 0, 0.8)"
+FAIL scrollbar-color supports animating as color pair of rgba() assert_equals: The value should be rgba(85, 0, 170, 0.6) rgba(85, 170, 0, 0.6) at 500ms expected "rgba(85, 0, 170, 0.6) rgba(85, 170, 0, 0.6)" but got "rgba(0, 0, 255, 0.8) rgba(0, 255, 0, 0.8)"
+FAIL scrollbar-color supports animating as color pair of hsla() assert_equals: The value should be rgba(85, 0, 170, 0.6) rgba(255, 0, 0, 0.6) at 500ms expected "rgba(85, 0, 170, 0.6) rgba(255, 0, 0, 0.6)" but got "rgba(0, 0, 255, 0.8) rgba(255, 0, 0, 0.8)"
 PASS scrollbar-gutter (type: discrete) has testInterpolation function
 PASS scrollbar-gutter uses discrete animation when animating between "auto" and "stable" with linear easing
 PASS scrollbar-gutter uses discrete animation when animating between "auto" and "stable" with effect easing
@@ -313,9 +320,9 @@ PASS transform: non-invertible matrices in matched transform lists
 PASS transform: non-invertible matrices in mismatched transform lists
 PASS transform: perspective
 PASS transform-box (type: discrete) has testInterpolation function
-FAIL transform-box uses discrete animation when animating between "fill-box" and "border-box" with linear easing assert_equals: The value should be border-box at 500ms expected "border-box" but got "view-box"
-FAIL transform-box uses discrete animation when animating between "fill-box" and "border-box" with effect easing assert_equals: The value should be border-box at 960ms expected "border-box" but got "view-box"
-FAIL transform-box uses discrete animation when animating between "fill-box" and "border-box" with keyframe easing assert_equals: The value should be border-box at 960ms expected "border-box" but got "view-box"
+PASS transform-box uses discrete animation when animating between "fill-box" and "border-box" with linear easing
+PASS transform-box uses discrete animation when animating between "fill-box" and "border-box" with effect easing
+PASS transform-box uses discrete animation when animating between "fill-box" and "border-box" with keyframe easing
 PASS transform-style (type: discrete) has testInterpolation function
 PASS transform-style uses discrete animation when animating between "flat" and "preserve-3d" with linear easing
 PASS transform-style uses discrete animation when animating between "flat" and "preserve-3d" with effect easing

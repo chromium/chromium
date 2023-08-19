@@ -1,0 +1,11 @@
+{
+  "name" : "Lacros Extension Preferences API Test Extension",
+  "version" : "0.1",
+  "manifest_version": 2,
+  "description" : "Lacros extension controlled pref API Test Extension for secondary profiles",
+  "permissions": ["proxy"],
+  "background": {
+    "scripts": ["test.js"],
+    "persistent": false
+  }
+}

@@ -13,7 +13,6 @@ static_library("android_system_error_page") {
   deps = [
     "//base",
     "//base:i18n",
-    "//components/content_relationship_verification",
     "//components/resources",
     "//components/strings",
     "//net",

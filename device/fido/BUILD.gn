@@ -40,6 +40,8 @@ component("fido") {
     "fido_parsing_utils.h",
     "fido_transport_protocol.cc",
     "fido_transport_protocol.h",
+    "json_request.cc",
+    "json_request.h",
     "opaque_attestation_statement.cc",
     "opaque_attestation_statement.h",
     "p256_public_key.cc",
@@ -209,6 +211,7 @@ component("fido") {
     ]
 
     deps += [
+      "//components/sync/protocol:protocol",
       "//services/device/public/cpp/hid",
       "//services/device/public/cpp/usb",
       "//services/device/public/mojom",
@@ -250,7 +253,7 @@ component("fido") {
       "AuthenticationServices.framework",
     ]
 
-    configs += [ "//build/config/compiler:enable_arc" ]
+    deps += [ "//build:branding_buildflags" ]
   }
 
   if (is_win) {
@@ -286,6 +289,19 @@ component("fido") {
       "//chromeos/dbus/u2f",
       "//chromeos/dbus/u2f:u2f_proto",
       "//dbus",
+    ]
+  }
+
+  if (!is_chromeos && !is_android) {
+    sources += [
+      "enclave/enclave_authenticator.cc",
+      "enclave/enclave_authenticator.h",
+      "enclave/enclave_discovery.cc",
+      "enclave/enclave_discovery.h",
+      "enclave/enclave_http_client.cc",
+      "enclave/enclave_http_client.h",
+      "enclave/enclave_protocol_utils.cc",
+      "enclave/enclave_protocol_utils.h",
     ]
   }
 }
@@ -459,8 +475,6 @@ source_set("test_support") {
       "mac/scoped_touch_id_test_environment.h",
       "mac/scoped_touch_id_test_environment.mm",
     ]
-
-    configs += [ "//build/config/compiler:enable_arc" ]
   }
 }
 
@@ -480,6 +494,25 @@ if (is_mac) {
       "//base",
       "//device/fido",
     ]
-    configs += [ "//build/config/compiler:enable_arc" ]
+  }
+}
+
+if (is_win || is_linux || is_mac) {
+  static_library("enclave_service") {
+    testonly = true
+    sources = [
+      "enclave/test/enclave_http_server.cc",
+      "enclave/test/enclave_http_server.h",
+    ]
+    deps = [
+      ":fido",
+      "//base",
+      "//components/cbor",
+      "//components/device_event_log",
+      "//components/sync/protocol:protocol",
+      "//mojo/public/cpp/bindings",
+      "//net",
+      "//net:test_support",
+    ]
   }
 }

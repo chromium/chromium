@@ -13,16 +13,16 @@
 #include "printing/units.h"
 
 #if BUILDFLAG(USE_CUPS)
-#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_CHROMEOS)
-#include <cups/cups.h>
-#endif
-
 #include "printing/print_job_constants_cups.h"
 #endif  // BUILDFLAG(USE_CUPS)
 
+#if BUILDFLAG(USE_CUPS_IPP)
+#include <cups/cups.h>
+#endif  // BUILDFLAG(USE_CUPS_IPP)
+
 #if BUILDFLAG(IS_WIN)
 #include "printing/mojom/print.mojom.h"
-#endif
+#endif  // BUILDFLAG(IS_WIN)
 
 namespace printing {
 
@@ -197,24 +197,19 @@ void GetColorModelForModel(mojom::ColorModel color_model,
   // The default case is excluded from the above switch statement to ensure that
   // all ColorModel values are determinantly handled.
 }
+#endif  // BUILDFLAG(USE_CUPS)
 
-#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_CHROMEOS)
+#if BUILDFLAG(USE_CUPS_IPP)
 std::string GetIppColorModelForModel(mojom::ColorModel color_model) {
   // Accept `kUnknownColorModel` for consistency with GetColorModelForModel().
   if (color_model == mojom::ColorModel::kUnknownColorModel)
     return CUPS_PRINT_COLOR_MODE_MONOCHROME;
 
-  absl::optional<bool> is_color = IsColorModelSelected(color_model);
-  if (!is_color.has_value()) {
-    NOTREACHED();
-    return std::string();
-  }
-
-  return is_color.value() ? CUPS_PRINT_COLOR_MODE_COLOR
-                          : CUPS_PRINT_COLOR_MODE_MONOCHROME;
+  return IsColorModelSelected(color_model).value()
+             ? CUPS_PRINT_COLOR_MODE_COLOR
+             : CUPS_PRINT_COLOR_MODE_MONOCHROME;
 }
-#endif  // BUILDFLAG(IS_MAC) || BUILDFLAG(IS_CHROMEOS)
-#endif  // BUILDFLAG(USE_CUPS)
+#endif  // BUILDFLAG(USE_CUPS_IPP)
 
 absl::optional<bool> IsColorModelSelected(mojom::ColorModel color_model) {
   switch (color_model) {
@@ -303,12 +298,12 @@ PrintSettings& PrintSettings::operator=(const PrintSettings& settings) {
   device_name_ = settings.device_name_;
   requested_media_ = settings.requested_media_;
   page_setup_device_units_ = settings.page_setup_device_units_;
+  media_type_ = settings.media_type_;
   dpi_ = settings.dpi_;
   scale_factor_ = settings.scale_factor_;
   rasterize_pdf_ = settings.rasterize_pdf_;
   rasterize_pdf_dpi_ = settings.rasterize_pdf_dpi_;
   landscape_ = settings.landscape_;
-  supports_alpha_blend_ = settings.supports_alpha_blend_;
 #if BUILDFLAG(IS_WIN)
   printer_language_type_ = settings.printer_language_type_;
 #endif
@@ -335,7 +330,7 @@ bool PrintSettings::operator==(const PrintSettings& other) const {
                   display_header_footer_, should_print_backgrounds_, collate_,
                   color_, copies_, duplex_mode_, device_name_, requested_media_,
                   page_setup_device_units_, dpi_, scale_factor_, rasterize_pdf_,
-                  rasterize_pdf_dpi_, landscape_, supports_alpha_blend_,
+                  rasterize_pdf_dpi_, landscape_,
 #if BUILDFLAG(IS_WIN)
                   printer_language_type_,
 #endif
@@ -359,7 +354,6 @@ bool PrintSettings::operator==(const PrintSettings& other) const {
                   other.requested_media_, other.page_setup_device_units_,
                   other.dpi_, other.scale_factor_, other.rasterize_pdf_,
                   other.rasterize_pdf_dpi_, other.landscape_,
-                  other.supports_alpha_blend_,
 #if BUILDFLAG(IS_WIN)
                   other.printer_language_type_,
 #endif
@@ -394,12 +388,12 @@ void PrintSettings::Clear() {
   device_name_.clear();
   requested_media_ = RequestedMedia();
   page_setup_device_units_.Clear();
+  media_type_.clear();
   dpi_ = gfx::Size();
   scale_factor_ = 1.0f;
   rasterize_pdf_ = false;
   rasterize_pdf_dpi_ = 0;
   landscape_ = false;
-  supports_alpha_blend_ = true;
 #if BUILDFLAG(IS_WIN)
   printer_language_type_ = mojom::PrinterLanguageType::kNone;
 #endif
@@ -507,7 +501,7 @@ void PrintSettings::UpdatePrinterPrintableArea(
     const gfx::Rect& printable_area_um) {
   // Scale the page size and printable area to device units.
   // Blink doesn't support different dpi settings in X and Y axis. Because of
-  // this, printers with non-square DPIs still scale page size and printable
+  // this, printers with non-square pixels still scale page size and printable
   // area using device_units_per_inch() instead of their respective dimensions
   // in device_units_per_inch_size().
   float scale = static_cast<float>(device_units_per_inch()) / kMicronsPerInch;
@@ -535,9 +529,15 @@ void PrintSettings::SetCustomMargins(
   margin_type_ = mojom::MarginType::kCustomMargins;
 }
 
+// static
 int PrintSettings::NewCookie() {
   // A cookie of 0 is used to mark a document as unassigned, count from 1.
   return cookie_seq.GetNext() + 1;
+}
+
+// static
+int PrintSettings::NewInvalidCookie() {
+  return 0;
 }
 
 void PrintSettings::SetOrientation(bool landscape) {

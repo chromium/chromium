@@ -4,6 +4,7 @@
 
 #include "third_party/blink/renderer/modules/webaudio/dynamics_compressor_handler.h"
 
+#include "base/trace_event/typed_macros.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_dynamics_compressor_options.h"
 #include "third_party/blink/renderer/modules/webaudio/audio_graph_tracer.h"
 #include "third_party/blink/renderer/modules/webaudio/audio_node_input.h"
@@ -12,7 +13,6 @@
 #include "third_party/blink/renderer/platform/audio/dynamics_compressor.h"
 #include "third_party/blink/renderer/platform/bindings/exception_messages.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
-#include "third_party/blink/renderer/platform/instrumentation/tracing/trace_event.h"
 
 namespace blink {
 
@@ -63,21 +63,29 @@ DynamicsCompressorHandler::~DynamicsCompressorHandler() {
 }
 
 void DynamicsCompressorHandler::Process(uint32_t frames_to_process) {
-  TRACE_EVENT0(TRACE_DISABLED_BY_DEFAULT("webaudio.audionode"),
-               "DynamicsCompressorHandler::Process");
+  float threshold = threshold_->FinalValue();
+  float knee = knee_->FinalValue();
+  float ratio = ratio_->FinalValue();
+  float attack = attack_->FinalValue();
+  float release = release_->FinalValue();
+
+  TRACE_EVENT(TRACE_DISABLED_BY_DEFAULT("webaudio.audionode"),
+              "DynamicsCompressorHandler::Process", "this",
+              reinterpret_cast<void*>(this), "threshold", threshold, "knee",
+              knee, "ratio", ratio, "attack", attack, "release", release);
+
   AudioBus* output_bus = Output(0).Bus();
   DCHECK(output_bus);
 
   dynamics_compressor_->SetParameterValue(DynamicsCompressor::kParamThreshold,
-                                          threshold_->FinalValue());
-  dynamics_compressor_->SetParameterValue(DynamicsCompressor::kParamKnee,
-                                          knee_->FinalValue());
+                                          threshold);
+  dynamics_compressor_->SetParameterValue(DynamicsCompressor::kParamKnee, knee);
   dynamics_compressor_->SetParameterValue(DynamicsCompressor::kParamRatio,
-                                          ratio_->FinalValue());
+                                          ratio);
   dynamics_compressor_->SetParameterValue(DynamicsCompressor::kParamAttack,
-                                          attack_->FinalValue());
+                                          attack);
   dynamics_compressor_->SetParameterValue(DynamicsCompressor::kParamRelease,
-                                          release_->FinalValue());
+                                          release);
 
   scoped_refptr<AudioBus> input_bus = Input(0).Bus();
   dynamics_compressor_->Process(input_bus.get(), output_bus, frames_to_process);

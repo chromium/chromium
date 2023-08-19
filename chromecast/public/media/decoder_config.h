@@ -151,9 +151,24 @@ enum VideoProfile : int {
   kHEVCScreenExtended,
   kHEVCScalableRext,
   kHEVCHighThroughputScreenExtended,
+  kVVCProfileMain10,
+  kVVCProfileMain12,
+  kVVCProfileMain12Intra,
+  kVVCProfileMultilayerMain10,
+  kVVCProfileMain10444,
+  kVVCProfileMain12444,
+  kVVCProfileMain16444,
+  kVVCProfileMain12444Intra,
+  kVVCProfileMain16444Intra,
+  kVVCProfileMultilayerMain10444,
+  kVVCProfileMain10Still,
+  kVVCProfileMain12Still,
+  kVVCProfileMain10444Still,
+  kVVCProfileMain12444Still,
+  kVVCProfileMain16444Still,
 
   kVideoProfileMin = kVideoProfileUnknown,
-  kVideoProfileMax = kHEVCHighThroughputScreenExtended,
+  kVideoProfileMax = kVVCProfileMain16444Still,
 };
 
 struct CodecProfileLevel {
@@ -231,7 +246,7 @@ enum class RangeID : int8_t {
   INVALID = 0,
   // Limited Rec. 709 color range with RGB values ranging from 16 to 235.
   LIMITED = 1,
-  // Full RGB color range with RGB valees from 0 to 255.
+  // Full RGB color range with RGB values from 0 to 255.
   FULL = 2,
   // Range is defined by TransferID/MatrixID.
   DERIVED = 3,

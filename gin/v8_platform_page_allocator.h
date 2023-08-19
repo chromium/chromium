@@ -14,7 +14,7 @@
 
 #include "base/allocator/partition_allocator/page_allocator.h"
 #include "gin/gin_export.h"
-#include "v8-platform.h"
+#include "v8/include/v8-platform.h"
 
 namespace gin {
 

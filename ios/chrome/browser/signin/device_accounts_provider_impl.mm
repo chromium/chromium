@@ -17,10 +17,6 @@
 #import "ios/chrome/browser/signin/system_identity_manager.h"
 #import "ios/public/provider/chrome/browser/signin/signin_error_api.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 namespace {
 
 using AccessTokenResult = DeviceAccountsProvider::AccessTokenResult;

@@ -130,6 +130,7 @@ cc_component("paint") {
     "//ui/gfx:color_space",
     "//ui/gfx/geometry",
     "//ui/gfx/geometry:geometry_skia",
+    "//ui/gfx/mojom:hdr_metadata",
   ]
 
   deps = [

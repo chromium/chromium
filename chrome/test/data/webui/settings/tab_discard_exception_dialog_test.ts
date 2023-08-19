@@ -2,12 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import 'chrome://settings/lazy_load.js';
 import 'chrome://settings/settings.js';
 
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-import {CrCheckboxElement} from 'chrome://settings/lazy_load.js';
-import {HighEfficiencyModeExceptionListAction, MAX_TAB_DISCARD_EXCEPTION_RULE_LENGTH, PerformanceBrowserProxyImpl, PerformanceMetricsProxyImpl, TAB_DISCARD_EXCEPTIONS_OVERFLOW_SIZE, TAB_DISCARD_EXCEPTIONS_PREF, TabDiscardExceptionAddDialogElement, TabDiscardExceptionAddDialogTabs, TabDiscardExceptionEditDialogElement, TabDiscardExceptionTabbedAddDialogElement} from 'chrome://settings/settings.js';
+import {HighEfficiencyModeExceptionListAction, MAX_TAB_DISCARD_EXCEPTION_RULE_LENGTH, PerformanceBrowserProxyImpl, PerformanceMetricsProxyImpl, TAB_DISCARD_EXCEPTIONS_OVERFLOW_SIZE, TAB_DISCARD_EXCEPTIONS_PREF, TabDiscardExceptionAddDialogElement, TabDiscardExceptionAddDialogTabs, TabDiscardExceptionCurrentSitesEntryElement, TabDiscardExceptionEditDialogElement, TabDiscardExceptionTabbedAddDialogElement} from 'chrome://settings/settings.js';
 import {assertDeepEquals, assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {eventToPromise} from 'chrome://webui-test/test_util.js';
 
@@ -70,6 +68,7 @@ suite('TabDiscardExceptionsDialog', function() {
         document.createElement('tab-discard-exception-tabbed-add-dialog');
     setupDialog(addDialog);
     await performanceBrowserProxy.whenCalled('getCurrentOpenSites');
+    performanceBrowserProxy.resetResolver('getCurrentOpenSites');
     return addDialog;
   }
 
@@ -183,7 +182,7 @@ suite('TabDiscardExceptionsDialog', function() {
     assertSubmit([EXISTING_RULE, VALID_RULE]);
     const action =
         await performanceMetricsProxy.whenCalled('recordExceptionListAction');
-    assertEquals(HighEfficiencyModeExceptionListAction.ADD, action);
+    assertEquals(HighEfficiencyModeExceptionListAction.ADD_MANUAL, action);
   });
 
   test('testTabDiscardExceptionsAddDialogSubmitExisting', async function() {
@@ -198,7 +197,7 @@ suite('TabDiscardExceptionsDialog', function() {
     assertSubmit([EXISTING_RULE, VALID_RULE]);
     const action =
         await performanceMetricsProxy.whenCalled('recordExceptionListAction');
-    assertEquals(HighEfficiencyModeExceptionListAction.ADD, action);
+    assertEquals(HighEfficiencyModeExceptionListAction.ADD_MANUAL, action);
   });
 
   test(
@@ -226,7 +225,7 @@ suite('TabDiscardExceptionsDialog', function() {
     assertSubmit([VALID_RULE]);
   });
 
-  async function assertRulesListEquals(
+  function assertRulesListEquals(
       dialog: TabDiscardExceptionTabbedAddDialogElement, rules: string[]) {
     const actual = dialog.$.list.$.list.items!;
     assertDeepEquals(rules, actual);
@@ -234,9 +233,12 @@ suite('TabDiscardExceptionsDialog', function() {
 
   function getRulesListEntry(
       dialog: TabDiscardExceptionTabbedAddDialogElement,
-      idx: number): CrCheckboxElement {
-    const entry = [...dialog.$.list.$.list.querySelectorAll<CrCheckboxElement>(
-        'cr-checkbox:not([hidden])')][idx];
+      idx: number): TabDiscardExceptionCurrentSitesEntryElement {
+    const entry = [
+      ...dialog.$.list.$.list
+          .querySelectorAll<TabDiscardExceptionCurrentSitesEntryElement>(
+              'tab-discard-exception-current-sites-entry:not([hidden])'),
+    ][idx];
     assertTrue(!!entry);
     return entry;
   }
@@ -247,6 +249,7 @@ suite('TabDiscardExceptionsDialog', function() {
 
     assertEquals(
         TabDiscardExceptionAddDialogTabs.MANUAL, dialog.$.tabs.selected);
+    assertFalse(dialog.$.list.getIsUpdatingForTesting());
   });
 
   test('testTabDiscardExceptionsTabbedAddDialogList', async function() {
@@ -259,8 +262,9 @@ suite('TabDiscardExceptionsDialog', function() {
     await eventToPromise('iron-resize', dialog);
     flush();
 
-    assertEquals(TabDiscardExceptionAddDialogTabs.LIST, dialog.$.tabs.selected);
-    await assertRulesListEquals(dialog, expectedRules);
+    assertEquals(
+        TabDiscardExceptionAddDialogTabs.CURRENT_SITES, dialog.$.tabs.selected);
+    assertRulesListEquals(dialog, expectedRules);
     assertTrue(dialog.$.actionButton.disabled);
     getRulesListEntry(dialog, 2).click();
     assertFalse(dialog.$.actionButton.disabled);
@@ -287,17 +291,76 @@ suite('TabDiscardExceptionsDialog', function() {
     assertFalse(dialog.$.actionButton.disabled);
     switchAddDialogTab(dialog, TabDiscardExceptionAddDialogTabs.MANUAL);
     assertTrue(dialog.$.actionButton.disabled);
-    switchAddDialogTab(dialog, TabDiscardExceptionAddDialogTabs.LIST);
+    switchAddDialogTab(dialog, TabDiscardExceptionAddDialogTabs.CURRENT_SITES);
     assertFalse(dialog.$.actionButton.disabled);
 
     getRulesListEntry(dialog, 0).click();
     switchAddDialogTab(dialog, TabDiscardExceptionAddDialogTabs.MANUAL);
     await assertUserInputValidated(VALID_RULE);
     assertFalse(dialog.$.actionButton.disabled);
-    switchAddDialogTab(dialog, TabDiscardExceptionAddDialogTabs.LIST);
+    switchAddDialogTab(dialog, TabDiscardExceptionAddDialogTabs.CURRENT_SITES);
     assertTrue(dialog.$.actionButton.disabled);
     switchAddDialogTab(dialog, TabDiscardExceptionAddDialogTabs.MANUAL);
     await performanceBrowserProxy.whenCalled('validateTabDiscardExceptionRule');
     assertFalse(dialog.$.actionButton.disabled);
+  });
+
+  test('testTabDiscardExceptionsTabbedAddDialogLiveUpdate', async function() {
+    const UPDATE_INTERVAL_MS = 3;
+    const INITIAL_SITE = 'siteA';
+    const CHANGED_SITE = 'siteB';
+    const CHANGED_SITE_SWITCH_TAB = 'siteC';
+    const CHANGED_SITE_DOCUMENT_HIDDEN = 'siteD';
+
+    performanceBrowserProxy.setCurrentOpenSites([INITIAL_SITE]);
+    dialog = await setupTabbedAddDialog();
+    dialog.$.list.setUpdateIntervalForTesting(UPDATE_INTERVAL_MS);
+    await eventToPromise('iron-resize', dialog.$.list.$.list);
+    flush();
+
+    assertTrue(dialog.$.list.getIsUpdatingForTesting());
+    assertRulesListEquals(dialog, [INITIAL_SITE]);
+    performanceBrowserProxy.setCurrentOpenSites([CHANGED_SITE]);
+    await new Promise((resolve) => setTimeout(resolve, UPDATE_INTERVAL_MS));
+    assertRulesListEquals(dialog, [CHANGED_SITE]);
+
+    // after switching to the manual tab, list should no longer update
+    switchAddDialogTab(dialog, TabDiscardExceptionAddDialogTabs.MANUAL);
+    await performanceBrowserProxy.whenCalled('getCurrentOpenSites');
+    assertFalse(dialog.$.list.getIsUpdatingForTesting());
+    await new Promise((resolve) => setTimeout(resolve, UPDATE_INTERVAL_MS));
+    performanceBrowserProxy.setCurrentOpenSites([CHANGED_SITE_SWITCH_TAB]);
+    assertRulesListEquals(dialog, [CHANGED_SITE]);
+
+    // after switching back to the list tab, list should start updating again
+    performanceBrowserProxy.resetResolver('getCurrentOpenSites');
+    switchAddDialogTab(dialog, TabDiscardExceptionAddDialogTabs.CURRENT_SITES);
+    await performanceBrowserProxy.whenCalled('getCurrentOpenSites');
+    await eventToPromise('iron-resize', dialog.$.list.$.list);
+    assertTrue(dialog.$.list.getIsUpdatingForTesting());
+    await new Promise((resolve) => setTimeout(resolve, UPDATE_INTERVAL_MS));
+    assertRulesListEquals(dialog, [CHANGED_SITE_SWITCH_TAB]);
+
+    // after document is hidden, list should no longer update
+    Object.defineProperty(
+        document, 'visibilityState', {value: 'hidden', writable: true});
+    performanceBrowserProxy.resetResolver('getCurrentOpenSites');
+    document.dispatchEvent(new Event('visibilitychange'));
+    await performanceBrowserProxy.whenCalled('getCurrentOpenSites');
+    assertFalse(dialog.$.list.getIsUpdatingForTesting());
+    await new Promise((resolve) => setTimeout(resolve, UPDATE_INTERVAL_MS));
+    performanceBrowserProxy.setCurrentOpenSites([CHANGED_SITE_DOCUMENT_HIDDEN]);
+    assertRulesListEquals(dialog, [CHANGED_SITE_SWITCH_TAB]);
+
+    // after document becomes visible, list should start updating again
+    Object.defineProperty(
+        document, 'visibilityState', {value: 'visible', writable: true});
+    performanceBrowserProxy.resetResolver('getCurrentOpenSites');
+    document.dispatchEvent(new Event('visibilitychange'));
+    await performanceBrowserProxy.whenCalled('getCurrentOpenSites');
+    await eventToPromise('iron-resize', dialog.$.list.$.list);
+    assertTrue(dialog.$.list.getIsUpdatingForTesting());
+    await new Promise((resolve) => setTimeout(resolve, UPDATE_INTERVAL_MS));
+    assertRulesListEquals(dialog, [CHANGED_SITE_DOCUMENT_HIDDEN]);
   });
 });

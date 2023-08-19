@@ -80,7 +80,7 @@ class ImageElementTimingTest : public testing::Test,
   }
 
   LayoutObject* GetLayoutObjectById(const char* id) {
-    return GetDoc()->getElementById(id)->GetLayoutObject();
+    return GetDoc()->getElementById(AtomicString(id))->GetLayoutObject();
   }
 
   void UpdateAllLifecyclePhases() {
@@ -216,7 +216,7 @@ TEST_P(ImageElementTimingTest, ImageRemoved) {
   EXPECT_TRUE(ImagesNotifiedContains(
       std::make_pair(layout_image, layout_image->CachedImage())));
 
-  GetDoc()->getElementById("target")->remove();
+  GetDoc()->getElementById(AtomicString("target"))->remove();
   // |layout_image| should no longer be part of |images_notified| since it will
   // be destroyed.
   EXPECT_EQ(ImagesNotifiedSize(), 0u);
@@ -237,7 +237,7 @@ TEST_P(ImageElementTimingTest, SVGImageRemoved) {
   EXPECT_TRUE(ImagesNotifiedContains(std::make_pair(
       layout_image, layout_image->ImageResource()->CachedImage())));
 
-  GetDoc()->getElementById("target")->remove();
+  GetDoc()->getElementById(AtomicString("target"))->remove();
   // |layout_image| should no longer be part of |images_notified| since it will
   // be destroyed.
   EXPECT_EQ(ImagesNotifiedSize(), 0u);
@@ -263,7 +263,7 @@ TEST_P(ImageElementTimingTest, BackgroundImageRemoved) {
   EXPECT_EQ(ImagesNotifiedSize(), 1u);
   EXPECT_TRUE(ImagesNotifiedContains(std::make_pair(object, content)));
 
-  GetDoc()->getElementById("target")->remove();
+  GetDoc()->getElementById(AtomicString("target"))->remove();
   EXPECT_EQ(ImagesNotifiedSize(), 0u);
 }
 

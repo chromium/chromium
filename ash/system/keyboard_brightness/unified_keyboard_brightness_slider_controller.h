@@ -13,8 +13,9 @@ namespace ash {
 
 class UnifiedSystemTrayModel;
 
-// Controller of a read-only slider showing keyboard brightness.
-class UnifiedKeyboardBrightnessSliderController : public UnifiedSliderListener {
+// Controller of a slider showing keyboard brightness.
+class ASH_EXPORT UnifiedKeyboardBrightnessSliderController
+    : public UnifiedSliderListener {
  public:
   explicit UnifiedKeyboardBrightnessSliderController(
       UnifiedSystemTrayModel* model);
@@ -36,7 +37,8 @@ class UnifiedKeyboardBrightnessSliderController : public UnifiedSliderListener {
 
  private:
   const raw_ptr<UnifiedSystemTrayModel, ExperimentalAsh> model_;
-  raw_ptr<UnifiedSliderView, ExperimentalAsh> slider_ = nullptr;
+  raw_ptr<UnifiedSliderView, DanglingUntriaged | ExperimentalAsh> slider_ =
+      nullptr;
 };
 
 }  // namespace ash

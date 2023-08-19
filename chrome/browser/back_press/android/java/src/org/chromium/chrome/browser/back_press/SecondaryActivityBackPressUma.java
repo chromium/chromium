@@ -17,7 +17,8 @@ import java.lang.annotation.RetentionPolicy;
 public class SecondaryActivityBackPressUma {
     @IntDef({SecondaryActivity.DOWNLOAD, SecondaryActivity.BOOKMARK, SecondaryActivity.FIRST_RUN,
             SecondaryActivity.LIGHTWEIGHT_FIRST_RUN, SecondaryActivity.HISTORY,
-            SecondaryActivity.SETTINGS, SecondaryActivity.NUM_TYPES})
+            SecondaryActivity.SETTINGS, SecondaryActivity.BOOKMARK_FOLDER_PICKER,
+            SecondaryActivity.NUM_TYPES})
     @Retention(RetentionPolicy.SOURCE)
     public @interface SecondaryActivity {
         int DOWNLOAD = 0;
@@ -26,8 +27,9 @@ public class SecondaryActivityBackPressUma {
         int LIGHTWEIGHT_FIRST_RUN = 3;
         int HISTORY = 4;
         int SETTINGS = 5;
+        int BOOKMARK_FOLDER_PICKER = 6;
 
-        int NUM_TYPES = 6;
+        int NUM_TYPES = 7;
     }
 
     public static void record(@SecondaryActivity int activity) {

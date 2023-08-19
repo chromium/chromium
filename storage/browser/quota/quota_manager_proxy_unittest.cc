@@ -7,6 +7,7 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/task/single_thread_task_runner.h"
+#include "base/test/gmock_expected_support.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
 #include "components/services/storage/public/cpp/buckets/bucket_info.h"
@@ -59,14 +60,13 @@ TEST_F(QuotaManagerProxyTest, GetBucketPath) {
   quota_manager_proxy_->UpdateOrCreateBucket(
       params, base::SingleThreadTaskRunner::GetCurrentDefault(),
       future.GetCallback());
-  auto bucket = future.Take();
-  ASSERT_TRUE(bucket.has_value());
+  ASSERT_OK_AND_ASSIGN(auto bucket, future.Take());
 
   base::FilePath expected_path =
       profile_path_.GetPath()
           .AppendASCII("WebStorage")
-          .AppendASCII(base::NumberToString(bucket->id.value()));
-  EXPECT_EQ(quota_manager_proxy_->GetBucketPath(bucket->ToBucketLocator()),
+          .AppendASCII(base::NumberToString(bucket.id.value()));
+  EXPECT_EQ(quota_manager_proxy_->GetBucketPath(bucket.ToBucketLocator()),
             expected_path);
 }
 
@@ -78,43 +78,41 @@ TEST_F(QuotaManagerProxyTest, GetClientBucketPath) {
   quota_manager_proxy_->UpdateOrCreateBucket(
       params, base::SingleThreadTaskRunner::GetCurrentDefault(),
       future.GetCallback());
-  auto bucket = future.Take();
-  ASSERT_TRUE(bucket.has_value());
+  ASSERT_OK_AND_ASSIGN(auto bucket, future.Take());
 
   base::FilePath bucket_path =
       profile_path_.GetPath()
           .AppendASCII("WebStorage")
-          .AppendASCII(base::NumberToString(bucket->id.value()));
+          .AppendASCII(base::NumberToString(bucket.id.value()));
 
   // FileSystem
   base::FilePath expected_path = bucket_path.AppendASCII("FileSystem");
   EXPECT_EQ(quota_manager_proxy_->GetClientBucketPath(
-                bucket->ToBucketLocator(), QuotaClientType::kFileSystem),
+                bucket.ToBucketLocator(), QuotaClientType::kFileSystem),
             expected_path);
 
   // IndexedDb
   expected_path = bucket_path.AppendASCII("IndexedDB");
   EXPECT_EQ(quota_manager_proxy_->GetClientBucketPath(
-                bucket->ToBucketLocator(), QuotaClientType::kIndexedDatabase),
+                bucket.ToBucketLocator(), QuotaClientType::kIndexedDatabase),
             expected_path);
 
   // BackgroundFetch
   expected_path = bucket_path.AppendASCII("BackgroundFetch");
   EXPECT_EQ(quota_manager_proxy_->GetClientBucketPath(
-                bucket->ToBucketLocator(), QuotaClientType::kBackgroundFetch),
+                bucket.ToBucketLocator(), QuotaClientType::kBackgroundFetch),
             expected_path);
 
   // CacheStorage
   expected_path = bucket_path.AppendASCII("CacheStorage");
-  EXPECT_EQ(
-      quota_manager_proxy_->GetClientBucketPath(
-          bucket->ToBucketLocator(), QuotaClientType::kServiceWorkerCache),
-      expected_path);
+  EXPECT_EQ(quota_manager_proxy_->GetClientBucketPath(
+                bucket.ToBucketLocator(), QuotaClientType::kServiceWorkerCache),
+            expected_path);
 
   // ServiceWorker
   expected_path = bucket_path.AppendASCII("ScriptCache");
   EXPECT_EQ(quota_manager_proxy_->GetClientBucketPath(
-                bucket->ToBucketLocator(), QuotaClientType::kServiceWorker),
+                bucket.ToBucketLocator(), QuotaClientType::kServiceWorker),
             expected_path);
 }
 

@@ -3,8 +3,6 @@
 <translationbundle lang="uk">
 <translation id="1075622780330595106">Ви давно не переходили на кілька вкладок (<ph name="NUMBER_OF_TABS" />). Закрити їх?</translation>
 <translation id="125153950246128346">Натисніть, щоб побачити іншу вкладку</translation>
-<translation id="1403228085774130835">Закриті вкладки можна знайти в розділі "Останні вкладки" в головному меню Chrome</translation>
-<translation id="1455506303394048917">Ваші дії на цих анонімних вкладках буде стерто з пристрою</translation>
 <translation id="1499635324672558517">Закрити всі анонімні вкладки?</translation>
 <translation id="1657719826150349398">Перемістити вкладку вниз</translation>
 <translation id="1869137256605757565">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> вкладка}one{<ph name="TABS_COUNT_MANY" /> вкладка}few{<ph name="TABS_COUNT_MANY" /> вкладки}many{<ph name="TABS_COUNT_MANY" /> вкладок}other{<ph name="TABS_COUNT_MANY" /> вкладки}}</translation>
@@ -47,6 +45,7 @@
 <translation id="5073204694187207510">Сховати повноекранну сітку</translation>
 <translation id="5076161749301278626">Показати відгуки про магазин?</translation>
 <translation id="5082793167783849073">Швидко порівнюйте сторінки, створивши групу. Щоб почати, натисніть і втримуйте посилання.</translation>
+<translation id="5339733443032484186">Остання вкладка</translation>
 <translation id="5490235265819901748">Групу вкладок розгорнуто</translation>
 <translation id="5494920125229734069">Вибрати все</translation>
 <translation id="5556417849629758491">Переглянути інформацію про магазин. Опція доступна вгорі екрана.</translation>
@@ -62,10 +61,12 @@
 <translation id="6228793724645064692">(оцінка магазину)</translation>
 <translation id="6333260925957816943">Інформація про цей магазин</translation>
 <translation id="639823877092900621">{TABS_COUNT,plural, =1{Розгрупувати <ph name="TABS_COUNT_ONE" /> вибрану вкладку}one{Розгрупувати <ph name="TABS_COUNT_MANY" /> вибрану вкладку}few{Розгрупувати <ph name="TABS_COUNT_MANY" /> вибрані вкладки}many{Розгрупувати <ph name="TABS_COUNT_MANY" /> вибраних вкладок}other{Розгрупувати <ph name="TABS_COUNT_MANY" /> вибраної вкладки}}</translation>
+<translation id="6421412308143682486">{INCOGNITO_TABS_COUNT,plural, =1{Закриті вкладки можна знайти в розділі "Останні вкладки" в головному меню Chrome. Анонімна вкладка буде недоступна.}one{Закриті вкладки можна знайти в розділі "Останні вкладки" в головному меню Chrome. # анонімна вкладка буде недоступна.}few{Закриті вкладки можна знайти в розділі "Останні вкладки" в головному меню Chrome. # анонімні вкладки будуть недоступні.}many{Закриті вкладки можна знайти в розділі "Останні вкладки" в головному меню Chrome. # анонімних вкладок будуть недоступні.}other{Закриті вкладки можна знайти в розділі "Останні вкладки" в головному меню Chrome. # анонімної вкладки будуть недоступні.}}</translation>
 <translation id="6422650314852876533">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> вкладка}one{<ph name="TABS_COUNT_MANY" /> вкладка}few{<ph name="TABS_COUNT_MANY" /> вкладки}many{<ph name="TABS_COUNT_MANY" /> вкладок}other{<ph name="TABS_COUNT_MANY" /> вкладки}}</translation>
 <translation id="6549021453810473782">Переглянути інформацію про магазин</translation>
 <translation id="6562820390860419811">Перемістити вкладку ліворуч</translation>
 <translation id="6615455863669487791">Показати</translation>
+<translation id="661742612106409204">Закриті вкладки можна знайти в розділі "Останні вкладки" в головному меню Chrome.</translation>
 <translation id="6840760312327750441">Щоб згрупувати вкладки, натисніть і утримуйте вкладку, а потім перетягніть її на іншу.</translation>
 <translation id="6856809498882026482">Вийти з режиму вибору кількох вкладок</translation>
 <translation id="7100731960740376323">{TABS_COUNT,plural, =1{Поділитися вкладкою}one{Поділитися вкладками}few{Поділитися вкладками}many{Поділитися вкладками}other{Поділитися вкладками}}</translation>
@@ -89,6 +90,7 @@
 <translation id="8398929769197326728">Нова папка – <ph name="CURRENT_TIMESTAMP_MS" /></translation>
 <translation id="8557923272772633250">Розгорнути групу зі стількома вкладками: <ph name="NUMBER_OF_TABS" /></translation>
 <translation id="8714939927607906138">Дешевше</translation>
+<translation id="8730999928494395583">Дані про ваші дії на цих анонімних вкладках буде вилучено з пристрою</translation>
 <translation id="8820741577754260431">Переглядайте зниження цін на вкладках</translation>
 <translation id="9090098097337832354">Інформацію про цей магазин закрито</translation>
 <translation id="9150694013019234766">Переходьте між вкладками в групі вкладок унизу екрана</translation>

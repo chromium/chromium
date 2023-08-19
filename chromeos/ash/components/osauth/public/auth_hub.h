@@ -41,6 +41,8 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_OSAUTH) AuthHub {
                                    AuthPurpose purpose,
                                    AuthAttemptConsumer* consumer) = 0;
 
+  virtual void Shutdown() = 0;
+
   virtual ~AuthHub() = default;
 };
 

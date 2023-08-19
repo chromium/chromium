@@ -11,10 +11,6 @@
 #import "net/base/url_util.h"
 #import "url/gurl.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 @implementation AppStartupParameters {
   GURL _externalURL;
   GURL _completeURL;
@@ -80,6 +76,7 @@
       break;
     case START_LENS_FROM_APP_ICON_LONG_PRESS:
     case START_LENS_FROM_HOME_SCREEN_WIDGET:
+    case START_LENS_FROM_SPOTLIGHT:
       [description appendString:@", should launch Lens"];
       break;
     case START_VOICE_SEARCH:
@@ -100,10 +97,34 @@
 }
 
 - (void)setPostOpeningAction:(TabOpeningPostOpeningAction)action {
-  // Only NO_ACTION or SHOW_DEFAULT_BROWSER_SETTINGS are allowed on non NTP.
-  DCHECK(action == NO_ACTION || action == SHOW_DEFAULT_BROWSER_SETTINGS ||
-         _externalURL == GURL(kChromeUINewTabURL));
+  DCHECK([self isValidPostOpeningAction:action]);
   _postOpeningAction = action;
+}
+
+#pragma mark - Private methods
+
+- (BOOL)isValidPostOpeningAction:(TabOpeningPostOpeningAction)action {
+  switch (action) {
+      // NO_ACTION and SHOW_DEFAULT_BROWSER_SETTINGS are  allowed on any URL.
+    case NO_ACTION:
+    case SHOW_DEFAULT_BROWSER_SETTINGS:
+    case SEARCH_PASSWORDS:
+      return YES;
+
+      // Lens action are valid on empty URLs, in addition to
+      // the URLs where all actions are valid.
+    case START_LENS_FROM_APP_ICON_LONG_PRESS:
+    case START_LENS_FROM_HOME_SCREEN_WIDGET:
+    case START_LENS_FROM_SPOTLIGHT:
+      if (_externalURL.is_empty()) {
+        return YES;
+      }
+      [[fallthrough]];
+
+      // Other actions are only valid on NTP;
+    default:
+      return _externalURL == GURL(kChromeUINewTabURL);
+  }
 }
 
 @end

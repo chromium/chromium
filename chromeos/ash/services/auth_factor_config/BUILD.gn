@@ -10,9 +10,13 @@ static_library("auth_factor_config") {
   sources = [
     "auth_factor_config.cc",
     "auth_factor_config.h",
+    "auth_factor_config_utils.cc",
+    "auth_factor_config_utils.h",
     "chrome_browser_delegates.h",
     "in_process_instances.cc",
     "in_process_instances.h",
+    "password_factor_editor.cc",
+    "password_factor_editor.h",
     "pin_factor_editor.cc",
     "pin_factor_editor.h",
     "recovery_factor_editor.cc",
@@ -21,7 +25,9 @@ static_library("auth_factor_config") {
 
   deps = [
     "//ash/constants",
+    "//chromeos/ash/components/cryptohome",
     "//chromeos/ash/components/login/auth",
+    "//chromeos/ash/components/osauth/public",
     "//components/prefs",
     "//components/user_manager",
   ]

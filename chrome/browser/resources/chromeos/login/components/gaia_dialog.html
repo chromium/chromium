@@ -20,12 +20,12 @@ found in the LICENSE file.
   }
 
   #saml-notice-container {
-    border-bottom: 1px solid var(--google-grey-200);
+    border-bottom: 1px solid var(--cros-sys-separator);
     height: 44px;
   }
 
   #saml-footer-container {
-    border-top: 1px solid var(--google-grey-200);
+    border-top: 1px solid var(--cros-sys-separator);
     height: 58px;
   }
 
@@ -95,7 +95,8 @@ found in the LICENSE file.
 <!-- As this dialog have pre-loading logic that require access to elements,
       dialog is marked as no-lazy. -->
 <oobe-content-dialog role="dialog" id="gaiaDialog" no-lazy
-    no-buttons$="[[isSamlSsoVisible]]" fullscreen$="[[isSamlSsoVisible]]">
+    no-buttons$="[[isSamlSsoVisible]]" fullscreen$="[[isSamlSsoVisible]]"
+    isGaia$="[[!isSamlSsoVisible]]">
   <div slot="content" id="signin-frame-container"
       hideshadows$="[[isPopUpOverlayVisible_]]"
       class="flex layout vertical">
@@ -139,6 +140,11 @@ found in the LICENSE file.
   <div slot="bottom-buttons" hidden$="[[navigationHidden]]">
     <div hidden="[[!isDefaultNavigationShown_(canGoBack,
         gaiaDialogButtonsType)]]">
+      <oobe-text-button id="quick-start-button"
+          on-click="onQuickStartClicked_"
+          hidden="[[!isQuickStartEnabled_]]"
+          text-key="signinScreenQuickStart">
+      </oobe-text-button>
       <oobe-text-button id="secondary-action-button"
           label-for-aria="[[secondaryActionButtonLabel_]]"
           on-click="onSecondaryActionButtonClicked_"

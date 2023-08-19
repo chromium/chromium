@@ -6,10 +6,6 @@
 
 #import "ios/chrome/browser/overlays/public/overlay_presentation_context.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 bool OverlayPresentationContextSupportsContainedUI(
     OverlayPresentationContext* context) {
   if (!context)

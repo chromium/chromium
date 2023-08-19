@@ -221,12 +221,12 @@ class CrosWindowManagementBrowserTest : public SystemExtensionsApiBrowserTest {
              .additional_src_files = {"chrome/test/data/system_extensions/"
                                       "cros_window_test_utils.js"},
              .additional_gen_files = {
-                 "gen/chrome/browser/ash/system_extensions/api/"
+                 "chrome/browser/ash/system_extensions/api/"
                  "window_management/"
                  "cros_window_management_test_helper.test-mojom-lite.js",
-                 "gen/ui/events/mojom/keyboard_codes.mojom-lite.js",
-                 "gen/ui/events/mojom/event_constants.mojom-lite.js",
-                 "gen/ui/gfx/geometry/mojom/geometry.mojom-lite.js",
+                 "ui/events/mojom/keyboard_codes.mojom-lite.js",
+                 "ui/events/mojom/event_constants.mojom-lite.js",
+                 "ui/gfx/geometry/mojom/geometry.mojom-lite.js",
              }}) {
     installation_ =
         TestSystemWebAppInstallation::SetUpStandaloneSingleWindowApp();
@@ -258,7 +258,7 @@ class CrosWindowManagementBrowserTest : public SystemExtensionsApiBrowserTest {
 
     // Install a web app with `browser` display mode, so that it launched
     // in a tab in regular browser window.
-    auto web_app_info = std::make_unique<WebAppInstallInfo>();
+    auto web_app_info = std::make_unique<web_app::WebAppInstallInfo>();
     web_app_info->start_url = start_url;
     web_app_info->user_display_mode = web_app::mojom::UserDisplayMode::kBrowser;
     const web_app::AppId app_id = web_app::test::InstallWebApp(

@@ -14,6 +14,7 @@
 #include "base/containers/stack.h"
 #include "base/files/file.h"
 #include "base/files/file_path.h"
+#include "base/functional/function_ref.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
 
@@ -36,6 +37,9 @@ namespace base {
 //
 //   base::FileEnumerator e(my_dir, false, base::FileEnumerator::FILES,
 //                          FILE_PATH_LITERAL("*.txt"));
+// Using `ForEach` with a lambda:
+//   e.ForEach([](const base::FilePath& item) {...});
+// Using a `for` loop:
 //   for (base::FilePath name = e.Next(); !name.empty(); name = e.Next())
 //     ...
 class BASE_EXPORT FileEnumerator {
@@ -166,6 +170,12 @@ class BASE_EXPORT FileEnumerator {
   FileEnumerator(const FileEnumerator&) = delete;
   FileEnumerator& operator=(const FileEnumerator&) = delete;
   ~FileEnumerator();
+
+  // Calls `ref` synchronously for each path found by the `FileEnumerator`. Each
+  // path will incorporate the `root_path` passed in the constructor:
+  // "<root_path>/file_name.txt". If the `root_path` is absolute, then so will
+  // be the paths provided in the `ref` invocations.
+  void ForEach(FunctionRef<void(const FilePath& path)> ref);
 
   // Returns the next file or an empty string if there are no more results.
   //

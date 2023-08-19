@@ -90,7 +90,6 @@ class SharingFCMHandler : public gcm::GCMAppHandler {
       absl::optional<chrome_browser_sharing::ServerChannelConfiguration>
           server_channel,
       SharingDevicePlatform sender_device_type,
-      base::TimeTicks message_received_time,
       std::unique_ptr<chrome_browser_sharing::ResponseMessage> response);
 
   void OnAckMessageSent(
@@ -102,7 +101,7 @@ class SharingFCMHandler : public gcm::GCMAppHandler {
       absl::optional<std::string> message_id,
       SharingChannelType channel_type);
 
-  const raw_ptr<gcm::GCMDriver, DanglingUntriaged> gcm_driver_;
+  const raw_ptr<gcm::GCMDriver, AcrossTasksDanglingUntriaged> gcm_driver_;
   raw_ptr<syncer::DeviceInfoTracker, DanglingUntriaged> device_info_tracker_;
   raw_ptr<SharingFCMSender, DanglingUntriaged> sharing_fcm_sender_;
   raw_ptr<SharingHandlerRegistry, DanglingUntriaged> handler_registry_;

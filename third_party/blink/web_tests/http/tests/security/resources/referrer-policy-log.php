@@ -6,7 +6,7 @@ function log(msg) {
 }
 
 function runTest() {
-    var referrerHeader = "<?php echo $_SERVER['HTTP_REFERER'] ?>";
+    var referrerHeader = "<?php echo ($_SERVER['HTTP_REFERER'] ?? null) ?>";
     if (referrerHeader == "")
         log("HTTP Referer header is empty");
     else

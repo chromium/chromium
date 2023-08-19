@@ -228,6 +228,21 @@ locale.  The strings in this file are specific to iOS.
       <message name="IDS_IOS_CREDENTIAL_PROVIDER_PROMO_LEARN_MORE_TITLE" desc="Title text of the 'Learn More' step Credential Provider Exention promo. [iOS only]">
         Choose Chrome for AutoFill
       </message>
+      <message name="IDS_IOS_DATA_NOT_UPLOADED_DIALOG_BODY" desc="Body of a dialog that is shown when the user starts to sign out; the user chooses to sync some or all data types, but some data hasn't been saved in their Google Account yet (for example, if there was an error). This string follows the heading 'Some Data Isn't Saved Yet', and the user can choose to tap on the buttons 'Cancel' or 'Delete and Sign Out'. If the user chooses to continue to sign out, then any of their data (such as bookmarks, passwords, history, settings, and more) that isn't saved in their account will be deleted. The tone should be helpful and instructive. [iOS only]">
+        Some of your Chrome data hasn't been saved in your Google Account yet.
+
+        Try waiting a few minutes before signing out. If you sign out now, this data will be deleted.
+      </message>
+      <message name="IDS_IOS_SYNC_ENCRYPTION_PASSPHRASE_HINT_UNO" desc="The information text on how to reset encryption passphrase for sync, shown on the sync encryption settings [Length: 300em] [iOS only]">
+        Passphrase encryption doesn’t include payment methods and addresses.
+
+To change this setting, <ph name="BEGIN_LINK">BEGIN_LINK</ph>clear the Chrome data in your account<ph name="END_LINK">END_LINK</ph>.
+      </message>
+      <message name="IDS_IOS_NEW_SYNC_ENCRYPTION_PASSPHRASE_INFO_UNO" desc="The information text for encrypting sync using a passphrase, shown on the passphrase screen [iOS only]">
+        Payment methods and addresses won’t be encrypted. Browsing history from Chrome won’t sync.
+
+Only someone with your passphrase can read your encrypted data. The passphrase is not sent to or stored by Google. If you forget your passphrase or want to change this setting, <ph name="BEGIN_LINK">BEGIN_LINK</ph>clear the Chrome data in your account<ph name="END_LINK">END_LINK</ph>.
+      </message>
       <message name="IDS_IOS_DEFAULT_BROWSER_TITLE_CTA_EXPERIMENT_SWITCH" desc="Title of the default browser promotion modal. [iOS only]">
         Switch to Chrome
       </message>
@@ -312,7 +327,7 @@ locale.  The strings in this file are specific to iOS.
       <message name="IDS_IOS_FIRST_RUN_SIGNIN_SUBTITLE" desc="Subtitle of the screen suggesting to the user to sign in. [iOS only]">
         To get the most out of Chrome, sign in to Chrome with your Google Account.
       </message>
-      <message name="IDS_IOS_FIRST_RUN_SIGNIN_SUBTITLE_SHORT" desc="Subtitle of the screen suggesting to the user to sign in. [iOS only]">
+      <message name="IDS_IOS_FIRST_RUN_SIGNIN_SUBTITLE_SHORT" desc="This string is on a promotion about signing in to Chrome with the user's Google Account. It explains the overarching user benefit of signing in (access to bookmarks, passwords, history, settings, etc.). However, we introduce a caveat, because the user has a managed account (such as Enterprise); this means that, depending on their organization's settings, the user might not be able to save all types of data in their Google Account. We want users to understand why signing in is beneficial, and click 'Continue as name' to sign in to their Google Account.">
           Sign in to get the most out of Chrome.
       </message>
       <message name="IDS_IOS_FIRST_RUN_SIGNIN_SUBTITLE_SIGNIN_FORCED" desc="Subtitle of a dialog to sign in to Chrome when sign-in is required because of an enterprise policy. [iOS only]">
@@ -337,6 +352,17 @@ Things to consider:
   • If Chrome crashes, details about the crash may include some personal info.
 
   • If you turn on sync, metrics may also include info about URLs you visit.<ph name="END_INDENT">END_INDENT</ph>
+      </message>
+      <message name="IDS_IOS_FIRST_RUN_UMA_DIALOG_EXPLANATION_NO_SYNC" desc="Text that explains the benefits users will get and what data is shared if they turn on the metrics sharing option. Bullet points lines should start with 2 spaces, followed by • and with a space right after. Related to IDS_IOS_FIRST_RUN_UMA_DIALOG_CHECKBOX and IDS_IOS_FIRST_RUN_UMA_DIALOG_TITLE. [iOS only]">
+        When on:
+<ph name="BEGIN_INDENT">BEGIN_INDENT</ph>  • Help make Chrome better for people who use it the way you do.<ph name="END_INDENT">END_INDENT</ph>
+
+Things to consider:
+<ph name="BEGIN_INDENT">BEGIN_INDENT</ph>  • Info is sent to Google about your Chrome usage, but it isn't tied to you.
+
+  • If Chrome crashes, details about the crash may include some personal info.
+
+  • If you sync your history to your Google Account, metrics may also include info about URLs you visit.<ph name="END_INDENT">END_INDENT</ph>
       </message>
       <message name="IDS_IOS_FIRST_RUN_UMA_DIALOG_TITLE" desc="In Title Case: Title of the dialog where users can change their Chrome metrics sharing settings, like usage data. The title communicates that allowing Chrome to see this data can improve Chrome; this happens because we can better invent/improve features based on usage. This appears when they open the Chrome app for the first time on their phone. [iOS only]">
         Make Chrome Better
@@ -398,6 +424,9 @@ Things to consider:
       <message name="IDS_IOS_PAGE_INFO_SECURITY_TAB_SECURE_IDENTITY" desc="The text of the identity section for iOS.">
         Chrome verified that <ph name="ISSUER">$1<ex>VeriSign</ex></ph> issued this website's certificate.
       </message>
+      <message name="IDS_IOS_POST_RESTORE_DEFAULT_BROWSER_PROMO_TITLE" desc="The text of the title for the post restore default browser promo.">
+        Make Chrome Your Default Browser?
+      </message>
       <message name="IDS_IOS_PRICE_NOTIFICATIONS_PRICE_TRACK_PERMISSION_REDIRECT_ALERT_MESSAGE" desc="The description that argues why push notification permission is necessary for price tracking.">
           Chrome notifications are currently turned off in your device settings.
       </message>
@@ -422,11 +451,20 @@ Things to consider:
       <message name="IDS_IOS_SAFE_BROWSING_ENHANCED_PROTECTION_BULLET_TWO" desc="Second bullet point under the Safe Browsing enhanced protection mode">
         Keeps you safe on Chrome and may be used to improve your security in other Google apps when you are signed in.
       </message>
+      <message name="IDS_IOS_SAFE_BROWSING_ENHANCED_PROTECTION_DATA_ICON_DESCRIPTION" desc="Description for Safe Browsing enhanced protection data icon.">
+        Warns you about dangerous sites, even ones Google didn’t know about before, by analyzing more data from sites than standard protection. You can choose to skip Chrome warnings.
+      </message>
+      <message name="IDS_IOS_SAFE_BROWSING_ENHANCED_PROTECTION_FOOTER" desc="Footer for Safe Browsing enhanced protection mode.">
+        Learn more about <ph name="BEGIN_LINK">BEGIN_LINK</ph>how Chrome keeps your data private<ph name="END_LINK">END_LINK</ph>
+      </message>
       <message name="IDS_IOS_SAFE_BROWSING_STANDARD_PROTECTION_BULLET_TWO" desc="Second bullet point under the Safe Browsing standard protection mode.">
         Checks URLs with a list of unsafe sites stored in Chrome. If a site tries to steal your password, or when you download a harmful file, Chrome may also send URLs, including bits of page content, to Safe Browsing.
       </message>
       <message name="IDS_IOS_SAFE_BROWSING_STANDARD_PROTECTION_LEAK_CHECK_SUMMARY" desc="Summary for the switch toggling whether Chrome should check that entered credentials have been part of a leak.">
         Chrome periodically checks your passwords against lists that have been published online. When doing this, your passwords and usernames are encrypted, so they can’t be read by anyone, including Google.
+      </message>
+      <message name="IDS_IOS_SAFE_BROWSING_STANDARD_PROTECTION_LEAK_CHECK_FRIENDLIER_SUMMARY" desc="Friendlier summary for the switch toggling whether Chrome should check that entered credentials have been part of a leak.">
+        When you use a password, Chrome warns you if it has been published online. When doing this, your passwords and usernames are encrypted, so they can’t be read by anyone, including Google.
       </message>
       <message name="IDS_IOS_SAFE_MODE_NAMED_TWEAKS_FOUND" desc="The message indicating a 3rd party tweak has been found that is known to crash Chrome.  After the ':', we will list the names of the libraries. [Length: 140em]">
         Some add-ons cause Chrome to crash. Please uninstall:
@@ -467,11 +505,20 @@ Things to consider:
       <message name="IDS_IOS_SETTINGS_PASSWORDS_IN_OTHER_APPS_SUBTITLE_IPHONE" desc="The subtitle of the view that teaches users to turn on iOS auto-fill from Chrome password manager for iPhone [iOS only]">
         You can use the passwords you saved to Google Password Manager in other apps on your iPhone.
       </message>
+      <message name="IDS_IOS_SET_UP_LIST_HIDE_MODULE_CONTEXT_MENU_DESCRIPTION" desc="Description for the long-press context menu for the Set Up List module.">
+          Hide “Get the most out of Chrome”
+      </message>
+      <message name="IDS_IOS_SET_UP_LIST_HIDE_MODULE_CONTEXT_MENU_TITLE" desc="Title for the long-press context menu for the Set Up List module.">
+          This card shows you suggestions on how to get the most out of Chrome.
+      </message>
       <message name="IDS_IOS_SHORT_PRODUCT_NAME" desc="The Chrome application short name">
         Chrome
       </message>
       <message name="IDS_IOS_SIGNED_IN_ACCOUNTS_VIEW_INFO" desc="The information text on the Signed In Accounts view. [iOS only] [200em]">
         Chrome saves you time by bringing your accounts to the web. You can add or remove accounts in Settings.
+      </message>
+      <message name="IDS_IOS_SIGNIN_SHEET_LABEL_FOR_WEB_SIGNIN" desc="This string is on a sign-in page, after the user taps to sign in to a website with their Google Account. It offers to sign the user in to both the website and to Chrome with the account. It highlights the overarching user benefit of signing in to Chrome (access to data from other devices like bookmarks, passwords, history, settings, etc.). We want users to understand why signing in is beneficial, and click 'Continue as name' to sign in to their Google Account. The tone should be informative and lightweight. [iOS only]">
+        Sign in to this site and Chrome to get your bookmarks and more on all your devices.
       </message>
       <message name="IDS_IOS_SIGN_IN_TO_CHROME_SETTING_TITLE" desc="The title for the setting item to Sign in to Chrome [iOS only]">
         Sign in to Chrome
@@ -484,6 +531,9 @@ Things to consider:
       </message>
       <message name="IDS_IOS_SIGNOUT_DIALOG_TITLE_WITH_SYNCING_MANAGED_ACCOUNT" desc="The signout dialog title. This dialog is used when the user have a managed account (other than gmail account) [iOS only].">
         Your account is managed by <ph name="HOSTED_DOMAIN">$1<ex>google.com</ex></ph>, so your Chrome data will be cleared from this device
+      </message>
+      <message name="IDS_IOS_SYNC_LOGIN_INFO_OUT_OF_DATE_WITH_UNO" desc="Body of a message that is shown certain error states, such as when account was removed in another app or the password was changed. This string follows the heading &quot;Verify it's you&quot;, and we want the user to tap on the button &quot;Verify&quot;. We are asking the user to sign back in to their Google Account, so that the user can sign back into Chrome and resume access to their Chrome data (such as bookmarks, passwords, history, settings, and more). The tone should be helpful and instructive.">
+        Keep using the Chrome data in your Google Account.
       </message>
       <message name="IDS_IOS_TAB_SWITCHER_NO_TABS_TO_SYNC_PROMO" desc="The title of the paragraph IDS_OPEN_TABS_NO_SESSION_INSTRUCTIONS_IOS. The paragraph explains that tabs opened on other devices where the user is signed in will appear here, in the Tab Switcher. [iOS only]">
         Use Chrome Everywhere
@@ -505,6 +555,9 @@ Things to consider:
       </message>
       <message name="IDS_IOS_UPGRADE_AVAILABLE" desc="Text to inform the user of the presence of a new version of the application">
         Chrome just got better! A new version is available.
+      </message>
+      <message name="IDS_IOS_USER_POLICY_NOTIFICATION_NO_SIGNOUT_SUBTITLE" desc="The subtitle of the User Policy notification dialog. [iOS only] [300em]">
+        Your organization, <ph name="DOMAIN">$1<ex>doe.com</ex></ph>, manages the account you're signed in to and how Chrome is used.
       </message>
       <message name="IDS_IOS_USER_POLICY_NOTIFICATION_SUBTITLE" desc="The subtitle of the User Policy notification dialog. [iOS only] [300em]">
         You are signed in and syncing your data with an account managed by <ph name="DOMAIN">$1<ex>doe.com</ex></ph> where its administrator can now set user policies specific to that account that can change the behavior of Chrome.
@@ -605,6 +658,24 @@ Things to consider:
       <message name="IDS_IOS_PASSWORD_CHECKUP_ERROR_OTHER" desc="Text inside popover which is shown when the user wants to see detailed information about the error. [iOS only]" meaning="Password check failed due to specific reason (out of memory).">
         Google Password Manager couldn't check all passwords. Try again later.
       </message>
+      <message name="IDS_IOS_WHATS_NEW_APP_SETTINGS" desc="Text of the row indicating the step of opening the app settings. [iOS only]">
+        Go to Chrome Settings.
+      </message>
+      <message name="IDS_IOS_DEFAULT_BROWSER_VIDEO_PROMO_APP_SETTINGS" desc="Text in the default browser video the app settings. [iOS only]">
+        Chrome Settings
+      </message>
+      <message name="IDS_IOS_WHATS_NEW_INCOGNITO_LOCK_STEP_3" desc="Text of the row indicating the third step to turn on Incognito Lock. [iOS only]">
+        Turn on “Lock Incognito Tabs When You Close Chrome.”
+      </message>
+      <message name="IDS_IOS_WHATS_NEW_INCOGNITO_LOCK_SUBTITLE" desc="Incognito Lock subtitle displayed in What's New. [iOS only]">
+        Lock your incognito when you leave Chrome or switch to a different app.
+      </message>
+      <message name="IDS_IOS_WHATS_NEW_MINI_MAPS_TITLE" desc="Mini Maps title displayed in What's New. [iOS only]">
+        Maps in Chrome
+      </message>
+      <message name="IDS_IOS_WHATS_NEW_MINI_MAPS_STEP_2" desc="Text of the row indicating the second step of of the Mini Maps feature. [iOS only]">
+        Tap “View with Google Maps on Chrome.”
+      </message>
       <message name="IDS_IOS_CHANGE_COMPROMISED_PASSWORD_DESCRIPTION_BRANDED" desc="Text inside Password Details screen shown when password was compromised. [iOS only]" meaning="Text which explains the user that current password is compromised and it should be changed.">
           Your password was exposed in a data breach. Google Password Manager recommends changing it now.
       </message>
@@ -619,6 +690,12 @@ Things to consider:
       </message>
       <message name="IDS_IOS_SETTINGS_ADD_PASSWORD_FOOTER_BRANDED" desc="Disclaimer telling users what will happen to their passwords">
         Your password will be saved to Google Password Manager for <ph name="EMAIL">$1<ex>example@gmail.com</ex></ph>.
+      </message>
+      <message name="IDS_IOS_UNO_UPGRADE_PROMO_SIGNIN_SUBTITLE_SYNC_DISABLED" desc="This string is on a sign-in page, shown several weeks after the user has installed Chrome. It explains the overarching user benefit of signing in (access to bookmarks, passwords, history, settings, etc.). However, we introduce a caveat, because the user has a managed account (such as Enterprise); this means that, depending on their organization's settings, the user might not be able to save all types of data in their Google Account. We want users to understand why signing in is beneficial, and click 'Continue as name' to sign in to their Google Account.">
+        Get the most out of Chrome.
+      </message>
+      <message name="IDS_IOS_UNO_UPGRADE_PROMO_SIGNIN_TITLE" desc="Title of the screen suggesting to the user to sign in. The user may see this screen when Chrome is opened, but only several weeks after installation.">
+        Make Chrome Your Own
       </message>
       <message name="IDS_IOS_ACCOUNT_TABLE_ERROR_ENTER_PASSPHRASE_MESSAGE" desc="The error message to show in the account table when there is a passphrase error. [iOS only]">
         To use and save Chrome data in your Google Account, enter your passphrase.

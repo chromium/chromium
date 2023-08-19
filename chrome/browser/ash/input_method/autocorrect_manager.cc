@@ -14,6 +14,7 @@
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/time/time.h"
+#include "chrome/browser/ash/crosapi/browser_util.h"
 #include "chrome/browser/ash/input_method/assistive_input_denylist.h"
 #include "chrome/browser/ash/input_method/assistive_prefs.h"
 #include "chrome/browser/ash/input_method/assistive_window_properties.h"
@@ -25,6 +26,7 @@
 #include "chrome/browser/ui/ash/keyboard/chrome_keyboard_controller_client.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/grit/generated_resources.h"
+#include "chromeos/components/kiosk/kiosk_utils.h"
 #include "components/strings/grit/components_strings.h"
 #include "services/metrics/public/cpp/ukm_builders.h"
 #include "ui/base/ime/ash/extension_ime_util.h"
@@ -44,7 +46,7 @@ constexpr int kDistanceUntilUnderlineHides = 3;
 constexpr int kMaxValidationTries = 4;
 constexpr base::TimeDelta kVeryFastInteractionPeriod = base::Milliseconds(200);
 constexpr base::TimeDelta kFastInteractionPeriod = base::Milliseconds(500);
-constexpr int kUndoWindowShowSettingMaxCount = 5;
+constexpr int kUndoWindowShowSettingMaxCount = 50;
 constexpr char kUndoWindowShowSettingCount[] = "undo_window.show_setting_count";
 
 bool IsVkAutocorrect() {
@@ -766,7 +768,9 @@ void AutocorrectManager::OnActivate(const std::string& engine_id) {
   PrefService* pref_service = profile_->GetPrefs();
   auto autocorrect_pref =
       GetPhysicalKeyboardAutocorrectPref(*pref_service, engine_id);
-  if (base::FeatureList::IsEnabled(features::kAutocorrectByDefault) &&
+
+  if (!crosapi::browser_util::IsLacrosEnabled() &&
+      base::FeatureList::IsEnabled(features::kAutocorrectByDefault) &&
       autocorrect_pref == AutocorrectPreference::kDefault &&
       IsUsEnglishId(engine_id) &&
       // This class is instantiated with NativeInputMethodEngineObserver, which
@@ -774,7 +778,7 @@ void AutocorrectManager::OnActivate(const std::string& engine_id) {
       // login screens, guest sessions, etc). Make sure we are only recording
       // this metric when a real user has logged into their profile.
       ProfileHelper::IsUserProfile(profile_) && profile_->IsRegularProfile() &&
-      !profile_->IsGuestSession()) {
+      !profile_->IsGuestSession() && !chromeos::IsKioskSession()) {
     SetPhysicalKeyboardAutocorrectAsEnabledByDefault(pref_service, engine_id);
   }
 }
@@ -798,8 +802,9 @@ bool AutocorrectManager::OnKeyEvent(const ui::KeyEvent& event) {
     HideUndoWindow();
     return true;
   }
-  if (event.code() == ui::DomCode::ARROW_UP ||
-      event.code() == ui::DomCode::TAB) {
+  if (!event.IsAltDown() && !event.IsControlDown() &&
+      (event.code() == ui::DomCode::ARROW_UP ||
+       event.code() == ui::DomCode::TAB)) {
     HighlightButtons(/*should_highlight_undo=*/true,
                      /*should_highlight_learn_more=*/false);
     return true;
@@ -1040,14 +1045,15 @@ void AutocorrectManager::UndoAutocorrect() {
     // This will not quite work properly if there is text actually highlighted,
     // and cursor is at end of the highlight block, but no easy way around it.
     // First delete everything before cursor.
-    DCHECK(autocorrect_range.Contains(surrounding_text.selection_range));
+    DCHECK(surrounding_text.selection_range.IsBoundedBy(autocorrect_range));
     const uint32_t before =
         surrounding_text.selection_range.start() - autocorrect_range.start();
     const uint32_t after =
         autocorrect_range.end() - surrounding_text.selection_range.end();
 
     if (base::FeatureList::IsEnabled(
-            features::kAutocorrectUseReplaceSurroundingText)) {
+            features::kAutocorrectUseReplaceSurroundingText) &&
+        !crosapi::browser_util::IsLacrosEnabled()) {
       input_context->ReplaceSurroundingText(
           before, after, pending_autocorrect_->original_text);
     } else {
@@ -1235,7 +1241,8 @@ void AutocorrectManager::AcceptOrClearPendingAutocorrect() {
 
 void AutocorrectManager::OnTextFieldContextualInfoChanged(
     const TextFieldContextualInfo& info) {
-  disabled_by_rule_ = denylist_.Contains(info.tab_url);
+  disabled_by_rule_ =
+      denylist_.Contains(info.tab_url) || chromeos::IsKioskSession();
   if (disabled_by_rule_) {
     LogAssistiveAutocorrectInternalState(
         AutocorrectInternalStates::kAppIsInDenylist);

@@ -38,13 +38,25 @@ constexpr net::NetworkTrafficAnnotationTag kCalendarTrafficAnnotation =
             "The request is authenticated with an OAuth2 access token "
             "identifying the Google account."
           destination: GOOGLE_OWNED_SERVICE
+          internal {
+            contacts {
+              email: "jiamingc@google.com"
+            }
+            contacts {
+              email: "cros-status-area-eng@google.com"
+            }
+          }
+          user_data {
+            type: ACCESS_TOKEN
+          }
+          last_reviewed: "2023-08-01"
         }
         policy {
           cookies_allowed: NO
           setting: "This feature cannot be disabled in settings."
           chrome_policy {
               CalendarIntegrationEnabled {
-                CalendarIntegrationEnabled: true
+                CalendarIntegrationEnabled: false
               }
           }
         })");

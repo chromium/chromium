@@ -12,6 +12,8 @@
 #include "ash/public/cpp/tablet_mode_observer.h"
 #include "ash/shelf/shelf_observer.h"
 #include "ash/shell_observer.h"
+#include "ash/system/tray/system_tray_observer.h"
+#include "ash/system/tray/tray_event_filter.h"
 #include "base/functional/callback_forward.h"
 #include "base/memory/raw_ptr.h"
 #include "ui/compositor/throughput_tracker.h"
@@ -25,20 +27,27 @@ namespace display {
 class Screen;
 }
 
+namespace views {
+class Widget;
+}  // namespace views
+
 namespace ash {
 
 class AshMessagePopupCollectionTest;
 class Shelf;
+class TrayBubbleView;
+class TrayEventFilterTest;
 
 // The MessagePopupCollection subclass for Ash. It needs to handle alignment of
 // the shelf and its autohide state.
 class ASH_EXPORT AshMessagePopupCollection
-    : public message_center::MessagePopupCollection,
+    : public display::DisplayObserver,
+      public message_center::MessagePopupCollection,
+      public message_center::MessageView::Observer,
       public ShelfObserver,
+      public SystemTrayObserver,
       public TabletModeObserver,
-      public display::DisplayObserver,
-      public views::WidgetObserver,
-      public message_center::MessageView::Observer {
+      public views::WidgetObserver {
  public:
   // The name that will set for the message popup widget in
   // ConfigureWidgetInitParamsForContainer(), and that can be used to identify a
@@ -75,14 +84,26 @@ class ASH_EXPORT AshMessagePopupCollection
       const message_center::Notification& notification) const override;
   void NotifyPopupAdded(message_center::MessagePopupView* popup) override;
   void NotifyPopupClosed(message_center::MessagePopupView* popup) override;
+  void NotifyPopupCollectionHeightChanged() override;
   void AnimationStarted() override;
   void AnimationFinished() override;
   message_center::MessagePopupView* CreatePopup(
       const message_center::Notification& notification) override;
+  void ClosePopupItem(const PopupItem& item) override;
 
   // TabletModeObserver:
   void OnTabletModeStarted() override;
   void OnTabletModeEnded() override;
+
+  // SystemTrayObserver:
+  void OnFocusLeavingSystemTray(bool reverse) override {}
+  void OnStatusAreaAnchoredBubbleVisibilityChanged(TrayBubbleView* tray_bubble,
+                                                   bool visible) override;
+  void OnTrayBubbleBoundsChanged(TrayBubbleView* tray_bubble) override;
+
+  // Returns true if `widget` is a popup widget belongs to this popup
+  // collection.
+  bool IsWidgetAPopupNotification(views::Widget* widget);
 
   // Sets `animation_idle_closure_`.
   void SetAnimationIdleClosureForTest(base::OnceClosure closure);
@@ -95,6 +116,7 @@ class ASH_EXPORT AshMessagePopupCollection
  private:
   friend class AshMessagePopupCollectionTest;
   friend class NotificationGroupingControllerTest;
+  friend class TrayEventFilterTest;
 
   // message_center::MessageView::Observer:
   void OnSlideOut(const std::string& notification_id) override;
@@ -111,6 +133,23 @@ class ASH_EXPORT AshMessagePopupCollection
   // Compute the new work area.
   void UpdateWorkArea();
 
+  // Makes changes to the baseline based on the visibility/bounds change of
+  // the current open bubble. Note that this function is only called by a change
+  // in the bubble (bubble size or visibility changed).
+  void AdjustBaselineBasedOnBubbleChange(TrayBubbleView* tray_bubble,
+                                         bool bubble_visible);
+
+  // Makes changes to the baseline based on the visibility/bounds change of
+  // the current open shelf pod bubble. `triggered_by_bubble_change` is true if
+  // this function is triggered by a change in the bubble (bubble size or
+  // visibility changed).
+  void AdjustBaselineBasedOnShelfPodBubble(bool triggered_by_bubble_change);
+
+  // Helper functions for `AdjustBaselineBaseOnBubble()`. Applied to secondary
+  // bubble.
+  void AdjustBaselineBasedOnSecondaryBubble(TrayBubbleView* tray_bubble,
+                                            bool visible);
+
   // ShelfObserver:
   void OnShelfWorkAreaInsetsChanged() override;
   void OnHotseatStateChanged(HotseatState old_state,
@@ -123,6 +162,13 @@ class ASH_EXPORT AshMessagePopupCollection
   // views::WidgetObserver:
   void OnWidgetClosing(views::Widget* widget) override;
   void OnWidgetActivationChanged(views::Widget* widget, bool active) override;
+
+  // Update the state of enabling expand/collapse behavior for each popup. We
+  // use `available_space_above_popups`, which is the space left on the screen
+  // above the popups, to make this decision. `available_space_above_popups`
+  // will only be meaningful if `shelf_bubble_open` is true.
+  void UpdateExpandCollapseEnabledForPopups(bool shelf_bubble_open,
+                                            int available_space_above_popups);
 
   absl::optional<display::ScopedDisplayObserver> display_observer_;
 

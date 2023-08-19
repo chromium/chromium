@@ -70,6 +70,7 @@ if (is_android) {
       "//media/cdm",
       "//media/formats",
       "//net",
+      "//third_party/re2",
       "//third_party/widevine/cdm:headers",
       "//ui/gl",
       "//url",
@@ -148,6 +149,7 @@ if (is_android) {
     sources = [
       "media_codec_bridge.h",
       "media_codec_direction.h",
+      "media_drm_bridge.h",
     ]
   }
 
@@ -169,10 +171,11 @@ if (is_android) {
       "//build/android:build_java",
       "//third_party/androidx:androidx_annotation_annotation_java",
     ]
-    annotation_processor_deps = [ "//base/android/jni_generator:jni_processor" ]
+
     srcjar_deps = [
       ":java_enums",
       ":java_switches",
+      ":media_jni_headers",
       "//media/base:java_enums",
     ]
     resources_package = "org.chromium.media"

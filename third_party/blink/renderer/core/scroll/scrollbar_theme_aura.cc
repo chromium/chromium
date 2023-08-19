@@ -243,15 +243,24 @@ void ScrollbarThemeAura::PaintTrack(GraphicsContext& context,
   // of the back track and forward track.
   auto state = WebThemeEngine::kStateNormal;
 
-  // TODO(wangxianzhu): The extra params for scrollbar track were for painting
-  // back and forward tracks separately, which we don't support. Remove them.
+  // TODO(wangxianzhu): Some of these extra params for scrollbar track were for
+  // painting back and forward tracks separately, which we don't support. Remove
+  // them.
   gfx::Rect align_rect = TrackRect(scrollbar);
-  WebThemeEngine::ExtraParams extra_params;
-  extra_params.scrollbar_track.is_back = false;
-  extra_params.scrollbar_track.track_x = align_rect.x();
-  extra_params.scrollbar_track.track_y = align_rect.y();
-  extra_params.scrollbar_track.track_width = align_rect.width();
-  extra_params.scrollbar_track.track_height = align_rect.height();
+
+  WebThemeEngine::ScrollbarTrackExtraParams scrollbar_track;
+  scrollbar_track.is_back = false;
+  scrollbar_track.track_x = align_rect.x();
+  scrollbar_track.track_y = align_rect.y();
+  scrollbar_track.track_width = align_rect.width();
+  scrollbar_track.track_height = align_rect.height();
+
+  if (scrollbar.ScrollbarTrackColor().has_value()) {
+    scrollbar_track.track_color =
+        scrollbar.ScrollbarTrackColor().value().toSkColor4f().toSkColor();
+  }
+
+  WebThemeEngine::ExtraParams extra_params(scrollbar_track);
 
   WebThemeEngineHelper::GetNativeThemeEngine()->Paint(
       context.Canvas(),
@@ -270,10 +279,18 @@ void ScrollbarThemeAura::PaintButton(GraphicsContext& gc,
   if (!params.should_paint)
     return;
 
-  WebThemeEngine::ExtraParams extra_params;
-  extra_params.scrollbar_button.zoom = scrollbar.EffectiveZoom();
-  extra_params.scrollbar_button.right_to_left =
-      scrollbar.ContainerIsRightToLeft();
+  WebThemeEngine::ScrollbarButtonExtraParams scrollbar_button;
+  scrollbar_button.zoom = scrollbar.EffectiveZoom();
+  scrollbar_button.right_to_left = scrollbar.ContainerIsRightToLeft();
+  if (scrollbar.ScrollbarThumbColor().has_value()) {
+    scrollbar_button.thumb_color =
+        scrollbar.ScrollbarThumbColor().value().toSkColor4f().toSkColor();
+  }
+  if (scrollbar.ScrollbarTrackColor().has_value()) {
+    scrollbar_button.track_color =
+        scrollbar.ScrollbarTrackColor().value().toSkColor4f().toSkColor();
+  }
+  WebThemeEngine::ExtraParams extra_params(scrollbar_button);
   WebThemeEngineHelper::GetNativeThemeEngine()->Paint(
       gc.Canvas(), params.part, params.state, rect, &extra_params,
       scrollbar.UsedColorScheme());
@@ -297,12 +314,21 @@ void ScrollbarThemeAura::PaintThumb(GraphicsContext& gc,
   else
     state = WebThemeEngine::kStateNormal;
 
+  WebThemeEngine::ScrollbarThumbExtraParams scrollbar_thumb;
+
+  if (scrollbar.ScrollbarThumbColor().has_value()) {
+    scrollbar_thumb.thumb_color =
+        scrollbar.ScrollbarThumbColor().value().toSkColor4f().toSkColor();
+  }
+
+  WebThemeEngine::ExtraParams params(scrollbar_thumb);
+
   WebThemeEngineHelper::GetNativeThemeEngine()->Paint(
       canvas,
       scrollbar.Orientation() == kHorizontalScrollbar
           ? WebThemeEngine::kPartScrollbarHorizontalThumb
           : WebThemeEngine::kPartScrollbarVerticalThumb,
-      state, rect, nullptr, scrollbar.UsedColorScheme());
+      state, rect, &params, scrollbar.UsedColorScheme());
 }
 
 bool ScrollbarThemeAura::ShouldRepaintAllPartsOnInvalidation() const {

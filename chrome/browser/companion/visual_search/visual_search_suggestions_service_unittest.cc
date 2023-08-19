@@ -20,9 +20,19 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
+using companion::visual_search::VisualSearchSuggestionsService;
+
 namespace {
 
-static const char kModelFilename[] = "visual_model.tflite";
+base::FilePath model_file_path() {
+  base::FilePath source_root_dir;
+  base::PathService::Get(base::DIR_SOURCE_ROOT, &source_root_dir);
+  return source_root_dir.AppendASCII("chrome")
+      .AppendASCII("test")
+      .AppendASCII("data")
+      .AppendASCII("companion_visual_search")
+      .AppendASCII("test-model-quantized.tflite");
+}
 
 }  // namespace
 
@@ -34,28 +44,21 @@ class VisualSearchSuggestionsServiceTest : public ::testing::Test {
             {base::MayBlock(), base::TaskPriority::BEST_EFFORT});
     test_model_provider_ = std::make_unique<
         optimization_guide::TestOptimizationGuideModelProvider>();
-    service_ = std::make_unique<
-        companion::visual_search::VisualSearchSuggestionsService>(
+    service_ = std::make_unique<VisualSearchSuggestionsService>(
         test_model_provider_.get(), background_task_runner);
 
-    base::FilePath test_data_dir;
-    base::PathService::Get(base::DIR_SOURCE_ROOT, &test_data_dir);
-    test_data_dir = test_data_dir.AppendASCII("components/test/data");
+    absl::optional<optimization_guide::proto::Any> model_metadata;
 
-    base::flat_set<base::FilePath> additional_files;
-    additional_files.insert(test_data_dir.AppendASCII(kModelFilename));
-
-    model_info_ =
-        optimization_guide::TestModelInfoBuilder()
-            .SetModelFilePath(test_data_dir.AppendASCII(kModelFilename))
-            .SetAdditionalFiles(additional_files)
-            .SetVersion(123)
-            .Build();
+    model_info_ = optimization_guide::TestModelInfoBuilder()
+                      .SetModelFilePath(model_file_path())
+                      .SetVersion(123)
+                      .Build();
 
     task_environment_.RunUntilIdle();
   }
 
   void TearDown() override {
+    service_->Shutdown();
     service_ = nullptr;
     task_environment_.RunUntilIdle();
   }
@@ -69,9 +72,95 @@ class VisualSearchSuggestionsServiceTest : public ::testing::Test {
 };
 
 TEST_F(VisualSearchSuggestionsServiceTest, OnModelUpdated) {
+  VisualSearchSuggestionsService::ModelUpdateCallback callback =
+      base::BindOnce([](base::File model, std::string config_proto) {
+        EXPECT_TRUE(model.IsValid());
+        EXPECT_TRUE(config_proto.empty());
+      });
+  service_->SetModelUpdateCallback(std::move(callback));
   service_->OnModelUpdated(optimization_guide::proto::OptimizationTarget::
                                OPTIMIZATION_TARGET_VISUAL_SEARCH_CLASSIFICATION,
                            *model_info_);
   task_environment_.RunUntilIdle();
-  EXPECT_TRUE(service_->GetModelFile().IsValid());
+}
+
+TEST_F(VisualSearchSuggestionsServiceTest,
+       OnModelUpdated_BadOptimizationTarget) {
+  VisualSearchSuggestionsService::ModelUpdateCallback callback =
+      base::BindOnce([](base::File model, std::string config_proto) {
+        EXPECT_FALSE(model.IsValid());
+        EXPECT_TRUE(config_proto.empty());
+      });
+  service_->SetModelUpdateCallback(std::move(callback));
+  service_->OnModelUpdated(optimization_guide::proto::OptimizationTarget::
+                               OPTIMIZATION_TARGET_TEXT_EMBEDDER,
+                           *model_info_);
+  task_environment_.RunUntilIdle();
+}
+
+TEST_F(VisualSearchSuggestionsServiceTest, OnModelUpdated_InvalidModelFile) {
+  base::FilePath source_root_dir;
+  base::PathService::Get(base::DIR_SOURCE_ROOT, &source_root_dir);
+  std::unique_ptr<optimization_guide::ModelInfo> invalid_model_info_ =
+      optimization_guide::TestModelInfoBuilder()
+          .SetModelFilePath(source_root_dir.AppendASCII("chrome")
+                                .AppendASCII("test")
+                                .AppendASCII("data")
+                                .AppendASCII("companion_visual_search")
+                                .AppendASCII("wack-a-doodle.tflite"))
+          .SetVersion(123)
+          .Build();
+
+  VisualSearchSuggestionsService::ModelUpdateCallback callback =
+      base::BindOnce([](base::File model, std::string config_proto) {
+        EXPECT_FALSE(model.IsValid());
+        EXPECT_TRUE(config_proto.empty());
+      });
+  service_->SetModelUpdateCallback(std::move(callback));
+  service_->OnModelUpdated(optimization_guide::proto::OptimizationTarget::
+                               OPTIMIZATION_TARGET_VISUAL_SEARCH_CLASSIFICATION,
+                           *invalid_model_info_);
+  task_environment_.RunUntilIdle();
+}
+
+TEST_F(VisualSearchSuggestionsServiceTest, OnModelUpdated_ModelAlreadyLoaded) {
+  VisualSearchSuggestionsService::ModelUpdateCallback callback =
+      base::BindOnce([](base::File model, std::string config_proto) {
+        EXPECT_TRUE(model.IsValid());
+        EXPECT_TRUE(config_proto.empty());
+      });
+  service_->SetModelUpdateCallback(std::move(callback));
+  service_->OnModelUpdated(optimization_guide::proto::OptimizationTarget::
+                               OPTIMIZATION_TARGET_VISUAL_SEARCH_CLASSIFICATION,
+                           *model_info_);
+  // Call OnModelUpdated again to instrument closing the model file before
+  // reload.
+  service_->OnModelUpdated(optimization_guide::proto::OptimizationTarget::
+                               OPTIMIZATION_TARGET_VISUAL_SEARCH_CLASSIFICATION,
+                           *model_info_);
+  task_environment_.RunUntilIdle();
+}
+
+TEST_F(VisualSearchSuggestionsServiceTest, OnModelUpdated_NullModelUpdate) {
+  VisualSearchSuggestionsService::ModelUpdateCallback callback =
+      base::BindOnce([](base::File model, std::string config_proto) {
+        EXPECT_TRUE(model.IsValid());
+        EXPECT_TRUE(config_proto.empty());
+      });
+  service_->SetModelUpdateCallback(std::move(callback));
+  service_->OnModelUpdated(optimization_guide::proto::OptimizationTarget::
+                               OPTIMIZATION_TARGET_VISUAL_SEARCH_CLASSIFICATION,
+                           *model_info_);
+  task_environment_.RunUntilIdle();
+
+  // Null model update should unload the model.
+  callback = base::BindOnce([](base::File model, std::string config_proto) {
+    EXPECT_FALSE(model.IsValid());
+    EXPECT_TRUE(config_proto.empty());
+  });
+  service_->OnModelUpdated(optimization_guide::proto::OptimizationTarget::
+                               OPTIMIZATION_TARGET_VISUAL_SEARCH_CLASSIFICATION,
+                           absl::nullopt);
+  service_->SetModelUpdateCallback(std::move(callback));
+  task_environment_.RunUntilIdle();
 }

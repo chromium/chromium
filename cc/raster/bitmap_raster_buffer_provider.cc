@@ -37,8 +37,7 @@ base::UnsafeSharedMemoryRegion AllocateSharedMemory(
       << "(format = " << format.ToString() << ")";
 
   size_t bytes = 0;
-  if (!viz::ResourceSizes::MaybeSizeInBytes(size, format.resource_format(),
-                                            &bytes)) {
+  if (!viz::ResourceSizes::MaybeSizeInBytes(size, format, &bytes)) {
     DLOG(ERROR) << "AllocateMappedBitmap with size that overflows";
     size_t alloc_size = std::numeric_limits<int>::max();
     base::TerminateBecauseOutOfMemory(alloc_size);
@@ -209,7 +208,7 @@ bool BitmapRasterBufferProvider::CanPartialRasterIntoProvidedResource() const {
 }
 
 bool BitmapRasterBufferProvider::IsResourceReadyToDraw(
-    const ResourcePool::InUsePoolResource& resource) const {
+    const ResourcePool::InUsePoolResource& resource) {
   // Bitmap resources are immediately ready to draw.
   return true;
 }
@@ -217,7 +216,7 @@ bool BitmapRasterBufferProvider::IsResourceReadyToDraw(
 uint64_t BitmapRasterBufferProvider::SetReadyToDrawCallback(
     const std::vector<const ResourcePool::InUsePoolResource*>& resources,
     base::OnceClosure callback,
-    uint64_t pending_callback_id) const {
+    uint64_t pending_callback_id) {
   // Bitmap resources are immediately ready to draw.
   return 0;
 }

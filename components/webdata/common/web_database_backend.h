@@ -13,7 +13,6 @@
 #include "base/functional/callback_forward.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/ref_counted_delete_on_sequence.h"
-#include "base/task/single_thread_task_runner.h"
 #include "components/webdata/common/web_data_request_manager.h"
 #include "components/webdata/common/web_database_service.h"
 #include "components/webdata/common/webdata_export.h"
@@ -22,6 +21,10 @@ class WebDatabase;
 class WebDatabaseTable;
 class WebDataRequest;
 class WebDataRequestManager;
+
+namespace base {
+class SequencedTaskRunner;
+}
 
 // WebDatabaseBackend handles all database tasks posted by
 // WebDatabaseService. It is refcounted to allow asynchronous destruction on the
@@ -42,10 +45,9 @@ class WEBDATA_EXPORT WebDatabaseBackend
                           const std::string& diagnostics) = 0;
   };
 
-  WebDatabaseBackend(
-      const base::FilePath& path,
-      std::unique_ptr<Delegate> delegate,
-      const scoped_refptr<base::SingleThreadTaskRunner>& db_thread);
+  WebDatabaseBackend(const base::FilePath& path,
+                     std::unique_ptr<Delegate> delegate,
+                     const scoped_refptr<base::SequencedTaskRunner>& db_thread);
 
   WebDatabaseBackend(const WebDatabaseBackend&) = delete;
   WebDatabaseBackend& operator=(const WebDatabaseBackend&) = delete;

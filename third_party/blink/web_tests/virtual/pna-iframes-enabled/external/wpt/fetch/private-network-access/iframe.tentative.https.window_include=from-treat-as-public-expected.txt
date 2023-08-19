@@ -1,0 +1,14 @@
+This is a testharness.js-based test.
+PASS treat-as-public-address to local: failed preflight.
+PASS treat-as-public-address to local: missing CORS headers.
+PASS treat-as-public-address to local: missing PNA header.
+FAIL treat-as-public-address to local: success. assert_equals: expected "loaded" but got "timeout"
+PASS treat-as-public-address to local (same-origin): no preflight required.
+PASS treat-as-public-address to private: failed preflight.
+PASS treat-as-public-address to private: missing CORS headers.
+PASS treat-as-public-address to private: missing PNA header.
+FAIL treat-as-public-address to private: success. assert_equals: expected "loaded" but got "timeout"
+PASS treat-as-public-address to public: no preflight required.
+PASS treat-as-public-address to local: optional preflight
+Harness: the test ran to completion.
+

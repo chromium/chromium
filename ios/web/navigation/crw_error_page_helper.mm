@@ -6,6 +6,7 @@
 
 #import <ostream>
 
+#import "base/apple/bundle_locations.h"
 #import "base/check.h"
 #import "base/strings/escape.h"
 #import "base/strings/sys_string_conversions.h"
@@ -13,18 +14,9 @@
 #import "net/base/url_util.h"
 #import "url/gurl.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 namespace {
 
 const char kOriginalUrlKey[] = "url";
-
-// Returns the bundle from which the html files should be loaded.
-NSBundle* BundleForHTMLFiles() {
-  return [NSBundle bundleForClass:CRWErrorPageHelper.class];
-}
 
 // Escapes HTML characters in `text`.
 NSString* EscapeHTMLCharacters(NSString* text) {
@@ -34,16 +26,18 @@ NSString* EscapeHTMLCharacters(NSString* text) {
 
 // Resturns the path for the error page to be loaded.
 NSString* LoadedErrorPageFilePath() {
-  NSString* path = [BundleForHTMLFiles() pathForResource:@"error_page_loaded"
-                                                  ofType:@"html"];
+  NSString* path =
+      [base::apple::FrameworkBundle() pathForResource:@"error_page_loaded"
+                                               ofType:@"html"];
   DCHECK(path) << "Loaded error page should exist";
   return path;
 }
 
 // Returns the path for the error page to be injected.
 NSString* InjectedErrorPageFilePath() {
-  NSString* path = [BundleForHTMLFiles() pathForResource:@"error_page_injected"
-                                                  ofType:@"html"];
+  NSString* path =
+      [base::apple::FrameworkBundle() pathForResource:@"error_page_injected"
+                                               ofType:@"html"];
   DCHECK(path) << "Injected error page should exist";
   return path;
 }

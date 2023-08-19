@@ -10,7 +10,6 @@
 #include "base/files/file_path.h"
 #include "base/memory/raw_ptr.h"
 #include "content/public/browser/browser_context.h"
-#include "content/public/browser/content_browser_client.h"
 #include "content/public/browser/resource_context.h"
 
 class SimpleFactoryKey;
@@ -73,6 +72,8 @@ class ShellBrowserContext : public BrowserContext {
   ReduceAcceptLanguageControllerDelegate*
   GetReduceAcceptLanguageControllerDelegate() override;
   OriginTrialsControllerDelegate* GetOriginTrialsControllerDelegate() override;
+
+  ShellFederatedPermissionContext* GetShellFederatedPermissionContext();
 
  protected:
   // Contains URLRequestContextGetter required for resource loading.

@@ -76,6 +76,19 @@ class GPU_GLES2_EXPORT ExternalVkImageBackingFactory
       SkAlphaType alpha_type,
       uint32_t usage,
       std::string debug_label) override;
+  std::unique_ptr<SharedImageBacking> CreateSharedImage(
+      const Mailbox& mailbox,
+      viz::SharedImageFormat format,
+      SurfaceHandle surface_handle,
+      const gfx::Size& size,
+      const gfx::ColorSpace& color_space,
+      GrSurfaceOrigin surface_origin,
+      SkAlphaType alpha_type,
+      uint32_t usage,
+      std::string debug_label,
+      bool is_thread_safe,
+      gfx::BufferUsage buffer_usage) override;
+
   bool IsSupported(uint32_t usage,
                    viz::SharedImageFormat format,
                    const gfx::Size& size,

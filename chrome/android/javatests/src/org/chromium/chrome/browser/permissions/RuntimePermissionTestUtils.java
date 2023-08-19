@@ -122,12 +122,12 @@ public class RuntimePermissionTestUtils {
     }
 
     private static void waitUntilDifferentDialogIsShowing(
-            final PermissionTestRule permissionTestRule, final PropertyModel currentDialog) {
+            final PermissionTestRule permissionTestRule, final PropertyModel previousDialog) {
         CriteriaHelper.pollUiThread(() -> {
             final ModalDialogManager manager =
                     permissionTestRule.getActivity().getModalDialogManager();
             Criteria.checkThat(manager.isShowing(), Matchers.is(true));
-            Criteria.checkThat(manager.getCurrentDialogForTest(), Matchers.not(currentDialog));
+            Criteria.checkThat(manager.getCurrentDialogForTest(), Matchers.not(previousDialog));
         });
     }
 
@@ -171,18 +171,20 @@ public class RuntimePermissionTestUtils {
             permissionTestRule.runJavaScriptCodeInCurrentTabWithGesture(javascriptToExecute);
         }
 
+        PropertyModel askPermissionDialogModel = null;
         if (permissionPromptAllow != null) {
             // A permission prompt dialog is expected. Wait for chrome to display and accept or
             // deny.
             PermissionTestRule.waitForDialog(activity);
+            final ModalDialogManager manager = TestThreadUtils.runOnUiThreadBlockingNoException(
+                    activity::getModalDialogManager);
+            askPermissionDialogModel = manager.getCurrentDialogForTest();
+
             PermissionTestRule.replyToDialog(permissionPromptAllow, activity);
 
             if (waitForMissingPermissionPrompt) {
                 // Wait for Chrome to inform user that a permission is missing --> different dialog
-                final ModalDialogManager manager = TestThreadUtils.runOnUiThreadBlockingNoException(
-                        activity::getModalDialogManager);
-                waitUntilDifferentDialogIsShowing(
-                        permissionTestRule, manager.getCurrentDialogForTest());
+                waitUntilDifferentDialogIsShowing(permissionTestRule, askPermissionDialogModel);
             }
         }
 
@@ -193,8 +195,7 @@ public class RuntimePermissionTestUtils {
             // Wait for the dialog that informs the user permissions are missing, when the initial 
             // prompt is rejected or expected to not be shown.
             if (!Boolean.TRUE.equals(permissionPromptAllow)) {
-                waitUntilDifferentDialogIsShowing(
-                        permissionTestRule, manager.getCurrentDialogForTest());
+                waitUntilDifferentDialogIsShowing(permissionTestRule, askPermissionDialogModel);
             }
 
             // Verify the correct missing permission string resource is displayed.

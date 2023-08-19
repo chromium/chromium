@@ -20,7 +20,7 @@ int DeviceVideoCaptureMaxBufferPoolSize() {
   // those frames get dropped.
   static int max_buffer_count = kVideoCaptureDefaultMaxBufferPoolSize;
 
-#if BUILDFLAG(IS_MAC)
+#if BUILDFLAG(IS_APPLE)
   // On macOS, we allow a few more buffers as it's routinely observed that it
   // runs out of three when just displaying 60 FPS media in a video element.
   // Also, this must be greater than the frame delay of VideoToolbox encoder

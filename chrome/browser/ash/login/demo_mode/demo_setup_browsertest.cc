@@ -24,7 +24,7 @@
 #include "base/values.h"
 #include "build/build_config.h"
 #include "chrome/browser/ash/login/demo_mode/demo_session.h"
-#include "chrome/browser/ash/login/demo_mode/demo_setup_test_utils.h"
+#include "chrome/browser/ash/login/demo_mode/demo_mode_test_utils.h"
 #include "chrome/browser/ash/login/mock_network_state_helper.h"
 #include "chrome/browser/ash/login/oobe_screen.h"
 #include "chrome/browser/ash/login/screens/demo_setup_screen.h"
@@ -100,6 +100,7 @@ const test::UIPath kDemoPreferencesNext = {kDemoPrefsId, "nextButton"};
 const test::UIPath kNetworkScreen = {kNetworkId};
 const test::UIPath kNetworkNextButton = {kNetworkId, "nextButton"};
 const test::UIPath kNetworkBackButton = {kNetworkId, "backButton"};
+const test::UIPath kNetworkQuickStartButton = {kNetworkId, "quickStart"};
 
 const test::UIPath kDemoSetupProgressDialog = {kDemoSetupId,
                                                "demoSetupProgressDialog"};
@@ -714,7 +715,9 @@ IN_PROC_BROWSER_TEST_F(DemoSetupArcSupportedTest, OfflineDemoModeUnavailable) {
   test::OobeJS().ExpectDisabledPath(kNetworkNextButton);
 }
 
-IN_PROC_BROWSER_TEST_F(DemoSetupArcSupportedTest, ClickNetworkOnNetworkScreen) {
+// Flaky. https://crbug.com/1453362.
+IN_PROC_BROWSER_TEST_F(DemoSetupArcSupportedTest,
+                       DISABLED_ClickNetworkOnNetworkScreen) {
   TriggerDemoModeOnWelcomeScreen();
   test::WaitForNetworkSelectionScreen();
 
@@ -1111,6 +1114,35 @@ IN_PROC_BROWSER_TEST_F(DemoSetupBlazeyDeviceTest,
 
   EXPECT_TRUE(StartupUtils::IsOobeCompleted());
   EXPECT_TRUE(StartupUtils::IsDeviceRegistered());
+}
+
+/**
+ * Test case of Quick Start enabled device, where quick start button should not
+ * show for demo mode.
+ */
+class DemoSetupQuickStartEnabledTest : public DemoSetupArcSupportedTest {
+ public:
+  ~DemoSetupQuickStartEnabledTest() override = default;
+
+  DemoSetupQuickStartEnabledTest() {
+    feature_list_.InitWithFeatures(
+        {
+            features::kEnableOobeNetworkScreenSkip,
+            features::kOobeQuickStart,
+        },
+        {});
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_F(DemoSetupQuickStartEnabledTest, QuickStartButton) {
+  SimulateNetworkDisconnected();
+
+  TriggerDemoModeOnWelcomeScreen();
+
+  test::OobeJS().ExpectHiddenPath(kNetworkQuickStartButton);
 }
 
 }  // namespace

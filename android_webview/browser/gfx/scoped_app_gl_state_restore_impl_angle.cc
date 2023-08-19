@@ -140,16 +140,10 @@ ScopedAppGLStateRestoreImplAngle::ScopedAppGLStateRestoreImplAngle(
   // always 0.
   framebuffer_binding_ext_ = 0;
 
-  // There should be no gl::GLContext current.
-  DCHECK(!gl::GLContext::GetCurrent());
-
   os::ClearGLErrors(false, nullptr);
 }
 
 ScopedAppGLStateRestoreImplAngle::~ScopedAppGLStateRestoreImplAngle() {
-  // There should be no gl::GLContext current.
-  DCHECK(!gl::GLContext::GetCurrent());
-
 #if DCHECK_IS_ON()
   DCHECK_EQ(egl_context_, os::eglGetCurrentContextFn())
       << " the native context is changed.";

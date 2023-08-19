@@ -14,7 +14,6 @@
 #include "media/audio/audio_io.h"
 #include "media/audio/mock_audio_manager.h"
 #include "media/audio/test_audio_thread.h"
-#include "media/base/media_switches.h"
 #include "mojo/public/cpp/bindings/associated_receiver.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/system/functions.h"
@@ -121,10 +120,7 @@ class TestEnvironment {
  public:
   TestEnvironment()
       : audio_manager_(std::make_unique<media::TestAudioThread>(false)),
-        stream_factory_(&audio_manager_,
-                        /*aecdump_recording_manager=*/nullptr,
-                        /*run_audio_processing=*/
-                        media::IsChromeWideEchoCancellationEnabled()),
+        stream_factory_(&audio_manager_, /*aecdump_recording_manager=*/nullptr),
         stream_factory_receiver_(
             &stream_factory_,
             remote_stream_factory_.BindNewPipeAndPassReceiver()) {

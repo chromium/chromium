@@ -9,9 +9,9 @@ import './strings.m.js';
 import './parent_access_after.js';
 import './parent_access_before.js';
 import './parent_access_disabled.js';
+import './parent_access_error.js';
+import './parent_access_offline.js';
 import './parent_access_ui.js';
-import './supervision/supervised_user_error.js';
-import './supervision/supervised_user_offline.js';
 import 'chrome://resources/cr_elements/cr_view_manager/cr_view_manager.js';
 
 import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
@@ -25,8 +25,8 @@ export const Screens = {
   BEFORE_FLOW: 'parent-access-before',
   AFTER_FLOW: 'parent-access-after',
   DISABLED: 'parent-access-disabled',
-  ERROR: 'supervised-user-error',
-  OFFLINE: 'supervised-user-offline',
+  ERROR: 'parent-access-error',
+  OFFLINE: 'parent-access-offline',
 };
 
 /** @enum {string} */

@@ -9,8 +9,8 @@
 #import "base/i18n/rtl.h"
 #import "base/ios/ios_util.h"
 #import "base/strings/sys_string_conversions.h"
-#import "ios/chrome/browser/flags/system_flags.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
+#import "ios/chrome/browser/shared/public/features/system_flags.h"
 #import "ios/chrome/browser/shared/ui/elements/fade_truncating_label.h"
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
 #import "ios/chrome/browser/shared/ui/util/image/image_util.h"
@@ -27,10 +27,6 @@
 #import "ui/gfx/image/image.h"
 #import "ui/gfx/ios/uikit_util.h"
 #import "url/gurl.h"
-
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
 
 namespace {
 
@@ -276,28 +272,24 @@ UIImage* DefaultFaviconImage() {
   _closeButton = [HighlightButton buttonWithType:UIButtonTypeCustom];
   [_closeButton setTranslatesAutoresizingMaskIntoConstraints:NO];
 
-  // TODO(crbug.com/1418068): Simplify after minimum version required is >=
-  // iOS 15.
-  if (base::ios::IsRunningOnIOS15OrLater() &&
-      IsUIButtonConfigurationEnabled()) {
-    if (@available(iOS 15, *)) {
-      UIButtonConfiguration* buttonConfiguration =
-          [UIButtonConfiguration plainButtonConfiguration];
-      buttonConfiguration.contentInsets = NSDirectionalEdgeInsetsMake(
-          kTabCloseTopInset, kTabCloseLeftInset, kTabCloseBottomInset,
-          kTabCloseRightInset);
-      _closeButton.configuration = buttonConfiguration;
-    }
+  UIImage* closeButton =
+      DefaultSymbolTemplateWithPointSize(kXMarkSymbol, kXmarkSymbolPointSize);
+  if (IsUIButtonConfigurationEnabled()) {
+    UIButtonConfiguration* buttonConfiguration =
+        [UIButtonConfiguration plainButtonConfiguration];
+    buttonConfiguration.contentInsets =
+        NSDirectionalEdgeInsetsMake(kTabCloseTopInset, kTabCloseLeftInset,
+                                    kTabCloseBottomInset, kTabCloseRightInset);
+    buttonConfiguration.image = closeButton;
+    _closeButton.configuration = buttonConfiguration;
   } else {
+    [_closeButton setImage:closeButton forState:UIControlStateNormal];
     UIEdgeInsets contentInsets =
         UIEdgeInsetsMake(kTabCloseTopInset, kTabCloseLeftInset,
                          kTabCloseBottomInset, kTabCloseRightInset);
     SetContentEdgeInsets(_closeButton, contentInsets);
   }
 
-  UIImage* closeButton =
-      DefaultSymbolTemplateWithPointSize(kXMarkSymbol, kXmarkSymbolPointSize);
-  [_closeButton setImage:closeButton forState:UIControlStateNormal];
   [_closeButton setAccessibilityLabel:l10n_util::GetNSString(
                                           IDS_IOS_TOOLS_MENU_CLOSE_TAB)];
   [_closeButton addTarget:self

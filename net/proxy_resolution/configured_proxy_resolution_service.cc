@@ -917,18 +917,24 @@ int ConfiguredProxyResolutionService::ResolveProxy(
   // and password), and local data (i.e. reference fragment) which does not need
   // to be disclosed to the resolver.
   GURL url = SanitizeUrl(raw_url);
+  GURL top_frame_url =
+      network_anonymization_key.GetTopFrameSite().has_value() &&
+              network_anonymization_key.GetTopFrameSite()->GetURL().is_valid()
+          ? SanitizeUrl(network_anonymization_key.GetTopFrameSite()->GetURL())
+          : GURL();
 
   // Check if the request can be completed right away. (This is the case when
   // using a direct connection for example).
   int rv = TryToCompleteSynchronously(url, result);
   if (rv != ERR_IO_PENDING) {
-    rv = DidFinishResolvingProxy(url, method, result, rv, net_log);
+    rv = DidFinishResolvingProxy(url, top_frame_url, method, result, rv,
+                                 net_log);
     return rv;
   }
 
   auto req = std::make_unique<ConfiguredProxyResolutionRequest>(
-      this, url, method, network_anonymization_key, result, std::move(callback),
-      net_log);
+      this, url, top_frame_url, method, network_anonymization_key, result,
+      std::move(callback), net_log);
 
   if (current_state_ == STATE_READY) {
     // Start the resolve request.
@@ -1160,6 +1166,7 @@ void ConfiguredProxyResolutionService::RemovePendingRequest(
 
 int ConfiguredProxyResolutionService::DidFinishResolvingProxy(
     const GURL& url,
+    const GURL& top_frame_url,
     const std::string& method,
     ProxyInfo* result,
     int result_code,
@@ -1171,7 +1178,8 @@ int ConfiguredProxyResolutionService::DidFinishResolvingProxy(
     // Allow the proxy delegate to interpose on the resolution decision,
     // possibly modifying the ProxyInfo.
     if (proxy_delegate_)
-      proxy_delegate_->OnResolveProxy(url, method, proxy_retry_info_, result);
+      proxy_delegate_->OnResolveProxy(url, top_frame_url, method,
+                                      proxy_retry_info_, result);
 
     net_log.AddEvent(
         NetLogEventType::PROXY_RESOLUTION_SERVICE_RESOLVED_PROXY_LIST,
@@ -1205,7 +1213,8 @@ int ConfiguredProxyResolutionService::DidFinishResolvingProxy(
       // Allow the proxy delegate to interpose on the resolution decision,
       // possibly modifying the ProxyInfo.
       if (proxy_delegate_)
-        proxy_delegate_->OnResolveProxy(url, method, proxy_retry_info_, result);
+        proxy_delegate_->OnResolveProxy(url, top_frame_url, method,
+                                        proxy_retry_info_, result);
     } else {
       result_code = ERR_MANDATORY_PROXY_CONFIGURATION_FAILED;
     }

@@ -93,7 +93,7 @@ void ReadDatabaseContents(LevelDBWrapper* db, DatabaseContents* contents) {
     if (RemovePrefix(key, kFileMetadataKeyPrefix, &file_id)) {
       std::unique_ptr<FileMetadata> metadata(new FileMetadata);
       if (!metadata->ParseFromString(itr->value().ToString())) {
-        util::Log(logging::LOG_WARNING, FROM_HERE,
+        util::Log(logging::LOGGING_WARNING, FROM_HERE,
                   "Failed to parse a FileMetadata");
         continue;
       }
@@ -106,14 +106,14 @@ void ReadDatabaseContents(LevelDBWrapper* db, DatabaseContents* contents) {
     if (RemovePrefix(key, kFileTrackerKeyPrefix, &tracker_id_str)) {
       int64_t tracker_id = 0;
       if (!base::StringToInt64(tracker_id_str, &tracker_id)) {
-        util::Log(logging::LOG_WARNING, FROM_HERE,
+        util::Log(logging::LOGGING_WARNING, FROM_HERE,
                   "Failed to parse TrackerID");
         continue;
       }
 
       std::unique_ptr<FileTracker> tracker(new FileTracker);
       if (!tracker->ParseFromString(itr->value().ToString())) {
-        util::Log(logging::LOG_WARNING, FROM_HERE,
+        util::Log(logging::LOGGING_WARNING, FROM_HERE,
                   "Failed to parse a Tracker");
         continue;
       }

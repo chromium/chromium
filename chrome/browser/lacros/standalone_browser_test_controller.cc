@@ -110,7 +110,7 @@ void StandaloneBrowserTestController::InstallWebApp(
     const std::string& start_url,
     apps::WindowMode window_mode,
     InstallWebAppCallback callback) {
-  auto info = std::make_unique<WebAppInstallInfo>();
+  auto info = std::make_unique<web_app::WebAppInstallInfo>();
   info->title = u"Test Web App";
   info->start_url = GURL(start_url);
   info->display_mode = WindowModeToDisplayMode(window_mode);
@@ -177,7 +177,7 @@ void StandaloneBrowserTestController::InstallSubApp(
     const web_app::AppId& parent_app_id,
     const std::string& sub_app_start_url,
     InstallSubAppCallback callback) {
-  auto info = std::make_unique<WebAppInstallInfo>();
+  auto info = std::make_unique<web_app::WebAppInstallInfo>();
   info->start_url = GURL(sub_app_start_url);
   info->parent_app_id = parent_app_id;
   info->title = u"Test Web App";

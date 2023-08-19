@@ -106,7 +106,7 @@ const allowedOptionalAttributes: Map<string, AllowFunction> = new Map([
 
 /** Allow-list of tag names in parseHtmlSubset. */
 const allowedTags: Set<string> =
-    new Set(['A', 'B', 'BR', 'DIV', 'KBD', 'P', 'PRE', 'SPAN', 'STRONG']);
+    new Set(['A', 'B', 'BR', 'DIV', 'EM', 'KBD', 'P', 'PRE', 'SPAN', 'STRONG']);
 
 /** Allow-list of optional tag names in parseHtmlSubset. */
 const allowedOptionalTags: Set<string> = new Set(['IMG', 'LI', 'UL']);

@@ -24,16 +24,15 @@ import androidx.annotation.IntDef;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.StringRes;
-import androidx.annotation.VisibleForTesting;
 
 import org.chromium.chrome.browser.browser_controls.BrowserStateBrowserControlsVisibilityDelegate;
 import org.chromium.chrome.browser.omnibox.OmniboxFeatures;
 import org.chromium.chrome.browser.omnibox.R;
 import org.chromium.components.browser_ui.widget.ChromeTransitionDrawable;
 import org.chromium.components.browser_ui.widget.CompositeTouchDelegate;
-import org.chromium.components.browser_ui.widget.animation.Interpolators;
 import org.chromium.ui.base.DeviceFormFactor;
 import org.chromium.ui.base.ViewUtils;
+import org.chromium.ui.interpolators.Interpolators;
 import org.chromium.ui.util.TokenHolder;
 import org.chromium.ui.widget.Toast;
 
@@ -572,12 +571,10 @@ public class StatusView extends LinearLayout {
                                                       : mIconAnimationDurationForTests;
     }
 
-    @VisibleForTesting
     TouchDelegate getTouchDelegateForTesting() {
         return mTouchDelegate;
     }
 
-    @VisibleForTesting
     void setIconAnimationDurationForTesting(int duration) {
         mIconAnimationDurationForTests = duration;
     }

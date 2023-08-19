@@ -8,6 +8,7 @@
 
 #include <algorithm>
 #include <cmath>
+#include <limits>
 #include <map>
 #include <numeric>
 #include <utility>
@@ -19,6 +20,7 @@
 #include "base/i18n/case_conversion.h"
 #include "base/memory/raw_ptr.h"
 #include "base/metrics/histogram.h"
+#include "base/metrics/histogram_macros.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/ranges/algorithm.h"
 #include "base/strings/strcat.h"
@@ -34,6 +36,7 @@
 #include "components/omnibox/browser/autocomplete_scoring_signals_annotator.h"
 #include "components/omnibox/browser/history_cluster_provider.h"
 #include "components/omnibox/browser/history_url_provider.h"
+#include "components/omnibox/browser/omnibox_feature_configs.h"
 #include "components/omnibox/browser/omnibox_field_trial.h"
 #include "components/omnibox/browser/omnibox_triggered_feature_service.h"
 #include "components/omnibox/browser/url_prefix.h"
@@ -197,8 +200,8 @@ void ShortcutsProvider::Start(const AutocompleteInput& input,
   if (input.focus_type() == metrics::OmniboxFocusType::INTERACTION_DEFAULT &&
       input.type() != metrics::OmniboxInputType::EMPTY &&
       !input.text().empty() && initialized_) {
-    GetMatches(input,
-               OmniboxFieldTrial::IsPopulatingUrlScoringSignalsEnabled());
+    DoAutocomplete(input,
+                   OmniboxFieldTrial::IsPopulatingUrlScoringSignalsEnabled());
   }
 }
 
@@ -233,22 +236,22 @@ void ShortcutsProvider::OnShortcutsLoaded() {
   initialized_ = true;
 }
 
-void ShortcutsProvider::GetMatches(const AutocompleteInput& input,
-                                   bool populate_scoring_signals) {
+void ShortcutsProvider::DoAutocomplete(const AutocompleteInput& input,
+                                       bool populate_scoring_signals) {
   if (!backend_) {
     return;
   }
   // Get the URLs from the shortcuts database with keys that partially or
-  // completely match the search term.
-  std::u16string term_string(base::i18n::ToLower(input.text()));
-  DCHECK(!term_string.empty());
+  // completely match the input string.
+  std::u16string lower_input(base::i18n::ToLower(input.text()));
+  DCHECK(!lower_input.empty());
 
   int max_relevance = kShortcutsProviderDefaultMaxRelevance;
   TemplateURLService* template_url_service = client_->GetTemplateURLService();
   const std::u16string fixed_up_input(FixupUserInput(input).second);
 
   // Get the shortcuts from the database with keys that partially or completely
-  // match the search term.
+  // match the input string.
   std::vector<ShortcutMatch> shortcut_matches;
   // Track history cluster shortcuts separately, so they don't consume
   // `provider_max_matches_`.
@@ -258,9 +261,9 @@ void ShortcutsProvider::GetMatches(const AutocompleteInput& input,
   // together, and create a single `ShortcutMatch`.
   std::map<GURL, std::vector<const ShortcutsDatabase::Shortcut*>>
       shortcuts_by_url;
-  for (auto it = FindFirstMatch(term_string, backend_.get());
+  for (auto it = FindFirstMatch(lower_input, backend_.get());
        it != backend_->shortcuts_map().end() &&
-       base::StartsWith(it->first, term_string, base::CompareCase::SENSITIVE);
+       base::StartsWith(it->first, lower_input, base::CompareCase::SENSITIVE);
        ++it) {
     const ShortcutsDatabase::Shortcut& shortcut = it->second;
 
@@ -272,9 +275,23 @@ void ShortcutsProvider::GetMatches(const AutocompleteInput& input,
     shortcuts_by_url[stripped_destination_url].push_back(&shortcut);
   }
 
+  if (!input.omit_asynchronous_matches()) {
+    // Inputs like 'http' or 'chrome' might have a more than 100 shortcuts,
+    // which precludes `UMA_HISTOGRAM_EXACT_LINEAR`.
+    UMA_HISTOGRAM_COUNTS_1000(
+        "Omnibox.Shortcuts.NumberOfUniqueShortcutsIterated",
+        shortcuts_by_url.size());
+  }
+
   for (const auto& [url, shortcuts] : shortcuts_by_url) {
-    ShortcutMatch shortcut_match =
-        CreateScoredShortcutMatch(term_string, url, shortcuts, max_relevance);
+    if (!input.omit_asynchronous_matches()) {
+      UMA_HISTOGRAM_EXACT_LINEAR(
+          "Omnibox.Shortcuts.NumberOfDuplicatesPerShortcutIterated",
+          shortcuts.size(), 11);
+    }
+
+    ShortcutMatch shortcut_match = CreateScoredShortcutMatch(
+        lower_input.length(), url, shortcuts, max_relevance);
 
     // Don't return shortcuts with zero relevance.
     if (shortcut_match.relevance == 0)
@@ -289,7 +306,11 @@ void ShortcutsProvider::GetMatches(const AutocompleteInput& input,
   }
 
   if (!shortcut_matches.empty() &&
-      base::FeatureList::IsEnabled(omnibox::kShortcutBoost)) {
+      omnibox_feature_configs::ShortcutBoosting::Get().enabled) {
+    // The initial value of `max_relevance` doesn't matter, as long as its >=
+    // all `shortcut_matches` relevances.
+    if (omnibox_feature_configs::ShortcutBoosting::Get().enabled)
+      max_relevance = INT_MAX;
     // Promote the shortcut with most hits to compete for the default slot.
     // Won't necessarily be the highest scoring shortcut, as scoring also
     // depends on visit times and input length. Therefore, has to be done before
@@ -302,15 +323,15 @@ void ShortcutsProvider::GetMatches(const AutocompleteInput& input,
         shortcut_matches, {}, [](const auto& shortcut_match) {
           return shortcut_match.aggregate_number_of_hits;
         });
-    int boost_score = AutocompleteMatch::IsSearchType(best_match->type)
-                          ? OmniboxFieldTrial::kShortcutBoostSearchScore.Get()
-                          : OmniboxFieldTrial::kShortcutBoostUrlScore.Get();
+    int boost_score =
+        AutocompleteMatch::IsSearchType(best_match->type)
+            ? omnibox_feature_configs::ShortcutBoosting::Get().search_score
+            : omnibox_feature_configs::ShortcutBoosting::Get().url_score;
     if (boost_score > best_match->relevance) {
       client_->GetOmniboxTriggeredFeatureService()->FeatureTriggered(
           metrics::OmniboxEventProto_Feature_SHORTCUT_BOOST);
-      if (!OmniboxFieldTrial::kShortcutBoostCounterfactual.Get()) {
-        max_relevance = boost_score;
-        best_match->relevance = max_relevance;
+      if (!omnibox_feature_configs::ShortcutBoosting::Get().counterfactual) {
+        best_match->relevance = boost_score;
       }
     }
   }
@@ -328,7 +349,10 @@ void ShortcutsProvider::GetMatches(const AutocompleteInput& input,
                    ? elem1.contents < elem2.contents
                    : elem1.relevance > elem2.relevance;
       });
-  if (shortcut_matches.size() > provider_max_matches_) {
+  bool ignore_provider_limit =
+      OmniboxFieldTrial::IsMlUrlScoringUnlimitedNumCandidatesEnabled();
+  if (!ignore_provider_limit &&
+      shortcut_matches.size() > provider_max_matches_) {
     shortcut_matches.erase(shortcut_matches.begin() + provider_max_matches_,
                            shortcut_matches.end());
   }
@@ -347,23 +371,25 @@ void ShortcutsProvider::GetMatches(const AutocompleteInput& input,
           --max_relevance;
         auto match = ShortcutToACMatch(
             *shortcut_match.shortcut, shortcut_match.stripped_destination_url,
-            relevance, input, fixed_up_input, term_string);
+            relevance, input, fixed_up_input, lower_input);
         if (populate_scoring_signals &&
             AutocompleteScoringSignalsAnnotator::IsEligibleMatch(match)) {
           PopulateScoringSignals(shortcut_match, &match);
         }
         return match;
       });
+
+  ResizeMatches(provider_max_matches_, ignore_provider_limit);
   base::ranges::transform(
       history_cluster_shortcut_matches, std::back_inserter(matches_),
       [&](const auto& shortcut_match) {
         auto match = ShortcutToACMatch(
             *shortcut_match.shortcut, shortcut_match.stripped_destination_url,
-            shortcut_match.relevance, input, fixed_up_input, term_string);
+            shortcut_match.relevance, input, fixed_up_input, lower_input);
     // Guard this as `HistoryClusterProvider` doesn't exist on iOS.
     // Though this code will never run on iOS regardless.
 #if !BUILDFLAG(IS_IOS)
-        // `term_string` is only what the user typed, e.g. "new y" instead of
+        // `lower_input` is only what the user typed, e.g. "new y" instead of
         // "new york". Use `match.description`, which is the whole string.
         // This is a bit hacky, but accurately reflects how
         // `HistoryClusterProvider` constructed the original match.
@@ -379,19 +405,53 @@ void ShortcutsProvider::GetMatches(const AutocompleteInput& input,
 }
 
 ShortcutMatch ShortcutsProvider::CreateScoredShortcutMatch(
-    const std::u16string& terms,
+    size_t input_length,
     const GURL& stripped_destination_url,
     const std::vector<const ShortcutsDatabase::Shortcut*>& shortcuts,
     int max_relevance) {
   DCHECK_GT(shortcuts.size(), 0u);
-  const size_t shortest_text_length =
-      ShortestShortcutText(shortcuts)->text.length();
-  const base::Time& last_access_time =
-      MostRecentShortcut(shortcuts)->last_access_time;
+
   const int number_of_hits = SumNumberOfHits(shortcuts);
-  const int relevance = CalculateScoreFromFactors(
-      terms.length(), shortest_text_length, last_access_time, number_of_hits,
-      max_relevance);
+  int boost_score = 0;
+  if (omnibox_feature_configs::ShortcutBoosting::Get().non_top_hit_threshold &&
+      number_of_hits >= omnibox_feature_configs::ShortcutBoosting::Get()
+                            .non_top_hit_threshold) {
+    boost_score =
+        AutocompleteMatch::IsSearchType(shortcuts[0]->match_core.type)
+            ? omnibox_feature_configs::ShortcutBoosting::Get().search_score
+            : omnibox_feature_configs::ShortcutBoosting::Get().url_score;
+
+    if (boost_score) {
+      client_->GetOmniboxTriggeredFeatureService()->FeatureTriggered(
+          metrics::OmniboxEventProto_Feature_SHORTCUT_BOOST);
+    }
+
+    if (omnibox_feature_configs::ShortcutBoosting::Get().counterfactual)
+      boost_score = 0;
+  }
+
+  int relevance = boost_score + number_of_hits;
+
+  // These scoring factors are only useful if boosting is inapplicable or for ML
+  // signal logging. Skip computing them otherwise to better measure performance
+  // impact of the 2 features.
+  size_t shortest_text_length = 0;
+  base::Time last_access_time = {};
+  if (!boost_score ||
+      OmniboxFieldTrial::IsPopulatingUrlScoringSignalsEnabled()) {
+    // International characters can change length depending on case. Use the
+    // lower case shortcut text length, since the `input_length` is also the
+    // lower case length.
+    shortest_text_length =
+        base::i18n::ToLower(ShortestShortcutText(shortcuts)->text).length();
+    last_access_time = MostRecentShortcut(shortcuts)->last_access_time;
+
+    if (!boost_score) {
+      relevance = CalculateScoreFromFactors(input_length, shortest_text_length,
+                                            last_access_time, number_of_hits,
+                                            max_relevance);
+    }
+  }
 
   // Pick the shortcut with the shortest content. Picking the shortest
   // shortcut text would probably also work, but could result in more
@@ -414,7 +474,7 @@ AutocompleteMatch ShortcutsProvider::ShortcutToACMatch(
     int relevance,
     const AutocompleteInput& input,
     const std::u16string& fixed_up_input_text,
-    const std::u16string term_string) {
+    const std::u16string lower_input) {
   DCHECK(!input.text().empty());
   AutocompleteMatch match;
   match.provider = this;
@@ -440,9 +500,12 @@ AutocompleteMatch ShortcutsProvider::ShortcutToACMatch(
   match.transition = shortcut.match_core.transition;
   match.type = shortcut.match_core.type;
   match.keyword = shortcut.match_core.keyword;
+  match.shortcut_boosted = relevance > kShortcutsProviderDefaultMaxRelevance;
   match.RecordAdditionalInfo("number of hits", shortcut.number_of_hits);
   match.RecordAdditionalInfo("last access time", shortcut.last_access_time);
   match.RecordAdditionalInfo("original input text", shortcut.text);
+  if (match.shortcut_boosted)
+    match.RecordAdditionalInfo("shortcut boosted", "true");
 
   // Set |inline_autocompletion| and |allowed_to_be_default_match| if possible.
   // If the input is in keyword mode, navigation matches cannot be the default
@@ -536,11 +599,11 @@ AutocompleteMatch ShortcutsProvider::ShortcutToACMatch(
 
   // Try to mark pieces of the contents and description as matches if they
   // appear in |input.text()|.
-  if (!term_string.empty()) {
+  if (!lower_input.empty()) {
     match.contents_class = ClassifyAllMatchesInString(
-        term_string, match.contents, is_search_type, match.contents_class);
+        lower_input, match.contents, is_search_type, match.contents_class);
     match.description_class = ClassifyAllMatchesInString(
-        term_string, match.description,
+        lower_input, match.description,
         /*text_is_search_query=*/false, match.description_class);
   }
   return match;

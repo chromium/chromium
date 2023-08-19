@@ -27,27 +27,27 @@ TEST_F(IbanMetricsTest, LogStoredIbanMetrics) {
   base::Time now = AutofillClock::Now();
   base::Time one_month_ago = now - base::Days(30);
 
-  std::vector<std::unique_ptr<IBAN>> local_ibans;
+  std::vector<std::unique_ptr<Iban>> local_ibans;
   local_ibans.reserve(5);
 
   // Create 2 in-use IBANs, one with nickname and the other not.
-  IBAN iban_in_use_0 = test::GetIBAN();
+  Iban iban_in_use_0 = test::GetIban();
   iban_in_use_0.set_use_date(one_month_ago);
   iban_in_use_0.set_use_count(10);
-  local_ibans.push_back(std::make_unique<IBAN>(std::move(iban_in_use_0)));
+  local_ibans.push_back(std::make_unique<Iban>(std::move(iban_in_use_0)));
 
-  IBAN iban_in_use_1 = test::GetIBAN();
+  Iban iban_in_use_1 = test::GetIban();
   iban_in_use_1.set_use_date(one_month_ago);
   iban_in_use_1.set_use_count(10);
   iban_in_use_1.set_nickname(u"My doctor's IBAN");
-  local_ibans.push_back(std::make_unique<IBAN>(std::move(iban_in_use_1)));
+  local_ibans.push_back(std::make_unique<Iban>(std::move(iban_in_use_1)));
 
   // Create 3 in-disuse IBANs.
   for (int i = 0; i < 3; ++i) {
-    IBAN iban_in_disuse = test::GetIBAN();
+    Iban iban_in_disuse = test::GetIban();
     iban_in_disuse.set_use_date(now - base::Days(200));
     iban_in_disuse.set_use_count(10);
-    local_ibans.push_back(std::make_unique<IBAN>(std::move(iban_in_disuse)));
+    local_ibans.push_back(std::make_unique<Iban>(std::move(iban_in_disuse)));
   }
 
   base::HistogramTester histogram_tester;

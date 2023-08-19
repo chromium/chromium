@@ -151,3 +151,7 @@ void AuthenticatorWin::CheckIfBiometricsAvailable(
       base::BindOnce(&GetBiometricAvailabilityFromWindows, std::move(callback),
                      base::SequencedTaskRunner::GetCurrentDefault()));
 }
+
+bool AuthenticatorWin::CanAuthenticateWithScreenLock() {
+  return password_manager_util_win::CanAuthenticateWithScreenLock();
+}

@@ -8,14 +8,11 @@
 #import "base/test/scoped_feature_list.h"
 #import "base/time/time.h"
 #import "ios/chrome/browser/default_browser/utils_test_support.h"
+#import "ios/chrome/browser/shared/public/features/features.h"
 #import "testing/gtest/include/gtest/gtest.h"
 #import "testing/gtest_mac.h"
 #import "testing/platform_test.h"
 #import "ui/base/l10n/l10n_util_mac.h"
-
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
 
 namespace {
 
@@ -24,6 +21,9 @@ constexpr base::TimeDelta kLessThan7Days = base::Days(7) - base::Minutes(1);
 
 // More than 7 days.
 constexpr base::TimeDelta kMoreThan7Days = base::Days(7) + base::Minutes(1);
+
+// More than 14 days.
+constexpr base::TimeDelta kMoreThan14Days = base::Days(14) + base::Minutes(1);
 
 // Less than 6 hours.
 constexpr base::TimeDelta kLessThan6Hours = base::Hours(6) - base::Minutes(1);
@@ -96,14 +96,122 @@ TEST_F(DefaultBrowserUtilsTest, MostRecentInterestDefaultPromoType) {
   EXPECT_EQ(type, DefaultPromoTypeMadeForIOS);
 }
 
-// Tests cool down between promos.
-TEST_F(DefaultBrowserUtilsTest, PromoCoolDown) {
+// Tests cooldown between fullscreen promos with cooldown refactor disabled and
+// no recent non-modal promo interaction.
+TEST_F(DefaultBrowserUtilsTest, FullscreenPromoCoolDownRefactorDisabled) {
+  feature_list_.InitWithFeatures(
+      {/*enabled=*/},
+      {/*disabled=*/kNonModalDefaultBrowserPromoCooldownRefactor});
+
+  EXPECT_FALSE(UserInFullscreenPromoCooldown());
+
   LogUserInteractionWithFullscreenPromo();
-  EXPECT_TRUE(UserInPromoCooldown());
+  EXPECT_TRUE(UserInFullscreenPromoCooldown());
 
   ClearDefaultBrowserPromoData();
   LogUserInteractionWithTailoredFullscreenPromo();
-  EXPECT_TRUE(UserInPromoCooldown());
+  EXPECT_TRUE(UserInFullscreenPromoCooldown());
+}
+
+// Tests cooldown between fullscreen promos with cooldown refactor disabled and
+// a more recent non-modal promo interaction.
+TEST_F(DefaultBrowserUtilsTest,
+       FullscreenPromoCoolDownRefactorDisabledRecentNonModalInteraction) {
+  feature_list_.InitWithFeatures(
+      {/*enabled=*/},
+      {/*disabled=*/kNonModalDefaultBrowserPromoCooldownRefactor});
+
+  EXPECT_FALSE(UserInFullscreenPromoCooldown());
+
+  LogUserInteractionWithNonModalPromo();
+  EXPECT_TRUE(UserInFullscreenPromoCooldown());
+
+  ClearDefaultBrowserPromoData();
+  LogUserInteractionWithTailoredFullscreenPromo();
+  LogUserInteractionWithNonModalPromo();
+  EXPECT_TRUE(UserInFullscreenPromoCooldown());
+}
+
+// Tests cooldown between non-modal promos with a prior non-modal promo
+// interaction.
+TEST_F(DefaultBrowserUtilsTest, NonModalPromoCoolDownWithPriorInteraction) {
+  EXPECT_FALSE(UserInNonModalPromoCooldown());
+
+  SetObjectInStorageForKey(kLastTimeUserInteractedWithNonModalPromo,
+                           [NSDate date]);
+
+  EXPECT_TRUE(UserInNonModalPromoCooldown());
+}
+
+// Tests cooldown between non-modal promos without a prior non-modal promo
+// interaction, but with a fullscreen promo interaction.
+TEST_F(DefaultBrowserUtilsTest, NonModalPromoCoolDownWithoutPriorInteraction) {
+  EXPECT_FALSE(UserInNonModalPromoCooldown());
+
+  SetObjectInStorageForKey(kLastTimeUserInteractedWithFullscreenPromo,
+                           [NSDate date]);
+
+  EXPECT_TRUE(UserInNonModalPromoCooldown());
+}
+
+// Tests logging user interactions with a non-modal promo with cooldown refactor
+// enabled.
+TEST_F(DefaultBrowserUtilsTest,
+       LogNonModalUserInteractionCooldownRefactorEnabled) {
+  feature_list_.InitWithFeatures(
+      {/*enabled=*/kNonModalDefaultBrowserPromoCooldownRefactor},
+      {/*disabled=*/});
+
+  EXPECT_FALSE(UserInNonModalPromoCooldown());
+
+  LogUserInteractionWithNonModalPromo();
+  EXPECT_EQ(UserInteractionWithNonModalPromoCount(), 1);
+  EXPECT_TRUE(UserInNonModalPromoCooldown());
+  EXPECT_FALSE(UserInFullscreenPromoCooldown());
+
+  LogUserInteractionWithNonModalPromo();
+  EXPECT_EQ(UserInteractionWithNonModalPromoCount(), 2);
+  EXPECT_TRUE(UserInNonModalPromoCooldown());
+  EXPECT_FALSE(UserInFullscreenPromoCooldown());
+}
+
+// Tests logging user interactions with a non-modal promo with cooldown refactor
+// disabled.
+TEST_F(DefaultBrowserUtilsTest,
+       LogNonModalUserInteractionCooldownRefactorDisabled) {
+  feature_list_.InitWithFeatures(
+      {/*enabled=*/},
+      {/*disabled=*/kNonModalDefaultBrowserPromoCooldownRefactor});
+
+  EXPECT_FALSE(UserInNonModalPromoCooldown());
+
+  LogUserInteractionWithNonModalPromo();
+  EXPECT_EQ(UserInteractionWithNonModalPromoCount(), 1);
+  EXPECT_TRUE(UserInNonModalPromoCooldown());
+  EXPECT_TRUE(UserInFullscreenPromoCooldown());
+
+  LogUserInteractionWithNonModalPromo();
+  EXPECT_EQ(UserInteractionWithNonModalPromoCount(), 2);
+  EXPECT_TRUE(UserInNonModalPromoCooldown());
+  EXPECT_TRUE(UserInFullscreenPromoCooldown());
+}
+
+// Tests that the cooldown refactor flag is enabled.
+TEST_F(DefaultBrowserUtilsTest, CooldownRefactorFlagEnabled) {
+  feature_list_.InitWithFeatures(
+      {/*enabled=*/kNonModalDefaultBrowserPromoCooldownRefactor},
+      {/*disabled=*/});
+
+  EXPECT_TRUE(IsNonModalDefaultBrowserPromoCooldownRefactorEnabled());
+}
+
+// Tests that the cooldown refactor flag is disabled.
+TEST_F(DefaultBrowserUtilsTest, CooldownRefactorFlagDisabled) {
+  feature_list_.InitWithFeatures(
+      {/*enabled=*/},
+      {/*disabled=*/kNonModalDefaultBrowserPromoCooldownRefactor});
+
+  EXPECT_FALSE(IsNonModalDefaultBrowserPromoCooldownRefactorEnabled());
 }
 
 // Tests no 2 tailored promos are not shown.
@@ -217,4 +325,380 @@ TEST_F(DefaultBrowserUtilsTest, ManualRecentTimestampForKeyOver6Hours) {
   EXPECT_FALSE(HasRecentTimestampForKey(kTestTimestampKey));
 }
 
+// Test `CalculatePromoStatistics` when feature flag is disabled.
+TEST_F(DefaultBrowserUtilsTest, CalculatePromoStatisticsTest_FlagDisabled) {
+  feature_list_.InitWithFeatures({},
+                                 {kDefaultBrowserTriggerCriteriaExperiment});
+  {
+    PromoStatistics* promo_stats = CalculatePromoStatistics();
+    EXPECT_EQ(0, promo_stats.promoDisplayCount);
+    EXPECT_EQ(0, promo_stats.numDaysSinceLastPromo);
+    EXPECT_EQ(0, promo_stats.chromeColdStartCount);
+    EXPECT_EQ(0, promo_stats.chromeWarmStartCount);
+    EXPECT_EQ(0, promo_stats.chromeIndirectStartCount);
+  }
+
+  LogFullscreenDefaultBrowserPromoDisplayed();
+  LogUserInteractionWithFullscreenPromo();
+  LogBrowserLaunched(true);
+  LogBrowserLaunched(false);
+  LogBrowserIndirectlylaunched();
+
+  {
+    PromoStatistics* promo_stats = CalculatePromoStatistics();
+    EXPECT_EQ(0, promo_stats.promoDisplayCount);
+    EXPECT_EQ(0, promo_stats.numDaysSinceLastPromo);
+    EXPECT_EQ(0, promo_stats.chromeColdStartCount);
+    EXPECT_EQ(0, promo_stats.chromeWarmStartCount);
+    EXPECT_EQ(0, promo_stats.chromeIndirectStartCount);
+  }
+}
+
+// Test `CalculatePromoStatistics` when feature flag is enabled.
+TEST_F(DefaultBrowserUtilsTest, CalculatePromoStatisticsTest_FlagEnabled) {
+  feature_list_.InitWithFeatures({kDefaultBrowserTriggerCriteriaExperiment},
+                                 {});
+  {
+    PromoStatistics* promo_stats = CalculatePromoStatistics();
+    EXPECT_EQ(0, promo_stats.promoDisplayCount);
+    EXPECT_EQ(0, promo_stats.numDaysSinceLastPromo);
+  }
+
+  NSTimeInterval secondsPerDay = 24 * 60 * 60;
+  NSDate* yesterday =
+      [[NSDate alloc] initWithTimeIntervalSinceNow:-secondsPerDay];
+  SetObjectInStorageForKey(kLastTimeUserInteractedWithFullscreenPromo,
+                           yesterday);
+
+  LogFullscreenDefaultBrowserPromoDisplayed();
+
+  {
+    PromoStatistics* promo_stats = CalculatePromoStatistics();
+    EXPECT_EQ(1, promo_stats.promoDisplayCount);
+    EXPECT_EQ(1, promo_stats.numDaysSinceLastPromo);
+  }
+
+  LogFullscreenDefaultBrowserPromoDisplayed();
+  LogUserInteractionWithFullscreenPromo();
+
+  {
+    PromoStatistics* promo_stats = CalculatePromoStatistics();
+    EXPECT_EQ(2, promo_stats.promoDisplayCount);
+    EXPECT_EQ(0, promo_stats.numDaysSinceLastPromo);
+  }
+}
+
+// Test `CalculatePromoStatistics` for chrome open metrics.
+TEST_F(DefaultBrowserUtilsTest, CalculatePromoStatisticsTest_ChromeOpen) {
+  feature_list_.InitWithFeatures({kDefaultBrowserTriggerCriteriaExperiment},
+                                 {});
+  {
+    PromoStatistics* promo_stats = CalculatePromoStatistics();
+    EXPECT_EQ(0, promo_stats.chromeColdStartCount);
+    EXPECT_EQ(0, promo_stats.chromeWarmStartCount);
+    EXPECT_EQ(0, promo_stats.chromeIndirectStartCount);
+  }
+
+  // Adding timestamps that are older than 14 days should not change the promo
+  // stats.
+  NSDate* moreThan14DaysAgo = (base::Time::Now() - kMoreThan14Days).ToNSDate();
+  SetObjectIntoStorageForKey(kAllTimestampsAppLaunchColdStart,
+                             @[ moreThan14DaysAgo ]);
+  SetObjectIntoStorageForKey(kAllTimestampsAppLaunchWarmStart,
+                             @[ moreThan14DaysAgo ]);
+  SetObjectIntoStorageForKey(kAllTimestampsAppLaunchIndirectStart,
+                             @[ moreThan14DaysAgo ]);
+  {
+    PromoStatistics* promo_stats = CalculatePromoStatistics();
+    EXPECT_EQ(0, promo_stats.chromeColdStartCount);
+    EXPECT_EQ(0, promo_stats.chromeWarmStartCount);
+    EXPECT_EQ(0, promo_stats.chromeIndirectStartCount);
+  }
+
+  // Adding timestamps that are between 7 - 14 days should be counted.
+  NSDate* moreThan7DaysAgo = (base::Time::Now() - kMoreThan7Days).ToNSDate();
+
+  SetObjectIntoStorageForKey(kAllTimestampsAppLaunchColdStart,
+                             @[ moreThan7DaysAgo, moreThan14DaysAgo ]);
+  SetObjectIntoStorageForKey(kAllTimestampsAppLaunchWarmStart,
+                             @[ moreThan7DaysAgo, moreThan14DaysAgo ]);
+  SetObjectIntoStorageForKey(kAllTimestampsAppLaunchIndirectStart,
+                             @[ moreThan7DaysAgo, moreThan14DaysAgo ]);
+  {
+    PromoStatistics* promo_stats = CalculatePromoStatistics();
+    EXPECT_EQ(1, promo_stats.chromeColdStartCount);
+    EXPECT_EQ(1, promo_stats.chromeWarmStartCount);
+    EXPECT_EQ(1, promo_stats.chromeIndirectStartCount);
+  }
+
+  LogBrowserLaunched(true);
+
+  {
+    PromoStatistics* promo_stats = CalculatePromoStatistics();
+    EXPECT_EQ(2, promo_stats.chromeColdStartCount);
+    EXPECT_EQ(1, promo_stats.chromeWarmStartCount);
+    EXPECT_EQ(1, promo_stats.chromeIndirectStartCount);
+  }
+
+  LogBrowserLaunched(true);
+  LogBrowserLaunched(false);
+
+  {
+    PromoStatistics* promo_stats = CalculatePromoStatistics();
+    EXPECT_EQ(3, promo_stats.chromeColdStartCount);
+    EXPECT_EQ(2, promo_stats.chromeWarmStartCount);
+    EXPECT_EQ(1, promo_stats.chromeIndirectStartCount);
+  }
+
+  LogBrowserLaunched(true);
+  LogBrowserLaunched(false);
+  LogBrowserIndirectlylaunched();
+
+  {
+    PromoStatistics* promo_stats = CalculatePromoStatistics();
+    EXPECT_EQ(4, promo_stats.chromeColdStartCount);
+    EXPECT_EQ(3, promo_stats.chromeWarmStartCount);
+    EXPECT_EQ(2, promo_stats.chromeIndirectStartCount);
+  }
+}
+
+// Test `CalculatePromoStatistics` for active day count metrics.
+TEST_F(DefaultBrowserUtilsTest, CalculatePromoStatisticsTest_ActiveDayCount) {
+  feature_list_.InitWithFeatures({kDefaultBrowserTriggerCriteriaExperiment},
+                                 {});
+  {
+    PromoStatistics* promo_stats = CalculatePromoStatistics();
+    EXPECT_EQ(0, promo_stats.activeDayCount);
+  }
+
+  // Adding timestamps that are older than 14 days should not change the promo
+  // stats.
+  NSDate* moreThan14DaysAgo = (base::Time::Now() - kMoreThan14Days).ToNSDate();
+  SetObjectIntoStorageForKey(kAllTimestampsAppLaunchColdStart,
+                             @[ moreThan14DaysAgo ]);
+  SetObjectIntoStorageForKey(kAllTimestampsAppLaunchWarmStart,
+                             @[ moreThan14DaysAgo ]);
+  SetObjectIntoStorageForKey(kAllTimestampsAppLaunchIndirectStart,
+                             @[ moreThan14DaysAgo ]);
+  {
+    PromoStatistics* promo_stats = CalculatePromoStatistics();
+    EXPECT_EQ(0, promo_stats.activeDayCount);
+  }
+
+  // Adding timestamps that are between 7 - 14 days should be counted.
+  NSDate* moreThan7DaysAgo = (base::Time::Now() - kMoreThan7Days).ToNSDate();
+
+  SetObjectIntoStorageForKey(kAllTimestampsAppLaunchColdStart,
+                             @[ moreThan7DaysAgo, moreThan14DaysAgo ]);
+  SetObjectIntoStorageForKey(kAllTimestampsAppLaunchWarmStart,
+                             @[ moreThan7DaysAgo, moreThan14DaysAgo ]);
+  SetObjectIntoStorageForKey(kAllTimestampsAppLaunchIndirectStart,
+                             @[ moreThan7DaysAgo, moreThan14DaysAgo ]);
+  {
+    PromoStatistics* promo_stats = CalculatePromoStatistics();
+    EXPECT_EQ(1, promo_stats.activeDayCount);
+  }
+
+  // Adding current timestamp should be counted.
+  LogBrowserLaunched(true);
+  LogBrowserLaunched(false);
+  LogBrowserIndirectlylaunched();
+
+  {
+    PromoStatistics* promo_stats = CalculatePromoStatistics();
+    EXPECT_EQ(2, promo_stats.activeDayCount);
+  }
+}
+
+// Test `CalculatePromoStatistics` for password manager use.
+TEST_F(DefaultBrowserUtilsTest,
+       CalculatePromoStatisticsTest_PasswordManagerUseCount) {
+  feature_list_.InitWithFeatures({kDefaultBrowserTriggerCriteriaExperiment},
+                                 {});
+  {
+    PromoStatistics* promo_stats = CalculatePromoStatistics();
+    EXPECT_EQ(0, promo_stats.passwordManagerUseCount);
+  }
+
+  // Adding timestamps that are older than 14 days should not change the promo
+  // stats.
+  NSDate* moreThan14DaysAgo = (base::Time::Now() - kMoreThan14Days).ToNSDate();
+  SetObjectIntoStorageForKey(kLastSignificantUserEventStaySafe,
+                             @[ moreThan14DaysAgo ]);
+  {
+    PromoStatistics* promo_stats = CalculatePromoStatistics();
+    EXPECT_EQ(0, promo_stats.passwordManagerUseCount);
+  }
+
+  // Adding timestamps that are between 7 - 14 days should be counted.
+  NSDate* moreThan7DaysAgo = (base::Time::Now() - kMoreThan7Days).ToNSDate();
+
+  SetObjectIntoStorageForKey(kLastSignificantUserEventStaySafe,
+                             @[ moreThan7DaysAgo, moreThan14DaysAgo ]);
+  {
+    PromoStatistics* promo_stats = CalculatePromoStatistics();
+    EXPECT_EQ(1, promo_stats.passwordManagerUseCount);
+  }
+
+  // Adding current timestamp should be counted.
+  LogLikelyInterestedDefaultBrowserUserActivity(DefaultPromoTypeStaySafe);
+
+  {
+    PromoStatistics* promo_stats = CalculatePromoStatistics();
+    EXPECT_EQ(2, promo_stats.passwordManagerUseCount);
+  }
+}
+
+// Test `CalculatePromoStatistics` for omnibox use count.
+TEST_F(DefaultBrowserUtilsTest,
+       CalculatePromoStatisticsTest_OmniboxClipboardUseCount) {
+  feature_list_.InitWithFeatures({kDefaultBrowserTriggerCriteriaExperiment},
+                                 {});
+  {
+    PromoStatistics* promo_stats = CalculatePromoStatistics();
+    EXPECT_EQ(0, promo_stats.omniboxClipboardUseCount);
+  }
+
+  // Adding timestamps that are older than 14 days should not change the promo
+  // stats.
+  NSDate* moreThan14DaysAgo = (base::Time::Now() - kMoreThan14Days).ToNSDate();
+  SetObjectIntoStorageForKey(kOmniboxUseCount, @[ moreThan14DaysAgo ]);
+  {
+    PromoStatistics* promo_stats = CalculatePromoStatistics();
+    EXPECT_EQ(0, promo_stats.omniboxClipboardUseCount);
+  }
+
+  // Adding timestamps that are between 7 - 14 days should be counted.
+  NSDate* moreThan7DaysAgo = (base::Time::Now() - kMoreThan7Days).ToNSDate();
+
+  SetObjectIntoStorageForKey(kOmniboxUseCount,
+                             @[ moreThan7DaysAgo, moreThan14DaysAgo ]);
+  {
+    PromoStatistics* promo_stats = CalculatePromoStatistics();
+    EXPECT_EQ(1, promo_stats.omniboxClipboardUseCount);
+  }
+
+  // Adding current timestamp should be counted.
+  LogCopyPasteInOmniboxForDefaultBrowserPromo();
+
+  {
+    PromoStatistics* promo_stats = CalculatePromoStatistics();
+    EXPECT_EQ(2, promo_stats.omniboxClipboardUseCount);
+  }
+}
+
+// Test `CalculatePromoStatistics` for bookmark use count.
+TEST_F(DefaultBrowserUtilsTest, CalculatePromoStatisticsTest_BookmarkUseCount) {
+  feature_list_.InitWithFeatures({kDefaultBrowserTriggerCriteriaExperiment},
+                                 {});
+  {
+    PromoStatistics* promo_stats = CalculatePromoStatistics();
+    EXPECT_EQ(0, promo_stats.bookmarkUseCount);
+  }
+
+  // Adding timestamps that are older than 14 days should not change the promo
+  // stats.
+  NSDate* moreThan14DaysAgo = (base::Time::Now() - kMoreThan14Days).ToNSDate();
+  SetObjectIntoStorageForKey(kBookmarkUseCount, @[ moreThan14DaysAgo ]);
+  {
+    PromoStatistics* promo_stats = CalculatePromoStatistics();
+    EXPECT_EQ(0, promo_stats.bookmarkUseCount);
+  }
+
+  // Adding timestamps that are between 7 - 14 days should be counted.
+  NSDate* moreThan7DaysAgo = (base::Time::Now() - kMoreThan7Days).ToNSDate();
+
+  SetObjectIntoStorageForKey(kBookmarkUseCount,
+                             @[ moreThan7DaysAgo, moreThan14DaysAgo ]);
+  {
+    PromoStatistics* promo_stats = CalculatePromoStatistics();
+    EXPECT_EQ(1, promo_stats.bookmarkUseCount);
+  }
+
+  // Adding current timestamp should be counted.
+  LogBookmarkUseForDefaultBrowserPromo();
+
+  {
+    PromoStatistics* promo_stats = CalculatePromoStatistics();
+    EXPECT_EQ(2, promo_stats.bookmarkUseCount);
+  }
+}
+
+// Test `CalculatePromoStatistics` for autofill use count.
+TEST_F(DefaultBrowserUtilsTest, CalculatePromoStatisticsTest_AutofillUseCount) {
+  feature_list_.InitWithFeatures({kDefaultBrowserTriggerCriteriaExperiment},
+                                 {});
+  {
+    PromoStatistics* promo_stats = CalculatePromoStatistics();
+    EXPECT_EQ(0, promo_stats.autofillUseCount);
+  }
+
+  // Adding timestamps that are older than 14 days should not change the promo
+  // stats.
+  NSDate* moreThan14DaysAgo = (base::Time::Now() - kMoreThan14Days).ToNSDate();
+  SetObjectIntoStorageForKey(kAutofillUseCount, @[ moreThan14DaysAgo ]);
+  SetObjectIntoStorageForKey(kAutofillUseCount, @[ moreThan14DaysAgo ]);
+  {
+    PromoStatistics* promo_stats = CalculatePromoStatistics();
+    EXPECT_EQ(0, promo_stats.autofillUseCount);
+  }
+
+  // Adding timestamps that are between 7 - 14 days should be counted.
+  NSDate* moreThan7DaysAgo = (base::Time::Now() - kMoreThan7Days).ToNSDate();
+
+  SetObjectIntoStorageForKey(kAutofillUseCount,
+                             @[ moreThan7DaysAgo, moreThan14DaysAgo ]);
+  {
+    PromoStatistics* promo_stats = CalculatePromoStatistics();
+    EXPECT_EQ(1, promo_stats.autofillUseCount);
+  }
+
+  // Adding current timestamp should be counted.
+  LogAutofillUseForDefaultBrowserPromo();
+
+  {
+    PromoStatistics* promo_stats = CalculatePromoStatistics();
+    EXPECT_EQ(2, promo_stats.autofillUseCount);
+  }
+}
+
+// Test `CalculatePromoStatistics` for pinned or remote tab use.
+TEST_F(DefaultBrowserUtilsTest,
+       CalculatePromoStatisticsTest_SpecialTabUseCount) {
+  feature_list_.InitWithFeatures({kDefaultBrowserTriggerCriteriaExperiment},
+                                 {});
+  {
+    PromoStatistics* promo_stats = CalculatePromoStatistics();
+    EXPECT_EQ(0, promo_stats.specialTabsUseCount);
+  }
+
+  // Adding timestamps that are older than 14 days should not change the promo
+  // stats.
+  NSDate* moreThan14DaysAgo = (base::Time::Now() - kMoreThan14Days).ToNSDate();
+  SetObjectIntoStorageForKey(kLastSignificantUserEventStaySafe,
+                             @[ moreThan14DaysAgo ]);
+  {
+    PromoStatistics* promo_stats = CalculatePromoStatistics();
+    EXPECT_EQ(0, promo_stats.specialTabsUseCount);
+  }
+
+  // Adding timestamps that are between 7 - 14 days should be counted.
+  NSDate* moreThan7DaysAgo = (base::Time::Now() - kMoreThan7Days).ToNSDate();
+
+  SetObjectIntoStorageForKey(kSpecialTabsUseCount,
+                             @[ moreThan7DaysAgo, moreThan14DaysAgo ]);
+  {
+    PromoStatistics* promo_stats = CalculatePromoStatistics();
+    EXPECT_EQ(1, promo_stats.specialTabsUseCount);
+  }
+
+  // Adding current timestamp should be counted.
+  LogRemoteTabsUsedForDefaultBrowserPromo();
+  LogPinnedTabsUsedForDefaultBrowserPromo();
+
+  {
+    PromoStatistics* promo_stats = CalculatePromoStatistics();
+    EXPECT_EQ(3, promo_stats.specialTabsUseCount);
+  }
+}
 }  // namespace

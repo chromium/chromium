@@ -13,15 +13,17 @@
 
 namespace partition_alloc {
 
+class AllocationNotificationData;
+class FreeNotificationData;
+
 // PartitionAlloc supports setting hooks to observe allocations/frees as they
 // occur as well as 'override' hooks that allow overriding those operations.
 class PA_COMPONENT_EXPORT(PARTITION_ALLOC) PartitionAllocHooks {
  public:
   // Log allocation and free events.
-  typedef void AllocationObserverHook(void* address,
-                                      size_t size,
-                                      const char* type_name);
-  typedef void FreeObserverHook(void* address);
+  typedef void AllocationObserverHook(
+      const AllocationNotificationData& notification_data);
+  typedef void FreeObserverHook(const FreeNotificationData& notification_data);
 
   // If it returns true, the allocation has been overridden with the pointer in
   // *out.
@@ -55,21 +57,20 @@ class PA_COMPONENT_EXPORT(PARTITION_ALLOC) PartitionAllocHooks {
     return hooks_enabled_.load(std::memory_order_relaxed);
   }
 
-  static void AllocationObserverHookIfEnabled(void* address,
-                                              size_t size,
-                                              const char* type_name);
+  static void AllocationObserverHookIfEnabled(
+      const partition_alloc::AllocationNotificationData& notification_data);
   static bool AllocationOverrideHookIfEnabled(void** out,
                                               unsigned int flags,
                                               size_t size,
                                               const char* type_name);
 
-  static void FreeObserverHookIfEnabled(void* address);
+  static void FreeObserverHookIfEnabled(
+      const FreeNotificationData& notification_data);
   static bool FreeOverrideHookIfEnabled(void* address);
 
-  static void ReallocObserverHookIfEnabled(void* old_address,
-                                           void* new_address,
-                                           size_t size,
-                                           const char* type_name);
+  static void ReallocObserverHookIfEnabled(
+      const FreeNotificationData& free_notification_data,
+      const AllocationNotificationData& allocation_notification_data);
   static bool ReallocOverrideHookIfEnabled(size_t* out, void* address);
 
   PA_ALWAYS_INLINE static QuarantineOverrideHook* GetQuarantineOverrideHook() {

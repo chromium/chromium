@@ -12,6 +12,7 @@
 #include "ash/app_list/model/app_list_item.h"
 #include "ash/app_list/model/app_list_model.h"
 #include "ash/app_list/quick_app_access_model.h"
+#include "ash/ash_element_identifiers.h"
 #include "ash/constants/ash_features.h"
 #include "ash/public/cpp/ash_typography.h"
 #include "ash/public/cpp/shelf_config.h"
@@ -27,10 +28,10 @@
 #include "ash/style/ash_color_provider.h"
 #include "ash/style/typography.h"
 #include "ash/user_education/user_education_class_properties.h"
-#include "ash/user_education/user_education_constants.h"
 #include "ash/wm/tablet_mode/tablet_mode_controller.h"
 #include "base/check_op.h"
 #include "base/i18n/rtl.h"
+#include "base/memory/raw_ptr.h"
 #include "base/metrics/user_metrics.h"
 #include "base/metrics/user_metrics_action.h"
 #include "base/time/time.h"
@@ -46,10 +47,12 @@
 #include "ui/gfx/scoped_canvas.h"
 #include "ui/views/animation/animation_builder.h"
 #include "ui/views/animation/flood_fill_ink_drop_ripple.h"
+#include "ui/views/animation/ink_drop.h"
 #include "ui/views/background.h"
 #include "ui/views/border.h"
 #include "ui/views/controls/button/button_controller.h"
 #include "ui/views/controls/button/image_button.h"
+#include "ui/views/controls/highlight_path_generator.h"
 #include "ui/views/controls/label.h"
 #include "ui/views/highlight_border.h"
 #include "ui/views/layout/fill_layout.h"
@@ -253,7 +256,7 @@ class HomeButton::ButtonImageView : public views::View {
                     : cros_tokens::kCrosSysSystemOnBase;
   }
 
-  HomeButtonController* const button_controller_;
+  const raw_ptr<HomeButtonController, ExperimentalAsh> button_controller_;
 
   bool toggled_ = false;
 };
@@ -288,7 +291,17 @@ HomeButton::HomeButton(Shelf* shelf)
       l10n_util::GetStringUTF16(IDS_ASH_SHELF_APP_LIST_LAUNCHER_TITLE));
   button_controller()->set_notify_action(
       views::ButtonController::NotifyAction::kOnPress);
-  SetHasInkDropActionOnClick(false);
+
+  // When Jelly is disabled, the toggled state is achieved by activating ink
+  // drop from the home button controller. Given that the controller manages ink
+  // drop on gesture events itself, disable the default on-gesture ink drop
+  // behavior.
+  views::InkDrop::Get(this)->SetMode(
+      jelly_enabled_ ? views::InkDropHost::InkDropMode::ON
+                     : views::InkDropHost::InkDropMode::ON_NO_GESTURE_HANDLER);
+  if (!jelly_enabled_) {
+    SetHasInkDropActionOnClick(false);
+  }
 
   SetEventTargeter(std::make_unique<views::ViewTargeter>(this));
   layer()->SetName("shelf/Homebutton");
@@ -297,15 +310,15 @@ HomeButton::HomeButton(Shelf* shelf)
   button_image_view_ =
       AddChildViewAt(std::make_unique<ButtonImageView>(&controller_), 0);
 
-  if (features::IsHomeButtonWithTextEnabled() &&
-      !features::IsHomeButtonQuickAppAccessEnabled()) {
+  if (features::IsHomeButtonWithTextEnabled()) {
     // Directly shows the nudge label if the text-in-shelf feature is enabled.
     CreateNudgeLabel();
     expandable_container_->SetVisible(true);
     shelf_->shelf_layout_manager()->LayoutShelf(false);
   }
 
-  if (features::IsHomeButtonQuickAppAccessEnabled()) {
+  if (features::IsHomeButtonQuickAppAccessEnabled() &&
+      !features::IsHomeButtonWithTextEnabled()) {
     shell_observation_.Observe(Shell::Get());
     app_list_model_observation_.Observe(AppListModelProvider::Get());
     quick_app_model_observation_.Observe(
@@ -316,8 +329,9 @@ HomeButton::HomeButton(Shelf* shelf)
     // NOTE: Set `kHelpBubbleContextKey` before `views::kElementIdentifierKey`
     // in case registration causes a help bubble to be created synchronously.
     SetProperty(kHelpBubbleContextKey, HelpBubbleContext::kAsh);
-    SetProperty(views::kElementIdentifierKey, kHomeButtonElementId);
   }
+  SetProperty(views::kElementIdentifierKey, kHomeButtonElementId);
+
   ShelfConfig::Get()->AddObserver(this);
 }
 
@@ -449,8 +463,6 @@ void HomeButton::ButtonPressed(views::Button* sender,
 }
 
 void HomeButton::OnShelfConfigUpdated() {
-  const float radius = ShelfConfig::Get()->control_border_radius();
-  layer()->SetRoundedCornerRadius({radius, radius, radius, radius});
   button_image_view_->UpdateForShelfConfigChange();
 }
 
@@ -689,8 +701,8 @@ void HomeButton::CreateQuickAppButton() {
   quick_app_button_ = expandable_container_->AddChildView(
       std::make_unique<views::ImageButton>(base::BindRepeating(
           &HomeButton::QuickAppButtonPressed, base::Unretained(this))));
-  // TODO(b/266734005): Replace with localized string once finalized.
-  quick_app_button_->SetAccessibleName(u"QuickApp");
+  quick_app_button_->SetAccessibleName(
+      AppListModelProvider::Get()->quick_app_access_model()->GetAppName());
 
   const int control_size = ShelfControlButton::CalculatePreferredSize().width();
 
@@ -702,6 +714,13 @@ void HomeButton::CreateQuickAppButton() {
       views::Button::STATE_NORMAL,
       AppListModelProvider::Get()->quick_app_access_model()->GetAppIcon(
           preferred_size));
+  views::HighlightPathGenerator::Install(
+      quick_app_button_,
+      std::make_unique<views::RoundRectHighlightPathGenerator>(
+          gfx::Insets(views::FocusRing::kDefaultHaloThickness / 2),
+          ShelfConfig::Get()->control_border_radius()));
+  views::FocusRing::Get(quick_app_button_)
+      ->SetColorId(cros_tokens::kCrosSysFocusRing);
   quick_app_button_->SetSize(preferred_size);
 
   shelf_->shelf_layout_manager()->LayoutShelf(false);

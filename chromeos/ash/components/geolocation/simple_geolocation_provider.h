@@ -44,9 +44,10 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_GEOLOCATION)
 
     virtual ~Delegate() = default;
 
-    // Determines if the precise geolocation resolution is allowed, based on the
-    // existing enterprise policies, device preferences and user preferences.
-    virtual bool IsPreciseGeolocationAllowed() const = 0;
+    // Determines if the geolocation resolution is allowed by the system, based
+    // on the existing enterprise policies, device preferences and user
+    // preferences.
+    virtual bool IsSystemGeolocationAllowed() const = 0;
   };
 
   SimpleGeolocationProvider(
@@ -68,6 +69,10 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_GEOLOCATION)
                           bool send_wifi_access_points,
                           bool send_cell_towers,
                           SimpleGeolocationRequest::ResponseCallback callback);
+
+  network::SharedURLLoaderFactory* GetSharedURLLoaderFactoryForTesting() {
+    return shared_url_loader_factory_.get();
+  }
 
   // Returns default geolocation service URL.
   static GURL DefaultGeolocationProviderURL();

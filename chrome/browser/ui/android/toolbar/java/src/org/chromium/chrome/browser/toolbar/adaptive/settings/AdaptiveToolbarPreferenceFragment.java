@@ -59,6 +59,8 @@ public class AdaptiveToolbarPreferenceFragment extends PreferenceFragmentCompat 
                 AdaptiveToolbarFeatures.isAdaptiveToolbarTranslateEnabled());
         mRadioButtonGroup.setCanUseAddToBookmarks(
                 AdaptiveToolbarFeatures.isAdaptiveToolbarAddToBookmarksEnabled());
+        mRadioButtonGroup.setCanUseReadAloud(
+                AdaptiveToolbarFeatures.isAdaptiveToolbarReadAloudEnabled());
         mRadioButtonGroup.setStatePredictor(new AdaptiveToolbarStatePredictor(
                 new ActivityAndroidPermissionDelegate(new WeakReference(getActivity()))));
         mRadioButtonGroup.setOnPreferenceChangeListener((preference, newValue) -> {
@@ -88,7 +90,6 @@ public class AdaptiveToolbarPreferenceFragment extends PreferenceFragmentCompat 
         return VoiceRecognitionUtil.isVoiceSearchEnabled(permissionDelegate);
     }
 
-    @VisibleForTesting
     /*package*/ void setCanUseVoiceSearchForTesting(boolean canUseVoiceSearch) {
         mRadioButtonGroup.setCanUseVoiceSearch(false);
     }

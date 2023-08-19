@@ -25,6 +25,9 @@
 DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(
     HighEfficiencyResourceView,
     kHighEfficiencyResourceViewMemorySavingsElementId);
+DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(
+    HighEfficiencyResourceView,
+    kHighEfficiencyResourceViewMemoryLabelElementId);
 
 namespace {
 
@@ -41,13 +44,16 @@ enum MemorySavingsQuartile {
   kMedium = 1,
   kHigh = 2,
   kVeryHigh = 3,
-  kMaxValue = kVeryHigh,
+  kHuge = 4,
+  kMaxValue = kHuge,
 };
 
 // Each element represents the label for the chart when memory savings are in
-// the quartile represented by `MemorySavingsQuartile`.
+// the quartile represented by `MemorySavingsQuartile`. The last "quartile"
+// instead represents the 99th percentile (or a full chart).
 constexpr int kQuartilesLabels[] = {
     IDS_HIGH_EFFICIENCY_DIALOG_SMALL_SAVINGS_LABEL,
+    IDS_HIGH_EFFICIENCY_DIALOG_MEDIUM_SAVINGS_LABEL,
     IDS_HIGH_EFFICIENCY_DIALOG_MEDIUM_SAVINGS_LABEL,
     IDS_HIGH_EFFICIENCY_DIALOG_LARGE_SAVINGS_LABEL,
     IDS_HIGH_EFFICIENCY_DIALOG_VERY_LARGE_SAVINGS_LABEL};
@@ -68,8 +74,12 @@ int GetMemorySavingsQuartile(const int memory_savings_bytes) {
              performance_manager::features::
                  kHighEfficiencyChartPmf75PercentileBytes.Get()) {
     return MemorySavingsQuartile::kHigh;
-  } else {
+  } else if (memory_savings_bytes <
+             performance_manager::features::
+                 kHighEfficiencyChartPmf99PercentileBytes.Get()) {
     return MemorySavingsQuartile::kVeryHigh;
+  } else {
+    return MemorySavingsQuartile::kHuge;
   }
 }
 
@@ -101,8 +111,9 @@ class GaugeView : public views::FlexLayoutView {
     // draw an arc to the middle of the corresponding bucket. This is why the
     // 0.5 parts of the multipliers are needed.
     const int memory_angle =
-        (GetMemorySavingsQuartile(memory_savings_bytes_) + 0.5) *
-        kBucketWidthDegrees;
+        std::min((GetMemorySavingsQuartile(memory_savings_bytes_) + 0.5) *
+                     kBucketWidthDegrees,
+                 180.0);
 
     DrawArc(canvas, center, memory_angle,
             GetColorProvider()->GetColor(ui::kColorButtonBackgroundProminent));
@@ -176,17 +187,20 @@ HighEfficiencyResourceView::HighEfficiencyResourceView(
       AddChildView(std::make_unique<GaugeView>(memory_savings_bytes));
 
   std::u16string formatted_savings = ui::FormatBytes(memory_savings_bytes);
-  auto* memory_label = gauge_view->AddChildView(
+  auto* memory_savings = gauge_view->AddChildView(
       std::make_unique<views::Label>(formatted_savings));
-  memory_label->SetProperty(views::kElementIdentifierKey,
-                            kHighEfficiencyResourceViewMemorySavingsElementId);
-  memory_label->SetFontList(
-      memory_label->font_list().DeriveWithSizeDelta(kMemoryLabelSizeDelta));
-  memory_label->SetAccessibleName(l10n_util::GetStringFUTF16(
+  memory_savings->SetProperty(
+      views::kElementIdentifierKey,
+      kHighEfficiencyResourceViewMemorySavingsElementId);
+  memory_savings->SetFontList(
+      memory_savings->font_list().DeriveWithSizeDelta(kMemoryLabelSizeDelta));
+  memory_savings->SetAccessibleName(l10n_util::GetStringFUTF16(
       IDS_HIGH_EFFICIENCY_DIALOG_SAVINGS_ACCNAME, {formatted_savings}));
 
-  AddChildView(std::make_unique<views::Label>(
+  auto* memory_label = AddChildView(std::make_unique<views::Label>(
       l10n_util::GetStringUTF16(
           kQuartilesLabels[GetMemorySavingsQuartile(memory_savings_bytes)]),
       views::style::CONTEXT_LABEL, views::style::STYLE_SECONDARY));
+  memory_label->SetProperty(views::kElementIdentifierKey,
+                            kHighEfficiencyResourceViewMemoryLabelElementId);
 }

@@ -10,7 +10,6 @@
 
 #include "ash/public/cpp/session/session_activation_observer.h"
 #include "base/memory/raw_ptr.h"
-#include "base/memory/scoped_refptr.h"
 #include "base/observer_list.h"
 #include "base/time/time.h"
 #include "chrome/browser/ash/login/saml/password_sync_token_fetcher.h"
@@ -187,8 +186,9 @@ class InSessionPasswordChangeManager
                                AuthenticationError error);
   void OnPasswordUpdateSuccess(std::unique_ptr<UserContext> user_context);
 
-  raw_ptr<Profile, ExperimentalAsh> primary_profile_;
-  raw_ptr<const user_manager::User, ExperimentalAsh> primary_user_;
+  raw_ptr<Profile, DanglingUntriaged | ExperimentalAsh> primary_profile_;
+  raw_ptr<const user_manager::User, DanglingUntriaged | ExperimentalAsh>
+      primary_user_;
   base::ObserverList<Observer> observer_list_;
   RecheckPasswordExpiryTask recheck_task_;
   PasswordUpdateFlow password_update_flow_;

@@ -6,12 +6,12 @@
 
 #import <utility>
 
+#import "base/apple/foundation_util.h"
 #import "base/critical_closure.h"
 #import "base/functional/bind.h"
 #import "base/functional/callback.h"
 #import "base/ios/crb_protocol_observers.h"
 #import "base/ios/ios_util.h"
-#import "base/mac/foundation_util.h"
 #import "base/metrics/histogram_functions.h"
 #import "base/metrics/histogram_macros.h"
 #import "base/notreached.h"
@@ -58,12 +58,19 @@
 #import "net/url_request/url_request_context_getter.h"
 #import "ui/base/device_form_factor.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 namespace {
 NSString* const kStartupAttemptReset = @"StartupAttemptReset";
+
+// Flushes the CookieStore on the IO thread and invoke `closure` upon
+// completion. The sequence where `closure` is invoked is unspecified.
+void FlushCookieStoreOnIOThread(
+    scoped_refptr<net::URLRequestContextGetter> getter,
+    base::OnceClosure closure) {
+  DCHECK_CURRENTLY_ON(web::WebThread::IO);
+  getter->GetURLRequestContext()->cookie_store()->FlushStore(
+      std::move(closure));
+}
+
 }  // namespace
 
 #pragma mark - AppStateObserverList
@@ -80,6 +87,11 @@ NSString* const kStartupAttemptReset = @"StartupAttemptReset";
 
 // Container for observers.
 @property(nonatomic, strong) AppStateObserverList* observers;
+
+// YES if cookies are currently being flushed to disk. Declared as a property
+// to allow modifying it in a block via a __weak pointer without checking if
+// the pointer is nil or not.
+@property(nonatomic, assign) BOOL savingCookies;
 
 // This method is the first to be called when user launches the application.
 // This performs the minimal amount of browser initialization that is needed by
@@ -131,9 +143,6 @@ NSString* const kStartupAttemptReset = @"StartupAttemptReset";
   // -applicationDidEnterBackground: can be called twice.
   // TODO(crbug.com/546196): Remove this once rdar://22392526 is fixed.
   BOOL _applicationInBackground;
-
-  // YES if cookies are currently being flushed to disk.
-  BOOL _savingCookies;
 }
 
 @synthesize userInteracted = _userInteracted;
@@ -244,29 +253,32 @@ NSString* const kStartupAttemptReset = @"StartupAttemptReset";
   [self.startupInformation expireFirstUserActionRecorder];
 
   if (self.mainBrowserState && !_savingCookies) {
-    // Save cookies to disk. The empty critical closure guarantees that the task
-    // will be run before backgrounding.
-    scoped_refptr<net::URLRequestContextGetter> getter =
-        self.mainBrowserState->GetRequestContext();
+    // Record that saving the cookies has started to prevent posting multiple
+    // tasks if the user quickly background, foreground and background the app
+    // again.
     _savingCookies = YES;
-    __weak AppState* weakSelf = self;
 
-    __block base::OnceClosure criticalClosure = base::MakeCriticalClosure(
-        "applicationDidEnterBackground:_savingCookies", base::BindOnce(^{
-          DCHECK_CURRENTLY_ON(web::WebThread::UI);
-          AppState* strongSelf = weakSelf;
-          if (strongSelf)
-            strongSelf->_savingCookies = NO;
-        }),
-        /*is_immediate=*/true);
+    // The closure may be called on any sequence, so ensure it is posted back
+    // on the current one but using base::BindPostTask(). The critical closure
+    // guarantees that the task will be run before backgrounding.
+    __weak AppState* weakSelf = self;
+    base::OnceClosure closure = base::BindPostTask(
+        base::SequencedTaskRunner::GetCurrentDefault(),
+        base::MakeCriticalClosure(
+            "applicationDidEnterBackground:_savingCookies", base::BindOnce(^{
+              // Accessing a property in a block is safe as this is compiled
+              // to sending a message which is well defined on nil.
+              weakSelf.savingCookies = NO;
+            }),
+            /*is_immediate=*/true));
+
+    // Saving the cookies needs to happen on the IO thread.
     web::GetIOThreadTaskRunner({})->PostTask(
-        FROM_HERE, base::BindOnce(^{
-          net::CookieStore* store =
-              getter->GetURLRequestContext()->cookie_store();
-          // FlushStore() runs its callback on any thread. Jump back to UI.
-          store->FlushStore(base::BindPostTask(web::GetUIThreadTaskRunner({}),
-                                               std::move(criticalClosure)));
-        }));
+        FROM_HERE,
+        base::BindOnce(
+            &FlushCookieStoreOnIOThread,
+            base::WrapRefCounted(self.mainBrowserState->GetRequestContext()),
+            std::move(closure)));
   }
 
   // Mark the startup as clean if it hasn't already been.
@@ -494,7 +506,7 @@ NSString* const kStartupAttemptReset = @"StartupAttemptReset";
     }
 
     SceneDelegate* sceneDelegate =
-        base::mac::ObjCCastStrict<SceneDelegate>(scene.delegate);
+        base::apple::ObjCCastStrict<SceneDelegate>(scene.delegate);
     [sceneStates addObject:sceneDelegate.sceneState];
   }
   return sceneStates;
@@ -623,9 +635,9 @@ NSString* const kStartupAttemptReset = @"StartupAttemptReset";
 
 - (void)sceneWillConnect:(NSNotification*)notification {
   UIWindowScene* scene =
-      base::mac::ObjCCastStrict<UIWindowScene>(notification.object);
+      base::apple::ObjCCastStrict<UIWindowScene>(notification.object);
   SceneDelegate* sceneDelegate =
-      base::mac::ObjCCastStrict<SceneDelegate>(scene.delegate);
+      base::apple::ObjCCastStrict<SceneDelegate>(scene.delegate);
 
   // Under some iOS 15 betas, Chrome gets scene connection events for some
   // system scene connections. To handle this, early return if the connecting

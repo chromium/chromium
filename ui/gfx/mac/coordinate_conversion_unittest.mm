@@ -8,14 +8,10 @@
 
 #include <memory>
 
-#import "base/mac/scoped_objc_class_swizzler.h"
+#import "base/apple/scoped_objc_class_swizzler.h"
 #import "testing/gtest_mac.h"
 #import "testing/platform_test.h"
 #include "ui/gfx/geometry/rect.h"
-
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
 
 const int kTestWidth = 320;
 const int kTestHeight = 200;
@@ -48,7 +44,7 @@ class MacCoordinateConversionTest : public PlatformTest {
   void TearDown() override;
 
  private:
-  std::unique_ptr<base::mac::ScopedObjCClassSwizzler> swizzle_frame_;
+  std::unique_ptr<base::apple::ScopedObjCClassSwizzler> swizzle_frame_;
 };
 
 void MacCoordinateConversionTest::SetUp() {
@@ -58,7 +54,7 @@ void MacCoordinateConversionTest::SetUp() {
   EXPECT_EQ(0, primary_screen_frame.origin.x);
   EXPECT_EQ(0, primary_screen_frame.origin.y);
 
-  swizzle_frame_ = std::make_unique<base::mac::ScopedObjCClassSwizzler>(
+  swizzle_frame_ = std::make_unique<base::apple::ScopedObjCClassSwizzler>(
       [NSScreen class], [MacCoordinateConversionTestScreenDonor class],
       @selector(frame));
 

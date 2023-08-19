@@ -212,6 +212,7 @@ class CC_ANIMATION_EXPORT AnimationHost : public MutatorHost,
   bool HasSmilAnimation() const override;
   bool HasViewTransition() const override;
   bool HasScrollLinkedAnimation(ElementId for_scroller) const override;
+  bool IsAutoScrolling() const override;
 
   // Starts/stops throughput tracking represented by |sequence_id|.
   void StartThroughputTracking(TrackedAnimationSequenceId sequence_id);

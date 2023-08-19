@@ -13,10 +13,9 @@
 #include "base/path_service.h"
 #include "base/strings/stringprintf.h"
 #include "base/threading/thread_restrictions.h"
-#include "chrome/browser/ash/login/users/test_users.h"
 #include "chrome/common/chrome_paths.h"
 #include "chrome/test/base/fake_gaia_mixin.h"
-#include "chromeos/ash/components/dbus/attestation/fake_attestation_client.h"
+#include "chromeos/ash/components/dbus/attestation/attestation_client.h"
 #include "net/base/url_util.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -38,6 +37,7 @@ constexpr char kRelayState[] = "RelayState";
 
 constexpr char kIdpDomain[] = "example.com";
 constexpr char kIdPHost[] = "login.corp.example.com";
+constexpr char kLinkedPageHost[] = "localhost";
 constexpr char kIdpSsoProfile[] = "inboundSamlSsoProfiles/example";
 constexpr char kSamlLoginPath[] = "SAML";
 constexpr char kSamlLoginAuthPath[] = "SAMLAuth";
@@ -45,6 +45,7 @@ constexpr char kSamlLoginWithDeviceAttestationPath[] =
     "SAML-with-device-attestation";
 constexpr char kSamlLoginWithDeviceTrustPath[] = "SAML-with-device-trust";
 constexpr char kSamlLoginCheckDeviceAnswerPath[] = "SAML-check-device-answer";
+constexpr char kLinkedPagePath[] = "linked";
 
 // Must be equal to SAML_VERIFIED_ACCESS_RESPONSE_HEADER from
 // chrome/browser/enterprise/connectors/device_trust/navigation_throttle.cc.
@@ -234,6 +235,11 @@ GURL FakeSamlIdpMixin::GetSamlWithCheckDeviceAnswerUrl() const {
       kIdPHost, std::string("/") + kSamlLoginCheckDeviceAnswerPath);
 }
 
+GURL FakeSamlIdpMixin::GetLinkedPageUrl() const {
+  return saml_server_.GetURL(kLinkedPageHost,
+                             std::string("/") + kLinkedPagePath);
+}
+
 std::unique_ptr<net::test_server::HttpResponse> FakeSamlIdpMixin::HandleRequest(
     const net::test_server::HttpRequest& request) {
   GURL request_url = request.GetURL();
@@ -268,6 +274,8 @@ std::unique_ptr<net::test_server::HttpResponse> FakeSamlIdpMixin::HandleRequest(
       return BuildResponseForLoginWithDeviceTrust(request, request_url);
     case RequestType::kLoginCheckDeviceAnswer:
       return BuildResponseForCheckDeviceAnswer(request, request_url);
+    case RequestType::kLinkedPage:
+      return BuildResponseForLinkedPage(request, request_url);
     case RequestType::kUnknown:
       NOTREACHED();
       return nullptr;
@@ -288,6 +296,9 @@ FakeSamlIdpMixin::RequestType FakeSamlIdpMixin::ParseRequestTypeFromRequestPath(
     return RequestType::kLoginWithDeviceTrust;
   if (request_path == GetSamlWithCheckDeviceAnswerUrl().path())
     return RequestType::kLoginCheckDeviceAnswer;
+  if (request_path == GetLinkedPageUrl().path()) {
+    return RequestType::kLinkedPage;
+  }
 
   return RequestType::kUnknown;
 }
@@ -380,7 +391,7 @@ FakeSamlIdpMixin::BuildResponseForCheckDeviceAnswer(const HttpRequest& request,
 
   auto iter = request.headers.find(kSamlVerifiedAccessResponseHeader);
   if (iter != request.headers.end()) {
-    SaveChallengeResponse(/*challenge_response=*/iter->second);
+    SaveChallengeResponse(/*response=*/iter->second);
   } else {
     ClearChallengeResponse();
   }
@@ -394,6 +405,13 @@ FakeSamlIdpMixin::BuildResponseForCheckDeviceAnswer(const HttpRequest& request,
   return http_response;
 }
 
+std::unique_ptr<HttpResponse> FakeSamlIdpMixin::BuildResponseForLinkedPage(
+    const HttpRequest& request,
+    const GURL& request_url) const {
+  return BuildHTMLResponse(login_html_template_, "linked",
+                           GetLinkedPageUrl().path());
+}
+
 std::unique_ptr<net::test_server::HttpResponse>
 FakeSamlIdpMixin::BuildHTMLResponse(const std::string& html_template,
                                     const std::string& relay_state,
@@ -405,6 +423,11 @@ FakeSamlIdpMixin::BuildHTMLResponse(const std::string& html_template,
   base::ReplaceSubstringsAfterOffset(&response_html, 0, "$Refresh",
                                      refresh_url_.spec());
 
+  return BuildHTMLResponse(response_html);
+}
+
+std::unique_ptr<net::test_server::HttpResponse>
+FakeSamlIdpMixin::BuildHTMLResponse(const std::string& response_html) const {
   auto http_response = std::make_unique<net::test_server::BasicHttpResponse>();
   http_response->set_code(net::HTTP_OK);
   http_response->set_content(response_html);

@@ -34,6 +34,10 @@ class JsonConfig:
   def SourcePathPrefixForNativeFile(self, basename):
     return self._NativeFile(basename).get('source_path_prefix')
 
+  def ComponentOverrides(self):
+    """Tuple of (path_prefix, component) tuples."""
+    return tuple(self._json_obj.get('component_overrides', {}).items())
+
 
 def Parse(path, on_config_error):
   try:

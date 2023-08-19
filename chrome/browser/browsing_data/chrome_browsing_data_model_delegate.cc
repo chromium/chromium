@@ -6,19 +6,46 @@
 
 #include <memory>
 
+#include "base/functional/callback_helpers.h"
+#include "base/memory/ref_counted.h"
+#include "base/memory/scoped_refptr.h"
 #include "chrome/browser/browsing_topics/browsing_topics_service_factory.h"
+#include "chrome/browser/media/webrtc/media_device_salt_service_factory.h"
 #include "components/browsing_topics/browsing_topics_service.h"
 #include "components/content_settings/browser/page_specific_content_settings.h"
+#include "components/media_device_salt/media_device_salt_service.h"
 #include "content/public/browser/storage_partition.h"
 #include "content/public/browser/storage_partition_config.h"
 #include "url/origin.h"
 
 #if !BUILDFLAG(IS_ANDROID)
+#include "chrome/browser/browsing_data/chrome_browsing_data_remover_constants.h"
+#include "chrome/browser/web_applications/isolated_web_apps/remove_isolated_web_app_browsing_data.h"
 #include "chrome/browser/web_applications/web_app_command_scheduler.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
 #endif
 
 namespace {
+
+class DynamicBarrierClosure : public base::RefCounted<DynamicBarrierClosure> {
+ public:
+  explicit DynamicBarrierClosure(base::OnceClosure closure)
+      : scoped_closure_(std::move(closure)) {}
+
+  DynamicBarrierClosure(const DynamicBarrierClosure&) = delete;
+  DynamicBarrierClosure& operator=(const DynamicBarrierClosure&) = delete;
+
+  base::OnceClosure CreateCallback() {
+    return base::DoNothingWithBoundArgs(base::WrapRefCounted(this));
+  }
+
+ private:
+  friend class base::RefCounted<DynamicBarrierClosure>;
+
+  ~DynamicBarrierClosure() = default;
+
+  base::ScopedClosureRunner scoped_closure_;
+};
 
 #if !BUILDFLAG(IS_ANDROID)
 std::vector<ChromeBrowsingDataModelDelegate::DelegateEntry>
@@ -34,7 +61,7 @@ IsolatedWebAppBrowsingDataToDelegateEntries(
   }
   return entries;
 }
-#endif
+#endif  // !BUILDFLAG(IS_ANDROID)
 
 }  // namespace
 
@@ -79,13 +106,14 @@ void ChromeBrowsingDataModelDelegate::GetAllDataKeys(
   if (web_app_provider && storage_partition_->GetConfig().is_default()) {
     web_app_provider->scheduler().GetIsolatedWebAppBrowsingData(
         base::BindOnce(&IsolatedWebAppBrowsingDataToDelegateEntries)
-            .Then(std::move(callback)));
-  } else {
-    std::move(callback).Run({});
+            .Then(base::BindOnce(
+                &ChromeBrowsingDataModelDelegate::GetAllMediaDeviceSaltDataKeys,
+                weak_ptr_factory_.GetWeakPtr(), std::move(callback))));
+    return;
   }
-#else
-  std::move(callback).Run({});
-#endif
+#endif  // !BUILDFLAG(IS_ANDROID)
+
+  GetAllMediaDeviceSaltDataKeys(std::move(callback), {});
 
   // TODO(crbug.com/1271155): Implement data retrieval for remaining data types.
 }
@@ -94,6 +122,9 @@ void ChromeBrowsingDataModelDelegate::RemoveDataKey(
     BrowsingDataModel::DataKey data_key,
     BrowsingDataModel::StorageTypeSet storage_types,
     base::OnceClosure callback) {
+  auto dynamic_barrier_closure =
+      base::MakeRefCounted<DynamicBarrierClosure>(std::move(callback));
+
   if (storage_types.Has(
           static_cast<BrowsingDataModel::StorageType>(StorageType::kTopics))) {
     // Topics can be deleted but not queried from disk as the creating origins
@@ -104,9 +135,25 @@ void ChromeBrowsingDataModelDelegate::RemoveDataKey(
     browsing_topics_service->ClearTopicsDataForOrigin(*origin);
   }
 
-  // TODO(crbug.com/1271155): Utilize the callback in remaining data
-  // typesdeletion methods that require a callback.
-  std::move(callback).Run();
+  if (storage_types.Has(static_cast<BrowsingDataModel::StorageType>(
+          StorageType::kMediaDeviceSalt))) {
+    if (const blink::StorageKey* storage_key =
+            absl::get_if<blink::StorageKey>(&data_key)) {
+      RemoveMediaDeviceSalt(*storage_key,
+                            dynamic_barrier_closure->CreateCallback());
+    }
+  }
+
+#if !BUILDFLAG(IS_ANDROID)
+  if (storage_types.Has(static_cast<BrowsingDataModel::StorageType>(
+          StorageType::kIsolatedWebApp))) {
+    CHECK(absl::holds_alternative<url::Origin>(data_key));
+    const url::Origin& origin = *absl::get_if<url::Origin>(&data_key);
+
+    web_app::RemoveIsolatedWebAppBrowsingData(
+        profile_, origin, dynamic_barrier_closure->CreateCallback());
+  }
+#endif  // !BUILDFLAG(IS_ANDROID)
 }
 
 absl::optional<BrowsingDataModel::DataOwner>
@@ -124,7 +171,54 @@ ChromeBrowsingDataModelDelegate::GetDataOwner(
           << "Unsupported Topics DataKey type: " << data_key.index();
       return absl::get<url::Origin>(data_key).host();
 
+    case StorageType::kMediaDeviceSalt:
+      CHECK(absl::holds_alternative<blink::StorageKey>(data_key))
+          << "Unsupported MediaDeviceSalt DataKey type: " << data_key.index();
+      return absl::get<blink::StorageKey>(data_key).origin().host();
+
     default:
       return absl::nullopt;
+  }
+}
+
+void ChromeBrowsingDataModelDelegate::GetAllMediaDeviceSaltDataKeys(
+    base::OnceCallback<void(std::vector<DelegateEntry>)> callback,
+    std::vector<DelegateEntry> entries) {
+  if (auto* service =
+          MediaDeviceSaltServiceFactory::GetInstance()->GetForBrowserContext(
+              profile_)) {
+    service->GetAllStorageKeys(base::BindOnce(
+        &ChromeBrowsingDataModelDelegate::GotAllMediaDeviceSaltDataKeys,
+        weak_ptr_factory_.GetWeakPtr(), std::move(callback),
+        std::move(entries)));
+  } else {
+    std::move(callback).Run(std::move(entries));
+  }
+}
+
+void ChromeBrowsingDataModelDelegate::GotAllMediaDeviceSaltDataKeys(
+    base::OnceCallback<void(std::vector<DelegateEntry>)> callback,
+    std::vector<DelegateEntry> entries,
+    std::vector<blink::StorageKey> storage_keys) {
+  static constexpr uint64_t kMediaDeviceSaltEntrySize = 100;
+  for (const auto& key : storage_keys) {
+    entries.emplace_back(key,
+                         static_cast<BrowsingDataModel::StorageType>(
+                             StorageType::kMediaDeviceSalt),
+                         kMediaDeviceSaltEntrySize);
+  }
+  std::move(callback).Run(std::move(entries));
+}
+
+void ChromeBrowsingDataModelDelegate::RemoveMediaDeviceSalt(
+    const blink::StorageKey& storage_key,
+    base::OnceClosure callback) {
+  media_device_salt::MediaDeviceSaltService* service =
+      MediaDeviceSaltServiceFactory::GetInstance()->GetForBrowserContext(
+          profile_);
+  if (service) {
+    service->DeleteSalt(storage_key, std::move(callback));
+  } else {
+    std::move(callback).Run();
   }
 }

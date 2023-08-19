@@ -26,8 +26,10 @@ android_library("policy_java") {
     "//build/android:build_java",
     "//third_party/androidx:androidx_annotation_annotation_java",
   ]
-  srcjar_deps = [ ":java_switches_srcjar" ]
-  annotation_processor_deps = [ "//base/android/jni_generator:jni_processor" ]
+  srcjar_deps = [
+    ":java_switches_srcjar",
+    ":jni_headers",
+  ]
 
   sources = _jni_sources + [
               "java/src/org/chromium/components/policy/AbstractAppRestrictionsProvider.java",
@@ -74,6 +76,7 @@ robolectric_library("components_policy_junit_tests") {
     "//base:base_java",
     "//base:base_java_test_support",
     "//base:base_junit_test_support",
+    "//base:jni_java",
     "//build/android:build_java",
     "//third_party/androidx:androidx_test_core_java",
     "//third_party/hamcrest:hamcrest_java",
@@ -96,8 +99,8 @@ android_library("native_test_support_java") {
     "//third_party/junit",
     "//third_party/mockito:mockito_java",
   ]
-  annotation_processor_deps = [ "//base/android/jni_generator:jni_processor" ]
 
+  srcjar_deps = [ ":test_jni_headers" ]
   sources = _test_jni_sources
 }
 

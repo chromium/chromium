@@ -5,7 +5,7 @@
 #include "chrome/browser/ui/views/webid/fake_delegate.h"
 
 gfx::NativeView FakeDelegate::GetNativeView() {
-  return gfx::kNullNativeView;
+  return gfx::NativeView();
 }
 
 content::WebContents* FakeDelegate::GetWebContents() {

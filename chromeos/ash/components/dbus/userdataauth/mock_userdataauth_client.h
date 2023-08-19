@@ -157,6 +157,11 @@ class COMPONENT_EXPORT(USERDATAAUTH_CLIENT) MockUserDataAuthClient
               (const ::user_data_auth::TerminateAuthFactorRequest& request,
                TerminateAuthFactorCallback callback),
               (override));
+  MOCK_METHOD(void,
+              GetArcDiskFeatures,
+              (const ::user_data_auth::GetArcDiskFeaturesRequest& request,
+               GetArcDiskFeaturesCallback callback),
+              (override));
 };
 
 }  // namespace ash

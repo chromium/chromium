@@ -84,6 +84,8 @@ PaymentRequest::PaymentRequest(
               ->transaction_mode()),
       journey_logger_(delegate_->IsOffTheRecord(),
                       delegate_->GetRenderFrameHost()->GetPageUkmSourceId()) {
+  CHECK(!delegate_->GetRenderFrameHost()->IsInLifecycleState(
+      content::RenderFrameHost::LifecycleState::kPrerendering));
   payment_handler_host_ = std::make_unique<PaymentHandlerHost>(
       web_contents(), weak_ptr_factory_.GetWeakPtr());
 }
@@ -266,7 +268,8 @@ void PaymentRequest::Init(
   }
 }
 
-void PaymentRequest::Show(bool wait_for_updated_details) {
+void PaymentRequest::Show(bool wait_for_updated_details,
+                          bool had_user_activation) {
   if (!IsInitialized()) {
     log_.Error(errors::kCannotShowWithoutInit);
     ResetAndDeleteThis();
@@ -297,6 +300,25 @@ void PaymentRequest::Show(bool wait_for_updated_details) {
                      errors::kAnotherUiShowing);
     ResetAndDeleteThis();
     return;
+  }
+
+  if (!had_user_activation) {
+    PaymentRequestWebContentsManager* manager =
+        PaymentRequestWebContentsManager::GetOrCreateForWebContents(
+            *web_contents());
+    if (manager->HadActivationlessShow()) {
+      log_.Error(errors::kCannotShowWithoutUserActivation);
+      DCHECK(!has_recorded_completion_);
+      has_recorded_completion_ = true;
+      journey_logger_.SetNotShown(JourneyLogger::NOT_SHOWN_REASON_OTHER);
+      client_->OnError(mojom::PaymentErrorReason::NOT_ALLOWED_ERROR,
+                       errors::kCannotShowWithoutUserActivation);
+      ResetAndDeleteThis();
+      return;
+    }
+
+    is_activationless_show_ = true;
+    manager->RecordActivationlessShow();
   }
 
   if (!delegate_->IsBrowserWindowActive()) {
@@ -757,6 +779,9 @@ bool PaymentRequest::CheckSatisfiesSkipUIConstraintsAndRecordShownState() {
   } else if (state()->IsInitialized() && spec()->IsInitialized()) {
     // Set "shown" only after state() and spec() initialization.
     journey_logger_.SetShown();
+  }
+  if (is_activationless_show_) {
+    journey_logger_.SetActivationlessShow();
   }
   return skipped_payment_request_ui_;
 }

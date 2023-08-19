@@ -8,7 +8,10 @@
 
 // sddl.h must come after windows.h.
 #include <sddl.h>
+#include <winternl.h>
 
+#include <climits>
+#include <memory>
 #include <string>
 
 #include "base/base_paths.h"
@@ -16,11 +19,38 @@
 #include "base/files/file_path.h"
 #include "base/path_service.h"
 #include "base/ranges/algorithm.h"
+#include "base/win/scoped_handle.h"
 #include "base/win/scoped_localalloc.h"
-#include "sandbox/win/src/win_utils.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace browser_util {
+
+namespace {
+
+absl::optional<std::wstring> GetNtPathFromWin32Path(const std::wstring& path) {
+  base::win::ScopedHandle file(::CreateFileW(
+      path.c_str(), 0, FILE_SHARE_READ | FILE_SHARE_WRITE | FILE_SHARE_DELETE,
+      nullptr, OPEN_EXISTING, FILE_FLAG_BACKUP_SEMANTICS, nullptr));
+  if (!file.is_valid()) {
+    return absl::nullopt;
+  }
+
+  constexpr ULONG kMaxNameSize = USHRT_MAX + sizeof(UNICODE_STRING);
+  std::unique_ptr<BYTE[]> buffer = std::make_unique<BYTE[]>(kMaxNameSize);
+  DWORD return_length;
+  // Information class 1 is ObjectNameInformation.
+  NTSTATUS status =
+      ::NtQueryObject(file.get(), static_cast<OBJECT_INFORMATION_CLASS>(1),
+                      buffer.get(), kMaxNameSize, &return_length);
+  if (!NT_SUCCESS(status)) {
+    return absl::nullopt;
+  }
+
+  PUNICODE_STRING name = reinterpret_cast<PUNICODE_STRING>(buffer.get());
+  return std::wstring(name->Buffer, name->Length / sizeof(name->Buffer[0]));
+}
+
+}  // namespace
 
 bool IsBrowserAlreadyRunning() {
   static HANDLE handle = nullptr;
@@ -42,7 +72,7 @@ bool IsBrowserAlreadyRunning() {
     return false;
   }
   absl::optional<std::wstring> nt_dir_name =
-      sandbox::GetNtPathFromWin32Path(exe_dir_path.value());
+      GetNtPathFromWin32Path(exe_dir_path.value());
   if (!nt_dir_name) {
     // See above for why false is returned here.
     return false;

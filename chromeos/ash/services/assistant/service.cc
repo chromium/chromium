@@ -39,6 +39,7 @@
 #include "chromeos/ash/services/libassistant/public/cpp/libassistant_loader.h"
 #include "chromeos/dbus/power_manager/power_supply_properties.pb.h"
 #include "components/account_id/account_id.h"
+#include "components/prefs/pref_service.h"
 #include "components/signin/public/base/consent_level.h"
 #include "components/signin/public/identity_manager/access_token_fetcher.h"
 #include "components/signin/public/identity_manager/access_token_info.h"
@@ -67,19 +68,33 @@ const char* g_s3_server_uri_override = nullptr;
 // device.
 const char* g_device_id_override = nullptr;
 
-// If LibAssistant service crashes `kMaxStartServiceRetries` times in total, we
-// will not restart LibAssistant, unless
-// 1. Explicitly re-enable the Assistant from the Settings,
-// 2. Reboot the device.
-// 3. It has been `kAutoRecoverTime` since the last crash.
-constexpr int kMaxStartServiceRetries = 5;
+// The max number of tries to start service.
+// We decide whether to start service based on two counters:
+// 1. the backoff `failure_count`, and
+// 2. the pref value `kAssistantNumFailuresSinceLastServiceRun`.
+//
+// 1.   Will not restart service if the `failure_count` is larger than
+//      `kMaxStartServiceRetries`. Note that the `failure_count` will change:
+// 1.a. Increment by 1 for every service disconnected.
+// 1.b. Reset to 0 when explicitly re-enable the Assistant from the Settings.
+// 1.c. Reset to 0 when re-login the device.
+// 1.d. Decrement by 1 when it has been `kAutoRecoverTime`.
+//
+// 2.   Will not restart service if the pref value
+//      `kAssistantNumFailuresSinceLastServiceRun` is larger than
+//      `kMaxStartServiceRetries`, unless `failure_count` is 0, e.g. the first
+//      time login. Note that the `kAssistantNumFailuresSinceLastServiceRun`
+//      will change:
+// 2.a. Increment by 1 for every service disconnected.
+// 2.b. Reset to 0 when every service running.
+constexpr int kMaxStartServiceRetries = 1;
 
 // An interval used to gradually reduce the failure_count so that we could
 // restart.
 constexpr base::TimeDelta kAutoRecoverTime = base::Hours(24);
 
 constexpr net::BackoffEntry::Policy kRetryStartServiceBackoffPolicy = {
-    1,          // Number of initial errors to ignore.
+    0,          // Number of initial errors to ignore.
     1000,       // Initial delay in ms.
     2.0,        // Factor by which the waiting time will be multiplied.
     0.2,        // Fuzzing percentage.
@@ -213,9 +228,11 @@ class Service::Context : public ServiceContext {
 
 Service::Service(std::unique_ptr<network::PendingSharedURLLoaderFactory>
                      pending_url_loader_factory,
-                 signin::IdentityManager* identity_manager)
+                 signin::IdentityManager* identity_manager,
+                 PrefService* pref_service)
     : context_(std::make_unique<Context>(this)),
       identity_manager_(identity_manager),
+      pref_service_(pref_service),
       token_refresh_timer_(std::make_unique<base::OneShotTimer>()),
       main_task_runner_(base::SequencedTaskRunner::GetCurrentDefault()),
       pending_url_loader_factory_(std::move(pending_url_loader_factory)),
@@ -363,14 +380,24 @@ void Service::OnAuthenticationError() {
 void Service::OnStateChanged(AssistantManagerService::State new_state) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  if (new_state == AssistantManagerService::State::STARTED)
-    FinalizeAssistantManagerService();
-  if (new_state == AssistantManagerService::State::RUNNING)
-    DVLOG(1) << "Assistant is running";
-  if (new_state == AssistantManagerService::State::STOPPED)
-    OnLibassistantServiceStopped();
-  if (new_state == AssistantManagerService::State::DISCONNECTED)
-    OnLibassistantServiceDisconnected();
+  switch (new_state) {
+    case AssistantManagerService::State::STARTED:
+      FinalizeAssistantManagerService();
+      break;
+    case AssistantManagerService::State::RUNNING:
+      OnLibassistantServiceRunning();
+      break;
+    case AssistantManagerService::State::STOPPED:
+      OnLibassistantServiceStopped();
+      break;
+    case AssistantManagerService::State::DISCONNECTED:
+      OnLibassistantServiceDisconnected();
+      break;
+    case AssistantManagerService::State::STARTING:
+    case AssistantManagerService::State::STOPPING:
+      // No action.
+      break;
+  }
 
   RecordServiceState(new_state);
   AssistantBrowserDelegate::Get()->OnAssistantStatusChanged(
@@ -393,10 +420,6 @@ void Service::UpdateAssistantManagerState() {
     return;
   }
 
-  if (start_service_retry_backoff_.failure_count() > kMaxStartServiceRetries) {
-    return;
-  }
-
   if (IsSignedOutMode()) {
     // Clear |access_token_| in signed-out mode to keep it synced with what we
     // will pass to the |assistant_manager_service_|.
@@ -410,6 +433,10 @@ void Service::UpdateAssistantManagerState() {
   switch (state) {
     case AssistantManagerService::State::STOPPED:
     case AssistantManagerService::State::DISCONNECTED:
+      if (!CanStartService()) {
+        return;
+      }
+
       if (assistant_state->settings_enabled().value()) {
         assistant_manager_service_->Start(GetUserInfo(), ShouldEnableHotword());
 
@@ -585,6 +612,11 @@ void Service::StopAssistantManagerService() {
   weak_ptr_factory_.InvalidateWeakPtrs();
 }
 
+void Service::OnLibassistantServiceRunning() {
+  DVLOG(1) << "Assistant is running";
+  pref_service_->SetInteger(prefs::kAssistantNumFailuresSinceLastServiceRun, 0);
+}
+
 void Service::OnLibassistantServiceStopped() {
   ClearAfterStop();
 }
@@ -595,8 +627,14 @@ void Service::OnLibassistantServiceDisconnected() {
   if (auto_service_recover_timer_->IsRunning()) {
     auto_service_recover_timer_->Stop();
   }
+
+  // Increase the failure count for both the backoff and pref.
   start_service_retry_backoff_.InformOfRequest(/*succeeded=*/false);
-  if (start_service_retry_backoff_.failure_count() <= kMaxStartServiceRetries) {
+  int num_failures = pref_service_->GetInteger(
+      prefs::kAssistantNumFailuresSinceLastServiceRun);
+  pref_service_->SetInteger(prefs::kAssistantNumFailuresSinceLastServiceRun,
+                            num_failures + 1);
+  if (CanStartService()) {
     LOG(WARNING) << "LibAssistant service disconnected. Re-starting...";
 
     // Restarts LibassistantService.
@@ -702,6 +740,33 @@ base::TimeDelta Service::GetAutoRecoverTime() {
     return auto_recover_time_for_testing_;
   }
   return kAutoRecoverTime;
+}
+
+bool Service::CanStartService() const {
+  // Please see comments on `kMaxStartServiceRetries`.
+  // We can start service if the failure count is zero:
+  // 1.b. Reset to 0 when explicitly re-enable the Assistant from the Settings.
+  // 1.c. Reset to 0 when re-login the device.
+  // 1.d. Decrement by 1 when it has been `kAutoRecoverTime`.
+  if (start_service_retry_backoff_.failure_count() == 0) {
+    return true;
+  }
+
+  // Do not start service if it has retried `kMaxStartServiceRetries` times in
+  // one chrome session or since the last time enable in Settings.
+  if (start_service_retry_backoff_.failure_count() > kMaxStartServiceRetries) {
+    return false;
+  }
+
+  // Do not start service if `kAssistantNumFailuresSinceLastServiceRun` failed
+  // `kMaxStartServiceRetries` times.
+  int num_failures_since_last_service_run = pref_service_->GetInteger(
+      prefs::kAssistantNumFailuresSinceLastServiceRun);
+  if (num_failures_since_last_service_run > kMaxStartServiceRetries) {
+    return false;
+  }
+
+  return true;
 }
 
 }  // namespace ash::assistant

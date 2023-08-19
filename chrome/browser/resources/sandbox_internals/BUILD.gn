@@ -2,33 +2,21 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import("//tools/grit/preprocess_if_expr.gni")
-import("//tools/typescript/ts_library.gni")
+import("//ui/webui/resources/tools/build_webui.gni")
 
 assert(is_android || is_linux || is_chromeos || is_win)
 
-preprocess_folder = "preprocessed"
+build_webui("build") {
+  grd_prefix = "sandbox_internals"
+  static_files = [ "sandbox_internals.html" ]
 
-if (is_win) {
-  ts_files = [ "sandbox_internals_win.ts" ]
-} else {
-  ts_files = [ "sandbox_internals.ts" ]
-}
-
-preprocess_if_expr("preprocess") {
-  out_folder = "$target_gen_dir/$preprocess_folder"
-  in_files = ts_files
-}
-
-ts_library("build_ts") {
-  root_dir = "$target_gen_dir/$preprocess_folder"
-  out_dir = "$target_gen_dir/tsc"
-  in_files = ts_files
-
-  if (is_android) {
-    definitions = [ "./sandbox_android.d.ts" ]
+  if (is_win) {
+    non_web_component_files = [ "sandbox_internals_win.ts" ]
+  } else {
+    non_web_component_files = [ "sandbox_internals.ts" ]
   }
-
-  deps = [ "//ui/webui/resources/js:build_ts" ]
-  extra_deps = [ ":preprocess" ]
+  ts_deps = [ "//ui/webui/resources/js:build_ts" ]
+  if (is_android) {
+    ts_definitions = [ "./sandbox_android.d.ts" ]
+  }
 }

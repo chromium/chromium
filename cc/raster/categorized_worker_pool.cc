@@ -375,11 +375,14 @@ void CategorizedWorkerPoolImpl::RunTaskInCategoryWithLockAcquired(
   auto prioritized_task = work_queue_.GetNextTaskToRun(category);
 
   TRACE_EVENT(
-      "toplevel", "TaskGraphRunner::RunTask", [&](perfetto::EventContext ctx) {
+      "toplevel", "TaskGraphRunner::RunTask",
+      perfetto::Flow::Global(prioritized_task.task->trace_task_id()),
+      [&](perfetto::EventContext ctx) {
         ctx.event<perfetto::protos::pbzero::ChromeTrackEvent>()
             ->set_chrome_raster_task()
             ->set_source_frame_number(prioritized_task.task->frame_number());
       });
+
   // There may be more work available, so wake up another worker thread.
   SignalHasReadyToRunTasksWithLockAcquired();
 

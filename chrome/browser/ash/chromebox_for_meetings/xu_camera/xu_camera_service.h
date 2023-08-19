@@ -14,6 +14,7 @@
 #include <vector>
 
 #include "base/files/scoped_file.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/ash/chromebox_for_meetings/service_adaptor.h"
 #include "chromeos/ash/components/dbus/chromebox_for_meetings/cfm_observer.h"
@@ -72,7 +73,7 @@ class XuCameraService : public CfmObserver,
 
   // mojom:XuCamera implementation
   void GetUnitId(const mojom::WebcamIdPtr id,
-                 const std::vector<uint8_t>& guid,
+                 const std::vector<uint8_t>& guid_le,
                  GetUnitIdCallback callback) override;
   void MapCtrl(const mojom::WebcamIdPtr id,
                const mojom::ControlMappingPtr mapping_ctrl,
@@ -114,11 +115,10 @@ class XuCameraService : public CfmObserver,
                     const base::ScopedFD& file_descriptor,
                     const uint8_t& unit_id,
                     const uint8_t& selector);
-  void OnGetDevices(const std::vector<uint8_t>& guid,
+  void OnGetDevices(const std::vector<uint8_t>& guid_le,
                     GetUnitIdCallback callback,
                     std::vector<device::mojom::UsbDeviceInfoPtr> devices);
-  std::vector<uint8_t> ProcessGuid(uint8_t unprocessed_guid[16]);
-  Delegate* delegate_;
+  raw_ptr<Delegate, ExperimentalAsh> delegate_;
   ServiceAdaptor service_adaptor_;
   mojo::ReceiverSet<XuCamera> receivers_;
   mojo::Remote<device::mojom::UsbDeviceManager> usb_manager_;

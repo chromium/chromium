@@ -48,6 +48,10 @@
 #include "components/enterprise/browser/controller/fake_browser_dm_token_storage.h"
 #endif
 
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
+#include "components/device_signals/core/browser/signals_types.h"
+#endif
+
 using testing::_;
 
 namespace enterprise_connectors {
@@ -149,7 +153,7 @@ class RealtimeReportingClientIsRealtimeReportingEnabledTest
   }
 
   bool should_init() {
-    return is_feature_flag_enabled_ || !profiles::IsPublicSession();
+    return is_feature_flag_enabled_ || !profiles::IsManagedGuestSession();
   }
 
  protected:
@@ -245,4 +249,34 @@ TEST_F(RealtimeReportingClientTestBase,
             EnterpriseReportingEventType::kUnknownEvent);
 }
 
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
+
+TEST_F(RealtimeReportingClientTestBase, TestCrowdstrikeSignalsPopulated) {
+  base::Value::Dict event;
+  device_signals::CrowdStrikeSignals signals;
+  signals.agent_id = "agent-123";
+  signals.customer_id = "customer-123";
+  device_signals::AgentSignalsResponse agent_signals;
+  agent_signals.crowdstrike_signals = signals;
+  device_signals::SignalsAggregationResponse response;
+  response.agent_signals_response = agent_signals;
+  AddCrowdstrikeSignalsToEvent(event, response);
+  const base::Value::List& agentList = event.Find("securityAgents")->GetList();
+  ASSERT_EQ(agentList.size(), 1u);
+  const base::Value::Dict& signalValues =
+      agentList[0].GetDict().Find("crowdstrike")->GetDict();
+  EXPECT_EQ(signalValues.Find("agent_id")->GetString(), "agent-123");
+  EXPECT_EQ(signalValues.Find("customer_id")->GetString(), "customer-123");
+}
+
+TEST_F(RealtimeReportingClientTestBase,
+       TestCrowdstrikeSignalsNotPopulatedForEmptyResponse) {
+  base::Value::Dict event;
+  device_signals::SignalsAggregationResponse response;
+  response.agent_signals_response = absl::nullopt;
+  AddCrowdstrikeSignalsToEvent(event, response);
+  EXPECT_EQ(event.Find("securityAgents"), nullptr);
+}
+
+#endif
 }  // namespace enterprise_connectors

@@ -24,7 +24,6 @@
 #include "third_party/blink/renderer/modules/encryptedmedia/media_key_session.h"
 #include "third_party/blink/renderer/modules/encryptedmedia/media_key_system_access.h"
 #include "third_party/blink/renderer/modules/encryptedmedia/media_key_system_access_initializer_base.h"
-#include "third_party/blink/renderer/modules/encryptedmedia/media_keys_controller.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/bindings/script_state.h"
 #include "third_party/blink/renderer/platform/bindings/v8_throw_exception.h"
@@ -110,10 +109,9 @@ void MediaKeySystemAccessInitializer::StartRequestAsync() {
   //    initialize the MediaKeySystemAccess object.
   DCHECK(!DomWindow()->document()->IsPrerendering());
 
-  MediaKeysController* controller =
-      MediaKeysController::From(DomWindow()->GetFrame()->GetPage());
   WebEncryptedMediaClient* media_client =
-      controller->EncryptedMediaClient(DomWindow());
+      EncryptedMediaUtils::GetEncryptedMediaClientFromLocalDOMWindow(
+          DomWindow());
   media_client->RequestMediaKeySystemAccess(WebEncryptedMediaRequest(this));
 }
 
@@ -192,10 +190,8 @@ ScriptPromise NavigatorRequestMediaKeySystemAccess::requestMediaKeySystemAccess(
 
   // 6. Asynchronously determine support, and if allowed, create and
   //    initialize the MediaKeySystemAccess object.
-  MediaKeysController* controller =
-      MediaKeysController::From(window->GetFrame()->GetPage());
   WebEncryptedMediaClient* media_client =
-      controller->EncryptedMediaClient(window);
+      EncryptedMediaUtils::GetEncryptedMediaClientFromLocalDOMWindow(window);
   media_client->RequestMediaKeySystemAccess(
       WebEncryptedMediaRequest(initializer));
 

@@ -8,6 +8,7 @@
 #include <string>
 
 #include "chromeos/ui/base/window_properties.h"
+#include "ui/aura/client/aura_constants.h"
 #include "ui/aura/window.h"
 #include "ui/aura/window_delegate.h"
 #include "ui/events/event.h"
@@ -19,9 +20,7 @@
 #include "ui/platform_window/platform_window.h"
 #include "ui/platform_window/platform_window_init_properties.h"
 #include "ui/platform_window/wm/wm_move_resize_handler.h"
-#include "ui/views/corewm/tooltip_aura.h"
 #include "ui/views/corewm/tooltip_controller.h"
-#include "ui/views/corewm/tooltip_lacros.h"
 #include "ui/views/views_delegate.h"
 #include "ui/views/widget/desktop_aura/desktop_native_widget_aura.h"
 #include "ui/views/widget/desktop_aura/window_event_filter_lacros.h"
@@ -58,7 +57,10 @@ DesktopWindowTreeHostLacros::DesktopWindowTreeHostLacros(
     internal::NativeWidgetDelegate* native_widget_delegate,
     DesktopNativeWidgetAura* desktop_native_widget_aura)
     : DesktopWindowTreeHostPlatform(native_widget_delegate,
-                                    desktop_native_widget_aura) {}
+                                    desktop_native_widget_aura) {
+  CHECK(GetContentWindow());
+  content_window_observation_.Observe(GetContentWindow());
+}
 
 DesktopWindowTreeHostLacros::~DesktopWindowTreeHostLacros() = default;
 
@@ -118,6 +120,11 @@ void DesktopWindowTreeHostLacros::OnImmersiveModeChanged(bool enabled) {
   GetContentWindow()->SetProperty(chromeos::kImmersiveIsActive, enabled);
 }
 
+void DesktopWindowTreeHostLacros::OnOverviewModeChanged(bool in_overview) {
+  GetContentWindow()->SetProperty(chromeos::kIsShowingInOverviewKey,
+                                  in_overview);
+}
+
 void DesktopWindowTreeHostLacros::OnTooltipShownOnServer(
     const std::u16string& text,
     const gfx::Rect& bounds) {
@@ -140,16 +147,21 @@ void DesktopWindowTreeHostLacros::AddAdditionalInitProperties(
   properties->wayland_app_id = params.wayland_app_id;
 }
 
-std::unique_ptr<corewm::Tooltip> DesktopWindowTreeHostLacros::CreateTooltip() {
-  // TODO(crbug.com/1338597): Remove TooltipAura from Lacros when Ash is new
-  // enough.
-  if (ui::OzonePlatform::GetInstance()
-          ->GetPlatformRuntimeProperties()
-          .supports_tooltip) {
-    return std::make_unique<views::corewm::TooltipLacros>();
+void DesktopWindowTreeHostLacros::OnWindowPropertyChanged(aura::Window* window,
+                                                          const void* key,
+                                                          intptr_t old) {
+  CHECK_EQ(GetContentWindow(), window);
+  if (key == aura::client::kTopViewInset) {
+    if (auto* wayland_extension = GetWaylandExtension()) {
+      wayland_extension->SetTopInset(
+          GetContentWindow()->GetProperty(aura::client::kTopViewInset));
+    }
   }
-  // Fallback to TooltipAura if wayland version is not new enough.
-  return std::make_unique<views::corewm::TooltipAura>();
+}
+
+void DesktopWindowTreeHostLacros::OnWindowDestroying(aura::Window* window) {
+  CHECK_EQ(GetContentWindow(), window);
+  content_window_observation_.Reset();
 }
 
 void DesktopWindowTreeHostLacros::CreateNonClientEventFilter() {

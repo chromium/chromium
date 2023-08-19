@@ -65,11 +65,8 @@ ExistingTabGroupSubMenuModel::ExistingTabGroupSubMenuModel(
 
   // For each window, append the tab groups to the end of the menu items.
   if (tab_menu_model_delegate_) {
-    // TODO(dljames): Rename GetExistingWindowsForMoveMenu to something generic
-    // since this function is now used for 'Move tab to window' and 'Add tab to
-    // group'
     for (Browser* browser :
-         tab_menu_model_delegate_->GetExistingWindowsForMoveMenu()) {
+         tab_menu_model_delegate_->GetOtherTabbedBrowserWindows()) {
       if (browser->tab_strip_model() == model)
         continue;
       const std::vector<MenuItemInfo> retrieved_menu_item_infos =
@@ -162,7 +159,7 @@ bool ExistingTabGroupSubMenuModel::ShouldShowSubmenu(
   // Look at tab groups in all other windows
   if (tab_menu_model_delegate) {
     for (Browser* browser :
-         tab_menu_model_delegate->GetExistingWindowsForMoveMenu()) {
+         tab_menu_model_delegate->GetOtherTabbedBrowserWindows()) {
       TabGroupModel* browser_group_model =
           browser->tab_strip_model()->group_model();
       if (!browser_group_model)
@@ -204,7 +201,7 @@ void ExistingTabGroupSubMenuModel::ExecuteExistingCommand(size_t target_index) {
   // Find the index of the browser with the group we are looking for.
   absl::optional<size_t> browser_index;
   std::vector<Browser*> browsers =
-      tab_menu_model_delegate_->GetExistingWindowsForMoveMenu();
+      tab_menu_model_delegate_->GetOtherTabbedBrowserWindows();
   for (size_t i = 0; i < browsers.size(); ++i) {
     TabStripModel* potential_model = browsers[i]->tab_strip_model();
     if (potential_model && potential_model != model() &&

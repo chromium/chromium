@@ -3,8 +3,6 @@
 <translationbundle lang="hu">
 <translation id="1075622780330595106"><ph name="NUMBER_OF_TABS" /> lapot nem használt mostanában. Szeretné bezárni őket?</translation>
 <translation id="125153950246128346">Koppintson másik lap megtekintéséhez</translation>
-<translation id="1403228085774130835">A bezárt lapokat a Chrome főmenüjének Nemrég megnyitott lapok szakaszában találja</translation>
-<translation id="1455506303394048917">Az ezeken az inkognitó lapokon végzett tevékenységei törlődnek erről az eszközről</translation>
 <translation id="1499635324672558517">Bezárja az összes inkognitó lapot?</translation>
 <translation id="1657719826150349398">Lap mozgatása lefelé</translation>
 <translation id="1869137256605757565">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> lap}other{<ph name="TABS_COUNT_MANY" /> lap}}</translation>
@@ -47,6 +45,7 @@
 <translation id="5073204694187207510">Teljes képernyős rács elrejtése</translation>
 <translation id="5076161749301278626">Lát véleményeket az üzletről?</translation>
 <translation id="5082793167783849073">Csoport kialakításával gyorsan összehasonlíthat oldalakat. A kezdéshez tartsa lenyomva ujját a kívánt linken.</translation>
+<translation id="5339733443032484186">A legutóbbi lap</translation>
 <translation id="5490235265819901748">Lapcsoport kibontva</translation>
 <translation id="5494920125229734069">Összes kiválasztása</translation>
 <translation id="5556417849629758491">Az üzlet adatainak megtekintése; a lehetőség a képernyő tetején található</translation>
@@ -62,10 +61,12 @@
 <translation id="6228793724645064692">(az üzlet értékelése)</translation>
 <translation id="6333260925957816943">Információ erről az üzletről</translation>
 <translation id="639823877092900621">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> kijelölt lap csoportosításának megszüntetése}other{<ph name="TABS_COUNT_MANY" /> kijelölt lap csoportosításának megszüntetése}}</translation>
+<translation id="6421412308143682486">{INCOGNITO_TABS_COUNT,plural, =1{A bezárt lapjait a Chrome főmenüjének Nemrég megnyitott lapok szakaszában találja. Az inkognitó lap nem lesz hozzáférhető.}other{A bezárt lapjait a Chrome főmenüjének Nemrég megnyitott lapok szakaszában találja. # inkognitó lap nem lesz hozzáférhető.}}</translation>
 <translation id="6422650314852876533">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> lap}other{<ph name="TABS_COUNT_MANY" /> lap}}</translation>
 <translation id="6549021453810473782">Üzletadatok megtekintése</translation>
 <translation id="6562820390860419811">Lap mozgatása balra</translation>
 <translation id="6615455863669487791">Megjelenítés</translation>
+<translation id="661742612106409204">A bezárt lapjait a Chrome főmenüjének Nemrég megnyitott lapok szakaszában találja.</translation>
 <translation id="6840760312327750441">Lapok csoportosításához tartsa nyomva az egyik lapot, majd húzza rá a másikra.</translation>
 <translation id="6856809498882026482">Több lapot kiválasztó mód elrejtése</translation>
 <translation id="7100731960740376323">{TABS_COUNT,plural, =1{Lap megosztása}other{Lapok megosztása}}</translation>

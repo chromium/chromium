@@ -6,6 +6,8 @@
 import json
 import os
 import subprocess
+from typing import Optional
+
 from flake_suppressor_common import common_typing as ct
 from unexpected_passes_common import queries as upc_queries
 
@@ -14,7 +16,7 @@ from unexpected_passes_common import queries as upc_queries
 # List of data selected from the database:
 # exported.id - build id of this test, like build-12345
 # test_metadata.name - the full test name, like external/wpt/rendering/test1
-# typ_tags - list of the test build tag, like [linux,release,trusty,x86_64]
+# typ_tags - list of the test build tag, like [linux,release,x86_64]
 # typ_expectations - list of expectations, like [Failure,Pass,Timeout]
 # step_names - list of step name from test task, like [blink_wpt_tests on Mac]
 # test_type - test type of this test, like image
@@ -51,6 +53,7 @@ WITH
   WHERE
     status = "FAIL" AND
     exported.realm = "chromium:ci" AND
+    {test_path_selector}
     partition_time > TIMESTAMP_SUB(CURRENT_TIMESTAMP(),
                                    INTERVAL @sample_period DAY) AND
     DATE(partition_time) > DATE_SUB(CURRENT_DATE(), INTERVAL 30 DAY)
@@ -62,7 +65,6 @@ WHERE
   image_diff_max_difference IS NOT NULL AND
   image_diff_total_pixels IS NOT NULL
 """
-
 
 class FuzzyDiffAnalyzerQuerier:
     def __init__(self, sample_period: int, billing_project: str):
@@ -77,14 +79,26 @@ class FuzzyDiffAnalyzerQuerier:
         self._sample_period = sample_period
         self._billing_project = billing_project
 
-    def get_failed_image_comparison_ci_tests(self) -> ct.QueryJsonType:
-        """Gets all failed image comparison tests from CI.
+    def get_failed_image_comparison_ci_tests(
+            self, test_path: Optional[str] = None) -> ct.QueryJsonType:
+        """Gets all failed image comparison tests from CI under the test path.
+
+        Args:
+          test_path: A string of test path that contains the tests to do
+              analysis. If the value is empty, this will check all tests.
 
         Returns:
           A JSON representation of the BigQuery results containing all found
-          failed test results that came from CI bots.
+          failed test results that came from CI bots under the test path.
         """
-        return self._get_json_results(CI_FAILED_IMAGE_COMPARISON_TEST_QUERY)
+        if test_path:
+            test_path_selector = (
+                'STARTS_WITH(test_metadata.name, "%s") AND' % test_path)
+        else:
+            test_path_selector = ''
+        return self._get_json_results(
+            CI_FAILED_IMAGE_COMPARISON_TEST_QUERY.format(
+                test_path_selector=test_path_selector))
 
     def _get_json_results(self, query: str) -> ct.QueryJsonType:
         """Gets the JSON results from an input BigQuery query.

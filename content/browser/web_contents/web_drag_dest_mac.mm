@@ -7,7 +7,7 @@
 #include <AppKit/AppKit.h>
 #import <Carbon/Carbon.h>
 
-#include "base/mac/scoped_nsobject.h"
+#include "base/memory/raw_ptr.h"
 #include "base/ranges/algorithm.h"
 #include "base/strings/sys_string_conversions.h"
 #include "content/browser/renderer_host/render_view_host_impl.h"
@@ -102,7 +102,43 @@ void DropCompletionCallback(WebDragDest* drag_dest,
 
 }  // namespace
 
-@implementation WebDragDest
+@implementation WebDragDest {
+  // Our associated WebContentsImpl. Weak reference.
+  raw_ptr<content::WebContentsImpl, DanglingUntriaged> _webContents;
+
+  // Delegate; weak.
+  raw_ptr<content::WebDragDestDelegate, DanglingUntriaged> _delegate;
+
+  // Updated asynchronously during a drag to tell us whether or not we should
+  // allow the drop.
+  NSDragOperation _currentOperation;
+
+  // Tracks the current RenderWidgetHost we're dragging over.
+  base::WeakPtr<content::RenderWidgetHostImpl> _currentRWHForDrag;
+
+  // Keep track of the render view host we're dragging over.  If it changes
+  // during a drag, we need to re-send the DragEnter message.
+  RenderViewHostIdentifier _currentRVH;
+
+  // Tracks the IDs of the source RenderProcessHost and RenderViewHost from
+  // which the current drag originated. These are set in
+  // -setDragStartTrackersForProcess:, and are used to ensure that drag events
+  // do not fire over a cross-site frame (with respect to the source frame) in
+  // the same page (see crbug.com/666858). See
+  // WebContentsViewAura::drag_start_process_id_ for additional information.
+  int _dragStartProcessID;
+  content::GlobalRoutingID _dragStartViewID;
+
+  // The unfiltered data for the current drag, or nullptr if none is in
+  // progress.
+  std::unique_ptr<content::DropData> _dropDataUnfiltered;
+
+  // The data for the current drag, filtered by |currentRWHForDrag_|.
+  std::unique_ptr<content::DropData> _dropDataFiltered;
+
+  // True if the drag has been canceled.
+  bool _canceled;
+}
 
 // |contents| is the WebContentsImpl representing this tab, used to communicate
 // drag&drop messages to WebCore and handle navigation on a successful drop
@@ -400,7 +436,7 @@ DropData PopulateDropDataFromPasteboard(NSPasteboard* pboard) {
   DropData drop_data;
 
   // https://crbug.com/1016740#c21
-  base::scoped_nsobject<NSArray> types([[pboard types] retain]);
+  NSArray* types = [pboard types];
 
   drop_data.did_originate_from_renderer =
       [types containsObject:ui::kUTTypeChromiumRendererInitiatedDrag];

@@ -34,11 +34,11 @@ std::u16string CreateLabel(const Suggestion& suggestion) {
   if (suggestion.labels.empty() || suggestion.labels[0][0].value.empty())
     return password;
 
-  // TODO(crbug.com/1313616): Re-consider whether using DCHECK is an appropriate
+  // TODO(crbug.com/1313616): Re-consider whether using CHECK is an appropriate
   // way to explicitly regulate what information should be populated for the
   // interface.
-  DCHECK_EQ(suggestion.labels.size(), 1U);
-  DCHECK_EQ(suggestion.labels[0].size(), 1U);
+  CHECK_EQ(suggestion.labels.size(), 1U);
+  CHECK_EQ(suggestion.labels[0].size(), 1U);
   return suggestion.labels[0][0].value + kLabelSeparator + password;
 }
 
@@ -52,15 +52,22 @@ AutofillKeyboardAccessoryAdapter::~AutofillKeyboardAccessoryAdapter() = default;
 
 // AutofillPopupView implementation.
 
-void AutofillKeyboardAccessoryAdapter::Show(
+bool AutofillKeyboardAccessoryAdapter::Show(
     AutoselectFirstSuggestion autoselect_first_suggestion) {
-  DCHECK(view_) << "Show called before a View was set!";
+  CHECK(view_) << "Show called before a View was set!";
   OnSuggestionsChanged();
+  return true;
 }
 
 void AutofillKeyboardAccessoryAdapter::Hide() {
-  DCHECK(view_) << "Hide called before a View was set!";
+  CHECK(view_) << "Hide called before a View was set!";
   view_->Hide();
+}
+
+bool AutofillKeyboardAccessoryAdapter::OverlapsWithPictureInPictureWindow()
+    const {
+  // TODO(crbug.com/1395164): Find out if pip window can hide the keyboard.
+  return false;
 }
 
 bool AutofillKeyboardAccessoryAdapter::HandleKeyPressEvent(
@@ -71,18 +78,18 @@ bool AutofillKeyboardAccessoryAdapter::HandleKeyPressEvent(
 void AutofillKeyboardAccessoryAdapter::OnSuggestionsChanged() {
   TRACE_EVENT0("passwords",
                "AutofillKeyboardAccessoryAdapter::OnSuggestionsChanged");
-  DCHECK(controller_) << "Call OnSuggestionsChanged only from its owner!";
-  DCHECK(view_) << "OnSuggestionsChanged called before a View was set!";
+  CHECK(controller_) << "Call OnSuggestionsChanged only from its owner!";
+  CHECK(view_) << "OnSuggestionsChanged called before a View was set!";
 
   labels_.clear();
   front_element_ = absl::nullopt;
   for (int i = 0; i < GetLineCount(); ++i) {
     const Suggestion& suggestion = controller_->GetSuggestionAt(i);
-    if (suggestion.frontend_id != PopupItemId::kClearForm) {
+    if (suggestion.popup_item_id != PopupItemId::kClearForm) {
       labels_.push_back(CreateLabel(suggestion));
       continue;
     }
-    DCHECK(!front_element_.has_value()) << "Additional front item at: " << i;
+    CHECK(!front_element_.has_value()) << "Additional front item at: " << i;
     front_element_ = absl::optional<int>(i);
     // If there is a special popup item, just reuse the previously used label.
     std::vector<std::vector<Suggestion::Text>> suggestion_labels =
@@ -98,7 +105,7 @@ void AutofillKeyboardAccessoryAdapter::OnSuggestionsChanged() {
 }
 
 void AutofillKeyboardAccessoryAdapter::AxAnnounce(const std::u16string& text) {
-  DCHECK(view_) << "AxAnnounce called before a View was set!";
+  CHECK(view_) << "AxAnnounce called before a View was set!";
   view_->AxAnnounce(text);
 }
 
@@ -115,9 +122,9 @@ AutofillKeyboardAccessoryAdapter::GetWeakPtr() {
 // AutofillPopupController implementation.
 
 void AutofillKeyboardAccessoryAdapter::AcceptSuggestion(int index) {
-  // Suggestions inside the keyboard accessory adapter are accepted without
-  // requiring a minimum time threshold.
-  NOTREACHED();
+  if (controller_) {
+    controller_->AcceptSuggestion(OffsetIndexFor(index));
+  }
 }
 
 void AutofillKeyboardAccessoryAdapter::AcceptSuggestionWithoutThreshold(
@@ -133,32 +140,46 @@ int AutofillKeyboardAccessoryAdapter::GetLineCount() const {
 
 const autofill::Suggestion& AutofillKeyboardAccessoryAdapter::GetSuggestionAt(
     int row) const {
-  DCHECK(controller_) << "Call GetSuggestionAt only from its owner!";
+  CHECK(controller_) << "Call GetSuggestionAt only from its owner!";
   return controller_->GetSuggestionAt(OffsetIndexFor(row));
 }
 
 std::u16string AutofillKeyboardAccessoryAdapter::GetSuggestionMainTextAt(
     int row) const {
-  DCHECK(controller_) << "Call GetSuggestionMainTextAt only from its owner!";
+  CHECK(controller_) << "Call GetSuggestionMainTextAt only from its owner!";
   return controller_->GetSuggestionMainTextAt(OffsetIndexFor(row));
 }
 
 std::u16string AutofillKeyboardAccessoryAdapter::GetSuggestionMinorTextAt(
     int row) const {
-  DCHECK(controller_) << "Call GetSuggestionMinorTextAt only from its owner!";
+  CHECK(controller_) << "Call GetSuggestionMinorTextAt only from its owner!";
   return controller_->GetSuggestionMinorTextAt(OffsetIndexFor(row));
 }
 
 std::vector<std::vector<Suggestion::Text>>
 AutofillKeyboardAccessoryAdapter::GetSuggestionLabelsAt(int row) const {
-  DCHECK(controller_) << "Call GetSuggestionLabelAt only from its owner!";
-  DCHECK(static_cast<size_t>(row) < labels_.size());
+  CHECK(controller_) << "Call GetSuggestionLabelAt only from its owner!";
+  CHECK(static_cast<size_t>(row) < labels_.size());
   return {{Suggestion::Text(labels_[OffsetIndexFor(row)])}};
 }
 
 PopupType AutofillKeyboardAccessoryAdapter::GetPopupType() const {
-  DCHECK(controller_) << "Call GetPopupType only from its owner!";
+  CHECK(controller_) << "Call GetPopupType only from its owner!";
   return controller_->GetPopupType();
+}
+
+AutofillSuggestionTriggerSource
+AutofillKeyboardAccessoryAdapter::GetAutofillSuggestionTriggerSource() const {
+  CHECK(controller_)
+      << "Call GetAutofillSuggestionTriggerSource only from its owner!";
+  return controller_->GetAutofillSuggestionTriggerSource();
+}
+
+bool AutofillKeyboardAccessoryAdapter::
+    ShouldIgnoreMouseObservedOutsideItemBoundsCheck() const {
+  CHECK(controller_) << "Call ShouldIgnoreMouseObservedOutsideItemBoundsCheck "
+                        "only from its owner!";
+  return controller_->ShouldIgnoreMouseObservedOutsideItemBoundsCheck();
 }
 
 bool AutofillKeyboardAccessoryAdapter::GetRemovalConfirmationText(
@@ -170,7 +191,7 @@ bool AutofillKeyboardAccessoryAdapter::GetRemovalConfirmationText(
 }
 
 bool AutofillKeyboardAccessoryAdapter::RemoveSuggestion(int index) {
-  DCHECK(view_) << "RemoveSuggestion called before a View was set!";
+  CHECK(view_) << "RemoveSuggestion called before a View was set!";
   std::u16string title, body;
   if (!GetRemovalConfirmationText(index, &title, &body))
     return false;
@@ -209,7 +230,7 @@ void AutofillKeyboardAccessoryAdapter::ViewDestroyed() {
 }
 
 gfx::NativeView AutofillKeyboardAccessoryAdapter::container_view() const {
-  DCHECK(controller_) << "Call OnSuggestionsChanged only from its owner!";
+  CHECK(controller_) << "Call OnSuggestionsChanged only from its owner!";
   return controller_->container_view();
 }
 
@@ -218,13 +239,13 @@ content::WebContents* AutofillKeyboardAccessoryAdapter::GetWebContents() const {
 }
 
 const gfx::RectF& AutofillKeyboardAccessoryAdapter::element_bounds() const {
-  DCHECK(controller_) << "Call OnSuggestionsChanged only from its owner!";
+  CHECK(controller_) << "Call OnSuggestionsChanged only from its owner!";
   return controller_->element_bounds();
 }
 
 base::i18n::TextDirection
 AutofillKeyboardAccessoryAdapter::GetElementTextDirection() const {
-  DCHECK(controller_);
+  CHECK(controller_);
   return controller_->GetElementTextDirection();
 }
 

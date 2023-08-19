@@ -107,7 +107,7 @@ ExtensionsMenuMainPageViewInteractiveUITest::
     GetExtensionsInRequestAccessButton() {
   return GetExtensionsToolbarContainer()
       ->GetExtensionsToolbarControls()
-      ->request_access_button_for_testing()
+      ->request_access_button()
       ->GetExtensionIdsForTesting();
 }
 
@@ -175,7 +175,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionsMenuMainPageViewInteractiveUITest,
   }
 
   ShowUi("");
-  views::Label* text_container = main_page()->GetTextContainerForTesting();
+  views::View* text_container = main_page()->GetTextContainerForTesting();
   views::View* reload_container = main_page()->GetReloadContainerForTesting();
   views::View* requests_access_container =
       main_page()->GetRequestsAccessContainerForTesting();
@@ -237,7 +237,8 @@ IN_PROC_BROWSER_TEST_F(ExtensionsMenuMainPageViewInteractiveUITest,
   EXPECT_TRUE(text_container->GetVisible());
   EXPECT_FALSE(reload_container->GetVisible());
   EXPECT_FALSE(requests_access_container->GetVisible());
-  EXPECT_EQ(text_container->GetText(),
+  EXPECT_EQ(views::AsViewClass<views::Label>(text_container->children()[0])
+                ->GetText(),
             l10n_util::GetStringUTF16(
                 IDS_EXTENSIONS_MENU_MESSAGE_SECTION_USER_BLOCKED_ACCESS_TEXT));
 
@@ -307,7 +308,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionsMenuMainPageViewInteractiveUITest,
   NavigateTo(urlA);
 
   ShowUi("");
-  views::Label* text_container = main_page()->GetTextContainerForTesting();
+  views::View* text_container = main_page()->GetTextContainerForTesting();
   views::View* reload_container = main_page()->GetReloadContainerForTesting();
   views::View* requests_access_container =
       main_page()->GetRequestsAccessContainerForTesting();
@@ -391,4 +392,42 @@ IN_PROC_BROWSER_TEST_F(ExtensionsMenuMainPageViewInteractiveUITest,
   EXPECT_THAT(GetExtensionsInRequestAccessSection(),
               testing::ElementsAre(extension_id));
   EXPECT_TRUE(GetExtensionsInRequestAccessButton().empty());
+}
+
+// Tests that the extensions menu is updated only when the web contents update
+// is for the same web contents the menu is been displayed for.
+IN_PROC_BROWSER_TEST_F(ExtensionsMenuMainPageViewInteractiveUITest,
+                       UpdatePageForActiveWebContentsChanges) {
+  ASSERT_TRUE(embedded_test_server()->Start());
+  auto extension =
+      InstallExtensionWithHostPermissions("Extension", "<all_urls>");
+
+  ASSERT_TRUE(AddTabAtIndex(0, embedded_test_server()->GetURL("/title1.html"),
+                            ui::PAGE_TRANSITION_TYPED));
+  ASSERT_TRUE(
+      AddTabAtIndex(1, GURL("chrome://extensions"), ui::PAGE_TRANSITION_TYPED));
+  browser()->tab_strip_model()->ActivateTabAt(1);
+
+  ShowUi("");
+  EXPECT_EQ(main_page()->GetSubheaderSubtitleTextForTesting(),
+            u"chrome://extensions");
+
+  // Update the title of the unfocused tab.
+  browser()->set_update_ui_immediately_for_testing();
+  content::WebContents* unfocused_tab =
+      browser()->tab_strip_model()->GetWebContentsAt(0);
+  content::TitleWatcher title_watcher(unfocused_tab, u"Updated Title");
+  ASSERT_TRUE(
+      content::ExecJs(unfocused_tab, "document.title = 'Updated Title';"));
+  title_watcher.WaitAndGetTitle();
+  // The browser UI is updated by a PostTask() with a delay of zero seconds.
+  // However, the update will be visible when the run loop next idles after the
+  // title is updated. To ensure it's ran, lets wait until its idle.
+  base::RunLoop().RunUntilIdle();
+
+  // Verify extensions menu content wasn't affected by checking the site
+  // displayed on the menu's subtitle.
+  ASSERT_EQ(browser()->tab_strip_model()->active_index(), 1);
+  EXPECT_EQ(main_page()->GetSubheaderSubtitleTextForTesting(),
+            u"chrome://extensions");
 }

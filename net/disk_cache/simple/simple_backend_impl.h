@@ -286,8 +286,8 @@ class NET_EXPORT_PRIVATE SimpleBackendImpl : public Backend,
   uint32_t entry_count_ = 0;
 
 #if BUILDFLAG(IS_ANDROID)
-  raw_ptr<base::android::ApplicationStatusListener> app_status_listener_ =
-      nullptr;
+  raw_ptr<base::android::ApplicationStatusListener, DanglingUntriaged>
+      app_status_listener_ = nullptr;
 #endif
 };
 

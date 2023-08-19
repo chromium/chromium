@@ -30,10 +30,10 @@
 
 namespace partition_alloc {
 
-using BucketDistribution = ThreadSafePartitionRoot::BucketDistribution;
+using BucketDistribution = PartitionRoot::BucketDistribution;
 namespace {
 
-constexpr size_t kSmallSize = 12;
+constexpr size_t kSmallSize = 33;  // Must be large enough to fit extras.
 constexpr size_t kDefaultCountForSmallBucket =
     ThreadCache::kSmallBucketBaseCount * ThreadCache::kDefaultMultiplier;
 constexpr size_t kFillCountForSmallBucket =
@@ -61,14 +61,13 @@ class DeltaCounter {
 // Forbid extras, since they make finding out which bucket is used harder.
 std::unique_ptr<PartitionAllocatorForTesting> CreateAllocator() {
   std::unique_ptr<PartitionAllocatorForTesting> allocator =
-      std::make_unique<PartitionAllocatorForTesting>();
-  allocator->init(PartitionOptions {
-    .aligned_alloc = PartitionOptions::AlignedAlloc::kAllowed,
+      std::make_unique<PartitionAllocatorForTesting>(PartitionOptions {
+        .aligned_alloc = PartitionOptions::AlignedAlloc::kAllowed,
 #if !BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
-    .thread_cache = PartitionOptions::ThreadCache::kEnabled,
+        .thread_cache = PartitionOptions::ThreadCache::kEnabled,
 #endif  // BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
-    .quarantine = PartitionOptions::Quarantine::kAllowed,
-  });
+        .star_scan_quarantine = PartitionOptions::StarScanQuarantine::kAllowed,
+      });
   allocator->root()->UncapEmptySlotSpanMemoryForTesting();
 
   return allocator;
@@ -77,8 +76,7 @@ std::unique_ptr<PartitionAllocatorForTesting> CreateAllocator() {
 }  // namespace
 
 class PartitionAllocThreadCacheTest
-    : public ::testing::TestWithParam<
-          PartitionRoot<internal::ThreadSafe>::BucketDistribution> {
+    : public ::testing::TestWithParam<PartitionRoot::BucketDistribution> {
  public:
   PartitionAllocThreadCacheTest()
       : allocator_(CreateAllocator()), scope_(allocator_->root()) {}
@@ -94,9 +92,9 @@ class PartitionAllocThreadCacheTest
 
  protected:
   void SetUp() override {
-    ThreadSafePartitionRoot* root = allocator_->root();
+    PartitionRoot* root = allocator_->root();
     switch (GetParam()) {
-      case BucketDistribution::kDefault:
+      case BucketDistribution::kNeutral:
         root->ResetBucketDistributionForTesting();
         break;
       case BucketDistribution::kDenser:
@@ -131,29 +129,28 @@ class PartitionAllocThreadCacheTest
               GetBucketSizeForThreadCache());
   }
 
-  ThreadSafePartitionRoot* root() { return allocator_->root(); }
+  PartitionRoot* root() { return allocator_->root(); }
 
   // Returns the size of the smallest bucket fitting an allocation of
   // |sizeof(ThreadCache)| bytes.
   size_t GetBucketSizeForThreadCache() {
     size_t tc_bucket_index = root()->SizeToBucketIndex(
-        sizeof(ThreadCache),
-        ThreadSafePartitionRoot::BucketDistribution::kDefault);
+        sizeof(ThreadCache), PartitionRoot::BucketDistribution::kNeutral);
     auto* tc_bucket = &root()->buckets[tc_bucket_index];
     return tc_bucket->slot_size;
   }
 
   static size_t SizeToIndex(size_t size) {
-    return PartitionRoot<internal::ThreadSafe>::SizeToBucketIndex(size,
-                                                                  GetParam());
+    return PartitionRoot::SizeToBucketIndex(size, GetParam());
   }
 
-  size_t FillThreadCacheAndReturnIndex(size_t size, size_t count = 1) {
-    uint16_t bucket_index = SizeToIndex(size);
+  size_t FillThreadCacheAndReturnIndex(size_t raw_size, size_t count = 1) {
+    uint16_t bucket_index = SizeToIndex(raw_size);
     std::vector<void*> allocated_data;
 
     for (size_t i = 0; i < count; ++i) {
-      allocated_data.push_back(root()->Alloc(size, ""));
+      allocated_data.push_back(
+          root()->Alloc(root()->AdjustSizeForExtrasSubtract(raw_size), ""));
     }
     for (void* ptr : allocated_data) {
       root()->Free(ptr);
@@ -164,10 +161,9 @@ class PartitionAllocThreadCacheTest
 
   void FillThreadCacheWithMemory(size_t target_cached_memory) {
     for (int batch : {1, 2, 4, 8, 16}) {
-      for (size_t allocation_size = 1;
-           allocation_size <= ThreadCache::kLargeSizeThreshold;
-           allocation_size++) {
-        FillThreadCacheAndReturnIndex(allocation_size, batch);
+      for (size_t raw_size = root()->AdjustSizeForExtrasAdd(1);
+           raw_size <= ThreadCache::kLargeSizeThreshold; raw_size++) {
+        FillThreadCacheAndReturnIndex(raw_size, batch);
 
         if (ThreadCache::Get()->CachedMemory() >= target_cached_memory) {
           return;
@@ -184,7 +180,7 @@ class PartitionAllocThreadCacheTest
 
 INSTANTIATE_TEST_SUITE_P(AlternateBucketDistribution,
                          PartitionAllocThreadCacheTest,
-                         ::testing::Values(BucketDistribution::kDefault,
+                         ::testing::Values(BucketDistribution::kNeutral,
                                            BucketDistribution::kDenser));
 
 TEST_P(PartitionAllocThreadCacheTest, Simple) {
@@ -193,7 +189,8 @@ TEST_P(PartitionAllocThreadCacheTest, Simple) {
   EXPECT_TRUE(tcache);
   DeltaCounter batch_fill_counter{tcache->stats_.batch_fill_count};
 
-  void* ptr = root()->Alloc(kSmallSize, "");
+  void* ptr =
+      root()->Alloc(root()->AdjustSizeForExtrasSubtract(kSmallSize), "");
   ASSERT_TRUE(ptr);
 
   uint16_t index = SizeToIndex(kSmallSize);
@@ -204,7 +201,8 @@ TEST_P(PartitionAllocThreadCacheTest, Simple) {
   // Freeing fills the thread cache.
   EXPECT_EQ(kFillCountForSmallBucket, tcache->bucket_count_for_testing(index));
 
-  void* ptr2 = root()->Alloc(kSmallSize, "");
+  void* ptr2 =
+      root()->Alloc(root()->AdjustSizeForExtrasSubtract(kSmallSize), "");
   // MTE-untag, because Free() changes tag.
   EXPECT_EQ(UntagPtr(ptr), UntagPtr(ptr2));
   // Allocated from the thread cache.
@@ -217,7 +215,8 @@ TEST_P(PartitionAllocThreadCacheTest, Simple) {
 }
 
 TEST_P(PartitionAllocThreadCacheTest, InexactSizeMatch) {
-  void* ptr = root()->Alloc(kSmallSize, "");
+  void* ptr =
+      root()->Alloc(root()->AdjustSizeForExtrasSubtract(kSmallSize), "");
   ASSERT_TRUE(ptr);
 
   // There is a cache.
@@ -232,7 +231,8 @@ TEST_P(PartitionAllocThreadCacheTest, InexactSizeMatch) {
   // Freeing fills the thread cache.
   EXPECT_EQ(kFillCountForSmallBucket, tcache->bucket_count_for_testing(index));
 
-  void* ptr2 = root()->Alloc(kSmallSize + 1, "");
+  void* ptr2 =
+      root()->Alloc(root()->AdjustSizeForExtrasSubtract(kSmallSize + 1), "");
   // MTE-untag, because Free() changes tag.
   EXPECT_EQ(UntagPtr(ptr), UntagPtr(ptr2));
   // Allocated from the thread cache.
@@ -271,21 +271,21 @@ TEST_P(PartitionAllocThreadCacheTest, Purge) {
 }
 
 TEST_P(PartitionAllocThreadCacheTest, NoCrossPartitionCache) {
-  PartitionAllocatorForTesting allocator;
-  allocator.init(PartitionOptions{
+  PartitionAllocatorForTesting allocator(PartitionOptions{
       .aligned_alloc = PartitionOptions::AlignedAlloc::kAllowed,
-      .quarantine = PartitionOptions::Quarantine::kAllowed,
+      .star_scan_quarantine = PartitionOptions::StarScanQuarantine::kAllowed,
   });
 
   size_t bucket_index = FillThreadCacheAndReturnIndex(kSmallSize);
-  void* ptr = allocator.root()->Alloc(kSmallSize, "");
+  void* ptr = allocator.root()->Alloc(
+      allocator.root()->AdjustSizeForExtrasSubtract(kSmallSize), "");
   ASSERT_TRUE(ptr);
 
   auto* tcache = root()->thread_cache_for_testing();
   EXPECT_EQ(kFillCountForSmallBucket,
             tcache->bucket_count_for_testing(bucket_index));
 
-  ThreadSafePartitionRoot::Free(ptr);
+  allocator.root()->Free(ptr);
   EXPECT_EQ(kFillCountForSmallBucket,
             tcache->bucket_count_for_testing(bucket_index));
 }
@@ -326,18 +326,22 @@ TEST_P(PartitionAllocThreadCacheTest, DirectMappedReallocMetrics) {
             root()->get_total_size_of_allocated_bytes());
   EXPECT_EQ(expected_allocated_size, root()->get_max_size_of_allocated_bytes());
 
-  void* ptr = root()->Alloc(10 * internal::kMaxBucketed, "");
+  void* ptr = root()->Alloc(
+      root()->AdjustSizeForExtrasSubtract(10 * internal::kMaxBucketed), "");
 
   EXPECT_EQ(expected_allocated_size + 10 * internal::kMaxBucketed,
             root()->get_total_size_of_allocated_bytes());
 
-  void* ptr2 = root()->Realloc(ptr, 9 * internal::kMaxBucketed, "");
+  void* ptr2 = root()->Realloc(
+      ptr, root()->AdjustSizeForExtrasSubtract(9 * internal::kMaxBucketed), "");
 
   ASSERT_EQ(ptr, ptr2);
   EXPECT_EQ(expected_allocated_size + 9 * internal::kMaxBucketed,
             root()->get_total_size_of_allocated_bytes());
 
-  ptr2 = root()->Realloc(ptr, 10 * internal::kMaxBucketed, "");
+  ptr2 = root()->Realloc(
+      ptr, root()->AdjustSizeForExtrasSubtract(10 * internal::kMaxBucketed),
+      "");
 
   ASSERT_EQ(ptr, ptr2);
   EXPECT_EQ(expected_allocated_size + 10 * internal::kMaxBucketed,
@@ -348,17 +352,17 @@ TEST_P(PartitionAllocThreadCacheTest, DirectMappedReallocMetrics) {
 
 namespace {
 
-size_t FillThreadCacheAndReturnIndex(ThreadSafePartitionRoot* root,
+size_t FillThreadCacheAndReturnIndex(PartitionRoot* root,
                                      size_t size,
                                      BucketDistribution bucket_distribution,
                                      size_t count = 1) {
   uint16_t bucket_index =
-      PartitionRoot<internal::ThreadSafe>::SizeToBucketIndex(
-          size, bucket_distribution);
+      PartitionRoot::SizeToBucketIndex(size, bucket_distribution);
   std::vector<void*> allocated_data;
 
   for (size_t i = 0; i < count; ++i) {
-    allocated_data.push_back(root->Alloc(size, ""));
+    allocated_data.push_back(
+        root->Alloc(root->AdjustSizeForExtrasSubtract(size), ""));
   }
   for (void* ptr : allocated_data) {
     root->Free(ptr);
@@ -376,7 +380,7 @@ class ThreadDelegateForMultipleThreadCaches
     : public internal::base::PlatformThreadForTesting::Delegate {
  public:
   ThreadDelegateForMultipleThreadCaches(ThreadCache* parent_thread_cache,
-                                        ThreadSafePartitionRoot* root,
+                                        PartitionRoot* root,
                                         BucketDistribution bucket_distribution)
       : parent_thread_tcache_(parent_thread_cache),
         root_(root),
@@ -393,8 +397,8 @@ class ThreadDelegateForMultipleThreadCaches
 
  private:
   ThreadCache* parent_thread_tcache_ = nullptr;
-  ThreadSafePartitionRoot* root_ = nullptr;
-  PartitionRoot<internal::ThreadSafe>::BucketDistribution bucket_distribution_;
+  PartitionRoot* root_ = nullptr;
+  PartitionRoot::BucketDistribution bucket_distribution_;
 };
 
 }  // namespace
@@ -418,20 +422,20 @@ namespace {
 class ThreadDelegateForThreadCacheReclaimedWhenThreadExits
     : public internal::base::PlatformThreadForTesting::Delegate {
  public:
-  ThreadDelegateForThreadCacheReclaimedWhenThreadExits(
-      ThreadSafePartitionRoot* root,
-      void*& other_thread_ptr)
+  ThreadDelegateForThreadCacheReclaimedWhenThreadExits(PartitionRoot* root,
+                                                       void*& other_thread_ptr)
       : root_(root), other_thread_ptr_(other_thread_ptr) {}
 
   void ThreadMain() override {
     EXPECT_FALSE(root_->thread_cache_for_testing());  // No allocations yet.
-    other_thread_ptr_ = root_->Alloc(kMediumSize, "");
+    other_thread_ptr_ =
+        root_->Alloc(root_->AdjustSizeForExtrasSubtract(kMediumSize), "");
     root_->Free(other_thread_ptr_);
     // |other_thread_ptr| is now in the thread cache.
   }
 
  private:
-  ThreadSafePartitionRoot* root_ = nullptr;
+  PartitionRoot* root_ = nullptr;
   void*& other_thread_ptr_;
 };
 
@@ -444,7 +448,8 @@ TEST_P(PartitionAllocThreadCacheTest, ThreadCacheReclaimedWhenThreadExits) {
   // Allocate enough objects to force a cache fill at the next allocation.
   std::vector<void*> tmp;
   for (size_t i = 0; i < kDefaultCountForMediumBucket / 4; i++) {
-    tmp.push_back(root()->Alloc(kMediumSize, ""));
+    tmp.push_back(
+        root()->Alloc(root()->AdjustSizeForExtrasSubtract(kMediumSize), ""));
   }
 
   void* other_thread_ptr = nullptr;
@@ -456,7 +461,8 @@ TEST_P(PartitionAllocThreadCacheTest, ThreadCacheReclaimedWhenThreadExits) {
                                                    &thread_handle);
   internal::base::PlatformThreadForTesting::Join(thread_handle);
 
-  void* this_thread_ptr = root()->Alloc(kMediumSize, "");
+  void* this_thread_ptr =
+      root()->Alloc(root()->AdjustSizeForExtrasSubtract(kMediumSize), "");
   // |other_thread_ptr| was returned to the central allocator, and is returned
   // here, as it comes from the freelist.
   EXPECT_EQ(UntagPtr(this_thread_ptr), UntagPtr(other_thread_ptr));
@@ -473,7 +479,7 @@ class ThreadDelegateForThreadCacheRegistry
     : public internal::base::PlatformThreadForTesting::Delegate {
  public:
   ThreadDelegateForThreadCacheRegistry(ThreadCache* parent_thread_cache,
-                                       ThreadSafePartitionRoot* root,
+                                       PartitionRoot* root,
                                        BucketDistribution bucket_distribution)
       : parent_thread_tcache_(parent_thread_cache),
         root_(root),
@@ -492,7 +498,7 @@ class ThreadDelegateForThreadCacheRegistry
 
  private:
   ThreadCache* parent_thread_tcache_ = nullptr;
-  ThreadSafePartitionRoot* root_ = nullptr;
+  PartitionRoot* root_ = nullptr;
   BucketDistribution bucket_distribution_;
 };
 
@@ -502,11 +508,19 @@ TEST_P(PartitionAllocThreadCacheTest, ThreadCacheRegistry) {
   auto* parent_thread_tcache = root()->thread_cache_for_testing();
   ASSERT_TRUE(parent_thread_tcache);
 
-#if !BUILDFLAG(IS_APPLE) && BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
+#if !(BUILDFLAG(IS_APPLE) || BUILDFLAG(IS_ANDROID) ||   \
+      BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_LINUX)) && \
+    BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
   // iOS and MacOS 15 create worker threads internally(start_wqthread).
   // So thread caches are created for the worker threads, because the threads
   // allocate memory for initialization (_dispatch_calloc is invoked).
   // We cannot assume that there is only 1 thread cache here.
+
+  // Regarding Linux, ChromeOS and Android, some other tests may create
+  // non-joinable threads. E.g. FilePathWatcherTest will create
+  // non-joinable thread at InotifyReader::StartThread(). The thread will
+  // be still running after the tests are finished, and will break
+  // an assumption that there exists only main thread here.
   {
     internal::ScopedGuard lock(ThreadCacheRegistry::GetLock());
     EXPECT_EQ(parent_thread_tcache->prev_, nullptr);
@@ -522,7 +536,9 @@ TEST_P(PartitionAllocThreadCacheTest, ThreadCacheRegistry) {
                                                    &thread_handle);
   internal::base::PlatformThreadForTesting::Join(thread_handle);
 
-#if !BUILDFLAG(IS_APPLE) && BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
+#if !(BUILDFLAG(IS_APPLE) || BUILDFLAG(IS_ANDROID) ||   \
+      BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_LINUX)) && \
+    BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
   internal::ScopedGuard lock(ThreadCacheRegistry::GetLock());
   EXPECT_EQ(parent_thread_tcache->prev_, nullptr);
   EXPECT_EQ(parent_thread_tcache->next_, nullptr);
@@ -543,7 +559,8 @@ TEST_P(PartitionAllocThreadCacheTest, RecordStats) {
   DeltaCounter cache_fill_misses_counter{tcache->stats_.cache_fill_misses};
 
   // Cache has been purged, first allocation is a miss.
-  void* data = root()->Alloc(kMediumSize, "");
+  void* data =
+      root()->Alloc(root()->AdjustSizeForExtrasSubtract(kMediumSize), "");
   EXPECT_EQ(1u, alloc_counter.Delta());
   EXPECT_EQ(1u, alloc_miss_counter.Delta());
   EXPECT_EQ(0u, alloc_hits_counter.Delta());
@@ -584,7 +601,7 @@ class ThreadDelegateForMultipleThreadCachesAccounting
     : public internal::base::PlatformThreadForTesting::Delegate {
  public:
   ThreadDelegateForMultipleThreadCachesAccounting(
-      ThreadSafePartitionRoot* root,
+      PartitionRoot* root,
       const ThreadCacheStats& wqthread_stats,
       int alloc_count,
       BucketDistribution bucket_distribution)
@@ -615,7 +632,7 @@ class ThreadDelegateForMultipleThreadCachesAccounting
   }
 
  private:
-  ThreadSafePartitionRoot* root_ = nullptr;
+  PartitionRoot* root_ = nullptr;
   BucketDistribution bucket_distribution_;
   const ThreadCacheStats wqthread_stats_;
   const int alloc_count_;
@@ -623,14 +640,30 @@ class ThreadDelegateForMultipleThreadCachesAccounting
 
 }  // namespace
 
-TEST_P(PartitionAllocThreadCacheTest, MultipleThreadCachesAccounting) {
+// TODO(https://crbug.com/1472705): Flaky on Android.
+#if BUILDFLAG(IS_ANDROID)
+#define MAYBE_MultipleThreadCachesAccounting \
+  DISABLED_MultipleThreadCachesAccounting
+#else
+#define MAYBE_MultipleThreadCachesAccounting MultipleThreadCachesAccounting
+#endif
+
+TEST_P(PartitionAllocThreadCacheTest, MAYBE_MultipleThreadCachesAccounting) {
   ThreadCacheStats wqthread_stats{0};
-#if BUILDFLAG(IS_APPLE) && BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
+#if !(BUILDFLAG(IS_APPLE) || BUILDFLAG(IS_ANDROID) ||   \
+      BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_LINUX)) && \
+    BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
   {
     // iOS and MacOS 15 create worker threads internally(start_wqthread).
     // So thread caches are created for the worker threads, because the threads
     // allocate memory for initialization (_dispatch_calloc is invoked).
     // We need to count worker threads created by iOS and Mac system.
+
+    // Regarding Linux, ChromeOS and Android, some other tests may create
+    // non-joinable threads. E.g. FilePathWatcherTest will create
+    // non-joinable thread at InotifyReader::StartThread(). The thread will
+    // be still running after the tests are finished. We need to count
+    // the joinable threads here.
     ThreadCacheRegistry::Instance().DumpStats(false, &wqthread_stats);
 
     // Remove this thread's thread cache stats from wqthread_stats.
@@ -668,7 +701,7 @@ namespace {
 class ThreadDelegateForPurgeAll
     : public internal::base::PlatformThreadForTesting::Delegate {
  public:
-  ThreadDelegateForPurgeAll(ThreadSafePartitionRoot* root,
+  ThreadDelegateForPurgeAll(PartitionRoot* root,
                             ThreadCache*& other_thread_tcache,
                             std::atomic<bool>& other_thread_started,
                             std::atomic<bool>& purge_called,
@@ -693,7 +726,8 @@ class ThreadDelegateForPurgeAll
     EXPECT_EQ(kFillCountForSmallBucket,
               other_thread_tcache_->bucket_count_for_testing(bucket_index_));
     // Allocations do not trigger Purge().
-    void* data = root_->Alloc(kSmallSize, "");
+    void* data =
+        root_->Alloc(root_->AdjustSizeForExtrasSubtract(kSmallSize), "");
     EXPECT_EQ(kFillCountForSmallBucket - 1,
               other_thread_tcache_->bucket_count_for_testing(bucket_index_));
     // But deallocations do.
@@ -703,7 +737,7 @@ class ThreadDelegateForPurgeAll
   }
 
  private:
-  ThreadSafePartitionRoot* root_ = nullptr;
+  PartitionRoot* root_ = nullptr;
   ThreadCache*& other_thread_tcache_;
   std::atomic<bool>& other_thread_started_;
   std::atomic<bool>& purge_called_;
@@ -798,15 +832,16 @@ TEST_P(PartitionAllocThreadCacheTest, PeriodicPurge) {
 
 namespace {
 
-void FillThreadCacheWithMemory(ThreadSafePartitionRoot* root,
+void FillThreadCacheWithMemory(PartitionRoot* root,
                                size_t target_cached_memory,
                                BucketDistribution bucket_distribution) {
   for (int batch : {1, 2, 4, 8, 16}) {
     for (size_t allocation_size = 1;
          allocation_size <= ThreadCache::kLargeSizeThreshold;
          allocation_size++) {
-      FillThreadCacheAndReturnIndex(root, allocation_size, bucket_distribution,
-                                    batch);
+      FillThreadCacheAndReturnIndex(
+          root, root->AdjustSizeForExtrasAdd(allocation_size),
+          bucket_distribution, batch);
 
       if (ThreadCache::Get()->CachedMemory() >= target_cached_memory) {
         return;
@@ -821,7 +856,7 @@ class ThreadDelegateForPeriodicPurgeSumsOverAllThreads
     : public internal::base::PlatformThreadForTesting::Delegate {
  public:
   ThreadDelegateForPeriodicPurgeSumsOverAllThreads(
-      ThreadSafePartitionRoot* root,
+      PartitionRoot* root,
       std::atomic<int>& allocations_done,
       std::atomic<bool>& can_finish,
       BucketDistribution bucket_distribution)
@@ -842,7 +877,7 @@ class ThreadDelegateForPeriodicPurgeSumsOverAllThreads
   }
 
  private:
-  ThreadSafePartitionRoot* root_ = nullptr;
+  PartitionRoot* root_ = nullptr;
   std::atomic<int>& allocations_done_;
   std::atomic<bool>& can_finish_;
   BucketDistribution bucket_distribution_;
@@ -923,7 +958,8 @@ TEST_P(PartitionAllocThreadCacheTest, MAYBE_DynamicCountPerBucket) {
       ThreadCache::kDefaultMultiplier / 2);
   // No immediate batch deallocation.
   EXPECT_EQ(kDefaultCountForMediumBucket, tcache->buckets_[bucket_index].count);
-  void* data = root()->Alloc(kMediumSize, "");
+  void* data =
+      root()->Alloc(root()->AdjustSizeForExtrasSubtract(kMediumSize), "");
   // Not triggered by allocations.
   EXPECT_EQ(kDefaultCountForMediumBucket - 1,
             tcache->buckets_[bucket_index].count);
@@ -987,7 +1023,7 @@ class ThreadDelegateForDynamicCountPerBucketMultipleThreads
     : public internal::base::PlatformThreadForTesting::Delegate {
  public:
   ThreadDelegateForDynamicCountPerBucketMultipleThreads(
-      ThreadSafePartitionRoot* root,
+      PartitionRoot* root,
       std::atomic<bool>& other_thread_started,
       std::atomic<bool>& threshold_changed,
       int bucket_index,
@@ -1010,7 +1046,8 @@ class ThreadDelegateForDynamicCountPerBucketMultipleThreads
     while (!threshold_changed_.load(std::memory_order_acquire)) {
     }
 
-    void* data = root_->Alloc(kSmallSize, "");
+    void* data =
+        root_->Alloc(root_->AdjustSizeForExtrasSubtract(kSmallSize), "");
     // Deallocations trigger limit enforcement.
     root_->Free(data);
     // Since the bucket is too full, it gets halved by batched deallocation.
@@ -1019,11 +1056,11 @@ class ThreadDelegateForDynamicCountPerBucketMultipleThreads
   }
 
  private:
-  ThreadSafePartitionRoot* root_ = nullptr;
+  PartitionRoot* root_ = nullptr;
   std::atomic<bool>& other_thread_started_;
   std::atomic<bool>& threshold_changed_;
   const int bucket_index_;
-  PartitionRoot<internal::ThreadSafe>::BucketDistribution bucket_distribution_;
+  PartitionRoot::BucketDistribution bucket_distribution_;
 };
 
 }  // namespace
@@ -1166,10 +1203,9 @@ TEST_P(PartitionAllocThreadCacheTest, MAYBE_Bookkeeping) {
   root()->ResetBookkeepingForTesting();
 
   // The ThreadCache is allocated before we change buckets, so its size is
-  // always based on the sparser distribution.
+  // always based on the neutral distribution.
   size_t tc_bucket_index = root()->SizeToBucketIndex(
-      sizeof(ThreadCache),
-      ThreadSafePartitionRoot::BucketDistribution::kDefault);
+      sizeof(ThreadCache), PartitionRoot::BucketDistribution::kNeutral);
   auto* tc_bucket = &root()->buckets[tc_bucket_index];
   size_t expected_allocated_size =
       tc_bucket->slot_size;  // For the ThreadCache itself.
@@ -1183,7 +1219,8 @@ TEST_P(PartitionAllocThreadCacheTest, MAYBE_Bookkeeping) {
             root()->get_total_size_of_allocated_bytes());
   EXPECT_EQ(expected_allocated_size, root()->get_max_size_of_allocated_bytes());
 
-  void* ptr = root()->Alloc(kMediumSize, "");
+  void* ptr =
+      root()->Alloc(root()->AdjustSizeForExtrasSubtract(kMediumSize), "");
 
   auto* medium_bucket = root()->buckets + SizeToIndex(kMediumSize);
   size_t medium_alloc_size = medium_bucket->slot_size;
@@ -1202,7 +1239,8 @@ TEST_P(PartitionAllocThreadCacheTest, MAYBE_Bookkeeping) {
 
   // These allocations all come from the thread-cache.
   for (size_t i = 0; i < kFillCountForMediumBucket; i++) {
-    arr[i] = root()->Alloc(kMediumSize, "");
+    arr[i] =
+        root()->Alloc(root()->AdjustSizeForExtrasSubtract(kMediumSize), "");
     EXPECT_EQ(expected_committed_size, root()->total_size_of_committed_pages);
     EXPECT_EQ(expected_committed_size, root()->max_size_of_committed_pages);
     EXPECT_EQ(expected_allocated_size,
@@ -1235,7 +1273,8 @@ TEST_P(PartitionAllocThreadCacheTest, TryPurgeNoAllocs) {
 TEST_P(PartitionAllocThreadCacheTest, TryPurgeMultipleCorrupted) {
   auto* tcache = root()->thread_cache_for_testing();
 
-  void* ptr = root()->Alloc(kMediumSize, "");
+  void* ptr =
+      root()->Alloc(root()->AdjustSizeForExtrasSubtract(kMediumSize), "");
 
   auto* medium_bucket = root()->buckets + SizeToIndex(kMediumSize);
 
@@ -1255,7 +1294,7 @@ TEST(AlternateBucketDistributionTest, SizeToIndex) {
     for (size_t offset = 0; offset < 4; offset++) {
       size_t n = i * (4 + offset) / 4;
       EXPECT_EQ(BucketIndexLookup::GetIndex(n),
-                BucketIndexLookup::GetIndexForDefaultBuckets(n));
+                BucketIndexLookup::GetIndexForNeutralBuckets(n));
     }
   }
 
@@ -1275,7 +1314,7 @@ TEST(AlternateBucketDistributionTest, SizeToIndex) {
     for (size_t offset = 0; offset < 2; offset++) {
       size_t n = i * (4 + offset) / 4;
       EXPECT_EQ(BucketIndexLookup::GetIndex(n),
-                BucketIndexLookup::GetIndexForDefaultBuckets(n));
+                BucketIndexLookup::GetIndexForNeutralBuckets(n));
       EXPECT_EQ(BucketIndexLookup::GetIndex(n), expected_index);
       expected_index += 2;
     }
@@ -1288,7 +1327,7 @@ TEST(AlternateBucketDistributionTest, SizeToIndex) {
       // the bucket index to be larger than the bucket index for the same
       // allocation under the default distribution.
       EXPECT_GT(BucketIndexLookup::GetIndex(n),
-                BucketIndexLookup::GetIndexForDefaultBuckets(n));
+                BucketIndexLookup::GetIndexForNeutralBuckets(n));
       // We expect both allocations in this loop to be rounded up to the next
       // power of two bucket.
       EXPECT_EQ(BucketIndexLookup::GetIndex(n), expected_index);
@@ -1302,7 +1341,7 @@ TEST(AlternateBucketDistributionTest, SizeToIndex) {
     for (size_t offset = 0; offset < 4; offset++) {
       size_t n = i * (4 + offset) / 4;
       EXPECT_EQ(BucketIndexLookup::GetIndex(n),
-                BucketIndexLookup::GetIndexForDefaultBuckets(n));
+                BucketIndexLookup::GetIndexForNeutralBuckets(n));
     }
   }
 }
@@ -1319,16 +1358,20 @@ TEST_P(PartitionAllocThreadCacheTest, AllocationRecording) {
   const size_t kSingleSlot = internal::PartitionPageSize() + 1;
 
   size_t expected_total_size = 0;
-  void* ptr = root()->Alloc(kSmallSize, "");
+  void* ptr =
+      root()->Alloc(root()->AdjustSizeForExtrasSubtract(kSmallSize), "");
   ASSERT_TRUE(ptr);
   expected_total_size += root()->GetUsableSize(ptr);
-  void* ptr2 = root()->Alloc(kBucketedNotCached, "");
+  void* ptr2 = root()->Alloc(
+      root()->AdjustSizeForExtrasSubtract(kBucketedNotCached), "");
   ASSERT_TRUE(ptr2);
   expected_total_size += root()->GetUsableSize(ptr2);
-  void* ptr3 = root()->Alloc(kDirectMapped, "");
+  void* ptr3 =
+      root()->Alloc(root()->AdjustSizeForExtrasSubtract(kDirectMapped), "");
   ASSERT_TRUE(ptr3);
   expected_total_size += root()->GetUsableSize(ptr3);
-  void* ptr4 = root()->Alloc(kSingleSlot, "");
+  void* ptr4 =
+      root()->Alloc(root()->AdjustSizeForExtrasSubtract(kSingleSlot), "");
   ASSERT_TRUE(ptr4);
   expected_total_size += root()->GetUsableSize(ptr4);
 
@@ -1455,12 +1498,12 @@ TEST_P(PartitionAllocThreadCacheTest, AllocationRecordingRealloc) {
 // once we have enabled features.
 TEST(AlternateBucketDistributionTest, SwitchBeforeAlloc) {
   std::unique_ptr<PartitionAllocatorForTesting> allocator(CreateAllocator());
-  ThreadSafePartitionRoot* root = allocator->root();
+  PartitionRoot* root = allocator->root();
 
   root->SwitchToDenserBucketDistribution();
   constexpr size_t n = (1 << 12) * 3 / 2;
   EXPECT_NE(internal::BucketIndexLookup::GetIndex(n),
-            internal::BucketIndexLookup::GetIndexForDefaultBuckets(n));
+            internal::BucketIndexLookup::GetIndexForNeutralBuckets(n));
 
   void* ptr = root->Alloc(n, "");
 
@@ -1476,9 +1519,9 @@ TEST(AlternateBucketDistributionTest, SwitchAfterAlloc) {
   std::unique_ptr<PartitionAllocatorForTesting> allocator(CreateAllocator());
   constexpr size_t n = (1 << 12) * 3 / 2;
   EXPECT_NE(internal::BucketIndexLookup::GetIndex(n),
-            internal::BucketIndexLookup::GetIndexForDefaultBuckets(n));
+            internal::BucketIndexLookup::GetIndexForNeutralBuckets(n));
 
-  ThreadSafePartitionRoot* root = allocator->root();
+  PartitionRoot* root = allocator->root();
   void* ptr = root->Alloc(n, "");
 
   root->SwitchToDenserBucketDistribution();

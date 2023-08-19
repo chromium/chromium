@@ -33,8 +33,9 @@ bool FrameNavigationState::allow_extension_scheme_ = false;
 
 DOCUMENT_USER_DATA_KEY_IMPL(FrameNavigationState);
 
-FrameNavigationState::FrameNavigationState(content::RenderFrameHost* rfh)
-    : content::DocumentUserData<FrameNavigationState>(rfh) {}
+FrameNavigationState::FrameNavigationState(
+    content::RenderFrameHost* render_frame_host)
+    : content::DocumentUserData<FrameNavigationState>(render_frame_host) {}
 FrameNavigationState::~FrameNavigationState() = default;
 
 // static

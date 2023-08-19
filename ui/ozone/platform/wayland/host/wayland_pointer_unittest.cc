@@ -501,9 +501,8 @@ TEST_F(WaylandPointerTest, SetBitmapAndScaleOnPointerFocus) {
 #else
     WaylandCursorFactory cursor_factory(connection_.get());
 #endif
-    cursor_factory.SetDeviceScaleFactor(scale);
-    auto cursor = cursor_factory.CreateImageCursor(mojom::CursorType::kCustom,
-                                                   dummy_cursor, hotspot_px);
+    auto cursor = cursor_factory.CreateImageCursor(
+        mojom::CursorType::kCustom, dummy_cursor, hotspot_px, scale);
 
     SendEnter(10, 10);
 

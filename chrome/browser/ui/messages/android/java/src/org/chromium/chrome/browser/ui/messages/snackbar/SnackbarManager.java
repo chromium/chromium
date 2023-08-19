@@ -4,12 +4,7 @@
 
 package org.chromium.chrome.browser.ui.messages.snackbar;
 
-import static android.view.accessibility.AccessibilityManager.FLAG_CONTENT_CONTROLS;
-import static android.view.accessibility.AccessibilityManager.FLAG_CONTENT_ICONS;
-import static android.view.accessibility.AccessibilityManager.FLAG_CONTENT_TEXT;
-
 import android.app.Activity;
-import android.os.Build;
 import android.os.Handler;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -25,7 +20,7 @@ import org.chromium.base.UnownedUserData;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.ObservableSupplierImpl;
-import org.chromium.chrome.browser.util.ChromeAccessibilityUtil;
+import org.chromium.ui.accessibility.AccessibilityState;
 import org.chromium.ui.base.WindowAndroid;
 
 /**
@@ -306,25 +301,17 @@ public class SnackbarManager implements OnClickListener, ActivityStateListener, 
         int durationMs = snackbar.getDuration();
         if (durationMs == 0) durationMs = sSnackbarDurationMs;
 
-        if (ChromeAccessibilityUtil.get().isAccessibilityEnabled()) {
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-                return ChromeAccessibilityUtil.get().getRecommendedTimeoutMillis(
-                        durationMs, FLAG_CONTENT_ICONS | FLAG_CONTENT_CONTROLS | FLAG_CONTENT_TEXT);
-            } else {
-                durationMs *= 2;
-                if (durationMs < sAccessibilitySnackbarDurationMs) {
-                    durationMs = sAccessibilitySnackbarDurationMs;
-                }
-            }
-        }
-
-        return durationMs;
+        // If no a11y service that can perform gestures is enabled, use the set duration. Otherwise
+        // multiply the duration by the recommended multiplier and use that with a minimum of 30s.
+        return !AccessibilityState.isPerformGesturesEnabled()
+                ? durationMs
+                : AccessibilityState.getRecommendedTimeoutMillis(
+                        sAccessibilitySnackbarDurationMs, durationMs);
     }
 
     /**
      * Disables the snackbar manager. This is only intended for testing purposes.
      */
-    @VisibleForTesting
     public void disableForTesting() {
         mIsDisabledForTesting = true;
     }
@@ -333,7 +320,6 @@ public class SnackbarManager implements OnClickListener, ActivityStateListener, 
      * Overrides the default snackbar duration with a custom value for testing.
      * @param durationMs The duration to use in ms.
      */
-    @VisibleForTesting
     public static void setDurationForTesting(int durationMs) {
         sSnackbarDurationMs = durationMs;
         sAccessibilitySnackbarDurationMs = durationMs;
@@ -342,18 +328,15 @@ public class SnackbarManager implements OnClickListener, ActivityStateListener, 
     /**
      * Clears any overrides set for testing.
      */
-    @VisibleForTesting
-    public static void restDurationForTesting() {
+    public static void resetDurationForTesting() {
         sSnackbarDurationMs = DEFAULT_SNACKBAR_DURATION_MS;
         sAccessibilitySnackbarDurationMs = ACCESSIBILITY_MODE_SNACKBAR_DURATION_MS;
     }
 
-    @VisibleForTesting
     static int getDefaultDurationForTesting() {
         return sSnackbarDurationMs;
     }
 
-    @VisibleForTesting
     static int getDefaultA11yDurationForTesting() {
         return sAccessibilitySnackbarDurationMs;
     }
@@ -361,7 +344,6 @@ public class SnackbarManager implements OnClickListener, ActivityStateListener, 
     /**
      * @return The currently showing snackbar. For testing only.
      */
-    @VisibleForTesting
     public Snackbar getCurrentSnackbarForTesting() {
         return mSnackbars.getCurrent();
     }
@@ -369,7 +351,6 @@ public class SnackbarManager implements OnClickListener, ActivityStateListener, 
     /**
      * @return The currently showing snackbar view. For testing only.
      */
-    @VisibleForTesting
     public SnackbarView getCurrentSnackbarViewForTesting() {
         return mView;
     }

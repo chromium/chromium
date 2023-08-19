@@ -356,6 +356,125 @@ INSTANTIATE_TEST_SUITE_P(
                        ::testing::ValuesIn({AgcState::AGC_DISABLED,
                                             AgcState::BROWSER_AGC,
                                             AgcState::SYSTEM_AGC})));
+
+enum AecState {
+  AEC_DISABLED,
+  BROWSER_AEC,
+  SYSTEM_AEC,
+};
+
+class ProcessedLocalAudioSourceVoiceIsolationTest
+    : public ProcessedLocalAudioSourceBase,
+      public testing::WithParamInterface<
+          testing::tuple<bool, bool, AecState, bool>> {
+ public:
+  bool IsVoiceIsolationOptionEnabled() { return std::get<0>(GetParam()); }
+  bool IsVoiceIsolationSupported() { return std::get<1>(GetParam()); }
+  AecState GetAecState() { return std::get<2>(GetParam()); }
+  bool IsSystemAecDefaultEnabled() { return std::get<3>(GetParam()); }
+
+  void SetUp() override {
+    if (IsVoiceIsolationOptionEnabled()) {
+      feature_list_.InitAndEnableFeature(
+          media::kCrOSSystemVoiceIsolationOption);
+    } else {
+      feature_list_.InitAndDisableFeature(
+          media::kCrOSSystemVoiceIsolationOption);
+    }
+
+    ProcessedLocalAudioSourceBase::SetUp();
+  }
+
+  void SetUpAudioProcessingProperties(AudioProcessingProperties* properties) {
+    switch (GetAecState()) {
+      case AEC_DISABLED:
+        properties->echo_cancellation_type = AudioProcessingProperties::
+            EchoCancellationType::kEchoCancellationDisabled;
+        break;
+      case BROWSER_AEC:
+        properties->echo_cancellation_type = AudioProcessingProperties::
+            EchoCancellationType::kEchoCancellationAec3;
+        break;
+      case SYSTEM_AEC:
+        properties->echo_cancellation_type = AudioProcessingProperties::
+            EchoCancellationType::kEchoCancellationSystem;
+        break;
+    }
+  }
+
+  void SetUpAudioParameters() {
+    blink::MediaStreamDevice modified_device(audio_source()->device());
+
+    if (IsVoiceIsolationSupported()) {
+      modified_device.input.set_effects(
+          modified_device.input.effects() |
+          media::AudioParameters::VOICE_ISOLATION_SUPPORTED);
+    }
+    if (IsSystemAecDefaultEnabled()) {
+      modified_device.input.set_effects(modified_device.input.effects() |
+                                        media::AudioParameters::ECHO_CANCELLER);
+    }
+
+    audio_source()->SetDevice(modified_device);
+  }
+
+ protected:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+MATCHER_P3(VoiceIsolationAsExpected,
+           voice_isolation_option_enabled,
+           voice_isolation_supported,
+           aec_state,
+           "") {
+  // Only if voice isolation is supported and browser AEC is enabled while voice
+  // isolation option feature flag is set, The voice isolation is force to being
+  // off. In this case, `CLIENT_CONTROLLED_VOICE_ISOLATION` should be set and
+  // `VOICE_ISOLATION` should be off.
+  // Otherwise, `CLIENT_CONTROLLED_VOICE_ISOLATION` should be off and
+  // `VOICE_ISOLATION` bit is don't-care.
+  if (voice_isolation_supported && aec_state == BROWSER_AEC &&
+      voice_isolation_option_enabled) {
+    return (arg.effects() &
+            media::AudioParameters::CLIENT_CONTROLLED_VOICE_ISOLATION) &&
+           ((arg.effects() & media::AudioParameters::VOICE_ISOLATION) == 0);
+  } else {
+    return (arg.effects() &
+            media::AudioParameters::CLIENT_CONTROLLED_VOICE_ISOLATION) == 0;
+  }
+}
+
+TEST_P(ProcessedLocalAudioSourceVoiceIsolationTest,
+       VerifyVoiceIsolationStateAsExpected) {
+  AudioProcessingProperties properties;
+  SetUpAudioProcessingProperties(&properties);
+  CreateProcessedLocalAudioSource(properties, 1 /* num_requested_channels */);
+  SetUpAudioParameters();
+
+  // Connect the track, and expect the MockAudioCapturerSource to be initialized
+  // and started by ProcessedLocalAudioSource.
+  EXPECT_CALL(*mock_audio_capturer_source(),
+              Initialize(VoiceIsolationAsExpected(
+                             IsVoiceIsolationOptionEnabled(),
+                             IsVoiceIsolationSupported(), GetAecState()),
+                         capture_source_callback()));
+  EXPECT_CALL(*mock_audio_capturer_source(), Start())
+      .WillOnce(Invoke(
+          capture_source_callback(),
+          &media::AudioCapturerSource::CaptureCallback::OnCaptureStarted));
+  ASSERT_TRUE(audio_source()->ConnectToInitializedTrack(audio_track()));
+}
+
+INSTANTIATE_TEST_SUITE_P(
+    VoiceIsolationTest,
+    ProcessedLocalAudioSourceVoiceIsolationTest,
+    ::testing::Combine(::testing::Bool(),
+                       ::testing::Bool(),
+                       ::testing::ValuesIn({AecState::AEC_DISABLED,
+                                            AecState::BROWSER_AEC,
+                                            AecState::SYSTEM_AEC}),
+                       ::testing::Bool()));
+
 #endif
 
 }  // namespace blink

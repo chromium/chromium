@@ -92,7 +92,8 @@ class TopShortcutsViewTest : public NoSessionAshTestBase {
   std::unique_ptr<UnifiedSystemTrayController> controller_;
 
   // Owned by widget.
-  raw_ptr<TopShortcutsView, ExperimentalAsh> top_shortcuts_view_;
+  raw_ptr<TopShortcutsView, DanglingUntriaged | ExperimentalAsh>
+      top_shortcuts_view_;
 };
 
 // All buttons are with the correct view id, catalog name and UMA tracking.

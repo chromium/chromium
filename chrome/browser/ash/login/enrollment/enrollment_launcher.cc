@@ -462,6 +462,7 @@ void EnrollmentLauncherImpl::ReportAuthStatus(
     case GoogleServiceAuthError::UNEXPECTED_SERVICE_RESPONSE:
     case GoogleServiceAuthError::SERVICE_ERROR:
     case GoogleServiceAuthError::SCOPE_LIMITED_UNRECOVERABLE_ERROR:
+    case GoogleServiceAuthError::CHALLENGE_RESPONSE_REQUIRED:
       UMA(policy::kMetricEnrollmentLoginFailed);
       LOG(ERROR) << "Auth error " << error.state();
       break;

@@ -366,26 +366,7 @@ def summarize_results(port_obj,
                 artifact_dict = test_dict.setdefault('artifacts', {})
                 artifact_dict.setdefault(artifact_name, []).extend(artifacts)
 
-        # Store test hierarchically by directory. e.g.
-        # foo/bar/baz.html: test_dict
-        # foo/bar/baz1.html: test_dict
-        #
-        # becomes
-        # foo: {
-        #     bar: {
-        #         baz.html: test_dict,
-        #         baz1.html: test_dict
-        #     }
-        # }
-        parts = test_name.split('/')
-        current_map = tests
-        for i, part in enumerate(parts):
-            if i == (len(parts) - 1):
-                current_map[part] = test_dict
-                break
-            if part not in current_map:
-                current_map[part] = {}
-            current_map = current_map[part]
+        convert_to_hierarchical_view(tests, test_name, test_dict)
 
     results['tests'] = tests
     results['num_passes'] = num_passes
@@ -425,6 +406,29 @@ def summarize_results(port_obj,
                 path)
 
     return results
+
+
+def convert_to_hierarchical_view(tests, test_name, test_dict):
+    # Store test hierarchically by directory. e.g.
+    # foo/bar/baz.html: test_dict
+    # foo/bar/baz1.html: test_dict
+    #
+    # becomes
+    # foo: {
+    #     bar: {
+    #         baz.html: test_dict,
+    #         baz1.html: test_dict
+    #     }
+    # }
+    parts = test_name.split('/')
+    current_map = tests
+    for i, part in enumerate(parts):
+        if i == (len(parts) - 1):
+            current_map[part] = test_dict
+            break
+        if part not in current_map:
+            current_map[part] = {}
+        current_map = current_map[part]
 
 
 def _worker_number(worker_name):

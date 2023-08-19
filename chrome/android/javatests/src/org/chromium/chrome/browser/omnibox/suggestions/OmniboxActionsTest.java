@@ -4,6 +4,8 @@
 
 package org.chromium.chrome.browser.omnibox.suggestions;
 
+import static androidx.test.espresso.assertion.ViewAssertions.matches;
+
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
@@ -39,7 +41,6 @@ import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.history.HistoryActivity;
 import org.chromium.chrome.browser.omnibox.suggestions.action.HistoryClustersAction;
 import org.chromium.chrome.browser.omnibox.suggestions.action.OmniboxActionInSuggest;
-import org.chromium.chrome.browser.omnibox.suggestions.base.ActionChipsAdapter;
 import org.chromium.chrome.browser.omnibox.suggestions.base.BaseSuggestionView;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tabmodel.IncognitoTabHostUtils;
@@ -114,26 +115,8 @@ public class OmniboxActionsTest {
         if (mTargetActivity != null) {
             ApplicationTestUtils.finishActivity(mTargetActivity);
         }
-        verifyNoMoreInteractions(mOmniboxActionJni);
         mJniMocker.mock(AutocompleteControllerJni.TEST_HOOKS, null);
         mJniMocker.mock(OmniboxActionJni.TEST_HOOKS, null);
-    }
-
-    /**
-     * Click the n-th action.
-     *
-     * @param actionIndex the index of action to invoke.
-     */
-    private void clickOnAction(int actionIndex) {
-        SuggestionInfo<BaseSuggestionView> info = mOmniboxUtils.findSuggestionWithActionChips();
-        Assert.assertNotNull(info);
-
-        CriteriaHelper.pollUiThread(() -> {
-            var adapter = (ActionChipsAdapter) info.view.getActionChipsView().getAdapter();
-            if (adapter.getItemCount() < actionIndex) return false;
-            adapter.setSelectedItem(actionIndex);
-            return adapter.getSelectedView().performClick();
-        });
     }
 
     /**
@@ -181,13 +164,13 @@ public class OmniboxActionsTest {
 
     @Test
     @MediumTest
-    @DisableFeatures({ChromeFeatureList.OMNIBOX_HISTORY_CLUSTER_PROVIDER})
+    @DisableFeatures(ChromeFeatureList.OMNIBOX_HISTORY_CLUSTER_PROVIDER)
     @EnableFeatures({ChromeFeatureList.HISTORY_JOURNEYS,
             ChromeFeatureList.OMNIBOX_HISTORY_CLUSTER_ACTION_CHIP})
     public void
     testHistoryClustersAction() throws Exception {
         setSuggestions(createDummyHistoryClustersAction("query"));
-        clickOnAction(0);
+        mOmniboxUtils.clickOnAction(0, 0);
 
         if (DeviceFormFactor.isNonMultiDisplayContextOnTablet(sActivityTestRule.getActivity())) {
             CriteriaHelper.pollUiThread(() -> {
@@ -201,6 +184,7 @@ public class OmniboxActionsTest {
                     InstrumentationRegistry.getInstrumentation(), HistoryActivity.class);
             Assert.assertNotNull("Could not find the history activity", mTargetActivity);
         }
+        verifyNoMoreInteractions(mOmniboxActionJni);
     }
 
     @Test
@@ -218,6 +202,7 @@ public class OmniboxActionsTest {
         verify(mOmniboxActionJni, times(1))
                 .recordActionShown(
                         ActionInfo.ActionType.DIRECTIONS_VALUE, /*position=*/2, /*executed=*/false);
+        verifyNoMoreInteractions(mOmniboxActionJni);
     }
 
     @Test
@@ -228,7 +213,7 @@ public class OmniboxActionsTest {
                 createDummyActionInSuggest(ActionInfo.ActionType.CALL),
                 createDummyActionInSuggest(ActionInfo.ActionType.DIRECTIONS));
 
-        clickOnAction(0);
+        mOmniboxUtils.clickOnAction(1, 0);
 
         verify(mOmniboxActionJni, times(1))
                 .recordActionShown(
@@ -236,6 +221,7 @@ public class OmniboxActionsTest {
         verify(mOmniboxActionJni, times(1))
                 .recordActionShown(
                         ActionInfo.ActionType.DIRECTIONS_VALUE, /*position=*/2, /*executed=*/false);
+        verifyNoMoreInteractions(mOmniboxActionJni);
     }
 
     @Test
@@ -246,7 +232,7 @@ public class OmniboxActionsTest {
                 createDummyActionInSuggest(ActionInfo.ActionType.CALL,
                         ActionInfo.ActionType.DIRECTIONS, ActionInfo.ActionType.REVIEWS));
 
-        clickOnAction(2);
+        mOmniboxUtils.clickOnAction(1, 2);
 
         verify(mOmniboxActionJni, times(1))
                 .recordActionShown(
@@ -257,5 +243,6 @@ public class OmniboxActionsTest {
         verify(mOmniboxActionJni, times(1))
                 .recordActionShown(
                         ActionInfo.ActionType.REVIEWS_VALUE, /*position=*/1, /*executed=*/true);
+        verifyNoMoreInteractions(mOmniboxActionJni);
     }
 }

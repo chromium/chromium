@@ -6,9 +6,11 @@
 
 #include <memory>
 
+#include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/location.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/types/expected.h"
 #include "base/values.h"
@@ -18,7 +20,9 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/web_applications/commands/callback_command.h"
 #include "chrome/browser/web_applications/commands/clear_browsing_data_command.h"
+#include "chrome/browser/web_applications/commands/dedupe_install_urls_command.h"
 #include "chrome/browser/web_applications/commands/externally_managed_install_command.h"
+#include "chrome/browser/web_applications/commands/fetch_install_info_from_install_url_command.h"
 #include "chrome/browser/web_applications/commands/fetch_installability_for_chrome_management.h"
 #include "chrome/browser/web_applications/commands/fetch_manifest_and_install_command.h"
 #include "chrome/browser/web_applications/commands/install_app_locally_command.h"
@@ -36,7 +40,13 @@
 #include "chrome/browser/web_applications/isolated_web_apps/get_controlled_frame_partition_command.h"
 #include "chrome/browser/web_applications/isolated_web_apps/get_isolated_web_app_browsing_data_command.h"
 #include "chrome/browser/web_applications/isolated_web_apps/install_isolated_web_app_command.h"
+#include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_apply_update_command.h"
+#include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_install_command_helper.h"
+#include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_prepare_and_store_update_command.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_url_info.h"
+#include "chrome/browser/web_applications/jobs/uninstall/remove_install_source_job.h"
+#include "chrome/browser/web_applications/jobs/uninstall/remove_install_url_job.h"
+#include "chrome/browser/web_applications/jobs/uninstall/remove_web_app_job.h"
 #include "chrome/browser/web_applications/locks/all_apps_lock.h"
 #include "chrome/browser/web_applications/locks/app_lock.h"
 #include "chrome/browser/web_applications/locks/noop_lock.h"
@@ -50,6 +60,7 @@
 #include "chrome/browser/web_applications/web_app_ui_manager.h"
 #include "chrome/browser/web_applications/web_contents/web_app_data_retriever.h"
 #include "chrome/browser/web_applications/web_contents/web_contents_manager.h"
+#include "chrome/common/chrome_features.h"
 #include "components/keep_alive_registry/keep_alive_registry.h"
 #include "components/keep_alive_registry/keep_alive_types.h"
 #include "components/keep_alive_registry/scoped_keep_alive.h"
@@ -74,11 +85,15 @@ std::unique_ptr<content::WebContents> CreateIsolatedWebAppWebContents(
 
 }  // namespace
 
-WebAppCommandScheduler::WebAppCommandScheduler(Profile& profile,
-                                               WebAppProvider* provider)
-    : profile_(profile), provider_(provider) {}
+WebAppCommandScheduler::WebAppCommandScheduler(Profile& profile)
+    : profile_(profile) {}
 
 WebAppCommandScheduler::~WebAppCommandScheduler() = default;
+
+void WebAppCommandScheduler::SetProvider(base::PassKey<WebAppProvider>,
+                                         WebAppProvider& provider) {
+  provider_ = &provider;
+}
 
 void WebAppCommandScheduler::Shutdown() {
   is_in_shutdown_ = true;
@@ -106,6 +121,21 @@ void WebAppCommandScheduler::FetchManifestAndInstall(
           std::move(dialog_callback), std::move(callback), use_fallback,
           provider_->web_contents_manager().CreateDataRetriever()),
       location);
+}
+
+void WebAppCommandScheduler::FetchInstallInfoFromInstallUrl(
+    ManifestId manifest_id,
+    GURL install_url,
+    base::OnceCallback<void(std::unique_ptr<WebAppInstallInfo>)> callback) {
+  if (IsShuttingDown()) {
+    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+        FROM_HERE, base::BindOnce(std::move(callback), nullptr));
+    return;
+  }
+
+  provider_->command_manager().ScheduleCommand(
+      std::make_unique<FetchInstallInfoFromInstallUrlCommand>(
+          std::move(manifest_id), std::move(install_url), std::move(callback)));
 }
 
 void WebAppCommandScheduler::InstallFromInfo(
@@ -188,7 +218,6 @@ void WebAppCommandScheduler::InstallExternallyManagedApp(
                             bool did_uninstall_and_replace)> install_callback,
     base::WeakPtr<content::WebContents> contents,
     std::unique_ptr<WebAppDataRetriever> data_retriever,
-    WebAppUrlLoader* web_app_url_loader,
     const base::Location& location) {
   if (IsShuttingDown()) {
     base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
@@ -203,8 +232,7 @@ void WebAppCommandScheduler::InstallExternallyManagedApp(
   provider_->command_manager().ScheduleCommand(
       std::make_unique<ExternallyManagedInstallCommand>(
           &profile_.get(), external_install_options,
-          std::move(install_callback), contents, std::move(data_retriever),
-          web_app_url_loader),
+          std::move(install_callback), contents, std::move(data_retriever)),
       location);
 }
 
@@ -368,8 +396,68 @@ void WebAppCommandScheduler::InstallIsolatedWebApp(
           provider_->web_contents_manager().CreateUrlLoader(),
           std::move(optional_keep_alive),
           std::move(optional_profile_keep_alive), std::move(callback),
-          InstallIsolatedWebAppCommand::CreateDefaultResponseReaderFactory(
-              *profile_->GetPrefs())),
+          std::make_unique<IsolatedWebAppInstallCommandHelper>(
+              url_info, provider_->web_contents_manager().CreateDataRetriever(),
+              IsolatedWebAppInstallCommandHelper::
+                  CreateDefaultResponseReaderFactory(*profile_->GetPrefs()))),
+      call_location);
+}
+
+void WebAppCommandScheduler::PrepareAndStoreIsolatedWebAppUpdate(
+    const WebApp::IsolationData::PendingUpdateInfo& update_info,
+    const IsolatedWebAppUrlInfo& url_info,
+    std::unique_ptr<ScopedKeepAlive> optional_keep_alive,
+    std::unique_ptr<ScopedProfileKeepAlive> optional_profile_keep_alive,
+    base::OnceCallback<void(
+        base::expected<void, IsolatedWebAppUpdatePrepareAndStoreCommandError>)>
+        callback,
+    const base::Location& call_location) {
+  if (IsShuttingDown()) {
+    IsolatedWebAppUpdatePrepareAndStoreCommandError error{
+        .message = "The profile and/or browser are shutting down."};
+    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+        FROM_HERE,
+        base::BindOnce(std::move(callback), base::unexpected(error)));
+    return;
+  }
+
+  provider_->command_manager().ScheduleCommand(
+      std::make_unique<IsolatedWebAppUpdatePrepareAndStoreCommand>(
+          update_info, url_info, CreateIsolatedWebAppWebContents(*profile_),
+          std::move(optional_keep_alive),
+          std::move(optional_profile_keep_alive), std::move(callback),
+          std::make_unique<IsolatedWebAppInstallCommandHelper>(
+              url_info, provider_->web_contents_manager().CreateDataRetriever(),
+              IsolatedWebAppInstallCommandHelper::
+                  CreateDefaultResponseReaderFactory(*profile_->GetPrefs()))),
+      call_location);
+}
+
+void WebAppCommandScheduler::ApplyPendingIsolatedWebAppUpdate(
+    const IsolatedWebAppUrlInfo& url_info,
+    std::unique_ptr<ScopedKeepAlive> optional_keep_alive,
+    std::unique_ptr<ScopedProfileKeepAlive> optional_profile_keep_alive,
+    base::OnceCallback<void(
+        base::expected<void, IsolatedWebAppApplyUpdateCommandError>)> callback,
+    const base::Location& call_location) {
+  if (IsShuttingDown()) {
+    IsolatedWebAppApplyUpdateCommandError error{
+        .message = "The profile and/or browser are shutting down."};
+    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+        FROM_HERE,
+        base::BindOnce(std::move(callback), base::unexpected(error)));
+    return;
+  }
+
+  provider_->command_manager().ScheduleCommand(
+      std::make_unique<IsolatedWebAppApplyUpdateCommand>(
+          url_info, CreateIsolatedWebAppWebContents(*profile_),
+          std::move(optional_keep_alive),
+          std::move(optional_profile_keep_alive), std::move(callback),
+          std::make_unique<IsolatedWebAppInstallCommandHelper>(
+              url_info, provider_->web_contents_manager().CreateDataRetriever(),
+              IsolatedWebAppInstallCommandHelper::
+                  CreateDefaultResponseReaderFactory(*profile_->GetPrefs()))),
       call_location);
 }
 
@@ -418,24 +506,18 @@ void WebAppCommandScheduler::InstallFromSync(const WebApp& web_app,
       web_app.sync_fallback_data().name, web_app.sync_fallback_data().scope,
       web_app.sync_fallback_data().theme_color, web_app.user_display_mode(),
       web_app.sync_fallback_data().icon_infos);
-  // TODO(http://b/262606416): Remove this when fully transitioned to
-  // WebContentsManager.
-  if (!url_loader_) {
-    url_loader_ = provider_->web_contents_manager().CreateUrlLoader();
-  }
   provider_->command_manager().ScheduleCommand(
-      std::make_unique<InstallFromSyncCommand>(
-          url_loader_.get(), &profile_.get(),
-          provider_->web_contents_manager().CreateDataRetriever(), params,
-          std::move(callback)),
+      std::make_unique<InstallFromSyncCommand>(&profile_.get(), params,
+                                               std::move(callback)),
       location);
 }
 
-void WebAppCommandScheduler::Uninstall(
-    const AppId& app_id,
-    absl::optional<WebAppManagement::Type> external_install_source,
+void WebAppCommandScheduler::RemoveInstallUrl(
+    absl::optional<AppId> app_id,
+    WebAppManagement::Type install_source,
+    const GURL& install_url,
     webapps::WebappUninstallSource uninstall_source,
-    WebAppUninstallCommand::UninstallWebAppCallback callback,
+    UninstallJob::Callback callback,
     const base::Location& location) {
   if (IsShuttingDown()) {
     base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
@@ -445,8 +527,67 @@ void WebAppCommandScheduler::Uninstall(
   }
   provider_->command_manager().ScheduleCommand(
       std::make_unique<WebAppUninstallCommand>(
-          app_id, external_install_source, uninstall_source,
-          std::move(callback), profile_.get()),
+          std::make_unique<RemoveInstallUrlJob>(uninstall_source, *profile_,
+                                                std::move(app_id),
+                                                install_source, install_url),
+          std::move(callback)),
+      location);
+}
+
+void WebAppCommandScheduler::RemoveInstallSource(
+    const AppId& app_id,
+    WebAppManagement::Type install_source,
+    webapps::WebappUninstallSource uninstall_source,
+    UninstallJob::Callback callback,
+    const base::Location& location) {
+  if (IsShuttingDown()) {
+    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+        FROM_HERE, base::BindOnce(std::move(callback),
+                                  webapps::UninstallResultCode::kCancelled));
+    return;
+  }
+  provider_->command_manager().ScheduleCommand(
+      std::make_unique<WebAppUninstallCommand>(
+          std::make_unique<RemoveInstallSourceJob>(uninstall_source, *profile_,
+                                                   app_id, install_source),
+          std::move(callback)),
+      location);
+}
+
+void WebAppCommandScheduler::UninstallWebApp(
+    const AppId& app_id,
+    webapps::WebappUninstallSource uninstall_source,
+    UninstallJob::Callback callback,
+    const base::Location& location) {
+  if (IsShuttingDown()) {
+    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+        FROM_HERE, base::BindOnce(std::move(callback),
+                                  webapps::UninstallResultCode::kCancelled));
+    return;
+  }
+  provider_->command_manager().ScheduleCommand(
+      std::make_unique<WebAppUninstallCommand>(
+          std::make_unique<RemoveWebAppJob>(uninstall_source, *profile_,
+                                            app_id),
+          std::move(callback)),
+      location);
+}
+
+void WebAppCommandScheduler::UninstallAllUserInstalledWebApps(
+    webapps::WebappUninstallSource uninstall_source,
+    UninstallAllUserInstalledWebAppsCommand::Callback callback,
+    const base::Location& location) {
+  if (IsShuttingDown()) {
+    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+        FROM_HERE,
+        base::BindOnce(std::move(callback),
+                       ConvertUninstallResultCodeToString(
+                           webapps::UninstallResultCode::kCancelled)));
+    return;
+  }
+  provider_->command_manager().ScheduleCommand(
+      std::make_unique<UninstallAllUserInstalledWebAppsCommand>(
+          uninstall_source, *profile_, std::move(callback)),
       location);
 }
 
@@ -626,6 +767,26 @@ void WebAppCommandScheduler::SynchronizeOsIntegration(
   provider_->command_manager().ScheduleCommand(
       std::make_unique<OsIntegrationSynchronizeCommand>(
           app_id, synchronize_options, std::move(synchronize_callback)),
+      location);
+}
+
+void WebAppCommandScheduler::ScheduleDedupeInstallUrls(
+    base::OnceClosure callback,
+    const base::Location& location) {
+  CHECK(base::FeatureList::IsEnabled(features::kWebAppDedupeInstallUrls));
+
+  base::UmaHistogramCounts100("WebApp.DedupeInstallUrls.SessionRunCount",
+                              ++dedupe_install_urls_run_count_);
+
+  if (IsShuttingDown()) {
+    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+        FROM_HERE, std::move(callback));
+    return;
+  }
+
+  provider_->command_manager().ScheduleCommand(
+      std::make_unique<DedupeInstallUrlsCommand>(profile_.get(),
+                                                 std::move(callback)),
       location);
 }
 

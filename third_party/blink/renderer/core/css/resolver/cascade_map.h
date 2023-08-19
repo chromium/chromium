@@ -12,6 +12,7 @@
 #include "third_party/blink/renderer/core/css/properties/css_bitset.h"
 #include "third_party/blink/renderer/core/css/resolver/cascade_priority.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
+#include "third_party/blink/renderer/platform/wtf/text/atomic_string_hash.h"
 
 namespace blink {
 
@@ -59,7 +60,8 @@ class CORE_EXPORT CascadeMap {
   // Adds an entry to the map if the incoming priority is greater than or equal
   // to the current priority for the same name. Entries must be added in non-
   // decreasing lexicographical order of (origin, tree scope, layer).
-  void Add(const CSSPropertyName&, CascadePriority);
+  void Add(const AtomicString& custom_property_name, CascadePriority);
+  void Add(CSSPropertyID, CascadePriority);
   // Added properties with CSSPropertyPriority::kHighPropertyPriority cause the
   // corresponding high_priority_-bit to be set. This provides a fast way to
   // check which high-priority properties have been added (if any).
@@ -165,12 +167,14 @@ class CORE_EXPORT CascadeMap {
                                                   sizeof(CascadePriorityList)];
   };
 
-  using CustomMap = HashMap<CSSPropertyName, CascadePriorityList>;
+  using CustomMap = HashMap<AtomicString, CascadePriorityList>;
 
   const CustomMap& GetCustomMap() const { return custom_properties_; }
   CustomMap& GetCustomMap() { return custom_properties_; }
 
  private:
+  ALWAYS_INLINE void Add(CascadePriorityList* list, CascadePriority);
+
   uint64_t high_priority_ = 0;
   bool has_important_ = false;
   bool inline_style_lost_ = false;

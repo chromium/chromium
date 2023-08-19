@@ -35,7 +35,6 @@ import java.util.Set;
         sdk = Build.VERSION_CODES.N_MR1, shadows = {MediaNotificationTestShadowResources.class})
 public class MediaNotificationActionsUpdatedTest extends MediaNotificationTestBase {
     private static final int TAB_ID_1 = 1;
-    private static final int TAB_ID_2 = 2;
     private static final int THROTTLE_MILLIS =
             MediaNotificationController.Throttler.THROTTLE_MILLIS;
 

@@ -81,7 +81,7 @@ class UploaderInterface {
   // response). Called always, regardless of whether there were errors.
   virtual void Completed(Status final_status) = 0;
 
-  static base::StringPiece ReasonToString(UploadReason);
+  static std::string_view ReasonToString(UploadReason);
 
  protected:
   UploaderInterface();

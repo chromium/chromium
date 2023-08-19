@@ -8,17 +8,6 @@
 
 namespace ash {
 
-EasyUnlockIconInfo::EasyUnlockIconInfo() = default;
-EasyUnlockIconInfo::EasyUnlockIconInfo(const EasyUnlockIconInfo& other) =
-    default;
-EasyUnlockIconInfo::EasyUnlockIconInfo(EasyUnlockIconInfo&& other) = default;
-EasyUnlockIconInfo::~EasyUnlockIconInfo() = default;
-
-EasyUnlockIconInfo& EasyUnlockIconInfo::operator=(
-    const EasyUnlockIconInfo& other) = default;
-EasyUnlockIconInfo& EasyUnlockIconInfo::operator=(EasyUnlockIconInfo&& other) =
-    default;
-
 bool DeviceEnterpriseInfo::operator==(const DeviceEnterpriseInfo& other) const {
   return other.enterprise_domain_manager == enterprise_domain_manager &&
          other.active_directory_managed == active_directory_managed &&

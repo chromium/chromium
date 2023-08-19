@@ -5,11 +5,9 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_EDITING_IME_EDIT_CONTEXT_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_EDITING_IME_EDIT_CONTEXT_H_
 
-#include "third_party/blink/public/platform/web_text_input_mode.h"
 #include "third_party/blink/public/platform/web_text_input_type.h"
 #include "third_party/blink/public/web/web_input_method_controller.h"
 #include "third_party/blink/renderer/bindings/core/v8/active_script_wrappable.h"
-#include "third_party/blink/renderer/bindings/core/v8/v8_edit_context_input_panel_policy.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/dom/element_rare_data_field.h"
 #include "third_party/blink/renderer/core/dom/events/event_target.h"
@@ -19,23 +17,19 @@
 
 namespace blink {
 
-using EditContextInputPanelPolicy = V8EditContextInputPanelPolicy::Enum;
-
 class DOMRect;
 class EditContext;
 class EditContextInit;
 class Element;
 class ExceptionState;
 class InputMethodController;
-class V8EditContextEnterKeyHint;
-class V8EditContextInputMode;
 
 // The goal of the EditContext is to expose the lower-level APIs provided by
 // modern operating systems to facilitate various input modalities to unlock
 // advanced editing scenarios. For more information please refer
 // https://github.com/MicrosoftEdge/MSEdgeExplainers/blob/master/EditContext/explainer.md.
 
-class CORE_EXPORT EditContext final : public EventTargetWithInlineData,
+class CORE_EXPORT EditContext final : public EventTarget,
                                       public ActiveScriptWrappable<EditContext>,
                                       public ExecutionContextClient,
                                       public WebInputMethodController,
@@ -118,38 +112,6 @@ class CORE_EXPORT EditContext final : public EventTargetWithInlineData,
   // Returns the current cached character bounds.
   const HeapVector<Member<DOMRect>> characterBounds();
 
-  // Returns the InputMode of the EditContext.
-  V8EditContextInputMode inputMode() const;
-
-  // Returns the EnterKeyHint of the EditContext.
-  V8EditContextEnterKeyHint enterKeyHint() const;
-
-  // Returns the InputPanelPolicy of the EditContext.
-  V8EditContextInputPanelPolicy inputPanelPolicy() const;
-
-  // Sets the text of the EditContext which is used to display suggestions.
-  void setText(const String& text);
-
-  // Sets the selectionStart of the EditContext.
-  void setSelectionStart(uint32_t selection_start,
-                         ExceptionState& exception_state);
-
-  // Sets the selectionEnd of the EditContext.
-  void setSelectionEnd(uint32_t selection_end, ExceptionState& exception_state);
-
-  // Sets an input mode defined in EditContextInputMode.
-  // This relates to the inputMode attribute defined for input element:
-  // https://html.spec.whatwg.org/multipage/interaction.html#input-modalities:-the-inputmode-attribute.
-  void setInputMode(const V8EditContextInputMode& input_mode);
-
-  // Sets a specific action related to Enter key defined in
-  // https://html.spec.whatwg.org/multipage/interaction.html#input-modalities:-the-enterkeyhint-attribute.
-  void setEnterKeyHint(const V8EditContextEnterKeyHint& enter_key_hint);
-
-  // Sets a policy that determines whether the VK should be raised or dismissed.
-  // Auto raises the VK automatically, Manual suppresses it.
-  void setInputPanelPolicy(const V8EditContextInputPanelPolicy& input_policy);
-
   // Internal APIs (called from Blink).
 
   // EventTarget overrides
@@ -175,7 +137,6 @@ class CORE_EXPORT EditContext final : public EventTargetWithInlineData,
       ConfirmCompositionBehavior selection_behavior) override;
   WebTextInputInfo TextInputInfo() override;
   int ComputeWebTextInputNextPreviousFlags() override { return 0; }
-  WebTextInputType TextInputType() override;
   int TextInputFlags() const;
   WebRange CompositionRange() const override;
   bool GetCompositionCharacterBounds(WebVector<gfx::Rect>& bounds) override;
@@ -212,7 +173,6 @@ class CORE_EXPORT EditContext final : public EventTargetWithInlineData,
   void DeleteWordBackward();
   void DeleteWordForward();
 
-  bool IsVirtualKeyboardPolicyManual() const override;
   bool IsEditContextActive() const override;
   // Returns whether show()/hide() API is called from virtualkeyboard or not.
   ui::mojom::VirtualKeyboardVisibilityRequest
@@ -239,12 +199,6 @@ class CORE_EXPORT EditContext final : public EventTargetWithInlineData,
   void DetachElement(Element* element_to_detach);
 
  private:
-  // Returns the enter key action attribute set in the EditContext.
-  ui::TextInputAction GetEditContextEnterKeyHint() const;
-
-  // Returns the inputMode of the EditContext from enterKeyHint property.
-  WebTextInputMode GetInputModeOfEditContext() const;
-
   InputMethodController& GetInputMethodController() const;
 
   void DeleteCurrentSelection();
@@ -297,14 +251,16 @@ class CORE_EXPORT EditContext final : public EventTargetWithInlineData,
 
   bool HasValidCompositionBounds() const;
 
+  // Delete the characters in the existing composition range and end the
+  // composition.
+  void CancelComposition();
+
+  void ClearCompositionState();
+
   // EditContext member variables.
   String text_;
   uint32_t selection_start_ = 0;
   uint32_t selection_end_ = 0;
-  WebTextInputMode input_mode_ = WebTextInputMode::kWebTextInputModeText;
-  ui::TextInputAction enter_key_hint_ = ui::TextInputAction::kEnter;
-  EditContextInputPanelPolicy input_panel_policy_ =
-      EditContextInputPanelPolicy::kManual;
   gfx::Rect control_bounds_;
   gfx::Rect selection_bounds_;
   WebVector<gfx::Rect> character_bounds_;

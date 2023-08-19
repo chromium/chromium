@@ -24,6 +24,7 @@
 #include "components/webapps/browser/install_result_code.h"
 #include "components/webapps/browser/installable/installable_metrics.h"
 #include "content/public/test/browser_test.h"
+#include "net/dns/mock_host_resolver.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "url/gurl.h"
 
@@ -41,6 +42,10 @@ class InstallPreloadedVerifiedAppCommandTest
       test_override_ =
           OsIntegrationTestOverrideImpl::OverrideForTesting(base::GetHomeDir());
     }
+
+    host_resolver()->AddRule("lh3.googleusercontent.com", "127.0.0.1");
+    host_resolver()->AddRule("fonts.gstatic.com", "127.0.0.1");
+    host_resolver()->AddRule("youtube.com", "127.0.0.1");
   }
 
   void TearDownOnMainThread() override {
@@ -66,8 +71,6 @@ class InstallPreloadedVerifiedAppCommandTest
   std::string GetIconUrl() {
     return https_server()->GetURL("/web_apps/blue-192.png").spec();
   }
-
-  base::flat_set<std::string> GetHostAllowlist() { return {"127.0.0.1"}; }
 
  private:
   std::unique_ptr<OsIntegrationTestOverrideImpl::BlockingRegistration>
@@ -100,8 +103,7 @@ IN_PROC_BROWSER_TEST_F(InstallPreloadedVerifiedAppCommandTest,
   provider().command_manager().ScheduleCommand(
       std::make_unique<InstallPreloadedVerifiedAppCommand>(
           webapps::WebappInstallSource::OMNIBOX_INSTALL_ICON, kDocumentUrl,
-          kManifestUrl, manifest, expected_id, GetHostAllowlist(),
-          result.GetCallback()));
+          kManifestUrl, manifest, expected_id, result.GetCallback()));
 
   AppId result_id = result.Get<0>();
   EXPECT_EQ(result_id, expected_id);
@@ -146,8 +148,7 @@ IN_PROC_BROWSER_TEST_F(InstallPreloadedVerifiedAppCommandTest,
   provider().command_manager().ScheduleCommand(
       std::make_unique<InstallPreloadedVerifiedAppCommand>(
           webapps::WebappInstallSource::OMNIBOX_INSTALL_ICON, kDocumentUrl,
-          kManifestUrl, manifest, expected_id, GetHostAllowlist(),
-          result.GetCallback()));
+          kManifestUrl, manifest, expected_id, result.GetCallback()));
 
   AppId result_id = result.Get<0>();
   EXPECT_EQ(result_id, expected_id);
@@ -178,8 +179,7 @@ IN_PROC_BROWSER_TEST_F(InstallPreloadedVerifiedAppCommandTest,
   provider().command_manager().ScheduleCommand(
       std::make_unique<InstallPreloadedVerifiedAppCommand>(
           webapps::WebappInstallSource::OMNIBOX_INSTALL_ICON, kDocumentUrl,
-          kManifestUrl, manifest, expected_id, GetHostAllowlist(),
-          result.GetCallback()));
+          kManifestUrl, manifest, expected_id, result.GetCallback()));
 
   AppId result_id = result.Get<0>();
   EXPECT_EQ(result_id, expected_id);
@@ -213,8 +213,7 @@ IN_PROC_BROWSER_TEST_F(InstallPreloadedVerifiedAppCommandTest,
   provider().command_manager().ScheduleCommand(
       std::make_unique<InstallPreloadedVerifiedAppCommand>(
           webapps::WebappInstallSource::INTERNAL_DEFAULT, kDocumentUrl,
-          kManifestUrl, manifest, existing_id, GetHostAllowlist(),
-          result.GetCallback()));
+          kManifestUrl, manifest, existing_id, result.GetCallback()));
 
   AppId result_id = result.Get<0>();
   EXPECT_EQ(result_id, existing_id);
@@ -275,8 +274,7 @@ IN_PROC_BROWSER_TEST_F(InstallPreloadedVerifiedAppCommandTest,
   provider().command_manager().ScheduleCommand(
       std::make_unique<InstallPreloadedVerifiedAppCommand>(
           webapps::WebappInstallSource::INTERNAL_DEFAULT, kDocumentUrl,
-          kManifestUrl, manifest, expected_id, GetHostAllowlist(),
-          result.GetCallback()));
+          kManifestUrl, manifest, expected_id, result.GetCallback()));
 
   AppId result_id = result.Get<0>();
   EXPECT_TRUE(webapps::IsSuccess(result.Get<1>()));
@@ -309,7 +307,7 @@ IN_PROC_BROWSER_TEST_F(InstallPreloadedVerifiedAppCommandTest,
       std::make_unique<InstallPreloadedVerifiedAppCommand>(
           webapps::WebappInstallSource::OMNIBOX_INSTALL_ICON, kDocumentUrl,
           kManifestUrl, kManifest,
-          /*expected_id=*/"", GetHostAllowlist(), result.GetCallback()));
+          /*expected_id=*/"", result.GetCallback()));
 
   EXPECT_EQ(result.Get<1>(),
             webapps::InstallResultCode::kNotValidManifestForWebApp);
@@ -329,7 +327,7 @@ IN_PROC_BROWSER_TEST_F(InstallPreloadedVerifiedAppCommandTest,
       std::make_unique<InstallPreloadedVerifiedAppCommand>(
           webapps::WebappInstallSource::OMNIBOX_INSTALL_ICON, kDocumentUrl,
           kManifestUrl, kManifest,
-          /*expected_id=*/"", GetHostAllowlist(), result.GetCallback()));
+          /*expected_id=*/"", result.GetCallback()));
 
   EXPECT_EQ(result.Get<1>(),
             webapps::InstallResultCode::kNotValidManifestForWebApp);
@@ -349,7 +347,7 @@ IN_PROC_BROWSER_TEST_F(InstallPreloadedVerifiedAppCommandTest,
       std::make_unique<InstallPreloadedVerifiedAppCommand>(
           webapps::WebappInstallSource::OMNIBOX_INSTALL_ICON, kDocumentUrl,
           kManifestUrl, kManifest,
-          /*expected_id=*/"", GetHostAllowlist(), result.GetCallback()));
+          /*expected_id=*/"", result.GetCallback()));
 
   EXPECT_EQ(result.Get<1>(),
             webapps::InstallResultCode::kNotValidManifestForWebApp);
@@ -376,7 +374,7 @@ IN_PROC_BROWSER_TEST_F(InstallPreloadedVerifiedAppCommandTest,
       std::make_unique<InstallPreloadedVerifiedAppCommand>(
           webapps::WebappInstallSource::OMNIBOX_INSTALL_ICON, kDocumentUrl,
           kManifestUrl, kManifest,
-          /*expected_id=*/"", GetHostAllowlist(), result.GetCallback()));
+          /*expected_id=*/"", result.GetCallback()));
 
   EXPECT_EQ(result.Get<1>(),
             webapps::InstallResultCode::kNotValidManifestForWebApp);
@@ -406,8 +404,7 @@ IN_PROC_BROWSER_TEST_F(InstallPreloadedVerifiedAppCommandTest,
   provider().command_manager().ScheduleCommand(
       std::make_unique<InstallPreloadedVerifiedAppCommand>(
           webapps::WebappInstallSource::OMNIBOX_INSTALL_ICON, kDocumentUrl,
-          kManifestUrl, manifest, kExpectedId, GetHostAllowlist(),
-          result.GetCallback()));
+          kManifestUrl, manifest, kExpectedId, result.GetCallback()));
 
   EXPECT_EQ(result.Get<1>(),
             webapps::InstallResultCode::kExpectedAppIdCheckFailed);
@@ -434,7 +431,7 @@ IN_PROC_BROWSER_TEST_F(InstallPreloadedVerifiedAppCommandTest,
         "type": "image/png"
       },
       {
-        "src": "https://notcdn.com/icons/192.png",
+        "src": "https://notgoogleusercontent.com/icons/192.png",
         "sizes": "192x192",
         "type": "image/png"
       },
@@ -442,14 +439,12 @@ IN_PROC_BROWSER_TEST_F(InstallPreloadedVerifiedAppCommandTest,
   })json";
   std::string manifest = base::ReplaceStringPlaceholders(
       kManifestTemplate, {GetIconUrl()}, nullptr);
-  base::flat_set<std::string> host_allowlist = {"cdn.com", "subdomain.app.com"};
 
   base::test::TestFuture<const AppId&, webapps::InstallResultCode> result;
   provider().command_manager().ScheduleCommand(
       std::make_unique<InstallPreloadedVerifiedAppCommand>(
           webapps::WebappInstallSource::OMNIBOX_INSTALL_ICON, kDocumentUrl,
-          kManifestUrl, manifest, kExpectedId, host_allowlist,
-          result.GetCallback()));
+          kManifestUrl, manifest, kExpectedId, result.GetCallback()));
 
   EXPECT_EQ(result.Get<1>(),
             webapps::InstallResultCode::kNotValidManifestForWebApp);
@@ -488,11 +483,146 @@ IN_PROC_BROWSER_TEST_F(InstallPreloadedVerifiedAppCommandTest,
   provider().command_manager().ScheduleCommand(
       std::make_unique<InstallPreloadedVerifiedAppCommand>(
           webapps::WebappInstallSource::OMNIBOX_INSTALL_ICON, kDocumentUrl,
-          kManifestUrl, manifest, kExpectedId, GetHostAllowlist(),
-          result.GetCallback()));
+          kManifestUrl, manifest, kExpectedId, result.GetCallback()));
 
   EXPECT_EQ(result.Get<1>(),
             webapps::InstallResultCode::kIconDownloadingFailed);
+}
+
+IN_PROC_BROWSER_TEST_F(InstallPreloadedVerifiedAppCommandTest,
+                       SuccessIconsFromDifferentHosts) {
+  const GURL kDocumentUrl("https://www.app.com/");
+  const GURL kManifestUrl("https://www.app.com/manifest.json");
+  const char kManifestTemplate[] = R"json({
+    "start_url": "/ ",
+    "name": "Test app",
+    "icons": [
+      {
+        "src": "$1",
+        "sizes": "96x96",
+        "type": "image/png"
+      },
+      {
+        "src": "$2",
+        "sizes": "192x192",
+        "type": "image/png"
+      }
+    ],
+    "shortcuts": [
+      {
+        "name": "Shortcut",
+        "url": "/shortcut",
+        "icons": [{
+            "src": "$3",
+            "sizes": "192x192",
+            "type": "image/png"
+        }]
+      }
+    ]
+  })json";
+
+  std::string manifest = base::ReplaceStringPlaceholders(
+      kManifestTemplate,
+      {https_server()
+           ->GetURL("fonts.gstatic.com", "/banners/96x96-red.png")
+           .spec(),
+       https_server()
+           ->GetURL("lh3.googleusercontent.com", "/banners/192x192-green.png")
+           .spec(),
+       https_server()->GetURL("youtube.com", "/web_apps/blue-192.png").spec()},
+      nullptr);
+  AppId expected_id =
+      GenerateAppId(/*manifest_id=*/absl::nullopt, kDocumentUrl);
+
+  base::test::TestFuture<const AppId&, webapps::InstallResultCode> result;
+  provider().command_manager().ScheduleCommand(
+      std::make_unique<InstallPreloadedVerifiedAppCommand>(
+          webapps::WebappInstallSource::INTERNAL_DEFAULT, kDocumentUrl,
+          kManifestUrl, manifest, expected_id, result.GetCallback()));
+
+  AppId result_id = result.Get<0>();
+  EXPECT_TRUE(webapps::IsSuccess(result.Get<1>()));
+
+  SkColor small_icon_color =
+      IconManagerReadAppIconPixel(provider().icon_manager(), result_id, 96);
+  EXPECT_EQ(small_icon_color, SK_ColorRED);
+
+  SkColor large_icon_color =
+      IconManagerReadAppIconPixel(provider().icon_manager(), result_id, 192);
+  EXPECT_EQ(large_icon_color, SK_ColorGREEN);
+
+  base::test::TestFuture<ShortcutsMenuIconBitmaps> shortcut_future;
+  provider().icon_manager().ReadAllShortcutsMenuIcons(
+      result_id, shortcut_future.GetCallback());
+
+  SkColor shortcut1_icon_color =
+      shortcut_future.Get()[0].any.at(192).getColor(0, 0);
+  EXPECT_EQ(shortcut1_icon_color, SK_ColorBLUE);
+}
+
+IN_PROC_BROWSER_TEST_F(InstallPreloadedVerifiedAppCommandTest,
+                       FailureInvalidIconHost) {
+  const GURL kDocumentUrl("https://www.app.com/");
+  const GURL kStartUrl("https://www.app.com/home");
+  const GURL kManifestUrl("https://www.app.com/manifest.json");
+  const char kManifestTemplate[] = R"json({
+    "start_url": "/home",
+    "name": "Test app",
+    "launch_handler": {
+      "client_mode": "focus-existing"
+    },
+    "icons": [
+      {
+        "src": "$1",
+        "sizes": "96x96",
+        "type": "image/png"
+      },
+      {
+        "src": "$2",
+        "sizes": "192x192",
+        "type": "image/png"
+      }
+    ]
+  })json";
+
+  std::string manifest = base::ReplaceStringPlaceholders(
+      kManifestTemplate,
+      {"https://googleusercontent.com.evil.com/icons/192.png",
+       "https://evilgoogleusercontent.com/icons/192.png"},
+      nullptr);
+
+  AppId expected_id = GenerateAppId(/*manifest_id=*/absl::nullopt, kStartUrl);
+  base::test::TestFuture<const AppId&, webapps::InstallResultCode> result;
+  provider().command_manager().ScheduleCommand(
+      std::make_unique<InstallPreloadedVerifiedAppCommand>(
+          webapps::WebappInstallSource::OMNIBOX_INSTALL_ICON, kDocumentUrl,
+          kManifestUrl, manifest, expected_id, result.GetCallback()));
+
+  EXPECT_EQ(result.Get<1>(),
+            webapps::InstallResultCode::kNoValidIconsInManifest);
+}
+
+IN_PROC_BROWSER_TEST_F(InstallPreloadedVerifiedAppCommandTest, FailureNoIcons) {
+  const GURL kDocumentUrl("https://www.app.com/");
+  const GURL kStartUrl("https://www.app.com/home");
+  const GURL kManifestUrl("https://www.app.com/manifest.json");
+  const char kManifestTemplate[] = R"json({
+    "start_url": "/home",
+    "name": "Test app",
+    "launch_handler": {
+      "client_mode": "focus-existing"
+    }
+  })json";
+
+  AppId expected_id = GenerateAppId(/*manifest_id=*/absl::nullopt, kStartUrl);
+  base::test::TestFuture<const AppId&, webapps::InstallResultCode> result;
+  provider().command_manager().ScheduleCommand(
+      std::make_unique<InstallPreloadedVerifiedAppCommand>(
+          webapps::WebappInstallSource::OMNIBOX_INSTALL_ICON, kDocumentUrl,
+          kManifestUrl, kManifestTemplate, expected_id, result.GetCallback()));
+
+  EXPECT_EQ(result.Get<1>(),
+            webapps::InstallResultCode::kNoValidIconsInManifest);
 }
 
 }  // namespace web_app

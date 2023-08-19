@@ -9,6 +9,44 @@
 #include "base/metrics/persistent_histogram_allocator.h"
 #include "base/path_service.h"
 #include "components/metrics/persistent_histograms.h"
+#include "net/base/features.h"
+#include "third_party/blink/public/common/features.h"
+#include "ui/gl/gl_features.h"
+
+namespace {
+
+class AwFeatureOverrides {
+ public:
+  AwFeatureOverrides() = default;
+
+  AwFeatureOverrides(const AwFeatureOverrides& other) = delete;
+  AwFeatureOverrides& operator=(const AwFeatureOverrides& other) = delete;
+
+  ~AwFeatureOverrides() = default;
+
+  // Enable a feature with WebView-specific override.
+  void EnableFeature(const base::Feature& feature) {
+    overrides.emplace_back(
+        std::cref(feature),
+        base::FeatureList::OverrideState::OVERRIDE_ENABLE_FEATURE);
+  }
+
+  // Disable a feature with WebView-specific override.
+  void DisableFeature(const base::Feature& feature) {
+    overrides.emplace_back(
+        std::cref(feature),
+        base::FeatureList::OverrideState::OVERRIDE_DISABLE_FEATURE);
+  }
+
+  void RegisterOverrides(base::FeatureList* feature_list) {
+    feature_list->RegisterExtraFeatureOverrides(std::move(overrides));
+  }
+
+ private:
+  std::vector<base::FeatureList::FeatureOverrideInfo> overrides;
+};
+
+}  // namespace
 
 void AwFieldTrials::OnVariationsSetupComplete() {
   // Persistent histograms must be enabled ASAP, but depends on Features.
@@ -18,4 +56,23 @@ void AwFieldTrials::OnVariationsSetupComplete() {
   } else {
     NOTREACHED();
   }
+}
+
+// TODO(crbug.com/1453407): Consider to migrate all WebView feature overrides
+// from the AwMainDelegate to the new mechanism here.
+void AwFieldTrials::RegisterFeatureOverrides(base::FeatureList* feature_list) {
+  AwFeatureOverrides aw_feature_overrides;
+
+  // Disable user-agent client hints on WebView.
+  aw_feature_overrides.DisableFeature(blink::features::kUserAgentClientHint);
+
+  // Disable network-change migration on WebView due to crbug.com/1430082.
+  aw_feature_overrides.DisableFeature(
+      net::features::kMigrateSessionsOnNetworkChangeV2);
+
+  // Disable the passthrough on WebView.
+  aw_feature_overrides.DisableFeature(
+      ::features::kDefaultPassthroughCommandDecoder);
+
+  aw_feature_overrides.RegisterOverrides(feature_list);
 }

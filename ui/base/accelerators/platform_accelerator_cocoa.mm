@@ -10,7 +10,7 @@
 
 @interface KeyEquivalentAndModifierMask ()
 
-@property(copy) NSString* keyEquivalent;
+@property(strong) NSString* keyEquivalent;
 @property(readwrite) NSUInteger modifierMask;
 
 @end
@@ -19,11 +19,6 @@
 
 @synthesize keyEquivalent = _keyEquivalent;
 @synthesize modifierMask = _modifierMask;
-
-- (void)dealloc {
-  [_keyEquivalent release];
-  [super dealloc];
-}
 
 @end
 
@@ -63,7 +58,7 @@ KeyEquivalentAndModifierMask* GetKeyEquivalentAndModifierMaskFromAccelerator(
   }
 
   KeyEquivalentAndModifierMask* equivalent =
-      [[[KeyEquivalentAndModifierMask alloc] init] autorelease];
+      [[KeyEquivalentAndModifierMask alloc] init];
   equivalent.keyEquivalent =
       [NSString stringWithFormat:@"%C", shifted_character];
   equivalent.modifierMask = cocoa_modifiers;

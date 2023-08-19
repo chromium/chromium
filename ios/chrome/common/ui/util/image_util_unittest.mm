@@ -8,10 +8,6 @@
 #import "testing/gtest_mac.h"
 #import "testing/platform_test.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 using ImageUtilTest = PlatformTest;
 
 #define EXPECT_EQ_RECT(a, b) \
@@ -285,15 +281,21 @@ TEST_F(ImageUtilTest, TestProjectionAspectFillNoClipping) {
 // Returns an image of random color in the same scale as the device main
 // screen.
 UIImage* testImage(CGSize imageSize) {
-  UIGraphicsBeginImageContextWithOptions(imageSize, NO, 0);
-  CGContextRef context = UIGraphicsGetCurrentContext();
-  CGContextSetRGBStrokeColor(context, 0, 0, 0, 1.0);
-  CGContextSetRGBFillColor(context, 0, 0, 0, 1.0);
-  CGContextFillRect(context,
-                    CGRectMake(0.0, 0.0, imageSize.width, imageSize.height));
-  UIImage* image = UIGraphicsGetImageFromCurrentImageContext();
-  UIGraphicsEndImageContext();
-  return image;
+  UIGraphicsImageRendererFormat* format =
+      [UIGraphicsImageRendererFormat preferredFormat];
+  format.opaque = NO;
+
+  UIGraphicsImageRenderer* renderer =
+      [[UIGraphicsImageRenderer alloc] initWithSize:imageSize format:format];
+
+  return
+      [renderer imageWithActions:^(UIGraphicsImageRendererContext* UIContext) {
+        CGContextRef context = UIContext.CGContext;
+        CGContextSetRGBStrokeColor(context, 0, 0, 0, 1.0);
+        CGContextSetRGBFillColor(context, 0, 0, 0, 1.0);
+        CGContextFillRect(
+            context, CGRectMake(0.0, 0.0, imageSize.width, imageSize.height));
+      }];
 }
 
 TEST_F(ImageUtilTest, TestResizeImageOpacity) {

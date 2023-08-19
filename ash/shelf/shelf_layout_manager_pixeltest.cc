@@ -10,6 +10,7 @@
 #include "ash/test/pixel/ash_pixel_test_init_params.h"
 #include "ash/wm/tablet_mode/tablet_mode_controller.h"
 #include "base/test/scoped_feature_list.h"
+#include "chromeos/constants/chromeos_features.h"
 
 namespace ash {
 
@@ -17,11 +18,16 @@ class ShelfLayoutManagerPixelRTLTest
     : public ShelfLayoutManagerTestBase,
       public testing::WithParamInterface<bool /*is_tablet_mode=*/> {
  public:
+  ShelfLayoutManagerPixelRTLTest() {
+    scoped_feature_list_.InitWithFeatureStates(
+        {{features::kContextualNudges, false},
+         {chromeos::features::kJelly, true}});
+  }
+
   // ShelfLayoutManagerTestBase:
   void SetUp() override {
     ShelfLayoutManagerTestBase::SetUp();
     PopulateAppShortcut(5);
-    scoped_feature_list_.InitAndDisableFeature(features::kContextualNudges);
   }
 
   absl::optional<pixel_test::InitParams> CreatePixelTestInitParams()
@@ -49,7 +55,7 @@ TEST_P(ShelfLayoutManagerPixelRTLTest, AutohideShelfVisibility) {
   shelf->SetAutoHideBehavior(ShelfAutoHideBehavior::kNever);
   EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
       "shelf_no_auto_hide",
-      /*revision_number=*/3, shelf->GetWindow(), shelf->hotseat_widget()));
+      /*revision_number=*/8, shelf->GetWindow(), shelf->hotseat_widget()));
 
   // When the auto-hide is set and a window is shown fullscreen, the shelf
   // should not be showing on the screen.
@@ -66,7 +72,7 @@ TEST_P(ShelfLayoutManagerPixelRTLTest, AutohideShelfVisibility) {
 
   EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
       "shelf_show_with_auto_hide",
-      /*revision_number=*/3, shelf->GetWindow(), shelf->hotseat_widget()));
+      /*revision_number=*/7, shelf->GetWindow(), shelf->hotseat_widget()));
 }
 
 }  // namespace ash

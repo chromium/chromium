@@ -43,12 +43,18 @@ CoreAccountId AccountsMutatorImpl::AddOrUpdateAccount(
     const std::string& email,
     const std::string& refresh_token,
     bool is_under_advanced_protection,
-    signin_metrics::SourceForRefreshTokenOperation source) {
+    signin_metrics::AccessPoint access_point,
+    signin_metrics::SourceForRefreshTokenOperation source
+#if BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
+    ,
+    const std::vector<uint8_t>& wrapped_binding_key
+#endif  // BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
+) {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   NOTREACHED();
 #endif
   CoreAccountId account_id =
-      account_tracker_service_->SeedAccountInfo(gaia_id, email);
+      account_tracker_service_->SeedAccountInfo(gaia_id, email, access_point);
   account_tracker_service_->SetIsAdvancedProtectionAccount(
       account_id, is_under_advanced_protection);
 
@@ -57,7 +63,12 @@ CoreAccountId AccountsMutatorImpl::AddOrUpdateAccount(
   // tracker, which is not intended.
   account_tracker_service_->CommitPendingAccountChanges();
 
-  token_service_->UpdateCredentials(account_id, refresh_token, source);
+  token_service_->UpdateCredentials(account_id, refresh_token, source
+#if BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
+                                    ,
+                                    wrapped_binding_key
+#endif  // BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
+  );
 
   return account_id;
 }
@@ -105,7 +116,8 @@ void AccountsMutatorImpl::InvalidateRefreshTokenForPrimaryAccount(
       primary_account_manager_->GetPrimaryAccountInfo(ConsentLevel::kSignin);
   AddOrUpdateAccount(primary_account_info.gaia, primary_account_info.email,
                      GaiaConstants::kInvalidRefreshToken,
-                     primary_account_info.is_under_advanced_protection, source);
+                     primary_account_info.is_under_advanced_protection,
+                     signin_metrics::AccessPoint::ACCESS_POINT_UNKNOWN, source);
 }
 
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)

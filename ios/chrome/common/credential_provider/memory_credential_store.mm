@@ -4,15 +4,11 @@
 
 #import "ios/chrome/common/credential_provider/memory_credential_store.h"
 
+#import "base/apple/foundation_util.h"
 #import "base/check.h"
-#import "base/mac/foundation_util.h"
 #import "base/notreached.h"
 #import "base/strings/sys_string_conversions.h"
 #import "ios/chrome/common/credential_provider/archivable_credential.h"
-
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
 
 @interface MemoryCredentialStore ()
 
@@ -63,7 +59,7 @@
       << "credential must have a record identifier";
   dispatch_barrier_async(self.workingQueue, ^{
     self.memoryStorage[credential.recordIdentifier] =
-        base::mac::ObjCCastStrict<ArchivableCredential>(credential);
+        base::apple::ObjCCastStrict<ArchivableCredential>(credential);
   });
 }
 

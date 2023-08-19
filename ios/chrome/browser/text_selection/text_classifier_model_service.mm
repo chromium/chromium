@@ -12,10 +12,6 @@
 #import "components/optimization_guide/proto/models.pb.h"
 #import "ios/chrome/browser/optimization_guide/optimization_guide_service.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 TextClassifierModelService::TextClassifierModelService(
     OptimizationGuideService* opt_guide_service)
     : opt_guide_service_(opt_guide_service) {
@@ -47,13 +43,17 @@ void TextClassifierModelService::Shutdown() {
 
 void TextClassifierModelService::OnModelUpdated(
     optimization_guide::proto::OptimizationTarget optimization_target,
-    const optimization_guide::ModelInfo& model_info) {
+    base::optional_ref<const optimization_guide::ModelInfo> model_info) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (optimization_target !=
       optimization_guide::proto::OPTIMIZATION_TARGET_TEXT_CLASSIFIER) {
     return;
   }
-  model_path_ = model_info.GetModelFilePath();
+  if (!model_info.has_value()) {
+    model_path_ = base::FilePath();
+    return;
+  }
+  model_path_ = model_info->GetModelFilePath();
 }
 
 bool TextClassifierModelService::ShouldRecordInternalsPageLog() const {

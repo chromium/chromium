@@ -15,33 +15,50 @@
 #include "absl/strings/cord.h"
 
 #include <algorithm>
-#include <climits>
+#include <array>
+#include <cassert>
+#include <cstddef>
+#include <cstdint>
 #include <cstdio>
+#include <cstring>
+#include <iostream>
 #include <iterator>
-#include <map>
-#include <numeric>
+#include <limits>
 #include <random>
+#include <set>
 #include <sstream>
+#include <string>
 #include <type_traits>
 #include <utility>
 #include <vector>
 
 #include "gmock/gmock.h"
 #include "gtest/gtest.h"
+#include "absl/base/attributes.h"
 #include "absl/base/config.h"
 #include "absl/base/internal/endian.h"
 #include "absl/base/macros.h"
+#include "absl/base/options.h"
 #include "absl/container/fixed_array.h"
+#include "absl/functional/function_ref.h"
 #include "absl/hash/hash.h"
 #include "absl/log/check.h"
 #include "absl/log/log.h"
 #include "absl/random/random.h"
+#include "absl/strings/cord_buffer.h"
 #include "absl/strings/cord_test_helpers.h"
 #include "absl/strings/cordz_test_helpers.h"
+#include "absl/strings/internal/cord_internal.h"
+#include "absl/strings/internal/cord_rep_crc.h"
+#include "absl/strings/internal/cord_rep_flat.h"
+#include "absl/strings/internal/cordz_statistics.h"
+#include "absl/strings/internal/cordz_update_tracker.h"
+#include "absl/strings/internal/string_constant.h"
 #include "absl/strings/match.h"
 #include "absl/strings/str_cat.h"
 #include "absl/strings/str_format.h"
 #include "absl/strings/string_view.h"
+#include "absl/types/optional.h"
 
 // convenience local constants
 static constexpr auto FLAT = absl::cord_internal::FLAT;
@@ -1765,6 +1782,8 @@ TEST_P(CordTest, ExternalMemoryGet) {
 // of empty and inlined cords, and flat nodes.
 
 constexpr auto kFairShare = absl::CordMemoryAccounting::kFairShare;
+constexpr auto kTotalMorePrecise =
+    absl::CordMemoryAccounting::kTotalMorePrecise;
 
 // Creates a cord of `n` `c` values, making sure no string stealing occurs.
 absl::Cord MakeCord(size_t n, char c) {
@@ -1776,12 +1795,14 @@ TEST(CordTest, CordMemoryUsageEmpty) {
   absl::Cord cord;
   EXPECT_EQ(sizeof(absl::Cord), cord.EstimatedMemoryUsage());
   EXPECT_EQ(sizeof(absl::Cord), cord.EstimatedMemoryUsage(kFairShare));
+  EXPECT_EQ(sizeof(absl::Cord), cord.EstimatedMemoryUsage(kTotalMorePrecise));
 }
 
 TEST(CordTest, CordMemoryUsageInlined) {
   absl::Cord a("hello");
   EXPECT_EQ(a.EstimatedMemoryUsage(), sizeof(absl::Cord));
   EXPECT_EQ(a.EstimatedMemoryUsage(kFairShare), sizeof(absl::Cord));
+  EXPECT_EQ(a.EstimatedMemoryUsage(kTotalMorePrecise), sizeof(absl::Cord));
 }
 
 TEST(CordTest, CordMemoryUsageExternalMemory) {
@@ -1791,6 +1812,7 @@ TEST(CordTest, CordMemoryUsageExternalMemory) {
       sizeof(absl::Cord) + 1000 + sizeof(CordRepExternal) + sizeof(intptr_t);
   EXPECT_EQ(cord.EstimatedMemoryUsage(), expected);
   EXPECT_EQ(cord.EstimatedMemoryUsage(kFairShare), expected);
+  EXPECT_EQ(cord.EstimatedMemoryUsage(kTotalMorePrecise), expected);
 }
 
 TEST(CordTest, CordMemoryUsageFlat) {
@@ -1800,6 +1822,8 @@ TEST(CordTest, CordMemoryUsageFlat) {
   EXPECT_EQ(cord.EstimatedMemoryUsage(), sizeof(absl::Cord) + flat_size);
   EXPECT_EQ(cord.EstimatedMemoryUsage(kFairShare),
             sizeof(absl::Cord) + flat_size);
+  EXPECT_EQ(cord.EstimatedMemoryUsage(kTotalMorePrecise),
+            sizeof(absl::Cord) + flat_size);
 }
 
 TEST(CordTest, CordMemoryUsageSubStringSharedFlat) {
@@ -1808,6 +1832,8 @@ TEST(CordTest, CordMemoryUsageSubStringSharedFlat) {
       absl::CordTestPeer::Tree(flat)->flat()->AllocatedSize();
   absl::Cord cord = flat.Subcord(500, 1000);
   EXPECT_EQ(cord.EstimatedMemoryUsage(),
+            sizeof(absl::Cord) + sizeof(CordRepSubstring) + flat_size);
+  EXPECT_EQ(cord.EstimatedMemoryUsage(kTotalMorePrecise),
             sizeof(absl::Cord) + sizeof(CordRepSubstring) + flat_size);
   EXPECT_EQ(cord.EstimatedMemoryUsage(kFairShare),
             sizeof(absl::Cord) + sizeof(CordRepSubstring) + flat_size / 2);
@@ -1819,6 +1845,8 @@ TEST(CordTest, CordMemoryUsageFlatShared) {
   const size_t flat_size =
       absl::CordTestPeer::Tree(cord)->flat()->AllocatedSize();
   EXPECT_EQ(cord.EstimatedMemoryUsage(), sizeof(absl::Cord) + flat_size);
+  EXPECT_EQ(cord.EstimatedMemoryUsage(kTotalMorePrecise),
+            sizeof(absl::Cord) + flat_size);
   EXPECT_EQ(cord.EstimatedMemoryUsage(kFairShare),
             sizeof(absl::Cord) + flat_size / 2);
 }
@@ -1836,6 +1864,8 @@ TEST(CordTest, CordMemoryUsageFlatHardenedAndShared) {
 
   absl::Cord cord2(cord);
   EXPECT_EQ(cord2.EstimatedMemoryUsage(),
+            sizeof(absl::Cord) + sizeof(CordRepCrc) + flat_size);
+  EXPECT_EQ(cord2.EstimatedMemoryUsage(kTotalMorePrecise),
             sizeof(absl::Cord) + sizeof(CordRepCrc) + flat_size);
   EXPECT_EQ(cord2.EstimatedMemoryUsage(kFairShare),
             sizeof(absl::Cord) + (sizeof(CordRepCrc) + flat_size / 2) / 2);
@@ -1863,6 +1893,8 @@ TEST(CordTest, CordMemoryUsageBTree) {
   size_t rep1_shared_size = sizeof(CordRepBtree) + flats1_size / 2;
 
   EXPECT_EQ(cord1.EstimatedMemoryUsage(), sizeof(absl::Cord) + rep1_size);
+  EXPECT_EQ(cord1.EstimatedMemoryUsage(kTotalMorePrecise),
+            sizeof(absl::Cord) + rep1_size);
   EXPECT_EQ(cord1.EstimatedMemoryUsage(kFairShare),
             sizeof(absl::Cord) + rep1_shared_size);
 
@@ -1877,6 +1909,8 @@ TEST(CordTest, CordMemoryUsageBTree) {
   size_t rep2_size = sizeof(CordRepBtree) + flats2_size;
 
   EXPECT_EQ(cord2.EstimatedMemoryUsage(), sizeof(absl::Cord) + rep2_size);
+  EXPECT_EQ(cord2.EstimatedMemoryUsage(kTotalMorePrecise),
+            sizeof(absl::Cord) + rep2_size);
   EXPECT_EQ(cord2.EstimatedMemoryUsage(kFairShare),
             sizeof(absl::Cord) + rep2_size);
 
@@ -1884,6 +1918,8 @@ TEST(CordTest, CordMemoryUsageBTree) {
   cord.Append(std::move(cord2));
 
   EXPECT_EQ(cord.EstimatedMemoryUsage(),
+            sizeof(absl::Cord) + sizeof(CordRepBtree) + rep1_size + rep2_size);
+  EXPECT_EQ(cord.EstimatedMemoryUsage(kTotalMorePrecise),
             sizeof(absl::Cord) + sizeof(CordRepBtree) + rep1_size + rep2_size);
   EXPECT_EQ(cord.EstimatedMemoryUsage(kFairShare),
             sizeof(absl::Cord) + sizeof(CordRepBtree) + rep1_shared_size / 2 +
@@ -1903,6 +1939,66 @@ TEST_P(CordTest, CordMemoryUsageInlineRep) {
   EXPECT_EQ(c1.EstimatedMemoryUsage(), c2.EstimatedMemoryUsage());
 }
 
+TEST_P(CordTest, CordMemoryUsageTotalMorePreciseMode) {
+  constexpr size_t kChunkSize = 2000;
+  std::string tmp_str(kChunkSize, 'x');
+  const absl::Cord flat(std::move(tmp_str));
+
+  // Construct `fragmented` with two references into the same
+  // underlying buffer shared with `flat`:
+  absl::Cord fragmented(flat);
+  fragmented.Append(flat);
+
+  // Memory usage of `flat`, minus the top-level Cord object:
+  const size_t flat_internal_usage =
+      flat.EstimatedMemoryUsage() - sizeof(absl::Cord);
+
+  // `fragmented` holds a Cord and a CordRepBtree. That tree points to two
+  // copies of flat's internals, which we expect to dedup:
+  EXPECT_EQ(fragmented.EstimatedMemoryUsage(kTotalMorePrecise),
+            sizeof(absl::Cord) +
+            sizeof(CordRepBtree) +
+            flat_internal_usage);
+
+  // This is a case where kTotal produces an overestimate:
+  EXPECT_EQ(fragmented.EstimatedMemoryUsage(),
+            sizeof(absl::Cord) +
+            sizeof(CordRepBtree) +
+            2 * flat_internal_usage);
+}
+
+TEST_P(CordTest, CordMemoryUsageTotalMorePreciseModeWithSubstring) {
+  constexpr size_t kChunkSize = 2000;
+  std::string tmp_str(kChunkSize, 'x');
+  const absl::Cord flat(std::move(tmp_str));
+
+  // Construct `fragmented` with two references into the same
+  // underlying buffer shared with `flat`.
+  //
+  // This time, each reference is through a Subcord():
+  absl::Cord fragmented;
+  fragmented.Append(flat.Subcord(1, kChunkSize - 2));
+  fragmented.Append(flat.Subcord(1, kChunkSize - 2));
+
+  // Memory usage of `flat`, minus the top-level Cord object:
+  const size_t flat_internal_usage =
+      flat.EstimatedMemoryUsage() - sizeof(absl::Cord);
+
+  // `fragmented` holds a Cord and a CordRepBtree. That tree points to two
+  // CordRepSubstrings, each pointing at flat's internals.
+  EXPECT_EQ(fragmented.EstimatedMemoryUsage(kTotalMorePrecise),
+            sizeof(absl::Cord) +
+            sizeof(CordRepBtree) +
+            2 * sizeof(CordRepSubstring) +
+            flat_internal_usage);
+
+  // This is a case where kTotal produces an overestimate:
+  EXPECT_EQ(fragmented.EstimatedMemoryUsage(),
+            sizeof(absl::Cord) +
+            sizeof(CordRepBtree) +
+            2 * sizeof(CordRepSubstring) +
+            2 * flat_internal_usage);
+}
 }  // namespace
 
 // Regtest for 7510292 (fix a bug introduced by 7465150)

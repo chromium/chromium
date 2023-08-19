@@ -16,7 +16,7 @@ namespace features {
 // Default number of days that dismissing or ignoring the banner will prevent it
 // being seen again for.
 constexpr unsigned int kMinimumBannerBlockedToBannerShown = 90;
-constexpr unsigned int kMinimumDaysBetweenBannerShows = 14;
+constexpr unsigned int kMinimumDaysBetweenBannerShows = 7;
 
 // Default site engagement required to trigger the banner.
 constexpr unsigned int kDefaultTotalEngagementToTrigger = 2;
@@ -40,24 +40,22 @@ extern const base::FeatureParam<base::TimeDelta>
     kInstallPromptGlobalGuardrails_IgnorePeriod;
 BASE_DECLARE_FEATURE(kWebApkInstallFailureNotification);
 BASE_DECLARE_FEATURE(kWebApkInstallFailureRetry);
+BASE_DECLARE_FEATURE(kBlockInstallPromptIfIgnoreRecently);
+
+BASE_DECLARE_FEATURE(kUniversalInstallManifest);
+BASE_DECLARE_FEATURE(kUniversalInstallIcon);
 #endif  // BUILDFLAG(IS_ANDROID)
 
 BASE_DECLARE_FEATURE(kCreateShortcutIgnoresManifest);
-BASE_DECLARE_FEATURE(kSkipServiceWorkerCheckInstallOnly);
-BASE_DECLARE_FEATURE(kDesktopPWAsDetailedInstallDialog);
-BASE_DECLARE_FEATURE(kSkipServiceWorkerForInstallPrompt);
 
 BASE_DECLARE_FEATURE(kInstallPromptSegmentation);
-
-bool SkipInstallServiceWorkerCheck();
-bool SkipServiceWorkerForInstallPromotion();
 
 BASE_DECLARE_FEATURE(kAppBannerTriggering);
 extern const base::FeatureParam<double> kBannerParamsEngagementTotalKey;
 extern const base::FeatureParam<int> kBannerParamsDaysAfterBannerDismissedKey;
 extern const base::FeatureParam<int> kBannerParamsDaysAfterBannerIgnoredKey;
 
-BASE_DECLARE_FEATURE(kWebAppsMlUkmCollection);
+BASE_DECLARE_FEATURE(kWebAppsEnableMLModelForPromotion);
 
 }  // namespace features
 }  // namespace webapps

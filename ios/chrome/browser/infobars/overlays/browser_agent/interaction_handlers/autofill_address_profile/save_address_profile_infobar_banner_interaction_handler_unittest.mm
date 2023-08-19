@@ -13,10 +13,6 @@
 #import "ios/chrome/browser/overlays/public/overlay_request_queue.h"
 #import "testing/platform_test.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 // Test fixture for SaveAddressProfileInfobarBannerInteractionHandler.
 class SaveAddressProfileInfobarBannerInteractionHandlerTest
     : public PlatformTest {

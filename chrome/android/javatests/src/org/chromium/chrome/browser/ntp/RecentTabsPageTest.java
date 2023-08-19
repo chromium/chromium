@@ -4,6 +4,13 @@
 
 package org.chromium.chrome.browser.ntp;
 
+import static androidx.test.espresso.Espresso.onView;
+import static androidx.test.espresso.assertion.ViewAssertions.matches;
+import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
+import static androidx.test.espresso.matcher.ViewMatchers.withId;
+import static androidx.test.espresso.matcher.ViewMatchers.withParent;
+
+import static org.hamcrest.core.AllOf.allOf;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.MockitoAnnotations.initMocks;
@@ -28,9 +35,11 @@ import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.Feature;
 import org.chromium.chrome.browser.ChromeTabbedActivity;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.SharedPreferencesManager;
+import org.chromium.chrome.browser.sync.SyncServiceFactory;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
@@ -38,9 +47,12 @@ import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.chrome.test.R;
 import org.chromium.chrome.test.util.ChromeRenderTestRule;
 import org.chromium.chrome.test.util.RecentTabsPageTestUtils;
+import org.chromium.chrome.test.util.browser.Features.EnableFeatures;
 import org.chromium.chrome.test.util.browser.signin.SigninTestRule;
+import org.chromium.chrome.test.util.browser.signin.SigninTestUtil;
 import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.components.policy.test.annotations.Policies;
+import org.chromium.components.signin.base.CoreAccountInfo;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.content_public.common.ContentUrlConstants;
 import org.chromium.ui.base.DeviceFormFactor;
@@ -57,7 +69,10 @@ import java.util.concurrent.ExecutionException;
  */
 @RunWith(ChromeJUnit4ClassRunner.class)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
+@EnableFeatures(ChromeFeatureList.EMPTY_STATES)
 public class RecentTabsPageTest {
+    private static final String EMAIL = "email@gmail.com";
+    private static final String NAME = "Email Emailson";
     @Rule
     public ChromeTabbedActivityTestRule mActivityTestRule = new ChromeTabbedActivityTestRule();
 
@@ -94,7 +109,6 @@ public class RecentTabsPageTest {
     @After
     public void tearDown() {
         leaveRecentTabsPage();
-        RecentTabsManager.setRecentlyClosedTabManagerForTests(null);
         SharedPreferencesManager.getInstance().removeKey(
                 ChromePreferenceKeys.SYNC_PROMO_TOTAL_SHOW_COUNT);
     }
@@ -238,6 +252,29 @@ public class RecentTabsPageTest {
                 mActivity, view, RecentTabsRowAdapter.RecentlyClosedTabsGroup.ID_REMOVE_ALL);
         Assert.assertEquals(0, mManager.getRecentlyClosedEntries(1).size());
         waitForViewToDisappear(eventString);
+    }
+
+    @Test
+    @MediumTest
+    @Feature({"RecentTabsPage"})
+    public void testEmptyStateView() throws ExecutionException {
+        // Sign in and enable sync.
+        CoreAccountInfo coreAccountInfo = addAccountWithNonDisplayableEmail(NAME);
+        SigninTestUtil.signinAndEnableSync(coreAccountInfo,
+                TestThreadUtils.runOnUiThreadBlockingNoException(SyncServiceFactory::get));
+
+        // Open an empty recent tabs page and confirm empty view shows.
+        mPage = loadRecentTabsPage();
+        onView(allOf(withId(R.id.empty_state_container),
+                       withParent(withId(R.id.legacy_sync_promo_view_frame_layout))))
+                .check(matches(isDisplayed()));
+    }
+
+    private CoreAccountInfo addAccountWithNonDisplayableEmail(String name) {
+        CoreAccountInfo coreAccountInfo = mSigninTestRule.addAccount(
+                EMAIL, name, SigninTestRule.NON_DISPLAYABLE_EMAIL_ACCOUNT_CAPABILITIES);
+        mSigninTestRule.waitForSeeding();
+        return coreAccountInfo;
     }
 
     /**

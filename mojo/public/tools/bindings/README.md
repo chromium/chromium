@@ -720,6 +720,24 @@ There are two dimensions on which an interface can be extended
     that the version number is scoped to the whole interface rather than to any
     individual parameter list.
 
+``` cpp
+// Old version:
+interface HumanResourceDatabase {
+  QueryEmployee(uint64 id) => (Employee? employee);
+};
+
+// New version:
+interface HumanResourceDatabase {
+  QueryEmployee(uint64 id, [MinVersion=1] bool retrieve_finger_print)
+      => (Employee? employee,
+          [MinVersion=1] array<uint8>? finger_print);
+};
+```
+
+Similar to [versioned structs](#Versioned-Structs), when you pass the parameter
+list of a request or response method to a destination using an older version of
+an interface, unrecognized fields are silently discarded.
+
     Please note that adding a response to a message which did not previously
     expect a response is a not a backwards-compatible change.
 
@@ -732,17 +750,12 @@ For example:
 ``` cpp
 // Old version:
 interface HumanResourceDatabase {
-  AddEmployee(Employee employee) => (bool success);
   QueryEmployee(uint64 id) => (Employee? employee);
 };
 
 // New version:
 interface HumanResourceDatabase {
-  AddEmployee(Employee employee) => (bool success);
-
-  QueryEmployee(uint64 id, [MinVersion=1] bool retrieve_finger_print)
-      => (Employee? employee,
-          [MinVersion=1] array<uint8>? finger_print);
+  QueryEmployee(uint64 id) => (Employee? employee);
 
   [MinVersion=1]
   AttachFingerPrint(uint64 id, array<uint8> finger_print)
@@ -750,10 +763,7 @@ interface HumanResourceDatabase {
 };
 ```
 
-Similar to [versioned structs](#Versioned-Structs), when you pass the parameter
-list of a request or response method to a destination using an older version of
-an interface, unrecognized fields are silently discarded. However, if the method
-call itself is not recognized, it is considered a validation error and the
+If a method call is not recognized, it is considered a validation error and the
 receiver will close its end of the interface pipe. For example, if a client on
 version 1 of the above interface sends an `AttachFingerPrint` request to an
 implementation of version 0, the client will be disconnected.

@@ -50,7 +50,7 @@ class INVALIDATION_EXPORT FakeAckHandler
   // Returns true if the specified invalidation was never delivered.
   bool IsUnsent(const Invalidation& invalidation) const;
 
-  // Retruns true if all invalidations have been acked and all drops recovered.
+  // Returns true if all invalidations have been acked and all drops recovered.
   bool AllInvalidationsAccountedFor() const;
 
   // Implementation of AckHandler.

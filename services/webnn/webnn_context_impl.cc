@@ -34,11 +34,12 @@ void WebNNContextImpl::OnConnectionError() {
 void WebNNContextImpl::CreateGraph(
     mojom::GraphInfoPtr graph_info,
     mojom::WebNNContext::CreateGraphCallback callback) {
-  if (!WebNNGraphImpl::ValidateAndBuildGraph(std::move(callback),
-                                             std::move(graph_info))) {
+  if (!WebNNGraphImpl::ValidateGraph(graph_info)) {
     receiver_.ReportBadMessage("Invalid graph from renderer.");
     return;
   }
+  // Call CreateGraphImpl() implemented by a backend.
+  CreateGraphImpl(std::move(graph_info), std::move(callback));
 }
 
 }  // namespace webnn

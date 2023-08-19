@@ -803,8 +803,9 @@ class GLES2DecoderTestBase : public ::testing::TestWithParam<bool>,
   MockGLStates gl_states_;
   base::test::SingleThreadTaskEnvironment task_environment_;
 
-  raw_ptr<MockCopyTextureResourceManager> copy_texture_manager_;  // not owned
-  raw_ptr<MockCopyTexImageResourceManager>
+  raw_ptr<MockCopyTextureResourceManager, DanglingUntriaged>
+      copy_texture_manager_;  // not owned
+  raw_ptr<MockCopyTexImageResourceManager, DanglingUntriaged>
       copy_tex_image_blitter_;  // not owned
 };
 

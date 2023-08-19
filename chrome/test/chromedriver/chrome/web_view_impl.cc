@@ -341,9 +341,10 @@ WebViewImpl::WebViewImpl(const std::string& id,
   // Browser.setDownloadBehavior. This is handled by the
   // DownloadDirectoryOverrideManager, which is only instantiated
   // in headless chrome.
-  if (browser_info->is_headless)
+  if (browser_info->is_headless_shell) {
     download_directory_override_manager_ =
         std::make_unique<DownloadDirectoryOverrideManager>(client_.get());
+  }
   // Child WebViews should not have their own navigation_tracker, but defer
   // all related calls to their parent. All WebViews must have either parent_
   // or navigation_tracker_
@@ -375,18 +376,16 @@ WebViewImpl* WebViewImpl::CreateChild(const std::string& session_id,
   // its children (one level deep at most).
   std::unique_ptr<DevToolsClientImpl> child_client =
       std::make_unique<DevToolsClientImpl>(session_id, session_id);
-  WebViewImpl* child = new WebViewImpl(
-      target_id, w3c_compliant_, this, browser_info_, std::move(child_client),
-      absl::nullopt,
-      IsNonBlocking() ? PageLoadStrategy::kNone : PageLoadStrategy::kNormal);
+  WebViewImpl* child =
+      new WebViewImpl(target_id, w3c_compliant_, this, browser_info_,
+                      std::move(child_client), absl::nullopt, "");
   if (!IsNonBlocking()) {
     // Find Navigation Tracker for the top of the WebViewImpl hierarchy
     const WebViewImpl* current_view = this;
     while (current_view->parent_)
       current_view = current_view->parent_;
     PageLoadStrategy* pls = current_view->navigation_tracker_.get();
-    NavigationTracker* nt = static_cast<NavigationTracker*>(pls);
-    child->client_->AddListener(static_cast<DevToolsEventListener*>(nt));
+    child->client_->AddListener(static_cast<DevToolsEventListener*>(pls));
   }
   return child;
 }

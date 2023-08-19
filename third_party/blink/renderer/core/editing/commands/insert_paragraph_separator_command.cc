@@ -43,9 +43,64 @@
 #include "third_party/blink/renderer/core/html_names.h"
 #include "third_party/blink/renderer/core/layout/layout_object.h"
 #include "third_party/blink/renderer/core/layout/layout_text.h"
+#include "third_party/blink/renderer/core/mathml_names.h"
+#include "third_party/blink/renderer/core/svg_names.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 
 namespace blink {
+
+namespace {
+
+// 3.2.5.2.5 Phrasing content
+// https://html.spec.whatwg.org/multipage/dom.html#phrasing-content
+bool IsPhrasingContent(const Node* node) {
+  DEFINE_STATIC_LOCAL(HashSet<QualifiedName>, phrasing_content_names,
+                      ({
+                          html_names::kATag,        html_names::kAbbrTag,
+                          html_names::kAreaTag,     html_names::kAudioTag,
+                          html_names::kBTag,        html_names::kBdiTag,
+                          html_names::kBdoTag,      html_names::kBrTag,
+                          html_names::kButtonTag,   html_names::kCanvasTag,
+                          html_names::kCiteTag,     html_names::kCodeTag,
+                          html_names::kDataTag,     html_names::kDatalistTag,
+                          html_names::kDelTag,      html_names::kDfnTag,
+                          html_names::kEmTag,       html_names::kEmbedTag,
+                          html_names::kITag,        html_names::kIFrameTag,
+                          html_names::kImgTag,      html_names::kInputTag,
+                          html_names::kInsTag,      html_names::kKbdTag,
+                          html_names::kLabelTag,    html_names::kLinkTag,
+                          html_names::kMapTag,      html_names::kMarkTag,
+                          mathml_names::kMathTag,   html_names::kMetaTag,
+                          html_names::kMeterTag,    html_names::kNoscriptTag,
+                          html_names::kObjectTag,   html_names::kOutputTag,
+                          html_names::kPictureTag,  html_names::kProgressTag,
+                          html_names::kQTag,        html_names::kRubyTag,
+                          html_names::kSTag,        html_names::kSampTag,
+                          html_names::kScriptTag,   html_names::kSelectTag,
+                          html_names::kSlotTag,     html_names::kSmallTag,
+                          html_names::kSpanTag,     html_names::kStrongTag,
+                          html_names::kSubTag,      html_names::kSupTag,
+                          svg_names::kSVGTag,       html_names::kTemplateTag,
+                          html_names::kTextareaTag, html_names::kTimeTag,
+                          html_names::kUTag,        html_names::kVarTag,
+                          html_names::kVideoTag,    html_names::kWbrTag,
+                      }));
+  if (const auto* element = DynamicTo<Element>(node)) {
+    return phrasing_content_names.Contains(element->TagQName());
+  }
+  return false;
+}
+
+bool IsEditableRootPhrasingContent(const Position& position) {
+  const ContainerNode* editable_root = HighestEditableRoot(position);
+  if (!editable_root) {
+    return false;
+  }
+  return EnclosingNodeOfType(FirstPositionInOrBeforeNode(*editable_root),
+                             IsPhrasingContent);
+}
+
+}  // namespace
 
 // When inserting a new line, we want to avoid nesting empty divs if we can.
 // Otherwise, when pasting, it's easy to have each new line be a div deeper than
@@ -216,6 +271,8 @@ void InsertParagraphSeparatorCommand::DoApply(EditingState* editing_state) {
   Position canonical_pos =
       CreateVisiblePosition(insertion_position).DeepEquivalent();
   if (!start_block || !start_block->NonShadowBoundaryParentNode() ||
+      (RuntimeEnabledFeatures::InsertLineBreakIfPhrasingContentEnabled() &&
+       IsEditableRootPhrasingContent(insertion_position)) ||
       IsTableCell(start_block) ||
       IsA<HTMLFormElement>(*start_block)
       // FIXME: If the node is hidden, we don't have a canonical position so we

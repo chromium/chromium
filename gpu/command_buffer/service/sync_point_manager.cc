@@ -394,7 +394,7 @@ SyncPointManager::CreateSyncPointClientState(
   DCHECK_LT(static_cast<size_t>(namespace_id), std::size(client_state_maps_));
   const auto [_, inserted] = client_state_maps_[namespace_id].insert(
       std::make_pair(command_buffer_id, client_state));
-  DCHECK(inserted);
+  CHECK(inserted);
 
   return client_state;
 }

@@ -15,17 +15,17 @@
 #include "base/test/gmock_callback_support.h"
 #include "base/values.h"
 #include "chrome/browser/ash/extensions/file_manager/event_router_factory.h"
-#include "chrome/browser/ash/file_manager/fake_disk_mount_manager.h"
 #include "chrome/browser/ash/file_manager/io_task.h"
 #include "chrome/browser/ash/file_manager/path_util.h"
 #include "chrome/browser/ash/file_manager/volume_manager_factory.h"
+#include "chrome/browser/ash/fileapi/file_system_backend.h"
 #include "chrome/test/base/testing_profile.h"
+#include "chromeos/ash/components/disks/fake_disk_mount_manager.h"
 #include "content/public/test/browser_task_environment.h"
 #include "extensions/browser/event_router.h"
 #include "extensions/browser/test_event_router.h"
 #include "extensions/common/extension.h"
 #include "storage/browser/file_system/external_mount_points.h"
-#include "storage/browser/file_system/file_system_backend.h"
 #include "storage/browser/quota/quota_manager_proxy.h"
 #include "storage/browser/test/test_file_system_context.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -141,13 +141,12 @@ class FileManagerEventRouterTest : public testing::Test {
         storage::kFileSystemTypeLocal, storage::FileSystemMountOption(),
         temp_dir_.GetPath());
 
-    file_manager::util::GetFileSystemContextForSourceURL(
-        profile_.get(), GURL("chrome-extension://abc"))
-        ->external_backend()
-        ->GrantFileAccessToOrigin(
-            url::Origin::Create(GURL("chrome-extension://abc")),
-            base::FilePath(file_manager::util::GetDownloadsMountPointName(
-                profile_.get())));
+    auto* context = file_manager::util::GetFileSystemContextForSourceURL(
+        profile_.get(), GURL("chrome-extension://abc"));
+    ash::FileSystemBackend::Get(*context)->GrantFileAccessToOrigin(
+        url::Origin::Create(GURL("chrome-extension://abc")),
+        base::FilePath(
+            file_manager::util::GetDownloadsMountPointName(profile_.get())));
   }
 
   const io_task::EntryStatus CreateSuccessfulEntryStatusForFileName(
@@ -168,7 +167,7 @@ class FileManagerEventRouterTest : public testing::Test {
   const blink::StorageKey kTestStorageKey =
       blink::StorageKey::CreateFromStringForTesting("chrome-extension://abc");
   scoped_refptr<storage::FileSystemContext> file_system_context_;
-  file_manager::FakeDiskMountManager disk_mount_manager_;
+  ash::disks::FakeDiskMountManager disk_mount_manager_;
 };
 
 // A matcher that matches an `extensions::Event::event_args` and attempts to
@@ -185,6 +184,79 @@ MATCHER_P3(ExpectEventArgString, index, field, expected_value, "") {
       (*outputs)[index].GetDict().FindString(field);
   EXPECT_TRUE(actual_value) << "Could not find the string with key: " << field;
   return testing::ExplainMatchResult(expected_value, *actual_value,
+                                     result_listener);
+}
+
+// A matcher that matches an `extensions::Event::event_args` and attempts to
+// extract the "conflictParams" and "pauseParams" keys. It expects
+// "conflictParams" to be empty, and then matches the "policyParams" values
+// against the expected ones.
+MATCHER_P3(ExpectEventArgPauseParams,
+           expected_type,
+           expected_count,
+           expected_file_name,
+           "") {
+  EXPECT_GE(arg.size(), 1u);
+  const base::Value::Dict* pause_params =
+      arg[0].GetDict().FindDict("pauseParams");
+  EXPECT_TRUE(pause_params)
+      << "The pause_params field is not available on the event";
+
+  const base::Value::Dict* conflict_pause_params =
+      pause_params->FindDict("conflictParams");
+  EXPECT_FALSE(conflict_pause_params)
+      << "The conflictParams field should not be available on the event";
+
+  const base::Value::Dict* policy_pause_params =
+      pause_params->FindDict("policyParams");
+  EXPECT_TRUE(policy_pause_params)
+      << "The policyParams field is not available on the event";
+  const std::string* actual_type = policy_pause_params->FindString("type");
+  EXPECT_TRUE(actual_type) << "Could not find the string with key: type";
+  const absl::optional<int> actual_count =
+      policy_pause_params->FindInt("policyFileCount");
+  EXPECT_TRUE(actual_count.has_value())
+      << "Could not find the number with key: type";
+  const std::string* actual_file_name =
+      policy_pause_params->FindString("fileName");
+  EXPECT_TRUE(actual_file_name)
+      << "Could not find the string with key: fileName";
+  return testing::ExplainMatchResult(expected_type, *actual_type,
+                                     result_listener) &&
+         testing::ExplainMatchResult(expected_count, actual_count.value(),
+                                     result_listener) &&
+         testing::ExplainMatchResult(expected_file_name, *actual_file_name,
+                                     result_listener);
+}
+
+// A matcher that matches an `extensions::Event::event_args` and attempts to
+// extract the "policyError" key. It then matches the "policyError" values
+// against the expected ones.
+MATCHER_P3(ExpectEventArgPolicyError,
+           expected_type,
+           expected_count,
+           expected_file_name,
+           "") {
+  EXPECT_GE(arg.size(), 1u);
+  const base::Value::Dict* policy_error =
+      arg[0].GetDict().FindDict("policyError");
+  EXPECT_TRUE(policy_error)
+      << "The policyError field is not available on the event";
+
+  const std::string* actual_type = policy_error->FindString("type");
+  EXPECT_TRUE(actual_type) << "Could not find the string with key: type";
+  const absl::optional<int> actual_count =
+      policy_error->FindInt("policyFileCount");
+  EXPECT_TRUE(actual_count.has_value())
+      << "Could not find the string with key: type";
+  const std::string* actual_file_name = policy_error->FindString("fileName");
+  EXPECT_TRUE(actual_file_name)
+      << "Could not find the string with key: fileName";
+  return testing::ExplainMatchResult(expected_type, *actual_type,
+                                     result_listener) &&
+         testing::ExplainMatchResult(expected_count, actual_count.value(),
+                                     result_listener) &&
+         testing::ExplainMatchResult(expected_file_name, *actual_file_name,
                                      result_listener);
 }
 
@@ -223,6 +295,72 @@ TEST_F(FileManagerEventRouterTest, OnIOTaskStatusForTrash) {
                 ExpectEventArgString(
                     0u, "fileSystemRoot",
                     "filesystem:chrome-extension://abc/external/Downloads/")))))
+      .WillOnce(RunClosure(run_loop.QuitClosure()));
+
+  event_router->OnIOTaskStatus(status);
+  run_loop.Run();
+}
+
+TEST_F(FileManagerEventRouterTest, OnIOTaskStatusForCopyPause) {
+  // Setup event routers.
+  extensions::TestEventRouter* test_event_router =
+      extensions::CreateAndUseTestEventRouter(profile_.get());
+  TestEventRouterObserver observer(test_event_router);
+  auto event_router = std::make_unique<EventRouter>(profile_.get());
+  event_router->ForceBroadcastingForTesting(true);
+
+  io_task::EntryStatus source_entry =
+      CreateSuccessfulEntryStatusForFileName("foo.txt");
+
+  std::vector<io_task::EntryStatus> source_entries;
+  source_entries.push_back(std::move(source_entry));
+
+  // Setup the ProgressStatus event.
+  file_manager::io_task::ProgressStatus status;
+  status.type = file_manager::io_task::OperationType::kCopy;
+  status.state = file_manager::io_task::State::kPaused;
+  status.sources = std::move(source_entries);
+  status.pause_params.policy_params = io_task::PolicyPauseParams(
+      policy::Policy::kDlp, /*warning_files_count*/ 2u, "foo.txt");
+
+  // Expect the event to have dlp as policy pause params.
+  base::RunLoop run_loop;
+  EXPECT_CALL(observer, OnBroadcastEvent(Field(&extensions::Event::event_args,
+                                               AllOf(ExpectEventArgPauseParams(
+                                                   "dlp", 2, "foo.txt")))))
+      .WillOnce(RunClosure(run_loop.QuitClosure()));
+
+  event_router->OnIOTaskStatus(status);
+  run_loop.Run();
+}
+
+TEST_F(FileManagerEventRouterTest, OnIOTaskStatusForPolicyError) {
+  // Setup event routers.
+  extensions::TestEventRouter* test_event_router =
+      extensions::CreateAndUseTestEventRouter(profile_.get());
+  TestEventRouterObserver observer(test_event_router);
+  auto event_router = std::make_unique<EventRouter>(profile_.get());
+  event_router->ForceBroadcastingForTesting(true);
+
+  io_task::EntryStatus source_entry =
+      CreateSuccessfulEntryStatusForFileName("foo.txt");
+
+  std::vector<io_task::EntryStatus> source_entries;
+  source_entries.push_back(std::move(source_entry));
+
+  // Setup the ProgressStatus event.
+  file_manager::io_task::ProgressStatus status;
+  status.type = file_manager::io_task::OperationType::kCopy;
+  status.state = file_manager::io_task::State::kError;
+  status.sources = std::move(source_entries);
+  status.policy_error.emplace(io_task::PolicyErrorType::kDlp,
+                              /*blocked_files=*/1, "foo.txt");
+
+  // Expect the event to have dlp as policy error.
+  base::RunLoop run_loop;
+  EXPECT_CALL(observer, OnBroadcastEvent(Field(&extensions::Event::event_args,
+                                               AllOf(ExpectEventArgPolicyError(
+                                                   "dlp", 1, "foo.txt")))))
       .WillOnce(RunClosure(run_loop.QuitClosure()));
 
   event_router->OnIOTaskStatus(status);

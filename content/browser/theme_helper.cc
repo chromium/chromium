@@ -7,7 +7,7 @@
 #include "base/no_destructor.h"
 #include "content/browser/renderer_host/render_process_host_impl.h"
 #include "content/common/renderer.mojom.h"
-#include "ui/color/color_provider_manager.h"
+#include "ui/color/color_provider_key.h"
 #include "ui/color/color_provider_utils.h"
 
 namespace content {
@@ -37,7 +37,7 @@ mojom::UpdateSystemColorInfoParamsPtr MakeUpdateSystemColorInfoParams(
   // the global NativeTheme web instance and instead have WebContents instances
   // propagate their specific ColorProviders to hosted frames.
   const auto get_renderer_color_map =
-      [](ui::ColorProviderManager::ColorMode color_mode) {
+      [](ui::ColorProviderKey::ColorMode color_mode) {
         auto key =
             ui::NativeTheme::GetInstanceForWeb()->GetColorProviderKey(nullptr);
         key.color_mode = color_mode;
@@ -47,9 +47,9 @@ mojom::UpdateSystemColorInfoParamsPtr MakeUpdateSystemColorInfoParams(
         return ui::CreateRendererColorMap(*color_provider);
       };
   params->light_colors =
-      get_renderer_color_map(ui::ColorProviderManager::ColorMode::kLight);
+      get_renderer_color_map(ui::ColorProviderKey::ColorMode::kLight);
   params->dark_colors =
-      get_renderer_color_map(ui::ColorProviderManager::ColorMode::kDark);
+      get_renderer_color_map(ui::ColorProviderKey::ColorMode::kDark);
 
   return params;
 }

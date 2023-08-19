@@ -8,6 +8,18 @@
 
 namespace webapps {
 
+bool UninstallSucceeded(UninstallResultCode code) {
+  switch (code) {
+    case UninstallResultCode::kSuccess:
+    case UninstallResultCode::kNoAppToUninstall:
+      return true;
+    case UninstallResultCode::kCancelled:
+    case UninstallResultCode::kError:
+    case UninstallResultCode::kShutdown:
+      return false;
+  }
+}
+
 std::string ConvertUninstallResultCodeToString(UninstallResultCode code) {
   switch (code) {
     case UninstallResultCode::kSuccess:
@@ -18,6 +30,8 @@ std::string ConvertUninstallResultCodeToString(UninstallResultCode code) {
       return "Uninstall cancelled";
     case UninstallResultCode::kError:
       return "Error";
+    case UninstallResultCode::kShutdown:
+      return "Shutdown";
   }
 }
 

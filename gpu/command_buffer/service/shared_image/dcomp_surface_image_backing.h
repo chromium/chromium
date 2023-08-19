@@ -10,6 +10,8 @@
 #include <windows.h>
 #include <wrl/client.h>
 
+#include <dawn/native/D3DBackend.h>
+
 #include "base/memory/scoped_refptr.h"
 #include "gpu/command_buffer/service/shared_image/dcomp_surface_image_representation.h"
 #include "gpu/command_buffer/service/shared_image/shared_image_backing.h"
@@ -53,12 +55,22 @@ class GPU_GLES2_EXPORT DCompSurfaceImageBacking
       MemoryTypeTracker* tracker) override;
 
   // Produce a write-only representation that calls back into this backing's
-  // |BeginDraw| and |EndDraw| on scoped write access.
+  // |BeginDrawGanesh| and |EndDrawGanesh| on scoped write access.
   // Currently, only one writer to a DCompSurfaceImageBacking is allowed
   // globally due to DComp surface limitations (which can be resolved with
   // Suspend/ResumeDraw) and usage of the GL FB0 (which can be resolved by
   // binding the DComp texture to a renderbuffer instead of a pbuffer).
   std::unique_ptr<SkiaGaneshImageRepresentation> ProduceSkiaGanesh(
+      SharedImageManager* manager,
+      MemoryTypeTracker* tracker,
+      scoped_refptr<SharedContextState> context_state) override;
+
+  // Produce a write-only representation that calls back into this backing's
+  // |BeginDrawGraphite| and |EndDrawGraphite| on scoped write access.
+  // Currently, only one writer to a DCompSurfaceImageBacking is allowed
+  // globally due to DComp surface limitations (which can be resolved with
+  // Suspend/ResumeDraw).
+  std::unique_ptr<SkiaGraphiteImageRepresentation> ProduceSkiaGraphite(
       SharedImageManager* manager,
       MemoryTypeTracker* tracker,
       scoped_refptr<SharedContextState> context_state) override;
@@ -81,23 +93,54 @@ class GPU_GLES2_EXPORT DCompSurfaceImageBacking
                                                         dcomp_surface_serial_);
   }
 
-  // For DCompSurfaceSkiaImageRepresentation implementation.
-  friend class DCompSurfaceSkiaImageRepresentation;
-  sk_sp<SkSurface> BeginDraw(SharedContextState* context_state,
-                             int final_msaa_count,
-                             const SkSurfaceProps& surface_props,
-                             const gfx::Rect& update_rect);
-  bool EndDraw();
+  Microsoft::WRL::ComPtr<ID3D11Texture2D> BeginDraw(
+      const gfx::Rect& update_rect,
+      gfx::Point& update_offset_out);
+  void EndDraw();
+
+  // For DCompSurfaceSkiaGaneshImageRepresentation implementation.
+  friend class DCompSurfaceSkiaGaneshImageRepresentation;
+  sk_sp<SkSurface> BeginDrawGanesh(SharedContextState* context_state,
+                                   int final_msaa_count,
+                                   const SkSurfaceProps& surface_props,
+                                   const gfx::Rect& update_rect);
+  void EndDrawGanesh();
+
+  // For DCompSurfaceDawnImageRepresentation implementation.
+  friend class DCompSurfaceDawnImageRepresentation;
+  wgpu::Texture BeginDrawDawn(const wgpu::Device& device,
+                              const wgpu::TextureUsage usage,
+                              const gfx::Rect& update_rect);
+  void EndDrawDawn(const wgpu::Device& device, wgpu::Texture texture);
 
   // Used to restore the surface that was current before BeginDraw at EndDraw.
   absl::optional<ui::ScopedMakeCurrent> scoped_make_current_;
 
   // GLSurface that binds |dcomp_surface_|'s draw texture to GL FB0 between
-  // |BeginDraw| and |EndDraw|.
+  // |BeginDrawGanesh| and |EndDrawGanesh|.
   class D3DTextureGLSurfaceEGL;
   scoped_refptr<D3DTextureGLSurfaceEGL> gl_surface_;
 
   Microsoft::WRL::ComPtr<IDCompositionSurface> dcomp_surface_;
+
+  // The texture returned from |dcomp_surface_|'s BeginDraw.
+  Microsoft::WRL::ComPtr<ID3D11Texture2D> dcomp_surface_draw_texture_;
+
+  // The intermediate texture that is wrapped into wgpu::Texture and used for
+  // drawing. The content will be copied back to |dcomp_surface_draw_texture_|
+  // at EndDraw.
+  Microsoft::WRL::ComPtr<ID3D11Texture2D> dcomp_surface_draw_texture_copy_;
+
+  // The update_rect passed to |dcomp_surface_|'s BeginDraw.
+  gfx::Rect update_rect_;
+
+  // The update_offset returned from |dcomp_surface_|'s BeginDraw.
+  gfx::Point dcomp_update_offset_;
+
+  // ExternalImageDXGI is created from |dcomp_surface_|'s draw texture between
+  // |BeginDrawGraphite| and |EndDrawGraphite|. This |external_image_| wraps the
+  // ComPtr<ID3D11Texture> instead of creating from a share HANDLE.
+  std::unique_ptr<dawn::native::d3d::ExternalImageDXGI> external_image_;
 
   // This is a number that increments once for every EndDraw on a surface, and
   // is used to determine when the contents have changed so Commit() needs to

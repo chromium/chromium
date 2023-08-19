@@ -16,10 +16,12 @@ class BookmarkNode;
 @protocol BookmarksEditorConsumer <NSObject>
 
 // Update the UI name and URL using current `bookmark` value.
-- (void)updateUIFromBookmark;
+- (void)updateUIWithName:(NSString*)name
+                     URL:(NSString*)URL
+              folderName:(NSString*)folderName;
 
-// Update the UI’s folder using current `folder` value.
-- (void)updateFolderLabel;
+// Update the UI’s folder’s name to `folderName`.
+- (void)updateFolderLabel:(NSString*)folderName;
 
 // Update the UI related to bookmark sync.
 - (void)updateSync;

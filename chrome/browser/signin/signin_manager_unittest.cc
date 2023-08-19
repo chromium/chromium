@@ -6,15 +6,19 @@
 #include "base/memory/raw_ptr.h"
 #include "base/scoped_observation.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "base/test/scoped_feature_list.h"
 #include "build/buildflag.h"
 #include "build/chromeos_buildflags.h"
 #include "components/signin/public/base/signin_pref_names.h"
 #include "components/signin/public/base/test_signin_client.h"
+#include "components/signin/public/identity_manager/account_capabilities_test_mutator.h"
 #include "components/signin/public/identity_manager/accounts_in_cookie_jar_info.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/signin/public/identity_manager/identity_test_environment.h"
 #include "components/signin/public/identity_manager/identity_test_utils.h"
 #include "components/signin/public/identity_manager/primary_account_mutator.h"
+#include "components/supervised_user/core/common/buildflags.h"
+#include "components/supervised_user/core/common/features.h"
 #include "components/sync_preferences/testing_pref_service_syncable.h"
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -80,7 +84,7 @@ class SigninManagerTest : public testing::Test,
 
   void RecreateSigninManager() {
     signin_manager_ =
-        std::make_unique<SigninManager>(&prefs_, identity_manager(), &client_);
+        std::make_unique<SigninManager>(prefs_, *identity_manager(), client_);
   }
 
   void InitializeSignoutDecision() {
@@ -91,15 +95,6 @@ class SigninManagerTest : public testing::Test,
   }
 
   bool is_signout_allowed() const { return GetParam(); }
-
-  AccountInfo GetAccountInfo(const std::string& email) {
-    AccountInfo account_info;
-    account_info.gaia = GetTestGaiaIdForEmail(email);
-    account_info.account_id =
-        identity_manager()->PickAccountIdForAccount(account_info.gaia, email);
-    account_info.email = email;
-    return account_info;
-  }
 
   void ExpectUnconsentedPrimaryAccountSetEvent(
       const CoreAccountInfo& expected_primary_account) {
@@ -159,11 +154,16 @@ class SigninManagerTest : public testing::Test,
 
   IdentityTestEnvironment* identity_test_env() { return &identity_test_env_; }
 
-  AccountInfo MakeAccountAvailableWithCookies(const std::string& email) {
-    AccountInfo account = GetAccountInfo(kTestEmail);
-    identity_test_env_.MakeAccountAvailableWithCookies(account.email,
-                                                       account.gaia);
+  AccountInfo MakeAccountAvailableWithCookies(
+      const std::string& email,
+      signin_metrics::AccessPoint access_point =
+          signin_metrics::AccessPoint::ACCESS_POINT_UNKNOWN) {
+    AccountInfo account = identity_test_env_.MakeAccountAvailable(email);
     EXPECT_FALSE(account.IsEmpty());
+    account.access_point = access_point;
+    identity_test_env_.UpdateAccountInfoForAccount(account);
+    signin::CookieParamsForTest cookie_params = {account.email, account.gaia};
+    identity_test_env_.SetCookieAccounts({cookie_params});
     EXPECT_TRUE(identity_manager()->HasPrimaryAccount(ConsentLevel::kSignin));
     EXPECT_EQ(account,
               identity_manager()->GetPrimaryAccountInfo(ConsentLevel::kSignin));
@@ -217,9 +217,9 @@ TEST_P(
 
   if (is_signout_allowed()) {
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
-  // Lacros token service does not check for the validity of tokens.
-  // Therefore, the primary account should not be removed.
-  EXPECT_TRUE(identity_manager()->HasPrimaryAccount(ConsentLevel::kSignin));
+    // Lacros token service does not check for the validity of tokens.
+    // Therefore, the primary account should not be removed.
+    EXPECT_TRUE(identity_manager()->HasPrimaryAccount(ConsentLevel::kSignin));
 #else
     ExpectUnconsentedPrimaryAccountClearedEvent(account);
     EXPECT_FALSE(identity_manager()->HasPrimaryAccount(ConsentLevel::kSignin));
@@ -230,9 +230,9 @@ TEST_P(
               account);
 #endif
   } else {
-  EXPECT_TRUE(identity_manager()->HasPrimaryAccount(ConsentLevel::kSignin));
-  EXPECT_EQ(identity_manager()->GetPrimaryAccountInfo(ConsentLevel::kSignin),
-            account);
+    EXPECT_TRUE(identity_manager()->HasPrimaryAccount(ConsentLevel::kSignin));
+    EXPECT_EQ(identity_manager()->GetPrimaryAccountInfo(ConsentLevel::kSignin),
+              account);
   }
 }
 
@@ -247,9 +247,9 @@ TEST_P(
   // With no refresh token, there is no unconsented primary account any more.
   identity_test_env()->RemoveRefreshTokenForAccount(account.account_id);
   if (is_signout_allowed()) {
-  ExpectUnconsentedPrimaryAccountClearedEvent(account);
+    ExpectUnconsentedPrimaryAccountClearedEvent(account);
   } else {
-  EXPECT_EQ(0U, observer().events().size());
+    EXPECT_EQ(0U, observer().events().size());
   }
   EXPECT_NE(is_signout_allowed(),
             identity_manager()->HasPrimaryAccount(ConsentLevel::kSignin));
@@ -271,9 +271,9 @@ TEST_P(SigninManagerTest, UnconsentedPrimaryAccountChangedBlockedByHandle) {
   // The account gets cleared once we destroy the handle.
   handle.reset();
   if (is_signout_allowed()) {
-  ExpectUnconsentedPrimaryAccountClearedEvent(account);
+    ExpectUnconsentedPrimaryAccountClearedEvent(account);
   } else {
-  EXPECT_EQ(0U, observer().events().size());
+    EXPECT_EQ(0U, observer().events().size());
   }
   EXPECT_NE(is_signout_allowed(),
             identity_manager()->HasPrimaryAccount(ConsentLevel::kSignin));
@@ -329,9 +329,9 @@ TEST_P(SigninManagerTest,
 
   // Unconsented account was removed.
   if (is_signout_allowed()) {
-  ExpectUnconsentedPrimaryAccountClearedEvent(account);
+    ExpectUnconsentedPrimaryAccountClearedEvent(account);
   } else {
-  EXPECT_EQ(0U, observer().events().size());
+    EXPECT_EQ(0U, observer().events().size());
   }
   EXPECT_NE(is_signout_allowed(),
             identity_manager()->HasPrimaryAccount(ConsentLevel::kSignin));
@@ -364,9 +364,9 @@ TEST_P(SigninManagerTest,
   EXPECT_NE(is_signout_allowed(),
             identity_manager()->HasPrimaryAccount(ConsentLevel::kSignin));
   if (is_signout_allowed()) {
-  ExpectUnconsentedPrimaryAccountClearedEvent(main_account);
+    ExpectUnconsentedPrimaryAccountClearedEvent(main_account);
   } else {
-  EXPECT_EQ(0U, observer().events().size());
+    EXPECT_EQ(0U, observer().events().size());
   }
 }
 
@@ -382,9 +382,9 @@ TEST_P(SigninManagerTest,
   EXPECT_NE(is_signout_allowed(),
             identity_manager()->HasPrimaryAccount(ConsentLevel::kSignin));
   if (is_signout_allowed()) {
-  ExpectUnconsentedPrimaryAccountClearedEvent(account);
+    ExpectUnconsentedPrimaryAccountClearedEvent(account);
   } else {
-  EXPECT_EQ(0U, observer().events().size());
+    EXPECT_EQ(0U, observer().events().size());
   }
 }
 
@@ -438,9 +438,9 @@ TEST_P(SigninManagerTest, UnconsentedPrimaryAccountDuringLoad) {
   EXPECT_NE(is_signout_allowed(),
             identity_manager()->HasPrimaryAccount(ConsentLevel::kSignin));
   if (is_signout_allowed()) {
-  ExpectUnconsentedPrimaryAccountClearedEvent(main_account);
+    ExpectUnconsentedPrimaryAccountClearedEvent(main_account);
   } else {
-  EXPECT_EQ(0U, observer().events().size());
+    EXPECT_EQ(0U, observer().events().size());
   }
 }
 
@@ -507,13 +507,13 @@ TEST_P(SigninManagerTest,
 
 #if !BUILDFLAG(IS_CHROMEOS_LACROS)
   if (is_signout_allowed()) {
-  event = observer().events()[1];
-  EXPECT_EQ(PrimaryAccountChangeEvent::Type::kNone,
-            event.GetEventTypeFor(ConsentLevel::kSync));
-  EXPECT_EQ(PrimaryAccountChangeEvent::Type::kSet,
-            event.GetEventTypeFor(ConsentLevel::kSignin));
-  EXPECT_EQ(second_account, event.GetPreviousState().primary_account);
-  EXPECT_EQ(first_account, event.GetCurrentState().primary_account);
+    event = observer().events()[1];
+    EXPECT_EQ(PrimaryAccountChangeEvent::Type::kNone,
+              event.GetEventTypeFor(ConsentLevel::kSync));
+    EXPECT_EQ(PrimaryAccountChangeEvent::Type::kSet,
+              event.GetEventTypeFor(ConsentLevel::kSignin));
+    EXPECT_EQ(second_account, event.GetPreviousState().primary_account);
+    EXPECT_EQ(first_account, event.GetCurrentState().primary_account);
   }
 #endif
 }
@@ -532,6 +532,9 @@ TEST_P(SigninManagerTest, UnconsentedPrimaryAccountUpdatedOnHandleDestroyed) {
   ExpectUnconsentedPrimaryAccountSetEvent(first_account);
   histogram_tester.ExpectUniqueSample(
       "Signin.SignIn.Completed",
+      signin_metrics::AccessPoint::ACCESS_POINT_DESKTOP_SIGNIN_MANAGER, 1);
+  histogram_tester.ExpectUniqueSample(
+      "Signin.SigninManager.SigninAccessPoint",
       signin_metrics::AccessPoint::ACCESS_POINT_DESKTOP_SIGNIN_MANAGER, 1);
 
   std::unique_ptr<AccountSelectionInProgressHandle> handle =
@@ -627,5 +630,79 @@ TEST_P(SigninManagerTest,
 #endif  // !BUILDFLAG(IS_CHROMEOS_LACROS)
 
 INSTANTIATE_TEST_SUITE_P(SignoutAllowed, SigninManagerTest, ::testing::Bool());
+
+TEST_F(SigninManagerTest, SigninCompletedMetric) {
+  base::HistogramTester histogram_tester;
+
+  signin_metrics::AccessPoint access_point =
+      signin_metrics::AccessPoint::ACCESS_POINT_SETTINGS;
+  AccountInfo account =
+      MakeAccountAvailableWithCookies(kTestEmail, access_point);
+  ExpectUnconsentedPrimaryAccountSetEvent(account);
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+  // Lacros always records `ACCESS_POINT_DESKTOP_SIGNIN_MANAGER`.
+  access_point =
+      signin_metrics::AccessPoint::ACCESS_POINT_DESKTOP_SIGNIN_MANAGER;
+#endif
+  histogram_tester.ExpectUniqueSample("Signin.SignIn.Completed", access_point,
+                                      1);
+  histogram_tester.ExpectUniqueSample("Signin.SigninManager.SigninAccessPoint",
+                                      access_point, 1);
+}
+
+#if BUILDFLAG(ENABLE_DICE_SUPPORT) && BUILDFLAG(ENABLE_SUPERVISED_USERS)
+class SigninManagerSupervisedUserTest : public SigninManagerTest {
+ public:
+  SigninManagerSupervisedUserTest() = default;
+  ~SigninManagerSupervisedUserTest() override = default;
+
+  void AddSupervisedAccount(ConsentLevel level) {
+    AccountInfo account;
+    if (level == ConsentLevel::kSignin) {
+      account = MakeAccountAvailableWithCookies(kTestEmail);
+    } else {
+      account = MakeSyncAccountAvailableWithCookies(kTestEmail);
+    }
+    AccountCapabilitiesTestMutator mutator(&account.capabilities);
+    mutator.set_is_subject_to_parental_controls(true);
+    signin::UpdateAccountInfoForAccount(identity_manager(), account);
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+TEST_F(SigninManagerSupervisedUserTest, SignoutOnCookiesDeletedNotAllowed) {
+  base::test::ScopedFeatureList scoped_feature_list;
+
+  scoped_feature_list.InitAndEnableFeature(
+      supervised_user::kClearingCookiesKeepsSupervisedUsersSignedIn);
+  AddSupervisedAccount(ConsentLevel::kSignin);
+  ASSERT_TRUE(identity_manager()->HasPrimaryAccount(ConsentLevel::kSignin));
+  ASSERT_EQ(1U, observer().events().size());
+  observer().Reset();
+
+  // Remove the cookie, the account shouldn't be cleared when flag is disabled.
+  identity_test_env()->SetCookieAccounts({});
+  EXPECT_EQ(0U, observer().events().size());
+  EXPECT_TRUE(identity_manager()->HasPrimaryAccount(ConsentLevel::kSignin));
+}
+
+TEST_F(SigninManagerSupervisedUserTest, SignoutOnCookiesDeletedAllowed) {
+  base::test::ScopedFeatureList scoped_feature_list;
+
+  scoped_feature_list.InitAndDisableFeature(
+      supervised_user::kClearingCookiesKeepsSupervisedUsersSignedIn);
+  AddSupervisedAccount(ConsentLevel::kSignin);
+  ASSERT_TRUE(identity_manager()->HasPrimaryAccount(ConsentLevel::kSignin));
+  ASSERT_EQ(1U, observer().events().size());
+  observer().Reset();
+
+  // Remove the cookie, the account should be cleared.
+  identity_test_env()->SetCookieAccounts({});
+  EXPECT_EQ(1U, observer().events().size());
+  EXPECT_FALSE(identity_manager()->HasPrimaryAccount(ConsentLevel::kSignin));
+}
+#endif  // BUILDFLAG(ENABLE_DICE_SUPPORT) && BUILDFLAG(ENABLE_SUPERVISED_USERS)
 
 }  // namespace signin

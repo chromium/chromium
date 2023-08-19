@@ -82,7 +82,7 @@ class CORE_EXPORT LayoutSVGRoot final : public LayoutReplaced {
     needs_boundaries_or_transform_update_ = true;
   }
 
-  void SetContainerSize(const LayoutSize& container_size) {
+  void SetContainerSize(const PhysicalSize& container_size) {
     NOT_DESTROYED();
     // SVGImage::draw() does a view layout prior to painting,
     // and we need that layout to know of the new size otherwise
@@ -94,7 +94,7 @@ class CORE_EXPORT LayoutSVGRoot final : public LayoutReplaced {
     container_size_ = container_size;
   }
 
-  LayoutSize GetContainerSize() const {
+  PhysicalSize GetContainerSize() const {
     NOT_DESTROYED();
     return container_size_;
   }
@@ -105,6 +105,8 @@ class CORE_EXPORT LayoutSVGRoot final : public LayoutReplaced {
     NOT_DESTROYED();
     return local_to_border_box_transform_;
   }
+  gfx::RectF ViewBoxRect() const;
+  gfx::SizeF ViewportSize() const;
 
   void RecalcVisualOverflow() override;
 
@@ -158,13 +160,13 @@ class CORE_EXPORT LayoutSVGRoot final : public LayoutReplaced {
     NOT_DESTROYED();
     return content_.ObjectBoundingBox();
   }
-  gfx::RectF StrokeBoundingBox() const override {
+  gfx::RectF DecoratedBoundingBox() const override {
     NOT_DESTROYED();
-    return content_.StrokeBoundingBox();
+    return content_.DecoratedBoundingBox();
   }
   gfx::RectF VisualRectInLocalSVGCoordinates() const override {
     NOT_DESTROYED();
-    return content_.StrokeBoundingBox();
+    return content_.DecoratedBoundingBox();
   }
 
   bool NodeAtPoint(HitTestResult&,
@@ -194,7 +196,7 @@ class CORE_EXPORT LayoutSVGRoot final : public LayoutReplaced {
   PaintLayerType LayerTypeRequired() const override;
 
   SVGContentContainer content_;
-  LayoutSize container_size_;
+  PhysicalSize container_size_;
   AffineTransform local_to_border_box_transform_;
   HeapHashSet<Member<LayoutNGSVGText>> text_set_;
   bool is_layout_size_changed_ : 1;

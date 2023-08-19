@@ -41,7 +41,6 @@ export class ModuleWrapperElement extends PolymerElement {
         observer: 'onModuleChange_',
         type: Object,
       },
-
       modulesRedesignedEnabled_: {
         type: Boolean,
         value: () => loadTimeData.getBoolean('modulesRedesignedEnabled'),
@@ -76,9 +75,14 @@ export class ModuleWrapperElement extends PolymerElement {
       if (intersectionRatio >= 1.0) {
         headerObserver.disconnect();
         const time = WindowProxy.getInstance().now();
-        recordLoadDuration('NewTabPage.Modules.Impression', time);
-        recordLoadDuration(
-            `NewTabPage.Modules.Impression.${this.module.descriptor.id}`, time);
+        // TODO(crbug.com/1444758): Add module instances impression duration
+        // metrics.
+        if (!this.modulesRedesignedEnabled_) {
+          recordLoadDuration('NewTabPage.Modules.Impression', time);
+          recordLoadDuration(
+              `NewTabPage.Modules.Impression.${this.module.descriptor.id}`,
+              time);
+        }
         this.dispatchEvent(new Event('detect-impression'));
         this.module.element.dispatchEvent(new Event('detect-impression'));
       }

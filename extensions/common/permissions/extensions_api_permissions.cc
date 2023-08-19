@@ -154,6 +154,8 @@ constexpr APIPermissionInfo::InitInfo permissions_to_register[] = {
      APIPermissionInfo::kFlagCannotBeOptional |
          APIPermissionInfo::kFlagSupportsContentCapabilities |
          APIPermissionInfo::kFlagDoesNotRequireManagedSessionFullLoginWarning},
+    {APIPermissionID::kUserScripts, "userScripts",
+     APIPermissionInfo::kFlagDoesNotRequireManagedSessionFullLoginWarning},
     {APIPermissionID::kUsb, "usb", APIPermissionInfo::kFlagNone},
     {APIPermissionID::kUsbDevice, "usbDevices",
      extensions::APIPermissionInfo::kFlagNone,

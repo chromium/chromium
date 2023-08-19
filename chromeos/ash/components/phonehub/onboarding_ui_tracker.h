@@ -43,7 +43,7 @@ class OnboardingUiTracker {
   virtual void DismissSetupUi() = 0;
 
   // Handle for when the user clicks the get started button.
-  virtual void HandleGetStarted() = 0;
+  virtual void HandleGetStarted(bool is_icon_clicked_when_nudge_visible) = 0;
 
   void AddObserver(Observer* observer);
   void RemoveObserver(Observer* observer);

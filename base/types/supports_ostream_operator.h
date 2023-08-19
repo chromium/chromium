@@ -11,17 +11,13 @@
 
 namespace base::internal {
 
-// Uses expression SFINAE to detect whether using operator<< would work.
+// Detects whether using operator<< would work.
 //
 // Note that the above #include of <ostream> is necessary to guarantee
 // consistent results here for basic types.
-template <typename T, typename = void>
-struct SupportsOstreamOperator : std::false_type {};
 template <typename T>
-struct SupportsOstreamOperator<T,
-                               decltype(void(std::declval<std::ostream&>()
-                                             << std::declval<T>()))>
-    : std::true_type {};
+concept SupportsOstreamOperator =
+    requires(const T& t, std::ostream& os) { os << t; };
 
 }  // namespace base::internal
 

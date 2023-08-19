@@ -84,7 +84,7 @@ class ApkWebAppInstaller {
   bool has_web_app_install_info() const {
     return web_app_install_info_ != nullptr;
   }
-  const WebAppInstallInfo& web_app_install_info() const {
+  const web_app::WebAppInstallInfo& web_app_install_info() const {
     return *web_app_install_info_;
   }
 
@@ -92,13 +92,13 @@ class ApkWebAppInstaller {
   // If |weak_owner_| is ever invalidated while this class is working,
   // installation will be aborted. |weak_owner_|'s lifetime must be equal to or
   // shorter than that of |profile_|.
-  raw_ptr<Profile, ExperimentalAsh> profile_;
+  raw_ptr<Profile, DanglingUntriaged | ExperimentalAsh> profile_;
   bool is_web_only_twa_;
   absl::optional<std::string> sha256_fingerprint_;
   InstallFinishCallback callback_;
   base::WeakPtr<Owner> weak_owner_;
 
-  std::unique_ptr<WebAppInstallInfo> web_app_install_info_;
+  std::unique_ptr<web_app::WebAppInstallInfo> web_app_install_info_;
 };
 
 }  // namespace ash

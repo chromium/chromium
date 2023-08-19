@@ -43,6 +43,9 @@ class TaskQueueWebView {
   // Used to post task to client thread.
   virtual scoped_refptr<base::TaskRunner> GetClientTaskRunner() = 0;
 
+  // Uniti tests can switch render thread.
+  virtual void ResetRenderThreadForTesting() = 0;
+
  protected:
   virtual ~TaskQueueWebView() = default;
 };

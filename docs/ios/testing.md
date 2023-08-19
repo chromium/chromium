@@ -89,10 +89,6 @@ tests that use the app interface.
 
 #import "ios/testing/earl_grey/earl_grey_test.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 GREY_STUB_CLASS_IN_APP_MAIN_QUEUE(MyTestAppInterface)
 
 ```
@@ -110,7 +106,6 @@ correctly build the test module. The skeleton of the target:
 ```
 source_set("eg2_tests") {
   configs += [
-    "//build/config/compiler:enable_arc",
     "//build/config/ios:xctest_config",
   ]
   testonly = true
@@ -144,11 +139,14 @@ EarlGrey tests are based on Apple's [XCUITest].
 
 1. If you added a new test file / suite, run `gclient runhooks` to sync for the
 list of tests in Xcode.
-2. Change the scheme to "ios_chrome_eg2test". Create and select the simulator
-you wish to use.
-3. You may run a test suite(module), TestCase or testMethod in test navigator.
+2. Run a test suite(module), TestCase or testMethod in test navigator.
 Xcode will build the targets and run the test(s) you choose. Alternatively, 
 use ⌘+U to run all the tests. See Apple's [Running Tests and Viewing Results].
+3. You can pass extra arguments to the app process with `--extra-app-args`, e.g.
+`--extra-app-args='--enable-features=Foo'`.
+    * This might not work consistently as tests can re-launch the app with
+    arbitrary command-line arguments.
+
 
 #### Running from the command-line
 

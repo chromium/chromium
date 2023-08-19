@@ -27,7 +27,11 @@ bool AddTo(CascadeMap& map,
            const CSSPropertyName& name,
            CascadePriority priority) {
   CascadePriority before = map.At(name);
-  map.Add(name, priority);
+  if (name.IsCustomProperty()) {
+    map.Add(name.ToAtomicString(), priority);
+  } else {
+    map.Add(name.Id(), priority);
+  }
   CascadePriority after = map.At(name);
   return before != after;
 }
@@ -165,12 +169,12 @@ TEST(CascadeMapTest, HighPriorityBits) {
 
   EXPECT_FALSE(map.HighPriorityBits());
 
-  map.Add(CSSPropertyName(CSSPropertyID::kFontSize), CascadeOrigin::kAuthor);
+  map.Add(CSSPropertyID::kFontSize, CascadeOrigin::kAuthor);
   EXPECT_EQ(map.HighPriorityBits(),
             1ull << static_cast<uint64_t>(CSSPropertyID::kFontSize));
 
-  map.Add(CSSPropertyName(CSSPropertyID::kColor), CascadeOrigin::kAuthor);
-  map.Add(CSSPropertyName(CSSPropertyID::kFontSize), CascadeOrigin::kAuthor);
+  map.Add(CSSPropertyID::kColor, CascadeOrigin::kAuthor);
+  map.Add(CSSPropertyID::kFontSize, CascadeOrigin::kAuthor);
   EXPECT_EQ(map.HighPriorityBits(),
             (1ull << static_cast<uint64_t>(CSSPropertyID::kFontSize)) |
                 (1ull << static_cast<uint64_t>(CSSPropertyID::kColor)));
@@ -187,7 +191,7 @@ TEST(CascadeMapTest, AllHighPriorityBits) {
       if (CSSProperty::Get(id).IsSurrogate()) {
         continue;
       }
-      map.Add(CSSPropertyName(id), CascadeOrigin::kAuthor);
+      map.Add(id, CascadeOrigin::kAuthor);
       expected |= (1ull << static_cast<uint64_t>(id));
     }
   }
@@ -202,7 +206,7 @@ TEST(CascadeMapTest, LastHighPrio) {
 
   CSSPropertyID last = kLastHighPriorityCSSProperty;
 
-  map.Add(CSSPropertyName(last), CascadeOrigin::kAuthor);
+  map.Add(last, CascadeOrigin::kAuthor);
   EXPECT_EQ(map.HighPriorityBits(), 1ull << static_cast<uint64_t>(last));
 }
 
@@ -217,8 +221,8 @@ TEST(CascadeMapTest, Reset) {
   EXPECT_FALSE(map.Find(color));
   EXPECT_FALSE(map.Find(x));
 
-  map.Add(color, author);
-  map.Add(x, author);
+  map.Add(color.Id(), author);
+  map.Add(x.ToAtomicString(), author);
 
   EXPECT_EQ(author, map.At(color));
   EXPECT_EQ(author, map.At(x));
@@ -232,8 +236,7 @@ TEST(CascadeMapTest, Reset) {
 TEST(CascadeMapTest, ResetHighPrio) {
   CascadeMap map;
   EXPECT_FALSE(map.HighPriorityBits());
-  map.Add(CSSPropertyName(CSSPropertyID::kFontSize),
-          CascadePriority(CascadeOrigin::kAuthor));
+  map.Add(CSSPropertyID::kFontSize, CascadePriority(CascadeOrigin::kAuthor));
   EXPECT_TRUE(map.HighPriorityBits());
   map.Reset();
   EXPECT_FALSE(map.HighPriorityBits());
@@ -249,19 +252,19 @@ TEST(CascadeMapTest, FindOrigin) {
   CSSPropertyName right(CSSPropertyID::kRight);
   CSSPropertyName bottom(CSSPropertyID::kBottom);
 
-  map.Add(color, UaPriority(1));
-  map.Add(display, UaPriority(2));
-  map.Add(top, UaPriority(3));
-  map.Add(left, UaPriority(4));
-  map.Add(right, UaPriority(5));
+  map.Add(color.Id(), UaPriority(1));
+  map.Add(display.Id(), UaPriority(2));
+  map.Add(top.Id(), UaPriority(3));
+  map.Add(left.Id(), UaPriority(4));
+  map.Add(right.Id(), UaPriority(5));
 
-  map.Add(display, UserPriority(10));
-  map.Add(right, UserPriority(11));
+  map.Add(display.Id(), UserPriority(10));
+  map.Add(right.Id(), UserPriority(11));
 
-  map.Add(color, AuthorPriority(20));
-  map.Add(display, AuthorPriority(21));
-  map.Add(top, AuthorPriority(22));
-  map.Add(bottom, AuthorPriority(23));
+  map.Add(color.Id(), AuthorPriority(20));
+  map.Add(display.Id(), AuthorPriority(21));
+  map.Add(top.Id(), AuthorPriority(22));
+  map.Add(bottom.Id(), AuthorPriority(23));
 
   // Final result of the cascade:
   EXPECT_EQ(AuthorPriority(20), *map.Find(color));

@@ -341,9 +341,6 @@ found in the LICENSE file.
             <span id="read-only-icon"></span>
             <span id="read-only-label">$i18n{READ_ONLY_LABEL}</span>
           </div>
-          <xf-icon type="offline" size="small" id="offline-folder-indicator"
-              aria-label="$i18n{DRIVE_OFFLINE_FOLDER_TOOLTIP}"
-              hidden has-tooltip show-card-tooltip></xf-icon>
           <div id="cancel-selection-button-wrapper">
             <cr-button id="cancel-selection-button" class="menu-button" tabindex="0"
                   aria-label="$i18n{CANCEL_SELECTION_BUTTON_LABEL}" has-tooltip>
@@ -356,9 +353,20 @@ found in the LICENSE file.
           <div id="action-bar">
             <div id="pinned-toggle-wrapper" hidden>
               <span id="pinned-toggle-label">$i18n{OFFLINE_COLUMN_LABEL}</span>
-              <cr-toggle id="pinned-toggle" command="#toggle-pinned"
-                         aria-labelledby="pinned-toggle-label">
-              </cr-toggle>
+              <xf-jellybean>
+                <cros-switch
+                    slot="jelly"
+                    id="pinned-toggle-jelly"
+                    command="#toggle-pinned"
+                    aria-labelledby="pinned-toggle-label">
+                </cros-switch>
+                <cr-toggle
+                    slot="old"
+                    id="pinned-toggle"
+                    command="#toggle-pinned"
+                    aria-labelledby="pinned-toggle-label">
+                </cr-toggle>
+              </xf-jellybean>
             </div>
             <cr-button id="tasks" class="combobutton menu-button" menu="#tasks-menu"
                     tabindex="0" hidden
@@ -411,8 +419,8 @@ found in the LICENSE file.
                     aria-haspopup="true"
                     aria-label="Cloud Placeholder"
                     has-tooltip>
-              <xf-icon type="cloud" slot="prefix-icon"></xf-icon>
-              <xf-icon slot="suffix-icon"></xf-icon>
+              <xf-icon type="cloud" size="small" slot="prefix-icon"></xf-icon>
+              <xf-icon type="blank" slot="suffix-icon"></xf-icon>
             </cr-button>
             <cr-button id="refresh-button" class="icon-button menu-button" tabindex="0" hidden
                     aria-label="$i18n{REFRESH_BUTTON_LABEL}"

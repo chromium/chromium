@@ -268,6 +268,8 @@ class DeviceStatusCollector : public StatusCollector,
       enterprise_management::DeviceStatusReportRequest* status);
   bool GetDeviceBootMode(
       enterprise_management::DeviceStatusReportRequest* status);
+  bool GetDemoModeDimensions(
+      enterprise_management::DeviceStatusReportRequest* status);
   void GetStorageStatus(scoped_refptr<DeviceStatusCollectorState> state);
   void GetGraphicsStatus(scoped_refptr<DeviceStatusCollectorState>
                              state);  // Queues async queries!

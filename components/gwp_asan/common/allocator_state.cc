@@ -171,17 +171,20 @@ AllocatorState::SlotIdx AllocatorState::AddrToSlot(uintptr_t addr) const {
   return static_cast<SlotIdx>(slot);
 }
 
-AllocatorState::SlotMetadata::SlotMetadata() {}
+AllocatorState::SlotMetadata::SlotMetadata() = default;
 
-AllocatorState::SlotMetadata& AllocatorState::GetLightweightSlotMetadataById(
+AllocatorState::LightweightSlotMetadata::LightweightSlotMetadata() = default;
+
+AllocatorState::LightweightSlotMetadata&
+AllocatorState::GetLightweightSlotMetadataById(
     LightweightDetector::MetadataId id,
-    SlotMetadata* metadata_arr) {
+    LightweightSlotMetadata* metadata_arr) {
   return metadata_arr[id % num_lightweight_detector_metadata];
 }
 
 bool AllocatorState::HasLightweightMetadataForId(
     LightweightDetector::MetadataId id,
-    SlotMetadata* metadata_arr) {
+    LightweightSlotMetadata* metadata_arr) {
   return GetLightweightSlotMetadataById(id, metadata_arr).lightweight_id == id;
 }
 

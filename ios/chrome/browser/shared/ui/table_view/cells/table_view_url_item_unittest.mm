@@ -4,7 +4,7 @@
 
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_url_item.h"
 
-#import "base/mac/foundation_util.h"
+#import "base/apple/foundation_util.h"
 #import "base/strings/sys_string_conversions.h"
 #import "components/url_formatter/elide_url.h"
 #import "ios/chrome/browser/net/crurl.h"
@@ -14,10 +14,6 @@
 #import "testing/gtest_mac.h"
 #import "testing/platform_test.h"
 #import "url/gurl.h"
-
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
 
 namespace {
 using TableViewURLItemTest = PlatformTest;
@@ -39,7 +35,8 @@ TEST_F(TableViewURLItemTest, TextLabels) {
   id cell = [[[item cellClass] alloc] init];
   ASSERT_TRUE([cell isMemberOfClass:[TableViewURLCell class]]);
 
-  TableViewURLCell* URLCell = base::mac::ObjCCastStrict<TableViewURLCell>(cell);
+  TableViewURLCell* URLCell =
+      base::apple::ObjCCastStrict<TableViewURLCell>(cell);
   EXPECT_FALSE(URLCell.titleLabel.text);
   EXPECT_FALSE(URLCell.URLLabel.text);
   EXPECT_FALSE(URLCell.metadataLabel.text);
@@ -64,7 +61,8 @@ TEST_F(TableViewURLItemTest, MetadataLabelIsHiddenWhenEmpty) {
   id cell = [[[item cellClass] alloc] init];
   ASSERT_TRUE([cell isMemberOfClass:[TableViewURLCell class]]);
 
-  TableViewURLCell* URLCell = base::mac::ObjCCastStrict<TableViewURLCell>(cell);
+  TableViewURLCell* URLCell =
+      base::apple::ObjCCastStrict<TableViewURLCell>(cell);
   ChromeTableViewStyler* styler = [[ChromeTableViewStyler alloc] init];
   [item configureCell:URLCell withStyler:styler];
   EXPECT_TRUE(URLCell.metadataLabel.hidden);
@@ -79,7 +77,8 @@ TEST_F(TableViewURLItemTest, MetadataLabelIsVisibleWhenNonEmpty) {
   id cell = [[[item cellClass] alloc] init];
   ASSERT_TRUE([cell isMemberOfClass:[TableViewURLCell class]]);
 
-  TableViewURLCell* URLCell = base::mac::ObjCCastStrict<TableViewURLCell>(cell);
+  TableViewURLCell* URLCell =
+      base::apple::ObjCCastStrict<TableViewURLCell>(cell);
   ChromeTableViewStyler* styler = [[ChromeTableViewStyler alloc] init];
   [item configureCell:URLCell withStyler:styler];
   EXPECT_FALSE(URLCell.metadataLabel.hidden);
@@ -112,7 +111,7 @@ TEST_F(TableViewURLItemTest, SupplementalURLTextWithTitle) {
   [item configureCell:cell withStyler:styler];
   ASSERT_TRUE([cell isMemberOfClass:[TableViewURLCell class]]);
   EXPECT_NSEQ(kExpectedURLLabelText,
-              base::mac::ObjCCast<TableViewURLCell>(cell).URLLabel.text);
+              base::apple::ObjCCast<TableViewURLCell>(cell).URLLabel.text);
 }
 
 // Tests that when there is no title, the URL is used as the title and the
@@ -129,7 +128,7 @@ TEST_F(TableViewURLItemTest, SupplementalURLTextWithNoTitle) {
   ChromeTableViewStyler* styler = [[ChromeTableViewStyler alloc] init];
   [item configureCell:cell withStyler:styler];
   ASSERT_TRUE([cell isMemberOfClass:[TableViewURLCell class]]);
-  TableViewURLCell* url_cell = base::mac::ObjCCast<TableViewURLCell>(cell);
+  TableViewURLCell* url_cell = base::apple::ObjCCast<TableViewURLCell>(cell);
   EXPECT_NSEQ(
       base::SysUTF16ToNSString(
           url_formatter::
@@ -155,9 +154,9 @@ TEST_F(TableViewURLItemTest, ThirdRowText) {
   [item configureCell:cell withStyler:styler];
   ASSERT_TRUE([cell isMemberOfClass:[TableViewURLCell class]]);
   EXPECT_NSEQ(kThirdRowText,
-              base::mac::ObjCCast<TableViewURLCell>(cell).thirdRowLabel.text);
+              base::apple::ObjCCast<TableViewURLCell>(cell).thirdRowLabel.text);
   EXPECT_FALSE(
-      base::mac::ObjCCast<TableViewURLCell>(cell).thirdRowLabel.hidden);
+      base::apple::ObjCCast<TableViewURLCell>(cell).thirdRowLabel.hidden);
 }
 
 // Tests that the third row text is not shown when the second row is not shown.
@@ -173,7 +172,8 @@ TEST_F(TableViewURLItemTest, ThirdRowTextNotShown) {
   ChromeTableViewStyler* styler = [[ChromeTableViewStyler alloc] init];
   [item configureCell:cell withStyler:styler];
   ASSERT_TRUE([cell isMemberOfClass:[TableViewURLCell class]]);
-  EXPECT_TRUE(base::mac::ObjCCast<TableViewURLCell>(cell).thirdRowLabel.hidden);
+  EXPECT_TRUE(
+      base::apple::ObjCCast<TableViewURLCell>(cell).thirdRowLabel.hidden);
 }
 
 // Tests that the third row text is shown in chosen color.
@@ -195,7 +195,7 @@ TEST_F(TableViewURLItemTest, ThirdRowTextColor) {
   ASSERT_TRUE([cell isMemberOfClass:[TableViewURLCell class]]);
   EXPECT_NSEQ(
       kExpectedColor,
-      base::mac::ObjCCast<TableViewURLCell>(cell).thirdRowLabel.textColor);
+      base::apple::ObjCCast<TableViewURLCell>(cell).thirdRowLabel.textColor);
 }
 
 // Tests that the third row text is included in the accessibility label.
@@ -218,7 +218,7 @@ TEST_F(TableViewURLItemTest, ThirdRowTextAccessibilityLabel) {
   [item configureCell:cell withStyler:styler];
   ASSERT_TRUE([cell isMemberOfClass:[TableViewURLCell class]]);
 
-  UITableViewCell* tableViewCell = base::mac::ObjCCast<UITableViewCell>(cell);
+  UITableViewCell* tableViewCell = base::apple::ObjCCast<UITableViewCell>(cell);
   tableViewCell.accessibilityLabel = nil;
   EXPECT_NSEQ(kExpectedAccessibilityText, tableViewCell.accessibilityLabel);
 }

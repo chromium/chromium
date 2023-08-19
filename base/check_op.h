@@ -7,12 +7,12 @@
 
 #include <cstddef>
 #include <string>
+#include <string_view>
 #include <type_traits>
 
 #include "base/base_export.h"
 #include "base/check.h"
 #include "base/dcheck_is_on.h"
-#include "base/debug/debugging_buildflags.h"
 #include "base/memory/raw_ptr_exclusion.h"
 #include "base/strings/to_string.h"
 #include "base/types/supports_ostream_operator.h"
@@ -37,8 +37,10 @@
 
 namespace logging {
 
-// Functions for turning check operand values into strings.
-// Caller takes ownership of the returned string.
+// Functions for turning check operand values into NUL-terminated C strings.
+// Caller takes ownership of the result and must release it with `free`.
+// This would normally be defined by <ostream>, but this header tries to avoid
+// including <ostream> to reduce compile-time. See https://crrev.com/c/2128112.
 BASE_EXPORT char* CheckOpValueStr(int v);
 BASE_EXPORT char* CheckOpValueStr(unsigned v);
 BASE_EXPORT char* CheckOpValueStr(long v);
@@ -48,7 +50,12 @@ BASE_EXPORT char* CheckOpValueStr(unsigned long long v);
 BASE_EXPORT char* CheckOpValueStr(const void* v);
 BASE_EXPORT char* CheckOpValueStr(std::nullptr_t v);
 BASE_EXPORT char* CheckOpValueStr(double v);
+// Although the standard defines operator<< for std::string and std::string_view
+// in their respective headers, libc++ requires <ostream> for them. See
+// https://github.com/llvm/llvm-project/issues/61070. So we define non-<ostream>
+// versions here too.
 BASE_EXPORT char* CheckOpValueStr(const std::string& v);
+BASE_EXPORT char* CheckOpValueStr(std::string_view v);
 
 // Convert a streamable value to string out-of-line to avoid <sstream>.
 BASE_EXPORT char* StreamValToStr(const void* v,
@@ -63,7 +70,7 @@ BASE_EXPORT char* StreamValToStr(const void* v,
 
 template <typename T>
 inline typename std::enable_if<
-    base::internal::SupportsOstreamOperator<const T&>::value &&
+    base::internal::SupportsOstreamOperator<const T&> &&
         !std::is_function<typename std::remove_pointer<T>::type>::value,
     char*>::type
 CheckOpValueStr(const T& v) {
@@ -89,8 +96,8 @@ CheckOpValueStr(const T& v) {
 // Overload for types that have no operator<< but do have .ToString() defined.
 template <typename T>
 inline typename std::enable_if<
-    !base::internal::SupportsOstreamOperator<const T&>::value &&
-        base::internal::SupportsToString<const T&>::value,
+    !base::internal::SupportsOstreamOperator<const T&> &&
+        base::internal::SupportsToString<const T&>,
     char*>::type
 CheckOpValueStr(const T& v) {
   // .ToString() may not return a std::string, e.g. blink::WTF::String.
@@ -114,7 +121,7 @@ CheckOpValueStr(const T& v) {
 // (i.e. scoped enums where no operator<< overload was declared).
 template <typename T>
 inline typename std::enable_if<
-    !base::internal::SupportsOstreamOperator<const T&>::value &&
+    !base::internal::SupportsOstreamOperator<const T&> &&
         std::is_enum<T>::value,
     char*>::type
 CheckOpValueStr(const T& v) {

@@ -79,7 +79,7 @@ class AutozoomToastControllerTest : public AshTestBase {
   }
 
   std::unique_ptr<AutozoomToastController> controller_;
-  raw_ptr<TestDelegate, ExperimentalAsh> delegate_;
+  raw_ptr<TestDelegate, DanglingUntriaged | ExperimentalAsh> delegate_;
 };
 
 TEST_F(AutozoomToastControllerTest, ShowToastWhenCameraActive) {

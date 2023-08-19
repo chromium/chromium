@@ -23,63 +23,16 @@ class ReplacementAppsManifestTest : public ManifestTest {
   ReplacementAppsManifestTest() : channel_(version_info::Channel::UNKNOWN) {}
 
  protected:
-  ManifestData CreateManifest(const char* replacement_web_app,
-                              const char* replacement_android_app) {
-    if (replacement_web_app != nullptr && replacement_android_app != nullptr) {
-      // both replacement apps are specified
-      constexpr char kManifest[] =
-          R"({
-             "name": "test",
-             "version": "1",
-             "manifest_version": 2,
-             "app": {
-               "background": {
-                 "scripts": ["background.js"]
-               }
-             },
-             "replacement_web_app": %s,
-             "replacement_android_app": %s
-           })";
-      base::Value manifest = base::test::ParseJson(base::StringPrintf(
-          kManifest, replacement_web_app, replacement_android_app));
-      return ManifestData(std::move(manifest).TakeDict());
-    } else if (replacement_web_app != nullptr) {
-      // only web replacement app specified
-      constexpr char kManifest[] =
-          R"({
+  ManifestData CreateManifest(const char* replacement_web_app) {
+    constexpr char kManifest[] =
+        R"({
              "name": "test",
              "version": "1",
              "manifest_version": 2,
              "replacement_web_app": %s
            })";
-      base::Value manifest = base::test::ParseJson(
-          base::StringPrintf(kManifest, replacement_web_app));
-      return ManifestData(std::move(manifest).TakeDict());
-    } else if (replacement_android_app != nullptr) {
-      // only Android replacement app specified
-      constexpr char kManifest[] =
-          R"({
-            "name": "test",
-            "version": "1",
-            "manifest_version": 2,
-            "app": {
-              "background": {
-                "scripts": ["background.js"]
-              }
-            },
-            "replacement_android_app": %s
-            })";
-      base::Value manifest = base::test::ParseJson(
-          base::StringPrintf(kManifest, replacement_android_app));
-      return ManifestData(std::move(manifest).TakeDict());
-    }
-
     base::Value manifest = base::test::ParseJson(
-        R"({
-             "name": "test",
-             "version": "1",
-             "manifest_version": 2
-           })");
+        base::StringPrintf(kManifest, replacement_web_app));
     return ManifestData(std::move(manifest).TakeDict());
   }
 
@@ -89,49 +42,32 @@ class ReplacementAppsManifestTest : public ManifestTest {
 
 }  // namespace
 
-TEST_F(ReplacementAppsManifestTest, InvalidAndroidAppType) {
-  LoadAndExpectError(CreateManifest(nullptr, "123"),
-                     manifest_errors::kInvalidReplacementAndroidApp);
-  LoadAndExpectError(CreateManifest(nullptr, "true"),
-                     manifest_errors::kInvalidReplacementAndroidApp);
-  LoadAndExpectError(CreateManifest(nullptr, "{}"),
-                     manifest_errors::kInvalidReplacementAndroidApp);
-  LoadAndExpectError(CreateManifest(nullptr, R"({"foo": false})"),
-                     manifest_errors::kInvalidReplacementAndroidApp);
-  LoadAndExpectError(CreateManifest(nullptr, R"(["com.company.app"])"),
-                     manifest_errors::kInvalidReplacementAndroidApp);
-}
-
 TEST_F(ReplacementAppsManifestTest, InvalidWebAppType) {
-  LoadAndExpectError(CreateManifest("32", nullptr),
+  LoadAndExpectError(CreateManifest("32"),
                      manifest_errors::kInvalidReplacementWebApp);
-  LoadAndExpectError(CreateManifest("true", nullptr),
+  LoadAndExpectError(CreateManifest("true"),
                      manifest_errors::kInvalidReplacementWebApp);
-  LoadAndExpectError(CreateManifest(R"("not_a_valid_url")", nullptr),
+  LoadAndExpectError(CreateManifest(R"("not_a_valid_url")"),
                      manifest_errors::kInvalidReplacementWebApp);
-  LoadAndExpectError(CreateManifest("{}", nullptr),
+  LoadAndExpectError(CreateManifest("{}"),
                      manifest_errors::kInvalidReplacementWebApp);
-  LoadAndExpectError(CreateManifest(R"({"foo": false})", nullptr),
+  LoadAndExpectError(CreateManifest(R"({"foo": false})"),
                      manifest_errors::kInvalidReplacementWebApp);
-  LoadAndExpectError(CreateManifest(R"("http://not_secure.com")", nullptr),
+  LoadAndExpectError(CreateManifest(R"("http://not_secure.com")"),
                      manifest_errors::kInvalidReplacementWebApp);
-  LoadAndExpectError(CreateManifest(R"(["https://secure.com"])", nullptr),
+  LoadAndExpectError(CreateManifest(R"(["https://secure.com"])"),
                      manifest_errors::kInvalidReplacementWebApp);
   LoadAndExpectError(
-      CreateManifest(R"(["https://www.google.com", "not_a_valid_url"])",
-                     nullptr),
+      CreateManifest(R"(["https://www.google.com", "not_a_valid_url"])"),
       manifest_errors::kInvalidReplacementWebApp);
 }
 
 TEST_F(ReplacementAppsManifestTest, VerifyParse) {
-  scoped_refptr<Extension> good = LoadAndExpectSuccess(
-      CreateManifest(R"("https://www.google.com")", R"("com.company.app")"));
+  scoped_refptr<Extension> good =
+      LoadAndExpectSuccess(CreateManifest(R"("https://www.google.com")"));
   EXPECT_TRUE(ReplacementAppsInfo::HasReplacementWebApp(good.get()));
   EXPECT_EQ(ReplacementAppsInfo::GetReplacementWebApp(good.get()),
             GURL("https://www.google.com"));
-  EXPECT_TRUE(ReplacementAppsInfo::HasReplacementAndroidApp(good.get()));
-  EXPECT_EQ(ReplacementAppsInfo::GetReplacementAndroidApp(good.get()),
-            "com.company.app");
 }
 
 }  // namespace extensions

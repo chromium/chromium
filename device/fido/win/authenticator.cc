@@ -9,11 +9,7 @@
 #include <utility>
 #include <vector>
 
-#include "base/check_op.h"
-#include "base/containers/flat_map.h"
 #include "base/functional/bind.h"
-#include "base/memory/raw_ptr.h"
-#include "base/memory/ref_counted.h"
 #include "base/notreached.h"
 #include "base/ranges/algorithm.h"
 #include "base/strings/string_util_win.h"
@@ -28,6 +24,7 @@
 #include "device/fido/fido_constants.h"
 #include "device/fido/fido_request_handler_base.h"
 #include "device/fido/fido_transport_protocol.h"
+#include "device/fido/public_key_credential_descriptor.h"
 #include "device/fido/win/type_conversions.h"
 #include "device/fido/win/webauthn_api.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -36,15 +33,6 @@
 namespace device {
 
 namespace {
-
-struct PlatformCredentialListDeleter {
-  explicit PlatformCredentialListDeleter(WinWebAuthnApi* win_api)
-      : win_api_(win_api) {}
-  inline void operator()(PWEBAUTHN_CREDENTIAL_DETAILS_LIST ptr) const {
-    win_api_->FreePlatformCredentialList(ptr);
-  }
-  raw_ptr<WinWebAuthnApi> win_api_;
-};
 
 AuthenticatorSupportedOptions WinWebAuthnApiOptions(int api_version) {
   AuthenticatorSupportedOptions options;
@@ -80,6 +68,21 @@ bool MayHaveWindowsHelloCredentials(
                       base::flat_set<FidoTransportProtocol>{
                           FidoTransportProtocol::kInternal};
          });
+}
+
+// Filters credentials from |found_creds| that are not present in
+// |allow_list_creds|.
+void FilterFoundCredentials(
+    std::vector<DiscoverableCredentialMetadata>* found_creds,
+    const std::vector<PublicKeyCredentialDescriptor>& allow_list_creds) {
+  auto remove_it = base::ranges::remove_if(
+      *found_creds, [&allow_list_creds](const auto& found_cred) {
+        return base::ranges::none_of(
+            allow_list_creds, [&found_cred](const auto& allow_list_cred) {
+              return allow_list_cred.id == found_cred.cred_id;
+            });
+      });
+  found_creds->erase(remove_it, found_creds->end());
 }
 
 }  // namespace
@@ -135,34 +138,15 @@ void WinWebAuthnApiAuthenticator::EnumeratePlatformCredentials(
       FROM_HERE,
       {base::TaskPriority::USER_VISIBLE, base::MayBlock(),
        base::TaskShutdownBehavior::CONTINUE_ON_SHUTDOWN},
+      base::BindOnce(AuthenticatorEnumerateCredentialsBlocking, api,
+                     /*rp_id=*/base::StringPiece16(),
+                     /*is_incognito=*/false),
       base::BindOnce(
-          [](WinWebAuthnApi* api)
-              -> std::vector<device::DiscoverableCredentialMetadata> {
-            if (!api || !api->IsAvailable() ||
-                !api->SupportsSilentDiscovery()) {
-              return {};
-            }
-
-            WEBAUTHN_GET_CREDENTIALS_OPTIONS options{
-                .dwVersion = WEBAUTHN_GET_CREDENTIALS_OPTIONS_VERSION_1,
-                .pwszRpId = nullptr,
-                .bBrowserInPrivateMode = false};
-
-            PWEBAUTHN_CREDENTIAL_DETAILS_LIST credentials = nullptr;
-            HRESULT hresult =
-                api->GetPlatformCredentialList(&options, &credentials);
-            std::unique_ptr<WEBAUTHN_CREDENTIAL_DETAILS_LIST,
-                            PlatformCredentialListDeleter>
-                credentials_deleter(credentials,
-                                    PlatformCredentialListDeleter(api));
-
-            if (hresult != S_OK) {
-              return {};
-            }
-            return WinCredentialDetailsListToCredentialMetadata(*credentials);
-          },
-          api),
-      std::move(callback));
+          [](base::OnceCallback<void(
+                 std::vector<device::DiscoverableCredentialMetadata>)> callback,
+             std::pair<bool, std::vector<DiscoverableCredentialMetadata>>
+                 result) { std::move(callback).Run(std::move(result.second)); },
+          std::move(callback)));
 }
 
 // static
@@ -255,8 +239,9 @@ void WinWebAuthnApiAuthenticator::GetAssertion(CtapGetAssertionRequest request,
                                                GetAssertionCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(!is_pending_);
-  if (is_pending_)
+  if (is_pending_) {
     return;
+  }
 
   is_pending_ = true;
 
@@ -306,69 +291,25 @@ void WinWebAuthnApiAuthenticator::GetPlatformCredentialInfoForRequest(
         FidoRequestHandlerBase::RecognizedCredential::kNoRecognizedCredential);
     return;
   }
-  if (!win_api_->SupportsSilentDiscovery()) {
-    // The Windows platform authenticator is the only authenticator available to
-    // us and we can't know if there are credentials in advance.
-    FIDO_LOG(DEBUG) << "Windows API version does not support silent discovery";
+  FIDO_LOG(DEBUG) << "Silently discovering credentials for " << request.rp_id;
+  auto [success, credentials] = AuthenticatorEnumerateCredentialsBlocking(
+      win_api_, base::UTF8ToUTF16(request.rp_id),
+      request_options.is_off_the_record_context);
+  if (!success) {
     std::move(callback).Run(
         /*credentials=*/{},
         FidoRequestHandlerBase::RecognizedCredential::kUnknown);
     return;
   }
-  FIDO_LOG(DEBUG) << "Silently discovering credentials for " << request.rp_id;
-  std::u16string rp_id = base::UTF8ToUTF16(request.rp_id);
-  WEBAUTHN_GET_CREDENTIALS_OPTIONS options{
-      .dwVersion = WEBAUTHN_GET_CREDENTIALS_OPTIONS_VERSION_1,
-      .pwszRpId = base::as_wcstr(rp_id),
-      .bBrowserInPrivateMode = request_options.is_off_the_record_context};
-  PWEBAUTHN_CREDENTIAL_DETAILS_LIST credentials = nullptr;
-  HRESULT hresult = win_api_->GetPlatformCredentialList(&options, &credentials);
-  std::unique_ptr<WEBAUTHN_CREDENTIAL_DETAILS_LIST,
-                  PlatformCredentialListDeleter>
-      credentials_deleter(credentials, PlatformCredentialListDeleter(win_api_));
-
-  switch (hresult) {
-    case S_OK: {
-      std::vector<DiscoverableCredentialMetadata> result =
-          WinCredentialDetailsListToCredentialMetadata(*credentials);
-      FIDO_LOG(DEBUG) << "Found " << result.size() << " credentials";
-      if (request.allow_list.empty()) {
-        std::move(callback).Run(std::move(result),
-                                FidoRequestHandlerBase::RecognizedCredential::
-                                    kHasRecognizedCredential);
-        return;
-      }
-      // Look for a discoverable credential present in the allow list.
-      for (const auto& credential : request.allow_list) {
-        if (std::find_if(result.begin(), result.end(),
-                         [&credential](const auto& result) {
-                           return result.cred_id == credential.id;
-                         }) != result.end()) {
-          std::move(callback).Run(/*credentials=*/{},
-                                  FidoRequestHandlerBase::RecognizedCredential::
-                                      kHasRecognizedCredential);
-          return;
-        }
-      }
-      // Could not find a credential that is present in the allow list.
-      std::move(callback).Run(
-          /*credentials=*/{}, FidoRequestHandlerBase::RecognizedCredential::
-                                  kNoRecognizedCredential);
-      return;
-    }
-    case NTE_NOT_FOUND:
-      FIDO_LOG(DEBUG) << "No credentials found";
-      std::move(callback).Run(/*credentials=*/{},
-                              FidoRequestHandlerBase::RecognizedCredential::
-                                  kNoRecognizedCredential);
-      return;
-    default:
-      FIDO_LOG(ERROR) << "Windows API returned unknown result: " << hresult;
-      std::move(callback).Run(
-          /*credentials=*/{},
-          FidoRequestHandlerBase::RecognizedCredential::kUnknown);
-      return;
+  if (!request.allow_list.empty()) {
+    FilterFoundCredentials(&credentials, request.allow_list);
   }
+  auto recognized = credentials.empty()
+                        ? FidoRequestHandlerBase::RecognizedCredential::
+                              kNoRecognizedCredential
+                        : FidoRequestHandlerBase::RecognizedCredential::
+                              kHasRecognizedCredential;
+  std::move(callback).Run(std::move(credentials), recognized);
 }
 
 void WinWebAuthnApiAuthenticator::GetTouch(base::OnceClosure callback) {
@@ -376,8 +317,9 @@ void WinWebAuthnApiAuthenticator::GetTouch(base::OnceClosure callback) {
 }
 
 void WinWebAuthnApiAuthenticator::Cancel() {
-  if (!is_pending_ || waiting_for_cancellation_)
+  if (!is_pending_ || waiting_for_cancellation_) {
     return;
+  }
 
   waiting_for_cancellation_ = true;
   // This returns immediately.

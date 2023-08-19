@@ -9,9 +9,9 @@
 #include <stdint.h>
 #include <functional>
 
-#include "base/containers/stack_container.h"
 #include "base/functional/callback.h"
 #include "base/time/time.h"
+#include "third_party/abseil-cpp/absl/container/inlined_vector.h"
 #include "ui/events/gesture_detection/gesture_detection_export.h"
 #include "ui/events/gesture_detection/gesture_event_data.h"
 
@@ -57,7 +57,7 @@ class GESTURE_DETECTION_EXPORT GestureEventDataPacket {
 
   const base::TimeTicks& timestamp() const { return timestamp_; }
   const GestureEventData& gesture(size_t i) const { return gestures_[i]; }
-  size_t gesture_count() const { return gestures_->size(); }
+  size_t gesture_count() const { return gestures_.size(); }
   GestureSource gesture_source() const { return gesture_source_; }
   const gfx::PointF& touch_location() const { return touch_location_; }
   const gfx::PointF& raw_touch_location() const { return raw_touch_location_; }
@@ -81,7 +81,7 @@ class GESTURE_DETECTION_EXPORT GestureEventDataPacket {
 
   enum { kTypicalMaxGesturesPerTouch = 5 };
   base::TimeTicks timestamp_;
-  base::StackVector<GestureEventData, kTypicalMaxGesturesPerTouch> gestures_;
+  absl::InlinedVector<GestureEventData, kTypicalMaxGesturesPerTouch> gestures_;
   gfx::PointF touch_location_;
   gfx::PointF raw_touch_location_;
   GestureSource gesture_source_;

@@ -110,9 +110,11 @@ class CastMetricsServiceClient : public ::metrics::MetricsServiceClient,
 
   // ::metrics::EnabledStateProvider:
   bool IsConsentGiven() const override;
+  bool IsReportingEnabled() const override;
 
   // Starts/stops the metrics service.
-  void EnableMetricsService(bool enabled);
+  void UpdateMetricsServiceState();
+  void DisableMetricsService();
 
   std::string client_id() const { return client_id_; }
 

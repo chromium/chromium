@@ -5,8 +5,6 @@ include_rules = [
   "+components/viz/common/gpu/gpu_vsync_callback.h",
   "+components/viz/common/gpu/vulkan_context_provider.h",
   "+components/viz/common/overlay_state/win/overlay_state_service.h",
-  "+components/viz/common/resources/resource_format.h",
-  "+components/viz/common/resources/resource_format_utils.h",
   "+components/viz/common/resources/resource_sizes.h",
   "+components/viz/common/resources/shared_image_format.h",
   "+components/viz/common/resources/shared_image_format_utils.h",

@@ -34,6 +34,8 @@ static_library("content") {
     "service_worker_helper.h",
     "shared_worker_helper.cc",
     "shared_worker_helper.h",
+    "shared_worker_info.cc",
+    "shared_worker_info.h",
   ]
 
   deps = [

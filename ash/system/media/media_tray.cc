@@ -16,6 +16,7 @@
 #include "ash/style/ash_color_id.h"
 #include "ash/style/ash_color_provider.h"
 #include "ash/style/icon_button.h"
+#include "ash/style/typography.h"
 #include "ash/system/media/media_notification_provider.h"
 #include "ash/system/tray/tray_bubble_view.h"
 #include "ash/system/tray/tray_bubble_wrapper.h"
@@ -27,6 +28,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/string_util.h"
+#include "chromeos/constants/chromeos_features.h"
 #include "components/media_message_center/notification_theme.h"
 #include "components/prefs/pref_change_registrar.h"
 #include "components/prefs/pref_registry_simple.h"
@@ -103,8 +105,13 @@ class GlobalMediaControlsTitleView : public views::View {
     if (base::FeatureList::IsEnabled(
             media::kGlobalMediaControlsCrOSUpdatedUI)) {
       title_label_->SetHorizontalAlignment(gfx::ALIGN_CENTER);
-      TrayPopupUtils::SetLabelFontList(title_label_,
-                                       TrayPopupUtils::FontStyle::kTitle);
+      if (chromeos::features::IsJellyEnabled()) {
+        TypographyProvider::Get()->StyleLabel(TypographyToken::kCrosTitle1,
+                                              *title_label_);
+      } else {
+        TrayPopupUtils::SetLabelFontList(title_label_,
+                                         TrayPopupUtils::FontStyle::kTitle);
+      }
     } else {
       title_label_->SetHorizontalAlignment(gfx::ALIGN_LEFT);
       title_label_->SetFontList(views::Label::GetDefaultFontList().Derive(
@@ -184,22 +191,30 @@ MediaTray::PinButton::PinButton()
           base::BindRepeating(&PinButton::ButtonPressed,
                               base::Unretained(this)),
           IconButton::Type::kMedium,
-          MediaTray::IsPinnedToShelf() ? &kPinnedIcon : &kUnpinnedIcon,
+          &kUnpinnedIcon,
           MediaTray::IsPinnedToShelf()
               ? IDS_ASH_GLOBAL_MEDIA_CONTROLS_PINNED_BUTTON_TOOLTIP_TEXT
-              : IDS_ASH_GLOBAL_MEDIA_CONTROLS_UNPINNED_BUTTON_TOOLTIP_TEXT) {}
+              : IDS_ASH_GLOBAL_MEDIA_CONTROLS_UNPINNED_BUTTON_TOOLTIP_TEXT,
+          /*is_togglable=*/true,
+          /*has_border=*/false) {
+  SetIconSize(kTrayTopShortcutButtonIconSize);
+  SetToggledVectorIcon(kPinnedIcon);
+  if (chromeos::features::IsJellyEnabled()) {
+    SetIconColorId(cros_tokens::kCrosSysOnSurface);
+    SetBackgroundToggledColorId(cros_tokens::kCrosSysSystemPrimaryContainer);
+  } else {
+    SetIconColor(AshColorProvider::Get()->GetContentLayerColor(
+        AshColorProvider::ContentLayerType::kIconColorPrimary));
+  }
+  SetToggled(MediaTray::IsPinnedToShelf());
+}
 
 void MediaTray::PinButton::ButtonPressed() {
   MediaTray::SetPinnedToShelf(!MediaTray::IsPinnedToShelf());
   base::UmaHistogramBoolean("Media.CrosGlobalMediaControls.PinAction",
                             MediaTray::IsPinnedToShelf());
 
-  SetImage(views::Button::STATE_NORMAL,
-           CreateVectorIcon(
-               MediaTray::IsPinnedToShelf() ? kPinnedIcon : kUnpinnedIcon,
-               kTrayTopShortcutButtonIconSize,
-               AshColorProvider::Get()->GetContentLayerColor(
-                   AshColorProvider::ContentLayerType::kIconColorPrimary)));
+  SetToggled(MediaTray::IsPinnedToShelf());
   SetTooltipText(l10n_util::GetStringUTF16(
       MediaTray::IsPinnedToShelf()
           ? IDS_ASH_GLOBAL_MEDIA_CONTROLS_PINNED_BUTTON_TOOLTIP_TEXT
@@ -217,9 +232,13 @@ MediaTray::MediaTray(Shelf* shelf)
   auto icon = std::make_unique<views::ImageView>();
   icon->SetTooltipText(l10n_util::GetStringUTF16(
       IDS_ASH_GLOBAL_MEDIA_CONTROLS_BUTTON_TOOLTIP_TEXT));
-  icon->SetImage(ui::ImageModel::FromVectorIcon(kGlobalMediaControlsIcon,
-                                                kColorAshIconColorPrimary));
   icon_ = tray_container()->AddChildView(std::move(icon));
+  if (chromeos::features::IsJellyEnabled()) {
+    UpdateTrayItemColor(is_active());
+  } else {
+    icon_->SetImage(ui::ImageModel::FromVectorIcon(kGlobalMediaControlsIcon,
+                                                   kColorAshIconColorPrimary));
+  }
 }
 
 MediaTray::~MediaTray() {
@@ -286,6 +305,14 @@ void MediaTray::HideBubbleWithView(const TrayBubbleView* bubble_view) {
 
 void MediaTray::ClickedOutsideBubble() {
   CloseBubble();
+}
+
+void MediaTray::UpdateTrayItemColor(bool is_active) {
+  DCHECK(chromeos::features::IsJellyEnabled());
+  icon_->SetImage(ui::ImageModel::FromVectorIcon(
+      kGlobalMediaControlsIcon,
+      is_active ? cros_tokens::kCrosSysSystemOnPrimaryContainer
+                : cros_tokens::kCrosSysOnSurface));
 }
 
 void MediaTray::OnLockStateChanged(bool locked) {

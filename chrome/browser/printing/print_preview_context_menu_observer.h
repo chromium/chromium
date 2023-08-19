@@ -30,7 +30,7 @@ class PrintPreviewContextMenuObserver : public RenderViewContextMenuObserver {
  private:
   bool IsPrintPreviewDialog();
 
-  raw_ptr<content::WebContents, DanglingUntriaged> contents_;
+  raw_ptr<content::WebContents, AcrossTasksDanglingUntriaged> contents_;
 };
 
 #endif  // CHROME_BROWSER_PRINTING_PRINT_PREVIEW_CONTEXT_MENU_OBSERVER_H_

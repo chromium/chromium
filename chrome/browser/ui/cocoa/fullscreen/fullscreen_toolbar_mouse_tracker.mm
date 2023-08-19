@@ -19,7 +19,7 @@ const CGFloat kTrackingAreaAdditionalThreshold = 50;
 
 }  // namespace
 
-@interface FullscreenToolbarMouseTracker () {
+@implementation FullscreenToolbarMouseTracker {
   // The frame for the tracking area. The value is the toolbar's frame with
   // additional height added at the bottom.
   NSRect _trackingAreaFrame;
@@ -27,7 +27,7 @@ const CGFloat kTrackingAreaAdditionalThreshold = 50;
   // The tracking area associated with the toolbar. This tracking area is used
   // to keep the toolbar active if the menubar had animated out but the mouse
   // is still on the toolbar.
-  base::scoped_nsobject<CrTrackingArea> _trackingArea;
+  CrTrackingArea* __strong _trackingArea;
 
   // Keeps the menu bar from hiding until the mouse exits the tracking area.
   std::unique_ptr<ScopedMenuBarLock> _menuBarLock;
@@ -38,14 +38,10 @@ const CGFloat kTrackingAreaAdditionalThreshold = 50;
   // Unfortunately, until we have a repro for https://crbug.com/1064911, we
   // can't verify more targeted fixes (for example, only removing the tracking
   // area if |_controller| has a window).
-  base::scoped_nsobject<NSView> _contentView;
+  NSView* __strong _contentView;
 
   FullscreenToolbarController* _controller;  // weak
 }
-
-@end
-
-@implementation FullscreenToolbarMouseTracker
 
 - (instancetype)initWithFullscreenToolbarController:
     (FullscreenToolbarController*)controller {
@@ -58,7 +54,6 @@ const CGFloat kTrackingAreaAdditionalThreshold = 50;
 
 - (void)dealloc {
   [self removeTrackingArea];
-  [super dealloc];
 }
 
 - (void)updateTrackingArea {
@@ -77,13 +72,13 @@ const CGFloat kTrackingAreaAdditionalThreshold = 50;
     [self removeTrackingArea];
   }
 
-  _contentView.reset([[[_controller window] contentView] retain]);
+  _contentView = [[_controller window] contentView];
 
-  _trackingArea.reset([[CrTrackingArea alloc]
+  _trackingArea = [[CrTrackingArea alloc]
       initWithRect:_trackingAreaFrame
            options:NSTrackingMouseEnteredAndExited | NSTrackingActiveInKeyWindow
              owner:self
-          userInfo:nil]);
+          userInfo:nil];
 
   [_contentView addTrackingArea:_trackingArea];
 }
@@ -108,8 +103,8 @@ const CGFloat kTrackingAreaAdditionalThreshold = 50;
   // closing, but isn't.
   // DCHECK(_contentView);
   [_contentView removeTrackingArea:_trackingArea];
-  _trackingArea.reset();
-  _contentView.reset();
+  _trackingArea = nil;
+  _contentView = nil;
 }
 
 - (void)mouseEntered:(NSEvent*)event {
@@ -117,7 +112,7 @@ const CGFloat kTrackingAreaAdditionalThreshold = 50;
 }
 
 - (void)mouseExited:(NSEvent*)event {
-  _menuBarLock.reset();
+  _menuBarLock = nil;
 }
 
 @end

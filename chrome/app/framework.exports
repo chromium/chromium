@@ -1,0 +1,20 @@
+# Copyright 2023 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+# This file is passed to `ld -exported_symbol_list` and contains the list of
+# symbol names that will remain globally visible in the final link output from
+# the Mac framework. All other symbols will be treated as if they have hidden
+# visibility.
+
+# TODO(danakj): Rust exports everything on posix, since that is the default
+# behaviour and it has equivalent to Clang's `-fvisibility=hidden`. If and
+# when Rust grows that capability, we should use it, and then we can remove
+# this exports file, since only explicitly exported things should appear
+# in the library.
+#
+# TODO(crbug.com/1462356): However there's also a second issue that #[no_mangle]
+# symbols get exported, which will need to be resolved too.
+
+_ChromeAppModeStart_v7
+_ChromeMain

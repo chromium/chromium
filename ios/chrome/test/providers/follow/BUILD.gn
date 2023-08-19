@@ -4,7 +4,6 @@
 
 source_set("follow") {
   testonly = true
-  configs += [ "//build/config/compiler:enable_arc" ]
   sources = [ "test_follow.mm" ]
   deps = [
     "//base",

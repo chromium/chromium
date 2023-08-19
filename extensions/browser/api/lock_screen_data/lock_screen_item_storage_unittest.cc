@@ -206,7 +206,7 @@ class ItemRegistry {
     return result;
   }
 
-  const std::string extension_id_;
+  const ExtensionId extension_id_;
   // Whether data item registration should succeed.
   bool allow_new_ = true;
   // Whether data item retrievals should fail.
@@ -802,7 +802,7 @@ class LockScreenItemStorageTest : public ExtensionsTest {
   // Whether the test is expected to create deprecated value store version.
   bool can_create_deprecated_value_store_ = false;
 
-  raw_ptr<TestLockScreenValueStoreMigrator, ExperimentalAsh>
+  raw_ptr<TestLockScreenValueStoreMigrator, DanglingUntriaged | ExperimentalAsh>
       value_store_migrator_ = nullptr;
 };
 

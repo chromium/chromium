@@ -517,7 +517,7 @@ void AppServiceShelfContextMenu::ShowAppInfo() {
   // registered. This is short term workaround to keep the relative
   // compatibility for Lacros Primary. We should figure out what should be shown
   // by this.
-  controller()->DoShowAppInfoFlow(controller()->profile(), item().id.app_id);
+  controller()->DoShowAppInfoFlow(item().id.app_id);
 }
 
 void AppServiceShelfContextMenu::SetLaunchType(int command_id) {

@@ -96,10 +96,10 @@ absl::optional<StringPieceOrString> Base64ToBase64URL(
 
 }  // namespace
 
-void Base64UrlEncode(StringPiece input,
+void Base64UrlEncode(span<const uint8_t> input,
                      Base64UrlEncodePolicy policy,
                      std::string* output) {
-  Base64Encode(input, output);
+  *output = Base64Encode(input);
 
   ReplaceChars(*output, "+", "-", output);
   ReplaceChars(*output, "/", "_", output);
@@ -118,6 +118,12 @@ void Base64UrlEncode(StringPiece input,
 
       break;
   }
+}
+
+void Base64UrlEncode(StringPiece input,
+                     Base64UrlEncodePolicy policy,
+                     std::string* output) {
+  Base64UrlEncode(base::as_bytes(base::make_span(input)), policy, output);
 }
 
 bool Base64UrlDecode(StringPiece input,

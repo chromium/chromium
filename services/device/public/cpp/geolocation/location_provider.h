@@ -7,6 +7,7 @@
 
 #include "base/compiler_specific.h"
 #include "base/functional/callback.h"
+#include "services/device/public/mojom/geolocation_internals.mojom.h"
 #include "services/device/public/mojom/geoposition.mojom.h"
 
 namespace device {
@@ -19,6 +20,9 @@ class LocationProvider {
   typedef base::RepeatingCallback<void(const LocationProvider*,
                                        mojom::GeopositionResultPtr)>
       LocationProviderUpdateCallback;
+
+  // Populate `diagnostics` with the internal state of this provider.
+  virtual void FillDiagnostics(mojom::GeolocationDiagnostics& diagnostics) = 0;
 
   // This callback will be used to notify when a new Geoposition becomes
   // available.

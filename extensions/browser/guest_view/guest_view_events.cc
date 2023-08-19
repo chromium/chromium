@@ -17,6 +17,16 @@ namespace guest_view_events {
 
 namespace {
 
+// WebRequest API events.
+constexpr char kEventAuthRequired[] = "webViewInternal.onAuthRequired";
+constexpr char kEventBeforeRedirect[] = "webViewInternal.onBeforeRedirect";
+constexpr char kEventBeforeRequest[] = "webViewInternal.onBeforeRequest";
+constexpr char kEventBeforeSendHeaders[] =
+    "webViewInternal.onBeforeSendHeaders";
+constexpr char kEventCompleted[] = "webViewInternal.onCompleted";
+constexpr char kEventErrorOccurred[] = "webViewInternal.onErrorOccurred";
+constexpr char kEventSendHeaders[] = "webViewInternal.onSendHeaders";
+
 class EventMap {
  public:
   EventMap() {
@@ -35,12 +45,11 @@ class EventMap {
         {guest_view::kEventResize, events::GUEST_VIEW_INTERNAL_ON_RESIZE},
         {webview::kEventAudioStateChanged,
          events::WEB_VIEW_INTERNAL_ON_AUDIO_STATE_CHANGED},
-        {webview::kEventBeforeRequest,
-         events::WEB_VIEW_INTERNAL_ON_BEFORE_REQUEST},
-        {webview::kEventBeforeSendHeaders,
+        {kEventBeforeRequest, events::WEB_VIEW_INTERNAL_ON_BEFORE_REQUEST},
+        {kEventBeforeSendHeaders,
          events::WEB_VIEW_INTERNAL_ON_BEFORE_SEND_HEADERS},
         {webview::kEventClose, events::WEB_VIEW_INTERNAL_ON_CLOSE},
-        {webview::kEventCompleted, events::WEB_VIEW_INTERNAL_ON_COMPLETED},
+        {kEventCompleted, events::WEB_VIEW_INTERNAL_ON_COMPLETED},
         {webview::kEventConsoleMessage,
          events::WEB_VIEW_INTERNAL_ON_CONSOLE_MESSAGE},
         {webview::kEventContentLoad, events::WEB_VIEW_INTERNAL_ON_CONTENT_LOAD},
@@ -71,13 +80,10 @@ class EventMap {
         {webview::kEventUnresponsive,
          events::WEB_VIEW_INTERNAL_ON_UNRESPONSIVE},
         {webview::kEventZoomChange, events::WEB_VIEW_INTERNAL_ON_ZOOM_CHANGE},
-        {webview::kEventAuthRequired,
-         events::WEB_VIEW_INTERNAL_ON_AUTH_REQUIRED},
-        {webview::kEventBeforeRedirect,
-         events::WEB_VIEW_INTERNAL_ON_BEFORE_REDIRECT},
-        {webview::kEventErrorOccurred,
-         events::WEB_VIEW_INTERNAL_ON_ERROR_OCCURRED},
-        {webview::kEventSendHeaders, events::WEB_VIEW_INTERNAL_ON_SEND_HEADERS},
+        {kEventAuthRequired, events::WEB_VIEW_INTERNAL_ON_AUTH_REQUIRED},
+        {kEventBeforeRedirect, events::WEB_VIEW_INTERNAL_ON_BEFORE_REDIRECT},
+        {kEventErrorOccurred, events::WEB_VIEW_INTERNAL_ON_ERROR_OCCURRED},
+        {kEventSendHeaders, events::WEB_VIEW_INTERNAL_ON_SEND_HEADERS},
     };
     for (const auto& name_and_value : names_and_values) {
       values_[name_and_value.name] = name_and_value.value;

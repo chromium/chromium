@@ -4,10 +4,6 @@
 
 #import "ios/chrome/browser/translate/language_selection_context.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 @interface LanguageSelectionContext ()
 // Redeclare public properties readwrite.
 @property(nonatomic, readwrite)

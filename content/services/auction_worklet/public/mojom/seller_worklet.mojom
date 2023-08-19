@@ -45,8 +45,9 @@ struct ComponentAuctionReportResultParams {
   // Metadata returned by the top-level seller's ReportResult() method, as JSON.
   string top_level_seller_signals;
 
-  // The bid value returned by the component seller's ScoreAd() method. May
-  // be the same value as the original bid.
+  // The stochastically rounded numeric value of the bid returned by the
+  // component seller's ScoreAd() method. May be the same value as the original
+  // bid.
   double modified_bid;
 
   // True to indicate that `modified_bid` has been populated. False if the
@@ -54,6 +55,22 @@ struct ComponentAuctionReportResultParams {
   // same value of the original bid or a different value).
   // TODO(https://crbug.com/657632): Update when optional doubles are supported.
   bool has_modified_bid;
+};
+
+// Represents the time between SellerWorklet::ScoreAd and each of the
+// dependencies to SellerWorklet::ScoreAdIfReady, which can help to identify
+// the slowest dependency, both in absolute terms and relative to other
+// dependencies. Each of the latencies recorded here may be null if that
+// dependency didn't apply for this call to ScoreAd.
+struct ScoreAdDependencyLatencies {
+  // Load of Script
+  mojo_base.mojom.TimeDelta? code_ready_latency;
+
+  // Download of DirectFromSellerSignals
+  mojo_base.mojom.TimeDelta? direct_from_seller_signals_latency;
+
+  // Download of TrustedScoringSignals
+  mojo_base.mojom.TimeDelta? trusted_scoring_signals_latency;
 };
 
 // Interface for returning ScoreAd results. The advantage of having an interface
@@ -117,7 +134,7 @@ interface ScoreAdClient {
                     url.mojom.Url? debug_win_report_url,
                     array<PrivateAggregationRequest> pa_requests,
                     mojo_base.mojom.TimeDelta scoring_latency,
-                    mojo_base.mojom.TimeDelta trusted_signals_fetch_latency,
+                    ScoreAdDependencyLatencies score_ad_dependency_latencies,
                     array<string> errors);
 };
 
@@ -265,19 +282,20 @@ interface SellerWorklet {
   //
   // `browser_signal_render_url` The render URL provided by the winning bid.
   //
-  // `browser_signal_bid` The numeric value of the winning bid.
+  // `browser_signal_bid` The stochastically rounded numeric value of the
+  //  winning bid.
   //
   // `browser_signal_bid_currency` The currency the bid is in. This is either
   //  the sellerCurrency from auction configuration, or unset to denote it's in
   //  the bidder's currency.
   //
-  // `browser_signal_desirability` The score returned by ScoreAd for the
-  //  winning bid.
+  // `browser_signal_desirability` The stochastically rounded numeric value of
+  //  the score returned by ScoreAd() for the winning bid.
   //
-  // `browser_signal_highest_scoring_other_bid` The numeric value of the bid
-  //  that got the second highest score, or 0 if it's not available, either
-  //  because there is no such thing or because no currency conversion was
-  //  performed.
+  // `browser_signal_highest_scoring_other_bid` The stochastically rounded
+  //  numeric value of the bid that got the second highest score, or 0 if it's
+  //  not available, either because there is no such thing or because no
+  //  currency conversion was performed.
   //
   // `browser_signal_highest_scoring_other_bid_currency` The currency associated
   //  with `browser_signal_highest_scoring_other_bid`. This is either the

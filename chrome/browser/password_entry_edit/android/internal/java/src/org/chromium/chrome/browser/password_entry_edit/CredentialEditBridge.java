@@ -24,8 +24,7 @@ class CredentialEditBridge implements UiDismissalHandler, CredentialActionDelega
     private long mNativeCredentialEditBridge;
     private CredentialEditCoordinator mCoordinator;
 
-    @Nullable
-    static CredentialEditBridge get() {
+    static @Nullable CredentialEditBridge get() {
         return sCredentialEditBridge;
     }
 

@@ -13,6 +13,7 @@
 #include <vector>
 
 #include "base/command_line.h"
+#include "base/files/file_enumerator.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
@@ -21,25 +22,31 @@
 #include "base/path_service.h"
 #include "base/process/launch.h"
 #include "base/process/process.h"
+#include "base/run_loop.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/synchronization/waitable_event.h"
 #include "base/system/sys_info.h"
+#include "base/task/single_thread_task_runner.h"
+#include "base/task/thread_pool.h"
 #include "base/test/bind.h"
+#include "base/test/gmock_expected_support.h"
+#include "base/test/task_environment.h"
 #include "base/test/test_timeouts.h"
 #include "base/threading/platform_thread.h"
 #include "base/win/atl.h"
 #include "base/win/registry.h"
+#include "base/win/scoped_com_initializer.h"
 #include "base/win/scoped_handle.h"
 #include "base/win/scoped_localalloc.h"
 #include "chrome/updater/test/integration_tests_impl.h"
 #include "chrome/updater/test_scope.h"
 #include "chrome/updater/updater_branding.h"
 #include "chrome/updater/updater_version.h"
-#include "chrome/updater/util/unittest_util.h"
-#include "chrome/updater/util/unittest_util_win.h"
+#include "chrome/updater/util/unit_test_util.h"
+#include "chrome/updater/util/unit_test_util_win.h"
 #include "chrome/updater/win/test/test_executables.h"
 #include "chrome/updater/win/test/test_strings.h"
 #include "chrome/updater/win/win_constants.h"
@@ -49,6 +56,8 @@
 namespace updater {
 
 namespace {
+
+constexpr char kTestAppID[] = "{D07D2B56-F583-4631-9E8E-9942F63765BE}";
 
 // Allows access to all authenticated users on the machine.
 CSecurityDesc GetEveryoneDaclSecurityDescriptor(ACCESS_MASK accessmask) {
@@ -136,17 +145,14 @@ TEST(WinUtil, BuildExeCommandLine) {
 }
 
 TEST(WinUtil, ShellExecuteAndWait) {
-  HResultOr<DWORD> result =
-      ShellExecuteAndWait(base::FilePath(L"NonExistent.Exe"), {}, {});
-  ASSERT_FALSE(result.has_value());
-  EXPECT_EQ(result.error(), HRESULT_FROM_WIN32(ERROR_FILE_NOT_FOUND));
+  EXPECT_THAT(ShellExecuteAndWait(base::FilePath(L"NonExistent.Exe"), {}, {}),
+              base::test::ErrorIs(HRESULT_FROM_WIN32(ERROR_FILE_NOT_FOUND)));
 
-  result = ShellExecuteAndWait(
-      GetTestProcessCommandLine(GetTestScope(), test::GetTestName())
-          .GetProgram(),
-      {}, {});
-  ASSERT_TRUE(result.has_value());
-  EXPECT_EQ(result.value(), DWORD{0});
+  EXPECT_THAT(ShellExecuteAndWait(
+                  GetTestProcessCommandLine(GetTestScope(), test::GetTestName())
+                      .GetProgram(),
+                  {}, {}),
+              base::test::ValueIs(DWORD{0}));
 }
 
 TEST(WinUtil, RunElevated) {
@@ -157,11 +163,9 @@ TEST(WinUtil, RunElevated) {
 
   const base::CommandLine test_process_cmd_line =
       GetTestProcessCommandLine(GetTestScope(), test::GetTestName());
-  HResultOr<DWORD> result =
-      RunElevated(test_process_cmd_line.GetProgram(),
-                  test_process_cmd_line.GetArgumentsString());
-  ASSERT_TRUE(result.has_value());
-  EXPECT_EQ(result.value(), DWORD{0});
+  EXPECT_THAT(RunElevated(test_process_cmd_line.GetProgram(),
+                          test_process_cmd_line.GetArgumentsString()),
+              base::test::ValueIs(DWORD{0}));
 }
 
 TEST(WinUtil, RunDeElevated_Exe) {
@@ -190,9 +194,9 @@ TEST(WinUtil, RunDeElevated_Exe) {
                     test_process_cmd_line.GetArgumentsString()));
   EXPECT_TRUE(event.TimedWait(TestTimeouts::action_max_timeout()));
 
-  EXPECT_TRUE(test::WaitFor(base::BindLambdaForTesting([&]() {
+  EXPECT_TRUE(test::WaitFor([&]() {
     return test::FindProcesses(kTestProcessExecutableName).empty();
-  })));
+  }));
 }
 
 TEST(WinUtil, GetOSVersion) {
@@ -316,9 +320,7 @@ TEST(WinUtil, CompareOSVersions_OldMajorWithHigherMinor) {
 }
 
 TEST(WinUtil, IsCOMCallerAdmin) {
-  HResultOr<bool> is_com_caller_admin = IsCOMCallerAdmin();
-  ASSERT_TRUE(is_com_caller_admin.has_value());
-  EXPECT_EQ(is_com_caller_admin.value(), ::IsUserAnAdmin());
+  EXPECT_THAT(IsCOMCallerAdmin(), base::test::ValueIs(::IsUserAnAdmin()));
 }
 
 TEST(WinUtil, EnableSecureDllLoading) {
@@ -432,12 +434,11 @@ TEST(WinUtil, ForEachRegistryRunValueWithPrefix) {
   int count_entries = 0;
   ForEachRegistryRunValueWithPrefix(
       kRunEntryPrefix,
-      base::BindLambdaForTesting([&key, &count_entries, kRunEntryPrefix](
-                                     const std::wstring& run_name) {
+      [&key, &count_entries, kRunEntryPrefix](const std::wstring& run_name) {
         EXPECT_TRUE(base::StartsWith(run_name, kRunEntryPrefix));
         ++count_entries;
         EXPECT_EQ(key.DeleteValue(run_name.c_str()), ERROR_SUCCESS);
-      }));
+      });
   EXPECT_EQ(count_entries, kRunEntries);
 }
 
@@ -480,12 +481,11 @@ TEST(WinUtil, ForEachServiceWithPrefix) {
   int count_entries = 0;
   ForEachServiceWithPrefix(
       kServiceNamePrefix, kServiceNamePrefix,
-      base::BindLambdaForTesting([&count_entries, kServiceNamePrefix](
-                                     const std::wstring& service_name) {
+      [&count_entries, kServiceNamePrefix](const std::wstring& service_name) {
         EXPECT_TRUE(base::StartsWith(service_name, kServiceNamePrefix));
         ++count_entries;
         EXPECT_TRUE(DeleteService(service_name));
-      }));
+      });
   EXPECT_EQ(count_entries, kNumServices);
 }
 
@@ -510,8 +510,41 @@ TEST(WinUtil, LogClsidEntries) {
   CLSID clsid = {};
   EXPECT_HRESULT_SUCCEEDED(
       ::CLSIDFromProgID(L"InternetExplorer.Application", &clsid));
-
   LogClsidEntries(clsid);
+}
+
+TEST(WinUtil, GetAppAPValue) {
+  std::string ap(GetAppAPValue(GetTestScope(), kTestAppID));
+  EXPECT_EQ(ap, "");
+
+  base::win::RegKey client_state_key(
+      CreateAppClientStateKey(GetTestScope(), base::ASCIIToWide(kTestAppID)));
+  EXPECT_EQ(client_state_key.WriteValue(kRegValueAP, L"TestAP"), ERROR_SUCCESS);
+
+  ap = GetAppAPValue(GetTestScope(), kTestAppID);
+  EXPECT_EQ(ap, "TestAP");
+
+  DeleteAppClientStateKey(GetTestScope(), base::ASCIIToWide(kTestAppID));
+}
+
+TEST(WinUtil, IsSTA) {
+  base::test::TaskEnvironment task_environment;
+
+  // The unit test main has initialized this thread already as an MTA.
+  EXPECT_FALSE(IsSTA());
+
+  base::RunLoop run_loop;
+  base::ThreadPool::CreateCOMSTATaskRunner(
+      {base::TaskPriority::USER_VISIBLE,
+       base::TaskShutdownBehavior::SKIP_ON_SHUTDOWN},
+      base::SingleThreadTaskRunnerThreadMode::DEDICATED)
+      ->PostTaskAndReply(
+          FROM_HERE, base::BindOnce([] {
+            base::win::ScopedCOMInitializer com_sta;
+            EXPECT_TRUE(IsSTA());
+          }),
+          base::BindLambdaForTesting([&run_loop]() { run_loop.Quit(); }));
+  run_loop.Run();
 }
 
 }  // namespace updater

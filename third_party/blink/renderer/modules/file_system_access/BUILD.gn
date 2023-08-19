@@ -15,8 +15,12 @@ blink_modules_sources("file_system_access") {
     "file_system_access_file_delegate.h",
     "file_system_access_incognito_file_delegate.cc",
     "file_system_access_incognito_file_delegate.h",
+    "file_system_access_manager.cc",
+    "file_system_access_manager.h",
     "file_system_access_regular_file_delegate.cc",
     "file_system_access_regular_file_delegate.h",
+    "file_system_change_record.cc",
+    "file_system_change_record.h",
     "file_system_directory_handle.cc",
     "file_system_directory_handle.h",
     "file_system_directory_iterator.cc",
@@ -25,6 +29,8 @@ blink_modules_sources("file_system_access") {
     "file_system_file_handle.h",
     "file_system_handle.cc",
     "file_system_handle.h",
+    "file_system_observer.cc",
+    "file_system_observer.h",
     "file_system_sync_access_handle.cc",
     "file_system_sync_access_handle.h",
     "file_system_underlying_sink.cc",
@@ -37,7 +43,10 @@ blink_modules_sources("file_system_access") {
     "storage_manager_file_system_access.h",
   ]
 
-  deps = [ "//third_party/blink/renderer/platform" ]
+  deps = [
+    "//third_party/blink/renderer/modules/permissions:permissions",
+    "//third_party/blink/renderer/platform",
+  ]
 }
 
 source_set("unit_tests") {

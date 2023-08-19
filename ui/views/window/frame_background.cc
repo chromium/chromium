@@ -112,10 +112,11 @@ void FrameBackground::PaintMaximized(gfx::Canvas* canvas,
 // for areas not covered by the theme image.
 #if (BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)) && \
     BUILDFLAG(ENABLE_DESKTOP_AURA)
-  ui::NativeTheme::ExtraParams params;
-  params.frame_top_area.use_custom_frame = use_custom_frame_;
-  params.frame_top_area.is_active = is_active_;
-  params.frame_top_area.default_background_color = frame_color_;
+  ui::NativeTheme::FrameTopAreaExtraParams frame_top_area;
+  frame_top_area.use_custom_frame = use_custom_frame_;
+  frame_top_area.is_active = is_active_;
+  frame_top_area.default_background_color = frame_color_;
+  ui::NativeTheme::ExtraParams params(frame_top_area);
   native_theme->Paint(canvas->sk_canvas(), color_provider,
                       ui::NativeTheme::kFrameTopArea, ui::NativeTheme::kNormal,
                       gfx::Rect(x, y, width, top_area_height_), params);

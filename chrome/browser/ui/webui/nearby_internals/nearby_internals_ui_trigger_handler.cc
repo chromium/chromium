@@ -12,7 +12,9 @@
 #include "base/time/time.h"
 #include "chrome/browser/nearby_sharing/attachment.h"
 #include "chrome/browser/nearby_sharing/logging/logging.h"
+#include "chrome/browser/nearby_sharing/nearby_notification_manager.h"
 #include "chrome/browser/nearby_sharing/nearby_sharing_service_factory.h"
+#include "chrome/browser/nearby_sharing/share_target.h"
 #include "chrome/browser/nearby_sharing/text_attachment.h"
 #include "chromeos/ash/services/nearby/public/mojom/nearby_share_target_types.mojom.h"
 
@@ -37,6 +39,10 @@ const char kIsReceiving[] = "isReceiving";
 const char kIsScanning[] = "isScanning";
 const char kIsSending[] = "isSending";
 const char kIsTransferring[] = "isTransferring";
+
+// KFields used in ShowReceiveNotification.
+const char kShareTargetFakeFullName[] = "Daniel's Rotom";
+const char kTextAttachmentFakeBodyText[] = "Long text that should be truncated";
 
 // TriggerEvents in alphabetical order.
 enum class TriggerEvent {
@@ -296,6 +302,11 @@ void NearbyInternalsUiTriggerHandler::RegisterMessages() {
       "getStates",
       base::BindRepeating(&NearbyInternalsUiTriggerHandler::GetState,
                           base::Unretained(this)));
+  web_ui()->RegisterMessageCallback(
+      "showNearbyShareReceivedNotification",
+      base::BindRepeating(
+          &NearbyInternalsUiTriggerHandler::ShowReceivedNotification,
+          base::Unretained(this)));
 }
 
 void NearbyInternalsUiTriggerHandler::InitializeContents(
@@ -589,4 +600,33 @@ void NearbyInternalsUiTriggerHandler::GetState(const base::Value::List& args) {
           service_->IsScanning(), service_->IsTransferring(),
           service_->IsReceivingFile(), service_->IsSendingFile(),
           service_->IsConnecting(), service_->IsInHighVisibility()));
+}
+
+void NearbyInternalsUiTriggerHandler::ShowReceivedNotification(
+    const base::Value::List& args) {
+  NearbySharingService* service =
+      NearbySharingServiceFactory::GetForBrowserContext(context_);
+  if (!service) {
+    NS_LOG(ERROR) << "No NearbyShareService instance to call.";
+    return;
+  }
+
+  NearbyNotificationManager* manager = service->GetNotificationManager();
+
+  if (!manager) {
+    NS_LOG(ERROR) << "No NearbyNotificationManager instance to call.";
+    return;
+  }
+
+  // Create a share target with a fake text attachment.
+  TextAttachment attachment(TextAttachment::Type::kText,
+                            kTextAttachmentFakeBodyText,
+                            /*title=*/absl::nullopt,
+                            /*mime_type=*/absl::nullopt);
+  ShareTarget target;
+  target.is_incoming = true;
+  target.device_name = kShareTargetFakeFullName;
+  attachment.MoveToShareTarget(target);
+
+  manager->ShowSuccess(target);
 }

@@ -29,6 +29,10 @@ base::TimeDelta ComputeAdpfTarget(const BeginFrameArgs& args) {
   return base::Milliseconds(12);
 }
 
+bool DrawImmediatelyWhenInteractive() {
+  return features::ShouldDrawImmediatelyWhenInteractive();
+}
+
 }  // namespace
 
 class DisplayScheduler::BeginFrameObserver : public BeginFrameObserverBase {
@@ -98,9 +102,16 @@ DisplayScheduler::~DisplayScheduler() {
   StopObservingBeginFrames();
 }
 
+void DisplayScheduler::SetDamageTracker(DisplayDamageTracker* damage_tracker) {
+  DisplaySchedulerBase::SetDamageTracker(damage_tracker);
+  damage_tracker->SetDisplayBeginFrameSourceId(
+      begin_frame_source_->source_id());
+}
+
 void DisplayScheduler::SetVisible(bool visible) {
-  if (visible_ == visible)
+  if (visible_ == visible) {
     return;
+  }
 
   visible_ = visible;
   // If going invisible, we'll stop observing begin frames once we try
@@ -418,8 +429,14 @@ DisplayScheduler::DesiredBeginFrameDeadlineMode() const {
     return BeginFrameDeadlineMode::kLate;
   }
 
+  // Only wait if we actually have pending surfaces and we're not forcing draw
+  // due to an ongoing interaction.
+  bool wait_for_pending_surfaces =
+      has_pending_surfaces_ && !(DrawImmediatelyWhenInteractive() &&
+                                 damage_tracker_->HasDamageDueToInteraction());
+
   bool all_surfaces_ready =
-      !has_pending_surfaces_ && damage_tracker_->IsRootSurfaceValid() &&
+      !wait_for_pending_surfaces && damage_tracker_->IsRootSurfaceValid() &&
       !damage_tracker_->expecting_root_surface_damage_because_of_resize();
 
   // When no draw is needed, only allow an early deadline in full-pipe mode.
@@ -535,6 +552,7 @@ void DisplayScheduler::DidFinishFrame(bool did_draw) {
   BeginFrameAck ack(current_begin_frame_args_, did_draw);
   if (client_)
     client_->DidFinishFrame(ack);
+  damage_tracker_->DidFinishFrame();
 }
 
 void DisplayScheduler::DidSwapBuffers() {

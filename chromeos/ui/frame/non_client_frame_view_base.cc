@@ -4,12 +4,14 @@
 
 #include "chromeos/ui/frame/non_client_frame_view_base.h"
 
+#include <memory>
+
 #include "chromeos/ui/base/tablet_state.h"
 #include "chromeos/ui/base/window_properties.h"
 #include "chromeos/ui/frame/default_frame_header.h"
 #include "chromeos/ui/frame/frame_utils.h"
+#include "chromeos/ui/frame/header_view.h"
 #include "ui/aura/client/aura_constants.h"
-#include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/color/color_id.h"
 #include "ui/gfx/geometry/rect.h"
@@ -22,7 +24,6 @@ namespace chromeos {
 
 NonClientFrameViewBase::OverlayView::OverlayView(HeaderView* header_view)
     : header_view_(header_view) {
-  AddChildView(header_view);
   SetEventTargeter(std::make_unique<views::ViewTargeter>(this));
 }
 
@@ -59,12 +60,15 @@ BEGIN_METADATA(NonClientFrameViewBase, OverlayView, views::View)
 END_METADATA
 
 NonClientFrameViewBase::NonClientFrameViewBase(views::Widget* frame)
-    : frame_(frame),
-      header_view_(new HeaderView(frame, this)),
-      overlay_view_(new OverlayView(header_view_)) {
+    : frame_(frame) {
   DCHECK(frame_);
 
-  header_view_->Init();
+  auto header_view = std::make_unique<HeaderView>(frame_, this);
+  header_view->Init();
+
+  auto overlay_view = std::make_unique<OverlayView>(header_view.get());
+  header_view_ = overlay_view->AddChildView(std::move(header_view));
+  overlay_view_ = overlay_view.get();
 
   // |header_view_| is set as the non client view's overlay view so that it can
   // overlay the web contents in immersive fullscreen.
@@ -72,7 +76,7 @@ NonClientFrameViewBase::NonClientFrameViewBase(views::Widget* frame)
   // would avoid the need to expose an "overlay view" concept on the
   // cross-platform class, and might allow for simpler creation/ownership/
   // plumbing.
-  frame->non_client_view()->SetOverlayView(overlay_view_);
+  frame->non_client_view()->SetOverlayView(overlay_view.release());
 
   UpdateDefaultFrameColors();
 }

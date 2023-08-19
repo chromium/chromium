@@ -107,10 +107,8 @@ namespace passwords_helper {
 std::vector<std::unique_ptr<PasswordForm>> GetLogins(
     PasswordStoreInterface* store) {
   EXPECT_TRUE(store);
-  password_manager::PasswordFormDigest matcher_form = {
-      PasswordForm::Scheme::kHtml, kFakeSignonRealm, GURL()};
   PasswordStoreConsumerHelper consumer;
-  store->GetLogins(matcher_form, consumer.GetWeakPtr());
+  store->GetAutofillableLogins(consumer.GetWeakPtr());
   return consumer.WaitForResult();
 }
 

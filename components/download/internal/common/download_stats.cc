@@ -174,9 +174,6 @@ void RecordDownloadCompleted(
     UMA_HISTOGRAM_CUSTOM_COUNTS("Download.DownloadSize.Parallelizable",
                                 download_len, 1, max, 256);
   }
-
-  RecordConnectionType("Download.NetworkConnectionType.Complete",
-                       connection_type, download_source);
 }
 
 void RecordDownloadInterrupted(DownloadInterruptReason reason,
@@ -563,19 +560,9 @@ void RecordParallelizableDownloadCount(DownloadCountTypes type,
                                 DOWNLOAD_COUNT_TYPES_LAST_ENTRY);
 }
 
-void RecordParallelDownloadRequestCount(int request_count) {
-  UMA_HISTOGRAM_CUSTOM_COUNTS("Download.ParallelDownloadRequestCount",
-                              request_count, 1, 10, 11);
-}
-
 void RecordParallelRequestCreationFailure(DownloadInterruptReason reason) {
   base::UmaHistogramSparse("Download.ParallelDownload.CreationFailureReason",
                            reason);
-}
-
-void RecordSavePackageEvent(SavePackageEvent event) {
-  UMA_HISTOGRAM_ENUMERATION("Download.SavePackage", event,
-                            SAVE_PACKAGE_LAST_ENTRY);
 }
 
 DownloadConnectionSecurity CheckDownloadConnectionSecurity(
@@ -631,14 +618,6 @@ void RecordDownloadHttpResponseCode(int response_code,
         "Download.HttpResponseCode.BackgroundDownload", status_code,
         status_codes);
   }
-}
-
-void RecordInProgressDBCount(InProgressDBCountTypes type) {
-  UMA_HISTOGRAM_ENUMERATION("Download.InProgressDB.Counts", type);
-}
-
-void RecordDownloadLaterEvent(DownloadLaterEvent event) {
-  base::UmaHistogramEnumeration("Download.Later.Events", event);
 }
 
 void RecordInputStreamReadError(MojoResult mojo_result) {

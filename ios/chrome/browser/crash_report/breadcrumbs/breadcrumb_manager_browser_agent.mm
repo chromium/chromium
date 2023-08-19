@@ -20,10 +20,6 @@
 #import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 namespace {
 
 int GetTabId(const web::WebState* const web_state) {
@@ -65,60 +61,67 @@ void BreadcrumbManagerBrowserAgent::PlatformLogEvent(const std::string& event) {
       ->AddEvent(event);
 }
 
-void BreadcrumbManagerBrowserAgent::WebStateInsertedAt(
+#pragma mark - WebStateListObserver
+
+void BreadcrumbManagerBrowserAgent::WebStateListDidChange(
     WebStateList* web_state_list,
-    web::WebState* web_state,
-    int index,
-    bool activating) {
-  if (batch_operation_) {
-    ++batch_operation_->insertion_count;
-    return;
+    const WebStateListChange& change,
+    const WebStateListStatus& status) {
+  switch (change.type()) {
+    case WebStateListChange::Type::kStatusOnly: {
+      if (!status.active_web_state_change()) {
+        return;
+      }
+      absl::optional<int> old_tab_id =
+          status.old_active_web_state
+              ? absl::optional<int>(GetTabId(status.old_active_web_state))
+              : absl::nullopt;
+      absl::optional<int> new_tab_id =
+          status.new_active_web_state
+              ? absl::optional<int>(GetTabId(status.new_active_web_state))
+              : absl::nullopt;
+      LogActiveTabChanged(old_tab_id, new_tab_id,
+                          web_state_list->active_index());
+      break;
+    }
+    case WebStateListChange::Type::kDetach: {
+      if (batch_operation_) {
+        ++batch_operation_->close_count;
+        return;
+      }
+      const WebStateListChangeDetach& detach_change =
+          change.As<WebStateListChangeDetach>();
+      LogTabClosedAt(GetTabId(detach_change.detached_web_state()),
+                     status.index);
+      break;
+    }
+    case WebStateListChange::Type::kMove: {
+      const WebStateListChangeMove& move_change =
+          change.As<WebStateListChangeMove>();
+      LogTabMoved(GetTabId(move_change.moved_web_state()),
+                  move_change.moved_from_index(), status.index);
+      break;
+    }
+    case WebStateListChange::Type::kReplace: {
+      const WebStateListChangeReplace& replace_change =
+          change.As<WebStateListChangeReplace>();
+      LogTabReplaced(GetTabId(replace_change.replaced_web_state()),
+                     GetTabId(replace_change.inserted_web_state()),
+                     status.index);
+      break;
+    }
+    case WebStateListChange::Type::kInsert: {
+      if (batch_operation_) {
+        ++batch_operation_->insertion_count;
+        return;
+      }
+      const WebStateListChangeInsert& insert_change =
+          change.As<WebStateListChangeInsert>();
+      LogTabInsertedAt(GetTabId(insert_change.inserted_web_state()),
+                       status.index, status.active_web_state_change());
+      break;
+    }
   }
-  LogTabInsertedAt(GetTabId(web_state), index, activating);
-}
-
-void BreadcrumbManagerBrowserAgent::WebStateMoved(WebStateList* web_state_list,
-                                                  web::WebState* web_state,
-                                                  int from_index,
-                                                  int to_index) {
-  LogTabMoved(GetTabId(web_state), from_index, to_index);
-}
-
-void BreadcrumbManagerBrowserAgent::WebStateReplacedAt(
-    WebStateList* web_state_list,
-    web::WebState* old_web_state,
-    web::WebState* new_web_state,
-    int index) {
-  LogTabReplaced(GetTabId(old_web_state), GetTabId(new_web_state), index);
-}
-
-void BreadcrumbManagerBrowserAgent::WillCloseWebStateAt(
-    WebStateList* web_state_list,
-    web::WebState* web_state,
-    int index,
-    bool user_action) {
-  if (batch_operation_) {
-    ++batch_operation_->close_count;
-    return;
-  }
-  LogTabClosedAt(GetTabId(web_state), index);
-}
-
-void BreadcrumbManagerBrowserAgent::WebStateActivatedAt(
-    WebStateList* web_state_list,
-    web::WebState* old_web_state,
-    web::WebState* new_web_state,
-    int active_index,
-    ActiveWebStateChangeReason reason) {
-  if (reason != ActiveWebStateChangeReason::Activated)
-    return;
-  absl::optional<int> old_tab_id =
-      old_web_state ? absl::optional<int>(GetTabId(old_web_state))
-                    : absl::nullopt;
-  absl::optional<int> new_tab_id =
-      new_web_state ? absl::optional<int>(GetTabId(new_web_state))
-                    : absl::nullopt;
-  LogActiveTabChanged(old_tab_id, new_tab_id, active_index);
 }
 
 void BreadcrumbManagerBrowserAgent::WillBeginBatchOperation(

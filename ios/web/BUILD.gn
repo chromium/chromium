@@ -42,12 +42,14 @@ source_set("web") {
     "//ios/web/favicon",
     "//ios/web/init",
     "//ios/web/navigation",
+    "//ios/web/navigation:proto_util",
     "//ios/web/navigation:wk_navigation_util",
     "//ios/web/net",
     "//ios/web/public",
     "//ios/web/public/js_messaging:gcrweb_js",
     "//ios/web/public/security",
     "//ios/web/public/session",
+    "//ios/web/public/session/proto:proto_util",
     "//ios/web/security",
     "//ios/web/session",
     "//ios/web/thread",
@@ -64,8 +66,6 @@ source_set("web") {
     "network_context_owner.cc",
     "web_client.mm",
   ]
-
-  configs += [ "//build/config/compiler:enable_arc" ]
 }
 
 source_set("threads") {
@@ -80,12 +80,9 @@ source_set("threads") {
     "web_thread_impl.cc",
     "web_thread_impl.h",
   ]
-
-  configs += [ "//build/config/compiler:enable_arc" ]
 }
 
 source_set("core") {
-  configs += [ "//build/config/compiler:enable_arc" ]
   deps = [
     "//base",
     "//url",
@@ -98,7 +95,6 @@ source_set("core") {
 }
 
 source_set("eg_app_support+eg2") {
-  configs += [ "//build/config/compiler:enable_arc" ]
   testonly = true
 
   deps = [
@@ -181,11 +177,9 @@ test("ios_web_unittests") {
   ]
 
   assert_no_deps = ios_assert_no_deps
-  configs += [ "//build/config/compiler:enable_arc" ]
 }
 
 source_set("ios_web_general_unittests") {
-  configs += [ "//build/config/compiler:enable_arc" ]
   testonly = true
   deps = [
     ":core",
@@ -201,6 +195,7 @@ source_set("ios_web_general_unittests") {
     "//ios/web/navigation:core",
     "//ios/web/public",
     "//ios/web/public/session",
+    "//ios/web/public/session/proto",
     "//ios/web/public/test",
     "//ios/web/public/test/fakes",
     "//ios/web/test:mojo_bindings",
@@ -225,7 +220,6 @@ source_set("ios_web_general_unittests") {
 }
 
 source_set("ios_web_navigation_unittests") {
-  configs += [ "//build/config/compiler:enable_arc" ]
   testonly = true
   deps = [
     ":core",
@@ -273,12 +267,10 @@ source_set("ios_web_navigation_unittests") {
     "navigation/crw_wk_navigation_states_unittest.mm",
     "navigation/navigation_context_impl_unittest.mm",
     "navigation/navigation_item_impl_unittest.mm",
-    "navigation/navigation_item_storage_builder_unittest.mm",
     "navigation/navigation_manager_impl_unittest.mm",
     "navigation/navigation_manager_util_unittest.mm",
     "navigation/nscoder_util_unittest.mm",
     "navigation/proto_util_unittest.mm",
-    "navigation/session_storage_builder_unittest.mm",
     "navigation/synthesized_session_restore_unittest.mm",
     "navigation/wk_back_forward_list_item_holder_unittest.mm",
     "navigation/wk_navigation_action_policy_util_unittest.mm",
@@ -288,7 +280,6 @@ source_set("ios_web_navigation_unittests") {
 }
 
 source_set("ios_web_net_unittests") {
-  configs += [ "//build/config/compiler:enable_arc" ]
   testonly = true
   deps = [
     ":core",
@@ -327,7 +318,6 @@ source_set("ios_web_net_unittests") {
 }
 
 source_set("test_support") {
-  configs += [ "//build/config/compiler:enable_arc" ]
   testonly = true
   sources = [
     "navigation/navigation_item_storage_test_util.h",
@@ -342,7 +332,6 @@ source_set("test_support") {
 }
 
 source_set("ios_web_text_fragments_unittests") {
-  configs += [ "//build/config/compiler:enable_arc" ]
   testonly = true
   deps = [
     "//base",
@@ -369,7 +358,6 @@ source_set("ios_web_text_fragments_unittests") {
 }
 
 source_set("ios_web_web_state_unittests") {
-  configs += [ "//build/config/compiler:enable_arc" ]
   testonly = true
   deps = [
     ":core",
@@ -396,6 +384,7 @@ source_set("ios_web_web_state_unittests") {
     "//ios/web/public/js_messaging",
     "//ios/web/public/security",
     "//ios/web/public/session",
+    "//ios/web/public/session/proto",
     "//ios/web/public/test",
     "//ios/web/public/test:test_fixture",
     "//ios/web/public/test/fakes",
@@ -435,7 +424,6 @@ source_set("ios_web_web_state_unittests") {
 }
 
 source_set("ios_web_web_state_js_unittests") {
-  configs += [ "//build/config/compiler:enable_arc" ]
   testonly = true
   deps = [
     ":core",
@@ -471,7 +459,6 @@ source_set("ios_web_web_state_js_unittests") {
 }
 
 source_set("ios_web_web_state_ui_unittests") {
-  configs += [ "//build/config/compiler:enable_arc" ]
   testonly = true
   deps = [
     ":core",
@@ -521,7 +508,6 @@ source_set("ios_web_web_state_ui_unittests") {
 }
 
 source_set("ios_web_webui_unittests") {
-  configs += [ "//build/config/compiler:enable_arc" ]
   testonly = true
   deps = [
     ":core",
@@ -557,7 +543,6 @@ source_set("ios_web_webui_unittests") {
 }
 
 test("ios_web_inttests") {
-  configs += [ "//build/config/compiler:enable_arc" ]
   deps = [
     ":web",
     "//base/test:test_support",

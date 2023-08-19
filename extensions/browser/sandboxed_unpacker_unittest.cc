@@ -17,6 +17,7 @@
 #include "base/memory/ref_counted.h"
 #include "base/path_service.h"
 #include "base/run_loop.h"
+#include "base/rust_buildflags.h"
 #include "base/strings/pattern.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
@@ -312,7 +313,7 @@ class SandboxedUnpackerTest : public ExtensionsTest {
 
  protected:
   base::ScopedTempDir extensions_dir_;
-  raw_ptr<MockSandboxedUnpackerClient, DanglingUntriaged> client_;
+  raw_ptr<MockSandboxedUnpackerClient, AcrossTasksDanglingUntriaged> client_;
   scoped_refptr<SandboxedUnpacker> sandboxed_unpacker_;
   std::unique_ptr<content::InProcessUtilityThreadHelper>
       in_process_utility_thread_helper_;
@@ -504,9 +505,15 @@ TEST_F(SandboxedUnpackerTest, InvalidMessagesFile) {
   // Check that there is no _locales folder.
   base::FilePath install_path = GetInstallPath().Append(kLocaleFolder);
   EXPECT_FALSE(base::PathExists(install_path));
+#if BUILDFLAG(BUILD_RUST_JSON_READER)
+  EXPECT_TRUE(base::MatchPattern(
+      GetInstallErrorMessage(),
+      u"*_locales?en_US?messages.json': EOF while parsing a string at line 4*"))
+#else   // BUILDFLAG(BUILD_RUST_JSON_READER)
   EXPECT_TRUE(base::MatchPattern(
       GetInstallErrorMessage(),
       u"*_locales?en_US?messages.json': Line: 4, column: 1,*"))
+#endif  // BUILDFLAG(BUILD_RUST_JSON_READER)
       << GetInstallErrorMessage();
   ASSERT_EQ(CrxInstallErrorType::SANDBOXED_UNPACKER_FAILURE,
             GetInstallErrorType());

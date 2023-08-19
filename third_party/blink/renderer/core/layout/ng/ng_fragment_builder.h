@@ -17,6 +17,7 @@
 #include "third_party/blink/renderer/core/layout/ng/ng_out_of_flow_positioned_node.h"
 #include "third_party/blink/renderer/core/layout/ng/ng_physical_fragment.h"
 #include "third_party/blink/renderer/core/layout/ng/ng_style_variant.h"
+#include "third_party/blink/renderer/core/scroll/scroll_start_targets.h"
 #include "third_party/blink/renderer/core/style/computed_style.h"
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_hash_map.h"
 #include "third_party/blink/renderer/platform/text/writing_direction_mode.h"
@@ -167,6 +168,9 @@ class CORE_EXPORT NGFragmentBuilder {
   void SetItemsBuilder(NGFragmentItemsBuilder* builder) {
     items_builder_ = builder;
   }
+
+  void PropagateStickyDescendants(const NGPhysicalFragment& child);
+  void PropagateSnapAreas(const NGPhysicalFragment& child);
 
   // Propagate |child|'s anchor for the CSS Anchor Positioning to |this|
   // builder. This includes the anchor of the |child| itself and anchors
@@ -466,7 +470,10 @@ class CORE_EXPORT NGFragmentBuilder {
     layout_object_ = node.GetLayoutBox();
   }
 
+  HeapVector<Member<LayoutBoxModelObject>>& EnsureStickyDescendants();
+  HeapHashSet<Member<LayoutBox>>& EnsureSnapAreas();
   NGLogicalAnchorQuery& EnsureAnchorQuery();
+  ScrollStartTargetCandidates& EnsureScrollStartTargets();
 
   void PropagateFromLayoutResultAndFragment(
       const NGLayoutResult&,
@@ -475,6 +482,7 @@ class CORE_EXPORT NGFragmentBuilder {
       const NGInlineContainer<LogicalOffset>* = nullptr);
 
   void PropagateFromLayoutResult(const NGLayoutResult&);
+  void PropagateScrollStartTarget(const NGPhysicalFragment& child);
 
   void PropagateFromFragment(
       const NGPhysicalFragment& child,
@@ -510,12 +518,16 @@ class CORE_EXPORT NGFragmentBuilder {
   // The break token to store in the resulting fragment.
   const NGBreakToken* break_token_ = nullptr;
 
+  HeapVector<Member<LayoutBoxModelObject>>* sticky_descendants_ = nullptr;
+  HeapHashSet<Member<LayoutBox>>* snap_areas_ = nullptr;
   NGLogicalAnchorQuery* anchor_query_ = nullptr;
   LayoutUnit bfc_line_offset_;
   absl::optional<LayoutUnit> bfc_block_offset_;
   NGMarginStrut end_margin_strut_;
   NGExclusionSpace exclusion_space_;
   absl::optional<int> lines_until_clamp_;
+
+  ScrollStartTargetCandidates* scroll_start_targets_ = nullptr;
 
   ChildrenVector children_;
 
@@ -556,7 +568,6 @@ class CORE_EXPORT NGFragmentBuilder {
   bool is_pushed_by_floats_ = false;
   bool subtree_modified_margin_strut_ = false;
   bool is_new_fc_ = false;
-  bool is_legacy_layout_root_ = false;
   bool is_block_in_inline_ = false;
   bool has_floating_descendants_for_paint_ = false;
   bool has_descendant_that_depends_on_percentage_block_size_ = false;

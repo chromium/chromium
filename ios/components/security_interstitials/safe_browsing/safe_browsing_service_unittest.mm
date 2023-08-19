@@ -48,10 +48,6 @@
 #import "services/network/public/cpp/simple_url_loader.h"
 #import "testing/platform_test.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 namespace {
 
 const char kSafePage[] = "https://example.test/safe.html";
@@ -77,6 +73,11 @@ class TestUrlCheckerClient {
   TestUrlCheckerClient& operator=(const TestUrlCheckerClient&) = delete;
 
   bool url_is_unsafe() const { return url_is_unsafe_; }
+
+  safe_browsing::SafeBrowsingUrlCheckerImpl::PerformedCheck performed_check()
+      const {
+    return performed_check_;
+  }
 
   void CheckUrl(const GURL& url) {
     result_pending_ = true;
@@ -127,7 +128,7 @@ class TestUrlCheckerClient {
           slow_check_notifier,
       bool proceed,
       bool showed_interstitial,
-      bool did_perform_url_real_time_check,
+      safe_browsing::SafeBrowsingUrlCheckerImpl::PerformedCheck performed_check,
       bool did_check_url_real_time_allowlist) {
     if (slow_check_notifier) {
       *slow_check_notifier =
@@ -137,6 +138,7 @@ class TestUrlCheckerClient {
     }
     url_is_unsafe_ = !proceed;
     result_pending_ = false;
+    performed_check_ = performed_check;
     url_checker_.reset();
   }
 
@@ -144,6 +146,8 @@ class TestUrlCheckerClient {
 
   bool result_pending_ = false;
   bool url_is_unsafe_ = false;
+  safe_browsing::SafeBrowsingUrlCheckerImpl::PerformedCheck performed_check_ =
+      safe_browsing::SafeBrowsingUrlCheckerImpl::PerformedCheck::kUnknown;
   SafeBrowsingService* safe_browsing_service_;
   web::FakeWebState web_state_;
   std::unique_ptr<safe_browsing::SafeBrowsingUrlCheckerImpl> url_checker_;
@@ -244,11 +248,20 @@ class SafeBrowsingServiceTest : public PlatformTest {
   }
 
  protected:
+  void SetUpVerdict(GURL url, bool is_unsafe) {
+    verdict_cache_manager_->CacheArtificialHashRealTimeLookupVerdict(url.spec(),
+                                                                     is_unsafe);
+  }
+
   web::WebTaskEnvironment task_environment_;
   scoped_refptr<SafeBrowsingService> safe_browsing_service_;
   std::unique_ptr<web::FakeBrowserState> browser_state_;
   std::unique_ptr<sync_preferences::TestingPrefServiceSyncable> pref_service_;
   FakeSafeBrowsingClient safe_browsing_client_;
+  safe_browsing::hash_realtime_utils::GoogleChromeBrandingPretenderForTesting
+      apply_branding_;
+  base::test::ScopedFeatureList scoped_feature_list_;
+  web::FakeWebState web_state_;
 
  private:
   void MarkUrlAsMalwareOnSBThread(const GURL& bad_url) {
@@ -586,6 +599,63 @@ TEST_F(SafeBrowsingServiceTest, NonEmptyUserAgent) {
         run_loop.Quit();
       }));
   run_loop.Run();
+}
+
+// Verifies that Safe Browsing hash prefix metrics are correctly recorded and
+// the performed check is correct when the hash prefix feature is enabled.
+TEST_F(SafeBrowsingServiceTest, HashPrefixEnabled) {
+  scoped_feature_list_.InitAndEnableFeature(
+      safe_browsing::kHashPrefixRealTimeLookups);
+  TestUrlCheckerClient client(safe_browsing_service_.get(),
+                              browser_state_.get(), &safe_browsing_client_);
+  pref_service_->SetBoolean(prefs::kSafeBrowsingEnabled, true);
+
+  base::HistogramTester histogram_tester;
+  GURL url = GURL(kMalwarePage);
+  SetUpVerdict(url, /*is_unsafe=*/true);
+  client.CheckUrl(url);
+
+  EXPECT_TRUE(client.result_pending());
+  client.WaitForResult();
+  EXPECT_FALSE(client.result_pending());
+  EXPECT_EQ(safe_browsing::SafeBrowsingUrlCheckerImpl::PerformedCheck::
+                kHashRealTimeCheck,
+            client.performed_check());
+  histogram_tester.ExpectBucketCount(
+      "SafeBrowsing.HPRT.Ineligible.IneligibleForSession",
+      /*sample=*/false,
+      /*expected_bucket_count=*/1);
+
+  task_environment_.RunUntilIdle();
+}
+
+// Verifies that Safe Browsing hash prefix metrics are correctly recorded and
+// the performed check is correct when the hash prefix feature is disabled.
+TEST_F(SafeBrowsingServiceTest, HashPrefixDisabled) {
+  scoped_feature_list_.InitAndDisableFeature(
+      safe_browsing::kHashPrefixRealTimeLookups);
+  TestUrlCheckerClient client(safe_browsing_service_.get(),
+                              browser_state_.get(), &safe_browsing_client_);
+
+  pref_service_->SetBoolean(prefs::kSafeBrowsingEnabled, true);
+
+  base::HistogramTester histogram_tester;
+  GURL url = GURL(kMalwarePage);
+  SetUpVerdict(url, /*is_unsafe=*/true);
+  client.CheckUrl(url);
+
+  EXPECT_TRUE(client.result_pending());
+  client.WaitForResult();
+  EXPECT_FALSE(client.result_pending());
+  EXPECT_EQ(safe_browsing::SafeBrowsingUrlCheckerImpl::PerformedCheck::
+                kHashDatabaseCheck,
+            client.performed_check());
+  histogram_tester.ExpectBucketCount(
+      "SafeBrowsing.HPRT.Ineligible.IneligibleForSession",
+      /*sample=*/true,
+      /*expected_bucket_count=*/1);
+
+  task_environment_.RunUntilIdle();
 }
 
 using SafeBrowsingServiceInitializationTest = PlatformTest;

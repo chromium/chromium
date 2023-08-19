@@ -271,12 +271,13 @@ class GLES2_IMPL_EXPORT ProgramInfoManager {
     std::unordered_map<std::string, GLint> frag_data_indices_;
   };
 
-  Program* GetProgramInfo(
-      GLES2Implementation* gl, GLuint program, ProgramInfoType type);
+  Program* GetProgramInfo(GLES2Implementation* gl,
+                          GLuint program,
+                          ProgramInfoType type) EXCLUSIVE_LOCKS_REQUIRED(lock_);
 
   typedef std::unordered_map<GLuint, Program> ProgramInfoMap;
 
-  ProgramInfoMap program_infos_;
+  ProgramInfoMap program_infos_ GUARDED_BY(lock_);
 
   mutable base::Lock lock_;
 };

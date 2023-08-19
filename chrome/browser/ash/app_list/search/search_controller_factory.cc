@@ -27,20 +27,21 @@
 #include "chrome/browser/ash/app_list/search/help_app_provider.h"
 #include "chrome/browser/ash/app_list/search/help_app_zero_state_provider.h"
 #include "chrome/browser/ash/app_list/search/keyboard_shortcut_provider.h"
-#include "chrome/browser/ash/app_list/search/local_images/local_image_search_provider.h"
+#include "chrome/browser/ash/app_list/search/local_image_search/local_image_search_provider.h"
 #include "chrome/browser/ash/app_list/search/omnibox/omnibox_lacros_provider.h"
 #include "chrome/browser/ash/app_list/search/omnibox/omnibox_provider.h"
 #include "chrome/browser/ash/app_list/search/os_settings_provider.h"
 #include "chrome/browser/ash/app_list/search/personalization_provider.h"
 #include "chrome/browser/ash/app_list/search/search_controller.h"
 #include "chrome/browser/ash/app_list/search/search_features.h"
+#include "chrome/browser/ash/app_list/search/system_info/system_info_card_provider.h"
 #include "chrome/browser/ash/arc/arc_util.h"
 #include "chrome/browser/ash/crosapi/browser_util.h"
 #include "chrome/browser/ash/crosapi/crosapi_manager.h"
 #include "chrome/browser/ash/drive/drive_integration_service.h"
-#include "chrome/browser/ash/web_applications/personalization_app/personalization_app_manager.h"
-#include "chrome/browser/ash/web_applications/personalization_app/personalization_app_manager_factory.h"
-#include "chrome/browser/ash/web_applications/personalization_app/personalization_app_utils.h"
+#include "chrome/browser/ash/system_web_apps/apps/personalization_app/personalization_app_manager.h"
+#include "chrome/browser/ash/system_web_apps/apps/personalization_app/personalization_app_manager_factory.h"
+#include "chrome/browser/ash/system_web_apps/apps/personalization_app/personalization_app_utils.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/webui/settings/ash/os_settings_manager.h"
 #include "chrome/browser/ui/webui/settings/ash/os_settings_manager_factory.h"
@@ -88,6 +89,10 @@ std::unique_ptr<SearchController> CreateSearchController(
   if (!profile->IsGuestSession()) {
     controller->AddProvider(std::make_unique<FileSearchProvider>(profile));
     controller->AddProvider(std::make_unique<DriveSearchProvider>(profile));
+    if (search_features::isLauncherSystemInfoAnswerCardsEnabled()) {
+      controller->AddProvider(
+          std::make_unique<SystemInfoCardProvider>(profile));
+    }
     if (search_features::IsLauncherImageSearchEnabled()) {
       controller->AddProvider(
           std::make_unique<LocalImageSearchProvider>(profile));
@@ -121,7 +126,7 @@ std::unique_ptr<SearchController> CreateSearchController(
   if (os_settings_manager && app_service_proxy) {
     controller->AddProvider(std::make_unique<OsSettingsProvider>(
         profile, os_settings_manager->search_handler(),
-        os_settings_manager->hierarchy(), app_service_proxy));
+        os_settings_manager->hierarchy()));
   }
 
   controller->AddProvider(std::make_unique<KeyboardShortcutProvider>(profile));

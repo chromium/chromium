@@ -48,6 +48,7 @@ class MockHidDelegate : public HidDelegate {
   void OnDeviceRemoved(const device::mojom::HidDeviceInfo& device);
   void OnDeviceChanged(const device::mojom::HidDeviceInfo& device);
   void OnPermissionRevoked(const url::Origin& origin);
+  void OnHidManagerConnectionError();
 
   MOCK_METHOD0(RunChooserInternal,
                std::vector<device::mojom::HidDeviceInfoPtr>());
@@ -77,6 +78,8 @@ class MockHidDelegate : public HidDelegate {
                void(BrowserContext*, const url::Origin&));
   MOCK_METHOD2(DecrementConnectionCount,
                void(BrowserContext*, const url::Origin&));
+
+  const base::ObserverList<Observer>& observer_list() { return observer_list_; }
 
  private:
   base::ObserverList<Observer> observer_list_;

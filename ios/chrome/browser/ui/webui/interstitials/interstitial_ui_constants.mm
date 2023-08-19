@@ -4,10 +4,6 @@
 
 #import "ios/chrome/browser/ui/webui/interstitials/interstitial_ui_constants.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 const char kChromeInterstitialSslPath[] = "/ssl";
 const char kChromeInterstitialCaptivePortalPath[] = "/captiveportal";
 const char kChromeInterstitialSafeBrowsingPath[] = "/safebrowsing";

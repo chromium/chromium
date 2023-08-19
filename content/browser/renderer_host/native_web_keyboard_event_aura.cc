@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "content/public/browser/native_web_keyboard_event.h"
+#include "content/public/common/input/native_web_keyboard_event.h"
 
 #include "ui/events/base_event_utils.h"
 #include "ui/events/blink/web_input_event.h"
@@ -21,36 +21,51 @@ ui::Event* CopyEvent(const ui::Event* event) {
 
 int WebEventModifiersToEventFlags(int modifiers) {
   int flags = 0;
-  if (modifiers & blink::WebInputEvent::kShiftKey)
+  if (modifiers & blink::WebInputEvent::kShiftKey) {
     flags |= ui::EF_SHIFT_DOWN;
-  if (modifiers & blink::WebInputEvent::kControlKey)
+  }
+  if (modifiers & blink::WebInputEvent::kControlKey) {
     flags |= ui::EF_CONTROL_DOWN;
-  if (modifiers & blink::WebInputEvent::kAltKey)
+  }
+  if (modifiers & blink::WebInputEvent::kAltKey) {
     flags |= ui::EF_ALT_DOWN;
-  if (modifiers & blink::WebInputEvent::kMetaKey)
+  }
+  if (modifiers & blink::WebInputEvent::kMetaKey) {
     flags |= ui::EF_COMMAND_DOWN;
-  if (modifiers & blink::WebInputEvent::kAltGrKey)
+  }
+  if (modifiers & blink::WebInputEvent::kAltGrKey) {
     flags |= ui::EF_ALTGR_DOWN;
-  if (modifiers & blink::WebInputEvent::kNumLockOn)
+  }
+  if (modifiers & blink::WebInputEvent::kNumLockOn) {
     flags |= ui::EF_NUM_LOCK_ON;
-  if (modifiers & blink::WebInputEvent::kCapsLockOn)
+  }
+  if (modifiers & blink::WebInputEvent::kCapsLockOn) {
     flags |= ui::EF_CAPS_LOCK_ON;
-  if (modifiers & blink::WebInputEvent::kScrollLockOn)
+  }
+  if (modifiers & blink::WebInputEvent::kScrollLockOn) {
     flags |= ui::EF_SCROLL_LOCK_ON;
-  if (modifiers & blink::WebInputEvent::kLeftButtonDown)
+  }
+  if (modifiers & blink::WebInputEvent::kLeftButtonDown) {
     flags |= ui::EF_LEFT_MOUSE_BUTTON;
-  if (modifiers & blink::WebInputEvent::kMiddleButtonDown)
+  }
+  if (modifiers & blink::WebInputEvent::kMiddleButtonDown) {
     flags |= ui::EF_MIDDLE_MOUSE_BUTTON;
-  if (modifiers & blink::WebInputEvent::kRightButtonDown)
+  }
+  if (modifiers & blink::WebInputEvent::kRightButtonDown) {
     flags |= ui::EF_RIGHT_MOUSE_BUTTON;
-  if (modifiers & blink::WebInputEvent::kBackButtonDown)
+  }
+  if (modifiers & blink::WebInputEvent::kBackButtonDown) {
     flags |= ui::EF_BACK_MOUSE_BUTTON;
-  if (modifiers & blink::WebInputEvent::kForwardButtonDown)
+  }
+  if (modifiers & blink::WebInputEvent::kForwardButtonDown) {
     flags |= ui::EF_FORWARD_MOUSE_BUTTON;
-  if (modifiers & blink::WebInputEvent::kIsAutoRepeat)
+  }
+  if (modifiers & blink::WebInputEvent::kIsAutoRepeat) {
     flags |= ui::EF_IS_REPEAT;
-  if (modifiers & blink::WebInputEvent::kIsTouchAccessibility)
+  }
+  if (modifiers & blink::WebInputEvent::kIsTouchAccessibility) {
     flags |= ui::EF_TOUCH_ACCESSIBILITY;
+  }
   return flags;
 }
 
@@ -104,36 +119,34 @@ NativeWebKeyboardEvent::NativeWebKeyboardEvent(blink::WebInputEvent::Type type,
                                                base::TimeTicks timestamp)
     : WebKeyboardEvent(type, modifiers, timestamp),
       os_event(nullptr),
-      skip_in_browser(false) {}
+      skip_if_unhandled(false) {}
 
 NativeWebKeyboardEvent::NativeWebKeyboardEvent(
     const blink::WebKeyboardEvent& web_event,
     gfx::NativeView native_view)
-    : WebKeyboardEvent(web_event), os_event(nullptr), skip_in_browser(false) {
+    : WebKeyboardEvent(web_event), os_event(nullptr), skip_if_unhandled(false) {
   os_event = TranslatedKeyEvent::Create(web_event);
 }
 
 NativeWebKeyboardEvent::NativeWebKeyboardEvent(gfx::NativeEvent native_event)
-    : NativeWebKeyboardEvent(static_cast<ui::KeyEvent&>(*native_event)) {
-}
+    : NativeWebKeyboardEvent(static_cast<ui::KeyEvent&>(*native_event)) {}
 
 NativeWebKeyboardEvent::NativeWebKeyboardEvent(const ui::KeyEvent& key_event)
     : WebKeyboardEvent(ui::MakeWebKeyboardEvent(key_event)),
       os_event(CopyEvent(&key_event)),
-      skip_in_browser(false) {}
+      skip_if_unhandled(false) {}
 
 NativeWebKeyboardEvent::NativeWebKeyboardEvent(
     const NativeWebKeyboardEvent& other)
     : WebKeyboardEvent(other),
       os_event(CopyEvent(other.os_event)),
-      skip_in_browser(other.skip_in_browser) {
-}
+      skip_if_unhandled(other.skip_if_unhandled) {}
 
 NativeWebKeyboardEvent::NativeWebKeyboardEvent(const ui::KeyEvent& key_event,
                                                char16_t character)
     : WebKeyboardEvent(ui::MakeWebKeyboardEvent(key_event)),
       os_event(nullptr),
-      skip_in_browser(false) {
+      skip_if_unhandled(false) {
   type_ = blink::WebInputEvent::Type::kChar;
   windows_key_code = character;
   text[0] = character;
@@ -145,7 +158,7 @@ NativeWebKeyboardEvent& NativeWebKeyboardEvent::operator=(
   WebKeyboardEvent::operator=(other);
   delete os_event;
   os_event = CopyEvent(other.os_event);
-  skip_in_browser = other.skip_in_browser;
+  skip_if_unhandled = other.skip_if_unhandled;
   return *this;
 }
 

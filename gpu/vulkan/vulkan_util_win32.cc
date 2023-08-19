@@ -65,4 +65,21 @@ SemaphoreHandle GetVkSemaphoreHandle(
   return SemaphoreHandle(handle_type, base::win::ScopedHandle(handle));
 }
 
+bool IsVkOpaqueExternalSemaphoreSupported(VulkanDeviceQueue* device_queue) {
+  return IsVkExternalSemaphoreHandleTypeSupported(
+      device_queue, VK_EXTERNAL_SEMAPHORE_HANDLE_TYPE_OPAQUE_WIN32_BIT);
+}
+
+VkSemaphore CreateVkOpaqueExternalSemaphore(VkDevice vk_device) {
+  return CreateExternalVkSemaphore(
+      vk_device, VK_EXTERNAL_SEMAPHORE_HANDLE_TYPE_OPAQUE_WIN32_BIT);
+}
+
+SemaphoreHandle ExportVkOpaqueExternalSemaphore(VkDevice vk_device,
+                                                VkSemaphore vk_semaphore) {
+  return GetVkSemaphoreHandle(
+      vk_device, vk_semaphore,
+      VK_EXTERNAL_SEMAPHORE_HANDLE_TYPE_OPAQUE_WIN32_BIT);
+}
+
 }  // namespace gpu

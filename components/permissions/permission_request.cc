@@ -70,6 +70,9 @@ std::u16string PermissionRequest::GetDialogMessageText() const {
     case RequestType::kMicStream:
       message_id = IDS_MEDIA_CAPTURE_AUDIO_ONLY_INFOBAR_TEXT;
       break;
+    case RequestType::kMidi:
+      message_id = IDS_MIDI_INFOBAR_TEXT;
+      break;
     case RequestType::kMidiSysex:
       message_id = IDS_MIDI_SYSEX_INFOBAR_TEXT;
       break;
@@ -151,6 +154,8 @@ absl::optional<std::u16string> PermissionRequest::GetRequestChipText(
          IDS_PERMISSIONS_MICROPHONE_ALLOWED_CONFIRMATION_SCREENREADER_ANNOUNCEMENT,
          IDS_PERMISSIONS_MICROPHONE_ALLOWED_ONCE_CONFIRMATION_SCREENREADER_ANNOUNCEMENT,
          IDS_PERMISSIONS_MICROPHONE_NOT_ALLOWED_CONFIRMATION_SCREENREADER_ANNOUNCEMENT}},
+       {RequestType::kMidi,
+        {IDS_MIDI_PERMISSION_CHIP, -1, -1, -1, -1, -1, -1, -1}},
        {RequestType::kMidiSysex,
         {IDS_MIDI_SYSEX_PERMISSION_CHIP, -1, -1, -1, -1, -1, -1, -1}},
        {RequestType::kNotifications,
@@ -210,6 +215,9 @@ std::u16string PermissionRequest::GetMessageTextFragment() const {
     case RequestType::kMicStream:
       message_id = IDS_MEDIA_CAPTURE_AUDIO_ONLY_PERMISSION_FRAGMENT;
       break;
+    case RequestType::kMidi:
+      message_id = IDS_MIDI_PERMISSION_FRAGMENT;
+      break;
     case RequestType::kMidiSysex:
       message_id = IDS_MIDI_SYSEX_PERMISSION_FRAGMENT;
       break;
@@ -231,12 +239,6 @@ std::u16string PermissionRequest::GetMessageTextFragment() const {
     case RequestType::kStorageAccess:
     case RequestType::kTopLevelStorageAccess:
       message_id = IDS_STORAGE_ACCESS_PERMISSION_FRAGMENT;
-      break;
-    case RequestType::kSecurityAttestation:
-      message_id = IDS_SECURITY_KEY_ATTESTATION_PERMISSION_FRAGMENT;
-      break;
-    case RequestType::kU2fApiRequest:
-      message_id = IDS_U2F_API_PERMISSION_FRAGMENT;
       break;
     case RequestType::kVrSession:
       message_id = IDS_VR_PERMISSION_FRAGMENT;

@@ -184,7 +184,8 @@ TEST_P(RulesetManagerTest, MultipleRulesets) {
 
     ASSERT_EQ(0u, manager()->GetMatcherCountForTest());
 
-    std::string extension_id_one, extension_id_two;
+    ExtensionId extension_id_one;
+    ExtensionId extension_id_two;
     size_t expected_matcher_count = 0;
 
     // Add the required rulesets.

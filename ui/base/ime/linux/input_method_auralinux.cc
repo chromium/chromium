@@ -6,6 +6,7 @@
 
 #include "base/auto_reset.h"
 #include "base/environment.h"
+#include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/strings/utf_offset_string_conversions.h"
 #include "base/strings/utf_string_conversions.h"
@@ -14,6 +15,7 @@
 #include "ui/base/ime/linux/linux_input_method_context_factory.h"
 #include "ui/base/ime/text_input_client.h"
 #include "ui/base/ime/text_input_flags.h"
+#include "ui/base/ui_base_features.h"
 #include "ui/events/event.h"
 
 namespace {
@@ -202,7 +204,7 @@ ui::EventDispatchDetails InputMethodAuraLinux::DispatchKeyEvent(
   // Should stop propagation of the event when composition is updated,
   // because the event is considered to be used for the composition.
   should_stop_propagation |=
-      MaybeUpdateComposition(commit_result == CommitResult::kSuccess);
+      UpdateCompositionIfChanged(commit_result == CommitResult::kSuccess);
 
   // If the IME has not handled the key event, passes the keyevent back to the
   // previous processing flow.
@@ -319,7 +321,26 @@ InputMethodAuraLinux::CommitResult InputMethodAuraLinux::MaybeCommitResult(
   return CommitResult::kSuccess;
 }
 
-bool InputMethodAuraLinux::MaybeUpdateComposition(bool text_committed) {
+bool InputMethodAuraLinux::UpdateCompositionIfTextSelected() {
+  TextInputClient* client = GetTextInputClient();
+  if (!client || IsTextInputTypeNone()) {
+    return false;
+  }
+  // In the special case where (1) there is no composition and (2) there is a
+  // non-empty selection, calling SetCompositionText should delete the
+  // selection, even when the call would otherwise be considered redundant.
+  // For example, calling SetCompositionText('') when there is no composition
+  // seems like it would have no effect, but it does if there is a non-empty
+  // selection, so we make sure it is called in such cases. See b/223500609.
+  if (!client->HasCompositionText() && composition_.text.empty() &&
+      selection_range_.IsValid() && !selection_range_.is_empty()) {
+    client->SetCompositionText(composition_);
+    return true;
+  }
+  return false;
+}
+
+bool InputMethodAuraLinux::UpdateCompositionIfChanged(bool text_committed) {
   TextInputClient* client = GetTextInputClient();
   bool update_composition =
       client && composition_changed_ && !IsTextInputTypeNone();
@@ -351,28 +372,21 @@ void InputMethodAuraLinux::UpdateContextFocusState() {
   auto* client = GetTextInputClient();
   bool has_client = client != nullptr;
   TextInputClient::FocusReason reason;
+  LinuxInputMethodContext::TextInputClientAttributes attributes;
+  attributes.input_type = text_input_type_;
   if (client) {
     reason = client->GetFocusReason();
+    attributes.input_mode = client->GetTextInputMode();
+    attributes.flags = client->GetTextInputFlags();
+    attributes.should_do_learning = client->ShouldDoLearning();
+    attributes.can_compose_inline = client->CanComposeInline();
   } else {
     reason = text_input_type_ == TEXT_INPUT_TYPE_NONE
                  ? TextInputClient::FocusReason::FOCUS_REASON_NONE
                  : TextInputClient::FocusReason::FOCUS_REASON_OTHER;
   }
-  context_->UpdateFocus(has_client, old_text_input_type, text_input_type_,
-                        reason);
 
-  TextInputMode mode = TEXT_INPUT_MODE_DEFAULT;
-  int flags = TEXT_INPUT_FLAG_NONE;
-  bool should_do_learning = false;
-  bool can_compose_inline = true;
-  if (client) {
-    mode = client->GetTextInputMode();
-    flags = client->GetTextInputFlags();
-    should_do_learning = client->ShouldDoLearning();
-    can_compose_inline = client->CanComposeInline();
-  }
-  context_->SetContentType(text_input_type_, mode, flags, should_do_learning,
-                           can_compose_inline);
+  context_->UpdateFocus(has_client, old_text_input_type, attributes, reason);
 }
 
 void InputMethodAuraLinux::OnTextInputTypeChanged(TextInputClient* client) {
@@ -496,6 +510,12 @@ void InputMethodAuraLinux::OnCommit(const std::u16string& text) {
   }
 }
 
+void InputMethodAuraLinux::OnInsertImage(const GURL& src) {
+  if (auto* text_input_client = GetTextInputClient()) {
+    text_input_client->InsertImage(src);
+  }
+}
+
 void InputMethodAuraLinux::OnConfirmCompositionText(bool keep_selection) {
   ConfirmCompositionText(keep_selection);
 }
@@ -614,7 +634,16 @@ void InputMethodAuraLinux::OnPreeditUpdate(
       return;
     }
   }
-  MaybeUpdateComposition(last_commit_result_ == CommitResult::kSuccess);
+  {
+    bool set_composition_text_called = false;
+    if (base::FeatureList::IsEnabled(
+            features::kRedundantImeCompositionClearing)) {
+      set_composition_text_called = UpdateCompositionIfTextSelected();
+    }
+    if (!set_composition_text_called) {
+      UpdateCompositionIfChanged(last_commit_result_ == CommitResult::kSuccess);
+    }
+  }
   last_commit_result_.reset();
 }
 

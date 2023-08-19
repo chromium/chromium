@@ -4,11 +4,9 @@
 
 #include "ui/base/test/ios/ui_image_test_utils.h"
 
-#include "base/mac/scoped_cftyperef.h"
+#include "base/apple/scoped_cftyperef.h"
 
-namespace ui {
-namespace test {
-namespace uiimage_utils {
+namespace ui::test::uiimage_utils {
 
 UIImage* UIImageWithSizeAndSolidColor(CGSize const& size, UIColor* color) {
   return UIImageWithSizeAndSolidColorAndScale(size, color, /*scale=*/1.0);
@@ -17,13 +15,20 @@ UIImage* UIImageWithSizeAndSolidColor(CGSize const& size, UIColor* color) {
 UIImage* UIImageWithSizeAndSolidColorAndScale(CGSize const& size,
                                               UIColor* color,
                                               CGFloat scale) {
-  UIGraphicsBeginImageContextWithOptions(size, /*opaque=*/YES, scale);
-  CGContextRef context = UIGraphicsGetCurrentContext();
-  CGContextSetFillColorWithColor(context, [color CGColor]);
-  CGContextFillRect(context, CGRectMake(0, 0, size.width, size.height));
-  UIImage* image_with_solid_color = UIGraphicsGetImageFromCurrentImageContext();
-  UIGraphicsEndImageContext();
-  return image_with_solid_color;
+  UIGraphicsImageRendererFormat* format =
+      [UIGraphicsImageRendererFormat preferredFormat];
+  format.scale = scale;
+  format.opaque = YES;
+
+  UIGraphicsImageRenderer* renderer =
+      [[UIGraphicsImageRenderer alloc] initWithSize:size format:format];
+
+  return
+      [renderer imageWithActions:^(UIGraphicsImageRendererContext* ui_context) {
+        CGContextRef context = ui_context.CGContext;
+        CGContextSetFillColorWithColor(context, [color CGColor]);
+        CGContextFillRect(context, CGRectMake(0, 0, size.width, size.height));
+      }];
 }
 
 bool UIImagesAreEqual(UIImage* image_1, UIImage* image_2) {
@@ -49,6 +54,4 @@ bool UIImagesAreEqual(UIImage* image_1, UIImage* image_2) {
   return memcmp(ptr_1, ptr_2, length_1) == 0;
 }
 
-}  // namespace uiimage_utils
-}  // namespace test
-}  // namespace ui
+}  // namespace ui::test::uiimage_utils

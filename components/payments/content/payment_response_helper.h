@@ -36,7 +36,7 @@ class PaymentResponseHelper
 
   // The spec, selected_app and delegate cannot be null.
   PaymentResponseHelper(
-      const std::string& app_locale,
+      std::string app_locale,
       base::WeakPtr<PaymentRequestSpec> spec,
       base::WeakPtr<PaymentApp> selected_app,
       base::WeakPtr<PaymentRequestDelegate> payment_request_delegate,
@@ -66,7 +66,7 @@ class PaymentResponseHelper
   void OnAddressNormalized(bool success,
                            const autofill::AutofillProfile& normalized_profile);
 
-  const raw_ref<const std::string> app_locale_;
+  const std::string app_locale_;
   bool is_waiting_for_shipping_address_normalization_;
   bool is_waiting_for_instrument_details_;
 

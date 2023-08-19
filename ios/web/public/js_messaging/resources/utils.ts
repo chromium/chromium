@@ -27,8 +27,8 @@ declare global {
 /**
  * Posts `message` to the webkit message handler specified by `handlerName`.
  *
- * @param {string} handlerName The name of the webkit message handler.
- * @param {Object} message The message to post to the handler.
+ * @param handlerName The name of the webkit message handler.
+ * @param message The message to post to the handler.
  */
 function sendWebKitMessage(handlerName: string, message: object|string) {
   try {
@@ -44,4 +44,16 @@ function sendWebKitMessage(handlerName: string, message: object|string) {
   }
 };
 
-export {sendWebKitMessage}
+/**
+ * Trims any whitespace from the start and end of a string.
+ * Used in preference to String.prototype.trim which can be overridden by
+ * sites.
+ *
+ * @param str The string to be trimmed.
+ * @return The string after trimming.
+ */
+function trim(str: string): string {
+  return str.replace(/^\s+|\s+$/g, '');
+};
+
+export {sendWebKitMessage, trim}

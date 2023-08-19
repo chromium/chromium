@@ -7,6 +7,7 @@
 #include <deque>
 #include <vector>
 
+#include "base/check_op.h"
 #include "base/command_line.h"
 #include "base/format_macros.h"
 #include "base/no_destructor.h"
@@ -115,14 +116,14 @@ static PrinterInfoKey printer_info_keys[] = {
     {"prn-info-4", PrinterInfoKey::Tag::kArray},
 };
 
-ScopedPrinterInfo::ScopedPrinterInfo(base::StringPiece data) {
-  std::vector<base::StringPiece> info = base::SplitStringPiece(
-      data, ";", base::TRIM_WHITESPACE, base::SPLIT_WANT_ALL);
+ScopedPrinterInfo::ScopedPrinterInfo(std::vector<std::string> data) {
+  CHECK_LE(data.size(), std::size(printer_info_keys));
   for (size_t i = 0; i < std::size(printer_info_keys); ++i) {
-    if (i < info.size())
-      printer_info_keys[i].Set(info[i]);
-    else
+    if (i < data.size()) {
+      printer_info_keys[i].Set(data[i]);
+    } else {
       printer_info_keys[i].Clear();
+    }
   }
 }
 

@@ -46,7 +46,7 @@ class ASH_EXPORT CaptureModeBarView : public views::View {
 
   // views::View:
   void AddedToWidget() override;
-  void Layout() override;
+  void OnBoundsChanged(const gfx::Rect& previous_bounds) override;
 
  protected:
   CaptureModeBarView();

@@ -117,3 +117,9 @@ bool TestTabStripModelDelegate::IsForWebApp() {
 }
 
 void TestTabStripModelDelegate::CopyURL(content::WebContents* web_contents) {}
+
+void TestTabStripModelDelegate::GoBack(content::WebContents* web_contents) {}
+
+bool TestTabStripModelDelegate::CanGoBack(content::WebContents* web_contents) {
+  return false;
+}

@@ -16,6 +16,7 @@
 #include "base/memory/ref_counted.h"
 #include "build/chromeos_buildflags.h"
 #include "components/signin/public/base/signin_client.h"
+#include "components/signin/public/base/wait_for_network_callback_helper.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "services/network/public/cpp/weak_wrapper_shared_url_loader_factory.h"
 #include "services/network/public/mojom/cookie_manager.mojom.h"
@@ -27,6 +28,26 @@
 #endif
 
 class PrefService;
+
+namespace version_info {
+enum class Channel;
+}
+
+class TestWaitForNetworkCallbackHelper : public WaitForNetworkCallbackHelper {
+ public:
+  TestWaitForNetworkCallbackHelper();
+  ~TestWaitForNetworkCallbackHelper() override;
+
+  // WaitForNetworkCallbackHelper:
+  bool AreNetworkCallsDelayed() override;
+  void DelayNetworkCall(base::OnceClosure callback) override;
+
+  void SetNetworkCallsDelayed(bool delayed);
+
+ private:
+  bool network_calls_delayed_ = false;
+  std::vector<base::OnceClosure> delayed_network_calls_;
+};
 
 // An implementation of SigninClient for use in unittests. Instantiates test
 // versions of the various objects that SigninClient is required to provide as
@@ -89,6 +110,7 @@ class TestSigninClient : public SigninClient {
   std::unique_ptr<GaiaAuthFetcher> CreateGaiaAuthFetcher(
       GaiaAuthConsumer* consumer,
       gaia::GaiaSource source) override;
+  version_info::Channel GetClientChannel() override;
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
   absl::optional<account_manager::Account> GetInitialPrimaryAccount() override;
@@ -102,6 +124,8 @@ class TestSigninClient : public SigninClient {
 #endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
 
  private:
+  std::unique_ptr<TestWaitForNetworkCallbackHelper>
+      test_wait_for_network_callback_helper_;
   std::unique_ptr<network::TestURLLoaderFactory>
       default_test_url_loader_factory_;
   raw_ptr<network::TestURLLoaderFactory> test_url_loader_factory_;
@@ -109,9 +133,6 @@ class TestSigninClient : public SigninClient {
   raw_ptr<PrefService> pref_service_;
   std::unique_ptr<network::mojom::CookieManager> cookie_manager_;
   bool are_signin_cookies_allowed_;
-  bool network_calls_delayed_;
-
-  std::vector<base::OnceClosure> delayed_network_calls_;
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
   absl::optional<account_manager::Account> initial_primary_account_;

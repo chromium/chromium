@@ -48,9 +48,9 @@ std::vector<base::FilePath> GetSetupFiles(const base::FilePath& source_dir) {
       source_dir, false, base::FileEnumerator::FileType::FILES,
       FILE_PATH_LITERAL("*"), base::FileEnumerator::FolderSearchPolicy::ALL,
       base::FileEnumerator::ErrorPolicy::STOP_ENUMERATION);
-  for (base::FilePath file = it.Next(); !file.empty(); file = it.Next()) {
+  it.ForEach([&result](const base::FilePath& file) {
     result.push_back(file.BaseName());
-  }
+  });
   if (it.GetError() != base::File::Error::FILE_OK) {
     VLOG(2) << __func__ << " could not enumerate files : " << it.GetError();
     return {};
@@ -78,6 +78,11 @@ int Setup(UpdaterScope scope) {
     LOG(ERROR) << "GetVersionedInstallDirectory failed.";
     return kErrorNoVersionedDirectory;
   }
+
+  // Stop any processes that may be running under the versioned path before
+  // installation.
+  StopProcessesUnderPath(*versioned_dir, base::Seconds(15));
+
   base::FilePath exe_path;
   if (!base::PathService::Get(base::FILE_EXE, &exe_path)) {
     LOG(ERROR) << "PathService failed.";

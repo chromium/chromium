@@ -6,7 +6,7 @@
 import {webUIListenerCallback} from 'chrome://resources/js/cr.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-import {CookiePrimarySetting, PrivacyGuideCompletionFragmentElement, PrivacyGuideCookiesFragmentElement, PrivacyGuideHistorySyncFragmentElement, PrivacyGuideMsbbFragmentElement, PrivacyGuideSafeBrowsingFragmentElement, PrivacyGuideWelcomeFragmentElement, SafeBrowsingSetting, SettingsRadioGroupElement} from 'chrome://settings/lazy_load.js';
+import {CookiePrimarySetting, PrivacyGuideCompletionFragmentElement, PrivacyGuideCookiesFragmentElement, PrivacyGuideHistorySyncFragmentElement, PrivacyGuideMsbbFragmentElement, PrivacyGuideSafeBrowsingFragmentElement, PrivacyGuideWelcomeFragmentElement, SafeBrowsingSetting, SettingsCollapseRadioButtonElement, SettingsRadioGroupElement} from 'chrome://settings/lazy_load.js';
 import {CrSettingsPrefs, MetricsBrowserProxyImpl, PrivacyGuideInteractions, PrivacyGuideSettingsStates, Router, routes, SettingsPrefsElement, SyncBrowserProxyImpl, SyncPrefs, syncPrefsIndividualDataTypes} from 'chrome://settings/settings.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {eventToPromise, isChildVisible} from 'chrome://webui-test/test_util.js';
@@ -26,7 +26,7 @@ function setSignInState(signedIn: boolean) {
   flush();
 }
 
-suite('WelcomeFragmentTests', function() {
+suite('WelcomeFragment', function() {
   let fragment: PrivacyGuideWelcomeFragmentElement;
 
   setup(function() {
@@ -50,7 +50,7 @@ suite('WelcomeFragmentTests', function() {
   });
 });
 
-suite('MsbbFragmentTests', function() {
+suite('MsbbFragment', function() {
   let fragment: PrivacyGuideMsbbFragmentElement;
   let settingsPrefs: SettingsPrefsElement;
   let testMetricsBrowserProxy: TestMetricsBrowserProxy;
@@ -145,7 +145,7 @@ suite('MsbbFragmentTests', function() {
   });
 });
 
-suite('HistorySyncFragmentTests', function() {
+suite('HistorySyncFragment', function() {
   let fragment: PrivacyGuideHistorySyncFragmentElement;
   let syncBrowserProxy: TestSyncBrowserProxy;
   let testMetricsBrowserProxy: TestMetricsBrowserProxy;
@@ -383,12 +383,13 @@ suite('HistorySyncFragmentTests', function() {
   });
 });
 
-suite('SafeBrowsingFragmentTests', function() {
+suite('SafeBrowsingFragment', function() {
   let fragment: PrivacyGuideSafeBrowsingFragmentElement;
   let settingsPrefs: SettingsPrefsElement;
   let testMetricsBrowserProxy: TestMetricsBrowserProxy;
 
   suiteSetup(function() {
+    loadTimeData.overrideValues({enableFriendlierSafeBrowsingSettings: true});
     settingsPrefs = document.createElement('settings-prefs');
     return CrSettingsPrefs.initialized;
   });
@@ -450,6 +451,35 @@ suite('SafeBrowsingFragmentTests', function() {
     assertEquals(result, expectedMetric);
   }
 
+  test('UpdatedEnhancedProtectionPrivacyGuide', function() {
+    const enhancedProtection =
+        fragment.shadowRoot!.querySelector<SettingsCollapseRadioButtonElement>(
+            '#safeBrowsingRadioEnhanced');
+    assertTrue(!!enhancedProtection);
+    const epSubLabel =
+        loadTimeData.getString('safeBrowsingEnhancedDescUpdated');
+    assertEquals(epSubLabel, enhancedProtection.subLabel);
+
+    fragment.shadowRoot!
+        .querySelector<HTMLElement>('#safeBrowsingRadioEnhanced')!.click();
+    flush();
+    // The updated description item container should be visible.
+    assertTrue(isChildVisible(fragment, '#updatedDescItemContainer'));
+  });
+
+  test('UpdatedStandardProtectionPrivacyGuide', function() {
+    const standardProtection =
+        fragment.shadowRoot!.querySelector<SettingsCollapseRadioButtonElement>(
+            '#safeBrowsingRadioStandard');
+    assertTrue(!!standardProtection);
+    const spSubLabel =
+        loadTimeData.getString('safeBrowsingStandardDescUpdated');
+    assertEquals(spSubLabel, standardProtection.subLabel);
+    assertTrue(standardProtection.noCollapse);
+    assertFalse(
+        isChildVisible(fragment, '#whenOnThingsToConsiderStandardProtection'));
+  });
+
   test('safeBrowsingMetricsEnhancedToStandard', function() {
     return assertSafeBrowsingMetrics({
       safeBrowsingStartsEnhanced: true,
@@ -502,9 +532,46 @@ suite('SafeBrowsingFragmentTests', function() {
     assertEquals(
         Number(radioButtonGroup.selected), SafeBrowsingSetting.STANDARD);
   });
+
+  suite('SafeBrowsingFragment_FlagsDisabled', function() {
+    suiteSetup(function() {
+      loadTimeData.overrideValues(
+          {enableFriendlierSafeBrowsingSettings: false});
+    });
+
+    test('NotUpdatedStandardProtectionPrivacyGuide', function() {
+      const standardProtection =
+          fragment.shadowRoot!
+              .querySelector<SettingsCollapseRadioButtonElement>(
+                  '#safeBrowsingRadioStandard');
+      assertTrue(!!standardProtection);
+      const spSubLabel = loadTimeData.getString('safeBrowsingStandardDesc');
+      assertEquals(spSubLabel, standardProtection.subLabel);
+      assertFalse(standardProtection.noCollapse);
+      assertTrue(isChildVisible(
+          fragment, '#whenOnThingsToConsiderStandardProtection'));
+    });
+
+    test('NotUpdatedEnhancedProtectionPrivacyGuide', function() {
+      const enhancedProtection =
+          fragment.shadowRoot!
+              .querySelector<SettingsCollapseRadioButtonElement>(
+                  '#safeBrowsingRadioEnhanced');
+      assertTrue(!!enhancedProtection);
+      const epSubLabel = loadTimeData.getString('safeBrowsingEnhancedDesc');
+      assertEquals(epSubLabel, enhancedProtection.subLabel);
+
+      fragment.shadowRoot!
+          .querySelector<HTMLElement>('#safeBrowsingRadioEnhanced')!.click();
+      flush();
+      // The updated description item container should not be visible.
+      assertFalse(isChildVisible(fragment, '#updatedDescItemContainer'));
+    });
+  });
+
 });
 
-suite('CookiesFragmentTests', function() {
+suite('CookiesFragment', function() {
   let fragment: PrivacyGuideCookiesFragmentElement;
   let settingsPrefs: SettingsPrefsElement;
   let testMetricsBrowserProxy: TestMetricsBrowserProxy;
@@ -625,7 +692,7 @@ suite('CookiesFragmentTests', function() {
   });
 });
 
-suite('CompletionFragmentTests', function() {
+suite('CompletionFragment', function() {
   let fragment: PrivacyGuideCompletionFragmentElement;
   let testMetricsBrowserProxy: TestMetricsBrowserProxy;
 

@@ -29,6 +29,12 @@ std::unique_ptr<LayerImpl> VideoLayer::CreateLayerImpl(
                                 transform_);
 }
 
+bool VideoLayer::RequiresSetNeedsDisplayOnHdrHeadroomChange() const {
+  // TODO(https://crbug.com/1450807): Only return true if the contents of the
+  // video are HDR.
+  return true;
+}
+
 bool VideoLayer::Update() {
   bool updated = Layer::Update();
 

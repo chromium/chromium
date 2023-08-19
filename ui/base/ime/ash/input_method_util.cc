@@ -20,6 +20,7 @@
 #include "ui/base/ime/ash/component_extension_ime_manager.h"
 #include "ui/base/ime/ash/extension_ime_util.h"
 // For SetHardwareKeyboardLayoutForTesting.
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/ime/ash/fake_input_method_delegate.h"
 #include "ui/base/ime/ash/input_method_delegate.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -780,9 +781,11 @@ InputMethodDescriptor InputMethodUtil::GetFallbackInputMethodDescriptor() {
       extension_ime_util::GetInputMethodIDByEngineID("xkb:us::eng"), "", "US",
       "us",  // layout
       languages,
-      true,     // login keyboard.
-      GURL(),   // options page, not available.
-      GURL());  // input view page, not available.
+      true,                                   // login keyboard.
+      GURL(),                                 // options page, not available.
+      GURL(),                                 // input view page, not available.
+      /*handwriting_language=*/absl::nullopt  // not available.
+  );
 }
 
 }  // namespace input_method

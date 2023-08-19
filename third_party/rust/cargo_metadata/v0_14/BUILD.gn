@@ -2,6 +2,9 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+# @generated from third_party/rust/BUILD.gn.hbs by tools/crates/gnrt.
+# Do not edit!
+
 import("//build/rust/cargo_crate.gni")
 
 cargo_crate("lib") {
@@ -13,10 +16,19 @@ cargo_crate("lib") {
   # third_party.toml to use it from first-party code.
   visibility = [ "//third_party/rust/*" ]
   crate_root = "crate/src/lib.rs"
+  sources = [
+    "//third_party/rust/cargo_metadata/v0_14/crate/src/dependency.rs",
+    "//third_party/rust/cargo_metadata/v0_14/crate/src/diagnostic.rs",
+    "//third_party/rust/cargo_metadata/v0_14/crate/src/errors.rs",
+    "//third_party/rust/cargo_metadata/v0_14/crate/src/lib.rs",
+    "//third_party/rust/cargo_metadata/v0_14/crate/src/messages.rs",
+    "//third_party/rust/cargo_metadata/v0_14/crate/tests/selftest.rs",
+    "//third_party/rust/cargo_metadata/v0_14/crate/tests/test_samples.rs",
+  ]
+  inputs = [ "//third_party/rust/cargo_metadata/v0_14/crate/README.md" ]
 
   # Unit tests skipped. Generate with --with-tests to include them.
   build_native_rust_unit_tests = false
-  sources = [ "crate/src/lib.rs" ]
   edition = "2018"
   cargo_pkg_version = "0.14.2"
   cargo_pkg_authors =

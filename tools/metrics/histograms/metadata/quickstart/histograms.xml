@@ -1,0 +1,268 @@
+<!--
+Copyright 2023 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+
+<!--
+This file is used to generate a comprehensive list of Quick Start histograms
+along with a detailed description for each histogram.
+
+For best practices on writing histogram descriptions, see
+https://chromium.googlesource.com/chromium/src.git/+/HEAD/tools/metrics/histograms/README.md
+
+Please follow the instructions in the OWNERS file in this directory to find a
+reviewer. If no OWNERS file exists, please consider signing up at
+go/reviewing-metrics (Googlers only), as all subdirectories are expected to
+have an OWNERS file. As a last resort you can send the CL to
+chromium-metrics-reviews@google.com.
+-->
+
+<histogram-configuration>
+
+<histograms>
+
+<histogram name="QuickStart.FastPairAdvertisementEnded.AdvertisingMethod"
+    enum="QuickStartAdvertisingMethod" expires_after="2023-12-01">
+  <owner>bhartmire@google.com</owner>
+  <owner>joeantonetti@google.com</owner>
+  <owner>chromeos-cross-device-eng@google.com</owner>
+  <summary>
+    The authentication method used for the Quick Start flow. Recorded when
+    unregistering the advertisement or when there's an error attempting to
+    register the advertisement.
+  </summary>
+</histogram>
+
+<histogram name="QuickStart.FastPairAdvertisementEnded.Duration" units="ms"
+    expires_after="2023-12-01">
+  <owner>bhartmire@google.com</owner>
+  <owner>joeantonetti@google.com</owner>
+  <owner>chromeos-cross-device-eng@google.com</owner>
+  <summary>
+    Time elapsed from attempting to start Fast Pair Advertising to it ending or
+    an error occurring. Recorded when unregistering the advertisement or when
+    there's an error attempting to register the advertisement.
+  </summary>
+</histogram>
+
+<histogram name="QuickStart.FastPairAdvertisementEnded.ErrorCode"
+    enum="QuickStartFastPairAdvertisingEndedErrorCode"
+    expires_after="2023-12-01">
+  <owner>bhartmire@google.com</owner>
+  <owner>joeantonetti@google.com</owner>
+  <owner>chromeos-cross-device-eng@google.com</owner>
+  <summary>
+    Reason a Fast Pair BLE advertisment failed to register. Recorded whenever a
+    Bluetooth Advertisement error occurs after attempting to register the
+    advertisement.
+  </summary>
+</histogram>
+
+<histogram name="QuickStart.FastPairAdvertisementEnded.Succeeded"
+    enum="BooleanSuccess" expires_after="2023-12-01">
+  <owner>bhartmire@google.com</owner>
+  <owner>joeantonetti@google.com</owner>
+  <owner>chromeos-cross-device-eng@google.com</owner>
+  <summary>
+    Whether Fast Pair advertising was successful. Recorded when unregistering
+    the advertisement or when there's an error attempting to register the
+    advertisement.
+  </summary>
+</histogram>
+
+<histogram name="QuickStart.FastPairAdvertisementStarted.AdvertisingMethod"
+    enum="QuickStartAdvertisingMethod" expires_after="2023-12-01">
+  <owner>bhartmire@google.com</owner>
+  <owner>joeantonetti@google.com</owner>
+  <owner>chromeos-cross-device-eng@google.com</owner>
+  <summary>
+    The authentication method used for the Quick Start flow. Recorded before
+    attempting to register advertisement.
+  </summary>
+</histogram>
+
+<histogram name="QuickStart.GaiaTransferAttempted" enum="BooleanAttempted"
+    expires_after="2023-12-01">
+  <owner>bhartmire@google.com</owner>
+  <owner>joeantonetti@google.com</owner>
+  <owner>chromeos-cross-device-eng@google.com</owner>
+  <summary>
+    Whether account transfer is being attempted. Recorded when there is an error
+    with the challenge bytes received or before requesting assertion.
+  </summary>
+</histogram>
+
+<histogram name="QuickStart.GaiaTransferResult" enum="BooleanSuccess"
+    expires_after="2023-12-01">
+  <owner>bhartmire@google.com</owner>
+  <owner>joeantonetti@google.com</owner>
+  <owner>chromeos-cross-device-eng@google.com</owner>
+  <summary>
+    Whether Gaia transfer was successful. Recorded after succesfully generating
+    FIDO assertion information or when an error occurs when receiving an
+    assertion response.
+  </summary>
+</histogram>
+
+<histogram name="QuickStart.GaiaTransferResult.FailureReason"
+    enum="QuickStartGaiaTransferResultFailureReason" expires_after="2023-12-01">
+  <owner>bhartmire@google.com</owner>
+  <owner>joeantonetti@google.com</owner>
+  <owner>chromeos-cross-device-eng@google.com</owner>
+  <summary>
+    The reason Gaia account transfer attempt failed. Recorded when an error
+    occurs receiving an assertion response.
+  </summary>
+</histogram>
+
+<histogram name="QuickStart.HandshakeResult.Duration" units="ms"
+    expires_after="2023-12-01">
+  <owner>bhartmire@google.com</owner>
+  <owner>joeantonetti@google.com</owner>
+  <owner>chromeos-cross-device-eng@google.com</owner>
+  <summary>
+    Duration of handshake message sent till a response being verified. Recorded
+    when a response is received.
+  </summary>
+</histogram>
+
+<histogram name="QuickStart.HandshakeResult.ErrorCode"
+    enum="QuickStartHandshakeResultErrorCode" expires_after="2023-12-01">
+  <owner>bhartmire@google.com</owner>
+  <owner>joeantonetti@google.com</owner>
+  <owner>chromeos-cross-device-eng@google.com</owner>
+  <summary>
+    The error code associated with failing to successfully verify the handshake
+    response. Recorded when a response is received.
+  </summary>
+</histogram>
+
+<histogram name="QuickStart.HandshakeResult.Succeeded" enum="BooleanSuccess"
+    expires_after="2023-12-01">
+  <owner>bhartmire@google.com</owner>
+  <owner>joeantonetti@google.com</owner>
+  <owner>chromeos-cross-device-eng@google.com</owner>
+  <summary>
+    Whether handshake response was parsed and verified. Recorded when receiving
+    a handshake response.
+  </summary>
+</histogram>
+
+<histogram name="QuickStart.HandshakeStarted" enum="BooleanAttempted"
+    expires_after="2023-12-01">
+  <owner>bhartmire@google.com</owner>
+  <owner>joeantonetti@google.com</owner>
+  <owner>chromeos-cross-device-eng@google.com</owner>
+  <summary>
+    Whether handshake was attempted to authenticate connection. Handshake is
+    attempted when an incoming connection is accepted and using QR code
+    authentication. Recorded when an incoming connection is accepted.
+  </summary>
+</histogram>
+
+<histogram name="QuickStart.MessageReceived.DesiredMessageType"
+    enum="QuickStartMessageType" expires_after="2023-12-01">
+  <owner>bhartmire@google.com</owner>
+  <owner>joeantonetti@google.com</owner>
+  <owner>chromeos-cross-device-eng@google.com</owner>
+  <summary>
+    The message type that should be received from the remote device. Recorded
+    when the response is received or a timeout occurs waiting for it.
+  </summary>
+</histogram>
+
+<histogram name="QuickStart.MessageReceived.{MessageType}.ErrorCode"
+    enum="QuickStartMessageReceivedErrorCode" expires_after="2023-12-01">
+  <owner>bhartmire@google.com</owner>
+  <owner>joeantonetti@google.com</owner>
+  <owner>chromeos-cross-device-eng@google.com</owner>
+  <summary>
+    The type of error that occured when receiving a message. Recorded when the
+    response is received or a timeout occurs waiting.
+  </summary>
+  <token key="MessageType">
+    <variant name="Assertion"/>
+    <variant name="BootstrapConfigurations"/>
+    <variant name="GetInfo"/>
+    <variant name="Handshake"/>
+    <variant name="NotifySourceOfUpdate"/>
+    <variant name="WifiCredentials"/>
+  </token>
+</histogram>
+
+<histogram name="QuickStart.MessageReceived.{MessageType}.ListenDuration"
+    units="ms" expires_after="2023-12-01">
+  <owner>bhartmire@google.com</owner>
+  <owner>joeantonetti@google.com</owner>
+  <owner>chromeos-cross-device-eng@google.com</owner>
+  <summary>
+    The listen duration waiting for a response from the remote device. Recorded
+    when succesfully receiving a response or when a timeout occurs waiting for a
+    response.
+  </summary>
+  <token key="MessageType">
+    <variant name="Assertion"/>
+    <variant name="BootstrapConfigurations"/>
+    <variant name="GetInfo"/>
+    <variant name="Handshake"/>
+    <variant name="NotifySourceOfUpdate"/>
+    <variant name="WifiCredentials"/>
+  </token>
+</histogram>
+
+<histogram name="QuickStart.MessageReceived.{MessageType}.Succeeded"
+    enum="BooleanSuccess" expires_after="2023-12-01">
+  <owner>bhartmire@google.com</owner>
+  <owner>joeantonetti@google.com</owner>
+  <owner>chromeos-cross-device-eng@google.com</owner>
+  <summary>
+    Whether the target device received message from the remote device. Recorded
+    when a response is received or when a timeout occurs waiting for a response.
+  </summary>
+  <token key="MessageType">
+    <variant name="Assertion"/>
+    <variant name="BootstrapConfigurations"/>
+    <variant name="GetInfo"/>
+    <variant name="Handshake"/>
+    <variant name="NotifySourceOfUpdate"/>
+    <variant name="WifiCredentials"/>
+  </token>
+</histogram>
+
+<histogram name="QuickStart.MessageSent.MessageType"
+    enum="QuickStartMessageType" expires_after="2023-12-01">
+  <owner>bhartmire@google.com</owner>
+  <owner>joeantonetti@google.com</owner>
+  <owner>chromeos-cross-device-eng@google.com</owner>
+  <summary>
+    The message type sent to the remote device. Recorded before writing stream
+    of bytes.
+  </summary>
+</histogram>
+
+<histogram name="QuickStart.WifiTransferResult" enum="BooleanSuccess"
+    expires_after="2023-12-01">
+  <owner>bhartmire@google.com</owner>
+  <owner>joeantonetti@google.com</owner>
+  <owner>chromeos-cross-device-eng@google.com</owner>
+  <summary>
+    Whether the Wifi credentials transfer was successful. Recorded when checking
+    if Wifi credentials was received from source device.
+  </summary>
+</histogram>
+
+<histogram name="QuickStart.WifiTransferResult.FailureReason"
+    enum="QuickStartWifiTransferResultFailureReason" expires_after="2023-12-01">
+  <owner>bhartmire@google.com</owner>
+  <owner>joeantonetti@google.com</owner>
+  <owner>chromeos-cross-device-eng@google.com</owner>
+  <summary>
+    Failure reason of attempted Wifi credentials transfer. Recorded when
+    checking if Wifi credentials was received was source device.
+  </summary>
+</histogram>
+
+</histograms>
+
+</histogram-configuration>

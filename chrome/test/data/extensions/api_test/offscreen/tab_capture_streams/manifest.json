@@ -1,0 +1,8 @@
+{
+  "name": "Offscreen Document Test for chrome.tabCapture",
+  "manifest_version": 3,
+  "version": "0.1",
+  "background": {"service_worker": "background.js"},
+  "permissions": ["offscreen", "tabCapture", "activeTab"],
+  "action": {}
+}

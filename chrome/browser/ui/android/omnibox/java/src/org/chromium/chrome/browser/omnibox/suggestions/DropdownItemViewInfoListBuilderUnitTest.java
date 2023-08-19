@@ -35,10 +35,9 @@ import org.mockito.junit.MockitoRule;
 import org.robolectric.annotation.Config;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
-import org.chromium.chrome.browser.omnibox.suggestions.base.HistoryClustersProcessor;
 import org.chromium.chrome.browser.omnibox.suggestions.dividerline.DividerLineProcessor;
 import org.chromium.chrome.browser.omnibox.suggestions.header.HeaderProcessor;
+import org.chromium.chrome.browser.omnibox.suggestions.history_clusters.HistoryClustersProcessor;
 import org.chromium.chrome.test.util.browser.Features;
 import org.chromium.components.omnibox.AutocompleteMatch;
 import org.chromium.components.omnibox.AutocompleteMatchBuilder;
@@ -360,7 +359,12 @@ public class DropdownItemViewInfoListBuilderUnitTest {
         mBuilder.setDropdownHeightWithKeyboardActive(45);
         Assert.assertEquals(5, mBuilder.getVisibleSuggestionsCount(result));
 
-        mBuilder.setDropdownHeightWithKeyboardActive(51);
+        // 40% of the next suggestion exposed - still not sufficient to be considered "visible".
+        mBuilder.setDropdownHeightWithKeyboardActive(54);
+        Assert.assertEquals(5, mBuilder.getVisibleSuggestionsCount(result));
+
+        // 50% of the next suggestion exposed - considered "visible".
+        mBuilder.setDropdownHeightWithKeyboardActive(55);
         Assert.assertEquals(6, mBuilder.getVisibleSuggestionsCount(result));
     }
 
@@ -520,8 +524,6 @@ public class DropdownItemViewInfoListBuilderUnitTest {
 
     @Test
     @SmallTest
-    @Features.
-    EnableFeatures(ChromeFeatureList.OMNIBOX_ADAPTIVE_SUGGESTIONS_VISIBLE_GROUP_ELIGIBILITY_UPDATE)
     public void visibleSuggestions_updatedVisibleGroupEligibilityLogic() {
         final SuggestionProcessor mockProcessor = mock(SuggestionProcessor.class);
         mBuilder.registerSuggestionProcessor(mockProcessor);

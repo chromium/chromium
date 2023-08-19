@@ -8,7 +8,6 @@
 # Our version of pylint doesn't know about python3 yet.
 # pylint: disable=unexpected-keyword-arg
 import argparse
-import collections
 import csv
 import json
 import os
@@ -103,20 +102,13 @@ class _Artifact:
           name = k[4:]
         metrics['DFM: ' + name] = v['Size with hindi']['value']
 
-  def PrintLibraryCompression(self):
-    with zipfile.ZipFile(self._path) as z:
-      for info in z.infolist():
-        if info.filename.endswith('.so'):
-          sys.stdout.write('{}/{} compressed: {} uncompressed: {}\n'.format(
-              self.name, posixpath.basename(info.filename), info.compress_size,
-              info.file_size))
 
-
-def _DumpCsv(metrics):
+def _DumpCsvAndClear(metrics):
   csv_writer = csv.DictWriter(
       sys.stdout, fieldnames=list(metrics.keys()), delimiter='\t')
   csv_writer.writeheader()
   csv_writer.writerow(metrics)
+  metrics.clear()
 
 
 def _DownloadAndAnalyze(signed_prefix, unsigned_prefix, staging_dir):
@@ -136,6 +128,12 @@ def _DownloadAndAnalyze(signed_prefix, unsigned_prefix, staging_dir):
   trichrome64_chrome = make_artifact('arm_64/TrichromeChromeGoogleStable.aab')
   trichrome64_webview = make_artifact('arm_64/TrichromeWebViewGoogleStable.aab')
   trichrome64_library = make_artifact('arm_64/TrichromeLibraryGoogleStable.apk')
+  trichrome64_high_chrome = make_artifact(
+      'high-arm_64/TrichromeChromeGoogle6432Stable.aab')
+  trichrome64_high_webview = make_artifact(
+      'high-arm_64/TrichromeWebViewGoogle6432Stable.aab')
+  trichrome64_high_library = make_artifact(
+      'high-arm_64/TrichromeLibraryGoogle6432Stable.apk')
 
   trichrome_system_apks = [
       make_artifact('arm/TrichromeWebViewGoogleSystemStable.apk'),
@@ -165,7 +163,7 @@ def _DownloadAndAnalyze(signed_prefix, unsigned_prefix, staging_dir):
   pool.close()
 
   # Add metrics in the order that we want them in the .csv output.
-  metrics = collections.OrderedDict()
+  metrics = {}
   webview.AddSize(metrics)
   webview64.AddSize(metrics)
   monochrome.AddSize(metrics)
@@ -175,16 +173,17 @@ def _DownloadAndAnalyze(signed_prefix, unsigned_prefix, staging_dir):
   trichrome_library.AddSize(metrics)
 
   # Separate where spreadsheet has computed columns for easier copy/paste.
-  _DumpCsv(metrics)
-  metrics = collections.OrderedDict()
+  _DumpCsvAndClear(metrics)
   trichrome64_chrome.AddSize(metrics)
   trichrome64_webview.AddSize(metrics)
   trichrome64_library.AddSize(metrics)
+  _DumpCsvAndClear(metrics)
 
-  _DumpCsv(metrics)
-  metrics = collections.OrderedDict()
+  trichrome64_high_chrome.AddSize(metrics)
+  trichrome64_high_webview.AddSize(metrics)
+  trichrome64_high_library.AddSize(metrics)
 
-  webview.PrintLibraryCompression()
+  _DumpCsvAndClear(metrics)
 
   metrics['System Image Size (arm32)'] = sum(x.GetApkSize()
                                              for x in trichrome_system_apks)
@@ -205,12 +204,11 @@ def _DownloadAndAnalyze(signed_prefix, unsigned_prefix, staging_dir):
   monochrome.AddMethodCount(metrics)
 
   # Separate where spreadsheet has computed columns for easier copy/paste.
-  _DumpCsv(metrics)
-  metrics = collections.OrderedDict()
+  _DumpCsvAndClear(metrics)
 
   trichrome_chrome.AddDfmSizes(metrics, 'Chrome')
   trichrome_webview.AddDfmSizes(metrics, 'WebView')
-  _DumpCsv(metrics)
+  _DumpCsvAndClear(metrics)
 
 
 def _CheckGnArgs(unsigned_prefix):
@@ -223,8 +221,10 @@ def _CheckGnArgs(unsigned_prefix):
       if f'{name} =' not in gn_args_data:
         sys.stderr.write(f'{name} is not in gn-args-derived.txt.\n')
       else:
-        sys.stderr.write(f'{name}!={value} in gn-args-derived.txt.\n')
-      sys.stderr.write('To download: ' + ' '.join(args) + '\n')
+        sys.stderr.write(f'{name} != {value} in gn-args-derived.txt.\n')
+        sys.stderr.write('Sizes will not be accurate. Try again with a later '
+                         'patch version.\n')
+      sys.stderr.write('Manually verify via: ' + ' '.join(args) + '\n')
       sys.exit(1)
 
   check_arg('is_on_release_branch', 'true')

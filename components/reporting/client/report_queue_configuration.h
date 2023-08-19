@@ -10,11 +10,13 @@
 #include <utility>
 
 #include "base/functional/callback.h"
+#include "components/reporting/proto/synced/record.pb.h"
 #include "components/reporting/proto/synced/record_constants.pb.h"
 #include "components/reporting/util/rate_limiter_interface.h"
 #include "components/reporting/util/status.h"
 #include "components/reporting/util/statusor.h"
 #include "components/reporting/util/wrapped_rate_limiter.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace reporting {
 
@@ -34,16 +36,66 @@ enum class EventType { kDevice, kUser };
 class ReportQueueConfiguration {
  public:
   // PolicyCheckCallbacks should return error::UNAUTHENTICATED if a policy check
-  // fails due to policies. Any other error as appropriate, and OK if a policy
+  // fails due to policies, any other error as appropriate, and OK if a policy
   // check is successful.
   using PolicyCheckCallback = base::RepeatingCallback<Status(void)>;
+
+  // Transient settings used by `ReportQueueConfiguration` instantiation.
+  struct Settings {
+    EventType event_type = EventType::kDevice;
+    Destination destination = Destination::UNDEFINED_DESTINATION;
+    int64_t reserved_space = 0L;
+  };
+
+  // Transient moveable helper class for composing `ReportQueueConfiguration`
+  // out of settings and then allowing to set non-trivial fields.
+  class Builder {
+   public:
+    explicit Builder(const Settings& settings);
+    Builder(Builder&&);
+    Builder& operator=(const Builder&) = delete;
+    ~Builder();
+
+    // Modifiers for non-trivial fields.
+    Builder SetPolicyCheckCallback(PolicyCheckCallback policy_check_callback);
+    Builder SetRateLimiter(std::unique_ptr<RateLimiterInterface> rate_limiter);
+    Builder SetDMToken(std::string_view dm_token);
+    Builder SetSourceInfo(absl::optional<SourceInfo> source_info);
+
+    // Finalizes the builder (no modifications are accepted after that) and
+    // outputs the final `ReportQueueConfiguration` or status.
+    StatusOr<std::unique_ptr<ReportQueueConfiguration>> Build();
+
+   private:
+    StatusOr<std::unique_ptr<ReportQueueConfiguration>> final_value_;
+  };
 
   ~ReportQueueConfiguration();
   ReportQueueConfiguration(const ReportQueueConfiguration& other) = delete;
   ReportQueueConfiguration& operator=(const ReportQueueConfiguration& other) =
       delete;
 
-  // Deprecated and should not be used.
+  // Factory for generating a `ReportQueueConfiguration`.
+  // The factory produces `Builder` thus allowing to set non-trivial fields.
+  // Once everything is set, `Builder` can be assigned (once!) using
+  // cast operator to `StatusOr<std::unique_ptr<ReportQueueConfiguration>>()`.
+  //
+  // Example usage:
+  //   StatusOr<reporting::ReportQueueConfiguration> config_result =
+  //       reporting::ReportQueueConfiguration::Create(
+  //           {.event_type = EventType::kUser,
+  //            .destination = Destination::HEART_BEAT})
+  //           .SetRateLimiter(std::make_unique<RateLimiterTokenBucket>(
+  //               /*max_level=*/1024,
+  //               /*filling_time=*/base::Minutes(10)))
+  //           .Build();
+  //   if (!config_result.ok()) {
+  //     return config_result.status();
+  //   }
+  //   auto config = config_result.ValueOrDie();
+  static Builder Create(const Settings& settings);
+
+  // Deprecated and should not be used. Use `Create({settings})` instead.
   //
   // Factory for generating a ReportQueueConfiguration.
   // If any of the parameters are invalid, will return error::INVALID_ARGUMENT.
@@ -54,12 +106,14 @@ class ReportQueueConfiguration {
   // request if after it remaining amount of disk space will not drop below
   // `reserved_space`. Intended for use by opportunistic queue.
   static StatusOr<std::unique_ptr<ReportQueueConfiguration>> Create(
-      base::StringPiece dm_token,
+      std::string_view dm_token,
       Destination destination,
       PolicyCheckCallback policy_check_callback,
       std::unique_ptr<RateLimiterInterface> rate_limiter = nullptr,
       int64_t reserved_space = 0L);
 
+  // Deprecated and should not be used. Use `Create({settings})` instead.
+  //
   // Factory for generating a ReportQueueConfiguration.
   // `event_type` is the type of event being reported, and is indirectly used to
   // retrieve DM tokens for downstream processing when building the report
@@ -94,18 +148,23 @@ class ReportQueueConfiguration {
 
   int64_t reserved_space() const { return reserved_space_; }
 
-  Status SetDMToken(base::StringPiece dm_token);
+  absl::optional<SourceInfo> source_info() const { return source_info_; }
+
+  Status SetDMToken(std::string_view dm_token);
 
   Status CheckPolicy() const;
 
  private:
+  friend class Builder;
+
   ReportQueueConfiguration();
 
   Status SetEventType(EventType event_type);
   Status SetDestination(Destination destination);
+  Status SetReservedSpace(int64_t reserved_space);
   Status SetPolicyCheckCallback(PolicyCheckCallback policy_check_callback);
   Status SetRateLimiter(std::unique_ptr<RateLimiterInterface> rate_limiter);
-  Status SetReservedSpace(int64_t reserved_space);
+  Status SetSourceInfo(absl::optional<SourceInfo> source_info);
 
   std::string dm_token_;
   EventType event_type_;
@@ -118,6 +177,7 @@ class ReportQueueConfiguration {
   WrappedRateLimiter::AsyncAcquireCb is_event_allowed_cb_;
 
   int64_t reserved_space_ = 0L;  // By default queues are not opportunistic.
+  absl::optional<SourceInfo> source_info_ = absl::nullopt;
 };
 
 }  // namespace reporting

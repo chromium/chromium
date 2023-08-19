@@ -3894,6 +3894,10 @@ TEST_F(WebRtcEventLogManagerTestCacheClearing,
   ClearCacheForBrowserContext(browser_context_.get(), base::Time::Min(),
                               base::Time::Max());
   WaitForPendingTasks(&run_loop);
+
+  // Restore factory before `run_loop` goes out of scope.
+  SetWebRtcEventLogUploaderFactoryForTesting(
+      std::make_unique<NullWebRtcEventLogUploader::Factory>(true));
 }
 
 TEST_P(WebRtcEventLogManagerTestWithRemoteLoggingDisabled,

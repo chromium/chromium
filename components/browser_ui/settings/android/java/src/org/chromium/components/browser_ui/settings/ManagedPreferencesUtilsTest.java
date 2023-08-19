@@ -25,6 +25,7 @@ import org.chromium.base.test.util.Batch;
 import org.chromium.components.browser_ui.settings.test.R;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.ui.base.TestActivity;
+import org.chromium.ui.widget.ToastManager;
 
 /** Tests of {@link ManagedPreferencesUtils}. */
 @RunWith(BaseRobolectricTestRunner.class)
@@ -41,6 +42,7 @@ public class ManagedPreferencesUtilsTest {
     @After
     public void tearDown() {
         ShadowToast.reset();
+        ToastManager.resetForTesting();
     }
 
     @Test

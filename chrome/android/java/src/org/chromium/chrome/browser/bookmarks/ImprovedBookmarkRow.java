@@ -30,6 +30,7 @@ import org.chromium.components.browser_ui.widget.selectable_list.SelectableListU
 /**
  * Common logic for improved bookmark and folder rows.
  */
+// TODO(crbug.com/): Make selection delegate optional for this class.
 public class ImprovedBookmarkRow extends SelectableItemViewBase<BookmarkId> {
     private ViewGroup mContainer;
     // The start image view which is shows the favicon.
@@ -46,9 +47,12 @@ public class ImprovedBookmarkRow extends SelectableItemViewBase<BookmarkId> {
     private ImageView mCheckImageView;
     // 3-dot menu which displays contextual actions.
     private ListMenuButton mMoreButton;
+    private ImageView mEndImageView;
 
     private boolean mDragEnabled;
     private boolean mBookmarkIdEditable;
+    private boolean mMoreButtonVisible;
+    private boolean mSelectionEnabled;
 
     private Runnable mOpenBookmarkCallback;
 
@@ -57,7 +61,7 @@ public class ImprovedBookmarkRow extends SelectableItemViewBase<BookmarkId> {
      * @param context The calling context, usually the parent view.
      * @param isVisual Whether the visual row should be used.
      */
-    protected static ImprovedBookmarkRow buildView(Context context, boolean isVisual) {
+    public static ImprovedBookmarkRow buildView(Context context, boolean isVisual) {
         ImprovedBookmarkRow row = new ImprovedBookmarkRow(context, null);
         row.setLayoutParams(new FrameLayout.LayoutParams(
                 ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT));
@@ -102,6 +106,7 @@ public class ImprovedBookmarkRow extends SelectableItemViewBase<BookmarkId> {
         mCheckImageView = findViewById(R.id.check_image);
 
         mMoreButton = findViewById(R.id.more);
+        mEndImageView = findViewById(R.id.end_image);
     }
 
     void setTitle(String title) {
@@ -114,6 +119,10 @@ public class ImprovedBookmarkRow extends SelectableItemViewBase<BookmarkId> {
         mDescriptionView.setText(description);
     }
 
+    void setDescriptionVisible(boolean visible) {
+        mDescriptionView.setVisibility(visible ? View.VISIBLE : View.GONE);
+    }
+
     void setStartImageVisible(boolean visible) {
         mStartImageView.setVisibility(visible ? View.VISIBLE : View.GONE);
     }
@@ -124,25 +133,14 @@ public class ImprovedBookmarkRow extends SelectableItemViewBase<BookmarkId> {
 
     void setStartIconDrawable(Drawable drawable) {
         mStartImageView.setImageDrawable(drawable);
-        mFolderIconView.setStartIconDrawable(drawable);
     }
 
     void setStartIconTint(ColorStateList tint) {
-        mFolderIconView.setStartIconTint(tint);
         mStartImageView.setImageTintList(tint);
     }
 
     void setStartAreaBackgroundColor(@ColorInt int color) {
-        mFolderIconView.setStartAreaBackgroundColor(color);
         mStartImageView.setBackgroundColor(color);
-    }
-
-    void setStartImageDrawables(@Nullable Drawable first, @Nullable Drawable second) {
-        mFolderIconView.setStartImageDrawables(first, second);
-    }
-
-    void setFolderChildCount(int count) {
-        mFolderIconView.setChildCount(count);
     }
 
     void setAccessoryView(@Nullable View view) {
@@ -171,24 +169,48 @@ public class ImprovedBookmarkRow extends SelectableItemViewBase<BookmarkId> {
     }
 
     void setSelectionEnabled(boolean selectionEnabled) {
+        mSelectionEnabled = selectionEnabled;
         mMoreButton.setClickable(!selectionEnabled);
         mMoreButton.setEnabled(!selectionEnabled);
         mMoreButton.setImportantForAccessibility(!selectionEnabled
                         ? IMPORTANT_FOR_ACCESSIBILITY_YES
                         : IMPORTANT_FOR_ACCESSIBILITY_NO);
+        updateView(false);
     }
 
     void setDragEnabled(boolean dragEnabled) {
         mDragEnabled = dragEnabled;
     }
 
-    void setOpenBookmarkCallback(Runnable openBookmarkCallback) {
-        mOpenBookmarkCallback = openBookmarkCallback;
-    }
-
     void setBookmarkIdEditable(boolean bookmarkIdEditable) {
         mBookmarkIdEditable = bookmarkIdEditable;
         updateView(false);
+    }
+
+    void setFolderCoordinator(ImprovedBookmarkFolderViewCoordinator folderCoordinator) {
+        folderCoordinator.setView(mFolderIconView);
+    }
+
+    void setRowClickListener(View.OnClickListener listener) {
+        setOnClickListener(listener);
+    }
+
+    void setRowLongClickListener(View.OnLongClickListener listener) {
+        setOnLongClickListener(listener);
+    }
+
+    void setEndImageVisible(boolean visible) {
+        mEndImageView.setVisibility(visible ? View.VISIBLE : View.GONE);
+    }
+
+    void setEndMenuVisible(boolean visible) {
+        mMoreButtonVisible = visible;
+        mMoreButton.setVisibility(visible ? View.VISIBLE : View.GONE);
+        updateView(false);
+    }
+
+    void setEndImageRes(int res) {
+        mEndImageView.setImageResource(res);
     }
 
     // SelectableItemViewBase implementation.
@@ -199,8 +221,8 @@ public class ImprovedBookmarkRow extends SelectableItemViewBase<BookmarkId> {
         mContainer.setBackgroundResource(selected ? R.drawable.rounded_rectangle_surface_1
                                                   : R.drawable.rounded_rectangle_surface_0);
 
-        boolean checkVisible = selected;
-        boolean moreVisible = !selected && mBookmarkIdEditable;
+        boolean checkVisible = mSelectionEnabled && selected;
+        boolean moreVisible = mMoreButtonVisible && !selected && mBookmarkIdEditable;
         mCheckImageView.setVisibility(checkVisible ? View.VISIBLE : View.GONE);
         mMoreButton.setVisibility(moreVisible ? View.VISIBLE : View.GONE);
     }
@@ -208,5 +230,9 @@ public class ImprovedBookmarkRow extends SelectableItemViewBase<BookmarkId> {
     @Override
     protected void onClick() {
         mOpenBookmarkCallback.run();
+    }
+
+    ImprovedBookmarkFolderView getFolderView() {
+        return mFolderIconView;
     }
 }

@@ -3,6 +3,8 @@
 // found in the LICENSE file.
 
 #include "components/page_load_metrics/common/page_load_timing.h"
+#include "components/page_load_metrics/common/page_load_metrics.mojom-forward.h"
+#include "third_party/blink/public/common/performance/performance_timeline_constants.h"
 
 namespace page_load_metrics {
 
@@ -24,6 +26,12 @@ mojom::PageLoadTimingPtr CreatePageLoadTiming() {
 
 mojom::LargestContentfulPaintTimingPtr CreateLargestContentfulPaintTiming() {
   return mojom::LargestContentfulPaintTiming::New();
+}
+
+mojom::SoftNavigationMetricsPtr CreateSoftNavigationMetrics() {
+  return mojom::SoftNavigationMetrics::New(
+      blink::kSoftNavigationCountDefaultValue, base::Milliseconds(0),
+      base::EmptyString(), mojom::LargestContentfulPaintTiming::New());
 }
 
 bool IsEmpty(const page_load_metrics::mojom::DocumentTiming& timing) {

@@ -100,11 +100,22 @@ TEST_F(OSAccessibilityServiceTest,
       service.get(), mojom::AssistiveTechnologyType::kSelectToSpeak));
 }
 
+// TODO(b/262637071) Fails on Fuchsia ASAN.
+#if BUILDFLAG(IS_FUCHSIA) && defined(ADDRESS_SANITIZER)
+#define MAYBE_BindsAssistiveTechnologyControllerWithSomeFeaturesEnabled \
+  DISABLED_BindsAssistiveTechnologyControllerWithSomeFeaturesEnabled
+#else
+#define MAYBE_BindsAssistiveTechnologyControllerWithSomeFeaturesEnabled \
+  BindsAssistiveTechnologyControllerWithSomeFeaturesEnabled
+#endif  // BUILDFLAG(IS_FUCHSIA) && defined(ADDRESS_SANITIZER)
 TEST_F(OSAccessibilityServiceTest,
-       BindsAssistiveTechnologyControllerWithSomeFeaturesEnabled) {
+       MAYBE_BindsAssistiveTechnologyControllerWithSomeFeaturesEnabled) {
   mojo::PendingReceiver<mojom::AccessibilityService> receiver;
   std::unique_ptr<OSAccessibilityService> service =
       std::make_unique<OSAccessibilityService>(std::move(receiver));
+
+  FakeServiceClient client(service.get());
+  client.BindAccessibilityServiceClientForTest();
 
   FakeAssistiveTechnologyController at_controller(service.get());
   at_controller.BindAssistiveTechnologyController(

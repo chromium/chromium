@@ -8,6 +8,7 @@
 #import "base/test/scoped_feature_list.h"
 #import "components/bookmarks/browser/bookmark_model.h"
 #import "components/bookmarks/common/bookmark_features.h"
+#import "components/sync/base/features.h"
 #import "ios/chrome/browser/bookmarks/bookmark_ios_unit_test_support.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/model/browser_state/test_chrome_browser_state.h"
@@ -19,10 +20,6 @@
 #import "third_party/ocmock/OCMock/OCMock.h"
 #import "third_party/ocmock/gtest_support.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 namespace {
 
 class BookmarksHomeViewControllerTest
@@ -31,7 +28,7 @@ class BookmarksHomeViewControllerTest
  protected:
   void SetUp() override {
     scoped_feature_list_.InitWithFeatureState(
-        bookmarks::kEnableBookmarksAccountStorage, IsAccountStorageEnabled());
+        syncer::kEnableBookmarksAccountStorage, IsAccountStorageEnabled());
     BookmarkIOSUnitTestSupport::SetUp();
   }
 
@@ -77,11 +74,12 @@ TEST_P(BookmarksHomeViewControllerTest,
                          [controller.tableViewModel
                              sectionForSectionIdentifier:
                                  BookmarksHomeSectionIdentifierBookmarks]]);
-    EXPECT_EQ(0, [controller tableView:controller.tableView
-                     numberOfRowsInSection:
-                         [controller.tableViewModel
-                             sectionForSectionIdentifier:
-                                 BookmarksHomeSectionIdentifierRootProfile]]);
+    EXPECT_EQ(
+        0, [controller tableView:controller.tableView
+               numberOfRowsInSection:
+                   [controller.tableViewModel
+                       sectionForSectionIdentifier:
+                           BookmarksHomeSectionIdentifierRootLocalOrSyncable]]);
     EXPECT_EQ(0, [controller tableView:controller.tableView
                      numberOfRowsInSection:
                          [controller.tableViewModel
@@ -92,6 +90,7 @@ TEST_P(BookmarksHomeViewControllerTest,
                          [controller.tableViewModel
                              sectionForSectionIdentifier:
                                  BookmarksHomeSectionIdentifierMessages]]);
+    [controller shutdown];
   }
 }
 
@@ -141,11 +140,12 @@ TEST_P(BookmarksHomeViewControllerTest,
                          [controller.tableViewModel
                              sectionForSectionIdentifier:
                                  BookmarksHomeSectionIdentifierBookmarks]]);
-    EXPECT_EQ(1, [controller tableView:controller.tableView
-                     numberOfRowsInSection:
-                         [controller.tableViewModel
-                             sectionForSectionIdentifier:
-                                 BookmarksHomeSectionIdentifierRootProfile]]);
+    EXPECT_EQ(
+        1, [controller tableView:controller.tableView
+               numberOfRowsInSection:
+                   [controller.tableViewModel
+                       sectionForSectionIdentifier:
+                           BookmarksHomeSectionIdentifierRootLocalOrSyncable]]);
     EXPECT_EQ(0, [controller tableView:controller.tableView
                      numberOfRowsInSection:
                          [controller.tableViewModel
@@ -156,6 +156,7 @@ TEST_P(BookmarksHomeViewControllerTest,
                          [controller.tableViewModel
                              sectionForSectionIdentifier:
                                  BookmarksHomeSectionIdentifierMessages]]);
+    [controller shutdown];
   }
 }
 
@@ -196,6 +197,7 @@ TEST_P(BookmarksHomeViewControllerTest, Metrics) {
     [controller keyCommand_close];
 
     EXPECT_EQ(user_action_tester.GetActionCount(user_action), 1);
+    [controller shutdown];
   }
 }
 

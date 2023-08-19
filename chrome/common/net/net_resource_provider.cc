@@ -13,7 +13,6 @@
 #include "chrome/grit/generated_resources.h"
 #include "net/grit/net_resources.h"
 #include "ui/base/l10n/l10n_util.h"
-#include "ui/base/layout.h"
 #include "ui/base/resource/resource_bundle.h"
 #include "ui/base/webui/jstemplate_builder.h"
 

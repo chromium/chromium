@@ -14,6 +14,8 @@
 #include "components/autofill/content/browser/content_autofill_driver.h"
 #include "components/autofill/content/browser/content_autofill_driver_factory.h"
 #include "components/autofill/content/browser/content_autofill_driver_factory_test_api.h"
+#include "components/autofill/core/browser/autofill_manager.h"
+#include "components/autofill/core/browser/autofill_manager_test_api.h"
 #include "components/autofill/core/browser/autofill_test_utils.h"
 #include "components/autofill/core/browser/field_types.h"
 #include "content/public/browser/web_contents.h"
@@ -27,8 +29,7 @@ AutofillManager* GetAutofillManager(content::WebContents* web_contents,
   // a new ContentAutofillDriver.
   if (ContentAutofillDriverFactory* factory =
           ContentAutofillDriverFactory::FromWebContents(web_contents)) {
-    if (ContentAutofillDriver* driver =
-            ContentAutofillDriverFactoryTestApi(factory).GetDriver(rfh)) {
+    if (ContentAutofillDriver* driver = test_api(*factory).GetDriver(rfh)) {
       return driver->autofill_manager();
     }
   }
@@ -102,8 +103,8 @@ JNI_AutofillProviderTestHelper_SimulateMainFrameAutofillServerResponseForTesting
   CHECK(response.SerializeToString(&response_string));
   std::string encoded_response_string;
   base::Base64Encode(response_string, &encoded_response_string);
-  autofill_manager->OnLoadedServerPredictionsForTest(encoded_response_string,
-                                                     signatures);
+  test_api(*autofill_manager)
+      .OnLoadedServerPredictions(encoded_response_string, signatures);
   return true;
 }
 
@@ -161,8 +162,8 @@ JNI_AutofillProviderTestHelper_SimulateMainFramePredictionsAutofillServerRespons
   CHECK(response.SerializeToString(&response_string));
   std::string encoded_response_string;
   base::Base64Encode(response_string, &encoded_response_string);
-  autofill_manager->OnLoadedServerPredictionsForTest(encoded_response_string,
-                                                     signatures);
+  test_api(*autofill_manager)
+      .OnLoadedServerPredictions(encoded_response_string, signatures);
   return true;
 }
 

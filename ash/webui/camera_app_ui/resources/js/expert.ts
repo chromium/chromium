@@ -42,7 +42,7 @@ export function toggleExpertMode(): void {
 
 
 /**
- * Get state value for expert mode and exert options.
+ * Get state value for expert mode and expert options.
  *
  * @param option Option state to be checked.
  */

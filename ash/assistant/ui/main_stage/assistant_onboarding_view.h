@@ -67,7 +67,7 @@ class COMPONENT_EXPORT(ASSISTANT_UI) AssistantOnboardingView
       nullptr;  // Owned by view hierarchy.
   raw_ptr<views::Label, ExperimentalAsh> intro_ =
       nullptr;  // Owned by view hierarchy.
-  raw_ptr<views::TableLayoutView, ExperimentalAsh> table_ =
+  raw_ptr<views::TableLayoutView, DanglingUntriaged | ExperimentalAsh> table_ =
       nullptr;  // Owned by view hierarchy.
 
   base::ScopedObservation<AssistantController, AssistantControllerObserver>

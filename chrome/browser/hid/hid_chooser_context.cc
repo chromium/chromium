@@ -16,9 +16,9 @@
 #include "base/values.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
-#include "chrome/browser/browser_process.h"
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
 #include "chrome/browser/hid/hid_policy_allowed_devices.h"
+#include "chrome/browser/hid/hid_policy_allowed_devices_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/content_settings/core/common/content_settings_types.h"
@@ -233,7 +233,7 @@ HidChooserContext::GetGrantedObjects(const url::Origin& origin) {
   }
 
   if (CanApplyPolicy()) {
-    auto* policy = g_browser_process->hid_policy_allowed_devices();
+    auto* policy = HidPolicyAllowedDevicesFactory::GetForProfile(profile_);
     for (const auto& entry : policy->device_policy()) {
       if (!base::Contains(entry.second, origin))
         continue;
@@ -311,7 +311,7 @@ HidChooserContext::GetAllGrantedObjects() {
   }
 
   if (CanApplyPolicy()) {
-    auto* policy = g_browser_process->hid_policy_allowed_devices();
+    auto* policy = HidPolicyAllowedDevicesFactory::GetForProfile(profile_);
     for (const auto& entry : policy->device_policy()) {
       auto object =
           VendorAndProductIdsToValue(entry.first.first, entry.first.second);
@@ -463,8 +463,8 @@ bool HidChooserContext::HasDevicePermission(
   }
 
   if (CanApplyPolicy() &&
-      g_browser_process->hid_policy_allowed_devices()->HasDevicePermission(
-          origin, device)) {
+      HidPolicyAllowedDevicesFactory::GetForProfile(profile_)
+          ->HasDevicePermission(origin, device)) {
     return true;
   }
 

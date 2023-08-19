@@ -5,6 +5,7 @@
 #import "ios/chrome/browser/overlays/overlay_presenter_impl.h"
 
 #import "base/check_op.h"
+#import "base/containers/contains.h"
 #import "base/memory/ptr_util.h"
 #import "ios/chrome/browser/overlays/public/overlay_callback_manager.h"
 #import "ios/chrome/browser/overlays/public/overlay_presentation_context.h"
@@ -12,10 +13,6 @@
 #import "ios/chrome/browser/overlays/public/overlay_request.h"
 #import "ios/chrome/browser/overlays/public/overlay_request_support.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
-
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
 
 #pragma mark - Factory method
 
@@ -59,7 +56,7 @@ OverlayPresenterImpl::OverlayPresenterImpl(Browser* browser,
     WebStateAddedToBrowser(web_state_list_->GetWebStateAt(i));
   }
   SetActiveWebState(web_state_list_->GetActiveWebState(),
-                    ActiveWebStateChangeReason::Activated);
+                    /*is_replaced=*/false);
 }
 
 OverlayPresenterImpl::~OverlayPresenterImpl() {
@@ -122,11 +119,11 @@ bool OverlayPresenterImpl::IsShowingOverlayUI() const {
 
 #pragma mark Accessors
 
-void OverlayPresenterImpl::SetActiveWebState(
-    web::WebState* web_state,
-    ActiveWebStateChangeReason reason) {
-  if (active_web_state_ == web_state)
+void OverlayPresenterImpl::SetActiveWebState(web::WebState* web_state,
+                                             bool is_replaced) {
+  if (active_web_state_ == web_state) {
     return;
+  }
 
   OverlayRequest* previously_active_request =
       removed_request_awaiting_dismissal_ != nullptr
@@ -138,23 +135,22 @@ void OverlayPresenterImpl::SetActiveWebState(
   // delegate's presentation context.  This occurs:
   // - when the presenting WebState is replaced, and
   // - when the presenting WebState is detached from the WebStateList.
-  const bool should_cancel_ui =
-      (reason == ActiveWebStateChangeReason::Replaced) ||
-      detaching_presenting_web_state_;
+  const bool should_cancel_ui = is_replaced || detaching_presenting_web_state_;
 
   active_web_state_ = web_state;
   detaching_presenting_web_state_ = false;
 
   // Early return if there's no UI delegate, since presentation cannot occur.
-  if (!presentation_context_)
+  if (!presentation_context_) {
     return;
+  }
 
   // If not already presenting, immediately show the next overlay.
   if (!presenting_) {
     PresentOverlayForActiveRequest();
     return;
   }
- 
+
   // If presenting_ is true and there is no previously active request, this
   // is likely because the presenting overlay is still in the process of being
   // dismissed and multiple tabs have been opened in the process.
@@ -227,8 +223,8 @@ void OverlayPresenterImpl::PresentOverlayForActiveRequest() {
   presented_request_ = request;
 
   // Notify the observers that the overlay UI is about to be shown.
-  bool initial_presentation = previously_presented_requests_.find(request) ==
-                              previously_presented_requests_.end();
+  bool initial_presentation =
+      !base::Contains(previously_presented_requests_, request);
   for (auto& observer : observers_) {
     if (observer.GetRequestSupport(this)->IsRequestSupported(request))
       observer.WillShowOverlay(this, request, initial_presentation);
@@ -385,7 +381,7 @@ void OverlayPresenterImpl::WebStateRemovedFromBrowser(
 
 void OverlayPresenterImpl::BrowserDestroyed(Browser* browser) {
   SetPresentationContext(nullptr);
-  SetActiveWebState(nullptr, ActiveWebStateChangeReason::Closed);
+  SetActiveWebState(nullptr, /*is_replaced=*/false);
 
   for (int i = 0; i < web_state_list_->count(); ++i) {
     WebStateRemovedFromBrowser(web_state_list_->GetWebStateAt(i));
@@ -520,35 +516,49 @@ void OverlayPresenterImpl::OverlayPresentationContextDidMoveToWindow(
 
 #pragma mark - WebStateListObserver
 
-void OverlayPresenterImpl::WebStateInsertedAt(WebStateList* web_state_list,
-                                              web::WebState* web_state,
-                                              int index,
-                                              bool activating) {
-  WebStateAddedToBrowser(web_state);
-}
-
-void OverlayPresenterImpl::WebStateReplacedAt(WebStateList* web_state_list,
-                                              web::WebState* old_web_state,
-                                              web::WebState* new_web_state,
-                                              int index) {
-  WebStateRemovedFromBrowser(old_web_state);
-  WebStateAddedToBrowser(new_web_state);
-}
-
-void OverlayPresenterImpl::WillDetachWebStateAt(WebStateList* web_state_list,
-                                                web::WebState* web_state,
-                                                int index) {
-  detaching_presenting_web_state_ =
-      presented_request_ ? presented_request_->GetQueueWebState() == web_state
-                         : false;
-  WebStateRemovedFromBrowser(web_state);
-}
-
-void OverlayPresenterImpl::WebStateActivatedAt(
+void OverlayPresenterImpl::WebStateListWillChange(
     WebStateList* web_state_list,
-    web::WebState* old_web_state,
-    web::WebState* new_web_state,
-    int active_index,
-    ActiveWebStateChangeReason reason) {
-  SetActiveWebState(new_web_state, reason);
+    const WebStateListChangeDetach& detach_change,
+    const WebStateListStatus& status) {
+  web::WebState* detached_web_state = detach_change.detached_web_state();
+  detaching_presenting_web_state_ =
+      presented_request_
+          ? presented_request_->GetQueueWebState() == detached_web_state
+          : false;
+  WebStateRemovedFromBrowser(detached_web_state);
+}
+
+void OverlayPresenterImpl::WebStateListDidChange(
+    WebStateList* web_state_list,
+    const WebStateListChange& change,
+    const WebStateListStatus& status) {
+  switch (change.type()) {
+    case WebStateListChange::Type::kStatusOnly:
+      // The activation is handled after this switch statement.
+      break;
+    case WebStateListChange::Type::kDetach:
+      // Do nothing when a WebState is detached.
+      break;
+    case WebStateListChange::Type::kMove:
+      // Do nothing when a WebState is moved.
+      break;
+    case WebStateListChange::Type::kReplace: {
+      const WebStateListChangeReplace& replace_change =
+          change.As<WebStateListChangeReplace>();
+      WebStateRemovedFromBrowser(replace_change.replaced_web_state());
+      WebStateAddedToBrowser(replace_change.inserted_web_state());
+      break;
+    }
+    case WebStateListChange::Type::kInsert: {
+      const WebStateListChangeInsert& insert_change =
+          change.As<WebStateListChangeInsert>();
+      WebStateAddedToBrowser(insert_change.inserted_web_state());
+      break;
+    }
+  }
+
+  if (status.active_web_state_change()) {
+    SetActiveWebState(status.new_active_web_state,
+                      change.type() == WebStateListChange::Type::kReplace);
+  }
 }

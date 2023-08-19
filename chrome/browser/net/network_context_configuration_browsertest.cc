@@ -720,7 +720,7 @@ class NetworkContextConfigurationBrowserTest
     FlushNetworkInterface();
   }
 
-  raw_ptr<Browser, DanglingUntriaged> incognito_ = nullptr;
+  raw_ptr<Browser, AcrossTasksDanglingUntriaged> incognito_ = nullptr;
 
   net::EmbeddedTestServer https_server_;
   std::unique_ptr<net::test_server::ControllableHttpResponse>
@@ -1031,7 +1031,14 @@ IN_PROC_BROWSER_TEST_P(NetworkContextConfigurationBrowserTest, PRE_DiskCache) {
 
 // Check if the URL loaded in PRE_DiskCache is still in the cache, across a
 // browser restart.
-IN_PROC_BROWSER_TEST_P(NetworkContextConfigurationBrowserTest, DiskCache) {
+// TODO(https://crbug.com/1464367): Fix test flake and re-enable
+#if BUILDFLAG(IS_MAC)
+#define MAYBE_DiskCache DISABLED_DiskCache
+#else
+#define MAYBE_DiskCache DiskCache
+#endif
+IN_PROC_BROWSER_TEST_P(NetworkContextConfigurationBrowserTest,
+                       MAYBE_DiskCache) {
   if (IsRestartStateWithInProcessNetworkService())
     return;
   // Crashing the network service may corrupt the disk cache, so skip this phase

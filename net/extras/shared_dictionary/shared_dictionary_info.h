@@ -18,7 +18,7 @@ namespace net {
 
 // This class represents a shared dictionary information stored in a SQLite
 // database for compression dictionary transport feature.
-class COMPONENT_EXPORT(NET_EXTRAS) SharedDictionaryInfo {
+class COMPONENT_EXPORT(NET_SHARED_DICTIONARY) SharedDictionaryInfo {
  public:
   SharedDictionaryInfo(const GURL& url,
                        base::Time response_time,

@@ -7,6 +7,7 @@
 #include <map>
 #include <vector>
 
+#include "base/containers/cxx20_erase.h"
 #include "base/lazy_instance.h"
 #include "base/memory/ptr_util.h"
 #include "third_party/skia/include/core/SkDrawLooper.h"
@@ -75,47 +76,92 @@ class ShadowNineboxSource : public CanvasImageSource {
   const float corner_radius_;
 };
 
-// Map from elevation/corner radius pair to a cached shadow.
-using ShadowDetailsMap = std::map<std::pair<int, int>, ShadowDetails>;
+// A shadow's appearance is determined by its rounded corner radius and shadow
+// values. Make these attributes as the key for shadow details.
+struct ShadowDetailsKey {
+  bool operator==(const ShadowDetailsKey& other) const {
+    return (corner_radius == other.corner_radius) && (values == other.values);
+  }
+
+  bool operator<(const ShadowDetailsKey& other) const {
+    return (corner_radius < other.corner_radius) ||
+           ((corner_radius == other.corner_radius) && (values < other.values));
+  }
+  int corner_radius;
+  ShadowValues values;
+};
+
+// Map from shadow details key to a cached shadow.
+using ShadowDetailsMap = std::map<ShadowDetailsKey, ShadowDetails>;
 base::LazyInstance<ShadowDetailsMap>::DestructorAtExit g_shadow_cache =
     LAZY_INSTANCE_INITIALIZER;
 
 }  // namespace
 
-ShadowDetails::ShadowDetails() {}
+ShadowDetails::ShadowDetails(const gfx::ShadowValues& values,
+                             const gfx::ImageSkia& nine_patch_image)
+    : values(values), nine_patch_image(nine_patch_image) {}
 ShadowDetails::ShadowDetails(const ShadowDetails& other) = default;
 ShadowDetails::~ShadowDetails() {}
 
 const ShadowDetails& ShadowDetails::Get(int elevation,
                                         int corner_radius,
                                         ShadowStyle style) {
-  auto iter =
-      g_shadow_cache.Get().find(std::make_pair(elevation, corner_radius));
-  if (iter != g_shadow_cache.Get().end())
-    return iter->second;
-
-  auto insertion = g_shadow_cache.Get().emplace(
-      std::make_pair(elevation, corner_radius), ShadowDetails());
-  DCHECK(insertion.second);
-  ShadowDetails* shadow = &insertion.first->second;
-
-  // Generate shadow values according to the give shadow style.
   switch (style) {
     case ShadowStyle::kMaterialDesign:
-      shadow->values = ShadowValue::MakeMdShadowValues(elevation);
-      break;
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+      return Get(corner_radius, ShadowValue::MakeMdShadowValues(elevation));
+#if BUILDFLAG(IS_CHROMEOS)
     case ShadowStyle::kChromeOSSystemUI:
-      shadow->values = ShadowValue::MakeChromeOSSystemUIShadowValues(elevation);
-      break;
+      return Get(corner_radius,
+                 ShadowValue::MakeChromeOSSystemUIShadowValues(elevation));
 #endif
-    default:
-      NOTREACHED() << "Unknown shadow style.";
+  }
+}
+
+const ShadowDetails& ShadowDetails::Get(int elevation,
+                                        int radius,
+                                        SkColor key_color,
+                                        SkColor ambient_color,
+                                        ShadowStyle style) {
+  switch (style) {
+    case ShadowStyle::kMaterialDesign:
+      return Get(radius, ShadowValue::MakeMdShadowValues(elevation, key_color,
+                                                         ambient_color));
+#if BUILDFLAG(IS_CHROMEOS)
+    case ShadowStyle::kChromeOSSystemUI:
+      return Get(radius, ShadowValue::MakeChromeOSSystemUIShadowValues(
+                             elevation, key_color, ambient_color));
+#endif
+  }
+}
+
+const ShadowDetails& ShadowDetails::Get(int radius,
+                                        const gfx::ShadowValues& values) {
+  ShadowDetailsKey key{radius, values};
+  auto iter = g_shadow_cache.Get().find(key);
+  if (iter != g_shadow_cache.Get().end()) {
+    return iter->second;
   }
 
-  auto* source = new ShadowNineboxSource(shadow->values, corner_radius);
-  shadow->ninebox_image = ImageSkia(base::WrapUnique(source), source->size());
-  return *shadow;
+  // Evict the details whose ninebox image does not have any shadow owners.
+  base::EraseIf(g_shadow_cache.Get(), [](auto& pair) {
+    return pair.second.nine_patch_image.IsUniquelyOwned();
+  });
+
+  auto source =
+      std::make_unique<ShadowNineboxSource>(values, key.corner_radius);
+  const gfx::Size image_size = source->size();
+  auto nine_patch_image = ImageSkia(std::move(source), image_size);
+  auto insertion = g_shadow_cache.Get().emplace(
+      key, ShadowDetails(values, nine_patch_image));
+  DCHECK(insertion.second);
+  const std::pair<const ShadowDetailsKey, ShadowDetails>& inserted_item =
+      *(insertion.first);
+  return inserted_item.second;
+}
+
+size_t ShadowDetails::GetDetailsCacheSizeForTest() {
+  return g_shadow_cache.Get().size();
 }
 
 }  // namespace gfx

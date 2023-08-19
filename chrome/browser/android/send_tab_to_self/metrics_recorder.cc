@@ -5,7 +5,7 @@
 #include "base/android/jni_string.h"
 #include "base/android/scoped_java_ref.h"
 #include "base/time/time.h"
-#include "chrome/browser/share/android/jni_headers/MetricsRecorder_jni.h"
+#include "chrome/android/chrome_jni_headers/MetricsRecorder_jni.h"
 #include "components/send_tab_to_self/metrics_util.h"
 
 namespace send_tab_to_self {

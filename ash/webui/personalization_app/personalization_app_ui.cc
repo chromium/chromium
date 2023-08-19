@@ -13,6 +13,7 @@
 #include "ash/rgb_keyboard/rgb_keyboard_manager.h"
 #include "ash/shell.h"
 #include "ash/wallpaper/wallpaper_constants.h"
+#include "ash/webui/common/trusted_types_util.h"
 #include "ash/webui/grit/ash_personalization_app_resources.h"
 #include "ash/webui/grit/ash_personalization_app_resources_map.h"
 #include "ash/webui/personalization_app/personalization_app_ambient_provider.h"
@@ -194,6 +195,16 @@ void AddStrings(content::WebUIDataSource* source) {
        IDS_PERSONALIZATION_APP_AMBIENT_MODE_PAGE_DESCRIPTION},
       {"ambientModeOn", IDS_PERSONALIZATION_APP_AMBIENT_MODE_ON},
       {"ambientModeOff", IDS_PERSONALIZATION_APP_AMBIENT_MODE_OFF},
+      {"ambientModeDurationTitle",
+       IDS_PERSONALIZATION_APP_AMBIENT_MODE_DURATION_TITLE},
+      {"ambientModeDurationMinutes",
+       IDS_PERSONALIZATION_APP_AMBIENT_MODE_DURATION_MINUTES},
+      {"ambientModeDurationOneHour",
+       IDS_PERSONALIZATION_APP_AMBIENT_MODE_DURATION_ONE_HOUR},
+      {"ambientModeDurationForever",
+       IDS_PERSONALIZATION_APP_AMBIENT_MODE_DURATION_FOREVER},
+      {"ambientModeDurationDescription",
+       IDS_PERSONALIZATION_APP_AMBIENT_MODE_DURATION_DESCRIPTION},
       {"ambientModeTopicSourceTitle",
        IDS_PERSONALIZATION_APP_AMBIENT_MODE_TOPIC_SOURCE_TITLE},
       {"ambientModeTopicSourceGooglePhotos",
@@ -320,19 +331,13 @@ void AddStrings(content::WebUIDataSource* source) {
       {"googlePhotosAlbumZeroStateMessage",
        IDS_PERSONALIZATION_APP_GOOGLE_PHOTOS_ALBUM_ZERO_STATE_MESSAGE},
 
-      //  Time of day Wallpaper/Screen saver strings
-      {"timeOfDayWallpaperDialogTitle",
-       IDS_PERSONALIZATION_APP_TIME_OF_DAY_WALLPAPER_DIALOG_TITLE},
-      {"timeOfDayWallpaperDialogContent",
-       IDS_PERSONALIZATION_APP_TIME_OF_DAY_WALLPAPER_DIALOG_CONTENT},
-      {"timeOfDayWallpaperDialogBackButton",
-       IDS_PERSONALIZATION_APP_TIME_OF_DAY_WALLPAPER_DIALOG_BACK_BUTTON},
-      {"timeOfDayWallpaperDialogConfirmButton",
-       IDS_PERSONALIZATION_APP_TIME_OF_DAY_WALLPAPER_DIALOG_CONFIRM_BUTTON},
+      // Time of day Wallpaper/Screen saver strings
       {"timeOfDayBannerDescription",
        IDS_PERSONALIZATION_APP_TIME_OF_DAY_BANNER_DESCRIPTION},
       {"timeOfDayBannerDescriptionNoScreensaver",
-       IDS_PERSONALIZATION_APP_TIME_OF_DAY_BANNER_DESCRIPTION_NO_SCREENSAVER}};
+       IDS_PERSONALIZATION_APP_TIME_OF_DAY_BANNER_DESCRIPTION_NO_SCREENSAVER},
+      {"timeOfDayWallpaperCollectionSublabel",
+       IDS_PERSONALIZATION_APP_TIME_OF_DAY_WALLPAPER_COLLECTION_SUBLABEL}};
 
   source->AddLocalizedStrings(kLocalizedStrings);
 
@@ -347,10 +352,7 @@ void AddStrings(content::WebUIDataSource* source) {
   // Product name does not need to be translated.
   auto product_name =
       l10n_util::GetStringUTF16(ui::GetChromeOSDeviceTypeResourceId());
-  // TODO(b/270597524): Switch to `IsTimeOfDayScreenSaverEnabled` once
-  // `kFeatureManagementTimeOfDayScreenSaver` is used.
-  if (base::FeatureList::IsEnabled(
-          features::kFeatureManagementTimeOfDayScreenSaver)) {
+  if (features::IsTimeOfDayScreenSaverEnabled()) {
     product_name = base::UTF8ToUTF16(
         GetAmbientBackendController()->GetTimeOfDayProductName());
   }
@@ -417,8 +419,7 @@ PersonalizationAppUI::PersonalizationAppUI(
       "script-src chrome://resources chrome://test chrome://webui-test "
       "'self';");
 
-  // TODO(crbug.com/1400799): Enable TrustedTypes.
-  source->DisableTrustedTypesCSP();
+  ash::EnableTrustedTypesCSP(source);
 
   AddResources(source);
   AddStrings(source);
@@ -480,8 +481,7 @@ void PersonalizationAppUI::AddBooleans(content::WebUIDataSource* source) {
 
   source->AddBoolean(
       "isRgbKeyboardSupported",
-      features::IsRgbKeyboardEnabled() &&
-          Shell::Get()->rgb_keyboard_manager()->IsRgbKeyboardSupported());
+      Shell::Get()->rgb_keyboard_manager()->IsRgbKeyboardSupported());
 
   source->AddBoolean("isScreenSaverDurationEnabled",
                      features::IsScreenSaverDurationEnabled());

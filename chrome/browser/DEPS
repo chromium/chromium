@@ -34,6 +34,7 @@ include_rules = [
   "+chrome/services/sharing/public",
   "+chrome/services/removable_storage_writer/public",
   "+chrome/services/util_win/public",
+  "+chrome/updater/app/server/win/updater_legacy_idl.h",
   "+chromeos",
   "+components/about_ui",
   "+components/account_id",
@@ -45,6 +46,7 @@ include_rules = [
   "+components/account_manager_core",
   "+components/app_restore",
   "+components/assist_ranker",
+  "+components/autofill/android",
   "+components/autofill/content/browser",
   "+components/autofill/content/common",
   "+components/autofill/core/browser",
@@ -135,6 +137,7 @@ include_rules = [
   "+components/embedder_support",
   "+components/encrypted_messages",
   "+components/enterprise",
+  "+components/environment_integrity/android",
   "+components/error_page/content/browser",
   "+components/exo",
   "+components/external_intents",
@@ -188,6 +191,7 @@ include_rules = [
   "+components/location/android",
   "+components/lookalikes/core",
   "+components/login",
+  "+components/media_device_salt",
   "+components/media_message_center",
   "+components/media_router/browser",
   "+components/history_clusters",
@@ -321,6 +325,7 @@ include_rules = [
   "+components/sqlite_proto",
   "+components/ssl_errors",
   "+components/startup_metric_utils/browser",
+  "+components/startup_metric_utils/common",
   "+components/storage_monitor",
   "+components/strings/grit",
   "+components/subresource_filter/android",
@@ -331,6 +336,7 @@ include_rules = [
   "+components/subresource_filter/core/mojom",
   "+components/supervised_user/core/browser",
   "+components/supervised_user/core/common",
+  "+components/supervised_user/test_support",
   "+components/sync",
   "+components/sync_bookmarks",
   "+components/sync_device_info",
@@ -358,6 +364,7 @@ include_rules = [
   "+components/upload_list",
   "+components/url_matcher",
   "+components/url_pattern_index/proto",
+  "+components/user_education",
   "+components/user_manager",
   "+components/user_notes",
   "+components/user_prefs",
@@ -585,6 +592,7 @@ specific_include_rules = {
   "about_flags\.cc" : [
     "+mojo/core/embedder/features.h",
     "+pdf/pdf_features.h",
+    "+sandbox/policy/features.h",
   ],
   "dbus_memory_pressure_evaluator_linux(_unittest)?\.(cc|h)" : [
     "+dbus",
@@ -597,5 +605,8 @@ specific_include_rules = {
   ],
   "webauth_interactive_uitest.cc": [
     "+device/fido",
+  ],
+  "shared_storage_browsertest.cc": [
+    "+components/services/storage/shared_storage/shared_storage_manager.h",
   ],
 }

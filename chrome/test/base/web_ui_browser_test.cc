@@ -25,6 +25,7 @@
 #include "base/values.h"
 #include "chrome/browser/chrome_content_browser_client.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/browser_navigator.h"
@@ -74,7 +75,7 @@ bool LogHandler(int severity,
                 int line,
                 size_t message_start,
                 const std::string& str) {
-  if (severity == logging::LOG_ERROR && file &&
+  if (severity == logging::LOGGING_ERROR && file &&
       std::string("CONSOLE") == file) {
     g_error_messages.Get().push_back(str);
   }
@@ -442,6 +443,16 @@ void BaseWebUIBrowserTest::SetUpOnMainThread() {
   }
 
   logging::SetLogMessageHandler(&LogHandler);
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  if (crosapi::browser_util::IsLacrosEnabled() && browser() == nullptr) {
+    // Create a new Ash browser window so test code using browser() can work
+    // even when Lacros is the only browser.
+    // TODO(crbug.com/1450158): Remove uses of browser() from such tests.
+    chrome::NewEmptyWindow(ProfileManager::GetActiveUserProfile());
+    SelectFirstBrowser();
+  }
+#endif
 
   // For tests that run on the login screen, there is no Browser during
   // SetUpOnMainThread() so skip adding TestDataSource. These tests don't need

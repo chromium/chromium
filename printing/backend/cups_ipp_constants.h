@@ -45,6 +45,7 @@ COMPONENT_EXPORT(PRINT_BACKEND) extern const char kIppMediaRightMargin[];
 COMPONENT_EXPORT(PRINT_BACKEND) extern const char kIppMediaSize[];
 COMPONENT_EXPORT(PRINT_BACKEND) extern const char kIppMediaSource[];
 COMPONENT_EXPORT(PRINT_BACKEND) extern const char kIppMediaTopMargin[];
+COMPONENT_EXPORT(PRINT_BACKEND) extern const char kIppMediaType[];
 COMPONENT_EXPORT(PRINT_BACKEND) extern const char kIppXDimension[];
 COMPONENT_EXPORT(PRINT_BACKEND) extern const char kIppYDimension[];
 

@@ -10,6 +10,8 @@
 #include "chrome/browser/ui/views/content_setting_bubble_contents.h"
 #include "chrome/browser/ui/views/location_bar/omnibox_chip_theme.h"
 #include "chrome/browser/ui/views/permissions/permission_prompt_bubble_base_view.h"
+#include "chrome/browser/ui/views/permissions/permission_prompt_style.h"
+#include "components/permissions/permission_actions_history.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/base/models/image_model.h"
 #include "ui/gfx/animation/slide_animation.h"
@@ -55,22 +57,39 @@ class OmniboxChipButton : public views::MdTextButton {
   void OnThemeChanged() override;
   void UpdateBackgroundColor() override;
 
-  // Set the button theme.
+  // Customize the button.
+  void SetUserDecision(permissions::PermissionAction user_decision);
   void SetTheme(OmniboxChipTheme theme);
   void SetMessage(std::u16string message);
+  void SetBlockedIconShowing(bool should_show_blocked_icon);
+  void SetPermissionPromptStyle(PermissionPromptStyle prompt_style);
+  void SetChipIcon(const gfx::VectorIcon& icon);
+
   void SetForceExpandedForTesting(bool force_expanded_for_testing);
 
-  void SetChipIcon(const gfx::VectorIcon& icon);
+  bool ShouldShowBlockedIcon() const { return should_show_blocked_icon_; }
+  permissions::PermissionAction GetUserDecision() const {
+    return user_decision_;
+  }
+  PermissionPromptStyle GetPermissionPromptStyle() const {
+    return prompt_style_;
+  }
+  OmniboxChipTheme GetOmniboxChipTheme() const { return theme_; }
+  OmniboxChipTheme get_theme_for_testing() { return theme_; }
 
   // Add/remove observer.
   void AddObserver(Observer* observer);
   void RemoveObserver(Observer* observer);
 
-  OmniboxChipTheme get_theme_for_testing() { return theme_; }
-
  protected:
+  // The following virtual functions are used for the non-error state permission
+  // chips (default/neutral states). For any other changes to the look and feel
+  // of the chips, consider subclassing and overriding as needed.
   virtual ui::ImageModel GetIconImageModel() const;
   virtual const gfx::VectorIcon& GetIcon() const;
+  virtual SkColor GetForegroundColor() const;
+  virtual SkColor GetBackgroundColor() const;
+
   // Updates the icon, and then updates text, icon, and background colors from
   // the theme.
   void UpdateIconAndColors();
@@ -86,14 +105,27 @@ class OmniboxChipButton : public views::MdTextButton {
 
   int GetIconSize() const;
 
-  SkColor GetTextAndIconColor() const;
-
-  SkColor GetBackgroundColor() const;
+  int GetCornerRadius() const;
 
   // An animation used for expanding and collapsing the chip.
   std::unique_ptr<gfx::SlideAnimation> animation_;
 
   OmniboxChipTheme theme_ = OmniboxChipTheme::kNormalVisibility;
+
+  // Denotes the chips current prompt style. This influences what appears in the
+  // location bar. Currently this will be some combination of text, icon, and
+  // prompt bubble.
+  PermissionPromptStyle prompt_style_ = PermissionPromptStyle::kChip;
+
+  // Denotes the current action / settings the user has selected on the omnibox
+  // chip prompt. Ex: "Allow", "Allow Once", "Not allowed".
+  permissions::PermissionAction user_decision_ =
+      permissions::PermissionAction::GRANTED;
+
+  // True when the blocked icon is currently showing in the omnibox chip. This
+  // usually happens when the user has disabled / "Not allowed" a permission
+  // such as location or notifications. False otherwise.
+  bool should_show_blocked_icon_ = false;
 
   int base_width_ = 0;
 

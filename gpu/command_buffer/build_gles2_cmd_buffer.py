@@ -758,7 +758,6 @@ _NAMED_TYPE_INFO = {
       'GL_ANY_SAMPLES_PASSED_CONSERVATIVE_EXT',
       'GL_COMMANDS_ISSUED_CHROMIUM',
       'GL_COMMANDS_ISSUED_TIMESTAMP_CHROMIUM',
-      'GL_LATENCY_QUERY_CHROMIUM',
       'GL_ASYNC_PIXEL_PACK_COMPLETED_CHROMIUM',
       'GL_COMMANDS_COMPLETED_CHROMIUM',
       'GL_READBACK_SHADOW_COPIES_UPDATED_CHROMIUM',
@@ -4099,16 +4098,19 @@ _FUNCTION_INFO = {
   },
   # mailbox_offset refers to the offset in shared memory pointing to shared
   # image mailbox.
-  'WritePixelsINTERNAL': {
+  'WritePixelsYUVINTERNAL': {
     'type': 'Custom',
     'extension': 'CHROMIUM_shared_image',
     'impl_func': False,
     'client_test': False,
     'cmd_args':
-        'GLint x_offset, GLint y_offset, GLint plane_index, GLuint src_width, '
-        'GLuint src_height, GLuint src_row_bytes, GLuint src_sk_color_type, '
-        'GLuint src_sk_alpha_type, GLint shm_id, GLuint shm_offset, '
-        'GLuint pixels_offset, GLuint mailbox_offset',
+        'GLuint src_width, GLuint src_height, GLuint src_row_bytes_plane1, '
+        'GLuint src_row_bytes_plane2, GLuint src_row_bytes_plane3, '
+        'GLuint src_row_bytes_plane4, GLuint src_yuv_plane_config, '
+        'GLuint src_yuv_subsampling, GLuint src_yuv_datatype, GLint shm_id, '
+        'GLuint shm_offset, GLuint pixels_offset_plane1, '
+        'GLuint pixels_offset_plane2, GLuint pixels_offset_plane3, '
+        'GLuint pixels_offset_plane4',
     'trace_level': 2,
   },
   'FramebufferMemorylessPixelLocalStorageANGLE': {

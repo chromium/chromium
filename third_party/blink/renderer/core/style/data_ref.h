@@ -34,6 +34,8 @@ class DataRef {
   USING_FAST_MALLOC(DataRef);
 
  public:
+  explicit DataRef(scoped_refptr<T>&& data) : data_(data) {}
+
   const T* Get() const { return data_.get(); }
 
   const T& operator*() const { return *Get(); }
@@ -45,11 +47,6 @@ class DataRef {
       data_ = data_->Copy();
     }
     return data_.get();
-  }
-
-  void Init() {
-    DCHECK(!data_);
-    data_ = T::Create();
   }
 
   bool operator==(const DataRef<T>& o) const {

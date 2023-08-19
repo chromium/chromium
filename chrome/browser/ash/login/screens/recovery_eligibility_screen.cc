@@ -14,17 +14,19 @@
 #include "chrome/browser/ui/webui/ash/login/recovery_eligibility_screen_handler.h"
 #include "chromeos/ash/components/login/auth/public/user_context.h"
 #include "chromeos/ash/components/login/auth/recovery/recovery_utils.h"
+#include "chromeos/ash/components/osauth/public/auth_session_storage.h"
 #include "components/prefs/pref_service.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace ash {
 
 namespace {
 
-// Returns `true` if the active Profile is under any kind of policy management.
-bool IsUserManaged() {
-  return ProfileManager::GetActiveUserProfile()
-      ->GetProfilePolicyConnector()
-      ->IsManaged();
+// Returns `true` if the active Profile is enterprise managed.
+bool IsUserEnterpriseManaged() {
+  Profile* profile = ProfileManager::GetActiveUserProfile();
+  return profile->GetProfilePolicyConnector()->IsManaged() &&
+         !profile->IsChild();
 }
 
 }  // namespace
@@ -41,9 +43,9 @@ std::string RecoveryEligibilityScreen::GetResultString(Result result) {
 
 // static
 bool RecoveryEligibilityScreen::ShouldSkipRecoverySetupBecauseOfPolicy() {
-  return IsUserManaged() &&
+  return IsUserEnterpriseManaged() &&
          !GetRecoveryDefaultState(
-             IsUserManaged(),
+             IsUserEnterpriseManaged(),
              ProfileManager::GetActiveUserProfile()->GetPrefs());
 }
 
@@ -60,10 +62,24 @@ bool RecoveryEligibilityScreen::MaybeSkip(WizardContext& wizard_context) {
     exit_callback_.Run(Result::NOT_APPLICABLE);
     return true;
   }
-  if (!wizard_context.extra_factors_auth_session.get()) {
-    exit_callback_.Run(Result::NOT_APPLICABLE);
-    return true;
+  std::unique_ptr<UserContext> user_context;
+  if (ash::features::ShouldUseAuthSessionStorage()) {
+    if (!wizard_context.extra_factors_token.has_value()) {
+      exit_callback_.Run(Result::NOT_APPLICABLE);
+      return true;
+    }
+    if (!ash::AuthSessionStorage::Get()->IsValid(
+            wizard_context.extra_factors_token.value())) {
+      exit_callback_.Run(Result::NOT_APPLICABLE);
+      return true;
+    }
+  } else {
+    if (!wizard_context.extra_factors_auth_session.get()) {
+      exit_callback_.Run(Result::NOT_APPLICABLE);
+      return true;
+    }
   }
+
   if (wizard_context.skip_post_login_screens_for_tests) {
     exit_callback_.Run(Result::NOT_APPLICABLE);
     return true;
@@ -72,7 +88,17 @@ bool RecoveryEligibilityScreen::MaybeSkip(WizardContext& wizard_context) {
 }
 
 void RecoveryEligibilityScreen::ShowImpl() {
-  UserContext* user_context = context()->extra_factors_auth_session.get();
+  UserContext* user_context = nullptr;
+  if (ash::features::ShouldUseAuthSessionStorage()) {
+    CHECK(context()->extra_factors_token.has_value());
+    auto* storage = ash::AuthSessionStorage::Get();
+    auto& token = context()->extra_factors_token.value();
+    CHECK(storage->IsValid(token));
+    user_context = storage->Peek(token);
+  } else {
+    user_context = context()->extra_factors_auth_session.get();
+  }
+
   CHECK(user_context);
   auto supported_factors =
       user_context->GetAuthFactorsConfiguration().get_supported_factors();
@@ -81,10 +107,10 @@ void RecoveryEligibilityScreen::ShowImpl() {
     // Don't ask about recovery consent for managed users - use the policy value
     // instead.
     context()->recovery_setup.ask_about_recovery_consent =
-        IsRecoveryOptInAvailable(IsUserManaged());
+        IsRecoveryOptInAvailable(IsUserEnterpriseManaged());
     context()->recovery_setup.recovery_factor_opted_in =
         GetRecoveryDefaultState(
-            IsUserManaged(),
+            IsUserEnterpriseManaged(),
             ProfileManager::GetActiveUserProfile()->GetPrefs());
   }
   exit_callback_.Run(Result::PROCEED);

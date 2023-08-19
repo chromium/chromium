@@ -48,14 +48,6 @@ class PageSpecificContentSettingsDelegate
       content::WebContents* web_contents) override;
   void OnContentAllowed(ContentSettingsType type) override;
   void OnContentBlocked(ContentSettingsType type) override;
-  void OnStorageAccessAllowed(
-      content_settings::mojom::ContentSettingsManager::StorageType storage_type,
-      const url::Origin& origin,
-      content::Page& page) override;
-  void OnCookieAccessAllowed(const net::CookieList& accessed_cookies,
-                             content::Page& page) override;
-  void OnServiceWorkerAccessAllowed(const url::Origin& origin,
-                                    content::Page& page) override;
 
   raw_ptr<content::WebContents> web_contents_;
 };

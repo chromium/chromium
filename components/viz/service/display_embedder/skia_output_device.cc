@@ -19,11 +19,11 @@
 #include "gpu/command_buffer/service/memory_tracking.h"
 #include "gpu/command_buffer/service/skia_utils.h"
 #include "services/tracing/public/cpp/perfetto/flow_event_utils.h"
-#include "third_party/skia/include/core/SkDeferredDisplayList.h"
 #include "third_party/skia/include/core/SkSurface.h"
 #include "third_party/skia/include/gpu/GrDirectContext.h"
 #include "third_party/skia/include/gpu/graphite/Context.h"
 #include "third_party/skia/include/gpu/graphite/Recording.h"
+#include "third_party/skia/include/private/chromium/GrDeferredDisplayList.h"
 #include "ui/gfx/gpu_fence.h"
 #include "ui/gfx/presentation_feedback.h"
 #include "ui/latency/latency_tracker.h"
@@ -35,9 +35,10 @@
 namespace viz {
 namespace {
 
+// TODO(crbug.com/1094361): Clean up the feature in M117.
 BASE_FEATURE(kAsyncGpuLatencyReporting,
              "AsyncGpuLatencyReporting",
-             base::FEATURE_ENABLED_BY_DEFAULT);
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 using ::perfetto::protos::pbzero::ChromeLatencyInfo;
 
@@ -103,7 +104,7 @@ bool SkiaOutputDevice::ScopedPaint::Wait(
 }
 
 bool SkiaOutputDevice::ScopedPaint::Draw(
-    sk_sp<const SkDeferredDisplayList> ddl) {
+    sk_sp<const GrDeferredDisplayList> ddl) {
   return device_->Draw(sk_surface_, std::move(ddl));
 }
 
@@ -381,11 +382,11 @@ bool SkiaOutputDevice::Wait(SkSurface* sk_surface,
 }
 
 bool SkiaOutputDevice::Draw(SkSurface* sk_surface,
-                            sk_sp<const SkDeferredDisplayList> ddl) {
+                            sk_sp<const GrDeferredDisplayList> ddl) {
 #if DCHECK_IS_ON()
   const auto& characterization = ddl->characterization();
   if (!sk_surface->isCompatible(characterization)) {
-    SkSurfaceCharacterization surface_characterization;
+    GrSurfaceCharacterization surface_characterization;
     DCHECK(sk_surface->characterize(&surface_characterization));
 #define CHECK_PROPERTY(name) \
   DCHECK_EQ(characterization.name(), surface_characterization.name());
@@ -403,7 +404,7 @@ bool SkiaOutputDevice::Draw(SkSurface* sk_surface,
     CHECK_PROPERTY(isProtected);
   }
 #endif
-  return sk_surface->draw(ddl);
+  return skgpu::ganesh::DrawDDL(sk_surface, ddl);
 }
 
 bool SkiaOutputDevice::Draw(

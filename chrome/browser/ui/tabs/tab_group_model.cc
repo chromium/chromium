@@ -34,8 +34,10 @@ TabGroup* TabGroupModel::AddTabGroup(
       controller_, id,
       visual_data.value_or(
           tab_groups::TabGroupVisualData(std::u16string(), GetNextColor())));
+  if (groups_.find(id) == groups_.end()) {
+    group_ids_.emplace_back(id);
+  }
   groups_[id] = std::move(tab_group);
-
   return groups_[id].get();
 }
 
@@ -50,15 +52,12 @@ TabGroup* TabGroupModel::GetTabGroup(const tab_groups::TabGroupId& id) const {
 
 void TabGroupModel::RemoveTabGroup(const tab_groups::TabGroupId& id) {
   DCHECK(ContainsTabGroup(id));
+  group_ids_.erase(base::ranges::remove(group_ids_, id));
   groups_.erase(id);
 }
 
 std::vector<tab_groups::TabGroupId> TabGroupModel::ListTabGroups() const {
-  std::vector<tab_groups::TabGroupId> group_ids;
-  group_ids.reserve(groups_.size());
-  for (const auto& id_group_pair : groups_)
-    group_ids.push_back(id_group_pair.first);
-  return group_ids;
+  return group_ids_;
 }
 
 tab_groups::TabGroupColorId TabGroupModel::GetNextColor() const {

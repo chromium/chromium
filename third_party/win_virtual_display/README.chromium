@@ -1,0 +1,22 @@
+Name: Windows Driver Samples
+Short Name: Windows-driver-samples
+URL: https://github.com/microsoft/Windows-driver-samples
+Version: 0
+Date: Jun 29 2023
+Revision: d9acf794c92ba2fb0525f6c794ef394709035ac3
+License: MPL 1
+License File: LICENSE
+Shipped: no
+Security Critical: no
+License Android Compatible: yes
+CPEPrefix: unknown
+
+Description:
+The chromium windows virtual display driver in this directory is a derivative
+of window sample driver code. See README.md for build instructions.
+
+Local Modifications:
+Code in video/IndirectDisplay/IddSampleDriver was copied and refactored,
+modernized, productionized and expanded on to derive a virtual display driver
+to be used by chromium under automated testing.
+See: https://docs.google.com/document/d/1rtxO2FEg0Zl_-oXHzIBsJo6py7wkySUpYruteNMlPys/edit?resourcekey=0-yLkX6DGPwNFn1ARMpM-zLQ

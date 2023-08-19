@@ -566,8 +566,7 @@ class ContextualSearchFakeServer
     }
 
     @Override
-    @Nullable
-    public GURL getBasePageUrl() {
+    public @Nullable GURL getBasePageUrl() {
         GURL baseUrl = mBaseManager.getBasePageUrl();
         if (baseUrl != null) {
             // Return plain HTTP URLs so we can test that we don't give them our legacy privacy

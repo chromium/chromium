@@ -22,7 +22,6 @@
 
 #include "third_party/blink/renderer/core/events/keyboard_event.h"
 
-#include "base/i18n/char_iterator.h"
 #include "build/build_config.h"
 #include "third_party/blink/public/common/input/web_input_event.h"
 #include "third_party/blink/public/platform/platform.h"
@@ -125,10 +124,8 @@ KeyboardEvent::KeyboardEvent(const WebKeyboardEvent& key,
 
   // Firefox: 0 for keydown/keyup events, character code for keypress
   // We match Firefox
-  if (type() == event_type_names::kKeypress) {
-    SetCharCode(
-        base::StringPiece16(key.text, blink::WebKeyboardEvent::kTextLengthCap));
-  }
+  if (type() == event_type_names::kKeypress)
+    char_code_ = key.text[0];
 
   if (type() == event_type_names::kKeydown ||
       type() == event_type_names::kKeyup)
@@ -183,11 +180,6 @@ void KeyboardEvent::initKeyboardEvent(ScriptState* script_state,
   location_ = location;
   InitModifiers(ctrl_key, alt_key, shift_key, meta_key);
   InitLocationModifiers(location);
-}
-
-void KeyboardEvent::SetCharCode(base::StringPiece16 str) {
-  char_code_ =
-      static_cast<unsigned int>(base::i18n::UTF16CharIterator(str).get());
 }
 
 int KeyboardEvent::keyCode() const {

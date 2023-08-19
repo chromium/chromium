@@ -4,6 +4,7 @@
 
 #include "content/browser/back_forward_cache_browsertest.h"
 
+#include "content/browser/back_forward_cache_test_util.h"
 #include "content/browser/renderer_host/navigation_request.h"
 #include "content/browser/web_contents/web_contents_impl.h"
 #include "content/public/browser/site_isolation_policy.h"
@@ -401,6 +402,57 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTestWithNotRestoredReasons,
   EXPECT_TRUE(ExecJs(current_frame_host(),
                      "performance.getEntriesByType('navigation')[0]."
                      "notRestoredReasons == null"));
+}
+
+// Test that after reload, NotRestoredReasons are reset.
+IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTestWithNotRestoredReasons,
+                       Reload) {
+  CreateHttpsServer();
+  ASSERT_TRUE(https_server()->Start());
+
+  GURL url_a(https_server()->GetURL("a.com", kBlockingPagePath));
+  GURL url_b(https_server()->GetURL("b.com", "/title1.html"));
+
+  // 1) Navigate to a bfcache blocking page.
+  ASSERT_TRUE(NavigateToURL(shell(), url_a));
+  RenderFrameHostImplWrapper rfh_a(current_frame_host());
+
+  // 2) Navigate to B.
+  ASSERT_TRUE(NavigateToURL(shell(), url_b));
+
+  // 3) Navigate back.
+  ASSERT_TRUE(HistoryGoBack(web_contents()));
+
+  // Blocking reasons should be recorded.
+  ExpectNotRestored({NotRestoredReason::kBlocklistedFeatures},
+                    {kBlockingReasonEnum}, {}, {}, {}, FROM_HERE);
+  // Expect that NotRestoredReasons are reported.
+  auto rfh_a_result =
+      MatchesNotRestoredReasons(blink::mojom::BFCacheBlocked::kYes,
+                                /*id=*/absl::nullopt, /*name=*/absl::nullopt,
+                                /*src=*/absl::nullopt,
+                                MatchesSameOriginDetails(
+                                    /*url=*/url_a.spec(),
+                                    /*reasons=*/{kBlockingReasonString},
+                                    /*children=*/{}));
+  EXPECT_THAT(current_frame_host()->NotRestoredReasonsForTesting(),
+              rfh_a_result);
+
+  // Reload
+  {
+    TestNavigationObserver observer(web_contents());
+    web_contents()->GetController().Reload(content::ReloadType::BYPASSING_CACHE,
+                                           false);  // check_for_repost
+    observer.Wait();
+  }
+  // Expect that NotRestoredReasons are reset to null after reload.
+  EXPECT_TRUE(current_frame_host()->NotRestoredReasonsForTesting().is_null());
+  EXPECT_TRUE(ExecJs(current_frame_host(),
+                     "performance.getEntriesByType('navigation')[0]."
+                     "type == 'reload'"));
+  EXPECT_EQ(true, EvalJs(current_frame_host(),
+                         "performance.getEntriesByType('navigation')[0]."
+                         "notRestoredReasons === null"));
 }
 
 }  // namespace content

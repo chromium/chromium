@@ -47,11 +47,6 @@ class FakeServiceDelegate : public FakeCupsProxyServiceDelegate {
     return installed_printers_.at(printer.id());
   }
 
-  void PrinterInstalled(const Printer& printer) override {
-    DCHECK(base::Contains(installed_printers_, printer.id()));
-    installed_printers_[printer.id()] = true;
-  }
-
   absl::optional<Printer> GetPrinter(const std::string& id) override {
     if (!base::Contains(installed_printers_, id)) {
       return absl::nullopt;
@@ -73,6 +68,7 @@ class FakeServiceDelegate : public FakeCupsProxyServiceDelegate {
     }
 
     // Install printer.
+    installed_printers_[printer.id()] = true;
     return std::move(callback).Run(true);
   }
 

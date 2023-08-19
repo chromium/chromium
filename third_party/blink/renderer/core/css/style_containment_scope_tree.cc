@@ -14,7 +14,7 @@ namespace blink {
 
 void StyleContainmentScopeTree::Trace(Visitor* visitor) const {
   visitor->Trace(root_scope_);
-  visitor->Trace(outermost_dirty_scope_);
+  visitor->Trace(outermost_quotes_dirty_scope_);
   visitor->Trace(scopes_);
 }
 
@@ -55,7 +55,7 @@ void StyleContainmentScopeTree::DestroyScopeForElement(const Element& element) {
   StyleContainmentScope* parent = scope->Parent();
   scope->ReattachToParent();
   scopes_.erase(&element);
-  UpdateOutermostDirtyScope(parent);
+  UpdateOutermostQuotesDirtyScope(parent);
 }
 
 void StyleContainmentScopeTree::CreateScopeForElement(const Element& element) {
@@ -67,9 +67,9 @@ void StyleContainmentScopeTree::CreateScopeForElement(const Element& element) {
   StyleContainmentScope* parent = FindOrCreateEnclosingScopeForElement(element);
   parent->AppendChild(scope);
   scopes_.insert(&element, scope);
-  auto children = parent->Children();
   // Try to find if we create a scope anywhere between the parent and existing
   // children. If so, reattach the child and the quotes.
+  auto children = parent->Children();
   for (StyleContainmentScope* child : children) {
     if (child != scope &&
         scope->IsAncestorOf(child->GetElement(), parent->GetElement())) {
@@ -84,7 +84,7 @@ void StyleContainmentScopeTree::CreateScopeForElement(const Element& element) {
       scope->AttachQuote(*quote);
     }
   }
-  UpdateOutermostDirtyScope(parent);
+  UpdateOutermostQuotesDirtyScope(parent);
 }
 
 void StyleContainmentScopeTree::ElementWillBeRemoved(const Element& element) {
@@ -93,7 +93,7 @@ void StyleContainmentScopeTree::ElementWillBeRemoved(const Element& element) {
     // we need to delete this scope and reattach its quotes and children
     // to its parent, and mark its parent dirty.
     StyleContainmentScope* scope = it->value;
-    UpdateOutermostDirtyScope(scope->Parent());
+    UpdateOutermostQuotesDirtyScope(scope->Parent());
     scope->ReattachToParent();
     scopes_.erase(it);
   }
@@ -134,17 +134,18 @@ StyleContainmentScope* FindCommonAncestor(StyleContainmentScope* scope1,
 
 }  // namespace
 
-void StyleContainmentScopeTree::UpdateOutermostDirtyScope(
+void StyleContainmentScopeTree::UpdateOutermostQuotesDirtyScope(
     StyleContainmentScope* scope) {
-  outermost_dirty_scope_ = FindCommonAncestor(scope, outermost_dirty_scope_);
+  outermost_quotes_dirty_scope_ =
+      FindCommonAncestor(scope, outermost_quotes_dirty_scope_);
 }
 
 void StyleContainmentScopeTree::UpdateQuotes() {
-  if (!outermost_dirty_scope_) {
+  if (!outermost_quotes_dirty_scope_) {
     return;
   }
-  outermost_dirty_scope_->UpdateQuotes();
-  outermost_dirty_scope_ = nullptr;
+  outermost_quotes_dirty_scope_->UpdateQuotes();
+  outermost_quotes_dirty_scope_ = nullptr;
 }
 
 }  // namespace blink

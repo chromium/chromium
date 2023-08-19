@@ -4,8 +4,10 @@
 
 #include <tuple>
 
-#include "base/functional/callback.h"
 #include "ui/base/models/image_model.h"
+
+#include "base/functional/callback.h"
+#include "base/trace_event/trace_event.h"
 #include "ui/base/resource/resource_bundle.h"
 #include "ui/color/color_id.h"
 #include "ui/gfx/vector_icon_utils.h"
@@ -166,6 +168,7 @@ bool ImageModel::operator!=(const ImageModel& other) const {
 
 gfx::ImageSkia ImageModel::Rasterize(
     const ui::ColorProvider* color_provider) const {
+  TRACE_EVENT0("ui", "ImageModel::Rasterize");
   if (IsImage())
     return GetImage().AsImageSkia();
 

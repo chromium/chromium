@@ -1,0 +1,181 @@
+<style include="settings-shared"></style>
+<os-settings-animated-pages id="pages"
+    current-route="{{currentRoute}}"
+    section="[[section_]]">
+  <div route-path="default">
+    <settings-card header-text="$i18n{a11yPageTitle}">
+      <settings-toggle-button
+          id="a11yImageLabelsToggle"
+          hidden="[[!showAccessibilityLabelsSetting_]]"
+          pref="{{prefs.settings.a11y.enable_accessibility_image_labels}}"
+          on-change="onToggleAccessibilityImageLabels_"
+          label="$i18n{accessibleImageLabelsTitle}"
+          sub-label="$i18n{accessibleImageLabelsSubtitle}"
+          deep-link-focus-id$="[[Setting.kGetImageDescriptionsFromGoogle]]">
+      </settings-toggle-button>
+      <div class="hr" hidden="[[!showAccessibilityLabelsSetting_]]"></div>
+      <settings-toggle-button id="optionsInMenuToggle"
+          label="$i18n{optionsInMenuLabel}"
+          sub-label="$i18n{optionsInMenuDescription}"
+          pref="{{prefs.settings.a11y.enable_menu}}"
+          deep-link-focus-id$="[[Setting.kA11yQuickSettings]]">
+      </settings-toggle-button>
+      <div class="hr"></div>
+      <cr-link-row id="textToSpeechSubpageTrigger"
+          label="$i18n{textToSpeechLinkTitle}"
+          on-click="onTextToSpeechClick_"
+          sub-label="$i18n{textToSpeechLinkDescription}"
+          role-description="$i18n{subpageArrowRoleDescription}">
+      </cr-link-row>
+      <div class="hr"></div>
+      <cr-link-row id="displayAndMagnificationPageTrigger"
+          label="$i18n{displayAndMagnificationLinkTitle}"
+          on-click="onDisplayAndMagnificationClick_"
+          sub-label="$i18n{displayAndMagnificationLinkDescription}"
+          role-description="$i18n{subpageArrowRoleDescription}">
+      </cr-link-row>
+      <div class="hr"></div>
+      <cr-link-row id="keyboardAndTextInputPageTrigger"
+          label="$i18n{keyboardAndTextInputLinkTitle}"
+          on-click="onKeyboardAndTextInputClick_"
+          sub-label="$i18n{keyboardAndTextInputLinkDescription}"
+          role-description="$i18n{subpageArrowRoleDescription}">
+      </cr-link-row>
+      <div class="hr"></div>
+      <cr-link-row id="cursorAndTouchpadPageTrigger"
+          label="$i18n{cursorAndTouchpadLinkTitle}"
+          on-click="onCursorAndTouchpadClick_"
+          sub-label="$i18n{cursorAndTouchpadLinkDescription}"
+          role-description="$i18n{subpageArrowRoleDescription}">
+      </cr-link-row>
+      <div class="hr"></div>
+      <cr-link-row id="audioAndCaptionsPageTrigger"
+          label="$i18n{audioAndCaptionsLinkTitle}"
+          on-click="onAudioAndCaptionsClick_"
+          sub-label="$i18n{audioAndCaptionsLinkDescription}"
+          role-description="$i18n{subpageArrowRoleDescription}">
+      </cr-link-row>
+      <template is="dom-if" if="[[!isGuest_]]">
+        <cr-link-row
+            id="additionalFeaturesLink" class="hr"
+            label="$i18n{additionalFeaturesTitle}"
+            on-click="onAdditionalFeaturesClick_"
+            external>
+        </cr-link-row>
+      </template>
+    </settings-card>
+  </div>
+
+  <template is="dom-if" route-path="/manageAccessibility">
+    <os-settings-subpage page-title="$i18n{manageAccessibilityFeatures}"
+        hide-close-button>
+      <settings-toggle-button
+          id="a11yImageLabelsToggle"
+          hidden="[[!showAccessibilityLabelsSetting_]]"
+          pref="{{prefs.settings.a11y.enable_accessibility_image_labels}}"
+          on-change="onToggleAccessibilityImageLabels_"
+          label="$i18n{accessibleImageLabelsTitle}"
+          sub-label="$i18n{accessibleImageLabelsSubtitle}"
+          deep-link-focus-id$="[[Setting.kGetImageDescriptionsFromGoogle]]">
+      </settings-toggle-button>
+      <div class="hr" hidden="[[!showAccessibilityLabelsSetting_]]"></div>
+      <cr-link-row id="textToSpeechSubpageTrigger"
+          label="$i18n{textToSpeechLinkTitle}"
+          on-click="onTextToSpeechClick_"
+          sub-label="$i18n{textToSpeechLinkDescription}"
+          role-description="$i18n{subpageArrowRoleDescription}">
+      </cr-link-row>
+      <div class="hr"></div>
+      <cr-link-row id="displayAndMagnificationPageTrigger"
+          label="$i18n{displayAndMagnificationLinkTitle}"
+          on-click="onDisplayAndMagnificationClick_"
+          sub-label="$i18n{displayAndMagnificationLinkDescription}"
+          role-description="$i18n{subpageArrowRoleDescription}">
+      </cr-link-row>
+      <div class="hr"></div>
+      <cr-link-row id="keyboardAndTextInputPageTrigger"
+          label="$i18n{keyboardAndTextInputLinkTitle}"
+          on-click="onKeyboardAndTextInputClick_"
+          sub-label="$i18n{keyboardAndTextInputLinkDescription}"
+          role-description="$i18n{subpageArrowRoleDescription}">
+      </cr-link-row>
+      <div class="hr"></div>
+      <cr-link-row id="cursorAndTouchpadPageTrigger"
+          label="$i18n{cursorAndTouchpadLinkTitle}"
+          on-click="onCursorAndTouchpadClick_"
+          sub-label="$i18n{cursorAndTouchpadLinkDescription}"
+          role-description="$i18n{subpageArrowRoleDescription}">
+      </cr-link-row>
+      <div class="hr"></div>
+      <cr-link-row id="audioAndCaptionsPageTrigger"
+          label="$i18n{audioAndCaptionsLinkTitle}"
+          on-click="onAudioAndCaptionsClick_"
+          sub-label="$i18n{audioAndCaptionsLinkDescription}"
+          role-description="$i18n{subpageArrowRoleDescription}">
+      </cr-link-row>
+    </os-settings-subpage>
+  </template>
+  <template is="dom-if" route-path="/textToSpeech">
+    <os-settings-subpage page-title="$i18n{textToSpeechLinkTitle}">
+      <settings-text-to-speech-subpage prefs="{{prefs}}"
+          has-screen-reader="[[hasScreenReader_]]">
+      </settings-text-to-speech-subpage>
+    </os-settings-subpage>
+  </template>
+  <template is="dom-if"
+      if="[[isAccessibilityChromeVoxPageMigrationEnabled_]]">
+    <template is="dom-if" route-path="/textToSpeech/chromeVox">
+      <os-settings-subpage page-title="$i18n{chromeVoxLabel}">
+        <settings-chromevox-subpage prefs="{{prefs}}">
+        </settings-chromevox-subpage>
+      </os-settings-subpage>
+    </template>
+  </template>
+  <template is="dom-if" route-path="/textToSpeech/selectToSpeak">
+    <os-settings-subpage page-title="$i18n{selectToSpeakLinkTitle}">
+      <settings-select-to-speak-subpage prefs="{{prefs}}">
+      </settings-select-to-speak-subpage>
+    </os-settings-subpage>
+  </template>
+  <template is="dom-if" route-path="/displayAndMagnification">
+    <os-settings-subpage page-title="$i18n{displayAndMagnificationLinkTitle}">
+      <settings-display-and-magnification-subpage prefs="{{prefs}}">
+      </settings-display-and-magnification-subpage>
+    </os-settings-subpage>
+  </template>
+  <template is="dom-if" route-path="/keyboardAndTextInput">
+    <os-settings-subpage page-title="$i18n{keyboardAndTextInputLinkTitle}">
+      <settings-keyboard-and-text-input-page prefs="{{prefs}}">
+      </settings-keyboard-and-text-input-page>
+    </os-settings-subpage>
+  </template>
+  <template is="dom-if" route-path="/cursorAndTouchpad">
+    <os-settings-subpage page-title="$i18n{cursorAndTouchpadLinkTitle}">
+      <settings-cursor-and-touchpad-page prefs="{{prefs}}">
+      </settings-cursor-and-touchpad-page>
+    </os-settings-subpage>
+  </template>
+  <template is="dom-if" route-path="/audioAndCaptions">
+    <os-settings-subpage page-title="$i18n{audioAndCaptionsLinkTitle}">
+      <settings-audio-and-captions-page prefs="{{prefs}}">
+      </settings-audio-and-captions-page>
+    </os-settings-subpage>
+  </template>
+  <template is="dom-if" route-path="/manageAccessibility/tts">
+    <os-settings-subpage page-title="$i18n{manageTtsSettings}">
+      <settings-tts-voice-subpage prefs="{{prefs}}">
+      </settings-tts-voice-subpage>
+    </os-settings-subpage>
+  </template>
+  <template is="dom-if" route-path="/manageAccessibility/captions">
+    <os-settings-subpage page-title="$i18n{captionsTitle}">
+      <settings-captions prefs="{{prefs}}"></settings-captions>
+    </os-settings-subpage>
+  </template>
+  <template is="dom-if" route-path="/manageAccessibility/switchAccess">
+    <os-settings-subpage page-title="$i18n{manageSwitchAccessSettings}">
+      <settings-switch-access-subpage prefs="{{prefs}}">
+      </settings-switch-access-subpage>
+    </os-settings-subpage>
+  </template>
+</os-settings-animated-pages>

@@ -28,7 +28,6 @@ class BuildState;
 class DownloadRequestLimiter;
 class DownloadStatusUpdater;
 class GpuModeManager;
-class HidPolicyAllowedDevices;
 class IconManager;
 class MediaFileSystemRegistry;
 class NotificationPlatformBridge;
@@ -43,6 +42,7 @@ class WebRtcLogUploader;
 
 #if !BUILDFLAG(IS_ANDROID)
 class HidSystemTrayIcon;
+class UsbSystemTrayIcon;
 class IntranetRedirectDetector;
 #endif
 
@@ -266,13 +266,13 @@ class BrowserProcess {
   // through the policy engine.
   virtual SerialPolicyAllowedPorts* serial_policy_allowed_ports() = 0;
 
-  // Returns the object which keeps track of Human Interface Device (HID)
-  // permissions configured through the policy engine.
-  virtual HidPolicyAllowedDevices* hid_policy_allowed_devices() = 0;
-
   // Returns the object which maintains Human Interface Device (HID) system tray
   // icon.
   virtual HidSystemTrayIcon* hid_system_tray_icon() = 0;
+
+  // Returns the object which maintains Universal Serial Bus (USB) system tray
+  // icon.
+  virtual UsbSystemTrayIcon* usb_system_tray_icon() = 0;
 #endif
 
   virtual BuildState* GetBuildState() = 0;

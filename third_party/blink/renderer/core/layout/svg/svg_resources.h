@@ -20,6 +20,7 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_SVG_SVG_RESOURCES_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_SVG_SVG_RESOURCES_H_
 
+#include "third_party/blink/renderer/core/style/computed_style_constants.h"
 #include "third_party/blink/renderer/core/style/style_difference.h"
 #include "third_party/blink/renderer/core/svg/svg_resource_client.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
@@ -46,7 +47,9 @@ class SVGResources {
 
  public:
   static SVGElementResourceClient* GetClient(const LayoutObject&);
-  static gfx::RectF ReferenceBoxForEffects(const LayoutObject&);
+  static gfx::RectF ReferenceBoxForEffects(
+      const LayoutObject&,
+      GeometryBox geometry_box = GeometryBox::kFillBox);
 
   static void UpdateEffects(LayoutObject&,
                             StyleDifference,

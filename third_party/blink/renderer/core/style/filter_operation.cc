@@ -81,7 +81,7 @@ gfx::RectF BlurFilterOperation::MapRect(const gfx::RectF& rect) const {
 gfx::RectF DropShadowFilterOperation::MapRect(const gfx::RectF& rect) const {
   float std_deviation = shadow_.Blur();
   return FEDropShadow::MapEffect(gfx::SizeF(std_deviation, std_deviation),
-                                 shadow_.Location(), rect);
+                                 shadow_.Offset(), rect);
 }
 
 gfx::RectF BoxReflectFilterOperation::MapRect(const gfx::RectF& rect) const {

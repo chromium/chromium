@@ -44,7 +44,8 @@ void CrosHealthdDisplaySamplerHandler::HandleResult(
         }
 
         metric_data = absl::make_optional<MetricData>();
-        const auto* const embedded_display_info = display_info->edp_info.get();
+        const auto* const embedded_display_info =
+            display_info->embedded_display.get();
         if (metric_type_ == MetricType::kInfo) {
           // Gather e-privacy screen info.
           auto* const privacy_screen_info_out =
@@ -81,9 +82,9 @@ void CrosHealthdDisplaySamplerHandler::HandleResult(
             internal_dp_out->set_manufacture_year(
                 embedded_display_info->manufacture_year->value);
           }
-          if (display_info->dp_infos) {
+          if (display_info->external_displays) {
             for (const auto& current_external_display :
-                 *display_info->dp_infos) {
+                 *display_info->external_displays) {
               auto* const external_dp_out = metric_data->mutable_info_data()
                                                 ->mutable_display_info()
                                                 ->add_display_device();
@@ -136,9 +137,9 @@ void CrosHealthdDisplaySamplerHandler::HandleResult(
             internal_dp_out->set_refresh_rate(
                 embedded_display_info->refresh_rate->value);
           }
-          if (display_info->dp_infos) {
+          if (display_info->external_displays) {
             for (const auto& current_external_display :
-                 *display_info->dp_infos) {
+                 *display_info->external_displays) {
               auto* const external_dp_out =
                   metric_data->mutable_telemetry_data()
                       ->mutable_displays_telemetry()

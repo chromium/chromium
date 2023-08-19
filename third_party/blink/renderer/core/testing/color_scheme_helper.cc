@@ -37,25 +37,30 @@ ColorSchemeHelper::~ColorSchemeHelper() {
 }
 
 void ColorSchemeHelper::SetPreferredColorScheme(
-    const mojom::blink::PreferredColorScheme preferred_color_scheme) {
+    mojom::blink::PreferredColorScheme preferred_color_scheme) {
   settings_.SetPreferredColorScheme(preferred_color_scheme);
 }
 
 void ColorSchemeHelper::SetPreferredContrast(
-    const mojom::blink::PreferredContrast preferred_contrast) {
+    mojom::blink::PreferredContrast preferred_contrast) {
   settings_.SetPreferredContrast(preferred_contrast);
 }
 
 void ColorSchemeHelper::SetForcedColors(Document& document,
-                                        const ForcedColors forced_colors) {
+                                        ForcedColors forced_colors) {
   web_theme_engine_->SetForcedColors(forced_colors);
   document.ColorSchemeChanged();
 }
 
 void ColorSchemeHelper::SetForcedColors(Page& page,
-                                        const ForcedColors forced_colors) {
+                                        ForcedColors forced_colors) {
   web_theme_engine_->SetForcedColors(forced_colors);
   page.ColorSchemeChanged();
 }
 
+void ColorSchemeHelper::SetEmulatedForcedColors(Document& document,
+                                                bool is_dark_theme) {
+  web_theme_engine_->EmulateForcedColors(is_dark_theme);
+  document.ColorSchemeChanged();
+}
 }  // namespace blink

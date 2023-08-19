@@ -12,10 +12,6 @@
 #import "testing/gmock/include/gmock/gmock.h"
 #import "testing/platform_test.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 namespace {
 // OverlayModality used in tests.
 const OverlayModality kModality = OverlayModality::kWebContentArea;

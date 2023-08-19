@@ -11,6 +11,7 @@ import static androidx.test.espresso.action.ViewActions.longClick;
 import static androidx.test.espresso.assertion.ViewAssertions.doesNotExist;
 import static androidx.test.espresso.assertion.ViewAssertions.matches;
 import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
+import static androidx.test.espresso.matcher.ViewMatchers.withId;
 import static androidx.test.espresso.matcher.ViewMatchers.withText;
 
 import static org.mockito.Mockito.doReturn;
@@ -55,6 +56,7 @@ import org.chromium.chrome.browser.bookmarks.BookmarkToolbar;
 import org.chromium.chrome.browser.bookmarks.BookmarkUiState.BookmarkUiMode;
 import org.chromium.chrome.browser.bookmarks.BookmarkUtils;
 import org.chromium.chrome.browser.bookmarks.TestingDelegate;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.ui.signin.SyncPromoController.SyncPromoState;
@@ -64,6 +66,7 @@ import org.chromium.chrome.test.R;
 import org.chromium.chrome.test.util.ActivityTestUtils;
 import org.chromium.chrome.test.util.BookmarkTestUtil;
 import org.chromium.chrome.test.util.MenuUtils;
+import org.chromium.chrome.test.util.browser.Features.DisableFeatures;
 import org.chromium.components.bookmarks.BookmarkId;
 import org.chromium.components.bookmarks.BookmarkType;
 import org.chromium.components.browser_ui.widget.RecyclerViewTestUtils;
@@ -84,6 +87,7 @@ import java.util.concurrent.ExecutionException;
  */
 @RunWith(ChromeJUnit4ClassRunner.class)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
+@DisableFeatures({ChromeFeatureList.ANDROID_IMPROVED_BOOKMARKS})
 @DoNotBatch(reason = "BookmarkTest has behaviours and thus can't be batched.")
 public class ReadingListTest {
     @Rule
@@ -95,9 +99,7 @@ public class ReadingListTest {
     @Rule
     public final DisableAnimationsTestRule mDisableAnimationsRule = new DisableAnimationsTestRule();
 
-    private static final String TEST_PAGE_URL_GOOGLE = "/chrome/test/data/android/google.html";
     private static final String TEST_PAGE_TITLE_GOOGLE = "The Google";
-    private static final String TEST_PAGE_URL_FOO = "/chrome/test/data/android/test.html";
     private static final int TEST_PORT = 12345;
 
     private BookmarkManagerCoordinator mBookmarkManagerCoordinator;
@@ -305,6 +307,8 @@ public class ReadingListTest {
     @Test
     @SmallTest
     @Restriction(RESTRICTION_TYPE_NON_LOW_END_DEVICE)
+    @DisableFeatures({ChromeFeatureList.EMPTY_STATES})
+    //@TODO(crbug.com/1468380): clean up after Empty States is fully launched.
     public void testReadingListEmptyView() throws Exception {
         BookmarkPromoHeader.forcePromoStateForTesting(SyncPromoState.NO_PROMO);
         openBookmarkManager();
@@ -318,6 +322,30 @@ public class ReadingListTest {
         TestThreadUtils.runOnUiThreadBlocking(
                 () -> getBookmarkDelegate().openFolder(mBookmarkModel.getMobileFolderId()));
         onView(withText(R.string.bookmarks_folder_empty)).check(matches(isDisplayed()));
+    }
+
+    @Test
+    @SmallTest
+    @Restriction(RESTRICTION_TYPE_NON_LOW_END_DEVICE)
+    public void testReadingListEmptyStateView() throws Exception {
+        BookmarkPromoHeader.forcePromoStateForTesting(SyncPromoState.NO_PROMO);
+        openBookmarkManager();
+        openRootFolder();
+        openReadingList();
+
+        // We should see an empty view with reading list text.
+        onView(withId(R.id.empty_state_icon)).check(matches(isDisplayed()));
+        onView(withText(R.string.reading_list_manager_empty_state)).check(matches(isDisplayed()));
+        onView(withText(R.string.reading_list_manager_save_page_to_read_later))
+                .check(matches(isDisplayed()));
+
+        // Open other folders will show the default empty view text.
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> getBookmarkDelegate().openFolder(mBookmarkModel.getMobileFolderId()));
+        onView(withId(R.id.empty_state_icon)).check(matches(isDisplayed()));
+        onView(withText(R.string.bookmark_manager_empty_state)).check(matches(isDisplayed()));
+        onView(withText(R.string.bookmark_manager_back_to_page_by_adding_bookmark))
+                .check(matches(isDisplayed()));
     }
 
     @Test

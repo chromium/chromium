@@ -13,6 +13,7 @@
 
 #include "base/hash/legacy_hash.h"
 #include "base/logging.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/strings/stringprintf.h"
 #include "base/time/time.h"
 #include "chrome/browser/browser_process.h"
@@ -279,8 +280,15 @@ std::vector<ExtensionInstallProto::DisableReason> GetDisableReasons(
       disable_reasons &= ~mask;
     }
   }
-  DCHECK_EQ(extensions::disable_reason::DisableReason::DISABLE_NONE,
-            disable_reasons);
+  if (disable_reasons !=
+      extensions::disable_reason::DisableReason::DISABLE_NONE) {
+    // Record any unexpected disable reasons - these are likely deprecated
+    // reason(s) that have not been migrated over in a few clients. Use this
+    // histogram to determine how many clients are affected to decide what
+    // action to take (if any).
+    base::UmaHistogramSparse("Extensions.DeprecatedDisableReasonsObserved",
+                             disable_reasons);
+  }
 
   return reasons;
 }

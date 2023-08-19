@@ -21,7 +21,6 @@ mojom("mojom") {
     "frame_data.mojom",
     "gpu_extra_info.mojom",
     "gpu_fence_handle.mojom",
-    "hdr_metadata.mojom",
     "hdr_static_metadata.mojom",
     "linear_gradient.mojom",
     "mask_filter_info.mojom",
@@ -40,6 +39,7 @@ mojom("mojom") {
   }
 
   public_deps = [
+    ":hdr_metadata",
     ":native_handle_types",
     "//mojo/public/mojom/base",
     "//skia/public/mojom",
@@ -239,25 +239,6 @@ mojom("mojom") {
     {
       types = [
         {
-          mojom = "gfx.mojom.HdrMetadataCta861_3"
-          cpp = "::gfx::HdrMetadataCta861_3"
-        },
-        {
-          mojom = "gfx.mojom.HdrMetadataSmpteSt2086"
-          cpp = "::gfx::HdrMetadataSmpteSt2086"
-        },
-        {
-          mojom = "gfx.mojom.HDRMetadata"
-          cpp = "::gfx::HDRMetadata"
-        },
-      ]
-      traits_headers = [ "hdr_metadata_mojom_traits.h" ]
-      traits_sources = [ "hdr_metadata_mojom_traits.cc" ]
-      traits_public_deps = [ "//ui/gfx" ]
-    },
-    {
-      types = [
-        {
           mojom = "gfx.mojom.Hinting"
           cpp = "::gfx::FontRenderParams::Hinting"
         },
@@ -383,7 +364,7 @@ mojom("native_handle_types") {
     enabled_features = [ "supports_native_pixmap" ]
   }
   if (is_linux || is_chromeos) {
-    enabled_features += [ "is_linux_or_chromeos_ash" ]
+    enabled_features += [ "is_linux_or_chromeos" ]
   }
   public_deps = [ "//mojo/public/mojom/base" ]
   generate_java = true
@@ -442,6 +423,43 @@ component("native_handle_types_mojom_traits") {
     "//base",
     "//mojo/public/mojom/base",
     "//ui/gfx",
+  ]
+}
+
+mojom("hdr_metadata") {
+  generate_java = true
+  webui_module_path = "chrome://resources/mojo/ui/gfx/mojom"
+
+  sources = [ "hdr_metadata.mojom" ]
+
+  public_deps = [
+    "//mojo/public/mojom/base",
+    "//skia/public/mojom",
+  ]
+
+  cpp_typemaps = [
+    {
+      types = [
+        {
+          mojom = "gfx.mojom.HdrMetadataCta861_3"
+          cpp = "::gfx::HdrMetadataCta861_3"
+        },
+        {
+          mojom = "gfx.mojom.HdrMetadataSmpteSt2086"
+          cpp = "::gfx::HdrMetadataSmpteSt2086"
+        },
+        {
+          mojom = "gfx.mojom.HdrMetadataExtendedRange"
+          cpp = "::gfx::HdrMetadataExtendedRange"
+        },
+        {
+          mojom = "gfx.mojom.HDRMetadata"
+          cpp = "::gfx::HDRMetadata"
+        },
+      ]
+      traits_headers = [ "hdr_metadata_mojom_traits.h" ]
+      traits_sources = [ "hdr_metadata_mojom_traits.cc" ]
+    },
   ]
 }
 

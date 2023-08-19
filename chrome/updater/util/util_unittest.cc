@@ -4,9 +4,13 @@
 
 #include "chrome/updater/util/util.h"
 
+#include <sstream>
+
 #include "base/command_line.h"
+#include "base/files/file_enumerator.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
+#include "base/files/scoped_temp_dir.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/path_service.h"
@@ -20,10 +24,21 @@
 #include "chrome/updater/constants.h"
 #include "chrome/updater/tag.h"
 #include "chrome/updater/test_scope.h"
+#include "chrome/updater/util/unit_test_util.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace updater {
+
+namespace {
+
+enum class TestEnum {
+  kEnumValue1 = 0L,
+  kEnumValue2 = 5L,
+  kEnumValue3,
+};
+
+}  // namespace
 
 TEST(Util, AppArgsAndAP) {
   base::test::ScopedCommandLine original_command_line;
@@ -92,6 +107,27 @@ TEST(Util, GetCrashDatabasePath) {
   ASSERT_TRUE(crash_database_path);
   EXPECT_EQ(crash_database_path->BaseName().value(),
             FILE_PATH_LITERAL("Crashpad"));
+}
+
+TEST(Util, StreamEnumValue) {
+  std::stringstream output;
+  output << "First: " << TestEnum::kEnumValue1
+         << ", second: " << TestEnum::kEnumValue2
+         << ", third: " << TestEnum::kEnumValue3;
+  EXPECT_EQ(output.str(), "First: 0, second: 5, third: 6");
+}
+
+TEST(Util, DeleteExcept) {
+  EXPECT_FALSE(DeleteExcept({}));
+
+  base::ScopedTempDir temp_dir;
+  ASSERT_TRUE(temp_dir.CreateUniqueTempDir());
+
+  const base::FilePath except_executable(temp_dir.GetPath().Append(
+      FILE_PATH_LITERAL("except_executable.executable")));
+  test::SetupMockUpdater(except_executable);
+  EXPECT_TRUE(DeleteExcept(except_executable));
+  test::ExpectOnlyMockUpdater(except_executable);
 }
 
 }  // namespace updater

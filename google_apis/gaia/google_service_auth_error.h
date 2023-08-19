@@ -83,8 +83,12 @@ class COMPONENT_EXPORT(GOOGLE_APIS) GoogleServiceAuthError {
     // that are in the request.
     SCOPE_LIMITED_UNRECOVERABLE_ERROR = 14,
 
+    // Indicates the service responded with a challenge that should be signed
+    // with a binding key and sent back.
+    CHALLENGE_RESPONSE_REQUIRED = 15,
+
     // The number of known error states.
-    NUM_STATES = 15,
+    NUM_STATES = 16,
   };
 
   static constexpr size_t kDeprecatedStateCount = 6;
@@ -142,6 +146,11 @@ class COMPONENT_EXPORT(GOOGLE_APIS) GoogleServiceAuthError {
   static GoogleServiceAuthError FromUnexpectedServiceResponse(
       const std::string& error_message);
 
+  // Construct a CHALLENGE_RESPONSE_REQUIRED error, with `challenge` containing
+  // an opaque string that should be signed with the binding key.
+  static GoogleServiceAuthError FromTokenBindingChallenge(
+      const std::string& challenge);
+
   // Provided for convenience for clients needing to reset an instance to NONE.
   // (avoids err_ = GoogleServiceAuthError(GoogleServiceAuthError::NONE), due
   // to explicit class and State enum relation. Note: shouldn't be inlined!
@@ -153,6 +162,9 @@ class COMPONENT_EXPORT(GOOGLE_APIS) GoogleServiceAuthError {
   State state() const;
   int network_error() const;
   const std::string& error_message() const;
+
+  // Should only be used when the error state is CHALLENGE_RESPONSE_REQUIRED.
+  const std::string& GetTokenBindingChallenge() const;
 
   // Should only be used when the error state is INVALID_GAIA_CREDENTIALS.
   InvalidGaiaCredentialsReason GetInvalidGaiaCredentialsReason() const;
@@ -187,6 +199,7 @@ class COMPONENT_EXPORT(GOOGLE_APIS) GoogleServiceAuthError {
   State state_;
   int network_error_;
   std::string error_message_;
+  std::string token_binding_challenge_;
   InvalidGaiaCredentialsReason invalid_gaia_credentials_reason_;
 };
 

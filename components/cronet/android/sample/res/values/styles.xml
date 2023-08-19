@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  Copyright 2019 The Chromium Authors
+  Use of this source code is governed by a BSD-style license that can be
+  found in the LICENSE file.
+-->
+
+<resources>
+    <style name="Theme.DevUi.DayNight" parent="@android:style/Theme.Material.Light.DarkActionBar" />
+    <style name="SelectedNavigationButton">
+        <item name="android:textColor">@color/navigation_selected</item>
+    </style>
+    <style name="UnselectedNavigationButton">
+        <item name="android:textColor">@color/navigation_unselected</item>
+    </style>
+    <style name="MediumText" parent="@android:style/TextAppearance.Medium">
+        <item name="android:textColor">@color/medium_text_color</item>
+    </style>
+</resources>

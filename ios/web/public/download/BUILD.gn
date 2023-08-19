@@ -16,9 +16,8 @@ source_set("download") {
     "download_controller_delegate.h",
     "download_task.h",
     "download_task_observer.h",
+    "download_task_observer.mm",
   ]
 
   frameworks = [ "Foundation.framework" ]
-
-  configs += [ "//build/config/compiler:enable_arc" ]
 }

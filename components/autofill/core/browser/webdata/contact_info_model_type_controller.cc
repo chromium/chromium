@@ -121,11 +121,6 @@ ContactInfoModelTypeController::ContactInfoModelTypeController(
 
 ContactInfoModelTypeController::~ContactInfoModelTypeController() = default;
 
-bool ContactInfoModelTypeController::ShouldRunInTransportOnlyMode() const {
-  return base::FeatureList::IsEnabled(
-      syncer::kSyncEnableContactInfoDataTypeInTransportMode);
-}
-
 PreconditionState ContactInfoModelTypeController::GetPreconditionState() const {
   // Exclude explicit passphrase users.
   if (sync_service_->GetUserSettings()->IsUsingExplicitPassphrase() &&

@@ -8,6 +8,7 @@
 #include "base/run_loop.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/test/bind.h"
+#include "base/test/gmock_expected_support.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
@@ -163,9 +164,8 @@ TEST_F(BucketManagerHostTest, OpenBucket) {
   quota_manager_->GetBucketByNameUnsafe(
       blink::StorageKey::CreateFromStringForTesting(kTestUrl), "inbox_bucket",
       blink::mojom::StorageType::kTemporary, bucket_future.GetCallback());
-  auto result = bucket_future.Take();
-  ASSERT_TRUE(result.has_value());
-  EXPECT_GT(result->id.value(), 0u);
+  ASSERT_OK_AND_ASSIGN(auto result, bucket_future.Take());
+  EXPECT_GT(result.id.value(), 0u);
 }
 
 TEST_F(BucketManagerHostTest, OpenBucketValidateName) {
@@ -241,8 +241,7 @@ TEST_F(BucketManagerHostTest, DeleteBucket) {
       blink::StorageKey::CreateFromStringForTesting(kTestUrl), "inbox_bucket",
       blink::mojom::StorageType::kTemporary, bucket_future.GetCallback());
   auto result = bucket_future.Take();
-  ASSERT_FALSE(result.has_value());
-  EXPECT_EQ(result.error(), storage::QuotaError::kNotFound);
+  EXPECT_THAT(result, base::test::ErrorIs(storage::QuotaError::kNotFound));
 }
 
 TEST_F(BucketManagerHostTest, DeleteInvalidBucketName) {

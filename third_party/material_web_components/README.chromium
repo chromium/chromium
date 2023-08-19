@@ -5,6 +5,7 @@ Version: 0.20.0
 License: Apache 2.0
 License File: LICENSE
 Security Critical: no
+Shipped: yes
 
 Description:
 This directory contains a copy of the lit-element framework and some elements

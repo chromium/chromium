@@ -9,8 +9,6 @@ import static android.system.OsConstants.SOCK_STREAM;
 
 import static com.google.common.truth.Truth.assertThat;
 
-import static org.junit.Assert.assertTrue;
-
 import android.os.Build;
 import android.system.Os;
 
@@ -21,7 +19,6 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
-import org.chromium.net.CronetTestRule.CronetTestFramework;
 import org.chromium.net.CronetTestRule.OnlyRunNativeCronet;
 import org.chromium.net.CronetTestRule.RequiresMinAndroidApi;
 import org.chromium.net.impl.CronetLibraryLoader;
@@ -37,7 +34,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 @RunWith(AndroidJUnit4.class)
 public class NetworkChangeNotifierTest {
     @Rule
-    public final CronetTestRule mTestRule = new CronetTestRule();
+    public final CronetTestRule mTestRule = CronetTestRule.withAutomaticEngineStartup();
 
     /**
      * Verify NetworkChangeNotifier signals trigger appropriate action, like
@@ -49,8 +46,6 @@ public class NetworkChangeNotifierTest {
     @RequiresMinAndroidApi(Build.VERSION_CODES.LOLLIPOP)
     // Os and OsConstants aren't exposed until Lollipop
     public void testNetworkChangeNotifier() throws Exception {
-        CronetTestFramework testFramework = mTestRule.startCronetTestFramework();
-
         // Bind a listening socket to a local port. The socket won't be used to accept any
         // connections, but rather to get connection stuck waiting to connect.
         FileDescriptor s = Os.socket(AF_INET6, SOCK_STREAM, 0);
@@ -68,7 +63,8 @@ public class NetworkChangeNotifierTest {
         UrlRequest request = null;
         for (int i = 0; i < 4; i++) {
             callback = new TestUrlRequestCallback();
-            request = testFramework.mCronetEngine
+            request = mTestRule.getTestFramework()
+                              .getEngine()
                               .newUrlRequestBuilder(url, callback, callback.getExecutor())
                               .build();
             request.start();
@@ -98,7 +94,7 @@ public class NetworkChangeNotifierTest {
 
         // Wait for ERR_NETWORK_CHANGED
         callback.blockForDone();
-        assertTrue(callback.mOnErrorCalled);
+        assertThat(callback.mOnErrorCalled).isTrue();
         assertThat(callback.mError)
                 .hasMessageThat()
                 .contains("Exception in CronetUrlRequest: net::ERR_NETWORK_CHANGED");

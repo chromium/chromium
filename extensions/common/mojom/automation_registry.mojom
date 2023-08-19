@@ -1,0 +1,16 @@
+// Copyright 2023 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module extensions.mojom;
+
+import "services/accessibility/public/mojom/automation.mojom";
+
+// Implemented by the main Browser process and called from the extensions
+// renderer process. This allows the extensions renderer process to receive
+// automation updates once registered.
+interface RendererAutomationRegistry {
+  // Binds an Automation who's caller lives in the main Browser process.
+  BindAutomation(
+    pending_associated_remote<ax.mojom.Automation> automation);
+};

@@ -165,8 +165,7 @@ TEST_F(CSSPrimitiveValueTest, NaNLengthClamp) {
   UnitValue b = {1, UnitType::kPixels};
   CSSPrimitiveValue* value = CreateAddition(a, b);
   CSSToLengthConversionData conversion_data;
-  EXPECT_EQ(std::numeric_limits<double>::max(),
-            value->ComputeLength<double>(conversion_data));
+  EXPECT_EQ(0.0, value->ComputeLength<double>(conversion_data));
 }
 
 TEST_F(CSSPrimitiveValueTest, PositiveInfinityPercentLengthClamp) {
@@ -190,7 +189,7 @@ TEST_F(CSSPrimitiveValueTest, NaNPercentLengthClamp) {
       {-std::numeric_limits<double>::quiet_NaN(), UnitType::kPercentage});
   CSSToLengthConversionData conversion_data;
   Length length = value->ConvertToLength(conversion_data);
-  EXPECT_EQ(std::numeric_limits<float>::max(), length.Percent());
+  EXPECT_EQ(0.0, length.Percent());
 }
 
 TEST_F(CSSPrimitiveValueTest, GetDoubleValueWithoutClampingAllowNaN) {
@@ -219,7 +218,7 @@ TEST_F(CSSPrimitiveValueTest,
 TEST_F(CSSPrimitiveValueTest, GetDoubleValueClampNaN) {
   CSSPrimitiveValue* value =
       Create({std::numeric_limits<double>::quiet_NaN(), UnitType::kPixels});
-  EXPECT_EQ(std::numeric_limits<double>::max(), value->GetDoubleValue());
+  EXPECT_EQ(0.0, value->GetDoubleValue());
 }
 
 TEST_F(CSSPrimitiveValueTest, GetDoubleValueClampPositiveInfinity) {

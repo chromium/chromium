@@ -244,7 +244,7 @@ TEST_F(StyledMarkupSerializerTest, ShadowTreeStyle) {
       "<p id='host' style='color: red'><span style='font-weight: bold;'><span "
       "id='one'>11</span></span></p>\n";
   SetBodyContent(body_content);
-  Element* one = GetDocument().getElementById("one");
+  Element* one = GetDocument().getElementById(AtomicString("one"));
   auto* text = To<Text>(one->firstChild());
   Position start_dom(text, 0);
   Position end_dom(text, 2);
@@ -258,7 +258,7 @@ TEST_F(StyledMarkupSerializerTest, ShadowTreeStyle) {
       "<span style='font-weight: bold'><slot name='#one'></slot></span>";
   SetBodyContent(body_content);
   SetShadowContent(shadow_content, "host");
-  one = GetDocument().getElementById("one");
+  one = GetDocument().getElementById(AtomicString("one"));
   text = To<Text>(one->firstChild());
   PositionInFlatTree start_ict(text, 0);
   PositionInFlatTree end_ict(text, 2);
@@ -274,8 +274,8 @@ TEST_F(StyledMarkupSerializerTest, DISABLED_AcrossShadow) {
       "<p id='host1'>[<span id='one'>11</span>]</p><p id='host2'>[<span "
       "id='two'>22</span>]</p>";
   SetBodyContent(body_content);
-  Element* one = GetDocument().getElementById("one");
-  Element* two = GetDocument().getElementById("two");
+  Element* one = GetDocument().getElementById(AtomicString("one"));
+  Element* two = GetDocument().getElementById(AtomicString("two"));
   Position start_dom(To<Text>(one->firstChild()), 0);
   Position end_dom(To<Text>(two->firstChild()), 2);
   const std::string& serialized_dom = SerializePart<EditingStrategy>(
@@ -290,8 +290,8 @@ TEST_F(StyledMarkupSerializerTest, DISABLED_AcrossShadow) {
   SetBodyContent(body_content);
   SetShadowContent(shadow_content1, "host1");
   SetShadowContent(shadow_content2, "host2");
-  one = GetDocument().getElementById("one");
-  two = GetDocument().getElementById("two");
+  one = GetDocument().getElementById(AtomicString("one"));
+  two = GetDocument().getElementById(AtomicString("two"));
   PositionInFlatTree start_ict(To<Text>(one->firstChild()), 0);
   PositionInFlatTree end_ict(To<Text>(two->firstChild()), 2);
   const std::string& serialized_ict = SerializePart<EditingInFlatTreeStrategy>(
@@ -307,8 +307,8 @@ TEST_F(StyledMarkupSerializerTest, AcrossInvisibleElements) {
       "<span id='span1' style='display: none'>11</span><span id='span2' "
       "style='display: none'>22</span>";
   SetBodyContent(body_content);
-  Element* span1 = GetDocument().getElementById("span1");
-  Element* span2 = GetDocument().getElementById("span2");
+  Element* span1 = GetDocument().getElementById(AtomicString("span1"));
+  Element* span2 = GetDocument().getElementById(AtomicString("span2"));
   Position start_dom = Position::FirstPositionInNode(*span1);
   Position end_dom = Position::LastPositionInNode(*span2);
   EXPECT_EQ("", SerializePart<EditingStrategy>(start_dom, end_dom));

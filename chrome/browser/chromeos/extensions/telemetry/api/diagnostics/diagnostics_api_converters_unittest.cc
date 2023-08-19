@@ -7,7 +7,7 @@
 #include "chromeos/crosapi/mojom/crosapi.mojom.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace chromeos::converters {
+namespace chromeos::converters::diagnostics {
 
 namespace {
 
@@ -149,6 +149,18 @@ TEST(TelemetryExtensionDiagnosticsApiConvertersUnitTest,
         crosapi::DiagnosticsRoutineEnum::kFingerprintAlive, &out));
     EXPECT_EQ(out, cx_diag::RoutineType::kFingerprintAlive);
   }
+  {
+    cx_diag::RoutineType out = cx_diag::RoutineType::kNone;
+    EXPECT_TRUE(ConvertMojoRoutine(
+        crosapi::DiagnosticsRoutineEnum::kPowerButton, &out));
+    EXPECT_EQ(out, cx_diag::RoutineType::kPowerButton);
+  }
+  {
+    cx_diag::RoutineType out = cx_diag::RoutineType::kNone;
+    EXPECT_TRUE(ConvertMojoRoutine(
+        crosapi::DiagnosticsRoutineEnum::kAudioDriver, &out));
+    EXPECT_EQ(out, cx_diag::RoutineType::kAudioDriver);
+  }
 }
 
 TEST(TelemetryExtensionDiagnosticsApiConvertersUnitTest, ConvertRoutineStatus) {
@@ -208,6 +220,9 @@ TEST(TelemetryExtensionDiagnosticsApiConvertersUnitTest,
   EXPECT_EQ(ConvertRoutineUserMessage(
                 crosapi::DiagnosticsRoutineUserMessageEnum::kPlugInACPower),
             cx_diag::UserMessageType::kPlugInAcPower);
+  EXPECT_EQ(ConvertRoutineUserMessage(
+                crosapi::DiagnosticsRoutineUserMessageEnum::kPressPowerButton),
+            cx_diag::UserMessageType::kPressPowerButton);
 }
 
 TEST(TelemetryExtensionDiagnosticsApiConvertersUnitTest,
@@ -245,4 +260,4 @@ TEST(TelemetryExtensionDiagnosticsApiConvertersUnitTest,
             crosapi::DiagnosticsNvmeSelfTestTypeEnum::kUnknown);
 }
 
-}  // namespace chromeos::converters
+}  // namespace chromeos::converters::diagnostics

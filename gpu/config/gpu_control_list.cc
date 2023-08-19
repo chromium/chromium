@@ -120,37 +120,11 @@ bool ProcessANGLEGLRenderer(const std::string& gl_renderer,
                             std::string* vendor,
                             std::string* renderer,
                             std::string* version) {
-  constexpr char kANGLEPrefix[] = "ANGLE (";
-  if (!base::StartsWith(gl_renderer, kANGLEPrefix))
-    return false;
-
-  std::vector<std::string> segments;
-  // ANGLE GL_RENDERER string:
-  // ANGLE (vendor,renderer,version)
-  size_t len = gl_renderer.size();
-  std::string vendor_renderer_version =
-      gl_renderer.substr(sizeof(kANGLEPrefix) - 1, len - sizeof(kANGLEPrefix));
-  segments = base::SplitString(vendor_renderer_version, ",",
-                               base::TRIM_WHITESPACE, base::SPLIT_WANT_ALL);
-  if (segments.size() != 3) {
-    LOG(DFATAL) << "Cannot parse ANGLE GL_RENDERER: " << gl_renderer;
-    return false;
-  }
-
-  // Check ANGLE backend.
-  // It could be `OpenGL, D3D, Vulkan, etc`
-  if (!base::StartsWith(segments[2], "OpenGL")) {
-    return false;
-  }
-
-  if (vendor)
-    *vendor = segments[0];
-  if (renderer)
-    *renderer = segments[1];
-  if (version)
-    *version = segments[2];
-
-  return true;
+  DCHECK(vendor);
+  DCHECK(renderer);
+  DCHECK(version);
+  return RE2::FullMatch(gl_renderer, "ANGLE \\((.*), (.*), (.*)\\)", vendor,
+                        renderer, version);
 }
 
 }  // namespace
@@ -384,11 +358,10 @@ bool GpuControlList::MachineModelInfo::Contains(const GPUInfo& gpu_info) const {
 }
 
 bool GpuControlList::More::Contains(const GPUInfo& gpu_info) const {
-  std::string gl_version_string;
-  bool is_angle_gl = ProcessANGLEGLRenderer(gpu_info.gl_renderer, nullptr,
-                                            nullptr, &gl_version_string);
-  if (GLVersionInfoMismatch(is_angle_gl ? gl_version_string
-                                        : gpu_info.gl_version)) {
+  std::string vendor, renderer, version;
+  bool is_angle_gl = ProcessANGLEGLRenderer(gpu_info.gl_renderer, &vendor,
+                                            &renderer, &version);
+  if (GLVersionInfoMismatch(is_angle_gl ? version : gpu_info.gl_version)) {
     return false;
   }
 

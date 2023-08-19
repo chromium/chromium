@@ -27,8 +27,6 @@ import java.util.concurrent.TimeoutException;
 
 /** Custom TestRule for MultiActivity Tests. */
 public class MultiActivityTestRule implements TestRule {
-    private static final String TAG = "MultiActivityTest";
-
     Context mContext;
 
     public Context getContext() {

@@ -9,6 +9,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/task/sequenced_task_runner.h"
 #include "gin/function_template.h"
+#include "mojo/public/cpp/bindings/pending_associated_remote.h"
 #include "services/accessibility/assistive_technology_controller_impl.h"
 #include "services/accessibility/automation_impl.h"
 #include "services/accessibility/features/bindings_isolate_holder.h"
@@ -23,15 +24,16 @@
 namespace ax {
 
 AutomationInternalBindings::AutomationInternalBindings(
-    base::WeakPtr<BindingsIsolateHolder> isolate_holder,
-    base::WeakPtr<mojom::AccessibilityServiceClient> ax_service_client,
-    scoped_refptr<base::SequencedTaskRunner> main_runner)
+    BindingsIsolateHolder* isolate_holder,
+    mojo::PendingAssociatedReceiver<mojom::Automation> automation,
+    mojo::PendingRemote<mojom::AutomationClient> automation_client)
     : isolate_holder_(isolate_holder),
       automation_v8_bindings_(std::make_unique<ui::AutomationV8Bindings>(
           /*AutomationTreeManagerOwner=*/this,
-          /*AutomationV8Router=*/this)) {
+          /*AutomationV8Router=*/this)),
+      automation_client_remote_(std::move(automation_client)) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  Bind(ax_service_client, main_runner);
+  receiver_.Bind(std::move(automation));
 }
 
 AutomationInternalBindings::~AutomationInternalBindings() = default;
@@ -188,42 +190,6 @@ void AutomationInternalBindings::PerformAction(
   // automation_client_remote_->PerformAction(action_data);
 }
 
-void AutomationInternalBindings::Bind(
-    base::WeakPtr<mojom::AccessibilityServiceClient> ax_service_client,
-    scoped_refptr<base::SequencedTaskRunner> main_runner) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  main_runner->PostTask(
-      FROM_HERE,
-      base::BindOnce(
-          [](base::WeakPtr<mojom::AccessibilityServiceClient> ax_service_client,
-             mojo::PendingReceiver<mojom::AutomationClient> remote,
-             mojo::PendingRemote<mojom::Automation> receiver) {
-            if (ax_service_client) {
-              ax_service_client->BindAutomation(std::move(receiver),
-                                                std::move(remote));
-            }
-          },
-          ax_service_client,
-          automation_client_remote_.BindNewPipeAndPassReceiver(),
-          automation_receiver_.BindNewPipeAndPassRemote()));
-}
-
-void AutomationInternalBindings::DispatchTreeDestroyedEvent(
-    const ui::AXTreeID& tree_id) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  // TODO(crbug.com/1357889): Dispatch to V8, via
-  // automationInternal.OnAccessibilityTreeDestroyed, paralleling
-  // extensions/browser/api/automation_internal/automation_event_router.cc.
-}
-
-void AutomationInternalBindings::DispatchActionResult(
-    const ui::AXActionData& data,
-    bool result) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  // TODO(crbug.com/1357889): Dispatch to V8 paralleling the implementation
-  // in extensions/browser/api/automation_internal/automation_event_router.cc.
-}
-
 void AutomationInternalBindings::DispatchAccessibilityEvents(
     const ui::AXTreeID& tree_id,
     const std::vector<ui::AXTreeUpdate>& updates,
@@ -240,14 +206,6 @@ void AutomationInternalBindings::DispatchAccessibilityLocationChange(
     const ui::AXRelativeBounds& bounds) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   OnAccessibilityLocationChange(tree_id, node_id, bounds);
-}
-
-void AutomationInternalBindings::DispatchGetTextLocationResult(
-    const ax::mojom::AXActionData& data,
-    gfx::Rect rect) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  // TODO(crbug.com/1357889): Dispatch to V8 paralleling the implementation
-  // in extensions/browser/api/automation_internal/automation_event_router.cc.
 }
 
 }  // namespace ax

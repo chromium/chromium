@@ -39,7 +39,7 @@ Response OverlayHandler::SetInspectMode(
 }
 
 Response OverlayHandler::SetPausedInDebuggerMessage(Maybe<String> message) {
-  paused_message_ = message.fromMaybe(std::string());
+  paused_message_ = message.value_or(std::string());
   UpdateCaptureInputEvents();
   return Response::FallThrough();
 }

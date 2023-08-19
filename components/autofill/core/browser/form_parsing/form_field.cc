@@ -88,7 +88,7 @@ void FormField::ParseFormFields(
   // Single fields pass.
   ParseSingleFieldForms(fields, page_language, is_form_tag, pattern_source,
                         field_candidates, log_manager);
-  const size_t fillable_single_fields = field_candidates.size() - email_count;
+  size_t fillable_single_fields = field_candidates.size() - email_count;
 
   // Phone pass.
   ParseFormFieldsPass(PhoneField::Parse, processed_fields, field_candidates,
@@ -114,10 +114,21 @@ void FormField::ParseFormFields(
                       field_candidates, page_language, pattern_source,
                       log_manager);
 
+  const size_t candidates_size = field_candidates.size();
   // Credit card pass.
   ParseFormFieldsPass(CreditCardField::Parse, processed_fields,
                       field_candidates, page_language, pattern_source,
                       log_manager);
+  if (base::FeatureList::IsEnabled(
+          features::kAutofillParseVcnCardOnFileStandaloneCvcFields) &&
+      email_count == 0 && candidates_size == field_candidates.size()) {
+    // No email or cc fields found. Standalone CVC field pass for the VCN card
+    // on file case.
+    ParseStandaloneCVCFields(fields, page_language, pattern_source,
+                             field_candidates, log_manager);
+    // Any detected standalone cvc fields are considered fillable single fields.
+    fillable_single_fields += field_candidates.size() - candidates_size;
+  }
 
   // Price pass.
   ParseFormFieldsPass(PriceField::Parse, processed_fields, field_candidates,
@@ -209,17 +220,27 @@ void FormField::ParseSingleFieldForms(
                       log_manager);
 
   // IBAN pass.
-  if (base::FeatureList::IsEnabled(features::kAutofillParseIBANFields)) {
-    ParseFormFieldsPass(IBANField::Parse, processed_fields, field_candidates,
-                        page_language, pattern_source, log_manager);
-  }
+  ParseFormFieldsPass(IbanField::Parse, processed_fields, field_candidates,
+                      page_language, pattern_source, log_manager);
+}
+
+void FormField::ParseStandaloneCVCFields(
+    const std::vector<std::unique_ptr<AutofillField>>& fields,
+    const LanguageCode& page_language,
+    PatternSource pattern_source,
+    FieldCandidatesMap& field_candidates,
+    LogManager* log_manager) {
+  std::vector<AutofillField*> processed_fields = RemoveCheckableFields(fields);
+  ParseFormFieldsPass(StandaloneCvcField::Parse, processed_fields,
+                      field_candidates, page_language, pattern_source,
+                      log_manager);
 }
 
 // static
 bool FormField::ParseField(AutofillScanner* scanner,
                            base::StringPiece16 pattern,
                            base::span<const MatchPatternRef> patterns,
-                           AutofillField** match,
+                           raw_ptr<AutofillField>* match,
                            const RegExLogging& logging) {
   return ParseFieldSpecifics(scanner, pattern, kDefaultMatchParams, patterns,
                              match, logging);
@@ -230,7 +251,7 @@ bool FormField::ParseFieldSpecificsWithLegacyPattern(
     AutofillScanner* scanner,
     base::StringPiece16 pattern,
     MatchParams match_type,
-    AutofillField** match,
+    raw_ptr<AutofillField>* match,
     const RegExLogging& logging) {
   if (scanner->IsEnd())
     return false;
@@ -249,7 +270,7 @@ bool FormField::ParseFieldSpecificsWithLegacyPattern(
 bool FormField::ParseFieldSpecificsWithNewPatterns(
     AutofillScanner* scanner,
     base::span<const MatchPatternRef> patterns,
-    AutofillField** match,
+    raw_ptr<AutofillField>* match,
     const RegExLogging& logging,
     MatchingPattern (*projection)(const MatchingPattern&)) {
   if (scanner->IsEnd())
@@ -301,7 +322,7 @@ bool FormField::ParseFieldSpecifics(
     base::StringPiece16 pattern,
     const MatchParams& match_type,
     base::span<const MatchPatternRef> patterns,
-    AutofillField** match,
+    raw_ptr<AutofillField>* match,
     const RegExLogging& logging,
     MatchingPattern (*projection)(const MatchingPattern&)) {
   return base::FeatureList::IsEnabled(features::kAutofillParsingPatternProvider)
@@ -314,7 +335,8 @@ bool FormField::ParseFieldSpecifics(
 // static
 bool FormField::ParseInAnyOrder(
     AutofillScanner* scanner,
-    std::vector<std::pair<AutofillField**, base::RepeatingCallback<bool()>>>
+    std::vector<
+        std::pair<raw_ptr<AutofillField>*, base::RepeatingCallback<bool()>>>
         fields_and_parsers) {
   if (scanner->IsEnd())
     return fields_and_parsers.empty();
@@ -349,7 +371,7 @@ bool FormField::ParseInAnyOrder(
 
 // static
 bool FormField::ParseEmptyLabel(AutofillScanner* scanner,
-                                AutofillField** match) {
+                                raw_ptr<AutofillField>* match) {
   return ParseFieldSpecificsWithLegacyPattern(
       scanner, kEmptyLabelRegex,
       MatchParams({MatchAttribute::kLabel}, kAllMatchFieldTypes), match,
@@ -382,7 +404,7 @@ std::vector<AutofillField*> FormField::RemoveCheckableFields(
     // synthetic fields.)
     if (IsCheckable(field->check_status) ||
         (field->role == FormFieldData::RoleAttribute::kPresentation &&
-         field->form_control_type != "select-one")) {
+         !field->IsSelectElement())) {
       continue;
     }
     processed_fields.push_back(field.get());
@@ -394,7 +416,7 @@ std::vector<AutofillField*> FormField::RemoveCheckableFields(
 bool FormField::MatchAndAdvance(AutofillScanner* scanner,
                                 base::StringPiece16 pattern,
                                 MatchParams match_type,
-                                AutofillField** match,
+                                raw_ptr<AutofillField>* match,
                                 const RegExLogging& logging) {
   AutofillField* field = scanner->Cursor();
   if (FormField::Match(field, pattern, match_type, logging)) {
@@ -507,7 +529,7 @@ bool FormField::MatchesFormControlType(base::StringPiece type,
     return true;
 
   if (match_type.contains(MatchFieldType::kSelect) &&
-      (type == "select-one" || type == "selectmenu")) {
+      (type == "select-one" || type == "selectlist")) {
     return true;
   }
 

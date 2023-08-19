@@ -1,0 +1,18 @@
+This is a testharness.js-based test.
+PASS Registering same scope as the script directory without the last slash
+PASS Registration scope outside the script directory
+PASS Registration scope outside domain
+PASS Registering script outside domain
+PASS Registering non-existent script
+PASS Registering invalid chunked encoding script
+FAIL Registering script with no MIME type assert_equals: expected "Failed to register a ServiceWorker for scope ('http://127.0.0.1:8000/serviceworker/resources/scope/no-mime-type-worker/') with script ('http://127.0.0.1:8000/serviceworker/resources/mime-type-worker.php'): The script does not have a MIME type." but got "Failed to register a ServiceWorker for scope ('http://127.0.0.1:8000/serviceworker/resources/scope/no-mime-type-worker/') with script ('http://127.0.0.1:8000/serviceworker/resources/mime-type-worker.php'): The script has an unsupported MIME type ('text/html')."
+PASS Registering script with bad MIME type
+PASS Registering redirected script
+PASS Registering script including parse error
+PASS Registering script including undefined error
+PASS Registering script including uncaught exception
+PASS Registering script importing malformed script
+PASS Registering script importing non-existent script
+PASS Script URL including URL-encoded slash
+Harness: the test ran to completion.
+

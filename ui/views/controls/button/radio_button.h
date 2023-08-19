@@ -40,6 +40,7 @@ class VIEWS_EXPORT RadioButton : public Checkbox {
   void NotifyClick(const ui::Event& event) override;
 
   // Overridden from LabelButton:
+  gfx::ImageSkia GetImage(ButtonState for_state) const override;
   ui::NativeTheme::Part GetThemePart() const override;
 
   // Overridden from Checkbox:

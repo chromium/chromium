@@ -8,15 +8,14 @@
 #include <vector>
 
 #include "base/functional/bind.h"
-#include "base/mac/scoped_nsobject.h"
 #include "content/app_shim_remote_cocoa/render_widget_host_ns_view_bridge.h"
 #include "content/app_shim_remote_cocoa/render_widget_host_ns_view_host_helper.h"
 #include "content/app_shim_remote_cocoa/web_contents_ns_view_bridge.h"
 #include "content/browser/renderer_host/input/web_input_event_builders_mac.h"
 #include "content/common/render_widget_host_ns_view.mojom.h"
 #include "content/common/web_contents_ns_view_bridge.mojom.h"
-#include "content/public/browser/native_web_keyboard_event.h"
 #include "content/public/browser/render_widget_host_view_mac_delegate.h"
+#include "content/public/common/input/native_web_keyboard_event.h"
 #include "mojo/public/cpp/bindings/associated_receiver.h"
 #include "mojo/public/cpp/bindings/associated_remote.h"
 #include "mojo/public/cpp/bindings/pending_associated_receiver.h"
@@ -110,7 +109,7 @@ class RenderWidgetHostNSViewBridgeOwner
     std::vector<uint8_t> native_event_data =
         ui::EventToData(key_event.os_event.Get());
     host_->ForwardKeyboardEventWithCommands(
-        std::move(input_event), native_event_data, key_event.skip_in_browser,
+        std::move(input_event), native_event_data, key_event.skip_if_unhandled,
         std::move(edit_commands));
   }
   void RouteOrProcessMouseEvent(
@@ -150,8 +149,6 @@ class RenderWidgetHostNSViewBridgeOwner
 
   mojo::AssociatedRemote<mojom::RenderWidgetHostNSViewHost> host_;
   std::unique_ptr<RenderWidgetHostNSViewBridge> bridge_;
-  base::scoped_nsobject<NSAccessibilityRemoteUIElement>
-      remote_accessibility_element_;
 };
 }
 

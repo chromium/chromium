@@ -10,10 +10,11 @@
 #include "base/test/test_future.h"
 #include "content/browser/service_worker/embedded_worker_instance.h"
 #include "content/browser/service_worker/embedded_worker_test_helper.h"
+#include "content/browser/service_worker/service_worker_hid_delegate_observer.h"
 #include "content/browser/service_worker/service_worker_test_utils.h"
+#include "content/public/test/test_browser_context.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
-#include "test_browser_context.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -54,6 +55,15 @@ void EmbeddedWorkerInstanceTestHarness::CreateAndStartWorker(
   worker_version_->set_fetch_handler_type(
       ServiceWorkerVersion::FetchHandlerType::kNotSkippable);
 
+  content::HidDelegate* hid_delegate =
+      content::GetContentClientForTesting()->browser()->GetHidDelegate();
+  worker_version_->set_has_hid_event_handlers(
+      hid_delegate && hid_delegate->IsServiceWorkerAllowedForOrigin(
+                          url::Origin::Create(origin)));
+
+  worker_version_->SetStatus(ServiceWorkerVersion::Status::ACTIVATED);
+  pair.first->SetActiveVersion(worker_version_);
+
   // Make the registration findable via storage functions.
   base::test::TestFuture<blink::ServiceWorkerStatusCode> status;
   helper_->context()->registry()->StoreRegistration(
@@ -61,14 +71,14 @@ void EmbeddedWorkerInstanceTestHarness::CreateAndStartWorker(
   ASSERT_EQ(blink::ServiceWorkerStatusCode::kOk, status.Get());
 
   StartServiceWorker(worker_version_.get());
-  ASSERT_EQ(worker_version_->GetEmbeddedWorkerForTesting()->status(),
+  ASSERT_EQ(worker_version_->embedded_worker()->status(),
             content::EmbeddedWorkerStatus::RUNNING);
 }
 
 void EmbeddedWorkerInstanceTestHarness::StopAndResetWorker() {
   EXPECT_NE(worker_version_, nullptr);
   StopServiceWorker(worker_version_.get());
-  ASSERT_EQ(worker_version_->GetEmbeddedWorkerForTesting()->status(),
+  ASSERT_EQ(worker_version_->embedded_worker()->status(),
             EmbeddedWorkerStatus::STOPPED);
   worker_version_.reset();
 }
@@ -77,12 +87,19 @@ void EmbeddedWorkerInstanceTestHarness::StopAndResetWorker() {
 void EmbeddedWorkerInstanceTestHarness::BindHidServiceToWorker(
     const GURL& origin,
     mojo::PendingReceiver<blink::mojom::HidService> receiver) {
-  EmbeddedWorkerInstance* worker =
-      worker_version_->GetEmbeddedWorkerForTesting();
+  EmbeddedWorkerInstance* worker = worker_version_->embedded_worker();
   EXPECT_NE(worker, nullptr);
   worker->BindHidService(url::Origin::Create(origin), std::move(receiver));
 }
 #endif  // !BUILDFLAG(IS_ANDROID)
+
+void EmbeddedWorkerInstanceTestHarness::BindUsbServiceToWorker(
+    const GURL& origin,
+    mojo::PendingReceiver<blink::mojom::WebUsbService> receiver) {
+  EmbeddedWorkerInstance* worker = worker_version_->embedded_worker();
+  EXPECT_NE(worker, nullptr);
+  worker->BindUsbService(url::Origin::Create(origin), std::move(receiver));
+}
 
 EmbeddedWorkerInstanceTestHarness::EmbeddedWorkerInstanceTestHarness(
     std::unique_ptr<BrowserTaskEnvironment> task_environment)

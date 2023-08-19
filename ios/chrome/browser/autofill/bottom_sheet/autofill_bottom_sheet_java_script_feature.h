@@ -9,6 +9,8 @@
 #import "components/autofill/core/common/unique_ids.h"
 #import "ios/web/public/js_messaging/java_script_feature.h"
 
+#import <set>
+
 class AutofillBottomSheetJavaScriptFeature : public web::JavaScriptFeature {
  public:
   static AutofillBottomSheetJavaScriptFeature* GetInstance();
@@ -16,15 +18,24 @@ class AutofillBottomSheetJavaScriptFeature : public web::JavaScriptFeature {
   // This function sends the relevant renderer IDs to the bottom_sheet.ts
   // script, which will result in attaching listeners for the focus events
   // on these fields.
+  // - If "must_be_empty" is true, this means that the field must be empty in
+  // order to handle the focus event.
   void AttachListeners(
       const std::vector<autofill::FieldRendererId>& renderer_ids,
-      web::WebFrame* frame);
+      web::WebFrame* frame,
+      bool must_be_empty);
 
-  // This function will result in detaching listeners from the username
-  // and password fields, which will prevent the bottom sheet from showing
-  // up until the form reloads. It will also re-trigger a focus event on
-  // the field that had originally triggered the bottom sheet.
-  void DetachListenersAndRefocus(web::WebFrame* frame);
+  // This function will result in detaching listeners from the provided renderer
+  // ids, which will prevent the associated bottom sheet from showing up until
+  // the form reloads.
+  // - If "must_be_empty" is true, this means that the field must be empty in
+  // order to handle the focus event.
+  // - If "refocus" is true, it will also re-trigger a focus event on the field
+  // that had originally triggered the bottom sheet.
+  void DetachListeners(const std::set<autofill::FieldRendererId>& renderer_ids,
+                       web::WebFrame* frame,
+                       bool must_be_empty,
+                       bool refocus);
 
  private:
   friend class base::NoDestructor<AutofillBottomSheetJavaScriptFeature>;

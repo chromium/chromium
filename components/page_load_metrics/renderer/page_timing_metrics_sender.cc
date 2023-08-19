@@ -14,7 +14,9 @@
 #include "base/timer/timer.h"
 #include "components/page_load_metrics/common/page_load_metrics.mojom.h"
 #include "components/page_load_metrics/common/page_load_metrics_util.h"
+#include "components/page_load_metrics/common/page_load_timing.h"
 #include "components/page_load_metrics/renderer/page_timing_sender.h"
+#include "components/page_load_metrics/renderer/soft_navigation_metrics_type_converter.h"
 #include "services/network/public/cpp/url_loader_completion_status.h"
 #include "services/network/public/mojom/url_response_head.mojom.h"
 #include "third_party/blink/public/common/features.h"
@@ -59,6 +61,7 @@ PageTimingMetricsSender::PageTimingMetricsSender(
       last_cpu_timing_(mojom::CpuTiming::New()),
       input_timing_delta_(mojom::InputTiming::New()),
       metadata_(mojom::FrameMetadata::New()),
+      soft_navigation_metrics_(CreateSoftNavigationMetrics()),
       buffer_timer_delay_ms_(GetBufferTimerDelayMillis(TimerType::kRenderer)),
       metadata_recorder_(initial_monotonic_timing) {
   InitiateUserInteractionTiming();
@@ -111,9 +114,22 @@ void PageTimingMetricsSender::DidObserveNewFeatureUsage(
   EnsureSendTimer();
 }
 
-void PageTimingMetricsSender::DidObserveSoftNavigation(uint32_t count) {
-  DCHECK(count > soft_navigation_count_);
-  soft_navigation_count_ = count;
+void PageTimingMetricsSender::DidObserveSoftNavigation(
+    blink::SoftNavigationMetrics new_metrics) {
+  // The start_time is a TimeDelta, and its resolution is in microseconds.
+  // Therefore each soft navigation would have an effectively larger start_time
+  // than the one that came before it. Each soft navigation should also have a
+  // larger count and a different navigation id.
+  CHECK(new_metrics.count > soft_navigation_metrics_->count);
+  CHECK(new_metrics.start_time > soft_navigation_metrics_->start_time);
+  CHECK(new_metrics.navigation_id != soft_navigation_metrics_->navigation_id);
+
+  soft_navigation_metrics_->count = new_metrics.count;
+
+  soft_navigation_metrics_->start_time = new_metrics.start_time;
+
+  soft_navigation_metrics_->navigation_id = new_metrics.navigation_id;
+
   EnsureSendTimer();
 }
 
@@ -279,6 +295,17 @@ void PageTimingMetricsSender::Update(
   EnsureSendTimer(send_urgently);
 }
 
+void PageTimingMetricsSender::UpdateSoftNavigationMetrics(
+    mojom::SoftNavigationMetricsPtr soft_navigation_metrics) {
+  if (soft_navigation_metrics_->Equals(*soft_navigation_metrics)) {
+    return;
+  }
+
+  soft_navigation_metrics_ = std::move(soft_navigation_metrics);
+
+  EnsureSendTimer(true);
+}
+
 void PageTimingMetricsSender::SendLatest() {
   if (!timer_->IsRunning())
     return;
@@ -326,10 +353,12 @@ void PageTimingMetricsSender::SendNow() {
       page_resource_data_use_.erase(resource->resource_id());
     }
   }
+
   sender_->SendTiming(last_timing_, metadata_, std::move(new_features_),
                       std::move(resources), render_data_, last_cpu_timing_,
                       std::move(input_timing_delta_), subresource_load_metrics_,
-                      soft_navigation_count_);
+                      soft_navigation_metrics_);
+
   input_timing_delta_ = mojom::InputTiming::New();
   InitiateUserInteractionTiming();
   new_features_.clear();
@@ -368,13 +397,16 @@ void PageTimingMetricsSender::InitiateUserInteractionTiming() {
 }
 
 void PageTimingMetricsSender::DidObserveUserInteraction(
-    base::TimeDelta max_event_duration,
+    base::TimeTicks max_event_start,
+    base::TimeTicks max_event_end,
     blink::UserInteractionType interaction_type) {
   input_timing_delta_->num_interactions++;
+  metadata_recorder_.AddInteractionDurationMetadata(max_event_start,
+                                                    max_event_end);
+  base::TimeDelta max_event_duration = max_event_end - max_event_start;
   input_timing_delta_->max_event_durations->get_user_interaction_latencies()
       .emplace_back(mojom::UserInteractionLatency::New(
           max_event_duration, UserInteractionTypeForMojom(interaction_type)));
   EnsureSendTimer();
 }
-
 }  // namespace page_load_metrics

@@ -82,6 +82,7 @@ class LayoutSVGBlock : public LayoutBlockFlow {
   }
 
   bool CheckForImplicitTransformChange(bool bbox_changed) const;
+  void UpdateTransformBeforeLayout();
   bool UpdateTransformAfterLayout(bool bounds_changed);
   void StyleDidChange(StyleDifference, const ComputedStyle* old_style) override;
   void UpdateFromStyle() override;

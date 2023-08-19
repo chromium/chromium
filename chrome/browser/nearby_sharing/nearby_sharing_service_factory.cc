@@ -12,6 +12,7 @@
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/ash/nearby/nearby_process_manager_factory.h"
+#include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/nearby_sharing/common/nearby_share_features.h"
 #include "chrome/browser/nearby_sharing/common/nearby_share_prefs.h"
 #include "chrome/browser/nearby_sharing/logging/logging.h"
@@ -26,6 +27,7 @@
 #include "components/pref_registry/pref_registry_syncable.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
+#include "components/user_manager/user_manager.h"
 #include "content/public/browser/browser_context.h"
 
 namespace {
@@ -49,22 +51,32 @@ NearbySharingServiceFactory* NearbySharingServiceFactory::GetInstance() {
 // static
 bool NearbySharingServiceFactory::IsNearbyShareSupportedForBrowserContext(
     content::BrowserContext* context) {
-  if (IsSupportedTesting().has_value())
+  if (IsSupportedTesting().has_value()) {
     return *IsSupportedTesting();
+  }
 
-  if (!base::FeatureList::IsEnabled(features::kNearbySharing))
-    return false;
-
-  Profile* profile = Profile::FromBrowserContext(context);
-  if (!profile)
-    return false;
-
-  if (!ash::nearby::NearbyProcessManagerFactory::CanBeLaunchedForProfile(
-          profile)) {
+  if (!base::FeatureList::IsEnabled(features::kNearbySharing)) {
     return false;
   }
 
-  return true;
+  Profile* profile = Profile::FromBrowserContext(context);
+  if (!profile) {
+    return false;
+  }
+
+  // Guest/incognito/signin profiles cannot use Nearby Share.
+  if (ash::ProfileHelper::IsSigninProfile(profile) ||
+      profile->IsOffTheRecord()) {
+    return false;
+  }
+
+  // Likewise, kiosk users are ineligible.
+  if (user_manager::UserManager::Get()->IsLoggedInAsAnyKioskApp()) {
+    return false;
+  }
+
+  // Nearby Share is not supported for secondary profiles.
+  return ash::ProfileHelper::IsPrimaryProfile(profile);
 }
 
 // static

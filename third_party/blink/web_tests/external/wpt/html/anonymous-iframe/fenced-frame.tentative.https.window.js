@@ -23,18 +23,22 @@ promise_test(async test => {
   send(iframe_credentialless, `
     const importScript = ${importScript};
     await importScript("/common/utils.js");
+    await importScript("/fenced-frame/resources/utils.js");
     await importScript("/html/cross-origin-embedder-policy/credentialless" +
       "/resources/common.js");
     await importScript("/html/anonymous-iframe/resources/common.js");
-    const frame_fenced = newFencedFrame("${origin}");
+    const frame_fenced = await newFencedFrame("${origin}");
     send("${msg_queue}", frame_fenced);
   `);
+  // TODO: Properly generate a fenced frame to check credentialless.
+  assert_true(false, "Fenced frame cannot be created.");
   const frame_fenced = await receive(msg_queue);
 
   // 3. Expect it not to be considered credentialless.
   send(frame_fenced, `
     send("${msg_queue}", window.credentialless);
   `);
+  // TODO: Properly generate a fenced frame which can perform this check.
   assert_equals(await receive(msg_queue), "false",
     "Check window.credentialless in FencedFrame");
 }, 'FencedFrame within a credentialless iframe is not credentialless')

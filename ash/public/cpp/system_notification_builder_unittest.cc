@@ -15,7 +15,7 @@ TEST(SystemNotificationBuilderTest, TrivialSetters) {
   builder.SetId("test").SetCatalogName(
       NotificationCatalogName::kTestCatalogName);
 
-  message_center::Notification notification = builder.Build();
+  message_center::Notification notification = builder.Build(false);
 
   EXPECT_EQ(notification.type(),
             message_center::NotificationType::NOTIFICATION_TYPE_SIMPLE);
@@ -48,7 +48,7 @@ TEST(SystemNotificationBuilderTest, TrivialSetters) {
           .SetOptionalFields(optional_data)
           .SetWarningLevel(
               message_center::SystemNotificationWarningLevel::WARNING)
-          .Build();
+          .Build(false);
 
   EXPECT_EQ(notification.type(),
             message_center::NotificationType::NOTIFICATION_TYPE_PROGRESS);
@@ -72,16 +72,16 @@ TEST(SystemNotificationBuilderTest, NotifierId) {
   notifier_id.id = "test";
 
   builder.SetCatalogName(NotificationCatalogName::kTestCatalogName);
-  EXPECT_EQ(builder.Build().notifier_id(), notifier_id);
+  EXPECT_EQ(builder.Build(false).notifier_id(), notifier_id);
 
   notifier_id.id = "test";
   builder.SetNotifierId(notifier_id);
-  EXPECT_EQ(builder.Build().notifier_id(), notifier_id);
+  EXPECT_EQ(builder.Build(false).notifier_id(), notifier_id);
 
   // Explicitly setting a non System NotifierId should still be possible.
   notifier_id = message_center::NotifierId();
   builder.SetNotifierId(notifier_id);
-  EXPECT_EQ(builder.Build().notifier_id(), notifier_id);
+  EXPECT_EQ(builder.Build(false).notifier_id(), notifier_id);
 }
 
 }  // namespace ash

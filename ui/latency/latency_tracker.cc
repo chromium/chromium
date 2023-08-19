@@ -489,10 +489,6 @@ void LatencyTracker::ComputeEndToEndLatencyHistograms(
       UMA_HISTOGRAM_INPUT_LATENCY_HIGH_RESOLUTION_MICROSECONDS(
           "Event.Latency.EndToEnd.KeyPress",
           ComputeLatency(original_timestamp, gpu_swap_begin_timestamp));
-    } else if (latency.source_event_type() == SourceEventType::MOUSE) {
-      UMA_HISTOGRAM_INPUT_LATENCY_HIGH_RESOLUTION_MICROSECONDS(
-          "Event.Latency.EndToEnd.Mouse",
-          ComputeLatency(original_timestamp, gpu_swap_begin_timestamp));
     } else if (latency.source_event_type() == SourceEventType::TOUCHPAD) {
       UMA_HISTOGRAM_INPUT_LATENCY_CUSTOM_1_SECOND_MAX_MICROSECONDS(
           "Event.Latency.EndToEnd.TouchpadPinch2",

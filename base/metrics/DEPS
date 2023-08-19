@@ -1,0 +1,10 @@
+specific_include_rules = {
+  "statistics_recorder.*": [
+    # Explicitly allow absl::Mutex for targetted use in StatisticsRecorder.
+    # Note: absl::Mutex is currently not generally allowed in Chromium (see
+    # src/DEPS) but this specific use has been explicitly discussed and agreed
+    # on cxx@chromium.org here:
+    # https://groups.google.com/a/chromium.org/g/cxx/c/bIlGr1URn8I/m/NbawW6rBDwAJ
+    '+third_party/abseil-cpp/absl/synchronization/mutex.h',
+  ]
+}

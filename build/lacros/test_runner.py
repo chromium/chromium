@@ -451,6 +451,13 @@ def _LaunchDebugger(args, forward_args, test_env):
   """
   logging.info('Starting debugger.')
 
+  # Redirect fatal signals to "ignore." When running an interactive debugger,
+  # these signals should go only to the debugger so the user can break back out
+  # of the debugged test process into the debugger UI without killing this
+  # parent script.
+  for sig in (signal.SIGTERM, signal.SIGINT):
+    signal.signal(sig, signal.SIG_IGN)
+
   # Force the tests into single-process-test mode for debugging unless manually
   # specified. Otherwise the tests will run in a child process that the debugger
   # won't be attached to and the debugger won't do anything.
@@ -543,6 +550,7 @@ lacros_version_skew_tests_v92.0.4515.130/test_ash_chrome
     # Starts Ash-Chrome.
     tmp_xdg_dir_name = tempfile.mkdtemp()
     tmp_ash_data_dir_name = tempfile.mkdtemp()
+    tmp_unique_ash_dir_name = tempfile.mkdtemp()
 
     # Please refer to below file for how mojo connection is set up in testing.
     # //chrome/browser/ash/crosapi/test_mojo_connection_manager.h
@@ -585,6 +593,7 @@ lacros_version_skew_tests_v92.0.4515.130/test_ash_chrome
       logging.info('Running ash with "ASH_WRAPPER": %s', ash_wrapper)
       ash_cmd = list(ash_wrapper.split()) + ash_cmd
 
+    ash_process = None
     ash_process_has_started = False
     total_tries = 3
     num_tries = 0
@@ -634,8 +643,15 @@ lacros_version_skew_tests_v92.0.4515.130/test_ash_chrome
       num_tries += 1
       ash_start_time = time.monotonic()
       logging.info('Starting ash-chrome.')
+
+      # Using preexec_fn=os.setpgrp here will detach the forked process from
+      # this process group before exec-ing Ash. This prevents interactive
+      # Control-C from being seen by Ash. Otherwise Control-C in a debugger
+      # can kill Ash out from under the debugger. In non-debugger cases, this
+      # script attempts to clean up the spawned processes nicely.
       ash_process = subprocess.Popen(ash_cmd,
                                      env=ash_env,
+                                     preexec_fn=os.setpgrp,
                                      stdout=ash_stdout,
                                      stderr=subprocess.STDOUT)
 
@@ -643,6 +659,7 @@ lacros_version_skew_tests_v92.0.4515.130/test_ash_chrome
         logging.info('Symbolizing ash logs with asan symbolizer.')
         ash_symbolize_process = subprocess.Popen([_ASAN_SYMBOLIZER_PATH],
                                                  stdin=ash_process.stdout,
+                                                 preexec_fn=os.setpgrp,
                                                  stdout=ash_symbolize_stdout,
                                                  stderr=subprocess.STDOUT)
         # Allow ash_process to receive a SIGPIPE if symbolize process exits.
@@ -678,6 +695,8 @@ lacros_version_skew_tests_v92.0.4515.130/test_ash_chrome
       forward_args.append(lacros_mojo_socket_arg)
 
     forward_args.append('--ash-chrome-path=' + ash_chrome_file)
+    forward_args.append('--unique-ash-dir=' + tmp_unique_ash_dir_name)
+
     test_env = os.environ.copy()
     test_env['WAYLAND_DISPLAY'] = ash_wayland_socket_name
     test_env['EGL_PLATFORM'] = 'surfaceless'
@@ -707,6 +726,7 @@ lacros_version_skew_tests_v92.0.4515.130/test_ash_chrome
 
     shutil.rmtree(tmp_xdg_dir_name, ignore_errors=True)
     shutil.rmtree(tmp_ash_data_dir_name, ignore_errors=True)
+    shutil.rmtree(tmp_unique_ash_dir_name, ignore_errors=True)
 
 
 def _RunTestDirectly(args, forward_args):

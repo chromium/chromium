@@ -54,6 +54,7 @@ AngleVulkanImageBackingFactory::AngleVulkanImageBackingFactory(
     auto& rg_info = rg_iter->second[0];
     supported_formats_[viz::MultiPlaneFormat::kNV12] = {r_info, rg_info};
     supported_formats_[viz::MultiPlaneFormat::kYV12] = {r_info, r_info, r_info};
+    supported_formats_[viz::MultiPlaneFormat::kI420] = {r_info, r_info, r_info};
   }
 }
 
@@ -136,7 +137,8 @@ AngleVulkanImageBackingFactory::CreateSharedImage(
     SkAlphaType alpha_type,
     uint32_t usage,
     std::string debug_label) {
-  return CreateSharedImage(mailbox, viz::GetSharedImageFormat(buffer_format),
+  return CreateSharedImage(mailbox,
+                           viz::GetSinglePlaneSharedImageFormat(buffer_format),
                            size, color_space, surface_origin, alpha_type, usage,
                            debug_label, std::move(handle));
 }

@@ -17,8 +17,7 @@ FakeInvalidationService::FakeInvalidationService()
   InvalidatorRegistrarWithMemory::RegisterProfilePrefs(
       pref_service_.registry());
   invalidator_registrar_ = std::make_unique<InvalidatorRegistrarWithMemory>(
-      &pref_service_, /*sender_id=*/"sender_id",
-      /*migrate_old_prefs=*/false);
+      &pref_service_, /*sender_id=*/"sender_id");
   invalidator_registrar_->UpdateInvalidatorState(INVALIDATIONS_ENABLED);
 }
 

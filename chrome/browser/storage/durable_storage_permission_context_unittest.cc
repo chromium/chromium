@@ -26,6 +26,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 
 using bookmarks::BookmarkModel;
+using PermissionStatus = blink::mojom::PermissionStatus;
 
 namespace {
 
@@ -246,8 +247,8 @@ TEST_F(DurableStoragePermissionContextTest, NonsecureOrigin) {
   TestDurablePermissionContext permission_context(profile());
   GURL url("http://www.google.com");
 
-  EXPECT_EQ(CONTENT_SETTING_BLOCK,
+  EXPECT_EQ(PermissionStatus::DENIED,
             permission_context
                 .GetPermissionStatus(nullptr /* render_frame_host */, url, url)
-                .content_setting);
+                .status);
 }

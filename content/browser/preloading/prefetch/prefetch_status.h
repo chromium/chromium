@@ -13,6 +13,11 @@ namespace content {
 // whenever this is changed.
 // These are also mapped onto the first content internal range of
 // `PreloadingEligibility` and onto `PreloadingFailureReason`.
+//
+// If you change this, please follow the process
+// https://docs.google.com/document/d/1PnrfowsZMt62PX1EvvTp2Nqs3ji1zrklrAEe1JYbkTk
+// to ensure failure reasons are correctly shown in the DevTools
+// frontend.
 enum class PrefetchStatus {
   // Deprecated. Replaced by `kPrefetchResponseUsed`.
   //

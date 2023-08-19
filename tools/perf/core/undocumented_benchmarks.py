@@ -16,7 +16,6 @@ UNDOCUMENTED_BENCHMARKS = {
     'performance_browser_tests',
     'startup.mobile',
     'system_health.webview_startup',
-    'tab_switching.typical_25',
     'tracing_perftests',
     'UNSCHEDULED_dummy_wpr_benchmark.loading_using_wpr',
     'v8.runtime_stats.top_25',

@@ -13,6 +13,7 @@ class AuthenticatorMacInterface {
  public:
   virtual ~AuthenticatorMacInterface() = default;
   virtual bool CheckIfBiometricsAvailable() = 0;
+  virtual bool CheckIfBiometricsOrScreenLockAvailable() = 0;
   virtual bool AuthenticateUserWithNonBiometrics(
       const std::u16string& message) = 0;
 };
@@ -23,6 +24,7 @@ class AuthenticatorMac : public AuthenticatorMacInterface {
   AuthenticatorMac();
   ~AuthenticatorMac() override;
   bool CheckIfBiometricsAvailable() override;
+  bool CheckIfBiometricsOrScreenLockAvailable() override;
   bool AuthenticateUserWithNonBiometrics(
       const std::u16string& message) override;
 };

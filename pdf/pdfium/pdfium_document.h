@@ -19,14 +19,18 @@ class DocumentLoader;
 
 class PDFiumDocument {
  public:
+  class DownloadHints;
+  class FileAccess;
+  class FileAvail;
+
   explicit PDFiumDocument(DocumentLoader* doc_loader);
   PDFiumDocument(const PDFiumDocument&) = delete;
   PDFiumDocument& operator=(const PDFiumDocument&) = delete;
   ~PDFiumDocument();
 
-  FPDF_FILEACCESS& file_access() { return *file_access_; }
-  FX_FILEAVAIL& file_availability() { return *file_availability_; }
-  FX_DOWNLOADHINTS& download_hints() { return *download_hints_; }
+  FPDF_FILEACCESS& file_access();
+  FX_FILEAVAIL& file_availability();
+  FX_DOWNLOADHINTS& download_hints();
 
   FPDF_AVAIL fpdf_availability() const { return fpdf_availability_.get(); }
   FPDF_DOCUMENT doc() const { return doc_handle_.get(); }
@@ -46,13 +50,13 @@ class PDFiumDocument {
   const raw_ptr<DocumentLoader> doc_loader_;
 
   // Interface structure to provide access to document stream.
-  std::unique_ptr<FPDF_FILEACCESS> file_access_;
+  std::unique_ptr<FileAccess> file_access_;
 
   // Interface structure to check data availability in the document stream.
-  std::unique_ptr<FX_FILEAVAIL> file_availability_;
+  std::unique_ptr<FileAvail> file_availability_;
 
   // Interface structure to request data chunks from the document stream.
-  std::unique_ptr<FX_DOWNLOADHINTS> download_hints_;
+  std::unique_ptr<DownloadHints> download_hints_;
 
   // Pointer to the document availability interface.
   ScopedFPDFAvail fpdf_availability_;

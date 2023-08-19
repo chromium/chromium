@@ -125,7 +125,8 @@ std::vector<proto::UMAFeature> GetAllUmaFeatures(
 proto::PredictionResult CreatePredictionResult(
     const std::vector<float>& model_scores,
     const proto::OutputConfig& output_config,
-    base::Time timestamp);
+    base::Time timestamp,
+    int64_t model_version);
 
 // Creates client result from prediction result.
 proto::ClientResult CreateClientResultFromPredResult(

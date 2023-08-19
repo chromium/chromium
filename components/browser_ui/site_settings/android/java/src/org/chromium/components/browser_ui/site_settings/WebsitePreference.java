@@ -10,6 +10,7 @@ import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
 import android.text.format.Formatter;
 import android.view.View;
+import android.view.View.OnClickListener;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -18,8 +19,8 @@ import androidx.preference.PreferenceViewHolder;
 
 import org.chromium.components.browser_ui.settings.ChromeImageViewPreference;
 import org.chromium.components.browser_ui.settings.FaviconViewUtils;
+import org.chromium.components.content_settings.ContentSettingsType;
 import org.chromium.components.embedder_support.util.UrlUtilities;
-import org.chromium.content_public.browser.ContentFeatureList;
 import org.chromium.url.GURL;
 
 /**
@@ -34,14 +35,10 @@ class WebsitePreference extends ChromeImageViewPreference {
     private final SiteSettingsCategory mCategory;
 
     // TODO(crbug.com/1076571): Move these constants to dimens.xml
-    private static final int FAVICON_PADDING_DP = 4;
     private static final int TEXT_SIZE_SP = 13;
 
     // Whether the favicon has been fetched already.
     private boolean mFaviconFetched;
-
-    // Finch param to allow subdomain settings for Request Desktop Site.
-    static final String PARAM_SUBDOMAIN_SETTINGS = "SubdomainSettings";
 
     WebsitePreference(Context context, SiteSettingsDelegate siteSettingsClient, Website site,
             SiteSettingsCategory category) {
@@ -81,12 +78,23 @@ class WebsitePreference extends ChromeImageViewPreference {
      */
     private GURL faviconUrl() {
         String origin = mSite.getMainAddress().getOrigin();
-        GURL uri = new GURL(origin);
+        GURL uri = new GURL(origin.contains(WebsiteAddress.ANY_SUBDOMAIN_PATTERN)
+                        ? origin.replace(WebsiteAddress.ANY_SUBDOMAIN_PATTERN, "")
+                        : origin);
         return UrlUtilities.clearPort(uri);
     }
 
     private void refresh() {
         setTitle(mSite.getTitle());
+
+        if (mCategory.getType() == SiteSettingsCategory.Type.ZOOM) {
+            // Create and set the delete button for this preference.
+            setImageView(R.drawable.btn_close, R.string.webstorage_clear_data_dialog_title,
+                    (OnClickListener) view
+                    -> mSiteSettingsDelegate.resetZoomLevel(mSite.getAddress().getHost()));
+            setImageViewEnabled(true);
+            setImagePadding(25, 0, 0, 0);
+        }
 
         if (mSiteSettingsDelegate.isPrivacySandboxFirstPartySetsUIFeatureEnabled()
                 && mSiteSettingsDelegate.isFirstPartySetsDataAccessEnabled()
@@ -102,9 +110,6 @@ class WebsitePreference extends ChromeImageViewPreference {
             if (mSite.isEmbargoed(mCategory.getContentSettingsType())) {
                 setSummary(getContext().getString(R.string.automatically_blocked));
             } else if (mCategory.getType() == SiteSettingsCategory.Type.REQUEST_DESKTOP_SITE
-                    && ContentFeatureList.getFieldTrialParamByFeatureAsBoolean(
-                            ContentFeatureList.REQUEST_DESKTOP_SITE_EXCEPTIONS,
-                            PARAM_SUBDOMAIN_SETTINGS, true)
                     && mSite.getAddress().getIsAnySubdomainPattern()) {
                 setSummary(String.format(
                         getContext().getString(R.string.website_settings_domain_exception_label),
@@ -112,17 +117,32 @@ class WebsitePreference extends ChromeImageViewPreference {
             }
             return;
         }
-        String subtitleText;
-        if (mSite.representsThirdPartiesOnSite()) {
-            subtitleText = getContext().getString(
-                    R.string.website_settings_third_party_cookies_exception_label);
-        } else {
-            subtitleText =
-                    String.format(getContext().getString(R.string.website_settings_embedded_on),
-                            mSite.getEmbedder().getTitle());
+
+        if (!mSiteSettingsDelegate.isPrivacySandboxSettings4Enabled()) {
+            String subtitleText;
+            if (mSite.representsThirdPartiesOnSite()) {
+                subtitleText = getContext().getString(
+                        R.string.website_settings_third_party_cookies_exception_label);
+            } else {
+                subtitleText =
+                        String.format(getContext().getString(R.string.website_settings_embedded_on),
+                                mSite.getEmbedder().getTitle());
+            }
+            setSummary(subtitleText);
         }
 
-        setSummary(subtitleText);
+        if (mSiteSettingsDelegate.isUserBypassUIEnabled()
+                && mCategory.getType() == SiteSettingsCategory.Type.THIRD_PARTY_COOKIES) {
+            var exception = mSite.getContentSettingException(ContentSettingsType.COOKIES);
+            if (exception != null && exception.hasExpiration()) {
+                var expirationInDays = exception.getExpirationInDays();
+                setSummary(expirationInDays == 0
+                                ? getContext().getString(R.string.site_settings_expires_today_label)
+                                : getContext().getResources().getQuantityString(
+                                        R.plurals.site_settings_expires_label, expirationInDays,
+                                        expirationInDays));
+            }
+        }
     }
 
     @Override
@@ -151,12 +171,21 @@ class WebsitePreference extends ChromeImageViewPreference {
                 usageText.setVisibility(View.VISIBLE);
             }
         }
+        if (mCategory.getType() == SiteSettingsCategory.Type.ZOOM) {
+            // TODO(crbug.com/1459631): Get current zoom for the URL to replace this "100" with.
+            String currentZoom =
+                    String.format(getContext().getString(R.string.page_zoom_level), 100);
+            usageText.setText(currentZoom);
+            usageText.setTextSize(TEXT_SIZE_SP);
+            usageText.setVisibility(View.VISIBLE);
+            setViewClickable(false);
+        }
 
         // Manually apply ListItemStartIcon style to draw the outer circle in the right size.
         ImageView icon = (ImageView) holder.findViewById(android.R.id.icon);
         FaviconViewUtils.formatIconForFavicon(getContext().getResources(), icon);
 
-        if (!mFaviconFetched) {
+        if (!mFaviconFetched && faviconUrl().isValid()) {
             // Start the favicon fetching. Will respond in onFaviconAvailable.
             mSiteSettingsDelegate.getFaviconImageForURL(faviconUrl(), this::onFaviconAvailable);
             mFaviconFetched = true;

@@ -49,10 +49,13 @@ GLCommonImageBackingFactory::GLCommonImageBackingFactory(
     if (format == viz::SinglePlaneFormat::kBGR_565) {
       continue;
     }
-    const GLuint image_internal_format = GLInternalFormat(format);
-    const GLenum gl_format = GLDataFormat(format);
+    const GLFormatDesc format_desc = ToGLFormatDesc(
+        format, /*plane_index=*/0,
+        feature_info->feature_flags().angle_rgbx_internal_format);
+    const GLuint image_internal_format = format_desc.image_internal_format;
+    const GLenum gl_format = format_desc.data_format;
     CHECK_NE(gl_format, static_cast<GLenum>(GL_ZERO));
-    const GLenum gl_type = GLDataType(format);
+    const GLenum gl_type = format_desc.data_type;
     const bool uncompressed_format_valid =
         validators->texture_internal_format.IsValid(image_internal_format) &&
         validators->texture_format.IsValid(gl_format);
@@ -72,14 +75,20 @@ GLCommonImageBackingFactory::GLCommonImageBackingFactory(
         gles2::TextureManager::GetCompatibilitySwizzle(feature_info, gl_format);
     info.image_internal_format = gles2::TextureManager::AdjustTexInternalFormat(
         feature_info, image_internal_format, gl_type);
-    info.storage_internal_format = TextureStorageFormat(
-        format, feature_info->feature_flags().angle_rgbx_internal_format);
+    info.storage_internal_format = format_desc.storage_internal_format;
     info.adjusted_format =
         gles2::TextureManager::AdjustTexFormat(feature_info, gl_format);
 
     if (enable_texture_storage && !info.is_compressed &&
         validators->texture_internal_format_storage.IsValid(
             info.storage_internal_format)) {
+      // GL_ALPHA8 requires EXT_texture_storage even with ES3. We should not
+      // rely on validating command decoder logic that allows GL_ALPHA8, but
+      // working around here for now until proper fix.
+      if (info.storage_internal_format == GL_ALPHA8 && use_passthrough_) {
+        continue;
+      }
+
       info.supports_storage = true;
       info.adjusted_storage_internal_format =
           gles2::TextureManager::AdjustTexStorageFormat(

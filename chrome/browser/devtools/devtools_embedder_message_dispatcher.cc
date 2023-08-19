@@ -234,6 +234,8 @@ DevToolsEmbedderMessageDispatcher::CreateForDevToolsFrontend(
   d->RegisterHandler("dispatchProtocolMessage",
                      &Delegate::DispatchProtocolMessageFromDevToolsFrontend,
                      delegate);
+  d->RegisterHandler("recordCountHistogram", &Delegate::RecordCountHistogram,
+                     delegate);
   d->RegisterHandler("recordEnumeratedHistogram",
                      &Delegate::RecordEnumeratedHistogram, delegate);
   d->RegisterHandler("recordPerformanceHistogram",

@@ -72,6 +72,8 @@ source_set("video") {
       "h266_nalu_parser.h",
       "h266_parser.cc",
       "h266_parser.h",
+      "h266_poc.cc",
+      "h266_poc.h",
     ]
   }
 
@@ -174,6 +176,7 @@ source_set("unit_tests") {
     sources += [
       "h266_nalu_parser_unittest.cc",
       "h266_parser_unittest.cc",
+      "h266_poc_unittest.cc",
     ]
   }
 

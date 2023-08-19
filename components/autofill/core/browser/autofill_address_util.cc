@@ -18,6 +18,7 @@
 #include "base/values.h"
 #include "components/autofill/core/browser/data_model/autofill_profile.h"
 #include "components/autofill/core/browser/data_model/autofill_profile_comparator.h"
+#include "components/autofill/core/browser/field_types.h"
 #include "components/autofill/core/browser/geo/address_i18n.h"
 #include "components/autofill/core/browser/geo/autofill_country.h"
 #include "components/autofill/core/browser/ui/country_combobox_model.h"
@@ -35,13 +36,15 @@ namespace autofill {
 
 namespace {
 
+using ::i18n::addressinput::AddressUiComponent;
+
 constexpr char kAddressComponentsFallbackCountryCode[] = "US";
 
-// Returns a vector of AddressUiComponent for `country_code` when using
+// Returns a vector of AutofillAddressUIComponent for `country_code` when using
 // `ui_language_code`. If no components are available for `country_code`, it
 // defaults back to the US. If `ui_language_code` is not valid,  the default
 // format is returned.
-std::vector<ExtendedAddressUiComponent> GetAddressComponents(
+std::vector<AutofillAddressUIComponent> GetAddressComponents(
     const std::string& country_code,
     const std::string& ui_language_code,
     std::string* components_language_code) {
@@ -52,7 +55,7 @@ std::vector<ExtendedAddressUiComponent> GetAddressComponents(
   localization.SetGetter(l10n_util::GetStringUTF8);
   AutofillCountry country(country_code);
 
-  std::vector<ExtendedAddressUiComponent> components =
+  std::vector<AutofillAddressUIComponent> components =
       ConvertAddressUiComponents(
           ::i18n::addressinput::BuildComponentsWithLiterals(
               country_code, localization, ui_language_code,
@@ -72,41 +75,50 @@ std::vector<ExtendedAddressUiComponent> GetAddressComponents(
   return {};
 }
 
+AutofillAddressUIComponent::LengthHint ConvertLengthHint(
+    AddressUiComponent::LengthHint length_hint) {
+  switch (length_hint) {
+    case AddressUiComponent::LengthHint::HINT_LONG:
+      return AutofillAddressUIComponent::LengthHint::HINT_LONG;
+    case AddressUiComponent::LengthHint::HINT_SHORT:
+      return AutofillAddressUIComponent::LengthHint::HINT_SHORT;
+  }
+  NOTREACHED_NORETURN();
+}
 }  // namespace
 
-std::vector<ExtendedAddressUiComponent> ConvertAddressUiComponents(
-    const std::vector<::i18n::addressinput::AddressUiComponent>&
-        addressinput_components,
+std::vector<AutofillAddressUIComponent> ConvertAddressUiComponents(
+    const std::vector<AddressUiComponent>& addressinput_components,
     const AutofillCountry& country) {
-  std::vector<ExtendedAddressUiComponent> components;
+  std::vector<AutofillAddressUIComponent> components;
   components.reserve(addressinput_components.size());
 
   base::ranges::transform(
       addressinput_components, std::back_inserter(components),
-      [&country](const ::i18n::addressinput::AddressUiComponent& component) {
+      [&country](const AddressUiComponent& component) {
         // The component's field property may not be initialized if the
         // component is literal, so it should not be used to avoid
         // memory sanitizer's errors (`use-of-uninitialized-value`).
-        bool is_required = component.literal.empty()
-                               ? country.IsAddressFieldRequired(component.field)
-                               : false;
-        return ExtendedAddressUiComponent(std::move(component), is_required);
+        if (!component.literal.empty()) {
+          return AutofillAddressUIComponent{
+              .literal = component.literal,
+          };
+        }
+        autofill::ServerFieldType field = i18n::TypeForField(component.field);
+        return AutofillAddressUIComponent{
+            .field = field,
+            .name = component.name,
+            .length_hint = ConvertLengthHint(component.length_hint),
+            .literal = component.literal,
+            .is_required = country.IsAddressFieldRequired(field),
+        };
       });
 
   return components;
 }
 
-ExtendedAddressUiComponent::ExtendedAddressUiComponent(
-    const ::i18n::addressinput::AddressUiComponent&& component,
-    bool is_required)
-    : ::i18n::addressinput::AddressUiComponent(component),
-      is_required(is_required) {}
-ExtendedAddressUiComponent::ExtendedAddressUiComponent(
-    const ::i18n::addressinput::AddressUiComponent&& component)
-    : ::i18n::addressinput::AddressUiComponent(component) {}
-
 void ExtendAddressComponents(
-    std::vector<ExtendedAddressUiComponent>& components,
+    std::vector<AutofillAddressUIComponent>& components,
     const AutofillCountry& country,
     const Localization& localization,
     bool include_literals) {
@@ -115,7 +127,7 @@ void ExtendAddressComponents(
     // Find the location of `rule.placed_after` in `components`.
     // `components.field` is only valid if `components.literal.empty()`.
     auto prev_component = base::ranges::find_if(
-        components, [&rule](const ExtendedAddressUiComponent& component) {
+        components, [&rule](const AutofillAddressUIComponent& component) {
           return component.literal.empty() &&
                  component.field == rule.placed_after;
         });
@@ -125,19 +137,19 @@ void ExtendAddressComponents(
     if (include_literals) {
       prev_component = components.insert(
           ++prev_component,
-          ExtendedAddressUiComponent{
-              {.literal = std::string(rule.separator_before_label)}});
+          AutofillAddressUIComponent{
+              .literal = std::string(rule.separator_before_label)});
     }
 
     components.insert(
         ++prev_component,
-        ExtendedAddressUiComponent{
-            {.field = rule.type,
-             .name = localization.GetString(rule.label_id),
-             .length_hint = rule.large_sized
-                                ? ExtendedAddressUiComponent::HINT_LONG
-                                : ExtendedAddressUiComponent::HINT_SHORT},
-            /*is_required=*/country.IsAddressFieldRequired(rule.type)});
+        AutofillAddressUIComponent{
+            .field = rule.type,
+            .name = localization.GetString(rule.label_id),
+            .length_hint = rule.large_sized
+                               ? AutofillAddressUIComponent::HINT_LONG
+                               : AutofillAddressUIComponent::HINT_SHORT,
+            .is_required = country.IsAddressFieldRequired(rule.type)});
   }
 }
 
@@ -145,17 +157,17 @@ void GetAddressComponents(
     const std::string& country_code,
     const std::string& ui_language_code,
     bool include_literals,
-    std::vector<std::vector<ExtendedAddressUiComponent>>* address_components,
+    std::vector<std::vector<AutofillAddressUIComponent>>* address_components,
     std::string* components_language_code) {
   std::string not_used;
-  std::vector<ExtendedAddressUiComponent> components = GetAddressComponents(
+  std::vector<AutofillAddressUIComponent> components = GetAddressComponents(
       country_code, ui_language_code,
       components_language_code ? components_language_code : &not_used);
-  std::vector<ExtendedAddressUiComponent>* line_components = nullptr;
-  for (const ExtendedAddressUiComponent& component : components) {
+  std::vector<AutofillAddressUIComponent>* line_components = nullptr;
+  for (const AutofillAddressUIComponent& component : components) {
     // Start a new line if this is the first line, or a new line literal exists.
     if (!line_components || component.literal == "\n") {
-      address_components->push_back(std::vector<ExtendedAddressUiComponent>());
+      address_components->push_back(std::vector<AutofillAddressUIComponent>());
       line_components = &address_components->back();
     }
 
@@ -188,22 +200,21 @@ std::u16string GetEnvelopeStyleAddress(const AutofillProfile& profile,
       profile.GetInfo(kCountryCode, ui_language_code);
 
   std::string not_used;
-  std::vector<ExtendedAddressUiComponent> components = GetAddressComponents(
+  std::vector<AutofillAddressUIComponent> components = GetAddressComponents(
       base::UTF16ToUTF8(country_code), ui_language_code, &not_used);
 
   DCHECK(!components.empty());
   std::string address;
-  for (const ExtendedAddressUiComponent& component : components) {
+  for (const AutofillAddressUIComponent& component : components) {
     // Add string literals directly.
     if (!component.literal.empty()) {
       address += component.literal;
       continue;
     }
-    if (!include_recipient &&
-        component.field == ::i18n::addressinput::RECIPIENT) {
+    if (!include_recipient && component.field == NAME_FULL) {
       continue;
     }
-    ServerFieldType type = i18n::TypeForField(component.field);
+    ServerFieldType type = component.field;
     if (type == NAME_FULL)
       type = NAME_FULL_WITH_HONORIFIC_PREFIX;
     address += base::UTF16ToUTF8(profile.GetInfo(type, ui_language_code));

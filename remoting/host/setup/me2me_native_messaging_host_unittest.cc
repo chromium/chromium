@@ -34,6 +34,7 @@
 #include "remoting/host/setup/test_util.h"
 #include "remoting/protocol/pairing_registry.h"
 #include "remoting/protocol/protocol_mock_objects.h"
+#include "services/network/test/test_shared_url_loader_factory.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
@@ -262,7 +263,7 @@ class Me2MeNativeMessagingHostTest : public testing::Test {
  protected:
   // Reference to the MockDaemonControllerDelegate, which is owned by
   // |channel_|.
-  raw_ptr<MockDaemonControllerDelegate, DanglingUntriaged>
+  raw_ptr<MockDaemonControllerDelegate, AcrossTasksDanglingUntriaged>
       daemon_controller_delegate_;
 
  private:
@@ -284,6 +285,8 @@ class Me2MeNativeMessagingHostTest : public testing::Test {
 
   std::unique_ptr<base::Thread> host_thread_;
   std::unique_ptr<base::RunLoop> host_run_loop_;
+
+  scoped_refptr<network::TestSharedURLLoaderFactory> test_url_loader_factory_;
 
   // Task runner of the host thread.
   scoped_refptr<AutoThreadTaskRunner> host_task_runner_;
@@ -314,6 +317,10 @@ void Me2MeNativeMessagingHostTest::SetUp() {
       host_thread_->task_runner(),
       base::BindOnce(&Me2MeNativeMessagingHostTest::ExitTest,
                      base::Unretained(this)));
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  test_url_loader_factory_ = new network::TestSharedURLLoaderFactory();
+#endif
 
   host_task_runner_->PostTask(
       FROM_HERE, base::BindOnce(&Me2MeNativeMessagingHostTest::StartHost,
@@ -350,10 +357,12 @@ void Me2MeNativeMessagingHostTest::StartHost() {
       new MockOAuthClient("fake_user_email", "fake_refresh_token"));
 
   std::unique_ptr<ChromotingHostContext> context =
-      ChromotingHostContext::Create(new remoting::AutoThreadTaskRunner(
-          host_task_runner_,
-          base::BindOnce(&Me2MeNativeMessagingHostTest::StopHost,
-                         base::Unretained(this))));
+      ChromotingHostContext::CreateForTesting(
+          new remoting::AutoThreadTaskRunner(
+              host_task_runner_,
+              base::BindOnce(&Me2MeNativeMessagingHostTest::StopHost,
+                             base::Unretained(this))),
+          test_url_loader_factory_);
 
   std::unique_ptr<remoting::Me2MeNativeMessagingHost> host(
       new Me2MeNativeMessagingHost(false, 0, std::move(context),

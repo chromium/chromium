@@ -108,7 +108,8 @@ class CellularSetupNotifierTest : public NoSessionAshTestBase {
   }
 
   // Ownership passed to Shell owned CellularSetupNotifier instance.
-  raw_ptr<base::MockOneShotTimer, ExperimentalAsh> mock_notification_timer_;
+  raw_ptr<base::MockOneShotTimer, DanglingUntriaged | ExperimentalAsh>
+      mock_notification_timer_;
 
   std::unique_ptr<network_config::CrosNetworkConfigTestHelper>
       network_config_helper_;

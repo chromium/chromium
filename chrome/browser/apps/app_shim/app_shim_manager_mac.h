@@ -14,8 +14,8 @@
 #include <vector>
 
 #include "apps/app_lifetime_monitor.h"
+#include "base/apple/scoped_cftyperef.h"
 #include "base/functional/callback_forward.h"
-#include "base/mac/scoped_cftyperef.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/apps/app_shim/app_shim_host_bootstrap_mac.h"
@@ -28,6 +28,7 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_list_observer.h"
 #include "chrome/browser/web_applications/web_app_id.h"
+#include "chrome/services/mac_notifications/public/mojom/mac_notifications.mojom.h"
 
 class Profile;
 class ProfileManager;
@@ -52,13 +53,15 @@ base::OnceClosure TakeShimStartupDoneCallbackForTesting();
 
 // This app shim handler that handles events for app shims that correspond to an
 // extension.
-class AppShimManager : public AppShimHostBootstrap::Client,
-                       public AppShimHost::Client,
-                       public AppLifetimeMonitor::Observer,
-                       public BrowserListObserver,
-                       public AvatarMenuObserver,
-                       public ProfileManagerObserver,
-                       public ProfileObserver {
+class AppShimManager
+    : public AppShimHostBootstrap::Client,
+      public AppShimHost::Client,
+      public AppLifetimeMonitor::Observer,
+      public BrowserListObserver,
+      public AvatarMenuObserver,
+      public ProfileManagerObserver,
+      public ProfileObserver,
+      public mac_notifications::mojom::MacNotificationProvider {
  public:
   class Delegate {
    public:
@@ -172,6 +175,17 @@ class AppShimManager : public AppShimHostBootstrap::Client,
       const web_app::AppId& app_id,
       const absl::optional<badging::BadgeManager::BadgeValue>& badge);
 
+  // Called to connect to a MacNotificationProvider instance in the app shim
+  // process for the given app_id. This is only supported for multi-profile
+  // app shims; but only legacy platform apps would use single-profile shims
+  // anyway.
+  // If there is no running app shim matching `app_id`, currently this method
+  // instead returns a remote connected to a dummy notification provider. In
+  // the future this will instead launch an app shim for `app_id` and connect
+  // to that.
+  mojo::Remote<mac_notifications::mojom::MacNotificationProvider>
+  LaunchNotificationProvider(const web_app::AppId& app_id);
+
   // AppShimHostBootstrap::Client:
   void OnShimProcessConnected(
       std::unique_ptr<AppShimHostBootstrap> bootstrap) override;
@@ -189,6 +203,7 @@ class AppShimManager : public AppShimHostBootstrap::Client,
                          const std::vector<base::FilePath>& files) override;
   void OnShimSelectedProfile(AppShimHost* host,
                              const base::FilePath& profile_path) override;
+  void OnShimOpenedAppSettings(AppShimHost* host) override;
   void OnShimOpenedUrls(AppShimHost* host,
                         const std::vector<GURL>& urls) override;
   void OnShimOpenAppWithOverrideUrl(AppShimHost* host,
@@ -400,6 +415,14 @@ class AppShimManager : public AppShimHostBootstrap::Client,
   static std::map<base::FilePath, int> GetProfilesWithMatchingHandlers(
       const LoadAndLaunchAppParams& params);
 
+  // mac_notifications::mojom::MacNotificationProvider:
+  void BindNotificationService(
+      mojo::PendingReceiver<mac_notifications::mojom::MacNotificationService>
+          service,
+      mojo::PendingRemote<
+          mac_notifications::mojom::MacNotificationActionHandler> handler)
+      override;
+
   std::unique_ptr<Delegate> delegate_;
 
   // Weak, reset during OnBeginTearDown.
@@ -410,6 +433,13 @@ class AppShimManager : public AppShimHostBootstrap::Client,
 
   // The avatar menu instance used by all app shims.
   std::unique_ptr<AvatarMenu> avatar_menu_;
+
+  // Requests for MacNotificationProviders that can't be connected to the
+  // correct app shim process right away get added to this receiver set
+  // instead. This is needed because higher level notifications code currently
+  // always expects to get a connected MacNotificationProvider remote.
+  mojo::ReceiverSet<mac_notifications::mojom::MacNotificationProvider>
+      dummy_notification_provider_receivers_;
 
   raw_ptr<AppShimObserver> app_shim_observer_ = nullptr;
 

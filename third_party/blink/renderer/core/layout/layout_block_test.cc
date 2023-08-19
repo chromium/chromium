@@ -44,7 +44,7 @@ TEST_F(LayoutBlockTest, WidthAvailableToChildrenChanged) {
       <div style='height:20px'>Item</div>
     </div>
   )HTML");
-  Element* list_element = GetDocument().getElementById("list");
+  Element* list_element = GetDocument().getElementById(AtomicString("list"));
   ASSERT_TRUE(list_element);
   auto* list_box = list_element->GetLayoutBox();
   Element* item_element = ElementTraversal::FirstChild(*list_element);
@@ -101,7 +101,9 @@ TEST_F(LayoutBlockTest, NestedInlineVisualOverflowVerticalRL) {
   )HTML");
 
   auto* target = GetLayoutBoxByElementId("target");
-  EXPECT_EQ(LayoutRect(-15, 0, 40, 40), target->VisualOverflowRect());
+  const int kLeft =
+      RuntimeEnabledFeatures::LayoutNGNoLocationEnabled() ? -25 : -15;
+  EXPECT_EQ(LayoutRect(kLeft, 0, 40, 40), target->VisualOverflowRect());
   EXPECT_EQ(PhysicalRect(-25, 0, 40, 40), target->PhysicalVisualOverflowRect());
 }
 
@@ -120,36 +122,25 @@ TEST_F(LayoutBlockTest, ContainmentStyleChange) {
     </div>
   )HTML");
 
-  Element* target_element = GetDocument().getElementById("target");
+  Element* target_element =
+      GetDocument().getElementById(AtomicString("target"));
   auto* target = To<LayoutBlockFlow>(target_element->GetLayoutObject());
-  auto* contained = GetLayoutBoxByElementId("contained");
-  if (target->IsLayoutNGObject()) {
-    EXPECT_TRUE(target->GetSingleCachedLayoutResult()
-                    ->PhysicalFragment()
-                    .HasOutOfFlowFragmentChild());
-  } else {
-    EXPECT_TRUE(target->PositionedObjects()->Contains(contained));
-  }
+  EXPECT_TRUE(target->GetSingleCachedLayoutResult()
+                  ->PhysicalFragment()
+                  .HasOutOfFlowFragmentChild());
 
   // Remove layout containment. This should cause |contained| to now be
   // in the positioned objects set for the LayoutView, not |target|.
-  target_element->setAttribute(html_names::kStyleAttr, "contain:style");
+  target_element->setAttribute(html_names::kStyleAttr,
+                               AtomicString("contain:style"));
   UpdateAllLifecyclePhasesForTest();
-  if (target->IsLayoutNGObject()) {
-    EXPECT_FALSE(target->GetSingleCachedLayoutResult()
-                     ->PhysicalFragment()
-                     .HasOutOfFlowFragmentChild());
-  } else {
-    EXPECT_FALSE(target->PositionedObjects());
-  }
+  EXPECT_FALSE(target->GetSingleCachedLayoutResult()
+                   ->PhysicalFragment()
+                   .HasOutOfFlowFragmentChild());
   const LayoutView* view = GetDocument().GetLayoutView();
-  if (view->IsLayoutNGObject()) {
-    EXPECT_TRUE(view->GetSingleCachedLayoutResult()
-                    ->PhysicalFragment()
-                    .HasOutOfFlowFragmentChild());
-  } else {
-    EXPECT_TRUE(view->PositionedObjects()->Contains(contained));
-  }
+  EXPECT_TRUE(view->GetSingleCachedLayoutResult()
+                  ->PhysicalFragment()
+                  .HasOutOfFlowFragmentChild());
 }
 
 }  // namespace blink

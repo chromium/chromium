@@ -26,7 +26,6 @@ non_web_component_files = [
   "fake_system_routine_controller.ts",
   "frequency_channel_utils.ts",
   "mojo_interface_provider.js",
-  "mojo_utils.ts",
   "routine_group.ts",
   "routine_list_executor.ts",
 ]
@@ -175,8 +174,6 @@ generate_grd("build_grd") {
   input_files_base_dir = rebase_path(".", "//")
   input_files = static_resource_files
   deps = [ ":build_ts" ]
-  public_deps = [ "//third_party/d3:build_grdp" ]
-  grdp_files = [ "$root_gen_dir/third_party/d3/d3_resources.grdp" ]
   manifest_files =
       filter_include(get_target_outputs(":build_ts"), [ "*_manifest.json" ])
   grd_prefix = "ash_diagnostics_app"

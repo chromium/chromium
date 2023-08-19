@@ -298,8 +298,24 @@ wheel: <
   version: "version:1.2.2"
 >
 wheel: <
+  name: "infra/python/wheels/blessed-py2_py3"
+  version: "version:1.20.0"
+>
+wheel: <
+  name: "infra/python/wheels/wcwidth-py2_py3"
+  version: "version:0.2.5"
+>
+wheel: <
+  name: "infra/python/wheels/jinxed-py2_py3"
+  version: "version:1.2.0"
+>
+wheel: <
+  name: "infra/python/wheels/ansicon-py2_py3"
+  version: "version:1.89.0"
+>
+wheel: <
   name: "infra/python/wheels/mozlog-py2_py3"
-  version: "version:7.1.0"
+  version: "version:8.0.0"
 >
 wheel: <
   name: "infra/python/wheels/mozprocess-py3"
@@ -392,9 +408,21 @@ wheel: <
   version: "version:0.10.1"
 >
 
+# Used by: pytest-py3:7.3.1
+wheel: <
+  name: "infra/python/wheels/exceptiongroup-py3"
+  version: "version:1.1.2"
+>
+
+# Used by: pytest-py3:7.3.1
+wheel: <
+  name: "infra/python/wheels/tomli-py3"
+  version: "version:2.0.1"
+>
+
 wheel <
   name: "infra/python/wheels/pytest-py3"
-  version: "version:6.2.2"
+  version: "version:7.3.1"
 >
 
 wheel <
@@ -469,7 +497,7 @@ wheel: <
 
 wheel: <
   name: "infra/python/wheels/websockets-py3"
-  version: "version:10.3"
+  version: "version:11.0.3"
 >
 
 # Used by:

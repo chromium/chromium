@@ -19,31 +19,29 @@ config("libunwind_config") {
   ]
 }
 
+# TODO(crbug.com/1458042): Move this build file to third_party/libc++/BUILD.gn once submodule migration is done
 source_set("libunwind") {
-  visibility = []
-  if (is_fuchsia) {
-    visibility += [ "//buildtools/third_party/libc++abi" ]
-  } else if (is_android) {
-    visibility += [ "//buildtools/third_party/libc++abi" ]
+  visibility = [ "//buildtools/third_party/libc++abi" ]
+  if (is_android) {
     visibility += [ "//services/tracing/public/cpp" ]
   }
   if (!is_component_build) {
     defines = [ "_LIBUNWIND_DISABLE_VISIBILITY_ANNOTATIONS" ]
   }
-  include_dirs = [ "//buildtools/third_party/libunwind/trunk/include" ]
+  include_dirs = [ "//third_party/libunwind/src/include" ]
   sources = [
     # C++ sources
-    "trunk/src/Unwind-EHABI.cpp",
-    "trunk/src/libunwind.cpp",
+    "//third_party/libunwind/src/src/Unwind-EHABI.cpp",
+    "//third_party/libunwind/src/src/libunwind.cpp",
 
     # C sources
-    "trunk/src/Unwind-sjlj.c",
-    "trunk/src/UnwindLevel1-gcc-ext.c",
-    "trunk/src/UnwindLevel1.c",
+    "//third_party/libunwind/src/src/Unwind-sjlj.c",
+    "//third_party/libunwind/src/src/UnwindLevel1-gcc-ext.c",
+    "//third_party/libunwind/src/src/UnwindLevel1.c",
 
     # ASM sources
-    "trunk/src/UnwindRegistersRestore.S",
-    "trunk/src/UnwindRegistersSave.S",
+    "//third_party/libunwind/src/src/UnwindRegistersRestore.S",
+    "//third_party/libunwind/src/src/UnwindRegistersSave.S",
   ]
   configs -= [
     "//build/config/compiler:chromium_code",

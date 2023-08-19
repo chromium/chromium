@@ -167,8 +167,7 @@ public class DownloadMessageUiControllerImpl implements DownloadMessageUiControl
         public String link;
         public int icon;
 
-        @IconType
-        public int iconType = IconType.DRAWABLE;
+        public @IconType int iconType = IconType.DRAWABLE;
 
         // Whether the the message must be shown, even though it was dismissed earlier. This
         // usually means there is a significant download update, e.g. download completed.
@@ -971,7 +970,6 @@ public class DownloadMessageUiControllerImpl implements DownloadMessageUiControl
     private void onMessageDismissed(Integer dismissReason) {
         mPropertyModel = null;
         if (dismissReason == DismissReason.GESTURE) {
-            recordCloseButtonClicked();
             computeNextStepForUpdate(null, false, true, false);
         }
     }
@@ -1013,11 +1011,6 @@ public class DownloadMessageUiControllerImpl implements DownloadMessageUiControl
             RecordHistogram.recordEnumeratedHistogram("Download.Progress.InfoBar.Shown",
                     multipleDownloadState, UmaInfobarShown.NUM_ENTRIES);
         }
-    }
-
-    private void recordCloseButtonClicked() {
-        RecordHistogram.recordEnumeratedHistogram(
-                "Download.Progress.InfoBar.CloseButtonClicked", mState, UiState.NUM_ENTRIES);
     }
 
     private static void recordLinkClicked(boolean openItem) {

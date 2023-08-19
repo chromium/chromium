@@ -21,7 +21,7 @@ const AtomicString& XRLayer::InterfaceName() const {
 
 void XRLayer::Trace(Visitor* visitor) const {
   visitor->Trace(session_);
-  EventTargetWithInlineData::Trace(visitor);
+  EventTarget::Trace(visitor);
 }
 
 }  // namespace blink

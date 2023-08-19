@@ -9,13 +9,11 @@
 
 #include "base/callback_list.h"
 #include "base/functional/callback.h"
+#include "base/memory/scoped_refptr.h"
+#include "build/build_config.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "components/sync/test/mock_model_type_change_processor.h"
 #include "testing/gmock/include/gmock/gmock.h"
-
-#if BUILDFLAG(IS_CHROMEOS)
-#include "chrome/browser/web_applications/web_app_run_on_os_login_manager.h"
-#endif
 
 class KeyedService;
 class Profile;
@@ -28,19 +26,27 @@ namespace web_app {
 
 class AbstractWebAppDatabaseFactory;
 class ExternallyManagedAppManager;
+class FileUtilsWrapper;
+class IsolatedWebAppCommandLineInstallManager;
+class IsolatedWebAppUpdateManager;
 class OsIntegrationManager;
 class PreinstalledWebAppManager;
 class WebAppCommandManager;
+class WebAppCommandScheduler;
 class WebAppIconManager;
 class WebAppInstallFinalizer;
 class WebAppInstallManager;
+class WebAppOriginAssociationManager;
 class WebAppPolicyManager;
-class WebAppRegistrar;
 class WebAppRegistrarMutable;
 class WebAppSyncBridge;
 class WebAppTranslationManager;
 class WebAppUiManager;
 class WebContentsManager;
+
+#if BUILDFLAG(IS_CHROMEOS)
+class WebAppRunOnOsLoginManager;
+#endif
 
 // This is a tool that allows unit tests (enabled by default) and browser tests
 // (disabled by default) to use a 'fake' version of the WebAppProvider system.
@@ -105,12 +111,29 @@ class FakeWebAppProvider : public WebAppProvider {
   // by default for unit tests, and can be enabled by setting this flag to true.
   void SetSynchronizePreinstalledAppsOnStartup(bool synchronize_on_startup);
 
+#if BUILDFLAG(IS_CHROMEOS)
+  enum class AutomaticIwaUpdateStrategy {
+    kDefault,
+    kForceDisabled,
+    kForceEnabled,
+  };
+
+  // The `IsolatedWebAppUpdateManager` will check for updates of all installed
+  // Isolated Web Apps on startup and in regular time intervals. This is
+  // disabled (`kForceDisabled`) by default for unit tests, and can be enabled
+  // by setting this flag to `kForceEnabled`. Setting this flag to `kDefault`
+  // will retain the default behavior of the `IsolatedWebAppUpdateManager`.
+  void SetEnableAutomaticIwaUpdates(
+      AutomaticIwaUpdateStrategy automatic_iwa_update_strategy);
+#endif
+
   // NB: If you replace the Registrar, you also have to replace the SyncBridge
   // accordingly.
-  void SetRegistrar(std::unique_ptr<WebAppRegistrar> registrar);
+  void SetRegistrar(std::unique_ptr<WebAppRegistrarMutable> registrar);
   void SetDatabaseFactory(
       std::unique_ptr<AbstractWebAppDatabaseFactory> database_factory);
   void SetSyncBridge(std::unique_ptr<WebAppSyncBridge> sync_bridge);
+  void SetFileUtils(scoped_refptr<FileUtilsWrapper> file_utils);
   void SetIconManager(std::unique_ptr<WebAppIconManager> icon_manager);
   void SetTranslationManager(
       std::unique_ptr<WebAppTranslationManager> translation_manager);
@@ -125,11 +148,17 @@ class FakeWebAppProvider : public WebAppProvider {
   void SetWebAppUiManager(std::unique_ptr<WebAppUiManager> ui_manager);
   void SetWebAppPolicyManager(
       std::unique_ptr<WebAppPolicyManager> web_app_policy_manager);
+  void SetIsolatedWebAppCommandLineInstallManager(
+      std::unique_ptr<IsolatedWebAppCommandLineInstallManager>
+          iwa_command_line_install_manager);
 #if BUILDFLAG(IS_CHROMEOS)
+  void SetIsolatedWebAppUpdateManager(
+      std::unique_ptr<IsolatedWebAppUpdateManager> iwa_update_manager);
   void SetWebAppRunOnOsLoginManager(std::unique_ptr<WebAppRunOnOsLoginManager>
                                         web_app_run_on_os_login_manager);
 #endif
   void SetCommandManager(std::unique_ptr<WebAppCommandManager> command_manager);
+  void SetScheduler(std::unique_ptr<WebAppCommandScheduler> scheduler);
   void SetPreinstalledWebAppManager(
       std::unique_ptr<PreinstalledWebAppManager> preinstalled_web_app_manager);
   void SetOriginAssociationManager(
@@ -159,7 +188,7 @@ class FakeWebAppProvider : public WebAppProvider {
   void StartWithSubsystems();
 
   // Create and set default fake subsystems.
-  void SetDefaultFakeSubsystems();
+  void CreateFakeSubsystems();
 
   // Used to verify shutting down of WebAppUiManager.
   void ShutDownUiManagerForTesting();
@@ -189,6 +218,15 @@ class FakeWebAppProvider : public WebAppProvider {
   // If true, preinstalled apps will be processed & installed (or uninstalled)
   // after the system starts.
   bool synchronize_preinstalled_app_on_startup_ = false;
+#if BUILDFLAG(IS_CHROMEOS)
+  // If `kForceEnabled`, the `IsolatedWebAppUpdateManager` will automatically
+  // search for updates of installed Isolated Web Apps on startup and in regular
+  // time intervals. If `kForceDisabled`, then it will not automatically search
+  // for updates. If `kDefault`, then it will use its default behavior to
+  // determine whether to search for updates (e.g., based feature flags).
+  AutomaticIwaUpdateStrategy automatic_iwa_update_strategy_ =
+      AutomaticIwaUpdateStrategy::kForceDisabled;
+#endif
 
   testing::NiceMock<syncer::MockModelTypeChangeProcessor> mock_processor_;
 };

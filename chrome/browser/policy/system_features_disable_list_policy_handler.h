@@ -21,16 +21,18 @@ namespace policy {
 // numeric values should never be reused.
 enum class SystemFeature : int {
   kUnknownSystemFeature = 0,
-  kCamera = 1,                // The camera chrome app on Chrome OS.
+  kCamera = 1,                // The camera chrome app on ChromeOS.
   kBrowserSettings = 2,       // Browser settings.
-  kOsSettings = 3,            // The settings feature on Chrome OS.
-  kScanning = 4,              // The scan SWA on Chrome OS.
-  kWebStore = 5,              // The web store chrome app on Chrome OS.
-  kCanvas = 6,                // The canvas web app on Chrome OS.
+  kOsSettings = 3,            // The settings feature on ChromeOS.
+  kScanning = 4,              // The scan SWA on ChromeOS.
+  kWebStore = 5,              // The web store chrome app on ChromeOS.
+  kCanvas = 6,                // The canvas web app on ChromeOS.
   kGoogleNewsDeprecated = 7,  // The Google news app is no longer supported.
-  kExplore = 8,               // The explore web app on Chrome OS.
-  kCrosh = 9,                 // The Chrome OS shell.
-  kMaxValue = kCrosh
+  kExplore = 8,               // The explore web app on ChromeOS.
+  kCrosh = 9,                 // The ChromeOS shell.
+  kTerminal = 10,             // The terminal client web app on ChromeOS.
+  kGallery = 11,              // The gallery web app on ChromeOS.
+  kMaxValue = kGallery
 };
 
 // A disabling mode that decides the user experience when a system feature is
@@ -50,6 +52,8 @@ extern const char kWebStoreFeature[];
 extern const char kCanvasFeature[];
 extern const char kExploreFeature[];
 extern const char kCroshFeature[];
+extern const char kTerminalFeature[];
+extern const char kGalleryFeature[];
 
 extern const char kBlockedDisableMode[];
 extern const char kHiddenDisableMode[];

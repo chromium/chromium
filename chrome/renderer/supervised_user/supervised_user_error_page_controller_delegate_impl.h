@@ -41,8 +41,6 @@ class SupervisedUserErrorPageControllerDelegateImpl
   void RequestUrlAccessRemote(UrlAccessRequestInitiated callback) override;
   void RequestUrlAccessLocal(UrlAccessRequestInitiated callback) override;
 
-  void Feedback() override;
-
   // content::RenderFrameObserver:
   void OnDestruct() override;
   void DidFinishLoad() override;

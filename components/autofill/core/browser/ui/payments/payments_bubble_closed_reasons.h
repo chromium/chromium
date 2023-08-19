@@ -8,6 +8,8 @@
 namespace autofill {
 
 // The reason why payments bubbles are closed.
+// A java IntDef@ is generated from this.
+// GENERATED_JAVA_ENUM_PACKAGE: org.chromium.components.autofill
 enum class PaymentsBubbleClosedReason {
   // Bubble closed reason not specified.
   kUnknown,

@@ -18,6 +18,8 @@
 #define VPLOGF(level) VPLOG(level) << __func__ << "(): "
 #define LOGF(severity) LOG(severity) << __func__ << "(): "
 #define DLOGF(severity) DLOG(severity) << __func__ << "(): "
+#define DLOGF_IF(severity, condition) \
+  DLOG_IF(severity, condition) << __func__ << "(): "
 
 namespace media {
 

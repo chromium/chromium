@@ -1,0 +1,20 @@
+diff --git a/org.jacoco.agent.rt/src/org/jacoco/agent/rt/internal/PreMain.java b/org.jacoco.agent.rt/src/org/jacoco/agent/rt/internal/PreMain.java
+index daa00e0a..95cf1d53 100644
+--- a/org.jacoco.agent.rt/src/org/jacoco/agent/rt/internal/PreMain.java
++++ b/org.jacoco.agent.rt/src/org/jacoco/agent/rt/internal/PreMain.java
+@@ -58,9 +58,12 @@ public final class PreMain {
+ 	private static IRuntime createRuntime(final Instrumentation inst)
+ 			throws Exception {
+ 
+-		if (redefineJavaBaseModule(inst)) {
+-			return new InjectedClassRuntime(Object.class, "$JaCoCo");
+-		}
++		// TODO(crbug/1452152): InjectedClassRuntime doesn't work well with
++		// Nougat.
++		// Uncomment once Nougat is phased out and Oreo+ is brought in.
++		// if (redefineJavaBaseModule(inst)) {
++		// return new InjectedClassRuntime(Object.class, "$JaCoCo");
++		// }
+ 
+ 		return ModifiedSystemClassRuntime.createFor(inst,
+ 				"java/lang/UnknownError");

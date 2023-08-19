@@ -25,7 +25,6 @@ public class AdaptiveToolbarStatePredictor {
      * Key used to lookup segmentation results for adaptive toolbar. Must be kept in sync with
      * components/segmentation_platform/internal/constants.cc.
      */
-    private static final String ADAPTIVE_TOOLBAR_SEGMENTATION_KEY = "adaptive_toolbar";
 
     private static Pair<Boolean, Integer> sSegmentationResultsForTesting;
     private static Integer sToolbarStateForTesting;
@@ -153,6 +152,7 @@ public class AdaptiveToolbarStatePredictor {
             case AdaptiveToolbarButtonVariant.VOICE:
             case AdaptiveToolbarButtonVariant.TRANSLATE:
             case AdaptiveToolbarButtonVariant.ADD_TO_BOOKMARKS:
+            case AdaptiveToolbarButtonVariant.READ_ALOUD:
                 return true;
             case AdaptiveToolbarButtonVariant.UNKNOWN:
             case AdaptiveToolbarButtonVariant.NONE:
@@ -206,8 +206,8 @@ public class AdaptiveToolbarStatePredictor {
      * Returns the default segment if {@code variant} is not available on this system. Otherwise
      * returns {@code variant} unchanged.
      */
-    @AdaptiveToolbarButtonVariant
-    private int replaceVariantIfDisabled(@AdaptiveToolbarButtonVariant int variant) {
+    private @AdaptiveToolbarButtonVariant int replaceVariantIfDisabled(
+            @AdaptiveToolbarButtonVariant int variant) {
         if (isVariantEnabled(variant)) return variant;
         variant = AdaptiveToolbarFeatures.getSegmentationDefault();
         if (isVariantEnabled(variant)) return variant;
@@ -224,6 +224,8 @@ public class AdaptiveToolbarStatePredictor {
                 return AdaptiveToolbarFeatures.isAdaptiveToolbarTranslateEnabled();
             case AdaptiveToolbarButtonVariant.ADD_TO_BOOKMARKS:
                 return AdaptiveToolbarFeatures.isAdaptiveToolbarAddToBookmarksEnabled();
+            case AdaptiveToolbarButtonVariant.READ_ALOUD:
+                return AdaptiveToolbarFeatures.isAdaptiveToolbarReadAloudEnabled();
             default:
                 return true;
         }
@@ -250,13 +252,11 @@ public class AdaptiveToolbarStatePredictor {
     }
 
     /** For testing only. */
-    @VisibleForTesting
     public static void setSegmentationResultsForTesting(Pair<Boolean, Integer> results) {
         sSegmentationResultsForTesting = results;
     }
 
     /** For testing only. */
-    @VisibleForTesting
     public static void setToolbarStateForTesting(Integer toolbarState) {
         sToolbarStateForTesting = toolbarState;
     }

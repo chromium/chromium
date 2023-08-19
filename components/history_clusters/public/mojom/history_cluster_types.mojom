@@ -33,6 +33,22 @@ struct SearchQuery {
 };
 
 /**
+ * The following enum must be kept in sync with their respective source in
+ * components/history/core/browser/history_types.h.
+ */
+
+// A cluster's visit's interaction state.
+enum InteractionState {
+  // The default state of visits. Visible in both zero-state and searches.
+  kDefault = 0,
+  // User has marked the visit hidden. Hidden in all surfaces.
+  kHidden = 1,
+  // User has dismissed the visit with positive intent. Hidden in the
+  // zero-state but still searchable.
+  kDone = 2,
+};
+
+/**
  * The following enums must be kept in sync with their respective variants in
  * //tools/metrics/histograms/metadata/history/histograms.xml and
  * //components/history_clusters/core/cluster_metrics_utils.h

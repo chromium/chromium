@@ -79,7 +79,7 @@ class CreditCardAccessManagerBrowserTest : public InProcessBrowserTest {
                             "12", test::NextYear().c_str(), "1");
     server_card.set_guid("00000000-0000-0000-0000-" +
                          card_number.substr(0, 12));
-    server_card.set_record_type(CreditCard::FULL_SERVER_CARD);
+    server_card.set_record_type(CreditCard::RecordType::kFullServerCard);
     server_card.set_server_id("full_id_" + card_number);
     AddTestServerCreditCard(browser()->profile(), server_card);
     return server_card;

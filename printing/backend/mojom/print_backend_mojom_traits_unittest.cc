@@ -79,13 +79,39 @@ TEST(PrintBackendMojomTraitsTest,
 }
 
 TEST(PrintBackendMojomTraitsTest, TestSerializeAndDeserializePaper) {
-  for (const auto& paper : kPapers) {
+  PrinterSemanticCapsAndDefaults::Papers test_papers = kPapers;
+  test_papers.push_back(kPaperCustom);
+
+  for (const auto& paper : test_papers) {
     PrinterSemanticCapsAndDefaults::Paper input = paper;
     PrinterSemanticCapsAndDefaults::Paper output;
     EXPECT_TRUE(
         mojo::test::SerializeAndDeserialize<mojom::Paper>(input, output));
     EXPECT_EQ(paper, output);
   }
+}
+
+TEST(PrintBackendMojomTraitsTest, TestPaperCtors) {
+  // All constructors should be able to generate valid papers.
+  constexpr gfx::Size kNonEmptySize(100, 200);
+  constexpr gfx::Rect kNonEmptyPrintableArea(kNonEmptySize);
+  PrinterSemanticCapsAndDefaults::Paper output;
+
+  PrinterSemanticCapsAndDefaults::Paper input;
+  EXPECT_TRUE(mojo::test::SerializeAndDeserialize<mojom::Paper>(input, output));
+
+  input = PrinterSemanticCapsAndDefaults::Paper("display_name", "vendor_id",
+                                                kNonEmptySize);
+  EXPECT_TRUE(mojo::test::SerializeAndDeserialize<mojom::Paper>(input, output));
+
+  input = PrinterSemanticCapsAndDefaults::Paper(
+      "display_name", "vendor_id", kNonEmptySize, kNonEmptyPrintableArea);
+  EXPECT_TRUE(mojo::test::SerializeAndDeserialize<mojom::Paper>(input, output));
+
+  input = PrinterSemanticCapsAndDefaults::Paper(
+      "display_name", "vendor_id", kNonEmptySize, kNonEmptyPrintableArea,
+      /*max_height_um=*/200);
+  EXPECT_TRUE(mojo::test::SerializeAndDeserialize<mojom::Paper>(input, output));
 }
 
 TEST(PrintBackendMojomTraitsTest, TestPaperEmpty) {
@@ -95,6 +121,20 @@ TEST(PrintBackendMojomTraitsTest, TestPaperEmpty) {
 
   EXPECT_TRUE(mojo::test::SerializeAndDeserialize<mojom::Paper>(input, output));
   EXPECT_EQ(input, output);
+}
+
+TEST(PrintBackendMojomTraitsTest, TestPaperInvalidCustomSize) {
+  // The min height is larger than the max height, so it should be invalid.
+  PrinterSemanticCapsAndDefaults::Paper input{
+      /*display_name=*/"display_name",
+      /*vendor_id=*/"vendor_id",
+      /*size_um=*/gfx::Size(4000, 7000),
+      /*printable_area_um=*/gfx::Rect(0, 0, 4000, 7000),
+      /*max_height_um=*/6000};
+  PrinterSemanticCapsAndDefaults::Paper output;
+
+  EXPECT_FALSE(
+      mojo::test::SerializeAndDeserialize<mojom::Paper>(input, output));
 }
 
 TEST(PrintBackendMojomTraitsTest, TestPaperEmptyPrintableArea) {
@@ -116,6 +156,20 @@ TEST(PrintBackendMojomTraitsTest, TestPaperPrintableAreaLargerThanSize) {
       /*display_name=*/"display_name", /*vendor_id=*/"vendor_id",
       /*size_um=*/gfx::Size(4000, 7000),
       /*printable_area_um=*/gfx::Rect(0, 100, 4100, 7200)};
+  PrinterSemanticCapsAndDefaults::Paper output;
+
+  EXPECT_FALSE(
+      mojo::test::SerializeAndDeserialize<mojom::Paper>(input, output));
+}
+
+TEST(PrintBackendMojomTraitsTest, TestPaperPrintableAreaLargerThanCustomSize) {
+  // The printable area is larger than the custom size, so it should be invalid.
+  PrinterSemanticCapsAndDefaults::Paper input{
+      /*display_name=*/"display_name",
+      /*vendor_id=*/"vendor_id",
+      /*size_um=*/gfx::Size(4000, 7000),
+      /*printable_area_um=*/gfx::Rect(0, 100, 4100, 7200),
+      /*max_height_um=*/8000};
   PrinterSemanticCapsAndDefaults::Paper output;
 
   EXPECT_FALSE(
@@ -186,6 +240,8 @@ TEST(PrintBackendMojomTraitsTest,
   EXPECT_TRUE(kDefaultPaper == output.default_paper);
   EXPECT_EQ(kDpis, output.dpis);
   EXPECT_EQ(kDefaultDpi, output.default_dpi);
+  EXPECT_EQ(kMediaTypes, output.media_types);
+  EXPECT_EQ(kDefaultMediaType, output.default_media_type);
 #if BUILDFLAG(IS_CHROMEOS)
   EXPECT_EQ(kPinSupported, output.pin_supported);
   EXPECT_EQ(kAdvancedCapabilities, output.advanced_capabilities);
@@ -256,6 +312,22 @@ TEST(PrintBackendMojomTraitsTest,
   EXPECT_EQ(kEmptyPapers, output.papers);
 }
 
+TEST(PrintBackendMojomTraitsTest,
+     TestSerializeAndDeserializePrinterSemanticCapsAndDefaultsEmptyMediaTypes) {
+  PrinterSemanticCapsAndDefaults input =
+      GenerateSamplePrinterSemanticCapsAndDefaults({});
+  PrinterSemanticCapsAndDefaults output;
+
+  // Override sample with empty `media_types`.
+  const PrinterSemanticCapsAndDefaults::MediaTypes kEmptyMediaTypes;
+  input.media_types.clear();
+
+  EXPECT_TRUE(mojo::test::SerializeAndDeserialize<
+              mojom::PrinterSemanticCapsAndDefaults>(input, output));
+
+  EXPECT_EQ(kEmptyMediaTypes, output.media_types);
+}
+
 TEST(
     PrintBackendMojomTraitsTest,
     TestSerializeAndDeserializePrinterSemanticCapsAndDefaultsNoDuplicatesInArrays) {
@@ -311,8 +383,9 @@ TEST(
   // Duplicate papers are known to be possible, seen with the Konica Minolta
   // 4750 Series PS driver.
   // Use a paper with same name but different size.
-  PrinterSemanticCapsAndDefaults::Paper paper_a4_prime = kPaperA4;
-  paper_a4_prime.size_um = kPaperLetter.size_um;
+  PrinterSemanticCapsAndDefaults::Paper paper_a4_prime(
+      kPaperA4.display_name(), kPaperA4.vendor_id(), kPaperLetter.size_um(),
+      kPaperA4.printable_area_um());
   input = GenerateSamplePrinterSemanticCapsAndDefaults({});
   const PrinterSemanticCapsAndDefaults::Papers kDuplicatePapers{
       kPaperA4, kPaperLetter, kPaperLedger, paper_a4_prime};

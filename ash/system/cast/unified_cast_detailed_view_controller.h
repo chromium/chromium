@@ -37,7 +37,8 @@ class UnifiedCastDetailedViewController : public DetailedViewController {
  private:
   const std::unique_ptr<DetailedViewDelegate> detailed_view_delegate_;
 
-  raw_ptr<CastDetailedView, ExperimentalAsh> view_ = nullptr;
+  raw_ptr<CastDetailedView, DanglingUntriaged | ExperimentalAsh> view_ =
+      nullptr;
 };
 
 }  // namespace ash

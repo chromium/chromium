@@ -206,6 +206,10 @@ int QuicChromiumClientStream::Handle::ReadBody(
   if (!stream_)
     return net_error_;
 
+  if (stream_->read_side_closed()) {
+    return OK;
+  }
+
   int rv = stream_->Read(buffer, buffer_len);
   if (rv != ERR_IO_PENDING)
     return rv;
@@ -378,13 +382,6 @@ bool QuicChromiumClientStream::Handle::IsFirstStream() const {
   return stream_->IsFirstStream();
 }
 
-void QuicChromiumClientStream::Handle::OnPromiseHeaderList(
-    quic::QuicStreamId promised_id,
-    size_t frame_len,
-    const quic::QuicHeaderList& header_list) {
-  stream_->OnPromiseHeaderList(promised_id, frame_len, header_list);
-}
-
 bool QuicChromiumClientStream::Handle::can_migrate_to_cellular_network() {
   if (!stream_)
     return false;
@@ -549,24 +546,6 @@ void QuicChromiumClientStream::OnTrailingHeadersComplete(
     // The handle will be notified of the headers via a posted task.
     NotifyHandleOfTrailingHeadersAvailableLater();
   }
-}
-
-void QuicChromiumClientStream::OnPromiseHeaderList(
-    quic::QuicStreamId promised_id,
-    size_t frame_len,
-    const quic::QuicHeaderList& header_list) {
-  spdy::Http2HeaderBlock promise_headers;
-  int64_t content_length = -1;
-  if (!quic::SpdyUtils::CopyAndValidateHeaders(header_list, &content_length,
-                                               &promise_headers)) {
-    DLOG(ERROR) << "Failed to parse header list: " << header_list.DebugString();
-    ConsumeHeaderList();
-    Reset(quic::QUIC_BAD_APPLICATION_PAYLOAD);
-    return;
-  }
-  ConsumeHeaderList();
-
-  session_->HandlePromised(id(), promised_id, promise_headers);
 }
 
 void QuicChromiumClientStream::OnBodyAvailable() {

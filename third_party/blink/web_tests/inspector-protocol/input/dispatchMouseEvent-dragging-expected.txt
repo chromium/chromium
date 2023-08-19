@@ -1,0 +1,358 @@
+Tests Input.dispatchMouseEvent method for dragging
+Drag
+-----Event-----
+type: mousemove
+button: 0
+buttons: 1
+clientX: 50
+clientY: 50
+screenX: 50
+screenY: 50
+-----Event-----
+type: mousedown
+button: 0
+buttons: 1
+clientX: 50
+clientY: 50
+screenX: 50
+screenY: 50
+-----Event-----
+type: mousemove
+button: 0
+buttons: 1
+clientX: 50
+clientY: 150
+screenX: 50
+screenY: 150
+-----Event-----
+type: dragstart
+button: 0
+buttons: 1
+clientX: 50
+clientY: 50
+screenX: 50
+screenY: 50
+-----Event-----
+type: drag
+button: 0
+buttons: 1
+clientX: 50
+clientY: 150
+screenX: 50
+screenY: 150
+-----Event-----
+type: dragenter
+button: 0
+buttons: 1
+clientX: 50
+clientY: 150
+screenX: 50
+screenY: 150
+-----Event-----
+type: dragover
+button: 0
+buttons: 1
+clientX: 50
+clientY: 150
+screenX: 50
+screenY: 150
+Drop
+-----Event-----
+type: drop
+button: 0
+buttons: 1
+clientX: 50
+clientY: 150
+screenX: 50
+screenY: 150
+-----Event-----
+type: dragend
+button: 0
+buttons: 0
+clientX: 50
+clientY: 150
+screenX: 50
+screenY: 150
+Drag and drop with movements between elements
+-----Event-----
+type: mousemove
+button: 0
+buttons: 1
+clientX: 50
+clientY: 50
+screenX: 50
+screenY: 50
+-----Event-----
+type: mousedown
+button: 0
+buttons: 1
+clientX: 50
+clientY: 50
+screenX: 50
+screenY: 50
+-----Event-----
+type: mousemove
+button: 0
+buttons: 1
+clientX: 50
+clientY: 75
+screenX: 50
+screenY: 75
+-----Event-----
+type: dragstart
+button: 0
+buttons: 1
+clientX: 50
+clientY: 50
+screenX: 50
+screenY: 50
+-----Event-----
+type: drag
+button: 0
+buttons: 1
+clientX: 50
+clientY: 75
+screenX: 50
+screenY: 75
+-----Event-----
+type: dragenter
+button: 0
+buttons: 1
+clientX: 50
+clientY: 75
+screenX: 50
+screenY: 75
+-----Event-----
+type: dragover
+button: 0
+buttons: 1
+clientX: 50
+clientY: 75
+screenX: 50
+screenY: 75
+-----Event-----
+type: drag
+button: 0
+buttons: 1
+clientX: 50
+clientY: 100
+screenX: 50
+screenY: 100
+-----Event-----
+type: dragover
+button: 0
+buttons: 1
+clientX: 50
+clientY: 100
+screenX: 50
+screenY: 100
+-----Event-----
+type: drag
+button: 0
+buttons: 1
+clientX: 50
+clientY: 125
+screenX: 50
+screenY: 125
+-----Event-----
+type: dragenter
+button: 0
+buttons: 1
+clientX: 50
+clientY: 125
+screenX: 50
+screenY: 125
+-----Event-----
+type: dragleave
+button: 0
+buttons: 1
+clientX: 50
+clientY: 125
+screenX: 50
+screenY: 125
+-----Event-----
+type: dragover
+button: 0
+buttons: 1
+clientX: 50
+clientY: 150
+screenX: 50
+screenY: 150
+-----Event-----
+type: drop
+button: 0
+buttons: 1
+clientX: 50
+clientY: 150
+screenX: 50
+screenY: 150
+-----Event-----
+type: dragend
+button: 0
+buttons: 0
+clientX: 50
+clientY: 150
+screenX: 50
+screenY: 150
+-----Event-----
+type: mousemove
+button: 0
+buttons: 1
+clientX: 50
+clientY: 51
+screenX: 50
+screenY: 51
+-----Event-----
+type: mousemove
+button: 0
+buttons: 1
+clientX: 50
+clientY: 52
+screenX: 50
+screenY: 52
+Drag and drop with cancellation
+-----Event-----
+type: mousemove
+button: 0
+buttons: 1
+clientX: 50
+clientY: 50
+screenX: 50
+screenY: 50
+-----Event-----
+type: mousedown
+button: 0
+buttons: 1
+clientX: 50
+clientY: 50
+screenX: 50
+screenY: 50
+-----Event-----
+type: mousemove
+button: 0
+buttons: 1
+clientX: 50
+clientY: 75
+screenX: 50
+screenY: 75
+-----Event-----
+type: dragstart
+button: 0
+buttons: 1
+clientX: 50
+clientY: 50
+screenX: 50
+screenY: 50
+-----Event-----
+type: drag
+button: 0
+buttons: 1
+clientX: 50
+clientY: 75
+screenX: 50
+screenY: 75
+-----Event-----
+type: dragenter
+button: 0
+buttons: 1
+clientX: 50
+clientY: 75
+screenX: 50
+screenY: 75
+-----Event-----
+type: dragover
+button: 0
+buttons: 1
+clientX: 50
+clientY: 75
+screenX: 50
+screenY: 75
+-----Event-----
+type: drag
+button: 0
+buttons: 1
+clientX: 50
+clientY: 100
+screenX: 50
+screenY: 100
+-----Event-----
+type: dragover
+button: 0
+buttons: 1
+clientX: 50
+clientY: 100
+screenX: 50
+screenY: 100
+-----Event-----
+type: drag
+button: 0
+buttons: 1
+clientX: 50
+clientY: 125
+screenX: 50
+screenY: 125
+-----Event-----
+type: dragenter
+button: 0
+buttons: 1
+clientX: 50
+clientY: 125
+screenX: 50
+screenY: 125
+-----Event-----
+type: dragleave
+button: 0
+buttons: 1
+clientX: 50
+clientY: 125
+screenX: 50
+screenY: 125
+-----Event-----
+type: dragover
+button: 0
+buttons: 1
+clientX: 50
+clientY: 150
+screenX: 50
+screenY: 150
+-----Event-----
+type: drag
+button: 0
+buttons: 1
+clientX: 50
+clientY: 150
+screenX: 50
+screenY: 150
+-----Event-----
+type: dragleave
+button: 0
+buttons: 1
+clientX: 50
+clientY: 150
+screenX: 50
+screenY: 150
+-----Event-----
+type: dragend
+button: 0
+buttons: 0
+clientX: 50
+clientY: 150
+screenX: 50
+screenY: 150
+-----Event-----
+type: mousemove
+button: 0
+buttons: 1
+clientX: 50
+clientY: 51
+screenX: 50
+screenY: 51
+-----Event-----
+type: mousemove
+button: 0
+buttons: 1
+clientX: 50
+clientY: 52
+screenX: 50
+screenY: 52
+

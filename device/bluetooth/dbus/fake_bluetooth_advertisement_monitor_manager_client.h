@@ -68,7 +68,7 @@ class DEVICE_BLUETOOTH_EXPORT FakeBluetoothAdvertisementMonitorManagerClient
                          const std::string& property_name);
 
   raw_ptr<FakeBluetoothAdvertisementMonitorApplicationServiceProvider,
-          DanglingUntriaged>
+          AcrossTasksDanglingUntriaged>
       application_provider_ = nullptr;
   std::unique_ptr<Properties> properties_;
 

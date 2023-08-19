@@ -85,8 +85,9 @@ class ServiceWorkerMetrics {
     SKIP_EMPTY_FETCH_HANDLER = 38,
     BYPASS_ONLY_IF_SERVICE_WORKER_NOT_STARTED = 39,
     WARM_UP = 40,
+    STATIC_ROUTER = 41,
     // Add new events to record here.
-    kMaxValue = WARM_UP,
+    kMaxValue = STATIC_ROUTER,
   };
 
   // Not used for UMA.

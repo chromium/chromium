@@ -22,7 +22,6 @@ import android.os.RemoteException;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.RequiresApi;
-import androidx.annotation.VisibleForTesting;
 
 import org.chromium.android_webview.common.DeveloperModeUtils;
 import org.chromium.android_webview.common.Flag;
@@ -375,7 +374,6 @@ public final class DeveloperUiService extends Service {
         helper.applyFlagOverrides(newFlags);
     }
 
-    @VisibleForTesting
     public static void clearSharedPrefsForTesting(Context context) {
         synchronized (sLock) {
             context.getSharedPreferences(DeveloperUiService.SHARED_PREFS_FILE, Context.MODE_PRIVATE)
@@ -385,7 +383,6 @@ public final class DeveloperUiService extends Service {
         }
     }
 
-    @VisibleForTesting
     public static void setFlagListForTesting(@NonNull Flag[] flagList) {
         synchronized (sLock) {
             sFlagList = flagList;

@@ -1,8 +1,8 @@
 file://media/OWNERS
 
+# mediastream OWNERS.
+file://third_party/blink/common/mediastream/COMMON_OWNERS
+
 # WebRTC OWNERS.
-guidou@chromium.org
 tommi@chromium.org
 olka@chromium.org
-eladalon@chromium.org
-toprice@chromium.org

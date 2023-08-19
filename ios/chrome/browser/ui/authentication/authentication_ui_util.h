@@ -11,8 +11,8 @@
 
 #include "base/ios/block_types.h"
 
-@class AlertCoordinator;
 @class ActionSheetCoordinator;
+@class AlertCoordinator;
 class Browser;
 
 // Sign-out result, related to SignoutActionSheetCoordinator().

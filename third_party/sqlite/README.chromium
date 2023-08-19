@@ -4,7 +4,9 @@ Version: 3.42.0
 CPEPrefix: cpe:/a:sqlite:sqlite:3.42.0
 Included In Release: Yes
 Security Critical: Yes
+Shipped: yes
 License: Public domain
+License File: LICENSE
 
 Chromium maintains a mirror of the official SQLite Git repository at
 https://chromium.googlesource.com/chromium/deps/sqlite. Generally the stock

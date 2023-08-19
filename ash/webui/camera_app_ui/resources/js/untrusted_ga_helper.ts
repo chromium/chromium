@@ -3,7 +3,6 @@
 // found in the LICENSE file.
 
 import {assert, assertExists} from './assert.js';
-import {WaitableEvent} from './waitable_event.js';
 
 /**
  * The GA library URL in trusted type.
@@ -29,27 +28,141 @@ declare global {
   }
 }
 
-type SendGA4Event = typeof sendGA4Event;
-const sendGA4EventReady = new WaitableEvent<SendGA4Event>();
-interface InitGAIdParams {
-  gaId: string;
-  ga4Id: string;
-  clientId: string;
-  ga4ApiSecret: string;
+const SCHEMA_VERSION = '3';
+
+export interface GaBaseEvent {
+  eventAction: string;
+  eventCategory?: string;
+  eventLabel?: string;
+  eventValue?: number;
 }
 
 /**
- * Initializes GA and GA4 for sending metrics.
+ * All dimensions for GA metrics.
  *
- * @param idParams The parameters to initialize GA and GA4.
- * @param idParams.gaId The GA tracker ID to send events.
- * @param idParams.ga4Id The GA4 measurement ID to send events.
- * @param idParams.clientId The client ID for the current client for GA and GA4.
- * @param setClientIdCallback Callback to store client id.
+ * The following two documents should also be updated when the dimensions is
+ * updated.
+ *
+ * * Camera App PDD (Privacy Design Document): go/cca-metrics-pdd.
+ * * CCA GA Events & Dimensions sheet: go/cca-metrics-schema.
  */
-function initGA(
-    idParams: InitGAIdParams,
-    setClientIdCallback: (clientId: string) => void): void {
+export enum GaMetricDimension {
+  BOARD = 1,
+  OS_VERSION = 2,
+  // Obsolete 'sound' state.
+  // SOUND = 3,
+  MIRROR = 4,
+  GRID = 5,
+  TIMER = 6,
+  MICROPHONE = 7,
+  MAXIMIZED = 8,
+  TALL_ORIENTATION = 9,
+  RESOLUTION = 10,
+  FPS = 11,
+  INTENT_RESULT = 12,
+  SHOULD_HANDLE_RESULT = 13,
+  SHOULD_DOWN_SCALE = 14,
+  IS_SECURE = 15,
+  ERROR_NAME = 16,
+  FILENAME = 17,
+  FUNC_NAME = 18,
+  LINE_NO = 19,
+  COL_NO = 20,
+  SHUTTER_TYPE = 21,
+  IS_VIDEO_SNAPSHOT = 22,
+  EVER_PAUSED = 23,
+  SUPPORT_PAN = 24,
+  SUPPORT_TILT = 25,
+  SUPPORT_ZOOM = 26,
+  // Obsolete
+  // DOC_RESULT = 27,
+  RECORD_TYPE = 28,
+  GIF_RESULT = 29,
+  DURATION = 30,
+  SCHEMA_VERSION = 31,
+  LAUNCH_TYPE = 32,
+  DOC_FIX_TYPE = 33,
+  RESOLUTION_LEVEL = 34,
+  ASPECT_RATIO_SET = 35,
+  DOC_PAGE_COUNT = 36,
+  TIME_LAPSE_SPEED = 37,
+  IS_TEST_IMAGE = 38,
+  DEVICE_PIXEL_RATIO = 39,
+  CAMERA_MODULE_ID = 40,
+}
+
+export enum Ga4MetricDimension {
+  ASPECT_RATIO_SET = 'aspect_ratio_set',
+  BOARD = 'board',
+  BROWSER_VERSION = 'browser_version',
+  CAMERA_MODULE_ID = 'camera_module_id',
+  COL_NO = 'col_no',
+  DEVICE_PIXEL_RATIO = 'device_pixel_ratio',
+  DOC_FIX_TYPE = 'doc_fix_type',
+  DOC_PAGE_COUNT = 'doc_page_count',
+  DURATION = 'duration',
+  ERROR_NAME = 'error_name',
+  EVENT_CATEGORY = 'event_category',
+  EVENT_LABEL = 'event_label',
+  EVER_PAUSED = 'ever_paused',
+  FILENAME = 'filename',
+  FPS = 'fps',
+  FUNC_NAME = 'func_name',
+  GIF_RESULT = 'gif_result',
+  GRID = 'grid',
+  INTENT_RESULT = 'intent_result',
+  IS_SECURE = 'is_secure',
+  IS_TEST_IMAGE = 'is_test_image',
+  IS_VIDEO_SNAPSHOT = 'is_video_snapshot',
+  LANGUAGE = 'language',
+  LAUNCH_TYPE = 'launch_type',
+  LINE_NO = 'line_no',
+  MAXIMIZED = 'maximized',
+  MICROPHONE = 'microphone',
+  MIRROR = 'mirror',
+  OS_VERSION = 'os_version',
+  RECORD_TYPE = 'record_type',
+  RESOLUTION = 'resolution',
+  RESOLUTION_LEVEL = 'resolution_level',
+  SCHEMA_VERSION = 'schema_version',
+  SCREEN_RESOLUTION = 'screen_resolution',
+  SHOULD_DOWN_SCALE = 'should_down_scale',
+  SHOULD_HANDLE_RESULT = 'should_handle_result',
+  SHUTTER_TYPE = 'shutter_type',
+  SUPPORT_PAN = 'support_pan',
+  SUPPORT_TILT = 'support_tilt',
+  SUPPORT_ZOOM = 'support_zoom',
+  TALL_ORIENTATION = 'tall_orientation',
+  TIME_LAPSE_SPEED = 'time_lapse_speed',
+  TIMER = 'timer',
+}
+
+export type Ga4EventParams =
+    Partial<Record<Ga4MetricDimension, string>&{value: number}>;
+
+type Ga4MeasurementProtocolEventParams = Ga4EventParams&{
+  ['engagement_time_msec']: string,
+  ['session_id']: string,
+}
+
+interface InitGaParams {
+  id: string;
+  baseDimensions: Map<GaMetricDimension, string>;
+  clientId: string;
+}
+let gaBaseDimensions: InitGaParams['baseDimensions']|null = null;
+/**
+ * Initializes GA for sending metrics.
+ *
+ * @param initParams The parameters to initialize GA.
+ * @param initParams.id The GA tracker ID to send events.
+ * @param initParams.baseDimensions The base dimensions that will be sent in
+ * every event.
+ * @param initParams.clientId The client ID for the current client for GA.
+ * @param setClientId The callback to store client id for GA.
+ */
+function initGa(
+    initParams: InitGaParams, setClientId: (clientId: string) => void): void {
   // GA initialization function which is copied and inlined from
   // https://developers.google.com/analytics/devguides/collection/analyticsjs.
   window.GoogleAnalyticsObject = 'ga';
@@ -82,22 +195,17 @@ function initGA(
   assert(m.parentNode !== null);
   m.parentNode.insertBefore(a, m);
 
-  const {gaId, ga4Id, clientId, ga4ApiSecret} = idParams;
-  window.ga('create', gaId, {
+  const {id, baseDimensions, clientId} = initParams;
+  gaBaseDimensions = baseDimensions;
+
+  window.ga('create', id, {
     storage: 'none',
     clientId: clientId,
   });
 
   window.ga((tracker?: UniversalAnalytics.Tracker) => {
     assert(tracker !== undefined);
-    const clientId = tracker.get('clientId');
-    setClientIdCallback(clientId);
-    sendGA4EventReady.signal(genSendGA4Event({
-      ga4Id,
-      gaId,
-      clientId,
-      ga4ApiSecret,
-    }));
+    setClientId(tracker.get('clientId'));
   });
 
   // By default GA uses a fake image and sets its source to the target URL to
@@ -114,66 +222,162 @@ function initGA(
   window.ga('set', 'anonymizeIp', true);
 }
 
-function genSendGA4Event({gaId, ga4Id, clientId, ga4ApiSecret}: InitGAIdParams):
-    SendGA4Event {
-  return (event: UniversalAnalytics.FieldsObject,
-          dimensions: Record<string, string>) => {
-    if (window[`ga-disable-${gaId}`]) {
-      return;
-    }
-    // TODO(b/267265966): Use gtag.js instead of measurement protocol when
-    // gtag.js supports sending events under non-http/https protocols.
-    const params: Record<string, unknown> = {};
-    if (event.eventLabel !== undefined) {
-      params[`event_label`] = event.eventLabel;
-    }
-    if (event.eventCategory !== undefined) {
-      params['event_category'] = event.eventCategory;
-    }
-    if (event.eventValue !== undefined) {
-      params['value'] = event.eventValue;
-    }
-    for (const [key, value] of Object.entries(dimensions)) {
-      params[key] = value;
-    }
-    /* eslint-disable @typescript-eslint/naming-convention */
-    void fetch(
-        `https://www.google-analytics.com/mp/collect?measurement_id=${
-            ga4Id}&api_secret=${ga4ApiSecret}`,
-        {
-          method: 'POST',
-          body: JSON.stringify({
-            client_id: clientId,
-            events: [{
-              name: event.eventAction,
-              params,
-            }],
-          }),
-        });
-    /* eslint-enable @typescript-eslint/naming-convention */
+interface InitGa4Params {
+  apiSecret: string;
+  baseParams: Ga4EventParams;
+  clientId?: string;
+  measurementId: string;
+  sessionId?: string;
+}
+
+type Ga4Config = Required<InitGa4Params>;
+
+/**
+ * `ga4Enabled` and `measurementProtocolUrl` are used in tests.
+ */
+let ga4Enabled = true;
+let measurementProtocolUrl = 'https://www.google-analytics.com/mp/collect';
+let ga4Config: Ga4Config|null = null;
+/**
+ * Initializes GA4 for sending metrics.
+ *
+ * @param initParams The parameters to initialize GA4.
+ * @param initParams.apiSecret The API secret to send events via Measurement
+ * Protocol.
+ * @param initParams.baseParams The event parameters that will be sent in every
+ * event.
+ * @param initParams.clientId The client ID for the current client for GA4.
+ * @param initParams.measurementId The GA4 measurement ID.
+ * @param initParams.sessionId The session ID in every event.
+ * @param setClientId The callback to store client id for GA4.
+ */
+function initGa4(
+    initParams: InitGa4Params, setClientId: (clientId: string) => void): void {
+  let {clientId, sessionId} = initParams;
+  if (clientId === undefined || clientId === '') {
+    clientId = generateGa4ClientId();
+  }
+  setClientId(clientId);
+  if (sessionId === undefined || sessionId === '') {
+    sessionId = generateGa4SessionId();
+  }
+  ga4Config = {
+    ...initParams,
+    clientId,
+    sessionId,
   };
 }
 
-/**
- * Sends event to GA.
- *
- * @param event Event to send.
- */
-function sendGAEvent(event: UniversalAnalytics.FieldsObject): void {
-  window.ga('send', 'event', event);
+function generateGa4ClientId() {
+  const randomNumber = Math.round(Math.random() * 0x7fffffff);
+  const timestamp = Math.round(Date.now() / 1000);
+  return `${randomNumber}.${timestamp}`;
+}
+
+function generateGa4SessionId() {
+  return String(Date.now());
 }
 
 /**
- * Sends events to GA4.
- *
- * @param event Event to send.
- * @param dimensions Custom dimensions to include in the event.
+ * Sends an "end_session" event when CCA is closed or refreshed.
  */
-function sendGA4Event(
-    event: UniversalAnalytics.FieldsObject,
-    dimensions: Record<string, string>): void {
-  void sendGA4EventReady.wait().then(
-      (sendEvent) => sendEvent(event, dimensions));
+function registerGa4EndSessionEvent(): void {
+  window.addEventListener('unload', () => {
+    sendGa4Event({
+      name: 'end_session',
+      eventParams: {
+        duration: window.performance.now().toFixed(),
+      },
+      beacon: true,
+    });
+  });
+}
+
+interface SendGaEventParams {
+  baseEvent: GaBaseEvent;
+  dimensions: Map<GaMetricDimension, string>;
+}
+
+/**
+ * Sends an event to GA.
+ *
+ * @param params The parameters object.
+ * @param params.baseEvent The basic event properties.
+ * @param params.dimensions Custom dimensions of the event.
+ */
+function sendGaEvent({baseEvent, dimensions}: SendGaEventParams): void {
+  assert(gaBaseDimensions !== null);
+  const event: UniversalAnalytics.FieldsObject = {...baseEvent};
+  const mergedDimensions: Array<[GaMetricDimension, string]> = [
+    ...gaBaseDimensions,
+    ...dimensions,
+    [GaMetricDimension.DEVICE_PIXEL_RATIO, getDevicePixelRatio()],
+    [GaMetricDimension.OS_VERSION, getOsVersion()],
+    [GaMetricDimension.SCHEMA_VERSION, SCHEMA_VERSION],
+  ];
+  for (const [key, value] of mergedDimensions) {
+    event[`dimension${key}`] = value;
+  }
+  window.ga('send', 'event', event);
+}
+
+interface SendGa4EventParams {
+  name: string;
+  eventParams: Record<string, number|string>;
+  beacon?: boolean;
+}
+
+/**
+ * Sends an event to GA4.
+ *
+ * @param params The parameters object.
+ * @param params.name The name of the event.
+ * @param params.eventParams The event parameters (custom dimensions) of the
+ *     event.
+ * @param params.beacon Send the event via `navigator.sendBeacon`.
+ */
+function sendGa4Event({
+  name,
+  eventParams,
+  beacon = false,
+}: SendGa4EventParams): void {
+  if (!ga4Enabled) {
+    return;
+  }
+  const {apiSecret, baseParams, clientId, measurementId, sessionId} =
+      assertExists(ga4Config);
+  const params: Ga4MeasurementProtocolEventParams = {
+    ...baseParams,
+    ...eventParams,
+    [Ga4MetricDimension.DEVICE_PIXEL_RATIO]: getDevicePixelRatio(),
+    [Ga4MetricDimension.LANGUAGE]: navigator.language,
+    [Ga4MetricDimension.OS_VERSION]: getOsVersion(),
+    [Ga4MetricDimension.SCHEMA_VERSION]: SCHEMA_VERSION,
+    [Ga4MetricDimension.SCREEN_RESOLUTION]: getScreenResolution(),
+    // Set '1' here as it's enough for GA4 to generate the metrics for n-day
+    // active users and we don't want to reimplement how gtag.js calculate the
+    // engagement time for each event.
+    // See
+    // https://developers.google.com/analytics/devguides/collection/protocol/ga4/sending-events?client_type=gtag#recommended_parameters_for_reports.
+    ['engagement_time_msec']: '1',
+    // Send this to create a session in GA4.
+    // See
+    // https://developers.google.com/analytics/devguides/collection/protocol/ga4/sending-events?client_type=gtag#recommended_parameters_for_reports.
+    ['session_id']: sessionId,
+  };
+
+  const url = `${measurementProtocolUrl}?measurement_id=${
+      measurementId}&api_secret=${apiSecret}`;
+  const body = JSON.stringify({
+    ['client_id']: clientId,
+    events: [{name, params}],
+  });
+
+  if (beacon) {
+    navigator.sendBeacon(url, body);
+  } else {
+    void fetch(url, {method: 'POST', body});
+  }
 }
 
 /**
@@ -182,14 +386,57 @@ function sendGA4Event(
  * @param id The GA tracker ID.
  * @param enabled True if the metrics is enabled.
  */
-function setMetricsEnabled(id: string, enabled: boolean): void {
+function setGaEnabled(id: string, enabled: boolean): void {
   window[`ga-disable-${id}`] = !enabled;
 }
 
-export interface GAHelper {
-  initGA: typeof initGA;
-  sendGAEvent: typeof sendGAEvent;
-  sendGA4Event: SendGA4Event;
-  setMetricsEnabled: typeof setMetricsEnabled;
+/**
+ * Sets if GA4 can send metrics.
+ *
+ * @param enabled True if the metrics is enabled.
+ */
+function setGa4Enabled(enabled: boolean): void {
+  ga4Enabled = enabled;
 }
-export {initGA, sendGAEvent, sendGA4Event, setMetricsEnabled};
+
+function getDevicePixelRatio() {
+  return window.devicePixelRatio.toFixed(2);
+}
+
+function getOsVersion() {
+  return navigator.appVersion.match(/CrOS\s+\S+\s+([\d.]+)/)?.[1] ?? '';
+}
+
+function getScreenResolution() {
+  const {width, height} = window.screen;
+  return `${width}x${height}`;
+}
+
+/**
+ * Change the URL that measurement protocol used to send events. This should
+ * be only called in tests.
+ */
+function setMeasurementProtocolUrl(url: string): void {
+  measurementProtocolUrl = url;
+}
+
+export interface GaHelper {
+  initGa: typeof initGa;
+  initGa4: typeof initGa4;
+  registerGa4EndSessionEvent: typeof registerGa4EndSessionEvent;
+  sendGaEvent: typeof sendGaEvent;
+  sendGa4Event: typeof sendGa4Event;
+  setGaEnabled: typeof setGaEnabled;
+  setGa4Enabled: typeof setGa4Enabled;
+  setMeasurementProtocolUrl: typeof setMeasurementProtocolUrl;
+}
+export {
+  initGa,
+  initGa4,
+  registerGa4EndSessionEvent,
+  sendGaEvent,
+  sendGa4Event,
+  setGaEnabled,
+  setGa4Enabled,
+  setMeasurementProtocolUrl,
+};

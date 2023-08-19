@@ -13,10 +13,6 @@
 #import "components/signin/public/identity_manager/tribool.h"
 #import "testing/platform_test.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 class SigninUtilInternalTest : public PlatformTest {
  public:
   void SetUp() override {
@@ -113,6 +109,18 @@ TEST_F(SigninUtilInternalTest,
   EXPECT_EQ(signin::Tribool::kTrue, IsFirstSessionAfterDeviceRestoreInternal());
   WaitAndExpectSentinelThatIsBackedUp();
   WaitAndExpectSentinelThatIsNotBackedUp();
+}
+
+// Tests the result of IsFirstSessionAfterDeviceRestoreInternal(), when only the
+// not-backed-up sentinel file exist.
+TEST_F(SigninUtilInternalTest,
+       IsFirstSessionAfterDeviceRestoreInternalAfterUnexpectedSentinel) {
+  NSURL* url = GetSentinelThatIsNotBackedUpURLPath();
+  [[NSFileManager defaultManager] createFileAtPath:[url path]
+                                          contents:nil
+                                        attributes:nil];
+  EXPECT_EQ(signin::Tribool::kUnknown,
+            IsFirstSessionAfterDeviceRestoreInternal());
 }
 
 // Tests the result of IsFirstSessionAfterDeviceRestoreInternal(), when all

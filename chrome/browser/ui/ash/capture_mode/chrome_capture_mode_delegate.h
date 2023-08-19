@@ -73,6 +73,15 @@ class ChromeCaptureModeDelegate : public ash::CaptureModeDelegate {
   void GetDriveFsFreeSpaceBytes(ash::OnGotDriveFsFreeSpace callback) override;
   bool IsCameraDisabledByPolicy() const override;
   bool IsAudioCaptureDisabledByPolicy() const override;
+  void RegisterVideoConferenceManagerClient(
+      crosapi::mojom::VideoConferenceManagerClient* client,
+      const base::UnguessableToken& client_id) override;
+  void UnregisterVideoConferenceManagerClient(
+      const base::UnguessableToken& client_id) override;
+  void UpdateVideoConferenceManager(
+      crosapi::mojom::VideoConferenceMediaUsageStatusPtr status) override;
+  void NotifyDeviceUsedWhileDisabled(
+      crosapi::mojom::VideoConferenceMediaDevice device) override;
 
  private:
   // Called back by the Drive integration service when the quota usage is

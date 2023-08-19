@@ -10,7 +10,7 @@
     // to function correctly.
     // TODO(crbug.com/1410937): Run as a non-test component.
     "//build/config/fuchsia/test/chromium_system_test_facet.shard.test-cml",
-    "//build/config/fuchsia/test/elf_test_ambient_exec_runner.shard.test-cml",
+    "//build/config/fuchsia/test/elf_test_runner.shard.test-cml",
     "sys/component/realm_builder_absolute.shard.cml",
 
     "syslog/client.shard.cml",
@@ -38,11 +38,6 @@
         // Required to display the View in Scene Manager unless running in
         // `--headless` mode.
         "fuchsia.element.GraphicalPresenter",
-
-        // Required to display the View in Root Presenter unless running in
-        // `--headless` mode.
-        // TODO(crbug.com/1402457): Remove after transition is complete.
-        "fuchsia.ui.policy.Presenter",
       ],
       from: "parent",
       to: "#realm_builder",
@@ -131,8 +126,6 @@
         "fuchsia.accessibility.semantics.SemanticsManager",
         "fuchsia.ui.composition.Allocator",
         "fuchsia.ui.composition.Flatland",
-        // TODO(crbug.com/1427170): Remove Scenic after migration is complete.
-        "fuchsia.ui.scenic.Scenic",
       ],
       from: "parent",
       to: "#realm_builder",

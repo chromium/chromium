@@ -29,7 +29,7 @@ void GPUUncapturedErrorEvent::Trace(Visitor* visitor) const {
   Event::Trace(visitor);
 }
 
-const GPUError* GPUUncapturedErrorEvent::error() const {
+GPUError* GPUUncapturedErrorEvent::error() {
   return error_;
 }
 

@@ -12,6 +12,7 @@ include_rules = [
   "+device/gamepad",
   "+gpu",
   "+media/media_buildflags.h",
+  "+media/base/media_switches.h",
   "+mojo/core/embedder/embedder.h",
   "+mojo/public/cpp",
   "+net/base",

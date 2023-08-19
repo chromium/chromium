@@ -21,9 +21,9 @@ android_library("java") {
     "//third_party/androidx:androidx_annotation_annotation_java",
     "//third_party/androidx:androidx_appcompat_appcompat_java",
   ]
+  srcjar_deps = [ ":jni_headers" ]
   sources = [ "android/java/src/org/chromium/chrome/browser/test_dummy/TestDummyImpl.java" ]
 
-  annotation_processor_deps = [ "//base/android/jni_generator:jni_processor" ]
   deps += [ "//base:jni_java" ]
   resources_package = "org.chromium.chrome.browser.test_dummy"
 }
@@ -50,6 +50,7 @@ android_library("base_module_java") {
     "//chrome/android/modules/test_dummy/provider:java",
     "//chrome/android/modules/test_dummy/public:java",
     "//chrome/browser/test_dummy:java",
+    "//components/module_installer/android:module_installer_java",
     "//third_party/androidx:androidx_appcompat_appcompat_java",
   ]
   sources = [ "android/java/src/org/chromium/chrome/browser/test_dummy/TestDummyActivity.java" ]

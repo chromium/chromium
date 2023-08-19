@@ -26,9 +26,9 @@ void GPURenderPassEncoder::setBindGroup(
     uint32_t index,
     GPUBindGroup* bindGroup,
     const Vector<uint32_t>& dynamicOffsets) {
+  WGPUBindGroupImpl* bgImpl = bindGroup ? bindGroup->GetHandle() : nullptr;
   GetProcs().renderPassEncoderSetBindGroup(
-      GetHandle(), index, bindGroup->GetHandle(), dynamicOffsets.size(),
-      dynamicOffsets.data());
+      GetHandle(), index, bgImpl, dynamicOffsets.size(), dynamicOffsets.data());
 }
 
 void GPURenderPassEncoder::setBindGroup(
@@ -47,8 +47,8 @@ void GPURenderPassEncoder::setBindGroup(
   const uint32_t* data =
       dynamic_offsets_data.DataMaybeOnStack() + dynamic_offsets_data_start;
 
-  GetProcs().renderPassEncoderSetBindGroup(GetHandle(), index,
-                                           bind_group->GetHandle(),
+  WGPUBindGroupImpl* bgImpl = bind_group ? bind_group->GetHandle() : nullptr;
+  GetProcs().renderPassEncoderSetBindGroup(GetHandle(), index, bgImpl,
                                            dynamic_offsets_data_length, data);
 }
 

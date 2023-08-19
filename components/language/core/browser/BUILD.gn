@@ -16,7 +16,6 @@ static_library("browser") {
     "language_usage_metrics.h",
     "locale_util.cc",
     "locale_util.h",
-    "pref_names.cc",
     "pref_names.h",
     "ulp_metrics_logger.cc",
     "ulp_metrics_logger.h",

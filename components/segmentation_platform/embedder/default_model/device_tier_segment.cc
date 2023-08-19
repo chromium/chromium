@@ -38,16 +38,18 @@ std::unique_ptr<Config> DeviceTierSegment::GetConfig() {
   auto config = std::make_unique<Config>();
   config->segmentation_key = kDeviceTierKey;
   config->segmentation_uma_name = kDeviceTierUmaName;
+  config->auto_execute_and_cache = true;
   config->AddSegmentId(kDeviceTierSegmentId,
                        std::make_unique<DeviceTierSegment>());
   config->is_boolean_segment = true;
   return config;
 }
 
-DeviceTierSegment::DeviceTierSegment() : ModelProvider(kDeviceTierSegmentId) {}
+DeviceTierSegment::DeviceTierSegment()
+    : DefaultModelProvider(kDeviceTierSegmentId) {}
 
-void DeviceTierSegment::InitAndFetchModel(
-    const ModelUpdatedCallback& model_updated_callback) {
+std::unique_ptr<DefaultModelProvider::ModelConfig>
+DeviceTierSegment::GetModelConfig() {
   proto::SegmentationModelMetadata device_tier_metadata;
   MetadataWriter writer(&device_tier_metadata);
   writer.SetDefaultSegmentationMetadataConfig(
@@ -80,11 +82,8 @@ void DeviceTierSegment::InitAndFetchModel(
       /*top_label_to_ttl_list=*/{}, /*default_ttl=*/7,
       /*time_unit=*/proto::TimeUnit::DAY);
 
-  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
-      FROM_HERE,
-      base::BindRepeating(model_updated_callback, kDeviceTierSegmentId,
-                          std::move(device_tier_metadata),
-                          kDeviceTierSegmentVersion));
+  return std::make_unique<ModelConfig>(std::move(device_tier_metadata),
+                                       kDeviceTierSegmentVersion);
 }
 
 void DeviceTierSegment::ExecuteModelWithInput(
@@ -115,10 +114,6 @@ void DeviceTierSegment::ExecuteModelWithInput(
   base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE,
       base::BindOnce(std::move(callback), ModelProvider::Response(1, score)));
-}
-
-bool DeviceTierSegment::ModelAvailable() {
-  return true;
 }
 
 }  // namespace segmentation_platform

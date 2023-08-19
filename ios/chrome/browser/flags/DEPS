@@ -1,9 +1,10 @@
 specific_include_rules = {
-  # TODO(crbug.com/1294160): Remove this dependency.
+  # Flag list can depends on everything.
   "^about_flags.mm": [
-    "+ios/chrome/browser/ui",
+    "+ios/chrome/browser",
   ],
   "^ios_chrome_field_trials.mm": [
+    "+ios/chrome/browser/variations",
     "+ios/chrome/browser/ui/content_suggestions",
     "+ios/chrome/browser/ui/first_run",
     "+ios/chrome/browser/ui/ntp",

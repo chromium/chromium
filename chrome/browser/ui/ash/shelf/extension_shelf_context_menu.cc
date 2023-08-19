@@ -24,6 +24,8 @@
 #include "components/policy/core/common/policy_pref_names.h"
 #include "content/public/browser/context_menu_params.h"
 #include "extensions/browser/extension_prefs.h"
+#include "extensions/browser/extension_system.h"
+#include "extensions/browser/management_policy.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/models/image_model.h"
 #include "ui/color/color_id.h"
@@ -35,6 +37,17 @@ namespace {
 // A helper used to filter which menu items added by the extension are shown.
 bool MenuItemHasLauncherContext(const extensions::MenuItem* item) {
   return item->contexts().Contains(extensions::MenuItem::LAUNCHER);
+}
+
+// Whether the user has permission to modify the given app's settings.
+bool UninstallAllowed(const std::string& app_id, Profile* profile) {
+  const extensions::Extension* extension =
+      extensions::ExtensionRegistry::Get(profile)->GetInstalledExtension(
+          app_id);
+  const extensions::ManagementPolicy* policy =
+      extensions::ExtensionSystem::Get(profile)->management_policy();
+  return extension && policy->UserMayModifySettings(extension, nullptr) &&
+         !policy->MustRemainInstalled(extension, nullptr);
 }
 
 }  // namespace
@@ -87,7 +100,7 @@ void ExtensionShelfContextMenu::GetMenuModel(GetMenuModelCallback callback) {
                          IDS_APP_LIST_EXTENSIONS_UNINSTALL);
   }
 
-  if (controller()->CanDoShowAppInfoFlow(profile, app_id)) {
+  if (controller()->CanDoShowAppInfoFlow(app_id)) {
     AddContextMenuOption(menu_model.get(), ash::SHOW_APP_INFO,
                          IDS_APP_CONTEXT_MENU_SHOW_INFO);
   }
@@ -147,18 +160,17 @@ bool ExtensionShelfContextMenu::IsCommandIdChecked(int command_id) const {
 }
 
 bool ExtensionShelfContextMenu::IsCommandIdEnabled(int command_id) const {
+  Profile* profile = controller()->profile();
   switch (command_id) {
     case ash::UNINSTALL:
-      return controller()->UninstallAllowed(item().id.app_id);
+      return UninstallAllowed(item().id.app_id, profile);
     case ash::APP_CONTEXT_MENU_NEW_WINDOW:
       // "Normal" windows are not allowed when incognito is enforced.
-      return IncognitoModePrefs::GetAvailability(
-                 controller()->profile()->GetPrefs()) !=
+      return IncognitoModePrefs::GetAvailability(profile->GetPrefs()) !=
              policy::IncognitoModeAvailability::kForced;
     case ash::APP_CONTEXT_MENU_NEW_INCOGNITO_WINDOW:
       // Incognito windows are not allowed when incognito is disabled.
-      return IncognitoModePrefs::GetAvailability(
-                 controller()->profile()->GetPrefs()) !=
+      return IncognitoModePrefs::GetAvailability(profile->GetPrefs()) !=
              policy::IncognitoModeAvailability::kDisabled;
     default:
       if (command_id < ash::COMMAND_ID_COUNT)
@@ -184,8 +196,7 @@ void ExtensionShelfContextMenu::ExecuteCommand(int command_id,
 
   switch (static_cast<ash::CommandId>(command_id)) {
     case ash::SHOW_APP_INFO:
-      controller()->DoShowAppInfoFlow(controller()->profile(),
-                                      item().id.app_id);
+      controller()->DoShowAppInfoFlow(item().id.app_id);
       break;
     case ash::USE_LAUNCH_TYPE_REGULAR:
       SetLaunchType(extensions::LAUNCH_TYPE_REGULAR);

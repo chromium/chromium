@@ -7,7 +7,6 @@
 
 #include "base/functional/callback.h"
 #include "media/base/video_color_space.h"
-#include "media/gpu/windows/d3d11_com_defs.h"
 #include "media/gpu/windows/d3d11_video_decoder_wrapper.h"
 
 namespace media {
@@ -19,8 +18,6 @@ class D3D11PictureBuffer;
 // required methods to D3D11VideoAccelerators.
 class D3D11VideoDecoderClient {
  public:
-  using SetAcceleratorDecoderCB =
-      base::RepeatingCallback<void(ComD3D11VideoDecoder)>;
   using SetAcceleratorDecoderWrapperCB =
       base::RepeatingCallback<void(std::unique_ptr<D3DVideoDecoderWrapper>)>;
 

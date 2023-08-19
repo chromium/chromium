@@ -82,7 +82,8 @@ class COMPONENT_EXPORT(TRACING_CPP) CustomEventRecorder
   std::vector<std::string> histograms_;
   // Stores the registered histogram callbacks for which OnMetricsSampleCallback
   // was set individually.
-  std::vector<
+  std::unordered_map<
+      std::string,
       std::unique_ptr<base::StatisticsRecorder::ScopedHistogramSampleObserver>>
       monitored_histograms_;
   base::ActionCallback user_action_callback_ =

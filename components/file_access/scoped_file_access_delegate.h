@@ -128,7 +128,8 @@ class COMPONENT_EXPORT(FILE_ACCESS) ScopedFileAccessDelegate {
 
    private:
     bool restore_original_callback_;
-    raw_ptr<RequestFilesAccessIOCallback> original_callback_ = nullptr;
+    raw_ptr<RequestFilesAccessIOCallback, DanglingUntriaged>
+        original_callback_ = nullptr;
   };
   // Get a callback to get file access to files for system component
   // destination. Can be called from IO or UI thread. The callback should be
@@ -150,6 +151,30 @@ class COMPONENT_EXPORT(FILE_ACCESS) ScopedFileAccessDelegate {
   static RequestFilesAccessIOCallback*
       request_files_access_for_system_io_callback_;
 };
+
+// Calls ScopedFilesAccessDelegate::RequestFilesAccess if
+// ScopedFilesAccessDelegate::HasInstance returns true, immediately calls the
+// callback with a ScopedFileAccess::Allowed object otherwise.
+COMPONENT_EXPORT(FILE_ACCESS)
+void RequestFilesAccess(
+    const std::vector<base::FilePath>& files,
+    const GURL& destination_url,
+    base::OnceCallback<void(file_access::ScopedFileAccess)> callback);
+
+// Calls ScopedFilesAccessDelegate::RequestFilesAccessForSystem if
+// ScopedFilesAccessDelegate::HasInstance returns true, immediately calls the
+// callback with a ScopedFileAccess::Allowed object otherwise.
+COMPONENT_EXPORT(FILE_ACCESS)
+void RequestFilesAccessForSystem(
+    const std::vector<base::FilePath>& files,
+    base::OnceCallback<void(file_access::ScopedFileAccess)> callback);
+
+// Calls ScopedFilesAccessDelegate::CreateFileAccessCallback if
+// ScopedFilesAccessDelegate::HasInstance returns true, returns a callback with
+// a ScopedFileAccess::Allowed object otherwise.
+COMPONENT_EXPORT(FILE_ACCESS)
+ScopedFileAccessDelegate::RequestFilesAccessIOCallback CreateFileAccessCallback(
+    const GURL& destination);
 
 }  // namespace file_access
 

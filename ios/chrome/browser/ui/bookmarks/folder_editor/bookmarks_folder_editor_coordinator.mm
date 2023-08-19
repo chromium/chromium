@@ -4,9 +4,9 @@
 
 #import "ios/chrome/browser/ui/bookmarks/folder_editor/bookmarks_folder_editor_coordinator.h"
 
+#import "base/apple/foundation_util.h"
 #import "base/check.h"
 #import "base/check_op.h"
-#import "base/mac/foundation_util.h"
 #import "base/metrics/user_metrics.h"
 #import "base/metrics/user_metrics_action.h"
 #import "components/bookmarks/browser/bookmark_node.h"
@@ -22,10 +22,6 @@
 #import "ios/chrome/browser/ui/bookmarks/folder_chooser/bookmarks_folder_chooser_coordinator.h"
 #import "ios/chrome/browser/ui/bookmarks/folder_chooser/bookmarks_folder_chooser_coordinator_delegate.h"
 #import "ios/chrome/browser/ui/bookmarks/folder_editor/bookmarks_folder_editor_view_controller.h"
-
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
 
 @interface BookmarksFolderEditorCoordinator () <
     BookmarksFolderEditorViewControllerDelegate,
@@ -87,7 +83,7 @@
   // TODO(crbug.com/1402758): Create a mediator.
   ChromeBrowserState* browserState =
       self.browser->GetBrowserState()->GetOriginalChromeBrowserState();
-  bookmarks::BookmarkModel* profileBookmarkModel =
+  bookmarks::BookmarkModel* localOrSyncableBookmarkModel =
       ios::LocalOrSyncableBookmarkModelFactory::GetForBrowserState(
           browserState);
   bookmarks::BookmarkModel* accountBookmarkModel =
@@ -97,13 +93,13 @@
   syncer::SyncService* syncService =
       SyncServiceFactory::GetForBrowserState(browserState);
   _viewController = [[BookmarksFolderEditorViewController alloc]
-      initWithProfileBookmarkModel:profileBookmarkModel
-              accountBookmarkModel:accountBookmarkModel
-                        folderNode:_folderNode
-                  parentFolderNode:_parentFolderNode
-             authenticationService:authService
-                       syncService:syncService
-                           browser:self.browser];
+      initWithLocalOrSyncableBookmarkModel:localOrSyncableBookmarkModel
+                      accountBookmarkModel:accountBookmarkModel
+                                folderNode:_folderNode
+                          parentFolderNode:_parentFolderNode
+                     authenticationService:authService
+                               syncService:syncService
+                                   browser:self.browser];
   _viewController.delegate = self;
   _viewController.snackbarCommandsHandler = HandlerForProtocol(
       self.browser->GetCommandDispatcher(), SnackbarCommands);
@@ -131,6 +127,7 @@
   DCHECK(_viewController);
   if (_navigationController) {
     [self.baseViewController dismissViewControllerAnimated:YES completion:nil];
+    _navigationController.presentationController.delegate = nil;
     _navigationController = nil;
   } else if (_baseNavigationController &&
              _baseNavigationController.presentingViewController) {
@@ -151,6 +148,10 @@
   }
   [_viewController disconnect];
   _viewController = nil;
+}
+
+- (void)dealloc {
+  DCHECK(!_viewController);
 }
 
 - (BOOL)canDismiss {
@@ -248,6 +249,7 @@
 - (void)presentationControllerDidDismiss:
     (UIPresentationController*)presentationController {
   DCHECK(_navigationController);
+  _navigationController.presentationController.delegate = nil;
   _navigationController = nil;
   [_delegate bookmarksFolderEditorCoordinatorShouldStop:self];
 }

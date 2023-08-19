@@ -19,12 +19,14 @@
 #include "build/blink_buildflags.h"
 #include "build/build_config.h"
 #include "net/http/structured_headers.h"
+#include "services/data_decoder/public/mojom/cbor_parser.mojom.h"
 #include "services/data_decoder/public/mojom/gzipper.mojom.h"
 #include "services/data_decoder/public/mojom/json_parser.mojom.h"
 #include "services/data_decoder/public/mojom/structured_headers_parser.mojom.h"
 #include "services/data_decoder/public/mojom/xml_parser.mojom.h"
 
 #if BUILDFLAG(IS_ANDROID)
+#include "base/types/expected_macros.h"
 #include "services/data_decoder/public/cpp/json_sanitizer.h"
 #endif
 
@@ -214,10 +216,9 @@ void DataDecoder::ParseJson(const std::string& json,
                     return;
                   }
 
-                  if (!result.has_value()) {
-                    std::move(callback).Run(base::unexpected(result.error()));
-                    return;
-                  }
+                  RETURN_IF_ERROR(result, [&](std::string error) {
+                    std::move(callback).Run(base::unexpected(std::move(error)));
+                  });
 
                   ParsingComplete(is_cancelled, std::move(callback),
                                   base::JSONReader::ReadAndReturnValueWithError(
@@ -413,6 +414,36 @@ void DataDecoder::GzipUncompress(base::span<const uint8_t> data,
       base::BindOnce(&ValueParseRequest<mojom::Gzipper,
                                         mojo_base::BigBuffer>::OnServiceValue,
                      request));
+}
+
+void DataDecoder::ParseCbor(base::span<const uint8_t> data,
+                            ValueParseCallback callback) {
+  auto request =
+      base::MakeRefCounted<ValueParseRequest<mojom::CborParser, base::Value>>(
+          std::move(callback), cancel_requests_);
+  GetService()->BindCborParser(request->BindRemote());
+  request->remote()->Parse(
+      data,
+      base::BindOnce(&ValueParseRequest<mojom::CborParser,
+                                        base::Value>::OnServiceValueOrError,
+                     request));
+}
+
+// static
+void DataDecoder::ParseCborIsolated(base::span<const uint8_t> data,
+                                    ValueParseCallback callback) {
+  auto decoder = std::make_unique<DataDecoder>();
+  auto* raw_decoder = decoder.get();
+
+  // We bind the DataDecoder's ownership into the result callback to ensure that
+  // it stays alive until the operation is complete.
+  raw_decoder->ParseCbor(
+      data, base::BindOnce(
+                [](std::unique_ptr<DataDecoder>, ValueParseCallback callback,
+                   ValueOrError result) {
+                  std::move(callback).Run(std::move(result));
+                },
+                std::move(decoder), std::move(callback)));
 }
 
 }  // namespace data_decoder

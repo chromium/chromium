@@ -311,6 +311,7 @@ void NotifyLocaleChange() {
 void OnLanguageSwitchedCallback(
     std::unique_ptr<ShowLoginWizardSwitchLanguageCallbackData> self,
     const locale_util::LanguageSwitchResult& result) {
+  TRACE_EVENT0("login", "OnLanguageSwitchedCallback");
   if (!result.success)
     LOG(WARNING) << "Locale could not be found for '" << result.requested_locale
                  << "'";
@@ -982,6 +983,7 @@ void LoginDisplayHostWebUI::CreateExistingUserController() {
 
 void LoginDisplayHostWebUI::ShowGaiaDialog(const AccountId& prefilled_account) {
   ShowGaiaDialogCommon(prefilled_account);
+  UpdateWallpaper(prefilled_account);
 }
 
 void LoginDisplayHostWebUI::ShowOsInstallScreen() {
@@ -1123,6 +1125,10 @@ void ShowLoginWizard(OobeScreenId first_screen) {
 
   input_method::InputMethodManager* manager =
       input_method::InputMethodManager::Get();
+
+  if (g_browser_process && g_browser_process->local_state()) {
+    manager->GetActiveIMEState()->SetInputMethodLoginDefault();
+  }
 
   system::InputDeviceSettings::Get()->SetNaturalScroll(
       base::CommandLine::ForCurrentProcess()->HasSwitch(

@@ -4,19 +4,25 @@
 
 #include "chrome/browser/ash/crosapi/browser_manager.h"
 
+#include <memory>
+
 #include "ash/constants/ash_features.h"
+#include "ash/constants/ash_switches.h"
 #include "ash/public/cpp/shelf_model.h"
+#include "base/command_line.h"
 #include "base/memory/raw_ptr.h"
+#include "base/test/scoped_command_line.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/ash/crosapi/browser_loader.h"
+#include "chrome/browser/ash/crosapi/fake_device_ownership_waiter.h"
 #include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
-#include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/component_updater/fake_cros_component_manager.h"
 #include "chrome/browser/ui/ash/shelf/chrome_shelf_controller.h"
 #include "chrome/test/base/scoped_testing_local_state.h"
 #include "chrome/test/base/testing_browser_process.h"
-#include "chrome/test/base/testing_profile.h"
+#include "chrome/test/base/testing_profile_manager.h"
+#include "chromeos/ash/components/standalone_browser/feature_refs.h"
 #include "chromeos/ash/components/standalone_browser/lacros_availability.h"
 #include "chromeos/crosapi/mojom/crosapi.mojom-test-utils.h"
 #include "chromeos/crosapi/mojom/crosapi.mojom.h"
@@ -152,12 +158,16 @@ class BrowserManagerTest : public testing::Test {
   ~BrowserManagerTest() override = default;
 
   void SetUp() override {
-    // Enable Lacros by setting the appropriate flag.
-    feature_list_.InitAndEnableFeature(ash::features::kLacrosSupport);
+    feature_list_.InitWithFeatures(ash::standalone_browser::GetFeatureRefs(),
+                                   {});
 
-    fake_user_manager_ = new ash::FakeChromeUserManager;
-    scoped_user_manager_ = std::make_unique<user_manager::ScopedUserManager>(
-        base::WrapUnique(fake_user_manager_.get()));
+    testing_profile_manager_ = std::make_unique<TestingProfileManager>(
+        TestingBrowserProcess::GetGlobal(), &local_state_);
+    ASSERT_TRUE(testing_profile_manager_->SetUp());
+    auto* testing_profile = testing_profile_manager_->CreateTestingProfile(
+        TestingProfile::kDefaultProfileUserName);
+
+    fake_user_manager_.Reset(std::make_unique<ash::FakeChromeUserManager>());
 
     auto fake_cros_component_manager =
         base::MakeRefCounted<FakeCrOSComponentManager>();
@@ -174,10 +184,13 @@ class BrowserManagerTest : public testing::Test {
     version_service_delegate_ = version_service_delegate.get();
     fake_browser_manager_->set_version_service_delegate_for_testing(
         std::move(version_service_delegate));
+    fake_browser_manager_->set_device_ownership_waiter_for_testing(
+        std::make_unique<FakeDeviceOwnershipWaiter>());
 
     shelf_model_ = std::make_unique<ash::ShelfModel>();
     shelf_controller_ = std::make_unique<ChromeShelfController>(
-        &testing_profile_, shelf_model_.get(), /*shelf_item_factory=*/nullptr);
+        testing_profile, shelf_model_.get(),
+        /*shelf_item_factory=*/nullptr);
     shelf_controller_->Init();
 
     // We need to avoid a DCHECK which happens when the policies have not yet
@@ -191,6 +204,13 @@ class BrowserManagerTest : public testing::Test {
   }
 
   void TearDown() override {
+    shelf_controller_.reset();
+    version_service_delegate_ = nullptr;
+    browser_loader_ = nullptr;
+    fake_browser_manager_.reset();
+    fake_user_manager_.Reset();
+    testing_profile_manager_.reset();
+
     // Need to reverse the state back to non set.
     crosapi::browser_util::ClearLacrosAvailabilityCacheForTest();
   }
@@ -203,8 +223,8 @@ class BrowserManagerTest : public testing::Test {
   };
 
   void AddUser(UserType user_type) {
-    const std::string email = "user@test.com";
-    AccountId account_id = AccountId::FromUserEmail(email);
+    AccountId account_id =
+        AccountId::FromUserEmail(TestingProfile::kDefaultProfileUserName);
 
     User* user;
     switch (user_type) {
@@ -223,14 +243,9 @@ class BrowserManagerTest : public testing::Test {
                                      /*browser_restart=*/false,
                                      /*is_child=*/false);
     fake_user_manager_->SimulateUserProfileLoad(account_id);
-    ash::ProfileHelper::Get()->SetUserToProfileMappingForTesting(
-        user, &testing_profile_);
 
     browser_util::SetProfileMigrationCompletedForUser(
-        local_state_.Get(),
-        ash::ProfileHelper::Get()
-            ->GetUserByProfile(&testing_profile_)
-            ->username_hash(),
+        local_state_.Get(), user->username_hash(),
         browser_util::MigrationMode::kCopy);
 
     EXPECT_TRUE(browser_util::IsLacrosEnabled());
@@ -253,10 +268,9 @@ class BrowserManagerTest : public testing::Test {
   // destruction timing.
   content::BrowserTaskEnvironment task_environment_;
   session_manager::SessionManager session_manager_;
-  TestingProfile testing_profile_;
-  raw_ptr<ash::FakeChromeUserManager, ExperimentalAsh> fake_user_manager_ =
-      nullptr;
-  std::unique_ptr<user_manager::ScopedUserManager> scoped_user_manager_;
+  std::unique_ptr<TestingProfileManager> testing_profile_manager_;
+  user_manager::TypedScopedUserManager<ash::FakeChromeUserManager>
+      fake_user_manager_;
   raw_ptr<MockBrowserLoader, ExperimentalAsh> browser_loader_ = nullptr;
   std::unique_ptr<MockComponentUpdateService> component_update_service_;
   std::unique_ptr<BrowserManagerFake> fake_browser_manager_;
@@ -273,6 +287,14 @@ class BrowserManagerTest : public testing::Test {
 };
 
 TEST_F(BrowserManagerTest, LacrosKeepAlive) {
+  // Disable the lacros launching on initialization and default keep-alive,
+  // so that we can make sure the behavior controlled by the test scenario.
+  base::test::ScopedCommandLine command_line;
+  command_line.GetProcessCommandLine()->AppendSwitch(
+      ash::switches::kDisableLoginLacrosOpening);
+  BrowserManager::ScopedUnsetAllKeepAliveForTesting unset_keep_alive(
+      fake_browser_manager_.get());
+
   AddUser(UserType::kRegularUser);
 
   using State = BrowserManagerFake::State;
@@ -307,6 +329,14 @@ TEST_F(BrowserManagerTest, LacrosKeepAlive) {
 }
 
 TEST_F(BrowserManagerTest, LacrosKeepAliveReloadsWhenUpdateAvailable) {
+  // Disable the lacros launching on initialization and default keep-alive,
+  // so that we can make sure the behavior controlled by the test scenario.
+  base::test::ScopedCommandLine command_line;
+  command_line.GetProcessCommandLine()->AppendSwitch(
+      ash::switches::kDisableLoginLacrosOpening);
+  BrowserManager::ScopedUnsetAllKeepAliveForTesting unset_keep_alive(
+      fake_browser_manager_.get());
+
   AddUser(UserType::kRegularUser);
   ExpectCallingLoad();
   fake_browser_manager_->InitializeAndStartIfNeeded();
@@ -335,6 +365,14 @@ TEST_F(BrowserManagerTest, LacrosKeepAliveReloadsWhenUpdateAvailable) {
 }
 
 TEST_F(BrowserManagerTest, NewWindowReloadsWhenUpdateAvailable) {
+  // Disable the lacros launching on initialization and default keep-alive,
+  // so that we can make sure the behavior controlled by the test scenario.
+  base::test::ScopedCommandLine command_line;
+  command_line.GetProcessCommandLine()->AppendSwitch(
+      ash::switches::kDisableLoginLacrosOpening);
+  BrowserManager::ScopedUnsetAllKeepAliveForTesting unset_keep_alive(
+      fake_browser_manager_.get());
+
   AddUser(UserType::kRegularUser);
   ExpectCallingLoad();
   fake_browser_manager_->InitializeAndStartIfNeeded();
@@ -360,6 +398,14 @@ TEST_F(BrowserManagerTest, NewWindowReloadsWhenUpdateAvailable) {
 }
 
 TEST_F(BrowserManagerTest, LacrosKeepAliveDoesNotBlockRestart) {
+  // Disable the lacros launching on initialization and default keep-alive,
+  // so that we can make sure the behavior controlled by the test scenario.
+  base::test::ScopedCommandLine command_line;
+  command_line.GetProcessCommandLine()->AppendSwitch(
+      ash::switches::kDisableLoginLacrosOpening);
+  BrowserManager::ScopedUnsetAllKeepAliveForTesting unset_keep_alive(
+      fake_browser_manager_.get());
+
   EXPECT_CALL(mock_browser_service_, UpdateKeepAlive(_)).Times(0);
   AddUser(UserType::kRegularUser);
 

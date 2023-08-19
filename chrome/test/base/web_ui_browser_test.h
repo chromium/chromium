@@ -180,8 +180,8 @@ class BaseWebUIBrowserTest : public JavaScriptBrowserTest {
 
   // When this is non-NULL, this is The WebUI instance used for testing.
   // Otherwise the selected tab's web_ui is used.
-  raw_ptr<content::WebUI, DanglingUntriaged> override_selected_web_ui_ =
-      nullptr;
+  raw_ptr<content::WebUI, AcrossTasksDanglingUntriaged>
+      override_selected_web_ui_ = nullptr;
 
   std::unique_ptr<TestChromeWebUIControllerFactory> test_factory_;
   std::unique_ptr<content::ScopedWebUIControllerFactoryRegistration>

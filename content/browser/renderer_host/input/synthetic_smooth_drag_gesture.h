@@ -5,13 +5,16 @@
 #ifndef CONTENT_BROWSER_RENDERER_HOST_INPUT_SYNTHETIC_SMOOTH_DRAG_GESTURE_H_
 #define CONTENT_BROWSER_RENDERER_HOST_INPUT_SYNTHETIC_SMOOTH_DRAG_GESTURE_H_
 
+#include <memory>
+
 #include "content/browser/renderer_host/input/synthetic_smooth_move_gesture.h"
 #include "content/common/content_export.h"
 
 #include "content/common/input/synthetic_smooth_drag_gesture_params.h"
 
 namespace content {
-class CONTENT_EXPORT SyntheticSmoothDragGesture : public SyntheticGesture {
+class CONTENT_EXPORT SyntheticSmoothDragGesture
+    : public SyntheticGestureBase<SyntheticSmoothDragGestureParams> {
  public:
   explicit SyntheticSmoothDragGesture(
       const SyntheticSmoothDragGestureParams& params);
@@ -32,7 +35,6 @@ class CONTENT_EXPORT SyntheticSmoothDragGesture : public SyntheticGesture {
                              SyntheticGestureTarget* target);
 
   std::unique_ptr<SyntheticSmoothMoveGesture> move_gesture_;
-  SyntheticSmoothDragGestureParams params_;
 };
 
 }  // namespace content

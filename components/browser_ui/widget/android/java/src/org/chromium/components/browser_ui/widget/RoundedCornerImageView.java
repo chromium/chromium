@@ -47,7 +47,6 @@ public class RoundedCornerImageView extends AppCompatImageView {
 
     private final Paint mRoundedBackgroundPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
     private Paint mRoundedContentPaint;
-    private final Matrix mScaleMatrix = new Matrix();
     private boolean mRoundCorners;
     // True, if constructor had a chance to run.
     // This is needed, because ImageView's constructor may trigger updates on our end

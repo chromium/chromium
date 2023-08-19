@@ -4,9 +4,7 @@
 
 #include "chrome/browser/safe_browsing/extension_telemetry/extension_telemetry_service_factory.h"
 
-#include "base/functional/bind.h"
 #include "base/no_destructor.h"
-#include "chrome/browser/browser_process.h"
 #include "chrome/browser/extensions/extension_management.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/safe_browsing/extension_telemetry/extension_telemetry_service.h"
@@ -54,13 +52,11 @@ KeyedService* ExtensionTelemetryServiceFactory::BuildServiceInstanceFor(
     return nullptr;
   NetworkContextService* network_service =
       NetworkContextServiceFactory::GetForBrowserContext(context);
-  if (!network_service)
+  if (!network_service) {
     return nullptr;
-  Profile* profile = Profile::FromBrowserContext(context);
-  return new ExtensionTelemetryService(
-      profile, network_service->GetURLLoaderFactory(),
-      extensions::ExtensionRegistry::Get(context),
-      extensions::ExtensionPrefs::Get(context));
+  }
+  return new ExtensionTelemetryService(Profile::FromBrowserContext(context),
+                                       network_service->GetURLLoaderFactory());
 }
 
 bool ExtensionTelemetryServiceFactory::ServiceIsCreatedWithBrowserContext()

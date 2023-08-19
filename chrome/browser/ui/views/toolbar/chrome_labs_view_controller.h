@@ -44,7 +44,8 @@ class ChromeLabsViewController {
   bool ShouldLabShowNewBadge(Profile* profile, const LabInfo& lab);
 
   raw_ptr<const ChromeLabsModel, DanglingUntriaged> model_;
-  raw_ptr<ChromeLabsBubbleView, DanglingUntriaged> chrome_labs_bubble_view_;
+  raw_ptr<ChromeLabsBubbleView, AcrossTasksDanglingUntriaged>
+      chrome_labs_bubble_view_;
   base::CallbackListSubscription restart_callback_;
   raw_ptr<Browser, DanglingUntriaged> browser_;
   raw_ptr<flags_ui::FlagsState, DanglingUntriaged> flags_state_;

@@ -9,10 +9,6 @@
 #import "ios/chrome/browser/feature_engagement/tracker_factory.h"
 #import "ios/chrome/browser/shared/public/commands/open_new_tab_command.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 namespace feature_engagement {
 
 void NotifyNewTabEvent(ChromeBrowserState* browser_state, bool is_incognito) {

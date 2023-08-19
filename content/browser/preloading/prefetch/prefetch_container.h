@@ -7,10 +7,12 @@
 
 #include <utility>
 
+#include "base/memory/raw_ref.h"
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
 #include "content/browser/preloading/prefetch/prefetch_probe_result.h"
 #include "content/browser/preloading/prefetch/prefetch_status.h"
+#include "content/browser/preloading/prefetch/prefetch_streaming_url_loader.h"
 #include "content/browser/preloading/prefetch/prefetch_type.h"
 #include "content/browser/preloading/speculation_host_devtools_observer.h"
 #include "content/common/content_export.h"
@@ -49,6 +51,40 @@ struct PrefetchResponseSizes {
 };
 
 // This class contains the state for a request to prefetch a specific URL.
+//
+// A `PrefetchContainer` can have multiple `PrefetchContainer::SinglePrefetch`es
+// and `PrefetchStreamingURLLoader`s to support redirects. Each
+// `PrefetchContainer::SinglePrefetch` in `redirect_chain_` corresponds to a
+// single redirect hop, while a single `PrefetchStreamingURLLoader` in
+// `streaming_loaders_` can receive multiple redirect hops unless network
+// context switching is needed.
+//
+// For example:
+//
+// |PrefetchStreamingURLLoader A-----| |PrefetchStreamingURLLoader B ---------|
+// HandleRedirect  - HandleRedirect  - HandleRedirect  - ReceiveResponse-Finish
+// |SinglePrefetch0| |SinglePrefetch1| |SinglePrefetch2| |SinglePrefetch3-----|
+//
+// While prefetching (see methods named like "ForCurrentPrefetch" or
+// "ToPrefetch"), `SinglePrefetch`es and `PrefetchStreamingURLLoader`s (among
+// other members) are added and filled. The steps for creating these objects and
+// associating with each other span multiple classes/methods:
+//
+// 1. A new `PrefetchContainer::SinglePrefetch` and thus a new
+// `PrefetchResponseReader` is created and added to `redirect_chain_`.
+// This is done either in:
+// - `PrefetchContainer` constructor [for an initial request], or
+// - `AddRedirectHop()` [for a redirect].
+//
+// 2. The new `PrefetchResponseReader` (created at Step 1, referenced as
+// `GetResponseReaderForCurrentPrefetch()`) is associated with the
+// `PrefetchStreamingURLLoader` to be used.
+// This is done either in (see the indirect call sites of
+// `PrefetchStreamingURLLoader::SetResponseReader()`):
+// - `PrefetchService::StartSinglePrefetch()` [initial request] or
+// - `PrefetchService::OnGotEligibilityResultForRedirect()` [redirect].
+// A new `PrefetchStreamingURLLoader` is also created if needed in
+// `PrefetchService::MakePrefetchRequest()`.
 class CONTENT_EXPORT PrefetchContainer {
  public:
   PrefetchContainer(
@@ -89,11 +125,21 @@ class CONTENT_EXPORT PrefetchContainer {
   // redirect hop of the given url.
   bool IsIsolatedNetworkContextRequiredForPreviousRedirectHop() const;
 
+  base::WeakPtr<PrefetchResponseReader> GetResponseReaderForCurrentPrefetch();
+
+  // Gets the site for the previous redirect hop to the given URL.
+  net::SchemefulSite GetSiteForPreviousRedirectHop(const GURL& url) const;
+
   // Whether or not the prefetch proxy would be required to fetch the given url
   // based on |prefetch_type_|.
   bool IsProxyRequiredForURL(const GURL& url) const;
 
   const blink::mojom::Referrer& GetReferrer() const { return referrer_; }
+
+  // Updates |referrer_| after a redirect.
+  void UpdateReferrer(
+      const GURL& new_referrer_url,
+      const network::mojom::ReferrerPolicy& new_referrer_policy);
 
   const net::SchemefulSite& GetReferringSite() const { return referring_site_; }
 
@@ -130,7 +176,6 @@ class CONTENT_EXPORT PrefetchContainer {
 
   // The length of the redirect chain for this prefetch.
   size_t GetRedirectChainSize() const { return redirect_chain_.size(); }
-  GURL GetMatchingURLFromRedirectChain() const;
 
   // Whether this prefetch is a decoy. Decoy prefetches will not store the
   // response, and not serve any prefetched resources.
@@ -154,19 +199,23 @@ class CONTENT_EXPORT PrefetchContainer {
   void TakeStreamingURLLoader(
       std::unique_ptr<PrefetchStreamingURLLoader> streaming_loader);
 
-  // Returns the first |PrefetchStreamingURLLoader| from |streaming_loaders_|.
-  // This URL loader should be used when serving the prefetch.
-  PrefetchStreamingURLLoader* GetFirstStreamingURLLoader() const;
+  bool HasStreamingURLLoadersForTest() const;
 
-  // Removes the first |PrefetchStreamingURLLoader| from |streaming_loaders_|
-  // and gives owernship of it to the caller.
-  std::unique_ptr<PrefetchStreamingURLLoader> ReleaseFirstStreamingURLLoader();
-
-  // Returns the last |PrefetchStreamingURLLoader| from |streaming_loaders_|.
-  // This URL loader should be used when fetching the prefetch.
+  // Returns the last |PrefetchStreamingURLLoader| from |streaming_loaders_|,
+  // i.e. the URL loader being used for prefetching the current redirect hop.
+  // This method should be used during prefetching and shouldn't be called for
+  // serving purpose.
+  //
+  // TODO(https://crbug.com/1449360): Migrate callers (e.g. to
+  // GetNonRedirectResponseReader()) that don't meet this criteria.
   PrefetchStreamingURLLoader* GetLastStreamingURLLoader() const;
 
-  // Clears all |PrefetchStreamingURLLoader|s from |streaming_loaders_|.
+  // Returns the PrefetchResponseReader corresponding to the last non-redirect
+  // response, if already received its head, or otherwise nullptr.
+  const PrefetchResponseReader* GetNonRedirectResponseReader() const;
+
+  // Clears all |PrefetchStreamingURLLoader|s and |PrefetchResponseReader|s from
+  // |streaming_loaders_|.
   void ResetAllStreamingURLLoaders();
 
   // The |PrefetchDocumentManager| that requested |this|.
@@ -191,13 +240,22 @@ class CONTENT_EXPORT PrefetchContainer {
   // received on a navigation to a matching URL.
   bool ShouldBlockUntilHeadReceived() const;
 
+  // Allows for a timer to be used to limit the maximum amount of time that a
+  // navigation can be blocked waiting for the head of this prefetch to be
+  // received.
+  void TakeBlockUntilHeadTimer(
+      std::unique_ptr<base::OneShotTimer> block_until_head_timer);
+  void ResetBlockUntilHeadTimer();
+
   // Whether or not |this| is servable.
   bool IsPrefetchServable(base::TimeDelta cacheable_duration) const;
 
-  // Called when |this| has received prefetched response's head.
-  // Once this is called, we should be able to call GetHead() and receive a
-  // non-null result.
-  void OnPrefetchedResponseHeadReceived();
+  // Called once it is determined whether or not the prefetch is servable, i.e.
+  // either when non-redirect response head is received, or when determined not
+  // servable.
+  void OnReceivedHead();
+  void SetOnReceivedHeadCallback(base::OnceClosure on_received_head_callback);
+  base::OnceClosure ReleaseOnReceivedHeadCallback();
 
   // Returns the head of the prefetched response. If there is no valid response,
   // then returns null.
@@ -245,6 +303,13 @@ class CONTENT_EXPORT PrefetchContainer {
   void SimulateAttemptAtInterceptorForTest();
   void DisablePrecogLoggingForTest() { attempt_ = nullptr; }
 
+  const absl::optional<net::HttpNoVarySearchData>& GetNoVarySearchData() const {
+    return no_vary_search_data_;
+  }
+  void SetNoVarySearchData(net::HttpNoVarySearchData no_vary_search_data) {
+    no_vary_search_data_ = std::move(no_vary_search_data);
+  }
+
   class SinglePrefetch;
 
   // A `Reader` represents the current state of serving.
@@ -252,15 +317,45 @@ class CONTENT_EXPORT PrefetchContainer {
   // `SinglePrefetch`, which is the element in |redirect_chain_| at index
   // |index_redirect_chain_to_serve_|.
   //
+  // This works like `base::WeakPtr<PrefetchContainer>` plus additional states,
+  // so check that the reader is valid (e.g. `if (reader)`) before calling other
+  // methods (except for `Clone()`).
+  //
   // TODO(crbug.com/1449360): Allow multiple Readers for a PrefetchContainer.
   // This might need ownership/lifetime changes of `Reader` and further cleaning
   // up the dependencies between `PrefetchContainer` and `Reader`.
   class CONTENT_EXPORT Reader final {
    public:
-    explicit Reader(PrefetchContainer& prefetch_container);
+    Reader();
+
+    Reader(base::WeakPtr<PrefetchContainer> prefetch_container,
+           size_t index_redirect_chain_to_serve);
 
     Reader(const Reader&) = delete;
     Reader& operator=(const Reader&) = delete;
+
+    Reader(Reader&&);
+    Reader& operator=(Reader&&);
+
+    ~Reader();
+
+    PrefetchContainer* GetPrefetchContainer() const {
+      return prefetch_container_.get();
+    }
+    Reader Clone() const;
+
+    // Returns true if `this` is valid.
+    // Do not call methods below if false.
+    explicit operator bool() const { return GetPrefetchContainer(); }
+
+    // Methods redirecting to `prefetch_container_`.
+    bool IsPrefetchServable(base::TimeDelta cacheable_duration) const;
+    bool HasPrefetchStatus() const;
+    PrefetchStatus GetPrefetchStatus() const;
+
+    // Returns whether the Reader reached the end. If true, the methods below
+    // shouldn't be called, because the current `SinglePrefetch` doesn't exist.
+    bool IsEnd() const;
 
     // Whether or not an isolated network context is required to serve.
     bool IsIsolatedNetworkContextRequiredToServe() const;
@@ -275,16 +370,16 @@ class CONTENT_EXPORT PrefetchContainer {
     // well as record metrics about how long this process takes.
     bool HasIsolatedCookieCopyStarted() const;
     bool IsIsolatedCookieCopyInProgress() const;
-    void OnIsolatedCookieCopyStart();
-    void OnIsolatedCookiesReadCompleteAndWriteStart();
-    void OnIsolatedCookieCopyComplete();
-    void OnInterceptorCheckCookieCopy();
-    void SetOnCookieCopyCompleteCallback(base::OnceClosure callback);
+    void OnIsolatedCookieCopyStart() const;
+    void OnIsolatedCookiesReadCompleteAndWriteStart() const;
+    void OnIsolatedCookieCopyComplete() const;
+    void OnInterceptorCheckCookieCopy() const;
+    void SetOnCookieCopyCompleteCallback(base::OnceClosure callback) const;
 
     // Called with the result of the probe. If the probing feature is enabled,
     // then a probe must complete successfully before the prefetch can be
     // served.
-    void OnPrefetchProbeResult(PrefetchProbeResult probe_result);
+    void OnPrefetchProbeResult(PrefetchProbeResult probe_result) const;
 
     // Checks if the given URL matches the the URL that can be served next.
     bool DoesCurrentURLToServeMatch(const GURL& url) const;
@@ -292,28 +387,35 @@ class CONTENT_EXPORT PrefetchContainer {
     // Returns the URL that can be served next.
     const GURL& GetCurrentURLToServe() const;
 
+    // Gets the current PrefetchResponseReader.
+    base::WeakPtr<PrefetchResponseReader>
+    GetCurrentResponseReaderToServeForTesting();
+
     // Called when one element of |redirect_chain_| is served and the next
     // element can now be served.
     void AdvanceCurrentURLToServe() { index_redirect_chain_to_serve_++; }
 
-    void ResetCurrentURLToServeForTesting() {
-      index_redirect_chain_to_serve_ = 0;
-    }
-
-   private:
     // Returns the `SinglePrefetch` to be served next.
     const SinglePrefetch& GetCurrentSinglePrefetchToServe() const;
 
-    // Currently the lifetime of `Reader` and `PrefetchContainer` are the same
-    // and thus this reference is always valid as long as `Reader` is valid.
-    PrefetchContainer& prefetch_container_;
+    // Set up a RequestHandler from the Reader. After this point,
+    // - The PrefetchResponseReader will manage its own lifetime, and will
+    // delete itself once its serving client is finished.
+    // - If IsReadyToServeLastEvents() is true, the PrefetchStreamingURLLoader
+    // will manage its own lifetime, and will delete itself once its prefetching
+    // request is finished. Otherwise, PrefetchStreamingURLLoader is kept owned
+    // by `streaming_loaders_`.
+    PrefetchResponseReader::RequestHandler CreateRequestHandler();
+
+   private:
+    base::WeakPtr<PrefetchContainer> prefetch_container_;
 
     // The index of the element in |prefetch_container_.redirect_chain_| that
     // can be served.
     size_t index_redirect_chain_to_serve_ = 0;
   };
 
-  Reader& GetReader() { return reader_; }
+  Reader CreateReader();
 
  protected:
   friend class PrefetchContainerTest;
@@ -341,6 +443,9 @@ class CONTENT_EXPORT PrefetchContainer {
   // has redirect(s).
   const SinglePrefetch& GetPreviousSinglePrefetchToPrefetch() const;
 
+  PrefetchResponseReader::RequestHandler CreateRequestHandlerInternal(
+      Reader& reader);
+
   // The ID of the RenderFrameHost that triggered the prefetch.
   GlobalRenderFrameHostId referring_render_frame_host_id_;
 
@@ -355,13 +460,18 @@ class CONTENT_EXPORT PrefetchContainer {
   PrefetchType prefetch_type_;
 
   // The referrer to use for the request.
-  const blink::mojom::Referrer referrer_;
+  blink::mojom::Referrer referrer_;
 
   // The origin and site of the page that requested the prefetched.
   url::Origin referring_origin_;
   net::SchemefulSite referring_site_;
 
-  // The No-Vary-Search hint of the prefetch.
+  // The No-Vary-Search response data, parsed from the actual response header
+  // (`GetHead()`).
+  absl::optional<net::HttpNoVarySearchData> no_vary_search_data_;
+
+  // The No-Vary-Search hint of the prefetch, which is specified by the
+  // speculation rules and can be different from actual `no_vary_search_data_`.
   const absl::optional<net::HttpNoVarySearchData> no_vary_search_hint_;
 
   // The |PrefetchDocumentManager| that requested |this|. Initially it owns
@@ -382,8 +492,6 @@ class CONTENT_EXPORT PrefetchContainer {
 
   // The redirect chain resulting from prefetching |prefetch_url_|.
   std::vector<std::unique_ptr<SinglePrefetch>> redirect_chain_;
-
-  Reader reader_{*this};
 
   // The network contexts used for this prefetch. They key corresponds to the
   // |is_isolated_network_context_required| param of the
@@ -443,6 +551,13 @@ class CONTENT_EXPORT PrefetchContainer {
   // The time at which |PrefetchService| started blocking until the head of
   // |this| was received.
   absl::optional<base::TimeTicks> blocked_until_head_start_time_;
+
+  // A timer used to limit the maximum amount of time that a navigation can be
+  // blocked waiting for the head of this prefetch to be received.
+  std::unique_ptr<base::OneShotTimer> block_until_head_timer_;
+
+  // Called when `OnReceivedHead()` is called.
+  base::OnceClosure on_received_head_callback_;
 
   base::WeakPtrFactory<PrefetchContainer> weak_method_factory_{this};
 };

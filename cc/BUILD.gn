@@ -4,6 +4,7 @@
 import("//build/config/sanitizers/sanitizers.gni")
 import("//gpu/vulkan/features.gni")
 import("//skia/features.gni")
+import("//ui/gl/features.gni")
 
 import("//cc/cc.gni")
 
@@ -39,6 +40,8 @@ cc_component("cc") {
     "input/browser_controls_offset_manager_client.h",
     "input/browser_controls_state.h",
     "input/compositor_input_interfaces.h",
+    "input/hit_test_opaqueness.cc",
+    "input/hit_test_opaqueness.h",
     "input/input_handler.cc",
     "input/input_handler.h",
     "input/layer_selection_bound.cc",
@@ -195,8 +198,6 @@ cc_component("cc") {
     "metrics/frame_sequence_tracker_collection.h",
     "metrics/frame_sorter.cc",
     "metrics/frame_sorter.h",
-    "metrics/jank_injector.cc",
-    "metrics/jank_injector.h",
     "metrics/jank_metrics.cc",
     "metrics/jank_metrics.h",
     "metrics/latency_ukm_reporter.cc",
@@ -413,6 +414,7 @@ cc_component("cc") {
     "trees/proxy_impl.h",
     "trees/proxy_main.cc",
     "trees/proxy_main.h",
+    "trees/raster_capabilities.cc",
     "trees/raster_capabilities.h",
     "trees/raster_context_provider_wrapper.cc",
     "trees/raster_context_provider_wrapper.h",
@@ -460,7 +462,6 @@ cc_component("cc") {
     "//base",
     "//base/third_party/dynamic_annotations",
     "//build:chromeos_buildflags",
-    "//components/power_scheduler",
     "//components/viz/client",
     "//device/base/synchronization",
     "//gpu",
@@ -676,6 +677,12 @@ cc_test_static_library("test_support") {
   if (!is_android) {
     data_deps = [ "//third_party/mesa_headers" ]
   }
+  if (skia_use_dawn) {
+    deps += [
+      "//third_party/dawn/src/dawn:proc",
+      "//third_party/dawn/src/dawn/native",
+    ]
+  }
 }
 
 if (is_ios) {
@@ -706,6 +713,7 @@ cc_test("cc_unittests") {
     "benchmarks/micro_benchmark_controller_unittest.cc",
     "debug/rendering_stats_unittest.cc",
     "input/browser_controls_offset_manager_unittest.cc",
+    "input/hit_test_opaqueness_unittest.cc",
     "input/main_thread_scrolling_reason_unittest.cc",
     "input/scroll_snap_data_unittest.cc",
     "input/scroll_state_unittest.cc",
@@ -756,7 +764,6 @@ cc_test("cc_unittests") {
     "metrics/frame_sequence_metrics_unittest.cc",
     "metrics/frame_sequence_tracker_unittest.cc",
     "metrics/frame_sorter_unittest.cc",
-    "metrics/jank_injector_unittest.cc",
     "metrics/jank_metrics_unittest.cc",
     "metrics/predictor_jank_tracker_unittest.cc",
     "metrics/scroll_jank_dropped_frame_tracker_unittest.cc",
@@ -890,7 +897,6 @@ cc_test("cc_unittests") {
     "//cc/mojo_embedder",
     "//cc/paint",
     "//cc/slim",
-    "//components/power_scheduler",
     "//components/ukm:test_support",
     "//components/viz/client",
     "//components/viz/common",
@@ -935,12 +941,15 @@ cc_test("cc_unittests") {
   }
 
   if (is_fuchsia) {
-    # TODO(https://crbug.com/1185811): Investigate removing the requirement for
-    # job_policy_ambient_mark_vmo_exec for the sake of V8's allocator in tests.
+    # TODO(https://crbug.com/1022542): Some of these tests use SwiftShader,
+    # which requires ambient VMEX.
     test_runner_shard = "//build/config/fuchsia/test/elf_test_ambient_exec_runner.shard.test-cml"
 
     additional_manifest_fragments = [
       "//build/config/fuchsia/test/fonts.shard.test-cml",
+
+      # TODO(https://crbug.com/1185811): Investigate removing the requirement
+      # for VmexResource.
       "//build/config/fuchsia/test/mark_vmo_executable.shard.test-cml",
       "//third_party/fuchsia-sdk/sdk/pkg/vulkan/client.shard.cml",
     ]

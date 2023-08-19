@@ -53,6 +53,7 @@ public class ChromeMessageQueueMediator implements MessageQueueDelegate, UrlFocu
     private ModalDialogManager mModalDialogManager;
     private ActivityLifecycleDispatcher mActivityLifecycleDispatcher;
     private final CallbackController mCallbackController = new CallbackController();
+    private final ActivityTabProvider.ActivityTabTabObserver mActivityTabTabObserver;
     private int mUrlFocusToken = TokenHolder.INVALID_TOKEN;
     private Handler mQueueHandler;
 
@@ -147,6 +148,20 @@ public class ChromeMessageQueueMediator implements MessageQueueDelegate, UrlFocu
         mActivityLifecycleDispatcher = activityLifecycleDispatcher;
         activityLifecycleDispatcher.register(mPauseResumeWithNativeObserver);
         mQueueHandler = new Handler();
+        mActivityTabTabObserver =
+                new ActivityTabProvider.ActivityTabTabObserver(activityTabProvider, true) {
+                    private int mToken = TokenHolder.INVALID_TOKEN;
+
+                    @Override
+                    protected void onObservingDifferentTab(Tab tab, boolean hint) {
+                        if (mToken == TokenHolder.INVALID_TOKEN && tab == null) {
+                            mToken = suspendQueue();
+                        } else if (mToken != TokenHolder.INVALID_TOKEN && tab != null) {
+                            resumeQueue(mToken);
+                            mToken = TokenHolder.INVALID_TOKEN;
+                        }
+                    }
+                };
     }
 
     public void destroy() {
@@ -157,6 +172,7 @@ public class ChromeMessageQueueMediator implements MessageQueueDelegate, UrlFocu
         mBrowserControlsManager.removeObserver(mBrowserControlsObserver);
         setLayoutStateProvider(null);
         setModalDialogManager(null);
+        mActivityTabTabObserver.destroy();
         mActivityTabProvider = null;
         mQueueController = null;
         mContainerCoordinator = null;
@@ -232,6 +248,18 @@ public class ChromeMessageQueueMediator implements MessageQueueDelegate, UrlFocu
         mContainerCoordinator.onAnimationEnd();
     }
 
+    @Override
+    public boolean isDestroyed() {
+        return mIsDestroyed;
+    }
+
+    @Override
+    public boolean isSwitchingScope() {
+        if (mActivityTabProvider == null) return false;
+        final Tab tab = mActivityTabProvider.get();
+        return tab != null && tab.isDestroyed();
+    }
+
     /**
      * Suspend queue so that the queue will not show a new message until it is resumed.
      * @return A token of {@link TokenHolder} required when resuming the queue.
@@ -249,7 +277,10 @@ public class ChromeMessageQueueMediator implements MessageQueueDelegate, UrlFocu
 
     @VisibleForTesting
     boolean areBrowserControlsReady() {
+        if (mIsDestroyed) return false;
+        assert mActivityTabProvider != null;
         final Tab tab = mActivityTabProvider.get();
+        if (tab == null || tab.isDestroyed()) return false;
         return TabBrowserControlsConstraintsHelper.getConstraints(tab)
                 == BrowserControlsState.HIDDEN
                 || BrowserControlsUtils.areBrowserControlsFullyVisible(mBrowserControlsManager);
@@ -315,7 +346,6 @@ public class ChromeMessageQueueMediator implements MessageQueueDelegate, UrlFocu
             mRunOnControlsFullyVisible = runnable;
         }
 
-        @VisibleForTesting
         Runnable getRunnableForTesting() {
             return mRunOnControlsFullyVisible;
         }
@@ -325,12 +355,10 @@ public class ChromeMessageQueueMediator implements MessageQueueDelegate, UrlFocu
         }
     }
 
-    @VisibleForTesting
     void setQueueHandlerForTesting(Handler handler) {
         mQueueHandler = handler;
     }
 
-    @VisibleForTesting
     int getUrlFocusTokenForTesting() {
         return mUrlFocusToken;
     }

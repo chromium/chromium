@@ -127,6 +127,9 @@
       <cr-link-row class="hr" id="reportIssue" on-click="onReportIssueClick_"
           hidden="[[!prefs.feedback_allowed.value]]"
           label="$i18n{aboutReportAnIssue}" external></cr-link-row>
+      <cr-link-row class="hr" id="privacyPolicy"
+        on-click="onPrivacyPolicyClick_" label="$i18n{aboutPrivacyPolicy}"
+        external></cr-link-row>
       <cr-link-row class="hr" id="getTheMostOutOfChrome"
           on-click="onGetTheMostOutOfChromeClick_"
           label="$i18n{getTheMostOutOfChrome}"
@@ -135,7 +138,7 @@
           hidden$="[[!showGetTheMostOutOfChromeSection_]]"></cr-link-row>
 </if>
       <cr-link-row class="hr" on-click="onManagementPageClick_"
-          start-icon="cr:domain" label="$i18n{managementPage}"
+          start-icon="[[managedByIcon_]]" label="$i18n{managementPage}"
           role-description="$i18n{subpageArrowRoleDescription}"
           hidden$="[[!isManaged_]]"></cr-link-row>
     </settings-section>
@@ -150,9 +153,9 @@
         <div class="info-section">
           <div class="secondary">$i18nRaw{aboutProductLicense}</div>
         </div>
-<if expr="_google_chrome">
+<if expr="_google_chrome or _is_chrome_for_testing_branded">
         <div class="secondary">
-          <a href="$i18n{aboutTermsURL}">$i18n{aboutProductTos}</a>
+          <a id="tos" href="$i18n{aboutTermsURL}">$i18n{aboutProductTos}</a>
         </div>
 </if>
 <if expr="not chromeos_ash">

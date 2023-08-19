@@ -12,9 +12,14 @@
 #include "base/no_destructor.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_split.h"
+#include "services/device/public/cpp/bluetooth/bluetooth_utils.h"
 #include "services/device/public/mojom/serial.mojom.h"
 
 namespace {
+
+const char kEntryKeyUsb[] = "usb";
+const char kEntryKeyBluetooth[] = "bluetooth";
+const char kBluetoothStandardUUID[] = "0000-1000-8000-00805f9b34fb";
 
 // Returns true if the passed string is exactly 4 digits long and only contains
 // valid hexadecimal characters (no leading 0x).
@@ -38,25 +43,29 @@ bool IsHexComponent(base::StringPiece string) {
 
 bool CompareEntry(const SerialBlocklist::Entry& a,
                   const SerialBlocklist::Entry& b) {
-  return std::tie(a.usb_vendor_id, a.usb_product_id) <
-         std::tie(b.usb_vendor_id, b.usb_product_id);
+  return std::tie(a.usb_vendor_id, a.usb_product_id,
+                  a.bluetooth_service_class_id) <
+         std::tie(b.usb_vendor_id, b.usb_product_id,
+                  b.bluetooth_service_class_id);
 }
 
-// Returns true if an entry in [begin, end) matches the vendor and product IDs
-// of |entry| and has a device version greater than or equal to |entry|.
+// Returns true if an entry in [begin, end) matches |entry|.
 template <class Iterator>
 bool EntryMatches(Iterator begin,
                   Iterator end,
                   const SerialBlocklist::Entry& entry) {
   auto it = std::lower_bound(begin, end, entry, CompareEntry);
-  return it != end && it->usb_vendor_id == entry.usb_vendor_id &&
-         it->usb_product_id == entry.usb_product_id;
+  if (it == end) {
+    return false;
+  }
+  // USB devices
+  if (it->bluetooth_service_class_id.empty()) {
+    return it->usb_vendor_id == entry.usb_vendor_id &&
+           it->usb_product_id == entry.usb_product_id;
+  }
+  // Bluetooth devices
+  return it->bluetooth_service_class_id == entry.bluetooth_service_class_id;
 }
-
-// This list must be sorted according to CompareEntry.
-constexpr SerialBlocklist::Entry kStaticEntries[] = {
-    {0x18D1, 0x58F3},  // Test entry: GOOGLE_HID_ECHO_GADGET
-};
 
 }  // namespace
 
@@ -77,13 +86,28 @@ SerialBlocklist& SerialBlocklist::Get() {
 
 bool SerialBlocklist::IsExcluded(
     const device::mojom::SerialPortInfo& port_info) const {
-  // Only USB devices can be matched.
-  if (!port_info.has_vendor_id || !port_info.has_product_id) {
+  if (!((port_info.has_vendor_id && port_info.has_product_id) ||
+        port_info.bluetooth_service_class_id.has_value())) {
     return false;
   }
 
-  Entry entry(port_info.vendor_id, port_info.product_id);
-  return EntryMatches(std::begin(kStaticEntries), std::end(kStaticEntries),
+  // We exclude all Bluetooth specified services except Serial Port Profile
+  // regardless of the blocklist for security.
+  if (port_info.bluetooth_service_class_id &&
+      port_info.bluetooth_service_class_id->IsValid() &&
+      *port_info.bluetooth_service_class_id !=
+          device::GetSerialPortProfileUUID() &&
+      port_info.bluetooth_service_class_id->canonical_value().substr(9, 27) ==
+          kBluetoothStandardUUID) {
+    return true;
+  }
+
+  Entry entry(port_info.has_vendor_id ? port_info.vendor_id : 0x0,
+              port_info.has_product_id ? port_info.product_id : 0x0,
+              port_info.bluetooth_service_class_id
+                  ? port_info.bluetooth_service_class_id->canonical_value()
+                  : "");
+  return EntryMatches(std::begin(static_entries_), std::end(static_entries_),
                       entry) ||
          EntryMatches(dynamic_entries_.begin(), dynamic_entries_.end(), entry);
 }
@@ -94,8 +118,8 @@ void SerialBlocklist::ResetToDefaultValuesForTesting() {
 }
 
 SerialBlocklist::SerialBlocklist() {
-  DCHECK(std::is_sorted(std::begin(kStaticEntries), std::end(kStaticEntries),
-                        CompareEntry));
+  CHECK(std::is_sorted(std::begin(static_entries_), std::end(static_entries_),
+                       CompareEntry));
   PopulateWithServerProvidedValues();
 }
 
@@ -107,19 +131,40 @@ void SerialBlocklist::PopulateWithServerProvidedValues() {
                               base::SPLIT_WANT_NONEMPTY)) {
     std::vector<base::StringPiece> components = base::SplitStringPiece(
         entry, ":", base::KEEP_WHITESPACE, base::SPLIT_WANT_ALL);
-    if (components.size() != 3 || components[0] != "usb" ||
-        !IsHexComponent(components[1]) || !IsHexComponent(components[2])) {
+    // Entry must at least indicate the type
+    if (components.empty()) {
       continue;
     }
 
-    uint32_t vendor_id;
-    uint32_t product_id;
-    if (!base::HexStringToUInt(components[1], &vendor_id) ||
-        !base::HexStringToUInt(components[2], &product_id)) {
-      continue;
-    }
+    if (components[0] == kEntryKeyUsb) {
+      if (components.size() != 3 || !IsHexComponent(components[1]) ||
+          !IsHexComponent(components[2])) {
+        continue;
+      }
 
-    dynamic_entries_.emplace_back(vendor_id, product_id);
+      uint32_t vendor_id;
+      uint32_t product_id;
+      if (!base::HexStringToUInt(components[1], &vendor_id) ||
+          !base::HexStringToUInt(components[2], &product_id)) {
+        continue;
+      }
+
+      dynamic_entries_.emplace_back(vendor_id, product_id,
+                                    /*bluetooth_service_class_id=*/"");
+    } else if (components[0] == kEntryKeyBluetooth) {
+      if (components.size() != 2) {
+        continue;
+      }
+
+      std::string uuid_as_string(components[1]);
+      device::BluetoothUUID uuid(uuid_as_string);
+      if (!uuid.IsValid()) {
+        continue;
+      }
+
+      dynamic_entries_.emplace_back(/*usb_vendor_id=*/0, /*usb_product_id=*/0,
+                                    uuid.canonical_value());
+    }
   }
 
   std::sort(dynamic_entries_.begin(), dynamic_entries_.end(), CompareEntry);

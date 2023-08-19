@@ -60,8 +60,8 @@ function instantiate(memory) {
               "module bytes should be an ArrayBuffer");
   assert_true(memory instanceof WebAssembly.Memory,
               "memory must be a WebAssembly.Memory");
-  return WebAssembly.instantiate(module_bytes, { external: { memory: memory } })
-      .then(result => result.instance);
+  return new WebAssembly.Instance(
+    new WebAssembly.Module(module_bytes),  { external: { memory: memory } });
 }
 
 function instantiatePages(num_pages) {
@@ -72,34 +72,24 @@ function assert_oob(func) {
   return assert_throws(WebAssembly.RuntimeError, func);
 }
 
-function define_promise_test(name, f) {
-  window[name] = function() {
-    try {
-      f()
-          .then(_ => true)
-          .catch(function(e) {
-            console.error("uncaught exception: " + e);
-            return false;
-          })
-    } catch (e) {
-      console.error("uncaught exception: " + e);
-      return false;
-    }
-  }
-}
-
-define_promise_test("peek_in_bounds", function() {
-  return instantiatePages(1).then(function(instance) {
+function peek_in_bounds() {
+  try {
+    const instance = instantiatePages(1);
     const peek = instance.exports.peek;
 
     assert_equals(peek(0), 0);
     assert_equals(peek(10000), 0);
     assert_equals(peek(65532), 0);
-  });
-});
+  } catch(e) {
+    console.error("uncaught exception: " + e);
+    return false;
+  }
+  return true;
+}
 
-define_promise_test("peek_out_of_bounds", function() {
-  return instantiatePages(1).then(function(instance) {
+function peek_out_of_bounds() {
+  try {
+    const instance = instantiatePages(1);
     const peek = instance.exports.peek;
 
     assert_oob(_ => peek(65536));
@@ -109,58 +99,82 @@ define_promise_test("peek_out_of_bounds", function() {
 
     assert_oob(_ => peek(1 << 30));
     assert_oob(_ => peek(3 << 30));
-  });
-});
+  } catch (e) {
+    console.error("uncaught exception: " + e);
+    return false;
+  }
+  return true;
+}
 
-define_promise_test("peek_out_of_bounds_grow_memory_from_zero_js", function() {
+function peek_out_of_bounds_grow_memory_from_zero_js() {
   const memory = new WebAssembly.Memory({initial: 0});
-  return instantiate(memory).then(function(instance) {
+  try {
+    const instance = instantiate(memory);
     const peek = instance.exports.peek;
 
     assert_oob(_ => peek(0));
     memory.grow(1);
     assert_equals(peek(0), 0);
-  });
-});
+  } catch (e) {
+    console.error("uncaught exception: " + e);
+    return false;
+  }
+  return true;
+}
 
-define_promise_test("peek_out_of_bounds_grow_memory_js", function() {
+function peek_out_of_bounds_grow_memory_js() {
   const memory = new WebAssembly.Memory({initial: 1});
-  return instantiate(memory).then(function(instance) {
+  try {
+    const instance = instantiate(memory);
     const peek = instance.exports.peek;
 
     assert_oob(_ => peek(70000));
     memory.grow(1);
     assert_equals(peek(70000), 0);
-  });
-});
+  } catch (e) {
+    console.error("uncaught exception: " + e);
+    return false;
+  }
+  return true;
+}
 
-define_promise_test("peek_out_of_bounds_grow_memory_from_zero_wasm",
-function() {
+function peek_out_of_bounds_grow_memory_from_zero_wasm() {
   const memory = new WebAssembly.Memory({initial: 0});
-  return instantiate(memory).then(function(instance) {
+  try {
+    const instance = instantiate(memory);
     const peek = instance.exports.peek;
     const grow = instance.exports.grow;
 
     assert_oob(_ => peek(0));
     grow(1);
     assert_equals(peek(0), 0);
-  });
-});
+  } catch (e) {
+    console.error("uncaught exception: " + e);
+    return false;
+  }
+  return true;
+}
 
-define_promise_test("peek_out_of_bounds_grow_memory_wasm", function() {
+function peek_out_of_bounds_grow_memory_wasm() {
   const memory = new WebAssembly.Memory({initial: 1});
-  return instantiate(memory).then(function(instance) {
+  try {
+    const instance = instantiate(memory);
     const peek = instance.exports.peek;
     const grow = instance.exports.grow;
 
     assert_oob(_ => peek(70000));
     grow(1);
     assert_equals(peek(70000), 0);
-  });
-});
+  } catch (e) {
+    console.error("uncaught exception: " + e);
+    return false;
+  }
+  return true;
+}
 
-define_promise_test("poke_in_bounds", function() {
-  return instantiatePages(1).then(function(instance) {
+function poke_in_bounds() {
+  try {
+    const instance = instantiatePages(1);
     const peek = instance.exports.peek;
     const poke = instance.exports.poke;
 
@@ -171,11 +185,16 @@ define_promise_test("poke_in_bounds", function() {
     assert_equals(peek(0), 41);
     assert_equals(peek(10000), 42);
     assert_equals(peek(65532), 43);
-  });
-});
+  } catch (e) {
+    console.error("uncaught exception: " + e);
+    return false;
+  }
+  return true;
+}
 
-define_promise_test("poke_out_of_bounds", function() {
-  return instantiatePages(1).then(function(instance) {
+function poke_out_of_bounds() {
+  try {
+    const instance = instantiatePages(1);
     const poke = instance.exports.poke;
 
     assert_oob(_ => poke(65536, 0));
@@ -185,12 +204,17 @@ define_promise_test("poke_out_of_bounds", function() {
 
     assert_oob(_ => poke(1 << 30, 0));
     assert_oob(_ => poke(3 << 30, 0));
-  });
-});
+  } catch (e) {
+    console.error("uncaught exception: " + e);
+    return false;
+  }
+  return true;
+}
 
-define_promise_test("poke_out_of_bounds_grow_memory_from_zero_js", function() {
+function poke_out_of_bounds_grow_memory_from_zero_js() {
   const memory = new WebAssembly.Memory({initial: 0});
-  return instantiate(memory).then(function(instance) {
+  try {
+    const instance = instantiate(memory);
     const peek = instance.exports.peek;
     const poke = instance.exports.poke;
 
@@ -202,12 +226,17 @@ define_promise_test("poke_out_of_bounds_grow_memory_from_zero_js", function() {
     assert_oob(_ => poke(0, 42));
     memory.grow(1);
     check_poke(0, 42);
-  });
-});
+  } catch (e) {
+    console.error("uncaught exception: " + e);
+    return false;
+  }
+  return true;
+}
 
-define_promise_test("poke_out_of_bounds_grow_memory_js", function() {
+function poke_out_of_bounds_grow_memory_js() {
   const memory = new WebAssembly.Memory({initial: 1});
-  return instantiate(memory).then(function(instance) {
+  try {
+    const instance = instantiate(memory);
     const peek = instance.exports.peek;
     const poke = instance.exports.poke;
 
@@ -219,13 +248,17 @@ define_promise_test("poke_out_of_bounds_grow_memory_js", function() {
     assert_oob(_ => poke(70000, 42));
     memory.grow(1);
     check_poke(70000, 42);
-  });
-});
+  } catch (e) {
+    console.error("uncaught exception: " + e);
+    return false;
+  }
+  return true;
+}
 
-define_promise_test("poke_out_of_bounds_grow_memory_from_zero_wasm",
-function() {
+function poke_out_of_bounds_grow_memory_from_zero_wasm() {
   const memory = new WebAssembly.Memory({initial: 0});
-  return instantiate(memory).then(function(instance) {
+  try {
+    const instance = instantiate(memory);
     const peek = instance.exports.peek;
     const poke = instance.exports.poke;
     const grow = instance.exports.grow;
@@ -238,12 +271,17 @@ function() {
     assert_oob(_ => poke(0, 42));
     grow(1);
     check_poke(0, 42);
-  });
-});
+  } catch (e) {
+    console.error("uncaught exception: " + e);
+    return false;
+  }
+  return true;
+}
 
-define_promise_test("poke_out_of_bounds_grow_memory_wasm", function() {
+function poke_out_of_bounds_grow_memory_wasm() {
   const memory = new WebAssembly.Memory({initial: 1});
-  return instantiate(memory).then(function(instance) {
+  try {
+    const instance = instantiate(memory);
     const peek = instance.exports.peek;
     const poke = instance.exports.poke;
     const grow = instance.exports.grow;
@@ -256,5 +294,9 @@ define_promise_test("poke_out_of_bounds_grow_memory_wasm", function() {
     assert_oob(_ => poke(70000, 42));
     grow(1);
     check_poke(70000, 42);
-  });
-});
+  } catch (e) {
+    console.error("uncaught exception: " + e);
+    return false;
+  }
+  return true;
+}

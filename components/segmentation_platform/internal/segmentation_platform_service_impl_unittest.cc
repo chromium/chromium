@@ -14,6 +14,7 @@
 #include "base/run_loop.h"
 #include "base/test/gmock_callback_support.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "base/test/mock_callback.h"
 #include "base/test/task_environment.h"
 #include "components/prefs/scoped_user_pref_update.h"
 #include "components/segmentation_platform/internal/constants.h"
@@ -111,13 +112,10 @@ class SegmentationPlatformServiceImplTest
               SegmentId::OPTIMIZATION_TARGET_SEGMENTATION_SHOPPING_USER))
              .second;
 
-    EXPECT_CALL(model_provider, InitAndFetchModel(_))
-        .WillRepeatedly(RunOnceCallback<0>(
-            SegmentId::OPTIMIZATION_TARGET_SEGMENTATION_SHOPPING_USER, metadata,
-            1));
+    model_provider_data_.default_provider_metadata
+        [SegmentId::OPTIMIZATION_TARGET_SEGMENTATION_SHOPPING_USER] = metadata;
     EXPECT_CALL(model_provider, ExecuteModelWithInput(_, _))
         .WillRepeatedly(RunOnceCallback<1>(ModelProvider::Response(1, 1)));
-    EXPECT_CALL(model_provider, ModelAvailable()).WillRepeatedly(Return(true));
   }
 
   void OnGetSelectedSegment(base::RepeatingClosure closure,
@@ -192,7 +190,7 @@ class SegmentationPlatformServiceImplTest
     segment_db_->LoadCallback(true);
 
     // If we build with TF Lite, we need to also inspect whether the
-    // ModelExecutionManagerImpl is publishing the correct data and whether that
+    // ModelManagerImpl is publishing the correct data and whether that
     // leads to the SegmentationPlatformServiceImpl doing the right thing.
     base::HistogramTester histogram_tester;
     proto::SegmentationModelMetadata metadata;
@@ -272,6 +270,10 @@ class SegmentationPlatformServiceImplTest
                         SegmentId::OPTIMIZATION_TARGET_SEGMENTATION_SHARE);
     AssertCachedSegment(kTestSegmentationKey2, false);
     AssertCachedSegment(kTestSegmentationKey3, false);
+
+    ASSERT_TRUE(
+        model_provider_data_.default_provider_metadata.count(
+            SegmentId::OPTIMIZATION_TARGET_SEGMENTATION_SHOPPING_USER) == 1);
   }
 
   void FailInitializationFlow() {

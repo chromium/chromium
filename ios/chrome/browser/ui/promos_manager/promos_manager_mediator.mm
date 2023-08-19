@@ -9,14 +9,10 @@
 
 #import "base/containers/small_map.h"
 #import "base/strings/sys_string_conversions.h"
-#import "ios/chrome/browser/flags/system_flags.h"
 #import "ios/chrome/browser/promos_manager/constants.h"
 #import "ios/chrome/browser/promos_manager/promo_config.h"
+#import "ios/chrome/browser/shared/public/features/system_flags.h"
 #import "third_party/abseil-cpp/absl/types/optional.h"
-
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
 
 @implementation PromosManagerMediator
 
@@ -39,23 +35,41 @@
   _promosManager->RecordImpression(promo);
 }
 
-- (absl::optional<promos_manager::Promo>)nextPromoForDisplay {
+- (absl::optional<PromoDisplayData>)nextPromoForDisplay:
+    (BOOL)isFirstShownPromo {
   DCHECK_NE(_promosManager, nullptr);
-  NSString* forcedPromoName = [self forcedPromoToDisplay];
+  // Only check for a forced promo the first time around, to prevent infinite
+  // forced promos.
+  // TODO(crbug.com/1457208): Once promo reentrance is supported, remove this
+  // and always show the forced promo.
+  if (isFirstShownPromo) {
+    absl::optional<promos_manager::Promo> forcedPromo =
+        [self forcedPromoToDisplay];
+    if (forcedPromo) {
+      return PromoDisplayData{.promo = forcedPromo.value(), .was_forced = true};
+    }
+  }
+
+  absl::optional<promos_manager::Promo> promo =
+      self.promosManager->NextPromoForDisplay();
+  if (promo) {
+    return PromoDisplayData{.promo = promo.value(), .was_forced = false};
+  }
+  return absl::nullopt;
+}
+
+// Returns the promo selected in the Force Promo experimental setting.
+// If none are selected, returns empty string. If user is in beta/stable,
+// this method always returns nil.
+- (absl::optional<promos_manager::Promo>)forcedPromoToDisplay {
+  NSString* forcedPromoName = experimental_flags::GetForcedPromoToDisplay();
   if ([forcedPromoName length] > 0) {
     absl::optional<promos_manager::Promo> forcedPromo =
         promos_manager::PromoForName(base::SysNSStringToUTF8(forcedPromoName));
     DCHECK(forcedPromo);
     return forcedPromo;
   }
-  return self.promosManager->NextPromoForDisplay();
-}
-
-// Returns the promo selected in the Force Promo experimental setting.
-// If none are selected, returns empty string. If user is in beta/stable,
-// this method always returns nil.
-- (NSString*)forcedPromoToDisplay {
-  return experimental_flags::GetForcedPromoToDisplay();
+  return absl::nullopt;
 }
 
 @end

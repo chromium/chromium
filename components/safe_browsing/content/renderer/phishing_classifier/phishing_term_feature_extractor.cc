@@ -155,8 +155,6 @@ void PhishingTermFeatureExtractor::ExtractFeaturesWithTimeout() {
       num_words = 0;
       base::TimeTicks now = clock_->NowTicks();
       if (now - state_->start_time >= base::Milliseconds(kMaxTotalTimeMs)) {
-        // We expect this to happen infrequently, so record when it does.
-        UMA_HISTOGRAM_COUNTS_1M("SBClientPhishing.TermFeatureTimeout", 1);
         RunCallback(false);
         return;
       }
@@ -164,12 +162,6 @@ void PhishingTermFeatureExtractor::ExtractFeaturesWithTimeout() {
       if (chunk_elapsed >= base::Milliseconds(kMaxTimePerChunkMs)) {
         // The time limit for the current chunk is up, so post a task to
         // continue extraction.
-        //
-        // Record how much time we actually spent on the chunk.  If this is
-        // much higher than kMaxTimePerChunkMs, we may need to adjust the
-        // clock granularity.
-        UMA_HISTOGRAM_TIMES("SBClientPhishing.TermFeatureChunkTime",
-                            chunk_elapsed);
         base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
             FROM_HERE,
             base::BindOnce(
@@ -254,10 +246,6 @@ void PhishingTermFeatureExtractor::RunCallback(bool success) {
   // Record some timing stats that we can use to evaluate feature extraction
   // performance.  These include both successful and failed extractions.
   DCHECK(state_.get());
-  UMA_HISTOGRAM_COUNTS_1M("SBClientPhishing.TermFeatureIterations",
-                          state_->num_iterations);
-  UMA_HISTOGRAM_TIMES("SBClientPhishing.TermFeatureTotalTime",
-                      clock_->NowTicks() - state_->start_time);
 
   DCHECK(!done_callback_.is_null());
   TRACE_EVENT_NESTABLE_ASYNC_END0("safe_browsing", "ExtractTermFeatures", this);

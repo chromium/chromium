@@ -261,6 +261,14 @@ public class TraceEvent implements AutoCloseable {
         begin(name, arg);
     }
 
+    /**
+     * Constructor used to support the "try with resource" construct.
+     */
+    private TraceEvent(String name, int arg) {
+        mName = name;
+        begin(name, arg);
+    }
+
     @Override
     public void close() {
         end(mName);
@@ -276,6 +284,20 @@ public class TraceEvent implements AutoCloseable {
      * @return a TraceEvent, or null if tracing is not enabled.
      */
     public static TraceEvent scoped(String name, String arg) {
+        if (!(EarlyTraceEvent.enabled() || enabled())) return null;
+        return new TraceEvent(name, arg);
+    }
+
+    /**
+     * Factory used to support the "try with resource" construct.
+     *
+     * Note that if tracing is not enabled, this will not result in allocating an object.
+     *
+     * @param name Trace event name.
+     * @param arg An integer argument of the event.
+     * @return a TraceEvent, or null if tracing is not enabled.
+     */
+    public static TraceEvent scoped(String name, int arg) {
         if (!(EarlyTraceEvent.enabled() || enabled())) return null;
         return new TraceEvent(name, arg);
     }
@@ -392,6 +414,41 @@ public class TraceEvent implements AutoCloseable {
     }
 
     /**
+     * Records a 'WebView.Startup.CreationTime.TotalFactoryInitTime' event with the
+     * 'android_webview.timeline' category starting at `startTimeMs` with the duration of
+     * `durationMs`.
+     */
+    public static void webViewStartupTotalFactoryInit(long startTimeMs, long durationMs) {
+        if (sEnabled) {
+            TraceEventJni.get().webViewStartupTotalFactoryInit(startTimeMs, durationMs);
+        }
+    }
+
+    /**
+     * Records a 'WebView.Startup.CreationTime.Stage1.FactoryInit' event with the
+     * 'android_webview.timeline' category starting at `startTimeMs` with the duration of
+     * `durationMs`.
+     */
+    public static void webViewStartupStage1(long startTimeMs, long durationMs) {
+        if (sEnabled) {
+            TraceEventJni.get().webViewStartupStage1(startTimeMs, durationMs);
+        }
+    }
+
+    /**
+     * Records 'WebView.Startup.CreationTime.Stage2.ProviderInit.Warm' and
+     * 'WebView.Startup.CreationTime.Stage2.ProviderInit.Cold' events depending on the value of
+     * `isColdStartup` with the 'android_webview.timeline' category starting at `startTimeMs` with
+     * the duration of `durationMs`.
+     */
+    public static void webViewStartupStage2(
+            long startTimeMs, long durationMs, boolean isColdStartup) {
+        if (sEnabled) {
+            TraceEventJni.get().webViewStartupStage2(startTimeMs, durationMs, isColdStartup);
+        }
+    }
+
+    /**
      * Snapshots the view hierarchy state on the main thread and then finishes emitting a trace
      * event on the threadpool.
      */
@@ -466,6 +523,18 @@ public class TraceEvent implements AutoCloseable {
     }
 
     /**
+     * Triggers the 'begin' native trace event.
+     * @param name The name of the event.
+     * @param arg An integer argument of the event.
+     */
+    public static void begin(String name, int arg) {
+        EarlyTraceEvent.begin(name, false /*isToplevel*/);
+        if (sEnabled) {
+            TraceEventJni.get().beginWithIntArg(name, arg);
+        }
+    }
+
+    /**
      * Triggers the 'end' native trace event with no arguments.
      * @param name The name of the event.
      */
@@ -515,6 +584,7 @@ public class TraceEvent implements AutoCloseable {
         void registerEnabledObserver();
         void instant(String name, String arg);
         void begin(String name, String arg);
+        void beginWithIntArg(String name, int arg);
         void end(String name, String arg, long flow);
         void beginToplevel(String target);
         void endToplevel(String target);
@@ -527,6 +597,9 @@ public class TraceEvent implements AutoCloseable {
                 String resourceName, long activityProtoPtr);
         void instantAndroidIPC(String name, long durMs);
         void instantAndroidToolbar(int blockReason, int allowReason, int snapshotDiff);
+        void webViewStartupTotalFactoryInit(long startTimeMs, long durationMs);
+        void webViewStartupStage1(long startTimeMs, long durationMs);
+        void webViewStartupStage2(long startTimeMs, long durationMs, boolean isColdStartup);
     }
 
     /**

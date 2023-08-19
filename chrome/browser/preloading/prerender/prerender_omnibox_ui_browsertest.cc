@@ -38,6 +38,7 @@
 #include "chrome/test/base/search_test_utils.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/omnibox/browser/base_search_provider.h"
+#include "components/omnibox/browser/omnibox_controller.h"
 #include "components/omnibox/browser/omnibox_edit_model.h"
 #include "components/safe_browsing/core/common/safe_browsing_prefs.h"
 #include "components/search_engines/template_url_data.h"
@@ -256,6 +257,8 @@ class PrerenderOmniboxUIBrowserTest : public InProcessBrowserTest,
       ukm_entry_builder_;
   bool is_prerendering_page_;
   std::unique_ptr<base::ScopedMockElapsedTimersForTest> scoped_test_timer_;
+  // Disable sampling of UKM preloading logs.
+  content::test::PreloadingConfigOverride preloading_config_override_;
 };
 
 // This test covers the path from starting a omnibox triggered prerendering
@@ -506,15 +509,14 @@ class PrerenderPreloaderHoldbackBrowserTest
     : public PrerenderOmniboxUIBrowserTest {
  public:
   PrerenderPreloaderHoldbackBrowserTest() {
-    feature_list_.InitWithFeatures(
-        /*enabled_features=*/{features::kPrerender2Holdback},
-        /* disabled_features=*/{
-            kSearchPrefetchOnlyAllowDefaultMatchPreloading});
+    preloading_config_override_.SetHoldback(
+        content::PreloadingType::kPrerender,
+        chrome_preloading_predictor::kOmniboxDirectURLInput, true);
   }
   ~PrerenderPreloaderHoldbackBrowserTest() override = default;
 
  private:
-  base::test::ScopedFeatureList feature_list_;
+  content::test::PreloadingConfigOverride preloading_config_override_;
 };
 
 IN_PROC_BROWSER_TEST_F(PrerenderPreloaderHoldbackBrowserTest,
@@ -644,8 +646,11 @@ class PrerenderOmniboxSearchSuggestionUIBrowserTest
       : prerender_helper_(base::BindRepeating(
             &PrerenderOmniboxUIBrowserTest::GetActiveWebContents,
             base::Unretained(this))) {
-    scoped_feature_list_.InitWithFeatures(
-        {features::kSupportSearchSuggestionForPrerender2},
+    scoped_feature_list_.InitWithFeaturesAndParameters(
+        {{features::kSupportSearchSuggestionForPrerender2,
+          {
+              {"implementation_type", "ignore_prefetch"},
+          }}},
         {prerender_utils::kHidePrefetchParameter,
          kSearchPrefetchOnlyAllowDefaultMatchPreloading});
   }
@@ -831,7 +836,7 @@ class PrerenderOmniboxSearchSuggestionUIBrowserTest
   AutocompleteController* GetAutocompleteController() {
     OmniboxView* omnibox =
         browser()->window()->GetLocationBar()->GetOmniboxView();
-    return omnibox->model()->autocomplete_controller();
+    return omnibox->controller()->autocomplete_controller();
   }
 
  protected:

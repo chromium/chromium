@@ -6,8 +6,10 @@
 
 namespace policy {
 
-DlpFileDestination::DlpFileDestination(const std::string& url)
-    : url_or_path_(url) {}
+DlpFileDestination::DlpFileDestination() = default;
+DlpFileDestination::DlpFileDestination(const GURL& url) : url_(url) {
+  CHECK(url_->is_valid());
+}
 DlpFileDestination::DlpFileDestination(const data_controls::Component component)
     : component_(component) {}
 
@@ -18,7 +20,7 @@ DlpFileDestination::DlpFileDestination(DlpFileDestination&&) = default;
 DlpFileDestination& DlpFileDestination::operator=(DlpFileDestination&&) =
     default;
 bool DlpFileDestination::operator==(const DlpFileDestination& other) const {
-  return component_ == other.component_ && url_or_path_ == other.url_or_path_;
+  return component_ == other.component_ && url_ == other.url_;
 }
 bool DlpFileDestination::operator!=(const DlpFileDestination& other) const {
   return !(*this == other);
@@ -34,8 +36,16 @@ bool DlpFileDestination::operator<(const DlpFileDestination& other) const {
   if (other.component_.has_value()) {
     return false;
   }
-  DCHECK(url_or_path_.has_value() && other.url_or_path_.has_value());
-  return url_or_path_.value() < other.url_or_path_.value();
+  if (url_.has_value() && other.url_.has_value()) {
+    return url_.value() < other.url_.value();
+  }
+  if (url_.has_value()) {
+    return true;
+  }
+  if (other.url_.has_value()) {
+    return false;
+  }
+  return false;
 }
 bool DlpFileDestination::operator<=(const DlpFileDestination& other) const {
   return *this == other || *this < other;
@@ -49,12 +59,16 @@ bool DlpFileDestination::operator>=(const DlpFileDestination& other) const {
 
 DlpFileDestination::~DlpFileDestination() = default;
 
-absl::optional<std::string> DlpFileDestination::url_or_path() const {
-  return url_or_path_;
+absl::optional<GURL> DlpFileDestination::url() const {
+  return url_;
 }
 
 absl::optional<data_controls::Component> DlpFileDestination::component() const {
   return component_;
+}
+
+bool DlpFileDestination::IsFileSystem() const {
+  return !url_.has_value();
 }
 
 }  // namespace policy

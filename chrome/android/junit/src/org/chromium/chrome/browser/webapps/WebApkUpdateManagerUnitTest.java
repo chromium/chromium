@@ -12,6 +12,7 @@ import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
+import android.app.Activity;
 import android.content.Intent;
 import android.content.res.AssetManager;
 import android.content.res.Resources;
@@ -28,7 +29,9 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TestRule;
 import org.junit.runner.RunWith;
+import org.mockito.Mock;
 import org.mockito.Mockito;
+import org.mockito.MockitoAnnotations;
 import org.robolectric.RuntimeEnvironment;
 import org.robolectric.android.util.concurrent.RoboExecutorService;
 import org.robolectric.annotation.Config;
@@ -86,6 +89,9 @@ import java.util.concurrent.TimeoutException;
         shadows = {ShadowUrlUtilities.class, BackgroundShadowAsyncTask.class})
 @LooperMode(LooperMode.Mode.LEGACY)
 public class WebApkUpdateManagerUnitTest {
+    @Mock
+    private Activity mActivityMock;
+
     @Rule
     public MockWebappDataStorageClockRule mClockRule = new MockWebappDataStorageClockRule();
 
@@ -114,6 +120,8 @@ public class WebApkUpdateManagerUnitTest {
     private static final int ORIENTATION = ScreenOrientationLockType.DEFAULT;
     private static final long THEME_COLOR = 1L;
     private static final long BACKGROUND_COLOR = 2L;
+    private static final long DARK_THEME_COLOR = 3L;
+    private static final long DARK_BACKGROUND_COLOR = 4L;
     private static final int DEFAULT_BACKGROUND_COLOR = 3;
     private static final String SHARE_TARGET_ACTION = "/share_action.html";
     private static final String SHARE_TARGET_PARAM_TITLE = "share_params_title";
@@ -159,16 +167,16 @@ public class WebApkUpdateManagerUnitTest {
         @Override
         public void storeWebApkUpdateRequestToFile(String updateRequestPath, String startUrl,
                 String scope, String name, String shortName, String manifestId, String appKey,
-                String primaryIconUrl, String primaryIconData, boolean isPrimaryIconMaskable,
-                String splashIconUrl, String splashIconData, boolean isSplashIconMaskable,
+                String primaryIconUrl, byte[] primaryIconData, boolean isPrimaryIconMaskable,
+                String splashIconUrl, byte[] splashIconData, boolean isSplashIconMaskable,
                 String[] iconUrls, String[] iconHashes, @DisplayMode.EnumType int displayMode,
-                int orientation, long themeColor, long backgroundColor, String shareTargetAction,
-                String shareTargetParamTitle, String shareTargetParamText,
-                boolean shareTargetParamIsMethodPost, boolean shareTargetParamIsEncTypeMultipart,
-                String[] shareTargetParamFileNames, Object[] shareTargetParamAccepts,
-                String[][] shortcuts, byte[][] shortcutIconData, String manifestUrl,
-                String webApkPackage, int webApkVersion, boolean isManifestStale,
-                boolean isAppIdentityUpdateSupported, int[] updateReasons,
+                int orientation, long themeColor, long backgroundColor, long darkThemeColor,
+                long darkBackgroundColor, String shareTargetAction, String shareTargetParamTitle,
+                String shareTargetParamText, boolean shareTargetParamIsMethodPost,
+                boolean shareTargetParamIsEncTypeMultipart, String[] shareTargetParamFileNames,
+                Object[] shareTargetParamAccepts, String[][] shortcuts, byte[][] shortcutIconData,
+                String manifestUrl, String webApkPackage, int webApkVersion,
+                boolean isManifestStale, boolean isAppIdentityUpdateSupported, int[] updateReasons,
                 Callback<Boolean> callback) {}
 
         @Override
@@ -197,12 +205,13 @@ public class WebApkUpdateManagerUnitTest {
         private boolean mNameUpdatesEnabled;
         private boolean mIconUpdatesEnabled;
 
-        public TestWebApkUpdateManager() {
-            this(/* nameUpdatesEnabled= */ false, /* iconUpdatesEnabled= */ false);
+        public TestWebApkUpdateManager(Activity activity) {
+            this(activity, /* nameUpdatesEnabled= */ false, /* iconUpdatesEnabled= */ false);
         }
 
-        public TestWebApkUpdateManager(boolean nameUpdatesEnabled, boolean iconUpdatesEnabled) {
-            this(buildMockTabProvider(), Mockito.mock(ActivityLifecycleDispatcher.class));
+        public TestWebApkUpdateManager(
+                Activity activity, boolean nameUpdatesEnabled, boolean iconUpdatesEnabled) {
+            this(activity, buildMockTabProvider(), Mockito.mock(ActivityLifecycleDispatcher.class));
             mNameUpdatesEnabled = nameUpdatesEnabled;
             mIconUpdatesEnabled = iconUpdatesEnabled;
         }
@@ -214,9 +223,9 @@ public class WebApkUpdateManagerUnitTest {
             return tabProvider;
         }
 
-        private TestWebApkUpdateManager(ActivityTabProvider tabProvider,
+        private TestWebApkUpdateManager(Activity activity, ActivityTabProvider tabProvider,
                 ActivityLifecycleDispatcher activityLifecycleDispatcher) {
-            super(tabProvider, activityLifecycleDispatcher);
+            super(activity, tabProvider, activityLifecycleDispatcher);
         }
 
         /**
@@ -285,9 +294,9 @@ public class WebApkUpdateManagerUnitTest {
                 String primaryIconUrl, String splashIconUrl, boolean isManifestStale,
                 boolean isAppIdentityUpdateSupported, List<Integer> updateReasons,
                 Callback<Boolean> callback) {
-            storeWebApkUpdateRequestToFile(updateRequestPath, info, primaryIconUrl, "",
-                    splashIconUrl, "", isManifestStale, isAppIdentityUpdateSupported, updateReasons,
-                    callback);
+            storeWebApkUpdateRequestToFile(updateRequestPath, info, primaryIconUrl, new byte[] {},
+                    splashIconUrl, new byte[] {}, isManifestStale, isAppIdentityUpdateSupported,
+                    updateReasons, callback);
         }
 
         @Override
@@ -298,8 +307,8 @@ public class WebApkUpdateManagerUnitTest {
 
         @Override
         protected void storeWebApkUpdateRequestToFile(String updateRequestPath, WebappInfo info,
-                String primaryIconUrl, String primaryIconData, String splashIconUrl,
-                String splashIconData, boolean isManifestStale,
+                String primaryIconUrl, byte[] primaryIconData, String splashIconUrl,
+                byte[] splashIconData, boolean isManifestStale,
                 boolean isAppIdentityUpdateSupported, List<Integer> updateReasons,
                 Callback<Boolean> callback) {
             mStoreUpdateRequestCallback = callback;
@@ -329,6 +338,8 @@ public class WebApkUpdateManagerUnitTest {
         public int orientation;
         public long themeColor;
         public long backgroundColor;
+        public long darkThemeColor;
+        public long darkBackgroundColor;
         public int defaultBackgroundColor;
         public String shareTargetAction;
         public String shareTargetParamTitle;
@@ -400,6 +411,9 @@ public class WebApkUpdateManagerUnitTest {
         metaData.putString(WebApkMetaDataKeys.SHORT_NAME, manifestData.shortName);
         metaData.putString(WebApkMetaDataKeys.THEME_COLOR, manifestData.themeColor + "L");
         metaData.putString(WebApkMetaDataKeys.BACKGROUND_COLOR, manifestData.backgroundColor + "L");
+        metaData.putString(WebApkMetaDataKeys.DARK_THEME_COLOR, manifestData.darkThemeColor + "L");
+        metaData.putString(
+                WebApkMetaDataKeys.DARK_BACKGROUND_COLOR, manifestData.darkBackgroundColor + "L");
         metaData.putInt(WebApkMetaDataKeys.DEFAULT_BACKGROUND_COLOR_ID,
                 FakeDefaultBackgroundColorResource.ID);
         metaData.putString(WebApkMetaDataKeys.WEB_MANIFEST_URL, WEB_MANIFEST_URL);
@@ -472,6 +486,8 @@ public class WebApkUpdateManagerUnitTest {
         manifestData.orientation = ORIENTATION;
         manifestData.themeColor = THEME_COLOR;
         manifestData.backgroundColor = BACKGROUND_COLOR;
+        manifestData.darkThemeColor = DARK_THEME_COLOR;
+        manifestData.darkBackgroundColor = DARK_BACKGROUND_COLOR;
         manifestData.defaultBackgroundColor = DEFAULT_BACKGROUND_COLOR;
         manifestData.shareTargetAction = SHARE_TARGET_ACTION;
         manifestData.shareTargetParamTitle = SHARE_TARGET_PARAM_TITLE;
@@ -504,10 +520,10 @@ public class WebApkUpdateManagerUnitTest {
         return WebApkIntentDataProviderFactory.create(new Intent(), "", manifestData.scopeUrl,
                 new WebappIcon(manifestData.primaryIcon), null, manifestData.name,
                 manifestData.shortName, manifestData.displayMode, manifestData.orientation, -1,
-                manifestData.themeColor, manifestData.backgroundColor,
-                manifestData.defaultBackgroundColor, false /* isPrimaryIconMaskable */,
-                false /* isSplashIconMaskable*/, kPackageName, -1, WEB_MANIFEST_URL,
-                manifestData.startUrl, manifestData.id, manifestData.appKey,
+                manifestData.themeColor, manifestData.backgroundColor, manifestData.darkThemeColor,
+                manifestData.darkBackgroundColor, manifestData.defaultBackgroundColor,
+                false /* isPrimaryIconMaskable */, false /* isSplashIconMaskable*/, kPackageName,
+                -1, WEB_MANIFEST_URL, manifestData.startUrl, manifestData.id, manifestData.appKey,
                 WebApkDistributor.BROWSER, manifestData.iconUrlToMurmur2HashMap, shareTarget,
                 false /* forceNavigation */, false /* isSplashProvidedByWebApk */,
                 null /* shareData */, manifestData.shortcuts /* shortcutItems */,
@@ -519,7 +535,7 @@ public class WebApkUpdateManagerUnitTest {
      * @param color The bitmap color.
      */
     private static Bitmap createBitmap(int color) {
-        int colors[] = {color};
+        int[] colors = {color};
         return Bitmap.createBitmap(colors, 1, 1, Bitmap.Config.ALPHA_8);
     }
 
@@ -619,7 +635,7 @@ public class WebApkUpdateManagerUnitTest {
         mClockRule.advance(WebappDataStorage.UPDATE_INTERVAL);
 
         TestWebApkUpdateManager updateManager =
-                new TestWebApkUpdateManager(nameUpdatesEnabled, iconUpdatesEnabled);
+                new TestWebApkUpdateManager(mActivityMock, nameUpdatesEnabled, iconUpdatesEnabled);
         updateIfNeeded(WEBAPK_PACKAGE_NAME, updateManager, androidManifestData.shortcuts);
         assertTrue(updateManager.updateCheckStarted());
         updateManager.onGotManifestData(intentDataProviderFromManifestData(fetchedManifestData),
@@ -629,6 +645,7 @@ public class WebApkUpdateManagerUnitTest {
 
     @Before
     public void setUp() throws Exception {
+        MockitoAnnotations.initMocks(this);
         UmaRecorderHolder.resetForTesting();
 
         PathUtils.setPrivateDataDirectorySuffix("chrome");
@@ -662,7 +679,7 @@ public class WebApkUpdateManagerUnitTest {
     public void testCheckOnNextLaunchIfClosePriorToFirstPageLoad() {
         mClockRule.advance(WebappDataStorage.UPDATE_INTERVAL);
         {
-            TestWebApkUpdateManager updateManager = new TestWebApkUpdateManager();
+            TestWebApkUpdateManager updateManager = new TestWebApkUpdateManager(mActivityMock);
             updateIfNeeded(WEBAPK_PACKAGE_NAME, updateManager);
             assertTrue(updateManager.updateCheckStarted());
         }
@@ -671,7 +688,7 @@ public class WebApkUpdateManagerUnitTest {
 
         {
             // Relaunching the WebAPK should do an is-update-needed check.
-            TestWebApkUpdateManager updateManager = new TestWebApkUpdateManager();
+            TestWebApkUpdateManager updateManager = new TestWebApkUpdateManager(mActivityMock);
             updateIfNeeded(WEBAPK_PACKAGE_NAME, updateManager);
             assertTrue(updateManager.updateCheckStarted());
             onGotUnchangedWebManifestData(updateManager);
@@ -679,7 +696,7 @@ public class WebApkUpdateManagerUnitTest {
 
         {
             // Relaunching the WebAPK should not do an is-update-needed-check.
-            TestWebApkUpdateManager updateManager = new TestWebApkUpdateManager();
+            TestWebApkUpdateManager updateManager = new TestWebApkUpdateManager(mActivityMock);
             updateIfNeeded(WEBAPK_PACKAGE_NAME, updateManager);
             assertFalse(updateManager.updateCheckStarted());
         }
@@ -696,7 +713,7 @@ public class WebApkUpdateManagerUnitTest {
         long initialTime = mClockRule.currentTimeMillis();
         mClockRule.advance(WebappDataStorage.UPDATE_INTERVAL);
 
-        TestWebApkUpdateManager updateManager = new TestWebApkUpdateManager();
+        TestWebApkUpdateManager updateManager = new TestWebApkUpdateManager(mActivityMock);
         updateIfNeeded(WEBAPK_PACKAGE_NAME, updateManager);
         assertTrue(updateManager.updateCheckStarted());
         onGotUnchangedWebManifestData(updateManager);
@@ -719,7 +736,7 @@ public class WebApkUpdateManagerUnitTest {
         storage.updateDidLastWebApkUpdateRequestSucceed(false);
         mClockRule.advance(WebappDataStorage.UPDATE_INTERVAL);
 
-        TestWebApkUpdateManager updateManager = new TestWebApkUpdateManager();
+        TestWebApkUpdateManager updateManager = new TestWebApkUpdateManager(mActivityMock);
         updateIfNeeded(WEBAPK_PACKAGE_NAME, updateManager);
         assertTrue(updateManager.updateCheckStarted());
         onGotUnchangedWebManifestData(updateManager);
@@ -738,7 +755,7 @@ public class WebApkUpdateManagerUnitTest {
     public void testMarkUpdateAsFailedIfClosePriorToUpdateCompleting() {
         mClockRule.advance(WebappDataStorage.UPDATE_INTERVAL);
 
-        TestWebApkUpdateManager updateManager = new TestWebApkUpdateManager();
+        TestWebApkUpdateManager updateManager = new TestWebApkUpdateManager(mActivityMock);
         updateIfNeeded(WEBAPK_PACKAGE_NAME, updateManager);
         assertTrue(updateManager.updateCheckStarted());
         onGotDifferentData(updateManager);
@@ -762,7 +779,7 @@ public class WebApkUpdateManagerUnitTest {
         mClockRule.advance(WebappDataStorage.UPDATE_INTERVAL);
 
         WebappDataStorage storage = getStorage(WEBAPK_PACKAGE_NAME);
-        TestWebApkUpdateManager updateManager = new TestWebApkUpdateManager();
+        TestWebApkUpdateManager updateManager = new TestWebApkUpdateManager(mActivityMock);
         updateIfNeeded(WEBAPK_PACKAGE_NAME, updateManager);
 
         onGotDifferentData(updateManager);
@@ -787,7 +804,7 @@ public class WebApkUpdateManagerUnitTest {
         mClockRule.advance(WebappDataStorage.UPDATE_INTERVAL);
 
         WebappDataStorage storage = getStorage(WEBAPK_PACKAGE_NAME);
-        TestWebApkUpdateManager updateManager = new TestWebApkUpdateManager();
+        TestWebApkUpdateManager updateManager = new TestWebApkUpdateManager(mActivityMock);
         updateIfNeeded(WEBAPK_PACKAGE_NAME, updateManager);
 
         onGotDifferentData(updateManager);
@@ -817,7 +834,7 @@ public class WebApkUpdateManagerUnitTest {
                 REQUEST_UPDATE_FOR_SHELL_APK_VERSION - 1);
         mClockRule.advance(WebappDataStorage.UPDATE_INTERVAL);
 
-        TestWebApkUpdateManager updateManager = new TestWebApkUpdateManager();
+        TestWebApkUpdateManager updateManager = new TestWebApkUpdateManager(mActivityMock);
         updateIfNeeded(WEBAPK_PACKAGE_NAME, updateManager);
         assertTrue(updateManager.updateCheckStarted());
 
@@ -843,7 +860,7 @@ public class WebApkUpdateManagerUnitTest {
                 REQUEST_UPDATE_FOR_SHELL_APK_VERSION - 1);
         mClockRule.advance(WebappDataStorage.UPDATE_INTERVAL);
 
-        TestWebApkUpdateManager updateManager = new TestWebApkUpdateManager();
+        TestWebApkUpdateManager updateManager = new TestWebApkUpdateManager(mActivityMock);
         updateIfNeeded(WEBAPK_PACKAGE_NAME, updateManager);
         assertTrue(updateManager.updateCheckStarted());
 
@@ -863,7 +880,7 @@ public class WebApkUpdateManagerUnitTest {
                 REQUEST_UPDATE_FOR_SHELL_APK_VERSION - 1);
         mClockRule.advance(WebappDataStorage.UPDATE_INTERVAL);
 
-        TestWebApkUpdateManager updateManager = new TestWebApkUpdateManager();
+        TestWebApkUpdateManager updateManager = new TestWebApkUpdateManager(mActivityMock);
         updateIfNeeded(WEBAPK_PACKAGE_NAME, updateManager);
         assertTrue(updateManager.updateCheckStarted());
 
@@ -887,7 +904,7 @@ public class WebApkUpdateManagerUnitTest {
     public void testStartUrlRedirectsToPageWithUpdatedWebManifest() {
         mClockRule.advance(WebappDataStorage.UPDATE_INTERVAL);
 
-        TestWebApkUpdateManager updateManager = new TestWebApkUpdateManager(
+        TestWebApkUpdateManager updateManager = new TestWebApkUpdateManager(mActivityMock,
                 /* nameUpdatesEnabled= */ true, /* iconUpdatesEnabled= */ false);
         updateIfNeeded(WEBAPK_PACKAGE_NAME, updateManager);
         assertTrue(updateManager.updateCheckStarted());
@@ -923,7 +940,7 @@ public class WebApkUpdateManagerUnitTest {
     public void testStartUrlRedirectsToPageWithUnchangedWebManifest() {
         mClockRule.advance(WebappDataStorage.UPDATE_INTERVAL);
 
-        TestWebApkUpdateManager updateManager = new TestWebApkUpdateManager();
+        TestWebApkUpdateManager updateManager = new TestWebApkUpdateManager(mActivityMock);
         updateIfNeeded(WEBAPK_PACKAGE_NAME, updateManager);
 
         // Update manager times out.
@@ -953,7 +970,7 @@ public class WebApkUpdateManagerUnitTest {
                 REQUEST_UPDATE_FOR_SHELL_APK_VERSION);
         mClockRule.advance(WebappDataStorage.UPDATE_INTERVAL);
 
-        TestWebApkUpdateManager updateManager = new TestWebApkUpdateManager();
+        TestWebApkUpdateManager updateManager = new TestWebApkUpdateManager(mActivityMock);
         updateIfNeeded(UNBOUND_WEBAPK_PACKAGE_NAME, updateManager);
         assertFalse(updateManager.updateCheckStarted());
         assertFalse(updateManager.updateRequested());
@@ -1220,6 +1237,26 @@ public class WebApkUpdateManagerUnitTest {
         assertTrue(checkUpdateNeededForFetchedManifest(oldData, fetchedData));
     }
 
+    /** Test that an upgrade is requested when the Web Manifest 'dark_theme_color' changes. */
+    @Test
+    public void testManifestDarkThemeColorChangedShouldUpgrade() {
+        ManifestData oldData = defaultManifestData();
+        oldData.themeColor = 3L;
+        ManifestData fetchedData = defaultManifestData();
+        fetchedData.themeColor = 4L;
+        assertTrue(checkUpdateNeededForFetchedManifest(oldData, fetchedData));
+    }
+
+    /** Test that an upgrade is requested when the Web Manifest 'dark_background_color' changes. */
+    @Test
+    public void testManifestDarkBackgroundColorChangedShouldUpgrade() {
+        ManifestData oldData = defaultManifestData();
+        oldData.backgroundColor = 4L;
+        ManifestData fetchedData = defaultManifestData();
+        fetchedData.backgroundColor = 5L;
+        assertTrue(checkUpdateNeededForFetchedManifest(oldData, fetchedData));
+    }
+
     /**
      * Test that an upgrade is not requested if the AndroidManifest does not have a valid background
      * color and the default background color in the WebAPK's resources is different than
@@ -1265,7 +1302,7 @@ public class WebApkUpdateManagerUnitTest {
         registerWebApk(WEBAPK_PACKAGE_NAME, defaultManifestData(),
                 REQUEST_UPDATE_FOR_SHELL_APK_VERSION - 1);
         WebappDataStorage storage = getStorage(WEBAPK_PACKAGE_NAME);
-        TestWebApkUpdateManager updateManager = new TestWebApkUpdateManager();
+        TestWebApkUpdateManager updateManager = new TestWebApkUpdateManager(mActivityMock);
 
         // There have not been any update requests for the current ShellAPK version. A WebAPK update
         // should be requested immediately.
@@ -1296,7 +1333,7 @@ public class WebApkUpdateManagerUnitTest {
     public void testForcedUpdateSuccess() {
         WebappDataStorage storage = getStorage(WEBAPK_PACKAGE_NAME);
         storage.setShouldForceUpdate(true);
-        TestWebApkUpdateManager updateManager = new TestWebApkUpdateManager();
+        TestWebApkUpdateManager updateManager = new TestWebApkUpdateManager(mActivityMock);
         updateIfNeeded(WEBAPK_PACKAGE_NAME, updateManager);
         assertTrue(updateManager.updateCheckStarted());
         onGotDifferentData(updateManager);
@@ -1313,7 +1350,7 @@ public class WebApkUpdateManagerUnitTest {
     public void testForcedUpdateNotNeeded() {
         WebappDataStorage storage = getStorage(WEBAPK_PACKAGE_NAME);
         storage.setShouldForceUpdate(true);
-        TestWebApkUpdateManager updateManager = new TestWebApkUpdateManager();
+        TestWebApkUpdateManager updateManager = new TestWebApkUpdateManager(mActivityMock);
         updateIfNeeded(WEBAPK_PACKAGE_NAME, updateManager);
         assertTrue(updateManager.updateCheckStarted());
         onGotManifestData(updateManager, defaultManifestData());
@@ -1328,7 +1365,7 @@ public class WebApkUpdateManagerUnitTest {
     public void testForcedUpdateFailure() {
         WebappDataStorage storage = getStorage(WEBAPK_PACKAGE_NAME);
         storage.setShouldForceUpdate(true);
-        TestWebApkUpdateManager updateManager = new TestWebApkUpdateManager();
+        TestWebApkUpdateManager updateManager = new TestWebApkUpdateManager(mActivityMock);
         updateIfNeeded(WEBAPK_PACKAGE_NAME, updateManager);
         assertTrue(updateManager.updateCheckStarted());
         onGotDifferentData(updateManager);
@@ -1344,7 +1381,7 @@ public class WebApkUpdateManagerUnitTest {
     public void testForcedUpdateManifestNotRetrieved() {
         WebappDataStorage storage = getStorage(WEBAPK_PACKAGE_NAME);
         storage.setShouldForceUpdate(true);
-        TestWebApkUpdateManager updateManager = new TestWebApkUpdateManager();
+        TestWebApkUpdateManager updateManager = new TestWebApkUpdateManager(mActivityMock);
         updateIfNeeded(WEBAPK_PACKAGE_NAME, updateManager);
         assertTrue(updateManager.updateCheckStarted());
         onGotManifestData(updateManager, null);
@@ -1366,7 +1403,7 @@ public class WebApkUpdateManagerUnitTest {
         storage.setShouldForceUpdate(true);
         assertFalse(storage.shouldForceUpdate());
 
-        TestWebApkUpdateManager updateManager = new TestWebApkUpdateManager();
+        TestWebApkUpdateManager updateManager = new TestWebApkUpdateManager(mActivityMock);
         updateIfNeeded(UNBOUND_WEBAPK_PACKAGE_NAME, updateManager);
         assertFalse(updateManager.updateCheckStarted());
         assertFalse(updateManager.updateRequested());
@@ -1553,7 +1590,7 @@ public class WebApkUpdateManagerUnitTest {
                 REQUEST_UPDATE_FOR_SHELL_APK_VERSION - 1);
         mClockRule.advance(WebappDataStorage.UPDATE_INTERVAL);
 
-        TestWebApkUpdateManager updateManager = new TestWebApkUpdateManager();
+        TestWebApkUpdateManager updateManager = new TestWebApkUpdateManager(mActivityMock);
         updateIfNeeded(WEBAPK_PACKAGE_NAME, updateManager);
         assertTrue(updateManager.updateCheckStarted());
 
@@ -1583,7 +1620,7 @@ public class WebApkUpdateManagerUnitTest {
                 WEBAPK_PACKAGE_NAME, androidManifestData, REQUEST_UPDATE_FOR_SHELL_APK_VERSION);
         mClockRule.advance(WebappDataStorage.UPDATE_INTERVAL);
 
-        TestWebApkUpdateManager updateManager = new TestWebApkUpdateManager();
+        TestWebApkUpdateManager updateManager = new TestWebApkUpdateManager(mActivityMock);
         updateIfNeeded(WEBAPK_PACKAGE_NAME, updateManager, androidManifestData.shortcuts);
         assertTrue(updateManager.updateCheckStarted());
         updateManager.onGotManifestData(/* fetchedIntentDataProvider= */ null,
@@ -1605,7 +1642,7 @@ public class WebApkUpdateManagerUnitTest {
         registerWebApk(WEBAPK_PACKAGE_NAME, androidData, REQUEST_UPDATE_FOR_SHELL_APK_VERSION);
         mClockRule.advance(WebappDataStorage.UPDATE_INTERVAL);
 
-        TestWebApkUpdateManager updateManager = new TestWebApkUpdateManager();
+        TestWebApkUpdateManager updateManager = new TestWebApkUpdateManager(mActivityMock);
         updateIfNeeded(WEBAPK_PACKAGE_NAME, updateManager);
         assertTrue(updateManager.updateCheckStarted());
 
@@ -1632,7 +1669,7 @@ public class WebApkUpdateManagerUnitTest {
         registerWebApk(WEBAPK_PACKAGE_NAME, androidData, REQUEST_UPDATE_FOR_SHELL_APK_VERSION);
         mClockRule.advance(WebappDataStorage.UPDATE_INTERVAL);
 
-        TestWebApkUpdateManager updateManager = new TestWebApkUpdateManager();
+        TestWebApkUpdateManager updateManager = new TestWebApkUpdateManager(mActivityMock);
         updateIfNeeded(WEBAPK_PACKAGE_NAME, updateManager);
         assertTrue(updateManager.updateCheckStarted());
 

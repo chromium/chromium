@@ -13,6 +13,7 @@
 #include "base/no_destructor.h"
 #include "components/viz/common/surfaces/frame_sink_id_allocator.h"
 #include "components/viz/host/host_frame_sink_manager.h"
+#include "content/common/content_export.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "services/viz/privileged/mojom/compositing/frame_sink_manager.mojom.h"
@@ -25,7 +26,7 @@ namespace content {
 
 class CompositorImpl;
 
-class CompositorDependenciesAndroid {
+class CONTENT_EXPORT CompositorDependenciesAndroid {
  public:
   static CompositorDependenciesAndroid& Get();
 
@@ -43,6 +44,10 @@ class CompositorDependenciesAndroid {
   void TryEstablishVizConnectionIfNeeded();
   void OnCompositorVisible(CompositorImpl* compositor);
   void OnCompositorHidden(CompositorImpl* compositor);
+  void OnSynchronousCompositorVisible();
+  void OnSynchronousCompositorHidden();
+
+  void DoLowEndBackgroundCleanupForTesting() { DoLowEndBackgroundCleanup(); }
 
  private:
   friend class base::NoDestructor<CompositorDependenciesAndroid>;
@@ -72,6 +77,7 @@ class CompositorDependenciesAndroid {
 
   // The set of visible CompositorImpls.
   base::flat_set<CompositorImpl*> visible_compositors_;
+  size_t visible_synchronous_compositors_ = 0u;
 
   std::unique_ptr<cc::TaskGraphRunner> task_graph_runner_;
 };

@@ -58,11 +58,13 @@ class ChromeSyncClient : public browser_sync::BrowserSyncClient {
   send_tab_to_self::SendTabToSelfSyncService* GetSendTabToSelfSyncService()
       override;
   sync_sessions::SessionSyncService* GetSessionSyncService() override;
+  password_manager::PasswordReceiverService* GetPasswordReceiverService()
+      override;
+  password_manager::PasswordSenderService* GetPasswordSenderService() override;
   sync_preferences::PrefServiceSyncable* GetPrefServiceSyncable() override;
   syncer::DataTypeController::TypeVector CreateDataTypeControllers(
       syncer::SyncService* sync_service) override;
-  syncer::TrustedVaultClient* GetTrustedVaultClient() override;
-  invalidation::InvalidationService* GetInvalidationService() override;
+  trusted_vault::TrustedVaultClient* GetTrustedVaultClient() override;
   syncer::SyncInvalidationsService* GetSyncInvalidationsService() override;
   scoped_refptr<syncer::ExtensionsActivity> GetExtensionsActivity() override;
   base::WeakPtr<syncer::ModelTypeControllerDelegate>
@@ -93,8 +95,6 @@ class ChromeSyncClient : public browser_sync::BrowserSyncClient {
 
   // The sync api component factory in use by this client.
   std::unique_ptr<browser_sync::SyncApiComponentFactoryImpl> component_factory_;
-
-  std::unique_ptr<syncer::TrustedVaultClient> trusted_vault_client_;
 
   // Members that must be fetched on the UI thread but accessed on their
   // respective backend threads.

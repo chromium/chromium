@@ -4,12 +4,8 @@
 
 #include "services/shape_detection/face_detection_impl_mac.h"
 
-#include "base/mac/scoped_cftyperef.h"
+#include "base/apple/scoped_cftyperef.h"
 #include "services/shape_detection/detection_utils_mac.h"
-
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
 
 namespace shape_detection {
 

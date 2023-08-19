@@ -1,0 +1,143 @@
+# Copyright 2023 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+# @generated from third_party/rust/BUILD.gn.hbs by tools/crates/gnrt.
+# Do not edit!
+
+import("//build/rust/cargo_crate.gni")
+
+{{#each rules}}
+{{#if this.1.concrete}}
+cargo_crate("{{this.0}}") {
+  {{#with this.1.concrete}}
+  {{#if crate_name}}
+  crate_name = "{{crate_name}}"
+  {{/if}}
+  {{#if epoch}}
+  epoch = "{{epoch}}"
+  {{/if}}
+  crate_type = "{{crate_type}}"
+  {{#unless public_visibility}}
+
+  # Only for usage from third-party crates. Add the crate to
+  # third_party.toml to use it from first-party code.
+  visibility = [ "//third_party/rust/*" ]
+  {{/unless}}
+  crate_root = "{{crate_root}}"
+  sources = [
+    {{#each sources}}
+    "{{this}}",
+    {{/each}}
+  ]
+  inputs = [
+    {{#each inputs}}
+    "{{this}}",
+    {{/each}}
+  ]
+
+  # Unit tests skipped. Generate with --with-tests to include them.
+  build_native_rust_unit_tests = false
+  edition = "{{edition}}"
+  cargo_pkg_version = "{{cargo_pkg_version}}"
+  {{#with cargo_pkg_authors}}
+  cargo_pkg_authors = "{{this}}"
+  {{/with}}
+  cargo_pkg_name = "{{cargo_pkg_name}}"
+  {{#with cargo_pkg_description}}
+  cargo_pkg_description = "{{gn_escape this}}"
+  {{/with}}
+  library_configs -= [ "//build/config/compiler:chromium_code" ]
+  library_configs += [ "//build/config/compiler:no_chromium_code" ]
+  executable_configs -= [ "//build/config/compiler:chromium_code" ]
+  executable_configs += [ "//build/config/compiler:no_chromium_code" ]
+  {{#each deps}}
+  {{#if @first}}
+  deps = [
+    {{#each this.rules}}
+    "{{this}}",
+    {{/each}}
+  ]
+  {{else}}
+  if ({{this.cond}}) {
+    deps += [
+      {{#each this.rules}}
+      "{{this}}",
+      {{/each}}
+    ]
+  }
+  {{/if}}
+  {{/each}}
+  {{#if aliased_deps}}
+  aliased_deps = {
+    {{#each aliased_deps}}
+    {{this.0}} = "{{this.1}}"
+    {{/each}}
+  }
+  {{/if}}
+  {{#each build_deps}}
+  {{#if @first}}
+  build_deps = [
+    {{#each this.rules}}
+    "{{this}}",
+    {{/each}}
+  ]
+  {{else}}
+  if ({{this.cond}}) {
+    build_deps += [
+      {{#each this.rules}}
+      "{{this}}",
+      {{/each}}
+    ]
+  }
+  {{/if}}
+  {{/each}}
+  {{#if features}}
+  features = [
+    {{#each features}}
+    "{{this}}",
+    {{/each}}
+  ]
+  {{/if}}
+  {{#if build_root}}
+  build_root = "{{build_root}}"
+  build_sources = [ "{{build_root}}" ]
+  {{#if build_script_outputs}}
+  build_script_outputs = [
+    {{#each build_script_outputs}}
+    "{{this}}",
+    {{/each}}
+  ]
+  {{/if}}
+  {{/if}}
+  {{#if rustenv}}
+  rustenv = [
+    {{#each rustenv}}
+    "{{this}}",
+    {{/each}}
+  ]
+  {{/if}}
+  {{#if rustflags}}
+  rustflags = [
+    {{#each rustflags}}
+    "{{this}}",
+    {{/each}}
+  ]
+  {{/if}}
+  {{#if output_dir}}
+  output_dir = "{{output_dir}}"
+  {{/if}}
+  {{/with}}
+}
+{{/if}}
+{{#if this.1.group}}
+group("{{this.0}}") {
+  {{#with this.1.group}}
+  public_deps = [":{{concrete_target}}"]
+  {{#if testonly}}
+  testonly = true
+  {{/if}}
+  {{/with}}
+}
+{{/if}}
+{{/each}}

@@ -6,8 +6,8 @@
 
 #include <IOKit/IOKitLib.h>
 
-#include "base/mac/foundation_util.h"
-#include "base/mac/scoped_cftyperef.h"
+#include "base/apple/foundation_util.h"
+#include "base/apple/scoped_cftyperef.h"
 #include "base/mac/scoped_ioobject.h"
 #include "base/strings/sys_string_conversions.h"
 
@@ -23,7 +23,7 @@ MachineIdStatus GetDeterministicMachineSpecificId(std::string* machine_id) {
   if (!uuid.get())
     return MachineIdStatus::FAILURE;
 
-  CFStringRef uuid_string = base::mac::CFCast<CFStringRef>(uuid);
+  CFStringRef uuid_string = base::apple::CFCast<CFStringRef>(uuid);
   if (!uuid_string)
     return MachineIdStatus::FAILURE;
 

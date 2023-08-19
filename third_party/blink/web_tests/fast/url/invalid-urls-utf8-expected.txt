@@ -2,12 +2,12 @@ This ensure we do not mess up the bytes when an URL is partially parsed and is i
 
 On success, you will see a series of "PASS" messages, followed by "TEST COMPLETE".
 
-FAIL src should be http:///. Was http:.
-FAIL src should be https:///. Was https:.
-FAIL src should be ftp:///. Was ftp:.
 PASS src is expected
-FAIL src should be ws:///. Was ws:.
-FAIL src should be wss:///. Was wss:.
+PASS src is expected
+PASS src is expected
+PASS src is expected
+PASS src is expected
+PASS src is expected
 FAIL src should be foo://tête à tête@host/. Was foo://t%C3%AAte %C3%A0 t%C3%AAte@host/.
 FAIL src should be foo://user:tête à tête@host/. Was foo://user:t%C3%AAte %C3%A0 t%C3%AAte@host/.
 PASS src is expected
@@ -19,10 +19,10 @@ FAIL src should be foo://user:password@host:tête à tête/. Was foo://user:pass
 FAIL src should be foo://user:password@host:80tête à tête. Was foo://user:password@host:80t%C3%AAte %C3%A0 t%C3%AAte.
 FAIL src should be foo://user:password@host:tête à tête/. Was foo://user:password@host:t%C3%AAte %C3%A0 t%C3%AAte/.
 FAIL src should be foo://user:password@host:80tête à tête. Was foo://user:password@host:80t%C3%AAte %C3%A0 t%C3%AAte.
-FAIL src should be ws://host:tête. Was ws://host:t%C3%AAte/.
-FAIL src should be ftp://host:tête. Was ftp://host:t%C3%AAte/.
-FAIL src should be http://host:tête. Was http://host:t%C3%AAte/.
-FAIL src should be https://host:tête. Was https://host:t%C3%AAte/.
+PASS src is expected
+PASS src is expected
+PASS src is expected
+PASS src is expected
 PASS successfullyParsed is true
 
 TEST COMPLETE

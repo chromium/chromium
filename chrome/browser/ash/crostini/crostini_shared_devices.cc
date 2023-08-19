@@ -107,6 +107,10 @@ void CrostiniSharedDevices::SetVmDeviceShared(guest_os::GuestId container_id,
   }
 }
 
+void CrostiniSharedDevices::EnsureFactoryBuilt() {
+  CrostiniSharedDevicesFactory::GetInstance();
+}
+
 void CrostiniSharedDevices::ApplySharingState(
     const guest_os::GuestId container_id,
     base::Value::Dict next_shared_devices,

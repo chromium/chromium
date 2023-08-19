@@ -6,6 +6,9 @@
 
 #include "base/no_destructor.h"
 #include "chrome/browser/ash/printing/cups_proxy_service_manager.h"
+#include "chrome/browser/profiles/profile.h"
+#include "chromeos/ash/components/browser_context_helper/browser_context_helper.h"
+#include "components/user_manager/user_manager.h"
 
 namespace ash {
 
@@ -36,7 +39,15 @@ CupsProxyServiceManagerFactory::~CupsProxyServiceManagerFactory() = default;
 
 KeyedService* CupsProxyServiceManagerFactory::BuildServiceInstanceFor(
     content::BrowserContext* context) const {
-  return new CupsProxyServiceManager();
+  // Only create the service for the primary user.
+  Profile* profile = Profile::FromBrowserContext(context);
+  auto* user =
+      ash::BrowserContextHelper::Get()->GetUserByBrowserContext(profile);
+  if (!user_manager::UserManager::Get()->IsPrimaryUser(user)) {
+    return nullptr;
+  }
+
+  return new CupsProxyServiceManager(profile);
 }
 
 bool CupsProxyServiceManagerFactory::ServiceIsCreatedWithBrowserContext()

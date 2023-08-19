@@ -33,13 +33,12 @@
 
 #include "third_party/blink/public/platform/web_common.h"
 #include "third_party/blink/public/web/web_array_buffer.h"
+#include "v8/include/v8-local-handle.h"
 
 namespace v8 {
 class Isolate;
 class Object;
 class Value;
-template <class T>
-class Local;
 }
 
 namespace blink {

@@ -11,6 +11,7 @@
 #include "base/ranges/algorithm.h"
 #include "base/time/time.h"
 #include "chromeos/ash/components/settings/scoped_timezone_settings.h"
+#include "third_party/abseil-cpp/absl/strings/ascii.h"
 
 namespace ash {
 
@@ -501,7 +502,7 @@ INSTANTIATE_TEST_SUITE_P(
            info) {
       std::string name = info.param.timezone;
       base::ranges::replace_if(
-          name, [](char c) { return !std::isalnum(c); }, '_');
+          name, [](unsigned char c) { return !absl::ascii_isalnum(c); }, '_');
       return name;
     });
 

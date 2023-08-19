@@ -21,6 +21,8 @@ build_webui("build") {
   }
 
   web_component_files = [
+    "elements/viewer-attachment.ts",
+    "elements/viewer-attachment-bar.ts",
     "elements/viewer-bookmark.ts",
     "elements/viewer-document-outline.ts",
     "elements/viewer-download-controls.ts",

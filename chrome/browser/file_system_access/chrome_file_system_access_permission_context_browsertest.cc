@@ -139,7 +139,8 @@ IN_PROC_BROWSER_TEST_F(
     PerformAfterWriteChecks) {
   const base::FilePath test_file = CreateTestFile("");
   ui::SelectFileDialog::SetFactory(
-      new content::FakeSelectFileDialogFactory({test_file}));
+      std::make_unique<content::FakeSelectFileDialogFactory>(
+          std::vector<base::FilePath>{test_file}));
 
   TestFileSystemAccessPermissionContext permission_context(
       browser()->profile());

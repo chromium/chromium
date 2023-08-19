@@ -333,7 +333,7 @@ Tests name sources in images and figures.
     ]
     role : {
         type : role
-        value : img
+        value : image
     }
 }
 {
@@ -380,7 +380,7 @@ Tests name sources in images and figures.
     ]
     role : {
         type : role
-        value : img
+        value : image
     }
 }
 {
@@ -440,7 +440,7 @@ Tests name sources in images and figures.
     ]
     role : {
         type : role
-        value : img
+        value : image
     }
 }
 {
@@ -509,7 +509,7 @@ Tests name sources in images and figures.
     ]
     role : {
         type : role
-        value : img
+        value : image
     }
 }
 {
@@ -607,7 +607,7 @@ Tests name sources in images and figures.
     ]
     role : {
         type : role
-        value : img
+        value : image
     }
 }
 {
@@ -701,7 +701,7 @@ Tests name sources in images and figures.
     ]
     role : {
         type : role
-        value : img
+        value : image
     }
 }
 

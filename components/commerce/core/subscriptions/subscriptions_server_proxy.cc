@@ -275,10 +275,12 @@ SubscriptionsServerProxy::CreateEndpointFetcher(
     const std::string& http_method,
     const std::string& post_data,
     const net::NetworkTrafficAnnotationTag& annotation_tag) {
+  // TODO(crbug.com/1463438): ConsentLevel::kSync is deprecated and should be
+  //     removed. See ConsentLevel::kSync documentation for details.
   return std::make_unique<EndpointFetcher>(
       url_loader_factory_, kOAuthName, url, http_method, kContentType,
       std::vector<std::string>{kOAuthScope}, kTimeoutMs.Get(), post_data,
-      annotation_tag, identity_manager_);
+      annotation_tag, identity_manager_, signin::ConsentLevel::kSync);
 }
 
 void SubscriptionsServerProxy::HandleManageSubscriptionsResponses(

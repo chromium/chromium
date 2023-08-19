@@ -40,8 +40,7 @@ class ClientServiceMap {
       DCHECK(client_to_service_array_[client_id] == invalid_service_id());
       client_to_service_array_[client_id] = service_id;
     } else {
-      DCHECK(client_to_service_map_.find(client_id) ==
-             client_to_service_map_.end());
+      DCHECK(client_to_service_map_.count(client_id) == 0);
       client_to_service_map_[client_id] = service_id;
     }
   }

@@ -156,15 +156,16 @@ class AuthHubVectorLifecycleTest : public ::testing::Test {
   base::flat_map<AshAuthFactor,
                  std::unique_ptr<StrictMock<MockAuthFactorEngine>>>
       engines_;
-  base::flat_map<AshAuthFactor,
-                 base::raw_ptr<AuthFactorEngine::FactorEngineObserver>>
+  base::flat_map<
+      AshAuthFactor,
+      raw_ptr<AuthFactorEngine::FactorEngineObserver, DanglingUntriaged>>
       engine_obvservers_;
   AuthFactorsSet usable_factors_;
   AuthFactorsSet failed_factors_;
 
   std::unique_ptr<AuthHubVectorLifecycle> lifecycle_;
 
-  base::raw_ptr<AuthHubConnector> connector_;
+  raw_ptr<AuthHubConnector> connector_;
 };
 
 // Standard init/shutdown flow.

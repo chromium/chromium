@@ -24,8 +24,6 @@ class InternalsPermission {
                                      Internals&,
                                      const ScriptValue&,
                                      const String& state,
-                                     const String& origin,
-                                     const String& embedding_origin,
                                      ExceptionState&);
 };
 

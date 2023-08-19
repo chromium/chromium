@@ -399,7 +399,7 @@ void RemoveFiletypeRegistration(const InstallerState& installer_state,
   std::wstring classes_path(ShellUtil::kRegClasses);
   classes_path.push_back(base::FilePath::kSeparators[0]);
 
-  const std::wstring prog_id(install_static::GetProgIdPrefix() +
+  const std::wstring prog_id(install_static::GetBrowserProgIdPrefix() +
                              browser_entry_suffix);
 
   // Delete each filetype association if it references this Chrome.  Take care
@@ -546,6 +546,14 @@ void RemoveDistributionRegistryState() {
                            {L"Extensions", L"NativeMessagingHosts"});
 }
 
+// Deletes {root}\Software\Classes\{prog_id} registry key.
+bool DeleteProgIdFromSoftwareClasses(HKEY root, const std::wstring& prog_id) {
+  std::wstring reg_prog_id(ShellUtil::kRegClasses);
+  reg_prog_id.push_back(base::FilePath::kSeparators[0]);
+  reg_prog_id.append(prog_id);
+  return DeleteRegistryKey(root, reg_prog_id, WorkItem::kWow64Default);
+}
+
 }  // namespace
 
 DeleteResult DeleteChromeDirectoriesIfEmpty(
@@ -584,26 +592,27 @@ bool DeleteChromeRegistrationKeys(const InstallerState& installer_state,
                                   const std::wstring& browser_entry_suffix,
                                   InstallStatus* exit_code) {
   DCHECK(exit_code);
-  base::FilePath chrome_exe(installer_state.target_path().Append(kChromeExe));
+  const base::FilePath chrome_exe(
+      installer_state.target_path().Append(kChromeExe));
 
-  // Delete Software\Classes\ChromeHTML.
-  const std::wstring prog_id(install_static::GetProgIdPrefix() +
-                             browser_entry_suffix);
-  std::wstring reg_prog_id(ShellUtil::kRegClasses);
-  reg_prog_id.push_back(base::FilePath::kSeparators[0]);
-  reg_prog_id.append(prog_id);
-  DeleteRegistryKey(root, reg_prog_id, WorkItem::kWow64Default);
+  // Delete {root}\Software\Classes\ChromeHTML.
+  const std::wstring html_prog_id(install_static::GetBrowserProgIdPrefix() +
+                                  browser_entry_suffix);
+  DeleteProgIdFromSoftwareClasses(root, html_prog_id);
 
-  // Delete Software\Classes\Chrome.
-  std::wstring reg_app_id(ShellUtil::kRegClasses);
-  reg_app_id.push_back(base::FilePath::kSeparators[0]);
-  // Append the requested suffix manually here (as ShellUtil::GetBrowserModelId
-  // would otherwise try to figure out the currently installed suffix).
-  reg_app_id.append(install_static::GetBaseAppId() + browser_entry_suffix);
-  DeleteRegistryKey(root, reg_app_id, WorkItem::kWow64Default);
+  // Delete {root}\Software\Classes\Chrome.
+
+  // Append the requested suffix manually here as ShellUtil::GetBrowserModelId
+  // would try to figure out the currently installed suffix.
+  const std::wstring chrome_prog_id(install_static::GetBaseAppId() +
+                                    browser_entry_suffix);
+  DeleteProgIdFromSoftwareClasses(root, chrome_prog_id);
+
+  // TODO(https://crbug.com/414141): Delete ChromePDF ProgId once support for
+  // PDF docs has landed.
 
   // Delete Software\Classes\CLSID\|toast_activator_clsid|.
-  std::wstring toast_activator_reg_path =
+  const std::wstring toast_activator_reg_path =
       InstallUtil::GetToastActivatorRegistryPath();
   if (!toast_activator_reg_path.empty()) {
     DeleteRegistryKey(root, toast_activator_reg_path, WorkItem::kWow64Default);
@@ -697,7 +706,7 @@ bool DeleteChromeRegistrationKeys(const InstallerState& installer_state,
     open_with_progids_key.assign(file_assoc_key);
     open_with_progids_key.append(ShellUtil::kRegOpenWithProgids);
     DeleteRegistryValue(root, open_with_progids_key, WorkItem::kWow64Default,
-                        prog_id);
+                        html_prog_id);
   }
 
   // Cleanup in case Chrome had been made the default browser.
@@ -851,15 +860,21 @@ InstallStatus UninstallProduct(const ModifyParams& modify_params,
   // profile shortcuts, etc.) to the system-level chrome.
   if (cmd_line.HasSwitch(installer::switches::kSelfDestruct) &&
       !installer_state.system_install()) {
-    const base::FilePath system_install_path(GetChromeInstallPath(true));
-    const base::FilePath system_chrome_path(
-        system_install_path.Append(installer::kChromeExe));
     VLOG(1) << "Retargeting user-generated Chrome shortcuts.";
-    if (base::PathExists(system_chrome_path)) {
-      RetargetUserShortcutsWithArgs(installer_state, chrome_exe,
-                                    system_chrome_path);
+    const base::FilePath system_install_path(
+        GetInstalledDirectory(/*system_install=*/true));
+    if (system_install_path.empty()) {
+      LOG(ERROR) << "Retarget failed: system-level Chrome install directory "
+                    "not found.";
     } else {
-      LOG(ERROR) << "Retarget failed: system-level Chrome not found.";
+      const base::FilePath system_chrome_path(
+          system_install_path.Append(installer::kChromeExe));
+      if (base::PathExists(system_chrome_path)) {
+        RetargetUserShortcutsWithArgs(installer_state, chrome_exe,
+                                      system_chrome_path);
+      } else {
+        LOG(ERROR) << "Retarget failed: system-level Chrome not found.";
+      }
     }
 
     // Retarget owned app shortcuts to the system-level chrome_proxy.

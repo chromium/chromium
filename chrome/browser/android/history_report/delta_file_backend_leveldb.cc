@@ -52,12 +52,9 @@ void SaveChange(leveldb::DB* db,
   entry.set_type(type);
   entry.set_url(url);
   leveldb::WriteOptions writeOptions;
-  std::string key;
-  base::SStringPrintf(&key, "%" PRId64, seq_no);
-  leveldb::Status status = db->Put(
-      writeOptions,
-      leveldb::Slice(key),
-      leveldb::Slice(entry.SerializeAsString()));
+  leveldb::Status status =
+      db->Put(writeOptions, leveldb::Slice(base::NumberToString(seq_no)),
+              leveldb::Slice(entry.SerializeAsString()));
   if (!status.ok())
     LOG(WARNING) << "Save Change failed " << status.ToString();
 }
@@ -162,9 +159,7 @@ int64_t DeltaFileBackend::Trim(int64_t lower_bound) {
     lower_bound = max_seq_no - 1;
   leveldb::WriteBatch updates;
   for (int64_t seq_no = min_seq_no; seq_no <= lower_bound; ++seq_no) {
-    std::string key;
-    base::SStringPrintf(&key, "%" PRId64, seq_no);
-    updates.Delete(leveldb::Slice(key));
+    updates.Delete(leveldb::Slice(base::NumberToString(seq_no)));
   }
 
   leveldb::WriteOptions write_options;
@@ -187,9 +182,7 @@ bool DeltaFileBackend::Recreate(const std::vector<std::string>& urls) {
     entry.set_seq_no(seq_no);
     entry.set_url(*it);
     entry.set_type("add");
-    std::string key;
-    base::SStringPrintf(&key, "%" PRId64, seq_no);
-    updates.Put(leveldb::Slice(key),
+    updates.Put(leveldb::Slice(base::NumberToString(seq_no)),
                 leveldb::Slice(entry.SerializeAsString()));
     ++seq_no;
   }
@@ -206,14 +199,12 @@ std::unique_ptr<std::vector<DeltaFileEntryWithData>> DeltaFileBackend::Query(
     int32_t limit) {
   if (!EnsureInitialized())
     return std::make_unique<std::vector<DeltaFileEntryWithData>>();
-  std::string start;
-  base::SStringPrintf(&start, "%" PRId64, last_seq_no + 1);
   leveldb::ReadOptions options;
   std::unique_ptr<leveldb::Iterator> db_it(db_->NewIterator(options));
-  std::unique_ptr<std::vector<DeltaFileEntryWithData>> result(
-      new std::vector<DeltaFileEntryWithData>());
+  auto result = std::make_unique<std::vector<DeltaFileEntryWithData>>();
   int32_t count = 0;
-  for (db_it->Seek(start); db_it->Valid() && count < limit; db_it->Next()) {
+  for (db_it->Seek(base::NumberToString(last_seq_no + 1));
+       db_it->Valid() && count < limit; db_it->Next()) {
     DeltaFileEntry entry;
     leveldb::Slice value_slice = db_it->value();
     if (!entry.ParseFromArray(value_slice.data(), value_slice.size()))
@@ -261,7 +252,7 @@ bool DeltaFileBackend::OnMemoryDump(
     return true;
 
   auto* dump = pmd->CreateAllocatorDump(
-      base::StringPrintf("history/delta_file_service/leveldb_0x%" PRIXPTR,
+      base::StringPrintf("history/delta_file_service/leveldb_%#" PRIXPTR,
                          reinterpret_cast<uintptr_t>(db_.get())));
   dump->AddScalar(base::trace_event::MemoryAllocatorDump::kNameSize,
                   base::trace_event::MemoryAllocatorDump::kUnitsBytes,

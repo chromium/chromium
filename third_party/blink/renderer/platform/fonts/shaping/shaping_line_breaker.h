@@ -18,7 +18,6 @@ class ShapeResult;
 class ShapeResultView;
 class Hyphenation;
 class LazyLineBreakIterator;
-enum class LineBreakType;
 
 // Shapes a line of text by finding the ideal break position as indicated by the
 // available space and the shape results for the entire paragraph. Once an ideal
@@ -106,10 +105,6 @@ class PLATFORM_EXPORT ShapingLineBreaker final {
                                                    unsigned end,
                                                    unsigned options);
 
-  // Disable breaking at soft hyphens (U+00AD).
-  bool IsSoftHyphenEnabled() const { return is_soft_hyphen_enabled_; }
-  void DisableSoftHyphen() { is_soft_hyphen_enabled_ = false; }
-
  private:
   const String& GetText() const;
 
@@ -167,7 +162,6 @@ class PLATFORM_EXPORT ShapingLineBreaker final {
   scoped_refptr<const ShapeResult> result_;
   const LazyLineBreakIterator* break_iterator_;
   const Hyphenation* hyphenation_;
-  bool is_soft_hyphen_enabled_;
 
   friend class ShapingLineBreakerTest;
 };

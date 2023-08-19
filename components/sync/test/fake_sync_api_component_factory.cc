@@ -44,7 +44,6 @@ FakeSyncApiComponentFactory::CreateDataTypeManager(
 
 std::unique_ptr<SyncEngine> FakeSyncApiComponentFactory::CreateSyncEngine(
     const std::string& name,
-    invalidation::InvalidationService* invalidator,
     syncer::SyncInvalidationsService* sync_invalidations_service) {
   auto engine = std::make_unique<FakeSyncEngine>(
       allow_fake_engine_init_completion_,

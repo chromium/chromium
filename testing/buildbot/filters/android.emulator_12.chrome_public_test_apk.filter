@@ -5,18 +5,6 @@
 -org.chromium.chrome.browser.download.OMADownloadHandlerTest.testClearPendingOMADownloads
 -org.chromium.chrome.browser.download.OMADownloadHandlerTest.testQueryDownloadResult
 
-# crbug.com/1193814
--org.chromium.chrome.browser.download.DownloadTest.testDangerousDownload__UseDownloadOfflineContentProviderDisabled
--org.chromium.chrome.browser.download.DownloadTest.testDangerousDownload__UseDownloadOfflineContentProviderEnabled
--org.chromium.chrome.browser.download.DownloadTest.testDuplicateHttpPostDownload_Dismiss__UseDownloadOfflineContentProviderDisabled
--org.chromium.chrome.browser.download.DownloadTest.testDuplicateHttpPostDownload_Dismiss__UseDownloadOfflineContentProviderEnabled
--org.chromium.chrome.browser.download.DownloadTest.testHttpGetDownload__UseDownloadOfflineContentProviderDisabled
--org.chromium.chrome.browser.download.DownloadTest.testHttpGetDownload__UseDownloadOfflineContentProviderEnabled
--org.chromium.chrome.browser.download.DownloadTest.testHttpPostDownload__UseDownloadOfflineContentProviderDisabled
--org.chromium.chrome.browser.download.DownloadTest.testHttpPostDownload__UseDownloadOfflineContentProviderEnabled
--org.chromium.chrome.browser.download.DownloadTest.testUrlEscaping__UseDownloadOfflineContentProviderDisabled
--org.chromium.chrome.browser.download.DownloadTest.testUrlEscaping__UseDownloadOfflineContentProviderEnabled
-
 # crbug.com/1036571
 -org.chromium.chrome.browser.shape_detection.ShapeDetectionTest.testTextDetection
 
@@ -36,9 +24,6 @@
 
 # crbug.com/1225754
 -org.chromium.chrome.browser.offlinepages.OfflinePageBridgeTest.testGetLoadUrlParamsForOpeningMhtmlFileUrl
-
-# crbug.com/1231219
--org.chromium.chrome.browser.bookmarks.BookmarkTest.testMoveDownMenuItem
 
 # crbug.com/1231227
 -org.chromium.chrome.browser.webapps.WebappDisplayModeTest.testFullScreen

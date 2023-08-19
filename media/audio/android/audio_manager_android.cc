@@ -393,7 +393,7 @@ AudioParameters AudioManagerAndroid::GetPreferredOutputStreamParameters(
     // requested buffer size; this provides significant power savings (~25%) and
     // reduces the potential for glitches under load.
     if (SupportsPerformanceModeForOutput() &&
-        input_params.latency_tag() == AudioLatency::LATENCY_PLAYBACK) {
+        input_params.latency_tag() == AudioLatency::Type::kPlayback) {
       buffer_size = input_params.frames_per_buffer();
     } else {
       buffer_size = GetOptimalOutputFrameSize(sample_rate,

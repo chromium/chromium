@@ -13,9 +13,9 @@
 #include "base/allocator/partition_allocator/partition_alloc_buildflags.h"
 #include "base/allocator/partition_allocator/partition_alloc_config.h"
 #include "base/allocator/partition_allocator/partition_bucket_lookup.h"
+#include "base/allocator/partition_allocator/shim/nonscannable_allocator.h"
 #include "base/debug/profiler.h"
 #include "base/format_macros.h"
-#include "base/memory/nonscannable_memory.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/strings/stringprintf.h"
@@ -139,11 +139,12 @@ void ReportPartitionAllocStats(ProcessMemoryDump* pmd,
     aligned_allocator->DumpStats("aligned", is_light_dump,
                                  &partition_stats_dumper);
   }
-  auto& nonscannable_allocator = internal::NonScannableAllocator::Instance();
+  auto& nonscannable_allocator =
+      allocator_shim::NonScannableAllocator::Instance();
   if (auto* root = nonscannable_allocator.root())
     root->DumpStats("nonscannable", is_light_dump, &partition_stats_dumper);
   auto& nonquarantinable_allocator =
-      internal::NonQuarantinableAllocator::Instance();
+      allocator_shim::NonQuarantinableAllocator::Instance();
   if (auto* root = nonquarantinable_allocator.root())
     root->DumpStats("nonquarantinable", is_light_dump, &partition_stats_dumper);
 

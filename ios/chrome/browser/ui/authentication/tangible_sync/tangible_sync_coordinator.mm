@@ -27,10 +27,6 @@
 #import "ios/chrome/browser/ui/authentication/tangible_sync/tangible_sync_view_controller_delegate.h"
 #import "ios/chrome/browser/unified_consent/unified_consent_service_factory.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 namespace {
 
 constexpr signin_metrics::AccessPoint kTangibleSyncAccessPoint =
@@ -81,7 +77,6 @@ constexpr signin_metrics::AccessPoint kTangibleSyncAccessPoint =
   [super start];
   _viewController = [[TangibleSyncViewController alloc] init];
   _viewController.delegate = self;
-  _viewController.modalInPresentation = YES;
   ChromeBrowserState* browserState = self.browser->GetBrowserState();
   AuthenticationService* authenticationService =
       AuthenticationServiceFactory::GetForBrowserState(browserState);
@@ -104,6 +99,7 @@ constexpr signin_metrics::AccessPoint kTangibleSyncAccessPoint =
   _mediator.consumer = _viewController;
   _mediator.delegate = self;
   if (_firstRun) {
+    _viewController.modalInPresentation = YES;
     base::UmaHistogramEnumeration("FirstRun.Stage",
                                   first_run::kTangibleSyncScreenStart);
   }

@@ -23,7 +23,7 @@ namespace blink {
 
 namespace {
 
-// https://wicg.github.io/compute-pressure/#dfn-max-queued-records
+// https://w3c.github.io/compute-pressure/#dfn-max-queued-records
 constexpr wtf_size_t kMaxQueuedRecords = 10;
 
 }  // namespace
@@ -99,7 +99,7 @@ class PressureObserver final : public ScriptWrappable {
   Member<V8PressureUpdateCallback> observer_callback_;
 
   // Requested sample rate from the user.
-  // https://wicg.github.io/compute-pressure/#dfn-samplerate
+  // https://w3c.github.io/compute-pressure/#dfn-samplerate
   double sample_rate_;
 
   HeapHashSet<Member<ScriptPromiseResolver>>

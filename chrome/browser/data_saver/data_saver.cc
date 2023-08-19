@@ -6,6 +6,7 @@
 #include "base/feature_list.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/task/thread_pool.h"
+#include "base/time/time.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 #if BUILDFLAG(IS_ANDROID)
@@ -19,6 +20,7 @@ absl::optional<bool> g_override_data_saver_for_testing;
 // This can be a global variable because this is an OS setting that does not
 // vary based on Chrome profiles.
 absl::optional<bool> g_cached_data_saver_setting;
+base::TimeTicks g_last_setting_check_time;
 
 bool IsDataSaverEnabledBlockingCall() {
   JNIEnv* env = base::android::AttachCurrentThread();
@@ -41,6 +43,7 @@ void ResetIsDataSaverEnabledForTesting() {
 
 void FetchDataSaverOSSettingAsynchronously() {
 #if BUILDFLAG(IS_ANDROID)
+  g_last_setting_check_time = base::TimeTicks::Now();
   base::ThreadPool::PostTaskAndReplyWithResult(
       FROM_HERE, base::BindOnce(IsDataSaverEnabledBlockingCall),
       base::BindOnce([](bool data_saver_enabled) {
@@ -62,9 +65,12 @@ bool IsDataSaverEnabled() {
     return g_cached_data_saver_setting.value();
   }
 
-  // There is a cached value. Update it asynchronously and return the cached
-  // value immediately.
-  FetchDataSaverOSSettingAsynchronously();
+  // There is a cached value.
+  if (base::TimeTicks::Now() - g_last_setting_check_time > base::Seconds(1)) {
+    // It's been more than one second since we checked the OS setting. Update
+    // it asynchronously and return the cached value immediately.
+    FetchDataSaverOSSettingAsynchronously();
+  }
   DCHECK(g_cached_data_saver_setting);
   return g_cached_data_saver_setting.value();
 #else

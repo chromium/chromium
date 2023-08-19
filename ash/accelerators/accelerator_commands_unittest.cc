@@ -6,6 +6,7 @@
 
 #include <memory>
 
+#include "ash/constants/ash_features.h"
 #include "ash/test/ash_test_base.h"
 #include "ash/wm/window_state.h"
 #include "ash/wm/window_util.h"
@@ -175,7 +176,12 @@ TEST_F(AcceleratorCommandsAudioTest, VolumeSetToZeroAndThenMute) {
   // Volume down, should decrease to zero and no mute.
   PressAndReleaseKey(ui::VKEY_VOLUME_DOWN, ui::EF_NONE);
   EXPECT_EQ(audio_handler->GetOutputVolumePercent(), 0);
-  EXPECT_FALSE(audio_handler->IsOutputMuted());
+  // For QsRevamp: the muted state is equivalent to the zero volume state.
+  if (features::IsQsRevampEnabled()) {
+    EXPECT_TRUE(audio_handler->IsOutputMuted());
+  } else {
+    EXPECT_FALSE(audio_handler->IsOutputMuted());
+  }
   // Volume down again, should decrease to zero and mute.
   PressAndReleaseKey(ui::VKEY_VOLUME_DOWN, ui::EF_NONE);
   EXPECT_EQ(audio_handler->GetOutputVolumePercent(), 0);

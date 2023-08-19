@@ -4,6 +4,9 @@
 
 #include "chromeos/ash/services/bluetooth_config/system_properties_provider_impl.h"
 
+#include "base/logging.h"
+#include "base/trace_event/trace_event.h"
+#include "chromeos/ash/services/bluetooth_config/fast_pair_delegate.h"
 #include "components/session_manager/core/session_manager.h"
 #include "components/user_manager/user_manager.h"
 
@@ -11,13 +14,18 @@ namespace ash::bluetooth_config {
 
 SystemPropertiesProviderImpl::SystemPropertiesProviderImpl(
     AdapterStateController* adapter_state_controller,
-    DeviceCache* device_cache)
+    DeviceCache* device_cache,
+    FastPairDelegate* fast_pair_delegate)
     : adapter_state_controller_(adapter_state_controller),
-      device_cache_(device_cache) {
+      device_cache_(device_cache),
+      fast_pair_delegate_(fast_pair_delegate) {
   adapter_state_controller_observation_.Observe(
       adapter_state_controller_.get());
   device_cache_observation_.Observe(device_cache_.get());
   session_manager::SessionManager::Get()->AddObserver(this);
+  if (fast_pair_delegate_) {
+    fast_pair_delegate_observation_.Observe(fast_pair_delegate_.get());
+  }
 }
 
 SystemPropertiesProviderImpl::~SystemPropertiesProviderImpl() {
@@ -35,10 +43,17 @@ void SystemPropertiesProviderImpl::OnAdapterStateChanged() {
 }
 
 void SystemPropertiesProviderImpl::OnSessionStateChanged() {
+  TRACE_EVENT0("login", "SystemPropertiesProviderImpl::OnSessionStateChanged");
   NotifyPropertiesChanged();
 }
 
 void SystemPropertiesProviderImpl::OnPairedDevicesListChanged() {
+  NotifyPropertiesChanged();
+}
+
+void SystemPropertiesProviderImpl::OnFastPairableDevicesChanged(
+    const std::vector<mojom::PairedBluetoothDevicePropertiesPtr>&
+        fast_pairable_devices) {
   NotifyPropertiesChanged();
 }
 
@@ -50,6 +65,15 @@ mojom::BluetoothSystemState SystemPropertiesProviderImpl::ComputeSystemState()
 std::vector<mojom::PairedBluetoothDevicePropertiesPtr>
 SystemPropertiesProviderImpl::GetPairedDevices() const {
   return device_cache_->GetPairedDevices();
+}
+
+std::vector<mojom::PairedBluetoothDevicePropertiesPtr>
+SystemPropertiesProviderImpl::GetFastPairableDevices() const {
+  if (fast_pair_delegate_) {
+    return fast_pair_delegate_->GetFastPairableDeviceProperties();
+  } else {
+    return std::vector<mojom::PairedBluetoothDevicePropertiesPtr>();
+  }
 }
 
 mojom::BluetoothModificationState

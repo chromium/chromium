@@ -2,32 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import {mojoString16ToString} from 'chrome://resources/js/mojo_type_util.js';
 import {BluetoothDeviceProperties, PairedBluetoothDeviceProperties} from 'chrome://resources/mojo/chromeos/ash/services/bluetooth_config/public/mojom/cros_bluetooth_config.mojom-webui.js';
-import {String16} from 'chrome://resources/mojo/mojo/public/mojom/base/string16.mojom-webui.js';
 
 import {BatteryType} from './bluetooth_types.js';
-
-/**
- * Converts a JS string to mojoBase.mojom.String16 object.
- * @param {string} str
- * @return {!String16}
- */
-export function stringToMojoString16(str) {
-  const arr = [];
-  for (let i = 0; i < str.length; i++) {
-    arr[i] = str.charCodeAt(i);
-  }
-  return {data: arr};
-}
-
-/**
- * Converts mojoBase.mojom.String16 to a JS string.
- * @param {!String16} str16
- * @return {string}
- */
-export function mojoString16ToString(str16) {
-  return str16.data.map(ch => String.fromCodePoint(ch)).join('');
-}
 
 /**
  * @param {?PairedBluetoothDeviceProperties} device

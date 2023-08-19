@@ -11,13 +11,19 @@
 #include "ash/shell.h"
 #include "base/test/bind.h"
 #include "components/exo/shell_surface.h"
+#include "components/exo/sub_surface.h"
+#include "components/exo/surface.h"
 #include "components/exo/test/exo_test_base.h"
 #include "components/exo/test/shell_surface_builder.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/aura/layout_manager.h"
+#include "ui/aura/window.h"
 #include "ui/display/display.h"
 #include "ui/display/test/display_manager_test_api.h"
 #include "ui/display/types/display_constants.h"
+
+using ::testing::InSequence;
 
 namespace exo {
 namespace {
@@ -41,6 +47,19 @@ class SurfaceTreeHostTest : public test::ExoTestBase {
   }
 
   std::unique_ptr<ShellSurface> shell_surface_;
+};
+
+class LayoutManagerChecker : public aura::LayoutManager {
+ public:
+  void OnWindowAddedToLayout(aura::Window* child) override {}
+  void OnWillRemoveWindowFromLayout(aura::Window* child) override {}
+  void OnWindowRemovedFromLayout(aura::Window* child) override {}
+  void OnChildWindowVisibilityChanged(aura::Window* child,
+                                      bool visible) override {}
+  void SetChildBounds(aura::Window* child,
+                      const gfx::Rect& requested_bounds) override {}
+
+  MOCK_METHOD(void, OnWindowResized, (), (override));
 };
 
 }  // namespace
@@ -121,6 +140,160 @@ TEST_F(SurfaceTreeHostTest,
   ASSERT_EQ(leave_enter_ids.size(), 3u);
   EXPECT_EQ(leave_enter_ids[2],
             std::make_pair(internal_display_id, external_display_id));
+}
+
+TEST_F(SurfaceTreeHostTest,
+       UpdateHostWindowBoundsOnlySetsNewBoundsIfContentSizeChanged) {
+  // Create 50x50 shell surface.
+  auto shell_surface = test::ShellSurfaceBuilder({50, 50}).BuildShellSurface();
+  auto* surface = shell_surface->root_surface();
+
+  // Create 25x25 sub surface.
+  auto child_surface = std::make_unique<Surface>();
+  auto child_buffer = std::make_unique<Buffer>(
+      exo_test_helper()->CreateGpuMemoryBuffer({25, 25}));
+  auto sub_surface = std::make_unique<SubSurface>(child_surface.get(), surface);
+  child_surface->Attach(child_buffer.get());
+  child_surface->Commit();
+
+  // Set a mocked LayoutManager for testing purposes.
+  shell_surface->host_window()->SetLayoutManager(
+      std::make_unique<LayoutManagerChecker>());
+  auto* layout_manager_checker = static_cast<LayoutManagerChecker*>(
+      shell_surface->host_window()->layout_manager());
+
+  {
+    InSequence s;
+
+    // SetBounds (and hence OnWindowResized) is called once when changing
+    // content bounds.
+    EXPECT_CALL(*layout_manager_checker, OnWindowResized).Times(1);
+    sub_surface->SetPosition({50, 50});
+    surface->Commit();
+    EXPECT_EQ(gfx::Rect(0, 0, 75, 75), shell_surface->host_window()->bounds());
+
+    // SetBounds (and hence OnWindowResized) is not called when
+    // UpdateHostWindowBounds() is called but content bounds have not changed
+    // in DP.
+    EXPECT_CALL(*layout_manager_checker, OnWindowResized).Times(0);
+    surface->Commit();
+    EXPECT_EQ(gfx::Rect(0, 0, 75, 75), shell_surface->host_window()->bounds());
+
+    // SetBounds (and hence OnWindowResized) is called once when
+    // destroying the root surface.
+    EXPECT_CALL(*layout_manager_checker, OnWindowResized).Times(1);
+    test::ShellSurfaceBuilder::DestroyRootSurface(shell_surface.get());
+    EXPECT_EQ(gfx::Rect(0, 0, 0, 0), shell_surface->host_window()->bounds());
+  }
+}
+
+TEST_F(SurfaceTreeHostTest,
+       UpdateHostWindowBoundsAllocatesLocalSurfaceIdWhenPixelSizeOnlyChanges) {
+  // Set device scale factor to 300%.
+  UpdateDisplay("800x600*3");
+
+  // Create 50x50 shell surface which submits in pixel coordinates.
+  auto shell_surface = test::ShellSurfaceBuilder({50, 50})
+                           .SetClientSubmitsInPixelCoordinates(true)
+                           .BuildShellSurface();
+  auto* surface = shell_surface->root_surface();
+
+  // Create 1x1 sub surface.
+  auto child_surface = std::make_unique<Surface>();
+  auto child_buffer = std::make_unique<Buffer>(
+      exo_test_helper()->CreateGpuMemoryBuffer({1, 1}));
+  auto sub_surface = std::make_unique<SubSurface>(child_surface.get(), surface);
+  child_surface->Attach(child_buffer.get());
+  child_surface->Commit();
+
+  // Set a mocked LayoutManager for testing purposes.
+  shell_surface->host_window()->SetLayoutManager(
+      std::make_unique<LayoutManagerChecker>());
+  auto* layout_manager_checker = static_cast<LayoutManagerChecker*>(
+      shell_surface->host_window()->layout_manager());
+
+  // The 50x50 content bound is scaled to 17x17.
+  EXPECT_EQ(gfx::Rect(0, 0, 17, 17), shell_surface->host_window()->bounds());
+
+  {
+    InSequence s;
+
+    // Set a 51x51 content bound (also scaled to 17).
+    // AllocateLocalSurfaceId is called here because DP size has not changed,
+    // but pixel size has, so we need a new surface id.
+    // SetBounds (and hence OnWindowResized) is not called.
+    EXPECT_CALL(*layout_manager_checker, OnWindowResized).Times(0);
+    auto local_surface_id = shell_surface->host_window()->GetLocalSurfaceId();
+    sub_surface->SetPosition({50, 50});
+    surface->Commit();
+    EXPECT_EQ(gfx::Rect(0, 0, 17, 17), shell_surface->host_window()->bounds());
+    EXPECT_NE(shell_surface->host_window()->GetLocalSurfaceId(),
+              local_surface_id);
+
+    // If we try again with the same pixel size, no surface id will be
+    // allocated.
+    // SetBounds (and hence OnWindowResized) is not called.
+    EXPECT_CALL(*layout_manager_checker, OnWindowResized).Times(0);
+    local_surface_id = shell_surface->host_window()->GetLocalSurfaceId();
+    surface->Commit();
+    EXPECT_EQ(gfx::Rect(0, 0, 17, 17), shell_surface->host_window()->bounds());
+    EXPECT_EQ(shell_surface->host_window()->GetLocalSurfaceId(),
+              local_surface_id);
+
+    // SetBounds (and hence OnWindowResized) is called once when
+    // destroying the root surface.
+    EXPECT_CALL(*layout_manager_checker, OnWindowResized).Times(1);
+    test::ShellSurfaceBuilder::DestroyRootSurface(shell_surface.get());
+    EXPECT_EQ(gfx::Rect(0, 0, 0, 0), shell_surface->host_window()->bounds());
+  }
+}
+
+TEST_F(SurfaceTreeHostTest,
+       UpdateScaleFactorUpdatesHostWindowBoundsEvenWhenPixelSizeIsSame) {
+  // Create 50x50 shell surface.
+  auto shell_surface = test::ShellSurfaceBuilder({50, 50})
+                           .SetClientSubmitsInPixelCoordinates(true)
+                           .BuildShellSurface();
+  auto* surface = shell_surface->root_surface();
+
+  // Create 25x25 sub surface.
+  auto child_surface = std::make_unique<Surface>();
+  auto child_buffer = std::make_unique<Buffer>(
+      exo_test_helper()->CreateGpuMemoryBuffer({25, 25}));
+  auto sub_surface = std::make_unique<SubSurface>(child_surface.get(), surface);
+  child_surface->Attach(child_buffer.get());
+  child_surface->Commit();
+
+  // Set a mocked LayoutManager for testing purposes.
+  shell_surface->host_window()->SetLayoutManager(
+      std::make_unique<LayoutManagerChecker>());
+  auto* layout_manager_checker = static_cast<LayoutManagerChecker*>(
+      shell_surface->host_window()->layout_manager());
+
+  {
+    InSequence s;
+
+    // SetBounds (and hence OnWindowResized) is called once when changing
+    // content bounds.
+    EXPECT_CALL(*layout_manager_checker, OnWindowResized).Times(1);
+    sub_surface->SetPosition({50, 50});
+    surface->Commit();
+    EXPECT_EQ(gfx::Rect(0, 0, 75, 75), shell_surface->host_window()->bounds());
+
+    // Changing scale factor can affect host window size as it's in DP
+    // coordinate.
+    EXPECT_CALL(*layout_manager_checker, OnWindowResized).Times(1);
+    shell_surface->SetScaleFactor(2.f);
+    shell_surface->host_window()->AllocateLocalSurfaceId();
+    surface->Commit();
+    EXPECT_EQ(gfx::Rect(0, 0, 38, 38), shell_surface->host_window()->bounds());
+
+    // SetBounds (and hence OnWindowResized) is called once when
+    // destroying the root surface.
+    EXPECT_CALL(*layout_manager_checker, OnWindowResized).Times(1);
+    test::ShellSurfaceBuilder::DestroyRootSurface(shell_surface.get());
+    EXPECT_EQ(gfx::Rect(0, 0, 0, 0), shell_surface->host_window()->bounds());
+  }
 }
 
 }  // namespace exo

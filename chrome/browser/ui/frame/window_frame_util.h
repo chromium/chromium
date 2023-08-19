@@ -17,24 +17,24 @@ class Browser;
 // that need to be accessible outside of /browser/ui/views.
 class WindowFrameUtil {
  public:
-  static constexpr int kWindows10GlassCaptionButtonWidth = 45;
-  static constexpr int kWindows10GlassCaptionButtonHeightRestored = 29;
-  static constexpr int kWindows10GlassCaptionButtonVisualSpacing = 1;
+  static constexpr int kWindowsCaptionButtonWidth = 45;
+  static constexpr int kWindowsCaptionButtonHeightRestored = 29;
+  static constexpr int kWindowsCaptionButtonVisualSpacing = 1;
 
   WindowFrameUtil(const WindowFrameUtil&) = delete;
   WindowFrameUtil& operator=(const WindowFrameUtil&) = delete;
 
-  // Returns the alpha that the Windows10CaptionButton should use to blend the
+  // Returns the alpha that the WindowsCaptionButton should use to blend the
   // color provided by the theme in determining the button's 'base color'.
-  static SkAlpha CalculateWindows10GlassCaptionButtonBackgroundAlpha(
+  static SkAlpha CalculateWindowsCaptionButtonBackgroundAlpha(
       SkAlpha theme_alpha);
 
   // Returns the size of the area occupied by the caption buttons in the glass
   // browser frame view.
-  static gfx::Size GetWindows10GlassCaptionButtonAreaSize();
+  static gfx::Size GetWindowsCaptionButtonAreaSize();
 
-  // Returns true if the windows 10 caption button is enabled.
-  static bool IsWin10TabSearchCaptionButtonEnabled(const Browser* browser);
+  // Returns true if the Windows caption button is enabled.
+  static bool IsWindowsTabSearchCaptionButtonEnabled(const Browser* browser);
 
  private:
   WindowFrameUtil() {}

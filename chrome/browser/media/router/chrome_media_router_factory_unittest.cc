@@ -25,9 +25,14 @@ class ChromeMediaRouterFactoryTest : public testing::Test {
   void SetUp() override {
     ChromeMediaRouterFactory::GetInstance()->SetTestingFactory(
         profile(), base::BindRepeating(&MockMediaRouter::Create));
+    ChromeMediaRouterFactory::GetInstance()->SetTestingFactory(
+        otr_profile(), base::BindRepeating(&MockMediaRouter::Create));
   }
 
   Profile* profile() { return &profile_; }
+  Profile* otr_profile() {
+    return profile_.GetPrimaryOTRProfile(/*create_if_needed=*/true);
+  }
 
  private:
   content::BrowserTaskEnvironment task_environment_;
@@ -39,18 +44,17 @@ TEST_F(ChromeMediaRouterFactoryTest, CreateForRegularProfile) {
 }
 
 TEST_F(ChromeMediaRouterFactoryTest, CreateForIncognitoProfile) {
-  Profile* incognito_profile =
-      profile()->GetPrimaryOTRProfile(/*create_if_needed=*/true);
-  ASSERT_TRUE(incognito_profile);
-
-  // Makes sure a MediaRouter can be created from an incognito Profile.
+  // Makes sure a MediaRouter can be created from an OTR Profile.
   MediaRouter* router =
-      MediaRouterFactory::GetApiForBrowserContext(incognito_profile);
+      MediaRouterFactory::GetApiForBrowserContext(otr_profile());
   ASSERT_TRUE(router);
 
-  if (!base::FeatureList::IsEnabled(kMediaRouterOTRInstance)) {
-    // A Profile and its incognito Profile share the same MediaRouter instance.
-    ASSERT_EQ(router, MediaRouterFactory::GetApiForBrowserContext(profile()));
+  if (base::FeatureList::IsEnabled(kMediaRouterOTRInstance)) {
+    // A Profile and its OTR Profile have different instances.
+    EXPECT_NE(router, MediaRouterFactory::GetApiForBrowserContext(profile()));
+  } else {
+    // A Profile and its OTR Profile share the same MediaRouter instance.
+    EXPECT_EQ(router, MediaRouterFactory::GetApiForBrowserContext(profile()));
   }
 }
 

@@ -119,6 +119,7 @@ class GPU_GLES2_EXPORT ServiceTransferCache
     // For metrics.
     uint32_t num_reuse = 0u;
     base::TimeTicks last_use = base::TimeTicks::Now();
+    base::TimeDelta max_last_use_delta;
   };
 
   struct EntryKeyComp {

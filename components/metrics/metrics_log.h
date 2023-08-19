@@ -172,15 +172,26 @@ class MetricsLog {
                                 DelegatingProvider* delegating_provider,
                                 PrefService* local_state);
 
+  // Returns the current time using |network_clock_| if non-null (falls back to
+  // |clock_| otherwise). If |record_time_zone| is true, the returned time will
+  // also be populated with the time zone. Must be called on the main thread.
+  ChromeUserMetricsExtension::RealLocalTime GetCurrentClockTime(
+      bool record_time_zone);
+
   // Finalizes the log. Calling this function will make a call to CloseLog().
   // |truncate_events| determines whether user action and omnibox data within
   // the log should be trimmed/truncated (for bandwidth concerns).
   // |current_app_version| is the current version of the application, and is
   // used to determine whether the log data was obtained in a previous version.
-  // The serialized proto of the finalized log will be written to |encoded_log|.
-  void FinalizeLog(bool truncate_events,
-                   const std::string& current_app_version,
-                   std::string* encoded_log);
+  // |close_time| is roughly the current time -- it is provided as a param
+  // since computing the current time can sometimes only be done on the main
+  // thread, and this method may be called on a background thread. The
+  // serialized proto of the finalized log will be written to |encoded_log|.
+  void FinalizeLog(
+      bool truncate_events,
+      const std::string& current_app_version,
+      absl::optional<ChromeUserMetricsExtension::RealLocalTime> close_time,
+      std::string* encoded_log);
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   // Assigns a user ID to the log. This should be called immediately after

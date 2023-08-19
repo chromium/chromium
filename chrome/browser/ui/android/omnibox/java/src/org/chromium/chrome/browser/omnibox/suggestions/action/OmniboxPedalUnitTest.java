@@ -99,7 +99,7 @@ public class OmniboxPedalUnitTest {
     @Test
     public void executePedal_clearBrowsingData() {
         new OmniboxPedal(0, "hint", "", OmniboxPedalId.CLEAR_BROWSING_DATA).execute(mDelegate);
-        verify(mDelegate, times(1)).openSettingsPage(SettingsFragment.CLEAR_BROWSING_DATA);
+        verify(mDelegate).handleClearBrowsingData();
         verifyNoMoreInteractions(mDelegate);
     }
 

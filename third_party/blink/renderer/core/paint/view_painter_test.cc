@@ -160,7 +160,7 @@ TEST_P(ViewPainterTest, FrameScrollHitTestProperties) {
   EXPECT_EQ(nullptr, scroll_hit_test_transform.ScrollNode());
   const auto& scroll_hit_test_clip =
       ToUnaliased(scroll_hit_test_chunk.properties.Clip());
-  EXPECT_EQ(gfx::RectF(LayoutRect::InfiniteIntRect()),
+  EXPECT_EQ(gfx::RectF(InfiniteIntRect()),
             scroll_hit_test_clip.PaintClipRect().Rect());
 
   // The scrolled contents should be scrolled and clipped.
@@ -178,80 +178,23 @@ TEST_P(ViewPainterTest, FrameScrollHitTestProperties) {
             scroll_hit_test_chunk.hit_test_data->scroll_translation);
 }
 
-class ViewPainterTouchActionRectTest : public ViewPainterTest {
- public:
-  void SetUp() override {
-    ViewPainterTest::SetUp();
-    SetPreferCompositingToLCDText(true);
-  }
-};
-
-INSTANTIATE_PAINT_TEST_SUITE_P(ViewPainterTouchActionRectTest);
-
-TEST_P(ViewPainterTouchActionRectTest, TouchActionRectScrollingContents) {
+TEST_P(ViewPainterTest, TouchActionRect) {
+  SetPreferCompositingToLCDText(true);
   SetBodyInnerHTML(R"HTML(
     <style>
       ::-webkit-scrollbar { display: none; }
       html {
-        background: lightblue;
-        touch-action: none;
-      }
-      body {
-        margin: 0;
-      }
-    </style>
-    <div id='forcescroll' style='width: 0; height: 3000px;'></div>
-  )HTML");
-
-  GetFrame().DomWindow()->scrollBy(0, 100);
-  UpdateAllLifecyclePhasesForTest();
-
-  HitTestData view_hit_test_data;
-  view_hit_test_data.touch_action_rects = {{gfx::Rect(0, 0, 800, 3000)},
-                                           {gfx::Rect(0, 0, 800, 3000)},
-                                           {gfx::Rect(0, 0, 800, 3000)}};
-
-  HitTestData non_scrolling_hit_test_data;
-  non_scrolling_hit_test_data.touch_action_rects = {
-      {gfx::Rect(0, 0, 800, 600)}};
-  HitTestData scroll_hit_test_data;
-  scroll_hit_test_data.scroll_translation =
-      GetLayoutView().FirstFragment().PaintProperties()->ScrollTranslation();
-  scroll_hit_test_data.scroll_hit_test_rect = gfx::Rect(0, 0, 800, 600);
-  EXPECT_THAT(
-      RootPaintController().PaintChunks()[0],
-      IsPaintChunk(0, 0,
-                   PaintChunk::Id(GetLayoutView().Layer()->Id(),
-                                  DisplayItem::kLayerChunk),
-                   GetLayoutView().FirstFragment().LocalBorderBoxProperties(),
-                   &non_scrolling_hit_test_data, gfx::Rect(0, 0, 800, 600)));
-  EXPECT_THAT(
-      RootPaintController().PaintChunks()[1],
-      IsPaintChunk(
-          0, 0,
-          PaintChunk::Id(GetLayoutView().Id(), DisplayItem::kScrollHitTest),
-          GetLayoutView().FirstFragment().LocalBorderBoxProperties(),
-          &scroll_hit_test_data, gfx::Rect(0, 0, 800, 600)));
-
-  EXPECT_THAT(ContentPaintChunks(),
-              ElementsAre(VIEW_SCROLLING_BACKGROUND_CHUNK(
-                  1, &view_hit_test_data, gfx::Rect(0, 0, 800, 3000))));
-}
-
-TEST_P(ViewPainterTouchActionRectTest, TouchActionRectNonScrollingContents) {
-  SetBodyInnerHTML(R"HTML(
-    <style>
-      ::-webkit-scrollbar { display: none; }
-      html {
-         background: radial-gradient(
+        background: radial-gradient(
           circle at 100px 100px, blue, transparent 200px) fixed;
-        touch-action: none;
+        touch-action: pinch-zoom;
       }
       body {
         margin: 0;
       }
     </style>
-    <div id='forcescroll' style='width: 0; height: 3000px;'></div>
+    <div id='child' style='width: 10px; height: 100px; touch-action: none'>
+    </div>
+    <div id='forcescroll' style='width: 0; height: 2900px;'></div>
   )HTML");
 
   GetFrame().DomWindow()->scrollBy(0, 100);
@@ -261,12 +204,14 @@ TEST_P(ViewPainterTouchActionRectTest, TouchActionRectNonScrollingContents) {
   auto non_scrolling_properties =
       view->FirstFragment().LocalBorderBoxProperties();
   HitTestData view_hit_test_data;
-  view_hit_test_data.touch_action_rects = {{gfx::Rect(0, 0, 800, 600)}};
+  view_hit_test_data.touch_action_rects = {
+      {gfx::Rect(0, 0, 800, 600), TouchAction::kPinchZoom}};
   auto* html = GetDocument().documentElement()->GetLayoutBox();
   auto scrolling_properties = view->FirstFragment().ContentsProperties();
   HitTestData scrolling_hit_test_data;
-  scrolling_hit_test_data.touch_action_rects = {{gfx::Rect(0, 0, 800, 3000)},
-                                                {gfx::Rect(0, 0, 800, 3000)}};
+  scrolling_hit_test_data.touch_action_rects = {
+      {gfx::Rect(0, 0, 800, 3000), TouchAction::kPinchZoom},
+      {gfx::Rect(0, 0, 10, 100), TouchAction::kNone}};
 
   HitTestData scroll_hit_test_data;
   scroll_hit_test_data.scroll_translation =

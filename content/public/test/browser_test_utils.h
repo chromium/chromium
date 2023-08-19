@@ -341,7 +341,7 @@ void SimulateMouseClickAt(WebContents* web_contents,
 // TODO(https://crbug.com/1199644): Make the Simulate* methods more user
 // friendly by taking zooming into account.
 gfx::PointF GetCenterCoordinatesOfElementWithId(
-    content::WebContents* web_contents,
+    const ToRenderFrameHost& adapter,
     base::StringPiece id);
 
 // Retrieves the center coordinates of the element with id |id| and simulates a
@@ -839,8 +839,8 @@ enum EvalJsOptions {
 //  - |script| doesn't need to call domAutomationController.send directly.
 //  - When a script doesn't produce a result, it's likely an assertion
 //    failure rather than a hang.  Doesn't get confused by crosstalk with
-//    other callers of domAutomationController.send() -- script results carry
-//    a GUID.
+//    callers of domAutomationController.send() -- EvalJs does not rely on
+//    domAutomationController.
 //  - Lists, dicts, null values, etc. can be returned as base::Values.
 //
 // It is guaranteed that EvalJs works even when the target frame is frozen.
@@ -940,16 +940,14 @@ std::vector<net::CanonicalCookie> GetCanonicalCookies(
     net::CookiePartitionKeyCollection key_collection =
         net::CookiePartitionKeyCollection::ContainsAll());
 
-// Sets a cookie for the given url. Uses inclusive SameSiteCookieContext and
-// SamePartyContext::Type by default, which get cookies regardless of their
-// SameSite and SameParty attributes. Returns true on success.
+// Sets a cookie for the given url. Uses inclusive SameSiteCookieContext by
+// default, which gets cookies regardless of their SameSite attribute. Returns
+// true on success.
 bool SetCookie(BrowserContext* browser_context,
                const GURL& url,
                const std::string& value,
                net::CookieOptions::SameSiteCookieContext context =
-                   net::CookieOptions::SameSiteCookieContext::MakeInclusive(),
-               net::SamePartyContext::Type party_context =
-                   net::SamePartyContext::Type::kSameParty);
+                   net::CookieOptions::SameSiteCookieContext::MakeInclusive());
 
 // Same as `SetCookie`, but sets a Partitioned cookie with the given partition
 // key. `value` is expected to use the `Partitioned` attribute.
@@ -959,9 +957,7 @@ bool SetPartitionedCookie(
     const std::string& value,
     const net::CookiePartitionKey& cookie_partition_key,
     net::CookieOptions::SameSiteCookieContext context =
-        net::CookieOptions::SameSiteCookieContext::MakeInclusive(),
-    net::SamePartyContext::Type party_context =
-        net::SamePartyContext::Type::kSameParty);
+        net::CookieOptions::SameSiteCookieContext::MakeInclusive());
 
 // Deletes cookies matching the provided filter. Returns the number of cookies
 // that were deleted.
@@ -1321,7 +1317,7 @@ class WebContentsAddedObserver {
 
   base::CallbackListSubscription creation_subscription_;
 
-  raw_ptr<WebContents, DanglingUntriaged> web_contents_ = nullptr;
+  raw_ptr<WebContents, AcrossTasksDanglingUntriaged> web_contents_ = nullptr;
   base::OnceClosure quit_closure_;
 };
 
@@ -1861,7 +1857,7 @@ class NavigationHandleCommitObserver : public content::WebContentsObserver {
 class WebContentsConsoleObserver : public WebContentsObserver {
  public:
   struct Message {
-    raw_ptr<RenderFrameHost, DanglingUntriaged> source_frame;
+    raw_ptr<RenderFrameHost, AcrossTasksDanglingUntriaged> source_frame;
     blink::mojom::ConsoleMessageLevel log_level;
     std::u16string message;
     int32_t line_no;
@@ -2374,8 +2370,11 @@ class CookieChangeObserver : public content::WebContentsObserver {
 RegisterWebContentsCreationCallback(
     base::RepeatingCallback<void(WebContents*)> callback);
 
-// Functions to traverse history and wait until the traversal completes. These
-// are wrappers around the same-named methods of the `NavigationController`.
+// Functions to traverse history and wait until the traversal completes, even if
+// the loading is stopped halfway (e.g. if a BackForwardCache entry is evicted
+// during the restoration, causing the old NavigationRequest to be reset and a
+// new NavigationRequest to be restarted). These are wrappers around the
+// same-named methods of the `NavigationController`.
 [[nodiscard]] bool HistoryGoToIndex(WebContents* wc, int index);
 [[nodiscard]] bool HistoryGoToOffset(WebContents* wc, int offset);
 [[nodiscard]] bool HistoryGoBack(WebContents* wc);

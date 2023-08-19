@@ -22,10 +22,12 @@
 
 #include "third_party/blink/renderer/core/css/style_rule_import.h"
 
+#include "third_party/blink/renderer/core/core_probes_inl.h"
 #include "third_party/blink/renderer/core/css/style_sheet_contents.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/execution_context/security_context.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
+#include "third_party/blink/renderer/core/inspector/inspector_audits_issue.h"
 #include "third_party/blink/renderer/core/loader/resource/css_style_sheet_resource.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/loader/fetch/fetch_initiator_type_names.h"
@@ -82,6 +84,15 @@ void StyleRuleImport::NotifyFinished(Resource* resource) {
   if (parent_style_sheet_) {
     document = parent_style_sheet_->SingleOwnerDocument();
     parent_context = parent_style_sheet_->ParserContext();
+    if (resource->LoadFailedOrCanceled() && document) {
+      AuditsIssue::ReportStylesheetLoadingRequestFailedIssue(
+          document, resource->Url(),
+          resource->LastResourceRequest().GetDevToolsId(),
+          parent_style_sheet_->BaseURL(),
+          resource->Options().initiator_info.position.line_,
+          resource->Options().initiator_info.position.column_,
+          resource->GetResourceError().LocalizedDescription());
+    }
   }
 
   // If either parent or resource is marked as ad, the new CSS will be tagged
@@ -151,6 +162,9 @@ void StyleRuleImport::RequestStyleSheet() {
   Referrer referrer = parser_context->GetReferrer();
   ResourceLoaderOptions options(parser_context->JavascriptWorld());
   options.initiator_info.name = fetch_initiator_type_names::kCSS;
+  if (position_hint_) {
+    options.initiator_info.position = *position_hint_;
+  }
   options.initiator_info.referrer = referrer.referrer;
   ResourceRequest resource_request(abs_url);
   resource_request.SetReferrerString(referrer.referrer);

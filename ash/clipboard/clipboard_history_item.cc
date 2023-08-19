@@ -8,6 +8,7 @@
 #include <vector>
 
 #include "ash/clipboard/clipboard_history_util.h"
+#include "ash/strings/grit/ash_strings.h"
 #include "base/callback_list.h"
 #include "base/notreached.h"
 #include "base/strings/escape.h"
@@ -15,7 +16,9 @@
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/time/time.h"
+#include "chromeos/constants/chromeos_features.h"
 #include "chromeos/crosapi/mojom/clipboard_history.mojom.h"
+#include "chromeos/ui/clipboard_history/clipboard_history_util.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/models/image_model.h"
@@ -97,6 +100,13 @@ std::u16string DetermineDisplayTextForFileSystemData(
     return std::u16string();
   }
 
+  size_t file_count = source_list.size();
+  if (chromeos::features::IsClipboardHistoryRefreshEnabled() &&
+      file_count > 1u) {
+    return l10n_util::GetPluralStringFUTF16(
+        IDS_ASH_CLIPBOARD_HISTORY_FILE_COUNT, file_count);
+  }
+
   // Strip path information, so all that's left are file names.
   for (auto& source : source_list) {
     source = source.substr(source.find_last_of(u"/") + 1);
@@ -137,7 +147,28 @@ std::u16string DetermineDisplayText(const ClipboardHistoryItem& item) {
   }
 }
 
+absl::optional<gfx::ElideBehavior> DetermineDisplayTextElideBehavior(
+    const ClipboardHistoryItem& item) {
+  return chromeos::features::IsClipboardHistoryRefreshEnabled() &&
+                 chromeos::clipboard_history::IsUrl(item.display_text())
+             ? absl::make_optional(gfx::ELIDE_MIDDLE)
+             : absl::nullopt;
+}
+
+absl::optional<size_t> DetermineDisplayTextMaxLines(
+    const ClipboardHistoryItem& item) {
+  return chromeos::features::IsClipboardHistoryRefreshEnabled() &&
+                 chromeos::clipboard_history::IsUrl(item.display_text())
+             ? absl::make_optional(1u)
+             : absl::nullopt;
+}
+
 absl::optional<ui::ImageModel> DetermineIcon(const ClipboardHistoryItem& item) {
+  if (chromeos::features::IsClipboardHistoryRefreshEnabled()) {
+    return chromeos::clipboard_history::GetIconForDescriptor(
+        clipboard_history_util::ItemToDescriptor(item));
+  }
+
   if (item.display_format() !=
       crosapi::mojom::ClipboardHistoryDisplayFormat::kFile) {
     return absl::nullopt;
@@ -156,8 +187,10 @@ ClipboardHistoryItem::ClipboardHistoryItem(ui::ClipboardData data)
       display_format_(CalculateDisplayFormat(*this)),
       display_image_(DetermineDisplayImage(*this)),
       display_text_(DetermineDisplayText(*this)),
-      icon_(DetermineIcon(*this)),
-      file_count_(clipboard_history_util::GetCountOfCopiedFiles(data_)) {}
+      display_text_elide_behavior_(DetermineDisplayTextElideBehavior(*this)),
+      display_text_max_lines_(DetermineDisplayTextMaxLines(*this)),
+      file_count_(clipboard_history_util::GetCountOfCopiedFiles(data_)),
+      icon_(DetermineIcon(*this)) {}
 
 ClipboardHistoryItem::ClipboardHistoryItem(const ClipboardHistoryItem& other)
     : id_(other.id_),
@@ -167,8 +200,11 @@ ClipboardHistoryItem::ClipboardHistoryItem(const ClipboardHistoryItem& other)
       display_format_(other.display_format_),
       display_image_(other.display_image_),
       display_text_(other.display_text_),
+      display_text_elide_behavior_(other.display_text_elide_behavior_),
+      display_text_max_lines_(other.display_text_max_lines_),
+      file_count_(other.file_count_),
       icon_(other.icon_),
-      file_count_(other.file_count_) {}
+      secondary_display_text_(other.secondary_display_text_) {}
 
 ClipboardHistoryItem::ClipboardHistoryItem(ClipboardHistoryItem&& other)
     : id_(std::move(other.id_)),
@@ -178,8 +214,12 @@ ClipboardHistoryItem::ClipboardHistoryItem(ClipboardHistoryItem&& other)
       display_format_(std::move(other.display_format_)),
       display_image_(std::move(other.display_image_)),
       display_text_(std::move(other.display_text_)),
+      display_text_elide_behavior_(
+          std::move(other.display_text_elide_behavior_)),
+      display_text_max_lines_(std::move(other.display_text_max_lines_)),
+      file_count_(std::move(other.file_count_)),
       icon_(std::move(other.icon_)),
-      file_count_(std::move(other.file_count_)) {}
+      secondary_display_text_(std::move(other.secondary_display_text_)) {}
 
 ClipboardHistoryItem::~ClipboardHistoryItem() = default;
 

@@ -15,12 +15,12 @@
 #include "ios/chrome/browser/shared/model/web_state_list/web_state_list_observer.h"
 #include "ios/web/public/web_state_observer.h"
 
-class ChromeBrowserState;
 class AllWebStateListObservationRegistrar;
+class BrowserList;
 
 namespace sync_sessions {
 class SyncSessionsClient;
-}
+}  // namespace sync_sessions
 
 // A LocalEventRouter that drives session sync via observation of
 // web::WebState-related events.
@@ -28,7 +28,7 @@ class IOSChromeLocalSessionEventRouter
     : public sync_sessions::LocalSessionEventRouter {
  public:
   IOSChromeLocalSessionEventRouter(
-      ChromeBrowserState* browser_state,
+      BrowserList* browser_list,
       sync_sessions::SyncSessionsClient* sessions_client_,
       const syncer::SyncableService::StartSyncFlare& flare);
 
@@ -55,17 +55,9 @@ class IOSChromeLocalSessionEventRouter
 
    private:
     // WebStateListObserver:
-    void WebStateInsertedAt(WebStateList* web_state_list,
-                            web::WebState* web_state,
-                            int index,
-                            bool activating) override;
-    void WebStateDetachedAt(WebStateList* web_state_list,
-                            web::WebState* web_state,
-                            int index) override;
-    void WebStateReplacedAt(WebStateList* web_state_list,
-                            web::WebState* old_web_state,
-                            web::WebState* new_web_state,
-                            int index) override;
+    void WebStateListDidChange(WebStateList* web_state_list,
+                               const WebStateListChange& change,
+                               const WebStateListStatus& status) override;
     void WillBeginBatchOperation(WebStateList* web_state_list) override;
     void BatchOperationEnded(WebStateList* web_state_list) override;
 
@@ -95,7 +87,7 @@ class IOSChromeLocalSessionEventRouter
   // Called on observation of a change in `web_state`.
   void OnWebStateChange(web::WebState* web_state);
 
-  // Observation registrars for the associated browser state; owns an instance
+  // Observation registrar for the associated browser list; owns an instance
   // of IOSChromeLocalSessionEventRouter::Observer.
   std::unique_ptr<AllWebStateListObservationRegistrar> const registrar_;
 

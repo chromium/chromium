@@ -9,52 +9,61 @@ class PrefRegistrySimple;
 
 namespace guest_os::prefs {
 
-// GuestOsSharedPath
-extern const char kGuestOSPathsSharedToVms[];
+// Dictionary of filesystem paths mapped to the list of VMs that the paths are
+// shared with.
+inline constexpr char kGuestOSPathsSharedToVms[] =
+    "guest_os.paths_shared_to_vms";
 
-// GuestOsMimeTypes
-extern const char kGuestOsMimeTypes[];
+// Mapping of file extension to mime types for each VM/Container.
+// Use of root 'crostini' is for historic reasons / backwards compatibility.
+inline constexpr char kGuestOsMimeTypes[] = "crostini.mime_types";
 
 // GuestOsRegistry and GuestId
-extern const char kVmTypeKey[];
-extern const char kVmNameKey[];
-extern const char kContainerNameKey[];
+inline constexpr char kVmTypeKey[] = "vm_type";
+inline constexpr char kVmNameKey[] = "vm_name";
+inline constexpr char kContainerNameKey[] = "container_name";
 
-// GuestOsRegistry
-extern const char kGuestOsRegistry[];
-extern const char kAppDesktopFileIdKey[];
-extern const char kAppCommentKey[];
-extern const char kAppExtensionsKey[];
-extern const char kAppMimeTypesKey[];
-extern const char kAppKeywordsKey[];
-extern const char kAppExecKey[];
-extern const char kAppExecutableFileNameKey[];
-extern const char kAppNameKey[];
-extern const char kAppNoDisplayKey[];
-extern const char kAppTerminalKey[];
-extern const char kAppScaledKey[];
-extern const char kAppPackageIdKey[];
-extern const char kAppStartupWMClassKey[];
-extern const char kAppStartupNotifyKey[];
-extern const char kAppInstallTimeKey[];
-extern const char kAppLastLaunchTimeKey[];
+// Registry of installed app for each VM/container.
+inline constexpr char kGuestOsRegistry[] = "crostini.registry";
+
+// Keys for the |kGuestOsRegistry| Dictionary stored in prefs for each app.
+inline constexpr char kAppDesktopFileIdKey[] = "desktop_file_id";
+inline constexpr char kAppCommentKey[] = "comment";
+inline constexpr char kAppExtensionsKey[] = "extensions";
+inline constexpr char kAppMimeTypesKey[] = "mime_types";
+inline constexpr char kAppKeywordsKey[] = "keywords";
+inline constexpr char kAppExecKey[] = "exec";
+inline constexpr char kAppExecutableFileNameKey[] = "executable_file_name";
+inline constexpr char kAppNameKey[] = "name";
+inline constexpr char kAppNoDisplayKey[] = "no_display";
+inline constexpr char kAppTerminalKey[] = "terminal";
+inline constexpr char kAppScaledKey[] = "scaled";
+inline constexpr char kAppPackageIdKey[] = "package_id";
+inline constexpr char kAppStartupWMClassKey[] = "startup_wm_class";
+inline constexpr char kAppStartupNotifyKey[] = "startup_notify";
+inline constexpr char kAppInstallTimeKey[] = "install_time";
+inline constexpr char kAppLastLaunchTimeKey[] = "last_launch_time";
 
 // GuestId
-extern const char kGuestOsContainers[];
-extern const char kContainerCreateOptions[];
-extern const char kContainerOsVersionKey[];
-extern const char kContainerOsPrettyNameKey[];
-extern const char kContainerColorKey[];
+inline constexpr char kGuestOsContainers[] = "crostini.containers";
+inline constexpr char kContainerCreateOptions[] = "crostini_create_options";
+inline constexpr char kContainerOsVersionKey[] = "container_os_version";
+inline constexpr char kContainerOsPrettyNameKey[] = "container_os_pretty_name";
+// SkColor used to assign badges to apps associated with this container.
+inline constexpr char kContainerColorKey[] = "badge_color";
 // Whether or not this guest should show up in the terminal app.
-extern const char kTerminalSupportedKey[];
+inline constexpr char kTerminalSupportedKey[] = "terminal_supported";
 // The display name to use in the terminal.
-extern const char kTerminalLabel[];
-extern const char kContainerSharedVmDevicesKey[];
-extern const char kBruschettaConfigId[];
+inline constexpr char kTerminalLabel[] = "terminal_label";
+// Should the terminal show the disabled by enterprise policy icon.
+inline constexpr char kTerminalPolicyDisabled[] = "terminal_policy_disabled";
+inline constexpr char kContainerSharedVmDevicesKey[] =
+    "container_shared_vm_devices";
+inline constexpr char kBruschettaConfigId[] = "bruschetta_config_id";
 
 // Terminal
 // Dictionary of terminal UI settings such as font style, colors, etc.
-extern const char kGuestOsTerminalSettings[];
+inline constexpr char kGuestOsTerminalSettings[] = "crostini.terminal_settings";
 
 void RegisterProfilePrefs(PrefRegistrySimple* registry);
 

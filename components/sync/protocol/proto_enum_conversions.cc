@@ -545,20 +545,6 @@ const char* ProtoEnumToString(
   return "";
 }
 
-// TODO(markusheintz): Remove.
-const char* ProtoEnumToString(
-    sync_pb::GaiaPasswordReuse::PasswordCaptured::EventTrigger trigger) {
-  ASSERT_ENUM_BOUNDS(sync_pb::GaiaPasswordReuse::PasswordCaptured, EventTrigger,
-                     UNSPECIFIED, EXPIRED_28D_TIMER);
-  switch (trigger) {
-    ENUM_CASE(sync_pb::GaiaPasswordReuse::PasswordCaptured, UNSPECIFIED);
-    ENUM_CASE(sync_pb::GaiaPasswordReuse::PasswordCaptured, USER_LOGGED_IN);
-    ENUM_CASE(sync_pb::GaiaPasswordReuse::PasswordCaptured, EXPIRED_28D_TIMER);
-  }
-  NOTREACHED();
-  return "";
-}
-
 const char* ProtoEnumToString(
     sync_pb::UserEventSpecifics::GaiaPasswordCaptured::EventTrigger trigger) {
   ASSERT_ENUM_BOUNDS(sync_pb::UserEventSpecifics::GaiaPasswordCaptured,

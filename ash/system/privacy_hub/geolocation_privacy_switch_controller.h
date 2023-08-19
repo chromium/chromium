@@ -38,8 +38,8 @@ class ASH_EXPORT GeolocationPrivacySwitchController : public SessionObserver {
   // using the following methods. They are used to decide whether a notification
   // that an app wants to use geolocation should be used. System usages like
   // time-zones should not use this mechanism as they are permanently active.
-  void OnAppStartsUsingGeolocation(const std::u16string& app_name);
-  void OnAppStopsUsingGeolocation(const std::u16string& app_name);
+  void TrackGeolocationAttempted(const std::string& app_name);
+  void TrackGeolocationRelinquished(const std::string& app_name);
 
   // Returns the names of the apps that want to actively use geolocation (if
   // there is more than `max_count` of such apps, first max_count names are
@@ -55,7 +55,7 @@ class ASH_EXPORT GeolocationPrivacySwitchController : public SessionObserver {
 
   std::unique_ptr<PrefChangeRegistrar> pref_change_registrar_;
   int usage_cnt_{};
-  std::map<std::u16string, int> usage_per_app_;
+  std::map<std::string, int> usage_per_app_;
 };
 
 }  // namespace ash

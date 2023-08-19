@@ -2,13 +2,16 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "content/browser/font_access/font_enumeration_data_source.h"
-
 #include <string>
 
 #include "base/i18n/rtl.h"
+#include "content/browser/font_access/font_enumeration_data_source.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/font_access/font_enumeration_table.pb.h"
+
+#if BUILDFLAG(IS_MAC)
+#include "content/browser/font_access/font_enumeration_data_source_mac.h"
+#endif  // BUILDFLAG(IS_MAC)
 
 namespace content {
 
@@ -44,6 +47,14 @@ TEST_F(FontEnumerationDataSourceTest, GetFonts_DefaultLocale) {
     EXPECT_EQ(font_table.fonts_size(), 0);
   }
 }
+
+#if BUILDFLAG(IS_MAC)
+TEST_F(FontEnumerationDataSourceTest, CheckInvalidFontMac) {
+  const CTFontDescriptorRef fd = nullptr;
+  FontEnumerationDataSourceMac data_src_mac;
+  EXPECT_FALSE(data_src_mac.IsValidFontMacForTesting(fd));
+}
+#endif  // BUILDFLAG(IS_MAC)
 
 }  // namespace
 

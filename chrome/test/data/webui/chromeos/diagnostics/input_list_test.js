@@ -44,7 +44,7 @@ suite('inputListTestSuite', function() {
   });
 
   setup(() => {
-    document.body.innerHTML = '';
+    document.body.innerHTML = window.trustedTypes.emptyHTML;
 
     provider.setStartTesterWithClamshellMode();
     provider.setStartWithLidOpen();

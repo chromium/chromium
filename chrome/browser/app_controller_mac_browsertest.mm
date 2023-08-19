@@ -2,8 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "base/memory/raw_ptr.h"
-
 #import <Cocoa/Cocoa.h>
 #import <Foundation/Foundation.h>
 #import <objc/runtime.h>
@@ -11,12 +9,12 @@
 
 #include <string>
 
+#include "base/apple/foundation_util.h"
+#include "base/apple/scoped_objc_class_swizzler.h"
 #include "base/command_line.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
-#include "base/mac/foundation_util.h"
-#include "base/mac/scoped_nsobject.h"
-#include "base/mac/scoped_objc_class_swizzler.h"
+#include "base/memory/raw_ptr.h"
 #include "base/path_service.h"
 #include "base/run_loop.h"
 #include "base/scoped_observation.h"
@@ -57,8 +55,8 @@
 #include "chrome/browser/ui/cocoa/history_menu_bridge.h"
 #include "chrome/browser/ui/cocoa/last_active_browser_cocoa.h"
 #include "chrome/browser/ui/cocoa/test/run_loop_testing.h"
-#include "chrome/browser/ui/profile_picker.h"
-#include "chrome/browser/ui/profile_ui_test_utils.h"
+#include "chrome/browser/ui/profiles/profile_picker.h"
+#include "chrome/browser/ui/profiles/profile_ui_test_utils.h"
 #include "chrome/browser/ui/search/ntp_test_utils.h"
 #include "chrome/browser/ui/startup/first_run_service.h"
 #include "chrome/browser/ui/tabs/tab_enums.h"
@@ -448,10 +446,8 @@ IN_PROC_BROWSER_TEST_F(AppControllerProfilePickerBrowserTest,
   // in the menu.
   PrefService* local_state = g_browser_process->local_state();
   local_state->SetBoolean(prefs::kBrowserGuestModeEnabled, false);
-  base::scoped_nsobject<NSMenuItem> about_menu_item(
-      [[[[NSApp mainMenu] itemWithTag:IDC_CHROME_MENU] submenu]
-          itemWithTag:IDC_ABOUT],
-      base::scoped_policy::RETAIN);
+  NSMenuItem* about_menu_item = [[[NSApp.mainMenu itemWithTag:IDC_CHROME_MENU]
+      submenu] itemWithTag:IDC_ABOUT];
   EXPECT_FALSE([AppController.sharedController
       validateUserInterfaceItem:about_menu_item]);
 }
@@ -523,11 +519,9 @@ IN_PROC_BROWSER_TEST_F(AppControllerProfilePickerBrowserTest,
   Browser* browser = active_browser_list()->get(0);
   EXPECT_FALSE(browser->profile()->IsGuestSession());
   // "About Chrome" is not available in the menu.
-  base::scoped_nsobject<NSMenu> chrome_submenu(
-      [[NSApp.mainMenu itemWithTag:IDC_CHROME_MENU] submenu],
-      base::scoped_policy::RETAIN);
-  base::scoped_nsobject<NSMenuItem> about_menu_item(
-      [chrome_submenu itemWithTag:IDC_ABOUT], base::scoped_policy::RETAIN);
+  NSMenu* chrome_submenu =
+      [[NSApp.mainMenu itemWithTag:IDC_CHROME_MENU] submenu];
+  NSMenuItem* about_menu_item = [chrome_submenu itemWithTag:IDC_ABOUT];
   EXPECT_FALSE([app_controller validateUserInterfaceItem:about_menu_item]);
   [chrome_submenu update];
   EXPECT_FALSE([about_menu_item isEnabled]);
@@ -588,18 +582,14 @@ IN_PROC_BROWSER_TEST_F(AppControllerProfilePickerBrowserTest, MenuCommands) {
   AppController* app_controller = AppController.sharedController;
 
   // Unhandled menu items are disabled.
-  base::scoped_nsobject<NSMenu> file_submenu(
-      [[NSApp.mainMenu itemWithTag:IDC_FILE_MENU] submenu],
-      base::scoped_policy::RETAIN);
-  base::scoped_nsobject<NSMenuItem> close_tab_menu_item(
-      [file_submenu itemWithTag:IDC_CLOSE_TAB], base::scoped_policy::RETAIN);
+  NSMenu* file_submenu = [[NSApp.mainMenu itemWithTag:IDC_FILE_MENU] submenu];
+  NSMenuItem* close_tab_menu_item = [file_submenu itemWithTag:IDC_CLOSE_TAB];
   EXPECT_FALSE([app_controller validateUserInterfaceItem:close_tab_menu_item]);
   [file_submenu update];
   EXPECT_FALSE([close_tab_menu_item isEnabled]);
 
   // Enabled menu items work.
-  base::scoped_nsobject<NSMenuItem> new_window_menu_item(
-      [file_submenu itemWithTag:IDC_NEW_WINDOW], base::scoped_policy::RETAIN);
+  NSMenuItem* new_window_menu_item = [file_submenu itemWithTag:IDC_NEW_WINDOW];
   EXPECT_TRUE([new_window_menu_item isEnabled]);
   EXPECT_TRUE([app_controller validateUserInterfaceItem:new_window_menu_item]);
   // Click on the item and checks that a new browser is opened.
@@ -801,7 +791,7 @@ IN_PROC_BROWSER_TEST_F(AppControllerReplaceNTPBrowserTest,
 IN_PROC_BROWSER_TEST_F(AppControllerBrowserTest, OpenInRegularBrowser) {
   ASSERT_TRUE(embedded_test_server()->Start());
   AppController* ac =
-      base::mac::ObjCCastStrict<AppController>([NSApp delegate]);
+      base::apple::ObjCCastStrict<AppController>([NSApp delegate]);
   ASSERT_TRUE(ac);
   // Create an incognito browser and make it the last active browser.
   Browser* incognito_browser = CreateIncognitoBrowser(browser()->profile());
@@ -840,7 +830,7 @@ IN_PROC_BROWSER_TEST_F(AppControllerBrowserTest,
                        OpenInRegularBrowserWhenOnlyIncognitoBrowserIsOpened) {
   ASSERT_TRUE(embedded_test_server()->Start());
   AppController* ac =
-      base::mac::ObjCCastStrict<AppController>([NSApp delegate]);
+      base::apple::ObjCCastStrict<AppController>([NSApp delegate]);
   ASSERT_TRUE(ac);
   EXPECT_EQ(BrowserList::GetInstance()->size(), 1u);
   // Close the current browser.
@@ -884,7 +874,7 @@ IN_PROC_BROWSER_TEST_F(AppControllerBrowserTest,
 IN_PROC_BROWSER_TEST_F(AppControllerBrowserTest, OpenUrlInGuestBrowser) {
   ASSERT_TRUE(embedded_test_server()->Start());
   AppController* ac =
-      base::mac::ObjCCastStrict<AppController>([NSApp delegate]);
+      base::apple::ObjCCastStrict<AppController>([NSApp delegate]);
   ASSERT_TRUE(ac);
   // Create a guest browser and make it the last active browser.
   Browser* guest_browser = CreateGuestBrowser();
@@ -1334,7 +1324,7 @@ class AppControllerHandoffBrowserTest : public InProcessBrowserTest {
   void SetUpInProcessBrowserTestFixture() override {
     // This swizzle intercepts the URL that would be sent to the Handoff
     // Manager, and instead puts it into a variable accessible to this test.
-    swizzler_ = std::make_unique<base::mac::ScopedObjCClassSwizzler>(
+    swizzler_ = std::make_unique<base::apple::ScopedObjCClassSwizzler>(
         [AppController class], @selector(updateHandoffManagerWithURL:title:),
         @selector(new_updateHandoffManagerWithURL:title:));
   }
@@ -1350,7 +1340,7 @@ class AppControllerHandoffBrowserTest : public InProcessBrowserTest {
   }
 
  private:
-  std::unique_ptr<base::mac::ScopedObjCClassSwizzler> swizzler_;
+  std::unique_ptr<base::apple::ScopedObjCClassSwizzler> swizzler_;
 };
 
 // Tests that as a user switches between tabs, navigates within a tab, and

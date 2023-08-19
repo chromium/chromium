@@ -127,7 +127,8 @@ class VersionUpdaterUnitTest : public testing::Test {
   std::unique_ptr<NetworkHandlerTestHelper> network_handler_test_helper_;
   std::unique_ptr<MockVersionUpdaterDelegate> mock_delegate_;
   std::unique_ptr<MockNetworkPortalDetector> mock_network_portal_detector_;
-  raw_ptr<FakeUpdateEngineClient, ExperimentalAsh> fake_update_engine_client_;
+  raw_ptr<FakeUpdateEngineClient, DanglingUntriaged | ExperimentalAsh>
+      fake_update_engine_client_;
 
   base::test::SingleThreadTaskEnvironment task_environment_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
@@ -339,8 +340,8 @@ TEST_F(VersionUpdaterUnitTest, HandlesPortalOnline) {
   EXPECT_CALL(*mock_network_portal_detector_, IsEnabled())
       .WillOnce(Return(true));
 
-  // StartNetworkCheck will call PortalStateChanged with update_info.state
-  // == STATE_FIRST_PORTAL_CHECK with an unknown portal state.
+  // StartNetworkCheck will call PortalStateChanged with an unknown portal
+  // state.
   EXPECT_CALL(*mock_delegate_,
               UpdateErrorMessage(NetworkState::PortalState::kUnknown,
                                  NetworkError::ERROR_STATE_OFFLINE, _))
@@ -364,8 +365,8 @@ TEST_F(VersionUpdaterUnitTest, HandlesPortalError) {
   EXPECT_CALL(*mock_network_portal_detector_, IsEnabled())
       .WillOnce(Return(true));
 
-  // StartNetworkCheck will call PortalStateChanged with update_info.state
-  // == STATE_FIRST_PORTAL_CHECK with an unknown portal state.
+  // StartNetworkCheck will call PortalStateChanged with update_info.state with
+  // an unknown portal state.
   EXPECT_CALL(*mock_delegate_,
               UpdateErrorMessage(NetworkState::PortalState::kUnknown,
                                  NetworkError::ERROR_STATE_OFFLINE, _))

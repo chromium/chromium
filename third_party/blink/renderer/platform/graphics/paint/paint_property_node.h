@@ -261,8 +261,7 @@ class PaintPropertyNode
 
   // Indicates that the paint property value changed in the last update in the
   // prepaint lifecycle step. This is used for raster invalidation and damage
-  // in the compositor. This value is cleared through ClearChangedToRoot()
-  // called by PaintArtifactCompositor::ClearPropertyTreeChangedState().
+  // in the compositor. This value is cleared through ClearChangedToRoot().
   mutable PaintPropertyChangeType changed_;
   // The changed sequence number is an optimization to avoid an O(n^2) to O(n^4)
   // treewalk when clearing the changed bits for the entire tree. When starting

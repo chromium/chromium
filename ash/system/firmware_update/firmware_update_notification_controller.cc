@@ -4,6 +4,7 @@
 
 #include "ash/system/firmware_update/firmware_update_notification_controller.h"
 
+#include "ash/constants/ash_features.h"
 #include "ash/constants/notifier_catalogs.h"
 #include "ash/public/cpp/new_window_delegate.h"
 #include "ash/public/cpp/notification_utils.h"
@@ -69,7 +70,6 @@ bool ShouldShowNotification() {
   switch (*user_type) {
     case user_manager::USER_TYPE_PUBLIC_ACCOUNT:
     case user_manager::USER_TYPE_GUEST:
-    case user_manager::USER_TYPE_ACTIVE_DIRECTORY:
     case user_manager::USER_TYPE_KIOSK_APP:
     case user_manager::USER_TYPE_ARC_KIOSK_APP:
     case user_manager::USER_TYPE_WEB_KIOSK_APP:
@@ -87,14 +87,15 @@ FirmwareUpdateNotificationController::FirmwareUpdateNotificationController(
     message_center::MessageCenter* message_center)
     : message_center_(message_center) {
   DCHECK(message_center_);
-  DCHECK(ash::FirmwareUpdateManager::IsInitialized());
-
-  ash::FirmwareUpdateManager::Get()->AddObserver(this);
+  if (ash::FirmwareUpdateManager::IsInitialized()) {
+    ash::FirmwareUpdateManager::Get()->AddObserver(this);
+  }
 }
 
 FirmwareUpdateNotificationController::~FirmwareUpdateNotificationController() {
-  DCHECK(ash::FirmwareUpdateManager::IsInitialized());
-  ash::FirmwareUpdateManager::Get()->RemoveObserver(this);
+  if (ash::FirmwareUpdateManager::IsInitialized()) {
+    ash::FirmwareUpdateManager::Get()->RemoveObserver(this);
+  }
 }
 
 void FirmwareUpdateNotificationController::NotifyFirmwareUpdateAvailable() {

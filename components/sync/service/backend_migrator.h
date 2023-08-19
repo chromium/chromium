@@ -80,7 +80,7 @@ class BackendMigrator {
   void OnConfigureDoneImpl(const DataTypeManager::ConfigureResult& result);
 
   const std::string name_;
-  raw_ptr<DataTypeManager, DanglingUntriaged> manager_;
+  const raw_ptr<DataTypeManager, DanglingUntriaged> manager_;
 
   const base::RepeatingClosure reconfigure_callback_;
   const base::RepeatingClosure migration_done_callback_;

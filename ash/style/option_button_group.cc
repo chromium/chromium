@@ -22,15 +22,18 @@ OptionButtonGroup::OptionButtonGroup(int group_width)
     : OptionButtonGroup(group_width,
                         kDefaultInsideBorderInsets,
                         kDefaultChildSpacing,
-                        OptionButtonBase::kDefaultPadding) {}
+                        OptionButtonBase::kDefaultPadding,
+                        OptionButtonBase::kImageLabelSpacingDP) {}
 
 OptionButtonGroup::OptionButtonGroup(int group_width,
                                      const gfx::Insets& inside_border_insets,
                                      int between_child_spacing,
-                                     const gfx::Insets& option_button_padding)
+                                     const gfx::Insets& option_button_padding,
+                                     int image_label_spacing)
     : group_width_(group_width),
       inside_border_insets_(inside_border_insets),
-      button_padding_(option_button_padding) {
+      button_padding_(option_button_padding),
+      image_label_spacing_(image_label_spacing) {
   SetLayoutManager(std::make_unique<views::BoxLayout>(
       views::BoxLayout::Orientation::kVertical, inside_border_insets,
       between_child_spacing));

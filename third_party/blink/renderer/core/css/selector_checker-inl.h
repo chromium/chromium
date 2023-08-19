@@ -91,11 +91,6 @@ bool EasySelectorChecker::Match(const CSSSelector* selector,
   const CSSSelector* rewind_on_failure = nullptr;
 
   while (selector != nullptr) {
-    if (selector->IsCoveredByBucketing()) {
-      DCHECK(MatchOne(selector, element))
-          << selector->SelectorText() << " unexpectedly didn't match "
-          << element;
-    }
     if (selector->IsCoveredByBucketing() || MatchOne(selector, element)) {
       if (selector->Relation() == CSSSelector::kDescendant) {
         // We matched the entire compound, but there are more.

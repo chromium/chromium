@@ -26,7 +26,6 @@
 <translation id="2060505056492490888">«<ph name="DOT" />»-ը սխալ տեղ է դրված «<ph name="INVALIDDOMAIN" />» տիրույթում:</translation>
 <translation id="2148716181193084225">Այսօր</translation>
 <translation id="2226276347425096477">Կրճատեք այս տեքստը մինչև <ph name="MAX_CHARACTERS" /> գրանշան կամ ավելի քիչ (ներկայումս <ph name="CURRENT_LENGTH" /> գրանշան է):</translation>
-<translation id="2246498165605549352">Տեղային ֆայլ</translation>
 <translation id="2247351761944213033">Շաբաթ <ph name="WEEKNUMBER" />, <ph name="YEAR" /></translation>
 <translation id="2277199496770840904">Կատարում <ph name="NUMBER" /></translation>
 <translation id="2393030564806080191">Գույնի տասնվեցական կոդը</translation>
@@ -89,6 +88,7 @@
 <translation id="5425179576310518467">ընթացիկ ամսաթիվը</translation>
 <translation id="5466621249238537318">Ընտրեք մեկ կամ մի քանի ֆայլ:</translation>
 <translation id="5468998798572797635">ելնել լիաէկրան ռեժիմից</translation>
+<translation id="5514612371225420585">Ֆայլ ձեր սարքում</translation>
 <translation id="5516235301412634559">0,75</translation>
 <translation id="5537725057119320332">Cast</translation>
 <translation id="5546461542133609677">հնչեցնել</translation>
@@ -113,6 +113,7 @@
 <translation id="6398862346408813489">Ցուցադրել ամիսների ընտրության վահանակը</translation>
 <translation id="6404546809543547843">աուդիո ժամագծի սահիչ</translation>
 <translation id="6443871981718447451">ցույց տալ ենթագրերի ընտրացանկը</translation>
+<translation id="6484738902856791350">Գեղեցիկ ձևաչափում</translation>
 <translation id="6550675742724504774">Ընտրանքներ</translation>
 <translation id="6572309429103589720">Քերականական սխալ</translation>
 <translation id="658823671542763450">մտնել լիաէկրան ռեժիմ</translation>

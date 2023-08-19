@@ -1,0 +1,9 @@
+include_rules = [
+  "+ash/components/android/mojom",
+  "+ash/public/cpp/app_types_util.h",
+  "+chrome/grit/generated_resources.h",
+  "+extensions/browser/api/automation_internal/automation_event_router.h",
+  "+ui/accessibility",
+  "+ui/base/l10n",
+  "+ui/gfx/geometry",
+]

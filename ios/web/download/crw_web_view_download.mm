@@ -8,10 +8,6 @@
 
 #import "base/ios/block_types.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 @interface CRWWebViewDownload () <WKDownloadDelegate>
 
 // Request URL called for the download.

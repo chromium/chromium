@@ -11,21 +11,20 @@
 #include "base/android/jni_array.h"
 #include "chrome/android/chrome_jni_headers/ChromeBackupAgentImpl_jni.h"
 #include "chrome/browser/profiles/profile_manager.h"
-#include "components/autofill/core/common/autofill_prefs.h"
 #include "components/prefs/pref_service.h"
 #include "components/sync/base/model_type.h"
 #include "components/sync/base/pref_names.h"
 
 namespace {
 
-static_assert(48 == syncer::GetNumModelTypes(),
+static_assert(49 == syncer::GetNumModelTypes(),
               "If the new type has a corresponding pref, add it here");
 const char* backed_up_preferences_[] = {
-    autofill::prefs::kAutofillWalletImportEnabled,
     syncer::prefs::internal::kSyncKeepEverythingSynced,
     syncer::prefs::internal::kSyncAutofill,
     syncer::prefs::internal::kSyncBookmarks,
     syncer::prefs::internal::kSyncPasswords,
+    syncer::prefs::internal::kSyncPayments,
     syncer::prefs::internal::kSyncPreferences,
     syncer::prefs::internal::kSyncReadingList,
     syncer::prefs::internal::kSyncSavedTabGroups,

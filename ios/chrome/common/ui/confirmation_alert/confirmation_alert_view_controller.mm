@@ -15,10 +15,6 @@
 #import "ios/chrome/common/ui/util/dynamic_type_util.h"
 #import "ios/chrome/common/ui/util/pointer_interaction_util.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 namespace {
 
 const CGFloat kActionsBottomMargin = 10;
@@ -56,7 +52,7 @@ const CGFloat kFaviconBadgeSideLength = 24;
 
 }  // namespace
 
-@interface ConfirmationAlertViewController ()
+@interface ConfirmationAlertViewController () <UIScrollViewDelegate>
 
 // References to the UI properties that need to be updated when the trait
 // collection changes.
@@ -69,31 +65,21 @@ const CGFloat kFaviconBadgeSideLength = 24;
 @property(nonatomic, strong) NSLayoutConstraint* imageViewAspectRatioConstraint;
 @property(nonatomic, strong) UIScrollView* scrollView;
 @property(nonatomic, strong) GradientView* gradientView;
-@property(nonatomic, assign) CGFloat customGradientViewHeight;
-@property(nonatomic, assign) CGFloat scrollViewHeightPadding;
 @property(nonatomic, strong) NSLayoutConstraint* gradientViewHeightConstraint;
+@property(nonatomic, strong)
+    NSLayoutConstraint* scrollViewBottomAnchorConstraint;
 @end
 
 @implementation ConfirmationAlertViewController
 
 #pragma mark - Public
 
-- (UISheetPresentationControllerDetent*)preferredHeightDetent {
-  __typeof(self) __weak weakSelf = self;
-  auto resolver = ^CGFloat(
-      id<UISheetPresentationControllerDetentResolutionContext> context) {
-    return [weakSelf detentForPreferredHeightInContext:context];
-  };
-  return [UISheetPresentationControllerDetent
-      customDetentWithIdentifier:@"preferred_height"
-                        resolver:resolver];
-}
-
 - (instancetype)init {
   self = [super initWithNibName:nil bundle:nil];
   if (self) {
     _customSpacingAfterImage = kStackViewSpacingAfterIllustration;
     _customGradientViewHeight = kGradientHeight;
+    _customScrollViewBottomInsets = kScrollViewBottomInsets;
     _customSpacing = kStackViewSpacing;
     _showsVerticalScrollIndicator = YES;
     _scrollEnabled = YES;
@@ -113,19 +99,21 @@ const CGFloat kFaviconBadgeSideLength = 24;
     [self.view addSubview:self.navigationBar];
   }
 
-  if (self.imageEnclosedWithShadowAndBadge ||
-      self.imageEnclosedWithShadowWithoutBadge) {
-    // The image view is set within the helper method.
-    self.imageContainerView = [self createImageContainerViewWithShadowAndBadge];
-  } else {
-    // The image container and the image view are the same.
-    self.imageView = [self createImageView];
-    self.imageContainerView = self.imageView;
-  }
-
   NSMutableArray* stackSubviews = [[NSMutableArray alloc] init];
 
-  [stackSubviews addObject:self.imageContainerView];
+  if (self.image) {
+    if (self.imageEnclosedWithShadowAndBadge ||
+        self.imageEnclosedWithShadowWithoutBadge) {
+      // The image view is set within the helper method.
+      self.imageContainerView =
+          [self createImageContainerViewWithShadowAndBadge];
+    } else {
+      // The image container and the image view are the same.
+      self.imageView = [self createImageView];
+      self.imageContainerView = self.imageView;
+    }
+    [stackSubviews addObject:self.imageContainerView];
+  }
 
   if (self.titleString.length) {
     UILabel* title = [self createTitleLabel];
@@ -170,10 +158,10 @@ const CGFloat kFaviconBadgeSideLength = 24;
   // horizontal scroll.
   [NSLayoutConstraint activateConstraints:@[
     [stackView.topAnchor constraintEqualToAnchor:self.scrollView.topAnchor],
-    [stackView.bottomAnchor constraintEqualToAnchor:self.scrollView.bottomAnchor
-                                           constant:-kScrollViewBottomInsets]
+    [stackView.bottomAnchor
+        constraintEqualToAnchor:self.scrollView.bottomAnchor
+                       constant:-self.customScrollViewBottomInsets]
   ]];
-  self.scrollViewHeightPadding += kScrollViewBottomInsets;
 
   // Scroll View constraints to the height of its content. This allows to center
   // the scroll view.
@@ -268,10 +256,12 @@ const CGFloat kFaviconBadgeSideLength = 24;
     self.gradientViewHeightConstraint.active = YES;
   }
 
+  self.scrollViewBottomAnchorConstraint = [self.scrollView.bottomAnchor
+      constraintLessThanOrEqualToAnchor:scrollViewBottomAnchor
+                               constant:-kScrollViewBottomInsets];
+  self.scrollViewBottomAnchorConstraint.active = YES;
+
   [NSLayoutConstraint activateConstraints:@[
-    [self.scrollView.bottomAnchor
-        constraintLessThanOrEqualToAnchor:scrollViewBottomAnchor
-                                 constant:-kScrollViewBottomInsets],
     [self.scrollView.leadingAnchor
         constraintEqualToAnchor:self.view.leadingAnchor],
     [self.scrollView.trailingAnchor
@@ -305,9 +295,10 @@ const CGFloat kFaviconBadgeSideLength = 24;
     centerYConstraint.priority = heightConstraint.priority - 1;
     centerYConstraint.active = YES;
   }
-  self.scrollViewHeightPadding += scrollViewTopConstant;
 
-  if (!self.imageHasFixedSize) {
+  // Only add the constraint for imageView with an image that has a variable
+  // size.
+  if (self.image && !self.imageHasFixedSize) {
     // Constrain the image to the scroll view size and its aspect ratio.
     [self.imageView
         setContentCompressionResistancePriority:UILayoutPriorityDefaultLow
@@ -344,6 +335,14 @@ const CGFloat kFaviconBadgeSideLength = 24;
             UIFontTextStyleHeadline,
             self.traitCollection.preferredContentSizeCategory,
             UIContentSizeCategoryExtraExtraExtraLarge);
+    if (self.secondaryActionString) {
+      self.secondaryActionButton.titleLabel.font =
+          [UIFont preferredFontForTextStyle:UIFontTextStyleBody];
+    }
+    if (self.tertiaryActionString) {
+      self.tertiaryActionButton.titleLabel.font =
+          [UIFont preferredFontForTextStyle:UIFontTextStyleBody];
+    }
   }
 
   // Update constraints for different size classes.
@@ -394,19 +393,74 @@ const CGFloat kFaviconBadgeSideLength = 24;
   // Do nothing by default. Subclasses can override this.
 }
 
-- (void)updateCustomGradientViewHeight:(CGFloat)height {
-  self.customGradientViewHeight = height;
-  self.gradientViewHeightConstraint.active = NO;
-  self.gradientViewHeightConstraint = [self.gradientView.heightAnchor
-      constraintEqualToConstant:self.customGradientViewHeight];
-  self.gradientViewHeightConstraint.active = YES;
+- (void)displayGradientView:(BOOL)shouldShow {
+  self.gradientView.hidden = !shouldShow;
 }
 
-- (CGFloat)getScrollViewHeightPadding {
-  return self.scrollViewHeightPadding;
+- (BOOL)isScrolledToBottom {
+  CGFloat scrollPosition =
+      self.scrollView.contentOffset.y + self.scrollView.frame.size.height;
+  CGFloat scrollLimit =
+      self.scrollView.contentSize.height + self.scrollView.contentInset.bottom;
+  return scrollPosition >= scrollLimit;
+}
+
+- (UISheetPresentationControllerDetent*)preferredHeightDetent {
+  __typeof(self) __weak weakSelf = self;
+  auto resolver = ^CGFloat(
+      id<UISheetPresentationControllerDetentResolutionContext> context) {
+    return [weakSelf detentForPreferredHeightInContext:context];
+  };
+  return [UISheetPresentationControllerDetent
+      customDetentWithIdentifier:@"preferred_height"
+                        resolver:resolver];
+}
+
+- (CGFloat)preferredHeightForContent {
+  // Obtain container view from presentation controller directly because
+  // this view may not have been added to its container view yet.
+  UIView* containerView = self.sheetPresentationController.containerView;
+
+  // Measure compressed height without safe area inset (detent values are
+  // generally expressed without safe area insets).
+  CGFloat fittingWidth = containerView.bounds.size.width;
+  CGSize fittingSize =
+      CGSizeMake(fittingWidth, UILayoutFittingCompressedSize.height);
+  CGFloat height = [self.view systemLayoutSizeFittingSize:fittingSize].height;
+  height -= containerView.safeAreaInsets.bottom;
+
+  // Replace bottom margin calculated based on view's own safe area with bottom
+  // margin calculated based on the safe area of the container view it will
+  // eventually live in. This is needed in case the detent value is requested
+  // before the view has been added to its superview.
+  height -= MAX(kActionsBottomMargin, self.view.safeAreaInsets.bottom);
+  height += MAX(kActionsBottomMargin, containerView.safeAreaInsets.bottom);
+
+  return height;
 }
 
 #pragma mark - Private
+
+- (CGFloat)detentForPreferredHeightInContext:
+    (id<UISheetPresentationControllerDetentResolutionContext>)context
+    API_AVAILABLE(ios(16)) {
+  // Only activate this detent in portrait orientation on iPhone.
+  UITraitCollection* traitCollection = context.containerTraitCollection;
+  if (traitCollection.horizontalSizeClass != UIUserInterfaceSizeClassCompact ||
+      traitCollection.verticalSizeClass != UIUserInterfaceSizeClassRegular) {
+    return UISheetPresentationControllerDetentInactive;
+  }
+
+  CGFloat height = [self preferredHeightForContent];
+
+  // Make sure detent is not larger than 75% of the maximum detent value but at
+  // least as large as a standard medium detent.
+  height = MIN(height, 0.75 * context.maximumDetentValue);
+  CGFloat mediumDetentHeight = [UISheetPresentationControllerDetent.mediumDetent
+      resolvedValueInContext:context];
+  height = MAX(height, mediumDetentHeight);
+  return height;
+}
 
 // Handle taps on the dismiss button.
 - (void)didTapDismissBarButton {
@@ -641,8 +695,11 @@ const CGFloat kFaviconBadgeSideLength = 24;
 
 // Helper to create the subtitle view.
 - (UITextView*)createSubtitleView {
+  if (!self.subtitleTextStyle) {
+    self.subtitleTextStyle = UIFontTextStyleBody;
+  }
   UITextView* subtitle = [self createTextView];
-  subtitle.font = [UIFont preferredFontForTextStyle:UIFontTextStyleBody];
+  subtitle.font = [UIFont preferredFontForTextStyle:self.subtitleTextStyle];
   subtitle.text = self.subtitleString;
   subtitle.textColor = [UIColor colorNamed:kTextSecondaryColor];
   subtitle.accessibilityIdentifier =
@@ -665,6 +722,7 @@ const CGFloat kFaviconBadgeSideLength = 24;
   scrollView.scrollEnabled = self.scrollEnabled;
   [scrollView
       setShowsVerticalScrollIndicator:self.showsVerticalScrollIndicator];
+  scrollView.delegate = self;
   return scrollView;
 }
 
@@ -804,44 +862,6 @@ const CGFloat kFaviconBadgeSideLength = 24;
       CreateOpaqueButtonPointerStyleProvider();
 
   return tertiaryActionButton;
-}
-
-- (CGFloat)detentForPreferredHeightInContext:
-    (id<UISheetPresentationControllerDetentResolutionContext>)context
-    API_AVAILABLE(ios(16)) {
-  // Only activate this detent in portrait orientation on iPhone.
-  UITraitCollection* traitCollection = context.containerTraitCollection;
-  if (traitCollection.horizontalSizeClass != UIUserInterfaceSizeClassCompact ||
-      traitCollection.verticalSizeClass != UIUserInterfaceSizeClassRegular) {
-    return UISheetPresentationControllerDetentInactive;
-  }
-
-  // Obtain container view from presentation controller directly because
-  // this view may not have been added to its container view yet.
-  UIView* containerView = self.sheetPresentationController.containerView;
-
-  // Measure compressed height without safe area inset (detent values are
-  // generally expressed without safe area insets).
-  CGFloat fittingWidth = containerView.bounds.size.width;
-  CGSize fittingSize =
-      CGSizeMake(fittingWidth, UILayoutFittingCompressedSize.height);
-  CGFloat height = [self.view systemLayoutSizeFittingSize:fittingSize].height;
-  height -= containerView.safeAreaInsets.bottom;
-
-  // Replace bottom margin calculated based on view's own safe area with bottom
-  // margin calculated based on the safe area of the container view it will
-  // eventually live in. This is needed in case the detent value is requested
-  // before the view has been added to its superview.
-  height -= MAX(kActionsBottomMargin, self.view.safeAreaInsets.bottom);
-  height += MAX(kActionsBottomMargin, containerView.safeAreaInsets.bottom);
-
-  // Make sure detent is not larger than 75% of the maximum detent value but at
-  // least as large as a standard medium detent.
-  height = MIN(height, 0.75 * context.maximumDetentValue);
-  CGFloat mediumDetentHeight = [UISheetPresentationControllerDetent.mediumDetent
-      resolvedValueInContext:context];
-  height = MAX(height, mediumDetentHeight);
-  return height;
 }
 
 @end

@@ -1,0 +1,3 @@
+{"prefetch": [{"source": "list",
+  "urls": ["https://speculationrules.test/next.html"],
+  "expects_no_vary_search": "params=(a)"}]}

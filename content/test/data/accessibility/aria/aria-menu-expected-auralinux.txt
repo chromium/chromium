@@ -1,9 +1,9 @@
 [document web]
 ++[menu bar] horizontal
-++++[menu item] name='File' controller-for
+++++[menu item] name='File' controller-for=[menu]
 ++++[menu item] name='Edit'
 ++++[menu item] name='View'
-++[menu] name='File' controlled-by
+++[menu] name='File' controlled-by=[menu item]
 ++++[menu item] name='New'
 ++++[menu item] name='Open'
 ++++[menu item] name='Save'

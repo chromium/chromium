@@ -4,12 +4,13 @@
 
 #include "chromeos/ui/frame/highlight_border_overlay.h"
 
+#include "base/containers/cxx20_erase.h"
 #include "base/memory/raw_ptr.h"
 #include "chromeos/constants/chromeos_features.h"
-#include "chromeos/ui/base/chromeos_ui_constants.h"
 #include "chromeos/ui/base/tablet_state.h"
 #include "chromeos/ui/base/window_properties.h"
 #include "chromeos/ui/base/window_state_type.h"
+#include "chromeos/ui/frame/frame_utils.h"
 #include "ui/aura/window.h"
 #include "ui/gfx/image/canvas_image_source.h"
 #include "ui/views/highlight_border.h"
@@ -30,14 +31,6 @@ views::HighlightBorder::Type GetBorderType() {
   return chromeos::features::IsJellyrollEnabled()
              ? views::HighlightBorder::Type::kHighlightBorderOnShadow
              : views::HighlightBorder::Type::kHighlightBorder3;
-}
-
-int GetRoundedCornerRadius(chromeos::WindowStateType type) {
-  if (type == chromeos::WindowStateType::kPip)
-    return chromeos::kPipRoundedCornerRadius;
-
-  return IsNormalWindowStateType(type) ? chromeos::kTopCornerRadiusWhenRestored
-                                       : 0;
 }
 
 // `ImageSource` generates an image painted with a highlight border.
@@ -74,8 +67,7 @@ HighlightBorderOverlay::HighlightBorderOverlay(views::Widget* widget)
     : layer_(ui::LAYER_NINE_PATCH),
       widget_(widget),
       window_(widget->GetNativeWindow()) {
-  rounded_corner_radius_ = GetRoundedCornerRadius(
-      window_->GetProperty(chromeos::kWindowStateTypeKey));
+  rounded_corner_radius_ = chromeos::GetFrameCornerRadius(window_);
   layer_.SetFillsBoundsOpaquely(false);
 
   UpdateNinePatchLayer();
@@ -120,9 +112,10 @@ void HighlightBorderOverlay::OnWindowPropertyChanged(aura::Window* window,
     return;
   }
 
-  if (key == chromeos::kWindowStateTypeKey) {
-    const int corner_radius = GetRoundedCornerRadius(
-        window->GetProperty(chromeos::kWindowStateTypeKey));
+  // We need to update the highlight border radius to match the radius of the
+  // frame.
+  if (chromeos::CanPropertyEffectFrameRadius(key)) {
+    const int corner_radius = chromeos::GetFrameCornerRadius(window);
     if (rounded_corner_radius_ != corner_radius) {
       rounded_corner_radius_ = corner_radius;
       UpdateNinePatchLayer();
@@ -197,6 +190,10 @@ void HighlightBorderOverlay::UpdateNinePatchLayer() {
       image_source_map;
   auto iter = image_source_map->find(key);
   if (iter == image_source_map->end()) {
+    // Evict the image source which has no owners.
+    base::EraseIf(*image_source_map, [](auto& key_and_image_source) {
+      return key_and_image_source.second.IsUniquelyOwned();
+    });
     // Create a new image.
     auto insertion = image_source_map->emplace(
         key, gfx::ImageSkia(std::make_unique<ImageSource>(
@@ -204,9 +201,7 @@ void HighlightBorderOverlay::UpdateNinePatchLayer() {
                                 rounded_corner_radius_, image_source_size),
                             image_source_size));
     DCHECK(insertion.second);
-    // When dynamic color feature launches or HighlightBorderOverlay applies to
-    // more window types, the cache size may increase. Add a dcheck here to
-    // notice the cache size change.
+    // Add a dcheck here to notice the cache size change.
     DCHECK_LE(image_source_map->size(), kMaxImageSourceNum);
     iter = insertion.first;
   }

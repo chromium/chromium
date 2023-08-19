@@ -46,6 +46,7 @@ if (!is_android) {
         "//third_party/re2",
         "//ui/accessibility",
         "//ui/base",
+        "//ui/compositor",
         "//ui/gfx",
         "//ui/strings:ui_strings_grit",
         "//ui/views",

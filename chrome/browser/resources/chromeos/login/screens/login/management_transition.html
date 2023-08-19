@@ -12,6 +12,13 @@ found in the LICENSE file.
     height: 3px;
     width: 100%;
   }
+
+  :host-context(.jelly-enabled) paper-progress {
+    --paper-progress-active-color: var(--cros-sys-primary);
+    --paper-progress-container-color: var(--cros-sys-primary_container);
+    --paper-progress-secondary-color: var(--cros-sys-primary);
+  }
+
 </style>
 <oobe-adaptive-dialog id="managementTransitionDialog" role="dialog"
     aria-label$="[[getDialogTitle_(locale, arcTransition_, managementEntity_)]]"
@@ -50,8 +57,8 @@ found in the LICENSE file.
     [[i18nDynamic(locale, 'managementTransitionErrorMessage')]]
   </div>
   <div slot="content" class="flex layout vertical center center-justified">
-    <img src="../../images/error.svg"
-        class="oobe-illustration" aria-hidden="true">
+    <iron-icon icon="oobe-illos:error-illo" class="illustration-jelly">
+    </iron-icon>
   </div>
   <div slot="bottom-buttons">
     <oobe-text-button id="accept-button" on-click="onAcceptAndContinue_"
@@ -60,4 +67,3 @@ found in the LICENSE file.
     </oobe-text-button>
   </div>
 </oobe-adaptive-dialog>
-

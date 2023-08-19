@@ -8,6 +8,7 @@
 
 #include "ash/constants/ash_paths.h"
 #include "ash/shell.h"
+#include "base/base64.h"
 #include "base/containers/contains.h"
 #include "base/files/file_util.h"
 #include "base/functional/bind.h"
@@ -17,8 +18,10 @@
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/thread_pool.h"
 #include "base/threading/scoped_blocking_call.h"
+#include "chromeos/ash/components/system/statistics_provider.h"
 #include "components/quirks/quirks_manager.h"
 #include "third_party/qcms/src/qcms.h"
+#include "third_party/zlib/google/compression_utils.h"
 #include "ui/display/display.h"
 #include "ui/display/types/display_constants.h"
 #include "ui/display/types/display_snapshot.h"
@@ -29,19 +32,11 @@ namespace ash {
 
 namespace {
 
-// Runs on a background thread because it does file IO.
 std::unique_ptr<DisplayColorManager::ColorCalibrationData> ParseDisplayProfile(
-    const base::FilePath& path,
+    qcms_profile* display_profile,
     bool has_color_correction_matrix) {
-  VLOG(1) << "Trying ICC file " << path.value()
-          << " has_color_correction_matrix: "
-          << (has_color_correction_matrix ? "true" : "false");
-  base::ScopedBlockingCall scoped_blocking_call(FROM_HERE,
-                                                base::BlockingType::MAY_BLOCK);
-  // Reads from a file.
-  qcms_profile* display_profile = qcms_profile_from_path(path.value().c_str());
   if (!display_profile) {
-    LOG(WARNING) << "Unable to load ICC file: " << path.value();
+    LOG(WARNING) << "Unable to load ICC profile.";
     return nullptr;
   }
 
@@ -49,8 +44,7 @@ std::unique_ptr<DisplayColorManager::ColorCalibrationData> ParseDisplayProfile(
       qcms_profile_get_vcgt_channel_length(display_profile);
 
   if (!has_color_correction_matrix && !vcgt_channel_length) {
-    LOG(WARNING) << "No vcgt table or color correction matrix in ICC file: "
-                 << path.value();
+    LOG(WARNING) << "No vcgt table or color correction matrix.";
     qcms_profile_release(display_profile);
     return nullptr;
   }
@@ -154,6 +148,46 @@ std::unique_ptr<DisplayColorManager::ColorCalibrationData> ParseDisplayProfile(
   VLOG(1) << "ICC file successfully parsed";
   qcms_profile_release(display_profile);
   return data;
+}
+
+// Runs on a background thread because it does file IO.
+std::unique_ptr<DisplayColorManager::ColorCalibrationData>
+ParseDisplayProfileFile(const base::FilePath& path,
+                        bool has_color_correction_matrix) {
+  VLOG(1) << "Trying ICC file " << path.value()
+          << " has_color_correction_matrix: "
+          << (has_color_correction_matrix ? "true" : "false");
+  base::ScopedBlockingCall scoped_blocking_call(FROM_HERE,
+                                                base::BlockingType::MAY_BLOCK);
+  // Reads from a file.
+  qcms_profile* display_profile = qcms_profile_from_path(path.value().c_str());
+  return ParseDisplayProfile(display_profile, has_color_correction_matrix);
+}
+
+std::unique_ptr<DisplayColorManager::ColorCalibrationData> ParseVpdEntry(
+    bool has_color_correction_matrix) {
+  absl::optional<std::string_view> display_profile_string =
+      system::StatisticsProvider::GetInstance()->GetMachineStatistic(
+          system::kDisplayProfilesKey);
+  DCHECK(display_profile_string);
+  // Remove hex product code and colon delimiter.
+  display_profile_string->remove_prefix(9);
+
+  std::string input;
+  if (!base::Base64Decode(display_profile_string.value(), &input)) {
+    LOG(WARNING) << "Failed to decode vpd display_profiles entry.";
+    return nullptr;
+  }
+
+  std::string output;
+  if (!compression::GzipUncompress(input, &output)) {
+    LOG(WARNING) << "Failed to decompress vpd display_profiles entry.";
+    return nullptr;
+  }
+
+  return ParseDisplayProfile(
+      qcms_profile_from_memory(output.c_str(), output.size()),
+      has_color_correction_matrix);
 }
 
 // Fills |out_result_matrix_vector| from the given skia |matrix|.
@@ -318,12 +352,30 @@ bool DisplayColorManager::LoadCalibrationForDisplay(
   // Look for calibrations for this display. Each calibration may overwrite the
   // previous one.
   // TODO(jchinlee): Consider collapsing queries.
-  QueryVpdForCalibration(display->display_id(), display->product_code(),
-                         display->has_color_correction_matrix(),
-                         display->type());
+  // TODO(b/290383914): Ensure VPD-written ICC is applied.
+  system::StatisticsProvider::GetInstance()->ScheduleOnMachineStatisticsLoaded(
+      base::BindOnce(&DisplayColorManager::QueryVpdForCalibration,
+                     weak_ptr_factory_.GetWeakPtr(), display->display_id(),
+                     display->product_code(),
+                     display->has_color_correction_matrix(), display->type()));
   QueryQuirksForCalibration(
       display->display_id(), display->display_name(), display->product_code(),
       display->has_color_correction_matrix(), display->type());
+  return true;
+}
+
+bool DisplayColorManager::HasVpdDisplayProfilesEntry(
+    int64_t product_code) const {
+  absl::optional<std::string_view> display_profile_string =
+      system::StatisticsProvider::GetInstance()->GetMachineStatistic(
+          system::kDisplayProfilesKey);
+  if (!display_profile_string)
+    return false;
+
+  const std::string hex_id = quirks::IdToHexString(product_code);
+  if (!display_profile_string->starts_with(hex_id))
+    return false;
+
   return true;
 }
 
@@ -335,31 +387,14 @@ void DisplayColorManager::QueryVpdForCalibration(
   if (type != display::DISPLAY_CONNECTION_TYPE_INTERNAL)
     return;
 
-  base::FilePath directory;
-  base::PathService::Get(DIR_DEVICE_DISPLAY_PROFILES_VPD, &directory);
-  const std::string icc_name = quirks::IdToFileName(product_code);
-  const base::FilePath icc_path = directory.Append(icc_name);
-
-  sequenced_task_runner_.get()->PostTaskAndReplyWithResult(
-      FROM_HERE, base::BindOnce(&base::PathExists, icc_path),
-      base::BindOnce(&DisplayColorManager::FinishQueryVpdForCalibration,
-                     weak_ptr_factory_.GetWeakPtr(), display_id, product_code,
-                     has_color_correction_matrix, type, icc_path));
-}
-
-void DisplayColorManager::FinishQueryVpdForCalibration(
-    int64_t display_id,
-    int64_t product_code,
-    bool has_color_correction_matrix,
-    display::DisplayConnectionType type,
-    const base::FilePath& expected_icc_path,
-    bool found_icc) {
-  if (!found_icc)
+  if (!HasVpdDisplayProfilesEntry(product_code)) {
     return;
+  }
 
-  DisplayColorManager::FinishLoadCalibrationForDisplay(
-      display_id, product_code, has_color_correction_matrix, type,
-      expected_icc_path, false);
+  VLOG(1) << "Loading ICC profile for display id: " << display_id
+          << " with product id: " << product_code;
+  UpdateCalibrationData(display_id, product_code,
+                        ParseVpdEntry(has_color_correction_matrix));
 }
 
 void DisplayColorManager::QueryQuirksForCalibration(
@@ -406,7 +441,8 @@ void DisplayColorManager::FinishLoadCalibrationForDisplay(
 
   sequenced_task_runner_->PostTaskAndReplyWithResult(
       FROM_HERE,
-      base::BindOnce(&ParseDisplayProfile, path, has_color_correction_matrix),
+      base::BindOnce(&ParseDisplayProfileFile, path,
+                     has_color_correction_matrix),
       base::BindOnce(&DisplayColorManager::UpdateCalibrationData,
                      weak_ptr_factory_.GetWeakPtr(), display_id, product_code));
 }

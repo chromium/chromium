@@ -4,12 +4,14 @@
 
 #import "ios/chrome/browser/url_loading/url_loading_observer_bridge.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 UrlLoadingObserverBridge::UrlLoadingObserverBridge(id<URLLoadingObserver> owner)
     : owner_(owner) {}
+
+UrlLoadingObserverBridge::~UrlLoadingObserverBridge() {
+  CHECK(!IsInObserverList())
+      << "UrlLoadingObserverBridge needs to be removed from "
+         "observer list before their destruction.";
+}
 
 void UrlLoadingObserverBridge::TabWillLoadUrl(
     const GURL& url,

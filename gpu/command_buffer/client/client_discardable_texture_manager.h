@@ -60,10 +60,9 @@ class GPU_EXPORT ClientDiscardableTextureManager {
     uint32_t client_lock_count = 1;
   };
 
-  // Access to other members must always be done with |lock_| held.
   mutable base::Lock lock_;
-  std::map<uint32_t, TextureEntry> texture_entries_;
-  ClientDiscardableManager discardable_manager_;
+  std::map<uint32_t, TextureEntry> texture_entries_ GUARDED_BY(lock_);
+  ClientDiscardableManager discardable_manager_ GUARDED_BY(lock_);
 };
 
 }  // namespace gpu

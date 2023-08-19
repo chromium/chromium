@@ -13,6 +13,7 @@
 #include "chromeos/ash/components/dbus/shill/shill_manager_client.h"
 #include "chromeos/ash/components/dbus/shill/shill_service_client.h"
 #include "dbus/property.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/cros_system_api/dbus/hermes/dbus-constants.h"
 #include "third_party/cros_system_api/dbus/shill/dbus-constants.h"
 
@@ -66,10 +67,24 @@ void FakeHermesProfileClient::SetEnableProfileBehavior(
   enable_profile_behavior_ = enable_profile_behavior;
 }
 
+void FakeHermesProfileClient::SetNextEnableCarrierProfileResult(
+    HermesResponseStatus status) {
+  CHECK(status != HermesResponseStatus::kSuccess);
+  next_enable_carrier_profile_result_ = status;
+}
+
 void FakeHermesProfileClient::EnableCarrierProfile(
     const dbus::ObjectPath& object_path,
     HermesResponseCallback callback) {
   DVLOG(1) << "Enabling Carrier Profile path=" << object_path.value();
+
+  if (next_enable_carrier_profile_result_.has_value()) {
+    base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
+        FROM_HERE, base::BindOnce(std::move(callback),
+                                  next_enable_carrier_profile_result_.value()));
+    next_enable_carrier_profile_result_ = absl::nullopt;
+    return;
+  }
 
   // Update carrier profile states.
   HermesProfileClient::Properties* properties = GetProperties(object_path);

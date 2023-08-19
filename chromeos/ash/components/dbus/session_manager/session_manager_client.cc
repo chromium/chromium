@@ -26,7 +26,6 @@
 #include "base/memory/writable_shared_memory_region.h"
 #include "base/path_service.h"
 #include "base/strings/string_util.h"
-#include "base/strings/stringprintf.h"
 #include "base/unguessable_token.h"
 #include "chromeos/ash/components/dbus/arc/arc.pb.h"
 #include "chromeos/ash/components/dbus/cryptohome/rpc.pb.h"
@@ -36,10 +35,10 @@
 #include "chromeos/dbus/common/blocking_method_caller.h"
 #include "components/policy/proto/device_management_backend.pb.h"
 #include "dbus/bus.h"
+#include "dbus/error.h"
 #include "dbus/message.h"
 #include "dbus/object_path.h"
 #include "dbus/object_proxy.h"
-#include "dbus/scoped_dbus_error.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/cros_system_api/dbus/service_constants.h"
 
@@ -469,16 +468,10 @@ class SessionManagerClientImpl : public SessionManagerClient {
     dbus::MessageWriter writer(&method_call);
     writer.AppendString(cryptohome_id.account_id());
     writer.AppendString(mode);
-    dbus::ScopedDBusError error;
-    std::unique_ptr<dbus::Response> response =
-        blocking_method_caller_->CallMethodAndBlockWithError(&method_call,
-                                                             &error);
-    if (!response) {
-      LOG(ERROR) << "BlockingRequestBrowserDataMigration failed"
-                 << (error.is_set()
-                         ? base::StringPrintf(" :%s:%s", error.name(),
-                                              error.message())
-                         : ".");
+    auto result = blocking_method_caller_->CallMethodAndBlock(&method_call);
+    if (!result.has_value()) {
+      LOG(ERROR) << "BlockingRequestBrowserDataMigration failed :"
+                 << result.error().name() << ":" << result.error().message();
       return false;
     }
 
@@ -492,16 +485,10 @@ class SessionManagerClientImpl : public SessionManagerClient {
         login_manager::kSessionManagerStartBrowserDataBackwardMigration);
     dbus::MessageWriter writer(&method_call);
     writer.AppendString(cryptohome_id.account_id());
-    dbus::ScopedDBusError error;
-    std::unique_ptr<dbus::Response> response =
-        blocking_method_caller_->CallMethodAndBlockWithError(&method_call,
-                                                             &error);
-    if (!response) {
-      LOG(ERROR) << "BlockingRequestBrowserDataBackwardMigration failed"
-                 << (error.is_set()
-                         ? base::StringPrintf(" :%s:%s", error.name(),
-                                              error.message())
-                         : ".");
+    auto result = blocking_method_caller_->CallMethodAndBlock(&method_call);
+    if (!result.has_value()) {
+      LOG(ERROR) << "BlockingRequestBrowserDataBackwardMigration failed :"
+                 << result.error().name() << ":" << result.error().message();
       return false;
     }
 
@@ -881,21 +868,20 @@ class SessionManagerClientImpl : public SessionManagerClient {
     writer.AppendArrayOfBytes(
         reinterpret_cast<const uint8_t*>(descriptor_blob.data()),
         descriptor_blob.size());
-    dbus::ScopedDBusError error;
-    std::unique_ptr<dbus::Response> response =
-        blocking_method_caller_->CallMethodAndBlockWithError(&method_call,
-                                                             &error);
-    RetrievePolicyResponseType result = RetrievePolicyResponseType::SUCCESS;
-    if (error.is_set() && error.name()) {
-      result = GetPolicyResponseTypeByError(error.name());
+    auto result = blocking_method_caller_->CallMethodAndBlock(&method_call);
+    RetrievePolicyResponseType response_type =
+        RetrievePolicyResponseType::SUCCESS;
+    if (!result.has_value() && result.error().IsValid()) {
+      response_type = GetPolicyResponseTypeByError(result.error().name());
     }
-    if (result == RetrievePolicyResponseType::SUCCESS) {
-      ExtractPolicyResponseString(descriptor.account_type(), response.get(),
+    if (response_type == RetrievePolicyResponseType::SUCCESS) {
+      ExtractPolicyResponseString(descriptor.account_type(),
+                                  result.has_value() ? result->get() : nullptr,
                                   policy_out);
     } else {
       policy_out->clear();
     }
-    return result;
+    return response_type;
   }
 
   void CallStorePolicy(const login_manager::PolicyDescriptor& descriptor,
@@ -1273,7 +1259,8 @@ void SessionManagerClient::InitializeFakeInMemory() {
 
 // static
 void SessionManagerClient::Shutdown() {
-  DCHECK(g_instance);
+  // Note `g_instance` could be nullptr when ScopedFakeSessionManagerClient is
+  // used.
   delete g_instance;
 }
 

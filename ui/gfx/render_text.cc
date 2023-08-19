@@ -383,7 +383,8 @@ void SkiaTextRenderer::DrawStrike(int x,
                                   int width,
                                   SkScalar thickness_factor) {
   const SkScalar text_size = font_.getSize();
-  const SkScalar height = text_size * thickness_factor;
+  // Strike should have a minimum height of 1.0f.
+  const SkScalar height = std::max(1.0f, text_size * thickness_factor);
   const SkScalar top = y - text_size * kStrikeThroughOffset - height / 2;
   SkScalar x_scalar = SkIntToScalar(x);
   const SkRect r =
@@ -568,6 +569,7 @@ void RenderText::SetFontList(const FontList& font_list) {
   styles_[TEXT_STYLE_ITALIC].SetValue((font_style & Font::ITALIC) != 0);
   styles_[TEXT_STYLE_UNDERLINE].SetValue((font_style & Font::UNDERLINE) != 0);
   styles_[TEXT_STYLE_HEAVY_UNDERLINE].SetValue(false);
+  styles_[TEXT_STYLE_STRIKE].SetValue((font_style & Font::STRIKE_THROUGH) != 0);
   baseline_ = kInvalidBaseline;
   cached_bounds_and_offset_valid_ = false;
   OnLayoutTextAttributeChanged(false);

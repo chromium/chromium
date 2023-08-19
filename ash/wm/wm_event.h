@@ -10,6 +10,7 @@
 #include "ash/wm/wm_metrics.h"
 #include "base/time/time.h"
 #include "chromeos/ui/frame/caption_buttons/snap_controller.h"
+#include "chromeos/ui/frame/multitask_menu/float_controller_base.h"
 #include "ui/display/display.h"
 #include "ui/display/display_observer.h"
 #include "ui/gfx/geometry/rect.h"
@@ -123,6 +124,7 @@ enum WMEventType {
 
 class SetBoundsWMEvent;
 class DisplayMetricsChangedWMEvent;
+class WindowFloatWMEvent;
 class WindowSnapWMEvent;
 
 class ASH_EXPORT WMEvent {
@@ -161,11 +163,12 @@ class ASH_EXPORT WMEvent {
   // True if the event is a window snap event.
   bool IsSnapEvent() const;
 
-  // Returns `this` if it's a WindowSnapWMEvent, otherwise returns nullptr.
-  virtual const WindowSnapWMEvent* AsSnapEvent() const;
-
   // Utility methods to downcast to specific WMEvent types.
-  const DisplayMetricsChangedWMEvent* AsDisplayMetricsChangedWMEvent() const;
+  virtual const SetBoundsWMEvent* AsSetBoundsWMEvent() const;
+  virtual const DisplayMetricsChangedWMEvent* AsDisplayMetricsChangedWMEvent()
+      const;
+  virtual const WindowFloatWMEvent* AsFloatEvent() const;
+  virtual const WindowSnapWMEvent* AsSnapEvent() const;
 
  private:
   WMEventType type_;
@@ -184,6 +187,9 @@ class ASH_EXPORT SetBoundsWMEvent : public WMEvent {
   SetBoundsWMEvent& operator=(const SetBoundsWMEvent&) = delete;
 
   ~SetBoundsWMEvent() override;
+
+  // WMevent:
+  const SetBoundsWMEvent* AsSetBoundsWMEvent() const override;
 
   const gfx::Rect& requested_bounds() const { return requested_bounds_; }
 
@@ -216,10 +222,28 @@ class ASH_EXPORT DisplayMetricsChangedWMEvent : public WMEvent {
     return changed_metrics_ & display::DisplayObserver::DISPLAY_METRIC_PRIMARY;
   }
 
-  uint32_t changed_metrics() const { return changed_metrics_; }
-
  private:
   const uint32_t changed_metrics_;
+};
+
+// An WMEvent to float a window.
+class ASH_EXPORT WindowFloatWMEvent : public WMEvent {
+ public:
+  explicit WindowFloatWMEvent(
+      chromeos::FloatStartLocation float_start_location);
+  WindowFloatWMEvent(const WindowFloatWMEvent&) = delete;
+  WindowFloatWMEvent& operator=(const WindowFloatWMEvent&) = delete;
+  ~WindowFloatWMEvent() override;
+
+  // WMEvent:
+  const WindowFloatWMEvent* AsFloatEvent() const override;
+
+  chromeos::FloatStartLocation float_start_location() const {
+    return float_start_location_;
+  }
+
+ private:
+  const chromeos::FloatStartLocation float_start_location_;
 };
 
 // An WMEvent to snap a window.

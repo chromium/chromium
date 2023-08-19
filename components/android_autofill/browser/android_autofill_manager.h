@@ -62,7 +62,8 @@ class AndroidAutofillManager : public AutofillManager {
   void OnDidPreviewAutofillFormDataImpl() override {}
   void OnDidEndTextFieldEditingImpl() override {}
   void OnHidePopupImpl() override;
-  void OnSelectFieldOptionsDidChangeImpl(const FormData& form) override {}
+  void OnSelectOrSelectListFieldOptionsDidChangeImpl(
+      const FormData& form) override {}
 
   void Reset() override;
   void OnContextMenuShownInField(const FormGlobalId& form_global_id,
@@ -80,7 +81,7 @@ class AndroidAutofillManager : public AutofillManager {
   // |triggered_origin| is the origin of the field from which the autofill is
   // triggered; this affects the security policy for cross-frame fills. See
   // AutofillDriver::FillOrPreviewForm() for further details.
-  void FillOrPreviewForm(mojom::RendererFormDataAction action,
+  void FillOrPreviewForm(mojom::AutofillActionPersistence action_persistence,
                          const FormData& form,
                          const FieldTypeGroup field_type_group,
                          const url::Origin& triggered_origin);
@@ -108,8 +109,7 @@ class AndroidAutofillManager : public AutofillManager {
       const FormData& form,
       const FormFieldData& field,
       const gfx::RectF& bounding_box,
-      AutoselectFirstSuggestion autoselect_first_suggestion,
-      FormElementWasClicked form_element_was_clicked) override;
+      AutofillSuggestionTriggerSource trigger_source) override;
 
   void OnFocusOnFormFieldImpl(const FormData& form,
                               const FormFieldData& field,
@@ -134,20 +134,12 @@ class AndroidAutofillManager : public AutofillManager {
   void OnAfterProcessParsedForms(
       const DenseSet<FormType>& form_types) override {}
 
-  void PropagateAutofillPredictions(
+  void PropagateAutofillPredictionsDeprecated(
       const std::vector<FormStructure*>& forms) override;
 
   void OnServerRequestError(FormSignature form_signature,
                             AutofillDownloadManager::RequestType request_type,
                             int http_error) override;
-
- protected:
-#ifdef UNIT_TEST
-  // For the unit tests where WebContents isn't available.
-  void set_autofill_provider_for_testing(AutofillProvider* autofill_provider) {
-    autofill_provider_for_testing_ = autofill_provider;
-  }
-#endif  // UNIT_TEST
 
  private:
   AutofillProvider* GetAutofillProvider();
@@ -168,7 +160,6 @@ class AndroidAutofillManager : public AutofillManager {
   FormEventLoggerWeblayerAndroid* GetEventFormLogger(FormType form_type);
 
   bool has_server_prediction_ = false;
-  raw_ptr<AutofillProvider> autofill_provider_for_testing_ = nullptr;
   std::unique_ptr<FormEventLoggerWeblayerAndroid> address_logger_;
   std::unique_ptr<FormEventLoggerWeblayerAndroid> payments_logger_;
   std::unique_ptr<FormEventLoggerWeblayerAndroid> password_logger_;

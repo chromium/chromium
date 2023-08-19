@@ -10,7 +10,6 @@ import android.os.Handler;
 import android.view.ViewGroup;
 
 import androidx.annotation.DrawableRes;
-import androidx.annotation.VisibleForTesting;
 import androidx.appcompat.content.res.AppCompatResources;
 
 import org.chromium.base.supplier.ObservableSupplier;
@@ -216,8 +215,8 @@ public class MerchantTrustBottomSheetMediator {
         }
     }
 
-    @DrawableRes
-    private static int getSecurityIconResource(@ConnectionSecurityLevel int securityLevel) {
+    private static @DrawableRes int getSecurityIconResource(
+            @ConnectionSecurityLevel int securityLevel) {
         switch (securityLevel) {
             case ConnectionSecurityLevel.NONE:
             case ConnectionSecurityLevel.WARNING:
@@ -241,7 +240,6 @@ public class MerchantTrustBottomSheetMediator {
                 || UrlUtilitiesJni.get().isGoogleSubDomainUrl(url.getSpec());
     }
 
-    @VisibleForTesting
     void setWebContentsForTesting(WebContents webContents) {
         mWebContentsForTesting = webContents;
     }
@@ -285,7 +283,6 @@ public class MerchantTrustBottomSheetMediator {
         }
     }
 
-    @VisibleForTesting
     void setFaviconDrawableForTesting(Drawable drawableForTesting) {
         mFaviconDrawableForTesting = drawableForTesting;
     }

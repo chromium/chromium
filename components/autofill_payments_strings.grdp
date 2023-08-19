@@ -115,6 +115,12 @@
   <message name="IDS_AUTOFILL_SAVE_CARD_PROMPT_TITLE_LOCAL" desc="Title text for the Autofill save card prompt when the card is to be saved locally. The prompt can be either a bubble or an infobar.">
     Save card?
   </message>
+  <message name="IDS_AUTOFILL_SAVE_CVC_PROMPT_TITLE_LOCAL" desc="Title text for the Autofill save CVC prompt that offers to save CVC for existing local cards. This prompt is shown if a CVC is detected for an existing local card on form submission.">
+    Save security code?
+  </message>
+  <message name="IDS_AUTOFILL_SAVE_CVC_PROMPT_EXPLANATION_LOCAL" desc="Explanation text for the Autofill save CVC prompt that offers to save CVC for existing local cards. This prompt is shown if a CVC is detected for an existing local card on form submission.">
+    For faster checkout, save the CVC for this card to your device
+  </message>
   <message name="IDS_AUTOFILL_FIX_FLOW_PROMPT_SAVE_CARD_LABEL" desc="Text to show on the button to save the card to Google when the fix flow dialog is shown after the Autofill save card prompt." formatter_data="android_java">
     Save card
   </message>
@@ -147,6 +153,9 @@
   </message>
   <message name="IDS_AUTOFILL_CARD_SAVED" desc="Title text for the Autofill save card manager bubble when the card has been saved either locally or to Google Payments. Also label for icon animation.">
     Card saved
+  </message>
+  <message name="IDS_AUTOFILL_CVC_SAVED" desc="Title text for the Autofill save card manager bubble when a CVC has been saved either to a local card or to a server card. Also label for icon animation.">
+    CVC saved
   </message>
   <message name="IDS_AUTOFILL_DONE" desc="Text to show for the button in the save card manager bubble when the card has been saved either locally or to Google Payments.">
     Done
@@ -337,8 +346,14 @@
     <message name="IDS_AUTOFILL_CARD_UNMASK_PROMPT_TITLE_SECURITY_CODE" desc="Title for the credit card unmasking dialog, specifically for the virtual card unmasking case.">
       Enter your security code for <ph name="CREDIT_CARD">$1<ex>Visa - 5679</ex></ph>
     </message>
-    <message name="IDS_AUTOFILL_CARD_UNMASK_PROMPT_TITLE_V2" desc="Title for the credit card unmasking dialog, according to August 2019 UI guidelines.">
-      Verify your card
+    <message name="IDS_AUTOFILL_CARD_UNMASK_PROGRESS_DIALOG_TITLE" desc="Title for the progress dialog that occurs during specific card unmasking flows, for example VCN unmasking. It is shown after the user selects a card, and will be dismissed once we receive a server response that denotes we can continue to the next step. The main purpose of the dialog is to inform the user that something is happening in the background, but that task is not done yet.">
+      Verifying payment method
+    </message>
+    <message name="IDS_AUTOFILL_CARD_UNMASK_CONFIRMATION_DIALOG_TITLE" desc="Title for the confirmation dialog that occurs upon a successful card unmask.">
+      Payment method verified
+    </message>
+    <message name="IDS_AUTOFILL_CARD_UNMASK_VERIFICATION_TITLE" desc="Title for the credit card unmasking progress dialog, also used as the title of challenge option selection dialog when only one challenge option available." formatter_data="android_java">
+      Verify it's you
     </message>
     <message name="IDS_AUTOFILL_CARD_UNMASK_PROMPT_EXPIRED_TITLE" desc="Title for the credit card unmasking dialog when the credit card is expired.">
       Enter the expiration date and CVC for <ph name="CREDIT_CARD">$1<ex>Visa - 5679</ex></ph>
@@ -448,7 +463,7 @@
     Cancel
   </message>
   <message name="IDS_AUTOFILL_CARD_UNMASK_CONFIRMATION_MESSAGE" desc="Message displayed after tapping a Virtual Card, and the response from the bank indicates that no further verification is required.">
-    Your card is confirmed
+    Verified
   </message>
   <message name="IDS_AUTOFILL_FIDO_AUTHENTICATION_PROMPT_TITLE" desc="Title for FIDO authentication progress dialog">
       Verifying...
@@ -567,16 +582,16 @@
   </message>
 
   <!-- Mandatory Reauth related strings - start -->
-  <message name="IDS_AUTOFILL_MANDATORY_REAUTH_OPT_IN_NO_THANKS" desc="Text for the cancel button in the mandatory reauth opt-in prompt. If the user clicks this button, mandatory reauth will not be enabled. Mandatory reauth requires the user to unlock their device or pass a biometric auth when autofilling payment method information.">
-    No Thanks
+  <message name="IDS_AUTOFILL_MANDATORY_REAUTH_OPT_IN_NO_THANKS" desc="Text for the cancel button in the mandatory reauth opt-in prompt. If the user clicks this button, mandatory reauth will not be enabled. Mandatory reauth requires the user to unlock their device or pass a biometric auth when autofilling payment method information." formatter_data="android_java">
+    No thanks
   </message>
-  <message name="IDS_AUTOFILL_MANDATORY_REAUTH_OPT_IN_ACCEPT" desc="Text for the accept button in the mandatory reauth opt-in prompt. If the user clicks this button, mandatory reauth will be enabled. Mandatory reauth requires the user to unlock their device or pass a biometric auth when autofilling payment method information.">
+  <message name="IDS_AUTOFILL_MANDATORY_REAUTH_OPT_IN_ACCEPT" desc="Text for the accept button in the mandatory reauth opt-in prompt. If the user clicks this button, mandatory reauth will be enabled. Mandatory reauth requires the user to unlock their device or pass a biometric auth when autofilling payment method information." formatter_data="android_java">
     Yes
   </message>
-  <message name="IDS_AUTOFILL_MANDATORY_REAUTH_OPT_IN_TITLE" desc="Title text for the mandatory reauth opt-in prompt that is displayed to the user after filling in payment method information. Mandatory reauth requires the user to unlock their device or pass a biometric auth when autofilling payment method information.">
+  <message name="IDS_AUTOFILL_MANDATORY_REAUTH_OPT_IN_TITLE" desc="Title text for the mandatory reauth opt-in prompt that is displayed to the user after filling in payment method information. Mandatory reauth requires the user to unlock their device or pass a biometric auth when autofilling payment method information." formatter_data="android_java">
     Always verify?
   </message>
-  <message name="IDS_AUTOFILL_MANDATORY_REAUTH_OPT_IN_EXPLANATION" desc="Explanation text for the mandatory reauth opt-in prompt that is displayed to the user after filling in payment method information. Mandatory reauth requires the user to unlock their device or pass a biometric auth when autofilling payment method information.">
+  <message name="IDS_AUTOFILL_MANDATORY_REAUTH_OPT_IN_EXPLANATION" desc="Explanation text for the mandatory reauth opt-in prompt that is displayed to the user after filling in payment method information. Mandatory reauth requires the user to unlock their device or pass a biometric auth when autofilling payment method information." formatter_data="android_java">
     For added security on shared devices, turn on verification every time you pay using autofill.
   </message>
   <message name="IDS_AUTOFILL_MANDATORY_REAUTH_ICON_TOOLTIP" desc="The tooltip message for the omnibox icon for the mandatory reauth opt-in bubble on Desktop. This bubble prompts users if they would like to enroll in mandatory reauth. Mandatory reauth requires the user to unlock their device or pass a biometric auth when autofilling payment method information.">
@@ -591,6 +606,18 @@
   <message name="IDS_AUTOFILL_MANDATORY_REAUTH_CONFIRMATION_SETTINGS_LINK" desc="A link to the settings page for the mandatory reauth confirmation prompt that is displayed to the user after opting into mandatory reauth. Mandatory reauth requires the user to unlock their device or pass a biometric auth when autofilling payment method information.">
     settings
   </message>
+
+  <if expr="is_android">
+    <message name="IDS_AUTOFILL_MANDATORY_REAUTH_OPT_IN_CONTENT_DESCRIPTION" desc="Content description for the mandatory reauth opt-in prompt that is displayed to the user after filling in payment method information. It is read as accessibility string when the bottom sheet containing the prompt is focused. Mandatory reauth requires the user to unlock their device or pass a biometric auth when autofilling payment method information." formatter_data="android_java">
+      Alert about new payment setting
+    </message>
+    <message name="IDS_AUTOFILL_MANDATORY_REAUTH_OPT_IN_OPENED_FULL" desc="The accessibility string for the mandatory reauth opt-in prompt that is displayed to the user after filling in payment method information. It is read as accessibility string when the bottom sheet containing the prompt is fully opened. Mandatory reauth requires the user to unlock their device or pass a biometric auth when autofilling payment method information." formatter_data="android_java">
+      Alert about new payment setting is opened
+    </message>
+    <message name="IDS_AUTOFILL_MANDATORY_REAUTH_OPT_IN_CLOSED" desc="The accessibility string for the mandatory reauth opt-in prompt that is displayed to the user after filling in payment method information. It is read as accessibility string when the bottom sheet containing the prompt is closed. Mandatory reauth requires the user to unlock their device or pass a biometric auth when autofilling payment method information." formatter_data="android_java">
+      Alert about new payment setting is closed
+    </message>
+  </if>
 
   <!-- virtual cards related strings - start -->
   <if expr="not is_ios and not is_android">
@@ -715,12 +742,21 @@
       Virtual card turned on
     </message>
   </if>
+  <message name="IDS_AUTOFILL_VIRTUAL_CARD_STANDALONE_CVC_SUGGESTION_IPH_BUBBLE_LABEL" desc="Text shown in the IPH bubble for filling in CVC on a virtual card that is saved on file of a merchant website.">
+      Use CVC for this virtual card
+  </message>
+  <message name="IDS_AUTOFILL_VIRTUAL_CARD_STANDALONE_CVC_SUGGESTION_IPH_BUBBLE_LABEL_SCREENREADER" is_accessibility_with_no_ui="true" desc="Screenreader text for the IPH bubble for filling in CVC on a virtual card that is saved on file of a merchant website.">
+      Fill in CVC for this virtual card
+  </message>
+  <message name="IDS_AUTOFILL_VIRTUAL_CARD_STANDALONE_CVC_SUGGESTION_TITLE" desc="Text to be displayed when displaying an Autofill suggestion to fill a standalone CVC for a virtual card on file.">
+      CVC for virtual card
+  </message>
   <!-- virtual cards related strings - end -->
   <message name="IDS_AUTOFILL_CARD_AUTH_SELECTION_DIALOG_TITLE_MULTIPLE_OPTIONS" desc="Title for the credit card unmasking dialog for multiple challenge options. Used in VCN authentication, and once a challenge option is selected a new dialog is rendered where the user authenticates with the selected challenge option." formatter_data="android_java">
       Choose how you'll verify it's you
   </message>
-  <message name="IDS_AUTOFILL_CARD_UNMASK_AUTHENTICATION_SELECTION_DIALOG_ISSUER_CONFIRMATION_TEXT" desc="The issuer confirmation text shown in the Autofill card unmask authentication selection dialog on Desktop. This is the header text of the dialog, and it is the text stating that the issuer wants additional authentication. This dialog lets the user choose the method of authentication when unmasking a server card, including a virtual card.">
-      Your bank wants to confirm it's you.
+  <message name="IDS_AUTOFILL_CARD_UNMASK_AUTHENTICATION_SELECTION_DIALOG_ISSUER_CONFIRMATION_TEXT" desc="The issuer confirmation text shown in the Autofill card unmask authentication selection dialog on Desktop and Clank. This is the header text of the dialog, and it is the text stating that the issuer wants additional authentication. This dialog lets the user choose the method of authentication when unmasking a server card, including a virtual card." formatter_data="android_java">
+      Your bank wants to make sure it's you
   </message>
   <message name="IDS_AUTOFILL_AUTHENTICATION_MODE_SECURITY_CODE" desc="The label for the 3 digit security code authentication option shown in the Autofill card unmask authentication selection dialog on Desktop. Only shown when there are multiple unmask options presented to the user. If selected, the user will be prompted to enter their security code.">
     Enter your security code
@@ -746,17 +782,17 @@
   <message name="IDS_AUTOFILL_CARD_UNMASK_AUTHENTICATION_SELECTION_DIALOG_CVC_CHALLENGE_INFO" desc="Text that is shown for the security code challenge option in the Card Unmask Authentication Selection Dialog. This text lets the user know where the location of the security code is on their card. If the user selects this challenge option and then accepts the dialog, the user will be prompted to enter this security code. An example of a security code is the CVC on the back of the user's credit card.">
       This is the <ph name="NUMBER_OF_DIGITS">$1<ex>3</ex></ph>-digit code on the <ph name="SIDE_OF_CARD">$2<ex>back of your card</ex></ph>
     </message>
-  <message name="IDS_AUTOFILL_CARD_UNMASK_OTP_INPUT_DIALOG_TITLE" desc="The title for the dialog that lets the user type in the OTP they received on Desktop. This message is shown right next to the logo for the dialog, and it lets the users know the action that is required in this dialog, which is to enter their verification code (OTP).">
-    Enter verification code
+  <message name="IDS_AUTOFILL_CARD_UNMASK_OTP_INPUT_DIALOG_TITLE" desc="The title for the dialog that lets the user type in the OTP they received on Desktop and Android. This message is shown right next to the logo for the dialog, and it lets the users know the action that is required in this dialog, which is to enter their verification code (OTP)." formatter_data="android_java">
+    Enter code
   </message>
   <message name="IDS_AUTOFILL_CARD_UNMASK_OTP_INPUT_DIALOG_FOOTER_MESSAGE" desc="The footer message for the dialog that lets the user type in the OTP they received on Desktop. This message instructs the user on what to do if they can't find their OTP code, for example if the OTP code was sent by email but it never came. It contains a link that comes from IDS_AUTOFILL_CARD_UNMASK_OTP_INPUT_DIALOG_NEW_CODE_MESSAGE which allows them to get a new code sent if clicked.">
-    Can't find your code? <ph name="IDS_AUTOFILL_CARD_UNMASK_OTP_INPUT_DIALOG_NEW_CODE_MESSAGE">$1<ex>Get new code</ex></ph>
+    Didn't receive your code? <ph name="IDS_AUTOFILL_CARD_UNMASK_OTP_INPUT_DIALOG_NEW_CODE_MESSAGE">$1<ex>Get new code</ex></ph>
   </message>
   <message name="IDS_AUTOFILL_CARD_UNMASK_OTP_INPUT_DIALOG_NEW_CODE_MESSAGE" desc="The second sentence of the footer message for the dialog that lets the user type in the OTP they received on Desktop. The entire footer message is for when the user can't find his OTP, for example if it was sent by email but the email never came. This is shown as a link that the user can click on to get a new OTP code, and will be substituted into IDS_AUTOFILL_CARD_UNMASK_OTP_INPUT_DIALOG_FOOTER_MESSAGE.">
     Get new code
   </message>
   <message name="IDS_AUTOFILL_CARD_UNMASK_OTP_INPUT_DIALOG_TEXTFIELD_PLACEHOLDER_MESSAGE" desc="The textfield placeholder text for the dialog that lets the user type in the OTP they received on Desktop. This message is shown when the textfield is empty, and it lets the user know the number of digits required for their OTP.">
-    Enter <ph name="NUMBER_OF_DIGITS">$1<ex>6</ex></ph>-digit code
+    Enter <ph name="NUMBER_OF_DIGITS">$1<ex>6</ex></ph>-digit verification code
   </message>
   <message name="IDS_AUTOFILL_CARD_UNMASK_OTP_INPUT_DIALOG_PENDING_MESSAGE" desc="The textfield placeholder text for the dialog that lets the user type in the OTP they received on Desktop. This message is shown after the user submits an OTP, and the dialog goes into pending state. It informs the user that we are currently verifying that the OTP they typed in is correct.">
     Verifying code...
@@ -834,14 +870,11 @@
   </if>
 
   <!-- Autofill Payments OTP verification dialog -->
-  <message name="IDS_AUTOFILL_PAYMENTS_OTP_VERIFICATION_DIALOG_TITLE" desc="Title of the OTP verification dialog which is shown to the user while unmasking a credit card." formatter_data="android_java">
-    Enter Verification Code
-  </message>
   <message name="IDS_AUTOFILL_PAYMENTS_OTP_VERIFICATION_DIALOG_CANT_FIND_CODE_MESSAGE" desc="Hint shown to the user in the event they are unable to find the OTP code."  formatter_data="android_java">
-    Can't find your code? <ph name="BEGIN_LINK">&lt;link&gt;</ph>Get new code<ph name="END_LINK">&lt;/link&gt;</ph>
+    Didn\u2019t receive your code? <ph name="BEGIN_LINK">&lt;link&gt;</ph>Get new code<ph name="END_LINK">&lt;/link&gt;</ph>
   </message>
   <message name="IDS_AUTOFILL_PAYMENTS_OTP_VERIFICATION_DIALOG_OTP_INPUT_HINT" desc="Hint shown in the OTP input field indicating the number of digits expected for the OTP." formatter_data="android_java">
-    Enter <ph name="OTP_LENGTH">%1$s<ex>6</ex></ph>-digit code
+    Enter <ph name="OTP_LENGTH">%1$s<ex>6</ex></ph>-digit verification code
   </message>
   <message name="IDS_AUTOFILL_PAYMENTS_OTP_VERIFICATION_DIALOG_POSITIVE_BUTTON_LABEL" desc="Positive button label for the OTP verification dialog." formatter_data="android_java">
     Confirm
@@ -888,7 +921,7 @@
   <message name="IDS_AUTOFILL_SETTINGS_PAGE_ENABLE_PAYMENT_METHOD_MANDATORY_REAUTH_LABEL" desc="Label for a settings page toggle that allows users to control whether or not to add mandatory reauth for payment methods filling." formatter_data="android_java">
     Always verify when using autofill
   </message>
-  <message name="IDS_AUTOFILL_SETTINGS_PAGE_ENABLE_PAYMENT_METHOD_MANDATORY_REAUTH_SUBLABEL" desc="Sublabel for a setttings page toggle that allows users to control whether or not to add mandatory reauth for payment methods filling." formatter_data="android_java">
+  <message name="IDS_AUTOFILL_SETTINGS_PAGE_ENABLE_PAYMENT_METHOD_MANDATORY_REAUTH_SUBLABEL" desc="Sublabel for a settings page toggle that allows users to control whether or not to add mandatory reauth for payment methods filling." formatter_data="android_java">
     When turned off, you may be asked occasionally to verify for security purposes
   </message>
   <if expr="is_android">
@@ -900,4 +933,23 @@
     </message>
   </if>
 
+  <!-- CVC Storage related strings -->
+  <if expr="not is_android">
+    <message name="IDS_AUTOFILL_SETTINGS_PAGE_ENABLE_CVC_STORAGE_LABEL" desc="Label for the payments settings page toggle that enables the user to store and use CVC for payments autofill.">
+      Save security codes
+    </message>
+    <message name="IDS_AUTOFILL_SETTINGS_PAGE_ENABLE_CVC_STORAGE_SUBLABEL" desc="Sublabel for the payments settings page toggle that enables the user to store and use CVC for payments autofill.">
+      Checkout faster when your CVCs are saved
+    </message>
+    <!-- This sublabel has hyperlink encoding present in it. This is to trigger the modal popup which would bulk delete all the CVCs. -->
+    <message name="IDS_AUTOFILL_SETTINGS_PAGE_ENABLE_CVC_STORAGE_WITH_DELETE_LINK_SUBLABEL" desc="Sublabel for the payments settings page that would bulk delete all the CVCs when clicked on it. that enables the user to store and use CVC for payments autofill. There is also a hyperlinked text which bulk deletes all the CVC data. This sublabel is used when we have CVC data present on the local DB.">
+      Checkout faster when your CVCs are saved. <ph name="LINK_BEGIN">&lt;a href="#"&gt;</ph>Delete saved security codes<ph name="LINK_END">&lt;/a&gt;</ph>
+    </message>
+    <message name="IDS_AUTOFILL_SETTINGS_PAGE_BULK_REMOVE_CVC_TITLE" desc="Title for the modal dialog when the user is trying to bulk remove/delete all the CVCs stored locally and on Google servers.">
+      Delete saved security codes?
+    </message>
+    <message name="IDS_AUTOFILL_SETTINGS_PAGE_BULK_REMOVE_CVC_DESCRIPTION" desc="Description for the modal dialog when the user is trying to bulk remove/delete all the CVCs stored locally and on Google servers.">
+      All security codes saved on your device and in Google Account will be deleted
+    </message>
+  </if>
 </grit-part>

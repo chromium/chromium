@@ -33,7 +33,6 @@
 #include "build/build_config.h"
 #include "build/buildflag.h"
 #include "components/attribution_reporting/source_registration.h"
-#include "components/attribution_reporting/source_registration_error.mojom.h"
 #include "components/attribution_reporting/suitable_origin.h"
 #include "components/attribution_reporting/trigger_registration.h"
 #include "content/browser/aggregation_service/aggregation_service.h"
@@ -58,7 +57,6 @@
 #include "content/browser/attribution_reporting/attribution_storage_sql.h"
 #include "content/browser/attribution_reporting/attribution_trigger.h"
 #include "content/browser/attribution_reporting/create_report_result.h"
-#include "content/browser/attribution_reporting/destination_throttler.h"
 #include "content/browser/attribution_reporting/os_registration.h"
 #include "content/browser/attribution_reporting/send_result.h"
 #include "content/browser/attribution_reporting/storable_source.h"
@@ -98,7 +96,7 @@ using ScopedUseInMemoryStorageForTesting =
     ::content::AttributionManagerImpl::ScopedUseInMemoryStorageForTesting;
 
 using ::attribution_reporting::mojom::OsRegistrationResult;
-using ::attribution_reporting::mojom::OsRegistrationType;
+using ::attribution_reporting::mojom::RegistrationType;
 
 // These values are persisted to logs. Entries should not be renumbered and
 // numeric values should never be reused.
@@ -185,17 +183,18 @@ bool IsStorageKeySessionOnly(
 
 void RecordStoreSourceStatus(StoreSourceResult result) {
   static_assert(StorableSource::Result::kMaxValue ==
-                    StorableSource::Result::kDestinationBothLimitsReached,
-                "Bump version of Conversions.SourceStoredStatus3 histogram.");
-  base::UmaHistogramEnumeration("Conversions.SourceStoredStatus3",
+                    StorableSource::Result::kEventReportWindowsInvalidStartTime,
+                "Bump version of Conversions.SourceStoredStatus6 histogram.");
+  base::UmaHistogramEnumeration("Conversions.SourceStoredStatus6",
                                 result.status);
 }
 
 void RecordCreateReportStatus(CreateReportResult result) {
-  static_assert(AttributionTrigger::EventLevelResult::kMaxValue ==
-                    AttributionTrigger::EventLevelResult::kNotRegistered,
-                "Bump version of Conversions.CreateReportStatus7 histogram.");
-  base::UmaHistogramEnumeration("Conversions.CreateReportStatus7",
+  static_assert(
+      AttributionTrigger::EventLevelResult::kMaxValue ==
+          AttributionTrigger::EventLevelResult::kReportWindowNotStarted,
+      "Bump version of Conversions.CreateReportStatus8 histogram.");
+  base::UmaHistogramEnumeration("Conversions.CreateReportStatus8",
                                 result.event_level_status());
   static_assert(
       AttributionTrigger::AggregatableResult::kMaxValue ==
@@ -351,10 +350,8 @@ void LogMetricsOnReportSent(const AttributionReport& report) {
   }
 }
 
-std::unique_ptr<AttributionStorageDelegate> MakeStorageDelegate() {
-  bool debug_mode = base::CommandLine::ForCurrentProcess()->HasSwitch(
-      switches::kAttributionReportingDebugMode);
-
+std::unique_ptr<AttributionStorageDelegate> MakeStorageDelegate(
+    bool debug_mode) {
   if (debug_mode) {
     return std::make_unique<AttributionStorageDelegateImpl>(
         AttributionNoiseMode::kNone, AttributionDelayMode::kNone);
@@ -364,30 +361,15 @@ std::unique_ptr<AttributionStorageDelegate> MakeStorageDelegate() {
       AttributionNoiseMode::kDefault, AttributionDelayMode::kDefault);
 }
 
-StorableSource::Result ThrottleResultToStorableSourceResult(
-    DestinationThrottler::Result r) {
-  switch (r) {
-    case DestinationThrottler::Result::kAllowed:
-      return StorableSource::Result::kSuccess;
-    case DestinationThrottler::Result::kHitGlobalLimit:
-      return StorableSource::Result::kDestinationGlobalLimitReached;
-    case DestinationThrottler::Result::kHitReportingLimit:
-      return StorableSource::Result::kDestinationReportingLimitReached;
-    case DestinationThrottler::Result::kHitBothLimits:
-      return StorableSource::Result::kDestinationBothLimitsReached;
-  }
-}
-
 bool IsOperationAllowed(
-    StoragePartitionImpl* storage_partition,
+    StoragePartitionImpl& storage_partition,
     ContentBrowserClient::AttributionReportingOperation operation,
     content::RenderFrameHost* rfh,
     const url::Origin* source_origin,
     const url::Origin* destination_origin,
     const url::Origin* reporting_origin) {
-  DCHECK(storage_partition);
   return GetContentClient()->browser()->IsAttributionReportingOperationAllowed(
-      storage_partition->browser_context(), operation, rfh, source_origin,
+      storage_partition.browser_context(), operation, rfh, source_origin,
       destination_origin, reporting_origin);
 }
 
@@ -449,7 +431,7 @@ bool AttributionManagerImpl::IsReportAllowed(
       },
       report.data());
   return IsOperationAllowed(
-      storage_partition_.get(),
+      *storage_partition_,
       ContentBrowserClient::AttributionReportingOperation::kReport,
       /*rfh=*/nullptr, &**source_origin,
       &*report.attribution_info().context_origin,
@@ -484,7 +466,8 @@ AttributionManagerImpl::AttributionManagerImpl(
           user_data_directory,
           /*max_pending_events=*/1000,
           std::move(special_storage_policy),
-          MakeStorageDelegate(),
+          MakeStorageDelegate(base::CommandLine::ForCurrentProcess()->HasSwitch(
+              switches::kAttributionReportingDebugMode)),
           std::make_unique<AttributionCookieCheckerImpl>(storage_partition),
           std::make_unique<AttributionReportNetworkSender>(
               storage_partition->GetURLLoaderFactoryForBrowserProcess()),
@@ -511,8 +494,8 @@ AttributionManagerImpl::AttributionManagerImpl(
     std::unique_ptr<AttributionReportSender> report_sender,
     std::unique_ptr<AttributionOsLevelManager> os_level_manager,
     scoped_refptr<base::UpdateableSequencedTaskRunner> storage_task_runner)
-    : throttler_(DestinationThrottler::Policy()),
-      storage_partition_(storage_partition),
+    : storage_partition_(
+          raw_ref<StoragePartitionImpl>::from_ptr(storage_partition)),
       max_pending_events_(max_pending_events),
       storage_task_runner_(std::move(storage_task_runner)),
       attribution_storage_(base::SequenceBound<AttributionStorageSql>(
@@ -532,7 +515,6 @@ AttributionManagerImpl::AttributionManagerImpl(
       cookie_checker_(std::move(cookie_checker)),
       report_sender_(std::move(report_sender)),
       os_level_manager_(std::move(os_level_manager)) {
-  DCHECK(storage_partition_);
   DCHECK_GT(max_pending_events_, 0u);
   DCHECK(storage_task_runner_);
   DCHECK(cookie_checker_);
@@ -577,7 +559,7 @@ void AttributionManagerImpl::HandleSource(
     StorableSource source,
     GlobalRenderFrameHostId render_frame_id) {
   bool allowed = IsOperationAllowed(
-      storage_partition_.get(),
+      *storage_partition_,
       ContentBrowserClient::AttributionReportingOperation::kSource,
       RenderFrameHost::FromID(render_frame_id),
       &*source.common_info().source_origin(),
@@ -634,7 +616,7 @@ void AttributionManagerImpl::HandleTrigger(
     AttributionTrigger trigger,
     GlobalRenderFrameHostId render_frame_id) {
   bool allowed = IsOperationAllowed(
-      storage_partition_.get(),
+      *storage_partition_,
       ContentBrowserClient::AttributionReportingOperation::kTrigger,
       RenderFrameHost::FromID(render_frame_id),
       /*source_origin=*/nullptr, &*trigger.destination_origin(),
@@ -735,8 +717,7 @@ void AttributionManagerImpl::ProcessNextEvent(bool is_debug_cookie_set) {
 
   absl::visit(base::Overloaded{
                   [&](StorableSource& source) {
-                    CheckDestinationThrottlerAndStoreSource(
-                        std::move(source), is_debug_cookie_set);
+                    StoreSource(std::move(source), is_debug_cookie_set);
                   },
                   [&](AttributionTrigger& trigger) {
                     StoreTrigger(std::move(trigger), is_debug_cookie_set);
@@ -747,37 +728,19 @@ void AttributionManagerImpl::ProcessNextEvent(bool is_debug_cookie_set) {
   pending_events_.pop_front();
 }
 
-void AttributionManagerImpl::CheckDestinationThrottlerAndStoreSource(
-    StorableSource source,
-    bool is_debug_cookie_set) {
-  DestinationThrottler::Result throttle_result = throttler_.UpdateAndGetResult(
-      source.registration().destination_set,
-      net::SchemefulSite(source.common_info().source_origin()),
-      net::SchemefulSite(source.common_info().reporting_origin()));
-  base::UmaHistogramEnumeration("Conversions.DestinationThrottlerResult",
-                                throttle_result);
-
+void AttributionManagerImpl::StoreSource(StorableSource source,
+                                         bool is_debug_cookie_set) {
   absl::optional<uint64_t> cleared_debug_key;
   if (!is_debug_cookie_set) {
     cleared_debug_key =
         std::exchange(source.registration().debug_key, absl::nullopt);
   }
 
-  if (StorableSource::Result result =
-          ThrottleResultToStorableSourceResult(throttle_result);
-      result == StorableSource::Result::kSuccess) {
-    attribution_storage_.AsyncCall(&AttributionStorage::StoreSource)
-        .WithArgs(source)
-        .Then(base::BindOnce(&AttributionManagerImpl::OnSourceStored,
-                             weak_factory_.GetWeakPtr(), std::move(source),
-                             cleared_debug_key, is_debug_cookie_set));
-  } else {
-    StoreSourceResult store_result(result);
-    store_result.max_destinations_per_rate_limit_window_reporting_origin =
-        throttler_.GetMaxPerReportingSite();
-    OnSourceStored(source, cleared_debug_key, is_debug_cookie_set,
-                   StoreSourceResult(result));
-  }
+  attribution_storage_.AsyncCall(&AttributionStorage::StoreSource)
+      .WithArgs(source)
+      .Then(base::BindOnce(&AttributionManagerImpl::OnSourceStored,
+                           weak_factory_.GetWeakPtr(), std::move(source),
+                           cleared_debug_key, is_debug_cookie_set));
 }
 
 void AttributionManagerImpl::AddPendingAggregatableReportTiming(
@@ -1258,20 +1221,6 @@ void AttributionManagerImpl::NotifyReportsChanged() {
   }
 }
 
-void AttributionManagerImpl::NotifyFailedSourceRegistration(
-    const std::string& header_value,
-    const attribution_reporting::SuitableOrigin& source_origin,
-    const attribution_reporting::SuitableOrigin& reporting_origin,
-    attribution_reporting::mojom::SourceType source_type,
-    attribution_reporting::mojom::SourceRegistrationError error) {
-  base::Time source_time = base::Time::Now();
-  for (auto& observer : observers_) {
-    observer.OnFailedSourceRegistration(header_value, source_time,
-                                        source_origin, reporting_origin,
-                                        source_type, error);
-  }
-}
-
 void AttributionManagerImpl::MaybeSendVerboseDebugReport(
     const StorableSource& source,
     bool is_debug_cookie_set,
@@ -1280,7 +1229,7 @@ void AttributionManagerImpl::MaybeSendVerboseDebugReport(
     return;
   }
 
-  if (!IsOperationAllowed(storage_partition_.get(),
+  if (!IsOperationAllowed(*storage_partition_,
                           ContentBrowserClient::AttributionReportingOperation::
                               kSourceVerboseDebugReport,
                           /*rfh=*/nullptr,
@@ -1307,7 +1256,7 @@ void AttributionManagerImpl::MaybeSendVerboseDebugReport(
     return;
   }
 
-  if (!IsOperationAllowed(storage_partition_.get(),
+  if (!IsOperationAllowed(*storage_partition_,
                           ContentBrowserClient::AttributionReportingOperation::
                               kTriggerVerboseDebugReport,
                           /*rfh=*/nullptr,
@@ -1350,13 +1299,13 @@ void AttributionManagerImpl::HandleOsRegistration(
   const url::Origin* source_origin;
   const url::Origin* destination_origin;
   switch (registration.GetType()) {
-    case OsRegistrationType::kSource:
+    case RegistrationType::kSource:
       operation =
           ContentBrowserClient::AttributionReportingOperation::kOsSource;
       source_origin = &registration.top_level_origin;
       destination_origin = nullptr;
       break;
-    case OsRegistrationType::kTrigger:
+    case RegistrationType::kTrigger:
       operation =
           ContentBrowserClient::AttributionReportingOperation::kOsTrigger;
       source_origin = nullptr;
@@ -1364,7 +1313,7 @@ void AttributionManagerImpl::HandleOsRegistration(
       break;
   }
 
-  if (!IsOperationAllowed(storage_partition_.get(), operation,
+  if (!IsOperationAllowed(*storage_partition_, operation,
                           RenderFrameHost::FromID(render_frame_id),
                           source_origin, destination_origin,
                           /*reporting_origin=*/&registration_origin)) {
@@ -1433,18 +1382,82 @@ void AttributionManagerImpl::NotifyOsRegistration(
   for (auto& observer : observers_) {
     observer.OnOsRegistration(now, registration, is_debug_key_allowed, result);
   }
+  switch (registration.GetType()) {
+    case attribution_reporting::mojom::RegistrationType::kSource:
+      base::UmaHistogramEnumeration("Conversions.OsRegistrationResult.Source",
+                                    result);
+      break;
+    case attribution_reporting::mojom::RegistrationType::kTrigger:
+      base::UmaHistogramEnumeration("Conversions.OsRegistrationResult.Trigger",
+                                    result);
+      break;
+  }
 }
 
 void AttributionManagerImpl::OnOsRegistration(
     bool is_debug_key_allowed,
     const OsRegistration& registration,
     bool success) {
-  base::UmaHistogramBoolean("Conversions.AttributionOsRegistrationResult",
-                            success);
+  MaybeSendVerboseDebugReport(registration);
 
   NotifyOsRegistration(registration, is_debug_key_allowed,
                        success ? OsRegistrationResult::kPassedToOs
                                : OsRegistrationResult::kRejectedByOs);
+}
+
+void AttributionManagerImpl::SetDebugMode(absl::optional<bool> enabled,
+                                          base::OnceClosure done) {
+  bool debug_mode =
+      enabled.value_or(base::CommandLine::ForCurrentProcess()->HasSwitch(
+          switches::kAttributionReportingDebugMode));
+
+  // TODO(apaseltiner): Observers should be notified when the debug mode changes
+  // so they can re-query its value.
+  attribution_storage_.AsyncCall(&AttributionStorage::SetDelegate)
+      .WithArgs(MakeStorageDelegate(debug_mode))
+      .Then(std::move(done));
+}
+
+void AttributionManagerImpl::MaybeSendVerboseDebugReport(
+    const OsRegistration& registration) {
+  if (!base::FeatureList::IsEnabled(kAttributionVerboseDebugReporting)) {
+    return;
+  }
+
+  const auto registration_origin =
+      url::Origin::Create(registration.registration_url);
+
+  ContentBrowserClient::AttributionReportingOperation operation;
+  const url::Origin* source_origin;
+  const url::Origin* destination_origin;
+  switch (registration.GetType()) {
+    case RegistrationType::kSource:
+      operation = ContentBrowserClient::AttributionReportingOperation::
+          kOsSourceVerboseDebugReport;
+      source_origin = &registration.top_level_origin;
+      destination_origin = nullptr;
+      break;
+    case RegistrationType::kTrigger:
+      operation = ContentBrowserClient::AttributionReportingOperation::
+          kOsTriggerVerboseDebugReport;
+      source_origin = nullptr;
+      destination_origin = &registration.top_level_origin;
+      break;
+  }
+
+  if (!IsOperationAllowed(*storage_partition_, operation,
+                          /*rfh=*/nullptr, source_origin, destination_origin,
+                          /*reporting_origin=*/&registration_origin)) {
+    return;
+  }
+
+  if (absl::optional<AttributionDebugReport> debug_report =
+          AttributionDebugReport::Create(registration)) {
+    report_sender_->SendReport(
+        std::move(*debug_report),
+        base::BindOnce(&AttributionManagerImpl::NotifyDebugReportSent,
+                       weak_factory_.GetWeakPtr()));
+  }
 }
 
 }  // namespace content

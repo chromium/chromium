@@ -9,6 +9,7 @@
 #include <vector>
 
 #include "ash/constants/ash_features.h"
+#include "ash/constants/ash_pref_names.h"
 #include "ash/public/mojom/input_device_settings.mojom-shared.h"
 #include "ash/public/mojom/input_device_settings.mojom.h"
 #include "ash/session/session_controller_impl.h"
@@ -266,6 +267,7 @@ void InputDeviceSettingsControllerImpl::RegisterProfilePrefs(
   pref_registry->RegisterDictionaryPref(
       prefs::kPointingStickDeviceSettingsDictPref);
   pref_registry->RegisterDictionaryPref(prefs::kTouchpadDeviceSettingsDictPref);
+  pref_registry->RegisterListPref(prefs::kKeyboardDeviceImpostersListPref);
 }
 
 void InputDeviceSettingsControllerImpl::OnActiveUserPrefServiceChanged(
@@ -277,11 +279,12 @@ void InputDeviceSettingsControllerImpl::OnActiveUserPrefServiceChanged(
     pref_service->SetDict(prefs::kMouseDeviceSettingsDictPref, {});
     pref_service->SetDict(prefs::kPointingStickDeviceSettingsDictPref, {});
     pref_service->SetDict(prefs::kTouchpadDeviceSettingsDictPref, {});
+    pref_service->SetList(prefs::kKeyboardDeviceImpostersListPref, {});
     return;
   }
 
   // If the flag is disabled, clear the new touchpad and keyboard settings from
-  // all settings dictionaries.
+  // all settings dictionaries and reset the notification prefs.
   if (!features::IsAltClickAndSixPackCustomizationEnabled() && pref_service) {
     base::Value::Dict updated_touchpad_dict =
         pref_service->GetDict(prefs::kTouchpadDeviceSettingsDictPref).Clone();
@@ -301,6 +304,13 @@ void InputDeviceSettingsControllerImpl::OnActiveUserPrefServiceChanged(
                           std::move(updated_touchpad_dict));
     pref_service->SetDict(prefs::kKeyboardDeviceSettingsDictPref,
                           std::move(updated_keyboard_dict));
+
+    pref_service->ClearPref(prefs::kSixPackKeyDeleteNotificationsRemaining);
+    pref_service->ClearPref(prefs::kSixPackKeyHomeNotificationsRemaining);
+    pref_service->ClearPref(prefs::kSixPackKeyEndNotificationsRemaining);
+    pref_service->ClearPref(prefs::kSixPackKeyPageUpNotificationsRemaining);
+    pref_service->ClearPref(prefs::kSixPackKeyPageDownNotificationsRemaining);
+    pref_service->ClearPref(prefs::kSixPackKeyInsertNotificationsRemaining);
   }
   active_pref_service_ = pref_service;
   active_account_id_ = Shell::Get()->session_controller()->GetActiveAccountId();
@@ -765,12 +775,31 @@ void InputDeviceSettingsControllerImpl::RemoveObserver(Observer* observer) {
   observers_.RemoveObserver(observer);
 }
 
+void InputDeviceSettingsControllerImpl::RecordComboDeviceMetric(
+    const mojom::Keyboard& keyboard) {
+  for (const auto& [_, mouse] : mice_) {
+    if (mouse->device_key == keyboard.device_key) {
+      metrics_manager_->RecordKeyboardMouseComboDeviceMetric(keyboard, *mouse);
+    }
+  }
+}
+
+void InputDeviceSettingsControllerImpl::RecordComboDeviceMetric(
+    const mojom::Mouse& mouse) {
+  for (const auto& [_, keyboard] : keyboards_) {
+    if (keyboard->device_key == mouse.device_key) {
+      metrics_manager_->RecordKeyboardMouseComboDeviceMetric(*keyboard, mouse);
+    }
+  }
+}
+
 void InputDeviceSettingsControllerImpl::DispatchKeyboardConnected(DeviceId id) {
   DCHECK(base::Contains(keyboards_, id));
   const auto& keyboard = *keyboards_.at(id);
   for (auto& observer : observers_) {
     observer.OnKeyboardConnected(keyboard);
   }
+  RecordComboDeviceMetric(keyboard);
 }
 
 void InputDeviceSettingsControllerImpl::
@@ -827,6 +856,7 @@ void InputDeviceSettingsControllerImpl::DispatchMouseConnected(DeviceId id) {
   for (auto& observer : observers_) {
     observer.OnMouseConnected(mouse);
   }
+  RecordComboDeviceMetric(mouse);
 }
 
 void InputDeviceSettingsControllerImpl::
@@ -949,12 +979,13 @@ void InputDeviceSettingsControllerImpl::OnPointingStickListUpdated(
   RefreshStoredLoginScreenPointingStickSettings();
 }
 
-void InputDeviceSettingsControllerImpl::
-    RestoreDefaultKeyboardModifierRemappings(DeviceId id) {
+void InputDeviceSettingsControllerImpl::RestoreDefaultKeyboardRemappings(
+    DeviceId id) {
   DCHECK(base::Contains(keyboards_, id));
   auto& keyboard = *keyboards_.at(id);
   mojom::KeyboardSettingsPtr new_settings = keyboard.settings->Clone();
   new_settings->modifier_remappings = {};
+  new_settings->six_pack_key_remappings = mojom::SixPackKeyInfo::New();
   if (keyboard.meta_key == mojom::MetaKey::kCommand) {
     new_settings->modifier_remappings[ui::mojom::ModifierKey::kControl] =
         ui::mojom::ModifierKey::kMeta;

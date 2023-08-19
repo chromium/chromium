@@ -72,10 +72,6 @@ class MockAutocompleteProviderClient
       bool create_if_necessary) const override {
     return remote_suggestions_service_.get();
   }
-  DocumentSuggestionsService* GetDocumentSuggestionsService(
-      bool create_if_necessary) const override {
-    return document_suggestions_service_.get();
-  }
   ZeroSuggestCacheService* GetZeroSuggestCacheService() override {
     return zero_suggest_cache_service_.get();
   }
@@ -175,8 +171,8 @@ class MockAutocompleteProviderClient
   scoped_refptr<network::SharedURLLoaderFactory> shared_factory_;
 
   std::unique_ptr<TemplateURLService> template_url_service_;
-  std::unique_ptr<RemoteSuggestionsService> remote_suggestions_service_;
   std::unique_ptr<DocumentSuggestionsService> document_suggestions_service_;
+  std::unique_ptr<RemoteSuggestionsService> remote_suggestions_service_;
   std::unique_ptr<ZeroSuggestCacheService> zero_suggest_cache_service_;
   std::unique_ptr<OmniboxPedalProvider> pedal_provider_;
   std::unique_ptr<OmniboxTriggeredFeatureService>

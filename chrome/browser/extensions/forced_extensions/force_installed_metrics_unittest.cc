@@ -904,7 +904,6 @@ TEST_F(ForceInstalledMetricsTest, ReportManagedGuestSessionOnExtensionFailure) {
   fake_user_manager->UserLoggedIn(account_id, user->username_hash(),
                                   false /* browser_restart */,
                                   false /* is_child */);
-  ash::ProfileHelper::Get()->SetProfileToUserMappingForTesting(user);
   SetupForceList(ExtensionOrigin::kWebStore);
   install_stage_tracker()->ReportFailure(
       kExtensionId1, InstallStageTracker::FailureReason::INVALID_ID);
@@ -930,7 +929,6 @@ TEST_F(ForceInstalledMetricsTest, ReportGuestSessionOnExtensionFailure) {
   fake_user_manager->UserLoggedIn(account_id, user->username_hash(),
                                   false /* browser_restart */,
                                   false /* is_child */);
-  ash::ProfileHelper::Get()->SetProfileToUserMappingForTesting(user);
   SetupForceList(ExtensionOrigin::kWebStore);
   install_stage_tracker()->ReportFailure(
       kExtensionId1, InstallStageTracker::FailureReason::INVALID_ID);
@@ -959,7 +957,6 @@ TEST_F(ForceInstalledMetricsTest,
   fake_user_manager->UserLoggedIn(account_id, user->username_hash(),
                                   false /* browser_restart */,
                                   false /* is_child */);
-  ash::ProfileHelper::Get()->SetProfileToUserMappingForTesting(user);
 
   SetupForceList(ExtensionOrigin::kWebStore);
   CreateExtensionService(/*extensions_enabled=*/true);

@@ -12,12 +12,9 @@
         },
         "name": "mixins_test args",
         "swarming": {
-          "can_use_on_swarming_builders": true,
-          "dimension_sets": [
-            {
-              "os": "Linux"
-            }
-          ],
+          "dimensions": {
+            "os": "Linux"
+          },
           "value": "test"
         },
         "test": "mixins_test",
@@ -25,19 +22,15 @@
         "variant_id": "args"
       },
       {
-        "args": [],
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "name": "mixins_test mixins",
         "swarming": {
-          "can_use_on_swarming_builders": true,
-          "dimension_sets": [
-            {
-              "iama": "mixin",
-              "os": "Linux"
-            }
-          ],
+          "dimensions": {
+            "iama": "mixin",
+            "os": "Linux"
+          },
           "value": "test"
         },
         "test": "mixins_test",
@@ -45,20 +38,16 @@
         "variant_id": "mixins"
       },
       {
-        "args": [],
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "name": "mixins_test swarming",
         "swarming": {
           "a": "b",
-          "can_use_on_swarming_builders": true,
-          "dimension_sets": [
-            {
-              "hello": "world",
-              "os": "Linux"
-            }
-          ],
+          "dimensions": {
+            "hello": "world",
+            "os": "Linux"
+          },
           "value": "test"
         },
         "test": "mixins_test",

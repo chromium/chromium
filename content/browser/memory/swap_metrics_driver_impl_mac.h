@@ -9,7 +9,7 @@
 
 #include <memory>
 
-#include "base/mac/scoped_mach_port.h"
+#include "base/apple/scoped_mach_port.h"
 #include "base/time/time.h"
 
 namespace content {
@@ -25,7 +25,7 @@ class SwapMetricsDriverImplMac : public SwapMetricsDriverImpl {
       base::TimeDelta interval) override;
 
  private:
-  base::mac::ScopedMachSendRight host_;
+  base::apple::ScopedMachSendRight host_;
 
   uint64_t last_swapins_ = 0;
   uint64_t last_swapouts_ = 0;

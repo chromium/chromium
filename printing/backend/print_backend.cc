@@ -154,11 +154,60 @@ XpsCapabilities::~XpsCapabilities() = default;
 
 #endif  // BUILDFLAG(IS_WIN)
 
+PrinterSemanticCapsAndDefaults::Paper::Paper() = default;
+
+PrinterSemanticCapsAndDefaults::Paper::Paper(const std::string& display_name,
+                                             const std::string& vendor_id,
+                                             const gfx::Size& size_um)
+    : Paper(display_name, vendor_id, size_um, gfx::Rect(size_um)) {}
+
+PrinterSemanticCapsAndDefaults::Paper::Paper(const std::string& display_name,
+                                             const std::string& vendor_id,
+                                             const gfx::Size& size_um,
+                                             const gfx::Rect& printable_area_um)
+    : Paper(display_name, vendor_id, size_um, printable_area_um, 0) {}
+
+PrinterSemanticCapsAndDefaults::Paper::Paper(const std::string& display_name,
+                                             const std::string& vendor_id,
+                                             const gfx::Size& size_um,
+                                             const gfx::Rect& printable_area_um,
+                                             int max_height_um)
+    : display_name_(display_name),
+      vendor_id_(vendor_id),
+      size_um_(size_um),
+      printable_area_um_(printable_area_um),
+      max_height_um_(max_height_um) {}
+
 bool PrinterSemanticCapsAndDefaults::Paper::operator==(
     const PrinterSemanticCapsAndDefaults::Paper& other) const {
-  return display_name == other.display_name && vendor_id == other.vendor_id &&
-         size_um == other.size_um &&
-         printable_area_um == other.printable_area_um;
+  return display_name_ == other.display_name_ &&
+         vendor_id_ == other.vendor_id_ && size_um_ == other.size_um_ &&
+         printable_area_um_ == other.printable_area_um_ &&
+         max_height_um_ == other.max_height_um_;
+}
+
+bool PrinterSemanticCapsAndDefaults::Paper::SupportsCustomSize() const {
+  return max_height_um_ > 0;
+}
+
+bool PrinterSemanticCapsAndDefaults::Paper::IsSizeWithinBounds(
+    const gfx::Size& other_um) const {
+  if (other_um == size_um_) {
+    return true;
+  }
+
+  if (!SupportsCustomSize()) {
+    return false;
+  }
+
+  return size_um_.width() == other_um.width() &&
+         size_um_.height() <= other_um.height() &&
+         other_um.height() <= max_height_um_;
+}
+
+bool PrinterSemanticCapsAndDefaults::MediaType::operator==(
+    const PrinterSemanticCapsAndDefaults::MediaType& other) const {
+  return display_name == other.display_name && vendor_id == other.vendor_id;
 }
 
 PrinterSemanticCapsAndDefaults::PrinterSemanticCapsAndDefaults() = default;

@@ -190,42 +190,4 @@ DWORD HardenTokenIntegrityLevelPolicy(const base::win::AccessToken& token) {
   return ERROR_SUCCESS;
 }
 
-bool CanLowIntegrityAccessDesktop() {
-  // Access required for UI thread to initialize (when user32.dll loads without
-  // win32k lockdown).
-  DWORD desired_access = DESKTOP_WRITEOBJECTS | DESKTOP_READOBJECTS;
-
-  // Desktop is inherited by child process unless overridden, e.g. by sandbox.
-  HDESK hdesk = ::GetThreadDesktop(GetCurrentThreadId());
-  absl::optional<base::win::SecurityDescriptor> sd =
-      base::win::SecurityDescriptor::FromHandle(
-          hdesk, base::win::SecurityObjectType::kDesktop,
-          OWNER_SECURITY_INFORMATION | GROUP_SECURITY_INFORMATION |
-              DACL_SECURITY_INFORMATION | LABEL_SECURITY_INFORMATION);
-  if (!sd) {
-    return false;
-  }
-
-  absl::optional<base::win::AccessToken> token =
-      base::win::AccessToken::FromCurrentProcess(/*impersonation=*/true,
-                                                 TOKEN_ADJUST_DEFAULT);
-  if (!token) {
-    return false;
-  }
-
-  absl::optional<base::win::AccessCheckResult> result;
-  // The token should still succeed before lowered, even if the lowered token
-  // fails.
-  DCHECK((result = sd->AccessCheck(*token, desired_access,
-                                   base::win::SecurityObjectType::kDesktop)) &&
-         result->access_status);
-  if (!token->SetIntegrityLevel(SECURITY_MANDATORY_LOW_RID)) {
-    return false;
-  }
-
-  result = sd->AccessCheck(*token, desired_access,
-                           base::win::SecurityObjectType::kDesktop);
-  return result && result->access_status;
-}
-
 }  // namespace sandbox

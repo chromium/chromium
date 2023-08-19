@@ -27,7 +27,6 @@
 #include "cc/raster/raster_source.h"
 #include "components/viz/client/client_resource_provider.h"
 #include "components/viz/common/features.h"
-#include "components/viz/common/gpu/context_provider.h"
 #include "components/viz/common/gpu/raster_context_provider.h"
 #include "gpu/GLES2/gl2extchromium.h"
 #include "gpu/command_buffer/client/context_support.h"
@@ -72,7 +71,7 @@ class GpuRasterBufferProvider::GpuRasterBacking
     pmd->AddOwnershipEdge(buffer_dump_guid, tracing_guid, importance);
   }
 
-  // The ContextProvider used to clean up the mailbox
+  // The context used to clean up the mailbox
   raw_ptr<viz::RasterContextProvider> worker_context_provider = nullptr;
 };
 
@@ -136,18 +135,18 @@ bool GpuRasterBufferProvider::RasterBufferImpl::
 }
 
 GpuRasterBufferProvider::GpuRasterBufferProvider(
-    viz::ContextProvider* compositor_context_provider,
+    viz::RasterContextProvider* compositor_context_provider,
     viz::RasterContextProvider* worker_context_provider,
-    bool use_gpu_memory_buffer_resources,
-    viz::SharedImageFormat tile_format,
+    const RasterCapabilities& raster_caps,
     const gfx::Size& max_tile_size,
     bool unpremultiply_and_dither_low_bit_depth_tiles,
     RasterQueryQueue* const pending_raster_queries,
     float raster_metric_probability)
     : compositor_context_provider_(compositor_context_provider),
       worker_context_provider_(worker_context_provider),
-      use_gpu_memory_buffer_resources_(use_gpu_memory_buffer_resources),
-      tile_format_(tile_format),
+      tile_format_(raster_caps.tile_format),
+      tile_overlay_candidate_(raster_caps.tile_overlay_candidate),
+      tile_texture_target_(raster_caps.tile_texture_target),
       max_tile_size_(max_tile_size),
       pending_raster_queries_(pending_raster_queries),
       raster_metric_probability_(raster_metric_probability),
@@ -182,9 +181,8 @@ std::unique_ptr<RasterBuffer> GpuRasterBufferProvider::AcquireBufferForRaster(
   if (!resource.gpu_backing()) {
     auto backing = std::make_unique<GpuRasterBacking>();
     backing->worker_context_provider = worker_context_provider_;
-    backing->InitOverlayCandidateAndTextureTarget(
-        resource.format(), compositor_context_provider_->ContextCapabilities(),
-        use_gpu_memory_buffer_resources_);
+    backing->overlay_candidate = tile_overlay_candidate_;
+    backing->texture_target = tile_texture_target_;
     backing->is_using_raw_draw =
         !backing->overlay_candidate && is_using_raw_draw_;
     resource.set_gpu_backing(std::move(backing));
@@ -213,7 +211,8 @@ bool GpuRasterBufferProvider::IsResourcePremultiplied() const {
 }
 
 bool GpuRasterBufferProvider::IsResourceReadyToDraw(
-    const ResourcePool::InUsePoolResource& resource) const {
+    const ResourcePool::InUsePoolResource& resource) {
+  FlushIfNeeded();
   const gpu::SyncToken& sync_token = resource.gpu_backing()->mailbox_sync_token;
   // This SyncToken() should have been set by calling OrderingBarrier() before
   // calling this.
@@ -231,7 +230,8 @@ bool GpuRasterBufferProvider::CanPartialRasterIntoProvidedResource() const {
 uint64_t GpuRasterBufferProvider::SetReadyToDrawCallback(
     const std::vector<const ResourcePool::InUsePoolResource*>& resources,
     base::OnceClosure callback,
-    uint64_t pending_callback_id) const {
+    uint64_t pending_callback_id) {
+  FlushIfNeeded();
   gpu::SyncToken latest_sync_token;
   for (const auto* in_use : resources) {
     const gpu::SyncToken& sync_token =
@@ -399,7 +399,7 @@ void GpuRasterBufferProvider::RasterBufferImpl::RasterizeSource(
                               base::bits::Log2Floor(sample_count), 0, 7, 7);
   // With Raw Draw, the framebuffer will be the rasterization target. It cannot
   // support LCD text, so disable LCD text for Raw Draw backings.
-  // TODO(penghuang): remove it when GrSlug can be serialized.
+  // TODO(penghuang): remove it when sktext::gpu::Slug can be serialized.
   bool is_raw_draw_backing =
       client_->is_using_raw_draw_ && !backing_->overlay_candidate;
   bool use_lcd_text = playback_settings.use_lcd_text && !is_raw_draw_backing;

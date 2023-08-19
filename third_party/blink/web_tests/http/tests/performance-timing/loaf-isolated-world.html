@@ -49,6 +49,26 @@ function exec_isolated(func) {
 
   return complete;
 }
+
+function exec_with_src(func) {
+  return complete;
+}
+
+promise_test(async() => {
+  await new Promise(resolve => testRunner.evaluateScriptInOwnTask(`
+    const deadline = performance.now() + 200;
+    while (performance.now() < deadline) {}
+  `, "test-runner://forbidden", resolve));
+
+  await wait_for_entries();
+
+  const forbidden = performance.getEntriesByType("long-animation-frame")
+    .flatMap(e => e.scripts)
+    .find(script => script.sourceLocation?.includes("forbidden"));
+
+  assert_false(!!forbidden, `Forbidden script exposed ${forbidden?.sourceLocation}`);
+  }, "LoAF should only expose HTTP(s) scripts");
+
 promise_test(async () => {
   await exec_isolated(() => new Promise(resolve => {
     setTimeout(function from_isolated() {

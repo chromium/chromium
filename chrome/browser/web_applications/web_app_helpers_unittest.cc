@@ -33,7 +33,6 @@ TEST(WebAppHelpers, GenerateAppId) {
 }
 
 TEST(WebAppHelpers, GenerateManifestIdFromStartUrlOnly) {
-  EXPECT_EQ(GURL(), GenerateManifestIdFromStartUrlOnly(GURL()));
   EXPECT_EQ(GURL("https://example.com/"),
             GenerateManifestIdFromStartUrlOnly(GURL("https://example.com/")));
   EXPECT_EQ(GURL("https://example.com"),

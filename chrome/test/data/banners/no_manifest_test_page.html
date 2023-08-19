@@ -3,10 +3,7 @@
     <title>Web app banner test page</title>
     <script src="main.js"></script>
   </head>
-  <script>
-    navigator.serviceWorker.register('service_worker.js');
-  </script>
-  <body>
+  <body onload="initializeWithWorker('service_worker.js')">
     Do-nothing page with a service worker, but no manifest.
   </body>
 </html>

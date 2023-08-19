@@ -72,7 +72,7 @@ constexpr base::FilePath::CharType kPdfExtension[] = FILE_PATH_LITERAL("pdf");
 class PrintingContextDelegate : public PrintingContext::Delegate {
  public:
   // PrintingContext::Delegate methods.
-  gfx::NativeView GetParentView() override { return nullptr; }
+  gfx::NativeView GetParentView() override { return gfx::NativeView(); }
   std::string GetAppLocale() override {
     return g_browser_process->GetApplicationLocale();
   }
@@ -105,7 +105,7 @@ gfx::Size GetDefaultPdfMediaSizeMicrons() {
 base::Value::Dict GetPdfCapabilities(
     const std::string& locale,
     PrinterSemanticCapsAndDefaults::Papers custom_papers) {
-  using cloud_devices::printer::MediaType;
+  using cloud_devices::printer::MediaSize;
 
   cloud_devices::CloudDeviceDescription description;
   cloud_devices::printer::OrientationCapability orientation;
@@ -125,29 +125,40 @@ base::Value::Dict GetPdfCapabilities(
   }
   color.SaveTo(&description);
 
-  static const MediaType kPdfMedia[] = {
-      MediaType::ISO_A0,   MediaType::ISO_A1,    MediaType::ISO_A2,
-      MediaType::ISO_A3,   MediaType::ISO_A4,    MediaType::ISO_A5,
-      MediaType::NA_LEGAL, MediaType::NA_LETTER, MediaType::NA_LEDGER};
-  const gfx::Size default_media_size = GetDefaultPdfMediaSizeMicrons();
-  cloud_devices::printer::Media default_media(std::string(), std::string(),
-                                              default_media_size);
-  if (!default_media.MatchBySize() ||
-      !base::Contains(kPdfMedia, default_media.type)) {
-    default_media = cloud_devices::printer::Media(
-        locale == "en-US" ? MediaType::NA_LETTER : MediaType::ISO_A4);
+  static constexpr MediaSize kPdfMedia[] = {
+      MediaSize::ISO_A0,   MediaSize::ISO_A1,    MediaSize::ISO_A2,
+      MediaSize::ISO_A3,   MediaSize::ISO_A4,    MediaSize::ISO_A5,
+      MediaSize::NA_LEGAL, MediaSize::NA_LETTER, MediaSize::NA_LEDGER};
+  cloud_devices::printer::Media default_media =
+      cloud_devices::printer::MediaBuilder()
+          .WithSizeAndDefaultPrintableArea(GetDefaultPdfMediaSizeMicrons())
+          .WithNameMaybeBasedOnSize(/*custom_display_name=*/"",
+                                    /*vendor_id=*/"")
+          .Build();
+  if (!base::Contains(kPdfMedia, default_media.size_name)) {
+    default_media =
+        cloud_devices::printer::MediaBuilder()
+            .WithStandardName(locale == "en-US" ? MediaSize::NA_LETTER
+                                                : MediaSize::ISO_A4)
+            .WithSizeAndPrintableAreaBasedOnStandardName()
+            .Build();
   }
   cloud_devices::printer::MediaCapability media;
   for (const auto& pdf_media : kPdfMedia) {
-    cloud_devices::printer::Media media_option(pdf_media);
+    cloud_devices::printer::Media media_option =
+        cloud_devices::printer::MediaBuilder()
+            .WithStandardName(pdf_media)
+            .WithSizeAndPrintableAreaBasedOnStandardName()
+            .Build();
     media.AddDefaultOption(media_option,
-                           default_media.type == media_option.type);
+                           default_media.size_name == media_option.size_name);
   }
   for (const PrinterSemanticCapsAndDefaults::Paper& paper : custom_papers) {
-    cloud_devices::printer::Media media_option(paper.display_name,
-                                               paper.vendor_id, paper.size_um,
-                                               paper.printable_area_um);
-    media.AddOption(media_option);
+    media.AddOption(cloud_devices::printer::MediaBuilder()
+                        .WithCustomName(paper.display_name(), paper.vendor_id())
+                        .WithSizeAndPrintableArea(paper.size_um(),
+                                                  paper.printable_area_um())
+                        .Build());
   }
   media.SaveTo(&description);
 

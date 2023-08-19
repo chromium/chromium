@@ -8,6 +8,7 @@
 #include <memory>
 
 #include "base/containers/flat_map.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/ash/printing/cups_print_job_manager.h"
 #include "chrome/browser/extensions/api/printing/print_job_controller.h"
@@ -47,8 +48,8 @@ class FakePrintJobControllerAsh : public PrintJobController,
                      std::unique_ptr<printing::PrintSettings> settings);
 
   // Not owned by FakePrintJobControllerAsh.
-  ash::TestCupsPrintJobManager* const print_job_manager_;
-  ash::CupsPrintersManager* const printers_manager_;
+  const raw_ptr<ash::TestCupsPrintJobManager> print_job_manager_;
+  const raw_ptr<ash::CupsPrintersManager> printers_manager_;
 
   // Stores ongoing print jobs as a mapping from job id to CupsPrintJob.
   base::flat_map<std::string, std::unique_ptr<ash::CupsPrintJob>> jobs_;

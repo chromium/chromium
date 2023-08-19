@@ -4,13 +4,42 @@
 
 #include "components/variations/client_filterable_state.h"
 
+#include "base/build_time.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/system/sys_info.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
+#include "components/prefs/pref_service.h"
+#include "components/variations/pref_names.h"
 
 namespace variations {
+
+ClientFilterableState::ClientFilterableState(
+    IsEnterpriseFunction is_enterprise_function,
+    GoogleGroupsFunction google_groups_function)
+    : is_enterprise_function_(std::move(is_enterprise_function)),
+      google_groups_function_(std::move(google_groups_function)) {
+  // The callback is only used when processing a study that uses the
+  // is_enterprise filter. If you're building a client that isn't expecting that
+  // filter, you should use a callback that always returns false.
+  DCHECK(is_enterprise_function_);
+}
+ClientFilterableState::~ClientFilterableState() = default;
+
+bool ClientFilterableState::IsEnterprise() const {
+  if (!is_enterprise_.has_value()) {
+    is_enterprise_ = std::move(is_enterprise_function_).Run();
+  }
+  return is_enterprise_.value();
+}
+
+base::flat_set<uint64_t> ClientFilterableState::GoogleGroups() const {
+  if (!google_groups_.has_value()) {
+    google_groups_ = std::move(google_groups_function_).Run();
+  }
+  return google_groups_.value();
+}
 
 // static
 Study::Platform ClientFilterableState::GetCurrentPlatform() {
@@ -61,29 +90,20 @@ base::Version ClientFilterableState::GetOSVersion() {
   return ret;
 }
 
-ClientFilterableState::ClientFilterableState(
-    IsEnterpriseFunction is_enterprise_function,
-    GoogleGroupsFunction google_groups_function)
-    : is_enterprise_function_(std::move(is_enterprise_function)),
-      google_groups_function_(std::move(google_groups_function)) {
-  // The callback is only used when processing a study that uses the
-  // is_enterprise filter. If you're building a client that isn't expecting that
-  // filter, you should use a callback that always returns false.
-  DCHECK(is_enterprise_function_);
-}
-ClientFilterableState::~ClientFilterableState() = default;
+base::Time ClientFilterableState::GetTimeForStudyDateChecks(
+    bool is_safe_seed,
+    PrefService* local_state) {
+  const base::Time seed_date =
+      is_safe_seed ? local_state->GetTime(prefs::kVariationsSafeSeedDate)
+                   : local_state->GetTime(prefs::kVariationsSeedDate);
+  const base::Time build_time = base::GetBuildTime();
 
-bool ClientFilterableState::IsEnterprise() const {
-  if (!is_enterprise_.has_value())
-    is_enterprise_ = std::move(is_enterprise_function_).Run();
-  return is_enterprise_.value();
-}
-
-base::flat_set<uint64_t> ClientFilterableState::GoogleGroups() const {
-  if (!google_groups_.has_value()) {
-    google_groups_ = std::move(google_groups_function_).Run();
+  // Use the build time for date checks if either the seed date is unknown or
+  // the build time is newer than the seed date.
+  if (seed_date.is_null() || seed_date < build_time) {
+    return build_time;
   }
-  return google_groups_.value();
+  return seed_date;
 }
 
 }  // namespace variations

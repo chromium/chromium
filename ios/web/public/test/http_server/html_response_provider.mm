@@ -7,10 +7,6 @@
 #import "ios/web/public/test/http_server/response_provider.h"
 #import "url/gurl.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 HtmlResponseProvider::HtmlResponseProvider()
     : response_provider_impl_(new HtmlResponseProviderImpl()) {}
 

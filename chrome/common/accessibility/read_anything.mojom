@@ -40,13 +40,14 @@ interface UntrustedPageHandlerFactory {
 };
 
 // Used as identifiers for the Read Anything theme options.
-// Next value: 4
+// Next value: 5
 [Extensible, Stable, Uuid="03f38cfc-a34f-460a-a0a7-faf711f11a64"]
 enum Colors {
   [Default]kDefault = 0,
   kLight = 1,
   kDark = 2,
   kYellow = 3,
+  [MinVersion=1] kBlue = 4,
 };
 
 [Extensible, Stable, Uuid="2B5C793A-D81E-4C76-8CDF-695C7E0A30E2",
@@ -77,6 +78,26 @@ interface UntrustedPageHandler {
   // the WebUI. This is because the main page selection may contain images,
   // captions, etc that are not shown in reading mode's simplified view.
   OnCopy();
+
+  // Informs the browser controller that the user updated the line spacing via
+  // the webui toolbar.
+  OnLineSpaceChange(read_anything.mojom.LineSpacing line_spacing);
+
+  // Informs the browser controller that the user updated the letter spacing via
+  // the webui toolbar.
+  OnLetterSpaceChange(read_anything.mojom.LetterSpacing letter_spacing);
+
+  // Informs the browser controller that the user updated the font name via
+  // the webui toolbar.
+  OnFontChange(string font);
+
+  // Informs the browser controller that the user updated the font size via
+  // the webui toolbar.
+  OnFontSizeChange(double font_size);
+
+  // Informs the browser controller that the user updated the color theme via
+  // the webui toolbar.
+  OnColorChange(read_anything.mojom.Colors color);
 
   // Informs the browser controller that a link was clicked in the WebUI. The
   // browser controller responds by performing a click action on the link in
@@ -124,6 +145,13 @@ interface UntrustedPage {
 
   // Send an updated theme to the WebUI.
   OnThemeChanged(ReadAnythingTheme new_theme);
+
+  // Send the theme values stored in prefs to the WebUI.
+  OnSettingsRestoredFromPrefs(read_anything.mojom.LineSpacing line_spacing,
+                           read_anything.mojom.LetterSpacing letter_spacing,
+                           string font,
+                           double font_size,
+                           read_anything.mojom.Colors color);
 
   // Notifies the WebUI that the ScreenAI service is ready on this device.
   [EnableIf=enable_screen_ai_service]

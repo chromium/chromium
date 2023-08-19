@@ -377,6 +377,28 @@ export class PasswordsSectionElement extends PasswordsSectionElementBase {
       focusWithoutInk(this.activeListItem_);
     });
   }
+
+  private computeSortFunction_(searchTerm: string):
+      ((a: chrome.passwordsPrivate.CredentialGroup,
+        b: chrome.passwordsPrivate.CredentialGroup) => number)|null {
+    // Keep current order when not searching.
+    if (!searchTerm) {
+      return null;
+    }
+
+    // Always show group with matching name in the top, fallback to alphabetical
+    // order when matching type is the same.
+    return function(
+        a: chrome.passwordsPrivate.CredentialGroup,
+        b: chrome.passwordsPrivate.CredentialGroup) {
+      const doesNameMatchA = a.name.toLowerCase().includes(searchTerm);
+      const doesNameMatchB = b.name.toLowerCase().includes(searchTerm);
+      if (doesNameMatchA === doesNameMatchB) {
+        return a.name.localeCompare(b.name);
+      }
+      return doesNameMatchA ? -1 : 1;
+    };
+  }
 }
 
 declare global {

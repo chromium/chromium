@@ -266,7 +266,7 @@ public class ForeignSessionHelper {
 
         return ForeignSessionHelperJni.get().openForeignSessionTabsAsBackgroundTabs(
                 mNativeForeignSessionHelper, newForegroundTab,
-                CollectionUtil.integerListToIntArray(tabIds), session.tag);
+                CollectionUtil.integerCollectionToIntArray(tabIds), session.tag);
     }
 
     @NativeMethods

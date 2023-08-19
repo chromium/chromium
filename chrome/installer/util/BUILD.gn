@@ -181,10 +181,11 @@ static_library("with_no_strings") {
     deps += [
       "//base:i18n",
       "//base/third_party/dynamic_annotations",
+      "//base/win:pe_image",
       "//build:branding_buildflags",
       "//chrome/install_static:install_static_util",
       "//components/base32",
-      "//components/metrics",
+      "//components/metrics:client_info",
       "//components/version_info:channel",
       "//courgette:courgette_lib",
       "//crypto",

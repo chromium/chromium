@@ -1,5 +1,8 @@
 include_rules = [
   "+components/breadcrumbs/core",
+  "+ios/chrome/browser/metrics",
+  "+ios/chrome/browser/overlays/public",
+  "+ios/chrome/browser/infobars",
 
   # For fuzzer
   "+third_party/crashpad/crashpad",

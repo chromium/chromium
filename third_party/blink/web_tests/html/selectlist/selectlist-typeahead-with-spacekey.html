@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html>
+<head>
+<script src="../../resources/js-test.js"></script>
+</head>
+<body>
+<selectlist id="selectlist">
+    <option>Canada</option>
+    <option>Spain</option>
+    <option>United Arab Emirates</option>
+    <option>United States</option>
+</selectlist>
+<script>
+description('Two keystrokes are considered as part of one typehead session if time difference between them is less than 1 sec');
+
+window.jsTestIsAsync = true;
+
+function keyDown(key, modifiers)
+{
+    if (!window.eventSender)
+      debug("No event sender");
+    eventSender.keyDown(key, modifiers);
+}
+
+var popup = document.getElementById("selectlist");
+
+function test1() {
+    debug('1. space key as part of search string.');
+    popup.focus();
+    popup.value = "Canada";
+    keyDown('U');
+    keyDown('n');
+    keyDown('i');
+    keyDown('t');
+    keyDown('e');
+    keyDown('d');
+    keyDown(' ');
+    keyDown('S');
+    shouldBeFalse('popup.open');
+    shouldBeEqualToString('popup.value', 'United States');
+    popup.blur();
+
+    debug('2. space key as part of search string with some delay.');
+    popup.focus();
+    popup.value = "Canada";
+    keyDown('U');
+    keyDown('n');
+    keyDown('i');
+    keyDown('t');
+    keyDown('e');
+    keyDown('d');
+    keyDown(' ');
+    internals.resetSelectListTypeAheadSession(popup);
+    keyDown('S');
+    shouldBeFalse('popup.open');
+    shouldBeEqualToString('popup.value', 'Spain');
+    popup.blur();
+
+    debug('3. space key to open popup menu.');
+    popup.focus();
+    popup.value = "Canada";
+    keyDown('U');
+    keyDown('n');
+    keyDown('i');
+    keyDown('t');
+    keyDown('e');
+    keyDown('d');
+    internals.resetSelectListTypeAheadSession(popup);
+    keyDown(' ');
+    shouldBeTrue('popup.open');
+    shouldBeEqualToString('popup.value', 'United Arab Emirates');
+    popup.blur();
+
+    finishJSTest();
+}
+
+test1();
+</script>
+</body>

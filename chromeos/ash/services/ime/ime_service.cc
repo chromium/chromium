@@ -56,7 +56,10 @@ ImeService::ImeService(
     : receiver_(this, std::move(receiver)),
       main_task_runner_(base::SequencedTaskRunner::GetCurrentDefault()),
       ime_shared_library_(ime_shared_library_wrapper),
-      field_trial_params_retriever_(std::move(field_trial_params_retriever)) {}
+      field_trial_params_retriever_(std::move(field_trial_params_retriever)) {
+  manager_receivers_.set_disconnect_handler(
+      base::BindRepeating(&ImeService::OnDisconnect, base::Unretained(this)));
+}
 
 ImeService::~ImeService() = default;
 
@@ -90,12 +93,13 @@ void ImeService::ConnectToImeEngine(
   //
   // The extension will only use ConnectToImeEngine, and NativeInputMethodEngine
   // will only use ConnectToInputMethod.
-  if (system_engine_ && system_engine_->IsConnected()) {
+  if (mode_ == Mode::kConnectedToSystemEngine) {
     std::move(callback).Run(/*bound=*/false);
     return;
   }
 
   ResetAllBackendConnections();
+  mode_ = Mode::kConnectedToDecoderEngine;
 
   decoder_engine_ = std::make_unique<DecoderEngine>(
       this, ime_shared_library_->MaybeLoadThenReturnEntryPoints());
@@ -108,6 +112,7 @@ void ImeService::InitializeConnectionFactory(
     mojo::PendingReceiver<mojom::ConnectionFactory> connection_factory,
     InitializeConnectionFactoryCallback callback) {
   ResetAllBackendConnections();
+  mode_ = Mode::kConnectedToSystemEngine;
 
   system_engine_ = std::make_unique<SystemEngine>(
       this, ime_shared_library_->MaybeLoadThenReturnEntryPoints());
@@ -136,49 +141,37 @@ void ImeService::RunInMainSequence(ImeSequencedTask task, int task_id) {
   main_task_runner_->PostTask(FROM_HERE, base::BindOnce(task, task_id));
 }
 
-// TODO(b/218815885): Use consistent feature flag names as in CrOS
-// base::Feature::name (instead of slightly-different bespoke names), and always
-// wire 1:1 to CrOS feature flags (instead of having any extra logic).
 bool ImeService::IsFeatureEnabled(const char* feature_name) {
-  // TODO(b/218815885): Replace refs of AssistiveEmojiEnhanced with
-  // AssistEmojiEnhanced in internal code for consistency.
-  // Then remove the AssistiveEmojiEnhanced check.
-  if (strcmp(feature_name, "AssistiveEmojiEnhanced") == 0 ||
-      strcmp(feature_name, features::kAssistEmojiEnhanced.name) == 0) {
-    return base::FeatureList::IsEnabled(features::kAssistEmojiEnhanced);
+  static const base::Feature* kConsideredFeatures[] = {
+      &features::kAssistEmojiEnhanced,
+      &features::kAssistMultiWord,
+      &features::kAutocorrectParamsTuning,
+      &features::kFirstPartyVietnameseInput,
+      &features::kLacrosOnly,
+      &features::kSystemJapanesePhysicalTyping,
+      &features::kImeDownloaderUpdate,
+      &features::kImeUsEnglishModelUpdate,
+      &features::kImeFstDecoderParamsUpdate,
+      &features::kAutocorrectByDefault,
+      &features::kAutocorrectUseReplaceSurroundingText,
+  };
+
+  // Use consistent feature flag names as in CrOS base::Feature::name and always
+  // wire 1:1 to CrOS feature flags without extra logic.
+  for (const base::Feature* feature : kConsideredFeatures) {
+    if (strcmp(feature_name, feature->name) == 0) {
+      return base::FeatureList::IsEnabled(*feature);
+    }
   }
-  // TODO(b/218815885): Replace refs of AssistiveMultiWord with
-  // AssistMultiWord in internal code for consistency.
-  // Then remove the AssistiveMultiWord check.
-  if (strcmp(feature_name, "AssistiveMultiWord") == 0 ||
-      strcmp(feature_name, features::kAssistMultiWord.name) == 0) {
-    return base::FeatureList::IsEnabled(features::kAssistMultiWord);
+
+  // For backwards-compatibility, check for the "LacrosSupport" flag, which was
+  // replaced by LacrosOnly.
+  // TODO(b/290714161): Remove this once the shared library no longer uses
+  // LacrosSupport.
+  if (strcmp(feature_name, "LacrosSupport") == 0) {
+    return base::FeatureList::IsEnabled(features::kLacrosOnly);
   }
-  if (strcmp(feature_name, features::kAutocorrectParamsTuning.name) == 0) {
-    return base::FeatureList::IsEnabled(features::kAutocorrectParamsTuning);
-  }
-  if (strcmp(feature_name, features::kFirstPartyVietnameseInput.name) == 0) {
-    return base::FeatureList::IsEnabled(features::kFirstPartyVietnameseInput);
-  }
-  if (strcmp(feature_name, features::kLacrosSupport.name) == 0) {
-    return base::FeatureList::IsEnabled(features::kLacrosSupport);
-  }
-  if (strcmp(feature_name, features::kSystemJapanesePhysicalTyping.name) == 0) {
-    return base::FeatureList::IsEnabled(
-        features::kSystemJapanesePhysicalTyping);
-  }
-  if (strcmp(feature_name, features::kImeDownloaderUpdate.name) == 0) {
-    return base::FeatureList::IsEnabled(features::kImeDownloaderUpdate);
-  }
-  if (strcmp(feature_name, features::kImeUsEnglishModelUpdate.name) == 0) {
-    return base::FeatureList::IsEnabled(features::kImeUsEnglishModelUpdate);
-  }
-  if (strcmp(feature_name, features::kImeFstDecoderParamsUpdate.name) == 0) {
-    return base::FeatureList::IsEnabled(features::kImeFstDecoderParamsUpdate);
-  }
-  if (strcmp(feature_name, features::kAutocorrectByDefault.name) == 0) {
-    return base::FeatureList::IsEnabled(features::kAutocorrectByDefault);
-  }
+
   return false;
 }
 
@@ -233,6 +226,10 @@ void ImeService::SimpleDownloadFinishedV2(SimpleDownloadCallbackV2 callback,
     callback(SIMPLE_DOWNLOAD_STATUS_OK, url_str.c_str(),
              ResolveDownloadPath(file).c_str());
   }
+}
+
+void ImeService::OnDisconnect() {
+  mode_ = Mode::kNotConnected;
 }
 
 const MojoSystemThunks* ImeService::GetMojoSystemThunks() {

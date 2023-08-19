@@ -38,13 +38,13 @@ class Decryptor : public base::RefCountedThreadSafe<Decryptor> {
   // is called.
   class Handle {
    public:
-    Handle(base::StringPiece shared_secret, scoped_refptr<Decryptor> decryptor);
+    Handle(std::string_view shared_secret, scoped_refptr<Decryptor> decryptor);
     Handle(const Handle& other) = delete;
     Handle& operator=(const Handle& other) = delete;
     ~Handle();
 
     // Adds piece of encrypted data to the record.
-    void AddToRecord(base::StringPiece data,
+    void AddToRecord(std::string_view data,
                      base::OnceCallback<void(Status)> cb);
 
     // Closes and attempts to decrypt the record. Hands over the decrypted data
@@ -52,7 +52,7 @@ class Decryptor : public base::RefCountedThreadSafe<Decryptor> {
     // store to attempt all private keys that are considered to be valid,
     // starting with the one that matches the hash. Self-destructs after the
     // callback.
-    void CloseRecord(base::OnceCallback<void(StatusOr<base::StringPiece>)> cb);
+    void CloseRecord(base::OnceCallback<void(StatusOr<std::string_view>)> cb);
 
    private:
     // Shared secret based on which symmetric key is produced.
@@ -70,19 +70,19 @@ class Decryptor : public base::RefCountedThreadSafe<Decryptor> {
   // Factory method creates a new record to collect data and decrypt them with
   // the given encrypted key. Hands the handle raw pointer over to the callback,
   // or error status.
-  void OpenRecord(base::StringPiece encrypted_key,
+  void OpenRecord(std::string_view encrypted_key,
                   base::OnceCallback<void(StatusOr<Handle*>)> cb);
 
   // Recreates shared secret from local private key and peer public value and
   // returns it or error status.
-  StatusOr<std::string> DecryptSecret(base::StringPiece public_key,
-                                      base::StringPiece peer_public_value);
+  StatusOr<std::string> DecryptSecret(std::string_view public_key,
+                                      std::string_view peer_public_value);
 
   // Records a key pair (stores only private key).
   // Executes on a sequenced thread, returns key id or error with callback.
   void RecordKeyPair(
-      base::StringPiece private_key,
-      base::StringPiece public_key,
+      std::string_view private_key,
+      std::string_view public_key,
       base::OnceCallback<void(StatusOr<Encryptor::PublicKeyId>)> cb);
 
   // Retrieves private key matching the public key hash.

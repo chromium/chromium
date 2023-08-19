@@ -66,6 +66,8 @@ public final class Preconditions {
 
     public static void checkNotMainThread() {}
 
+    public static void checkNotGoogleApiHandlerThread() {}
+
     public static void checkNotMainThread(String errorMessage) {}
 
     public static void checkHandlerThread(Handler handler) {}

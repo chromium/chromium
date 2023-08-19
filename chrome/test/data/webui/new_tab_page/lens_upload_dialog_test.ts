@@ -2,7 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import 'chrome://webui-test/mojo_webui_test_support.js';
 import 'chrome://new-tab-page/new_tab_page.js';
 
 import {LensErrorType, LensSubmitType, LensUploadDialogAction, LensUploadDialogElement, LensUploadDialogError} from 'chrome://new-tab-page/lazy_load.js';
@@ -165,6 +164,23 @@ suite('LensUploadDialogTest', () => {
         document.hasFocus = nativeHasFocus;
       });
 
+  test('focusout that occurs during drag does not close dialog', async () => {
+    // Arrange.
+    const focusEvent = new FocusEvent('focusout', {relatedTarget: null});
+    const dragEvent = new DragEvent('dragenter');
+    // Act.
+    uploadDialog.$.dragDropArea.dispatchEvent(dragEvent);
+    uploadDialog.$.dialog.dispatchEvent(focusEvent);
+
+    // Assert.
+    assertFalse(uploadDialog.$.dialog.hidden);
+    assertEquals(
+        0,
+        metrics.count(
+            'NewTabPage.Lens.UploadDialog.DialogAction',
+            LensUploadDialogAction.DIALOG_CLOSED));
+  });
+
   test('clicking esc key closes the dialog', async () => {
     // Act.
     document.dispatchEvent(new KeyboardEvent('keydown', {key: 'Escape'}));
@@ -312,7 +328,7 @@ suite('LensUploadDialogTest', () => {
   test('drop event should submit files', async () => {
     // Arrange.
     let submitFileListCalled = false;
-    uploadDialog.$.lensForm.submitFileList = (_fileList: FileList) => {
+    uploadDialog.$.lensForm.submitFileList = async (_fileList: FileList) => {
       submitFileListCalled = true;
     };
     // Act.

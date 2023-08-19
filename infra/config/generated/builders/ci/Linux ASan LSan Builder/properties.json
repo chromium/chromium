@@ -109,6 +109,10 @@
         {
           "builder": "linux_chromium_asan_rel_ng",
           "group": "tryserver.chromium.linux"
+        },
+        {
+          "builder": "linux_chromium_asan_siso_rel_ng",
+          "group": "tryserver.chromium.linux"
         }
       ]
     }
@@ -116,7 +120,8 @@
   "$build/reclient": {
     "instance": "rbe-chromium-trusted",
     "jobs": 500,
-    "metrics_project": "chromium-reclient-metrics"
+    "metrics_project": "chromium-reclient-metrics",
+    "scandeps_server": true
   },
   "$recipe_engine/resultdb/test_presentation": {
     "column_keys": [],

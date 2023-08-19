@@ -22,6 +22,7 @@
 #include "components/url_formatter/elide_url.h"
 #include "components/vector_icons/vector_icons.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/base/ui_base_features.h"
 #include "ui/views/controls/button/image_button.h"
 #include "ui/views/controls/button/image_button_factory.h"
 #include "ui/views/controls/button/toggle_button.h"
@@ -38,8 +39,10 @@ PermissionToggleRowView::PermissionToggleRowView(
     : permission_(permission),
       delegate_(delegate),
       navigation_handler_(navigation_handler) {
+  // TODO(crbug.com/1446230): Directly subclass `RichControlsContainerView`
+  // instead of adding it as the only child.
   SetUseDefaultFillLayout(true);
-  row_view_ = AddChildView(std::make_unique<PageInfoRowView>());
+  row_view_ = AddChildView(std::make_unique<RichControlsContainerView>());
   row_view_->SetTitle(PageInfoUI::PermissionTypeToUIString(permission.type));
 
   // Add extra details as sublabel.
@@ -51,11 +54,10 @@ PermissionToggleRowView::PermissionToggleRowView(
     std::u16string requesting_origin_string;
     switch (permission.type) {
       case ContentSettingsType::STORAGE_ACCESS:
-        requesting_origin_string = l10n_util::GetStringFUTF16(
-            IDS_PAGE_INFO_STORAGE_ACCESS_SECONDARY_TEXT,
+        requesting_origin_string =
             url_formatter::FormatOriginForSecurityDisplay(
                 *permission.requesting_origin,
-                url_formatter::SchemeDisplay::OMIT_CRYPTOGRAPHIC));
+                url_formatter::SchemeDisplay::OMIT_CRYPTOGRAPHIC);
         break;
       default:
         NOTREACHED();
@@ -78,11 +80,12 @@ PermissionToggleRowView::PermissionToggleRowView(
   } else {
     InitForManagedSource(delegate);
   }
-  // Set flex rule, defined in `PageInfoRowView`, to wrap the subtitle text but
-  // size the parent view to match the content.
-  SetProperty(views::kFlexBehaviorKey,
-              views::FlexSpecification(base::BindRepeating(
-                  &PageInfoRowView::FlexRule, base::Unretained(row_view_))));
+  // Set flex rule, defined in `RichControlsContainerView`, to wrap the subtitle
+  // text but size the parent view to match the content.
+  SetProperty(
+      views::kFlexBehaviorKey,
+      views::FlexSpecification(base::BindRepeating(
+          &RichControlsContainerView::FlexRule, base::Unretained(row_view_))));
   UpdateUiOnPermissionChanged();
 }
 
@@ -120,9 +123,8 @@ void PermissionToggleRowView::InitForUserSource(bool should_show_spacer_view) {
                 row_view_->GetFirstLineHeight()));
   toggle_button->SetProperty(views::kMarginsKey,
                              gfx::Insets::VH(0, icon_label_spacing));
-  toggle_button->SetAccessibleName(l10n_util::GetStringFUTF16(
-      IDS_PAGE_INFO_SELECTOR_TOOLTIP,
-      PageInfoUI::PermissionTypeToUIString(permission_.type)));
+  toggle_button->SetTooltipText(PageInfoUI::PermissionTooltipUiString(
+      permission_.type, permission_.requesting_origin));
 
   toggle_button_ = row_view_->AddControl(std::move(toggle_button));
 
@@ -164,6 +166,9 @@ void PermissionToggleRowView::InitForManagedSource(
   auto state_label = std::make_unique<views::Label>(
       PageInfoUI::PermissionStateToUIString(delegate, permission_),
       views::style::CONTEXT_LABEL, views::style::STYLE_SECONDARY);
+  if (features::IsChromeRefresh2023()) {
+    state_label->SetTextStyle(views::style::STYLE_BODY_5);
+  }
   state_label->SetProperty(views::kMarginsKey,
                            gfx::Insets::VH(0, icon_label_spacing));
   row_view_->AddControl(std::move(state_label));
@@ -183,7 +188,7 @@ void PermissionToggleRowView::UpdateUiOnPermissionChanged() {
 
   // Update toggle state if it is used.
   if (toggle_button_) {
-    toggle_button_->SetIsOn(PageInfoUI::IsToggleOn(permission_));
+    toggle_button_->AnimateIsOn(PageInfoUI::IsToggleOn(permission_));
   }
 
   // Reset |state_label_|, readd it after if needed.

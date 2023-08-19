@@ -73,8 +73,8 @@ class TabStripViewBinder {
                 return;
             }
 
-            Drawable favicon = model.get(TabProperties.FAVICON).getDefaultDrawable();
-            setFavicon(view, model, favicon);
+            TabListFaviconProvider.TabFavicon tabFavicon = model.get(TabProperties.FAVICON);
+            setFavicon(view, model, tabFavicon == null ? null : tabFavicon.getDefaultDrawable());
         } else if (TabProperties.FAVICON_FETCHER == propertyKey) {
             if (!TabUiFeatureUtilities.isTabGroupsAndroidContinuationEnabled(view.getContext())) {
                 return;

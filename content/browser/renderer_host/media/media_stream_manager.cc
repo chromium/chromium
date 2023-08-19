@@ -7,7 +7,6 @@
 #include <stddef.h>
 #include <stdint.h>
 
-#include <cctype>
 #include <list>
 #include <memory>
 #include <vector>
@@ -34,6 +33,7 @@
 #include "content/browser/gpu/gpu_process_host.h"
 #include "content/browser/media/capture/desktop_capture_device_uma_types.h"
 #include "content/browser/media/media_devices_permission_checker.h"
+#include "content/browser/media/media_devices_util.h"
 #include "content/browser/permissions/permission_controller_impl.h"
 #include "content/browser/renderer_host/media/audio_input_device_manager.h"
 #include "content/browser/renderer_host/media/audio_service_listener.h"
@@ -146,8 +146,7 @@ void EnableHotwordEffect(const StreamControls& controls, int* effects) {
 // Gets raw |device_id| and |group_id| when given a hashed device_id
 // |hmac_device_id|. Both |device_id| and |group_id| could be null pointers.
 bool GetDeviceIDAndGroupIDFromHMAC(
-    const std::string& salt,
-    const url::Origin& security_origin,
+    const MediaDeviceSaltAndOrigin& salt_and_origin,
     const std::string& hmac_device_id,
     const blink::WebMediaDeviceInfoArray& devices,
     std::string* device_id,
@@ -158,8 +157,8 @@ bool GetDeviceIDAndGroupIDFromHMAC(
   }
 
   for (const auto& device_info : devices) {
-    if (!MediaStreamManager::DoesMediaDeviceIDMatchHMAC(
-            salt, security_origin, hmac_device_id, device_info.device_id)) {
+    if (!DoesRawMediaDeviceIDMatchHMAC(salt_and_origin, hmac_device_id,
+                                       device_info.device_id)) {
       continue;
     }
     if (device_id) {
@@ -186,19 +185,6 @@ MediaStreamType ConvertToMediaStreamType(MediaDeviceType type) {
   }
 
   return MediaStreamType::NO_SERVICE;
-}
-
-MediaDeviceType ConvertToMediaDeviceType(MediaStreamType stream_type) {
-  switch (stream_type) {
-    case MediaStreamType::DEVICE_AUDIO_CAPTURE:
-      return MediaDeviceType::MEDIA_AUDIO_INPUT;
-    case MediaStreamType::DEVICE_VIDEO_CAPTURE:
-      return MediaDeviceType::MEDIA_VIDEO_INPUT;
-    default:
-      NOTREACHED();
-  }
-
-  return MediaDeviceType::NUM_MEDIA_DEVICE_TYPES;
 }
 
 const char* DeviceTypeToString(MediaDeviceType type) {
@@ -466,26 +452,6 @@ MediaStreamDevices DisplayMediaDevicesFromFakeDeviceConfig(
   return devices;
 }
 
-void FinalizeGetMediaDeviceIDForHMAC(
-    MediaDeviceType type,
-    const std::string& salt,
-    const url::Origin& security_origin,
-    const std::string& source_id,
-    scoped_refptr<base::SequencedTaskRunner> task_runner,
-    base::OnceCallback<void(const absl::optional<std::string>&)> callback,
-    const MediaDeviceEnumeration& enumeration) {
-  for (const auto& device : enumeration[static_cast<size_t>(type)]) {
-    if (MediaStreamManager::DoesMediaDeviceIDMatchHMAC(
-            salt, security_origin, source_id, device.device_id)) {
-      task_runner->PostTask(
-          FROM_HERE, base::BindOnce(std::move(callback), device.device_id));
-      return;
-    }
-  }
-  task_runner->PostTask(FROM_HERE,
-                        base::BindOnce(std::move(callback), absl::nullopt));
-}
-
 bool ChangeSourceSupported(const MediaStreamDevices& devices) {
   for (const MediaStreamDevice& device : devices) {
     DesktopMediaID media_id = DesktopMediaID::Parse(device.id);
@@ -675,7 +641,7 @@ class MediaStreamManager::DeviceRequest {
     target_frame_id_ = requesting_frame_id;
     ui_request_ = std::make_unique<MediaStreamRequest>(
         requesting_process_id, requesting_frame_id, page_request_id,
-        salt_and_origin.origin.GetURL(), user_gesture, request_type_,
+        salt_and_origin.origin().GetURL(), user_gesture, request_type_,
         requested_audio_device_id, requested_video_device_id, audio_type_,
         video_type_, stream_controls_.disable_local_echo,
         stream_controls_.request_pan_tilt_zoom_permission);
@@ -697,7 +663,7 @@ class MediaStreamManager::DeviceRequest {
     target_frame_id_ = target_render_frame_id;
     ui_request_ = std::make_unique<MediaStreamRequest>(
         target_render_process_id, target_render_frame_id, page_request_id,
-        salt_and_origin.origin.GetURL(), user_gesture, request_type_, "", "",
+        salt_and_origin.origin().GetURL(), user_gesture, request_type_, "", "",
         audio_type_, video_type_, stream_controls_.disable_local_echo,
         /*request_pan_tilt_zoom_permission=*/false);
     ui_request_->exclude_system_audio = stream_controls_.exclude_system_audio;
@@ -739,13 +705,13 @@ class MediaStreamManager::DeviceRequest {
            i < static_cast<int>(MediaStreamType::NUM_MEDIA_TYPES); ++i) {
         media_observer->OnMediaRequestStateChanged(
             target_process_id_, target_frame_id_, page_request_id,
-            salt_and_origin.origin.GetURL(), static_cast<MediaStreamType>(i),
+            salt_and_origin.origin().GetURL(), static_cast<MediaStreamType>(i),
             new_state);
       }
     } else {
       media_observer->OnMediaRequestStateChanged(
           target_process_id_, target_frame_id_, page_request_id,
-          salt_and_origin.origin.GetURL(), stream_type, new_state);
+          salt_and_origin.origin().GetURL(), stream_type, new_state);
     }
   }
 
@@ -953,7 +919,7 @@ class MediaStreamManager::DeviceRequest {
       case MediaRequestState::MEDIA_REQUEST_STATE_OPENING:
         GetUIThreadTaskRunner({})->PostTask(
             FROM_HERE, base::BindOnce(NotifyMultiCaptureStarted, label_,
-                                      salt_and_origin.origin));
+                                      salt_and_origin.origin()));
         break;
       case MediaRequestState::MEDIA_REQUEST_STATE_ERROR:
         GetUIThreadTaskRunner({})->PostTask(
@@ -1457,6 +1423,12 @@ void MediaStreamManager::SendMessageToNativeLog(const std::string& message) {
   media_stream_manager->AddLogMessageOnIOThread(message);
 }
 
+// static
+MediaStreamManager* MediaStreamManager::GetInstance() {
+  DCHECK_CURRENTLY_ON(BrowserThread::IO);
+  return media_stream_manager;
+}
+
 MediaStreamManager::MediaStreamManager(media::AudioSystem* audio_system)
     : MediaStreamManager(audio_system, nullptr) {
   SendLogMessage(base::StringPrintf("MediaStreamManager([this=%p]))", this));
@@ -1624,9 +1596,10 @@ std::string MediaStreamManager::MakeMediaAccessRequest(
   auto request = std::make_unique<MediaAccessRequest>(
       render_process_id, render_frame_id, requester_id, page_request_id,
       std::move(audio_stream_selection_info_ptr), controls,
-      MediaDeviceSaltAndOrigin{
-          std::string() /* salt */, std::string() /* group_id_salt */,
-          security_origin, true /* has_focus */, false /* is_background */},
+      MediaDeviceSaltAndOrigin(
+          /*device_id_salt=*/std::string(), /*origin=*/security_origin,
+          /*group_id_salt=*/std::string(),
+          /*has_focus=*/true, /*is_background=*/false),
       std::move(callback));
   const std::string& label = AddRequest(std::move(request))->first;
 
@@ -2074,29 +2047,6 @@ void MediaStreamManager::OpenDevice(int render_process_id,
                                 base::Unretained(this), label));
 }
 
-bool MediaStreamManager::TranslateSourceIdToDeviceIdAndGroupId(
-    MediaStreamType stream_type,
-    const std::string& salt,
-    const url::Origin& security_origin,
-    const std::string& source_id,
-    std::string* device_id,
-    absl::optional<std::string>* group_id) const {
-  DCHECK(stream_type == MediaStreamType::DEVICE_AUDIO_CAPTURE ||
-         stream_type == MediaStreamType::DEVICE_VIDEO_CAPTURE);
-  // The source_id can be empty if the constraint is set but empty.
-  if (source_id.empty()) {
-    return false;
-  }
-
-  // TODO(guidou): Change to use MediaDevicesManager::EnumerateDevices.
-  // See http://crbug.com/648155.
-  blink::WebMediaDeviceInfoArray cached_devices =
-      media_devices_manager_->GetCachedDeviceInfo(
-          ConvertToMediaDeviceType(stream_type));
-  return GetDeviceIDAndGroupIDFromHMAC(salt, security_origin, source_id,
-                                       cached_devices, device_id, group_id);
-}
-
 void MediaStreamManager::EnsureDeviceMonitorStarted() {
   DCHECK_CURRENTLY_ON(BrowserThread::IO);
   media_devices_manager_->StartMonitoring();
@@ -2130,9 +2080,8 @@ void MediaStreamManager::StopRemovedDevice(
           continue;
         }
         const blink::MediaStreamDevice& device = device_ptr->value();
-        const std::string source_id = GetHMACForMediaDeviceID(
-            request->salt_and_origin.device_id_salt,
-            request->salt_and_origin.origin, media_device_info.device_id);
+        const std::string source_id = GetHMACForRawMediaDeviceID(
+            request->salt_and_origin, media_device_info.device_id);
         if (device.id == source_id && device.type == stream_type) {
           session_ids.push_back(device.session_id());
           if (request->device_stopped_cb) {
@@ -2155,9 +2104,9 @@ bool MediaStreamManager::PickDeviceId(
   if (controls.device_id.empty()) {
     return true;
   }
-  if (!GetDeviceIDAndGroupIDFromHMAC(
-          salt_and_origin.device_id_salt, salt_and_origin.origin,
-          controls.device_id, devices, device_id, /*group_id=*/nullptr)) {
+  if (!GetDeviceIDAndGroupIDFromHMAC(salt_and_origin, controls.device_id,
+                                     devices, device_id,
+                                     /*group_id=*/nullptr)) {
     LOG(WARNING) << "Invalid device ID = " << controls.device_id;
     return false;
   }
@@ -2187,12 +2136,10 @@ void MediaStreamManager::TranslateDeviceIdToSourceId(
   if (request->audio_type() == MediaStreamType::DEVICE_AUDIO_CAPTURE ||
       request->video_type() == MediaStreamType::DEVICE_VIDEO_CAPTURE) {
     device->id =
-        GetHMACForMediaDeviceID(request->salt_and_origin.device_id_salt,
-                                request->salt_and_origin.origin, device->id);
+        GetHMACForRawMediaDeviceID(request->salt_and_origin, device->id);
     if (device->group_id) {
-      device->group_id = GetHMACForMediaDeviceID(
-          request->salt_and_origin.group_id_salt,
-          request->salt_and_origin.origin, *device->group_id);
+      device->group_id = GetHMACForRawMediaDeviceID(
+          request->salt_and_origin, *device->group_id, /*use_group_salt=*/true);
     }
   }
 }
@@ -2657,7 +2604,7 @@ bool MediaStreamManager::SetUpTabCaptureRequest(DeviceRequest* request,
                      base::Unretained(this), capture_device_id,
                      request->requesting_process_id,
                      request->requesting_frame_id,
-                     request->salt_and_origin.origin.GetURL()),
+                     request->salt_and_origin.origin().GetURL()),
       base::BindOnce(
           &MediaStreamManager::FinishTabCaptureRequestSetupWithDeviceId,
           base::Unretained(this), label));
@@ -2781,9 +2728,8 @@ bool MediaStreamManager::FindExistingRequestedDevice(
   DCHECK(existing_device);
   DCHECK(existing_request_state);
 
-  std::string hashed_source_id = GetHMACForMediaDeviceID(
-      new_request.salt_and_origin.device_id_salt,
-      new_request.salt_and_origin.origin, new_device.id);
+  std::string hashed_source_id =
+      GetHMACForRawMediaDeviceID(new_request.salt_and_origin, new_device.id);
 
   bool is_audio_capture =
       new_device.type == MediaStreamType::DEVICE_AUDIO_CAPTURE &&
@@ -3354,9 +3300,9 @@ void MediaStreamManager::HandleAccessRequestResponse(
   media_stream_metrics::RecordMediaStreamRequestResponseMetric(
       request->video_type(), request->request_type(), result);
 
-  if (request->salt_and_origin.ukm_source_id) {
+  if (request->salt_and_origin.ukm_source_id().has_value()) {
     media_stream_metrics::RecordMediaStreamRequestResponseUKM(
-        request->salt_and_origin.ukm_source_id.value(), request->video_type(),
+        request->salt_and_origin.ukm_source_id().value(), request->video_type(),
         request->request_type(), result);
   }
 
@@ -3778,79 +3724,6 @@ void MediaStreamManager::DoNativeLogCallbackUnregistration(
 }
 
 // static
-std::string MediaStreamManager::GetHMACForMediaDeviceID(
-    const std::string& salt,
-    const url::Origin& security_origin,
-    const std::string& raw_unique_id) {
-  // TODO(crbug.com/1215532): DCHECKs are disabled during automated testing on
-  // CrOS and this check failed when tested on an experimental builder. Revert
-  // https://crrev.com/c/2932244 to enable it. See go/chrome-dcheck-on-cros
-  // or http://crbug.com/1113456 for more details.
-#if !BUILDFLAG(IS_CHROMEOS_ASH)
-  DCHECK(!raw_unique_id.empty());
-#endif
-  if (raw_unique_id == media::AudioDeviceDescription::kDefaultDeviceId ||
-      raw_unique_id == media::AudioDeviceDescription::kCommunicationsDeviceId) {
-    return raw_unique_id;
-  }
-
-  crypto::HMAC hmac(crypto::HMAC::SHA256);
-  const size_t digest_length = hmac.DigestLength();
-  std::vector<uint8_t> digest(digest_length);
-  bool result = hmac.Init(security_origin.Serialize()) &&
-                hmac.Sign(raw_unique_id + salt, &digest[0], digest.size());
-  DCHECK(result);
-  return base::ToLowerASCII(base::HexEncode(&digest[0], digest.size()));
-}
-
-// static
-bool MediaStreamManager::DoesMediaDeviceIDMatchHMAC(
-    const std::string& salt,
-    const url::Origin& security_origin,
-    const std::string& device_guid,
-    const std::string& raw_unique_id) {
-  DCHECK(!raw_unique_id.empty());
-  std::string guid_from_raw_device_id =
-      GetHMACForMediaDeviceID(salt, security_origin, raw_unique_id);
-  return guid_from_raw_device_id == device_guid;
-}
-
-// static
-void MediaStreamManager::GetMediaDeviceIDForHMAC(
-    MediaStreamType stream_type,
-    std::string salt,
-    url::Origin security_origin,
-    std::string hmac_device_id,
-    scoped_refptr<base::SequencedTaskRunner> task_runner,
-    base::OnceCallback<void(const absl::optional<std::string>&)> callback) {
-  DCHECK_CURRENTLY_ON(BrowserThread::IO);
-  DCHECK(stream_type == MediaStreamType::DEVICE_AUDIO_CAPTURE ||
-         stream_type == MediaStreamType::DEVICE_VIDEO_CAPTURE);
-  MediaDeviceType device_type = ConvertToMediaDeviceType(stream_type);
-  MediaStreamManager::GetMediaDeviceIDForHMAC(
-      device_type, std::move(salt), std::move(security_origin),
-      std::move(hmac_device_id), std::move(task_runner), std::move(callback));
-}
-
-void MediaStreamManager::GetMediaDeviceIDForHMAC(
-    MediaDeviceType device_type,
-    std::string salt,
-    url::Origin security_origin,
-    std::string hmac_device_id,
-    scoped_refptr<base::SequencedTaskRunner> task_runner,
-    base::OnceCallback<void(const absl::optional<std::string>&)> callback) {
-  DCHECK_CURRENTLY_ON(BrowserThread::IO);
-  MediaDevicesManager::BoolDeviceTypes requested_types;
-  requested_types[static_cast<size_t>(device_type)] = true;
-  media_stream_manager->media_devices_manager()->EnumerateDevices(
-      requested_types,
-      base::BindOnce(&FinalizeGetMediaDeviceIDForHMAC, device_type,
-                     std::move(salt), std::move(security_origin),
-                     std::move(hmac_device_id), std::move(task_runner),
-                     std::move(callback)));
-}
-
-// static
 bool MediaStreamManager::IsOriginAllowed(int render_process_id,
                                          const url::Origin& origin) {
   if (!ChildProcessSecurityPolicyImpl::GetInstance()->CanRequestURL(
@@ -4137,7 +4010,7 @@ void MediaStreamManager::SubscribeToPermissionController(
           request->page_request_id,
           blink::IsAudioInputMediaType(request->audio_type()),
           blink::IsVideoInputMediaType(request->video_type()),
-          request->salt_and_origin.origin.GetURL()));
+          request->salt_and_origin.origin().GetURL()));
 }
 
 void MediaStreamManager::SubscribeToPermissionControllerOnUIThread(

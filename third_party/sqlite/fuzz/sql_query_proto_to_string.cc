@@ -424,88 +424,60 @@ CONV_FN(BinaryOperator, bop) {
   switch (bop) {
     case BINOP_CONCAT:
       return " || ";
-      break;
     case BINOP_STAR:
       return " * ";
-      break;
     case BINOP_SLASH:
       return " / ";
-      break;
     case BINOP_PERCENT:
       return " % ";
-      break;
     case BINOP_PLUS:
       return " + ";
-      break;
     case BINOP_MINUS:
       return " - ";
-      break;
     case BINOP_LELE:
       return " << ";
-      break;
     case BINOP_GRGR:
       return " >> ";
-      break;
     case BINOP_AMPERSAND:
       return " & ";
-      break;
     case BINOP_PIPE:
       return " | ";
-      break;
     case BINOP_LE:
       return " < ";
-      break;
     case BINOP_LEQ:
       return " <= ";
-      break;
     case BINOP_GR:
       return " > ";
-      break;
     case BINOP_GREQ:
       return " >= ";
-      break;
     case BINOP_EQ:
       return " = ";
-      break;
     case BINOP_EQEQ:
       return " == ";
-      break;
     case BINOP_NOTEQ:
       return " != ";
-      break;
     case BINOP_LEGR:
       return " <> ";
-      break;
     case BINOP_IS:
       return " IS ";
-      break;
     case BINOP_ISNOT:
       return " IS NOT ";
-      break;
     case BINOP_IN:
       return " IN ";  // CORPUS specialize?
-      break;
     case BINOP_LIKE:
       return " LIKE ";  // CORPUS specialize?
-      break;
     case BINOP_GLOB:
       return " GLOB ";  // CORPUS
-      break;
     case BINOP_MATCH:
       return " MATCH ";  // CORPUS
-      break;
     case BINOP_REGEXP:
       return " REGEXP ";  // CORPUS
-      break;
     case BINOP_AND:
       return " AND ";
-      break;
     case BINOP_OR:
       return " OR ";
-      break;
     default:
       return " AND ";
-      break;
   }
 }
 
@@ -1178,7 +1150,7 @@ CONV_FN(CreateTable, create_table) {
   RETURN_IF_DISABLED_QUERY(CreateTable);
 #if defined(FUZZ_FTS3)
   return "";  // Don't create normal tables in FTS3 fuzzing mode.
-#endif
+#else
   std::string ret("CREATE ");
   if (create_table.has_temp_modifier()) {
     ret += EnumStrReplaceUnderscores(
@@ -1208,6 +1180,7 @@ CONV_FN(CreateTable, create_table) {
   }
 
   return ret;  // TODO(mpdenton)
+#endif
 }
 
 // ~~~~For INSERT and SELECT~~~~

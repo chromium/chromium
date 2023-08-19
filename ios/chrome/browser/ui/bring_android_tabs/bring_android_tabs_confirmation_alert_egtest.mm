@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/ui/bring_android_tabs/bring_android_tabs_app_interface.h"
+#import "ios/chrome/browser/ui/bring_android_tabs/bring_android_tabs_test_session.h"
 #import "ios/chrome/browser/ui/bring_android_tabs/bring_android_tabs_test_utils.h"
 #import "ios/chrome/browser/ui/bring_android_tabs/constants.h"
 #import "ios/chrome/common/ui/confirmation_alert/constants.h"
@@ -13,10 +13,7 @@
 #import "ios/chrome/test/earl_grey/chrome_test_case.h"
 #import "ios/testing/earl_grey/disabled_test_macros.h"
 #import "ios/testing/earl_grey/earl_grey_test.h"
-
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
+#import "net/test/embedded_test_server/embedded_test_server.h"
 
 // Test suite that tests user interactions with the Bring Android Tabs
 // confirmation alert modal.
@@ -35,9 +32,10 @@
   [[self class] testForStartup];
   [super setUp];
   if (![ChromeEarlGrey isIPadIdiom]) {
-    [BringAndroidTabsAppInterface
-        addSessionToFakeSyncServer:BringAndroidTabsAppInterfaceForeignSession::
-                                       kRecentFromAndroidPhone];
+    GREYAssertTrue(self.testServer->Start(), @"Test server failed to start.");
+    AddSessionToFakeSyncServerFromTestServer(
+        BringAndroidTabsTestSession::kRecentFromAndroidPhone,
+        self.testServer->base_url());
     CompleteFREWithSyncEnabled(YES);
   }
 }
@@ -55,14 +53,14 @@
   }
   [ChromeEarlGreyUI openTabGrid];
   VerifyConfirmationAlertPromptVisibility(YES);
-  VerifyThatPromptDoesNotShowOnRestart(/*bottom_message=*/NO);
+  VerifyThatPromptDoesNotShowOnRestart(
+      /*bottom_message=*/NO, self.testServer->base_url());
 }
 
 // Tests that the user can open the list of recent Android tabs by tapping the
 // "open" button on the confirmation alert modal. Afterwards, the modal would
 // not be shown again after the user restarts.
-// TODO(crbug.com/1448864): Re-enable test when issue is fixed.
-- (void)DISABLED_testOpen {
+- (void)testOpen {
   if ([ChromeEarlGrey isIPadIdiom]) {
     EARL_GREY_TEST_SKIPPED(@"Test skipped on iPad.");
   }
@@ -72,14 +70,12 @@
                  grey_accessibilityID(
                      kConfirmationAlertPrimaryActionAccessibilityIdentifier)]
       performAction:grey_tap()];
-  int expectedTabCountFromDistantSessions = [BringAndroidTabsAppInterface
-      tabsCountForSession:BringAndroidTabsAppInterfaceForeignSession::
-                              kRecentFromAndroidPhone];
-  [ChromeEarlGrey waitForMainTabCount:expectedTabCountFromDistantSessions +
-                                      /*new tab page*/ 1];
+  [ChromeEarlGrey
+      waitForMainTabCount:GetTabCountOnPrompt() + /*new tab page*/ 1];
   [ChromeEarlGrey closeAllTabs];
   VerifyConfirmationAlertPromptVisibility(NO);
-  VerifyThatPromptDoesNotShowOnRestart(/*bottom_message=*/NO);
+  VerifyThatPromptDoesNotShowOnRestart(
+      /*bottom_message=*/NO, self.testServer->base_url());
 }
 
 // Tests that the user can review the list of Android tabs by tapping the
@@ -98,7 +94,8 @@
   [[EarlGrey selectElementWithMatcher:grey_accessibilityID(
                                           kBringAndroidTabsPromptTabListAXId)]
       assertWithMatcher:grey_sufficientlyVisible()];
-  VerifyThatPromptDoesNotShowOnRestart(/*bottom_message=*/NO);
+  VerifyThatPromptDoesNotShowOnRestart(
+      /*bottom_message=*/NO, self.testServer->base_url());
 }
 
 // Tests that the user can close the confirmation alert modal by tapping the
@@ -120,7 +117,8 @@
   [ChromeEarlGrey openNewTab];
   [ChromeEarlGreyUI openTabGrid];
   VerifyConfirmationAlertPromptVisibility(NO);
-  VerifyThatPromptDoesNotShowOnRestart(/*bottom_message=*/NO);
+  VerifyThatPromptDoesNotShowOnRestart(
+      /*bottom_message=*/NO, self.testServer->base_url());
 }
 
 // Tests that the user can swipe down the confirmation alert modal to dismiss
@@ -142,7 +140,8 @@
   [ChromeEarlGrey openNewTab];
   [ChromeEarlGreyUI openTabGrid];
   VerifyConfirmationAlertPromptVisibility(NO);
-  VerifyThatPromptDoesNotShowOnRestart(/*bottom_message=*/NO);
+  VerifyThatPromptDoesNotShowOnRestart(
+      /*bottom_message=*/NO, self.testServer->base_url());
 }
 
 @end

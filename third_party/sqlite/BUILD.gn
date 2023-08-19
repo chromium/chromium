@@ -574,7 +574,7 @@ config("sqlite3_dbfuzz2_config") {
 }
 
 # Upstream fuzzer that tests corrupted database files.
-if (use_fuzzing_engine) {
+if (use_fuzzing_engine && !use_clang_coverage) {
   fuzzer_test("sqlite3_dbfuzz2_fuzzer") {
     include_dirs = [ "." ]
     sources = [ "src/test/dbfuzz2.c" ]

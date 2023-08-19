@@ -10,15 +10,6 @@
 -AllForms/FormStructureBrowserTest.DataDrivenHeuristics/103
 -AllForms/FormStructureBrowserTest.DataDrivenHeuristics/153
 
-# TODO(crbug.com/1326648):
-# ../../chrome/browser/ui/views/frame/browser_view_browsertest.cc:343: Failure
-# Expected equality of these values:
-#   browser_view()->GetAccessibleWindowTitle()
-#     Which is: u"about:blank - Chromium"
-#   delegate_observer->GetTitle()
-#     Which is: u"Dialog Title"
--BrowserViewTest.GetAccessibleTabModalDialogTitle
-
 # TODO(crbug.com/1325504): [html_media_element.cc(4705)] SetError: {code=4,
 # message="MEDIA_ELEMENT_ERROR: Media load rejected by URL safety check"}
 -All/DeclarativeNetRequestBrowserTest.PacRequestsBypassRules/0
@@ -438,8 +429,8 @@
 -ChromeTracingDelegateBrowserTestFromCommandLine.IgnoreThrottle
 -ChromeTracingDelegateBrowserTestFromCommandLine.ScenarioFromCommandLine
 -ContentScriptApiTest.ContentScriptExtensionProcess
--CookieControlsBubbleViewTest.InvokeUi_NotWorkingClicked
--CookieControlsBubbleViewTest.NotWorkingClicked
+-OldCookieControlsBubbleViewTest.InvokeUi_NotWorkingClicked
+-OldCookieControlsBubbleViewTest.NotWorkingClicked
 -CrSettingsBasicPageTest.BasicPage
 -DesktopCaptureApiTest.ChooseDesktopMedia
 -DesktopCaptureApiTest.Delegation

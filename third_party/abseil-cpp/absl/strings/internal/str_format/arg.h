@@ -279,14 +279,14 @@ FloatingConvertResult FormatConvertImpl(long double v,
 // Chars.
 CharConvertResult FormatConvertImpl(char v, FormatConversionSpecImpl conv,
                                     FormatSinkImpl* sink);
-CharConvertResult FormatConvertImpl(signed char v,
-                                    FormatConversionSpecImpl conv,
-                                    FormatSinkImpl* sink);
-CharConvertResult FormatConvertImpl(unsigned char v,
-                                    FormatConversionSpecImpl conv,
-                                    FormatSinkImpl* sink);
 
 // Ints.
+IntegralConvertResult FormatConvertImpl(signed char v,
+                                        FormatConversionSpecImpl conv,
+                                        FormatSinkImpl* sink);
+IntegralConvertResult FormatConvertImpl(unsigned char v,
+                                        FormatConversionSpecImpl conv,
+                                        FormatSinkImpl* sink);
 IntegralConvertResult FormatConvertImpl(short v,  // NOLINT
                                         FormatConversionSpecImpl conv,
                                         FormatSinkImpl* sink);
@@ -441,7 +441,7 @@ class FormatArgImpl {
   // For everything else:
   //   - Decay char* and char arrays into `const char*`
   //   - Decay any other pointer to `const void*`
-  //   - Decay all enums to their underlying type.
+  //   - Decay all enums to the integral promotion of their underlying type.
   //   - Decay function pointers to void*.
   template <typename T, typename = void>
   struct DecayType {
@@ -461,7 +461,7 @@ class FormatArgImpl {
                        !str_format_internal::HasUserDefinedConvert<T>::value &&
                        !strings_internal::HasAbslStringify<T>::value &&
                        std::is_enum<T>::value>::type> {
-    using type = typename std::underlying_type<T>::type;
+    using type = decltype(+typename std::underlying_type<T>::type());
   };
 
  public:

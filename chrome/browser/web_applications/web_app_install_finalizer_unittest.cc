@@ -6,14 +6,15 @@
 
 #include <initializer_list>
 #include <memory>
+#include <tuple>
 #include <utility>
 
 #include "base/feature_list.h"
-#include "base/run_loop.h"
 #include "base/scoped_observation.h"
 #include "base/strings/string_piece_forward.h"
 #include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
+#include "base/test/test_future.h"
 #include "base/traits_bag.h"
 #include "build/build_config.h"
 #include "build/buildflag.h"
@@ -260,12 +261,11 @@ TEST_P(WebAppInstallFinalizerUnitTest, OnWebAppManifestUpdatedTriggered) {
       webapps::WebappInstallSource::EXTERNAL_POLICY);
 
   FinalizeInstallResult result = AwaitFinalizeInstall(*info, options);
-  base::RunLoop runloop;
-  finalizer().FinalizeUpdate(
-      *info, base::BindLambdaForTesting(
-                 [&](const AppId& app_id, webapps::InstallResultCode code,
-                     OsHooksErrors os_hooks_errors) { runloop.Quit(); }));
-  runloop.Run();
+  base::test::TestFuture<const AppId&, webapps::InstallResultCode,
+                         OsHooksErrors>
+      update_future;
+  finalizer().FinalizeUpdate(*info, update_future.GetCallback());
+  update_future.Wait();
   EXPECT_TRUE(install_manager_observer_->web_app_manifest_updated_called());
 }
 
@@ -432,16 +432,13 @@ TEST_P(WebAppInstallFinalizerUnitTest, InstallOsHooksDisabledForDefaultApps) {
   info->file_handlers =
       CreateFileHandlersFromManifest(file_handlers, info->start_url);
 
-  base::RunLoop runloop;
-  finalizer().FinalizeUpdate(
-      *info, base::BindLambdaForTesting([&](const AppId& app_id,
-                                            webapps::InstallResultCode code,
-                                            OsHooksErrors os_hooks_errors) {
-        EXPECT_EQ(webapps::InstallResultCode::kSuccessAlreadyInstalled, code);
-        EXPECT_TRUE(os_hooks_errors.none());
-        runloop.Quit();
-      }));
-  runloop.Run();
+  base::test::TestFuture<const AppId&, webapps::InstallResultCode,
+                         OsHooksErrors>
+      update_future;
+  finalizer().FinalizeUpdate(*info, update_future.GetCallback());
+  auto [app_id, code, os_hooks_errors] = update_future.Take();
+  EXPECT_EQ(webapps::InstallResultCode::kSuccessAlreadyInstalled, code);
+  EXPECT_TRUE(os_hooks_errors.none());
 
 #if BUILDFLAG(IS_CHROMEOS)
   // OS integration is always enabled in ChromeOS

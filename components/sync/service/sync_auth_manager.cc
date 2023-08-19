@@ -65,6 +65,9 @@ SyncAccountInfo DetermineAccountToUse(
     return SyncAccountInfo();
   }
 
+  // TODO(crbug.com/1462552): Simplify once kSync becomes unreachable or is
+  // deleted from the codebase. See ConsentLevel::kSync documentation for
+  // details.
   return SyncAccountInfo(
       identity_manager->GetPrimaryAccountInfo(signin::ConsentLevel::kSignin),
       /*is_sync_consented=*/identity_manager->HasPrimaryAccount(

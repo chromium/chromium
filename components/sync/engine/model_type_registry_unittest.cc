@@ -12,6 +12,7 @@
 #include "base/test/task_environment.h"
 #include "components/sync/engine/cancelation_signal.h"
 #include "components/sync/engine/data_type_activation_response.h"
+#include "components/sync/engine/model_type_worker.h"
 #include "components/sync/protocol/model_type_state.pb.h"
 #include "components/sync/test/fake_model_type_processor.h"
 #include "components/sync/test/fake_sync_encryption_handler.h"
@@ -92,6 +93,27 @@ TEST_F(ModelTypeRegistryTest, GetInitialSyncEndedTypes) {
       MakeDataTypeActivationResponse(MakeInitialModelTypeState(SESSIONS)));
 
   EXPECT_EQ(ModelTypeSet({THEMES}), registry()->GetInitialSyncEndedTypes());
+}
+
+TEST_F(ModelTypeRegistryTest, GetTypesWithUnsyncedData) {
+  // Create workers for PREFERENCES and BOOKMARKS.
+  registry()->ConnectDataType(
+      PREFERENCES,
+      MakeDataTypeActivationResponse(MakeInitialModelTypeState(PREFERENCES)));
+  registry()->ConnectDataType(
+      BOOKMARKS,
+      MakeDataTypeActivationResponse(MakeInitialModelTypeState(BOOKMARKS)));
+
+  // Simulate a local BOOKMARKS change. In production, the ModelTypeProcessor
+  // would call NudgeForCommit() on the worker.
+  for (const std::unique_ptr<ModelTypeWorker>& worker :
+       registry()->GetConnectedModelTypeWorkersForTest()) {
+    if (worker->GetModelType() == BOOKMARKS) {
+      worker->NudgeForCommit();
+    }
+  }
+
+  EXPECT_EQ(ModelTypeSet({BOOKMARKS}), registry()->GetTypesWithUnsyncedData());
 }
 
 }  // namespace

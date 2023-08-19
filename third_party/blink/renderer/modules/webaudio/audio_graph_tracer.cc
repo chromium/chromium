@@ -17,11 +17,10 @@ namespace blink {
 const char AudioGraphTracer::kSupplementName[] = "AudioGraphTracer";
 
 void AudioGraphTracer::ProvideAudioGraphTracerTo(Page& page) {
-  page.ProvideSupplement(MakeGarbageCollected<AudioGraphTracer>());
+  page.ProvideSupplement(MakeGarbageCollected<AudioGraphTracer>(page));
 }
 
-AudioGraphTracer::AudioGraphTracer()
-    : Supplement(nullptr), inspector_agent_(nullptr) {}
+AudioGraphTracer::AudioGraphTracer(Page& page) : Supplement(page) {}
 
 void AudioGraphTracer::Trace(Visitor* visitor) const {
   visitor->Trace(inspector_agent_);

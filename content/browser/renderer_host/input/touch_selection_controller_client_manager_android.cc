@@ -40,6 +40,9 @@ void TouchSelectionControllerClientManagerAndroid::OnSwipeToMoveCursorBegin() {}
 
 void TouchSelectionControllerClientManagerAndroid::OnSwipeToMoveCursorEnd() {}
 
+void TouchSelectionControllerClientManagerAndroid::OnClientHitTestRegionUpdated(
+    ui::TouchSelectionControllerClient* client) {}
+
 void TouchSelectionControllerClientManagerAndroid::UpdateClientSelectionBounds(
     const gfx::SelectionBound& start,
     const gfx::SelectionBound& end,

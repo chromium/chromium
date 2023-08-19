@@ -16,7 +16,7 @@
 
 namespace web_app {
 
-class WebAppRegistrar;
+class WebAppProvider;
 
 // Allows skipping the entire Execute() step for the sub manager.
 // Useful for testing crbug.com/1434577.
@@ -27,7 +27,7 @@ extern bool g_skip_execute_os_settings_sub_manager_for_testing;
 class UninstallationViaOsSettingsSubManager : public OsIntegrationSubManager {
  public:
   UninstallationViaOsSettingsSubManager(const base::FilePath& profile_path,
-                                        WebAppRegistrar& registrar);
+                                        WebAppProvider& provider);
   ~UninstallationViaOsSettingsSubManager() override;
 
   void Configure(const AppId& app_id,
@@ -44,7 +44,7 @@ class UninstallationViaOsSettingsSubManager : public OsIntegrationSubManager {
  private:
   void CompleteUnregistration(const AppId& app_id);
   const base::FilePath profile_path_;
-  const raw_ref<WebAppRegistrar, DanglingUntriaged> registrar_;
+  const raw_ref<WebAppProvider> provider_;
   base::WeakPtrFactory<UninstallationViaOsSettingsSubManager> weak_factory_{
       this};
 };

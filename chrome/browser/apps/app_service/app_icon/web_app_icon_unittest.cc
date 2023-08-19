@@ -17,14 +17,13 @@
 #include "base/path_service.h"
 #include "base/run_loop.h"
 #include "base/test/bind.h"
-#include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
 #include "build/chromeos_buildflags.h"
 #include "cc/test/pixel_comparator.h"
 #include "cc/test/pixel_test_utils.h"
 #include "chrome/browser/apps/app_service/app_icon/app_icon_factory.h"
 #include "chrome/browser/apps/app_service/app_icon/app_icon_test_util.h"
-#include "chrome/browser/apps/app_service/app_icon/app_icon_util.h"
+#include "chrome/browser/apps/app_service/app_icon/icon_effects.h"
 #include "chrome/browser/apps/icon_standardizer.h"
 #include "chrome/browser/extensions/chrome_app_icon.h"
 #include "chrome/browser/web_applications/test/test_file_utils.h"
@@ -46,8 +45,8 @@
 #include "content/public/test/browser_task_environment.h"
 #include "extensions/grit/extensions_browser_resources.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "ui/base/layout.h"
 #include "ui/base/resource/resource_bundle.h"
+#include "ui/base/resource/resource_scale_factor.h"
 #include "ui/gfx/codec/png_codec.h"
 #include "ui/gfx/image/image_skia_operations.h"
 #include "ui/gfx/image/image_skia_rep.h"
@@ -62,6 +61,7 @@
 #include "chrome/browser/ash/arc/icon_decode_request.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/grit/chrome_unscaled_resources.h"
+#include "chromeos/ash/components/standalone_browser/feature_refs.h"
 #include "components/services/app_service/public/cpp/icon_loader.h"
 #include "components/services/app_service/public/cpp/icon_types.h"
 #include "services/data_decoder/public/cpp/test_support/in_process_data_decoder.h"
@@ -72,14 +72,8 @@ namespace apps {
 
 class WebAppIconFactoryTest : public testing::Test {
  public:
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-  WebAppIconFactoryTest() {
-    scoped_feature_list_.InitWithFeatures(
-        {}, {features::kWebAppsCrosapi, ash::features::kLacrosPrimary});
-  }
-#else
+  // TODO(crbug.com/1462253): Also test with Lacros flags enabled.
   WebAppIconFactoryTest() = default;
-#endif
 
   ~WebAppIconFactoryTest() override = default;
 
@@ -107,10 +101,8 @@ class WebAppIconFactoryTest : public testing::Test {
   }
 
   void RegisterApp(std::unique_ptr<web_app::WebApp> web_app) {
-    std::unique_ptr<web_app::WebAppRegistryUpdate> update =
-        sync_bridge().BeginUpdate();
+    web_app::ScopedRegistryUpdate update = sync_bridge().BeginUpdate();
     update->CreateApp(std::move(web_app));
-    sync_bridge().CommitUpdate(std::move(update), base::DoNothing());
   }
 
   void WriteIcons(const std::string& app_id,
@@ -277,7 +269,6 @@ class WebAppIconFactoryTest : public testing::Test {
   Profile* profile() { return profile_.get(); }
 
  private:
-  base::test::ScopedFeatureList scoped_feature_list_;
   content::BrowserTaskEnvironment task_environment_;
   std::unique_ptr<TestingProfile> profile_;
   raw_ptr<web_app::WebAppProvider> web_app_provider_;
@@ -896,8 +887,6 @@ class AppServiceWebAppIconTest : public WebAppIconFactoryTest {
  public:
   void SetUp() override {
     WebAppIconFactoryTest::SetUp();
-    scoped_feature_list_.InitAndEnableFeature(
-        apps::kUnifiedAppServiceIconLoading);
 
     proxy_ = AppServiceProxyFactory::GetForProfile(profile());
     fake_icon_loader_ = std::make_unique<apps::FakeIconLoader>(proxy_);
@@ -1004,7 +993,6 @@ class AppServiceWebAppIconTest : public WebAppIconFactoryTest {
   AppServiceProxy& app_service_proxy() { return *proxy_; }
 
  private:
-  base::test::ScopedFeatureList scoped_feature_list_;
   data_decoder::test::InProcessDataDecoder in_process_data_decoder_;
 
   raw_ptr<AppServiceProxy> proxy_;

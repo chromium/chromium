@@ -9,10 +9,6 @@
 #import "base/check.h"
 #import "base/strings/sys_string_conversions.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 @implementation OCMockComplexTypeHelper {
   // The represented object.
   OCMockObject* _object;

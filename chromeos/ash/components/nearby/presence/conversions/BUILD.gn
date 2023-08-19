@@ -1,0 +1,48 @@
+# Copyright 2023 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/chromeos/ui_mode.gni")
+import("//testing/test.gni")
+
+assert(is_chromeos_ash, "Non-Chrome-OS builds must not depend on //ash")
+
+static_library("conversions") {
+  sources = [
+    "proto_conversions.cc",
+    "proto_conversions.h",
+  ]
+
+  deps = [
+    "//base",
+    "//chromeos/ash/components/nearby/common/proto",
+    "//chromeos/ash/components/nearby/presence/proto",
+    "//chromeos/ash/services/nearby/public/mojom",
+  ]
+
+  public_deps = [
+    "//third_party/nearby:connections_credential_proto",
+    "//third_party/nearby:connections_local_credential_proto",
+    "//third_party/nearby:connections_metadata_proto",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+
+  sources = [ "proto_conversions_unittest.cc" ]
+
+  deps = [
+    ":conversions",
+    "//base",
+    "//base/test:test_support",
+    "//chromeos/ash/services/nearby/public/mojom",
+    "//testing/gtest",
+  ]
+
+  public_deps = [
+    "//third_party/nearby:connections_credential_proto",
+    "//third_party/nearby:connections_local_credential_proto",
+    "//third_party/nearby:connections_metadata_proto",
+  ]
+}

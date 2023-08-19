@@ -32,6 +32,8 @@ import org.chromium.base.test.util.MinAndroidSdkLevel;
 import org.chromium.chrome.browser.device.DeviceClassManager;
 import org.chromium.chrome.browser.document.ChromeLauncherActivity;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
+import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
+import org.chromium.chrome.browser.preferences.SharedPreferencesManager;
 import org.chromium.chrome.browser.tab.TabImpl;
 import org.chromium.chrome.browser.tab.TabLaunchType;
 import org.chromium.chrome.browser.tab.state.CriticalPersistedTabData;
@@ -122,7 +124,6 @@ public class ChromeTabbedActivityTest {
         Assert.assertEquals(animationsEnabled, DeviceClassManager.enableAnimations());
     }
 
-    // Tests the fix for the regression reported in crbug.com/1444638.
     @Test
     @SmallTest
     @MinAndroidSdkLevel(Build.VERSION_CODES.S)
@@ -138,9 +139,19 @@ public class ChromeTabbedActivityTest {
 
         var tabModelSelectorObserver = mActivity.getTabModelSelectorObserverForTesting();
         TestThreadUtils.runOnUiThreadBlocking(tabModelSelectorObserver::onTabStateInitialized);
-        Assert.assertNotNull(
-                "A TabModelSelectorTabModelObserver should be registered by MultiInstanceManager on tab state initialization.",
-                mActivity.getMultiInstanceMangerForTesting().getTabModelObserverForTesting());
+        Assert.assertTrue(
+                "Regular tab count should be written to SharedPreferences after tab state initialization.",
+                SharedPreferencesManager.getInstance()
+                                .readIntsWithPrefix(ChromePreferenceKeys.MULTI_INSTANCE_TAB_COUNT)
+                                .size()
+                        > 0);
+        Assert.assertTrue(
+                "Incognito tab count should be written to SharedPreferences after tab state initialization.",
+                SharedPreferencesManager.getInstance()
+                                .readIntsWithPrefix(
+                                        ChromePreferenceKeys.MULTI_INSTANCE_INCOGNITO_TAB_COUNT)
+                                .size()
+                        > 0);
 
         // Restore the original value of |mCreatedTabOnStartup|.
         mActivity.setCreatedTabOnStartupForTesting(createdTabOnStartup);

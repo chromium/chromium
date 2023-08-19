@@ -49,11 +49,4 @@ public interface DropdownItemProcessor {
     default boolean allowBackgroundRounding() {
         return false;
     }
-
-    /**
-     * Return whether this suggestion can host OmniboxAction chips.
-     */
-    default boolean allowOmniboxActions() {
-        return false;
-    }
 }

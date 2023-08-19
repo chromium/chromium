@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <title></title>
+    <script src="/resources/testharness.js"></script>
+    <script src="/resources/testharnessreport.js"></script>
+    <script src="resources/manual.js"></script>
+  </head>
+  <body>
+    <p>
+      This test requires a supported HID device:
+    </p>
+    <ul>
+      <li>RFIdeas pcProx badge reader (0C27:3BFA)
+    </ul>
+    <script>
+      checkReportAccessPcProx = async devices => {
+        // Expect one device with one top-level keyboard collection.
+        assert_equals(devices.length, 1, 'device count');
+        assert_equals(devices[0].collections.length, 1, 'collection count');
+        const collection = getCollectionByUsage(devices[0], 0x0001, 0x0006);
+        assert_not_equals(collection, undefined, 'keyboard collection');
+
+        // The input and output reports are not accessible.
+        const input00 = getReport(devices, 'input', 0);
+        assert_equals(input00, undefined, 'input report blocked');
+        const output00 = getReport(devices, 'output', 0);
+        assert_equals(input00, undefined, 'output report blocked');
+
+        // The feature report is accessible.
+        const feature00 = getReport(devices, 'feature', 0);
+        assert_not_equals(feature00, undefined, 'feature report allowed');
+
+        // Try opening the device
+        if (!devices[0].opened) {
+          await devices[0].open();
+        }
+        assert_true(devices[0].opened);
+
+        // Read device information using a feature report. The protocol is
+        // documented here:
+        // https://github.com/micolous/pcprox/blob/master/README.md
+        const command = new Uint8Array([0x8a, 0, 0, 0, 0, 0, 0, 0]);
+        await devices[0].sendFeatureReport(0, command.buffer);
+        const reply = await devices[0].receiveFeatureReport(0);
+        assert_equals(reply.byteLength, 8, 'receive feature report length');
+      };
+
+      manual_hid_test(async (t, devices) => {
+        if (hasDeviceIds(devices, 0x0c27, 0x3bfa))
+          await checkReportAccessPcProx(devices);
+        else
+          assert_unreached('Select a supported device.');
+      }, 'Can send and receive feature reports.');
+    </script>
+  </body>
+</html>

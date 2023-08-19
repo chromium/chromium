@@ -73,7 +73,7 @@ source_set("test_support_ui") {
     "//chrome/browser/web_applications",
     "//chrome/browser/web_applications:web_applications_test_support",
     "//chrome/test:test_support_ui",
-    "//components/services/app_service/public/cpp:types",
+    "//components/services/app_service",
     "//content/test:test_support",
     "//testing/gtest",
     "//url",

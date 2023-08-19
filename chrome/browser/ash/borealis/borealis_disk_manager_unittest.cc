@@ -163,8 +163,10 @@ class BorealisDiskManagerTest : public testing::Test,
   std::unique_ptr<TestingProfile> profile_;
   std::unique_ptr<BorealisContext> context_;
   std::unique_ptr<BorealisDiskManagerImpl> disk_manager_;
-  raw_ptr<FreeSpaceProviderMock, ExperimentalAsh> free_space_provider_;
-  raw_ptr<BorealisServiceFake, ExperimentalAsh> service_fake_;
+  raw_ptr<FreeSpaceProviderMock, DanglingUntriaged | ExperimentalAsh>
+      free_space_provider_;
+  raw_ptr<BorealisServiceFake, DanglingUntriaged | ExperimentalAsh>
+      service_fake_;
   std::unique_ptr<testing::NiceMock<BorealisDiskDispatcherMock>>
       mock_dispatcher_;
   std::unique_ptr<BorealisFeatures> borealis_features_;

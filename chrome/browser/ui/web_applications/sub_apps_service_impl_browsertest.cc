@@ -12,17 +12,20 @@
 #include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
+#include "chrome/browser/notifications/notification_display_service_tester.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
+#include "chrome/browser/ui/web_applications/sub_apps_install_dialog_controller.h"
 #include "chrome/browser/ui/web_applications/web_app_controller_browsertest.h"
 #include "chrome/browser/web_applications/test/web_app_install_test_utils.h"
 #include "chrome/browser/web_applications/web_app.h"
+#include "chrome/browser/web_applications/web_app_command_scheduler.h"
 #include "chrome/browser/web_applications/web_app_constants.h"
 #include "chrome/browser/web_applications/web_app_helpers.h"
-#include "chrome/browser/web_applications/web_app_install_finalizer.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/browser/web_applications/web_app_registrar.h"
 #include "chrome/browser/web_applications/web_app_registry_update.h"
+#include "chrome/browser/web_applications/web_app_sync_bridge.h"
 #include "chrome/browser/web_applications/web_app_ui_manager.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/webapps/browser/uninstall_result_code.h"
@@ -69,6 +72,9 @@ constexpr const char kSubAppIdInvalid[] = "/invalid-sub-app-id";
 using RemoveResultsMojo =
     std::vector<blink::mojom::SubAppsServiceRemoveResultPtr>;
 
+using AddResults =
+    std::vector<std::pair<ManifestId, blink::mojom::SubAppsServiceResultCode>>;
+
 // There's one simple end-to-end test that actually calls the JS API interface,
 // the rest test the mojo interface (since the first layer listening to the API
 // calls is almost a direct passthrough to the mojo service).
@@ -78,6 +84,22 @@ using RemoveResultsMojo =
 
 class SubAppsServiceImplBrowserTest : public WebAppControllerBrowserTest {
  public:
+  SubAppsServiceImplBrowserTest()
+      : dialog_override_(
+            SubAppsInstallDialogController::SetAutomaticActionForTesting(
+                SubAppsInstallDialogController::DialogActionForTesting::
+                    kAccept)) {}
+  void SetUpOnMainThread() override {
+    WebAppControllerBrowserTest::SetUpOnMainThread();
+    notification_display_service_ =
+        std::make_unique<NotificationDisplayServiceTester>(profile());
+  }
+
+  void TearDownOnMainThread() override {
+    notification_display_service_.reset();
+    WebAppControllerBrowserTest::TearDownOnMainThread();
+  }
+
   content::RenderFrameHost* render_frame_host(
       content::WebContents* web_contents = nullptr) {
     if (!web_contents) {
@@ -112,7 +134,7 @@ class SubAppsServiceImplBrowserTest : public WebAppControllerBrowserTest {
 
   void UninstallParentAppBySource(WebAppManagement::Type source) {
     base::test::TestFuture<void> uninstall_future;
-    provider().install_finalizer().UninstallExternalWebApp(
+    provider().scheduler().RemoveInstallSource(
         parent_app_id_, source, webapps::WebappUninstallSource::kAppsPage,
         base::BindLambdaForTesting([&](webapps::UninstallResultCode code) {
           EXPECT_EQ(code, webapps::UninstallResultCode::kSuccess);
@@ -135,8 +157,7 @@ class SubAppsServiceImplBrowserTest : public WebAppControllerBrowserTest {
 
   // Calls the Add() method on the mojo interface which is async, and waits for
   // it to finish. Argument should contain paths, not full URLs.
-  SubAppsServiceImpl::AddResults CallAdd(
-      std::vector<std::pair<std::string, std::string>> subapps) {
+  AddResults CallAdd(std::vector<std::pair<std::string, std::string>> subapps) {
     // Convert params to mojo before making the call.
     std::vector<SubAppsServiceAddParametersPtr> sub_apps_mojo;
     for (const auto& [manifest_id_path, install_url_path] : subapps) {
@@ -149,7 +170,7 @@ class SubAppsServiceImplBrowserTest : public WebAppControllerBrowserTest {
     EXPECT_TRUE(future.Wait()) << "Add did not trigger the callback.";
 
     // Unpack the mojo results before returning them.
-    SubAppsServiceImpl::AddResults add_results;
+    AddResults add_results;
     for (const auto& result : future.Take()) {
       add_results.emplace_back(GetURLFromPath(result->manifest_id_path),
                                result->result_code);
@@ -160,7 +181,7 @@ class SubAppsServiceImplBrowserTest : public WebAppControllerBrowserTest {
   void ExpectCallAdd(
       base::flat_set<std::pair<ManifestId, SubAppsServiceResultCode>> expected,
       std::vector<std::pair<std::string, std::string>> subapps) {
-    SubAppsServiceImpl::AddResults actual = CallAdd(subapps);
+    AddResults actual = CallAdd(subapps);
     EXPECT_THAT(actual, testing::UnorderedElementsAreArray(expected));
   }
 
@@ -202,10 +223,21 @@ class SubAppsServiceImplBrowserTest : public WebAppControllerBrowserTest {
     return list;
   }
 
+  bool UninstallNotificationShown() {
+    return notification_display_service_
+        ->GetNotification(SubAppsServiceImpl::kSubAppsUninstallNotificationId)
+        .has_value();
+  }
+
  protected:
   base::test::ScopedFeatureList features_{blink::features::kDesktopPWAsSubApps};
   AppId parent_app_id_;
   mojo::Remote<SubAppsService> remote_;
+  base::AutoReset<
+      absl::optional<SubAppsInstallDialogController::DialogActionForTesting>>
+      dialog_override_;
+  std::unique_ptr<NotificationDisplayServiceTester>
+      notification_display_service_;
 };
 
 /********** End-to-end test (one is enough!). **********/
@@ -462,6 +494,31 @@ IN_PROC_BROWSER_TEST_F(SubAppsServiceImplBrowserTest, AddZero) {
   EXPECT_EQ(0ul, GetAllSubAppIds(parent_app_id_).size());
 }
 
+/******** Tests for the Add API call - dialog behaviour ********/
+
+// Verify that all sub apps are returned with the failure result code when the
+// permissions dialog is declined.
+IN_PROC_BROWSER_TEST_F(SubAppsServiceImplBrowserTest,
+                       DialogNotAcceptedReturnsAllSubApps) {
+  NavigateToParentApp();
+  InstallParentApp();
+  BindRemote();
+
+  auto dialog_override =
+      SubAppsInstallDialogController::SetAutomaticActionForTesting(
+          SubAppsInstallDialogController::DialogActionForTesting::kCancel);
+
+  ExpectCallAdd(
+      {{GetURLFromPath(kSubAppPath), SubAppsServiceResultCode::kFailure},
+       {GetURLFromPath(kSubAppPath2), SubAppsServiceResultCode::kFailure},
+       {GetURLFromPath(kSubAppPath3), SubAppsServiceResultCode::kFailure}},
+      {{kSubAppPath, kSubAppPath},
+       {kSubAppPath2, kSubAppPath2},
+       {kSubAppPath3, kSubAppPath3}});
+
+  EXPECT_EQ(0ul, GetAllSubAppIds(parent_app_id_).size());
+}
+
 /********** Tests for uninstallation behaviour. **********/
 
 // Verify that uninstalling an app with sub-apps causes sub-apps to be
@@ -509,7 +566,7 @@ IN_PROC_BROWSER_TEST_F(SubAppsServiceImplBrowserTest,
 
   // Add another source to the parent app.
   {
-    ScopedRegistryUpdate update(&provider().sync_bridge_unsafe());
+    ScopedRegistryUpdate update = provider().sync_bridge_unsafe().BeginUpdate();
     WebApp* web_app = update->UpdateApp(parent_app_id_);
     ASSERT_TRUE(web_app);
     web_app->AddSource(WebAppManagement::kDefault);
@@ -690,6 +747,7 @@ IN_PROC_BROWSER_TEST_F(SubAppsServiceImplBrowserTest, RemoveOneApp) {
       CallRemove({kSubAppPath}));
   EXPECT_EQ(0ul, GetAllSubAppIds(parent_app_id_).size());
   EXPECT_FALSE(provider().registrar_unsafe().IsInstalled(app_id));
+  EXPECT_TRUE(UninstallNotificationShown());
 }
 
 // Remove works with a list of apps.
@@ -725,6 +783,16 @@ IN_PROC_BROWSER_TEST_F(SubAppsServiceImplBrowserTest, RemoveListOfApps) {
       GenerateAppIdFromManifestId(sub_app_id_1)));
   EXPECT_FALSE(provider().registrar_unsafe().IsInstalled(
       GenerateAppIdFromManifestId(sub_app_id_2)));
+
+  absl::optional<message_center::Notification> uninstall_notification =
+      notification_display_service_->GetNotification(
+          SubAppsServiceImpl::kSubAppsUninstallNotificationId);
+  ASSERT_TRUE(uninstall_notification.has_value());
+  // Confirm the string generated for the notification title mentions the
+  // correct number of uninstalls (i.e. successful uninstalls rather than
+  // the number of requested installs).
+  ASSERT_TRUE(uninstall_notification->title().find(u" 2 "));
+  ASSERT_TRUE(uninstall_notification->never_timeout());
 }
 
 // Calling remove with an empty list doesn't crash.
@@ -744,6 +812,7 @@ IN_PROC_BROWSER_TEST_F(SubAppsServiceImplBrowserTest, RemoveEmptyList) {
   CallRemove({});
   EXPECT_EQ(1ul, GetAllSubAppIds(parent_app_id_).size());
   EXPECT_TRUE(provider().registrar_unsafe().IsInstalled(app_id));
+  EXPECT_FALSE(UninstallNotificationShown());
 }
 
 // Remove fails for a regular installed app.
@@ -758,6 +827,7 @@ IN_PROC_BROWSER_TEST_F(SubAppsServiceImplBrowserTest, RemoveFailRegularApp) {
   EXPECT_EQ(
       SingleRemoveResultMojo(kSubAppPath, SubAppsServiceResultCode::kFailure),
       CallRemove({kSubAppPath}));
+  EXPECT_FALSE(UninstallNotificationShown());
 }
 
 // Remove fails for a sub-app with a different parent_app_id.
@@ -780,6 +850,7 @@ IN_PROC_BROWSER_TEST_F(SubAppsServiceImplBrowserTest, RemoveFailWrongParent) {
   EXPECT_EQ(
       SingleRemoveResultMojo(kSubAppPath2, SubAppsServiceResultCode::kFailure),
       CallRemove({kSubAppPath2}));
+  EXPECT_FALSE(UninstallNotificationShown());
 }
 
 // Remove call returns failure if the calling app isn't installed.
@@ -791,6 +862,7 @@ IN_PROC_BROWSER_TEST_F(SubAppsServiceImplBrowserTest,
   EXPECT_EQ(
       SingleRemoveResultMojo(kSubAppPath, SubAppsServiceResultCode::kFailure),
       CallRemove({kSubAppPath}));
+  EXPECT_FALSE(UninstallNotificationShown());
 }
 
 // Remove call closes the mojo connection if the argument is wrong origin to the
@@ -811,6 +883,7 @@ IN_PROC_BROWSER_TEST_F(SubAppsServiceImplBrowserTest, RemoveFailWrongOrigin) {
                       }));
   ASSERT_TRUE(disconnect_handler_future.Wait())
       << "Disconnect handler not invoked.";
+  EXPECT_FALSE(UninstallNotificationShown());
 }
 
 }  // namespace web_app

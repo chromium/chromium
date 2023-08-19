@@ -1,9 +1,6 @@
 # LLD for Mac builds
 
-Like on most other platforms, Chromium uses the LLD linker on iOS and macOS.
-This is a recent change. If things go well, it will ship in m95,
-but we might discover showstopper bugs that delay things a bit.
-
+Like on other platforms, Chromium uses the LLD linker on iOS and macOS.
 
 ## Background
 
@@ -13,9 +10,9 @@ is the executable file format used on most OSs, including Linux, Android,
 Chrome OS, Fuchsia), and it's faster than other COFF linkers (the executable
 file format on Windows).
 
-LLD is currently 3-4x as fast as ld64, the macOS system linker, at linking
+LLD is currently twice as fast as ld64, the macOS system linker, at linking
 Chromium Framework in symbol\_level=0 release builds, despite ld64 being already
-fast.
+fast. (Before Xcode 14.1, LLD was 6x as fast as ld64.)
 
 LLD has advantages unrelated to speed, too:
 
@@ -47,16 +44,9 @@ different platforms.
 
 ## Current status and known issues
 
-LLD is used by default in almost all build configurations. All
-tests on all bots are passing, both Intel and Arm.
-
-There are a few open issues:
-
-- LLD implements deduplication (aka "ICF"), but we don't yet
-  enable it in arm builds ([bug](https://crbug.com/1253924)).
-- LLD doesn't yet implement call graph profile sort.
-- LTO support in LLD/macOS isn't complete yet, and we don't use LTO
-  on macOS yet for that reason.
+LLD is used by default in all build configurations.
+All tests on all bots are passing, both Intel and Arm.
+Most things even work.
 
 ## Hacking on LLD
 

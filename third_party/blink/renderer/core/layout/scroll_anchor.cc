@@ -7,6 +7,7 @@
 #include <algorithm>
 #include <memory>
 
+#include "base/trace_event/typed_macros.h"
 #include "third_party/blink/renderer/core/css/css_markup.h"
 #include "third_party/blink/renderer/core/css/style_engine.h"
 #include "third_party/blink/renderer/core/display_lock/display_lock_utilities.h"
@@ -84,7 +85,8 @@ static Corner CornerToAnchor(const ScrollableArea* scroller) {
   return Corner::kTopLeft;
 }
 
-static LayoutPoint CornerPointOfRect(LayoutRect rect, Corner which_corner) {
+static PhysicalOffset CornerPointOfRect(const PhysicalRect& rect,
+                                        Corner which_corner) {
   switch (which_corner) {
     case Corner::kTopLeft:
       return rect.MinXMinYCorner();
@@ -92,12 +94,12 @@ static LayoutPoint CornerPointOfRect(LayoutRect rect, Corner which_corner) {
       return rect.MaxXMinYCorner();
   }
   NOTREACHED();
-  return LayoutPoint();
+  return PhysicalOffset();
 }
 
 // Bounds of the LayoutObject relative to the scroller's visible content rect.
-static LayoutRect RelativeBounds(const LayoutObject* layout_object,
-                                 const ScrollableArea* scroller) {
+static PhysicalRect RelativeBounds(const LayoutObject* layout_object,
+                                   const ScrollableArea* scroller) {
   PhysicalRect local_bounds;
   if (const auto* box = DynamicTo<LayoutBox>(layout_object)) {
     local_bounds = box->PhysicalBorderBoxRect();
@@ -120,22 +122,22 @@ static LayoutRect RelativeBounds(const LayoutObject* layout_object,
     NOTREACHED();
   }
 
-  LayoutRect relative_bounds =
-      LayoutRect(scroller
-                     ->LocalToVisibleContentQuad(
-                         gfx::QuadF(gfx::RectF(local_bounds)), layout_object)
-                     .BoundingBox());
+  gfx::RectF relative_bounds =
+      scroller
+          ->LocalToVisibleContentQuad(gfx::QuadF(gfx::RectF(local_bounds)),
+                                      layout_object)
+          .BoundingBox();
 
-  return relative_bounds;
+  return PhysicalRect::FastAndLossyFromRectF(relative_bounds);
 }
 
 static LayoutPoint ComputeRelativeOffset(const LayoutObject* layout_object,
                                          const ScrollableArea* scroller,
                                          Corner corner) {
-  LayoutPoint offset =
+  PhysicalOffset offset =
       CornerPointOfRect(RelativeBounds(layout_object, scroller), corner);
   const LayoutBox* scroller_box = ScrollerLayoutBox(scroller);
-  return scroller_box->FlipForWritingMode(PhysicalOffset(offset));
+  return scroller_box->FlipForWritingMode(offset);
 }
 
 static bool CandidateMayMoveWithScroller(const LayoutObject* candidate,
@@ -282,9 +284,9 @@ static const String ComputeUniqueSelector(Node* anchor_node) {
   return builder.ToString();
 }
 
-static LayoutRect GetVisibleRect(ScrollableArea* scroller) {
+static PhysicalRect GetVisibleRect(ScrollableArea* scroller) {
   auto visible_rect =
-      ScrollerLayoutBox(scroller)->OverflowClipRect(LayoutPoint());
+      ScrollerLayoutBox(scroller)->OverflowClipRect(PhysicalOffset());
 
   const ComputedStyle* style = ScrollerLayoutBox(scroller)->Style();
   visible_rect.ContractEdges(
@@ -318,8 +320,8 @@ ScrollAnchor::ExamineResult ScrollAnchor::Examine(
   if (!CandidateMayMoveWithScroller(candidate, scroller_))
     return ExamineResult(kSkip);
 
-  LayoutRect candidate_rect = RelativeBounds(candidate, scroller_);
-  LayoutRect visible_rect = GetVisibleRect(scroller_);
+  PhysicalRect candidate_rect = RelativeBounds(candidate, scroller_);
+  PhysicalRect visible_rect = GetVisibleRect(scroller_);
 
   bool occupies_space =
       candidate_rect.Width() > 0 && candidate_rect.Height() > 0;
@@ -333,7 +335,7 @@ ScrollAnchor::ExamineResult ScrollAnchor::Examine(
 }
 
 void ScrollAnchor::FindAnchor() {
-  TRACE_EVENT0("blink", "ScrollAnchor::findAnchor");
+  TRACE_EVENT0("blink", "ScrollAnchor::FindAnchor");
 
   bool found_priority_anchor = FindAnchorInPriorityCandidates();
   if (!found_priority_anchor)
@@ -343,6 +345,11 @@ void ScrollAnchor::FindAnchor() {
     anchor_object_->SetIsScrollAnchorObject();
     saved_relative_offset_ =
         ComputeRelativeOffset(anchor_object_, scroller_, corner_);
+    TRACE_EVENT_INSTANT(TRACE_DISABLED_BY_DEFAULT("blink.debug"), "FindAnchor",
+                        "anchor_object_", anchor_object_->DebugName());
+    TRACE_EVENT_INSTANT(TRACE_DISABLED_BY_DEFAULT("blink.debug"), "FindAnchor",
+                        "saved_relative_offset_",
+                        saved_relative_offset_.ToString());
     anchor_is_cv_auto_without_layout_ =
         DisplayLockUtilities::IsAutoWithoutLayout(*anchor_object_);
   }
@@ -464,20 +471,6 @@ ScrollAnchor::WalkStatus ScrollAnchor::FindAnchorInOOFs(
   if (!layout_block)
     return kSkip;
 
-  if (!layout_block->IsLayoutNGObject()) {
-    if (TrackedLayoutBoxLinkedHashSet* positioned_descendants =
-            layout_block->PositionedObjects()) {
-      for (LayoutBox* descendant : *positioned_descendants) {
-        if (descendant->Parent() != candidate) {
-          WalkStatus status = FindAnchorRecursive(descendant);
-          if (IsViable(status))
-            return status;
-        }
-      }
-    }
-    return kSkip;
-  }
-
   // Look for OOF child fragments. If we're at a fragmentation context root,
   // this means that we need to look for them inside the fragmentainers (which
   // are children of fragmentation context root fragments), because then an OOF
@@ -595,7 +588,12 @@ gfx::Vector2d ScrollAnchor::ComputeAdjustment() const {
                             anchor_object_, scroller_, corner_)) -
                         ToRoundedVector2d(saved_relative_offset_);
 
-  LayoutRect anchor_rect = RelativeBounds(anchor_object_, scroller_);
+  PhysicalRect anchor_rect = RelativeBounds(anchor_object_, scroller_);
+  TRACE_EVENT_INSTANT(TRACE_DISABLED_BY_DEFAULT("blink.debug"),
+                      "ComputeAdjustment", "anchor_object_",
+                      anchor_object_->DebugName());
+  TRACE_EVENT_INSTANT(TRACE_DISABLED_BY_DEFAULT("blink.debug"),
+                      "ComputeAdjustment", "delta", delta.ToString());
 
   // Only adjust on the block layout axis.
   const LayoutBox* scroller_box = ScrollerLayoutBox(scroller_);
@@ -608,21 +606,22 @@ gfx::Vector2d ScrollAnchor::ComputeAdjustment() const {
     // See the effect delta would have on the anchor rect.
     // If the anchor is now off-screen (in block direction) then make sure it's
     // just at the edge.
-    anchor_rect.Move(-LayoutSize(delta));
+    anchor_rect.Move(-PhysicalOffset(delta));
     if (scroller_box->IsHorizontalWritingMode()) {
-      if (anchor_rect.MaxY() < 0)
-        delta.set_y(delta.y() + anchor_rect.MaxY().ToInt());
+      if (anchor_rect.Bottom() < 0) {
+        delta.set_y(delta.y() + anchor_rect.Bottom().ToInt());
+      }
     } else {
       // For the flipped blocks writing mode, we need to adjust the offset to
       // align the opposite edge of the block (MaxX edge instead of X edge).
       if (scroller_box->HasFlippedBlocksWritingMode()) {
         auto visible_rect = GetVisibleRect(scroller_);
-        if (anchor_rect.X() > visible_rect.MaxX()) {
+        if (anchor_rect.X() > visible_rect.Right()) {
           delta.set_x(delta.x() -
-                      (anchor_rect.X().ToInt() - visible_rect.MaxX().ToInt()));
+                      (anchor_rect.X().ToInt() - visible_rect.Right().ToInt()));
         }
-      } else if (anchor_rect.MaxX() < 0) {
-        delta.set_x(delta.x() + anchor_rect.MaxX().ToInt());
+      } else if (anchor_rect.Right() < 0) {
+        delta.set_x(delta.x() + anchor_rect.Right().ToInt());
       }
     }
   }
@@ -637,6 +636,8 @@ gfx::Vector2d ScrollAnchor::ComputeAdjustment() const {
 }
 
 void ScrollAnchor::Adjust() {
+  TRACE_EVENT0(TRACE_DISABLED_BY_DEFAULT("blink.debug"),
+               "ScrollAnchor::Adjust");
   if (!queued_)
     return;
   queued_ = false;
@@ -644,6 +645,8 @@ void ScrollAnchor::Adjust() {
   if (!anchor_object_)
     return;
   gfx::Vector2d adjustment = ComputeAdjustment();
+  TRACE_EVENT_INSTANT(TRACE_DISABLED_BY_DEFAULT("blink.debug"), "Adjust",
+                      "adjustment", adjustment.ToString());
 
   // We should pick a new anchor if we had an unlaid-out content-visibility
   // auto. It should have been laid out, so if it is still the best candidate,
@@ -661,15 +664,21 @@ void ScrollAnchor::Adjust() {
     return;
   }
 
-  scroller_->SetScrollOffset(
-      scroller_->GetScrollOffset() + ScrollOffset(adjustment),
-      mojom::blink::ScrollType::kAnchoring);
+  ScrollOffset new_offset =
+      scroller_->GetScrollOffset() + ScrollOffset(adjustment);
+
+  TRACE_EVENT_INSTANT(TRACE_DISABLED_BY_DEFAULT("blink.debug"), "Adjust",
+                      "new_offset", new_offset.ToString());
+
+  scroller_->SetScrollOffset(new_offset, mojom::blink::ScrollType::kAnchoring);
 
   UseCounter::Count(ScrollerLayoutBox(scroller_)->GetDocument(),
                     WebFeature::kScrollAnchored);
 }
 
 bool ScrollAnchor::RestoreAnchor(const SerializedAnchor& serialized_anchor) {
+  TRACE_EVENT0(TRACE_DISABLED_BY_DEFAULT("blink.debug"),
+               "ScrollAnchor::RestoreAnchor");
   if (!scroller_ || !serialized_anchor.IsValid()) {
     return false;
   }
@@ -704,6 +713,9 @@ bool ScrollAnchor::RestoreAnchor(const SerializedAnchor& serialized_anchor) {
     return false;
   }
 
+  TRACE_EVENT_INSTANT(TRACE_DISABLED_BY_DEFAULT("blink.debug"), "RestoreAnchor",
+                      "found_elements_length", found_elements->length());
+
   for (unsigned index = 0; index < found_elements->length(); index++) {
     Element* anchor_element = found_elements->item(index);
     LayoutObject* anchor_object = anchor_element->GetLayoutObject();
@@ -732,6 +744,9 @@ bool ScrollAnchor::RestoreAnchor(const SerializedAnchor& serialized_anchor) {
         ScrollOffset(serialized_anchor.relative_offset.X().ToFloat(),
                      serialized_anchor.relative_offset.Y().ToFloat());
     desired_offset -= delta;
+    TRACE_EVENT_INSTANT(TRACE_DISABLED_BY_DEFAULT("blink.debug"),
+                        "RestoreAnchor", "anchor_object",
+                        anchor_object->DebugName());
     scroller_->SetScrollOffset(desired_offset,
                                mojom::blink::ScrollType::kAnchoring);
     FindAnchor();

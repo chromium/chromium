@@ -11,10 +11,12 @@
 #include "base/functional/callback_forward.h"
 #include "content/common/content_export.h"
 #include "content/public/browser/storage_partition.h"
+#include "content/public/browser/storage_partition_config.h"
 #include "net/cookies/cookie_partition_key_collection.h"
 #include "services/network/public/mojom/clear_data_filter.mojom-forward.h"
 #include "services/network/public/mojom/cookie_manager.mojom.h"
 #include "services/network/public/mojom/network_service.mojom.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/storage_key/storage_key.h"
 
 class GURL;
@@ -24,6 +26,8 @@ class Origin;
 }  // namespace url
 
 namespace content {
+
+class StoragePartitionConfig;
 
 // A class that builds Origin->bool predicates to filter browsing data. These
 // filters can be of two modes - a list of items to delete or a list of items to
@@ -117,10 +121,22 @@ class CONTENT_EXPORT BrowsingDataFilterBuilder {
   // Returns true if we're an empty preserve list, where we delete everything.
   virtual bool MatchesAllOriginsAndDomains() = 0;
 
+  // Returns true if we're an empty delete list, where we delete nothing.
+  virtual bool MatchesNothing() = 0;
+
   // When true, this filter will exclude unpartitioned cookies, i.e. cookies
   // whose partition key is null. By default, the value is false.
   // Partitioned cookies are unaffected by this setting.
   virtual void SetPartitionedStateAllowedOnly(bool value) = 0;
+
+  // When set, only data from the given StoragePartition will be removed.
+  // By default, data from non-default StoragePartitions will not be removed.
+  // This should not be used when removing Profile-scoped data types.
+  virtual void SetStoragePartitionConfig(
+      const StoragePartitionConfig& storage_partition_config) = 0;
+
+  virtual absl::optional<StoragePartitionConfig>
+  GetStoragePartitionConfig() = 0;
 
   // Deprecated: Prefer `BuildStorageKeyFilter()` instead.
   // Builds a filter that matches URLs that are in the list to delete, or aren't

@@ -10,9 +10,8 @@
 #include <string>
 
 #include "ash/strings/grit/ash_strings.h"
+#include "ash/webui/settings/public/constants/routes.mojom-forward.h"
 #include "base/functional/bind.h"
-#include "base/functional/callback.h"
-#include "base/strings/strcat.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/ash/app_list/search/common/icon_constants.h"
@@ -26,7 +25,6 @@
 #include "chrome/browser/ash/app_list/vector_icons/vector_icons.h"
 #include "chrome/browser/ui/webui/settings/ash/calculator/size_calculator.h"
 #include "chrome/browser/ui/webui/settings/ash/device_storage_util.h"
-#include "chrome/browser/ui/webui/settings/chromeos/constants/routes.mojom-forward.h"
 #include "chrome/common/channel_info.h"
 #include "chrome/grit/generated_resources.h"
 #include "chromeos/ash/components/string_matching/fuzzy_tokenized_string_match.h"
@@ -56,7 +54,7 @@ using ::chromeos::settings::mojom::kAboutChromeOsSectionPath;
 using ::chromeos::settings::mojom::kStorageSubpagePath;
 using AnswerCardInfo = ::ash::SystemInfoAnswerCardData;
 
-constexpr double kRelevanceThreshold = 0.64;
+constexpr double kRelevanceThreshold = 0.79;
 
 double ConvertKBtoBytes(uint32_t amount) {
   return static_cast<double>(amount) * 1024;
@@ -206,15 +204,23 @@ void SystemInfoCardProvider::OnMemoryUsageUpdated(bool create_result,
       l10n_util::GetStringFUTF16(IDS_ASH_MEMORY_USAGE_IN_LAUNCHER_DESCRIPTION,
                                  available_memory_gb, total_memory_gb);
 
+  std::u16string accessibility_label_details = l10n_util::GetStringFUTF16(
+      IDS_ASH_MEMORY_USAGE_IN_LAUNCHER_ACCESSIBILITY_LABEL, available_memory_gb,
+      total_memory_gb);
+
   if (create_result) {
     AnswerCardInfo answer_card_info(memory_usage_percentage);
+    // The bar chart will turn red if there is less than 10% of memory free.
+    answer_card_info.SetUpperLimitForBarChart(90);
     SearchProvider::Results new_results;
     DCHECK(memory_timer_);
     new_results.emplace_back(std::make_unique<MemoryAnswerResult>(
-        profile_, last_query_, /*url_path=*/"", diagnostics_icon_, relevance_,
-        /*title=*/u"", description,
+        profile_, last_query_, /*url_path=*/base::EmptyString(),
+        diagnostics_icon_, relevance_,
+        /*title=*/base::EmptyString16(), description,
+        accessibility_label_details,
         SystemInfoAnswerResult::SystemInfoCategory::kDiagnostics,
-        answer_card_info,
+        SystemInfoAnswerResult::SystemInfoCardType::kMemory, answer_card_info,
         base::BindRepeating(&SystemInfoCardProvider::UpdateMemoryUsage,
                             weak_factory_.GetWeakPtr()),
         std::move(memory_timer_), this));
@@ -222,7 +228,8 @@ void SystemInfoCardProvider::OnMemoryUsageUpdated(bool create_result,
     memory_timer_ = std::make_unique<base::RepeatingTimer>();
   } else {
     for (auto& observer : memory_observers_) {
-      observer.OnMemoryUpdated(memory_usage_percentage, description);
+      observer.OnMemoryUpdated(memory_usage_percentage, description,
+                               accessibility_label_details);
     }
   }
 }
@@ -277,17 +284,21 @@ void SystemInfoCardProvider::OnCpuUsageUpdated(bool create_result,
   PopulateAverageScaledClockSpeed(*cpu_info, *new_cpu_usage.get());
 
   previous_cpu_usage_data_ = new_cpu_usage_data;
+  std::u16string cpu_temp =
+      base::NumberToString16(new_cpu_usage->GetAverageCpuTempCelsius());
+  // Provide the frequency in GHz and round the value to 2 decimal places.
+  std::u16string cpu_speed = base::NumberToString16(
+      static_cast<double>(
+          new_cpu_usage->GetScalingAverageCurrentFrequencyKhz() / 10000) /
+      100);
   std::u16string title =
       l10n_util::GetStringFUTF16(IDS_ASH_CPU_IN_LAUNCHER_TITLE,
                                  new_cpu_usage->GetPercentUsageTotalString());
   std::u16string description = l10n_util::GetStringFUTF16(
-      IDS_ASH_CPU_IN_LAUNCHER_DESCRIPTION,
-      base::NumberToString16(new_cpu_usage->GetAverageCpuTempCelsius()),
-      // Provide the frequency in GHz and round the value to 2 decimal places.
-      base::NumberToString16(
-          static_cast<double>(
-              new_cpu_usage->GetScalingAverageCurrentFrequencyKhz() / 10000) /
-          100));
+      IDS_ASH_CPU_IN_LAUNCHER_DESCRIPTION, cpu_temp, cpu_speed);
+  std::u16string accessibility_label_details = l10n_util::GetStringFUTF16(
+      IDS_ASH_CPU_IN_LAUNCHER_ACCESSIBILITY_LABEL,
+      new_cpu_usage->GetPercentUsageTotalString(), cpu_temp, cpu_speed);
 
   if (create_result) {
     AnswerCardInfo answer_card_info(
@@ -295,10 +306,11 @@ void SystemInfoCardProvider::OnCpuUsageUpdated(bool create_result,
     SearchProvider::Results new_results;
     DCHECK(cpu_usage_timer_);
     new_results.emplace_back(std::make_unique<CpuAnswerResult>(
-        profile_, last_query_, /*url_path=*/"", diagnostics_icon_, relevance_,
-        title, description,
+        profile_, last_query_, /*url_path=*/base::EmptyString(),
+        diagnostics_icon_, relevance_, title, description,
+        accessibility_label_details,
         SystemInfoAnswerResult::SystemInfoCategory::kDiagnostics,
-        answer_card_info,
+        SystemInfoAnswerResult::SystemInfoCardType::kCPU, answer_card_info,
         base::BindRepeating(&SystemInfoCardProvider::UpdateCpuUsage,
                             weak_factory_.GetWeakPtr()),
         std::move(cpu_usage_timer_), this));
@@ -306,7 +318,8 @@ void SystemInfoCardProvider::OnCpuUsageUpdated(bool create_result,
     cpu_usage_timer_ = std::make_unique<base::RepeatingTimer>();
   } else {
     for (auto& observer : cpu_observers_) {
-      observer.OnCpuDataUpdated(title, description);
+      observer.OnCpuDataUpdated(title, description,
+                                accessibility_label_details);
     }
   }
 }
@@ -356,18 +369,34 @@ void SystemInfoCardProvider::OnBatteryInfoUpdated(
 
   PopulatePowerStatus(proto.value(), *new_battery_health.get());
 
-  std::u16string description = l10n_util::GetStringFUTF16(
-      IDS_ASH_BATTERY_STATUS_IN_LAUNCHER_DESCRIPTION,
+  std::u16string battery_health_info = l10n_util::GetStringFUTF16(
+      IDS_ASH_BATTERY_STATUS_IN_LAUNCHER_DESCRIPTION_RIGHT,
       base::NumberToString16(new_battery_health->GetBatteryWearPercentage()),
       base::NumberToString16(new_battery_health->GetCycleCount()));
 
+  std::u16string accessibility_extra_details = l10n_util::GetStringFUTF16(
+      IDS_ASH_BATTERY_STATUS_IN_LAUNCHER_EXTRA_DETAILS_ACCESSIBILITY_LABEL,
+      base::NumberToString16(new_battery_health->GetBatteryWearPercentage()),
+      base::NumberToString16(new_battery_health->GetCycleCount()));
+
+  std::u16string accessibility_label_details =
+      base::JoinString({new_battery_health->GetAccessibilityLabel(),
+                        accessibility_extra_details},
+                       u". ");
+
   AnswerCardInfo answer_card_info(new_battery_health->GetBatteryPercentage());
+  // The bar chart will turn red if there is less than 20 of battery
+  // charge left.
+  answer_card_info.SetLowerLimitForBarChart(20);
+  answer_card_info.SetExtraDetails(battery_health_info);
   SearchProvider::Results new_results;
   new_results.emplace_back(std::make_unique<BatteryAnswerResult>(
-      profile_, last_query_, /*url_path=*/"", diagnostics_icon_, relevance_,
-      new_battery_health->GetPowerTime(), description,
+      profile_, last_query_, /*url_path=*/base::EmptyString(),
+      diagnostics_icon_, relevance_,
+      /*title=*/base::EmptyString16(), new_battery_health->GetPowerTime(),
+      accessibility_label_details,
       SystemInfoAnswerResult::SystemInfoCategory::kDiagnostics,
-      answer_card_info));
+      SystemInfoAnswerResult::SystemInfoCardType::kBattery, answer_card_info));
   SwapResults(&new_results);
 
   battery_health_ = std::move(new_battery_health);
@@ -381,22 +410,26 @@ void SystemInfoCardProvider::UpdateChromeOsVersion() {
                                       : IDS_VERSION_UI_UNOFFICIAL);
   std::u16string processor_variation = l10n_util::GetStringUTF16(
       sizeof(void*) == 8 ? IDS_VERSION_UI_64BIT : IDS_VERSION_UI_32BIT);
+  std::u16string channel_name = base::UTF8ToUTF16(
+      chrome::GetChannelName(chrome::WithExtendedStable(true)));
 
   std::u16string version_string = l10n_util::GetStringFUTF16(
-      IDS_ASH_VERSION_IN_LAUNCHER_MESSAGE, version, is_official,
-      base::UTF8ToUTF16(
-          chrome::GetChannelName(chrome::WithExtendedStable(true))),
+      IDS_ASH_VERSION_IN_LAUNCHER_MESSAGE, version, is_official, channel_name,
       processor_variation);
   std::u16string description =
-      l10n_util::GetStringUTF16(IDS_SETTINGS_ABOUT_PAGE_CHECK_FOR_UPDATES);
+      l10n_util::GetStringUTF16(IDS_ASH_VERSION_IN_LAUNCHER_DESCRIPTION);
+  std::u16string accessibility_label_details = l10n_util::GetStringFUTF16(
+      IDS_ASH_VERSION_IN_LAUNCHER_ACCESSIBILITY_LABEL, version, is_official,
+      channel_name, processor_variation);
 
   AnswerCardInfo answer_card_info(
       ash::SystemInfoAnswerCardDisplayType::kTextCard);
   SearchProvider::Results new_results;
   new_results.emplace_back(std::make_unique<SystemInfoAnswerResult>(
       profile_, last_query_, kAboutChromeOsSectionPath, os_settings_icon_,
-      relevance_, version_string, description,
-      SystemInfoAnswerResult::SystemInfoCategory::kSettings, answer_card_info));
+      relevance_, version_string, description, accessibility_label_details,
+      SystemInfoAnswerResult::SystemInfoCategory::kSettings,
+      SystemInfoAnswerResult::SystemInfoCardType::kVersion, answer_card_info));
   SwapResults(&new_results);
 }
 
@@ -471,30 +504,6 @@ void SystemInfoCardProvider::OnStorageInfoUpdated() {
     NOTREACHED() << "Unable to retrieve total or available disk space";
     return;
   }
-
-  int64_t system_bytes = 0;
-  for (int i = 0; i < SizeCalculator::kCalculationTypeCount; ++i) {
-    const int64_t total_bytes_for_current_item =
-        std::max(storage_items_total_bytes_[i], static_cast<int64_t>(0));
-    // The total amount of disk space counts positively towards system's size.
-    if (i == static_cast<int>(SizeCalculator::CalculationType::kTotal)) {
-      if (total_bytes_for_current_item <= 0) {
-        return;
-      }
-      system_bytes += total_bytes_for_current_item;
-      continue;
-    }
-    // All other items are subtracted from the total amount of disk space.
-    if (i == static_cast<int>(SizeCalculator::CalculationType::kAvailable) &&
-        total_bytes_for_current_item < 0) {
-      return;
-    }
-    system_bytes -= total_bytes_for_current_item;
-  }
-  const int system_space_index =
-      static_cast<int>(SizeCalculator::CalculationType::kSystem);
-  storage_items_total_bytes_[system_space_index] = system_bytes;
-
   CreateStorageAnswerCard();
 }
 
@@ -508,40 +517,20 @@ void SystemInfoCardProvider::CreateStorageAnswerCard() {
   int64_t in_use_bytes = total_bytes - available_bytes;
   std::u16string in_use_size = ui::FormatBytes(in_use_bytes);
   std::u16string total_size = ui::FormatBytes(total_bytes);
-  std::u16string title = l10n_util::GetStringFUTF16(
-      IDS_ASH_STORAGE_STATUS_IN_LAUNCHER_TITLE, in_use_size, total_size);
-  std::map<ash::SearchResultSystemInfoStorageType, int64_t>
-      storage_type_to_size = {
-          {ash::SearchResultSystemInfoStorageType::kMyFiles,
-           storage_items_total_bytes_[static_cast<int>(
-               SizeCalculator::CalculationType::kMyFiles)]},
-          {ash::SearchResultSystemInfoStorageType::kDriveOfflineFiles,
-           storage_items_total_bytes_[static_cast<int>(
-               SizeCalculator::CalculationType::kDriveOfflineFiles)]},
-          {ash::SearchResultSystemInfoStorageType::kBrowsingData,
-           storage_items_total_bytes_[static_cast<int>(
-               SizeCalculator::CalculationType::kBrowsingData)]},
-          {ash::SearchResultSystemInfoStorageType::kAppsExtensions,
-           storage_items_total_bytes_[static_cast<int>(
-               SizeCalculator::CalculationType::kAppsExtensions)]},
-          {ash::SearchResultSystemInfoStorageType::kCrostini,
-           storage_items_total_bytes_[static_cast<int>(
-               SizeCalculator::CalculationType::kCrostini)]},
-          {ash::SearchResultSystemInfoStorageType::kOtherUsers,
-           storage_items_total_bytes_[static_cast<int>(
-               SizeCalculator::CalculationType::kOtherUsers)]},
-          {ash::SearchResultSystemInfoStorageType::kSystem,
-           storage_items_total_bytes_[static_cast<int>(
-               SizeCalculator::CalculationType::kSystem)]},
-          {ash::SearchResultSystemInfoStorageType::kTotal, total_bytes}};
+  std::u16string description = l10n_util::GetStringFUTF16(
+      IDS_ASH_STORAGE_STATUS_IN_LAUNCHER_DESCRIPTION, in_use_size, total_size);
 
-  AnswerCardInfo answer_card_info(storage_type_to_size);
+  std::u16string accessibility_label_details = l10n_util::GetStringFUTF16(
+      IDS_ASH_STORAGE_STATUS_IN_LAUNCHER_ACCESSIBILITY_LABEL, in_use_size,
+      total_size);
+
+  AnswerCardInfo answer_card_info(in_use_bytes * 100 / total_bytes);
   SearchProvider::Results new_results;
   new_results.emplace_back(std::make_unique<SystemInfoAnswerResult>(
       profile_, last_query_, kStorageSubpagePath, os_settings_icon_, relevance_,
-      title,
-      /*description=*/u"",
-      SystemInfoAnswerResult::SystemInfoCategory::kSettings, answer_card_info));
+      /*title=*/base::EmptyString16(), description, accessibility_label_details,
+      SystemInfoAnswerResult::SystemInfoCategory::kSettings,
+      SystemInfoAnswerResult::SystemInfoCardType::kStorage, answer_card_info));
   SwapResults(&new_results);
 }
 

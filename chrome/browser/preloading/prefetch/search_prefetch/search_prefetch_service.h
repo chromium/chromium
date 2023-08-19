@@ -212,6 +212,12 @@ class SearchPrefetchService : public KeyedService,
   // Fires all timers.
   void FireAllExpiryTimerForTesting();
 
+  // For a given `canonical_search_url`, tells its corresponding
+  // StreamingSearchPrefetchURLLoader to run the callback upon destruction.
+  void SetLoaderDestructionCallbackForTesting(
+      const GURL& canonical_search_url,
+      base::OnceClosure streaming_url_loader_destruction_callback);
+
  private:
   // Returns whether the prefetch started or not.
   bool MaybePrefetchURL(const GURL& url,

@@ -14,6 +14,10 @@
 - (void)tabsSettingsTableViewControllerDidSelectInactiveTabsSettings:
     (TabsSettingsTableViewController*)tabsSettingsTableViewController;
 
+// Tells to the model to handle logic and navigation for tab pickup settings.
+- (void)tabsSettingsTableViewControllerDidSelectTabPickupSettings:
+    (TabsSettingsTableViewController*)tabsSettingsTableViewController;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_UI_SETTINGS_TABS_TABS_SETTINGS_TABLE_VIEW_CONTROLLER_DELEGATE_H_

@@ -19,8 +19,7 @@ class HighEfficiencyBubbleDelegate : public ui::DialogModelDelegate {
                                         HighEfficiencyBubbleObserver* observer);
 
   void OnSettingsClicked();
-
-  void OnAddSiteToExclusionListButtonClicked();
+  void OnAddSiteToExceptionsListClicked();
 
   void OnDialogDestroy();
 

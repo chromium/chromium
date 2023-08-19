@@ -81,6 +81,7 @@ if (is_android) {
       "//third_party/androidx:androidx_core_core_java",
     ]
 
+    srcjar_deps = [ ":jni_headers" ]
     sources = [
       "android/java/src/org/chromium/chrome/browser/thumbnail/generator/ThumbnailDiskStorage.java",
       "android/java/src/org/chromium/chrome/browser/thumbnail/generator/ThumbnailGenerator.java",
@@ -89,8 +90,6 @@ if (is_android) {
       "android/java/src/org/chromium/chrome/browser/thumbnail/generator/ThumbnailProviderImpl.java",
       "android/java/src/org/chromium/chrome/browser/thumbnail/generator/ThumbnailStorageDelegate.java",
     ]
-
-    annotation_processor_deps = [ "//base/android/jni_generator:jni_processor" ]
   }
 
   generate_jni("jni_headers") {
@@ -169,6 +168,7 @@ if (is_android) {
   android_library("generator_java_test_support") {
     testonly = true
 
+    srcjar_deps = [ ":test_support_jni_headers" ]
     sources = [
       "android/java/src/org/chromium/chrome/browser/thumbnail/generator/ThumbnailMediaData.java",
       "android/java/src/org/chromium/chrome/browser/thumbnail/generator/ThumbnailMediaParserBridge.java",
@@ -180,8 +180,6 @@ if (is_android) {
       "//base:jni_java",
       "//build/android:build_java",
     ]
-
-    annotation_processor_deps = [ "//base/android/jni_generator:jni_processor" ]
   }
 
   source_set("test_support") {

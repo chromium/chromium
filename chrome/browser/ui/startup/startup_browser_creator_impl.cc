@@ -127,7 +127,7 @@ bool ShouldRestoreApps(bool is_post_restart, Profile* profile) {
   return is_post_restart ||
          (primary_user_profile &&
           BrowserLauncher::GetForProfile(primary_user_profile)
-              ->is_launching_for_full_restore());
+              ->is_launching_for_last_opened_profiles());
 #else
   return is_post_restart;
 #endif
@@ -273,6 +273,7 @@ Browser* StartupBrowserCreatorImpl::OpenTabsInBrowser(
   }
 
   bool first_tab = true;
+  bool process_headless_commands = headless::ShouldProcessHeadlessCommands();
   custom_handlers::ProtocolHandlerRegistry* registry =
       profile_ ? ProtocolHandlerRegistryFactory::GetForBrowserContext(profile_)
                : nullptr;
@@ -298,6 +299,22 @@ Browser* StartupBrowserCreatorImpl::OpenTabsInBrowser(
       continue;
     }
 
+    // Headless mode is restricted to only one url in the command line, so
+    // just grab the first one assuming it's the target.
+    if (first_tab && process_headless_commands) {
+      headless::ProcessHeadlessCommands(
+          profile_, tab.url,
+          base::BindOnce(
+              [](base::WeakPtr<Browser> browser,
+                 headless::HeadlessCommandHandler::Result result) {
+                if (browser && browser->window()) {
+                  browser->window()->Close();
+                }
+              },
+              browser->AsWeakPtr()));
+      continue;
+    }
+
     int add_types = first_tab ? AddTabTypes::ADD_ACTIVE : AddTabTypes::ADD_NONE;
     add_types |= AddTabTypes::ADD_FORCE_INDEX;
     if (tab.type == StartupTab::Type::kPinned)
@@ -319,29 +336,13 @@ Browser* StartupBrowserCreatorImpl::OpenTabsInBrowser(
     Navigate(&params);
     first_tab = false;
   }
-  if (!browser->tab_strip_model()->GetActiveWebContents()) {
+  if (!browser->tab_strip_model()->GetActiveWebContents() &&
+      !process_headless_commands) {
     // TODO(sky): this is a work around for 110909. Figure out why it's needed.
     if (!browser->tab_strip_model()->count())
       chrome::AddTabAt(browser, GURL(), -1, true);
     else
       browser->tab_strip_model()->ActivateTabAt(0);
-  }
-
-  if (headless::ShouldProcessHeadlessCommands()) {
-    // Headless mode is restricted to only one url in the command line, so
-    // just grab the actave tab assuming it's the target.
-    content::WebContents* web_contents =
-        browser->tab_strip_model()->GetActiveWebContents();
-    if (web_contents) {
-      headless::ProcessHeadlessCommands(profile_, web_contents->GetVisibleURL(),
-                                        base::BindOnce(
-                                            [](base::WeakPtr<Browser> browser) {
-                                              if (browser->window()) {
-                                                browser->window()->Close();
-                                              }
-                                            },
-                                            browser->AsWeakPtr()));
-    }
   }
 
   browser->window()->Show();

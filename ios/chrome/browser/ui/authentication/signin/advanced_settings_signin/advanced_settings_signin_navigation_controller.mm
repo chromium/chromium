@@ -4,14 +4,11 @@
 
 #import "ios/chrome/browser/ui/authentication/signin/advanced_settings_signin/advanced_settings_signin_navigation_controller.h"
 
+#import "base/check.h"
 #import "ios/chrome/browser/ui/authentication/signin/advanced_settings_signin/advanced_settings_signin_constants.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ui/base/l10n/l10n_util_mac.h"
-
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
 
 using l10n_util::GetNSString;
 
@@ -56,7 +53,7 @@ using l10n_util::GetNSString;
 // sync preferences chosen by the user, closes the completion
 // callback and closes the advanced sign-in settings.
 - (void)onNavigationDoneButton {
-  [self.navigationDelegate navigationDoneButtonWasTapped];
+  [self.navigationDelegate navigationDoneButtonWasTapped:self];
 }
 
 @end

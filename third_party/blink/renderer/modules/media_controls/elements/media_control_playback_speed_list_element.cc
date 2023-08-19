@@ -165,8 +165,8 @@ Element* MediaControlPlaybackSpeedListElement::CreatePlaybackSpeedListItem(
       MakeGarbageCollected<HTMLLabelElement>(GetDocument());
   playback_speed_item->SetShadowPseudoId(
       AtomicString("-internal-media-controls-playback-speed-list-item"));
-  auto* playback_speed_item_input = MakeGarbageCollected<HTMLInputElement>(
-      GetDocument(), CreateElementFlags());
+  auto* playback_speed_item_input =
+      MakeGarbageCollected<HTMLInputElement>(GetDocument());
   playback_speed_item_input->SetShadowPseudoId(
       AtomicString("-internal-media-controls-playback-speed-list-item-input"));
   playback_speed_item_input->setAttribute(html_names::kAriaHiddenAttr,

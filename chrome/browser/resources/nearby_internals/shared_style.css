@@ -12,6 +12,7 @@
   cursor: default;
   font-family: monospace;
   font-size: 12px;
+  --standard-border: 1px solid black;
 }
 
 .internals-button {
@@ -19,4 +20,81 @@
   color: white;
   font-family: Roboto;
   margin: 5px;
+}
+
+.flex {
+  flex: 1;
+}
+
+html, body {
+  width: 100%;
+  height: 100%;
+  margin: 0;
+  padding: 0;
+  overflow: hidden;
+  font-family: "Roboto", sans-serif;
+  display: flex;
+  flex-direction: row;
+}
+
+header {
+  min-height: 50px;
+  font-size: 24px;
+  background-color: #069BDE;
+  display: flex;
+  padding: 0 20px;
+  color: #f4f4f4;
+  text-align: center;
+  align-items: center;
+  border-bottom: 1px solid rgba(0,0,0,0.12);
+}
+
+.hidden {
+  display: none;
+}
+
+/** CSS for controls panel */
+#controls, #logs {
+  width: 50%;
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+
+.logo {
+  font-size: 30px;
+  margin-right: 12px;
+}
+
+#controls-panel {
+  padding: 40px;
+}
+
+.control {
+  margin: 5px;
+  padding: 20px;
+  box-shadow: 0 3px 10px 0 rgba(0, 0, 0, 0.2),
+              0 3px 10px 0 rgba(0, 0, 0, 0.2),
+              4px 4px 6px 0 rgba(0, 0, 0, 0.5)
+}
+
+.control-title {
+  font-size: 18px;
+  font-weight: bold;
+  margin-bottom: 5px;
+}
+
+#actions {
+  display: flex;
+  flex-direction: row;
+}
+
+/** CSS for logs panel */
+#logs-panel {
+  width: 50%;
+  height: 100%;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  border-left: 1px solid rgba(0,0,0,0.12);
 }

@@ -21,6 +21,8 @@ class AwPermissionRequestDelegate;
 // The specific permission request should implement the
 // AwPermissionRequestDelegate interface, See MediaPermissionRequest.
 // This object is owned by the java peer.
+//
+// Lifetime: Temporary
 class AwPermissionRequest {
  public:
   // GENERATED_JAVA_ENUM_PACKAGE: org.chromium.android_webview.permission

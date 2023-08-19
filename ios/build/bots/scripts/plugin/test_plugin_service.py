@@ -14,7 +14,7 @@ import sys
 if os.path.split(os.path.dirname(__file__))[1] != 'plugin':
   sys.path.append(
       os.path.join(os.path.abspath(os.path.dirname(__file__)), 'plugin'))
-from plugin_constants import PLUGIN_PROTOS_PATH, PLUGIN_SERVICE_WORKER_COUNT, PLUGIN_SERVICE_ADDRESS
+from plugin_constants import PLUGIN_PROTOS_PATH, PLUGIN_SERVICE_WORKER_COUNT, PLUGIN_SERVICE_ADDRESS, PLUGIN_PROXY_SERVICE_PORT, REMOTE_PLUGIN_PROXY_PORT
 
 sys.path.append(PLUGIN_PROTOS_PATH)
 import test_plugin_service_pb2
@@ -34,8 +34,8 @@ class TestPluginServicer(test_plugin_service_pb2_grpc.TestPluginServiceServicer
 
     Args:
       enabled_plugins: a list of initialized plugins to be used during
-      different lifecycle stages of test execution. See the list of available
-      test plugins in test_plugins.py
+        different lifecycle stages of test execution. See the list of
+        available test plugins in test_plugins.py
 
     """
     self.plugins = enabled_plugins
@@ -61,6 +61,13 @@ class TestPluginServicer(test_plugin_service_pb2_grpc.TestPluginServiceServicer
       plugin.test_case_did_fail(request)
     return test_plugin_service_pb2.TestCaseDidFailResponse()
 
+  def TestBundleWillFinish(self, request, context):
+    """ Executes plugin tasks when a test bundle is about to finish"""
+    LOGGER.info('Received request for TestBundleWillFinish %s', request)
+    for plugin in self.plugins:
+      plugin.test_bundle_will_finish(request)
+    return test_plugin_service_pb2.TestBundleWillFinishResponse()
+
   def ListEnabledPlugins(self, request, context):
     """ Returns the list of enabled plugins """
     LOGGER.info('Received request for ListEnabledPlugins %s', request)
@@ -85,16 +92,19 @@ class TestPluginServicerWrapper:
   managing the plugin service such as start, tear_down, etc...
   """
 
-  def __init__(self, servicer):
+  def __init__(self, servicer, device_proxy=None):
     """Initializes a new instance of this class.
 
     Args:
       servicer: an initialized test plugin service above
+      device_proxy: default to be none. Pass in an instance of
+        PluginServiceProxyWrapper if the test is running on physical device.
 
     """
     self.servicer = servicer
     self.server = grpc.server(
         futures.ThreadPoolExecutor(max_workers=PLUGIN_SERVICE_WORKER_COUNT))
+    self.device_proxy = device_proxy
 
   def start_server(self):
     """ Starts a test plugin service, so it can receive gRPC requests """
@@ -104,6 +114,10 @@ class TestPluginServicerWrapper:
     self.server.add_insecure_port(PLUGIN_SERVICE_ADDRESS)
     self.server.start()
     LOGGER.info('Test plugin server is running!')
+
+    if self.device_proxy:
+      self.device_proxy.start()
+      LOGGER.info('Test plugin proxy server is running!')
 
   def wait_for_termination(self):
     """ Block current thread until the test plugin service stops """
@@ -115,11 +129,17 @@ class TestPluginServicerWrapper:
     self.reset()
     self.server.stop(grace=None)
 
+    if self.device_proxy:
+      self.device_proxy.tear_down()
+
   def reset(self):
     """ Resets the test plugin service. This might be useful between
     each attempt of test runs """
     LOGGER.info('Resetting plugin service')
     self.servicer.reset()
+
+    if self.device_proxy:
+      self.device_proxy.reset()
 
 
 # for testing purpose only when running locally

@@ -3,8 +3,6 @@
 <translationbundle lang="az">
 <translation id="1075622780330595106"><ph name="NUMBER_OF_TABS" /> tab son zamanlarda istifadə edilməyib. Onlar bağlansın?</translation>
 <translation id="125153950246128346">Başqa taba baxmaq üçün klikləyin</translation>
-<translation id="1403228085774130835">Qapalı tablarınızı Chrome əsas menyusunda Son tablarda tapa bilərsiniz</translation>
-<translation id="1455506303394048917">Incognito tablarındakı fəaliyyətiniz bu cihazdan silinəcək</translation>
 <translation id="1499635324672558517">Bütün Incognito tabları qapadılsın?</translation>
 <translation id="1657719826150349398">Tabı aşağıya daşıyın</translation>
 <translation id="1869137256605757565">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> tab}other{<ph name="TABS_COUNT_MANY" /> tab}}</translation>
@@ -47,6 +45,7 @@
 <translation id="5073204694187207510">Tam ekran cədvəlini gizlədin</translation>
 <translation id="5076161749301278626">Mağaza rəyləri göstərilsin?</translation>
 <translation id="5082793167783849073">Qruplaşdırmaqla səhifələri asanlıqla müqayisə edin. Başlamaq üçün linkə toxunub saxlayın.</translation>
+<translation id="5339733443032484186">Son tab</translation>
 <translation id="5490235265819901748">Tab qrupu genişləndirildi</translation>
 <translation id="5494920125229734069">Hamısını seçin</translation>
 <translation id="5556417849629758491">Mağaza məlumatlarına baxın, seçim ekranın yuxarı hissəsində əlçatandır</translation>
@@ -62,10 +61,12 @@
 <translation id="6228793724645064692">(mağaza reytinqi)</translation>
 <translation id="6333260925957816943">Bu mağaza haqqında məlumatlar</translation>
 <translation id="639823877092900621">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> seçilmiş tabı ayırın}other{<ph name="TABS_COUNT_MANY" /> seçilmiş tabı ayırın}}</translation>
+<translation id="6421412308143682486">{INCOGNITO_TABS_COUNT,plural, =1{Bağlı tablar Chrome əsas menyusunda Son tablarda olur. Anonim tab əlçatan olmayacaq.}other{Bağlı tablar Chrome əsas menyusunda Son tablarda olur. # anonim tab əlçatan olmayacaq.}}</translation>
 <translation id="6422650314852876533">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> tab}other{<ph name="TABS_COUNT_MANY" /> tab}}</translation>
 <translation id="6549021453810473782">Mağaza məlumatlarına baxın</translation>
 <translation id="6562820390860419811">Tabı sola daşıyın</translation>
 <translation id="6615455863669487791">Mənə göstərin</translation>
+<translation id="661742612106409204">Bağlı tablar Chrome əsas menyusunda Son tablarda olur.</translation>
 <translation id="6840760312327750441">Panelləri qruplaşdırmaq üçün panelə toxunub saxlayın. Daha sonra digər panelin üzərinə çəkin.</translation>
 <translation id="6856809498882026482">Çoxsaylı seçim rejimini gizlədin</translation>
 <translation id="7100731960740376323">{TABS_COUNT,plural, =1{Tabı paylaşın}other{Tabları paylaşın}}</translation>

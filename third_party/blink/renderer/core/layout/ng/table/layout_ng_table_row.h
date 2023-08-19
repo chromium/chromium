@@ -34,11 +34,6 @@ class CORE_EXPORT LayoutNGTableRow : public LayoutNGBlock {
 
   // LayoutBlock methods start.
 
-  void UpdateBlockLayout() override {
-    NOT_DESTROYED();
-    NOTREACHED();
-  }
-
   const char* GetName() const override {
     NOT_DESTROYED();
     return "LayoutNGTableRow";

@@ -265,7 +265,8 @@ class NET_EXPORT_PRIVATE TransportClientSocketPool
   // SSLClientContext::Observer methods.
   void OnSSLConfigChanged(
       SSLClientContext::SSLConfigChangeType change_type) override;
-  void OnSSLConfigForServerChanged(const HostPortPair& server) override;
+  void OnSSLConfigForServersChanged(
+      const base::flat_set<HostPortPair>& servers) override;
 
  private:
   // Entry for a persistent socket which became idle at time |start_time|.

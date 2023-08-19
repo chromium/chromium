@@ -40,4 +40,12 @@ SaveCardFailureBubbleViews::CreateMainContentView() {
   return main_view;
 }
 
+void SaveCardFailureBubbleViews::Init() {
+  SaveCardBubbleViews::Init();
+  gfx::Insets parent_margin = margins();
+  set_margins(
+      parent_margin.set_bottom(ChromeLayoutProvider::Get()->GetDistanceMetric(
+          views::DISTANCE_DIALOG_CONTENT_MARGIN_BOTTOM_TEXT)));
+}
+
 }  // namespace autofill

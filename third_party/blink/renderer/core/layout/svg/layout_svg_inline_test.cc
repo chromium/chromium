@@ -22,4 +22,20 @@ TEST_F(LayoutSVGInlineTest, IsChildAllowed) {
   EXPECT_FALSE(a->SlowFirstChild());
 }
 
+TEST_F(LayoutSVGInlineTest, LocalToAncestorPoint) {
+  SetBodyInnerHTML(R"HTML(
+<style>body { margin:0; }</style>
+<div style="height:3px"></div>
+<svg width="200" height="100">
+<text>
+<tspan id="container">abc<a id="target">foo</a></tspan>
+</text>
+</svg>)HTML");
+  LayoutObject* target = GetLayoutObjectByElementId("target");
+  LayoutSVGInline* container =
+      To<LayoutSVGInline>(GetLayoutObjectByElementId("container"));
+  EXPECT_NE(target->LocalToAbsolutePoint(PhysicalOffset()),
+            target->LocalToAncestorPoint(PhysicalOffset(), container));
+}
+
 }  // namespace blink

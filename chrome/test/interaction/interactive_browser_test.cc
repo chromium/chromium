@@ -6,12 +6,11 @@
 
 #include <utility>
 
-#include "base/auto_reset.h"
 #include "base/check.h"
+#include "base/functional/overloaded.h"
 #include "base/strings/strcat.h"
 #include "base/strings/stringprintf.h"
 #include "base/test/bind.h"
-#include "base/test/rectify_callback.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_navigator.h"
 #include "chrome/browser/ui/browser_window.h"
@@ -20,17 +19,12 @@
 #include "chrome/test/interaction/interactive_browser_test_internal.h"
 #include "chrome/test/interaction/tracked_element_webcontents.h"
 #include "chrome/test/interaction/webcontents_interaction_test_util.h"
-#include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/types/variant.h"
 #include "ui/base/interaction/element_identifier.h"
-#include "ui/base/interaction/element_test_util.h"
 #include "ui/base/interaction/element_tracker.h"
 #include "ui/base/interaction/interaction_sequence.h"
-#include "ui/base/interaction/interaction_test_util.h"
 #include "ui/base/interaction/interactive_test_internal.h"
-#include "ui/views/interaction/element_tracker_views.h"
 #include "ui/views/interaction/interactive_views_test.h"
-#include "ui/views/view_tracker.h"
 #include "ui/views/views_delegate.h"
 
 namespace {
@@ -507,20 +501,24 @@ InteractiveBrowserTestApi::DeepQueryToRelativePosition(const DeepQuery& query) {
 Browser* InteractiveBrowserTestApi::GetBrowserFor(
     ui::ElementContext current_context,
     BrowserSpecifier spec) {
-  if (absl::holds_alternative<AnyBrowser>(spec))
-    return nullptr;
-  if (absl::holds_alternative<CurrentBrowser>(spec)) {
-    Browser* const browser =
-        InteractionTestUtilBrowser::GetBrowserFromContext(current_context);
-    CHECK(browser) << "Current context is not a browser.";
-    return browser;
-  }
-  if (Browser** const browser = absl::get_if<Browser*>(&spec)) {
-    CHECK(*browser) << "BrowserSpecifier: Browser* is null.";
-    return *browser;
-  }
-  Browser* const browser_ptr =
-      absl::get<std::reference_wrapper<Browser*>>(spec).get();
-  CHECK(browser_ptr) << "BrowserSpecifier: Browser* is null.";
-  return browser_ptr;
+  return absl::visit(
+      base::Overloaded{[](AnyBrowser) -> Browser* { return nullptr; },
+                       [current_context](CurrentBrowser) {
+                         Browser* const browser =
+                             InteractionTestUtilBrowser::GetBrowserFromContext(
+                                 current_context);
+                         CHECK(browser) << "Current context is not a browser.";
+                         return browser;
+                       },
+                       [](Browser* browser) {
+                         CHECK(browser)
+                             << "BrowserSpecifier: Browser* is null.";
+                         return browser;
+                       },
+                       [](std::reference_wrapper<Browser*> browser) {
+                         CHECK(browser.get())
+                             << "BrowserSpecifier: Browser* is null.";
+                         return browser.get();
+                       }},
+      spec);
 }

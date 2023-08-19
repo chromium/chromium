@@ -6,6 +6,11 @@
 
 namespace prefs {
 
+// Number of times the "Address Bar" settings "new" IPH badge has been shown.
+// This is set to INT_MAX when the user visites the "Address Bar" settings page.
+const char kAddressBarSettingsNewBadgeShownCount[] =
+    "ios.address_bar_settings_new_badge_shown_count";
+
 // The application locale.
 const char kApplicationLocale[] = "intl.app_locale";
 
@@ -17,6 +22,11 @@ const char kArticlesForYouEnabled[] = "suggestions.articles_enabled";
 
 // Boolean which indicates if the omnibox should be at the bottom of the screen.
 const char kBottomOmnibox[] = "ios.bottom_omnibox";
+
+// Boolean which indicates if the default value of `kBottomOmnibox` is bottom.
+// This saves the default value of the bottom omnibox setting to present the
+// omnibox consistently.
+const char kBottomOmniboxByDefault[] = "ios.bottom_omnibox_by_default";
 
 // Boolean that is true when Browser Lockdown Mode is enabled.
 const char kBrowserLockdownModeEnabled[] = "ios.browser_lockdown_mode_enabled";
@@ -53,6 +63,10 @@ const char kContextualSearchEnabled[] = "search.contextual_search_enabled";
 // The default character encoding to assume for a web page in the
 // absence of MIME charset specification
 const char kDefaultCharset[] = "intl.charset_default";
+
+// The prefs to enable address detection in web pages.
+const char kDetectAddressesAccepted[] = "ios.detect_addresses_accepted";
+const char kDetectAddressesEnabled[] = "ios.settings.detect_addresses_enabled";
 
 // Whether to send the DNT header.
 const char kEnableDoNotTrack[] = "enable_do_not_track";
@@ -153,6 +167,24 @@ const char kIosDiscoverFeedLastRefreshTime[] =
 const char kIosDiscoverFeedLastUnseenRefreshTime[] =
     "ios.discover_feed.last_unseen_refresh_time";
 
+// A list of the latest fetched Most Visited Sites.
+const char kIosLatestMostVisitedSites[] = "ios.most_visited_sites";
+
+// Integer representing the number of impressions of the Most Visited Site since
+// a freshness signal.
+const char kIosMagicStackSegmentationMVTImpressionsSinceFreshness[] =
+    "ios.magic_stack_segmentation.most_visited_sites_freshness";
+
+// Integer representing the number of impressions of Shortcuts since a freshness
+// signal.
+const char kIosMagicStackSegmentationShortcutsImpressionsSinceFreshness[] =
+    "ios.magic_stack_segmentation.shortcuts_freshness";
+
+// Integer representing the number of impressions of Safety Check since a
+// freshness signal.
+const char kIosMagicStackSegmentationSafetyCheckImpressionsSinceFreshness[] =
+    "ios.magic_stack_segmentation.safety_check_freshness";
+
 // The number of consecutive times the user dismissed the password bottom sheet.
 // This gets reset to 0 whenever the user selects a password from the bottom
 // sheet or from the keyboard accessory.
@@ -178,6 +210,30 @@ const char kIosPromosManagerImpressions[] = "ios.promos_manager.impressions";
 // campaigns.
 const char kIosPromosManagerSingleDisplayActivePromos[] =
     "ios.promos_manager.single_display_active_promos";
+
+// Time preference containing the last run time of the Safety Check.
+const char kIosSafetyCheckManagerLastRunTime[] =
+    "ios.safety_check_manager.last_run_time";
+
+// String preference containing the Password Check result from the most recent
+// Safety Check run (using the new Safety Check Manager).
+const char kIosSafetyCheckManagerPasswordCheckResult[] =
+    "ios.safety_check_manager.password_check_result";
+
+// String preference containing the Update Check result from the most recent
+// Safety Check run (using the new Safety Check Manager).
+const char kIosSafetyCheckManagerUpdateCheckResult[] =
+    "ios.safety_check_manager.update_check_result";
+
+// String preference containing the Safe Browsing Check result from the most
+// recent Safety Check run (using the new Safety Check Manager).
+const char kIosSafetyCheckManagerSafeBrowsingCheckResult[] =
+    "ios.safety_check_manager.safe_browsing_check_result";
+
+// String preference containing the default account to use for saving images to
+// Google Photos.
+const char kIosSaveToPhotosDefaultGaiaId[] =
+    "ios.save_to_photos.default_gaia_id";
 
 // Preference that hold a boolean indicating if the user has already dismissed
 // the sign-in promo in settings view.
@@ -241,10 +297,19 @@ const char kNTPFollowingFeedSortType[] = "ios.ntp.following_feed.sort_type";
 const char kDefaultFollowingFeedSortTypeChanged[] =
     "ios.ntp.following_feed_default_sort_type_changed";
 
+// Boolean that is true when OS Lockdown Mode is enabled for their entire device
+// through native iOS settings.
+const char kOSLockdownModeEnabled[] = "ios.os_lockdown_mode_enabled";
+
 // Dictionary preference which tracks day(s) a given destination is clicked from
 // the new overflow menu carousel.
 const char kOverflowMenuDestinationUsageHistory[] =
     "overflow_menu.destination_usage_history";
+
+// Boolean preference that tracks whether the destination usage history feature
+// is enabled on the overflow menu.
+extern const char kOverflowMenuDestinationUsageHistoryEnabled[] =
+    "overflow_menu.destination_usage_history.enabled";
 
 // List preference which tracks new destinations added to the overflow menu
 // carousel.
@@ -255,8 +320,29 @@ const char kOverflowMenuNewDestinations[] = "overflow_menu.new_destinations";
 const char kOverflowMenuDestinationsOrder[] =
     "overflow_menu.destinations_order";
 
+// List preference which tracks the current hidden overflow menu destinations.
+const char kOverflowMenuHiddenDestinations[] =
+    "overflow_menu.hidden_destinations";
+
+// List preference which tracks the currently badged overflow menu destinations.
+const char kOverflowMenuDestinationBadgeData[] =
+    "overflow_menu.destination_badge_data";
+
+// Dict preference which tracks the current elements and order of the overflow
+// menu's actions.
+const char kOverflowMenuActionsOrder[] = "overflow_menu.actions_order";
+
 // Boolean that is true when Suggest support is enabled.
 const char kSearchSuggestEnabled[] = "search.suggest_enabled";
+
+// Boolean that is true when the TabPickup feature is enabled.
+const char kTabPickupEnabled[] = "ios.tab_pickup_enabled";
+
+// The last time a tab pickup banner was displayed.
+const char kTabPickupLastDisplayedTime[] = "ios.tab_pickup_last_displayed_time";
+
+// The last URL used to display a tab pickup banner.
+const char kTabPickupLastDisplayedURL[] = "ios.tab_pickup_last_displayed_url";
 
 // Boolean indicating if displaying price drops for shopping URLs on Tabs
 // in the Tab Switching UI is enabled.
@@ -331,8 +417,18 @@ const char kMixedContentAutoupgradeEnabled[] =
 
 // An int counting the remaining number of times the autofill branding icon
 // should show inside form input accessories.
-const char kAutofillBrandingIconAnimationRemainingCountPrefName[] =
+const char kAutofillBrandingIconAnimationRemainingCount[] =
     "ios.autofill.branding.animation.remaining_count";
+
+// An integer representing the number of times the autofill branding icon has
+// displayed.
+const char kAutofillBrandingIconDisplayCount[] =
+    "ios.autofill.branding.display_count";
+
+// A boolean used to track whether the user has tapped on any of the keyboard
+// accessories when the autofill branding is visible.
+const char kAutofillBrandingKeyboardAccessoriesTapped[] =
+    "ios.autofill.branding.keyboard_accessory_tapped";
 
 // A boolean used to determine if the Price Tracking UI has been shown.
 const char kPriceNotificationsHasBeenShown[] =

@@ -95,7 +95,7 @@
           "group": "tryserver.chromium.linux"
         },
         {
-          "builder": "linux-rel-ml",
+          "builder": "linux-siso-rel",
           "group": "tryserver.chromium.linux"
         }
       ]

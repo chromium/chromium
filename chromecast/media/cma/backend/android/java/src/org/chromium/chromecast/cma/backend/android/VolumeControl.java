@@ -126,14 +126,16 @@ class VolumeControl {
     private static final String EXTRA_VOLUME_STREAM_TYPE = "android.media.EXTRA_VOLUME_STREAM_TYPE";
 
     // Mapping from Android's stream_type to Cast's AudioContentType (used for callback).
-    private static final SparseIntArray ANDROID_TYPE_TO_CAST_TYPE_MAP = new SparseIntArray(4) {
-        {
-            append(AudioManager.STREAM_MUSIC, AudioContentType.MEDIA);
-            append(AudioManager.STREAM_ALARM, AudioContentType.ALARM);
-            append(AudioManager.STREAM_SYSTEM, AudioContentType.COMMUNICATION);
-            append(AudioManager.STREAM_VOICE_CALL, AudioContentType.OTHER);
-        }
-    };
+    private static final SparseIntArray ANDROID_TYPE_TO_CAST_TYPE_MAP;
+    static {
+        var array = new SparseIntArray(4);
+        array.append(AudioManager.STREAM_MUSIC, AudioContentType.MEDIA);
+        array.append(AudioManager.STREAM_ALARM, AudioContentType.ALARM);
+        array.append(AudioManager.STREAM_SYSTEM, AudioContentType.COMMUNICATION);
+        array.append(AudioManager.STREAM_VOICE_CALL, AudioContentType.OTHER);
+
+        ANDROID_TYPE_TO_CAST_TYPE_MAP = array;
+    }
 
     private final long mNativeVolumeControl;
 

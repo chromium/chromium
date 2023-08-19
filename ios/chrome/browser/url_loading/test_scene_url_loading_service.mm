@@ -4,10 +4,6 @@
 
 #import "ios/chrome/browser/url_loading/test_scene_url_loading_service.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 TestSceneUrlLoadingService::TestSceneUrlLoadingService() {}
 
 void TestSceneUrlLoadingService::LoadUrlInNewTab(const UrlLoadParams& params) {

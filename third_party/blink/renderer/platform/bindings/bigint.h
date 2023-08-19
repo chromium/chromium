@@ -5,14 +5,22 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_BINDINGS_BIGINT_H_
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_BINDINGS_BIGINT_H_
 
+#include "base/compiler_specific.h"
 #include "third_party/abseil-cpp/absl/numeric/int128.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
+#include "third_party/blink/renderer/platform/platform_export.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
-#include "v8/include/v8.h"
+#include "v8/include/v8-context.h"
+#include "v8/include/v8-forward.h"
+#include "v8/include/v8-local-handle.h"
+#include "v8/include/v8-primitive.h"
+#include "v8/include/v8-value.h"
 
 namespace blink {
 
-class BigInt {
+class ExceptionState;
+
+class PLATFORM_EXPORT BigInt final {
  public:
   BigInt() = default;
   explicit BigInt(v8::Local<v8::BigInt> bigint) {
@@ -48,6 +56,23 @@ class BigInt {
   Vector<uint64_t> words_;  // least significant at the front
   int sign_bit_ = 0;        // 0 for positive/zero, 1 for negative
 };
+
+// Convert a value to a BigInt. This can fail depending on the input type
+// and value.
+// https://webidl.spec.whatwg.org/#es-bigint
+PLATFORM_EXPORT BigInt ToBigIntSlow(v8::Isolate*,
+                                    v8::Local<v8::Value>,
+                                    ExceptionState&);
+inline BigInt ToBigInt(v8::Isolate* isolate,
+                       v8::Local<v8::Value> value,
+                       ExceptionState& exception_state) {
+  // Fast case. The value is already a BigInt.
+  if (LIKELY(value->IsBigInt())) {
+    return BigInt(value.As<v8::BigInt>());
+  }
+
+  return ToBigIntSlow(isolate, value, exception_state);
+}
 
 }  // namespace blink
 

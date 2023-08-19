@@ -7,12 +7,14 @@
 #import <stdint.h>
 
 #import <algorithm>
+#import <iterator>
 #import <memory>
 #import <vector>
 
 #import <MaterialComponents/MaterialSnackbar.h>
 
 #import "base/check.h"
+#import "base/containers/contains.h"
 #import "base/containers/flat_map.h"
 #import "base/hash/hash.h"
 #import "base/i18n/string_compare.h"
@@ -31,24 +33,22 @@
 #import "components/query_parser/query_parser.h"
 #import "components/signin/public/identity_manager/account_info.h"
 #import "components/strings/grit/components_strings.h"
+#import "components/sync/base/features.h"
 #import "components/sync/base/user_selectable_type.h"
 #import "components/sync/service/sync_service.h"
 #import "components/sync/service/sync_user_settings.h"
 #import "components/url_formatter/url_fixer.h"
 #import "ios/chrome/browser/bookmarks/bookmarks_utils.h"
-#import "ios/chrome/browser/flags/system_flags.h"
+#import "ios/chrome/browser/shared/public/features/system_flags.h"
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
 #import "ios/chrome/browser/ui/bookmarks/undo_manager_wrapper.h"
+#import "ios/chrome/browser/ui/ntp/metrics/home_metrics.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "third_party/skia/include/core/SkColor.h"
 #import "ui/base/l10n/l10n_util.h"
 #import "ui/base/l10n/l10n_util_mac.h"
 #import "ui/base/models/tree_node_iterator.h"
-
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
 
 using bookmarks::BookmarkNode;
 
@@ -187,8 +187,7 @@ bool AreAllAvailableBookmarkModelsLoaded(
     bookmarks::BookmarkModel* profile_model,
     bookmarks::BookmarkModel* account_model) {
   DCHECK(profile_model);
-  if (!base::FeatureList::IsEnabled(
-          bookmarks::kEnableBookmarksAccountStorage)) {
+  if (!base::FeatureList::IsEnabled(syncer::kEnableBookmarksAccountStorage)) {
     return profile_model->loaded();
   }
   DCHECK(account_model);
@@ -196,13 +195,14 @@ bool AreAllAvailableBookmarkModelsLoaded(
 }
 
 bool IsAccountBookmarkStorageOptedIn(syncer::SyncService* sync_service) {
-  if (!base::FeatureList::IsEnabled(
-          bookmarks::kEnableBookmarksAccountStorage)) {
+  if (!base::FeatureList::IsEnabled(syncer::kEnableBookmarksAccountStorage)) {
     return false;
   }
   if (sync_service->GetAccountInfo().IsEmpty()) {
     return false;
   }
+  // TODO(crbug.com/1462552): Remove this after UNO phase 3. See
+  // ConsentLevel::kSync documentation for more details.
   if (sync_service->HasSyncConsent()) {
     return false;
   }
@@ -222,7 +222,7 @@ void DeleteBookmarks(const std::set<const BookmarkNode*>& bookmarks,
     DeleteBookmarks(bookmarks, model, node->children()[i - 1].get());
   }
 
-  if (bookmarks.find(node) != bookmarks.end()) {
+  if (base::Contains(bookmarks, node)) {
     model->Remove(node, bookmarks::metrics::BookmarkEditSource::kUser);
   }
 }
@@ -272,6 +272,7 @@ bool CreateOrUpdateBookmark(const BookmarkNode* node,
   bookmarks::BookmarkModel* folder_model =
       GetBookmarkModelForNode(folder, local_or_syncable_model, account_model);
   if (!node) {  // Create a new bookmark.
+    RecordModuleFreshnessSignal(ContentSuggestionsModuleType::kShortcuts);
     base::RecordAction(base::UserMetricsAction("BookmarkAdded"));
     node = folder_model->AddNewURL(folder, folder->children().size(),
                                    titleString, url);
@@ -349,6 +350,7 @@ MDCSnackbarMessage* CreateBookmarkAtPositionWithUndoToast(
       [[UndoManagerWrapper alloc] initWithBrowserState:browser_state];
   [wrapper startGroupingActions];
 
+  RecordModuleFreshnessSignal(ContentSuggestionsModuleType::kShortcuts);
   base::RecordAction(base::UserMetricsAction("BookmarkAdded"));
   bookmarks::BookmarkModel* folder_model =
       GetBookmarkModelForNode(folder, local_or_syncable_model, account_model);
@@ -362,7 +364,7 @@ MDCSnackbarMessage* CreateBookmarkAtPositionWithUndoToast(
   NSString* text =
       l10n_util::GetNSString(IDS_IOS_BOOKMARK_NEW_BOOKMARK_CREATED);
   return CreateUndoToastWithWrapper(wrapper, text,
-                                    "MobileBookmarkManagerBookmarkAddedUndone");
+                                    "MobileBookmarkManagerAddedBookmarkUndone");
 }
 
 MDCSnackbarMessage* UpdateBookmarkPositionWithUndoToast(
@@ -432,7 +434,7 @@ MDCSnackbarMessage* DeleteBookmarksWithUndoToast(
   [wrapper resetUndoManagerChanged];
 
   NSString* text = nil;
-  if (base::FeatureList::IsEnabled(bookmarks::kEnableBookmarksAccountStorage)) {
+  if (base::FeatureList::IsEnabled(syncer::kEnableBookmarksAccountStorage)) {
     text = base::SysUTF16ToNSString(l10n_util::GetPluralStringFUTF16(
         IDS_IOS_BOOKMARK_DELETED_BOOKMARKS, node_count));
   } else if (node_count == 1) {
@@ -446,18 +448,25 @@ MDCSnackbarMessage* DeleteBookmarksWithUndoToast(
                                     "MobileBookmarkManagerDeletedEntryUndone");
 }
 
-// Traverses the bookmark tree of `source_model` and moves bookmarks to
-// `destination_folder`. Nodes further from the root are moved first, as moving
-// a node to a different model might invalidate pointers to its child nodes
-// (which might still be in the `bookmarks` set). `node` should belong to
-// `source_model` and `destination_folder` should belong to `dest_model`.
+using BookmarkNodeVectorIterator = std::vector<const BookmarkNode*>::iterator;
+
+// Traverses the bookmark tree of `source_model` and moves `bookmarks_to_move`
+// to `destination_folder`. Nodes further from the root are moved first, as
+// moving a node to a different model might invalidate pointers to its child
+// nodes (which might still be in `bookmarks_to_move`). Nodes references by
+// iterators in `bookmarks_to_move` should belong to `source_model` and
+// `destination_folder` should belong to `dest_model`.
+//
+// When the move is performed - this method will update the corresponding
+// `BookmarkNode` pointer to which the iterator in `bookmarks_to_move` refers.
+//
 // Returns whether any moves were performed.
-// Note: this method removes moved bookmarks nodes from `bookmarks` set.
-bool MoveToOtherModelRecursive(std::set<const BookmarkNode*>& bookmarks_to_move,
-                               bookmarks::BookmarkModel* source_model,
-                               bookmarks::BookmarkModel* dest_model,
-                               const BookmarkNode* destination_folder,
-                               const BookmarkNode* node_cursor) {
+bool MoveToOtherModelRecursive(
+    std::vector<BookmarkNodeVectorIterator>& bookmarks_to_move,
+    bookmarks::BookmarkModel* source_model,
+    bookmarks::BookmarkModel* dest_model,
+    const BookmarkNode* destination_folder,
+    const BookmarkNode* node_cursor) {
   DCHECK(source_model != dest_model);
   DCHECK(destination_folder->HasAncestor(dest_model->root_node()));
   if (bookmarks_to_move.empty()) {
@@ -475,48 +484,56 @@ bool MoveToOtherModelRecursive(std::set<const BookmarkNode*>& bookmarks_to_move,
         did_perform_move;
   }
 
-  auto it = bookmarks_to_move.find(node_cursor);
+  auto it = base::ranges::find(bookmarks_to_move, node_cursor,
+                               [](auto it) { return *it; });
   if (it == bookmarks_to_move.end()) {
     return did_perform_move;
   }
-  source_model->MoveToOtherModelWithNewNodeIdsAndUuids(node_cursor, dest_model,
-                                                       destination_folder);
-  bookmarks_to_move.erase(it);
+  const BookmarkNode* moved_node =
+      source_model->MoveToOtherModelWithNewNodeIdsAndUuids(
+          node_cursor, dest_model, destination_folder);
+  **it = moved_node;
   return true;
 }
 
-bool MoveBookmarks(std::set<const bookmarks::BookmarkNode*> bookmarks_to_move,
-                   bookmarks::BookmarkModel* local_model,
-                   bookmarks::BookmarkModel* account_model,
-                   const bookmarks::BookmarkNode* destination_folder) {
+bool MoveBookmarks(
+    std::vector<const bookmarks::BookmarkNode*>& bookmarks_to_move,
+    bookmarks::BookmarkModel* local_model,
+    bookmarks::BookmarkModel* account_model,
+    const bookmarks::BookmarkNode* destination_folder) {
   bool did_perform_move = false;
   bookmarks::BookmarkModel* dest_model =
       GetBookmarkModelForNode(destination_folder, local_model, account_model);
-  // The key is the source bookmark model and the value is the set of bookmarks
-  // that need to be moved from that model.
-  base::flat_map<bookmarks::BookmarkModel*, std::set<const BookmarkNode*>>
-      cross_model_moves;
-  for (const BookmarkNode* node_to_move : bookmarks_to_move) {
-    if (destination_folder->HasAncestor(node_to_move)) {
+
+  // The key is the source bookmark model and the value is a vector of iterators
+  // that belong into `bookmarks_to_move`. Iterators are used to update node
+  // pointers after the move.
+  using ModelToIteratorVectorMap =
+      base::flat_map<bookmarks::BookmarkModel*,
+                     std::vector<BookmarkNodeVectorIterator>>;
+  ModelToIteratorVectorMap cross_model_moves;
+  for (auto it = bookmarks_to_move.begin(); it != bookmarks_to_move.end();
+       ++it) {
+    if (destination_folder->HasAncestor(*it)) {
       continue;  // Cannot move a folder into one of its descendants.
     }
-    if (node_to_move->parent() == destination_folder) {
+    if ((*it)->parent() == destination_folder) {
       continue;  // Already in `destination_folder`, nothing to do.
     }
 
     bookmarks::BookmarkModel* source_model =
-        GetBookmarkModelForNode(node_to_move, local_model, account_model);
+        GetBookmarkModelForNode((*it), local_model, account_model);
     if (source_model == dest_model) {
       // Since moving bookmarks within one model shouldn't invalidate any node
       // pointers - we can proceed with the move right away.
-      source_model->Move(node_to_move, destination_folder,
+      source_model->Move((*it), destination_folder,
                          destination_folder->children().size());
       did_perform_move = true;
     } else {
       // Moving bookmarks between models might invalidate node pointers, so just
       // keep track of this node for now - it will be moved by
       // `MoveBookmarksAcrossModelsRecursive` just below.
-      cross_model_moves[source_model].insert(node_to_move);
+      cross_model_moves[source_model].push_back(it);
     }
   }
 
@@ -531,7 +548,7 @@ bool MoveBookmarks(std::set<const bookmarks::BookmarkNode*> bookmarks_to_move,
 }
 
 MDCSnackbarMessage* MoveBookmarksWithUndoToast(
-    std::set<const BookmarkNode*> bookmarks_to_move,
+    std::vector<const BookmarkNode*>& bookmarks_to_move,
     bookmarks::BookmarkModel* local_model,
     bookmarks::BookmarkModel* account_model,
     const BookmarkNode* destination_folder,
@@ -545,8 +562,7 @@ MDCSnackbarMessage* MoveBookmarksWithUndoToast(
   // Move the selected bookmarks.
   [wrapper startGroupingActions];
   const bool did_perform_move = bookmark_utils_ios::MoveBookmarks(
-      std::move(bookmarks_to_move), local_model, account_model,
-      destination_folder);
+      bookmarks_to_move, local_model, account_model, destination_folder);
   [wrapper stopGroupingActions];
   [wrapper resetUndoManagerChanged];
 

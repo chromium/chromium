@@ -13,9 +13,11 @@
 #include <utility>
 #include <vector>
 
+#include "base/functional/function_ref.h"
 #include "base/memory/raw_ptr.h"
 #include "base/process/process_handle.h"
 #include "base/sequence_checker.h"
+#include "components/performance_manager/graph/initializing_frame_node_observer.h"
 #include "components/performance_manager/owned_objects.h"
 #include "components/performance_manager/public/graph/graph.h"
 #include "components/performance_manager/public/graph/graph_registered.h"
@@ -44,6 +46,11 @@ class GraphImpl : public Graph {
   // implement the whole interface, and have the compiler enforce that as new
   // methods are added.
   using Observer = GraphObserver;
+
+  using FrameNodeImplVisitor = base::FunctionRef<bool(FrameNodeImpl*)>;
+  using PageNodeImplVisitor = base::FunctionRef<bool(PageNodeImpl*)>;
+  using ProcessNodeImplVisitor = base::FunctionRef<bool(ProcessNodeImpl*)>;
+  using WorkerNodeImplVisitor = base::FunctionRef<bool(WorkerNodeImpl*)>;
 
   using NodeSet = std::unordered_set<NodeBase*>;
 
@@ -82,6 +89,11 @@ class GraphImpl : public Graph {
   std::vector<const FrameNode*> GetAllFrameNodes() const override;
   std::vector<const PageNode*> GetAllPageNodes() const override;
   std::vector<const WorkerNode*> GetAllWorkerNodes() const override;
+  bool VisitAllProcessNodes(ProcessNodeVisitor visitor) const override;
+  bool VisitAllFrameNodes(FrameNodeVisitor visitor) const override;
+  bool VisitAllPageNodes(PageNodeVisitor visitor) const override;
+  bool VisitAllWorkerNodes(WorkerNodeVisitor visitor) const override;
+
   bool HasOnlySystemNode() const override;
   ukm::UkmRecorder* GetUkmRecorder() const override;
   NodeDataDescriberRegistry* GetNodeDataDescriberRegistry() const override;
@@ -90,6 +102,10 @@ class GraphImpl : public Graph {
 #if DCHECK_IS_ON()
   bool IsOnGraphSequence() const override;
 #endif
+  void AddInitializingFrameNodeObserver(
+      InitializingFrameNodeObserver* frame_node_observer) override;
+  void RemoveInitializingFrameNodeObserver(
+      InitializingFrameNodeObserver* frame_node_observer) override;
   GraphRegistered* GetRegisteredObject(uintptr_t type_id) override;
 
   // Helper function for safely downcasting to the implementation. This also
@@ -113,6 +129,11 @@ class GraphImpl : public Graph {
   std::vector<FrameNodeImpl*> GetAllFrameNodeImpls() const;
   std::vector<PageNodeImpl*> GetAllPageNodeImpls() const;
   std::vector<WorkerNodeImpl*> GetAllWorkerNodeImpls() const;
+  bool VisitAllProcessNodeImpls(ProcessNodeImplVisitor visitor) const;
+  bool VisitAllFrameNodeImpls(FrameNodeImplVisitor visitor) const;
+  bool VisitAllPageNodeImpls(PageNodeImplVisitor visitor) const;
+  bool VisitAllWorkerNodeImpls(WorkerNodeImplVisitor visitor) const;
+
   const NodeSet& nodes() { return nodes_; }
 
   // Retrieves the process node with PID |pid|, if any.
@@ -129,6 +150,12 @@ class GraphImpl : public Graph {
   // removed from the graph before it's deleted.
   void AddNewNode(NodeBase* new_node);
   void RemoveNode(NodeBase* node);
+
+  // Sends the `OnFrameNodeInitializing()` and `OnFrameNodeTearingDown()`
+  // notifications to initializing frame node observers (See
+  // InitializingFrameNodeObserver for details).
+  void NotifyFrameNodeInitializing(const FrameNode* frame_node);
+  void NotifyFrameNodeTearingDown(const FrameNode* frame_node);
 
   // A |key| of nullptr counts all instances associated with the |node|. A
   // |node| of null counts all instances associated with the |key|. If both are
@@ -208,8 +235,22 @@ class GraphImpl : public Graph {
   template <typename NodeType, typename ReturnNodeType>
   std::vector<ReturnNodeType> GetAllNodesOfType() const;
 
+  template <typename NodeType, typename VisitedNodeType>
+  bool VisitAllNodesOfType(
+      base::FunctionRef<bool(VisitedNodeType)> visitor) const;
+
   void CreateSystemNode() VALID_CONTEXT_REQUIRED(sequence_checker_);
   void ReleaseSystemNode() VALID_CONTEXT_REQUIRED(sequence_checker_);
+
+  enum class LifecycleState {
+    kBeforeSetUp,
+    kSetUpCalled,
+    kTearDownCalled,
+  };
+
+  // Tracks the lifecycle state of this instance to enforce calls to `SetUp()`
+  // and `TearDown()`.
+  LifecycleState lifecycle_state_ = LifecycleState::kBeforeSetUp;
 
   std::unique_ptr<SystemNodeImpl> system_node_
       GUARDED_BY_CONTEXT(sequence_checker_);
@@ -258,6 +299,9 @@ class GraphImpl : public Graph {
   // Storage for GraphRegistered objects.
   RegisteredObjects<GraphRegistered> registered_objects_
       GUARDED_BY_CONTEXT(sequence_checker_);
+
+  InitializingFrameNodeObserverManager
+      initializing_frame_node_observer_manager_;
 
   // The most recently assigned serialization ID.
   int64_t current_node_serialization_id_ GUARDED_BY_CONTEXT(sequence_checker_) =

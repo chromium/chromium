@@ -2,6 +2,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//build/config/linux/gtk/gtk.gni")
 import("//build/config/ui.gni")
 
 if (is_ios) {
@@ -9,5 +10,6 @@ if (is_ios) {
 }
 
 declare_args() {
-  enable_remoting = !is_castos && !is_cast_android && !is_fuchsia
+  enable_remoting = !is_castos && !is_cast_android && !is_fuchsia &&
+                    (!is_linux || (target_cpu != "arm64" && use_gtk))
 }

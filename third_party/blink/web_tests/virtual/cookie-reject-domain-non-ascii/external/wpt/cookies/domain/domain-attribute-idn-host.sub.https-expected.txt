@@ -1,0 +1,9 @@
+This is a testharness.js-based test.
+PASS UTF8-encoded IDN in domain attribute
+PASS UTF8-encoded IDN with non-ASCII dot in domain attribute
+PASS wrong UTF8-encoded IDN in domain attribute
+PASS punycode IDN in domain attribute
+PASS wrong punycode IDN in domain attribute
+PASS IDN with invalid UTF-8 bytes in domain attribute
+Harness: the test ran to completion.
+

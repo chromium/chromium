@@ -5,6 +5,7 @@ Version: 9.0.0
 License: MIT
 License File: LICENSE
 Security Critical: no
+Shipped: no
 Source: https://gitlab.freedesktop.org/wayland/weston
 
 --[ DESCRIPTION ] ------------------

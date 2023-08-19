@@ -35,8 +35,10 @@
 <translation id="1280820357415527819">მიმდინარეობს მობილური ქსელების ძიება</translation>
 <translation id="1293556467332435079">ფაილები</translation>
 <translation id="1297922636971898492">Google Drive ამჟამად მიუწვდომელია. ატვირთვა ავტომატურად განახლდება Google Drive-ის დაბრუნების შემდეგ.</translation>
+<translation id="1306130176943817227">წაშლა ვერ მოხერხდა. ერთეული გამოიყენება.</translation>
 <translation id="1307931752636661898">Linux ფაილების ნახვა ვერ ხერხდება</translation>
 <translation id="1313405956111467313">პროქსის ავტომატური კონფიგურაცია</translation>
+<translation id="134645005685694099">თქვენს მოწყობილობაში არ არის საკმარისი მეხსიერება იმისთვის, რომ ფაილების სინქრონიზაცია ჩართული დარჩეს. ახალი ფაილების სინქრონიზაცია ავტომატურად აღარ განხორციელდება.</translation>
 <translation id="1353686479385938207"><ph name="PROVIDER_NAME" />: <ph name="NETWORK_NAME" /></translation>
 <translation id="1358735829858566124">ფაილი ან დირექტორია არ არის გამოყენებადი.</translation>
 <translation id="1363028406613469049">ჩანაწერი</translation>
@@ -113,7 +115,6 @@
 <translation id="1920798810075583923">საზამთრო</translation>
 <translation id="1924372192547904021"><ph name="DRIVE_NAME" /> დაფორმატდა</translation>
 <translation id="1931134289871235022">სლოვაკური</translation>
-<translation id="1933345018156373194">გადაადგილება ვერ მოხერხდა, მოულოდნელი შეცდომა: <ph name="ERROR_MESSAGE" /></translation>
 <translation id="1936717151811561466">ფინური</translation>
 <translation id="1942765061641586207">სურათის გარჩევადობა</translation>
 <translation id="1972984168337863910">ფაილების გამოხმაურების არეების გაფართოება</translation>
@@ -130,7 +131,7 @@
 <translation id="2084108471225856927">მოწყობილობის პარამეტრები</translation>
 <translation id="2084809735218147718">მადლობის წარწერა</translation>
 <translation id="2088690981887365033">VPN ქსელი</translation>
-<translation id="2089751716171649322">მარტივად იქონიეთ წვდომა თქვენს Google Drive ფაილებზე, როცა ხაზგარეშე რეჟიმში ხართ</translation>
+<translation id="209653272837065803">ფაილების სინქრონიზაციის გასაგრძელებლად საკმარისი მეხსიერება არ არის</translation>
 <translation id="2111134541987263231">ჩართეთ <ph name="BEGIN_BOLD" />ინკოგნიტოში დაშვება<ph name="END_BOLD" /></translation>
 <translation id="2114191879048183086">წაშლილებში არსებული <ph name="NUMBER_OF_ITEMS" /> ერთეული წაიშლება და მათ აღდგენას ვეღარ მოახერხებთ.</translation>
 <translation id="2122305276694332719">დამალულ ქსელთან ავტომატურად დაკავშირება საშუალებას მისცემს სხვებს, იხილონ თქვენი მოწყობილობა და ქსელის ზოგიერთი პარამეტრი, ამიტომ ეს არ არის რეკომენდებული.</translation>
@@ -147,9 +148,11 @@
 <translation id="2198315389084035571">გამარტივებული ჩინური</translation>
 <translation id="22085916256174561">კორეული</translation>
 <translation id="2208919847696382164">დააინსტალირეთ Linux-ის მეშვეობით</translation>
+<translation id="2215692307449050019">ბატარეა ჯდება. ფაილების სინქრონიზაცია გაგრძელდება, როცა ელკვების წყაროს დაუკავშირდებით.</translation>
 <translation id="2225536596944493418">ნამდვილად გსურთ, წაშალოთ <ph name="NUMBER_OF_ITEMS" /> ერთეული?</translation>
 <translation id="2230062665678605299">ვერ შეიქმნა საქაღალდე „<ph name="FOLDER_NAME" />“. <ph name="ERROR_MESSAGE" /></translation>
 <translation id="2239068707900391003">პიროვნება ყავით</translation>
+<translation id="2247561763838186830">თქვენ გამოხვედით სისტემიდან</translation>
 <translation id="2251368349685848079">წაშლილებიდან აღდგენა</translation>
 <translation id="2278133026967558505">ფაილებზე წვდომა ყველა ვებსაიტისა და URL-ის მიერ</translation>
 <translation id="2282155092769082568">ავტოკონფიგურაციის URL:</translation>
@@ -163,7 +166,7 @@
 <translation id="2312704192806647271">{COUNT,plural, =1{გაფართოება ID-ით <ph name="BEGIN_LIST" /><ph name="END_LIST" /> ვერ მოიძებნა. დაუკავშირდით თქვენს ადმინისტრატორს.}other{გაფართოებები ID-ებით <ph name="BEGIN_LIST" /><ph name="END_LIST" /> ვერ მოიძებნა. დაუკავშირდით თქვენს ადმინისტრატორს.}}</translation>
 <translation id="2325650632570794183">ამ ფაილის ტიპი ვერ მოძებნა. გთხოვთ ეწვიოთ Chrome Web Store, რათა იპოვოთ ამ ფაილის გამხსნელი აპლიკაცია.</translation>
 <translation id="2326539130272988168">ბულგარული</translation>
-<translation id="2337715497728194187">Bruschetta-თი გაზიარება</translation>
+<translation id="233822363739146957">თქვენი ყველა ფაილის სინქრონიზაციისთვის საკმარისი მეხსიერება არ არის</translation>
 <translation id="23721837607121582">მობილური პროფილის ჩამოტვირთვა, ქსელი <ph name="NETWORK_INDEX" /> / <ph name="NETWORK_COUNT" />-დან, <ph name="NETWORK_NAME" /></translation>
 <translation id="2377319039870049694">სიის ხედზე გადართვა</translation>
 <translation id="2377590462528165447"><ph name="NUMBER_OF_ITEMS" /> საქაღალდე გაზიარებულია Linux-თან</translation>
@@ -181,6 +184,7 @@
 <translation id="2464089476039395325">HTTP პროქსი-სერვერი</translation>
 <translation id="2467267713099745100"><ph name="NETWORK_TYPE" /> ქსელი, გამორთული</translation>
 <translation id="2468402215065996499">ტამაგოჩი</translation>
+<translation id="2468470447085858632">იქონიეთ წვდომა თქვენს Google Drive ფაილებზე ხაზგარეშე რეჟიმში, ფაილების სინქრონიზაციის მეშვეობით</translation>
 <translation id="2470939964922472929">არასწორი PIN-კოდი ზედმეტად ბევრჯერ შეიყვანეთ. ახალი PIN-კოდის დასაყენებლად შეიყვანეთ განბლოკვის პერსონალური 8-ციფრიანი გასაღები (PUK), რომელიც თქვენმა ოპერატორმა მოგაწოდათ.</translation>
 <translation id="2500392669976258912">გუჯარათული ფონეტიკური</translation>
 <translation id="2515586267016047495">Alt</translation>
@@ -192,7 +196,6 @@
 <translation id="2544853746127077729">ავტორიზაციის სერთიფიკატი უარყოფილი იყო ქსელის მიერ</translation>
 <translation id="255937426064304553">აშშ საერთაშორისო</translation>
 <translation id="2563185590376525700">ბაყაყი</translation>
-<translation id="2574327434504608656">Bruschetta-სთან გაზიარებულია 1 საქაღალდე</translation>
 <translation id="2578394532502990878">ტამილური ფონეტიკური</translation>
 <translation id="2579959351793446050">ორია</translation>
 <translation id="2587195714949534472">მიმდინარეობს „<ph name="FILE_NAME" />“-ის სინქრონიზაციისთვის მომზადება...</translation>
@@ -216,6 +219,7 @@
 <translation id="2782104745158847185">შეცდომა Linux აპლიკაციის ინსტალაციისას</translation>
 <translation id="2802583107108007218">შეიტყვეთ მეტი ამ შეზღუდვების შესახებ</translation>
 <translation id="2803375539583399270">შეიყვანეთ PIN-კოდი</translation>
+<translation id="2819519502129272135">ფაილების სინქრონიზაცია გამორთულია</translation>
 <translation id="2820957248982571256">მიმდინარეობს სკანირება...</translation>
 <translation id="2830077785865012357">ჩინური ბოპომოფო</translation>
 <translation id="2843806747483486897">ნაგულისხმევის შეცვლა…</translation>
@@ -291,7 +295,6 @@
 <translation id="3408072735282270043">გააქტიურება, <ph name="NETWORK_NAME" /></translation>
 <translation id="3408236822532681288">გერმანული (გერმანია) Neo 2 კლავიატურით</translation>
 <translation id="3414856743105198592">ამოღებადი მედიის ფორმატირების შემთხვევაში მთლიანი მონაცემები წაიშლება. გსურთ გააგრძელოთ?</translation>
-<translation id="3435143625481187092">მიეცით Bruschetta-ს საქაღალდეში „<ph name="FOLDER_NAME" />“ არსებულ ფაილებზე წვდომის ნებართვა</translation>
 <translation id="3437801641691368414">შექმნის დრო</translation>
 <translation id="343907260260897561">მყისიერი კამერა</translation>
 <translation id="3455931012307786678">ესტონური</translation>
@@ -299,7 +302,6 @@
 <translation id="3479552764303398839">ახლა არა</translation>
 <translation id="3486821258960016770">მონღოლური</translation>
 <translation id="3495304270784461826"><ph name="COUNT" /> შეცდომა.</translation>
-<translation id="3501954296166022751">თქვენი Google Drive ფაილები ხელმისაწვდომია ხაზგარეშე რეჟიმში</translation>
 <translation id="3509680540198371098">ქსელი <ph name="NETWORK_INDEX" />/<ph name="NETWORK_COUNT" />-დან, <ph name="NETWORK_NAME" />, <ph name="SECURITY_STATUS" />, <ph name="CONNECTION_STATUS" />, სიგნალის სიძლიერე: <ph name="SIGNAL_STRENGTH" />%, დეტალები</translation>
 <translation id="3511705761158917664">მიმდინარეობს <ph name="NUMBER_OF_ITEMS" /> ერთეულის სინქრონიზაციისთვის მომზადება...</translation>
 <translation id="3522708245912499433">პორტუგალიური</translation>
@@ -356,8 +358,10 @@
 <translation id="3906232975181435906">მიმდინარეობს მობილური პროფილის ინსტალაცია, ქსელი <ph name="NETWORK_INDEX" /> / <ph name="NETWORK_COUNT" />-დან, <ph name="NETWORK_NAME" /></translation>
 <translation id="3924145049010392604">მეტა</translation>
 <translation id="3943857333388298514">ჩასმა</translation>
+<translation id="3950820424414687140">შესვლა</translation>
 <translation id="3952872973865944257">ტელუგუ ფონეტიკური</translation>
 <translation id="3958548648197196644">კივი</translation>
+<translation id="397105322502079400">ანგარიშობს…</translation>
 <translation id="3971140002794351170">მობილური პროფილის ჩამოტვირთვა, ქსელი <ph name="NETWORK_INDEX" /> / <ph name="NETWORK_COUNT" />-დან, <ph name="NETWORK_NAME" />, <ph name="NETWORK_PROVIDER_NAME" /></translation>
 <translation id="3973925058222872294">ინგლისური (გაერთიანებული სამეფო)</translation>
 <translation id="3975895378829046965">ბენგალური ფონეტიკური</translation>
@@ -368,6 +372,7 @@
 <translation id="4040753847560036377">PUK-კოდი არასწორია</translation>
 <translation id="4057991113334098539">მიმდინარეობს გააქტიურება...</translation>
 <translation id="4092890906744441904">ირლანდიური</translation>
+<translation id="4124731372776320263">მიმდინარეობს Drive-ის 1 ფაილის სინქრონიზაცია</translation>
 <translation id="4124935795427217608">ზღაპრული მარტორქა</translation>
 <translation id="4131235941541910880">გადაიტანეთ არასაჭირო ერთეულები წაშლილებში</translation>
 <translation id="4134804435730168042">ქსელი <ph name="NETWORK_INDEX" /> / <ph name="NETWORK_COUNT" />-დან, <ph name="NETWORK_NAME" />, <ph name="NETWORK_PROVIDER_NAME" />, გაააქტიურეთ მოწყობილობის დაყენების შემდეგ</translation>
@@ -377,7 +382,6 @@
 <translation id="4159731583141908892"><ph name="FILE_NAME" /> გადატანილია.</translation>
 <translation id="4176286497474237543">წაშლილების ახლავე გასუფთავება</translation>
 <translation id="4179621117429069925">ეს ერთეული თქვენს წაშლილებშია</translation>
-<translation id="4181839429935094755">Bruschetta-სთან გაზიარებულია <ph name="NUMBER_OF_ITEMS" /> საქაღალდე</translation>
 <translation id="4186579485882418952">ხაზგარეშე რეჟიმის ჩართვა</translation>
 <translation id="4193154014135846272">Google დოკუმენტი</translation>
 <translation id="4197674956721858839">Zip არჩევანი</translation>
@@ -417,6 +421,7 @@
 <translation id="4432921877815220091">ქსელი <ph name="NETWORK_INDEX" /> / <ph name="NETWORK_COUNT" />-დან, <ph name="NETWORK_NAME" />, გაააქტიურეთ მოწყობილობის დაყენების შემდეგ, მართავს თქვენი ადმინისტრატორი</translation>
 <translation id="4439427728133035643">ქსელი <ph name="NETWORK_INDEX" />/<ph name="NETWORK_COUNT" />-დან, <ph name="NETWORK_NAME" />, სიგნალის სიძლიერე: <ph name="SIGNAL_STRENGTH" />%, დაკავშირება</translation>
 <translation id="4442424173763614572">DNS ძიება ვერ განხორციელდა</translation>
+<translation id="4445896958353114391">მიმდინარეობს ფაილების სინქრონიზაცია</translation>
 <translation id="4462159676511157176">ინდივიდუალური სახელთა სერვერები</translation>
 <translation id="4465725236958772856">ქსელი <ph name="NETWORK_INDEX" />/<ph name="NETWORK_COUNT" />-დან, <ph name="NETWORK_NAME" />, მართავს თქვენი ადმინისტრატორი, დაკავშირება</translation>
 <translation id="4470564870223067757">ჰანგული ნაკრები 2</translation>
@@ -438,11 +443,11 @@
 <translation id="4599600860674643278">ფილტრი გადაყენებულია.</translation>
 <translation id="4603392156942865207">მიმდინარეობს „<ph name="FILE_NAME" />“-ის კოპირება „<ph name="FOLDER_NAME" />“-ში</translation>
 <translation id="4631887759990505102">შემსრულებელი</translation>
+<translation id="4635373743001040938">მეხსიერება კრიტიკულად არასაკმარისია. ფაილების სინქრონიზაცია გამოირთო.</translation>
 <translation id="4642769377300286600">მიმდინარეობს მობილური პროფილის ინსტალაცია, ქსელი <ph name="NETWORK_INDEX" /> / <ph name="NETWORK_COUNT" />-დან, <ph name="NETWORK_NAME" />, <ph name="NETWORK_PROVIDER_NAME" /></translation>
 <translation id="4646813851450205600">ჩეხური Qwerty კლავიატურით</translation>
 <translation id="4656777537938206294">აქციეთ ფაილები ხაზგარეშე რეჟიმში ხელმისაწვდომად</translation>
 <translation id="4658782175094886150">პიროვნება თოვლში</translation>
-<translation id="466782788172479199">მიეცით Bruschetta-ს თქვენს Google Drive-ში არსებულ ფაილებზე წვდომის ნებართვა. ცვლილებები სინქრონიზებული იქნება თქვენს სხვა მოწყობილობებთან.</translation>
 <translation id="4669606053856530811">„<ph name="SOURCE_NAME" />“-ის წევრები დაკარგავენ წვდომას, თუ ეს ერთეულები არ იქნება გაზიარებული მათთან.</translation>
 <translation id="467809019005607715">Google Slides</translation>
 <translation id="4690246192099372265">შვედურო</translation>
@@ -491,8 +496,8 @@
 <translation id="4961158930123534723">Parallels Desktop-თან გაზიარებულია 1 საქაღალდე</translation>
 <translation id="496656650103537022"><ph name="FILE_NAME" /> აღდგენილია</translation>
 <translation id="4969785127455456148">ალბომი</translation>
+<translation id="4972330214479971536">ფაილების სინქრონიზაციის დაყენება ვერ დასრულდა</translation>
 <translation id="4973523518332075481">სახელის სიგრძე უნდა იყოს <ph name="MAX_LENGTH" /> ან ნაკლები სიმბოლო</translation>
-<translation id="4973970068702235170">დაარქივება ვერ მოხერხდა, მოულოდნელი შეცდომა: <ph name="ERROR_MESSAGE" /></translation>
 <translation id="4984616446166309645">იაპონური</translation>
 <translation id="4987699874727873250">ინგლისური (ინდოეთი)</translation>
 <translation id="4988205478593450158">ნამდვილად გსურთ, წაშალოთ „<ph name="FILE_NAME" />“?</translation>
@@ -514,6 +519,7 @@
 <translation id="5102922915594634436">სინქრონიზებული საქაღალდეების მართვა</translation>
 <translation id="5109254780565519649">მოხდა შეცდომა. შესაძლოა, ზოგიერთი ერთეულის აღდგენა ვერ მოხერხებულიყო.</translation>
 <translation id="5110329002213341433">ინგლისური (კანადა)</translation>
+<translation id="5119780910075847424">სინქრონიზაცია დაპაუზებულია</translation>
 <translation id="5123433949759960244">კალათბურთის ბურთი</translation>
 <translation id="5129662217315786329">პოლონური</translation>
 <translation id="5144820558584035333">ჰანგული კომპლექტი 3 (390)</translation>
@@ -532,6 +538,7 @@
 <translation id="5218183485292899140">შვეიცარია საფრანგეთი</translation>
 <translation id="5234764350956374838">გაუქმება</translation>
 <translation id="5253070652067921974">შემქმნელი</translation>
+<translation id="5254207638927440400">ფაილის გადატანა შეუძლებელია. ფაილი გამოიყენება.</translation>
 <translation id="5257456363153333584">ჭრიჭინა</translation>
 <translation id="5262311848634918433"><ph name="MARKUP_1" />იქონიეთ წვდომა ფაილებზე ნებისმიერი ადგილიდან, ხაზგარეშე რეჟიმშიც კი.<ph name="MARKUP_2" />
     Google Drive-ზე არსებული ფაილები მუდმივად ახლდება და ნებისმიერი მოწყობილობიდან არის ხელმისაწვდომი.<ph name="MARKUP_3" />
@@ -551,7 +558,6 @@
 <translation id="5323213332664049067">ლათინური ამერიკა</translation>
 <translation id="5330145655348521461">ეს ფაილი გახსნილია სხვადასხვა სამუშაო მაგიდაზე. მის სანახავად გადადით <ph name="USER_NAME" /> (<ph name="MAIL_ADDRESS" />)-ზე.</translation>
 <translation id="5330512191124428349">ინფორმაციის მიღება</translation>
-<translation id="5344246330454251646">გაზიარების მართვა Bruschetta-სთვის</translation>
 <translation id="535792325654997756">პიროვნება კატებით</translation>
 <translation id="5358764674931277">კადრების სიხშირე</translation>
 <translation id="5363339716524495120">შეყვანის ენაა ჩინური</translation>
@@ -563,6 +569,7 @@
 <translation id="5422221874247253874">წვდომის წერტილი</translation>
 <translation id="5428105026674456456">ესპანური</translation>
 <translation id="5438282218546237410">მოთხოვნაზე „<ph name="SEARCH_TERM" />“ შედეგები ვერ მოიძებნა.</translation>
+<translation id="5447680084201416734">საკმარისი მეხსიერება არ არის.</translation>
 <translation id="5449551289610225147">პაროლი არასწორია</translation>
 <translation id="5459064203055649751">ფაილი სახელად „<ph name="FILENAME" />“ უკვე არსებობს. გსურთ, ჩაანაცვლოთ ის იმ ფაილით, რომელიც გადაგაქვთ?</translation>
 <translation id="5463231940765244860">შეყვანა</translation>
@@ -573,7 +580,6 @@
 <translation id="5494920125229734069">აარჩიეთ ყველა</translation>
 <translation id="5500122897333236901">ისლანდიური</translation>
 <translation id="5508696409934741614">წერტილები</translation>
-<translation id="5519161320735100193">Google Drive-ის პარამეტრები</translation>
 <translation id="5522908512596376669">ფაილების სია ნაჩვენებია სიის ხედში.</translation>
 <translation id="5524517123096967210">ფაილის წაკითხვა ვერ მოხერხდა.</translation>
 <translation id="5533102081734025921"><ph name="IMAGE_TYPE" /> სურათი</translation>
@@ -601,6 +607,7 @@
 <translation id="5720028165859493293"><ph name="FILE_NAME" /> გადატანილია წაშლილებში</translation>
 <translation id="5724172041621205163">ტაი Pattachote კლავიატურით</translation>
 <translation id="57383366388012121">გასული თვე</translation>
+<translation id="575175778971367197">ამ ფაილის სინქრონიზაცია ამჟამად ვერ ხერხდება</translation>
 <translation id="5756666464756035725">უნგრული QWERTY</translation>
 <translation id="5760252553414789727">არჩეულია <ph name="SELECTED_FILES_COUNT" /> ერთეული</translation>
 <translation id="5763377084591234761">გერმანული (შვეიცარია)</translation>
@@ -626,7 +633,6 @@
 <translation id="5896749729057314184">ქსელი <ph name="NETWORK_INDEX" /> / <ph name="NETWORK_COUNT" />-დან, <ph name="NETWORK_NAME" />, არააქტიური, სიგნალის სიძლიერეა <ph name="SIGNAL_STRENGTH" />%, დეტალები</translation>
 <translation id="5911887972742538906">თქვენი Linux აპლიკაციის ინსტალაციისას მოხდა შეცდომა.</translation>
 <translation id="5912396950572065471">ფორმატი</translation>
-<translation id="5913638992615760742">კოპირების ოპერაცია ვერ შესრულდა, მოულოდნელი შეცდომა: <ph name="ERROR_MESSAGE" /></translation>
 <translation id="5918480239180455431">ხელმისაწვდომია ახალი საძიებო ფუნქციები</translation>
 <translation id="5926082595146149752">ნიდერლანდური (ნიდერლანდები) აშშ-ის საერთაშორისო (PC) კლავიატურით</translation>
 <translation id="5932901536148835538">Chromebit</translation>
@@ -634,7 +640,6 @@
 <translation id="5955954492236143329"><ph name="NUMBER_OF_ITEMS" /> ერთეული</translation>
 <translation id="5957366693331451795">Chromebox-ები</translation>
 <translation id="5982621672636444458">დალაგების ვარიანტები</translation>
-<translation id="6007237601604674381">გადაადგილება ვერ მოხერხდა. <ph name="ERROR_MESSAGE" /></translation>
 <translation id="6011074160056912900">Ethernet ქსელი</translation>
 <translation id="60357267506638014">ჩეხური QWERTY</translation>
 <translation id="603895874132768835">ამ ქსელს ვერ გამოიყენებთ, სანამ ახალ PIN-კოდს არ დააყენებთ</translation>
@@ -690,6 +695,7 @@
 <translation id="6423031066725912715">ვიეტნამური TCVN კლავიატურით</translation>
 <translation id="6430271654280079150">1 მცდელობა დაგრჩათ.</translation>
 <translation id="643243556292470964">წაშლილი ფაილები ახლა გადატანილია წაშლილებში</translation>
+<translation id="6438480100790416671">მიმდინარეობს მეხსიერება სივრცის შემოწმება…</translation>
 <translation id="6485131920355264772">ვერ მოხერხდა სივრცის ინფორმაციის მიღება</translation>
 <translation id="6495925982925244349">ქსელი <ph name="NETWORK_INDEX" />/<ph name="NETWORK_COUNT" />-დან, <ph name="NETWORK_NAME" />, <ph name="SECURITY_STATUS" />, <ph name="CONNECTION_STATUS" />, სიგნალის სიძლიერე: <ph name="SIGNAL_STRENGTH" />%, მართავს თქვენი ადმინისტრატორი, დეტალები</translation>
 <translation id="649877868557234318">მიმდინარეობს „<ph name="FILE_NAME" />“-ის ამოღება „<ph name="FOLDER_NAME" />“-დან</translation>
@@ -702,6 +708,7 @@
 <translation id="6558280019477628686">მოხდა შეცდომა. ზოგიერთი ერთეული შეიძლება არ წაშლილიყო.</translation>
 <translation id="656398493051028875">„<ph name="FILENAME" />“-ის წაშლა…</translation>
 <translation id="6581162200855843583">Google Drive-ის ბმული</translation>
+<translation id="6588648400954570689">ფაილების სინქრონიზაციის პარამეტრები</translation>
 <translation id="6594855146910089723">ეს საქაღალდე გაზიარებულია Linux-სა და Parallels Desktop-თან</translation>
 <translation id="6607272825297743757">ფაილის ინფორმაცია</translation>
 <translation id="6609332149380188670">Parallels Desktop-თან გაზიარებულია <ph name="NUMBER_OF_ITEMS" /> საქაღალდე</translation>
@@ -716,7 +723,6 @@
 <translation id="6710213216561001401">წინა</translation>
 <translation id="6732801395666424405">სერტიფიკატები ვერ ჩაიტვირთა</translation>
 <translation id="6736329909263487977"><ph name="ISSUED_BY" /> [<ph name="ISSUED_TO" />]</translation>
-<translation id="6740270213273127264">საქაღალდის გაზიარება Bruschetta-სთან</translation>
 <translation id="6750737795876287924">მიმდინარე კატალოგი</translation>
 <translation id="6751256176799620176">არჩეულია 1 საქაღალდე</translation>
 <translation id="6755827872271341378">ChromeOS Flex მოწყობილობა</translation>
@@ -793,6 +799,7 @@
 <translation id="7256405249507348194">ამოუცნობი შეცდომა: <ph name="DESC" /></translation>
 <translation id="7268659760406822741">ხელმისაწვდომი მომსახურებები</translation>
 <translation id="7291818353625820805">გსურთ, კლავიშები გამეორდეს? გამორთეთ მახვილის ნიშნები კლავიატურის პარამეტრებიდან</translation>
+<translation id="729236380049459563">ფაილების სინქრონიზაცია ჩართულია</translation>
 <translation id="7292816689782057017">ადმინისტრატორის მიერ დადგენილი წესები ზღუდავს ზოგიერთ მდებარეობაზე შენახვას.</translation>
 <translation id="7294063083760278948">ტელუგუ ტრანსლიტერაცია</translation>
 <translation id="7295662345261934369">სხვებთან გაზიარება</translation>
@@ -800,6 +807,7 @@
 <translation id="7309413087278791451">გერმანული (ბელგია)</translation>
 <translation id="7339898014177206373">ახალი ფანჯარა</translation>
 <translation id="7343393116438664539">ვიეტნამური ტელექსი</translation>
+<translation id="7347346221088620549">დაშიფრული ფაილი</translation>
 <translation id="7357762654218998920">ამ ტიპის ფაილი მხარდაუჭერელია. <ph name="BEGIN_LINK_HELP" />შეიტყვეთ მეტი<ph name="END_LINK_HELP" /> ChromeOS-ზე ფაილების გახსნის შესახებ.</translation>
 <translation id="7359359531237882347">მიმდინარეობს <ph name="NUMBER_OF_ITEMS" /> ერთეულის კოპირება…</translation>
 <translation id="7375951387215729722">„<ph name="COLUMN_NAME" />“-ში ფაილების სია დალაგებულია კლებადი მიმდევრობით.</translation>
@@ -826,6 +834,7 @@
 <translation id="7547811415869834682">ჰოლანდიური</translation>
 <translation id="7551643184018910560">თაროზე ჩამაგრება</translation>
 <translation id="7553492409867692754">მიეცით Linux აპებს საქაღალდეში „<ph name="FOLDER_NAME" />“ არსებულ ფაილებზე წვდომის ნებართვა</translation>
+<translation id="7555339735447658365">ამჟამად ხაზგარეშე რეჟიმში ხართ. ფაილების სინქრონიზაცია გაგრძელდება, როცა ინტერნეტს დაუკავშირდებით</translation>
 <translation id="7589661784326793847">დაელოდეთ ერთი წამი</translation>
 <translation id="7592775719802218421"><ph name="FILE_NAME" /> გარდაიქმნება ხაზგარეშე ხელმისაწვდომად</translation>
 <translation id="7600126690270271294">სერბული</translation>
@@ -844,6 +853,7 @@
 <translation id="76959938259365003">წაშლილები ვერ გასუფთავდა.</translation>
 <translation id="770015031906360009">ბერძნული</translation>
 <translation id="7705251383879779343"><ph name="FILE_NAME" /> დაკოპირდა.</translation>
+<translation id="7707941139430559579">ფაილის გადატანა შეუძლებელია. <ph name="ERROR_MESSAGE" /></translation>
 <translation id="7708271999969613024">ამ ქსელის გამოსაყენებლად უნდა შეიყვანოთ განბლოკვის პერსონალური 8-ციფრიანი გასაღები (PUK), რომელიც თქვენმა ოპერატორმა მოგაწოდათ.</translation>
 <translation id="7711920809702896782">სურათის ინფორმაცია</translation>
 <translation id="7724603315864178912">ამოჭრა</translation>
@@ -889,10 +899,10 @@
 <translation id="7972920761225148017">ფრანგული (შვეიცარია)</translation>
 <translation id="7973962044839454485">PPP ავთენტიფიკაცია ვერ მოხერხდა არასწორი მომხმარებლის სახელის ან პაროლის გამო</translation>
 <translation id="7980421588063892270">ინგლისური (აშშ) Colemak კლავიატურით</translation>
-<translation id="7985008041109611710">სინქრონიზდება <ph name="NUMBER_OF_FILES_SYNCING" /> ფაილი</translation>
 <translation id="8000066093800657092">ქსელი არ არის</translation>
 <translation id="8008366997883261463">ჯეკ რასელ ტერიერი</translation>
 <translation id="8028993641010258682">ზომა</translation>
+<translation id="8034974485549318493">საწყისი დაყენებისთვის საჭიროა ინტერნეტ-კავშირი, რომ ფაილები დასინქრონდეს.</translation>
 <translation id="803771048473350947">ფაილი</translation>
 <translation id="8038111231936746805">(ნაგულისხმევი)</translation>
 <translation id="8042602468072383151"><ph name="AUDIO_TYPE" /> აუდიო</translation>
@@ -903,6 +913,7 @@
 <translation id="8087576439476816834">ჩამოტვირთვა, <ph name="PROFILE_NAME" /></translation>
 <translation id="8106045200081704138">ჩემთვის გაზიარებული</translation>
 <translation id="8116072619078571545">გაყინული წყალი</translation>
+<translation id="8124093710070495550">პრობლემა სინქრონიზაციისას</translation>
 <translation id="8128733386027980860">ინგლისური (გაერთიანებული სამეფო) Dvorak კლავიატურით</translation>
 <translation id="8137331602592933310">„<ph name="FILENAME" />“ გაზიარებულია თქვენთვის. მისი წაშლა შეუძლებელია, რადგან ის თქვენ არ გეკუთვნით.</translation>
 <translation id="8138705869659070104">გააქტიურება მოწყობილობის დაყენების შემდეგ</translation>
@@ -912,9 +923,11 @@
 <translation id="8154842056504218462">არჩეულია ყველა ჩანაწერი.</translation>
 <translation id="8157684860301034423">აპის ინფორმაციის მოძიება ვერ მოხერხდა.</translation>
 <translation id="8175731104491895765">ფრანგული (ბელგია)</translation>
+<translation id="8175799081768705361">მიმდინარეობს Drive-ის <ph name="NUMBER_OF_FILES_SYNCING" /> ფაილის სინქრონიზაცია</translation>
 <translation id="8179976553408161302">Enter</translation>
 <translation id="8193175696669055101">მოწყობილობის მოდელი</translation>
 <translation id="8223479393428528563">ამ ფაილების ქსელგარე გამოყენებისათვის, დაბრუნდით ქსელში, ფაილზე გმარჯვენა ღილაკზე დააჭირეთ და მონიშნეთ <ph name="OFFLINE_CHECKBOX_NAME" /> ვარიანტი.</translation>
+<translation id="8241139360630443550">მეხსიერების ნახვა</translation>
 <translation id="8249296373107784235">შეწყვეტა</translation>
 <translation id="8250690786522693009">ლათინური</translation>
 <translation id="8250920743982581267">დოკუმენტები</translation>
@@ -945,6 +958,7 @@
 <translation id="8404498045299006085">ყველას შენარჩუნება</translation>
 <translation id="8408068190360279472"><ph name="NETWORK_TYPE" /> ქსელი, მიმდინარეობს დაკავშირება</translation>
 <translation id="8425213833346101688">შეცვლა</translation>
+<translation id="8428213095426709021">პარამეტრები</translation>
 <translation id="8431909052837336408">SIM ბარათის PIN-კოდის შეცვლა</translation>
 <translation id="8437209419043462667">US</translation>
 <translation id="8452135315243592079">აკლია SIM ბარათი</translation>
@@ -981,6 +995,7 @@
 <translation id="8609695766746872526">ისლანდიური</translation>
 <translation id="863903787380594467">PIN-კოდი არასწორია. <ph name="RETRIES" /> მცდელობა დაგრჩათ.</translation>
 <translation id="8639391553632924850"><ph name="INPUT_LABEL" /> — პორტი</translation>
+<translation id="8656407365183407932">თქვენი ხაზგარეშე ფაილები იძულებით ამოიშალა</translation>
 <translation id="8656768832129462377">არ შეამოწმოთ</translation>
 <translation id="8688591111840995413">არასწორი პაროლი</translation>
 <translation id="8698464937041809063">Google ნახაზი</translation>
@@ -1011,10 +1026,12 @@
 <translation id="8919081441417203123">დანიური</translation>
 <translation id="8949925099261528566">დაკავშირებულია, ინტერნეტის გარეშე</translation>
 <translation id="8965697826696209160">საკმარისი ადგილი არ არის.</translation>
+<translation id="8970887620466824814">წარმოიქმნა შეფერხება.</translation>
 <translation id="8971742885766657349">მიმდინარეობს სინქრონიზაცია — <ph name="PERCENT" />%</translation>
 <translation id="8997962250644902079">ჩინური (ტრადიციული) პინ-ინი</translation>
 <translation id="8998871447376656508">თქვენს Google Drive-ზე არ არის საკმარისი თავისუფალი მეხსიერება ატვირთვის შესასრულებლად.</translation>
 <translation id="9003940392834790328">ქსელი <ph name="NETWORK_INDEX" />/<ph name="NETWORK_COUNT" />-დან, <ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" />, სიგნალის სიძლიერე: <ph name="SIGNAL_STRENGTH" />%, მართავს თქვენი ადმინისტრატორი, დეტალები</translation>
+<translation id="9007990314804111233">შედით თქვენს Microsoft ანგარიშში</translation>
 <translation id="9017798300203431059">რუსული ფონეტიკური</translation>
 <translation id="9034924485347205037">Linux ფაილები</translation>
 <translation id="9035012421917565900">ერთეულები „<ph name="DESTINATION_NAME" />“-ში ვეღარ დაბრუნდება, რაც ნიშნავს, რომ ამ მოქმედებას ვერ გააუქმებთ.</translation>
@@ -1045,7 +1062,6 @@
 <translation id="9213073329713032541">ინსტალაცია წარმატებით დაიწყო.</translation>
 <translation id="9219103736887031265">გამოსახულებები</translation>
 <translation id="9219908252191632183">მთვარისმიერი</translation>
-<translation id="937795003075802289">სინქრონიზდება 1 ფაილი</translation>
 <translation id="938470336146445890">გთხოვთ დააინსტალირეთ მომხმარებლის სერთიფიკატი.</translation>
 <translation id="939736085109172342">ახალი საქაღალდე</translation>
 <translation id="943972244133411984">შემცვლელი</translation>

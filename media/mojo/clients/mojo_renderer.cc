@@ -60,10 +60,10 @@ void MojoRenderer::Initialize(MediaResource* media_resource,
   init_cb_ = std::move(init_cb);
 
   switch (media_resource_->GetType()) {
-    case MediaResource::Type::STREAM:
+    case MediaResource::Type::kStream:
       InitializeRendererFromStreams(client);
       break;
-    case MediaResource::Type::URL:
+    case MediaResource::Type::KUrl:
       InitializeRendererFromUrl(client);
       break;
   }

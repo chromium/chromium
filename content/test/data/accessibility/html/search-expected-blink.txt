@@ -1,0 +1,9 @@
+rootWebArea
+++genericContainer ignored
+++++genericContainer ignored
+++++++search
+++++++++labelText
+++++++++++staticText name='Search element.'
+++++++++++++inlineTextBox name='Search element.'
+++++++++searchBox
+++++++++++genericContainer

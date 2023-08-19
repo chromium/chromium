@@ -4,9 +4,8 @@
 
 package org.chromium.chrome.browser.device_reauth;
 
-import androidx.annotation.VisibleForTesting;
-
 import org.chromium.base.Callback;
+import org.chromium.base.ResettersForTesting;
 import org.chromium.base.annotations.CalledByNative;
 import org.chromium.base.annotations.NativeMethods;
 
@@ -52,10 +51,11 @@ public class ReauthenticatorBridge {
      *         validated auth for passing the current authentication request.
      */
     public void reauthenticate(Callback<Boolean> callback, boolean useLastValidAuth) {
-        assert mAuthResultCallback == null;
-        mAuthResultCallback = callback;
-        ReauthenticatorBridgeJni.get().reauthenticate(
-                mNativeReauthenticatorBridge, useLastValidAuth);
+        if (mAuthResultCallback == null) {
+            mAuthResultCallback = callback;
+            ReauthenticatorBridgeJni.get().reauthenticate(
+                    mNativeReauthenticatorBridge, useLastValidAuth);
+        }
     }
 
     /**
@@ -70,9 +70,9 @@ public class ReauthenticatorBridge {
     }
 
     /** For testing only. */
-    @VisibleForTesting
     public static void setInstanceForTesting(ReauthenticatorBridge instance) {
         sReauthenticatorBridgeForTesting = instance;
+        ResettersForTesting.register(() -> sReauthenticatorBridgeForTesting = null);
     }
 
     @CalledByNative

@@ -86,6 +86,11 @@ def main():
     web_idl_database = bind_gen.package_initializer.package_initializer(
     ).web_idl_database()
     idl_definitions = {
+        "async_iterator": [
+            interface.async_iterator
+            for interface in web_idl_database.interfaces
+            if interface.async_iterator
+        ],
         "callback_function":
         web_idl_database.callback_functions,
         "callback_interface":
@@ -146,7 +151,7 @@ def main():
 
     # Check whether all generated files are listed appropriately.
     for kind, file_set in filepaths.items():
-        for idl_definition in idl_definitions[kind]:
+        for idl_definition in idl_definitions.get(kind, []):
             if kind == "callback_function" and idl_definition.identifier in (
                     "OnErrorEventHandlerNonNull",
                     "OnBeforeUnloadEventHandlerNonNull"):

@@ -10,10 +10,6 @@
 #import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
 #import "ios/components/security_interstitials/safe_browsing/safe_browsing_service.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 // static
 safe_browsing::SafeBrowsingMetricsCollector*
 SafeBrowsingMetricsCollectorFactory::GetForBrowserState(

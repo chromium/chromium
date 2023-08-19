@@ -21,6 +21,8 @@ namespace speech {
 
 const char kUsEnglishLocale[] = "en-US";
 
+const char kEnglishLocaleNoCountry[] = "en";
+
 const char kSodaBinaryInstallationResult[] =
     "SodaInstaller.BinaryInstallationResult";
 

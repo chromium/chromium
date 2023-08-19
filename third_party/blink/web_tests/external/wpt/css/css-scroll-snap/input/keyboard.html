@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <link rel="help" href="https://drafts.csswg.org/css-scroll-snap-1/#scroll-snap-type" />
 <title>Arrow key scroll snapping</title>
+<meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1">
 <meta name="flags" content="should">
 <meta name="assert"
       content="Test passes if keyboard scrolling correctly snaps on a snap
@@ -47,9 +48,10 @@ promise_test(async t => {
   assert_equals(scroller.scrollTop, 0, "verify test pre-condition");
   const scrollCounter = new ScrollCounter(t, scroller);
   await keyPress(scroller, "ArrowDown");
-  await waitForScrollEnd(scroller, scrollTop, 400);
+  await waitForScrollEnd(scroller);
+  assert_equals(scroller.scrollTop, 400);
   // Make sure we don't jump directly to the new snap position.
-  assert_greater_than(scrollCounter.count, 2);
+  assert_greater_than(scrollCounter.count, 1);
 }, "Snaps to bottom-left after pressing ArrowDown");
 
 promise_test(async t => {
@@ -57,9 +59,10 @@ promise_test(async t => {
   assert_equals(scroller.scrollTop, 400, "verify test pre-condition");
   const scrollCounter = new ScrollCounter(t, scroller);
   await keyPress(scroller, "ArrowUp");
-  await waitForScrollEnd(scroller, scrollTop, 0);
+  await waitForScrollEnd(scroller);
+  assert_equals(scroller.scrollTop, 0);
   // Make sure we don't jump directly to the new snap position.
-  assert_greater_than(scrollCounter.count, 2);
+  assert_greater_than(scrollCounter.count, 1);
 }, "Snaps to top-left after pressing ArrowUp");
 
 promise_test(async t => {
@@ -67,9 +70,10 @@ promise_test(async t => {
   assert_equals(scroller.scrollTop, 0, "verify test pre-condition");
   const scrollCounter = new ScrollCounter(t, scroller);
   await keyPress(scroller, "ArrowRight");
-  await waitForScrollEnd(scroller, scrollLeft, 400);
+  await waitForScrollEnd(scroller);
+  assert_equals(scroller.scrollLeft, 400);
   // Make sure we don't jump directly to the new snap position.
-  assert_greater_than(scrollCounter.count, 2);
+  assert_greater_than(scrollCounter.count, 1);
 }, "Snaps to top-right after pressing ArrowRight");
 
 promise_test(async t => {
@@ -77,9 +81,10 @@ promise_test(async t => {
   assert_equals(scroller.scrollLeft, 400, "verify test pre-condition");
   const scrollCounter = new ScrollCounter(t, scroller);
   await keyPress(scroller, "ArrowLeft");
-  await waitForScrollEnd(scroller, scrollLeft, 0);
+  await waitForScrollEnd(scroller);
+  assert_equals(scroller.scrollLeft, 0);
   // Make sure we don't jump directly to the new snap position.
-  assert_greater_than(scrollCounter.count, 2);
+  assert_greater_than(scrollCounter.count, 1);
 }, "Snaps to top-left after pressing ArrowLeft");
 
 promise_test(async t => {
@@ -95,10 +100,8 @@ promise_test(async t => {
   topRight.style.left = "500px";
   scroller.scrollTo(0, 0);
   assert_equals(scroller.scrollLeft, 0, "verify test pre-condition");
-  const scrollPromise = waitForScrollEvent(scroller);
   await keyPress(scroller, "ArrowRight");
-  await scrollPromise;
-  await waitForAnimationEnd(scrollLeft);
+  await waitForScrollEnd(scroller);
   assert_between_exclusive(scroller.scrollLeft, 0, 500);
 }, "If the original intended offset is valid as making a snap area cover the"
 + "snapport, and there's no other snap offset in between, use the original"
@@ -108,16 +111,19 @@ promise_test(async t => {
   t.add_cleanup(function() {
     topLeft.style.width = "";
     topRight.style.left = "400px";
+    topRight.style.scrollSnapStop = "";
   });
 
   // Make the snap area cover the snapport.
   topLeft.style.width = "800px";
   // Make the next snap offset closer than the original intended offset.
   topRight.style.left = "20px";
+  topRight.style.scrollSnapStop = "always";
   scroller.scrollTo(0, 0);
   assert_equals(scroller.scrollLeft, 0, "verify test pre-condition");
   await keyPress(scroller, "ArrowRight");
-  await waitForScrollEnd(scroller, scrollLeft, 20);
+  await waitForScrollEnd(scroller);
+  assert_equals(scroller.scrollLeft, 20);
 }, "If the original intended offset is valid as making a snap area cover the "
 + "snapport, but there's a defined snap offset in between, use the defined snap"
 + " offset.");
@@ -125,7 +131,8 @@ promise_test(async t => {
 promise_test(async t => {
   scroller.scrollTo(400, 0);
   await keyPress(scroller, "ArrowRight");
-  await waitForScrollEnd(scroller, scrollLeft, 400);
+  await waitForScrollEnd(scroller);
+  assert_equals(scroller.scrollLeft, 400);
 }, "If there is no valid snap offset on the arrow key's direction other than "
 + "the current offset, and the scroll-snap-type is mandatory, stay at the "
 + "current offset.");
@@ -133,15 +140,22 @@ promise_test(async t => {
 promise_test(async t => {
   t.add_cleanup(function() {
     scroller.style.scrollSnapType = "both mandatory";
+    scroller.style.width = "";
+    topLeft.style.width = "";
   });
 
   scroller.style.scrollSnapType = "both proximity";
+
+  // This test case works only if the scroll amount of pressing "ArrowRight" is
+  // greater than the scroll snap proximity value of the scroll container.
+  // "100px" width of the scroll container works on major browsers.
+  scroller.style.width = "100px";
+  topLeft.style.width = "80px";
+
   scroller.scrollTo(400, 0);
   assert_equals(scroller.scrollLeft, 400, "verify test pre-condition");
-  const scrollPromise = waitForScrollEvent(scroller);
   await keyPress(scroller, "ArrowRight");
-  await scrollPromise;
-  await waitForAnimationEnd(scrollLeft);
+  await waitForScrollEnd(scroller);
   assert_greater_than(scroller.scrollLeft, 400);
 }, "If there is no valid snap offset on the arrow key's direction other than "
 + "the current offset, and the scroll-snap-type is proximity, go to the "

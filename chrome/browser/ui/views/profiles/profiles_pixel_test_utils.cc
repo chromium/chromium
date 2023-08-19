@@ -3,7 +3,9 @@
 // found in the LICENSE file.
 
 #include "chrome/browser/ui/views/profiles/profiles_pixel_test_utils.h"
+
 #include <memory>
+
 #include "base/command_line.h"
 #include "base/scoped_environment_variable_override.h"
 #include "base/test/scoped_feature_list.h"
@@ -12,6 +14,7 @@
 #include "chrome/common/chrome_features.h"
 #include "components/signin/public/base/signin_buildflags.h"
 #include "components/signin/public/identity_manager/account_info.h"
+#include "components/signin/public/identity_manager/identity_test_environment.h"
 #include "components/signin/public/identity_manager/identity_test_utils.h"
 #include "ui/base/ui_base_features.h"
 #include "ui/base/ui_base_switches.h"
@@ -40,21 +43,26 @@ AccountInfo FillAccountInfo(const CoreAccountInfo& core_info,
 }  // namespace
 
 AccountInfo SignInWithPrimaryAccount(
-    Profile* profile,
+    signin::IdentityTestEnvironment& identity_test_env,
     AccountManagementStatus management_status) {
-  DCHECK(profile);
+  auto* identity_manager = identity_test_env.identity_manager();
 
-  auto* identity_manager = IdentityManagerFactory::GetForProfile(profile);
-  auto core_account_info = signin::MakePrimaryAccountAvailable(
-      identity_manager,
+  const std::string email =
       management_status == AccountManagementStatus::kManaged
           ? "joe.consumer@example.com"
-          : "joe.consumer@gmail.com",
-      signin::ConsentLevel::kSignin);
-  auto account_info = FillAccountInfo(core_account_info, management_status);
-  signin::UpdateAccountInfoForAccount(identity_manager, account_info);
+          : "joe.consumer@gmail.com";
+  AccountInfo base_account_info = identity_test_env.MakePrimaryAccountAvailable(
+      email, signin::ConsentLevel::kSignin);
 
-  return account_info;
+  identity_test_env.UpdateAccountInfoForAccount(
+      FillAccountInfo(base_account_info, management_status));
+
+  AccountInfo primary_account_info =
+      identity_manager->FindExtendedAccountInfoByEmailAddress(email);
+  CHECK_EQ(primary_account_info.account_id, base_account_info.account_id);
+  CHECK(primary_account_info.IsValid());
+
+  return primary_account_info;
 }
 
 void SetUpPixelTestCommandLine(
@@ -75,14 +83,11 @@ void SetUpPixelTestCommandLine(
   }
 }
 
-void InitPixelTestFeatures(
-    const PixelTestParam& params,
-    base::test::ScopedFeatureList& feature_list,
-    std::vector<base::test::FeatureRef>& enabled_features,
-    std::vector<base::test::FeatureRef>& disabled_features) {
-  if (params.use_dark_theme) {
-    enabled_features.push_back(features::kWebUIDarkMode);
-  }
+void InitPixelTestFeatures(const PixelTestParam& params,
+                           base::test::ScopedFeatureList& feature_list) {
+  std::vector<base::test::FeatureRef> enabled_features;
+  std::vector<base::test::FeatureRef> disabled_features;
+
   if (params.use_chrome_refresh_2023_style) {
     enabled_features.push_back(features::kChromeRefresh2023);
     enabled_features.push_back(features::kChromeWebuiRefresh2023);
@@ -92,5 +97,6 @@ void InitPixelTestFeatures(
     enabled_features.push_back(kForYouFre);
   }
 #endif
+
   feature_list.InitWithFeatures(enabled_features, disabled_features);
 }

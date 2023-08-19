@@ -23,6 +23,7 @@
 #include "base/test/scoped_feature_list.h"
 #include "base/unguessable_token.h"
 #include "build/build_config.h"
+#include "content/browser/media/media_devices_util.h"
 #include "content/browser/renderer_host/media/media_stream_manager.h"
 #include "content/browser/renderer_host/media/media_stream_ui_proxy.h"
 #include "content/browser/renderer_host/media/mock_video_capture_provider.h"
@@ -87,7 +88,6 @@ typedef media::FakeAudioManager AudioManagerPlatform;
 
 namespace {
 
-const char kMockSalt[] = "";
 const char kFakeDeviceIdPrefix[] = "fake_device_id_";
 
 // This class mocks the audio manager and overrides some methods to ensure that
@@ -446,7 +446,7 @@ class MediaStreamManagerTest : public ::testing::Test
         media_stream_manager_.get());
     media_stream_manager_->GenerateStreams(
         render_process_id, render_frame_id, requester_id, page_request_id,
-        controls, MediaDeviceSaltAndOrigin(), /*user_gesture=*/false,
+        controls, MediaDeviceSaltAndOrigin::Empty(), /*user_gesture=*/false,
         /*audio_stream_selection_info_ptr=*/
         blink::mojom::StreamSelectionInfo::New(
             /*strategy=*/blink::mojom::StreamSelectionStrategy::
@@ -532,7 +532,7 @@ class MediaStreamManagerTest : public ::testing::Test
     }
     media_stream_manager_->GenerateStreams(
         render_process_id, render_frame_id, requester_id, page_request_id,
-        controls, MediaDeviceSaltAndOrigin(), false /* user_gesture */,
+        controls, MediaDeviceSaltAndOrigin::Empty(), false /* user_gesture */,
         StreamSelectionInfo::New(
             blink::mojom::StreamSelectionStrategy::SEARCH_BY_DEVICE_ID,
             absl::nullopt),
@@ -646,7 +646,7 @@ class MediaStreamManagerTest : public ::testing::Test
         StreamSelectionInfo::New(strategy, session_id);
     media_stream_manager_->GenerateStreams(
         render_process_id, render_frame_id, requester_id, page_request_id,
-        controls, MediaDeviceSaltAndOrigin(), false /* user_gesture */,
+        controls, MediaDeviceSaltAndOrigin::Empty(), false /* user_gesture */,
         std::move(info), std::move(generate_stream_callback),
         std::move(stopped_callback), std::move(changed_callback),
         std::move(request_state_change_callback),
@@ -860,39 +860,6 @@ TEST_F(MediaStreamManagerTest, MakeAndCancelMultipleRequests) {
   run_loop_.Run();
 }
 
-TEST_F(MediaStreamManagerTest, DeviceID) {
-  url::Origin security_origin = url::Origin::Create(GURL("http://localhost"));
-  const std::string unique_default_id(
-      media::AudioDeviceDescription::kDefaultDeviceId);
-  const std::string hashed_default_id =
-      MediaStreamManager::GetHMACForMediaDeviceID(kMockSalt, security_origin,
-                                                  unique_default_id);
-  EXPECT_TRUE(MediaStreamManager::DoesMediaDeviceIDMatchHMAC(
-      kMockSalt, security_origin, hashed_default_id, unique_default_id));
-  EXPECT_EQ(unique_default_id, hashed_default_id);
-
-  const std::string unique_communications_id(
-      media::AudioDeviceDescription::kCommunicationsDeviceId);
-  const std::string hashed_communications_id =
-      MediaStreamManager::GetHMACForMediaDeviceID(kMockSalt, security_origin,
-                                                  unique_communications_id);
-  EXPECT_TRUE(MediaStreamManager::DoesMediaDeviceIDMatchHMAC(
-      kMockSalt, security_origin, hashed_communications_id,
-      unique_communications_id));
-  EXPECT_EQ(unique_communications_id, hashed_communications_id);
-
-  const std::string unique_other_id("other-unique-id");
-  const std::string hashed_other_id =
-      MediaStreamManager::GetHMACForMediaDeviceID(kMockSalt, security_origin,
-                                                  unique_other_id);
-  EXPECT_TRUE(MediaStreamManager::DoesMediaDeviceIDMatchHMAC(
-      kMockSalt, security_origin, hashed_other_id, unique_other_id));
-  EXPECT_NE(unique_other_id, hashed_other_id);
-  EXPECT_EQ(hashed_other_id.size(), 64U);
-  for (const char& c : hashed_other_id)
-    EXPECT_TRUE(base::IsAsciiDigit(c) || (c >= 'a' && c <= 'f'));
-}
-
 TEST_F(MediaStreamManagerTest, GenerateSameStreamForAudioDevice) {
   media_stream_manager_->UseFakeUIFactoryForTests(base::BindRepeating([]() {
     return std::make_unique<FakeMediaStreamUIProxy>(
@@ -1024,7 +991,7 @@ TEST_F(MediaStreamManagerTest, GetDisplayMediaRequestCallsUIProxy) {
   const int page_request_id = 0;
   media_stream_manager_->GenerateStreams(
       render_process_id, render_frame_id, requester_id, page_request_id,
-      controls, MediaDeviceSaltAndOrigin(), false /* user_gesture */,
+      controls, MediaDeviceSaltAndOrigin::Empty(), false /* user_gesture */,
       StreamSelectionInfo::New(
           blink::mojom::StreamSelectionStrategy::SEARCH_BY_DEVICE_ID,
           absl::nullopt),
@@ -1083,7 +1050,7 @@ TEST_F(MediaStreamManagerTest, DesktopCaptureDeviceStopped) {
 
   media_stream_manager_->GenerateStreams(
       render_process_id, render_frame_id, requester_id, page_request_id,
-      controls, MediaDeviceSaltAndOrigin(), false /* user_gesture */,
+      controls, MediaDeviceSaltAndOrigin::Empty(), false /* user_gesture */,
       StreamSelectionInfo::New(
           blink::mojom::StreamSelectionStrategy::SEARCH_BY_DEVICE_ID,
           absl::nullopt),
@@ -1155,7 +1122,7 @@ TEST_F(MediaStreamManagerTest, DesktopCaptureDeviceChanged) {
 
   media_stream_manager_->GenerateStreams(
       render_process_id, render_frame_id, requester_id, page_request_id,
-      controls, MediaDeviceSaltAndOrigin(), false /* user_gesture */,
+      controls, MediaDeviceSaltAndOrigin::Empty(), false /* user_gesture */,
       StreamSelectionInfo::New(
           blink::mojom::StreamSelectionStrategy::SEARCH_BY_DEVICE_ID,
           absl::nullopt),
@@ -1178,37 +1145,6 @@ TEST_F(MediaStreamManagerTest, DesktopCaptureDeviceChanged) {
   media_stream_manager_->StopStreamDevice(render_process_id, render_frame_id,
                                           requester_id, video_device.id,
                                           video_device.session_id());
-}
-
-TEST_F(MediaStreamManagerTest, GetMediaDeviceIDForHMAC) {
-  const char kSalt[] = "my salt";
-  const url::Origin kOrigin = url::Origin::Create(GURL("http://example.com"));
-  const std::string kExistingRawDeviceId =
-      std::string(kFakeDeviceIdPrefix) + "0";
-  const std::string kExistingHmacDeviceId =
-      MediaStreamManager::GetHMACForMediaDeviceID(kSalt, kOrigin,
-                                                  kExistingRawDeviceId);
-
-  MediaStreamManager::GetMediaDeviceIDForHMAC(
-      blink::mojom::MediaStreamType::DEVICE_AUDIO_CAPTURE, kSalt, kOrigin,
-      kExistingHmacDeviceId, base::SequencedTaskRunner::GetCurrentDefault(),
-      base::BindOnce(
-          [](const std::string& expected_raw_device_id,
-             const absl::optional<std::string>& raw_device_id) {
-            ASSERT_TRUE(raw_device_id.has_value());
-            EXPECT_EQ(*raw_device_id, expected_raw_device_id);
-          },
-          kExistingRawDeviceId));
-  base::RunLoop().RunUntilIdle();
-
-  const std::string kNonexistingHmacDeviceId = "does not exist";
-  MediaStreamManager::GetMediaDeviceIDForHMAC(
-      blink::mojom::MediaStreamType::DEVICE_AUDIO_CAPTURE, kSalt, kOrigin,
-      kNonexistingHmacDeviceId, base::SequencedTaskRunner::GetCurrentDefault(),
-      base::BindOnce([](const absl::optional<std::string>& raw_device_id) {
-        EXPECT_FALSE(raw_device_id.has_value());
-      }));
-  base::RunLoop().RunUntilIdle();
 }
 
 TEST_F(MediaStreamManagerTest, MultiCaptureOnMediaStreamUIWindowId) {
@@ -1415,7 +1351,7 @@ class MediaStreamManagerTestForTransfers : public MediaStreamManagerTest {
 
     media_stream_manager_->GenerateStreams(
         render_process_id_, render_frame_id_, requester_id_,
-        /*page_request_id=*/1, controls, MediaDeviceSaltAndOrigin(),
+        /*page_request_id=*/1, controls, MediaDeviceSaltAndOrigin::Empty(),
         /*user_gesture=*/false,
         StreamSelectionInfo::New(
             blink::mojom::StreamSelectionStrategy::SEARCH_BY_DEVICE_ID,
@@ -1449,7 +1385,7 @@ class MediaStreamManagerTestForTransfers : public MediaStreamManagerTest {
     media_stream_manager_->GetOpenDevice(
         existing_device_session_id_, transfer_id_, /*render_process_id=*/2,
         /*render_frame_id=*/2, /*requester_id=*/2, /*page_request_id=*/2,
-        MediaDeviceSaltAndOrigin(), std::move(get_open_device_cb),
+        MediaDeviceSaltAndOrigin::Empty(), std::move(get_open_device_cb),
         /*device_stopped_cb=*/base::DoNothing(),
         /*device_changed_cb=*/base::DoNothing(),
         /*device_request_state_change_cb=*/base::DoNothing(),

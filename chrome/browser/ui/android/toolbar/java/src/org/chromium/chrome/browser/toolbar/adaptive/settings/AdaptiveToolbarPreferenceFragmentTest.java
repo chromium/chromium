@@ -21,14 +21,19 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TestRule;
 import org.junit.runner.RunWith;
+import org.mockito.Mock;
+import org.mockito.MockitoAnnotations;
 import org.robolectric.annotation.Config;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.omnibox.voice.VoiceRecognitionUtil;
 import org.chromium.chrome.browser.preferences.SharedPreferencesManager;
+import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.signin.services.UnifiedConsentServiceBridge;
 import org.chromium.chrome.browser.toolbar.R;
 import org.chromium.chrome.browser.toolbar.adaptive.AdaptiveToolbarButtonVariant;
+import org.chromium.chrome.browser.toolbar.adaptive.AdaptiveToolbarFeatures;
 import org.chromium.chrome.browser.toolbar.adaptive.AdaptiveToolbarPrefs;
 import org.chromium.chrome.browser.toolbar.adaptive.AdaptiveToolbarStatePredictor;
 import org.chromium.chrome.test.util.browser.Features;
@@ -36,25 +41,30 @@ import org.chromium.chrome.test.util.browser.Features.DisableFeatures;
 import org.chromium.chrome.test.util.browser.Features.EnableFeatures;
 import org.chromium.components.browser_ui.settings.ChromeSwitchPreference;
 import org.chromium.components.browser_ui.widget.RadioButtonWithDescription;
-
 /**
  * Tests for {@link AdaptiveToolbarPreferenceFragment}.
  */
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
-@EnableFeatures({ChromeFeatureList.ADAPTIVE_BUTTON_IN_TOP_TOOLBAR_CUSTOMIZATION_V2})
+@EnableFeatures(ChromeFeatureList.ADAPTIVE_BUTTON_IN_TOP_TOOLBAR_CUSTOMIZATION_V2)
 @DisableFeatures({ChromeFeatureList.ADAPTIVE_BUTTON_IN_TOP_TOOLBAR,
         ChromeFeatureList.ADAPTIVE_BUTTON_IN_TOP_TOOLBAR_TRANSLATE,
-        ChromeFeatureList.ADAPTIVE_BUTTON_IN_TOP_TOOLBAR_ADD_TO_BOOKMARKS})
+        ChromeFeatureList.ADAPTIVE_BUTTON_IN_TOP_TOOLBAR_ADD_TO_BOOKMARKS,
+        ChromeFeatureList.READALOUD})
 public class AdaptiveToolbarPreferenceFragmentTest {
     @Rule
     public TestRule mProcessor = new Features.JUnitProcessor();
+
+    @Mock
+    Profile mProfile;
 
     private ChromeSwitchPreference mSwitchPreference;
     private RadioButtonGroupAdaptiveToolbarPreference mRadioPreference;
 
     @Before
     public void setUpTest() throws Exception {
+        MockitoAnnotations.initMocks(this);
+
         SharedPreferencesManager.getInstance().removeKey(ADAPTIVE_TOOLBAR_CUSTOMIZATION_ENABLED);
         SharedPreferencesManager.getInstance().removeKey(ADAPTIVE_TOOLBAR_CUSTOMIZATION_SETTINGS);
         AdaptiveToolbarStatePredictor.setSegmentationResultsForTesting(
@@ -66,7 +76,6 @@ public class AdaptiveToolbarPreferenceFragmentTest {
     @After
     public void tearDownTest() throws Exception {
         AdaptiveToolbarStatePredictor.setSegmentationResultsForTesting(null);
-        VoiceRecognitionUtil.setIsVoiceSearchEnabledForTesting(null);
         SharedPreferencesManager.getInstance().removeKey(ADAPTIVE_TOOLBAR_CUSTOMIZATION_ENABLED);
         SharedPreferencesManager.getInstance().removeKey(ADAPTIVE_TOOLBAR_CUSTOMIZATION_SETTINGS);
     }
@@ -244,6 +253,62 @@ public class AdaptiveToolbarPreferenceFragmentTest {
                     getButton(AdaptiveToolbarButtonVariant.ADD_TO_BOOKMARKS).getId());
             Assert.assertEquals(View.GONE,
                     getButton(AdaptiveToolbarButtonVariant.ADD_TO_BOOKMARKS).getVisibility());
+            assertButtonCheckedCorrectly("Based on your usage", AdaptiveToolbarButtonVariant.AUTO);
+            Assert.assertEquals(AdaptiveToolbarButtonVariant.AUTO, mRadioPreference.getSelection());
+            Assert.assertEquals(AdaptiveToolbarButtonVariant.AUTO,
+                    SharedPreferencesManager.getInstance().readInt(
+                            ADAPTIVE_TOOLBAR_CUSTOMIZATION_SETTINGS));
+        });
+    }
+
+    @Test
+    @SmallTest
+    @EnableFeatures(ChromeFeatureList.READALOUD)
+    public void testReadAloudOption_Enabled() {
+        AdaptiveToolbarFeatures.setProfile(mProfile);
+        UnifiedConsentServiceBridge.setUrlKeyedAnonymizedDataCollectionEnabled(true);
+        FragmentScenario<AdaptiveToolbarPreferenceFragment> scenario =
+                FragmentScenario.launchInContainer(AdaptiveToolbarPreferenceFragment.class,
+                        Bundle.EMPTY, R.style.Theme_Chromium_Settings);
+        scenario.onFragment(fragment -> {
+            mRadioPreference = (RadioButtonGroupAdaptiveToolbarPreference) fragment.findPreference(
+                    AdaptiveToolbarPreferenceFragment.PREF_ADAPTIVE_RADIO_GROUP);
+
+            // Select Read Aloud.
+            Assert.assertEquals(R.id.adaptive_option_read_aloud,
+                    getButton(AdaptiveToolbarButtonVariant.READ_ALOUD).getId());
+            selectButton(AdaptiveToolbarButtonVariant.READ_ALOUD);
+            assertButtonCheckedCorrectly("Read Aloud", AdaptiveToolbarButtonVariant.READ_ALOUD);
+            Assert.assertEquals(
+                    AdaptiveToolbarButtonVariant.READ_ALOUD, mRadioPreference.getSelection());
+            Assert.assertEquals(AdaptiveToolbarButtonVariant.READ_ALOUD,
+                    SharedPreferencesManager.getInstance().readInt(
+                            ADAPTIVE_TOOLBAR_CUSTOMIZATION_SETTINGS));
+        });
+    }
+
+    @Test
+    @SmallTest
+    @DisableFeatures(ChromeFeatureList.READALOUD)
+    public void testReadAloudOption_Disabled() {
+        // Set initial preference to Read Aloud.
+        SharedPreferencesManager.getInstance().writeInt(
+                ADAPTIVE_TOOLBAR_CUSTOMIZATION_SETTINGS, AdaptiveToolbarButtonVariant.READ_ALOUD);
+        FragmentScenario<AdaptiveToolbarPreferenceFragment> scenario =
+                FragmentScenario.launchInContainer(AdaptiveToolbarPreferenceFragment.class,
+                        Bundle.EMPTY, R.style.Theme_Chromium_Settings);
+        scenario.onFragment(fragment -> {
+            mRadioPreference = (RadioButtonGroupAdaptiveToolbarPreference) fragment.findPreference(
+                    AdaptiveToolbarPreferenceFragment.PREF_ADAPTIVE_RADIO_GROUP);
+
+            // Read Aloud option should be hidden, and we should have reverted back to
+            // "Auto".
+            Assert.assertEquals(R.id.adaptive_option_read_aloud,
+                    getButton(AdaptiveToolbarButtonVariant.READ_ALOUD).getId());
+
+            Assert.assertEquals(
+                    View.GONE, getButton(AdaptiveToolbarButtonVariant.READ_ALOUD).getVisibility());
+
             assertButtonCheckedCorrectly("Based on your usage", AdaptiveToolbarButtonVariant.AUTO);
             Assert.assertEquals(AdaptiveToolbarButtonVariant.AUTO, mRadioPreference.getSelection());
             Assert.assertEquals(AdaptiveToolbarButtonVariant.AUTO,

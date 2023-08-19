@@ -10,25 +10,36 @@
 #include "ui/color/color_id.h"
 #include "ui/color/color_mixer.h"
 #include "ui/color/color_provider.h"
-#include "ui/color/color_provider_manager.h"
+#include "ui/color/color_provider_key.h"
 #include "ui/color/color_recipe.h"
 #include "ui/color/color_transform.h"
 
 namespace ui {
+// This aligns with GM2 default InkDropHighlight::visible_opacity_.
+constexpr SkAlpha kAttentionHighlightAlpha = 0.128 * 255;
 
 void AddMaterialUiColorMixer(ColorProvider* provider,
-                             const ColorProviderManager::Key& key) {
-  const bool dark_mode =
-      key.color_mode == ColorProviderManager::ColorMode::kDark;
+                             const ColorProviderKey& key) {
+  const bool dark_mode = key.color_mode == ColorProviderKey::ColorMode::kDark;
   DVLOG(2) << "Adding MaterialUiColorMixer to ColorProvider for "
            << (dark_mode ? "Dark" : "Light") << " window.";
   ColorMixer& mixer = provider->AddMixer();
 
   mixer[kColorAvatarIconIncognito] = {kColorSysOnSurfaceVariant};
+  mixer[kColorAppMenuProfileRowBackground] = {kColorSysSurface4};
+  mixer[kColorAppMenuProfileRowBackgroundHovered] = {
+      kColorSysStateHoverOnSubtle};
+  mixer[kColorAppMenuProfileRowChipBackground] = {kColorSysTonalContainer};
+  mixer[kColorAppMenuProfileRowChipHovered] = {
+      ui::GetResultingPaintColor(kColorAppMenuProfileRowBackgroundHovered,
+                                 kColorAppMenuProfileRowChipBackground)};
+  mixer[kColorAvatarIconGuest] = {kColorSysOnSurfaceSecondary};
   mixer[kColorBadgeBackground] = {kColorSysTonalContainer};
   mixer[kColorBadgeForeground] = {kColorSysOnTonalContainer};
   mixer[kColorBadgeInCocoaMenuBackground] = {kColorSysPrimary};
   mixer[kColorBadgeInCocoaMenuForeground] = {kColorSysOnPrimary};
+  mixer[kColorBubbleBackground] = {kColorSysSurface};
+  mixer[kColorBubbleFooterBackground] = {kColorSysNeutralContainer};
   mixer[kColorButtonBackground] = {kColorSysSurface};
   mixer[kColorButtonBackgroundPressed] =
       GetResultingPaintColor({kColorSysStatePressed}, {kColorButtonBackground});
@@ -39,6 +50,8 @@ void AddMaterialUiColorMixer(ColorProvider* provider,
       {kColorSysStateFocus}, {kColorButtonBackgroundProminent})};
   mixer[kColorButtonBorder] = {kColorSysTonalOutline};
   mixer[kColorButtonBorderDisabled] = {kColorSysStateDisabled};
+  mixer[kColorButtonFeatureAttentionHighlight] =
+      SetAlpha({kColorSysPrimary}, kAttentionHighlightAlpha);
   mixer[kColorButtonForeground] = {kColorSysPrimary};
   mixer[kColorButtonForegroundDisabled] = {kColorSysStateDisabled};
   mixer[kColorButtonForegroundProminent] = {kColorSysOnPrimary};
@@ -58,14 +71,36 @@ void AddMaterialUiColorMixer(ColorProvider* provider,
   mixer[kColorFocusableBorderUnfocused] = {kColorSysOutline};
   mixer[kColorFrameActive] = {kColorSysHeader};
   mixer[kColorFrameActiveUnthemed] = {kColorSysHeader};
+  mixer[kColorFrameCaptionButtonUnfocused] = {dark_mode ? kColorRefSecondary100
+                                                        : kColorRefSecondary0};
   mixer[kColorFrameInactive] = {kColorSysHeaderInactive};
+  mixer[kColorIcon] = {kColorSysOnSurfaceSubtle};
+  mixer[kColorHistoryClustersSidePanelDivider] = {kColorSysOnBaseDivider};
+  mixer[kColorHistoryClustersSidePanelDialogBackground] = {kColorSysSurface};
+  mixer[kColorHistoryClustersSidePanelDialogDivider] = {
+      kColorSysNeutralOutline};
+  mixer[kColorHistoryClustersSidePanelDialogPrimaryForeground] = {
+      kColorSysOnSurface};
+  mixer[kColorHistoryClustersSidePanelDialogSecondaryForeground] = {
+      kColorSysOnSurfaceSubtle};
+  mixer[kColorHistoryClustersSidePanelCardSecondaryForeground] = {
+      kColorSysOnSurfaceSubtle};
+  mixer[kColorLabelSelectionBackground] = {kColorTextSelectionBackground};
+  mixer[kColorLinkForegroundDefault] = {kColorSysPrimary};
   mixer[kColorListItemFolderIconBackground] = {kColorSysTonalContainer};
   mixer[kColorListItemFolderIconForeground] = {kColorSysOnTonalContainer};
   mixer[kColorListItemUrlFaviconBackground] = {kColorSysNeutralContainer};
   mixer[kColorMenuButtonBackground] = {kColorSysNeutralContainer};
+  mixer[kColorMenuButtonBackgroundSelected] = {GetResultingPaintColor(
+      {kColorSysStateHoverOnSubtle}, {kColorMenuButtonBackground})};
   mixer[kColorMenuIcon] = {kColorSysOnSurfaceSubtle};
+  mixer[kColorMenuIconDisabled] = {kColorSysStateDisabled};
   mixer[kColorMenuItemForegroundSecondary] = {kColorSysOnSurfaceSubtle};
   mixer[kColorMenuItemForeground] = {kColorSysOnSurface};
+  mixer[kColorMenuSelectionBackground] = {GetResultingPaintColor(
+      {kColorSysStateHoverOnSubtle}, {kColorMenuBackground})};
+  mixer[kColorPrimaryBackground] = {kColorSysSurface};
+  mixer[kColorPrimaryForeground] = {kColorSysOnSurface};
   mixer[kColorProgressBar] = {ui::kColorSysPrimary};
   mixer[kColorProgressBarBackground] = {ui::kColorSysNeutralOutline};
   mixer[kColorProgressBarPaused] = {ui::kColorSysStateDisabled};
@@ -73,6 +108,7 @@ void AddMaterialUiColorMixer(ColorProvider* provider,
   mixer[kColorRadioButtonForegroundDisabled] = {
       kColorSysStateDisabledContainer};
   mixer[kColorRadioButtonForegroundUnchecked] = {kColorSysOutline};
+  mixer[kColorSecondaryForeground] = {ui::kColorSysOnSurfaceSubtle};
   mixer[kColorSegmentedButtonBorder] = {kColorSysTonalOutline};
   mixer[kColorSegmentedButtonForegroundChecked] = {kColorSysOnTonalContainer};
   mixer[kColorSegmentedButtonForegroundUnchecked] = {kColorSysOnSurfaceSubtle};
@@ -80,6 +116,7 @@ void AddMaterialUiColorMixer(ColorProvider* provider,
   mixer[kColorSegmentedButtonRipple] = {kColorSysStateRippleNeutralOnSubtle};
   mixer[kColorSegmentedButtonChecked] = {kColorSysTonalContainer};
   mixer[kColorSeparator] = {kColorSysDivider};
+  mixer[kColorSidePanelComboboxBackground] = {kColorSysBaseContainer};
   mixer[kColorSliderThumb] = {kColorSysPrimary};
   mixer[kColorSliderThumbMinimal] = {kColorSysSecondary};
   mixer[kColorSliderTrack] = {kColorSysOnPrimary};
@@ -107,7 +144,21 @@ void AddMaterialUiColorMixer(ColorProvider* provider,
   mixer[kColorTextfieldOutlineDisabled] = {SK_ColorTRANSPARENT};
   mixer[kColorTextfieldOutlineInvalid] = {
       kColorTextfieldForegroundPlaceholderInvalid};
-  mixer[kColorTextfieldSelectionBackground] = {kColorSysTonalContainer};
+  mixer[kColorTextfieldSelectionBackground] = {kColorTextSelectionBackground};
+  mixer[kColorTextSelectionBackground] = {kColorSysTonalContainer};
+  mixer[kColorThemeColorPickerCheckmarkBackground] = {kColorSysOnSurface};
+  mixer[kColorThemeColorPickerCheckmarkForeground] = {
+      kColorSysInverseOnSurface};
+  mixer[kColorThemeColorPickerCustomColorIconBackground] = {
+      kColorSysOnSurfaceSubtle};
+  mixer[kColorThemeColorPickerHueSliderDialogBackground] = {kColorSysSurface};
+  mixer[kColorThemeColorPickerHueSliderDialogForeground] = {kColorSysOnSurface};
+  mixer[kColorThemeColorPickerHueSliderDialogIcon] = {kColorSysOnSurfaceSubtle};
+  mixer[kColorThemeColorPickerHueSliderHandle] = {kColorSysWhite};
+  mixer[kColorThemeColorPickerOptionBackground] = {kColorSysNeutralContainer};
+  mixer[kColorToastBackground] = {kColorSysInverseSurface};
+  mixer[kColorToastButton] = {kColorSysInversePrimary};
+  mixer[kColorToastForeground] = {kColorSysInverseOnSurface};
   mixer[kColorToggleButtonHover] = {kColorSysStateHover};
   mixer[kColorToggleButtonPressed] = {kColorSysStatePressed};
   mixer[kColorToggleButtonShadow] = {kColorSysOutline};

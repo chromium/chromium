@@ -51,7 +51,7 @@ class FormFetcherImpl : public FormFetcher,
   std::vector<const PasswordForm*> GetNonFederatedMatches() const override;
   std::vector<const PasswordForm*> GetFederatedMatches() const override;
   bool IsBlocklisted() const override;
-  bool IsMovingBlocked(const autofill::GaiaIdHash& destination,
+  bool IsMovingBlocked(const signin::GaiaIdHash& destination,
                        const std::u16string& username) const override;
 
   const std::vector<const PasswordForm*>& GetAllRelevantMatches()
@@ -75,7 +75,7 @@ class FormFetcherImpl : public FormFetcher,
   const PasswordFormDigest form_digest_;
 
   // Client used to obtain a CredentialFilter.
-  const raw_ptr<PasswordManagerClient, DanglingUntriaged> client_;
+  const raw_ptr<PasswordManagerClient> client_;
 
   // State of the fetcher.
   State state_ = State::NOT_WAITING;

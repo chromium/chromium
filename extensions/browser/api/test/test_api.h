@@ -50,6 +50,17 @@ class TestNotifyFailFunction : public TestExtensionFunction {
   ResponseAction Run() override;
 };
 
+class TestOpenFileUrlFunction : public TestExtensionFunction {
+ public:
+  DECLARE_EXTENSION_FUNCTION("test.openFileUrl", UNKNOWN)
+
+ protected:
+  ~TestOpenFileUrlFunction() override;
+
+  // ExtensionFunction:
+  ResponseAction Run() override;
+};
+
 class TestLogFunction : public TestExtensionFunction {
  public:
   DECLARE_EXTENSION_FUNCTION("test.log", UNKNOWN)

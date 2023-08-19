@@ -36,7 +36,7 @@ class FakeDeskSyncBridge : public DeskModel {
   size_t GetDeskTemplateEntryCount() const override;
   size_t GetMaxSaveAndRecallDeskEntryCount() const override;
   size_t GetMaxDeskTemplateEntryCount() const override;
-  std::vector<base::Uuid> GetAllEntryUuids() const override;
+  std::set<base::Uuid> GetAllEntryUuids() const override;
   bool IsReady() const override;
   // Whether this sync bridge is syncing local data to sync. This sync bridge
   // still allows user to save desk templates locally when users disable syncing
@@ -64,9 +64,6 @@ class FakeDeskSyncBridge : public DeskModel {
 
   // `desk_template_entries_` is keyed by UUIDs.
   DeskEntries desk_template_entries_;
-
-  // `floating_workspace_templates_uuid_` is keyed by cache_guids.
-  base::flat_map<std::string, base::Uuid> floating_workspace_templates_uuid_;
 
   std::string cache_guid_;
 

@@ -25,9 +25,11 @@ export class OptionPanel extends View {
   private readonly observers = new Map<state.State, state.StateObserver>();
 
   constructor() {
-    super(
-        ViewName.OPTION_PANEL,
-        {dismissByEsc: true, dismissByBackgroundClick: true});
+    super(ViewName.OPTION_PANEL, {
+      dismissByEsc: true,
+      dismissByBackgroundClick: true,
+      dismissOnStopStreaming: true,
+    });
   }
 
   override entering(options: EnterOptions): void {

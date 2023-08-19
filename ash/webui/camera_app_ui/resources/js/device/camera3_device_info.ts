@@ -66,8 +66,12 @@ export class Camera3DeviceInfo {
       readonly supportPTZ: boolean,
   ) {
     this.deviceId = deviceInfo.deviceId;
+    // If all fps supported by the camera is lower than 24, use the maximum
+    // supported fps.
+    const maxSupportedFps =
+        Math.max(...videoResolutionFpses.map(({maxFps}) => maxFps));
     for (const {width, height, maxFps} of videoResolutionFpses) {
-      if (maxFps < 24) {
+      if (maxFps < 24 && maxFps !== maxSupportedFps) {
         continue;
       }
       const r = new Resolution(width, height);
@@ -81,7 +85,6 @@ export class Camera3DeviceInfo {
   }
 
   /**
-   * @param videoResolution Video resolution.
    * @return The constant fps supported by this video resolution.
    */
   getConstFpses(videoResolution: Resolution): number[] {
@@ -94,7 +97,7 @@ export class Camera3DeviceInfo {
 
   private pairedPreviewCaptureResolutions(captureRs: Resolution[]):
       CapturePreviewPairs {
-    // Filter out preview resolution greater than 1920x1080 and 1600x1200 for
+    // Filters out preview resolution greater than 1920x1080 and 1600x1200 for
     // preventing performance issue.
     const previewRs = this.videoResolutions.filter(
         ({width, height}) => width <= 1920 && height <= 1200);
@@ -113,7 +116,7 @@ export class Camera3DeviceInfo {
   }
 
   /**
-   * Creates a Camera3DeviceInfo by given device info and the mojo device
+   * Creates a Camera3DeviceInfo by the given device info and the mojo device
    *     operator.
    *
    * @param deviceInfo Given device info.

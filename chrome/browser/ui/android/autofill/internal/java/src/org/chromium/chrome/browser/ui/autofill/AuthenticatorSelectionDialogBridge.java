@@ -25,8 +25,6 @@ import java.util.List;
  */
 @JNINamespace("autofill")
 public class AuthenticatorSelectionDialogBridge implements AuthenticatorSelectionDialog.Listener {
-    private static final String TAG = "AuthSelectionDialog";
-
     private final long mNativeCardUnmaskAuthenticationSelectionDialogView;
     private final Context mContext;
     private AuthenticatorSelectionDialog mAuthenticatorSelectionDialog;

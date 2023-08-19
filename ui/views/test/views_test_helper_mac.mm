@@ -26,7 +26,7 @@ ViewsTestHelperMac::ViewsTestHelperMac() {
   // Unbundled applications (those without Info.plist) default to
   // NSApplicationActivationPolicyProhibited, which prohibits the application
   // obtaining key status or activating windows without user interaction.
-  [NSApp setActivationPolicy:NSApplicationActivationPolicyRegular];
+  NSApp.activationPolicy = NSApplicationActivationPolicyRegular;
 
   ui::test::EventGeneratorDelegate::SetFactoryFunction(
       base::BindRepeating(&test::CreateEventGeneratorDelegateMac));
@@ -50,7 +50,7 @@ ViewsTestHelperMac::~ViewsTestHelperMac() {
   // Unit tests on Aura may create Widgets owned by a RootWindow that gets torn
   // down, but on Mac we need to be more explicit.
   @autoreleasepool {
-    NSArray* native_windows = [NSApp windows];
+    NSArray* native_windows = NSApp.windows;
     for (NSWindow* window : native_windows)
       DCHECK(!Widget::GetWidgetForNativeWindow(window)) << "Widget not closed.";
 

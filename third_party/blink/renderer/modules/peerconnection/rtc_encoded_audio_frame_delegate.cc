@@ -7,6 +7,7 @@
 #include <utility>
 
 #include "third_party/blink/renderer/core/typed_arrays/dom_array_buffer.h"
+#include "third_party/blink/renderer/platform/bindings/exception_code.h"
 #include "third_party/webrtc/api/frame_transformer_factory.h"
 
 namespace blink {
@@ -14,12 +15,13 @@ namespace blink {
 const void* RTCEncodedAudioFramesAttachment::kAttachmentKey;
 
 RTCEncodedAudioFrameDelegate::RTCEncodedAudioFrameDelegate(
-    std::unique_ptr<webrtc::TransformableFrameInterface> webrtc_frame,
-    Vector<uint32_t> contributing_sources,
+    std::unique_ptr<webrtc::TransformableAudioFrameInterface> webrtc_frame,
+    rtc::ArrayView<const unsigned int> contributing_sources,
     absl::optional<uint16_t> sequence_number)
     : webrtc_frame_(std::move(webrtc_frame)),
-      contributing_sources_(std::move(contributing_sources)),
-      sequence_number_(sequence_number) {}
+      sequence_number_(sequence_number) {
+  contributing_sources_.assign(contributing_sources);
+}
 
 uint32_t RTCEncodedAudioFrameDelegate::Timestamp() const {
   base::AutoLock lock(lock_);
@@ -30,15 +32,17 @@ DOMArrayBuffer* RTCEncodedAudioFrameDelegate::CreateDataBuffer() const {
   ArrayBufferContents contents;
   {
     base::AutoLock lock(lock_);
-    if (!webrtc_frame_)
+    if (!webrtc_frame_) {
       return nullptr;
+    }
 
     auto data = webrtc_frame_->GetData();
     contents =
         ArrayBufferContents(data.size(), 1, ArrayBufferContents::kNotShared,
                             ArrayBufferContents::kDontInitialize);
-    if (UNLIKELY(!contents.Data()))
+    if (UNLIKELY(!contents.Data())) {
       OOM_CRASH(data.size());
+    }
     memcpy(contents.Data(), data.data(), data.size());
   }
   return DOMArrayBuffer::Create(std::move(contents));
@@ -49,6 +53,18 @@ void RTCEncodedAudioFrameDelegate::SetData(const DOMArrayBuffer* data) {
   if (webrtc_frame_ && data) {
     webrtc_frame_->SetData(rtc::ArrayView<const uint8_t>(
         static_cast<const uint8_t*>(data->Data()), data->ByteLength()));
+  }
+}
+
+void RTCEncodedAudioFrameDelegate::SetTimestamp(
+    uint32_t timestamp,
+    ExceptionState& exception_state) {
+  base::AutoLock lock(lock_);
+  if (webrtc_frame_) {
+    webrtc_frame_->SetRTPTimestamp(timestamp);
+  } else {
+    exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
+                                      "Underlying webrtc frame doesn't exist.");
   }
 }
 
@@ -74,25 +90,31 @@ Vector<uint32_t> RTCEncodedAudioFrameDelegate::ContributingSources() const {
   return contributing_sources_;
 }
 
-std::unique_ptr<webrtc::TransformableFrameInterface>
+absl::optional<uint64_t> RTCEncodedAudioFrameDelegate::AbsCaptureTime() const {
+  base::AutoLock lock(lock_);
+  if (webrtc_frame_ &&
+      webrtc_frame_->GetDirection() ==
+          webrtc::TransformableFrameInterface::Direction::kReceiver) {
+    webrtc::TransformableAudioFrameInterface* incoming_audio_frame =
+        static_cast<webrtc::TransformableAudioFrameInterface*>(
+            webrtc_frame_.get());
+
+    return incoming_audio_frame->AbsoluteCaptureTimestamp();
+  }
+
+  return absl::nullopt;
+}
+
+std::unique_ptr<webrtc::TransformableAudioFrameInterface>
 RTCEncodedAudioFrameDelegate::PassWebRtcFrame() {
   base::AutoLock lock(lock_);
   return std::move(webrtc_frame_);
 }
 
-std::unique_ptr<webrtc::TransformableFrameInterface>
-RTCEncodedAudioFrameDelegate::CloneWebRtcFrame(String& exception_message) {
+std::unique_ptr<webrtc::TransformableAudioFrameInterface>
+RTCEncodedAudioFrameDelegate::CloneWebRtcFrame() {
   base::AutoLock lock(lock_);
-  if (webrtc_frame_->GetDirection() ==
-      webrtc::TransformableFrameInterface::Direction::kReceiver) {
-    return webrtc::CloneAudioFrame(
-        static_cast<webrtc::TransformableAudioFrameInterface*>(
-            webrtc_frame_.get()));
-  } else {
-    exception_message =
-        "Cloning of outgoing RTCEncodedAudioFrames is not supported.";
-    return nullptr;
-  }
+  return webrtc::CloneAudioFrame(webrtc_frame_.get());
 }
 
 }  // namespace blink

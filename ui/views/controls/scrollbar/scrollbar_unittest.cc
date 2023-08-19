@@ -47,7 +47,7 @@ class TestScrollBarController : public views::ScrollBarController {
 
   // We save the last values in order to assert the correctness of the scroll
   // operation.
-  raw_ptr<views::ScrollBar, DanglingUntriaged> last_source;
+  raw_ptr<views::ScrollBar, AcrossTasksDanglingUntriaged> last_source;
   bool last_is_positive;
   bool last_is_page;
   int last_position;
@@ -104,7 +104,7 @@ class ScrollBarViewsTest : public ViewsTestBase {
   UniqueWidgetPtr widget_;
 
   // This is the Views scrollbar.
-  raw_ptr<ScrollBar, DanglingUntriaged> scrollbar_ = nullptr;
+  raw_ptr<ScrollBar, AcrossTasksDanglingUntriaged> scrollbar_ = nullptr;
 
   // Keep track of the size of the track. This is how we can tell when we
   // scroll to the middle.
@@ -209,6 +209,10 @@ TEST_F(ScrollBarViewsTest, ThumbFullLengthOfTrack) {
   // Emulate a key down.
   scrollbar_->ScrollByAmount(ScrollBar::ScrollAmount::kNextLine);
   EXPECT_EQ(0, scrollbar_->GetPosition());
+  // Emulate a programmatic scroll to a non-zero offset. See crbug.com/1447967.
+  scrollbar_->Update(100, 100, 10);
+  EXPECT_EQ(scrollbar_->GetTrackBounds().width(),
+            scrollbar_->GetThumbLengthForTesting());
 }
 
 TEST_F(ScrollBarViewsTest, AccessibleRole) {

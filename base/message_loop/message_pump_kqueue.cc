@@ -8,12 +8,12 @@
 
 #include <atomic>
 
+#include "base/apple/mach_logging.h"
+#include "base/apple/scoped_nsautorelease_pool.h"
 #include "base/auto_reset.h"
 #include "base/feature_list.h"
 #include "base/logging.h"
 #include "base/mac/mac_util.h"
-#include "base/mac/mach_logging.h"
-#include "base/mac/scoped_nsautorelease_pool.h"
 #include "base/notreached.h"
 #include "base/posix/eintr_wrapper.h"
 #include "base/time/time_override.h"
@@ -40,8 +40,7 @@ std::atomic_bool g_use_simplified_version = false;
 // waiting in a kevent64 invocation is still (inherently) racy.
 bool KqueueTimersSpuriouslyWakeUp() {
 #if BUILDFLAG(IS_MAC)
-  static const bool kqueue_timers_spuriously_wakeup = mac::IsAtMostOS10_13();
-  return kqueue_timers_spuriously_wakeup;
+  return false;
 #else
   // This still happens on iOS15.
   return true;
@@ -131,7 +130,7 @@ MessagePumpKqueue::MessagePumpKqueue()
   // using an EVFILT_USER event, especially when triggered across threads.
   kern_return_t kr = mach_port_allocate(
       mach_task_self(), MACH_PORT_RIGHT_RECEIVE,
-      base::mac::ScopedMachReceiveRight::Receiver(wakeup_).get());
+      base::apple::ScopedMachReceiveRight::Receiver(wakeup_).get());
   MACH_CHECK(kr == KERN_SUCCESS, kr) << "mach_port_allocate";
 
   // Configure the event to directly receive the Mach message as part of the
@@ -163,7 +162,7 @@ void MessagePumpKqueue::Run(Delegate* delegate) {
     RunSimplified(delegate);
   } else {
     while (keep_running_) {
-      mac::ScopedNSAutoreleasePool pool;
+      apple::ScopedNSAutoreleasePool pool;
 
       bool do_more_work = DoInternalWork(delegate, nullptr);
       if (!keep_running_)
@@ -196,7 +195,7 @@ void MessagePumpKqueue::RunSimplified(Delegate* delegate) {
   DoInternalWork(delegate, nullptr);
 
   while (keep_running_) {
-    mac::ScopedNSAutoreleasePool pool;
+    apple::ScopedNSAutoreleasePool pool;
 
     Delegate::NextWorkInfo next_work_info = delegate->DoWork();
     if (!keep_running_)

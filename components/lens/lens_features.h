@@ -69,6 +69,35 @@ extern const base::FeatureParam<std::string> kHomepageURLForLens;
 COMPONENT_EXPORT(LENS_FEATURES)
 extern const base::FeatureParam<bool> kEnableLensHtmlRedirectFix;
 
+// Enable Lens loading state removal on
+// DocumentOnLoadCompletedInPrimaryMainFrame.
+// TODO(crbug/1452161): Clean up unused listeners and flags after determining
+// which ones we want to listen to for server-side rendering backends.
+COMPONENT_EXPORT(LENS_FEATURES)
+extern const base::FeatureParam<bool>
+    kDismissLoadingStateOnDocumentOnLoadCompletedInPrimaryMainFrame;
+
+// Enable Lens loading state removal on DomContentLoaded.
+COMPONENT_EXPORT(LENS_FEATURES)
+extern const base::FeatureParam<bool> kDismissLoadingStateOnDomContentLoaded;
+
+// Enable Lens loading state removal on DidFinishNavigation.
+COMPONENT_EXPORT(LENS_FEATURES)
+extern const base::FeatureParam<bool> kDismissLoadingStateOnDidFinishNavigation;
+
+// Enable Lens loading state removal on NavigationEntryCommitted.
+COMPONENT_EXPORT(LENS_FEATURES)
+extern const base::FeatureParam<bool>
+    kDismissLoadingStateOnNavigationEntryCommitted;
+
+// Enable Lens loading state removal on DidFinishLoad.
+COMPONENT_EXPORT(LENS_FEATURES)
+extern const base::FeatureParam<bool> kDismissLoadingStateOnDidFinishLoad;
+
+// Enable Lens loading state removal on PrimaryPageChanged.
+COMPONENT_EXPORT(LENS_FEATURES)
+extern const base::FeatureParam<bool> kDismissLoadingStateOnPrimaryPageChanged;
+
 // Enables Lens fullscreen search on Desktop platforms.
 COMPONENT_EXPORT(LENS_FEATURES)
 extern const base::FeatureParam<bool> kEnableFullscreenSearch;
@@ -136,6 +165,36 @@ extern std::string GetHomepageURLForLens();
 // Returns whether to apply fix for HTML redirects.
 COMPONENT_EXPORT(LENS_FEATURES)
 extern bool GetEnableLensHtmlRedirectFix();
+
+// Returns whether to remove the Lens side panel loading state in the
+// OnDocumentOnLoadCompletedInPrimaryMainFrame web contents observer callback.
+COMPONENT_EXPORT(LENS_FEATURES)
+extern bool GetDismissLoadingStateOnDocumentOnLoadCompletedInPrimaryMainFrame();
+
+// Returns whether to remove the Lens side panel loading state in the
+// DOMContentLoaded web contents observer callback.
+COMPONENT_EXPORT(LENS_FEATURES)
+extern bool GetDismissLoadingStateOnDomContentLoaded();
+
+// Returns whether to remove the Lens side panel loading state in the
+// DidFinishNavigation web contents observer callback.
+COMPONENT_EXPORT(LENS_FEATURES)
+extern bool GetDismissLoadingStateOnDidFinishNavigation();
+
+// Returns whether to remove the Lens side panel loading state in the
+// NavigationEntryCommitted web contents observer callback.
+COMPONENT_EXPORT(LENS_FEATURES)
+extern bool GetDismissLoadingStateOnNavigationEntryCommitted();
+
+// Returns whether to remove the Lens side panel loading state in the
+// DidFinishLoad web contents observer callback.
+COMPONENT_EXPORT(LENS_FEATURES)
+extern bool GetDismissLoadingStateOnDidFinishLoad();
+
+// Returns whether to remove the Lens side panel loading state in the
+// PrimaryPageChanged web contents observer callback.
+COMPONENT_EXPORT(LENS_FEATURES)
+extern bool GetDismissLoadingStateOnPrimaryPageChanged();
 
 // Returns whether Lens fullscreen search is enabled.
 COMPONENT_EXPORT(LENS_FEATURES)

@@ -15,11 +15,11 @@
 #import "ios/chrome/browser/history/history_service_factory.h"
 #import "ios/chrome/browser/prerender/prerender_service_factory.h"
 #import "ios/chrome/browser/search_engines/template_url_service_factory.h"
-#import "ios/chrome/browser/sessions/scene_util_test_support.h"
 #import "ios/chrome/browser/sessions/session_restoration_browser_agent.h"
 #import "ios/chrome/browser/sessions/test_session_service.h"
 #import "ios/chrome/browser/shared/coordinator/scene/scene_state.h"
 #import "ios/chrome/browser/shared/coordinator/scene/scene_state_browser_agent.h"
+#import "ios/chrome/browser/shared/coordinator/scene/scene_util_test_support.h"
 #import "ios/chrome/browser/shared/model/browser/browser_list.h"
 #import "ios/chrome/browser/shared/model/browser/browser_list_factory.h"
 #import "ios/chrome/browser/shared/model/browser/test/test_browser_list_observer.h"
@@ -37,9 +37,9 @@
 #import "third_party/ocmock/OCMock/OCMock.h"
 #import "ui/base/device_form_factor.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
+// To get access to web::features::kEnableSessionSerializationOptimizations.
+// TODO(crbug.com/1383087): remove once the feature is fully launched.
+#import "ios/web/common/features.h"
 
 @interface SceneStateWithFakeScene : SceneState
 
@@ -64,11 +64,14 @@ namespace {
 
 class BrowserViewWranglerTest : public PlatformTest {
  protected:
-  BrowserViewWranglerTest()
-      : fake_scene_(FakeSceneWithIdentifier([[NSUUID UUID] UUIDString])),
-        scene_state_(
-            [[SceneStateWithFakeScene alloc] initWithScene:fake_scene_]),
-        test_session_service_([[TestSessionService alloc] init]) {
+  BrowserViewWranglerTest() {
+    scoped_feature_list_.InitAndDisableFeature(
+        web::features::kEnableSessionSerializationOptimizations);
+
+    fake_scene_ = FakeSceneWithIdentifier([[NSUUID UUID] UUIDString]);
+    scene_state_ = [[SceneStateWithFakeScene alloc] initWithScene:fake_scene_];
+    test_session_service_ = [[TestSessionService alloc] init];
+
     TestChromeBrowserState::Builder test_cbs_builder;
     test_cbs_builder.AddTestingFactory(
         SendTabToSelfSyncServiceFactory::GetInstance(),
@@ -112,6 +115,7 @@ class BrowserViewWranglerTest : public PlatformTest {
   }
 
   web::WebTaskEnvironment task_environment_;
+  base::test::ScopedFeatureList scoped_feature_list_;
   IOSChromeScopedTestingLocalState local_state_;
   std::unique_ptr<TestChromeBrowserState> chrome_browser_state_;
   id fake_scene_;
@@ -264,6 +268,42 @@ TEST_F(BrowserViewWranglerTest, TestInactiveInterface) {
   // After shutdown all browsers are destroyed.
   [wrangler shutdown];
   EXPECT_EQ(0UL, browser_list->AllRegularBrowsers().size());
+
+  browser_list->RemoveObserver(&observer);
+}
+
+TEST_F(BrowserViewWranglerTest, TestIncognitoBrowserSessionRestorationLogic) {
+  BrowserList* browser_list =
+      BrowserListFactory::GetForBrowserState(chrome_browser_state_.get());
+  TestBrowserListObserver observer;
+  browser_list->AddObserver(&observer);
+
+  BrowserViewWrangler* wrangler = [[BrowserViewWrangler alloc]
+             initWithBrowserState:chrome_browser_state_.get()
+                       sceneState:scene_state_
+       applicationCommandEndpoint:nil
+      browsingDataCommandEndpoint:nil];
+
+  // Creation of the main browser should restore the sessions.
+  [wrangler createMainBrowser];
+  [wrangler createMainCoordinatorAndInterface];
+  EXPECT_EQ(1, test_session_service_.loadSessionCallsCount);
+
+  // Initial creation of incognito browser should restore the sessions.
+  EXPECT_EQ(wrangler.incognitoInterface.browser,
+            observer.GetLastAddedIncognitoBrowser());
+  EXPECT_EQ(2, test_session_service_.loadSessionCallsCount);
+
+  // Destroing and rebuilding the incognito browser should not restore the
+  // sessions.
+  [wrangler willDestroyIncognitoBrowserState];
+  chrome_browser_state_->DestroyOffTheRecordChromeBrowserState();
+  chrome_browser_state_->GetOffTheRecordChromeBrowserState();
+  [wrangler incognitoBrowserStateCreated];
+  EXPECT_EQ(2, test_session_service_.loadSessionCallsCount);
+
+  [wrangler createInactiveBrowser];
+  [wrangler shutdown];
 
   browser_list->RemoveObserver(&observer);
 }

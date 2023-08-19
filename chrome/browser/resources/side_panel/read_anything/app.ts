@@ -5,7 +5,9 @@
 import '//read-anything-side-panel.top-chrome/shared/sp_empty_state.js';
 import '//resources/cr_elements/cr_hidden_style.css.js';
 import '../strings.m.js';
+import './read_anything_toolbar.js';
 
+import {ColorChangeUpdater} from '//resources/cr_components/color_change_listener/colors_css_updater.js';
 import {WebUiListenerMixin} from '//resources/cr_elements/web_ui_listener_mixin.js';
 import {assert} from '//resources/js/assert_ts.js';
 import {rgbToSkColor, skColorToRgba} from '//resources/js/color_utils.js';
@@ -21,13 +23,15 @@ interface LinkColor {
   default: string;
   visited: string;
 }
+// TODO(crbug.com/1465029): Remove colors defined here once the Views toolbar is
+// removed.
 const style = getComputedStyle(document.body);
 const darkThemeBackgroundSkColor =
     rgbToSkColor(style.getPropertyValue('--google-grey-900-rgb'));
 const lightThemeBackgroundSkColor =
     rgbToSkColor(style.getPropertyValue('--google-grey-50-rgb'));
 const yellowThemeBackgroundSkColor =
-    rgbToSkColor(style.getPropertyValue('--google-yellow-200-rgb'));
+    rgbToSkColor(style.getPropertyValue('--google-yellow-100-rgb'));
 const darkThemeEmptyStateBodyColor = 'var(--google-grey-500)';
 const defaultThemeEmptyStateBodyColor = 'var(--google-grey-700)';
 const darkThemeLinkColors: LinkColor = {
@@ -68,9 +72,9 @@ class TwoWayMap extends Map {
   }
 }
 
-////////////////////////////////////////////////////////////
-// Called by ReadAnythingPageHandler via callback router. //
-////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////
+// Called by ReadAnythingUntrustedPageHandler via callback router. //
+/////////////////////////////////////////////////////////////////////
 
 // The chrome.readingMode context is created by the ReadAnythingAppController
 // which is only instantiated when the kReadAnything feature is enabled. This
@@ -100,6 +104,18 @@ if (chrome.readingMode) {
     assert(readAnythingApp);
     readAnythingApp.showLoading();
   };
+
+  chrome.readingMode.showEmpty = () => {
+    const readAnythingApp = document.querySelector('read-anything-app');
+    assert(readAnythingApp);
+    readAnythingApp.showEmpty();
+  };
+
+  chrome.readingMode.restoreSettingsFromPrefs = () => {
+    const readAnythingApp = document.querySelector('read-anything-app');
+    assert(readAnythingApp);
+    readAnythingApp.restoreSettingsFromPrefs();
+  };
 }
 
 export class ReadAnythingElement extends ReadAnythingElementBase {
@@ -114,8 +130,6 @@ export class ReadAnythingElement extends ReadAnythingElementBase {
   // Defines the valid font names that can be passed to front-end and maps
   // them to a corresponding class style in app.html. Must stay in-sync with
   // the names set in read_anything_font_model.cc.
-  // TODO(1266555): The displayed names of the fonts should be messages that
-  //                will be translated to other languages.
   private defaultFontName_: string = 'sans-serif';
   private validFontNames_: Array<{name: string, css: string}> = [
     {name: 'Poppins', css: 'Poppins'},
@@ -138,6 +152,17 @@ export class ReadAnythingElement extends ReadAnythingElementBase {
   private emptyStateDarkImagePath_: string;
   private emptyStateHeading_: string;
   private emptyStateSubheading_: string;
+
+  // If the WebUI toolbar should be shown. This happens when the WebUI feature
+  // flag is enabled.
+  private isWebUIToolbarVisible_: boolean;
+
+  constructor() {
+    super();
+    if (chrome.readingMode && chrome.readingMode.isWebUIToolbarVisible) {
+      ColorChangeUpdater.forDocument().start();
+    }
+  }
 
   override connectedCallback() {
     super.connectedCallback();
@@ -177,6 +202,8 @@ export class ReadAnythingElement extends ReadAnythingElementBase {
       chrome.readingMode.onCopy();
       return false;
     };
+
+    this.isWebUIToolbarVisible_ = chrome.readingMode.isWebUIToolbarVisible;
   }
 
   private buildSubtree_(nodeId: number): Node {
@@ -242,6 +269,18 @@ export class ReadAnythingElement extends ReadAnythingElementBase {
     return parentElement;
   }
 
+  showEmpty() {
+    if (chrome.readingMode.isSelectable) {
+      this.emptyStateHeading_ = loadTimeData.getString('emptyStateHeader');
+    } else {
+      this.emptyStateHeading_ = loadTimeData.getString('notSelectableHeader');
+    }
+    this.emptyStateImagePath_ = './images/empty_state.svg';
+    this.emptyStateDarkImagePath_ = './images/empty_state.svg';
+    this.emptyStateSubheading_ = loadTimeData.getString('emptyStateSubheader');
+    this.hasContent_ = false;
+  }
+
   showLoading() {
     this.emptyStateImagePath_ = '//resources/images/throbber_small.svg';
     this.emptyStateDarkImagePath_ =
@@ -275,21 +314,8 @@ export class ReadAnythingElement extends ReadAnythingElementBase {
       return;
     }
 
-    // If there is no content to show, the empty state container will be shown.
     const node = this.buildSubtree_(rootId);
-    // The empty state header tells the user to select text to distill. Some web
-    // pages don't work with selection, so we show a different message.
     if (!node.textContent) {
-      if (chrome.readingMode.isSelectable()) {
-        this.emptyStateHeading_ = loadTimeData.getString('emptyStateHeader');
-      } else {
-        this.emptyStateHeading_ = loadTimeData.getString('notSelectableHeader');
-      }
-      this.emptyStateImagePath_ = './images/empty_state.svg';
-      this.emptyStateDarkImagePath_ = './images/empty_state.svg';
-      this.emptyStateSubheading_ =
-          loadTimeData.getString('emptyStateSubheader');
-      this.hasContent_ = false;
       return;
     }
 
@@ -330,11 +356,18 @@ export class ReadAnythingElement extends ReadAnythingElementBase {
     startElement.scrollIntoViewIfNeeded();
   }
 
-  private validatedFontName_(): string {
+  // TODO(b/1465029): Once the IsReadAnythingWebUIEnabled flag is removed
+  // this should be renamed to just validatedFontName_ and the current
+  // validatedFontName_ method can be removed.
+  private validatedFontNameFromName_(fontName: string): string {
     // Validate that the given font name is a valid choice, or use the default.
-    const validFontName = this.validFontNames_.find(
-        (f: {name: string}) => f.name === chrome.readingMode.fontName);
+    const validFontName =
+        this.validFontNames_.find((f: {name: string}) => f.name === fontName);
     return validFontName ? validFontName.css : this.defaultFontName_;
+  }
+
+  private validatedFontName_(): string {
+    return this.validatedFontNameFromName_(chrome.readingMode.fontName);
   }
 
   private getLinkColor_(backgroundSkColor: SkColor): LinkColor {
@@ -354,6 +387,15 @@ export class ReadAnythingElement extends ReadAnythingElementBase {
                     defaultThemeEmptyStateBodyColor;
   }
 
+  // TODO(crbug.com/1465029): This method should be renamed to
+  // getEmptyStateBodyColor_() and replace the one above once we've removed the
+  // Views toolbar.
+  private getEmptyStateBodyColorFromWebUi_(colorSuffix: string): string {
+    const isDark = colorSuffix.includes('dark');
+    return isDark ? darkThemeEmptyStateBodyColor :
+                    defaultThemeEmptyStateBodyColor;
+  }
+
   private getSelectionColor_(backgroundSkColor: SkColor): string {
     switch (backgroundSkColor.value) {
       case darkThemeBackgroundSkColor.value:
@@ -365,6 +407,94 @@ export class ReadAnythingElement extends ReadAnythingElementBase {
     }
   }
 
+  restoreSettingsFromPrefs() {
+    this.updateLineSpacing(chrome.readingMode.lineSpacing);
+    this.updateLetterSpacing(chrome.readingMode.letterSpacing);
+    this.updateFont(chrome.readingMode.fontName);
+    this.updateStyles({
+      '--font-size': chrome.readingMode.fontSize + 'em',
+    });
+    let colorSuffix: string|undefined;
+    switch (chrome.readingMode.colorTheme) {
+      case chrome.readingMode.defaultTheme:
+        colorSuffix = '';
+        break;
+      case chrome.readingMode.lightTheme:
+        colorSuffix = '-light';
+        break;
+      case chrome.readingMode.darkTheme:
+        colorSuffix = '-dark';
+        break;
+      case chrome.readingMode.yellowTheme:
+        colorSuffix = '-yellow';
+        break;
+      case chrome.readingMode.blueTheme:
+        colorSuffix = '-blue';
+        break;
+      default:
+        // Do nothing
+    }
+    if (colorSuffix !== undefined) {
+      this.updateThemeFromWebUi(colorSuffix);
+    }
+  }
+
+  updateLineSpacing(newLineHeight: number) {
+    this.updateStyles({
+      '--line-height': newLineHeight,
+    });
+  }
+
+  updateLetterSpacing(newLetterSpacing: number) {
+    this.updateStyles({
+      '--letter-spacing': newLetterSpacing + 'em',
+    });
+  }
+
+  updateFont(fontName: string) {
+    const validatedFontName = this.validatedFontNameFromName_(fontName);
+    this.updateStyles({
+      '--font-family': validatedFontName,
+    });
+
+    // Also update the font on the toolbar itself with the validated font name.
+    const shadowRoot = this.shadowRoot;
+    assert(shadowRoot);
+    const toolbar = shadowRoot.getElementById('toolbar');
+    if (toolbar) {
+      toolbar.style.fontFamily = validatedFontName;
+    }
+  }
+
+  updateFontSize(increase: boolean) {
+    chrome.readingMode.onFontSizeChanged(increase);
+    this.updateStyles({
+      '--font-size': chrome.readingMode.fontSize + 'em',
+    });
+  }
+
+  // TODO(crbug.com/1465029): This method should be renamed to updateTheme()
+  // and replace the one below once we've removed the Views toolbar.
+  updateThemeFromWebUi(colorSuffix: string) {
+    const emptyStateBodyColor = colorSuffix ?
+        this.getEmptyStateBodyColorFromWebUi_(colorSuffix) :
+        'var(--color-side-panel-card-secondary-foreground)';
+    this.updateStyles({
+      '--background-color':
+          `var(--color-read-anything-background${colorSuffix})`,
+      '--foreground-color':
+          `var(--color-read-anything-foreground${colorSuffix})`,
+      '--sp-empty-state-heading-color':
+          `var(--color-read-anything-foreground${colorSuffix})`,
+      '--sp-empty-state-body-color': emptyStateBodyColor,
+      '--selection-color':
+          `var(--color-read-anything-text-selection${colorSuffix})`,
+      '--link-color': `var(--color-read-anything-link-default${colorSuffix})`,
+      '--visited-link-color':
+          `var(--color-read-anything-link-visited${colorSuffix})`,
+    });
+  }
+
   updateTheme() {
     const foregroundColor:
         SkColor = {value: chrome.readingMode.foregroundColor};
@@ -373,6 +503,7 @@ export class ReadAnythingElement extends ReadAnythingElementBase {
     const linkColor = this.getLinkColor_(backgroundColor);
 
     this.updateStyles({
+      '--background-color': skColorToRgba(backgroundColor),
       '--font-family': this.validatedFontName_(),
       '--font-size': chrome.readingMode.fontSize + 'em',
       '--foreground-color': skColorToRgba(foregroundColor),
@@ -385,7 +516,9 @@ export class ReadAnythingElement extends ReadAnythingElementBase {
           this.getEmptyStateBodyColor_(backgroundColor),
       '--visited-link-color': linkColor.visited,
     });
-    document.body.style.background = skColorToRgba(backgroundColor);
+    if (!chrome.readingMode.isWebUIToolbarVisible) {
+      document.body.style.background = skColorToRgba(backgroundColor);
+    }
   }
 }
 

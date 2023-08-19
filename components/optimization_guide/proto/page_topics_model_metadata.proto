@@ -67,6 +67,7 @@ message TopicTaxonomy {
 
 message PageTopicsModelMetadata {
   reserved 4;
+  reserved 5;
 
   // The version is specified by the client as what functionality outside the
   // model the client supports (e.g., pre/post processing). When provided from
@@ -83,6 +84,6 @@ message PageTopicsModelMetadata {
   // populated by the server.
   optional PageTopicsOutputPostprocessingParams output_postprocessing_params =
       3;
-  // The taxonomy used by this model.
-  optional TopicTaxonomy topic_taxonomy = 5;
+  // The taxonomy version sent by the client to request the corresponding model.
+  optional int64 taxonomy_version = 6;
 }

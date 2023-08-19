@@ -7,19 +7,23 @@
 
 #include <vector>
 
-#include "base/functional/callback_helpers.h"
 #include "base/memory/raw_ptr.h"
+#include "mojo/public/cpp/bindings/pending_associated_remote.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "services/accessibility/public/mojom/accessibility_service.mojom.h"
+#include "services/accessibility/public/mojom/tts.mojom-forward.h"
+#include "services/accessibility/public/mojom/user_interface.mojom-forward.h"
 
 namespace content {
 class BrowserContext;
+class DevToolsAgentHost;
 }
 
 namespace ash {
 class AutomationClientImpl;
 class TtsClientImpl;
+class UserInterfaceImpl;
 
 // The AccessibilityServiceClient in the Browser process interacts with the
 // AccessibilityService process over mojom. It is responsible for communicating
@@ -36,10 +40,13 @@ class AccessibilityServiceClient
   ~AccessibilityServiceClient() override;
 
   // ax::mojom::AccessibilityServiceClient:
-  void BindAutomation(mojo::PendingRemote<ax::mojom::Automation> automation,
-                      mojo::PendingReceiver<ax::mojom::AutomationClient>
-                          automation_client) override;
+  void BindAutomation(
+      mojo::PendingAssociatedRemote<ax::mojom::Automation> automation,
+      mojo::PendingReceiver<ax::mojom::AutomationClient> automation_client)
+      override;
   void BindTts(mojo::PendingReceiver<ax::mojom::Tts> tts_receiver) override;
+  void BindUserInterface(
+      mojo::PendingReceiver<ax::mojom::UserInterface> ui_receiver) override;
 
   void SetProfile(content::BrowserContext* profile);
 
@@ -63,8 +70,17 @@ class AccessibilityServiceClient
 
   void LaunchAccessibilityServiceAndBind();
 
+  void CreateDevToolsAgentHost(ax::mojom::AssistiveTechnologyType type);
+
+  // Function is used to create a callback that is passed into a
+  // AccessibilityServiceDevToolsDelegate. It should not be called directly.
+  void ConnectDevToolsAgent(
+      ::mojo::PendingAssociatedReceiver<blink::mojom::DevToolsAgent> agent,
+      ax::mojom::AssistiveTechnologyType type);
+
   std::unique_ptr<AutomationClientImpl> automation_client_;
   std::unique_ptr<TtsClientImpl> tts_client_;
+  std::unique_ptr<UserInterfaceImpl> user_interface_client_;
 
   // Track the currently enabled features in case we disconnect from the service
   // and need to reconnect, for example when the profile changes.
@@ -78,6 +94,11 @@ class AccessibilityServiceClient
   // This class receives mojom requests from the service via the interface
   // AccessibilityServiceClient.
   mojo::Receiver<ax::mojom::AccessibilityServiceClient> service_client_{this};
+
+  // Container mapping AT type and devtools host.
+  std::map<ax::mojom::AssistiveTechnologyType,
+           scoped_refptr<content::DevToolsAgentHost>>
+      devtools_agent_hosts_;
 };
 
 }  // namespace ash

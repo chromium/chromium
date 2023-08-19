@@ -10,6 +10,7 @@
 
 #include "base/observer_list.h"
 #include "components/keyed_service/core/keyed_service.h"
+#include "components/signin/public/identity_manager/identity_manager.h"
 #include "content/public/browser/federated_identity_permission_context_delegate.h"
 
 namespace content {
@@ -25,6 +26,7 @@ class FederatedIdentityIdentityProviderSigninStatusContext;
 // Javascript API.
 class FederatedIdentityPermissionContext
     : public content::FederatedIdentityPermissionContextDelegate,
+      public signin::IdentityManager::Observer,
       public KeyedService {
  public:
   explicit FederatedIdentityPermissionContext(
@@ -35,6 +37,9 @@ class FederatedIdentityPermissionContext
       const FederatedIdentityPermissionContext&) = delete;
   FederatedIdentityPermissionContext& operator=(
       const FederatedIdentityPermissionContext&) = delete;
+
+  // KeyedService:
+  void Shutdown() override;
 
   // content::FederatedIdentityPermissionContextDelegate:
   void AddIdpSigninStatusObserver(IdpSigninStatusObserver* observer) override;
@@ -68,6 +73,11 @@ class FederatedIdentityPermissionContext
   void RegisterIdP(const GURL& url) override;
   void UnregisterIdP(const GURL& url) override;
 
+  // signin::IdentityManager::Observer:
+  void OnAccountsInCookieUpdated(
+      const signin::AccountsInCookieJarInfo& accounts_in_cookie_jar_info,
+      const GoogleServiceAuthError& error) override;
+
   void FlushScheduledSaveSettingsCalls();
 
  private:
@@ -79,6 +89,9 @@ class FederatedIdentityPermissionContext
       idp_signin_context_;
   std::unique_ptr<FederatedIdentityIdentityProviderRegistrationContext>
       idp_registration_context_;
+  base::ScopedObservation<signin::IdentityManager,
+                          signin::IdentityManager::Observer>
+      obs_{this};
 
   base::ObserverList<IdpSigninStatusObserver> idp_signin_status_observer_list_;
 };

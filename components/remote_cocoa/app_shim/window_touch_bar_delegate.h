@@ -6,7 +6,6 @@
 #define COMPONENTS_REMOTE_COCOA_APP_SHIM_WINDOW_TOUCH_BAR_DELEGATE_H_
 
 #import <Cocoa/Cocoa.h>
-#include <os/availability.h>
 
 // Bridge delegate class for NativeWidgetMacNSWindow and
 // BrowserWindowTouchBarMac.

@@ -153,7 +153,8 @@ class BatteryUpdateMessageHandlerTest : public testing::Test {
   std::unique_ptr<FastPairDataParser> data_parser_;
   std::unique_ptr<QuickPairProcessManager> process_manager_;
 
-  raw_ptr<device::BluetoothDevice, ExperimentalAsh> bluetooth_device_ = nullptr;
+  raw_ptr<device::BluetoothDevice, DanglingUntriaged | ExperimentalAsh>
+      bluetooth_device_ = nullptr;
   std::unique_ptr<BatteryUpdateMessageHandler> battery_update_message_handler_;
 };
 

@@ -3,22 +3,73 @@
 // found in the LICENSE file.
 
 #include "chrome/browser/browsing_data/chrome_browsing_data_model_delegate.h"
+#include "base/containers/cxx20_erase_vector.h"
+#include "base/files/scoped_temp_dir.h"
+#include "base/functional/callback_helpers.h"
 #include "base/test/bind.h"
+#include "base/test/test_future.h"
+#include "chrome/browser/browsing_data/chrome_browsing_data_remover_constants.h"
 #include "chrome/browser/browsing_topics/browsing_topics_service_factory.h"
-#include "chrome/browser/history/history_service_factory.h"
+#include "chrome/browser/media/webrtc/media_device_salt_service_factory.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chrome/test/base/testing_profile_manager.h"
 #include "components/browsing_topics/test_util.h"
+#include "components/media_device_salt/media_device_salt_service.h"
+#include "components/nacl/common/buildflags.h"
+#include "content/public/browser/browsing_data_remover.h"
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/public/common/storage_key/storage_key.h"
 #include "url/gurl.h"
+
+#if !BUILDFLAG(IS_ANDROID)
+#include "chrome/browser/web_applications/web_app_command_manager.h"
+#include "chrome/browser/web_applications/web_app_provider.h"
+#endif
+
+#if BUILDFLAG(ENABLE_NACL)
+#include "chrome/browser/nacl_host/nacl_browser_delegate_impl.h"
+#include "components/nacl/browser/nacl_browser.h"
+#endif  // BUILDFLAG(ENABLE_NACL)
+
+using ::testing::Contains;
+using ::testing::ElementsAre;
+using ::testing::UnorderedElementsAre;
+
+namespace {
+
+blink::StorageKey StorageKey1() {
+  return blink::StorageKey::CreateFromStringForTesting("https://example.com");
+}
+
+blink::StorageKey StorageKey2() {
+  return blink::StorageKey::CreateFromStringForTesting("https://example2.com");
+}
+
+}  // namespace
+
+#if BUILDFLAG(ENABLE_NACL)
+class ScopedNaClBrowserDelegate {
+ public:
+  ~ScopedNaClBrowserDelegate() {
+    nacl::NaClBrowser::ClearAndDeleteDelegateForTest();
+  }
+
+  void Init(ProfileManager* profile_manager) {
+    nacl::NaClBrowser::SetDelegate(
+        std::make_unique<NaClBrowserDelegateImpl>(profile_manager));
+  }
+};
+#endif  // BUILDFLAG(ENABLE_NACL)
 
 class ChromeBrowsingDataModelDelegateTest : public testing::Test {
  public:
-  ChromeBrowsingDataModelDelegateTest()
-      : profile_(std::make_unique<TestingProfile>()) {}
+  ChromeBrowsingDataModelDelegateTest() {
+    feature_list_.InitAndEnableFeature(
+        media_device_salt::kMediaDeviceIdPartitioning);
+  }
 
   ChromeBrowsingDataModelDelegateTest(
       const ChromeBrowsingDataModelDelegateTest&) = delete;
@@ -28,6 +79,14 @@ class ChromeBrowsingDataModelDelegateTest : public testing::Test {
   ~ChromeBrowsingDataModelDelegateTest() override = default;
 
   void SetUp() override {
+    ASSERT_TRUE(temp_dir_.CreateUniqueTempDir());
+    profile_manager_ = std::make_unique<TestingProfileManager>(
+        TestingBrowserProcess::GetGlobal());
+    ASSERT_TRUE(profile_manager_->SetUp(temp_dir_.GetPath()));
+    profile_ = profile_manager_->CreateTestingProfile("test_profile");
+
+    delegate_ = ChromeBrowsingDataModelDelegate::CreateForProfile(profile_);
+
     browsing_topics::BrowsingTopicsServiceFactory::GetInstance()
         ->SetTestingFactoryAndUse(
             profile(),
@@ -39,34 +98,150 @@ class ChromeBrowsingDataModelDelegateTest : public testing::Test {
                   mock_browsing_topics_service.get();
               return mock_browsing_topics_service;
             }));
+
+#if BUILDFLAG(ENABLE_NACL)
+    // Clearing Cache will clear PNACL cache, which needs this delegate set.
+    nacl_browser_delegate_.Init(profile_manager_->profile_manager());
+#endif  // BUILDFLAG(ENABLE_NACL)
+
+#if !BUILDFLAG(IS_ANDROID)
+    if (auto* web_app_provider =
+            web_app::WebAppProvider::GetForWebApps(profile_.get())) {
+      web_app_provider->command_manager().Start();
+    }
+#endif
+
+    media_device_salt_service_ =
+        MediaDeviceSaltServiceFactory::GetInstance()->GetForBrowserContext(
+            profile_.get());
+    // Get salts for test keys, so that they are stored in the service.
+    base::test::TestFuture<const std::string&> future;
+    media_device_salt_service()->GetSalt(StorageKey1(), future.GetCallback());
+    future.Wait();
+    future.Clear();
+    media_device_salt_service()->GetSalt(StorageKey2(), future.GetCallback());
+    future.Wait();
+
+    base::test::TestFuture<std::vector<blink::StorageKey>> all_keys_future;
+    media_device_salt_service()->GetAllStorageKeys(
+        all_keys_future.GetCallback());
+    ASSERT_THAT(all_keys_future.Get(),
+                UnorderedElementsAre(StorageKey1(), StorageKey2()));
   }
 
   TestingProfile* profile() { return profile_.get(); }
+
+  ChromeBrowsingDataModelDelegate* delegate() { return delegate_.get(); }
 
   browsing_topics::MockBrowsingTopicsService* mock_browsing_topics_service() {
     return mock_browsing_topics_service_;
   }
 
+  media_device_salt::MediaDeviceSaltService* media_device_salt_service() {
+    return media_device_salt_service_;
+  }
+
  protected:
+#if BUILDFLAG(ENABLE_NACL)
+  ScopedNaClBrowserDelegate nacl_browser_delegate_;
+#endif  // BUILDFLAG(ENABLE_NACL)
   content::BrowserTaskEnvironment task_environment_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
-  const std::unique_ptr<TestingProfile> profile_;
+  base::test::ScopedFeatureList feature_list_;
+  base::ScopedTempDir temp_dir_;
+  std::unique_ptr<TestingProfileManager> profile_manager_;
+  raw_ptr<TestingProfile> profile_;  // Owned by `profile_manager_`.
   raw_ptr<browsing_topics::MockBrowsingTopicsService>
       mock_browsing_topics_service_;
+  std::unique_ptr<ChromeBrowsingDataModelDelegate> delegate_;
+  raw_ptr<media_device_salt::MediaDeviceSaltService> media_device_salt_service_;
 };
 
 TEST_F(ChromeBrowsingDataModelDelegateTest, RemoveDataKeyForTopics) {
-  auto testOrigin = url::Origin::Create(GURL("a.test"));
+  auto test_origin = url::Origin::Create(GURL("a.test"));
   EXPECT_CALL(*mock_browsing_topics_service(),
-              ClearTopicsDataForOrigin(testOrigin))
+              ClearTopicsDataForOrigin(test_origin))
       .Times(1);
-  std::unique_ptr<ChromeBrowsingDataModelDelegate> delegate =
-      ChromeBrowsingDataModelDelegate::CreateForProfile(profile());
-  EXPECT_TRUE(delegate);
 
-  delegate->RemoveDataKey(
-      testOrigin,
+  delegate()->RemoveDataKey(
+      test_origin,
       {static_cast<BrowsingDataModel::StorageType>(
           ChromeBrowsingDataModelDelegate::StorageType::kTopics)},
       base::DoNothing());
 }
+
+TEST_F(ChromeBrowsingDataModelDelegateTest, RemoveDataKeyForMediaDeviceSalts) {
+  base::test::TestFuture<void> done_future;
+  delegate()->RemoveDataKey(
+      StorageKey1(),
+      {static_cast<BrowsingDataModel::StorageType>(
+          ChromeBrowsingDataModelDelegate::StorageType::kMediaDeviceSalt)},
+      done_future.GetCallback());
+  done_future.Wait();
+
+  base::test::TestFuture<std::vector<blink::StorageKey>> all_keys_future;
+  media_device_salt_service()->GetAllStorageKeys(all_keys_future.GetCallback());
+  EXPECT_THAT(all_keys_future.Get(), ElementsAre(StorageKey2()));
+}
+
+TEST_F(ChromeBrowsingDataModelDelegateTest, GetAllDataKeysAndGetDataOwner) {
+  base::test::TestFuture<
+      std::vector<ChromeBrowsingDataModelDelegate::DelegateEntry>>
+      future;
+  delegate()->GetAllDataKeys(future.GetCallback());
+  auto delegate_entries = future.Get();
+
+  std::vector<blink::StorageKey> expected_keys = {StorageKey1(), StorageKey2()};
+  for (const auto& entry : delegate_entries) {
+    const blink::StorageKey* storage_key =
+        absl::get_if<blink::StorageKey>(&entry.data_key);
+    ASSERT_TRUE(storage_key);
+    EXPECT_THAT(expected_keys, Contains(*storage_key));
+    base::Erase(expected_keys, *storage_key);
+
+    EXPECT_GT(entry.storage_size, 0u);
+
+    EXPECT_EQ(static_cast<ChromeBrowsingDataModelDelegate::StorageType>(
+                  entry.storage_type),
+              ChromeBrowsingDataModelDelegate::StorageType::kMediaDeviceSalt);
+
+    absl::optional<BrowsingDataModel::DataOwner> owner =
+        delegate()->GetDataOwner(
+            entry.data_key, static_cast<BrowsingDataModel::StorageType>(
+                                ChromeBrowsingDataModelDelegate::StorageType::
+                                    kMediaDeviceSalt));
+    ASSERT_TRUE(owner.has_value());
+
+    const std::string* str_owner = absl::get_if<std::string>(&*owner);
+    ASSERT_TRUE(str_owner);
+    EXPECT_EQ(*str_owner, storage_key->origin().host());
+  }
+  EXPECT_TRUE(expected_keys.empty());
+}
+
+#if !BUILDFLAG(IS_ANDROID)
+TEST_F(ChromeBrowsingDataModelDelegateTest, RemoveIsolatedWebAppData) {
+  auto testOrigin = url::Origin::Create(
+      GURL("isolated-app://"
+           "aerugqztij5biqquuk3mfwpsaibuegaqcitgfchwuosuofdjabzqaaic/"));
+  std::unique_ptr<ChromeBrowsingDataModelDelegate> delegate =
+      ChromeBrowsingDataModelDelegate::CreateForProfile(profile());
+  ASSERT_TRUE(delegate);
+
+  content::BrowsingDataRemover* remover = profile()->GetBrowsingDataRemover();
+  ASSERT_EQ(~0ULL, remover->GetLastUsedRemovalMaskForTesting());
+
+  base::RunLoop run_loop;
+  delegate->RemoveDataKey(
+      testOrigin,
+      {static_cast<BrowsingDataModel::StorageType>(
+          ChromeBrowsingDataModelDelegate::StorageType::kIsolatedWebApp)},
+      run_loop.QuitClosure());
+  run_loop.Run();
+
+  EXPECT_EQ((chrome_browsing_data_remover::DATA_TYPE_SITE_DATA |
+             content::BrowsingDataRemover::DATA_TYPE_CACHE) &
+                ~content::BrowsingDataRemover::DATA_TYPE_COOKIES,
+            remover->GetLastUsedRemovalMaskForTesting());
+}
+#endif  // !BUILDFLAG(IS_ANDROID)

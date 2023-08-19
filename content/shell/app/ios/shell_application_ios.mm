@@ -4,10 +4,6 @@
 
 #import "content/shell/app/ios/shell_application_ios.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 #include "base/command_line.h"
 #include "content/public/app/content_main.h"
 #include "content/public/app/content_main_runner.h"
@@ -31,7 +27,7 @@ static std::unique_ptr<content::ShellMainDelegate> g_main_delegate;
     willConnectToSession:(UISceneSession*)session
                  options:(UISceneConnectionOptions*)connectionOptions {
   CHECK_EQ(1u, content::Shell::windows().size());
-  UIWindow* window = content::Shell::windows()[0]->window();
+  UIWindow* window = content::Shell::windows()[0]->window().Get();
 
   // The rootViewController must be added after a windowScene is set
   // so stash it in a temp variable and then reattach it. If we don't

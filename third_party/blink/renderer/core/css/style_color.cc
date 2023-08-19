@@ -351,4 +351,17 @@ CSSValueID StyleColor::EffectiveColorKeyword() const {
                                                           : color_keyword_;
 }
 
+CORE_EXPORT std::ostream& operator<<(std::ostream& stream,
+                                     const StyleColor& color) {
+  if (color.IsCurrentColor()) {
+    return stream << "currentcolor";
+  } else if (color.IsUnresolvedColorMixFunction()) {
+    return stream << "<unresolved color-mix>";
+  } else if (color.HasColorKeyword() && !color.IsNumeric()) {
+    return stream << getValueName(color.GetColorKeyword());
+  } else {
+    return stream << color.GetColor();
+  }
+}
+
 }  // namespace blink

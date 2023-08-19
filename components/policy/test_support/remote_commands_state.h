@@ -60,6 +60,9 @@ class RemoteCommandsState {
   // Expected to be called by tests to poll the remote command results.
   bool GetRemoteCommandResult(int64_t id, em::RemoteCommandResult* result);
 
+  // Returns true if the remote command result is available.
+  bool IsRemoteCommandResultAvailable(int64_t id);
+
  private:
   base::Lock lock_;
 

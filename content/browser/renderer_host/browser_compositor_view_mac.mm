@@ -22,7 +22,6 @@
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/accelerated_widget_mac/accelerated_widget_mac.h"
 #include "ui/accelerated_widget_mac/window_resize_helper_mac.h"
-#include "ui/base/layout.h"
 #include "ui/compositor/recyclable_compositor_mac.h"
 #include "ui/gfx/geometry/dip_util.h"
 #include "ui/gfx/geometry/size_conversions.h"
@@ -325,6 +324,15 @@ bool BrowserCompositorMac::ShouldShowStaleContentOnEviction() {
   return false;
 }
 
+void BrowserCompositorMac::DidNavigateMainFramePreCommit() {
+  delegated_frame_host_->DidNavigateMainFramePreCommit();
+}
+
+void BrowserCompositorMac::DidEnterBackForwardCache() {
+  dfh_local_surface_id_allocator_.GenerateId();
+  delegated_frame_host_->DidEnterBackForwardCache();
+}
+
 void BrowserCompositorMac::DidNavigate() {
   if (render_widget_host_is_hidden_) {
     // Navigating while hidden should not allocate a new LocalSurfaceID. Once
@@ -399,6 +407,11 @@ ui::Compositor* BrowserCompositorMac::GetCompositor() const {
   if (recyclable_compositor_)
     return recyclable_compositor_->compositor();
   return nullptr;
+}
+
+void BrowserCompositorMac::InvalidateSurfaceAllocationGroup() {
+  dfh_local_surface_id_allocator_.Invalidate(
+      /*also_invalidate_allocation_group=*/true);
 }
 
 cc::DeadlinePolicy BrowserCompositorMac::GetDeadlinePolicy(

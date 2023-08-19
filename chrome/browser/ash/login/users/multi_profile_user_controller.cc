@@ -8,7 +8,6 @@
 
 #include "ash/public/cpp/login_types.h"
 #include "base/functional/bind.h"
-#include "chrome/browser/ash/login/users/multi_profile_user_controller_delegate.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/common/pref_names.h"
@@ -23,44 +22,31 @@
 
 namespace ash {
 
+// TODO(b/278643115) Remove the using when moved.
+using user_manager::kMultiProfileUserBehaviorPref;
+using user_manager::MultiUserSignInPolicy;
+using user_manager::MultiUserSignInPolicyToPrefValue;
+using user_manager::ParseMultiUserSignInPolicyPref;
+
 namespace {
-
-std::string SanitizeBehaviorValue(const std::string& value) {
-  if (value == MultiProfileUserController::kBehaviorUnrestricted ||
-      value == MultiProfileUserController::kBehaviorPrimaryOnly ||
-      value == MultiProfileUserController::kBehaviorNotAllowed) {
-    return value;
-  }
-
-  return std::string(MultiProfileUserController::kBehaviorUnrestricted);
-}
 
 bool SetUserAllowedReason(
     MultiProfileUserController::UserAllowedInSessionReason* reason,
     MultiProfileUserController::UserAllowedInSessionReason value) {
-  if (reason)
+  if (reason) {
     *reason = value;
+  }
   return value == MultiProfileUserController::ALLOWED;
 }
 
 }  // namespace
 
-// static
-const char MultiProfileUserController::kBehaviorUnrestricted[] = "unrestricted";
-const char MultiProfileUserController::kBehaviorPrimaryOnly[] = "primary-only";
-const char MultiProfileUserController::kBehaviorNotAllowed[] = "not-allowed";
-
-// Note: this policy value is not a real one an is only returned locally for
-// owner users instead of default one kBehaviorUnrestricted.
-const char MultiProfileUserController::kBehaviorOwnerPrimaryOnly[] =
-    "owner-primary-only";
-
 MultiProfileUserController::MultiProfileUserController(
-    MultiProfileUserControllerDelegate* delegate,
-    PrefService* local_state)
-    : delegate_(delegate), local_state_(local_state) {}
+    PrefService* local_state,
+    user_manager::UserManager* user_manager)
+    : local_state_(local_state), user_manager_(user_manager) {}
 
-MultiProfileUserController::~MultiProfileUserController() {}
+MultiProfileUserController::~MultiProfileUserController() = default;
 
 // static
 void MultiProfileUserController::RegisterPrefs(PrefRegistrySimple* registry) {
@@ -70,8 +56,9 @@ void MultiProfileUserController::RegisterPrefs(PrefRegistrySimple* registry) {
 // static
 void MultiProfileUserController::RegisterProfilePrefs(
     user_prefs::PrefRegistrySyncable* registry) {
-  registry->RegisterStringPref(prefs::kMultiProfileUserBehavior,
-                               kBehaviorUnrestricted);
+  registry->RegisterStringPref(kMultiProfileUserBehaviorPref,
+                               std::string(MultiUserSignInPolicyToPrefValue(
+                                   MultiUserSignInPolicy::kUnrestricted)));
   registry->RegisterBooleanPref(
       prefs::kMultiProfileNeverShowIntro, false,
       user_prefs::PrefRegistrySyncable::SYNCABLE_OS_PREF);
@@ -80,73 +67,65 @@ void MultiProfileUserController::RegisterProfilePrefs(
       user_prefs::PrefRegistrySyncable::SYNCABLE_OS_PREF);
 }
 
-// static
-MultiProfileUserController::UserAllowedInSessionReason
-MultiProfileUserController::GetPrimaryUserPolicy() {
-  user_manager::UserManager* user_manager = user_manager::UserManager::Get();
-  CHECK(user_manager);
-
-  const user_manager::User* user = user_manager->GetPrimaryUser();
-  if (!user)
-    return ALLOWED;
-
-  Profile* profile = ProfileHelper::Get()->GetProfileByUser(user);
-  if (!profile)
-    return ALLOWED;
-
-  // No user is allowed if the primary user policy forbids it.
-  const std::string behavior =
-      profile->GetPrefs()->GetString(prefs::kMultiProfileUserBehavior);
-  if (behavior == kBehaviorNotAllowed)
-    return NOT_ALLOWED_PRIMARY_USER_POLICY_FORBIDS;
-
-  return ALLOWED;
+void MultiProfileUserController::Shutdown() {
+  pref_watchers_.clear();
 }
 
-// static
-MultiProfileUserBehavior MultiProfileUserController::UserBehaviorStringToEnum(
-    const std::string& behavior) {
-  if (behavior == kBehaviorPrimaryOnly)
-    return MultiProfileUserBehavior::PRIMARY_ONLY;
-  if (behavior == kBehaviorNotAllowed)
-    return MultiProfileUserBehavior::NOT_ALLOWED;
-  if (behavior == kBehaviorOwnerPrimaryOnly)
-    return MultiProfileUserBehavior::OWNER_PRIMARY_ONLY;
+MultiProfileUserController::UserAllowedInSessionReason
+MultiProfileUserController::GetPrimaryUserPolicy() const {
+  const user_manager::User* user = user_manager_->GetPrimaryUser();
+  if (!user) {
+    return ALLOWED;
+  }
 
-  return MultiProfileUserBehavior::UNRESTRICTED;
+  Profile* profile = ProfileHelper::Get()->GetProfileByUser(user);
+  if (!profile) {
+    return ALLOWED;
+  }
+
+  // No user is allowed if the primary user policy forbids it.
+  auto value = ParseMultiUserSignInPolicyPref(
+      profile->GetPrefs()->GetString(kMultiProfileUserBehaviorPref));
+  if (value == MultiUserSignInPolicy::kNotAllowed) {
+    return NOT_ALLOWED_PRIMARY_USER_POLICY_FORBIDS;
+  }
+
+  return ALLOWED;
 }
 
 bool MultiProfileUserController::IsUserAllowedInSession(
     const std::string& user_email,
     MultiProfileUserController::UserAllowedInSessionReason* reason) const {
-  user_manager::UserManager* user_manager = user_manager::UserManager::Get();
-  CHECK(user_manager);
-
-  const user_manager::User* primary_user = user_manager->GetPrimaryUser();
+  const user_manager::User* primary_user = user_manager_->GetPrimaryUser();
   std::string primary_user_email;
-  if (primary_user)
+  if (primary_user) {
     primary_user_email = primary_user->GetAccountId().GetUserEmail();
+  }
 
   // Always allow if there is no primary user or user being checked is the
   // primary user.
-  if (primary_user_email.empty() || primary_user_email == user_email)
+  if (primary_user_email.empty() || primary_user_email == user_email) {
     return SetUserAllowedReason(reason, ALLOWED);
+  }
 
   UserAllowedInSessionReason primary_user_policy = GetPrimaryUserPolicy();
-  if (primary_user_policy != ALLOWED)
+  if (primary_user_policy != ALLOWED) {
     return SetUserAllowedReason(reason, primary_user_policy);
+  }
 
   // The user must have 'unrestricted' policy to be a secondary user.
-  const std::string behavior = GetCachedValue(user_email);
-  return SetUserAllowedReason(reason, behavior == kBehaviorUnrestricted
-                                          ? ALLOWED
-                                          : NOT_ALLOWED_POLICY_FORBIDS);
+  const auto policy = GetCachedValue(user_email);
+  return SetUserAllowedReason(reason,
+                              policy == MultiUserSignInPolicy::kUnrestricted
+                                  ? ALLOWED
+                                  : NOT_ALLOWED_POLICY_FORBIDS);
 }
 
 void MultiProfileUserController::StartObserving(Profile* user_profile) {
   // Profile name could be empty during tests.
-  if (user_profile->GetProfileUserName().empty())
+  if (user_profile->GetProfileUserName().empty()) {
     return;
+  }
 
   std::unique_ptr<PrefChangeRegistrar> registrar(new PrefChangeRegistrar);
   registrar->Init(user_profile->GetPrefs());
@@ -160,39 +139,38 @@ void MultiProfileUserController::StartObserving(Profile* user_profile) {
 }
 
 void MultiProfileUserController::RemoveCachedValues(
-    const std::string& user_email) {
+    std::string_view user_email) {
   ScopedDictPrefUpdate update(local_state_,
                               prefs::kCachedMultiProfileUserBehavior);
   update->Remove(user_email);
 }
 
-std::string MultiProfileUserController::GetCachedValue(
-    const std::string& user_email) const {
+MultiUserSignInPolicy MultiProfileUserController::GetCachedValue(
+    std::string_view user_email) const {
   const base::Value::Dict& dict =
       local_state_->GetDict(prefs::kCachedMultiProfileUserBehavior);
 
   const std::string* value = dict.FindString(user_email);
-  if (value)
-    return SanitizeBehaviorValue(*value);
+  if (!value) {
+    return MultiUserSignInPolicy::kUnrestricted;
+  }
 
-  return std::string(kBehaviorUnrestricted);
+  return ParseMultiUserSignInPolicyPref(*value).value_or(
+      MultiUserSignInPolicy::kUnrestricted);
 }
 
-void MultiProfileUserController::SetCachedValue(const std::string& user_email,
-                                                const std::string& behavior) {
+void MultiProfileUserController::SetCachedValue(std::string_view user_email,
+                                                MultiUserSignInPolicy policy) {
   ScopedDictPrefUpdate update(local_state_,
                               prefs::kCachedMultiProfileUserBehavior);
-  update->Set(user_email, SanitizeBehaviorValue(behavior));
+  update->Set(user_email, MultiUserSignInPolicyToPrefValue(policy));
 }
 
 void MultiProfileUserController::CheckSessionUsers() {
-  const user_manager::UserList& users =
-      user_manager::UserManager::Get()->GetLoggedInUsers();
-  for (user_manager::UserList::const_iterator it = users.begin();
-       it != users.end(); ++it) {
-    if (!IsUserAllowedInSession((*it)->GetAccountId().GetUserEmail(),
-                                nullptr)) {
-      delegate_->OnUserNotAllowed((*it)->GetAccountId().GetUserEmail());
+  for (const user_manager::User* user : user_manager_->GetLoggedInUsers()) {
+    const std::string& user_email = user->GetAccountId().GetUserEmail();
+    if (!IsUserAllowedInSession(user_email, /*reason=*/nullptr)) {
+      user_manager_->NotifyUserNotAllowed(user_email);
       return;
     }
   }
@@ -212,9 +190,10 @@ void MultiProfileUserController::OnUserPrefChanged(Profile* user_profile) {
                                 prefs::kCachedMultiProfileUserBehavior);
     update->Remove(user_email);
   } else {
-    const std::string behavior =
-        prefs->GetString(prefs::kMultiProfileUserBehavior);
-    SetCachedValue(user_email, behavior);
+    auto policy = ParseMultiUserSignInPolicyPref(
+        prefs->GetString(kMultiProfileUserBehaviorPref));
+    SetCachedValue(user_email,
+                   policy.value_or(MultiUserSignInPolicy::kUnrestricted));
   }
 
   CheckSessionUsers();

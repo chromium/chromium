@@ -8,6 +8,7 @@
 #include "ash/app_list/model/app_list_item.h"
 #include "ash/constants/ash_constants.h"
 #include "ash/constants/ash_features.h"
+#include "ash/style/ash_color_id.h"
 #include "ash/style/ash_color_provider.h"
 #include "ui/events/event.h"
 #include "ui/gfx/canvas.h"
@@ -125,12 +126,12 @@ bool ProcessLeftRightKeyTraversalForTextfield(views::Textfield* textfield,
   return true;
 }
 
-gfx::ImageSkia CreateIconWithCircleBackground(const gfx::ImageSkia& icon) {
+gfx::ImageSkia CreateIconWithCircleBackground(
+    const gfx::ImageSkia& icon,
+    const ui::ColorProvider* color_provider) {
   DCHECK_EQ(icon.width(), icon.height());
   return gfx::ImageSkiaOperations::CreateImageWithCircleBackground(
-      icon.width() / 2,
-      AshColorProvider::Get()->GetBaseLayerColor(
-          AshColorProvider::BaseLayerType::kOpaque),
+      icon.width() / 2, color_provider->GetColor(kColorAshShieldAndBaseOpaque),
       icon);
 }
 

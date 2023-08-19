@@ -7,6 +7,14 @@
 
 #import <Foundation/Foundation.h>
 
+namespace signin_metrics {
+enum class AccessPoint;
+}  // namespace signin_metrics
+
+namespace syncer {
+class SyncService;
+}  // namespace syncer
+
 class ChromeAccountManagerService;
 @class ConsistencyDefaultAccountMediator;
 @protocol ConsistencyDefaultAccountConsumer;
@@ -26,7 +34,10 @@ class ChromeAccountManagerService;
 
 // The designated initializer.
 - (instancetype)initWithAccountManagerService:
-    (ChromeAccountManagerService*)accountManagerService
+                    (ChromeAccountManagerService*)accountManagerService
+                                  syncService:(syncer::SyncService*)syncService
+                                  accessPoint:
+                                      (signin_metrics::AccessPoint)accessPoint
     NS_DESIGNATED_INITIALIZER;
 
 - (instancetype)init NS_UNAVAILABLE;

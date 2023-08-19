@@ -8,8 +8,6 @@ source_set("coordinators") {
     "translate_infobar_placeholder_overlay_coordinator.mm",
   ]
 
-  configs += [ "//build/config/compiler:enable_arc" ]
-
   deps = [
     "//ios/chrome/browser/overlays/public/common/infobars",
     "//ios/chrome/browser/overlays/public/infobar_banner",
@@ -24,12 +22,13 @@ source_set("mediators") {
     "translate_infobar_banner_overlay_mediator.mm",
   ]
 
-  configs += [ "//build/config/compiler:enable_arc" ]
-
   deps = [
     "//base",
+    "//components/translate/core/browser",
     "//ios/chrome/app/strings",
+    "//ios/chrome/browser/infobars/overlays:util",
     "//ios/chrome/browser/overlays",
+    "//ios/chrome/browser/overlays/public/default",
     "//ios/chrome/browser/overlays/public/infobar_banner",
     "//ios/chrome/browser/shared/public/features",
     "//ios/chrome/browser/shared/ui/symbols",
@@ -44,8 +43,6 @@ source_set("unit_tests") {
   testonly = true
   sources = [ "translate_infobar_banner_overlay_mediator_unittest.mm" ]
 
-  configs += [ "//build/config/compiler:enable_arc" ]
-
   deps = [
     ":mediators",
     "//base/test:test_support",
@@ -54,8 +51,10 @@ source_set("unit_tests") {
     "//components/translate/core/browser:test_support",
     "//ios/chrome/app/strings",
     "//ios/chrome/browser/infobars",
+    "//ios/chrome/browser/infobars:public",
     "//ios/chrome/browser/overlays",
     "//ios/chrome/browser/overlays/public/common/infobars",
+    "//ios/chrome/browser/overlays/public/default",
     "//ios/chrome/browser/overlays/public/infobar_banner",
     "//ios/chrome/browser/overlays/test",
     "//ios/chrome/browser/shared/ui/symbols",

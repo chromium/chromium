@@ -42,6 +42,7 @@ PermissionContextDelegates::~PermissionContextDelegates() = default;
 
 permissions::PermissionManager::PermissionContextMap
 CreateDefaultPermissionContexts(content::BrowserContext* browser_context,
+                                bool is_regular_profile,
                                 PermissionContextDelegates delegates) {
   permissions::PermissionManager::PermissionContextMap permission_contexts;
 
@@ -73,7 +74,8 @@ CreateDefaultPermissionContexts(content::BrowserContext* browser_context,
   permission_contexts[ContentSettingsType::GEOLOCATION] =
       std::make_unique<permissions::GeolocationPermissionContextAndroid>(
           browser_context,
-          std::move(delegates.geolocation_permission_context_delegate));
+          std::move(delegates.geolocation_permission_context_delegate),
+          is_regular_profile);
 #elif BUILDFLAG(IS_MAC) || BUILDFLAG(IS_CHROMEOS)
   DCHECK(delegates.geolocation_manager);
   permission_contexts[ContentSettingsType::GEOLOCATION] =

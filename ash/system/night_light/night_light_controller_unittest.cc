@@ -31,10 +31,10 @@
 #include "components/prefs/pref_service.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/compositor/layer.h"
-#include "ui/display/fake/fake_display_snapshot.h"
 #include "ui/display/manager/display_change_observer.h"
 #include "ui/display/manager/display_manager.h"
 #include "ui/display/manager/test/action_logger_util.h"
+#include "ui/display/manager/test/fake_display_snapshot.h"
 #include "ui/display/manager/test/test_native_display_delegate.h"
 #include "ui/gfx/geometry/vector3d_f.h"
 #include "ui/message_center/public/cpp/notification.h"
@@ -264,7 +264,8 @@ class NightLightTest : public NoSessionAshTestBase {
   }
 
  private:
-  raw_ptr<TestDelegate, ExperimentalAsh> delegate_ = nullptr;  // Not owned.
+  raw_ptr<TestDelegate, DanglingUntriaged | ExperimentalAsh> delegate_ =
+      nullptr;  // Not owned.
 };
 
 // Tests toggling NightLight on / off and makes sure the observer is updated and
@@ -1326,7 +1327,8 @@ class NightLightCrtcTest : public NightLightTest {
  private:
   std::unique_ptr<display::test::ActionLogger> logger_;
   // Not owned.
-  raw_ptr<display::test::TestNativeDisplayDelegate, ExperimentalAsh>
+  raw_ptr<display::test::TestNativeDisplayDelegate,
+          DanglingUntriaged | ExperimentalAsh>
       native_display_delegate_;
   std::unique_ptr<display::DisplayChangeObserver> display_change_observer_;
   std::unique_ptr<display::DisplayConfigurator::TestApi> test_api_;
@@ -1840,8 +1842,10 @@ class AmbientEQTest : public NightLightTest {
   std::unique_ptr<display::test::ActionLogger> logger_;
 
   // Not owned.
-  raw_ptr<NightLightControllerImpl, ExperimentalAsh> controller_;
-  raw_ptr<display::test::TestNativeDisplayDelegate, ExperimentalAsh>
+  raw_ptr<NightLightControllerImpl, DanglingUntriaged | ExperimentalAsh>
+      controller_;
+  raw_ptr<display::test::TestNativeDisplayDelegate,
+          DanglingUntriaged | ExperimentalAsh>
       native_display_delegate_;
   std::unique_ptr<display::DisplayChangeObserver> display_change_observer_;
   std::unique_ptr<display::DisplayConfigurator::TestApi> test_api_;

@@ -385,7 +385,7 @@ bool GCMMessageCryptographer::Decrypt(
     return false;
   }
 
-  plaintext->assign(decrypted_record.data(), decrypted_record.size());
+  *plaintext = decrypted_record;
   return true;
 }
 

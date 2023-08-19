@@ -15,17 +15,20 @@
 #import "ios/chrome/browser/shared/public/commands/activity_service_commands.h"
 #import "ios/chrome/browser/shared/public/commands/share_highlight_command.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
+#import "ios/chrome/browser/shared/ui/symbols/symbols.h"
 #import "ios/chrome/browser/ui/browser_container/edit_menu_alert_delegate.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ios/web/public/web_state.h"
 #import "ui/base/l10n/l10n_util.h"
 #import "ui/strings/grit/ui_strings.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 using shared_highlighting::LinkGenerationError;
+
+namespace {
+typedef void (^ProceduralBlockWithItemArray)(NSArray<UIMenuElement*>*);
+typedef void (^ProceduralBlockWithBlockWithItemArray)(
+    ProceduralBlockWithItemArray);
+}  // namespace
 
 @implementation LinkToTextMediator {
   // The Browser's WebStateList.
@@ -141,6 +144,49 @@ using shared_highlighting::LinkGenerationError;
   LinkToTextTabHelper* helper = LinkToTextTabHelper::FromWebState(webState);
   DCHECK(helper);
   return helper;
+}
+
+- (void)addItemWithCompletion:(ProceduralBlockWithItemArray)completion {
+  if (![self shouldOfferLinkToText]) {
+    completion(@[]);
+    return;
+  }
+
+  __weak __typeof(self) weakSelf = self;
+  NSString* title = l10n_util::GetNSString(IDS_IOS_SHARE_LINK_TO_TEXT);
+  NSString* linkToTextId = @"chromecommand.linktotext";
+  UIAction* action =
+      [UIAction actionWithTitle:title
+                          image:DefaultSymbolWithPointSize(
+                                    kHighlighterSymbol, kSymbolActionPointSize)
+                     identifier:linkToTextId
+                        handler:^(UIAction* a) {
+                          [weakSelf handleLinkToTextSelection];
+                        }];
+  completion(@[ action ]);
+}
+
+#pragma mark - EditMenuProvider
+
+- (void)buildMenuWithBuilder:(id<UIMenuBuilder>)builder {
+  NSString* linkToTextId = @"chromecommand.menu.linktotext";
+
+  __weak __typeof(self) weakSelf = self;
+  ProceduralBlockWithBlockWithItemArray provider =
+      ^(ProceduralBlockWithItemArray completion) {
+        [weakSelf addItemWithCompletion:completion];
+      };
+  // Use a deferred element so that the item is displayed depending on the text
+  // selection and updated on selection change.
+  UIDeferredMenuElement* deferredMenuElement =
+      [UIDeferredMenuElement elementWithProvider:provider];
+
+  UIMenu* linkToTextMenu = [UIMenu menuWithTitle:@""
+                                           image:nil
+                                      identifier:linkToTextId
+                                         options:UIMenuOptionsDisplayInline
+                                        children:@[ deferredMenuElement ]];
+  [builder insertChildMenu:linkToTextMenu atEndOfMenuForIdentifier:UIMenuRoot];
 }
 
 @end

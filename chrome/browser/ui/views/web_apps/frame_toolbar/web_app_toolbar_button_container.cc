@@ -314,7 +314,8 @@ SkColor WebAppToolbarButtonContainer::GetIconLabelBubbleBackgroundColor()
   return background_color_;
 }
 
-bool WebAppToolbarButtonContainer::ShouldHideContentSettingImage() {
+bool WebAppToolbarButtonContainer::ShouldHideContentSettingImage(
+    ImageType type) {
   return false;
 }
 

@@ -11,6 +11,7 @@
 
 #include "base/functional/callback_forward.h"
 #include "base/observer_list_types.h"
+#include "base/supports_user_data.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "components/services/storage/privileged/mojom/indexed_db_control.mojom-forward.h"
@@ -78,6 +79,7 @@ class HostZoomLevelContext;
 class HostZoomMap;
 class InterestGroupManager;
 class PlatformNotificationContext;
+class PrivateAggregationDataModel;
 class ServiceWorkerContext;
 class SharedWorkerService;
 class StoragePartitionConfig;
@@ -90,7 +92,7 @@ class NavigationRequest;
 // persistent state inside the BrowserContext. This is used to implement
 // isolated storage where a renderer with isolated storage cannot see
 // the cookies, localStorage, etc., that normal web renderers have access to.
-class CONTENT_EXPORT StoragePartition {
+class CONTENT_EXPORT StoragePartition : public base::SupportsUserData {
  public:
   // Returns the StoragePartitionConfig that represents this StoragePartition.
   virtual const StoragePartitionConfig& GetConfig() = 0;
@@ -163,6 +165,7 @@ class CONTENT_EXPORT StoragePartition {
   virtual InterestGroupManager* GetInterestGroupManager() = 0;
   virtual BrowsingTopicsSiteDataManager* GetBrowsingTopicsSiteDataManager() = 0;
   virtual AttributionDataModel* GetAttributionDataModel() = 0;
+  virtual PrivateAggregationDataModel* GetPrivateAggregationDataModel() = 0;
 
   virtual leveldb_proto::ProtoDatabaseProvider* GetProtoDatabaseProvider() = 0;
   // Must be set before the first call to GetProtoDatabaseProvider(), or a new
@@ -201,6 +204,7 @@ class CONTENT_EXPORT StoragePartition {
     REMOVE_DATA_MASK_ATTRIBUTION_REPORTING_INTERNAL = 1 << 16,
     REMOVE_DATA_MASK_PRIVATE_AGGREGATION_INTERNAL = 1 << 17,
     REMOVE_DATA_MASK_INTEREST_GROUPS_INTERNAL = 1 << 18,
+    REMOVE_DATA_MASK_ENVIRONMENT_INTEGRITY = 1 << 19,
 
     REMOVE_DATA_MASK_ALL = 0xFFFFFFFF,
 
@@ -359,7 +363,7 @@ class CONTENT_EXPORT StoragePartition {
       const storage::QuotaSettings* settings);
 
  protected:
-  virtual ~StoragePartition() {}
+  ~StoragePartition() override {}
 };
 
 }  // namespace content

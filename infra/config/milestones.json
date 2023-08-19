@@ -9,20 +9,10 @@
         "project": "chromium-m109",
         "ref": "refs/branch-heads/5414"
     },
-    "110": {
-        "name": "m110",
-        "project": "chromium-m110",
-        "ref": "refs/branch-heads/5481"
-    },
     "112": {
         "name": "m112",
         "project": "chromium-m112",
         "ref": "refs/branch-heads/5615"
-    },
-    "113": {
-        "name": "m113",
-        "project": "chromium-m113",
-        "ref": "refs/branch-heads/5672"
     },
     "114": {
         "name": "m114",
@@ -33,5 +23,15 @@
         "name": "m115",
         "project": "chromium-m115",
         "ref": "refs/branch-heads/5790"
+    },
+    "116": {
+        "name": "m116",
+        "project": "chromium-m116",
+        "ref": "refs/branch-heads/5845"
+    },
+    "117": {
+        "name": "m117",
+        "project": "chromium-m117",
+        "ref": "refs/branch-heads/5938"
     }
 }

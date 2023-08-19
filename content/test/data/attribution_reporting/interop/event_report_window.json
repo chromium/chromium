@@ -3,7 +3,7 @@
   "input": {
     "sources": [
       {
-        "timestamp": "1643235573000",
+        "timestamp": "0",
         "registration_request": {
           "source_origin": "https://source.test",
           "attribution_src_url": "https://reporter.test/register-source",
@@ -15,8 +15,8 @@
             "Attribution-Reporting-Register-Source": {
               "destination": "https://destination.test",
               "source_event_id": "123",
-              // Clamped to one day (86400 seconds).
-              "event_report_window": "86390",
+              // Clamped to one hour (3600 seconds).
+              "event_report_window": 3590,
               "aggregation_keys": {
                 "a": "0x1"
               }
@@ -25,7 +25,7 @@
         }]
       },
       {
-        "timestamp": "1643235574000",
+        "timestamp": "1000",
         "registration_request": {
           "source_origin": "https://source.test",
           "attribution_src_url": "https://reporter2.test/register-source",
@@ -44,7 +44,7 @@
         }]
       },
       {
-        "timestamp": "1643235575000",
+        "timestamp": "2000",
         "registration_request": {
           "source_origin": "https://source.test",
           "attribution_src_url": "https://reporter.test/register-source",
@@ -67,9 +67,10 @@
     ],
     "triggers": [
       // Should result in an event-level report and an aggregatable report
-      // as the event report window was clamped to one day.
+      // as the event report window was clamped to one hour.
       {
-        "timestamp": "1643321973000",
+        // 3,599,000 ms = 1 hour - 1 second < clamped event_report_window value
+        "timestamp": "3599000",
         "registration_request": {
           "attribution_src_url": "https://reporter.test/register-trigger",
           "destination_origin": "https://destination.test"
@@ -97,9 +98,11 @@
         }]
       },
       // Should result in an aggregatable report, but not event-level report as
-      // event report window has passed.
+      // event report window has passed (event report window is an exclusive
+      // bound).
       {
-        "timestamp": "1643321973001",
+        // 3,600,000 ms = 1 hour = clamped event_report_window value
+        "timestamp": "3600000",
         "registration_request": {
           "attribution_src_url": "https://reporter.test/register-trigger",
           "destination_origin": "https://destination.test"
@@ -131,7 +134,9 @@
       // Should result in an event-level report as the event report window was
       // not rounded.
       {
-        "timestamp": "1643323974000",
+        // 88,400,000 ms = 88,400 s (source 456 non-rounded event_report
+        // window).
+        "timestamp": "88400000",
         "registration_request": {
           "attribution_src_url": "https://reporter2.test/register-trigger",
           "destination_origin": "https://destination.test"
@@ -149,10 +154,17 @@
           }
         }]
       },
-      // Should result in an event-level report and report time was based one
+      // Should result in an event-level report and report time was based on
       // event report window.
       {
-        "timestamp": "1643321974500",
+        // We use a timestamp that is before the end of the clamped timestamp.
+        // The report would be created even if the event_report_window would not
+        // be clamped. However, we can assert that it was by ensuring that the
+        // report's report_time is based on the clamped event_report_window.
+        // clamped: 86,402 s = 2 s + 86,400 s
+        // 86,401,000 ms = clamped - 1 s
+
+        "timestamp": "86401000",
         "registration_request": {
           "attribution_src_url": "https://reporter.test/register-trigger",
           "destination_origin": "https://destination2.test"
@@ -178,36 +190,42 @@
         "payload": {
           "attribution_destination": "https://destination.test",
           "randomized_trigger_rate": 0.0001372,
-          "scheduled_report_time": "1643325573",
+          // 7200 s = 3600 s (clamped event_report_window) + 1 h (base
+          // delay)
+          "scheduled_report_time": "7200",
           "source_event_id": "123",
           "source_type": "navigation",
           "trigger_data": "1"
         },
         "report_url": "https://reporter.test/.well-known/attribution-reporting/report-event-attribution",
-        "report_time": "1643325573000"
+        "report_time": "7200000"
       },
       {
         "payload": {
           "attribution_destination": "https://destination.test",
           "randomized_trigger_rate": 0.0000025,
-          "scheduled_report_time": "1643327574",
+          // 92,001 s = 1 s (source timestamp) + 88,400 s (event_report_window)
+          // + 1 h (base delay)
+          "scheduled_report_time": "92001",
           "source_event_id": "456",
           "source_type": "event",
           "trigger_data": "1"
        },
-       "report_time": "1643327574000",
+       "report_time": "92001000",
        "report_url": "https://reporter2.test/.well-known/attribution-reporting/report-event-attribution"
       },
       {
         "payload": {
           "attribution_destination": "https://destination2.test",
           "randomized_trigger_rate": 0.0000025,
-          "scheduled_report_time": "1643325575",
+          // 90,002 s = 2 s (source timestamp) + 86,400 s (clamped
+          // event_report_window) + 1h (base delay)
+          "scheduled_report_time": "90002",
           "source_event_id": "789",
           "source_type": "event",
           "trigger_data": "0"
        },
-       "report_time": "1643325575000",
+       "report_time": "90002000",
        "report_url": "https://reporter.test/.well-known/attribution-reporting/report-event-attribution"
       }
     ],
@@ -223,7 +241,7 @@
           ]
         },
         "report_url": "https://reporter.test/.well-known/attribution-reporting/report-aggregate-attribution",
-        "report_time": "1643325573000"
+        "report_time": "7199000"
       },
       {
         "payload": {
@@ -233,7 +251,7 @@
               "value": 456
            } ]
         },
-        "report_time": "1643325573001",
+        "report_time": "7200000",
         "report_url": "https://reporter.test/.well-known/attribution-reporting/report-aggregate-attribution"
       }
     ],
@@ -247,7 +265,7 @@
           },
           "type": "trigger-event-report-window-passed"
        } ],
-       "report_time": "1643321973001",
+       "report_time": "3600000",
        "report_url": "https://reporter.test/.well-known/attribution-reporting/debug/verbose"
       }
     ]

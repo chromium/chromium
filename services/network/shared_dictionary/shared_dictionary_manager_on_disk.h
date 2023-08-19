@@ -42,6 +42,7 @@ class SharedDictionaryManagerOnDisk : public SharedDictionaryManager {
       const base::FilePath& database_path,
       const base::FilePath& cache_directory_path,
       uint64_t cache_max_size,
+      uint64_t cache_max_count,
 #if BUILDFLAG(IS_ANDROID)
       base::android::ApplicationStatusListener* app_status_listener,
 #endif  // BUILDFLAG(IS_ANDROID)
@@ -56,12 +57,28 @@ class SharedDictionaryManagerOnDisk : public SharedDictionaryManager {
 
   // SharedDictionaryManager
   scoped_refptr<SharedDictionaryStorage> CreateStorage(
-      const net::SharedDictionaryStorageIsolationKey& isolation_key) override;
+      const net::SharedDictionaryIsolationKey& isolation_key) override;
   void SetCacheMaxSize(uint64_t cache_max_size) override;
   void ClearData(base::Time start_time,
                  base::Time end_time,
                  base::RepeatingCallback<bool(const GURL&)> url_matcher,
                  base::OnceClosure callback) override;
+  void ClearDataForIsolationKey(
+      const net::SharedDictionaryIsolationKey& isolation_key,
+      base::OnceClosure callback) override;
+  void GetUsageInfo(base::OnceCallback<
+                    void(const std::vector<net::SharedDictionaryUsageInfo>&)>
+                        callback) override;
+  void GetSharedDictionaryInfo(
+      const net::SharedDictionaryIsolationKey& isolation_key,
+      base::OnceCallback<
+          void(std::vector<network::mojom::SharedDictionaryInfoPtr>)> callback)
+      override;
+  void GetOriginsBetween(
+      base::Time start_time,
+      base::Time end_time,
+      base::OnceCallback<void(const std::vector<url::Origin>&)> callback)
+      override;
 
   SharedDictionaryDiskCache& disk_cache() { return disk_cache_; }
   net::SQLitePersistentSharedDictionaryStore& metadata_store() {
@@ -69,7 +86,7 @@ class SharedDictionaryManagerOnDisk : public SharedDictionaryManager {
   }
 
   scoped_refptr<SharedDictionaryWriter> CreateWriter(
-      const net::SharedDictionaryStorageIsolationKey& isolation_key,
+      const net::SharedDictionaryIsolationKey& isolation_key,
       const GURL& url,
       base::Time response_time,
       base::TimeDelta expiration,
@@ -77,6 +94,14 @@ class SharedDictionaryManagerOnDisk : public SharedDictionaryManager {
       base::OnceCallback<void(net::SharedDictionaryInfo)> callback);
 
   void UpdateDictionaryLastUsedTime(net::SharedDictionaryInfo& info);
+
+  // Posts a MismatchingEntryDeletionTask if this method is called for the first
+  // time.
+  void MaybePostMismatchingEntryDeletionTask();
+
+  // Posts a ExpiredDictionaryDeletionTask if there is no ongoing or queued
+  // MismatchingEntryDeletionTask.
+  void MaybePostExpiredDictionaryDeletionTask();
 
  private:
   class SerializedTask {
@@ -92,17 +117,19 @@ class SharedDictionaryManagerOnDisk : public SharedDictionaryManager {
   };
 
   class ClearDataTask;
+  class ClearDataForIsolationKeyTask;
   class MismatchingEntryDeletionTask;
   class CacheEvictionTask;
   class ExpiredDictionaryDeletionTask;
 
   class ClearDataTaskInfo;
+  class ClearDataForIsolationKeyTaskInfo;
   class MismatchingEntryDeletionTaskInfo;
   class CacheEvictionTaskInfo;
   class ExpiredDictionaryDeletionTaskInfo;
 
   void OnDictionaryWrittenInDiskCache(
-      const net::SharedDictionaryStorageIsolationKey& isolation_key,
+      const net::SharedDictionaryIsolationKey& isolation_key,
       const GURL& url,
       base::Time response_time,
       base::TimeDelta expiration,
@@ -123,9 +150,7 @@ class SharedDictionaryManagerOnDisk : public SharedDictionaryManager {
   void OnFinishSerializedTask();
   void MaybeStartSerializedTask();
 
-  void MaybePostMismatchingEntryDeletionTask();
   void MaybePostCacheEvictionTask();
-  void MaybePostExpiredDictionaryDeletionTask();
 
   void OnDictionaryDeleted(
       const std::set<base::UnguessableToken>& disk_cache_key_tokens,
@@ -137,8 +162,10 @@ class SharedDictionaryManagerOnDisk : public SharedDictionaryManager {
   }
 
   uint64_t cache_max_size() const { return cache_max_size_; }
+  uint64_t cache_max_count() const { return cache_max_count_; }
 
   uint64_t cache_max_size_;
+  const uint64_t cache_max_count_;
   SharedDictionaryDiskCache disk_cache_;
   net::SQLitePersistentSharedDictionaryStore metadata_store_;
 

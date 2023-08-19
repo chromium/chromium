@@ -41,7 +41,15 @@ enum BubbleViewID {
   // Label which is a child of an individual "toggle" VC effect.
   kToggleEffectLabel,
 
-  kNextAvailableId = kToggleEffectLabel + 1,
+  // The label with a warning icon, indicating that effects are not available
+  // for linux apps.
+  kLinuxAppWarningView,
+
+  // The VC bubble that will be displayed when all the running media apps are
+  // Linux apps.
+  kLinuxAppBubbleView,
+
+  kNextAvailableId = kLinuxAppBubbleView + 1,
 };
 
 }  // namespace ash::video_conference

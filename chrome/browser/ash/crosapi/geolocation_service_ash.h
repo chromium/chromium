@@ -5,6 +5,8 @@
 #ifndef CHROME_BROWSER_ASH_CROSAPI_GEOLOCATION_SERVICE_ASH_H_
 #define CHROME_BROWSER_ASH_CROSAPI_GEOLOCATION_SERVICE_ASH_H_
 
+#include <string>
+
 #include "chromeos/crosapi/mojom/geolocation.mojom.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"
@@ -25,6 +27,8 @@ class GeolocationServiceAsh : public mojom::GeolocationService {
 
   // crosapi::mojom::GeolocationService:
   void GetWifiAccessPoints(GetWifiAccessPointsCallback callback) override;
+  void TrackGeolocationAttempted(const std::string& name) override;
+  void TrackGeolocationRelinquished(const std::string& name) override;
 
  private:
   // This class supports any number of connections. This allows the client to

@@ -313,7 +313,8 @@ class MultiDeviceSetupHostBackendDelegateImplTest
   std::unique_ptr<sync_preferences::TestingPrefServiceSyncable>
       test_pref_service_;
   std::unique_ptr<device_sync::FakeDeviceSyncClient> fake_device_sync_client_;
-  raw_ptr<base::MockOneShotTimer, ExperimentalAsh> mock_timer_;
+  raw_ptr<base::MockOneShotTimer, DanglingUntriaged | ExperimentalAsh>
+      mock_timer_;
 
   std::unique_ptr<FakeHostBackendDelegateObserver> observer_;
 

@@ -3,8 +3,6 @@
 <translationbundle lang="es-419">
 <translation id="1075622780330595106">Últimamente no usaste <ph name="NUMBER_OF_TABS" /> de tus pestañas. ¿Quieres cerrarlas?</translation>
 <translation id="125153950246128346">Presiona para ver otra pestaña</translation>
-<translation id="1403228085774130835">Puedes encontrar todas las pestañas cerradas en Pestañas recientes en el menú principal de Chrome</translation>
-<translation id="1455506303394048917">Tu actividad en las pestañas de incógnito se borrará del dispositivo</translation>
 <translation id="1499635324672558517">¿Quieres cerrar todas las pestañas de incógnito?</translation>
 <translation id="1657719826150349398">Mover la pestaña hacia abajo</translation>
 <translation id="1869137256605757565">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> pestaña}other{<ph name="TABS_COUNT_MANY" /> pestañas}}</translation>
@@ -47,6 +45,7 @@
 <translation id="5073204694187207510">Oculta la cuadrícula de pantalla completa</translation>
 <translation id="5076161749301278626">¿Quieres ver las opiniones de la tienda?</translation>
 <translation id="5082793167783849073">Forma un grupo para comparar las páginas rápidamente. Para comenzar, mantén presionado un vínculo.</translation>
+<translation id="5339733443032484186">Tu pestaña más reciente</translation>
 <translation id="5490235265819901748">Se expandió el grupo de pestañas</translation>
 <translation id="5494920125229734069">Seleccionar todo</translation>
 <translation id="5556417849629758491">Ver información de la tienda (la opción está disponible cerca de la parte superior de la pantalla)</translation>
@@ -62,10 +61,12 @@
 <translation id="6228793724645064692">(calificación de la tienda)</translation>
 <translation id="6333260925957816943">Hoja de información sobre esta tienda</translation>
 <translation id="639823877092900621">{TABS_COUNT,plural, =1{Desagrupar <ph name="TABS_COUNT_ONE" /> pestaña seleccionada}other{Desagrupar <ph name="TABS_COUNT_MANY" /> pestañas seleccionadas}}</translation>
+<translation id="6421412308143682486">{INCOGNITO_TABS_COUNT,plural, =1{Puedes encontrar todas tus pestañas cerradas en la opción Pestañas recientes del menú principal de Chrome. Tu pestaña de incógnito no estará disponible.}other{Puedes encontrar todas tus pestañas cerradas en la opción Pestañas recientes del menú principal de Chrome. Tus # pestañas de incógnito no estarán disponibles.}}</translation>
 <translation id="6422650314852876533">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> pestaña}other{<ph name="TABS_COUNT_MANY" /> pestañas}}</translation>
 <translation id="6549021453810473782">Consulta la información sobre la tienda.</translation>
 <translation id="6562820390860419811">Mover la pestaña a la izquierda</translation>
 <translation id="6615455863669487791">Mostrarme</translation>
+<translation id="661742612106409204">Puedes encontrar todas tus pestañas cerradas en la opción Pestañas recientes del menú principal de Chrome.</translation>
 <translation id="6840760312327750441">Para agrupar pestañas, mantén presionada una y arrástrala hasta otra.</translation>
 <translation id="6856809498882026482">Ocultar el modo de selección múltiple</translation>
 <translation id="7100731960740376323">{TABS_COUNT,plural, =1{Compartir pestaña}other{Compartir pestañas}}</translation>

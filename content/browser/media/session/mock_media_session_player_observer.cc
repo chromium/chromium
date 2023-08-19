@@ -80,14 +80,6 @@ void MockMediaSessionPlayerObserver::OnEnterPictureInPicture(int player_id) {
   players_[player_id].is_in_picture_in_picture_ = true;
 }
 
-void MockMediaSessionPlayerObserver::OnExitPictureInPicture(int player_id) {
-  EXPECT_GE(player_id, 0);
-  EXPECT_EQ(players_.size(), 1u);
-
-  ++received_exit_picture_in_picture_calls_;
-  players_[player_id].is_in_picture_in_picture_ = false;
-}
-
 void MockMediaSessionPlayerObserver::OnSetAudioSinkId(
     int player_id,
     const std::string& raw_device_id) {

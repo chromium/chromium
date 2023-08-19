@@ -6,16 +6,11 @@
 
 #import <Foundation/Foundation.h>
 
-#include "base/mac/scoped_nsobject.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-@interface TestDelayed : NSObject {
- @private
-  BOOL _didWork;
-  TestDelayed* _next;
-}
+@interface TestDelayed : NSObject
 @property(readonly, nonatomic) BOOL didWork;
-@property(assign, nonatomic) TestDelayed* next;
+@property(strong, nonatomic) TestDelayed* next;
 @end
 
 @implementation TestDelayed
@@ -36,7 +31,7 @@
 @end
 
 TEST(RunLoopTesting, RunAllPending) {
-  base::scoped_nsobject<TestDelayed> tester([[TestDelayed alloc] init]);
+  TestDelayed* tester = [[TestDelayed alloc] init];
   EXPECT_FALSE([tester didWork]);
 
   chrome::testing::NSRunLoopRunAllPending();
@@ -45,8 +40,8 @@ TEST(RunLoopTesting, RunAllPending) {
 }
 
 TEST(RunLoopTesting, NestedWork) {
-  base::scoped_nsobject<TestDelayed> tester([[TestDelayed alloc] init]);
-  base::scoped_nsobject<TestDelayed> nested([[TestDelayed alloc] init]);
+  TestDelayed* tester = [[TestDelayed alloc] init];
+  TestDelayed* nested = [[TestDelayed alloc] init];
   [tester setNext:nested];
 
   EXPECT_FALSE([tester didWork]);

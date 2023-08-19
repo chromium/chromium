@@ -11,10 +11,6 @@
 #import "ios/chrome/browser/ui/authentication/signin/signin_utils.h"
 #import "net/base/network_change_notifier.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 using signin_metrics::AccessPoint;
 using signin_metrics::LogSigninAccessPointStarted;
 using signin_metrics::PromoAction;
@@ -90,6 +86,7 @@ typedef NS_ENUM(NSUInteger, UserSigninPromoAction) {
                                 PromoActionCount);
       break;
     }
+    case SigninCoordinatorResultDisabled:
     case SigninCoordinatorResultInterrupted: {
       // TODO(crbug.com/951145): Add metric for when the sign-in has been
       // interrupted.

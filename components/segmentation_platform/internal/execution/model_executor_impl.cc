@@ -60,7 +60,7 @@ struct ModelExecutorImpl::ExecutionState {
   std::unique_ptr<ModelExecutionTraceEvent> trace_event;
 
   proto::SegmentInfo segment_info;
-  raw_ptr<ModelProvider, DanglingUntriaged> model_provider = nullptr;
+  raw_ptr<ModelProvider, AcrossTasksDanglingUntriaged> model_provider = nullptr;
   bool record_metrics_for_default = false;
   ModelExecutionCallback callback;
   ModelProvider::Request input_tensor;
@@ -127,7 +127,7 @@ void ModelExecutorImpl::ExecuteModel(
   }
 
   state->upload_tensors =
-      SegmentationUkmHelper::GetInstance()->CanUploadTensors(segment_info);
+      SegmentationUkmHelper::GetInstance()->IsUploadRequested(segment_info);
   feature_list_query_processor_->ProcessFeatureList(
       segment_info.model_metadata(), request->input_context, segment_id,
       clock_->Now(), base::Time(),

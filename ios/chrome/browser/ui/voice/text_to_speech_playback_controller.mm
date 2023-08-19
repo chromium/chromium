@@ -8,10 +8,6 @@
 #import "ios/chrome/browser/ui/voice/text_to_speech_notification_handler.h"
 #import "ios/web/public/web_state.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 TextToSpeechPlaybackController::TextToSpeechPlaybackController()
     : notification_helper_([[TextToSpeechNotificationHandler alloc] init]) {}
 
@@ -62,48 +58,34 @@ void TextToSpeechPlaybackController::Shutdown() {
 
 #pragma mark WebStateListObserver
 
-void TextToSpeechPlaybackController::WebStateInsertedAt(
+void TextToSpeechPlaybackController::WebStateListWillChange(
     WebStateList* web_state_list,
-    web::WebState* web_state,
-    int index,
-    bool activating) {
-  if (activating)
-    SetWebState(web_state);
-}
+    const WebStateListChangeDetach& detach_change,
+    const WebStateListStatus& status) {
+  if (!detach_change.is_closing()) {
+    return;
+  }
 
-void TextToSpeechPlaybackController::WebStateReplacedAt(
-    WebStateList* web_state_list,
-    web::WebState* old_web_state,
-    web::WebState* new_web_state,
-    int index) {
-  if (new_web_state == web_state_list->GetActiveWebState())
-    SetWebState(new_web_state);
-}
-
-void TextToSpeechPlaybackController::WebStateActivatedAt(
-    WebStateList* web_state_list,
-    web::WebState* old_web_state,
-    web::WebState* new_web_state,
-    int active_index,
-    ActiveWebStateChangeReason reason) {
-  SetWebState(new_web_state);
-}
-
-void TextToSpeechPlaybackController::WebStateDetachedAt(
-    WebStateList* web_state_list,
-    web::WebState* web_state,
-    int index) {
-  if (web_state_ == web_state)
+  if (web_state_ == detach_change.detached_web_state()) {
     SetWebState(nullptr);
+  }
 }
 
-void TextToSpeechPlaybackController::WillCloseWebStateAt(
+void TextToSpeechPlaybackController::WebStateListDidChange(
     WebStateList* web_state_list,
-    web::WebState* web_state,
-    int index,
-    bool user_action) {
-  if (web_state_ == web_state)
-    SetWebState(nullptr);
+    const WebStateListChange& change,
+    const WebStateListStatus& status) {
+  if (change.type() == WebStateListChange::Type::kDetach) {
+    const WebStateListChangeDetach& detach_change =
+        change.As<WebStateListChangeDetach>();
+    if (web_state_ == detach_change.detached_web_state()) {
+      SetWebState(nullptr);
+    }
+  }
+
+  if (status.active_web_state_change()) {
+    SetWebState(status.new_active_web_state);
+  }
 }
 
 #pragma mark WebStateObserver

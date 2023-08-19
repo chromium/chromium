@@ -56,10 +56,6 @@
 #include "third_party/blink/renderer/core/html/forms/labels_node_list.h"
 #include "third_party/blink/renderer/core/html/html_frame_owner_element.h"
 #include "third_party/blink/renderer/core/html/html_image_element.h"
-#include "third_party/blink/renderer/core/html/html_table_caption_element.h"
-#include "third_party/blink/renderer/core/html/html_table_cell_element.h"
-#include "third_party/blink/renderer/core/html/html_table_col_element.h"
-#include "third_party/blink/renderer/core/html/html_table_element.h"
 #include "third_party/blink/renderer/core/html/media/html_media_element.h"
 #include "third_party/blink/renderer/core/html/shadow/shadow_element_names.h"
 #include "third_party/blink/renderer/core/input_type_names.h"
@@ -467,8 +463,7 @@ bool AXLayoutObject::ComputeAccessibilityIsIgnored(
 
     // A 1x1 canvas is too small for the user to see and thus ignored.
     const auto* canvas = DynamicTo<LayoutHTMLCanvas>(GetLayoutObject());
-    if (canvas &&
-        (canvas->Size().Height() <= 1 || canvas->Size().Width() <= 1)) {
+    if (canvas && (canvas->Size().height <= 1 || canvas->Size().width <= 1)) {
       if (ignored_reasons)
         ignored_reasons->push_back(IgnoredReason(kAXProbablyPresentational));
       return true;
@@ -969,8 +964,7 @@ AXObject* AXLayoutObject::AccessibilityHitTest(const gfx::Point& point) const {
   HitTestRequest request(HitTestRequest::kReadOnly | HitTestRequest::kActive);
   HitTestLocation location(point);
   HitTestResult hit_test_result = HitTestResult(request, location);
-  layer->HitTest(location, hit_test_result,
-                 PhysicalRect(PhysicalRect::InfiniteIntRect()));
+  layer->HitTest(location, hit_test_result, PhysicalRect(InfiniteIntRect()));
 
   Node* node = hit_test_result.InnerNode();
   if (!node)
@@ -1035,211 +1029,6 @@ Document* AXLayoutObject::GetDocument() const {
 void AXLayoutObject::HandleAutofillStateChanged(WebAXAutofillState state) {
   // Autofill state is stored in AXObjectCache.
   AXObjectCache().SetAutofillState(AXObjectID(), state);
-}
-
-// The following is a heuristic used to determine if a
-// <table> should be with ax::mojom::blink::Role::kTable or
-// ax::mojom::blink::Role::kLayoutTable.
-bool AXLayoutObject::IsDataTable() const {
-  if (!layout_object_ || !GetNode())
-    return false;
-
-  // If it has an ARIA role, it's definitely a data table.
-  AtomicString role;
-  if (HasAOMPropertyOrARIAAttribute(AOMStringProperty::kRole, role))
-    return true;
-
-  // When a section of the document is contentEditable, all tables should be
-  // treated as data tables, otherwise users may not be able to work with rich
-  // text editors that allow creating and editing tables.
-  if (GetNode() && blink::IsEditable(*GetNode()))
-    return true;
-
-  // This employs a heuristic to determine if this table should appear.
-  // Only "data" tables should be exposed as tables.
-  // Unfortunately, there is no good way to determine the difference
-  // between a "layout" table and a "data" table.
-  auto* table_element = DynamicTo<HTMLTableElement>(GetNode());
-  if (!table_element)
-    return false;
-
-  // If there is a caption element, summary, THEAD, or TFOOT section, it's most
-  // certainly a data table
-  if (!table_element->Summary().empty() || table_element->tHead() ||
-      table_element->tFoot() || table_element->caption())
-    return true;
-
-  // if someone used "rules" attribute than the table should appear
-  if (!table_element->Rules().empty())
-    return true;
-
-  // if there's a colgroup or col element, it's probably a data table.
-  if (Traversal<HTMLTableColElement>::FirstChild(*table_element))
-    return true;
-
-  // If there are at least 20 rows, we'll call it a data table.
-  HTMLTableRowsCollection* rows = table_element->rows();
-  int num_rows = rows->length();
-  if (num_rows >= AXObjectCacheImpl::kDataTableHeuristicMinRows)
-    return true;
-  if (num_rows <= 0)
-    return false;
-
-  int num_cols_in_first_body = rows->Item(0)->cells()->length();
-  // If there's only one cell, it's not a good AXTable candidate.
-  if (num_rows == 1 && num_cols_in_first_body == 1)
-    return false;
-
-  // Store the background color of the table to check against cell's background
-  // colors.
-  const ComputedStyle* table_style = layout_object_->Style();
-  if (!table_style)
-    return false;
-
-  Color table_bg_color =
-      table_style->VisitedDependentColor(GetCSSPropertyBackgroundColor());
-  bool has_cell_spacing = table_style->HorizontalBorderSpacing() &&
-                          table_style->VerticalBorderSpacing();
-
-  // check enough of the cells to find if the table matches our criteria
-  // Criteria:
-  //   1) must have at least one valid cell (and)
-  //   2) at least half of cells have borders (or)
-  //   3) at least half of cells have different bg colors than the table, and
-  //      there is cell spacing
-  unsigned valid_cell_count = 0;
-  unsigned bordered_cell_count = 0;
-  unsigned background_difference_cell_count = 0;
-  unsigned cells_with_top_border = 0;
-  unsigned cells_with_bottom_border = 0;
-  unsigned cells_with_left_border = 0;
-  unsigned cells_with_right_border = 0;
-
-  Color alternating_row_colors[5];
-  int alternating_row_color_count = 0;
-  for (int row = 0; row < num_rows; ++row) {
-    HTMLTableRowElement* row_element = rows->Item(row);
-    int n_cols = row_element->cells()->length();
-    for (int col = 0; col < n_cols; ++col) {
-      const Element* cell = row_element->cells()->item(col);
-      if (!cell)
-        continue;
-      // Any <th> tag -> treat as data table.
-      if (cell->HasTagName(html_names::kThTag))
-        return true;
-
-      // Check for an explicitly assigned a "data" table attribute.
-      auto* cell_elem = DynamicTo<HTMLTableCellElement>(*cell);
-      if (cell_elem) {
-        if (!cell_elem->Headers().empty() || !cell_elem->Abbr().empty() ||
-            !cell_elem->Axis().empty() ||
-            !cell_elem->FastGetAttribute(html_names::kScopeAttr).empty())
-          return true;
-      }
-
-      LayoutObject* cell_layout_object = cell->GetLayoutObject();
-      if (!cell_layout_object || !cell_layout_object->IsLayoutBlock())
-        continue;
-
-      const LayoutBlock* cell_layout_block =
-          To<LayoutBlock>(cell_layout_object);
-      if (cell_layout_block->Size().Width() < 1 ||
-          cell_layout_block->Size().Height() < 1)
-        continue;
-
-      valid_cell_count++;
-
-      const ComputedStyle* computed_style = cell_layout_block->Style();
-      if (!computed_style)
-        continue;
-
-      // If the empty-cells style is set, we'll call it a data table.
-      if (computed_style->EmptyCells() == EEmptyCells::kHide)
-        return true;
-
-      // If a cell has matching bordered sides, call it a (fully) bordered cell.
-      if ((cell_layout_block->BorderTop() > 0 &&
-           cell_layout_block->BorderBottom() > 0) ||
-          (cell_layout_block->BorderLeft() > 0 &&
-           cell_layout_block->BorderRight() > 0))
-        bordered_cell_count++;
-
-      // Also keep track of each individual border, so we can catch tables where
-      // most cells have a bottom border, for example.
-      if (cell_layout_block->BorderTop() > 0)
-        cells_with_top_border++;
-      if (cell_layout_block->BorderBottom() > 0)
-        cells_with_bottom_border++;
-      if (cell_layout_block->BorderLeft() > 0)
-        cells_with_left_border++;
-      if (cell_layout_block->BorderRight() > 0)
-        cells_with_right_border++;
-
-      // If the cell has a different color from the table and there is cell
-      // spacing, then it is probably a data table cell (spacing and colors take
-      // the place of borders).
-      Color cell_color = computed_style->VisitedDependentColor(
-          GetCSSPropertyBackgroundColor());
-      if (has_cell_spacing && table_bg_color != cell_color &&
-          !cell_color.IsFullyTransparent()) {
-        background_difference_cell_count++;
-      }
-
-      // If we've found 10 "good" cells, we don't need to keep searching.
-      if (bordered_cell_count >= 10 || background_difference_cell_count >= 10)
-        return true;
-
-      // For the first 5 rows, cache the background color so we can check if
-      // this table has zebra-striped rows.
-      if (row < 5 && row == alternating_row_color_count) {
-        LayoutObject* layout_row = cell_layout_block->Parent();
-        if (!layout_row || !layout_row->IsBoxModelObject() ||
-            !layout_row->IsTableRow())
-          continue;
-        const ComputedStyle* row_computed_style = layout_row->Style();
-        if (!row_computed_style)
-          continue;
-        Color row_color = row_computed_style->VisitedDependentColor(
-            GetCSSPropertyBackgroundColor());
-        alternating_row_colors[alternating_row_color_count] = row_color;
-        alternating_row_color_count++;
-      }
-    }
-  }
-
-  // if there is less than two valid cells, it's not a data table
-  if (valid_cell_count <= 1)
-    return false;
-
-  // half of the cells had borders, it's a data table
-  unsigned needed_cell_count = valid_cell_count / 2;
-  if (bordered_cell_count >= needed_cell_count ||
-      cells_with_top_border >= needed_cell_count ||
-      cells_with_bottom_border >= needed_cell_count ||
-      cells_with_left_border >= needed_cell_count ||
-      cells_with_right_border >= needed_cell_count)
-    return true;
-
-  // half had different background colors, it's a data table
-  if (background_difference_cell_count >= needed_cell_count)
-    return true;
-
-  // Check if there is an alternating row background color indicating a zebra
-  // striped style pattern.
-  if (alternating_row_color_count > 2) {
-    Color first_color = alternating_row_colors[0];
-    for (int k = 1; k < alternating_row_color_count; k++) {
-      // If an odd row was the same color as the first row, its not alternating.
-      if (k % 2 == 1 && alternating_row_colors[k] == first_color)
-        return false;
-      // If an even row is not the same as the first row, its not alternating.
-      if (!(k % 2) && alternating_row_colors[k] != first_color)
-        return false;
-    }
-    return true;
-  }
-
-  return false;
 }
 
 unsigned AXLayoutObject::ColumnCount() const {
@@ -1489,9 +1278,11 @@ AXObject* AXLayoutObject::AccessibilityImageMapHitTest(
   if (!parent)
     return nullptr;
 
+  PhysicalOffset physical_point(point);
   for (const auto& child : parent->ChildrenIncludingIgnored()) {
-    if (child->GetBoundsInFrameCoordinates().Contains(LayoutPoint(point)))
+    if (child->GetBoundsInFrameCoordinates().Contains(physical_point)) {
       return child.Get();
+    }
   }
 
   return nullptr;

@@ -73,12 +73,16 @@ class CORE_EXPORT SVGElement : public Element {
   }
   static bool IsAnimatableCSSProperty(const QualifiedName&);
 
-  enum ApplyMotionTransform {
+  bool HasMotionTransform() const { return HasSVGRareData(); }
+  // Apply any "motion transform" contribution (if existing.)
+  void ApplyMotionTransform(AffineTransform&) const;
+
+  enum ApplyMotionTransformTag {
     kExcludeMotionTransform,
     kIncludeMotionTransform
   };
-  bool HasTransform(ApplyMotionTransform) const;
-  AffineTransform CalculateTransform(ApplyMotionTransform) const;
+  bool HasTransform(ApplyMotionTransformTag) const;
+  AffineTransform CalculateTransform(ApplyMotionTransformTag) const;
 
   enum CTMScope {
     kNearestViewportScope,  // Used by SVGGraphicsElement::getCTM()
@@ -161,7 +165,8 @@ class CORE_EXPORT SVGElement : public Element {
   void SetCorrespondingElement(SVGElement*);
   SVGUseElement* GeneratingUseElement() const;
 
-  virtual void SynchronizeSVGAttribute(const QualifiedName&) const;
+  void SynchronizeSVGAttribute(const QualifiedName&) const;
+  virtual void SynchronizeAllSVGAttributes() const;
   void CollectExtraStyleForPresentationAttribute(
       MutableCSSPropertyValueSet*) override;
 
@@ -232,10 +237,12 @@ class CORE_EXPORT SVGElement : public Element {
 
   bool HasSVGParent() const;
 
-  // Utility function for implementing SynchronizeSVGAttribute() in children
-  // (and mixins such as SVGTests).
-  static void SynchronizeAllSVGAttributes(
+  // Utility function for implementing SynchronizeAllSVGAttributes() in
+  // subclasses (and mixins such as SVGTests).
+  static void SynchronizeListOfSVGAttributes(
       const base::span<SVGAnimatedPropertyBase*> attributes);
+
+  bool HasFocusEventListeners() const;
 
  protected:
   SVGElement(const QualifiedName&,
@@ -279,8 +286,6 @@ class CORE_EXPORT SVGElement : public Element {
   void ReportAttributeParsingError(SVGParsingError,
                                    const QualifiedName&,
                                    const AtomicString&);
-  bool HasFocusEventListeners() const;
-
   void AddedEventListener(const AtomicString& event_type,
                           RegisteredEventListener&) override;
   void RemovedEventListener(const AtomicString& event_type,

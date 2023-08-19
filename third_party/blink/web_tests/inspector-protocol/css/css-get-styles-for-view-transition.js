@@ -26,11 +26,25 @@
   const rootNodeStyles = await dp.CSS.getMatchedStylesForNode({'nodeId': rootNode.nodeId});
   testRunner.log(rootNodeStyles);
 
-  for (const node of rootNode.pseudoElements) {
+  for (const node of getAllPseudos(rootNode)) {
     const styles = await dp.CSS.getMatchedStylesForNode({'nodeId': node.nodeId});
     testRunner.log(styles, "Dumping styles for : " + node.localName + " with id " + node.pseudoIdentifier);
   }
 
   testRunner.completeTest();
-});
 
+  function getAllPseudos(rootNode) {
+    let pseudos = [];
+
+    if (rootNode.pseudoElements === undefined) {
+      return pseudos;
+    }
+
+    for (const node of rootNode.pseudoElements) {
+      pseudos = pseudos.concat(node);
+      pseudos = pseudos.concat(getAllPseudos(node));
+    }
+
+    return pseudos;
+  };
+});

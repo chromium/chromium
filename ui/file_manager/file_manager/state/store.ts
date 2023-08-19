@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 import {FilesAppEntry} from '../externs/files_app_entry_interfaces.js';
-import {FileData, FileKey, SearchLocation, SearchOptions, SearchRecency, State} from '../externs/ts/state.js';
+import {FileData, FileKey, State} from '../externs/ts/state.js';
 import {BaseStore} from '../lib/base_store.js';
 
 import {Action} from './actions.js';
@@ -34,8 +34,7 @@ export function getStore(): Store {
   // TODO(b/272120634): Put the store on window to prevent Store being created
   // twice.
   if (!window.store) {
-    window.store =
-        new BaseStore<State, Action>({allEntries: {}} as State, rootReducer);
+    window.store = new BaseStore<State, Action>(getEmptyState(), rootReducer);
   }
 
   return window.store;
@@ -61,17 +60,6 @@ export function getEmptyState(): State {
     bulkPinning: undefined,
     preferences: undefined,
   };
-}
-
-/**
- * Search options to be used if the user did not specify their own.
- */
-export function getDefaultSearchOptions(): SearchOptions {
-  return {
-    location: SearchLocation.THIS_FOLDER,
-    recency: SearchRecency.ANYTIME,
-    fileCategory: chrome.fileManagerPrivate.FileCategory.ALL,
-  } as SearchOptions;
 }
 
 /**

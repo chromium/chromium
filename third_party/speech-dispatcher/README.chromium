@@ -2,7 +2,9 @@ Name: Speech Dispatcher
 URL: http://devel.freebsoft.org/speechd
 Version: 0.7.1
 License: GPL (v2 or later)
+License File: COPYING
 Security Critical: yes
+Shipped: yes
 
 Description:
 Speech Dispatcher project provides a high-level device independent layer for

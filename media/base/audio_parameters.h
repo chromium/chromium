@@ -211,6 +211,17 @@ class MEDIA_SHMEM_EXPORT AudioParameters {
     FUCHSIA_RENDER_USAGE_COMMUNICATION = 1 << 16,
 
     IGNORE_UI_GAINS = 1 << 17,
+
+    VOICE_ISOLATION_SUPPORTED = 1 << 18,  // Set when system voice isolation is
+                                          // supported.
+    CLIENT_CONTROLLED_VOICE_ISOLATION =
+        1 << 19,                // Set when client forces to
+                                // enable/disable the platform voice
+                                // isolation effects. False indicates
+                                // to use platform default state.
+    VOICE_ISOLATION = 1 << 20,  // Enable/Disable platform voice isolation.
+                                // Only meaningful when
+                                // CLIENT_CONTROLLED_VOICE_ISOLATION is set.
   };
 
   struct HardwareCapabilities {
@@ -340,10 +351,10 @@ class MEDIA_SHMEM_EXPORT AudioParameters {
   }
   const std::vector<Point>& mic_positions() const { return mic_positions_; }
 
-  void set_latency_tag(AudioLatency::LatencyType latency_tag) {
+  void set_latency_tag(AudioLatency::Type latency_tag) {
     latency_tag_ = latency_tag;
   }
-  AudioLatency::LatencyType latency_tag() const { return latency_tag_; }
+  AudioLatency::Type latency_tag() const { return latency_tag_; }
 
   AudioParameters(const AudioParameters&);
   AudioParameters& operator=(const AudioParameters&);
@@ -374,7 +385,7 @@ class MEDIA_SHMEM_EXPORT AudioParameters {
 
   // Optional tag to pass latency info from renderer to browser. Set to
   // AudioLatency::LATENCY_COUNT by default, which means "not specified".
-  AudioLatency::LatencyType latency_tag_;
+  AudioLatency::Type latency_tag_;
 
   // Audio hardware specific parameters, these are treated as read-only and
   // changing them has no effect.

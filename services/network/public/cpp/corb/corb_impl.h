@@ -110,10 +110,12 @@ class COMPONENT_EXPORT(NETWORK_CPP) CrossOriginReadBlocking {
 
     // Implementation of the `corb::ResponseAnalyzer` abstract interface.
     ~CorbResponseAnalyzer() override;
-    Decision Init(const GURL& request_url,
-                  const absl::optional<url::Origin>& request_initiator,
-                  mojom::RequestMode request_mode,
-                  const network::mojom::URLResponseHead& response) override;
+    Decision Init(
+        const GURL& request_url,
+        const absl::optional<url::Origin>& request_initiator,
+        mojom::RequestMode request_mode,
+        mojom::RequestDestination /*request_destination_from_renderer*/,
+        const network::mojom::URLResponseHead& response) override;
     Decision Sniff(base::StringPiece data) override;
     Decision HandleEndOfSniffableResponseBody() override;
     bool ShouldReportBlockedResponse() const override;

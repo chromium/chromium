@@ -598,11 +598,7 @@ GURL BaseFile::GetEffectiveAuthorityURL(const GURL& source_url,
 }
 
 void BaseFile::OnFileQuarantined(
-    bool connection_error,
     quarantine::mojom::QuarantineFileResult result) {
-  base::UmaHistogramBoolean("Download.QuarantineService.ConnectionError",
-                            connection_error);
-
   DCHECK(on_annotation_done_callback_);
   quarantine_service_.reset();
   std::move(on_annotation_done_callback_)
@@ -612,9 +608,8 @@ void BaseFile::OnFileQuarantined(
 void BaseFile::OnQuarantineServiceError(const GURL& source_url,
                                         const GURL& referrer_url) {
 #if BUILDFLAG(IS_WIN)
-  OnFileQuarantined(/*connection_error=*/true,
-                    quarantine::SetInternetZoneIdentifierDirectly(
-                        full_path_, source_url, referrer_url));
+  OnFileQuarantined(quarantine::SetInternetZoneIdentifierDirectly(
+      full_path_, source_url, referrer_url));
 #else   // !BUILDFLAG(IS_WIN)
   CHECK(false) << "In-process quarantine service should not have failed.";
 #endif  // !BUILDFLAG(IS_WIN)
@@ -649,8 +644,8 @@ void BaseFile::AnnotateWithSourceInformation(
 
     quarantine_service_->QuarantineFile(
         full_path_, authority_url, referrer_url, client_guid,
-        base::BindOnce(&BaseFile::OnFileQuarantined, weak_factory_.GetWeakPtr(),
-                       false));
+        base::BindOnce(&BaseFile::OnFileQuarantined,
+                       weak_factory_.GetWeakPtr()));
   }
 }
 

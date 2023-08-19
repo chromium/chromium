@@ -45,21 +45,29 @@ class CallbackCookieSettings : public CookieSettingsBase {
   explicit CallbackCookieSettings(GetSettingCallback callback)
       : callback_(std::move(callback)) {}
 
+  ContentSetting GetContentSetting(
+      const GURL& primary_url,
+      const GURL& secondary_url,
+      ContentSettingsType content_type,
+      content_settings::SettingInfo* info) const override {
+    return callback_.Run(primary_url);
+  }
+
   // CookieSettingsBase:
-  ContentSetting GetCookieSettingInternal(
-      const GURL& url,
-      const GURL& first_party_url,
-      bool is_third_party_request,
-      net::CookieSettingOverrides overrides,
-      content_settings::SettingSource* source) const override {
-    return callback_.Run(url);
+  bool ShouldAlwaysAllowCookies(const GURL& url,
+                                const GURL& first_party_url) const override {
+    return false;
   }
-  ContentSetting GetSettingForLegacyCookieAccess(
-      const std::string& cookie_domain) const override {
-    GURL cookie_domain_url =
-        net::cookie_util::CookieOriginToURL(cookie_domain, false);
-    return callback_.Run(cookie_domain_url);
+
+  bool ShouldBlockThirdPartyCookies() const override { return false; }
+
+  bool IsThirdPartyCookiesAllowedScheme(
+      const std::string& scheme) const override {
+    return false;
   }
+
+  bool IsStorageAccessApiEnabled() const override { return true; }
+
   bool ShouldIgnoreSameSiteRestrictions(
       const GURL& url,
       const net::SiteForCookies& site_for_cookies) const override {
@@ -262,6 +270,8 @@ TEST_P(CookieSettingsBaseStorageAccessAPITest,
       overrides.Has(
           net::CookieSettingOverride::kTopLevelStorageAccessGrantEligible),
       IsStoragePartitioned());
+  EXPECT_EQ(overrides.Has(net::CookieSettingOverride::k3pcdSupport),
+            IsStoragePartitioned());
 }
 
 INSTANTIATE_TEST_SUITE_P(

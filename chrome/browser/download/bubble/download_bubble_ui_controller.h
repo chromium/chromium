@@ -66,6 +66,12 @@ class DownloadBubbleUIController {
                                   DownloadCommands::Command command,
                                   bool is_main_view);
 
+  // Process button press on the bubble and return whether the bubble should
+  // close.
+  bool ProcessDownloadButtonPressWithClose(DownloadUIModel* model,
+                                           DownloadCommands::Command command,
+                                           bool is_main_view);
+
   // Notify when a download toolbar button (in any window) is pressed.
   void HandleButtonPressed();
 
@@ -75,9 +81,10 @@ class DownloadBubbleUIController {
   // Returns whether the guest account icon should be shown for the download.
   bool ShouldShowGuestIcon(const DownloadUIModel* model) const;
 
-  // Schedules the ephemeral warning download to be canceled. It will only be
-  // canceled if it continues to be an ephemeral warning that hasn't been acted
-  // on when the scheduled time arrives.
+  // Schedules the ephemeral warning download to be hidden from the bubble, and
+  // subsequently canceled. It will only be canceled if it continues to be an
+  // ephemeral warning that hasn't been acted on when the scheduled time
+  // arrives.
   void ScheduleCancelForEphemeralWarning(const std::string& guid);
 
   // Force the controller to hide the download UI entirely, including the bubble
@@ -124,7 +131,8 @@ class DownloadBubbleUIController {
   // DownloadDisplayController and DownloadBubbleUIController have the same
   // lifetime. Both are owned, constructed together, and destructed together by
   // DownloadToolbarButtonView. If one is valid, so is the other.
-  raw_ptr<DownloadDisplayController, DanglingUntriaged> display_controller_;
+  raw_ptr<DownloadDisplayController, AcrossTasksDanglingUntriaged>
+      display_controller_;
 
   absl::optional<base::Time> last_partial_view_shown_time_ = absl::nullopt;
 

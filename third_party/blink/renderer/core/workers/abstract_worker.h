@@ -47,7 +47,7 @@ class ExecutionContext;
 // Implementation of the AbstractWorker interface defined in the WebWorker HTML
 // spec: https://html.spec.whatwg.org/C/#abstractworker
 class CORE_EXPORT AbstractWorker
-    : public EventTargetWithInlineData,
+    : public EventTarget,
       public ExecutionContextLifecycleStateObserver {
  public:
   // EventTarget APIs

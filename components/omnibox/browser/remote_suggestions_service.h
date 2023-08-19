@@ -20,6 +20,8 @@
 #include "net/traffic_annotation/network_traffic_annotation.h"
 #include "url/gurl.h"
 
+class DocumentSuggestionsService;
+
 namespace network {
 class SharedURLLoaderFactory;
 class SimpleURLLoader;
@@ -36,32 +38,41 @@ class RemoteSuggestionsService : public KeyedService {
  public:
   class Observer : public base::CheckedObserver {
    public:
-    // Called when the transfer is about to start. `request_id` identifies the
+    // Called when the request has been created. `request_id` identifies the
     // request. `request` is deleted after this call once the transfer starts.
-    virtual void OnSuggestRequestStarting(
+    virtual void OnSuggestRequestCreated(
         const base::UnguessableToken& request_id,
         const network::ResourceRequest* request) {}
+    // Called when the transfer has started. `request_id` identifies the
+    // request. `request_body` is the HTTP POST upload body, if applicable.
+    virtual void OnSuggestRequestStarted(
+        const base::UnguessableToken& request_id,
+        network::SimpleURLLoader* loader,
+        const std::string& request_body) {}
     // Called when the transfer is done. `request_id` identifies the request.
-    // `response_received` indicates whether the request has succeeded and
-    // `response_body` is populated.
+    // `response_code` is the response status code. A status code of 200
+    // indicates that the request has succeeded and `response_body` is
+    // populated.
     virtual void OnSuggestRequestCompleted(
         const base::UnguessableToken& request_id,
-        const bool response_received,
+        const int response_code,
         const std::unique_ptr<std::string>& response_body) {}
   };
 
-  explicit RemoteSuggestionsService(
+  RemoteSuggestionsService(
+      DocumentSuggestionsService* document_suggestions_service,
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory);
 
   ~RemoteSuggestionsService() override;
   RemoteSuggestionsService(const RemoteSuggestionsService&) = delete;
   RemoteSuggestionsService& operator=(const RemoteSuggestionsService&) = delete;
 
-  // Called when the transfer is done. `response_received` indicates whether the
-  // request has succeeded and `response_body` is populated.
+  // Called when the transfer is done. `response_code` is the response status
+  // code. A status code of 200 indicates that the request has succeeded and
+  // `response_body` is populated.
   using CompletionCallback =
       base::OnceCallback<void(const network::SimpleURLLoader* source,
-                              const bool response_received,
+                              const int response_code,
                               std::unique_ptr<std::string> response_body)>;
 
   // Returns the suggest endpoint URL for `template_url`.
@@ -101,6 +112,19 @@ class RemoteSuggestionsService : public KeyedService {
       const SearchTermsData& search_terms_data,
       CompletionCallback completion_callback);
 
+  // Creates and starts a document suggestion request for |query|.
+  // May obtain an OAuth2 token for the signed-in users.
+  using DocumentStartCallback = base::OnceCallback<void(
+      std::unique_ptr<network::SimpleURLLoader> loader)>;
+  void CreateDocumentSuggestionsRequest(const std::u16string& query,
+                                        bool is_incognito,
+                                        DocumentStartCallback start_callback,
+                                        CompletionCallback completion_callback);
+
+  // Advises the service to stop any process that creates a document suggestion
+  // request.
+  void StopCreatingDocumentSuggestionsRequest();
+
   // Creates and returns a loader to delete personalized suggestions.
   //
   // `deletion_url` must be a valid URL.
@@ -117,6 +141,18 @@ class RemoteSuggestionsService : public KeyedService {
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory);
 
  private:
+  // Called when the request has been created, before fetching the OAuth2 token.
+  // Notifies `observers_`.
+  void OnDocumentSuggestionsRequestAvailable(
+      const base::UnguessableToken& request_id,
+      network::ResourceRequest* request);
+  // Called when the transfer has started, after receiving the OAuth2 token.
+  // Notifies `observers_` and calls `start_callback`.
+  void OnDocumentSuggestionsLoaderAvailable(
+      const base::UnguessableToken& request_id,
+      DocumentStartCallback start_callback,
+      std::unique_ptr<network::SimpleURLLoader> loader,
+      const std::string& request_body);
   // Called when the transfer is done. Notifies `observers_` and calls
   // `completion_callback`.
   void OnURLLoadComplete(const base::UnguessableToken& request_id,
@@ -124,6 +160,7 @@ class RemoteSuggestionsService : public KeyedService {
                          const network::SimpleURLLoader* source,
                          std::unique_ptr<std::string> response_body);
 
+  raw_ptr<DocumentSuggestionsService> document_suggestions_service_;
   scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory_;
   // Observers being notified of request start and completion events.
   base::ObserverList<Observer> observers_;

@@ -6,6 +6,7 @@
 
 #include "components/autofill/core/browser/data_model/credit_card_art_image.h"
 #include "components/autofill/core/browser/metrics/autofill_metrics.h"
+#include "components/autofill/core/browser/payments/constants.h"
 #include "components/autofill/core/common/autofill_tick_clock.h"
 #include "components/image_fetcher/core/image_fetcher.h"
 #include "components/image_fetcher/core/request_metadata.h"
@@ -77,7 +78,17 @@ void AutofillImageFetcher::FetchImagesForURLs(
 }
 
 GURL AutofillImageFetcher::ResolveCardArtURL(const GURL& card_art_url) {
-  return card_art_url;
+  // TODO(crbug.com/1313616): There is only one gstatic card art image we are
+  // using currently, that returns as metadata when it isn't. Remove this logic
+  // and append FIFE URL suffix by default when the static image is deprecated,
+  // and we send rich card art instead.
+  if (card_art_url.spec() == kCapitalOneCardArtUrl) {
+    return card_art_url;
+  }
+
+  // A FIFE image fetching param suffix is appended to the URL. The image
+  // should be center cropped and of Size(32, 20).
+  return GURL(card_art_url.spec() + "=w32-h20-n");
 }
 
 gfx::Image AutofillImageFetcher::ResolveCardArtImage(
@@ -93,12 +104,11 @@ void AutofillImageFetcher::OnCardArtImageFetched(
     const absl::optional<base::TimeTicks>& fetch_image_request_timestamp,
     const gfx::Image& card_art_image,
     const image_fetcher::RequestMetadata& metadata) {
-  // In case of an invalid url, `fetch_image_request_timestamp` is nullopt, and
-  // hence we don't report any latency UMA metrics.
-  if (fetch_image_request_timestamp.has_value()) {
-    AutofillMetrics::LogImageFetcherRequestLatency(
-        AutofillTickClock::NowTicks() - *fetch_image_request_timestamp);
-  }
+  CHECK(fetch_image_request_timestamp.has_value());
+
+  AutofillMetrics::LogImageFetcherRequestLatency(
+      AutofillTickClock::NowTicks() - *fetch_image_request_timestamp);
+
   AutofillMetrics::LogImageFetchResult(/*succeeded=*/!card_art_image.IsEmpty());
 
   // Allow subclasses to specialize the card art image if desired.
@@ -112,12 +122,7 @@ void AutofillImageFetcher::FetchImageForURL(
     base::OnceCallback<void(std::unique_ptr<CreditCardArtImage>)>
         barrier_callback,
     const GURL& card_art_url) {
-  if (!card_art_url.is_valid()) {
-    OnCardArtImageFetched(std::move(barrier_callback), card_art_url,
-                          absl::nullopt, gfx::Image(),
-                          image_fetcher::RequestMetadata());
-    return;
-  }
+  CHECK(card_art_url.is_valid());
 
   // Allow subclasses to specialize the URL if desired.
   GURL resolved_url = ResolveCardArtURL(card_art_url);

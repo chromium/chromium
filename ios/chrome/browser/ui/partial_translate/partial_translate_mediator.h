@@ -38,6 +38,16 @@ class WebStateList;
 // The delegate to present error message alerts.
 @property(nonatomic, weak) id<EditMenuAlertDelegate> alertDelegate;
 
+// Handles the link to text menu item selection.
+- (void)handlePartialTranslateSelection;
+
+// Returns whether a partial translate can be handled.
+- (BOOL)canHandlePartialTranslateSelection;
+
+// Whether partial translate action should be proposed (independently of the
+// current selection).
+- (BOOL)shouldInstallPartialTranslate;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_UI_PARTIAL_TRANSLATE_PARTIAL_TRANSLATE_MEDIATOR_H_

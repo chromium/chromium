@@ -33,6 +33,7 @@
 #include "third_party/blink/renderer/core/fetch/body_stream_buffer.h"
 #include "third_party/blink/renderer/core/fetch/fetch_manager.h"
 #include "third_party/blink/renderer/core/fetch/form_data_bytes_consumer.h"
+#include "third_party/blink/renderer/core/fetch/request_util.h"
 #include "third_party/blink/renderer/core/fetch/trust_token_to_mojom.h"
 #include "third_party/blink/renderer/core/fileapi/blob.h"
 #include "third_party/blink/renderer/core/fileapi/public_url_manager.h"
@@ -434,19 +435,14 @@ Request* Request::CreateRequestWithRequestOrString(
   // - "If |mode| is "navigate", throw a TypeError."
   // - "If |mode| is non-null, set |request|'s mode to |mode|."
   if (init->hasMode()) {
-    if (init->mode() == "navigate") {
+    network::mojom::RequestMode mode = V8RequestModeToMojom(init->mode());
+    if (mode == network::mojom::RequestMode::kNavigate) {
       exception_state.ThrowTypeError(
           "Cannot construct a Request with a RequestInit whose mode member is "
           "set as 'navigate'.");
       return nullptr;
     }
-    if (init->mode() == "same-origin") {
-      request->SetMode(network::mojom::RequestMode::kSameOrigin);
-    } else if (init->mode() == "no-cors") {
-      request->SetMode(network::mojom::RequestMode::kNoCors);
-    } else if (init->mode() == "cors") {
-      request->SetMode(network::mojom::RequestMode::kCors);
-    }
+    request->SetMode(mode);
   } else {
     // |inputRequest| is directly checked here instead of setting and
     // checking |fallbackMode| as specified in the spec.
@@ -481,9 +477,9 @@ Request* Request::CreateRequestWithRequestOrString(
   // present, and |unknown| otherwise."
   if (init->hasTargetAddressSpace()) {
     if (init->targetAddressSpace() == "local") {
-      request->SetTargetAddressSpace(network::mojom::IPAddressSpace::kLoopback);
-    } else if (init->targetAddressSpace() == "private") {
       request->SetTargetAddressSpace(network::mojom::IPAddressSpace::kLocal);
+    } else if (init->targetAddressSpace() == "private") {
+      request->SetTargetAddressSpace(network::mojom::IPAddressSpace::kPrivate);
     } else if (init->targetAddressSpace() == "public") {
       request->SetTargetAddressSpace(network::mojom::IPAddressSpace::kPublic);
     } else if (init->targetAddressSpace() == "unknown") {
@@ -1023,10 +1019,10 @@ bool Request::keepalive() const {
 }
 String Request::targetAddressSpace() const {
   switch (request_->TargetAddressSpace()) {
-    case network::mojom::IPAddressSpace::kLoopback:
-      return "loopback";
     case network::mojom::IPAddressSpace::kLocal:
       return "local";
+    case network::mojom::IPAddressSpace::kPrivate:
+      return "private";
     case network::mojom::IPAddressSpace::kPublic:
       return "public";
     case network::mojom::IPAddressSpace::kUnknown:

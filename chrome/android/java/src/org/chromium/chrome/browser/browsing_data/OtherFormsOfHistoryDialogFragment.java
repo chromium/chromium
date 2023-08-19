@@ -13,7 +13,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.TextView;
 
-import androidx.annotation.VisibleForTesting;
 import androidx.appcompat.app.AlertDialog;
 import androidx.fragment.app.DialogFragment;
 import androidx.fragment.app.FragmentActivity;
@@ -106,7 +105,6 @@ public class OtherFormsOfHistoryDialogFragment
      * For testing purposes, resets the preference indicating that this dialog has been shown
      * to false.
      */
-    @VisibleForTesting
     static void clearShownPreferenceForTesting() {
         recordDialogWasShown(false);
     }

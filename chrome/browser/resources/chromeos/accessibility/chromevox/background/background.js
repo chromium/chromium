@@ -2,7 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {AsyncUtil} from '../../common/async_util.js';
 import {AutomationPredicate} from '../../common/automation_predicate.js';
 import {AutomationUtil} from '../../common/automation_util.js';
 import {constants} from '../../common/constants.js';
@@ -39,7 +38,6 @@ import {PageLoadSoundHandler} from './event/page_load_sound_handler.js';
 import {RangeAutomationHandler} from './event/range_automation_handler.js';
 import {EventSource} from './event_source.js';
 import {FindHandler} from './find_handler.js';
-import {FocusBounds} from './focus_bounds.js';
 import {GestureCommandHandler} from './gesture_command_handler.js';
 import {BackgroundKeyboardHandler} from './keyboard_handler.js';
 import {LiveRegions} from './live_regions.js';
@@ -62,7 +60,7 @@ const Dir = constants.Dir;
 const RoleType = chrome.automation.RoleType;
 const StateType = chrome.automation.StateType;
 
-/** ChromeVox background page. */
+/** ChromeVox background context. */
 export class Background extends ChromeVoxState {
   constructor() {
     super();

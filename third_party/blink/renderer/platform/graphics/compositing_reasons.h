@@ -34,7 +34,7 @@ using CompositingReasons = uint64_t;
   V(FixedPosition)                                                             \
   V(UndoOverscroll)                                                            \
   V(StickyPosition)                                                            \
-  V(AnchorScroll)                                                              \
+  V(AnchorPosition)                                                            \
   V(BackdropFilter)                                                            \
   V(BackdropFilterMask)                                                        \
   V(RootScroller)                                                              \
@@ -68,8 +68,11 @@ using CompositingReasons = uint64_t;
   V(ViewTransitionPseudoElement)                                               \
                                                                                \
   /* For composited scrolling. In CompositeScrollAfterPaint, this is           \
-     determined after paint. */                                                \
+                            determined after paint. */                         \
   V(OverflowScrolling)                                                         \
+                                                                               \
+  /* Element is participating in element capture. */                           \
+  V(ElementCapture)                                                            \
                                                                                \
   /* The following reasons are not used in paint properties, but are           \
      determined after paint, for debugging. See PaintArtifactCompositor. */    \
@@ -141,7 +144,7 @@ class PLATFORM_EXPORT CompositingReason {
     kDirectReasonsForEffectProperty =
         kActiveOpacityAnimation | kWillChangeOpacity | kBackdropFilter |
         kWillChangeBackdropFilter | kActiveBackdropFilterAnimation |
-        kViewTransitionPseudoElement | kTransform3DSceneLeaf,
+        kViewTransitionPseudoElement | kTransform3DSceneLeaf | kElementCapture,
     kDirectReasonsForFilterProperty =
         kActiveFilterAnimation | kWillChangeFilter,
     kDirectReasonsForBackdropFilter = kBackdropFilter |
@@ -170,7 +173,7 @@ class PLATFORM_EXPORT CompositingReason {
         // the scroll container, but it needs expansion by itself if there is
         // additional clip between the sticky element and its scroll container.
         // Similar for anchor positioned elements.
-        kStickyPosition | kAnchorScroll,
+        kStickyPosition | kAnchorPosition,
   };
 };
 

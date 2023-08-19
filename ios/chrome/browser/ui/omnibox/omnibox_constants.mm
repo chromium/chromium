@@ -4,10 +4,6 @@
 
 #import "ios/chrome/browser/ui/omnibox/omnibox_constants.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 const CGFloat kOmniboxPlaceholderAlpha = 0.3;
 
 NSString* const kOmniboxLeadingImageDefaultAccessibilityIdentifier =

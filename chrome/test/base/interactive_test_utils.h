@@ -15,6 +15,7 @@
 #include "ui/base/test/ui_controls.h"
 #include "ui/display/display.h"
 #include "ui/gfx/geometry/point.h"
+#include "ui/gfx/geometry/vector2d.h"
 
 namespace display {
 class Screen;
@@ -123,9 +124,13 @@ void HideNativeWindow(gfx::NativeWindow window);
 // Sends a move event blocking until received. Returns true if the event was
 // successfully received. This uses ui_controls::SendMouse***NotifyWhenDone,
 // see it for details.
-[[nodiscard]] bool SendMouseMoveSync(const gfx::Point& location);
-[[nodiscard]] bool SendMouseEventsSync(ui_controls::MouseButton type,
-                                       int button_state);
+[[nodiscard]] bool SendMouseMoveSync(
+    const gfx::Point& location,
+    gfx::NativeWindow window_hint = ui_controls::kNoWindowHint);
+[[nodiscard]] bool SendMouseEventsSync(
+    ui_controls::MouseButton type,
+    int button_state,
+    gfx::NativeWindow window_hint = ui_controls::kNoWindowHint);
 
 // A combination of SendMouseMove to the middle of the view followed by
 // SendMouseEvents. Only exposed for toolkit-views.
@@ -133,6 +138,14 @@ void HideNativeWindow(gfx::NativeWindow window);
 #if defined(TOOLKIT_VIEWS)
 void MoveMouseToCenterAndPress(
     views::View* view,
+    ui_controls::MouseButton button,
+    int button_state,
+    base::OnceClosure task,
+    int accelerator_state = ui_controls::kNoAccelerator);
+
+void MoveMouseToCenterWithOffsetAndPress(
+    views::View* view,
+    const gfx::Vector2d& offset,
     ui_controls::MouseButton button,
     int button_state,
     base::OnceClosure task,
@@ -148,13 +161,6 @@ void WaitForViewFocus(Browser* browser, views::View* view, bool focused);
 #endif
 
 #if BUILDFLAG(IS_MAC)
-// Send press and release events for |key_code| with selected modifiers and wait
-// until the last event arrives to our NSApp. Events will be sent as CGEvents
-// through HID event tap. |key_code| must be a virtual key code (reference can
-// be found in HIToolbox/Events.h from macOS SDK). |modifier_flags| must be a
-// bitmask from ui::EventFlags.
-void SendGlobalKeyEventsAndWait(int key_code, int modifier_flags);
-
 // Clear pressed modifier keys and report true if any key modifiers were down.
 bool ClearKeyEventModifiers();
 #endif

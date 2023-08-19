@@ -93,6 +93,18 @@ NearbyShareDialogUI::NearbyShareDialogUI(content::WebUI* web_ui)
       network::mojom::CSPDirectiveName::WorkerSrc,
       "worker-src blob: chrome://resources 'self';");
 
+  html_source->OverrideContentSecurityPolicy(
+      network::mojom::CSPDirectiveName::TrustedTypes,
+      "trusted-types static-types "
+      // Required by lottie.
+      "lottie-worker-script-loader webui-test-script "
+      // Required by parse-html-subset.
+      "parse-html-subset sanitize-inner-html "
+      // Required by lit-html.
+      "lit-html "
+      // Required by polymer.
+      "polymer-html-literal polymer-template-event-attribute-policy;");
+
   html_source->AddBoolean(
       "isOnePageOnboardingEnabled",
       base::FeatureList::IsEnabled(features::kNearbySharingOnePageOnboarding));

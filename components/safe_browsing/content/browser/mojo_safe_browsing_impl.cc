@@ -41,29 +41,22 @@ content::WebContents* GetWebContentsFromID(int render_process_id,
 // if it hasn't been run yet.
 class CheckUrlCallbackWrapper {
  public:
-  using Callback =
-      base::OnceCallback<void(mojo::PendingReceiver<mojom::UrlCheckNotifier>,
-                              bool,
-                              bool,
-                              bool,
-                              bool)>;
+  using Callback = base::OnceCallback<
+      void(mojo::PendingReceiver<mojom::UrlCheckNotifier>, bool, bool)>;
 
   explicit CheckUrlCallbackWrapper(Callback callback)
       : callback_(std::move(callback)) {}
   ~CheckUrlCallbackWrapper() {
     if (callback_) {
-      Run(mojo::NullReceiver(), true, false, false, false);
+      Run(mojo::NullReceiver(), true, false);
     }
   }
 
   void Run(mojo::PendingReceiver<mojom::UrlCheckNotifier> slow_check_notifier,
            bool proceed,
-           bool showed_interstitial,
-           bool did_perform_url_real_time_check,
-           bool did_check_url_real_time_allowlist) {
-    std::move(callback_).Run(
-        std::move(slow_check_notifier), proceed, showed_interstitial,
-        did_perform_url_real_time_check, did_check_url_real_time_allowlist);
+           bool showed_interstitial) {
+    std::move(callback_).Run(std::move(slow_check_notifier), proceed,
+                             showed_interstitial);
   }
 
  private:
@@ -160,9 +153,7 @@ void MojoSafeBrowsingImpl::CreateCheckerAndCheck(
     // Ensure that we don't destroy an uncalled CreateCheckerAndCheckCallback
     if (callback) {
       std::move(callback).Run(mojo::NullReceiver(), true /* proceed */,
-                              false /* showed_interstitial */,
-                              false /* did_perform_url_real_time_check */,
-                              false /* did_check_url_real_time_allowlist */);
+                              false /* showed_interstitial */);
     }
 
     // This will drop |receiver|. The result is that the renderer side will
@@ -192,7 +183,8 @@ void MojoSafeBrowsingImpl::CreateCheckerAndCheck(
       /*hash_realtime_service_on_ui=*/nullptr,
       /*mechanism_experimenter=*/nullptr,
       /*is_mechanism_experiment_allowed=*/false,
-      /*hash_real_time_lookup_enabled=*/false);
+      /*hash_realtime_selection=*/
+      hash_realtime_utils::HashRealTimeSelection::kNone);
   auto weak_impl = checker_impl->WeakPtr();
 
   checker_impl->CheckUrl(

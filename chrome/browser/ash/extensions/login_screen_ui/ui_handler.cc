@@ -10,6 +10,7 @@
 #include "ash/public/cpp/login_screen.h"
 #include "ash/public/cpp/login_screen_model.h"
 #include "ash/public/cpp/login_types.h"
+#include "base/trace_event/trace_event.h"
 #include "chrome/browser/ash/login/ui/login_screen_extension_ui/create_options.h"
 #include "chrome/browser/ash/login/ui/login_screen_extension_ui/window.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
@@ -178,6 +179,7 @@ bool UiHandler::HasOpenWindow(const std::string& extension_id) const {
 }
 
 void UiHandler::UpdateSessionState() {
+  TRACE_EVENT0("ui", "UiHandler::UpdateSessionState");
   session_manager::SessionState state =
       session_manager::SessionManager::Get()->session_state();
   bool new_login_or_lock_screen_active =
@@ -194,6 +196,7 @@ void UiHandler::UpdateSessionState() {
 }
 
 void UiHandler::OnSessionStateChanged() {
+  TRACE_EVENT0("login", "LoginStateAsh::OnSessionStateChanged");
   UpdateSessionState();
 }
 

@@ -77,6 +77,10 @@ class ShellToplevelWrapper {
   // Whether the shell supports top level immersive status. The deprecated
   // immersive status used to be set on the surface level.
   virtual bool SupportsTopLevelImmersiveStatus() const = 0;
+
+  // Sets the top inset (header) height which is reserved or occupied by the top
+  // window frame.
+  virtual void SetTopInset(int height) = 0;
 #endif
 
   // Sets a native window to minimized state.
@@ -188,6 +192,8 @@ class ShellToplevelWrapper {
   // Sets the shape of the toplevel window. If `shape_rects` is null this will
   // unset the window shape.
   virtual void SetShape(std::unique_ptr<ShapeRects> shape_rects) = 0;
+
+  virtual void AckRotateFocus(uint32_t serial, uint32_t handled) = 0;
 
   // Casts `this` to XDGToplevelWrapperImpl, if it is of that type.
   virtual XDGToplevelWrapperImpl* AsXDGToplevelWrapper();

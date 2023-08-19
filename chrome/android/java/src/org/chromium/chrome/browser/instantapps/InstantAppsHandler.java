@@ -8,8 +8,6 @@ import org.chromium.chrome.browser.AppHooks;
 
 /** A launcher for Instant Apps. */
 public class InstantAppsHandler {
-    private static final String TAG = "InstantAppsHandler";
-
     private static final Object INSTANCE_LOCK = new Object();
     private static InstantAppsHandler sInstance;
 

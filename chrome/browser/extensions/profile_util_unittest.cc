@@ -42,17 +42,6 @@ TEST_F(ProfileUtilUnitTest, ProfileCanUseNonComponentExtensions_ChildUser) {
   EXPECT_TRUE(ProfileCanUseNonComponentExtensions(testing_profile()));
 }
 
-TEST_F(ProfileUtilUnitTest,
-       ProfileCanUseNonComponentExtensions_ActiveDirectoryUser) {
-  const AccountId ad_user_account_id(AccountId::AdFromUserEmailObjGuid(
-      "activedirectory@gmail.com", "obj-guid"));
-  ASSERT_NO_FATAL_FAILURE(LoginChromeOSAshUser(
-      GetFakeUserManager()->AddActiveDirectoryUser(ad_user_account_id),
-      ad_user_account_id));
-
-  EXPECT_TRUE(ProfileCanUseNonComponentExtensions(testing_profile()));
-}
-
 TEST_F(ProfileUtilUnitTest, ProfileCannotUseNonComponentExtensions_GuestUser) {
   ASSERT_NO_FATAL_FAILURE(MaybeSetUpTestUser(/*is_guest=*/true));
 

@@ -32,6 +32,7 @@
 
 #include "third_party/blink/renderer/core/style/basic_shapes.h"
 #include "third_party/blink/renderer/core/style/clip_path_operation.h"
+#include "third_party/blink/renderer/core/style/computed_style_constants.h"
 #include "third_party/blink/renderer/platform/graphics/path.h"
 
 namespace blink {
@@ -39,8 +40,10 @@ namespace blink {
 class ShapeClipPathOperation final : public ClipPathOperation {
  public:
   static scoped_refptr<ShapeClipPathOperation> Create(
-      scoped_refptr<const BasicShape> shape) {
-    return base::AdoptRef(new ShapeClipPathOperation(std::move(shape)));
+      scoped_refptr<const BasicShape> shape,
+      GeometryBox geometry_box) {
+    return base::AdoptRef(
+        new ShapeClipPathOperation(std::move(shape), geometry_box));
   }
 
   const BasicShape* GetBasicShape() const { return shape_.get(); }
@@ -50,16 +53,20 @@ class ShapeClipPathOperation final : public ClipPathOperation {
     return path;
   }
 
+  GeometryBox GetGeometryBox() const { return geometry_box_; }
+
  private:
   bool operator==(const ClipPathOperation&) const override;
   OperationType GetType() const override { return kShape; }
 
-  explicit ShapeClipPathOperation(scoped_refptr<const BasicShape> shape)
-      : shape_(std::move(shape)) {
+  explicit ShapeClipPathOperation(scoped_refptr<const BasicShape> shape,
+                                  GeometryBox geometry_box)
+      : shape_(std::move(shape)), geometry_box_(geometry_box) {
     DCHECK(shape_);
   }
 
   scoped_refptr<const BasicShape> shape_;
+  GeometryBox geometry_box_;
 };
 
 template <>
@@ -74,7 +81,9 @@ inline bool ShapeClipPathOperation::operator==(
   if (!IsSameType(o)) {
     return false;
   }
-  return *shape_ == *To<ShapeClipPathOperation>(o).shape_;
+  auto& other_shape = To<ShapeClipPathOperation>(o);
+  return *shape_ == *other_shape.shape_ &&
+         geometry_box_ == other_shape.geometry_box_;
 }
 
 }  // namespace blink

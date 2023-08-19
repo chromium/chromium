@@ -25,9 +25,9 @@ class PrivacyHubSpeakOnMuteControllerTest : public AshTestBase {
     // and the video conference feature flag together with the camera effects
     // switch to enable video conference.
     scoped_feature_list_.InitWithFeatures(
-        {ash::features::kCrosPrivacyHub, ash::features::kVideoConference}, {});
-    base::CommandLine::ForCurrentProcess()->AppendSwitch(
-        switches::kCameraEffectsSupportedByHardware);
+        {ash::features::kCrosPrivacyHub, ash::features::kVideoConference,
+         features::kCameraEffectsSupportedByHardware},
+        {});
   }
 
   ~PrivacyHubSpeakOnMuteControllerTest() override = default;
@@ -37,7 +37,7 @@ class PrivacyHubSpeakOnMuteControllerTest : public AshTestBase {
     AshTestBase::SetUp();
 
     speak_on_mute_controller_ =
-        &Shell::Get()->privacy_hub_controller()->speak_on_mute_controller();
+        Shell::Get()->privacy_hub_controller()->speak_on_mute_controller();
   }
 
   void SetUserPref(bool enabled) {
@@ -57,7 +57,7 @@ class PrivacyHubSpeakOnMuteControllerTest : public AshTestBase {
   }
 
  private:
-  raw_ptr<SpeakOnMuteDetectionPrivacySwitchController>
+  raw_ptr<SpeakOnMuteDetectionPrivacySwitchController, DanglingUntriaged>
       speak_on_mute_controller_;
   // Instantiates a fake controller (the real one is created in
   // ChromeBrowserMainExtraPartsAsh::PreProfileInit() which is not called in

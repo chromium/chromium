@@ -9,6 +9,10 @@ set -o errexit
 SCRIPT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 
 KEYS=(
+    # Debian Archive Automatic Signing Key (12/bookworm)
+    "6ED0E7B82643E131"
+    # Debian Stable Release Key (12/bookworm)
+    "F8D2585B8783D481"
     # Debian Archive Automatic Signing Key (11/bullseye)
     "73A4F27B8DD47936"
     # Debian Security Archive Automatic Signing Key (11/bullseye)
@@ -21,20 +25,6 @@ KEYS=(
     "DC30D7C23CBBABEE"
     # Debian Security Archive Automatic Signing Key (10/buster)
     "4DFAB270CAA96DFA"
-    # Jessie Stable Release Key
-    "CBF8D6FD518E17E1"
-    # Debian Archive Automatic Signing Key (7.0/wheezy)
-    "8B48AD6246925553"
-    # Debian Archive Automatic Signing Key (8/jessie)
-    "7638D0442B90D010"
-    # Debian Security Archive Automatic Signing Key (8/jessie)
-    "9D6D8F6BC857C906"
-    # Debian Archive Automatic Signing Key (9/stretch)
-    "E0B11894F66AEC98"
-    # Debian Security Archive Automatic Signing Key (9/stretch)
-    "EDA0D2388AE22BA9"
-    # Debian Stable Release Key (9/stretch)
-    "EF0F382A1A7B6500"
 )
 
 gpg --keyserver keyserver.ubuntu.com --recv-keys ${KEYS[@]}

@@ -50,8 +50,8 @@ public class DisclosureSnackbar extends DisclosureInfobar {
     }
 
     @Override
-    @Nullable
-    protected Snackbar makeRunningInChromeInfobar(SnackbarManager.SnackbarController controller) {
+    protected @Nullable Snackbar makeRunningInChromeInfobar(
+            SnackbarManager.SnackbarController controller) {
         if (mShown) return null;
         mShown = true;
 

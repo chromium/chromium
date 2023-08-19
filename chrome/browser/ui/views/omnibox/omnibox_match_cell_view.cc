@@ -242,7 +242,7 @@ OmniboxMatchCellView::~OmniboxMatchCellView() = default;
 int OmniboxMatchCellView::GetTextIndent() {
   return ui::TouchUiController::Get()->touch_ui() ||
                  OmniboxFieldTrial::IsCr23LayoutEnabled()
-             ? 51
+             ? 52
              : 47;
 }
 
@@ -398,13 +398,18 @@ void OmniboxMatchCellView::SetImage(const gfx::ImageSkia& image,
 }
 
 gfx::Insets OmniboxMatchCellView::GetInsets() const {
-  const bool single_line = layout_style_ == LayoutStyle::ONE_LINE_SUGGESTION;
-  const int vertical_margin =
-      OmniboxFieldTrial::IsUniformRowHeightEnabled()
-          ? OmniboxFieldTrial::kRichSuggestionVerticalMargin.Get()
-          : ChromeLayoutProvider::Get()->GetDistanceMetric(
-                single_line ? DISTANCE_OMNIBOX_CELL_VERTICAL_PADDING
-                            : DISTANCE_OMNIBOX_TWO_LINE_CELL_VERTICAL_PADDING);
+  int vertical_margin = 0;
+  if (OmniboxFieldTrial::IsChromeRefreshSuggestHoverFillShapeEnabled()) {
+    vertical_margin = 0;
+  } else if (OmniboxFieldTrial::IsUniformRowHeightEnabled()) {
+    vertical_margin = OmniboxFieldTrial::kRichSuggestionVerticalMargin.Get();
+  } else if (layout_style_ == LayoutStyle::ONE_LINE_SUGGESTION) {
+    vertical_margin = ChromeLayoutProvider::Get()->GetDistanceMetric(
+        DISTANCE_OMNIBOX_CELL_VERTICAL_PADDING);
+  } else {
+    vertical_margin = ChromeLayoutProvider::Get()->GetDistanceMetric(
+        DISTANCE_OMNIBOX_TWO_LINE_CELL_VERTICAL_PADDING);
+  }
   return gfx::Insets::TLBR(vertical_margin, OmniboxMatchCellView::kMarginLeft,
                            vertical_margin, OmniboxMatchCellView::kMarginRight);
 }
@@ -489,12 +494,15 @@ bool OmniboxMatchCellView::GetCanProcessEventsWithinSubtree() const {
 }
 
 gfx::Size OmniboxMatchCellView::CalculatePreferredSize() const {
-  int contentHeight = content_view_->GetLineHeight();
-  int height =
-      OmniboxFieldTrial::IsUniformRowHeightEnabled()
-          ? GetEntityImageSize() +
-                2 * OmniboxFieldTrial::kRichSuggestionVerticalMargin.Get()
-          : contentHeight + GetInsets().height();
+  int height = 0;
+  if (OmniboxFieldTrial::IsChromeRefreshSuggestHoverFillShapeEnabled()) {
+    height = GetEntityImageSize();
+  } else if (OmniboxFieldTrial::IsUniformRowHeightEnabled()) {
+    height = GetEntityImageSize() +
+             2 * OmniboxFieldTrial::kRichSuggestionVerticalMargin.Get();
+  } else {
+    height = content_view_->GetLineHeight() + GetInsets().height();
+  }
   if (layout_style_ == LayoutStyle::TWO_LINE_SUGGESTION)
     height += description_view_->GetHeightForWidth(width() - GetTextIndent());
   // Width is not calculated because it's not needed by current callers.

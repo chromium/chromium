@@ -13,7 +13,8 @@
 #include "url/gurl.h"
 
 namespace content {
-class WebContents;
+class NavigationHandle;
+class RenderFrameHost;
 }  // namespace content
 
 namespace pdf {
@@ -51,16 +52,18 @@ class PdfStreamDelegate {
   PdfStreamDelegate& operator=(const PdfStreamDelegate&) = delete;
   virtual ~PdfStreamDelegate();
 
-  // Maps the incoming stream URL to the original URL. This method should
-  // associate a `StreamInfo` with the given `WebContents`, for later retrieval
-  // by `GetStreamInfo()`.
-  virtual absl::optional<GURL> MapToOriginalUrl(content::WebContents* contents,
-                                                const GURL& stream_url);
+  // Maps the navigation to the original URL. This method should associate a
+  // `StreamInfo` with the `blink::Document` for `navigation_handle`'s parent
+  // `RenderFrameHost`, for later retrieval by `GetStreamInfo()`.
+  virtual absl::optional<GURL> MapToOriginalUrl(
+      content::NavigationHandle& navigation_handle);
 
-  // Gets the stream information associated with the given `WebContents`.
-  // Returns null if there is no associated stream.
+  // Gets the stream information associated with the given `RenderFrameHost`.
+  // The frame must be a PDF extension frame or Print Preview's frame.
+  // Returns null if there is no associated stream or if `embedder_frame` is
+  // `nullptr`.
   virtual absl::optional<StreamInfo> GetStreamInfo(
-      content::WebContents* contents);
+      content::RenderFrameHost* embedder_frame);
 };
 
 }  // namespace pdf

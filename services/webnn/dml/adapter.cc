@@ -4,16 +4,69 @@
 
 #include "services/webnn/dml/adapter.h"
 
+#include <d3d11.h>
+
+#include "base/check_is_test.h"
 #include "base/logging.h"
+#include "services/webnn/dml/command_queue.h"
+#include "services/webnn/dml/error.h"
 #include "services/webnn/dml/platform_functions.h"
+#include "services/webnn/dml/utils.h"
+#include "ui/gl/gl_angle_util_win.h"
 
 namespace webnn::dml {
 
 // static
-scoped_refptr<Adapter> Adapter::Create(ComPtr<IDXGIAdapter> dxgi_adapter) {
+scoped_refptr<Adapter> Adapter::GetInstance(
+    DML_FEATURE_LEVEL min_feature_level_required) {
+  // If the `Adapter` instance is created, add a reference and return it.
+  if (instance_) {
+    if (!instance_->IsDMLFeatureLevelSupported(min_feature_level_required)) {
+      DLOG(ERROR) << "Feature level is not supported by the adapter.";
+      return nullptr;
+    }
+    return base::WrapRefCounted(instance_);
+  }
+
+  // Otherwise, create a new one with the adapter queried from ANGLE.
+  ComPtr<ID3D11Device> d3d11_device = gl::QueryD3D11DeviceObjectFromANGLE();
+  if (!d3d11_device) {
+    DLOG(ERROR) << "Failed to query ID3D11Device from ANGLE.";
+    return nullptr;
+  }
+  // A ID3D11Device is always QueryInteface-able to a IDXGIDevice.
+  ComPtr<IDXGIDevice> dxgi_device;
+  CHECK_EQ(d3d11_device.As(&dxgi_device), S_OK);
+  // All DXGI devices should have adapters.
+  ComPtr<IDXGIAdapter> dxgi_adapter;
+  CHECK_EQ(dxgi_device->GetAdapter(&dxgi_adapter), S_OK);
+  return Adapter::Create(std::move(dxgi_adapter), min_feature_level_required);
+}
+
+// static
+scoped_refptr<Adapter> Adapter::GetInstanceForTesting() {
+  CHECK_IS_TEST();
+  return Adapter::GetInstance(/*min_feature_level=*/DML_FEATURE_LEVEL_1_0);
+}
+
+// static
+scoped_refptr<Adapter> Adapter::Create(
+    ComPtr<IDXGIAdapter> dxgi_adapter,
+    DML_FEATURE_LEVEL min_feature_level_required) {
   PlatformFunctions* platformFunctions = PlatformFunctions::GetInstance();
   if (!platformFunctions) {
     return nullptr;
+  }
+
+  if (is_debug_layer_enabled_) {
+    // Enable the D3D12 debug layer.
+    // Must be called before the D3D12 device is created.
+    auto d3d12_get_debug_interface_proc =
+        platformFunctions->d3d12_get_debug_interface_proc();
+    ComPtr<ID3D12Debug> d3d12_debug;
+    if (SUCCEEDED(d3d12_get_debug_interface_proc(IID_PPV_ARGS(&d3d12_debug)))) {
+      d3d12_debug->EnableDebugLayer();
+    }
   }
 
   // Create d3d12 device.
@@ -27,10 +80,20 @@ scoped_refptr<Adapter> Adapter::Create(ComPtr<IDXGIAdapter> dxgi_adapter) {
     return nullptr;
   };
 
+  DML_CREATE_DEVICE_FLAGS flags = DML_CREATE_DEVICE_FLAG_NONE;
+
+  // Enable the DML debug layer if the D3D12 debug layer was enabled.
+  if (is_debug_layer_enabled_) {
+    ComPtr<ID3D12DebugDevice> debug_device;
+    if (SUCCEEDED(d3d12_device->QueryInterface(IID_PPV_ARGS(&debug_device)))) {
+      flags |= DML_CREATE_DEVICE_FLAG_DEBUG;
+    }
+  }
+
   // Create dml device.
   ComPtr<IDMLDevice> dml_device;
   auto dml_create_device_proc = platformFunctions->dml_create_device_proc();
-  hr = dml_create_device_proc(d3d12_device.Get(), DML_CREATE_DEVICE_FLAG_NONE,
+  hr = dml_create_device_proc(d3d12_device.Get(), flags,
                               IID_PPV_ARGS(&dml_device));
   if (FAILED(hr)) {
     DLOG(ERROR) << "Failed to create dml device : "
@@ -38,28 +101,66 @@ scoped_refptr<Adapter> Adapter::Create(ComPtr<IDXGIAdapter> dxgi_adapter) {
     return nullptr;
   };
 
+  const DML_FEATURE_LEVEL max_feature_level_supported =
+      GetMaxSupportedDMLFeatureLevel(dml_device.Get());
+  if (min_feature_level_required > max_feature_level_supported) {
+    DLOG(ERROR) << "Feature level not supported by the adapter";
+    return nullptr;
+  }
+
   // Create command queue.
-  std::unique_ptr<CommandQueue> command_queue =
+  scoped_refptr<CommandQueue> command_queue =
       CommandQueue::Create(d3d12_device.Get());
   if (!command_queue) {
     DLOG(ERROR) << "Failed to create command queue.";
     return nullptr;
   }
 
-  return WrapRefCounted(
-      new Adapter(std::move(dxgi_adapter), std::move(d3d12_device),
-                  std::move(dml_device), std::move(command_queue)));
+  return WrapRefCounted(new Adapter(
+      std::move(dxgi_adapter), std::move(d3d12_device), std::move(dml_device),
+      std::move(command_queue), max_feature_level_supported));
+}
+
+// static
+void Adapter::EnableDebugLayerForTesting() {
+  CHECK_IS_TEST();
+  is_debug_layer_enabled_ = true;
 }
 
 Adapter::Adapter(ComPtr<IDXGIAdapter> dxgi_adapter,
                  ComPtr<ID3D12Device> d3d12_device,
                  ComPtr<IDMLDevice> dml_device,
-                 std::unique_ptr<CommandQueue> command_queue)
+                 scoped_refptr<CommandQueue> command_queue,
+                 DML_FEATURE_LEVEL max_feature_level_supported)
     : dxgi_adapter_(std::move(dxgi_adapter)),
       d3d12_device_(std::move(d3d12_device)),
       dml_device_(std::move(dml_device)),
-      command_queue_(std::move(command_queue)) {}
+      command_queue_(std::move(command_queue)),
+      max_feature_level_supported_(max_feature_level_supported) {
+  CHECK_EQ(instance_, nullptr);
+  instance_ = this;
+}
 
-Adapter::~Adapter() = default;
+Adapter::~Adapter() {
+  CHECK_EQ(instance_, this);
+  instance_ = nullptr;
+}
+
+bool Adapter::IsDMLFeatureLevelSupported(
+    DML_FEATURE_LEVEL feature_level) const {
+  return feature_level <= max_feature_level_supported_;
+}
+
+bool Adapter::IsDMLDeviceCompileGraphSupportedForTesting() const {
+  CHECK_IS_TEST();
+  // IDMLDevice1::CompileGraph was introduced in DirectML version 1.2.0 or
+  // DML_FEATURE_LEVEL_2_1.
+  // https://learn.microsoft.com/en-us/windows/ai/directml/dml-feature-level-history
+  return IsDMLFeatureLevelSupported(DML_FEATURE_LEVEL_2_1);
+}
+
+Adapter* Adapter::instance_ = nullptr;
+
+bool Adapter::is_debug_layer_enabled_ = false;
 
 }  // namespace webnn::dml

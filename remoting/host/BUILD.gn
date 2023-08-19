@@ -240,10 +240,6 @@ if (is_linux) {
   pkg_config("xkbcommon") {
     packages = [ "xkbcommon" ]
   }
-
-  pkg_config("libevdev") {
-    packages = [ "libevdev" ]
-  }
 }
 
 # This must be a static library instead of a source set because
@@ -410,6 +406,14 @@ static_library("common") {
     "zombie_host_detector.h",
   ]
 
+  # ChromotingHostServices currently only works on Linux and Windows.
+  if (is_linux || is_win) {
+    sources += [
+      "chromoting_host_services_server.cc",
+      "chromoting_host_services_server.h",
+    ]
+  }
+
   libs = []
 
   configs += [
@@ -522,7 +526,9 @@ static_library("common") {
   if (remoting_use_x11) {
     assert(use_glib)
     defines += [ "REMOTING_USE_X11" ]
+    sources -= [ "active_display_monitor.cc" ]
     sources += [
+      "active_display_monitor_linux.cc",
       "curtain_mode_linux.cc",
       "desktop_display_info_loader_linux.cc",
       "desktop_display_info_loader_x11.cc",
@@ -534,6 +540,8 @@ static_library("common") {
       "input_injector_x11.cc",
       "input_injector_x11.h",
       "keyboard_layout_monitor_linux.cc",
+      "linux/active_display_monitor_x11.cc",
+      "linux/active_display_monitor_x11.h",
       "linux/clipboard_portal.cc",
       "linux/clipboard_portal.h",
       "linux/clipboard_portal_injector.cc",
@@ -571,7 +579,6 @@ static_library("common") {
       "x11_display_util.cc",
       "x11_display_util.h",
     ]
-    configs += [ ":libevdev" ]
     libs += [ "//third_party/libei/lib64/libei.a" ]
     public_deps += [
       "//third_party/wayland:wayland_client",
@@ -814,11 +821,6 @@ source_set("unit_tests") {
     "zombie_host_detector_unittest.cc",
   ]
 
-  # MojoIpcServer currently only works on Linux and Windows.
-  if (is_linux || is_win) {
-    sources += [ "chromoting_host_services_client_unittest.cc" ]
-  }
-
   if (use_ozone || is_chromeos_ash) {
     sources -= [ "input_monitor/local_input_monitor_unittest.cc" ]
   }
@@ -857,12 +859,23 @@ source_set("unit_tests") {
     "//remoting/signaling",
     "//remoting/signaling:test_support",
     "//remoting/signaling:unit_tests",
+    "//services/network:test_support",
     "//skia",
     "//testing/gmock",
     "//testing/gtest",
     "//ui/base:base",
     "//ui/events:events",
   ]
+
+  # ChromotingHostServices currently only works on Linux and Windows.
+  if (is_linux || is_win) {
+    sources += [
+      "chromoting_host_services_client_unittest.cc",
+      "chromoting_host_services_server_unittest.cc",
+    ]
+
+    deps += [ "//remoting/host:ipc_constants" ]
+  }
 
   if (is_linux) {
     deps += [
@@ -887,15 +900,19 @@ source_set("unit_tests") {
   if (is_chromeos_ash) {
     sources += [
       "desktop_display_info_loader_chromeos_unittest.cc",
+      "input_injector_chromeos_unittest.cc",
       "it2me/it2me_confirmation_dialog_chromeos_unittest.cc",
     ]
     deps += [
+      "//ash:test_support",
+      "//chromeos/ash/components:test_support",
       "//components/user_manager:test_support",
       "//remoting/host/chromeos",
       "//remoting/host/chromeos:features",
       "//remoting/host/chromeos:reporter_unit_tests",
       "//remoting/host/chromeos:unit_tests",
       "//ui/message_center:test_support",
+      "//ui/ozone",
     ]
   }
 

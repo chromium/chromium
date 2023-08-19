@@ -78,6 +78,20 @@ HelpBubbleViewAsh* HelpBubbleViewAshTestBase::CreateHelpBubbleView(
 }
 
 HelpBubbleViewAsh* HelpBubbleViewAshTestBase::CreateHelpBubbleView(
+    HelpBubbleParams params) {
+  // NOTE: `HelpBubbleViewAsh` will never be created without body text.
+  params.body_text = Repeat(u"Body", /*times=*/50);
+
+  // Anchor the help bubble view to the test `widget_`.
+  internal::HelpBubbleAnchorParams anchor_params;
+  anchor_params.view = widget_->GetContentsView();
+
+  // NOTE: The returned help bubble view is owned by its widget.
+  return new HelpBubbleViewAsh(HelpBubbleId::kTest, anchor_params,
+                               std::move(params));
+}
+
+HelpBubbleViewAsh* HelpBubbleViewAshTestBase::CreateHelpBubbleView(
     const absl::optional<HelpBubbleStyle>& style) {
   HelpBubbleParams params;
   params.arrow = HelpBubbleArrow::kNone;
@@ -114,20 +128,6 @@ void HelpBubbleViewAshTestBase::SetUp() {
   // are working as intended.
   widget_->CenterWindow(gfx::Size(50, 50));
   widget_->ShowInactive();
-}
-
-HelpBubbleViewAsh* HelpBubbleViewAshTestBase::CreateHelpBubbleView(
-    HelpBubbleParams params) {
-  // NOTE: `HelpBubbleViewAsh` will never be created without body text.
-  params.body_text = Repeat(u"Body", /*times=*/50);
-
-  // Anchor the help bubble view to the test `widget_`.
-  internal::HelpBubbleAnchorParams anchor_params;
-  anchor_params.view = widget_->GetContentsView();
-
-  // NOTE: The returned help bubble view is owned by its widget.
-  return new HelpBubbleViewAsh(HelpBubbleId::kTest, anchor_params,
-                               std::move(params));
 }
 
 }  // namespace ash

@@ -19,8 +19,6 @@ group("closure_compile") {
 
 group("js_modules") {
   deps = [
-    ":crostini",
-    ":drive_sync_handler",
     ":file_manager_base",
     ":file_operation_handler",
     ":file_operation_manager",
@@ -37,8 +35,6 @@ visibility = [ ":*" ]
 js_type_check("closure_compile_jsmodules") {
   deps = [
     ":app_window_wrapper",
-    ":crostini",
-    ":drive_sync_handler",
     ":entry_location_impl",
     ":file_manager_base",
     ":file_operation_handler",
@@ -100,8 +96,6 @@ js_library("app_window_wrapper") {
 
 js_library("file_manager_base") {
   deps = [
-    ":crostini",
-    ":drive_sync_handler",
     ":file_operation_handler",
     ":file_operation_manager",
     ":file_operation_util",
@@ -123,35 +117,9 @@ js_library("file_manager_base") {
   ]
 }
 
-js_library("crostini") {
-  deps = [
-    "//ash/webui/common/resources:assert",
-    "//ash/webui/common/resources:load_time_data.m",
-    "//ui/file_manager/file_manager/common/js:volume_manager_types",
-    "//ui/file_manager/file_manager/externs:volume_manager",
-    "//ui/file_manager/file_manager/externs/background:crostini",
-  ]
-}
-
 js_library("mock_crostini") {
   testonly = true
-  deps = [
-    ":crostini",
-    "//ui/file_manager/file_manager/externs/background:crostini",
-  ]
-}
-
-js_unittest("crostini_unittest") {
-  deps = [
-    ":mock_crostini",
-    "//ash/webui/common/resources:load_time_data.m",
-    "//chrome/test/data/webui/chromeos:chai_assert",
-    "//ui/file_manager/file_manager/common/js:mock_entry",
-    "//ui/file_manager/file_manager/common/js:volume_manager_types",
-    "//ui/file_manager/file_manager/externs:entry_location",
-    "//ui/file_manager/file_manager/externs:volume_manager",
-    "//ui/file_manager/file_manager/externs/background:crostini",
-  ]
+  deps = [ "//ui/file_manager/file_manager/externs/background:crostini" ]
 }
 
 js_library("mock_drive_sync_handler") {
@@ -162,36 +130,6 @@ js_library("mock_drive_sync_handler") {
   ]
   visibility +=
       [ "//ui/file_manager/file_manager/foreground/js:actions_model_unittest" ]
-}
-
-js_library("drive_sync_handler") {
-  deps = [
-    ":file_operation_util",
-    "//ash/webui/common/resources:assert",
-    "//ash/webui/common/resources:event_target",
-    "//ui/file_manager/file_manager/common/js:api",
-    "//ui/file_manager/file_manager/common/js:async_util",
-    "//ui/file_manager/file_manager/common/js:progress_center_common",
-    "//ui/file_manager/file_manager/common/js:url_constants",
-    "//ui/file_manager/file_manager/common/js:util",
-    "//ui/file_manager/file_manager/externs:drive_dialog_controller",
-    "//ui/file_manager/file_manager/externs:metadata_model",
-    "//ui/file_manager/file_manager/externs/background:drive_sync_handler",
-    "//ui/file_manager/file_manager/externs/background:progress_center",
-  ]
-}
-
-js_unittest("drive_sync_handler_unittest") {
-  deps = [
-    ":drive_sync_handler",
-    ":mock_progress_center",
-    "//ash/webui/common/resources:load_time_data.m",
-    "//chrome/test/data/webui/chromeos:chai_assert",
-    "//ui/file_manager/file_manager/common/js:mock_chrome",
-    "//ui/file_manager/file_manager/common/js:progress_center_common",
-    "//ui/file_manager/file_manager/common/js:url_constants",
-    "//ui/file_manager/file_manager/foreground/js/metadata:metadata_model",
-  ]
 }
 
 js_library("entry_location_impl") {
@@ -429,8 +367,6 @@ js_library("volume_manager_util") {
 
 js_test_type_check("js_test_type_check") {
   deps = [
-    ":crostini_unittest",
-    ":drive_sync_handler_unittest",
     ":file_operation_handler_unittest",
     ":file_operation_manager_unittest",
     ":volume_manager_unittest",

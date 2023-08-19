@@ -13,6 +13,14 @@ namespace {
 constexpr int64_t kMBytes = 1024 * 1024;
 }  // namespace
 
+// Disables the `flush_to_media` setting for the quota SQLite db, which maps to
+// F_FULLFSYNC on mac, which is known to have performance issues. Specifically,
+// this is suspected of causing a high number of SQLite IO errors as encountered
+// by CDM storage code.
+BASE_FEATURE(kDisableQuotaDbFullFSync,
+             "DisableQuotaDbFullFSync",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // A kill switch for the new approach to storage eviction on low disk space. See
 // crbug.com/1382847
 BASE_FEATURE(kNewQuotaEvictionRoutine,

@@ -63,12 +63,13 @@ class NATIVE_THEME_EXPORT NativeThemeAura : public NativeThemeBase {
                            Part part,
                            State state,
                            const gfx::Rect& rect,
-                           ScrollbarOverlayColorTheme theme,
+                           const ScrollbarThumbExtraParams& extra_params,
                            ColorScheme color_scheme) const override;
   void PaintScrollbarCorner(cc::PaintCanvas* canvas,
                             const ColorProvider* color_provider,
                             State state,
                             const gfx::Rect& rect,
+                            const ScrollbarTrackExtraParams& extra_params,
                             ColorScheme color_scheme) const override;
   gfx::Size GetPartSize(Part part,
                         State state,

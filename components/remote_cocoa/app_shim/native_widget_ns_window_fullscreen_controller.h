@@ -106,7 +106,7 @@ class REMOTE_COCOA_APP_SHIM_EXPORT NativeWidgetNSWindowFullscreenController {
     kWindowed,
     // Moving the window to the target display on which it will go fullscreen.
     kWindowedMovingToFullscreenTarget,
-    // In transition to enter fullscreen mode. This encompases the following
+    // In transition to enter fullscreen mode. This encompasses the following
     // states:
     // - From the kWindowed state, a task for ToggleFullscreen has been
     //   posted.
@@ -117,7 +117,7 @@ class REMOTE_COCOA_APP_SHIM_EXPORT NativeWidgetNSWindowFullscreenController {
     kEnterFullscreenTransition,
     // In fullscreen mode.
     kFullscreen,
-    // In transition to exit fullscreen mode. This encompases the following
+    // In transition to exit fullscreen mode. This encompasses the following
     // states:
     // - From the kFullscreen state, a task for ToggleFullscreen has been
     //   posted.

@@ -4,10 +4,6 @@
 
 #import "ios/chrome/browser/ui/settings/google_services/accounts_table_view_controller_constants.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 NSString* const kSettingsAccountsTableViewId = @"SettingsAccountsTableViewId";
 NSString* const kSettingsAccountsTableViewAddAccountCellId =
     @"SettingsAccountsTableViewAddAccountCellId";

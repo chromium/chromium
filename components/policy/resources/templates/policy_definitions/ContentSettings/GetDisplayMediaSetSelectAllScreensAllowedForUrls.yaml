@@ -4,11 +4,13 @@ desc: |-
         This policy unlocks the <ph name="AUTO_SELECT_ALL_SCREENS_NAME">autoSelectAllScreens</ph> property for web applications at defined origins.
         If the <ph name="AUTO_SELECT_ALL_SCREENS_NAME">autoSelectAllScreens</ph> property is defined in a <ph name="GET_DISPLAY_MEDIA_SET_NAME">getDisplayMediaSet</ph> request, all screen surfaces are automatically captured without requiring explicit user permission.
         If the policy is not set, <ph name="AUTO_SELECT_ALL_SCREENS_NAME">autoSelectAllScreens</ph> is not available for any web application.
+  In order to improve privacy, starting with <ph name="PRODUCT_NAME">$1<ex>Google Chrome</ex></ph> version 116, this policy will not support dynamic refresh anymore. Therefore, the user can be sure that no additional pages will be able to capture the screens after login if it were not allowed at session start already.
 example_value:
 - https://www.example.com
 - '[*.]example.edu'
 features:
-  dynamic_refresh: true
+  # intentional!
+  dynamic_refresh: false
   per_profile: true
 owners:
 - file://chrome/browser/media/webrtc/OWNERS

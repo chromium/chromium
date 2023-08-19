@@ -26,7 +26,6 @@
 <translation id="2060505056492490888">A „<ph name="DOT" />” rossz helyen van a(z) „<ph name="INVALIDDOMAIN" />” címben.</translation>
 <translation id="2148716181193084225">Ma</translation>
 <translation id="2226276347425096477">Kérjük, rövidítse le a szöveget legfeljebb <ph name="MAX_CHARACTERS" /> karakterre (jelenleg <ph name="CURRENT_LENGTH" /> karaktert használ).</translation>
-<translation id="2246498165605549352">Helyi fájl</translation>
 <translation id="2247351761944213033"><ph name="WEEKNUMBER" />. hét, <ph name="YEAR" /></translation>
 <translation id="2277199496770840904"><ph name="NUMBER" />. szám</translation>
 <translation id="2393030564806080191">Szín hexadecimális értéke</translation>
@@ -89,6 +88,7 @@
 <translation id="5425179576310518467">aktuális dátum</translation>
 <translation id="5466621249238537318">Kérjük, válasszon ki egy vagy több fájlt.</translation>
 <translation id="5468998798572797635">kilépés a teljes képernyős nézetből</translation>
+<translation id="5514612371225420585">Fájl az eszközén</translation>
 <translation id="5516235301412634559">0,75</translation>
 <translation id="5537725057119320332">Küldés</translation>
 <translation id="5546461542133609677">némítás feloldása</translation>
@@ -113,6 +113,7 @@
 <translation id="6398862346408813489">A hónapválasztási panel megjelenítése</translation>
 <translation id="6404546809543547843">hang idővonalának vezérlője</translation>
 <translation id="6443871981718447451">a feliratok menü mutatása</translation>
+<translation id="6484738902856791350">Olvashatóra formázás</translation>
 <translation id="6550675742724504774">Beállítások</translation>
 <translation id="6572309429103589720">Nyelvtani hiba</translation>
 <translation id="658823671542763450">teljes képernyős nézet</translation>

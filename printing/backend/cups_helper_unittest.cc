@@ -24,8 +24,8 @@ namespace {
 // Returns true if the papers have the same name, vendor ID, and size.
 bool PapersEqual(const PrinterSemanticCapsAndDefaults::Paper& lhs,
                  const PrinterSemanticCapsAndDefaults::Paper& rhs) {
-  return lhs.display_name == rhs.display_name &&
-         lhs.vendor_id == rhs.vendor_id && lhs.size_um == rhs.size_um;
+  return lhs.display_name() == rhs.display_name() &&
+         lhs.vendor_id() == rhs.vendor_id() && lhs.size_um() == rhs.size_um();
 }
 
 void VerifyCapabilityColorModels(const PrinterSemanticCapsAndDefaults& caps) {
@@ -243,14 +243,14 @@ TEST(PrintBackendCupsHelperTest, PpdParsingPageSize) {
   EXPECT_TRUE(ParsePpdCapabilities(/*dest=*/nullptr, /*locale=*/"",
                                    kTestPpdData, &caps));
   ASSERT_EQ(2UL, caps.papers.size());
-  EXPECT_EQ("Letter", caps.papers[0].vendor_id);
-  EXPECT_EQ("US Letter", caps.papers[0].display_name);
-  EXPECT_EQ(215900, caps.papers[0].size_um.width());
-  EXPECT_EQ(279400, caps.papers[0].size_um.height());
-  EXPECT_EQ("Legal", caps.papers[1].vendor_id);
-  EXPECT_EQ("US Legal", caps.papers[1].display_name);
-  EXPECT_EQ(215900, caps.papers[1].size_um.width());
-  EXPECT_EQ(355600, caps.papers[1].size_um.height());
+  EXPECT_EQ("Letter", caps.papers[0].vendor_id());
+  EXPECT_EQ("US Letter", caps.papers[0].display_name());
+  EXPECT_EQ(215900, caps.papers[0].size_um().width());
+  EXPECT_EQ(279400, caps.papers[0].size_um().height());
+  EXPECT_EQ("Legal", caps.papers[1].vendor_id());
+  EXPECT_EQ("US Legal", caps.papers[1].display_name());
+  EXPECT_EQ(215900, caps.papers[1].size_um().width());
+  EXPECT_EQ(355600, caps.papers[1].size_um().height());
   EXPECT_TRUE(PapersEqual(caps.papers[1], caps.default_paper));
 }
 
@@ -285,10 +285,10 @@ TEST(PrintBackendCupsHelperTest, PpdParsingPageSizeNoDefaultSpecified) {
     EXPECT_TRUE(ParsePpdCapabilities(/*dest=*/nullptr, /*locale=*/"en-US",
                                      kTestPpdData, &caps));
     ASSERT_EQ(4UL, caps.papers.size());
-    EXPECT_EQ("Letter", caps.papers[3].vendor_id);
-    EXPECT_EQ("US Letter", caps.papers[3].display_name);
-    EXPECT_EQ(215900, caps.papers[3].size_um.width());
-    EXPECT_EQ(279400, caps.papers[3].size_um.height());
+    EXPECT_EQ("Letter", caps.papers[3].vendor_id());
+    EXPECT_EQ("US Letter", caps.papers[3].display_name());
+    EXPECT_EQ(215900, caps.papers[3].size_um().width());
+    EXPECT_EQ(279400, caps.papers[3].size_um().height());
     EXPECT_TRUE(PapersEqual(caps.papers[3], caps.default_paper));
   }
   {
@@ -296,10 +296,10 @@ TEST(PrintBackendCupsHelperTest, PpdParsingPageSizeNoDefaultSpecified) {
     EXPECT_TRUE(ParsePpdCapabilities(/*dest=*/nullptr, /*locale=*/"en-UK",
                                      kTestPpdData, &caps));
     ASSERT_EQ(4UL, caps.papers.size());
-    EXPECT_EQ("A4", caps.papers[1].vendor_id);
-    EXPECT_EQ("ISO A4", caps.papers[1].display_name);
-    EXPECT_EQ(209903, caps.papers[1].size_um.width());
-    EXPECT_EQ(297039, caps.papers[1].size_um.height());
+    EXPECT_EQ("A4", caps.papers[1].vendor_id());
+    EXPECT_EQ("ISO A4", caps.papers[1].display_name());
+    EXPECT_EQ(209903, caps.papers[1].size_um().width());
+    EXPECT_EQ(297039, caps.papers[1].size_um().height());
     EXPECT_TRUE(PapersEqual(caps.papers[1], caps.default_paper));
   }
 }
@@ -331,22 +331,22 @@ TEST(PrintBackendCupsHelperTest, PpdParsingPrintableArea) {
   ASSERT_EQ(2UL, caps.papers.size());
 
   {
-    EXPECT_EQ("Letter", caps.papers[0].vendor_id);
-    EXPECT_EQ("US Letter", caps.papers[0].display_name);
-    EXPECT_EQ(215900, caps.papers[0].size_um.width());
-    EXPECT_EQ(279400, caps.papers[0].size_um.height());
-    const gfx::Rect& printable_area_um = caps.papers[0].printable_area_um;
+    EXPECT_EQ("Letter", caps.papers[0].vendor_id());
+    EXPECT_EQ("US Letter", caps.papers[0].display_name());
+    EXPECT_EQ(215900, caps.papers[0].size_um().width());
+    EXPECT_EQ(279400, caps.papers[0].size_um().height());
+    const gfx::Rect& printable_area_um = caps.papers[0].printable_area_um();
     EXPECT_EQ(8467, printable_area_um.x());
     EXPECT_EQ(10583, printable_area_um.y());
     EXPECT_EQ(203200, printable_area_um.width());
     EXPECT_EQ(239889, printable_area_um.height());
   }
   {
-    EXPECT_EQ("Legal", caps.papers[1].vendor_id);
-    EXPECT_EQ("US Legal", caps.papers[1].display_name);
-    EXPECT_EQ(215900, caps.papers[1].size_um.width());
-    EXPECT_EQ(355600, caps.papers[1].size_um.height());
-    const gfx::Rect& printable_area_um = caps.papers[1].printable_area_um;
+    EXPECT_EQ("Legal", caps.papers[1].vendor_id());
+    EXPECT_EQ("US Legal", caps.papers[1].display_name());
+    EXPECT_EQ(215900, caps.papers[1].size_um().width());
+    EXPECT_EQ(355600, caps.papers[1].size_um().height());
+    const gfx::Rect& printable_area_um = caps.papers[1].printable_area_um();
     EXPECT_EQ(4233, printable_area_um.x());
     EXPECT_EQ(4233, printable_area_um.y());
     EXPECT_EQ(207434, printable_area_um.width());
@@ -748,8 +748,7 @@ TEST(PrintBackendCupsHelperTest, PpdParsingResolutionTagNames) {
   }
 }
 
-TEST(PrintBackendCupsHelperTest,
-     TestPpdParsingResolutionInvalidDefaultResolution) {
+TEST(PrintBackendCupsHelperTest, PpdParsingResolutionInvalidDefaultResolution) {
   constexpr char kTestPpdData[] =
       R"(*PPD-Adobe: "4.3"
 *OpenUI *Resolution/Resolution: PickOne
@@ -764,31 +763,78 @@ TEST(PrintBackendCupsHelperTest,
   EXPECT_TRUE(caps.default_dpi.IsEmpty());
 }
 
-TEST(PrintBackendCupsHelperTest, PpdParsingResolutionNoResolution) {
-  // If the PPD does not have a valid resolution, the DPI should still be set to
-  // an OS-dependent default value.
-#if BUILDFLAG(IS_MAC)
-  constexpr gfx::Size kExpectedDpi(kDefaultMacDpi, kDefaultMacDpi);
-#elif BUILDFLAG(IS_LINUX)
-  constexpr gfx::Size kExpectedDpi(kPixelsPerInch, kPixelsPerInch);
-#else
-  constexpr gfx::Size kExpectedDpi(kDefaultPdfDpi, kDefaultPdfDpi);
-#endif
-
+TEST(PrintBackendCupsHelperTest,
+     PpdParsingResolutionStandaloneDefaultResolution) {
+  // The PPD spec allows for standalone default keywords, which implies there is
+  // only 1 resolution and it is the default.
   constexpr char kTestPpdData[] =
       R"(*PPD-Adobe: "4.3"
-*OpenUI *Resolution/Resolution: PickOne
-*CloseUI: *Resolution)";
+*OpenUI *ColorModel/Color Model: PickOne
+*DefaultColorModel: CMYK
+*ColorModel CMYK/Color: "(cmyk) RCsetdevicecolor"
+*ColorModel Gray/Black and White: "(gray) RCsetdevicecolor"
+*CloseUI: *ColorModel
+*DefaultResolution: 500dpi
+*OpenUI *Duplex/2-Sided Printing: PickOne
+*DefaultDuplex: DuplexTumble
+*Duplex None/Off: <</Duplex false>>setpagedevice"
+*Duplex DuplexNoTumble/LongEdge: <</Duplex true/Tumble false>>setpagedevice"
+*CloseUI: *Duplex)";
+  constexpr gfx::Size kExpectedResolution(500, 500);
 
   PrinterSemanticCapsAndDefaults caps;
   EXPECT_TRUE(ParsePpdCapabilities(/*dest=*/nullptr, /*locale=*/"",
                                    kTestPpdData, &caps));
-  EXPECT_EQ(std::vector<gfx::Size>{kExpectedDpi}, caps.dpis);
-  EXPECT_EQ(caps.default_dpi, kExpectedDpi);
-  EXPECT_TRUE(ParsePpdCapabilities(/*dest=*/nullptr, /*locale=*/"",
-                                   "*PPD-Adobe: \"4.3\"", &caps));
-  EXPECT_EQ(std::vector<gfx::Size>{kExpectedDpi}, caps.dpis);
-  EXPECT_EQ(caps.default_dpi, kExpectedDpi);
+  EXPECT_THAT(caps.dpis, testing::ElementsAre(kExpectedResolution));
+  EXPECT_EQ(kExpectedResolution, caps.default_dpi);
+}
+
+TEST(PrintBackendCupsHelperTest, PpdParsingResolutionNoResolution) {
+#if BUILDFLAG(IS_MAC)
+  constexpr gfx::Size kExpectedDpi(kDefaultMacDpi, kDefaultMacDpi);
+#else
+  constexpr gfx::Size kExpectedDpi(kDefaultPdfDpi, kDefaultPdfDpi);
+#endif
+
+  // If the PPD does not have a valid resolution, the DPI should still be set to
+  // an OS-dependent default value.
+  {
+    constexpr char kPpdWithNoResolutionValue[] =
+        R"(*PPD-Adobe: "4.3"
+*OpenUI *Resolution/Resolution: PickOne
+*CloseUI: *Resolution)";
+    PrinterSemanticCapsAndDefaults caps;
+    EXPECT_TRUE(ParsePpdCapabilities(/*dest=*/nullptr, /*locale=*/"",
+                                     kPpdWithNoResolutionValue, &caps));
+    EXPECT_THAT(caps.dpis, testing::ElementsAre(kExpectedDpi));
+    EXPECT_EQ(kExpectedDpi, caps.default_dpi);
+  }
+
+  // Same goes for a PPD that is missing the resolution option entirely.
+  {
+    constexpr char kPpdWithNoResolutionOption[] = R"(*PPD-Adobe: "4.3")";
+    PrinterSemanticCapsAndDefaults caps;
+    EXPECT_TRUE(ParsePpdCapabilities(
+        /*dest=*/nullptr, /*locale=*/"", kPpdWithNoResolutionOption, &caps));
+    EXPECT_THAT(caps.dpis, testing::ElementsAre(kExpectedDpi));
+    EXPECT_EQ(kExpectedDpi, caps.default_dpi);
+  }
+
+  // Same goes for a PPD where the resolution option only contains a
+  // DefaultResolution but no actual Resolution values.
+  {
+    constexpr char kPpdWithOnlyDefaultResolutionValue[] =
+        R"(*PPD-Adobe: "4.3"
+*OpenUI *Resolution/Resolution: PickOne
+*DefaultResolution: 500dpi
+*CloseUI: *Resolution)";
+    PrinterSemanticCapsAndDefaults caps;
+    EXPECT_TRUE(ParsePpdCapabilities(/*dest=*/nullptr, /*locale=*/"",
+                                     kPpdWithOnlyDefaultResolutionValue,
+                                     &caps));
+    EXPECT_THAT(caps.dpis, testing::ElementsAre(kExpectedDpi));
+    EXPECT_EQ(kExpectedDpi, caps.default_dpi);
+  }
 }
 
 TEST(PrintBackendCupsHelperTest, PpdParsingResolutionNoDefaultResolution) {

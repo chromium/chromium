@@ -21,6 +21,33 @@ GURL GenerateUrnUuid() {
               base::Uuid::GenerateRandomV4().AsLowercaseString());
 }
 
+std::string SubstituteMappedStrings(
+    const std::string& input,
+    const std::vector<std::pair<std::string, std::string>>& substitutions) {
+  std::vector<std::string> output_vec;
+  size_t input_idx = 0;
+  while (input_idx < input.size()) {
+    size_t replace_idx = input.size();
+    size_t replace_end_idx = input.size();
+    std::pair<std::string, std::string> const* next_replacement = nullptr;
+    for (const auto& substitution : substitutions) {
+      size_t found_idx = input.find(substitution.first, input_idx);
+      if (found_idx < replace_idx) {
+        replace_idx = found_idx;
+        replace_end_idx = found_idx + substitution.first.size();
+        next_replacement = &substitution;
+      }
+    }
+    output_vec.push_back(input.substr(input_idx, replace_idx - input_idx));
+    if (replace_idx < input.size()) {
+      output_vec.push_back(next_replacement->second);
+    }
+    // move input index to after what we replaced (or end of string).
+    input_idx = replace_end_idx;
+  }
+  return base::StrCat(output_vec);
+}
+
 namespace {
 
 std::vector<std::pair<GURL, FencedFrameConfig>>
@@ -62,6 +89,30 @@ void RedactProperty(
 }
 
 }  // namespace
+
+AutomaticBeaconInfo::AutomaticBeaconInfo(
+    const std::string& data,
+    const std::vector<blink::FencedFrame::ReportingDestination>& destinations,
+    network::AttributionReportingRuntimeFeatures
+        attribution_reporting_runtime_features,
+    bool once)
+    : data(data),
+      destinations(destinations),
+      attribution_reporting_runtime_features(
+          attribution_reporting_runtime_features),
+      once(once) {}
+
+AutomaticBeaconInfo::AutomaticBeaconInfo(const AutomaticBeaconInfo&) = default;
+
+AutomaticBeaconInfo::AutomaticBeaconInfo(AutomaticBeaconInfo&&) = default;
+
+AutomaticBeaconInfo& AutomaticBeaconInfo::operator=(
+    const AutomaticBeaconInfo&) = default;
+
+AutomaticBeaconInfo& AutomaticBeaconInfo::operator=(AutomaticBeaconInfo&&) =
+    default;
+
+AutomaticBeaconInfo::~AutomaticBeaconInfo() = default;
 
 FencedFrameConfig::FencedFrameConfig() = default;
 
@@ -309,11 +360,19 @@ void FencedFrameProperties::UpdateAutomaticBeaconData(
     const std::string& event_data,
     const std::vector<blink::FencedFrame::ReportingDestination>& destinations,
     network::AttributionReportingRuntimeFeatures
-        attribution_reporting_runtime_features) {
+        attribution_reporting_runtime_features,
+    bool once) {
   // For an ad component, the event data from its automatic beacon is ignored.
   automatic_beacon_info_.emplace(is_ad_component_ ? std::string{} : event_data,
                                  destinations,
-                                 attribution_reporting_runtime_features);
+                                 attribution_reporting_runtime_features, once);
+}
+
+void FencedFrameProperties::MaybeResetAutomaticBeaconData() {
+  if (automatic_beacon_info_.has_value() &&
+      automatic_beacon_info_->once == true) {
+    automatic_beacon_info_.reset();
+  }
 }
 
 }  // namespace content

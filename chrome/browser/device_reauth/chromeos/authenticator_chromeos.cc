@@ -8,6 +8,7 @@
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "ash/public/cpp/in_session_auth_dialog_controller.h"
+#include "chromeos/ash/components/osauth/public/common_types.h"
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
 #include "chromeos/crosapi/mojom/in_session_auth.mojom.h"
@@ -19,7 +20,7 @@ namespace {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 void OnAuthComplete(base::OnceCallback<void(bool)> callback,
                     bool success,
-                    const base::UnguessableToken& token,
+                    const ash::AuthProofToken& token,
                     base::TimeDelta timeout) {
   // Here we simply ignore `token` and `timeout`, as password manager manages
   // its own auth timeout
@@ -59,9 +60,17 @@ void AuthenticatorChromeOS::AuthenticateUser(
 #elif BUILDFLAG(IS_CHROMEOS_LACROS)
   if (auto* lacros_service = chromeos::LacrosService::Get();
       lacros_service->IsAvailable<crosapi::mojom::InSessionAuth>()) {
-    lacros_service->GetRemote<crosapi::mojom::InSessionAuth>()->RequestToken(
-        crosapi::mojom::Reason::kAccessPasswordManager,
-        base::BindOnce(&OnRequestToken, std::move(result_callback)));
+    if (lacros_service->GetInterfaceVersion<crosapi::mojom::InSessionAuth>() <
+        static_cast<int>(crosapi::mojom::InSessionAuth::MethodMinVersions::
+                             kRequestTokenMinVersion)) {
+      lacros_service->GetRemote<crosapi::mojom::InSessionAuth>()->RequestToken(
+          crosapi::mojom::Reason::kAccessPasswordManager, absl::nullopt,
+          base::BindOnce(&OnRequestToken, std::move(result_callback)));
+    } else {
+      lacros_service->GetRemote<crosapi::mojom::InSessionAuth>()->RequestToken(
+          crosapi::mojom::Reason::kAccessPasswordManager, std::string(),
+          base::BindOnce(&OnRequestToken, std::move(result_callback)));
+    }
   }
 #endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
 }

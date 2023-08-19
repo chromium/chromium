@@ -20,6 +20,9 @@ class DlpContentObserver {
   // Returns proper implementation of the interface. Never returns nullptr.
   static DlpContentObserver* Get();
 
+  // Returns if an instance of the class is currently active.
+  static bool HasInstance();
+
   virtual ~DlpContentObserver() = default;
 
   // Being called when confidentiality state changes for |web_contents|, e.g.

@@ -22,6 +22,10 @@ class FilePath;
 
 namespace network {
 class SharedURLLoaderFactory;
+
+namespace mojom {
+class NetworkContext;
+}
 }
 
 namespace safe_browsing {
@@ -71,6 +75,9 @@ class SafeBrowsingService
   // Returns the SafeBrowsingDatabaseManager owned by this service.
   virtual scoped_refptr<safe_browsing::SafeBrowsingDatabaseManager>
   GetDatabaseManager() = 0;
+
+  // Returns the network context owned by this service.
+  virtual network::mojom::NetworkContext* GetNetworkContext() = 0;
 
   // Clears cookies if the given deletion time range is for "all time". Calls
   // the given `callback` once deletion is complete.

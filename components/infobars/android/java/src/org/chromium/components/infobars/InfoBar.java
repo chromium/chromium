@@ -26,8 +26,6 @@ import org.chromium.ui.modelutil.PropertyModel;
  */
 @JNINamespace("infobars")
 public abstract class InfoBar implements InfoBarInteractionHandler, InfoBarUiItem {
-    private static final String TAG = "InfoBar";
-
     /**
      * Interface for InfoBar to interact with its container.
      */

@@ -6,6 +6,7 @@
 #include <utility>
 
 #include "base/memory/raw_ptr.h"
+#include "base/scoped_observation.h"
 #include "components/services/app_service/public/cpp/app_capability_access_cache.h"
 #include "components/services/app_service/public/cpp/capability_access.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -87,7 +88,7 @@ class CapabilityAccessRecursiveObserver
   explicit CapabilityAccessRecursiveObserver(
       apps::AppCapabilityAccessCache* cache)
       : cache_(cache) {
-    Observe(cache);
+    observation_.Observe(cache);
   }
 
   ~CapabilityAccessRecursiveObserver() override = default;
@@ -172,7 +173,7 @@ class CapabilityAccessRecursiveObserver
 
   void OnAppCapabilityAccessCacheWillBeDestroyed(
       apps::AppCapabilityAccessCache* cache) override {
-    Observe(nullptr);
+    observation_.Reset();
   }
 
   static void ExpectEq(const apps::CapabilityAccessUpdate& outer,
@@ -185,6 +186,9 @@ class CapabilityAccessRecursiveObserver
 
  private:
   raw_ptr<apps::AppCapabilityAccessCache> cache_;
+  base::ScopedObservation<apps::AppCapabilityAccessCache,
+                          apps::AppCapabilityAccessCache::Observer>
+      observation_{this};
   AccountId account_id_ = AccountId::FromUserEmail("test@gmail.com");
   std::set<std::string> accessing_camera_apps_;
   std::set<std::string> accessing_microphone_apps_;
@@ -400,4 +404,25 @@ TEST_F(AppCapabilityAccessCacheTest, SuperRecursive) {
   EXPECT_EQ(cache.GetAppsAccessingCamera(), observer.accessing_camera_apps());
   EXPECT_EQ(cache.GetAppsAccessingMicrophone(),
             observer.accessing_microphone_apps());
+}
+
+TEST_F(AppCapabilityAccessCacheTest, GetAppsAccessingCapabilities_Empty) {
+  apps::AppCapabilityAccessCache cache;
+  cache.SetAccountId(account_id());
+
+  EXPECT_THAT(cache.GetAppsAccessingCapabilities(), testing::IsEmpty());
+}
+
+TEST_F(AppCapabilityAccessCacheTest,
+       GetAppsAccessingCapabilities_CameraAndMicrophone) {
+  apps::AppCapabilityAccessCache cache;
+  cache.SetAccountId(account_id());
+
+  std::vector<apps::CapabilityAccessPtr> deltas;
+  deltas.push_back(MakeCapabilityAccess("a", true, false));
+  deltas.push_back(MakeCapabilityAccess("b", false, true));
+  cache.OnCapabilityAccesses(std::move(deltas));
+
+  EXPECT_THAT(cache.GetAppsAccessingCapabilities(),
+              testing::UnorderedElementsAre("a", "b"));
 }

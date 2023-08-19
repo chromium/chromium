@@ -8,10 +8,6 @@
 
 #import "ios/chrome/browser/ui/policy/user_policy/user_policy_prompt_view_controller.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 namespace {
 constexpr CGFloat kHalfSheetCornerRadius = 20;
 }  // namespace

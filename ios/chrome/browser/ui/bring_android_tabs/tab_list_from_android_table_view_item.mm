@@ -4,7 +4,7 @@
 
 #import "ios/chrome/browser/ui/bring_android_tabs/tab_list_from_android_table_view_item.h"
 
-#import "base/mac/foundation_util.h"
+#import "base/apple/foundation_util.h"
 #import "base/strings/sys_string_conversions.h"
 #import "components/url_formatter/elide_url.h"
 #import "ios/chrome/browser/net/crurl.h"
@@ -13,10 +13,6 @@
 #import "ios/chrome/common/ui/favicon/favicon_container_view.h"
 #import "ios/chrome/common/ui/favicon/favicon_view.h"
 #import "ios/chrome/common/ui/table_view/table_view_cells_constants.h"
-
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
 
 @implementation TabListFromAndroidTableViewItem
 
@@ -32,7 +28,7 @@
   [super configureCell:tableCell withStyler:styler];
 
   TabListFromAndroidTableViewCell* cell =
-      base::mac::ObjCCastStrict<TabListFromAndroidTableViewCell>(tableCell);
+      base::apple::ObjCCastStrict<TabListFromAndroidTableViewCell>(tableCell);
   cell.titleLabel.text = [self titleLabelText];
   cell.URLLabel.text = [self URLLabelText];
   cell.cellUniqueIdentifier = self.uniqueIdentifier;

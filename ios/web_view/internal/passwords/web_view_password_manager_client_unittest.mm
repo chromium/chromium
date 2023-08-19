@@ -7,7 +7,6 @@
 #import <memory>
 
 #import "base/memory/scoped_refptr.h"
-#import "base/test/scoped_feature_list.h"
 #import "base/test/task_environment.h"
 #import "components/autofill/core/browser/logging/stub_log_manager.h"
 #import "components/password_manager/core/browser/mock_password_form_manager_for_ui.h"
@@ -32,10 +31,6 @@
 #import "testing/platform_test.h"
 #import "url/gurl.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 namespace ios_web_view {
 
 using testing::_;
@@ -50,9 +45,6 @@ class WebViewPasswordManagerClientTest : public PlatformTest {
         account_store_(
             base::MakeRefCounted<password_manager::TestPasswordStore>(
                 password_manager::IsAccountStore(true))) {
-    scoped_feature.InitAndEnableFeature(
-        password_manager::features::kEnablePasswordsAccountStorage);
-
     pref_service_.registry()->RegisterBooleanPref(
         password_manager::prefs::kCredentialsEnableService, true);
 
@@ -73,7 +65,6 @@ class WebViewPasswordManagerClientTest : public PlatformTest {
     account_store_->ShutdownOnUIThread();
   }
 
-  base::test::ScopedFeatureList scoped_feature;
   web::FakeWebState web_state_;
   syncer::TestSyncService sync_service_;
   TestingPrefServiceSimple pref_service_;

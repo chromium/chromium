@@ -19,6 +19,7 @@
 #include "media/audio/audio_device_description.h"
 #include "media/audio/cras/audio_manager_cras_base.h"
 #include "media/base/audio_timestamp_helper.h"
+#include "media/base/media_switches.h"
 
 namespace media {
 
@@ -60,6 +61,23 @@ void ReportStreamStartResult(StreamStartResult result) {
 
 void ReportNotifyStreamErrors(int err) {
   base::UmaHistogramSparse("Media.Audio.CrasInputStreamNotifyStreamError", err);
+}
+
+static constexpr char kVoiceIsolationEffectStateHistogramName[] =
+    "Cras.StreamEffectState.VoiceIsolation";
+
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+// Used to log stream effects in `CrasInputStream::Start`.
+enum class StreamEffectState {
+  kForceDisable = 0,
+  kForceEnable = 1,
+  kPlatformDefault = 2,
+  kMaxValue = kPlatformDefault
+};
+
+void RecordVoiceIsolationState(StreamEffectState state) {
+  base::UmaHistogramEnumeration(kVoiceIsolationEffectStateHistogramName, state);
 }
 
 }  // namespace
@@ -212,6 +230,14 @@ inline bool CrasInputStream::UseCrasAgc() const {
   return params_.effects() & AudioParameters::AUTOMATIC_GAIN_CONTROL;
 }
 
+inline bool CrasInputStream::UseClientControlledVoiceIsolation() const {
+  return params_.effects() & AudioParameters::CLIENT_CONTROLLED_VOICE_ISOLATION;
+}
+
+inline bool CrasInputStream::UseCrasVoiceIsolation() const {
+  return params_.effects() & AudioParameters::VOICE_ISOLATION;
+}
+
 inline bool CrasInputStream::DspBasedAecIsAllowed() const {
   return params_.effects() & AudioParameters::ALLOW_DSP_ECHO_CANCELLER;
 }
@@ -319,6 +345,20 @@ void CrasInputStream::Start(AudioInputCallback* callback) {
 
   if (UseCrasAgc()) {
     libcras_stream_params_enable_agc(stream_params);
+  }
+
+  if (base::FeatureList::IsEnabled(media::kCrOSSystemVoiceIsolationOption)) {
+    if (UseClientControlledVoiceIsolation()) {
+      if (UseCrasVoiceIsolation()) {
+        libcras_stream_params_enable_voice_isolation(stream_params);
+        RecordVoiceIsolationState(StreamEffectState::kForceEnable);
+      } else {
+        libcras_stream_params_disable_voice_isolation(stream_params);
+        RecordVoiceIsolationState(StreamEffectState::kForceDisable);
+      }
+    } else {
+      RecordVoiceIsolationState(StreamEffectState::kPlatformDefault);
+    }
   }
 
   if (DspBasedAecIsAllowed()) {
@@ -453,7 +493,8 @@ void CrasInputStream::ReadAudio(size_t frames,
 
   peak_detector_.FindPeak(audio_bus_.get());
 
-  callback_->OnData(audio_bus_.get(), capture_time, normalized_volume, {});
+  callback_->OnData(audio_bus_.get(), capture_time, normalized_volume,
+                    glitch_info_accumulator_.GetAndReset());
 }
 
 void CrasInputStream::NotifyStreamError(int err) {
@@ -574,8 +615,14 @@ void CrasInputStream::CalculateAudioGlitches(
   base::TimeDelta dropped_samples_glitch_duration =
       dropped_samples_duration - last_dropped_samples_duration_;
 
-  glitch_reporter_.UpdateStats(overrun_glitch_duration +
-                               dropped_samples_glitch_duration);
+  base::TimeDelta glitch_duration =
+      overrun_glitch_duration + dropped_samples_glitch_duration;
+  glitch_reporter_.UpdateStats(glitch_duration);
+  if (glitch_duration.is_positive()) {
+    glitch_info_accumulator_.Add(AudioGlitchInfo::SingleBoundedGlitch(
+        glitch_duration, AudioGlitchInfo::Direction::kCapture));
+  }
+
   last_overrun_frames_ = overrun_frames;
   last_dropped_samples_duration_ = dropped_samples_duration;
 }

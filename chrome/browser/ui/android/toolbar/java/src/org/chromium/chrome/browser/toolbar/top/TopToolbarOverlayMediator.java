@@ -8,9 +8,9 @@ import android.content.Context;
 import android.view.View;
 
 import androidx.annotation.ColorInt;
-import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.Callback;
+import org.chromium.base.ResettersForTesting;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsUtils;
@@ -203,8 +203,7 @@ public class TopToolbarOverlayMediator {
      * @param tab The tab to get the background color for.
      * @return The background color.
      */
-    @ColorInt
-    private int getToolbarBackgroundColor(Tab tab) {
+    private @ColorInt int getToolbarBackgroundColor(Tab tab) {
         if (sToolbarBackgroundColorForTesting != null) return sToolbarBackgroundColorForTesting;
         return mTopUiThemeColorProvider.getSceneLayerBackground(tab);
     }
@@ -214,8 +213,7 @@ public class TopToolbarOverlayMediator {
      * @param backgroundColor The tab's background color.
      * @return The url bar color.
      */
-    @ColorInt
-    private int getUrlBarBackgroundColor(Tab tab, @ColorInt int backgroundColor) {
+    private @ColorInt int getUrlBarBackgroundColor(Tab tab, @ColorInt int backgroundColor) {
         if (sUrlBarColorForTesting != null) return sUrlBarColorForTesting;
         return ThemeUtils.getTextBoxColorForToolbarBackground(mContext, tab, backgroundColor);
     }
@@ -294,25 +292,24 @@ public class TopToolbarOverlayMediator {
         updateVisibility();
     }
 
-    @VisibleForTesting
     void setVisibilityManuallyControlledForTesting(boolean manuallyControlled) {
         mIsVisibilityManuallyControlled = manuallyControlled;
         updateShadowState();
         updateVisibility();
     }
 
-    @VisibleForTesting
     static void setIsTabletForTesting(Boolean isTablet) {
         sIsTabletForTesting = isTablet;
+        ResettersForTesting.register(() -> sIsTabletForTesting = null);
     }
 
-    @VisibleForTesting
     static void setToolbarBackgroundColorForTesting(@ColorInt int color) {
         sToolbarBackgroundColorForTesting = color;
+        ResettersForTesting.register(() -> sToolbarBackgroundColorForTesting = null);
     }
 
-    @VisibleForTesting
     static void setUrlBarColorForTesting(@ColorInt int color) {
         sUrlBarColorForTesting = color;
+        ResettersForTesting.register(() -> sUrlBarColorForTesting = null);
     }
 }

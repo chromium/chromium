@@ -541,13 +541,66 @@ TEST_P(PDFiumPageImageDataTest, ImageData) {
   ASSERT_EQ(3u, page.images_.size());
 
   ASSERT_FALSE(page.images_[0].alt_text.empty());
-  EXPECT_TRUE(page.images_[0].image_data.drawsNothing());
-  EXPECT_EQ(page.images_[0].image_data.width(), 0);
-  EXPECT_EQ(page.images_[0].image_data.height(), 0);
+  SkBitmap image_bitmap = engine->GetImageForOcr(
+      /*page_index=*/0, page.images_[0].page_object_index);
+  EXPECT_FALSE(image_bitmap.drawsNothing());
+  EXPECT_EQ(image_bitmap.width(), 50);
+  EXPECT_EQ(image_bitmap.height(), 50);
 
-  ASSERT_TRUE(page.images_[2].alt_text.empty());
-  EXPECT_EQ(page.images_[1].image_data.width(), 20);
-  EXPECT_EQ(page.images_[1].image_data.height(), 20);
+  ASSERT_TRUE(page.images_[1].alt_text.empty());
+  image_bitmap = engine->GetImageForOcr(/*page_index=*/0,
+                                        page.images_[1].page_object_index);
+  EXPECT_FALSE(image_bitmap.drawsNothing());
+  // While the scaled image size is 20x20, `image_data` has the same size as
+  // the image in the PDF file, which is 50x50, and is not scaled.
+  EXPECT_EQ(image_bitmap.width(), 50);
+  EXPECT_EQ(image_bitmap.height(), 50);
+}
+
+TEST_P(PDFiumPageImageDataTest, RotatedPageImageData) {
+  TestClient client;
+  std::unique_ptr<PDFiumEngine> engine =
+      InitializeEngine(&client, FILE_PATH_LITERAL("rotated_page.pdf"));
+  ASSERT_TRUE(engine);
+  ASSERT_EQ(1, engine->GetNumberOfPages());
+
+  PDFiumPage& page = GetPDFiumPageForTest(*engine, 0);
+  page.CalculateImages();
+  ASSERT_EQ(1u, page.images_.size());
+
+  // This page is rotated, therefore the extracted image size is 25x100 while
+  // the stored image is 100x25.
+  SkBitmap image_bitmap = engine->GetImageForOcr(
+      /*page_index=*/0, page.images_[0].page_object_index);
+  EXPECT_EQ(image_bitmap.width(), 25);
+  EXPECT_EQ(image_bitmap.height(), 100);
+}
+
+TEST_P(PDFiumPageImageDataTest, ImageDataForNonImage) {
+  TestClient client;
+  std::unique_ptr<PDFiumEngine> engine =
+      InitializeEngine(&client, FILE_PATH_LITERAL("text_with_image.pdf"));
+  ASSERT_TRUE(engine);
+  ASSERT_EQ(1, engine->GetNumberOfPages());
+
+  PDFiumPage& page = GetPDFiumPageForTest(*engine, 0);
+  page.CalculateImages();
+  ASSERT_EQ(3u, page.images_.size());
+  ASSERT_EQ(1, page.images_[0].page_object_index);
+
+  // Existing non-image object.
+  SkBitmap image_bitmap = engine->GetImageForOcr(
+      /*page_index=*/0, /*image_index=*/0);
+  EXPECT_TRUE(image_bitmap.drawsNothing());
+  EXPECT_EQ(image_bitmap.width(), 0);
+  EXPECT_EQ(image_bitmap.height(), 0);
+
+  // Out of range.
+  image_bitmap = engine->GetImageForOcr(
+      /*page_index=*/0, /*image_index=*/1000);
+  EXPECT_TRUE(image_bitmap.drawsNothing());
+  EXPECT_EQ(image_bitmap.width(), 0);
+  EXPECT_EQ(image_bitmap.height(), 0);
 }
 
 INSTANTIATE_TEST_SUITE_P(All, PDFiumPageImageDataTest, testing::Bool());

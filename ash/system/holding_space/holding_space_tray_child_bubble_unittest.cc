@@ -23,7 +23,9 @@
 #include "base/files/file_path.h"
 #include "base/memory/raw_ptr.h"
 #include "base/test/scoped_feature_list.h"
+#include "chromeos/constants/chromeos_features.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/chromeos/styles/cros_tokens_color_mappings.h"
 #include "ui/compositor/layer.h"
 #include "ui/views/widget/unique_widget_ptr.h"
 
@@ -221,9 +223,15 @@ TEST_P(HoldingSpaceTrayChildBubbleRefreshTest, HasExpectedBubbleTreatment) {
     // Background.
     auto* background = child_bubble()->GetBackground();
     ASSERT_TRUE(background);
-    EXPECT_EQ(
-        background->get_color(),
-        child_bubble()->GetColorProvider()->GetColor(kColorAshShieldAndBase80));
+    if (chromeos::features::IsJellyEnabled()) {
+      EXPECT_EQ(background->get_color(),
+                child_bubble()->GetColorProvider()->GetColor(
+                    cros_tokens::kCrosSysSystemBaseElevated));
+    } else {
+      EXPECT_EQ(background->get_color(),
+                child_bubble()->GetColorProvider()->GetColor(
+                    kColorAshShieldAndBase80));
+    }
     EXPECT_EQ(layer->background_blur(), ColorProvider::kBackgroundBlurSigma);
 
     // Border.

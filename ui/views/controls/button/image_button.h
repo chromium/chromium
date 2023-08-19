@@ -9,8 +9,8 @@
 #include <utility>
 
 #include "base/gtest_prod_util.h"
-#include "ui/base/layout.h"
 #include "ui/base/models/image_model.h"
+#include "ui/base/resource/resource_scale_factor.h"
 #include "ui/gfx/image/image_skia.h"
 #include "ui/views/controls/button/button.h"
 #include "ui/views/metadata/view_factory.h"

@@ -6,10 +6,6 @@
 
 #import "ios/chrome/browser/shared/ui/elements/activity_overlay_view.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 @implementation ActivityOverlayViewController
 
 - (void)loadView {

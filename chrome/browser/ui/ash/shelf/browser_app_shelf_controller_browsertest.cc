@@ -18,6 +18,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/bind.h"
 #include "base/test/scoped_run_loop_timeout.h"
+#include "base/test/test_future.h"
 #include "base/test/test_timeouts.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
@@ -27,6 +28,7 @@
 #include "chrome/browser/ash/crosapi/ash_requires_lacros_browsertestbase.h"
 #include "chrome/browser/ash/crosapi/browser_manager.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/ui/ash/shelf/chrome_shelf_controller.h"
 #include "chrome/browser/ui/ash/shelf/chrome_shelf_controller_test_util.h"
 #include "chrome/browser/ui/browser.h"
@@ -35,7 +37,7 @@
 #include "chrome/browser/web_applications/web_app_helpers.h"
 #include "chrome/browser/web_applications/web_app_id.h"
 #include "chrome/browser/web_applications/web_app_install_info.h"
-#include "chromeos/crosapi/mojom/test_controller.mojom-test-utils.h"
+#include "chromeos/crosapi/mojom/test_controller.mojom.h"
 #include "components/app_constants/constants.h"
 #include "components/services/app_service/public/cpp/app_registry_cache.h"
 #include "components/services/app_service/public/cpp/app_types.h"
@@ -190,7 +192,7 @@ class BrowserAppShelfControllerBrowserTest
 
   void SetUpOnMainThread() override {
     crosapi::AshRequiresLacrosBrowserTestBase::SetUpOnMainThread();
-    profile_ = browser()->profile();
+    profile_ = ProfileManager::GetActiveUserProfile();
     if (!HasLacrosArgument()) {
       return;
     }
@@ -243,10 +245,10 @@ class BrowserAppShelfControllerBrowserTest
 
   std::string InstallWebApp(const std::string& start_url,
                             apps::WindowMode mode) {
-    crosapi::mojom::StandaloneBrowserTestControllerAsyncWaiter waiter(
-        GetStandaloneBrowserTestController());
-    std::string app_id;
-    waiter.InstallWebApp(start_url, mode, &app_id);
+    base::test::TestFuture<const std::string&> app_id_future;
+    GetStandaloneBrowserTestController()->InstallWebApp(
+        start_url, mode, app_id_future.GetCallback());
+    std::string app_id = app_id_future.Take();
 
     // Wait until the app is installed: app service publisher updates may arrive
     // out of order with the web app installation reply, so we wait until the

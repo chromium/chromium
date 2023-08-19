@@ -22,6 +22,7 @@
 #include "extensions/browser/image_sanitizer.h"
 #include "extensions/browser/install/crx_install_error.h"
 #include "extensions/browser/json_file_sanitizer.h"
+#include "extensions/common/extension_id.h"
 #include "extensions/common/manifest.h"
 #include "extensions/common/mojom/manifest.mojom-shared.h"
 #include "mojo/public/cpp/bindings/remote.h"
@@ -296,7 +297,7 @@ class SandboxedUnpacker : public ImageSanitizer::Client {
 
   // The extension's ID. This will be calculated from the public key
   // in the CRX header.
-  std::string extension_id_;
+  ExtensionId extension_id_;
 
   // Location to use for the unpacked extension.
   mojom::ManifestLocation location_;

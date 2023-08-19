@@ -182,6 +182,17 @@ message IsolationDataProto {
 
   // The version of the IWA.
   required string version = 5;
+
+  message PendingUpdateInfo {
+    oneof location {
+      InstalledBundle installed_bundle = 1;
+      DevModeBundle dev_mode_bundle = 2;
+      DevModeProxy dev_mode_proxy = 3;
+    }
+    required string version = 4;
+  }
+
+  optional PendingUpdateInfo pending_update_info = 6;
 }
 
 // Full WebApp object data. See detailed comments in
@@ -428,4 +439,8 @@ message WebAppProto {
   // https://github.com/WICG/manifest-incubations/blob/gh-pages/scope_extensions-explainer.md
   // for association requirements.
   repeated WebAppScopeExtensionProto scope_extensions_validated = 62;
+
+  // Stores whether the current web app is set as the default app to capture
+  // links.
+  optional bool is_user_selected_app_for_capturing_links = 63;
 }

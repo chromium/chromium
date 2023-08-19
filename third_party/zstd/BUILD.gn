@@ -1,0 +1,93 @@
+# Copyright 2023 The Chromium Authors
+# Use of this source code is governed by a BSD - style license that can be
+# found in the LICENSE file.
+
+config("zstd_internal_config") {
+  if (!is_debug) {
+    # Build code using -O3.
+    configs = [
+      "//build/config/compiler:no_chromium_code",
+      "//build/config/compiler:optimize_speed",
+    ]
+  }
+}
+
+config("zstd_hide_symbols") {
+  defines = [
+    "ZSTDLIB_STATIC_API=ZSTDLIB_HIDDEN",
+    "ZDICTLIB_STATIC_API=ZDICTLIB_HIDDEN",
+    "ZSTDLIB_VISIBLE=ZSTDLIB_HIDDEN",
+    "ZSTDERRORLIB_VISIBLE=ZSTDERRORLIB_HIDDEN",
+    "ZDICTLIB_VISIBLE=ZDICTLIB_HIDDEN",
+  ]
+}
+
+source_set("headers") {
+  sources = [
+    "src/lib/zstd.h",
+    "src/lib/zstd_errors.h",
+  ]
+  configs += [ ":zstd_hide_symbols" ]
+}
+
+source_set("common") {
+  sources = [
+    "src/lib/common/allocations.h",
+    "src/lib/common/bits.h",
+    "src/lib/common/bitstream.h",
+    "src/lib/common/compiler.h",
+    "src/lib/common/cpu.h",
+    "src/lib/common/debug.c",
+    "src/lib/common/debug.h",
+    "src/lib/common/entropy_common.c",
+    "src/lib/common/error_private.c",
+    "src/lib/common/error_private.h",
+    "src/lib/common/fse.h",
+    "src/lib/common/fse_decompress.c",
+    "src/lib/common/huf.h",
+    "src/lib/common/mem.h",
+    "src/lib/common/pool.c",
+    "src/lib/common/pool.h",
+    "src/lib/common/portability_macros.h",
+    "src/lib/common/threading.c",
+    "src/lib/common/threading.h",
+    "src/lib/common/xxhash.c",
+    "src/lib/common/xxhash.h",
+    "src/lib/common/zstd_common.c",
+    "src/lib/common/zstd_deps.h",
+    "src/lib/common/zstd_internal.h",
+    "src/lib/common/zstd_trace.h",
+  ]
+  configs -= [
+    "//build/config/compiler:chromium_code",
+    "//build/config/compiler:default_optimization",
+  ]
+  configs += [ ":zstd_hide_symbols" ]
+  configs += [ ":zstd_internal_config" ]
+  public_deps = [ ":headers" ]
+}
+
+source_set("decompress") {
+  sources = [
+    "src/lib/decompress/huf_decompress.c",
+    "src/lib/decompress/zstd_ddict.c",
+    "src/lib/decompress/zstd_ddict.h",
+    "src/lib/decompress/zstd_decompress.c",
+    "src/lib/decompress/zstd_decompress_block.c",
+    "src/lib/decompress/zstd_decompress_block.h",
+    "src/lib/decompress/zstd_decompress_internal.h",
+  ]
+  if (current_cpu == "x64" && !is_win) {
+    sources += [ "src/lib/decompress/huf_decompress_amd64.S" ]
+  }
+  configs -= [
+    "//build/config/compiler:chromium_code",
+    "//build/config/compiler:default_optimization",
+  ]
+  configs += [ ":zstd_hide_symbols" ]
+  configs += [ ":zstd_internal_config" ]
+  public_deps = [
+    ":common",
+    ":headers",
+  ]
+}

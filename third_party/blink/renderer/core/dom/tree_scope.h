@@ -34,26 +34,25 @@
 #include "third_party/blink/renderer/core/html/forms/radio_button_group_scope.h"
 #include "third_party/blink/renderer/core/layout/hit_test_request.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
-#include "third_party/blink/renderer/platform/heap/collection_support/heap_hash_map.h"
-#include "third_party/blink/renderer/platform/heap/collection_support/heap_linked_hash_set.h"
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_vector.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/wtf/text/atomic_string.h"
 
 namespace blink {
 
+class Animation;
 class ContainerNode;
 class CSSStyleSheet;
 class DOMSelection;
 class Document;
 class Element;
-class HTMLDetailsElement;
 class HTMLMapElement;
 class HitTestResult;
 class IdTargetObserverRegistry;
 class Node;
 class SVGTreeScopeResources;
 class ScopedStyleResolver;
+class StyleSheetList;
 
 // The root node of a document tree (in which case this is a Document) or of a
 // shadow tree (in which case this is a ShadowRoot). Various things, like
@@ -68,6 +67,24 @@ class CORE_EXPORT TreeScope : public GarbageCollectedMixin {
     kInternal = 1 << 1,
     kWebExposed = 1 << 2,
   };
+
+  // DocumentOrShadowRoot web-exposed:
+  Element* activeElement() const;
+  StyleSheetList* styleSheets() { return &StyleSheets(); }
+  V8ObservableArrayCSSStyleSheet* adoptedStyleSheets() {
+    return AdoptedStyleSheets();
+  }
+  DOMSelection* getSelection() { return GetSelection(); }
+  HeapVector<Member<Animation>> getAnimations();
+  Element* elementFromPoint(double x, double y) {
+    return ElementFromPoint(x, y);
+  }
+  HeapVector<Member<Element>> elementsFromPoint(double x, double y) {
+    return ElementsFromPoint(x, y);
+  }
+  Element* pointerLockElement();
+  Element* fullscreenElement();
+  Element* pictureInPictureElement();
 
   TreeScope* ParentTreeScope() const { return parent_tree_scope_; }
 
@@ -97,17 +114,6 @@ class CORE_EXPORT TreeScope : public GarbageCollectedMixin {
   void AddImageMap(HTMLMapElement&);
   void RemoveImageMap(HTMLMapElement&);
   HTMLMapElement* GetImageMap(const String& url) const;
-
-  // DetailsSet is the set of details elements with a particular name
-  // attribute.  They are stored in a HeapLinkedHashSet since the
-  // iteration order is web-exposed (through deprecated Mutation
-  // events), so it should be something vaguely reasonable (in this
-  // case, insertion order) that doesn't expose anything potentially
-  // sensitive.
-  using DetailsSet = HeapLinkedHashSet<WeakMember<HTMLDetailsElement>>;
-  using DetailsNameMap = HeapHashMap<AtomicString, Member<DetailsSet>>;
-  // HTMLDetailsElement objects that have a name attribute.
-  DetailsNameMap& NamedDetailsElements() { return details_name_map_; }
 
   Element* ElementFromPoint(double x, double y) const;
   Element* HitTestPoint(double x, double y, const HitTestRequest&) const;
@@ -160,6 +166,8 @@ class CORE_EXPORT TreeScope : public GarbageCollectedMixin {
 
   SVGTreeScopeResources& EnsureSVGTreeScopedResources();
 
+  StyleSheetList& StyleSheets();
+
   V8ObservableArrayCSSStyleSheet* AdoptedStyleSheets() const {
     return adopted_style_sheets_;
   }
@@ -204,9 +212,6 @@ class CORE_EXPORT TreeScope : public GarbageCollectedMixin {
   Member<TreeOrderedMap> elements_by_id_;
   Member<TreeOrderedMap> image_maps_by_name_;
 
-  // HTMLDetailsElement objects that have a name attribute.
-  DetailsNameMap details_name_map_;
-
   Member<IdTargetObserverRegistry> id_target_observer_registry_;
 
   Member<ScopedStyleResolver> scoped_style_resolver_;
@@ -216,6 +221,8 @@ class CORE_EXPORT TreeScope : public GarbageCollectedMixin {
   RadioButtonGroupScope radio_button_group_scope_;
 
   Member<SVGTreeScopeResources> svg_tree_scoped_resources_;
+
+  Member<StyleSheetList> style_sheet_list_;
 
   Member<V8ObservableArrayCSSStyleSheet> adopted_style_sheets_;
 };

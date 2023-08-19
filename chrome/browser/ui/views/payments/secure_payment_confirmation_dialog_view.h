@@ -103,7 +103,8 @@ class SecurePaymentConfirmationDialogView
 
   // Cache the instrument icon pointer so we don't needlessly update it in
   // OnModelUpdated().
-  raw_ptr<const SkBitmap, DanglingUntriaged> instrument_icon_ = nullptr;
+  raw_ptr<const SkBitmap, AcrossTasksDanglingUntriaged> instrument_icon_ =
+      nullptr;
   // Cache the instrument icon generation ID to check if the instrument_icon_
   // has changed pixels.
   uint32_t instrument_icon_generation_id_ = 0;

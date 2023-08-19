@@ -27,7 +27,6 @@ class AutofillSnackbarControllerImpl : public AutofillSnackbarController {
 
   // Show the snackbar.
   void Show(AutofillSnackbarType autofill_snackbar_type);
-  void SetViewForTesting(AutofillSnackbarView* view);
 
   // AutofillSnackbarController:
   void OnActionClicked() override;

@@ -6,7 +6,7 @@ import os
 import sys
 import json
 import itertools
-from typing import Any, List
+from typing import Any, List, Set
 import unittest
 
 import gpu_path_util
@@ -23,7 +23,9 @@ four_colors_img_path = os.path.join(data_path, 'four-colors.y4m')
 frame_sources = [
     'camera', 'capture', 'offscreen', 'arraybuffer', 'hw_decoder', 'sw_decoder'
 ]
-video_codecs = ['avc1.42001E', 'vp8', 'vp09.00.10.08', 'av01.0.04M.08']
+video_codecs = [
+    'avc1.42001E', 'hvc1.1.6.L123.00', 'vp8', 'vp09.00.10.08', 'av01.0.04M.08'
+]
 accelerations = ['prefer-hardware', 'prefer-software']
 
 
@@ -31,6 +33,20 @@ class WebCodecsIntegrationTest(gpu_integration_test.GpuIntegrationTest):
   @classmethod
   def Name(cls) -> str:
     return 'webcodecs'
+
+  @classmethod
+  def _SuiteSupportsParallelTests(cls) -> bool:
+    return True
+
+  def _GetSerialGlobs(self) -> Set[str]:
+    serial_globs = set()
+    if sys.platform == 'win32':
+      serial_globs |= {
+          # crbug.com/1473480. Windows + NVIDIA has a maximum parallel encode
+          # limit of 2, so serialize hardware encoding tests on Windows.
+          'WebCodecs_*prefer-hardware*',
+      }
+    return serial_globs
 
 # pylint: disable=too-many-branches
 
@@ -82,7 +98,10 @@ class WebCodecsIntegrationTest(gpu_integration_test.GpuIntegrationTest):
 
   @classmethod
   def BitrateTests(cls) -> ct.TestGenerator:
-    high_res_codecs = ['avc1.420034', 'vp8', 'vp09.00.10.08', 'av01.0.04M.08']
+    high_res_codecs = [
+        'avc1.420034', 'hvc1.1.6.L123.00', 'vp8', 'vp09.00.10.08',
+        'av01.0.04M.08'
+    ]
     for codec in high_res_codecs:
       for acc in accelerations:
         for bitrate_mode in ['constant', 'variable']:
@@ -105,6 +124,17 @@ class WebCodecsIntegrationTest(gpu_integration_test.GpuIntegrationTest):
     yield ('WebCodecs_WebRTCPeerConnection_Worker',
            'webrtc-peer-connection.html', [{
                'use_worker': True
+           }])
+
+    source_type = 'offscreen'
+    codec = 'avc1.42001E'
+    acc = 'prefer-hardware'
+    args = (source_type, codec, acc)
+    yield ('WebCodecs_PerFrameQpEncoding_%s_%s_%s' % args,
+           'frame-qp-encoding.html', [{
+               'source_type': source_type,
+               'codec': codec,
+               'acceleration': acc
            }])
 
     for source_type in ['offscreen', 'arraybuffer']:
@@ -195,8 +225,10 @@ class WebCodecsIntegrationTest(gpu_integration_test.GpuIntegrationTest):
   def SetUpProcess(cls) -> None:
     super(WebCodecsIntegrationTest, cls).SetUpProcess()
     args = [
-        '--use-fake-device-for-media-stream', '--use-fake-ui-for-media-stream',
-        '--enable-blink-features=SharedArrayBuffer'
+        '--use-fake-device-for-media-stream',
+        '--use-fake-ui-for-media-stream',
+        '--enable-blink-features=SharedArrayBuffer',
+        cba.ENABLE_PLATFORM_HEVC_ENCODER_SUPPORT,
     ] + cba.ENABLE_WEBGPU_FOR_TESTING
 
     # If we don't call CustomizeBrowserArgs cls.platform is None

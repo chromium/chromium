@@ -13,7 +13,7 @@
 
 // This class informs OneTimePermissionsTracker of pages being loaded, navigated
 // or destroyed in each tab. This information is then used by the
-// OneTimeGeolocationPermissionProvider to revoke permissions.
+// OneTimePermissionProvider to revoke permissions.
 class OneTimePermissionsTrackerHelper
     : public content::WebContentsObserver,
       public content::WebContentsUserData<OneTimePermissionsTrackerHelper>,

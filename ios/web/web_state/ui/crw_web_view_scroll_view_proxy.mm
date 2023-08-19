@@ -7,16 +7,12 @@
 #import <objc/runtime.h>
 #import <memory>
 
+#import "base/apple/foundation_util.h"
 #import "base/auto_reset.h"
 #import "base/ios/crb_protocol_observers.h"
-#import "base/mac/foundation_util.h"
 #import "base/strings/sys_string_conversions.h"
 #import "ios/web/common/features.h"
 #import "ios/web/web_state/ui/crw_web_view_scroll_view_delegate_proxy.h"
-
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
 
 // *Address of* this variable is used as a marker to specify that it matches any
 // context.
@@ -390,9 +386,9 @@ static int gAnyContext = 0;
   if ([keyPath isEqualToString:@"contentSize"]) {
     if (!base::FeatureList::IsEnabled(web::features::kSmoothScrollingDefault)) {
       NSValue* oldValue =
-          base::mac::ObjCCast<NSValue>(change[NSKeyValueChangeOldKey]);
+          base::apple::ObjCCast<NSValue>(change[NSKeyValueChangeOldKey]);
       NSValue* newValue =
-          base::mac::ObjCCast<NSValue>(change[NSKeyValueChangeNewKey]);
+          base::apple::ObjCCast<NSValue>(change[NSKeyValueChangeNewKey]);
       // If the value is unchanged -- if the old and new values are equal --
       // then return without notifying observers.
       if (oldValue && newValue && [newValue isEqualToValue:oldValue]) {

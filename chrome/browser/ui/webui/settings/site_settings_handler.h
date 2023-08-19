@@ -129,120 +129,7 @@ class SiteSettingsHandler
 
   void OnZoomLevelChanged(const content::HostZoomMap::ZoomLevelChange& change);
 
- private:
-  friend class SiteSettingsHandlerBaseTest;
-  friend class SiteSettingsHandlerChooserExceptionTest;
-  friend class SiteSettingsHandlerInfobarTest;
-  // TODO(crbug.com/1373962): Remove this friend class when
-  // Persistent Permissions is launched.
-  friend class PersistentPermissionsSiteSettingsHandlerTest;
-  FRIEND_TEST_ALL_PREFIXES(PersistentPermissionsSiteSettingsHandlerTest,
-                           HandleGetFileSystemGrants);
-  FRIEND_TEST_ALL_PREFIXES(PersistentPermissionsSiteSettingsHandlerTest,
-                           HandleRevokeFileSystemGrant);
-  FRIEND_TEST_ALL_PREFIXES(PersistentPermissionsSiteSettingsHandlerTest,
-                           HandleRevokeFileSystemGrants);
-  FRIEND_TEST_ALL_PREFIXES(SiteSettingsHandlerInfobarTest,
-                           SettingPermissionsTriggersInfobar);
-  FRIEND_TEST_ALL_PREFIXES(SiteSettingsHandlerTest,
-                           BlockAutoplay_SendOnRequest);
-  FRIEND_TEST_ALL_PREFIXES(SiteSettingsHandlerTest, BlockAutoplay_Update);
-#if BUILDFLAG(ENABLE_PLUGINS)
-  FRIEND_TEST_ALL_PREFIXES(SiteSettingsHandlerTest,
-                           ChangingFlashSettingForSiteIsRemembered);
-#endif
-  FRIEND_TEST_ALL_PREFIXES(SiteSettingsHandlerTest, Cookies);
-  FRIEND_TEST_ALL_PREFIXES(SiteSettingsHandlerTest, DefaultSettingSource);
-  FRIEND_TEST_ALL_PREFIXES(SiteSettingsHandlerTest, ExceptionHelpers);
-  FRIEND_TEST_ALL_PREFIXES(SiteSettingsHandlerTest, ExtensionDisplayName);
-  FRIEND_TEST_ALL_PREFIXES(SiteSettingsHandlerTest, GetAllSites);
-  FRIEND_TEST_ALL_PREFIXES(SiteSettingsHandlerTest, GetRecentSitePermissions);
-  FRIEND_TEST_ALL_PREFIXES(SiteSettingsHandlerTest, OnStorageFetched);
-  FRIEND_TEST_ALL_PREFIXES(SiteSettingsHandlerTest, GetAndSetDefault);
-  FRIEND_TEST_ALL_PREFIXES(SiteSettingsHandlerTest, GetAndSetForInvalidURLs);
-  FRIEND_TEST_ALL_PREFIXES(SiteSettingsHandlerTest, GetAndSetOriginPermissions);
-  FRIEND_TEST_ALL_PREFIXES(SiteSettingsHandlerTest, Incognito);
-  FRIEND_TEST_ALL_PREFIXES(SiteSettingsHandlerTest, IncognitoExceptions);
-  FRIEND_TEST_ALL_PREFIXES(SiteSettingsHandlerTest,
-                           ResetCategoryPermissionForEmbargoedOrigins);
-  FRIEND_TEST_ALL_PREFIXES(SiteSettingsHandlerTest,
-                           ResetCategoryPermissionForInvalidOrigins);
-  FRIEND_TEST_ALL_PREFIXES(SiteSettingsHandlerTest, Origins);
-  FRIEND_TEST_ALL_PREFIXES(SiteSettingsHandlerTest, Patterns);
-  FRIEND_TEST_ALL_PREFIXES(SiteSettingsHandlerTest, PatternsAndContentType);
-  FRIEND_TEST_ALL_PREFIXES(SiteSettingsHandlerTest, SessionOnlyException);
-  FRIEND_TEST_ALL_PREFIXES(SiteSettingsHandlerTest, ZoomLevels);
-  FRIEND_TEST_ALL_PREFIXES(SiteSettingsHandlerTest,
-                           HandleClearSiteGroupDataAndCookies);
-  FRIEND_TEST_ALL_PREFIXES(SiteSettingsHandlerTest,
-                           HandleClearUnpartitionedUsage);
-  FRIEND_TEST_ALL_PREFIXES(SiteSettingsHandlerTest, ClearClientHints);
-  FRIEND_TEST_ALL_PREFIXES(SiteSettingsHandlerTest, ClearReducedAcceptLanguage);
-  FRIEND_TEST_ALL_PREFIXES(SiteSettingsHandlerTest,
-                           HandleClearPartitionedUsage);
-  FRIEND_TEST_ALL_PREFIXES(SiteSettingsHandlerTest, CookieSettingDescription);
-  FRIEND_TEST_ALL_PREFIXES(SiteSettingsHandlerTest, HandleGetFormattedBytes);
-  FRIEND_TEST_ALL_PREFIXES(SiteSettingsHandlerTest,
-                           NotificationPermissionRevokeUkm);
-  FRIEND_TEST_ALL_PREFIXES(SiteSettingsHandlerTest, ExcludeWebUISchemesInLists);
-  FRIEND_TEST_ALL_PREFIXES(SiteSettingsHandlerTest,
-                           IncludeWebUISchemesInGetOriginPermissions);
-  FRIEND_TEST_ALL_PREFIXES(SiteSettingsHandlerTest, HandleGetUsageInfo);
-  FRIEND_TEST_ALL_PREFIXES(SiteSettingsHandlerTest,
-                           HandleGetFpsMembershipLabel);
-  FRIEND_TEST_ALL_PREFIXES(SiteSettingsHandlerTest, NonTreeModelDeletion);
-  FRIEND_TEST_ALL_PREFIXES(SiteSettingsHandlerTest, FirstPartySetsMembership);
-  FRIEND_TEST_ALL_PREFIXES(SiteSettingsHandlerTest,
-                           HandleIgnoreOriginsForNotificationPermissionReview);
-  FRIEND_TEST_ALL_PREFIXES(SiteSettingsHandlerTest,
-                           HandleBlockNotificationPermissionForOrigins);
-  FRIEND_TEST_ALL_PREFIXES(SiteSettingsHandlerTest,
-                           HandleAllowNotificationPermissionForOrigins);
-  FRIEND_TEST_ALL_PREFIXES(SiteSettingsHandlerTest,
-                           HandleResetNotificationPermissionForOrigins);
-  FRIEND_TEST_ALL_PREFIXES(SiteSettingsHandlerTest,
-                           PopulateNotificationPermissionReviewData);
-  FRIEND_TEST_ALL_PREFIXES(
-      SiteSettingsHandlerTest,
-      HandleUndoIgnoreOriginsForNotificationPermissionReview);
-  FRIEND_TEST_ALL_PREFIXES(SiteSettingsHandlerTest,
-                           SendNotificationPermissionReviewList_FeatureEnabled);
-  FRIEND_TEST_ALL_PREFIXES(
-      SiteSettingsHandlerTest,
-      SendNotificationPermissionReviewList_FeatureDisabled);
-  FRIEND_TEST_ALL_PREFIXES(
-      SiteSettingsHandlerInfobarTest,
-      SettingPermissionsDoesNotTriggerInfobarOnDifferentProfile);
-#if BUILDFLAG(ENABLE_EXTENSIONS)
-  FRIEND_TEST_ALL_PREFIXES(SiteSettingsHandlerTest, HandleGetExtensionName);
-#endif
-  FRIEND_TEST_ALL_PREFIXES(SiteSettingsHandlerTest, IsolatedWebAppUsageInfo);
-  FRIEND_TEST_ALL_PREFIXES(SiteSettingsHandlerIsolatedWebAppTest, ZoomLevel);
-  FRIEND_TEST_ALL_PREFIXES(SiteSettingsHandlerIsolatedWebAppTest,
-                           ZoomLevelsSortedByAppName);
-
-  // Rebuilds the BrowsingDataModel & CookiesTreeModel. Pending requests are
-  // serviced when both models are built.
-  void RebuildModels();
-  void ModelBuilt();
   void ServicePendingRequests();
-
-  // Add or remove this class as an observer for content settings and chooser
-  // contexts corresponding to |profile|.
-  void ObserveSourcesForProfile(Profile* profile);
-  void StopObservingSourcesForProfile(Profile* profile);
-
-  // Calculates the data storage that has been used for each origin, and
-  // stores the information in the |all_sites_map| and |origin_size_map|.
-  void GetOriginStorage(AllSitesMap* all_sites_map,
-                        std::map<url::Origin, int64_t>* origin_size_map);
-
-  // Calculates the number of cookies for each etld+1 and each host, and
-  // stores the information in the |all_sites_map| and |host_cookie_map|.
-  void GetHostCookies(
-      AllSitesMap* all_sites_map,
-      std::map<std::pair<std::string, absl::optional<std::string>>, int>*
-          host_cookie_map);
 
   // Asynchronously fetches the usage for a given origin. Replies back with
   // OnGetUsageInfo above.
@@ -266,12 +153,6 @@ class SiteSettingsHandler
   // the front end when fetching finished.
   void HandleGetAllSites(const base::Value::List& args);
 
-  // Returns a list of content settings types that are controlled via a standard
-  // permissions UI and should be made visible to the user. There is a single
-  // nullable string argument, which represents an associated origin. See
-  // `SiteSettingsPrefsBrowserProxy#getCategoryList`.
-  void HandleGetCategoryList(const base::Value::List& args);
-
   // Returns a string for display describing the current cookie settings.
   void HandleGetCookieSettingDescription(const base::Value::List& args);
 
@@ -286,11 +167,6 @@ class SiteSettingsHandler
   // this list back to the front end.
   void OnStorageFetched();
 
-  // Returns a list of sites, grouped by their effective top level domain plus
-  // 1, with their cookies number and data usage information. This method will
-  // only be called after HandleGetAllSites is called.
-  base::Value::List PopulateCookiesAndUsageData(Profile* profile);
-
   // Converts a given number of bytes into a human-readable format, with data
   // units.
   void HandleGetFormattedBytes(const base::Value::List& args);
@@ -298,11 +174,12 @@ class SiteSettingsHandler
   // Returns the list of site exceptions for a given content settings type.
   void HandleGetExceptionList(const base::Value::List& args);
 
+  // Returns the list of storage access site exceptions for a given content
+  // setting (such as enabled or blocked).
+  void HandleGetStorageAccessExceptionList(const base::Value::List& args);
+
   // Returns the list of chooser exceptions for a given chooser type.
   void HandleGetChooserExceptionList(const base::Value::List& args);
-
-  // Returns the list of notification permissions that needs to be reviewed.
-  void HandleGetNotificationPermissionReviewList(const base::Value::List& args);
 
   // Returns the list of the allowed permission grants as defined by the
   // File System Access API.
@@ -323,6 +200,7 @@ class SiteSettingsHandler
 
   // Handles setting and resetting an origin permission.
   void HandleResetCategoryPermissionForPattern(const base::Value::List& args);
+  // TODO(1466127): Add tests for HandleSetCategoryPermissionForPattern.
   void HandleSetCategoryPermissionForPattern(const base::Value::List& args);
 
   // TODO(andypaicu, crbug.com/880684): Update to only expect a list of three
@@ -331,45 +209,14 @@ class SiteSettingsHandler
   // Handles resetting a chooser exception for the given site.
   void HandleResetChooserExceptionForSite(const base::Value::List& args);
 
-  // Handles ignoring origins for the review notification permissions feature.
-  void HandleIgnoreOriginsForNotificationPermissionReview(
-      const base::Value::List& args);
-
-  // Handles resetting a notification permission for given origins.
-  void HandleResetNotificationPermissionForOrigins(
-      const base::Value::List& args);
-
-  // Handles blocking notification permissions for multiple origins.
-  void HandleBlockNotificationPermissionForOrigins(
-      const base::Value::List& args);
-
-  // Handles allowing notification permissions for multiple origins.
-  void HandleAllowNotificationPermissionForOrigins(
-      const base::Value::List& args);
-
-  // Handles reverting the action of ignoring origins for review notification
-  // permissions feature by removing them from the notification permission
-  // verification blocklist.
-  void HandleUndoIgnoreOriginsForNotificationPermissionReview(
-      const base::Value::List& args);
-
-  // Returns whether a given string is a valid origin.
-  void HandleIsOriginValid(const base::Value::List& args);
-
   // Returns whether the pattern is valid given the type.
   void HandleIsPatternValidForType(const base::Value::List& args);
 
   // Looks up whether an incognito session is active.
   void HandleUpdateIncognitoStatus(const base::Value::List& args);
 
-  // Notifies the JS side whether incognito is enabled.
-  void SendIncognitoStatus(Profile* profile, bool was_destroyed);
-
   // Handles the request for a list of all zoom levels.
   void HandleFetchZoomLevels(const base::Value::List& args);
-
-  // Sends the zoom level list down to the web ui.
-  void SendZoomLevels();
 
   // Removes a particular zoom level for a given host.
   void HandleRemoveZoomLevel(const base::Value::List& args);
@@ -377,14 +224,72 @@ class SiteSettingsHandler
   // Handles the request to send block autoplay state.
   void HandleFetchBlockAutoplayStatus(const base::Value::List& args);
 
-  // Notifies the JS side about the state of the block autoplay toggle.
-  void SendBlockAutoplayStatus();
-
   // Updates the block autoplay enabled pref when the UI is toggled.
   void HandleSetBlockAutoplayEnabled(const base::Value::List& args);
 
   // Clear web storage data and cookies from CookiesTreeModel for a site group.
   void HandleClearSiteGroupDataAndCookies(const base::Value::List& args);
+
+  void ClearAllSitesMapForTesting();
+
+  void SetModelsForTesting(
+      std::unique_ptr<CookiesTreeModel> cookies_tree_model,
+      std::unique_ptr<BrowsingDataModel> browsing_data_model);
+
+  CookiesTreeModel* GetCookiesTreeModelForTesting();
+  BrowsingDataModel* GetBrowsingDataModelForTesting();
+
+ private:
+  friend class SiteSettingsHandlerBaseTest;
+  friend class SiteSettingsHandlerInfobarTest;
+  // TODO(crbug.com/1373962): Remove this friend class when
+  // Persistent Permissions is launched.
+  friend class PersistentPermissionsSiteSettingsHandlerTest;
+
+  // Rebuilds the BrowsingDataModel & CookiesTreeModel. Pending requests are
+  // serviced when both models are built.
+  void RebuildModels();
+  void ModelBuilt();
+
+  // Add or remove this class as an observer for content settings and chooser
+  // contexts corresponding to |profile|.
+  void ObserveSourcesForProfile(Profile* profile);
+  void StopObservingSourcesForProfile(Profile* profile);
+
+  // Calculates the data storage that has been used for each origin, and
+  // stores the information in the |all_sites_map| and |origin_size_map|.
+  void GetOriginStorage(AllSitesMap* all_sites_map,
+                        std::map<url::Origin, int64_t>* origin_size_map);
+
+  // Calculates the number of cookies for each etld+1 and each host, and
+  // stores the information in the |all_sites_map| and |host_cookie_map|.
+  void GetHostCookies(
+      AllSitesMap* all_sites_map,
+      std::map<std::pair<std::string, absl::optional<std::string>>, int>*
+          host_cookie_map);
+
+  // Returns a list of content settings types that are controlled via a standard
+  // permissions UI and should be made visible to the user. There is a single
+  // nullable string argument, which represents an associated origin. See
+  // `SiteSettingsPrefsBrowserProxy#getCategoryList`.
+  void HandleGetCategoryList(const base::Value::List& args);
+
+  // Returns a list of sites, grouped by their effective top level domain plus
+  // 1, with their cookies number and data usage information. This method will
+  // only be called after HandleGetAllSites is called.
+  base::Value::List PopulateCookiesAndUsageData(Profile* profile);
+
+  // Returns whether a given string is a valid origin.
+  void HandleIsOriginValid(const base::Value::List& args);
+
+  // Notifies the JS side about the state of the block autoplay toggle.
+  void SendBlockAutoplayStatus();
+
+  // Notifies the JS side whether incognito is enabled.
+  void SendIncognitoStatus(Profile* profile, bool was_destroyed);
+
+  // Sends the zoom level list down to the web ui.
+  void SendZoomLevels();
 
   // Record metrics for actions on All Sites Page.
   void HandleRecordAction(const base::Value::List& args);
@@ -398,20 +303,9 @@ class SiteSettingsHandler
   // CookiesTreeModel is deprecated.
   void RemoveNonTreeModelData(const std::vector<url::Origin>& origins);
 
-  void SetModelsForTesting(
-      std::unique_ptr<CookiesTreeModel> cookies_tree_model,
-      std::unique_ptr<BrowsingDataModel> browsing_data_model);
-
-  void ClearAllSitesMapForTesting();
-
   // Notifies the JS side the effective cookies setting has changed and
   // provides the updated description label for display.
   void SendCookieSettingDescription();
-
-  // Returns a list of domains to be shown on the 'Review Notification
-  // Permissions' module in site settings notification page. Those domains send
-  // a lot of notifications, but have low site engagement.
-  base::Value::List PopulateNotificationPermissionReviewData();
 
   // Returns a dictionary containing the lists of the allowed permission
   // grant objects granted via the File System Access API, per origin.

@@ -141,6 +141,7 @@ if (enable_vulkan) {
 
     if (is_android) {
       sources += [ "vulkan_image_android.cc" ]
+      deps += [ "//gpu/config:config" ]
     }
 
     if (is_fuchsia) {
@@ -152,6 +153,15 @@ if (enable_vulkan) {
         "vulkan_image_win.cc",
         "vulkan_util_win32.cc",
       ]
+    }
+
+    if (use_ozone) {
+      sources += [
+        "drm_modifiers_filter_vulkan.cc",
+        "drm_modifiers_filter_vulkan.h",
+      ]
+
+      deps += [ "//ui/ozone:drm_modifiers_filter" ]
     }
 
     if (is_fuchsia) {
@@ -246,6 +256,8 @@ if (enable_vulkan) {
       }
 
       if (use_ozone) {
+        sources += [ "drm_modifiers_filter_vulkan_unittest.cc" ]
+
         deps += [ "//ui/ozone" ]
       }
     }

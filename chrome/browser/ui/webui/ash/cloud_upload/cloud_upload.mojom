@@ -7,6 +7,8 @@ module ash.cloud_upload.mojom;
 // The selected action when the user closes the dialog.
 enum UserAction {
   kCancel,
+  kCancelGoogleDrive,
+  kCancelOneDrive,
   kSetUpOneDrive,
   kUploadToGoogleDrive,
   kUploadToOneDrive,
@@ -27,6 +29,20 @@ enum DialogPage {
 
   // A separate dialog when we're only connecting OneDrive by itself.
   kConnectToOneDrive,
+};
+
+// Used for metrics to represent each individual page of the dialog, and should
+// be kept in sync with OfficeSetupPage in enums.xml.  These values are
+// persisted to logs. Entries should not be renumbered and numeric values should
+// never be reused.
+enum MetricsRecordedSetupPage {
+  kFileHandlerPage = 0,
+  kMoveConfirmationOneDrive = 1,
+  kMoveConfirmationGoogleDrive = 2,
+  kOneDriveSetupWelcome = 3,
+  kOneDriveSetupPWAInstall = 4,
+  kOneDriveSetupODFSMount = 5,
+  kOneDriveSetupComplete = 6,
 };
 
 // Operation used to upload the source file.
@@ -58,9 +74,9 @@ struct DialogArgs {
   // the `kFileHandlerDialog` dialog.
   array<DialogTask> local_tasks;
 
-  // True if the setup flow is running for the first time. False if running
-  // fixup flow.
-  bool first_time_setup;
+  // True if the setup flow should end with setting Microsoft 365 as default
+  // handler.
+  bool set_office_as_default_handler;
 
   // Indicates what operation is used to upload the source file (copy or move).
   OperationType operation_type;
@@ -126,4 +142,7 @@ interface PageHandler {
   // Get the preference for whether the move to OneDrive confirmation dialog
   // has been shown before.
   GetOfficeMoveConfirmationShownForOneDrive() => (bool move_confirmation_shown);
+
+  // Records the page at which the setup was cancelled.
+  RecordCancel(MetricsRecordedSetupPage page);
 };

@@ -10,6 +10,7 @@
 #include <utility>
 #include <vector>
 
+#include "base/scoped_observation.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/task_environment.h"
@@ -17,6 +18,7 @@
 #include "build/chromeos_buildflags.h"
 #include "components/bookmarks/browser/base_bookmark_model_observer.h"
 #include "components/bookmarks/browser/bookmark_model.h"
+#include "components/bookmarks/browser/bookmark_model_observer.h"
 #include "components/bookmarks/browser/bookmark_node_data.h"
 #include "components/bookmarks/common/bookmark_metrics.h"
 #include "components/bookmarks/test/test_bookmark_client.h"
@@ -387,7 +389,9 @@ TEST_F(BookmarkUtilsTest, CopyPasteMetaInfo) {
 #endif
 TEST_F(BookmarkUtilsTest, MAYBE_CutToClipboard) {
   std::unique_ptr<BookmarkModel> model(TestBookmarkClient::CreateModel());
-  model->AddObserver(this);
+  base::ScopedObservation<BookmarkModel, BookmarkModelObserver>
+      model_observation{this};
+  model_observation.Observe(model.get());
 
   std::u16string title(u"foo");
   GURL url("http://foo.com");

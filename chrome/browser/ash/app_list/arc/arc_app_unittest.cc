@@ -39,8 +39,8 @@
 #include "chrome/browser/apps/app_service/app_icon/app_icon_decoder.h"
 #include "chrome/browser/apps/app_service/app_icon/app_icon_factory.h"
 #include "chrome/browser/apps/app_service/app_icon/app_icon_util.h"
-#include "chrome/browser/apps/app_service/app_icon/arc_icon_once_loader.h"
 #include "chrome/browser/apps/app_service/app_icon/dip_px_util.h"
+#include "chrome/browser/apps/app_service/app_icon/icon_effects.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
 #include "chrome/browser/apps/app_service/publishers/arc_apps.h"
@@ -329,24 +329,18 @@ bool IsIconCreated(Profile* profile,
                    const std::string& app_id,
                    int dip_size,
                    ui::ResourceScaleFactor scale_factor) {
-  // When the kUnifiedAppServiceIconLoading flag is enabled, the AppService
-  // saves the adaptive icon with the foreground and background icon files, so
-  // we need to check the foreground and background icon files in the AppService
-  // directory.
-  if (base::FeatureList::IsEnabled(apps::kUnifiedAppServiceIconLoading)) {
-    DCHECK(profile);
+  // The AppService saves the adaptive icon with the foreground and background
+  // icon files, so we need to check the foreground and background icon files in
+  // the AppService directory.
+  DCHECK(profile);
 
-    auto foreground_path = apps::GetForegroundIconPath(
-        profile->GetPath(), app_id,
-        apps_util::ConvertDipToPxForScale(dip_size, scale_factor));
-    auto background_path = apps::GetBackgroundIconPath(
-        profile->GetPath(), app_id,
-        apps_util::ConvertDipToPxForScale(dip_size, scale_factor));
-    return apps::IsAdaptiveIcon(foreground_path, background_path);
-  }
-
-  return base::PathExists(prefs->GetIconPath(
-      app_id, GetAppListIconDescriptor(dip_size, scale_factor)));
+  auto foreground_path = apps::GetForegroundIconPath(
+      profile->GetPath(), app_id,
+      apps_util::ConvertDipToPxForScale(dip_size, scale_factor));
+  auto background_path = apps::GetBackgroundIconPath(
+      profile->GetPath(), app_id,
+      apps_util::ConvertDipToPxForScale(dip_size, scale_factor));
+  return apps::IsAdaptiveIcon(foreground_path, background_path);
 }
 
 void WaitForIconCreation(Profile* profile,
@@ -354,22 +348,11 @@ void WaitForIconCreation(Profile* profile,
                          const std::string& app_id,
                          int dip_size,
                          ui::ResourceScaleFactor scale_factor) {
-  if (base::FeatureList::IsEnabled(apps::kUnifiedAppServiceIconLoading)) {
-    // Process pending tasks. This performs multiple thread hops, so we need
-    // to run it continuously until it is resolved.
-    do {
-      content::RunAllTasksUntilIdle();
-    } while (!IsIconCreated(profile, prefs, app_id, dip_size, scale_factor));
-    return;
-  }
-
-  const base::FilePath icon_path = prefs->GetIconPath(
-      app_id, GetAppListIconDescriptor(dip_size, scale_factor));
   // Process pending tasks. This performs multiple thread hops, so we need
   // to run it continuously until it is resolved.
   do {
     content::RunAllTasksUntilIdle();
-  } while (!base::PathExists(icon_path));
+  } while (!IsIconCreated(profile, prefs, app_id, dip_size, scale_factor));
 }
 
 void WaitForIconUpdates(Profile* profile,
@@ -1189,13 +1172,6 @@ class ArcAppModelIconTest : public ArcAppModelBuilderRecreate,
   }
 
   void RemoveAppsFromIconLoader(std::vector<std::string>& app_ids) {
-    apps::ArcIconOnceLoader& arc_icon_once_loader =
-        apps::ArcAppsFactory::GetForProfile(profile())
-            ->GetArcIconOnceLoaderForTesting();
-    for (const auto& app_id : app_ids) {
-      arc_icon_once_loader.OnAppRemoved(app_id);
-    }
-
     // Update the icon key to fetch the new icon and avoid icon catch,
     apps_util::IncrementingIconKeyFactory icon_key_factory;
     std::vector<apps::AppPtr> apps;
@@ -1210,15 +1186,6 @@ class ArcAppModelIconTest : public ArcAppModelBuilderRecreate,
     apps::AppServiceProxyFactory::GetForProfile(profile())->OnApps(
         std::move(apps), apps::AppType::kArc,
         false /* should_notify_initialized */);
-  }
-
-  // Set FakeArcAppIconFactory to use FakeArcAppIcon for Arc app icon loading to
-  // calculate the arc app icon requests number.
-  void SetFakeArcAppIconFactory() {
-    apps::ArcAppsFactory::GetForProfile(profile())
-        ->GetArcIconOnceLoaderForTesting()
-        .SetArcAppIconFactoryForTesting(std::make_unique<FakeArcAppIconFactory>(
-            arc_app_icon_requests_, max_arc_app_icon_request_count_));
   }
 
   arc::mojom::AppInfoPtr test_app() const { return fake_apps()[0]->Clone(); }
@@ -1976,18 +1943,14 @@ TEST_P(ArcAppModelBuilderTest, InstallIcon) {
   const float scale = ui::GetScaleForResourceScaleFactor(scale_factor);
   const std::string app_id = ArcAppTest::GetAppId(app);
 
-  // When the kUnifiedAppServiceIconLoading flag is enabled, the AppService
-  // saves the adaptive icon with the foreground and background icon files, so
-  // we check the foreground icon file in the AppService directory, not
-  // the icon path in the ARC directory.
-  const base::FilePath icon_path =
-      base::FeatureList::IsEnabled(apps::kUnifiedAppServiceIconLoading)
-          ? apps::GetForegroundIconPath(profile()->GetPath(), app_id,
-                                        apps_util::ConvertDipToPxForScale(
-                                            ash::SharedAppListConfig::instance()
-                                                .default_grid_icon_dimension(),
-                                            scale_factor))
-          : prefs->GetIconPath(app_id, GetAppListIconDescriptor(scale_factor));
+  // The AppService saves the adaptive icon with the foreground and background
+  // icon files, so we check the foreground icon file in the AppService
+  // directory, not the icon path in the ARC directory.
+  const base::FilePath icon_path = apps::GetForegroundIconPath(
+      profile()->GetPath(), app_id,
+      apps_util::ConvertDipToPxForScale(
+          ash::SharedAppListConfig::instance().default_grid_icon_dimension(),
+          scale_factor));
   EXPECT_FALSE(IsIconCreated(
       profile(), prefs, app_id,
       ash::SharedAppListConfig::instance().default_grid_icon_dimension(),
@@ -2879,8 +2842,6 @@ TEST_P(ArcAppModelIconTest, LoadManyIcons) {
   ArcAppListPrefs* prefs = ArcAppListPrefs::Get(profile_.get());
   ASSERT_NE(nullptr, prefs);
 
-  SetFakeArcAppIconFactory();
-
   int app_count = 500;
   std::vector<std::string> app_ids;
   CreateFakeApps(app_count, app_ids);
@@ -2901,8 +2862,6 @@ TEST_P(ArcAppModelIconTest, LoadManyIconsWithSomeBadIcons) {
 
   ArcAppListPrefs* prefs = ArcAppListPrefs::Get(profile_.get());
   ASSERT_NE(nullptr, prefs);
-
-  SetFakeArcAppIconFactory();
 
   int app_count = 500;
   std::vector<std::string> app_ids;

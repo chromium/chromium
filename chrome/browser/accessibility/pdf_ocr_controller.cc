@@ -6,6 +6,9 @@
 
 #include "base/check_is_test.h"
 #include "base/check_op.h"
+#include "base/metrics/histogram_functions.h"
+#include "base/metrics/metrics_hashes.h"
+#include "base/strings/string_split.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/screen_ai/screen_ai_service_router.h"
@@ -15,6 +18,8 @@
 #include "chrome/common/pdf_util.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/grit/generated_resources.h"
+#include "components/language/core/browser/pref_names.h"
+#include "components/language/core/common/language_util.h"
 #include "components/prefs/pref_service.h"
 #include "content/public/browser/render_view_host.h"
 #include "content/public/browser/render_widget_host.h"
@@ -22,6 +27,11 @@
 #include "content/public/browser/web_contents.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/views/accessibility/view_accessibility.h"
+
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+#include "chromeos/crosapi/mojom/prefs.mojom.h"
+#include "chromeos/lacros/lacros_service.h"
+#endif
 
 namespace {
 
@@ -86,6 +96,19 @@ void AnnounceToScreenReader(const int message_id) {
       l10n_util::GetStringUTF16(message_id));
 }
 
+void RecordAcceptLanguages(const std::string& accept_languages) {
+  for (std::string language :
+       base::SplitString(accept_languages, ",", base::TRIM_WHITESPACE,
+                         base::SPLIT_WANT_NONEMPTY)) {
+    // Convert to a Chrome language code synonym. This language synonym is then
+    // converted into a `LocaleCodeISO639` enum value for a UMA histogram.
+    language::ToChromeLanguageSynonym(&language);
+    // TODO(crbug.com/1443345): Add a browser test to validate this UMA metric.
+    base::UmaHistogramSparse("Accessibility.PdfOcr.UserAcceptLanguage",
+                             base::HashMetricName(language));
+  }
+}
+
 }  // namespace
 
 namespace screen_ai {
@@ -116,18 +139,14 @@ PdfOcrController::GetAllPdfWebContentsesForTesting(Profile* profile) {
 }
 
 void PdfOcrController::RunPdfOcrOnlyOnce(content::WebContents* web_contents) {
-  // TODO(crbug.com/1393069): Need to wait for the Screen AI library to be
-  // installed if not ready yet. Then, set the AXMode for PDF OCR only when the
-  // Screen AI library is downloaded and ready.
   if (!web_contents) {
     CHECK_IS_TEST();
     return;
   }
 
-  if (MaybeAddObserverOrTriggerDownload(web_contents)) {
-    // If we added an observer for `ScreenAIInstallState` or triggered
-    // downloading the Screen AI library, return here; the request will be
-    // handled when the library is ready or discarded if it fails to load it.
+  if (MaybeScheduleRequest(web_contents)) {
+    // The request will be handled when the library is ready or discarded if it
+    // fails to load.
     return;
   }
 
@@ -137,6 +156,9 @@ void PdfOcrController::RunPdfOcrOnlyOnce(content::WebContents* web_contents) {
   ui::AXMode ax_mode = web_contents->GetAccessibilityMode();
   ax_mode.set_mode(ui::AXMode::kPDFOcr, true);
   web_contents->SetAccessibilityMode(ax_mode);
+
+  RecordAcceptLanguages(
+      profile_->GetPrefs()->GetString(language::prefs::kAcceptLanguages));
 }
 
 bool PdfOcrController::IsEnabled() const {
@@ -150,12 +172,28 @@ void PdfOcrController::OnPdfOcrAlwaysActiveChanged() {
       profile_->GetPrefs()->GetBoolean(prefs::kAccessibilityPdfOcrAlwaysActive);
   VLOG(2) << "PDF OCR Always Active changed: " << is_always_active;
 
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+  // This preference should be kept in sync with Ash.
+  auto* lacros_service = chromeos::LacrosService::Get();
+  if (!lacros_service ||
+      !lacros_service->IsAvailable<crosapi::mojom::Prefs>()) {
+    VLOG(0) << "Cannot sync the preference with Ash.";
+  } else {
+    lacros_service->GetRemote<crosapi::mojom::Prefs>()->SetPref(
+        crosapi::mojom::PrefPath::kAccessibilityPdfOcrAlwaysActive,
+        profile_->GetPrefs()
+            ->GetValue(prefs::kAccessibilityPdfOcrAlwaysActive)
+            .Clone(),
+        base::OnceClosure());
+  }
+#endif
+
   if (is_always_active) {
-    if (MaybeAddObserverOrTriggerDownload(
-            /*web_contents_for_only_once_request=*/nullptr)) {
-      // If we added an observer for `ScreenAIInstallState` or triggered
-      // downloading the Screen AI library, return here; the request will be
-      // handled when the library is ready or discarded if it fails to load it.
+    RecordAcceptLanguages(
+        profile_->GetPrefs()->GetString(language::prefs::kAcceptLanguages));
+    if (MaybeScheduleRequest(/*web_contents_for_only_once_request=*/nullptr)) {
+      // The request will be handled when the library is ready or discarded if
+      // it fails to load.
       return;
     }
   } else {
@@ -182,52 +220,40 @@ void PdfOcrController::SendPdfOcrAlwaysActiveToAll(bool is_always_active) {
   }
 }
 
-bool PdfOcrController::MaybeAddObserverOrTriggerDownload(
+bool PdfOcrController::MaybeScheduleRequest(
     content::WebContents* web_contents_for_only_once_request) {
   ScreenAIInstallState::State current_install_state =
       ScreenAIInstallState::GetInstance()->get_state();
 
+  // No need for scheduling if service is ready already.
   if (current_install_state == ScreenAIInstallState::State::kReady) {
     return false;
   }
 
+  // Keep the request until the library is ready.
+  if (web_contents_for_only_once_request) {
+    // PDF OCR once request. Keep its weak pointer of the web contents
+    // requested for this. We only keep this request for one PDF (the last one).
+    last_webcontents_requested_for_run_once_ =
+        web_contents_for_only_once_request->GetWeakPtr();
+  } else {
+    // PDF OCR always request.
+    send_always_active_state_when_service_is_ready_ = true;
+  }
+
+  // TODO(crbug.com/127829): Make sure requesting to repeat a failed download
+  // will trigger a new one.
+  if (current_install_state == ScreenAIInstallState::State::kFailed) {
+    ScreenAIInstallState::GetInstance()->DownloadComponent();
+  }
+
   if (!component_ready_observer_.IsObserving()) {
     // Start observing ScreenAIInstallState when the user activates PDF OCR. It
-    // triggers downloading the Screen AI library if it's not downloaded. Keep
-    // the request until the library is ready.
-    if (web_contents_for_only_once_request) {
-      // PDF OCR once request. Keep its weak pointer of the web contents
-      // requested for this.
-      last_webcontents_requested_for_run_once_ =
-          web_contents_for_only_once_request->GetWeakPtr();
-    } else {
-      // PDF OCR always request.
-      send_always_active_state_when_service_is_ready_ = true;
-    }
+    // triggers downloading the Screen AI library if it's not downloaded.
     component_ready_observer_.Observe(ScreenAIInstallState::GetInstance());
-    return true;
   }
 
-  if (current_install_state == ScreenAIInstallState::State::kFailed) {
-    // Try downloading the Screen AI library again if it failed before. Keep the
-    // request until the library is ready; this request will be discarded
-    // if it fails to download it again.
-    // TODO(crbug.com/127829): Make sure requesting a failed download will
-    // trigger a new one.
-    if (web_contents_for_only_once_request) {
-      // PDF OCR once request. Keep its weak pointer of the web contents
-      // requested for this.
-      last_webcontents_requested_for_run_once_ =
-          web_contents_for_only_once_request->GetWeakPtr();
-    } else {
-      // PDF OCR always request.
-      send_always_active_state_when_service_is_ready_ = true;
-    }
-    ScreenAIInstallState::GetInstance()->DownloadComponent();
-    return true;
-  }
-
-  return false;
+  return true;
 }
 
 void PdfOcrController::StateChanged(ScreenAIInstallState::State state) {

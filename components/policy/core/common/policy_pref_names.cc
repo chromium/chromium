@@ -83,6 +83,9 @@ const char kIntensiveWakeUpThrottlingEnabled[] =
 #if BUILDFLAG(IS_ANDROID)
 // Boolean policy preference to disable the BackForwardCache feature.
 const char kBackForwardCacheEnabled[] = "policy.back_forward_cache_enabled";
+
+// Boolean policy preference to disable the Read Aloud feature.
+const char kReadAloudEnabled[] = "policy.read_aloud_enabled";
 #endif  // BUILDFLAG(IS_ANDROID)
 
 // Boolean policy preference to disable the User-Agent Client Hints
@@ -135,7 +138,9 @@ const char kHideWebStoreIcon[] = "hide_web_store_icon";
 const char kIncognitoModeAvailability[] = "incognito.mode_availability";
 
 // A boolean indicating whether the new behavior for beforeunload show cancel
-// dialog if event.preventDefault() gets called is in effect.
+// dialog is in effect. If true, then
+// 1. If event.preventDefault() is called, prompt cancel dialog.
+// 2. If event.returnValue is the empty string, do not prompt cancel dialog.
 const char kBeforeunloadEventCancelByPreventDefaultEnabled[] =
     "policy.beforeunload_event_cancel_by_prevent_default_enabled";
 
@@ -143,6 +148,20 @@ const char kBeforeunloadEventCancelByPreventDefaultEnabled[] =
 // The value is controlled by the PolicyTestPageEnabled policy.
 // If this is set to True, the page will be accessible.
 const char kPolicyTestPageEnabled[] = "policy_test_page_enabled";
+
+// A boolean pref indicating whether the new the page with "Cache-Control:
+// no-store" header is allowed to be stored in back/forward cache.
+const char kAllowBackForwardCacheForCacheControlNoStorePageEnabled[] =
+    "policy.allow_back_forward_cache_for_cache_control_no_store_page_enabled";
+
+const char kLocalTestPoliciesForNextStartup[] =
+    "local_test_policies_for_next_startup";
+
+// A boolean pref indicating whether to allow deprecation of the "unload"
+// event.
+// If false, the deprecation rollout will be ignored.
+const char kForcePermissionPolicyUnloadDefaultEnabled[] =
+    "policy.force_permission_policy_unload_default_enabled";
 
 }  // namespace policy_prefs
 }  // namespace policy

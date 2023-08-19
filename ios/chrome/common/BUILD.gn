@@ -6,7 +6,6 @@ import("//build/buildflag_header.gni")
 import("//build/config/ios/ios_sdk.gni")
 
 source_set("common") {
-  configs += [ "//build/config/compiler:enable_arc" ]
   sources = [
     "channel_info.h",
     "channel_info.mm",
@@ -27,7 +26,6 @@ source_set("common") {
 }
 
 source_set("button_config") {
-  configs += [ "//build/config/compiler:enable_arc" ]
   sources = [
     "button_configuration_util.h",
     "button_configuration_util.mm",
@@ -35,8 +33,13 @@ source_set("button_config") {
   frameworks = [ "UIKit.framework" ]
 }
 
+# TODO(crbug.com/1471650): Remove this once AppStore stops blocking
+# __availability_version_check.
+source_set("os_version_check") {
+  sources = [ "third_party/compiler-rt/os_version_check.c" ]
+}
+
 source_set("constants") {
-  configs += [ "//build/config/compiler:enable_arc" ]
   sources = [
     "constants.h",
     "constants.mm",
@@ -50,7 +53,6 @@ source_set("string_util") {
     "string_util.mm",
   ]
   deps = [ "//base" ]
-  configs += [ "//build/config/compiler:enable_arc" ]
   frameworks = [ "UIKit.framework" ]
 }
 
@@ -61,8 +63,6 @@ source_set("timing") {
   ]
 
   frameworks = [ "QuartzCore.framework" ]
-
-  configs += [ "//build/config/compiler:enable_arc" ]
 }
 
 source_set("unit_tests") {
@@ -75,29 +75,11 @@ source_set("unit_tests") {
   ]
   deps = [
     ":common",
-    ":noarc_unit_tests",
     ":string_util",
     "//base",
     "//base/test:test_support",
     "//ios/chrome/common/ui/colors",
     "//ios/chrome/common/ui/util:util",
-    "//testing/gtest",
-  ]
-  configs += [ "//build/config/compiler:enable_arc" ]
-}
-
-# The block_unittest.mm has been duplicated during the migration of iOS code
-# to ARC (see crbug.com/624363). As this test checks the interaction of C++
-# objects and Objective-C blocks, it is necessary to keep two version of the
-# test compiled with and without ARC. Remove this file when the conversion to
-# ARC is complete.
-source_set("noarc_unit_tests") {
-  visibility = [ ":unit_tests" ]
-  testonly = true
-  sources = [ "noarc_block_unittest.mm" ]
-  deps = [
-    ":common",
-    "//base",
     "//testing/gtest",
   ]
 }

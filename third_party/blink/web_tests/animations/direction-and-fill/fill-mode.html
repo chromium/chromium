@@ -11,6 +11,7 @@
   animation-delay: 0.1s;
   animation-duration: 0.1s;
   animation-timing-function: linear;
+  animation-play-state:  paused;
   animation-name: anim;
 }
 @keyframes anim {
@@ -43,9 +44,7 @@
 <script src="../../resources/testharness.js"></script>
 <script src="../../resources/testharnessreport.js"></script>
 <script type="text/javascript" charset="utf-8">
-const numAnims = 5;
-var animsFinished = 0;
-const allowance = 5;
+"use strict";
 const expectedValues = [
   {id: "a", start: 100, end: 100},
   {id: "b", start: 200, end: 100},
@@ -60,8 +59,9 @@ async_test(t => {
       var el = document.getElementById(expectedValues[i].id);
       var expectedValue = expectedValues[i].end;
       var realValue = parseFloat(window.getComputedStyle(el).left);
-      var diff = Math.abs(expectedValue - realValue);
-      assert_less_than(diff, allowance, "end of animation - id: " + expectedValues[i].id + " expected: " + expectedValue + " actual: " + realValue);
+      assert_equals(realValue, expectedValue,
+          `end of animation - id: ${expectedValues[i].id} expected: ` +
+          `${expectedValue} actual: ${realValue}`);
     }
     t.done();
   }
@@ -71,15 +71,18 @@ async_test(t => {
       var el = document.getElementById(expectedValues[i].id);
       var expectedValue = expectedValues[i].start;
       var realValue = parseFloat(window.getComputedStyle(el).left);
-      var diff = Math.abs(expectedValue - realValue);
-      assert_less_than(diff, allowance, "start of animation - id: " + expectedValues[i].id + " expected: " + expectedValue + " actual: " + realValue);
+      assert_equals(realValue, expectedValue,
+          `start of animation - id: ${expectedValues[i].id} expected: ` +
+          `${expectedValue} actual: ${realValue}`);
     }
-    document.addEventListener("animationend", t.step_func(() => {
-      if (++animsFinished == numAnims) {
-        t.step_timeout(endTest, 0); // this set timeout should be ok in the test environment
-                                    // since we're just giving style a chance to resolve
-      }
-    }));
+    // We start each animation in a paused state and play only after the initial
+    // snapshot to prevent a test flake.
+    let promises = [];
+    document.getAnimations().forEach(anim => {
+      anim.play();
+      promises.push(anim.finished);
+    });
+    Promise.all(promises).then(endTest);
   }));
 }, 'This test performs an animation of the left property with four different fill modes. It animates over 0.1 second with a 0.1 second delay. It takes snapshots at document load and the end of the animation');
 </script>

@@ -33,6 +33,7 @@ build_webui("build") {
     "ui/margin_control_container.ts",
     "ui/margins_settings.ts",
     "ui/media_size_settings.ts",
+    "ui/media_type_settings.ts",
     "ui/more_settings.ts",
     "ui/number_settings_section.ts",
     "ui/other_options_settings.ts",
@@ -52,6 +53,7 @@ build_webui("build") {
       "ui/destination_list_item_cros.ts",
       "ui/destination_select_cros.ts",
       "ui/pin_settings.ts",
+      "ui/printer_setup_info_cros.ts",
       "ui/provisional_destination_resolver.ts",
       "ui/destination_dialog_cros.ts",
     ]

@@ -14,12 +14,18 @@ mojom("mojo_bindings") {
   sources = [ "attribution_reporting.mojom" ]
   webui_module_path = "/"
   use_typescript_sources = true
+  generate_java = false
+  disable_variants = true
+  disallow_interfaces = true
 }
 
 mojom("store_source_result_mojom") {
   sources = [ "store_source_result.mojom" ]
   webui_module_path = "/"
   use_typescript_sources = true
+  generate_java = false
+  disable_variants = true
+  disallow_interfaces = true
 }
 
 mojom("internals_mojo_bindings") {
@@ -27,7 +33,6 @@ mojom("internals_mojo_bindings") {
   public_deps = [
     ":mojo_bindings",
     ":store_source_result_mojom",
-    "//components/attribution_reporting:mojom",
     "//components/attribution_reporting:registration_mojom",
     "//components/attribution_reporting:source_type_mojom",
     "//services/network/public/mojom:mojom_attribution",
@@ -35,6 +40,8 @@ mojom("internals_mojo_bindings") {
   ]
   webui_module_path = "/"
   use_typescript_sources = true
+  generate_java = false
+  disable_variants = true
 
   cpp_typemaps = [
     {
@@ -49,13 +56,8 @@ mojom("internals_mojo_bindings") {
         "attribution_report.h",
       ]
       traits_deps = [
-        ":attribution_reporting_proto",
-
         # //content/common/aggregatable_report.mojom is transitively included.
         "//content/common:mojo_bindings",
-
-        # //components/aggregation_service/aggregation_service.mojom is transitively included.
-        "//components/aggregation_service:mojom",
       ]
     },
   ]

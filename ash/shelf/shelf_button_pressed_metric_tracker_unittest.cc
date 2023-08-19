@@ -67,7 +67,8 @@ class ShelfButtonPressedMetricTrackerTest : public AshTestBase {
 
  protected:
   // The test target. Not owned.
-  raw_ptr<ShelfButtonPressedMetricTracker, ExperimentalAsh> metric_tracker_;
+  raw_ptr<ShelfButtonPressedMetricTracker, DanglingUntriaged | ExperimentalAsh>
+      metric_tracker_;
 
   // The TickClock injected in to the test target.
   base::SimpleTestTickClock tick_clock_;

@@ -4,10 +4,11 @@
 
 #include "ash/system/tray/system_tray_notifier.h"
 
-#include "ash/public/cpp/system_tray_observer.h"
 #include "ash/system/ime/ime_observer.h"
 #include "ash/system/network/network_observer.h"
 #include "ash/system/privacy/screen_security_observer.h"
+#include "ash/system/tray/system_tray_observer.h"
+#include "ash/system/tray/tray_bubble_view.h"
 #include "ash/system/virtual_keyboard/virtual_keyboard_observer.h"
 
 namespace ash {
@@ -105,9 +106,18 @@ void SystemTrayNotifier::NotifySystemTrayBubbleShown() {
     observer.OnSystemTrayBubbleShown();
 }
 
-void SystemTrayNotifier::NotifyStatusAreaAnchoredBubbleShown() {
+void SystemTrayNotifier::NotifyStatusAreaAnchoredBubbleVisibilityChanged(
+    TrayBubbleView* tray_bubble,
+    bool visible) {
   for (auto& observer : system_tray_observers_) {
-    observer.OnStatusAreaAnchoredBubbleShown();
+    observer.OnStatusAreaAnchoredBubbleVisibilityChanged(tray_bubble, visible);
+  }
+}
+
+void SystemTrayNotifier::NotifyTrayBubbleBoundsChanged(
+    TrayBubbleView* tray_bubble) {
+  for (auto& observer : system_tray_observers_) {
+    observer.OnTrayBubbleBoundsChanged(tray_bubble);
   }
 }
 

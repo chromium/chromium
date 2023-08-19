@@ -10,9 +10,16 @@
 #include "mojo/public/cpp/bindings/self_owned_receiver.h"
 #include "services/webnn/webnn_context_impl.h"
 
+#if BUILDFLAG(IS_WIN)
+#include "services/webnn/dml/adapter.h"
+#include "services/webnn/dml/context_impl.h"
+#endif
+
 namespace webnn {
 
 namespace {
+
+WebNNContextProviderImpl::BackendForTesting* g_backend_for_testing = nullptr;
 
 using webnn::mojom::CreateContextOptionsPtr;
 using webnn::mojom::WebNNContextProvider;
@@ -37,15 +44,42 @@ void WebNNContextProviderImpl::OnConnectionError(WebNNContextImpl* impl) {
   impls_.erase(it);
 }
 
+// static
+void WebNNContextProviderImpl::SetBackendForTesting(
+    BackendForTesting* backend_for_testing) {
+  g_backend_for_testing = backend_for_testing;
+}
+
 void WebNNContextProviderImpl::CreateWebNNContext(
     CreateContextOptionsPtr options,
     WebNNContextProvider::CreateWebNNContextCallback callback) {
+  if (g_backend_for_testing) {
+    g_backend_for_testing->CreateWebNNContext(impls_, this, std::move(options),
+                                              std::move(callback));
+    return;
+  }
+
 #if BUILDFLAG(IS_WIN)
+  // Get the default `Adapter` instance which is created for the adapter queried
+  // from ANGLE. At the current stage, all `ContextImpl` share this instance.
+  //
+  // TODO(crbug.com/1469755): Support getting `Adapter` instance based on
+  // `options`.
+  constexpr DML_FEATURE_LEVEL kMinDMLFeatureLevelForWebNN =
+      DML_FEATURE_LEVEL_4_0;
+  scoped_refptr<dml::Adapter> adapter =
+      dml::Adapter::GetInstance(kMinDMLFeatureLevelForWebNN);
+  if (!adapter) {
+    std::move(callback).Run(mojom::CreateContextResult::kNotSupported,
+                            mojo::NullRemote());
+    return;
+  }
   // The remote sent to the renderer.
   mojo::PendingRemote<mojom::WebNNContext> blink_remote;
   // The receiver bound to WebNNContextImpl.
-  impls_.push_back(base::WrapUnique<WebNNContextImpl>(new WebNNContextImpl(
-      blink_remote.InitWithNewPipeAndPassReceiver(), this)));
+  impls_.push_back(base::WrapUnique<WebNNContextImpl>(new dml::ContextImpl(
+      std::move(adapter), blink_remote.InitWithNewPipeAndPassReceiver(),
+      this)));
   std::move(callback).Run(mojom::CreateContextResult::kOk,
                           std::move(blink_remote));
 #else

@@ -7,12 +7,12 @@ package org.chromium.net;
 import static com.google.common.truth.Truth.assertThat;
 import static com.google.common.truth.Truth.assertWithMessage;
 
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.assertThrows;
 import static org.junit.Assert.fail;
 
-import static org.chromium.net.CronetTestRule.getContext;
 import static org.chromium.net.CronetTestRule.getTestStorage;
 import static org.chromium.net.Http2TestServer.SERVER_CERT_PEM;
+import static org.chromium.net.truth.UrlResponseInfoSubject.assertThat;
 
 import androidx.test.ext.junit.runners.AndroidJUnit4;
 import androidx.test.filters.SmallTest;
@@ -50,7 +50,7 @@ public class PkpTest {
     private static final boolean DISABLE_PINNING_BYPASS_FOR_LOCAL_ANCHORS = false;
 
     @Rule
-    public final CronetTestRule mTestRule = new CronetTestRule();
+    public final CronetTestRule mTestRule = CronetTestRule.withManualEngineStartup();
 
     private CronetEngine mCronetEngine;
     private ExperimentalCronetEngine.Builder mBuilder;
@@ -65,7 +65,8 @@ public class PkpTest {
             return;
         }
         System.loadLibrary("cronet_tests");
-        assertTrue(Http2TestServer.startHttp2TestServer(getContext()));
+        assertThat(Http2TestServer.startHttp2TestServer(mTestRule.getTestFramework().getContext()))
+                .isTrue();
         mServerHost = "test.example.com";
         mServerUrl = "https://" + mServerHost + ":" + Http2TestServer.getServerPort();
         mDomain = mServerHost.substring(mServerHost.indexOf('.') + 1, mServerHost.length());
@@ -366,20 +367,15 @@ public class PkpTest {
     public void testIllegalArgumentExceptionWhenPinValueIsSHA1() throws Exception {
         createCronetEngineBuilder(ENABLE_PINNING_BYPASS_FOR_LOCAL_ANCHORS, KNOWN_ROOT);
         byte[] sha1 = new byte[20];
-        try {
-            addPkpSha256(mServerHost, sha1, EXCLUDE_SUBDOMAINS, DISTANT_FUTURE);
-        } catch (IllegalArgumentException ex) {
-            // Expected exception
-            return;
-        }
-        fail("Expected IllegalArgumentException with pin value: " + Arrays.toString(sha1));
+        assertThrows("Pin value was: " + Arrays.toString(sha1), IllegalArgumentException.class,
+                () -> addPkpSha256(mServerHost, sha1, EXCLUDE_SUBDOMAINS, DISTANT_FUTURE));
     }
 
     /**
      * Asserts that the response from the server contains an PKP error.
      */
     private void assertErrorResponse() {
-        assertWithMessage("Expected an error").that(mListener.mError).isNotNull();
+        assertThat(mListener.mError).isNotNull();
         int errorCode = ((NetworkException) mListener.mError).getCronetInternalErrorCode();
         Set<Integer> expectedErrors = new HashSet<>();
         expectedErrors.add(NetError.ERR_CONNECTION_REFUSED);
@@ -399,21 +395,22 @@ public class PkpTest {
                     + ((NetworkException) mListener.mError).getCronetInternalErrorCode());
         }
         assertWithMessage("Expected non-null response from the server")
-                .that(mListener.mResponseInfo)
+                .that(mListener.getResponseInfoWithChecks())
                 .isNotNull();
-        assertThat(mListener.mResponseInfo.getHttpStatusCode()).isEqualTo(200);
+        assertThat(mListener.getResponseInfoWithChecks()).hasHttpStatusCodeThat().isEqualTo(200);
     }
 
     private void createCronetEngineBuilder(boolean bypassPinningForLocalAnchors, boolean knownRoot)
             throws Exception {
         // Set common CronetEngine parameters
-        mBuilder = new ExperimentalCronetEngine.Builder(getContext());
+        mBuilder = mTestRule.getTestFramework().createNewSecondaryBuilder(
+                mTestRule.getTestFramework().getContext());
         mBuilder.enablePublicKeyPinningBypassForLocalTrustAnchors(bypassPinningForLocalAnchors);
         JSONObject hostResolverParams = CronetTestUtil.generateHostResolverRules();
         JSONObject experimentalOptions = new JSONObject()
                                                  .put("HostResolverRules", hostResolverParams);
         mBuilder.setExperimentalOptions(experimentalOptions.toString());
-        mBuilder.setStoragePath(getTestStorage(getContext()));
+        mBuilder.setStoragePath(getTestStorage(mTestRule.getTestFramework().getContext()));
         mBuilder.enableHttpCache(CronetEngine.Builder.HTTP_CACHE_DISK_NO_HTTP, 1000 * 1024);
         final String[] server_certs = {SERVER_CERT_PEM};
         CronetTestUtil.setMockCertVerifierForTesting(
@@ -477,13 +474,10 @@ public class PkpTest {
     }
 
     private void assertExceptionWhenHostNameIsInvalid(String hostName) {
-        try {
-            addPkpSha256(hostName, generateSomeSha256(), INCLUDE_SUBDOMAINS, DISTANT_FUTURE);
-        } catch (IllegalArgumentException ex) {
-            // Expected exception.
-            return;
-        }
-        fail("Expected IllegalArgumentException when passing " + hostName + " host name");
+        assertThrows("Hostname was " + hostName, IllegalArgumentException.class,
+                ()
+                        -> addPkpSha256(hostName, generateSomeSha256(), INCLUDE_SUBDOMAINS,
+                                DISTANT_FUTURE));
     }
 
     @SuppressWarnings("ArrayAsKeyOfSetOrMap")
@@ -494,16 +488,13 @@ public class PkpTest {
         Date expirationDate = expirationDataIsNull ? null : new Date();
 
         boolean shouldThrowNpe = hostNameIsNull || pinsAreNull || expirationDataIsNull;
-        try {
-            mBuilder.addPublicKeyPins(hostName, pins, INCLUDE_SUBDOMAINS, expirationDate);
-        } catch (NullPointerException ex) {
-            if (!shouldThrowNpe) {
-                fail("Null pointer exception was not expected: " + ex.toString());
-            }
-            return;
-        }
         if (shouldThrowNpe) {
-            fail("NullPointerException was expected");
+            assertThrows(NullPointerException.class,
+                    ()
+                            -> mBuilder.addPublicKeyPins(
+                                    hostName, pins, INCLUDE_SUBDOMAINS, expirationDate));
+        } else {
+            mBuilder.addPublicKeyPins(hostName, pins, INCLUDE_SUBDOMAINS, expirationDate);
         }
     }
 }

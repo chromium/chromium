@@ -11,9 +11,11 @@ import './start_setup_page.js';
 import '//resources/ash/common/cr.m.js';
 import '//resources/polymer/v3_0/iron-pages/iron-pages.js';
 
-import {WebUIListenerBehavior} from '//resources/ash/common/web_ui_listener_behavior.js';
 import {assert} from '//resources/ash/common/assert.js';
+import {WebUIListenerBehavior} from '//resources/ash/common/web_ui_listener_behavior.js';
 import {Polymer} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {ColorChangeUpdater} from 'chrome://resources/cr_components/color_change_listener/colors_css_updater.js';
+import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {HostDevice} from 'chrome://resources/mojo/chromeos/ash/services/multidevice_setup/public/mojom/multidevice_setup.mojom-webui.js';
 
 import {MojoInterfaceProvider, MojoInterfaceProviderImpl} from './mojo_api.js';
@@ -151,6 +153,19 @@ const MultiDeviceSetup = Polymer({
       type: Boolean,
       value: false,
     },
+
+    /**
+     * Return true if the Jelly feature flag is enabled.
+     * @private
+     */
+    isJellyEnabled: {
+      type: Boolean,
+      readOnly: true,
+      value() {
+        return loadTimeData.valueExists('isJellyEnabled') &&
+            loadTimeData.getBoolean('isJellyEnabled');
+      },
+    },
   },
 
   listeners: {
@@ -170,6 +185,18 @@ const MultiDeviceSetup = Polymer({
     this.addWebUIListener(
         'multidevice_setup.initializeSetupFlow',
         this.initializeSetupFlow.bind(this));
+
+    if (this.isJellyEnabled) {
+      const link = document.createElement('link');
+      link.rel = 'stylesheet';
+      link.href = 'chrome://theme/colors.css?sets=legacy,sys';
+      document.head.appendChild(link);
+      document.body.classList.add('jelly-enabled');
+      /** @suppress {checkTypes} */
+      (function() {
+        ColorChangeUpdater.forDocument().start();
+      })();
+    }
   },
 
   /** @override */

@@ -26,7 +26,6 @@
 #include "gpu/command_buffer/service/test_helper.h"
 #include "gpu/command_buffer/service/test_memory_tracker.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "ui/gl/gl_image.h"
 #include "ui/gl/gl_mock.h"
 #include "ui/gl/gl_switches.h"
 
@@ -39,18 +38,6 @@ using ::testing::_;
 
 namespace gpu {
 namespace gles2 {
-
-namespace {
-
-class GLImageStub : public gl::GLImage {
- public:
-  GLImageStub() = default;
-
- private:
-  ~GLImageStub() override = default;
-};
-
-}  // namespace
 
 class TextureTestHelper {
  public:
@@ -1679,49 +1666,6 @@ TEST_F(TextureTest, UseDeletedTexture) {
   texture_ref = nullptr;
 }
 
-#if !BUILDFLAG(IS_ANDROID)
-TEST_F(TextureTest, GetLevelImage) {
-  manager_->SetTarget(texture_ref_.get(), GL_TEXTURE_2D);
-  manager_->SetLevelInfo(texture_ref_.get(), GL_TEXTURE_2D, 1, GL_RGBA, 2, 2, 1,
-                         0, GL_RGBA, GL_UNSIGNED_BYTE, gfx::Rect(2, 2));
-  Texture* texture = texture_ref_->texture();
-  EXPECT_TRUE(texture->GetLevelImage(GL_TEXTURE_2D, 1) == nullptr);
-  // Set image.
-  scoped_refptr<gl::GLImage> image(new GLImageStub);
-  manager_->SetBoundLevelImage(texture_ref_.get(), GL_TEXTURE_2D, 1,
-                               image.get());
-  EXPECT_FALSE(texture->GetLevelImage(GL_TEXTURE_2D, 1) == nullptr);
-  // Remove it.
-  manager_->UnsetLevelImage(texture_ref_.get(), GL_TEXTURE_2D, 1);
-  EXPECT_TRUE(texture->GetLevelImage(GL_TEXTURE_2D, 1) == nullptr);
-
-  // Re-add it, and check that it's reset when SetLevelInfo is called.
-  manager_->SetBoundLevelImage(texture_ref_.get(), GL_TEXTURE_2D, 1,
-                               image.get());
-  manager_->SetLevelInfo(texture_ref_.get(), GL_TEXTURE_2D, 1, GL_RGBA, 2, 2, 1,
-                         0, GL_RGBA, GL_UNSIGNED_BYTE, gfx::Rect(2, 2));
-  EXPECT_TRUE(texture->GetLevelImage(GL_TEXTURE_2D, 1) == nullptr);
-}
-
-#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
-TEST_F(TextureTest, MarkLevelImageBound) {
-  manager_->SetTarget(texture_ref_.get(), GL_TEXTURE_2D);
-  manager_->SetLevelInfo(texture_ref_.get(), GL_TEXTURE_2D, 0, GL_RGBA, 2, 2, 1,
-                         0, GL_RGBA, GL_UNSIGNED_BYTE, gfx::Rect(2, 2));
-  Texture* texture = texture_ref_->texture();
-  // Set image, initially unbound.
-  scoped_refptr<gl::GLImage> image(new GLImageStub);
-  manager_->SetUnboundLevelImage(texture_ref_.get(), GL_TEXTURE_2D, 0,
-                                 image.get());
-  EXPECT_TRUE(texture->HasUnboundLevelImage(GL_TEXTURE_2D, 0));
-  // Mark the image as bound and verify that the state updates.
-  texture->MarkLevelImageBound(GL_TEXTURE_2D, 0);
-  EXPECT_FALSE(texture->HasUnboundLevelImage(GL_TEXTURE_2D, 0));
-}
-#endif
-
-#endif
-
 #if BUILDFLAG(IS_ANDROID)
 TEST_F(TextureTest, SetStreamTextureImageServiceID) {
   manager_->SetTarget(texture_ref_.get(), GL_TEXTURE_EXTERNAL_OES);
@@ -2098,14 +2042,8 @@ TEST_P(ProduceConsumeTextureTest, ProduceConsumeTextureWithImage) {
   manager_->SetTarget(texture_ref_.get(), target);
   Texture* texture = texture_ref_->texture();
   EXPECT_EQ(static_cast<GLenum>(target), texture->target());
-#if !BUILDFLAG(IS_ANDROID)
-  scoped_refptr<gl::GLImage> image(new GLImageStub);
-#endif
   manager_->SetLevelInfo(texture_ref_.get(), target, 0, GL_RGBA, 0, 0, 1, 0,
                          GL_RGBA, GL_UNSIGNED_BYTE, gfx::Rect());
-#if !BUILDFLAG(IS_ANDROID)
-  manager_->SetBoundLevelImage(texture_ref_.get(), target, 0, image.get());
-#endif
   GLuint service_id = texture->service_id();
   Texture* produced_texture = Produce(texture_ref_.get());
 
@@ -2115,9 +2053,6 @@ TEST_P(ProduceConsumeTextureTest, ProduceConsumeTextureWithImage) {
   scoped_refptr<TextureRef> restored_texture = manager_->GetTexture(client_id);
   EXPECT_EQ(produced_texture, restored_texture->texture());
   EXPECT_EQ(service_id, restored_texture->service_id());
-#if !BUILDFLAG(IS_ANDROID)
-  EXPECT_EQ(image.get(), restored_texture->texture()->GetLevelImage(target, 0));
-#endif
 }
 
 static const GLenum kTextureTargets[] = {GL_TEXTURE_2D, GL_TEXTURE_EXTERNAL_OES,
@@ -2397,50 +2332,6 @@ TEST_F(SharedTextureTest, Memory) {
   texture_manager2_->RemoveTexture(20);
   EXPECT_EQ(initial_memory2, memory_tracker2_.GetSize());
 }
-
-#if !BUILDFLAG(IS_ANDROID)
-TEST_F(SharedTextureTest, Images) {
-  scoped_refptr<TextureRef> ref1 = texture_manager1_->CreateTexture(10, 10);
-  scoped_refptr<TextureRef> ref2 =
-      texture_manager2_->Consume(20, ref1->texture());
-
-  texture_manager1_->SetTarget(ref1.get(), GL_TEXTURE_2D);
-  texture_manager1_->SetLevelInfo(ref1.get(), GL_TEXTURE_2D, 1, GL_RGBA, 2, 2,
-                                  1, 0, GL_RGBA, GL_UNSIGNED_BYTE,
-                                  gfx::Rect(2, 2));
-  EXPECT_FALSE(ref1->texture()->HasImages());
-  EXPECT_FALSE(ref2->texture()->HasImages());
-  EXPECT_FALSE(texture_manager1_->HaveImages());
-  EXPECT_FALSE(texture_manager2_->HaveImages());
-  scoped_refptr<gl::GLImage> image1(new GLImageStub);
-  texture_manager1_->SetBoundLevelImage(ref1.get(), GL_TEXTURE_2D, 1,
-                                        image1.get());
-  EXPECT_TRUE(ref1->texture()->HasImages());
-  EXPECT_TRUE(ref2->texture()->HasImages());
-  EXPECT_TRUE(texture_manager1_->HaveImages());
-  EXPECT_TRUE(texture_manager2_->HaveImages());
-  scoped_refptr<gl::GLImage> image2(new GLImageStub);
-  texture_manager1_->SetBoundLevelImage(ref1.get(), GL_TEXTURE_2D, 1,
-                                        image2.get());
-  EXPECT_TRUE(ref1->texture()->HasImages());
-  EXPECT_TRUE(ref2->texture()->HasImages());
-  EXPECT_TRUE(texture_manager1_->HaveImages());
-  EXPECT_TRUE(texture_manager2_->HaveImages());
-  texture_manager1_->SetLevelInfo(ref1.get(), GL_TEXTURE_2D, 1, GL_RGBA, 2, 2,
-                                  1, 0, GL_RGBA, GL_UNSIGNED_BYTE,
-                                  gfx::Rect(2, 2));
-  EXPECT_FALSE(ref1->texture()->HasImages());
-  EXPECT_FALSE(ref2->texture()->HasImages());
-  EXPECT_FALSE(texture_manager1_->HaveImages());
-  EXPECT_FALSE(texture_manager1_->HaveImages());
-
-  EXPECT_CALL(*gl_, DeleteTextures(1, _))
-      .Times(1)
-      .RetiresOnSaturation();
-  texture_manager1_->RemoveTexture(10);
-  texture_manager2_->RemoveTexture(20);
-}
-#endif
 
 class TextureFormatTypeValidationTest : public TextureManagerTest {
  public:

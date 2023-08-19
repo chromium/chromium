@@ -55,7 +55,7 @@ NativePixmapSupportType GetNativePixmapSupportType() {
 
 class GLOzoneEGLX11 : public GLOzoneEGL {
  public:
-  GLOzoneEGLX11() : support_type_(GetNativePixmapSupportType()) {}
+  GLOzoneEGLX11() = default;
 
   GLOzoneEGLX11(const GLOzoneEGLX11&) = delete;
   GLOzoneEGLX11& operator=(const GLOzoneEGLX11&) = delete;
@@ -70,7 +70,7 @@ class GLOzoneEGLX11 : public GLOzoneEGL {
   }
 
   bool CanImportNativePixmap() override {
-    return support_type_ != NativePixmapSupportType::kNone;
+    return GetNativePixmapSupportType() != NativePixmapSupportType::kNone;
   }
 
   std::unique_ptr<NativePixmapGLBinding> ImportNativePixmap(
@@ -81,7 +81,7 @@ class GLOzoneEGLX11 : public GLOzoneEGL {
       const gfx::ColorSpace& color_space,
       GLenum target,
       GLuint texture_id) override {
-    switch (support_type_) {
+    switch (GetNativePixmapSupportType()) {
       case NativePixmapSupportType::kDMABuf: {
         return NativePixmapEGLBinding::Create(pixmap, plane_format, plane,
                                               plane_size, color_space, target,
@@ -148,7 +148,6 @@ class GLOzoneEGLX11 : public GLOzoneEGL {
   }
 
  private:
-  const NativePixmapSupportType support_type_;
   bool is_swiftshader_ = false;
 };
 

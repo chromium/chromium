@@ -30,6 +30,7 @@
 #include "components/safe_browsing/content/renderer/phishing_classifier/phishing_dom_feature_extractor.h"
 #include "components/safe_browsing/content/renderer/phishing_classifier/phishing_term_feature_extractor.h"
 #include "components/safe_browsing/content/renderer/phishing_classifier/phishing_url_feature_extractor.h"
+#include "components/safe_browsing/content/renderer/phishing_classifier/phishing_visual_feature_extractor.h"
 #include "components/safe_browsing/content/renderer/phishing_classifier/scorer.h"
 #include "components/safe_browsing/core/common/features.h"
 #include "components/safe_browsing/core/common/proto/csd.pb.h"
@@ -47,29 +48,6 @@
 #include "url/gurl.h"
 
 namespace safe_browsing {
-
-namespace {
-
-std::unique_ptr<SkBitmap> PlaybackOnBackgroundThread(
-    cc::PaintRecord paint_record,
-    gfx::Rect bounds) {
-  // Use the Rec. 2020 color space, in case the user input is wide-gamut.
-  std::unique_ptr<SkBitmap> bitmap = std::make_unique<SkBitmap>();
-  sk_sp<SkColorSpace> rec2020 = SkColorSpace::MakeRGB(
-      {2.22222f, 0.909672f, 0.0903276f, 0.222222f, 0.0812429f, 0, 0},
-      SkNamedGamut::kRec2020);
-  SkImageInfo bitmap_info = SkImageInfo::Make(
-      bounds.width(), bounds.height(), SkColorType::kN32_SkColorType,
-      SkAlphaType::kUnpremul_SkAlphaType, rec2020);
-  if (!bitmap->tryAllocPixels(bitmap_info))
-    return nullptr;
-
-  SkCanvas sk_canvas(*bitmap, skia::LegacyDisplayGlobals::GetSkSurfaceProps());
-  paint_record.Playback(&sk_canvas);
-  return bitmap;
-}
-
-}  // namespace
 
 const float PhishingClassifier::kInvalidScore = -1.0;
 const float PhishingClassifier::kPhishyThreshold = 0.5;
@@ -111,6 +89,7 @@ void PhishingClassifier::BeginClassification(const std::u16string* page_text,
       scorer->find_page_term_callback(), scorer->find_page_word_callback(),
       scorer->max_words_per_term(), scorer->murmurhash3_seed(),
       scorer->max_shingles_per_page(), scorer->shingle_size());
+  visual_extractor_ = std::make_unique<PhishingVisualFeatureExtractor>();
   page_text_ = page_text;
   done_callback_ = std::move(done_callback);
 
@@ -160,6 +139,7 @@ void PhishingClassifier::CancelPendingClassification() {
   DCHECK(is_ready());
   dom_extractor_.reset();
   term_extractor_.reset();
+  visual_extractor_.reset();
   weak_factory_.InvalidateWeakPtrs();
   Clear();
 }
@@ -181,10 +161,16 @@ void PhishingClassifier::DOMExtractionFinished(bool success) {
 void PhishingClassifier::TermExtractionFinished(bool success) {
   if (success) {
 #if BUILDFLAG(FULL_SAFE_BROWSING)
-    ExtractVisualFeatures();
+    visual_extractor_->ExtractFeatures(
+        render_frame_->GetWebFrame(),
+        base::BindOnce(&PhishingClassifier::OnPlaybackDone,
+                       base::Unretained(this)));
 #else
     if (ScorerStorage::GetInstance()->GetScorer()->HasVisualTfLiteModel()) {
-      ExtractVisualFeatures();
+      visual_extractor_->ExtractFeatures(
+          render_frame_->GetWebFrame(),
+          base::BindOnce(&PhishingClassifier::OnPlaybackDone,
+                         base::Unretained(this)));
     } else {
       VisualExtractionFinished(true);
     }
@@ -192,41 +178,6 @@ void PhishingClassifier::TermExtractionFinished(bool success) {
   } else {
     RunFailureCallback();
   }
-}
-
-void PhishingClassifier::ExtractVisualFeatures() {
-  DCHECK(content::RenderThread::IsMainThread());
-  base::TimeTicks start_time = base::TimeTicks::Now();
-  TRACE_EVENT0("safe_browsing", "ExtractVisualFeatures");
-
-  blink::WebLocalFrame* frame = render_frame_->GetWebFrame();
-  gfx::SizeF viewport_size = frame->View()->VisualViewportSize();
-  gfx::Rect bounds = ToEnclosingRect(gfx::RectF(viewport_size));
-
-  auto tracker = std::make_unique<paint_preview::PaintPreviewTracker>(
-      base::UnguessableToken::Create(), frame->GetEmbeddingToken(),
-      /*is_main_frame=*/true);
-  cc::PaintRecorder recorder;
-  cc::PaintCanvas* canvas = recorder.beginRecording();
-  canvas->SetPaintPreviewTracker(tracker.get());
-
-  if (!frame->CapturePaintPreview(bounds, canvas,
-                                  /*include_linked_destinations=*/false,
-                                  /*skip_accelerated_content=*/true)) {
-    VisualExtractionFinished(/*success=*/false);
-  }
-
-  cc::PaintRecord paint_record = recorder.finishRecordingAsPicture();
-
-  base::UmaHistogramTimes("SBClientPhishing.VisualFeatureTime",
-                          base::TimeTicks::Now() - start_time);
-
-  base::ThreadPool::PostTaskAndReplyWithResult(
-      FROM_HERE, {base::WithBaseSyncPrimitives()},
-      base::BindOnce(&PlaybackOnBackgroundThread, std::move(paint_record),
-                     bounds),
-      base::BindOnce(&PhishingClassifier::OnPlaybackDone,
-                     weak_factory_.GetWeakPtr()));
 }
 
 void PhishingClassifier::OnPlaybackDone(std::unique_ptr<SkBitmap> bitmap) {

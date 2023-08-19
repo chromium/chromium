@@ -96,8 +96,9 @@ static_assert((kFilterableDataTypes &
 uint64_t MaskForKey(const char* key) {
   if (strcmp(key, extension_browsing_data_api_constants::kCacheKey) == 0)
     return content::BrowsingDataRemover::DATA_TYPE_CACHE;
-  if (strcmp(key, extension_browsing_data_api_constants::kCookiesKey) == 0)
+  if (strcmp(key, extension_browsing_data_api_constants::kCookiesKey) == 0) {
     return content::BrowsingDataRemover::DATA_TYPE_COOKIES;
+  }
   if (strcmp(key, extension_browsing_data_api_constants::kDownloadsKey) == 0)
     return content::BrowsingDataRemover::DATA_TYPE_DOWNLOADS;
   if (strcmp(key, extension_browsing_data_api_constants::kFileSystemsKey) == 0)
@@ -311,18 +312,16 @@ ExtensionFunction::ResponseAction BrowsingDataRemoverFunction::Run() {
 
   if (origins) {
     OriginParsingResult result = ParseOrigins(*origins);
-    if (result.has_value()) {
-      origins_ = std::move(*result);
-    } else {
+    if (!result.has_value()) {
       return RespondNow(std::move(result.error()));
     }
+    origins_ = std::move(*result);
   } else if (exclude_origins) {
     OriginParsingResult result = ParseOrigins(*exclude_origins);
-    if (result.has_value()) {
-      origins_ = std::move(*result);
-    } else {
+    if (!result.has_value()) {
       return RespondNow(std::move(result.error()));
     }
+    origins_ = std::move(*result);
   }
   mode_ = origins ? content::BrowsingDataFilterBuilder::Mode::kDelete
                   : content::BrowsingDataFilterBuilder::Mode::kPreserve;

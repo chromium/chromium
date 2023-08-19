@@ -4,6 +4,7 @@
 
 #include "components/exo/keyboard.h"
 
+#include "ash/accelerators/accelerator_controller_impl.h"
 #include "ash/accelerators/accelerator_table.h"
 #include "ash/constants/app_types.h"
 #include "ash/constants/ash_features.h"
@@ -12,6 +13,7 @@
 #include "ash/public/cpp/accelerators.h"
 #include "ash/public/cpp/keyboard/keyboard_controller.h"
 #include "ash/shell.h"
+#include "ash/wm/window_state.h"
 #include "base/containers/contains.h"
 #include "base/containers/span.h"
 #include "base/functional/bind.h"
@@ -478,6 +480,20 @@ void Keyboard::OnKeyboardLayoutNameChanged(const std::string& layout_name) {
 ////////////////////////////////////////////////////////////////////////////////
 // Keyboard, private:
 
+base::flat_map<ui::DomCode, KeyState> Keyboard::GetPressedKeysForSurface(
+    Surface* surface) {
+  // Remove system keys from being sent as pressed keys unless the window
+  // can consume them.
+  base::flat_map<ui::DomCode, KeyState> filtered_keys = pressed_keys_;
+  aura::Window* top_level = surface->window()->GetToplevelWindow();
+  if (top_level && !ash::WindowState::Get(top_level)->CanConsumeSystemKeys()) {
+    base::EraseIf(filtered_keys, [](const auto& p) {
+      return ash::AcceleratorController::IsSystemKey(p.second.key_code);
+    });
+  }
+  return filtered_keys;
+}
+
 void Keyboard::SetFocus(Surface* surface) {
   if (focus_) {
     RemoveEventHandler();
@@ -488,8 +504,9 @@ void Keyboard::SetFocus(Surface* surface) {
   }
   if (surface) {
     pressed_keys_ = seat_->pressed_keys();
+    auto enter_keys = GetPressedKeysForSurface(surface);
     delegate_->OnKeyboardModifiers(seat_->xkb_tracker()->GetModifiers());
-    delegate_->OnKeyboardEnter(surface, pressed_keys_);
+    delegate_->OnKeyboardEnter(surface, enter_keys);
     focus_ = surface;
     focus_->AddSurfaceObserver(this);
     focused_on_ime_supported_surface_ = IsImeSupportedSurface(surface);

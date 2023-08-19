@@ -122,6 +122,11 @@ enum FieldTypeGroupForMetrics {
   GROUP_ADDRESS_HOME_LANDMARK,
   GROUP_ADDRESS_HOME_BETWEEN_STREETS,
   GROUP_ADDRESS_HOME_ADMIN_LEVEL2,
+  GROUP_ADDRESS_HOME_STREET_LOCATION,
+  GROUP_ADDRESS_HOME_OVERFLOW,
+  GROUP_DELIVERY_INSTRUCTIONS,
+  GROUP_ADDRESS_HOME_OVERFLOW_AND_LANDMARK,
+  GROUP_ADDRESS_HOME_BETWEEN_STREETS_OR_LANDMARK,
   // Add new entries here and update enums.xml.
   NUM_FIELD_TYPE_GROUPS_FOR_METRICS
 };
@@ -247,10 +252,27 @@ int GetFieldTypeGroupPredictionQualityMetric(
           group = GROUP_ADDRESS_HOME_LANDMARK;
           break;
         case ADDRESS_HOME_BETWEEN_STREETS:
+        case ADDRESS_HOME_BETWEEN_STREETS_1:
+        case ADDRESS_HOME_BETWEEN_STREETS_2:
           group = GROUP_ADDRESS_HOME_BETWEEN_STREETS;
           break;
         case ADDRESS_HOME_ADMIN_LEVEL2:
           group = GROUP_ADDRESS_HOME_ADMIN_LEVEL2;
+          break;
+        case ADDRESS_HOME_OVERFLOW:
+          group = GROUP_ADDRESS_HOME_OVERFLOW;
+          break;
+        case ADDRESS_HOME_OVERFLOW_AND_LANDMARK:
+          group = GROUP_ADDRESS_HOME_OVERFLOW_AND_LANDMARK;
+          break;
+        case ADDRESS_HOME_BETWEEN_STREETS_OR_LANDMARK:
+          group = GROUP_ADDRESS_HOME_BETWEEN_STREETS_OR_LANDMARK;
+          break;
+        case ADDRESS_HOME_STREET_LOCATION:
+          group = GROUP_ADDRESS_HOME_STREET_LOCATION;
+          break;
+        case DELIVERY_INSTRUCTIONS:
+          group = GROUP_DELIVERY_INSTRUCTIONS;
           break;
         case UNKNOWN_TYPE:
           group = GROUP_UNKNOWN_TYPE;
@@ -318,6 +340,7 @@ int GetFieldTypeGroupPredictionQualityMetric(
         case IBAN_VALUE:
         case MAX_VALID_FIELD_TYPE:
         case CREDIT_CARD_STANDALONE_VERIFICATION_CODE:
+        case SINGLE_USERNAME_FORGOT_PASSWORD:
           NOTREACHED() << field_type << " type is not in that group.";
           group = GROUP_AMBIGUOUS;
           break;
@@ -358,6 +381,7 @@ int GetFieldTypeGroupPredictionQualityMetric(
           group = GROUP_CREDIT_CARD_DATE;
           break;
         case CREDIT_CARD_VERIFICATION_CODE:
+        case CREDIT_CARD_STANDALONE_VERIFICATION_CODE:
           group = GROUP_CREDIT_CARD_VERIFICATION;
           break;
         default:
@@ -1530,7 +1554,7 @@ void AutofillMetrics::LogStoredCreditCardMetrics(
     UMA_HISTOGRAM_COUNTS_1000("Autofill.DaysSinceLastUse.StoredCreditCard",
                               days_since_last_use);
     switch (card->record_type()) {
-      case CreditCard::LOCAL_CARD:
+      case CreditCard::RecordType::kLocalCard:
         UMA_HISTOGRAM_COUNTS_1000(
             "Autofill.DaysSinceLastUse.StoredCreditCard.Local",
             days_since_last_use);
@@ -1539,7 +1563,7 @@ void AutofillMetrics::LogStoredCreditCardMetrics(
         if (card->HasNonEmptyValidNickname())
           num_local_cards_with_nickname += 1;
         break;
-      case CreditCard::MASKED_SERVER_CARD:
+      case CreditCard::RecordType::kMaskedServerCard:
         UMA_HISTOGRAM_COUNTS_1000(
             "Autofill.DaysSinceLastUse.StoredCreditCard.Server",
             days_since_last_use);
@@ -1551,7 +1575,7 @@ void AutofillMetrics::LogStoredCreditCardMetrics(
         if (card->HasNonEmptyValidNickname())
           num_masked_cards_with_nickname += 1;
         break;
-      case CreditCard::FULL_SERVER_CARD:
+      case CreditCard::RecordType::kFullServerCard:
         UMA_HISTOGRAM_COUNTS_1000(
             "Autofill.DaysSinceLastUse.StoredCreditCard.Server",
             days_since_last_use);
@@ -1561,7 +1585,7 @@ void AutofillMetrics::LogStoredCreditCardMetrics(
         num_unmasked_cards += 1;
         num_disused_unmasked_cards += disused_delta;
         break;
-      case CreditCard::VIRTUAL_CARD:
+      case CreditCard::RecordType::kVirtualCard:
         // This card type is not persisted in Chrome.
         NOTREACHED();
         break;
@@ -1620,7 +1644,7 @@ void AutofillMetrics::LogStoredCreditCardMetrics(
   size_t virtual_card_enabled_card_count = base::ranges::count_if(
       server_cards, [](const std::unique_ptr<CreditCard>& card) {
         return card->virtual_card_enrollment_state() ==
-               CreditCard::VirtualCardEnrollmentState::ENROLLED;
+               CreditCard::VirtualCardEnrollmentState::kEnrolled;
       });
   base::UmaHistogramCounts1000(
       "Autofill.StoredCreditCardCount.Server.WithVirtualCardMetadata",
@@ -2290,15 +2314,21 @@ void AutofillMetrics::FormInteractionsUkmLogger::LogSuggestionsShown(
 }
 
 void AutofillMetrics::FormInteractionsUkmLogger::LogDidFillSuggestion(
-    int record_type,
-    bool is_for_credit_card,
+    absl::variant<AutofillProfile::RecordType, CreditCard::RecordType>
+        record_type,
     const FormStructure& form,
     const AutofillField& field) {
   if (!CanLog())
     return;
 
+  bool is_for_credit_card =
+      absl::holds_alternative<CreditCard::RecordType>(record_type);
+
   ukm::builders::Autofill_SuggestionFilled(source_id_)
-      .SetRecordType(record_type)
+      .SetRecordType(is_for_credit_card
+                         ? base::to_underlying(
+                               absl::get<CreditCard::RecordType>(record_type))
+                         : absl::get<AutofillProfile::RecordType>(record_type))
       .SetIsForCreditCard(is_for_credit_card)
       .SetMillisecondsSinceFormParsed(
           MillisecondsSinceFormParsed(form.form_parsed_timestamp()))
@@ -2606,9 +2636,6 @@ void AutofillMetrics::FormInteractionsUkmLogger::
       .SetFieldSessionIdentifier(
           AutofillMetrics::FieldGlobalIdToHash64Bit(field.global_id()))
       .SetFieldSignature(HashFieldSignature(field.GetFieldSignature()))
-      .SetWasFocused(OptionalBooleanToBool(was_focused))
-      .SetIsFocusable(field.IsFocusable())
-      .SetUserTypedIntoField(OptionalBooleanToBool(user_typed_into_field))
       .SetFormControlType(base::to_underlying(field.FormControlType()))
       .SetAutocompleteState(base::to_underlying(autocomplete_state));
 
@@ -2617,22 +2644,19 @@ void AutofillMetrics::FormInteractionsUkmLogger::
                   OptionalBooleanToBool(user_typed_into_field));
   SetStatusVector(AutofillStatus::kWasFocused,
                   OptionalBooleanToBool(was_focused));
+  SetStatusVector(AutofillStatus::kIsInSubFrame,
+                  form.ToFormData().host_frame != field.host_frame);
+
   if (was_focused == OptionalBoolean::kTrue) {
     SetStatusVector(AutofillStatus::kSuggestionWasAvailable,
                     OptionalBooleanToBool(suggestion_was_available));
     SetStatusVector(AutofillStatus::kSuggestionWasShown,
                     OptionalBooleanToBool(suggestion_was_shown));
-    builder
-        .SetSuggestionWasAvailable(
-            OptionalBooleanToBool(suggestion_was_available))
-        .SetSuggestionWasShown(OptionalBooleanToBool(suggestion_was_shown));
   }
 
   if (suggestion_was_shown == OptionalBoolean::kTrue) {
     SetStatusVector(AutofillStatus::kSuggestionWasAccepted,
                     OptionalBooleanToBool(suggestion_was_accepted));
-    builder.SetSuggestionWasAccepted(
-        OptionalBooleanToBool(suggestion_was_accepted));
   }
 
   SetStatusVector(AutofillStatus::kWasAutofillTriggered, autofill_count > 0);
@@ -2644,25 +2668,17 @@ void AutofillMetrics::FormInteractionsUkmLogger::
     SetStatusVector(AutofillStatus::kWasRefill, autofill_count > 1);
 
     static_assert(autofill_skipped_status.data().size() == 1);
-    builder.SetWasAutofilled(OptionalBooleanToBool(was_autofilled))
-        .SetHadValueBeforeFilling(
-            OptionalBooleanToBool(had_value_before_filling))
-        .SetAutofillSkippedStatus(autofill_skipped_status.data()[0])
-        .SetWasRefill(autofill_count > 1);
+    builder.SetAutofillSkippedStatus(autofill_skipped_status.data()[0]);
   }
 
   if (filled_value_was_modified != OptionalBoolean::kUndefined) {
     SetStatusVector(AutofillStatus::kFilledValueWasModified,
                     OptionalBooleanToBool(filled_value_was_modified));
-    builder.SetFilledValueWasModified(
-        OptionalBooleanToBool(filled_value_was_modified));
   }
 
   if (had_typed_or_filled_value_at_submission != OptionalBoolean::kUndefined) {
     SetStatusVector(
         AutofillStatus::kHadTypedOrFilledValueAtSubmission,
-        OptionalBooleanToBool(had_typed_or_filled_value_at_submission));
-    builder.SetHadTypedOrFilledValueAtSubmission(
         OptionalBooleanToBool(had_typed_or_filled_value_at_submission));
   }
 
@@ -2698,11 +2714,7 @@ void AutofillMetrics::FormInteractionsUkmLogger::
   }
 
   // Serialize the DenseSet of the autofill status into int64_t.
-  // TODO(crbug.com/1325851): Mark the individual boolean metrics of autofill
-  // status that autofill_status_vector contains obsolete once we verify the
-  // data in AutofillStatusVector metric.
-  static_assert(autofill_status_vector.data().size() == 1U,
-                "There are 12 enum values in AutofillStatusVector.");
+  static_assert(autofill_status_vector.data().size() == 1U);
   builder.SetAutofillStatusVector(autofill_status_vector.data()[0]);
 
   builder.Record(ukm_recorder_);
@@ -2712,7 +2724,6 @@ void AutofillMetrics::FormInteractionsUkmLogger::
     LogAutofillFormSummaryAtFormRemove(
         const FormStructure& form_structure,
         FormEventSet form_events,
-        bool is_in_any_main_frame,
         const base::TimeTicks& initial_interaction_timestamp,
         const base::TimeTicks& form_submitted_timestamp) {
   if (!CanLog()) {
@@ -2729,7 +2740,6 @@ void AutofillMetrics::FormInteractionsUkmLogger::
       .SetFormSignature(HashFormSignature(form_structure.form_signature()))
       .SetAutofillFormEvents(form_events.data()[0])
       .SetAutofillFormEvents2(form_events.data()[1])
-      .SetIsInMainframe(is_in_any_main_frame)
       .SetWasSubmitted(!form_submitted_timestamp.is_null())
       .SetSampleRate(1);
 
@@ -3230,15 +3240,13 @@ std::string AutofillMetrics::GetHistogramStringForCardType(
     }
   } else if (absl::holds_alternative<CreditCard::RecordType>(card_type)) {
     switch (absl::get<CreditCard::RecordType>(card_type)) {
-      case CreditCard::FULL_SERVER_CARD:
-      case CreditCard::MASKED_SERVER_CARD:
+      case CreditCard::RecordType::kFullServerCard:
+      case CreditCard::RecordType::kMaskedServerCard:
         return ".ServerCard";
-      case CreditCard::VIRTUAL_CARD:
+      case CreditCard::RecordType::kVirtualCard:
         return ".VirtualCard";
-      case CreditCard::LOCAL_CARD:
-        // We do not offer CVC auth for local cards.
-        NOTREACHED();
-        break;
+      case CreditCard::RecordType::kLocalCard:
+        return ".LocalCard";
     }
   }
 

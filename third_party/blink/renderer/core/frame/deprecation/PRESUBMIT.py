@@ -72,14 +72,16 @@ def _CheckDeprecation(input_api, output_api):
                 'translation_note']:
             return [
                 output_api.PresubmitError(
-                    'deprecation.json5 items must all contain a non-empty "translation_note" value.'
+                    'deprecation.json5 items must all contain a non-empty '
+                    '"translation_note" value.'
                 )
             ]
         if len(deprecation['translation_note']) != len(
                 deprecation['translation_note'].encode()):
             return [
                 output_api.PresubmitError(
-                    'deprecation.json5 items must all contain fully ascii "translation_note" values.'
+                    'deprecation.json5 items must all contain fully ascii '
+                    '"translation_note" values.'
                 )
             ]
         if 'web_features' in deprecation and deprecation['web_features']:
@@ -99,14 +101,16 @@ def _CheckDeprecation(input_api, output_api):
             if deprecation['name'] not in EXEMPTED_FROM_RENDERER_GENERATION:
                 return [
                     output_api.PresubmitError(
-                        'deprecation.json5 items must all contain a non-empty list of "web_features".'
+                        'deprecation.json5 items must all contain a non-empty '
+                        'list of "web_features".'
                     )
                 ]
         if 'chrome_status_feature' in deprecation:
             if not deprecation['chrome_status_feature']:
                 return [
                     output_api.PresubmitError(
-                        'deprecation.json5 items can omit chrome_status_feature, but if included it must have a value.'
+                        'deprecation.json5 items can omit chrome_status_feature,'
+                        'but if included it must have a value.'
                     )
                 ]
             if deprecation[
@@ -114,20 +118,41 @@ def _CheckDeprecation(input_api, output_api):
                         'chrome_status_feature'] > 9999999999999999:
                 return [
                     output_api.PresubmitError(
-                        'deprecation.json5 items with a chrome_status_feature must have one in the valid range.'
+                        'deprecation.json5 items with a chrome_status_feature '
+                        'must have one in the valid range.'
                     )
                 ]
         if 'milestone' in deprecation:
             if not deprecation['milestone']:
                 return [
                     output_api.PresubmitError(
-                        'deprecation.json5 items can omit milestone, but if included it must have a value.'
+                        'deprecation.json5 items can omit milestone, but if '
+                        'included it must have a value.'
                     )
                 ]
             if deprecation['milestone'] < 1 or deprecation['milestone'] > 1000:
                 return [
                     output_api.PresubmitError(
-                        'deprecation.json5 items with a milestone must have one in the valid range.'
+                        'deprecation.json5 items with a milestone must have '
+                        'one in the valid range.'
+                    )
+                ]
+        if 'obsolete_to_be_removed_after_milestone' in deprecation:
+            if not deprecation['obsolete_to_be_removed_after_milestone']:
+                return [
+                    output_api.PresubmitError(
+                        'deprecation.json5 items can omit milestone, but if '
+                        'included it must have a value.'
+                    )
+                ]
+            if deprecation[
+                    'obsolete_to_be_removed_after_milestone'] < 1 or deprecation[
+                        'obsolete_to_be_removed_after_milestone'] > 1000:
+                return [
+                    output_api.PresubmitError(
+                        'deprecation.json5 items with an '
+                        'obsolete_to_be_removed_after_milestone must have a '
+                        'milestone in the valid range.'
                     )
                 ]
 

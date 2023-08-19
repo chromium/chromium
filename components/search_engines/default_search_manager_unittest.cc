@@ -30,34 +30,38 @@ namespace {
 void SetOverrides(sync_preferences::TestingPrefServiceSyncable* prefs,
                   bool update) {
   prefs->SetUserPref(prefs::kSearchProviderOverridesVersion, base::Value(1));
-  base::Value::List overrides;
-  base::Value::Dict entry;
 
-  entry.Set("name", update ? "new_foo" : "foo");
-  entry.Set("keyword", update ? "new_fook" : "fook");
-  entry.Set("search_url", "http://foo.com/s?q={searchTerms}");
-  entry.Set("favicon_url", "http://foi.com/favicon.ico");
-  entry.Set("encoding", "UTF-8");
-  entry.Set("id", 1001);
-  entry.Set("suggest_url", "http://foo.com/suggest?q={searchTerms}");
-  base::Value::List alternate_urls;
-  alternate_urls.Append("http://foo.com/alternate?q={searchTerms}");
-  entry.Set("alternate_urls", std::move(alternate_urls));
-  overrides.Append(std::move(entry));
+  auto entry1 =
+      base::Value::Dict()
+          .Set("name", update ? "new_foo" : "foo")
+          .Set("keyword", update ? "new_fook" : "fook")
+          .Set("search_url", "http://foo.com/s?q={searchTerms}")
+          .Set("favicon_url", "http://foi.com/favicon.ico")
+          .Set("encoding", "UTF-8")
+          .Set("id", 1001)
+          .Set("suggest_url", "http://foo.com/suggest?q={searchTerms}")
+          .Set("alternate_urls",
+               base::Value::List().Append(
+                   "http://foo.com/alternate?q={searchTerms}"));
 
-  entry = base::Value::Dict();
-  entry.Set("id", 1002);
-  entry.Set("name", update ? "new_bar" : "bar");
-  entry.Set("keyword", update ? "new_bark" : "bark");
-  entry.Set("encoding", std::string());
-  overrides.Append(entry.Clone());
-  entry.Set("id", 1003);
-  entry.Set("name", "baz");
-  entry.Set("keyword", "bazk");
-  entry.Set("encoding", "UTF-8");
-  overrides.Append(std::move(entry));
-  prefs->SetUserPref(prefs::kSearchProviderOverrides,
-                     base::Value(std::move(overrides)));
+  auto entry2 = base::Value::Dict()
+                    .Set("id", 1002)
+                    .Set("name", update ? "new_bar" : "bar")
+                    .Set("keyword", update ? "new_bark" : "bark")
+                    .Set("encoding", std::string());
+
+  auto entry3 = base::Value::Dict()
+                    .Set("id", 1003)
+                    .Set("name", "baz")
+                    .Set("keyword", "bazk")
+                    .Set("encoding", "UTF-8");
+
+  auto overrides = base::Value::List()
+                       .Append(std::move(entry1))
+                       .Append(std::move(entry2))
+                       .Append(std::move(entry3));
+
+  prefs->SetUserPref(prefs::kSearchProviderOverrides, std::move(overrides));
 }
 
 void SetPolicy(sync_preferences::TestingPrefServiceSyncable* prefs,

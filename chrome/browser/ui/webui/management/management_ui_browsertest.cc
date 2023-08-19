@@ -106,7 +106,7 @@ IN_PROC_BROWSER_TEST_F(ManagementUITest, MAYBE_ManagementStateChange) {
            base::UTF8ToUTF16(chrome::kManagedUiLearnMoreUrl),
            base::EscapeForHTML(l10n_util::GetStringUTF16(
                IDS_MANAGEMENT_LEARN_MORE_ACCCESSIBILITY_TEXT)))},
-      {"extensionReportingTitle",
+      {"extensionReportingSubtitle",
        l10n_util::GetStringUTF16(IDS_MANAGEMENT_EXTENSIONS_INSTALLED)},
       {"pageSubtitle",
        l10n_util::GetStringUTF16(IDS_MANAGEMENT_NOT_MANAGED_SUBTITLE)},
@@ -139,7 +139,7 @@ IN_PROC_BROWSER_TEST_F(ManagementUITest, MAYBE_ManagementStateChange) {
            base::UTF8ToUTF16(chrome::kManagedUiLearnMoreUrl),
            base::EscapeForHTML(l10n_util::GetStringUTF16(
                IDS_MANAGEMENT_LEARN_MORE_ACCCESSIBILITY_TEXT)))},
-      {"extensionReportingTitle",
+      {"extensionReportingSubtitle",
        l10n_util::GetStringUTF16(IDS_MANAGEMENT_EXTENSIONS_INSTALLED)},
       {"pageSubtitle", l10n_util::GetStringUTF16(IDS_MANAGEMENT_SUBTITLE)},
       {"managedWebsitesSubtitle",

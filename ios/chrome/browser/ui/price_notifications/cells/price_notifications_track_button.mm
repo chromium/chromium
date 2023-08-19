@@ -14,10 +14,6 @@
 #import "ios/chrome/grit/ios_strings.h"
 #import "ui/base/l10n/l10n_util_mac.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 namespace {
 const CGFloat kTrackButtonTopPadding = 4;
 }  // namespace
@@ -27,42 +23,30 @@ const CGFloat kTrackButtonTopPadding = 4;
 - (instancetype)init {
   self = [super init];
   if (self) {
-    // TODO(crbug.com/1418068): Simplify after minimum version required is >=
-    // iOS 15.
     size_t horizontalPadding = [self horizontalPadding];
-    if (base::ios::IsRunningOnIOS15OrLater() &&
-        IsUIButtonConfigurationEnabled()) {
-      if (@available(iOS 15, *)) {
-        UIButtonConfiguration* buttonConfiguration =
-            [UIButtonConfiguration plainButtonConfiguration];
-        buttonConfiguration.contentInsets = NSDirectionalEdgeInsetsMake(
-            kTrackButtonTopPadding, horizontalPadding, kTrackButtonTopPadding,
-            horizontalPadding);
+    if (IsUIButtonConfigurationEnabled()) {
+      UIButtonConfiguration* buttonConfiguration =
+          [UIButtonConfiguration plainButtonConfiguration];
+      buttonConfiguration.contentInsets = NSDirectionalEdgeInsetsMake(
+          kTrackButtonTopPadding, horizontalPadding, kTrackButtonTopPadding,
+          horizontalPadding);
 
-        // Customize title string.
-        NSMutableParagraphStyle* style = [[NSMutableParagraphStyle alloc] init];
-        UIFont* font =
-            [UIFont preferredFontForTextStyle:UIFontTextStyleHeadline];
-        [style setLineBreakMode:NSLineBreakByTruncatingTail];
-        NSDictionary* attributes = @{
-          NSParagraphStyleAttributeName : style,
-          NSFontAttributeName : font
-        };
-        NSMutableAttributedString* string = [[NSMutableAttributedString alloc]
-            initWithString:
-                l10n_util::GetNSString(
-                    IDS_IOS_PRICE_NOTIFICATIONS_PRICE_TRACK_TRACK_BUTTON)];
-        [string addAttributes:attributes range:NSMakeRange(0, string.length)];
-        buttonConfiguration.attributedTitle = string;
+      // Customize title string.
+      UIFont* font = [UIFont preferredFontForTextStyle:UIFontTextStyleHeadline];
+      NSDictionary* attributes = @{NSFontAttributeName : font};
+      NSMutableAttributedString* string = [[NSMutableAttributedString alloc]
+          initWithString:
+              l10n_util::GetNSString(
+                  IDS_IOS_PRICE_NOTIFICATIONS_PRICE_TRACK_TRACK_BUTTON)];
+      [string addAttributes:attributes range:NSMakeRange(0, string.length)];
+      buttonConfiguration.attributedTitle = string;
 
-        buttonConfiguration.baseForegroundColor = UIColor.whiteColor;
-        buttonConfiguration.background.backgroundColor =
-            [UIColor colorNamed:kBlueColor];
-        buttonConfiguration.cornerStyle =
-            UIButtonConfigurationCornerStyleCapsule;
-        buttonConfiguration.titleLineBreakMode = NSLineBreakByTruncatingTail;
-        self.configuration = buttonConfiguration;
-      }
+      buttonConfiguration.baseForegroundColor = UIColor.whiteColor;
+      buttonConfiguration.background.backgroundColor =
+          [UIColor colorNamed:kBlueColor];
+      buttonConfiguration.cornerStyle = UIButtonConfigurationCornerStyleCapsule;
+      buttonConfiguration.titleLineBreakMode = NSLineBreakByTruncatingTail;
+      self.configuration = buttonConfiguration;
     } else {
       self.titleLabel.font =
           [UIFont preferredFontForTextStyle:UIFontTextStyleHeadline];

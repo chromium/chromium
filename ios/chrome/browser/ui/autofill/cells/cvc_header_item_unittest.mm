@@ -4,15 +4,11 @@
 
 #import "cvc_header_item.h"
 
-#import "base/mac/foundation_util.h"
+#import "base/apple/foundation_util.h"
 #import "ios/chrome/browser/shared/ui/table_view/chrome_table_view_styler.h"
 #import "testing/gtest/include/gtest/gtest.h"
 #import "testing/gtest_mac.h"
 #import "testing/platform_test.h"
-
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
 
 namespace {
 
@@ -29,7 +25,7 @@ TEST_F(CVCHeaderItemTest, ConfigureHeaderFooterView) {
   id view = [[[header_item cellClass] alloc] init];
   ASSERT_TRUE([view isMemberOfClass:[CVCHeaderView class]]);
 
-  CVCHeaderView* header_view = base::mac::ObjCCastStrict<CVCHeaderView>(view);
+  CVCHeaderView* header_view = base::apple::ObjCCastStrict<CVCHeaderView>(view);
   EXPECT_EQ(0U, header_view.instructionsLabel.text.length);
 
   ChromeTableViewStyler* styler = [[ChromeTableViewStyler alloc] init];

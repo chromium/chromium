@@ -36,22 +36,46 @@ const StackTraceContainer& OperationRecord::GetStackTrace() const {
   return stack_trace_;
 }
 
+#if BUILDFLAG(ENABLE_ALLOCATION_TRACE_RECORDER_FULL_REPORTING)
+AllocationTraceRecorderStatistics::AllocationTraceRecorderStatistics(
+    size_t total_number_of_allocations,
+    size_t total_number_of_collisions)
+    : total_number_of_allocations(total_number_of_allocations),
+      total_number_of_collisions(total_number_of_collisions) {}
+#else
+AllocationTraceRecorderStatistics::AllocationTraceRecorderStatistics(
+    size_t total_number_of_allocations)
+    : total_number_of_allocations(total_number_of_allocations) {}
+#endif
+
 void AllocationTraceRecorder::OnAllocation(
     const void* allocated_address,
     size_t allocated_size,
     base::allocator::dispatcher::AllocationSubsystem subsystem,
     const char* type) {
-  for (auto idx = GetNextIndex();
-       !alloc_trace_buffer_[idx].InitializeAllocation(allocated_address,
-                                                      allocated_size);
-       idx = GetNextIndex()) {
+  // Record the allocation into the next available slot, allowing for failure
+  // due to the slot already being in-use by another
+  // OperationRecord::Initialize*() call from another thread.
+  for (auto index = GetNextIndex();
+       !alloc_trace_buffer_[index].InitializeAllocation(allocated_address,
+                                                        allocated_size);
+       index = GetNextIndex()) {
+#if BUILDFLAG(ENABLE_ALLOCATION_TRACE_RECORDER_FULL_REPORTING)
+    total_number_of_collisions_.fetch_add(1, std::memory_order_relaxed);
+#endif
   }
 }
 
 void AllocationTraceRecorder::OnFree(const void* freed_address) {
-  for (auto idx = GetNextIndex();
-       !alloc_trace_buffer_[idx].InitializeFree(freed_address);
-       idx = GetNextIndex()) {
+  // Record the free into the next available slot, allowing for failure due to
+  // the slot already being in-use by another OperationRecord::Initialize*()
+  // call from another thread.
+  for (auto index = GetNextIndex();
+       !alloc_trace_buffer_[index].InitializeFree(freed_address);
+       index = GetNextIndex()) {
+#if BUILDFLAG(ENABLE_ALLOCATION_TRACE_RECORDER_FULL_REPORTING)
+    total_number_of_collisions_.fetch_add(1, std::memory_order_relaxed);
+#endif
   }
 }
 
@@ -72,6 +96,16 @@ const OperationRecord& AllocationTraceRecorder::operator[](size_t idx) const {
   DCHECK_LT(array_index, alloc_trace_buffer_.size());
 
   return alloc_trace_buffer_[array_index];
+}
+
+AllocationTraceRecorderStatistics
+AllocationTraceRecorder::GetRecorderStatistics() const {
+#if BUILDFLAG(ENABLE_ALLOCATION_TRACE_RECORDER_FULL_REPORTING)
+  return {total_number_of_records_.load(std::memory_order_relaxed),
+          total_number_of_collisions_.load(std::memory_order_relaxed)};
+#else
+  return {total_number_of_records_.load(std::memory_order_relaxed)};
+#endif
 }
 
 }  // namespace base::debug::tracer

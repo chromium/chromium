@@ -32,6 +32,12 @@
 #include "components/viz/test/test_gpu_service_holder.h"
 #include "components/viz/test/test_in_process_context_provider.h"
 #include "gpu/command_buffer/client/gles2_implementation.h"
+#include "skia/buildflags.h"
+
+#if BUILDFLAG(SKIA_USE_DAWN)
+#include "third_party/dawn/include/dawn/dawn_proc.h"
+#include "third_party/dawn/include/dawn/native/DawnNative.h"  // nogncheck
+#endif
 
 using gpu::gles2::GLES2Interface;
 
@@ -58,7 +64,11 @@ LayerTreePixelTest::LayerTreePixelTest(viz::RendererType renderer_type)
       raster_type_(GetDefaultRasterType(renderer_type)),
       pixel_comparator_(
           std::make_unique<AlphaDiscardingExactPixelComparator>()),
-      pending_texture_mailbox_callbacks_(0) {}
+      pending_texture_mailbox_callbacks_(0) {
+#if BUILDFLAG(SKIA_USE_DAWN)
+  dawnProcSetProcs(&dawn::native::GetProcs());
+#endif
+}
 
 LayerTreePixelTest::~LayerTreePixelTest() = default;
 
@@ -66,14 +76,14 @@ std::unique_ptr<TestLayerTreeFrameSink>
 LayerTreePixelTest::CreateLayerTreeFrameSink(
     const viz::RendererSettings& renderer_settings,
     double refresh_rate,
-    scoped_refptr<viz::ContextProvider>,
+    scoped_refptr<viz::RasterContextProvider>,
     scoped_refptr<viz::RasterContextProvider>) {
   scoped_refptr<viz::TestInProcessContextProvider> compositor_context_provider;
   scoped_refptr<viz::TestInProcessContextProvider> worker_context_provider;
   if (!use_software_renderer()) {
     compositor_context_provider =
         base::MakeRefCounted<viz::TestInProcessContextProvider>(
-            viz::TestContextType::kGLES2, /*support_locking=*/false);
+            viz::TestContextType::kGLES2WithRaster, /*support_locking=*/false);
 
     viz::TestContextType worker_ri_type;
     switch (raster_type()) {

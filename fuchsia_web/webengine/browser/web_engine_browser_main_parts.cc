@@ -4,7 +4,6 @@
 
 #include "fuchsia_web/webengine/browser/web_engine_browser_main_parts.h"
 
-#include <fuchsia/ui/scenic/cpp/fidl.h>
 #include <fuchsia/web/cpp/fidl.h>
 #include <lib/sys/cpp/component_context.h>
 #include <lib/sys/cpp/outgoing_directory.h>
@@ -154,24 +153,6 @@ std::unique_ptr<media::FuchsiaCdmManager> CreateCdmManager() {
       base::FilePath(cdm_data_directory), cdm_data_quota_bytes);
 }
 
-// Checks the supported ozone platform with Scenic if no arg is specified
-// already.
-void MaybeSetOzonePlatformArg(base::CommandLine* launch_args) {
-  if (launch_args->HasSwitch(switches::kOzonePlatform))
-    return;
-
-  fuchsia::ui::scenic::ScenicSyncPtr scenic;
-  zx_status_t status =
-      base::ComponentContextForProcess()->svc()->Connect(scenic.NewRequest());
-  ZX_CHECK(status == ZX_OK, status) << "Couldn't connect to Scenic.";
-
-  bool scenic_uses_flatland = false;
-  status = scenic->UsesFlatland(&scenic_uses_flatland);
-  ZX_CHECK(status == ZX_OK, status) << "UsesFlatland()";
-  launch_args->AppendSwitchNative(switches::kOzonePlatform,
-                                  scenic_uses_flatland ? "flatland" : "scenic");
-}
-
 }  // namespace
 
 void FrameHostImpl::CreateFrameWithParams(
@@ -193,11 +174,6 @@ WebEngineBrowserMainParts::browser_contexts() const {
   for (auto& binding : context_bindings_.bindings())
     contexts.push_back(binding->impl()->browser_context());
   return contexts;
-}
-
-int WebEngineBrowserMainParts::PreEarlyInitialization() {
-  MaybeSetOzonePlatformArg(base::CommandLine::ForCurrentProcess());
-  return content::BrowserMainParts::PreEarlyInitialization();
 }
 
 void WebEngineBrowserMainParts::PostEarlyInitialization() {

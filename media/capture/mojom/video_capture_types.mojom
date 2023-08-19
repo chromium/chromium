@@ -87,8 +87,8 @@ enum VideoCaptureApi {
 
 [Stable, Extensible]
 enum VideoCaptureTransportType {
-  // For MACOSX_AVFOUNDATION Api, identifies devices that are built-in or USB.
-  MACOSX_USB_OR_BUILT_IN,
+// For AVFoundation Api, identify devices that are built-in or USB.
+  APPLE_USB_OR_BUILT_IN,
   OTHER_TRANSPORT
 };
 
@@ -256,6 +256,9 @@ enum VideoCaptureError {
   [MinVersion=5] kWinMediaFoundationSourceCreationFailed,
   [MinVersion=5] kWinDirectShowDeviceFilterCreationFailed,
   [MinVersion=5] kWinDirectShowDeviceInitializationFailed,
+  [MinVersion=6] kVideoCaptureDeviceFactorySecondCreateDenied,
+  [MinVersion=7] kScreenCaptureKitResetStreamError,
+  [MinVersion=8] kWinMediaFoundationCameraBusy,
 };
 
 [Stable, Extensible]

@@ -2,12 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {Action} from 'chrome://resources/ash/common/store/store.js';
 import {assert} from 'chrome://resources/js/assert_ts.js';
+import {Action} from 'chrome://resources/js/store_ts.js';
 import {FilePath} from 'chrome://resources/mojo/mojo/public/mojom/base/file_path.mojom-webui.js';
 import {Url} from 'chrome://resources/mojo/url/mojom/url.mojom-webui.js';
 
-import {CurrentWallpaper, GooglePhotosAlbum, GooglePhotosEnablementState, GooglePhotosPhoto, WallpaperCollection, WallpaperImage} from '../../personalization_app.mojom-webui.js';
+import {CurrentAttribution, CurrentWallpaper, GooglePhotosAlbum, GooglePhotosEnablementState, GooglePhotosPhoto, WallpaperCollection, WallpaperImage} from '../../personalization_app.mojom-webui.js';
 
 import {DisplayableImage} from './constants.js';
 
@@ -35,6 +35,7 @@ export enum WallpaperActionName {
   BEGIN_UPDATE_DAILY_REFRESH_IMAGE = 'begin_update_daily_refresh_image',
   CLEAR_DAILY_REFRESH_ACTION = 'clear_daily_refresh_action',
   END_SELECT_IMAGE = 'end_select_image',
+  SET_ATTRIBUTION = 'set_attribution',
   SET_COLLECTIONS = 'set_collections',
   SET_DAILY_REFRESH_COLLECTION_ID = 'set_daily_refresh_collection_id',
   SET_GOOGLE_PHOTOS_DAILY_REFRESH_ALBUM_ID =
@@ -58,19 +59,20 @@ export type WallpaperActions =
     BeginLoadImagesForCollectionsAction|BeginLoadLocalImagesAction|
     BeginLoadLocalImageDataAction|BeginUpdateDailyRefreshImageAction|
     BeginLoadSelectedImageAction|BeginSelectImageAction|ClearDailyRefreshAction|
-    EndSelectImageAction|SetCollectionsAction|SetDailyRefreshCollectionIdAction|
-    SetGooglePhotosDailyRefreshAlbumIdAction|SetGooglePhotosEnabledAction|
-    SetImagesForCollectionAction|SetDefaultImageThumbnailAction|
-    SetLocalImageDataAction|SetLocalImagesAction|
+    EndSelectImageAction|SetAttributionAction|SetCollectionsAction|
+    SetDailyRefreshCollectionIdAction|SetGooglePhotosDailyRefreshAlbumIdAction|
+    SetGooglePhotosEnabledAction|SetImagesForCollectionAction|
+    SetDefaultImageThumbnailAction|SetLocalImageDataAction|SetLocalImagesAction|
     SetUpdatedDailyRefreshImageAction|SetSelectedImageAction|
     SetFullscreenEnabledAction;
 
-export type AppendGooglePhotosAlbumAction = Action&{
-  name: WallpaperActionName.APPEND_GOOGLE_PHOTOS_ALBUM,
-  albumId: string,
-  photos: GooglePhotosPhoto[] | null,
-  resumeToken: string | null,
-};
+export interface AppendGooglePhotosAlbumAction extends Action {
+  name: WallpaperActionName.APPEND_GOOGLE_PHOTOS_ALBUM;
+  albumId: string;
+  photos: GooglePhotosPhoto[]|null;
+  resumeToken: string|null;
+}
+
 
 /**
  * Appends to the list of Google Photos photos for the album associated with the
@@ -87,11 +89,12 @@ export function appendGooglePhotosAlbumAction(
   };
 }
 
-export type AppendGooglePhotosAlbumsAction = Action&{
-  name: WallpaperActionName.APPEND_GOOGLE_PHOTOS_ALBUMS,
-  albums: GooglePhotosAlbum[] | null,
-  resumeToken: string | null,
-};
+export interface AppendGooglePhotosAlbumsAction extends Action {
+  name: WallpaperActionName.APPEND_GOOGLE_PHOTOS_ALBUMS;
+  albums: GooglePhotosAlbum[]|null;
+  resumeToken: string|null;
+}
+
 
 /**
  * Appends to the list of Google Photos owned albums. May be called with
@@ -107,11 +110,12 @@ export function appendGooglePhotosAlbumsAction(
   };
 }
 
-export type AppendGooglePhotosSharedAlbumsAction = Action&{
-  name: WallpaperActionName.APPEND_GOOGLE_PHOTOS_SHARED_ALBUMS,
-  albums: GooglePhotosAlbum[] | null,
-  resumeToken: string | null,
-};
+export interface AppendGooglePhotosSharedAlbumsAction extends Action {
+  name: WallpaperActionName.APPEND_GOOGLE_PHOTOS_SHARED_ALBUMS;
+  albums: GooglePhotosAlbum[]|null;
+  resumeToken: string|null;
+}
+
 
 /**
  * Appends to the list of Google Photos shared albums. May be called with
@@ -127,11 +131,12 @@ export function appendGooglePhotosSharedAlbumsAction(
   };
 }
 
-export type AppendGooglePhotosPhotosAction = Action&{
-  name: WallpaperActionName.APPEND_GOOGLE_PHOTOS_PHOTOS,
-  photos: GooglePhotosPhoto[] | null,
-  resumeToken: string | null,
-};
+export interface AppendGooglePhotosPhotosAction extends Action {
+  name: WallpaperActionName.APPEND_GOOGLE_PHOTOS_PHOTOS;
+  photos: GooglePhotosPhoto[]|null;
+  resumeToken: string|null;
+}
+
 
 /**
  * Appends to the list of Google Photos photos. May be called with null on
@@ -147,50 +152,54 @@ export function appendGooglePhotosPhotosAction(
   };
 }
 
-export type BeginLoadGooglePhotosAlbumAction = Action&{
-  name: WallpaperActionName.BEGIN_LOAD_GOOGLE_PHOTOS_ALBUM,
-  albumId: string,
-};
+export interface BeginLoadGooglePhotosAlbumAction extends Action {
+  name: WallpaperActionName.BEGIN_LOAD_GOOGLE_PHOTOS_ALBUM;
+  albumId: string;
+}
+
 
 /**
- * Notify that the app is loading the list of Google Photos photos for the album
- * associated with the specified id.
+ * Notifies that the app is loading the list of Google Photos photos for the
+ * album associated with the specified id.
  */
 export function beginLoadGooglePhotosAlbumAction(albumId: string):
     BeginLoadGooglePhotosAlbumAction {
   return {albumId, name: WallpaperActionName.BEGIN_LOAD_GOOGLE_PHOTOS_ALBUM};
 }
 
-export type BeginLoadGooglePhotosAlbumsAction = Action&{
-  name: WallpaperActionName.BEGIN_LOAD_GOOGLE_PHOTOS_ALBUMS,
-};
+export interface BeginLoadGooglePhotosAlbumsAction extends Action {
+  name: WallpaperActionName.BEGIN_LOAD_GOOGLE_PHOTOS_ALBUMS;
+}
+
 
 /**
- * Notify that the app is loading the list of Google Photos albums.
+ * Notifies that the app is loading the list of Google Photos albums.
  */
 export function beginLoadGooglePhotosAlbumsAction():
     BeginLoadGooglePhotosAlbumsAction {
   return {name: WallpaperActionName.BEGIN_LOAD_GOOGLE_PHOTOS_ALBUMS};
 }
 
-export type BeginLoadGooglePhotosSharedAlbumsAction = Action&{
-  name: WallpaperActionName.BEGIN_LOAD_GOOGLE_PHOTOS_SHARED_ALBUMS,
-};
+export interface BeginLoadGooglePhotosSharedAlbumsAction extends Action {
+  name: WallpaperActionName.BEGIN_LOAD_GOOGLE_PHOTOS_SHARED_ALBUMS;
+}
+
 
 /**
- * Notify that the app is loading the list of Google Photos albums.
+ * Notifies that the app is loading the list of Google Photos albums.
  */
 export function beginLoadGooglePhotosSharedAlbumsAction():
     BeginLoadGooglePhotosSharedAlbumsAction {
   return {name: WallpaperActionName.BEGIN_LOAD_GOOGLE_PHOTOS_SHARED_ALBUMS};
 }
 
-export type BeginLoadGooglePhotosEnabledAction = Action&{
-  name: WallpaperActionName.BEGIN_LOAD_GOOGLE_PHOTOS_ENABLED,
-};
+export interface BeginLoadGooglePhotosEnabledAction extends Action {
+  name: WallpaperActionName.BEGIN_LOAD_GOOGLE_PHOTOS_ENABLED;
+}
+
 
 /**
- * Notify that the app is loading whether the user is allowed to access Google
+ * Notifies that the app is loading whether the user is allowed to access Google
  * Photos.
  */
 export function beginLoadGooglePhotosEnabledAction():
@@ -198,25 +207,27 @@ export function beginLoadGooglePhotosEnabledAction():
   return {name: WallpaperActionName.BEGIN_LOAD_GOOGLE_PHOTOS_ENABLED};
 }
 
-export type BeginLoadGooglePhotosPhotosAction = Action&{
-  name: WallpaperActionName.BEGIN_LOAD_GOOGLE_PHOTOS_PHOTOS,
-};
+export interface BeginLoadGooglePhotosPhotosAction extends Action {
+  name: WallpaperActionName.BEGIN_LOAD_GOOGLE_PHOTOS_PHOTOS;
+}
+
 
 /**
- * Notify that the app is loading the list of Google Photos photos.
+ * Notifies that the app is loading the list of Google Photos photos.
  */
 export function beginLoadGooglePhotosPhotosAction():
     BeginLoadGooglePhotosPhotosAction {
   return {name: WallpaperActionName.BEGIN_LOAD_GOOGLE_PHOTOS_PHOTOS};
 }
 
-export type BeginLoadImagesForCollectionsAction = Action&{
-  name: WallpaperActionName.BEGIN_LOAD_IMAGES_FOR_COLLECTIONS,
-  collections: WallpaperCollection[],
-};
+export interface BeginLoadImagesForCollectionsAction extends Action {
+  name: WallpaperActionName.BEGIN_LOAD_IMAGES_FOR_COLLECTIONS;
+  collections: WallpaperCollection[];
+}
+
 
 /**
- * Notify that app is loading image list for the given collection.
+ * Notifies that app is loading image list for the given collection.
  */
 export function beginLoadImagesForCollectionsAction(
     collections: WallpaperCollection[]): BeginLoadImagesForCollectionsAction {
@@ -226,33 +237,36 @@ export function beginLoadImagesForCollectionsAction(
   };
 }
 
-export type BeginLoadDefaultImageThumbnailAction = Action&{
-  name: WallpaperActionName.BEGIN_LOAD_DEFAULT_IMAGE_THUMBNAIL,
-};
+export interface BeginLoadDefaultImageThumbnailAction extends Action {
+  name: WallpaperActionName.BEGIN_LOAD_DEFAULT_IMAGE_THUMBNAIL;
+}
+
 
 export function beginLoadDefaultImageThubmnailAction():
     BeginLoadDefaultImageThumbnailAction {
   return {name: WallpaperActionName.BEGIN_LOAD_DEFAULT_IMAGE_THUMBNAIL};
 }
 
-export type BeginLoadLocalImagesAction = Action&{
-  name: WallpaperActionName.BEGIN_LOAD_LOCAL_IMAGES,
-};
+export interface BeginLoadLocalImagesAction extends Action {
+  name: WallpaperActionName.BEGIN_LOAD_LOCAL_IMAGES;
+}
+
 
 /**
- * Notify that app is loading local image list.
+ * Notifies that app is loading local image list.
  */
 export function beginLoadLocalImagesAction(): BeginLoadLocalImagesAction {
   return {name: WallpaperActionName.BEGIN_LOAD_LOCAL_IMAGES};
 }
 
-export type BeginLoadLocalImageDataAction = Action&{
-  name: WallpaperActionName.BEGIN_LOAD_LOCAL_IMAGE_DATA,
-  id: string,
-};
+export interface BeginLoadLocalImageDataAction extends Action {
+  name: WallpaperActionName.BEGIN_LOAD_LOCAL_IMAGE_DATA;
+  id: string;
+}
+
 
 /**
- * Notify that app is loading thumbnail for the given local image.
+ * Notifies that app is loading thumbnail for the given local image.
  */
 export function beginLoadLocalImageDataAction(image: FilePath):
     BeginLoadLocalImageDataAction {
@@ -262,12 +276,13 @@ export function beginLoadLocalImageDataAction(image: FilePath):
   };
 }
 
-export type BeginUpdateDailyRefreshImageAction = Action&{
-  name: WallpaperActionName.BEGIN_UPDATE_DAILY_REFRESH_IMAGE,
-};
+export interface BeginUpdateDailyRefreshImageAction extends Action {
+  name: WallpaperActionName.BEGIN_UPDATE_DAILY_REFRESH_IMAGE;
+}
+
 
 /**
- * Notify that a user has clicked on the refresh button.
+ * Notifies that a user has clicked on the refresh button.
  */
 export function beginUpdateDailyRefreshImageAction():
     BeginUpdateDailyRefreshImageAction {
@@ -276,51 +291,73 @@ export function beginUpdateDailyRefreshImageAction():
   };
 }
 
-export type BeginLoadSelectedImageAction = Action&{
-  name: WallpaperActionName.BEGIN_LOAD_SELECTED_IMAGE,
-};
+export interface BeginLoadSelectedImageAction extends Action {
+  name: WallpaperActionName.BEGIN_LOAD_SELECTED_IMAGE;
+}
+
 
 /**
- * Notify that app is loading currently selected image information.
+ * Notifies that app is loading currently selected image information.
  */
 export function beginLoadSelectedImageAction(): BeginLoadSelectedImageAction {
   return {name: WallpaperActionName.BEGIN_LOAD_SELECTED_IMAGE};
 }
 
-export type BeginSelectImageAction = Action&{
-  name: WallpaperActionName.BEGIN_SELECT_IMAGE,
-  image: DisplayableImage,
-};
+export interface BeginSelectImageAction extends Action {
+  name: WallpaperActionName.BEGIN_SELECT_IMAGE;
+  image: DisplayableImage;
+}
+
 
 /**
- * Notify that a user has clicked on an image to set as wallpaper.
+ * Notifies that a user has clicked on an image to set as wallpaper.
  */
 export function beginSelectImageAction(image: DisplayableImage):
     BeginSelectImageAction {
   return {name: WallpaperActionName.BEGIN_SELECT_IMAGE, image};
 }
 
-export type EndSelectImageAction = Action&{
-  name: WallpaperActionName.END_SELECT_IMAGE,
-  image: DisplayableImage,
-  success: boolean,
-};
+export interface EndSelectImageAction extends Action {
+  name: WallpaperActionName.END_SELECT_IMAGE;
+  image: DisplayableImage;
+  success: boolean;
+}
+
 
 /**
- * Notify that the user-initiated action to set image has finished.
+ * Notifies that the user-initiated action to set image has finished.
  */
 export function endSelectImageAction(
     image: DisplayableImage, success: boolean): EndSelectImageAction {
   return {name: WallpaperActionName.END_SELECT_IMAGE, image, success};
 }
 
-export type SetCollectionsAction = Action&{
-  name: WallpaperActionName.SET_COLLECTIONS,
-  collections: WallpaperCollection[] | null,
-};
+export interface SetAttributionAction extends Action {
+  name: WallpaperActionName.SET_ATTRIBUTION;
+  attribution: CurrentAttribution|null;
+}
+
 
 /**
- * Set the collections. May be called with null if an error occurred.
+ * Sets the attribution of the current wallpaper. May be called with null if an
+ * error occurred.
+ */
+export function setAttributionAction(attribution: CurrentAttribution|
+                                     null): SetAttributionAction {
+  return {
+    name: WallpaperActionName.SET_ATTRIBUTION,
+    attribution,
+  };
+}
+
+export interface SetCollectionsAction extends Action {
+  name: WallpaperActionName.SET_COLLECTIONS;
+  collections: WallpaperCollection[]|null;
+}
+
+
+/**
+ * Sets the collections. May be called with null if an error occurred.
  */
 export function setCollectionsAction(collections: WallpaperCollection[]|
                                      null): SetCollectionsAction {
@@ -330,13 +367,14 @@ export function setCollectionsAction(collections: WallpaperCollection[]|
   };
 }
 
-export type SetDailyRefreshCollectionIdAction = Action&{
-  name: WallpaperActionName.SET_DAILY_REFRESH_COLLECTION_ID,
-  collectionId: string,
-};
+export interface SetDailyRefreshCollectionIdAction extends Action {
+  name: WallpaperActionName.SET_DAILY_REFRESH_COLLECTION_ID;
+  collectionId: string;
+}
+
 
 /**
- * Set and enable daily refresh for given collectionId.
+ * Sets and enable daily refresh for given collectionId.
  */
 export function setDailyRefreshCollectionIdAction(collectionId: string):
     SetDailyRefreshCollectionIdAction {
@@ -346,13 +384,14 @@ export function setDailyRefreshCollectionIdAction(collectionId: string):
   };
 }
 
-export type SetGooglePhotosDailyRefreshAlbumIdAction = Action&{
-  name: WallpaperActionName.SET_GOOGLE_PHOTOS_DAILY_REFRESH_ALBUM_ID,
-  albumId: string,
-};
+export interface SetGooglePhotosDailyRefreshAlbumIdAction extends Action {
+  name: WallpaperActionName.SET_GOOGLE_PHOTOS_DAILY_REFRESH_ALBUM_ID;
+  albumId: string;
+}
+
 
 /**
- * Set and enable daily refresh for given Google Photos albumId.
+ * Sets and enable daily refresh for given Google Photos albumId.
  */
 export function setGooglePhotosDailyRefreshAlbumIdAction(albumId: string):
     SetGooglePhotosDailyRefreshAlbumIdAction {
@@ -362,12 +401,13 @@ export function setGooglePhotosDailyRefreshAlbumIdAction(albumId: string):
   };
 }
 
-export type ClearDailyRefreshAction = Action&{
-  name: WallpaperActionName.CLEAR_DAILY_REFRESH_ACTION,
-};
+export interface ClearDailyRefreshAction extends Action {
+  name: WallpaperActionName.CLEAR_DAILY_REFRESH_ACTION;
+}
+
 
 /**
- * Clear the data related to daily refresh, indicating daily refresh is not
+ * Clears the data related to daily refresh, indicating daily refresh is not
  * active.
  */
 export function clearDailyRefreshAction(): ClearDailyRefreshAction {
@@ -376,10 +416,11 @@ export function clearDailyRefreshAction(): ClearDailyRefreshAction {
   };
 }
 
-export type SetGooglePhotosEnabledAction = Action&{
-  name: WallpaperActionName.SET_GOOGLE_PHOTOS_ENABLED,
-  enabled: GooglePhotosEnablementState,
-};
+export interface SetGooglePhotosEnabledAction extends Action {
+  name: WallpaperActionName.SET_GOOGLE_PHOTOS_ENABLED;
+  enabled: GooglePhotosEnablementState;
+}
+
 
 /** Sets whether the user is allowed to access Google Photos. */
 export function setGooglePhotosEnabledAction(
@@ -387,14 +428,15 @@ export function setGooglePhotosEnabledAction(
   return {enabled, name: WallpaperActionName.SET_GOOGLE_PHOTOS_ENABLED};
 }
 
-export type SetImagesForCollectionAction = Action&{
-  name: WallpaperActionName.SET_IMAGES_FOR_COLLECTION,
-  collectionId: string,
-  images: WallpaperImage[] | null,
-};
+export interface SetImagesForCollectionAction extends Action {
+  name: WallpaperActionName.SET_IMAGES_FOR_COLLECTION;
+  collectionId: string;
+  images: WallpaperImage[]|null;
+}
+
 
 /**
- * Set the images for a given collection. May be called with null if an error
+ * Sets the images for a given collection. May be called with null if an error
  * occurred.
  */
 export function setImagesForCollectionAction(
@@ -407,10 +449,11 @@ export function setImagesForCollectionAction(
   };
 }
 
-export type SetDefaultImageThumbnailAction = Action&{
-  name: WallpaperActionName.SET_DEFAULT_IMAGE_THUMBNAIL,
-  thumbnail: Url,
-};
+export interface SetDefaultImageThumbnailAction extends Action {
+  name: WallpaperActionName.SET_DEFAULT_IMAGE_THUMBNAIL;
+  thumbnail: Url;
+}
+
 
 export function setDefaultImageThumbnailAction(thumbnail: Url):
     SetDefaultImageThumbnailAction {
@@ -420,14 +463,15 @@ export function setDefaultImageThumbnailAction(thumbnail: Url):
   };
 }
 
-export type SetLocalImageDataAction = Action&{
-  name: WallpaperActionName.SET_LOCAL_IMAGE_DATA,
-  id: string,
-  data: Url,
-};
+export interface SetLocalImageDataAction extends Action {
+  name: WallpaperActionName.SET_LOCAL_IMAGE_DATA;
+  id: string;
+  data: Url;
+}
+
 
 /**
- * Set the thumbnail data for a local image.
+ * Sets the thumbnail data for a local image.
  */
 export function setLocalImageDataAction(
     filePath: FilePath, data: Url): SetLocalImageDataAction {
@@ -438,12 +482,13 @@ export function setLocalImageDataAction(
   };
 }
 
-export type SetLocalImagesAction = Action&{
-  name: WallpaperActionName.SET_LOCAL_IMAGES,
-  images: FilePath[] | null,
-};
+export interface SetLocalImagesAction extends Action {
+  name: WallpaperActionName.SET_LOCAL_IMAGES;
+  images: FilePath[]|null;
+}
 
-/** Set the list of local images. */
+
+/** Sets the list of local images. */
 export function setLocalImagesAction(images: FilePath[]|
                                      null): SetLocalImagesAction {
   return {
@@ -452,12 +497,13 @@ export function setLocalImagesAction(images: FilePath[]|
   };
 }
 
-export type SetUpdatedDailyRefreshImageAction = Action&{
-  name: WallpaperActionName.SET_UPDATED_DAILY_REFRESH_IMAGE,
-};
+export interface SetUpdatedDailyRefreshImageAction extends Action {
+  name: WallpaperActionName.SET_UPDATED_DAILY_REFRESH_IMAGE;
+}
+
 
 /**
- * Notify that a image has been refreshed.
+ * Notifies that a image has been refreshed.
  */
 export function setUpdatedDailyRefreshImageAction():
     SetUpdatedDailyRefreshImageAction {
@@ -472,10 +518,11 @@ export function setUpdatedDailyRefreshImageAction():
  * scenarios where no wallpaper has ever been selected and no default wallpaper
  * is applied, for example.
  */
-export type SetSelectedImageAction = Action&{
-  name: WallpaperActionName.SET_SELECTED_IMAGE,
-  image: CurrentWallpaper | null,
-};
+export interface SetSelectedImageAction extends Action {
+  name: WallpaperActionName.SET_SELECTED_IMAGE;
+  image: CurrentWallpaper|null;
+}
+
 
 /**
  * Returns an action to set the current image as currently selected across the
@@ -492,13 +539,14 @@ export function setSelectedImageAction(image: CurrentWallpaper|
 
 
 
-export type SetFullscreenEnabledAction = Action&{
-  name: WallpaperActionName.SET_FULLSCREEN_ENABLED,
-  enabled: boolean,
-};
+export interface SetFullscreenEnabledAction extends Action {
+  name: WallpaperActionName.SET_FULLSCREEN_ENABLED;
+  enabled: boolean;
+}
+
 
 /**
- * Enable/disable the fullscreen preview mode for wallpaper.
+ * Enables/disables the fullscreen preview mode for wallpaper.
  */
 export function setFullscreenEnabledAction(enabled: boolean):
     SetFullscreenEnabledAction {

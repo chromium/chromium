@@ -11,8 +11,8 @@
 #include <type_traits>
 #include <utility>
 
+#include "base/allocator/partition_allocator/partition_alloc_base/check.h"
 #include "base/allocator/partition_allocator/partition_alloc_base/compiler_specific.h"
-#include "base/allocator/partition_allocator/partition_alloc_check.h"
 
 namespace partition_alloc::internal {
 
@@ -70,8 +70,8 @@ scoped_refptr<T> AdoptRef(T* obj) {
   static_assert(std::is_same<subtle::StartRefCountFromOneTag, Tag>::value,
                 "Use AdoptRef only if the reference count starts from one.");
 
-  PA_DCHECK(obj);
-  PA_DCHECK(obj->HasOneRef());
+  PA_BASE_DCHECK(obj);
+  PA_BASE_DCHECK(obj->HasOneRef());
   obj->Adopted();
   return scoped_refptr<T>(obj, subtle::kAdoptRefTag);
 }
@@ -225,12 +225,12 @@ class PA_TRIVIAL_ABI scoped_refptr {
   T* get() const { return ptr_; }
 
   T& operator*() const {
-    PA_DCHECK(ptr_);
+    PA_BASE_DCHECK(ptr_);
     return *ptr_;
   }
 
   T* operator->() const {
-    PA_DCHECK(ptr_);
+    PA_BASE_DCHECK(ptr_);
     return ptr_;
   }
 

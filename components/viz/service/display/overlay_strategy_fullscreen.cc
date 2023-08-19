@@ -52,10 +52,13 @@ void OverlayStrategyFullscreen::Propose(
     return;
 
   OverlayCandidate candidate;
+  const OverlayCandidateFactory::OverlayContext context = {
+      .supports_mask_filter = false};
+
   OverlayCandidateFactory candidate_factory = OverlayCandidateFactory(
       render_pass, resource_provider, surface_damage_rect_list,
       &output_color_matrix, GetPrimaryPlaneDisplayRect(primary_plane),
-      &render_pass_filters);
+      &render_pass_filters, context);
   if (candidate_factory.FromDrawQuad(quad, candidate) !=
       OverlayCandidate::CandidateStatus::kSuccess) {
     return;
@@ -68,7 +71,7 @@ void OverlayStrategyFullscreen::Propose(
   }
   candidate.is_opaque = true;
   candidate.plane_z_order = 0;
-  candidates->push_back({front, candidate, this});
+  candidates->emplace_back(front, candidate, this);
 }
 
 bool OverlayStrategyFullscreen::Attempt(

@@ -172,15 +172,21 @@ class ArcIdleManagerTest : public testing::Test {
   std::unique_ptr<FakePowerInstance> power_instance_;
   std::unique_ptr<ash::ArcWindowWatcher> arc_window_watcher_;
 
-  raw_ptr<ArcIdleManager, ExperimentalAsh> arc_idle_manager_;
+  raw_ptr<ArcIdleManager, DanglingUntriaged | ExperimentalAsh>
+      arc_idle_manager_;
   size_t interactive_enabled_counter_ = 0;
   size_t interactive_disabled_counter_ = 0;
 
-  raw_ptr<ash::ThrottleObserver, ExperimentalAsh> cpu_throttle_observer_;
-  raw_ptr<ash::ThrottleObserver, ExperimentalAsh> on_battery_observer_;
-  raw_ptr<ash::ThrottleObserver, ExperimentalAsh> display_power_observer_;
-  raw_ptr<ash::ThrottleObserver, ExperimentalAsh> arc_window_observer_;
-  raw_ptr<ash::ThrottleObserver, ExperimentalAsh> background_service_observer_;
+  raw_ptr<ash::ThrottleObserver, DanglingUntriaged | ExperimentalAsh>
+      cpu_throttle_observer_;
+  raw_ptr<ash::ThrottleObserver, DanglingUntriaged | ExperimentalAsh>
+      on_battery_observer_;
+  raw_ptr<ash::ThrottleObserver, DanglingUntriaged | ExperimentalAsh>
+      display_power_observer_;
+  raw_ptr<ash::ThrottleObserver, DanglingUntriaged | ExperimentalAsh>
+      arc_window_observer_;
+  raw_ptr<ash::ThrottleObserver, DanglingUntriaged | ExperimentalAsh>
+      background_service_observer_;
 };
 
 // Tests that ArcIdleManager can be constructed and destructed.

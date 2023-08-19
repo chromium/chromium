@@ -140,16 +140,36 @@ void SimpleMenuModel::AddTitle(const std::u16string& label) {
   AppendItem(std::move(item));
 }
 
+void SimpleMenuModel::AddTitleWithStringId(int string_id) {
+  AddTitle(l10n_util::GetStringUTF16(string_id));
+}
+
 void SimpleMenuModel::AddSeparator(MenuSeparatorType separator_type) {
   if (items_.empty()) {
     if (separator_type == NORMAL_SEPARATOR) {
       return;
     }
     DCHECK_EQ(SPACING_SEPARATOR, separator_type);
-  } else if (items_.back().type == TYPE_SEPARATOR) {
-    DCHECK_EQ(NORMAL_SEPARATOR, separator_type);
-    DCHECK_EQ(NORMAL_SEPARATOR, items_.back().separator_type);
-    return;
+  } else {
+    size_t last_visible_item = items_.size();
+    for (auto i = items_.size(); i > 0; i--) {
+      if (IsVisibleAt(i - 1)) {
+        last_visible_item = i - 1;
+        break;
+      }
+    }
+
+    if (last_visible_item == items_.size()) {
+      // No visible items. Don't add a separator.
+      return;
+    }
+
+    if (items_.at(last_visible_item).type == TYPE_SEPARATOR) {
+      DCHECK_EQ(NORMAL_SEPARATOR, separator_type);
+      DCHECK_EQ(NORMAL_SEPARATOR, items_.at(last_visible_item).separator_type);
+      // The last item is already a separator. Don't add another.
+      return;
+    }
   }
 #if !defined(USE_AURA)
   if (separator_type == SPACING_SEPARATOR)
@@ -375,15 +395,6 @@ absl::optional<size_t> SimpleMenuModel::GetIndexOfCommandId(
 ////////////////////////////////////////////////////////////////////////////////
 // SimpleMenuModel, MenuModel implementation:
 
-bool SimpleMenuModel::HasIcons() const {
-  for (size_t i = 0; i < GetItemCount(); ++i) {
-    if (!GetIconAt(i).IsEmpty())
-      return true;
-  }
-
-  return false;
-}
-
 size_t SimpleMenuModel::GetItemCount() const {
   return items_.size();
 }
@@ -450,8 +461,10 @@ ButtonMenuItemModel* SimpleMenuModel::GetButtonMenuItemAt(size_t index) const {
 bool SimpleMenuModel::IsEnabledAt(size_t index) const {
   int command_id = GetCommandIdAt(index);
 
-  if (!delegate_ || command_id == kSeparatorId || GetButtonMenuItemAt(index))
+  if (!delegate_ || command_id == kSeparatorId || command_id == kTitleId ||
+      GetButtonMenuItemAt(index)) {
     return items_[ValidateItemIndex(index)].enabled;
+  }
 
   return delegate_->IsCommandIdEnabled(command_id) &&
          items_[ValidateItemIndex(index)].enabled;

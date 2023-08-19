@@ -21,15 +21,14 @@ class FaceMLAppUI;
 // Implements the PageHandler interface.
 class FaceMLPageHandler : public mojom::face_ml_app::PageHandler {
  public:
-  explicit FaceMLPageHandler(FaceMLAppUI* face_ml_app_ui);
+  FaceMLPageHandler(
+      FaceMLAppUI* face_ml_app_ui,
+      mojo::PendingReceiver<mojom::face_ml_app::PageHandler> pending_receiver,
+      mojo::PendingRemote<mojom::face_ml_app::Page> pending_page);
   ~FaceMLPageHandler() override;
 
   FaceMLPageHandler(const FaceMLPageHandler&) = delete;
   FaceMLPageHandler& operator=(const FaceMLPageHandler&) = delete;
-
-  void BindInterface(
-      mojo::PendingReceiver<mojom::face_ml_app::PageHandler> pending_receiver,
-      mojo::PendingRemote<mojom::face_ml_app::Page> pending_page);
 
  private:
   void GetCurrentUserInformation(

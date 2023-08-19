@@ -29,6 +29,7 @@
 #include "third_party/blink/renderer/core/dom/first_letter_pseudo_element.h"
 #include "third_party/blink/renderer/core/dom/layout_tree_builder.h"
 #include "third_party/blink/renderer/core/dom/layout_tree_builder_traversal.h"
+#include "third_party/blink/renderer/core/dom/node_cloning_data.h"
 #include "third_party/blink/renderer/core/dom/node_computed_style.h"
 #include "third_party/blink/renderer/core/dom/node_traversal.h"
 #include "third_party/blink/renderer/core/dom/shadow_root.h"
@@ -116,7 +117,8 @@ Text* Text::splitText(unsigned offset, ExceptionState& exception_state) {
 
   EventQueueScope scope;
   String old_str = data();
-  Text* new_text = CloneWithData(GetDocument(), old_str.Substring(offset));
+  Text* new_text =
+      To<Text>(CloneWithData(GetDocument(), old_str.Substring(offset)));
   SetDataWithoutUpdate(old_str.Substring(0, offset));
 
   DidModifyData(old_str, CharacterData::kUpdateFromNonParser);
@@ -241,10 +243,6 @@ Text* Text::ReplaceWholeText(const String& new_text) {
 
 String Text::nodeName() const {
   return "#text";
-}
-
-Node* Text::Clone(Document& factory, CloneChildrenFlag) const {
-  return CloneWithData(factory, data());
 }
 
 static inline bool EndsWithWhitespace(const String& text) {
@@ -486,7 +484,8 @@ void Text::UpdateTextLayoutObject(unsigned offset_of_replaced_data,
                                         length_of_replaced_data);
 }
 
-Text* Text::CloneWithData(Document& factory, const String& data) const {
+CharacterData* Text::CloneWithData(Document& factory,
+                                   const String& data) const {
   return Create(factory, data);
 }
 

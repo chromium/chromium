@@ -32,6 +32,7 @@ import org.chromium.components.offline_items_collection.UpdateDelta;
 import org.chromium.content_public.browser.LoadUrlParams;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.net.test.EmbeddedTestServer;
+import org.chromium.net.test.ServerCertificate;
 import org.chromium.ui.base.PageTransition;
 
 import java.util.List;
@@ -100,8 +101,8 @@ public class MHTMLPageTest implements CustomMainActivityStart {
     @Before
     public void setUp() {
         deleteTestFiles();
-        mTestServer = EmbeddedTestServer.createAndStartServer(
-                ApplicationProvider.getApplicationContext());
+        mTestServer = EmbeddedTestServer.createAndStartHTTPSServer(
+                ApplicationProvider.getApplicationContext(), ServerCertificate.CERT_OK);
     }
 
     @After

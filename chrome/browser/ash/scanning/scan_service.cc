@@ -44,6 +44,9 @@ namespace mojo_ipc = scanning::mojom;
 // The max progress percent that can be reported for a scanned page.
 constexpr uint32_t kMaxProgressPercent = 100;
 
+// The number of minutes to wait before the scan times out and is canceled.
+constexpr base::TimeDelta kTimeout = base::Minutes(15);
+
 // Creates a filename for a scanned image using |start_time|, |page_number|, and
 // |file_ext|.
 std::string CreateFilename(const base::Time::Exploded& start_time,
@@ -168,6 +171,16 @@ void RecordScanJobResult(
   }
 }
 
+std::unique_ptr<device::PowerSaveBlocker> RequestWakeLock(
+    const std::string& description) {
+  return std::make_unique<device::PowerSaveBlocker>(
+      /*type=*/device::mojom::WakeLockType::kPreventDisplaySleepAllowDimming,
+      /*reason=*/device::mojom::WakeLockReason::kOther,
+      /*description=*/description,
+      /*ui_task_runner=*/base::SequencedTaskRunner::GetCurrentDefault(),
+      /*blocking_task_runner=*/nullptr);
+}
+
 }  // namespace
 
 ScanService::ScanService(LorgnetteScannerManager* lorgnette_scanner_manager,
@@ -216,6 +229,9 @@ void ScanService::StartScan(
     StartScanCallback callback) {
   ClearScanState();
   SetScanJobObserver(std::move(observer));
+
+  wake_lock_ = RequestWakeLock("Scan Job in Progress");
+
   std::move(callback).Run(SendScanRequest(
       scanner_id, std::move(settings), /*page_index_to_replace=*/absl::nullopt,
       base::BindOnce(&ScanService::OnScanCompleted,
@@ -236,6 +252,9 @@ void ScanService::StartMultiPageScan(
 
   ClearScanState();
   SetScanJobObserver(std::move(observer));
+
+  wake_lock_ = RequestWakeLock("Multi Page Scan in Progress");
+
   const bool success = SendScanRequest(
       scanner_id, std::move(settings), /*page_index_to_replace=*/absl::nullopt,
       base::BindOnce(&ScanService::OnMultiPageScanPageCompleted,
@@ -284,6 +303,15 @@ bool ScanService::SendScanRequest(
   // Save the DPI information for the scan.
   scan_dpi_ = settings->resolution_dpi;
 
+  timeout_callback_.Reset(base::BindOnce(&ScanService::OnScanCompleted));
+  base::SequencedTaskRunner::GetCurrentDefault()->PostDelayedTask(
+      // If this callback is called, `is_multi_page_scan` does not matter.
+      // Always setting it to false here makes it simpler.
+      FROM_HERE, base::BindOnce(timeout_callback_.callback(), this,
+	                        /*is_multi_page_scan=*/false,
+                                lorgnette::SCAN_FAILURE_MODE_IO_ERROR),
+      kTimeout);
+
   base::Time::Now().LocalExplode(&start_time_);
   lorgnette_scanner_manager_->Scan(
       scanner_name,
@@ -299,6 +327,8 @@ bool ScanService::SendScanRequest(
 }
 
 void ScanService::CancelScan() {
+  // In case the user cancels, we don't want to cancel again in the future.
+  timeout_callback_.Cancel();
   lorgnette_scanner_manager_->CancelScan(base::BindOnce(
       &ScanService::OnCancelCompleted, weak_ptr_factory_.GetWeakPtr()));
 }
@@ -384,10 +414,12 @@ void ScanService::BindInterface(
 }
 
 void ScanService::Shutdown() {
+  timeout_callback_.Cancel();
   lorgnette_scanner_manager_ = nullptr;
   receiver_.reset();
   multi_page_controller_receiver_.reset();
   weak_ptr_factory_.InvalidateWeakPtrs();
+  wake_lock_.reset();
 }
 
 void ScanService::OnScannerNamesReceived(
@@ -447,6 +479,7 @@ void ScanService::OnPageReceived(
     const absl::optional<uint32_t> page_index_to_replace,
     std::string scanned_image,
     uint32_t page_number) {
+  timeout_callback_.Cancel();
   // TODO(b/172670649): Update LorgnetteManagerClient to pass scan data as a
   // vector.
   // In case the last reported progress percent was less than 100, send one
@@ -509,6 +542,7 @@ void ScanService::OnScanCompleted(bool is_multi_page_scan,
   if (failure_mode == lorgnette::SCAN_FAILURE_MODE_NO_FAILURE &&
       !scanned_images_.empty()) {
     DCHECK(!scanned_file_paths_.empty());
+    timeout_callback_.Cancel();
     task_runner_->PostTaskAndReplyWithResult(
         FROM_HERE,
         base::BindOnce(&SaveAsPdf, scanned_images_, scanned_file_paths_.back(),
@@ -526,6 +560,7 @@ void ScanService::OnScanCompleted(bool is_multi_page_scan,
           failure_mode),
       base::BindOnce(&ScanService::OnAllPagesSaved,
                      weak_ptr_factory_.GetWeakPtr()));
+  wake_lock_.reset();
 }
 
 void ScanService::OnMultiPageScanPageCompleted(
@@ -534,6 +569,9 @@ void ScanService::OnMultiPageScanPageCompleted(
       lorgnette::ScanFailureMode::SCAN_FAILURE_MODE_NO_FAILURE) {
     base::UmaHistogramEnumeration("Scanning.MultiPageScan.PageScanResult",
                                   scanning::ScanJobFailureReason::kSuccess);
+    // Reset the timeout for each page in a multi page scan so timeout isn't
+    // triggered for a long scan.
+    timeout_callback_.Cancel();
     return;
   }
 
@@ -547,6 +585,7 @@ void ScanService::OnCancelCompleted(bool success) {
   if (success)
     ClearScanState();
   scan_job_observer_->OnCancelComplete(success);
+  wake_lock_.reset();
 }
 
 void ScanService::OnPdfSaved(const bool success) {
@@ -594,6 +633,7 @@ void ScanService::ClearScanState() {
   scanned_file_paths_.clear();
   scanned_images_.clear();
   num_pages_scanned_ = 0;
+  wake_lock_.reset();
 }
 
 void ScanService::SetScanJobObserver(

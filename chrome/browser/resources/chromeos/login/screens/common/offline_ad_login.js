@@ -7,6 +7,7 @@
  * Authenticate user screens.
  */
 
+import '//resources/cr_elements/chromeos/cros_color_overrides.css.js';
 import '//resources/cr_elements/cr_toggle/cr_toggle.js';
 import '//resources/cr_elements/icons.html.js';
 import '//resources/cr_elements/md_select.css.js';
@@ -429,7 +430,7 @@ class OfflineAdLogin extends OfflineAdLoginBase {
         'encryption_types': this.storedEncryption_,
       };
       this.dispatchEvent(new CustomEvent(
-          'authCompleted', {bubbles: true, composed: true, detail: msg}));
+        'authCompletedAd', { bubbles: true, composed: true, detail: msg }));
     } else {
       this.loading = true;
       this.userActed(['completeAdAuthentication', user, password]);

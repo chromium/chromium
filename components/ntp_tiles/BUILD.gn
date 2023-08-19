@@ -79,7 +79,6 @@ static_library("ntp_tiles") {
       "country_code_ios.h",
       "country_code_ios.mm",
     ]
-    configs += [ "//build/config/compiler:enable_arc" ]
   }
 
   if (enable_extensions) {

@@ -14,6 +14,7 @@
 #include "base/values.h"
 #include "components/attribution_reporting/aggregation_keys.h"
 #include "components/attribution_reporting/destination_set.h"
+#include "components/attribution_reporting/event_report_windows.h"
 #include "components/attribution_reporting/filters.h"
 #include "components/attribution_reporting/source_registration_error.mojom-forward.h"
 #include "mojo/public/cpp/bindings/default_construct_tag.h"
@@ -51,9 +52,17 @@ struct COMPONENT_EXPORT(ATTRIBUTION_REPORTING) SourceRegistration {
 
   uint64_t source_event_id = 0;
   DestinationSet destination_set;
+  // These `base::TimeDelta`s should be non-negative, but this is only enforced
+  // by the `Parse()` methods.
   absl::optional<base::TimeDelta> expiry;
+  // TODO(tquintanilla): Ideally, it would make sense to make this field an
+  // absl::optional<absl::variant<base::TimeDelta, EventReportWindows>> as
+  // the two fields are mutually exclusive in the registration.
   absl::optional<base::TimeDelta> event_report_window;
   absl::optional<base::TimeDelta> aggregatable_report_window;
+  absl::optional<EventReportWindows> event_report_windows;
+  // Non-null value should be non-negative
+  absl::optional<int> max_event_level_reports;
   int64_t priority = 0;
   FilterData filter_data;
   absl::optional<uint64_t> debug_key;

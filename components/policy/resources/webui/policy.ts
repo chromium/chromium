@@ -18,7 +18,7 @@ document.addEventListener('DOMContentLoaded', () => {
 function getPolicyFieldsets() {
   const statusBoxes = document.querySelectorAll('status-box');
   return Array.from(statusBoxes)
-      .map(box => box.shadowRoot!.querySelector('fieldset'));
+      .map(box => box.shadowRoot!.querySelector('.status-box-fields'));
 }
 
 function getAllPolicyTables() {

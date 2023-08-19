@@ -9,4 +9,8 @@ found in the LICENSE file.
     <style name="TextAppearance.AccessibilityTextPreference">
         <item name="android:textColor">?android:attr/textColorPrimary</item>
     </style>
+
+    <style name="TextAppearance.PageZoomResetButton" parent="TextButton">
+        <item name="android:textSize">@dimen/text_size_large</item>
+    </style>
 </resources>

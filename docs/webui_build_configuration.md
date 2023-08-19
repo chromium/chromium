@@ -32,15 +32,14 @@ the code that should be served at runtime.
 
 * WebUI build rules should only be used directly or via the wrapper rules
   documented here ([build_webui](#build_webui),
-  [build_webui_tests](#build_webui_tests). If you want to use any of the rules
+  [build_webui_tests](#build_webui_tests)). If you want to use any of the rules
   below from within another tool or script, please get a review from one of the
-  cross-platform, non-backend WebUI
-  [OWNERS](https://source.chromium.org/chromium/chromium/src/+/main:ui/webui/PLATFORM_OWNERS).
+  cross-platform, non-backend WebUI [OWNERS](/ui/webui/PLATFORM_OWNERS).
 
 ## WebUI build rules
 
 ### **html_to_wrapper, css_to_wrapper**
-```
+
 These rules are used to inline HTML or CSS into a TypeScript file which can be
 compiled by TS compiler and then imported with JS imports at runtime. This is
 necessary when writing Web Components, which need to return their HTML in the
@@ -50,7 +49,6 @@ By default, these rules accept input files from within the current directory.
 
 By default, they output the wrapped `.html.ts` and `.css.ts` files to the target
 generated directory (|target_gen_dir|).
-```
 
 #### **Arguments**
 ```
@@ -90,14 +88,13 @@ css_to_wrapper("css_wrapper_files") {
 ```
 
 ### **preprocess_if_expr**
-```
+
 This rule is used to preprocess files containing `<if expr="*">`. These
 expressions are most frequently used to enable code to only run on certain
 platforms.
 
 By default, reads input files from within the current directory and saves output
 in |target_gen_dir|.
-```
 
 #### **Arguments**
 ```
@@ -148,12 +145,11 @@ preprocess_if_expr("preprocess_src") {
 ```
 
 ### **ts_library**
-```
+
 This rule is used to compile TypeScript code to JavaScript. It outputs JS files
 corresponding to each TS file passed as an input into the designated output
 directory, and generates a manifest listing all the files it has output named
 $target_name.manifest in the target generated directory.
-```
 
 #### **Input File notes**
 ```
@@ -244,11 +240,10 @@ ts_library("build_ts") {
 ```
 
 ### **bundle_js**
-```
+
 This rule is used to bundle larger user-facing WebUIs for improved performance.
 It is generally not needed for debug UIs or UIs that have very few files to
 import.
-```
 
 #### **Arguments**
 ```
@@ -315,11 +310,10 @@ if (optimize_webui) {
 ```
 
 ### **minify_js**
-```
+
 This rule is used to minify Javascript files to reduce build size.
 This can be used alongside bundle_js(), if bundling and minifying is
 desired.
-```
 
 #### **Arguments**
 ```
@@ -352,10 +346,9 @@ if (optimize_webui) {
 ```
 
 ### **generate_grd**
-```
+
 This rule is used to list the WebUI resources that need to be served at runtime
 in a grd file.
-```
 
 #### **Arguments**
 ```
@@ -372,6 +365,10 @@ grdp_files: List of .grdp files that should be included in the grd. Generally
 grd_prefix: The prefix to use for the grd resource IDs. Resources will be named
             with the following pattern: IDR_GRD_PREFIX_INPUT_FILE_PATH
 out_grd: The output grd file to write. Must end with either '.grd' or '.grdp'.
+resource_path_prefix: Optional prefix to add to every path in input_files (after
+                      the path has been processed by |resource_path_rewrites|).
+                      Must not end in a `/` as it will automatically be added
+                      when joining to each path.
 resource_path_rewrites: Paths to rewrite. In general, the path in input_files,
                         or the path listed in a manifest, will be used as the
                         resource path, i.e. "foo/bar.js" will have that path
@@ -399,14 +396,13 @@ generate_grd("build_grd") {
 ```
 
 ### **grit**
-```
+
 This rule is used to create a pak file from the grd file that contains all the
 listed resources, so that they can be included in the binary and served at
 runtime. Without creating a grit rule (and hooking up the target to the build),
 the WebUI will not load since the resources will not exist. This rule also
 generates C++ header files that are used to add the files to a specific
 WebUIController.
-```
 
 #### **Arguments**
 ```
@@ -459,7 +455,6 @@ user-facing WebUI is being built.
 
 ![WebUI build pipeline flow diagram](images/webui_build_pipeline.png)
 
-```
 This umbrella rule captures the most common WebUI build pipeline configuration
 and aims to hide the complexity of having to define all previously described
 rules directly. Using build_webui() is the recommended approach for most modern
@@ -470,26 +465,25 @@ rules described earlier.
 
 Under the cover, build_webui() defines the following targets
 
-preprocess_if_expr("preprocess_ts_files")
-preprocess_if_expr("preprocess_html_css_files")
-create_js_source_maps("create_source_maps")
-html_to_wrapper("html_wrapper_files")
-css_to_wrapper("css_wrapper_files")
-copy("copy_mojo")
-ts_library("build_ts")
-merge_js_source_maps("merge_source_maps")
-bundle_js("build_bundle")
-minify_js("build_min_js")
-generate_grd("build_grd")
-generate_grd("build_grdp")
-grit("resources")
+* preprocess_if_expr("preprocess_ts_files")
+* preprocess_if_expr("preprocess_html_css_files")
+* create_js_source_maps("create_source_maps")
+* html_to_wrapper("html_wrapper_files")
+* css_to_wrapper("css_wrapper_files")
+* copy("copy_mojo")
+* ts_library("build_ts")
+* merge_js_source_maps("merge_source_maps")
+* bundle_js("build_bundle")
+* minify_js("build_min_js")
+* generate_grd("build_grd")
+* generate_grd("build_grdp")
+* grit("resources")
 
 Some targets are only conditionally defined based on build_webui() input
 parameters.
 
 Only ":build_ts", ":resources" and ":build_grdp" targets are public and can be
 referred to from other parts of the build.
-```
 
 #### **Arguments**
 ```
@@ -637,7 +631,6 @@ WebUI's tests are built.
 
 ![WebUI tests build pipeline flow diagram](images/webui_build_pipeline_tests.png)
 
-```
 This umbrella rule captures the most common WebUI test build pipeline
 configuration and aims to hide the complexity of having to define multiple other
 targets directly. Using build_webui_tests() is the recommended approach for most
@@ -647,15 +640,13 @@ chrome://webui-test/<webui_name>/
 
 Under the cover, build_webui_tests() defines the following targets
 
-preprocess_if_expr("preprocess")
-ts_library("build_ts")
-generate_grd("build_grdp")
+* preprocess_if_expr("preprocess")
+* ts_library("build_ts")
+* generate_grd("build_grdp")
 
 The parameters passed to build_webui_tests() are forwarded as needed to
 the targets above. Only the ":build_grdp" target is public and can be referred
 to from other parts of the build.
-
-```
 
 #### **Arguments**
 ```

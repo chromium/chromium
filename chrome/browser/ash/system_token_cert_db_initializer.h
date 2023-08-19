@@ -56,7 +56,8 @@ class SystemTokenCertDBInitializer
   }
 
   // net::NSSCertDatabase::Observer
-  void OnCertDBChanged() override;
+  void OnTrustStoreChanged() override;
+  void OnClientCertStoreChanged() override;
 
  private:
   // Called once the cryptohome service is available.

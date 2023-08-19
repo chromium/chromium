@@ -140,6 +140,21 @@ public abstract class BidirectionalStream {
         }
 
         /**
+         * Binds the request to the specified network handle. Cronet will send this request only
+         * using the network associated to this handle. If this network disconnects the request will
+         * fail, the exact error will depend on the stage of request processing when the network
+         * disconnects. Network handles can be obtained through {@code Network#getNetworkHandle}.
+         * Only available starting from Android Marshmallow.
+         *
+         * @param networkHandle the network handle to bind the request to. Specify {@link
+         * CronetEngine#UNBIND_NETWORK_HANDLE} to unbind.
+         * @return the builder to facilitate chaining.
+         */
+        public Builder bindToNetwork(long networkHandle) {
+            return this;
+        }
+
+        /**
          * Creates a {@link BidirectionalStream} using configuration from this {@link Builder}. The
          * returned {@code BidirectionalStream} can then be started by calling {@link
          * BidirectionalStream#start}.

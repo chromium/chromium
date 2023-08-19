@@ -1,5 +1,0 @@
-specific_include_rules = {
-  "file_access_copy_or_move_delegate_factory_unittest\.cc": [
-    "+storage/browser/file_system",
-  ],
-}

@@ -16,6 +16,7 @@
 #include "ash/system/unified/buttons.h"
 #include "ash/system/unified/unified_system_tray_controller.h"
 #include "ash/system/unified/unified_system_tray_model.h"
+#include "ash/system/update/eol_notice_quick_settings_view.h"
 #include "ash/test/ash_test_base.h"
 #include "ash/test_shell_delegate.h"
 #include "base/check.h"
@@ -95,7 +96,8 @@ class QuickSettingsHeaderTest : public NoSessionAshTestBase {
   }
 
   base::test::ScopedFeatureList feature_list_;
-  raw_ptr<TestShellDelegate, ExperimentalAsh> test_shell_delegate_ = nullptr;
+  raw_ptr<TestShellDelegate, DanglingUntriaged | ExperimentalAsh>
+      test_shell_delegate_ = nullptr;
   scoped_refptr<UnifiedSystemTrayModel> model_;
   std::unique_ptr<UnifiedSystemTrayController> controller_;
   std::unique_ptr<views::Widget> widget_;
@@ -255,10 +257,13 @@ TEST_F(QuickSettingsHeaderTest, BothEolNoticeAndEnterpriseVisible) {
   EXPECT_EQ(GetManagedButtonLabel()->GetText(), u"Managed");
   EXPECT_EQ(GetManagedButton()->GetTooltipText({}), u"Managed by example.com");
   EXPECT_TRUE(header_->GetVisible());
-  ASSERT_TRUE(header_->eol_notice_for_test());
-  EXPECT_TRUE(header_->eol_notice_for_test()->GetVisible());
+  EolNoticeQuickSettingsView* eol_notice = header_->eol_notice_for_test();
+  ASSERT_TRUE(eol_notice);
+  EXPECT_TRUE(eol_notice->GetVisible());
+  // The label is shorter due to the two-column layout.
+  EXPECT_EQ(eol_notice->GetText(), u"Updates ended");
 
-  LeftClickOn(header_->eol_notice_for_test());
+  LeftClickOn(eol_notice);
   EXPECT_EQ(1, GetSystemTrayClient()->show_eol_info_count());
 }
 
@@ -287,6 +292,9 @@ TEST_F(QuickSettingsHeaderTest, ChildVisible) {
   EXPECT_EQ(GetSupervisedButton()->GetTooltipText({}),
             u"Account managed by parent@test.com");
   EXPECT_TRUE(header_->GetVisible());
+
+  LeftClickOn(GetSupervisedButton());
+  EXPECT_EQ(GetSystemTrayClient()->show_account_settings_count(), 1);
 }
 
 }  // namespace ash

@@ -1,0 +1,4 @@
+include_rules = [
+  "+chromeos/constants/chromeos_features.h",
+  "+components/web_package/signed_web_bundles/signed_web_bundle_id.h",
+]

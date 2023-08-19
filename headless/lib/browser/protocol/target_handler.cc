@@ -36,15 +36,15 @@ Response TargetHandler::CreateTarget(const std::string& url,
                                      Maybe<bool> for_tab,
                                      std::string* out_target_id) {
 #if BUILDFLAG(IS_MAC)
-  if (enable_begin_frame_control.fromMaybe(false)) {
+  if (enable_begin_frame_control.value_or(false)) {
     return Response::ServerError(
         "BeginFrameControl is not supported on MacOS yet");
   }
 #endif
 
   HeadlessBrowserContext* context;
-  if (context_id.isJust()) {
-    context = browser_->GetBrowserContextForId(context_id.fromJust());
+  if (context_id.has_value()) {
+    context = browser_->GetBrowserContextForId(context_id.value());
     if (!context)
       return Response::InvalidParams("browserContextId");
   } else {
@@ -66,11 +66,11 @@ Response TargetHandler::CreateTarget(const std::string& url,
       context->CreateWebContentsBuilder()
           .SetInitialURL(gurl)
           .SetWindowSize(gfx::Size(
-              width.fromMaybe(browser_->options()->window_size.width()),
-              height.fromMaybe(browser_->options()->window_size.height())))
+              width.value_or(browser_->options()->window_size.width()),
+              height.value_or(browser_->options()->window_size.height())))
           .SetEnableBeginFrameControl(
-              enable_begin_frame_control.fromMaybe(false))
-          .SetUseTabTarget(for_tab.fromMaybe(false))
+              enable_begin_frame_control.value_or(false))
+          .SetUseTabTarget(for_tab.value_or(false))
           .Build());
 
   *out_target_id = web_contents_impl->GetDevToolsAgentHostId();

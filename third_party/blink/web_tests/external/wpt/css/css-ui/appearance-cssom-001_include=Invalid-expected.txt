@@ -1,5 +1,5 @@
 This is a testharness.js-based test.
-Found 300 tests; 292 PASS, 8 FAIL, 0 TIMEOUT, 0 NOTRUN.
+Found 300 tests; 298 PASS, 2 FAIL, 0 TIMEOUT, 0 NOTRUN.
 PASS -webkit-appearance: bogus-button (invalid)
 PASS -webkit-appearance: attachment (invalid)
 PASS -webkit-appearance: button-bevel (invalid)
@@ -67,7 +67,7 @@ PASS -webkit-appearance: progressbar (invalid)
 PASS -webkit-appearance: progressbar-vertical (invalid)
 PASS -webkit-appearance: progresschunk (invalid)
 PASS -webkit-appearance: progresschunk-vertical (invalid)
-FAIL -webkit-appearance: push-button (invalid) assert_in_array: style.WebkitAppearance (uppercase W) value "push-button" not in array [""]
+PASS -webkit-appearance: push-button (invalid)
 PASS -webkit-appearance: radio-container (invalid)
 PASS -webkit-appearance: radio-label (invalid)
 PASS -webkit-appearance: radiomenuitem (invalid)
@@ -98,7 +98,7 @@ PASS -webkit-appearance: searchfield-results-button (invalid)
 PASS -webkit-appearance: searchfield-results-decoration (invalid)
 PASS -webkit-appearance: separator (invalid)
 PASS -webkit-appearance: sheet (invalid)
-FAIL -webkit-appearance: slider-horizontal (invalid) assert_in_array: style.WebkitAppearance (uppercase W) value "slider-horizontal" not in array [""]
+PASS -webkit-appearance: slider-horizontal (invalid)
 FAIL -webkit-appearance: slider-vertical (invalid) assert_in_array: style.WebkitAppearance (uppercase W) value "slider-vertical" not in array [""]
 PASS -webkit-appearance: sliderthumb-horizontal (invalid)
 PASS -webkit-appearance: sliderthumb-vertical (invalid)
@@ -108,7 +108,7 @@ PASS -webkit-appearance: spinner-downbutton (invalid)
 PASS -webkit-appearance: spinner-textfield (invalid)
 PASS -webkit-appearance: spinner-upbutton (invalid)
 PASS -webkit-appearance: splitter (invalid)
-FAIL -webkit-appearance: square-button (invalid) assert_in_array: style.WebkitAppearance (uppercase W) value "square-button" not in array [""]
+PASS -webkit-appearance: square-button (invalid)
 PASS -webkit-appearance: statusbar (invalid)
 PASS -webkit-appearance: statusbarpanel (invalid)
 PASS -webkit-appearance: tab (invalid)
@@ -217,7 +217,7 @@ PASS appearance: progressbar (invalid)
 PASS appearance: progressbar-vertical (invalid)
 PASS appearance: progresschunk (invalid)
 PASS appearance: progresschunk-vertical (invalid)
-FAIL appearance: push-button (invalid) assert_in_array: style.appearance value "push-button" not in array [""]
+PASS appearance: push-button (invalid)
 PASS appearance: radio-container (invalid)
 PASS appearance: radio-label (invalid)
 PASS appearance: radiomenuitem (invalid)
@@ -248,7 +248,7 @@ PASS appearance: searchfield-results-button (invalid)
 PASS appearance: searchfield-results-decoration (invalid)
 PASS appearance: separator (invalid)
 PASS appearance: sheet (invalid)
-FAIL appearance: slider-horizontal (invalid) assert_in_array: style.appearance value "slider-horizontal" not in array [""]
+PASS appearance: slider-horizontal (invalid)
 FAIL appearance: slider-vertical (invalid) assert_in_array: style.appearance value "slider-vertical" not in array [""]
 PASS appearance: sliderthumb-horizontal (invalid)
 PASS appearance: sliderthumb-vertical (invalid)
@@ -258,7 +258,7 @@ PASS appearance: spinner-downbutton (invalid)
 PASS appearance: spinner-textfield (invalid)
 PASS appearance: spinner-upbutton (invalid)
 PASS appearance: splitter (invalid)
-FAIL appearance: square-button (invalid) assert_in_array: style.appearance value "square-button" not in array [""]
+PASS appearance: square-button (invalid)
 PASS appearance: statusbar (invalid)
 PASS appearance: statusbarpanel (invalid)
 PASS appearance: tab (invalid)

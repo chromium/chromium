@@ -10,9 +10,9 @@
 
 #include <string>
 
+#include "base/apple/scoped_cftyperef.h"
 #include "base/component_export.h"
 #include "base/functional/callback.h"
-#include "base/mac/scoped_cftyperef.h"
 #include "base/memory/weak_ptr.h"
 #include "device/fido/mac/credential_store.h"
 

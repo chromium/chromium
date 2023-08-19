@@ -15,13 +15,16 @@
 #include <vector>
 
 #include "base/check_op.h"
+#include "base/feature_list.h"
 #include "base/ranges/algorithm.h"
 #include "base/time/time.h"
 #include "components/prefs/pref_service.h"
+#include "components/search_engines/search_engines_pref_names.h"
 #include "components/search_engines/template_url.h"
 #include "components/search_engines/template_url_prepopulate_data.h"
 #include "components/search_engines/template_url_service.h"
 #include "components/search_engines/template_url_starter_pack_data.h"
+#include "components/signin/public/base/signin_switches.h"
 
 std::u16string GetDefaultSearchEngineName(TemplateURLService* service) {
   DCHECK(service);
@@ -314,6 +317,35 @@ ActionsFromCurrentData CreateActionsFromCurrentPrepopulateData(
   }
 
   return actions;
+}
+
+const std::string& GetDefaultSearchProviderPrefValue(PrefService& prefs) {
+  if (base::FeatureList::IsEnabled(switches::kSearchEngineChoice)) {
+    const auto& default_search_provider =
+        prefs.GetString(prefs::kDefaultSearchProviderGUID);
+
+    if (!default_search_provider.empty()) {
+      return default_search_provider;
+    }
+
+    const auto& synced_default_search_provider =
+        prefs.GetString(prefs::kSyncedDefaultSearchProviderGUID);
+    if (!synced_default_search_provider.empty()) {
+      prefs.SetString(prefs::kDefaultSearchProviderGUID,
+                      synced_default_search_provider);
+    }
+    return synced_default_search_provider;
+  }
+  return prefs.GetString(prefs::kSyncedDefaultSearchProviderGUID);
+}
+
+void SetDefaultSearchProviderPrefValue(PrefService& prefs,
+                                       const std::string& value) {
+  if (base::FeatureList::IsEnabled(switches::kSearchEngineChoice)) {
+    prefs.SetString(prefs::kDefaultSearchProviderGUID, value);
+  } else {
+    prefs.SetString(prefs::kSyncedDefaultSearchProviderGUID, value);
+  }
 }
 
 void MergeEnginesFromStarterPackData(

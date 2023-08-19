@@ -51,8 +51,6 @@ class CORE_EXPORT TextFragmentAnchorMetrics final
 
   void DidFindAmbiguousMatch();
 
-  void DidStartSearch();
-
   void DidInvokeScrollIntoView();
 
   void ReportMetrics();

@@ -146,7 +146,19 @@ class COMPONENT_EXPORT(PLATFORM_WINDOW) PlatformWindowDelegate {
   // Sets the immersive mode for the window. This will only have an effect on
   // ChromeOS platforms.
   virtual void OnImmersiveModeChanged(bool immersive) {}
+
+  // Lets the window know that ChromeOS overview mode has changed.
+  virtual void OnOverviewModeChanged(bool in_overview) {}
 #endif
+
+  enum RotateDirection {
+    kForward,
+    kBackward,
+  };
+  // Rotates the focus within the window. The method will return true if there
+  // are more views left after rotation and false otherwise. Reset will restart
+  // the focus and focus on the first view for the given direction.
+  virtual bool OnRotateFocus(RotateDirection direction, bool reset);
 
   virtual void OnLostCapture() = 0;
 

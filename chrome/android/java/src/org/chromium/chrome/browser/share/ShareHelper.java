@@ -147,8 +147,7 @@ public class ShareHelper extends org.chromium.components.browser_ui.share.ShareH
     /**
      * Gets the {@link ComponentName} of the app that was used to last share.
      */
-    @Nullable
-    public static ComponentName getLastShareComponentName() {
+    public static @Nullable ComponentName getLastShareComponentName() {
         SharedPreferencesManager preferencesManager = SharedPreferencesManager.getInstance();
         String name = preferencesManager.readString(
                 ChromePreferenceKeys.SHARING_LAST_SHARED_COMPONENT_NAME, null);

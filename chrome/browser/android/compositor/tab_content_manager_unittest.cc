@@ -35,7 +35,6 @@ constexpr int kApproximationCacheSize = 0;
 constexpr int kCompressionQueueMaxSize = 2;
 constexpr int kWriteQueueMaxSize = 2;
 constexpr bool kUseApproximationThumbnail = false;
-constexpr bool kSaveJpegThumbnails = true;
 constexpr double kJpegAspectRatio = 0.85;
 
 class MockUIResourceProvider : public ui::UIResourceProvider {
@@ -64,7 +63,7 @@ class TabContentManagerTest : public ::testing::Test {
     tab_content_manager_ = std::make_unique<TabContentManager>(
         env, nullptr, kDefaultCacheSize, kApproximationCacheSize,
         kCompressionQueueMaxSize, kWriteQueueMaxSize,
-        kUseApproximationThumbnail, kSaveJpegThumbnails, kJpegAspectRatio);
+        kUseApproximationThumbnail, kJpegAspectRatio);
     tab_content_manager_->SetUIResourceProvider(
         ui_resource_provider_.GetWeakPtr());
 

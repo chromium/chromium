@@ -111,6 +111,7 @@ component("display") {
     "//base",
     "//base:i18n",
     "//build:chromeos_buildflags",
+    "//components/device_event_log",
     "//mojo/public/cpp/bindings:struct_traits",
     "//ui/display/mojom:mojom_shared_cpp_sources",
     "//ui/display/util",
@@ -174,7 +175,10 @@ static_library("test_support") {
   public_deps = [ ":display" ]
   deps = [
     "//base",
+    "//skia",
     "//testing/gmock",
+    "//third_party/re2",
+    "//ui/display",
     "//ui/display/types",
     "//ui/display/util",
     "//ui/events/devices",
@@ -207,6 +211,10 @@ static_library("test_support") {
       "manager/test/action_logger.h",
       "manager/test/action_logger_util.cc",
       "manager/test/action_logger_util.h",
+      "manager/test/fake_display_delegate.cc",
+      "manager/test/fake_display_delegate.h",
+      "manager/test/fake_display_snapshot.cc",
+      "manager/test/fake_display_snapshot.h",
       "manager/test/test_display_layout_manager.cc",
       "manager/test/test_display_layout_manager.h",
       "manager/test/test_native_display_delegate.cc",
@@ -216,6 +224,7 @@ static_library("test_support") {
       "manager/test/touch_transform_controller_test_api.cc",
       "manager/test/touch_transform_controller_test_api.h",
     ]
+    configs += [ "//build/config/compiler:wexit_time_destructors" ]
     public_deps += [ "//ui/display/manager" ]
   }
 }
@@ -252,7 +261,7 @@ test("display_unittests") {
     "//mojo/public/cpp/test_support:test_utils",
     "//testing/gmock",
     "//testing/gtest",
-    "//ui/display/fake",
+    "//ui/display:test_support",
     "//ui/display/mojom",
     "//ui/display/types",
     "//ui/display/util",
@@ -270,7 +279,6 @@ test("display_unittests") {
 
   if (is_chromeos_ash) {
     sources += [
-      "fake/fake_display_snapshot_unittest.cc",
       "manager/apply_content_protection_task_unittest.cc",
       "manager/configure_displays_task_unittest.cc",
       "manager/content_protection_key_manager_unittest.cc",
@@ -282,9 +290,11 @@ test("display_unittests") {
       "manager/json_converter_unittest.cc",
       "manager/managed_display_info_unittest.cc",
       "manager/query_content_protection_task_unittest.cc",
+      "manager/test/fake_display_snapshot_unittest.cc",
       "manager/touch_device_manager_unittest.cc",
       "manager/touch_transform_controller_unittest.cc",
       "manager/update_display_configuration_task_unittest.cc",
+      "manager/util/display_manager_test_util_unittest.cc",
       "manager/util/display_manager_util_unittest.cc",
     ]
 

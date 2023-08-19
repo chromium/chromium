@@ -57,6 +57,12 @@ void MockHidDelegate::OnPermissionRevoked(const url::Origin& origin) {
     observer.OnPermissionRevoked(origin);
 }
 
+void MockHidDelegate::OnHidManagerConnectionError() {
+  for (auto& observer : observer_list_) {
+    observer.OnHidManagerConnectionError();
+  }
+}
+
 HidTestContentBrowserClient::HidTestContentBrowserClient() = default;
 
 HidTestContentBrowserClient::~HidTestContentBrowserClient() = default;

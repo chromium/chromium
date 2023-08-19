@@ -13,10 +13,6 @@
 #include "chrome/browser/status_icons/desktop_notification_balloon.h"
 #include "chrome/browser/status_icons/status_icon.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 @class MenuControllerCocoa;
 @class NSStatusItem;
 @class StatusItemController;

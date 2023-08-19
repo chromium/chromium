@@ -3,8 +3,6 @@
 <translationbundle lang="sv">
 <translation id="1075622780330595106"><ph name="NUMBER_OF_TABS" /> av flikarna har inte använts på länge. Vill du stänga dem?</translation>
 <translation id="125153950246128346">Tryck för att visa en annan flik</translation>
-<translation id="1403228085774130835">Du hittar flikar som du har stängt under Senaste flikarna i Chromes huvudmeny</translation>
-<translation id="1455506303394048917">Aktivitet på de här inkognitoflikarna tas bort från enheten</translation>
 <translation id="1499635324672558517">Vill du stänga alla inkognitoflikar?</translation>
 <translation id="1657719826150349398">Flytta fliken nedåt</translation>
 <translation id="1869137256605757565">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> flik}other{<ph name="TABS_COUNT_MANY" /> flikar}}</translation>
@@ -47,6 +45,7 @@
 <translation id="5073204694187207510">Dölj helskärmsrutnät</translation>
 <translation id="5076161749301278626">Vill du visa butiksrecensioner?</translation>
 <translation id="5082793167783849073">Jämför sidor snabbt genom att skapa en grupp. Börja med att trycka länge på en länk.</translation>
+<translation id="5339733443032484186">Din senaste flik</translation>
 <translation id="5490235265819901748">Flikgruppen har utökats</translation>
 <translation id="5494920125229734069">Markera alla</translation>
 <translation id="5556417849629758491">Visa butiksinformation. Alternativet visas högt upp på skärmen</translation>
@@ -62,10 +61,12 @@
 <translation id="6228793724645064692">(butikens betyg)</translation>
 <translation id="6333260925957816943">Information om den här butiken</translation>
 <translation id="639823877092900621">{TABS_COUNT,plural, =1{Dela upp <ph name="TABS_COUNT_ONE" /> vald flik}other{Dela upp <ph name="TABS_COUNT_MANY" /> valda flikar}}</translation>
+<translation id="6421412308143682486">{INCOGNITO_TABS_COUNT,plural, =1{Du hittar flikar som du har stängt under Senaste flikarna i Chromes huvudmeny. Inkognitofliken är inte tillgänglig.}other{Du hittar flikar som du har stängt under Senaste flikarna i Chromes huvudmeny. Dina # inkognitoflikar är inte tillgängliga.}}</translation>
 <translation id="6422650314852876533">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> flik}other{<ph name="TABS_COUNT_MANY" /> flikar}}</translation>
 <translation id="6549021453810473782">Visa butiksinformation</translation>
 <translation id="6562820390860419811">Flytta fliken åt vänster</translation>
 <translation id="6615455863669487791">Visa mig</translation>
+<translation id="661742612106409204">Du hittar flikar som du har stängt under Senaste flikarna i Chromes huvudmeny.</translation>
 <translation id="6840760312327750441">Gruppera flikar genom att trycka länge på en flik. Dra sedan fliken ovanpå en annan flik.</translation>
 <translation id="6856809498882026482">Dölj flervalsläget</translation>
 <translation id="7100731960740376323">{TABS_COUNT,plural, =1{Dela flik}other{Dela flikar}}</translation>

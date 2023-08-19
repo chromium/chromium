@@ -101,7 +101,7 @@ std::unique_ptr<DeferredImageDecoder> DeferredImageDecoder::Create(
     scoped_refptr<SharedBuffer> data,
     bool data_complete,
     ImageDecoder::AlphaOption alpha_option,
-    const ColorBehavior& color_behavior) {
+    ColorBehavior color_behavior) {
   std::unique_ptr<ImageDecoder> metadata_decoder =
       ImageDecoder::Create(data, data_complete, alpha_option,
                            ImageDecoder::kDefaultBitDepth, color_behavior);
@@ -416,7 +416,7 @@ void DeferredImageDecoder::ActivateLazyGainmapDecoding() {
   // Extract metadata from the gainmap's data.
   auto gainmap_metadata_decoder = ImageDecoder::Create(
       gainmap->data, all_data_received_, ImageDecoder::kAlphaNotPremultiplied,
-      ImageDecoder::kDefaultBitDepth, ColorBehavior::Ignore());
+      ImageDecoder::kDefaultBitDepth, ColorBehavior::kIgnore);
   if (!gainmap_metadata_decoder) {
     DLOG(ERROR) << "Failed to create gainmap image decoder.";
     might_have_gainmap_ = false;
@@ -434,7 +434,7 @@ void DeferredImageDecoder::ActivateLazyGainmapDecoding() {
   // Create the result frame generator and metadata.
   gainmap->frame_generator = ImageFrameGenerator::Create(
       gfx::SizeToSkISize(gainmap_metadata_decoder->DecodedSize()),
-      kIsMultiFrame, ColorBehavior::Ignore(),
+      kIsMultiFrame, ColorBehavior::kIgnore,
       gainmap_metadata_decoder->GetSupportedDecodeSizes());
 
   // Populate metadata and save to the `gainmap_` member.

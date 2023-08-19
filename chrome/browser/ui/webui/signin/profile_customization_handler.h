@@ -52,7 +52,7 @@ class ProfileCustomizationHandler : public content::WebUIMessageHandler,
                             const std::u16string& old_profile_name) override;
 
  private:
-  friend class ProfilePickerLocalProfileCreationDialogBrowserTest;
+  friend class ProfilePickerCreationFlowBrowserTest;
 
   // Handlers for messages from javascript.
   void HandleInitialized(const base::Value::List& args);

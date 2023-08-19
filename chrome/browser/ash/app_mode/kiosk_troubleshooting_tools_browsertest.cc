@@ -3,11 +3,11 @@
 // found in the LICENSE file.
 
 #include "ash/shell.h"
-#include "chrome/browser/ash/app_mode/app_session_ash.h"
+#include "chrome/browser/ash/app_mode/kiosk_system_session.h"
 #include "chrome/browser/ash/app_mode/web_app/web_kiosk_app_manager.h"
 #include "chrome/browser/ash/login/app_mode/test/kiosk_base_test.h"
 #include "chrome/browser/ash/login/app_mode/test/web_kiosk_base_test.h"
-#include "chrome/browser/chromeos/app_mode/app_session_browser_window_handler.h"
+#include "chrome/browser/chromeos/app_mode/kiosk_browser_window_handler.h"
 #include "chrome/browser/devtools/devtools_window_testing.h"
 #include "chrome/browser/policy/developer_tools_policy_handler.h"
 #include "chrome/browser/profiles/profile.h"
@@ -74,7 +74,7 @@ class KioskTroubleshootingToolsTest : public WebKioskBaseTest {
 
   Browser* EmulateOpenNewWindowShortcutPressedAndReturnNewBrowser() const {
     EmulateOpenNewWindowShortcutPressed();
-    EXPECT_FALSE(ShouldBrowserBeClosedByAppSessionBrowserHander(app_session()));
+    EXPECT_FALSE(DidSessionCloseNewWindow(kiosk_system_session()));
     return BrowserList::GetInstance()->GetLastActive();
   }
 
@@ -102,7 +102,7 @@ class KioskTroubleshootingToolsTest : public WebKioskBaseTest {
         /*user_gesture=*/true);
     Browser* new_browser = Browser::Create(params);
     new_browser->window()->Show();
-    EXPECT_FALSE(ShouldBrowserBeClosedByAppSessionBrowserHander(app_session()));
+    EXPECT_FALSE(DidSessionCloseNewWindow(kiosk_system_session()));
     return new_browser;
   }
 
@@ -120,8 +120,8 @@ class KioskTroubleshootingToolsTest : public WebKioskBaseTest {
     return BrowserList::GetInstance()->get(0);
   }
 
-  AppSessionAsh* app_session() const {
-    return WebKioskAppManager::Get()->app_session();
+  KioskSystemSession* kiosk_system_session() const {
+    return WebKioskAppManager::Get()->kiosk_system_session();
   }
 
  protected:
@@ -142,7 +142,7 @@ IN_PROC_BROWSER_TEST_F(KioskTroubleshootingToolsTest,
 
   // Shut down the session when kiosk troubleshooting tools get disabled.
   UpdateTroubleshootingToolsPolicy(/*enable=*/false);
-  EXPECT_TRUE(app_session()->is_shutting_down());
+  EXPECT_TRUE(kiosk_system_session()->is_shutting_down());
 }
 
 IN_PROC_BROWSER_TEST_F(KioskTroubleshootingToolsTest,
@@ -186,14 +186,14 @@ IN_PROC_BROWSER_TEST_F(KioskTroubleshootingToolsTest,
   ExpectOnlyKioskAppOpen();
 
   EmulateOpenNewWindowShortcutPressed();
-  EXPECT_FALSE(ShouldBrowserBeClosedByAppSessionBrowserHander(app_session()));
+  EXPECT_FALSE(DidSessionCloseNewWindow(kiosk_system_session()));
 
   ExpectOpenBrowser(
       chromeos::KioskBrowserWindowType::kOpenedTroubleshootingNormalBrowser);
 
   // Shut down the session when kiosk troubleshooting tools get disabled.
   UpdateTroubleshootingToolsPolicy(/*enable=*/false);
-  EXPECT_TRUE(app_session()->is_shutting_down());
+  EXPECT_TRUE(kiosk_system_session()->is_shutting_down());
 }
 
 IN_PROC_BROWSER_TEST_F(KioskTroubleshootingToolsTest,
@@ -207,7 +207,7 @@ IN_PROC_BROWSER_TEST_F(KioskTroubleshootingToolsTest,
                                                 /*is_docked=*/false);
 
   EmulateOpenNewWindowShortcutPressed();
-  EXPECT_FALSE(ShouldBrowserBeClosedByAppSessionBrowserHander(app_session()));
+  EXPECT_FALSE(DidSessionCloseNewWindow(kiosk_system_session()));
 
   EXPECT_EQ(BrowserList::GetInstance()->size(), 3u);
   histogram.ExpectBucketCount(
@@ -234,7 +234,7 @@ IN_PROC_BROWSER_TEST_F(KioskTroubleshootingToolsTest,
   EXPECT_TRUE(IsLactActiveBrowserResizable());
 
   EmulateOpenNewWindowShortcutPressed();
-  EXPECT_FALSE(ShouldBrowserBeClosedByAppSessionBrowserHander(app_session()));
+  EXPECT_FALSE(DidSessionCloseNewWindow(kiosk_system_session()));
   EXPECT_TRUE(IsLactActiveBrowserResizable());
 }
 
@@ -245,7 +245,7 @@ IN_PROC_BROWSER_TEST_F(KioskTroubleshootingToolsTest,
 
   // Explicitly open a new window to make sure it will be closed.
   Browser::Create(Browser::CreateParams(profile(), /*user_gesture=*/true));
-  EXPECT_TRUE(ShouldBrowserBeClosedByAppSessionBrowserHander(app_session()));
+  EXPECT_TRUE(DidSessionCloseNewWindow(kiosk_system_session()));
 
   histogram.ExpectBucketCount(
       chromeos::kKioskNewBrowserWindowHistogram,
@@ -262,8 +262,8 @@ IN_PROC_BROWSER_TEST_F(KioskTroubleshootingToolsTest,
   base::RunLoop().RunUntilIdle();
 
   ExpectOnlyKioskAppOpen();
-  // Since new window shortcut will not be proceed at all, `AppSession` will not
-  // handle a new window because it was never created.
+  // Since new window shortcut will not be proceed at all, `KioskBrowserSession`
+  // will not handle a new window because it was never created.
   histogram.ExpectBucketCount(
       chromeos::kKioskNewBrowserWindowHistogram,
       chromeos::KioskBrowserWindowType::kClosedRegularBrowser, 0);

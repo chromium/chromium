@@ -16,6 +16,7 @@
 #include "ui/gfx/text_constants.h"
 #include "ui/views/controls/focus_ring.h"
 #include "ui/views/controls/highlight_path_generator.h"
+#include "ui/views/focus/focus_manager.h"
 #include "ui/views/layout/box_layout.h"
 #include "ui/views/metadata/view_factory_internal.h"
 #include "ui/views/view_targeter_delegate.h"
@@ -99,13 +100,16 @@ bool ShouldShowLandscape(const views::Widget* widget) {
 }
 
 bool HasFocusInAnyChildView(views::View* view) {
-  // Find the topmost ancestor of the focused view, or |view|, whichever comes
-  // first.
-  views::View* search = view->GetFocusManager()->GetFocusedView();
-  while (search && search != view) {
-    search = search->parent();
+  CHECK(view);
+  views::FocusManager* focus_manager = view->GetFocusManager();
+  CHECK(focus_manager);
+
+  views::View* focused_view = focus_manager->GetFocusedView();
+  if (focused_view) {
+    return view->Contains(focused_view);
+  } else {
+    return false;
   }
-  return search == view;
 }
 
 std::unique_ptr<views::Label> CreateUnthemedBubbleLabel(

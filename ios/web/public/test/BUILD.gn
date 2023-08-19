@@ -3,7 +3,6 @@
 # found in the LICENSE file.
 
 source_set("test") {
-  configs += [ "//build/config/compiler:enable_arc" ]
   testonly = true
 
   public_deps = [
@@ -23,6 +22,9 @@ source_set("test") {
     "//ios/web/navigation",
     "//ios/web/navigation:wk_navigation_util",
     "//ios/web/public/deprecated",
+    "//ios/web/public/session",
+    "//ios/web/public/session/proto",
+    "//ios/web/public/session/proto:proto_util",
     "//ios/web/test:js_test_util_internal",
     "//ios/web/test:test_support",
     "//ios/web/web_state:web_state_impl_header",
@@ -59,12 +61,9 @@ source_set("download_test_utils") {
   ]
 
   frameworks = [ "Foundation.framework" ]
-
-  configs += [ "//build/config/compiler:enable_arc" ]
 }
 
 source_set("javascript_test") {
-  configs += [ "//build/config/compiler:enable_arc" ]
   testonly = true
 
   deps = [
@@ -88,7 +87,6 @@ source_set("javascript_test") {
 # a target that limits its visibility to //ios/web, //components and to the
 # targets in //ios/chrome that safely wraps those fixtures.
 source_set("test_fixture") {
-  configs += [ "//build/config/compiler:enable_arc" ]
   testonly = true
 
   visibility = [
@@ -130,7 +128,6 @@ source_set("test_fixture") {
 }
 
 source_set("element_selector") {
-  configs += [ "//build/config/compiler:enable_arc" ]
   testonly = true
 
   sources = [
@@ -142,7 +139,6 @@ source_set("element_selector") {
 }
 
 source_set("util") {
-  configs += [ "//build/config/compiler:enable_arc" ]
   testonly = true
 
   deps = [
@@ -199,5 +195,4 @@ source_set("fuzzer_support") {
     "//ios/web/public",
     "//ios/web/public/test/fakes",
   ]
-  configs += [ "//build/config/compiler:enable_arc" ]
 }

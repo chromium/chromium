@@ -14,6 +14,7 @@ import android.location.LocationManager;
 import com.google.android.gms.location.FusedLocationProviderClient;
 
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mockito;
@@ -27,6 +28,7 @@ import org.robolectric.shadows.ShadowLocationManager;
 import org.robolectric.shadows.ShadowLog;
 
 import org.chromium.base.ThreadUtils;
+import org.chromium.base.test.BaseRobolectricTestRule;
 import org.chromium.base.test.util.Feature;
 
 import java.util.Arrays;
@@ -45,6 +47,9 @@ public class LocationProviderTest {
         return Arrays.asList(new Object[][] {{LocationProviderType.MOCK},
                 {LocationProviderType.ANDROID}, {LocationProviderType.GMS_CORE}});
     }
+
+    @Rule(order = -2)
+    public BaseRobolectricTestRule mBaseRule = new BaseRobolectricTestRule();
 
     private LocationManager mLocationManager;
     private ShadowLocationManager mShadowLocationManager;

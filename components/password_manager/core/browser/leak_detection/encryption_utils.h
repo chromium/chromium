@@ -13,7 +13,7 @@
 namespace password_manager {
 
 // Username hash prefix length in bits.
-constexpr size_t kUsernameHashPrefixLength = 26;
+inline constexpr size_t kUsernameHashPrefixLength = 26;
 
 // Canonicalizes |username| by lower-casing and and stripping a mail-address
 // host in case the username is a mail address. |username| must be a UTF-8

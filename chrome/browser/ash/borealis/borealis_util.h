@@ -13,6 +13,8 @@
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/views/widget/widget.h"
 
+class Profile;
+
 namespace borealis {
 
 // This is used by the Borealis installer app.
@@ -32,8 +34,6 @@ extern const char kLauncherSearchAppId[];
 extern const char kIgnoredAppIdPrefix[];
 // This is used to install the Borealis DLC component.
 extern const char kBorealisDlcName[];
-// The regex used for extracting the Borealis app ID of an application.
-extern const char kBorealisAppIdRegex[];
 // Base64-encoded allowed x-scheme for Borealis apps.
 extern const char kAllowedScheme[];
 // Error string to replace Proton version info in the event that a GameID
@@ -54,13 +54,34 @@ struct CompatToolInfo {
 // Note that this does not check if the app is from the Borealis VM.
 bool IsNonGameBorealisApp(const std::string& app_id);
 
-// Returns a Borealis app ID parsed from |exec|, or nullopt on failure.
+// Steam started putting "Proton X.0", "Steam Linux Runtime - XXX" apps in the
+// launcher recently, we shouldn't show them.
+//
+// TODO(b/288176160): Valve probably shouldn't be doing this, we want a more
+// thorough fix long term.
+bool ShouldHideIrrelevantApp(const std::string& desktop_name);
+
+// Returns a Steam Game ID parsed from |exec|, or nullopt on failure.
+// These are the numeric "App IDs" described at
+// https://partner.steamgames.com/doc/store/application. We use the term
+// "Steam Game ID" here to differentiate from other kinds of "application ID".
+//
 // TODO(b/173547790): This should probably be moved when we've decided
 // the details of how/where it will be used.
-absl::optional<int> GetBorealisAppId(std::string exec);
+absl::optional<int> ParseSteamGameId(std::string exec);
 
-// Returns the Borealis app ID of the |window|, or nullopt on failure.
-absl::optional<int> GetBorealisAppId(const aura::Window* window);
+// Returns the Steam Game ID of the |window|, or nullopt on failure.
+// These are the numeric "App IDs" described at
+// https://partner.steamgames.com/doc/store/application. We use the term
+// "Steam Game ID" here to differentiate from other kinds of "application ID".
+absl::optional<int> SteamGameId(const aura::Window* window);
+
+// Get the steam app id (a.k.a. STEAM_GAME cardinal) for the app with the
+// given chromeos |app_id|, registered with |profile|, or nullopt if we can't
+// work it out/there isn't one.
+//
+// Works for anonymous apps of the form "borealis_anon:.*xprop.<id>".
+absl::optional<int> SteamGameId(Profile* profile, const std::string& app_id);
 
 // Checks that a given URL has the allowed scheme and that its contents starts
 // with one of the URLs in the allowlist.

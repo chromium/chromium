@@ -206,6 +206,8 @@ TEST_F(WaylandOutputWithAuraOutputManagerTest,
   PostToServerAndWait([](wl::TestWaylandServerThread* server) {
     wl_output_send_done(server->output()->resource());
   });
+
+  primary_output()->set_delegate_for_testing(nullptr);
 }
 
 }  // namespace ui

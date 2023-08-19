@@ -108,10 +108,9 @@ void SetManualProxy(base::Value::Dict* manual,
 
 base::Value::Dict OncValueWithMode(const std::string& source,
                                    const std::string& mode) {
-  base::Value::Dict result;
-  result.Set(::onc::network_config::kType,
-             CreateEffectiveValue(source, base::Value(mode)));
-  return result;
+  return base::Value::Dict().Set(
+      ::onc::network_config::kType,
+      CreateEffectiveValue(source, base::Value(mode)));
 }
 
 absl::optional<base::Value::Dict> OncValueForManualProxyList(

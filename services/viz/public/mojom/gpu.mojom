@@ -6,6 +6,7 @@ module viz.mojom;
 
 import "gpu/ipc/common/gpu_feature_info.mojom";
 import "gpu/ipc/common/gpu_info.mojom";
+import "gpu/ipc/common/client_gmb_interface.mojom";
 import "gpu/ipc/common/sync_token.mojom";
 [EnableIf=is_chromeos_ash]
 import "components/chromeos_camera/common/mjpeg_decode_accelerator.mojom";
@@ -37,6 +38,11 @@ interface Gpu {
   // stay alive for as long as the invoked Gpu instance.
   CreateGpuMemoryBufferFactory(
       pending_receiver<GpuMemoryBufferFactory> receiver);
+
+  // Creates a  direct channel between renderer and gpu process for GMB
+  // creation.
+  CreateClientGpuMemoryBufferFactory(
+      pending_receiver<gpu.mojom.ClientGmbInterface> receiver);
 
   // Tells the GPU service to create a new channel for communication with a
   // client. The GPU service responds with client ID, IPC handle and

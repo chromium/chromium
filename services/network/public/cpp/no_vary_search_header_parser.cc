@@ -5,6 +5,7 @@
 #include "services/network/public/cpp/no_vary_search_header_parser.h"
 
 #include "base/strings/stringprintf.h"
+#include "base/types/expected_macros.h"
 #include "net/http/http_no_vary_search_data.h"
 #include "services/network/public/mojom/no_vary_search.mojom.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -22,49 +23,49 @@ mojom::NoVarySearchWithParseErrorPtr ParseNoVarySearch(
     const net::HttpResponseHeaders& headers) {
   // See No-Vary-Search header structure at
   // https://github.com/WICG/nav-speculation/blob/main/no-vary-search.md#the-header
-  const auto no_vary_search_data =
-      net::HttpNoVarySearchData::ParseFromHeaders(headers);
-  if (!no_vary_search_data.has_value()) {
-    using Input = net::HttpNoVarySearchData::ParseErrorEnum;
-    const auto map_error = [](Input error) {
-      using Output = mojom::NoVarySearchParseError;
-      switch (error) {
-        case Input::kOk:
-          return Output::kOk;
-        case Input::kDefaultValue:
-          return Output::kDefaultValue;
-        case Input::kNotDictionary:
-          return Output::kNotDictionary;
-        case Input::kUnknownDictionaryKey:
-          return Output::kUnknownDictionaryKey;
-        case Input::kNonBooleanKeyOrder:
-          return Output::kNonBooleanKeyOrder;
-        case Input::kParamsNotStringList:
-          return Output::kParamsNotStringList;
-        case Input::kExceptNotStringList:
-          return Output::kExceptNotStringList;
-        case Input::kExceptWithoutTrueParams:
-          return Output::kExceptWithoutTrueParams;
-      }
-      NOTREACHED_NORETURN();
-    };
-    return mojom::NoVarySearchWithParseError::NewParseError(
-        map_error(no_vary_search_data.error()));
-  };
+  using Input = net::HttpNoVarySearchData::ParseErrorEnum;
+  ASSIGN_OR_RETURN(const auto no_vary_search_data,
+                   net::HttpNoVarySearchData::ParseFromHeaders(headers),
+                   ([](Input error) {
+                     const auto map_error = [](Input error) {
+                       using Output = mojom::NoVarySearchParseError;
+                       switch (error) {
+                         case Input::kOk:
+                           return Output::kOk;
+                         case Input::kDefaultValue:
+                           return Output::kDefaultValue;
+                         case Input::kNotDictionary:
+                           return Output::kNotDictionary;
+                         case Input::kUnknownDictionaryKey:
+                           return Output::kUnknownDictionaryKey;
+                         case Input::kNonBooleanKeyOrder:
+                           return Output::kNonBooleanKeyOrder;
+                         case Input::kParamsNotStringList:
+                           return Output::kParamsNotStringList;
+                         case Input::kExceptNotStringList:
+                           return Output::kExceptNotStringList;
+                         case Input::kExceptWithoutTrueParams:
+                           return Output::kExceptWithoutTrueParams;
+                       }
+                       NOTREACHED_NORETURN();
+                     };
+                     return mojom::NoVarySearchWithParseError::NewParseError(
+                         map_error(error));
+                   }));
 
   mojom::NoVarySearchPtr no_vary_search = network::mojom::NoVarySearch::New();
-  no_vary_search->vary_on_key_order = no_vary_search_data->vary_on_key_order();
-  if (no_vary_search_data->vary_by_default()) {
+  no_vary_search->vary_on_key_order = no_vary_search_data.vary_on_key_order();
+  if (no_vary_search_data.vary_by_default()) {
     no_vary_search->search_variance =
         mojom::SearchParamsVariance::NewNoVaryParams(std::vector<std::string>(
-            no_vary_search_data->no_vary_params().begin(),
-            no_vary_search_data->no_vary_params().end()));
+            no_vary_search_data.no_vary_params().begin(),
+            no_vary_search_data.no_vary_params().end()));
     return mojom::NoVarySearchWithParseError::NewNoVarySearch(
         std::move(no_vary_search));
   }
   no_vary_search->search_variance = mojom::SearchParamsVariance::NewVaryParams(
-      std::vector<std::string>(no_vary_search_data->vary_params().begin(),
-                               no_vary_search_data->vary_params().end()));
+      std::vector<std::string>(no_vary_search_data.vary_params().begin(),
+                               no_vary_search_data.vary_params().end()));
   return mojom::NoVarySearchWithParseError::NewNoVarySearch(
       std::move(no_vary_search));
 }

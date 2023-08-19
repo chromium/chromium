@@ -235,6 +235,10 @@ class AccountReconcilor
   FRIEND_TEST_ALL_PREFIXES(AccountReconcilorDiceTest,
                            DiceReconcileReuseGaiaFirstAccount);
   FRIEND_TEST_ALL_PREFIXES(AccountReconcilorDiceTest, DeleteCookie);
+  FRIEND_TEST_ALL_PREFIXES(AccountReconcilorDiceTestForSupervisedUsers,
+                           DeleteCookieForNonSyncingSupervisedUsers);
+  FRIEND_TEST_ALL_PREFIXES(AccountReconcilorDiceTestForSupervisedUsers,
+                           DeleteCookieForSyncingSupervisedUsers);
   FRIEND_TEST_ALL_PREFIXES(AccountReconcilorMirrorTest, TokensNotLoaded);
   FRIEND_TEST_ALL_PREFIXES(AccountReconcilorMirrorTest,
                            StartReconcileCookiesDisabled);

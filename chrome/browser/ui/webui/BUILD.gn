@@ -38,6 +38,10 @@ source_set("configs") {
   }
 
   # Includes Ash Chrome and Lacros Chrome
+  if (is_chromeos) {
+    deps += [ "//chromeos/constants" ]
+  }
+
   if (is_chromeos_ash) {
     sources += [
       "ash/chrome_untrusted_web_ui_configs_chromeos.cc",

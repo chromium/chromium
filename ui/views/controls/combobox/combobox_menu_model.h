@@ -47,8 +47,7 @@ class VIEWS_EXPORT ComboboxMenuModel : public ui::MenuModel {
  private:
   bool UseCheckmarks() const;
 
-  // Overridden from MenuModel:
-  bool HasIcons() const override;
+  // ui::MenuModel:
   size_t GetItemCount() const override;
   ui::MenuModel::ItemType GetTypeAt(size_t index) const override;
   ui::MenuSeparatorType GetSeparatorTypeAt(size_t index) const override;

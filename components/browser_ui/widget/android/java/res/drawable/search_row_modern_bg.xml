@@ -11,10 +11,5 @@ found in the LICENSE file.
             <solid android:color="@macro/toolbar_background_primary" />
         </shape>
     </item>
-    <item
-        android:top="@dimen/search_row_modern_bg_vertical_inset"
-        android:bottom="@dimen/search_row_modern_bg_vertical_inset"
-        android:start="@dimen/search_row_modern_bg_horizontal_inset"
-        android:end="@dimen/search_row_modern_bg_horizontal_inset"
-        android:drawable="@drawable/modern_toolbar_text_box_background" />
+    <item android:drawable="@drawable/modern_toolbar_text_box_background" />
 </layer-list>

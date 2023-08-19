@@ -28,8 +28,10 @@ void FakeOnboardingUiTracker::DismissSetupUi() {
   SetShouldShowOnboardingUi(false);
 }
 
-void FakeOnboardingUiTracker::HandleGetStarted() {
+void FakeOnboardingUiTracker::HandleGetStarted(
+    bool is_icon_clicked_when_nudge_visible) {
   ++handle_get_started_call_count_;
+  is_icon_clicked_when_nudge_visible_ = is_icon_clicked_when_nudge_visible;
 }
 
 }  // namespace phonehub

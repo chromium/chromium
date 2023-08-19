@@ -171,8 +171,10 @@ class IdleManagerTest : public RenderViewHostTestHarness {
 
  private:
   std::unique_ptr<IdleManagerImpl> idle_manager_;
-  raw_ptr<MockPermissionManager, DanglingUntriaged> permission_manager_;
-  raw_ptr<MockIdleTimeProvider, DanglingUntriaged> idle_time_provider_;
+  raw_ptr<MockPermissionManager, AcrossTasksDanglingUntriaged>
+      permission_manager_;
+  raw_ptr<MockIdleTimeProvider, AcrossTasksDanglingUntriaged>
+      idle_time_provider_;
   std::unique_ptr<ui::test::ScopedIdleProviderForTest>
       scoped_idle_time_provider_;
   NiceMock<MockIdleMonitor> idle_monitor_;

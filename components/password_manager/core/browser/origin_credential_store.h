@@ -11,6 +11,7 @@
 #include "base/containers/span.h"
 #include "base/time/time.h"
 #include "base/types/strong_alias.h"
+#include "components/password_manager/core/browser/password_manager_util.h"
 #include "url/gurl.h"
 #include "url/origin.h"
 
@@ -21,17 +22,10 @@ struct PasswordForm;
 // Encapsulates the data from the password manager backend as used by the UI.
 class UiCredential {
  public:
-  using IsPublicSuffixMatch =
-      base::StrongAlias<class IsPublicSuffixMatchTag, bool>;
-
-  using IsAffiliationBasedMatch =
-      base::StrongAlias<class IsAffiliationBasedMatchTag, bool>;
-
   UiCredential(std::u16string username,
                std::u16string password,
                url::Origin origin,
-               IsPublicSuffixMatch is_public_suffix_match,
-               IsAffiliationBasedMatch is_affiliation_based_match,
+               password_manager_util::GetLoginMatchType match_type,
                base::Time last_used);
   UiCredential(const PasswordForm& form, const url::Origin& affiliated_origin);
   UiCredential(UiCredential&&);
@@ -46,12 +40,11 @@ class UiCredential {
 
   const url::Origin& origin() const { return origin_; }
 
-  IsPublicSuffixMatch is_public_suffix_match() const {
-    return is_public_suffix_match_;
-  }
+  // Domain or App name displayed in the UI for affiliated or PSL matches.
+  const std::string& display_name() const { return display_name_; }
 
-  IsAffiliationBasedMatch is_affiliation_based_match() const {
-    return is_affiliation_based_match_;
+  password_manager_util::GetLoginMatchType match_type() const {
+    return match_type_;
   }
 
   base::Time last_used() const { return last_used_; }
@@ -60,8 +53,8 @@ class UiCredential {
   std::u16string username_;
   std::u16string password_;
   url::Origin origin_;
-  IsPublicSuffixMatch is_public_suffix_match_{false};
-  IsAffiliationBasedMatch is_affiliation_based_match_{false};
+  std::string display_name_;
+  password_manager_util::GetLoginMatchType match_type_;
   base::Time last_used_;
 };
 

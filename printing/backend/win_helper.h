@@ -160,7 +160,8 @@ void SetGetDisplayNameFunction(
 COMPONENT_EXPORT(PRINT_BACKEND)
 bool InitBasicPrinterInfo(HANDLE printer, PrinterBasicInfo* printer_info);
 
-COMPONENT_EXPORT(PRINT_BACKEND) std::string GetDriverInfo(HANDLE printer);
+COMPONENT_EXPORT(PRINT_BACKEND)
+std::vector<std::string> GetDriverInfo(HANDLE printer);
 
 // Determines if the specified printer driver is known to cause a file save
 // UI dialog to be displayed when printing a document.
@@ -195,6 +196,11 @@ std::unique_ptr<DEVMODE, base::FreeDeleter> PromptDevMode(
     DEVMODE* in,
     HWND window,
     bool* canceled);
+
+// Expose helper to convert a driver version number to human-friendly
+// dot-separated format only for testing.
+COMPONENT_EXPORT(PRINT_BACKEND)
+std::string GetDriverVersionStringForTesting(DWORDLONG version_number);
 
 }  // namespace printing
 

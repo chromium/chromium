@@ -5,6 +5,7 @@
 #ifndef CONTENT_COMMON_INPUT_SYNTHETIC_GESTURE_PARAMS_H_
 #define CONTENT_COMMON_INPUT_SYNTHETIC_GESTURE_PARAMS_H_
 
+#include "content/common/content_export.h"
 #include "content/common/input/input_injector.mojom-shared.h"
 
 namespace content {
@@ -15,7 +16,7 @@ namespace content {
 // The logic for dispatching input events that implement the gesture lives
 // in separate classes in content/browser/renderer_host/input/.
 //
-struct SyntheticGestureParams {
+struct CONTENT_EXPORT SyntheticGestureParams {
   SyntheticGestureParams();
   SyntheticGestureParams(const SyntheticGestureParams& other);
   virtual ~SyntheticGestureParams();
@@ -23,6 +24,7 @@ struct SyntheticGestureParams {
   content::mojom::GestureSourceType gesture_source_type;
 
   enum GestureType {
+    SMOOTH_MOVE_GESTURE,
     SMOOTH_SCROLL_GESTURE,
     SMOOTH_DRAG_GESTURE,
     PINCH_GESTURE,

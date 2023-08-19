@@ -17,7 +17,6 @@ import android.view.ViewGroup;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.annotation.VisibleForTesting;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.recyclerview.widget.RecyclerView.OnScrollListener;
@@ -25,6 +24,7 @@ import androidx.recyclerview.widget.RecyclerView.ViewHolder;
 
 import org.chromium.base.ContextUtils;
 import org.chromium.base.IntentUtils;
+import org.chromium.base.ResettersForTesting;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.R;
@@ -48,6 +48,7 @@ import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.components.favicon.LargeIconBridge;
 import org.chromium.components.user_prefs.UserPrefs;
 import org.chromium.content_public.browser.LoadUrlParams;
+import org.chromium.ui.UiUtils;
 import org.chromium.ui.base.PageTransition;
 import org.chromium.url.GURL;
 
@@ -157,8 +158,7 @@ public class HistoryContentManager implements SignInStateObserver, PrefObserver 
         mShouldShowClearDataIfAvailable = shouldShowClearDataIfAvailable;
         mHostName = hostName;
         mIsScrollToLoadDisabled = ChromeAccessibilityUtil.get().isAccessibilityEnabled()
-                || ChromeAccessibilityUtil.isHardwareKeyboardAttached(
-                        mActivity.getResources().getConfiguration());
+                || UiUtils.isHardwareKeyboardAttached();
         mSelectionDelegate = selectionDelegate != null
                 ? selectionDelegate
                 : new SelectionDelegate<HistoryItem>() {
@@ -545,14 +545,14 @@ public class HistoryContentManager implements SignInStateObserver, PrefObserver 
     }
 
     /** @param provider The {@link HistoryProvider} that is used in place of a real one. */
-    @VisibleForTesting
     public static void setProviderForTests(HistoryProvider provider) {
         sProviderForTests = provider;
+        ResettersForTesting.register(() -> sProviderForTests = null);
     }
 
     /** @param isScrollToLoadDisabled Whether scrolling to load is disabled for tests. */
-    @VisibleForTesting
     public static void setScrollToLoadDisabledForTesting(boolean isScrollToLoadDisabled) {
         sIsScrollToLoadDisabledForTests = isScrollToLoadDisabled;
+        ResettersForTesting.register(() -> sIsScrollToLoadDisabledForTests = null);
     }
 }

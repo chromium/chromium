@@ -23,7 +23,7 @@ AutofillSaveUpdateAddressProfileDelegateIOS::
     AutofillSaveUpdateAddressProfileDelegateIOS(
         const AutofillProfile& profile,
         const AutofillProfile* original_profile,
-        absl::optional<std::u16string> syncing_user_email,
+        absl::optional<std::u16string> user_email,
         const std::string& locale,
         AutofillClient::SaveAddressProfilePromptOptions options,
         AutofillClient::AddressProfileSavePromptCallback callback)
@@ -32,7 +32,7 @@ AutofillSaveUpdateAddressProfileDelegateIOS::
       original_profile_(base::OptionalFromPtr(original_profile)),
       address_profile_save_prompt_callback_(std::move(callback)),
       is_migration_to_account_(options.is_migration_to_account),
-      syncing_user_email_(syncing_user_email) {}
+      user_email_(user_email) {}
 
 AutofillSaveUpdateAddressProfileDelegateIOS::
     ~AutofillSaveUpdateAddressProfileDelegateIOS() {
@@ -90,10 +90,10 @@ std::u16string AutofillSaveUpdateAddressProfileDelegateIOS::GetDescription()
         IDS_IOS_AUTOFILL_MIGRATE_ADDRESS_IN_ACCOUNT_MESSAGE_SUBTITLE);
   }
   if (IsProfileAnAccountProfile() && !original_profile_.has_value()) {
-    DCHECK(syncing_user_email_);
+    DCHECK(user_email_);
     return l10n_util::GetStringFUTF16(
         IDS_IOS_AUTOFILL_SAVE_ADDRESS_IN_ACCOUNT_MESSAGE_SUBTITLE,
-        *syncing_user_email_);
+        *user_email_);
   }
   return GetProfileDescription(
       original_profile_ ? *original_profile_ : profile_, locale_,

@@ -14,92 +14,90 @@ found in the LICENSE file.
     <link rel="stylesheet" href="chrome://resources/css/text_defaults.css">
     <link rel="stylesheet" href="main.css">
   </head>
-  <body id=events-view-drop-target>
+  <body id="events-view-drop-target">
     <div id="tab-list">
     </div>
 
-    <div id=main-tab-contents>
-      <div id=events-view-tab-content class=content-box>
+    <div id="main-tab-contents">
+      <div id="events-view-tab-content" class="content-box">
         The net-internals events viewer and related functionality has been removed.
         Please use <a href="chrome://net-export">chrome://net-export</a> to save netlogs and the external <a href="https://netlog-viewer.appspot.com/">netlog_viewer</a> to view them.
       </div>
 
-      <div id=proxy-view-tab-content class=content-box>
-       <input type=button value="Re-apply settings"
-           id=proxy-view-reload-settings>
-       <input type=button value="Clear bad proxies"
-           id=proxy-view-clear-bad-proxies>
+      <div id="proxy-view-tab-content" class="content-box">
+       <input type="button" value="Re-apply settings"
+           id="proxy-view-reload-settings">
+       <input type="button" value="Clear bad proxies"
+           id="proxy-view-clear-bad-proxies">
       </div>
 
-      <div id=dns-view-tab-content class=content-box>
+      <div id="dns-view-tab-content" class="content-box">
         <h4>DNS lookup</h4>
           <p>Input a domain name to look up:</p>
-          <form id=dns-view-dns-lookup-form>
-            Domain: <input type=text id=dns-view-dns-lookup-input type="url"
+          <form id="dns-view-dns-lookup-form">
+            Domain: <input type="text" id="dns-view-dns-lookup-input" type="url"
                      placeholder="example.com">
-            <input type=submit value="Lookup" id=dns-view-dns-lookup-submit>
+            <input type="submit" value="Lookup" id="dns-view-dns-lookup-submit">
           </form>
-          <div style="margin-top: 1em; margin-left: 2em;"
-          id=dns-view-dns-lookup-output>
+          <div class="output-box" id="dns-view-dns-lookup-output">
           </div>
         </h4>
         <h4>
           Host resolver cache
-          <input type=button value="Clear host cache" id=dns-view-clear-cache>
+          <button id="dns-view-clear-cache">Clear host cache</button>
         </h4>
       </div>
 
-      <div id=sockets-view-tab-content class=content-box>
-        <ul style='margin-top:0'>
+      <div id="sockets-view-tab-content" class="content-box">
+        <ul>
           <li>
-            <input type=button value="Close idle sockets"
-                id=sockets-view-close-idle-button>
+            <input type="button" value="Close idle sockets"
+                id="sockets-view-close-idle-button">
           </li>
           <li>
-            <input type=button value="Flush socket pools"
-                id=sockets-view-flush-button>
-            <span class=warning-text>
+            <input type="button" value="Flush socket pools"
+                id="sockets-view-flush-button">
+            <span class="warning-text">
               May break pages with active connections
             </span>
           </li>
         </ul>
       </div>
 
-      <div id=domain-security-policy-view-tab-content class=content-box>
+      <div id="domain-security-policy-view-tab-content" class="content-box">
         <!-- This UI allows a user to query and update the browser's list of
              HSTS/PKP domains. -->
 
         <h3>HSTS/PKP</h3>
 
-        <div class=deindent-header>
+        <div class="deindent-header">
           HSTS is HTTP Strict Transport Security: a way for sites to elect to
           always use HTTPS. See
-          <a href="https://www.chromium.org/hsts" target=_blank>
+          <a href="https://www.chromium.org/hsts" target="_blank">
           https://www.chromium.org/hsts</a>. PKP is Public Key Pinning: Chrome
           "pins" certain public keys for certain sites in official builds.</div>
 
         <h4>Add HSTS domain</h4>
 
         <p>Input a domain name to add it to the HSTS set:</p>
-        <form id=hsts-view-add-form>
-          Domain: <input type=text id=hsts-view-add-input type="url"
+        <form id="hsts-view-add-form">
+          Domain: <input type="text" id=hsts-view-add-input type="url"
                    placeholder="example.com">
           <label>Include subdomains for STS: <input type="checkbox"
-                                              id=hsts-view-check-sts-input>
+                                              id="hsts-view-check-sts-input">
           </label>
-          <input type=submit value="Add" id=hsts-view-add-submit>
+          <input type="submit" value="Add" id="hsts-view-add-submit">
         </form>
 
         <h4>Query HSTS/PKP domain</h4>
 
         <p>Input a domain name to query the current HSTS/PKP set:</p>
-        <form id=hsts-view-query-form>
-          Domain: <input type=text id=hsts-view-query-input type="url"
+        <form id="hsts-view-query-form">
+          Domain: <input type="text" id="hsts-view-query-input" type="url"
                    placeholder="example.com">
-          <input type=submit value="Query" id=hsts-view-query-submit>
+          <input type="submit" value="Query" id="hsts-view-query-submit">
         </form>
-        <div style="margin-top: 1em; margin-left: 2em;"
-            id=hsts-view-query-output>
+        <div class="output-box" id="hsts-view-query-output">
         </div>
 
         <h3>Delete domain security policies</h3>
@@ -108,20 +106,30 @@ found in the LICENSE file.
           Input a domain name to delete its dynamic HSTS policy.
           (<i>You cannot delete preloaded entries.</i>):
         </p>
-        <form id=domain-security-policy-view-delete-form>
-          <label>Domain: <input type=text
-                   id=domain-security-policy-view-delete-input
+        <form id="domain-security-policy-view-delete-form">
+          <label>Domain: <input type="text"
+                   id="domain-security-policy-view-delete-input"
                    type="url"
                    placeholder="example.com"></label>
-          <input type=submit value="Delete"
-            id=domain-security-policy-view-delete-submit>
+          <input type="submit" value="Delete"
+            id="domain-security-policy-view-delete-submit">
         </form>
 
       </div>
 
+      <div id="shared-dictionary-view-tab-content" class="content-box">
+        <h4>Shared Dictionary</h4>
+        <div>
+          <button value="Reload" id="shared-dictionary-reload">Reload</button>
+          <button id="shared-dictionary-view-clear-all">Clear all</button>
+          <div class="output-box" id="shared-dictionary-output">
+          </div>
+        </div>
+      </div>
+
 <if expr="chromeos_ash">
-      <div id="chromeos-view-tab-content" class=content-box>
-        <h4 style='margin-top:0'>Import ONC file</h4>
+      <div id="chromeos-view-tab-content" class="content-box">
+        <h4 class="tab-title">Import ONC file</h4>
         <div>
           Import ONC File has moved to
           <a href="chrome://network#general">chrome://network#general</a>.

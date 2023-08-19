@@ -75,6 +75,9 @@ class NET_EXPORT IPAddressBytes {
     bytes_[size_++] = val;
   }
 
+  // Appends the range [`first`, `last`) to the end and increments the size.
+  void Append(const uint8_t* first, const uint8_t* last);
+
   // Returns a reference to the byte at index |pos|.
   uint8_t& operator[](size_t pos) {
     DCHECK_LT(pos, size_);

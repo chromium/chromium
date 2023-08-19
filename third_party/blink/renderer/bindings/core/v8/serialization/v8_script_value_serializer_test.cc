@@ -28,6 +28,7 @@
 #include "third_party/blink/renderer/bindings/core/v8/v8_dom_quad.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_dom_rect.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_dom_rect_read_only.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_fenced_frame_config.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_file.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_file_list.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_image_bitmap.h"
@@ -53,6 +54,7 @@
 #include "third_party/blink/renderer/core/geometry/dom_rect.h"
 #include "third_party/blink/renderer/core/geometry/dom_rect_read_only.h"
 #include "third_party/blink/renderer/core/html/canvas/image_data.h"
+#include "third_party/blink/renderer/core/html/fenced_frame/fenced_frame_config.h"
 #include "third_party/blink/renderer/core/imagebitmap/image_bitmap.h"
 #include "third_party/blink/renderer/core/messaging/message_port.h"
 #include "third_party/blink/renderer/core/mojo/mojo_handle.h"
@@ -60,6 +62,7 @@
 #include "third_party/blink/renderer/core/script/classic_script.h"
 #include "third_party/blink/renderer/core/streams/readable_stream.h"
 #include "third_party/blink/renderer/core/streams/transform_stream.h"
+#include "third_party/blink/renderer/core/testing/file_backed_blob_factory_test_helper.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/blob/blob_data.h"
 #include "third_party/blink/renderer/platform/file_metadata.h"
@@ -1521,7 +1524,7 @@ TEST(V8ScriptValueSerializerTest, TransferOffscreenCanvas) {
   // More exhaustive tests in web_tests/. This is a sanity check.
   V8TestingScope scope;
   OffscreenCanvas* canvas =
-      OffscreenCanvas::Create(scope.GetExecutionContext(), 10, 7);
+      OffscreenCanvas::Create(scope.GetScriptState(), 10, 7);
   canvas->SetPlaceholderCanvasId(519);
   v8::Local<v8::Value> wrapper = ToV8(canvas, scope.GetScriptState());
   Transferables transferables;
@@ -1642,7 +1645,11 @@ TEST(V8ScriptValueSerializerTest, DecodeBlobIndexOutOfRange) {
 
 TEST(V8ScriptValueSerializerTest, RoundTripFileNative) {
   V8TestingScope scope;
-  auto* file = MakeGarbageCollected<File>("/native/path");
+  FileBackedBlobFactoryTestHelper file_factory_helper(
+      scope.GetExecutionContext());
+  auto* file =
+      MakeGarbageCollected<File>(scope.GetExecutionContext(), "/native/path");
+  file_factory_helper.FlushForTesting();
   v8::Local<v8::Value> wrapper = ToV8(file, scope.GetScriptState());
   v8::Local<v8::Value> result = RoundTrip(wrapper, scope);
   File* new_file = V8File::ToWrappable(scope.GetIsolate(), result);
@@ -1850,7 +1857,11 @@ TEST(V8ScriptValueSerializerTest, DecodeFileV8WithSnapshot) {
 
 TEST(V8ScriptValueSerializerTest, RoundTripFileIndex) {
   V8TestingScope scope;
-  auto* file = MakeGarbageCollected<File>("/native/path");
+  FileBackedBlobFactoryTestHelper file_factory_helper(
+      scope.GetExecutionContext());
+  auto* file =
+      MakeGarbageCollected<File>(scope.GetExecutionContext(), "/native/path");
+  file_factory_helper.FlushForTesting();
   v8::Local<v8::Value> wrapper = ToV8(file, scope.GetScriptState());
   WebBlobInfoArray blob_info_array;
   v8::Local<v8::Value> result =
@@ -1920,9 +1931,14 @@ TEST(V8ScriptValueSerializerTest, DecodeFileIndexOutOfRange) {
 
 TEST(V8ScriptValueSerializerTest, RoundTripFileList) {
   V8TestingScope scope;
+  FileBackedBlobFactoryTestHelper file_factory_helper(
+      scope.GetExecutionContext());
   auto* file_list = MakeGarbageCollected<FileList>();
-  file_list->Append(MakeGarbageCollected<File>("/native/path"));
-  file_list->Append(MakeGarbageCollected<File>("/native/path2"));
+  file_list->Append(
+      MakeGarbageCollected<File>(scope.GetExecutionContext(), "/native/path"));
+  file_list->Append(
+      MakeGarbageCollected<File>(scope.GetExecutionContext(), "/native/path2"));
+  file_factory_helper.FlushForTesting();
   v8::Local<v8::Value> wrapper = ToV8(file_list, scope.GetScriptState());
   v8::Local<v8::Value> result = RoundTrip(wrapper, scope);
   FileList* new_file_list = V8FileList::ToWrappable(scope.GetIsolate(), result);
@@ -1981,9 +1997,14 @@ TEST(V8ScriptValueSerializerTest, DecodeFileListV8WithoutSnapshot) {
 
 TEST(V8ScriptValueSerializerTest, RoundTripFileListIndex) {
   V8TestingScope scope;
+  FileBackedBlobFactoryTestHelper file_factory_helper(
+      scope.GetExecutionContext());
   auto* file_list = MakeGarbageCollected<FileList>();
-  file_list->Append(MakeGarbageCollected<File>("/native/path"));
-  file_list->Append(MakeGarbageCollected<File>("/native/path2"));
+  file_list->Append(
+      MakeGarbageCollected<File>(scope.GetExecutionContext(), "/native/path"));
+  file_list->Append(
+      MakeGarbageCollected<File>(scope.GetExecutionContext(), "/native/path2"));
+  file_factory_helper.FlushForTesting();
   v8::Local<v8::Value> wrapper = ToV8(file_list, scope.GetScriptState());
   WebBlobInfoArray blob_info_array;
   v8::Local<v8::Value> result =
@@ -2275,6 +2296,61 @@ TEST(V8ScriptValueSerializerTest, SSVTrailerEnforceExposureAssertionDisabled) {
     V8TestingScope scope;
     EXPECT_TRUE(ssv->CanDeserializeIn(scope.GetExecutionContext()));
   }
+}
+
+TEST(V8ScriptValueSerializerTest, RoundTripFencedFrameConfig) {
+  ScopedFencedFramesForTest fenced_frames(true);
+  V8TestingScope scope;
+  FencedFrameConfig* config = FencedFrameConfig::Create(
+      KURL("https://example.com"), 200, 250, "some shared storage context",
+      KURL("urn:uuid:37665e6f-f3fd-4393-8429-719d02843a54"), gfx::Size(64, 48),
+      gfx::Size(32, 16), FencedFrameConfig::AttributeVisibility::kOpaque,
+      FencedFrameConfig::AttributeVisibility::kTransparent, true);
+  v8::Local<v8::Value> wrapper =
+      ToV8(config, scope.GetContext()->Global(), scope.GetIsolate());
+  v8::Local<v8::Value> result = RoundTrip(wrapper, scope);
+  FencedFrameConfig* new_config =
+      V8FencedFrameConfig::ToWrappable(scope.GetIsolate(), result);
+  ASSERT_NE(new_config, nullptr);
+  EXPECT_NE(config, new_config);
+  EXPECT_EQ(config->url_, new_config->url_);
+  EXPECT_EQ(config->width_, new_config->width_);
+  EXPECT_EQ(config->height_, new_config->height_);
+  EXPECT_EQ(config->shared_storage_context_,
+            new_config->shared_storage_context_);
+  EXPECT_EQ(config->urn_uuid_, new_config->urn_uuid_);
+  EXPECT_EQ(config->container_size_, new_config->container_size_);
+  EXPECT_EQ(config->content_size_, new_config->content_size_);
+  EXPECT_EQ(config->url_attribute_visibility_,
+            new_config->url_attribute_visibility_);
+  EXPECT_EQ(config->size_attribute_visibility_,
+            new_config->size_attribute_visibility_);
+  EXPECT_EQ(config->deprecated_should_freeze_initial_size_,
+            new_config->deprecated_should_freeze_initial_size_);
+}
+
+TEST(V8ScriptValueSerializerTest, RoundTripFencedFrameConfigNullValues) {
+  ScopedFencedFramesForTest fenced_frames(true);
+  V8TestingScope scope;
+  FencedFrameConfig* config = FencedFrameConfig::Create(g_empty_string);
+  ASSERT_FALSE(config->urn_uuid_.has_value());
+  ASSERT_FALSE(config->container_size_.has_value());
+  ASSERT_FALSE(config->content_size_.has_value());
+  v8::Local<v8::Value> wrapper =
+      ToV8(config, scope.GetContext()->Global(), scope.GetIsolate());
+  v8::Local<v8::Value> result = RoundTrip(wrapper, scope);
+  FencedFrameConfig* new_config =
+      V8FencedFrameConfig::ToWrappable(scope.GetIsolate(), result);
+  ASSERT_NE(new_config, nullptr);
+  EXPECT_NE(config, new_config);
+  EXPECT_EQ(config->shared_storage_context_,
+            new_config->shared_storage_context_);
+  EXPECT_EQ(config->urn_uuid_, new_config->urn_uuid_);
+  EXPECT_FALSE(new_config->urn_uuid_.has_value());
+  EXPECT_EQ(config->container_size_, new_config->container_size_);
+  EXPECT_FALSE(new_config->container_size_.has_value());
+  EXPECT_EQ(config->content_size_, new_config->content_size_);
+  EXPECT_FALSE(new_config->content_size_.has_value());
 }
 
 }  // namespace blink

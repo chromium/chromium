@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import {getTrustedHTML} from 'chrome://resources/js/static_types.js';
 import {assertEquals, assertNotEquals} from 'chrome://webui-test/chai_assert.js';
 
 import {CurrentDirectory, PropStatus} from '../externs/ts/state.js';
@@ -14,7 +15,8 @@ import {BreadcrumbContainer} from './breadcrumb_container.js';
 let breadcrumbContainer: BreadcrumbContainer|null = null;
 
 export function setUp() {
-  document.body.innerHTML = '<div id="breadcrumb-container"></div>';
+  document.body.innerHTML =
+      getTrustedHTML`<div id="breadcrumb-container"></div>`;
   breadcrumbContainer =
       new BreadcrumbContainer(document.querySelector('#breadcrumb-container')!);
 }

@@ -9,7 +9,7 @@ import android.content.Context;
 import org.chromium.base.annotations.CalledByNative;
 import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.browser.settings.SettingsLauncherImpl;
-import org.chromium.chrome.browser.sync.SyncService;
+import org.chromium.chrome.browser.sync.SyncServiceFactory;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.modaldialog.ModalDialogManager;
@@ -31,7 +31,7 @@ public class PasswordManagerLauncher {
     public static void showPasswordSettings(Context context, @ManagePasswordsReferrer int referrer,
             Supplier<ModalDialogManager> modalDialogManagerSupplier, boolean managePasskeys) {
         PasswordManagerHelper.showPasswordSettings(context, referrer, new SettingsLauncherImpl(),
-                SyncService.get(), modalDialogManagerSupplier, managePasskeys);
+                SyncServiceFactory.get(), modalDialogManagerSupplier, managePasskeys);
     }
 
     @CalledByNative

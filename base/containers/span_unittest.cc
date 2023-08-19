@@ -1066,6 +1066,9 @@ TEST(SpanTest, ConstexprIterator) {
 
   static_assert(1 == *((span.begin() + 1) -= 1), "");
   static_assert(6 == *((span.begin() + 1) -= 0), "");
+
+  static_assert(0 + span.begin() == span.begin() + 0);
+  static_assert(1 + span.begin() == span.begin() + 1);
 }
 
 TEST(SpanTest, ReverseIterator) {

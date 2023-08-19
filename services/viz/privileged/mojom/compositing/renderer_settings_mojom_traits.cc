@@ -31,8 +31,6 @@ bool StructTraits<viz::mojom::DebugRendererSettingsDataView,
 bool StructTraits<viz::mojom::RendererSettingsDataView, viz::RendererSettings>::
     Read(viz::mojom::RendererSettingsDataView data,
          viz::RendererSettings* out) {
-  out->apply_simple_frame_rate_throttling =
-      data.apply_simple_frame_rate_throttling();
   out->allow_antialiasing = data.allow_antialiasing();
   out->force_antialiasing = data.force_antialiasing();
   out->force_blending_with_shaders = data.force_blending_with_shaders();

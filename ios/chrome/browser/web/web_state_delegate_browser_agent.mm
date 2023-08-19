@@ -5,6 +5,10 @@
 #import "ios/chrome/browser/web/web_state_delegate_browser_agent.h"
 
 #import "base/strings/sys_string_conversions.h"
+#import "components/content_settings/core/browser/host_content_settings_map.h"
+#import "components/content_settings/core/common/content_settings.h"
+#import "components/supervised_user/core/common/supervised_user_utils.h"
+#import "ios/chrome/browser/content_settings/host_content_settings_map_factory.h"
 #import "ios/chrome/browser/overlays/public/overlay_callback_manager.h"
 #import "ios/chrome/browser/overlays/public/overlay_modality.h"
 #import "ios/chrome/browser/overlays/public/overlay_request.h"
@@ -12,6 +16,7 @@
 #import "ios/chrome/browser/overlays/public/overlay_response.h"
 #import "ios/chrome/browser/overlays/public/web_content_area/http_auth_overlay.h"
 #import "ios/chrome/browser/permissions/permissions_tab_helper.h"
+#import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
 #import "ios/chrome/browser/snapshots/snapshot_tab_helper.h"
 #import "ios/chrome/browser/ui/context_menu/context_menu_configuration_provider.h"
 #import "ios/chrome/browser/ui/dialogs/nsurl_protection_space_util.h"
@@ -22,11 +27,8 @@
 #import "ios/chrome/browser/web/web_state_container_view_provider.h"
 #import "ios/chrome/browser/web_state_list/tab_insertion_browser_agent.h"
 #import "ios/components/security_interstitials/ios_blocking_page_tab_helper.h"
+#import "ios/web/public/permissions/permissions.h"
 #import "ios/web/public/ui/context_menu_params.h"
-
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
 
 BROWSER_USER_DATA_KEY_IMPL(WebStateDelegateBrowserAgent)
 
@@ -47,6 +49,35 @@ void OnHTTPAuthOverlayFinished(web::WebStateDelegate::AuthCallback callback,
   }
   std::move(callback).Run(nil, nil);
 }
+
+// Returns true if a supervised user attempts to access the microphone or camera
+// content setting when a parent has explicitly set site settings controls to
+// block permissions.
+bool IsMicOrCameraAccessSubjectToParentalControls(
+    ChromeBrowserState* browser_state,
+    NSArray<NSNumber*>* permissions) {
+  if (!supervised_user::IsSubjectToParentalControls(
+          browser_state->GetPrefs())) {
+    return false;
+  }
+
+  HostContentSettingsMap* host_content_settings_map =
+      ios::HostContentSettingsMapFactory::GetForBrowserState(browser_state);
+  CHECK(host_content_settings_map);
+
+  ContentSetting default_mic_setting =
+      host_content_settings_map->GetDefaultContentSetting(
+          ContentSettingsType::MEDIASTREAM_MIC, /*provider_id=*/nullptr);
+  ContentSetting default_camera_setting =
+      host_content_settings_map->GetDefaultContentSetting(
+          ContentSettingsType::MEDIASTREAM_CAMERA, /*provider_id=*/nullptr);
+
+  return ([permissions containsObject:@(web::PermissionMicrophone)] &&
+          default_mic_setting == ContentSetting::CONTENT_SETTING_BLOCK) ||
+         ([permissions containsObject:@(web::PermissionCamera)] &&
+          default_camera_setting == ContentSetting::CONTENT_SETTING_BLOCK);
+}
+
 }  // namespace
 
 WebStateDelegateBrowserAgent::WebStateDelegateBrowserAgent(
@@ -83,32 +114,43 @@ void WebStateDelegateBrowserAgent::ClearUIProviders() {
   container_view_provider_ = nil;
 }
 
-// WebStateListObserver::
-void WebStateDelegateBrowserAgent::WebStateInsertedAt(
+#pragma mark - WebStateListObserver
+
+void WebStateDelegateBrowserAgent::WebStateListDidChange(
     WebStateList* web_state_list,
-    web::WebState* web_state,
-    int index,
-    bool activating) {
-  SetWebStateDelegate(web_state);
+    const WebStateListChange& change,
+    const WebStateListStatus& status) {
+  switch (change.type()) {
+    case WebStateListChange::Type::kStatusOnly:
+      // Do nothing when a WebState is selected and its status is updated.
+      break;
+    case WebStateListChange::Type::kDetach: {
+      const WebStateListChangeDetach& detach_change =
+          change.As<WebStateListChangeDetach>();
+      ClearWebStateDelegate(detach_change.detached_web_state());
+      break;
+    }
+    case WebStateListChange::Type::kMove:
+      // Do nothing when a WebState is moved.
+      break;
+    case WebStateListChange::Type::kReplace: {
+      const WebStateListChangeReplace& replace_change =
+          change.As<WebStateListChangeReplace>();
+      ClearWebStateDelegate(replace_change.replaced_web_state());
+      SetWebStateDelegate(replace_change.inserted_web_state());
+      break;
+    }
+    case WebStateListChange::Type::kInsert: {
+      const WebStateListChangeInsert& insert_change =
+          change.As<WebStateListChangeInsert>();
+      SetWebStateDelegate(insert_change.inserted_web_state());
+      break;
+    }
+  }
 }
 
-void WebStateDelegateBrowserAgent::WebStateReplacedAt(
-    WebStateList* web_state_list,
-    web::WebState* old_web_state,
-    web::WebState* new_web_state,
-    int index) {
-  ClearWebStateDelegate(old_web_state);
-  SetWebStateDelegate(new_web_state);
-}
+#pragma mark - BrowserObserver
 
-void WebStateDelegateBrowserAgent::WebStateDetachedAt(
-    WebStateList* web_state_list,
-    web::WebState* web_state,
-    int index) {
-  ClearWebStateDelegate(web_state);
-}
-
-// BrowserObserver::
 void WebStateDelegateBrowserAgent::BrowserDestroyed(Browser* browser) {
   DCHECK(browser_observation_.IsObservingSource(browser));
 
@@ -125,7 +167,8 @@ void WebStateDelegateBrowserAgent::BrowserDestroyed(Browser* browser) {
   browser_observation_.Reset();
 }
 
-// WebStateObserver::
+#pragma mark - WebStateObserver
+
 void WebStateDelegateBrowserAgent::WebStateRealized(web::WebState* web_state) {
   SetWebStateDelegate(web_state);
   web_state_observations_.RemoveObservation(web_state);
@@ -236,6 +279,16 @@ void WebStateDelegateBrowserAgent::HandlePermissionsDecisionRequest(
     web::WebState* source,
     NSArray<NSNumber*>* permissions,
     web::WebStatePermissionDecisionHandler handler) API_AVAILABLE(ios(15.0)) {
+  ChromeBrowserState* chrome_browser_state =
+      ChromeBrowserState::FromBrowserState(source->GetBrowserState());
+  // For supervised users, sites can be denied permission to access camera or
+  // mic by default. In this case, we do not show the dialog.
+  if (IsMicOrCameraAccessSubjectToParentalControls(chrome_browser_state,
+                                                   permissions)) {
+    handler(web::PermissionDecisionDeny);
+    return;
+  }
+
   PermissionsTabHelper::FromWebState(source)
       ->PresentPermissionsDecisionDialogWithCompletionHandler(permissions,
                                                               handler);

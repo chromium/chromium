@@ -8,6 +8,7 @@
 #include <set>
 
 #include "ash/public/cpp/holding_space/holding_space_constants.h"
+#include "ash/public/cpp/holding_space/holding_space_file.h"
 #include "ash/public/cpp/holding_space/holding_space_image.h"
 #include "ash/public/cpp/holding_space/holding_space_item.h"
 #include "ash/public/cpp/holding_space/holding_space_section.h"
@@ -65,7 +66,8 @@ class HoldingSpaceItemScreenCaptureViewTest
     ASSERT_TRUE(HoldingSpaceItem::IsScreenCaptureType(type));
 
     item_ = HoldingSpaceItem::CreateFileBackedItem(
-        type, base::FilePath("file_path"), GURL("filesystem:file_system_url"),
+        type, HoldingSpaceFile(HoldingSpaceFile::FileSystemType::kTest),
+        base::FilePath("file_path"), GURL("filesystem:file_system_url"),
         base::BindOnce(
             [](HoldingSpaceItem::Type type, const base::FilePath& file_path)
                 -> std::unique_ptr<HoldingSpaceImage> {

@@ -65,8 +65,6 @@ class SSLClientAuthHandler::Core : public base::RefCountedThreadSafe<Core> {
         client_cert_store_(std::move(client_cert_store)),
         cert_request_info_(cert_request_info) {}
 
-  bool has_client_cert_store() const { return !!client_cert_store_; }
-
   void GetClientCerts() {
     if (client_cert_store_) {
       // TODO(davidben): This is still a cyclical ownership where
@@ -102,10 +100,10 @@ class SSLClientAuthHandler::Core : public base::RefCountedThreadSafe<Core> {
 
 SSLClientAuthHandler::SSLClientAuthHandler(
     std::unique_ptr<net::ClientCertStore> client_cert_store,
-    WebContents::Getter web_contents_getter,
+    ContextGetter context_getter,
     net::SSLCertRequestInfo* cert_request_info,
     Delegate* delegate)
-    : web_contents_getter_(std::move(web_contents_getter)),
+    : context_getter_(std::move(context_getter)),
       cert_request_info_(cert_request_info),
       delegate_(delegate) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
@@ -134,19 +132,10 @@ void SSLClientAuthHandler::DidGetClientCerts(
     net::ClientCertIdentityList client_certs) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
-  WebContents* web_contents = web_contents_getter_.Run();
-  if (!web_contents) {
-    delegate_->CancelCertificateSelection();
-    return;
-  }
+  auto [browser_context, web_contents] = context_getter_.Run();
 
-  // Note that if |client_cert_store_| is NULL, we intentionally fall through to
-  // SelectClientCertificate(). This is for platforms where the client cert
-  // matching is not performed by Chrome. Those platforms handle the cert
-  // matching before showing the dialog.
-  if (core_->has_client_cert_store() && client_certs.empty()) {
-    // No need to query the user if there are no certs to choose from.
-    delegate_->ContinueWithCertificate(nullptr, nullptr);
+  if (!browser_context) {
+    delegate_->CancelCertificateSelection();
     return;
   }
 
@@ -155,7 +144,8 @@ void SSLClientAuthHandler::DidGetClientCerts(
   base::WeakPtr<SSLClientAuthHandler> weak_self = weak_factory_.GetWeakPtr();
   base::OnceClosure cancellation_callback =
       GetContentClient()->browser()->SelectClientCertificate(
-          web_contents, cert_request_info_.get(), std::move(client_certs),
+          browser_context, web_contents, cert_request_info_.get(),
+          std::move(client_certs),
           std::make_unique<ClientCertificateDelegateImpl>(weak_self));
   if (weak_self) {
     cancellation_callback_ = std::move(cancellation_callback);

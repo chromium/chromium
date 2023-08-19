@@ -16,12 +16,15 @@
 
 #include "ash/display/display_util.h"
 #include "ash/display/screen_orientation_controller.h"
+#include "ash/focus_cycler.h"
 #include "ash/public/cpp/tablet_mode_observer.h"
 #include "ash/public/cpp/window_properties.h"
 #include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"
 #include "ash/wm/desks/desk.h"
 #include "ash/wm/desks/desks_controller.h"
+#include "ash/wm/overview/overview_controller.h"
+#include "ash/wm/overview/overview_observer.h"
 #include "ash/wm/window_state.h"
 #include "base/logging.h"
 #include "base/memory/raw_ptr.h"
@@ -41,6 +44,7 @@
 #include "components/exo/wayland/wayland_display_observer.h"
 #include "components/exo/wayland/wl_output.h"
 #include "components/exo/wayland/xdg_shell.h"
+#include "components/version_info/version_info.h"
 #include "ui/aura/client/aura_constants.h"
 #include "ui/aura/env.h"
 #include "ui/aura/window_occlusion_tracker.h"
@@ -766,18 +770,47 @@ uint32_t HandleAuraSurfaceConfigureCallback(
   return serial;
 }
 
+using AuraSurfaceRotateFocusCallback = base::RepeatingCallback<
+    void(uint32_t serial, ash::FocusCycler::Direction direction, bool restart)>;
+
+uint32_t HandleAuraSurfaceRotateFocusCallback(
+    SerialTracker* serial_tracker,
+    AuraSurfaceRotateFocusCallback callback,
+    ash::FocusCycler::Direction direction,
+    bool restart) {
+  auto serial =
+      serial_tracker->GetNextSerial(SerialTracker::EventType::OTHER_EVENT);
+  callback.Run(serial, direction, restart);
+  return serial;
+}
+
 AuraToplevel::AuraToplevel(ShellSurface* shell_surface,
                            SerialTracker* const serial_tracker,
+                           SerialTracker* const rotation_serial_tracker,
                            wl_resource* xdg_toplevel_resource,
                            wl_resource* aura_toplevel_resource)
     : shell_surface_(shell_surface),
       serial_tracker_(serial_tracker),
+      rotation_serial_tracker_(rotation_serial_tracker),
       xdg_toplevel_resource_(xdg_toplevel_resource),
       aura_toplevel_resource_(aura_toplevel_resource) {
   DCHECK(shell_surface);
 }
 
 AuraToplevel::~AuraToplevel() = default;
+
+void AuraToplevel::OnRotatePaneFocus(uint32_t serial,
+                                     ash::FocusCycler::Direction direction,
+                                     bool restart) {
+  auto zaura_direction = direction == ash::FocusCycler::Direction::FORWARD
+                             ? ZAURA_TOPLEVEL_ROTATE_DIRECTION_FORWARD
+                             : ZAURA_TOPLEVEL_ROTATE_DIRECTION_BACKWARD;
+  zaura_toplevel_send_rotate_focus(
+      aura_toplevel_resource_, serial, zaura_direction,
+      restart ? ZAURA_TOPLEVEL_ROTATE_RESTART_STATE_RESTART
+              : ZAURA_TOPLEVEL_ROTATE_RESTART_STATE_NO_RESTART);
+  wl_client_flush(wl_resource_get_client(aura_toplevel_resource_));
+}
 
 void AuraToplevel::SetOrientationLock(uint32_t lock_type) {
   shell_surface_->SetOrientationLock(OrientationLock(lock_type));
@@ -859,6 +892,13 @@ void AuraToplevel::SetClientUsesScreenCoordinates() {
                                               weak_ptr_factory_.GetWeakPtr())));
   shell_surface_->set_origin_change_callback(base::BindRepeating(
       &AuraToplevel::OnOriginChange, weak_ptr_factory_.GetWeakPtr()));
+  if (wl_resource_get_version(aura_toplevel_resource_) >=
+      ZAURA_TOPLEVEL_ROTATE_FOCUS_SINCE_VERSION) {
+    shell_surface_->set_rotate_focus_callback(base::BindRepeating(
+        HandleAuraSurfaceRotateFocusCallback, rotation_serial_tracker_,
+        base::BindRepeating(&AuraToplevel::OnRotatePaneFocus,
+                            weak_ptr_factory_.GetWeakPtr())));
+  }
 }
 
 void AuraToplevel::SetSystemModal(bool modal) {
@@ -889,6 +929,11 @@ void AuraToplevel::SetShape(absl::optional<cc::Region> shape) {
   shell_surface_->SetShape(std::move(shape));
 }
 
+void AuraToplevel::AckRotateFocus(uint32_t serial, uint32_t h) {
+  auto handled = h == ZAURA_TOPLEVEL_ROTATE_HANDLED_STATE_HANDLED;
+  shell_surface_->AckRotateFocus(serial, handled);
+}
+
 void AuraToplevel::IntentToSnap(uint32_t snap_direction) {
   switch (snap_direction) {
     case ZAURA_SURFACE_SNAP_DIRECTION_NONE:
@@ -905,6 +950,10 @@ void AuraToplevel::IntentToSnap(uint32_t snap_direction) {
 
 void AuraToplevel::UnsetSnap() {
   shell_surface_->UnsetSnap();
+}
+
+void AuraToplevel::SetTopInset(int top_inset) {
+  shell_surface_->SetTopInset(top_inset);
 }
 
 template <class T>
@@ -927,9 +976,13 @@ void AuraToplevel::OnConfigure(const gfx::Rect& bounds,
   // TODO(crbug/1250129): Support snapped state.
   if (IsFullscreenOrPinnedWindowStateType(state_type)) {
     AddState(&states, XDG_TOPLEVEL_STATE_FULLSCREEN);
-    if (shell_surface_->GetWidget()->GetNativeWindow()->GetProperty(
-            chromeos::kImmersiveImpliedByFullscreen))
+    if (shell_surface_->GetWidget() &&
+        shell_surface_->GetWidget()->GetNativeWindow()->GetProperty(
+            chromeos::kImmersiveImpliedByFullscreen)) {
+      // TODO(oshima): Immersive should probably be default.
+      // Investigate and fix.
       AddState(&states, ZAURA_TOPLEVEL_STATE_IMMERSIVE);
+    }
   }
   if (resizing)
     AddState(&states, XDG_TOPLEVEL_STATE_RESIZING);
@@ -1098,15 +1151,14 @@ const uint32_t kFixedBugIds[] = {
     1352584,
     1358908,
     1400226,
-    1402158,
     1405471,
-    1410676,
 };
 
 // Implements aura shell interface and monitors workspace state needed
 // for the aura shell interface.
 class WaylandAuraShell : public ash::DesksController::Observer,
                          public ash::TabletModeObserver,
+                         public ash::OverviewObserver,
                          public SeatObserver {
  public:
   WaylandAuraShell(wl_resource* aura_shell_resource, Display* display)
@@ -1114,12 +1166,19 @@ class WaylandAuraShell : public ash::DesksController::Observer,
     WMHelper* helper = WMHelper::GetInstance();
     helper->AddTabletModeObserver(this);
     ash::DesksController::Get()->AddObserver(this);
+    ash::Shell::Get()->overview_controller()->AddObserver(this);
     if (wl_resource_get_version(aura_shell_resource_) >=
         ZAURA_SHELL_LAYOUT_MODE_SINCE_VERSION) {
       auto layout_mode = helper->InTabletMode()
                              ? ZAURA_SHELL_LAYOUT_MODE_TABLET
                              : ZAURA_SHELL_LAYOUT_MODE_WINDOWED;
       zaura_shell_send_layout_mode(aura_shell_resource_, layout_mode);
+    }
+    if (wl_resource_get_version(aura_shell_resource_) >=
+        ZAURA_SHELL_COMPOSITOR_VERSION_SINCE_VERSION) {
+      const base::StringPiece ash_version = version_info::GetVersionNumber();
+      zaura_shell_send_compositor_version(aura_shell_resource_,
+                                          ash_version.data());
     }
     if (wl_resource_get_version(aura_shell_resource_) >=
         ZAURA_SHELL_BUG_FIX_SINCE_VERSION) {
@@ -1131,12 +1190,14 @@ class WaylandAuraShell : public ash::DesksController::Observer,
 
     OnDesksChanged();
     OnDeskActivationChanged();
+    OnOverviewModeChanged();
   }
   WaylandAuraShell(const WaylandAuraShell&) = delete;
   WaylandAuraShell& operator=(const WaylandAuraShell&) = delete;
   ~WaylandAuraShell() override {
     WMHelper* helper = WMHelper::GetInstance();
     helper->RemoveTabletModeObserver(this);
+    ash::Shell::Get()->overview_controller()->RemoveObserver(this);
     ash::DesksController::Get()->RemoveObserver(this);
     if (seat_)
       seat_->RemoveObserver(this);
@@ -1145,27 +1206,26 @@ class WaylandAuraShell : public ash::DesksController::Observer,
   // Overridden from ash::TabletModeObserver:
   void OnTabletModeStarted() override {
     if (wl_resource_get_version(aura_shell_resource_) >=
-        ZAURA_SHELL_LAYOUT_MODE_SINCE_VERSION)
+        ZAURA_SHELL_LAYOUT_MODE_SINCE_VERSION) {
       zaura_shell_send_layout_mode(aura_shell_resource_,
                                    ZAURA_SHELL_LAYOUT_MODE_TABLET);
+      wl_client_flush(wl_resource_get_client(aura_shell_resource_));
+    }
   }
   void OnTabletModeEnding() override {
     if (wl_resource_get_version(aura_shell_resource_) >=
-        ZAURA_SHELL_LAYOUT_MODE_SINCE_VERSION)
+        ZAURA_SHELL_LAYOUT_MODE_SINCE_VERSION) {
       zaura_shell_send_layout_mode(aura_shell_resource_,
                                    ZAURA_SHELL_LAYOUT_MODE_WINDOWED);
+      wl_client_flush(wl_resource_get_client(aura_shell_resource_));
+    }
   }
   void OnTabletModeEnded() override {}
 
-  // Overridden from SeatObserver:
-  void OnSurfaceFocused(Surface* gained_focus,
-                        Surface* lost_focus,
-                        bool has_focused_surface) override {
-    FocusedSurfaceChanged(gained_focus, lost_focus, has_focused_surface);
-  }
-
   // ash::DesksController::Observer:
-  void OnDeskAdded(const ash::Desk* desk) override { OnDesksChanged(); }
+  void OnDeskAdded(const ash::Desk* desk, bool from_undo) override {
+    OnDesksChanged();
+  }
   void OnDeskRemoved(const ash::Desk* desk) override { OnDesksChanged(); }
   void OnDeskReordered(int old_index, int new_index) override {
     OnDesksChanged();
@@ -1179,6 +1239,25 @@ class WaylandAuraShell : public ash::DesksController::Observer,
   void OnDeskNameChanged(const ash::Desk* desk,
                          const std::u16string& new_name) override {
     OnDesksChanged();
+  }
+
+  // ash::OverviewObserver:
+  void OnOverviewModeStartingAnimationComplete(bool canceled) override {
+    if (!canceled) {
+      OnOverviewModeChanged();
+    }
+  }
+  void OnOverviewModeEndingAnimationComplete(bool canceled) override {
+    if (!canceled) {
+      OnOverviewModeChanged();
+    }
+  }
+
+  // SeatObserver:
+  void OnSurfaceFocused(Surface* gained_focus,
+                        Surface* lost_focus,
+                        bool has_focused_surface) override {
+    FocusedSurfaceChanged(gained_focus, lost_focus, has_focused_surface);
   }
 
  private:
@@ -1211,6 +1290,21 @@ class WaylandAuraShell : public ash::DesksController::Observer,
     zaura_shell_send_desk_activation_changed(
         aura_shell_resource_,
         ash::DesksController::Get()->GetActiveDeskIndex());
+  }
+
+  void OnOverviewModeChanged() {
+    if (wl_resource_get_version(aura_shell_resource_) <
+        ZAURA_SHELL_SET_OVERVIEW_MODE_SINCE_VERSION) {
+      return;
+    }
+
+    const bool in_overview =
+        ash::Shell::Get()->overview_controller()->InOverviewSession();
+    if (in_overview) {
+      zaura_shell_send_set_overview_mode(aura_shell_resource_);
+    } else {
+      zaura_shell_send_unset_overview_mode(aura_shell_resource_);
+    }
   }
 
   void FocusedSurfaceChanged(Surface* gained_active_surface,
@@ -1450,6 +1544,19 @@ void aura_toplevel_set_shape(wl_client* client,
                       : absl::nullopt);
 }
 
+void aura_toplevel_set_top_inset(wl_client* client,
+                                 wl_resource* resource,
+                                 int32_t top_inset) {
+  GetUserDataAs<AuraToplevel>(resource)->SetTopInset(top_inset);
+}
+
+void aura_toplevel_ack_rotate_focus(wl_client* client,
+                                    wl_resource* resource,
+                                    uint32_t serial,
+                                    uint32_t handled) {
+  GetUserDataAs<AuraToplevel>(resource)->AckRotateFocus(serial, handled);
+}
+
 const struct zaura_toplevel_interface aura_toplevel_implementation = {
     aura_toplevel_set_orientation_lock,
     aura_toplevel_surface_submission_in_pixel_coordinates,
@@ -1475,6 +1582,8 @@ const struct zaura_toplevel_interface aura_toplevel_implementation = {
     aura_toplevel_unset_snap,
     aura_toplevel_set_persistable,
     aura_toplevel_set_shape,
+    aura_toplevel_set_top_inset,
+    aura_toplevel_ack_rotate_focus,
 };
 
 void aura_popup_surface_submission_in_pixel_coordinates(wl_client* client,
@@ -1540,6 +1649,7 @@ void aura_shell_get_aura_toplevel(wl_client* client,
       aura_toplevel_resource, &aura_toplevel_implementation,
       std::make_unique<AuraToplevel>(
           shell_surface_data.shell_surface, shell_surface_data.serial_tracker,
+          shell_surface_data.rotation_serial_tracker,
           shell_surface_data.surface_resource, aura_toplevel_resource));
 }
 

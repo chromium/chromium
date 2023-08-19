@@ -79,16 +79,16 @@ public class ModalDialogViewBinder
             assert checkFilledButtonConsistency(model);
             assert checkCustomButtonsConsistency(model);
             // Intentionally left empty since this is only read once before the dialog is inflated.
-        } else if (ModalDialogProperties.FULLSCREEN_DIALOG == propertyKey
-                || ModalDialogProperties.DIALOG_WHEN_LARGE == propertyKey
-                || ModalDialogProperties.EXCEED_MAX_HEIGHT == propertyKey) {
-            boolean ignoreWidthConstraints = model.get(ModalDialogProperties.FULLSCREEN_DIALOG)
-                    || model.get(ModalDialogProperties.DIALOG_WHEN_LARGE);
-            boolean ignoreHeightConstraint = model.get(ModalDialogProperties.EXCEED_MAX_HEIGHT);
+        } else if (ModalDialogProperties.DIALOG_STYLES == propertyKey) {
+            int dialogStyle = model.get(ModalDialogProperties.DIALOG_STYLES);
+            boolean ignoreWidthConstraints =
+                    dialogStyle == ModalDialogProperties.DialogStyles.FULLSCREEN_DIALOG
+                    || dialogStyle == ModalDialogProperties.DialogStyles.FULLSCREEN_DARK_DIALOG
+                    || dialogStyle == ModalDialogProperties.DialogStyles.DIALOG_WHEN_LARGE;
+            boolean ignoreHeightConstraint =
+                    dialogStyle == ModalDialogProperties.DialogStyles.FULLSCREEN_DIALOG
+                    || dialogStyle == ModalDialogProperties.DialogStyles.FULLSCREEN_DARK_DIALOG;
             view.setIgnoreConstraints(ignoreWidthConstraints, ignoreHeightConstraint);
-            assert !(model.get(ModalDialogProperties.FULLSCREEN_DIALOG)
-                    && model.get(ModalDialogProperties.DIALOG_WHEN_LARGE))
-                : "Both FULLSCREEN_DIALOG and DIALOG_WHEN_LARGE cannot be set to true.";
         } else if (ModalDialogProperties.BUTTON_TAP_PROTECTION_PERIOD_MS == propertyKey) {
             view.setButtonTapProtectionDurationMs(
                     model.get(ModalDialogProperties.BUTTON_TAP_PROTECTION_PERIOD_MS));

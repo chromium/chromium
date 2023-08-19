@@ -47,7 +47,12 @@ class PasswordRequirementsServiceTest : public testing::Test {
         fetcher_ptr_(new MockPasswordRequirementsSpecFetcher()),
         service_(std::unique_ptr<MockPasswordRequirementsSpecFetcher>(
             fetcher_ptr_)) {}
-  ~PasswordRequirementsServiceTest() override = default;
+
+  ~PasswordRequirementsServiceTest() override {
+    // This is set to `nullptr` explicitly to a) avoid that `fetcher_ptr_`
+    // dangles during construction and b) keep the construction order as is.
+    fetcher_ptr_ = nullptr;
+  }
 
  protected:
   // Prepopulated test data.
@@ -55,8 +60,8 @@ class PasswordRequirementsServiceTest : public testing::Test {
   autofill::FormSignature test_form_signature_{123};
   autofill::FieldSignature test_field_signature_{22};
 
-  // Weak pointer.
-  raw_ptr<MockPasswordRequirementsSpecFetcher, DanglingUntriaged> fetcher_ptr_;
+  // Raw pointer, object is owned by `service_`.
+  raw_ptr<MockPasswordRequirementsSpecFetcher> fetcher_ptr_;
   PasswordRequirementsService service_;
 };
 

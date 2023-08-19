@@ -33,6 +33,7 @@ import static org.chromium.components.browser_ui.site_settings.WebsitePreference
 import static org.chromium.components.content_settings.PrefNames.COOKIE_CONTROLS_MODE;
 import static org.chromium.components.content_settings.PrefNames.DESKTOP_SITE_DISPLAY_SETTING_ENABLED;
 import static org.chromium.components.content_settings.PrefNames.DESKTOP_SITE_PERIPHERAL_SETTING_ENABLED;
+import static org.chromium.components.content_settings.PrefNames.DESKTOP_SITE_WINDOW_SETTING_ENABLED;
 import static org.chromium.ui.test.util.ViewUtils.onViewWaiting;
 
 import android.content.Context;
@@ -64,7 +65,6 @@ import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 
 import org.chromium.base.ContextUtils;
-import org.chromium.base.FeatureList;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CallbackHelper;
@@ -145,9 +145,7 @@ import org.chromium.url.GURL;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.concurrent.TimeoutException;
 
 /** Tests for everything under Settings > Site Settings. */
@@ -224,8 +222,6 @@ public class SiteSettingsTest {
         });
         LocationUtils.setFactory(null);
         LocationProviderOverrider.setLocationProviderImpl(null);
-        NfcSystemLevelSetting.resetNfcForTesting();
-        IncognitoUtils.setEnabledForTesting(null);
         ContextUtils.getAppSharedPreferences()
                 .edit()
                 .remove(SingleCategorySettingsConstants
@@ -498,7 +494,8 @@ public class SiteSettingsTest {
         final SettingsActivity settingsActivity;
 
         if (type == SiteSettingsCategory.Type.ALL_SITES
-                || type == SiteSettingsCategory.Type.USE_STORAGE) {
+                || type == SiteSettingsCategory.Type.USE_STORAGE
+                || type == SiteSettingsCategory.Type.ZOOM) {
             settingsActivity = SiteSettingsTestUtils.startAllSitesSettings(type);
         } else {
             settingsActivity = SiteSettingsTestUtils.startSiteSettingsCategory(type);
@@ -565,7 +562,7 @@ public class SiteSettingsTest {
     @Test
     @SmallTest
     @Feature({"Preferences"})
-    @EnableFeatures({ChromeFeatureList.PRIVACY_SANDBOX_FPS_UI})
+    @EnableFeatures(ChromeFeatureList.PRIVACY_SANDBOX_FPS_UI)
     public void testCookiesFPSSubpageIsLaunched() throws Exception {
         SettingsActivity settingsActivity =
                 SiteSettingsTestUtils.startSiteSettingsCategory(SiteSettingsCategory.Type.COOKIES);
@@ -877,10 +874,14 @@ public class SiteSettingsTest {
     @Policies.Add({ @Policies.Item(key = "DefaultCookiesSetting", string = "2") })
     public void testDefaultCookiesSettingManagedBlock() {
         checkDefaultCookiesSettingManaged(true);
-        checkThirdPartyCookieBlockingManaged(false);
+        checkThirdPartyCookieBlockingManaged(true);
         // The ContentSetting is managed (and set to BLOCK) while ThirdPartyCookieBlocking is not
         // managed. This means cookies should always be blocked, so the user cannot choose any other
         // options and all buttons except the active one should be disabled.
+        // TODO(crbug.com/1378703): The logic this is testing is now somewhat superfluous, as the
+        // default content setting policy automatically sets the 3P cookie policy. This can be
+        // removed when the old cookies page is removed as part of the solidication of the Privacy
+        // Sandbox Settings 4 launch.
         SettingsActivity settingsActivity =
                 SiteSettingsTestUtils.startSiteSettingsCategory(SiteSettingsCategory.Type.COOKIES);
         checkFourStateCookieToggleButtonState(
@@ -1181,7 +1182,7 @@ public class SiteSettingsTest {
     public void testOnlyExpectedPreferencesShown() {
         // If you add a category in the SiteSettings UI, please update this total AND add a test for
         // it below, named "testOnlyExpectedPreferences<Category>".
-        Assert.assertEquals(29, SiteSettingsCategory.Type.NUM_ENTRIES);
+        Assert.assertEquals(30, SiteSettingsCategory.Type.NUM_ENTRIES);
     }
 
     @Test
@@ -1190,6 +1191,14 @@ public class SiteSettingsTest {
     @DisableFeatures(SiteSettingsFeatureList.SITE_DATA_IMPROVEMENTS)
     public void testOnlyExpectedPreferencesAllSites() {
         checkPreferencesForCategory(SiteSettingsCategory.Type.ALL_SITES, NULL_ARRAY);
+    }
+
+    @Test
+    @SmallTest
+    @Feature({"Preferences"})
+    @DisableFeatures(SiteSettingsFeatureList.SITE_DATA_IMPROVEMENTS)
+    public void testOnlyExpectedPreferencesZoom() {
+        checkPreferencesForCategory(SiteSettingsCategory.Type.ZOOM, NULL_ARRAY);
     }
 
     @Test
@@ -1462,7 +1471,6 @@ public class SiteSettingsTest {
         NfcSystemLevelSetting.setNfcSettingForTesting(false);
         checkPreferencesForCategory(
                 SiteSettingsCategory.Type.NFC, BINARY_TOGGLE_WITH_OS_WARNING_EXTRA);
-        NfcSystemLevelSetting.setNfcSettingForTesting(null);
     }
 
     @Test
@@ -1513,22 +1521,6 @@ public class SiteSettingsTest {
     @Test
     @SmallTest
     @Feature({"Preferences"})
-    @DisableFeatures(ContentFeatureList.REQUEST_DESKTOP_SITE_EXCEPTIONS)
-    public void testOnlyExpectedPreferencesRequestDesktopSite() {
-        testExpectedPreferences(
-                SiteSettingsCategory.Type.REQUEST_DESKTOP_SITE, BINARY_TOGGLE, BINARY_TOGGLE);
-        Assert.assertTrue(
-                "SharedPreference USER_ENABLED_DESKTOP_SITE_GLOBAL_SETTING_PREFERENCE_KEY should be"
-                        + " updated.",
-                ContextUtils.getAppSharedPreferences().contains(
-                        SingleCategorySettingsConstants
-                                .USER_ENABLED_DESKTOP_SITE_GLOBAL_SETTING_PREFERENCE_KEY));
-    }
-
-    @Test
-    @SmallTest
-    @Feature({"Preferences"})
-    @EnableFeatures(ContentFeatureList.REQUEST_DESKTOP_SITE_EXCEPTIONS)
     public void testOnlyExpectedPreferencesRequestDesktopSiteDomainSettings() {
         testExpectedPreferences(SiteSettingsCategory.Type.REQUEST_DESKTOP_SITE,
                 BINARY_TOGGLE_WITH_EXCEPTION, BINARY_TOGGLE_WITH_EXCEPTION);
@@ -1544,11 +1536,23 @@ public class SiteSettingsTest {
     @SmallTest
     @Feature({"Preferences"})
     @EnableFeatures(ContentFeatureList.REQUEST_DESKTOP_SITE_ADDITIONS)
-    @DisableFeatures(ContentFeatureList.REQUEST_DESKTOP_SITE_EXCEPTIONS)
+    @DisableFeatures(ContentFeatureList.REQUEST_DESKTOP_SITE_WINDOW_SETTING)
     public void testOnlyExpectedPreferencesRequestDesktopSiteAdditionalSettings() {
-        String[] rdsDisabled = {"binary_toggle", "desktop_site_peripheral", "desktop_site_display"};
-        testExpectedPreferences(
-                SiteSettingsCategory.Type.REQUEST_DESKTOP_SITE, rdsDisabled, BINARY_TOGGLE);
+        String[] rdsDisabled = {"binary_toggle", "desktop_site_peripheral", "desktop_site_display",
+                "add_exception"};
+        testExpectedPreferences(SiteSettingsCategory.Type.REQUEST_DESKTOP_SITE, rdsDisabled,
+                BINARY_TOGGLE_WITH_EXCEPTION);
+    }
+
+    @Test
+    @SmallTest
+    @Feature({"Preferences"})
+    @EnableFeatures(ContentFeatureList.REQUEST_DESKTOP_SITE_WINDOW_SETTING)
+    @DisableFeatures(ContentFeatureList.REQUEST_DESKTOP_SITE_ADDITIONS)
+    public void testOnlyExpectedPreferencesRequestDesktopSiteWindowSettings() {
+        String[] rdsEnabled = {"binary_toggle", "desktop_site_window", "add_exception"};
+        testExpectedPreferences(SiteSettingsCategory.Type.REQUEST_DESKTOP_SITE,
+                BINARY_TOGGLE_WITH_EXCEPTION, rdsEnabled);
     }
 
     @Test
@@ -1923,29 +1927,6 @@ public class SiteSettingsTest {
     @Test
     @SmallTest
     @Feature({"Preferences"})
-    @DisableFeatures(ContentFeatureList.REQUEST_DESKTOP_SITE_EXCEPTIONS)
-    public void testAllowRequestDesktopSite() {
-        new TwoStatePermissionTestCase("RequestDesktopSite",
-                SiteSettingsCategory.Type.REQUEST_DESKTOP_SITE,
-                ContentSettingsType.REQUEST_DESKTOP_SITE, true)
-                .run();
-    }
-
-    @Test
-    @SmallTest
-    @Feature({"Preferences"})
-    @DisableFeatures(ContentFeatureList.REQUEST_DESKTOP_SITE_EXCEPTIONS)
-    public void testBlockRequestDesktopSite() {
-        new TwoStatePermissionTestCase("RequestDesktopSite",
-                SiteSettingsCategory.Type.REQUEST_DESKTOP_SITE,
-                ContentSettingsType.REQUEST_DESKTOP_SITE, false)
-                .run();
-    }
-
-    @Test
-    @SmallTest
-    @Feature({"Preferences"})
-    @EnableFeatures(ContentFeatureList.REQUEST_DESKTOP_SITE_EXCEPTIONS)
     public void testAllowRequestDesktopSiteDomainSetting() {
         new TwoStatePermissionTestCase("RequestDesktopSite",
                 SiteSettingsCategory.Type.REQUEST_DESKTOP_SITE,
@@ -1957,40 +1938,6 @@ public class SiteSettingsTest {
     @Test
     @SmallTest
     @Feature({"Preferences"})
-    public void testAllowRequestDesktopSiteDomainSetting_DowngradePath() {
-        // Enable RDS exceptions.
-        Map<String, Boolean> featureMap = new HashMap<>();
-        featureMap.put(ContentFeatureList.REQUEST_DESKTOP_SITE_EXCEPTIONS, true);
-        FeatureList.setTestFeatures(featureMap);
-
-        TestThreadUtils.runOnUiThreadBlocking(() -> {
-            WebsitePreferenceBridgeJni.get().setPermissionSettingForOrigin(
-                    getBrowserContextHandle(), ContentSettingsType.REQUEST_DESKTOP_SITE,
-                    "https://example.com", "https://example.com", ContentSettingValues.ALLOW);
-        });
-
-        new TwoStatePermissionTestCase("RequestDesktopSite",
-                SiteSettingsCategory.Type.REQUEST_DESKTOP_SITE,
-                ContentSettingsType.REQUEST_DESKTOP_SITE, true)
-                .withExpectedPrefKeys("allowed_group")
-                .withExpectedPrefKeys(SingleCategorySettings.ADD_EXCEPTION_KEY)
-                .run();
-
-        // Disable RDS exceptions for a downgrade.
-        featureMap.put(ContentFeatureList.REQUEST_DESKTOP_SITE_EXCEPTIONS, false);
-        featureMap.put(SiteSettingsFeatureList.REQUEST_DESKTOP_SITE_EXCEPTIONS_DOWNGRADE, true);
-        FeatureList.setTestFeatures(featureMap);
-
-        new TwoStatePermissionTestCase("RequestDesktopSite",
-                SiteSettingsCategory.Type.REQUEST_DESKTOP_SITE,
-                ContentSettingsType.REQUEST_DESKTOP_SITE, true)
-                .run();
-    }
-
-    @Test
-    @SmallTest
-    @Feature({"Preferences"})
-    @EnableFeatures(ContentFeatureList.REQUEST_DESKTOP_SITE_EXCEPTIONS)
     public void testBlockRequestDesktopSiteDomainSetting() {
         new TwoStatePermissionTestCase("RequestDesktopSite",
                 SiteSettingsCategory.Type.REQUEST_DESKTOP_SITE,
@@ -2291,6 +2238,39 @@ public class SiteSettingsTest {
             preferences.onPreferenceChange(externalDisplayPref, false);
             Assert.assertFalse("Display setting should be OFF.",
                     prefService.getBoolean(DESKTOP_SITE_DISPLAY_SETTING_ENABLED));
+        });
+        settingsActivity.finish();
+    }
+
+    @Test
+    @SmallTest
+    @Feature({"Preferences"})
+    @EnableFeatures(ContentFeatureList.REQUEST_DESKTOP_SITE_WINDOW_SETTING)
+    public void testDesktopSiteWindowSettings() {
+        final SettingsActivity settingsActivity = SiteSettingsTestUtils.startSiteSettingsCategory(
+                SiteSettingsCategory.Type.REQUEST_DESKTOP_SITE);
+
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
+            SingleCategorySettings preferences =
+                    (SingleCategorySettings) settingsActivity.getMainFragment();
+            // Window setting is only available when the Global Setting is ON.
+            ChromeSwitchPreference toggle =
+                    preferences.findPreference(SingleCategorySettings.BINARY_TOGGLE_KEY);
+            preferences.onPreferenceChange(toggle, true);
+
+            ChromeBaseCheckBoxPreference windowSettingPref = preferences.findPreference(
+                    SingleCategorySettings.DESKTOP_SITE_WINDOW_TOGGLE_KEY);
+            PrefService prefService = UserPrefs.get(getBrowserContextHandle());
+            Assert.assertFalse("Window setting should be OFF.",
+                    prefService.getBoolean(DESKTOP_SITE_WINDOW_SETTING_ENABLED));
+
+            preferences.onPreferenceChange(windowSettingPref, true);
+            Assert.assertTrue("Window setting should be ON.",
+                    prefService.getBoolean(DESKTOP_SITE_WINDOW_SETTING_ENABLED));
+
+            preferences.onPreferenceChange(windowSettingPref, false);
+            Assert.assertFalse("Window setting should be OFF.",
+                    prefService.getBoolean(DESKTOP_SITE_WINDOW_SETTING_ENABLED));
         });
         settingsActivity.finish();
     }

@@ -50,7 +50,7 @@ Googlers can consult internal instructions
 [here](http://go/clank-webview/device_setup.md).
 
 External contributors can flash a prebuilt `userdebug` image (based off
-aosp-master) onto a Pixel device with [Android Flash
+aosp-main) onto a Pixel device with [Android Flash
 Tool](https://flash.android.com/welcome?continue=%2Fcustom). This requires a
 browser capable of WebUSB (we recommend the latest Google Chrome stable
 release).

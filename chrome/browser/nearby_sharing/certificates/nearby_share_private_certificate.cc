@@ -311,8 +311,17 @@ NearbySharePrivateCertificate::ToPublicCertificate() const {
       (not_before_ - not_before_offset).ToJavaTime() / 1000);
   public_certificate.mutable_end_time()->set_seconds(
       (not_after_ + not_after_offset).ToJavaTime() / 1000);
+
+  // When `visibility_` is set to kYourDevices, under the hood, the visibility
+  // is set to Selected Contacts with an empty allowed contact list. The
+  // NearbyShare server sends a public certificate to all devices logged into
+  // the same GAIA account as this one when the visibility is kSelectedContacts,
+  // so if the allowed contact list is empty, then the public certificate is
+  // sent out to devices logged into the same GAIA account only; this is
+  // effectively being visible only to the user's own devices.
   public_certificate.set_for_selected_contacts(
-      visibility_ == nearby_share::mojom::Visibility::kSelectedContacts);
+      visibility_ == nearby_share::mojom::Visibility::kSelectedContacts ||
+      visibility_ == nearby_share::mojom::Visibility::kYourDevices);
   public_certificate.set_metadata_encryption_key(std::string(
       metadata_encryption_key_.begin(), metadata_encryption_key_.end()));
   public_certificate.set_encrypted_metadata_bytes(std::string(
@@ -321,8 +330,12 @@ NearbySharePrivateCertificate::ToPublicCertificate() const {
       std::string(metadata_encryption_key_tag->begin(),
                   metadata_encryption_key_tag->end()));
 
-  // Note: The |for_self_share| field is not set by clients but is set by the
-  // server for all downloaded public certificates.
+  // Note: Setting |for_self_share| here will cause the server to silently
+  // reject the marked certificates. The |for_self_share| field is not set by
+  // clients but is set by the server for all downloaded public certificates.
+
+  // TODO (brandosocarras@ b/291132662): indicate that Your Devices visibility
+  // public certificates are Your Devices visibility to NS server.
 
   return public_certificate;
 }

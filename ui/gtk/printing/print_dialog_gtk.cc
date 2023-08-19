@@ -108,15 +108,14 @@ class StickyPrintSettingGtk {
   StickyPrintSettingGtk(const StickyPrintSettingGtk&) = delete;
   StickyPrintSettingGtk& operator=(const StickyPrintSettingGtk&) = delete;
 
-  ~StickyPrintSettingGtk() {
-    NOTREACHED();  // Intended to be used with base::NoDestructor.
-  }
+  // Intended to be used with base::NoDestructor.
+  ~StickyPrintSettingGtk() = delete;
 
   GtkPrintSettings* settings() { return last_used_settings_; }
 
   void SetLastUsedSettings(GtkPrintSettings* settings) {
     DCHECK(last_used_settings_);
-    g_object_unref(last_used_settings_);
+    g_object_unref(last_used_settings_.ExtractAsDangling());
     last_used_settings_ = gtk_print_settings_copy(settings);
   }
 
@@ -204,16 +203,13 @@ PrintDialogGtk::~PrintDialogGtk() {
     dialog_ = nullptr;
   }
   if (gtk_settings_) {
-    g_object_unref(gtk_settings_);
-    gtk_settings_ = nullptr;
+    g_object_unref(gtk_settings_.ExtractAsDangling());
   }
   if (page_setup_) {
-    g_object_unref(page_setup_);
-    page_setup_ = nullptr;
+    g_object_unref(page_setup_.ExtractAsDangling());
   }
   if (printer_) {
-    g_object_unref(printer_);
-    printer_ = nullptr;
+    g_object_unref(printer_.ExtractAsDangling());
   }
 }
 
@@ -484,19 +480,22 @@ void PrintDialogGtk::OnResponse(GtkWidget* dialog, int response_id) {
         return;
       }
 
-      if (gtk_settings_)
-        g_object_unref(gtk_settings_);
+      if (gtk_settings_) {
+        g_object_unref(gtk_settings_.ExtractAsDangling());
+      }
       gtk_settings_ =
           gtk_print_unix_dialog_get_settings(GTK_PRINT_UNIX_DIALOG(dialog_));
 
-      if (printer_)
-        g_object_unref(printer_);
+      if (printer_) {
+        g_object_unref(printer_.ExtractAsDangling());
+      }
       printer_ = gtk_print_unix_dialog_get_selected_printer(
           GTK_PRINT_UNIX_DIALOG(dialog_));
       g_object_ref(printer_);
 
-      if (page_setup_)
-        g_object_unref(page_setup_);
+      if (page_setup_) {
+        g_object_unref(page_setup_.ExtractAsDangling());
+      }
       page_setup_ =
           gtk_print_unix_dialog_get_page_setup(GTK_PRINT_UNIX_DIALOG(dialog_));
       g_object_ref(page_setup_);

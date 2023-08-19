@@ -23,6 +23,9 @@ class SaveCardFailureBubbleViews : public SaveCardBubbleViews {
  protected:
   ~SaveCardFailureBubbleViews() override = default;
 
+  // SaveCardBubbleViews:
+  void Init() override;
+
  private:
   // SaveCardBubbleViews:
   std::unique_ptr<views::View> CreateMainContentView() override;

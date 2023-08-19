@@ -3,11 +3,8 @@
 # found in the LICENSE file.
 
 source_set("test_support") {
-  configs += [ "//build/config/compiler:enable_arc" ]
   testonly = true
   sources = [
-    "bookmarks_test_util.h",
-    "bookmarks_test_util.mm",
     "browsing_data_test_util.h",
     "browsing_data_test_util.mm",
     "chrome_test_util.h",
@@ -64,7 +61,6 @@ source_set("test_support") {
     "//ios/chrome/browser/browser_state",
     "//ios/chrome/browser/browsing_data",
     "//ios/chrome/browser/content_settings",
-    "//ios/chrome/browser/flags:system_flags",
     "//ios/chrome/browser/history",
     "//ios/chrome/browser/infobars",
     "//ios/chrome/browser/main",
@@ -79,6 +75,7 @@ source_set("test_support") {
     "//ios/chrome/browser/shared/model/url:constants",
     "//ios/chrome/browser/shared/model/web_state_list",
     "//ios/chrome/browser/shared/public/commands",
+    "//ios/chrome/browser/shared/public/features:system_flags",
     "//ios/chrome/browser/shared/ui/util",
     "//ios/chrome/browser/signin",
     "//ios/chrome/browser/signin:fake_system_identity",
@@ -93,12 +90,7 @@ source_set("test_support") {
     "//ios/chrome/browser/ui/browser_view",
     "//ios/chrome/browser/ui/main",
     "//ios/chrome/browser/ui/passwords/bottom_sheet:common",
-    "//ios/chrome/browser/ui/settings",
-    "//ios/chrome/browser/ui/settings:settings_root",
-    "//ios/chrome/browser/ui/settings/password",
-    "//ios/chrome/browser/ui/settings/password:password_ui",
     "//ios/chrome/browser/ui/settings/password:test_support",
-    "//ios/chrome/browser/ui/settings/password/password_details:password_details_ui",
     "//ios/chrome/browser/ui/settings/password/password_settings:common",
     "//ios/chrome/browser/ui/tab_switcher/tab_grid",
     "//ios/chrome/browser/ui/tabs",
@@ -109,6 +101,7 @@ source_set("test_support") {
     "//ios/testing:open_url_context",
     "//ios/third_party/material_components_ios",
     "//ios/web",
+    "//ios/web/common:features",
     "//ios/web/public/security",
     "//ios/web/public/test",
     "//net",

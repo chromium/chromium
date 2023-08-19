@@ -45,6 +45,7 @@ TotalAnimationThroughputReporter::~TotalAnimationThroughputReporter() {
     throughput_tracker_->Cancel();
   if (compositor_)
     compositor_->RemoveObserver(this);
+  compositor_ = nullptr;
 }
 
 void TotalAnimationThroughputReporter::OnFirstAnimationStarted(

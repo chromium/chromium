@@ -46,7 +46,8 @@ net::SSLContextConfig MojoSSLConfigToSSLContextConfig(
   DCHECK_LE(net_config.version_min, net_config.version_max);
 
   net_config.disabled_cipher_suites = mojo_config->disabled_cipher_suites;
-  net_config.post_quantum_enabled = mojo_config->post_quantum_enabled;
+  net_config.post_quantum_override =
+      OptionalBoolFromMojo(mojo_config->post_quantum_override);
   net_config.ech_enabled = mojo_config->ech_enabled;
   net_config.insecure_hash_override =
       OptionalBoolFromMojo(mojo_config->insecure_hash_override);

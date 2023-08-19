@@ -27,16 +27,11 @@
 #include "net/url_request/url_request_context_builder.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-#if BUILDFLAG(IS_MAC)
-#include "base/mac/mac_util.h"
-#endif
-
 namespace network_session_configurator {
 
 class NetworkSessionConfiguratorTest : public testing::Test {
  public:
-  NetworkSessionConfiguratorTest()
-      : quic_user_agent_id_("Chrome/52.0.2709.0 Linux x86_64") {
+  NetworkSessionConfiguratorTest() {
     scoped_feature_list_.Init();
     variations::testing::ClearAllVariationParams();
   }
@@ -44,8 +39,7 @@ class NetworkSessionConfiguratorTest : public testing::Test {
   void ParseCommandLineAndFieldTrials(const base::CommandLine& command_line) {
     network_session_configurator::ParseCommandLineAndFieldTrials(
         command_line,
-        /*is_quic_force_disabled=*/false, quic_user_agent_id_, &params_,
-        &quic_params_);
+        /*is_quic_force_disabled=*/false, &params_, &quic_params_);
   }
 
   void ParseFieldTrials() {
@@ -53,7 +47,6 @@ class NetworkSessionConfiguratorTest : public testing::Test {
         base::CommandLine(base::CommandLine::NO_PROGRAM));
   }
 
-  std::string quic_user_agent_id_;
   base::test::ScopedFeatureList scoped_feature_list_;
   net::HttpNetworkSessionParams params_;
   net::QuicParams quic_params_;
@@ -78,7 +71,6 @@ TEST_F(NetworkSessionConfiguratorTest, Defaults) {
   EXPECT_EQ(1250u, quic_params_.max_packet_length);
   EXPECT_EQ(quic::QuicTagVector(), quic_params_.connection_options);
   EXPECT_EQ(quic::QuicTagVector(), quic_params_.client_connection_options);
-  EXPECT_FALSE(params_.enable_server_push_cancellation);
   EXPECT_FALSE(quic_params_.close_sessions_on_ip_change);
   EXPECT_FALSE(quic_params_.goaway_sessions_on_ip_change);
   EXPECT_EQ(net::kIdleConnectionTimeout, quic_params_.idle_connection_timeout);
@@ -89,7 +81,11 @@ TEST_F(NetworkSessionConfiguratorTest, Defaults) {
   EXPECT_EQ(base::Seconds(quic::kInitialIdleTimeoutSecs),
             quic_params_.max_idle_time_before_crypto_handshake);
   EXPECT_FALSE(quic_params_.estimate_initial_rtt);
+#if BUILDFLAG(IS_ANDROID)
+  EXPECT_TRUE(quic_params_.migrate_sessions_on_network_change_v2);
+#else   // !BUILDFLAG(IS_ANDROID)
   EXPECT_FALSE(quic_params_.migrate_sessions_on_network_change_v2);
+#endif  // BUILDFLAG(IS_ANDROID)
   EXPECT_FALSE(quic_params_.migrate_sessions_early_v2);
   EXPECT_FALSE(quic_params_.retry_on_alternate_network_before_handshake);
   EXPECT_FALSE(quic_params_.migrate_idle_sessions);
@@ -103,7 +99,6 @@ TEST_F(NetworkSessionConfiguratorTest, Defaults) {
   EXPECT_EQ(net::DefaultSupportedQuicVersions(),
             quic_params_.supported_versions);
   EXPECT_FALSE(params_.enable_quic_proxies_for_https_urls);
-  EXPECT_EQ("Chrome/52.0.2709.0 Linux x86_64", quic_params_.user_agent_id);
   EXPECT_EQ(0u, quic_params_.origins_to_force_quic_on.size());
   EXPECT_FALSE(
       quic_params_.initial_delay_for_broken_alternative_service.has_value());
@@ -409,17 +404,6 @@ TEST_F(NetworkSessionConfiguratorTest,
   ParseFieldTrials();
   EXPECT_EQ(base::Seconds(quic::kInitialIdleTimeoutSecs),
             quic_params_.max_idle_time_before_crypto_handshake);
-}
-
-TEST_F(NetworkSessionConfiguratorTest, EnableServerPushCancellation) {
-  std::map<std::string, std::string> field_trial_params;
-  field_trial_params["enable_server_push_cancellation"] = "true";
-  base::AssociateFieldTrialParams("QUIC", "Enabled", field_trial_params);
-  base::FieldTrialList::CreateFieldTrial("QUIC", "Enabled");
-
-  ParseFieldTrials();
-
-  EXPECT_TRUE(params_.enable_server_push_cancellation);
 }
 
 TEST_F(NetworkSessionConfiguratorTest, QuicEstimateInitialRtt) {
@@ -794,15 +778,10 @@ TEST_F(NetworkSessionConfiguratorTest, HostRules) {
 }
 
 TEST_F(NetworkSessionConfiguratorTest, DefaultCacheBackend) {
-#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || \
+    BUILDFLAG(IS_MAC)
   EXPECT_EQ(net::URLRequestContextBuilder::HttpCacheParams::DISK_SIMPLE,
             ChooseCacheType());
-#elif BUILDFLAG(IS_MAC)
-  EXPECT_EQ(
-      base::mac::IsAtLeastOS10_14()
-          ? net::URLRequestContextBuilder::HttpCacheParams::DISK_SIMPLE
-          : net::URLRequestContextBuilder::HttpCacheParams::DISK_BLOCKFILE,
-      ChooseCacheType());
 #else
   EXPECT_EQ(net::URLRequestContextBuilder::HttpCacheParams::DISK_BLOCKFILE,
             ChooseCacheType());

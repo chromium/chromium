@@ -356,9 +356,19 @@ void FakeDriveFs::SetMetadata(const FakeMetadata& metadata) {
   stored_metadata.folder_feature = metadata.folder_feature;
   stored_metadata.doc_id = metadata.doc_id;
   stored_metadata.pinned = metadata.pinned;
+  stored_metadata.dirty = metadata.dirty;
   stored_metadata.available_offline = metadata.available_offline;
   stored_metadata.shared = metadata.shared;
-  stored_metadata.shortcut = metadata.shortcut;
+  if (metadata.shortcut) {
+    drivefs::mojom::ShortcutDetails shortcut_details;
+    shortcut_details.target_lookup_status =
+        drivefs::mojom::ShortcutDetails::LookupStatus::kOk;
+    if (!metadata.shortcut_target_path.empty()) {
+      shortcut_details.target_path =
+          absl::make_optional<base::FilePath>(metadata.shortcut_target_path);
+    }
+    stored_metadata.shortcut_details = std::move(shortcut_details);
+  }
   stored_metadata.alternate_url = metadata.alternate_url;
   stored_metadata.can_pin = metadata.can_pin;
 }
@@ -374,6 +384,15 @@ absl::optional<bool> FakeDriveFs::IsItemPinned(const std::string& path) {
   for (const auto& metadata : metadata_) {
     if (metadata.first.value() == path) {
       return metadata.second.pinned;
+    }
+  }
+  return absl::nullopt;
+}
+
+absl::optional<bool> FakeDriveFs::IsItemDirty(const std::string& path) {
+  for (const auto& metadata : metadata_) {
+    if (metadata.first.value() == path) {
+      return metadata.second.dirty;
     }
   }
   return absl::nullopt;
@@ -432,7 +451,9 @@ void FakeDriveFs::GetMetadata(const base::FilePath& path,
   }
 
   const auto& stored_metadata = metadata_[path];
+  metadata->item_id = stored_metadata.doc_id;
   metadata->pinned = stored_metadata.pinned;
+  metadata->dirty = stored_metadata.dirty;
   metadata->available_offline =
       stored_metadata.pinned || stored_metadata.available_offline;
   metadata->shared = stored_metadata.shared;
@@ -467,10 +488,8 @@ void FakeDriveFs::GetMetadata(const base::FilePath& path,
   if (stored_metadata.hosted) {
     metadata->can_pin = CanPinStatus::kDisabled;
   }
-  if (stored_metadata.shortcut) {
-    metadata->shortcut_details = mojom::ShortcutDetails::New();
-    metadata->shortcut_details->target_lookup_status =
-        mojom::ShortcutDetails::LookupStatus::kOk;
+  if (stored_metadata.shortcut_details.has_value()) {
+    metadata->shortcut_details = stored_metadata.shortcut_details->Clone();
   }
 
   std::move(callback).Run(drive::FILE_ERROR_OK, std::move(metadata));
@@ -626,15 +645,24 @@ void FakeDriveFs::GetQuotaUsage(
                           mojom::QuotaUsage::New());
 }
 
+void FakeDriveFs::SetPooledStorageQuotaUsage(int64_t used_user_bytes,
+                                             int64_t total_user_bytes,
+                                             bool organization_limit_exceeded) {
+  pooled_quota_usage_.used_user_bytes = used_user_bytes;
+  pooled_quota_usage_.total_user_bytes = total_user_bytes;
+  pooled_quota_usage_.organization_limit_exceeded = organization_limit_exceeded;
+}
+
 void FakeDriveFs::GetPooledQuotaUsage(
     drivefs::mojom::DriveFs::GetPooledQuotaUsageCallback callback) {
   auto usage = mojom::PooledQuotaUsage::New();
 
-  usage->user_type = mojom::UserType::kUnmanaged;
-  usage->used_user_bytes = 1 * 1024 * 1024;
-  usage->total_user_bytes = 2 * 1024 * 1024;
-  usage->organization_limit_exceeded = false;
-  usage->organization_name = "Test Organization";
+  usage->user_type = pooled_quota_usage_.user_type;
+  usage->used_user_bytes = pooled_quota_usage_.used_user_bytes;
+  usage->total_user_bytes = pooled_quota_usage_.total_user_bytes;
+  usage->organization_limit_exceeded =
+      pooled_quota_usage_.organization_limit_exceeded;
+  usage->organization_name = "Test organization";
 
   std::move(callback).Run(drive::FileError::FILE_ERROR_OK, std::move(usage));
 }

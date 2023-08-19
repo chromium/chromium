@@ -1,5 +1,4 @@
 monorail {
-  component: "Blink>GetUserMedia"
+  component: "Blink>MediaStream"
 }
-
 team_email: "webrtc-dev@chromium.org"

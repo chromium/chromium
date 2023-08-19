@@ -62,7 +62,7 @@ class PLATFORM_EXPORT DataPipeBytesConsumer final : public BytesConsumer {
   void Cancel() override;
   PublicState GetPublicState() const override;
   Error GetError() const override {
-    DCHECK(state_ == InternalState::kErrored);
+    DCHECK_EQ(InternalState::kErrored, state_);
     return error_;
   }
   String DebugName() const override { return "DataPipeBytesConsumer"; }
@@ -70,7 +70,7 @@ class PLATFORM_EXPORT DataPipeBytesConsumer final : public BytesConsumer {
   void Trace(Visitor*) const override;
 
  private:
-  bool IsReadableOrWaiting() const;
+  bool IsWaiting() const;
   void MaybeClose();
   void SetError(const Error& error);
   void Notify(MojoResult);

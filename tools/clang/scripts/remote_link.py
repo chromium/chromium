@@ -91,57 +91,17 @@ def is_thin_archive(path):
     return f.read(8) == b'!<thin>\n'
 
 
-def names_in_archive(path):
+def names_in_archive(path, ar_path):
   """
   Yields the member names in the archive file at path.
   """
-  # Note: This could alternatively be implemented by invoking some
-  # external utility, e.g. llvm-ar, which would avoid having logic here
-  # to parse thin archives. The current approach was chosen because it
-  # avoids spawning additional processes and having an external dependency
-  # (in particular, this works even if llvm-ar is not in $PATH).
-  with open(path, 'rb') as f:
-    long_names = None
-    f.seek(8, io.SEEK_CUR)
-    while True:
-      file_id = f.read(16)
-      if len(file_id) == 0:
-        break
-      f.seek(32, io.SEEK_CUR)
-      m = re.match(b'/([0-9]+)', file_id)
-      if long_names and m:
-        name_pos = int(m.group(1))
-        name_end = long_names.find(b'/\n', name_pos)
-        name = long_names[name_pos:name_end]
-      else:
-        name = file_id
-      try:
-        size = int(f.read(10))
-      except:
-        sys.stderr.write('While parsing %r, pos %r\n' % (path, f.tell()))
-        raise
-      # Two entries are special: '/' and '//'. The former is
-      # the symbol table, which we skip. The latter is the long
-      # file name table, which we read.
-      # Anything else is a filename entry which we yield.
-      # Every file record ends with two terminating characters
-      # which we skip.
-      seek_distance = 2
-      if file_id == b'/               ':
-        # Skip symbol table.
-        seek_distance += size + (size & 1)
-      elif file_id == b'//              ':
-        # Read long name table.
-        f.seek(2, io.SEEK_CUR)
-        long_names = f.read(size)
-        seek_distance = size & 1
-      else:
-        # Using UTF-8 here gives us a fighting chance if someone decides to use
-        # non-US-ASCII characters in a file name, and backslashreplace gives us
-        # a human-readable representation of any undecodable bytes we might
-        # encounter.
-        yield name.decode('UTF-8', 'backslashreplace')
-      f.seek(seek_distance, io.SEEK_CUR)
+  proc = subprocess.run([ar_path, "t", path], stdout=subprocess.PIPE)
+  for line in proc.stdout.splitlines():
+    # Using UTF-8 here gives us a fighting chance if someone decides to use
+    # non-US-ASCII characters in a file name, and backslashreplace gives us
+    # a human-readable representation of any undecodable bytes we might
+    # encounter.
+    yield line.decode('UTF-8', 'backslashreplace').rstrip()
 
 
 def ninjaenc(s):
@@ -178,16 +138,13 @@ def parse_args(args):
   ap.add_argument('--allowlist',
                   action='store_true',
                   help='act as if the target is on the allow list.')
+  ap.add_argument('--ar-path', help='path to ar or llvm-ar.', required=True)
   try:
     splitpos = args.index('--')
   except:
-    splitpos = None
-  if splitpos:
-    parsed = ap.parse_args(args[1:splitpos])
-    rest = args[(splitpos + 1):]
-  else:
-    parsed = ap.parse_args([])
-    rest = args[1:]
+    raise Exception("Must separate linker args from wrapper args using --")
+  parsed = ap.parse_args(args[1:splitpos])
+  rest = args[(splitpos + 1):]
   parsed.linker = rest[0]
   parsed.linker_args = rest[1:]
   return parsed
@@ -216,7 +173,7 @@ class RemoteLinkBase(object):
                                 re.IGNORECASE)
   FUNCTION_SECTIONS_RE = re.compile('-f(no-)?function-sections|[-/]Gy(-)?',
                                     re.IGNORECASE)
-  LIB_RE = re.compile('.*\\.(?:a|lib)', re.IGNORECASE)
+  LIB_RE = re.compile('.*\\.(?:a|r?lib)', re.IGNORECASE)
   # LTO_RE matches flags we want to pass in the thin link step but not in the
   # native link step.
   # Continue to pass -flto and -fsanitize flags in the native link even though
@@ -317,26 +274,41 @@ class RemoteLinkBase(object):
       else:
         yield arg
 
-  def expand_thin_archives(self, args):
+  def expand_archives(self, args, ar_path):
     """
-    Yields the parameters in args, with thin archives replaced by a sequence
+    Yields the parameters in args, with archives replaced by a sequence
     of '--start-lib', the member names, and '--end-lib'. This is used to get a
-    command line where members of thin archives are mentioned explicitly.
+    command line where members of archives are mentioned explicitly, but we
+    still get the same semantics as using archive files, namely that the object
+    files are only linked in if they provided needed symbol definitions.
+    Most of the archives encountered in the Chromium link process are
+    "thin archives", which means they're just directories of files that are
+    already on disk - and all we need to do is enumerate those files instead
+    of actually extracting anything. Occasionally we encounter a real archive
+    and its contents need to be extracted.
     """
     for arg in args:
-      prefix = os.path.dirname(arg)
-      if prefix:
-        prefix += '/'
-      if (self.LIB_RE.match(arg) and os.path.exists(arg)
-          and is_thin_archive(arg)):
+      if arg.startswith("./"):
+        arg = arg[2:]
+      if self.LIB_RE.match(arg) and os.path.exists(arg):
         yield (self.WL + '--start-lib')
-        for name in names_in_archive(arg):
-          yield (prefix + name)
+        if is_thin_archive(arg):
+          for name in names_in_archive(arg, ar_path):
+            yield (name)
+        else:
+          arg_encoded = arg.replace("..", "parent_dir")
+          extractdir = os.path.join("expanded_archives", arg_encoded)
+          if not os.path.exists(extractdir):
+            os.makedirs(extractdir)
+          subprocess.run([ar_path, "--output", extractdir, "x", arg])
+          for name in names_in_archive(arg, ar_path):
+            yield (os.path.join(extractdir, name))
         yield (self.WL + '--end-lib')
       else:
         yield (arg)
 
-  def analyze_args(self, args, gen_dir, common_dir, use_common_objects):
+  def analyze_args(self, args, gen_dir, common_dir, use_common_objects,
+                   ar_path):
     """
     Analyzes the command line arguments in args.
     If no ThinLTO code generation is necessary, returns None.
@@ -355,7 +327,7 @@ class RemoteLinkBase(object):
       return None
 
     rsp_expanded = list(self.expand_args_rsps(args.linker_args))
-    expanded_args = list(self.expand_thin_archives(rsp_expanded))
+    expanded_args = list(self.expand_archives(rsp_expanded, ar_path))
 
     return self.analyze_expanded_args(expanded_args, args.output, args.linker,
                                       gen_dir, common_dir, use_common_objects)
@@ -636,7 +608,8 @@ class RemoteLinkBase(object):
     use_common_objects = not (args.allowlist or basename in self.ALLOWLIST)
     common_dir = 'common_objs'
     gen_dir = 'lto.' + basename
-    params = self.analyze_args(args, gen_dir, common_dir, use_common_objects)
+    params = self.analyze_args(args, gen_dir, common_dir, use_common_objects,
+                               args.ar_path)
     # If we determined that no distributed code generation need be done, just
     # invoke the original command.
     if params is None:

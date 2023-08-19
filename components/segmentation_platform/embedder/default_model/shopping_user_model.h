@@ -13,7 +13,7 @@ struct Config;
 
 // Segmentation shopping user model provider. Provides a default model and
 // metadata for the shopping user optimization target.
-class ShoppingUserModel : public ModelProvider {
+class ShoppingUserModel : public DefaultModelProvider {
  public:
   ShoppingUserModel();
   ~ShoppingUserModel() override = default;
@@ -25,11 +25,10 @@ class ShoppingUserModel : public ModelProvider {
   static std::unique_ptr<Config> GetConfig();
 
   // ModelProvider implementation.
-  void InitAndFetchModel(
-      const ModelUpdatedCallback& model_updated_callback) override;
+  std::unique_ptr<ModelConfig> GetModelConfig() override;
+
   void ExecuteModelWithInput(const ModelProvider::Request& inputs,
                              ExecutionCallback callback) override;
-  bool ModelAvailable() override;
 };
 
 }  // namespace segmentation_platform

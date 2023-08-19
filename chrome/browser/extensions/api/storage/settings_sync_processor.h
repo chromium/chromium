@@ -12,6 +12,7 @@
 #include "base/values.h"
 #include "components/sync/base/model_type.h"
 #include "components/value_store/value_store_change.h"
+#include "extensions/common/extension_id.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace syncer {
@@ -53,7 +54,7 @@ class SettingsSyncProcessor {
 
  private:
   // ID of the extension the changes are for.
-  const std::string extension_id_;
+  const ExtensionId extension_id_;
 
   // Sync model type. Either EXTENSION_SETTING or APP_SETTING.
   const syncer::ModelType type_;

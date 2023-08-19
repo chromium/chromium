@@ -121,9 +121,9 @@ TEST_P(MediaSessionControllersManagerTest, ActivateDeactivateSession) {
   ASSERT_FALSE(media_session()->IsActive());
 
   manager_->OnMetadata(media_player_id_, true, false,
-                       media::MediaContentType::Transient);
+                       media::MediaContentType::kTransient);
   manager_->OnMetadata(media_player_id2_, true, false,
-                       media::MediaContentType::Transient);
+                       media::MediaContentType::kTransient);
   EXPECT_FALSE(media_session()->IsActive());
 
   EXPECT_TRUE(manager_->RequestPlay(media_player_id_));
@@ -147,7 +147,7 @@ TEST_P(MediaSessionControllersManagerTest, ActivateDeactivateSession) {
 
 TEST_P(MediaSessionControllersManagerTest, RenderFrameDeletedRemovesHost) {
   manager_->OnMetadata(media_player_id_, true, false,
-                       media::MediaContentType::Transient);
+                       media::MediaContentType::kTransient);
   EXPECT_TRUE(manager_->RequestPlay(media_player_id_));
   ASSERT_EQ(media_session()->IsActive(), IsMediaSessionEnabled());
 
@@ -157,7 +157,7 @@ TEST_P(MediaSessionControllersManagerTest, RenderFrameDeletedRemovesHost) {
 
 TEST_P(MediaSessionControllersManagerTest, OnPauseSuspends) {
   manager_->OnMetadata(media_player_id_, true, false,
-                       media::MediaContentType::Transient);
+                       media::MediaContentType::kTransient);
   EXPECT_TRUE(manager_->RequestPlay(media_player_id_));
   ASSERT_FALSE(media_session()->IsSuspended());
 
@@ -167,7 +167,7 @@ TEST_P(MediaSessionControllersManagerTest, OnPauseSuspends) {
 
 TEST_P(MediaSessionControllersManagerTest, OnPauseIdNotFound) {
   manager_->OnMetadata(media_player_id_, true, false,
-                       media::MediaContentType::Transient);
+                       media::MediaContentType::kTransient);
   EXPECT_TRUE(manager_->RequestPlay(media_player_id_));
   ASSERT_FALSE(media_session()->IsSuspended());
 
@@ -181,7 +181,7 @@ TEST_P(MediaSessionControllersManagerTest, PositionState) {
     return;
 
   manager_->OnMetadata(media_player_id_, true, false,
-                       media::MediaContentType::Transient);
+                       media::MediaContentType::kTransient);
 
   {
     media_session::test::MockMediaSessionMojoObserver observer(
@@ -233,9 +233,9 @@ TEST_P(MediaSessionControllersManagerTest, MultiplePlayersWithPositionState) {
     return;
 
   manager_->OnMetadata(media_player_id_, true, false,
-                       media::MediaContentType::Transient);
+                       media::MediaContentType::kTransient);
   manager_->OnMetadata(media_player_id2_, true, false,
-                       media::MediaContentType::Transient);
+                       media::MediaContentType::kTransient);
 
   media_session::MediaPosition expected_position1(
       /*playback_rate=*/1.0, /*duration=*/base::TimeDelta(),
@@ -277,7 +277,7 @@ TEST_P(MediaSessionControllersManagerTest, PictureInPictureAvailability) {
     return;
 
   manager_->OnMetadata(media_player_id_, true, false,
-                       media::MediaContentType::Transient);
+                       media::MediaContentType::kTransient);
 
   media_session::test::MockMediaSessionMojoObserver observer(*media_session());
 
@@ -297,9 +297,9 @@ TEST_P(MediaSessionControllersManagerTest,
     return;
 
   manager_->OnMetadata(media_player_id_, true, false,
-                       media::MediaContentType::Persistent);
+                       media::MediaContentType::kPersistent);
   manager_->OnMetadata(media_player_id2_, true, false,
-                       media::MediaContentType::Persistent);
+                       media::MediaContentType::kPersistent);
 
   media_session::test::MockMediaSessionMojoObserver observer(*media_session());
 

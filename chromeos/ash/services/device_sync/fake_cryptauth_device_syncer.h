@@ -101,7 +101,7 @@ class FakeCryptAuthDeviceSyncerFactory
   raw_ptr<CryptAuthKeyRegistry, ExperimentalAsh> last_key_registry_ = nullptr;
   raw_ptr<CryptAuthClientFactory, ExperimentalAsh> last_client_factory_ =
       nullptr;
-  raw_ptr<SyncedBluetoothAddressTracker, ExperimentalAsh>
+  raw_ptr<SyncedBluetoothAddressTracker, DanglingUntriaged | ExperimentalAsh>
       last_synced_bluetooth_address_tracker_ = nullptr;
   raw_ptr<PrefService, ExperimentalAsh> last_pref_service_ = nullptr;
 };

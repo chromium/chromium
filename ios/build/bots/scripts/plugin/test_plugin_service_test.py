@@ -33,6 +33,11 @@ class UnitTest(unittest.TestCase):
     self.servicer_wrapper = TestPluginServicerWrapper(self.servicer)
     self.servicer_wrapper.server = mock.MagicMock()
 
+    # for device testing
+    self.device_proxy = mock.MagicMock()
+    self.servicer_wrapper_on_device = TestPluginServicerWrapper(
+        self.servicer, self.device_proxy)
+
   def test_TestCaseWillStart_succeed(self):
     request = test_plugin_service_pb2.TestCaseWillStartRequest()
     response = self.servicer.TestCaseWillStart(request, None)
@@ -54,6 +59,14 @@ class UnitTest(unittest.TestCase):
     self.assertEqual(response, expected_response)
     self.video_recorder_plugin.test_case_did_fail.assert_called_with(request)
 
+  def test_TestBundleWillFinish(self):
+    request = test_plugin_service_pb2.TestBundleWillFinishRequest()
+    response = self.servicer.TestBundleWillFinish(request, None)
+    expected_response = test_plugin_service_pb2.TestBundleWillFinishResponse()
+    self.assertEqual(response, expected_response)
+    self.video_recorder_plugin.test_bundle_will_finish.assert_called_with(
+        request)
+
   def test_ListEnabledPlugins_succeed(self):
     request = test_plugin_service_pb2.ListEnabledPluginsRequest()
     response = self.servicer.ListEnabledPlugins(request, None)
@@ -67,6 +80,20 @@ class UnitTest(unittest.TestCase):
     self.servicer_wrapper.server.add_insecure_port.assert_called_with(
         PLUGIN_SERVICE_ADDRESS)
     self.servicer_wrapper.server.start.assert_called_with()
+    self.assertEqual(self.servicer_wrapper.device_proxy, None)
+
+    # Plugin feature running on physical device
+    self.servicer_wrapper_on_device.start_server()
+    self.servicer_wrapper_on_device.device_proxy.start.assert_called_with()
+
+  def test_tear_down(self):
+    self.servicer_wrapper.tear_down()
+    self.video_recorder_plugin.reset.assert_called_with()
+    self.servicer_wrapper.server.stop.assert_called_with(grace=None)
+
+    # Plugin feature running on physical device
+    self.servicer_wrapper_on_device.tear_down()
+    self.servicer_wrapper_on_device.device_proxy.tear_down.assert_called_with()
 
   def test_wait_for_termination(self):
     self.servicer_wrapper.wait_for_termination()

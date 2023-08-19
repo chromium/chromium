@@ -208,7 +208,7 @@ constexpr MessageInfo kChromeMemoryPressureNotification = {
     kChromeMemoryPressureNotificationIndices, nullptr};
 
 // Proto Message: ChromeTaskAnnotator
-constexpr int kChromeTaskAnnotatorIndices[] = {1, 2, -1};
+constexpr int kChromeTaskAnnotatorIndices[] = {1, 2, 3, -1};
 constexpr MessageInfo kChromeTaskAnnotator = {kChromeTaskAnnotatorIndices,
                                               nullptr};
 
@@ -357,7 +357,7 @@ constexpr MessageInfo kRendererMainThreadTaskExecution = {
     kRendererMainThreadTaskExecutionIndices, nullptr};
 
 // Proto Message: EventLatency
-constexpr int kEventLatencyIndices[] = {1, -1};
+constexpr int kEventLatencyIndices[] = {1, 2, 4, 5, -1};
 constexpr MessageInfo kEventLatency = {kEventLatencyIndices, nullptr};
 
 // Proto Message: ProcessSingleton
@@ -397,15 +397,61 @@ constexpr int kScrollDeltasIndices[] = {1, 2,  3,  4,  5,  6,  7, 8,
                                         9, 10, 11, 12, 13, 14, -1};
 constexpr MessageInfo kScrollDeltas = {kScrollDeltasIndices, nullptr};
 
+// Proto Message: WinRenderAudioFromSource
+constexpr int kWinRenderAudioFromSourceIndices[] = {1, 2, 3, 4,  5,  6,
+                                                    7, 8, 9, 10, 11, -1};
+constexpr MessageInfo kWinRenderAudioFromSource = {
+    kWinRenderAudioFromSourceIndices, nullptr};
+
+// Proto Message: MacAUHALStream
+constexpr int kMacAUHALStreamIndices[] = {1, 2,  3,  4,  5,  6,  7, 8,
+                                          9, 10, 11, 12, 13, 14, -1};
+constexpr MessageInfo kMacAUHALStream = {kMacAUHALStreamIndices, nullptr};
+
+// Proto Message: LinuxAlsaOutput
+constexpr int kLinuxAlsaOutputIndices[] = {1, 2, 3, 4, 5, 6, 7, -1};
+constexpr MessageInfo kLinuxAlsaOutput = {kLinuxAlsaOutputIndices, nullptr};
+
+// Proto Message: LinuxPulseOutput
+constexpr int kLinuxPulseOutputIndices[] = {1, 2, 3, 4, 5, -1};
+constexpr MessageInfo kLinuxPulseOutput = {kLinuxPulseOutputIndices, nullptr};
+
+// Proto Message: FrameSinkId
+constexpr int kFrameSinkIdIndices[] = {1, 2, -1};
+constexpr MessageInfo kFrameSinkId = {kFrameSinkIdIndices, nullptr};
+
+// Proto Message: ChromeUnguessableToken
+constexpr int kChromeUnguessableTokenIndices[] = {1, 2, -1};
+constexpr MessageInfo kChromeUnguessableToken = {kChromeUnguessableTokenIndices,
+                                                 nullptr};
+
+// Proto Message: LocalSurfaceId
+constexpr int kLocalSurfaceIdIndices[] = {1, 2, 3, -1};
+constexpr MessageInfo const* kLocalSurfaceIdComplexMessages[] = {
+    nullptr, nullptr, &kChromeUnguessableToken};
+constexpr MessageInfo kLocalSurfaceId = {kLocalSurfaceIdIndices,
+                                         kLocalSurfaceIdComplexMessages};
+
+// Proto Message: ChromeGraphicsPipeline
+constexpr int kChromeGraphicsPipelineIndices[] = {1, 2, 3, 4, 5, 6, -1};
+constexpr MessageInfo const* kChromeGraphicsPipelineComplexMessages[] = {
+    nullptr, &kFrameSinkId, nullptr, &kLocalSurfaceId, nullptr, nullptr};
+constexpr MessageInfo kChromeGraphicsPipeline = {
+    kChromeGraphicsPipelineIndices, kChromeGraphicsPipelineComplexMessages};
+
+// Proto Message: CrasUnified
+constexpr int kCrasUnifiedIndices[] = {1, 2, 3, 4, 5, 6, 7, -1};
+constexpr MessageInfo kCrasUnified = {kCrasUnifiedIndices, nullptr};
+
 // Proto Message: TrackEvent
 constexpr int kTrackEventIndices[] = {
-    1,    2,    3,    5,    6,    9,    10,   11,   12,   16,   17,
-    22,   23,   24,   25,   26,   27,   28,   29,   30,   31,   32,
-    33,   34,   35,   36,   38,   39,   40,   41,   42,   43,   47,
-    48,   1001, 1002, 1003, 1004, 1005, 1006, 1007, 1008, 1009, 1010,
-    1011, 1012, 1013, 1014, 1015, 1016, 1017, 1018, 1019, 1020, 1021,
-    1022, 1023, 1024, 1025, 1028, 1031, 1032, 1033, 1034, 1036, 1038,
-    1039, 1040, 1041, 1042, 1046, 1047, -1};
+    1,    2,    3,    5,    6,    9,    10,   11,   12,   16,   17,   22,
+    23,   24,   25,   26,   27,   28,   29,   30,   31,   32,   33,   34,
+    35,   36,   38,   39,   40,   41,   42,   43,   47,   48,   1001, 1002,
+    1003, 1004, 1005, 1006, 1007, 1008, 1009, 1010, 1011, 1012, 1013, 1014,
+    1015, 1016, 1017, 1018, 1019, 1020, 1021, 1022, 1023, 1024, 1025, 1028,
+    1031, 1032, 1033, 1034, 1036, 1038, 1039, 1040, 1041, 1042, 1046, 1047,
+    1048, 1049, 1050, 1051, 1052, 1053, -1};
 constexpr MessageInfo const* kTrackEventComplexMessages[] = {
     nullptr,
     nullptr,
@@ -478,7 +524,13 @@ constexpr MessageInfo const* kTrackEventComplexMessages[] = {
     &kAndroidToolbar,
     &kActiveProcesses,
     &kTabSwitchMeasurement,
-    &kScrollDeltas};
+    &kScrollDeltas,
+    &kWinRenderAudioFromSource,
+    &kMacAUHALStream,
+    &kLinuxAlsaOutput,
+    &kLinuxPulseOutput,
+    &kChromeGraphicsPipeline,
+    &kCrasUnified};
 constexpr MessageInfo kTrackEvent = {kTrackEventIndices,
                                      kTrackEventComplexMessages};
 
@@ -567,17 +619,18 @@ constexpr MessageInfo const* kTriggerRuleComplexMessages[] = {
 constexpr MessageInfo kTriggerRule = {kTriggerRuleIndices,
                                       kTriggerRuleComplexMessages};
 
-// Proto Message: TraceMetadata
-constexpr int kTraceMetadataIndices[] = {1, 2, 3, -1};
-constexpr MessageInfo const* kTraceMetadataComplexMessages[] = {
+// Proto Message: BackgroundTracingMetadata
+constexpr int kBackgroundTracingMetadataIndices[] = {1, 2, 3, -1};
+constexpr MessageInfo const* kBackgroundTracingMetadataComplexMessages[] = {
     &kTriggerRule, &kTriggerRule, nullptr};
-constexpr MessageInfo kTraceMetadata = {kTraceMetadataIndices,
-                                        kTraceMetadataComplexMessages};
+constexpr MessageInfo kBackgroundTracingMetadata = {
+    kBackgroundTracingMetadataIndices,
+    kBackgroundTracingMetadataComplexMessages};
 
 // Proto Message: ChromeMetadataPacket
 constexpr int kChromeMetadataPacketIndices[] = {1, 2, 3, -1};
 constexpr MessageInfo const* kChromeMetadataPacketComplexMessages[] = {
-    &kTraceMetadata, nullptr, nullptr};
+    &kBackgroundTracingMetadata, nullptr, nullptr};
 constexpr MessageInfo kChromeMetadataPacket = {
     kChromeMetadataPacketIndices, kChromeMetadataPacketComplexMessages};
 

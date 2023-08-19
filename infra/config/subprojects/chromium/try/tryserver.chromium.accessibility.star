@@ -40,6 +40,8 @@ try_.builder(
 try_.builder(
     name = "linux-blink-web-tests-force-accessibility-rel",
     mirrors = ["ci/linux-blink-web-tests-force-accessibility-rel"],
+    check_for_flakiness = False,
+    check_for_flakiness_with_resultdb = False,
     tryjob = try_.job(
         location_filters = [
             "third_party/blink/renderer/modules/accessibility/.+",

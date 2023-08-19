@@ -1,0 +1,158 @@
+<style include="settings-shared">
+  .container-details-list {
+    padding-inline-start: var(--cr-section-indent-padding);
+  }
+
+  .detail-content {
+    color: var(--cros-text-color-primary);
+    flex: auto;
+  }
+
+  .detail-heading {
+    color: var(--cr-secondary-text-color);
+    flex: auto;
+  }
+
+  .vm-column {
+    flex: 1;
+    flex-grow: 3;
+    word-break: break-all;
+  }
+
+  #createExtraContainer {
+    padding-top: 10px;
+  }
+
+  cr-expand-button {
+    --cr-section-vertical-padding: 0;
+    flex: auto;
+  }
+</style>
+<div class="settings-box first">
+  <div id="extraContainersDescription" class="start">
+    $i18n{crostiniExtraContainersDescription}
+  </div>
+</div>
+<div class="settings-box first">
+  <div id="extraContainersTableTitle" class="start"
+      aria-hidden="true">
+    $i18n{crostiniExtraContainersTableTitle}
+  </div>
+  <cr-button id="create" on-click="onCreateClick_" disabled="[[!enableButtons_]]">
+    $i18n{crostiniExtraContainersCreate}
+  </cr-button>
+</div>
+
+<template is="dom-repeat"
+    items="[[allVms_]]" as="vmName" index-as="vmIndex"
+    sort="byVmName_" mutable-data>
+  <div class="settings-box hr">
+    <div class="detail-heading">
+      $i18n{crostiniExtraContainersVmNameLabel}:
+      <span class="detail-content">[[vmName]]</span>
+    </div>
+  </div>
+  <div class="list-frame vertical-list">
+    <template is="dom-repeat" items="[[allContainers_]]"
+        filter="[[infoHasVmName_(vmName)]]" sort="byGuestId_" mutable-data>
+      <div class="list-item">
+      <cr-expand-button
+          class="list-item secondary"
+          id="expand-button-[[item.id.vm_name]]-[[item.id.container_name]]"
+          expanded="{{item.detailsExpanded}}"
+          data-container-id="[[item.id]]">
+        <div class="detail-heading">
+          $i18n{crostiniExtraContainersContainerNameLabel}:
+          <span class="detail-content">[[item.id.container_name]]</span>
+        </div>
+      </cr-expand-button>
+      <div class="separator"></div>
+      <cr-icon-button id="showContainerMenu[[index]]"
+          class="icon-more-vert"
+          title="$i18n{moreActions}"
+          data-container-id="[[item.id]]"
+          on-click="onContainerMenuClick_">
+      </cr-icon-button>
+      </div>
+      <iron-collapse
+          id="collapse-[[item.id.vm_name]]-[[item.id.container_name]]"
+          opened="[[item.detailsExpanded]]">
+        <div class="container-details-list"
+            id="details-[[item.id.vm_name]]-[[item.id.container_name]]">
+          <div class="list-item">
+            <div class="detail-heading" aria-hidden="true">
+              $i18n{crostiniExtraContainersAppBadgeColor}
+            </div>
+            <input type="color"
+                data-container-id="[[item.id]]"
+                value="[[item.badge_color]]"
+                on-change="onContainerColorChange_">
+          </div>
+          <div class="list-item">
+            <div class="detail-heading" aria-hidden="true">
+              $i18n{crostiniExtraContainersShareMicrophone}
+            </div>
+            <cr-toggle
+                id="microphone-[[item.id.vm_name]]-[[item.id.container_name]]"
+                data-container-id="[[item.id]]"
+                checked="[[isMicrophoneShared_(item.id)]]"
+                on-change="onMicrophoneSharingChanged_">
+            </cr-toggle>
+          </div>
+          <div class="list-item"
+              hidden="[[!showIp_(item)]]"
+              id="ip-[[item.id.vm_name]]-[[item.id.container_name]]">
+            <div class="detail-heading" aria-hidden="true">
+              $i18n{crostiniExtraContainersContainerIpLabel}
+            </div>
+            <div class="vm-column">
+              [[item.ipv4]]
+            </div>
+          </div>
+        </div>
+      </iron-collapse>
+    </template>
+  </div>
+</template>
+
+<template is="dom-if" if="[[showCreateContainerDialog_]]" restamp>
+  <settings-crostini-create-container-dialog
+      on-close="onCreateContainerDialogClose_"
+      all-containers="[[allContainers_]]">
+  </settings-crostini-create-container-dialog>
+</template>
+<cr-lazy-render id="containerMenu">
+  <template>
+    <cr-action-menu class="complex" role-description="$i18n{menu}">
+      <button id="stopContainerButton"
+          class="dropdown-item"
+          role="menuitem"
+          disabled="[[shouldDisableStopContainer_(lastMenuContainerInfo_)]]"
+          on-click="onStopContainerClick_">
+        $i18n{crostiniExtraContainersStop}
+      </button>
+      <button id="deleteContainerButton"
+          class="dropdown-item"
+          role="menuitem"
+          disabled="[[shouldDisableDeleteContainer_(lastMenuContainerInfo_)]]"
+          on-click="onDeleteContainerClick_">
+        $i18n{crostiniExtraContainersDelete}
+      </button>
+      <button id="exportContainerButton"
+          class="dropdown-item"
+          role="menuitem"
+          on-click="onExportContainerClick_"
+          disabled="[[!enableButtons_]]">
+        $i18n{crostiniExport}
+      </button>
+      <button id="importContainerButton"
+          class="dropdown-item"
+          role="menuitem"
+          on-click="onImportContainerClick_"
+          disabled="[[!enableButtons_]]">
+        $i18n{crostiniImport}
+      </button>
+    </cr-action-menu>
+  </template>
+</cr-lazy-render>
+

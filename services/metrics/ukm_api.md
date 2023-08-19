@@ -273,6 +273,37 @@ If the event name in the XML contains a period (`.`), it is replaced with an und
 
 To avoid having UKM report becoming unbounded in size, an upper limit is placed on the number of events recorded for each event type. Events that are recorded too frequently may be subject to downsampling (see [go/ukm-downsampling](http://go/ukm-downsampling)). As a rule of thumb, it is recommended that most entries be recorded at most once per 100 page loads on average to limit data volume.
 
+### Singular UKM Events
+
+The Singular UKM Entry provides a type safe API for updating metric fields of an event where only the latest metric values are recorded. The Singular UKM Entry must be used and destroyed on the same sequence it was created. Currently, only recording from the browser process is supported.
+
+Example:
+
+```cpp
+#include "components/ukm/singular_ukm_entry.h"
+#include "services/metrics/public/cpp/ukm_builders.h"
+
+// Create the SingularUkmEntry for an event.
+std::unique_ptr<SingularUkmEntry<ukm::builders::MyEvent>> entry =
+  SingularUkmEntry<ukm::builders::MyEvent>::Create(source_id);
+
+{
+  // Create a builder for the entry to set the metrics.
+  SingularUkmEntry<ukm::builders::MyEvent>::EntryBuilder builder = entry->Builder();
+  builder->SetMyMetric(metric_value);
+  // When `builder` goes out of scope, the constructed entry will be saved with the SingularUkmEntry.
+}
+
+{
+  SingularUkmEntry<ukm::builders::MyEvent>::EntryBuilder builder = entry->Builder();
+  builder->SetMyMetric(metric_value2);
+}
+```
+
+The arrow operator (`->`) on a builder is used to set the desired metrics of an event. Once the `builder` is destroyed the newly constructed event is saved as the latest event. The last event, with metric `metric_value2`, is recorded by the UkmRecorder when `entry` is destroyed.
+
+Additional documentation can be found [here](https://cs.chromium.org/chromium/src/components/ukm/singular_ukm_entry.h).
+
 ## Local Testing
 
 Build Chromium and run it with flags `--force-enable-metrics-reporting --metrics-upload-interval=N`. The first flag overrides metrics collection to be ON. The second flag means that locally collected metrics will be populated in a UKM report and uploaded every `N` seconds; You may want some small `N` if you are interested in seeing this behavior.

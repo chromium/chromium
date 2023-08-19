@@ -25,9 +25,6 @@ BASE_DECLARE_FEATURE(kEnableDiscoverFeedDiscoFeedEndpoint);
 // Feature flag to enable the sync promo on top of the discover feed.
 BASE_DECLARE_FEATURE(kEnableDiscoverFeedTopSyncPromo);
 
-// Feature flag to enable a default Following feed sort type.
-BASE_DECLARE_FEATURE(kEnableFollowingFeedDefaultSortType);
-
 // Feature flag to fix the NTP view hierarchy if it is broken before applying
 // constraints.
 // TODO(crbug.com/1262536): Remove this when it is fixed.
@@ -80,13 +77,6 @@ extern const char kDiscoverFeedTopSyncPromoStyle[];
 extern const char kDisableStickyHeaderForFollowingFeed[];
 extern const char kOverrideFeedHeaderHeight[];
 
-// A parameter value for the default Following sort type to be Sort by Latest.
-extern const char kFollowingFeedDefaultSortTypeSortByLatest[];
-
-// A parameter value for the default Following sort type to be Grouped by
-// Publisher.
-extern const char kFollowingFeedDefaultSortTypeGroupedByPublisher[];
-
 // A parameter value for the feed's refresh threshold when the feed has already
 // been seen by the user.
 extern const char kFeedSettingRefreshThresholdInSeconds[];
@@ -124,12 +114,6 @@ bool ShouldIgnoreFeedEngagementConditionForTopSyncPromo();
 
 // Returns the number of impressions before autodismissing the feed sync promo.
 int FeedSyncPromoAutodismissCount();
-
-// Whether the Following feed default sort type experiment is enabled.
-bool IsFollowingFeedDefaultSortTypeEnabled();
-
-// Whether the default Following feed sort type is Grouped by Publisher.
-bool IsDefaultFollowingFeedSortTypeGroupedByPublisher();
 
 // Whether content suggestions are enabled for supervised users.
 bool IsContentSuggestionsForSupervisedUserEnabled(PrefService* pref_service);

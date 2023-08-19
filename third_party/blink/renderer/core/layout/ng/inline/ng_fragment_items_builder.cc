@@ -19,7 +19,8 @@ NGFragmentItemsBuilder::NGFragmentItemsBuilder(
 
 NGFragmentItemsBuilder::NGFragmentItemsBuilder(
     const NGInlineNode& node,
-    WritingDirectionMode writing_direction)
+    WritingDirectionMode writing_direction,
+    bool is_block_fragmented)
     : node_(node), writing_direction_(writing_direction) {
   const NGInlineItemsData& items_data = node.ItemsData(false);
   text_content_ = items_data.text_content;
@@ -32,9 +33,17 @@ NGFragmentItemsBuilder::NGFragmentItemsBuilder(
   // line, and each line contains 3 items; a line box, an inline box, and a
   // text. If it will require more than one reallocations, make an initial
   // reservation here.
-  const wtf_size_t estimated_item_count = text_content_.length() / 40 * 3;
-  if (UNLIKELY(estimated_item_count > items_.capacity() * 2))
-    items_.ReserveInitialCapacity(estimated_item_count);
+  //
+  // Skip this if we constrained by a fragmentainer's block-size. The estimate
+  // will be way too high in such cases, and we're going to make this
+  // reservation for every fragmentainer, potentially running out of memory if
+  // oilpan doesn't get around to collecting it.
+  if (!is_block_fragmented) {
+    const wtf_size_t estimated_item_count = text_content_.length() / 40 * 3;
+    if (UNLIKELY(estimated_item_count > items_.capacity() * 2)) {
+      items_.ReserveInitialCapacity(estimated_item_count);
+    }
+  }
 }
 
 NGFragmentItemsBuilder::~NGFragmentItemsBuilder() {

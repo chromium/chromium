@@ -34,6 +34,11 @@ template("rewrite_imports") {
       import_mappings += invoker.import_mappings
     }
 
+    import_var_mappings = []
+    if (defined(invoker.import_var_mappings)) {
+      import_var_mappings += invoker.import_var_mappings
+    }
+
     args = [ "--in_files" ] + in_files
     args += [
       "--base_dir",
@@ -48,5 +53,6 @@ template("rewrite_imports") {
       rebase_path(manifest_out, root_build_dir),
     ]
     args += [ "--import_mappings" ] + import_mappings
+    args += [ "--import_var_mappings" ] + import_var_mappings
   }
 }

@@ -110,6 +110,11 @@ class EventGeneratorDelegate {
 // EventGeneratorDelegate.
 class EventGenerator {
  public:
+  // Some test suites (e.g. chromeos_integration_tests) must use ui_controls.h
+  // and cannot use EventGenerator. Calling this function causes
+  // EventGenerator::Init() to CHECK-fail with a helpful message.
+  static void BanEventGenerator();
+
   // Create an EventGenerator with EventGeneratorDelegate,
   // which uses the coordinates conversions and targeting provided by
   // |delegate|.
@@ -157,6 +162,16 @@ class EventGenerator {
     // Default. Emulates default NSWindow dispatch: calls specific event handler
     // based on event type. Most robust.
     WIDGET,
+  };
+
+  // Determines the end state of a scroll sequence.
+  enum class ScrollSequenceType {
+    // Create an "incomplete" scroll sequence, meaning that it ends with the
+    // fingers resting on the trackpad.
+    ScrollOnly,
+    // Create a "complete" scroll sequence, meaning that it ends with the
+    // fingers being lifted off of the trackpad.
+    UpToFling,
   };
 
   // Updates the |current_screen_location_| to point to the middle of the target
@@ -411,14 +426,19 @@ class EventGenerator {
                                 int move_x,
                                 int move_y);
 
-  // Generates scroll sequences of a FlingCancel, Scrolls, FlingStart, with
-  // constant deltas to |x_offset| and |y_offset| in |steps|.
-  void ScrollSequence(const gfx::Point& start,
-                      const base::TimeDelta& step_delay,
-                      float x_offset,
-                      float y_offset,
-                      int steps,
-                      int num_fingers);
+  // Generates scroll sequences starting with a FlingCancel, followed by Scrolls
+  // with constant deltas to `x_offset` and `y_offset` in `steps`. If
+  // `end_state` == `UpToFling`, the scroll sequences end with a FlingStart.
+  // Otherwise, return early to simulate the fingers still resting on the
+  // trackpad.
+  void ScrollSequence(
+      const gfx::Point& start,
+      const base::TimeDelta& step_delay,
+      float x_offset,
+      float y_offset,
+      int steps,
+      int num_fingers,
+      ScrollSequenceType end_state = ScrollSequenceType::UpToFling);
 
   // Generate a TrackPad "rest" event. That is, a user resting fingers on the
   // trackpad without moving. This may then be followed by a ScrollSequence(),
@@ -483,7 +503,7 @@ class EventGenerator {
 
   std::unique_ptr<EventGeneratorDelegate> delegate_;
   gfx::Point current_screen_location_;
-  raw_ptr<EventTarget, DanglingUntriaged> current_target_ = nullptr;
+  raw_ptr<EventTarget, AcrossTasksDanglingUntriaged> current_target_ = nullptr;
   int flags_ = 0;
   bool grab_ = false;
 

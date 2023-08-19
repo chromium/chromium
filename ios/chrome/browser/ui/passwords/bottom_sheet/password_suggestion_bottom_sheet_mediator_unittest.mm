@@ -8,7 +8,6 @@
 #import "components/autofill/ios/browser/form_suggestion_provider.h"
 #import "components/autofill/ios/form_util/form_activity_params.h"
 #import "components/keyed_service/core/service_access_type.h"
-#import "components/password_manager/core/browser/affiliation/mock_affiliation_service.h"
 #import "components/password_manager/core/browser/password_manager_test_utils.h"
 #import "components/password_manager/core/browser/test_password_store.h"
 #import "components/password_manager/ios/shared_password_controller.h"
@@ -34,10 +33,6 @@
 #import "testing/platform_test.h"
 #import "third_party/ocmock/OCMock/OCMock.h"
 #import "third_party/ocmock/gtest_support.h"
-
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
 
 // Expose the internal disconnect function for testing purposes
 @interface PasswordSuggestionBottomSheetMediator ()
@@ -217,7 +212,6 @@ class PasswordSuggestionBottomSheetMediatorTest : public PlatformTest {
     prefs_->registry()->RegisterIntegerPref(
         prefs::kIosPasswordBottomSheetDismissCount, 0);
 
-    password_manager::MockAffiliationService affiliation_service_;
     store_ =
         base::WrapRefCounted(static_cast<password_manager::TestPasswordStore*>(
             IOSChromePasswordStoreFactory::GetForBrowserState(
@@ -290,19 +284,19 @@ TEST_F(PasswordSuggestionBottomSheetMediatorTest, IncrementDismissCount) {
 
   EXPECT_EQ(
       prefs_.get()->GetInteger(prefs::kIosPasswordBottomSheetDismissCount), 0);
-  [mediator_ refocus];
+  [mediator_ dismiss];
   EXPECT_EQ(
       prefs_.get()->GetInteger(prefs::kIosPasswordBottomSheetDismissCount), 1);
-  [mediator_ refocus];
+  [mediator_ dismiss];
   EXPECT_EQ(
       prefs_.get()->GetInteger(prefs::kIosPasswordBottomSheetDismissCount), 2);
-  [mediator_ refocus];
+  [mediator_ dismiss];
   EXPECT_EQ(
       prefs_.get()->GetInteger(prefs::kIosPasswordBottomSheetDismissCount), 3);
 
   // Expect failure after 3 times.
 #if defined(GTEST_HAS_DEATH_TEST)
-  EXPECT_DEATH([mediator_ refocus],
+  EXPECT_DEATH([mediator_ dismiss],
                "Failed when dismiss count is incremented higher than the "
                "expected value.");
 #endif  // defined(GTEST_HAS_DEATH_TEST)

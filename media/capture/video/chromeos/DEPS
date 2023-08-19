@@ -5,5 +5,6 @@ include_rules = [
   "+chromeos/components/sensors",
   "+chromeos/dbus",
   "+components/chromeos_camera",
+  "+third_party/cros_system_api",
   "+third_party/libsync",
 ]

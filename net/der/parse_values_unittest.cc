@@ -190,7 +190,7 @@ struct Uint64TestData {
   bool should_pass;
   const uint8_t input[9];
   size_t length;
-  uint64_t expected_value;
+  uint64_t expected_value = 0;
 };
 
 const Uint64TestData kUint64TestData[] = {
@@ -220,8 +220,9 @@ TEST(ParseValuesTest, ParseUint64) {
     uint64_t result;
     EXPECT_EQ(test_case.should_pass,
               ParseUint64(Input(test_case.input, test_case.length), &result));
-    if (test_case.should_pass)
+    if (test_case.should_pass) {
       EXPECT_EQ(test_case.expected_value, result);
+    }
   }
 }
 
@@ -229,7 +230,7 @@ struct Uint8TestData {
   bool should_pass;
   const uint8_t input[9];
   size_t length;
-  uint8_t expected_value;
+  uint8_t expected_value = 0;
 };
 
 const Uint8TestData kUint8TestData[] = {
@@ -256,8 +257,9 @@ TEST(ParseValuesTest, ParseUint8) {
     uint8_t result;
     EXPECT_EQ(test_case.should_pass,
               ParseUint8(Input(test_case.input, test_case.length), &result));
-    if (test_case.should_pass)
+    if (test_case.should_pass) {
       EXPECT_EQ(test_case.expected_value, result);
+    }
   }
 }
 
@@ -265,7 +267,7 @@ struct IsValidIntegerTestData {
   bool should_pass;
   const uint8_t input[2];
   size_t length;
-  bool negative;
+  bool negative = false;
 };
 
 const IsValidIntegerTestData kIsValidIntegerTestData[] = {
@@ -302,8 +304,9 @@ TEST(ParseValuesTest, IsValidInteger) {
     EXPECT_EQ(
         test_case.should_pass,
         IsValidInteger(Input(test_case.input, test_case.length), &negative));
-    if (test_case.should_pass)
+    if (test_case.should_pass) {
       EXPECT_EQ(test_case.negative, negative);
+    }
   }
 }
 
@@ -348,7 +351,7 @@ TEST(ParseValuesTest, ParseBitStringSevenOneBits) {
 
   EXPECT_EQ(1u, bit_string->unused_bits());
   EXPECT_EQ(1u, bit_string->bytes().Length());
-  EXPECT_EQ(0xFE, bit_string->bytes().UnsafeData()[0]);
+  EXPECT_EQ(0xFE, bit_string->bytes()[0]);
 
   EXPECT_TRUE(bit_string->AssertsBit(0));
   EXPECT_TRUE(bit_string->AssertsBit(1));
@@ -371,87 +374,92 @@ TEST(ParseValuesTest, ParseBitStringSevenOneBitsUnusedBitIsOne) {
 }
 
 TEST(ParseValuesTest, ParseIA5String) {
-  const Input valid_der({0x46, 0x6f, 0x6f, 0x20, 0x62, 0x61, 0x72, 0x01, 0x7f});
+  const uint8_t valid_der[] = {0x46, 0x6f, 0x6f, 0x20, 0x62,
+                               0x61, 0x72, 0x01, 0x7f};
   std::string s;
-  EXPECT_TRUE(ParseIA5String(valid_der, &s));
+  EXPECT_TRUE(ParseIA5String(der::Input(valid_der), &s));
   EXPECT_EQ("Foo bar\x01\x7f", s);
 
   // 0x80 is not a valid character in IA5String.
-  const Input invalid_der({0x46, 0x6f, 0x80, 0x20, 0x62, 0x61, 0x72});
-  EXPECT_FALSE(ParseIA5String(invalid_der, &s));
+  const uint8_t invalid_der[] = {0x46, 0x6f, 0x80, 0x20, 0x62, 0x61, 0x72};
+  EXPECT_FALSE(ParseIA5String(der::Input(invalid_der), &s));
 }
 
 TEST(ParseValuesTest, ParseVisibleString) {
-  const Input valid_der({0x46, 0x6f, 0x6f, 0x20, 0x62, 0x61, 0x72, 0x7e});
+  const uint8_t valid_der[] = {0x46, 0x6f, 0x6f, 0x20, 0x62, 0x61, 0x72, 0x7e};
   std::string s;
-  EXPECT_TRUE(ParseVisibleString(valid_der, &s));
+  EXPECT_TRUE(ParseVisibleString(der::Input(valid_der), &s));
   EXPECT_EQ("Foo bar\x7e", s);
 
   // 0x7f is not a valid character in VisibleString
-  const Input invalid_der({0x46, 0x6f, 0x7f, 0x20, 0x62, 0x61, 0x72});
-  EXPECT_FALSE(ParseVisibleString(invalid_der, &s));
+  const uint8_t invalid_der[] = {0x46, 0x6f, 0x7f, 0x20, 0x62, 0x61, 0x72};
+  EXPECT_FALSE(ParseVisibleString(der::Input(invalid_der), &s));
 
   // 0x1f is not a valid character in VisibleString
-  const Input invalid_der2({0x46, 0x6f, 0x1f, 0x20, 0x62, 0x61, 0x72});
-  EXPECT_FALSE(ParseVisibleString(invalid_der2, &s));
+  const uint8_t invalid_der2[] = {0x46, 0x6f, 0x1f, 0x20, 0x62, 0x61, 0x72};
+  EXPECT_FALSE(ParseVisibleString(der::Input(invalid_der2), &s));
 }
 
 TEST(ParseValuesTest, ParsePrintableString) {
-  const Input valid_der({0x46, 0x6f, 0x6f, 0x20, 0x62, 0x61, 0x72});
+  const uint8_t valid_der[] = {0x46, 0x6f, 0x6f, 0x20, 0x62, 0x61, 0x72};
   std::string s;
-  EXPECT_TRUE(ParsePrintableString(valid_der, &s));
+  EXPECT_TRUE(ParsePrintableString(der::Input(valid_der), &s));
   EXPECT_EQ("Foo bar", s);
 
   // 0x5f '_' is not a valid character in PrintableString.
-  const Input invalid_der({0x46, 0x6f, 0x5f, 0x20, 0x62, 0x61, 0x72});
-  EXPECT_FALSE(ParsePrintableString(invalid_der, &s));
+  const uint8_t invalid_der[] = {0x46, 0x6f, 0x5f, 0x20, 0x62, 0x61, 0x72};
+  EXPECT_FALSE(ParsePrintableString(der::Input(invalid_der), &s));
 }
 
 TEST(ParseValuesTest, ParseTeletexStringAsLatin1) {
-  const Input valid_der({0x46, 0x6f, 0xd6, 0x20, 0x62, 0x61, 0x72});
+  const uint8_t valid_der[] = {0x46, 0x6f, 0xd6, 0x20, 0x62, 0x61, 0x72};
   std::string s;
-  EXPECT_TRUE(ParseTeletexStringAsLatin1(valid_der, &s));
+  EXPECT_TRUE(ParseTeletexStringAsLatin1(der::Input(valid_der), &s));
   EXPECT_EQ("FoÖ bar", s);
 }
 
 TEST(ParseValuesTest, ParseBmpString) {
-  const Input valid_der(
-      {0x00, 0x66, 0x00, 0x6f, 0x00, 0x6f, 0x00, 0x62, 0x00, 0x61, 0x00, 0x72});
+  const uint8_t valid_der[] = {0x00, 0x66, 0x00, 0x6f, 0x00, 0x6f,
+                               0x00, 0x62, 0x00, 0x61, 0x00, 0x72};
   std::string s;
-  EXPECT_TRUE(ParseBmpString(valid_der, &s));
+  EXPECT_TRUE(ParseBmpString(der::Input(valid_der), &s));
   EXPECT_EQ("foobar", s);
 
-  const Input valid_nonascii_der({0x27, 0x28, 0x26, 0xa1, 0x2b, 0x50});
-  EXPECT_TRUE(ParseBmpString(valid_nonascii_der, &s));
+  const uint8_t valid_nonascii_der[] = {0x27, 0x28, 0x26, 0xa1, 0x2b, 0x50};
+  EXPECT_TRUE(ParseBmpString(der::Input(valid_nonascii_der), &s));
   EXPECT_EQ("✨⚡⭐", s);
 
   // BmpString must encode characters in pairs of 2 bytes.
-  const Input invalid_odd_der({0x00, 0x66, 0x00, 0x6f, 0x00});
-  EXPECT_FALSE(ParseBmpString(invalid_odd_der, &s));
+  const uint8_t invalid_odd_der[] = {0x00, 0x66, 0x00, 0x6f, 0x00};
+  EXPECT_FALSE(ParseBmpString(der::Input(invalid_odd_der), &s));
 
   // UTF-16BE encoding of U+1D11E, MUSICAL SYMBOL G CLEF, which is not valid in
   // UCS-2.
-  const Input invalid_bmp_valid_utf16_with_surrogate({0xd8, 0x34, 0xdd, 0x1e});
-  EXPECT_FALSE(ParseBmpString(invalid_bmp_valid_utf16_with_surrogate, &s));
+  const uint8_t invalid_bmp_valid_utf16_with_surrogate[] = {0xd8, 0x34, 0xdd,
+                                                            0x1e};
+  EXPECT_FALSE(
+      ParseBmpString(der::Input(invalid_bmp_valid_utf16_with_surrogate), &s));
 }
 
 TEST(ParseValuesTest, ParseUniversalString) {
-  const Input valid_der({0x00, 0x00, 0x00, 0x66, 0x00, 0x00, 0x00, 0x6f,
-                         0x00, 0x00, 0x00, 0x6f, 0x00, 0x00, 0x00, 0x62,
-                         0x00, 0x00, 0x00, 0x61, 0x00, 0x00, 0x00, 0x72});
+  const uint8_t valid_der[] = {0x00, 0x00, 0x00, 0x66, 0x00, 0x00, 0x00, 0x6f,
+                               0x00, 0x00, 0x00, 0x6f, 0x00, 0x00, 0x00, 0x62,
+                               0x00, 0x00, 0x00, 0x61, 0x00, 0x00, 0x00, 0x72};
   std::string s;
-  EXPECT_TRUE(ParseUniversalString(valid_der, &s));
+  EXPECT_TRUE(ParseUniversalString(der::Input(valid_der), &s));
   EXPECT_EQ("foobar", s);
 
-  const Input valid_non_ascii_der({0x0,  0x1,  0xf4, 0xe,  0x0,  0x0, 0x0,
-                                   0x20, 0x0,  0x1,  0xd1, 0x1e, 0x0, 0x0,
-                                   0x26, 0x69, 0x0,  0x0,  0x26, 0x6b});
-  EXPECT_TRUE(ParseUniversalString(valid_non_ascii_der, &s));
+  const uint8_t valid_non_ascii_der[] = {0x0,  0x1,  0xf4, 0xe,  0x0,  0x0, 0x0,
+                                         0x20, 0x0,  0x1,  0xd1, 0x1e, 0x0, 0x0,
+                                         0x26, 0x69, 0x0,  0x0,  0x26, 0x6b};
+  EXPECT_TRUE(ParseUniversalString(der::Input(valid_non_ascii_der), &s));
   EXPECT_EQ("🐎 𝄞♩♫", s);
 
   // UniversalString must encode characters in groups of 4 bytes.
-  const Input invalid_non_4_multiple_der({0x00, 0x00, 0x00, 0x66, 0x00, 0x00});
-  EXPECT_FALSE(ParseUniversalString(invalid_non_4_multiple_der, &s));
+  const uint8_t invalid_non_4_multiple_der[] = {0x00, 0x00, 0x00,
+                                                0x66, 0x00, 0x00};
+  EXPECT_FALSE(
+      ParseUniversalString(der::Input(invalid_non_4_multiple_der), &s));
 }
 
 }  // namespace net::der::test

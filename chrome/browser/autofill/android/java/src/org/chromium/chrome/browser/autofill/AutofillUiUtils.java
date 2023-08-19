@@ -20,6 +20,7 @@ import android.graphics.RectF;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.os.Handler;
+import android.text.InputType;
 import android.text.Spannable;
 import android.text.SpannableString;
 import android.text.SpannableStringBuilder;
@@ -47,6 +48,8 @@ import org.chromium.base.ApiCompatibilityUtils;
 import org.chromium.base.Callback;
 import org.chromium.base.ContextUtils;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
+import org.chromium.components.autofill.ServerFieldType;
+import org.chromium.components.autofill.payments.LegalMessageLine;
 import org.chromium.ui.text.NoUnderlineClickableSpan;
 import org.chromium.ui.text.SpanApplier;
 import org.chromium.url.GURL;
@@ -89,6 +92,85 @@ public class AutofillUiUtils {
         int CVC_AND_EXPIRATION = 5;
         int NOT_ENOUGH_INFO = 6;
         int NONE = 7;
+    }
+
+    /**
+     * Different sizes in which we show the credit card art images. Update the {@code NUM_SIZES}
+     * entry when adding/removing entries.
+     */
+    @IntDef({CardIconSize.SMALL, CardIconSize.LARGE})
+    @Retention(RetentionPolicy.SOURCE)
+    public @interface CardIconSize {
+        int SMALL = 0;
+        int LARGE = 1;
+        int NUM_SIZES = 2;
+    }
+
+    /**
+     * Contains dimensional specs for credit card icons.
+     */
+    public static class CardIconSpecs {
+        private final Context mContext;
+        private final int mWidthId;
+        private final int mHeightId;
+        private final int mCornerRadiusId;
+        private final int mBorderWidthId;
+
+        /**
+         * @param context to get the resources.
+         * @param widthId Resource Id for the icon's width spec.
+         * @param heightId Resource Id for the icon's height spec.
+         * @param cornerRadiusId Resource Id for the icon's corner radius spec.
+         * @param borderWidthId Resource Id for the icon's border width spec.
+         */
+        private CardIconSpecs(
+                Context context, int widthId, int heightId, int cornerRadiusId, int borderWidthId) {
+            mContext = context;
+            mWidthId = widthId;
+            mHeightId = heightId;
+            mCornerRadiusId = cornerRadiusId;
+            mBorderWidthId = borderWidthId;
+        }
+
+        /**
+         * Create the {@link CardIconSpecs} for the icon based on the size (small or large) of the
+         * icon to be rendered.
+         * @param context to get the resources.
+         * @param cardIconSize Enum that specifies the icon's size (small or large).
+         * @return {@link CardIconSpecs} instance containing the specs for the card icon.
+         */
+        public static CardIconSpecs create(Context context, @CardIconSize int cardIconSize) {
+            int borderWidthId = R.dimen.card_icon_border_width;
+            int widthId = R.dimen.small_card_icon_width;
+            int heightId = R.dimen.small_card_icon_height;
+            int cornerRadiusId = R.dimen.small_card_icon_corner_radius;
+
+            if (cardIconSize == CardIconSize.LARGE
+                    && ChromeFeatureList.isEnabled(
+                            ChromeFeatureList.AUTOFILL_ENABLE_NEW_CARD_ART_AND_NETWORK_IMAGES)) {
+                widthId = R.dimen.large_card_icon_width;
+                heightId = R.dimen.large_card_icon_height;
+                cornerRadiusId = R.dimen.large_card_icon_corner_radius;
+            }
+
+            return new CardIconSpecs(context, widthId, heightId, cornerRadiusId, borderWidthId);
+        }
+
+        public @Px int getWidth() {
+            return mContext.getResources().getDimensionPixelSize(mWidthId);
+        }
+
+        public @Px int getHeight() {
+            return mContext.getResources().getDimensionPixelSize(mHeightId);
+        }
+
+        public @Px int getCornerRadius() {
+            return mContext.getResources().getDimensionPixelSize(mCornerRadiusId);
+        }
+
+        public @Px int getBorderWidth() {
+            return mContext.getResources().getDimensionPixelSize(mBorderWidthId);
+        }
     }
 
     /**
@@ -160,8 +242,7 @@ public class AutofillUiUtils {
      * @return The ErrorType value representing the type of error found for the expiration date
      *         unmask fields.
      */
-    @ErrorType
-    public static int getExpirationDateErrorType(EditText monthInput, EditText yearInput,
+    public static @ErrorType int getExpirationDateErrorType(EditText monthInput, EditText yearInput,
             boolean didFocusOnMonth, boolean didFocusOnYear) {
         Calendar calendar = Calendar.getInstance();
         int thisYear = calendar.get(Calendar.YEAR);
@@ -451,7 +532,38 @@ public class AutofillUiUtils {
         // option is used to set the width in pixels, and "h" is used to set the height in pixels.
         StringBuilder url = new StringBuilder(customIconUrl.getSpec());
         url.append("=w").append(width).append("-h").append(height);
+
+        // If SCS supports stretching, add it as a param to fetch images of exact dimensions.
+        if (ChromeFeatureList.isEnabled(
+                    ChromeFeatureList.AUTOFILL_ENABLE_CARD_ART_SERVER_SIDE_STRETCHING)) {
+            url.append("-s");
+        }
         return new GURL(url.toString());
+    }
+
+    /**
+     * Always show the Capital One virtual card icon for virtual cards if the card icon URL is
+     * available for the card. Never show the Capital One virtual card icon for FPAN. Show rich card
+     * art when the metadata experiment is enabled.
+     * @param customIconUrl {@link GURL} for fetching the custom icon.
+     * @param isVirtualCard Whether or not the card is a virtual card.
+     * @return True if the custom icon should be shown. False otherwise.
+     */
+    public static boolean shouldShowCustomIcon(GURL customIconUrl, boolean isVirtualCard) {
+        if (customIconUrl == null) {
+            return false;
+        }
+
+        if (isVirtualCard && customIconUrl.getSpec().equals(CAPITAL_ONE_ICON_URL)) {
+            return true;
+        }
+
+        if (!customIconUrl.getSpec().equals(CAPITAL_ONE_ICON_URL)
+                && ChromeFeatureList.isEnabled(ChromeFeatureList.AUTOFILL_ENABLE_CARD_ART_IMAGE)) {
+            return true;
+        }
+
+        return false;
     }
 
     /**
@@ -463,16 +575,13 @@ public class AutofillUiUtils {
      * @param cardArtUrl The URL to fetch the icon.
      * @param defaultIconId Resource Id for the default (network) icon if the card art could not be
      *        retrieved.
-     * @param widthId Resource Id for the width spec.
-     * @param heightId Resource Id for the height spec.
-     * @param cornerRadiusId Resource Id for the corner radius spec.
+     * @param cardIconSize Enum that specifies the icon's size (small or large).
      * @param showCustomIcon If true, custom card icon is fetched, else, default icon is fetched.
      * @return {@link Drawable} that can be set as the card icon. If neither the custom icon nor the
      *         default icon is available, returns null.
      */
     public static @Nullable Drawable getCardIcon(Context context, @Nullable GURL cardArtUrl,
-            int defaultIconId, int widthId, int heightId, int cornerRadiusId,
-            boolean showCustomIcon) {
+            int defaultIconId, @CardIconSize int cardIconSize, boolean showCustomIcon) {
         Drawable defaultIcon =
                 defaultIconId == 0 ? null : AppCompatResources.getDrawable(context, defaultIconId);
         if (!showCustomIcon || cardArtUrl == null || !cardArtUrl.isValid()) {
@@ -487,7 +596,7 @@ public class AutofillUiUtils {
 
         Bitmap customIconBitmap =
                 PersonalDataManager.getInstance().getCustomImageForAutofillSuggestionIfAvailable(
-                        context, cardArtUrl, widthId, heightId, cornerRadiusId);
+                        cardArtUrl, CardIconSpecs.create(context, cardIconSize));
         if (customIconBitmap == null) {
             return defaultIcon;
         }
@@ -495,95 +604,53 @@ public class AutofillUiUtils {
         return new BitmapDrawable(context.getResources(), customIconBitmap);
     }
 
-    public static int getSettingsPageIconWidthId() {
-        if (ChromeFeatureList.isEnabled(
-                    ChromeFeatureList.AUTOFILL_ENABLE_NEW_CARD_ART_AND_NETWORK_IMAGES)) {
-            return R.dimen.settings_page_card_icon_width_new;
-        }
-        return R.dimen.settings_page_card_icon_width;
-    }
-
-    public static int getSettingsPageIconHeightId() {
-        if (ChromeFeatureList.isEnabled(
-                    ChromeFeatureList.AUTOFILL_ENABLE_NEW_CARD_ART_AND_NETWORK_IMAGES)) {
-            return R.dimen.settings_page_card_icon_height_new;
-        }
-        return R.dimen.settings_page_card_icon_height;
-    }
-
-    public static int getCardUnmaskDialogIconWidthId() {
-        if (ChromeFeatureList.isEnabled(
-                    ChromeFeatureList.AUTOFILL_ENABLE_NEW_CARD_ART_AND_NETWORK_IMAGES)) {
-            return R.dimen.card_unmask_dialog_credit_card_icon_width_new;
-        }
-        return R.dimen.card_unmask_dialog_credit_card_icon_width;
-    }
-
-    public static int getCardUnmaskDialogIconHeightId() {
-        if (ChromeFeatureList.isEnabled(
-                    ChromeFeatureList.AUTOFILL_ENABLE_NEW_CARD_ART_AND_NETWORK_IMAGES)) {
-            return R.dimen.card_unmask_dialog_credit_card_icon_height_new;
-        }
-        return R.dimen.card_unmask_dialog_credit_card_icon_height;
-    }
-
-    public static int getVirtualCardEnrollmentDialogIconWidthId() {
-        if (ChromeFeatureList.isEnabled(
-                    ChromeFeatureList.AUTOFILL_ENABLE_NEW_CARD_ART_AND_NETWORK_IMAGES)) {
-            return R.dimen.virtual_card_enrollment_dialog_card_art_width_new;
-        }
-        return R.dimen.virtual_card_enrollment_dialog_card_art_width;
-    }
-
-    public static int getVirtualCardEnrollmentDialogIconHeightId() {
-        if (ChromeFeatureList.isEnabled(
-                    ChromeFeatureList.AUTOFILL_ENABLE_NEW_CARD_ART_AND_NETWORK_IMAGES)) {
-            return R.dimen.virtual_card_enrollment_dialog_card_art_height_new;
-        }
-        return R.dimen.virtual_card_enrollment_dialog_card_art_height;
-    }
-
     /**
      * Resize the bitmap to the required specs, round corners, and add grey border.
      * @param bitmap to be updated.
-     * @param width of the bitmap.
-     * @param height of the bitmap.
-     * @param cornerRadius for the bitmap.
+     * @param cardIconSpecs {@link CardIconSpecs} instance containing the specs for the card icon.
      * @param addRoundedCornersAndGreyBorder If true, the bitmap corners are rounded, and a grey
      *         border is added. If false, no enhancements are applied to the bitmap.
      * @return Resized {@link Bitmap} with rounded corners and grey border.
      */
-    public static Bitmap resizeAndAddRoundedCornersAndGreyBorder(Bitmap bitmap, @Px int width,
-            @Px int height, float cornerRadius, boolean addRoundedCornersAndGreyBorder) {
-        // The server maintains the card art image's aspect ratio, so the fetched image might not be
-        // the exact required size. Scale the icon to the desired dimension.
-        Bitmap scaledBitmap = Bitmap.createScaledBitmap(bitmap, width, height, /* filter= */ true);
+    public static Bitmap resizeAndAddRoundedCornersAndGreyBorder(
+            Bitmap bitmap, CardIconSpecs cardIconSpecs, boolean addRoundedCornersAndGreyBorder) {
+        // Until AutofillEnableCardArtServerSideStretching is rolled out, the server maintains the
+        // card art image's aspect ratio, so the fetched image might not be the exact required size.
+        // Scale the icon to the desired dimension.
+        // TODO(crbug.com/1458974): Remove scaling when AutofillEnableCardArtServerSideStretching is
+        // rolled out.
+        if (bitmap.getWidth() != cardIconSpecs.getWidth()
+                || bitmap.getHeight() != cardIconSpecs.getHeight()) {
+            bitmap = Bitmap.createScaledBitmap(bitmap, cardIconSpecs.getWidth(),
+                    cardIconSpecs.getHeight(), /* filter= */ true);
+        }
 
         if (!addRoundedCornersAndGreyBorder) {
-            return scaledBitmap;
+            return bitmap;
         }
 
         // Round the corners.
-        Bitmap scaledBitmapWithEnhancements = Bitmap.createBitmap(
-                scaledBitmap.getWidth(), scaledBitmap.getHeight(), Bitmap.Config.ARGB_8888);
-        Canvas canvas = new Canvas(scaledBitmapWithEnhancements);
+        float cornerRadius = cardIconSpecs.getCornerRadius();
+        Bitmap bitmapWithEnhancements =
+                Bitmap.createBitmap(bitmap.getWidth(), bitmap.getHeight(), Bitmap.Config.ARGB_8888);
+        Canvas canvas = new Canvas(bitmapWithEnhancements);
         Paint paint = new Paint();
         paint.setAntiAlias(true);
-        Rect rect = new Rect(0, 0, scaledBitmap.getWidth(), scaledBitmap.getHeight());
+        Rect rect = new Rect(0, 0, bitmap.getWidth(), bitmap.getHeight());
         RectF rectF = new RectF(rect);
         canvas.drawRoundRect(rectF, cornerRadius, cornerRadius, paint);
         paint.setXfermode(new PorterDuffXfermode(PorterDuff.Mode.SRC_IN));
-        canvas.drawBitmap(scaledBitmap, rect, rect, paint);
+        canvas.drawBitmap(bitmap, rect, rect, paint);
 
         // Add the grey border.
         Context context = ContextUtils.getApplicationContext();
         int greyColor = ContextCompat.getColor(context, R.color.modern_grey_100);
         paint.setColor(greyColor);
         paint.setStyle(Paint.Style.STROKE);
-        paint.setStrokeWidth(context.getResources().getDimension(R.dimen.card_art_border_width));
+        paint.setStrokeWidth(cardIconSpecs.getBorderWidth());
         canvas.drawRoundRect(rectF, cornerRadius, cornerRadius, paint);
 
-        return scaledBitmapWithEnhancements;
+        return bitmapWithEnhancements;
     }
 
     /**
@@ -596,6 +663,9 @@ public class AutofillUiUtils {
      * @param cardArtUrl URL to fetch custom card art.
      * @param defaultIconId Resource Id for the default (network) icon if the card art doesn't exist
      *         or couldn't be retrieved.
+     * @param cardIconSize Enum that specifies the icon's size (small or large).
+     * @param iconEndMarginId Resource Id for the margin between the icon and the card details
+     *         section.
      * @param cardNameAndNumberTextAppearance Text appearance Id for the card name and the card
      *         number.
      * @param cardLabelTextAppearance Text appearance Id for the card label.
@@ -603,12 +673,12 @@ public class AutofillUiUtils {
      */
     public static void addCardDetails(Context context, View parentView, String cardName,
             String cardNumber, String cardLabel, GURL cardArtUrl, int defaultIconId,
-            int iconWidthId, int iconHeightId, int iconEndMarginId,
+            @CardIconSize int cardIconSize, int iconEndMarginId,
             int cardNameAndNumberTextAppearance, int cardLabelTextAppearance,
             boolean showCustomIcon) {
         ImageView cardIconView = parentView.findViewById(R.id.card_icon);
-        cardIconView.setImageDrawable(getCardIcon(context, cardArtUrl, defaultIconId, iconWidthId,
-                iconHeightId, R.dimen.card_art_corner_radius, showCustomIcon));
+        cardIconView.setImageDrawable(
+                getCardIcon(context, cardArtUrl, defaultIconId, cardIconSize, showCustomIcon));
 
         // Set margin between the card icon and the card details.
         MarginLayoutParams params = (MarginLayoutParams) cardIconView.getLayoutParams();
@@ -625,5 +695,28 @@ public class AutofillUiUtils {
         TextView cardLabelView = parentView.findViewById(R.id.card_label);
         cardLabelView.setText(cardLabel);
         cardLabelView.setTextAppearance(cardLabelTextAppearance);
+    }
+
+    public static int getInputTypeForField(@ServerFieldType int type) {
+        switch (type) {
+            case ServerFieldType.NAME_FULL:
+                return InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_FLAG_CAP_WORDS
+                        | InputType.TYPE_TEXT_VARIATION_PERSON_NAME;
+            case ServerFieldType.ADDRESS_HOME_SORTING_CODE:
+            case ServerFieldType.ADDRESS_HOME_ZIP:
+                return InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_FLAG_CAP_CHARACTERS
+                        | InputType.TYPE_TEXT_VARIATION_POSTAL_ADDRESS;
+            case ServerFieldType.PHONE_HOME_WHOLE_NUMBER:
+                // Show the keyboard with numbers and phone-related symbols.
+                return InputType.TYPE_CLASS_PHONE;
+            case ServerFieldType.ADDRESS_HOME_STREET_ADDRESS:
+                return InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_FLAG_CAP_WORDS
+                        | InputType.TYPE_TEXT_FLAG_MULTI_LINE
+                        | InputType.TYPE_TEXT_VARIATION_POSTAL_ADDRESS;
+            case ServerFieldType.EMAIL_ADDRESS:
+                return InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_VARIATION_EMAIL_ADDRESS;
+            default:
+                return InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_FLAG_CAP_WORDS;
+        }
     }
 }

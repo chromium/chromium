@@ -9,17 +9,21 @@
 
 #include "base/auto_reset.h"
 #include "base/callback_list.h"
+#include "base/memory/weak_ptr.h"
 #include "components/user_education/common/help_bubble.h"
 #include "components/user_education/common/help_bubble_factory.h"
 #include "components/user_education/common/help_bubble_params.h"
 #include "ui/base/interaction/element_identifier.h"
-#include "ui/base/interaction/element_tracker.h"
+#include "ui/base/interaction/element_test_util.h"
+#include "ui/base/interaction/framework_specific_implementation.h"
 
 namespace ui {
 class TrackedElement;
 }
 
 namespace user_education::test {
+
+class TestHelpBubbleElement;
 
 class TestHelpBubble : public HelpBubble {
  public:
@@ -28,6 +32,7 @@ class TestHelpBubble : public HelpBubble {
   TestHelpBubble(ui::TrackedElement* element, HelpBubbleParams params);
   ~TestHelpBubble() override;
 
+  DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kElementId);
   DECLARE_FRAMEWORK_SPECIFIC_METADATA()
 
   const HelpBubbleParams& params() const { return params_; }
@@ -38,7 +43,7 @@ class TestHelpBubble : public HelpBubble {
   // Simulates the bubble timing out.
   void SimulateTimeout();
 
-  // Simualtes the user pressing one of the bubble buttons.
+  // Simulates the user pressing one of the bubble buttons.
   void SimulateButtonPress(int button_index);
 
   // Provides the index of a button with a given string value as its text
@@ -58,12 +63,29 @@ class TestHelpBubble : public HelpBubble {
  private:
   void OnElementHidden(ui::TrackedElement* element);
 
-  raw_ptr<ui::TrackedElement> element_;
+  std::unique_ptr<TestHelpBubbleElement> bubble_element_;
+  raw_ptr<ui::TrackedElement> anchor_element_;
   base::CallbackListSubscription element_hidden_subscription_;
   HelpBubbleParams params_;
   int focus_count_ = 0;
 
   base::WeakPtrFactory<TestHelpBubble> weak_ptr_factory_{this};
+};
+
+class TestHelpBubbleElement : public ui::test::TestElementBase {
+ public:
+  TestHelpBubbleElement(base::WeakPtr<TestHelpBubble> bubble,
+                        ui::ElementIdentifier identifier,
+                        ui::ElementContext context);
+  ~TestHelpBubbleElement() override;
+
+  DECLARE_FRAMEWORK_SPECIFIC_METADATA()
+
+  TestHelpBubble* bubble() { return bubble_.get(); }
+  const TestHelpBubble* bubble() const { return bubble_.get(); }
+
+ private:
+  base::WeakPtr<TestHelpBubble> bubble_;
 };
 
 class TestHelpBubbleFactory : public HelpBubbleFactory {

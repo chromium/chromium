@@ -30,11 +30,13 @@ TEST_F(LayoutTableTest, OverflowViaOutline) {
   auto* target = GetTableByElementId("target");
   EXPECT_EQ(LayoutRect(0, 0, 100, 200), target->SelfVisualOverflowRect());
   To<Element>(target->GetNode())
-      ->setAttribute(html_names::kStyleAttr, "outline: 2px solid black");
+      ->setAttribute(html_names::kStyleAttr,
+                     AtomicString("outline: 2px solid black"));
 
   auto* child = GetTableByElementId("child");
   To<Element>(child->GetNode())
-      ->setAttribute(html_names::kStyleAttr, "outline: 2px solid black");
+      ->setAttribute(html_names::kStyleAttr,
+                     AtomicString("outline: 2px solid black"));
 
   UpdateAllLifecyclePhasesForTest();
   EXPECT_EQ(LayoutRect(-2, -2, 104, 204), target->SelfVisualOverflowRect());
@@ -368,7 +370,8 @@ TEST_F(LayoutTableTest, VisualOverflowCleared) {
   auto* table = GetTableByElementId("table");
   EXPECT_EQ(LayoutRect(-3, -3, 66, 66), table->SelfVisualOverflowRect());
   To<Element>(table->GetNode())
-      ->setAttribute(html_names::kStyleAttr, "box-shadow: initial");
+      ->setAttribute(html_names::kStyleAttr,
+                     AtomicString("box-shadow: initial"));
   UpdateAllLifecyclePhasesForTest();
   EXPECT_EQ(LayoutRect(0, 0, 50, 50), table->SelfVisualOverflowRect());
 }

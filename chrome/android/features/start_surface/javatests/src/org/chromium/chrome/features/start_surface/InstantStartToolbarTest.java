@@ -31,6 +31,7 @@ import org.junit.runner.RunWith;
 import org.chromium.base.library_loader.LibraryLoader;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.CriteriaHelper;
+import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.Restriction;
 import org.chromium.chrome.browser.ChromeTabbedActivity;
@@ -61,8 +62,7 @@ import java.io.IOException;
 @CommandLineFlags.
     Add({ChromeSwitches.DISABLE_NATIVE_INITIALIZATION, ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE,
     "force-fieldtrials=Study/Group"})
-@EnableFeatures({ChromeFeatureList.TAB_GRID_LAYOUT_ANDROID,
-    ChromeFeatureList.START_SURFACE_RETURN_TIME + "<Study,",
+@EnableFeatures({ChromeFeatureList.START_SURFACE_RETURN_TIME + "<Study,",
     ChromeFeatureList.START_SURFACE_ANDROID + "<Study", ChromeFeatureList.INSTANT_START})
 @Restriction({Restriction.RESTRICTION_TYPE_NON_LOW_END_DEVICE,
     UiRestriction.RESTRICTION_TYPE_PHONE})
@@ -161,6 +161,7 @@ public class InstantStartToolbarTest {
 
     @Test
     @SmallTest
+    @DisabledTest(message = "https://crbug.com/1471244")
     @Feature({"RenderTest"})
     @CommandLineFlags.Add({INSTANT_START_TEST_BASE_PARAMS,
             ChromeSwitches.FORCE_UPDATE_MENU_UPDATE_TYPE + "=update_available"})
@@ -171,6 +172,7 @@ public class InstantStartToolbarTest {
 
     @Test
     @SmallTest
+    @DisabledTest(message = "https://crbug.com/1471244")
     @Feature({"RenderTest"})
     @CommandLineFlags.Add({INSTANT_START_TEST_BASE_PARAMS,
             ChromeSwitches.FORCE_UPDATE_MENU_UPDATE_TYPE + "=unsupported_os_version"})

@@ -23,11 +23,13 @@
     <output filename="components_locale_settings_en-US.pak" type="data_package" lang="en" />
     <output filename="components_locale_settings_es.pak" type="data_package" lang="es" />
     <if expr="is_ios">
-      <!-- iOS uses es-MX for es-419 -->
-      <output filename="components_locale_settings_es-MX.pak" type="data_package" lang="es-419" />
-    </if>
-    <if expr="not is_ios">
-      <output filename="components_locale_settings_es-419.pak" type="data_package" lang="es-419" />
+      <then>
+        <!-- iOS uses es-MX for es-419 -->
+        <output filename="components_locale_settings_es-MX.pak" type="data_package" lang="es-419" />
+      </then>
+      <else>
+        <output filename="components_locale_settings_es-419.pak" type="data_package" lang="es-419" />
+      </else>
     </if>
     <output filename="components_locale_settings_et.pak" type="data_package" lang="et" />
     <output filename="components_locale_settings_eu.pak" type="data_package" lang="eu" />
@@ -70,11 +72,13 @@
     <output filename="components_locale_settings_pa.pak" type="data_package" lang="pa" />
     <output filename="components_locale_settings_pl.pak" type="data_package" lang="pl" />
     <if expr="is_ios">
-      <!-- iOS uses pt for pt-BR -->
-      <output filename="components_locale_settings_pt.pak" type="data_package" lang="pt-BR" />
-    </if>
-    <if expr="not is_ios">
-      <output filename="components_locale_settings_pt-BR.pak" type="data_package" lang="pt-BR" />
+      <then>
+        <!-- iOS uses pt for pt-BR -->
+        <output filename="components_locale_settings_pt.pak" type="data_package" lang="pt-BR" />
+      </then>
+      <else>
+        <output filename="components_locale_settings_pt-BR.pak" type="data_package" lang="pt-BR" />
+      </else>
     </if>
     <output filename="components_locale_settings_pt-PT.pak" type="data_package" lang="pt-PT" />
     <output filename="components_locale_settings_or.pak" type="data_package" lang="or" />
@@ -253,63 +257,66 @@
   <release seq="1" allow_pseudo="false">
     <includes>
       <!-- The HTML for the about:terms page -->
-      <if expr="not is_android and not is_ios and _google_chrome">
-        <if expr="'am' == lang">    <include name="IDS_TERMS_HTML" file="resources/terms/terms_am.html" type="BINDATA" /></if>
-        <if expr="'ar' == lang">    <include name="IDS_TERMS_HTML" file="resources/terms/terms_ar.html" type="BINDATA" /></if>
-        <if expr="'bg' == lang">    <include name="IDS_TERMS_HTML" file="resources/terms/terms_bg.html" type="BINDATA" /></if>
-        <if expr="'bn' == lang">    <include name="IDS_TERMS_HTML" file="resources/terms/terms_bn.html" type="BINDATA" /></if>
-        <if expr="'ca' == lang">    <include name="IDS_TERMS_HTML" file="resources/terms/terms_ca.html" type="BINDATA" /></if>
-        <if expr="'cs' == lang">    <include name="IDS_TERMS_HTML" file="resources/terms/terms_cs.html" type="BINDATA" /></if>
-        <if expr="'da' == lang">    <include name="IDS_TERMS_HTML" file="resources/terms/terms_da.html" type="BINDATA" /></if>
-        <if expr="'de' == lang">    <include name="IDS_TERMS_HTML" file="resources/terms/terms_de.html" type="BINDATA" /></if>
-        <if expr="'el' == lang">    <include name="IDS_TERMS_HTML" file="resources/terms/terms_el.html" type="BINDATA" /></if>
-        <if expr="'en-GB' == lang"> <include name="IDS_TERMS_HTML" file="resources/terms/terms_en-GB.html" type="BINDATA" /></if>
-        <if expr="'en' == lang">    <include name="IDS_TERMS_HTML" file="resources/terms/terms_en.html" type="BINDATA" /></if>
-        <if expr="'es' == lang">    <include name="IDS_TERMS_HTML" file="resources/terms/terms_es.html" type="BINDATA" /></if>
-        <if expr="'es-419' == lang"><include name="IDS_TERMS_HTML" file="resources/terms/terms_es-419.html" type="BINDATA" /></if>
-        <if expr="'et' == lang">    <include name="IDS_TERMS_HTML" file="resources/terms/terms_et.html" type="BINDATA" /></if>
-        <if expr="'fa' == lang">    <include name="IDS_TERMS_HTML" file="resources/terms/terms_fa.html" type="BINDATA" /></if>
-        <if expr="'fi' == lang">    <include name="IDS_TERMS_HTML" file="resources/terms/terms_fi.html" type="BINDATA" /></if>
-        <if expr="'fil' == lang">   <include name="IDS_TERMS_HTML" file="resources/terms/terms_fil.html" type="BINDATA" /></if>
-        <if expr="'fr' == lang">    <include name="IDS_TERMS_HTML" file="resources/terms/terms_fr.html" type="BINDATA" /></if>
-        <if expr="'gu' == lang">    <include name="IDS_TERMS_HTML" file="resources/terms/terms_gu.html" type="BINDATA" /></if>
-        <if expr="'he' == lang">    <include name="IDS_TERMS_HTML" file="resources/terms/terms_he.html" type="BINDATA" /></if>
-        <if expr="'hi' == lang">    <include name="IDS_TERMS_HTML" file="resources/terms/terms_hi.html" type="BINDATA" /></if>
-        <if expr="'hr' == lang">    <include name="IDS_TERMS_HTML" file="resources/terms/terms_hr.html" type="BINDATA" /></if>
-        <if expr="'hu' == lang">    <include name="IDS_TERMS_HTML" file="resources/terms/terms_hu.html" type="BINDATA" /></if>
-        <if expr="'id' == lang">    <include name="IDS_TERMS_HTML" file="resources/terms/terms_id.html" type="BINDATA" /></if>
-        <if expr="'it' == lang">    <include name="IDS_TERMS_HTML" file="resources/terms/terms_it.html" type="BINDATA" /></if>
-        <if expr="'ja' == lang">    <include name="IDS_TERMS_HTML" file="resources/terms/terms_ja.html" type="BINDATA" /></if>
-        <if expr="'kn' == lang">    <include name="IDS_TERMS_HTML" file="resources/terms/terms_kn.html" type="BINDATA" /></if>
-        <if expr="'ko' == lang">    <include name="IDS_TERMS_HTML" file="resources/terms/terms_ko.html" type="BINDATA" /></if>
-        <if expr="'lt' == lang">    <include name="IDS_TERMS_HTML" file="resources/terms/terms_lt.html" type="BINDATA" /></if>
-        <if expr="'lv' == lang">    <include name="IDS_TERMS_HTML" file="resources/terms/terms_lv.html" type="BINDATA" /></if>
-        <if expr="'ml' == lang">    <include name="IDS_TERMS_HTML" file="resources/terms/terms_ml.html" type="BINDATA" /></if>
-        <if expr="'mr' == lang">    <include name="IDS_TERMS_HTML" file="resources/terms/terms_mr.html" type="BINDATA" /></if>
-        <if expr="'nl' == lang">    <include name="IDS_TERMS_HTML" file="resources/terms/terms_nl.html" type="BINDATA" /></if>
-        <if expr="'no' == lang">    <include name="IDS_TERMS_HTML" file="resources/terms/terms_nb.html" type="BINDATA" /></if>
-        <if expr="'pl' == lang">    <include name="IDS_TERMS_HTML" file="resources/terms/terms_pl.html" type="BINDATA" /></if>
-        <if expr="'pt-BR' == lang"> <include name="IDS_TERMS_HTML" file="resources/terms/terms_pt-BR.html" type="BINDATA" /></if>
-        <if expr="'pt-PT' == lang"> <include name="IDS_TERMS_HTML" file="resources/terms/terms_pt-PT.html" type="BINDATA" /></if>
-        <if expr="'ro' == lang">    <include name="IDS_TERMS_HTML" file="resources/terms/terms_ro.html" type="BINDATA" /></if>
-        <if expr="'ru' == lang">    <include name="IDS_TERMS_HTML" file="resources/terms/terms_ru.html" type="BINDATA" /></if>
-        <if expr="'sk' == lang">    <include name="IDS_TERMS_HTML" file="resources/terms/terms_sk.html" type="BINDATA" /></if>
-        <if expr="'sl' == lang">    <include name="IDS_TERMS_HTML" file="resources/terms/terms_sl.html" type="BINDATA" /></if>
-        <if expr="'sr' == lang">    <include name="IDS_TERMS_HTML" file="resources/terms/terms_sr.html" type="BINDATA" /></if>
-        <if expr="'sv' == lang">    <include name="IDS_TERMS_HTML" file="resources/terms/terms_sv.html" type="BINDATA" /></if>
-        <if expr="'sw' == lang">    <include name="IDS_TERMS_HTML" file="resources/terms/terms_sw.html" type="BINDATA" /></if>
-        <if expr="'ta' == lang">    <include name="IDS_TERMS_HTML" file="resources/terms/terms_ta.html" type="BINDATA" /></if>
-        <if expr="'te' == lang">    <include name="IDS_TERMS_HTML" file="resources/terms/terms_te.html" type="BINDATA" /></if>
-        <if expr="'th' == lang">    <include name="IDS_TERMS_HTML" file="resources/terms/terms_th.html" type="BINDATA" /></if>
-        <if expr="'tr' == lang">    <include name="IDS_TERMS_HTML" file="resources/terms/terms_tr.html" type="BINDATA" /></if>
-        <if expr="'uk' == lang">    <include name="IDS_TERMS_HTML" file="resources/terms/terms_uk.html" type="BINDATA" /></if>
-        <if expr="'vi' == lang">    <include name="IDS_TERMS_HTML" file="resources/terms/terms_vi.html" type="BINDATA" /></if>
-        <if expr="'zh-CN' == lang"> <include name="IDS_TERMS_HTML" file="resources/terms/terms_zh-CN.html" type="BINDATA" /></if>
-        <if expr="'zh-TW' == lang"> <include name="IDS_TERMS_HTML" file="resources/terms/terms_zh-TW.html" type="BINDATA" /></if>
-      </if>
-
-      <if expr="not is_android and not is_ios and not _google_chrome">
-        <include name="IDS_TERMS_HTML" file="resources/terms/terms_chromium.html" type="BINDATA" />
+      <if expr="not is_android and not is_ios">
+        <if expr="_google_chrome or _is_chrome_for_testing_branded">
+          <then>
+            <if expr="'am' == lang">    <include name="IDS_TERMS_HTML" file="resources/terms/terms_am.html" type="BINDATA" /></if>
+            <if expr="'ar' == lang">    <include name="IDS_TERMS_HTML" file="resources/terms/terms_ar.html" type="BINDATA" /></if>
+            <if expr="'bg' == lang">    <include name="IDS_TERMS_HTML" file="resources/terms/terms_bg.html" type="BINDATA" /></if>
+            <if expr="'bn' == lang">    <include name="IDS_TERMS_HTML" file="resources/terms/terms_bn.html" type="BINDATA" /></if>
+            <if expr="'ca' == lang">    <include name="IDS_TERMS_HTML" file="resources/terms/terms_ca.html" type="BINDATA" /></if>
+            <if expr="'cs' == lang">    <include name="IDS_TERMS_HTML" file="resources/terms/terms_cs.html" type="BINDATA" /></if>
+            <if expr="'da' == lang">    <include name="IDS_TERMS_HTML" file="resources/terms/terms_da.html" type="BINDATA" /></if>
+            <if expr="'de' == lang">    <include name="IDS_TERMS_HTML" file="resources/terms/terms_de.html" type="BINDATA" /></if>
+            <if expr="'el' == lang">    <include name="IDS_TERMS_HTML" file="resources/terms/terms_el.html" type="BINDATA" /></if>
+            <if expr="'en-GB' == lang"> <include name="IDS_TERMS_HTML" file="resources/terms/terms_en-GB.html" type="BINDATA" /></if>
+            <if expr="'en' == lang">    <include name="IDS_TERMS_HTML" file="resources/terms/terms_en.html" type="BINDATA" /></if>
+            <if expr="'es' == lang">    <include name="IDS_TERMS_HTML" file="resources/terms/terms_es.html" type="BINDATA" /></if>
+            <if expr="'es-419' == lang"><include name="IDS_TERMS_HTML" file="resources/terms/terms_es-419.html" type="BINDATA" /></if>
+            <if expr="'et' == lang">    <include name="IDS_TERMS_HTML" file="resources/terms/terms_et.html" type="BINDATA" /></if>
+            <if expr="'fa' == lang">    <include name="IDS_TERMS_HTML" file="resources/terms/terms_fa.html" type="BINDATA" /></if>
+            <if expr="'fi' == lang">    <include name="IDS_TERMS_HTML" file="resources/terms/terms_fi.html" type="BINDATA" /></if>
+            <if expr="'fil' == lang">   <include name="IDS_TERMS_HTML" file="resources/terms/terms_fil.html" type="BINDATA" /></if>
+            <if expr="'fr' == lang">    <include name="IDS_TERMS_HTML" file="resources/terms/terms_fr.html" type="BINDATA" /></if>
+            <if expr="'gu' == lang">    <include name="IDS_TERMS_HTML" file="resources/terms/terms_gu.html" type="BINDATA" /></if>
+            <if expr="'he' == lang">    <include name="IDS_TERMS_HTML" file="resources/terms/terms_he.html" type="BINDATA" /></if>
+            <if expr="'hi' == lang">    <include name="IDS_TERMS_HTML" file="resources/terms/terms_hi.html" type="BINDATA" /></if>
+            <if expr="'hr' == lang">    <include name="IDS_TERMS_HTML" file="resources/terms/terms_hr.html" type="BINDATA" /></if>
+            <if expr="'hu' == lang">    <include name="IDS_TERMS_HTML" file="resources/terms/terms_hu.html" type="BINDATA" /></if>
+            <if expr="'id' == lang">    <include name="IDS_TERMS_HTML" file="resources/terms/terms_id.html" type="BINDATA" /></if>
+            <if expr="'it' == lang">    <include name="IDS_TERMS_HTML" file="resources/terms/terms_it.html" type="BINDATA" /></if>
+            <if expr="'ja' == lang">    <include name="IDS_TERMS_HTML" file="resources/terms/terms_ja.html" type="BINDATA" /></if>
+            <if expr="'kn' == lang">    <include name="IDS_TERMS_HTML" file="resources/terms/terms_kn.html" type="BINDATA" /></if>
+            <if expr="'ko' == lang">    <include name="IDS_TERMS_HTML" file="resources/terms/terms_ko.html" type="BINDATA" /></if>
+            <if expr="'lt' == lang">    <include name="IDS_TERMS_HTML" file="resources/terms/terms_lt.html" type="BINDATA" /></if>
+            <if expr="'lv' == lang">    <include name="IDS_TERMS_HTML" file="resources/terms/terms_lv.html" type="BINDATA" /></if>
+            <if expr="'ml' == lang">    <include name="IDS_TERMS_HTML" file="resources/terms/terms_ml.html" type="BINDATA" /></if>
+            <if expr="'mr' == lang">    <include name="IDS_TERMS_HTML" file="resources/terms/terms_mr.html" type="BINDATA" /></if>
+            <if expr="'nl' == lang">    <include name="IDS_TERMS_HTML" file="resources/terms/terms_nl.html" type="BINDATA" /></if>
+            <if expr="'no' == lang">    <include name="IDS_TERMS_HTML" file="resources/terms/terms_nb.html" type="BINDATA" /></if>
+            <if expr="'pl' == lang">    <include name="IDS_TERMS_HTML" file="resources/terms/terms_pl.html" type="BINDATA" /></if>
+            <if expr="'pt-BR' == lang"> <include name="IDS_TERMS_HTML" file="resources/terms/terms_pt-BR.html" type="BINDATA" /></if>
+            <if expr="'pt-PT' == lang"> <include name="IDS_TERMS_HTML" file="resources/terms/terms_pt-PT.html" type="BINDATA" /></if>
+            <if expr="'ro' == lang">    <include name="IDS_TERMS_HTML" file="resources/terms/terms_ro.html" type="BINDATA" /></if>
+            <if expr="'ru' == lang">    <include name="IDS_TERMS_HTML" file="resources/terms/terms_ru.html" type="BINDATA" /></if>
+            <if expr="'sk' == lang">    <include name="IDS_TERMS_HTML" file="resources/terms/terms_sk.html" type="BINDATA" /></if>
+            <if expr="'sl' == lang">    <include name="IDS_TERMS_HTML" file="resources/terms/terms_sl.html" type="BINDATA" /></if>
+            <if expr="'sr' == lang">    <include name="IDS_TERMS_HTML" file="resources/terms/terms_sr.html" type="BINDATA" /></if>
+            <if expr="'sv' == lang">    <include name="IDS_TERMS_HTML" file="resources/terms/terms_sv.html" type="BINDATA" /></if>
+            <if expr="'sw' == lang">    <include name="IDS_TERMS_HTML" file="resources/terms/terms_sw.html" type="BINDATA" /></if>
+            <if expr="'ta' == lang">    <include name="IDS_TERMS_HTML" file="resources/terms/terms_ta.html" type="BINDATA" /></if>
+            <if expr="'te' == lang">    <include name="IDS_TERMS_HTML" file="resources/terms/terms_te.html" type="BINDATA" /></if>
+            <if expr="'th' == lang">    <include name="IDS_TERMS_HTML" file="resources/terms/terms_th.html" type="BINDATA" /></if>
+            <if expr="'tr' == lang">    <include name="IDS_TERMS_HTML" file="resources/terms/terms_tr.html" type="BINDATA" /></if>
+            <if expr="'uk' == lang">    <include name="IDS_TERMS_HTML" file="resources/terms/terms_uk.html" type="BINDATA" /></if>
+            <if expr="'vi' == lang">    <include name="IDS_TERMS_HTML" file="resources/terms/terms_vi.html" type="BINDATA" /></if>
+            <if expr="'zh-CN' == lang"> <include name="IDS_TERMS_HTML" file="resources/terms/terms_zh-CN.html" type="BINDATA" /></if>
+            <if expr="'zh-TW' == lang"> <include name="IDS_TERMS_HTML" file="resources/terms/terms_zh-TW.html" type="BINDATA" /></if>
+          </then>
+          <else>
+            <include name="IDS_TERMS_HTML" file="resources/terms/terms_chromium.html" type="BINDATA" />
+          </else>
+        </if>
       </if>
     </includes>
     <messages fallback_to_english="true">

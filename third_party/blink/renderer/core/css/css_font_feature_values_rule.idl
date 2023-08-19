@@ -4,9 +4,7 @@
 
 // https://drafts.csswg.org/css-fonts-4/#om-fontfeaturevalues
 
-[
-    RuntimeEnabled = FontVariantAlternates
-] interface CSSFontFeatureValuesRule : CSSRule {
+interface CSSFontFeatureValuesRule : CSSRule {
   attribute CSSOMString fontFamily;
 
   readonly attribute CSSFontFeatureValuesMap annotation;
@@ -17,9 +15,7 @@
   readonly attribute CSSFontFeatureValuesMap styleset;
 };
 
-[
-    RuntimeEnabled = FontVariantAlternates
-] interface CSSFontFeatureValuesMap {
+interface CSSFontFeatureValuesMap {
    maplike<CSSOMString, sequence<unsigned long>>;
    undefined set(CSSOMString featureValueName,
      (unsigned long or sequence<unsigned long>) values);

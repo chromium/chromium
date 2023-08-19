@@ -13,6 +13,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/to_string.h"
+#include "chrome/browser/web_applications/jobs/uninstall/web_app_uninstall_and_replace_job.h"
 #include "chrome/browser/web_applications/locks/app_lock.h"
 #include "chrome/browser/web_applications/os_integration/os_integration_manager.h"
 #include "chrome/browser/web_applications/web_app.h"
@@ -20,7 +21,6 @@
 #include "chrome/browser/web_applications/web_app_id.h"
 #include "chrome/browser/web_applications/web_app_install_finalizer.h"
 #include "chrome/browser/web_applications/web_app_install_utils.h"
-#include "chrome/browser/web_applications/web_app_uninstall_and_replace_job.h"
 #include "components/webapps/browser/install_result_code.h"
 #include "components/webapps/browser/installable/installable_metrics.h"
 
@@ -206,7 +206,7 @@ void InstallFromInfoCommand::OnInstallCompleted(const AppId& app_id,
   }
 
   uninstall_and_replace_job_.emplace(
-      profile_, lock_->AsWeakPtr(), apps_or_extensions_to_uninstall_, app_id,
+      profile_, *lock_, apps_or_extensions_to_uninstall_, app_id,
       base::BindOnce(&InstallFromInfoCommand::OnUnintallAndReplaceFinished,
                      weak_factory_.GetWeakPtr(), app_id, std::move(code)));
   uninstall_and_replace_job_->Start();

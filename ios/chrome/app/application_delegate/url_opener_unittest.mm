@@ -29,10 +29,6 @@
 #import "third_party/ocmock/OCMock/OCMock.h"
 #import "third_party/ocmock/gtest_support.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 // URLOpenerTest is parameterized on this enum to test with
 // enabled and disabled kExternalFilesLoadedInWebState feature flag.
 enum class ExternalFilesLoadedInWebStateFeature {

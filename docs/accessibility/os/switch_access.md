@@ -79,7 +79,7 @@ Switch Access code lives mainly in four places:
 - The Switch Access menu and back button code, in `ash/system/accessibility/`
 
 - The Switch Access settings page,
-`chrome/browser/resources/settings/chromeos/os_a11y_page/switch_access_subpage.*`
+`chrome/browser/resources/ash/settings/os_a11y_page/switch_access_subpage.*`
 
 
 ### Tests

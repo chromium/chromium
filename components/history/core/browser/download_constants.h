@@ -46,6 +46,7 @@ enum class DownloadDangerType {
   PROMPT_FOR_SCANNING = 17,
   BLOCKED_UNSUPPORTED_FILETYPE = 18,
   DANGEROUS_ACCOUNT_COMRPOMISE = 19,
+  DEEP_SCANNED_FAILED = 20,
 };
 
 // DownloadId represents the id of a DownloadRow into the DownloadDatabase.

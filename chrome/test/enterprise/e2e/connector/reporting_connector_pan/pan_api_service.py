@@ -13,6 +13,8 @@ from typing import Any, Dict, Sequence, Tuple
 
 import requests
 
+from .. import Verifyable
+from .. import VerifyContent
 from .pan_event import PanEvent
 
 
@@ -22,7 +24,7 @@ PENDING = 1
 IGNORE = 2  # this value is ignored
 
 
-class PanApiService(object):
+class PanApiService(Verifyable):
   """This class handles retrieving events from a Palo Auto Network server.
 
 
@@ -50,6 +52,28 @@ class PanApiService(object):
       self._credentials = json.loads(credentials)
     except json.JSONDecodeError:
       logging.debug("Decoding PanApiService credentials JSON has failed")
+
+  def TryVerify(self, content: VerifyContent) -> bool:
+    """Method to be called repeated until success or timeout."""
+    event_to_query = PanEvent(
+        type="badNavigationEvent",
+        device_id=content.device_id,
+        reason="MALWARE",
+        url="http://testsafebrowsing.appspot.com/s/malware.html",
+    )
+    logging.info("Event to look for: %s" % event_to_query)
+    match_found = False
+
+    self.start_xdr_query()
+    self.get_xdr_query_results()
+    events = self.get_events()
+    event_string = "\n".join(str(v) for v in events)
+    logging.info(f"Events logged:\n{event_string}")
+    if self.query_for_event(event_to_query):
+      logging.info("Matched event found\n")
+      match_found = True
+    self.stop_xdr_query()
+    return match_found
 
   def _reset_ids(self):
     """Resets all the internal ids."""
@@ -90,7 +114,7 @@ class PanApiService(object):
           type=inner_event["event"],
           device_id=inner_event["device_id"],
           reason=inner_event["reason"] if "reason" in inner_event else "",
-          url=inner_event["url"],
+          url=inner_event["url"] if "url" in inner_event else "",
       )
       if ev == pe:
         return True

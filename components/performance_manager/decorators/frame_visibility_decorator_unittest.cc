@@ -38,12 +38,25 @@ class FrameVisibilityDecoratorTest : public GraphTestHarness {
   TestNodeWrapper<ProcessNodeImpl> process_node_;
 };
 
+// Tests that a main frame in a visible page is not visible if it is not
+// current.
+TEST_F(FrameVisibilityDecoratorTest, IsCurrent) {
+  auto page_node = CreateNode<PageNodeImpl>();
+  page_node->SetIsVisible(true);
+  auto main_frame_node = CreateFrameNodeAutoId(process_node(), page_node.get());
+  EXPECT_EQ(main_frame_node->visibility(), FrameNode::Visibility::kNotVisible);
+
+  main_frame_node->SetIsCurrent(true);
+  EXPECT_EQ(main_frame_node->visibility(), FrameNode::Visibility::kVisible);
+}
+
 TEST_F(FrameVisibilityDecoratorTest, SetPageVisible) {
   auto page_node = CreateNode<PageNodeImpl>();
   EXPECT_FALSE(page_node->is_visible());
 
   // Create a frame node.
   auto frame_node = CreateFrameNodeAutoId(process_node(), page_node.get());
+  frame_node->SetIsCurrent(true);
 
   // Starts not visible because the page is not visible.
   EXPECT_EQ(frame_node->visibility(), FrameNode::Visibility::kNotVisible);
@@ -63,21 +76,25 @@ TEST_F(FrameVisibilityDecoratorTest, SetPageVisibleWithChildNodes) {
 
   // Create a main frame node.
   auto main_frame_node = CreateFrameNodeAutoId(process_node(), page_node.get());
+  main_frame_node->SetIsCurrent(true);
 
   // Create a child frame node with a non-empty viewport intersection.
   auto intersecting_child_frame_node = CreateFrameNodeAutoId(
       process_node(), page_node.get(), main_frame_node.get());
+  intersecting_child_frame_node->SetIsCurrent(true);
   intersecting_child_frame_node->SetViewportIntersection(kNonEmptyIntersection);
 
   // Create a child frame node with an empty viewport intersection.
   auto non_intersecting_child_frame_node = CreateFrameNodeAutoId(
       process_node(), page_node.get(), main_frame_node.get());
+  non_intersecting_child_frame_node->SetIsCurrent(true);
   non_intersecting_child_frame_node->SetViewportIntersection(
       kEmptyIntersection);
 
   // Create a child frame node with no viewport intersection
   auto no_intersection_child_frame_node = CreateFrameNodeAutoId(
       process_node(), page_node.get(), main_frame_node.get());
+  no_intersection_child_frame_node->SetIsCurrent(true);
 
   // Starts not visible because the page is not visible.
   EXPECT_EQ(main_frame_node->visibility(), FrameNode::Visibility::kNotVisible);
@@ -115,15 +132,18 @@ TEST_F(FrameVisibilityDecoratorTest, SetFrameViewportIntersection) {
   auto page_node = CreateNode<PageNodeImpl>();
   page_node->SetIsVisible(true);
   auto main_frame_node = CreateFrameNodeAutoId(process_node(), page_node.get());
+  main_frame_node->SetIsCurrent(true);
 
   // Create a test frame node with no viewport intersection.
   auto frame_node = CreateFrameNodeAutoId(process_node(), page_node.get(),
                                           main_frame_node.get());
+  frame_node->SetIsCurrent(true);
   EXPECT_FALSE(frame_node->viewport_intersection().has_value());
 
   // Create a child frame node with no viewport_intersection.
   auto child_frame_node =
       CreateFrameNodeAutoId(process_node(), page_node.get(), frame_node.get());
+  child_frame_node->SetIsCurrent(true);
   EXPECT_FALSE(child_frame_node->viewport_intersection().has_value());
 
   // Both frames have an unknown visibility because their viewport intersection

@@ -145,6 +145,8 @@ const char kReadDynamicRulesJSONStatusHistogram[] =
     "Extensions.DeclarativeNetRequest.ReadDynamicRulesJSONStatus";
 const char kIsLargeRegexHistogram[] =
     "Extensions.DeclarativeNetRequest.IsLargeRegexRule";
+const char kRegexRuleSizeHistogram[] =
+    "Extensions.DeclarativeNetRequest.RegexRuleSize";
 const char kLoadRulesetResultHistogram[] =
     "Extensions.DeclarativeNetRequest.LoadRulesetResult";
 

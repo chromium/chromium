@@ -22,6 +22,9 @@ declare_args() {
   # Do not disable brotli filter by default.
   disable_brotli_filter = false
 
+  # Do not disable zstd filter by default, except for Cronet builds.
+  disable_zstd_filter = is_cronet_build
+
   # Multicast DNS.
   enable_mdns = is_win || is_linux || is_chromeos || is_fuchsia || is_apple
 

@@ -24,10 +24,6 @@ js_library("foreground_window") {
   ]
 }
 
-js_library("banner") {
-  deps = [ "//ui/file_manager/file_manager/common/js:volume_manager_types" ]
-}
-
 js_library("command_handler_deps") {
   deps = [
     ":files_app_entry_interfaces",

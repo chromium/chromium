@@ -15,7 +15,7 @@ class WebDatabase;
 class WebDatabaseService;
 
 namespace base {
-class SingleThreadTaskRunner;
+class SequencedTaskRunner;
 }
 
 // Base for WebDataService class hierarchy.
@@ -45,7 +45,7 @@ class WEBDATA_EXPORT WebDataServiceBase
   // WebDataServiceBase is destroyed on the UI sequence.
   WebDataServiceBase(
       scoped_refptr<WebDatabaseService> wdbs,
-      const scoped_refptr<base::SingleThreadTaskRunner>& ui_task_runner);
+      const scoped_refptr<base::SequencedTaskRunner>& ui_task_runner);
 
   WebDataServiceBase(const WebDataServiceBase&) = delete;
   WebDataServiceBase& operator=(const WebDataServiceBase&) = delete;

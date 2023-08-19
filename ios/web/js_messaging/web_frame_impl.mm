@@ -20,10 +20,6 @@
 #import "ios/web/public/thread/web_thread.h"
 #import "url/gurl.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 namespace {
 
 // Creates a JavaScript string for executing the function __gCrWeb.`name` with
@@ -57,8 +53,7 @@ WebFrameImpl::WebFrameImpl(WKFrameInfo* frame_info,
       frame_id_(frame_id),
       is_main_frame_(is_main_frame),
       security_origin_(security_origin),
-      web_state_(web_state),
-      weak_ptr_factory_(this) {
+      web_state_(web_state) {
   DCHECK(frame_info_);
   DCHECK(web_state_);
   web_state->AddObserver(this);
@@ -240,7 +235,7 @@ bool WebFrameImpl::ExecuteJavaScriptFunction(
 
   void (^completion_handler)(id, NSError*) = nil;
   if (reply_with_result) {
-    base::WeakPtr<WebFrameImpl> weak_frame = weak_ptr_factory_.GetWeakPtr();
+    base::WeakPtr<WebFrameImpl> weak_frame = base::AsWeakPtr(this);
     completion_handler = ^void(id value, NSError* error) {
       if (error) {
         DLOG(WARNING) << "Script execution of:"

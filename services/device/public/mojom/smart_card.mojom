@@ -2,6 +2,15 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+// The purpose of these mojo interfaces is to expose the platform's PC/SC
+// implementation (according to "Interoperability Specification for ICCs and
+// Personal Computer Systems; Part 5 ICC Resource Manager Definition") as close
+// as possible, exposing the same concepts and functionality.
+//
+// See https://pcscworkgroup.com/specifications/download/
+// And its authoritative implementation, winscard.h:
+// https://learn.microsoft.com/en-us/windows/win32/api/winscard/
+
 module device.mojom;
 
 import "mojo/public/mojom/base/time.mojom";
@@ -91,6 +100,24 @@ enum SmartCardDisposition {
   kEject
 };
 
+// State of a SmartCardConnection.
+// Note that there's quite some overlap with SmartCardReaderStateFlags.
+// But that's what PC/SC does.
+enum SmartCardConnectionState {
+  // SCARD_ABSENT
+  kAbsent,
+  // SCARD_PRESENT
+  kPresent,
+  // SCARD_SWALLOWED
+  kSwallowed,
+  // SCARD_POWERED
+  kPowered,
+  // SCARD_NEGOTIABLE
+  kNegotiable,
+  // SCARD_SPECIFIC
+  kSpecific
+};
+
 // Flags for describing the state of a smart card reader.
 // Maps to the corresponding SCARD_STATE_* flags in winscard.h
 struct SmartCardReaderStateFlags {
@@ -113,12 +140,18 @@ struct SmartCardReaderStateFlags {
 struct SmartCardReaderStateIn {
   string reader;
   SmartCardReaderStateFlags current_state;
+  // Number of card insertion and removal events that happened in this reader,
+  // as known by the application.
+  uint16 current_count;
 };
 
 // Describes the actual state of a smart card reader.
 struct SmartCardReaderStateOut {
   string reader;
   SmartCardReaderStateFlags event_state;
+  // Number of card insertion and removal events that happened in this reader.
+  // Will always be zero if not supported by the platform.
+  uint16 event_count;
   array<uint8> answer_to_reset;
 };
 
@@ -130,6 +163,14 @@ struct SmartCardProtocols {
   bool t1;
   // SCARD_PROTOCOL_RAW
   bool raw;
+};
+
+// Status of a SmartCardConnection.
+struct SmartCardStatus {
+  string reader_name;
+  SmartCardConnectionState state;
+  SmartCardProtocol protocol;
+  array<uint8> answer_to_reset;
 };
 
 // The result of a SmartCardContext.GetStatusChange request.
@@ -170,6 +211,28 @@ union SmartCardDataResult {
   SmartCardError error;
 };
 
+// The result of a SmartCardConnection.Status request.
+union SmartCardStatusResult {
+  SmartCardStatus status;
+  SmartCardError error;
+};
+
+// The result of a SmartCardConnection.BeginTransaction request.
+union SmartCardTransactionResult {
+  pending_associated_remote<SmartCardTransaction> transaction;
+  SmartCardError error;
+};
+
+// An interface to a transaction.
+// All commands sent through the related SmartCardConnection will be part of
+// this transaction.
+interface SmartCardTransaction {
+  // Ends a logical transaction, allowing other applications to resume
+  // interactions with that card.
+  // Upon termination, the action indicated by `disposition` is performed.
+  EndTransaction(SmartCardDisposition disposition) => (SmartCardResult result);
+};
+
 // An interface to a valid connection (SCARDHANDLE) within a context
 // in a PC/SC (winscard.h) provider.
 interface SmartCardConnection {
@@ -192,10 +255,18 @@ interface SmartCardConnection {
   // Sets an attribute of the Interface Device Handler.
   SetAttrib(uint32 id, array<uint8> data) => (SmartCardResult result);
 
-  // TODO(crbug.com/1386175): Add methods:
-  // * BeginTransaction()
-  // * EndTransaction()
-  // * Status()
+  // Returns the status of the connected reader.
+  Status() => (SmartCardStatusResult result);
+
+  // Initiates a logical transaction against the card in the reader associated
+  // with this connection. If successful, this blocks other applications from
+  // accessing the card, allowing the calling application to perform a sequence
+  // of operations against the card with assurance that any intermediate state
+  // information will remain valid.
+  //
+  // On Windows, if a transaction is held on the card for more than five seconds
+  // with no operations happening on that card, then the card is reset.
+  BeginTransaction() => (SmartCardTransactionResult result);
 };
 
 // An interface to a valid context in a PC/SC (winscard.h) provider.

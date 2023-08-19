@@ -1,44 +1,44 @@
 <style include="cr-shared-style iron-flex">
-  [slot='page-body'] {
-    height: 300px;
-    margin-top: -20px;
-  }
+    [slot='page-body'] {
+      height: 300px;
+      margin-top: -20px;
+    }
 
-  profile-discovery-list-item {
-    height: 64px;
-  }
+    profile-discovery-list-item {
+      height: 64px;
+    }
 
-  #container {
-    height: 230px;
-    margin-top: 20px;
-    overflow-x: hidden;
-    overflow-y: auto;
-  }
+    #container {
+      height: 230px;
+      margin-top: 20px;
+      overflow-x: hidden;
+      overflow-y: auto;
+    }
 
-  iron-list > *:not(:first-of-type) {
-    border-top: var(--cr-separator-line);
-  }
-</style>
-<base-page>
-  <div slot="page-body">
-    <div>[[i18n('profileListPageMessage')]]</div>
-    <div id="container" class="layout vertical flex" scrollable>
-      <iron-list id="profileList" items="[[pendingProfiles]]"
-          scroll-target="container"
-          selection-enabled="[[!showBusy]]"
-          preserve-focus
-          selected-item="{{selectedProfile}}"
-          role="listbox">
-        <template>
-          <profile-discovery-list-item profile="[[item]]"
-              selected="[[isProfileSelected_(item, selectedProfile)]]"
-              tabindex="0"
-              role="option"
-              aria-selected="[[isProfileSelected_(item, selectedProfile)]]"
-              show-loading-indicator="[[showBusy]]">
-          </profile-discovery-list-item>
-        </template>
-      </iron-list>
+    iron-list > *:not(:first-of-type) {
+      border-top: var(--cr-separator-line);
+    }
+  </style>
+  <base-page>
+    <div slot="page-body">
+      <div>[[i18n('profileListPageMessage')]]</div>
+      <div id="container" class="layout vertical flex" scrollable>
+        <iron-list id="profileList" items="[[pendingProfileProperties]]"
+            scroll-target="container"
+            selection-enabled="[[!showBusy]]"
+            preserve-focus
+            selected-item="{{selectedProfileProperties}}"
+            role="listbox">
+          <template>
+            <profile-discovery-list-item profile-properties="[[item]]"
+                selected="[[isProfilePropertiesSelected_(item, selectedProfileProperties)]]"
+                tabindex="0"
+                role="option"
+                aria-selected="[[isProfilePropertiesSelected_(item, selectedProfileProperties)]]"
+                show-loading-indicator="[[showBusy]]">
+            </profile-discovery-list-item>
+          </template>
+        </iron-list>
+      </div>
     </div>
-  </div>
-</base-page>
+  </base-page>

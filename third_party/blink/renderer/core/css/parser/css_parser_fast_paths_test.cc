@@ -7,6 +7,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/renderer/core/css/css_color.h"
 #include "third_party/blink/renderer/core/css/css_identifier_value.h"
+#include "third_party/blink/renderer/core/css/css_numeric_literal_value.h"
 #include "third_party/blink/renderer/core/css/css_value_list.h"
 #include "third_party/blink/renderer/platform/testing/runtime_enabled_features_test_helpers.h"
 
@@ -95,6 +96,67 @@ TEST(CSSParserFastPathsTest, ParseRevertLayer) {
         CSSPropertyID::kDirection, "revert-layer", kHTMLStandardMode);
     ASSERT_TRUE(value);
     EXPECT_TRUE(value->IsRevertLayerValue());
+  }
+}
+
+TEST(CSSParserFastPathsTest, ParseSimpleLength) {
+  CSSValue* value = CSSParserFastPaths::MaybeParseValue(
+      CSSPropertyID::kWidth, "234px", kHTMLStandardMode);
+  ASSERT_NE(nullptr, value);
+  EXPECT_FALSE(value->IsValueList());
+  EXPECT_EQ("234px", value->CssText());
+
+  value = CSSParserFastPaths::MaybeParseValue(CSSPropertyID::kWidth,
+                                              "234.567px", kHTMLStandardMode);
+  ASSERT_NE(nullptr, value);
+  EXPECT_FALSE(value->IsValueList());
+  EXPECT_EQ("234.567px", value->CssText());
+
+  value = CSSParserFastPaths::MaybeParseValue(CSSPropertyID::kWidth, ".567px",
+                                              kHTMLStandardMode);
+  ASSERT_NE(nullptr, value);
+  EXPECT_FALSE(value->IsValueList());
+  EXPECT_EQ("0.567px", value->CssText());
+
+  value = CSSParserFastPaths::MaybeParseValue(CSSPropertyID::kWidth, "234.px",
+                                              kHTMLStandardMode);
+  EXPECT_EQ(nullptr, value);
+
+  value = CSSParserFastPaths::MaybeParseValue(CSSPropertyID::kWidth, "234.e2px",
+                                              kHTMLStandardMode);
+  EXPECT_EQ(nullptr, value);
+
+  value = CSSParserFastPaths::MaybeParseValue(CSSPropertyID::kWidth, ".",
+                                              kHTMLStandardMode);
+  EXPECT_EQ(nullptr, value);
+
+  // This is legal, but we don't support it in the fast path.
+  value = CSSParserFastPaths::MaybeParseValue(CSSPropertyID::kWidth, "234e2px",
+                                              kHTMLStandardMode);
+  EXPECT_EQ(nullptr, value);
+}
+
+// Mostly to stress-test the SIMD paths.
+TEST(CSSParserFastPathsTest, VariousNumberOfDecimalsInLength) {
+  const std::pair<std::string, double> kTestCases[] = {
+      {"0.1px", 0.1},
+      {"0.12px", 0.12},
+      {"0.123px", 0.123},
+      {"0.1234px", 0.1234},
+      {"0.12345px", 0.12345},
+      {"0.123456px", 0.123456},
+      {"0.1234567px", 0.1234567},
+      {"0.12345678px", 0.1234567},   // NOTE: Max. seven digits.
+      {"0.123456789px", 0.1234567},  // NOTE: Max. seven digits.
+  };
+  for (const auto& [str, expected_val] : kTestCases) {
+    SCOPED_TRACE(str);
+    CSSValue* value = CSSParserFastPaths::MaybeParseValue(
+        CSSPropertyID::kWidth, str.c_str(), kHTMLStandardMode);
+    ASSERT_NE(nullptr, value);
+    EXPECT_FALSE(value->IsValueList());
+    EXPECT_DOUBLE_EQ(expected_val,
+                     To<CSSNumericLiteralValue>(value)->DoubleValue());
   }
 }
 
@@ -279,6 +341,11 @@ TEST(CSSParserFastPathsTest, ParseHSL) {
             CSSParserFastPaths::ParseColor("hsla(45deg, 150%, 50%)",
                                            kHTMLStandardMode, color));
   EXPECT_EQ("rgb(255, 191, 0)", color.SerializeAsCSSColor());
+
+  // Stray period at the end
+  EXPECT_NE(ParseColorResult::kColor,
+            CSSParserFastPaths::ParseColor("hsl(0.turn, 25%, 50%)",
+                                           kHTMLStandardMode, color));
 }
 
 TEST(CSSParserFastPathsTest, ParseHSLWithAlpha) {

@@ -20,9 +20,11 @@ if (enable_av1_decoder && (use_v4l2_codec || use_vaapi)) {
       ":test_helpers",
       ":video_player",
       ":video_player_test_environment",
+      "//base/test:test_support",
       "//media:test_support",
       "//media/gpu:buildflags",
       "//media/gpu/chromeos:common",
+      "//testing/gmock",
       "//testing/gtest",
     ]
   }

@@ -15,6 +15,8 @@ source_set("lib") {
     "device_factory_impl.h",
     "device_media_to_mojo_adapter.cc",
     "device_media_to_mojo_adapter.h",
+    "devices_changed_notifier.cc",
+    "devices_changed_notifier.h",
     "gpu_memory_buffer_virtual_device_mojo_adapter.cc",
     "gpu_memory_buffer_virtual_device_mojo_adapter.h",
     "push_video_stream_subscription_impl.cc",
@@ -101,6 +103,7 @@ source_set("tests") {
   sources = [
     "broadcasting_receiver_unittest.cc",
     "device_media_to_mojo_adapter_unittest.cc",
+    "devices_changed_notifier_unittest.cc",
     "gpu_memory_buffer_virtual_device_mojo_adapter_unittest.cc",
     "test/fake_device_descriptor_test.cc",
     "test/fake_device_descriptor_test.h",

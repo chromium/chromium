@@ -24,6 +24,9 @@ class CONTENT_EXPORT PrivateAggregationBudgetKey {
  public:
   enum class Api { kProtectedAudience, kSharedStorage };
 
+  static constexpr Api kAllApis[] = {Api::kProtectedAudience,
+                                     Api::kSharedStorage};
+
   // Represents the smallest period of time for which budget usage is recorded.
   // This interval includes the `start_time()` instant, but excludes the end
   // time (`start_time() + kDuration`) instant. (But note the

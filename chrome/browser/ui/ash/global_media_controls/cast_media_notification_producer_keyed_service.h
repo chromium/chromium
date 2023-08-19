@@ -26,6 +26,16 @@ class CastMediaNotificationProducerKeyedService : public KeyedService,
       const CastMediaNotificationProducerKeyedService&) = delete;
   ~CastMediaNotificationProducerKeyedService() override;
 
+  // Add the MediaItemManager and create a corresponding
+  // CastMediaNotificationProducer for it.
+  void AddMediaItemManager(
+      global_media_controls::MediaItemManager* media_item_manager);
+
+  // Remove the MediaItemManager and delete the corresponding
+  // CastMediaNotificationProducer.
+  void RemoveMediaItemManager(
+      global_media_controls::MediaItemManager* media_item_manager);
+
  private:
   // KeyedService:
   void Shutdown() override;
@@ -35,8 +45,13 @@ class CastMediaNotificationProducerKeyedService : public KeyedService,
 
   void Reset();
 
-  std::unique_ptr<CastMediaNotificationProducer> cast_producer_;
-  raw_ptr<global_media_controls::MediaItemManager> item_manager_;
+  const raw_ptr<Profile> profile_;
+
+  // A map to record the MediaItemManager pointer and the corresponding
+  // CastMediaNotificationProducer.
+  std::map<raw_ptr<global_media_controls::MediaItemManager>,
+           std::unique_ptr<CastMediaNotificationProducer>>
+      managers_and_producers_;
 };
 
 #endif  // CHROME_BROWSER_UI_ASH_GLOBAL_MEDIA_CONTROLS_CAST_MEDIA_NOTIFICATION_PRODUCER_KEYED_SERVICE_H_

@@ -22,6 +22,7 @@
 #include "components/metrics/structured/structured_events.h"
 #include "components/metrics/structured/structured_metrics_features.h"
 #include "components/metrics/structured/structured_metrics_recorder.h"
+#include "components/metrics/structured/test/test_key_data_provider.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/metrics_proto/chrome_user_metrics_extension.pb.h"
 
@@ -73,6 +74,9 @@ class StructuredMetricsProviderTest : public testing::Test {
     // Move the mock date forward from day 0, because KeyData assumes that day 0
     // is a bug.
     task_environment_.AdvanceClock(base::Days(1000));
+
+    scoped_feature_list_.InitAndDisableFeature(
+        kEnabledStructuredMetricsService);
   }
 
   void TearDown() override { StructuredMetricsClient::Get()->UnsetDelegate(); }
@@ -98,9 +102,11 @@ class StructuredMetricsProviderTest : public testing::Test {
     system_profile_provider_ = std::make_unique<TestSystemProfileProvider>();
     // Create a system profile, normally done by ChromeMetricsServiceClient.
     structured_metrics_recorder_ = std::unique_ptr<StructuredMetricsRecorder>(
-        new StructuredMetricsRecorder(DeviceKeyFilePath(),
-                                      /*write_delay=*/base::Seconds(0),
+        new StructuredMetricsRecorder(/*write_delay=*/base::Seconds(0),
                                       system_profile_provider_.get()));
+    structured_metrics_recorder_->InitializeKeyDataProvider(
+        std::make_unique<TestKeyDataProvider>(DeviceKeyFilePath(),
+                                              ProfileKeyFilePath()));
     // Create the provider, normally done by the ChromeMetricsServiceClient.
     provider_ = std::unique_ptr<StructuredMetricsProvider>(
         new StructuredMetricsProvider(
@@ -128,6 +134,7 @@ class StructuredMetricsProviderTest : public testing::Test {
     ChromeUserMetricsExtension uma_proto;
     if (provider_->HasIndependentMetrics()) {
       provider_->ProvideIndependentMetrics(
+          base::DoNothing(),
           base::BindOnce([](bool success) { CHECK(success); }), &uma_proto,
           nullptr);
       Wait();
@@ -168,7 +175,8 @@ class StructuredMetricsProviderTest : public testing::Test {
 // Ensure that disabling independent upload of non-client_id metrics via feature
 // flag instead uploads them in the main UMA upload.
 TEST_F(StructuredMetricsProviderTest, DisableIndependentUploads) {
-  scoped_feature_list_.InitAndEnableFeatureWithParameters(
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeatureWithParameters(
       features::kStructuredMetrics,
       {{"enable_independent_metrics_upload", "false"}});
 

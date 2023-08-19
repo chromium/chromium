@@ -10,13 +10,8 @@
 #include "third_party/blink/renderer/platform/graphics/paint/float_clip_rect.h"
 #include "third_party/blink/renderer/platform/graphics/paint/property_tree_state.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
-#include "ui/gfx/geometry/quad_f.h"
-#include "ui/gfx/geometry/rect.h"
-#include "ui/gfx/geometry/rect_conversions.h"
 #include "ui/gfx/geometry/rect_f.h"
-#include "ui/gfx/geometry/skia_conversions.h"
 #include "ui/gfx/geometry/transform.h"
-#include "ui/gfx/geometry/vector2d_f.h"
 
 namespace blink {
 
@@ -186,7 +181,7 @@ class PLATFORM_EXPORT GeometryMapper {
  private:
   struct ExtraProjectionResult {
     bool has_animation = false;
-    bool has_sticky_or_anchor_scroll = false;
+    bool has_sticky_or_anchor_position = false;
     STACK_ALLOCATED();
   };
 
@@ -231,10 +226,6 @@ class PLATFORM_EXPORT GeometryMapper {
       const gfx::RectF& rect2,
       const PropertyTreeState& state2);
 
-  static const ClipPaintPropertyNode* HighestOutputClipBetween(
-      const EffectPaintPropertyNode& ancestor,
-      const EffectPaintPropertyNode& descendant);
-
   static gfx::RectF VisualRectForCompositingOverlap(
       const gfx::RectF& local_rect,
       const PropertyTreeState& local_state,
@@ -244,20 +235,6 @@ class PLATFORM_EXPORT GeometryMapper {
       const TransformPaintPropertyNode& scroll_translation,
       gfx::RectF& rect,
       PropertyTreeState& state);
-
-  static void MoveRect(gfx::RectF& rect, const gfx::Vector2dF& delta) {
-    rect.Offset(delta.x(), delta.y());
-  }
-
-  static void MoveRect(LayoutRect& rect, const gfx::Vector2dF& delta) {
-    rect.Move(LayoutSize(delta));
-  }
-
-  static void MoveRect(gfx::Rect& rect, const gfx::Vector2dF& delta) {
-    gfx::RectF rect_f(rect);
-    MoveRect(rect_f, delta);
-    rect = gfx::ToEnclosingRect(rect_f);
-  }
 
   friend class GeometryMapperTest;
   static bool LocalToAncestorVisualRectInternalForTesting(

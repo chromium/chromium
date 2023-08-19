@@ -17,10 +17,6 @@
 #import "ios/web/test/js_test_util_internal.h"
 #import "testing/gtest_mac.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 using base::test::ios::WaitUntilConditionOrTimeout;
 using base::test::ios::kWaitForPageLoadTimeout;
 
@@ -96,7 +92,7 @@ TEST_F(PageScriptUtilTest, WKWebViewEarlyPageScriptIsolatedWorld) {
 
 // Tests that embedder's WKWebView script is included into early script.
 TEST_F(PageScriptUtilTest, WKEmbedderScript) {
-  GetWebClient()->SetEarlyPageScript(@"__gCrEmbedder = {};");
+  GetWebClient()->SetEarlyPageScriptForMainFrame(@"__gCrEmbedder = {};");
   WKWebView* web_view = BuildWKWebView(CGRectZero, GetBrowserState());
   AddSharedScriptsToWebView(web_view);
   test::ExecuteJavaScript(

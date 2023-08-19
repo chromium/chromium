@@ -8,11 +8,13 @@
 #include "extensions/renderer/object_backed_native_handler.h"
 
 namespace extensions {
+class IPCMessageSender;
 
 // Implements custom bindings for the pageCapture API.
 class PageCaptureCustomBindings : public ObjectBackedNativeHandler {
  public:
-  explicit PageCaptureCustomBindings(ScriptContext* context);
+  PageCaptureCustomBindings(ScriptContext* context,
+                            IPCMessageSender* ipc_message_sender);
 
   // ObjectBackedNativeHandler:
   void AddRoutes() override;
@@ -21,6 +23,9 @@ class PageCaptureCustomBindings : public ObjectBackedNativeHandler {
   // Creates a Blob with the content of the specified file.
   void CreateBlob(const v8::FunctionCallbackInfo<v8::Value>& args);
   void SendResponseAck(const v8::FunctionCallbackInfo<v8::Value>& args);
+
+  // The IPCMessageSender for this context. Must outlive this class.
+  IPCMessageSender* const ipc_message_sender_;
 };
 
 }  // namespace extensions

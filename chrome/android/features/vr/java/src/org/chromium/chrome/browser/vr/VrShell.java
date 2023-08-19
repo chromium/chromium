@@ -21,6 +21,7 @@ import com.google.vr.ndk.base.AndroidCompat;
 import com.google.vr.ndk.base.GvrLayout;
 
 import org.chromium.base.Log;
+import org.chromium.base.ResettersForTesting;
 import org.chromium.base.StrictModeContext;
 import org.chromium.base.annotations.CalledByNative;
 import org.chromium.base.annotations.JNINamespace;
@@ -40,7 +41,6 @@ import org.chromium.ui.display.DisplayAndroid;
 @JNINamespace("vr")
 public class VrShell extends GvrLayout implements SurfaceHolder.Callback {
     private static final String TAG = "VrShellImpl";
-    private static final float INCHES_TO_METERS = 0.0254f;
 
     private final Activity mActivity;
     private final VrShellDelegate mDelegate;
@@ -282,9 +282,9 @@ public class VrShell extends GvrLayout implements SurfaceHolder.Callback {
      * is run and the parent consumed the event.
      * @param callback The Callback to be run.
      */
-    @VisibleForTesting
     public void setOnDispatchTouchEventForTesting(OnDispatchTouchEventCallback callback) {
         mOnDispatchTouchEventForTesting = callback;
+        ResettersForTesting.register(() -> mOnDispatchTouchEventForTesting = null);
     }
 
     /**
@@ -292,12 +292,11 @@ public class VrShell extends GvrLayout implements SurfaceHolder.Callback {
      * Android Window's VSyncs.
      * @param callback The Runnable to be run.
      */
-    @VisibleForTesting
     public void setOnVSyncPausedForTesting(Runnable callback) {
         mOnVSyncPausedForTesting = callback;
+        ResettersForTesting.register(() -> mOnVSyncPausedForTesting = null);
     }
 
-    @VisibleForTesting
     public View getPresentationViewForTesting() {
         return mPresentationView;
     }

@@ -13,7 +13,6 @@
 #include "components/favicon/content/large_favicon_provider_getter.h"
 #include "components/favicon/core/core_favicon_service.h"
 #include "components/favicon/core/large_favicon_provider.h"
-#include "components/favicon/core/large_icon_worker.h"
 #include "components/favicon_base/fallback_icon_style.h"
 #include "components/favicon_base/favicon_types.h"
 #include "content/public/browser/android/browser_context_handle.h"
@@ -93,9 +92,9 @@ jboolean LargeIconBridge::GetLargeIconForURL(
 
   // Use desired_size = 0 for getting the icon from the cache (so that
   // the icon is not poorly rescaled by LargeIconService).
-  LargeIconWorker::GetLargeIconRawBitmap(
-      favicon_provider, *url, min_source_size_px, desired_source_size_px,
-      std::move(callback_runner), {}, &cancelable_task_tracker_);
+  favicon_provider->GetLargeIconRawBitmapOrFallbackStyleForPageUrl(
+      *url, min_source_size_px, desired_source_size_px,
+      std::move(callback_runner), &cancelable_task_tracker_);
 
   return true;
 }

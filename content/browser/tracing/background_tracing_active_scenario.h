@@ -20,6 +20,7 @@ namespace content {
 
 class BackgroundTracingConfigImpl;
 class BackgroundTracingRule;
+class TracingDelegate;
 
 class BackgroundTracingActiveScenario {
  public:
@@ -28,7 +29,7 @@ class BackgroundTracingActiveScenario {
 
   BackgroundTracingActiveScenario(
       std::unique_ptr<BackgroundTracingConfigImpl> config,
-      BackgroundTracingManager::ReceiveCallback receive_callback,
+      TracingDelegate* delegate,
       base::OnceClosure on_aborted_callback);
 
   BackgroundTracingActiveScenario(const BackgroundTracingActiveScenario&) =
@@ -51,21 +52,16 @@ class BackgroundTracingActiveScenario {
 
   // Called by TracingSession when the final trace data is ready for proto
   // traces.
-  void OnProtoDataComplete(std::unique_ptr<std::string>);
-  // Called by TracingSession when the final trace data is ready for any trace
-  // when using BackgroundTracingSetupMode::kFromConfigFile.
-  void OnDataForLocalOutputComplete(std::unique_ptr<std::string>);
+  void OnProtoDataComplete(std::string);
 
   // Called when the finalized trace data has been uploaded/transferred away
   // from the background tracing system.
-  void OnFinalizeComplete(bool success);
+  void OnFinalizeComplete();
 
   // For testing
   CONTENT_EXPORT void FireTimerForTesting();
   CONTENT_EXPORT void SetRuleTriggeredCallbackForTesting(
       const base::RepeatingClosure& callback);
-
-  size_t GetTraceUploadLimitKb() const;
 
  private:
   bool StartTracing();
@@ -79,7 +75,7 @@ class BackgroundTracingActiveScenario {
   raw_ptr<const BackgroundTracingRule> last_triggered_rule_ = nullptr;
   State scenario_state_ = State::kIdle;
   base::RepeatingClosure rule_triggered_callback_for_testing_;
-  BackgroundTracingManager::ReceiveCallback receive_callback_;
+  raw_ptr<TracingDelegate> delegate_;
   base::OnceClosure on_aborted_callback_;
 
   class TracingTimer;

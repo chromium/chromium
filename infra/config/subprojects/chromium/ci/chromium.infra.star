@@ -3,6 +3,7 @@
 # found in the LICENSE file.
 """Definitions of builders in the chromium.infra builder group."""
 
+load("//lib/branches.star", "branches")
 load("//lib/builders.star", "os", "sheriff_rotations")
 load("//lib/ci.star", "ci")
 load("//lib/consoles.star", "consoles")
@@ -14,15 +15,31 @@ ci.defaults.set(
     os = os.LINUX_DEFAULT,
     execution_timeout = ci.DEFAULT_EXECUTION_TIMEOUT,
     service_account = ci.DEFAULT_SERVICE_ACCOUNT,
+    shadow_service_account = ci.DEFAULT_SHADOW_SERVICE_ACCOUNT,
 )
 
 consoles.console_view(
     name = "chromium.infra",
 )
 
+# Builders monitored by go/clank-autoroll
+consoles.list_view(
+    name = "android.autoroll",
+    title = "Android Autoroll Gardening",
+)
+[branches.list_view_entry(
+    list_view = "android.autoroll",
+    builder = "chromium:ci/{}".format(name),
+) for name in (
+    "android-androidx-packager",
+    "android-sdk-packager",
+    "3pp-linux-amd64-packager",
+)]
+
 def packager_builder(**kwargs):
     return ci.builder(
         service_account = "chromium-cipd-builder@chops-service-accounts.iam.gserviceaccount.com",
+        shadow_service_account = "chromium-cipd-try-builder@chops-service-accounts.iam.gserviceaccount.com",
         **kwargs
     )
 
@@ -111,6 +128,7 @@ packager_builder(
                 "tools/android/avd/proto/creation/generic_playstore_android24.textpb",
                 "tools/android/avd/proto/creation/generic_android25.textpb",
                 "tools/android/avd/proto/creation/generic_playstore_android25.textpb",
+                "tools/android/avd/proto/creation/generic_android26.textpb",
                 "tools/android/avd/proto/creation/generic_android27.textpb",
                 "tools/android/avd/proto/creation/generic_playstore_android27.textpb",
                 "tools/android/avd/proto/creation/generic_android28.textpb",
@@ -124,7 +142,8 @@ packager_builder(
                 "tools/android/avd/proto/creation/generic_playstore_android32_foldable.textpb",
                 "tools/android/avd/proto/creation/generic_android33.textpb",
                 "tools/android/avd/proto/creation/generic_playstore_android33.textpb",
-                "tools/android/avd/proto/creation/generic_androidu.textpb",
+                "tools/android/avd/proto/creation/generic_android34.textpb",
+                "tools/android/avd/proto/creation/generic_playstore_android34.textpb",
             ],
             "gclient_config": "chromium",
             "gclient_apply_config": ["android"],
@@ -154,6 +173,10 @@ packager_builder(
                 "cipd_yaml": "third_party/android_sdk/cipd/build-tools/33.0.0.yaml",
             },
             {
+                "sdk_package_name": "build-tools;34.0.0",
+                "cipd_yaml": "third_party/android_sdk/cipd/build-tools/34.0.0.yaml",
+            },
+            {
                 "sdk_package_name": "cmdline-tools;latest",
                 "cipd_yaml": "third_party/android_sdk/cipd/cmdline-tools.yaml",
             },
@@ -168,6 +191,10 @@ packager_builder(
             {
                 "sdk_package_name": "platforms;android-33",
                 "cipd_yaml": "third_party/android_sdk/cipd/platforms/android-33.yaml",
+            },
+            {
+                "sdk_package_name": "platforms;android-34",
+                "cipd_yaml": "third_party/android_sdk/cipd/platforms/android-34.yaml",
             },
             {
                 "sdk_package_name": "platforms;android-TiramisuPrivacySandbox",
@@ -208,6 +235,10 @@ packager_builder(
             {
                 "sdk_package_name": "system-images;android-25;google_apis_playstore;x86",
                 "cipd_yaml": "third_party/android_sdk/cipd/system_images/android-25/google_apis_playstore/x86.yaml",
+            },
+            {
+                "sdk_package_name": "system-images;android-26;google_apis;x86",
+                "cipd_yaml": "third_party/android_sdk/cipd/system_images/android-26/google_apis/x86.yaml",
             },
             {
                 "sdk_package_name": "system-images;android-27;google_apis;x86",
@@ -274,10 +305,13 @@ packager_builder(
                 "sdk_package_name": "system-images;android-TiramisuPrivacySandbox;google_apis_playstore;x86_64",
                 "cipd_yaml": "third_party/android_sdk/cipd/system_images/android-TiramisuPrivacySandbox/google_apis_playstore/x86_64.yaml",
             },
-            # TODO(crbug/1442598): Replace Android-U system images with the finalized API level once available
             {
-                "sdk_package_name": "system-images;android-UpsideDownCake;google_apis;x86_64",
-                "cipd_yaml": "third_party/android_sdk/cipd/system_images/android-UpsideDownCake/google_apis/x86_64.yaml",
+                "sdk_package_name": "system-images;android-34;google_apis;x86_64",
+                "cipd_yaml": "third_party/android_sdk/cipd/system_images/android-34/google_apis/x86_64.yaml",
+            },
+            {
+                "sdk_package_name": "system-images;android-34;google_apis_playstore;x86_64",
+                "cipd_yaml": "third_party/android_sdk/cipd/system_images/android-34/google_apis_playstore/x86_64.yaml",
             },
         ],
     },
@@ -324,6 +358,12 @@ ci.builder(
                 "device_os": "N2G48C",
                 "max_uid_threshold": 18000,
             },
+            {
+                "pool": "chromium.tests",
+                "device_type": "walleye",
+                "device_os": "OPM4.171019.021.P2",
+                "max_uid_threshold": 18000,
+            },
             # Used by ci/android-pie-arm64-rel
             # This is mirrored by the CQ builder android-arm64-rel
             {
@@ -338,6 +378,12 @@ ci.builder(
                 "pool": "chromium.tests",
                 "device_type": "sailfish",
                 "device_os": "PQ3A.190801.002",
+                "max_uid_threshold": 18000,
+            },
+            {
+                "pool": "chromium.tests",
+                "device_type": "walleye",
+                "device_os": "QQ1A.191205.008",
                 "max_uid_threshold": 18000,
             },
             # Used by GPU team

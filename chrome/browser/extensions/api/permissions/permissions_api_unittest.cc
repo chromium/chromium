@@ -28,6 +28,7 @@
 #include "extensions/test/test_extension_dir.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace extensions {
 
@@ -153,7 +154,8 @@ class PermissionsAPIUnitTest : public ExtensionServiceTestWithInstall {
   // ExtensionServiceTestBase:
   void SetUp() override {
     ExtensionServiceTestWithInstall::SetUp();
-    PermissionsRequestFunction::SetAutoConfirmForTests(true);
+    dialog_action_ = PermissionsRequestFunction::SetDialogActionForTests(
+        PermissionsRequestFunction::DialogAction::kAutoConfirm);
     InitializeEmptyExtensionService();
     browser_window_ = std::make_unique<TestBrowserWindow>();
     Browser::CreateParams params(profile(), true);
@@ -163,14 +165,16 @@ class PermissionsAPIUnitTest : public ExtensionServiceTestWithInstall {
   }
   // ExtensionServiceTestBase:
   void TearDown() override {
+    dialog_action_.reset();
     browser_.reset();
     browser_window_.reset();
-    PermissionsRequestFunction::ResetAutoConfirmForTests();
     ExtensionServiceTestWithInstall::TearDown();
   }
 
   std::unique_ptr<TestBrowserWindow> browser_window_;
   std::unique_ptr<Browser> browser_;
+  absl::optional<base::AutoReset<PermissionsRequestFunction::DialogAction>>
+      dialog_action_;
 };
 
 TEST_F(PermissionsAPIUnitTest, Contains) {
@@ -488,7 +492,9 @@ TEST_F(PermissionsAPIUnitTest, ReRequestingWithheldOptionalPermissions) {
   EXPECT_TRUE(
       permissions_data->active_permissions().effective_hosts().is_empty());
 
-  PermissionsRequestFunction::SetAutoConfirmForTests(false);
+  auto dialog_action_reset =
+      PermissionsRequestFunction::SetDialogActionForTests(
+          PermissionsRequestFunction::DialogAction::kAutoReject);
   {
     std::unique_ptr<const PermissionSet> prompted_permissions;
     EXPECT_FALSE(RunRequestFunction(
@@ -615,7 +621,9 @@ TEST_F(PermissionsAPIUnitTest, RequestingAlreadyGrantedWithheldPermissions) {
   // Request the already-granted host permission. The function should succeed
   // (without even prompting the user), and the permission should (still) be
   // granted.
-  PermissionsRequestFunction::SetAutoConfirmForTests(false);
+  auto dialog_action_reset =
+      PermissionsRequestFunction::SetDialogActionForTests(
+          PermissionsRequestFunction::DialogAction::kAutoReject);
 
   std::unique_ptr<const PermissionSet> prompted_permissions;
   EXPECT_TRUE(RunRequestFunction(*extension, profile(),

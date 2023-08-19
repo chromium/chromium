@@ -77,6 +77,8 @@ GCMProfileService::IdentityObserver::IdentityObserver(
     : driver_(driver), identity_manager_(identity_manager) {
   identity_manager_->AddObserver(this);
 
+  // TODO(crbug.com/1466865): Delete account-tracking code, latest when
+  // ConsentLevel::kSync is cleaned up from the codebase.
   OnSyncPrimaryAccountSet(
       identity_manager_->GetPrimaryAccountInfo(signin::ConsentLevel::kSync));
   StartAccountTracker(std::move(url_loader_factory));
@@ -90,6 +92,8 @@ GCMProfileService::IdentityObserver::~IdentityObserver() {
 
 void GCMProfileService::IdentityObserver::OnPrimaryAccountChanged(
     const signin::PrimaryAccountChangeEvent& event) {
+  // TODO(crbug.com/1466865): Delete account-tracking code, latest when
+  // ConsentLevel::kSync is cleaned up from the codebase.
   switch (event.GetEventTypeFor(signin::ConsentLevel::kSync)) {
     case signin::PrimaryAccountChangeEvent::Type::kSet:
       OnSyncPrimaryAccountSet(event.GetCurrentState().primary_account);
@@ -158,29 +162,19 @@ GCMProfileService::GCMProfileService(
     scoped_refptr<base::SequencedTaskRunner>& blocking_task_runner)
     : identity_manager_(identity_manager),
       url_loader_factory_(std::move(url_loader_factory)) {
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-  signin::IdentityManager::AccountIdMigrationState id_migration =
-      identity_manager_->GetAccountIdMigrationState();
-  bool remove_account_mappings_with_email_key =
-      (id_migration == signin::IdentityManager::MIGRATION_IN_PROGRESS) ||
-      (id_migration == signin::IdentityManager::MIGRATION_DONE);
-#else
-  // Migration is done on non-ChromeOS platforms.
-  bool remove_account_mappings_with_email_key = false;
-#endif
-
   driver_ = CreateGCMDriverDesktop(
       std::move(gcm_client_factory), prefs,
       path.Append(gcm_driver::kGCMStoreDirname),
-      remove_account_mappings_with_email_key,
       base::BindRepeating(get_socket_factory_callback,
                           weak_ptr_factory_.GetWeakPtr()),
       url_loader_factory_, network_connection_tracker, channel,
       product_category_for_subtypes, ui_task_runner, io_task_runner,
       blocking_task_runner);
 
-  identity_observer_ = std::make_unique<IdentityObserver>(
-      identity_manager_, url_loader_factory_, driver_.get());
+  if (identity_manager_) {
+    identity_observer_ = std::make_unique<IdentityObserver>(
+        identity_manager_, url_loader_factory_, driver_.get());
+  }
 }
 #endif  // BUILDFLAG(USE_GCM_FROM_PLATFORM)
 

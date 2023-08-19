@@ -31,6 +31,8 @@ import org.chromium.base.supplier.Supplier;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.JniMocker;
 import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
+import org.chromium.chrome.browser.flags.CachedFeatureFlags;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.homepage.HomepageManager;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.profiles.ProfileJni;
@@ -43,6 +45,8 @@ import org.chromium.components.feature_engagement.EventConstants;
 import org.chromium.components.feature_engagement.Tracker;
 import org.chromium.content_public.browser.LoadUrlParams;
 import org.chromium.ui.base.PageTransition;
+
+import java.util.HashMap;
 
 /** Unit tests for ToolbarTabControllerImpl. */
 @RunWith(BaseRobolectricTestRunner.class)
@@ -67,6 +71,8 @@ public class ToolbarTabControllerImplTest {
     @Mock
     private Tab mTab;
     @Mock
+    private Tab mTab2;
+    @Mock
     private Supplier<Boolean> mOverrideHomePageSupplier;
     @Mock
     private ObservableSupplier<BottomControlsCoordinator> mBottomControlsCoordinatorSupplier;
@@ -84,6 +90,8 @@ public class ToolbarTabControllerImplTest {
     public Profile.Natives mMockProfileNatives;
     @Mock
     private NativePage mNativePage;
+    @Mock
+    private Supplier<Tab> mActivityTabProvider;
 
     @Rule
     public TestRule mProcessor = new Features.JUnitProcessor();
@@ -94,6 +102,7 @@ public class ToolbarTabControllerImplTest {
     public void setUp() {
         MockitoAnnotations.initMocks(this);
         doReturn(mTab).when(mTabSupplier).get();
+        doReturn(mTab).when(mActivityTabProvider).get();
         doReturn(false).when(mOverrideHomePageSupplier).get();
         mocker.mock(ProfileJni.TEST_HOOKS, mMockProfileNatives);
         doReturn(mProfile).when(mMockProfileNatives).fromWebContents(any());
@@ -191,9 +200,47 @@ public class ToolbarTabControllerImplTest {
                 new LoadUrlParams(homePageUrl, PageTransition.HOME_PAGE))));
     }
 
+    @Test
+    public void testUsingCorrectTabSupplier() {
+        // Should only use regular tab supplier when back press refactor is disabled and
+        // control with activity tab provider is also disabled.
+        var featureList = new HashMap<String, Boolean>();
+        featureList.put(ChromeFeatureList.BACK_GESTURE_REFACTOR, false);
+        featureList.put(ChromeFeatureList.BACK_GESTURE_ACTIVITY_TAB_PROVIDER, false);
+        CachedFeatureFlags.setFeaturesForTesting(featureList);
+
+        doReturn(mTab2).when(mActivityTabProvider).get();
+        doReturn(false).when(mTab2).canGoBack();
+        doReturn(true).when(mTab).canGoBack();
+
+        Assert.assertTrue(mToolbarTabController.back());
+        Assert.assertTrue(mToolbarTabController.canGoBack());
+
+        featureList.put(ChromeFeatureList.BACK_GESTURE_REFACTOR, true);
+        featureList.put(ChromeFeatureList.BACK_GESTURE_ACTIVITY_TAB_PROVIDER, false);
+        CachedFeatureFlags.setFeaturesForTesting(featureList);
+
+        Assert.assertFalse(mToolbarTabController.back());
+        Assert.assertFalse(mToolbarTabController.canGoBack());
+
+        featureList.put(ChromeFeatureList.BACK_GESTURE_REFACTOR, false);
+        featureList.put(ChromeFeatureList.BACK_GESTURE_ACTIVITY_TAB_PROVIDER, true);
+        CachedFeatureFlags.setFeaturesForTesting(featureList);
+
+        Assert.assertFalse(mToolbarTabController.back());
+        Assert.assertFalse(mToolbarTabController.canGoBack());
+
+        featureList.put(ChromeFeatureList.BACK_GESTURE_REFACTOR, true);
+        featureList.put(ChromeFeatureList.BACK_GESTURE_ACTIVITY_TAB_PROVIDER, true);
+        CachedFeatureFlags.setFeaturesForTesting(featureList);
+
+        Assert.assertFalse(mToolbarTabController.back());
+        Assert.assertFalse(mToolbarTabController.canGoBack());
+    }
+
     private void initToolbarTabController() {
         mToolbarTabController = new ToolbarTabControllerImpl(mTabSupplier,
                 mOverrideHomePageSupplier, mTrackerSupplier, mBottomControlsCoordinatorSupplier,
-                ToolbarManager::homepageUrl, mRunnable, mTabSupplier);
+                ToolbarManager::homepageUrl, mRunnable, mActivityTabProvider);
     }
 }

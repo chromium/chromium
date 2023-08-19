@@ -17,10 +17,10 @@
 namespace updater {
 namespace {
 
-constexpr char kEnrollmentTokenFilepath[] =
+constexpr char kEnrollmentTokenFilePath[] =
     "/opt/" COMPANY_SHORTNAME_STRING "/" PRODUCT_FULLNAME_STRING
     "/CloudManagementEnrollmentToken";
-constexpr char kDmTokenFilepath[] =
+constexpr char kDmTokenFilePath[] =
     "/opt/" COMPANY_SHORTNAME_STRING "/" PRODUCT_FULLNAME_STRING
     "/CloudManagement";
 
@@ -34,9 +34,9 @@ std::string GetMachineId() {
 
 // Reads a token from the given file. Returns the empty string if the file could
 // not be read.
-std::string LoadTokenFromFile(const std::string& token_file_path) {
+std::string LoadTokenFromFile(const base::FilePath& token_file_path) {
   std::string token_value;
-  if (!base::ReadFileToString(base::FilePath(token_file_path), &token_value)) {
+  if (!base::ReadFileToString(token_file_path, &token_value)) {
     return std::string();
   }
 
@@ -46,7 +46,15 @@ std::string LoadTokenFromFile(const std::string& token_file_path) {
 
 class TokenService : public TokenServiceInterface {
  public:
-  TokenService() = default;
+  TokenService(const base::FilePath& enrollment_token_path,
+               const base::FilePath& dm_token_path)
+      : enrollment_token_path_(enrollment_token_path.empty()
+                                   ? base::FilePath(kEnrollmentTokenFilePath)
+                                   : enrollment_token_path),
+        dm_token_path_(dm_token_path.empty() ? base::FilePath(kDmTokenFilePath)
+                                             : dm_token_path),
+        enrollment_token_(LoadTokenFromFile(enrollment_token_path_)),
+        dm_token_(LoadTokenFromFile(dm_token_path_)) {}
   ~TokenService() override = default;
 
   // Overrides for TokenServiceInterface.
@@ -55,8 +63,8 @@ class TokenService : public TokenServiceInterface {
   bool IsEnrollmentMandatory() const override { return false; }
 
   bool StoreEnrollmentToken(const std::string& enrollment_token) override {
-    if (!base::ImportantFileWriter::WriteFileAtomically(
-            base::FilePath(kEnrollmentTokenFilepath), enrollment_token)) {
+    if (!WriteContentToGlobalReadableFile(enrollment_token_path_,
+                                          enrollment_token)) {
       return false;
     }
 
@@ -64,11 +72,18 @@ class TokenService : public TokenServiceInterface {
     return true;
   }
 
+  bool DeleteEnrollmentToken() override {
+    if (!base::DeleteFile(enrollment_token_path_)) {
+      return false;
+    }
+    enrollment_token_.clear();
+    return true;
+  }
+
   std::string GetEnrollmentToken() const override { return enrollment_token_; }
 
   bool StoreDmToken(const std::string& dm_token) override {
-    if (!base::ImportantFileWriter::WriteFileAtomically(
-            base::FilePath(kDmTokenFilepath), dm_token)) {
+    if (!WriteContentToGlobalReadableFile(dm_token_path_, dm_token)) {
       return false;
     }
     dm_token_ = dm_token;
@@ -76,7 +91,7 @@ class TokenService : public TokenServiceInterface {
   }
 
   bool DeleteDmToken() override {
-    if (!base::DeleteFile(base::FilePath(kDmTokenFilepath))) {
+    if (!base::DeleteFile(dm_token_path_)) {
       return false;
     }
     dm_token_.clear();
@@ -88,12 +103,18 @@ class TokenService : public TokenServiceInterface {
  private:
   // Cached values in memory.
   const std::string device_id_ = GetMachineId();
-  std::string enrollment_token_ = LoadTokenFromFile(kEnrollmentTokenFilepath);
-  std::string dm_token_ = LoadTokenFromFile(kDmTokenFilepath);
+  const base::FilePath enrollment_token_path_;
+  const base::FilePath dm_token_path_;
+  std::string enrollment_token_;
+  std::string dm_token_;
 };
 
-DMStorage::DMStorage(const base::FilePath& policy_cache_root)
-    : DMStorage(policy_cache_root, std::make_unique<TokenService>()) {}
+DMStorage::DMStorage(const base::FilePath& policy_cache_root,
+                     const base::FilePath& enrollment_token_path,
+                     const base::FilePath& dm_token_path)
+    : DMStorage(policy_cache_root,
+                std::make_unique<TokenService>(enrollment_token_path,
+                                               dm_token_path)) {}
 
 scoped_refptr<DMStorage> GetDefaultDMStorage() {
   return base::MakeRefCounted<DMStorage>(

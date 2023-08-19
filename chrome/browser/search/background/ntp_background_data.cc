@@ -11,8 +11,15 @@ namespace {
 constexpr char kThumbnailImageOptions[] = "=w156-h117-p-k-no-nd-mv";
 }  // namespace
 
-std::string GetThumbnailImageOptionsForTesting() {
+std::string GetThumbnailImageOptions() {
   return kThumbnailImageOptions;
+}
+
+GURL AddOptionsToImageURL(const std::string& image_url,
+                          const std::string& image_options) {
+  return GURL(image_url + ((image_url.find('=') == std::string::npos)
+                               ? image_options
+                               : std::string("")));
 }
 
 CollectionInfo::CollectionInfo() = default;
@@ -34,17 +41,13 @@ bool operator!=(const CollectionInfo& lhs, const CollectionInfo& rhs) {
 }
 
 CollectionInfo CollectionInfo::CreateFromProto(
-    const ntp::background::Collection& collection) {
+    const ntp::background::Collection& collection,
+    absl::optional<GURL> preview_image_url) {
   CollectionInfo collection_info;
   collection_info.collection_id = collection.collection_id();
   collection_info.collection_name = collection.collection_name();
-  // Use the first preview image as the representative one for the collection.
-  if (collection.preview_size() > 0 && collection.preview(0).has_image_url()) {
-    collection_info.preview_image_url =
-        GURL(collection.preview(0).image_url() +
-             ((collection.preview(0).image_url().find('=') == std::string::npos)
-                  ? kThumbnailImageOptions
-                  : std::string("")));
+  if (preview_image_url.has_value()) {
+    collection_info.preview_image_url = preview_image_url.value();
   }
 
   return collection_info;
@@ -73,21 +76,13 @@ bool operator!=(const CollectionImage& lhs, const CollectionImage& rhs) {
 CollectionImage CollectionImage::CreateFromProto(
     const std::string& collection_id,
     const ntp::background::Image& image,
-    const std::string& default_image_options) {
+    const GURL& default_image_url,
+    const GURL& thumbnail_image_url) {
   CollectionImage collection_image;
   collection_image.collection_id = collection_id;
   collection_image.asset_id = image.asset_id();
-  // Without options added to the image, it is 512x512.
-  collection_image.thumbnail_image_url = GURL(
-      image.image_url() + ((image.image_url().find('=') == std::string::npos)
-                               ? kThumbnailImageOptions
-                               : std::string("")));
-  // TODO(crbug.com/874339): Request resolution from service, instead of
-  // setting it here.
-  collection_image.image_url = GURL(
-      image.image_url() + ((image.image_url().find('=') == std::string::npos)
-                               ? default_image_options
-                               : std::string("")));
+  collection_image.thumbnail_image_url = thumbnail_image_url;
+  collection_image.image_url = default_image_url;
   for (const auto& attribution : image.attribution()) {
     collection_image.attribution.push_back(attribution.text());
   }

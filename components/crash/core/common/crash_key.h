@@ -10,6 +10,7 @@
 #include <string>
 
 #include "base/memory/raw_ptr.h"
+#include "base/memory/raw_ptr_exclusion.h"
 #include "base/strings/string_piece.h"
 #include "build/build_config.h"
 #include "components/crash/core/common/crash_buildflags.h"
@@ -108,7 +109,9 @@ class CRASH_KEY_EXPORT CrashKeyStringImpl {
   // If the crash key is set, this is the index into the storage that can be
   // used to set/clear the key without requiring a linear scan of the storage
   // table. This will be |num_entries| if unset.
-  size_t* index_array_;
+  // This field is not a raw_ptr<> because it was filtered by the rewriter
+  // for: #constexpr-ctor-field-initializer
+  RAW_PTR_EXCLUSION size_t* index_array_;
   size_t index_array_count_;
 };
 
@@ -192,8 +195,12 @@ class CrashKeyStringCombinedImpl {
   bool is_set() const { return breakpad_key_->is_set(); }
 
  private:
-  CrashKeyStringImpl* breakpad_key_;
-  crashpad::Annotation* crashpad_key_;
+  // This field is not a raw_ptr<> because it was filtered by the rewriter
+  // for: #constexpr-ctor-field-initializer
+  RAW_PTR_EXCLUSION CrashKeyStringImpl* breakpad_key_;
+  // This field is not a raw_ptr<> because it was filtered by the rewriter
+  // for: #constexpr-ctor-field-initializer
+  RAW_PTR_EXCLUSION crashpad::Annotation* crashpad_key_;
 };
 
 }  // namespace internal

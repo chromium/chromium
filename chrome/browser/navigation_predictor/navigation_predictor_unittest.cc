@@ -588,6 +588,20 @@ class NavigationPredictorUserInteractionsTest : public NavigationPredictorTest {
     predictor_service->ReportAnchorElementPointerOut(std::move(metrics));
     base::RunLoop().RunUntilIdle();
   }
+  void ReportAnchorElementPointerDataOnHoverTimerFired(
+      blink::mojom::AnchorElementMetricsHost* predictor_service,
+      MockNavigationPredictorForTesting::AnchorId anchor_id,
+      double mouse_velocity,
+      double mouse_acceleration) {
+    blink::mojom::AnchorElementPointerDataOnHoverTimerFiredPtr metrics =
+        blink::mojom::AnchorElementPointerDataOnHoverTimerFired::New(
+            static_cast<uint32_t>(anchor_id),
+            blink::mojom::AnchorElementPointerData::New(
+                /*is_mouse_pointer=*/true, mouse_velocity, mouse_acceleration));
+    predictor_service->ReportAnchorElementPointerDataOnHoverTimerFired(
+        std::move(metrics));
+    base::RunLoop().RunUntilIdle();
+  }
 
   void ReportAnchorElementClick(
       blink::mojom::AnchorElementMetricsHost* predictor_service,
@@ -800,16 +814,28 @@ TEST_F(NavigationPredictorUserInteractionsTest, RecordUserInteractionMetrics) {
   // Mouse hover over anchor element 0 and moves away.
   const int navigation_start_to_pointer_over_0 = 140;
   const int hover_dwell_time_0 = 60;
+  const double mouse_velocity = 50.0;
+  const double mouse_acceleration = 10.0;
   ReportAnchorElementPointerOver(
       predictor_service.get(), anchor_id_0,
       base::Milliseconds(navigation_start_to_pointer_over_0));
   ReportAnchorElementPointerOut(predictor_service.get(), anchor_id_0,
                                 base::Milliseconds(hover_dwell_time_0));
+  ReportAnchorElementPointerDataOnHoverTimerFired(
+      predictor_service.get(), anchor_id_0, mouse_velocity, mouse_acceleration);
 
   // Anchor element 0 leaves the viewport.
   const int time_in_viewport_0 = 250;
   ReportAnchorElementLeftViewport(predictor_service.get(), anchor_id_0,
                                   base::Milliseconds(time_in_viewport_0));
+
+  // Anchor element 0 enters and leaves the viewport again.
+  ReportAnchorElementEnteredViewport(
+      predictor_service.get(), anchor_id_0,
+      base::Milliseconds(navigation_start_to_entered_viewport +
+                         time_in_viewport_0 + 1));
+  ReportAnchorElementLeftViewport(predictor_service.get(), anchor_id_0,
+                                  base::Milliseconds(1));
 
   // Mouse hover over anchor element 1 and stays there.
   const int navigation_start_to_pointer_over_1 = 280;
@@ -839,6 +865,7 @@ TEST_F(NavigationPredictorUserInteractionsTest, RecordUserInteractionMetrics) {
       // Anchor element 0.
       case 0:
         EXPECT_EQ(0, get_metric(i, UkmEntry::kIsInViewportName));
+        EXPECT_EQ(2, get_metric(i, UkmEntry::kEnteredViewportCountName));
         EXPECT_EQ(0, get_metric(i, UkmEntry::kIsPointerHoveringOverName));
         EXPECT_EQ(
             ukm::GetExponentialBucketMin(time_in_viewport_0, 1.3),
@@ -847,12 +874,17 @@ TEST_F(NavigationPredictorUserInteractionsTest, RecordUserInteractionMetrics) {
                   get_metric(i, UkmEntry::kMaxHoverDwellTimeMsName));
         EXPECT_EQ(ukm::GetExponentialBucketMin(1, 1.3),
                   get_metric(i, UkmEntry::kPointerHoveringOverCountName));
+        EXPECT_EQ(ukm::GetExponentialBucketMin(mouse_velocity, 1.3),
+                  get_metric(i, UkmEntry::kMouseVelocityName));
+        EXPECT_EQ(ukm::GetExponentialBucketMin(mouse_acceleration, 1.3),
+                  get_metric(i, UkmEntry::kMouseAccelerationName));
         break;
 
       // Anchor element 1.
       case 1:
         EXPECT_EQ(1, get_metric(i, UkmEntry::kAnchorIndexName));
         EXPECT_EQ(1, get_metric(i, UkmEntry::kIsInViewportName));
+        EXPECT_EQ(1, get_metric(i, UkmEntry::kEnteredViewportCountName));
         EXPECT_EQ(1, get_metric(i, UkmEntry::kIsPointerHoveringOverName));
         EXPECT_EQ(
             ukm::GetExponentialBucketMin(
@@ -1025,6 +1057,7 @@ TEST_F(NavigationPredictorUserInteractionsTest,
     EXPECT_EQ(static_cast<uint32_t>(anchor_id_0),
               get_metric(UkmEntry::kAnchorIndexName));
     EXPECT_EQ(1, get_metric(UkmEntry::kIsInViewportName));
+    EXPECT_EQ(1, get_metric(UkmEntry::kEnteredViewportCountName));
     EXPECT_EQ(0, get_metric(UkmEntry::kIsPointerHoveringOverName));
     EXPECT_EQ(ukm::GetExponentialBucketMin(hover_dwell_time_0, 1.3),
               get_metric(UkmEntry::kMaxHoverDwellTimeMsName));

@@ -11,12 +11,15 @@
 #ifndef GPU_COMMAND_BUFFER_CLIENT_WEBGPU_CMD_HELPER_AUTOGEN_H_
 #define GPU_COMMAND_BUFFER_CLIENT_WEBGPU_CMD_HELPER_AUTOGEN_H_
 
-void DawnCommands(uint32_t commands_shm_id,
+void DawnCommands(uint32_t trace_id_high,
+                  uint32_t trace_id_low,
+                  uint32_t commands_shm_id,
                   uint32_t commands_shm_offset,
                   uint32_t size) {
   webgpu::cmds::DawnCommands* c = GetCmdSpace<webgpu::cmds::DawnCommands>();
   if (c) {
-    c->Init(commands_shm_id, commands_shm_offset, size);
+    c->Init(trace_id_high, trace_id_low, commands_shm_id, commands_shm_offset,
+            size);
   }
 }
 

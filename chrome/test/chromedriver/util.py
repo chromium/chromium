@@ -54,7 +54,7 @@ def Is64Bit():
   # see what CPU we're targetting.
   try:
     args_gn = os.path.join(chrome_paths.GetBuildDir(['args.gn']), 'args.gn')
-    with open(args_gn) as build_args:
+    with open(args_gn, encoding='utf-8') as build_args:
       for build_arg in build_args:
         decommented = build_arg.split('#')[0]
         key_and_value = decommented.split('=')
@@ -182,7 +182,7 @@ def RunCommand(cmd, cwd=None, fileName=None):
   """
   sys.stdout.flush()
   if fileName is not None:
-    with open(fileName,"wb") as out:
+    with open(fileName, "wb", encoding='utf-8') as out:
       process = subprocess.Popen(cmd, cwd=cwd,stdout=out,stderr=out)
   else:
     process = subprocess.Popen(cmd, cwd=cwd)
@@ -309,7 +309,7 @@ def WriteResultToJSONFile(test_suites, results, json_path):
   output['num_failures_by_type']['FAIL'] = num_fails
   output['num_failures_by_type']['PASS'] = len(output['tests']) - num_fails
 
-  with open(json_path, 'w') as script_out_file:
+  with open(json_path, 'w', encoding='utf-8') as script_out_file:
     json.dump(output, script_out_file)
     script_out_file.write('\n')
 
@@ -350,7 +350,7 @@ def TryUploadingResultToResultSink(results):
     return test_results
 
   try:
-    with open(os.environ['LUCI_CONTEXT']) as f:
+    with open(os.environ['LUCI_CONTEXT'], encoding='utf-8') as f:
       sink = json.load(f)['result_sink']
   except KeyError:
     return

@@ -18,10 +18,6 @@
 #import "ios/chrome/browser/ui/settings/password/password_checkup/password_checkup_view_controller.h"
 #import "ios/chrome/browser/ui/settings/password/password_issues/password_issues_coordinator.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 using password_manager::PasswordCheckReferrer;
 
 @interface PasswordCheckupCoordinator () <PasswordCheckupCommands,
@@ -95,11 +91,12 @@ using password_manager::PasswordCheckReferrer;
   [self.delegate passwordCheckupCoordinatorDidRemove:self];
 }
 
+// TODO(crbug.com/1464966): Make sure there aren't mutiple active
+// `_passwordIssuesCoordinator`s at once.
 - (void)showPasswordIssuesWithWarningType:
     (password_manager::WarningType)warningType {
   password_manager::LogOpenPasswordIssuesList(warningType);
 
-  CHECK(!_passwordIssuesCoordinator);
   _passwordIssuesCoordinator = [[PasswordIssuesCoordinator alloc]
             initForWarningType:warningType
       baseNavigationController:self.baseNavigationController

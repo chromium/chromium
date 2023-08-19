@@ -34,10 +34,11 @@ import org.chromium.chrome.browser.omnibox.UrlBarEditingTextStateProvider;
 import org.chromium.chrome.browser.omnibox.styles.OmniboxResourceProvider;
 import org.chromium.chrome.browser.omnibox.suggestions.AutocompleteController.OnSuggestionsReceivedListener;
 import org.chromium.chrome.browser.omnibox.suggestions.action.OmniboxActionFactoryImpl;
-import org.chromium.chrome.browser.omnibox.suggestions.base.HistoryClustersProcessor.OpenHistoryClustersDelegate;
 import org.chromium.chrome.browser.omnibox.suggestions.basic.BasicSuggestionProcessor.BookmarkState;
+import org.chromium.chrome.browser.omnibox.suggestions.history_clusters.HistoryClustersProcessor.OpenHistoryClustersDelegate;
 import org.chromium.chrome.browser.omnibox.voice.VoiceRecognitionHandler;
 import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.search_engines.TemplateUrlServiceFactory;
 import org.chromium.chrome.browser.share.ShareDelegate;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabSelectionType;
@@ -51,6 +52,7 @@ import org.chromium.components.omnibox.AutocompleteResult;
 import org.chromium.components.omnibox.OmniboxSuggestionType;
 import org.chromium.components.omnibox.action.OmniboxAction;
 import org.chromium.components.omnibox.action.OmniboxActionDelegate;
+import org.chromium.components.search_engines.TemplateUrlService;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.ui.base.PageTransition;
 import org.chromium.ui.modaldialog.DialogDismissalCause;
@@ -77,7 +79,6 @@ class AutocompleteMediator implements OnSuggestionsReceivedListener,
     // Delay triggering the omnibox results upon key press to allow the location bar to repaint
     // with the new characters.
     private static final long OMNIBOX_SUGGESTION_START_DELAY_MS = 30;
-    private static final int OMNIBOX_HISTOGRAMS_MAX_SUGGESTIONS = 10;
 
     private final @NonNull Context mContext;
     private final @NonNull AutocompleteControllerProvider mControllerProvider;
@@ -99,6 +100,7 @@ class AutocompleteMediator implements OnSuggestionsReceivedListener,
     private @Nullable Runnable mCurrentAutocompleteRequest;
     private @Nullable Runnable mDeferredLoadAction;
     private @Nullable PropertyModel mDeleteDialogModel;
+    private @Nullable TemplateUrlService mTemplateUrlService;
 
     private boolean mNativeInitialized;
     private AutocompleteController mAutocomplete;
@@ -122,11 +124,9 @@ class AutocompleteMediator implements OnSuggestionsReceivedListener,
         int ACTIVATED_BY_USER_INPUT = 1; // The edit session is triggered by user input.
         int ACTIVATED_BY_QUERY_TILE = 2; // The edit session is triggered from query tile.
     }
-    @EditSessionState
-    private int mEditSessionState = EditSessionState.INACTIVE;
+    private @EditSessionState int mEditSessionState = EditSessionState.INACTIVE;
 
-    @RefineActionUsage
-    private int mRefineActionUsage = RefineActionUsage.NOT_USED;
+    private @RefineActionUsage int mRefineActionUsage = RefineActionUsage.NOT_USED;
 
     // The timestamp (using SystemClock.elapsedRealtime()) at the point when the user started
     // modifying the omnibox with new input.
@@ -339,7 +339,7 @@ class AutocompleteMediator implements OnSuggestionsReceivedListener,
                 postAutocompleteRequest(this::startZeroSuggest, SCHEDULE_FOR_IMMEDIATE_EXECUTION);
             } else {
                 String text = mUrlBarEditingTextProvider.getTextWithoutAutocomplete();
-                onTextChanged(text, text);
+                onTextChanged(text);
             }
         } else {
             stopMeasuringSuggestionRequestToUiModelTime();
@@ -379,6 +379,7 @@ class AutocompleteMediator implements OnSuggestionsReceivedListener,
         }
         mAutocomplete = mControllerProvider.get(profile);
         mAutocomplete.addOnSuggestionsReceivedListener(this);
+        mTemplateUrlService = TemplateUrlServiceFactory.getForProfile(profile);
         mDropdownViewInfoListBuilder.setProfile(profile);
 
         runPendingAutocompleteRequests();
@@ -448,8 +449,7 @@ class AutocompleteMediator implements OnSuggestionsReceivedListener,
         if (isSearchSuggestion) refineText = TextUtils.concat(refineText, " ").toString();
 
         mDelegate.setOmniboxEditingText(refineText);
-        onTextChanged(mUrlBarEditingTextProvider.getTextWithoutAutocomplete(),
-                mUrlBarEditingTextProvider.getTextWithAutocomplete());
+        onTextChanged(mUrlBarEditingTextProvider.getTextWithoutAutocomplete());
 
         if (isSearchSuggestion) {
             // Note: the logic below toggles assumes individual values to be represented by
@@ -537,6 +537,12 @@ class AutocompleteMediator implements OnSuggestionsReceivedListener,
     @Override
     public void finishInteraction() {
         mDelegate.clearOmniboxFocus();
+    }
+
+    @Override
+    public @Nullable String queryFromGurl(GURL url) {
+        if (mTemplateUrlService == null) return null;
+        return mTemplateUrlService.getSearchQueryForUrl(url);
     }
 
     public void showDeleteDialog(@NonNull AutocompleteMatch suggestion, @NonNull String titleText,
@@ -684,7 +690,7 @@ class AutocompleteMediator implements OnSuggestionsReceivedListener,
      * Notifies the autocomplete system that the text has changed that drives autocomplete and the
      * autocomplete suggestions should be updated.
      */
-    public void onTextChanged(String textWithoutAutocomplete, String textWithAutocomplete) {
+    public void onTextChanged(String textWithoutAutocomplete) {
         if (mShouldPreventOmniboxAutocomplete) return;
 
         mIgnoreOmniboxItemSelection = true;
@@ -712,7 +718,7 @@ class AutocompleteMediator implements OnSuggestionsReceivedListener,
                         : -1;
                 int pageClassification = mDataProvider.getPageClassification(
                         mDelegate.didFocusUrlFromFakebox(), /*isPrefetch=*/false);
-                String currentUrl = mDataProvider.getCurrentUrl();
+                GURL currentUrl = mDataProvider.getCurrentGurl();
 
                 postAutocompleteRequest(() -> {
                     startMeasuringSuggestionRequestToUiModelTime();
@@ -832,7 +838,7 @@ class AutocompleteMediator implements OnSuggestionsReceivedListener,
 
             recordMetrics(matchIndex, WindowOpenDisposition.CURRENT_TAB, suggestion);
             if (((transition & PageTransition.CORE_MASK) == PageTransition.TYPED)
-                    && TextUtils.equals(url.getSpec(), mDataProvider.getCurrentUrl())) {
+                    && url.equals(mDataProvider.getCurrentGurl())) {
                 // When the user hit enter on the existing permanent URL, treat it like a
                 // reload for scoring purposes.  We could detect this by just checking
                 // user_input_in_progress_, but it seems better to treat "edits" that end
@@ -894,7 +900,7 @@ class AutocompleteMediator implements OnSuggestionsReceivedListener,
         int pageClassification = mDataProvider.getPageClassification(
                 /*isFocusedFromFakebox=*/false, /*isPrefetch=*/true);
         postAutocompleteRequest(() -> {
-            mAutocomplete.startPrefetch(mDataProvider.getCurrentUrl(), pageClassification);
+            mAutocomplete.startPrefetch(mDataProvider.getCurrentGurl(), pageClassification);
         }, SCHEDULE_FOR_IMMEDIATE_EXECUTION);
     }
 
@@ -920,7 +926,7 @@ class AutocompleteMediator implements OnSuggestionsReceivedListener,
             mShouldCacheSuggestions =
                     pageClassification == PageClassification.ANDROID_SEARCH_WIDGET_VALUE;
             mAutocomplete.startZeroSuggest(mUrlBarEditingTextProvider.getTextWithAutocomplete(),
-                    mDataProvider.getCurrentUrl(), pageClassification, mDataProvider.getTitle());
+                    mDataProvider.getCurrentGurl(), pageClassification, mDataProvider.getTitle());
         }
     }
 
@@ -973,7 +979,7 @@ class AutocompleteMediator implements OnSuggestionsReceivedListener,
         if (!mNativeInitialized || mAutocomplete == null) return;
         stopAutocomplete(false);
         if (mDataProvider.hasTab()) {
-            mAutocomplete.start(mDataProvider.getCurrentUrl(),
+            mAutocomplete.start(mDataProvider.getCurrentGurl(),
                     mDataProvider.getPageClassification(
                             /*isFocusedFromFakebox=*/false, /*isPrefetch=*/false),
                     query, -1, false);
@@ -1018,7 +1024,7 @@ class AutocompleteMediator implements OnSuggestionsReceivedListener,
         // validation.
         if (mAutocompleteResult.isFromCachedResult()) return;
 
-        String currentPageUrl = mDataProvider.getCurrentUrl();
+        GURL currentPageUrl = mDataProvider.getCurrentGurl();
         int pageClassification = mDataProvider.getPageClassification(
                 mDelegate.didFocusUrlFromFakebox(), /*isPrefetch=*/false);
         long elapsedTimeSinceModified = getElapsedTimeSinceInputChange();

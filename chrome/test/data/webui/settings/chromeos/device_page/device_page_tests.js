@@ -4,7 +4,7 @@
 
 import 'chrome://resources/polymer/v3_0/iron-test-helpers/mock-interactions.js';
 
-import {crosAudioConfigMojom, DevicePageBrowserProxyImpl, fakeCrosAudioConfig, FakeInputDeviceSettingsProvider, fakeKeyboards, fakeMice, fakePointingSticks, fakeTouchpads, IdleBehavior, LidClosedBehavior, NoteAppLockScreenSupport, Router, routes, setCrosAudioConfigForTesting, setDisplayApiForTesting, setInputDeviceSettingsProviderForTesting, StorageSpaceState} from 'chrome://os-settings/os_settings.js';
+import {crosAudioConfigMojom, DevicePageBrowserProxyImpl, fakeCrosAudioConfig, fakeGraphicsTablets, FakeInputDeviceSettingsProvider, fakeKeyboards, fakeMice, fakePointingSticks, fakeTouchpads, IdleBehavior, LidClosedBehavior, NoteAppLockScreenSupport, Router, routes, setCrosAudioConfigForTesting, setDisplayApiForTesting, setInputDeviceSettingsProviderForTesting, StorageSpaceState} from 'chrome://os-settings/os_settings.js';
 import {assert} from 'chrome://resources/ash/common/assert.js';
 import {webUIListenerCallback} from 'chrome://resources/ash/common/cr.m.js';
 import {loadTimeData} from 'chrome://resources/ash/common/load_time_data.m.js';
@@ -25,6 +25,7 @@ const TestNames = {
   DevicePage: 'device page',
   Audio: 'audio',
   Display: 'display',
+  GraphicsTablet: 'graphics tablet',
   Keyboard: 'keyboard',
   PerDeviceMouse: 'per-device mouse',
   PerDeviceTouchpad: 'per-device touchpad',
@@ -81,6 +82,20 @@ function getFakePrefs() {
           type: chrome.settingsPrivate.PrefType.NUMBER,
           value: 0,
         },
+      },
+    },
+    gdata: {
+      disabled: {
+        key: 'gdata.disabled',
+        type: chrome.settingsPrivate.PrefType.BOOLEAN,
+        value: false,
+      },
+    },
+    power: {
+      cros_battery_saver_active: {
+        key: 'power.cros_battery_saver_active',
+        type: chrome.settingsPrivate.PrefType.BOOLEAN,
+        value: false,
       },
     },
     settings: {
@@ -405,22 +420,23 @@ suite('SettingsDevicePage', function() {
    * @param {boolean} adaptiveChargingManaged
    */
   function sendPowerManagementSettings(
-      possibleAcIdleBehaviors, possibleBatteryIdleBehaviors, currAcIdleBehavior,
-      currBatteryIdleBehavior, acIdleManaged, batteryIdleManaged,
-      lidClosedBehavior, lidClosedControlled, hasLid, adaptiveCharging,
-      adaptiveChargingManaged) {
+      possibleAcIdleBehaviors, possibleBatteryIdleBehaviors,
+      currentAcIdleBehavior, currentBatteryIdleBehavior, acIdleManaged,
+      batteryIdleManaged, lidClosedBehavior, lidClosedControlled, hasLid,
+      adaptiveCharging, adaptiveChargingManaged, batterySaverFeatureEnabled) {
     webUIListenerCallback('power-management-settings-changed', {
-      possibleAcIdleBehaviors: possibleAcIdleBehaviors,
-      possibleBatteryIdleBehaviors: possibleBatteryIdleBehaviors,
-      currentAcIdleBehavior: currAcIdleBehavior,
-      currentBatteryIdleBehavior: currBatteryIdleBehavior,
-      acIdleManaged: acIdleManaged,
-      batteryIdleManaged: batteryIdleManaged,
-      lidClosedBehavior: lidClosedBehavior,
-      lidClosedControlled: lidClosedControlled,
-      hasLid: hasLid,
-      adaptiveCharging: adaptiveCharging,
-      adaptiveChargingManaged: adaptiveChargingManaged,
+      possibleAcIdleBehaviors,
+      possibleBatteryIdleBehaviors,
+      currentAcIdleBehavior,
+      currentBatteryIdleBehavior,
+      acIdleManaged,
+      batteryIdleManaged,
+      lidClosedBehavior,
+      lidClosedControlled,
+      hasLid,
+      adaptiveCharging,
+      adaptiveChargingManaged,
+      batterySaverFeatureEnabled,
     });
     flush();
   }
@@ -477,6 +493,16 @@ suite('SettingsDevicePage', function() {
     });
   }
 
+  /**
+   * Set enablePeripheralCustomization feature flag to true for split tests.
+   * @param {!boolean} isEnabled
+   */
+  function setPeripheralCustomizationEnabled(isEnabled) {
+    loadTimeData.overrideValues({
+      enablePeripheralCustomization: isEnabled,
+    });
+  }
+
   test(assert(TestNames.DevicePage), async function() {
     const provider = new FakeInputDeviceSettingsProvider();
     setInputDeviceSettingsProviderForTesting(provider);
@@ -486,8 +512,6 @@ suite('SettingsDevicePage', function() {
 
     await init();
     assertTrue(isVisible(devicePage.shadowRoot.querySelector('#displayRow')));
-
-    // enableAudioSettingsPage feature flag by default is turned on in tests.
     assertTrue(isVisible(devicePage.shadowRoot.querySelector('#audioRow')));
 
     // enableInputDeviceSettingsSplit feature flag by default is turned on.
@@ -501,6 +525,9 @@ suite('SettingsDevicePage', function() {
         devicePage.shadowRoot.querySelector('#perDeviceKeyboardRow')));
     assertFalse(isVisible(devicePage.shadowRoot.querySelector('#pointersRow')));
     assertFalse(isVisible(devicePage.shadowRoot.querySelector('#keyboardRow')));
+
+    // enablePeripheralCustomization feature flag by default is turned on.
+    assertTrue(isVisible(devicePage.shadowRoot.querySelector('#tabletRow')));
 
     // Turn off the enableInputDeviceSettingsSplit feature flag.
     setDeviceSplitEnabled(false);
@@ -523,14 +550,11 @@ suite('SettingsDevicePage', function() {
     webUIListenerCallback('has-mouse-changed', true);
     await flushTasks();
     assertTrue(isVisible(devicePage.shadowRoot.querySelector('#pointersRow')));
-  });
 
-  test('audio row visibility', async function() {
-    loadTimeData.overrideValues({
-      enableAudioSettingsPage: false,
-    });
+    // Turn off the enablePeripheralCustomization feature flag.
+    setPeripheralCustomizationEnabled(false);
     await init();
-    assertFalse(isVisible(devicePage.shadowRoot.querySelector('#audioRow')));
+    assertFalse(isVisible(devicePage.shadowRoot.querySelector('#tabletRow')));
   });
 
   test('per-device-mouse row visibility', async function() {
@@ -701,9 +725,7 @@ suite('SettingsDevicePage', function() {
       const page =
           devicePage.shadowRoot.querySelector('settings-per-device-keyboard');
       assert(page);
-      return Promise.resolve(page).then(function(page) {
-        perDeviceKeyboardPage = page;
-      });
+      perDeviceKeyboardPage = page;
     });
 
     test('per-device keyboard subpage visibility', function() {
@@ -946,9 +968,6 @@ suite('SettingsDevicePage', function() {
     }
 
     setup(async function() {
-      loadTimeData.overrideValues({
-        enableAudioSettingsPage: true,
-      });
       await init();
 
       // FakeAudioConfig must be set before audio subpage is loaded.
@@ -2054,6 +2073,87 @@ suite('SettingsDevicePage', function() {
     });
   });
 
+  suite(assert(TestNames.GraphicsTablet), function() {
+    let graphicsTabletPage;
+    let inputDeviceSettingsProvider;
+
+    suiteSetup(() => {
+      inputDeviceSettingsProvider = new FakeInputDeviceSettingsProvider();
+      inputDeviceSettingsProvider.setFakeGraphicsTablets(fakeGraphicsTablets);
+      setInputDeviceSettingsProviderForTesting(inputDeviceSettingsProvider);
+    });
+
+    setup(async function() {
+      setPeripheralCustomizationEnabled(true);
+      await init();
+      const row =
+          assert(devicePage.shadowRoot.querySelector(`#main #tabletRow`));
+      row.click();
+      assertEquals(routes.GRAPHICS_TABLET, Router.getInstance().currentRoute);
+      const page = devicePage.shadowRoot.querySelector(
+          'settings-graphics-tablet-subpage');
+      assert(page);
+      return Promise.resolve(page).then(function(page) {
+        graphicsTabletPage = page;
+      });
+    });
+
+    test('graphics tablet subpage visibility', async () => {
+      assertEquals(routes.GRAPHICS_TABLET, Router.getInstance().currentRoute);
+      const items = graphicsTabletPage.shadowRoot.querySelectorAll('.device');
+      // Verify that all graphics tablets are displayed and their ids are same
+      // with the data in the provider.
+      assertEquals(items.length, fakeGraphicsTablets.length);
+      assertTrue(isVisible(items[0]));
+      assertEquals(
+          Number(items[0].getAttribute('data-evdev-id')),
+          fakeGraphicsTablets[0].id);
+      assertTrue(isVisible(items[1]));
+      assertEquals(
+          Number(items[1].getAttribute('data-evdev-id')),
+          fakeGraphicsTablets[1].id);
+
+      // Verify that the customize-tablet-buttons and customize-pen-buttons
+      // crLinkRow are visible.
+      const customizeTabletButtons =
+          graphicsTabletPage.shadowRoot.querySelector(
+              '#customizeTabletButtons');
+      assert(customizeTabletButtons);
+      assertTrue(isVisible(customizeTabletButtons));
+
+      // Verify clicking the customize table buttons row will be redirecting
+      // to the customize table buttons subpage.
+      customizeTabletButtons.click();
+      await flushTasks();
+      assertEquals(
+          routes.CUSTOMIZE_TABLET_BUTTONS, Router.getInstance().currentRoute);
+
+      const urlSearchQuery =
+          Router.getInstance().getQueryParameters().get('graphicsTabletId');
+      assertTrue(!!urlSearchQuery);
+      const graphicsTabletId = Number(urlSearchQuery);
+      assertFalse(isNaN(graphicsTabletId));
+      assertEquals(fakeGraphicsTablets[0].id, graphicsTabletId);
+
+      // Verify clicking the customize pen buttons row will be redirected
+      // to the customize table buttons subpage.
+      Router.getInstance().navigateTo(routes.GRAPHICS_TABLET);
+      assertEquals(routes.GRAPHICS_TABLET, Router.getInstance().currentRoute);
+      const customizePenButtons =
+          graphicsTabletPage.shadowRoot.querySelector('#customizePenButtons');
+
+      assertTrue(isVisible(customizePenButtons));
+      customizePenButtons.click();
+      await flushTasks();
+      assertEquals(
+          routes.CUSTOMIZE_PEN_BUTTONS, Router.getInstance().currentRoute);
+      const graphicsTabletPenId = Number(
+          Router.getInstance().getQueryParameters().get('graphicsTabletId'));
+      assertFalse(isNaN(graphicsTabletPenId));
+      assertEquals(fakeGraphicsTablets[0].id, graphicsTabletPenId);
+    });
+  });
+
   suite(assert(TestNames.Display), function() {
     let displayPage;
     let browserProxy;
@@ -2404,10 +2504,14 @@ suite('SettingsDevicePage', function() {
     await fakeSystemDisplay.getLayoutCalled.promise;
     assertEquals(1, displayPage.displays.length);
 
+    const displayNightLight =
+        displayPage.shadowRoot.querySelector('settings-display-night-light');
+    assert(displayNightLight);
+
     const temperature =
-        displayPage.shadowRoot.querySelector('#nightLightTemperatureDiv');
-    const schedule =
-        displayPage.shadowRoot.querySelector('#nightLightScheduleTypeDropDown');
+        displayNightLight.shadowRoot.getElementById('nightLightTemperatureDiv');
+    const schedule = displayNightLight.shadowRoot.getElementById(
+        'nightLightScheduleTypeDropDown');
 
     // Night Light is off, so temperature is hidden. Schedule is always shown.
     assertTrue(temperature.hidden);
@@ -2448,6 +2552,7 @@ suite('SettingsDevicePage', function() {
       let acIdleSelect;
       let lidClosedToggle;
       let adaptiveChargingToggle;
+      let batterySaverToggle;
 
       suiteSetup(function() {
         // Adaptive charging setting should be shown.
@@ -2475,6 +2580,8 @@ suite('SettingsDevicePage', function() {
               adaptiveChargingToggle =
                   assert(powerPage.shadowRoot.querySelector(
                       '#adaptiveChargingToggle'));
+              batterySaverToggle = assert(
+                  powerPage.shadowRoot.querySelector('#batterySaverToggle'));
 
               assertEquals(
                   1,
@@ -2496,7 +2603,8 @@ suite('SettingsDevicePage', function() {
                   false /* batteryIdleManaged */, LidClosedBehavior.SUSPEND,
                   false /* lidClosedControlled */, true /* hasLid */,
                   false /* adaptiveCharging */,
-                  false /* adaptiveChargingManaged */);
+                  false /* adaptiveChargingManaged */,
+                  true /* batterySaverFeatureEnabled */);
             });
       });
 
@@ -2515,6 +2623,8 @@ suite('SettingsDevicePage', function() {
 
         // Power source row is hidden since there's no battery.
         assertTrue(powerSourceRow.hidden);
+        // Battery Saver is also hidden.
+        assertTrue(batterySaverToggle.hidden);
         // Idle settings while on battery and while charging should not be
         // visible if the battery is not present.
         assertEquals(
@@ -2550,6 +2660,8 @@ suite('SettingsDevicePage', function() {
         // Power sources row is visible but dropdown is hidden.
         assertFalse(powerSourceRow.hidden);
         assertTrue(powerSourceSelect.hidden);
+        // Battery saver should be toggleable when not charging.
+        assertFalse(batterySaverToggle.disabled);
 
         // Attach a dual-role USB device.
         const powerSource = {
@@ -2563,12 +2675,18 @@ suite('SettingsDevicePage', function() {
         // "Battery" should be selected.
         assertFalse(powerSourceSelect.hidden);
         assertEquals('', powerSourceSelect.value);
+        // We are charging on a non-low power charger, battery saver should be
+        // grayed out.
+        assertTrue(batterySaverToggle.disabled);
 
         // Select the power source.
         setPowerSources([powerSource], powerSource.id, true);
         flush();
         assertFalse(powerSourceSelect.hidden);
         assertEquals(powerSource.id, powerSourceSelect.value);
+        // Charging, but on a low-power charger, battery saver should be
+        // toggleable.
+        assertFalse(batterySaverToggle.disabled);
 
         // Send another power source; the first should still be selected.
         const otherPowerSource = Object.assign({}, powerSource);
@@ -2577,6 +2695,7 @@ suite('SettingsDevicePage', function() {
         flush();
         assertFalse(powerSourceSelect.hidden);
         assertEquals(powerSource.id, powerSourceSelect.value);
+        assertFalse(batterySaverToggle.disabled);
       });
 
       test('choose power source', function() {
@@ -2669,8 +2788,8 @@ suite('SettingsDevicePage', function() {
               IdleBehavior.DISPLAY_OFF, IdleBehavior.DISPLAY_OFF,
               false /* acIdleManaged */, false /* batteryIdleManaged */,
               lidBehavior, false /* lidClosedControlled */, true /* hasLid */,
-              false /* adaptiveCharging */,
-              false /* adaptiveChargingManaged */);
+              false /* adaptiveCharging */, false /* adaptiveChargingManaged */,
+              true /* batterySaverFeatureEnabled */);
         };
 
         sendLid(LidClosedBehavior.SUSPEND);
@@ -2713,7 +2832,8 @@ suite('SettingsDevicePage', function() {
                      LidClosedBehavior.DO_NOTHING,
                      false /* lidClosedControlled */, true /* hasLid */,
                      false /* adaptiveCharging */,
-                     false /* adaptiveChargingManaged */);
+                     false /* adaptiveChargingManaged */,
+                     true /* batterySaverFeatureEnabled */);
                  microTask.run(resolve);
                })
             .then(function() {
@@ -2771,7 +2891,8 @@ suite('SettingsDevicePage', function() {
                   true /* acIdleManaged */, true /* batteryIdleManaged */,
                   LidClosedBehavior.DO_NOTHING, false /* lidClosedControlled */,
                   true /* hasLid */, false /* adaptiveCharging */,
-                  false /* adaptiveChargingManaged */);
+                  false /* adaptiveChargingManaged */,
+                  true /* batterySaverFeatureEnabled */);
               return new Promise(function(resolve) {
                 microTask.run(resolve);
               });
@@ -2813,7 +2934,8 @@ suite('SettingsDevicePage', function() {
                      LidClosedBehavior.DO_NOTHING,
                      false /* lidClosedControlled */, true /* hasLid */,
                      false /* adaptiveCharging */,
-                     false /* adaptiveChargingManaged */);
+                     false /* adaptiveChargingManaged */,
+                     true /* batterySaverFeatureEnabled */);
                  microTask.run(resolve);
                })
             .then(function() {
@@ -2870,7 +2992,8 @@ suite('SettingsDevicePage', function() {
                   false /* acIdleManaged */, false /* batteryIdleManaged */,
                   LidClosedBehavior.SUSPEND, false /* lidClosedControlled */,
                   true /* hasLid */, false /* adaptiveCharging */,
-                  false /* adaptiveChargingManaged */);
+                  false /* adaptiveChargingManaged */,
+                  true /* batterySaverFeatureEnabled */);
               return new Promise(function(resolve) {
                 microTask.run(resolve);
               });
@@ -2923,7 +3046,8 @@ suite('SettingsDevicePage', function() {
                      LidClosedBehavior.SHUT_DOWN,
                      true /* lidClosedControlled */, true /* hasLid */,
                      false /* adaptiveCharging */,
-                     false /* adaptiveChargingManaged */);
+                     false /* adaptiveChargingManaged */,
+                     true /* batterySaverFeatureEnabled */);
                  microTask.run(resolve);
                })
             .then(function() {
@@ -2959,7 +3083,8 @@ suite('SettingsDevicePage', function() {
                   LidClosedBehavior.STOP_SESSION,
                   true /* lidClosedControlled */, true /* hasLid */,
                   false /* adaptiveCharging */,
-                  false /* adaptiveChargingManaged */);
+                  false /* adaptiveChargingManaged */,
+                  true /* batterySaverFeatureEnabled */);
               return new Promise(function(resolve) {
                 microTask.run(resolve);
               });
@@ -3010,7 +3135,8 @@ suite('SettingsDevicePage', function() {
                      false /* batteryIdleManaged */, LidClosedBehavior.SUSPEND,
                      false /* lidClosedControlled */, false /* hasLid */,
                      false /* adaptiveCharging */,
-                     false /* adaptiveChargingManaged */);
+                     false /* adaptiveChargingManaged */,
+                     true /* batterySaverFeatureEnabled */);
                  microTask.run(resolve);
                })
             .then(function() {
@@ -3067,7 +3193,8 @@ suite('SettingsDevicePage', function() {
             false /* acIdleManaged */, false /* batteryIdleManaged */,
             LidClosedBehavior.SUSPEND, false /* lidClosedControlled */,
             true /* hasLid */, true /* adaptiveCharging */,
-            true /* adaptiveCharingManaged */);
+            true /* adaptiveCharingManaged */,
+            true /* batterySaverFeatureEnabled */);
 
         assertTrue(adaptiveChargingToggle.shadowRoot.querySelector('cr-toggle')
                        .checked);
@@ -3086,6 +3213,78 @@ suite('SettingsDevicePage', function() {
             routes.POWER, '440',
             adaptiveChargingToggle.shadowRoot.querySelector('cr-toggle'),
             'Adaptive charging toggle');
+      });
+
+      test('Battery Saver hidden when feature disabled', () => {
+        sendPowerManagementSettings(
+            [
+              IdleBehavior.DISPLAY_OFF_SLEEP,
+              IdleBehavior.DISPLAY_OFF,
+              IdleBehavior.DISPLAY_ON,
+            ],
+            [
+              IdleBehavior.DISPLAY_OFF_SLEEP,
+              IdleBehavior.DISPLAY_OFF,
+              IdleBehavior.DISPLAY_ON,
+            ],
+            IdleBehavior.DISPLAY_OFF_SLEEP, IdleBehavior.DISPLAY_OFF_SLEEP,
+            false /* acIdleManaged */, false /* batteryIdleManaged */,
+            LidClosedBehavior.SUSPEND, false /* lidClosedControlled */,
+            true /* hasLid */, false /* adaptiveCharging */,
+            false /* adaptiveChargingManaged */,
+            false /* batterySaverFeatureEnabled */);
+
+        assertTrue(batterySaverToggle.hidden);
+      });
+
+      test('Battery Saver toggleable', () => {
+        // Battery is present.
+        webUIListenerCallback('battery-status-changed', {
+          present: true,
+          charging: false,
+          calculating: false,
+          percent: 50,
+          statusText: '5 hours left',
+        });
+        // There are no power sources.
+        setPowerSources([], '', false);
+        // Battery saver feature is enabled.
+        sendPowerManagementSettings(
+            [
+              IdleBehavior.DISPLAY_OFF_SLEEP,
+              IdleBehavior.DISPLAY_OFF,
+              IdleBehavior.DISPLAY_ON,
+            ],
+            [
+              IdleBehavior.DISPLAY_OFF_SLEEP,
+              IdleBehavior.DISPLAY_OFF,
+              IdleBehavior.DISPLAY_ON,
+            ],
+            IdleBehavior.DISPLAY_OFF_SLEEP, IdleBehavior.DISPLAY_OFF_SLEEP,
+            false /* acIdleManaged */, false /* batteryIdleManaged */,
+            LidClosedBehavior.SUSPEND, false /* lidClosedControlled */,
+            true /* hasLid */, false /* adaptiveCharging */,
+            false /* adaptiveChargingManaged */,
+            true /* batterySaverFeatureEnabled */);
+
+        // Battery saver should be visible and toggleable.
+        assertFalse(batterySaverToggle.hidden);
+        assertFalse(batterySaverToggle.disabled);
+      });
+
+      test('Battery Saver updates when pref updates', () => {
+        function setPref(value) {
+          const newPrefs = getFakePrefs();
+          newPrefs.power.cros_battery_saver_active.value = value;
+          powerPage.prefs = newPrefs;
+          flush();
+        }
+
+        setPref(true);
+        assertTrue(batterySaverToggle.checked);
+
+        setPref(false);
+        assertFalse(batterySaverToggle.checked);
       });
     });
   });
@@ -3724,14 +3923,17 @@ suite('SettingsDevicePage', function() {
       testing.Test.disableAnimationsAndTransitions();
     });
 
-    setup(async function() {
+    async function setupPage() {
+      PolymerTest.clearBody();
       await init();
       return showAndGetDeviceSubpage('storage', routes.STORAGE)
           .then(function(page) {
             storagePage = page;
             storagePage.stopPeriodicUpdate_();
           });
-    });
+    }
+
+    setup(setupPage);
 
     test('storage stats size', async function() {
       // Low available storage space.
@@ -3861,6 +4063,82 @@ suite('SettingsDevicePage', function() {
       flush();
       assertFalse(
           isVisible(storagePage.shadowRoot.querySelector('#otherUsersSize')));
+    });
+
+    test('drive offline size', async () => {
+      async function assertDriveOfflineSizeVisibility(params) {
+        loadTimeData.overrideValues({
+          enableDriveFsBulkPinning: params.enableDriveFsBulkPinning,
+          showGoogleDriveSettingsPage: params.showGoogleDriveSettingsPage,
+        });
+        await setupPage();
+        devicePage.prefs.gdata.disabled = !params.isDriveEnabled;
+        await flushTasks();
+        const expectedState =
+            (params.isVisible) ? 'be visible' : 'not be visible';
+        assertEquals(
+            params.isVisible,
+            isVisible(
+                storagePage.shadowRoot.getElementById('driveOfflineSize')),
+            `Expected #driveOfflineSize to ${expectedState} with params: ${
+                JSON.stringify(params)}`);
+      }
+
+      assertDriveOfflineSizeVisibility({
+        enableDriveFsBulkPinning: false,
+        showGoogleDriveSettingsPage: false,
+        isDriveEnabled: false,
+        isVisible: false,
+      });
+
+      assertDriveOfflineSizeVisibility({
+        enableDriveFsBulkPinning: false,
+        showGoogleDriveSettingsPage: false,
+        isDriveEnabled: true,
+        isVisible: false,
+      });
+
+      assertDriveOfflineSizeVisibility({
+        enableDriveFsBulkPinning: false,
+        showGoogleDriveSettingsPage: true,
+        isDriveEnabled: false,
+        isVisible: false,
+      });
+
+      assertDriveOfflineSizeVisibility({
+        enableDriveFsBulkPinning: true,
+        showGoogleDriveSettingsPage: false,
+        isDriveEnabled: false,
+        isVisible: false,
+      });
+
+      assertDriveOfflineSizeVisibility({
+        enableDriveFsBulkPinning: true,
+        showGoogleDriveSettingsPage: true,
+        isDriveEnabled: false,
+        isVisible: false,
+      });
+
+      assertDriveOfflineSizeVisibility({
+        enableDriveFsBulkPinning: false,
+        showGoogleDriveSettingsPage: true,
+        isDriveEnabled: true,
+        isVisible: true,
+      });
+
+      assertDriveOfflineSizeVisibility({
+        enableDriveFsBulkPinning: true,
+        showGoogleDriveSettingsPage: false,
+        isDriveEnabled: true,
+        isVisible: true,
+      });
+
+      assertDriveOfflineSizeVisibility({
+        enableDriveFsBulkPinning: true,
+        showGoogleDriveSettingsPage: true,
+        isDriveEnabled: true,
+        isVisible: true,
+      });
     });
   });
 });

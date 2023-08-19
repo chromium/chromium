@@ -61,6 +61,7 @@
 #include "chrome/updater/win/ui/splash_screen.h"
 #pragma clang diagnostic pop
 
+#include "components/update_client/protocol_parser.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace updater {
@@ -163,9 +164,6 @@ void InstallProgressSilentObserver::OnComplete(
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   CHECK(events_sink_);
   VLOG(1) << __func__;
-
-  // TODO(crbug.com/1286580): Launch `post_install_launch_command_line` for
-  // each app if needed.
 
   events_sink_->DoExit();
 }
@@ -399,10 +397,12 @@ class AppInstallControllerImpl : public AppInstallController,
 
   // These functions are called on the main updater sequence.
   void DoInstallApp();
-  void DoInstallAppOffline(const std::string& installer_version,
-                           const base::FilePath& installer_path,
-                           const std::string& install_args,
-                           const std::string& install_data);
+  void DoInstallAppOffline(
+      const update_client::ProtocolParser::Results& results,
+      const std::string& installer_version,
+      const base::FilePath& installer_path,
+      const std::string& install_args,
+      const std::string& install_data);
   void HandleOsNotSupported();
   void InstallComplete(UpdateService::Result result);
 
@@ -509,9 +509,7 @@ void AppInstallControllerImpl::DoInstallApp() {
   base::ThreadPool::PostTaskAndReply(
       FROM_HERE,
       base::BindOnce(&SetUsageStats, GetUpdaterScope(), app_id_,
-                     tag_args && tag_args->usage_stats_enable
-                         ? absl::make_optional(*tag_args->usage_stats_enable)
-                         : absl::nullopt),
+                     tag_args ? tag_args->usage_stats_enable : absl::nullopt),
       base::BindOnce(
           &UpdateService::Install, update_service_, request,
           GetDecodedInstallDataFromAppArgs(app_id_),
@@ -539,8 +537,6 @@ void AppInstallControllerImpl::InstallAppOffline(
                 FROM_HERE, {base::MayBlock()},
                 base::BindOnce(
                     [](const std::string& app_id) {
-                      const base::CommandLine cmd_line =
-                          GetCommandLineLegacyCompatible();
                       // Parse the offline manifest to get the install
                       // command and install data.
                       update_client::ProtocolParser::Results results;
@@ -549,16 +545,14 @@ void AppInstallControllerImpl::InstallAppOffline(
                       std::string install_args;
                       std::string install_data;
                       ReadInstallCommandFromManifest(
-                          cmd_line.GetSwitchValueNative(kOfflineDirSwitch),
-                          app_id,
-                          GetInstallDataIndexFromAppArgsForCommandLine(cmd_line,
-                                                                       app_id),
+                          base::CommandLine::ForCurrentProcess()
+                              ->GetSwitchValueNative(kOfflineDirSwitch),
+                          app_id, GetInstallDataIndexFromAppArgs(app_id),
                           results, installer_version, installer_path,
                           install_args, install_data);
 
                       const std::string client_install_data =
-                          GetDecodedInstallDataFromAppArgsForCommandLine(
-                              cmd_line, app_id);
+                          GetDecodedInstallDataFromAppArgs(app_id);
                       return std::make_tuple(results, installer_version,
                                              installer_path, install_args,
                                              client_install_data.empty()
@@ -574,14 +568,10 @@ void AppInstallControllerImpl::InstallAppOffline(
                            base::FilePath /*installer_path*/,
                            std::string /*arguments*/,
                            std::string /*install_data*/>& result) {
-                      if (!IsOsSupported(std::get<0>(result))) {
-                        self->HandleOsNotSupported();
-                        return;
-                      }
-
                       self->DoInstallAppOffline(
-                          std::get<1>(result), std::get<2>(result),
-                          std::get<3>(result), std::get<4>(result));
+                          std::get<0>(result), std::get<1>(result),
+                          std::get<2>(result), std::get<3>(result),
+                          std::get<4>(result));
                     },
                     self));
           },
@@ -589,6 +579,7 @@ void AppInstallControllerImpl::InstallAppOffline(
 }
 
 void AppInstallControllerImpl::DoInstallAppOffline(
+    const update_client::ProtocolParser::Results& results,
     const std::string& installer_version,
     const base::FilePath& installer_path,
     const std::string& install_args,
@@ -605,10 +596,15 @@ void AppInstallControllerImpl::DoInstallAppOffline(
   install_progress_observer_ipc_ = std::make_unique<InstallProgressObserverIPC>(
       observer_.get(), ui_thread_id_);
 
+  if (!IsOsSupported(results)) {
+    HandleOsNotSupported();
+    return;
+  }
+
   base::Value::Dict install_settings_dict;
   install_settings_dict.Set(kInstallerVersion, installer_version);
 
-  base::CommandLine cmd_line = GetCommandLineLegacyCompatible();
+  const base::CommandLine cmd_line(*base::CommandLine::ForCurrentProcess());
   install_settings_dict.Set(kEnterpriseSwitch,
                             cmd_line.HasSwitch(kEnterpriseSwitch));
   install_settings_dict.Set(kSessionIdSwitch,
@@ -620,14 +616,12 @@ void AppInstallControllerImpl::DoInstallAppOffline(
     VLOG(1) << "Failed to serialize install settings.";
   }
 
-  absl::optional<tagging::TagArgs> tag_args =
-      GetTagArgsForCommandLine(cmd_line).tag_args;
+  absl::optional<tagging::TagArgs> tag_args = GetTagArgs().tag_args;
   RegistrationRequest request;
   request.app_id = app_id_;
   request.version = base::Version(kNullVersion);
 
-  absl::optional<tagging::AppArgs> app_args =
-      GetAppArgsForCommandLine(cmd_line, app_id_);
+  absl::optional<tagging::AppArgs> app_args = GetAppArgs(app_id_);
   if (app_args) {
     request.ap = app_args->ap;
   }
@@ -641,9 +635,7 @@ void AppInstallControllerImpl::DoInstallAppOffline(
   base::ThreadPool::PostTaskAndReply(
       FROM_HERE,
       base::BindOnce(&SetUsageStats, GetUpdaterScope(), app_id_,
-                     tag_args && tag_args->usage_stats_enable
-                         ? absl::make_optional(*tag_args->usage_stats_enable)
-                         : absl::nullopt),
+                     tag_args ? tag_args->usage_stats_enable : absl::nullopt),
       base::BindOnce(
           &UpdateService::RegisterApp, update_service_, request,
           base::BindOnce(
@@ -961,6 +953,9 @@ bool AppInstallControllerImpl::DoReboot() {
 
 void AppInstallControllerImpl::DoCancel() {
   CHECK_EQ(GetUIThreadID(), GetCurrentThreadId());
+  if (!update_service_) {
+    return;
+  }
   main_task_runner_->PostTask(
       FROM_HERE,
       base::BindOnce(&UpdateService::CancelInstalls, update_service_, app_id_));

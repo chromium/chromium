@@ -11,6 +11,7 @@
 #include <utility>
 #include <vector>
 
+#include "base/apple/foundation_util.h"
 #include "base/at_exit.h"
 #include "base/command_line.h"
 #include "base/containers/contains.h"
@@ -20,7 +21,6 @@
 #include "base/functional/callback.h"
 #include "base/functional/callback_helpers.h"
 #include "base/logging.h"
-#include "base/mac/foundation_util.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/message_loop/message_pump_type.h"
 #include "base/no_destructor.h"
@@ -44,10 +44,6 @@
 #include "chrome/updater/util/mac_util.h"
 #include "chrome/updater/util/util.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
-
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
 
 namespace updater {
 
@@ -202,7 +198,7 @@ void MaybeInstallUpdater(UpdaterScope scope) {
 
   if (path &&
       [NSFileManager.defaultManager
-          fileExistsAtPath:base::mac::FilePathToNSString(path.value())]) {
+          fileExistsAtPath:base::apple::FilePathToNSString(path.value())]) {
     // Updater is already installed.
     return;
   }
@@ -214,9 +210,9 @@ void MaybeInstallUpdater(UpdaterScope scope) {
 
   const absl::optional<base::FilePath> setup_path = GetUpdaterExecutablePath(
       IsSystemShim() ? UpdaterScope::kSystem : UpdaterScope::kUser);
-  if (!setup_path ||
-      ![NSFileManager.defaultManager
-          fileExistsAtPath:base::mac::FilePathToNSString(setup_path.value())]) {
+  if (!setup_path || ![NSFileManager.defaultManager
+                         fileExistsAtPath:base::apple::FilePathToNSString(
+                                              setup_path.value())]) {
     return;
   }
 
@@ -559,8 +555,20 @@ std::string KSAdminApp::SwitchValue(const std::string& arg) const {
 }
 
 void KSAdminApp::Delete() {
-  // TODO(crbug.com/1250524): Implement.
-  Shutdown(1);
+  // Existing updater clients may call `ksadmin --delete` to delete an app
+  // ticket in one of the following situations:
+  // 1) The app is uninstalled. In this case, the path existence checker should
+  //    return false. That means the app will be un-registered by the periodic
+  //    tasks at certain point.
+  // 2) The user updater figures that the app is managed by the system updater
+  //    as well. A common scenario is that a second user installed the same app
+  //    and then promoted it to a system app. In this case, we can ignore the
+  //    deletion request and just rely on the system updater to run update.
+  //    The downside is that sometimes the user updater gets the app update
+  //    error. But this could an existing problem when two user updaters manage
+  //    the same app together.
+  // So in summary, we can just omit the ticket deletion request here.
+  Shutdown(0);
 }
 
 NSDictionary<NSString*, KSTicket*>* KSAdminApp::LoadTicketStore() const {

@@ -103,3 +103,10 @@ LOAD_FLAG(RESTRICTED_PREFETCH, 1 << 15)
 // is considered privileged, and therefore this flag must only be set from a
 // trusted process.
 LOAD_FLAG(CAN_USE_RESTRICTED_PREFETCH, 1 << 16)
+
+// Indicates that this load can use a shared dictionary.
+LOAD_FLAG(CAN_USE_SHARED_DICTIONARY, 1 << 17)
+
+// Indicates that CAN_USE_SHARED_DICTIONARY must be disabled after a redirect to
+// another origin.
+LOAD_FLAG(DISABLE_SHARED_DICTIONARY_AFTER_CROSS_ORIGIN_REDIRECT, 1 << 18)

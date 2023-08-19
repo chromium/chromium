@@ -92,7 +92,7 @@ class ChromeContentVerifierDelegate : public ContentVerifierDelegate {
   // Returns information needed for content verification of |extension|.
   VerifyInfo GetVerifyInfo(const Extension& extension) const;
 
-  raw_ptr<content::BrowserContext, DanglingUntriaged> context_;
+  raw_ptr<content::BrowserContext, AcrossTasksDanglingUntriaged> context_;
   VerifyInfo::Mode default_mode_;
 
   // This maps an extension id to a backoff entry for slowing down

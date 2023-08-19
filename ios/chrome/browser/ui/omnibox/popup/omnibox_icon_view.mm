@@ -13,10 +13,6 @@
 #import "ios/chrome/browser/ui/omnibox/popup/omnibox_icon.h"
 #import "url/gurl.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 @implementation OmniboxIconView {
   id<OmniboxIcon> _omniboxIcon;
   // The view containing the symbols or the favicons.

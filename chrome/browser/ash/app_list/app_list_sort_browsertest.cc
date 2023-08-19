@@ -239,13 +239,9 @@ class AppListSortBrowserTest : public extensions::ExtensionBrowserTest {
 
     const int default_app_count = app_list_test_api_.GetTopListItemCount();
 
-    if (base::FeatureList::IsEnabled(ash::features::kLacrosSupport)) {
-      // Assume that there are three default apps, one being the Lacros browser.
-      ASSERT_EQ(3, app_list_test_api_.GetTopListItemCount());
-    } else {
-      // Assume that there are two default apps.
-      ASSERT_EQ(2, app_list_test_api_.GetTopListItemCount());
-    }
+    // Assume that there are two default apps.
+    ASSERT_EQ(2, app_list_test_api_.GetTopListItemCount());
+
     apps::AppServiceProxyFactory::GetForProfile(profile())
         ->OverrideInnerIconLoaderForTesting(&icon_loader_);
 

@@ -6,6 +6,7 @@ package org.chromium.components.browser_ui.modaldialog;
 
 import android.app.Activity;
 import android.content.Context;
+import android.os.Build;
 import android.view.Window;
 import android.view.WindowManager;
 
@@ -63,18 +64,24 @@ public class AppModalPresenter extends ModalDialogManager.Presenter {
         int styles[][] = {
                 {R.style.ThemeOverlay_BrowserUI_ModalDialog_TextPrimaryButton,
                         R.style.ThemeOverlay_BrowserUI_ModalDialog_TextPrimaryButton_Fullscreen,
-                        R.style.ThemeOverlay_BrowserUI_ModalDialog_TextPrimaryButton_DialogWhenLarge},
+                        R.style.ThemeOverlay_BrowserUI_ModalDialog_TextPrimaryButton_DialogWhenLarge,
+                        R.style.ThemeOverlay_BrowserUI_ModalDialog_TextPrimaryButton_Fullscreen_Dark},
                 {R.style.ThemeOverlay_BrowserUI_ModalDialog_FilledPrimaryButton,
                         R.style.ThemeOverlay_BrowserUI_ModalDialog_FilledPrimaryButton_Fullscreen,
-                        R.style.ThemeOverlay_BrowserUI_ModalDialog_FilledPrimaryButton_DialogWhenLarge},
+                        R.style.ThemeOverlay_BrowserUI_ModalDialog_FilledPrimaryButton_DialogWhenLarge,
+                        R.style.ThemeOverlay_BrowserUI_ModalDialog_FilledPrimaryButton_Fullscreen_Dark},
                 {R.style.ThemeOverlay_BrowserUI_ModalDialog_FilledNegativeButton,
                         R.style.ThemeOverlay_BrowserUI_ModalDialog_FilledNegativeButton_Fullscreen,
-                        R.style.ThemeOverlay_BrowserUI_ModalDialog_FilledNegativeButton_DialogWhenLarge}};
-        int index = 0;
-        if (model.get(ModalDialogProperties.FULLSCREEN_DIALOG)) {
-            index = 1;
-        } else if (model.get(ModalDialogProperties.DIALOG_WHEN_LARGE)) {
-            index = 2;
+                        R.style.ThemeOverlay_BrowserUI_ModalDialog_FilledNegativeButton_DialogWhenLarge,
+                        R.style.ThemeOverlay_BrowserUI_ModalDialog_FilledNegativeButton_Fullscreen_Dark}};
+        int dialogIndex = 0;
+        int dialogStyle = model.get(ModalDialogProperties.DIALOG_STYLES);
+        if (dialogStyle == ModalDialogProperties.DialogStyles.FULLSCREEN_DIALOG) {
+            dialogIndex = 1;
+        } else if (dialogStyle == ModalDialogProperties.DialogStyles.DIALOG_WHEN_LARGE) {
+            dialogIndex = 2;
+        } else if (dialogStyle == ModalDialogProperties.DialogStyles.FULLSCREEN_DARK_DIALOG) {
+            dialogIndex = Build.VERSION.SDK_INT >= Build.VERSION_CODES.O ? 3 : 1;
         }
         int buttonIndex = 0;
         int buttonStyle = model.get(ModalDialogProperties.BUTTON_STYLES);
@@ -84,7 +91,7 @@ public class AppModalPresenter extends ModalDialogManager.Presenter {
                 == ModalDialogProperties.ButtonStyles.PRIMARY_OUTLINE_NEGATIVE_FILLED) {
             buttonIndex = 2;
         }
-        mDialog = new ComponentDialog(mContext, styles[buttonIndex][index]);
+        mDialog = new ComponentDialog(mContext, styles[buttonIndex][dialogIndex]);
         mDialog.setOnCancelListener(dialogInterface
                 -> dismissCurrentDialog(DialogDismissalCause.NAVIGATE_BACK_OR_TOUCH_OUTSIDE));
 
@@ -108,10 +115,7 @@ public class AppModalPresenter extends ModalDialogManager.Presenter {
         } catch (WindowManager.BadTokenException badToken) {
             // See https://crbug.com/926688.
             dismissCurrentDialog(DialogDismissalCause.NOT_ATTACHED_TO_WINDOW);
-            return;
         }
-
-        dialogView.announceForAccessibility(getContentDescription(model));
     }
 
     @Override

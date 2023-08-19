@@ -8,15 +8,16 @@
 #include <sys/types.h>
 #include <utility>
 
+#include "base/apple/bridging.h"
+#include "base/apple/foundation_util.h"
+#include "base/apple/osstatus_logging.h"
 #include "base/command_line.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_file.h"
 #include "base/functional/bind.h"
 #include "base/logging.h"
 #include "base/mac/authorization_util.h"
-#include "base/mac/foundation_util.h"
 #include "base/mac/launchd.h"
-#include "base/mac/mac_logging.h"
 #include "base/mac/scoped_authorizationref.h"
 #include "base/mac/scoped_launch_data.h"
 #include "base/memory/ptr_util.h"
@@ -51,7 +52,7 @@ class ScopedWaitpid {
   // case. Note that -1 is the value returned from
   // base::mac::ExecuteWithPrivilegesAndGetPID() when the child PID could not be
   // determined.
-  ScopedWaitpid(pid_t pid) : pid_(pid) {}
+  explicit ScopedWaitpid(pid_t pid) : pid_(pid) {}
   ~ScopedWaitpid() { MaybeWait(); }
 
   // Executes the waitpid() and resets the scoper. After this, the caller may
@@ -91,7 +92,8 @@ bool RunHelperAsRoot(const std::string& command,
       IDS_HOST_AUTHENTICATION_PROMPT,
       l10n_util::GetStringUTF16(IDS_PRODUCT_NAME));
   base::mac::ScopedAuthorizationRef authorization =
-      base::mac::AuthorizationCreateToRunAsRoot(base::mac::NSToCFCast(prompt));
+      base::mac::AuthorizationCreateToRunAsRoot(
+          base::apple::NSToCFPtrCast(prompt));
   if (!authorization.get()) {
     LOG(ERROR) << "Failed to obtain authorizationRef";
     return false;

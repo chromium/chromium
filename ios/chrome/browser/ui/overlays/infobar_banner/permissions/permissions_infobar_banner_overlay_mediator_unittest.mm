@@ -17,10 +17,6 @@
 #import "testing/platform_test.h"
 #import "ui/base/l10n/l10n_util.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 // Test fixture for PermissionsBannerOverlayMediator.
 class PermissionsBannerOverlayMediatorTest : public PlatformTest {
  public:

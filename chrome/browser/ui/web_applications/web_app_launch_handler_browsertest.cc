@@ -5,6 +5,7 @@
 #include "base/strings/strcat.h"
 #include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
+#include "build/chromeos_buildflags.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/browser_list.h"
@@ -22,10 +23,12 @@
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/browser/web_applications/web_app_registrar.h"
 #include "chrome/browser/web_applications/web_app_registry_update.h"
+#include "chrome/browser/web_applications/web_app_sync_bridge.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/embedder_support/switches.h"
 #include "components/page_load_metrics/browser/page_load_metrics_test_waiter.h"
+#include "content/public/browser/notification_service.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/test_navigation_observer.h"
@@ -454,7 +457,8 @@ IN_PROC_BROWSER_TEST_F(WebAppLaunchHandlerBrowserTest, GlobalLaunchQueue) {
 }
 
 // https://crbug.com/1444959
-#if BUILDFLAG(IS_LINUX)
+// TODO(crbug.com/1459410): Re-enable this test
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)
 #define MAYBE_SelectActiveBrowser DISABLED_SelectActiveBrowser
 #else
 #define MAYBE_SelectActiveBrowser SelectActiveBrowser
@@ -470,8 +474,9 @@ IN_PROC_BROWSER_TEST_F(WebAppLaunchHandlerBrowserTest,
   EXPECT_NE(browser_1, browser_2);
 
   {
-    ScopedRegistryUpdate update(
-        &WebAppProvider::GetForTest(profile())->sync_bridge_unsafe());
+    ScopedRegistryUpdate update = WebAppProvider::GetForTest(profile())
+                                      ->sync_bridge_unsafe()
+                                      .BeginUpdate();
     WebApp* web_app = update->UpdateApp(app_id);
     web_app->SetLaunchHandler(LaunchHandler{ClientMode::kFocusExisting});
   }

@@ -22,7 +22,7 @@ PermissionPromptBubble::PermissionPromptBubble(
       base::FeatureList::IsEnabled(permissions::features::kConfirmationChip) &&
       delegate->Requests()[0]->IsConfirmationChipSupported()) {
     lbv->chip_controller()->InitializePermissionPrompt(
-        web_contents, delegate->GetWeakPtr(),
+        delegate->GetWeakPtr(),
         base::BindOnce(&PermissionPromptBubble::ShowBubble,
                        weak_factory_.GetWeakPtr()));
   } else {
@@ -77,6 +77,14 @@ void PermissionPromptBubble::OnWidgetActivationChanged(views::Widget* widget,
       prompt_bubble_->GetWidget()->GetPrimaryWindowWidget()->IsVisible();
 }
 
+absl::optional<gfx::Rect> PermissionPromptBubble::GetViewBoundsInScreen()
+    const {
+  return prompt_bubble_
+             ? absl::make_optional<gfx::Rect>(
+                   prompt_bubble_->GetWidget()->GetWindowBoundsInScreen())
+             : absl::nullopt;
+}
+
 bool PermissionPromptBubble::UpdateAnchor() {
   bool was_browser_changed = UpdateBrowser();
   // TODO(crbug.com/1175231): Investigate why prompt_bubble_ can be null
@@ -106,8 +114,7 @@ bool PermissionPromptBubble::UpdateAnchor() {
     if (lbv && lbv->IsDrawn() && !lbv->GetWidget()->IsFullscreen() &&
         !lbv->IsEditingOrEmpty()) {
       auto* chip_controller = lbv->chip_controller();
-      chip_controller->InitializePermissionPrompt(
-          web_contents(), delegate()->GetWeakPtr(), base::DoNothing());
+      chip_controller->InitializePermissionPrompt(delegate()->GetWeakPtr());
     }
   }
 

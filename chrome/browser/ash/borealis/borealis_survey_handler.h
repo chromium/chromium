@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_ASH_BOREALIS_BOREALIS_SURVEY_HANDLER_H_
 #define CHROME_BROWSER_ASH_BOREALIS_BOREALIS_SURVEY_HANDLER_H_
 
+#include "base/memory/raw_ptr.h"
 #include "chrome/browser/ash/borealis/borealis_window_manager.h"
 #include "chrome/browser/ash/hats/hats_notification_controller.h"
 
@@ -36,7 +37,7 @@ class BorealisSurveyHandler
                            GetSurveyDataReturnsCorrectData);
 
   scoped_refptr<ash::HatsNotificationController> hats_notification_controller_;
-  Profile* profile_;
+  raw_ptr<Profile, ExperimentalAsh> profile_;
   base::ScopedObservation<BorealisWindowManager,
                           BorealisWindowManager::AppWindowLifetimeObserver>
       lifetime_observation_{this};

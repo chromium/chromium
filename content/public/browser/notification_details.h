@@ -42,7 +42,7 @@ class CONTENT_EXPORT NotificationDetails {
 
   // Declaring this const allows Details<T> to be used with both T = Foo and
   // T = const Foo.
-   raw_ptr<const void, DanglingUntriaged> ptr_;
+   raw_ptr<const void, AcrossTasksDanglingUntriaged> ptr_;
 };
 
 template <class T>

@@ -22,7 +22,7 @@ BASE_FEATURE(kBluetoothPhoneFilter,
 // related to clipboard history.
 BASE_FEATURE(kClipboardHistoryRefresh,
              "ClipboardHistoryRefresh",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Enables cloud game features. A separate flag "LauncherGameSearch" controls
 // launcher-only cloud gaming features, since they can also be enabled on
@@ -31,8 +31,19 @@ BASE_FEATURE(kCloudGamingDevice,
              "CloudGamingDevice",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// Enables Demo Mode System Web App migration
-BASE_FEATURE(kDemoModeSWA, "DemoModeSWA", base::FEATURE_ENABLED_BY_DEFAULT);
+// Enables ChromeOS Apps APIs.
+BASE_FEATURE(kCrosAppsApis, "CrosAppsApis", base::FEATURE_DISABLED_BY_DEFAULT);
+
+// Enables the ChromeOS Diagnostics API.
+BASE_FEATURE(kCrosDiagnosticsApi,
+             "CrosDiagnosticsApi",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+// Enables the use of cros-component UI elements. Contact:
+// cros-jellybean-team@google.com.
+BASE_FEATURE(kCrosComponents,
+             "CrosComponents",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 // Disable idle sockets closing on memory pressure for NetworkContexts that
 // belong to Profiles. It only applies to Profiles because the goal is to
@@ -65,12 +76,20 @@ BASE_FEATURE(kExperimentalWebAppStoragePartitionIsolation,
              "ExperimentalWebAppStoragePartitionIsolation",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// Enable IWA support for Telemetry Extension API.
+BASE_FEATURE(kIWAForTelemetryExtensionAPI,
+             "IWAForTelemetryExtensionAPI",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Enables Jelly features. go/jelly-flags
-BASE_FEATURE(kJelly, "Jelly", base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kJelly, "Jelly", base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Enables Jellyroll features. Jellyroll is a feature flag for CrOSNext, which
 // controls all system UI updates and new system components. go/jelly-flags
-BASE_FEATURE(kJellyroll, "Jellyroll", base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kJellyroll, "Jellyroll", base::FEATURE_ENABLED_BY_DEFAULT);
+
+// Controls enabling / disabling the orca feature.
+BASE_FEATURE(kOrca, "Orca", base::FEATURE_DISABLED_BY_DEFAULT);
 
 // Controls whether to enable quick answers V2 settings sub-toggles.
 BASE_FEATURE(kQuickAnswersV2SettingsSubToggle,
@@ -110,8 +129,21 @@ bool IsCloudGamingDeviceEnabled() {
 #endif
 }
 
-bool IsDemoModeSWAEnabled() {
-  return base::FeatureList::IsEnabled(kDemoModeSWA);
+bool IsCrosAppsApisEnabled() {
+  return base::FeatureList::IsEnabled(kCrosAppsApis);
+}
+
+bool IsCrosDiagnosticsApiEnabled() {
+  return base::FeatureList::IsEnabled(kCrosDiagnosticsApi) &&
+         IsCrosAppsApisEnabled();
+}
+
+bool IsCrosComponentsEnabled() {
+  return base::FeatureList::IsEnabled(kCrosComponents) && IsJellyEnabled();
+}
+
+bool IsIWAForTelemetryExtensionAPIEnabled() {
+  return base::FeatureList::IsEnabled(kIWAForTelemetryExtensionAPI);
 }
 
 bool IsJellyEnabled() {
@@ -119,9 +151,13 @@ bool IsJellyEnabled() {
 }
 
 bool IsJellyrollEnabled() {
-  // Force Jellyroll features on if Jelly is enabled since they need to be
-  // tested together. b/270742469
-  return IsJellyEnabled() || base::FeatureList::IsEnabled(kJellyroll);
+  // Only enable Jellyroll if Jelly is also enabled as this is how tests expect
+  // this to behave.
+  return IsJellyEnabled() && base::FeatureList::IsEnabled(kJellyroll);
+}
+
+bool IsOrcaEnabled() {
+  return base::FeatureList::IsEnabled(kOrca);
 }
 
 bool IsQuickAnswersV2TranslationDisabled() {
@@ -150,13 +186,13 @@ bool IsRoundedWindowsEnabled() {
          base::FeatureList::IsEnabled(kJelly);
 }
 
-int RoundedWindowsRadiusInDip() {
+int RoundedWindowsRadius() {
   if (!IsRoundedWindowsEnabled()) {
     return 0;
   }
 
   return base::GetFieldTrialParamByFeatureAsInt(
-      kRoundedWindows, kRoundedWindowsRadius, /*default_value=*/8);
+      kRoundedWindows, kRoundedWindowsRadius, /*default_value=*/12);
 }
 
 }  // namespace chromeos::features

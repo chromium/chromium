@@ -8,7 +8,6 @@
 #include <stdlib.h>
 
 #include <algorithm>
-#include <cctype>
 #include <cmath>
 #include <iterator>
 #include <set>
@@ -24,6 +23,7 @@
 #include "components/zucchini/buffer_source.h"
 #include "components/zucchini/buffer_view.h"
 #include "components/zucchini/io_utils.h"
+#include "third_party/abseil-cpp/absl/strings/ascii.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace zucchini {
@@ -170,8 +170,9 @@ class CodeItemParser {
 
     // TODO(huangs): Fail if |code_item->insns_size == 0| (Constraint A1).
     // Skip instruction bytes.
-    if (!source_.GetArray<uint16_t>(code_item->insns_size))
+    if (!source_.Skip(code_item->insns_size * sizeof(uint16_t))) {
       return kInvalidOffset;
+    }
     // Skip padding if present.
     if (code_item->tries_size > 0 && !source_.AlignOn(image_, 4U))
       return kInvalidOffset;
@@ -180,8 +181,9 @@ class CodeItemParser {
     // is nontrivial due to use of uleb128 / sleb128.
     if (code_item->tries_size > 0) {
       // Skip (try_item) tries[].
-      if (!source_.GetArray<dex::TryItem>(code_item->tries_size))
+      if (!source_.Skip(code_item->tries_size * sizeof(dex::TryItem))) {
         return kInvalidOffset;
+      }
 
       // Skip handlers_group.
       uint32_t handlers_size = 0;
@@ -844,8 +846,9 @@ bool ReadDexHeader(ConstBufferView image, ReadDexHeaderResults* opt_results) {
   // Magic matches: More detailed tests can be conducted.
   int dex_version = 0;
   for (int i = 4; i < 7; ++i) {
-    if (!isdigit(header->magic[i]))
+    if (!absl::ascii_isdigit(header->magic[i])) {
       return false;
+    }
     dex_version = dex_version * 10 + (header->magic[i] - '0');
   }
 

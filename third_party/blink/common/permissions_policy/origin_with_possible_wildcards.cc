@@ -4,39 +4,16 @@
 
 #include "third_party/blink/public/common/permissions_policy/origin_with_possible_wildcards.h"
 
-#include "base/feature_list.h"
 #include "net/base/registry_controlled_domains/registry_controlled_domain.h"
 #include "services/network/public/cpp/content_security_policy/content_security_policy.h"
 #include "services/network/public/cpp/content_security_policy/csp_source.h"
 #include "services/network/public/cpp/cors/origin_access_entry.h"
-#include "third_party/blink/public/common/features.h"
 #include "url/gurl.h"
 #include "url/origin.h"
 
 namespace blink {
 
 OriginWithPossibleWildcards::OriginWithPossibleWildcards() = default;
-
-OriginWithPossibleWildcards::OriginWithPossibleWildcards(
-    const url::Origin& origin,
-    bool has_subdomain_wildcard) {
-  // Origins cannot be opaque.
-  DCHECK(!origin.opaque());
-  csp_source.scheme = origin.scheme();
-  csp_source.host = origin.host();
-  csp_source.port = origin.port() ?: url::PORT_UNSPECIFIED;
-  // Prevent url::Origin from writing the default port into the CSPSource
-  // as the normal parsing route doesn't do this.
-  if (csp_source.port == 80 && (csp_source.scheme == url::kHttpScheme ||
-                                csp_source.scheme == url::kWsScheme)) {
-    csp_source.port = url::PORT_UNSPECIFIED;
-  } else if (csp_source.port == 443 &&
-             (csp_source.scheme == url::kHttpsScheme ||
-              csp_source.scheme == url::kWssScheme)) {
-    csp_source.port = url::PORT_UNSPECIFIED;
-  }
-  csp_source.is_host_wildcard = has_subdomain_wildcard;
-}
 
 OriginWithPossibleWildcards::OriginWithPossibleWildcards(
     const OriginWithPossibleWildcards& rhs) = default;
@@ -47,17 +24,28 @@ OriginWithPossibleWildcards& OriginWithPossibleWildcards::operator=(
 OriginWithPossibleWildcards::~OriginWithPossibleWildcards() = default;
 
 // static
-OriginWithPossibleWildcards OriginWithPossibleWildcards::FromOrigin(
-    const url::Origin& origin) {
-  return OriginWithPossibleWildcards(origin, /*has_subdomain_wildcard=*/false);
+absl::optional<OriginWithPossibleWildcards>
+OriginWithPossibleWildcards::FromOrigin(const url::Origin& origin) {
+  // Origins cannot be opaque.
+  if (origin.opaque()) {
+    return absl::nullopt;
+  }
+  return Parse(origin.Serialize(), NodeType::kHeader);
 }
 
 // static
-OriginWithPossibleWildcards
+absl::optional<OriginWithPossibleWildcards>
 OriginWithPossibleWildcards::FromOriginAndWildcardsForTest(
     const url::Origin& origin,
     bool has_subdomain_wildcard) {
-  return OriginWithPossibleWildcards(origin, has_subdomain_wildcard);
+  absl::optional<OriginWithPossibleWildcards> origin_with_possible_wildcards =
+      FromOrigin(origin);
+  if (origin_with_possible_wildcards.has_value()) {
+    // Overwrite wildcard settings.
+    origin_with_possible_wildcards->csp_source.is_host_wildcard =
+        has_subdomain_wildcard;
+  }
+  return origin_with_possible_wildcards;
 }
 
 // static
@@ -90,28 +78,6 @@ absl::optional<OriginWithPossibleWildcards> OriginWithPossibleWildcards::Parse(
   // The CSPSource may have parsed a path but we should ignore it as permissions
   // policies are origin based, not URL based.
   origin_with_possible_wildcards.csp_source.path = "";
-
-  // If expanded matching is supported we can conclude validation early.
-  if (base::FeatureList::IsEnabled(
-          blink::features::kCSPWildcardsInPermissionsPolicies)) {
-    return origin_with_possible_wildcards;
-  }
-
-  // Since extended matching is disabled the CSPSource must have a host and must
-  // not have a wildcard port.
-  if (origin_with_possible_wildcards.csp_source.host.empty() ||
-      origin_with_possible_wildcards.csp_source.is_port_wildcard) {
-    return absl::nullopt;
-  }
-
-  // The remaining host (after the wildcard) must be at least an eTLD+1.
-  if (origin_with_possible_wildcards.csp_source.is_host_wildcard &&
-      !net::registry_controlled_domains::HostHasRegistryControlledDomain(
-          origin_with_possible_wildcards.csp_source.host,
-          net::registry_controlled_domains::INCLUDE_UNKNOWN_REGISTRIES,
-          net::registry_controlled_domains::INCLUDE_PRIVATE_REGISTRIES)) {
-    return absl::nullopt;
-  }
 
   // The CSPSource is valid so we can return it.
   return origin_with_possible_wildcards;

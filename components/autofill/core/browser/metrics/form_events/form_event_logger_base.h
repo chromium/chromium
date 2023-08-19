@@ -138,13 +138,20 @@ class FormEventLoggerBase {
                      FormEvent event,
                      const FormStructure& form) const {}
 
-  // Records UMA metrics on the funnel and key metrics, and writes logs to
-  // autofill-internals.
+  // Records UMA metrics on the funnel and writes logs to autofill-internals.
   void RecordFunnelMetrics() const;
-  // For each key metric, a separate function is defined below. By making them
-  // virtual, derived classes can change the behavior for specific metrics.
-  // `RecordKeyMetrics()` checks the necessary pre-conditions for metrics to be
-  // emitted and calls the relevant functions.
+
+  // For each funnel metric, a separate function is defined below.
+  // `RecordFunnelMetrics()` checks the necessary pre-conditions for metrics to
+  // be emitted and calls the relevant functions.
+  void RecordInteractionAfterParsedAsType(LogBuffer& logs) const;
+  void RecordSuggestionAfterInteraction(LogBuffer& logs) const;
+  void RecordFillAfterSuggestion(LogBuffer& logs) const;
+  void RecordSubmissionAfterFill(LogBuffer& logs) const;
+
+  // Records UMA metrics on keym etrics and writes logs to autofill-internals.
+  // Similar to the funnel metrics, a separate function for each key metric is
+  // defined below.
   void RecordKeyMetrics() const;
 
   // Whether for a submitted form, Chrome had data stored that could be

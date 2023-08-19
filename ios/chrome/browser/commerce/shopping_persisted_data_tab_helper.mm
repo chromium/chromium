@@ -19,10 +19,6 @@
 #import "ios/web/public/navigation/navigation_item.h"
 #import "ios/web/public/navigation/navigation_manager.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 namespace {
 const int kUnitsToMicros = 1000000;
 const int kMinimumDropThresholdAbsolute = 2 * kUnitsToMicros;
@@ -186,8 +182,8 @@ void ShoppingPersistedDataTabHelper::DidFinishNavigation(
   if (!optimization_guide_service)
     return;
 
-  optimization_guide_service->CanApplyOptimizationAsync(
-      navigation_context, optimization_guide::proto::PRICE_TRACKING,
+  optimization_guide_service->CanApplyOptimization(
+      navigation_context->GetUrl(), optimization_guide::proto::PRICE_TRACKING,
       base::BindOnce(
           &ShoppingPersistedDataTabHelper::OnOptimizationGuideResultReceived,
           weak_factory_.GetWeakPtr(), navigation_context->GetUrl()));

@@ -3985,10 +3985,6 @@
     },
     {
         "duration": null,
-        "name": "system_health.common_desktop/multitab:misc:typical24"
-    },
-    {
-        "duration": null,
         "name": "system_health.common_desktop/play:media:google_play_music"
     },
     {
@@ -4245,10 +4241,6 @@
     },
     {
         "duration": null,
-        "name": "system_health.memory_desktop/multitab:misc:typical24"
-    },
-    {
-        "duration": null,
         "name": "system_health.memory_desktop/play:media:google_play_music"
     },
     {
@@ -4258,10 +4250,6 @@
     {
         "duration": "131.950131",
         "name": "system_health.memory_desktop/play:media:soundcloud"
-    },
-    {
-        "duration": null,
-        "name": "tab_switching.typical_25/multitab:misc:typical24"
     },
     {
         "duration": "24.021742",

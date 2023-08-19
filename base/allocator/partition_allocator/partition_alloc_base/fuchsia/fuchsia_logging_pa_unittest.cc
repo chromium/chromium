@@ -25,7 +25,7 @@ class MockLogSource {
 }  // namespace
 
 // Verifies the Fuchsia-specific PA_ZX_*() logging macros.
-TEST(FuchsiaLoggingTest, FuchsiaLogging) {
+TEST(FuchsiaLoggingTestPA, FuchsiaLogging) {
   MockLogSource mock_log_source;
   constexpr int kTimes =
 #if BUILDFLAG(PA_DCHECK_IS_ON)

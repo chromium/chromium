@@ -7,10 +7,6 @@
 
 #include "services/shape_detection/public/mojom/textdetection.mojom.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 @class CIDetector;
 
 namespace shape_detection {

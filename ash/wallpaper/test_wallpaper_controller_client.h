@@ -35,9 +35,6 @@ class TestWallpaperControllerClient : public WallpaperControllerClient {
                      const std::vector<backdrop::Image>& images);
 
   size_t open_count() const { return open_count_; }
-  size_t set_default_wallpaper_count() const {
-    return set_default_wallpaper_count_;
-  }
   size_t fetch_images_for_collection_count() const {
     return fetch_images_for_collection_count_;
   }
@@ -76,10 +73,6 @@ class TestWallpaperControllerClient : public WallpaperControllerClient {
 
   // WallpaperControllerClient:
   void OpenWallpaperPicker() override;
-  void SetDefaultWallpaper(
-      const AccountId& account_id,
-      bool show_wallpaper,
-      base::OnceCallback<void(bool success)> callback) override;
   void FetchDailyRefreshWallpaper(
       const std::string& collection_id,
       DailyWallpaperUrlFetchedCallback callback) override;
@@ -103,7 +96,6 @@ class TestWallpaperControllerClient : public WallpaperControllerClient {
 
  private:
   size_t open_count_ = 0;
-  size_t set_default_wallpaper_count_ = 0;
   size_t fetch_images_for_collection_count_ = 0;
   std::string fetch_daily_refresh_wallpaper_param_;
   bool fetch_daily_refresh_info_fails_ = false;

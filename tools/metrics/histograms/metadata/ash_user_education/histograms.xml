@@ -1,0 +1,131 @@
+<!--
+Copyright 2023 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+
+<!--
+This file is used to generate a comprehensive list of User Education histograms
+along with a detailed description for each histogram.
+
+For best practices on writing histogram descriptions, see
+https://chromium.googlesource.com/chromium/src.git/+/HEAD/tools/metrics/histograms/README.md
+
+Please follow the instructions in the OWNERS file in this directory to find a
+reviewer. If no OWNERS file exists, please consider signing up at
+go/reviewing-metrics (Googlers only), as all subdirectories are expected to
+have an OWNERS file. As a last resort you can send the CL to
+chromium-metrics-reviews@google.com.
+-->
+
+<histogram-configuration>
+
+<histograms>
+
+<variants name="Completion">
+  <variant name="Aborted" summary="aborted"/>
+  <variant name="Completed" summary="completed"/>
+  <variant name="Counterfactual" summary="prevented counterfactually"/>
+</variants>
+
+<histogram name="Ash.WelcomeTour.Aborted.Reason"
+    enum="WelcomeTourAbortedReason" expires_after="2024-01-01">
+  <owner>angusmclean@google.com</owner>
+  <owner>dmblack@google.com</owner>
+  <summary>
+    Records the reason that the Welcome Tour was aborted after starting.
+  </summary>
+</histogram>
+
+<histogram name="Ash.WelcomeTour.Prevented.Reason"
+    enum="WelcomeTourPreventedReason" expires_after="2024-01-01">
+  <owner>angusmclean@google.com</owner>
+  <owner>dmblack@google.com</owner>
+  <summary>
+    Records the reason that the Welcome Tour was prevented from starting. Only
+    logged when the feature flag is turned on, but the tour was not shown for
+    another reason.
+  </summary>
+</histogram>
+
+<histogram name="Ash.WelcomeTour.Step.Aborted" enum="WelcomeTourStep"
+    expires_after="2024-01-01">
+  <owner>angusmclean@google.com</owner>
+  <owner>dmblack@google.com</owner>
+  <summary>Records that the Welcome Tour was aborted on a given step.</summary>
+</histogram>
+
+<histogram name="Ash.WelcomeTour.Step.Duration.{Step}" units="ms"
+    expires_after="2024-01-01">
+  <owner>angusmclean@google.com</owner>
+  <owner>dmblack@google.com</owner>
+  <summary>
+    Records the duration of the {Step} step of the Welcome Tour.
+  </summary>
+  <token key="Step">
+    <variant name="Dialog" summary="dialog"/>
+    <variant name="ExploreApp" summary="Explore app"/>
+    <variant name="ExploreAppWindow" summary="Explore app window"/>
+    <variant name="HomeButton" summary="home button"/>
+    <variant name="Search" summary="search"/>
+    <variant name="SettingsApp" summary="Settings app"/>
+    <variant name="Shelf" summary="shelf"/>
+    <variant name="StatusArea" summary="status area"/>
+  </token>
+</histogram>
+
+<histogram name="Ash.WelcomeTour.Step.Shown" enum="WelcomeTourStep"
+    expires_after="2024-01-01">
+  <owner>angusmclean@google.com</owner>
+  <owner>dmblack@google.com</owner>
+  <summary>
+    Records that a step of the Welcome Tour was shown. Each step should be
+    recorded either 0 or 1 times for any given user, depending on how far into
+    the tour the user proceeds.
+  </summary>
+</histogram>
+
+<histogram name="Ash.WelcomeTour.{Completion}.Duration" units="ms"
+    expires_after="2024-01-01">
+  <owner>angusmclean@google.com</owner>
+  <owner>dmblack@google.com</owner>
+  <summary>
+    Records the duration of the Welcome Tour when it has been {Completion},
+    starting from when dialog shows.
+  </summary>
+  <token key="Completion" variants="Completion"/>
+</histogram>
+
+<histogram name="Ash.WelcomeTour.{Completion}.Interaction.Count"
+    enum="WelcomeTourInteraction" expires_after="2024-01-01">
+  <owner>angusmclean@google.com</owner>
+  <owner>dmblack@google.com</owner>
+  <summary>
+    Records each time the user performs the given interaction when the tour was
+    {Completion}.
+  </summary>
+  <token key="Completion" variants="Completion"/>
+</histogram>
+
+<histogram
+    name="Ash.WelcomeTour.{Completion}.Interaction.FirstTime.{Interaction}"
+    units="ms" expires_after="2024-01-01">
+  <owner>angusmclean@google.com</owner>
+  <owner>dmblack@google.com</owner>
+  <summary>
+    Records the time it took the user to interact with {Interaction}, when the
+    tour was {Completion}.
+  </summary>
+  <token key="Completion" variants="Completion"/>
+  <token key="Interaction">
+    <variant name="FilesApp" summary="the Files app"/>
+    <variant name="Launcher" summary="the Launcher"/>
+    <variant name="QuickSettings" summary="Quick Settings"/>
+    <variant name="Search" summary="the search box in the Launcher"/>
+    <variant name="SettingsApp" summary="the Settings app"/>
+  </token>
+</histogram>
+
+</histograms>
+
+</histogram-configuration>

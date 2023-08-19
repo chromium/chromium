@@ -104,8 +104,7 @@ public class GetDetailsConverter {
     }
 
     /** Extracts an {@link ItemDetails} from a {@link Parcelable}. */
-    @Nullable
-    static ItemDetails convertItemDetails(Bundle item) {
+    static @Nullable ItemDetails convertItemDetails(Bundle item) {
         for (String field : REQUIRED_FIELDS) {
             if (item.containsKey(field) && (item.get(field) instanceof String)) continue;
             Log.w(TAG, "Item does not contain field String " + field + ".");

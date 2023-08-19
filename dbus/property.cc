@@ -137,15 +137,15 @@ bool PropertySet::GetAndBlock(PropertyBase* property) {
   writer.AppendString(property->name());
 
   DCHECK(object_proxy_);
-  std::unique_ptr<dbus::Response> response(object_proxy_->CallMethodAndBlock(
-      &method_call, ObjectProxy::TIMEOUT_USE_DEFAULT));
+  auto result = object_proxy_->CallMethodAndBlock(
+      &method_call, ObjectProxy::TIMEOUT_USE_DEFAULT);
 
-  if (!response.get()) {
+  if (!result.has_value()) {
     LOG(WARNING) << property->name() << ": GetAndBlock: failed.";
     return false;
   }
 
-  MessageReader reader(response.get());
+  MessageReader reader(result->get());
   if (property->PopValueFromReader(&reader)) {
     property->set_valid(true);
     NotifyPropertyChanged(property->name());
@@ -203,11 +203,9 @@ bool PropertySet::SetAndBlock(PropertyBase* property) {
   property->AppendSetValueToWriter(&writer);
 
   DCHECK(object_proxy_);
-  std::unique_ptr<dbus::Response> response(object_proxy_->CallMethodAndBlock(
-      &method_call, ObjectProxy::TIMEOUT_USE_DEFAULT));
-  if (response.get())
-    return true;
-  return false;
+  return object_proxy_
+      ->CallMethodAndBlock(&method_call, ObjectProxy::TIMEOUT_USE_DEFAULT)
+      .has_value();
 }
 
 void PropertySet::OnSet(PropertyBase* property,

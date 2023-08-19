@@ -74,7 +74,8 @@ rust_static_library("mojo_rust_system") {
 
   bindgen_output = get_target_outputs(":mojo_c_system_binding")
   inputs = bindgen_output
-  rustenv = [ "BINDGEN_RS_FILE=" + rebase_path(bindgen_output[0]) ]
+  rustenv = [ "BINDGEN_RS_FILE=" +
+              rebase_path(bindgen_output[0], get_path_info(crate_root, "dir")) ]
 }
 
 rust_static_library("mojo_rust_system_test_support") {

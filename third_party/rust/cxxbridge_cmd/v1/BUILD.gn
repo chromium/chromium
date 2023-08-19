@@ -2,15 +2,71 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+# @generated from third_party/rust/BUILD.gn.hbs by tools/crates/gnrt.
+# Do not edit!
+
 import("//build/rust/cargo_crate.gni")
 
 cargo_crate("cxxbridge") {
   crate_type = "bin"
   crate_root = "crate/src/main.rs"
+  sources = [
+    "//third_party/rust/cxxbridge_cmd/v1/crate/src/app.rs",
+    "//third_party/rust/cxxbridge_cmd/v1/crate/src/cfg.rs",
+    "//third_party/rust/cxxbridge_cmd/v1/crate/src/gen/block.rs",
+    "//third_party/rust/cxxbridge_cmd/v1/crate/src/gen/builtin.rs",
+    "//third_party/rust/cxxbridge_cmd/v1/crate/src/gen/cfg.rs",
+    "//third_party/rust/cxxbridge_cmd/v1/crate/src/gen/check.rs",
+    "//third_party/rust/cxxbridge_cmd/v1/crate/src/gen/error.rs",
+    "//third_party/rust/cxxbridge_cmd/v1/crate/src/gen/file.rs",
+    "//third_party/rust/cxxbridge_cmd/v1/crate/src/gen/fs.rs",
+    "//third_party/rust/cxxbridge_cmd/v1/crate/src/gen/ifndef.rs",
+    "//third_party/rust/cxxbridge_cmd/v1/crate/src/gen/include.rs",
+    "//third_party/rust/cxxbridge_cmd/v1/crate/src/gen/mod.rs",
+    "//third_party/rust/cxxbridge_cmd/v1/crate/src/gen/names.rs",
+    "//third_party/rust/cxxbridge_cmd/v1/crate/src/gen/namespace.rs",
+    "//third_party/rust/cxxbridge_cmd/v1/crate/src/gen/nested.rs",
+    "//third_party/rust/cxxbridge_cmd/v1/crate/src/gen/out.rs",
+    "//third_party/rust/cxxbridge_cmd/v1/crate/src/gen/write.rs",
+    "//third_party/rust/cxxbridge_cmd/v1/crate/src/lib.rs",
+    "//third_party/rust/cxxbridge_cmd/v1/crate/src/main.rs",
+    "//third_party/rust/cxxbridge_cmd/v1/crate/src/output.rs",
+    "//third_party/rust/cxxbridge_cmd/v1/crate/src/syntax/atom.rs",
+    "//third_party/rust/cxxbridge_cmd/v1/crate/src/syntax/attrs.rs",
+    "//third_party/rust/cxxbridge_cmd/v1/crate/src/syntax/cfg.rs",
+    "//third_party/rust/cxxbridge_cmd/v1/crate/src/syntax/check.rs",
+    "//third_party/rust/cxxbridge_cmd/v1/crate/src/syntax/derive.rs",
+    "//third_party/rust/cxxbridge_cmd/v1/crate/src/syntax/discriminant.rs",
+    "//third_party/rust/cxxbridge_cmd/v1/crate/src/syntax/doc.rs",
+    "//third_party/rust/cxxbridge_cmd/v1/crate/src/syntax/error.rs",
+    "//third_party/rust/cxxbridge_cmd/v1/crate/src/syntax/file.rs",
+    "//third_party/rust/cxxbridge_cmd/v1/crate/src/syntax/ident.rs",
+    "//third_party/rust/cxxbridge_cmd/v1/crate/src/syntax/impls.rs",
+    "//third_party/rust/cxxbridge_cmd/v1/crate/src/syntax/improper.rs",
+    "//third_party/rust/cxxbridge_cmd/v1/crate/src/syntax/instantiate.rs",
+    "//third_party/rust/cxxbridge_cmd/v1/crate/src/syntax/mangle.rs",
+    "//third_party/rust/cxxbridge_cmd/v1/crate/src/syntax/map.rs",
+    "//third_party/rust/cxxbridge_cmd/v1/crate/src/syntax/mod.rs",
+    "//third_party/rust/cxxbridge_cmd/v1/crate/src/syntax/names.rs",
+    "//third_party/rust/cxxbridge_cmd/v1/crate/src/syntax/namespace.rs",
+    "//third_party/rust/cxxbridge_cmd/v1/crate/src/syntax/parse.rs",
+    "//third_party/rust/cxxbridge_cmd/v1/crate/src/syntax/pod.rs",
+    "//third_party/rust/cxxbridge_cmd/v1/crate/src/syntax/qualified.rs",
+    "//third_party/rust/cxxbridge_cmd/v1/crate/src/syntax/report.rs",
+    "//third_party/rust/cxxbridge_cmd/v1/crate/src/syntax/resolve.rs",
+    "//third_party/rust/cxxbridge_cmd/v1/crate/src/syntax/set.rs",
+    "//third_party/rust/cxxbridge_cmd/v1/crate/src/syntax/symbol.rs",
+    "//third_party/rust/cxxbridge_cmd/v1/crate/src/syntax/tokens.rs",
+    "//third_party/rust/cxxbridge_cmd/v1/crate/src/syntax/toposort.rs",
+    "//third_party/rust/cxxbridge_cmd/v1/crate/src/syntax/trivial.rs",
+    "//third_party/rust/cxxbridge_cmd/v1/crate/src/syntax/types.rs",
+    "//third_party/rust/cxxbridge_cmd/v1/crate/src/syntax/visit.rs",
+    "//third_party/rust/cxxbridge_cmd/v1/crate/src/test.rs",
+  ]
+  inputs = [ "//third_party/rust/cxxbridge_cmd/v1/crate/src/gen/include/cxx.h" ]
 
   # Unit tests skipped. Generate with --with-tests to include them.
   build_native_rust_unit_tests = false
-  sources = [ "crate/src/main.rs" ]
   edition = "2018"
   cargo_pkg_version = "1.0.82"
   cargo_pkg_authors = "David Tolnay <dtolnay@gmail.com>"
@@ -35,10 +91,63 @@ cargo_crate("lib") {
   epoch = "1"
   crate_type = "rlib"
   crate_root = "crate/src/lib.rs"
+  sources = [
+    "//third_party/rust/cxxbridge_cmd/v1/crate/src/app.rs",
+    "//third_party/rust/cxxbridge_cmd/v1/crate/src/cfg.rs",
+    "//third_party/rust/cxxbridge_cmd/v1/crate/src/gen/block.rs",
+    "//third_party/rust/cxxbridge_cmd/v1/crate/src/gen/builtin.rs",
+    "//third_party/rust/cxxbridge_cmd/v1/crate/src/gen/cfg.rs",
+    "//third_party/rust/cxxbridge_cmd/v1/crate/src/gen/check.rs",
+    "//third_party/rust/cxxbridge_cmd/v1/crate/src/gen/error.rs",
+    "//third_party/rust/cxxbridge_cmd/v1/crate/src/gen/file.rs",
+    "//third_party/rust/cxxbridge_cmd/v1/crate/src/gen/fs.rs",
+    "//third_party/rust/cxxbridge_cmd/v1/crate/src/gen/ifndef.rs",
+    "//third_party/rust/cxxbridge_cmd/v1/crate/src/gen/include.rs",
+    "//third_party/rust/cxxbridge_cmd/v1/crate/src/gen/mod.rs",
+    "//third_party/rust/cxxbridge_cmd/v1/crate/src/gen/names.rs",
+    "//third_party/rust/cxxbridge_cmd/v1/crate/src/gen/namespace.rs",
+    "//third_party/rust/cxxbridge_cmd/v1/crate/src/gen/nested.rs",
+    "//third_party/rust/cxxbridge_cmd/v1/crate/src/gen/out.rs",
+    "//third_party/rust/cxxbridge_cmd/v1/crate/src/gen/write.rs",
+    "//third_party/rust/cxxbridge_cmd/v1/crate/src/lib.rs",
+    "//third_party/rust/cxxbridge_cmd/v1/crate/src/main.rs",
+    "//third_party/rust/cxxbridge_cmd/v1/crate/src/output.rs",
+    "//third_party/rust/cxxbridge_cmd/v1/crate/src/syntax/atom.rs",
+    "//third_party/rust/cxxbridge_cmd/v1/crate/src/syntax/attrs.rs",
+    "//third_party/rust/cxxbridge_cmd/v1/crate/src/syntax/cfg.rs",
+    "//third_party/rust/cxxbridge_cmd/v1/crate/src/syntax/check.rs",
+    "//third_party/rust/cxxbridge_cmd/v1/crate/src/syntax/derive.rs",
+    "//third_party/rust/cxxbridge_cmd/v1/crate/src/syntax/discriminant.rs",
+    "//third_party/rust/cxxbridge_cmd/v1/crate/src/syntax/doc.rs",
+    "//third_party/rust/cxxbridge_cmd/v1/crate/src/syntax/error.rs",
+    "//third_party/rust/cxxbridge_cmd/v1/crate/src/syntax/file.rs",
+    "//third_party/rust/cxxbridge_cmd/v1/crate/src/syntax/ident.rs",
+    "//third_party/rust/cxxbridge_cmd/v1/crate/src/syntax/impls.rs",
+    "//third_party/rust/cxxbridge_cmd/v1/crate/src/syntax/improper.rs",
+    "//third_party/rust/cxxbridge_cmd/v1/crate/src/syntax/instantiate.rs",
+    "//third_party/rust/cxxbridge_cmd/v1/crate/src/syntax/mangle.rs",
+    "//third_party/rust/cxxbridge_cmd/v1/crate/src/syntax/map.rs",
+    "//third_party/rust/cxxbridge_cmd/v1/crate/src/syntax/mod.rs",
+    "//third_party/rust/cxxbridge_cmd/v1/crate/src/syntax/names.rs",
+    "//third_party/rust/cxxbridge_cmd/v1/crate/src/syntax/namespace.rs",
+    "//third_party/rust/cxxbridge_cmd/v1/crate/src/syntax/parse.rs",
+    "//third_party/rust/cxxbridge_cmd/v1/crate/src/syntax/pod.rs",
+    "//third_party/rust/cxxbridge_cmd/v1/crate/src/syntax/qualified.rs",
+    "//third_party/rust/cxxbridge_cmd/v1/crate/src/syntax/report.rs",
+    "//third_party/rust/cxxbridge_cmd/v1/crate/src/syntax/resolve.rs",
+    "//third_party/rust/cxxbridge_cmd/v1/crate/src/syntax/set.rs",
+    "//third_party/rust/cxxbridge_cmd/v1/crate/src/syntax/symbol.rs",
+    "//third_party/rust/cxxbridge_cmd/v1/crate/src/syntax/tokens.rs",
+    "//third_party/rust/cxxbridge_cmd/v1/crate/src/syntax/toposort.rs",
+    "//third_party/rust/cxxbridge_cmd/v1/crate/src/syntax/trivial.rs",
+    "//third_party/rust/cxxbridge_cmd/v1/crate/src/syntax/types.rs",
+    "//third_party/rust/cxxbridge_cmd/v1/crate/src/syntax/visit.rs",
+    "//third_party/rust/cxxbridge_cmd/v1/crate/src/test.rs",
+  ]
+  inputs = [ "//third_party/rust/cxxbridge_cmd/v1/crate/src/gen/include/cxx.h" ]
 
   # Unit tests skipped. Generate with --with-tests to include them.
   build_native_rust_unit_tests = false
-  sources = [ "crate/src/lib.rs" ]
   edition = "2018"
   cargo_pkg_version = "1.0.82"
   cargo_pkg_authors = "David Tolnay <dtolnay@gmail.com>"

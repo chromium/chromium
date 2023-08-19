@@ -213,17 +213,20 @@ void DecryptingVideoDecoder::DecodePendingBuffer() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK_EQ(state_, kPendingDecode) << state_;
 
+  auto& buffer = pending_buffer_to_decode_;
+
   // Note: Traces require a unique ID per decode, if we ever support multiple
   // in flight decodes, the trace begin+end macros need the same unique id.
   DCHECK_EQ(GetMaxDecodeRequests(), 1);
-  TRACE_EVENT_ASYNC_BEGIN1(
+  const bool is_end_of_stream = buffer->end_of_stream();
+  const bool is_encrypted = !is_end_of_stream && buffer->decrypt_config();
+  const auto timestamp_us =
+      is_end_of_stream ? 0 : buffer->timestamp().InMicroseconds();
+  TRACE_EVENT_NESTABLE_ASYNC_BEGIN2(
       "media", "DecryptingVideoDecoder::DecodePendingBuffer", this,
-      "timestamp_us",
-      pending_buffer_to_decode_->end_of_stream()
-          ? 0
-          : pending_buffer_to_decode_->timestamp().InMicroseconds());
+      "is_encrypted", is_encrypted, "timestamp_us", timestamp_us);
 
-  if (!DecoderBuffer::DoSubsamplesMatch(*pending_buffer_to_decode_)) {
+  if (!DecoderBuffer::DoSubsamplesMatch(*buffer)) {
     MEDIA_LOG(ERROR, media_log_)
         << "DecryptingVideoDecoder: Subsamples for Buffer do not match";
     state_ = kError;
@@ -232,7 +235,7 @@ void DecryptingVideoDecoder::DecodePendingBuffer() {
   }
 
   decryptor_->DecryptAndDecodeVideo(
-      pending_buffer_to_decode_,
+      buffer,
       base::BindPostTaskToCurrentDefault(base::BindRepeating(
           &DecryptingVideoDecoder::DeliverFrame, weak_factory_.GetWeakPtr())));
 }
@@ -289,7 +292,7 @@ void DecryptingVideoDecoder::DeliverFrame(Decryptor::Status status,
       return;
     }
 
-    TRACE_EVENT_ASYNC_BEGIN0(
+    TRACE_EVENT_NESTABLE_ASYNC_BEGIN0(
         "media", "DecryptingVideoDecoder::WaitingForDecryptionKey", this);
     state_ = kWaitingForKey;
     waiting_cb_.Run(WaitingReason::kNoDecryptionKey);
@@ -361,13 +364,14 @@ void DecryptingVideoDecoder::DoReset() {
 
 void DecryptingVideoDecoder::CompletePendingDecode(Decryptor::Status status) {
   DCHECK_EQ(state_, kPendingDecode);
-  TRACE_EVENT_ASYNC_END1("media", "DecryptingVideoDecoder::DecodePendingBuffer",
-                         this, "status", Decryptor::GetStatusName(status));
+  TRACE_EVENT_NESTABLE_ASYNC_END1(
+      "media", "DecryptingVideoDecoder::DecodePendingBuffer", this, "status",
+      Decryptor::GetStatusName(status));
 }
 
 void DecryptingVideoDecoder::CompleteWaitingForDecryptionKey() {
   DCHECK_EQ(state_, kWaitingForKey);
-  TRACE_EVENT_ASYNC_END0(
+  TRACE_EVENT_NESTABLE_ASYNC_END0(
       "media", "DecryptingVideoDecoder::WaitingForDecryptionKey", this);
 }
 

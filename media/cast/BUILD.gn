@@ -465,6 +465,8 @@ if (is_win || is_mac || is_linux || is_chromeos_lacros || is_fuchsia) {
       "//base",
       "//build/win:default_exe_manifest",
       "//media",
+      "//media:test_support",
+      "//testing/gmock",
     ]
   }
 

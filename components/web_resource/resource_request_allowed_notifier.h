@@ -21,7 +21,7 @@ namespace web_resource {
 //
 // Currently, the criteria for allowing resource requests are:
 //  1. The network is currently available,
-//  2. The EULA was accepted by the user (ChromeOS only), and
+//  2. The EULA was accepted by the user (can be disabled), and
 //  3. The --disable-background-networking command line switch is not set.
 //
 // Interested services should add themselves as an observer of
@@ -83,6 +83,10 @@ class ResourceRequestAllowedNotifier
   // |leaky| to true if this class will not be destructed before shutdown.
   void Init(Observer* observer, bool leaky);
 
+  // Performs the same initialization as above, except that it allows for
+  // disabling waiting for acceptance of EULA (by default it's enabled)
+  void Init(Observer* observer, bool leaky, bool wait_for_eula);
+
   // Returns whether resource requests are allowed, per the various criteria.
   // If not, this call will set some flags so it knows to notify the observer
   // if the criteria change. Note that the observer will not be notified unless
@@ -122,7 +126,7 @@ class ResourceRequestAllowedNotifier
   const char* disable_network_switch_;
 
   // The local state this class is observing.
-  raw_ptr<PrefService, DanglingUntriaged> local_state_;
+  raw_ptr<PrefService, LeakedDanglingUntriaged> local_state_;
 
   // Tracks whether or not the observer/service depending on this class actually
   // requested permission to make a request or not. If it did not, then this
@@ -139,8 +143,8 @@ class ResourceRequestAllowedNotifier
   raw_ptr<Observer> observer_;
 
   NetworkConnectionTrackerGetter network_connection_tracker_getter_;
-  raw_ptr<network::NetworkConnectionTracker> network_connection_tracker_ =
-      nullptr;
+  raw_ptr<network::NetworkConnectionTracker, LeakedDanglingUntriaged>
+      network_connection_tracker_ = nullptr;
   network::mojom::ConnectionType connection_type_ =
       network::mojom::ConnectionType::CONNECTION_UNKNOWN;
   bool connection_initialized_ = false;

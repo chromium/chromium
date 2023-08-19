@@ -649,7 +649,7 @@ TEST(ChannelTest, SendToDeadMachPortName) {
   get_send_name_refs();
   EXPECT_EQ(2u, send);
   EXPECT_EQ(0u, dead);
-  base::mac::ScopedMachSendRight extra_send(send_name);
+  base::apple::ScopedMachSendRight extra_send(send_name);
 
   // Channel A gets created with the Mach send right from |platform_channel|.
   CallbackChannelDelegate delegate_a;

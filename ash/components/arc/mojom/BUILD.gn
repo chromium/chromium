@@ -9,7 +9,6 @@ assert(is_chromeos_ash)
 
 mojom("mojom") {
   sources = [
-    "accessibility_helper.mojom",
     "adbd.mojom",
     "anr.mojom",
     "app.mojom",
@@ -47,7 +46,6 @@ mojom("mojom") {
     "nearby_share.mojom",
     "net.mojom",
     "obb_mounter.mojom",
-    "payment_app.mojom",
     "pip.mojom",
     "policy.mojom",
     "power.mojom",
@@ -56,7 +54,6 @@ mojom("mojom") {
     "privacy_items.mojom",
     "process.mojom",
     "property.mojom",
-    "rotation_lock.mojom",
     "scale_factor.mojom",
     "screen_capture.mojom",
     "sharesheet.mojom",
@@ -86,6 +83,7 @@ mojom("mojom") {
     "//mojo/public/mojom/base",
     "//printing/mojom",
     "//sandbox/policy/mojom",
+    "//services/accessibility/android/public/mojom",
     "//services/device/public/mojom:usb",
     "//services/media_session/public/mojom",
     "//services/resource_coordinator/public/mojom",
@@ -416,6 +414,7 @@ mojom("protected_buffer_manager") {
 source_set("unit_tests") {
   testonly = true
   sources = [
+    "//ash/components/arc/intent_helper/intent_filter_mojom_traits_unittest.cc",
     "ime_mojom_traits_unittest.cc",
     "video_accelerator_mojom_traits_unittest.cc",
     "video_encode_accelerator_mojom_traits_unittest.cc",
@@ -423,6 +422,7 @@ source_set("unit_tests") {
 
   deps = [
     ":mojom",
+    "//components/arc",
     "//media",
     "//mojo/public/cpp/test_support:test_utils",
     "//testing/gtest",

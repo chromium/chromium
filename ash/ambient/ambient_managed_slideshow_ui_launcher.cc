@@ -9,6 +9,7 @@
 #include "ash/ambient/ambient_managed_photo_controller.h"
 #include "ash/ambient/ambient_view_delegate_impl.h"
 #include "ash/ambient/managed/screensaver_images_policy_handler.h"
+#include "ash/ambient/metrics/managed_screensaver_metrics.h"
 #include "ash/ambient/model/ambient_slideshow_photo_config.h"
 #include "ash/ambient/ui/photo_view.h"
 #include "ash/login/ui/lock_screen.h"
@@ -42,6 +43,7 @@ AmbientManagedSlideshowUiLauncher::~AmbientManagedSlideshowUiLauncher() =
 void AmbientManagedSlideshowUiLauncher::OnImagesReady() {
   CHECK(initialization_callback_);
   std::move(initialization_callback_).Run(/*success=*/true);
+  metrics_recorder_.RecordSessionStartupTime();
 }
 
 void AmbientManagedSlideshowUiLauncher::OnErrorStateChanged() {
@@ -54,6 +56,7 @@ void AmbientManagedSlideshowUiLauncher::OnLockStateChanged(bool locked) {
 
 void AmbientManagedSlideshowUiLauncher::Initialize(
     InitializationCallback on_done) {
+  metrics_recorder_.RecordSessionStart();
   initialization_callback_ = std::move(on_done);
   // TODO(b/281056480): Remove this line and add the login screen visible method
   // to session observer. This is required because if we compute the ready state
@@ -78,6 +81,7 @@ std::unique_ptr<views::View> AmbientManagedSlideshowUiLauncher::CreateView() {
 
 void AmbientManagedSlideshowUiLauncher::Finalize() {
   photo_controller_.StopScreenUpdate();
+  metrics_recorder_.RecordSessionEnd();
 }
 
 AmbientBackendModel*

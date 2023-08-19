@@ -7,6 +7,8 @@
 #include <vector>
 
 #include "ash/constants/ash_features.h"
+#include "ash/constants/ash_pref_names.h"
+#include "ash/keyboard/keyboard_controller_impl.h"
 #include "ash/public/mojom/input_device_settings.mojom.h"
 #include "ash/shell.h"
 #include "ash/system/input_device_settings/input_device_settings_controller_impl.h"
@@ -18,6 +20,7 @@
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/accelerators/accelerator.h"
 #include "ui/events/ash/keyboard_capability.h"
+#include "ui/events/ash/mojom/six_pack_shortcut_modifier.mojom-shared.h"
 #include "ui/events/devices/device_data_manager_test_api.h"
 #include "ui/events/devices/keyboard_device.h"
 #include "ui/events/event_constants.h"
@@ -95,11 +98,11 @@ class AcceleratorAliasConverterTest : public AshTestBase {
                                    bool enabled) {
     if (!features::IsInputDeviceSettingsSplitEnabled()) {
       // Top row keys not fKeys prevents remapping.
-      Shell::Get()
-          ->keyboard_capability()
-          ->SetTopRowKeysAsFKeysEnabledForTesting(enabled);
-      EXPECT_EQ(enabled,
-                Shell::Get()->keyboard_capability()->TopRowKeysAreFKeys());
+      Shell::Get()->session_controller()->GetActivePrefService()->SetBoolean(
+          prefs::kSendFunctionKeys, enabled);
+      EXPECT_EQ(
+          enabled,
+          Shell::Get()->keyboard_controller()->AreTopRowKeysFunctionKeys());
       return;
     }
 
@@ -136,19 +139,34 @@ TEST_F(AcceleratorAliasConverterTest, CheckTopRowAliasNoAlias) {
 TEST_F(AcceleratorAliasConverterTest, CheckGlobeKeyAlias) {
   std::unique_ptr<FakeDeviceManager> fake_keyboard_manager_ =
       std::make_unique<FakeDeviceManager>();
-  ui::KeyboardDevice fake_keyboard(
-      /*id=*/1, /*type=*/ui::InputDeviceType::INPUT_DEVICE_BLUETOOTH,
-      /*name=*/kKbdTopRowLayout1Tag);
-  fake_keyboard.sys_path = base::FilePath("path");
-  fake_keyboard_manager_->AddFakeKeyboard(fake_keyboard, kKbdTopRowLayout1Tag);
-
   AcceleratorAliasConverter accelerator_alias_converter_;
+
+  // Globe key is not available in non-wilco/drallion internal devices.
+  ui::KeyboardDevice internal_keyboard(
+      /*id=*/1, /*type=*/ui::InputDeviceType::INPUT_DEVICE_INTERNAL,
+      /*name=*/kKbdTopRowLayout1Tag);
+  internal_keyboard.sys_path = base::FilePath("internal_path");
+  fake_keyboard_manager_->AddFakeKeyboard(internal_keyboard,
+                                          kKbdTopRowLayout1Tag);
 
   const ui::Accelerator accelerator{ui::VKEY_MODECHANGE, ui::EF_NONE};
   std::vector<ui::Accelerator> accelerator_aliases =
       accelerator_alias_converter_.CreateAcceleratorAlias(accelerator);
   EXPECT_EQ(0u, accelerator_aliases.size());
 
+  // Globe key is available in external keyboard.
+  ui::KeyboardDevice fake_keyboard(
+      /*id=*/1, /*type=*/ui::InputDeviceType::INPUT_DEVICE_BLUETOOTH,
+      /*name=*/kKbdTopRowLayout1Tag);
+  fake_keyboard.sys_path = base::FilePath("path");
+  fake_keyboard_manager_->AddFakeKeyboard(fake_keyboard, kKbdTopRowLayout1Tag);
+
+  accelerator_aliases =
+      accelerator_alias_converter_.CreateAcceleratorAlias(accelerator);
+  EXPECT_EQ(1u, accelerator_aliases.size());
+  EXPECT_EQ(accelerator, accelerator_aliases[0]);
+
+  // Globe key is available in wilco/drallion keyboards.
   ui::KeyboardDevice wilco_keyboard(
       /*id=*/2, /*type=*/ui::InputDeviceType::INPUT_DEVICE_INTERNAL,
       /*name=*/kKbdTopRowLayout1Tag);
@@ -294,19 +312,6 @@ TEST_F(AcceleratorAliasConverterTest, CheckCapsLockAlias) {
   accelerator_aliases =
       accelerator_alias_converter_.CreateAcceleratorAlias(bad_accelerator);
   EXPECT_EQ(0u, accelerator_aliases.size());
-}
-
-TEST_F(AcceleratorAliasConverterTest, CheckPlayPauseHidden) {
-  AcceleratorAliasConverter accelerator_alias_converter_;
-  const ui::Accelerator play_accelerator{ui::VKEY_PLAY, ui::EF_NONE};
-  const ui::Accelerator pause_accelerator{ui::VKEY_PAUSE, ui::EF_NONE};
-
-  EXPECT_TRUE(
-      accelerator_alias_converter_.CreateAcceleratorAlias(play_accelerator)
-          .empty());
-  EXPECT_TRUE(
-      accelerator_alias_converter_.CreateAcceleratorAlias(pause_accelerator)
-          .empty());
 }
 
 TEST_F(AcceleratorAliasConverterTest, MetaFKeyRewritesSuppressed) {
@@ -644,35 +649,7 @@ INSTANTIATE_TEST_SUITE_P(
         // [original_modifiers].
         {ui::Accelerator{ui::VKEY_DELETE, ui::EF_ALT_DOWN},
          ui::Accelerator{ui::VKEY_BACK, ui::EF_COMMAND_DOWN | ui::EF_ALT_DOWN}},
-
-        // Below are tests for reversed six pack alias.
-        // [Search] not in modifiers prevents remapping.
-        {ui::Accelerator{ui::VKEY_LEFT, ui::EF_ALT_DOWN}, absl::nullopt},
-        // key_code not as reversed six pack key prevent remapping.
-        {ui::Accelerator{ui::VKEY_ZOOM, ui::EF_COMMAND_DOWN}, absl::nullopt},
-        // [Back] + [Search] -> [Delete]
-        {ui::Accelerator{ui::VKEY_BACK, ui::EF_COMMAND_DOWN},
-         ui::Accelerator{ui::VKEY_DELETE, ui::EF_NONE}},
-        // [Back] + [Shift] + [Search] -> [Insert].
-        {ui::Accelerator{ui::VKEY_BACK,
-                         ui::EF_COMMAND_DOWN | ui::EF_SHIFT_DOWN},
-         ui::Accelerator{ui::VKEY_INSERT, ui::EF_NONE}},
-        // [Back] + [Shift] + [Search] + [Alt] -> [Insert] + [Alt].
-        {ui::Accelerator{ui::VKEY_BACK, ui::EF_COMMAND_DOWN |
-                                            ui::EF_SHIFT_DOWN |
-                                            ui::EF_ALT_DOWN},
-         ui::Accelerator{ui::VKEY_INSERT, ui::EF_ALT_DOWN}},
-        // [Back] + [Search] + [Alt] -> [Delete] + [Alt].
-        {ui::Accelerator{ui::VKEY_BACK, ui::EF_COMMAND_DOWN | ui::EF_ALT_DOWN},
-         ui::Accelerator{ui::VKEY_DELETE, ui::EF_ALT_DOWN}},
-        // [Left] + [Search] + [Alt] -> [Home] + [Alt].
-        {ui::Accelerator{ui::VKEY_LEFT, ui::EF_COMMAND_DOWN | ui::EF_ALT_DOWN},
-         ui::Accelerator{ui::VKEY_HOME, ui::EF_ALT_DOWN}},
-        // [Left] + [Search] + [Shift] + [Alt] -> [Home] + [Shift] + [Alt].
-        {ui::Accelerator{ui::VKEY_LEFT, ui::EF_COMMAND_DOWN | ui::EF_ALT_DOWN |
-                                            ui::EF_SHIFT_DOWN},
-         ui::Accelerator{ui::VKEY_HOME,
-                         ui::EF_ALT_DOWN | ui::EF_SHIFT_DOWN}}}));
+    }));
 
 TEST_P(SixPackAliasTestWithExternalKeyboard, CheckSixPackAlias) {
   fake_keyboard_manager_->RemoveAllDevices();
@@ -722,7 +699,7 @@ INSTANTIATE_TEST_SUITE_P(
     SixPackAliasTestWithInternalKeyboard,
     testing::ValuesIn(std::vector<AcceleratorAliasConverterTestData>{
         // A keyboard without six pack keys should not affect the aliasing of
-        // six pack key, but only affect the aliasing of reversed six pack key.
+        // six pack key.
 
         // [Search] as original modifier prevents remapping.
         {ui::Accelerator{ui::VKEY_ZOOM, ui::EF_COMMAND_DOWN}, absl::nullopt},
@@ -741,31 +718,7 @@ INSTANTIATE_TEST_SUITE_P(
         // [original_modifiers].
         {ui::Accelerator{ui::VKEY_DELETE, ui::EF_ALT_DOWN},
          ui::Accelerator{ui::VKEY_BACK, ui::EF_COMMAND_DOWN | ui::EF_ALT_DOWN}},
-
-        // Below are tests for reversed six pack alias.
-        // All reversed six pack aliasing which work with an external
-        // keyboard should stop working with an internal keyboard.
-        // [Back] + [Search] -> None.
-        {ui::Accelerator{ui::VKEY_BACK, ui::EF_COMMAND_DOWN}, absl::nullopt},
-        // [Back] + [Shift] + [Search] -> None.
-        {ui::Accelerator{ui::VKEY_BACK,
-                         ui::EF_COMMAND_DOWN | ui::EF_SHIFT_DOWN},
-         absl::nullopt},
-        // // [Back] + [Shift] + [Search] + [Alt] -> None.
-        {ui::Accelerator{ui::VKEY_BACK, ui::EF_COMMAND_DOWN |
-                                            ui::EF_SHIFT_DOWN |
-                                            ui::EF_ALT_DOWN},
-         absl::nullopt},
-        // [Back] + [Search] + [Alt] -> None.
-        {ui::Accelerator{ui::VKEY_BACK, ui::EF_COMMAND_DOWN | ui::EF_ALT_DOWN},
-         absl::nullopt},
-        // [Left] + [Search] + [Alt] -> None.
-        {ui::Accelerator{ui::VKEY_LEFT, ui::EF_COMMAND_DOWN | ui::EF_ALT_DOWN},
-         absl::nullopt},
-        // [Left] + [Search] + [Shift] + [Alt] -> None.
-        {ui::Accelerator{ui::VKEY_LEFT, ui::EF_COMMAND_DOWN | ui::EF_ALT_DOWN |
-                                            ui::EF_SHIFT_DOWN},
-         absl::nullopt}}));
+    }));
 
 TEST_P(SixPackAliasTestWithInternalKeyboard, CheckSixPackAlias) {
   fake_keyboard_manager_->RemoveAllDevices();
@@ -794,6 +747,183 @@ TEST_P(SixPackAliasTestWithInternalKeyboard, CheckSixPackAlias) {
   }
 }
 
+class SixPackAliasAltTest
+    : public AcceleratorAliasConverterTest,
+      public testing::WithParamInterface<AcceleratorAliasConverterTestData> {
+  void SetUp() override {
+    scoped_feature_list_.InitWithFeatures(
+        {ash::features::kInputDeviceSettingsSplit,
+         ash::features::kAltClickAndSixPackCustomization},
+        /*disabled_features=*/{});
+    AcceleratorAliasConverterTest::SetUp();
+    AcceleratorAliasConverterTestData test_data = GetParam();
+    accelerator_ = test_data.accelerator_;
+    expected_accelerators_ = test_data.expected_accelerators_;
+    fake_keyboard_manager_ = std::make_unique<FakeDeviceManager>();
+  }
+
+ protected:
+  base::test::ScopedFeatureList scoped_feature_list_;
+  ui::Accelerator accelerator_;
+  absl::optional<ui::Accelerator> expected_accelerators_;
+  std::unique_ptr<FakeDeviceManager> fake_keyboard_manager_;
+};
+
+INSTANTIATE_TEST_SUITE_P(
+    // Empty to simplify gtest output
+    ,
+    SixPackAliasAltTest,
+    testing::ValuesIn(std::vector<AcceleratorAliasConverterTestData>{
+        {ui::Accelerator{ui::VKEY_DELETE, ui::EF_NONE},
+         ui::Accelerator{ui::VKEY_BACK, ui::EF_ALT_DOWN}},
+
+        {ui::Accelerator{ui::VKEY_HOME, ui::EF_NONE},
+         ui::Accelerator{ui::VKEY_UP, ui::EF_ALT_DOWN | ui::EF_CONTROL_DOWN}},
+
+        {ui::Accelerator{ui::VKEY_PRIOR, ui::EF_NONE},
+         ui::Accelerator{ui::VKEY_UP, ui::EF_ALT_DOWN}},
+
+        {ui::Accelerator{ui::VKEY_END, ui::EF_NONE},
+         ui::Accelerator{ui::VKEY_DOWN, ui::EF_ALT_DOWN | ui::EF_CONTROL_DOWN}},
+
+        {ui::Accelerator{ui::VKEY_NEXT, ui::EF_NONE},
+         ui::Accelerator{ui::VKEY_DOWN, ui::EF_ALT_DOWN}},
+
+    }));
+
+TEST_P(SixPackAliasAltTest, CheckSixPackAliasAlt) {
+  fake_keyboard_manager_->RemoveAllDevices();
+  ui::KeyboardDevice fake_keyboard(
+      /*id=*/1, /*type=*/ui::InputDeviceType::INPUT_DEVICE_INTERNAL,
+      /*name=*/kKbdTopRowLayout1Tag);
+  fake_keyboard.sys_path = base::FilePath("path");
+  fake_keyboard_manager_->AddFakeKeyboard(fake_keyboard, kKbdTopRowLayout2Tag);
+  auto settings = Shell::Get()
+                      ->input_device_settings_controller()
+                      ->GetKeyboardSettings(fake_keyboard.id)
+                      ->Clone();
+
+  mojom::SixPackKeyInfoPtr six_pack_key_info = mojom::SixPackKeyInfo::New();
+  six_pack_key_info->del = ui::mojom::SixPackShortcutModifier::kAlt;
+  six_pack_key_info->home = ui::mojom::SixPackShortcutModifier::kAlt;
+  six_pack_key_info->end = ui::mojom::SixPackShortcutModifier::kAlt;
+  six_pack_key_info->page_down = ui::mojom::SixPackShortcutModifier::kAlt;
+  six_pack_key_info->page_up = ui::mojom::SixPackShortcutModifier::kAlt;
+
+  settings->six_pack_key_remappings = six_pack_key_info.Clone();
+  Shell::Get()->input_device_settings_controller()->SetKeyboardSettings(
+      fake_keyboard.id, std::move(settings));
+  AcceleratorAliasConverter accelerator_alias_converter_;
+
+  std::vector<ui::Accelerator> accelerator_alias =
+      accelerator_alias_converter_.CreateAcceleratorAlias(accelerator_);
+  EXPECT_EQ(1u, accelerator_alias.size());
+  EXPECT_EQ(expected_accelerators_, accelerator_alias[0]);
+}
+
+class SixPackAliasSearchTest
+    : public AcceleratorAliasConverterTest,
+      public testing::WithParamInterface<AcceleratorAliasConverterTestData> {
+  void SetUp() override {
+    scoped_feature_list_.InitWithFeatures(
+        {ash::features::kInputDeviceSettingsSplit,
+         ash::features::kAltClickAndSixPackCustomization},
+        /*disabled_features=*/{});
+    AcceleratorAliasConverterTest::SetUp();
+    AcceleratorAliasConverterTestData test_data = GetParam();
+    accelerator_ = test_data.accelerator_;
+    expected_accelerators_ = test_data.expected_accelerators_;
+    fake_keyboard_manager_ = std::make_unique<FakeDeviceManager>();
+  }
+
+ protected:
+  base::test::ScopedFeatureList scoped_feature_list_;
+  ui::Accelerator accelerator_;
+  absl::optional<ui::Accelerator> expected_accelerators_;
+  std::unique_ptr<FakeDeviceManager> fake_keyboard_manager_;
+};
+
+INSTANTIATE_TEST_SUITE_P(
+    // Empty to simplify gtest output
+    ,
+    SixPackAliasSearchTest,
+    testing::ValuesIn(std::vector<AcceleratorAliasConverterTestData>{
+
+        {ui::Accelerator{ui::VKEY_INSERT, ui::EF_NONE},
+         ui::Accelerator{ui::VKEY_BACK,
+                         ui::EF_COMMAND_DOWN | ui::EF_SHIFT_DOWN}},
+
+        {ui::Accelerator{ui::VKEY_DELETE, ui::EF_NONE},
+         ui::Accelerator{ui::VKEY_BACK, ui::EF_COMMAND_DOWN}},
+
+        {ui::Accelerator{ui::VKEY_HOME, ui::EF_NONE},
+         ui::Accelerator{ui::VKEY_LEFT, ui::EF_COMMAND_DOWN}},
+
+        {ui::Accelerator{ui::VKEY_PRIOR, ui::EF_NONE},
+         ui::Accelerator{ui::VKEY_UP, ui::EF_COMMAND_DOWN}},
+
+        {ui::Accelerator{ui::VKEY_END, ui::EF_NONE},
+         ui::Accelerator{ui::VKEY_RIGHT, ui::EF_COMMAND_DOWN}},
+
+        {ui::Accelerator{ui::VKEY_NEXT, ui::EF_NONE},
+         ui::Accelerator{ui::VKEY_DOWN, ui::EF_COMMAND_DOWN}},
+    }));
+
+TEST_P(SixPackAliasSearchTest, CheckSixPackAliasSearch) {
+  fake_keyboard_manager_->RemoveAllDevices();
+  ui::KeyboardDevice fake_keyboard(
+      /*id=*/1, /*type=*/ui::InputDeviceType::INPUT_DEVICE_INTERNAL,
+      /*name=*/kKbdTopRowLayout1Tag);
+  fake_keyboard.sys_path = base::FilePath("path");
+  fake_keyboard_manager_->AddFakeKeyboard(fake_keyboard, kKbdTopRowLayout2Tag);
+  auto settings = Shell::Get()
+                      ->input_device_settings_controller()
+                      ->GetKeyboardSettings(fake_keyboard.id)
+                      ->Clone();
+
+  mojom::SixPackKeyInfoPtr six_pack_key_info = mojom::SixPackKeyInfo::New();
+  settings->six_pack_key_remappings = six_pack_key_info.Clone();
+  Shell::Get()->input_device_settings_controller()->SetKeyboardSettings(
+      fake_keyboard.id, std::move(settings));
+  AcceleratorAliasConverter accelerator_alias_converter_;
+
+  std::vector<ui::Accelerator> accelerator_alias =
+      accelerator_alias_converter_.CreateAcceleratorAlias(accelerator_);
+
+  EXPECT_EQ(1u, accelerator_alias.size());
+  EXPECT_EQ(expected_accelerators_, accelerator_alias[0]);
+}
+
+TEST_P(SixPackAliasSearchTest, CheckSixPackAliasNone) {
+  fake_keyboard_manager_->RemoveAllDevices();
+  ui::KeyboardDevice fake_keyboard(
+      /*id=*/1, /*type=*/ui::InputDeviceType::INPUT_DEVICE_INTERNAL,
+      /*name=*/kKbdTopRowLayout1Tag);
+  fake_keyboard.sys_path = base::FilePath("path");
+  fake_keyboard_manager_->AddFakeKeyboard(fake_keyboard, kKbdTopRowLayout2Tag);
+  auto settings = Shell::Get()
+                      ->input_device_settings_controller()
+                      ->GetKeyboardSettings(fake_keyboard.id)
+                      ->Clone();
+
+  mojom::SixPackKeyInfoPtr six_pack_key_info = mojom::SixPackKeyInfo::New();
+  six_pack_key_info->del = ui::mojom::SixPackShortcutModifier::kNone;
+  six_pack_key_info->home = ui::mojom::SixPackShortcutModifier::kNone;
+  six_pack_key_info->insert = ui::mojom::SixPackShortcutModifier::kNone;
+  six_pack_key_info->end = ui::mojom::SixPackShortcutModifier::kNone;
+  six_pack_key_info->page_down = ui::mojom::SixPackShortcutModifier::kNone;
+  six_pack_key_info->page_up = ui::mojom::SixPackShortcutModifier::kNone;
+  settings->six_pack_key_remappings = six_pack_key_info.Clone();
+  Shell::Get()->input_device_settings_controller()->SetKeyboardSettings(
+      fake_keyboard.id, std::move(settings));
+  AcceleratorAliasConverter accelerator_alias_converter_;
+
+  std::vector<ui::Accelerator> accelerator_alias =
+      accelerator_alias_converter_.CreateAcceleratorAlias(accelerator_);
+
+  EXPECT_EQ(0u, accelerator_alias.size());
+}
+
 class MediaKeyAliasTest : public AcceleratorAliasConverterTest,
                           public testing::WithParamInterface<ui::KeyboardCode> {
 };
@@ -801,9 +931,7 @@ class MediaKeyAliasTest : public AcceleratorAliasConverterTest,
 INSTANTIATE_TEST_SUITE_P(
     All,
     MediaKeyAliasTest,
-    testing::Values(ui::VKEY_MEDIA_PAUSE,
-                    ui::VKEY_MEDIA_PLAY,
-                    ui::VKEY_OEM_103,  // Media Rewind
+    testing::Values(ui::VKEY_OEM_103,  // Media Rewind
                     ui::VKEY_OEM_104,  // Media Fast Forward
                     ui::VKEY_MEDIA_STOP));
 

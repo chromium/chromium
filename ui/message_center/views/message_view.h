@@ -146,6 +146,12 @@ class MESSAGE_CENTER_EXPORT MessageView
   virtual void OnSettingsButtonPressed(const ui::Event& event);
   virtual void OnSnoozeButtonPressed(const ui::Event& event);
 
+  // Enables/disables the notification expand collapse behavior. Used to
+  // indicate that expand/collapse notification is allowed/not allowed in a
+  // specific situation. Note that this is currently only used by chromeOS
+  // notification.
+  virtual void SetExpandCollapseEnabled(bool enabled) {}
+
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   // Gets the animation duration for a recent bounds change.
   virtual base::TimeDelta GetBoundsAnimationDuration(

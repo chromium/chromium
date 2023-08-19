@@ -16,7 +16,7 @@ Neither has a leading slash.
 
 import json
 import logging
-from typing import Optional
+from typing import Optional, Sequence
 
 from blinkpy.common.memoized import memoized
 from blinkpy.common.path_finder import PathFinder
@@ -88,7 +88,11 @@ class WPTManifest(object):
         [[reference_url1, "=="], [reference_url2, "!="], ...]
     """
 
-    def __init__(self, host, manifest_path, exclude_jsshell: bool = True):
+    def __init__(self,
+                 host,
+                 manifest_path,
+                 test_types: Optional[Sequence[str]] = None,
+                 exclude_jsshell: bool = True):
         self.host = host
         self.port = self.host.port_factory.get()
         self.raw_dict = json.loads(
@@ -101,8 +105,13 @@ class WPTManifest(object):
             self.raw_dict.get('items', {}))
 
         self.wpt_manifest_path = manifest_path
-        self.test_types = ('manual', 'reftest', 'print-reftest', 'testharness',
-                           'crashtest')
+        self.test_types = test_types or (
+            'manual',
+            'reftest',
+            'print-reftest',
+            'testharness',
+            'crashtest',
+        )
         self.test_name_to_file = {}
         self._exclude_jsshell = exclude_jsshell
 
@@ -354,7 +363,10 @@ class WPTManifest(object):
             fs.remove(manifest_path)
 
         # TODO(crbug.com/853815): perhaps also cache the manifest for wpt_internal.
-        if 'external' in path:
+        #
+        # `url_base` should match those of `web_tests/wptrunner.blink.ini` (or
+        # the implicit root `/` URL base).
+        if path.startswith('external'):
             base_manifest_path = fs.join(port.web_tests_dir(), 'external',
                                          BASE_MANIFEST_NAME)
             if fs.exists(base_manifest_path):
@@ -364,26 +376,35 @@ class WPTManifest(object):
             else:
                 _log.error('Manifest base not found at "%s".',
                            base_manifest_path)
+            url_base = '/'
+        elif path.startswith('wpt_internal'):
+            url_base = '/wpt_internal/'
 
-        WPTManifest.generate_manifest(port, wpt_path)
+        WPTManifest.generate_manifest(port, wpt_path, url_base)
 
         if fs.isfile(manifest_path):
-            _log.debug('Manifest generation completed.')
+            _log.info(
+                f'Manifest generation completed for {url_base!r} ({path})')
         else:
             _log.error(
-                'Manifest generation failed; creating an empty MANIFEST.json...'
-            )
+                f'Manifest generation failed for {url_base!r} ({path}); '
+                'creating an empty MANIFEST.json...')
             fs.write_text_file(manifest_path, '{}')
 
     @staticmethod
-    def generate_manifest(port, dest_path):
+    def generate_manifest(port, dest_path, url_base: str = '/'):
         """Generates MANIFEST.json on the specified directory."""
         wpt_exec_path = PathFinder(
             port.host.filesystem).path_from_chromium_base(
                 'third_party', 'wpt_tools', 'wpt', 'wpt')
         cmd = [
-            port.python3_command(), wpt_exec_path, 'manifest', '-v',
-            '--no-download', '--tests-root', dest_path
+            port.python3_command(),
+            wpt_exec_path,
+            'manifest',
+            '-v',
+            '--no-download',
+            f'--tests-root={dest_path}',
+            f'--url-base={url_base}',
         ]
 
         # ScriptError will be raised if the command fails.

@@ -9,7 +9,6 @@
 
 #include "base/containers/flat_map.h"
 #include "base/containers/span.h"
-#include "base/containers/stack_container.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/synchronization/condition_variable.h"
 #include "base/synchronization/lock.h"
@@ -17,6 +16,7 @@
 #include "mojo/core/ipcz_driver/object.h"
 #include "mojo/public/c/system/trap.h"
 #include "mojo/public/c/system/types.h"
+#include "third_party/abseil-cpp/absl/container/inlined_vector.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/ipcz/include/ipcz/ipcz.h"
 
@@ -116,7 +116,7 @@ class MojoTrap : public Object<MojoTrap> {
     scoped_refptr<Trigger> trigger;
     MojoTrapEvent event;
   };
-  base::StackVector<PendingEvent, 4> pending_mojo_events_ GUARDED_BY(lock_);
+  absl::InlinedVector<PendingEvent, 4> pending_mojo_events_ GUARDED_BY(lock_);
 
   bool armed_ GUARDED_BY(lock_) = false;
 };

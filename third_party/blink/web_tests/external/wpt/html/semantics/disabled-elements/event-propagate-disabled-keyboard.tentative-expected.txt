@@ -24,10 +24,10 @@ PASS Untrusted key events on <input disabled="" type="time">, observed from <for
 PASS Untrusted key events on <input disabled="" type="url">, observed from <form>
 PASS Untrusted key events on <input disabled="" type="week">, observed from <form>
 PASS Untrusted key events on <fieldset disabled=""><span tabindex="0">Span</span></fieldset>, observed from <form>
-FAIL Trusted key events on <fieldset disabled=""><span tabindex="0">Span</span></fieldset>, observed from <form> promise_test: Unhandled rejection with value: object "Error: We do not support keydown and keyup actions, please use test_driver.send_keys. See crbug.com/893480."
+PASS Trusted key events on <fieldset disabled=""><span tabindex="0">Span</span></fieldset>, observed from <form>
 PASS Untrusted key events on <button disabled=""><span tabindex="0">Span</span></button>, observed from <form>
-FAIL Trusted key events on <button disabled=""><span tabindex="0">Span</span></button>, observed from <form> promise_test: Unhandled rejection with value: object "Error: We do not support keydown and keyup actions, please use test_driver.send_keys. See crbug.com/893480."
+PASS Trusted key events on <button disabled=""><span tabindex="0">Span</span></button>, observed from <form>
 FAIL Untrusted key events on <custom-control disabled="">Text</custom-control>, observed from <form> assert_array_equals: Observed events lengths differ, expected array ["keydown", "keyup"] length 2, got [] length 0
-FAIL Trusted key events on <custom-control disabled="">Text</custom-control>, observed from <form> promise_test: Unhandled rejection with value: object "Error: We do not support keydown and keyup actions, please use test_driver.send_keys. See crbug.com/893480."
+PASS Trusted key events on <custom-control disabled="">Text</custom-control>, observed from <form>
 Harness: the test ran to completion.
 

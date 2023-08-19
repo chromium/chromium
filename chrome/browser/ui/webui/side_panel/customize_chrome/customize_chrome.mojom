@@ -17,8 +17,6 @@ struct BackgroundImage {
   bool is_uploaded_image;
   // Title of the background image.
   string title;
-  // The main color of the background image.
-  skia.mojom.SkColor? main_color;
   // Collection id of the background image.
   string collection_id;
   // Whether daily refresh is enabled.
@@ -39,31 +37,14 @@ struct Theme {
   BackgroundImage? background_image;
   // User's third party theme info.
   ThirdPartyThemeInfo? third_party_theme_info;
-  // Whether the OS is in dark mode.
-  bool system_dark_mode;
-  // The color this theme was calculated from.
-  skia.mojom.SkColor seed_color;
   // The current theme background color.
   skia.mojom.SkColor background_color;
   // The current theme foreground color. If not set, we use the default theme.
   skia.mojom.SkColor? foreground_color;
-  // The color of the color picker icon.
-  skia.mojom.SkColor color_picker_icon_color;
-  // True if the colors are managed by a policy.
-  bool colors_managed_by_policy;
   // True if the background is managed by a policy.
   bool background_managed_by_policy;
-};
-
-struct ChromeColor {
-  // Localized string of the color name.
-  string name;
-  // The color this Chrome color was calculated from.
-  skia.mojom.SkColor seed;
-  // The foreground color.
-  skia.mojom.SkColor background;
-  // The background color.
-  skia.mojom.SkColor foreground;
+  // True if we are following the OS theme.
+  bool follow_device_theme;
 };
 
 // A collection of background images.
@@ -122,12 +103,6 @@ interface CustomizeChromePageHandler {
   // Triggers a call to |CustomizeChromePage.SetPageMostVisitedSettings|.
   UpdateMostVisitedSettings();
 
-  // Returns the chrome colors used in the customize chrome side panel overview.
-  GetOverviewChromeColors() => (array<ChromeColor> colors);
-
-  // Returns the chrome colors used in the customize chrome side panel themes.
-  GetChromeColors() => (array<ChromeColor> colors);
-
   // Returns the collections of background images.
   GetBackgroundCollections() => (array<BackgroundCollection> collections);
 
@@ -143,8 +118,8 @@ interface CustomizeChromePageHandler {
   // Sets Chrome's theme according to the default color.
   SetDefaultColor();
 
-  // Sets a Chrome theme generated from |seed_color|.
-  SetSeedColor(skia.mojom.SkColor seed_color);
+  // Set that the theme should follow the device's.
+  SetFollowDeviceTheme(bool follow);
 
   // Removes background image.
   RemoveBackgroundImage();

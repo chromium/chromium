@@ -24,8 +24,10 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.content.res.AppCompatResources;
 import androidx.core.graphics.drawable.RoundedBitmapDrawable;
 import androidx.core.widget.ImageViewCompat;
+import androidx.swiperefreshlayout.widget.CircularProgressDrawable;
 
 import org.chromium.base.SysUtils;
+import org.chromium.components.browser_ui.styles.SemanticColorUtils;
 import org.chromium.components.browser_ui.widget.BoundedLinearLayout;
 import org.chromium.components.browser_ui.widget.gesture.SwipeGestureListener;
 import org.chromium.components.browser_ui.widget.gesture.SwipeGestureListener.SwipeHandler;
@@ -50,7 +52,8 @@ public class MessageBannerView extends BoundedLinearLayout {
     private @PrimaryWidgetAppearance int mPrimaryWidgetAppearance =
             PrimaryWidgetAppearance.BUTTON_IF_TEXT_IS_SET;
     private TextView mPrimaryButton;
-    private View mPrimaryProgressSpinner;
+    private String mPrimaryButtonText;
+    private Drawable mPrimaryButtonDrawable;
     private ListMenuButton mSecondaryButton;
     private View mDivider;
     private String mSecondaryButtonMenuText;
@@ -61,6 +64,7 @@ public class MessageBannerView extends BoundedLinearLayout {
     private int mCornerRadius = -1;
     private PopupMenuShownListener mPopupMenuShownListener;
     private Drawable mDescriptionDrawable;
+    private boolean mOverrideSecondaryIconContentDescription = true;
 
     public MessageBannerView(Context context, @Nullable AttributeSet attrs) {
         super(context, attrs);
@@ -72,7 +76,6 @@ public class MessageBannerView extends BoundedLinearLayout {
         mTitle = findViewById(R.id.message_title);
         mDescription = findViewById(R.id.message_description);
         mPrimaryButton = findViewById(R.id.message_primary_button);
-        mPrimaryProgressSpinner = findViewById(R.id.message_primary_progress_spinner);
         mIconView = findViewById(R.id.message_icon);
         mSecondaryButton = findViewById(R.id.message_secondary_button);
         mDivider = findViewById(R.id.message_divider);
@@ -83,6 +86,7 @@ public class MessageBannerView extends BoundedLinearLayout {
         if (SysUtils.isLowEndDevice()) {
             setBackgroundResource(R.drawable.popup_bg);
         }
+        mPrimaryButtonDrawable = mPrimaryButton.getBackground();
     }
 
     void enableA11y(boolean enabled) {
@@ -93,10 +97,19 @@ public class MessageBannerView extends BoundedLinearLayout {
     void setTitle(String title) {
         mTitle.setText(title);
         if (mOnTitleChanged != null) mOnTitleChanged.run();
+        if (mOverrideSecondaryIconContentDescription
+                && TextUtils.isEmpty(mTitle.getContentDescription())) {
+            setSecondaryIconContentDescription(
+                    getResources().getString(R.string.message_more_options, title), true);
+        }
     }
 
     void setTitleContentDescription(String description) {
         mTitle.setContentDescription(description);
+        if (mOverrideSecondaryIconContentDescription) {
+            setSecondaryIconContentDescription(
+                    getResources().getString(R.string.message_more_options, description), true);
+        }
     }
 
     void setDescriptionText(CharSequence description) {
@@ -165,22 +178,38 @@ public class MessageBannerView extends BoundedLinearLayout {
 
     void setPrimaryButtonText(String text) {
         mPrimaryButton.setText(text);
+        mPrimaryButtonText = text;
         updatePrimaryWidgetAppearance();
     }
 
     private void updatePrimaryWidgetAppearance() {
-        mPrimaryButton.setVisibility(
-                mPrimaryWidgetAppearance == PrimaryWidgetAppearance.BUTTON_IF_TEXT_IS_SET
-                                && !TextUtils.isEmpty(mPrimaryButton.getText())
-                        ? VISIBLE
-                        : GONE);
-        mPrimaryProgressSpinner.setVisibility(
-                mPrimaryWidgetAppearance == PrimaryWidgetAppearance.PROGRESS_SPINNER ? VISIBLE
-                                                                                     : GONE);
+        if (mPrimaryWidgetAppearance == PrimaryWidgetAppearance.BUTTON_IF_TEXT_IS_SET
+                && !TextUtils.isEmpty(mPrimaryButtonText)) {
+            mPrimaryButton.setBackground(mPrimaryButtonDrawable);
+            mPrimaryButton.setText(mPrimaryButtonText);
+            mPrimaryButton.setVisibility(VISIBLE);
+        } else if (mPrimaryWidgetAppearance == PrimaryWidgetAppearance.PROGRESS_SPINNER) {
+            mPrimaryButton.setText("");
+            var spinner = new CircularProgressDrawable(getContext());
+            spinner.setStyle(CircularProgressDrawable.DEFAULT);
+            spinner.setColorSchemeColors(
+                    SemanticColorUtils.getDefaultIconColorAccent1(getContext()));
+            mPrimaryButton.setBackground(spinner);
+            spinner.start();
+            mPrimaryButton.setVisibility(VISIBLE);
+        } else {
+            mPrimaryButton.setVisibility(GONE);
+        }
     }
 
     void setPrimaryButtonClickListener(OnClickListener listener) {
-        mPrimaryButton.setOnClickListener(listener);
+        mPrimaryButton.setOnClickListener((view) -> {
+            // Ignore click events if a progress bar is showing.
+            if (mPrimaryWidgetAppearance == PrimaryWidgetAppearance.BUTTON_IF_TEXT_IS_SET
+                    && !TextUtils.isEmpty(mPrimaryButtonText)) {
+                listener.onClick(view);
+            }
+        });
     }
 
     void setSecondaryIcon(Drawable icon) {
@@ -214,8 +243,9 @@ public class MessageBannerView extends BoundedLinearLayout {
         mSecondaryMenuButtonDelegate = delegate;
     }
 
-    void setSecondaryIconContentDescription(String description) {
+    void setSecondaryIconContentDescription(String description, boolean canBeOverridden) {
         mSecondaryButton.setContentDescription(description);
+        mOverrideSecondaryIconContentDescription = canBeOverridden;
     }
 
     void setSwipeHandler(SwipeHandler handler) {
@@ -395,5 +425,9 @@ public class MessageBannerView extends BoundedLinearLayout {
         public boolean onDown(MotionEvent e) {
             return true;
         }
+    }
+
+    ListMenuButton getSecondaryButtonForTesting() {
+        return mSecondaryButton;
     }
 }

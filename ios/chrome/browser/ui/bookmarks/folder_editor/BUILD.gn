@@ -12,7 +12,6 @@ group("folder_editor") {
 # This target is only used for internal builds in bookmark.
 # Contains coordinator headers.
 source_set("coordinator_headers") {
-  configs += [ "//build/config/compiler:enable_arc" ]
   visibility = [
     ":coordinator_impl",
     ":folder_editor",
@@ -29,7 +28,6 @@ source_set("coordinator_headers") {
 # This target is only used for internal builds in bookmark.
 # Contains coordinator implementation.
 source_set("coordinator_impl") {
-  configs += [ "//build/config/compiler:enable_arc" ]
   visibility = [ ":folder_editor" ]
   sources = [ "bookmarks_folder_editor_coordinator.mm" ]
   deps = [
@@ -51,7 +49,6 @@ source_set("coordinator_impl") {
 # Private to this coordinator.
 # Contains folder editor ui implementation.
 source_set("ui") {
-  configs += [ "//build/config/compiler:enable_arc" ]
   visibility = [ ":coordinator_impl" ]
   sources = [
     "bookmarks_folder_editor_view_controller.h",

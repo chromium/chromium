@@ -14,6 +14,7 @@
 #include "ash/public/cpp/capture_mode/capture_mode_test_api.h"
 #include "ash/style/icon_button.h"
 #include "ash/test/ash_test_base.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 
 namespace ash {
@@ -132,6 +133,10 @@ TEST_F(CaptureAudioMixingTest, KeyboardNavigation) {
 }
 
 TEST_F(CaptureAudioMixingTest, ServiceWillRecordAudio) {
+  constexpr char kHistogramNameBase[] = "AudioRecordingMode";
+  const std::string histogram_name = BuildHistogramName(
+      kHistogramNameBase, /*behavior=*/nullptr, /*append_ui_mode_suffix=*/true);
+
   struct {
     const char* const scope_name;
     AudioRecordingMode audio_mode;
@@ -149,6 +154,10 @@ TEST_F(CaptureAudioMixingTest, ServiceWillRecordAudio) {
 
   for (const auto& test_case : kTestCases) {
     SCOPED_TRACE(test_case.scope_name);
+
+    base::HistogramTester histogram_tester;
+    histogram_tester.ExpectBucketCount(histogram_name, test_case.audio_mode, 0);
+
     auto* controller = StartSession();
     controller->SetAudioRecordingMode(test_case.audio_mode);
 
@@ -163,6 +172,8 @@ TEST_F(CaptureAudioMixingTest, ServiceWillRecordAudio) {
     controller->EndVideoRecording(EndRecordingReason::kStopRecordingButton);
 
     WaitForCaptureFileToBeSaved();
+
+    histogram_tester.ExpectBucketCount(histogram_name, test_case.audio_mode, 1);
   }
 }
 
@@ -189,6 +200,13 @@ class ProjectorAudioMixingTest : public CaptureAudioMixingTest {
 };
 
 TEST_F(ProjectorAudioMixingTest, AudioSettingsMenu) {
+  constexpr char kHistogramNameBase[] = "AudioRecordingMode";
+  const std::string histogram_name = BuildHistogramName(
+      kHistogramNameBase,
+      CaptureModeTestApi().GetBehavior(BehaviorType::kProjector),
+      /*append_ui_mode_suffix=*/true);
+  base::HistogramTester histogram_tester;
+
   StartProjectorModeSession();
   auto* event_generator = GetEventGenerator();
 
@@ -211,6 +229,25 @@ TEST_F(ProjectorAudioMixingTest, AudioSettingsMenu) {
   // Microphone should still be selected by default.
   EXPECT_TRUE(IsAudioOptionChecked(kAudioMicrophone));
   EXPECT_FALSE(IsAudioOptionChecked(kAudioSystemAndMicrophone));
+
+  // End the session and expect the correct audio mode was recorded.
+  auto* controller = CaptureModeController::Get();
+  controller->Stop();
+  histogram_tester.ExpectBucketCount(histogram_name,
+                                     AudioRecordingMode::kMicrophone, 1);
+  histogram_tester.ExpectBucketCount(
+      histogram_name, AudioRecordingMode::kSystemAndMicrophone, 0);
+
+  // Start a new session and select `kSystemAndMicrophone`, and expect the
+  // correct metrics will be recorded when the session ends.
+  StartProjectorModeSession();
+  controller->SetAudioRecordingMode(AudioRecordingMode::kSystemAndMicrophone);
+  controller->Stop();
+
+  histogram_tester.ExpectBucketCount(histogram_name,
+                                     AudioRecordingMode::kMicrophone, 1);
+  histogram_tester.ExpectBucketCount(
+      histogram_name, AudioRecordingMode::kSystemAndMicrophone, 1);
 }
 
 }  // namespace ash

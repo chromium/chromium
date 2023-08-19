@@ -16,10 +16,7 @@ source_set("mdc") {
 
   deps = [ "//ios/third_party/material_components_ios" ]
 
-  configs += [
-    ":disable_deprecated_declarations",
-    "//build/config/compiler:enable_arc",
-  ]
+  configs += [ ":disable_deprecated_declarations" ]
 }
 
 # TODO(crbug.com/1344830): Migrate away from deprecated MDC APIs.

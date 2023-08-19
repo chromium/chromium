@@ -35,7 +35,6 @@ namespace {
 
 constexpr int kProcessId = 123;
 constexpr int kRequestId = 456;
-constexpr ResourceScheduler::ClientId kResourceSchedulerClientId(99);
 
 }  // namespace
 
@@ -80,7 +79,7 @@ class CorsURLLoaderFactoryTest : public testing::Test {
         url::Origin::Create(test_server_.base_url());
     auto resource_scheduler_client =
         base::MakeRefCounted<ResourceSchedulerClient>(
-            kResourceSchedulerClientId, IsBrowserInitiated(false),
+            ResourceScheduler::ClientId::Create(), IsBrowserInitiated(false),
             &resource_scheduler_,
             url_request_context_->network_quality_estimator());
     cors_url_loader_factory_ = std::make_unique<CorsURLLoaderFactory>(
@@ -191,6 +190,26 @@ TEST_F(CorsURLLoaderFactoryTest, CleanupWithSharedCacheObjectInUse) {
   // resulting in a another one failing causes a crash during teardown. See
   // https://crbug.com/1209769.
   ResetFactory();
+}
+
+TEST_F(CorsURLLoaderFactoryTest, SchemeIsInvalid) {
+#if BUILDFLAG(IS_ANDROID)
+  const base::Location& location = FROM_HERE;
+  ResourceRequest request(location);
+#else
+  ResourceRequest request;
+#endif
+  request.url = GURL("data://example.com");
+  mojo::test::BadMessageObserver bad_message_observer;
+  CreateLoaderAndStart(request);
+  EXPECT_EQ(
+      "CorsURLLoaderFactory: data: URL is not supported."
+#if BUILDFLAG(IS_ANDROID)
+      " Request created location is " +
+          location.ToString()
+#endif
+          ,
+      bad_message_observer.WaitForBadMessage());
 }
 
 TEST_F(CorsURLLoaderFactoryTest,

@@ -3,14 +3,10 @@
 // found in the LICENSE file.
 
 #import "ios/testing/scoped_block_swizzler.h"
-#import "base/mac/foundation_util.h"
+#import "base/apple/foundation_util.h"
 #import "testing/gtest/include/gtest/gtest.h"
 #import "testing/gtest_mac.h"
 #import "testing/platform_test.h"
-
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
 
 // Class containing two methods that will be swizzled by the unittests.
 @interface ScopedBlockSwizzlerTestClass : NSObject
@@ -60,7 +56,7 @@ TEST_F(ScopedBlockSwizzlerTest, SwizzlingInstanceMethod) {
 
   {
     id block = ^NSString*(id self) {
-      return base::mac::ObjCCastStrict<ScopedBlockSwizzlerTestClass>(self)
+      return base::apple::ObjCCastStrict<ScopedBlockSwizzlerTestClass>(self)
           .value;
     };
     ScopedBlockSwizzler swizzler([ScopedBlockSwizzlerTestClass class],

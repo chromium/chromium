@@ -23,10 +23,6 @@ Parcel::Parcel() = default;
 Parcel::Parcel(SequenceNumber sequence_number)
     : sequence_number_(sequence_number) {}
 
-Parcel::Parcel(Parcel&& other) = default;
-
-Parcel& Parcel::operator=(Parcel&& other) = default;
-
 Parcel::~Parcel() {
   if (objects_) {
     for (Ref<APIObject>& object : objects_->storage) {
@@ -35,11 +31,6 @@ Parcel::~Parcel() {
       }
     }
   }
-}
-
-void Parcel::SetInlinedData(std::vector<uint8_t> data) {
-  data_.view = absl::MakeSpan(data);
-  data_.storage = std::move(data);
 }
 
 void Parcel::SetDataFromMessage(Message::ReceivedDataBuffer buffer,
@@ -126,7 +117,7 @@ void Parcel::CommitData(size_t num_bytes) {
   ABSL_ASSERT(num_bytes <= storage.fragment().size() + sizeof(FragmentHeader));
   auto& header = *reinterpret_cast<FragmentHeader*>(
       storage.fragment().mutable_bytes().data());
-  header.reserved = 0;
+  header.reserved.store(0, std::memory_order_relaxed);
 
   // This store-release is balanced by the load-acquire in AdoptDataFragment()
   // by the eventual consumer of this data.
@@ -143,20 +134,17 @@ void Parcel::ReleaseDataFragment() {
   data_.view = {};
 }
 
-void Parcel::Consume(size_t num_bytes, absl::Span<IpczHandle> out_handles) {
-  auto data = data_.view;
+void Parcel::ConsumeHandles(absl::Span<IpczHandle> out_handles) {
   absl::Span<Ref<APIObject>> objects;
   if (objects_) {
     objects = objects_->view;
   }
-  ABSL_ASSERT(num_bytes <= data.size());
   ABSL_ASSERT(out_handles.size() <= objects.size());
 
   for (size_t i = 0; i < out_handles.size(); ++i) {
     out_handles[i] = APIObject::ReleaseAsHandle(std::move(objects[i]));
   }
 
-  data_.view.remove_prefix(num_bytes);
   if (objects_) {
     objects_->view.remove_prefix(out_handles.size());
   }
@@ -187,17 +175,6 @@ std::string Parcel::Describe() const {
   return ss.str();
 }
 
-Parcel::DataFragment::DataFragment(DataFragment&& other)
-    : memory_(std::move(other.memory_)),
-      fragment_(std::exchange(other.fragment_, {})) {}
-
-Parcel::DataFragment& Parcel::DataFragment::operator=(DataFragment&& other) {
-  reset();
-  memory_ = std::move(other.memory_);
-  fragment_ = std::exchange(other.fragment_, {});
-  return *this;
-}
-
 Parcel::DataFragment::~DataFragment() {
   reset();
 }
@@ -215,17 +192,6 @@ void Parcel::DataFragment::reset() {
   memory_->FreeFragment(fragment_);
   memory_.reset();
   fragment_ = {};
-}
-
-Parcel::DataStorageWithView::DataStorageWithView(DataStorageWithView&& other)
-    : storage(std::exchange(other.storage, absl::monostate{})),
-      view(std::exchange(other.view, {})) {}
-
-Parcel::DataStorageWithView& Parcel::DataStorageWithView::operator=(
-    DataStorageWithView&& other) {
-  storage = std::exchange(other.storage, absl::monostate{});
-  view = std::exchange(other.view, {});
-  return *this;
 }
 
 }  // namespace ipcz

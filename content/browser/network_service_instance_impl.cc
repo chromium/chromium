@@ -17,6 +17,8 @@
 #include "base/files/file_enumerator.h"
 #include "base/files/file_util.h"
 #include "base/functional/bind.h"
+#include "base/functional/callback_forward.h"
+#include "base/location.h"
 #include "base/message_loop/message_pump_type.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
@@ -27,6 +29,7 @@
 #include "base/synchronization/waitable_event.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/single_thread_task_runner.h"
+#include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
 #include "base/threading/sequence_local_storage_slot.h"
 #include "base/threading/thread.h"
@@ -54,6 +57,7 @@
 #include "net/base/features.h"
 #include "net/base/network_change_notifier.h"
 #include "net/first_party_sets/global_first_party_sets.h"
+#include "net/log/file_net_log_observer.h"
 #include "net/log/net_log_util.h"
 #include "sandbox/policy/features.h"
 #include "services/cert_verifier/cert_verifier_service_factory.h"
@@ -89,6 +93,10 @@
 #include "services/network/public/mojom/network_interface_change_listener.mojom.h"
 #endif
 
+#if BUILDFLAG(IS_ANDROID)
+#include "content/public/common/content_switches.h"
+#endif
+
 namespace content {
 
 namespace {
@@ -115,6 +123,8 @@ mojo::Remote<network::mojom::EmptyNetworkService>*
     g_empty_network_service_remote = nullptr;
 bool IsEmptyNetworkServiceEnabledForUMA() {
   return IsInProcessNetworkService() &&
+         !base::CommandLine::ForCurrentProcess()->HasSwitch(
+             switches::kSingleProcess) &&
          base::FeatureList::IsEnabled(
              network::features::kNetworkServiceEmptyOutOfProcess);
 }
@@ -315,13 +325,13 @@ void CreateNetworkContextInternal(
 
   if (network::TransferableDirectory::IsOpenForTransferRequired()) {
     if (params->file_paths) {
+      if (params->file_paths->http_cache_directory) {
+        params->file_paths->http_cache_directory->OpenForTransfer();
+      }
+      if (params->file_paths->shared_dictionary_directory) {
+        params->file_paths->shared_dictionary_directory->OpenForTransfer();
+      }
       params->file_paths->data_directory.OpenForTransfer();
-    }
-    if (params->http_cache_directory) {
-      params->http_cache_directory->OpenForTransfer();
-    }
-    if (params->shared_dictionary_directory) {
-      params->shared_dictionary_directory->OpenForTransfer();
     }
   }
 
@@ -390,7 +400,11 @@ void CreateInProcessNetworkService(
       FROM_HERE, base::BindOnce(&CreateInProcessNetworkServiceOnThread,
                                 std::move(receiver)));
 #if BUILDFLAG(IS_ANDROID)
-  if (IsEmptyNetworkServiceEnabledForUMA()) {
+  if (IsEmptyNetworkServiceEnabledForUMA() &&
+      // DownloadManagerService.java calls this in ServiceManagerOnlyMode, where
+      // this is called before the browser threads are initialized and UI thread
+      // is not named Chrome_UIThread at that point. We avoid such rare case.
+      BrowserThread::CurrentlyOn(BrowserThread::UI)) {
     if (!g_empty_network_service_remote) {
       g_empty_network_service_remote =
           new mojo::Remote<network::mojom::EmptyNetworkService>;
@@ -398,13 +412,26 @@ void CreateInProcessNetworkService(
     g_empty_network_service_remote->reset();
     mojo::PendingReceiver<network::mojom::EmptyNetworkService> empty_receiver =
         g_empty_network_service_remote->BindNewPipeAndPassReceiver();
-    ServiceProcessHost::Launch(std::move(empty_receiver),
-                               ServiceProcessHost::Options()
-                                   .WithDisplayName(u"Empty Network Service")
-                                   .Pass());
+    ServiceProcessHost::Options options;
+    options.WithDisplayName(u"Empty Network Service");
+    options.WithExtraCommandLineSwitches(
+        {network::switches::kRegisterEmptyNetworkService});
+    ServiceProcessHost::Launch(std::move(empty_receiver), std::move(options));
   }
 #endif
 }
+
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_LINUX)
+// Runs a self-owned SystemDnsResolverMojoImpl. This is meant to run on a
+// high-priority thread pool.
+void RunSystemDnsResolverOnThreadPool(
+    mojo::PendingReceiver<network::mojom::SystemDnsResolver> dns_receiver) {
+  mojo::MakeSelfOwnedReceiver(
+      std::make_unique<content::SystemDnsResolverMojoImpl>(),
+      std::move(dns_receiver));
+}
+#endif  // BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_LINUX) ||
+        // BUILDFLAG(IS_CHROMEOS)
 
 network::mojom::NetworkServiceParamsPtr CreateNetworkServiceParams() {
   network::mojom::NetworkServiceParamsPtr network_service_params =
@@ -461,18 +488,21 @@ network::mojom::NetworkServiceParamsPtr CreateNetworkServiceParams() {
   }
 #endif  // BUILDFLAG(IS_POSIX)
 
-#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_LINUX)
   if (GetContentClient()
           ->browser()
           ->ShouldRunOutOfProcessSystemDnsResolution() &&
       IsOutOfProcessNetworkService()) {
     mojo::PendingRemote<network::mojom::SystemDnsResolver> dns_remote;
-    mojo::MakeSelfOwnedReceiver(
-        std::make_unique<content::SystemDnsResolverMojoImpl>(),
-        dns_remote.InitWithNewPipeAndPassReceiver());
+    scoped_refptr<base::SequencedTaskRunner> thread_pool_task_runner =
+        base::ThreadPool::CreateSequencedTaskRunner(
+            {base::TaskPriority::USER_BLOCKING});
+    thread_pool_task_runner->PostTask(
+        FROM_HERE, base::BindOnce(RunSystemDnsResolverOnThreadPool,
+                                  dns_remote.InitWithNewPipeAndPassReceiver()));
     network_service_params->system_dns_resolver = std::move(dns_remote);
   }
-#endif
+#endif  // BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_LINUX)
 
   return network_service_params;
 }
@@ -546,6 +576,42 @@ net::NetLogCaptureMode GetNetCaptureModeFromCommandLine(
   }
 
   return net::NetLogCaptureMode::kDefault;
+}
+
+// Parse the maximum file size for the NetLog, if one was specified.
+// kNoLimit indicates no, valid, maximum size was specified.
+int64_t GetNetMaximumFileSizeFromCommandLine(
+    const base::CommandLine& command_line) {
+  base::StringPiece switch_name = network::switches::kNetLogMaxSizeMb;
+
+  if (!command_line.HasSwitch(switch_name)) {
+    return net::FileNetLogObserver::kNoLimit;
+  }
+
+  std::string value = command_line.GetSwitchValueASCII(switch_name);
+
+  if (value.empty()) {
+    return net::FileNetLogObserver::kNoLimit;
+  }
+
+  // 32 bits for the input is fine, a max size of ~2 PB ought to be enough for
+  // anybody.
+  uint32_t max_size_megabytes;
+  bool valid = base::StringToUint(value, &max_size_megabytes);
+
+  if (!valid) {
+    return net::FileNetLogObserver::kNoLimit;
+  }
+
+  // Value is currently in megabytes, convert to bytes. 1024*1024 == 2^20 ==
+  // left shift by 20 bits
+  uint64_t max_size_bytes = max_size_megabytes << 20;
+  return max_size_bytes;
+}
+
+base::RepeatingClosure& OnNetworkServiceRestartedCbStorage() {
+  static base::SequenceLocalStorageSlot<base::RepeatingClosure> restarted_cb;
+  return restarted_cb.GetOrCreateValue();
 }
 
 }  // namespace
@@ -651,9 +717,12 @@ network::mojom::NetworkService* GetNetworkService() {
         if (!file.IsValid()) {
           LOG(ERROR) << "Failed opening NetLog: " << log_path.value();
         } else {
+          uint64_t max_file_size =
+              GetNetMaximumFileSizeFromCommandLine(*command_line);
+
           (*g_network_service_remote)
               ->StartNetLog(
-                  std::move(file),
+                  std::move(file), max_file_size,
                   GetNetCaptureModeFromCommandLine(*command_line),
                   GetContentClient()->browser()->GetNetLogConstants());
         }
@@ -809,6 +878,19 @@ void ShutDownNetworkService() {
 #endif
 }
 
+void RestartNetworkService() {
+  ShutDownNetworkService();
+  GetNetworkService();
+  if (OnNetworkServiceRestartedCbStorage()) {
+    OnNetworkServiceRestartedCbStorage().Run();
+  }
+}
+
+void OnRestartNetworkServiceForTesting(base::RepeatingClosure on_restart) {
+  DCHECK(!OnNetworkServiceRestartedCbStorage() || !on_restart);
+  OnNetworkServiceRestartedCbStorage() = std::move(on_restart);
+}
+
 namespace {
 
 cert_verifier::mojom::CertVerifierServiceFactory*
@@ -910,17 +992,19 @@ void SetCertVerifierServiceFactoryForTesting(
 }
 
 void MaybeCleanCacheDirectory(network::mojom::NetworkContextParams* params) {
-  if (params->http_cache_enabled && params->http_cache_directory) {
+  if (params->http_cache_enabled && params->file_paths &&
+      params->file_paths->http_cache_directory) {
     // Delete any old data except for the "Cache_Data" directory.
     base::ThreadPool::PostTask(
         FROM_HERE,
         {base::TaskPriority::BEST_EFFORT, base::MayBlock(),
          base::TaskShutdownBehavior::CONTINUE_ON_SHUTDOWN},
         base::BindOnce(MaybeDeleteOldCache,
-                       params->http_cache_directory->path()));
+                       params->file_paths->http_cache_directory->path()));
 
-    params->http_cache_directory =
-        params->http_cache_directory->path().Append(kCacheDataDirectoryName);
+    params->file_paths->http_cache_directory =
+        params->file_paths->http_cache_directory->path().Append(
+            kCacheDataDirectoryName);
   }
 }
 
@@ -928,13 +1012,15 @@ void CreateNetworkContextInNetworkService(
     mojo::PendingReceiver<network::mojom::NetworkContext> context,
     network::mojom::NetworkContextParamsPtr params) {
   TRACE_EVENT0("loading", "CreateNetworkContextInNetworkService");
-  DCHECK(BrowserThread::CurrentlyOn(BrowserThread::UI));
+  DCHECK(!BrowserThread::IsThreadInitialized(BrowserThread::UI) ||
+         BrowserThread::CurrentlyOn(BrowserThread::UI));
 
   MaybeCleanCacheDirectory(params.get());
 
   const bool has_valid_http_cache_path =
-      params->http_cache_enabled && params->http_cache_directory &&
-      !params->http_cache_directory->path().empty();
+      params->http_cache_enabled && params->file_paths &&
+      params->file_paths->http_cache_directory &&
+      !params->file_paths->http_cache_directory->path().empty();
   const bool brokering_is_enabled =
       IsOutOfProcessNetworkService() &&
       base::FeatureList::IsEnabled(
@@ -942,7 +1028,7 @@ void CreateNetworkContextInNetworkService(
   if (has_valid_http_cache_path && brokering_is_enabled) {
     mojo::MakeSelfOwnedReceiver(
         std::make_unique<HttpCacheBackendFileOperationsFactory>(
-            params->http_cache_directory->path()),
+            params->file_paths->http_cache_directory->path()),
         params->http_cache_file_operations_factory
             .InitWithNewPipeAndPassReceiver());
   }

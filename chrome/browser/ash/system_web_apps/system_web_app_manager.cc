@@ -34,35 +34,36 @@
 #include "base/strings/string_piece_forward.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/time/time.h"
+#include "base/trace_event/trace_event.h"
 #include "base/version.h"
+#include "chrome/browser/ash/system_web_apps/apps/camera_app/camera_system_web_app_info.h"
+#include "chrome/browser/ash/system_web_apps/apps/connectivity_diagnostics_system_web_app_info.h"
+#include "chrome/browser/ash/system_web_apps/apps/crosh_system_web_app_info.h"
+#include "chrome/browser/ash/system_web_apps/apps/demo_mode_web_app_info.h"
+#include "chrome/browser/ash/system_web_apps/apps/diagnostics_system_web_app_info.h"
+#include "chrome/browser/ash/system_web_apps/apps/eche_app_info.h"
+#include "chrome/browser/ash/system_web_apps/apps/face_ml_system_web_app_info.h"
+#include "chrome/browser/ash/system_web_apps/apps/file_manager_web_app_info.h"
+#include "chrome/browser/ash/system_web_apps/apps/firmware_update_system_web_app_info.h"
+#include "chrome/browser/ash/system_web_apps/apps/help_app/help_app_web_app_info.h"
+#include "chrome/browser/ash/system_web_apps/apps/media_app/media_web_app_info.h"
+#include "chrome/browser/ash/system_web_apps/apps/os_feedback_system_web_app_info.h"
+#include "chrome/browser/ash/system_web_apps/apps/os_flags_system_web_app_info.h"
+#include "chrome/browser/ash/system_web_apps/apps/os_settings_web_app_info.h"
+#include "chrome/browser/ash/system_web_apps/apps/os_url_handler_system_web_app_info.h"
+#include "chrome/browser/ash/system_web_apps/apps/personalization_app/personalization_system_app_delegate.h"
+#include "chrome/browser/ash/system_web_apps/apps/print_management_web_app_info.h"
+#include "chrome/browser/ash/system_web_apps/apps/projector_system_web_app_info.h"
+#include "chrome/browser/ash/system_web_apps/apps/scanning_system_web_app_info.h"
+#include "chrome/browser/ash/system_web_apps/apps/shimless_rma_system_web_app_info.h"
+#include "chrome/browser/ash/system_web_apps/apps/shortcut_customization_system_web_app_info.h"
+#include "chrome/browser/ash/system_web_apps/apps/terminal_system_web_app_info.h"
 #include "chrome/browser/ash/system_web_apps/color_helpers.h"
 #include "chrome/browser/ash/system_web_apps/system_web_app_background_task.h"
 #include "chrome/browser/ash/system_web_apps/system_web_app_icon_checker.h"
 #include "chrome/browser/ash/system_web_apps/system_web_app_manager_factory.h"
 #include "chrome/browser/ash/system_web_apps/types/system_web_app_background_task_info.h"
 #include "chrome/browser/ash/system_web_apps/types/system_web_app_delegate.h"
-#include "chrome/browser/ash/web_applications/camera_app/camera_system_web_app_info.h"
-#include "chrome/browser/ash/web_applications/connectivity_diagnostics_system_web_app_info.h"
-#include "chrome/browser/ash/web_applications/crosh_system_web_app_info.h"
-#include "chrome/browser/ash/web_applications/demo_mode_web_app_info.h"
-#include "chrome/browser/ash/web_applications/diagnostics_system_web_app_info.h"
-#include "chrome/browser/ash/web_applications/eche_app_info.h"
-#include "chrome/browser/ash/web_applications/face_ml_system_web_app_info.h"
-#include "chrome/browser/ash/web_applications/file_manager_web_app_info.h"
-#include "chrome/browser/ash/web_applications/firmware_update_system_web_app_info.h"
-#include "chrome/browser/ash/web_applications/help_app/help_app_web_app_info.h"
-#include "chrome/browser/ash/web_applications/media_app/media_web_app_info.h"
-#include "chrome/browser/ash/web_applications/os_feedback_system_web_app_info.h"
-#include "chrome/browser/ash/web_applications/os_flags_system_web_app_info.h"
-#include "chrome/browser/ash/web_applications/os_settings_web_app_info.h"
-#include "chrome/browser/ash/web_applications/os_url_handler_system_web_app_info.h"
-#include "chrome/browser/ash/web_applications/personalization_app/personalization_system_app_delegate.h"
-#include "chrome/browser/ash/web_applications/print_management_web_app_info.h"
-#include "chrome/browser/ash/web_applications/projector_system_web_app_info.h"
-#include "chrome/browser/ash/web_applications/scanning_system_web_app_info.h"
-#include "chrome/browser/ash/web_applications/shimless_rma_system_web_app_info.h"
-#include "chrome/browser/ash/web_applications/shortcut_customization_system_web_app_info.h"
-#include "chrome/browser/ash/web_applications/terminal_system_web_app_info.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profiles_state.h"
@@ -89,7 +90,7 @@
 #include "url/gurl.h"
 #include "url/origin.h"
 #if !defined(OFFICIAL_BUILD)
-#include "chrome/browser/ash/web_applications/sample_system_web_app_info.h"
+#include "chrome/browser/ash/system_web_apps/apps/sample_system_web_app_info.h"
 #endif  // !defined(OFFICIAL_BUILD)
 
 namespace ash {
@@ -319,6 +320,7 @@ void SystemWebAppManager::ScheduleStart() {
 }
 
 void SystemWebAppManager::Start() {
+  TRACE_EVENT0("ui", "SystemWebAppManager::Start");
   DCHECK(provider_->is_registry_ready());
 
   // `Start` can be called multiple times in tests.
@@ -374,21 +376,11 @@ void SystemWebAppManager::Start() {
 
   // In tests, only install System Web Apps if `InstallSystemAppsForTesting()`
   // or `SetSystemAppsForTesting()` has been called.
-  if (base::CommandLine::ForCurrentProcess()->HasSwitch(switches::kTestType) &&
-      skip_app_installation_in_test_) {
-    base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
-        FROM_HERE,
-        base::BindOnce(
-            &SystemWebAppManager::OnAppsSynchronized,
-            weak_ptr_factory_.GetWeakPtr(), should_force_install_apps,
-            install_start_time,
-            /*install_results=*/
-            std::map<GURL,
-                     web_app::ExternallyManagedAppManager::InstallResult>(),
-            /*uninstall_results=*/std::map<GURL, bool>()));
-
-    return;
+  if (skip_app_installation_in_test_ &&
+      base::CommandLine::ForCurrentProcess()->HasSwitch(switches::kTestType)) {
+    install_options_list.clear();
   }
+
   provider_->externally_managed_app_manager().SynchronizeInstalledApps(
       std::move(install_options_list),
       web_app::ExternalInstallSource::kSystemInstalled,
@@ -406,9 +398,32 @@ void SystemWebAppManager::Shutdown() {
 }
 
 void SystemWebAppManager::InstallSystemAppsForTesting() {
-  on_apps_synchronized_ = std::make_unique<base::OneShotEvent>();
-  on_tasks_started_ = std::make_unique<base::OneShotEvent>();
-  on_icon_check_completed_ = std::make_unique<base::OneShotEvent>();
+  {
+    // If system web app manager is still starting (explained below), we need
+    // to wait until it finishes before we can reset the states. This is to
+    // ensure the app synchronization request to web app system is complete
+    // before issuing another one in Start().
+    //
+    // In browser tests, SystemWebAppManager starts immediately after
+    // WebAppProvider is ready and calls SynchronizeInstalledApps.
+    //
+    // SynchronizeInstalledApps asynchronously handles the install request
+    // (awaits on web app system lock). If this operation isn't complete before
+    // test body starts, we'll issue a second SynchronizeInstalledApps request
+    // and violates the expectation (in web app system) that there can be only
+    // one in-flight synchronize request for each app install source.
+    //
+    // TODO(https://crbug.com/1400853): Ensure browsertests sets up system apps
+    // before SystemWebAppManager::Start(). Then, remove this method (or
+    // restrict its use to system web app feature test that needs to simulate
+    // system restart).
+    base::RunLoop run_loop;
+    on_apps_synchronized().Post(FROM_HERE, run_loop.QuitClosure());
+    run_loop.Run();
+  }
+
+  ResetForTesting();  // IN-TEST
+
   skip_app_installation_in_test_ = false;
   Start();
 
@@ -498,8 +513,8 @@ void SystemWebAppManager::OnReadyToCommitNavigation(
   }
 }
 
-absl::optional<SystemWebAppType>
-SystemWebAppManager::GetCapturingSystemAppForURL(const GURL& url) const {
+absl::optional<SystemWebAppType> SystemWebAppManager::GetSystemAppForURL(
+    const GURL& url) const {
   if (!HasSystemWebAppScheme(url))
     return absl::nullopt;
 
@@ -521,6 +536,18 @@ SystemWebAppManager::GetCapturingSystemAppForURL(const GURL& url) const {
   if (!delegate)
     return absl::nullopt;
 
+  return type;
+}
+
+absl::optional<SystemWebAppType>
+SystemWebAppManager::GetCapturingSystemAppForURL(const GURL& url) const {
+  absl::optional<SystemWebAppType> type = GetSystemAppForURL(url);
+  if (!type.has_value()) {
+    return absl::nullopt;
+  }
+
+  const SystemWebAppDelegate* delegate =
+      GetSystemWebApp(system_app_delegates_, type.value());
   if (!delegate->ShouldCaptureNavigations())
     return absl::nullopt;
 
@@ -557,10 +584,13 @@ void SystemWebAppManager::SetUpdatePolicyForTesting(UpdatePolicy policy) {
 }
 
 void SystemWebAppManager::ResetForTesting() {
+  CHECK_IS_TEST();
   StopBackgroundTasks();
+  tasks_.clear();
   icon_checker_ = SystemWebAppIconChecker::Create(profile_);
   on_apps_synchronized_ = std::make_unique<base::OneShotEvent>();
   on_icon_check_completed_ = std::make_unique<base::OneShotEvent>();
+  on_tasks_started_ = std::make_unique<base::OneShotEvent>();
 }
 
 const base::Version& SystemWebAppManager::CurrentVersion() const {

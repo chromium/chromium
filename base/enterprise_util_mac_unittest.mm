@@ -6,28 +6,13 @@
 
 #include "testing/gtest/include/gtest/gtest.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 namespace base {
 
-TEST(EnterpriseUtilMacTest, IsDeviceRegisteredWithManagementOldSmokeTest) {
-  MacDeviceManagementStateOld state = IsDeviceRegisteredWithManagementOld();
+TEST(EnterpriseUtilMacTest, IsDeviceRegisteredWithManagementSmokeTest) {
+  MacDeviceManagementState state = IsDeviceRegisteredWithManagement();
 
-  EXPECT_NE(MacDeviceManagementStateOld::kFailureAPIUnavailable, state);
-  EXPECT_NE(MacDeviceManagementStateOld::kFailureUnableToParseResult, state);
-}
-
-TEST(EnterpriseUtilMacTest, IsDeviceRegisteredWithManagementNewSmokeTest) {
-  MacDeviceManagementStateNew state = IsDeviceRegisteredWithManagementNew();
-
-  if (@available(macOS 10.13.4, *)) {
-    EXPECT_NE(MacDeviceManagementStateNew::kFailureAPIUnavailable, state);
-    EXPECT_NE(MacDeviceManagementStateNew::kFailureUnableToParseResult, state);
-  } else {
-    EXPECT_EQ(MacDeviceManagementStateNew::kFailureAPIUnavailable, state);
-  }
+  EXPECT_NE(MacDeviceManagementState::kFailureAPIUnavailable, state);
+  EXPECT_NE(MacDeviceManagementState::kFailureUnableToParseResult, state);
 }
 
 }  // namespace base

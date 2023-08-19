@@ -26,11 +26,4 @@ using PostHostClearedCallback =
     base::StrongAlias<class PostHostClearedCallbackTag,
                       base::OnceCallback<void(Browser*)>>;
 
-// Callback to run to finish the flow. If a `PostHostClearedCallback` is
-// provided, it will be executed after the host is cleared, and will be given
-// a browser window for the newly set up profile.
-using FinishFlowCallback =
-    base::StrongAlias<class FinishFlowCallbackTag,
-                      base::OnceCallback<void(PostHostClearedCallback)>>;
-
 #endif  // CHROME_BROWSER_UI_VIEWS_PROFILES_PROFILE_MANAGEMENT_TYPES_H_

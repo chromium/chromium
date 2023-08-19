@@ -42,9 +42,7 @@ class FakeSafeBrowsing : public mojom::SafeBrowsing {
       receiver_ = std::move(receiver);
     } else {
       std::move(callback).Run(/*slow_check_notifier=*/mojo::NullReceiver(),
-                              /*proceed=*/true, /*show_interstitial=*/false,
-                              /*did_perform_url_real_time_check=*/false,
-                              /*did_check_url_real_time_allowlist=*/false);
+                              /*proceed=*/true, /*show_interstitial=*/false);
     }
   }
 
@@ -56,9 +54,7 @@ class FakeSafeBrowsing : public mojom::SafeBrowsing {
     ASSERT_TRUE(should_delay_callback_);
     std::move(pending_callback_)
         .Run(/*slow_check_notifier=*/mojo::NullReceiver(),
-             /*proceed=*/true, /*show_interstitial=*/false,
-             /*did_perform_url_real_time_check=*/false,
-             /*did_check_url_real_time_allowlist=*/false);
+             /*proceed=*/true, /*show_interstitial=*/false);
   }
 
   void EnableDelayCallback() { should_delay_callback_ = true; }

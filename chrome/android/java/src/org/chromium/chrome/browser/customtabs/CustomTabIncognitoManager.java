@@ -30,8 +30,6 @@ import javax.inject.Inject;
  */
 @ActivityScope
 public class CustomTabIncognitoManager implements NativeInitObserver, DestroyObserver {
-    private static final String TAG = "CctIncognito";
-
     private final Activity mActivity;
     private final CustomTabActivityNavigationController mNavigationController;
     private final BrowserServicesIntentDataProvider mIntentDataProvider;
@@ -91,7 +89,7 @@ public class CustomTabIncognitoManager implements NativeInitObserver, DestroyObs
         if (!CommandLine.getInstance().hasSwitch(
                     ChromeSwitches.ENABLE_INCOGNITO_SNAPSHOTS_IN_ANDROID_RECENTS)) {
             new IncognitoCustomTabSnapshotController(
-                    mActivity.getWindow(), () -> mIntentDataProvider.isIncognito());
+                    mActivity, () -> mIntentDataProvider.isIncognito());
         }
     }
 

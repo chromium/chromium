@@ -11,6 +11,7 @@
 #import "ios/chrome/browser/ui/content_suggestions/ntp_home_constant.h"
 #import "ios/chrome/browser/ui/ntp/discover_feed_constants.h"
 #import "ios/chrome/browser/ui/ntp/feed_control_delegate.h"
+#import "ios/chrome/browser/ui/ntp/feed_menu_commands.h"
 #import "ios/chrome/browser/ui/ntp/metrics/feed_metrics_recorder.h"
 #import "ios/chrome/browser/ui/ntp/new_tab_page_constants.h"
 #import "ios/chrome/browser/ui/ntp/new_tab_page_delegate.h"
@@ -22,10 +23,6 @@
 #import "ui/base/l10n/l10n_util.h"
 #import "ui/base/l10n/l10n_util_mac.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 namespace {
 
 // Leading margin for title label. Its used to align with the Card leading
@@ -34,8 +31,6 @@ const CGFloat kTitleHorizontalMargin = 19;
 // Trailing/leading margins for header buttons. Its used to align with the card
 // margins.
 const CGFloat kButtonHorizontalMargin = 14;
-// Font size for label text in header.
-const CGFloat kDiscoverFeedTitleFontSize = 16;
 // Font size for the custom search engine label.
 const CGFloat kCustomSearchEngineLabelFontSize = 13;
 // Font size for the hidden feed label.
@@ -143,6 +138,21 @@ NSInteger kFeedSymbolPointSize = 17;
   [self.container addSubview:self.menuButton];
   [self.view addSubview:self.container];
   [self applyHeaderConstraints];
+}
+
+#pragma mark - UITraitEnvironment
+
+- (void)traitCollectionDidChange:(UITraitCollection*)previousTraitCollection {
+  [super traitCollectionDidChange:previousTraitCollection];
+  if (previousTraitCollection.preferredContentSizeCategory !=
+      self.traitCollection.preferredContentSizeCategory) {
+    UIFont* font = [self fontForTitle];
+    self.titleLabel.font = font;
+    NSDictionary* attributes =
+        [NSDictionary dictionaryWithObject:font forKey:NSFontAttributeName];
+    [self.segmentedControl setTitleTextAttributes:attributes
+                                         forState:UIControlStateNormal];
+  }
 }
 
 #pragma mark - Public
@@ -343,6 +353,9 @@ NSInteger kFeedSymbolPointSize = 17;
         kHeaderMenuButtonInsetTopAndBottom, kHeaderMenuButtonInsetSides);
     SetImageEdgeInsets(menuButton, imageInsets);
   }
+  [menuButton addTarget:self
+                 action:@selector(didTouchMenuButton)
+       forControlEvents:UIControlEventTouchUpInside];
 }
 
 // Configures and returns the feed header's sorting button.
@@ -377,10 +390,8 @@ NSInteger kFeedSymbolPointSize = 17;
 - (UILabel*)createTitleLabel {
   UILabel* titleLabel = [[UILabel alloc] init];
   titleLabel.translatesAutoresizingMaskIntoConstraints = NO;
-  titleLabel.font = [UIFont systemFontOfSize:kDiscoverFeedTitleFontSize
-                                      weight:UIFontWeightMedium];
-  titleLabel.textColor = [UIColor colorNamed:kGrey700Color];
-  titleLabel.adjustsFontForContentSizeCategory = YES;
+  titleLabel.font = [self fontForTitle];
+  titleLabel.textColor = [UIColor colorNamed:kTextSecondaryColor];
   titleLabel.accessibilityIdentifier =
       ntp_home::DiscoverHeaderTitleAccessibilityID();
   titleLabel.text = [self feedHeaderTitleText];
@@ -400,8 +411,7 @@ NSInteger kFeedSymbolPointSize = 17;
   [segmentedControl setApportionsSegmentWidthsByContent:NO];
 
   // Set text font and color.
-  UIFont* font = [UIFont systemFontOfSize:kDiscoverFeedTitleFontSize
-                                   weight:UIFontWeightMedium];
+  UIFont* font = [self fontForTitle];
   NSDictionary* attributes =
       [NSDictionary dictionaryWithObject:font forKey:NSFontAttributeName];
   [segmentedControl setTitleTextAttributes:attributes
@@ -418,6 +428,10 @@ NSInteger kFeedSymbolPointSize = 17;
       kNTPFeedHeaderSegmentedControlIdentifier;
 
   return segmentedControl;
+}
+
+- (UIFont*)fontForTitle {
+  return CreateDynamicFont(UIFontTextStyleSubheadline, UIFontWeightMedium);
 }
 
 // Configures and returns the dot indicating that there is new content in the
@@ -776,6 +790,11 @@ NSInteger kFeedSymbolPointSize = 17;
   } else {
     return [[UIColor colorNamed:kBackgroundColor] colorWithAlphaComponent:0.95];
   }
+}
+
+// Opens the feed menu.
+- (void)didTouchMenuButton {
+  [self.feedMenuHandler openFeedMenuFromButton:self.menuButton];
 }
 
 @end

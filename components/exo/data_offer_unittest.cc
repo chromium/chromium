@@ -866,13 +866,10 @@ TEST_F(DataOfferTest, SetClipboardDataFilenames) {
   TestDataOfferDelegate delegate;
   DataOffer data_offer(&delegate);
 
-  base::Pickle pickle;
-  pickle.WriteString("file:///test/path");
   TestDataExchangeDelegate data_exchange_delegate;
   {
     ui::ScopedClipboardWriter writer(ui::ClipboardBuffer::kCopyPaste);
-    writer.WritePickledData(pickle,
-                            ui::ClipboardFormatType::WebCustomDataType());
+    writer.WriteFilenames("file:///test/path");
   }
 
   auto* window = CreateTestWindowInShellWithBounds(gfx::Rect());

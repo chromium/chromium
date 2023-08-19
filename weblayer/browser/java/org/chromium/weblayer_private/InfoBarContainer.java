@@ -23,7 +23,7 @@ import org.chromium.content_public.browser.NavigationHandle;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.content_public.browser.WebContentsObserver;
 import org.chromium.ui.KeyboardVisibilityDelegate.KeyboardVisibilityListener;
-import org.chromium.ui.util.AccessibilityUtil;
+import org.chromium.ui.accessibility.AccessibilityState;
 
 import java.util.ArrayList;
 
@@ -41,14 +41,15 @@ public class InfoBarContainer implements KeyboardVisibilityListener, InfoBar.Con
     private static int sInstanceCount;
 
     // InfoBarContainer's handling of accessibility is a global toggle, and thus a static observer
-    // suffices. However, observing accessibility events has the wrinkle that all accessibility
-    // observers are removed when there are no more Browsers and are not re-added if a new Browser
-    // is subsequently created. To handle this wrinkle, |sAccessibilityObserver| is added as an
-    // observer whenever the number of non-destroyed InfoBarContainers becomes non-zero and removed
-    // whenever that number flips to zero.
-    private static final AccessibilityUtil.Observer sAccessibilityObserver;
+    // suffices. |sAccessibilityObserver| is added as an observer to {@link AccessibilityState.java}
+    // whenever the number of non-destroyed InfoBarContainers becomes non-zero. The Listener is
+    // added to a WeakHashSet so garbage collection is handled without needing to remove here.
+    private static final AccessibilityState.Listener sAccessibilityStateListener;
     static {
-        sAccessibilityObserver = (enabled) -> setIsAllowedToAutoHide(!enabled);
+        sAccessibilityStateListener = (oldAccessibilityState, newAccessibilityState) -> {
+            setIsAllowedToAutoHide(!newAccessibilityState.isTouchExplorationEnabled
+                    && !newAccessibilityState.isPerformGesturesEnabled);
+        };
     }
 
     /**
@@ -163,7 +164,7 @@ public class InfoBarContainer implements KeyboardVisibilityListener, InfoBar.Con
 
     InfoBarContainer(TabImpl tab) {
         if (++sInstanceCount == 1) {
-            WebLayerAccessibilityUtil.get().addObserver(sAccessibilityObserver);
+            AccessibilityState.addListener(sAccessibilityStateListener);
         }
 
         mTab = tab;
@@ -243,7 +244,6 @@ public class InfoBarContainer implements KeyboardVisibilityListener, InfoBar.Con
         mInfoBarContainerView.addInfoBar(infoBar);
     }
 
-    @VisibleForTesting
     public View getViewForTesting() {
         return mInfoBarContainerView;
     }
@@ -252,7 +252,6 @@ public class InfoBarContainer implements KeyboardVisibilityListener, InfoBar.Con
      * Adds an InfoBar to the view hierarchy.
      * @param infoBar InfoBar to add to the View hierarchy.
      */
-    @VisibleForTesting
     public void addInfoBarForTesting(InfoBar infoBar) {
         addInfoBar(infoBar);
     }
@@ -305,10 +304,6 @@ public class InfoBarContainer implements KeyboardVisibilityListener, InfoBar.Con
     public void destroy() {
         mTab.getWebContents().removeObserver(mWebContentsObserver);
 
-        if (--sInstanceCount == 0) {
-            WebLayerAccessibilityUtil.get().removeObserver(sAccessibilityObserver);
-        }
-
         if (mInfoBarContainerView != null) destroyContainerView();
         if (mNativeInfoBarContainer != 0) {
             InfoBarContainerJni.get().destroy(mNativeInfoBarContainer, InfoBarContainer.this);
@@ -320,7 +315,6 @@ public class InfoBarContainer implements KeyboardVisibilityListener, InfoBar.Con
     /**
      * @return all of the InfoBars held in this container.
      */
-    @VisibleForTesting
     public ArrayList<InfoBar> getInfoBarsForTesting() {
         return mInfoBars;
     }
@@ -464,7 +458,6 @@ public class InfoBarContainer implements KeyboardVisibilityListener, InfoBar.Con
     /**
      * @return The {@link InfoBarContainerView} this class holds.
      */
-    @VisibleForTesting
     public InfoBarContainerView getContainerViewForTesting() {
         return mInfoBarContainerView;
     }

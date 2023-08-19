@@ -10,6 +10,7 @@ import android.text.format.DateUtils;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.ContextUtils;
+import org.chromium.base.ResettersForTesting;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.library_loader.LibraryLoader;
 import org.chromium.base.metrics.RecordHistogram;
@@ -102,9 +103,10 @@ public class BackgroundTaskSchedulerUma extends BackgroundTaskSchedulerExternalU
         return sInstance;
     }
 
-    @VisibleForTesting
     public static void setInstanceForTesting(BackgroundTaskSchedulerUma instance) {
+        var oldValue = sInstance;
         sInstance = instance;
+        ResettersForTesting.register(() -> sInstance = oldValue);
     }
 
     /** Reports metrics for task scheduling and whether it was successful. */
@@ -169,40 +171,10 @@ public class BackgroundTaskSchedulerUma extends BackgroundTaskSchedulerExternalU
     }
 
     @Override
-    public void reportTaskStartedNative(int taskId, boolean minimalBrowserMode) {
+    public void reportTaskStartedNative(int taskId) {
         int umaEnumValue = toUmaEnumValueFromTaskId(taskId);
         cacheEvent("Android.BackgroundTaskScheduler.TaskLoadedNative", umaEnumValue);
-        if (minimalBrowserMode) {
-            cacheEvent(
-                    "Android.BackgroundTaskScheduler.TaskLoadedNative.ReducedMode", umaEnumValue);
-        } else {
-            cacheEvent(
-                    "Android.BackgroundTaskScheduler.TaskLoadedNative.FullBrowser", umaEnumValue);
-        }
     }
-
-    @Override
-    public void reportNativeTaskStarted(int taskId, boolean minimalBrowserMode) {
-        int umaEnumValue = toUmaEnumValueFromTaskId(taskId);
-        cacheEvent("Android.NativeBackgroundTask.TaskStarted", umaEnumValue);
-        if (minimalBrowserMode) {
-            cacheEvent("Android.NativeBackgroundTask.TaskStarted.ReducedMode", umaEnumValue);
-        } else {
-            cacheEvent("Android.NativeBackgroundTask.TaskStarted.FullBrowser", umaEnumValue);
-        }
-    }
-
-    @Override
-    public void reportNativeTaskFinished(int taskId, boolean minimalBrowserMode) {
-        int umaEnumValue = toUmaEnumValueFromTaskId(taskId);
-        cacheEvent("Android.NativeBackgroundTask.TaskFinished", umaEnumValue);
-        if (minimalBrowserMode) {
-            cacheEvent("Android.NativeBackgroundTask.TaskFinished.ReducedMode", umaEnumValue);
-        } else {
-            cacheEvent("Android.NativeBackgroundTask.TaskFinished.FullBrowser", umaEnumValue);
-        }
-    }
-
     @Override
     public void reportStartupMode(int startupMode) {
         // We don't record full browser's warm startup since most of the full browser warm startup

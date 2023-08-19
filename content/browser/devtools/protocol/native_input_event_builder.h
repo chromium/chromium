@@ -6,7 +6,7 @@
 #define CONTENT_BROWSER_DEVTOOLS_PROTOCOL_NATIVE_INPUT_EVENT_BUILDER_H_
 
 #include "build/build_config.h"
-#include "content/public/browser/native_web_keyboard_event.h"
+#include "content/public/common/input/native_web_keyboard_event.h"
 
 namespace content::protocol {
 

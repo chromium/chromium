@@ -50,6 +50,7 @@
 #include "chrome/browser/web_applications/web_app_utils.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/chrome_switches.h"
+#include "components/keep_alive_registry/keep_alive_registry.h"
 #include "components/keep_alive_registry/keep_alive_types.h"
 #include "components/keep_alive_registry/scoped_keep_alive.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -99,6 +100,13 @@ class StartupWebAppCreator
     // There must be a kAppId switch arg in the command line to launch.
     if (app_id.empty())
       return false;
+
+    // Ensure keep alive registry is available and is not shutting down before
+    // attempting a web apps launch.
+    KeepAliveRegistry* keep_alive_registry = KeepAliveRegistry::GetInstance();
+    if (!keep_alive_registry || keep_alive_registry->IsShuttingDown()) {
+      return false;
+    }
 
     scoped_refptr<StartupWebAppCreator> web_app_startup =
         base::AdoptRef(new StartupWebAppCreator(command_line, cur_dir, profile,

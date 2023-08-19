@@ -6,54 +6,70 @@
 #define IOS_CHROME_BROWSER_UI_TOOLBAR_TOOLBAR_MEDIATOR_H_
 
 #import <Foundation/Foundation.h>
+#import <UIKit/UIKit.h>
 
-#import "ios/chrome/browser/ui/toolbar/adaptive_toolbar_menus_provider.h"
+#import "components/prefs/pref_service.h"
+#import "ios/chrome/browser/ui/toolbar/public/toolbar_type.h"
 
-namespace web {
-class WebState;
-}
-@class BrowserActionFactory;
-class OverlayPresenter;
-class TemplateURLService;
-@protocol ToolbarConsumer;
-class WebNavigationBrowserAgent;
+namespace segmentation_platform {
+class DeviceSwitcherResultDispatcher;
+}  // namespace segmentation_platform
+
+@protocol ToolbarOmniboxConsumer;
 class WebStateList;
 
-// A mediator object that provides the relevant properties of a web state
-// to a consumer.
-@interface ToolbarMediator : NSObject <AdaptiveToolbarMenusProvider>
+/// Delegate for events in `ToolbarMediator`.
+@protocol ToolbarMediatorDelegate <NSObject>
 
-// Whether the search icon should be in dark mode or not.
-@property(nonatomic, assign, getter=isIncognito) BOOL incognito;
+/// Updates toolbar appearance.
+- (void)updateToolbar;
 
-// The WebStateList that this mediator listens for any changes on the total
-// number of Webstates.
-@property(nonatomic, assign) WebStateList* webStateList;
+/// Transitions the omnibox position to the toolbar of type `toolbarType`.
+- (void)transitionOmniboxToToolbarType:(ToolbarType)toolbarType;
 
-// The consumer for this object. This can change during the lifetime of this
-// object and may be nil.
-@property(nonatomic, strong) id<ToolbarConsumer> consumer;
+/// Transitions the steady state omnibox position to the toolbar of type
+/// `toolbarType`. The steady state omnibox is when the omnibox is not focused.
+- (void)transitionSteadyStateOmniboxToToolbarType:(ToolbarType)toolbarType;
 
-// The overlay presenter for OverlayModality::kWebContentArea.  This mediator
-// listens for overlay presentation events to determine whether the share button
-// should be enabled.
-@property(nonatomic, assign) OverlayPresenter* webContentAreaOverlayPresenter;
+@end
 
-// The template url service to use for checking whether search by image is
-// available.
-@property(nonatomic, assign) TemplateURLService* templateURLService;
+@interface ToolbarMediator : NSObject
 
-// Action factory.
-@property(nonatomic, strong) BrowserActionFactory* actionFactory;
+/// Delegate for events in `ToolbarMediator`.
+@property(nonatomic, weak) id<ToolbarMediatorDelegate> delegate;
+/// The omnibox consumer for this object.
+@property(nonatomic, weak) id<ToolbarOmniboxConsumer> omniboxConsumer;
+/// Observe user preference changes for preferred omnibox position.
+@property(nonatomic, assign) PrefService* prefService;
 
-// Helper for Web navigation.
-@property(nonatomic, assign) WebNavigationBrowserAgent* navigationBrowserAgent;
+@property(nonatomic, assign)
+    segmentation_platform::DeviceSwitcherResultDispatcher*
+        deviceSwitcherResultDispatcher;
 
-// Updates the consumer to conforms to `webState`.
-- (void)updateConsumerForWebState:(web::WebState*)webState;
+/// Creates an instance of the mediator. Observers will be installed into all
+/// existing web states in `webStateList`. While the mediator is alive,
+/// observers will be added and removed from web states when they are inserted
+/// into or removed from the web state list.
+- (instancetype)initWithWebStateList:(WebStateList*)webStateList
+                         isIncognito:(BOOL)isIncognito;
 
-// Stops observing all objects.
+/// Disconnects all observers set by the mediator on any web states in its
+/// web state list. After `disconnect` is called, the mediator will not add
+/// observers to further webstates.
 - (void)disconnect;
+
+/// Location bar (omnibox) focus has changed to `focused`.
+- (void)locationBarFocusChangedTo:(BOOL)focused;
+
+/// NTP became active on the active web state. This can happen after web state
+/// finish navigation.
+- (void)didNavigateToNTPOnActiveWebState;
+
+/// Toolbar's trait collection changed to `traitCollection`.
+- (void)toolbarTraitCollectionChangedTo:(UITraitCollection*)traitCollection;
+
+/// Sets the omnibox initial position to the correct toolbar.
+- (void)setInitialOmniboxPosition;
 
 @end
 

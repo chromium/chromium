@@ -44,63 +44,48 @@ namespace {
 
 }  // namespace
 
-Screen::Screen(LocalDOMWindow* window,
-               int64_t display_id,
-               bool use_size_override)
-    : ExecutionContextClient(window),
-      display_id_(display_id),
-      use_size_override_(use_size_override) {}
+Screen::Screen(LocalDOMWindow* window, int64_t display_id)
+    : ExecutionContextClient(window), display_id_(display_id) {}
 
 // static
 bool Screen::AreWebExposedScreenPropertiesEqual(
     const display::ScreenInfo& prev,
-    const display::ScreenInfo& current,
-    bool use_size_override) {
-  // height() and width() use rect.size() or size_override
-  gfx::Size prev_size = prev.rect.size();
-  if (prev.size_override && use_size_override)
-    prev_size = *prev.size_override;
-  gfx::Size current_size = current.rect.size();
-  if (current.size_override && use_size_override)
-    current_size = *current.size_override;
-  if (prev_size != current_size)
+    const display::ScreenInfo& current) {
+  // height() and width() use rect.size()
+  if (prev.rect.size() != current.rect.size()) {
     return false;
+  }
 
   // height() and width() use device_scale_factor
   // Note: comparing device_scale_factor is a bit of a lie as Screen only uses
   // this with the PhysicalPixelsQuirk (see width() / height() below).  However,
   // this value likely changes rarely and should not throw many false positives.
-  if (prev.device_scale_factor != current.device_scale_factor)
+  if (prev.device_scale_factor != current.device_scale_factor) {
     return false;
+  }
 
-  // availLeft() and availTop() use available_rect.origin()
-  if (prev.available_rect.origin() != current.available_rect.origin())
+  // avail[Left|Top|Width|Height]() use available_rect
+  if (prev.available_rect != current.available_rect) {
     return false;
-
-  // availHeight() and availWidth() use available_rect.size() or size_override
-  gfx::Size prev_avail_size = prev.available_rect.size();
-  if (prev.size_override && use_size_override)
-    prev_avail_size = *prev.size_override;
-  gfx::Size current_avail_size = current.available_rect.size();
-  if (current.size_override && use_size_override)
-    current_avail_size = *current.size_override;
-  if (prev_avail_size != current_avail_size)
-    return false;
+  }
 
   // colorDepth() and pixelDepth() use depth
-  if (prev.depth != current.depth)
+  if (prev.depth != current.depth) {
     return false;
+  }
 
   // isExtended()
-  if (prev.is_extended != current.is_extended)
+  if (prev.is_extended != current.is_extended) {
     return false;
+  }
 
   if (RuntimeEnabledFeatures::CanvasHDREnabled()) {
     // (red|green|blue)Primary(X|Y) and whitePoint(X|Y).
     const auto& prev_dcs = prev.display_color_spaces;
     const auto& current_dcs = current.display_color_spaces;
-    if (prev_dcs.GetPrimaries() != current_dcs.GetPrimaries())
+    if (prev_dcs.GetPrimaries() != current_dcs.GetPrimaries()) {
       return false;
+    }
 
     // highDynamicRangeHeadroom.
     if (prev_dcs.GetHDRMaxLuminanceRelative() !=
@@ -159,7 +144,7 @@ int Screen::availWidth() const {
 }
 
 void Screen::Trace(Visitor* visitor) const {
-  EventTargetWithInlineData::Trace(visitor);
+  EventTarget::Trace(visitor);
   ExecutionContextClient::Trace(visitor);
   Supplementable<Screen>::Trace(visitor);
 }
@@ -190,8 +175,6 @@ gfx::Rect Screen::GetRect(bool available) const {
   LocalFrame* frame = DomWindow()->GetFrame();
   const display::ScreenInfo& screen_info = GetScreenInfo();
   gfx::Rect rect = available ? screen_info.available_rect : screen_info.rect;
-  if (screen_info.size_override && use_size_override_)
-    rect.set_size(*screen_info.size_override);
   if (frame->GetSettings()->GetReportScreenSizeInPhysicalPixelsQuirk())
     return gfx::ScaleToRoundedRect(rect, screen_info.device_scale_factor);
   return rect;

@@ -6,13 +6,12 @@
 
 #include <memory>
 
+#import "base/apple/foundation_util.h"
+#import "base/apple/scoped_objc_class_swizzler.h"
 #include "base/auto_reset.h"
 #include "base/debug/crash_logging.h"
 #include "base/debug/dump_without_crashing.h"
 #include "base/feature_list.h"
-#import "base/mac/foundation_util.h"
-#import "base/mac/scoped_nsobject.h"
-#import "base/mac/scoped_objc_class_swizzler.h"
 #include "base/metrics/field_trial_params.h"
 #include "base/no_destructor.h"
 #include "base/system/sys_info.h"
@@ -30,7 +29,7 @@ namespace {
 
 NSString* const kWindowDidChangePositionInWindowList =
     @"ChromeWindowDidChangePositionInWindowList";
-NSString* const kWindowIsOccludedKey = @"ChromeWindowIsOccludedKey";
+constexpr char kWindowIsOccludedKey[] = "ChromeWindowIsOccludedKey";
 
 bool IsBrowserProcess() {
   return base::CommandLine::ForCurrentProcess()
@@ -40,45 +39,41 @@ bool IsBrowserProcess() {
 
 }  // namespace
 
-@interface WebContentsOcclusionCheckerMac () {
-  NSWindow* _windowResizingOrMoving;
-  NSWindow* _windowReceivingFullscreenTransitionNotifications;
-  BOOL _displaysAreAsleep;
-  BOOL _occlusionStateUpdatesAreScheduled;
-  BOOL _updatingOcclusionStates;
-  std::unique_ptr<base::mac::ScopedObjCClassSwizzler> _windowClassSwizzler;
-}
+@interface WebContentsOcclusionCheckerMac ()
 
 // Returns a pointer to the shared instance that can be cleared during tests.
-+ (base::scoped_nsobject<WebContentsOcclusionCheckerMac>*)
-    sharedOcclusionChecker;
++ (WebContentsOcclusionCheckerMac* __strong*)sharedOcclusionChecker;
 
-- (base::mac::ScopedObjCClassSwizzler*)windowClassSwizzler;
+- (base::apple::ScopedObjCClassSwizzler*)windowClassSwizzler;
 
 @end
 
-@implementation WebContentsOcclusionCheckerMac
+@implementation WebContentsOcclusionCheckerMac {
+  NSWindow* __weak _windowResizingOrMoving;
+  NSWindow* __weak _windowReceivingFullscreenTransitionNotifications;
+  BOOL _displaysAreAsleep;
+  BOOL _occlusionStateUpdatesAreScheduled;
+  BOOL _updatingOcclusionStates;
+  std::unique_ptr<base::apple::ScopedObjCClassSwizzler> _windowClassSwizzler;
+}
 
-+ (base::scoped_nsobject<WebContentsOcclusionCheckerMac>*)
-    sharedOcclusionChecker {
-  static base::NoDestructor<
-      base::scoped_nsobject<WebContentsOcclusionCheckerMac>>
-      sharedOcclusionChecker;
-  return sharedOcclusionChecker.get();
++ (WebContentsOcclusionCheckerMac* __strong*)sharedOcclusionChecker {
+  static WebContentsOcclusionCheckerMac* sharedOcclusionChecker;
+  return &sharedOcclusionChecker;
 }
 
 + (instancetype)sharedInstance {
-  base::scoped_nsobject<WebContentsOcclusionCheckerMac>* sharedInstance =
+  WebContentsOcclusionCheckerMac* __strong* sharedInstance =
       [self sharedOcclusionChecker];
-  if (sharedInstance->get() == nil) {
-    sharedInstance->reset([[self alloc] init]);
+  if (*sharedInstance == nil) {
+    *sharedInstance = [[self alloc] init];
 
     // Checking if occlusion tracking is the cause of crashes in utility
     // processes (and how that's possible). See https://crbug.com/1276322 .
     if (!IsBrowserProcess())
       base::debug::DumpWithoutCrashing();
   }
-  return sharedInstance->get();
+  return *sharedInstance;
 }
 
 + (BOOL)manualOcclusionDetectionSupportedForVersion:(int32_t)major
@@ -101,7 +96,7 @@ bool IsBrowserProcess() {
 }
 
 + (void)resetSharedInstanceForTesting {
-  [self sharedOcclusionChecker]->reset();
+  *[self sharedOcclusionChecker] = nil;
 }
 
 - (instancetype)init {
@@ -120,7 +115,7 @@ bool IsBrowserProcess() {
   // There's no notification for NSWindows changing their order in the window
   // list. Swizzle -orderWindow:relativeTo:, allowing the checker to initiate
   // occlusion checks on window ordering changes.
-  _windowClassSwizzler = std::make_unique<base::mac::ScopedObjCClassSwizzler>(
+  _windowClassSwizzler = std::make_unique<base::apple::ScopedObjCClassSwizzler>(
       [NSWindow class], [WebContentsOcclusionCheckerMac class],
       @selector(orderWindow:relativeTo:));
 
@@ -135,11 +130,9 @@ bool IsBrowserProcess() {
   [[NSNotificationCenter defaultCenter] removeObserver:self];
   [[[NSWorkspace sharedWorkspace] notificationCenter] removeObserver:self];
   _windowClassSwizzler.reset();
-
-  [super dealloc];
 }
 
-- (base::mac::ScopedObjCClassSwizzler*)windowClassSwizzler {
+- (base::apple::ScopedObjCClassSwizzler*)windowClassSwizzler {
   return _windowClassSwizzler.get();
 }
 
@@ -237,7 +230,7 @@ bool IsBrowserProcess() {
 }
 
 - (BOOL)windowCanTriggerOcclusionUpdates:(NSWindow*)window {
-  // We only care about occlusion because we want to inform web contentes
+  // We only care about occlusion because we want to inform web contents
   // so they can update their visibility state. Therefore, we ignore windows
   // that don't have a web contents (they essentially don't exist for our manual
   // occlusion calculations).
@@ -391,10 +384,10 @@ bool IsBrowserProcess() {
 
   _updatingOcclusionStates = YES;
 
-  base::scoped_nsobject<NSArray<NSWindow*>> windowsFromFrontToBack(
-      [[[NSApplication sharedApplication] orderedWindows] copy]);
+  NSArray<NSWindow*>* windowsFromFrontToBack =
+      [[[NSApplication sharedApplication] orderedWindows] copy];
 
-  for (NSWindow* window in windowsFromFrontToBack.get()) {
+  for (NSWindow* window in windowsFromFrontToBack) {
     // The fullscreen transition causes spurious occlusion notifications.
     // See https://crbug.com/1081229 . Also, ignore windows that don't have
     // web contentses.
@@ -483,7 +476,7 @@ bool IsBrowserProcess() {
     return;
 
   objc_setAssociatedObject(self, kWindowIsOccludedKey, flag ? @YES : nil,
-                           OBJC_ASSOCIATION_COPY_NONATOMIC);
+                           OBJC_ASSOCIATION_RETAIN_NONATOMIC);
 
   NSString* occlusionCheckerKey = [WebContentsOcclusionCheckerMac className];
   [[NSNotificationCenter defaultCenter]

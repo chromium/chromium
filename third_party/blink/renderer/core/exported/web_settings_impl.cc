@@ -428,10 +428,6 @@ void WebSettingsImpl::SetAllowGeolocationOnInsecureOrigins(bool allow) {
   settings_->SetAllowGeolocationOnInsecureOrigins(allow);
 }
 
-void WebSettingsImpl::SetThreadedScrollingEnabled(bool enabled) {
-  settings_->SetThreadedScrollingEnabled(enabled);
-}
-
 void WebSettingsImpl::SetTouchDragDropEnabled(bool enabled) {
   settings_->SetTouchDragDropEnabled(enabled);
 }
@@ -568,6 +564,14 @@ void WebSettingsImpl::SetEnableScrollAnimator(bool enabled) {
 
 void WebSettingsImpl::SetPrefersReducedMotion(bool enabled) {
   settings_->SetPrefersReducedMotion(enabled);
+}
+
+void WebSettingsImpl::SetPrefersReducedTransparency(bool enabled) {
+  settings_->SetPrefersReducedTransparency(enabled);
+}
+
+void WebSettingsImpl::SetInvertedColors(bool enabled) {
+  settings_->SetInvertedColors(enabled);
 }
 
 bool WebSettingsImpl::ViewportEnabled() const {

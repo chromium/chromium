@@ -5,10 +5,13 @@
 #ifndef ASH_SYSTEM_MESSAGE_CENTER_MESSAGE_CENTER_UTILS_H_
 #define ASH_SYSTEM_MESSAGE_CENTER_MESSAGE_CENTER_UTILS_H_
 
+#include <string>
+
 #include "ash/ash_export.h"
 #include "base/functional/callback_forward.h"
 #include "ui/gfx/animation/tween.h"
 #include "ui/message_center/public/cpp/notification.h"
+#include "ui/message_center/public/cpp/notifier_id.h"
 
 namespace message_center {
 class NotificationViewController;
@@ -18,9 +21,12 @@ namespace views {
 class View;
 }
 
-namespace ash {
+namespace ash::message_center_utils {
 
-namespace message_center_utils {
+// Return a hash string derived from `notifier_id` data. This is appended to a
+// notification's `id` to create a unique identifier for a grouped notification.
+std::string ASH_EXPORT
+GenerateGroupParentNotificationIdSuffix(message_center::NotifierId notifier_id);
 
 // Comparator function for sorting the notifications in the order that they
 // should be displayed. Currently the ordering rule is very simple (subject to
@@ -91,8 +97,6 @@ void SlideOutView(views::View* view,
 ResizeImageIfExceedSizeLimit(const gfx::ImageSkia& input_image,
                              size_t size_limit_in_byte);
 
-}  // namespace message_center_utils
-
-}  // namespace ash
+}  // namespace ash::message_center_utils
 
 #endif  // ASH_SYSTEM_MESSAGE_CENTER_MESSAGE_CENTER_UTILS_H_

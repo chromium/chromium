@@ -11,7 +11,7 @@
 namespace ui {
 
 CGFloat AlignValueToUpperPixel(CGFloat value) {
-  CGFloat scale = [[UIScreen mainScreen] scale];
+  CGFloat scale = UIScreen.mainScreen.scale;
   return std::ceil(value * scale) / scale;
 }
 

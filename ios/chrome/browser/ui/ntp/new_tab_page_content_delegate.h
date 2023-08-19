@@ -11,6 +11,9 @@
 // YES if the content requires the header to stick while scrolling.
 - (BOOL)isContentHeaderSticky;
 
+// YES if the "Return to recent tab" tile is currently visible.
+- (BOOL)isRecentTabTileVisible;
+
 // Handles what happens when the signin promo changes visibility in the NTP.
 - (void)signinPromoHasChangedVisibility:(BOOL)visible;
 
@@ -22,6 +25,12 @@
 
 // Signal to the Omnibox to enter the focused state.
 - (void)focusOmnibox;
+
+// Refreshes NTP content, such as content suggestions and feed.
+- (void)refreshNTPContent;
+
+// Updates the NTP for the selected feed.
+- (void)updateForSelectedFeed:(FeedType)selectedFeed;
 
 @end
 

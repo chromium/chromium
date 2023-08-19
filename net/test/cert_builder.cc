@@ -19,8 +19,8 @@
 #include "net/cert/pki/extended_key_usage.h"
 #include "net/cert/pki/parse_certificate.h"
 #include "net/cert/pki/verify_signed_data.h"
+#include "net/cert/time_conversions.h"
 #include "net/cert/x509_util.h"
-#include "net/der/encode_values.h"
 #include "net/der/input.h"
 #include "net/der/parse_values.h"
 #include "net/der/parser.h"
@@ -894,6 +894,11 @@ void CertBuilder::SetTBSSignatureAlgorithmTLV(
   Invalidate();
 }
 
+void CertBuilder::SetSerialNumber(uint64_t serial_number) {
+  serial_number_ = serial_number;
+  Invalidate();
+}
+
 void CertBuilder::SetRandomSerialNumber() {
   serial_number_ = base::RandUint64();
   Invalidate();
@@ -932,7 +937,7 @@ std::string CertBuilder::GetSubjectKeyIdentifier() {
 
   auto& extension_value = extensions_[ski_oid];
   der::Input ski_value;
-  if (!ParseSubjectKeyIdentifier(der::Input(&extension_value.value),
+  if (!ParseSubjectKeyIdentifier(der::Input(extension_value.value),
                                  &ski_value)) {
     return std::string();
   }
@@ -943,7 +948,7 @@ bool CertBuilder::GetValidity(base::Time* not_before,
                               base::Time* not_after) const {
   der::GeneralizedTime not_before_generalized_time;
   der::GeneralizedTime not_after_generalized_time;
-  if (!ParseValidity(der::Input(&validity_tlv_), &not_before_generalized_time,
+  if (!ParseValidity(der::Input(validity_tlv_), &not_before_generalized_time,
                      &not_after_generalized_time) ||
       !GeneralizedTimeToTime(not_before_generalized_time, not_before) ||
       !GeneralizedTimeToTime(not_after_generalized_time, not_after)) {

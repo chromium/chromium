@@ -99,7 +99,7 @@ void SVGPatternElement::BuildPendingResource() {
   if (auto* pattern = DynamicTo<SVGPatternElement>(target))
     AddReferenceTo(pattern);
 
-  InvalidatePattern(layout_invalidation_reason::kSvgResourceInvalidated);
+  InvalidatePattern();
 }
 
 void SVGPatternElement::ClearResourceReferences() {
@@ -143,7 +143,7 @@ void SVGPatternElement::SvgAttributeChanged(
     if (is_length_attr)
       UpdateRelativeLengthsInformation();
 
-    InvalidatePattern(layout_invalidation_reason::kAttributeChanged);
+    InvalidatePattern();
     return;
   }
 
@@ -174,20 +174,18 @@ void SVGPatternElement::ChildrenChanged(const ChildrenChange& change) {
   SVGElement::ChildrenChanged(change);
 
   if (!change.ByParser())
-    InvalidatePattern(layout_invalidation_reason::kChildChanged);
+    InvalidatePattern();
 }
 
-void SVGPatternElement::InvalidatePattern(
-    LayoutInvalidationReasonForTracing reason) {
+void SVGPatternElement::InvalidatePattern() {
   if (auto* layout_object = To<LayoutSVGResourceContainer>(GetLayoutObject()))
-    layout_object->InvalidateCacheAndMarkForLayout(reason);
+    layout_object->InvalidateCache();
 }
 
 void SVGPatternElement::InvalidateDependentPatterns() {
   NotifyIncomingReferences([](SVGElement& element) {
     if (auto* pattern = DynamicTo<SVGPatternElement>(element)) {
-      pattern->InvalidatePattern(
-          layout_invalidation_reason::kSvgResourceInvalidated);
+      pattern->InvalidatePattern();
     }
   });
 }
@@ -333,28 +331,25 @@ SVGAnimatedPropertyBase* SVGPatternElement::PropertyFromAttribute(
   }
 }
 
-void SVGPatternElement::SynchronizeSVGAttribute(
-    const QualifiedName& name) const {
-  if (name == AnyQName()) {
-    SVGAnimatedPropertyBase* attrs[]{x_.Get(),
-                                     y_.Get(),
-                                     width_.Get(),
-                                     height_.Get(),
-                                     pattern_transform_.Get(),
-                                     pattern_units_.Get(),
-                                     pattern_content_units_.Get()};
-    SynchronizeAllSVGAttributes(attrs);
-  }
-  SVGURIReference::SynchronizeSVGAttribute(name);
-  SVGTests::SynchronizeSVGAttribute(name);
-  SVGFitToViewBox::SynchronizeSVGAttribute(name);
-  SVGElement::SynchronizeSVGAttribute(name);
+void SVGPatternElement::SynchronizeAllSVGAttributes() const {
+  SVGAnimatedPropertyBase* attrs[]{x_.Get(),
+                                   y_.Get(),
+                                   width_.Get(),
+                                   height_.Get(),
+                                   pattern_transform_.Get(),
+                                   pattern_units_.Get(),
+                                   pattern_content_units_.Get()};
+  SynchronizeListOfSVGAttributes(attrs);
+  SVGURIReference::SynchronizeAllSVGAttributes();
+  SVGTests::SynchronizeAllSVGAttributes();
+  SVGFitToViewBox::SynchronizeAllSVGAttributes();
+  SVGElement::SynchronizeAllSVGAttributes();
 }
 
 void SVGPatternElement::CollectExtraStyleForPresentationAttribute(
     MutableCSSPropertyValueSet* style) {
-  if (pattern_transform_->HasPresentationAttributeMapping() &&
-      pattern_transform_->IsAnimating()) {
+  DCHECK(pattern_transform_->HasPresentationAttributeMapping());
+  if (pattern_transform_->IsAnimating()) {
     CollectStyleForPresentationAttribute(pattern_transform_->AttributeName(),
                                          g_empty_atom, style);
   }

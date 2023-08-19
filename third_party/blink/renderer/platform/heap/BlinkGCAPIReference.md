@@ -441,7 +441,7 @@ Using non-const fields in `Trace()` methods may cause data races and other issue
 ## Heap collections
 
 Oilpan, like any other managed runtime library, provides basic support for collections that integrate its managed types `Member<T>` and `WeakMember<T>`.
-Do not use heap collection with persistent types (e.g. HeapVector<Persistent<T>>).
+Do not use heap collection with persistent types (e.g. `HeapVector<Persistent<T>>`).
 
 Collections compared to other libraries used in Blink:
 

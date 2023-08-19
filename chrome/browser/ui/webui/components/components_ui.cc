@@ -22,7 +22,8 @@
 #include "chrome/browser/ui/webui/webui_util.h"
 #include "chrome/common/chrome_paths.h"
 #include "chrome/common/url_constants.h"
-#include "chrome/grit/dev_ui_browser_resources.h"
+#include "chrome/grit/components_resources.h"
+#include "chrome/grit/components_resources_map.h"
 #include "chrome/grit/generated_resources.h"
 #include "chrome/grit/theme_resources.h"
 #include "content/public/browser/web_ui.h"
@@ -72,7 +73,7 @@ void CreateAndAddComponentsUIHTMLSource(Profile* profile) {
       "isGuest",
 #if BUILDFLAG(IS_CHROMEOS_ASH)
       user_manager::UserManager::Get()->IsLoggedInAsGuest() ||
-          user_manager::UserManager::Get()->IsLoggedInAsPublicAccount()
+          user_manager::UserManager::Get()->IsLoggedInAsManagedGuestSession()
 #elif BUILDFLAG(IS_CHROMEOS_LACROS)
                       chromeos::BrowserParamsProxy::Get()->SessionType() ==
                               crosapi::mojom::SessionType::kPublicSession ||
@@ -82,8 +83,8 @@ void CreateAndAddComponentsUIHTMLSource(Profile* profile) {
 #endif
   );
   source->UseStringsJs();
-  source->AddResourcePath("components.js", IDR_COMPONENTS_COMPONENTS_JS);
-  source->AddResourcePath("components.css", IDR_COMPONENTS_COMPONENTS_CSS);
+  source->AddResourcePaths(
+      base::make_span(kComponentsResources, kComponentsResourcesSize));
   source->SetDefaultResource(IDR_COMPONENTS_COMPONENTS_HTML);
 }
 

@@ -4,8 +4,8 @@
 
 #import "chrome/browser/ui/cocoa/apps/app_shim_menu_controller_mac.h"
 
+#include "base/apple/scoped_nsautorelease_pool.h"
 #include "base/containers/adapters.h"
-#include "base/mac/scoped_nsautorelease_pool.h"
 #include "base/strings/sys_string_conversions.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/app/chrome_command_ids.h"
@@ -39,15 +39,13 @@ NSMenuItem* GetItemByTag(NSInteger menu_tag, NSInteger item_tag) {
 // with the same title.
 NSMenuItem* NewTopLevelItemFrom(NSInteger menu_tag) {
   NSMenuItem* original = [[NSApp mainMenu] itemWithTag:menu_tag];
-  base::scoped_nsobject<NSMenuItem> item([[NSMenuItem alloc]
-      initWithTitle:[original title]
-             action:nil
-      keyEquivalent:@""]);
+  NSMenuItem* item = [[NSMenuItem alloc] initWithTitle:[original title]
+                                                action:nil
+                                         keyEquivalent:@""];
   DCHECK([original hasSubmenu]);
-  base::scoped_nsobject<NSMenu> sub_menu([[NSMenu alloc]
-      initWithTitle:[[original submenu] title]]);
+  NSMenu* sub_menu = [[NSMenu alloc] initWithTitle:[[original submenu] title]];
   [item setSubmenu:sub_menu];
-  return item.autorelease();
+  return item;
 }
 
 // Finds an item using |menu_tag| and |item_tag| and adds a duplicate of it to
@@ -55,8 +53,7 @@ NSMenuItem* NewTopLevelItemFrom(NSInteger menu_tag) {
 void AddDuplicateItem(NSMenuItem* top_level_item,
                       NSInteger menu_tag,
                       NSInteger item_tag) {
-  base::scoped_nsobject<NSMenuItem> item(
-      [GetItemByTag(menu_tag, item_tag) copy]);
+  NSMenuItem* item = [GetItemByTag(menu_tag, item_tag) copy];
   DCHECK(item);
   [[top_level_item submenu] addItem:item];
 }
@@ -169,9 +166,9 @@ extensions::AppWindowRegistry::AppWindowList GetAppWindowsForNSWindow(
 // doppelganger just copies the item and sets a new action.
 @interface DoppelgangerMenuItem : NSObject {
  @private
-  base::scoped_nsobject<NSMenuItem> _menuItem;
-  base::scoped_nsobject<NSMenuItem> _sourceItem;
-  base::scoped_nsobject<NSString> _sourceKeyEquivalent;
+  NSMenuItem* __strong _menuItem;
+  NSMenuItem* __strong _sourceItem;
+  NSString* __strong _sourceKeyEquivalent;
   int _resourceId;
 }
 
@@ -211,13 +208,12 @@ extensions::AppWindowRegistry::AppWindowList GetAppWindowsForNSWindow(
                             action:(SEL)action
                      keyEquivalent:(NSString*)keyEquivalent {
   if ((self = [super init])) {
-    _sourceItem.reset([GetItemByTag(menuTag, itemTag) retain]);
+    _sourceItem = GetItemByTag(menuTag, itemTag);
     DCHECK(_sourceItem);
-    _sourceKeyEquivalent.reset([[_sourceItem keyEquivalent] copy]);
-    _menuItem.reset([[NSMenuItem alloc]
-        initWithTitle:[_sourceItem title]
-               action:action
-        keyEquivalent:keyEquivalent]);
+    _sourceKeyEquivalent = [[_sourceItem keyEquivalent] copy];
+    _menuItem = [[NSMenuItem alloc] initWithTitle:[_sourceItem title]
+                                           action:action
+                                    keyEquivalent:keyEquivalent];
     [_menuItem setTarget:controller];
     [_menuItem setTag:itemTag];
     _resourceId = resourceId;
@@ -230,11 +226,11 @@ extensions::AppWindowRegistry::AppWindowList GetAppWindowsForNSWindow(
                   targetItemTag:(NSInteger)targetItemTag
                   keyEquivalent:(NSString*)keyEquivalent {
   if ((self = [super init])) {
-    _menuItem.reset([GetItemByTag(menuTag, targetItemTag) copy]);
-    _sourceItem.reset([GetItemByTag(menuTag, sourceItemTag) retain]);
+    _menuItem = [GetItemByTag(menuTag, targetItemTag) copy];
+    _sourceItem = GetItemByTag(menuTag, sourceItemTag);
     DCHECK(_menuItem);
     DCHECK(_sourceItem);
-    _sourceKeyEquivalent.reset([[_sourceItem keyEquivalent] copy]);
+    _sourceKeyEquivalent = [[_sourceItem keyEquivalent] copy];
   }
   return self;
 }
@@ -297,69 +293,68 @@ extensions::AppWindowRegistry::AppWindowList GetAppWindowsForNSWindow(
 }
 
 - (void)dealloc {
-  [[NSNotificationCenter defaultCenter] removeObserver:self];
-  [super dealloc];
+  [NSNotificationCenter.defaultCenter removeObserver:self];
 }
 
 - (void)buildAppMenuItems {
-  _aboutDoppelganger.reset([[DoppelgangerMenuItem alloc]
-      initWithController:self
-                 menuTag:IDC_CHROME_MENU
-                 itemTag:IDC_ABOUT
-              resourceId:IDS_ABOUT_MAC
-                  action:nil
-           keyEquivalent:@""]);
-  _hideDoppelganger.reset([[DoppelgangerMenuItem alloc]
+  _aboutDoppelganger =
+      [[DoppelgangerMenuItem alloc] initWithController:self
+                                               menuTag:IDC_CHROME_MENU
+                                               itemTag:IDC_ABOUT
+                                            resourceId:IDS_ABOUT_MAC
+                                                action:nil
+                                         keyEquivalent:@""];
+  _hideDoppelganger = [[DoppelgangerMenuItem alloc]
       initWithController:self
                  menuTag:IDC_CHROME_MENU
                  itemTag:IDC_HIDE_APP
               resourceId:IDS_HIDE_APP_MAC
                   action:@selector(hideCurrentPlatformApp)
-           keyEquivalent:@"h"]);
-  _quitDoppelganger.reset([[DoppelgangerMenuItem alloc]
+           keyEquivalent:@"h"];
+  _quitDoppelganger = [[DoppelgangerMenuItem alloc]
       initWithController:self
                  menuTag:IDC_CHROME_MENU
                  itemTag:IDC_EXIT
               resourceId:IDS_EXIT_MAC
                   action:@selector(quitCurrentPlatformApp)
-           keyEquivalent:@"q"]);
-  _newDoppelganger.reset([[DoppelgangerMenuItem alloc]
-      initWithController:self
-                 menuTag:IDC_FILE_MENU
-                 itemTag:IDC_NEW_WINDOW
-              resourceId:0
-                  action:nil
-           keyEquivalent:@"n"]);
+           keyEquivalent:@"q"];
+  _newDoppelganger =
+      [[DoppelgangerMenuItem alloc] initWithController:self
+                                               menuTag:IDC_FILE_MENU
+                                               itemTag:IDC_NEW_WINDOW
+                                            resourceId:0
+                                                action:nil
+                                         keyEquivalent:@"n"];
   // Since the "Close Window" menu item will have the same shortcut as "Close
   // Tab" on the Chrome menu, we need to create a doppelganger.
-  _closeWindowDoppelganger.reset([[DoppelgangerMenuItem alloc]
-                initWithMenuTag:IDC_FILE_MENU
-                  sourceItemTag:IDC_CLOSE_TAB
-                  targetItemTag:IDC_CLOSE_WINDOW
-                  keyEquivalent:@"w"]);
+  _closeWindowDoppelganger =
+      [[DoppelgangerMenuItem alloc] initWithMenuTag:IDC_FILE_MENU
+                                      sourceItemTag:IDC_CLOSE_TAB
+                                      targetItemTag:IDC_CLOSE_WINDOW
+                                      keyEquivalent:@"w"];
   // For apps, the "Window" part of "New Window" is dropped to match the default
   // menu set given to Cocoa Apps.
   [[_newDoppelganger menuItem] setTitle:l10n_util::GetNSString(IDS_NEW_MAC)];
-  _openDoppelganger.reset([[DoppelgangerMenuItem alloc]
-      initWithController:self
-                 menuTag:IDC_FILE_MENU
-                 itemTag:IDC_OPEN_FILE
-              resourceId:0
-                  action:nil
-           keyEquivalent:@"o"]);
-  _allToFrontDoppelganger.reset([[DoppelgangerMenuItem alloc]
+  _openDoppelganger =
+      [[DoppelgangerMenuItem alloc] initWithController:self
+                                               menuTag:IDC_FILE_MENU
+                                               itemTag:IDC_OPEN_FILE
+                                            resourceId:0
+                                                action:nil
+                                         keyEquivalent:@"o"];
+  _allToFrontDoppelganger = [[DoppelgangerMenuItem alloc]
       initWithController:self
                  menuTag:IDC_WINDOW_MENU
                  itemTag:IDC_ALL_WINDOWS_FRONT
               resourceId:0
                   action:@selector(focusCurrentPlatformApp)
-           keyEquivalent:@""]);
+           keyEquivalent:@""];
 
   // The app's menu.
-  _appMenuItem.reset([[NSMenuItem alloc] initWithTitle:@""
-                                                action:nil
-                                         keyEquivalent:@""]);
-  base::scoped_nsobject<NSMenu> appMenu([[NSMenu alloc] initWithTitle:@""]);
+  _appMenuItem = [[NSMenuItem alloc] initWithTitle:@""
+                                            action:nil
+                                     keyEquivalent:@""];
+  NSMenu* appMenu = [[NSMenu alloc] initWithTitle:@""];
   [_appMenuItem setSubmenu:appMenu];
   [appMenu setAutoenablesItems:NO];
 
@@ -371,7 +366,7 @@ extensions::AppWindowRegistry::AppWindowList GetAppWindowsForNSWindow(
   [appMenu addItem:[_quitDoppelganger menuItem]];
 
   // File menu.
-  _fileMenuItem.reset([NewTopLevelItemFrom(IDC_FILE_MENU) retain]);
+  _fileMenuItem = NewTopLevelItemFrom(IDC_FILE_MENU);
   [[_fileMenuItem submenu] addItem:[_newDoppelganger menuItem]];
   [[_fileMenuItem submenu] addItem:[_openDoppelganger menuItem]];
   [[_fileMenuItem submenu] addItem:[NSMenuItem separatorItem]];
@@ -380,19 +375,19 @@ extensions::AppWindowRegistry::AppWindowList GetAppWindowsForNSWindow(
   // Edit menu. We copy the menu because the last two items, "Start Dictation"
   // and "Special Characters" are added by OSX, so we can't copy them
   // explicitly.
-  _editMenuItem.reset([[[NSApp mainMenu] itemWithTag:IDC_EDIT_MENU] copy]);
+  _editMenuItem = [[[NSApp mainMenu] itemWithTag:IDC_EDIT_MENU] copy];
 
   // View menu. Remove "Always Show Bookmark Bar" and separator.
-  _viewMenuItem.reset([[[NSApp mainMenu] itemWithTag:IDC_VIEW_MENU] copy]);
+  _viewMenuItem = [[[NSApp mainMenu] itemWithTag:IDC_VIEW_MENU] copy];
   RemoveMenuItemWithTag(_viewMenuItem, IDC_SHOW_BOOKMARK_BAR, YES);
 
   // History menu.
-  _historyMenuItem.reset([NewTopLevelItemFrom(IDC_HISTORY_MENU) retain]);
+  _historyMenuItem = NewTopLevelItemFrom(IDC_HISTORY_MENU);
   AddDuplicateItem(_historyMenuItem, IDC_HISTORY_MENU, IDC_BACK);
   AddDuplicateItem(_historyMenuItem, IDC_HISTORY_MENU, IDC_FORWARD);
 
   // Window menu.
-  _windowMenuItem.reset([NewTopLevelItemFrom(IDC_WINDOW_MENU) retain]);
+  _windowMenuItem = NewTopLevelItemFrom(IDC_WINDOW_MENU);
   AddDuplicateItem(_windowMenuItem, IDC_WINDOW_MENU, IDC_MINIMIZE_WINDOW);
   AddDuplicateItem(_windowMenuItem, IDC_WINDOW_MENU, IDC_MAXIMIZE_WINDOW);
   [[_windowMenuItem submenu] addItem:[NSMenuItem separatorItem]];
@@ -419,7 +414,7 @@ extensions::AppWindowRegistry::AppWindowList GetAppWindowsForNSWindow(
   // must be drained before the window finishes -dealloc. In this method, an
   // autorelease is sent by the invocation of [NSApp windows].
   // http://crbug.com/406944.
-  base::mac::ScopedNSAutoreleasePool pool;
+  base::apple::ScopedNSAutoreleasePool pool;
 
   NSString* name = [notification name];
   if ([name isEqualToString:NSWindowDidBecomeMainNotification]) {

@@ -35,8 +35,10 @@
 <translation id="1280820357415527819">మొబైల్ నెట్‌వర్క్‌ల కోసం వెతుకుతోంది</translation>
 <translation id="1293556467332435079">Files</translation>
 <translation id="1297922636971898492">Google Drive ప్రస్తుతం అందుబాటులో లేదు. Google Drive అందుబాటులోకి వచ్చిన తర్వాత అప్‌లోడ్ ఆటోమేటిక్‌గా మళ్లీ ప్రారంభమవుతుంది.</translation>
+<translation id="1306130176943817227">తొలగించడం సాధ్యపడదు. ఐటెమ్ వినియోగంలో ఉంది.</translation>
 <translation id="1307931752636661898">Linux ఫైళ్లను చూడటం సాధ్యపడలేదు</translation>
 <translation id="1313405956111467313">ఆటోమేటిక్‌ ప్రాక్సీ కాన్ఫిగరేషన్</translation>
+<translation id="134645005685694099">ఫైల్ సింక్‌ను ఆన్‌లో ఉంచడానికి మీ పరికరంలో తగినంత స్టోరేజ్ స్పేస్ లేదు. కొత్త ఫైల్స్ ఇకపై ఆటోమేటిక్‌గా సింక్ చేయబడవు.</translation>
 <translation id="1353686479385938207"><ph name="PROVIDER_NAME" />: <ph name="NETWORK_NAME" /></translation>
 <translation id="1358735829858566124">ఈ ఫైల్ లేదా డైరెక్టరీ ఉపయోగించబడదు.</translation>
 <translation id="1363028406613469049">ట్రాక్ చేయండి</translation>
@@ -113,7 +115,6 @@
 <translation id="1920798810075583923">పుచ్చకాయ</translation>
 <translation id="1924372192547904021"><ph name="DRIVE_NAME" /> ఫార్మాట్ చేయబడింది</translation>
 <translation id="1931134289871235022">స్లోవక్</translation>
-<translation id="1933345018156373194">తరలింపు విఫలమైంది, తెలియని ఎర్రర్: <ph name="ERROR_MESSAGE" /></translation>
 <translation id="1936717151811561466">ఫిన్నిష్</translation>
 <translation id="1942765061641586207">చిత్ర రిజల్యూషన్</translation>
 <translation id="1972984168337863910">అభిప్రాయ ప్యానెల్‌ల ఫైళ్లు విస్తరించు</translation>
@@ -130,7 +131,7 @@
 <translation id="2084108471225856927">పరికర సెట్టింగ్‌లు</translation>
 <translation id="2084809735218147718">సంజ్ఞ ద్వారా థ్యాంక్ యు చెబుతున్న వ్యక్తి</translation>
 <translation id="2088690981887365033">VPN నెట్‌వర్క్</translation>
-<translation id="2089751716171649322">మీరు ఆఫ్‌లైన్‌లో ఉన్నప్పుడు మీ Google Drive ఫైల్స్‌ను సులభంగా యాక్సెస్ చేయండి</translation>
+<translation id="209653272837065803">ఫైళ్లను సింక్ చేయడాన్ని కొనసాగించడానికి తగినంత స్టోరేజ్ స్పేస్ లేదు</translation>
 <translation id="2111134541987263231"><ph name="BEGIN_BOLD" />అజ్ఞాత మోడ్‌లో అనుమతించండి<ph name="END_BOLD" /> ఆప్షన్‌ను ఆన్ చేయండి</translation>
 <translation id="2114191879048183086"><ph name="NUMBER_OF_ITEMS" /> ఐటెమ్‌లు తొలగించబడతాయి, మీరు వాటిని రీస్టోర్ చేయలేరు.</translation>
 <translation id="2122305276694332719">దాచబడిన నెట్‌వర్క్‌కు ఆటోమేటిక్‌గా కనెక్ట్ చేయడం వలన మీ పరికరాన్ని, కొన్ని నెట్‌వర్క్‌ల సెట్టింగ్‌లను ఇతరులు చూడగలుగుతారు, కనుక ఇది సిఫార్సు చేయబడదు.</translation>
@@ -147,9 +148,11 @@
 <translation id="2198315389084035571">సరళీకృత చైనీస్</translation>
 <translation id="22085916256174561">కొరియన్</translation>
 <translation id="2208919847696382164">Linuxతో ఇన్‌స్టాల్ చేయండి</translation>
+<translation id="2215692307449050019">బ్యాటరీ తక్కువగా ఉంది. మీరు పవర్‌కు కనెక్ట్ చేసినప్పుడు ఫైల్ సింక్ చేయడం మళ్లీ ప్రారంభమవుతుంది.</translation>
 <translation id="2225536596944493418">మీరు <ph name="NUMBER_OF_ITEMS" /> అంశాలను ఖచ్చితంగా తొలగించాలనుకుంటున్నారా?</translation>
 <translation id="2230062665678605299">"<ph name="FOLDER_NAME" />" ఫోల్డర్‌ను క్రియేట్ చేయడం సాధ్యపడలేదు. <ph name="ERROR_MESSAGE" /></translation>
 <translation id="2239068707900391003">కాఫీని పట్టుకుని ఉన్న వ్యక్తి</translation>
+<translation id="2247561763838186830">మీరు లాగ్ అవుట్ చేయబడ్డారు</translation>
 <translation id="2251368349685848079">ట్రాష్ నుండి రీస్టోర్ చేయండి</translation>
 <translation id="2278133026967558505">అన్ని వెబ్‌సైట్‌లు, URLలకు ఫైల్ యాక్సెస్‌ను ఇవ్వండి</translation>
 <translation id="2282155092769082568">ఆటోకాన్ఫిగరేషన్ URL:</translation>
@@ -163,7 +166,7 @@
 <translation id="2312704192806647271">{COUNT,plural, =1{IDతో <ph name="BEGIN_LIST" /><ph name="END_LIST" /> ఎక్స్‌టెన్షన్‌ను కనుగొనడం సాధ్యం కాదు. మీ అడ్మినిస్ట్రేటర్‌ను కాంటాక్ట్ చేయండి.}other{IDలతో <ph name="BEGIN_LIST" /><ph name="END_LIST" /> ఎక్స్‌టెన్షన్‌లను కనుగొనడం సాధ్యం కాదు. మీ అడ్మినిస్ట్రేటర్‌ను కాంటాక్ట్ చేయండి.}}</translation>
 <translation id="2325650632570794183">ఈ ఫైల్ రకానికి మద్దతు లేదు. దయచేసి ఈ రకమైన ఫైల్‌ను తెరవగల యాప్‌ను కనుగొనడానికి Chrome వెబ్ స్టోర్‌ను సందర్శించండి.</translation>
 <translation id="2326539130272988168">బల్గేరియన్</translation>
-<translation id="2337715497728194187">Bruschettaతో షేర్ చేయండి</translation>
+<translation id="233822363739146957">మీ అన్ని ఫైళ్లను సింక్ చేయడానికి తగినంత స్టోరేజ్ స్పేస్ లేదు</translation>
 <translation id="23721837607121582"><ph name="NETWORK_NAME" />, <ph name="NETWORK_COUNT" />లో <ph name="NETWORK_INDEX" />వ నెట్‌వర్క్ మొబైల్ ప్రొఫైల్‌ను డౌన్‌లోడ్ చేయండి</translation>
 <translation id="2377319039870049694">లిస్ట్‌ వీక్షణకు మార్చు</translation>
 <translation id="2377590462528165447">Linuxతో <ph name="NUMBER_OF_ITEMS" /> ఫోల్డర్‌లు షేర్ చేయబడ్డాయి</translation>
@@ -181,6 +184,7 @@
 <translation id="2464089476039395325">HTTP ప్రాక్సీ</translation>
 <translation id="2467267713099745100"><ph name="NETWORK_TYPE" /> నెట్‌వర్క్, ఆఫ్‌లో ఉంది</translation>
 <translation id="2468402215065996499">టమగోచి</translation>
+<translation id="2468470447085858632">ఫైల్ సింక్‌తో మీ Google Drive ఫైల్స్‌ను ఆఫ్‌లైన్‌లో యాక్సెస్ చేయండి</translation>
 <translation id="2470939964922472929">చాలా ఎక్కువ సార్లు తప్పు PIN ఎంటర్ చేయబడింది. కొత్త PINను సెటప్ చేయడానికి, మీ క్యారియర్ ద్వారా అందించబడే 8-అంకెల PIN అన్‌బ్లాక్ చేసే కీ(PUK)ని ఎంటర్ చేయండి.</translation>
 <translation id="2500392669976258912">గుజరాతీ ఫొనెటిక్</translation>
 <translation id="2515586267016047495">Alt</translation>
@@ -192,7 +196,6 @@
 <translation id="2544853746127077729">ప్రామాణీకరణ ప్రమాణపత్రం నెట్‌వర్క్ ద్వారా తిరస్కరించబడింది</translation>
 <translation id="255937426064304553">యుఎస్ అంతర్జాతీయం</translation>
 <translation id="2563185590376525700">కప్ప</translation>
-<translation id="2574327434504608656">Bruschettaతో 1 ఫోల్డర్ షేర్ చేయబడింది</translation>
 <translation id="2578394532502990878">తమిళం ఫొనెటిక్</translation>
 <translation id="2579959351793446050">ఒడియా</translation>
 <translation id="2587195714949534472"><ph name="FILE_NAME" />ని సింక్ చేయడానికి సిద్ధం చేస్తోంది...</translation>
@@ -216,6 +219,7 @@
 <translation id="2782104745158847185">Linux అప్లికేషన్‌ను ఇన్‌స్టాల్ చేయడంలో ఎర్రర్</translation>
 <translation id="2802583107108007218">ఈ పరిమితుల గురించి మరింత తెలుసుకోండి</translation>
 <translation id="2803375539583399270">PINను నమోదు చేయండి</translation>
+<translation id="2819519502129272135">ఫైల్ సింక్ ఆఫ్ చేయబడింది</translation>
 <translation id="2820957248982571256">స్కాన్ చేస్తోంది...</translation>
 <translation id="2830077785865012357">చైనీస్ జుయిన్</translation>
 <translation id="2843806747483486897">డిఫాల్ట్‌ను మార్చు...</translation>
@@ -291,7 +295,6 @@
 <translation id="3408072735282270043"><ph name="NETWORK_NAME" />, యాక్టివేట్ చేయి</translation>
 <translation id="3408236822532681288">నియో 2 కీబోర్డ్‌తో జర్మన్ (జర్మనీ)</translation>
 <translation id="3414856743105198592">తొలగించగల మీడియాను ఫార్మాట్ చేయడం వలన మొత్తం డేటా తుడిచి వేయబడుతుంది. మీరు కొనసాగించాలనుకుంటున్నారా?</translation>
-<translation id="3435143625481187092"><ph name="FOLDER_NAME" /> ఫోల్డర్‌లో ఉన్న ఫైల్స్‌ను యాక్సెస్ చేయడానికి Bruschettaకు అనుమతినివ్వండి</translation>
 <translation id="3437801641691368414">క్రియేట్ చేసిన సమయం</translation>
 <translation id="343907260260897561">ఇన్‌స్టంట్ కెమెరా</translation>
 <translation id="3455931012307786678">ఎస్టోనియన్</translation>
@@ -299,7 +302,6 @@
 <translation id="3479552764303398839">ఇప్పుడు కాదు</translation>
 <translation id="3486821258960016770">మంగోలియన్</translation>
 <translation id="3495304270784461826"><ph name="COUNT" /> లోపాలు.</translation>
-<translation id="3501954296166022751">మీ Google Drive ఫైల్స్ ఆఫ్‌లైన్‌లో అందుబాటులో ఉన్నాయి</translation>
 <translation id="3509680540198371098"><ph name="NETWORK_COUNT" />లో <ph name="NETWORK_INDEX" /> నెట్‌వర్క్, <ph name="NETWORK_NAME" />, <ph name="SECURITY_STATUS" />, <ph name="CONNECTION_STATUS" />, సిగ్నల్ సామర్థ్యం <ph name="SIGNAL_STRENGTH" />%, వివరాలు</translation>
 <translation id="3511705761158917664"><ph name="NUMBER_OF_ITEMS" /> ఐటెమ్‌లను సింక్ చేయడానికి సిద్ధం చేస్తోంది...</translation>
 <translation id="3522708245912499433">పోర్చుగీస్</translation>
@@ -356,8 +358,10 @@
 <translation id="3906232975181435906"><ph name="NETWORK_NAME" />నుండి <ph name="NETWORK_COUNT" />లో <ph name="NETWORK_INDEX" />వ నెట్‌వర్క్ మొబైల్ ప్రొఫైల్‌ను ఇన్‌స్టాల్ చేస్తోంది</translation>
 <translation id="3924145049010392604">Meta</translation>
 <translation id="3943857333388298514">పేస్ట్ చేయండి</translation>
+<translation id="3950820424414687140">సైన్ ఇన్</translation>
 <translation id="3952872973865944257">తెలుగు ఫొనెటిక్</translation>
 <translation id="3958548648197196644">కివి</translation>
+<translation id="397105322502079400">గణిస్తోంది...</translation>
 <translation id="3971140002794351170"><ph name="NETWORK_NAME" />, <ph name="NETWORK_PROVIDER_NAME" /> నుండి <ph name="NETWORK_COUNT" />లో <ph name="NETWORK_INDEX" />వ నెట్‌వర్క్ మొబైల్ ప్రొఫైల్‌ను డౌన్‌లోడ్ చేయండి</translation>
 <translation id="3973925058222872294">ఇంగ్లీష్ (UK)</translation>
 <translation id="3975895378829046965">బంగ్లా ఫొనెటిక్</translation>
@@ -368,6 +372,7 @@
 <translation id="4040753847560036377">తప్పు PUK</translation>
 <translation id="4057991113334098539">సక్రియం చేస్తోంది...</translation>
 <translation id="4092890906744441904">ఐరిష్</translation>
+<translation id="4124731372776320263">1 Drive ఫైల్‌ను సింక్ చేస్తోంది</translation>
 <translation id="4124935795427217608">యునికార్న్</translation>
 <translation id="4131235941541910880">మీకు అవసరం లేని ఐటెమ్‌లను ట్రాష్‌కు తరలించండి</translation>
 <translation id="4134804435730168042"><ph name="NETWORK_COUNT" />‌లో <ph name="NETWORK_INDEX" /> నెట్‌వర్క్, <ph name="NETWORK_NAME" />, <ph name="NETWORK_PROVIDER_NAME" />, పరికరాన్ని సెటప్ చేసిన తర్వాత యాక్టివేట్ చేయండి</translation>
@@ -377,7 +382,6 @@
 <translation id="4159731583141908892"><ph name="FILE_NAME" /> తరలించబడింది.</translation>
 <translation id="4176286497474237543">ఇప్పుడే ట్రాష్‌ను ఖాళీ చేయండి</translation>
 <translation id="4179621117429069925">ఈ ఐటెమ్ మీ ట్రాష్‌లో ఉంది</translation>
-<translation id="4181839429935094755">Bruschettaతో <ph name="NUMBER_OF_ITEMS" /> ఫోల్డర్‌లు షేర్ చేయబడ్డాయి</translation>
 <translation id="4186579485882418952">ఆఫ్‌లైన్ మోడ్‌ను ఎనేబుల్ చేయి</translation>
 <translation id="4193154014135846272">Google డాక్యుమెంట్‌</translation>
 <translation id="4197674956721858839">జిప్ ఎంపిక</translation>
@@ -417,6 +421,7 @@
 <translation id="4432921877815220091"><ph name="NETWORK_COUNT" />‌లో <ph name="NETWORK_INDEX" /> నెట్‌వర్క్, <ph name="NETWORK_NAME" />, పరికరాన్ని సెటప్ చేసిన తర్వాత యాక్టివేట్ చేయండి, అది మీ అడ్మినిస్ట్రేటర్ ద్వారా మేనేజ్ చేయబడుతోంది</translation>
 <translation id="4439427728133035643"><ph name="NETWORK_COUNT" />లో <ph name="NETWORK_INDEX" /> నెట్‌వర్క్, <ph name="NETWORK_NAME" />, సిగ్నల్ సామర్థ్యం <ph name="SIGNAL_STRENGTH" />%, కనెక్ట్ చేయండి</translation>
 <translation id="4442424173763614572">DNS సెర్చ్ విఫలమైంది</translation>
+<translation id="4445896958353114391">ఫైల్స్‌ను సింక్ చేస్తోంది</translation>
 <translation id="4462159676511157176">అనుకూల పేరు సర్వర్‌లు</translation>
 <translation id="4465725236958772856"><ph name="NETWORK_COUNT" />లో <ph name="NETWORK_INDEX" /> నెట్‌వర్క్, <ph name="NETWORK_NAME" />, మీ అడ్మినిస్ట్రేటర్ ద్వారా నిర్వహించబడుతోంది, కనెక్ట్ చేయండి</translation>
 <translation id="4470564870223067757">హాంగుల్ 2 సెట్</translation>
@@ -438,11 +443,11 @@
 <translation id="4599600860674643278">ఫిల్టర్ రీసెట్ చేయబడింది.</translation>
 <translation id="4603392156942865207"><ph name="FILE_NAME" />ను <ph name="FOLDER_NAME" />కు కాపీ చేస్తోంది</translation>
 <translation id="4631887759990505102">చిత్రకారుడు</translation>
+<translation id="4635373743001040938">స్టోరేజ్ స్పేస్ చాలా తక్కువగా ఉంది. ఫైల్ సింక్ ఆఫ్ చేయబడింది.</translation>
 <translation id="4642769377300286600"><ph name="NETWORK_NAME" />, <ph name="NETWORK_PROVIDER_NAME" /> నుండి <ph name="NETWORK_COUNT" />లో <ph name="NETWORK_INDEX" />వ నెట్‌వర్క్ మొబైల్ ప్రొఫైల్‌ను ఇన్‌స్టాల్ చేస్తోంది</translation>
 <translation id="4646813851450205600">Qwerty కీబోర్డ్‌తో చెక్(Czech)</translation>
 <translation id="4656777537938206294">ఫైళ్లను ఆఫ్‌లైన్‌లో అందుబాటులో ఉంచండి</translation>
 <translation id="4658782175094886150">మంచు ప్రదేశంలో ఉన్న వ్యక్తి</translation>
-<translation id="466782788172479199">మీ Google Driveలోని ఫైల్స్‌ను యాక్సెస్ చేయడానికి Bruschettaకు అనుమతినివ్వండి. మార్పులు మీ ఇతర పరికరాలలో కూడా సింక్ చేయబడతాయి.</translation>
 <translation id="4669606053856530811">'<ph name="SOURCE_NAME" />' యొక్క సభ్యులతో ఈ అంశాలను షేర్ చేస్తే మినహా వారు యాక్సెస్‌ను కోల్పోతారు.</translation>
 <translation id="467809019005607715">Google Slides</translation>
 <translation id="4690246192099372265">స్వీడిష్</translation>
@@ -491,8 +496,8 @@
 <translation id="4961158930123534723">Parallels Desktopతో 1 ఫోల్డర్ షేర్ చేయబడింది</translation>
 <translation id="496656650103537022"><ph name="FILE_NAME" /> రీస్టోర్ చేయబడింది</translation>
 <translation id="4969785127455456148">ఆల్బమ్</translation>
+<translation id="4972330214479971536">ఫైల్ సింక్‌ను సెటప్ చేయడం పూర్తి చేయడం సాధ్యపడలేదు</translation>
 <translation id="4973523518332075481"><ph name="MAX_LENGTH" /> లేదా అంతకంటే తక్కువ అక్షరాలు ఉన్న పేరుని ఉపయోగించండి</translation>
-<translation id="4973970068702235170">జిప్ చేయడం విఫలమైంది, అనుకోని ఎర్రర్: <ph name="ERROR_MESSAGE" /></translation>
 <translation id="4984616446166309645">జపనీస్</translation>
 <translation id="4987699874727873250">ఇంగ్లీష్ (భారతదేశం)</translation>
 <translation id="4988205478593450158">మీరు ఖచ్చితంగా "<ph name="FILE_NAME" />"ని తొలగించాలనుకుంటున్నారా?</translation>
@@ -514,6 +519,7 @@
 <translation id="5102922915594634436">సింక్ చేసిన ఫోల్డర్‌లను మేనేజ్ చేయండి</translation>
 <translation id="5109254780565519649">ఎర్రర్ ఏర్పడింది. కొన్ని ఐటెమ్‌లు రీస్టోర్ చేయబడకపోవచ్చు.</translation>
 <translation id="5110329002213341433">ఇంగ్లీష్ (కెనడా)</translation>
+<translation id="5119780910075847424">సింక్ పాజ్ చేయబడింది</translation>
 <translation id="5123433949759960244">బాస్కెట్‌బాల్</translation>
 <translation id="5129662217315786329">పోలిష్</translation>
 <translation id="5144820558584035333">హాంగుల్ 3 సెట్ (390)</translation>
@@ -532,6 +538,7 @@
 <translation id="5218183485292899140">స్విస్ ఫ్రెంచ్</translation>
 <translation id="5234764350956374838">తొలగించండి</translation>
 <translation id="5253070652067921974">సృష్టించినవారు</translation>
+<translation id="5254207638927440400">ఫైల్‌ను తరలించడం సాధ్యపడదు. ఫైల్ వినియోగంలో ఉంది.</translation>
 <translation id="5257456363153333584">తూనీగ</translation>
 <translation id="5262311848634918433"><ph name="MARKUP_1" />ఫైళ్లను ఎక్కడి నుండైనా యాక్సెస్ చేయండి, ఆఫ్‌లైన్‌లో ఉన్నా కూడా.<ph name="MARKUP_2" />
     Google Driveలోని ఫైళ్లు అప్‌డేట్ చేయబడి ఉంటాయి, ఇవి ఏ పరికరం నుండైనా అందుబాటులో ఉంటాయి.<ph name="MARKUP_3" />
@@ -552,7 +559,6 @@
 <translation id="5323213332664049067">లాటిన్ అమెరికన్</translation>
 <translation id="5330145655348521461">ఈ ఫైల్స్ వేరే డెస్క్‌టాప్‌లో తెరవబడ్డాయి. దీన్ని చూడటానికి <ph name="USER_NAME" /> (<ph name="MAIL_ADDRESS" />)కు తరలించండి.</translation>
 <translation id="5330512191124428349">సమాచారం పొందండి</translation>
-<translation id="5344246330454251646">Bruschetta షేరింగ్‌ను మేనేజ్ చేయండి</translation>
 <translation id="535792325654997756">పిల్లులతో ఉన్న వ్యక్తి</translation>
 <translation id="5358764674931277">ఫ్రేమ్ రేట్</translation>
 <translation id="5363339716524495120">ఇన్‌పుట్ భాష చైనీస్</translation>
@@ -564,6 +570,7 @@
 <translation id="5422221874247253874">యాక్సెస్ స్థానం</translation>
 <translation id="5428105026674456456">స్పానిష్</translation>
 <translation id="5438282218546237410"><ph name="SEARCH_TERM" />కు సంబంధించిన శోధన ఫలితాలేవీ లేవు.</translation>
+<translation id="5447680084201416734">తగినంత స్టోరేజ్ లేదు.</translation>
 <translation id="5449551289610225147">పాస్‌వర్డ్ చెల్లదు</translation>
 <translation id="5459064203055649751">"<ph name="FILENAME" />" పేరు గల ఫైల్ ఇప్పటికే వినియోగంలో ఉంది. మీరు తరలిస్తున్న దానితో దాన్ని భర్తీ చేయాలనుకుంటున్నారా?</translation>
 <translation id="5463231940765244860">నమోదు చేయండి</translation>
@@ -574,7 +581,6 @@
 <translation id="5494920125229734069">అన్నీ ఎంచుకోండి</translation>
 <translation id="5500122897333236901">ఐస్‌లాండిక్</translation>
 <translation id="5508696409934741614">చుక్కలు</translation>
-<translation id="5519161320735100193">Google Drive సెట్టింగ్‌లు</translation>
 <translation id="5522908512596376669">ఫైల్ లిస్ట్‌, "లిస్ట్‌ వీక్షణ"కు మార్చబడింది.</translation>
 <translation id="5524517123096967210">ఫైల్‌ను చదవడం సాధ్యపడదు.</translation>
 <translation id="5533102081734025921"><ph name="IMAGE_TYPE" /> చిత్రం</translation>
@@ -602,6 +608,7 @@
 <translation id="5720028165859493293"><ph name="FILE_NAME" /> ట్రాష్‌కు తరలించబడింది</translation>
 <translation id="5724172041621205163">పట్టచోటె కీబోర్డ్‌తో థాయ్</translation>
 <translation id="57383366388012121">గత నెల</translation>
+<translation id="575175778971367197">ప్రస్తుతం ఈ ఫైల్‌ను సింక్ చేయడం సాధ్యపడదు</translation>
 <translation id="5756666464756035725">హంగేరియన్ QWERTY</translation>
 <translation id="5760252553414789727"><ph name="SELECTED_FILES_COUNT" /> ఐటెమ్‌లు ఎంచుకోబడ్డాయి</translation>
 <translation id="5763377084591234761">జర్మన్ (స్విట్జర్లాండ్)</translation>
@@ -627,7 +634,6 @@
 <translation id="5896749729057314184"><ph name="NETWORK_COUNT" /> <ph name="NETWORK_NAME" />‌లోని నెట్‌వర్క్ <ph name="NETWORK_INDEX" /> యాక్టివేట్ చేయబడలేదు, సిగ్నల్ సామర్థ్యం <ph name="SIGNAL_STRENGTH" />%, వివరాలు</translation>
 <translation id="5911887972742538906">మీ Linux అప్లికేషన్ యొక్క ఇన్‌స్టాలేషన్ సమయంలో ఎర్రర్ ఏర్పడింది.</translation>
 <translation id="5912396950572065471">ఫార్మాట్</translation>
-<translation id="5913638992615760742">కాపీ చర్య విఫలమైంది, ఊహించని ఎర్రర్: <ph name="ERROR_MESSAGE" /></translation>
 <translation id="5918480239180455431">కొత్త సెర్చ్ ఫీచర్‌లు అందుబాటులో ఉన్నాయి</translation>
 <translation id="5926082595146149752">US అంతర్జాతీయ PC కీబోర్డ్‌తో డచ్ (నెదర్లాండ్స్)</translation>
 <translation id="5932901536148835538">Chromebit</translation>
@@ -635,7 +641,6 @@
 <translation id="5955954492236143329"><ph name="NUMBER_OF_ITEMS" /> అంశాలు</translation>
 <translation id="5957366693331451795">Chromeboxలు</translation>
 <translation id="5982621672636444458">క్రమబద్ధీకరణ ఎంపికలు</translation>
-<translation id="6007237601604674381">తరలింపు విఫలమైంది. <ph name="ERROR_MESSAGE" /></translation>
 <translation id="6011074160056912900">ఈథర్‌నెట్ నెట్‌వర్క్</translation>
 <translation id="60357267506638014">చెక్ QWERTY</translation>
 <translation id="603895874132768835">మీరు కొత్త PINను సెటప్ చేసే వరకు ఈ నెట్‌వర్క్‌ను ఉపయోగించలేరు</translation>
@@ -691,6 +696,7 @@
 <translation id="6423031066725912715">TCVN కీబోర్డ్‌తో వియత్నామీస్</translation>
 <translation id="6430271654280079150">మీకు 1 ప్రయత్నం మిగిలి ఉంది.</translation>
 <translation id="643243556292470964">తొలగించబడిన ఫైల్స్ ఇప్పుడు ట్రాష్‌కు తరలించబడ్డాయి</translation>
+<translation id="6438480100790416671">స్టోరేజ్ స్పేస్‌ను చెక్ చేస్తోంది…</translation>
 <translation id="6485131920355264772">ఖాళీ సమాచారాన్ని తిరిగి పొందడం విఫలమైంది</translation>
 <translation id="6495925982925244349"><ph name="NETWORK_COUNT" />లో <ph name="NETWORK_INDEX" /> నెట్‌వర్క్, <ph name="NETWORK_NAME" />, <ph name="SECURITY_STATUS" />, <ph name="CONNECTION_STATUS" />, సిగ్నల్ సామర్థ్యం <ph name="SIGNAL_STRENGTH" />%, మీ అడ్మినిస్ట్రేటర్ ద్వారా నిర్వహించబడుతోంది, వివరాలు</translation>
 <translation id="649877868557234318"><ph name="FILE_NAME" /> <ph name="FOLDER_NAME" />‌కు సంగ్రహించబడుతోంది</translation>
@@ -703,6 +709,7 @@
 <translation id="6558280019477628686">ఎర్రర్ ఏర్పడింది. కొన్ని అంశాలు తొలగించబడి ఉండకపోవచ్చు.</translation>
 <translation id="656398493051028875">"<ph name="FILENAME" />"ని తొలగిస్తోంది...</translation>
 <translation id="6581162200855843583">Google Drive లింక్</translation>
+<translation id="6588648400954570689">ఫైల్ సింక్ సెట్టింగ్‌లు</translation>
 <translation id="6594855146910089723">ఈ ఫోల్డర్ Linux ఇంకా Parallels Desktopతో షేర్ చేయబడింది</translation>
 <translation id="6607272825297743757">ఫైల్ సమాచారం</translation>
 <translation id="6609332149380188670"><ph name="NUMBER_OF_ITEMS" /> ఫోల్డర్‌లు Parallels Desktopతో చేర్చబడ్డాయి</translation>
@@ -717,7 +724,6 @@
 <translation id="6710213216561001401">మునుపటి</translation>
 <translation id="6732801395666424405">ప్రమాణపత్రాలు లోడ్ కాలేదు</translation>
 <translation id="6736329909263487977"><ph name="ISSUED_BY" /> [<ph name="ISSUED_TO" />]</translation>
-<translation id="6740270213273127264">Bruschettaతో ఫోల్డర్‌ను షేర్ చేయండి</translation>
 <translation id="6750737795876287924">ప్రస్తుత డైరెక్టరీ</translation>
 <translation id="6751256176799620176">1 ఫోల్డర్ ఎంచుకోబడింది</translation>
 <translation id="6755827872271341378">ChromeOS Flex పరికరం</translation>
@@ -794,6 +800,7 @@
 <translation id="7256405249507348194">గుర్తించబడని ఎర్రర్: <ph name="DESC" /></translation>
 <translation id="7268659760406822741">అందుబాటులో ఉన్న సేవలు</translation>
 <translation id="7291818353625820805">రిపీట్ చేయడానికి కీలు అవసరమా? కీబోర్డ్ సెట్టింగ్‌లలో యాక్సెంట్ మార్క్‌లను ఆఫ్ చేయండి</translation>
+<translation id="729236380049459563">ఫైల్ సింక్ ఆన్‌లో ఉంది</translation>
 <translation id="7292816689782057017">అడ్మినిస్ట్రేటర్ పాలసీ ప్రకారం, ఫైల్స్‌ను కేవలం కొన్ని లొకేషన్‌లలో మాత్రమే సేవ్ చేయడానికి వీలవుతుంది.</translation>
 <translation id="7294063083760278948">తెలుగు ట్రాన్స్‌లిటరేషన్</translation>
 <translation id="7295662345261934369">ఇతరులతో షేర్ చేయండి</translation>
@@ -801,6 +808,7 @@
 <translation id="7309413087278791451">జర్మన్ (బెల్జియం)</translation>
 <translation id="7339898014177206373">కొత్త విండో</translation>
 <translation id="7343393116438664539">వియత్నామీస్ టెలెక్స్</translation>
+<translation id="7347346221088620549">ఎన్‌క్రిప్ట్ చేసిన ఫైల్</translation>
 <translation id="7357762654218998920">ఈ ఫైల్ రకం సపోర్ట్ చేయదు. ChromeOSలో ఫైల్స్‌ను తెరవడం గురించి <ph name="BEGIN_LINK_HELP" />మరింత తెలుసుకోండి<ph name="END_LINK_HELP" />.</translation>
 <translation id="7359359531237882347"><ph name="NUMBER_OF_ITEMS" /> అంశాలను కాపీ చేస్తోంది...</translation>
 <translation id="7375951387215729722">ఫైల్ లిస్ట్‌ <ph name="COLUMN_NAME" /> ప్రకారం అవరోహణ క్రమంలో వర్గీకరించబడింది.</translation>
@@ -827,6 +835,7 @@
 <translation id="7547811415869834682">డచ్</translation>
 <translation id="7551643184018910560">అరకు పిన్ చేయండి</translation>
 <translation id="7553492409867692754"><ph name="FOLDER_NAME" />ఫోల్డర్‌లోని ఫైళ్లను యాక్సెస్ చేయడానికి Linux యాప్‌లకు అనుమతి ఇవ్వండి</translation>
+<translation id="7555339735447658365">మీరు ప్రస్తుతం ఆఫ్‌లైన్‌లో ఉన్నారు. మీరు ఇంటర్నెట్‌కు కనెక్ట్ చేసినప్పుడు ఫైల్‌ను సింక్ చేయడం కొనసాగించబడుతుంది</translation>
 <translation id="7589661784326793847">ఒక క్షణం వేచి ఉండండి</translation>
 <translation id="7592775719802218421"><ph name="FILE_NAME" />ను ఆఫ్‌లైన్‌లో అందుబాటులో ఉంచుతోంది</translation>
 <translation id="7600126690270271294">సెర్బియన్</translation>
@@ -845,6 +854,7 @@
 <translation id="76959938259365003">ట్రాష్‌ను ఖాళీ చేయడంలో విఫలమైంది.</translation>
 <translation id="770015031906360009">గ్రీక్</translation>
 <translation id="7705251383879779343"><ph name="FILE_NAME" /> కాపీ చేయబడింది.</translation>
+<translation id="7707941139430559579">ఫైల్‌ను తరలించడం సాధ్యపడదు. <ph name="ERROR_MESSAGE" /></translation>
 <translation id="7708271999969613024">ఈ నెట్‌వర్క్‌ను ఉపయోగించడానికి, క్యారియర్ అందించిన 8 అంకెల పర్సనల్ అన్‌బ్లాకింగ్ కీ (PUK)ని మీరు ఎంటర్ చేయాల్సి ఉంటుంది.</translation>
 <translation id="7711920809702896782">చిత్రం సమాచారం</translation>
 <translation id="7724603315864178912">కత్తిరించండి</translation>
@@ -890,10 +900,10 @@
 <translation id="7972920761225148017">ఫ్రెంచ్ (స్విట్జర్లాండ్)</translation>
 <translation id="7973962044839454485">వినియోగదారు పేరు లేదా పాస్‌వర్డ్ తప్పు అయినందున PPP ప్రామాణీకరణ విఫలమైంది</translation>
 <translation id="7980421588063892270">కోల్‌మాక్ కీబోర్డ్‌తో ఇంగ్లీష్ (US)</translation>
-<translation id="7985008041109611710"><ph name="NUMBER_OF_FILES_SYNCING" /> ఫైల్స్ సింక్ అవుతున్నాయి</translation>
 <translation id="8000066093800657092">ఏ నెట్‌వర్క్ లేదు</translation>
 <translation id="8008366997883261463">జాక్ రస్సెల్ టెర్రియర్</translation>
 <translation id="8028993641010258682">సైజ్‌</translation>
+<translation id="8034974485549318493">ప్రారంభ సెటప్ కోసం, మీరు ఇంటర్నెట్‌కు కనెక్ట్ చేయాల్సి ఉంటుంది, తద్వారా ఫైల్స్ సింక్ కాగలవు.</translation>
 <translation id="803771048473350947">ఫైల్</translation>
 <translation id="8038111231936746805">(డిఫాల్ట్)</translation>
 <translation id="8042602468072383151"><ph name="AUDIO_TYPE" /> ఆడియో</translation>
@@ -904,6 +914,7 @@
 <translation id="8087576439476816834">డౌన్‌లోడ్ చేయి, <ph name="PROFILE_NAME" /></translation>
 <translation id="8106045200081704138">నాతో షేర్ చేసినవి</translation>
 <translation id="8116072619078571545">చల్లటి నీరు</translation>
+<translation id="8124093710070495550">సింక్ చేయడంలో సమస్య ఏర్పడింది</translation>
 <translation id="8128733386027980860">డ్వోరక్ కీబోర్డ్‌తో ఇంగ్లీష్ (UK)</translation>
 <translation id="8137331602592933310">"<ph name="FILENAME" />" మీతో షేర్ చేయబడింది. మీకు ఇది స్వంతం కానందున మీరు దీన్ని తొలగించలేరు.</translation>
 <translation id="8138705869659070104">పరికరాన్ని సెటప్ చేసిన తర్వాత యాక్టివేట్ చేయండి</translation>
@@ -913,9 +924,11 @@
 <translation id="8154842056504218462">అన్ని నమోదులు ఎంపిక చేయబడ్డాయి.</translation>
 <translation id="8157684860301034423">యాప్ సమాచారాన్ని తిరిగి పొందడంలో విఫలమైంది.</translation>
 <translation id="8175731104491895765">ఫ్రెంచ్ (బెల్జియం)</translation>
+<translation id="8175799081768705361"><ph name="NUMBER_OF_FILES_SYNCING" /> Drive ఫైల్స్‌ను సింక్ చేస్తోంది</translation>
 <translation id="8179976553408161302">Enter</translation>
 <translation id="8193175696669055101">పరికరం మోడల్</translation>
 <translation id="8223479393428528563">ఈ ఫైళ్లను ఆఫ్‌లైన్‌లో ఉపయోగించేందుకు వాటిని సేవ్ చేయడానికి, తిరిగి ఆన్‌లైన్‌లోకి వచ్చి, ఫైళ్లపై కుడి-క్లిక్ చేసి, ఆపై <ph name="OFFLINE_CHECKBOX_NAME" /> ఎంపికను ఎంచుకోండి.</translation>
+<translation id="8241139360630443550">స్టోరేజ్‌ను చూడండి</translation>
 <translation id="8249296373107784235">రద్దుచేయి</translation>
 <translation id="8250690786522693009">లాటిన్</translation>
 <translation id="8250920743982581267">డాక్యుమెంట్లు</translation>
@@ -946,6 +959,7 @@
 <translation id="8404498045299006085">అన్నింటినీ అలాగే ఉంచండి</translation>
 <translation id="8408068190360279472"><ph name="NETWORK_TYPE" /> నెట్‌వర్క్, కనెక్ట్ చేస్తోంది</translation>
 <translation id="8425213833346101688">మార్చు</translation>
+<translation id="8428213095426709021">సెట్టింగ్‌లు</translation>
 <translation id="8431909052837336408">SIM PINను మార్చండి</translation>
 <translation id="8437209419043462667">యుఎస్</translation>
 <translation id="8452135315243592079">SIM కార్డ్ లేదు</translation>
@@ -982,6 +996,7 @@
 <translation id="8609695766746872526">ఐస్‌లాండిక్</translation>
 <translation id="863903787380594467">పిన్ తప్పు. మీకు <ph name="RETRIES" /> ప్రయత్నాలు మిగిలి ఉన్నాయి.</translation>
 <translation id="8639391553632924850"><ph name="INPUT_LABEL" /> - పోర్ట్</translation>
+<translation id="8656407365183407932">మీ ఆఫ్‌లైన్ ఫైళ్లను తీసివేయాలి</translation>
 <translation id="8656768832129462377">తనిఖీ చేయవద్దు</translation>
 <translation id="8688591111840995413">పాస్‌వర్డ్ చెల్లదు</translation>
 <translation id="8698464937041809063">Google డ్రాయింగ్</translation>
@@ -1012,10 +1027,12 @@
 <translation id="8919081441417203123">డేనిష్</translation>
 <translation id="8949925099261528566">కనెక్ట్ చేయబడింది, ఇంటర్నెట్ లేదు</translation>
 <translation id="8965697826696209160">తగినంత ఖాళీ లేదు.</translation>
+<translation id="8970887620466824814">ఏదో తప్పు జరిగింది.</translation>
 <translation id="8971742885766657349">సింక్ చేయడం - <ph name="PERCENT" />% పూర్తయింది</translation>
 <translation id="8997962250644902079">చైనీస్ (సాంప్రదాయ) పిన్యిన్</translation>
 <translation id="8998871447376656508">అప్‌లోడ్‌ను పూర్తి చేయడానికి మీ Google Driveలో తగినంత ఖాళీ స్థలం లేదు.</translation>
 <translation id="9003940392834790328"><ph name="NETWORK_COUNT" />లో <ph name="NETWORK_INDEX" /> నెట్‌వర్క్, <ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" />, సిగ్నల్ సామర్థ్యం <ph name="SIGNAL_STRENGTH" />%, మీ అడ్మినిస్ట్రేటర్ ద్వారా నిర్వహించబడుతోంది, వివరాలు</translation>
+<translation id="9007990314804111233">మీ Microsoft ఖాతాకు సైన్ ఇన్ చేయండి</translation>
 <translation id="9017798300203431059">రష్యన్ ఫోనెటిక్</translation>
 <translation id="9034924485347205037">Linux ఫైళ్లు</translation>
 <translation id="9035012421917565900">ఈ అంశాలను '<ph name="DESTINATION_NAME" />'లోకి తిరిగి తరలించడం సాధ్యపడదు. కాబట్టి మీరు ఈ చర్యను రద్దు చేయలేరు.</translation>
@@ -1046,7 +1063,6 @@
 <translation id="9213073329713032541">ఇన్‌స్టాలేషన్ విజయవంతంగా ప్రారంభించబడింది.</translation>
 <translation id="9219103736887031265">ఇమేజ్‌లు</translation>
 <translation id="9219908252191632183">లూనార్</translation>
-<translation id="937795003075802289">1 ఫైల్ సింక్ అవుతోంది</translation>
 <translation id="938470336146445890">దయచేసి వినియోగదారు సర్టిఫికెట్‌ను ఇన్‌స్టాల్ చేయండి.</translation>
 <translation id="939736085109172342">కొత్త  ఫోల్డర్</translation>
 <translation id="943972244133411984">వీరు ఎడిట్ చేశారు</translation>

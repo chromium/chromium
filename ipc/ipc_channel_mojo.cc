@@ -100,7 +100,7 @@ class ThreadSafeChannelProxy : public mojo::ThreadSafeProxy {
 
   const scoped_refptr<base::SingleThreadTaskRunner> task_runner_;
   const Forwarder forwarder_;
-  const raw_ref<mojo::AssociatedGroupController, DanglingUntriaged>
+  const raw_ref<mojo::AssociatedGroupController, AcrossTasksDanglingUntriaged>
       group_controller_;
 };
 

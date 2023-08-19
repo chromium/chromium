@@ -11,6 +11,7 @@
 #include "base/time/time.h"
 #include "cc/animation/animation.h"
 #include "cc/animation/animation_host.h"
+#include "cc/animation/keyframe_effect.h"
 #include "cc/trees/property_tree.h"
 
 namespace cc {
@@ -88,7 +89,8 @@ void AnimationTimeline::ClearAnimations() {
 
 bool AnimationTimeline::TickTimeLinkedAnimations(
     const std::vector<scoped_refptr<Animation>>& ticking_animations,
-    base::TimeTicks monotonic_time) {
+    base::TimeTicks monotonic_time,
+    bool tick_finished) {
   DCHECK(!IsScrollTimeline());
 
   bool animated = false;
@@ -103,8 +105,11 @@ bool AnimationTimeline::TickTimeLinkedAnimations(
     if (animation->IsScrollLinkedAnimation())
       continue;
 
-    animation->Tick(monotonic_time);
-    animated = true;
+    if (!tick_finished && animation->keyframe_effect()->awaiting_deletion()) {
+      continue;
+    }
+
+    animated |= animation->Tick(monotonic_time);
   }
   return animated;
 }

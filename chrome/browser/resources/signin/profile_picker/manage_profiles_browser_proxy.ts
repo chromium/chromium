@@ -133,13 +133,6 @@ export interface ManageProfilesBrowserProxy {
   getAvailableIcons(): Promise<AvatarIcon[]>;
 
   /**
-   * Creates local profile.
-   */
-  createProfile(
-      profileName: string, profileColor: number, avatarIndex: number,
-      createShortcut: boolean): void;
-
-  /**
    * Creates local profile and opens a profile customization modal dialog on a
    * browser window.
    * TODO(https://crbug.com/1282157): Add createShortcut parameter.
@@ -244,14 +237,6 @@ export class ManageProfilesBrowserProxyImpl {
 
   getAvailableIcons() {
     return sendWithPromise('getAvailableIcons');
-  }
-
-  createProfile(
-      profileName: string, profileColor: number, avatarIndex: number,
-      createShortcut: boolean) {
-    chrome.send(
-        'createProfile',
-        [profileName, profileColor, avatarIndex, createShortcut]);
   }
 
   createProfileAndOpenCustomizationDialog(profileColor: number) {

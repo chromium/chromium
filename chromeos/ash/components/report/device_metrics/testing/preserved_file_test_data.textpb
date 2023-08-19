@@ -1,0 +1,207 @@
+test_cases: {
+  name: GET_SUCCESS_SAVE_SUCCESS
+  get_response: {
+    active_status: {
+      use_case: CROS_FRESNEL_DAILY
+      last_ping_date: "2023-01-01 00:00:00.000 GMT"
+    }
+    active_status: {
+      use_case: CROS_FRESNEL_28DAY_ACTIVE
+      last_ping_date: "2023-01-01 00:00:00.000 GMT"
+    }
+    active_status: {
+      use_case: CROS_FRESNEL_CHURN_MONTHLY_COHORT
+      last_ping_date: "2023-01-01 00:00:00.000 GMT"
+      churn_active_status: 72351745
+    }
+    active_status: {
+      use_case: CROS_FRESNEL_CHURN_MONTHLY_OBSERVATION
+      period_status: {
+        is_active_current_period_minus_0: true
+        is_active_current_period_minus_1: true
+        is_active_current_period_minus_2: true
+      }
+    }
+  }
+  save_response: {}
+}
+test_cases: {
+  name: GET_SUCCESS_SAVE_FAIL
+  get_response: {
+    active_status: {
+      use_case: CROS_FRESNEL_DAILY
+      last_ping_date: "2023-01-01 00:00:00.000 GMT"
+    }
+    active_status: {
+      use_case: CROS_FRESNEL_28DAY_ACTIVE
+      last_ping_date: "2023-01-01 00:00:00.000 GMT"
+    }
+    active_status: {
+      use_case: CROS_FRESNEL_CHURN_MONTHLY_COHORT
+      last_ping_date: "2023-01-01 00:00:00.000 GMT"
+      churn_active_status: 72351745
+    }
+    active_status: {
+      use_case: CROS_FRESNEL_CHURN_MONTHLY_OBSERVATION
+      period_status: {
+        is_active_current_period_minus_0: false
+        is_active_current_period_minus_1: false
+        is_active_current_period_minus_2: false
+      }
+    }
+  }
+  save_response: {
+    error_message: "ERROR - Save Request Failed"
+  }
+}
+test_cases: {
+  name: GET_FAIL_SAVE_SUCCESS
+  get_response: {
+    error_message: "ERROR - Get Request Failed"
+  }
+  save_response: {}
+}
+test_cases: {
+  name: GET_FAIL_SAVE_FAIL
+  get_response: {
+    error_message: "ERROR - Get Request Failed"
+  }
+  save_response: {
+    error_message: "ERROR - Save Request Failed"
+  }
+}
+test_cases: {
+  name: GET_SUCCESS_FUTURE_PING_DATE_SAVE_SUCCESS
+  get_response: {
+    active_status: {
+      use_case: CROS_FRESNEL_DAILY
+      last_ping_date: "2024-01-01 00:00:00.000 GMT"
+    }
+    active_status: {
+      use_case: CROS_FRESNEL_28DAY_ACTIVE
+      last_ping_date: "2024-01-01 00:00:00.000 GMT"
+    }
+    active_status: {
+      use_case: CROS_FRESNEL_CHURN_MONTHLY_COHORT
+      last_ping_date: "2024-01-01 00:00:00.000 GMT"
+      churn_active_status: 74973185
+    }
+    active_status: {
+      use_case: CROS_FRESNEL_CHURN_MONTHLY_OBSERVATION
+      period_status: {
+        is_active_current_period_minus_0: true
+        is_active_current_period_minus_1: true
+        is_active_current_period_minus_2: true
+      }
+    }
+  }
+  save_response: {}
+}
+test_cases: {
+  name: GET_SUCCESS_SAME_PING_DATE_SAVE_SUCCESS
+  get_response: {
+    active_status: {
+      use_case: CROS_FRESNEL_DAILY
+      last_ping_date: "2023-01-01 00:00:00.000 GMT"
+    }
+    active_status: {
+      use_case: CROS_FRESNEL_28DAY_ACTIVE
+      last_ping_date: "2023-01-01 00:00:00.000 GMT"
+    }
+    active_status: {
+      use_case: CROS_FRESNEL_CHURN_MONTHLY_COHORT
+      last_ping_date: "2023-01-01 00:00:00.000 GMT"
+      churn_active_status: 72351745
+    }
+    active_status: {
+      use_case: CROS_FRESNEL_CHURN_MONTHLY_OBSERVATION
+      period_status: {
+        is_active_current_period_minus_0: true
+        is_active_current_period_minus_1: true
+        is_active_current_period_minus_2: true
+      }
+    }
+  }
+  save_response: {}
+}
+test_cases: {
+  name: GET_SUCCESS_PAST_PING_DATE_SAVE_SUCCESS
+  get_response: {
+    active_status: {
+      use_case: CROS_FRESNEL_DAILY
+      last_ping_date: "2022-01-01 00:00:00.000 GMT"
+    }
+    active_status: {
+      use_case: CROS_FRESNEL_28DAY_ACTIVE
+      last_ping_date: "2022-01-01 00:00:00.000 GMT"
+    }
+    active_status: {
+      use_case: CROS_FRESNEL_CHURN_MONTHLY_COHORT
+      last_ping_date: "2022-11-01 00:00:00.000 GMT"
+      churn_active_status: 69206017
+    }
+    active_status: {
+      use_case: CROS_FRESNEL_CHURN_MONTHLY_OBSERVATION
+      period_status: {
+        is_active_current_period_minus_0: true
+        is_active_current_period_minus_1: true
+        is_active_current_period_minus_2: true
+      }
+    }
+  }
+  save_response: {}
+}
+test_cases: {
+  name: GET_SUCCESS_UNIX_EPOCH_PING_DATE_SAVE_SUCCESS
+  get_response: {
+    active_status: {
+      use_case: CROS_FRESNEL_DAILY
+      last_ping_date: "1970-01-01 00:00:00.000 GMT"
+    }
+    active_status: {
+      use_case: CROS_FRESNEL_28DAY_ACTIVE
+      last_ping_date: "1970-01-01 00:00:00.000 GMT"
+    }
+    active_status: {
+      use_case: CROS_FRESNEL_CHURN_MONTHLY_COHORT
+      last_ping_date: "1970-01-01 00:00:00.000 GMT"
+      churn_active_status: 0
+    }
+    active_status: {
+      use_case: CROS_FRESNEL_CHURN_MONTHLY_OBSERVATION
+      period_status: {
+        is_active_current_period_minus_0: false
+        is_active_current_period_minus_1: false
+        is_active_current_period_minus_2: false
+      }
+    }
+  }
+  save_response: {}
+}
+test_cases: {
+  name: GET_INVALID_PING_DATE_SAVE_SUCCESS
+  get_response: {
+    active_status: {
+      use_case: CROS_FRESNEL_DAILY
+      last_ping_date: "XXXX-XX-XX XX:XX:XX.XXX XXX"
+    }
+    active_status: {
+      use_case: CROS_FRESNEL_28DAY_ACTIVE
+      last_ping_date: "XXXX-XX-XX XX:XX:XX.XXX XXX"
+    }
+    active_status: {
+      use_case: CROS_FRESNEL_CHURN_MONTHLY_COHORT
+      last_ping_date: "XXXX-XX-XX XX:XX:XX.XXX XXX"
+      churn_active_status: 0
+    }
+    active_status: {
+      use_case: CROS_FRESNEL_CHURN_MONTHLY_OBSERVATION
+      period_status: {
+        is_active_current_period_minus_0: false
+        is_active_current_period_minus_1: false
+        is_active_current_period_minus_2: false
+      }
+    }
+  }
+  save_response: {}
+}

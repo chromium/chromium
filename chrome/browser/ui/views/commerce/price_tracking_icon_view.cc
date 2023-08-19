@@ -27,6 +27,7 @@
 #include "components/commerce/core/shopping_service.h"
 #include "components/feature_engagement/public/feature_constants.h"
 #include "components/feature_engagement/public/tracker.h"
+#include "components/omnibox/browser/omnibox_field_trial.h"
 #include "components/omnibox/browser/vector_icons.h"
 #include "components/power_bookmarks/core/power_bookmark_utils.h"
 #include "components/power_bookmarks/core/proto/power_bookmark_meta.pb.h"
@@ -70,7 +71,9 @@ PriceTrackingIconView::PriceTrackingIconView(
       browser_(browser),
       profile_(browser->profile()),
       bubble_coordinator_(this),
-      icon_(&omnibox::kPriceTrackingDisabledIcon) {
+      icon_(OmniboxFieldTrial::IsChromeRefreshIconsEnabled()
+                ? &omnibox::kPriceTrackingDisabledRefreshIcon
+                : &omnibox::kPriceTrackingDisabledIcon) {
   SetUpForInOutAnimation();
   SetProperty(views::kElementIdentifierKey, kPriceTrackingChipElementId);
   SetAccessibilityProperties(
@@ -192,7 +195,7 @@ bool PriceTrackingIconView::MaybeShowIPH() {
     return false;
   }
   return browser_->window()->MaybeShowFeaturePromo(
-      feature_engagement::kIPHPriceTrackingChipFeature, {},
+      feature_engagement::kIPHPriceTrackingChipFeature,
       base::BindOnce(&PriceTrackingIconView::UnpauseAnimation,
                      base::Unretained(this)));
 }
@@ -243,9 +246,6 @@ void PriceTrackingIconView::EnablePriceTracking(bool enable) {
             SidePanelCoordinator::GetGlobalSidePanelRegistry(browser_);
         registry->SetActiveEntry(registry->GetEntryForKey(
             SidePanelEntry::Key(SidePanelEntry::Id::kBookmarks)));
-      } else {
-        profile_->GetPrefs()->SetBoolean(prefs::kShouldShowSidePanelBookmarkTab,
-                                         true);
       }
     }
   }
@@ -263,8 +263,13 @@ void PriceTrackingIconView::EnablePriceTracking(bool enable) {
 }
 
 void PriceTrackingIconView::SetVisualState(bool enable) {
-  icon_ = enable ? &omnibox::kPriceTrackingEnabledFilledIcon
-                 : &omnibox::kPriceTrackingDisabledIcon;
+  if (OmniboxFieldTrial::IsChromeRefreshIconsEnabled()) {
+    icon_ = enable ? &omnibox::kPriceTrackingEnabledRefreshIcon
+                   : &omnibox::kPriceTrackingDisabledRefreshIcon;
+  } else {
+    icon_ = enable ? &omnibox::kPriceTrackingEnabledFilledIcon
+                   : &omnibox::kPriceTrackingDisabledIcon;
+  }
   // TODO(meiliang@): Confirm with UXW on the tooltip string. If this expected,
   // we can return label()->GetText() instead.
   SetAccessibleName(l10n_util::GetStringUTF16(

@@ -221,6 +221,9 @@ IN_PROC_BROWSER_TEST_F(LoginLogoutReporterBrowserTest,
   base::RunLoop().RunUntilIdle();
 
   Record login_record = GetNextLoginLogoutRecord(&observer);
+  ASSERT_TRUE(login_record.has_source_info());
+  EXPECT_THAT(login_record.source_info().source(),
+              Eq(::reporting::SourceInfo::ASH));
 
   LoginLogoutRecord login_record_data;
   ASSERT_TRUE(login_record_data.ParseFromString(login_record.data()));
@@ -232,6 +235,9 @@ IN_PROC_BROWSER_TEST_F(LoginLogoutReporterBrowserTest,
 
   Shell::Get()->session_controller()->RequestSignOut();
   Record logout_record = GetNextLoginLogoutRecord(&observer);
+  ASSERT_TRUE(logout_record.has_source_info());
+  EXPECT_THAT(logout_record.source_info().source(),
+              Eq(::reporting::SourceInfo::ASH));
 
   LoginLogoutRecord logout_record_data;
   ASSERT_TRUE(logout_record_data.ParseFromString(logout_record.data()));
@@ -248,6 +254,9 @@ IN_PROC_BROWSER_TEST_F(LoginLogoutReporterBrowserTest, LoginFailed) {
   base::RunLoop().RunUntilIdle();
 
   Record login_record = GetNextLoginLogoutRecord(&observer);
+  ASSERT_TRUE(login_record.has_source_info());
+  EXPECT_THAT(login_record.source_info().source(),
+              Eq(::reporting::SourceInfo::ASH));
 
   LoginLogoutRecord failed_login_record_data;
   ASSERT_TRUE(failed_login_record_data.ParseFromString(login_record.data()));
@@ -291,6 +300,9 @@ IN_PROC_BROWSER_TEST_F(LoginLogoutReporterBrowserTest, GuestLogin) {
     // Record is not enqueued yet, so wait for it.
     login_record = GetNextLoginLogoutRecord(&observer);
   }
+  ASSERT_TRUE(login_record.value().has_source_info());
+  EXPECT_THAT(login_record.value().source_info().source(),
+              Eq(::reporting::SourceInfo::ASH));
 
   LoginLogoutRecord login_record_data;
   ASSERT_TRUE(login_record_data.ParseFromString(login_record->data()));
@@ -389,9 +401,12 @@ IN_PROC_BROWSER_TEST_F(LoginLogoutReporterPublicSessionBrowserTest,
   base::RunLoop().RunUntilIdle();
 
   user_manager::UserManager* user_manager = user_manager::UserManager::Get();
-  ASSERT_TRUE(user_manager->IsLoggedInAsPublicAccount());
+  ASSERT_TRUE(user_manager->IsLoggedInAsManagedGuestSession());
 
   Record login_record = GetNextLoginLogoutRecord(&observer);
+  ASSERT_TRUE(login_record.has_source_info());
+  EXPECT_THAT(login_record.source_info().source(),
+              Eq(::reporting::SourceInfo::ASH));
 
   LoginLogoutRecord login_record_data;
   ASSERT_TRUE(login_record_data.ParseFromString(login_record.data()));
@@ -477,6 +492,9 @@ IN_PROC_BROWSER_TEST_F(LoginLogoutReporterKioskBrowserTest,
     // Record is not enqueued yet, so wait for it.
     login_record = GetNextLoginLogoutRecord(&observer);
   }
+  ASSERT_TRUE(login_record.value().has_source_info());
+  EXPECT_THAT(login_record.value().source_info().source(),
+              Eq(::reporting::SourceInfo::ASH));
 
   LoginLogoutRecord login_record_data;
   ASSERT_TRUE(login_record_data.ParseFromString(login_record->data()));
@@ -549,6 +567,9 @@ IN_PROC_BROWSER_TEST_F(LoginLogoutReporterKioskFailedBrowserTest,
     // Record is not enqueued yet, so wait for it.
     login_record = GetNextLoginLogoutRecord(&observer);
   }
+  ASSERT_TRUE(login_record.value().has_source_info());
+  EXPECT_THAT(login_record.value().source_info().source(),
+              Eq(::reporting::SourceInfo::ASH));
 
   LoginLogoutRecord login_record_data;
   ASSERT_TRUE(login_record_data.ParseFromString(login_record->data()));

@@ -4,15 +4,14 @@
 
 #include "chrome/browser/metrics/chrome_android_metrics_provider.h"
 
-#include "base/feature_list.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "chrome/browser/android/customtabs/custom_tab_session_state_tracker.h"
 #include "chrome/browser/android/locale/locale_manager.h"
 #include "chrome/browser/android/metrics/uma_session_stats.h"
-#include "chrome/browser/flags/android/chrome_feature_list.h"
 #include "chrome/browser/flags/android/chrome_session_state.h"
 #include "chrome/browser/notifications/jni_headers/NotificationSystemStatusUtil_jni.h"
+#include "components/metrics/android_metrics_helper.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
 #include "system_profile.pb.h"
@@ -67,6 +66,7 @@ ChromeAndroidMetricsProvider::~ChromeAndroidMetricsProvider() {}
 // static
 void ChromeAndroidMetricsProvider::RegisterPrefs(PrefRegistrySimple* registry) {
   chrome::android::RegisterActivityTypePrefs(registry);
+  metrics::AndroidMetricsHelper::RegisterPrefs(registry);
 }
 
 void ChromeAndroidMetricsProvider::OnDidCreateMetricsLog() {
@@ -83,6 +83,12 @@ void ChromeAndroidMetricsProvider::OnDidCreateMetricsLog() {
   // before the new metrics log record can be uploaded, Chrome may be able to
   // recover it for upload on restart.
   chrome::android::SaveActivityTypeToLocalState(local_state_, type);
+
+  EmitMultipleUserProfilesHistogram();
+
+  metrics::AndroidMetricsHelper::GetInstance()->EmitHistograms(
+      local_state_,
+      /*on_did_create_metrics_log=*/true);
 }
 
 void ChromeAndroidMetricsProvider::ProvidePreviousSessionData(
@@ -95,6 +101,10 @@ void ChromeAndroidMetricsProvider::ProvidePreviousSessionData(
   // Save whether multiple user profiles are present in Android. This is
   // unlikely to change across sessions.
   EmitMultipleUserProfilesHistogram();
+
+  metrics::AndroidMetricsHelper::GetInstance()->EmitHistograms(
+      local_state_,
+      /*on_did_create_metrics_log=*/false);
 }
 
 void ChromeAndroidMetricsProvider::ProvideCurrentSessionData(
@@ -118,6 +128,10 @@ void ChromeAndroidMetricsProvider::ProvideCurrentSessionData(
 
   UmaSessionStats::GetInstance()->ProvideCurrentSessionData();
   EmitAppNotificationStatusHistogram();
-  EmitMultipleUserProfilesHistogram();
   LocaleManager::RecordUserTypeMetrics();
+}
+
+// static
+void ChromeAndroidMetricsProvider::ResetGlobalStateForTesting() {
+  metrics::AndroidMetricsHelper::ResetGlobalStateForTesting();
 }

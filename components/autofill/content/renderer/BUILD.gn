@@ -30,6 +30,8 @@ static_library("renderer") {
     "prefilled_values_detector.h",
     "renderer_save_password_progress_logger.cc",
     "renderer_save_password_progress_logger.h",
+    "suggestion_properties.cc",
+    "suggestion_properties.h",
   ]
 
   deps = [

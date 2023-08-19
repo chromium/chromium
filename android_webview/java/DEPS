@@ -1,7 +1,6 @@
 include_rules = [
   "+components/android_autofill",
   "+components/autofill/android/java",
-  "+components/content_relationship_verification/android/java",
   "+components/embedder_support/android/java",
   "+components/embedder_support/android/metrics/java",
   "+components/navigation_interception/android/java",

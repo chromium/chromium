@@ -26,7 +26,6 @@
 <translation id="2060505056492490888">„<ph name="DOT" />“ је стављено на погрешно место у „<ph name="INVALIDDOMAIN" />“.</translation>
 <translation id="2148716181193084225">Данас</translation>
 <translation id="2226276347425096477">Скратите овај текст на <ph name="MAX_CHARACTERS" /> знак(ов)а или мање (тренутно користите <ph name="CURRENT_LENGTH" /> знак(ов)а).</translation>
-<translation id="2246498165605549352">Локална датотека</translation>
 <translation id="2247351761944213033"><ph name="WEEKNUMBER" />. недеља, <ph name="YEAR" />.</translation>
 <translation id="2277199496770840904"><ph name="NUMBER" />. песма</translation>
 <translation id="2393030564806080191">Хексадецимална вредност боје</translation>
@@ -89,6 +88,7 @@
 <translation id="5425179576310518467">тренутни датум</translation>
 <translation id="5466621249238537318">Изаберите једну или више датотека.</translation>
 <translation id="5468998798572797635">изађите из режима целог екрана</translation>
+<translation id="5514612371225420585">Фајл на уређају</translation>
 <translation id="5516235301412634559">0,75</translation>
 <translation id="5537725057119320332">Пребацуј</translation>
 <translation id="5546461542133609677">укључите звук</translation>
@@ -113,6 +113,7 @@
 <translation id="6398862346408813489">Прикажи таблу за избор месеца</translation>
 <translation id="6404546809543547843">клизач за трајање аудио-садржаја</translation>
 <translation id="6443871981718447451">прикажите мени опционалног титла</translation>
+<translation id="6484738902856791350">Лепо форматирај</translation>
 <translation id="6550675742724504774">Опције</translation>
 <translation id="6572309429103589720">Нетачна граматика</translation>
 <translation id="658823671542763450">пређите на режим целог екрана</translation>

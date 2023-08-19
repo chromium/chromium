@@ -1,0 +1,42 @@
+object_value {
+  field {
+    name: "destination"
+    value {
+      string_value {
+        value: "https://advertiser.example"
+      }
+    }
+  }
+  field {
+    name: "event_report_windows"
+    value {
+      object_value {
+        field {
+          name: "start_time"
+          value {
+            int_value {
+              value: 3600
+            }
+          }
+        }
+        field {
+          name: "end_times"
+          value {
+            array_value {
+              value {
+                int_value {
+                  value: 172800
+                }
+              }
+              value {
+                int_value {
+                  value: 345600
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}

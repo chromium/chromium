@@ -170,6 +170,15 @@ public class SyncConsentFragment extends SyncConsentFragmentBase {
     }
 
     @Override
+    protected void onSettingsLinkClicked(View button) {
+        if (BuildInfo.getInstance().isAutomotive) {
+            super.displayDeviceLockPage(() -> super.onSettingsLinkClicked(button));
+            return;
+        }
+        super.onSettingsLinkClicked(button);
+    }
+
+    @Override
     protected SyncConsentDelegate getDelegate() {
         return (SyncConsentDelegate) getActivity();
     }

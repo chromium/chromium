@@ -284,16 +284,17 @@ Good::Good() = default;
 
 ## Comment style
 
-References to code in comments should be wrapped in `` ` ` `` pairs. Codesearch uses
-this as a heuristic for finding C++ symbols in comments and generating
-cross-references for that symbol.
+References to code in comments should be wrapped in `` ` ` `` pairs. Codesearch
+uses this as a heuristic for finding C++ symbols in comments and generating
+cross-references for that symbol. Historically, Chrome also used `||` pairs to
+delimit variable names; codesearch understands both conventions and will
+generate a cross-reference either way. Going forward, prefer the new style even
+if existing code uses the old one.
 
 * Class and type names: `` `FooClass` ``.
 * Function names: `` `FooFunction()` ``. The trailing parens disambiguate
   against class names, and occasionally, English words.
-* Variable names: `` `foo_var` ``. Historically, Chrome also used `||` pairs to
-  delimit variable names; codesearch understands both conventions and will
-  generate a cross-reference either way.
+* Variable names: `` `foo_var` ``.
 * Tracking comments for future improvements: `// TODO(crbug.com/12345): ...`,
   or, less optimally, `// TODO(knowledgeable_username): ...`.  Tracking bugs
   provide space to give background context and current status; a username might

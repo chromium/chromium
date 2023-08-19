@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ash/crostini/crostini_export_import.h"
 
+#include <algorithm>
 #include <utility>
 
 #include "base/files/file_util.h"
@@ -19,6 +20,7 @@
 #include "chrome/browser/ash/crostini/crostini_manager_factory.h"
 #include "chrome/browser/ash/crostini/crostini_util.h"
 #include "chrome/browser/ash/file_manager/path_util.h"
+#include "chrome/browser/ash/guest_os/guest_id.h"
 #include "chrome/browser/ash/guest_os/guest_os_share_path.h"
 #include "chrome/browser/ash/guest_os/guest_os_share_path_factory.h"
 #include "chrome/browser/profiles/profile.h"
@@ -185,8 +187,9 @@ void CrostiniExportImport::OpenFileDialog(OperationData* operation_data,
     return;
   }
   // Early return if the select file dialog is already active.
-  if (select_folder_dialog_)
+  if (select_folder_dialog_) {
     return;
+  }
 
   ui::SelectFileDialog::Type file_selector_mode;
   unsigned title = 0;
@@ -220,7 +223,8 @@ void CrostiniExportImport::OpenFileDialog(OperationData* operation_data,
 void CrostiniExportImport::FileSelected(const base::FilePath& path,
                                         int index,
                                         void* params) {
-  Start(static_cast<OperationData*>(params), path, base::DoNothing());
+  Start(static_cast<OperationData*>(params), path,
+        /* create_new_container= */ false, base::DoNothing());
   select_folder_dialog_.reset();
 }
 
@@ -242,15 +246,31 @@ void CrostiniExportImport::ExportContainer(
     base::FilePath path,
     CrostiniManager::CrostiniResultCallback callback) {
   Start(NewOperationData(ExportImportType::EXPORT, std::move(container_id)),
-        path, std::move(callback));
+        path, /* create_new_container= */ false, std::move(callback));
 }
 
 void CrostiniExportImport::ImportContainer(
     guest_os::GuestId container_id,
     base::FilePath path,
     CrostiniManager::CrostiniResultCallback callback) {
+  std::vector<guest_os::GuestId> existing_containers =
+      guest_os::GetContainers(profile_, guest_os::VmType::TERMINA);
+  if (std::find(existing_containers.begin(), existing_containers.end(),
+                container_id) == existing_containers.end()) {
+    LOG(ERROR) << "Attempting to import Crostini container backup into "
+                  "non-existent container: "
+               << container_id;
+  }
   Start(NewOperationData(ExportImportType::IMPORT, std::move(container_id)),
-        path, std::move(callback));
+        path, /* create_new_container= */ false, std::move(callback));
+}
+
+void CrostiniExportImport::CreateContainerFromImport(
+    guest_os::GuestId container_id,
+    base::FilePath path,
+    CrostiniManager::CrostiniResultCallback callback) {
+  Start(NewOperationData(ExportImportType::IMPORT, std::move(container_id)),
+        path, /* create_new_container= */ true, std::move(callback));
 }
 
 void CrostiniExportImport::ExportContainer(guest_os::GuestId container_id,
@@ -258,7 +278,7 @@ void CrostiniExportImport::ExportContainer(guest_os::GuestId container_id,
                                            OnceTrackerFactory tracker_factory) {
   Start(NewOperationData(ExportImportType::EXPORT, std::move(container_id),
                          std::move(tracker_factory)),
-        path, base::DoNothing());
+        path, /* create_new_container= */ false, base::DoNothing());
 }
 
 void CrostiniExportImport::ImportContainer(guest_os::GuestId container_id,
@@ -266,12 +286,13 @@ void CrostiniExportImport::ImportContainer(guest_os::GuestId container_id,
                                            OnceTrackerFactory tracker_factory) {
   Start(NewOperationData(ExportImportType::IMPORT, std::move(container_id),
                          std::move(tracker_factory)),
-        path, base::DoNothing());
+        path, /* create_new_container= */ false, base::DoNothing());
 }
 
 void CrostiniExportImport::Start(
     OperationData* operation_data,
     base::FilePath path,
+    bool create_new_container,
     CrostiniManager::CrostiniResultCallback callback) {
   std::unique_ptr<OperationData> operation_data_storage(
       std::move(operation_data_storage_[operation_data]));
@@ -316,7 +337,7 @@ void CrostiniExportImport::Start(
           base::BindOnce(
               &CrostiniExportImport::EnsureLxdStartedThenSharePath,
               weak_ptr_factory_.GetWeakPtr(), operation_data->container_id,
-              path, false,
+              path, false, create_new_container,
               base::BindOnce(&CrostiniExportImport::ExportAfterSharing,
                              weak_ptr_factory_.GetWeakPtr(),
                              operation_data->container_id, path,
@@ -324,7 +345,8 @@ void CrostiniExportImport::Start(
       break;
     case ExportImportType::IMPORT:
       CrostiniExportImport::EnsureLxdStartedThenSharePath(
-          operation_data->container_id, path, false,
+          operation_data->container_id, path, /* persist= */ false,
+          create_new_container,
           base::BindOnce(&CrostiniExportImport::ImportAfterSharing,
                          weak_ptr_factory_.GetWeakPtr(),
                          operation_data->container_id, path,
@@ -337,10 +359,14 @@ void CrostiniExportImport::EnsureLxdStartedThenSharePath(
     const guest_os::GuestId& container_id,
     const base::FilePath& path,
     bool persist,
+    bool create_new_container,
     guest_os::GuestOsSharePath::SharePathCallback callback) {
   auto* crostini_manager = crostini::CrostiniManager::GetForProfile(profile_);
   crostini::CrostiniManager::RestartOptions options;
   options.stop_after_lxd_available = true;
+  if (create_new_container) {
+    options.restart_source = crostini::RestartSource::kMultiContainerCreation;
+  }
   crostini_manager->RestartCrostiniWithOptions(
       container_id, std::move(options),
       base::BindOnce(&CrostiniExportImport::SharePath,
@@ -356,9 +382,9 @@ void CrostiniExportImport::SharePath(
   auto vm_info =
       crostini::CrostiniManager::GetForProfile(profile_)->GetVmInfo(vm_name);
   if (result != CrostiniResult::SUCCESS || !vm_info.has_value()) {
-    std::move(callback).Run(
-        base::FilePath(), false,
-        base::StringPrintf("VM could not be started: %d", result));
+    std::move(callback).Run(base::FilePath(), false,
+                            base::StringPrintf("VM could not be started: %d",
+                                               static_cast<int>(result)));
     return;
   }
   guest_os::GuestOsSharePath::GetForProfile(profile_)->SharePath(

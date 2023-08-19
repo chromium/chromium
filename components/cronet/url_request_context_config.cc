@@ -82,7 +82,6 @@ const char kQuicMaxMigrationsToNonDefaultNetworkOnWriteError[] =
     "max_migrations_to_non_default_network_on_write_error";
 const char kQuicMaxMigrationsToNonDefaultNetworkOnPathDegrading[] =
     "max_migrations_to_non_default_network_on_path_degrading";
-const char kQuicUserAgentId[] = "user_agent_id";
 const char kQuicMigrateSessionsEarlyV2[] = "migrate_sessions_early_v2";
 const char kQuicRetryOnAlternateNetworkBeforeHandshake[] =
     "retry_on_alternate_network_before_handshake";
@@ -182,9 +181,9 @@ const char kBidiStreamDetectBrokenConnection[] =
 const char kUseDnsHttpsSvcbFieldTrialName[] = "UseDnsHttpsSvcb";
 const char kUseDnsHttpsSvcbUseAlpn[] = "use_alpn";
 
-// Runtime flag to enable Cronet Telemetry, defaults to false. To enable Cronet
+// Runtime flag to enable Cronet Telemetry, defaults to true. To enable Cronet
 // Telemetry, this must be set to true alongside the manifest file flag
-// specified by CronetManifest.TELEMETRY_OPT_IN_META_DATA_STR.
+// specified by CronetManifest's documentation.
 const char kEnableTelemetry[] = "enable_telemetry";
 
 // "goaway_sessions_on_ip_change" is default on for iOS unless overridden via
@@ -276,7 +275,6 @@ URLRequestContextConfig::PreloadedNelAndReportingHeader::
 
 URLRequestContextConfig::URLRequestContextConfig(
     bool enable_quic,
-    const std::string& quic_user_agent_id,
     bool enable_spdy,
     bool enable_brotli,
     HttpCacheType http_cache,
@@ -291,7 +289,6 @@ URLRequestContextConfig::URLRequestContextConfig(
     bool bypass_public_key_pinning_for_local_trust_anchors,
     absl::optional<double> network_thread_priority)
     : enable_quic(enable_quic),
-      quic_user_agent_id(quic_user_agent_id),
       enable_spdy(enable_spdy),
       enable_brotli(enable_brotli),
       http_cache(http_cache),
@@ -309,7 +306,7 @@ URLRequestContextConfig::URLRequestContextConfig(
       network_thread_priority(network_thread_priority),
       bidi_stream_detect_broken_connection(false),
       heartbeat_interval(base::Seconds(0)),
-      enable_telemetry(false) {
+      enable_telemetry(true) {
   SetContextConfigExperimentalOptions();
 }
 
@@ -319,7 +316,6 @@ URLRequestContextConfig::~URLRequestContextConfig() {}
 std::unique_ptr<URLRequestContextConfig>
 URLRequestContextConfig::CreateURLRequestContextConfig(
     bool enable_quic,
-    const std::string& quic_user_agent_id,
     bool enable_spdy,
     bool enable_brotli,
     HttpCacheType http_cache,
@@ -344,10 +340,10 @@ URLRequestContextConfig::CreateURLRequestContextConfig(
       experimental_options = base::Value::Dict();
   }
   return base::WrapUnique(new URLRequestContextConfig(
-      enable_quic, quic_user_agent_id, enable_spdy, enable_brotli, http_cache,
-      http_cache_max_size, load_disable_cache, storage_path, accept_language,
-      user_agent, std::move(experimental_options).value(),
-      std::move(mock_cert_verifier), enable_network_quality_estimator,
+      enable_quic, enable_spdy, enable_brotli, http_cache, http_cache_max_size,
+      load_disable_cache, storage_path, accept_language, user_agent,
+      std::move(experimental_options).value(), std::move(mock_cert_verifier),
+      enable_network_quality_estimator,
       bypass_public_key_pinning_for_local_trust_anchors,
       network_thread_priority));
 }
@@ -519,11 +515,6 @@ void URLRequestContextConfig::SetContextBuilderExperimentalOptions(
       quic_params->allow_server_migration =
           quic_args.FindBool(kQuicAllowServerMigration)
               .value_or(quic_params->allow_server_migration);
-
-      const std::string* user_agent_id = quic_args.FindString(kQuicUserAgentId);
-      if (user_agent_id) {
-        quic_params->user_agent_id = *user_agent_id;
-      }
 
       quic_params->enable_socket_recv_optimization =
           quic_args.FindBool(kQuicEnableSocketRecvOptimization)
@@ -863,7 +854,6 @@ void URLRequestContextConfig::ConfigureURLRequestContextBuilder(
   session_params.enable_quic = enable_quic;
   auto quic_context = std::make_unique<net::QuicContext>();
   if (enable_quic) {
-    quic_context->params()->user_agent_id = quic_user_agent_id;
     // Note goaway sessions on ip change will be turned on by default
     // for iOS unless overrided via experiemental options.
     quic_context->params()->goaway_sessions_on_ip_change =
@@ -894,9 +884,9 @@ URLRequestContextConfigBuilder::~URLRequestContextConfigBuilder() {}
 std::unique_ptr<URLRequestContextConfig>
 URLRequestContextConfigBuilder::Build() {
   return URLRequestContextConfig::CreateURLRequestContextConfig(
-      enable_quic, quic_user_agent_id, enable_spdy, enable_brotli, http_cache,
-      http_cache_max_size, load_disable_cache, storage_path, accept_language,
-      user_agent, experimental_options, std::move(mock_cert_verifier),
+      enable_quic, enable_spdy, enable_brotli, http_cache, http_cache_max_size,
+      load_disable_cache, storage_path, accept_language, user_agent,
+      experimental_options, std::move(mock_cert_verifier),
       enable_network_quality_estimator,
       bypass_public_key_pinning_for_local_trust_anchors,
       network_thread_priority);

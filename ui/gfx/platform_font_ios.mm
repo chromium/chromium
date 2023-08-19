@@ -9,7 +9,7 @@
 #include <cmath>
 
 #include "base/apple/bridging.h"
-#import "base/mac/foundation_util.h"
+#import "base/apple/foundation_util.h"
 #include "base/notreached.h"
 #include "base/strings/sys_string_conversions.h"
 #include "base/strings/utf_string_conversions.h"
@@ -17,10 +17,6 @@
 #include "ui/gfx/font.h"
 #include "ui/gfx/font_render_params.h"
 #include "ui/gfx/ios/NSString+CrStringDrawing.h"
-
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
 
 namespace gfx {
 

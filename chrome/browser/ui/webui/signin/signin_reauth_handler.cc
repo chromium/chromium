@@ -8,7 +8,7 @@
 
 #include "base/functional/bind.h"
 #include "base/logging.h"
-#include "chrome/browser/ui/signin_reauth_view_controller.h"
+#include "chrome/browser/ui/signin/signin_reauth_view_controller.h"
 #include "components/sync/protocol/user_consent_types.pb.h"
 #include "content/public/browser/web_ui.h"
 #include "ui/base/webui/web_ui_util.h"

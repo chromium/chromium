@@ -51,8 +51,9 @@ void InvalidateInstancesAndAncestorResources(SVGStopElement* stop_element) {
   SVGElement::InvalidationGuard invalidation_guard(stop_element);
 
   Element* parent = stop_element->parentElement();
-  if (auto* gradient = DynamicTo<SVGGradientElement>(parent))
-    gradient->InvalidateGradient(layout_invalidation_reason::kChildChanged);
+  if (auto* gradient = DynamicTo<SVGGradientElement>(parent)) {
+    gradient->InvalidateGradient();
+  }
 }
 
 }  // namespace
@@ -97,12 +98,10 @@ SVGAnimatedPropertyBase* SVGStopElement::PropertyFromAttribute(
   }
 }
 
-void SVGStopElement::SynchronizeSVGAttribute(const QualifiedName& name) const {
-  if (name == AnyQName()) {
-    SVGAnimatedPropertyBase* attrs[]{offset_.Get()};
-    SynchronizeAllSVGAttributes(attrs);
-  }
-  SVGElement::SynchronizeSVGAttribute(name);
+void SVGStopElement::SynchronizeAllSVGAttributes() const {
+  SVGAnimatedPropertyBase* attrs[]{offset_.Get()};
+  SynchronizeListOfSVGAttributes(attrs);
+  SVGElement::SynchronizeAllSVGAttributes();
 }
 
 }  // namespace blink

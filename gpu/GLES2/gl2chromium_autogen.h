@@ -379,7 +379,7 @@
   GLES2_GET_FUN(CopySharedImageToTextureINTERNAL)
 #define glReadbackARGBImagePixelsINTERNAL \
   GLES2_GET_FUN(ReadbackARGBImagePixelsINTERNAL)
-#define glWritePixelsINTERNAL GLES2_GET_FUN(WritePixelsINTERNAL)
+#define glWritePixelsYUVINTERNAL GLES2_GET_FUN(WritePixelsYUVINTERNAL)
 #define glEnableiOES GLES2_GET_FUN(EnableiOES)
 #define glDisableiOES GLES2_GET_FUN(DisableiOES)
 #define glBlendEquationiOES GLES2_GET_FUN(BlendEquationiOES)

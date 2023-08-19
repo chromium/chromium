@@ -128,11 +128,6 @@ class CORE_EXPORT CheckPseudoHasArgumentContext {
                     sizeof(CheckPseudoHasArgumentTraversalType) * 8,
                 "traversal type size check");
 
-  inline const CSSSelector* GetCurrentRelationAndNextCompound(
-      const CSSSelector* compound_selector,
-      CSSSelector::RelationType& relation,
-      bool& contains_child_indexed);
-
   // Indicate the :has argument relative type and subtree traversal scope.
   // If 'adjacent_distance_limit' is integer max, it means that all the
   // adjacent subtrees need to be traversed. otherwise, it means that it is

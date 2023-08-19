@@ -93,7 +93,7 @@ chrome_ios_eg2_test("ios_chrome_integration_eg2tests_module") {
     "//ios/chrome/browser/safe_browsing:eg2_tests",
     "//ios/chrome/browser/supervised_user:eg2_tests",
     "//ios/chrome/browser/ui/autofill:eg2_tests",
-    "//ios/chrome/browser/ui/autofill/form_input_accessory:eg2_tests",
+    "//ios/chrome/browser/ui/autofill/branding:eg2_tests",
     "//ios/chrome/browser/ui/autofill/manual_fill:eg2_tests",
     "//ios/chrome/browser/ui/content_suggestions:eg2_tests",
     "//ios/chrome/browser/ui/context_menu:eg2_tests",
@@ -139,11 +139,15 @@ chrome_ios_eg2_test("ios_chrome_settings_eg2tests_module") {
     "//ios/chrome/browser/ui/settings/notifications:eg2_tests",
     "//ios/chrome/browser/ui/settings/notifications/tracking_price:eg2_tests",
     "//ios/chrome/browser/ui/settings/password:eg2_tests",
+    "//ios/chrome/browser/ui/settings/password/password_checkup:eg2_tests",
+    "//ios/chrome/browser/ui/settings/password/password_sharing:eg2_tests",
     "//ios/chrome/browser/ui/settings/password/passwords_in_other_apps:eg2_tests",
     "//ios/chrome/browser/ui/settings/privacy:eg2_tests",
+    "//ios/chrome/browser/ui/settings/privacy/lockdown_mode:eg2_tests",
     "//ios/chrome/browser/ui/settings/sync:eg2_tests",
     "//ios/chrome/browser/ui/settings/tabs:eg2_tests",
     "//ios/chrome/browser/ui/settings/tabs/inactive_tabs:eg2_tests",
+    "//ios/chrome/browser/ui/settings/tabs/tab_pickup:eg2_tests",
   ]
   data_deps = [ ":ios_chrome_eg2tests" ]
 }
@@ -167,9 +171,12 @@ chrome_ios_eg2_test("ios_chrome_ui_eg2tests_module") {
   xcode_test_application_name = "ios_chrome_eg2tests"
 
   deps = [
+    "//ios/chrome/browser/settings/sync/utils:eg2_tests",
+    "//ios/chrome/browser/ui/autofill/bottom_sheet:eg2_tests",
     "//ios/chrome/browser/ui/bring_android_tabs:eg2_tests",
-    "//ios/chrome/browser/ui/browser_container:eg2_tests",
     "//ios/chrome/browser/ui/browser_view:eg2_tests",
+    "//ios/chrome/browser/ui/bubble:eg2_tests",
+    "//ios/chrome/browser/ui/default_promo/post_restore:eg2_tests",
     "//ios/chrome/browser/ui/dialogs:eg2_tests",
     "//ios/chrome/browser/ui/download:eg2_tests",
     "//ios/chrome/browser/ui/find_bar:eg2_tests",
@@ -199,7 +206,7 @@ chrome_ios_eg2_test("ios_chrome_ui_eg2tests_module") {
     "//ios/chrome/browser/ui/safe_mode:eg2_tests",
     "//ios/chrome/browser/ui/search_with:eg2_tests",
     "//ios/chrome/browser/ui/send_tab_to_self:eg2_tests",
-    "//ios/chrome/browser/ui/settings/sync/utils:eg2_tests",
+    "//ios/chrome/browser/ui/settings/address_bar_preference:eg2_tests",
     "//ios/chrome/browser/ui/sharing:eg2_tests",
     "//ios/chrome/browser/ui/sharing/activity_services:eg2_tests",
     "//ios/chrome/browser/ui/side_swipe:eg2_tests",
@@ -208,8 +215,8 @@ chrome_ios_eg2_test("ios_chrome_ui_eg2tests_module") {
     "//ios/chrome/browser/ui/tab_switcher/tab_grid/inactive_tabs:eg2_tests",
     "//ios/chrome/browser/ui/tab_switcher/tab_grid/pinned_tabs/tests:eg2_tests",
     "//ios/chrome/browser/ui/tabs:eg2_tests",
+    "//ios/chrome/browser/ui/tabs/tab_pickup:eg2_tests",
     "//ios/chrome/browser/ui/text_fragments:eg2_tests",
-    "//ios/chrome/browser/ui/thumb_strip:eg2_tests",
     "//ios/chrome/browser/ui/toolbar:eg2_tests",
     "//ios/chrome/browser/ui/webui:eg2_tests",
     "//ios/chrome/browser/ui/webui/interstitials:eg2_tests",
@@ -248,10 +255,7 @@ chrome_ios_eg2_test("ios_chrome_web_eg2tests_module") {
 }
 
 source_set("eg2_tests") {
-  configs += [
-    "//build/config/compiler:enable_arc",
-    "//build/config/ios:xctest_config",
-  ]
+  configs += [ "//build/config/ios:xctest_config" ]
   testonly = true
 
   sources = [ "smoke_egtest.mm" ]
@@ -261,7 +265,9 @@ source_set("eg2_tests") {
     "//ios/chrome/app/strings",
     "//ios/chrome/browser/shared/model/prefs:pref_names",
     "//ios/chrome/browser/shared/public/features",
+    "//ios/chrome/browser/ui/bookmarks:eg_test_support+eg2",
     "//ios/chrome/browser/ui/settings:settings_root_constants",
+    "//ios/chrome/browser/ui/settings/password:eg_test_support+eg2",
     "//ios/chrome/browser/ui/settings/password:password_constants",
     "//ios/chrome/browser/ui/settings/password/password_settings:password_settings_constants",
     "//ios/chrome/test/earl_grey:eg_test_support+eg2",

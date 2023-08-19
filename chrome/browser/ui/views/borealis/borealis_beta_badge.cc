@@ -9,6 +9,7 @@
 #include "base/i18n/rtl.h"
 #include "cc/paint/paint_flags.h"
 #include "chrome/grit/generated_resources.h"
+#include "ui/accessibility/ax_enums.mojom-shared.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/chromeos/styles/cros_tokens_color_mappings.h"
@@ -44,7 +45,11 @@ gfx::FontList GetFont() {
 
 }  // namespace
 
-BorealisBetaBadge::BorealisBetaBadge() = default;
+BorealisBetaBadge::BorealisBetaBadge() {
+  SetAccessibilityProperties(
+      /*role=*/ax::mojom::Role::kStaticText,
+      /*name=*/GetText());
+}
 
 BorealisBetaBadge::~BorealisBetaBadge() = default;
 

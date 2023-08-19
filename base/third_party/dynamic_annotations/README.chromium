@@ -2,6 +2,8 @@ Name: dynamic annotations
 URL: http://code.google.com/p/data-race-test/wiki/DynamicAnnotations
 Version: 4384
 License: BSD
+License File: LICENSE
+Shipped: yes
 
 ATTENTION: please avoid using these annotations in Chromium code.
 They were mainly intended to instruct the Valgrind-based version of

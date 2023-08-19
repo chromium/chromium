@@ -138,7 +138,7 @@ class ASH_EXPORT AmbientController
   // Set the ui state to begin showing ambient mode. After calling this
   // function, there will be a delay while content downloads or reads from disk
   // until ambient mode widget is actually constructed.
-  void SetUiVisibilityShown();
+  void SetUiVisibilityShouldShow();
 
   // Set the ui state to begin showing preview ambient mode. After calling this
   // function, there will be a delay while content downloads or reads from disk

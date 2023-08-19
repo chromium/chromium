@@ -176,7 +176,7 @@ ToastOverlay::ToastOverlay(Delegate* delegate,
   params.z_order = ui::ZOrderLevel::kFloatingUIElement;
   params.bounds = CalculateOverlayBounds();
   params.parent =
-      root_window_->GetChildById(kShellWindowId_DragImageAndTooltipContainer);
+      root_window_->GetChildById(kShellWindowId_SettingBubbleContainer);
   overlay_widget_->Init(std::move(params));
   overlay_widget_->SetVisibilityChangedAnimationsEnabled(true);
   overlay_widget_->SetContentsView(overlay_view_.get());
@@ -324,10 +324,12 @@ int ToastOverlay::CalculateSliderBubbleOffset() {
 
   // If a slider bubble is visible, the toast baseline will be shifted
   // up by the slider bubble's height + a default spacing offset.
-  return unified_system_tray->IsSliderBubbleShown()
-             ? unified_system_tray->GetSliderBubbleHeight() +
-                   ToastOverlay::kOffset
-             : 0;
+  if (unified_system_tray->IsSliderBubbleShown()) {
+    auto* slider_view = unified_system_tray->GetSliderView();
+    DCHECK(slider_view);
+    return slider_view->height() + ToastOverlay::kOffset;
+  }
+  return 0;
 }
 
 void ToastOverlay::OnButtonClicked() {

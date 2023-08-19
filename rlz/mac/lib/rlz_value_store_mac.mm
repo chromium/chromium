@@ -8,9 +8,9 @@
 
 #include <tuple>
 
+#include "base/apple/foundation_util.h"
 #include "base/check.h"
 #include "base/files/file_path.h"
-#include "base/mac/foundation_util.h"
 #include "base/notreached.h"
 #include "base/strings/sys_string_conversions.h"
 #include "rlz/lib/assert.h"
@@ -18,11 +18,7 @@
 #include "rlz/lib/recursive_cross_process_lock_posix.h"
 #include "rlz/lib/supplementary_branding.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
-using base::mac::ObjCCast;
+using base::apple::ObjCCast;
 
 namespace rlz_lib {
 
@@ -275,7 +271,7 @@ NSString* RlzLockFilename() {
 
 ScopedRlzValueStoreLock::ScopedRlzValueStoreLock() {
   bool got_distributed_lock = g_recursive_lock.TryGetCrossProcessLock(
-      base::mac::NSStringToFilePath(RlzLockFilename()));
+      base::apple::NSStringToFilePath(RlzLockFilename()));
   // At this point, we hold the in-process lock, no matter the value of
   // |got_distributed_lock|.
 
@@ -356,7 +352,7 @@ void SetRlzStoreDirectory(const base::FilePath& directory) {
     if (directory.empty()) {
       g_test_folder = nil;
     } else {
-      g_test_folder = base::mac::FilePathToNSString(directory);
+      g_test_folder = base::apple::FilePathToNSString(directory);
     }
   }
 }

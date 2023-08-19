@@ -4,11 +4,11 @@
 
 #include "components/omnibox/browser/actions/tab_switch_action.h"
 
-#include <cctype>
 #include <numeric>
 
 #include "build/build_config.h"
 #include "components/omnibox/browser/buildflags.h"
+#include "components/omnibox/browser/omnibox_field_trial.h"
 #include "components/strings/grit/components_strings.h"
 #include "ui/base/window_open_disposition.h"
 
@@ -37,7 +37,9 @@ void TabSwitchAction::Execute(ExecutionContext& context) const {
 
 #if defined(SUPPORT_PEDALS_VECTOR_ICONS)
 const gfx::VectorIcon& TabSwitchAction::GetVectorIcon() const {
-  return omnibox::kSwitchIcon;
+  return OmniboxFieldTrial::IsChromeRefreshActionChipIconsEnabled()
+             ? omnibox::kSwitchCr2023Icon
+             : omnibox::kSwitchIcon;
 }
 #endif
 

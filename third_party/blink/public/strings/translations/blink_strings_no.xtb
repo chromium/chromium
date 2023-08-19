@@ -26,7 +26,6 @@
 <translation id="2060505056492490888">«<ph name="DOT" />» er brukt på feil sted i «<ph name="INVALIDDOMAIN" />».</translation>
 <translation id="2148716181193084225">I dag</translation>
 <translation id="2226276347425096477">Forkort denne teksten til <ph name="MAX_CHARACTERS" /> tegn eller færre (for øyeblikket bruker du <ph name="CURRENT_LENGTH" /> tegn).</translation>
-<translation id="2246498165605549352">Lokal fil</translation>
 <translation id="2247351761944213033">Uke <ph name="WEEKNUMBER" />, <ph name="YEAR" /></translation>
 <translation id="2277199496770840904">Spor <ph name="NUMBER" /></translation>
 <translation id="2393030564806080191">Heksadesimal fargeverdi</translation>
@@ -89,6 +88,7 @@
 <translation id="5425179576310518467">datoen i dag</translation>
 <translation id="5466621249238537318">Velg én eller flere filer.</translation>
 <translation id="5468998798572797635">avslutt fullskjerm</translation>
+<translation id="5514612371225420585">Fil på enheten</translation>
 <translation id="5516235301412634559">0,75</translation>
 <translation id="5537725057119320332">Cast</translation>
 <translation id="5546461542133609677">slå på lyden</translation>
@@ -113,6 +113,7 @@
 <translation id="6398862346408813489">Se panelet for valg av måned</translation>
 <translation id="6404546809543547843">lydtidslinje</translation>
 <translation id="6443871981718447451">vis menyen for teksting for hørselshemmede</translation>
+<translation id="6484738902856791350">Pen formatering</translation>
 <translation id="6550675742724504774">Alternativer</translation>
 <translation id="6572309429103589720">Grammatikkfeil</translation>
 <translation id="658823671542763450">gå til fullskjermmodus</translation>

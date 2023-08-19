@@ -113,6 +113,8 @@ class CORE_EXPORT FrameFetchContext final : public BaseFetchContext,
 
   bool IsPrerendering() const override;
 
+  bool DoesLCPPHaveAnyHintData() override;
+
   // Exposed for testing.
   void ModifyRequestForCSP(ResourceRequest&);
   void AddClientHintsIfNecessary(const absl::optional<float> resource_width,
@@ -189,8 +191,6 @@ class CORE_EXPORT FrameFetchContext final : public BaseFetchContext,
   WebContentSettingsClient* GetContentSettingsClient() const;
   Settings* GetSettings() const;
   String GetUserAgent() const;
-  String GetFullUserAgent() const;
-  String GetReducedUserAgent() const;
   absl::optional<UserAgentMetadata> GetUserAgentMetadata() const;
   const PermissionsPolicy* GetPermissionsPolicy() const override;
   const ClientHintsPreferences GetClientHintsPreferences() const;

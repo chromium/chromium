@@ -21,10 +21,6 @@
 #import "net/url_request/url_request_context_getter.h"
 #import "net/url_request/url_request_interceptor.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 namespace {
 // All ChromeBrowserState will store a dummy base::SupportsUserData::Data
 // object with this key. It can be used to check that a web::BrowserState
@@ -33,9 +29,11 @@ const char kBrowserStateIsChromeBrowserState[] = "IsChromeBrowserState";
 }  // namespace
 
 ChromeBrowserState::ChromeBrowserState(
+    const base::FilePath& state_path,
     scoped_refptr<base::SequencedTaskRunner> io_task_runner)
-    : io_task_runner_(std::move(io_task_runner)) {
+    : state_path_(state_path), io_task_runner_(std::move(io_task_runner)) {
   DCHECK(io_task_runner_);
+  DCHECK(!state_path_.empty());
   SetUserData(kBrowserStateIsChromeBrowserState,
               std::make_unique<base::SupportsUserData::Data>());
 }
@@ -78,6 +76,18 @@ scoped_refptr<base::SequencedTaskRunner> ChromeBrowserState::GetIOTaskRunner() {
 
 PrefService* ChromeBrowserState::GetPrefs() {
   return GetSyncablePrefs();
+}
+
+base::FilePath ChromeBrowserState::GetOffTheRecordStatePath() const {
+  if (IsOffTheRecord()) {
+    return state_path_;
+  }
+
+  return state_path_.Append(FILE_PATH_LITERAL("OTR"));
+}
+
+base::FilePath ChromeBrowserState::GetStatePath() const {
+  return state_path_;
 }
 
 net::URLRequestContextGetter* ChromeBrowserState::GetRequestContext() {

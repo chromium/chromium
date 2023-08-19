@@ -88,12 +88,13 @@ TestV4StoreFactory::TestV4StoreFactory() = default;
 
 TestV4StoreFactory::~TestV4StoreFactory() = default;
 
-std::unique_ptr<V4Store> TestV4StoreFactory::CreateV4Store(
+V4StorePtr TestV4StoreFactory::CreateV4Store(
     const scoped_refptr<base::SequencedTaskRunner>& task_runner,
     const base::FilePath& store_path) {
-  auto new_store = std::make_unique<TestV4Store>(task_runner, store_path);
+  V4StorePtr new_store(new TestV4Store(task_runner, store_path),
+                       V4StoreDeleter(task_runner));
   new_store->Initialize();
-  return std::move(new_store);
+  return new_store;
 }
 
 TestV4DatabaseFactory::TestV4DatabaseFactory() = default;
@@ -109,6 +110,14 @@ TestV4DatabaseFactory::Create(
       base::OnTaskRunnerDeleter(db_task_runner));
   v4_db_ = v4_db.get();
   return std::move(v4_db);
+}
+
+bool TestV4DatabaseFactory::IsReady() {
+  // v4_db_ is created on a base threadpool thread.
+  // It might not be ready by the time it is used.
+  // Ideally, this should be handled better, but this is a quick way
+  // of checking if it has been constructed.
+  return v4_db_ != nullptr;
 }
 
 void TestV4DatabaseFactory::MarkPrefixAsBad(ListIdentifier list_id,

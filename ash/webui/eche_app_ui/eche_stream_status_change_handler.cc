@@ -88,7 +88,7 @@ void EcheStreamStatusChangeHandler::SetStreamActionObserver(
   observer_remote_.Bind(std::move(observer));
 }
 
-void EcheStreamStatusChangeHandler::OnRequestCloseConnnection() {
+void EcheStreamStatusChangeHandler::OnRequestCloseConnection() {
   CloseStream();
 }
 

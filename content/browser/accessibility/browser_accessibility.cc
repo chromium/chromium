@@ -824,67 +824,21 @@ bool BrowserAccessibility::HasVisibleCaretOrSelection() const {
   return node()->HasVisibleCaretOrSelection();
 }
 
-std::set<ui::AXPlatformNode*> BrowserAccessibility::GetNodesForNodeIdSet(
-    const std::set<int32_t>& ids) {
-  std::set<ui::AXPlatformNode*> nodes;
-  for (int32_t node_id : ids) {
-    if (ui::AXPlatformNode* node = GetFromNodeID(node_id)) {
-      nodes.insert(node);
-    }
-  }
-  return nodes;
-}
-
-ui::AXPlatformNode* BrowserAccessibility::GetTargetNodeForRelation(
-    ax::mojom::IntAttribute attr) {
-  DCHECK(ui::IsNodeIdIntAttribute(attr));
-
-  int target_id;
-  if (!node()->GetIntAttribute(attr, &target_id))
-    return nullptr;
-
-  return GetFromNodeID(target_id);
-}
-
 std::vector<ui::AXPlatformNode*>
-BrowserAccessibility::GetTargetNodesForRelation(
-    ax::mojom::IntListAttribute attr) {
-  DCHECK(ui::IsNodeIdIntListAttribute(attr));
-
-  std::vector<int32_t> target_ids;
-  if (!GetIntListAttribute(attr, &target_ids))
-    return std::vector<ui::AXPlatformNode*>();
-
-  // If we use std::set to eliminate duplicates, the resulting set will be
-  // sorted by the id and we will lose the original order provided by the
-  // author which may be of interest to ATs. The number of ids should be small.
-
-  std::vector<ui::AXPlatformNode*> nodes;
-  for (int32_t target_id : target_ids) {
-    if (ui::AXPlatformNode* node = GetFromNodeID(target_id)) {
-      if (!base::Contains(nodes, node))
-        nodes.push_back(node);
-    }
-  }
-
-  return nodes;
-}
-
-std::set<ui::AXPlatformNode*>
 BrowserAccessibility::GetSourceNodesForReverseRelations(
     ax::mojom::IntAttribute attr) {
   DCHECK(manager_);
   DCHECK(ui::IsNodeIdIntAttribute(attr));
-  return GetNodesForNodeIdSet(
+  return GetNodesFromRelationIdSet(
       manager_->ax_tree()->GetReverseRelations(attr, GetData().id));
 }
 
-std::set<ui::AXPlatformNode*>
+std::vector<ui::AXPlatformNode*>
 BrowserAccessibility::GetSourceNodesForReverseRelations(
     ax::mojom::IntListAttribute attr) {
   DCHECK(manager_);
   DCHECK(ui::IsNodeIdIntListAttribute(attr));
-  return GetNodesForNodeIdSet(
+  return GetNodesFromRelationIdSet(
       manager_->ax_tree()->GetReverseRelations(attr, GetData().id));
 }
 
@@ -1936,12 +1890,15 @@ ui::TextAttributeMap BrowserAccessibility::GetSpellingAndGrammarAttributes()
   // and exposed on the text field itself. Otherwise, assistive software (AT)
   // won't be able to see them because the native field's descendants are an
   // implementation detail that is hidden from AT.
-  if (IsAtomicTextField()) {
+  if (IsAtomicTextField() && !node()->GetValueForControl().empty()) {
     int start_offset = 0;
+    // Note that in PDFs, static_text will always be null. This is because text
+    // fields are not given descendants by `PdfAccessibilityTreeBuilder`.
     for (BrowserAccessibility* static_text =
              BrowserAccessibilityManager::NextTextOnlyObject(
                  InternalGetFirstChild());
          static_text; static_text = static_text->InternalGetNextSibling()) {
+      DCHECK(static_text->IsDescendantOf(this));
       ui::TextAttributeMap text_spelling_attributes =
           static_text->GetSpellingAndGrammarAttributes();
       for (auto& attribute : text_spelling_attributes) {

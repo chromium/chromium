@@ -41,7 +41,7 @@ class SyncedTabDelegateAndroid : public TabContentsSyncedTabDelegate {
   void ResetWebContents();
 
  private:
-  raw_ptr<TabAndroid> tab_android_;
+  const raw_ptr<TabAndroid> tab_android_;
 };
 }  // namespace browser_sync
 

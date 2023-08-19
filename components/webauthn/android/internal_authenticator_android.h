@@ -18,6 +18,8 @@ namespace content {
 class RenderFrameHost;
 }  // namespace content
 
+namespace webauthn {
+
 // Implementation of the public InternalAuthenticator interface.
 // This class is meant only for trusted and internal components of Chrome to
 // use. The Android implementation is in
@@ -87,5 +89,7 @@ class InternalAuthenticatorAndroid : public webauthn::InternalAuthenticator {
   webauthn::GetMatchingCredentialIdsCallback
       get_matching_credential_ids_callback_;
 };
+
+}  // namespace webauthn
 
 #endif  // COMPONENTS_WEBAUTHN_ANDROID_INTERNAL_AUTHENTICATOR_ANDROID_H_

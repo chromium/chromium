@@ -8,7 +8,6 @@
 #include <string>
 
 #include "base/strings/string_piece_forward.h"
-#include "components/autofill/core/browser/field_types.h"
 
 namespace base {
 class Time;
@@ -75,12 +74,6 @@ bool IsValidZip(const std::u16string& text);
 
 // Returns true if |text| looks like an SSN, with or without separators.
 bool IsSSN(const std::u16string& text);
-
-// Returns whether |value| is valid for the given |type|. If not null,
-// |error_message| is populated when the function returns false.
-bool IsValidForType(const std::u16string& value,
-                    ServerFieldType type,
-                    std::u16string* error_message);
 
 // Returns the expected CVC length based on the |card_network|.
 size_t GetCvcLengthForCardNetwork(const base::StringPiece card_network,

@@ -10,10 +10,6 @@
 #import "remoting/ios/app/remoting_theme.h"
 #include "ui/base/l10n/l10n_util.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 static const CGFloat kPadding = 20.f;
 static UIFont* const kErrorFont = [UIFont systemFontOfSize:13.f];
 

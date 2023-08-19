@@ -3,13 +3,16 @@
 <translationbundle lang="es">
 <translation id="1016765312371154165">Chrome no se ha cerrado correctamente.</translation>
 <translation id="130631256467250065">Los cambios se aplicarán la próxima vez que reinicies el dispositivo.</translation>
+<translation id="1555506416658437797">editar los métodos de pago.</translation>
 <translation id="1635457557763038537">Los cambios se aplicarán la próxima vez que reinicies Chrome.</translation>
+<translation id="2399868464369312507">Google Chrome está intentando editar los métodos de pago.</translation>
 <translation id="2447485272386224171">Chrome se ha creado gracias al proyecto de software libre <ph name="BEGIN_LINK_CHROMIUM" />Chromium<ph name="END_LINK_CHROMIUM" /> y a otro <ph name="BEGIN_LINK_OSS" />software libre<ph name="END_LINK_OSS" />.</translation>
 <translation id="2588322182880276190">Logotipo de Chrome</translation>
 <translation id="3444832043240812445">Esta página solo muestra información sobre fallos recientes si se <ph name="BEGIN_LINK" />habilitan los informes sobre fallos<ph name="END_LINK" />.</translation>
 <translation id="3875312571075912821">Configura tu cortafuegos o tu antivirus para permitir el acceso de Chrome
           a la red.</translation>
 <translation id="5005121315113832363">Chrome ha bloqueado esta página</translation>
+<translation id="585620188971323280">modificar la configuración para completar los métodos de pago.</translation>
 <translation id="6011049234605203654">Accede al
           menú de Chrome, haz clic en
           <ph name="SETTINGS_TITLE" />
@@ -42,4 +45,5 @@
           y desactiva las casillas de verificación de los proxies seleccionados.</translation>
 <translation id="8232971017369963250">Chrome se ha podido crear gracias al proyecto de software libre <ph name="BEGIN_LINK_CHROMIUM" />Chromium<ph name="END_LINK_CHROMIUM" />.</translation>
 <translation id="8279509328145658601">Chrome también se ha podido crear gracias a otro <ph name="BEGIN_LINK_OSS" />software libre<ph name="END_LINK_OSS" />.</translation>
+<translation id="8544217240017914508">Google Chrome está intentando modificar la configuración para completar los métodos de pago.</translation>
 </translationbundle>

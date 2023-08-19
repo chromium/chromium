@@ -1,5 +1,4 @@
 source_set("home") {
-  configs += [ "//build/config/compiler:enable_arc" ]
   sources = [
     "bookmark_promo_controller.h",
     "bookmark_promo_controller.mm",
@@ -24,7 +23,6 @@ source_set("home") {
     "//ios/chrome/browser/default_browser:utils",
     "//ios/chrome/browser/drag_and_drop",
     "//ios/chrome/browser/favicon",
-    "//ios/chrome/browser/flags:system_flags",
     "//ios/chrome/browser/metrics:metrics_internal",
     "//ios/chrome/browser/policy:policy_util",
     "//ios/chrome/browser/shared/coordinator/alert",
@@ -33,6 +31,7 @@ source_set("home") {
     "//ios/chrome/browser/shared/model/browser_state",
     "//ios/chrome/browser/shared/model/web_state_list",
     "//ios/chrome/browser/shared/public/commands",
+    "//ios/chrome/browser/shared/public/features:system_flags",
     "//ios/chrome/browser/shared/ui/elements",
     "//ios/chrome/browser/shared/ui/list_model:list_model",
     "//ios/chrome/browser/shared/ui/table_view",
@@ -68,12 +67,12 @@ source_set("home") {
     "//ios/web/public/navigation",
     "//ios/web/public/navigation:referrer",
     "//ui/base",
+    "//ui/strings",
   ]
   frameworks = [ "UIKit.framework" ]
 }
 
 source_set("unit_tests") {
-  configs += [ "//build/config/compiler:enable_arc" ]
   testonly = true
   sources = [ "bookmarks_home_view_controller_unittest.mm" ]
   deps = [
@@ -90,10 +89,7 @@ source_set("unit_tests") {
 }
 
 source_set("eg2_tests") {
-  configs += [
-    "//build/config/compiler:enable_arc",
-    "//build/config/ios:xctest_config",
-  ]
+  configs += [ "//build/config/ios:xctest_config" ]
   testonly = true
   sources = [
     "bookmarks_account_storage_promo_egtest.mm",
@@ -104,8 +100,11 @@ source_set("eg2_tests") {
     "//components/bookmarks/common",
     "//components/policy:generated",
     "//components/signin/public/base",
+    "//components/sync/base",
+    "//components/sync/base:features",
     "//ios/chrome/app/strings",
     "//ios/chrome/browser/policy:eg_test_support+eg2",
+    "//ios/chrome/browser/shared/ui/elements:eg_test_support+eg2",
     "//ios/chrome/browser/signin:fake_system_identity",
     "//ios/chrome/browser/signin:test_constants",
     "//ios/chrome/browser/ui/authentication:authentication_constants",

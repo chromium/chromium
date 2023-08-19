@@ -8,9 +8,13 @@
 #include <set>
 #include <utility>
 
+#include "base/files/file_path.h"
+#include "base/files/file_util.h"
+#include "base/location.h"
+#include "base/path_service.h"
 #include "base/strings/string_util.h"
-#include "base/test/metrics/histogram_tester.h"
 #include "build/chromeos_buildflags.h"
+#include "components/feedback/redaction_tool/metrics_tester.h"
 #include "components/feedback/redaction_tool/pii_types.h"
 
 namespace redaction {
@@ -35,8 +39,22 @@ struct StringWithRedaction {
 const StringWithRedaction kStringsWithRedactions[] = {
     {"aaaaaaaa [SSID=123aaaaaa]aaaaa",  // SSID.
      "aaaaaaaa [SSID=(SSID: 1)]aaaaa", PIIType::kSSID},
+    {"chrome://resources/foo",  // Secure chrome resource, exempt.
+     "chrome://resources/foo", PIIType::kNone},
+    {"chrome://settings/crisper.js",  // Exempt settings URLs.
+     "chrome://settings/crisper.js", PIIType::kNone},
+    // Exempt first party extension.
+    {"chrome-extension://nkoccljplnhpfnfiajclkommnmllphnl/foobar.js",
+     "chrome-extension://nkoccljplnhpfnfiajclkommnmllphnl/foobar.js",
+     PIIType::kNone},
     {"aaaaaaaahttp://tets.comaaaaaaa",  // URL.
      "aaaaaaaa(URL: 1)", PIIType::kURL},
+    {"chrome://resources/f?user=bar",  // Potentially PII in parameter.
+     "(URL: 2)", PIIType::kURL},
+    {"chrome-extension://nkoccljplnhpfnfiajclkommnmllphnl/foobar.js?bar=x",
+     "(URL: 3)", PIIType::kURL},  // Potentially PII in parameter.
+    {"isolated-app://airugqztij5biqquuk3mfwpsaibuegaqcitgfchwuosuofdjabzqaaac/",
+     "(URL: 4)", PIIType::kURL},                  // URL
     {"u:object_r:system_data_file:s0:c512,c768",  // No PII, it is an SELinux
                                                   // context.
      "u:object_r:system_data_file:s0:c512,c768", PIIType::kNone},
@@ -172,20 +190,6 @@ const StringWithRedaction kStringsWithRedactions[] = {
      "(IPv6: 18)", PIIType::kIPAddress},
     {"aa:aa:aa:aa:aa:aa",  // MAC address (BSSID).
      "(MAC OUI=aa:aa:aa IFACE=1)", PIIType::kMACAddress},
-    {"chrome://resources/foo",  // Secure chrome resource, exempt.
-     "chrome://resources/foo", PIIType::kNone},
-    {"chrome://settings/crisper.js",  // Exempt settings URLs.
-     "chrome://settings/crisper.js", PIIType::kNone},
-    // Exempt first party extension.
-    {"chrome-extension://nkoccljplnhpfnfiajclkommnmllphnl/foobar.js",
-     "chrome-extension://nkoccljplnhpfnfiajclkommnmllphnl/foobar.js",
-     PIIType::kNone},
-    {"chrome://resources/f?user=bar",  // Potentially PII in parameter.
-     "(URL: 2)", PIIType::kURL},
-    {"chrome-extension://nkoccljplnhpfnfiajclkommnmllphnl/foobar.js?bar=x",
-     "(URL: 3)", PIIType::kURL},  // Potentially PII in parameter.
-    {"isolated-app://airugqztij5biqquuk3mfwpsaibuegaqcitgfchwuosuofdjabzqaaac/",
-     "(URL: 4)", PIIType::kURL},  // URL
     {"/root/27540283740a0897ab7c8de0f809add2bacde78f/foo",
      "/root/(HASH:2754 1)/foo", PIIType::kStableIdentifier},  // Hash string.
     {"B3mcFTkQAHofv94DDTUuVJGGEI/BbzsyDncplMCR2P4=", "(UID: 1)",
@@ -242,6 +246,12 @@ const StringWithRedaction kStringsWithRedactions[] = {
     // Random data before and after a valid IBAN shouldn't match.
     {"base64DataGB82-WEST-1234-5698-7654-32+base64Data",
      "base64DataGB82-WEST-1234-5698-7654-32+base64Data", PIIType::kNone},
+    // Redacted Crash IDs.
+    {"Crash report receipt ID 153c963587d8d8d4",
+     "Crash report receipt ID (Crash ID: 1)", PIIType::kCrashId},
+    {"with prefixCrash report receipt ID 153C963587D8D8D4b with trailing text",
+     "with prefixCrash report receipt ID (Crash ID: 2) with trailing text",
+     PIIType::kCrashId},
 #if BUILDFLAG(IS_CHROMEOS_ASH)  // We only redact Android paths on Chrome OS.
     // Allowed android storage path.
     {"112K\t/home/root/deadbeef1234/android-data/data/system_de",
@@ -255,6 +265,12 @@ const StringWithRedaction kStringsWithRedactions[] = {
 };
 
 class RedactionToolTest : public testing::Test {
+ public:
+  RedactionToolTest()
+      : metrics_tester_(MetricsTester::Create()),
+        redactor_(kFakeFirstPartyExtensionIDs,
+                  metrics_tester_->SetupRecorder()) {}
+
  protected:
   std::string RedactMACAddresses(const std::string& input) {
     return redactor_.RedactMACAddresses(input, nullptr);
@@ -286,7 +302,21 @@ class RedactionToolTest : public testing::Test {
     return redactor_.RedactCustomPatternWithoutContext(input, pattern, nullptr);
   }
 
-  RedactionTool redactor_{kFakeFirstPartyExtensionIDs};
+  template <typename T>
+  void ExpectBucketCount(
+      const base::StringPiece histogram_name,
+      const T enum_value,
+      const size_t expected_count,
+      const base::Location location = base::Location::Current()) {
+    const size_t actual_count = metrics_tester_->GetBucketCount(
+        histogram_name, static_cast<int>(enum_value));
+
+    EXPECT_EQ(actual_count, expected_count)
+        << location.file_name() << ":" << location.line_number();
+  }
+
+  std::unique_ptr<MetricsTester> metrics_tester_;
+  RedactionTool redactor_;
 };
 
 TEST_F(RedactionToolTest, Redact) {
@@ -502,6 +532,14 @@ TEST_F(RedactionToolTest, RedactCustomPatterns) {
   EXPECT_EQ("gaia_id='(GAIA: 2)'", RedactCustomPatterns("gaia_id='987654321'"));
   EXPECT_EQ("{id: (GAIA: 1), email:",
             RedactCustomPatterns("{id: 1234567890, email:"));
+  EXPECT_EQ("\"accountId\": \"(GAIA: 3)\"",
+            RedactCustomPatterns("\"accountId\": \"01234\""));
+  EXPECT_EQ("\"label\": \"Account Id\",\n  \"status\": \"(GAIA: 3)\"",
+            RedactCustomPatterns(
+                "\"label\": \"Account Id\",\n  \"status\": \"01234\""));
+  EXPECT_EQ(
+      "\"label\": \"Gaia Id\",\n  \"status\": \"(GAIA: 3)\"",
+      RedactCustomPatterns("\"label\": \"Gaia Id\",\n  \"status\": \"01234\""));
 
   EXPECT_EQ("(email: 1)", RedactCustomPatterns("foo@bar.com"));
   EXPECT_EQ("Email: (email: 1).", RedactCustomPatterns("Email: foo@bar.com."));
@@ -628,21 +666,22 @@ TEST_F(RedactionToolTest, RedactChunk) {
   redactor_.EnableCreditCardRedaction(true);
   std::string redaction_input;
   std::string redaction_output;
-  constexpr char kHistogramName[] = "Feedback.RedactionTool.CreditCardMatch";
-  enum class CreditCardDetection {
-    kRegexMatch = 1,
-    kTimestamp = 2,
-    kRepeatedChars = 3,
-    kDoesntValidate = 4,
-    kValidated = 5,
-  };
   using enum CreditCardDetection;
-  const base::HistogramTester histogram_tester;
-  histogram_tester.ExpectBucketCount(kHistogramName, kRegexMatch, 0);
-  histogram_tester.ExpectBucketCount(kHistogramName, kTimestamp, 0);
-  histogram_tester.ExpectBucketCount(kHistogramName, kRepeatedChars, 0);
-  histogram_tester.ExpectBucketCount(kHistogramName, kDoesntValidate, 0);
-  histogram_tester.ExpectBucketCount(kHistogramName, kValidated, 0);
+  ExpectBucketCount(kCreditCardRedactionHistogram, kRegexMatch, 0);
+  ExpectBucketCount(kCreditCardRedactionHistogram, kTimestamp, 0);
+  ExpectBucketCount(kCreditCardRedactionHistogram, kRepeatedChars, 0);
+  ExpectBucketCount(kCreditCardRedactionHistogram, kDoesntValidate, 0);
+  ExpectBucketCount(kCreditCardRedactionHistogram, kValidated, 0);
+  EXPECT_EQ(metrics_tester_->GetNumBucketEntries(
+                RedactionToolMetricsRecorder::
+                    GetTimeSpentRedactingHistogramNameForTesting()),
+            0u);
+
+  for (int enum_int = static_cast<int>(PIIType::kNone) + 1;
+       enum_int <= static_cast<int>(PIIType::kMaxValue); ++enum_int) {
+    const PIIType enum_value = static_cast<PIIType>(enum_int);
+    ExpectBucketCount(kPIIRedactedHistogram, enum_value, 0);
+  }
 
   for (const auto& s : kStringsWithRedactions) {
     redaction_input.append(s.pre_redaction).append("\n");
@@ -650,11 +689,33 @@ TEST_F(RedactionToolTest, RedactChunk) {
   }
   EXPECT_EQ(redaction_output, redactor_.Redact(redaction_input));
 
-  histogram_tester.ExpectBucketCount(kHistogramName, kRegexMatch, 16);
-  histogram_tester.ExpectBucketCount(kHistogramName, kTimestamp, 2);
-  histogram_tester.ExpectBucketCount(kHistogramName, kRepeatedChars, 1);
-  histogram_tester.ExpectBucketCount(kHistogramName, kDoesntValidate, 8);
-  histogram_tester.ExpectBucketCount(kHistogramName, kValidated, 5);
+  for (int enum_int = static_cast<int>(PIIType::kNone) + 1;
+       enum_int <= static_cast<int>(PIIType::kMaxValue); ++enum_int) {
+    const PIIType enum_value = static_cast<PIIType>(enum_int);
+    const size_t expected_count = base::ranges::count_if(
+        kStringsWithRedactions,
+        [enum_value](const StringWithRedaction& string_with_redaction) {
+          return string_with_redaction.pii_type == enum_value;
+        });
+    ExpectBucketCount(kPIIRedactedHistogram, enum_value, expected_count);
+  }
+  // This isn't handled by the redaction tool but rather in the
+  // `UiHierarchyDataCollector`. It's part of the enum for historical reasons.
+  ExpectBucketCount(kPIIRedactedHistogram, PIIType::kUIHierarchyWindowTitles,
+                    0);
+  // This isn't handled by the redaction tool but rather in Shill. It's part of
+  // the enum for historical reasons.
+  ExpectBucketCount(kPIIRedactedHistogram, PIIType::kEAP, 0);
+
+  ExpectBucketCount(kCreditCardRedactionHistogram, kRegexMatch, 16);
+  ExpectBucketCount(kCreditCardRedactionHistogram, kTimestamp, 2);
+  ExpectBucketCount(kCreditCardRedactionHistogram, kRepeatedChars, 1);
+  ExpectBucketCount(kCreditCardRedactionHistogram, kDoesntValidate, 8);
+  ExpectBucketCount(kCreditCardRedactionHistogram, kValidated, 5);
+  EXPECT_EQ(metrics_tester_->GetNumBucketEntries(
+                RedactionToolMetricsRecorder::
+                    GetTimeSpentRedactingHistogramNameForTesting()),
+            1u);
 }
 
 TEST_F(RedactionToolTest, RedactAndKeepSelected) {
@@ -816,9 +877,10 @@ TEST_F(RedactionToolTest, DetectPII) {
          }},
         {PIIType::kCreditCard,
          {"4012888888881881", "5019717010103742", "5019717010103742787"}},
+        {PIIType::kIBAN, {"GB82WEST12345698765432", "GB33BUKB20201555555555"}},
     {
-      PIIType::kIBAN, {
-        "GB82WEST12345698765432", "GB33BUKB20201555555555"
+      PIIType::kCrashId, {
+        "153c963587d8d8d4", "153C963587D8D8D4b"
       }
     }
   };
@@ -877,7 +939,32 @@ TEST_F(RedactionToolTest, RedactAndroidAppStoragePaths) {
       "key=value exe=/data/app/pack.age1/b_ key=value\n";
   EXPECT_EQ(kDuOutputRedacted, RedactAndroidAppStoragePaths(kDuOutput));
 }
+
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+
+#if !BUILDFLAG(IS_IOS)
+// TODO(xiangdongkong): Make the test work on IOS builds. Current issue: the
+// test files do not exist.
+//
+// Redact the text in the input file "test_data/test_logs.txt".
+// The expected output is from "test_data/test_logs_redacted.txt".
+TEST_F(RedactionToolTest, RedactTextFileContent) {
+  base::FilePath base_path;
+  base::PathService::Get(base::DIR_SRC_TEST_DATA_ROOT, &base_path);
+  base_path = base_path.AppendASCII("components/feedback/redaction_tool")
+                  .AppendASCII("test_data");
+
+  std::string text_to_be_redacted;
+  std::string text_redacted;
+  ASSERT_TRUE(base::ReadFileToString(base_path.AppendASCII("test_logs.txt"),
+                                     &text_to_be_redacted));
+  ASSERT_TRUE(base::ReadFileToString(
+      base_path.AppendASCII("test_logs_redacted.txt"), &text_redacted));
+
+  EXPECT_EQ(text_redacted, redactor_.Redact(text_to_be_redacted));
+}
+
+#endif  // !BUILDFLAG(IS_IOS)
 
 TEST_F(RedactionToolTest, RedactBlockDevices) {
   // Test cases in the form {input, output}.

@@ -41,4 +41,4 @@ class SupervisedUserSettingsServiceFactory
       web::BrowserState* context) const override;
 };
 
-#endif  // IOS_CHROME_BROWSER_SUPERVISED_USER_SUPERVISED_USER_METRICS_SERVICE_FACTORY_H_
+#endif  // IOS_CHROME_BROWSER_SUPERVISED_USER_SUPERVISED_USER_SETTINGS_SERVICE_FACTORY_H_

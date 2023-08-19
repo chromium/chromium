@@ -7,8 +7,10 @@
 
 #include <CoreMedia/CoreMedia.h>
 
+#include <memory>
+
+#include "base/apple/scoped_cftyperef.h"
 #include "base/functional/callback.h"
-#include "base/mac/scoped_cftyperef.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted_delete_on_sequence.h"
 #include "base/memory/scoped_refptr.h"
@@ -25,6 +27,9 @@ struct SyncToken;
 
 namespace media {
 
+class MediaLog;
+struct VideoToolboxDecodeMetadata;
+
 // Converts IOSurface-backed CVImageBuffers to VideoFrames.
 class VideoToolboxFrameConverter
     : public gpu::CommandBufferStub::DestructionObserver,
@@ -32,7 +37,9 @@ class VideoToolboxFrameConverter
  public:
   using GetCommandBufferStubCB =
       base::RepeatingCallback<gpu::CommandBufferStub*()>;
-  using OutputCB = base::OnceCallback<void(scoped_refptr<VideoFrame>, void*)>;
+  using OutputCB =
+      base::OnceCallback<void(scoped_refptr<VideoFrame>,
+                              std::unique_ptr<VideoToolboxDecodeMetadata>)>;
 
   // `gpu_task_runner` is the task runner on which |this| operates, which must
   // match the task runner used by the stub returned from |get_stub_cb|
@@ -40,11 +47,11 @@ class VideoToolboxFrameConverter
   // any sequence, but Convert() must be called on `gpu_task_runner`.
   VideoToolboxFrameConverter(
       scoped_refptr<base::SequencedTaskRunner> gpu_task_runner,
+      std::unique_ptr<MediaLog> media_log,
       GetCommandBufferStubCB get_stub_cb);
 
   void Convert(base::ScopedCFTypeRef<CVImageBufferRef> image,
-               base::TimeDelta timestamp,
-               void* context,
+               std::unique_ptr<VideoToolboxDecodeMetadata> metadata,
                OutputCB output_cb);
 
  private:
@@ -65,9 +72,10 @@ class VideoToolboxFrameConverter
       const gpu::SyncToken& sync_token);
 
   scoped_refptr<base::SequencedTaskRunner> gpu_task_runner_;
+  std::unique_ptr<MediaLog> media_log_;
   GetCommandBufferStubCB get_stub_cb_;
-  bool initialized_ = false;
 
+  bool initialized_ = false;
   raw_ptr<gpu::CommandBufferStub> stub_ = nullptr;
   gpu::SequenceId wait_sequence_id_;
   raw_ptr<gpu::SharedImageStub> sis_ = nullptr;

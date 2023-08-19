@@ -13,6 +13,7 @@ import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.Callback;
+import org.chromium.base.ResettersForTesting;
 import org.chromium.base.SysUtils;
 import org.chromium.base.TraceEvent;
 import org.chromium.base.metrics.RecordHistogram;
@@ -130,9 +131,9 @@ public class AppIndexingUtil {
         getAppIndexingReporter().reportWebPageView(tab.getUrl().getSpec(), tab.getTitle());
     }
 
-    @VisibleForTesting
     static void setCallbackForTesting(Callback<WebPage> callback) {
         sCallbackForTesting = callback;
+        ResettersForTesting.register(() -> sCallbackForTesting = null);
     }
 
     private boolean wasPageVisitedRecently(String url) {

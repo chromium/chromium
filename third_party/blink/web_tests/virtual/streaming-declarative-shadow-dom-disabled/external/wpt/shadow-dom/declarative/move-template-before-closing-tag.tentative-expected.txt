@@ -1,6 +1,0 @@
-This is a testharness.js-based test.
-FAIL Moving the template node during parsing should attach to initial parent (content before observer) assert_true: Declarative shadow template should not be left over expected true got false
-FAIL Moving the template node during parsing should attach to initial parent (content after observer) assert_true: Declarative shadow template should not be left over expected true got false
-PASS Moving the template node from invalid parent to valid parent should still not attach
-Harness: the test ran to completion.
-

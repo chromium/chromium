@@ -4,8 +4,8 @@
 
 import 'chrome://webui-test/mojo_webui_test_support.js';
 
+import {stringToMojoString16} from 'chrome://resources/js/mojo_type_util.js';
 import {fakeSearchResults} from 'chrome://shortcut-customization/js/fake_data.js';
-import {stringToMojoString16} from 'chrome://shortcut-customization/js/mojo_utils.js';
 import {FakeShortcutSearchHandler} from 'chrome://shortcut-customization/js/search/fake_shortcut_search_handler.js';
 import {MojoSearchResult} from 'chrome://shortcut-customization/js/shortcut_types.js';
 

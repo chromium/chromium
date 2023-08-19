@@ -145,11 +145,20 @@ class ScopedCreateDCWithBitmap {
 
 base::win::RegKey OpenThemeRegKey(REGSAM access) {
   base::win::RegKey hkcu_themes_regkey;
-  hkcu_themes_regkey.Open(HKEY_CURRENT_USER,
-                          L"Software\\Microsoft\\Windows\\CurrentVersion\\"
-                          L"Themes\\Personalize",
-                          access);
+  // Validity is checked at time-of-use.
+  (void)hkcu_themes_regkey.Open(HKEY_CURRENT_USER,
+                                L"Software\\Microsoft\\Windows\\"
+                                L"CurrentVersion\\Themes\\Personalize",
+                                access);
   return hkcu_themes_regkey;
+}
+
+base::win::RegKey OpenColorFilteringRegKey(REGSAM access) {
+  base::win::RegKey hkcu_color_filtering_regkey;
+  // Validity is checked at time-of-use.
+  (void)hkcu_color_filtering_regkey.Open(
+      HKEY_CURRENT_USER, L"Software\\Microsoft\\ColorFiltering", access);
+  return hkcu_color_filtering_regkey;
 }
 
 }  // namespace
@@ -262,14 +271,16 @@ void NativeThemeWin::Paint(cc::PaintCanvas* canvas,
       PaintMenuGutter(canvas, color_provider, rect);
       return;
     case kMenuPopupSeparator:
-      PaintMenuSeparator(canvas, color_provider, extra.menu_separator);
+      PaintMenuSeparator(canvas, color_provider,
+                         absl::get<MenuSeparatorExtraParams>(extra));
       return;
     case kMenuPopupBackground:
       PaintMenuBackground(canvas, color_provider, rect);
       return;
     case kMenuItemBackground:
       CommonThemePaintMenuItemBackground(this, color_provider, canvas, state,
-                                         rect, extra.menu_item);
+                                         rect,
+                                         absl::get<MenuItemExtraParams>(extra));
       return;
     default:
       PaintIndirect(canvas, part, state, rect, extra);
@@ -294,8 +305,21 @@ NativeThemeWin::NativeThemeWin(bool configure_web_instance,
     hkcu_themes_regkey_ = OpenThemeRegKey(KEY_READ | KEY_NOTIFY);
     if (hkcu_themes_regkey_.Valid()) {
       UpdateDarkModeStatus();
+      UpdatePrefersReducedTransparency();
       RegisterThemeRegkeyObserver();
     }
+  } else if (base::SequencedTaskRunner::HasCurrentDefault()) {
+    hkcu_themes_regkey_ = OpenThemeRegKey(KEY_READ | KEY_NOTIFY);
+    if (hkcu_themes_regkey_.Valid()) {
+      UpdatePrefersReducedTransparency();
+      RegisterThemeRegkeyObserver();
+    }
+  }
+  hkcu_color_filtering_regkey_ =
+      OpenColorFilteringRegKey(KEY_READ | KEY_NOTIFY);
+  if (hkcu_color_filtering_regkey_.Valid()) {
+    UpdateInvertedColors();
+    RegisterColorFilteringRegkeyObserver();
   }
   if (!IsForcedHighContrast()) {
     set_forced_colors(IsUsingHighContrastThemeInternal());
@@ -328,6 +352,8 @@ void NativeThemeWin::ConfigureWebInstance() {
   web_instance->set_forced_colors(InForcedColorsMode());
   web_instance->set_preferred_color_scheme(GetPreferredColorScheme());
   web_instance->SetPreferredContrast(GetPreferredContrast());
+  web_instance->set_prefers_reduced_transparency(
+      GetPrefersReducedTransparency());
   web_instance->set_system_colors(GetSystemColors());
 }
 
@@ -426,7 +452,7 @@ void NativeThemeWin::PaintDirect(SkCanvas* destination_canvas,
     // matches what XP does in various menus; GetThemePartSize() doesn't seem to
     // return good values here.)
     constexpr int kChannelThickness = 4;
-    if (extra.trackbar.vertical) {
+    if (absl::get<TrackbarExtraParams>(extra).vertical) {
       rect_win.top += (rect_win.bottom - rect_win.top - kChannelThickness) / 2;
       rect_win.bottom = rect_win.top + kChannelThickness;
     } else {
@@ -444,7 +470,7 @@ void NativeThemeWin::PaintDirect(SkCanvas* destination_canvas,
       case kMenuPopupArrow:
         // The right-pointing arrow can use the common code, but the
         // left-pointing one needs custom code.
-        if (!extra.menu_arrow.pointing_right) {
+        if (!absl::get<MenuArrowExtraParams>(extra).pointing_right) {
           PaintLeftMenuArrowThemed(hdc, handle, part_id, state_id, rect);
           return;
         }
@@ -496,39 +522,46 @@ void NativeThemeWin::PaintDirect(SkCanvas* destination_canvas,
     case kCheckbox:
     case kPushButton:
     case kRadio:
-      PaintButtonClassic(hdc, part, state, &rect_win, extra.button);
+      PaintButtonClassic(hdc, part, state, &rect_win,
+                         absl::get<ButtonExtraParams>(extra));
       return;
     case kInnerSpinButton:
-      DrawFrameControl(hdc, &rect_win, DFC_SCROLL,
-                       extra.inner_spin.classic_state);
+      DrawFrameControl(
+          hdc, &rect_win, DFC_SCROLL,
+          absl::get<InnerSpinButtonExtraParams>(extra).classic_state);
       return;
-    case kMenuCheck:
-      PaintFrameControl(
-          hdc, rect, DFC_MENU,
-          extra.menu_check.is_radio ? DFCS_MENUBULLET : DFCS_MENUCHECK,
-          extra.menu_check.is_selected, state);
+    case kMenuCheck: {
+      const auto& menu_check = absl::get<MenuCheckExtraParams>(extra);
+      PaintFrameControl(hdc, rect, DFC_MENU,
+                        menu_check.is_radio ? DFCS_MENUBULLET : DFCS_MENUCHECK,
+                        menu_check.is_selected, state);
       return;
+    }
     case kMenuList:
       DrawFrameControl(hdc, &rect_win, DFC_SCROLL,
-                       DFCS_SCROLLCOMBOBOX | extra.menu_list.classic_state);
+                       DFCS_SCROLLCOMBOBOX |
+                           absl::get<MenuListExtraParams>(extra).classic_state);
       return;
-    case kMenuPopupArrow:
+    case kMenuPopupArrow: {
+      const auto& menu_arrow = absl::get<MenuArrowExtraParams>(extra);
       // For some reason, Windows uses the name DFCS_MENUARROWRIGHT to indicate
       // a left pointing arrow.
-      PaintFrameControl(hdc, rect, DFC_MENU,
-                        extra.menu_arrow.pointing_right ? DFCS_MENUARROW
-                                                        : DFCS_MENUARROWRIGHT,
-                        extra.menu_arrow.is_selected, state);
+      PaintFrameControl(
+          hdc, rect, DFC_MENU,
+          menu_arrow.pointing_right ? DFCS_MENUARROW : DFCS_MENUARROWRIGHT,
+          menu_arrow.is_selected, state);
       return;
+    }
     case kProgressBar: {
-      RECT value_rect = gfx::Rect(extra.progress_bar.value_rect_x,
-                                  extra.progress_bar.value_rect_y,
-                                  extra.progress_bar.value_rect_width,
-                                  extra.progress_bar.value_rect_height)
-                            .ToRECT();
+      const auto& progress_bar = absl::get<ProgressBarExtraParams>(extra);
+      RECT value_rect =
+          gfx::Rect(progress_bar.value_rect_x, progress_bar.value_rect_y,
+                    progress_bar.value_rect_width,
+                    progress_bar.value_rect_height)
+              .ToRECT();
       if (handle) {
         PaintProgressBarOverlayThemed(hdc, handle, &rect_win, &value_rect,
-                                      extra.progress_bar);
+                                      progress_bar);
       } else {
         FillRect(hdc, &rect_win, GetSysColorBrush(COLOR_BTNFACE));
         FillRect(hdc, &value_rect, GetSysColorBrush(COLOR_BTNSHADOW));
@@ -549,7 +582,7 @@ void NativeThemeWin::PaintDirect(SkCanvas* destination_canvas,
     case kScrollbarHorizontalTrack:
     case kScrollbarVerticalTrack:
       PaintScrollbarTrackClassic(destination_canvas, hdc, &rect_win,
-                                 extra.scrollbar_track);
+                                 absl::get<ScrollbarTrackExtraParams>(extra));
       return;
     case kTabPanelBackground:
       // Classic just renders a flat color background.
@@ -559,24 +592,27 @@ void NativeThemeWin::PaintDirect(SkCanvas* destination_canvas,
       // TODO(mpcomplete): can we detect if the color is specified by the user,
       // and if not, just use the system color?
       // CreateSolidBrush() accepts a RGB value but alpha must be 0.
+      const auto& text_field = absl::get<TextFieldExtraParams>(extra);
       base::win::ScopedGDIObject<HBRUSH> bg_brush(CreateSolidBrush(
-          skia::SkColorToCOLORREF(extra.text_field.background_color)));
+          skia::SkColorToCOLORREF(text_field.background_color)));
       if (handle) {
         PaintTextFieldThemed(hdc, handle, bg_brush.get(), part_id, state_id,
-                             &rect_win, extra.text_field);
+                             &rect_win, text_field);
       } else {
-        PaintTextFieldClassic(hdc, bg_brush.get(), &rect_win, extra.text_field);
+        PaintTextFieldClassic(hdc, bg_brush.get(), &rect_win, text_field);
       }
       return;
     }
-    case kTrackbarThumb:
-      if (extra.trackbar.vertical) {
+    case kTrackbarThumb: {
+      const auto& trackbar = absl::get<TrackbarExtraParams>(extra);
+      if (trackbar.vertical) {
         DrawEdge(hdc, &rect_win, EDGE_RAISED, BF_RECT | BF_SOFT | BF_MIDDLE);
       } else {
         PaintHorizontalTrackbarThumbClassic(destination_canvas, hdc, rect_win,
-                                            extra.trackbar);
+                                            trackbar);
       }
       return;
+    }
     case kTrackbarTrack:
       DrawEdge(hdc, &rect_win, EDGE_SUNKEN, BF_RECT);
       return;
@@ -743,17 +779,22 @@ void NativeThemeWin::PaintIndirect(cc::PaintCanvas* destination_canvas,
 
   // Offset destination rects to have origin (0,0).
   gfx::Rect adjusted_rect(rect.size());
-  ExtraParams adjusted_extra(extra);
+  ExtraParams adjusted_extra = extra;
   switch (part) {
-    case kProgressBar:
-      adjusted_extra.progress_bar.value_rect_x = 0;
-      adjusted_extra.progress_bar.value_rect_y = 0;
+    case kProgressBar: {
+      auto progress_bar = absl::get<ProgressBarExtraParams>(adjusted_extra);
+      progress_bar.value_rect_x = 0;
+      progress_bar.value_rect_y = 0;
       break;
+    }
     case kScrollbarHorizontalTrack:
-    case kScrollbarVerticalTrack:
-      adjusted_extra.scrollbar_track.track_x = 0;
-      adjusted_extra.scrollbar_track.track_y = 0;
+    case kScrollbarVerticalTrack: {
+      auto scrollbar_track =
+          absl::get<ScrollbarTrackExtraParams>(adjusted_extra);
+      scrollbar_track.track_x = 0;
+      scrollbar_track.track_y = 0;
       break;
+    }
     default:
       break;
   }
@@ -1189,24 +1230,29 @@ int NativeThemeWin::GetWindowsPart(Part part,
     case kScrollbarVerticalThumb:
       return SBP_THUMBBTNVERT;
     case kScrollbarHorizontalTrack:
-      return extra.scrollbar_track.is_upper ? SBP_UPPERTRACKHORZ
-                                            : SBP_LOWERTRACKHORZ;
+      return absl::get<ScrollbarTrackExtraParams>(extra).is_upper
+                 ? SBP_UPPERTRACKHORZ
+                 : SBP_LOWERTRACKHORZ;
     case kScrollbarVerticalTrack:
-      return extra.scrollbar_track.is_upper ? SBP_UPPERTRACKVERT
-                                            : SBP_LOWERTRACKVERT;
+      return absl::get<ScrollbarTrackExtraParams>(extra).is_upper
+                 ? SBP_UPPERTRACKVERT
+                 : SBP_LOWERTRACKVERT;
     case kWindowResizeGripper:
       // Use the status bar gripper.  There doesn't seem to be a standard
       // gripper in Windows for the space between scrollbars.  This is pretty
       // close, but it's supposed to be painted over a status bar.
       return SP_GRIPPER;
     case kInnerSpinButton:
-      return extra.inner_spin.spin_up ? SPNP_UP : SPNP_DOWN;
+      return absl::get<InnerSpinButtonExtraParams>(extra).spin_up ? SPNP_UP
+                                                                  : SPNP_DOWN;
     case kTabPanelBackground:
       return TABP_BODY;
     case kTrackbarThumb:
-      return extra.trackbar.vertical ? TKP_THUMBVERT : TKP_THUMBBOTTOM;
+      return absl::get<TrackbarExtraParams>(extra).vertical ? TKP_THUMBVERT
+                                                            : TKP_THUMBBOTTOM;
     case kTrackbarTrack:
-      return extra.trackbar.vertical ? TKP_TRACKVERT : TKP_TRACK;
+      return absl::get<TrackbarExtraParams>(extra).vertical ? TKP_TRACKVERT
+                                                            : TKP_TRACK;
     case kMenuPopupBackground:
     case kMenuItemBackground:
     case kScrollbarCorner:
@@ -1227,8 +1273,9 @@ int NativeThemeWin::GetWindowsState(Part part,
         case kDisabled:
           return ABS_DOWNDISABLED;
         case kHovered:
-          return extra.scrollbar_arrow.is_hovering ? ABS_DOWNHOVER
-                                                   : ABS_DOWNHOT;
+          return absl::get<ScrollbarArrowExtraParams>(extra).is_hovering
+                     ? ABS_DOWNHOVER
+                     : ABS_DOWNHOT;
         case kNormal:
           return ABS_DOWNNORMAL;
         case kPressed:
@@ -1242,8 +1289,9 @@ int NativeThemeWin::GetWindowsState(Part part,
         case kDisabled:
           return ABS_LEFTDISABLED;
         case kHovered:
-          return extra.scrollbar_arrow.is_hovering ? ABS_LEFTHOVER
-                                                   : ABS_LEFTHOT;
+          return absl::get<ScrollbarArrowExtraParams>(extra).is_hovering
+                     ? ABS_LEFTHOVER
+                     : ABS_LEFTHOT;
         case kNormal:
           return ABS_LEFTNORMAL;
         case kPressed:
@@ -1257,8 +1305,9 @@ int NativeThemeWin::GetWindowsState(Part part,
         case kDisabled:
           return ABS_RIGHTDISABLED;
         case kHovered:
-          return extra.scrollbar_arrow.is_hovering ? ABS_RIGHTHOVER
-                                                   : ABS_RIGHTHOT;
+          return absl::get<ScrollbarArrowExtraParams>(extra).is_hovering
+                     ? ABS_RIGHTHOVER
+                     : ABS_RIGHTHOT;
         case kNormal:
           return ABS_RIGHTNORMAL;
         case kPressed:
@@ -1272,7 +1321,9 @@ int NativeThemeWin::GetWindowsState(Part part,
         case kDisabled:
           return ABS_UPDISABLED;
         case kHovered:
-          return extra.scrollbar_arrow.is_hovering ? ABS_UPHOVER : ABS_UPHOT;
+          return absl::get<ScrollbarArrowExtraParams>(extra).is_hovering
+                     ? ABS_UPHOVER
+                     : ABS_UPHOT;
         case kNormal:
           return ABS_UPNORMAL;
         case kPressed:
@@ -1282,7 +1333,7 @@ int NativeThemeWin::GetWindowsState(Part part,
           return 0;
       }
     case kCheckbox: {
-      const ButtonExtraParams& button = extra.button;
+      const auto& button = absl::get<ButtonExtraParams>(extra);
       switch (state) {
         case kDisabled:
           return button.checked
@@ -1326,10 +1377,13 @@ int NativeThemeWin::GetWindowsState(Part part,
           return ETS_DISABLED;
         case kHovered:
           return ETS_HOT;
-        case kNormal:
-          if (extra.text_field.is_read_only)
+        case kNormal: {
+          const auto& text_filed = absl::get<TextFieldExtraParams>(extra);
+          if (text_filed.is_read_only) {
             return ETS_READONLY;
-          return extra.text_field.is_focused ? ETS_FOCUSED : ETS_NORMAL;
+          }
+          return text_filed.is_focused ? ETS_FOCUSED : ETS_NORMAL;
+        }
         case kPressed:
           return ETS_SELECTED;
         case kNumStates:
@@ -1338,12 +1392,13 @@ int NativeThemeWin::GetWindowsState(Part part,
       }
     case kMenuPopupArrow:
       return (state == kDisabled) ? MSM_DISABLED : MSM_NORMAL;
-    case kMenuCheck:
+    case kMenuCheck: {
+      const auto& menu_check = absl::get<MenuCheckExtraParams>(extra);
       if (state == kDisabled) {
-        return extra.menu_check.is_radio ? MC_BULLETDISABLED
-                                         : MC_CHECKMARKDISABLED;
+        return menu_check.is_radio ? MC_BULLETDISABLED : MC_CHECKMARKDISABLED;
       }
-      return extra.menu_check.is_radio ? MC_BULLETNORMAL : MC_CHECKMARKNORMAL;
+      return menu_check.is_radio ? MC_BULLETNORMAL : MC_CHECKMARKNORMAL;
+    }
     case kMenuCheckBackground:
       return (state == kDisabled) ? MCB_DISABLED : MCB_NORMAL;
     case kPushButton:
@@ -1353,7 +1408,8 @@ int NativeThemeWin::GetWindowsState(Part part,
         case kHovered:
           return PBS_HOT;
         case kNormal:
-          return extra.button.is_default ? PBS_DEFAULTED : PBS_NORMAL;
+          return absl::get<ButtonExtraParams>(extra).is_default ? PBS_DEFAULTED
+                                                                : PBS_NORMAL;
         case kPressed:
           return PBS_PRESSED;
         case kNumStates:
@@ -1361,7 +1417,7 @@ int NativeThemeWin::GetWindowsState(Part part,
           return 0;
       }
     case kRadio: {
-      const ButtonExtraParams& button = extra.button;
+      const auto& button = absl::get<ButtonExtraParams>(extra);
       switch (state) {
         case kDisabled:
           return button.checked ? RBS_CHECKEDDISABLED : RBS_UNCHECKEDDISABLED;
@@ -1380,8 +1436,10 @@ int NativeThemeWin::GetWindowsState(Part part,
     case kScrollbarVerticalGripper:
     case kScrollbarHorizontalThumb:
     case kScrollbarVerticalThumb:
-      if ((state == kHovered) && !extra.scrollbar_thumb.is_hovering)
+      if ((state == kHovered) &&
+          !absl::get<ScrollbarThumbExtraParams>(extra).is_hovering) {
         return SCRBS_HOT;
+      }
       [[fallthrough]];
     case kScrollbarHorizontalTrack:
     case kScrollbarVerticalTrack:
@@ -1413,24 +1471,26 @@ int NativeThemeWin::GetWindowsState(Part part,
           NOTREACHED();
           return 0;
       }
-    case kInnerSpinButton:
+    case kInnerSpinButton: {
+      const auto& inner_spin = absl::get<InnerSpinButtonExtraParams>(extra);
       switch (state) {
         case kDisabled:
-          return extra.inner_spin.spin_up ? static_cast<int>(UPS_DISABLED)
-                                          : static_cast<int>(DNS_DISABLED);
+          return inner_spin.spin_up ? static_cast<int>(UPS_DISABLED)
+                                    : static_cast<int>(DNS_DISABLED);
         case kHovered:
-          return extra.inner_spin.spin_up ? static_cast<int>(UPS_HOT)
-                                          : static_cast<int>(DNS_HOT);
+          return inner_spin.spin_up ? static_cast<int>(UPS_HOT)
+                                    : static_cast<int>(DNS_HOT);
         case kNormal:
-          return extra.inner_spin.spin_up ? static_cast<int>(UPS_NORMAL)
-                                          : static_cast<int>(DNS_NORMAL);
+          return inner_spin.spin_up ? static_cast<int>(UPS_NORMAL)
+                                    : static_cast<int>(DNS_NORMAL);
         case kPressed:
-          return extra.inner_spin.spin_up ? static_cast<int>(UPS_PRESSED)
-                                          : static_cast<int>(DNS_PRESSED);
+          return inner_spin.spin_up ? static_cast<int>(UPS_PRESSED)
+                                    : static_cast<int>(DNS_PRESSED);
         case kNumStates:
           NOTREACHED();
           return 0;
       }
+    }
     case kMenuPopupGutter:
     case kMenuPopupSeparator:
     case kProgressBar:
@@ -1571,9 +1631,22 @@ void NativeThemeWin::RegisterThemeRegkeyObserver() {
   hkcu_themes_regkey_.StartWatching(base::BindOnce(
       [](NativeThemeWin* native_theme) {
         native_theme->UpdateDarkModeStatus();
+        native_theme->UpdatePrefersReducedTransparency();
         // RegKey::StartWatching only provides one notification. Reregistration
         // is required to get future notifications.
         native_theme->RegisterThemeRegkeyObserver();
+      },
+      base::Unretained(this)));
+}
+
+void NativeThemeWin::RegisterColorFilteringRegkeyObserver() {
+  DCHECK(hkcu_color_filtering_regkey_.Valid());
+  hkcu_color_filtering_regkey_.StartWatching(base::BindOnce(
+      [](NativeThemeWin* native_theme) {
+        native_theme->UpdateInvertedColors();
+        // RegKey::StartWatching only provides one notification. Reregistration
+        // is required to get future notifications.
+        native_theme->RegisterColorFilteringRegkeyObserver();
       },
       base::Unretained(this)));
 }
@@ -1588,6 +1661,41 @@ void NativeThemeWin::UpdateDarkModeStatus() {
   }
   set_use_dark_colors(dark_mode_enabled);
   set_preferred_color_scheme(CalculatePreferredColorScheme());
+  CloseHandlesInternal();
+  NotifyOnNativeThemeUpdated();
+}
+
+void NativeThemeWin::UpdatePrefersReducedTransparency() {
+  bool prefers_reduced_transparency = false;
+  if (hkcu_themes_regkey_.Valid()) {
+    DWORD enable_transparency = 1;
+    hkcu_themes_regkey_.ReadValueDW(L"EnableTransparency",
+                                    &enable_transparency);
+    prefers_reduced_transparency = (enable_transparency == 0);
+  }
+  set_prefers_reduced_transparency(prefers_reduced_transparency);
+  CloseHandlesInternal();
+  NotifyOnNativeThemeUpdated();
+}
+
+void NativeThemeWin::UpdateInvertedColors() {
+  bool inverted_colors = false;
+  if (hkcu_color_filtering_regkey_.Valid()) {
+    DWORD active = 0;
+    hkcu_color_filtering_regkey_.ReadValueDW(L"Active", &active);
+    if (active == 1) {
+    // 0 = Greyscale
+    // 1 = Invert
+    // 2 = Greyscale Inverted
+    // 3 = Deuteranopia
+    // 4 = Protanopia
+    // 5 = Tritanopia
+    DWORD filter_type = 0;
+    hkcu_color_filtering_regkey_.ReadValueDW(L"FilterType", &filter_type);
+    inverted_colors = (filter_type == 1);
+    }
+  }
+  set_inverted_colors(inverted_colors);
   CloseHandlesInternal();
   NotifyOnNativeThemeUpdated();
 }

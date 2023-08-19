@@ -1,0 +1,14 @@
+Test that the Storage.setAttributionReportingLocalTestingMode command is handled.
+{
+    id : <number>
+    result : {
+    }
+    sessionId : <string>
+}
+{
+    id : <number>
+    result : {
+    }
+    sessionId : <string>
+}
+

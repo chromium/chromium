@@ -7,18 +7,18 @@
 
 #include "gpu/command_buffer/service/shared_context_state.h"
 #include "gpu/command_buffer/service/shared_image/gl_common_image_backing_factory.h"
-#include "gpu/command_buffer/service/shared_image/gl_texture_common_representations.h"
 #include "gpu/command_buffer/service/shared_image/shared_image_backing.h"
 #include "gpu/command_buffer/service/shared_image/texture_holder_vk.h"
 #include "ui/gl/scoped_egl_image.h"
+
+class GrPromiseImageTexture;
 
 namespace gpu {
 namespace gles2 {
 class TexturePassthrough;
 }
 
-class AngleVulkanImageBacking : public ClearTrackingSharedImageBacking,
-                                public GLTextureImageRepresentationClient {
+class AngleVulkanImageBacking : public ClearTrackingSharedImageBacking {
  public:
   AngleVulkanImageBacking(SharedContextState* context_state,
                           const Mailbox& mailbox,
@@ -46,12 +46,9 @@ class AngleVulkanImageBacking : public ClearTrackingSharedImageBacking,
       MemoryTypeTracker* tracker,
       scoped_refptr<SharedContextState> context_state) override;
 
-  // GLTextureImageRepresentationClient implementation.
-  bool GLTextureImageRepresentationBeginAccess(bool readonly) override;
-  void GLTextureImageRepresentationEndAccess(bool readonly) override;
-
  private:
   class SkiaAngleVulkanImageRepresentation;
+  class GLTexturePassthroughAngleVulkanImageRepresentation;
 
   struct TextureHolderGL {
     TextureHolderGL();
@@ -66,11 +63,13 @@ class AngleVulkanImageBacking : public ClearTrackingSharedImageBacking,
   // The maximum number of GL or Vulkan textures this backing can hold.
   static constexpr size_t kMaxTextures = 3;
 
-  std::vector<sk_sp<SkPromiseImageTexture>> GetPromiseTextures();
+  std::vector<sk_sp<GrPromiseImageTexture>> GetPromiseTextures();
   void AcquireTextureANGLE();
   void ReleaseTextureANGLE();
   void PrepareBackendTexture();
   void SyncImageLayoutFromBackendTexture();
+  bool BeginAccessGLTexturePassthrough(GLenum mode);
+  void EndAccessGLTexturePassthrough(GLenum mode);
   bool BeginAccessSkia(bool readonly);
   void EndAccessSkia();
   bool InitializePassthroughTexture();

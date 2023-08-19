@@ -66,22 +66,34 @@ class RebaselineCLTest(BaseTestCase, LoggingTestCase):
                 'port_name': 'test-win-win7',
                 'specifiers': ['Win7', 'Release'],
                 'is_try_builder': True,
+                'steps': {
+                    'blink_web_tests (with patch)': {},
+                },
             },
             'MOCK Try Linux': {
                 'port_name': 'test-linux-trusty',
                 'specifiers': ['Trusty', 'Release'],
                 'is_try_builder': True,
+                'steps': {
+                    'blink_web_tests (with patch)': {},
+                },
             },
             'MOCK Try Mac': {
                 'port_name': 'test-mac-mac10.11',
                 'specifiers': ['Mac10.11', 'Release'],
                 'is_try_builder': True,
+                'steps': {
+                    'blink_web_tests (with patch)': {},
+                },
             },
             'MOCK Try Linux (CQ duplicate)': {
                 'port_name': 'test-linux-trusty',
                 'specifiers': ['Trusty', 'Release'],
                 'is_try_builder': True,
                 'is_cq_builder': True,
+                'steps': {
+                    'blink_web_tests (with patch)': {},
+                },
             },
         })
 
@@ -281,7 +293,7 @@ class RebaselineCLTest(BaseTestCase, LoggingTestCase):
             # one/slow-fail.html
             #
 
-            one/does-not-exist.html
+            one/not-a-test.html
             one/text-fail.html
                 two/   '''))
         exit_code = self.command.execute(
@@ -291,6 +303,8 @@ class RebaselineCLTest(BaseTestCase, LoggingTestCase):
             'INFO: All builds finished.\n',
             'INFO: Reading list of tests to rebaseline from %s\n' %
             test_name_file,
+            "WARNING: 'one/not-a-test.html' does not represent any tests "
+            'and may be misspelled.\n',
             'INFO: Rebaselining one/flaky-fail.html\n',
             'INFO: Rebaselining one/missing.html\n',
             'INFO: Rebaselining one/text-fail.html\n',
@@ -659,10 +673,8 @@ class RebaselineCLTest(BaseTestCase, LoggingTestCase):
             'TestExpectations instead of being rebaselined.\n',
             'WARNING: Consider adding the following lines to '
             '/mock-checkout/third_party/blink/web_tests/TestExpectations:\n'
-            '[ Trusty ] two/image-fail.html [ Failure ]  # Reftest failure\n',
+            '[ Trusty ] two/image-fail.html [ Failure ]  # Reftest image failure\n',
         ])
-        self._mock_copier.find_baselines_to_copy.assert_not_called()
-        self.tool.main.assert_not_called()
         self.assertFalse(
             self.tool.filesystem.exists(
                 self._expand('platform/test-linux-trusty/'

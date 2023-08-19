@@ -20,15 +20,12 @@ namespace {
 class DXGISharedHandleManagerTest : public testing::Test {
  protected:
   void SetUp() override {
-    // TODO(sunnyps): Unify this with the check in D3DImageBackingFactory.
     d3d11_device_ = gl::QueryD3D11DeviceObjectFromANGLE();
-    if (d3d11_device_) {
-      dxgi_shared_handle_manager_ =
-          base::MakeRefCounted<DXGISharedHandleManager>(d3d11_device_);
-    }
+    dxgi_shared_handle_manager_ =
+        base::MakeRefCounted<DXGISharedHandleManager>();
   }
 
-  bool ShouldSkipTest() const { return !dxgi_shared_handle_manager_; }
+  bool ShouldSkipTest() const { return !d3d11_device_; }
 
   Microsoft::WRL::ComPtr<ID3D11Texture2D> CreateTexture() {
     D3D11_TEXTURE2D_DESC desc;
@@ -85,7 +82,7 @@ TEST_F(DXGISharedHandleManagerTest, LookupByToken) {
 
   scoped_refptr<DXGISharedHandleState> orig_state =
       dxgi_shared_handle_manager_->GetOrCreateSharedHandleState(
-          orig_token, std::move(orig_handle));
+          orig_token, std::move(orig_handle), d3d11_device_);
   ASSERT_NE(orig_state, nullptr);
 
   EXPECT_EQ(dxgi_shared_handle_manager_->GetSharedHandleMapSizeForTesting(),
@@ -102,7 +99,7 @@ TEST_F(DXGISharedHandleManagerTest, LookupByToken) {
 
     scoped_refptr<DXGISharedHandleState> state =
         dxgi_shared_handle_manager_->GetOrCreateSharedHandleState(
-            orig_token, std::move(new_handle));
+            orig_token, std::move(new_handle), d3d11_device_);
     EXPECT_EQ(state, orig_state);
 
     EXPECT_EQ(dxgi_shared_handle_manager_->GetSharedHandleMapSizeForTesting(),
@@ -130,7 +127,7 @@ TEST_F(DXGISharedHandleManagerTest, LookupByTokenMultiThread) {
 
   scoped_refptr<DXGISharedHandleState> orig_state =
       dxgi_shared_handle_manager_->GetOrCreateSharedHandleState(
-          orig_token, std::move(orig_handle));
+          orig_token, std::move(orig_handle), d3d11_device_);
   ASSERT_NE(orig_state, nullptr);
 
   EXPECT_EQ(dxgi_shared_handle_manager_->GetSharedHandleMapSizeForTesting(),
@@ -156,7 +153,7 @@ TEST_F(DXGISharedHandleManagerTest, LookupByTokenMultiThread) {
 
           scoped_refptr<DXGISharedHandleState> state =
               dxgi_shared_handle_manager_->GetOrCreateSharedHandleState(
-                  orig_token, std::move(new_handle));
+                  orig_token, std::move(new_handle), d3d11_device_);
           EXPECT_EQ(state, orig_state);
 
           EXPECT_EQ(

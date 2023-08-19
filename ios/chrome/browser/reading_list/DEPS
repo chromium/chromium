@@ -1,7 +1,23 @@
+include_rules = [
+  "+ios/chrome/browser/favicon",
+  "+ios/chrome/browser/signin",
+  "+ios/chrome/browser/sync",
+  "+ios/chrome/browser/history",
+  "+ios/chrome/browser/dom_distiller",
+]
+
 specific_include_rules = {
   # TODO(crbug.com/1294160): Remove this dependency.
   "^reading_list_distiller_page.mm": [
-    "+ios/chrome/browser/ui/util/uikit_ui_util.h",
+    "+ios/chrome/browser/shared/ui/util/uikit_ui_util.h",
   ],
+  "^reading_list_browser_agent.h": [
+    "+ios/chrome/browser/shared/ui/util/url_with_title.h",
+  ],
+  "^reading_list_browser_agent.mm": [
+    "+ios/chrome/browser/shared/ui/util/uikit_ui_util.h",
+    "+ios/chrome/browser/ui/ntp/metrics/home_metrics.h",
+  ],
+
 }
 

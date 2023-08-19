@@ -121,11 +121,12 @@ TEST_F(VisibleSelectionTest, expandUsingGranularity) {
   SetBodyContent(body_content);
   ShadowRoot* shadow_root = SetShadowContent(shadow_content, "host");
 
-  Node* one = GetDocument().getElementById("one")->firstChild();
-  Node* two = GetDocument().getElementById("two")->firstChild();
-  Node* three = shadow_root->getElementById("three")->firstChild();
-  Node* four = shadow_root->getElementById("four")->firstChild();
-  Node* five = shadow_root->getElementById("five")->firstChild();
+  Node* one = GetDocument().getElementById(AtomicString("one"))->firstChild();
+  Node* two = GetDocument().getElementById(AtomicString("two"))->firstChild();
+  Node* three =
+      shadow_root->getElementById(AtomicString("three"))->firstChild();
+  Node* four = shadow_root->getElementById(AtomicString("four"))->firstChild();
+  Node* five = shadow_root->getElementById(AtomicString("five"))->firstChild();
 
   VisibleSelection selection;
   VisibleSelectionInFlatTree selection_in_flat_tree;
@@ -284,7 +285,7 @@ TEST_F(VisibleSelectionTest, FirstLetter) {
   SetBodyContent(
       "<style>p::first-letter { font-color: red; }</style>"
       "<p>abc def</p>");
-  const Element* sample = GetDocument().QuerySelector("p");
+  const Element* sample = GetDocument().QuerySelector(AtomicString("p"));
   const SelectionInDOMTree selection =
       SelectionInDOMTree::Builder()
           .Collapse(Position(sample->firstChild(), 0))
@@ -299,7 +300,7 @@ TEST_F(VisibleSelectionTest, FirstLetterCollapsedWhitespace) {
   SetBodyContent(
       "<style>p::first-letter { font-color: red; }</style>"
       "<p>  abc def</p>");
-  const Element* sample = GetDocument().QuerySelector("p");
+  const Element* sample = GetDocument().QuerySelector(AtomicString("p"));
   const SelectionInDOMTree selection =
       SelectionInDOMTree::Builder()
           .Collapse(Position(sample->firstChild(), 0))
@@ -319,7 +320,7 @@ TEST_F(VisibleSelectionTest, FirstLetterPartial) {
   SetBodyContent(
       "<style>p::first-letter { font-color: red; }</style>"
       "<p>((a))bc def</p>");
-  const Element* sample = GetDocument().QuerySelector("p");
+  const Element* sample = GetDocument().QuerySelector(AtomicString("p"));
   const SelectionInDOMTree selection =
       SelectionInDOMTree::Builder()
           .Collapse(Position(sample->firstChild(), 1))
@@ -335,7 +336,7 @@ TEST_F(VisibleSelectionTest, FirstLetterTextTransform) {
   SetBodyContent(
       "<style>p::first-letter { text-transform: uppercase; }</style>"
       "<p>\u00DFbc def</p>");  // uppercase(U+00DF) = "SS"
-  const Element* sample = GetDocument().QuerySelector("p");
+  const Element* sample = GetDocument().QuerySelector(AtomicString("p"));
   const SelectionInDOMTree selection =
       SelectionInDOMTree::Builder()
           .Collapse(Position(sample->firstChild(), 0))
@@ -350,7 +351,7 @@ TEST_F(VisibleSelectionTest, FirstLetterVisibilityHidden) {
   SetBodyContent(
       "<style>p::first-letter { visibility: hidden; }</style>"
       "<p>abc def</p>");
-  const Element* sample = GetDocument().QuerySelector("p");
+  const Element* sample = GetDocument().QuerySelector(AtomicString("p"));
   const SelectionInDOMTree selection =
       SelectionInDOMTree::Builder()
           .Collapse(Position(sample->firstChild(), 0))
@@ -370,7 +371,7 @@ TEST_F(VisibleSelectionTest, FirstLetterVisibilityHidden) {
 TEST_F(VisibleSelectionTest, SelectAllWithInputElement) {
   SetBodyContent("<input>123");
   Element* const html_element = GetDocument().documentElement();
-  Element* const input = GetDocument().QuerySelector("input");
+  Element* const input = GetDocument().QuerySelector(AtomicString("input"));
   Node* const last_child = GetDocument().body()->lastChild();
 
   const VisibleSelection& visible_selection_in_dom_tree =
@@ -445,9 +446,9 @@ TEST_F(VisibleSelectionTest, ShadowCrossing) {
   ShadowRoot* shadow_root = SetShadowContent(shadow_content, "host");
 
   Element* body = GetDocument().body();
-  Element* host = body->QuerySelector("#host");
-  Element* one = body->QuerySelector("#one");
-  Element* six = shadow_root->QuerySelector("#s6");
+  Element* host = body->QuerySelector(AtomicString("#host"));
+  Element* one = body->QuerySelector(AtomicString("#one"));
+  Element* six = shadow_root->QuerySelector(AtomicString("#s6"));
 
   VisibleSelection selection = CreateVisibleSelection(
       SelectionInDOMTree::Builder()
@@ -493,9 +494,9 @@ TEST_F(VisibleSelectionTest, ShadowNested) {
   //    <span id="s6">66</span>
   //  </p>
   Element* body = GetDocument().body();
-  Element* host = body->QuerySelector("#host");
-  Element* one = body->QuerySelector("#one");
-  Element* eight = shadow_root2->QuerySelector("#s8");
+  Element* host = body->QuerySelector(AtomicString("#host"));
+  Element* one = body->QuerySelector(AtomicString("#one"));
+  Element* eight = shadow_root2->QuerySelector(AtomicString("#s8"));
 
   VisibleSelection selection = CreateVisibleSelection(
       SelectionInDOMTree::Builder()
@@ -656,7 +657,7 @@ TEST_F(VisibleSelectionTest, WordGranularityAfterTextControl) {
 TEST_F(VisibleSelectionTest, updateIfNeededWithShadowHost) {
   SetBodyContent("<div id=host></div><div id=sample>foo</div>");
   SetShadowContent("<slot>", "host");
-  Element* sample = GetDocument().getElementById("sample");
+  Element* sample = GetDocument().getElementById(AtomicString("sample"));
 
   // Simulates saving selection in undo stack.
   VisibleSelection selection =
@@ -666,7 +667,7 @@ TEST_F(VisibleSelectionTest, updateIfNeededWithShadowHost) {
   EXPECT_EQ(Position(sample->firstChild(), 0), selection.Start());
 
   // Simulates modifying DOM tree to invalidate distribution.
-  Element* host = GetDocument().getElementById("host");
+  Element* host = GetDocument().getElementById(AtomicString("host"));
   host->AppendChild(sample);
   GetDocument().UpdateStyleAndLayout(DocumentUpdateReason::kTest);
 

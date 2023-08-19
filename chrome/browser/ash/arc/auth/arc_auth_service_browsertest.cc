@@ -28,6 +28,7 @@
 #include "base/strings/stringprintf.h"
 #include "base/test/bind.h"
 #include "base/test/scoped_command_line.h"
+#include "chrome/browser/ash/account_manager/account_apps_availability.h"
 #include "chrome/browser/ash/account_manager/account_apps_availability_factory.h"
 #include "chrome/browser/ash/app_list/arc/arc_data_removal_dialog.h"
 #include "chrome/browser/ash/arc/arc_util.h"
@@ -37,8 +38,8 @@
 #include "chrome/browser/ash/arc/session/arc_service_launcher.h"
 #include "chrome/browser/ash/arc/session/arc_session_manager.h"
 #include "chrome/browser/ash/arc/test/test_arc_session_manager.h"
+#include "chrome/browser/ash/login/demo_mode/demo_mode_test_utils.h"
 #include "chrome/browser/ash/login/demo_mode/demo_session.h"
-#include "chrome/browser/ash/login/demo_mode/demo_setup_test_utils.h"
 #include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
 #include "chrome/browser/ash/policy/core/browser_policy_connector_ash.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
@@ -56,6 +57,7 @@
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chromeos/ash/components/cryptohome/cryptohome_parameters.h"
+#include "chromeos/ash/components/standalone_browser/feature_refs.h"
 #include "components/account_id/account_id.h"
 #include "components/account_manager_core/chromeos/account_manager_facade_factory.h"
 #include "components/policy/core/common/cloud/device_management_service.h"
@@ -276,8 +278,13 @@ class ArcAuthServiceTest : public InProcessBrowserTest,
   ~ArcAuthServiceTest() override = default;
 
   void SetUp() override {
+    std::vector<base::test::FeatureRef> lacros =
+        ash::standalone_browser::GetFeatureRefs();
+    lacros.push_back(crosapi::browser_util::kLacrosForSupervisedUsers);
     if (IsArcAccountRestrictionsEnabled()) {
-      feature_list_.InitAndEnableFeature(ash::features::kLacrosSupport);
+      feature_list_.InitWithFeatures(lacros, {});
+    } else {
+      feature_list_.InitWithFeatures({}, lacros);
     }
     InProcessBrowserTest::SetUp();
   }
@@ -299,8 +306,6 @@ class ArcAuthServiceTest : public InProcessBrowserTest,
         std::make_unique<ArcSessionRunner>(
             base::BindRepeating(FakeArcSession::Create)));
     ExpandPropertyFilesForTesting(ArcSessionManager::Get());
-
-    ash::ProfileHelper::SetAlwaysReturnPrimaryUserForTesting(true);
   }
 
   void TearDownOnMainThread() override {
@@ -330,7 +335,6 @@ class ArcAuthServiceTest : public InProcessBrowserTest,
     identity_test_environment_adaptor_.reset();
     profile_.reset();
     user_manager_enabler_.reset();
-    ash::ProfileHelper::SetAlwaysReturnPrimaryUserForTesting(false);
   }
 
   ash::FakeChromeUserManager* GetFakeUserManager() const {
@@ -388,7 +392,7 @@ class ArcAuthServiceTest : public InProcessBrowserTest,
     auto* identity_test_env =
         identity_test_environment_adaptor_->identity_test_env();
     identity_test_env->SetAutomaticIssueOfAccessTokens(true);
-    // Use ConsentLevel::kSignin because ARC doesn't care about  browser sync
+    // Use ConsentLevel::kSignin because ARC doesn't care about browser sync
     // consent.
     identity_test_env->MakePrimaryAccountAvailable(
         kFakeUserName, signin::ConsentLevel::kSignin);
@@ -428,6 +432,11 @@ class ArcAuthServiceTest : public InProcessBrowserTest,
     WaitForInstanceReady(arc_bridge_service_->auth());
     // Waiting for users and profiles to be setup.
     base::RunLoop().RunUntilIdle();
+
+    EXPECT_TRUE(user_manager::UserManager::Get()->IsPrimaryUser(
+        ash::ProfileHelper::Get()->GetUserByProfile(profile())));
+    ASSERT_EQ(IsArcAccountRestrictionsEnabled(),
+              ash::AccountAppsAvailability::IsArcAccountRestrictionsEnabled());
   }
 
   bool SetIsAccountAvailableInArc(std::string gaia, bool is_available) {
@@ -610,7 +619,6 @@ IN_PROC_BROWSER_TEST_P(ArcAuthServiceTest, SuccessfulBackgroundFetch) {
   EXPECT_EQ(kFakeAuthCode, auth_instance().account_info()->auth_code.value());
   EXPECT_EQ(mojom::ChromeAccountType::USER_ACCOUNT,
             auth_instance().account_info()->account_type);
-  EXPECT_FALSE(auth_instance().account_info()->enrollment_token);
   EXPECT_FALSE(auth_instance().account_info()->is_managed);
 }
 
@@ -656,7 +664,6 @@ IN_PROC_BROWSER_TEST_P(ArcAuthServiceTest, SuccessfulBackgroundProxyBypass) {
   EXPECT_EQ(kFakeAuthCode, auth_instance().account_info()->auth_code.value());
   EXPECT_EQ(mojom::ChromeAccountType::USER_ACCOUNT,
             auth_instance().account_info()->account_type);
-  EXPECT_FALSE(auth_instance().account_info()->enrollment_token);
   EXPECT_FALSE(auth_instance().account_info()->is_managed);
 }
 
@@ -677,7 +684,6 @@ IN_PROC_BROWSER_TEST_P(ArcAuthServiceTest,
   EXPECT_EQ(kFakeAuthCode, auth_instance().account_info()->auth_code.value());
   EXPECT_EQ(mojom::ChromeAccountType::USER_ACCOUNT,
             auth_instance().account_info()->account_type);
-  EXPECT_FALSE(auth_instance().account_info()->enrollment_token);
   EXPECT_FALSE(auth_instance().account_info()->is_managed);
   EXPECT_FALSE(auth_instance().sign_in_persistent_error());
   tester.ExpectUniqueSample(
@@ -750,7 +756,6 @@ IN_PROC_BROWSER_TEST_P(ArcAuthServiceTest, FetchSecondaryAccountInfoSucceeds) {
   EXPECT_EQ(kFakeAuthCode, auth_instance().account_info()->auth_code.value());
   EXPECT_EQ(mojom::ChromeAccountType::USER_ACCOUNT,
             auth_instance().account_info()->account_type);
-  EXPECT_FALSE(auth_instance().account_info()->enrollment_token);
   EXPECT_FALSE(auth_instance().account_info()->is_managed);
   EXPECT_FALSE(auth_instance().sign_in_persistent_error());
   tester.ExpectUniqueSample(
@@ -1064,8 +1069,6 @@ class ArcRobotAccountAuthServiceTest : public ArcAuthServiceTest {
 
   ~ArcRobotAccountAuthServiceTest() override = default;
 
-  void SetUp() override { InProcessBrowserTest::SetUp(); }
-
   void SetUpCommandLine(base::CommandLine* command_line) override {
     command_line->AppendSwitchASCII(policy::switches::kDeviceManagementUrl,
                                     "http://localhost");
@@ -1137,7 +1140,6 @@ IN_PROC_BROWSER_TEST_P(ArcRobotAccountAuthServiceTest, GetDemoAccount) {
   EXPECT_EQ(kFakeAuthCode, auth_instance().account_info()->auth_code.value());
   EXPECT_EQ(mojom::ChromeAccountType::ROBOT_ACCOUNT,
             auth_instance().account_info()->account_type);
-  EXPECT_FALSE(auth_instance().account_info()->enrollment_token);
   EXPECT_FALSE(auth_instance().account_info()->is_managed);
 }
 
@@ -1165,7 +1167,6 @@ IN_PROC_BROWSER_TEST_P(ArcRobotAccountAuthServiceTest,
   EXPECT_TRUE(auth_instance().account_info()->auth_code.value().empty());
   EXPECT_EQ(mojom::ChromeAccountType::OFFLINE_DEMO_ACCOUNT,
             auth_instance().account_info()->account_type);
-  EXPECT_FALSE(auth_instance().account_info()->enrollment_token);
   EXPECT_TRUE(auth_instance().account_info()->is_managed);
 }
 
@@ -1196,7 +1197,6 @@ IN_PROC_BROWSER_TEST_P(ArcRobotAccountAuthServiceTest,
   EXPECT_TRUE(auth_instance().account_info()->auth_code.value().empty());
   EXPECT_EQ(mojom::ChromeAccountType::OFFLINE_DEMO_ACCOUNT,
             auth_instance().account_info()->account_type);
-  EXPECT_FALSE(auth_instance().account_info()->enrollment_token);
   EXPECT_TRUE(auth_instance().account_info()->is_managed);
 }
 
@@ -1219,7 +1219,6 @@ IN_PROC_BROWSER_TEST_P(ArcRobotAccountAuthServiceTest,
   EXPECT_EQ(kFakeAuthCode, auth_instance().account_info()->auth_code.value());
   EXPECT_EQ(mojom::ChromeAccountType::ROBOT_ACCOUNT,
             auth_instance().account_info()->account_type);
-  EXPECT_FALSE(auth_instance().account_info()->enrollment_token);
   EXPECT_TRUE(auth_instance().account_info()->is_managed);
   EXPECT_FALSE(auth_instance().sign_in_persistent_error());
 }
@@ -1242,7 +1241,6 @@ IN_PROC_BROWSER_TEST_P(ArcAuthServiceTest, ChildAccountFetch) {
   EXPECT_EQ(kFakeAuthCode, auth_instance().account_info()->auth_code.value());
   EXPECT_EQ(mojom::ChromeAccountType::CHILD_ACCOUNT,
             auth_instance().account_info()->account_type);
-  EXPECT_FALSE(auth_instance().account_info()->enrollment_token);
   EXPECT_FALSE(auth_instance().account_info()->is_managed);
 }
 

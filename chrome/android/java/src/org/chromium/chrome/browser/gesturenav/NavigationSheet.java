@@ -62,9 +62,9 @@ public interface NavigationSheet {
     }
 
     /**
-     * Dummy object that does nothing. Saves lots of null checks.
+     * Placeholder object that does nothing. Saves lots of null checks.
      */
-    static final NavigationSheet DUMMY = new NavigationSheet() {
+    static final NavigationSheet PLACEHOLDER = new NavigationSheet() {
         @Override
         public void setDelegate(Delegate delegate) {}
 

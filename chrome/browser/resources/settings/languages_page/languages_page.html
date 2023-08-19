@@ -54,10 +54,6 @@
     margin-inline-start: var(--cr-controlled-by-spacing);
   }
 </if>
-
-  #offerTranslations:focus {
-    background-color: transparent;
-  }
 </style>
 <div id="languagesSection">
   <div class="cr-row continuation">
@@ -109,19 +105,13 @@
       </div>
     </template>
   </div>
-  <template is="dom-if" if="[[!enableDesktopDetailedLanguageSettings_]]">
-    <settings-toggle-button id="offerTranslateOtherLanguages"
-        pref="{{prefs.translate.enabled}}" label="$i18n{offerToEnableTranslate}"
-        on-settings-boolean-control-change="onTranslateToggleChange_">
-    </settings-toggle-button>
-  </template>
   <cr-lazy-render id="menu">
     <template>
       <cr-action-menu role-description="$i18n{menu}"
 <if expr="is_win">
-          on-close="onCloseMenu_"
+          on-close="onCloseMenu_" class="complex"
 </if>
-          class$="[[getMenuClass_(prefs.translate.enabled.value)]]">
+          >
 <if expr="is_win">
         <cr-checkbox id="uiLanguageItem"
             class="dropdown-item"
@@ -139,17 +129,6 @@
           </iron-icon>
         </cr-checkbox>
 </if> <!-- is_win -->
-        <template is="dom-if" if="[[!enableDesktopDetailedLanguageSettings_]]">
-          <cr-checkbox id="offerTranslations"
-              class="dropdown-item"
-              checked="[[detailLanguage_.translateEnabled]]"
-              on-change="onTranslateCheckboxChange_"
-              hidden="[[!prefs.translate.enabled.value]]"
-              disabled="[[disableTranslateCheckbox_(
-                  detailLanguage_, languages.translateTarget)]]" noink>
-            $i18n{offerToTranslateInThisLanguage} </cr-checkbox>
-          <hr hidden="[[!shouldShowDialogSeparator_(languages.enabled.*)]]">
-        </template>
         <button class="dropdown-item" role="menuitem"
             on-click="onMoveToTopClick_"
             hidden="[[isNthLanguage_(

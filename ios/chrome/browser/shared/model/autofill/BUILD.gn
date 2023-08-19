@@ -3,7 +3,6 @@
 # found in the LICENSE file.
 
 source_set("autofill_message") {
-  configs += [ "//build/config/compiler:enable_arc" ]
   sources = [
     "save_card_message_with_links.h",
     "save_card_message_with_links.mm",

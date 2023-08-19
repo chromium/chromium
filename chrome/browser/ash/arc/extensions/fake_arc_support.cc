@@ -61,22 +61,6 @@ void FakeArcSupport::Close() {
   UnsetMessageHost();
 }
 
-void FakeArcSupport::EmulateAuthSuccess() {
-  DCHECK_EQ(ArcSupportHost::UIPage::ACTIVE_DIRECTORY_AUTH, ui_page_);
-  base::Value::Dict message;
-  message.Set("event", "onAuthSucceeded");
-  SerializeAndSend(native_message_host_.get(), message);
-}
-
-void FakeArcSupport::EmulateAuthFailure(const std::string& error_msg) {
-  DCHECK(native_message_host_);
-  DCHECK_EQ(ArcSupportHost::UIPage::ACTIVE_DIRECTORY_AUTH, ui_page_);
-  base::Value::Dict message;
-  message.Set("event", "onAuthFailed");
-  message.Set("errorMessage", error_msg);
-  SerializeAndSend(native_message_host_.get(), message);
-}
-
 void FakeArcSupport::ClickAgreeButton() {
   DCHECK_EQ(ui_page_, ArcSupportHost::UIPage::TERMS);
   base::Value::Dict message;
@@ -103,12 +87,6 @@ void FakeArcSupport::ClickCancelButton() {
   message.Set("isLocationServiceEnabled", location_service_mode_);
   message.Set("isLocationServiceManaged", location_service_managed_);
   SerializeAndSend(native_message_host_.get(), message);
-  // The cancel button closes the window.
-  Close();
-}
-
-void FakeArcSupport::ClickAdAuthCancelButton() {
-  DCHECK_EQ(ui_page_, ArcSupportHost::UIPage::ACTIVE_DIRECTORY_AUTH);
   // The cancel button closes the window.
   Close();
 }
@@ -175,19 +153,6 @@ void FakeArcSupport::PostMessageFromNativeHost(
       ui_page_ = ArcSupportHost::UIPage::TERMS;
     } else if (*page == "arc-loading") {
       ui_page_ = ArcSupportHost::UIPage::ARC_LOADING;
-    } else if (*page == "active-directory-auth") {
-      ui_page_ = ArcSupportHost::UIPage::ACTIVE_DIRECTORY_AUTH;
-      const std::string* federation_url =
-          message.FindStringByDottedPath("options.federationUrl");
-      const std::string* device_management_url_prefix =
-          message.FindStringByDottedPath("options.deviceManagementUrlPrefix");
-      if (!federation_url || !device_management_url_prefix) {
-        NOTREACHED() << message_string;
-        return;
-      }
-      active_directory_auth_federation_url_ = *federation_url;
-      active_directory_auth_device_management_url_prefix_ =
-          *device_management_url_prefix;
     } else {
       NOTREACHED() << message_string;
     }

@@ -11,7 +11,7 @@ enum GPUCompilationMessageType {
 };
 
 [
-    Exposed(Window WebGPU, DedicatedWorker WebGPU),
+    Exposed=(Window, DedicatedWorker),
     SecureContext
 ] interface GPUCompilationMessage {
     readonly attribute DOMString message;

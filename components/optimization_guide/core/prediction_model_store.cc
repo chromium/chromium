@@ -371,21 +371,25 @@ void PredictionModelStore::RemoveModel(
     return;
   }
 
-  RecordPredictionModelStoreModelRemovalVersionHistogram(model_remove_reason);
+  RecordPredictionModelStoreModelRemovalVersionHistogram(optimization_target,
+                                                         model_remove_reason);
   ModelStoreMetadataEntryUpdater metadata(local_state_, optimization_target,
                                           model_cache_key);
   auto base_model_dir = metadata.GetModelBaseDir();
   if (base_model_dir) {
     // Backward compatibility: Model dirs were absolute in the earlier versions,
     // and it was only in experiment. The latest versions use relative paths.
+    // Convert to absolute paths to save in the pref, since absolute dirs could
+    // become non-existent if IOS Chrome upgrade changes the sandbox dirs.
     DCHECK(!base_model_dir->IsAbsolute() ||
            base_store_dir_.IsParent(*base_model_dir));
-    base::FilePath absolute_model_dir =
-        base_model_dir->IsAbsolute() ? *base_model_dir
-                                     : base_store_dir_.Append(*base_model_dir);
+    base::FilePath relative_model_dir =
+        base_model_dir->IsAbsolute()
+            ? ConvertToRelativePath(base_store_dir_, *base_model_dir)
+            : *base_model_dir;
     ScopedDictPrefUpdate pref_update(
         local_state_, prefs::localstate::kStoreFilePathsToDelete);
-    pref_update->Set(FilePathToString(absolute_model_dir), true);
+    pref_update->Set(FilePathToString(relative_model_dir), true);
   }
   // Continue removing the metadata even if the model dirs does not exist.
   metadata.ClearMetadata();
@@ -416,12 +420,18 @@ void PredictionModelStore::CleanUpOldModelFiles() {
   DCHECK(local_state_);
   for (const auto entry :
        local_state_->GetDict(prefs::localstate::kStoreFilePathsToDelete)) {
+    // Backward compatibility: Model dirs were absolute in the earlier versions.
+    // The latest versions use relative paths.
     auto path_to_delete = StringToFilePath(entry.first);
     DCHECK(path_to_delete);
-    DCHECK(base_store_dir_.IsParent(*path_to_delete));
+    DCHECK(!path_to_delete->IsAbsolute() ||
+           base_store_dir_.IsParent(*path_to_delete));
+    base::FilePath absolute_path_to_delete =
+        path_to_delete->IsAbsolute() ? *path_to_delete
+                                     : base_store_dir_.Append(*path_to_delete);
     background_task_runner_->PostTaskAndReplyWithResult(
         FROM_HERE,
-        base::BindOnce(&base::DeletePathRecursively, *path_to_delete),
+        base::BindOnce(&base::DeletePathRecursively, absolute_path_to_delete),
         base::BindOnce(&PredictionModelStore::OnFilePathDeleted,
                        weak_ptr_factory_.GetWeakPtr(), entry.first));
   }

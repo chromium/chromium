@@ -23,10 +23,6 @@
 #include "crypto/mock_apple_keychain.h"
 #include "crypto/symmetric_key.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 namespace os_crypt {
 class EncryptionKeyCreationUtil;
 }

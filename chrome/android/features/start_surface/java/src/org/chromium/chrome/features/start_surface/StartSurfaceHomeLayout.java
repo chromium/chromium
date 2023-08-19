@@ -7,8 +7,6 @@ package org.chromium.chrome.features.start_surface;
 import android.animation.Animator;
 import android.content.Context;
 
-import androidx.annotation.VisibleForTesting;
-
 import org.chromium.base.TraceEvent;
 import org.chromium.chrome.browser.compositor.layouts.Layout;
 import org.chromium.chrome.browser.compositor.layouts.LayoutRenderHost;
@@ -22,8 +20,6 @@ import org.chromium.chrome.features.tasks.TasksView;
  * A {@link Layout} that shows Start Surface home view.
  */
 public class StartSurfaceHomeLayout extends Layout {
-    private static final String TAG = "SSHomeLayout";
-
     private static final String TRACE_SHOW_START_SURFACE =
             "StartSurfaceHomeLayout.Show.StartSurface";
     private static final String TRACE_HIDE_START_SURFACE =
@@ -142,7 +138,6 @@ public class StartSurfaceHomeLayout extends Layout {
         mBackgroundTabAnimation.start();
     }
 
-    @VisibleForTesting
     public StartSurface getStartSurfaceForTesting() {
         return mStartSurface;
     }

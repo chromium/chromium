@@ -36,6 +36,8 @@ per-file LACROS_QA_QUALIFIED_VERSION=svenzheng@chromium.org
 per-file MAJOR_BRANCH_DATE=chrome-official-brancher@chops-service-accounts.iam.gserviceaccount.com
 per-file VERSION=chrome-official-brancher@chops-service-accounts.iam.gserviceaccount.com
 per-file VERSION=govind@chromium.org
+# For Chrome release DEPS auto rolling
+per-file chrome_branch_deps.json=chrome-official-brancher@chops-service-accounts.iam.gserviceaccount.com
 
 # For Fuchsia-specific changes:
 per-file ...fuchsia*=file://build/fuchsia/OWNERS

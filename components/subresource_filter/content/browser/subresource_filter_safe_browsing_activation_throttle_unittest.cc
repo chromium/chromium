@@ -1002,9 +1002,8 @@ TEST_F(SubresourceFilterSafeBrowsingActivationThrottleTest,
   tester().ExpectTotalCount(kSafeBrowsingCheckTime, 1);
 }
 
-// Flaky on Win, Chromium and Linux. http://crbug.com/748524
 TEST_P(SubresourceFilterSafeBrowsingActivationThrottleParamTest,
-       DISABLED_ListMatchedOnStart_NoDelay) {
+       ListMatchedOnStart_NoDelay) {
   const ActivationListTestData& test_data = GetParam();
   const GURL url(kURL);
   ConfigureForMatchParam(url);
@@ -1024,9 +1023,8 @@ TEST_P(SubresourceFilterSafeBrowsingActivationThrottleParamTest,
                                  base::Milliseconds(0), 1);
 }
 
-// Flaky on Win, Chromium and Linux. http://crbug.com/748524
 TEST_P(SubresourceFilterSafeBrowsingActivationThrottleParamTest,
-       DISABLED_ListMatchedOnRedirect_NoDelay) {
+       ListMatchedOnRedirect_NoDelay) {
   const ActivationListTestData& test_data = GetParam();
   const GURL url(kURL);
   const GURL redirect_url(kRedirectURL);
@@ -1163,9 +1161,8 @@ TEST_F(SubresourceFilterSafeBrowsingActivationThrottleInfoBarUiTest,
 #endif
 }
 
-// Disabled due to flaky failures: https://crbug.com/753669.
 TEST_P(SubresourceFilterSafeBrowsingActivationThrottleParamTest,
-       DISABLED_ListMatchedOnStartWithRedirect_NoActivation) {
+       ListMatchedOnStartWithRedirect_NoActivation) {
   const GURL url(kURL);
   const GURL redirect_url(kRedirectURL);
   ConfigureForMatchParam(url);

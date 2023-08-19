@@ -407,7 +407,7 @@ void It2MeNativeMessagingHostLacros::ProcessConnect(int message_id,
   lacros_service->GetRemote<crosapi::mojom::Remoting>()->StartSupportSession(
       std::move(session_params),
       base::BindOnce(&It2MeNativeMessagingHostLacros::OnSupportSessionStarted,
-                     base::Unretained(this)));
+                     weak_factory_.GetWeakPtr()));
 }
 
 void It2MeNativeMessagingHostLacros::ProcessDisconnect(int message_id) {

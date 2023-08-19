@@ -6,6 +6,8 @@
 #define CHROME_BROWSER_UI_VIEWS_FRAME_PICTURE_IN_PICTURE_BROWSER_FRAME_VIEW_H_
 
 #include "base/scoped_observation.h"
+#include "build/build_config.h"
+#include "chrome/browser/ui/content_settings/content_setting_image_model_states.h"
 #include "chrome/browser/ui/toolbar/chrome_location_bar_model_delegate.h"
 #include "chrome/browser/ui/views/frame/browser_frame.h"
 #include "chrome/browser/ui/views/frame/browser_non_client_frame_view.h"
@@ -62,6 +64,7 @@ class PictureInPictureBrowserFrameView
                                views::Label& window_title_label) const override;
   int GetTopInset(bool restored) const override;
   int GetThemeBackgroundXInset() const override;
+  void OnBrowserViewInitViewsComplete() override;
   void UpdateThrobber(bool running) override {}
   gfx::Rect GetBoundsForClientView() const override;
   gfx::Rect GetWindowBoundsForClientBounds(
@@ -87,6 +90,7 @@ class PictureInPictureBrowserFrameView
   // ChromeLocationBarModelDelegate:
   content::WebContents* GetActiveWebContents() const override;
   bool GetURL(GURL* url) const override;
+  bool ShouldPreventElision() override;
   bool ShouldTrimDisplayUrlAfterHostName() const override;
   bool ShouldDisplayURL() const override;
 
@@ -105,7 +109,7 @@ class PictureInPictureBrowserFrameView
   SkColor GetIconLabelBubbleBackgroundColor() const override;
 
   // ContentSettingImageView::Delegate:
-  bool ShouldHideContentSettingImage() override;
+  bool ShouldHideContentSettingImage(ImageType type) override;
   content::WebContents* GetContentSettingWebContents() override;
   ContentSettingBubbleModelDelegate* GetContentSettingBubbleModelDelegate()
       override;
@@ -175,6 +179,10 @@ class PictureInPictureBrowserFrameView
   static gfx::ShadowValues GetShadowValues();
 #endif
 
+#if BUILDFLAG(IS_WIN)
+  gfx::Insets GetClientAreaInsets(HMONITOR monitor) const;
+#endif
+
   // Helper functions for testing.
   std::vector<gfx::Animation*> GetRenderActiveAnimationsForTesting();
   std::vector<gfx::Animation*> GetRenderInactiveAnimationsForTesting();
@@ -189,7 +197,7 @@ class PictureInPictureBrowserFrameView
     kOther = 0,
     kBackToTabButton = 1,
     kCloseButton = 2,
-    kMaxValue = kCloseButton,
+    kMaxValue = kCloseButton
   };
 
   CloseReason close_reason_ = CloseReason::kOther;
@@ -250,6 +258,11 @@ class PictureInPictureBrowserFrameView
 
   // Used to monitor key and mouse events from native window.
   std::unique_ptr<WindowEventObserver> window_event_observer_;
+
+#if !BUILDFLAG(IS_ANDROID)
+  // If non-null, this displays the allow / block setting overlay for autopip.
+  raw_ptr<views::View> auto_pip_setting_overlay_ = nullptr;
+#endif
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_FRAME_PICTURE_IN_PICTURE_BROWSER_FRAME_VIEW_H_

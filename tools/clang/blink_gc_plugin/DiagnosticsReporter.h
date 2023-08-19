@@ -38,6 +38,8 @@ class DiagnosticsReporter {
       const CheckFieldsVisitor::Errors& errors);
   void ClassContainsGCRoots(RecordInfo* info,
                             const CheckGCRootsVisitor::Errors& errors);
+  void ClassContainsGCRootRefs(RecordInfo* info,
+                               const CheckGCRootsVisitor::Errors& errors);
   void ClassContainsForbiddenFields(
       RecordInfo* info,
       const CheckForbiddenFieldsVisitor::Errors& errors);
@@ -74,7 +76,9 @@ class DiagnosticsReporter {
   void NoteFieldRequiresTracing(RecordInfo* holder, clang::FieldDecl* field);
   void NoteFieldShouldNotBeTraced(RecordInfo* holder, clang::FieldDecl* field);
   void NotePartObjectContainsGCRoot(FieldPoint* point);
+  void NotePartObjectContainsGCRootRef(FieldPoint* point);
   void NoteFieldContainsGCRoot(FieldPoint* point);
+  void NoteFieldContainsGCRootRef(FieldPoint* point);
   void NoteField(FieldPoint* point, unsigned note);
   void NoteField(clang::FieldDecl* field, unsigned note);
   void NoteOverriddenNonVirtualTrace(clang::CXXMethodDecl* overridden);
@@ -92,6 +96,18 @@ class DiagnosticsReporter {
   void VariantUsedWithGC(const clang::Expr* expr,
                          const clang::CXXRecordDecl* variant,
                          const clang::CXXRecordDecl* gc_type);
+  void CollectionOfGCed(const clang::Decl* decl,
+                        const clang::CXXRecordDecl* collection,
+                        const clang::CXXRecordDecl* gc_type);
+  void CollectionOfGCed(const clang::Expr* expr,
+                        const clang::CXXRecordDecl* collection,
+                        const clang::CXXRecordDecl* gc_type);
+  void CollectionOfMembers(const clang::Decl* decl,
+                           const clang::CXXRecordDecl* collection,
+                           const clang::CXXRecordDecl* gc_type);
+  void CollectionOfMembers(const clang::Expr* expr,
+                           const clang::CXXRecordDecl* collection,
+                           const clang::CXXRecordDecl* gc_type);
   void MemberOnStack(const clang::VarDecl* var);
   void AdditionalPadding(const clang::RecordDecl* var, size_t padding);
 
@@ -115,6 +131,7 @@ class DiagnosticsReporter {
   unsigned diag_fields_improperly_traced_;
   unsigned diag_class_contains_invalid_fields_;
   unsigned diag_class_contains_gc_root_;
+  unsigned diag_class_contains_gc_root_ref_;
   unsigned diag_finalizer_accesses_finalized_field_;
   unsigned diag_overridden_non_virtual_trace_;
   unsigned diag_missing_trace_dispatch_method_;
@@ -142,7 +159,9 @@ class DiagnosticsReporter {
   unsigned diag_member_in_unmanaged_class_note_;
   unsigned diag_part_object_to_gc_derived_class_note_;
   unsigned diag_part_object_contains_gc_root_note_;
+  unsigned diag_part_object_contains_gc_root_ref_note_;
   unsigned diag_field_contains_gc_root_note_;
+  unsigned diag_field_contains_gc_root_ref_note_;
   unsigned diag_finalized_field_note_;
   unsigned diag_overridden_non_virtual_trace_note_;
   unsigned diag_manual_dispatch_method_note_;
@@ -162,6 +181,8 @@ class DiagnosticsReporter {
   unsigned diag_optional_field_used_with_gc_;
   unsigned diag_optional_new_expr_used_with_gc_;
   unsigned diag_variant_used_with_gc_;
+  unsigned diag_collection_of_gced_;
+  unsigned diag_collection_of_members_;
 };
 
 #endif // TOOLS_BLINK_GC_PLUGIN_DIAGNOSTICS_REPORTER_H_

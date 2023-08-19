@@ -4,11 +4,11 @@
 
 import("//build/config/features.gni")
 import("//ios/web/public/js_messaging/optimize_js.gni")
+import("//ios/web/public/js_messaging/optimize_ts.gni")
 import("//testing/libfuzzer/fuzzer_test.gni")
 import("//testing/test.gni")
 
 source_set("form_util") {
-  configs += [ "//build/config/compiler:enable_arc" ]
   sources = [
     "form_activity_observer.h",
     "form_activity_observer_bridge.h",
@@ -31,7 +31,6 @@ source_set("form_util") {
 }
 
 source_set("form_util_feature") {
-  configs += [ "//build/config/compiler:enable_arc" ]
   sources = [
     "form_util_java_script_feature.h",
     "form_util_java_script_feature.mm",
@@ -45,7 +44,6 @@ source_set("form_util_feature") {
 }
 
 source_set("form_handler_feature") {
-  configs += [ "//build/config/compiler:enable_arc" ]
   sources = [
     "form_handlers_java_script_feature.h",
     "form_handlers_java_script_feature.mm",
@@ -65,9 +63,13 @@ optimize_js("fill_js") {
   sources = [ "resources/fill.js" ]
 }
 
-optimize_js("form_js") {
-  primary_script = "resources/form.js"
-  sources = [ "resources/form.js" ]
+optimize_ts("form_js") {
+  sources = [ "resources/form.ts" ]
+
+  deps = [
+    "//ios/web/public/js_messaging:gcrweb",
+    "//ios/web/public/js_messaging:util_scripts",
+  ]
 }
 
 optimize_js("form_handlers_js") {
@@ -77,7 +79,6 @@ optimize_js("form_handlers_js") {
 
 source_set("test_support") {
   testonly = true
-  configs += [ "//build/config/compiler:enable_arc" ]
   sources = [
     "autofill_test_with_web_state.h",
     "autofill_test_with_web_state.mm",
@@ -102,7 +103,6 @@ source_set("test_support") {
 
 source_set("unit_tests") {
   testonly = true
-  configs += [ "//build/config/compiler:enable_arc" ]
   sources = [
     "fill_js_unittest.mm",
     "form_activity_observer_bridge_unittest.mm",
@@ -141,10 +141,7 @@ source_set("unit_tests") {
 }
 if (is_ios) {
   fuzzer_test("form_activity_tab_helper_fuzzer") {
-    additional_configs = [
-      "//build/config/compiler:enable_arc",
-      "//testing/libfuzzer:build_for_ios_clusterfuzz_job",
-    ]
+    additional_configs = [ "//testing/libfuzzer:build_for_ios_clusterfuzz_job" ]
     sources = [ "form_activity_tab_helper_fuzzer.mm" ]
     deps = [
       ":form_util",

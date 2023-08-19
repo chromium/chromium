@@ -1,7 +1,11 @@
 Name: url_parse
-URL: http://mxr.mozilla.org/comm-central/source/mozilla/netwerk/base/src/nsURLParsers.cpp
+Version: unknown
+URL: https://hg.mozilla.org/mozilla-central/file/tip/netwerk/base/nsURLParsers.cpp
 License: BSD and MPL 1.1/GPL 2.0/LGPL 2.1
 License File: LICENSE.txt
+Shipped: yes
+Security Critical: yes
+CPEPrefix: unknown
 
 Description:
 

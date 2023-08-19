@@ -6,7 +6,7 @@
 #define COMPONENTS_AUTOFILL_CONTENT_BROWSER_FORM_FOREST_TEST_API_H_
 
 #include "base/containers/stack.h"
-#include "base/memory/raw_ptr.h"
+#include "base/memory/raw_ref.h"
 #include "components/autofill/content/browser/form_forest.h"
 
 namespace autofill::internal {
@@ -17,7 +17,7 @@ class FormForestTestApi {
   using FrameData = FormForest::FrameData;
   using FrameForm = FormForest::FrameAndForm;
 
-  explicit FormForestTestApi(FormForest* ff) : ff_(ff) { DCHECK(ff_); }
+  explicit FormForestTestApi(FormForest* ff) : ff_(*ff) {}
 
   void Reset() { ff_->frame_datas_.clear(); }
 
@@ -61,8 +61,7 @@ class FormForestTestApi {
   // Adds the frame and form children for `frame_and_form.form` to |frontier|.
   void ExpandForm(base::stack<FrameForm>& frontier, FrameForm frame_and_form);
 
-  // Non-null pointer to wrapped FormForest.
-  raw_ptr<FormForest> ff_;
+  const raw_ref<FormForest> ff_;
 };
 
 template <typename UnaryFunction>
@@ -71,12 +70,13 @@ void FormForestTestApi::TraverseTrees(base::stack<FrameForm>& frontier,
   while (!frontier.empty()) {
     FrameForm next = frontier.top();
     frontier.pop();
-    DCHECK(next);
-    if (!next)
-      continue;
     fun(*next.form);
     ExpandForm(frontier, next);
   }
+}
+
+inline FormForestTestApi test_api(FormForest& form_forest) {
+  return FormForestTestApi(&form_forest);
 }
 
 }  // namespace autofill::internal

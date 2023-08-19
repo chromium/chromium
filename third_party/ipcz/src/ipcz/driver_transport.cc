@@ -19,21 +19,21 @@ namespace ipcz {
 
 namespace {
 
-IpczResult IPCZ_API NotifyTransport(IpczHandle transport,
+IpczResult IPCZ_API NotifyTransport(IpczHandle listener,
                                     const void* data,
                                     size_t num_bytes,
                                     const IpczDriverHandle* driver_handles,
                                     size_t num_driver_handles,
                                     IpczTransportActivityFlags flags,
                                     const void* options) {
-  DriverTransport* t = DriverTransport::FromHandle(transport);
+  DriverTransport* t = DriverTransport::FromHandle(listener);
   if (!t) {
     return IPCZ_RESULT_INVALID_ARGUMENT;
   }
 
   if (flags & IPCZ_TRANSPORT_ACTIVITY_DEACTIVATED) {
     const Ref<DriverTransport> doomed_transport =
-        DriverTransport::TakeFromHandle(transport);
+        DriverTransport::TakeFromHandle(listener);
     doomed_transport->NotifyDeactivated();
     return IPCZ_RESULT_OK;
   }

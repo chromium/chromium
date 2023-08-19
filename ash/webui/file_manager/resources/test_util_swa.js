@@ -55,7 +55,7 @@ test.swaTestMessageListener = (request) => {
 let testUtilsLoaded = false;
 
 test.swaLoadTestUtils = async () => {
-  const scriptUrl = './runtime_loaded_test_util_swa.js';
+  const scriptUrl = 'runtime_loaded_test_util_swa.js';
   try {
     console.log('Loading ' + scriptUrl);
     await new ScriptLoader(scriptUrl, {type: 'module'}).load();

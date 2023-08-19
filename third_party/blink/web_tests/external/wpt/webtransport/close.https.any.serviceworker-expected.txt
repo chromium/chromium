@@ -1,5 +1,6 @@
 This is a testharness.js-based test.
 PASS close
+PASS close without waiting for ready
 PASS close with code and reason
 PASS close with code and long reason
 PASS server initiated closure without code and reason

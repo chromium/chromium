@@ -21,8 +21,7 @@ const CGFloat kMenuBarRevealEventKind = 2004;
 OSStatus MenuBarRevealHandler(EventHandlerCallRef handler,
                               EventRef event,
                               void* context) {
-  FullscreenMenubarTracker* self =
-      static_cast<FullscreenMenubarTracker*>(context);
+  FullscreenMenubarTracker* self = (__bridge FullscreenMenubarTracker*)context;
 
   // If Chrome has multiple fullscreen windows in their own space, the Handler
   // becomes flaky and might start receiving kMenuBarRevealEventKind events
@@ -33,8 +32,9 @@ OSStatus MenuBarRevealHandler(EventHandlerCallRef handler,
   // kEventMenuBarHidden to set these values.
   if (GetEventKind(event) == kMenuBarRevealEventKind) {
     CGFloat revealFraction = 0;
-    GetEventParameter(event, FOUR_CHAR_CODE('rvlf'), typeCGFloat, NULL,
-                      sizeof(CGFloat), NULL, &revealFraction);
+    GetEventParameter(event, FOUR_CHAR_CODE('rvlf'), typeCGFloat,
+                      /*outActualType=*/nullptr, sizeof(CGFloat),
+                      /*outActualSize=*/nullptr, &revealFraction);
     if (revealFraction > 0.0 && revealFraction < 1.0)
       [self setMenubarProgress:revealFraction];
   } else if (GetEventKind(event) == kEventMenuBarShown) {
@@ -48,19 +48,19 @@ OSStatus MenuBarRevealHandler(EventHandlerCallRef handler,
 
 }  // end namespace
 
-@interface FullscreenMenubarTracker () {
-  FullscreenToolbarController* _controller;        // weak
-
-  // A Carbon event handler that tracks the revealed fraction of the menubar.
-  EventHandlerRef _menubarTrackingHandler;
-}
+@interface FullscreenMenubarTracker ()
 
 // Returns YES if the mouse is on the same screen as the window.
 - (BOOL)isMouseOnScreen;
 
 @end
 
-@implementation FullscreenMenubarTracker
+@implementation FullscreenMenubarTracker {
+  FullscreenToolbarController* __weak _controller;
+
+  // A Carbon event handler that tracks the revealed fraction of the menubar.
+  EventHandlerRef _menubarTrackingHandler;
+}
 
 @synthesize state = _state;
 @synthesize menubarFraction = _menubarFraction;
@@ -84,12 +84,12 @@ OSStatus MenuBarRevealHandler(EventHandlerCallRef handler,
     eventSpecs[2].eventClass = kEventClassMenu;
     eventSpecs[2].eventKind = kEventMenuBarHidden;
 
-    InstallApplicationEventHandler(NewEventHandlerUPP(&MenuBarRevealHandler),
-                                   std::size(eventSpecs), eventSpecs, self,
-                                   &_menubarTrackingHandler);
+    InstallApplicationEventHandler(
+        NewEventHandlerUPP(&MenuBarRevealHandler), std::size(eventSpecs),
+        eventSpecs, (__bridge void*)self, &_menubarTrackingHandler);
 
     // Register for Active Space change notifications.
-    [[[NSWorkspace sharedWorkspace] notificationCenter]
+    [NSWorkspace.sharedWorkspace.notificationCenter
         addObserver:self
            selector:@selector(activeSpaceDidChange:)
                name:NSWorkspaceActiveSpaceDidChangeNotification
@@ -100,9 +100,7 @@ OSStatus MenuBarRevealHandler(EventHandlerCallRef handler,
 
 - (void)dealloc {
   RemoveEventHandler(_menubarTrackingHandler);
-  [[[NSWorkspace sharedWorkspace] notificationCenter] removeObserver:self];
-
-  [super dealloc];
+  [NSWorkspace.sharedWorkspace.notificationCenter removeObserver:self];
 }
 
 - (CGFloat)menubarFraction {
@@ -121,8 +119,9 @@ OSStatus MenuBarRevealHandler(EventHandlerCallRef handler,
     return;
 
   // Ignore the menubarFraction changes if the Space is inactive.
-  if (![[_controller window] isOnActiveSpace])
+  if (!_controller.window.onActiveSpace) {
     return;
+  }
 
   if (ui::IsCGFloatEqual(progress, 1.0))
     _state = FullscreenMenubarState::SHOWN;
@@ -141,8 +140,8 @@ OSStatus MenuBarRevealHandler(EventHandlerCallRef handler,
 }
 
 - (BOOL)isMouseOnScreen {
-  return NSMouseInRect([NSEvent mouseLocation],
-                       [[_controller window] screen].frame, false);
+  return NSMouseInRect(NSEvent.mouseLocation, _controller.window.screen.frame,
+                       false);
 }
 
 - (void)activeSpaceDidChange:(NSNotification*)notification {

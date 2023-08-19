@@ -15,6 +15,7 @@
 #include "components/omnibox/browser/match_compare.h"
 #include "components/omnibox/browser/omnibox_field_trial.h"
 #include "components/omnibox/browser/omnibox_log.h"
+#include "components/omnibox/browser/omnibox_popup_selection.h"
 #include "components/omnibox/common/omnibox_features.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/metrics_proto/omnibox_event.pb.h"
@@ -39,7 +40,8 @@ class OmniboxMetricsProviderTest : public testing::Test {
         u"my text", /*just_deleted_text=*/false, metrics::OmniboxInputType::URL,
         /*in_keyword_mode=*/false,
         metrics::OmniboxEventProto_KeywordModeEntryMethod_INVALID,
-        /*is_popup_open=*/false, /*selected_index=*/selected_index,
+        /*is_popup_open=*/false,
+        /*selection=*/OmniboxPopupSelection(selected_index),
         WindowOpenDisposition::CURRENT_TAB, /*is_paste_and_go=*/false,
         SessionID::NewUnique(),
         metrics::OmniboxEventProto::PageClassification::

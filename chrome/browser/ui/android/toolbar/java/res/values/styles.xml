@@ -17,6 +17,10 @@ found in the LICENSE file.
         <item name="tint">@color/default_icon_color_tint_list</item>
         <item name="android:background">?attr/selectableItemBackground</item>
     </style>
+    <style name="LocationBarActionButtonPolish" parent="LocationBarActionButton">
+        <item name="android:layout_height">@dimen/location_bar_action_icon_width</item>
+        <item name="android:background">@drawable/single_tab_card_ripple</item>
+    </style>
     <style name="ToolbarButton">
         <item name="android:background">?attr/selectableItemBackground</item>
         <item name="android:layout_width">@dimen/toolbar_button_width</item>

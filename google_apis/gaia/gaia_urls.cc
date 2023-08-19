@@ -6,6 +6,7 @@
 
 #include "base/command_line.h"
 #include "base/logging.h"
+#include "base/macros/concat.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_piece.h"
 #include "base/strings/stringprintf.h"
@@ -17,9 +18,7 @@
 #include "url/url_canon.h"
 #include "url/url_constants.h"
 
-#define CONCAT_HIDDEN(a, b) a##b
-#define CONCAT(a, b) CONCAT_HIDDEN(a, b)
-#define URL_KEY_AND_PTR(name) #name, &CONCAT(name, _)
+#define URL_KEY_AND_PTR(name) #name, &BASE_CONCAT(name, _)
 
 namespace {
 
@@ -64,7 +63,7 @@ const char kSigninChromeSyncKeysRecoverabilityUrlSuffix[] =
     "?kdi=CAIaDgoKY2hyb21lc3luYxAB";
 
 const char kServiceLogoutUrlSuffix[] = "Logout";
-const char kContinueUrlForLogoutSuffix[] = "chrome/blank.html";
+const char kBlankPageSuffix[] = "chrome/blank.html";
 const char kMergeSessionUrlSuffix[] = "MergeSession";
 const char kOAuth1LoginUrlSuffix[] = "OAuthLogin";
 const char kOAuthMultiloginSuffix[] = "oauth/multilogin";
@@ -307,6 +306,10 @@ const GURL& GaiaUrls::tasks_api_origin_url() const {
   return tasks_api_origin_url_;
 }
 
+const GURL& GaiaUrls::blank_page_url() const {
+  return blank_page_url_;
+}
+
 const GURL& GaiaUrls::google_apis_origin_url() const {
   return google_apis_origin_url_;
 }
@@ -324,10 +327,9 @@ GURL GaiaUrls::ListAccountsURLWithSource(const std::string& source) {
 GURL GaiaUrls::LogOutURLWithSource(const std::string& source) {
   std::string params =
       source.empty()
-          ? base::StringPrintf("?continue=%s",
-                               continue_url_for_logout_.spec().c_str())
+          ? base::StringPrintf("?continue=%s", blank_page_url_.spec().c_str())
           : base::StringPrintf("?source=%s&continue=%s", source.c_str(),
-                               continue_url_for_logout_.spec().c_str());
+                               blank_page_url_.spec().c_str());
   return service_logout_url_.Resolve(params);
 }
 
@@ -391,8 +393,7 @@ void GaiaUrls::InitializeDefault() {
       base::StrCat({kSigninChromeSyncKeysRetrievalUrl,
                     kSigninChromeSyncKeysRecoverabilityUrlSuffix}));
   ResolveURLIfInvalid(&service_logout_url_, gaia_url, kServiceLogoutUrlSuffix);
-  ResolveURLIfInvalid(&continue_url_for_logout_, gaia_url,
-                      kContinueUrlForLogoutSuffix);
+  ResolveURLIfInvalid(&blank_page_url_, gaia_url, kBlankPageSuffix);
   ResolveURLIfInvalid(&merge_session_url_, gaia_url, kMergeSessionUrlSuffix);
   ResolveURLIfInvalid(&oauth_multilogin_url_, gaia_url, kOAuthMultiloginSuffix);
   ResolveURLIfInvalid(&oauth1_login_url_, gaia_url, kOAuth1LoginUrlSuffix);
@@ -461,7 +462,7 @@ void GaiaUrls::InitializeFromConfig() {
   config->GetURLIfExists(
       URL_KEY_AND_PTR(signin_chrome_sync_keys_recoverability_degraded_url));
   config->GetURLIfExists(URL_KEY_AND_PTR(service_logout_url));
-  config->GetURLIfExists(URL_KEY_AND_PTR(continue_url_for_logout));
+  config->GetURLIfExists(URL_KEY_AND_PTR(blank_page_url));
   config->GetURLIfExists(URL_KEY_AND_PTR(merge_session_url));
   config->GetURLIfExists(URL_KEY_AND_PTR(oauth_multilogin_url));
   config->GetURLIfExists(URL_KEY_AND_PTR(oauth_user_info_url));

@@ -10,11 +10,21 @@ export interface PasskeysBrowserProxy {
    * May report false positives if the last passkey was recently deleted.
    */
   hasPasskeys(): Promise<boolean>;
+
+  /**
+   * Opens the passkey management surface, whether that be native to the
+   * operating system, or a Chrome settings tab.
+   */
+  managePasskeys(): void;
 }
 
 export class PasskeysBrowserProxyImpl implements PasskeysBrowserProxy {
   hasPasskeys() {
     return sendWithPromise('passkeysHasPasskeys');
+  }
+
+  managePasskeys() {
+    return chrome.send('passkeysManagePasskeys');
   }
 
   static getInstance(): PasskeysBrowserProxy {

@@ -32,12 +32,10 @@
 #include "ash/constants/ash_features.h"
 #include "ash/controls/gradient_layer_delegate.h"
 #include "ash/controls/scroll_view_gradient_helper.h"
-#include "ash/drag_drop/drag_drop_controller.h"
 #include "ash/public/cpp/app_list/app_list_features.h"
 #include "ash/public/cpp/assistant/controller/assistant_ui_controller.h"
 #include "ash/public/cpp/style/color_provider.h"
 #include "ash/public/cpp/test/assistant_test_api.h"
-#include "ash/public/cpp/test/shell_test_api.h"
 #include "ash/shell.h"
 #include "ash/style/ash_color_provider.h"
 #include "ash/system/notification_center/notification_center_tray.h"
@@ -50,6 +48,7 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "chromeos/ash/services/assistant/public/cpp/assistant_enums.h"
+#include "chromeos/constants/chromeos_features.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/compositor/layer.h"
 #include "ui/compositor/scoped_animation_duration_scale_mode.h"
@@ -198,30 +197,6 @@ class AppListBubbleViewDragTest : public AppListBubbleViewTest,
     scoped_feature_list_.InitWithFeatureState(
         app_list_features::kDragAndDropRefactor, GetParam());
     AppListBubbleViewTest::SetUp();
-  }
-
-  void MaybeRunDragAndDropSequence(std::list<base::OnceClosure>* tasks) {
-    if (!GetParam()) {
-      while (!tasks->empty()) {
-        std::move(tasks->front()).Run();
-        tasks->pop_front();
-      }
-      return;
-    }
-
-    ShellTestApi().drag_drop_controller()->SetLoopClosureForTesting(
-        base::BindLambdaForTesting([&]() {
-          auto task = std::move(tasks->front());
-          tasks->pop_front();
-          std::move(task).Run();
-        }),
-        base::DoNothing());
-    tasks->push_front(base::BindLambdaForTesting([&]() {
-      // Generate OnDragEnter() event for the host view.
-      GetEventGenerator()->MoveMouseBy(10, 10);
-    }));
-    // Start Drag and Drop Sequence by moving the mouse.
-    GetEventGenerator()->MoveMouseBy(10, 10);
   }
   base::test::ScopedFeatureList scoped_feature_list_;
 };
@@ -439,8 +414,10 @@ TEST_F(AppListBubbleViewTest, ShowAnimationDestroysAndRestoresShadow) {
   auto* apps_grid_view = GetAppsGridView();
   ui::LayerAnimationStoppedWaiter().Wait(apps_grid_view->layer());
 
-  // Shadow is restored.
-  EXPECT_TRUE(app_list_bubble_view->view_shadow_for_test());
+  // Shadow is restored - when kJelly is enabled, no shadow is expected, for
+  // consistency with bubbles in system tray area.
+  EXPECT_EQ(!chromeos::features::IsJellyEnabled(),
+            !!app_list_bubble_view->view_shadow_for_test());
 }
 
 TEST_F(AppListBubbleViewTest, ShowAnimationRecordsSmoothnessHistogram) {
@@ -1255,7 +1232,7 @@ TEST_P(AppListBubbleViewDragTest, ReparentDragOutOfFolderClosesFolder) {
     generator->ReleaseLeftButton();
     EXPECT_FALSE(GetAppListTestHelper()->GetBubbleFolderView()->GetVisible());
   }));
-  MaybeRunDragAndDropSequence(&tasks);
+  MaybeRunDragAndDropSequenceForAppList(&tasks, /*is_touch=*/false);
 
   // End the drag.
   generator->ReleaseLeftButton();
@@ -1287,7 +1264,7 @@ TEST_P(AppListBubbleViewDragTest, DragItemInsideFolderDoesNotSelectItem) {
     EXPECT_FALSE(folder_view->items_grid_view()->has_selected_view());
     EXPECT_FALSE(GetFocusedView()) << GetFocusedViewName();
   }));
-  MaybeRunDragAndDropSequence(&tasks);
+  MaybeRunDragAndDropSequenceForAppList(&tasks, /*is_touch=*/false);
 }
 
 TEST_F(AppListBubbleViewTest, OpenFolderWithMouseDoesNotFocusItem) {
@@ -1626,7 +1603,7 @@ TEST_P(AppListBubbleViewDragTest, AutoScrollOnTopOfTheBubble) {
   }));
   tasks.push_back(
       base::BindLambdaForTesting([&]() { generator->ReleaseLeftButton(); }));
-  MaybeRunDragAndDropSequence(&tasks);
+  MaybeRunDragAndDropSequenceForAppList(&tasks, /*is_touch=*/false);
 }
 
 // Verifies that hidden app list bubble view does not attempt to change its

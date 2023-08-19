@@ -566,7 +566,7 @@ if ((crashpad_is_linux || crashpad_is_android || crashpad_is_fuchsia) &&
   }
 }
 
-if (crashpad_is_mac || crashpad_is_ios) {
+if (crashpad_is_apple) {
   crashpad_loadable_module("crashpad_snapshot_test_module_crashy_initializer") {
     testonly = true
     sources = [

@@ -6,23 +6,19 @@
 dmurph@chromium.org
 phillis@chromium.org
 dibyapal@chromium.org
+alancutter@chromium.org
+glenrob@chromium.org
 
 # Secondary
-alancutter@chromium.org
 cmp@chromium.org
 dominickn@chromium.org
-glenrob@chromium.org
 ortuno@chromium.org
 
 # OS shortcuts
 tapted@chromium.org
 
 per-file web_app_default_offline*=finnur@chromium.org
-per-file web_app_file_handler*=davidbienvenu@chromium.org
-per-file web_app_file_handler*=jessemckenna@google.com
 per-file web_app_id_constants.*=dominickn@chromium.org
 per-file web_app_id_constants.*=tsergeant@chromium.org
-per-file web_app_shortcut_win*=davidbienvenu@chromium.org
-per-file web_app_shortcut_win*=jessemckenna@google.com
 
 per-file BUILD.gn=file://chrome/browser/web_applications/isolated_web_apps/OWNERS

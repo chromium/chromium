@@ -11,24 +11,20 @@
 #import "components/keyed_service/core/keyed_service.h"
 #import "components/keyed_service/ios/browser_state_dependency_manager.h"
 #import "ios/chrome/browser/shared/model/browser/all_web_state_list_observation_registrar.h"
+#import "ios/chrome/browser/shared/model/browser/browser_list_factory.h"
 #import "ios/chrome/browser/shared/model/browser_state/browser_state_otr_helper.h"
 #import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
 #import "ios/chrome/browser/web/features.h"
 #import "ios/chrome/browser/web/session_state/web_session_state_cache.h"
 #import "ios/chrome/browser/web/session_state/web_session_state_cache_web_state_list_observer.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 namespace {
 // C++ wrapper around WebSessionStateCache, owning the WebSessionStateCache and
 // allowing it bind it to an ChromeBrowserState as a KeyedService.
 class WebSessionStateCacheWrapper : public KeyedService {
  public:
-  explicit WebSessionStateCacheWrapper(
-      ChromeBrowserState* browser_state,
-      WebSessionStateCache* web_session_state_cache);
+  WebSessionStateCacheWrapper(BrowserList* browser_list,
+                              WebSessionStateCache* web_session_state_cache);
 
   WebSessionStateCacheWrapper(const WebSessionStateCacheWrapper&) = delete;
   WebSessionStateCacheWrapper& operator=(const WebSessionStateCacheWrapper&) =
@@ -49,13 +45,13 @@ class WebSessionStateCacheWrapper : public KeyedService {
 };
 
 WebSessionStateCacheWrapper::WebSessionStateCacheWrapper(
-    ChromeBrowserState* browser_state,
+    BrowserList* browser_list,
     WebSessionStateCache* web_session_state_cache)
     : web_session_state_cache_(web_session_state_cache) {
   DCHECK(web_session_state_cache);
   registrar_ = std::make_unique<AllWebStateListObservationRegistrar>(
-      browser_state, std::make_unique<WebSessionStateCacheWebStateListObserver>(
-                         web_session_state_cache));
+      browser_list, std::make_unique<WebSessionStateCacheWebStateListObserver>(
+                        web_session_state_cache));
 }
 
 WebSessionStateCacheWrapper::~WebSessionStateCacheWrapper() {
@@ -73,7 +69,7 @@ std::unique_ptr<KeyedService> BuildWebSessionStateCacheWrapper(
   ChromeBrowserState* chrome_browser_state =
       ChromeBrowserState::FromBrowserState(context);
   return std::make_unique<WebSessionStateCacheWrapper>(
-      chrome_browser_state,
+      BrowserListFactory::GetForBrowserState(chrome_browser_state),
       [[WebSessionStateCache alloc] initWithBrowserState:chrome_browser_state]);
 }
 }  // namespace

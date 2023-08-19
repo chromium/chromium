@@ -10,7 +10,7 @@
 #include "components/autofill/core/browser/data_model/credit_card.h"
 
 // Creates an FastCheckoutAutofillProfile in Java. This is comparable to
-// PersonalDataManagerAndroid::CreateJavaProfileFromNative.
+// AutofillProfile::CreateJavaObject.
 base::android::ScopedJavaLocalRef<jobject> CreateFastCheckoutAutofillProfile(
     JNIEnv* env,
     const autofill::AutofillProfile& profile,

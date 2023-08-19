@@ -10,6 +10,7 @@
 #include "ash/wm/tablet_mode/tablet_mode_controller.h"
 #include "base/cancelable_callback.h"
 #include "base/containers/flat_set.h"
+#include "base/memory/raw_ptr_exclusion.h"
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_multi_source_observation.h"
 #include "base/scoped_observation.h"
@@ -151,7 +152,9 @@ class ASH_EXPORT WindowRestoreController
   // True whenever we are attempting to restore snap state.
   // The window that is about to be snapped by window restore. Reset to nullptr
   // if we aren't directly working with the window anymore.
-  aura::Window* to_be_snapped_window_ = nullptr;
+  // This field is not a raw_ptr<> because it was filtered by the rewriter
+  // for: #addr-of
+  RAW_PTR_EXCLUSION aura::Window* to_be_snapped_window_ = nullptr;
 
   // The set of windows that have had their widgets initialized and will be
   // shown later.

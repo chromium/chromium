@@ -10,24 +10,21 @@
 #import "base/path_service.h"
 #import "base/run_loop.h"
 #import "base/strings/stringprintf.h"
-#import "base/strings/utf_string_conversions.h"
 #import "base/test/ios/wait_util.h"
 #import "base/test/metrics/histogram_tester.h"
 #import "base/values.h"
 #import "components/sessions/core/session_id.h"
 #import "ios/net/protocol_handler_util.h"
-#import "ios/web/common/features.h"
 #import "ios/web/common/uikit_ui_util.h"
 #import "ios/web/navigation/navigation_manager_impl.h"
 #import "ios/web/navigation/wk_navigation_util.h"
 #import "ios/web/public/js_messaging/web_frame.h"
 #import "ios/web/public/navigation/navigation_item.h"
 #import "ios/web/public/navigation/navigation_manager.h"
-#import "ios/web/public/session/crw_navigation_item_storage.h"
-#import "ios/web/public/session/crw_session_storage.h"
 #import "ios/web/public/test/error_test_util.h"
 #import "ios/web/public/test/fakes/fake_web_client.h"
 #import "ios/web/public/test/fakes/fake_web_state_delegate.h"
+#import "ios/web/public/test/web_state_test_util.h"
 #import "ios/web/public/test/web_test_with_web_state.h"
 #import "ios/web/public/test/web_view_content_test_util.h"
 #import "ios/web/public/web_client.h"
@@ -40,10 +37,6 @@
 #import "ui/gfx/geometry/rect_f.h"
 #import "ui/gfx/image/image.h"
 #import "ui/gfx/image/image_unittest_util.h"
-
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
 
 using base::test::ios::WaitUntilConditionOrTimeout;
 using base::test::ios::kWaitForJSCompletionTimeout;
@@ -64,6 +57,25 @@ NSError* CreateUnsupportedURLError() {
       {{NSURLErrorDomain, NSURLErrorUnsupportedURL},
        {net::kNSErrorDomain, net::ERR_INVALID_URL}});
 }
+
+// Create an unrealized WebState with `items_count` navigation items.
+std::unique_ptr<WebState> CreateUnrealizedWebStateWithItemsCount(
+    BrowserState* browser_state,
+    size_t items_count) {
+  std::vector<test::PageInfo> items;
+  items.reserve(items_count);
+
+  for (size_t index = 0; index < items_count; ++index) {
+    items.push_back(test::PageInfo{
+        .url = GURL(base::StringPrintf("http://www.%zu.com", index)),
+        .title = base::StringPrintf("Test%zu", index),
+    });
+  }
+
+  return test::CreateUnrealizedWebStateWithItems(
+      browser_state, /* last_committed_item_index= */ 0, items);
+}
+
 }  // namespace
 
 using wk_navigation_util::IsWKInternalUrl;
@@ -354,23 +366,9 @@ TEST_F(WebStateTest, SetHasOpener) {
 TEST_F(WebStateTest, RestoreLargeSession) {
   // Create session storage with large number of items.
   const int kItemCount = 150;
-  NSMutableArray<CRWNavigationItemStorage*>* item_storages =
-      [NSMutableArray arrayWithCapacity:kItemCount];
-  for (unsigned int i = 0; i < kItemCount; i++) {
-    CRWNavigationItemStorage* item = [[CRWNavigationItemStorage alloc] init];
-    item.URL = GURL(base::StringPrintf("http://www.%u.com", i));
-    item.title = base::ASCIIToUTF16(base::StringPrintf("Test%u", i));
-    [item_storages addObject:item];
-  }
+  std::unique_ptr<WebState> web_state =
+      CreateUnrealizedWebStateWithItemsCount(GetBrowserState(), kItemCount);
 
-  // Restore the session.
-  WebState::CreateParams params(GetBrowserState());
-  CRWSessionStorage* session_storage = [[CRWSessionStorage alloc] init];
-  session_storage.stableIdentifier = [[NSUUID UUID] UUIDString];
-  session_storage.uniqueIdentifier = SessionID::NewUnique();
-  session_storage.itemStorages = item_storages;
-  session_storage.userAgentType = UserAgentType::MOBILE;
-  auto web_state = WebState::CreateWithStorageSession(params, session_storage);
   web_state->SetKeepRenderProcessAlive(true);
   WebState* web_state_ptr = web_state.get();
   NavigationManager* navigation_manager = web_state->GetNavigationManager();
@@ -488,22 +486,9 @@ TEST_F(WebStateTest, RestoreLargeSession) {
 TEST_F(WebStateTest, CallStopDuringSessionRestore) {
   // Create session storage with large number of items.
   const int kItemCount = 10;
-  NSMutableArray<CRWNavigationItemStorage*>* item_storages =
-      [NSMutableArray arrayWithCapacity:kItemCount];
-  for (unsigned int i = 0; i < kItemCount; i++) {
-    CRWNavigationItemStorage* item = [[CRWNavigationItemStorage alloc] init];
-    item.virtualURL = GURL(base::StringPrintf("http://www.%u.com", i));
-    [item_storages addObject:item];
-  }
+  std::unique_ptr<WebState> web_state =
+      CreateUnrealizedWebStateWithItemsCount(GetBrowserState(), kItemCount);
 
-  // Restore the session.
-  WebState::CreateParams params(GetBrowserState());
-  CRWSessionStorage* session_storage = [[CRWSessionStorage alloc] init];
-  session_storage.stableIdentifier = [[NSUUID UUID] UUIDString];
-  session_storage.uniqueIdentifier = SessionID::NewUnique();
-  session_storage.itemStorages = item_storages;
-  session_storage.userAgentType = UserAgentType::MOBILE;
-  auto web_state = WebState::CreateWithStorageSession(params, session_storage);
   web_state->SetKeepRenderProcessAlive(true);
   WebState* web_state_ptr = web_state.get();
   NavigationManager* navigation_manager = web_state->GetNavigationManager();
@@ -538,23 +523,9 @@ TEST_F(WebStateTest, CallStopDuringSessionRestore) {
 TEST_F(WebStateTest, CallLoadURLWithParamsDuringSessionRestore) {
   // Create session storage with large number of items.
   const int kItemCount = 10;
-  NSMutableArray<CRWNavigationItemStorage*>* item_storages =
-      [NSMutableArray arrayWithCapacity:kItemCount];
-  for (unsigned int i = 0; i < kItemCount; i++) {
-    CRWNavigationItemStorage* item = [[CRWNavigationItemStorage alloc] init];
-    item.virtualURL = GURL(base::StringPrintf("http://www.%u.test", i));
-    item.userAgentType = UserAgentType::MOBILE;
-    [item_storages addObject:item];
-  }
+  std::unique_ptr<WebState> web_state =
+      CreateUnrealizedWebStateWithItemsCount(GetBrowserState(), kItemCount);
 
-  // Restore the session.
-  WebState::CreateParams params(GetBrowserState());
-  CRWSessionStorage* session_storage = [[CRWSessionStorage alloc] init];
-  session_storage.stableIdentifier = [[NSUUID UUID] UUIDString];
-  session_storage.uniqueIdentifier = SessionID::NewUnique();
-  session_storage.itemStorages = item_storages;
-  session_storage.userAgentType = UserAgentType::MOBILE;
-  auto web_state = WebState::CreateWithStorageSession(params, session_storage);
   web_state->SetKeepRenderProcessAlive(true);
   WebState* web_state_ptr = web_state.get();
   NavigationManager* navigation_manager = web_state->GetNavigationManager();
@@ -596,22 +567,9 @@ TEST_F(WebStateTest, CallLoadURLWithParamsDuringSessionRestore) {
 TEST_F(WebStateTest, CallReloadDuringSessionRestore) {
   // Create session storage with large number of items.
   const int kItemCount = 10;
-  NSMutableArray<CRWNavigationItemStorage*>* item_storages =
-      [NSMutableArray arrayWithCapacity:kItemCount];
-  for (unsigned int i = 0; i < kItemCount; i++) {
-    CRWNavigationItemStorage* item = [[CRWNavigationItemStorage alloc] init];
-    item.virtualURL = GURL(base::StringPrintf("http://www.%u.com", i));
-    [item_storages addObject:item];
-  }
+  std::unique_ptr<WebState> web_state =
+      CreateUnrealizedWebStateWithItemsCount(GetBrowserState(), kItemCount);
 
-  // Restore the session.
-  WebState::CreateParams params(GetBrowserState());
-  CRWSessionStorage* session_storage = [[CRWSessionStorage alloc] init];
-  session_storage.stableIdentifier = [[NSUUID UUID] UUIDString];
-  session_storage.uniqueIdentifier = SessionID::NewUnique();
-  session_storage.itemStorages = item_storages;
-  session_storage.userAgentType = UserAgentType::MOBILE;
-  auto web_state = WebState::CreateWithStorageSession(params, session_storage);
   web_state->SetKeepRenderProcessAlive(true);
   WebState* web_state_ptr = web_state.get();
   NavigationManager* navigation_manager = web_state->GetNavigationManager();
@@ -647,23 +605,9 @@ TEST_F(WebStateTest, CallReloadDuringSessionRestore) {
 TEST_F(WebStateTest, RestorePageTitles) {
   // Create session storage.
   const int kItemCount = 3;
-  NSMutableArray<CRWNavigationItemStorage*>* item_storages =
-      [NSMutableArray arrayWithCapacity:kItemCount];
-  for (unsigned int i = 0; i < kItemCount; i++) {
-    CRWNavigationItemStorage* item = [[CRWNavigationItemStorage alloc] init];
-    item.URL = GURL(base::StringPrintf("http://www.%u.com", i));
-    item.title = base::ASCIIToUTF16(base::StringPrintf("Test%u", i));
-    [item_storages addObject:item];
-  }
+  std::unique_ptr<WebState> web_state =
+      CreateUnrealizedWebStateWithItemsCount(GetBrowserState(), kItemCount);
 
-  // Restore the session.
-  WebState::CreateParams params(GetBrowserState());
-  CRWSessionStorage* session_storage = [[CRWSessionStorage alloc] init];
-  session_storage.stableIdentifier = [[NSUUID UUID] UUIDString];
-  session_storage.uniqueIdentifier = SessionID::NewUnique();
-  session_storage.itemStorages = item_storages;
-  session_storage.userAgentType = UserAgentType::MOBILE;
-  auto web_state = WebState::CreateWithStorageSession(params, session_storage);
   web_state->SetKeepRenderProcessAlive(true);
   NavigationManager* navigation_manager = web_state->GetNavigationManager();
   // TODO(crbug.com/873729): The session will not be restored until

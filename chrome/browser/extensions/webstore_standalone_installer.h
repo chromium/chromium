@@ -11,6 +11,7 @@
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
+#include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
 #include "chrome/browser/extensions/active_install_data.h"
 #include "chrome/browser/extensions/extension_install_prompt.h"
@@ -40,7 +41,6 @@ class WebstoreDataFetcher;
 class WebstoreStandaloneInstaller
     : public base::RefCountedThreadSafe<WebstoreStandaloneInstaller>,
       public WebstoreDataFetcherDelegate,
-      public WebstoreInstaller::Delegate,
       public WebstoreInstallHelper::Delegate,
       public ProfileObserver {
  public:
@@ -185,12 +185,11 @@ class WebstoreStandaloneInstaller
                               InstallHelperResultCode result_code,
                               const std::string& error_message) override;
 
-  // WebstoreInstaller::Delegate interface implementation.
-  void OnExtensionInstallSuccess(const std::string& id) override;
-  void OnExtensionInstallFailure(
-      const std::string& id,
-      const std::string& error,
-      WebstoreInstaller::FailureReason reason) override;
+  // WebstoreInstaller::Delegate callbacks.
+  void OnExtensionInstallSuccess(const std::string& id);
+  void OnExtensionInstallFailure(const std::string& id,
+                                 const std::string& error,
+                                 WebstoreInstaller::FailureReason reason);
 
   // ProfileObserver
   void OnProfileWillBeDestroyed(Profile* profile) override;
@@ -233,6 +232,8 @@ class WebstoreStandaloneInstaller
   // Created by ShowInstallUI() when a prompt is shown (if
   // the implementor returns a non-NULL in CreateInstallPrompt()).
   scoped_refptr<Extension> localized_extension_for_display_;
+
+  base::WeakPtrFactory<WebstoreStandaloneInstaller> weak_ptr_factory_{this};
 };
 
 }  // namespace extensions

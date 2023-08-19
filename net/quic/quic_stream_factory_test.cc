@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "net/quic/quic_stream_factory.h"
+#include <sys/types.h>
 
 #include <memory>
 #include <ostream>
@@ -11,6 +12,7 @@
 
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
+#include "base/logging.h"
 #include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/strings/strcat.h"
@@ -26,6 +28,8 @@
 #include "net/base/features.h"
 #include "net/base/load_flags.h"
 #include "net/base/mock_network_change_notifier.h"
+#include "net/base/net_error_details.h"
+#include "net/base/net_errors.h"
 #include "net/base/network_anonymization_key.h"
 #include "net/base/schemeful_site.h"
 #include "net/cert/ct_policy_enforcer.h"
@@ -47,6 +51,7 @@
 #include "net/quic/mock_quic_data.h"
 #include "net/quic/properties_based_quic_server_info.h"
 #include "net/quic/quic_chromium_alarm_factory.h"
+#include "net/quic/quic_chromium_client_session.h"
 #include "net/quic/quic_chromium_client_session_peer.h"
 #include "net/quic/quic_context.h"
 #include "net/quic/quic_http_stream.h"
@@ -123,14 +128,11 @@ const quic::QuicConnectionId kNewCID = quic::test::TestConnectionId(12345678);
 // and enable_connection_racting.
 struct TestParams {
   quic::ParsedQuicVersion version;
-  bool enable_quic_priority_incremental_support;
 };
 
 // Used by ::testing::PrintToStringParamName().
 std::string PrintToString(const TestParams& p) {
-  return base::StrCat({ParsedQuicVersionToString(p.version), "_",
-                       (p.enable_quic_priority_incremental_support ? "" : "No"),
-                       "Incremental"});
+  return ParsedQuicVersionToString(p.version);
 }
 
 std::vector<TestParams> GetTestParams() {
@@ -138,8 +140,7 @@ std::vector<TestParams> GetTestParams() {
   quic::ParsedQuicVersionVector all_supported_versions =
       AllSupportedQuicVersions();
   for (const auto& version : all_supported_versions) {
-    params.push_back(TestParams{version, false});
-    params.push_back(TestParams{version, true});
+    params.push_back(TestParams{version});
   }
   return params;
 }
@@ -249,7 +250,6 @@ class QuicStreamFactoryTestBase : public WithTaskEnvironment {
  protected:
   QuicStreamFactoryTestBase(
       quic::ParsedQuicVersion version,
-      bool enable_quic_priority_incremental_support,
       std::vector<base::test::FeatureRef> enabled_features = {},
       std::vector<base::test::FeatureRef> disabled_features = {})
       : host_resolver_(std::make_unique<MockHostResolver>(
@@ -278,11 +278,6 @@ class QuicStreamFactoryTestBase : public WithTaskEnvironment {
             &QuicStreamFactoryTestBase::OnFailedOnDefaultNetwork,
             base::Unretained(this))),
         quic_params_(context_.params()) {
-    if (enable_quic_priority_incremental_support) {
-      enabled_features.push_back(features::kPriorityIncremental);
-    } else {
-      disabled_features.push_back(features::kPriorityIncremental);
-    }
     enabled_features.push_back(features::kAsyncQuicSession);
     scoped_feature_list_.InitWithFeatures(enabled_features, disabled_features);
     FLAGS_quic_enable_http3_grease_randomness = false;
@@ -300,10 +295,6 @@ class QuicStreamFactoryTestBase : public WithTaskEnvironment {
         &crypto_client_stream_factory_, &context_);
   }
 
-  void SetIetfConnectionMigrationFlagsAndConnectionOptions() {
-    FLAGS_quic_reloadable_flag_quic_connection_migration_use_new_cid_v2 = true;
-  }
-
   void InitializeConnectionMigrationV2Test(
       NetworkChangeNotifier::NetworkList connected_networks) {
     scoped_mock_network_change_notifier_ =
@@ -315,7 +306,6 @@ class QuicStreamFactoryTestBase : public WithTaskEnvironment {
     quic_params_->migrate_sessions_on_network_change_v2 = true;
     quic_params_->migrate_sessions_early_v2 = true;
     socket_factory_ = std::make_unique<TestConnectionMigrationSocketFactory>();
-    SetIetfConnectionMigrationFlagsAndConnectionOptions();
     Initialize();
   }
 
@@ -926,6 +916,9 @@ class QuicStreamFactoryTestBase : public WithTaskEnvironment {
       IoMode write_error_mode,
       bool disconnect_before_connect);
   void TestNoAlternateNetworkBeforeHandshake(quic::QuicErrorCode error);
+  void
+  TestThatBlackHoleIsDisabledOnNoNewNetworkThenResumedAfterConnectingToANetwork(
+      bool is_blackhole_disabled_after_disconnecting);
   void TestNewConnectionOnAlternateNetworkBeforeHandshake(
       quic::QuicErrorCode error);
   void TestOnNetworkMadeDefaultNonMigratableStream(bool migrate_idle_sessions);
@@ -981,10 +974,7 @@ class QuicStreamFactoryTestBase : public WithTaskEnvironment {
 class QuicStreamFactoryTest : public QuicStreamFactoryTestBase,
                               public ::testing::TestWithParam<TestParams> {
  protected:
-  QuicStreamFactoryTest()
-      : QuicStreamFactoryTestBase(
-            GetParam().version,
-            GetParam().enable_quic_priority_incremental_support) {}
+  QuicStreamFactoryTest() : QuicStreamFactoryTestBase(GetParam().version) {}
 };
 
 INSTANTIATE_TEST_SUITE_P(VersionIncludeStreamDependencySequence,
@@ -1897,7 +1887,6 @@ TEST_P(QuicStreamFactoryTest, PoolingWithServerMigration) {
                                             "192.168.0.1", "");
   IPEndPoint alt_address = IPEndPoint(IPAddress(1, 2, 3, 4), 443);
   quic::QuicConfig config;
-  SetIetfConnectionMigrationFlagsAndConnectionOptions();
   config.SetIPv4AlternateServerAddressToSend(ToQuicSocketAddress(alt_address));
   config.SetPreferredAddressConnectionIdAndTokenToSend(
       kNewCID, quic::QuicUtils::GenerateStatelessResetToken(kNewCID));
@@ -4988,7 +4977,6 @@ TEST_P(QuicStreamFactoryTest,
 }
 
 TEST_P(QuicStreamFactoryTest, MultiPortSessionWithMigration) {
-  SetIetfConnectionMigrationFlagsAndConnectionOptions();
   // Turning on MPQC will implicitly turn on port migration.
   quic_params_->client_connection_options.push_back(quic::kMPQC);
   socket_factory_ = std::make_unique<TestPortMigrationSocketFactory>();
@@ -5138,7 +5126,6 @@ TEST_P(QuicStreamFactoryTest, MultiPortSessionWithMigration) {
 
 TEST_P(QuicStreamFactoryTest, SuccessfullyMigratedToServerPreferredAddress) {
   IPEndPoint server_preferred_address = IPEndPoint(IPAddress(1, 2, 3, 4), 123);
-  SetIetfConnectionMigrationFlagsAndConnectionOptions();
   FLAGS_quic_enable_chaos_protection = false;
   quic_params_->connection_options.push_back(quic::kSPAD);
   socket_factory_ = std::make_unique<TestPortMigrationSocketFactory>();
@@ -5224,7 +5211,6 @@ TEST_P(QuicStreamFactoryTest, SuccessfullyMigratedToServerPreferredAddress) {
 
 TEST_P(QuicStreamFactoryTest, FailedToValidateServerPreferredAddress) {
   IPEndPoint server_preferred_address = IPEndPoint(IPAddress(1, 2, 3, 4), 123);
-  SetIetfConnectionMigrationFlagsAndConnectionOptions();
   FLAGS_quic_enable_chaos_protection = false;
   quic_params_->connection_options.push_back(quic::kSPAD);
   socket_factory_ = std::make_unique<TestPortMigrationSocketFactory>();
@@ -5318,7 +5304,6 @@ TEST_P(QuicStreamFactoryTest, FailedToValidateServerPreferredAddress) {
 
 TEST_P(QuicStreamFactoryTest,
        MigratePortOnPathDegrading_WithoutNetworkHandle_PathValidator) {
-  SetIetfConnectionMigrationFlagsAndConnectionOptions();
   socket_factory_ = std::make_unique<TestPortMigrationSocketFactory>();
   Initialize();
 
@@ -5326,7 +5311,6 @@ TEST_P(QuicStreamFactoryTest,
 }
 
 TEST_P(QuicStreamFactoryTest, PortMigrationDisabledOnPathDegrading) {
-  SetIetfConnectionMigrationFlagsAndConnectionOptions();
   socket_factory_ = std::make_unique<TestPortMigrationSocketFactory>();
   Initialize();
 
@@ -5428,7 +5412,6 @@ TEST_P(QuicStreamFactoryTest, PortMigrationDisabledOnPathDegrading) {
 
 TEST_P(QuicStreamFactoryTest,
        PortMigrationProbingReceivedStatelessReset_PathValidator) {
-  SetIetfConnectionMigrationFlagsAndConnectionOptions();
   socket_factory_ = std::make_unique<TestPortMigrationSocketFactory>();
   Initialize();
   ProofVerifyDetailsChromium verify_details = DefaultProofVerifyDetails();
@@ -5554,7 +5537,6 @@ TEST_P(QuicStreamFactoryTest,
       scoped_mock_network_change_notifier_->mock_network_change_notifier();
   mock_ncn->ForceNetworkHandlesSupported();
   mock_ncn->SetConnectedNetworksList({kDefaultNetworkForTests});
-  SetIetfConnectionMigrationFlagsAndConnectionOptions();
   socket_factory_ = std::make_unique<TestPortMigrationSocketFactory>();
   Initialize();
 
@@ -5574,7 +5556,6 @@ TEST_P(QuicStreamFactoryTest,
   mock_ncn->SetConnectedNetworksList({kDefaultNetworkForTests});
   // Enable migration on network change.
   quic_params_->migrate_sessions_on_network_change_v2 = true;
-  SetIetfConnectionMigrationFlagsAndConnectionOptions();
   socket_factory_ = std::make_unique<TestPortMigrationSocketFactory>();
   Initialize();
 
@@ -5582,6 +5563,577 @@ TEST_P(QuicStreamFactoryTest,
       ->NotifyNetworkMadeDefault(kDefaultNetworkForTests);
 
   TestSimplePortMigrationOnPathDegrading();
+}
+
+TEST_P(
+    QuicStreamFactoryTest,
+    TestPostNetworkOnMadeDefaultWhileConnectionMigrationFailOnUnexpectedErrorTwoDifferentSessions) {
+  scoped_mock_network_change_notifier_ =
+      std::make_unique<ScopedMockNetworkChangeNotifier>();
+  MockNetworkChangeNotifier* mock_ncn =
+      scoped_mock_network_change_notifier_->mock_network_change_notifier();
+  mock_ncn->ForceNetworkHandlesSupported();
+  mock_ncn->SetConnectedNetworksList({kDefaultNetworkForTests});
+  // Enable migration on network change.
+  quic_params_->migrate_sessions_on_network_change_v2 = true;
+  socket_factory_ = std::make_unique<TestPortMigrationSocketFactory>();
+  Initialize();
+
+  MockQuicData socket_data1(version_);
+  socket_data1.AddRead(SYNCHRONOUS, ERR_IO_PENDING);
+  socket_data1.AddWrite(SYNCHRONOUS, ConstructInitialSettingsPacket());
+  socket_data1.AddWrite(ASYNC, OK);
+  socket_data1.AddSocketDataToFactory(socket_factory_.get());
+  client_maker_.Reset();
+  MockQuicData socket_data2(version_);
+  socket_data2.AddRead(SYNCHRONOUS, ERR_IO_PENDING);
+  socket_data2.AddWrite(SYNCHRONOUS, ConstructInitialSettingsPacket());
+  socket_data2.AddWrite(ASYNC, OK);
+  socket_data2.AddSocketDataToFactory(socket_factory_.get());
+  // Add new sockets to use post migration. Those are bad sockets and will cause
+  // migration to fail.
+  MockConnect connect_result = MockConnect(ASYNC, ERR_UNEXPECTED);
+  SequencedSocketData socket_data3(connect_result, base::span<MockRead>(),
+                                   base::span<MockWrite>());
+  socket_factory_->AddSocketDataProvider(&socket_data3);
+  SequencedSocketData socket_data4(connect_result, base::span<MockRead>(),
+                                   base::span<MockWrite>());
+  socket_factory_->AddSocketDataProvider(&socket_data4);
+
+  url::SchemeHostPort server1(url::kHttpsScheme, kDefaultServerHostName, 443);
+  url::SchemeHostPort server2(url::kHttpsScheme, kServer2HostName, 443);
+
+  ProofVerifyDetailsChromium verify_details = DefaultProofVerifyDetails();
+  crypto_client_stream_factory_.AddProofVerifyDetails(&verify_details);
+  crypto_client_stream_factory_.AddProofVerifyDetails(&verify_details);
+
+  host_resolver_->set_synchronous_mode(true);
+  host_resolver_->rules()->AddIPLiteralRule(server1.host(), "192.168.0.1", "");
+  host_resolver_->rules()->AddIPLiteralRule(server2.host(), "192.168.0.2", "");
+
+  // Create request and QuicHttpStream to create session1.
+  QuicStreamRequest request1(factory_.get());
+  EXPECT_EQ(ERR_IO_PENDING,
+            request1.Request(
+                server1, version_, privacy_mode_, DEFAULT_PRIORITY, SocketTag(),
+                NetworkAnonymizationKey(), SecureDnsPolicy::kAllow,
+                /*use_dns_aliases=*/true, /*require_dns_https_alpn=*/false,
+                /*cert_verify_flags=*/0, url_, net_log_, &net_error_details_,
+                failed_on_default_network_callback_, callback_.callback()));
+  EXPECT_THAT(callback_.WaitForResult(), IsOk());
+  std::unique_ptr<HttpStream> stream1 = CreateStream(&request1);
+  EXPECT_TRUE(stream1.get());
+
+  // Create request and QuicHttpStream to create session2.
+  QuicStreamRequest request2(factory_.get());
+  EXPECT_EQ(ERR_IO_PENDING,
+            request2.Request(
+                server2, version_, privacy_mode_, DEFAULT_PRIORITY, SocketTag(),
+                NetworkAnonymizationKey(), SecureDnsPolicy::kAllow,
+                /*use_dns_aliases=*/true, /*require_dns_https_alpn=*/false,
+                /*cert_verify_flags=*/0, url2_, net_log_, &net_error_details_,
+                failed_on_default_network_callback_, callback_.callback()));
+  EXPECT_THAT(callback_.WaitForResult(), IsOk());
+  std::unique_ptr<HttpStream> stream2 = CreateStream(&request2);
+  EXPECT_TRUE(stream2.get());
+
+  QuicChromiumClientSession* session1 = GetActiveSession(server1);
+  QuicChromiumClientSession* session2 = GetActiveSession(server2);
+  EXPECT_NE(session1, session2);
+
+  // Cause QUIC stream to be created and send GET so session1 has an open
+  // stream.
+  HttpRequestInfo request_info1;
+  request_info1.method = "GET";
+  request_info1.url = url_;
+  request_info1.traffic_annotation =
+      MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS);
+  stream1->RegisterRequest(&request_info1);
+  EXPECT_EQ(OK, stream1->InitializeStream(true, DEFAULT_PRIORITY, net_log_,
+                                          CompletionOnceCallback()));
+  HttpResponseInfo response1;
+  HttpRequestHeaders request_headers1;
+  EXPECT_EQ(OK, stream1->SendRequest(request_headers1, &response1,
+                                     callback_.callback()));
+
+  // Cause QUIC stream to be created and send GET so session2 has an open
+  // stream.
+  HttpRequestInfo request_info2;
+  request_info2.method = "GET";
+  request_info2.url = url_;
+  request_info2.traffic_annotation =
+      MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS);
+  stream2->RegisterRequest(&request_info2);
+  EXPECT_EQ(OK, stream2->InitializeStream(true, DEFAULT_PRIORITY, net_log_,
+                                          CompletionOnceCallback()));
+  HttpResponseInfo response2;
+  HttpRequestHeaders request_headers2;
+  EXPECT_EQ(OK, stream2->SendRequest(request_headers2, &response2,
+                                     callback_.callback()));
+
+  EXPECT_EQ(2u, crypto_client_stream_factory_.streams().size());
+
+  crypto_client_stream_factory_.streams()[0]->setHandshakeConfirmedForce(false);
+  crypto_client_stream_factory_.streams()[1]->setHandshakeConfirmedForce(false);
+
+  std::unique_ptr<QuicChromiumClientSession::Handle> handle1 =
+      session1->CreateHandle(server1);
+  std::unique_ptr<QuicChromiumClientSession::Handle> handle2 =
+      session2->CreateHandle(server2);
+  mock_ncn->NotifyNetworkDisconnected(kDefaultNetworkForTests);
+  mock_ncn->NotifyNetworkMadeDefault(kNewNetworkForTests);
+
+  NetErrorDetails details;
+  handle1->PopulateNetErrorDetails(&details);
+  EXPECT_EQ(
+      quic::QuicErrorCode::QUIC_CONNECTION_MIGRATION_HANDSHAKE_UNCONFIRMED,
+      details.quic_connection_error);
+  EXPECT_EQ(false, details.quic_connection_migration_successful);
+
+  handle2->PopulateNetErrorDetails(&details);
+  EXPECT_EQ(
+      quic::QuicErrorCode::QUIC_CONNECTION_MIGRATION_HANDSHAKE_UNCONFIRMED,
+      details.quic_connection_error);
+  EXPECT_EQ(false, details.quic_connection_migration_successful);
+}
+
+TEST_P(QuicStreamFactoryTest,
+       TestPostNetworkMadeDefaultWhileConnectionMigrationFailBeforeHandshake) {
+  scoped_mock_network_change_notifier_ =
+      std::make_unique<ScopedMockNetworkChangeNotifier>();
+  MockNetworkChangeNotifier* mock_ncn =
+      scoped_mock_network_change_notifier_->mock_network_change_notifier();
+  mock_ncn->ForceNetworkHandlesSupported();
+  mock_ncn->SetConnectedNetworksList({kDefaultNetworkForTests});
+  // Enable migration on network change.
+  quic_params_->migrate_sessions_on_network_change_v2 = true;
+  socket_factory_ = std::make_unique<TestPortMigrationSocketFactory>();
+  Initialize();
+  ProofVerifyDetailsChromium verify_details = DefaultProofVerifyDetails();
+  crypto_client_stream_factory_.AddProofVerifyDetails(&verify_details);
+
+  auto task_runner = base::MakeRefCounted<base::TestMockTimeTaskRunner>();
+  QuicStreamFactoryPeer::SetTaskRunner(factory_.get(), task_runner.get());
+
+  int packet_num = 1;
+  MockQuicData quic_data(version_);
+  quic_data.AddRead(SYNCHRONOUS, ERR_IO_PENDING);
+  quic_data.AddWrite(SYNCHRONOUS, ConstructInitialSettingsPacket(packet_num++));
+  quic_data.AddRead(SYNCHRONOUS, ERR_IO_PENDING);
+
+  quic_data.AddSocketDataToFactory(socket_factory_.get());
+
+  // Create request and QuicHttpStream.
+  QuicStreamRequest request(factory_.get());
+  EXPECT_EQ(ERR_IO_PENDING,
+            request.Request(
+                scheme_host_port_, version_, privacy_mode_, DEFAULT_PRIORITY,
+                SocketTag(), NetworkAnonymizationKey(), SecureDnsPolicy::kAllow,
+                /*use_dns_aliases=*/true, /*require_dns_https_alpn=*/false,
+                /*cert_verify_flags=*/0, url_, net_log_, &net_error_details_,
+                failed_on_default_network_callback_, callback_.callback()));
+  EXPECT_THAT(callback_.WaitForResult(), IsOk());
+
+  QuicChromiumClientSession* session = GetActiveSession(scheme_host_port_);
+  EXPECT_TRUE(QuicStreamFactoryPeer::IsLiveSession(factory_.get(), session));
+  EXPECT_TRUE(HasActiveSession(scheme_host_port_));
+
+  crypto_client_stream_factory_.last_stream()->setHandshakeConfirmedForce(
+      false);
+
+  std::unique_ptr<QuicChromiumClientSession::Handle> handle =
+      session->CreateHandle(scheme_host_port_);
+  mock_ncn->NotifyNetworkDisconnected(kDefaultNetworkForTests);
+  mock_ncn->NotifyNetworkConnected(kNewNetworkForTests);
+  mock_ncn->NotifyNetworkMadeDefault(kNewNetworkForTests);
+
+  NetErrorDetails details;
+  handle->PopulateNetErrorDetails(&details);
+  EXPECT_EQ(
+      quic::QuicErrorCode::QUIC_CONNECTION_MIGRATION_HANDSHAKE_UNCONFIRMED,
+      details.quic_connection_error);
+  EXPECT_EQ(false, details.quic_connection_migration_successful);
+}
+
+// See crbug/1465889 for more details on what scenario is being tested.
+TEST_P(
+    QuicStreamFactoryTest,
+    TestPostNetworkOnMadeDefaultWhileConnectionMigrationFailOnNoActiveStreams) {
+  scoped_mock_network_change_notifier_ =
+      std::make_unique<ScopedMockNetworkChangeNotifier>();
+  MockNetworkChangeNotifier* mock_ncn =
+      scoped_mock_network_change_notifier_->mock_network_change_notifier();
+  mock_ncn->ForceNetworkHandlesSupported();
+  mock_ncn->SetConnectedNetworksList({kDefaultNetworkForTests});
+  // Enable migration on network change.
+  quic_params_->migrate_sessions_on_network_change_v2 = true;
+  socket_factory_ = std::make_unique<TestPortMigrationSocketFactory>();
+  Initialize();
+  ProofVerifyDetailsChromium verify_details = DefaultProofVerifyDetails();
+  crypto_client_stream_factory_.AddProofVerifyDetails(&verify_details);
+  crypto_client_stream_factory_.AddProofVerifyDetails(&verify_details);
+
+  auto task_runner = base::MakeRefCounted<base::TestMockTimeTaskRunner>();
+  QuicStreamFactoryPeer::SetTaskRunner(factory_.get(), task_runner.get());
+
+  int packet_num = 1;
+  MockQuicData quic_data(version_);
+  quic_data.AddRead(SYNCHRONOUS, ERR_IO_PENDING);
+  quic_data.AddWrite(SYNCHRONOUS, ConstructInitialSettingsPacket(packet_num++));
+  quic_data.AddWrite(
+      SYNCHRONOUS,
+      client_maker_.MakeConnectionClosePacket(
+          packet_num, quic::QUIC_CONNECTION_MIGRATION_NO_MIGRATABLE_STREAMS,
+          "net error"));
+
+  quic_data.AddSocketDataToFactory(socket_factory_.get());
+
+  // Create request and QuicHttpStream.
+  QuicStreamRequest request(factory_.get());
+  EXPECT_EQ(ERR_IO_PENDING,
+            request.Request(
+                scheme_host_port_, version_, privacy_mode_, DEFAULT_PRIORITY,
+                SocketTag(), NetworkAnonymizationKey(), SecureDnsPolicy::kAllow,
+                /*use_dns_aliases=*/true, /*require_dns_https_alpn=*/false,
+                /*cert_verify_flags=*/0, url_, net_log_, &net_error_details_,
+                failed_on_default_network_callback_, callback_.callback()));
+  EXPECT_THAT(callback_.WaitForResult(), IsOk());
+  std::unique_ptr<HttpStream> stream = CreateStream(&request);
+  EXPECT_TRUE(stream.get());
+
+  // Ensure that session is alive and active.
+  QuicChromiumClientSession* session = GetActiveSession(scheme_host_port_);
+  EXPECT_TRUE(QuicStreamFactoryPeer::IsLiveSession(factory_.get(), session));
+  EXPECT_TRUE(HasActiveSession(scheme_host_port_));
+  EXPECT_FALSE(session->HasActiveRequestStreams());
+
+  std::unique_ptr<QuicChromiumClientSession::Handle> handle =
+      session->CreateHandle(scheme_host_port_);
+  mock_ncn->NotifyNetworkDisconnected(kDefaultNetworkForTests);
+  mock_ncn->NotifyNetworkConnected(kNewNetworkForTests);
+  mock_ncn->NotifyNetworkMadeDefault(kNewNetworkForTests);
+
+  NetErrorDetails details;
+  handle->PopulateNetErrorDetails(&details);
+  EXPECT_EQ(
+      quic::QuicErrorCode::QUIC_CONNECTION_MIGRATION_NO_MIGRATABLE_STREAMS,
+      details.quic_connection_error);
+  EXPECT_EQ(false, details.quic_connection_migration_successful);
+}
+
+// See crbug/1465889 for more details on what scenario is being tested.
+TEST_P(
+    QuicStreamFactoryTest,
+    TestPostNetworkOnMadeDefaultWhileConnectionMigrationFailOnUnexpectedError) {
+  scoped_mock_network_change_notifier_ =
+      std::make_unique<ScopedMockNetworkChangeNotifier>();
+  MockNetworkChangeNotifier* mock_ncn =
+      scoped_mock_network_change_notifier_->mock_network_change_notifier();
+  mock_ncn->ForceNetworkHandlesSupported();
+  mock_ncn->SetConnectedNetworksList({kDefaultNetworkForTests});
+  // Enable migration on network change.
+  quic_params_->migrate_sessions_on_network_change_v2 = true;
+  socket_factory_ = std::make_unique<TestPortMigrationSocketFactory>();
+  Initialize();
+  ProofVerifyDetailsChromium verify_details = DefaultProofVerifyDetails();
+  crypto_client_stream_factory_.AddProofVerifyDetails(&verify_details);
+  crypto_client_stream_factory_.AddProofVerifyDetails(&verify_details);
+
+  auto task_runner = base::MakeRefCounted<base::TestMockTimeTaskRunner>();
+  QuicStreamFactoryPeer::SetTaskRunner(factory_.get(), task_runner.get());
+
+  int packet_num = 1;
+  MockQuicData quic_data(version_);
+  quic_data.AddRead(SYNCHRONOUS, ERR_IO_PENDING);
+  quic_data.AddWrite(SYNCHRONOUS, ConstructInitialSettingsPacket(packet_num++));
+  quic_data.AddWrite(
+      SYNCHRONOUS,
+      ConstructGetRequestPacket(
+          packet_num++, GetNthClientInitiatedBidirectionalStreamId(0), true));
+  quic_data.AddRead(SYNCHRONOUS, ERR_IO_PENDING);
+
+  MockQuicData quic_data2(version_);
+  quic_data2.AddConnect(ASYNC, ERR_UNEXPECTED);
+
+  quic_data.AddSocketDataToFactory(socket_factory_.get());
+  quic_data2.AddSocketDataToFactory(socket_factory_.get());
+
+  // Create request and QuicHttpStream.
+  QuicStreamRequest request(factory_.get());
+  EXPECT_EQ(ERR_IO_PENDING,
+            request.Request(
+                scheme_host_port_, version_, privacy_mode_, DEFAULT_PRIORITY,
+                SocketTag(), NetworkAnonymizationKey(), SecureDnsPolicy::kAllow,
+                /*use_dns_aliases=*/true, /*require_dns_https_alpn=*/false,
+                /*cert_verify_flags=*/0, url_, net_log_, &net_error_details_,
+                failed_on_default_network_callback_, callback_.callback()));
+  EXPECT_THAT(callback_.WaitForResult(), IsOk());
+  std::unique_ptr<HttpStream> stream = CreateStream(&request);
+  EXPECT_TRUE(stream.get());
+
+  // Cause QUIC stream to be created.
+  HttpRequestInfo request_info;
+  request_info.method = "GET";
+  request_info.url = url_;
+  request_info.traffic_annotation =
+      MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS);
+  stream->RegisterRequest(&request_info);
+  EXPECT_EQ(OK, stream->InitializeStream(true, DEFAULT_PRIORITY, net_log_,
+                                         CompletionOnceCallback()));
+
+  // Ensure that session is alive and active.
+  QuicChromiumClientSession* session = GetActiveSession(scheme_host_port_);
+  EXPECT_TRUE(QuicStreamFactoryPeer::IsLiveSession(factory_.get(), session));
+  EXPECT_TRUE(HasActiveSession(scheme_host_port_));
+
+  // Send GET request on stream.
+  HttpResponseInfo response;
+  HttpRequestHeaders request_headers;
+  EXPECT_EQ(OK, stream->SendRequest(request_headers, &response,
+                                    callback_.callback()));
+
+  std::unique_ptr<QuicChromiumClientSession::Handle> handle =
+      session->CreateHandle(scheme_host_port_);
+  mock_ncn->NotifyNetworkDisconnected(kDefaultNetworkForTests);
+  mock_ncn->NotifyNetworkConnected(kNewNetworkForTests);
+  mock_ncn->NotifyNetworkMadeDefault(kNewNetworkForTests);
+
+  NetErrorDetails details;
+  handle->PopulateNetErrorDetails(&details);
+  EXPECT_EQ(quic::QuicErrorCode::QUIC_CONNECTION_MIGRATION_INTERNAL_ERROR,
+            details.quic_connection_error);
+  EXPECT_EQ(false, details.quic_connection_migration_successful);
+}
+
+// See crbug/1465889 for more details on what scenario is being tested.
+TEST_P(QuicStreamFactoryTest,
+       TestPostNetworkOnMadeDefaultWhileConnectionMigrationIsFailing) {
+  scoped_mock_network_change_notifier_ =
+      std::make_unique<ScopedMockNetworkChangeNotifier>();
+  MockNetworkChangeNotifier* mock_ncn =
+      scoped_mock_network_change_notifier_->mock_network_change_notifier();
+  mock_ncn->ForceNetworkHandlesSupported();
+  mock_ncn->SetConnectedNetworksList({kDefaultNetworkForTests});
+  // Enable migration on network change.
+  quic_params_->migrate_sessions_on_network_change_v2 = true;
+  socket_factory_ = std::make_unique<TestPortMigrationSocketFactory>();
+  Initialize();
+  ProofVerifyDetailsChromium verify_details = DefaultProofVerifyDetails();
+  crypto_client_stream_factory_.AddProofVerifyDetails(&verify_details);
+  crypto_client_stream_factory_.AddProofVerifyDetails(&verify_details);
+
+  auto task_runner = base::MakeRefCounted<base::TestMockTimeTaskRunner>();
+  QuicStreamFactoryPeer::SetTaskRunner(factory_.get(), task_runner.get());
+
+  int packet_num = 1;
+  MockQuicData quic_data(version_);
+  quic_data.AddRead(SYNCHRONOUS, ERR_IO_PENDING);
+  quic_data.AddWrite(SYNCHRONOUS, ConstructInitialSettingsPacket(packet_num++));
+  quic_data.AddWrite(
+      SYNCHRONOUS,
+      ConstructGetRequestPacket(
+          packet_num++, GetNthClientInitiatedBidirectionalStreamId(0), true));
+  quic_data.AddRead(SYNCHRONOUS, ERR_IO_PENDING);
+
+  MockQuicData quic_data2(version_);
+  quic_data2.AddRead(SYNCHRONOUS, ERR_IO_PENDING);
+
+  quic_data.AddSocketDataToFactory(socket_factory_.get());
+  quic_data2.AddSocketDataToFactory(socket_factory_.get());
+
+  // Create request and QuicHttpStream.
+  QuicStreamRequest request(factory_.get());
+  EXPECT_EQ(ERR_IO_PENDING,
+            request.Request(
+                scheme_host_port_, version_, privacy_mode_, DEFAULT_PRIORITY,
+                SocketTag(), NetworkAnonymizationKey(), SecureDnsPolicy::kAllow,
+                /*use_dns_aliases=*/true, /*require_dns_https_alpn=*/false,
+                /*cert_verify_flags=*/0, url_, net_log_, &net_error_details_,
+                failed_on_default_network_callback_, callback_.callback()));
+  EXPECT_THAT(callback_.WaitForResult(), IsOk());
+  std::unique_ptr<HttpStream> stream = CreateStream(&request);
+  EXPECT_TRUE(stream.get());
+
+  // Cause QUIC stream to be created.
+  HttpRequestInfo request_info;
+  request_info.method = "GET";
+  request_info.url = url_;
+  request_info.traffic_annotation =
+      MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS);
+  stream->RegisterRequest(&request_info);
+  EXPECT_EQ(OK, stream->InitializeStream(true, DEFAULT_PRIORITY, net_log_,
+                                         CompletionOnceCallback()));
+
+  // Ensure that session is alive and active.
+  QuicChromiumClientSession* session = GetActiveSession(scheme_host_port_);
+  EXPECT_TRUE(QuicStreamFactoryPeer::IsLiveSession(factory_.get(), session));
+  EXPECT_TRUE(HasActiveSession(scheme_host_port_));
+
+  // Send GET request on stream.
+  HttpResponseInfo response;
+  HttpRequestHeaders request_headers;
+  EXPECT_EQ(OK, stream->SendRequest(request_headers, &response,
+                                    callback_.callback()));
+
+  std::unique_ptr<QuicChromiumClientSession::Handle> handle =
+      session->CreateHandle(scheme_host_port_);
+  mock_ncn->NotifyNetworkDisconnected(kDefaultNetworkForTests);
+  mock_ncn->NotifyNetworkConnected(kNewNetworkForTests);
+  mock_ncn->NotifyNetworkMadeDefault(kNewNetworkForTests);
+
+  NetErrorDetails details;
+  handle->PopulateNetErrorDetails(&details);
+  EXPECT_EQ(quic::QuicErrorCode::QUIC_CONNECTION_MIGRATION_TOO_MANY_CHANGES,
+            details.quic_connection_error);
+  EXPECT_EQ(false, details.quic_connection_migration_successful);
+}
+
+void QuicStreamFactoryTestBase::
+    TestThatBlackHoleIsDisabledOnNoNewNetworkThenResumedAfterConnectingToANetwork(
+        bool is_blackhole_disabled_after_disconnecting) {
+  scoped_mock_network_change_notifier_ =
+      std::make_unique<ScopedMockNetworkChangeNotifier>();
+  MockNetworkChangeNotifier* mock_ncn =
+      scoped_mock_network_change_notifier_->mock_network_change_notifier();
+  mock_ncn->ForceNetworkHandlesSupported();
+  mock_ncn->SetConnectedNetworksList({kDefaultNetworkForTests});
+  // Enable migration on network change.
+  quic_params_->migrate_sessions_on_network_change_v2 = true;
+  socket_factory_ = std::make_unique<TestPortMigrationSocketFactory>();
+  Initialize();
+  ProofVerifyDetailsChromium verify_details = DefaultProofVerifyDetails();
+  crypto_client_stream_factory_.AddProofVerifyDetails(&verify_details);
+  crypto_client_stream_factory_.AddProofVerifyDetails(&verify_details);
+
+  // Using a testing task runner so that we can control time.
+  auto task_runner = base::MakeRefCounted<base::TestMockTimeTaskRunner>();
+  QuicStreamFactoryPeer::SetTaskRunner(factory_.get(), task_runner.get());
+
+  int packet_num = 1;
+  MockQuicData quic_data(version_);
+  quic_data.AddRead(SYNCHRONOUS, ERR_IO_PENDING);
+  quic_data.AddWrite(SYNCHRONOUS, ConstructInitialSettingsPacket(packet_num++));
+  quic_data.AddWrite(
+      SYNCHRONOUS,
+      ConstructGetRequestPacket(
+          packet_num++, GetNthClientInitiatedBidirectionalStreamId(0), true));
+  quic_data.AddRead(SYNCHRONOUS, ERR_IO_PENDING);
+  MockQuicData quic_data2(version_);
+  quic::QuicConnectionId cid_on_new_path =
+      quic::test::TestConnectionId(12345678);
+  client_maker_.set_connection_id(cid_on_new_path);
+  quic_data2.AddWrite(SYNCHRONOUS, client_maker_.MakePingPacket(packet_num++));
+  quic_data2.AddWrite(SYNCHRONOUS, client_maker_.MakeRetireConnectionIdPacket(
+                                       packet_num++, /*sequence_number=*/0u));
+
+  quic_data2.AddRead(
+      ASYNC, ConstructOkResponsePacket(
+                 1, GetNthClientInitiatedBidirectionalStreamId(0), false));
+  quic_data2.AddRead(SYNCHRONOUS, ERR_IO_PENDING);
+  quic_data2.AddWrite(SYNCHRONOUS,
+                      client_maker_.MakeDataPacket(
+                          packet_num++, GetQpackDecoderStreamId(), false,
+                          StreamCancellationQpackDecoderInstruction(0)));
+  quic_data2.AddWrite(
+      SYNCHRONOUS,
+      client_maker_.MakeRstPacket(packet_num++,
+                                  GetNthClientInitiatedBidirectionalStreamId(0),
+                                  quic::QUIC_STREAM_CANCELLED));
+
+  quic_data.AddSocketDataToFactory(socket_factory_.get());
+  quic_data2.AddSocketDataToFactory(socket_factory_.get());
+
+  // Create request and QuicHttpStream.
+  QuicStreamRequest request(factory_.get());
+  EXPECT_EQ(ERR_IO_PENDING,
+            request.Request(
+                scheme_host_port_, version_, privacy_mode_, DEFAULT_PRIORITY,
+                SocketTag(), NetworkAnonymizationKey(), SecureDnsPolicy::kAllow,
+                /*use_dns_aliases=*/true, /*require_dns_https_alpn=*/false,
+                /*cert_verify_flags=*/0, url_, net_log_, &net_error_details_,
+                failed_on_default_network_callback_, callback_.callback()));
+  EXPECT_THAT(callback_.WaitForResult(), IsOk());
+  std::unique_ptr<HttpStream> stream = CreateStream(&request);
+  EXPECT_TRUE(stream.get());
+
+  // Cause QUIC stream to be created.
+  HttpRequestInfo request_info;
+  request_info.method = "GET";
+  request_info.url = url_;
+  request_info.traffic_annotation =
+      MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS);
+  stream->RegisterRequest(&request_info);
+  EXPECT_EQ(OK, stream->InitializeStream(true, DEFAULT_PRIORITY, net_log_,
+                                         CompletionOnceCallback()));
+
+  // Ensure that session is alive and active.
+  QuicChromiumClientSession* session = GetActiveSession(scheme_host_port_);
+  EXPECT_TRUE(QuicStreamFactoryPeer::IsLiveSession(factory_.get(), session));
+  EXPECT_TRUE(HasActiveSession(scheme_host_port_));
+  MaybeMakeNewConnectionIdAvailableToSession(cid_on_new_path, session);
+  // Send GET request on stream.
+  HttpResponseInfo response;
+  HttpRequestHeaders request_headers;
+  EXPECT_EQ(OK, stream->SendRequest(request_headers, &response,
+                                    callback_.callback()));
+  handles::NetworkHandle old_network = session->GetCurrentNetwork();
+  // Forcefully disconnect the current network. This should stop the blackhole
+  // detector since there is no other available network.
+  mock_ncn->NotifyNetworkDisconnected(kDefaultNetworkForTests);
+
+  if (is_blackhole_disabled_after_disconnecting) {
+    EXPECT_FALSE(
+        session->connection()->blackhole_detector().IsDetectionInProgress());
+  } else {
+    EXPECT_TRUE(
+        session->connection()->blackhole_detector().IsDetectionInProgress());
+  }
+
+  // This will fire migrateImmediately which will connect to a new socket on the
+  // new network.
+  mock_ncn->NotifyNetworkConnected(kNewNetworkForTests);
+
+  // Execute the tasks that are added to the task runner from
+  // NotifyNetworkConnected.
+  task_runner->RunUntilIdle();
+  base::RunLoop().RunUntilIdle();
+
+  // Verify that we are on the new network.
+  EXPECT_TRUE(old_network != session->GetCurrentNetwork());
+  EXPECT_TRUE(session->GetCurrentNetwork() == kNewNetworkForTests);
+
+  // Verify that blackhole detector is still active.
+  EXPECT_TRUE(
+      session->connection()->blackhole_detector().IsDetectionInProgress());
+
+  // Verify that we also received the response on the new path.
+  EXPECT_EQ(OK, stream->ReadResponseHeaders(callback_.callback()));
+  EXPECT_EQ(200, response.headers->response_code());
+}
+// When the feature is disabled, the blackhole detector should stay enabled
+// when there is no available network. resumed once a new network has been
+// connected to.
+TEST_P(
+    QuicStreamFactoryTest,
+    VerifyThatBlackHoleIsDisabledOnNoAvailableNetworkThenResumedAfterConnectingToNewNetwork_FeatureDisabled) {
+  TestThatBlackHoleIsDisabledOnNoNewNetworkThenResumedAfterConnectingToANetwork(
+      false);
+}
+
+// When the feature is enabled, the blackhole detector should be disabled
+// when there is no available network. resumed once a new network has been
+// connected to.
+TEST_P(
+    QuicStreamFactoryTest,
+    VerifyThatBlackHoleIsDisabledOnNoAvailableNetworkThenResumedAfterConnectingToNewNetwork_FeatureEnabled) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatures(
+      // enabled_features
+      {features::kDisableBlackholeOnNoNewNetwork},
+      // disabled_features
+      {});
+  TestThatBlackHoleIsDisabledOnNoNewNetworkThenResumedAfterConnectingToANetwork(
+      true);
 }
 
 void QuicStreamFactoryTestBase::TestSimplePortMigrationOnPathDegrading() {
@@ -5623,25 +6175,16 @@ void QuicStreamFactoryTestBase::TestSimplePortMigrationOnPathDegrading() {
       ASYNC, ConstructOkResponsePacket(
                  2, GetNthClientInitiatedBidirectionalStreamId(0), false));
   quic_data2.AddRead(SYNCHRONOUS, ERR_IO_PENDING);
-  if (FLAGS_quic_reloadable_flag_quic_connection_migration_use_new_cid_v2) {
-    quic_data2.AddWrite(SYNCHRONOUS,
-                        client_maker_.MakeAckAndRetireConnectionIdPacket(
-                            packet_number++,
-                            /*largest_received=*/2,
-                            /*smallest_received=*/1, /*sequence_number=*/0u));
-    quic_data2.AddWrite(
-        SYNCHRONOUS,
-        client_maker_.MakeDataPacket(
-            packet_number++, GetQpackDecoderStreamId(),
-            /*fin=*/false, StreamCancellationQpackDecoderInstruction(0)));
-  } else {
-    quic_data2.AddWrite(
-        SYNCHRONOUS,
-        client_maker_.MakeAckAndDataPacket(
-            packet_number++, GetQpackDecoderStreamId(),
-            /*largest_received=*/2, /*smallest_received=*/2, /*fin=*/false,
-            StreamCancellationQpackDecoderInstruction(0)));
-  }
+  quic_data2.AddWrite(SYNCHRONOUS,
+                      client_maker_.MakeAckAndRetireConnectionIdPacket(
+                          packet_number++,
+                          /*largest_received=*/2,
+                          /*smallest_received=*/1, /*sequence_number=*/0u));
+  quic_data2.AddWrite(
+      SYNCHRONOUS,
+      client_maker_.MakeDataPacket(
+          packet_number++, GetQpackDecoderStreamId(),
+          /*fin=*/false, StreamCancellationQpackDecoderInstruction(0)));
   quic_data2.AddWrite(
       SYNCHRONOUS,
       client_maker_.MakeRstPacket(packet_number++,
@@ -5765,7 +6308,6 @@ void QuicStreamFactoryTestBase::TestSimplePortMigrationOnPathDegrading() {
 
 TEST_P(QuicStreamFactoryTest,
        MultiplePortMigrationsExceedsMaxLimit_iQUICStyle) {
-  SetIetfConnectionMigrationFlagsAndConnectionOptions();
   socket_factory_ = std::make_unique<TestPortMigrationSocketFactory>();
   Initialize();
 
@@ -5833,11 +6375,8 @@ TEST_P(QuicStreamFactoryTest,
     uint64_t new_cid = 12345678;
     quic::QuicConnectionId cid_on_new_path =
         quic::test::TestConnectionId(new_cid + i);
-    if (FLAGS_quic_reloadable_flag_quic_connection_migration_use_new_cid_v2) {
-      client_maker_.set_connection_id(cid_on_new_path);
-      MaybeMakeNewConnectionIdAvailableToSession(cid_on_new_path, session,
-                                                 i + 1);
-    }
+    client_maker_.set_connection_id(cid_on_new_path);
+    MaybeMakeNewConnectionIdAvailableToSession(cid_on_new_path, session, i + 1);
     quic_data2.AddWrite(
         SYNCHRONOUS,
         client_maker_.MakeConnectivityProbingPacket(packet_number));
@@ -5951,7 +6490,6 @@ TEST_P(QuicStreamFactoryTest,
   // Enable migration on network change.
   quic_params_->migrate_sessions_on_network_change_v2 = true;
   quic_params_->migrate_idle_sessions = true;
-  SetIetfConnectionMigrationFlagsAndConnectionOptions();
   socket_factory_ = std::make_unique<TestPortMigrationSocketFactory>();
   Initialize();
 
@@ -7331,9 +7869,9 @@ TEST_P(QuicStreamFactoryTest, MigrateBackToDefaultPostMigrationOnWriteError) {
 // This test verifies that the connection will not attempt connection migration
 // (send connectivity probes on alternate path) when path degrading is detected
 // and handshake is not confirmed.
-// TODO(crbug.com/1347664): This test is failing on various platforms.
 TEST_P(QuicStreamFactoryTest,
-       DISABLED_NoMigrationOnPathDegradingBeforeHandshakeConfirmed) {
+       NoMigrationOnPathDegradingBeforeHandshakeConfirmed) {
+  FLAGS_quic_enable_chaos_protection = false;
   InitializeConnectionMigrationV2Test(
       {kDefaultNetworkForTests, kNewNetworkForTests});
 
@@ -7386,21 +7924,19 @@ TEST_P(QuicStreamFactoryTest,
 // This test verifies that if a connection is closed with
 // QUIC_NETWORK_IDLE_TIMEOUT before handshake is completed and there is no
 // alternate network, no new connection will be created.
-// TODO(crbug.com/1347664): This test is failing on various platforms.
-TEST_P(QuicStreamFactoryTest,
-       DISABLED_NoAlternateNetworkBeforeHandshakeOnIdleTimeout) {
+TEST_P(QuicStreamFactoryTest, NoAlternateNetworkBeforeHandshakeOnIdleTimeout) {
   TestNoAlternateNetworkBeforeHandshake(quic::QUIC_NETWORK_IDLE_TIMEOUT);
 }
 
 // This test verifies that if a connection is closed with QUIC_HANDSHAKE_TIMEOUT
 // and there is no alternate network, no new connection will be created.
-// TODO(crbug.com/1347664): This test is failing on various platforms.
-TEST_P(QuicStreamFactoryTest, DISABLED_NoAlternateNetworkOnHandshakeTimeout) {
+TEST_P(QuicStreamFactoryTest, NoAlternateNetworkOnHandshakeTimeout) {
   TestNoAlternateNetworkBeforeHandshake(quic::QUIC_HANDSHAKE_TIMEOUT);
 }
 
 void QuicStreamFactoryTestBase::TestNoAlternateNetworkBeforeHandshake(
     quic::QuicErrorCode quic_error) {
+  FLAGS_quic_enable_chaos_protection = false;
   DCHECK(quic_error == quic::QUIC_NETWORK_IDLE_TIMEOUT ||
          quic_error == quic::QUIC_HANDSHAKE_TIMEOUT);
   InitializeConnectionMigrationV2Test({kDefaultNetworkForTests});
@@ -7468,15 +8004,12 @@ void QuicStreamFactoryTestBase::TestNoAlternateNetworkBeforeHandshake(
   EXPECT_TRUE(socket_data.AllWriteDataConsumed());
 }
 
-// TODO(crbug.com/1347664): This test is failing on various platforms.
-TEST_P(QuicStreamFactoryTest,
-       DISABLED_NewConnectionBeforeHandshakeAfterIdleTimeout) {
+TEST_P(QuicStreamFactoryTest, NewConnectionBeforeHandshakeAfterIdleTimeout) {
   TestNewConnectionOnAlternateNetworkBeforeHandshake(
       quic::QUIC_NETWORK_IDLE_TIMEOUT);
 }
 
-// TODO(crbug.com/1347664): This test is failing on various platforms.
-TEST_P(QuicStreamFactoryTest, DISABLED_NewConnectionAfterHandshakeTimeout) {
+TEST_P(QuicStreamFactoryTest, NewConnectionAfterHandshakeTimeout) {
   TestNewConnectionOnAlternateNetworkBeforeHandshake(
       quic::QUIC_HANDSHAKE_TIMEOUT);
 }
@@ -7498,6 +8031,13 @@ void QuicStreamFactoryTestBase::
         quic::QuicErrorCode quic_error) {
   DCHECK(quic_error == quic::QUIC_NETWORK_IDLE_TIMEOUT ||
          quic_error == quic::QUIC_HANDSHAKE_TIMEOUT);
+  FLAGS_quic_enable_chaos_protection = false;
+  // TODO(https://crbug.com/1295460): Make this test work with asynchronous QUIC
+  // session creation. This test only works with synchronous session creation
+  // for now.
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndDisableFeature(net::features::kAsyncQuicSession);
+
   quic_params_->retry_on_alternate_network_before_handshake = true;
   InitializeConnectionMigrationV2Test(
       {kDefaultNetworkForTests, kNewNetworkForTests});
@@ -7727,9 +8267,9 @@ TEST_P(QuicStreamFactoryTest, MigrationOnWriteErrorBeforeHandshakeConfirmed) {
 // Test that if the original connection is closed with QUIC_PACKET_WRITE_ERROR
 // before handshake is confirmed and new connection before handshake is turned
 // on, a new connection will be retried on the alternate network.
-// TODO(crbug.com/1347664): This test is failing on various platforms.
 TEST_P(QuicStreamFactoryTest,
-       DISABLED_RetryConnectionOnWriteErrorBeforeHandshakeConfirmed) {
+       RetryConnectionOnWriteErrorBeforeHandshakeConfirmed) {
+  FLAGS_quic_enable_chaos_protection = false;
   quic_params_->retry_on_alternate_network_before_handshake = true;
   InitializeConnectionMigrationV2Test(
       {kDefaultNetworkForTests, kNewNetworkForTests});
@@ -8407,11 +8947,8 @@ void QuicStreamFactoryTestBase::TestMigrationOnWriteErrorMixedStreams2(
                             GetNthClientInitiatedBidirectionalStreamId(1),
                             /*fin=*/true);
   std::vector<uint64_t> original_packet_numbers = {1};
-  uint64_t retransmit_frame_count = 0;
-  if (base::FeatureList::IsEnabled(features::kPriorityIncremental)) {
-    original_packet_numbers.push_back(2);
-    retransmit_frame_count = 2;
-  }
+  uint64_t retransmit_frame_count = 2;
+  original_packet_numbers.push_back(2);
   socket_data1.AddWrite(
       SYNCHRONOUS, client_maker_.MakeRetransmissionRstAndDataPacket(
                        original_packet_numbers, packet_number++,
@@ -8568,11 +9105,8 @@ void QuicStreamFactoryTestBase::TestMigrationOnWriteErrorNonMigratableStream(
                               GetNthClientInitiatedBidirectionalStreamId(0),
                               /*fin=*/true);
     std::vector<uint64_t> original_packet_numbers = {1};
-    uint64_t retransmit_frame_count = 0;
-    if (base::FeatureList::IsEnabled(features::kPriorityIncremental)) {
-      original_packet_numbers.push_back(2);
-      retransmit_frame_count = 2;
-    }
+    uint64_t retransmit_frame_count = 2;
+    original_packet_numbers.push_back(2);
     socket_data.AddWrite(
         SYNCHRONOUS, client_maker_.MakeRetransmissionRstAndDataPacket(
                          original_packet_numbers, packet_num++,
@@ -8868,9 +9402,14 @@ TEST_P(QuicStreamFactoryTest, MigrateSessionOnMultipleWriteErrorsAsyncAsync) {
 
 // Verifies that a connection is closed when connection migration is triggered
 // on network being disconnected and the handshake is not confirmed.
-// TODO(crbug.com/1347664): This test is failing on various platforms.
-TEST_P(QuicStreamFactoryTest,
-       DISABLED_NoMigrationBeforeHandshakeOnNetworkDisconnected) {
+TEST_P(QuicStreamFactoryTest, NoMigrationBeforeHandshakeOnNetworkDisconnected) {
+  FLAGS_quic_enable_chaos_protection = false;
+  // TODO(https://crbug.com/1295460): Make this test work with asynchronous QUIC
+  // session creation. This test only works with synchronous session creation
+  // for now.
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndDisableFeature(net::features::kAsyncQuicSession);
+
   InitializeConnectionMigrationV2Test(
       {kDefaultNetworkForTests, kNewNetworkForTests});
 
@@ -11314,7 +11853,6 @@ TEST_P(QuicStreamFactoryTest, CustomIdleMigrationPeriod) {
 
 TEST_P(QuicStreamFactoryTest, ServerMigration) {
   quic_params_->allow_server_migration = true;
-  SetIetfConnectionMigrationFlagsAndConnectionOptions();
   Initialize();
 
   ProofVerifyDetailsChromium verify_details = DefaultProofVerifyDetails();
@@ -11453,7 +11991,6 @@ TEST_P(QuicStreamFactoryTest, ServerMigration) {
 
 TEST_P(QuicStreamFactoryTest, ServerMigrationNonMigratableStream) {
   quic_params_->allow_server_migration = true;
-  SetIetfConnectionMigrationFlagsAndConnectionOptions();
   Initialize();
 
   ProofVerifyDetailsChromium verify_details = DefaultProofVerifyDetails();
@@ -11573,7 +12110,6 @@ TEST_P(QuicStreamFactoryTest, ServerMigrationIPv4ToIPv4) {
   // Add alternate IPv4 server address to config.
   IPEndPoint alt_address = IPEndPoint(IPAddress(1, 2, 3, 4), 123);
   quic::QuicConfig config;
-  SetIetfConnectionMigrationFlagsAndConnectionOptions();
   config.SetIPv4AlternateServerAddressToSend(ToQuicSocketAddress(alt_address));
   config.SetPreferredAddressConnectionIdAndTokenToSend(
       kNewCID, quic::QuicUtils::GenerateStatelessResetToken(kNewCID));
@@ -11588,7 +12124,6 @@ TEST_P(QuicStreamFactoryTest, ServerMigrationIPv6ToIPv6) {
   IPEndPoint alt_address = IPEndPoint(
       IPAddress(1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16), 123);
   quic::QuicConfig config;
-  SetIetfConnectionMigrationFlagsAndConnectionOptions();
   config.SetIPv6AlternateServerAddressToSend(ToQuicSocketAddress(alt_address));
   config.SetPreferredAddressConnectionIdAndTokenToSend(
       kNewCID, quic::QuicUtils::GenerateStatelessResetToken(kNewCID));
@@ -11789,7 +12324,7 @@ TEST_P(QuicStreamFactoryTest, OnCertDBChanged) {
 
   // Synthesize a CertDatabase change notification and verify that stream saw
   // the event.
-  CertDatabase::GetInstance()->NotifyObserversCertDBChanged();
+  CertDatabase::GetInstance()->NotifyObserversTrustStoreChanged();
   base::RunLoop().RunUntilIdle();
 
   EXPECT_TRUE(factory_->is_quic_known_to_work_on_current_network());
@@ -12195,9 +12730,7 @@ TEST_P(QuicStreamFactoryTest, CryptoConfigCache) {
 
 // With different NetworkAnonymizationKeys enabled for HttpServerProperties,
 // there should only be one global CryptoCache per NetworkAnonymizationKey.
-// TODO(https://crbug.com/1335453): The test is flaky.
-TEST_P(QuicStreamFactoryTest,
-       DISABLED_CryptoConfigCacheWithNetworkAnonymizationKey) {
+TEST_P(QuicStreamFactoryTest, CryptoConfigCacheWithNetworkAnonymizationKey) {
   const char kUserAgentId1[] = "spoon";
   const char kUserAgentId2[] = "fork";
   const char kUserAgentId3[] = "another spoon";
@@ -12618,199 +13151,6 @@ TEST_P(QuicStreamFactoryTest, YieldAfterDuration) {
   EXPECT_TRUE(socket_data.AllWriteDataConsumed());
 }
 
-TEST_P(QuicStreamFactoryTest, ServerPushSessionAffinity) {
-  Initialize();
-  ProofVerifyDetailsChromium verify_details = DefaultProofVerifyDetails();
-  crypto_client_stream_factory_.AddProofVerifyDetails(&verify_details);
-
-  MockQuicData socket_data(version_);
-  socket_data.AddRead(SYNCHRONOUS, ERR_IO_PENDING);
-  socket_data.AddWrite(SYNCHRONOUS, ConstructInitialSettingsPacket());
-  socket_data.AddSocketDataToFactory(socket_factory_.get());
-
-  QuicStreamRequest request(factory_.get());
-  EXPECT_EQ(ERR_IO_PENDING,
-            request.Request(
-                scheme_host_port_, version_, privacy_mode_, DEFAULT_PRIORITY,
-                SocketTag(), NetworkAnonymizationKey(), SecureDnsPolicy::kAllow,
-                /*use_dns_aliases=*/true, /*require_dns_https_alpn=*/false,
-                /*cert_verify_flags=*/0, url_, net_log_, &net_error_details_,
-                failed_on_default_network_callback_, callback_.callback()));
-
-  EXPECT_THAT(callback_.WaitForResult(), IsOk());
-  std::unique_ptr<HttpStream> stream = CreateStream(&request);
-  EXPECT_TRUE(stream.get());
-
-  EXPECT_EQ(0, QuicStreamFactoryPeer::GetNumPushStreamsCreated(factory_.get()));
-
-  string url = "https://www.example.org/";
-
-  QuicChromiumClientSession* session = GetActiveSession(scheme_host_port_);
-
-  quic::QuicClientPromisedInfo promised(
-      session, GetNthServerInitiatedUnidirectionalStreamId(0), kDefaultUrl);
-  (*session->push_promise_index()->promised_by_url())[kDefaultUrl] = &promised;
-
-  QuicStreamRequest request2(factory_.get());
-  EXPECT_EQ(OK,
-            request2.Request(
-                scheme_host_port_, version_, privacy_mode_, DEFAULT_PRIORITY,
-                SocketTag(), NetworkAnonymizationKey(), SecureDnsPolicy::kAllow,
-                /*use_dns_aliases=*/true, /*require_dns_https_alpn=*/false,
-                /*cert_verify_flags=*/0, url_, net_log_, &net_error_details_,
-                failed_on_default_network_callback_, callback_.callback()));
-
-  EXPECT_EQ(1, QuicStreamFactoryPeer::GetNumPushStreamsCreated(factory_.get()));
-}
-
-TEST_P(QuicStreamFactoryTest, ServerPushPrivacyModeMismatch) {
-  Initialize();
-  ProofVerifyDetailsChromium verify_details = DefaultProofVerifyDetails();
-  crypto_client_stream_factory_.AddProofVerifyDetails(&verify_details);
-  crypto_client_stream_factory_.AddProofVerifyDetails(&verify_details);
-
-  MockQuicData socket_data1(version_);
-  socket_data1.AddRead(SYNCHRONOUS, ERR_IO_PENDING);
-  socket_data1.AddWrite(SYNCHRONOUS, ConstructInitialSettingsPacket());
-  socket_data1.AddSocketDataToFactory(socket_factory_.get());
-
-  client_maker_.Reset();
-  MockQuicData socket_data2(version_);
-  socket_data2.AddRead(SYNCHRONOUS, ERR_IO_PENDING);
-  socket_data2.AddWrite(SYNCHRONOUS, ConstructInitialSettingsPacket());
-  socket_data2.AddSocketDataToFactory(socket_factory_.get());
-
-  QuicStreamRequest request(factory_.get());
-  EXPECT_EQ(ERR_IO_PENDING,
-            request.Request(
-                scheme_host_port_, version_, privacy_mode_, DEFAULT_PRIORITY,
-                SocketTag(), NetworkAnonymizationKey(), SecureDnsPolicy::kAllow,
-                /*use_dns_aliases=*/true, /*require_dns_https_alpn=*/false,
-                /*cert_verify_flags=*/0, url_, net_log_, &net_error_details_,
-                failed_on_default_network_callback_, callback_.callback()));
-
-  EXPECT_THAT(callback_.WaitForResult(), IsOk());
-  std::unique_ptr<HttpStream> stream = CreateStream(&request);
-  EXPECT_TRUE(stream.get());
-
-  EXPECT_EQ(0, QuicStreamFactoryPeer::GetNumPushStreamsCreated(factory_.get()));
-
-  string url = "https://www.example.org/";
-  QuicChromiumClientSession* session = GetActiveSession(scheme_host_port_);
-
-  quic::QuicClientPromisedInfo promised(
-      session, GetNthServerInitiatedUnidirectionalStreamId(0), kDefaultUrl);
-
-  quic::QuicClientPushPromiseIndex* index = session->push_promise_index();
-
-  (*index->promised_by_url())[kDefaultUrl] = &promised;
-  EXPECT_EQ(index->GetPromised(kDefaultUrl), &promised);
-
-  // Sending the request should not use the push stream, since the privacy mode
-  // is different.
-  QuicStreamRequest request2(factory_.get());
-  EXPECT_EQ(
-      ERR_IO_PENDING,
-      request2.Request(
-          scheme_host_port_, version_, PRIVACY_MODE_ENABLED, DEFAULT_PRIORITY,
-          SocketTag(), NetworkAnonymizationKey(), SecureDnsPolicy::kAllow,
-          /*use_dns_aliases=*/true, /*require_dns_https_alpn=*/false,
-          /*cert_verify_flags=*/0, url_, net_log_, &net_error_details_,
-          failed_on_default_network_callback_, callback_.callback()));
-
-  EXPECT_EQ(0, QuicStreamFactoryPeer::GetNumPushStreamsCreated(factory_.get()));
-  // The pushed stream should still be pending.
-  EXPECT_EQ(&promised, index->GetPromised(kDefaultUrl));
-
-  EXPECT_THAT(callback_.WaitForResult(), IsOk());
-  std::unique_ptr<HttpStream> stream2 = CreateStream(&request2);
-  EXPECT_TRUE(stream2.get());
-
-  EXPECT_TRUE(socket_data1.AllReadDataConsumed());
-  EXPECT_TRUE(socket_data1.AllWriteDataConsumed());
-  EXPECT_TRUE(socket_data2.AllReadDataConsumed());
-  EXPECT_TRUE(socket_data2.AllWriteDataConsumed());
-}
-
-TEST_P(QuicStreamFactoryTest, ServerPushNetworkAnonymizationKeyMismatch) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitWithFeatures(
-      // enabled_features
-      {features::kPartitionHttpServerPropertiesByNetworkIsolationKey,
-       // Need to partition connections by NetworkAnonymizationKey for
-       // QuicSessionAliasKey to include NetworkAnonymizationKeys.
-       features::kPartitionConnectionsByNetworkIsolationKey},
-      // disabled_features
-      {});
-
-  Initialize();
-  ProofVerifyDetailsChromium verify_details = DefaultProofVerifyDetails();
-  crypto_client_stream_factory_.AddProofVerifyDetails(&verify_details);
-  crypto_client_stream_factory_.AddProofVerifyDetails(&verify_details);
-
-  MockQuicData socket_data1(version_);
-  socket_data1.AddRead(SYNCHRONOUS, ERR_IO_PENDING);
-  socket_data1.AddWrite(SYNCHRONOUS, ConstructInitialSettingsPacket());
-  socket_data1.AddSocketDataToFactory(socket_factory_.get());
-
-  client_maker_.Reset();
-  MockQuicData socket_data2(version_);
-  socket_data2.AddRead(SYNCHRONOUS, ERR_IO_PENDING);
-  socket_data2.AddWrite(SYNCHRONOUS, ConstructInitialSettingsPacket());
-  socket_data2.AddSocketDataToFactory(socket_factory_.get());
-
-  QuicStreamRequest request(factory_.get());
-  EXPECT_EQ(ERR_IO_PENDING,
-            request.Request(
-                scheme_host_port_, version_, privacy_mode_, DEFAULT_PRIORITY,
-                SocketTag(), NetworkAnonymizationKey(), SecureDnsPolicy::kAllow,
-                /*use_dns_aliases=*/true, /*require_dns_https_alpn=*/false,
-                /*cert_verify_flags=*/0, url_, net_log_, &net_error_details_,
-                failed_on_default_network_callback_, callback_.callback()));
-
-  EXPECT_THAT(callback_.WaitForResult(), IsOk());
-  std::unique_ptr<HttpStream> stream = CreateStream(&request);
-  EXPECT_TRUE(stream.get());
-
-  EXPECT_EQ(0, QuicStreamFactoryPeer::GetNumPushStreamsCreated(factory_.get()));
-
-  string url = "https://www.example.org/";
-  QuicChromiumClientSession* session = GetActiveSession(scheme_host_port_);
-
-  quic::QuicClientPromisedInfo promised(
-      session, GetNthServerInitiatedUnidirectionalStreamId(0), kDefaultUrl);
-
-  quic::QuicClientPushPromiseIndex* index = session->push_promise_index();
-
-  (*index->promised_by_url())[kDefaultUrl] = &promised;
-  EXPECT_EQ(index->GetPromised(kDefaultUrl), &promised);
-
-  // Sending the request should not use the push stream, since the
-  // NetworkAnonymizationKey is different.
-  QuicStreamRequest request2(factory_.get());
-  EXPECT_EQ(
-      ERR_IO_PENDING,
-      request2.Request(
-          scheme_host_port_, version_, PRIVACY_MODE_DISABLED, DEFAULT_PRIORITY,
-          SocketTag(), NetworkAnonymizationKey::CreateTransient(),
-          SecureDnsPolicy::kAllow,
-          /*use_dns_aliases=*/true, /*require_dns_https_alpn=*/false,
-          /*cert_verify_flags=*/0, url_, net_log_, &net_error_details_,
-          failed_on_default_network_callback_, callback_.callback()));
-
-  EXPECT_EQ(0, QuicStreamFactoryPeer::GetNumPushStreamsCreated(factory_.get()));
-  EXPECT_EQ(&promised, index->GetPromised(kDefaultUrl));
-
-  EXPECT_THAT(callback_.WaitForResult(), IsOk());
-  std::unique_ptr<HttpStream> stream2 = CreateStream(&request2);
-  EXPECT_TRUE(stream2.get());
-
-  EXPECT_TRUE(socket_data1.AllReadDataConsumed());
-  EXPECT_TRUE(socket_data1.AllWriteDataConsumed());
-  EXPECT_TRUE(socket_data2.AllReadDataConsumed());
-  EXPECT_TRUE(socket_data2.AllWriteDataConsumed());
-}
-
 // Pool to existing session with matching quic::QuicServerId
 // even if destination is different.
 TEST_P(QuicStreamFactoryTest, PoolByOrigin) {
@@ -12883,7 +13223,6 @@ enum DestinationType {
 struct PoolingTestParams {
   quic::ParsedQuicVersion version;
   DestinationType destination_type;
-  bool enable_quic_priority_incremental_support;
 };
 
 // Used by ::testing::PrintToStringParamName().
@@ -12900,10 +13239,8 @@ std::string PrintToString(const PoolingTestParams& p) {
       destination_string = "DIFFERENT";
       break;
   }
-  return base::StrCat({ParsedQuicVersionToString(p.version), "_",
-                       destination_string, "_",
-                       (p.enable_quic_priority_incremental_support ? "" : "No"),
-                       "Incremental"});
+  return base::StrCat(
+      {ParsedQuicVersionToString(p.version), "_", destination_string});
 }
 
 std::vector<PoolingTestParams> GetPoolingTestParams() {
@@ -12911,12 +13248,9 @@ std::vector<PoolingTestParams> GetPoolingTestParams() {
   quic::ParsedQuicVersionVector all_supported_versions =
       AllSupportedQuicVersions();
   for (const quic::ParsedQuicVersion& version : all_supported_versions) {
-    params.push_back(PoolingTestParams{version, SAME_AS_FIRST, false});
-    params.push_back(PoolingTestParams{version, SAME_AS_FIRST, true});
-    params.push_back(PoolingTestParams{version, SAME_AS_SECOND, false});
-    params.push_back(PoolingTestParams{version, SAME_AS_SECOND, true});
-    params.push_back(PoolingTestParams{version, DIFFERENT, false});
-    params.push_back(PoolingTestParams{version, DIFFERENT, true});
+    params.push_back(PoolingTestParams{version, SAME_AS_FIRST});
+    params.push_back(PoolingTestParams{version, SAME_AS_SECOND});
+    params.push_back(PoolingTestParams{version, DIFFERENT});
   }
   return params;
 }
@@ -12928,9 +13262,7 @@ class QuicStreamFactoryWithDestinationTest
       public ::testing::TestWithParam<PoolingTestParams> {
  protected:
   QuicStreamFactoryWithDestinationTest()
-      : QuicStreamFactoryTestBase(
-            GetParam().version,
-            GetParam().enable_quic_priority_incremental_support),
+      : QuicStreamFactoryTestBase(GetParam().version),
         destination_type_(GetParam().destination_type),
         hanging_read_(SYNCHRONOUS, ERR_IO_PENDING, 0) {}
 
@@ -13404,8 +13736,6 @@ TEST_P(QuicStreamFactoryTest, ConfigConnectionOptions) {
 
   Initialize();
 
-  // RVCM will be default enabled as a connection option.
-  quic_params_->connection_options.push_back(quic::kRVCM);
   const quic::QuicConfig* config =
       QuicStreamFactoryPeer::GetConfig(factory_.get());
   EXPECT_EQ(quic_params_->connection_options, config->SendConnectionOptions());
@@ -14436,7 +14766,7 @@ class QuicStreamFactoryDnsAliasPoolingTest
       public ::testing::TestWithParam<DnsAliasPoolingTestParams> {
  protected:
   QuicStreamFactoryDnsAliasPoolingTest()
-      : QuicStreamFactoryTestBase(GetParam().version, true),
+      : QuicStreamFactoryTestBase(GetParam().version),
         use_dns_aliases_(GetParam().use_dns_aliases),
         dns_aliases1_(GetParam().dns_aliases1),
         dns_aliases2_(GetParam().dns_aliases2),
@@ -14535,12 +14865,10 @@ class QuicStreamFactoryEchTest : public QuicStreamFactoryTestBase,
                                  public ::testing::TestWithParam<TestParams> {
  protected:
   QuicStreamFactoryEchTest()
-      : QuicStreamFactoryTestBase(
-            GetParam().version,
-            GetParam().enable_quic_priority_incremental_support,
-            /*enabled_features=*/
-            {features::kEncryptedClientHello,
-             features::kEncryptedClientHelloQuic}) {}
+      : QuicStreamFactoryTestBase(GetParam().version,
+                                  /*enabled_features=*/
+                                  {features::kEncryptedClientHello,
+                                   features::kEncryptedClientHelloQuic}) {}
 };
 
 INSTANTIATE_TEST_SUITE_P(VersionIncludeStreamDependencySequence,

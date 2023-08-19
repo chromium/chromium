@@ -117,6 +117,7 @@ class FrameNodeImpl
   void SetIsHoldingIndexedDBLock(bool is_holding_indexeddb_lock);
   void SetIsAudible(bool is_audible);
   void SetViewportIntersection(const gfx::Rect& viewport_intersection);
+  void SetInitialVisibility(Visibility visibility);
   void SetVisibility(Visibility visibility);
   void SetResidentSetKbEstimate(uint64_t rss_estimate);
   void SetPrivateFootprintKbEstimate(uint64_t private_footprint_estimate);
@@ -189,7 +190,6 @@ class FrameNodeImpl
   const base::flat_set<const WorkerNode*> GetChildWorkerNodes() const override;
   bool VisitChildDedicatedWorkers(
       const WorkerNodeVisitor& visitor) const override;
-  const PriorityAndReason& GetPriorityAndReason() const override;
   bool HadFormInteraction() const override;
   bool HadUserEdits() const override;
   bool IsAudible() const override;
@@ -197,6 +197,7 @@ class FrameNodeImpl
   Visibility GetVisibility() const override;
   uint64_t GetResidentSetKbEstimate() const override;
   uint64_t GetPrivateFootprintKbEstimate() const override;
+  const PriorityAndReason& GetPriorityAndReason() const override;
 
   // Properties associated with a Document, which are reset when a
   // different-document navigation is committed in the frame.
@@ -260,10 +261,6 @@ class FrameNodeImpl
   bool HasFrameNodeInAncestors(FrameNodeImpl* frame_node) const;
   bool HasFrameNodeInDescendants(FrameNodeImpl* frame_node) const;
   bool HasFrameNodeInTree(FrameNodeImpl* frame_node) const;
-
-  // Returns the initial visibility of this frame. Should only be called when
-  // the frame node joins the graph.
-  Visibility GetInitialFrameVisibility() const;
 
   mojo::Receiver<mojom::DocumentCoordinationUnit> receiver_{this};
 
@@ -364,8 +361,7 @@ class FrameNodeImpl
       &FrameNodeObserver::OnViewportIntersectionChanged>
       viewport_intersection_;
 
-  // Indicates if the frame is visible. This is initialized in
-  // FrameNodeImpl::OnJoiningGraph() and then maintained by
+  // Indicates if the frame is visible. This is maintained by the
   // FrameVisibilityDecorator.
   ObservedProperty::NotifiesOnlyOnChangesWithPreviousValue<
       Visibility,

@@ -135,7 +135,7 @@ export class CaptureCandidatePreferrer {
   private preferPhotoAspectRatioOrder: AspectRatioSet[] = [];
 
   /**
-   * Adds listener for photo resolution options.
+   * Adds `listener` for photo resolution options.
    */
   addPhotoResolutionOptionListener(listener: PhotoResolutionOptionListener):
       void {
@@ -143,7 +143,7 @@ export class CaptureCandidatePreferrer {
   }
 
   /**
-   * Adds listener for photo aspect ratio options.
+   * Adds `listener` for photo aspect ratio options.
    */
   addPhotoAspectRatioOptionListener(listener: PhotoAspectRatioOptionListener):
       void {
@@ -151,7 +151,7 @@ export class CaptureCandidatePreferrer {
   }
 
   /**
-   * Adds listener for video resolution options.
+   * Adds `listener` for video resolution options.
    */
   addVideoResolutionOptionListener(listener: VideoResolutionOptionListener):
       void {
@@ -179,7 +179,7 @@ export class CaptureCandidatePreferrer {
   }
 
   /**
-   * Gets all the capture candidates sorted based on users preference.
+   * Gets all the capture candidates sorted based on users preferences.
    */
   getSortedCandidates(
       infos: Camera3DeviceInfo[], deviceId: string, mode: Mode,
@@ -200,7 +200,7 @@ export class CaptureCandidatePreferrer {
   }
 
   /**
-   * Sets photo resolution level preference.
+   * Sets photo `resolutionLevel` preference.
    */
   setPrefPhotoResolutionLevel(
       deviceId: string, resolutionLevel: PhotoResolutionLevel): void {
@@ -209,14 +209,14 @@ export class CaptureCandidatePreferrer {
         LocalStorageKey.PREF_DEVICE_PHOTO_RESOLUTION_LEVEL,
         this.prefPhotoResolutionLevelMap);
 
-    // For opening camera, it will be notified after the reconfigure.
+    // For opening camera, it will be notified after the reconfiguration.
     if (deviceId !== this.cameraConfig?.deviceId) {
       this.notifyListeners();
     }
   }
 
   /**
-   * Sets photo aspect ratio set preference.
+   * Sets photo `aspectRatioSet` preference.
    */
   setPrefPhotoAspectRatioSet(deviceId: string, aspectRatioSet: AspectRatioSet):
       void {
@@ -225,14 +225,14 @@ export class CaptureCandidatePreferrer {
         LocalStorageKey.PREF_DEVICE_PHOTO_ASPECT_RATIO_SET,
         this.prefPhotoAspectRatioSetMap);
 
-    // For opening camera, it will be notified after the reconfigure.
+    // For opening camera, it will be notified after the reconfiguration.
     if (deviceId !== this.cameraConfig?.deviceId) {
       this.notifyListeners();
     }
   }
 
   /**
-   * Sets video resolution level preference.
+   * Sets video `resolutionLevel` preference.
    */
   setPrefVideoResolutionLevel(
       deviceId: string, resolutionLevel: VideoResolutionLevel): void {
@@ -241,7 +241,7 @@ export class CaptureCandidatePreferrer {
         LocalStorageKey.PREF_DEVICE_VIDEO_RESOLUTION_LEVEL,
         this.prefVideoResolutionLevelMap);
 
-    // For opening camera, it will be notified after the reconfigure.
+    // For opening camera, it will be notified after the reconfiguration.
     if (deviceId !== this.cameraConfig?.deviceId) {
       this.notifyListeners();
     }
@@ -259,7 +259,7 @@ export class CaptureCandidatePreferrer {
         LocalStorageKey.PREF_DEVICE_VIDEO_RESOLUTION_FPS,
         this.prefVideoFpsesMap);
 
-    // For opening camera, it will be notified after the reconfigure.
+    // For opening camera, it will be notified after the reconfiguration.
     if (!shouldReconfigure) {
       this.notifyListeners();
     }
@@ -277,7 +277,7 @@ export class CaptureCandidatePreferrer {
         LocalStorageKey.PREF_DEVICE_PHOTO_RESOLUTION_EXPERT,
         this.prefPhotoResolutionMap);
 
-    // For opening camera, it will be notified after the reconfigure.
+    // For opening camera, it will be notified after the reconfiguration.
     if (deviceId !== this.cameraConfig?.deviceId) {
       this.notifyListeners();
     }
@@ -328,7 +328,7 @@ export class CaptureCandidatePreferrer {
   }
 
   /**
-   * Returns whether it currently prefer square photo.
+   * Returns whether it currently prefers square photo.
    */
   preferSquarePhoto(deviceId: string): boolean {
     return this.prefPhotoAspectRatioSetMap[deviceId] ===
@@ -336,7 +336,7 @@ export class CaptureCandidatePreferrer {
   }
 
   /**
-   * Returns the photo resolution level where the resolution belongs in the
+   * Returns the photo resolution level where the `resolution` belongs in the
    * current opened camera.
    */
   getPhotoResolutionLevel(resolution: Resolution): PhotoResolutionLevel {
@@ -360,7 +360,7 @@ export class CaptureCandidatePreferrer {
   }
 
   /**
-   * Returns the video resolution level where the resolution belongs in the
+   * Returns the video resolution level where the `resolution` belongs in the
    * current opened camera.
    */
   getVideoResolutionLevel(resolution: Resolution): VideoResolutionLevel {
@@ -485,7 +485,7 @@ export class CaptureCandidatePreferrer {
   }
 
   /**
-   * Splits the given resolutions to up to 2 groups by the 60% of the maximum
+   * Splits the given `resolutions` to up to 2 groups by the 60% of the maximum
    * resolution and converts them to photo resolution options.
    */
   private createPhotoResolutionOptions(resolutions: Resolution[]):
@@ -749,7 +749,7 @@ export class CaptureCandidatePreferrer {
         this.getPreferPhotoResolution(deviceId, chosenAspectRatioSet);
     for (const option of options) {
       // Select the level corresponding to current resolution for opening
-      // camera. Otherwise, select according to the use user preference.
+      // camera. Otherwise, select according to the user preference.
       if (deviceId === this.cameraConfig?.deviceId &&
           this.cameraConfig?.mode !== Mode.VIDEO) {
         const currentResolution =
@@ -791,8 +791,8 @@ export class CaptureCandidatePreferrer {
   }
 
   /**
-   * Notify listeners for the new options changes according to the built options
-   * and the current camera config.
+   * Notifies listeners for the new options changes according to the built
+   * options and the current camera config.
    */
   private notifyListeners(): void {
     this.notifyPhotoResolutionListeners();

@@ -12,7 +12,7 @@ namespace {
 
 // TODO(crbug.com/1153139): Reconcile with GetDefaultTaskLeeway() and
 // kMinLowResolutionThresholdMs once GetDefaultTaskLeeway() == 16ms.
-constexpr base::TimeDelta kMaxPreciseDelay = Milliseconds(32);
+constexpr base::TimeDelta kMaxPreciseDelay = Milliseconds(64);
 
 subtle::DelayPolicy MaybeOverrideDelayPolicy(subtle::DelayPolicy delay_policy,
                                              TimeTicks queue_time,

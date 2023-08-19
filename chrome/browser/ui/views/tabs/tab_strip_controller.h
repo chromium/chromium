@@ -196,10 +196,6 @@ class TabStripController {
   // frame for either active or inactive windows.
   virtual bool EverHasVisibleBackgroundTabShapes() const = 0;
 
-  // Returnes whether the window frame is being painted as active. This
-  // determines which colors are used in the tab strip.
-  virtual bool ShouldPaintAsActiveFrame() const = 0;
-
   // Returns whether tab strokes can ever be drawn. If true, strokes will only
   // be drawn if necessary.
   virtual bool CanDrawStrokes() const = 0;

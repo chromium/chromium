@@ -25,6 +25,14 @@ matchMedia("(prefers-reduced-data: reduce)").matches: true
 matchMedia("(prefers-reduced-data: reduce)").matches applied: reduce
 matchMedia("(prefers-reduced-data: __invalid__)").matches: false
 matchMedia("(prefers-reduced-data: __invalid__)").matches applied: no-preference
+matchMedia("(prefers-reduced-transparency: __invalid__)").matches: false
+matchMedia("(prefers-reduced-transparency: __invalid__)").matches applied: no-preference
+matchMedia("(prefers-reduced-transparency: no-preference)").matches: true
+matchMedia("(prefers-reduced-transparency: no-preference)").matches applied: no-preference
+matchMedia("(prefers-reduced-transparency: reduce)").matches: true
+matchMedia("(prefers-reduced-transparency: reduce)").matches applied: reduce
+matchMedia("(prefers-reduced-transparency: __invalid__)").matches: false
+matchMedia("(prefers-reduced-transparency: __invalid__)").matches applied: no-preference
 matchMedia("(prefers-contrast: __invalid__)").matches: false
 matchMedia("(prefers-contrast: __invalid__)").matches applied: no-preference
 matchMedia("(prefers-contrast: no-preference)").matches: true

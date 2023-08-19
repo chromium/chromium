@@ -6,7 +6,7 @@
 #define CHROME_BROWSER_PAGE_INFO_CHROME_ABOUT_THIS_SITE_SERVICE_CLIENT_H_
 
 #include "base/memory/raw_ptr.h"
-#include "components/optimization_guide/content/browser/optimization_guide_decider.h"
+#include "components/optimization_guide/core/optimization_guide_decider.h"
 #include "components/page_info/core/about_this_site_service.h"
 
 class PrefService;

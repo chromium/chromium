@@ -3,7 +3,6 @@
 # found in the LICENSE file.
 
 source_set("passwords") {
-  configs += [ "//build/config/compiler:enable_arc" ]
   sources = [
     "password_breach_consumer.h",
     "password_breach_coordinator.h",
@@ -15,6 +14,7 @@ source_set("passwords") {
     "password_breach_view_controller.mm",
     "password_protection_coordinator.h",
     "password_protection_coordinator.mm",
+    "password_protection_coordinator_delegate.h",
     "password_protection_view_controller.h",
     "password_protection_view_controller.mm",
     "password_suggestion_coordinator.h",
@@ -59,7 +59,6 @@ source_set("passwords") {
 }
 
 source_set("constants") {
-  configs += [ "//build/config/compiler:enable_arc" ]
   sources = [
     "password_constants.h",
     "password_constants.mm",
@@ -67,10 +66,7 @@ source_set("constants") {
 }
 
 source_set("eg_app_support+eg2") {
-  configs += [
-    "//build/config/compiler:enable_arc",
-    "//build/config/ios:xctest_config",
-  ]
+  configs += [ "//build/config/ios:xctest_config" ]
   testonly = true
   sources = [
     "password_breach_app_interface.h",
@@ -86,10 +82,7 @@ source_set("eg_app_support+eg2") {
 }
 
 source_set("eg_test_support+eg2") {
-  configs += [
-    "//build/config/compiler:enable_arc",
-    "//build/config/ios:xctest_config",
-  ]
+  configs += [ "//build/config/ios:xctest_config" ]
   testonly = true
   sources = [
     "password_breach_app_interface.h",
@@ -103,10 +96,7 @@ source_set("eg_test_support+eg2") {
 }
 
 source_set("eg2_tests") {
-  configs += [
-    "//build/config/compiler:enable_arc",
-    "//build/config/ios:xctest_config",
-  ]
+  configs += [ "//build/config/ios:xctest_config" ]
   testonly = true
   sources = [ "password_breach_egtest.mm" ]
   deps = [
@@ -117,6 +107,7 @@ source_set("eg2_tests") {
     "//components/password_manager/core/common:features",
     "//components/strings",
     "//ios/chrome/browser/ui/authentication:eg_test_support+eg2",
+    "//ios/chrome/browser/ui/settings/password:eg_test_support+eg2",
     "//ios/chrome/browser/ui/settings/password:password_constants",
     "//ios/chrome/test:eg_test_support+eg2",
     "//ios/chrome/test/earl_grey:eg_test_support+eg2",

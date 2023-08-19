@@ -22,10 +22,6 @@
 #import "testing/platform_test.h"
 #import "url/scheme_host_port.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 namespace web {
 namespace wk_navigation_util {
 

@@ -21,5 +21,7 @@ extern const char kOpenMostRecentTabAction[];
 #pragma mark - Histograms
 
 extern const char kTrendingQueriesHistogram[];
+extern const char kMagicStackTopModuleImpressionHistogram[];
+extern const char kMagicStackModuleEngagementHistogram[];
 
 #endif  // IOS_CHROME_BROWSER_UI_CONTENT_SUGGESTIONS_CONTENT_SUGGESTIONS_METRICS_CONSTANTS_H_

@@ -5,6 +5,7 @@
 #include "chrome/browser/ui/webui/ash/emoji/emoji_page_handler.h"
 
 #include "ash/constants/ash_features.h"
+#include "ash/constants/ash_pref_names.h"
 #include "ash/public/cpp/system/toast_data.h"
 #include "ash/public/cpp/system/toast_manager.h"
 #include "base/memory/raw_ptr.h"
@@ -17,6 +18,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/webui/ash/emoji/emoji_ui.h"
 #include "chrome/grit/generated_resources.h"
+#include "components/prefs/pref_service.h"
 #include "content/public/browser/storage_partition.h"
 #include "ui/base/clipboard/scoped_clipboard_writer.h"
 #include "ui/base/ime/ash/ime_bridge.h"
@@ -105,11 +107,15 @@ class InsertObserver : public ui::InputMethodObserver {
 
   void OnTextInputStateChanged(const ui::TextInputClient* client) override {
     focus_change_count_++;
-    // 2 focus changes - 1 for loss of focus in emoji picker, second for
-    // focusing in the new text field.  You would expect this to fail if
-    // the emoji picker window does not have focus in the text field, but
-    // waiting for 2 focus changes is still correct behavior.
-    if (focus_change_count_ == 2) {
+    // At least 2 focus changes - 1 for loss of focus in emoji picker, second
+    // for focusing in the new text field.
+    // And in lacros, we may expect third change to correct text input type (
+    // from initial value to actual correct value).
+    // You would expect this to fail if the emoji picker window does not have
+    // focus in the text field, but waiting for at least 2 focus changes is
+    // still correct behavior.
+
+    if (focus_change_count_ >= 2) {
       // Need to get the client via the IME as InsertText is non-const.
       // Can't use this->ime_ either as it may not be active, want to ensure
       // that we get the active IME.
@@ -133,11 +139,10 @@ class InsertObserver : public ui::InputMethodObserver {
       }
 
       PerformInsert(input_client);
-      DestroySelf();
+      if (this->inserted_) {
+        DestroySelf();
+      }
       return;
-    }
-    if (focus_change_count_ > 2) {
-      DestroySelf();
     }
   }
   void OnFocus() override {}
@@ -170,6 +175,12 @@ class EmojiObserver : public InsertObserver {
       : InsertObserver(ime), emoji_to_insert_(emoji_to_insert) {}
 
   void PerformInsert(ui::TextInputClient* input_client) override {
+    if (input_client->GetTextInputType() ==
+        ui::TextInputType::TEXT_INPUT_TYPE_NONE) {
+      // In some clients (e.g. Sheets), there is an extra focus before the
+      // "real" text input field. so we skip this insertion.
+      return;
+    }
     input_client->InsertText(
         base::UTF8ToUTF16(emoji_to_insert_),
         ui::TextInputClient::InsertTextCursorBehavior::kMoveCursorAfterText);
@@ -213,6 +224,18 @@ EmojiPageHandler::EmojiPageHandler(
       incognito_mode_(incognito_mode),
       no_text_field_(no_text_field) {
   Profile* profile = Profile::FromWebUI(web_ui);
+
+  // There are two conditions to control the GIF support:
+  //   1. Feature flag is turned on.
+  //   2. For managed users, the policy is turned on.
+  gif_support_enabled_ =
+      base::FeatureList::IsEnabled(features::kImeSystemEmojiPickerGIFSupport) &&
+      (profile->GetPrefs()->IsManagedPreference(
+           prefs::kEmojiPickerGifSupportEnabled)
+           ? profile->GetPrefs()->GetBoolean(
+                 prefs::kEmojiPickerGifSupportEnabled)
+           : true);
+
   url_loader_factory_ = profile->GetDefaultStoragePartition()
                             ->GetURLLoaderFactoryForBrowserProcess();
 }
@@ -242,7 +265,7 @@ void EmojiPageHandler::GetFeatureList(GetFeatureListCallback callback) {
     enabled_features.push_back(
         emoji_picker::mojom::Feature::EMOJI_PICKER_SEARCH_EXTENSION);
   }
-  if (base::FeatureList::IsEnabled(features::kImeSystemEmojiPickerGIFSupport)) {
+  if (gif_support_enabled_) {
     enabled_features.push_back(
         emoji_picker::mojom::Feature::EMOJI_PICKER_GIF_SUPPORT);
   }

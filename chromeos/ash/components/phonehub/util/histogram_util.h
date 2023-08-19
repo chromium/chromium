@@ -84,7 +84,7 @@ enum class PhoneHubMessageResult {
 // numeric values should never be reused.
 // Keep in sync with corresponding enum in tools/metrics/histograms/enums.xml.
 // Keep in sync with PhoneHubPermissionsSetupFlowScreens in
-// chrome/browser/resources/settings/chromeos/multidevice_page/
+// chrome/browser/resources/ash/settings/multidevice_page/
 // multidevice_constants.js
 enum class PermissionsOnboardingSetUpMode {
   kNone = 0,
@@ -99,7 +99,7 @@ enum class PermissionsOnboardingSetUpMode {
 };
 
 // Keep in sync with PhoneHubPermissionsSetupFlowScreens in
-// chrome/browser/resources/settings/chromeos/multidevice_page/
+// chrome/browser/resources/ash/settings/multidevice_page/
 // multidevice_constants.js
 enum class PermissionsOnboardingStep {
   kUnknown = 0,
@@ -116,7 +116,7 @@ enum class PermissionsOnboardingStep {
 // numeric values should never be reused.
 // Keep in sync with corresponding enum in tools/metrics/histograms/enums.xml.
 // Keep in sync with PhoneHubPermissionsSetupAction in
-// chrome/browser/resources/settings/chromeos/multidevice_page/
+// chrome/browser/resources/ash/settings/multidevice_page/
 // multidevice_constants.js
 enum class PermissionsOnboardingScreenEvent {
   kUnknown = 0,
@@ -126,6 +126,17 @@ enum class PermissionsOnboardingScreenEvent {
   kSetUpOrDone = 4,
   kNextOrTryAgain = 5,
   kMaxValue = kNextOrTryAgain
+};
+
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+// Keep in sync with corresponding enum in tools/metrics/histograms/enums.xml.
+enum class MultiDeviceSetupDialogEntrypoint {
+  kSettingsPage = 0,
+  kSetupNotification = 1,
+  kPhoneHubBubble = 2,
+  kPhoneHubBubbleAferNudge = 3,
+  kMaxValue = kPhoneHubBubbleAferNudge
 };
 
 // Logs a given opt-in |entry_point| for the PhoneHub feature.
@@ -168,6 +179,10 @@ void LogPermissionOnboardingSetupMode(PermissionsOnboardingSetUpMode mode);
 
 // Log setup result when multidevice permissions set up dialog is finished.
 void LogPermissionOnboardingSetupResult(PermissionsOnboardingSetUpMode mode);
+
+// Logs a given |entry_point| for MultiDevice setup dialog.
+void LogMultiDeviceSetupDialogEntryPoint(
+    MultiDeviceSetupDialogEntrypoint entry_point);
 
 }  // namespace util
 }  // namespace phonehub

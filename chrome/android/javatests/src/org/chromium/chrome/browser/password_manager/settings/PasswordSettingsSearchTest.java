@@ -14,7 +14,6 @@ import static androidx.test.espresso.assertion.ViewAssertions.matches;
 import static androidx.test.espresso.matcher.ViewMatchers.assertThat;
 import static androidx.test.espresso.matcher.ViewMatchers.isAssignableFrom;
 import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
-import static androidx.test.espresso.matcher.ViewMatchers.isRoot;
 import static androidx.test.espresso.matcher.ViewMatchers.withContentDescription;
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
 import static androidx.test.espresso.matcher.ViewMatchers.withParent;
@@ -37,7 +36,6 @@ import static org.chromium.ui.test.util.ViewUtils.VIEW_GONE;
 import static org.chromium.ui.test.util.ViewUtils.VIEW_INVISIBLE;
 import static org.chromium.ui.test.util.ViewUtils.VIEW_NULL;
 import static org.chromium.ui.test.util.ViewUtils.onViewWaiting;
-import static org.chromium.ui.test.util.ViewUtils.waitForView;
 
 import android.app.Instrumentation;
 import android.content.Intent;
@@ -82,6 +80,7 @@ import org.chromium.chrome.browser.settings.SettingsActivityTestRule;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.R;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
+import org.chromium.ui.test.util.ViewUtils;
 
 import java.util.Date;
 import java.util.concurrent.atomic.AtomicReference;
@@ -129,7 +128,7 @@ public class PasswordSettingsSearchTest {
     public void testSearchIconVisibleInActionBar() {
         mTestHelper.setPasswordSource(null); // Initialize empty preferences.
         mTestHelper.startPasswordSettingsFromMainSettings(mSettingsActivityTestRule);
-        onViewWaiting(withText(R.string.password_settings_title));
+        onViewWaiting(withText(R.string.password_manager_settings_title));
         PasswordSettings f = mSettingsActivityTestRule.getFragment();
 
         // Force the search option into the action bar.
@@ -152,7 +151,7 @@ public class PasswordSettingsSearchTest {
         mTestHelper.setPasswordSource(
                 null); // Initialize empty preferences.mSettingsActivityTestRule
         mTestHelper.startPasswordSettingsFromMainSettings(mSettingsActivityTestRule);
-        onViewWaiting(withText(R.string.password_settings_title));
+        onViewWaiting(withText(R.string.password_manager_settings_title));
         PasswordSettings f = mSettingsActivityTestRule.getFragment();
 
         // Force the search option into the overflow menu.
@@ -179,7 +178,7 @@ public class PasswordSettingsSearchTest {
     public void testTriggeringSearchRestoresHelpIcon() {
         mTestHelper.setPasswordSource(null);
         mTestHelper.startPasswordSettingsFromMainSettings(mSettingsActivityTestRule);
-        onViewWaiting(withText(R.string.password_settings_title));
+        onViewWaiting(withText(R.string.password_manager_settings_title));
 
         // Retrieve the initial status and ensure that the help option is there at all.
         final AtomicReference<Boolean> helpInOverflowMenu = new AtomicReference<>(false);
@@ -199,7 +198,7 @@ public class PasswordSettingsSearchTest {
         // Trigger the search, close it and wait for UI to be restored.
         onView(withSearchMenuIdOrText()).perform(click());
         onView(withContentDescription(R.string.abc_action_bar_up_description)).perform(click());
-        onViewWaiting(withText(R.string.password_settings_title));
+        onViewWaiting(withText(R.string.password_manager_settings_title));
 
         // Check that the help option is exactly where it was to begin with.
         if (helpInOverflowMenu.get()) {
@@ -283,7 +282,7 @@ public class PasswordSettingsSearchTest {
         // the toolbar label which contains the same string, look for the one inside a linear
         // layout.
         onView(allOf(withParent(isAssignableFrom(LinearLayout.class)),
-                       withText(R.string.password_settings_title)))
+                       withText(R.string.password_manager_settings_title)))
                 .check(doesNotExist());
         // Check the message for no result.
         onView(withText(R.string.password_no_result)).check(matches(isDisplayed()));
@@ -337,9 +336,9 @@ public class PasswordSettingsSearchTest {
         onView(withSearchMenuIdOrText()).perform(click());
 
         onView(withText(R.string.passwords_auto_signin_title)).check(doesNotExist());
-        onView(isRoot()).check(waitForView(
+        ViewUtils.waitForViewCheckingState(
                 withParent(withContentDescription(R.string.abc_action_menu_overflow_description)),
-                VIEW_INVISIBLE | VIEW_GONE | VIEW_NULL));
+                VIEW_INVISIBLE | VIEW_GONE | VIEW_NULL);
 
         onView(withContentDescription(R.string.abc_action_bar_up_description)).perform(click());
         InstrumentationRegistry.getInstrumentation().waitForIdleSync();
@@ -383,8 +382,8 @@ public class PasswordSettingsSearchTest {
 
         // Trigger search which shouldn't have the button yet.
         onView(withSearchMenuIdOrText()).perform(click());
-        onView(isRoot()).check(
-                waitForView(withId(R.id.search_close_btn), VIEW_INVISIBLE | VIEW_GONE | VIEW_NULL));
+        ViewUtils.waitForViewCheckingState(
+                withId(R.id.search_close_btn), VIEW_INVISIBLE | VIEW_GONE | VIEW_NULL);
 
         // Type something and see the button appear.
         onView(withId(R.id.search_src_text))
@@ -394,8 +393,8 @@ public class PasswordSettingsSearchTest {
 
         // Clear the search which should hide the button again.
         onView(withId(R.id.search_close_btn)).perform(click()); // Clear search.
-        onView(isRoot()).check(
-                waitForView(withId(R.id.search_close_btn), VIEW_INVISIBLE | VIEW_GONE | VIEW_NULL));
+        ViewUtils.waitForViewCheckingState(
+                withId(R.id.search_close_btn), VIEW_INVISIBLE | VIEW_GONE | VIEW_NULL);
     }
 
     /**

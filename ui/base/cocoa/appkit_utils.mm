@@ -30,7 +30,7 @@ enum class ForceTouchAction {
 namespace ui {
 
 bool ForceClickInvokesQuickLook() {
-  return [[NSUserDefaults standardUserDefaults]
+  return [NSUserDefaults.standardUserDefaults
              integerForKey:@"com.apple.trackpad.forceClick"] ==
          static_cast<NSInteger>(ForceTouchAction::QUICK_LOOK);
 }

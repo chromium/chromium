@@ -4,16 +4,14 @@
 
 #import "ios/chrome/browser/ui/autofill/manual_fill/manual_fill_action_cell.h"
 
+#import "base/logging.h"
+#import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/shared/ui/list_model/list_model.h"
 #import "ios/chrome/browser/ui/autofill/manual_fill/manual_fill_cell_button.h"
 #import "ios/chrome/browser/ui/autofill/manual_fill/manual_fill_cell_utils.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/common/ui/util/constraints_ui_util.h"
 #import "ios/chrome/common/ui/util/pointer_interaction_util.h"
-
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
 
 @interface ManualFillActionItem ()
 
@@ -77,7 +75,18 @@
     [self createView];
   }
 
-  [self.titleButton setTitle:title forState:UIControlStateNormal];
+  if (IsUIButtonConfigurationEnabled()) {
+    UIButtonConfiguration* buttonConfiguration = self.titleButton.configuration;
+    DCHECK(buttonConfiguration);
+    UIFont* font = [UIFont preferredFontForTextStyle:UIFontTextStyleBody];
+    NSDictionary* attributes = @{NSFontAttributeName : font};
+    NSAttributedString* attributedTitleString =
+        [[NSAttributedString alloc] initWithString:title attributes:attributes];
+    buttonConfiguration.attributedTitle = attributedTitleString;
+    self.titleButton.configuration = buttonConfiguration;
+  } else {
+    [self.titleButton setTitle:title forState:UIControlStateNormal];
+  }
   self.titleButton.accessibilityIdentifier = accessibilityID;
   self.action = action;
 }

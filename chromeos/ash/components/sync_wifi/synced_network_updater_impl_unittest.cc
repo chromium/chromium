@@ -126,7 +126,9 @@ class SyncedNetworkUpdaterImplTest : public testing::Test {
   base::test::TaskEnvironment task_environment_;
   std::unique_ptr<NetworkTestHelper> local_test_helper_;
   std::unique_ptr<FakeTimerFactory> timer_factory_;
-  raw_ptr<FakePendingNetworkConfigurationTracker, ExperimentalAsh> tracker_;
+  raw_ptr<FakePendingNetworkConfigurationTracker,
+          DanglingUntriaged | ExperimentalAsh>
+      tracker_;
   std::unique_ptr<SyncedNetworkMetricsLogger> metrics_logger_;
   std::unique_ptr<SyncedNetworkUpdaterImpl> updater_;
   mojo::Remote<chromeos::network_config::mojom::CrosNetworkConfig>

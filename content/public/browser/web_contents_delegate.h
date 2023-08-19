@@ -123,7 +123,8 @@ class CONTENT_EXPORT WebContentsDelegate {
   // OpenURL() for these cases which does it for you).
 
   // Returns the WebContents the URL is opened in, or nullptr if the URL wasn't
-  // opened immediately.
+  // opened immediately. Note that the URL might be opened in another context
+  // when a nullptr is returned.
   virtual WebContents* OpenURLFromTab(WebContents* source,
                                       const OpenURLParams& params);
 
@@ -398,15 +399,15 @@ class CONTENT_EXPORT WebContentsDelegate {
   virtual JavaScriptDialogManager* GetJavaScriptDialogManager(
       WebContents* source);
 
-#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_MAC)
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_APPLE)
   // Called when color chooser should open. Returns the opened color chooser.
   // Returns nullptr if we failed to open the color chooser. The color chooser
-  // is only supported/required for Android.
+  // is supported/required for Android or iOS.
   virtual std::unique_ptr<ColorChooser> OpenColorChooser(
       WebContents* web_contents,
       SkColor color,
       const std::vector<blink::mojom::ColorSuggestionPtr>& suggestions);
-#endif  // BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_MAC)
+#endif
 
   // Called when an eye dropper should open. Returns the eye dropper window.
   // The eye dropper is responsible for calling listener->ColorSelected() or
@@ -637,7 +638,8 @@ class CONTENT_EXPORT WebContentsDelegate {
   // whether they will shrink the Blink's view size. Note that they are not
   // complete in the sense that there is no API to tell content to poll these
   // values again, except part of resize. But this is not needed by embedder
-  // because it's always accompanied by view size change.
+  // because it's always accompanied by view size change. The values returned
+  // by these APIs are in physical pixels (not DIPs).
   virtual int GetTopControlsHeight();
   virtual int GetTopControlsMinHeight();
   virtual int GetBottomControlsHeight();
@@ -746,6 +748,9 @@ class CONTENT_EXPORT WebContentsDelegate {
   // It's used to prevent drag and drop between privileged and non-privileged
   // WebContents.
   virtual bool IsPrivileged();
+
+  // Initiates previewing the given `url` within the given `web_contents`.
+  virtual void InitiatePreview(WebContents& web_contents, const GURL& url) {}
 
  protected:
   virtual ~WebContentsDelegate();

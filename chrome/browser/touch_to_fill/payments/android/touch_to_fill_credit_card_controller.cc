@@ -7,7 +7,7 @@
 #include <memory>
 
 #include "base/android/jni_string.h"
-#include "chrome/browser/touch_to_fill/payments/android/jni_headers/TouchToFillCreditCardControllerBridge_jni.h"
+#include "chrome/browser/touch_to_fill/payments/android/internal/jni/TouchToFillCreditCardControllerBridge_jni.h"
 #include "chrome/browser/touch_to_fill/payments/android/touch_to_fill_credit_card_view.h"
 #include "chrome/browser/touch_to_fill/payments/android/touch_to_fill_delegate_android_impl.h"
 #include "components/autofill/content/browser/content_autofill_client.h"

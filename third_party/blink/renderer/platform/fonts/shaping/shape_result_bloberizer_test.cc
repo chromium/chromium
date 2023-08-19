@@ -40,7 +40,7 @@ class ShapeResultBloberizerTest : public FontTestBase {
  protected:
   void SetUp() override {
     font_description.SetComputedSize(12.0);
-    font_description.SetLocale(LayoutLocale::Get("en"));
+    font_description.SetLocale(LayoutLocale::Get(AtomicString("en")));
     ASSERT_EQ(USCRIPT_LATIN, font_description.GetScript());
     font_description.SetGenericFamily(FontDescription::kStandardFamily);
 
@@ -583,12 +583,12 @@ TEST_F(ShapeResultBloberizerTest, SupplementaryMultiRunNG) {
   HarfBuzzShaper shaper_c(string.Substring(range_c.from, range_c.to));
 
   Font font = blink::test::CreateTestFont(
-      "NotoSansCJK",
+      AtomicString("NotoSansCJK"),
       blink::test::BlinkRootDir() +
           "/web_tests/third_party/NotoSansCJK/NotoSansCJKjp-Regular-subset.otf",
       12);
   Font font2 = blink::test::CreateTestFont(
-      "NotoSansCJK",
+      AtomicString("NotoSansCJK"),
       blink::test::BlinkRootDir() +
           "/web_tests/third_party/NotoSansCJK/NotoSansCJKjp-Regular-subset.otf",
       20);

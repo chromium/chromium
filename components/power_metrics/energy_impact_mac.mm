@@ -7,17 +7,13 @@
 #include <Foundation/Foundation.h>
 #import <IOKit/IOKitLib.h>
 
-#include "base/mac/foundation_util.h"
-#include "base/mac/scoped_cftyperef.h"
+#include "base/apple/foundation_util.h"
+#include "base/apple/scoped_cftyperef.h"
 #include "base/mac/scoped_ioobject.h"
 #include "base/strings/sys_string_conversions.h"
 #include "base/time/time.h"
 #include "components/power_metrics/mach_time_mac.h"
 #include "components/power_metrics/resource_coalition_mac.h"
-
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
 
 namespace power_metrics {
 
@@ -25,13 +21,13 @@ namespace {
 
 NSDictionary* MaybeGetDictionaryFromPath(const base::FilePath& path) {
   // The folder where the energy coefficient plist files are stored.
-  return
-      [NSDictionary dictionaryWithContentsOfURL:base::mac::FilePathToNSURL(path)
-                                          error:nil];
+  return [NSDictionary
+      dictionaryWithContentsOfURL:base::apple::FilePathToNSURL(path)
+                            error:nil];
 }
 
 double GetNamedCoefficientOrZero(NSDictionary* dict, NSString* key) {
-  NSNumber* num = base::mac::ObjCCast<NSNumber>(dict[key]);
+  NSNumber* num = base::apple::ObjCCast<NSNumber>(dict[key]);
   return num.floatValue;
 }
 
@@ -187,7 +183,7 @@ absl::optional<std::string> GetBoardIdForThisMachine() {
   // This is what libpmenergy is observed to do in order to retrieve the correct
   // coefficients file for the local computer.
   base::ScopedCFTypeRef<CFDataRef> board_id_data(
-      base::mac::CFCast<CFDataRef>(IORegistryEntryCreateCFProperty(
+      base::apple::CFCast<CFDataRef>(IORegistryEntryCreateCFProperty(
           platform_expert, CFSTR("board-id"), kCFAllocatorDefault, 0)));
 
   if (!board_id_data)

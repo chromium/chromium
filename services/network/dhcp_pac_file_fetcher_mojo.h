@@ -63,7 +63,8 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) DhcpPacFileFetcherMojo
   void OnPacUrlReceived(const std::string& url);
 
   net::CompletionOnceCallback callback_;
-  raw_ptr<std::u16string, DanglingUntriaged | ExperimentalAsh> utf16_text_;
+  raw_ptr<std::u16string, AcrossTasksDanglingUntriaged | ExperimentalAsh>
+      utf16_text_;
   GURL pac_url_;
   net::MutableNetworkTrafficAnnotationTag traffic_annotation_;
   std::unique_ptr<net::PacFileFetcher> pac_file_fetcher_;

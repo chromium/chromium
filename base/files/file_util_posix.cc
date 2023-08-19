@@ -51,7 +51,7 @@
 
 #if BUILDFLAG(IS_APPLE)
 #include <AvailabilityMacros.h>
-#include "base/mac/foundation_util.h"
+#include "base/apple/foundation_util.h"
 #endif
 
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_ANDROID)
@@ -630,7 +630,7 @@ bool ExecutableExistsInPath(Environment* env,
 #endif  // !BUILDFLAG(IS_FUCHSIA)
 
 #if !BUILDFLAG(IS_APPLE)
-// This is implemented in file_util_mac.mm for Mac.
+// This is implemented in file_util_apple.mm for Mac.
 bool GetTempDir(FilePath* path) {
   const char* tmp = getenv("TMPDIR");
   if (tmp) {
@@ -647,7 +647,7 @@ bool GetTempDir(FilePath* path) {
 }
 #endif  // !BUILDFLAG(IS_APPLE)
 
-#if !BUILDFLAG(IS_APPLE)  // Mac implementation is in file_util_mac.mm.
+#if !BUILDFLAG(IS_APPLE)  // Mac implementation is in file_util_apple.mm.
 FilePath GetHomeDir() {
 #if BUILDFLAG(IS_CHROMEOS)
   if (SysInfo::IsRunningOnChromeOS()) {
@@ -690,7 +690,7 @@ bool CreateTemporaryFileInDir(const FilePath& dir, FilePath* temp_file) {
 
 FilePath FormatTemporaryFileName(FilePath::StringPieceType identifier) {
 #if BUILDFLAG(IS_APPLE)
-  StringPiece prefix = base::mac::BaseBundleID();
+  StringPiece prefix = base::apple::BaseBundleID();
 #elif BUILDFLAG(GOOGLE_CHROME_BRANDING)
   StringPiece prefix = "com.google.Chrome";
 #else

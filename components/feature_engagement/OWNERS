@@ -1,3 +1,4 @@
+dfried@chromium.org
 dtrainor@chromium.org
 nyquist@chromium.org
 shaktisahu@chromium.org
@@ -9,9 +10,3 @@ per-file ...feature_constants.*=twellington@chromium.org
 per-file ...feature_list.*=twellington@chromium.org
 per-file ...EventConstants.java=twellington@chromium.org
 per-file ...FeatureConstants.java=twellington@chromium.org
-
-# For User Education/Feature Engagement on desktop platforms:
-per-file ...event_constants.*=dfried@chromium.org
-per-file ...feature_configurations.cc=dfried@chromium.org
-per-file ...feature_constants.*=dfried@chromium.org
-per-file ...feature_list.*=dfried@chromium.org

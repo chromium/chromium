@@ -32,6 +32,10 @@ static const int kDinoTileSizePixels = 4;
 // Size of a QR locator, in modules.
 static const int kLocatorSizeModules = 7;
 
+QRCodeGeneratorServiceImpl::QRCodeGeneratorServiceImpl() : receiver_(this) {
+  InitializeDinoBitmap();
+}
+
 QRCodeGeneratorServiceImpl::QRCodeGeneratorServiceImpl(
     mojo::PendingReceiver<mojom::QRCodeGeneratorService> receiver)
     : receiver_(this, std::move(receiver)) {
@@ -285,13 +289,13 @@ void QRCodeGeneratorServiceImpl::GenerateQRCode(
     return;
   }
 
-  absl::optional<QRCodeGenerator::GeneratedCode> qr_data;
+  absl::optional<qr_code_generator::QRCodeGenerator::GeneratedCode> qr_data;
   {
     base::TimeTicks start_time = base::TimeTicks::Now();
     // The QR version (i.e. size) must be >= 5 because otherwise the dino
     // painted over the middle covers too much of the code to be decodable.
     constexpr int kMinimumQRVersion = 5;
-    QRCodeGenerator qr;
+    qr_code_generator::QRCodeGenerator qr;
     qr_data = qr.Generate(base::as_bytes(base::make_span(request->data)),
                           kMinimumQRVersion);
     base::UmaHistogramMicrosecondsTimes(

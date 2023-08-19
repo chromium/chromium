@@ -99,32 +99,27 @@ public class PartnerHomepageIntegrationTest {
     public void testHomepageButtonClick() throws InterruptedException {
         EmbeddedTestServer testServer = EmbeddedTestServer.createAndStartServer(
                 ApplicationProvider.getApplicationContext());
-        try {
-            // Load non-homepage URL.
-            mActivityTestRule.loadUrl(testServer.getURL(TEST_PAGE));
-            UiUtils.settleDownUI(InstrumentationRegistry.getInstrumentation());
-            Assert.assertNotSame(Uri.parse(TestPartnerBrowserCustomizationsProvider.HOMEPAGE_URI),
-                    Uri.parse(ChromeTabUtils.getUrlStringOnUiThread(
-                            mActivityTestRule.getActivity().getActivityTab())));
-
-            // Click homepage button.
-            ChromeTabUtils.waitForTabPageLoaded(mActivityTestRule.getActivity().getActivityTab(),
-                    TestPartnerBrowserCustomizationsProvider.HOMEPAGE_URI, new Runnable() {
-                        @Override
-                        public void run() {
-                            View homeButton =
-                                    mActivityTestRule.getActivity().findViewById(R.id.home_button);
-                            Assert.assertEquals("Homepage button is not shown", View.VISIBLE,
-                                    homeButton.getVisibility());
-                            TouchCommon.singleClickView(homeButton);
-                        }
-                    });
-            Assert.assertEquals(Uri.parse(TestPartnerBrowserCustomizationsProvider.HOMEPAGE_URI),
-                    Uri.parse(ChromeTabUtils.getUrlStringOnUiThread(
-                            mActivityTestRule.getActivity().getActivityTab())));
-        } finally {
-            testServer.stopAndDestroyServer();
-        }
+        // Load non-homepage URL.
+        mActivityTestRule.loadUrl(testServer.getURL(TEST_PAGE));
+        UiUtils.settleDownUI(InstrumentationRegistry.getInstrumentation());
+        Assert.assertNotSame(Uri.parse(TestPartnerBrowserCustomizationsProvider.HOMEPAGE_URI),
+                Uri.parse(ChromeTabUtils.getUrlStringOnUiThread(
+                        mActivityTestRule.getActivity().getActivityTab())));
+        // Click homepage button.
+        ChromeTabUtils.waitForTabPageLoaded(mActivityTestRule.getActivity().getActivityTab(),
+                TestPartnerBrowserCustomizationsProvider.HOMEPAGE_URI, new Runnable() {
+                    @Override
+                    public void run() {
+                        View homeButton =
+                                mActivityTestRule.getActivity().findViewById(R.id.home_button);
+                        Assert.assertEquals("Homepage button is not shown", View.VISIBLE,
+                                homeButton.getVisibility());
+                        TouchCommon.singleClickView(homeButton);
+                    }
+                });
+        Assert.assertEquals(Uri.parse(TestPartnerBrowserCustomizationsProvider.HOMEPAGE_URI),
+                Uri.parse(ChromeTabUtils.getUrlStringOnUiThread(
+                        mActivityTestRule.getActivity().getActivityTab())));
     }
 
     /**

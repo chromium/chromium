@@ -10,10 +10,6 @@
 #import "ios/web/public/ui/crw_web_view_proxy.h"
 #import "ios/web/public/ui/crw_web_view_scroll_view_proxy.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 void MoveContentBelowHeader(id<CRWWebViewProxy> proxy, FullscreenModel* model) {
   DCHECK(proxy);
   DCHECK(model);

@@ -5,7 +5,6 @@
 #ifndef NET_CERT_PKI_VERIFY_CERTIFICATE_CHAIN_TYPED_UNITTEST_H_
 #define NET_CERT_PKI_VERIFY_CERTIFICATE_CHAIN_TYPED_UNITTEST_H_
 
-#include "net/cert/pem.h"
 #include "net/cert/pki/parsed_certificate.h"
 #include "net/cert/pki/simple_path_builder_delegate.h"
 #include "net/cert/pki/test_helpers.h"

@@ -10,7 +10,6 @@
 #include <utility>
 
 #include "base/containers/cxx20_erase.h"
-#include "base/feature_list.h"
 #include "base/files/file_util.h"
 #include "base/format_macros.h"
 #include "base/logging.h"
@@ -63,14 +62,6 @@ static const char kOtherBookmarksFolderServerTag[] = "other_bookmarks";
 static const char kOtherBookmarksFolderName[] = "Other Bookmarks";
 static const char kSyncedBookmarksFolderServerTag[] = "synced_bookmarks";
 static const char kSyncedBookmarksFolderName[] = "Synced Bookmarks";
-
-// Returns entity's version without increasing it by one for tombstones. The
-// version is updated and set in SaveEntity() and there is no need to increment
-// it again in CommitResponse. Otherwise, it would be possible that the next
-// commit request would return the same version.
-BASE_FEATURE(kSyncReturnRealVersionOnCommitInLoopbackServer,
-             "SyncReturnRealVersionOnCommitInLoopbackServer",
-             base::FEATURE_ENABLED_BY_DEFAULT);
 
 int GetServerMigrationVersion(
     const std::map<ModelType, int>& server_migration_versions,
@@ -250,8 +241,7 @@ LoopbackServer::LoopbackServer(const base::FilePath& persistent_file)
       writer_(
           persistent_file_,
           base::ThreadPool::CreateSequencedTaskRunner(
-              {base::MayBlock(), base::TaskShutdownBehavior::BLOCK_SHUTDOWN})),
-      observer_for_tests_(nullptr) {
+              {base::MayBlock(), base::TaskShutdownBehavior::BLOCK_SHUTDOWN})) {
   DCHECK(!persistent_file_.empty());
   Init();
 }
@@ -609,14 +599,7 @@ void LoopbackServer::BuildEntryResponseForSuccessfulCommit(
                                         ? response_type_override_.Run(entity)
                                         : sync_pb::CommitResponse::SUCCESS);
   entry_response->set_id_string(entity.GetId());
-
-  if (entity.IsDeleted() &&
-      !base::FeatureList::IsEnabled(
-          kSyncReturnRealVersionOnCommitInLoopbackServer)) {
-    entry_response->set_version(entity.GetVersion() + 1);
-  } else {
-    entry_response->set_version(entity.GetVersion());
-  }
+  entry_response->set_version(entity.GetVersion());
 }
 
 bool LoopbackServer::IsChild(const string& id,
@@ -835,6 +818,9 @@ bool LoopbackServer::ModifyEntitySpecifics(
   LoopbackServerEntity* entity = iter->second.get();
   entity->SetSpecifics(updated_specifics);
   UpdateEntityVersion(entity);
+
+  ScheduleSaveStateToFile();
+
   return true;
 }
 
@@ -858,6 +844,9 @@ bool LoopbackServer::ModifyBookmarkEntity(
     entity->SetName(updated_specifics.bookmark().legacy_canonicalized_title());
   }
   UpdateEntityVersion(entity);
+
+  ScheduleSaveStateToFile();
+
   return true;
 }
 

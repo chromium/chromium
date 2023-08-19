@@ -29,7 +29,7 @@
 #elif BUILDFLAG(IS_APPLE)
 #include <malloc/malloc.h>
 
-#include "base/allocator/partition_allocator/shim/allocator_interception_mac.h"
+#include "base/allocator/partition_allocator/shim/allocator_interception_apple.h"
 #include "base/allocator/partition_allocator/third_party/apple_apsl/malloc.h"
 #else
 #include <malloc.h>
@@ -538,9 +538,9 @@ TEST_F(AllocatorShimTest, InterceptUcrtAlignedAllocationSymbols) {
 
 TEST_F(AllocatorShimTest, AlignedReallocSizeZeroFrees) {
   void* alloc_ptr = _aligned_malloc(123, 16);
-  CHECK(alloc_ptr);
+  ASSERT_TRUE(alloc_ptr);
   alloc_ptr = _aligned_realloc(alloc_ptr, 0, 16);
-  CHECK(!alloc_ptr);
+  ASSERT_TRUE(!alloc_ptr);
 }
 #endif  // BUILDFLAG(IS_WIN)
 

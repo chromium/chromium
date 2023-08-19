@@ -23,8 +23,9 @@ class String;
 
 namespace blink {
 
-class KURL;
+class Blob;
 class ExecutionContext;
+class KURL;
 class SecurityOrigin;
 
 // Sends messages via mojo to the blink::mojom::FileSystemManager service
@@ -124,13 +125,13 @@ class FileSystemDispatcher : public GarbageCollected<FileSystemDispatcher>,
   void TruncateSync(const KURL& path, int64_t offset, StatusCallback callback);
 
   void Write(const KURL& path,
-             const String& blob_id,
+             const Blob& blob,
              int64_t offset,
              int* request_id_out,
              const WriteCallback& success_callback,
              StatusCallback error_callback);
   void WriteSync(const KURL& path,
-                 const String& blob_id,
+                 const Blob& blob,
                  int64_t offset,
                  const WriteCallback& success_callback,
                  StatusCallback error_callback);

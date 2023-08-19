@@ -14,7 +14,6 @@ import '../strings.m.js';
 import '../shared_style.css.js';
 import '../shared_vars.css.js';
 
-import {CrContainerShadowMixin} from 'chrome://resources/cr_elements/cr_container_shadow_mixin.js';
 import {focusWithoutInk} from 'chrome://resources/js/focus_without_ink.js';
 import {I18nMixin} from 'chrome://resources/cr_elements/i18n_mixin.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
@@ -54,8 +53,7 @@ export interface ExtensionsActivityLogElement {
   };
 }
 
-const ExtensionsActivityLogElementBase =
-    I18nMixin(CrContainerShadowMixin(PolymerElement));
+const ExtensionsActivityLogElementBase = I18nMixin(PolymerElement);
 
 export class ExtensionsActivityLogElement extends
     ExtensionsActivityLogElementBase {

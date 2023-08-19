@@ -16,6 +16,14 @@ const char kRunOnOsLoginModeWindowed[] = "windowed";
 static_assert(WebAppManagement::kMinValue == 0,
               "Source enum should be zero based");
 
+static_assert(WebAppManagementTypes::All().Has(WebAppManagement::kMinValue),
+              "WebAppManagementTypes is missing an enum value");
+static_assert(WebAppManagementTypes::All().Has(WebAppManagement::kMaxValue),
+              "WebAppManagementTypes is missing an enum value");
+static_assert(WebAppManagementTypes::kValueCount ==
+                  WebAppManagement::kMaxValue + 1,
+              "WebAppManagementTypes is missing an enum value");
+
 namespace WebAppManagement {
 std::ostream& operator<<(std::ostream& os, WebAppManagement::Type type) {
   switch (type) {
@@ -45,6 +53,17 @@ std::ostream& operator<<(std::ostream& os, WebAppManagement::Type type) {
 
 static_assert(OsHookType::kShortcuts == 0,
               "OsHookType enum should be zero based");
+
+std::ostream& operator<<(std::ostream& os, RunOnOsLoginMode mode) {
+  switch (mode) {
+    case RunOnOsLoginMode::kWindowed:
+      return os << "windowed";
+    case RunOnOsLoginMode::kMinimized:
+      return os << "minimized";
+    case RunOnOsLoginMode::kNotRun:
+      return os << "not run";
+  }
+}
 
 std::ostream& operator<<(std::ostream& os, ApiApprovalState state) {
   switch (state) {
@@ -100,6 +119,10 @@ std::string ConvertUninstallSourceToStringType(
       return "External Lock Screen";
     case webapps::WebappUninstallSource::kTestCleanup:
       return "Test cleanup";
+    case webapps::WebappUninstallSource::kInstallUrlDeduping:
+      return "Install URL deduping";
+    case webapps::WebappUninstallSource::kHealthcareUserInstallCleanup:
+      return "Healthcare User Install Cleanup";
   }
 }
 

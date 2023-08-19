@@ -81,20 +81,9 @@ class WebstoreInstaller : public ExtensionRegistryObserver,
     MANIFEST_CHECK_LEVEL_STRICT,
   };
 
-  class Delegate {
-   public:
-    virtual void OnExtensionDownloadStarted(const std::string& id,
-                                            download::DownloadItem* item);
-    virtual void OnExtensionDownloadProgress(const std::string& id,
-                                             download::DownloadItem* item);
-    virtual void OnExtensionInstallSuccess(const std::string& id) = 0;
-    virtual void OnExtensionInstallFailure(const std::string& id,
-                                           const std::string& error,
-                                           FailureReason reason) = 0;
-
-   protected:
-    virtual ~Delegate() {}
-  };
+  using SuccessCallback = base::OnceCallback<void(const std::string&)>;
+  using FailureCallback = base::OnceCallback<
+      void(const std::string&, const std::string&, FailureReason)>;
 
   // Contains information about what parts of the extension install process can
   // be skipped or modified. If one of these is present, it means that a CRX
@@ -180,14 +169,12 @@ class WebstoreInstaller : public ExtensionRegistryObserver,
       const download::DownloadItem& download);
 
   // Creates a WebstoreInstaller for downloading and installing the extension
-  // with the given |id| from the Chrome Web Store. If |delegate| is not
-  // nullptr, it will be notified when the install succeeds or fails. The
-  // installer will use the specified |controller| to download the extension.
-  // Only one WebstoreInstaller can use a specific controller at any given time.
-  // This also associates the |approval| with this install. Note: the delegate
-  // should stay alive until being called back.
+  // with the given `id` from the Chrome Web Store. The `success_callback` and
+  // `failure_callback` parameters must not be null. This also associates the
+  // `approval` with this install.
   WebstoreInstaller(Profile* profile,
-                    Delegate* delegate,
+                    SuccessCallback success_callback,
+                    FailureCallback failure_callback,
                     content::WebContents* web_contents,
                     const std::string& id,
                     std::unique_ptr<Approval> approval,
@@ -200,10 +187,6 @@ class WebstoreInstaller : public ExtensionRegistryObserver,
   void OnExtensionInstalled(content::BrowserContext* browser_context,
                             const Extension* extension,
                             bool is_update) override;
-
-  // Removes the reference to the delegate passed in the constructor. Used when
-  // the delegate object must be deleted before this object.
-  void InvalidateDelegate();
 
   // Instead of using the default download directory, use |directory| instead.
   // This does *not* transfer ownership of |directory|.
@@ -265,7 +248,8 @@ class WebstoreInstaller : public ExtensionRegistryObserver,
       extension_registry_observation_{this};
   base::WeakPtr<content::WebContents> web_contents_;
   raw_ptr<Profile> profile_;
-  raw_ptr<Delegate, DanglingUntriaged> delegate_;
+  SuccessCallback success_callback_;
+  FailureCallback failure_callback_;
   std::string id_;
   InstallSource install_source_;
   // The DownloadItem is owned by the DownloadManager and is valid from when

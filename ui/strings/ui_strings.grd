@@ -648,6 +648,9 @@ need to be translated for each locale.-->
         <message name="IDS_APP_SHOW_CLIPBOARD_HISTORY" desc="The context menu item to show the clipboard history menu.">
           Clipboard
         </message>
+        <message name="IDS_APP_PASTE_FROM_CLIPBOARD" desc="The context menu item to show the submenu of clipboard history items the user can paste.">
+          Paste from clipboard
+        </message>
       </if>
 
       <!-- Generic terms -->
@@ -844,6 +847,9 @@ need to be translated for each locale.-->
       <message name="IDS_MESSAGE_CENTER_NOTIFICATION_INLINE_REPLY_PLACEHOLDER" desc="The default placeholder text for notification inline reply.">
         Send message
       </message>
+      <message name="IDS_MESSAGE_CENTER_NOTIFICATION_INLINE_REPLY_ACCESSIBLE_NAME" desc="The default accessible name for notification inline reply button.">
+        Send reply
+      </message>
       <message name="IDS_MESSAGE_NOTIFICATION_NOW_STRING_SHORTEST" desc="A string denoting the current point in time that should be as short as possible. Should be same as AndroidPlatform msgId 8912796667087856402. (frameworks/base/core/res/res/values/strings.xml:string:now_string_shortest)">
         now
       </message>
@@ -929,8 +935,8 @@ need to be translated for each locale.-->
       <message name="IDS_CLIPBOARD_HISTORY_MENU_TITLE" desc="The title of the clipboard history menu which shows the history of the clipboard data">
         Clipboard history
       </message>
-      <message name="IDS_CLIPBOARD_HISTORY_DELETE_BUTTON" desc="Accessibility name of the button which functions to delete a clipboard history menu entry">
-        Remove from clipboard.
+      <message name="IDS_CLIPBOARD_HISTORY_DELETE_ITEM_TEXT" is_accessibility_with_no_ui="true" desc="Accessibility name of the button used to delete an item from the clipboard history menu. Spoken by screen readers when an item's delete button gets focus but not visually rendered.">
+        Remove <ph name="ITEM_TEXT">$1<ex>text showing on menu item</ex></ph>.
       </message>
       <message name="IDS_CLIPBOARD_HISTORY_DELETE_BUTTON_HOVER_TEXT" desc="Message displayed when hovering over the button to delete a clipboard history menu entry">
         Remove

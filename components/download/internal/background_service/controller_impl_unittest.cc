@@ -70,8 +70,6 @@ DriverEntry BuildDriverEntry(const Entry& entry, DriverEntry::State state) {
   return dentry;
 }
 
-void NotifyTaskFinished(bool success) {}
-
 class UploadClient : public test::MockClient {
  public:
   UploadClient() = default;
@@ -199,7 +197,10 @@ class DownloadServiceControllerImplTest : public testing::Test {
         std::move(device_status_listener), &navigation_monitor,
         std::move(scheduler), std::move(task_scheduler),
         std::move(file_monitor), download_file_dir);
+    task_finished_successfully_ = false;
   }
+
+  void NotifyTaskFinished(bool success) { task_finished_successfully_ = true; }
 
  protected:
   void OnInitCompleted() {
@@ -246,6 +247,7 @@ class DownloadServiceControllerImplTest : public testing::Test {
   base::RepeatingCallback<void(const std::string&, DownloadParams::StartResult)>
       start_callback_;
   bool init_callback_called_;
+  bool task_finished_successfully_;
 };
 
 }  // namespace
@@ -472,10 +474,37 @@ TEST_F(DownloadServiceControllerImplTest,
   driver_->MakeReady();
   store_->TriggerInit(true, std::make_unique<std::vector<Entry>>(entries));
   file_monitor_->TriggerInit(true);
-  controller_->OnStartScheduledTask(DownloadTaskType::CLEANUP_TASK,
-                                    base::BindOnce(&NotifyTaskFinished));
+  controller_->OnStartScheduledTask(
+      DownloadTaskType::CLEANUP_TASK,
+      base::BindOnce(&DownloadServiceControllerImplTest::NotifyTaskFinished,
+                     base::Unretained(this)));
 
   task_runner_->RunUntilIdle();
+  EXPECT_FALSE(task_finished_successfully_);
+  controller_->OnStopScheduledTask(DownloadTaskType::CLEANUP_TASK);
+}
+
+TEST_F(DownloadServiceControllerImplTest,
+       OnStartScheduledTaskCallbackInvokedIfControllerNotReady) {
+  Entry entry1 = test::BuildBasicEntry();
+  Entry entry2 = test::BuildBasicEntry();
+  Entry entry3 = test::BuildBasicEntry(Entry::State::COMPLETE);
+  entry3.completion_time = base::Time::Now();
+
+  std::vector<Entry> entries = {entry1, entry2, entry3};
+
+  EXPECT_CALL(*task_scheduler_,
+              ScheduleTask(DownloadTaskType::CLEANUP_TASK, _, _, _, _, _))
+      .Times(0);
+
+  InitializeController();
+  controller_->OnStartScheduledTask(
+      DownloadTaskType::CLEANUP_TASK,
+      base::BindOnce(&DownloadServiceControllerImplTest::NotifyTaskFinished,
+                     base::Unretained(this)));
+
+  task_runner_->RunUntilIdle();
+  EXPECT_TRUE(task_finished_successfully_);
   controller_->OnStopScheduledTask(DownloadTaskType::CLEANUP_TASK);
 }
 
@@ -1989,8 +2018,10 @@ TEST_F(DownloadServiceControllerImplTest, DownloadTaskQueuesAfterFinish) {
 
   // Simulate a task start, which should limit our calls to Reschedule() because
   // we are in a task.
-  controller_->OnStartScheduledTask(DownloadTaskType::DOWNLOAD_TASK,
-                                    base::BindOnce(&NotifyTaskFinished));
+  controller_->OnStartScheduledTask(
+      DownloadTaskType::DOWNLOAD_TASK,
+      base::BindOnce(&DownloadServiceControllerImplTest::NotifyTaskFinished,
+                     base::Unretained(this)));
 
   // Set up new expectations to start a new download.
   ON_CALL(*scheduler_, Next(_, _))
@@ -2054,8 +2085,10 @@ TEST_F(DownloadServiceControllerImplTest, CleanupTaskQueuesAfterFinish) {
   EXPECT_CALL(*task_scheduler_,
               ScheduleTask(DownloadTaskType::CLEANUP_TASK, _, _, _, _, _))
       .Times(0);
-  controller_->OnStartScheduledTask(DownloadTaskType::CLEANUP_TASK,
-                                    base::BindOnce(&NotifyTaskFinished));
+  controller_->OnStartScheduledTask(
+      DownloadTaskType::CLEANUP_TASK,
+      base::BindOnce(&DownloadServiceControllerImplTest::NotifyTaskFinished,
+                     base::Unretained(this)));
 
   // Trigger download succeed events, which should not schedule a cleanup until
   // the existing cleanup has finished.

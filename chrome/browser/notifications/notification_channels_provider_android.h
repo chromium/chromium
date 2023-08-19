@@ -99,12 +99,21 @@ class NotificationChannelsProviderAndroid
                              constraints = {}) override;
   void ClearAllContentSettingsRules(ContentSettingsType content_type) override;
   void ShutdownOnUIThread() override;
+  bool UpdateLastUsedTime(const GURL& primary_url,
+                          const GURL& secondary_url,
+                          ContentSettingsType content_type,
+                          const base::Time time) override;
   bool ResetLastVisitTime(const ContentSettingsPattern& primary_pattern,
                           const ContentSettingsPattern& secondary_pattern,
                           ContentSettingsType content_type) override;
   bool UpdateLastVisitTime(const ContentSettingsPattern& primary_pattern,
                            const ContentSettingsPattern& secondary_pattern,
                            ContentSettingsType content_type) override;
+  bool RenewContentSetting(
+      const GURL& primary_url,
+      const GURL& secondary_url,
+      ContentSettingsType content_type,
+      absl::optional<ContentSetting> setting_to_match) override;
   void SetClockForTesting(base::Clock* clock) override;
 
  private:

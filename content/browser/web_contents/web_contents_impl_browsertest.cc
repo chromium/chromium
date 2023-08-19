@@ -55,7 +55,6 @@
 #include "content/public/browser/host_zoom_map.h"
 #include "content/public/browser/invalidate_type.h"
 #include "content/public/browser/javascript_dialog_manager.h"
-#include "content/public/browser/load_notification_details.h"
 #include "content/public/browser/media_player_id.h"
 #include "content/public/browser/navigation_controller.h"
 #include "content/public/browser/navigation_handle.h"
@@ -174,32 +173,6 @@ WebContentsImplBrowserTest::WebContentsImplBrowserTest() {
       features::kSurfaceSyncFullscreenKillswitch);
 }
 
-// Keeps track of data from LoadNotificationDetails so we can later verify that
-// they are correct, after the LoadNotificationDetails object is deleted.
-class LoadStopNotificationObserver : public WindowedNotificationObserver {
- public:
-  explicit LoadStopNotificationObserver(NavigationController* controller)
-      : WindowedNotificationObserver(NOTIFICATION_LOAD_STOP,
-                                     Source<NavigationController>(controller)),
-        session_index_(-1),
-        controller_(nullptr) {}
-  void Observe(int type,
-               const NotificationSource& source,
-               const NotificationDetails& details) override {
-    if (type == NOTIFICATION_LOAD_STOP) {
-      const Details<LoadNotificationDetails> load_details(details);
-      url_ = load_details->url;
-      session_index_ = load_details->session_index;
-      controller_ = load_details->controller;
-    }
-    WindowedNotificationObserver::Observe(type, source, details);
-  }
-
-  GURL url_;
-  int session_index_;
-  raw_ptr<NavigationController> controller_;
-};
-
 // Starts a new navigation as soon as the current one commits, but does not
 // wait for it to complete.  This allows us to observe DidStopLoading while
 // a pending entry is present.
@@ -295,22 +268,6 @@ class LoadingStateChangedDelegate : public WebContentsDelegate {
   int loadingStateShowLoadingUICount_ = 0;
 };
 
-// Test that DidStopLoading includes the correct URL in the details.
-IN_PROC_BROWSER_TEST_F(WebContentsImplBrowserTest, DidStopLoadingDetails) {
-  ASSERT_TRUE(embedded_test_server()->Start());
-
-  LoadStopNotificationObserver load_observer(
-      &shell()->web_contents()->GetController());
-  EXPECT_TRUE(
-      NavigateToURL(shell(), embedded_test_server()->GetURL("/title1.html")));
-  load_observer.Wait();
-
-  EXPECT_EQ("/title1.html", load_observer.url_.path());
-  EXPECT_EQ(0, load_observer.session_index_);
-  EXPECT_EQ(&shell()->web_contents()->GetController(),
-            load_observer.controller_);
-}
-
 // Regression test for https://crbug.com/1405036
 // Dumping the accessibility tree should not crash, even if it has not received
 // an ID through a renderer tree yet.
@@ -318,8 +275,7 @@ IN_PROC_BROWSER_TEST_F(WebContentsImplBrowserTest,
                        DumpAccessibilityTreeWithoutTreeID) {
   ASSERT_TRUE(embedded_test_server()->Start());
 
-  LoadStopNotificationObserver load_observer(
-      &shell()->web_contents()->GetController());
+  TestNavigationObserver load_observer(shell()->web_contents());
   EXPECT_TRUE(
       NavigateToURL(shell(), embedded_test_server()->GetURL("/title1.html")));
   load_observer.Wait();
@@ -329,32 +285,6 @@ IN_PROC_BROWSER_TEST_F(WebContentsImplBrowserTest,
   EXPECT_EQ(
       shell()->web_contents()->DumpAccessibilityTree(false, property_filters),
       expected);
-}
-
-// Test that DidStopLoading includes the correct URL in the details when a
-// pending entry is present.
-IN_PROC_BROWSER_TEST_F(WebContentsImplBrowserTest,
-                       DidStopLoadingDetailsWithPending) {
-  ASSERT_TRUE(embedded_test_server()->Start());
-  // TODO(clamy): Add a cross-process navigation case as well once
-  // crbug.com/581024 is fixed.
-  GURL url1 = embedded_test_server()->GetURL("/title1.html");
-  GURL url2 = embedded_test_server()->GetURL("/title2.html");
-
-  // Listen for the first load to stop.
-  LoadStopNotificationObserver load_observer(
-      &shell()->web_contents()->GetController());
-  // Start a new pending navigation as soon as the first load commits.
-  // We will hear a DidStopLoading from the first load as the new load
-  // is started.
-  NavigateOnCommitObserver commit_observer(shell(), url2);
-  EXPECT_TRUE(NavigateToURL(shell(), url1));
-  load_observer.Wait();
-
-  EXPECT_EQ(url1, load_observer.url_);
-  EXPECT_EQ(0, load_observer.session_index_);
-  EXPECT_EQ(&shell()->web_contents()->GetController(),
-            load_observer.controller_);
 }
 
 namespace {
@@ -1890,10 +1820,13 @@ class MockFileSelectListener : public FileChooserImpl::FileSelectListenerImpl {
   void FileSelected(std::vector<blink::mojom::FileChooserFileInfoPtr> files,
                     const base::FilePath& base_dir,
                     blink::mojom::FileChooserParams::Mode mode) override {}
-  void FileSelectionCanceled() override {}
+  void FileSelectionCanceled() override { cancelled_ = true; }
+
+  bool cancelled() const { return cancelled_; }
 
  private:
   ~MockFileSelectListener() override = default;
+  bool cancelled_ = false;
 };
 
 IN_PROC_BROWSER_TEST_F(WebContentsImplBrowserTest,
@@ -2965,7 +2898,10 @@ IN_PROC_BROWSER_TEST_F(WebContentsImplBrowserTest, FileChooserEndsFullscreen) {
 
   wc->EnterFullscreenMode(wc->GetPrimaryMainFrame(), {});
   EXPECT_TRUE(wc->IsFullscreen());
-  wc->RunFileChooser(wc->GetPrimaryMainFrame(),
+
+  auto [chooser, remote] =
+      FileChooserImpl::CreateForTesting(wc->GetPrimaryMainFrame());
+  wc->RunFileChooser(chooser->GetWeakPtr(), wc->GetPrimaryMainFrame(),
                      base::MakeRefCounted<MockFileSelectListener>(),
                      blink::mojom::FileChooserParams());
   EXPECT_FALSE(wc->IsFullscreen());
@@ -3105,6 +3041,72 @@ IN_PROC_BROWSER_TEST_F(WebContentsImplBrowserTest,
   EXPECT_TRUE(ExecJs(wc, script));
   test_delegate.Wait();
   EXPECT_FALSE(wc->IsFullscreen());
+}
+
+IN_PROC_BROWSER_TEST_F(WebContentsImplBrowserTest,
+                       FileChooserBlockedFromHiddenWebContents) {
+  ASSERT_TRUE(embedded_test_server()->Start());
+  shell()->set_hold_file_chooser();
+
+  EXPECT_TRUE(NavigateToURL(shell(), GURL("about:blank")));
+
+  WebContentsImpl* wc = static_cast<WebContentsImpl*>(shell()->web_contents());
+  wc->WasHidden();
+  EXPECT_EQ(shell()->web_contents()->GetVisibility(), Visibility::HIDDEN);
+
+  auto [chooser, remote] =
+      FileChooserImpl::CreateForTesting(wc->GetPrimaryMainFrame());
+  auto file_select_listener = base::MakeRefCounted<MockFileSelectListener>();
+  wc->RunFileChooser(chooser->GetWeakPtr(), wc->GetPrimaryMainFrame(),
+                     file_select_listener, blink::mojom::FileChooserParams());
+  EXPECT_TRUE(file_select_listener->cancelled());
+  EXPECT_EQ(shell()->run_file_chooser_count(), 0u);
+}
+
+IN_PROC_BROWSER_TEST_F(WebContentsImplBrowserTest,
+                       EnumerateDirectoryBlockedFromHiddenWebContents) {
+  ASSERT_TRUE(embedded_test_server()->Start());
+  shell()->set_hold_file_chooser();
+
+  EXPECT_TRUE(NavigateToURL(shell(), GURL("about:blank")));
+
+  WebContentsImpl* wc = static_cast<WebContentsImpl*>(shell()->web_contents());
+  wc->WasHidden();
+  EXPECT_EQ(shell()->web_contents()->GetVisibility(), Visibility::HIDDEN);
+
+  auto [chooser, remote] =
+      FileChooserImpl::CreateForTesting(wc->GetPrimaryMainFrame());
+  auto file_select_listener = base::MakeRefCounted<MockFileSelectListener>();
+  wc->EnumerateDirectory(chooser->GetWeakPtr(), wc->GetPrimaryMainFrame(),
+                         file_select_listener, base::FilePath());
+  EXPECT_TRUE(file_select_listener->cancelled());
+  EXPECT_EQ(shell()->run_file_chooser_count(), 0u);
+}
+
+IN_PROC_BROWSER_TEST_F(WebContentsImplBrowserTest,
+                       NewWindowBlockedForActiveFileChooser) {
+  ASSERT_TRUE(embedded_test_server()->Start());
+  shell()->set_hold_file_chooser();
+
+  GURL url = embedded_test_server()->GetURL("/click-noreferrer-links.html");
+  EXPECT_TRUE(NavigateToURL(shell(), url));
+
+  WebContentsImpl* wc = static_cast<WebContentsImpl*>(shell()->web_contents());
+  auto [chooser, remote] =
+      FileChooserImpl::CreateForTesting(wc->GetPrimaryMainFrame());
+  auto file_select_listener = base::MakeRefCounted<MockFileSelectListener>();
+  wc->RunFileChooser(chooser->GetWeakPtr(), wc->GetPrimaryMainFrame(),
+                     file_select_listener, blink::mojom::FileChooserParams());
+  EXPECT_FALSE(file_select_listener->cancelled());
+
+  // Open a new, named window.
+  WebContentsConsoleObserver console_observer(shell()->web_contents());
+  console_observer.SetPattern(
+      "window.open blocked due to active file chooser.");
+  EXPECT_TRUE(ExecJs(shell(), "window.open('about:blank','new_window');"));
+  ASSERT_TRUE(console_observer.Wait());
+  EXPECT_EQ(url, shell()->web_contents()->GetLastCommittedURL());
+  EXPECT_EQ(1u, Shell::windows().size());
 }
 
 IN_PROC_BROWSER_TEST_F(WebContentsImplBrowserTest,
@@ -3660,7 +3662,7 @@ IN_PROC_BROWSER_TEST_F(WebContentsImplBrowserTest, FrozenAndUnfrozenIPC) {
 
   // Delete an iframe when the page is active(not frozen), which should succeed.
   rfh_b->GetMojomFrameInRenderer()->Delete(
-      mojom::FrameDeleteIntention::kNotMainFrame);
+      mojom::FrameDeleteIntention::kNotMainFrame, mojo::NullRemote());
   delete_rfh_b.WaitUntilDeleted();
   EXPECT_TRUE(delete_rfh_b.deleted());
   EXPECT_FALSE(delete_rfh_c.deleted());
@@ -3671,7 +3673,7 @@ IN_PROC_BROWSER_TEST_F(WebContentsImplBrowserTest, FrozenAndUnfrozenIPC) {
 
   // Try to delete an iframe, and succeeds because the message is unfreezable.
   rfh_c->GetMojomFrameInRenderer()->Delete(
-      mojom::FrameDeleteIntention::kNotMainFrame);
+      mojom::FrameDeleteIntention::kNotMainFrame, mojo::NullRemote());
   delete_rfh_c.WaitUntilDeleted();
   EXPECT_TRUE(delete_rfh_c.deleted());
 }
@@ -3788,7 +3790,7 @@ class FullscreenWebContentsObserver : public WebContentsObserver {
  private:
   base::RunLoop run_loop_;
   bool found_value_ = false;
-  raw_ptr<RenderFrameHost, DanglingUntriaged> wanted_rfh_;
+  raw_ptr<RenderFrameHost, AcrossTasksDanglingUntriaged> wanted_rfh_;
 };
 
 }  // namespace
@@ -5554,8 +5556,7 @@ IN_PROC_BROWSER_TEST_F(WebContentsImplBrowserTest,
                        ReinitializeMainFrameForCrashedTab) {
   ASSERT_TRUE(embedded_test_server()->Start());
 
-  LoadStopNotificationObserver load_observer(
-      &shell()->web_contents()->GetController());
+  TestNavigationObserver load_observer(shell()->web_contents());
   EXPECT_TRUE(
       NavigateToURL(shell(), embedded_test_server()->GetURL("/title1.html")));
   load_observer.Wait();
@@ -6071,6 +6072,105 @@ IN_PROC_BROWSER_TEST_F(WebContentsImplStarScanPrerenderBrowserTest,
   // Complete load and check that PCScan is enabled again.
   WaitForLoadStop(shell()->web_contents());
   EXPECT_TRUE(partition_alloc::internal::PCScan::IsEnabled());
+}
+
+class MockColorProviderSource : public ui::ColorProviderSource {
+ public:
+  MockColorProviderSource() { provider_.GenerateColorMap(); }
+  MockColorProviderSource(const MockColorProviderSource&) = delete;
+  MockColorProviderSource& operator=(const MockColorProviderSource&) = delete;
+  ~MockColorProviderSource() override = default;
+
+  // ui::ColorProviderSource:
+  const ui::ColorProvider* GetColorProvider() const override {
+    return &provider_;
+  }
+  ui::ColorProviderKey GetColorProviderKey() const override { return key_; }
+
+ private:
+  ui::ColorProvider provider_;
+  ui::ColorProviderKey key_;
+};
+
+class OutgoingSetWebPreferencesMojoWatcher {
+ public:
+  explicit OutgoingSetWebPreferencesMojoWatcher(RenderViewHostImpl* rvh)
+      : rvh_(rvh), outgoing_message_seen_(false) {
+    rvh_->SetWillSendWebPreferencesCallbackForTesting(base::BindRepeating(
+        &OutgoingSetWebPreferencesMojoWatcher::OnWebPreferencesSent,
+        base::Unretained(this)));
+  }
+  ~OutgoingSetWebPreferencesMojoWatcher() {
+    rvh_->SetWillSendWebPreferencesCallbackForTesting(base::RepeatingClosure());
+  }
+
+  void WaitForIpc() {
+    if (outgoing_message_seen_) {
+      return;
+    }
+    run_loop_ = std::make_unique<base::RunLoop>();
+    run_loop_->Run();
+    run_loop_.reset();
+  }
+
+  bool outgoing_message_seen() const { return outgoing_message_seen_; }
+
+ private:
+  void OnWebPreferencesSent() {
+    outgoing_message_seen_ = true;
+    if (run_loop_) {
+      run_loop_->Quit();
+    }
+  }
+
+  raw_ptr<RenderViewHostImpl> rvh_ = nullptr;
+  bool outgoing_message_seen_ = false;
+  std::unique_ptr<base::RunLoop> run_loop_;
+};
+
+IN_PROC_BROWSER_TEST_F(WebContentsImplBrowserTest,
+                       UpdatesWebPreferencesOnColorProviderChanges) {
+  ASSERT_TRUE(embedded_test_server()->Start());
+  WebContentsImpl* web_contents =
+      static_cast<WebContentsImpl*>(shell()->web_contents());
+
+  // Navigate to a site with two iframes in different origins.
+  const GURL url = embedded_test_server()->GetURL(
+      "a.com", "/cross_site_iframe_factory.html?a(b,c)");
+  EXPECT_TRUE(NavigateToURL(shell(), url));
+
+  // Retrieve all unique render view hosts. Multiple frame hosts can be
+  // associated to the same RenderViewHost, so use a set to avoid duplication.
+  std::unordered_set<RenderViewHostImpl*> render_view_hosts;
+  for (FrameTreeNode* frame_tree_node :
+       web_contents->GetPrimaryFrameTree().Nodes()) {
+    RenderViewHostImpl* render_view_host = static_cast<RenderViewHostImpl*>(
+        frame_tree_node->current_frame_host()->GetRenderViewHost());
+    ASSERT_NE(nullptr, render_view_host);
+    render_view_hosts.insert(render_view_host);
+  }
+
+  // Set up watchers for SetWebPreferences message being sent from render view
+  // hosts.
+  std::vector<std::unique_ptr<OutgoingSetWebPreferencesMojoWatcher>>
+      mojo_watchers;
+  for (auto* render_view_host : render_view_hosts) {
+    mojo_watchers.push_back(
+        std::make_unique<OutgoingSetWebPreferencesMojoWatcher>(
+            render_view_host));
+  }
+
+  // Create a mock source, set it as the source for the contents and propagate
+  // color provider change notifications.
+  MockColorProviderSource color_provider_source;
+  web_contents->SetColorProviderSource(&color_provider_source);
+  color_provider_source.NotifyColorProviderChanged();
+
+  // Ensure Mojo messages are sent to each frame.
+  for (auto& mojo_watcher : mojo_watchers) {
+    mojo_watcher->WaitForIpc();
+    EXPECT_TRUE(mojo_watcher->outgoing_message_seen());
+  }
 }
 
 #endif  // BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC) && BUILDFLAG(USE_STARSCAN)

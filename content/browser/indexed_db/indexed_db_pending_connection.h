@@ -9,26 +9,26 @@
 
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
-#include "content/browser/indexed_db/indexed_db_callbacks.h"
 #include "content/browser/indexed_db/indexed_db_data_loss_info.h"
 #include "content/browser/indexed_db/indexed_db_database_callbacks.h"
+#include "content/browser/indexed_db/indexed_db_factory_client.h"
 #include "content/common/content_export.h"
 
 namespace content {
 
-class IndexedDBCallbacks;
+class IndexedDBFactoryClient;
 class IndexedDBDatabaseCallbacks;
 
 struct CONTENT_EXPORT IndexedDBPendingConnection {
   IndexedDBPendingConnection(
-      scoped_refptr<IndexedDBCallbacks> callbacks,
+      std::unique_ptr<IndexedDBFactoryClient> factory_client,
       scoped_refptr<IndexedDBDatabaseCallbacks> database_callbacks,
       int64_t transaction_id,
       int64_t version,
       base::OnceCallback<void(base::WeakPtr<IndexedDBTransaction>)>
           create_transaction_callback);
   ~IndexedDBPendingConnection();
-  scoped_refptr<IndexedDBCallbacks> callbacks;
+  std::unique_ptr<IndexedDBFactoryClient> factory_client;
   scoped_refptr<IndexedDBDatabaseCallbacks> database_callbacks;
   int64_t transaction_id;
   int64_t version;

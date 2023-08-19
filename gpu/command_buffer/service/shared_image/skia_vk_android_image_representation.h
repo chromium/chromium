@@ -36,16 +36,16 @@ class SkiaVkAndroidImageRepresentation : public SkiaGaneshImageRepresentation {
       const gfx::Rect& update_rect,
       std::vector<GrBackendSemaphore>* begin_semaphores,
       std::vector<GrBackendSemaphore>* end_semaphores,
-      std::unique_ptr<GrBackendSurfaceMutableState>* end_state) override;
-  std::vector<sk_sp<SkPromiseImageTexture>> BeginWriteAccess(
+      std::unique_ptr<skgpu::MutableTextureState>* end_state) override;
+  std::vector<sk_sp<GrPromiseImageTexture>> BeginWriteAccess(
       std::vector<GrBackendSemaphore>* begin_semaphores,
       std::vector<GrBackendSemaphore>* end_semaphores,
-      std::unique_ptr<GrBackendSurfaceMutableState>* end_state) override;
+      std::unique_ptr<skgpu::MutableTextureState>* end_state) override;
   void EndWriteAccess() override;
-  std::vector<sk_sp<SkPromiseImageTexture>> BeginReadAccess(
+  std::vector<sk_sp<GrPromiseImageTexture>> BeginReadAccess(
       std::vector<GrBackendSemaphore>* begin_semaphores,
       std::vector<GrBackendSemaphore>* end_semaphores,
-      std::unique_ptr<GrBackendSurfaceMutableState>* end_state) override;
+      std::unique_ptr<skgpu::MutableTextureState>* end_state) override;
   void EndReadAccess() override;
 
  protected:
@@ -59,7 +59,7 @@ class SkiaVkAndroidImageRepresentation : public SkiaGaneshImageRepresentation {
 
   // Initial read fence to wait on before reading |vulkan_image_|.
   base::ScopedFD init_read_fence_;
-  sk_sp<SkPromiseImageTexture> promise_texture_;
+  sk_sp<GrPromiseImageTexture> promise_texture_;
 
  private:
   bool BeginAccess(bool readonly,
@@ -67,7 +67,7 @@ class SkiaVkAndroidImageRepresentation : public SkiaGaneshImageRepresentation {
                    std::vector<GrBackendSemaphore>* end_semaphores,
                    base::ScopedFD init_read_fence);
   void EndAccess(bool readonly);
-  std::unique_ptr<GrBackendSurfaceMutableState> GetEndAccessState();
+  std::unique_ptr<skgpu::MutableTextureState> GetEndAccessState();
 
   VkDevice vk_device();
   VulkanImplementation* vk_implementation();

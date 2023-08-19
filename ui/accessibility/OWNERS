@@ -1,19 +1,18 @@
 abigailbklein@google.com
 aleventhal@chromium.org
 benjamin.beaudry@microsoft.com
-dlibby@microsoft.com
 dtseng@chromium.org
+janewman@microsoft.com
 katie@chromium.org
 kschmi@microsoft.com
 nektar@chromium.org
 
 # For Android / Java related changes:
 mschillaci@google.com
+aldietz@google.com
 
 per-file *.mojom=set noparent
 per-file *.mojom=file://ipc/SECURITY_OWNERS
 
 per-file *_param_traits*.*=set noparent
 per-file *_param_traits*.*=file://ipc/SECURITY_OWNERS
-
-per-file ax_language_detection*=chrishall@chromium.org

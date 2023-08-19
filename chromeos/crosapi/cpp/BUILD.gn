@@ -50,11 +50,14 @@ source_set("unit_tests") {
   testonly = true
   deps = [
     ":cpp",
+    ":crosapi_constants",
     "//base/test:test_support",
     "//chromeos/crosapi/mojom",
+    "//components/version_info",
     "//testing/gtest",
   ]
   sources = [
+    "channel_to_enum_unittest.cc",
     "gurl_os_handler_unittest.cc",
     "keystore_service_util_unittest.cc",
   ]

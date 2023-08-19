@@ -4,6 +4,7 @@
 
 #include "remoting/client/input/key_event_mapper.h"
 
+#include "base/containers/contains.h"
 #include "remoting/proto/event.pb.h"
 
 namespace remoting {
@@ -39,7 +40,7 @@ void KeyEventMapper::InjectKeyEvent(const protocol::KeyEvent& event) {
   if (event.has_usb_keycode()) {
     // Deliver trapped keys to the callback, not the next stub.
     if (!trap_callback.is_null() && event.has_pressed() &&
-        (trapped_keys.find(event.usb_keycode()) != trapped_keys.end())) {
+        base::Contains(trapped_keys, event.usb_keycode())) {
       trap_callback.Run(event);
       return;
     }

@@ -160,6 +160,10 @@ void TestRenderFrameHost::ReportInspectorIssue(
              blink::mojom::InspectorIssueCode::kFederatedAuthRequestIssue) {
     ++federated_auth_counts_[issue->details->federated_auth_request_details
                                  ->status];
+  } else if (issue->code == blink::mojom::InspectorIssueCode::
+                                kFederatedAuthUserInfoRequestIssue) {
+    ++federated_auth_user_info_counts_
+        [issue->details->federated_auth_user_info_request_details->status];
   }
   RenderFrameHostImpl::ReportInspectorIssue(std::move(issue));
 }
@@ -290,17 +294,35 @@ int TestRenderFrameHost::GetHeavyAdIssueCount(
 }
 
 int TestRenderFrameHost::GetFederatedAuthRequestIssueCount(
-    absl::optional<blink::mojom::FederatedAuthRequestResult> filter) {
-  if (!filter) {
+    absl::optional<blink::mojom::FederatedAuthRequestResult> status_type) {
+  if (!status_type) {
     int total = 0;
     for (const auto& [result, count] : federated_auth_counts_)
       total += count;
     return total;
   }
 
-  auto it = federated_auth_counts_.find(*filter);
+  auto it = federated_auth_counts_.find(*status_type);
   if (it == federated_auth_counts_.end())
     return 0;
+  return it->second;
+}
+
+int TestRenderFrameHost::GetFederatedAuthUserInfoRequestIssueCount(
+    absl::optional<blink::mojom::FederatedAuthUserInfoRequestResult>
+        status_type) {
+  if (!status_type) {
+    int total = 0;
+    for (const auto& [result, count] : federated_auth_user_info_counts_) {
+      total += count;
+    }
+    return total;
+  }
+
+  auto it = federated_auth_user_info_counts_.find(*status_type);
+  if (it == federated_auth_user_info_counts_.end()) {
+    return 0;
+  }
   return it->second;
 }
 
@@ -468,38 +490,19 @@ void TestRenderFrameHost::DidEnforceInsecureRequestPolicy(
 }
 
 void TestRenderFrameHost::PrepareForCommit() {
-  PrepareForCommitInternal(
-      net::IPEndPoint(),
-      /* was_fetched_via_cache=*/false,
-      /* is_signed_exchange_inner_response=*/false,
-      net::HttpResponseInfo::CONNECTION_INFO_UNKNOWN, absl::nullopt, nullptr,
-      mojo::ScopedDataPipeConsumerHandle(), {} /* dns_aliases */);
+  PrepareForCommitInternal(network::mojom::URLResponseHead::New(),
+                           mojo::ScopedDataPipeConsumerHandle());
 }
 
 void TestRenderFrameHost::PrepareForCommitDeprecatedForNavigationSimulator(
-    const net::IPEndPoint& remote_endpoint,
-    bool was_fetched_via_cache,
-    bool is_signed_exchange_inner_response,
-    net::HttpResponseInfo::ConnectionInfo connection_info,
-    absl::optional<net::SSLInfo> ssl_info,
-    scoped_refptr<net::HttpResponseHeaders> response_headers,
-    mojo::ScopedDataPipeConsumerHandle response_body,
-    const std::vector<std::string>& dns_aliases) {
-  PrepareForCommitInternal(remote_endpoint, was_fetched_via_cache,
-                           is_signed_exchange_inner_response, connection_info,
-                           ssl_info, response_headers, std::move(response_body),
-                           dns_aliases);
+    network::mojom::URLResponseHeadPtr response,
+    mojo::ScopedDataPipeConsumerHandle response_body) {
+  PrepareForCommitInternal(std::move(response), std::move(response_body));
 }
 
 void TestRenderFrameHost::PrepareForCommitInternal(
-    const net::IPEndPoint& remote_endpoint,
-    bool was_fetched_via_cache,
-    bool is_signed_exchange_inner_response,
-    net::HttpResponseInfo::ConnectionInfo connection_info,
-    absl::optional<net::SSLInfo> ssl_info,
-    scoped_refptr<net::HttpResponseHeaders> response_headers,
-    mojo::ScopedDataPipeConsumerHandle response_body,
-    const std::vector<std::string>& dns_aliases) {
+    network::mojom::URLResponseHeadPtr response,
+    mojo::ScopedDataPipeConsumerHandle response_body) {
   NavigationRequest* request = frame_tree_node_->navigation_request();
   CHECK(request);
   bool have_to_make_network_request =
@@ -532,19 +535,16 @@ void TestRenderFrameHost::PrepareForCommitInternal(
   CHECK(url_loader);
 
   // Simulate the network stack commit.
-  auto response = network::mojom::URLResponseHead::New();
-  response->remote_endpoint = remote_endpoint;
-  response->was_fetched_via_cache = was_fetched_via_cache;
-  response->is_signed_exchange_inner_response =
-      is_signed_exchange_inner_response;
-  response->connection_info = connection_info;
-  response->ssl_info = ssl_info;
-  response->load_timing.send_start = base::TimeTicks::Now();
-  response->load_timing.receive_headers_start = base::TimeTicks::Now();
-  response->headers = response_headers;
-  response->parsed_headers = network::PopulateParsedHeaders(
-      response->headers.get(), request->GetURL());
-  response->dns_aliases = dns_aliases;
+  if (response->load_timing.send_start.is_null()) {
+    response->load_timing.send_start = base::TimeTicks::Now();
+  }
+  if (response->load_timing.receive_headers_start.is_null()) {
+    response->load_timing.receive_headers_start = base::TimeTicks::Now();
+  }
+  if (!response->parsed_headers) {
+    response->parsed_headers = network::PopulateParsedHeaders(
+        response->headers.get(), request->GetURL());
+  }
   // TODO(carlosk): Ideally, it should be possible someday to
   // fully commit the navigation at this call to CallOnResponseStarted.
   url_loader->CallOnResponseStarted(std::move(response),

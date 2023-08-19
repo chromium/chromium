@@ -127,17 +127,17 @@ TEST_F(ImeOnFocusTest, OnUserGesture) {
 
 TEST_F(ImeOnFocusTest, AfterFirstGesture) {
   RunImeOnFocusTest("ime-on-focus-after-first-gesture.html", 1,
-                    gfx::Point(50, 50), "input");
+                    gfx::Point(50, 50), AtomicString("input"));
 }
 
 TEST_F(ImeOnFocusTest, AfterNavigationWithinPage) {
   RunImeOnFocusTest("ime-on-focus-after-navigation-within-page.html", 1,
-                    gfx::Point(50, 50), "input");
+                    gfx::Point(50, 50), AtomicString("input"));
 }
 
 TEST_F(ImeOnFocusTest, AfterFrameLoadOnGesture) {
   RunImeOnFocusTest("ime-on-focus-after-frame-load-on-gesture.html", 1,
-                    gfx::Point(50, 50), "input", "frame.html");
+                    gfx::Point(50, 50), AtomicString("input"), "frame.html");
 }
 
 }  // namespace blink

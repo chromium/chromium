@@ -4,10 +4,6 @@
 
 #import "ios/chrome/browser/ui/content_suggestions/cells/content_suggestions_most_visited_constants.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 const CGFloat kIconSize = 56;
 const CGFloat kLabelTextColor = 0.314;
 const NSInteger kLabelNumLines = 2;

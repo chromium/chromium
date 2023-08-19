@@ -82,9 +82,9 @@ class ASH_PUBLIC_EXPORT InputDeviceSettingsController {
   // settings.
   virtual const mojom::MousePolicies& GetMousePolicies() = 0;
 
-  // Restore the keyboard modifier remappings to its default mappings for
+  // Restore the keyboard remappings to its default mappings for
   // keyboard of `id`.
-  virtual void RestoreDefaultKeyboardModifierRemappings(DeviceId id) = 0;
+  virtual void RestoreDefaultKeyboardRemappings(DeviceId id) = 0;
   // Configure the settings for keyboard of `id` with the provided
   // `settings`.
   virtual void SetKeyboardSettings(DeviceId id,

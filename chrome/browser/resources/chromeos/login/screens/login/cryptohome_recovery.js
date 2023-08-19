@@ -175,15 +175,6 @@ class CryptohomeRecovery extends CryptohomeRecoveryBase {
     this.disabled_ = true;
     this.userActed('reauth');
   }
-
-  /**
-   * Returns the src of the illustration.
-   * @private
-   */
-  getImageSource_() {
-    return this.isDarkModeActive_ ? 'images/security_lock_dark.svg' :
-                                    'images/security_lock_light.svg';
-  }
 }
 
 customElements.define(CryptohomeRecovery.is, CryptohomeRecovery);

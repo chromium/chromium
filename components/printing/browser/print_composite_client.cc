@@ -20,6 +20,7 @@
 #include "content/public/browser/render_process_host.h"
 #include "content/public/browser/service_process_host.h"
 #include "printing/common/metafile_utils.h"
+#include "printing/print_settings.h"
 #include "printing/printing_utils.h"
 #include "third_party/blink/public/common/associated_interfaces/associated_interface_provider.h"
 
@@ -153,7 +154,6 @@ void PrintCompositeClient::OnDidPrintFrameContent(
   printed_subframes_.insert(render_frame_host);
 }
 
-#if BUILDFLAG(ENABLE_TAGGED_PDF)
 void PrintCompositeClient::SetAccessibilityTree(
     int document_cookie,
     const ui::AXTreeUpdate& accessibility_tree) {
@@ -163,7 +163,6 @@ void PrintCompositeClient::SetAccessibilityTree(
   auto* compositor = GetCompositeRequest(document_cookie);
   compositor->SetAccessibilityTree(accessibility_tree);
 }
-#endif
 
 void PrintCompositeClient::PrintCrossProcessSubframe(
     const gfx::Rect& rect,
@@ -264,11 +263,13 @@ void PrintCompositeClient::DoCompositeDocumentToPdf(
     int document_cookie,
     content::RenderFrameHost* render_frame_host,
     const mojom::DidPrintContentParams& content,
+    const ui::AXTreeUpdate& accessibility_tree,
     mojom::PrintCompositor::CompositeDocumentToPdfCallback callback) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   DCHECK(!GetIsDocumentConcurrentlyComposited(document_cookie));
 
   auto* compositor = CreateCompositeRequest(document_cookie, render_frame_host);
+  compositor->SetAccessibilityTree(accessibility_tree);
 
   for (auto& requested : requested_subframes_) {
     if (!IsDocumentCookieValid(requested->document_cookie_))
@@ -362,7 +363,7 @@ mojom::PrintCompositor* PrintCompositeClient::CreateCompositeRequest(
 void PrintCompositeClient::RemoveCompositeRequest(int cookie) {
   DCHECK_EQ(document_cookie_, cookie);
   compositor_.reset();
-  document_cookie_ = 0;
+  document_cookie_ = PrintSettings::NewInvalidCookie();
   initiator_frame_ = nullptr;
 
   // Reset state of the client.

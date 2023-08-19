@@ -43,7 +43,7 @@ constexpr std::array<MetadataWriter::UMAFeature, 1> kSearchUserUMAFeatures = {
 
 constexpr char kUkmInputEnabled[] = "ukm-input-enabled";
 
-std::unique_ptr<ModelProvider> GetSearchUserDefaultModel() {
+std::unique_ptr<DefaultModelProvider> GetSearchUserDefaultModel() {
   if (!base::GetFieldTrialParamByFeatureAsBool(
           features::kSegmentationPlatformSearchUser, kDefaultModelEnabledParam,
           true)) {
@@ -65,13 +65,15 @@ std::unique_ptr<Config> SearchUserModel::GetConfig() {
   config->segmentation_key = kSearchUserKey;
   config->segmentation_uma_name = kSearchUserUmaName;
   config->AddSegmentId(kSearchUserSegmentId, GetSearchUserDefaultModel());
+  config->auto_execute_and_cache = true;
   return config;
 }
 
-SearchUserModel::SearchUserModel() : ModelProvider(kSearchUserSegmentId) {}
+SearchUserModel::SearchUserModel()
+    : DefaultModelProvider(kSearchUserSegmentId) {}
 
-void SearchUserModel::InitAndFetchModel(
-    const ModelUpdatedCallback& model_updated_callback) {
+std::unique_ptr<DefaultModelProvider::ModelConfig>
+SearchUserModel::GetModelConfig() {
   proto::SegmentationModelMetadata search_user_metadata;
   MetadataWriter writer(&search_user_metadata);
   writer.SetDefaultSegmentationMetadataConfig(
@@ -99,8 +101,7 @@ void SearchUserModel::InitAndFetchModel(
         .sql = query.c_str(),
         .events = kPageLoadEvent.data(),
         .events_size = kPageLoadEvent.size()};
-    MetadataWriter::SqlFeature features[] = {sql_feature};
-    writer.AddSqlFeatures(features, 1);
+    writer.AddSqlFeature(sql_feature);
   }
 
   // Set OutputConfig.
@@ -113,10 +114,8 @@ void SearchUserModel::InitAndFetchModel(
       /*top_label_to_ttl_list=*/{}, /*default_ttl=*/7,
       /*time_unit=*/proto::TimeUnit::DAY);
 
-  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
-      FROM_HERE, base::BindRepeating(
-                     model_updated_callback, kSearchUserSegmentId,
-                     std::move(search_user_metadata), kSearchUserModelVersion));
+  return std::make_unique<ModelConfig>(std::move(search_user_metadata),
+                                       kSearchUserModelVersion);
 }
 
 void SearchUserModel::ExecuteModelWithInput(
@@ -133,10 +132,6 @@ void SearchUserModel::ExecuteModelWithInput(
   base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE, base::BindOnce(std::move(callback),
                                 ModelProvider::Response(1, search_count)));
-}
-
-bool SearchUserModel::ModelAvailable() {
-  return true;
 }
 
 }  // namespace segmentation_platform

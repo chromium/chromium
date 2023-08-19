@@ -1,0 +1,316 @@
+<!doctype html>
+<meta name=timeout content=long>
+<script src='/resources/testharness.js'></script>
+<script src='/resources/testharnessreport.js'></script>
+<script src='/common/utils.js'></script>
+<script src='resources/utils.js'></script>
+<script src='/private-aggregation/resources/protected-audience-helper-module.js'></script>
+
+<body>
+<script>
+'use strict';
+
+private_aggregation_promise_test(async test => {
+  const uuid = generateUuid();
+  await runReportTest(test, uuid, {
+    generateBid: `privateAggregation.enableDebugMode();
+        privateAggregation.contributeToHistogram({ bucket: 1n, value: 2 });`
+  });
+
+  const reports = await pollReports(
+      '/.well-known/private-aggregation/report-protected-audience');
+  assert_equals(reports.length, 1);
+
+  const report = JSON.parse(reports[0]);
+  verifyReport(report, /*api=*/'protected-audience',
+              /*is_debug_enabled=*/true, /*debug_key=*/undefined,
+              /*expected_cleartext_payload=*/ONE_CONTRIBUTION_EXAMPLE_PAYLOAD);
+
+  const debug_reports = await pollReports(
+      '/.well-known/private-aggregation/debug/report-protected-audience');
+  assert_equals(debug_reports.length, 1);
+
+  verifyReportsIdenticalExceptPayload(report, JSON.parse(debug_reports[0]));
+
+}, 'auction that calls Private Aggregation in generateBid');
+
+private_aggregation_promise_test(async test => {
+  const uuid = generateUuid();
+  await runReportTest(test, uuid, {
+    scoreAd: `privateAggregation.enableDebugMode();
+        privateAggregation.contributeToHistogram({ bucket: 1n, value: 2 });`
+  });
+
+  const reports = await pollReports(
+      '/.well-known/private-aggregation/report-protected-audience');
+  assert_equals(reports.length, 1);
+
+  const report = JSON.parse(reports[0]);
+  verifyReport(report, /*api=*/'protected-audience',
+              /*is_debug_enabled=*/true, /*debug_key=*/undefined,
+              /*expected_cleartext_payload=*/ONE_CONTRIBUTION_EXAMPLE_PAYLOAD);
+
+  const debug_reports = await pollReports(
+      '/.well-known/private-aggregation/debug/report-protected-audience');
+  assert_equals(debug_reports.length, 1);
+
+  verifyReportsIdenticalExceptPayload(report, JSON.parse(debug_reports[0]));
+
+}, 'auction that calls Private Aggregation in scoreAd');
+
+private_aggregation_promise_test(async test => {
+  const uuid = generateUuid();
+  await runReportTest(test, uuid, {
+    reportWin: `privateAggregation.enableDebugMode();
+        privateAggregation.contributeToHistogram({ bucket: 1n, value: 2 });`
+  });
+
+  const reports = await pollReports(
+      '/.well-known/private-aggregation/report-protected-audience');
+  assert_equals(reports.length, 1);
+
+  const report = JSON.parse(reports[0]);
+  verifyReport(report, /*api=*/'protected-audience',
+              /*is_debug_enabled=*/true, /*debug_key=*/undefined,
+              /*expected_cleartext_payload=*/ONE_CONTRIBUTION_EXAMPLE_PAYLOAD);
+
+  const debug_reports = await pollReports(
+      '/.well-known/private-aggregation/debug/report-protected-audience');
+  assert_equals(debug_reports.length, 1);
+
+  verifyReportsIdenticalExceptPayload(report, JSON.parse(debug_reports[0]));
+
+}, 'auction that calls Private Aggregation in reportWin');
+
+private_aggregation_promise_test(async test => {
+  const uuid = generateUuid();
+  await runReportTest(test, uuid, {
+    reportResult: `privateAggregation.enableDebugMode();
+        privateAggregation.contributeToHistogram({ bucket: 1n, value: 2 });`
+  });
+
+  const reports = await pollReports(
+      '/.well-known/private-aggregation/report-protected-audience');
+  assert_equals(reports.length, 1);
+
+  const report = JSON.parse(reports[0]);
+  verifyReport(report, /*api=*/'protected-audience',
+              /*is_debug_enabled=*/true, /*debug_key=*/undefined,
+              /*expected_cleartext_payload=*/ONE_CONTRIBUTION_EXAMPLE_PAYLOAD);
+
+  const debug_reports = await pollReports(
+      '/.well-known/private-aggregation/debug/report-protected-audience');
+  assert_equals(debug_reports.length, 1);
+
+  verifyReportsIdenticalExceptPayload(report, JSON.parse(debug_reports[0]));
+
+}, 'auction that calls Private Aggregation in reportResult');
+
+private_aggregation_promise_test(async test => {
+  const uuid = generateUuid();
+  await runReportTest(test, uuid, {
+    reportResult: `privateAggregation.enableDebugMode();
+        privateAggregation.contributeToHistogram({ bucket: 1n, value: 2 });
+        privateAggregation.contributeToHistogram({ bucket: 3n, value: 4 });`
+  });
+
+  const reports = await pollReports(
+      '/.well-known/private-aggregation/report-protected-audience');
+  assert_equals(reports.length, 1);
+
+  const report = JSON.parse(reports[0]);
+  verifyReport(report, /*api=*/'protected-audience',
+              /*is_debug_enabled=*/true, /*debug_key=*/undefined,
+              /*expected_cleartext_payload=*/MULTIPLE_CONTRIBUTIONS_EXAMPLE_PAYLOAD);
+
+  const debug_reports = await pollReports(
+      '/.well-known/private-aggregation/debug/report-protected-audience');
+  assert_equals(debug_reports.length, 1);
+
+  verifyReportsIdenticalExceptPayload(report, JSON.parse(debug_reports[0]));
+
+}, 'auction that calls Private Aggregation with multiple contributions');
+
+private_aggregation_promise_test(async test => {
+  const uuid = generateUuid();
+  await runReportTest(test, uuid, {
+    generateBid: `privateAggregation.enableDebugMode();
+        privateAggregation.contributeToHistogram({ bucket: 1n, value: 2 });`,
+    reportWin: `privateAggregation.enableDebugMode();
+        privateAggregation.contributeToHistogram({ bucket: 3n, value: 4 });`
+  });
+
+  const reports = await pollReports(
+      '/.well-known/private-aggregation/report-protected-audience');
+  assert_equals(reports.length, 1);
+
+  const report = JSON.parse(reports[0]);
+  verifyReport(report, /*api=*/'protected-audience',
+              /*is_debug_enabled=*/true, /*debug_key=*/undefined,
+              /*expected_cleartext_payload=*/MULTIPLE_CONTRIBUTIONS_EXAMPLE_PAYLOAD);
+
+  const debug_reports = await pollReports(
+      '/.well-known/private-aggregation/debug/report-protected-audience');
+  assert_equals(debug_reports.length, 1);
+
+  verifyReportsIdenticalExceptPayload(report, JSON.parse(debug_reports[0]));
+
+}, 'auction that calls Private Aggregation batches across different functions');
+
+private_aggregation_promise_test(async test => {
+  const uuid = generateUuid();
+  await runReportTest(test, uuid, {
+    reportResult: `privateAggregation.contributeToHistogram({ bucket: 1n, value: 2 });`
+  });
+
+  const reports = await pollReports(
+      '/.well-known/private-aggregation/report-protected-audience');
+  assert_equals(reports.length, 1);
+
+  const report = JSON.parse(reports[0]);
+  verifyReport(report, /*api=*/'protected-audience',
+              /*is_debug_enabled=*/false, /*debug_key=*/undefined,
+              /*expected_cleartext_payload=*/undefined);
+
+  // We use a short timeout as the previous poll should've waited long enough.
+  const debug_reports = await pollReports(
+      '/.well-known/private-aggregation/debug/report-protected-audience',
+      /*wait_for=*/1, /*timeout=*/50);
+  assert_equals(debug_reports, null);
+}, 'auction that calls Private Aggregation without debug mode');
+
+private_aggregation_promise_test(async test => {
+  const uuid = generateUuid();
+  await runReportTest(test, uuid, {
+    reportResult: `privateAggregation.enableDebugMode({ debugKey: 1234n });
+        privateAggregation.contributeToHistogram({ bucket: 1n, value: 2 });`
+  });
+
+  const reports = await pollReports(
+      '/.well-known/private-aggregation/report-protected-audience');
+  assert_equals(reports.length, 1);
+
+  const report = JSON.parse(reports[0]);
+  verifyReport(report, /*api=*/'protected-audience',
+              /*is_debug_enabled=*/true, /*debug_key=*/'1234',
+              /*expected_cleartext_payload=*/ONE_CONTRIBUTION_EXAMPLE_PAYLOAD);
+
+  const debug_reports = await pollReports(
+      '/.well-known/private-aggregation/debug/report-protected-audience');
+  assert_equals(debug_reports.length, 1);
+
+  verifyReportsIdenticalExceptPayload(report, JSON.parse(debug_reports[0]));
+}, 'auction that calls Private Aggregation using a debug key');
+
+private_aggregation_promise_test(async test => {
+  const uuid = generateUuid();
+  await runReportTest(test, uuid, {
+    generateBid: `privateAggregation.enableDebugMode({ debugKey: 1234n });
+        privateAggregation.contributeToHistogram({ bucket: 1n, value: 2 });`,
+    reportWin: `privateAggregation.enableDebugMode({ debugKey: 2345n });
+        privateAggregation.contributeToHistogram({ bucket: 3n, value: 4 });`
+  });
+
+  const reports = await pollReports(
+      '/.well-known/private-aggregation/report-protected-audience',
+      /*wait_for=*/2);
+  assert_equals(reports.length, 2);
+
+  const debug_reports = await pollReports(
+      '/.well-known/private-aggregation/debug/report-protected-audience',
+      /*wait_for=*/2);
+  assert_equals(debug_reports.length, 2);
+
+}, 'auction that calls Private Aggregation does not batch different functions if debug keys differ');
+
+private_aggregation_promise_test(async test => {
+  const uuid = generateUuid();
+  await runReportTest(test, uuid, {
+    generateBid: `privateAggregation.contributeToHistogram({ bucket: 1n, value: 2 });`,
+    reportWin: `privateAggregation.enableDebugMode();
+        privateAggregation.contributeToHistogram({ bucket: 3n, value: 4 });`
+  });
+
+  const reports = await pollReports(
+      '/.well-known/private-aggregation/report-protected-audience',
+      /*wait_for=*/2);
+  assert_equals(reports.length, 2);
+
+  const debug_reports = await pollReports(
+      '/.well-known/private-aggregation/debug/report-protected-audience');
+  assert_equals(debug_reports.length, 1);
+
+}, 'auction that calls Private Aggregation does not batch different functions if debug modes differ');
+
+private_aggregation_promise_test(async test => {
+  const uuid = generateUuid();
+  await runReportTest(test, uuid, {
+    generateBid: `privateAggregation.enableDebugMode();
+        privateAggregation.contributeToHistogram({ bucket: 1n, value: 2 });`,
+    reportWin: `privateAggregation.enableDebugMode({ debugKey: 1234n });
+        privateAggregation.contributeToHistogram({ bucket: 3n, value: 4 });`
+  });
+
+  const reports = await pollReports(
+      '/.well-known/private-aggregation/report-protected-audience',
+      /*wait_for=*/2);
+  assert_equals(reports.length, 2);
+
+  const debug_reports = await pollReports(
+      '/.well-known/private-aggregation/debug/report-protected-audience',
+      /*wait_for=*/2);
+  assert_equals(debug_reports.length, 2);
+
+}, 'auction that calls Private Aggregation does not batch different functions if debug key presence differs');
+
+private_aggregation_promise_test(async test => {
+  const uuid = generateUuid();
+  await runReportTest(test, uuid, {
+    reportWin: `privateAggregation.enableDebugMode();
+        privateAggregation.contributeToHistogram({ bucket: 1n, value: 2 });`
+  });
+
+  await runReportTest(test, uuid, {
+    reportWin: `privateAggregation.enableDebugMode();
+        privateAggregation.contributeToHistogram({ bucket: 3n, value: 4 });`
+  });
+
+  const reports = await pollReports(
+      '/.well-known/private-aggregation/report-protected-audience',
+      /*wait_for=*/2);
+  assert_equals(reports.length, 2);
+
+  const debug_reports = await pollReports(
+      '/.well-known/private-aggregation/debug/report-protected-audience',
+      /*wait_for=*/2);
+  assert_equals(debug_reports.length, 2);
+
+}, 'auctions that call Private Aggregation do not batch across different auctions');
+
+private_aggregation_promise_test(async test => {
+  const uuid = generateUuid();
+  await runReportTest(test, uuid, {
+    reportWin: `privateAggregation.enableDebugMode();
+        privateAggregation.contributeToHistogram({ bucket: 1n, value: 2 });
+        aNonExistentVariable;`
+  });
+
+  const reports = await pollReports(
+      '/.well-known/private-aggregation/report-protected-audience');
+  assert_equals(reports.length, 1);
+
+  const report = JSON.parse(reports[0]);
+  verifyReport(report, /*api=*/'protected-audience',
+              /*is_debug_enabled=*/true, /*debug_key=*/undefined,
+              /*expected_cleartext_payload=*/ONE_CONTRIBUTION_EXAMPLE_PAYLOAD);
+
+  const debug_reports = await pollReports(
+      '/.well-known/private-aggregation/debug/report-protected-audience');
+  assert_equals(debug_reports.length, 1);
+
+  verifyReportsIdenticalExceptPayload(report, JSON.parse(debug_reports[0]));
+
+}, 'auction that calls Private Aggregation then has unrelated error still sends reports');
+
+</script>
+</body>

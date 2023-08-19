@@ -174,7 +174,7 @@ class WebAXObjectProxy : public gin::Wrappable<WebAXObjectProxy> {
   v8::Local<v8::Object> AriaActiveDescendantElement();
   v8::Local<v8::Object> AriaControlsElementAtIndex(unsigned index);
   v8::Local<v8::Object> AriaDetailsElementAtIndex(unsigned index);
-  v8::Local<v8::Object> AriaErrorMessageElement();
+  v8::Local<v8::Object> AriaErrorMessageElementAtIndex(unsigned index);
   v8::Local<v8::Object> AriaFlowToElementAtIndex(unsigned index);
   v8::Local<v8::Object> AriaOwnsElementAtIndex(unsigned index);
   std::string AllAttributes();

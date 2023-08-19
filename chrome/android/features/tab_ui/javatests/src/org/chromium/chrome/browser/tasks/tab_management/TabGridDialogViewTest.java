@@ -25,10 +25,10 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import org.chromium.base.test.UiThreadTest;
+import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
-import org.chromium.base.test.util.DisabledTest;
 import org.chromium.chrome.browser.tasks.tab_management.TabGridDialogView.VisibilityListener;
 import org.chromium.chrome.tab_ui.R;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
@@ -43,11 +43,13 @@ import java.util.concurrent.atomic.AtomicReference;
  * BlankUiTestActivity Tests for the {@link TabGridDialogView}.
  */
 @RunWith(ChromeJUnit4ClassRunner.class)
+@Batch(Batch.UNIT_TESTS)
 public class TabGridDialogViewTest extends BlankUiTestActivityTestCase {
     private int mToolbarHeight;
     private int mTopMargin;
     private int mSideMargin;
-    private FrameLayout mDummyParent;
+    private FrameLayout mTestParent;
+    private View mSourceView;
     private View mUngroupBar;
     private View mAnimationCardView;
     private View mBackgroundFrameView;
@@ -60,12 +62,12 @@ public class TabGridDialogViewTest extends BlankUiTestActivityTestCase {
     public void setUpTest() throws Exception {
         super.setUpTest();
         TestThreadUtils.runOnUiThreadBlocking(() -> {
-            mDummyParent = new FrameLayout(getActivity());
-            getActivity().setContentView(mDummyParent);
+            mTestParent = new FrameLayout(getActivity());
+            getActivity().setContentView(mTestParent);
             LayoutInflater.from(getActivity())
-                    .inflate(R.layout.tab_grid_dialog_layout, mDummyParent, true);
+                    .inflate(R.layout.tab_grid_dialog_layout, mTestParent, true);
 
-            mTabGridDialogView = mDummyParent.findViewById(R.id.dialog_parent_view);
+            mTabGridDialogView = mTestParent.findViewById(R.id.dialog_parent_view);
             mTabGridDialogContainer = mTabGridDialogView.findViewById(R.id.dialog_container_view);
             mUngroupBar = mTabGridDialogContainer.findViewById(R.id.dialog_ungroup_bar);
             mUngroupBarTextView = mUngroupBar.findViewById(R.id.dialog_ungroup_bar_text);
@@ -73,7 +75,7 @@ public class TabGridDialogViewTest extends BlankUiTestActivityTestCase {
             mAnimationCardView = mTabGridDialogView.findViewById(R.id.dialog_animation_card_view);
             mBackgroundFrameView = mTabGridDialogView.findViewById(R.id.dialog_frame);
             ScrimCoordinator scrimCoordinator =
-                    new ScrimCoordinator(getActivity(), null, mDummyParent, Color.RED);
+                    new ScrimCoordinator(getActivity(), null, mTestParent, Color.RED);
             mTabGridDialogView.setupScrimCoordinator(scrimCoordinator);
             mTabGridDialogView.setScrimClickRunnable(() -> {});
 
@@ -151,7 +153,7 @@ public class TabGridDialogViewTest extends BlankUiTestActivityTestCase {
     public void testUpdateUngroupBar() {
         AtomicReference<ColorStateList> showTextColorReference = new AtomicReference<>();
         AtomicReference<ColorStateList> hoverTextColorReference = new AtomicReference<>();
-        // Initialize the dialog with dummy views.
+        // Initialize the dialog with stand-in views.
         TestThreadUtils.runOnUiThreadBlocking(() -> {
             mTabGridDialogContainer.removeAllViews();
             View toolbarView = new View(getActivity());
@@ -275,16 +277,18 @@ public class TabGridDialogViewTest extends BlankUiTestActivityTestCase {
 
     @Test
     @MediumTest
-    @DisabledTest(message = "https://crbug.com/1036552")
     public void testDialog_ZoomInZoomOut() {
         // TODO(crbug.com/1075677): figure out a stable way to separate different stages of the
         // animation so that we can verify the alpha and view hierarchy of the animation-related
         // views.
         AtomicReference<ViewGroup> parentViewReference = new AtomicReference<>();
-        // Setup the animation with a dummy animation source view.
+        // Setup the animation with a stand-in animation source view.
         TestThreadUtils.runOnUiThreadBlocking(() -> {
-            View sourceView = new View(getActivity());
-            mTabGridDialogView.setupDialogAnimation(sourceView);
+            mSourceView = new View(getActivity());
+            mTestParent.addView(mSourceView, 0, new FrameLayout.LayoutParams(100, 100));
+        });
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
+            mTabGridDialogView.setupDialogAnimation(mSourceView);
             parentViewReference.set((ViewGroup) mTabGridDialogContainer.getParent());
             Assert.assertFalse(mTabGridDialogContainer.isFocused());
         });
@@ -350,12 +354,14 @@ public class TabGridDialogViewTest extends BlankUiTestActivityTestCase {
 
     @Test
     @MediumTest
-    @DisabledTest(message = "https://crbug.com/1036552")
     public void testDialog_ZoomInFadeOut() {
-        // Setup the animation with a dummy animation source view.
+        // Setup the animation with a stand-in animation source view.
         TestThreadUtils.runOnUiThreadBlocking(() -> {
-            View sourceView = new View(getActivity());
-            mTabGridDialogView.setupDialogAnimation(sourceView);
+            mSourceView = new View(getActivity());
+            mTestParent.addView(mSourceView, 0, new FrameLayout.LayoutParams(100, 100));
+        });
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
+            mTabGridDialogView.setupDialogAnimation(mSourceView);
             Assert.assertFalse(mTabGridDialogContainer.isFocused());
         });
         // Show the dialog.

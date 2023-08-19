@@ -21,70 +21,6 @@
 #include "base/posix/eintr_wrapper.h"
 #endif
 
-#if BUILDFLAG(IS_CHROMEOS)
-#include <poll.h>
-#include <sys/resource.h>
-#include <vector>
-
-#include "base/strings/string_number_conversions.h"
-#include "base/system/sys_info.h"
-#include "components/crash/core/common/crash_key.h"
-#endif
-
-namespace {
-
-#if BUILDFLAG(IS_CHROMEOS)
-// TODO(hitawala): Merge this and viz::GatherFDStats functions.
-bool GatherFDStats(uint32_t& fd_max,
-                   uint32_t& active_fd_count,
-                   uint32_t& rlim_cur) {
-  // https://stackoverflow.com/questions/7976769/
-  // getting-count-of-current-used-file-descriptors-from-c-code
-  rlimit limit_data;
-  getrlimit(RLIMIT_NOFILE, &limit_data);
-  std::vector<pollfd> poll_data;
-  constexpr uint32_t kMaxNumFDTested = 1 << 16;
-  // |rlim_cur| is the soft max but is likely the value we can rely on instead
-  // of the real max.
-  rlim_cur = limit_data.rlim_cur;
-  fd_max = std::max(1u, std::min(rlim_cur, kMaxNumFDTested));
-  poll_data.resize(fd_max);
-  for (size_t i = 0; i < poll_data.size(); i++) {
-    auto& each = poll_data[i];
-    each.fd = static_cast<int>(i);
-    each.events = 0;
-    each.revents = 0;
-  }
-
-  poll(poll_data.data(), poll_data.size(), 0);
-  active_fd_count = 0;
-  for (auto&& each : poll_data) {
-    if (each.revents != POLLNVAL) {
-      active_fd_count++;
-    }
-  }
-  return true;
-}
-
-void SetFDCrashKeys() {
-  uint32_t fd_max;
-  uint32_t active_fd_count;
-  uint32_t rlim_cur;
-
-  if (!GatherFDStats(fd_max, active_fd_count, rlim_cur)) {
-    return;
-  }
-  static crash_reporter::CrashKeyString<32> num_fd_max("num-fd-max");
-  static crash_reporter::CrashKeyString<32> num_fd_soft_max("num-fd-soft-max");
-  static crash_reporter::CrashKeyString<32> num_fd_active("num-fd-active");
-  num_fd_max.Set(base::NumberToString(fd_max));
-  num_fd_soft_max.Set(base::NumberToString(rlim_cur));
-  num_fd_active.Set(base::NumberToString(active_fd_count));
-}
-#endif
-
-}  // namespace
-
 namespace gl {
 
 GLFenceAndroidNativeFenceSync::GLFenceAndroidNativeFenceSync() {}
@@ -100,9 +36,6 @@ GLFenceAndroidNativeFenceSync::CreateInternal(EGLenum type, EGLint* attribs) {
   auto fence = base::WrapUnique(new GLFenceAndroidNativeFenceSync());
 
   if (!fence->InitializeInternal(type, attribs)) {
-#if BUILDFLAG(IS_CHROMEOS)
-    SetFDCrashKeys();
-#endif
     return nullptr;
   }
   return fence;
@@ -130,9 +63,6 @@ std::unique_ptr<gfx::GpuFence> GLFenceAndroidNativeFenceSync::GetGpuFence() {
 
   const EGLint sync_fd = eglDupNativeFenceFDANDROID(display_, sync_);
   if (sync_fd < 0) {
-#if BUILDFLAG(IS_CHROMEOS)
-    SetFDCrashKeys();
-#endif
     return nullptr;
   }
 

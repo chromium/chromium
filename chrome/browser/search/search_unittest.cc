@@ -125,7 +125,10 @@ class SearchTest : public BrowserWithTestWindowTest {
       {"Remote NTP -> Regular", "https://foo.com/newtab", true,
        "https://foo.com/other", false, false, false, false},
       {"SRP -> SRP", "https://foo.com/url", false, "https://foo.com/url", false,
-       true, !content::WillSameSiteNavigationsChangeRenderFrameHosts(), true},
+       true,
+       !content::WillSameSiteNavigationChangeRenderFrameHosts(
+           /*is_main_frame=*/true),
+       true},
       {"SRP -> Regular", "https://foo.com/url", false, "https://foo.com/other",
        false, !content::CanSameSiteMainFrameNavigationsChangeSiteInstances(),
        !content::CanSameSiteMainFrameNavigationsChangeSiteInstances(), true},

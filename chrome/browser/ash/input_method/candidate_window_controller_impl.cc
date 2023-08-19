@@ -35,7 +35,7 @@ void CandidateWindowControllerImpl::InitCandidateWindowView() {
   if (candidate_window_view_)
     return;
 
-  gfx::NativeView parent = nullptr;
+  gfx::NativeView parent = gfx::NativeView();
 
   aura::Window* active_window = ash::window_util::GetActiveWindow();
   // Use MenuContainer so that it works even with a system modal dialog.

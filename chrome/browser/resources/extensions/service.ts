@@ -171,6 +171,28 @@ export class Service implements ServiceInterface {
         });
   }
 
+  /**
+   * Allows the consumer to call the API asynchronously.
+   */
+  uninstallItem(id: string): Promise<void> {
+    chrome.metricsPrivate.recordUserAction('Extensions.RemoveExtensionClick');
+    return chrome.management.uninstall(id, {showConfirmDialog: true});
+  }
+
+  deleteItems(ids: string[]): Promise<void> {
+    this.isDeleting_ = true;
+    return chrome.developerPrivate.removeMultipleExtensions(ids).finally(() => {
+      this.isDeleting_ = false;
+    });
+  }
+
+  setItemSafetyCheckWarningAcknowledged(id: string): Promise<void> {
+    return chrome.developerPrivate.updateExtensionConfiguration({
+      extensionId: id,
+      acknowledgeSafetyCheckWarning: true,
+    });
+  }
+
   setItemEnabled(id: string, isEnabled: boolean) {
     chrome.metricsPrivate.recordUserAction(
         isEnabled ? 'Extensions.ExtensionEnabled' :
@@ -258,10 +280,10 @@ export class Service implements ServiceInterface {
     return this.loadUnpackedHelper_();
   }
 
-  retryLoadUnpacked(retryGuid: string): Promise<boolean> {
+  retryLoadUnpacked(retryGuid?: string): Promise<boolean> {
     // Attempt to load an unpacked extension, optionally as another attempt at
     // a previously-specified load.
-    return this.loadUnpackedHelper_({retryGuid: retryGuid});
+    return this.loadUnpackedHelper_({retryGuid});
   }
 
   choosePackRootDirectory(): Promise<string> {

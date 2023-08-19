@@ -7,8 +7,8 @@
 
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
+#include "components/safe_browsing/core/browser/database_manager_mechanism.h"
 #include "components/safe_browsing/core/browser/db/database_manager.h"
-#include "components/safe_browsing/core/browser/hash_database_mechanism.h"
 #include "components/safe_browsing/core/browser/hashprefix_realtime/hash_realtime_service.h"
 #include "components/safe_browsing/core/browser/safe_browsing_lookup_mechanism.h"
 #include "url/gurl.h"
@@ -24,7 +24,8 @@ class HashRealTimeMechanism : public SafeBrowsingLookupMechanism {
       scoped_refptr<SafeBrowsingDatabaseManager> database_manager,
       scoped_refptr<base::SequencedTaskRunner> ui_task_runner,
       base::WeakPtr<HashRealTimeService> lookup_service_on_ui,
-      MechanismExperimentHashDatabaseCache experiment_cache_selection);
+      MechanismExperimentHashDatabaseCache experiment_cache_selection,
+      bool is_source_lookup_mechanism_experiment);
   HashRealTimeMechanism(const HashRealTimeMechanism&) = delete;
   HashRealTimeMechanism& operator=(const HashRealTimeMechanism&) = delete;
   ~HashRealTimeMechanism() override;
@@ -44,6 +45,7 @@ class HashRealTimeMechanism : public SafeBrowsingLookupMechanism {
   static void StartLookupOnUIThread(
       base::WeakPtr<HashRealTimeMechanism> weak_checker_on_io,
       const GURL& url,
+      bool is_source_lookup_mechanism_experiment,
       base::WeakPtr<HashRealTimeService> lookup_service_on_ui,
       scoped_refptr<base::SequencedTaskRunner> io_task_runner);
 
@@ -72,9 +74,11 @@ class HashRealTimeMechanism : public SafeBrowsingLookupMechanism {
   void OnHashDatabaseCompleteCheckResult(
       bool real_time_request_failed,
       std::unique_ptr<SafeBrowsingLookupMechanism::CompleteCheckResult> result);
-  void OnHashDatabaseCompleteCheckResultInternal(SBThreatType threat_type,
-                                                 const ThreatMetadata& metadata,
-                                                 bool real_time_request_failed);
+  void OnHashDatabaseCompleteCheckResultInternal(
+      SBThreatType threat_type,
+      const ThreatMetadata& metadata,
+      absl::optional<ThreatSource> threat_source,
+      bool real_time_request_failed);
 
   SEQUENCE_CHECKER(sequence_checker_);
 
@@ -87,7 +91,14 @@ class HashRealTimeMechanism : public SafeBrowsingLookupMechanism {
 
   // This will be created in cases where the hash-prefix real-time check decides
   // to fall back to the hash-based database checks.
-  std::unique_ptr<HashDatabaseMechanism> hash_database_mechanism_ = nullptr;
+  std::unique_ptr<DatabaseManagerMechanism> hash_database_mechanism_ = nullptr;
+
+  // True if the mechanism was created as part of the
+  // SafeBrowsingLookupMechanismExperiment.
+  // TODO(crbug.com/1410253): [Also TODO(thefrog)] Delete usages of
+  // |is_source_lookup_mechanism_experiment_| in file when deprecating the
+  // experiment.
+  bool is_source_lookup_mechanism_experiment_;
 
   base::WeakPtrFactory<HashRealTimeMechanism> weak_factory_{this};
 };

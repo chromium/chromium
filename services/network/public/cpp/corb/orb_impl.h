@@ -36,6 +36,7 @@ class COMPONENT_EXPORT(NETWORK_CPP) OpaqueResponseBlockingAnalyzer final
   Decision Init(const GURL& request_url,
                 const absl::optional<url::Origin>& request_initiator,
                 mojom::RequestMode request_mode,
+                mojom::RequestDestination request_destination_from_renderer,
                 const network::mojom::URLResponseHead& response) override;
   Decision Sniff(base::StringPiece data) override;
   Decision HandleEndOfSniffableResponseBody() override;
@@ -86,10 +87,18 @@ class COMPONENT_EXPORT(NETWORK_CPP) OpaqueResponseBlockingAnalyzer final
   // Remembering which past requests sniffed as media.  Never null.
   // TODO(lukasza): Replace with raw_ref<T> or nonnull_raw_ptr<T> once
   // available.
-  raw_ptr<PerFactoryState, DanglingUntriaged> per_factory_state_;
+  // This dangling raw_ptr occurred in:
+  // content_browsertests: SignedExchangeSubresourcePrefetchBrowserTest.CORS
+  // https://ci.chromium.org/ui/p/chromium/builders/try/mac-rel/1416613/test-results?q=ExactID%3Aninja%3A%2F%2Fcontent%2Ftest%3Acontent_browsertests%2FSignedExchangeSubresourcePrefetchBrowserTest.CORS+VHash%3Ae04c2114e5be4931
+  raw_ptr<PerFactoryState, FlakyDanglingUntriaged> per_factory_state_;
 
   BlockingDecisionReason blocking_decision_reason_ =
       BlockingDecisionReason::kInvalid;
+
+  // The request destination. Note that this value always originates from
+  // the renderer.
+  mojom::RequestDestination request_destination_from_renderer_ =
+      mojom::RequestDestination::kEmpty;
 };
 
 }  // namespace corb

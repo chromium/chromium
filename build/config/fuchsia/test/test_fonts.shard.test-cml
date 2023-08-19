@@ -5,7 +5,7 @@
   children: [
     {
       name: "test_fonts",
-      url: "fuchsia-pkg://fuchsia.com/fonts#meta/fonts.cm",
+      url: "fuchsia-pkg://fuchsia.com/fonts_configurable_for_test#meta/fonts_configurable_for_test.cm",
     },
   ],
   offer: [
@@ -31,7 +31,9 @@
   ],
   facets: {
     "fuchsia.test": {
-        "deprecated-allowed-packages": [ "fonts" ],
+        // TODO(crbug.com/1408597): Remove when the isolated font provider
+        // component is subpackaged.
+        "deprecated-allowed-packages": [ "fonts_configurable_for_test" ],
     },
   },
 }

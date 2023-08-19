@@ -14,6 +14,7 @@ import '../appearance_page/appearance_page.js';
 import '../privacy_page/privacy_guide/privacy_guide_promo.js';
 import '../privacy_page/privacy_page.js';
 import '../safety_check_page/safety_check_page.js';
+import '../safety_hub/safety_hub_entry_point.js';
 import '../autofill_page/autofill_page.js';
 import '../controls/settings_idle_load.js';
 import '../on_startup_page/on_startup_page.js';
@@ -134,16 +135,6 @@ export class SettingsBasicPageElement extends SettingsBasicPageElementBase {
         },
       },
 
-      // <if expr="not chromeos_ash">
-      enableDesktopDetailedLanguageSettings_: {
-        type: Boolean,
-        value() {
-          return loadTimeData.getBoolean(
-              'enableDesktopDetailedLanguageSettings');
-        },
-      },
-      // </if>
-
       /**
        * True if the basic page should currently display the privacy guide
        * promo.
@@ -183,7 +174,6 @@ export class SettingsBasicPageElement extends SettingsBasicPageElementBase {
   // <if expr="not chromeos_ash">
   languages?: LanguagesModel;
   languageHelper: LanguageHelper;
-  private enableDesktopDetailedLanguageSettings_: boolean;
   // </if>
   pageVisibility: PageVisibility;
   inSearchMode: boolean;
@@ -388,6 +378,16 @@ export class SettingsBasicPageElement extends SettingsBasicPageElementBase {
 
   private showBatteryPage_(visibility?: boolean): boolean {
     return visibility !== false;
+  }
+
+  private showSafetyCheckPage_(visibility?: boolean): boolean {
+    return !loadTimeData.getBoolean('enableSafetyHub') &&
+        this.showPage_(visibility);
+  }
+
+  private showSafetyHubEntryPointPage_(visibility?: boolean): boolean {
+    return loadTimeData.getBoolean('enableSafetyHub') &&
+        this.showPage_(visibility);
   }
 
   // <if expr="_google_chrome">

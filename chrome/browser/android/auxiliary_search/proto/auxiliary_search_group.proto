@@ -11,10 +11,18 @@ option java_outer_classname = 'AuxiliarySearchGroupProto';
 package auxiliary_search;
 
 // Contains information about the tabs and bookmarks.
+message AuxiliarySearchEntry {
+  optional string title = 1;
+  optional string url = 2;
+  optional int64 creation_timestamp = 3;
+  optional int64 last_modification_timestamp = 4;
+  optional int64 last_access_timestamp = 5;
+}
+
 message AuxiliarySearchBookmarkGroup {
-  message Bookmark {
-    optional string title = 1;
-    optional string url = 2;
-  }
-  repeated Bookmark bookmark = 1;
+  repeated AuxiliarySearchEntry bookmark = 1;
+}
+
+message AuxiliarySearchTabGroup {
+  repeated AuxiliarySearchEntry tab = 1;
 }

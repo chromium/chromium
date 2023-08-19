@@ -5,6 +5,7 @@ Version: 9f9c5365816bdd036fd80d54b22e86764ea4b7a7
 License: MIT
 License File: LICENSE
 Security Critical: no
+Shipped: yes
 
 Description:
 Core X11 protocol client library

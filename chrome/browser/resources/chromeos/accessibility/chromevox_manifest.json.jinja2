@@ -29,7 +29,6 @@
     "storage",
     "tabs",
     "tts",
-    "virtualKeyboardPrivate",
     "chrome://resources/",
     "https://docs.google.com/*",
     "https://docs.sandbox.google.com/*"
@@ -51,7 +50,7 @@
   },
   "options_page": "chromevox/options/options.html",
   "default_locale": "en",
-  "content_security_policy": "default-src 'none'; script-src 'self' 'wasm-eval' chrome://resources; style-src 'unsafe-inline' chrome://resources;",
+  "content_security_policy": "default-src 'none'; script-src 'self' 'wasm-eval' chrome://resources; style-src 'unsafe-inline' chrome://resources; img-src 'self' data:;",
   "externally_connectable": {
     "ids": [
       // Braille IME.

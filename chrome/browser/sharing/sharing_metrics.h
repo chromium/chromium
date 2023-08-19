@@ -112,28 +112,4 @@ void LogSendSharingMessageResult(
     base::TimeDelta receiver_pulse_interval,
     SharingSendMessageResult result);
 
-// Logs to UMA the size of the selected text for Shared Clipboard.
-void LogSharedClipboardSelectedTextSize(size_t text_size);
-
-// Logs to UMA the result of handling a Remote Copy message.
-void LogRemoteCopyHandleMessageResult(RemoteCopyHandleMessageResult result);
-
-// Logs to UMA the size of the received text for Remote Copy.
-void LogRemoteCopyReceivedTextSize(size_t size);
-
-// Logs to UMA the size of the received image (before decoding) for Remote Copy.
-void LogRemoteCopyReceivedImageSizeBeforeDecode(size_t size);
-
-// Logs to UMA the size of the received image (after decoding) for Remote Copy.
-void LogRemoteCopyReceivedImageSizeAfterDecode(size_t size);
-
-// Logs to UMA the status code of an image load request for Remote Copy.
-void LogRemoteCopyLoadImageStatusCode(int code);
-
-// Logs to UMA the time to load an image for Remote Copy.
-void LogRemoteCopyLoadImageTime(base::TimeDelta time);
-
-// Logs to UMA the time to decode an image for Remote Copy.
-void LogRemoteCopyDecodeImageTime(base::TimeDelta time);
-
 #endif  // CHROME_BROWSER_SHARING_SHARING_METRICS_H_

@@ -27,7 +27,6 @@ source_set("infobars") {
     "//url",
   ]
   frameworks = [ "UIKit.framework" ]
-  configs += [ "//build/config/compiler:enable_arc" ]
 }
 
 source_set("constants") {
@@ -36,14 +35,10 @@ source_set("constants") {
     "sc_infobar_constants.mm",
   ]
   deps = []
-  configs += [ "//build/config/compiler:enable_arc" ]
 }
 
 source_set("eg2_tests") {
-  configs += [
-    "//build/config/compiler:enable_arc",
-    "//build/config/ios:xctest_config",
-  ]
+  configs += [ "//build/config/ios:xctest_config" ]
   testonly = true
   sources = [
     "sc_infobar_banner_coordinator_egtest.mm",

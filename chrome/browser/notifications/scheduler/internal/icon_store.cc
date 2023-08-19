@@ -155,7 +155,6 @@ void IconProtoDbStore::OnIconsEncoded(
     std::vector<IconType> icons_type,
     std::vector<std::string> icons_uuid,
     std::unique_ptr<EncodeResult> encode_result) {
-  stats::LogPngIconConverterEncodeResult(encode_result->success);
   IconTypeUuidMap icons_uuid_map;
   if (!encode_result->success) {
     std::move(callback).Run(std::move(icons_uuid_map), false);
@@ -181,7 +180,6 @@ void IconProtoDbStore::OnIconsDecoded(
     LoadIconsCallback callback,
     std::vector<std::string> icons_uuid,
     std::unique_ptr<DecodeResult> decoded_result) {
-  stats::LogPngIconConverterDecodeResult(decoded_result->success);
   if (!decoded_result->success) {
     std::move(callback).Run(false, LoadedIconsMap{});
     return;

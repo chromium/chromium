@@ -125,7 +125,7 @@ class TabGroupHeader : public TabSlotView,
 
    private:
     bool is_open_ = false;
-    raw_ptr<views::Widget, DanglingUntriaged> widget_;
+    raw_ptr<views::Widget, AcrossTasksDanglingUntriaged> widget_;
     // Outlives this because it's a dependency inversion interface for the
     // header's parent View.
     raw_ref<TabSlotController> tab_slot_controller_;

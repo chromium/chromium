@@ -52,8 +52,6 @@ class PLATFORM_EXPORT LayoutPoint {
       : x_(point.x()), y_(point.y()) {}
   constexpr explicit LayoutPoint(const gfx::PointF& point)
       : x_(point.x()), y_(point.y()) {}
-  constexpr explicit LayoutPoint(const LayoutSize& size)
-      : x_(size.Width()), y_(size.Height()) {}
 
   constexpr explicit operator gfx::PointF() const {
     return gfx::PointF(x_.ToFloat(), y_.ToFloat());
@@ -72,7 +70,6 @@ class PLATFORM_EXPORT LayoutPoint {
   void SetX(LayoutUnit x) { x_ = x; }
   void SetY(LayoutUnit y) { y_ = y; }
 
-  void Move(const LayoutSize& s) { Move(s.Width(), s.Height()); }
   void Move(const gfx::Vector2d& s) { Move(s.x(), s.y()); }
   void MoveBy(const LayoutPoint& offset) { Move(offset.X(), offset.Y()); }
   void Move(int dx, int dy) { Move(LayoutUnit(dx), LayoutUnit(dy)); }
@@ -98,7 +95,8 @@ class PLATFORM_EXPORT LayoutPoint {
   LayoutUnit x_, y_;
 };
 
-ALWAYS_INLINE LayoutPoint& operator+=(LayoutPoint& a, const LayoutSize& b) {
+ALWAYS_INLINE LayoutPoint& operator+=(LayoutPoint& a,
+                                      const DeprecatedLayoutSize& b) {
   a.Move(b.Width(), b.Height());
   return a;
 }
@@ -118,18 +116,9 @@ ALWAYS_INLINE LayoutPoint& operator-=(LayoutPoint& a, const LayoutPoint& b) {
   return a;
 }
 
-ALWAYS_INLINE LayoutPoint& operator-=(LayoutPoint& a, const LayoutSize& b) {
-  a.Move(-b.Width(), -b.Height());
-  return a;
-}
-
 inline LayoutPoint& operator-=(LayoutPoint& a, const gfx::Vector2d& b) {
   a.Move(-b.x(), -b.y());
   return a;
-}
-
-inline LayoutPoint operator+(const LayoutPoint& a, const LayoutSize& b) {
-  return LayoutPoint(a.X() + b.Width(), a.Y() + b.Height());
 }
 
 ALWAYS_INLINE LayoutPoint operator+(const LayoutPoint& a,
@@ -137,15 +126,13 @@ ALWAYS_INLINE LayoutPoint operator+(const LayoutPoint& a,
   return LayoutPoint(a.X() + b.X(), a.Y() + b.Y());
 }
 
-ALWAYS_INLINE LayoutSize operator-(const LayoutPoint& a, const LayoutPoint& b) {
-  return LayoutSize(a.X() - b.X(), a.Y() - b.Y());
+ALWAYS_INLINE DeprecatedLayoutSize operator-(const LayoutPoint& a,
+                                             const LayoutPoint& b) {
+  return DeprecatedLayoutSize(a.X() - b.X(), a.Y() - b.Y());
 }
 
-ALWAYS_INLINE LayoutSize operator-(const LayoutPoint& a, const gfx::Point& b) {
-  return LayoutSize(a.X() - b.x(), a.Y() - b.y());
-}
-
-inline LayoutPoint operator-(const LayoutPoint& a, const LayoutSize& b) {
+inline LayoutPoint operator-(const LayoutPoint& a,
+                             const DeprecatedLayoutSize& b) {
   return LayoutPoint(a.X() - b.Width(), a.Y() - b.Height());
 }
 
@@ -164,18 +151,6 @@ ALWAYS_INLINE constexpr bool operator==(const LayoutPoint& a,
 
 constexpr bool operator!=(const LayoutPoint& a, const LayoutPoint& b) {
   return !(a == b);
-}
-
-constexpr LayoutPoint ToPoint(const LayoutSize& size) {
-  return LayoutPoint(size.Width(), size.Height());
-}
-
-constexpr LayoutPoint ToLayoutPoint(const LayoutSize& p) {
-  return LayoutPoint(p.Width(), p.Height());
-}
-
-constexpr LayoutSize ToSize(const LayoutPoint& a) {
-  return LayoutSize(a.X(), a.Y());
 }
 
 inline gfx::Point ToFlooredPoint(const LayoutPoint& point) {
@@ -200,7 +175,8 @@ inline LayoutPoint CeiledLayoutPoint(const gfx::PointF& p) {
                      LayoutUnit::FromFloatCeil(p.y()));
 }
 
-inline gfx::Size ToPixelSnappedSize(const LayoutSize& s, const LayoutPoint& p) {
+inline gfx::Size ToPixelSnappedSize(const DeprecatedLayoutSize& s,
+                                    const LayoutPoint& p) {
   return gfx::Size(SnapSizeToPixel(s.Width(), p.X()),
                    SnapSizeToPixel(s.Height(), p.Y()));
 }
@@ -210,10 +186,6 @@ inline gfx::Vector2d ToRoundedVector2d(const LayoutPoint& p) {
 }
 inline gfx::Size ToRoundedSize(const LayoutPoint& p) {
   return gfx::Size(p.X().Round(), p.Y().Round());
-}
-
-inline LayoutSize ToLayoutSize(const LayoutPoint& p) {
-  return LayoutSize(p.X(), p.Y());
 }
 
 inline LayoutPoint FlooredLayoutPoint(const gfx::SizeF& s) {

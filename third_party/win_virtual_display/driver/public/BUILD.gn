@@ -1,0 +1,10 @@
+# Copyright 2023 The Chromium Authors
+# Use of this source code is governed by a BSD - style license that can be
+# found in the LICENSE file.
+
+# Note most of this directory is built using MSBuild and not ninja except
+# for this shared public file which is shared between the driver and client
+# code which * is * built with ninja.
+source_set("public") {
+  sources = [ "properties.h" ]
+}

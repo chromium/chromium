@@ -1,4 +1,4 @@
-<style include="cr-shared-style">
+<style include="cr-shared-style cros-color-overrides">
   /**
     * It's important that buttons are square (have same height and width) so
     * paper-ripple looks nice
@@ -50,6 +50,10 @@
     width: var(--pin-button-size);
   }
 
+  :host-context(.jelly-enabled) #backspaceButton {
+    --cr-icon-button-fill-color: var(--cros-sys-on_surface);
+  }
+
   #backspaceButton[disabled] {
     opacity: 0.34;
   }
@@ -74,12 +78,23 @@
     --paper-ripple-opacity: 1;
   }
 
+  :host-context(.jelly-enabled) cr-button.digit-button {
+    --ink-color: var(--cros-sys-ripple_neutral_on_subtle);
+  }
+
   :host-context(.focus-outline-visible) .digit-button:focus {
     font-weight: 500;
   }
 
   .digit-button inner-text {
     font-family: 'Roboto';
+  }
+
+  :host-context(.jelly-enabled) .digit-button inner-text {
+    font-family: var(--cros-display-6-font-family);
+    font-size: var(--cros-display-6-font-size);
+    font-weight: var(--cros-display-6-font-weight);
+    line-height: var(--cros-display-6-line-height);
   }
 
   /* TODO(https://crbug.com/1307255): Figure out how to use variables of the
@@ -90,8 +105,16 @@
     border-radius: 50%;
   }
 
+  :host-context(.jelly-enabled) cr-button.digit-button {
+    background-color: var(--cros-sys-surface3);
+  }
+
   cr-button:hover {
     background-color: var(--cros-highlight-color-focus);
+  }
+
+  :host-context(.jelly-enabled) cr-button.digit-button:hover {
+    background-color: var(--cros-sys-hover_on_subtle);
   }
 
   cr-icon-button {
@@ -99,8 +122,16 @@
     border-radius: 50%;
   }
 
+  :host-context(.jelly-enabled) cr-icon-button#backspaceButton {
+    background-color: var(--cros-sys-surface3);
+  }
+
   cr-icon-button:hover {
     background-color: var(--cros-highlight-color-focus);
+  }
+
+  :host-context(.jelly-enabled) cr-icon-button#backspaceButton:hover {
+    background-color: var(--cros-sys-hover_on_subtle);
   }
 
   inner-text.letter {
@@ -120,6 +151,10 @@
   .number {
     color: var(--pin-keyboard-number-color, var(--cros-text-color-primary));
     font-size: 20px;
+  }
+
+  :host-context(.jelly-enabled) .number {
+    color: var(--cros-sys-on_surface);
   }
 
   #pinInput::part(input) {
@@ -154,6 +189,10 @@
 
   #pinInput[is-input-rtl] {
     direction: rtl;
+  }
+
+  :host-context(.jelly-enabled) cr-input#pinInput {
+    --cr-input-background-color: var(--cros-sys-input_field_on_shaded);
   }
 
   /* Ensure that all children of cr-button do not consume events. This

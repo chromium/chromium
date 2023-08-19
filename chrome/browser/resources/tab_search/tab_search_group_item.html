@@ -6,7 +6,6 @@
   #icon {
     flex-shrink: 0;
     height: var(--mwb-icon-size);
-    margin-inline-end: var(--mwb-list-item-horizontal-margin);
     width: var(--mwb-icon-size);
   }
 
@@ -20,6 +19,7 @@
   #primaryText {
     color: var(--cr-primary-text-color);
     font-size: var(--mwb-primary-text-font-size);
+    font-weight: var(--mwb-primary-text-font-weight);
     margin-bottom: 3px;
   }
 
@@ -28,6 +28,7 @@
     color: var(--cr-secondary-text-color);
     display: flex;
     font-size: var(--mwb-secondary-text-font-size);
+    font-weight: var(--mwb-secondary-text-font-weight);
   }
 
   #textAriaLabel {
@@ -63,21 +64,39 @@
     margin-inline-end: 4px;
     margin-inline-start: 4px;
   }
+
+  #iconContainer {
+    margin-inline-end: 16px;
+  }
+
+  :host-context([chrome-refresh-2023]) #iconContainer {
+    align-items: center;
+    background: var(--color-list-item-url-favicon-background);
+    border-radius: 8px;
+    display: flex;
+    flex-shrink: 0;
+    height: 40px;
+    justify-content: center;
+    overflow: hidden;
+    width: 40px;
+  }
 </style>
 
-<!-- TODO(romanarora): Replace with a 16x16 SVG. -->
-<svg id="icon" width="32" height="32" viewBox="0 0 32 32" fill="none"
-    xmlns="http://www.w3.org/2000/svg">
-  <mask id="mask0" mask-type="alpha" maskUnits="userSpaceOnUse" x="2" y="4"
-      width="28" height="24">
-    <path fill-rule="evenodd" clip-rule="evenodd"
-        d="M6 5C6 4.44772 6.44772 4 7 4H29C29.5523 4 30 4.44772 30 5V23C30 23.5523 29.5523 24 29 24H7C6.44772 24 6 23.5523 6 23V5ZM7.99992 22V6.33335H17.9999V12H27.9999V22H7.99992ZM2 9C2 8.44772 2.44772 8 3 8H4V26H26V27C26 27.5523 25.5523 28 25 28H3C2.44772 28 2 27.5523 2 27V9Z"
-        fill="#616161">
-  </mask>
-  <g mask="url(#mask0)">
-    <rect width="32" height="32" fill="#5F6368">
-  </g>
-</svg>
+<div id="iconContainer">
+  <!-- TODO(romanarora): Replace with a 16x16 SVG. -->
+  <svg id="icon" width="32" height="32" viewBox="0 0 32 32" fill="none"
+      xmlns="http://www.w3.org/2000/svg">
+    <mask id="mask0" mask-type="alpha" maskUnits="userSpaceOnUse" x="2" y="4"
+        width="28" height="24">
+      <path fill-rule="evenodd" clip-rule="evenodd"
+          d="M6 5C6 4.44772 6.44772 4 7 4H29C29.5523 4 30 4.44772 30 5V23C30 23.5523 29.5523 24 29 24H7C6.44772 24 6 23.5523 6 23V5ZM7.99992 22V6.33335H17.9999V12H27.9999V22H7.99992ZM2 9C2 8.44772 2.44772 8 3 8H4V26H26V27C26 27.5523 25.5523 28 25 28H3C2.44772 28 2 27.5523 2 27V9Z"
+          fill="#616161">
+    </mask>
+    <g mask="url(#mask0)">
+      <rect width="32" height="32" fill="#5F6368">
+    </g>
+  </svg>
+</div>
 <div id="textAriaLabel" title="[[ariaLabelForText_(data)]]"></div>
 <div class="text-container" aria-hidden="true">
   <div id="primaryText" title="[[data.tabGroup.title]]"></div>

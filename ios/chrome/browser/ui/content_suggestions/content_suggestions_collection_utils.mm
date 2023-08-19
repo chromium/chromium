@@ -14,6 +14,7 @@
 #import "ios/chrome/browser/ui/location_bar/location_bar_constants.h"
 #import "ios/chrome/browser/ui/ntp/new_tab_page_header_constants.h"
 #import "ios/chrome/browser/ui/start_surface/start_surface_features.h"
+#import "ios/chrome/browser/ui/toolbar/public/toolbar_constants.h"
 #import "ios/chrome/browser/ui/toolbar/public/toolbar_utils.h"
 #import "ios/chrome/common/button_configuration_util.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
@@ -23,10 +24,7 @@
 #import "ios/components/ui_util/dynamic_type_util.h"
 #import "ui/base/device_form_factor.h"
 #import "ui/base/l10n/l10n_util.h"
-
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
+#import "ui/gfx/ios/uikit_util.h"
 
 namespace {
 
@@ -114,6 +112,10 @@ CGFloat DoodleTopMargin(CGFloat top_inset,
   return top_margin;
 }
 
+CGFloat HeaderSeparatorHeight() {
+  return ui::AlignValueToUpperPixel(kToolbarSeparatorHeight);
+}
+
 CGFloat SearchFieldTopMargin() {
   return ShouldShrinkLogoForStartSurface() ? kShrunkLogoSearchFieldTopMargin
                                            : kSearchFieldTopMargin;
@@ -129,17 +131,20 @@ CGFloat SearchFieldWidth(CGFloat width, UITraitCollection* trait_collection) {
       std::min(kSearchFieldSmall, width - kSearchFieldMinMargin * 2));
 }
 
+CGFloat FakeOmniboxHeight() {
+  return ToolbarExpandedHeight(
+      [UIApplication sharedApplication].preferredContentSizeCategory);
+}
+
 CGFloat HeightForLogoHeader(BOOL logo_is_showing,
                             BOOL doodle_is_showing,
-                            CGFloat top_inset,
                             UITraitCollection* trait_collection) {
   CGFloat header_height =
-      DoodleTopMargin(top_inset, trait_collection) +
+      DoodleTopMargin(0, trait_collection) +
       DoodleHeight(logo_is_showing, doodle_is_showing, trait_collection) +
-      SearchFieldTopMargin() +
-      ToolbarExpandedHeight(
-          [UIApplication sharedApplication].preferredContentSizeCategory) +
-      HeaderBottomPadding();
+      SearchFieldTopMargin() + FakeOmniboxHeight() +
+      ntp_header::kScrolledToTopOmniboxBottomMargin +
+      ceil(HeaderSeparatorHeight());
   if (!IsRegularXRegularSizeClass(trait_collection)) {
     return header_height;
   }
@@ -197,9 +202,14 @@ void ConfigureVoiceSearchButton(UIButton* voice_search_button,
   [voice_search_button setTranslatesAutoresizingMaskIntoConstraints:NO];
   [search_tab_target addSubview:voice_search_button];
 
-  // TODO(crbug.com/1418068): Remove after minimum version required is >=
-  // iOS 15 and refactor with UIButtonConfiguration.
-  SetAdjustsImageWhenHighlighted(voice_search_button, NO);
+  if (IsUIButtonConfigurationEnabled()) {
+    UIButtonConfiguration* buttonConfig =
+        [UIButtonConfiguration plainButtonConfiguration];
+    buttonConfig.contentInsets = NSDirectionalEdgeInsetsMake(0, 0, 0, 0);
+    voice_search_button.configuration = buttonConfig;
+  } else {
+    SetAdjustsImageWhenHighlighted(voice_search_button, NO);
+  }
 
   UIImage* mic_image = DefaultSymbolWithPointSize(
       kMicrophoneSymbol, kSymbolContentSuggestionsPointSize);
@@ -220,9 +230,14 @@ void ConfigureLensButton(UIButton* lens_button, UIView* search_tap_target) {
   lens_button.translatesAutoresizingMaskIntoConstraints = NO;
   [search_tap_target addSubview:lens_button];
 
-  // TODO(crbug.com/1418068): Remove after minimum version required is >=
-  // iOS 15 and refactor with UIButtonConfiguration.
-  SetAdjustsImageWhenHighlighted(lens_button, NO);
+  if (IsUIButtonConfigurationEnabled()) {
+    UIButtonConfiguration* buttonConfig =
+        [UIButtonConfiguration plainButtonConfiguration];
+    buttonConfig.contentInsets = NSDirectionalEdgeInsetsMake(0, 0, 0, 0);
+    lens_button.configuration = buttonConfig;
+  } else {
+    SetAdjustsImageWhenHighlighted(lens_button, NO);
+  }
 
   UIImage* camera_image = CustomSymbolWithPointSize(
       kCameraLensSymbol, kSymbolContentSuggestionsPointSize);
@@ -246,6 +261,15 @@ UIView* NearestAncestor(UIView* view, Class of_class) {
     return view;
   }
   return NearestAncestor([view superview], of_class);
+}
+
+BOOL ShouldShowWiderMagicStackLayer(UITraitCollection* traitCollection,
+                                    UIWindow* window) {
+  // Some iphone devices in landscape mode are still small enough to have a
+  // Compact  UIUserInterfaceSizeClass.
+  return traitCollection.horizontalSizeClass ==
+             UIUserInterfaceSizeClassRegular ||
+         IsLandscape(window);
 }
 
 }  // namespace content_suggestions

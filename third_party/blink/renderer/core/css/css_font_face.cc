@@ -31,6 +31,7 @@
 #include "third_party/blink/renderer/core/css/css_segmented_font_face.h"
 #include "third_party/blink/renderer/core/css/font_face_set_document.h"
 #include "third_party/blink/renderer/core/css/font_face_set_worker.h"
+#include "third_party/blink/renderer/core/css/font_size_functions.h"
 #include "third_party/blink/renderer/core/css/remote_font_face_source.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/core/workers/worker_global_scope.h"
@@ -121,7 +122,7 @@ scoped_refptr<SimpleFontData> CSSFontFace::GetFontData(
 
   // Apply the 'size-adjust' descriptor before font selection.
   // https://drafts.csswg.org/css-fonts-5/#descdef-font-face-size-adjust
-  const FontDescription& size_adjusted_description =
+  FontDescription size_adjusted_description =
       font_face_->HasSizeAdjust()
           ? font_description.SizeAdjustedFontDescription(
                 font_face_->GetSizeAdjust())
@@ -142,6 +143,20 @@ scoped_refptr<SimpleFontData> CSSFontFace::GetFontData(
     if (scoped_refptr<SimpleFontData> result =
             source->GetFontData(size_adjusted_description,
                                 font_face_->GetFontSelectionCapabilities())) {
+      // The font data here is created using the primary font's description.
+      // We need to adjust the size of a fallback font with actual font metrics
+      // if the description has font-size-adjust.
+      if (size_adjusted_description.HasSizeAdjust()) {
+        if (auto adjusted_size =
+                FontSizeFunctions::MetricsMultiplierAdjustedFontSize(
+                    result.get(), size_adjusted_description)) {
+          size_adjusted_description.SetAdjustedSize(adjusted_size.value());
+          result =
+              source->GetFontData(size_adjusted_description,
+                                  font_face_->GetFontSelectionCapabilities());
+        }
+      }
+
       if (font_face_->HasFontMetricsOverride()) {
         // TODO(xiaochengh): Try not to create a temporary
         // SimpleFontData.

@@ -9,10 +9,6 @@
 #import "ios/chrome/browser/web/session_state/web_session_state_cache.h"
 #import "ios/chrome/browser/web/session_state/web_session_state_tab_helper.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 WebSessionStateCacheWebStateListObserver::
     WebSessionStateCacheWebStateListObserver(
         WebSessionStateCache* web_session_state_cache)
@@ -23,19 +19,46 @@ WebSessionStateCacheWebStateListObserver::
 WebSessionStateCacheWebStateListObserver::
     ~WebSessionStateCacheWebStateListObserver() = default;
 
-void WebSessionStateCacheWebStateListObserver::WillCloseWebStateAt(
+#pragma mark - WebStateListObserver
+
+void WebSessionStateCacheWebStateListObserver::WebStateListWillChange(
     WebStateList* web_state_list,
-    web::WebState* web_state,
-    int index,
-    bool user_action) {
-  [web_session_state_cache_ removeSessionStateDataForWebState:web_state];
+    const WebStateListChangeDetach& detach_change,
+    const WebStateListStatus& status) {
+  if (!detach_change.is_closing()) {
+    return;
+  }
+
+  [web_session_state_cache_
+      removeSessionStateDataForWebState:detach_change.detached_web_state()];
 }
-void WebSessionStateCacheWebStateListObserver::WebStateReplacedAt(
+
+void WebSessionStateCacheWebStateListObserver::WebStateListDidChange(
     WebStateList* web_state_list,
-    web::WebState* old_web_state,
-    web::WebState* new_web_state,
-    int index) {
-  WebSessionStateTabHelper::FromWebState(new_web_state)->SaveSessionState();
+    const WebStateListChange& change,
+    const WebStateListStatus& status) {
+  switch (change.type()) {
+    case WebStateListChange::Type::kStatusOnly:
+      // Do nothing when a WebState is selected and its status is updated.
+      break;
+    case WebStateListChange::Type::kDetach:
+      // Do nothing when a WebState is detached.
+      break;
+    case WebStateListChange::Type::kMove:
+      // Do nothing when a WebState is moved.
+      break;
+    case WebStateListChange::Type::kReplace: {
+      const WebStateListChangeReplace& replace_change =
+          change.As<WebStateListChangeReplace>();
+      WebSessionStateTabHelper::FromWebState(
+          replace_change.inserted_web_state())
+          ->SaveSessionState();
+      break;
+    }
+    case WebStateListChange::Type::kInsert:
+      // Do nothing when a new WebState is inserted.
+      break;
+  }
 }
 
 void WebSessionStateCacheWebStateListObserver::WillBeginBatchOperation(

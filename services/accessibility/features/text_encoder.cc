@@ -15,11 +15,11 @@
 #include "gin/handle.h"
 #include "gin/public/wrapper_info.h"
 #include "services/accessibility/features/registered_wrappable.h"
-#include "v8-array-buffer.h"
-#include "v8-typed-array.h"
+#include "v8/include/v8-array-buffer.h"
 #include "v8/include/v8-isolate.h"
 #include "v8/include/v8-local-handle.h"
 #include "v8/include/v8-primitive.h"
+#include "v8/include/v8-typed-array.h"
 
 namespace ax {
 
@@ -40,12 +40,12 @@ gin::ObjectTemplateBuilder TextEncoder::GetObjectTemplateBuilder(
 
 void TextEncoder::Encode(gin::Arguments* arguments) {
   v8::Isolate* isolate = arguments->isolate();
-  DCHECK(isolate);
+  CHECK(isolate);
   v8::HandleScope handle_scope(isolate);
 
   std::vector<v8::Local<v8::Value>> args = arguments->GetAll();
-  DCHECK_EQ(args.size(), 1u);
-  DCHECK(args[0]->IsString());
+  CHECK_GT(args.size(), 0u);
+  CHECK(args[0]->IsString());
   v8::Local<v8::String> v8_input = args[0].As<v8::String>();
   std::string input;
   gin::ConvertFromV8(isolate, v8_input, &input);

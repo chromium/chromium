@@ -62,7 +62,6 @@ mod semver_exempt {
     assert_impl!(SourceFile is not Send or Sync);
 }
 
-#[cfg(not(no_libprocmacro_unwind_safe))]
 mod unwind_safe {
     use proc_macro2::{
         Delimiter, Group, Ident, LexError, Literal, Punct, Spacing, Span, TokenStream, TokenTree,

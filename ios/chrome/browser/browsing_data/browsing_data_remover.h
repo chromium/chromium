@@ -49,7 +49,7 @@ class BrowsingDataRemover : public KeyedService {
   void NotifyBrowsingDataRemoved(BrowsingDataRemoveMask mask);
 
  private:
-  base::ObserverList<BrowsingDataRemoverObserver, true>::Unchecked observers_;
+  base::ObserverList<BrowsingDataRemoverObserver, true> observers_;
 };
 
 #endif  // IOS_CHROME_BROWSER_BROWSING_DATA_BROWSING_DATA_REMOVER_H_

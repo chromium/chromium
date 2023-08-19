@@ -8,6 +8,7 @@ found in the LICENSE file.
 <androidx.constraintlayout.widget.ConstraintLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:focusable="true"
@@ -88,13 +89,15 @@ found in the LICENSE file.
     <!-- Reference to the summary and managed disclaimer view that allows constraining views to
          the bottom of the bottommost view that is displayed (ether the disclaimer view for managed
          prefs or the summary view for non-managed preferences). Used for setting the bottom space
-         for both managed and unmanaged cases. -->
+         for both managed and unmanaged cases.
+         TODO(crbug.com/1450798): remove linter suppression. -->
     <androidx.constraintlayout.widget.Barrier
         android:id="@+id/barrier_for_bottom_space"
         android:layout_width="wrap_content"
         android:layout_height="0dp"
         app:barrierDirection="bottom"
-        app:constraint_referenced_ids="summary,managed_disclaimer_text" />
+        app:constraint_referenced_ids="summary,managed_disclaimer_text"
+        tools:ignore="NotSibling" />
 
     <!-- Top padding for the title/summary block. This can't be done by setting top-margin for
          the title, because the title may be hidden for some preferences

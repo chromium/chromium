@@ -54,12 +54,20 @@ class DeviceFactoryAdapterLacros : public DeviceFactory {
       mojo::PendingRemote<mojom::DevicesChangedObserver> observer,
       bool raise_event_if_virtual_devices_already_present) override;
 
+  void WrapNewDeviceInProxy(
+      CreateDeviceCallback callback,
+      const std::string& device_id,
+      mojo::PendingRemote<crosapi::mojom::VideoCaptureDevice> proxy_remote,
+      crosapi::mojom::DeviceAccessResultCode code);
+
   void OnClientConnectionErrorOrClose(std::string device_id);
 
   mojo::Remote<crosapi::mojom::VideoCaptureDeviceFactory> device_factory_ash_;
 
   // The key is the device id used in blink::MediaStreamDevice.
   base::flat_map<std::string, std::unique_ptr<DeviceProxyLacros>> devices_;
+
+  base::WeakPtrFactory<DeviceFactoryAdapterLacros> weak_factory_{this};
 };
 
 }  // namespace video_capture

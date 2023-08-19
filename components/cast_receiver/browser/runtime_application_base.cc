@@ -58,7 +58,7 @@ void RuntimeApplicationBase::Load(StatusCallback callback) {
     SetUrlRewriteRules(std::move(cached_mojom_rules_));
   }
 
-  DVLOG(1) << "Loaded application: " << *this;
+  DLOG(INFO) << "Loaded application: " << *this;
   std::move(callback).Run(OkStatus());
 }
 
@@ -79,6 +79,10 @@ RuntimeApplicationBase::GetApplicationControls() {
 
 void RuntimeApplicationBase::NavigateToPage(const GURL& url) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  auto* window_controls = embedder_application().GetContentWindowControls();
+  DCHECK(window_controls);
+  window_controls->AddVisibilityChangeObserver(*this);
 
   embedder_application().NavigateToPage(url);
 
@@ -106,11 +110,7 @@ void RuntimeApplicationBase::SetContentPermissions(
 
 void RuntimeApplicationBase::OnPageNavigationComplete() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DVLOG(1) << "Page loaded: " << *this;
-
-  auto* window_controls = embedder_application().GetContentWindowControls();
-  DCHECK(window_controls);
-  window_controls->AddVisibilityChangeObserver(*this);
+  DLOG(INFO) << "Page loaded: " << *this;
 
   embedder_application().NotifyApplicationStarted();
 
@@ -143,8 +143,8 @@ void RuntimeApplicationBase::SetMediaBlocking(bool load_blocked,
 
   is_media_load_blocked_ = load_blocked;
   is_media_start_blocked_ = start_blocked;
-  DVLOG(1) << "Media state updated: is_load_blocked=" << load_blocked
-           << ", is_start_blocked=" << start_blocked << ", " << *this;
+  DLOG(INFO) << "Media state updated: is_load_blocked=" << load_blocked
+             << ", is_start_blocked=" << start_blocked << ", " << *this;
 
   if (!embedder_application().GetWebContents()) {
     return;
@@ -162,8 +162,8 @@ void RuntimeApplicationBase::SetVisibility(bool is_visible) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   is_visible_ = is_visible;
-  DVLOG(1) << "Visibility updated: is_visible_=" << is_visible_ << ", "
-           << *this;
+  DLOG(INFO) << "Visibility updated: is_visible_=" << is_visible_ << ", "
+             << *this;
 
   auto* window_controls = embedder_application().GetContentWindowControls();
   if (!window_controls) {
@@ -181,8 +181,8 @@ void RuntimeApplicationBase::SetTouchInputEnabled(bool enabled) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   is_touch_input_enabled_ = enabled;
-  DVLOG(1) << "Touch input updated: is_touch_input_enabled_= "
-           << is_touch_input_enabled_ << ", " << *this;
+  DLOG(INFO) << "Touch input updated: is_touch_input_enabled_= "
+             << is_touch_input_enabled_ << ", " << *this;
 
   auto* window_controls = embedder_application().GetContentWindowControls();
   if (!window_controls) {
@@ -224,8 +224,8 @@ void RuntimeApplicationBase::StopApplication(
 
   embedder_application().NotifyApplicationStopped(stop_reason, net_error_code);
 
-  DVLOG(1) << "Application is stopped: stop_reason=" << stop_reason << ", "
-           << *this;
+  DLOG(INFO) << "Application is stopped: stop_reason=" << stop_reason << ", "
+             << *this;
 }
 
 void RuntimeApplicationBase::SetWebVisibilityAndPaint(bool is_visible) {

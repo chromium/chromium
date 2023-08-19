@@ -24,7 +24,10 @@
 #include "third_party/skia/include/core/SkColorFilter.h"
 #include "third_party/skia/include/core/SkColorSpace.h"
 #include "third_party/skia/include/core/SkImage.h"
+#include "third_party/skia/include/core/SkMatrix.h"
+#include "third_party/skia/include/core/SkPictureRecorder.h"
 #include "third_party/skia/include/core/SkScalar.h"
+#include "third_party/skia/include/core/SkShader.h"
 #include "third_party/skia/include/core/SkString.h"
 #include "third_party/skia/include/core/SkTileMode.h"
 #include "third_party/skia/include/effects/SkImageFilters.h"
@@ -222,7 +225,7 @@ ColorFilterPaintFilter::ColorFilterPaintFilter(sk_sp<ColorFilter> color_filter,
       color_filter_(std::move(color_filter)),
       input_(std::move(input)) {
   cached_sk_filter_ = SkImageFilters::ColorFilter(
-      color_filter_ ? color_filter_->GetSkColorFilter() : nullptr,
+      color_filter_ ? color_filter_->sk_color_filter_ : nullptr,
       GetSkFilter(input_.get()), crop_rect);
 }
 
@@ -345,23 +348,35 @@ bool DropShadowPaintFilter::EqualsForTesting(
          AreValuesEqualForTesting(input_, other.input_);  // IN-TEST
 }
 
-MagnifierPaintFilter::MagnifierPaintFilter(const SkRect& src_rect,
+MagnifierPaintFilter::MagnifierPaintFilter(const SkRect& lens_bounds,
+                                           SkScalar zoom_amount,
                                            SkScalar inset,
                                            sk_sp<PaintFilter> input,
                                            const CropRect* crop_rect)
     : PaintFilter(kType, crop_rect, HasDiscardableImages(input)),
-      src_rect_(src_rect),
+      lens_bounds_(lens_bounds),
+      zoom_amount_(zoom_amount),
       inset_(inset),
       input_(std::move(input)) {
-  cached_sk_filter_ = SkImageFilters::Magnifier(
-      src_rect_, inset_, GetSkFilter(input_.get()), crop_rect);
+  // Historically the Skia Magnifier filter always used nearest-neighbor
+  // sampling internally, when it was only used for the accessibility
+  // magnifier widgets (where NN was preferred and always had an integer zoom
+  // amount). However, when the zoom amount is not an integer NN severely
+  // degrades visual quality. If more refined control is required, the
+  // sampling mode can be exposed and plumbed up to FilterOperation.
+  SkFilterMode filter_mode = SkScalarIsInt(zoom_amount) ? SkFilterMode::kNearest
+                                                        : SkFilterMode::kLinear;
+  cached_sk_filter_ =
+      SkImageFilters::Magnifier(lens_bounds_, zoom_amount_, inset_, filter_mode,
+                                GetSkFilter(input_.get()), crop_rect);
 }
 
 MagnifierPaintFilter::~MagnifierPaintFilter() = default;
 
 size_t MagnifierPaintFilter::SerializedSize() const {
   base::CheckedNumeric<size_t> total_size =
-      BaseSerializedSize() + PaintOpWriter::SerializedSize(src_rect_) +
+      BaseSerializedSize() + PaintOpWriter::SerializedSize(lens_bounds_) +
+      PaintOpWriter::SerializedSize(zoom_amount_) +
       PaintOpWriter::SerializedSize(inset_);
   total_size += PaintOpWriter::SerializedSize(input_.get());
   return total_size.ValueOrDefault(0u);
@@ -369,13 +384,15 @@ size_t MagnifierPaintFilter::SerializedSize() const {
 
 sk_sp<PaintFilter> MagnifierPaintFilter::SnapshotWithImagesInternal(
     ImageProvider* image_provider) const {
-  return sk_make_sp<MagnifierPaintFilter>(
-      src_rect_, inset_, Snapshot(input_, image_provider), GetCropRect());
+  return sk_make_sp<MagnifierPaintFilter>(lens_bounds_, zoom_amount_, inset_,
+                                          Snapshot(input_, image_provider),
+                                          GetCropRect());
 }
 
 bool MagnifierPaintFilter::EqualsForTesting(
     const MagnifierPaintFilter& other) const {
-  return src_rect_ == other.src_rect_ && inset_ == other.inset_ &&
+  return lens_bounds_ == other.lens_bounds_ &&
+         zoom_amount_ == other.zoom_amount_ && inset_ == other.inset_ &&
          AreValuesEqualForTesting(input_, other.input_);  // IN-TEST
 }
 
@@ -412,17 +429,47 @@ bool ComposePaintFilter::EqualsForTesting(
 }
 
 AlphaThresholdPaintFilter::AlphaThresholdPaintFilter(const SkRegion& region,
-                                                     SkScalar inner_min,
-                                                     SkScalar outer_max,
                                                      sk_sp<PaintFilter> input,
                                                      const CropRect* crop_rect)
     : PaintFilter(kType, crop_rect, HasDiscardableImages(input)),
       region_(region),
-      inner_min_(inner_min),
-      outer_max_(outer_max),
       input_(std::move(input)) {
-  cached_sk_filter_ = SkImageFilters::AlphaThreshold(
-      region_, inner_min_, outer_max_, GetSkFilter(input_.get()), crop_rect);
+  // Historically, Skia had a specialized AlphaThreshold effect that took an
+  // inner and outer alpha threshold. If a pixel inside the region had an alpha
+  // lower than the inner threshold, its opacity would be increased to that
+  // threshold. If a pixel outside the region had an alpha higher than the
+  // outer threshold, its opacity would be lowered to that threshold.
+  //
+  // The actual usage in chrome used an inner and outer threshold of 0, which
+  // has the equivalent behavior of leaving pixels inside the region unmodified,
+  // and clearing pixels outside the region to transparent black.
+
+  SkRect cull_rect = SkRect::Make(region.getBounds());
+  if (crop_rect) {
+    if (!cull_rect.intersect(*crop_rect)) {
+      cull_rect = SkRect::MakeEmpty();
+    }
+  }
+
+  if (region.isRect()) {
+    // `cull_rect` can entirely represent the threshold effect, so avoid
+    // producing a mask image that has to be blended against and just crop it.
+    // TODO(michaelludwig): Replace with a dedicated SkImageFilters::Crop once
+    // that has been made public, but Offset(0,0) is equivalent.
+    cached_sk_filter_ =
+        SkImageFilters::Offset(0, 0, GetSkFilter(input_.get()), cull_rect);
+  } else {
+    SkPictureRecorder recorder;
+    SkCanvas* canvas = recorder.beginRecording(cull_rect, nullptr);
+    canvas->clear(SK_ColorTRANSPARENT);
+    canvas->drawRegion(region, SkPaint(SkColors::kBlack));
+    sk_sp<SkPicture> shape_mask = recorder.finishRecordingAsPicture();
+    // kSrcIn multiplies the source (input_) by the dest's alpha (shape_mask)
+    cached_sk_filter_ = SkImageFilters::Blend(
+        SkBlendMode::kSrcIn,
+        /*dst=*/SkImageFilters::Picture(std::move(shape_mask)),
+        /*src=*/GetSkFilter(input_.get()), crop_rect);
+  }
 }
 
 AlphaThresholdPaintFilter::~AlphaThresholdPaintFilter() = default;
@@ -430,25 +477,21 @@ AlphaThresholdPaintFilter::~AlphaThresholdPaintFilter() = default;
 size_t AlphaThresholdPaintFilter::SerializedSize() const {
   size_t region_size = region_.writeToMemory(nullptr);
   base::CheckedNumeric<size_t> total_size;
-  total_size = BaseSerializedSize() +
-               PaintOpWriter::SerializedSizeOfBytes(region_size) +
-               PaintOpWriter::SerializedSize(inner_min_) +
-               PaintOpWriter::SerializedSize(outer_max_);
+  total_size =
+      BaseSerializedSize() + PaintOpWriter::SerializedSizeOfBytes(region_size);
   total_size += PaintOpWriter::SerializedSize(input_.get());
   return total_size.ValueOrDefault(0u);
 }
 
 sk_sp<PaintFilter> AlphaThresholdPaintFilter::SnapshotWithImagesInternal(
     ImageProvider* image_provider) const {
-  return sk_make_sp<AlphaThresholdPaintFilter>(region_, inner_min_, outer_max_,
-                                               Snapshot(input_, image_provider),
-                                               GetCropRect());
+  return sk_make_sp<AlphaThresholdPaintFilter>(
+      region_, Snapshot(input_, image_provider), GetCropRect());
 }
 
 bool AlphaThresholdPaintFilter::EqualsForTesting(
     const AlphaThresholdPaintFilter& other) const {
-  return region_ == other.region_ && inner_min_ == other.inner_min_ &&
-         outer_max_ == other.outer_max_ &&
+  return region_ == other.region_ &&
          AreValuesEqualForTesting(input_, other.input_);  // IN-TEST
 }
 
@@ -566,9 +609,9 @@ MatrixConvolutionPaintFilter::MatrixConvolutionPaintFilter(
   DCHECK(kernel_size_.width() >= 0 && kernel_size_.height() >= 0);
   auto len = static_cast<size_t>(kernel_size_.width()) *
              static_cast<size_t>(kernel_size_.height());
-  kernel_->reserve(len);
+  kernel_.reserve(len);
   for (size_t i = 0; i < len; ++i)
-    kernel_->push_back(kernel[i]);
+    kernel_.push_back(kernel[i]);
 
   cached_sk_filter_ = SkImageFilters::MatrixConvolution(
       kernel_size_, kernel, gain_, bias_, kernel_offset_, tile_mode_,
@@ -581,8 +624,7 @@ size_t MatrixConvolutionPaintFilter::SerializedSize() const {
   base::CheckedNumeric<size_t> total_size =
       BaseSerializedSize() + PaintOpWriter::SerializedSize(kernel_size_) +
       PaintOpWriter::SerializedSize<size_t>() +
-      PaintOpWriter::SerializedSizeOfElements(kernel_->data(),
-                                              kernel_->size()) +
+      PaintOpWriter::SerializedSizeOfElements(kernel_.data(), kernel_.size()) +
       PaintOpWriter::SerializedSize(gain_) +
       PaintOpWriter::SerializedSize(bias_) +
       PaintOpWriter::SerializedSize(kernel_offset_) +
@@ -602,9 +644,8 @@ sk_sp<PaintFilter> MatrixConvolutionPaintFilter::SnapshotWithImagesInternal(
 bool MatrixConvolutionPaintFilter::EqualsForTesting(
     const MatrixConvolutionPaintFilter& other) const {
   return kernel_size_ == other.kernel_size_ &&
-         base::ranges::equal(kernel_.container(), other.kernel_.container()) &&
-         gain_ == other.gain_ && bias_ == other.bias_ &&
-         kernel_offset_ == other.kernel_offset_ &&
+         base::ranges::equal(kernel_, other.kernel_) && gain_ == other.gain_ &&
+         bias_ == other.bias_ && kernel_offset_ == other.kernel_offset_ &&
          tile_mode_ == other.tile_mode_ &&
          convolve_alpha_ == other.convolve_alpha_ &&
          AreValuesEqualForTesting(input_, other.input_);  // IN-TEST
@@ -837,8 +878,8 @@ MergePaintFilter::MergePaintFilter(const sk_sp<PaintFilter>* const filters,
   for (int i = 0; i < count; ++i) {
     auto filter =
         image_provider ? Snapshot(filters[i], image_provider) : filters[i];
-    inputs_->push_back(std::move(filter));
-    sk_filters.push_back(GetSkFilter(inputs_->back().get()));
+    inputs_.push_back(std::move(filter));
+    sk_filters.push_back(GetSkFilter(inputs_.back().get()));
   }
 
   cached_sk_filter_ = SkImageFilters::Merge(
@@ -859,7 +900,7 @@ size_t MergePaintFilter::SerializedSize() const {
 sk_sp<PaintFilter> MergePaintFilter::SnapshotWithImagesInternal(
     ImageProvider* image_provider) const {
   return sk_sp<MergePaintFilter>(new MergePaintFilter(
-      &inputs_[0], inputs_->size(), GetCropRect(), image_provider));
+      &inputs_[0], inputs_.size(), GetCropRect(), image_provider));
 }
 
 bool MergePaintFilter::EqualsForTesting(const MergePaintFilter& other) const {
@@ -998,14 +1039,12 @@ TurbulencePaintFilter::TurbulencePaintFilter(TurbulenceType turbulence_type,
   sk_sp<SkShader> shader;
   switch (turbulence_type_) {
     case TurbulenceType::kTurbulence:
-      shader = SkPerlinNoiseShader::MakeTurbulence(
-          base_frequency_x_, base_frequency_y_, num_octaves_, seed_,
-          &tile_size_);
+      shader = SkShaders::MakeTurbulence(base_frequency_x_, base_frequency_y_,
+                                         num_octaves_, seed_, &tile_size_);
       break;
     case TurbulenceType::kFractalNoise:
-      shader = SkPerlinNoiseShader::MakeFractalNoise(
-          base_frequency_x_, base_frequency_y_, num_octaves_, seed_,
-          &tile_size_);
+      shader = SkShaders::MakeFractalNoise(base_frequency_x_, base_frequency_y_,
+                                           num_octaves_, seed_, &tile_size_);
       break;
   }
 

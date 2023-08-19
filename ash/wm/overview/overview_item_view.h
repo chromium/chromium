@@ -74,6 +74,9 @@ class ASH_EXPORT OverviewItemView : public WindowMiniView,
   gfx::Rect GetHeaderBounds() const override;
   gfx::Size GetPreviewViewSize() const override;
 
+  // WindowMiniViewBase:
+  void RefreshItemVisuals() override;
+
   // OverviewHighlightableView:
   views::View* GetView() override;
   void MaybeActivateHighlightedView() override;
@@ -90,6 +93,7 @@ class ASH_EXPORT OverviewItemView : public WindowMiniView,
  protected:
   // views::View:
   bool OnMousePressed(const ui::MouseEvent& event) override;
+  bool OnMouseWheel(const ui::MouseWheelEvent& event) override;
   bool OnMouseDragged(const ui::MouseEvent& event) override;
   void OnMouseReleased(const ui::MouseEvent& event) override;
   void OnGestureEvent(ui::GestureEvent* event) override;

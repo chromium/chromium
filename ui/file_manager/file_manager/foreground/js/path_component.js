@@ -44,6 +44,13 @@ export class PathComponent {
   }
 
   /**
+   * Returns the key of this component (its URL).
+   */
+  getKey() {
+    return this.url_;
+  }
+
+  /**
    * Computes path components for the path of entry.
    * @param {!Entry|!FilesAppEntry} entry An entry.
    * @return {!Array<!PathComponent>} Components.

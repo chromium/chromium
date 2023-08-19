@@ -75,9 +75,9 @@ class MockWebBundleParserFactory final : public mojom::WebBundleParserFactory {
                  const absl::optional<GURL>& base_url);
 
   // mojom::WebBundleParserFactory implementation.
-  void GetParserForFile(mojo::PendingReceiver<mojom::WebBundleParser> receiver,
-                        const absl::optional<GURL>& base_url,
-                        base::File file) override;
+  void BindFileDataSource(
+      mojo::PendingReceiver<mojom::BundleDataSource> data_source_receiver,
+      base::File file) override;
   void GetParserForDataSource(
       mojo::PendingReceiver<mojom::WebBundleParser> receiver,
       const absl::optional<GURL>& base_url,

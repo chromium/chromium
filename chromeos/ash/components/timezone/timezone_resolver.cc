@@ -418,12 +418,18 @@ void TimeZoneResolver::Start() {
   if (!implementation_) {
     implementation_ = std::make_unique<TimeZoneResolverImpl>(this);
     implementation_->Start();
+    is_running_ = true;
   }
 }
 
 void TimeZoneResolver::Stop() {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   implementation_.reset();
+  is_running_ = false;
+}
+
+bool TimeZoneResolver::IsRunning() {
+  return is_running_;
 }
 
 // static

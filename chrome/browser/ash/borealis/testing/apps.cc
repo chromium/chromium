@@ -30,7 +30,7 @@ void CreateFakeApp(Profile* profile,
       ->UpdateApplicationList(list);
 }
 
-std::string FakeAppId(std::string desktop_file_id) {
+std::string FakeAppId(const std::string& desktop_file_id) {
   return guest_os::GuestOsRegistryService::GenerateAppId(desktop_file_id,
                                                          "borealis", "penguin");
 }

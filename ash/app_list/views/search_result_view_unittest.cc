@@ -3,8 +3,10 @@
 // found in the LICENSE file.
 
 #include "ash/app_list/views/search_result_view.h"
+#include <memory>
 
 #include "ash/app_list/model/search/test_search_result.h"
+#include "ash/public/cpp/app_list/app_list_types.h"
 #include "base/memory/raw_ptr.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/views/controls/label.h"
@@ -78,6 +80,18 @@ class SearchResultViewWidgetTest : public views::test::WidgetTest {
     return merged_string;
   }
 
+  std::u16string GetRightDetailsText(SearchResultView* view) {
+    std::u16string merged_string = u"";
+    for (const auto& label_tag_pair : view->right_details_label_tags_) {
+      merged_string += label_tag_pair.GetLabel()->GetText();
+    }
+    return merged_string;
+  }
+
+  bool IsProgressBarChart(SearchResultView* view) {
+    return view->is_progress_bar_answer_card_;
+  }
+
   void SetSearchResultViewMultilineDetailsHeight(
       SearchResultView* search_result_view,
       int height) {
@@ -133,7 +147,7 @@ class SearchResultViewWidgetTest : public views::test::WidgetTest {
   int result_id = 0;
   std::unique_ptr<SearchResultView> answer_card_view_;
   std::unique_ptr<SearchResultView> search_result_view_;
-  raw_ptr<views::Widget, ExperimentalAsh> widget_;
+  raw_ptr<views::Widget, DanglingUntriaged | ExperimentalAsh> widget_;
 };
 
 TEST_F(SearchResultViewWidgetTest, SearchResultTextVectorUpdate) {
@@ -310,6 +324,20 @@ TEST_F(SearchResultViewTest, FlexWeightCalculation) {
                   ->GetProperty(views::kFlexBehaviorKey)
                   ->order());
   }
+}
+
+TEST_F(SearchResultViewWidgetTest, ProgressBarResult) {
+  auto progress_bar_result = std::make_unique<TestSearchResult>();
+  auto system_info_data = std::make_unique<ash::SystemInfoAnswerCardData>(0.5);
+  system_info_data->SetExtraDetails(u"right description");
+  progress_bar_result->SetSystemInfoAnswerCardData(*system_info_data.get());
+  SetupTestSearchResult(progress_bar_result.get());
+  answer_card_view()->SetResult(progress_bar_result.get());
+  answer_card_view()->OnResultChanged();
+  EXPECT_EQ(true, IsProgressBarChart(answer_card_view()));
+  EXPECT_EQ(u"Test Search Result Details 0",
+            GetDetailsText(answer_card_view()));
+  EXPECT_EQ(u"right description", GetRightDetailsText(answer_card_view()));
 }
 
 }  // namespace ash

@@ -44,8 +44,13 @@ version) in B, and so they'll be considered out of date by ninja and recompiled.
 Example usage:
   clang_code_coverage_wrapper.py \\
       --files-to-instrument=coverage_instrumentation_input.txt
-"""
 
+Siso implements the same logic in
+build/config/siso/clang_code_coverage_wrapper.star, which avoids the wrapper
+invocations for remote execution and performance improvement.
+Please update the Siso starlark file when updating this file.
+"""
+# LINT.IfChange
 
 import argparse
 import os
@@ -67,13 +72,7 @@ _COVERAGE_FLAGS = [
 ]
 
 # Files that should not be built with coverage flags by default.
-_DEFAULT_COVERAGE_EXCLUSION_LIST = [
-    # TODO(crbug.com/1051561): angle_unittests affected by coverage.
-    '../../base/message_loop/message_pump_default.cc',
-    '../../base/message_loop/message_pump_libevent.cc',
-    '../../base/message_loop/message_pump_win.cc',
-    '../../base/task/sequence_manager/thread_controller_with_message_pump_impl.cc',  #pylint: disable=line-too-long
-]
+_DEFAULT_COVERAGE_EXCLUSION_LIST = []
 
 # Map of exclusion lists indexed by target OS.
 # If no target OS is defined, or one is defined that doesn't have a specific
@@ -100,11 +99,6 @@ _COVERAGE_EXCLUSION_LIST_MAP = {
         '../../components/media_router/common/providers/cast/channel/cast_message_util.cc',  #pylint: disable=line-too-long
         '../../components/media_router/common/providers/cast/cast_media_source.cc',  #pylint: disable=line-too-long
         '../../ui/events/keycodes/dom/keycode_converter.cc',
-        # TODO(crbug.com/1051561): angle_unittests affected by coverage.
-        '../../base/message_loop/message_pump_default.cc',
-        '../../base/message_loop/message_pump_libevent.cc',
-        '../../base/message_loop/message_pump_win.cc',
-        '../../base/task/sequence_manager/thread_controller_with_message_pump_impl.cc',  #pylint: disable=line-too-long
     ],
     'chromeos': [
         # These files caused clang to crash while compiling them. They are
@@ -113,18 +107,6 @@ _COVERAGE_EXCLUSION_LIST_MAP = {
         '../../third_party/icu/source/common/uts46.cpp',
         '../../third_party/icu/source/common/ucnvmbcs.cpp',
         '../../base/android/android_image_reader_compat.cc',
-        # TODO(crbug.com/1051561): angle_unittests affected by coverage.
-        '../../base/message_loop/message_pump_default.cc',
-        '../../base/message_loop/message_pump_libevent.cc',
-        '../../base/message_loop/message_pump_win.cc',
-        '../../base/task/sequence_manager/thread_controller_with_message_pump_impl.cc',  #pylint: disable=line-too-long
-    ],
-    'win': [
-        # TODO(crbug.com/1051561): angle_unittests affected by coverage.
-        '../../base/message_loop/message_pump_default.cc',
-        '../../base/message_loop/message_pump_libevent.cc',
-        '../../base/message_loop/message_pump_win.cc',
-        '../../base/task/sequence_manager/thread_controller_with_message_pump_impl.cc',  #pylint: disable=line-too-long
     ],
 }
 
@@ -238,3 +220,5 @@ def main():
 
 if __name__ == '__main__':
   sys.exit(main())
+
+# LINT.ThenChange(/build/config/siso/clang_code_coverage_wrapper.star)

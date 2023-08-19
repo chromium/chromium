@@ -79,7 +79,7 @@ class ASH_EXPORT ScopedOverviewTransformWindow
   //      OVERVIEW_ANIMATION_RESTORE_WINDOW, &animation_settings);
   //  // Calls to SetTransform & SetOpacity will use the same animation settings
   //  // until animation_settings is destroyed.
-  //  OverviewUtil::SetTransform(root_window, new_transform);
+  //  SetTransform(root_window, new_transform) in `overview_utils.h`;
   //  overview_window.SetOpacity(1);
   void BeginScopedAnimation(OverviewAnimationType animation_type,
                             ScopedAnimationSettings* animation_settings);
@@ -87,8 +87,7 @@ class ASH_EXPORT ScopedOverviewTransformWindow
   // Returns true if this overview window contains the |target|.
   bool Contains(const aura::Window* target) const;
 
-  // Returns transformed bounds of the overview window. See
-  // OverviewUtil::GetTransformedBounds for more details.
+  // Returns transformed bounds of the overview window.
   gfx::RectF GetTransformedBounds() const;
 
   // Returns the kTopViewInset property of |window_| unless there are transient

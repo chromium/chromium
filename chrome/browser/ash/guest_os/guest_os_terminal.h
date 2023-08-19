@@ -112,7 +112,15 @@ enum class TerminalSetting {
   kAllowImagesInline = 70,
   kTheme = 71,
   kThemeVariations = 72,
-  kMaxValue = kThemeVariations,
+  kFindResultColor = 73,
+  kFindResultSelectedColor = 74,
+  kLineHeightPaddingSize = 75,
+  kKeybindingsOsDefaults = 76,
+  kScreenPaddingSize = 77,
+  kScreenBorderSize = 78,
+  kScreenBorderColor = 79,
+  kLineHeight = 80,
+  kMaxValue = kLineHeight,
 };
 
 const std::string& GetTerminalHomeUrl();

@@ -207,6 +207,7 @@ void BucketManagerHost::DidGetBucket(
         case storage::QuotaError::kDatabaseError:
         case storage::QuotaError::kDatabaseDisabled:
         case storage::QuotaError::kUnknownError:
+        case storage::QuotaError::kStorageKeyError:
           return blink::mojom::BucketError::kUnknown;
       }
     }(result.error().quota_error);

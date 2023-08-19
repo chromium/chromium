@@ -41,10 +41,9 @@
   }
 </style>
 
-<!-- TODO(b/162365553): Implement accessibility attributes. -->
 <div id="labelWrapper">
   <div id="label" aria-hidden="true">
-    <div id="apnName">[[apn.accessPointName]]</div>
+    <div id="apnName">[[getApnDisplayName_(apn)]]</div>
     <div id="autoDetected" hidden="[[apn.id]]">
       [[i18n('apnAutoDetected')]]
     </div>
@@ -57,14 +56,15 @@
 <cr-icon-button id="actionMenuButton" class="icon-more-vert"
     on-click="onMenuButtonClicked_"
     title="[[i18n('apnMoreActionsTitle', apn.accessPointName)]]"
-    focus-row-control focus-type="menu">
+    focus-row-control focus-type="menu"
+    aria-label="[[getAriaLabel_(apn, itemIndex, listSize, isConnected,
+        isDisabled_)]]">
 </cr-icon-button>
 
-<!-- TODO(b/162365553) Add a11y support-->
 <cr-action-menu id="dotsMenu">
   <button id="detailsButton" class="dropdown-item"
       on-click="onDetailsClicked_">
-    [[i18n('apnMenuDetails')]]
+    [[getDetailsMenuItemLabel_(apn)]]
   </button>
   <template is="dom-if" if="[[shouldShowDisableMenuItem_(apn)]]" restamp>
     <button id="disableButton" class="dropdown-item"

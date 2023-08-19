@@ -278,8 +278,15 @@ bool Expand(const wchar_t* source, const wchar_t* destination) {
   g_FDICopy(fdi, source_name_utf8, source_path_utf8, 0, &Notify, nullptr,
             &context);
   g_FDIDestroy(fdi);
-  if (context.succeeded)
+  if (context.succeeded) {
+    // https://crbug.com/1443320: We see crashes on Windows 10 when running
+    // setup.exe in which it appears that an entire hunk of the file is zeros or
+    // random memory. There is nothing out of the ordinary in the way that this
+    // file is written (0x8000 byte chunks via normal WriteFile calls). As an
+    // experiment, flush the file before closing it.
+    ::FlushFileBuffers(context.dest_file.GetHandleUnsafe());
     return true;
+  }
 
   // Delete the output file if it was created.
   if (context.dest_file.IsValid())

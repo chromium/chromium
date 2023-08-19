@@ -58,14 +58,41 @@ class CORE_EXPORT CSSToLengthConversionData : public CSSLengthResolver {
 
    public:
     FontSizes() = default;
-    FontSizes(float em, float rem, const Font*, float font_zoom);
+    FontSizes(float em, float rem, const Font* font, float font_zoom)
+        : em_(em),
+          rem_(rem),
+          font_(font),
+          root_font_(font),
+          font_zoom_(font_zoom),
+          root_font_zoom_(font_zoom) {
+      DCHECK(font_);
+    }
+
     FontSizes(float em,
               float rem,
               const Font* font,
               const Font* root_font,
               float font_zoom,
-              float root_font_zoom);
-    FontSizes(const FontSizeStyle&, const ComputedStyle* root_style);
+              float root_font_zoom)
+        : em_(em),
+          rem_(rem),
+          font_(font),
+          root_font_(root_font),
+          font_zoom_(font_zoom),
+          root_font_zoom_(root_font_zoom) {
+      DCHECK(font_);
+      DCHECK(root_font_);
+    }
+
+    FontSizes(const FontSizeStyle& style, const ComputedStyle* root_style)
+        : FontSizes(style.SpecifiedFontSize(),
+                    root_style ? root_style->SpecifiedFontSize()
+                               : style.SpecifiedFontSize(),
+                    &style.GetFont(),
+                    root_style ? &root_style->GetFont() : &style.GetFont(),
+                    style.EffectiveZoom(),
+                    root_style ? root_style->EffectiveZoom()
+                               : style.EffectiveZoom()) {}
 
     float Em(float zoom) const { return em_ * zoom; }
     float Rem(float zoom) const { return rem_ * zoom; }
@@ -75,6 +102,8 @@ class CORE_EXPORT CSSToLengthConversionData : public CSSLengthResolver {
     float Rch(float zoom) const;
     float Ic(float zoom) const;
     float Ric(float zoom) const;
+    float Cap(float zoom) const;
+    float Rcap(float zoom) const;
 
    private:
     float em_ = 0;
@@ -138,6 +167,7 @@ class CORE_EXPORT CSSToLengthConversionData : public CSSLengthResolver {
           dynamic_height_(height) {}
 
     explicit ViewportSize(const LayoutView*);
+    bool operator==(const ViewportSize&) const = default;
 
     // v*
     double Width() const { return LargeWidth(); }
@@ -215,7 +245,7 @@ class CORE_EXPORT CSSToLengthConversionData : public CSSLengthResolver {
     kEm = 1u << 0,
     // rem
     kRootFontRelative = 1u << 1,
-    // ex, ch, ic, lh
+    // ex, ch, ic, lh, cap, rcap
     kGlyphRelative = 1u << 2,
     // rex, rch, ric have both kRootFontRelative and kGlyphRelative
     // lh
@@ -240,7 +270,7 @@ class CORE_EXPORT CSSToLengthConversionData : public CSSLengthResolver {
   CSSToLengthConversionData(const ComputedStyleOrBuilder& element_style,
                             const ComputedStyle* parent_style,
                             const ComputedStyle* root_style,
-                            const LayoutView* layout_view,
+                            const ViewportSize& viewport_size,
                             const ContainerSizes& container_sizes,
                             float zoom,
                             Flags& flags)
@@ -250,7 +280,7 @@ class CORE_EXPORT CSSToLengthConversionData : public CSSLengthResolver {
             LineHeightSize(parent_style ? parent_style->GetFontSizeStyle()
                                         : element_style.GetFontSizeStyle(),
                            root_style),
-            ViewportSize(layout_view),
+            viewport_size,
             container_sizes,
             zoom,
             flags) {}
@@ -265,6 +295,8 @@ class CORE_EXPORT CSSToLengthConversionData : public CSSLengthResolver {
   float RicFontSize(float zoom) const override;
   float LineHeight(float zoom) const override;
   float RootLineHeight(float zoom) const override;
+  float CapFontSize(float zoom) const override;
+  float RcapFontSize(float zoom) const override;
   double ViewportWidth() const override;
   double ViewportHeight() const override;
   double SmallViewportWidth() const override;

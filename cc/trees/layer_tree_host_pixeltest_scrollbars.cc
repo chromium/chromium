@@ -16,7 +16,6 @@
 #include "cc/test/pixel_comparator.h"
 #include "cc/trees/layer_tree_impl.h"
 #include "components/viz/test/test_in_process_context_provider.h"
-#include "gpu/command_buffer/client/gles2_interface.h"
 
 #if !BUILDFLAG(IS_ANDROID)
 

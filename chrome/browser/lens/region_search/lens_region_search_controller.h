@@ -38,7 +38,8 @@ class LensRegionSearchController : public content::WebContentsObserver {
   // to true, the whole screen will automatically be captured.
   void Start(content::WebContents* web_contents,
              bool use_fullscreen_capture,
-             bool is_google_default_search_provider);
+             bool is_google_default_search_provider,
+             lens::AmbientSearchEntryPoint entry_point);
 
   // Closes the UI overlay and user education bubble if currently being shown.
   // The closed reason for this method is defaulted to the close button being
@@ -93,6 +94,10 @@ class LensRegionSearchController : public content::WebContentsObserver {
   // results in correct search engine. This value is set every time the capture
   // mode is started to have an accurate value for the completed capture.
   bool is_google_default_search_provider_ = false;
+
+  // Variable for tracking whether the region search request originated from the
+  // companion.
+  lens::AmbientSearchEntryPoint entry_point_;
 
   bool in_capture_mode_ = false;
 

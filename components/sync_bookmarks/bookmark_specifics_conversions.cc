@@ -23,6 +23,7 @@
 #include "base/uuid.h"
 #include "components/bookmarks/browser/bookmark_model.h"
 #include "components/bookmarks/browser/bookmark_node.h"
+#include "components/bookmarks/browser/bookmark_uuids.h"
 #include "components/bookmarks/common/bookmark_metrics.h"
 #include "components/favicon/core/favicon_service.h"
 #include "components/sync/base/unique_position.h"
@@ -386,7 +387,7 @@ const bookmarks::BookmarkNode* CreateBookmarkNodeFromSpecifics(
                 // Use FromDeltaSinceWindowsEpoch because last_used_time_us has
                 // always used the Windows epoch.
                 base::Microseconds(last_used_time_us));
-        model->UpdateLastUsedTime(node, last_used_time);
+        model->UpdateLastUsedTime(node, last_used_time, /*just_opened=*/false);
       }
       SetBookmarkFaviconFromSpecifics(specifics, node, favicon_service);
       return node;
@@ -429,7 +430,7 @@ void UpdateBookmarkNodeFromSpecifics(
           // Use FromDeltaSinceWindowsEpoch because last_used_time_us has
           // always used the Windows epoch.
           base::Microseconds(last_used_time_us));
-      model->UpdateLastUsedTime(node, last_used_time);
+      model->UpdateLastUsedTime(node, last_used_time, /*just_opened=*/false);
     }
   }
 }
@@ -494,7 +495,7 @@ bool IsValidBookmarkSpecifics(const sync_pb::BookmarkSpecifics& specifics) {
     LogInvalidSpecifics(InvalidBookmarkSpecificsError::kInvalidGUID);
     is_valid = false;
   } else if (guid.AsLowercaseString() ==
-             bookmarks::BookmarkNode::kBannedUuidDueToPastSyncBug) {
+             bookmarks::kBannedUuidDueToPastSyncBug) {
     DLOG(ERROR) << "Invalid bookmark: banned UUID in specifics.";
     LogInvalidSpecifics(InvalidBookmarkSpecificsError::kBannedGUID);
     is_valid = false;

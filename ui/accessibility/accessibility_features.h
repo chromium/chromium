@@ -77,13 +77,6 @@ AX_BASE_EXPORT BASE_DECLARE_FEATURE(kTextBasedAudioDescription);
 // enabled.
 AX_BASE_EXPORT bool IsTextBasedAudioDescriptionEnabled();
 
-// Returns true if the accessibility code should use experimental optimization
-// techniques in the AXTree::Unserialize method.
-AX_BASE_EXPORT bool IsUnserializeOptimizationsEnabled();
-
-// Enables an experimental implementation in AXTree for performance tests.
-AX_BASE_EXPORT BASE_DECLARE_FEATURE(kAccessibilityUnserializeOptimizations);
-
 #if BUILDFLAG(IS_WIN)
 // Enables an experimental Chrome-specific accessibility COM API
 AX_BASE_EXPORT BASE_DECLARE_FEATURE(kIChromeAccessible);
@@ -98,10 +91,21 @@ AX_BASE_EXPORT BASE_DECLARE_FEATURE(kSelectiveUIAEnablement);
 // the accessibility system.
 AX_BASE_EXPORT bool IsSelectiveUIAEnablementEnabled();
 
+AX_BASE_EXPORT BASE_DECLARE_FEATURE(kUiaProvider);
+
+// Returns true if the browser's UIA provider should be used when requested by
+// an a11y client.
+AX_BASE_EXPORT bool IsUiaProviderEnabled();
 #endif  // BUILDFLAG(IS_WIN)
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 AX_BASE_EXPORT bool IsDictationOfflineAvailable();
+
+AX_BASE_EXPORT BASE_DECLARE_FEATURE(
+    kExperimentalAccessibilityChromeVoxOobeDialogImprovements);
+
+AX_BASE_EXPORT bool
+IsExperimentalAccessibilityChromeVoxOobeDialogImprovementsEnabled();
 
 // Enables Context Checking with the accessibility Dictation feature.
 AX_BASE_EXPORT BASE_DECLARE_FEATURE(
@@ -127,19 +131,19 @@ AX_BASE_EXPORT BASE_DECLARE_FEATURE(
 AX_BASE_EXPORT bool
 AreExperimentalAccessibilityColorEnhancementSettingsEnabled();
 
-// Enables Select-to-Speak settings page migration from extension options page
-// to Chrome OS settings page.
-AX_BASE_EXPORT BASE_DECLARE_FEATURE(kAccessibilitySelectToSpeakPageMigration);
-
-// Returns true if Select-to-Speak settings page migration enabled.
-AX_BASE_EXPORT bool IsAccessibilitySelectToSpeakPageMigrationEnabled();
-
 // Enables ChromeVox settings page migration from extension options page to
 // Chrome OS settings page.
 AX_BASE_EXPORT BASE_DECLARE_FEATURE(kAccessibilityChromeVoxPageMigration);
 
 // Returns true if ChromeVox settings page migration is enabled.
 AX_BASE_EXPORT bool IsAccessibilityChromeVoxPageMigrationEnabled();
+
+// Enables Dictation keyboard improvements.
+AX_BASE_EXPORT BASE_DECLARE_FEATURE(
+    kAccessibilityDictationKeyboardImprovements);
+
+// Returns true if Dictation keyboard improvements are enabled.
+AX_BASE_EXPORT bool IsAccessibilityDictationKeyboardImprovementsEnabled();
 
 // Enables AccessibilitySelectToSpeakPrefsMigration.
 AX_BASE_EXPORT BASE_DECLARE_FEATURE(kAccessibilitySelectToSpeakPrefsMigration);
@@ -161,12 +165,16 @@ AX_BASE_EXPORT BASE_DECLARE_FEATURE(
 // Returns true if kAccessibilityAcceleratorNotificationsTimeout is enabled.
 AX_BASE_EXPORT bool IsAccessibilityAcceleratorNotificationsTimeoutEnabled();
 
-// Enables the deprecation of ChromeVox tabs menu.
-AX_BASE_EXPORT BASE_DECLARE_FEATURE(kAccessibilityDeprecateChromeVoxTabs);
+// Enables the experimental GameFace integration.
+AX_BASE_EXPORT BASE_DECLARE_FEATURE(kAccessibilityGameFaceIntegration);
 
-// Returns true if kAccessibilityDeprecateChromeVoxTabs is enabled.
-AX_BASE_EXPORT bool IsAccessibilityDeprecateChromeVoxTabsEnabled();
+// Returns true if the GameFace integration is enabled.
+AX_BASE_EXPORT bool IsAccessibilityGameFaceIntegrationEnabled();
 
+// A feature that makes PDFs displayed in the ChromeOS Media App (AKA Backlight)
+// accessible by performing OCR on the images for each page.
+AX_BASE_EXPORT BASE_DECLARE_FEATURE(kBacklightOcr);
+AX_BASE_EXPORT bool IsBacklightOcrEnabled();
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 // Enables Get Image Descriptions to augment existing images labels,
@@ -226,6 +234,11 @@ AX_BASE_EXPORT bool IsReadAnythingWithScreen2xEnabled();
 
 // If enabled, ScreenAI library writes some debug data in /tmp.
 AX_BASE_EXPORT bool IsScreenAIDebugModeEnabled();
+
+AX_BASE_EXPORT BASE_DECLARE_FEATURE(kReadAnythingWebUIToolbar);
+
+// If enabled, use the WebUI toolbar in Read Anything.
+AX_BASE_EXPORT bool IsReadAnythingWebUIToolbarEnabled();
 
 // Enables a feature whereby inaccessible (i.e. untagged) PDFs are made
 // accessible using an optical character recognition service. Due to the size of

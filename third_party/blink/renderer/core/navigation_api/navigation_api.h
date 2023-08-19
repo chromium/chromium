@@ -24,7 +24,7 @@ namespace blink {
 
 class DOMException;
 class HistoryItem;
-class NavigationApiNavigation;
+class NavigationApiMethodTracker;
 class NavigationUpdateCurrentEntryOptions;
 class NavigationHistoryEntry;
 class NavigateEvent;
@@ -36,7 +36,7 @@ class NavigationTransition;
 class RegisteredEventListener;
 class SerializedScriptValue;
 
-class CORE_EXPORT NavigationApi final : public EventTargetWithInlineData {
+class CORE_EXPORT NavigationApi final : public EventTarget {
   DEFINE_WRAPPERTYPEINFO();
 
  public:
@@ -122,7 +122,7 @@ class CORE_EXPORT NavigationApi final : public EventTargetWithInlineData {
 
   int GetIndexFor(NavigationHistoryEntry*);
 
-  // EventTargetWithInlineData overrides:
+  // EventTarget overrides:
   const AtomicString& InterfaceName() const final;
   ExecutionContext* GetExecutionContext() const final { return window_; }
   void AddedEventListener(const AtomicString&, RegisteredEventListener&) final;
@@ -167,9 +167,10 @@ class CORE_EXPORT NavigationApi final : public EventTargetWithInlineData {
 
   Member<NavigationTransition> transition_;
 
-  Member<NavigationApiNavigation> ongoing_navigation_;
-  HeapHashMap<String, Member<NavigationApiNavigation>> upcoming_traversals_;
-  Member<NavigationApiNavigation> upcoming_non_traversal_navigation_;
+  Member<NavigationApiMethodTracker> ongoing_api_method_tracker_;
+  HeapHashMap<String, Member<NavigationApiMethodTracker>>
+      upcoming_traverse_api_method_trackers_;
+  Member<NavigationApiMethodTracker> upcoming_non_traverse_api_method_tracker_;
 
   Member<NavigateEvent> ongoing_navigate_event_;
 

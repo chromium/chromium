@@ -1,11 +1,12 @@
 Name: TensorFlow Text
 Short Name: tensorflow-text
 URL: https://github.com/tensorflow/text.git
-Version: 2.7.3
-Date: 2021/12/08
+Version: 015d02a30c712c0d1dd31441db38c826ed8975af
+Date: 2023/06/10
 License: Apache 2.0
 License File: LICENSE
 Security Critical: Yes
+Shipped: yes
 CPEPrefix: unknown
 
 Description:
@@ -20,8 +21,7 @@ auto-format on save.
 
 0002 - Change an includes to be the chromium third_party version.
 
-0003 - The most involved fix to change absl::string_view, which isn't well
-supported in Chromium so everything is changed to re2::StringPiece.
+0003 - Patch since removed
 
 0004 - Many of the files that aren't built into Chromium still trigger DEPS
 errors by the CQ, so those includes are just commented out.

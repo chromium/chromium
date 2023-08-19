@@ -1,0 +1,137 @@
+<style include="iron-flex cr-shared-style settings-shared md-select">
+  .indented {
+    margin-inline-start: var(--cr-section-indent-padding);
+    padding-inline-start: 0;
+  }
+  cr-policy-indicator {
+    padding-inline-end: 8px;
+  }
+</style>
+<div id="powerSourceRow" class="cr-row first"
+    hidden$="[[!batteryStatus_.present]]">
+  <div class="flex cr-padded-text" aria-hidden="true">
+    <div id="powerSourceLabel">[[powerSourceLabel_]]</div>
+    <div id="batteryStatus" class="secondary">[[batteryStatus_.statusText]]</div>
+  </div>
+  <select id="powerSource" class="md-select"
+      hidden$="[[!showPowerSourceDropdown_]]"
+      aria-labelledby="powerSourceLabel"
+      aria-describedby="batteryStatus"
+      on-change="onPowerSourceChange_"
+      deep-link-focus-id$="[[Setting.kPowerSource]]">
+    <option value="" selected="[[isEqual_('', selectedPowerSourceId_)]]">
+      $i18n{powerSourceBattery}
+    </option>
+    <template is="dom-repeat" items="[[powerSources_]]">
+      <option value="[[item.id]]"
+          selected="[[isEqual_(item.id, selectedPowerSourceId_)]]">
+        [[item.description]]
+      </option>
+    </template>
+  </select>
+  <div hidden$="[[showPowerSourceDropdown_]]"
+      aria-labelledby="powerSourceLabel"
+      aria-describedby="batteryStatus">
+    [[powerSourceName_]]
+  </div>
+</div>
+
+<settings-toggle-button id="batterySaverToggle"
+    hidden$="[[batterySaverHidden_]]"
+    pref="{{prefs.power.cros_battery_saver_active}}"
+    label="$i18n{powerBatterySaverLabel}"
+    sub-label="$i18n{powerBatterySaverSubtext}"
+    disabled="[[batterySaverToggleDisabled_]]"
+    deep-link-focus-id$="[[Setting.kBatterySaver]]">
+</settings-toggle-button>
+
+<settings-toggle-button hidden$="[[!adaptiveChargingEnabled_]]"
+  class$="[[getClassForRow_(batteryStatus_.present, 'adaptiveCharging')]]"
+  id="adaptiveChargingToggle"
+  pref="[[adaptiveChargingPref_]]"
+  label="$i18n{powerAdaptiveChargingLabel}"
+  sub-label="$i18n{powerAdaptiveChargingSubtext}"
+  learn-more-url="$i18n{powerAdaptiveChargingLearnMoreUrl}"
+  on-settings-boolean-control-change="onAdaptiveChargingToggleChange_"
+  deep-link-focus-id$="[[Setting.kAdaptiveCharging]]"
+  no-set-pref>
+</settings-toggle-button>
+
+<div class$="[[getClassForRow_(batteryStatus_.present, 'idle')]]">
+  <div id="powerIdleLabel" class="flex" aria-label="true">
+    $i18n{powerIdleLabel}
+  </div>
+  <template is="dom-if" if="[[!batteryStatus_.present]]" restamp>
+    <template is="dom-if" if="[[acIdleManaged_]]" restamp>
+      <cr-policy-indicator id="noBatteryAcIdleManagedIndicator"
+          indicator-type="devicePolicy"
+          icon-aria-label="$i18n{powerIdleWhileChargingAriaLabel}">
+      </cr-policy-indicator>
+    </template>
+    <select id="noBatteryAcIdleSelect" class="md-select"
+        on-change="onAcIdleSelectChange_"
+        disabled="[[shouldAcIdleSelectBeDisabled_]]"
+        aria-label="$i18n{powerIdleWhileChargingAriaLabel}"
+        deep-link-focus-id$="[[Setting.kPowerIdleBehaviorWhileCharging]]">
+      <template is="dom-repeat" items="[[acIdleOptions_]]">
+        <option value="[[item.value]]" selected="[[item.selected]]">
+          [[item.name]]
+        </option>
+      </template>
+    </select>
+  </template>
+</div>
+
+<template is="dom-if" if="[[batteryStatus_.present]]" restamp>
+  <div id="acIdleSettingBox" class="cr-row indented first">
+    <div class="flex" aria-hidden="true">
+      $i18n{powerIdleWhileChargingLabel}
+    </div>
+    <template is="dom-if" if="[[acIdleManaged_]]" restamp>
+      <cr-policy-indicator id="acIdleManagedIndicator"
+          indicator-type="devicePolicy"
+          icon-aria-label="$i18n{powerIdleWhileChargingAriaLabel}">
+      </cr-policy-indicator>
+    </template>
+    <select id="acIdleSelect" class="md-select"
+        on-change="onAcIdleSelectChange_"
+        disabled="[[shouldAcIdleSelectBeDisabled_]]"
+        aria-label="$i18n{powerIdleWhileChargingAriaLabel}"
+        deep-link-focus-id$="[[Setting.kPowerIdleBehaviorWhileCharging]]">
+      <template is="dom-repeat" items="[[acIdleOptions_]]">
+        <option value="[[item.value]]" selected="[[item.selected]]">
+          [[item.name]]
+        </option>
+      </template>
+    </select>
+  </div>
+
+  <div id="batteryIdleSettingBox" class="cr-row indented">
+    <div class="flex" aria-hidden="true">
+      $i18n{powerIdleWhileOnBatteryLabel}
+    </div>
+    <template is="dom-if" if="[[batteryIdleManaged_]]" restamp>
+      <cr-policy-indicator id="batteryIdleManagedIndicator"
+          indicator-type="devicePolicy"
+          icon-aria-label="$i18n{powerIdleWhileOnBatteryAriaLabel}">
+      </cr-policy-indicator>
+    </template>
+    <select id="batteryIdleSelect" class="md-select"
+        on-change="onBatteryIdleSelectChange_"
+        disabled="[[shouldBatteryIdleSelectBeDisabled_]]"
+        aria-label="$i18n{powerIdleWhileOnBatteryAriaLabel}"
+        deep-link-focus-id$="[[Setting.kPowerIdleBehaviorWhileOnBattery]]">
+      <template is="dom-repeat" items="[[batteryIdleOptions_]]">
+        <option value="[[item.value]]" selected="[[item.selected]]">
+          [[item.name]]
+        </option>
+      </template>
+    </select>
+  </div>
+</template>
+
+<settings-toggle-button hidden$="[[!hasLid_]]" id="lidClosedToggle"
+  pref="[[lidClosedPref_]]" label="[[lidClosedLabel_]]"
+  on-settings-boolean-control-change="onLidClosedToggleChange_" no-set-pref
+  deep-link-focus-id$="[[Setting.kSleepWhenLaptopLidClosed]]">
+</settings-toggle-button>

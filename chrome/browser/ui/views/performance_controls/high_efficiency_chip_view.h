@@ -52,10 +52,6 @@ class HighEfficiencyChipView : public PageActionIconView,
   // Checks whether high efficiency mode is currently enabled.
   void OnHighEfficiencyModeChanged() override;
 
-  bool ShouldHighlightMemorySavingsWithExpandedChip(
-      HighEfficiencyChipTabHelper* high_efficiency_tab_helper,
-      PrefService* pref_service);
-
   const raw_ptr<Browser> browser_;
   const std::u16string chip_accessible_label_;
   base::OneShotTimer timer_;
@@ -65,7 +61,6 @@ class HighEfficiencyChipView : public PageActionIconView,
       performance_manager::user_tuning::UserPerformanceTuningManager::Observer>
       user_performance_tuning_manager_observation_{this};
   bool is_high_efficiency_mode_enabled_ = false;
-  base::WeakPtrFactory<HighEfficiencyChipView> weak_ptr_factory_{this};
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_PERFORMANCE_CONTROLS_HIGH_EFFICIENCY_CHIP_VIEW_H_

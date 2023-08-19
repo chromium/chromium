@@ -13,6 +13,10 @@ class PrefService;
 @protocol TabsSettingsConsumer;
 @protocol TabsSettingsNavigationCommands;
 
+namespace syncer {
+class SyncService;
+}  // namespace syncer
+
 // Mediator for the tabs settings.
 @interface TabsSettingsMediator
     : NSObject <TabsSettingsTableViewControllerDelegate>
@@ -21,9 +25,11 @@ class PrefService;
 @property(nonatomic, weak) id<TabsSettingsNavigationCommands> handler;
 
 // Designated initializer. All the parameters should not be null.
+// `syncService` sync service.
 // `localPrefService`: preference service from the application context.
 // `consumer`: consumer that will be notified when the data change.
 - (instancetype)initWithUserLocalPrefService:(PrefService*)localPrefService
+                                 syncService:(syncer::SyncService*)syncService
                                     consumer:(id<TabsSettingsConsumer>)consumer
     NS_DESIGNATED_INITIALIZER;
 

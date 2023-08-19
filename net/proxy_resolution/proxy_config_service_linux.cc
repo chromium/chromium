@@ -262,7 +262,7 @@ class SettingGetterImplGSettings
         ShutDown();
       } else {
         LOG(WARNING) << "~SettingGetterImplGSettings: leaking gsettings client";
-        client_ = nullptr;
+        client_.ExtractAsDangling();
       }
     }
     DCHECK(!client_);
@@ -298,11 +298,11 @@ class SettingGetterImplGSettings
     if (client_) {
       DCHECK(task_runner_->RunsTasksInCurrentSequence());
       // This also disables gsettings notifications.
-      g_object_unref(socks_client_);
-      g_object_unref(ftp_client_);
-      g_object_unref(https_client_);
-      g_object_unref(http_client_);
-      g_object_unref(client_);
+      g_object_unref(socks_client_.ExtractAsDangling());
+      g_object_unref(ftp_client_.ExtractAsDangling());
+      g_object_unref(https_client_.ExtractAsDangling());
+      g_object_unref(http_client_.ExtractAsDangling());
+      g_object_unref(client_.ExtractAsDangling());
       // We only need to null client_ because it's the only one that we check.
       client_ = nullptr;
       task_runner_ = nullptr;

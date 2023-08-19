@@ -33,7 +33,8 @@ class EnrollmentHelperMixin : public InProcessBrowserTestMixin {
 
   ~EnrollmentHelperMixin() override;
 
-  // Resets mock (to be used in tests that retry enrollment).
+  // Re-creates mock. Useful in tests that retry enrollment with different auth
+  // mechanism, which causes original mock to be destroyed by EnrollmentScreen.
   void ResetMock();
 
   // Sets up expectation of no enrollment attempt.

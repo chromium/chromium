@@ -223,6 +223,7 @@ void DataSourceTester::BeginTrace(
   perfetto::TraceConfig perfetto_config(
       tracing::GetDefaultPerfettoConfig(trace_config));
   trace_log->SetEnabled(trace_config, perfetto_config);
+  base::RunLoop().RunUntilIdle();
 #else   // !BUILDFLAG(USE_PERFETTO_CLIENT_LIBRARY)
   trace_log->SetEnabled(trace_config,
                         base::trace_event::TraceLog::RECORDING_MODE);

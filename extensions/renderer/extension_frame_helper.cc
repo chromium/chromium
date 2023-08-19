@@ -18,7 +18,6 @@
 #include "extensions/common/extension_features.h"
 #include "extensions/common/extension_messages.h"
 #include "extensions/common/manifest_handlers/background_info.h"
-#include "extensions/renderer/api/automation/automation_api_helper.h"
 #include "extensions/renderer/api/messaging/native_renderer_messaging_service.h"
 #include "extensions/renderer/console.h"
 #include "extensions/renderer/dispatcher.h"
@@ -134,10 +133,6 @@ ExtensionFrameHelper::ExtensionFrameHelper(content::RenderFrame* render_frame,
       content::RenderFrameObserverTracker<ExtensionFrameHelper>(render_frame),
       extension_dispatcher_(extension_dispatcher) {
   g_frame_helpers.Get().insert(this);
-  if (render_frame->GetWebFrame()->IsOutermostMainFrame()) {
-    // Manages its own lifetime.
-    new AutomationApiHelper(render_frame);
-  }
 
   render_frame->GetAssociatedInterfaceRegistry()
       ->AddInterface<mojom::LocalFrame>(
@@ -386,7 +381,7 @@ void ExtensionFrameHelper::DidCreateScriptContext(
     // second time here.
     if (is_initializing_main_world_script_context_)
       return;
-    if (render_frame()->IsBrowserSideNavigationPending()) {
+    if (render_frame()->IsRequestingNavigation()) {
       // Defer initializing the extensions script context now because it depends
       // on having the URL of the provisional load which isn't available at this
       // point.

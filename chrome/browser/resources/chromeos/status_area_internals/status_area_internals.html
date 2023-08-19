@@ -1,0 +1,92 @@
+<!-- Copyright 2023 The Chromium Authors. All rights reserved.
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file. -->
+
+<style>
+  :host {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    height: 100%;
+  }
+
+  app-header {
+    background-color: royalblue;
+    color: white;
+    font-size: 200%;
+    padding: 8px;
+    text-align: center;
+  }
+
+  .input-field {
+    margin: 2.5% 5%;
+  }
+
+  .input-field ol {
+    margin: 0 0 8px 0;
+    padding: 0 16px;
+  }
+
+  .input-field ol>li {
+    align-items: center;
+    border-bottom: none;
+    display: flex;
+    padding: 0 0 8px 0;
+  }
+
+  .padded-text {
+    margin-inline-start: 5px;
+  }
+
+  .row {
+    display: flex;
+    flex: 0 1 100%;
+  }
+</style>
+
+<app-header>
+  <app-toolbar>ChromeOS Status Area Tester</app-toolbar>
+</app-header>
+
+<div class="input-field">
+  <ol>
+    <h2>Shelf Pod</h2>
+    <p>Toggle to show or hide the pod in the shelf</p>
+    <li>
+      <div class="row">
+        <cr-toggle aria-label="ime-tray" on-change="onImeToggled_"></cr-toggle>
+        <span aria-hidden="true" class="padded-text">
+          IME Tray
+        </span>
+      </div>
+    </li>
+    <li>
+      <div class="row">
+        <cr-toggle aria-label="tote"></cr-toggle>
+        <span aria-hidden="true" class="padded-text">
+          Tote
+        </span>
+      </div>
+    </li>
+    <li>
+      <div class="row">
+        <cr-toggle aria-label="palette-tray" on-change="onPaletteToggled_">
+        </cr-toggle>
+        <span aria-hidden="true" class="padded-text">
+          Palette Tray
+        </span>
+      </div>
+    </li>
+    <li>
+      <div class="row">
+        <cr-toggle aria-label="logout-button"></cr-toggle>
+        <span aria-hidden="true" class="padded-text">
+          Logout Button
+        </span>
+      </div>
+    </li>
+
+    <h2>Privacy Indicators</h2>
+    <privacy-indicator-app-manager></privacy-indicator-app-manager>
+  </ol>
+</div>

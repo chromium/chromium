@@ -18,7 +18,8 @@ PermissionDecisionAutoBlockerFactory::GetForProfile(Profile* profile) {
 // static
 PermissionDecisionAutoBlockerFactory*
 PermissionDecisionAutoBlockerFactory::GetInstance() {
-  return base::Singleton<PermissionDecisionAutoBlockerFactory>::get();
+  static base::NoDestructor<PermissionDecisionAutoBlockerFactory> instance;
+  return instance.get();
 }
 
 PermissionDecisionAutoBlockerFactory::PermissionDecisionAutoBlockerFactory()

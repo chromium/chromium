@@ -1,0 +1,5 @@
+AXWebArea AXRoleDescription='HTML content'
+++AXGroup AXSubrole=AXLandmarkSearch AXRoleDescription='search'
+++++AXGroup AXRoleDescription='group'
+++++++AXStaticText AXRoleDescription='text' AXValue='Search element.'
+++++AXTextField AXSubrole=AXSearchField AXRoleDescription='search text field'

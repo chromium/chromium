@@ -28,6 +28,7 @@ source_set("favicon") {
     "//components/favicon/core:history_implementation",
     "//components/image_fetcher/core",
     "//components/keyed_service/content",
+    "//components/password_manager/content/common",
     "//components/sync",
     "//content/public/browser",
     "//ui/gfx",

@@ -181,7 +181,6 @@ void SharingService::UnregisterDevice() {
 
 void SharingService::OnDeviceRegistered(
     SharingDeviceRegistrationResult result) {
-  LogSharingRegistrationResult(result);
   switch (result) {
     case SharingDeviceRegistrationResult::kSuccess:
       backoff_entry_.InformOfRequest(true);
@@ -229,7 +228,6 @@ void SharingService::OnDeviceRegistered(
 
 void SharingService::OnDeviceUnregistered(
     SharingDeviceRegistrationResult result) {
-  LogSharingUnregistrationResult(result);
   if (IsSyncEnabledForSharing(sync_service_)) {
     // In case sync is enabled during un-registration, register it.
     state_ = State::REGISTERING;

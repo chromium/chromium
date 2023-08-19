@@ -3,7 +3,6 @@
 # found in the LICENSE file.
 
 source_set("browser") {
-  configs += [ "//build/config/compiler:enable_arc" ]
   sources = [
     "history_database_helper.cc",
     "history_database_helper.h",

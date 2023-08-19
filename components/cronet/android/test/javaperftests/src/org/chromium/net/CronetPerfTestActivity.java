@@ -238,7 +238,6 @@ public class CronetPerfTestActivity extends Activity {
             }
         }
 
-        // NOTE(pauljensen): Sampling profiling won't work on KitKat and earlier devices.
         private void startLogging() {
             if (getConfigBoolean("CAPTURE_NETLOG")) {
                 mCronetEngine.startNetLogToFile(

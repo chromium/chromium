@@ -59,6 +59,7 @@ class ASH_EXPORT QuickSettingsMediaViewController
   // global_media_controls::MediaItemUIObserver:
   void OnMediaItemUIClicked(const std::string& id) override;
   void OnMediaItemUIDestroyed(const std::string& id) override;
+  void OnMediaItemUIShowDevices(const std::string& id) override;
 
   std::unique_ptr<views::View> CreateView();
 
@@ -67,6 +68,9 @@ class ASH_EXPORT QuickSettingsMediaViewController
 
   // Updates the order of media items in the quick settings media view.
   void UpdateMediaItemOrder();
+
+  // Returns the current desired height of the media view.
+  int GetMediaViewHeight();
 
   // Helper functions for testing.
   QuickSettingsMediaView* media_view_for_testing() { return media_view_; }
@@ -82,7 +86,7 @@ class ASH_EXPORT QuickSettingsMediaViewController
   global_media_controls::MediaItemUIObserverSet media_item_ui_observer_set_{
       this};
 
-  raw_ptr<QuickSettingsMediaView> media_view_ = nullptr;
+  raw_ptr<QuickSettingsMediaView, DanglingUntriaged> media_view_ = nullptr;
 };
 
 }  // namespace ash

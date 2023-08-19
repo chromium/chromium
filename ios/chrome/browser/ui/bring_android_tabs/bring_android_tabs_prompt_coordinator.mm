@@ -15,10 +15,6 @@
 #import "ios/chrome/browser/ui/bring_android_tabs/bring_android_tabs_ui_swift.h"
 #import "ios/chrome/browser/url_loading/url_loading_browser_agent.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 namespace {
 
 // Sets a custom radius for the half sheet presentation.

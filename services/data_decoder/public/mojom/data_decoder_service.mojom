@@ -6,6 +6,7 @@ module data_decoder.mojom;
 
 import "components/web_package/mojom/web_bundle_parser.mojom";
 import "sandbox/policy/mojom/sandbox.mojom";
+import "services/data_decoder/public/mojom/cbor_parser.mojom";
 import "services/data_decoder/public/mojom/gzipper.mojom";
 import "services/data_decoder/public/mojom/image_decoder.mojom";
 import "services/data_decoder/public/mojom/json_parser.mojom";
@@ -15,17 +16,8 @@ import "services/data_decoder/public/mojom/xml_parser.mojom";
 [EnableIf=is_chromeos_ash]
 import "services/data_decoder/public/mojom/ble_scan_parser.mojom";
 
-// TODO(https://crbug.com/1296386): Remove JIT permission on Fuchsia when
-// decoding images no longer requires the VMEX capability.
-[EnableIf=is_fuchsia]
-const sandbox.mojom.Sandbox kDataDecoderSandbox
-  = sandbox.mojom.Sandbox.kServiceWithJit;
-[EnableIfNot=is_fuchsia]
-const sandbox.mojom.Sandbox kDataDecoderSandbox
-  = sandbox.mojom.Sandbox.kService;
-
 // The main interface to the Data Decoder service.
-[ServiceSandbox=kDataDecoderSandbox]
+[ServiceSandbox=sandbox.mojom.Sandbox.kService]
 interface DataDecoderService {
   // Binds an interface which can be used to decode compressed image data.
   BindImageDecoder(pending_receiver<ImageDecoder> receiver);
@@ -51,4 +43,7 @@ interface DataDecoderService {
 
   // Binds an interface which can be used to parse structured headers.
   BindStructuredHeadersParser(pending_receiver<StructuredHeadersParser> receiver);
+
+  // Binds an interface which can be used to parse CBOR data.
+  BindCborParser(pending_receiver<CborParser> receiver);
 };

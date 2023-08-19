@@ -5,17 +5,22 @@
 #include "chrome/browser/ui/webui/settings/ash/files_page/google_drive_page_handler.h"
 
 #include "base/strings/utf_string_conversions.h"
+#include "base/task/task_traits.h"
+#include "base/task/thread_pool.h"
 #include "chrome/browser/ash/drive/drive_integration_service.h"
+#include "chrome/browser/ash/drive/file_system_util.h"
 #include "chrome/browser/ui/webui/settings/ash/files_page/mojom/google_drive_handler.mojom.h"
+#include "chromeos/ash/components/drivefs/drivefs_pin_manager.h"
 #include "mojo/public/cpp/bindings/callback_helpers.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/text/bytes_formatting.h"
 
 namespace ash::settings {
-
-using drivefs::pinning::Progress;
-
 namespace {
+
+using drive::DriveIntegrationService;
+using drivefs::pinning::PinManager;
+using drivefs::pinning::Progress;
 
 google_drive::mojom::StatusPtr CreateStatusPtr(const Progress& progress) {
   auto status = google_drive::mojom::Status::New();
@@ -23,11 +28,9 @@ google_drive::mojom::StatusPtr CreateStatusPtr(const Progress& progress) {
       (progress.required_space >= 0)
           ? base::UTF16ToUTF8(ui::FormatBytes(progress.required_space))
           : "";
-  int64_t remaining_space = progress.free_space - progress.required_space;
-  status->remaining_space =
-      (remaining_space >= 0)
-          ? base::UTF16ToUTF8(
-                ui::FormatBytes(progress.free_space - progress.required_space))
+  status->free_space =
+      (progress.free_space >= 0)
+          ? base::UTF16ToUTF8(ui::FormatBytes(progress.free_space))
           : "";
   status->stage = progress.stage;
   status->is_error = progress.IsError();
@@ -43,51 +46,48 @@ GoogleDrivePageHandler::GoogleDrivePageHandler(
     : profile_(profile),
       page_(std::move(page)),
       receiver_(this, std::move(receiver)) {
-  if (drive::DriveIntegrationService* const drive_service = GetDriveService()) {
-    drive_service->AddObserver(this);
+  if (DriveIntegrationService* const service = GetDriveService()) {
+    service->AddObserver(this);
   }
 }
 
 GoogleDrivePageHandler::~GoogleDrivePageHandler() {
-  if (drive::DriveIntegrationService* const drive_service = GetDriveService()) {
-    drive_service->RemoveObserver(this);
+  if (DriveIntegrationService* const service = GetDriveService()) {
+    service->RemoveObserver(this);
   }
 }
 
 void GoogleDrivePageHandler::CalculateRequiredSpace() {
-  auto* const pin_manager = GetPinManager();
+  PinManager* const pin_manager = GetPinManager();
   if (!pin_manager) {
     page_->OnServiceUnavailable();
     return;
   }
+
   NotifyProgress(pin_manager->GetProgress());
-  pin_manager->CalculateRequiredSpace();
+  if (!pin_manager->CalculateRequiredSpace()) {
+    page_->OnServiceUnavailable();
+    return;
+  }
 }
 
 void GoogleDrivePageHandler::NotifyProgress(const Progress& progress) {
   page_->OnProgress(CreateStatusPtr(progress));
 }
 
-drive::DriveIntegrationService* GoogleDrivePageHandler::GetDriveService() {
-  drive::DriveIntegrationService* service =
+DriveIntegrationService* GoogleDrivePageHandler::GetDriveService() {
+  DriveIntegrationService* const service =
       drive::DriveIntegrationServiceFactory::FindForProfile(profile_);
-  if (!service || !service->IsMounted()) {
-    return nullptr;
-  }
-  return service;
+  return service && service->IsMounted() ? service : nullptr;
 }
 
-drivefs::pinning::PinManager* GoogleDrivePageHandler::GetPinManager() {
-  drive::DriveIntegrationService* service = GetDriveService();
-  if (!service || !service->GetPinManager()) {
-    return nullptr;
-  }
-  return service->GetPinManager();
+PinManager* GoogleDrivePageHandler::GetPinManager() {
+  DriveIntegrationService* const service = GetDriveService();
+  return service ? service->GetPinManager() : nullptr;
 }
 
 void GoogleDrivePageHandler::OnBulkPinProgress(const Progress& progress) {
-  auto* const pin_manager = GetPinManager();
-  if (!pin_manager) {
+  if (!GetPinManager()) {
     page_->OnServiceUnavailable();
     return;
   }
@@ -95,29 +95,29 @@ void GoogleDrivePageHandler::OnBulkPinProgress(const Progress& progress) {
   NotifyProgress(progress);
 }
 
-void GoogleDrivePageHandler::GetTotalPinnedSize(
-    GetTotalPinnedSizeCallback callback) {
+void GoogleDrivePageHandler::GetContentCacheSize(
+    GetContentCacheSizeCallback callback) {
   if (!GetDriveService()) {
     page_->OnServiceUnavailable();
     std::move(callback).Run(absl::nullopt);
     return;
   }
 
-  // If Drive crashes, this callback may not get invoked so in that instance
-  // ensure it gets invoked with "-1" to signal an error case.
-  auto on_total_pinned_size_callback =
-      mojo::WrapCallbackWithDefaultInvokeIfNotRun(
-          base::BindOnce(&GoogleDrivePageHandler::OnGetTotalPinnedSize,
-                         weak_ptr_factory_.GetWeakPtr(), std::move(callback)),
-          /*size=*/-1);
-  GetDriveService()->GetTotalPinnedSize(
-      std::move(on_total_pinned_size_callback));
+  const base::FilePath content_cache_path =
+      GetDriveService()->GetDriveFsContentCachePath();
+
+  base::ThreadPool::PostTaskAndReplyWithResult(
+      FROM_HERE, {base::MayBlock(), base::TaskPriority::USER_VISIBLE},
+      base::BindOnce(&drive::util::ComputeDriveFsContentCacheSize,
+                     content_cache_path),
+      base::BindOnce(&GoogleDrivePageHandler::OnGetContentCacheSize,
+                     weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
 }
 
-void GoogleDrivePageHandler::OnGetTotalPinnedSize(
-    GetTotalPinnedSizeCallback callback,
+void GoogleDrivePageHandler::OnGetContentCacheSize(
+    GetContentCacheSizeCallback callback,
     int64_t size) {
-  if (size == -1) {
+  if (size < 0) {
     std::move(callback).Run(absl::nullopt);
     return;
   }
@@ -146,6 +146,11 @@ void GoogleDrivePageHandler::OnClearPinnedFiles(
     ClearPinnedFilesCallback callback,
     drive::FileError error) {
   std::move(callback).Run();
+}
+
+void GoogleDrivePageHandler::RecordBulkPinningEnabledMetric() {
+  drivefs::pinning::RecordBulkPinningEnabledSource(
+      drivefs::pinning::BulkPinningEnabledSource::kSystemSettings);
 }
 
 }  // namespace ash::settings

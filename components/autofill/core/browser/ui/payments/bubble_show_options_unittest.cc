@@ -21,7 +21,7 @@ class BubbleShowOptionsTest : public testing::Test {
     options.masked_card_number_last_four = u"**** 1234";
     options.virtual_card = test::GetFullServerCard();
     options.virtual_card_cvc = u"123";
-    options.card_image = gfx::test::CreateImage(32, 20);
+    options.card_image = gfx::test::CreateImage(40, 24);
     return options;
   }
 };

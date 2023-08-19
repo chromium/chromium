@@ -18,10 +18,6 @@
 #import "testing/platform_test.h"
 #import "third_party/ocmock/OCMock/OCMock.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 // Tests the SetUpListView and subviews.
 class SetUpListDefaultBrowserPromoCoordinatorTest : public PlatformTest {
  public:
@@ -75,7 +71,7 @@ TEST_F(SetUpListDefaultBrowserPromoCoordinatorTest, PrimaryButton) {
 
   histogram_tester.ExpectUniqueSample(
       "IOS.DefaultBrowserPromo.SetUpList.Action",
-      IOSDefaultBrowserFullscreenPromoAction::kActionButton, 1);
+      IOSDefaultBrowserPromoAction::kActionButton, 1);
   EXPECT_EQ(1, user_action_tester.GetActionCount(
                    "IOS.DefaultBrowserPromo.SetUpList.Appear"));
   EXPECT_EQ(1, user_action_tester.GetActionCount(
@@ -96,7 +92,7 @@ TEST_F(SetUpListDefaultBrowserPromoCoordinatorTest, SecondaryButton) {
   task_environment_.RunUntilIdle();
   histogram_tester.ExpectUniqueSample(
       "IOS.DefaultBrowserPromo.SetUpList.Action",
-      IOSDefaultBrowserFullscreenPromoAction::kCancel, 1);
+      IOSDefaultBrowserPromoAction::kCancel, 1);
   EXPECT_EQ(1, user_action_tester.GetActionCount(
                    "IOS.DefaultBrowserPromo.SetUpList.Appear"));
   EXPECT_EQ(1, user_action_tester.GetActionCount(
@@ -119,7 +115,7 @@ TEST_F(SetUpListDefaultBrowserPromoCoordinatorTest, SwipeToDismiss) {
   task_environment_.RunUntilIdle();
   histogram_tester.ExpectUniqueSample(
       "IOS.DefaultBrowserPromo.SetUpList.Action",
-      IOSDefaultBrowserFullscreenPromoAction::kCancel, 1);
+      IOSDefaultBrowserPromoAction::kCancel, 1);
   EXPECT_EQ(1, user_action_tester.GetActionCount(
                    "IOS.DefaultBrowserPromo.SetUpList.Appear"));
   EXPECT_EQ(1, user_action_tester.GetActionCount(

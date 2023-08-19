@@ -10,7 +10,9 @@
 #include "base/files/file.h"
 #include "base/strings/sys_string_conversions.h"
 #include "base/trace_event/trace_config.h"
+#include "content/public/browser/browser_accessibility_state.h"
 #include "content/shell/app/resource.h"
+#include "content/shell/browser/color_chooser/shell_color_chooser_ios.h"
 #include "content/shell/browser/shell.h"
 #include "content/shell/browser/shell_file_select_helper.h"
 #include "services/tracing/public/cpp/perfetto/perfetto_config.h"
@@ -18,10 +20,7 @@
 #include "third_party/perfetto/include/perfetto/tracing/core/trace_config.h"
 #include "third_party/perfetto/include/perfetto/tracing/tracing.h"
 #include "ui/display/screen.h"
-
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
+#include "ui/gfx/native_widget_types.h"
 
 namespace {
 
@@ -97,6 +96,7 @@ static const char kAllTracingCategories[] = "*";
 - (void)startTracingWithCategories:(const char*)categories;
 - (UIAlertController*)actionSheetWithTitle:(nullable NSString*)title
                                    message:(nullable NSString*)message;
+- (void)voiceOverStatusDidChange;
 @end
 
 @implementation ContentShellWindowDelegate
@@ -284,7 +284,20 @@ static const char kAllTracingCategories[] = "*";
                        constant:-16.0],
     [_field.heightAnchor constraintEqualToConstant:32.0],
   ]];
-  UIView* web_contents_view = _shell->web_contents()->GetNativeView();
+
+  // Enable Accessibility if VoiceOver is already running.
+  if (UIAccessibilityIsVoiceOverRunning()) {
+    content::BrowserAccessibilityState::GetInstance()->OnScreenReaderDetected();
+  }
+
+  // Register for VoiceOver notifications.
+  [[NSNotificationCenter defaultCenter]
+      addObserver:self
+         selector:@selector(voiceOverStatusDidChange)
+             name:UIAccessibilityVoiceOverStatusDidChangeNotification
+           object:nil];
+
+  UIView* web_contents_view = _shell->web_contents()->GetNativeView().Get();
   [_contentView addSubview:web_contents_view];
 }
 
@@ -427,6 +440,15 @@ static const char kAllTracingCategories[] = "*";
   return alertController;
 }
 
+- (void)voiceOverStatusDidChange {
+  content::BrowserAccessibilityState* accessibility_state =
+      content::BrowserAccessibilityState::GetInstance();
+  if (UIAccessibilityIsVoiceOverRunning()) {
+    accessibility_state->OnScreenReaderDetected();
+  } else {
+    accessibility_state->OnScreenReaderStopped();
+  }
+}
 @end
 
 @implementation TracingHandler
@@ -550,7 +572,7 @@ gfx::NativeWindow ShellPlatformDelegate::GetNativeWindow(Shell* shell) {
   DCHECK(base::Contains(shell_data_map_, shell));
   ShellData& shell_data = shell_data_map_[shell];
 
-  return shell_data.window;
+  return gfx::NativeWindow(shell_data.window);
 }
 
 void ShellPlatformDelegate::CleanUp(Shell* shell) {
@@ -628,6 +650,14 @@ bool ShellPlatformDelegate::DestroyShell(Shell* shell) {
 
   [shell_data.window resignKeyWindow];
   return false;  // We have not destroyed the shell here.
+}
+
+std::unique_ptr<ColorChooser> ShellPlatformDelegate::OpenColorChooser(
+    WebContents* web_contents,
+    SkColor color,
+    const std::vector<blink::mojom::ColorSuggestionPtr>& suggestions) {
+  return ShellColorChooserIOS::OpenColorChooser(web_contents, color,
+                                                suggestions);
 }
 
 void ShellPlatformDelegate::RunFileChooser(

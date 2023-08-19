@@ -26,7 +26,6 @@
 <translation id="2060505056492490888">Το σύμβολο "<ph name="DOT" />" χρησιμοποιείται σε λάθος θέση στη διεύθυνση "<ph name="INVALIDDOMAIN" />".</translation>
 <translation id="2148716181193084225">Σήμερα</translation>
 <translation id="2226276347425096477">Κάντε πιο σύντομο αυτό το κείμενο ώστε να έχει το πολύ <ph name="MAX_CHARACTERS" /> χαρακτήρες (αυτήν τη στιγμή χρησιμοποιείτε <ph name="CURRENT_LENGTH" /> χαρακτήρες).</translation>
-<translation id="2246498165605549352">Τοπικό αρχείο</translation>
 <translation id="2247351761944213033">Εβδομάδα <ph name="WEEKNUMBER" />, <ph name="YEAR" /></translation>
 <translation id="2277199496770840904">Κομμάτι <ph name="NUMBER" /></translation>
 <translation id="2393030564806080191">Δεκαεξαδική τιμή χρώματος</translation>
@@ -89,6 +88,7 @@
 <translation id="5425179576310518467">τρέχουσα ημερομηνία</translation>
 <translation id="5466621249238537318">Επιλέξτε ένα ή περισσότερα αρχεία.</translation>
 <translation id="5468998798572797635">έξοδος από πλήρη οθόνη</translation>
+<translation id="5514612371225420585">Αρχείο στη συσκευή σας</translation>
 <translation id="5516235301412634559">0,75</translation>
 <translation id="5537725057119320332">Μετάδοση</translation>
 <translation id="5546461542133609677">κατάργηση σίγασης</translation>
@@ -113,6 +113,7 @@
 <translation id="6398862346408813489">Εμφάνιση παραθύρου επιλογής μήνα</translation>
 <translation id="6404546809543547843">δείκτης χρόνου ήχου</translation>
 <translation id="6443871981718447451">εμφάνιση μενού υποτίτλων</translation>
+<translation id="6484738902856791350">Όμορφη εκτύπωση</translation>
 <translation id="6550675742724504774">Επιλογές</translation>
 <translation id="6572309429103589720">Μη έγκυρη γραμματική</translation>
 <translation id="658823671542763450">ενεργοποίηση πλήρους οθόνης</translation>

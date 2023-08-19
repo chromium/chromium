@@ -1,0 +1,82 @@
+<style include="app-management-cros-shared-style">
+  #noPermissions {
+    border-top: none;
+  }
+</style>
+<div class="permission-list">
+  <app-management-pin-to-shelf-item
+      id="pinToShelfSetting"
+      class="permission-card-row separated-row"
+      app="[[app_]]">
+  </app-management-pin-to-shelf-item>
+  <app-management-permission-item id="notificationsCard"
+      class="permission-card-row separated-row"
+      app="[[app_]]"
+      permission-label="$i18n{appManagementNotificationsLabel}"
+      permission-type="kNotifications">
+  </app-management-permission-item>
+  <div id="permissionsCard"
+      class="permission-card-row">
+    <div id="subpermissionExpandRow"
+        class="permission-section-header">
+      <div class="header-text">$i18n{appManagementPermissionsLabel}</div>
+    </div>
+    <div id="subpermissionList"
+        class="permission-list indented-permission-block">
+
+      <template is="dom-repeat" items="[[permissionDefinitions_]]">
+        <template is="dom-if" if="[[hasReadOnlyPermissions_]]">
+          <app-management-read-only-permission-item class="subpermission-row"
+            app="[[app_]]"
+            icon="[[item.icon]]"
+            permission-label="[[i18n(item.labelId)]]"
+            permission-type="[[item.type]]">
+          </app-management-read-only-permission-item>
+        </template>
+
+        <template is="dom-if" if="[[!hasReadOnlyPermissions_]]">
+          <app-management-permission-item class="subpermission-row"
+            app="[[app_]]"
+            icon="[[item.icon]]"
+            permission-label="[[i18n(item.labelId)]]"
+            permission-type="[[item.type]]">
+          </app-management-permission-item>
+        </template>
+      </template>
+
+      <template
+          is="dom-if"
+          if="[[noPermissionsRequested_(app_, permissionDefinitions_)]]">
+        <div id="noPermissions" class="permission-text-row">
+          $i18n{appManagementNoPermissions}
+        </div>
+      </template>
+    </div>
+  </div>
+  <app-management-more-permissions-item id="managePermissions"
+    hidden$="[[!hasReadOnlyPermissions_]]"
+    class="permission-card-row separated-row" app="[[app_]]"
+    more-permissions-label="$i18n{appManagementArcManagePermissionsLabel}">
+  </app-management-more-permissions-item>
+  <app-management-resize-lock-item
+      id="resizeLockSetting"
+      class="permission-card-row separated-row row-with-description"
+      app="[[app_]]">
+  </app-management-resize-lock-item>
+  <app-management-more-permissions-item id="moreSettings"
+      hidden$="[[hasReadOnlyPermissions_]]"
+      class="permission-card-row separated-row" app="[[app_]]"
+      more-permissions-label="$i18n{appManagementMorePermissionsLabel}">
+  </app-management-more-permissions-item>
+  <app-management-supported-links-item
+      id="supportedLinksSetting"
+      class="permission-card-row"
+      app="[[app_]]"
+      apps="[[apps_]]">
+  </app-management-supported-links-item>
+  <app-management-app-details-item
+      id="appDetails"
+      class="permission-card-row"
+      app="[[app_]]">
+  </app-management-app-details-item>
+</div>

@@ -5,7 +5,7 @@
 #import <Foundation/Foundation.h>
 #include <objc/runtime.h>
 
-#import "base/mac/scoped_nsobject.h"
+#import "base/apple/scoped_nsobject.h"
 #import "components/crash/core/common/objc_zombie.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "testing/platform_test.h"

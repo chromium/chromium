@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 import {Destination, DestinationOrigin, NativeLayerCrosImpl, NativeLayerImpl, PrinterStatusReason, PrinterStatusSeverity, PrintPreviewDestinationDropdownCrosElement, PrintPreviewDestinationSelectCrosElement} from 'chrome://print/print_preview.js';
+import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {MockController} from 'chrome://webui-test/mock_controller.js';
 import {waitBeforeNextRender} from 'chrome://webui-test/polymer_test_util.js';
@@ -14,17 +15,36 @@ import {FakeMediaQueryList, getGoogleDriveDestination, getSaveAsPdfDestination} 
 const printer_status_test_cros = {
   suiteName: 'PrinterStatusTestCros',
   TestNames: {
-    PrinterStatusUpdatesColor: 'printer status updates color',
+    // TODO(b/289091283): Remove test for flag off and update test name for flag
+    //                    on when `isPrintPreviewSetupAssistanceEnabled` flag is
+    //                    removed.
+    PrinterStatusUpdatesColor_FlagOff: 'printer status updates color when ' +
+        '`isPrintPreviewSetupAssistanceEnabled` flag off',
+    PrinterStatusUpdatesColor_FlagOn: 'printer status updates color when ' +
+        '`isPrintPreviewSetupAssistanceEnabled` flag on',
     SendStatusRequestOnce: 'send status request once',
     HiddenStatusText: 'hidden status text',
     ChangeIcon: 'change icon',
     SuccessfulPrinterStatusAfterRetry: 'successful printer status after retry',
+    // TODO(b/289091283): Remove test for flag off and update test name for flag
+    //                    on when `isPrintPreviewSetupAssistanceEnabled` flag is
+    //                    removed.
+    StatusTextClass_FlagOff: 'status text class flag off',
+    StatusTextClass_FlagOn: 'status text class flag on',
   },
 };
 
 Object.assign(window, {printer_status_test_cros: printer_status_test_cros});
 
 suite(printer_status_test_cros.suiteName, function() {
+  const PRINTER_ICON_GREEN = 'print-preview:printer-status-green';
+
+  const PRINTER_ICON_GREY = 'print-preview:printer-status-grey';
+
+  const PRINTER_ICON_ORANGE = 'print-preview:printer-status-orange';
+
+  const PRINTER_ICON_RED = 'print-preview:printer-status-red';
+
   let destinationSelect: PrintPreviewDestinationSelectCrosElement;
 
   let nativeLayerCros: NativeLayerCrosStub;
@@ -176,7 +196,11 @@ suite(printer_status_test_cros.suiteName, function() {
   });
 
   test(
-      printer_status_test_cros.TestNames.PrinterStatusUpdatesColor, function() {
+      printer_status_test_cros.TestNames.PrinterStatusUpdatesColor_FlagOff,
+      function() {
+        loadTimeData.overrideValues({
+          isPrintPreviewSetupAssistanceEnabled: false,
+        });
         const destination1 =
             createDestination('ID1', 'One', DestinationOrigin.CROS);
         const destination2 =
@@ -223,82 +247,181 @@ suite(printer_status_test_cros.suiteName, function() {
 
               // Empty printer status.
               assertEquals(
-                  'print-preview:printer-status-green',
+                  PRINTER_ICON_GREEN,
                   getIconString(dropdown, destination1.key));
 
               // Error printer status with unknown severity.
               assertEquals(
-                  'print-preview:printer-status-green',
+                  PRINTER_ICON_GREEN,
                   getIconString(dropdown, destination2.key));
 
               // Error printer status with report severity.
               assertEquals(
-                  'print-preview:printer-status-green',
+                  PRINTER_ICON_GREEN,
                   getIconString(dropdown, destination3.key));
 
               // Error printer status with warning severity.
               assertEquals(
-                  'print-preview:printer-status-red',
+                  PRINTER_ICON_RED, getIconString(dropdown, destination4.key));
+
+              // Error printer status with error severity.
+              assertEquals(
+                  PRINTER_ICON_RED, getIconString(dropdown, destination5.key));
+
+              // Error printer status with unknown severity + error printer
+              // status with error severity.
+              assertEquals(
+                  PRINTER_ICON_RED, getIconString(dropdown, destination6.key));
+
+              // Error printer status with unknown severity + error printer
+              // status with report severity.
+              assertEquals(
+                  PRINTER_ICON_GREEN,
+                  getIconString(dropdown, destination7.key));
+
+              // Unknown reason printer status with error severity.
+              assertEquals(
+                  PRINTER_ICON_GREY, getIconString(dropdown, destination8.key));
+
+              // Unknown reason printer status with unknown severity.
+              assertEquals(
+                  PRINTER_ICON_GREEN,
+                  getIconString(dropdown, destination9.key));
+            });
+      });
+
+  /**
+   * Verifies icon contains expected color depending on destination's
+   * computed printer status reason from `getStatusReasonFromPrinterStatus`
+   * when `isPrintPreviewSetupAssistanceEnabled` flag on.
+   */
+  test(
+      printer_status_test_cros.TestNames.PrinterStatusUpdatesColor_FlagOn,
+      function() {
+        loadTimeData.overrideValues({
+          isPrintPreviewSetupAssistanceEnabled: true,
+        });
+        const destination1 =
+            createDestination('ID1', 'One', DestinationOrigin.CROS);
+        const destination2 =
+            createDestination('ID2', 'Two', DestinationOrigin.CROS);
+        const destination3 =
+            createDestination('ID3', 'Three', DestinationOrigin.CROS);
+        const destination4 =
+            createDestination('ID4', 'Four', DestinationOrigin.CROS);
+        const destination5 =
+            createDestination('ID5', 'Five', DestinationOrigin.CROS);
+        const destination6 =
+            createDestination('ID6', 'Six', DestinationOrigin.CROS);
+        const destination7 =
+            createDestination('ID7', 'Seven', DestinationOrigin.CROS);
+        const destination8 =
+            createDestination('ID8', 'Eight', DestinationOrigin.CROS);
+        const destination9 =
+            createDestination('ID9', 'Nine', DestinationOrigin.CROS);
+
+        return waitBeforeNextRender(destinationSelect)
+            .then(() => {
+              const whenStatusRequestsDone =
+                  nativeLayerCros.waitForMultiplePrinterStatusRequests(9);
+
+              destinationSelect.recentDestinationList = [
+                destination1,
+                destination2,
+                destination3,
+                destination4,
+                destination5,
+                destination6,
+                destination7,
+                destination8,
+                destination9,
+              ];
+
+              return whenStatusRequestsDone;
+            })
+            .then(() => {
+              return waitBeforeNextRender(destinationSelect);
+            })
+            .then(() => {
+              const dropdown = destinationSelect.$.dropdown;
+
+              // Empty printer status.
+              assertEquals(
+                  PRINTER_ICON_GREEN,
+                  getIconString(dropdown, destination1.key));
+
+              // Error printer status with unknown severity.
+              assertEquals(
+                  PRINTER_ICON_GREEN,
+                  getIconString(dropdown, destination2.key));
+
+              // Error printer status with report severity.
+              assertEquals(
+                  PRINTER_ICON_GREEN,
+                  getIconString(dropdown, destination3.key));
+
+              // Error printer status with warning severity.
+              assertEquals(
+                  PRINTER_ICON_ORANGE,
                   getIconString(dropdown, destination4.key));
 
               // Error printer status with error severity.
               assertEquals(
-                  'print-preview:printer-status-red',
+                  PRINTER_ICON_ORANGE,
                   getIconString(dropdown, destination5.key));
 
               // Error printer status with unknown severity + error printer
               // status with error severity.
               assertEquals(
-                  'print-preview:printer-status-red',
+                  PRINTER_ICON_ORANGE,
                   getIconString(dropdown, destination6.key));
 
               // Error printer status with unknown severity + error printer
               // status with report severity.
               assertEquals(
-                  'print-preview:printer-status-green',
+                  PRINTER_ICON_GREEN,
                   getIconString(dropdown, destination7.key));
 
               // Unknown reason printer status with error severity.
               assertEquals(
-                  'print-preview:printer-status-grey',
+                  PRINTER_ICON_GREEN,
                   getIconString(dropdown, destination8.key));
 
               // Unknown reason printer status with unknown severity.
               assertEquals(
-                  'print-preview:printer-status-green',
+                  PRINTER_ICON_GREEN,
                   getIconString(dropdown, destination9.key));
             });
       });
 
-  test(
-      printer_status_test_cros.TestNames.SendStatusRequestOnce, function() {
-        return waitBeforeNextRender(destinationSelect).then(() => {
-          const destination1 =
-              createDestination('ID1', 'One', DestinationOrigin.CROS);
-          const destination2 =
-              createDestination('ID2', 'Two', DestinationOrigin.CROS);
+  test(printer_status_test_cros.TestNames.SendStatusRequestOnce, function() {
+    return waitBeforeNextRender(destinationSelect).then(() => {
+      const destination1 =
+          createDestination('ID1', 'One', DestinationOrigin.CROS);
+      const destination2 =
+          createDestination('ID2', 'Two', DestinationOrigin.CROS);
 
-          destinationSelect.recentDestinationList = [
-            destination1,
-            destination2,
-            createDestination('ID3', 'Three', DestinationOrigin.EXTENSION),
-            createDestination('ID4', 'Four', DestinationOrigin.EXTENSION),
-          ];
-          assertEquals(
-              2, nativeLayerCros.getCallCount('requestPrinterStatusUpdate'));
+      destinationSelect.recentDestinationList = [
+        destination1,
+        destination2,
+        createDestination('ID3', 'Three', DestinationOrigin.EXTENSION),
+        createDestination('ID4', 'Four', DestinationOrigin.EXTENSION),
+      ];
+      assertEquals(
+          2, nativeLayerCros.getCallCount('requestPrinterStatusUpdate'));
 
-          // Update list with 2 existing destinations and one new destination.
-          // Make sure the requestPrinterStatusUpdate only gets called for the
-          // new destination.
-          destinationSelect.recentDestinationList = [
-            destination1,
-            destination2,
-            createDestination('ID5', 'Five', DestinationOrigin.CROS),
-          ];
-          assertEquals(
-              3, nativeLayerCros.getCallCount('requestPrinterStatusUpdate'));
-        });
-      });
+      // Update list with 2 existing destinations and one new destination.
+      // Make sure the requestPrinterStatusUpdate only gets called for the
+      // new destination.
+      destinationSelect.recentDestinationList = [
+        destination1,
+        destination2,
+        createDestination('ID5', 'Five', DestinationOrigin.CROS),
+      ];
+      assertEquals(
+          3, nativeLayerCros.getCallCount('requestPrinterStatusUpdate'));
+    });
+  });
 
   test(printer_status_test_cros.TestNames.HiddenStatusText, function() {
     const destinationStatus =
@@ -359,8 +482,7 @@ suite(printer_status_test_cros.suiteName, function() {
 
       destinationSelect.destination = localCrosPrinter;
       destinationSelect.updateDestination();
-      assertEquals(
-          'print-preview:printer-status-grey', dropdown.destinationIcon);
+      assertEquals(PRINTER_ICON_GREY, dropdown.destinationIcon);
 
       destinationSelect.destination = localNonCrosPrinter;
       destinationSelect.updateDestination();
@@ -400,8 +522,7 @@ suite(printer_status_test_cros.suiteName, function() {
         return whenStatusRequestsDonePromise
             .then(() => {
               assertEquals(
-                  'print-preview:printer-status-grey',
-                  getIconString(dropdown, destination.key));
+                  PRINTER_ICON_GREY, getIconString(dropdown, destination.key));
               assertEquals(
                   0,
                   nativeLayerCros.getCallCount(
@@ -414,8 +535,7 @@ suite(printer_status_test_cros.suiteName, function() {
                   2,
                   nativeLayerCros.getCallCount('requestPrinterStatusUpdate'));
               assertEquals(
-                  'print-preview:printer-status-green',
-                  getIconString(dropdown, destination.key));
+                  PRINTER_ICON_GREEN, getIconString(dropdown, destination.key));
               assertEquals(
                   1,
                   nativeLayerCros.getCallCount(
@@ -425,5 +545,109 @@ suite(printer_status_test_cros.suiteName, function() {
                   nativeLayerCros.getArgs(
                       'recordPrinterStatusRetrySuccessHistogram')[0]);
             });
+      });
+
+  test(
+      printer_status_test_cros.TestNames.StatusTextClass_FlagOff,
+      async function() {
+        loadTimeData.overrideValues({
+          isPrintPreviewSetupAssistanceEnabled: false,
+        });
+
+        const destinationStatus =
+            destinationSelect.shadowRoot!.querySelector<HTMLElement>(
+                '.destination-additional-info')!;
+        await waitBeforeNextRender(destinationSelect);
+        const destinationWithoutErrorStatus =
+            createDestination('ID1', 'One', DestinationOrigin.CROS);
+        const destinationWithErrorStatus1 =
+            createDestination('ID4', 'Four', DestinationOrigin.CROS);
+        const destinationWithErrorStatus2 =
+            createDestination('ID10', 'Ten', DestinationOrigin.CROS);
+        destinationSelect.recentDestinationList = [
+          destinationWithoutErrorStatus,
+          destinationWithErrorStatus1,
+          destinationWithErrorStatus2,
+        ];
+
+        // Destination with ID1 will not have an error status shown.
+        destinationSelect.destination = destinationWithoutErrorStatus;
+        await destinationSelect.destination.requestPrinterStatus();
+        await waitBeforeNextRender(destinationSelect);
+
+        const statusText: HTMLElement =
+            destinationStatus.querySelector<HTMLElement>('#statusText')!;
+        const destinationStatusClass = 'destination-status';
+
+        assertEquals(destinationStatusClass, statusText.className.trim());
+
+        // Destination with ID4 will return an error printer status that will
+        // trigger the error text being populated.
+        destinationSelect.destination = destinationWithErrorStatus1;
+        await destinationSelect.destination.requestPrinterStatus();
+        await waitBeforeNextRender(destinationSelect);
+
+        assertEquals(destinationStatusClass, statusText.className.trim());
+
+        // Destination with ID10 will return an error printer status that will
+        // trigger the error text being populated.
+        destinationSelect.destination = destinationWithErrorStatus2;
+        await destinationSelect.destination.requestPrinterStatus();
+        await waitBeforeNextRender(destinationSelect);
+
+        assertEquals(destinationStatusClass, statusText.className.trim());
+      });
+
+  test(
+      printer_status_test_cros.TestNames.StatusTextClass_FlagOn,
+      async function() {
+        loadTimeData.overrideValues({
+          isPrintPreviewSetupAssistanceEnabled: true,
+        });
+
+        const destinationStatus =
+            destinationSelect.shadowRoot!.querySelector<HTMLElement>(
+                '.destination-additional-info')!;
+        await waitBeforeNextRender(destinationSelect);
+        const destinationWithoutErrorStatus =
+            createDestination('ID1', 'One', DestinationOrigin.CROS);
+        const destinationWithErrorStatus1 =
+            createDestination('ID4', 'Four', DestinationOrigin.CROS);
+        const destinationWithErrorStatus2 =
+            createDestination('ID10', 'Ten', DestinationOrigin.CROS);
+        destinationSelect.recentDestinationList = [
+          destinationWithoutErrorStatus,
+          destinationWithErrorStatus1,
+          destinationWithErrorStatus2,
+        ];
+
+        // Destination with ID1 will not have an error status shown.
+        destinationSelect.destination = destinationWithoutErrorStatus;
+        destinationSelect.updateDestination();
+        await destinationSelect.destination.requestPrinterStatus();
+        await waitBeforeNextRender(destinationSelect);
+
+        const statusText: HTMLElement =
+            destinationStatus.querySelector<HTMLElement>('#statusText')!;
+        assertEquals('destination-status', statusText.className.trim());
+
+        // Destination with ID4 will return an error printer status that will
+        // trigger the error text being populated with status-orange class.
+        destinationSelect.destination = destinationWithErrorStatus1;
+        await destinationSelect.destination.requestPrinterStatus();
+        await waitBeforeNextRender(destinationSelect);
+
+        assertTrue(
+            statusText.classList.contains('status-orange'), 'contains orange');
+
+        // Destination with ID10 will return an error printer status that will
+        // trigger the error text being populated with status-red class
+        destinationSelect.destination = destinationWithErrorStatus2;
+        await destinationSelect.destination.requestPrinterStatus();
+        await waitBeforeNextRender(destinationSelect);
+
+        assertTrue(
+            statusText.classList.contains('status-red'),
+            `contains red: ${statusText.className}`);
       });
 });

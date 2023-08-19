@@ -11,66 +11,21 @@ import("//build/config/dcheck_always_on.gni")
 buildflag_header("buildflags") {
   header = "buildflags.h"
 
-  assert(use_allocator_shim || !use_partition_alloc_as_malloc,
-         "PartitionAlloc-Everywhere requires the allocator shim")
-
-  flags = [
-    "USE_ALLOCATOR_SHIM=$use_allocator_shim",
-
-    "USE_PARTITION_ALLOC_AS_GWP_ASAN_STORE=$enable_backup_ref_ptr_support",
-  ]
+  flags =
+      [ "USE_PARTITION_ALLOC_AS_GWP_ASAN_STORE=$enable_backup_ref_ptr_support" ]
 }
 
 if (is_apple) {
-  source_set("early_zone_registration_mac") {
+  source_set("early_zone_registration_apple") {
     sources = [
-      "early_zone_registration_mac.cc",
-      "early_zone_registration_mac.h",
+      "early_zone_registration_apple.cc",
+      "early_zone_registration_apple.h",
+      "partition_allocator/shim/early_zone_registration_constants.h",
     ]
 
     deps = [
       ":buildflags",
       "//base/allocator/partition_allocator:buildflags",
     ]
-  }
-}
-
-# Used to shim malloc symbols on Android. see //base/allocator/README.md.
-config("wrap_malloc_symbols") {
-  ldflags = [
-    "-Wl,-wrap,calloc",
-    "-Wl,-wrap,free",
-    "-Wl,-wrap,malloc",
-    "-Wl,-wrap,memalign",
-    "-Wl,-wrap,posix_memalign",
-    "-Wl,-wrap,pvalloc",
-    "-Wl,-wrap,realloc",
-    "-Wl,-wrap,valloc",
-
-    # Not allocating memory, but part of the API
-    "-Wl,-wrap,malloc_usable_size",
-
-    # <stdlib.h> functions
-    "-Wl,-wrap,realpath",
-
-    # <string.h> functions
-    "-Wl,-wrap,strdup",
-    "-Wl,-wrap,strndup",
-
-    # <unistd.h> functions
-    "-Wl,-wrap,getcwd",
-
-    # <stdio.h> functions
-    "-Wl,-wrap,asprintf",
-    "-Wl,-wrap,vasprintf",
-  ]
-}
-
-config("mac_no_default_new_delete_symbols") {
-  if (!is_component_build) {
-    # This is already set when we compile libc++, see
-    # buildtools/third_party/libc++/BUILD.gn. But it needs to be set here as well,
-    # since the shim defines the symbols, to prevent them being exported.
-    cflags = [ "-fvisibility-global-new-delete-hidden" ]
   }
 }

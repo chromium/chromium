@@ -58,17 +58,18 @@ const mojoResponseHandler: ProxyHandler<MojoEndpoint> = {
 /**
  * Closes the given mojo endpoint once the page is unloaded.
  * Reference b/176139064.
- *
- * @param endpoint The mojo endpoint.
  */
 function closeWhenUnload(endpoint: MojoEndpoint) {
   addUnloadCallback(() => closeEndpoint(endpoint));
 }
 
 /**
- * Returns a mojo |endpoint| and returns a proxy of it.
+ * Returns a proxy of |endpoint|.
  *
- * @return The proxy of the given endpoint.
+ * The |endpoint| is automatically closed on window unload.
+ * Note that the methods on the returned proxy will not be resolved after unload
+ * event on window is triggered to avoid race condition during the window
+ * unloading.
  */
 export function wrapEndpoint<T extends MojoEndpoint>(endpoint: T): T {
   closeWhenUnload(endpoint);
@@ -79,7 +80,7 @@ export function wrapEndpoint<T extends MojoEndpoint>(endpoint: T): T {
 }
 
 /**
- * Returns the target mojo endpoint.
+ * Closes the target mojo |endpoint|.
  */
 export function closeEndpoint(endpoint: MojoEndpoint): void {
   endpoint.$.close();

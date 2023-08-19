@@ -6,40 +6,36 @@
 
 #import <memory>
 
+#import "base/feature_list.h"
 #import "base/metrics/histogram_functions.h"
 #import "base/metrics/histogram_macros.h"
 #import "base/metrics/user_metrics.h"
 #import "base/metrics/user_metrics_action.h"
+#import "base/notreached.h"
 #import "base/strings/sys_string_conversions.h"
 #import "components/prefs/pref_service.h"
 #import "components/signin/public/base/signin_metrics.h"
+#import "components/sync/base/features.h"
+#import "components/sync/service/sync_user_settings.h"
 #import "ios/chrome/browser/discover_feed/feed_constants.h"
-#import "ios/chrome/browser/flags/system_flags.h"
-#import "ios/chrome/browser/shared/coordinator/scene/scene_state.h"
-#import "ios/chrome/browser/shared/coordinator/scene/scene_state_browser_agent.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
 #import "ios/chrome/browser/shared/public/commands/application_commands.h"
 #import "ios/chrome/browser/shared/public/commands/show_signin_command.h"
+#import "ios/chrome/browser/shared/public/features/features.h"
+#import "ios/chrome/browser/shared/public/features/system_flags.h"
 #import "ios/chrome/browser/signin/authentication_service.h"
 #import "ios/chrome/browser/signin/chrome_account_manager_service.h"
 #import "ios/chrome/browser/signin/chrome_account_manager_service_observer_bridge.h"
 #import "ios/chrome/browser/signin/system_identity.h"
-#import "ios/chrome/browser/ui/authentication/authentication_flow.h"
+#import "ios/chrome/browser/sync/sync_observer_bridge.h"
 #import "ios/chrome/browser/ui/authentication/cells/signin_promo_view_configurator.h"
 #import "ios/chrome/browser/ui/authentication/cells/signin_promo_view_consumer.h"
 #import "ios/chrome/browser/ui/authentication/signin/signin_coordinator.h"
 #import "ios/chrome/browser/ui/authentication/signin/signin_utils.h"
 #import "ios/chrome/browser/ui/authentication/signin_presenter.h"
-#import "ios/chrome/browser/ui/authentication/unified_consent/identity_chooser/identity_chooser_coordinator.h"
-#import "ios/chrome/browser/ui/authentication/unified_consent/identity_chooser/identity_chooser_coordinator_delegate.h"
 #import "ios/chrome/browser/ui/ntp/new_tab_page_feature.h"
-#import "ios/chrome/browser/ui/scoped_ui_blocker/scoped_ui_blocker.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ui/base/l10n/l10n_util.h"
-
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
 
 namespace {
 
@@ -78,7 +74,6 @@ bool IsSupportedAccessPoint(signin_metrics::AccessPoint access_point) {
     case signin_metrics::AccessPoint::ACCESS_POINT_USER_MANAGER:
     case signin_metrics::AccessPoint::ACCESS_POINT_DEVICES_PAGE:
     case signin_metrics::AccessPoint::ACCESS_POINT_CLOUD_PRINT:
-    case signin_metrics::AccessPoint::ACCESS_POINT_CONTENT_AREA:
     case signin_metrics::AccessPoint::ACCESS_POINT_SIGNIN_PROMO:
     case signin_metrics::AccessPoint::ACCESS_POINT_UNKNOWN:
     case signin_metrics::AccessPoint::ACCESS_POINT_PASSWORD_BUBBLE:
@@ -109,6 +104,8 @@ bool IsSupportedAccessPoint(signin_metrics::AccessPoint access_point) {
     case signin_metrics::AccessPoint::ACCESS_POINT_ACCOUNT_CONSISTENCY_SERVICE:
     case signin_metrics::AccessPoint::ACCESS_POINT_SEARCH_COMPANION:
     case signin_metrics::AccessPoint::ACCESS_POINT_SET_UP_LIST:
+    case signin_metrics::AccessPoint::
+        ACCESS_POINT_PASSWORD_MIGRATION_WARNING_ANDROID:
     case signin_metrics::AccessPoint::ACCESS_POINT_MAX:
       return false;
   }
@@ -155,7 +152,6 @@ void RecordImpressionsTilSigninButtonsHistogramForAccessPoint(
     case signin_metrics::AccessPoint::ACCESS_POINT_USER_MANAGER:
     case signin_metrics::AccessPoint::ACCESS_POINT_DEVICES_PAGE:
     case signin_metrics::AccessPoint::ACCESS_POINT_CLOUD_PRINT:
-    case signin_metrics::AccessPoint::ACCESS_POINT_CONTENT_AREA:
     case signin_metrics::AccessPoint::ACCESS_POINT_SIGNIN_PROMO:
     case signin_metrics::AccessPoint::ACCESS_POINT_UNKNOWN:
     case signin_metrics::AccessPoint::ACCESS_POINT_PASSWORD_BUBBLE:
@@ -189,6 +185,8 @@ void RecordImpressionsTilSigninButtonsHistogramForAccessPoint(
     case signin_metrics::AccessPoint::ACCESS_POINT_ACCOUNT_CONSISTENCY_SERVICE:
     case signin_metrics::AccessPoint::ACCESS_POINT_SEARCH_COMPANION:
     case signin_metrics::AccessPoint::ACCESS_POINT_SET_UP_LIST:
+    case signin_metrics::AccessPoint::
+        ACCESS_POINT_PASSWORD_MIGRATION_WARNING_ANDROID:
       NOTREACHED() << "Unexpected value for access point "
                    << static_cast<int>(access_point);
       break;
@@ -236,7 +234,6 @@ void RecordImpressionsTilDismissHistogramForAccessPoint(
     case signin_metrics::AccessPoint::ACCESS_POINT_USER_MANAGER:
     case signin_metrics::AccessPoint::ACCESS_POINT_DEVICES_PAGE:
     case signin_metrics::AccessPoint::ACCESS_POINT_CLOUD_PRINT:
-    case signin_metrics::AccessPoint::ACCESS_POINT_CONTENT_AREA:
     case signin_metrics::AccessPoint::ACCESS_POINT_SIGNIN_PROMO:
     case signin_metrics::AccessPoint::ACCESS_POINT_UNKNOWN:
     case signin_metrics::AccessPoint::ACCESS_POINT_PASSWORD_BUBBLE:
@@ -270,6 +267,8 @@ void RecordImpressionsTilDismissHistogramForAccessPoint(
     case signin_metrics::AccessPoint::ACCESS_POINT_ACCOUNT_CONSISTENCY_SERVICE:
     case signin_metrics::AccessPoint::ACCESS_POINT_SEARCH_COMPANION:
     case signin_metrics::AccessPoint::ACCESS_POINT_SET_UP_LIST:
+    case signin_metrics::AccessPoint::
+        ACCESS_POINT_PASSWORD_MIGRATION_WARNING_ANDROID:
       NOTREACHED() << "Unexpected value for access point "
                    << static_cast<int>(access_point);
       break;
@@ -317,7 +316,6 @@ void RecordImpressionsTilXButtonHistogramForAccessPoint(
     case signin_metrics::AccessPoint::ACCESS_POINT_USER_MANAGER:
     case signin_metrics::AccessPoint::ACCESS_POINT_DEVICES_PAGE:
     case signin_metrics::AccessPoint::ACCESS_POINT_CLOUD_PRINT:
-    case signin_metrics::AccessPoint::ACCESS_POINT_CONTENT_AREA:
     case signin_metrics::AccessPoint::ACCESS_POINT_SIGNIN_PROMO:
     case signin_metrics::AccessPoint::ACCESS_POINT_UNKNOWN:
     case signin_metrics::AccessPoint::ACCESS_POINT_PASSWORD_BUBBLE:
@@ -350,6 +348,8 @@ void RecordImpressionsTilXButtonHistogramForAccessPoint(
     case signin_metrics::AccessPoint::ACCESS_POINT_ACCOUNT_CONSISTENCY_SERVICE:
     case signin_metrics::AccessPoint::ACCESS_POINT_SEARCH_COMPANION:
     case signin_metrics::AccessPoint::ACCESS_POINT_SET_UP_LIST:
+    case signin_metrics::AccessPoint::
+        ACCESS_POINT_PASSWORD_MIGRATION_WARNING_ANDROID:
     case signin_metrics::AccessPoint::ACCESS_POINT_MAX:
       NOTREACHED() << "Unexpected value for access point "
                    << static_cast<int>(access_point);
@@ -382,7 +382,6 @@ const char* DisplayedCountPreferenceKey(
     case signin_metrics::AccessPoint::ACCESS_POINT_USER_MANAGER:
     case signin_metrics::AccessPoint::ACCESS_POINT_DEVICES_PAGE:
     case signin_metrics::AccessPoint::ACCESS_POINT_CLOUD_PRINT:
-    case signin_metrics::AccessPoint::ACCESS_POINT_CONTENT_AREA:
     case signin_metrics::AccessPoint::ACCESS_POINT_SIGNIN_PROMO:
     case signin_metrics::AccessPoint::ACCESS_POINT_UNKNOWN:
     case signin_metrics::AccessPoint::ACCESS_POINT_PASSWORD_BUBBLE:
@@ -418,6 +417,8 @@ const char* DisplayedCountPreferenceKey(
     case signin_metrics::AccessPoint::ACCESS_POINT_ACCOUNT_CONSISTENCY_SERVICE:
     case signin_metrics::AccessPoint::ACCESS_POINT_SEARCH_COMPANION:
     case signin_metrics::AccessPoint::ACCESS_POINT_SET_UP_LIST:
+    case signin_metrics::AccessPoint::
+        ACCESS_POINT_PASSWORD_MIGRATION_WARNING_ANDROID:
       return nullptr;
   }
 }
@@ -447,7 +448,6 @@ const char* AlreadySeenSigninViewPreferenceKey(
     case signin_metrics::AccessPoint::ACCESS_POINT_USER_MANAGER:
     case signin_metrics::AccessPoint::ACCESS_POINT_DEVICES_PAGE:
     case signin_metrics::AccessPoint::ACCESS_POINT_CLOUD_PRINT:
-    case signin_metrics::AccessPoint::ACCESS_POINT_CONTENT_AREA:
     case signin_metrics::AccessPoint::ACCESS_POINT_SIGNIN_PROMO:
     case signin_metrics::AccessPoint::ACCESS_POINT_UNKNOWN:
     case signin_metrics::AccessPoint::ACCESS_POINT_PASSWORD_BUBBLE:
@@ -483,6 +483,8 @@ const char* AlreadySeenSigninViewPreferenceKey(
     case signin_metrics::AccessPoint::ACCESS_POINT_ACCOUNT_CONSISTENCY_SERVICE:
     case signin_metrics::AccessPoint::ACCESS_POINT_SEARCH_COMPANION:
     case signin_metrics::AccessPoint::ACCESS_POINT_SET_UP_LIST:
+    case signin_metrics::AccessPoint::
+        ACCESS_POINT_PASSWORD_MIGRATION_WARNING_ANDROID:
       return nullptr;
   }
 }
@@ -490,12 +492,16 @@ const char* AlreadySeenSigninViewPreferenceKey(
 }  // namespace
 
 @interface SigninPromoViewMediator () <ChromeAccountManagerServiceObserver,
-                                       IdentityChooserCoordinatorDelegate>
+                                       SyncObserverModelBridge>
 
 // Redefined to be readwrite.
 @property(nonatomic, strong, readwrite) id<SystemIdentity> identity;
-@property(nonatomic, assign, readwrite, getter=isSigninInProgress)
-    BOOL signinInProgress;
+
+// YES if the sign-in flow is in progress.
+@property(nonatomic, assign, readwrite) BOOL signinInProgress;
+// YES if the initial sync for a specific data type is in progress. The data
+// type is based on `dataTypeToWaitForInitialSync`.
+@property(nonatomic, assign, readwrite) BOOL initialSyncInProgress;
 
 // Presenter which can show signin UI.
 @property(nonatomic, weak, readonly) id<SigninPresenter> presenter;
@@ -528,18 +534,12 @@ const char* AlreadySeenSigninViewPreferenceKey(
 @implementation SigninPromoViewMediator {
   std::unique_ptr<ChromeAccountManagerServiceObserverBridge>
       _accountManagerServiceObserver;
-  Browser* _browser;
   // View used to present sign-in UI.
   UIViewController* _baseViewController;
-  // Sign-in flow, used only when `self.signInOnly` is `YES`.
-  AuthenticationFlow* _authenticationFlow;
-  // Coordinator for the user to select an account.
-  IdentityChooserCoordinator* _identityChooserCoordinator;
-  // Coordinator to add an account.
-  SigninCoordinator* _signinCoordinator;
-  // TODO(crbug.com/1448830): This class should not need to block the UI.
-  // The UI blocker is only used in sign-in only cases.
-  std::unique_ptr<ScopedUIBlocker> _uiBlocker;
+  // Sync service.
+  syncer::SyncService* _syncService;
+  // Observer for changes to the sync state.
+  std::unique_ptr<SyncObserverBridge> _syncObserverBridge;
 }
 
 + (void)registerBrowserStatePrefs:(user_prefs::PrefRegistrySyncable*)registry {
@@ -623,28 +623,36 @@ const char* AlreadySeenSigninViewPreferenceKey(
   return YES;
 }
 
-- (instancetype)initWithBrowser:(Browser*)browser
-          accountManagerService:
-              (ChromeAccountManagerService*)accountManagerService
-                    authService:(AuthenticationService*)authService
-                    prefService:(PrefService*)prefService
-                    accessPoint:(signin_metrics::AccessPoint)accessPoint
-                      presenter:(id<SigninPresenter>)presenter
-             baseViewController:(UIViewController*)baseViewController {
+- (instancetype)
+    initWithAccountManagerService:
+        (ChromeAccountManagerService*)accountManagerService
+                      authService:(AuthenticationService*)authService
+                      prefService:(PrefService*)prefService
+                      syncService:(syncer::SyncService*)syncService
+                      accessPoint:(signin_metrics::AccessPoint)accessPoint
+                        presenter:(id<SigninPresenter>)presenter
+               baseViewController:(UIViewController*)baseViewController {
   self = [super init];
   if (self) {
     DCHECK(accountManagerService);
     DCHECK(IsSupportedAccessPoint(accessPoint));
-    _browser = browser;
     _accountManagerService = accountManagerService;
     _authService = authService;
     _prefService = prefService;
+    _syncService = syncService;
     _accessPoint = accessPoint;
+    _dataTypeToWaitForInitialSync = syncer::ModelType::UNSPECIFIED;
     _presenter = presenter;
     _baseViewController = baseViewController;
     _accountManagerServiceObserver =
         std::make_unique<ChromeAccountManagerServiceObserverBridge>(
             self, _accountManagerService);
+    // Starting the sync state observation enables the sign-in progress to be
+    // set to YES even if the user hasn't interacted with the promo. It is
+    // intentional to keep UX consistency, given the initial sync cancellation
+    // which should end the sign-in progress is tricky to detect.
+    _syncObserverBridge =
+        std::make_unique<SyncObserverBridge>(self, _syncService);
 
     id<SystemIdentity> defaultIdentity = [self defaultIdentity];
     if (defaultIdentity) {
@@ -655,7 +663,7 @@ const char* AlreadySeenSigninViewPreferenceKey(
 }
 
 - (void)dealloc {
-  DCHECK_EQ(ios::SigninPromoViewState::Invalid, _signinPromoViewState)
+  DCHECK_EQ(SigninPromoViewState::kInvalid, _signinPromoViewState)
       << base::SysNSStringToUTF8([self description]);
 }
 
@@ -677,7 +685,7 @@ const char* AlreadySeenSigninViewPreferenceKey(
                       userGivenName:self.identity.userGivenName
                           userImage:self.identityAvatar
                      hasCloseButton:hasCloseButton
-                   hasSignInSpinner:self.signinInProgress];
+                   hasSignInSpinner:self.showSpinner];
   }
   if (self.identity) {
     return [[SigninPromoViewConfigurator alloc]
@@ -686,7 +694,7 @@ const char* AlreadySeenSigninViewPreferenceKey(
                       userGivenName:self.identity.userGivenName
                           userImage:self.identityAvatar
                      hasCloseButton:hasCloseButton
-                   hasSignInSpinner:self.signinInProgress];
+                   hasSignInSpinner:self.showSpinner];
   }
   SigninPromoViewConfigurator* configurator =
       [[SigninPromoViewConfigurator alloc]
@@ -695,10 +703,15 @@ const char* AlreadySeenSigninViewPreferenceKey(
                         userGivenName:nil
                             userImage:nil
                        hasCloseButton:hasCloseButton
-                     hasSignInSpinner:self.signinInProgress];
-  if (self.signInOnly) {
-    configurator.primaryButtonTitleNoAccountsModeOverride =
-        l10n_util::GetNSString(IDS_IOS_CONSISTENCY_PROMO_SIGN_IN);
+                     hasSignInSpinner:self.showSpinner];
+  switch (self.signinPromoAction) {
+    case SigninPromoAction::kSync:
+      break;
+    case SigninPromoAction::kSigninSheet:
+    case SigninPromoAction::kInstantSignin:
+      configurator.primaryButtonTitleNoAccountsModeOverride =
+          l10n_util::GetNSString(IDS_IOS_CONSISTENCY_PROMO_SIGN_IN);
+      break;
   }
   return configurator;
 }
@@ -708,8 +721,8 @@ const char* AlreadySeenSigninViewPreferenceKey(
   if (self.signinPromoViewVisible) {
     return;
   }
-  if (self.signinPromoViewState == ios::SigninPromoViewState::NeverVisible) {
-    self.signinPromoViewState = ios::SigninPromoViewState::Unused;
+  if (self.signinPromoViewState == SigninPromoViewState::kNeverVisible) {
+    self.signinPromoViewState = SigninPromoViewState::kUnused;
   }
   self.signinPromoViewVisible = YES;
   signin_metrics::RecordSigninImpressionUserActionForAccessPoint(
@@ -757,21 +770,79 @@ const char* AlreadySeenSigninViewPreferenceKey(
   self.consumer = nil;
   self.accountManagerService = nullptr;
   self.authService = nullptr;
+  _syncService = nullptr;
   _accountManagerServiceObserver.reset();
+  _syncObserverBridge.reset();
 }
 
 #pragma mark - Public properties
 
 - (BOOL)isInvalidClosedOrNeverVisible {
   return self.invalidOrClosed ||
-         self.signinPromoViewState == ios::SigninPromoViewState::NeverVisible;
+         self.signinPromoViewState == SigninPromoViewState::kNeverVisible;
+}
+
+- (BOOL)showSpinner {
+  return self.signinInProgress || self.initialSyncInProgress;
 }
 
 #pragma mark - Private properties
 
 - (BOOL)isInvalidOrClosed {
-  return self.signinPromoViewState == ios::SigninPromoViewState::Closed ||
-         self.signinPromoViewState == ios::SigninPromoViewState::Invalid;
+  return self.signinPromoViewState == SigninPromoViewState::kClosed ||
+         self.signinPromoViewState == SigninPromoViewState::kInvalid;
+}
+
+// Sets the Chrome identity to display in the sign-in promo.
+- (void)setIdentity:(id<SystemIdentity>)identity {
+  _identity = identity;
+  if (!_identity) {
+    self.identityAvatar = nil;
+  } else {
+    self.identityAvatar =
+        self.accountManagerService->GetIdentityAvatarWithIdentity(
+            _identity, IdentityAvatarSize::SmallSize);
+  }
+}
+
+// Updates `_signinInProgress` value, and sends a notification the consumer
+// to update the sign-in promo, so the progress indicator can be displayed.
+- (void)setSigninInProgress:(BOOL)signinInProgress {
+  if (_signinInProgress == signinInProgress) {
+    return;
+  }
+  _signinInProgress = signinInProgress;
+  SigninPromoViewConfigurator* configurator = [self createConfigurator];
+  if ([self.consumer
+          respondsToSelector:@selector(promoProgressStateDidChange)]) {
+    [self.consumer promoProgressStateDidChange];
+  }
+  [self.consumer configureSigninPromoWithConfigurator:configurator
+                                      identityChanged:NO];
+}
+
+- (void)setInitialSyncInProgress:(BOOL)initialSyncInProgress {
+  if (_initialSyncInProgress == initialSyncInProgress) {
+    return;
+  }
+  _initialSyncInProgress = initialSyncInProgress;
+  SigninPromoViewConfigurator* configurator = [self createConfigurator];
+  if ([self.consumer
+          respondsToSelector:@selector(promoProgressStateDidChange)]) {
+    [self.consumer promoProgressStateDidChange];
+  }
+  [self.consumer configureSigninPromoWithConfigurator:configurator
+                                      identityChanged:NO];
+}
+
+- (void)setSigninPromoAction:(SigninPromoAction)signinPromoAction {
+  if (_signinPromoAction == signinPromoAction) {
+    return;
+  }
+  _signinPromoAction = signinPromoAction;
+  SigninPromoViewConfigurator* configurator = [self createConfigurator];
+  [self.consumer configureSigninPromoWithConfigurator:configurator
+                                      identityChanged:NO];
 }
 
 #pragma mark - Private
@@ -788,39 +859,16 @@ const char* AlreadySeenSigninViewPreferenceKey(
   return self.accountManagerService->GetDefaultIdentity();
 }
 
-// Sets the Chrome identity to display in the sign-in promo.
-- (void)setIdentity:(id<SystemIdentity>)identity {
-  _identity = identity;
-  if (!_identity) {
-    self.identityAvatar = nil;
-  } else {
-    self.identityAvatar =
-        self.accountManagerService->GetIdentityAvatarWithIdentity(
-            _identity, IdentityAvatarSize::SmallSize);
-  }
-}
-
 // Sends the update notification to the consummer if the signin-in is not in
 // progress. This is to avoid to update the sign-in promo view in the
 // background.
 - (void)sendConsumerNotificationWithIdentityChanged:(BOOL)identityChanged {
-  if (self.signinInProgress)
+  if (self.showSpinner) {
     return;
+  }
   SigninPromoViewConfigurator* configurator = [self createConfigurator];
   [self.consumer configureSigninPromoWithConfigurator:configurator
                                       identityChanged:identityChanged];
-}
-
-// Updates `_signinInProgress` value, and sends a notification the consumer
-// to update the sign-in promo, so the progress indicator can be displayed.
-- (void)setSigninInProgress:(BOOL)signinInProgress {
-  if (_signinInProgress == signinInProgress) {
-    return;
-  }
-  _signinInProgress = signinInProgress;
-  SigninPromoViewConfigurator* configurator = [self createConfigurator];
-  [self.consumer configureSigninPromoWithConfigurator:configurator
-                                      identityChanged:NO];
 }
 
 // Records in histogram, the number of time the sign-in promo is displayed
@@ -840,13 +888,17 @@ const char* AlreadySeenSigninViewPreferenceKey(
 }
 
 // Finishes the sign-in process.
-- (void)signinCallback {
-  if (self.signinPromoViewState == ios::SigninPromoViewState::Invalid) {
+- (void)signinCallbackWithResult:(SigninCoordinatorResult)result {
+  if (self.signinPromoViewState == SigninPromoViewState::kInvalid) {
     // The mediator owner can remove the view before the sign-in is done.
     return;
   }
-  DCHECK_EQ(ios::SigninPromoViewState::UsedAtLeastOnce,
-            self.signinPromoViewState)
+  // We can turn on `self.initialSyncInProgress`, if the sign-in is successful.
+  // We can't call now GetTypesWithPendingDownloadForInitialSync() related to
+  // a post task issue.
+  self.initialSyncInProgress = (result == SigninCoordinatorResultSuccess) &&
+                               [self shouldWaitForInitialSync];
+  DCHECK_EQ(SigninPromoViewState::kUsedAtLeastOnce, self.signinPromoViewState)
       << base::SysNSStringToUTF8([self description]);
   DCHECK(self.signinInProgress) << base::SysNSStringToUTF8([self description]);
   self.signinInProgress = NO;
@@ -854,8 +906,9 @@ const char* AlreadySeenSigninViewPreferenceKey(
 
 // Starts sign-in process with the Chrome identity from `identity`.
 - (void)showSigninWithIdentity:(id<SystemIdentity>)identity
+                     operation:(AuthenticationOperation)operation
                    promoAction:(signin_metrics::PromoAction)promoAction {
-  self.signinPromoViewState = ios::SigninPromoViewState::UsedAtLeastOnce;
+  self.signinPromoViewState = SigninPromoViewState::kUsedAtLeastOnce;
   self.signinInProgress = YES;
   __weak SigninPromoViewMediator* weakSelf = self;
   // This mediator might be removed before the sign-in callback is invoked.
@@ -863,134 +916,40 @@ const char* AlreadySeenSigninViewPreferenceKey(
   // To make sure -[<SigninPromoViewConsumer> signinDidFinish], we have to save
   // in a variable and not get it from weakSelf (that might not exist anymore).
   __weak id<SigninPromoViewConsumer> weakConsumer = self.consumer;
-  ShowSigninCommandCompletionCallback completion = ^(BOOL succeeded) {
-    [weakSelf signinCallback];
-    if ([weakConsumer respondsToSelector:@selector(signinDidFinish)])
-      [weakConsumer signinDidFinish];
-  };
+  ShowSigninCommandCompletionCallback completion =
+      ^(SigninCoordinatorResult result, SigninCompletionInfo* completionInfo) {
+        [weakSelf signinCallbackWithResult:result];
+        if ([weakConsumer respondsToSelector:@selector(signinDidFinish)]) {
+          [weakConsumer signinDidFinish];
+        }
+      };
   if ([self.consumer respondsToSelector:@selector
                      (signinPromoViewMediator:shouldOpenSigninWithIdentity
                                                 :promoAction:completion:)]) {
+    CHECK(!base::FeatureList::IsEnabled(kHideSettingsSyncPromo));
     [self.consumer signinPromoViewMediator:self
               shouldOpenSigninWithIdentity:identity
                                promoAction:promoAction
                                 completion:completion];
   } else {
-    ShowSigninCommand* command = [[ShowSigninCommand alloc]
-        initWithOperation:AuthenticationOperationSigninAndSync
-                 identity:identity
-              accessPoint:self.accessPoint
-              promoAction:promoAction
-                 callback:completion];
+    ShowSigninCommand* command =
+        [[ShowSigninCommand alloc] initWithOperation:operation
+                                            identity:identity
+                                         accessPoint:self.accessPoint
+                                         promoAction:promoAction
+                                            callback:completion];
     [self.presenter showSignin:command];
-  }
-}
-
-// Triggers the primary action when `signInOnly` is at YES: starts sign-in flow.
-- (void)primaryActionForSignInOnly {
-  DCHECK(self.signInOnly) << base::SysNSStringToUTF8([self description]);
-  SceneState* sceneState =
-      SceneStateBrowserAgent::FromBrowser(_browser)->GetSceneState();
-  _uiBlocker = std::make_unique<ScopedUIBlocker>(sceneState);
-  signin_metrics::RecordSigninUserActionForAccessPoint(self.accessPoint);
-  self.signinPromoViewState = ios::SigninPromoViewState::UsedAtLeastOnce;
-  self.signinInProgress = YES;
-  [self startSignInOnlyFlow];
-}
-
-// Triggers the secondary action when `signInOnly` is at YES: starts the
-// add account dialog.
-- (void)secondaryActionForSignInOnly {
-  DCHECK(self.signInOnly) << base::SysNSStringToUTF8([self description]);
-  SceneState* sceneState =
-      SceneStateBrowserAgent::FromBrowser(_browser)->GetSceneState();
-  _uiBlocker = std::make_unique<ScopedUIBlocker>(sceneState);
-  signin_metrics::RecordSigninUserActionForAccessPoint(self.accessPoint);
-  self.signinPromoViewState = ios::SigninPromoViewState::UsedAtLeastOnce;
-  self.signinInProgress = YES;
-  _identityChooserCoordinator = [[IdentityChooserCoordinator alloc]
-      initWithBaseViewController:_baseViewController
-                         browser:_browser];
-  _identityChooserCoordinator.delegate = self;
-  [_identityChooserCoordinator start];
-}
-
-// Starts the sign-in only flow.
-- (void)startSignInOnlyFlow {
-  signin_metrics::RecordSigninUserActionForAccessPoint(self.accessPoint);
-  _authenticationFlow = [[AuthenticationFlow alloc]
-               initWithBrowser:_browser
-                      identity:self.identity
-                   accessPoint:self.accessPoint
-              postSignInAction:PostSignInAction::
-                                   kEnableBookmarkReadingListAccountStorage
-      presentingViewController:_baseViewController];
-  __weak id<SigninPromoViewConsumer> weakConsumer = self.consumer;
-  __weak __typeof(self) weakSelf = self;
-  [_authenticationFlow startSignInWithCompletion:^(BOOL success) {
-    [weakSelf signInFlowCompletedForSignInOnly];
-    if ([weakConsumer respondsToSelector:@selector(signinDidFinish)]) {
-      [weakConsumer signinDidFinish];
-    }
-  }];
-}
-
-// Called when the sign-in flow is over. This method should only be called
-// when this is a sign-in only flow.
-- (void)signInFlowCompletedForSignInOnly {
-  DCHECK(self.signInOnly) << base::SysNSStringToUTF8([self description]);
-  _uiBlocker.reset();
-  self.signinInProgress = NO;
-}
-
-- (void)startAddAccountForSignInOnly {
-  DCHECK(!_signinCoordinator)
-      << base::SysNSStringToUTF8([_signinCoordinator description]) << " "
-      << base::SysNSStringToUTF8([self description]);
-  DCHECK(self.signInOnly) << base::SysNSStringToUTF8([self description]);
-  SceneState* sceneState =
-      SceneStateBrowserAgent::FromBrowser(_browser)->GetSceneState();
-  _uiBlocker = std::make_unique<ScopedUIBlocker>(sceneState);
-  self.signinPromoViewState = ios::SigninPromoViewState::UsedAtLeastOnce;
-  self.signinInProgress = YES;
-  _signinCoordinator = [SigninCoordinator
-      addAccountCoordinatorWithBaseViewController:_baseViewController
-                                          browser:_browser
-                                      accessPoint:_accessPoint];
-  __weak __typeof(self) weakSelf = self;
-  _signinCoordinator.signinCompletion =
-      ^(SigninCoordinatorResult result, SigninCompletionInfo* info) {
-        [weakSelf addAccountDoneWithResult:result info:info];
-      };
-  [_signinCoordinator start];
-}
-
-- (void)addAccountDoneWithResult:(SigninCoordinatorResult)result
-                            info:(SigninCompletionInfo*)info {
-  DCHECK(_signinCoordinator) << base::SysNSStringToUTF8([self description]);
-  _signinCoordinator = nil;
-  switch (result) {
-    case SigninCoordinatorResultSuccess:
-      self.identity = info.identity;
-      [self startSignInOnlyFlow];
-      break;
-    case SigninCoordinatorResultInterrupted:
-    case SigninCoordinatorResultCanceledByUser:
-      _uiBlocker.reset();
-      self.signinInProgress = NO;
-      break;
   }
 }
 
 // Changes the promo view state, and records the metrics.
 - (void)signinPromoViewIsRemoved {
-  DCHECK_NE(ios::SigninPromoViewState::Invalid, self.signinPromoViewState)
+  DCHECK_NE(SigninPromoViewState::kInvalid, self.signinPromoViewState)
       << base::SysNSStringToUTF8([self description]);
   BOOL wasNeverVisible =
-      self.signinPromoViewState == ios::SigninPromoViewState::NeverVisible;
-  BOOL wasUnused =
-      self.signinPromoViewState == ios::SigninPromoViewState::Unused;
-  self.signinPromoViewState = ios::SigninPromoViewState::Invalid;
+      self.signinPromoViewState == SigninPromoViewState::kNeverVisible;
+  BOOL wasUnused = self.signinPromoViewState == SigninPromoViewState::kUnused;
+  self.signinPromoViewState = SigninPromoViewState::kInvalid;
   self.signinPromoViewVisible = NO;
   if (wasNeverVisible)
     return;
@@ -1005,12 +964,37 @@ const char* AlreadySeenSigninViewPreferenceKey(
   // If the sign-in view is removed when the user is authenticated, then the
   // sign-in for sync has been done by another view, and this mediator cannot be
   // counted as being dismissed.
+  // TODO(crbug.com/1462858): Once new sync opt-ins are deprecated this usage
+  // of kSync will become obsolete. Delete this code after phase 2.
   if (self.authService->HasPrimaryIdentity(signin::ConsentLevel::kSync))
     return;
   int displayedCount =
       self.prefService->GetInteger(displayedCountPreferenceKey);
   RecordImpressionsTilDismissHistogramForAccessPoint(self.accessPoint,
                                                      displayedCount);
+}
+
+// Whether the sign-in needs to wait for the end of the initial sync to
+// complete.
+- (BOOL)shouldWaitForInitialSync {
+  return self.dataTypeToWaitForInitialSync != syncer::ModelType::UNSPECIFIED;
+}
+
+- (void)optInBookmarkReadingListAccountStorage {
+  bool bookmarksAccountStorageEnabled =
+      base::FeatureList::IsEnabled(syncer::kEnableBookmarksAccountStorage);
+  bool dualReadingListModelEnabled = base::FeatureList::IsEnabled(
+      syncer::kReadingListEnableDualReadingListModel);
+  bool readingListTransportUponSignInEnabled = base::FeatureList::IsEnabled(
+      syncer::kReadingListEnableSyncTransportModeUponSignIn);
+  CHECK(bookmarksAccountStorageEnabled ||
+        (dualReadingListModelEnabled && readingListTransportUponSignInEnabled))
+      << "bookmarksAccountStorageEnabled: " << bookmarksAccountStorageEnabled
+      << ", dualReadingListModelEnabled: " << dualReadingListModelEnabled
+      << ", readingListTransportUponSignInEnabled: "
+      << readingListTransportUponSignInEnabled;
+  _syncService->GetUserSettings()
+      ->SetBookmarksAndReadingListAccountStorageOptIn(true);
 }
 
 #pragma mark - ChromeAccountManagerServiceObserver
@@ -1047,14 +1031,26 @@ const char* AlreadySeenSigninViewPreferenceKey(
   // On iOS, the promo does not have a button to add and account when there is
   // already an account on the device. That flow goes through the NOT_DEFAULT
   // promo instead. Always use the NO_EXISTING_ACCOUNT variant.
-  signin_metrics::PromoAction promo_action =
+  signin_metrics::PromoAction promoAction =
       signin_metrics::PromoAction::PROMO_ACTION_NEW_ACCOUNT_NO_EXISTING_ACCOUNT;
   signin_metrics::RecordSigninUserActionForAccessPoint(self.accessPoint);
-  if (self.signInOnly) {
-    [self startAddAccountForSignInOnly];
-    return;
+  switch (self.signinPromoAction) {
+    case SigninPromoAction::kInstantSignin:
+      [self showSigninWithIdentity:nil
+                         operation:AuthenticationOperation::kInstantSignin
+                       promoAction:promoAction];
+      return;
+    case SigninPromoAction::kSync:
+      [self showSigninWithIdentity:nil
+                         operation:AuthenticationOperation::kSigninAndSync
+                       promoAction:promoAction];
+      return;
+    case SigninPromoAction::kSigninSheet:
+      [self showSigninWithIdentity:nil
+                         operation:AuthenticationOperation::kSigninOnly
+                       promoAction:promoAction];
+      return;
   }
-  [self showSigninWithIdentity:nil promoAction:promo_action];
 }
 
 - (void)signinPromoViewDidTapSigninWithDefaultAccount:
@@ -1065,13 +1061,26 @@ const char* AlreadySeenSigninViewPreferenceKey(
   DCHECK(!self.invalidClosedOrNeverVisible)
       << base::SysNSStringToUTF8([self description]);
   [self sendImpressionsTillSigninButtonsHistogram];
-  if (self.signInOnly) {
-    [self primaryActionForSignInOnly];
-    return;
+  switch (self.signinPromoAction) {
+    case SigninPromoAction::kInstantSignin:
+      [self showSigninWithIdentity:self.identity
+                         operation:AuthenticationOperation::kInstantSignin
+                       promoAction:signin_metrics::PromoAction::
+                                       PROMO_ACTION_WITH_DEFAULT];
+      return;
+    case SigninPromoAction::kSync:
+      [self showSigninWithIdentity:self.identity
+                         operation:AuthenticationOperation::kSigninAndSync
+                       promoAction:signin_metrics::PromoAction::
+                                       PROMO_ACTION_WITH_DEFAULT];
+      return;
+    case SigninPromoAction::kSigninSheet:
+      [self showSigninWithIdentity:nil
+                         operation:AuthenticationOperation::kSigninOnly
+                       promoAction:signin_metrics::PromoAction::
+                                       PROMO_ACTION_WITH_DEFAULT];
+      return;
   }
-  [self showSigninWithIdentity:self.identity
-                   promoAction:signin_metrics::PromoAction::
-                                   PROMO_ACTION_WITH_DEFAULT];
 }
 
 - (void)signinPromoViewDidTapSigninWithOtherAccount:
@@ -1083,13 +1092,27 @@ const char* AlreadySeenSigninViewPreferenceKey(
       << base::SysNSStringToUTF8([self description]);
   [self sendImpressionsTillSigninButtonsHistogram];
   signin_metrics::RecordSigninUserActionForAccessPoint(self.accessPoint);
-  if (self.signInOnly) {
-    [self secondaryActionForSignInOnly];
-    return;
+
+  switch (self.signinPromoAction) {
+    case SigninPromoAction::kInstantSignin:
+      [self showSigninWithIdentity:nil
+                         operation:AuthenticationOperation::kInstantSignin
+                       promoAction:signin_metrics::PromoAction::
+                                       PROMO_ACTION_NOT_DEFAULT];
+      return;
+    case SigninPromoAction::kSync:
+      [self showSigninWithIdentity:nil
+                         operation:AuthenticationOperation::kSigninAndSync
+                       promoAction:signin_metrics::PromoAction::
+                                       PROMO_ACTION_NOT_DEFAULT];
+      return;
+    case SigninPromoAction::kSigninSheet:
+      [self showSigninWithIdentity:nil
+                         operation:AuthenticationOperation::kSigninOnly
+                       promoAction:signin_metrics::PromoAction::
+                                       PROMO_ACTION_NOT_DEFAULT];
+      return;
   }
-  [self showSigninWithIdentity:nil
-                   promoAction:signin_metrics::PromoAction::
-                                   PROMO_ACTION_NOT_DEFAULT];
 }
 
 - (void)signinPromoViewCloseButtonWasTapped:(SigninPromoView*)view {
@@ -1101,7 +1124,7 @@ const char* AlreadySeenSigninViewPreferenceKey(
          self.accessPoint ==
              signin_metrics::AccessPoint::ACCESS_POINT_NTP_FEED_TOP_PROMO)
       << base::SysNSStringToUTF8([self description]);
-  self.signinPromoViewState = ios::SigninPromoViewState::Closed;
+  self.signinPromoViewState = SigninPromoViewState::kClosed;
   const char* alreadySeenSigninViewPreferenceKey =
       AlreadySeenSigninViewPreferenceKey(self.accessPoint);
   DCHECK(alreadySeenSigninViewPreferenceKey)
@@ -1121,55 +1144,27 @@ const char* AlreadySeenSigninViewPreferenceKey(
   }
 }
 
-#pragma mark - IdentityChooserCoordinatorDelegate
+#pragma mark - SyncObserverModelBridge
 
-- (void)identityChooserCoordinatorDidClose:
-    (IdentityChooserCoordinator*)coordinator {
-  // `_identityChooserCoordinator.delegate` was set to nil before calling this
-  // method since `identityChooserCoordinatorDidTapOnAddAccount:` or
-  // `identityChooserCoordinator:didSelectIdentity:` have been called before.
-  NOTREACHED() << base::SysNSStringToUTF8([self description]);
-}
-
-- (void)identityChooserCoordinatorDidTapOnAddAccount:
-    (IdentityChooserCoordinator*)coordinator {
-  DCHECK_EQ(coordinator, _identityChooserCoordinator)
-      << base::SysNSStringToUTF8([self description]);
-  _identityChooserCoordinator.delegate = nil;
-  [_identityChooserCoordinator stop];
-  _identityChooserCoordinator = nil;
-  [self startAddAccountForSignInOnly];
-}
-
-- (void)identityChooserCoordinator:(IdentityChooserCoordinator*)coordinator
-                 didSelectIdentity:(id<SystemIdentity>)identity {
-  DCHECK_EQ(coordinator, _identityChooserCoordinator)
-      << base::SysNSStringToUTF8([self description]);
-  _identityChooserCoordinator.delegate = nil;
-  [_identityChooserCoordinator stop];
-  _identityChooserCoordinator = nil;
-  if (!identity) {
-    self.signinInProgress = NO;
-    _uiBlocker.reset();
-    return;
-  }
-  self.identity = identity;
-  [_identityChooserCoordinator stop];
-  _identityChooserCoordinator = nil;
-  [self startSignInOnlyFlow];
+- (void)onSyncStateChanged {
+  self.initialSyncInProgress =
+      [self shouldWaitForInitialSync] &&
+      _syncService->GetTypesWithPendingDownloadForInitialSync().Has(
+          self.dataTypeToWaitForInitialSync);
 }
 
 #pragma mark - NSObject
 
 - (NSString*)description {
   return [NSString
-      stringWithFormat:@"<%@: %p, identity: %p, signinPromoViewState: %d, "
-                       @"signinInProgress: %d, accessPoint: %d, "
-                       @"signinPromoViewVisible: %d, invalidOrClosed %d>",
-                       self.class.description, self, self.identity,
-                       self.signinPromoViewState, self.signinInProgress,
-                       self.accessPoint, self.signinPromoViewVisible,
-                       self.invalidOrClosed];
+      stringWithFormat:
+          @"<%@: %p, identity: %p, signinPromoViewState: %d, "
+          @"signinInProgress: %d, initialSyncInProgress %d, accessPoint: %d, "
+          @"signinPromoViewVisible: %d, invalidOrClosed %d>",
+          self.class.description, self, self.identity,
+          static_cast<int>(self.signinPromoViewState), self.signinInProgress,
+          self.initialSyncInProgress, static_cast<int>(self.accessPoint),
+          self.signinPromoViewVisible, self.invalidOrClosed];
 }
 
 @end

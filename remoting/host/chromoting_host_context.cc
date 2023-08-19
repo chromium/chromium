@@ -6,8 +6,8 @@
 
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
-#include "base/memory/ptr_util.h"
 #include "base/message_loop/message_pump_type.h"
+#include "base/notreached.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/threading/thread_restrictions.h"
 #include "build/build_config.h"
@@ -21,11 +21,190 @@ namespace remoting {
 
 namespace {
 
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+class ChromotingHostContextChromeOs : public ChromotingHostContext {
+ public:
+  ChromotingHostContextChromeOs(
+      scoped_refptr<AutoThreadTaskRunner> ui_task_runner,
+      scoped_refptr<AutoThreadTaskRunner> audio_task_runner,
+      scoped_refptr<AutoThreadTaskRunner> file_task_runner,
+      scoped_refptr<AutoThreadTaskRunner> input_task_runner,
+      scoped_refptr<AutoThreadTaskRunner> network_task_runner,
+      scoped_refptr<AutoThreadTaskRunner> video_capture_task_runner,
+      scoped_refptr<AutoThreadTaskRunner> video_encode_task_runner,
+      scoped_refptr<network::SharedURLLoaderFactory> shared_url_loader_factory);
+
+  ChromotingHostContextChromeOs(const ChromotingHostContextChromeOs&) = delete;
+  ChromotingHostContextChromeOs& operator=(
+      const ChromotingHostContextChromeOs&) = delete;
+
+  ~ChromotingHostContextChromeOs() override;
+
+  // remoting::ChromotingHostContext implementation.
+  std::unique_ptr<ChromotingHostContext> Copy() override;
+  scoped_refptr<net::URLRequestContextGetter> url_request_context_getter()
+      const override;
+  scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory() override;
+
+ private:
+  // |ui_shared_url_loader_factory_| is a SharedUrlLoaderFactory which is bound
+  // to the ui_task_runner sequence and is used to create copies of the original
+  // ChromotingHostContext instance.
+  scoped_refptr<network::SharedURLLoaderFactory> ui_shared_url_loader_factory_;
+
+  // |pending_factory_| is initialized from |ui_shared_url_loader_factory_| on
+  // the UI thread which allows for binding |network_shared_url_loader_factory_|
+  // to the network_task_runner sequence.
+  std::unique_ptr<network::PendingSharedURLLoaderFactory> pending_factory_;
+
+  // |network_shared_url_loader_factory_| is a SharedUrlLoaderFactory which is
+  // bound to the network_task_runner sequence.
+  scoped_refptr<network::SharedURLLoaderFactory>
+      network_shared_url_loader_factory_;
+};
+
+ChromotingHostContextChromeOs::ChromotingHostContextChromeOs(
+    scoped_refptr<AutoThreadTaskRunner> ui_task_runner,
+    scoped_refptr<AutoThreadTaskRunner> audio_task_runner,
+    scoped_refptr<AutoThreadTaskRunner> file_task_runner,
+    scoped_refptr<AutoThreadTaskRunner> input_task_runner,
+    scoped_refptr<AutoThreadTaskRunner> network_task_runner,
+    scoped_refptr<AutoThreadTaskRunner> video_capture_task_runner,
+    scoped_refptr<AutoThreadTaskRunner> video_encode_task_runner,
+    scoped_refptr<network::SharedURLLoaderFactory> shared_url_loader_factory)
+    : ChromotingHostContext(ui_task_runner,
+                            audio_task_runner,
+                            file_task_runner,
+                            input_task_runner,
+                            network_task_runner,
+                            video_capture_task_runner,
+                            video_encode_task_runner),
+      ui_shared_url_loader_factory_(shared_url_loader_factory),
+      pending_factory_(ui_shared_url_loader_factory_->Clone()) {}
+
+ChromotingHostContextChromeOs::~ChromotingHostContextChromeOs() {
+  // |ui_shared_url_loader_factory_| should always be valid however
+  // |network_shared_url_loader_factory_| may not be if it was never accessed.
+  ui_task_runner()->ReleaseSoon(FROM_HERE,
+                                std::move(ui_shared_url_loader_factory_));
+  if (network_shared_url_loader_factory_) {
+    network_task_runner()->ReleaseSoon(
+        FROM_HERE, std::move(network_shared_url_loader_factory_));
+  }
+}
+
+std::unique_ptr<ChromotingHostContext> ChromotingHostContextChromeOs::Copy() {
+  DCHECK(ui_task_runner()->BelongsToCurrentThread());
+  return std::make_unique<ChromotingHostContextChromeOs>(
+      ui_task_runner(), audio_task_runner(), file_task_runner(),
+      input_task_runner(), network_task_runner(), video_capture_task_runner(),
+      video_encode_task_runner(), ui_shared_url_loader_factory_);
+}
+
+scoped_refptr<net::URLRequestContextGetter>
+ChromotingHostContextChromeOs::url_request_context_getter() const {
+  NOTREACHED();
+  return nullptr;
+}
+
+scoped_refptr<network::SharedURLLoaderFactory>
+ChromotingHostContextChromeOs::url_loader_factory() {
+  DCHECK(network_task_runner()->BelongsToCurrentThread());
+  if (!network_shared_url_loader_factory_) {
+    network_shared_url_loader_factory_ =
+        network::SharedURLLoaderFactory::Create(std::move(pending_factory_));
+  }
+  return network_shared_url_loader_factory_;
+}
+#else  // !BUILDFLAG(IS_CHROMEOS_ASH)
 void DisallowBlockingOperations() {
   base::DisallowBlocking();
   // TODO(crbug.com/793486): Re-enable after the underlying issue is fixed.
   // base::DisallowBaseSyncPrimitives();
 }
+
+class ChromotingHostContextDesktop : public ChromotingHostContext {
+ public:
+  ChromotingHostContextDesktop(
+      scoped_refptr<AutoThreadTaskRunner> ui_task_runner,
+      scoped_refptr<AutoThreadTaskRunner> audio_task_runner,
+      scoped_refptr<AutoThreadTaskRunner> file_task_runner,
+      scoped_refptr<AutoThreadTaskRunner> input_task_runner,
+      scoped_refptr<AutoThreadTaskRunner> network_task_runner,
+      scoped_refptr<AutoThreadTaskRunner> video_capture_task_runner,
+      scoped_refptr<AutoThreadTaskRunner> video_encode_task_runner,
+      scoped_refptr<net::URLRequestContextGetter> url_request_context_getter);
+
+  ChromotingHostContextDesktop(const ChromotingHostContextDesktop&) = delete;
+  ChromotingHostContextDesktop& operator=(const ChromotingHostContextDesktop&) =
+      delete;
+
+  ~ChromotingHostContextDesktop() override;
+
+  // remoting::ChromotingHostContext implementation.
+  std::unique_ptr<ChromotingHostContext> Copy() override;
+  scoped_refptr<net::URLRequestContextGetter> url_request_context_getter()
+      const override;
+  scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory() override;
+
+ private:
+  // Serves URLRequestContexts that use the network and UI task runners.
+  scoped_refptr<net::URLRequestContextGetter> url_request_context_getter_;
+
+  // Makes a SharedURLLoaderFactory out of |url_request_context_getter_|
+  std::unique_ptr<network::TransitionalURLLoaderFactoryOwner>
+      url_loader_factory_owner_;
+};
+
+ChromotingHostContextDesktop::ChromotingHostContextDesktop(
+    scoped_refptr<AutoThreadTaskRunner> ui_task_runner,
+    scoped_refptr<AutoThreadTaskRunner> audio_task_runner,
+    scoped_refptr<AutoThreadTaskRunner> file_task_runner,
+    scoped_refptr<AutoThreadTaskRunner> input_task_runner,
+    scoped_refptr<AutoThreadTaskRunner> network_task_runner,
+    scoped_refptr<AutoThreadTaskRunner> video_capture_task_runner,
+    scoped_refptr<AutoThreadTaskRunner> video_encode_task_runner,
+    scoped_refptr<net::URLRequestContextGetter> url_request_context_getter)
+    : ChromotingHostContext(ui_task_runner,
+                            audio_task_runner,
+                            file_task_runner,
+                            input_task_runner,
+                            network_task_runner,
+                            video_capture_task_runner,
+                            video_encode_task_runner),
+      url_request_context_getter_(url_request_context_getter) {}
+
+ChromotingHostContextDesktop::~ChromotingHostContextDesktop() {
+  if (url_loader_factory_owner_) {
+    network_task_runner()->DeleteSoon(FROM_HERE,
+                                      url_loader_factory_owner_.release());
+  }
+}
+
+std::unique_ptr<ChromotingHostContext> ChromotingHostContextDesktop::Copy() {
+  return std::make_unique<ChromotingHostContextDesktop>(
+      ui_task_runner(), audio_task_runner(), file_task_runner(),
+      input_task_runner(), network_task_runner(), video_capture_task_runner(),
+      video_encode_task_runner(), url_request_context_getter_);
+}
+
+scoped_refptr<net::URLRequestContextGetter>
+ChromotingHostContextDesktop::url_request_context_getter() const {
+  return url_request_context_getter_;
+}
+
+scoped_refptr<network::SharedURLLoaderFactory>
+ChromotingHostContextDesktop::url_loader_factory() {
+  DCHECK(network_task_runner()->BelongsToCurrentThread());
+  if (!url_loader_factory_owner_) {
+    url_loader_factory_owner_ =
+        std::make_unique<network::TransitionalURLLoaderFactoryOwner>(
+            url_request_context_getter_);
+  }
+  return url_loader_factory_owner_->GetURLLoaderFactory();
+}
+
+#endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
 
 }  // namespace
 
@@ -36,30 +215,16 @@ ChromotingHostContext::ChromotingHostContext(
     scoped_refptr<AutoThreadTaskRunner> input_task_runner,
     scoped_refptr<AutoThreadTaskRunner> network_task_runner,
     scoped_refptr<AutoThreadTaskRunner> video_capture_task_runner,
-    scoped_refptr<AutoThreadTaskRunner> video_encode_task_runner,
-    scoped_refptr<net::URLRequestContextGetter> url_request_context_getter)
+    scoped_refptr<AutoThreadTaskRunner> video_encode_task_runner)
     : ui_task_runner_(ui_task_runner),
       audio_task_runner_(audio_task_runner),
       file_task_runner_(file_task_runner),
       input_task_runner_(input_task_runner),
       network_task_runner_(network_task_runner),
       video_capture_task_runner_(video_capture_task_runner),
-      video_encode_task_runner_(video_encode_task_runner),
-      url_request_context_getter_(url_request_context_getter) {}
+      video_encode_task_runner_(video_encode_task_runner) {}
 
-ChromotingHostContext::~ChromotingHostContext() {
-  if (url_loader_factory_owner_) {
-    network_task_runner_->DeleteSoon(FROM_HERE,
-                                     url_loader_factory_owner_.release());
-  }
-}
-
-std::unique_ptr<ChromotingHostContext> ChromotingHostContext::Copy() {
-  return base::WrapUnique(new ChromotingHostContext(
-      ui_task_runner_, audio_task_runner_, file_task_runner_,
-      input_task_runner_, network_task_runner_, video_capture_task_runner_,
-      video_encode_task_runner_, url_request_context_getter_));
-}
+ChromotingHostContext::~ChromotingHostContext() = default;
 
 scoped_refptr<AutoThreadTaskRunner> ChromotingHostContext::audio_task_runner()
     const {
@@ -96,26 +261,11 @@ ChromotingHostContext::video_encode_task_runner() const {
   return video_encode_task_runner_;
 }
 
-scoped_refptr<net::URLRequestContextGetter>
-ChromotingHostContext::url_request_context_getter() const {
-  return url_request_context_getter_;
-}
-
-scoped_refptr<network::SharedURLLoaderFactory>
-ChromotingHostContext::url_loader_factory() {
-  DCHECK(network_task_runner_->RunsTasksInCurrentSequence());
-  if (!url_loader_factory_owner_) {
-    url_loader_factory_owner_ =
-        std::make_unique<network::TransitionalURLLoaderFactoryOwner>(
-            url_request_context_getter_);
-  }
-  return url_loader_factory_owner_->GetURLLoaderFactory();
-}
-
 policy::ManagementService* ChromotingHostContext::management_service() {
   return policy::PlatformManagementService::GetInstance();
 }
 
+#if !BUILDFLAG(IS_CHROMEOS_ASH)
 std::unique_ptr<ChromotingHostContext> ChromotingHostContext::Create(
     scoped_refptr<AutoThreadTaskRunner> ui_task_runner) {
 #if BUILDFLAG(IS_WIN)
@@ -150,27 +300,27 @@ std::unique_ptr<ChromotingHostContext> ChromotingHostContext::Create(
                                  base::MessagePumpType::IO);
 #endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
 
-  return base::WrapUnique(new ChromotingHostContext(
+  return std::make_unique<ChromotingHostContextDesktop>(
       ui_task_runner, audio_task_runner, file_task_runner, input_task_runner,
       network_task_runner,
 #if BUILDFLAG(IS_APPLE)
       // Mac requires a UI thread for the capturer.
       AutoThread::CreateWithType("ChromotingCaptureThread", ui_task_runner,
                                  base::MessagePumpType::UI),
-#else
+#else   // !BUILDFLAG(IS_APPLE)
       AutoThread::Create("ChromotingCaptureThread", ui_task_runner),
-#endif
+#endif  // !BUILDFLAG(IS_APPLE)
       AutoThread::Create("ChromotingEncodeThread", ui_task_runner),
-      base::MakeRefCounted<URLRequestContextGetter>(network_task_runner)));
+      base::MakeRefCounted<URLRequestContextGetter>(network_task_runner));
 }
-
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#else   // BUILDFLAG(IS_CHROMEOS_ASH)
 
 // static
 std::unique_ptr<ChromotingHostContext> ChromotingHostContext::CreateForChromeOS(
     scoped_refptr<base::SingleThreadTaskRunner> io_task_runner,
     scoped_refptr<base::SingleThreadTaskRunner> ui_task_runner,
-    scoped_refptr<base::SingleThreadTaskRunner> file_task_runner) {
+    scoped_refptr<base::SingleThreadTaskRunner> file_task_runner,
+    scoped_refptr<network::SharedURLLoaderFactory> shared_url_loader_factory) {
   // AutoThreadTaskRunner is a TaskRunner with the special property that it will
   // continue to process tasks until no references remain. We usually provide a
   // QuitClosure which is run when the AutoThreadTaskRunner instance is
@@ -190,7 +340,7 @@ std::unique_ptr<ChromotingHostContext> ChromotingHostContext::CreateForChromeOS(
 
   // Use browser's file thread as the joiner as it is the only browser-thread
   // that allows blocking I/O, which is required by thread joining.
-  return base::WrapUnique(new ChromotingHostContext(
+  return std::make_unique<ChromotingHostContextChromeOs>(
       ui_auto_task_runner,
       AutoThread::Create("ChromotingAudioThread", file_auto_task_runner),
       file_auto_task_runner,
@@ -198,8 +348,20 @@ std::unique_ptr<ChromotingHostContext> ChromotingHostContext::CreateForChromeOS(
       io_auto_task_runner,  // network_task_runner
       ui_auto_task_runner,  // video_capture_task_runner
       AutoThread::Create("ChromotingEncodeThread", file_auto_task_runner),
-      base::MakeRefCounted<URLRequestContextGetter>(io_auto_task_runner)));
+      shared_url_loader_factory);
 }
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+
+// static
+std::unique_ptr<ChromotingHostContext> ChromotingHostContext::CreateForTesting(
+    scoped_refptr<AutoThreadTaskRunner> ui_task_runner,
+    scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory) {
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  return ChromotingHostContext::CreateForChromeOS(
+      ui_task_runner, ui_task_runner, ui_task_runner, url_loader_factory);
+#else
+  return ChromotingHostContext::Create(ui_task_runner);
+#endif
+}
 
 }  // namespace remoting

@@ -47,16 +47,15 @@ public class ToastManagerTest {
     @Before
     public void setUp() {
         MockitoAnnotations.initMocks(this);
-        ToastManager.setEnabledForTesting(true);
     }
 
     @After
     public void tearDown() {
         waitForIdleUi();
         ToastManager.resetForTesting();
+        mToast = null;
         clearInvocations(mAndroidToastObject);
         clearInvocations(mAndroidToastObjectNext);
-        ToastManager.setEnabledForTesting(false);
     }
 
     private static void waitForIdleUi() {
@@ -68,9 +67,7 @@ public class ToastManagerTest {
     public void showToast() {
         doReturn(mAndroidToastObject).when(mToast).getAndroidToast();
 
-        ToastManager toastManager = ToastManager.getInstance();
-
-        toastManager.requestShow(mToast);
+        ToastManager.getInstance().requestShow(mToast);
         verify(mAndroidToastObject).show();
     }
 

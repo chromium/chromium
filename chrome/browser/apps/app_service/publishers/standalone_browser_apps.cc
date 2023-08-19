@@ -104,19 +104,6 @@ void StandaloneBrowserApps::Initialize() {
                         /*should_notify_initialized=*/true);
 }
 
-void StandaloneBrowserApps::LoadIcon(const std::string& app_id,
-                                     const IconKey& icon_key,
-                                     IconType icon_type,
-                                     int32_t size_hint_in_dip,
-                                     bool allow_placeholder_icon,
-                                     apps::LoadIconCallback callback) {
-  DCHECK_NE(icon_key.resource_id, apps::IconKey::kInvalidResourceId);
-  LoadIconFromResource(
-      profile_, app_id, icon_type, size_hint_in_dip, icon_key.resource_id,
-      /*is_placeholder_icon=*/false,
-      static_cast<IconEffects>(icon_key.icon_effects), std::move(callback));
-}
-
 void StandaloneBrowserApps::Launch(const std::string& app_id,
                                    int32_t event_flags,
                                    LaunchSource launch_source,
@@ -176,7 +163,12 @@ void StandaloneBrowserApps::OnLoadComplete(bool success,
   auto app = std::make_unique<App>(AppType::kStandaloneBrowser,
                                    app_constants::kLacrosAppId);
   app->icon_key = std::move(*CreateIconKey(success));
-  AppPublisher::Publish(std::move(app));
+  std::vector<AppPtr> standalone_browser_app_vector;
+  standalone_browser_app_vector.push_back(std::move(app));
+
+  AppPublisher::Publish(std::move(standalone_browser_app_vector),
+                        AppType::kStandaloneBrowser,
+                        /*should_notify_initialized=*/true);
 }
 
 }  // namespace apps

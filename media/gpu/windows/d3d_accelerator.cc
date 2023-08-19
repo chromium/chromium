@@ -9,11 +9,8 @@
 namespace media {
 
 D3DAccelerator::D3DAccelerator(D3D11VideoDecoderClient* client,
-                               MediaLog* media_log,
-                               ComD3D11VideoDevice video_device)
-    : client_(client),
-      media_log_(media_log),
-      video_device_(std::move(video_device)) {
+                               MediaLog* media_log)
+    : client_(client), media_log_(media_log) {
   DCHECK(client);
   DCHECK(media_log_);
   client->SetDecoderWrapperCB(base::BindRepeating(
@@ -42,6 +39,7 @@ void D3DAccelerator::RecordFailure(base::StringPiece reason,
 
 void D3DAccelerator::SetVideoDecoderWrapper(
     std::unique_ptr<D3DVideoDecoderWrapper> video_decoder_wrapper) {
+  CHECK(video_decoder_wrapper);
   video_decoder_wrapper_ = std::move(video_decoder_wrapper);
 }
 

@@ -11,22 +11,37 @@ import("//testing/test.gni")
 
 import("//third_party/inspector_protocol/inspector_protocol.gni")
 
-viz_component("resource_format") {
-  output_name = "viz_resource_format"
+viz_component("shared_image_format") {
+  output_name = "viz_shared_image_format"
 
-  defines = [ "VIZ_RESOURCE_FORMAT_IMPLEMENTATION" ]
+  defines = [ "IS_VIZ_SHARED_IMAGE_FORMAT_IMPL" ]
 
   sources = [
-    "resources/resource_format.h",
+    "resources/resource_sizes.h",
     "resources/shared_image_format.cc",
     "resources/shared_image_format.h",
-    "viz_resource_format_export.h",
+    "resources/shared_image_format_utils.cc",
+    "resources/shared_image_format_utils.h",
   ]
+  configs = [ "//third_party/khronos:khronos_headers" ]
   public_deps = [
     "//base",
     "//mojo/public/cpp/bindings",
+    "//services/viz/public/mojom:singleplanar_format",
   ]
-  deps = [ "//ui/gfx/geometry:geometry" ]
+  deps = [
+    "//base",
+    "//build:chromeos_buildflags",
+    "//cc/base",
+    "//gpu/vulkan:buildflags",
+    "//skia",
+    "//third_party/dawn/include/dawn:cpp_headers",
+    "//ui/gfx:buffer_types",
+    "//ui/gfx/geometry",
+  ]
+  if (enable_vulkan) {
+    deps += [ "//third_party/vulkan-deps/vulkan-headers/src:vulkan_headers" ]
+  }
 }
 
 always_enable_blending_for_primary = is_castos || is_cast_android
@@ -39,38 +54,6 @@ buildflag_header("buildflags") {
     "ENABLE_CAST_OVERLAY_STRATEGY=$enable_cast_overlay_strategy",
     "ALWAYS_ENABLE_BLENDING_FOR_PRIMARY=$always_enable_blending_for_primary",
   ]
-}
-
-viz_component("resource_format_utils") {
-  output_name = "viz_resource_format_utils"
-
-  defines = [ "VIZ_RESOURCE_FORMAT_IMPLEMENTATION" ]
-
-  sources = [
-    "resources/resource_format_utils.cc",
-    "resources/resource_format_utils.h",
-    "resources/resource_sizes.h",
-    "resources/shared_image_format_utils.cc",
-    "resources/shared_image_format_utils.h",
-  ]
-
-  configs = [ "//third_party/khronos:khronos_headers" ]
-
-  public_deps = [ ":resource_format" ]
-
-  deps = [
-    "//base",
-    "//build:chromeos_buildflags",
-    "//cc/base:base",
-    "//gpu/vulkan:buildflags",
-    "//skia",
-    "//third_party/dawn/include/dawn:cpp_headers",
-    "//ui/gfx:buffer_types",
-    "//ui/gfx/geometry:geometry",
-  ]
-  if (enable_vulkan) {
-    deps += [ "//third_party/vulkan-deps/vulkan-headers/src:vulkan_headers" ]
-  }
 }
 
 if (skia_use_metal) {
@@ -131,32 +114,6 @@ if (enable_vulkan) {
       "//gpu/vulkan:buildflags",
       "//gpu/vulkan/init:skia",
       "//ui/gfx",
-    ]
-  }
-}
-
-if (skia_use_dawn) {
-  viz_component("dawn_context_provider") {
-    output_name = "viz_dawn_context_provider"
-
-    defines = [ "VIZ_DAWN_CONTEXT_PROVIDER_IMPLEMENTATION" ]
-
-    sources = [
-      "gpu/dawn_context_provider.cc",
-      "gpu/dawn_context_provider.h",
-      "viz_dawn_context_provider_export.h",
-    ]
-
-    public_deps = [
-      "//skia",
-      "//third_party/dawn/include/dawn:headers",
-    ]
-
-    deps = [
-      "//base",
-      "//third_party/dawn/src/dawn:cpp",
-      "//third_party/dawn/src/dawn:proc",
-      "//third_party/dawn/src/dawn/native",
     ]
   }
 }
@@ -333,6 +290,7 @@ viz_component("common") {
     "//mojo/public/cpp/system",
     "//services/tracing/public/cpp:cpp",
     "//third_party/libyuv",
+    "//ui/display/types",
     "//ui/gfx",
     "//ui/gfx:color_space",
     "//ui/gfx/geometry",
@@ -360,7 +318,7 @@ viz_component("common") {
 
   public_deps = [
     ":buildflags",
-    ":resource_format_utils",
+    ":shared_image_format",
     "//gpu/command_buffer/client",
     "//gpu/command_buffer/common",
     "//mojo/public/cpp/bindings",
@@ -372,9 +330,6 @@ viz_component("common") {
   }
   if (skia_use_metal) {
     public_deps += [ ":metal_context_provider" ]
-  }
-  if (skia_use_dawn) {
-    public_deps += [ ":dawn_context_provider" ]
   }
 }
 
@@ -392,9 +347,9 @@ viz_source_set("unit_tests") {
     "quads/compositor_render_pass_unittest.cc",
     "quads/draw_quad_unittest.cc",
     "quads/render_pass_io_unittest.cc",
-    "resources/resource_format_utils_unittest.cc",
     "resources/resource_sizes_unittest.cc",
     "resources/shared_image_format_unittest.cc",
+    "resources/shared_image_format_utils_unittest.cc",
     "surfaces/child_local_surface_id_allocator_unittest.cc",
     "surfaces/local_surface_id_unittest.cc",
     "surfaces/parent_local_surface_id_allocator_unittest.cc",

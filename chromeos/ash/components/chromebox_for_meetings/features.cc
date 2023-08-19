@@ -16,6 +16,6 @@ BASE_FEATURE(kMojoServices,
 
 BASE_FEATURE(kXuControls,
              "MeetDevicesXuControls",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 }  // namespace ash::cfm::features

@@ -166,6 +166,12 @@ export const Personality = {
     'relativePitch': -0.6,
   }),
 
+  // TTS personality for dictation hints.
+  DICTATION_HINT: new TtsSpeechProperties({
+    'punctuationEcho': 'none',
+    'relativePitch': 0.3,
+  }),
+
   // TTS personality for emphasis or italicized text.
   EMPHASIS: new TtsSpeechProperties({
     'relativeVolume': 0.1,

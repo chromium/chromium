@@ -6,9 +6,9 @@
 
 #include "base/no_destructor.h"
 #include "chrome/browser/content_settings/cookie_settings_factory.h"
-#include "chrome/browser/dips/dips_features.h"
 #include "chrome/browser/dips/dips_service.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
+#include "content/public/common/content_features.h"
 
 /* static */
 DIPSService* DIPSServiceFactory::GetForBrowserContext(
@@ -24,7 +24,7 @@ DIPSServiceFactory* DIPSServiceFactory::GetInstance() {
 
 /* static */
 ProfileSelections DIPSServiceFactory::CreateProfileSelections() {
-  if (!base::FeatureList::IsEnabled(dips::kFeature)) {
+  if (!base::FeatureList::IsEnabled(features::kDIPS)) {
     return ProfileSelections::BuildNoProfilesSelected();
   }
 

@@ -57,13 +57,6 @@ bool WillElementBeVisible(const UiElement* element) {
   return WillElementFaceCamera(element);
 }
 
-int NumVisibleInTreeRecursive(const UiElement* element) {
-  int visible = WillElementBeVisible(element) ? 1 : 0;
-  for (auto& child : element->children())
-    visible += NumVisibleInTreeRecursive(child.get());
-  return visible;
-}
-
 }  // namespace
 
 UiTest::UiTest() {}
@@ -71,34 +64,20 @@ UiTest::~UiTest() {}
 
 void UiTest::SetUp() {
   browser_ = std::make_unique<testing::NiceMock<MockUiBrowserInterface>>();
-}
 
-void UiTest::CreateSceneInternal(const UiInitialState& state) {
+  // Now create the initial scene.
+  UiInitialState state;
+  state.gvr_input_support = true;
+
   ui_instance_ = std::make_unique<Ui>(std::move(browser_.get()), state);
   ui_ = ui_instance_.get();
   scene_ = ui_instance_->scene();
   model_ = ui_instance_->model_for_test();
-  model_->controllers[0].transform.Translate3d(kStartControllerPosition);
 
   OnBeginFrame();
   // Need a second BeginFrame here because the first one will add controllers
   // to the scene, which need an additional frame to get into a good state.
   OnBeginFrame();
-}
-
-void UiTest::CreateScene(const UiInitialState& state) {
-  CreateSceneInternal(state);
-}
-
-void UiTest::CreateScene(InWebVr in_web_vr) {
-  UiInitialState state;
-  state.in_web_vr = in_web_vr;
-  state.gvr_input_support = true;
-  CreateScene(state);
-}
-
-void UiTest::SetIncognito(bool incognito) {
-  model_->incognito = incognito;
 }
 
 bool UiTest::IsVisible(UiElementName name) const {
@@ -141,45 +120,6 @@ void UiTest::VerifyOnlyElementsVisible(
   }
 }
 
-int UiTest::NumVisibleInTree(UiElementName name) const {
-  OnBeginFrame();
-  auto* root = scene_->GetUiElementByName(name);
-  EXPECT_NE(root, nullptr);
-  if (!root) {
-    return 0;
-  }
-  return NumVisibleInTreeRecursive(root);
-}
-
-bool UiTest::VerifyIsAnimating(const std::set<UiElementName>& names,
-                               const std::vector<TargetProperty>& properties,
-                               bool animating) const {
-  OnBeginFrame();
-  for (auto name : names) {
-    auto* element = scene_->GetUiElementByName(name);
-    EXPECT_NE(nullptr, element);
-    SCOPED_TRACE(element->DebugName());
-    if (IsAnimating(element, properties) != animating) {
-      return false;
-    }
-  }
-  return true;
-}
-
-bool UiTest::VerifyRequiresLayout(const std::set<UiElementName>& names,
-                                  bool requires_layout) const {
-  OnBeginFrame();
-  for (auto name : names) {
-    SCOPED_TRACE(name);
-    auto* element = scene_->GetUiElementByName(name);
-    EXPECT_NE(nullptr, element);
-    if (!element || element->requires_layout() != requires_layout) {
-      return false;
-    }
-  }
-  return true;
-}
-
 bool UiTest::RunForMs(float milliseconds) {
   return RunFor(base::Milliseconds(milliseconds));
 }
@@ -191,15 +131,6 @@ bool UiTest::RunForSeconds(float seconds) {
 bool UiTest::AdvanceFrame() {
   current_time_ += base::Milliseconds(16);
   return OnBeginFrame();
-}
-
-void UiTest::GetBackgroundColor(SkColor* background_color) const {
-  OnBeginFrame();
-  Rect* background =
-      static_cast<Rect*>(scene_->GetUiElementByName(kSolidBackground));
-  ASSERT_NE(nullptr, background);
-  EXPECT_EQ(background->center_color(), background->edge_color());
-  *background_color = background->edge_color();
 }
 
 bool UiTest::RunFor(base::TimeDelta delta) {
@@ -222,7 +153,6 @@ bool UiTest::RunFor(base::TimeDelta delta) {
 
 bool UiTest::OnBeginFrame() const {
   bool changed = false;
-  model_->current_time = current_time_;
   changed |= scene_->OnBeginFrame(current_time_, kStartHeadPose);
   if (scene_->HasDirtyTextures()) {
     scene_->UpdateTextures();

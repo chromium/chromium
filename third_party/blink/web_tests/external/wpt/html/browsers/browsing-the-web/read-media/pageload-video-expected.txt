@@ -1,4 +1,0 @@
-This is a testharness.js-based test.
-FAIL The document for a standalone media file should have one child in the body. assert_equals: expected "application/ogg" but got "video/ogg"
-Harness: the test ran to completion.
-

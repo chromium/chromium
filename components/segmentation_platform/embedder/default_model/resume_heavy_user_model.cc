@@ -49,6 +49,7 @@ std::unique_ptr<Config> ResumeHeavyUserModel::GetConfig() {
   config->segmentation_uma_name = kResumeHeavyUserUmaName;
   config->AddSegmentId(SegmentId::RESUME_HEAVY_USER_SEGMENT,
                        std::make_unique<ResumeHeavyUserModel>());
+  config->auto_execute_and_cache = true;
   config->segment_selection_ttl =
       base::Days(base::GetFieldTrialParamByFeatureAsInt(
           features::kResumeHeavyUserSegmentFeature,
@@ -64,10 +65,11 @@ std::unique_ptr<Config> ResumeHeavyUserModel::GetConfig() {
   return config;
 }
 
-ResumeHeavyUserModel::ResumeHeavyUserModel() : ModelProvider(kSegmentId) {}
+ResumeHeavyUserModel::ResumeHeavyUserModel()
+    : DefaultModelProvider(kSegmentId) {}
 
-void ResumeHeavyUserModel::InitAndFetchModel(
-    const ModelUpdatedCallback& model_updated_callback) {
+std::unique_ptr<DefaultModelProvider::ModelConfig>
+ResumeHeavyUserModel::GetModelConfig() {
   proto::SegmentationModelMetadata metadata;
   MetadataWriter writer(&metadata);
   writer.SetDefaultSegmentationMetadataConfig(
@@ -79,10 +81,8 @@ void ResumeHeavyUserModel::InitAndFetchModel(
 
   // Set features.
   writer.AddUmaFeatures(kUMAFeatures.data(), kUMAFeatures.size());
-
-  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
-      FROM_HERE, base::BindRepeating(model_updated_callback, kSegmentId,
-                                     std::move(metadata), /*model_version=*/1));
+  return std::make_unique<ModelConfig>(std::move(metadata),
+                                       /*model_version=*/1);
 }
 
 void ResumeHeavyUserModel::ExecuteModelWithInput(
@@ -112,10 +112,6 @@ void ResumeHeavyUserModel::ExecuteModelWithInput(
   base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE,
       base::BindOnce(std::move(callback), ModelProvider::Response(1, result)));
-}
-
-bool ResumeHeavyUserModel::ModelAvailable() {
-  return true;
 }
 
 }  // namespace segmentation_platform

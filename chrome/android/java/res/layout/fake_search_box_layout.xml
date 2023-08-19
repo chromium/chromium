@@ -45,12 +45,12 @@ found in the LICENSE file.
     </RelativeLayout>
     <org.chromium.ui.widget.ChromeImageView
         android:id="@+id/voice_search_button"
-        style="@style/LocationBarActionButton"
+        style="@style/LocationBarActionButtonPolish"
         android:contentDescription="@string/accessibility_toolbar_btn_mic"
         android:src="@drawable/btn_mic" />
     <org.chromium.ui.widget.ChromeImageView
         android:id="@+id/lens_camera_button"
-        style="@style/LocationBarActionButton"
+        style="@style/LocationBarActionButtonPolish"
         android:contentDescription="@string/accessibility_btn_lens_camera"
         android:src="@drawable/lens_camera_icon"
         android:visibility="gone" />

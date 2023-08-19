@@ -88,6 +88,8 @@ extern const char kManagementOnPrintVisibleData[];
 extern const char kManagementOnPageVisitedEvent[];
 extern const char kManagementOnPageVisitedVisibleData[];
 
+extern const char kManagementLegacyTechReport[];
+
 extern const char kPolicyKeyReportMachineIdData[];
 extern const char kPolicyKeyReportUserIdData[];
 extern const char kPolicyKeyReportVersionData[];
@@ -102,6 +104,7 @@ extern const char kReportingTypeExtensions[];
 extern const char kReportingTypeSecurity[];
 extern const char kReportingTypeUser[];
 extern const char kReportingTypeUserActivity[];
+extern const char kReportingTypeLegacyTech[];
 
 namespace extensions {
 class Extension;
@@ -172,6 +175,7 @@ class ManagementUIHandler : public content::WebUIMessageHandler,
   base::Value::Dict GetContextualManagedData(Profile* profile);
   base::Value::Dict GetThreatProtectionInfo(Profile* profile);
   base::Value::List GetManagedWebsitesInfo(Profile* profile) const;
+  base::Value::List GetApplicationsInfo(Profile* profile) const;
   virtual policy::PolicyService* GetPolicyService();
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
   virtual device_signals::UserPermissionService* GetUserPermissionService();
@@ -190,11 +194,11 @@ class ManagementUIHandler : public content::WebUIMessageHandler,
   void AddUpdateRequiredEolInfo(base::Value::Dict* response) const;
 
   // Adds a boolean which indicates if the network traffic can be monitored by
-  // the admin via policy configurations, either via a proxy server or via
-  // secure DNS templates with identifiers. If true, a warning will be added to
-  // the transparency panel to inform the user that the admin may be able to see
-  // their network traffic.
-  void AddMonitoredNetworkPrivacyDisclosure(base::Value::Dict* response) const;
+  // the admin via policy configurations, either via a proxy server, via
+  // secure DNS templates with identifiers, or via XDR monitoring. If true, a
+  // warning will be added to the transparency panel to inform the user that the
+  // admin may be able to see their network traffic.
+  void AddMonitoredNetworkPrivacyDisclosure(base::Value::Dict* response);
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
  private:
   void GetManagementStatus(Profile* profile, base::Value::Dict* status) const;
@@ -214,6 +218,7 @@ class ManagementUIHandler : public content::WebUIMessageHandler,
   void HandleGetContextualManagedData(const base::Value::List& args);
   void HandleGetThreatProtectionInfo(const base::Value::List& args);
   void HandleGetManagedWebsites(const base::Value::List& args);
+  void HandleGetApplications(const base::Value::List& args);
   void HandleInitBrowserReportingInfo(const base::Value::List& args);
 
   void AsyncUpdateLogo();

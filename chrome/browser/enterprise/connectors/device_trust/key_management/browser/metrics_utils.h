@@ -5,8 +5,10 @@
 #ifndef CHROME_BROWSER_ENTERPRISE_CONNECTORS_DEVICE_TRUST_KEY_MANAGEMENT_BROWSER_METRICS_UTILS_H_
 #define CHROME_BROWSER_ENTERPRISE_CONNECTORS_DEVICE_TRUST_KEY_MANAGEMENT_BROWSER_METRICS_UTILS_H_
 
+#include "base/time/time.h"
 #include "chrome/browser/enterprise/connectors/device_trust/key_management/browser/commands/key_rotation_command.h"
 #include "components/enterprise/browser/device_trust/device_trust_key_manager.h"
+#include "components/policy/proto/device_management_backend.pb.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace enterprise_connectors {
@@ -67,6 +69,13 @@ void LogKeyRotationResult(bool had_nonce, KeyRotationCommand::Status status);
 
 // Logs the key synchronization `error`.
 void LogSynchronizationError(DTSynchronizationError error);
+
+// Logs the time it took for a key with `trust_level` to sign a payload, using
+// `start_time`.
+void LogSignatureLatency(
+    enterprise_management::BrowserPublicKeyUploadRequest::KeyTrustLevel
+        trust_level,
+    base::TimeTicks start_time);
 
 }  // namespace enterprise_connectors
 

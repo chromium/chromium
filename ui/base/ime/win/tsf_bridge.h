@@ -101,6 +101,9 @@ class COMPONENT_EXPORT(UI_BASE_IME_WIN) TSFBridge {
   // Returns the focused text input client.
   virtual TextInputClient* GetFocusedTextInputClient() const = 0;
 
+  // Notify TSF when a frame with a committed Url has been focused.
+  virtual void OnUrlChanged() = 0;
+
  protected:
   // Uses GetInstance() instead.
   TSFBridge() = default;

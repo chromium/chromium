@@ -230,6 +230,10 @@ class USER_MANAGER_EXPORT KnownUser final {
   void PinAutosubmitSetBackfillNotNeeded(const AccountId& account_id);
   void PinAutosubmitSetBackfillNeededForTests(const AccountId& account_id);
 
+  base::Value::Dict GetAuthFactorCache(const AccountId& account_id);
+  void SetAuthFactorCache(const AccountId& account_id,
+                          const base::Value::Dict cache);
+
   // Setter and getter for password sync token used for syncing SAML passwords
   // across multiple user devices.
   void SetPasswordSyncToken(const AccountId& account_id,

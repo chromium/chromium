@@ -23,6 +23,10 @@ class SyncService;
 class SyncSessionDurationsMetricsRecorder;
 }
 
+namespace unified_consent {
+class MsbbSessionDurationsMetricsRecorder;
+}
+
 // Tracks the active browsing time that the user spends signed in and/or syncing
 // as fraction of their total browsing time.
 class IOSProfileSessionDurationsService : public KeyedService {
@@ -61,6 +65,8 @@ class IOSProfileSessionDurationsService : public KeyedService {
  private:
   std::unique_ptr<syncer::SyncSessionDurationsMetricsRecorder>
       sync_metrics_recorder_;
+  std::unique_ptr<unified_consent::MsbbSessionDurationsMetricsRecorder>
+      msbb_metrics_recorder_;
   std::unique_ptr<password_manager::PasswordSessionDurationsMetricsRecorder>
       password_metrics_recorder_;
 

@@ -179,6 +179,12 @@ class TabStripModelDelegate {
 
   // Copies the URL of the given WebContents.
   virtual void CopyURL(content::WebContents* web_contents) = 0;
+
+  // Navigates the web_contents back to the previous page.
+  virtual void GoBack(content::WebContents* web_contents) = 0;
+
+  // Returns whether the web_contents can be navigated back.
+  virtual bool CanGoBack(content::WebContents* web_contents) = 0;
 };
 
 #endif  // CHROME_BROWSER_UI_TABS_TAB_STRIP_MODEL_DELEGATE_H_

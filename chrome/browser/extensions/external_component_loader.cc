@@ -18,6 +18,7 @@
 #include "extensions/common/manifest.h"
 
 #if BUILDFLAG(IS_CHROMEOS)
+#include "chrome/browser/chromeos/upload_office_to_cloud/upload_office_to_cloud.h"
 #include "chrome/browser/policy/profile_policy_connector.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chromeos/constants/chromeos_features.h"
@@ -48,12 +49,7 @@ void ExternalComponentLoader::StartLoading() {
                            prefs);
     }
 
-    if (chromeos::features::IsUploadOfficeToCloudEnabled()) {
-      // Only load ODFS if the current session is NOT managed.
-      // TODO(b/279126844): merge with
-      // `ash::cloud_upload::IsEligibleAndEnabledUploadOfficeToCloud()`.
-      bool eligible = !profile_->GetProfilePolicyConnector()->IsManaged();
-
+    if (chromeos::IsEligibleAndEnabledUploadOfficeToCloud(profile_)) {
       // Do not load in Ash if Lacros is enabled, otherwise all messages will be
       // routed to the extension in Ash.
       bool should_load = false;
@@ -66,7 +62,7 @@ void ExternalComponentLoader::StartLoading() {
       // extensions in other profiles won't work).
       should_load = profile_ == ProfileManager::GetPrimaryUserProfile();
 #endif
-      if (eligible && should_load) {
+      if (should_load) {
         AddExternalExtension(extension_misc::kODFSExtensionId, prefs);
       }
     }

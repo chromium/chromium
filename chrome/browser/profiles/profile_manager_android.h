@@ -7,15 +7,21 @@
 
 #include <jni.h>
 
+#include "base/scoped_observation.h"
+#include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/profiles/profile_manager_observer.h"
 
 class ProfileManagerAndroid : public ProfileManagerObserver {
  public:
-  ProfileManagerAndroid();
+  explicit ProfileManagerAndroid(ProfileManager* manager);
   ~ProfileManagerAndroid() override;
 
   void OnProfileAdded(Profile* profile) override;
   void OnProfileMarkedForPermanentDeletion(Profile* profile) override;
+
+ private:
+  base::ScopedObservation<ProfileManager, ProfileManagerObserver>
+      profile_manager_observation_{this};
 };
 
 #endif  // CHROME_BROWSER_PROFILES_PROFILE_MANAGER_ANDROID_H_

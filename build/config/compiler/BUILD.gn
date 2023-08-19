@@ -17,6 +17,7 @@ import("//build/config/host_byteorder.gni")
 import("//build/config/rust.gni")
 import("//build/config/sanitizers/sanitizers.gni")
 import("//build/config/ui.gni")
+import("//build/config/unwind.gni")
 import("//build/toolchain/cc_wrapper.gni")
 import("//build/toolchain/goma.gni")
 import("//build/toolchain/rbe.gni")
@@ -150,10 +151,6 @@ declare_args() {
   # The gold linker by default has text section splitting enabled.
   use_text_section_splitting = false
 
-  # Turn off the --call-graph-profile-sort flag for lld by default. Enable
-  # selectively for targets where it's beneficial.
-  enable_call_graph_profile_sort = chrome_pgo_phase == 2
-
   # Enable DWARF v5.
   use_dwarf5 = false
 
@@ -177,10 +174,6 @@ declare_args() {
   # If true, linker crashes will be rerun with `--reproduce` which causes
   # a reproducer file to be saved.
   save_reproducers_on_lld_crash = false
-
-  # Allow projects that wish to stay on C++17 to override Chromium's default.
-  # TODO(crbug.com/1402249): evaluate removing this end of 2023
-  use_cxx17 = false
 
   # Enable ShadowCallStack for compiled binaries. SCS stores a pointer to a
   # shadow call stack in register x18. Hence, x18 must not be used by the OS
@@ -207,7 +200,7 @@ declare_args() {
                                                        current_cpu == "x64"))))
 }
 
-if (is_android || (is_chromeos_ash && is_chromeos_device)) {
+if (is_android) {
   # Set the path to use orderfile for linking Chrome
   # Note that this is for using only one orderfile for linking
   # the Chrome binary/library.
@@ -218,15 +211,17 @@ if (is_android || (is_chromeos_ash && is_chromeos_device)) {
       # Allow downstream tools to set orderfile path with
       # another variable.
       chrome_orderfile_path = default_chrome_orderfile
-    } else if (is_chromeos_ash && is_chromeos_device) {
-      if (chromeos_afdo_platform == "arm" ||
-          chromeos_afdo_platform == "arm-exp") {
-        chrome_orderfile_path = "//chromeos/profiles/chromeos.arm.orderfile.txt"
-      } else {
-        chrome_orderfile_path = "//chromeos/profiles/chromeos.orderfile.txt"
-      }
     }
   }
+}
+
+declare_args() {
+  # Turn off the --call-graph-profile-sort flag for lld by default. Enable
+  # selectively for targets where it's beneficial.
+  enable_call_graph_profile_sort =
+      chrome_pgo_phase == 2 ||
+      (is_chromeos &&
+       (clang_use_default_sample_profile || clang_sample_profile_path != ""))
 }
 
 assert(!(llvm_force_head_revision && use_goma),
@@ -276,6 +271,7 @@ config("compiler") {
   ldflags = []
   defines = []
   configs = []
+  rustflags = []
 
   # System-specific flags. If your compiler flags apply to one of the
   # categories here, add it to the associated file to keep this shared config
@@ -449,9 +445,11 @@ config("compiler") {
           "-fno-unwind-tables",
           "-fno-asynchronous-unwind-tables",
         ]
+        rustflags += [ "-Cforce-unwind-tables=no" ]
         defines += [ "NO_UNWIND_TABLES" ]
       } else {
         cflags += [ "-funwind-tables" ]
+        rustflags += [ "-Cforce-unwind-tables=yes" ]
       }
     }
   }
@@ -639,7 +637,7 @@ config("compiler") {
         cflags_cc += [ "-fno-trigraphs" ]
       }
     } else if (is_clang) {
-      if (use_cxx17) {
+      if (defined(use_cxx17) && use_cxx17) {
         cflags_cc += [ "-std=${standard_prefix}++17" ]
       } else {
         cflags_cc += [ "-std=${standard_prefix}++20" ]
@@ -651,7 +649,8 @@ config("compiler") {
     }
   } else if (is_win) {
     cflags_c += [ "/std:c11" ]
-    if (use_cxx17 || (!is_clang && defined(msvc_use_cxx17) && msvc_use_cxx17)) {
+    if ((defined(use_cxx17) && use_cxx17) ||
+        (!is_clang && defined(msvc_use_cxx17) && msvc_use_cxx17)) {
       cflags_cc += [ "/std:c++17" ]
     } else {
       cflags_cc += [ "/std:c++20" ]
@@ -664,7 +663,7 @@ config("compiler") {
     # clause, above.
     cflags_c += [ "-std=c11" ]
 
-    if (use_cxx17) {
+    if (defined(use_cxx17) && use_cxx17) {
       cflags_cc += [ "-std=c++17" ]
     } else {
       cflags_cc += [ "-std=c++20" ]
@@ -966,11 +965,6 @@ config("compiler") {
     # to compile dylibs on Android, such as for constructing unit test APKs.
     "-Cdefault-linker-libraries",
 
-    # Require `unsafe` blocks even in `unsafe` fns. This is intended to become
-    # an error by default eventually; see
-    # https://github.com/rust-lang/rust/issues/71668
-    "-Dunsafe_op_in_unsafe_fn",
-
     # To make Rust .d files compatible with ninja
     "-Zdep-info-omit-d-target",
 
@@ -1008,6 +1002,18 @@ config("compiler") {
       "-Cpanic=abort",
       "-Zpanic_abort_tests",
     ]
+  }
+
+  # Normally, this would be defined in the `runtime_library` config but NaCl
+  # saigo libc++ does not use the custom hermetic libc++. Unfortunately, there
+  # isn't really a better config to add this define for the define to
+  # consistently apply in both Chromium and non-Chromium code *and* non-NaCl
+  # and NaCl code.
+  #
+  # TODO(https://crbug.com/702997): Move this back to the `runtime_library`
+  # config when NaCl is removed.
+  if (use_safe_libcxx) {
+    defines += [ "_LIBCPP_ENABLE_ASSERTIONS=1" ]
   }
 }
 
@@ -1558,100 +1564,6 @@ config("compiler_arm") {
   }
 }
 
-# Rust and C++ both provide intrinsics for LLVM to call for math operations. We
-# want to use the C++ intrinsics, not the ones in the Rust compiler_builtins
-# library. The Rust symbols are marked as weak, so that they can be replaced by
-# the C++ symbols. This config ensures the C++ symbols exist and are strong in
-# order to cause that replacement to occur by explicitly linking in clang's
-# compiler-rt library.
-config("compiler_builtins") {
-  visibility = [ ":runtime_library" ]
-
-  _supported = true
-  _dir = ""
-  _libname = "builtins"
-  _prefix = "lib"
-  _suffix = ""
-  _ext = "a"
-  if (!toolchain_has_rust) {
-    # Since there's no Rust in the toolchain, there's no concern that we'll use
-    # the Rust stdlib's intrinsics here.
-    _supported = false
-  } else if (is_win) {
-    _dir = "windows"
-    _prefix = ""
-    _ext = "lib"
-    if (current_cpu == "x64") {
-      _suffix = "-x86_64"
-    } else if (current_cpu == "x86") {
-      _suffix = "-i386"
-    } else {
-      assert(false)  # Unhandled cpu type
-    }
-  } else if (is_mac) {
-    _dir = "darwin"
-    _libname = "osx"
-  } else if (is_ios) {
-    import("//build/config/ios/config.gni")  # For `target_environment`
-
-    _dir = "darwin"
-    if (target_environment == "simulator") {
-      _libname = "iossim"
-    } else {
-      _libname = "ios"
-    }
-  } else if (is_linux || is_chromeos) {
-    if (current_cpu == "x64") {
-      _dir = "x86_64-unknown-linux-gnu"
-    } else if (current_cpu == "x86") {
-      _dir = "i386-unknown-linux-gnu"
-    } else if (current_cpu == "arm") {
-      _dir = "armv7-unknown-linux-gnueabihf"
-    } else if (current_cpu == "arm64") {
-      _dir = "aarch64-unknown-linux-gnu"
-    } else {
-      assert(false)  # Unhandled cpu type
-    }
-  } else if (is_fuchsia) {
-    if (current_cpu == "x64") {
-      _dir = "x86_64-unknown-fuchsia"
-    } else if (current_cpu == "arm64") {
-      _dir = "aarch64-unknown-fuchsia"
-    } else {
-      assert(false)  # Unhandled cpu type
-    }
-  } else if (is_android) {
-    _dir = "linux"
-    if (current_cpu == "x64") {
-      _suffix = "-x86_64-android"
-    } else if (current_cpu == "x86") {
-      _suffix = "-i686-android"
-    } else if (current_cpu == "arm") {
-      _suffix = "-arm-android"
-    } else if (current_cpu == "arm64") {
-      _suffix = "-aarch64-android"
-    } else {
-      assert(false)  # Unhandled cpu type
-    }
-  } else {
-    assert(false)  # Unhandled target platform
-  }
-
-  if (_supported) {
-    _clang_lib_dir = "$clang_base_path/lib/clang/$clang_version/lib"
-    _lib_file = "${_prefix}clang_rt.${_libname}${_suffix}.${_ext}"
-    libs = [ "$_clang_lib_dir/$_dir/$_lib_file" ]
-  } else {
-    not_needed([
-                 "_dir",
-                 "_libname",
-                 "_prefix",
-                 "_suffix",
-                 "_ext",
-               ])
-  }
-}
-
 # runtime_library -------------------------------------------------------------
 #
 # Sets the runtime library and associated options.
@@ -1673,14 +1585,26 @@ config("runtime_library") {
     configs += [ "//build/config/c++:runtime_library" ]
   }
 
-  if (toolchain_has_rust) {
-    configs += [ ":compiler_builtins" ]
+  # Rust and C++ both provide intrinsics for LLVM to call for math operations. We
+  # want to use the C++ intrinsics, not the ones in the Rust compiler_builtins
+  # library. The Rust symbols are marked as weak, so that they can be replaced by
+  # the C++ symbols. This config ensures the C++ symbols exist and are strong in
+  # order to cause that replacement to occur by explicitly linking in clang's
+  # compiler-rt library.
+  if (is_clang && toolchain_has_rust) {
+    configs += [ "//build/config/clang:compiler_builtins" ]
   }
 
   # TODO(crbug.com/830987): Come up with a better name for is POSIX + Fuchsia
   # configuration.
   if (is_posix || is_fuchsia) {
     configs += [ "//build/config/posix:runtime_library" ]
+
+    if (use_custom_libunwind) {
+      # Instead of using an unwind lib from the toolchain,
+      # buildtools/third_party/libunwind will be built and used directly.
+      ldflags = [ "--unwindlib=none" ]
+    }
   }
 
   # System-specific flags. If your compiler flags apply to one of the
@@ -1829,6 +1753,11 @@ config("default_warnings") {
         cflags += [ "-Wno-nonportable-include-path" ]
       }
 
+      if (is_fuchsia && llvm_force_head_revision) {
+        # TODO(https://crbug.com/1474032): fix and reenable
+        cflags += [ "-Wno-deprecated-literal-operator" ]
+      }
+
       cflags += [
         "-Wenum-compare-conditional",
 
@@ -1848,14 +1777,26 @@ config("default_warnings") {
           # TODO(crbug.com/1412713) Evaluate and possibly enable.
           "-Wno-deprecated-this-capture",
         ]
-
-        if (llvm_force_head_revision) {
-          # TODO(https://crbug.com/1448905): Evaluate and possibly enable.
-          cflags += [ "-Wno-builtin-macro-redefined" ]
-        }
       }
     }
+
+    # Some builders, such as Cronet, use a different version of Clang than
+    # Chromium. This can cause minor errors when compiling Chromium changes. We
+    # want to avoid these errors.
+    if (use_lenient_compiler_flags) {
+      cflags += [
+        "-Wno-error=unknown-warning-option",
+        "-Wno-error=unused-command-line-argument",
+      ]
+    }
   }
+
+  # Rust warnings
+
+  # Require `unsafe` blocks even in `unsafe` fns. This is intended to become
+  # an error by default eventually; see
+  # https://github.com/rust-lang/rust/issues/71668
+  rustflags = [ "-Dunsafe_op_in_unsafe_fn" ]
 }
 
 # prevent_unsafe_narrowing ----------------------------------------------------
@@ -1950,7 +1891,14 @@ config("chromium_code") {
       # Non-chromium code is not guaranteed to compile cleanly with
       # _FORTIFY_SOURCE. Also, fortified build may fail when optimizations are
       # disabled, so only do that for Release build.
-      defines += [ "_FORTIFY_SOURCE=2" ]
+      fortify_level = "2"
+
+      # ChromeOS supports a high-quality _FORTIFY_SOURCE=3 implementation
+      # with a few custom glibc patches. Use that if it's available.
+      if (is_chromeos_ash) {
+        fortify_level = "3"
+      }
+      defines += [ "_FORTIFY_SOURCE=" + fortify_level ]
     }
 
     if (is_apple) {
@@ -1972,13 +1920,11 @@ config("chromium_code") {
 
       # Warn on unnecessary extra semicolons outside of function definitions.
       "-Wextra-semi",
-    ]
 
-    # TODO(thakis): Enable this more often, https://crbug.com/346399
-    # use_fuzzing_engine_with_lpm: https://crbug.com/1063180
-    if ((!is_nacl || is_nacl_saigo) && !use_fuzzing_engine_with_lpm) {
-      cflags += [ "-Wunreachable-code-aggressive" ]
-    }
+      # Warn on unreachable code, including unreachable breaks and returns.
+      # See https://crbug.com/346399#c148 for suppression strategies.
+      "-Wunreachable-code-aggressive",
+    ]
 
     # Thread safety analysis is broken under nacl: https://crbug.com/982423.
     if (!is_nacl || is_nacl_saigo) {
@@ -2058,7 +2004,7 @@ config("no_chromium_code") {
 config("noshadowing") {
   # This flag has to be disabled for nacl because the nacl compiler is too
   # strict about shadowing.
-  if (is_clang && (!is_nacl || is_nacl_saigo) && !llvm_force_head_revision) {
+  if (is_clang && (!is_nacl || is_nacl_saigo)) {
     cflags = [ "-Wshadow" ]
   }
 }
@@ -2560,6 +2506,14 @@ config("afdo") {
       if (use_profi) {
         cflags += [ "-fsample-profile-use-profi" ]
       }
+
+      # crbug.com/1459429: ARM builds see failures due to -Wbackend-plugin.
+      # These seem to be false positives - the complaints are about functions
+      # marked with `__nodebug__` not having associated debuginfo. In the case
+      # where this was observed, the `__nodebug__` function was also marked
+      # `__always_inline__` and had no branches, so AFDO info is likely useless
+      # there.
+      cflags += [ "-Wno-backend-plugin" ]
       inputs = [ _clang_sample_profile ]
     }
   } else if (auto_profile_path != "" && is_a_target_toolchain) {
@@ -2641,11 +2595,17 @@ config("symbols") {
       if (use_dwarf5) {
         cflags += [ "-gdwarf-5" ]
         rustflags += [ "-Zdwarf-version=5" ]
-      } else if (!is_apple) {
+      } else {
         # Recent clang versions default to DWARF5 on Linux, and Android is about
-        # to switch. TODO: Adopt that in controlled way.
-        # Apple platforms still default to 4, so the flag is not needed there.
-        cflags += [ "-gdwarf-4" ]
+        # to switch. TODO: Adopt that in controlled way. For now, keep DWARF4.
+        # Apple platforms still default to 4 in clang, so they don't need the
+        # cflags.
+        if (!is_apple) {
+          cflags += [ "-gdwarf-4" ]
+        }
+
+        # On Apple, rustc defaults to DWARF2 so it needs to be told how to
+        # match clang.
         rustflags += [ "-Zdwarf-version=4" ]
       }
     }
@@ -2866,36 +2826,35 @@ config("strip_debug") {
 }
 
 if (is_apple) {
-  # On Mac and iOS, this enables support for ARC (automatic ref-counting).
-  # See http://clang.llvm.org/docs/AutomaticReferenceCounting.html.
+  # On macOS and iOS, this enables support for ARC (automatic reference
+  # counting). See http://clang.llvm.org/docs/AutomaticReferenceCounting.html.
+  #
+  # -fobjc-arc enables ARC overall.
+  #
+  # ARC does not add exception handlers to pure Objective-C code, but does add
+  # them to Objective-C++ code with the rationale that C++ pervasively adds them
+  # in for exception safety. However, exceptions are banned in Chromium code for
+  # C++ and exceptions in Objective-C code are intended to be fatal, so
+  # -fno-objc-arc-exceptions is specified to disable these unwanted exception
+  # handlers.
   config("enable_arc") {
-    common_flags = [ "-fobjc-arc" ]
+    common_flags = [
+      "-fobjc-arc",
+      "-fno-objc-arc-exceptions",
+    ]
     cflags_objc = common_flags
     cflags_objcc = common_flags
   }
 }
 
-if (is_chromeos_ash && is_chromeos_device) {
-  # This config is intended to be a temporary to facilitate
-  # the transition to use orderfile in Chrome OS. Once orderfile
-  # use becomes a default in Chrome OS, this config should not
-  # be needed.
-  config("use_orderfile_for_hugepage") {
-    if (chrome_orderfile_path != "") {
-      defines = [ "CHROMEOS_ORDERFILE_USE" ]
-    }
-  }
-}
-
-if (is_android || (is_chromeos_ash && is_chromeos_device)) {
-  # Use orderfile for linking Chrome on Android and Chrome OS.
+if (is_android) {
+  # Use orderfile for linking Chrome on Android.
   # This config enables using an orderfile for linking in LLD.
   config("chrome_orderfile_config") {
     # Don't try to use an orderfile with call graph sorting, except on Android,
     # where we care about memory used by code, so we still want to mandate
     # ordering.
-    if (chrome_orderfile_path != "" &&
-        (is_android || !enable_call_graph_profile_sort)) {
+    if (chrome_orderfile_path != "") {
       assert(use_lld)
       _rebased_orderfile = rebase_path(chrome_orderfile_path, root_build_dir)
       ldflags = [

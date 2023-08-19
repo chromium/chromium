@@ -17,11 +17,9 @@ source_set("javascript_feature") {
     "//ios/web/public/js_messaging",
     "//net",
   ]
-  configs += [ "//build/config/compiler:enable_arc" ]
 }
 
 source_set("utils") {
-  configs += [ "//build/config/compiler:enable_arc" ]
   sources = [
     "follow_util.h",
     "follow_util.mm",
@@ -39,7 +37,6 @@ source_set("utils") {
 }
 
 source_set("enums") {
-  configs += [ "//build/config/compiler:enable_arc" ]
   sources = [
     "follow_action_state.h",
     "followed_web_site_state.h",
@@ -65,23 +62,21 @@ source_set("tab_helper") {
     "//components/keyed_service/core",
     "//ios/chrome/app/strings",
     "//ios/chrome/browser/feature_engagement",
-    "//ios/chrome/browser/flags:system_flags",
     "//ios/chrome/browser/follow:enums",
     "//ios/chrome/browser/follow:utils",
     "//ios/chrome/browser/history",
     "//ios/chrome/browser/ntp:features",
     "//ios/chrome/browser/shared/model/browser_state",
     "//ios/chrome/browser/shared/model/url",
+    "//ios/chrome/browser/shared/public/features:system_flags",
     "//ios/chrome/browser/signin",
     "//ios/web/public",
     "//ios/web/public/js_messaging",
     "//ui/base",
   ]
-  configs += [ "//build/config/compiler:enable_arc" ]
 }
 
 source_set("service") {
-  configs += [ "//build/config/compiler:enable_arc" ]
   sources = [
     "follow_configuration.h",
     "follow_configuration.mm",
@@ -101,7 +96,6 @@ source_set("service") {
 }
 
 source_set("service_factory") {
-  configs += [ "//build/config/compiler:enable_arc" ]
   sources = [
     "follow_service_factory.h",
     "follow_service_factory.mm",
@@ -119,7 +113,6 @@ source_set("service_factory") {
 }
 
 source_set("browser_agent") {
-  configs += [ "//build/config/compiler:enable_arc" ]
   sources = [
     "follow_browser_agent.h",
     "follow_browser_agent.mm",
@@ -134,7 +127,6 @@ source_set("browser_agent") {
     "//ios/chrome/app/strings",
     "//ios/chrome/browser/discover_feed:discover_feed",
     "//ios/chrome/browser/discover_feed:discover_feed_factory",
-    "//ios/chrome/browser/flags:system_flags",
     "//ios/chrome/browser/follow:service",
     "//ios/chrome/browser/follow:service_factory",
     "//ios/chrome/browser/net:crurl",
@@ -142,6 +134,7 @@ source_set("browser_agent") {
     "//ios/chrome/browser/shared/model/browser_state",
     "//ios/chrome/browser/shared/model/prefs:pref_names",
     "//ios/chrome/browser/shared/public/commands",
+    "//ios/chrome/browser/shared/public/features:system_flags",
     "//ios/chrome/browser/ui/follow",
     "//ios/chrome/browser/ui/ntp/metrics",
     "//ui/base",
@@ -154,13 +147,10 @@ source_set("feature_flags") {
     "follow_features.mm",
   ]
 
-  configs += [ "//build/config/compiler:enable_arc" ]
-
   deps = [ "//base" ]
 }
 
 source_set("unit_tests") {
-  configs += [ "//build/config/compiler:enable_arc" ]
   testonly = true
   sources = [
     "follow_java_script_feature_unittest.mm",

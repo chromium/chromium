@@ -30,9 +30,9 @@
 #endif
 
 #if BUILDFLAG(ENABLE_SUPERVISED_USERS)
-#include "chrome/browser/content_settings/content_settings_supervised_provider.h"
 #include "chrome/browser/profiles/profile_key.h"
 #include "chrome/browser/supervised_user/supervised_user_settings_service_factory.h"
+#include "components/supervised_user/core/browser/supervised_user_content_settings_provider.h"
 #include "components/supervised_user/core/browser/supervised_user_settings_service.h"
 #endif
 
@@ -76,8 +76,7 @@ HostContentSettingsMapFactory::HostContentSettingsMapFactory()
 #endif
 }
 
-HostContentSettingsMapFactory::~HostContentSettingsMapFactory() {
-}
+HostContentSettingsMapFactory::~HostContentSettingsMapFactory() = default;
 
 // static
 HostContentSettingsMap* HostContentSettingsMapFactory::GetForProfile(
@@ -90,7 +89,8 @@ HostContentSettingsMap* HostContentSettingsMapFactory::GetForProfile(
 
 // static
 HostContentSettingsMapFactory* HostContentSettingsMapFactory::GetInstance() {
-  return base::Singleton<HostContentSettingsMapFactory>::get();
+  static base::NoDestructor<HostContentSettingsMapFactory> instance;
+  return instance.get();
 }
 
 scoped_refptr<RefcountedKeyedService>
@@ -150,8 +150,10 @@ scoped_refptr<RefcountedKeyedService>
       SupervisedUserSettingsServiceFactory::GetForKey(profile->GetProfileKey());
   // This may be null in testing.
   if (supervised_service) {
-    std::unique_ptr<content_settings::SupervisedProvider> supervised_provider(
-        new content_settings::SupervisedProvider(supervised_service));
+    std::unique_ptr<supervised_user::SupervisedUserContentSettingsProvider>
+        supervised_provider(
+            new supervised_user::SupervisedUserContentSettingsProvider(
+                supervised_service));
     settings_map->RegisterProvider(HostContentSettingsMap::SUPERVISED_PROVIDER,
                                    std::move(supervised_provider));
   }

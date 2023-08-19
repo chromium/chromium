@@ -2,7 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {ESimManagerObserverInterface, ESimOperationResult, ESimProfile, ESimProfileProperties, Euicc, EuiccProperties, ProfileInstallResult, ProfileState, QRCode} from 'chrome://resources/mojo/chromeos/ash/services/cellular_setup/public/mojom/esim_manager.mojom-webui.js';
+import {ESimManagerInterface, ESimManagerObserverInterface, ESimOperationResult, ESimProfile, ESimProfileProperties, ESimProfileRemote, EuiccInterface, EuiccProperties, EuiccRemote, ProfileInstallMethod, ProfileInstallResult, ProfileState, QRCode} from 'chrome://resources/mojo/chromeos/ash/services/cellular_setup/public/mojom/esim_manager.mojom-webui.js';
+import {String16} from 'chrome://resources/mojo/mojo/public/mojom/base/string16.mojom-webui.js';
 
 /** @implements {ESimProfile} */
 class FakeProfile {
@@ -29,7 +30,6 @@ class FakeProfile {
   }
 
   /**
-   * @override
    * @return {!Promise<{properties: ESimProfileProperties},}>}
    */
   getProperties() {
@@ -60,7 +60,6 @@ class FakeProfile {
   }
 
   /**
-   * @override
    * @param {string} confirmationCode
    * @return {!Promise<{result:
    *     ProfileInstallResult},}>}
@@ -125,8 +124,7 @@ class FakeProfile {
   }
 
   /**
-   * @override
-   * @param {?mojoBase.mojom.String16} nickname
+   * @param {?String16} nickname
    * @return {!Promise<{result: ESimOperationResult},}>}
    */
   setProfileNickname(nickname) {
@@ -147,7 +145,6 @@ class FakeProfile {
     });
   }
 
-  /** @override */
   uninstallProfile() {
     this.fakeEuicc_.notifyProfileChangedForTest(this);
     this.defferedUninstallProfilePromise_ = this.deferredPromise_();
@@ -171,7 +168,7 @@ class FakeProfile {
   }
 }
 
-/** @implements {Euicc} */
+/** @implements {EuiccInterface} */
 class FakeEuicc {
   constructor(eid, numProfiles, fakeESimManager) {
     this.fakeESimManager_ = fakeESimManager;
@@ -184,7 +181,6 @@ class FakeEuicc {
   }
 
   /**
-   * @override
    * @return {!Promise<{properties: EuiccProperties},}>}
    */
   getProperties() {
@@ -192,7 +188,6 @@ class FakeEuicc {
   }
 
   /**
-   * @override
    * @return {!Promise<{result:
    *     ESimOperationResult},}>}
    */
@@ -203,8 +198,21 @@ class FakeEuicc {
   }
 
   /**
-   * @override
-   * @return {!Promise<{profiles: Array<!ESimProfile>,}>}
+   * @return {!Promise<{result:ESimOperationResult,
+   *     profiles:Array<!ESimProfileProperties>,}}
+   *
+   */
+  requestAvailableProfiles() {
+    return Promise.resolve({
+      result: this.requestPendingProfilesResult_,
+      profiles: this.profiles_.map(profile => {
+        return profile.properties;
+      }),
+    });
+  }
+
+  /**
+   * @return {!Promise<{profiles: Array<!ESimProfileRemote>,}>}
    */
   getProfileList() {
     return Promise.resolve({
@@ -213,8 +221,7 @@ class FakeEuicc {
   }
 
   /**
-   * @override
-   * @return {!Promise<{qrCode: QRCode} | null>}
+   * @return {!Promise<{qrCode: QRCode| null}>}
    */
   getEidQRCode() {
     if (this.eidQRCode_) {
@@ -225,18 +232,19 @@ class FakeEuicc {
   }
 
   /**
-   * @override
    * @param {string} activationCode
    * @param {string} confirmationCode
-   * @param {boolean} isInstallViaQrCode
-   * @return {!Promise<{result: ProfileInstallResult},}>}
+   * @param {ProfileInstallMethod} installMethod
+   * @return {!Promise<{result: ProfileInstallResult, profile: ESimProfileRemote
+   *     | null },}>}
    */
   installProfileFromActivationCode(
-      activationCode, confirmationCode, isInstallViaQrCode) {
+      activationCode, confirmationCode, installMethod) {
     this.notifyProfileListChangedForTest();
     return Promise.resolve({
       result: this.profileInstallResult_ ? this.profileInstallResult_ :
                                            ProfileInstallResult.kSuccess,
+      profile: null,
     });
   }
 
@@ -310,8 +318,7 @@ export class FakeESimManagerRemote {
   }
 
   /**
-   * @override
-   * @return {!Promise<{euiccs: !Array<!Euicc>,}>}
+   * @return {!Promise<{euiccs: !Array<!EuiccRemote>,}>}
    */
   getAvailableEuiccs() {
     return Promise.resolve({

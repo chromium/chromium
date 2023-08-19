@@ -27,10 +27,6 @@
 #import "third_party/ocmock/OCMock/OCMock.h"
 #import "url/gurl.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 using app_launcher_overlays::AppLaunchConfirmationRequest;
 using app_launcher_overlays::AllowAppLaunchResponse;
 
@@ -148,7 +144,7 @@ TEST_F(AppLauncherBrowserAgentTest, MailToUrlLaunchesApp) {
   // the application will open the URL.
   OCMExpect([application_ openURL:net::NSURLWithGURL(kMailToUrl)
                           options:@{}
-                completionHandler:nil]);
+                completionHandler:[OCMArg isNotNil]]);
   AppLauncherTabHelper::FromWebState(web_state)->RequestToLaunchApp(
       kMailToUrl, kSourcePageUrl, /*link_transition=*/true);
 

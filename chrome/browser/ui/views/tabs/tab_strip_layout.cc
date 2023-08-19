@@ -8,6 +8,7 @@
 
 #include <algorithm>
 
+#include "chrome/browser/ui/layout_constants.h"
 #include "chrome/browser/ui/tabs/tab_style.h"
 #include "ui/gfx/animation/tween.h"
 #include "ui/gfx/geometry/rect.h"
@@ -139,7 +140,8 @@ std::vector<gfx::Rect> CalculateTabBounds(
   std::vector<gfx::Rect> bounds;
   for (const TabWidthConstraints& tab : tabs) {
     const int tab_width = tab_sizer.CalculateTabWidth(tab);
-    bounds.emplace_back(next_x, 0, tab_width, layout_constants.tab_height);
+    bounds.emplace_back(next_x, GetLayoutConstant(TAB_STRIP_PADDING), tab_width,
+                        layout_constants.tab_height);
     next_x += tab_width - layout_constants.tab_overlap;
   }
 

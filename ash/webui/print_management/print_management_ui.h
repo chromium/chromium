@@ -23,6 +23,8 @@ namespace ash {
 namespace printing {
 namespace printing_manager {
 
+class PrintManagementDelegate;
+class PrintManagementHandler;
 class PrintManagementUI;
 
 // The WebUIConfig for chrome://print-management/.
@@ -45,7 +47,8 @@ class PrintManagementUI : public ui::MojoWebUIController {
   // |callback_| should bind the pending receiver to an implementation of
   // chromeos::printing::printing_manager::mojom::PrintingMetadataProvider.
   PrintManagementUI(content::WebUI* web_ui,
-                    BindPrintingMetadataProviderCallback callback_);
+                    BindPrintingMetadataProviderCallback callback_,
+                    std::unique_ptr<PrintManagementDelegate> delegate);
   ~PrintManagementUI() override;
 
   PrintManagementUI(const PrintManagementUI&) = delete;
@@ -60,11 +63,21 @@ class PrintManagementUI : public ui::MojoWebUIController {
           receiver);
 
   void BindInterface(
+      mojo::PendingReceiver<
+          chromeos::printing::printing_manager::mojom::PrintManagementHandler>
+          receiver);
+
+  void BindInterface(
       mojo::PendingReceiver<color_change_listener::mojom::PageHandler>
           receiver);
 
  private:
   const BindPrintingMetadataProviderCallback bind_pending_receiver_callback_;
+
+  // The print management handler provides extra functionality such as opening
+  // Printer settings.
+  std::unique_ptr<ash::printing::printing_manager::PrintManagementHandler>
+      print_management_handler_;
 
   // The color change handler notifies the WebUI when the color provider
   // changes.

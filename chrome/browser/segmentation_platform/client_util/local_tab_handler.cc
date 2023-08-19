@@ -72,6 +72,18 @@ std::vector<TabFetcher::TabEntry> FetchTabs(const Profile* profile) {
 
 #endif  // BUILDFLAG(IS_ANDROID)
 
+GURL GetLocalTabURL(const TabFetcher::Tab& tab) {
+  if (tab.webcontents) {
+    return tab.webcontents->GetURL();
+  }
+#if BUILDFLAG(IS_ANDROID)
+  if (tab.tab_android) {
+    return tab.tab_android->GetURL();
+  }
+#endif
+  return GURL();
+}
+
 // Returns the time since last time the tab was modified.
 base::TimeDelta GetLocalTimeSinceModified(const TabFetcher::Tab& tab) {
   base::Time last_modified_timestamp;
@@ -114,15 +126,12 @@ TabFetcher::Tab LocalTabHandler::FindLocalTab(const TabEntry& entry) {
           reinterpret_cast<content::WebContents*>(tab.web_contents_data.get());
       result.tab_android =
           reinterpret_cast<TabAndroid*>(tab.tab_android_data.get());
+      result.time_since_modified = GetLocalTimeSinceModified(result);
+      result.tab_url = GetLocalTabURL(result);
       break;
     }
   }
   return result;
-}
-
-base::TimeDelta LocalTabHandler::GetLocalTabTimeSinceModified(
-    const TabFetcher::Tab& tab) {
-  return GetLocalTimeSinceModified(tab);
 }
 
 LocalTabSource::LocalTabSource(

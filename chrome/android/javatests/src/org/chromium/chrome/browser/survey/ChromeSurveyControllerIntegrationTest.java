@@ -20,7 +20,6 @@ import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.CriteriaHelper;
-import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Restriction;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
@@ -30,7 +29,7 @@ import org.chromium.chrome.browser.preferences.SharedPreferencesManager;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
-import org.chromium.chrome.test.util.browser.Features;
+import org.chromium.chrome.test.util.browser.Features.EnableFeatures;
 import org.chromium.components.messages.DismissReason;
 import org.chromium.components.messages.MessageBannerProperties;
 import org.chromium.components.messages.MessageDispatcher;
@@ -50,7 +49,7 @@ import java.util.concurrent.TimeoutException;
 // clang-format off
 @RunWith(ChromeJUnit4ClassRunner.class)
 @Restriction(UiRestriction.RESTRICTION_TYPE_PHONE)
-@Features.EnableFeatures(ChromeFeatureList.CHROME_SURVEY_NEXT_ANDROID)
+@EnableFeatures(ChromeFeatureList.CHROME_SURVEY_NEXT_ANDROID)
 @CommandLineFlags.Add({
     ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE, ChromeSwitches.CHROME_FORCE_ENABLE_SURVEY,
     ChromeSurveyController.COMMAND_LINE_PARAM_NAME + "=" +
@@ -97,16 +96,13 @@ public class ChromeSurveyControllerIntegrationTest {
 
     @After
     public void tearDown() {
-        SurveyController.setInstanceForTesting(null);
         mSharedPreferenceManager.removeKey(mPrefKey);
-        ChromeSurveyController.forceIsUMAEnabledForTesting(false);
         ChromeSurveyController.resetMessageShownForTesting();
     }
 
-    @DisabledTest(message = "https:://crbug.com/1447519")
     @Test
     @MediumTest
-    public void testMessagePrimaryButtonClicked() throws TimeoutException, ExecutionException {
+    public void testMessagePrimaryButtonClicked() {
         PropertyModel message = getSurveyMessage();
         Assert.assertNotNull("Message should not be null.", message);
 
@@ -121,20 +117,18 @@ public class ChromeSurveyControllerIntegrationTest {
                 mTestSurveyController.showSurveyCallbackHelper.getCallCount());
     }
 
-    @DisabledTest(message = "https:://crbug.com/1447519")
     @Test
     @MediumTest
-    public void testMessageDismissed() throws TimeoutException, ExecutionException {
+    public void testMessageDismissed() {
         PropertyModel message = getSurveyMessage();
         Assert.assertNotNull("Message should not be null.", message);
         TestThreadUtils.runOnUiThreadBlocking(
                 () -> mMessageDispatcher.dismissMessage(message, DismissReason.GESTURE));
     }
 
-    @DisabledTest(message = "https:://crbug.com/1447519")
     @Test
     @MediumTest
-    public void testNoMessageInNewTab() throws InterruptedException, ExecutionException {
+    public void testNoMessageInNewTab() throws InterruptedException {
         // Simulate message visibility for the auto-dismiss duration length of time.
         waitUntilSurveyPromptStateRecorded(MESSAGE_AUTO_DISMISS_DURATION_MS);
 
@@ -149,6 +143,10 @@ public class ChromeSurveyControllerIntegrationTest {
         Tab tab = mActivityTestRule.getActivity().getActivityTab();
         waitUntilTabIsReady(tab);
         mTestSurveyController.downloadCallbackHelper.waitForFirst();
+        // After getting the survey response, it might take momentarily longer for the message to be
+        // shown. Wait until the message is shown before proceeding.
+        CriteriaHelper.pollUiThread(
+                () -> getSurveyMessage() != null, "Survey message should be shown.");
         Assert.assertNotNull("Tab should have a message.", getSurveyMessage());
     }
 

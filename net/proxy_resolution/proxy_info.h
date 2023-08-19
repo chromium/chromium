@@ -57,6 +57,11 @@ class NET_EXPORT ProxyInfo {
   // proxy configuration.
   void OverrideProxyList(const ProxyList& proxy_list);
 
+  // Indicates that this is a proxy for IP Protection.
+  void set_is_for_ip_protection(bool is_for_ip_protection) {
+    is_for_ip_protection_ = is_for_ip_protection;
+  }
+
   // Returns true if this proxy info specifies a direct connection.
   bool is_direct() const {
     // We don't implicitly fallback to DIRECT unless it was added to the list.
@@ -122,6 +127,9 @@ class NET_EXPORT ProxyInfo {
   bool did_bypass_proxy() const {
     return did_bypass_proxy_;
   }
+
+  // Returns true if this proxy info is for IP Protection.
+  bool is_for_ip_protection() const { return is_for_ip_protection_; }
 
   // Returns the first valid proxy server. is_empty() must be false to be able
   // to call this function.
@@ -194,6 +202,9 @@ class NET_EXPORT ProxyInfo {
 
   // Whether the proxy result represent a proxy bypass.
   bool did_bypass_proxy_ = false;
+
+  // Whether this proxy is for IP Protection.
+  bool is_for_ip_protection_ = false;
 
   // How long it took to resolve the proxy.  Times are both null if proxy was
   // determined synchronously without running a PAC.

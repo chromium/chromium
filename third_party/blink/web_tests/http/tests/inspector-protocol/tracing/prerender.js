@@ -1,34 +1,40 @@
 (async function(testRunner) {
   const pageUrl =
       'http://127.0.0.1:8000/inspector-protocol/prerender/resources/inspector-protocol-page.html';
-  const {page, session, dp} = await testRunner.startURL(
-      pageUrl, 'Test that prerender page is included in the trace events');
+  const {tabTargetSession} = await testRunner.startBlankWithTabTarget(
+      'Test that prerender page is included in the trace events');
 
-  const bp = testRunner.browserP();
-  const tabs = (await bp.Target.getTargets({
-                 filter: [{type: 'tab'}]
-               })).result.targetInfos;
-  const tabUnderTest = tabs.find(target => target.url === pageUrl);
-
-  const tabSessionId = (await bp.Target.attachToTarget({
-                         targetId: tabUnderTest.targetId,
-                         flatten: true
-                       })).result.sessionId;
-  const tabSession = testRunner.browserSession().createChild(tabSessionId);
-  const tp = tabSession.protocol;
+  const tp = tabTargetSession.protocol;
 
   const TracingHelper =
       await testRunner.loadScript('../resources/tracing-test.js');
-  const tracingHelper = new TracingHelper(testRunner, tabSession);
+  const tracingHelper = new TracingHelper(testRunner, tabTargetSession);
+
+  const childTargetManager =
+      new TestRunner.ChildTargetManager(testRunner, tabTargetSession);
+  await childTargetManager.startAutoAttach();
+  const primarySession =
+      childTargetManager.findAttachedSessionPrimaryMainFrame();
+  const dp = primarySession.protocol;
+
+  primarySession.navigate(pageUrl);
 
   await dp.Preload.enable();
   await tracingHelper.startTracing();
 
-  page.navigate('../prerender/resources/simple-prerender.html');
+  primarySession.navigate('../prerender/resources/simple-prerender.html');
   await dp.Preload.oncePrerenderStatusUpdated(e => e.params.status == 'Ready');
+  const prerenderSession = childTargetManager.findAttachedSessionPrerender();
+  const pp = prerenderSession.protocol;
+  await Promise.all([pp.Preload.enable(), pp.Page.enable()]);
+  primarySession.evaluate(`document.getElementById('link').click()`);
 
-  session.evaluate(`document.getElementById('link').click()`);
-  await dp.Preload.oncePrerenderAttemptCompleted();
+  await Promise.all([
+    pp.Preload.oncePrerenderAttemptCompleted(),
+    pp.Page.setLifecycleEventsEnabled({ enabled: true }),
+    pp.Page.onceLifecycleEvent(event => event.params.name === 'load'),
+  ]);
+
   const devtoolsEvents = await tracingHelper.stopTracing();
   const prerenderFrameCommitted =
       tracingHelper

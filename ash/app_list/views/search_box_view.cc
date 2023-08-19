@@ -19,6 +19,7 @@
 #include "ash/app_list/views/result_selection_controller.h"
 #include "ash/app_list/views/search_box_view_delegate.h"
 #include "ash/app_list/views/search_result_base_view.h"
+#include "ash/ash_element_identifiers.h"
 #include "ash/constants/ash_features.h"
 #include "ash/keyboard/ui/keyboard_ui_controller.h"
 #include "ash/public/cpp/app_list/app_list_config.h"
@@ -33,7 +34,9 @@
 #include "ash/style/ash_color_provider.h"
 #include "ash/style/typography.h"
 #include "ash/user_education/user_education_class_properties.h"
-#include "ash/user_education/user_education_constants.h"
+#include "ash/user_education/welcome_tour/welcome_tour_metrics.h"
+#include "base/containers/contains.h"
+#include "base/i18n/case_conversion.h"
 #include "base/i18n/rtl.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
@@ -41,6 +44,7 @@
 #include "base/notreached.h"
 #include "base/rand_util.h"
 #include "base/ranges/algorithm.h"
+#include "base/strings/string_util.h"
 #include "chromeos/constants/chromeos_features.h"
 #include "chromeos/ui/vector_icons/vector_icons.h"
 #include "components/vector_icons/vector_icons.h"
@@ -112,18 +116,18 @@ constexpr SearchBoxView::PlaceholderTextType kGamingPlaceholders[4] = {
     SearchBoxView::PlaceholderTextType::kGames,
 };
 
-constexpr views::Radii kAssistantButtonBackgroundRadiiLTR = {
-    .top_left = 18.0f,
-    .top_right = 18.0f,
-    .bottom_right = 4.0f,
-    .bottom_left = 18.0f,
+constexpr gfx::RoundedCornersF kAssistantButtonBackgroundRadiiLTR = {
+    18,
+    18,
+    4,
+    18,
 };
 
-constexpr views::Radii kAssistantButtonBackgroundRadiiRTL = {
-    .top_left = 18.0f,
-    .top_right = 18.0f,
-    .bottom_right = 18.0f,
-    .bottom_left = 4.0f,
+constexpr gfx::RoundedCornersF kAssistantButtonBackgroundRadiiRTL = {
+    18,
+    18,
+    18,
+    4,
 };
 
 bool IsTrimmedQueryEmpty(const std::u16string& query) {
@@ -169,11 +173,12 @@ std::u16string GetCategoryName(SearchResult* search_result) {
 bool IsSubstringCaseInsensitive(std::u16string haystack_expr,
                                 std::u16string needle_expr) {
   // Convert complete given String to lower case
-  base::ranges::transform(haystack_expr, haystack_expr.begin(), ::tolower);
+  std::u16string haystack = base::i18n::ToLower(haystack_expr);
   // Convert complete given Sub String to lower case
-  base::ranges::transform(needle_expr, needle_expr.begin(), ::tolower);
-  // Find sub string in given string
-  return haystack_expr.find(needle_expr) != std::string::npos;
+  std::u16string needle = base::i18n::ToLower(needle_expr);
+
+  // Find substring in the given string
+  return base::Contains(haystack, needle);
 }
 
 void RecordAutocompleteMatchMetric(SearchBoxTextMatch match_type) {
@@ -253,8 +258,8 @@ SearchBoxView::SearchBoxView(SearchBoxViewDelegate* delegate,
     // NOTE: Set `kHelpBubbleContextKey` before `views::kElementIdentifierKey`
     // in case registration causes a help bubble to be created synchronously.
     SetProperty(kHelpBubbleContextKey, HelpBubbleContext::kAsh);
-    SetProperty(views::kElementIdentifierKey, kSearchBoxViewElementId);
   }
+  SetProperty(views::kElementIdentifierKey, kSearchBoxViewElementId);
 
   if (is_jelly_enabled_) {
     auto font_list = TypographyProvider::Get()->ResolveTypographyToken(
@@ -388,6 +393,11 @@ void SearchBoxView::HandleQueryChange(const std::u16string& query,
       base::RecordAction(base::UserMetricsAction("AppList_SearchQueryStarted"));
       // Set 'user_initiated_model_update_time_' when initiating a new query.
       user_initiated_model_update_time_ = current_time;
+
+      if (features::IsWelcomeTourEnabled()) {
+        welcome_tour_metrics::RecordInteraction(
+            welcome_tour_metrics::Interaction::kSearch);
+      }
     } else if (!current_query_.empty() && query.empty()) {
       base::RecordAction(base::UserMetricsAction("AppList_LeaveSearch"));
       // Reset 'user_initiated_model_update_time_' when clearing the search_box.
@@ -518,6 +528,7 @@ void SearchBoxView::OnThemeChanged() {
       gfx::CreateVectorIcon(chromeos::kAssistantIcon, GetSearchBoxIconSize(),
                             button_icon_color));
   auto* focus_ring = views::FocusRing::Get(assistant_button());
+  focus_ring->SetOutsetFocusRingDisabled(true);
   focus_ring->SetColorId(GetFocusColorId(is_jelly_enabled_));
 
   if (focus_ring_layer_) {

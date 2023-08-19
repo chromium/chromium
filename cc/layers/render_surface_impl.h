@@ -302,7 +302,7 @@ class CC_EXPORT RenderSurfaceImpl {
 
   // The nearest ancestor target surface that will contain the contents of this
   // surface, and that ignores outside occlusion. This can point to itself.
-  raw_ptr<const RenderSurfaceImpl, DanglingUntriaged>
+  raw_ptr<const RenderSurfaceImpl, AcrossTasksDanglingUntriaged>
       nearest_occlusion_immune_ancestor_;
 
   std::unique_ptr<DamageTracker> damage_tracker_;

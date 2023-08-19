@@ -97,15 +97,15 @@ class SystemWebAppManager : public KeyedService,
   // KeyedService:
   void Shutdown() override;
 
-  // The SystemWebAppManager is disabled in browser tests by default because it
-  // pollutes the startup state (several tests expect the Extensions state to be
-  // clean).
+  // By default, we don't install system web apps in browser tests to avoid
+  // running installation tasks (inefficient because most browser tests don't
+  // need SWAs).
   //
-  // Call this to install apps for SystemWebApp specific tests, e.g if a test
-  // needs to open OS Settings.
+  // Call this to install default enabled system apps if the test needs them.
+  // (e.g. test opening OS Settings from an Ash views button).
   //
-  // This can also be called multiple times to simulate reinstallation from
-  // system restart, e.g.
+  // This can be called multiple times to simulate reinstallation from system
+  // restart.
   void InstallSystemAppsForTesting();
 
   // Returns the app id for the given System App |type|.
@@ -125,8 +125,14 @@ class SystemWebAppManager : public KeyedService,
   // Returns whether |app_id| points to an installed System App.
   bool IsSystemWebApp(const web_app::AppId& app_id) const;
 
-  // Returns the SystemWebAppType that should capture the navigation to
-  // |url|.
+  // Returns the SystemWebAppType that should handle |url|.
+  //
+  // Under the hood, it returns the system web app whose `start_url` shares
+  // the same origin with the given |url|. It does not take
+  // `SystemWebAppDelegate::IsURLInSystemAppScope` into account.
+  absl::optional<SystemWebAppType> GetSystemAppForURL(const GURL& url) const;
+
+  // Returns the SystemWebAppType that should capture the navigation to |url|.
   absl::optional<SystemWebAppType> GetCapturingSystemAppForURL(
       const GURL& url) const;
 

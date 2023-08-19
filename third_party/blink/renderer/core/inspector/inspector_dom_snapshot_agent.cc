@@ -15,6 +15,7 @@
 #include "third_party/blink/renderer/core/dom/element.h"
 #include "third_party/blink/renderer/core/dom/flat_tree_traversal.h"
 #include "third_party/blink/renderer/core/dom/node.h"
+#include "third_party/blink/renderer/core/dom/node_computed_style.h"
 #include "third_party/blink/renderer/core/dom/pseudo_element.h"
 #include "third_party/blink/renderer/core/dom/qualified_name.h"
 #include "third_party/blink/renderer/core/dom/shadow_root.h"
@@ -189,7 +190,7 @@ PhysicalRect InspectorDOMSnapshotAgent::TextFragmentRectInDocument(
     const LayoutObject* layout_object,
     const LayoutText::TextBoxInfo& text_box) {
   PhysicalRect local_coords_text_box_rect =
-      layout_object->FlipForWritingMode(text_box.local_rect);
+      layout_object->FlipForWritingMode(text_box.local_rect.ToLayoutRect());
   PhysicalRect absolute_coords_text_box_rect =
       layout_object->LocalToAbsoluteRect(local_coords_text_box_rect);
   LocalFrameView* local_frame_view = layout_object->GetFrameView();
@@ -308,15 +309,15 @@ protocol::Response InspectorDOMSnapshotAgent::captureSnapshot(
     css_property_filter_->push_back(&property);
   }
 
-  if (include_paint_order.fromMaybe(false)) {
+  if (include_paint_order.value_or(false)) {
     paint_order_map_ =
         InspectorDOMSnapshotAgent::BuildPaintLayerTree(main_window->document());
   }
 
-  include_snapshot_dom_rects_ = include_dom_rects.fromMaybe(false);
+  include_snapshot_dom_rects_ = include_dom_rects.value_or(false);
   include_blended_background_colors_ =
-      include_blended_background_colors.fromMaybe(false);
-  include_text_color_opacities_ = include_text_color_opacities.fromMaybe(false);
+      include_blended_background_colors.value_or(false);
+  include_text_color_opacities_ = include_text_color_opacities.value_or(false);
 
   for (LocalFrame* frame : *inspected_frames_) {
     if (Document* document = frame->GetDocument())
@@ -736,12 +737,20 @@ InspectorDOMSnapshotAgent::BuildStylesForNode(Node* node) {
       !node->GetDocument().NeedsLayoutTreeUpdateForNodeIncludingDisplayLocked(
           *node));
   auto result = std::make_unique<protocol::Array<int>>();
-  auto* layout_object = node->GetLayoutObject();
-  if (!layout_object)
+  LayoutObject* layout_object = node->GetLayoutObject();
+  if (!layout_object) {
+    // This doesn't make sense for display:contents elements. They are also
+    // rendered, but with no LayoutObject.
     return result;
-  const ComputedStyle* style = node->EnsureComputedStyle(kPseudoIdNone);
-  if (!style)
+  }
+  Element* element = DynamicTo<Element>(node);
+  if (!element) {
+    element = FlatTreeTraversal::ParentElement(*node);
+  }
+  const ComputedStyle* style = element ? element->GetComputedStyle() : nullptr;
+  if (!style) {
     return result;
+  }
   auto cached_style = style_cache_.find(style);
   if (cached_style != style_cache_.end())
     return std::make_unique<protocol::Array<int>>(*cached_style->value);

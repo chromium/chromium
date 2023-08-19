@@ -213,15 +213,6 @@ void NetworkPortalSigninController::ShowDialog(Profile* profile,
       chrome::ShowWebDialog(nullptr, profile, dialog_)));
 }
 
-void NetworkPortalSigninController::ShowSingletonTab(Profile* profile,
-                                                     const GURL& url) {
-  chrome::ScopedTabbedBrowserDisplayer displayer(profile);
-  if (!displayer.browser())
-    return;
-
-  ::ShowSingletonTab(displayer.browser(), url);
-}
-
 void NetworkPortalSigninController::ShowTab(Profile* profile, const GURL& url) {
   chrome::ScopedTabbedBrowserDisplayer displayer(profile);
   if (!displayer.browser())

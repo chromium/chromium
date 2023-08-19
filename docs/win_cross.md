@@ -13,6 +13,9 @@ swarming.  This document describes how to set that up, and current restrictions.
 What does *not* work:
 
 * `js2gtest` tests are omitted from the build ([bug](https://crbug.com/1010561))
+  Note that newer WebUI tests are not based on js2gtest
+  (see migration progress at [crbug.com/1457360](https://crbug.com/1457360)) and
+  are included in the build.
 * on Mac hosts, 32-bit builds don't work ([bug](https://crbug.com/794838) has
   more information, and this is unlikely to ever change)
 
@@ -130,6 +133,6 @@ You can run the Windows binaries you built on swarming, like so:
 See the contents of run-swarmed.py for how to do this manually.
 
 The
-[linux-win_cross-rel](https://ci.chromium.org/p/chromium/builders/luci.chromium.ci/linux-win_cross-rel/)
+[linux-win_cross-rel](https://ci.chromium.org/p/chromium/builders/ci/linux-win_cross-rel)
 buildbot does 64-bit release cross builds, and also runs tests. You can look at
 it to get an idea of which tests pass in the cross build.

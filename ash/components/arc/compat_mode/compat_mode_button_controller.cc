@@ -19,6 +19,7 @@
 #include "ash/resources/vector_icons/vector_icons.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_forward.h"
+#include "chromeos/constants/chromeos_features.h"
 #include "chromeos/ui/frame/default_frame_header.h"
 #include "components/strings/grit/components_strings.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -32,9 +33,13 @@ namespace {
 const gfx::VectorIcon& GetIcon(const ResizeCompatMode& mode) {
   switch (mode) {
     case ResizeCompatMode::kPhone:
-      return ash::kSystemMenuPhoneLegacyIcon;
+      return chromeos::features::IsJellyEnabled()
+                 ? ash::kSystemMenuPhoneIcon
+                 : ash::kSystemMenuPhoneLegacyIcon;
     case ResizeCompatMode::kTablet:
-      return ash::kSystemMenuTabletLegacyIcon;
+      return chromeos::features::IsJellyEnabled()
+                 ? ash::kSystemMenuTabletIcon
+                 : ash::kSystemMenuTabletLegacyIcon;
     case ResizeCompatMode::kResizable:
       return kResizableIcon;
   }
@@ -85,8 +90,9 @@ void CompatModeButtonController::Update(
         this,
         base::BindRepeating(&CompatModeButtonController::ToggleResizeToggleMenu,
                             GetWeakPtr(), window, pref_delegate));
-    compat_mode_button->SetSubImage(views::kMenuDropArrowIcon);
     frame_header->SetCenterButton(compat_mode_button);
+
+    UpdateArrowIcon(window, /*widget_visibility=*/false);
 
     auto* const frame_view = ash::NonClientFrameViewAsh::Get(window);
     // Ideally, we want HeaderView to update properties, but as currently
@@ -129,6 +135,25 @@ void CompatModeButtonController::Update(
 void CompatModeButtonController::OnButtonPressed() {
   visible_when_button_pressed_ =
       resize_toggle_menu_ && resize_toggle_menu_->IsBubbleShown();
+}
+
+void CompatModeButtonController::UpdateArrowIcon(aura::Window* window,
+                                                 bool widget_visibility) {
+  auto* const frame_view = ash::NonClientFrameViewAsh::Get(window);
+  // |frame_view| can be null in unittest.
+  if (!frame_view) {
+    return;
+  }
+
+  auto* const compat_mode_button =
+      frame_view->GetHeaderView()->GetFrameHeader()->GetCenterButton();
+  if (chromeos::features::IsJellyEnabled()) {
+    compat_mode_button->SetSubImage(widget_visibility ? ash::kKsvArrowUpIcon
+                                                      : ash::kKsvArrowDownIcon);
+  } else {
+    compat_mode_button->SetSubImage(views::kMenuDropArrowIcon);
+  }
+  compat_mode_button->SchedulePaint();
 }
 
 base::WeakPtr<CompatModeButtonController>
@@ -182,8 +207,12 @@ void CompatModeButtonController::ToggleResizeToggleMenu(
   if (visible_when_button_pressed_)
     return;
   resize_toggle_menu_.reset();
-  resize_toggle_menu_ =
-      std::make_unique<ResizeToggleMenu>(frame_view->frame(), pref_delegate);
+  resize_toggle_menu_ = std::make_unique<ResizeToggleMenu>(
+      base::BindOnce(&CompatModeButtonController::UpdateArrowIcon,
+                     base::Unretained(this), window,
+                     /*widget_visibility=*/false),
+      frame_view->frame(), pref_delegate);
+  UpdateArrowIcon(window, /*widget_visibility=*/true);
 }
 
 }  // namespace arc

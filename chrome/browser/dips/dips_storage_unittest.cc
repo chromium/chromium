@@ -6,16 +6,18 @@
 
 #include "base/functional/bind.h"
 #include "base/metrics/field_trial_params.h"
+#include "base/strings/stringprintf.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/thread_pool.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/simple_test_clock.h"
 #include "base/test/task_environment.h"
 #include "base/threading/sequence_bound.h"
-#include "chrome/browser/dips/dips_features.h"
+#include "base/time/time.h"
 #include "chrome/browser/dips/dips_state.h"
 #include "chrome/browser/dips/dips_utils.h"
 #include "content/public/browser/browsing_data_filter_builder.h"
+#include "content/public/common/content_features.h"
 #include "services/network/public/mojom/clear_data_filter.mojom.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -49,7 +51,7 @@ class ScopedDIPSFeatureEnabledWithParams {
  public:
   explicit ScopedDIPSFeatureEnabledWithParams(
       const base::FieldTrialParams& params) {
-    features_.InitAndEnableFeatureWithParameters(dips::kFeature, params);
+    features_.InitAndEnableFeatureWithParameters(features::kDIPS, params);
   }
 
  private:
@@ -76,14 +78,14 @@ TEST(DIPSGetSitesToClearTest, FiltersByTriggerParam) {
   // Call 'GetSitesToClear' when the trigger is unset.
   {
     base::test::ScopedFeatureList features;
-    features.InitAndEnableFeature(dips::kFeature);
+    features.InitAndEnableFeature(features::kDIPS);
     EXPECT_THAT(storage.GetSitesToClear(absl::nullopt), testing::IsEmpty());
   }
   // Call 'GetSitesToClear' when DIPS is triggered by bounces.
   {
     base::test::ScopedFeatureList features;
     features.InitAndEnableFeatureWithParameters(
-        dips::kFeature, {{"triggering_action", "bounce"}});
+        features::kDIPS, {{"triggering_action", "bounce"}});
     EXPECT_THAT(storage.GetSitesToClear(absl::nullopt),
                 testing::ElementsAre(GetSiteForDIPS(kBounceUrl),
                                      GetSiteForDIPS(kStatefulBounceUrl)));
@@ -92,7 +94,7 @@ TEST(DIPSGetSitesToClearTest, FiltersByTriggerParam) {
   {
     base::test::ScopedFeatureList features;
     features.InitAndEnableFeatureWithParameters(
-        dips::kFeature, {{"triggering_action", "storage"}});
+        features::kDIPS, {{"triggering_action", "storage"}});
     EXPECT_THAT(storage.GetSitesToClear(absl::nullopt),
                 testing::ElementsAre(GetSiteForDIPS(kStatefulBounceUrl),
                                      GetSiteForDIPS(kStorageUrl)));
@@ -101,7 +103,7 @@ TEST(DIPSGetSitesToClearTest, FiltersByTriggerParam) {
   {
     base::test::ScopedFeatureList features;
     features.InitAndEnableFeatureWithParameters(
-        dips::kFeature, {{"triggering_action", "stateful_bounce"}});
+        features::kDIPS, {{"triggering_action", "stateful_bounce"}});
     EXPECT_THAT(storage.GetSitesToClear(absl::nullopt),
                 testing::ElementsAre(GetSiteForDIPS(kStatefulBounceUrl)));
   }
@@ -133,12 +135,12 @@ TEST(DIPSGetSitesToClearTest, CustomGracePeriod) {
 
   base::test::ScopedFeatureList features;
   features.InitAndEnableFeatureWithParameters(
-      dips::kFeature,
+      features::kDIPS,
       {{"grace_period", "30s"}, {"triggering_action", "stateful_bounce"}});
 
-  // Advance time by less than `dips::kGracePeriod` but greater than `start +
-  // custom_grace_period` and verify that no sites are returned without using
-  // the custom grace period.
+  // Advance time by less than `features::kDIPSGracePeriod` but greater than
+  // `start + custom_grace_period` and verify that no sites are returned without
+  // using the custom grace period.
   clock.Advance(base::Seconds(10));
   EXPECT_THAT(storage.GetSitesToClear(absl::nullopt), testing::IsEmpty());
   // Verify that using a custom grace period less than the amount time was
@@ -172,10 +174,10 @@ TEST(DIPSGetSitesToClearTest, CustomGracePeriod_AllTriggers) {
   // unset.
   {
     base::test::ScopedFeatureList features;
-    features.InitAndEnableFeature(dips::kFeature);
-    // Advance time by less than `dips::kGracePeriod` and verify that no sites
-    // are returned
-    clock.Advance(dips::kGracePeriod.Get() / 2);
+    features.InitAndEnableFeature(features::kDIPS);
+    // Advance time by less than `features::kDIPSGracePeriod` and verify that
+    // no sites are returned
+    clock.Advance(features::kDIPSGracePeriod.Get() / 2);
     EXPECT_THAT(storage.GetSitesToClear(absl::nullopt), testing::IsEmpty());
     // Verify that using a custom grace period less than the amount time was
     // advanced still returns nothing when the trigger is unset.
@@ -190,10 +192,10 @@ TEST(DIPSGetSitesToClearTest, CustomGracePeriod_AllTriggers) {
   {
     base::test::ScopedFeatureList features;
     features.InitAndEnableFeatureWithParameters(
-        dips::kFeature, {{"triggering_action", "bounce"}});
-    // Advance time by less than `dips::kGracePeriod` and verify that no sites
-    // are returned without using a custom grace period.
-    clock.Advance(dips::kGracePeriod.Get() / 2);
+        features::kDIPS, {{"triggering_action", "bounce"}});
+    // Advance time by less than `features::kDIPSGracePeriod` and verify that
+    // no sites are returned without using a custom grace period.
+    clock.Advance(features::kDIPSGracePeriod.Get() / 2);
     EXPECT_THAT(storage.GetSitesToClear(absl::nullopt), testing::IsEmpty());
     // Verify that using a custom grace period less than the amount time was
     // advanced returns the expected sites for triggering on bounces.
@@ -210,10 +212,10 @@ TEST(DIPSGetSitesToClearTest, CustomGracePeriod_AllTriggers) {
   {
     base::test::ScopedFeatureList features;
     features.InitAndEnableFeatureWithParameters(
-        dips::kFeature, {{"triggering_action", "storage"}});
-    // Advance time by less than `dips::kGracePeriod` and verify that no sites
-    // are returned without using a custom grace period.
-    clock.Advance(dips::kGracePeriod.Get() / 2);
+        features::kDIPS, {{"triggering_action", "storage"}});
+    // Advance time by less than `features::kDIPSGracePeriod` and verify that
+    // no sites are returned without using a custom grace period.
+    clock.Advance(features::kDIPSGracePeriod.Get() / 2);
     EXPECT_THAT(storage.GetSitesToClear(absl::nullopt), testing::IsEmpty());
     // Verify that using a custom grace period less than the amount time was
     // advanced returns the expected sites for triggering on storage.
@@ -230,10 +232,10 @@ TEST(DIPSGetSitesToClearTest, CustomGracePeriod_AllTriggers) {
   {
     base::test::ScopedFeatureList features;
     features.InitAndEnableFeatureWithParameters(
-        dips::kFeature, {{"triggering_action", "stateful_bounce"}});
-    // Advance time by less than `dips::kGracePeriod` and verify that no sites
-    // are returned without using a custom grace period.
-    clock.Advance(dips::kGracePeriod.Get() / 2);
+        features::kDIPS, {{"triggering_action", "stateful_bounce"}});
+    // Advance time by less than `features::kDIPSGracePeriod` and verify that
+    // no sites are returned without using a custom grace period.
+    clock.Advance(features::kDIPSGracePeriod.Get() / 2);
     EXPECT_THAT(storage.GetSitesToClear(absl::nullopt), testing::IsEmpty());
     // Verify that using a custom grace period less than the amount time was
     // advanced returns the expected sites for triggering on stateful bounces.
@@ -246,10 +248,17 @@ class DIPSStorageTest : public testing::Test {
  public:
   DIPSStorageTest() = default;
 
+  void SetUp() override { storage_.SetClockForTesting(&clock_); }
+
+  TimestampRange ToRange(base::Time first, base::Time last) {
+    return {{first, last}};
+  }
+
  protected:
   base::test::TaskEnvironment env_;
   ScopedDIPSFeatureEnabledWithParams feature{{{"interaction_ttl", "inf"}}};
   TestStorage storage_;
+  base::SimpleTestClock clock_;
 };
 
 TEST(DirtyBit, Constructor) {
@@ -293,29 +302,35 @@ TEST_F(DIPSStorageTest, NewURL) {
   EXPECT_FALSE(state.was_loaded());
   EXPECT_FALSE(state.site_storage_times().has_value());
   EXPECT_FALSE(state.user_interaction_times().has_value());
+  EXPECT_FALSE(state.web_authn_assertion_times().has_value());
 }
 
 TEST_F(DIPSStorageTest, SetValues) {
   GURL url("https://example.com");
   auto time1 = base::Time::FromDoubleT(1);
   auto time2 = base::Time::FromDoubleT(2);
+  auto time3 = base::Time::FromDoubleT(3);
 
   {
     DIPSState state = storage_.Read(url);
     state.update_site_storage_time(time1);
     state.update_user_interaction_time(time2);
+    state.update_web_authn_assertion_time(time3);
 
     // Before flushing `state`, reads for the same URL won't include its
     // changes.
     DIPSState state2 = storage_.Read(url);
     EXPECT_FALSE(state2.site_storage_times().has_value());
     EXPECT_FALSE(state2.user_interaction_times().has_value());
+    EXPECT_FALSE(state2.web_authn_assertion_times().has_value());
   }
 
   DIPSState state = storage_.Read(url);
   EXPECT_TRUE(state.was_loaded());
   EXPECT_EQ(state.site_storage_times()->first, absl::make_optional(time1));
   EXPECT_EQ(state.user_interaction_times()->first, absl::make_optional(time2));
+  EXPECT_EQ(state.web_authn_assertion_times()->first,
+            absl::make_optional(time3));
 }
 
 TEST_F(DIPSStorageTest, SameSiteSameState) {
@@ -347,6 +362,106 @@ TEST_F(DIPSStorageTest, DifferentSiteDifferentState) {
             absl::make_optional(time1));
   EXPECT_EQ(storage_.Read(url2).site_storage_times()->first,
             absl::make_optional(time2));
+}
+
+// This test is not all-inclusive as only fucuses on some (deemed) important
+// overlapping scenarios.
+TEST_F(DIPSStorageTest, RemoveByTime_WebAuthnAssertion) {
+  base::SimpleTestClock clock;
+  clock.SetNow(base::Time::FromDoubleT(100));
+  auto tiny_delta = base::Milliseconds(1);
+  auto delete_begin = clock.Now();
+  auto delete_end = delete_begin + tiny_delta * 100;
+  auto i = 0;
+
+  {
+    const GURL url(base::StringPrintf("https://case%d.test", ++i));
+    storage_.WriteForTesting(
+        url, {{}, {}, {}, {}, ToRange(delete_begin, delete_end)});
+    storage_.RemoveEvents(delete_begin, delete_end, nullptr,
+                          DIPSEventRemovalType::kHistory);
+    EXPECT_FALSE(storage_.Read(url).was_loaded());
+  }
+
+  {
+    const GURL url(base::StringPrintf("https://case%d.test", ++i));
+    storage_.WriteForTesting(
+        url, {{}, {}, {}, {}, ToRange(delete_begin + tiny_delta, delete_end)});
+    storage_.RemoveEvents(delete_begin, delete_end, nullptr,
+                          DIPSEventRemovalType::kHistory);
+    EXPECT_FALSE(storage_.Read(url).was_loaded());
+  }
+
+  {
+    const GURL url(base::StringPrintf("https://case%d.test", ++i));
+    storage_.WriteForTesting(
+        url, {{}, {}, {}, {}, ToRange(delete_begin, delete_end - tiny_delta)});
+    storage_.RemoveEvents(delete_begin, delete_end, nullptr,
+                          DIPSEventRemovalType::kHistory);
+    EXPECT_FALSE(storage_.Read(url).was_loaded());
+  }
+
+  {
+    const GURL url(base::StringPrintf("https://case%d.test", ++i));
+    StateValue init_state;
+    init_state.web_authn_assertion_times =
+        ToRange(delete_begin, delete_end + tiny_delta);
+    storage_.WriteForTesting(url, init_state);
+    storage_.RemoveEvents(delete_begin, delete_end, nullptr,
+                          DIPSEventRemovalType::kHistory);
+    EXPECT_EQ(
+        storage_.Read(url).web_authn_assertion_times(),
+        ToRange(delete_end, init_state.web_authn_assertion_times->second));
+  }
+
+  {
+    const GURL url(base::StringPrintf("https://case%d.test", ++i));
+    StateValue init_state;
+    init_state.web_authn_assertion_times =
+        ToRange(delete_begin - tiny_delta, delete_end);
+    storage_.WriteForTesting(url, init_state);
+    storage_.RemoveEvents(delete_begin, delete_end, nullptr,
+                          DIPSEventRemovalType::kHistory);
+    EXPECT_EQ(
+        storage_.Read(url).web_authn_assertion_times(),
+        ToRange(init_state.web_authn_assertion_times->first, delete_begin));
+  }
+
+  {
+    const GURL url(base::StringPrintf("https://case%d.test", ++i));
+    StateValue init_state;
+    init_state.web_authn_assertion_times =
+        ToRange(delete_begin - tiny_delta, delete_end + tiny_delta);
+    storage_.WriteForTesting(url, init_state);
+    storage_.RemoveEvents(delete_begin, delete_end, nullptr,
+                          DIPSEventRemovalType::kHistory);
+    EXPECT_EQ(storage_.Read(url).web_authn_assertion_times(),
+              init_state.web_authn_assertion_times);
+  }
+
+  {
+    const GURL url(base::StringPrintf("https://case%d.test", ++i));
+    StateValue init_state;
+    init_state.web_authn_assertion_times =
+        ToRange(delete_end + tiny_delta, delete_end + tiny_delta * 2);
+    storage_.WriteForTesting(url, init_state);
+    storage_.RemoveEvents(delete_begin, delete_end, nullptr,
+                          DIPSEventRemovalType::kHistory);
+    EXPECT_EQ(storage_.Read(url).web_authn_assertion_times(),
+              init_state.web_authn_assertion_times);
+  }
+
+  {
+    const GURL url(base::StringPrintf("https://case%d.test", ++i));
+    StateValue init_state;
+    init_state.web_authn_assertion_times =
+        ToRange(delete_begin - tiny_delta * 2, delete_begin - tiny_delta);
+    storage_.WriteForTesting(url, init_state);
+    storage_.RemoveEvents(delete_begin, delete_end, nullptr,
+                          DIPSEventRemovalType::kHistory);
+    EXPECT_EQ(storage_.Read(url).web_authn_assertion_times(),
+              init_state.web_authn_assertion_times);
+  }
 }
 
 TEST_F(DIPSStorageTest, RemoveByTimeWithNullRangeEndTime) {
@@ -521,6 +636,39 @@ TEST_F(DIPSStorageTest, RemoveByTimeInteractionOnly) {
   EXPECT_FALSE(state2.was_loaded());  // removed
 }
 
+TEST_F(DIPSStorageTest, RemovePopupEventsByTime) {
+  std::string site1 = GetSiteForDIPS(GURL("https://example1.com"));
+  std::string site2 = GetSiteForDIPS(GURL("https://example2.com"));
+  std::string site3 = GetSiteForDIPS(GURL("https://example3.com"));
+  base::Time delete_begin = base::Time::FromDoubleT(3);
+  base::Time delete_end = base::Time::FromDoubleT(5);
+
+  ASSERT_TRUE(storage_.WritePopup(site1, site2, /*access_id=*/1u,
+                                  base::Time::FromDoubleT(2)));
+  ASSERT_TRUE(storage_.WritePopup(site1, site3, /*access_id=*/2u,
+                                  base::Time::FromDoubleT(4)));
+  ASSERT_TRUE(storage_.WritePopup(site2, site3, /*access_id=*/3u,
+                                  base::Time::FromDoubleT(6)));
+
+  storage_.RemoveEvents(delete_begin, delete_end, nullptr,
+                        DIPSEventRemovalType::kHistory);
+
+  // Verify that only the second popup event (with timestamp 4) was cleared.
+
+  absl::optional<PopupsStateValue> popup1 = storage_.ReadPopup(site1, site2);
+  ASSERT_TRUE(popup1.has_value());
+  EXPECT_EQ(popup1.value().access_id, 1u);
+  EXPECT_EQ(popup1.value().last_popup_time, base::Time::FromDoubleT(2));
+
+  absl::optional<PopupsStateValue> popup2 = storage_.ReadPopup(site1, site3);
+  ASSERT_FALSE(popup2.has_value());
+
+  absl::optional<PopupsStateValue> popup3 = storage_.ReadPopup(site2, site3);
+  ASSERT_TRUE(popup3.has_value());
+  EXPECT_EQ(popup3.value().access_id, 3u);
+  EXPECT_EQ(popup3.value().last_popup_time, base::Time::FromDoubleT(6));
+}
+
 TEST_F(DIPSStorageTest, RemoveByTimeBounces) {
   GURL url1("https://example1.com");
   GURL url2("https://example2.com");
@@ -677,6 +825,34 @@ TEST_F(DIPSStorageTest, RemoveRows) {
   EXPECT_FALSE(storage_.Read(url2).was_loaded());
 }
 
+TEST_F(DIPSStorageTest, DidSiteHaveInteractionSince) {
+  GURL url1("https://example1.com");
+
+  EXPECT_FALSE(
+      storage_.DidSiteHaveInteractionSince(url1, base::Time::FromDoubleT(0)));
+
+  storage_.WriteForTesting(
+      url1, StateValue{.site_storage_times{{base::Time::FromDoubleT(1),
+                                            base::Time::FromDoubleT(1)}},
+                       .user_interaction_times{{base::Time::FromDoubleT(2),
+                                                base::Time::FromDoubleT(2)}},
+                       .stateful_bounce_times{{base::Time::FromDoubleT(3),
+                                               base::Time::FromDoubleT(3)}},
+                       .bounce_times{{base::Time::FromDoubleT(3),
+                                      base::Time::FromDoubleT(4)}}});
+
+  EXPECT_TRUE(
+      storage_.DidSiteHaveInteractionSince(url1, base::Time::FromDoubleT(0)));
+  EXPECT_TRUE(
+      storage_.DidSiteHaveInteractionSince(url1, base::Time::FromDoubleT(1)));
+  EXPECT_TRUE(
+      storage_.DidSiteHaveInteractionSince(url1, base::Time::FromDoubleT(2)));
+  EXPECT_FALSE(
+      storage_.DidSiteHaveInteractionSince(url1, base::Time::FromDoubleT(3)));
+  EXPECT_FALSE(
+      storage_.DidSiteHaveInteractionSince(url1, base::Time::FromDoubleT(4)));
+}
+
 class DIPSStoragePrepopulateTest : public testing::Test {
  public:
   DIPSStoragePrepopulateTest()
@@ -715,9 +891,9 @@ TEST_F(DIPSStoragePrepopulateTest, ExistingStorageAndInteractionTimes) {
   // First record interaction and storage for the site, then call Prepopulate().
   storage_.AsyncCall(&DIPSStorage::RecordInteraction)
       .WithArgs(GURL("http://site"), interaction_time,
-                DIPSCookieMode::kStandard);
+                DIPSCookieMode::kBlock3PC);
   storage_.AsyncCall(&DIPSStorage::RecordStorage)
-      .WithArgs(GURL("http://site"), storage_time, DIPSCookieMode::kStandard);
+      .WithArgs(GURL("http://site"), storage_time, DIPSCookieMode::kBlock3PC);
   storage_.AsyncCall(&DIPSStorage::Prepopulate)
       .WithArgs(prepopulate_time, std::vector<std::string>{"site"},
                 base::DoNothing());
@@ -741,7 +917,7 @@ TEST_F(DIPSStoragePrepopulateTest, ExistingStorageTime) {
 
   // Record only storage for the site, then call Prepopulate().
   storage_.AsyncCall(&DIPSStorage::RecordStorage)
-      .WithArgs(GURL("http://site"), storage_time, DIPSCookieMode::kStandard);
+      .WithArgs(GURL("http://site"), storage_time, DIPSCookieMode::kBlock3PC);
   storage_.AsyncCall(&DIPSStorage::Prepopulate)
       .WithArgs(prepopulate_time, std::vector<std::string>{"site"},
                 base::DoNothing());
@@ -765,7 +941,7 @@ TEST_F(DIPSStoragePrepopulateTest, ExistingInteractionTime) {
   // Record only storage for the site, then call Prepopulate().
   storage_.AsyncCall(&DIPSStorage::RecordInteraction)
       .WithArgs(GURL("http://site"), interaction_time,
-                DIPSCookieMode::kStandard);
+                DIPSCookieMode::kBlock3PC);
   storage_.AsyncCall(&DIPSStorage::Prepopulate)
       .WithArgs(prepopulate_time, std::vector<std::string>{"site"},
                 base::DoNothing());

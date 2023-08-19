@@ -13,6 +13,7 @@
 #include "ash/public/cpp/clipboard_history_controller.h"
 #include "ash/public/cpp/clipboard_image_model_factory.h"
 #include "ash/public/cpp/keyboard/keyboard_types.h"
+#include "ash/webui/settings/public/constants/routes.mojom-forward.h"
 #include "base/check.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
@@ -24,7 +25,6 @@
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/ui/ash/keyboard/chrome_keyboard_controller_client.h"
 #include "chrome/browser/ui/settings_window_manager_chromeos.h"
-#include "chrome/browser/ui/webui/settings/chromeos/constants/routes.mojom-forward.h"
 #include "chromeos/constants/chromeos_features.h"
 #include "chromeos/crosapi/mojom/clipboard_history.mojom.h"
 #include "components/user_manager/user_manager.h"
@@ -127,7 +127,8 @@ bool SendKeyEventImpl(const std::string& type,
 
       SendProcessKeyEvent(ui::ET_KEY_PRESSED, host);
 
-      ui::KeyEvent char_event(key_value, code, ui::DomCode::NONE, ui::EF_NONE);
+      ui::KeyEvent char_event = ui::KeyEvent::FromCharacter(
+          key_value, code, ui::DomCode::NONE, ui::EF_NONE);
       if (tic)
         tic->InsertChar(char_event);
       SendProcessKeyEvent(ui::ET_KEY_RELEASED, host);
@@ -517,9 +518,6 @@ void ChromeVirtualKeyboardDelegate::OnHasInputDevices(
       "newheader",
       base::FeatureList::IsEnabled(ash::features::kVirtualKeyboardNewHeader)));
   features.Append(GenerateFeatureFlag(
-      "multitouch",
-      base::FeatureList::IsEnabled(ash::features::kVirtualKeyboardMultitouch)));
-  features.Append(GenerateFeatureFlag(
       "roundCorners", base::FeatureList::IsEnabled(
                           ash::features::kVirtualKeyboardRoundCorners)));
   features.Append(
@@ -540,6 +538,9 @@ void ChromeVirtualKeyboardDelegate::OnHasInputDevices(
   features.Append(GenerateFeatureFlag(
       "japanesefunctionrow",
       base::FeatureList::IsEnabled(ash::features::kJapaneseFunctionRow)));
+  features.Append(GenerateFeatureFlag(
+      "virtualkeyboardremovenacl",
+      base::FeatureList::IsEnabled(ash::features::kVirtualKeyboardRemoveNacl)));
 
   results.Set("features", std::move(features));
 

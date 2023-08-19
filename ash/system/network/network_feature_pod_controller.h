@@ -73,9 +73,11 @@ class ASH_EXPORT NetworkFeaturePodController
   void UpdateButtonStateIfExists();
 
   // Owned by the views hierarchy.
-  raw_ptr<FeaturePodButton, ExperimentalAsh> button_ = nullptr;
-  raw_ptr<FeatureTile, ExperimentalAsh> tile_ = nullptr;
-  raw_ptr<UnifiedSystemTrayController, ExperimentalAsh> tray_controller_;
+  raw_ptr<FeaturePodButton, DanglingUntriaged | ExperimentalAsh> button_ =
+      nullptr;
+  raw_ptr<FeatureTile, DanglingUntriaged | ExperimentalAsh> tile_ = nullptr;
+  raw_ptr<UnifiedSystemTrayController, DanglingUntriaged | ExperimentalAsh>
+      tray_controller_;
 
   base::WeakPtrFactory<NetworkFeaturePodController> weak_ptr_factory_{this};
 };

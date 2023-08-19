@@ -4,7 +4,7 @@
 
 #include "chrome/browser/favicon/history_ui_favicon_request_handler_factory.h"
 
-#include "base/memory/singleton.h"
+#include "base/no_destructor.h"
 #include "chrome/browser/favicon/favicon_service_factory.h"
 #include "chrome/browser/favicon/large_icon_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
@@ -40,7 +40,8 @@ HistoryUiFaviconRequestHandlerFactory::GetForBrowserContext(
 // static
 HistoryUiFaviconRequestHandlerFactory*
 HistoryUiFaviconRequestHandlerFactory::GetInstance() {
-  return base::Singleton<HistoryUiFaviconRequestHandlerFactory>::get();
+  static base::NoDestructor<HistoryUiFaviconRequestHandlerFactory> instance;
+  return instance.get();
 }
 
 HistoryUiFaviconRequestHandlerFactory::HistoryUiFaviconRequestHandlerFactory()
@@ -58,7 +59,7 @@ HistoryUiFaviconRequestHandlerFactory::HistoryUiFaviconRequestHandlerFactory()
 }
 
 HistoryUiFaviconRequestHandlerFactory::
-    ~HistoryUiFaviconRequestHandlerFactory() {}
+    ~HistoryUiFaviconRequestHandlerFactory() = default;
 
 KeyedService* HistoryUiFaviconRequestHandlerFactory::BuildServiceInstanceFor(
     content::BrowserContext* context) const {

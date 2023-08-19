@@ -437,6 +437,9 @@ def main():
   parser.add_argument('--isolated-script-test-filter', help=argparse.SUPPRESS)
   parser.add_argument(
       '--isolated-script-test-perf-output', help=argparse.SUPPRESS)
+  parser.add_argument('--isolated-script-test-repeat', help=argparse.SUPPRESS)
+  parser.add_argument('--isolated-script-test-launcher-retry-limit',
+                      help=argparse.SUPPRESS)
 
   parser.add_argument(
       '--isolated-script-test-output',

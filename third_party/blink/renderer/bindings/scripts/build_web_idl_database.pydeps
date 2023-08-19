@@ -10,6 +10,7 @@ build_web_idl_database.py
 web_idl/__init__.py
 web_idl/argument.py
 web_idl/ast_group.py
+web_idl/async_iterator.py
 web_idl/attribute.py
 web_idl/callback_function.py
 web_idl/callback_interface.py
@@ -38,6 +39,7 @@ web_idl/observable_array.py
 web_idl/operation.py
 web_idl/reference.py
 web_idl/runtime_enabled_features.py
+web_idl/sync_iterator.py
 web_idl/typedef.py
 web_idl/union.py
 web_idl/user_defined_type.py

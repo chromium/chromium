@@ -13,6 +13,8 @@ namespace prefs {
 // kBlockThirdPartyCookies but with a new UI.
 const char kCookieControlsMode[] = "profile.cookie_controls_mode";
 
+const char kBlockTruncatedCookies[] = "profile.cookie_block_truncated";
+
 // Version of the pattern format used to define content settings.
 const char kContentSettingsVersion[] = "profile.content_settings.pref_version";
 
@@ -55,7 +57,7 @@ const char kManagedDefaultFileSystemWriteGuardSetting[] =
     "profile.managed_default_content_settings.file_system_write_guard";
 const char kManagedDefaultSerialGuardSetting[] =
     "profile.managed_default_content_settings.serial_guard";
-const char kManagedDefaultInsecureLocalNetworkSetting[] =
+const char kManagedDefaultInsecurePrivateNetworkSetting[] =
     "profile.managed_default_content_settings.insecure_private_network";
 const char kManagedDefaultJavaScriptJitSetting[] =
     "profile.managed_default_content_settings.javascript_jit";
@@ -67,6 +69,8 @@ const char kManagedDefaultLocalFontsSetting[] =
     "profile.managed_default_content_settings.local_fonts";
 const char kManagedDefaultThirdPartyStoragePartitioningSetting[] =
     "profile.managed_default_content_settings.third_party_storage_partitioning";
+const char kManagedDefaultMidi[] =
+    "profile.managed_default_content_settings.midi";
 
 // Preferences that are exclusively used to store managed
 // content settings patterns.
@@ -82,8 +86,9 @@ const char kManagedCookiesBlockedForUrls[] =
     "profile.managed_cookies_blocked_for_urls";
 const char kManagedCookiesSessionOnlyForUrls[] =
     "profile.managed_cookies_sessiononly_for_urls";
-const char kManagedGetDisplayMediaSetSelectAllScreensAllowedForUrls[] =
-    "profile.managed_get_display_media_set_select_all_screens_allowed_for_urls";
+const char kManagedAccessToGetAllScreensMediaInSessionAllowedForUrls[] =
+    "profile.managed_access_to_get_all_screens_media_in_session_allowed_for_"
+    "urls";
 const char kManagedImagesAllowedForUrls[] =
     "profile.managed_images_allowed_for_urls";
 const char kManagedImagesBlockedForUrls[] =
@@ -126,7 +131,7 @@ const char kManagedLegacyCookieAccessAllowedForDomains[] =
 const char kManagedSerialAskForUrls[] = "profile.managed_serial_ask_for_urls";
 const char kManagedSerialBlockedForUrls[] =
     "profile.managed_serial_blocked_for_urls";
-const char kManagedInsecureLocalNetworkAllowedForUrls[] =
+const char kManagedInsecurePrivateNetworkAllowedForUrls[] =
     "profile.managed_insecure_private_network_allowed_for_urls";
 const char kManagedJavaScriptJitAllowedForSites[] =
     "profile.managed_javascript_jit_allowed_for_sites";
@@ -145,11 +150,40 @@ const char kManagedLocalFontsBlockedForUrls[] =
     "profile.managed_local_fonts_blocked_for_urls";
 const char kManagedThirdPartyStoragePartitioningBlockedForOrigins[] =
     "profile.managed_third_party_storage_partitioning_blocked_for_origins";
+const char kManagedMidiAllowedForUrls[] =
+    "profile.managed_midi_allowed_for_urls";
+const char kManagedMidiBlockedForUrls[] =
+    "profile.managed_midi_blocked_for_urls";
 
 // Boolean indicating whether the quiet UI is enabled for notification
-// permission requests.
+// permission requests. This and kEnableNotificationCPSS can't both be true
+// at the same time.
 const char kEnableQuietNotificationPermissionUi[] =
     "profile.content_settings.enable_quiet_permission_ui.notifications";
+
+// Boolean indicating whether the quiet UI is enabled for geolocation
+// permission requests. This and kEnableGeolocationCPSS can't both be true at
+// the same time.
+const char kEnableQuietGeolocationPermissionUi[] =
+    "profile.content_settings.enable_quiet_permission_ui.geolocation";
+
+// Boolean indicating whether the users who have quiet notifications enabled
+// adaptively have to be migrated to CPSS.
+const char kDidMigrateAdaptiveNotifiationQuietingToCPSS[] =
+    "profile.content_settings.did_migrate_adaptive_notification_quieting_to_"
+    "cpss";
+
+// Boolean indicating whether CPSS is enabled for notification permissions.
+// This and kEnableQuietNotificationPermissionUi can't both be true at the same
+// time.
+const char kEnableNotificationCPSS[] =
+    "profile.content_settings.enable_cpss.notifications";
+
+// Boolean indicating whether CPSS is enabled for geolocation permissions.
+// This and kEnableQuietGeolocationPermissionUi can't both be true at the same
+// time.
+const char kEnableGeolocationCPSS[] =
+    "profile.content_settings.enable_cpss.geolocation";
 
 // Enum indicating by which method the quiet UI has been enabled for
 // notification permission requests. This is stored as of M88 and will be
@@ -179,6 +213,9 @@ const char kDesktopSitePeripheralSettingEnabled[] =
 // Display setting for request desktop site. When enabled, we will always
 // request desktop site if a monitor is connected.
 const char kDesktopSiteDisplaySettingEnabled[] = "desktop_site.display_setting";
+// Window setting for request desktop site. When enabled, we will request
+// mobile site if the window is narrow.
+const char kDesktopSiteWindowSettingEnabled[] = "desktop_site.window_setting";
 #endif
 
 }  // namespace prefs

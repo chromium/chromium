@@ -5,7 +5,7 @@
 #ifndef UI_GTK_GTK_COLOR_MIXERS_H_
 #define UI_GTK_GTK_COLOR_MIXERS_H_
 
-#include "ui/color/color_provider_manager.h"
+#include "ui/color/color_provider_key.h"
 
 namespace ui {
 class ColorProvider;
@@ -14,7 +14,7 @@ class ColorProvider;
 namespace gtk {
 
 void AddGtkNativeColorMixer(ui::ColorProvider* provider,
-                            const ui::ColorProviderManager::Key& key);
+                            const ui::ColorProviderKey& key);
 
 }  // namespace gtk
 

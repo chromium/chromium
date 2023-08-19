@@ -1,0 +1,213 @@
+<style include="settings-shared">
+  :host {
+    /* The tap target extends slightly above each visible menu item. */
+    --tap-target-padding: 3px;
+    /* Width of the keyboard focus border. */
+    --focus-border-width: 2px;
+    box-sizing: border-box;
+    display: block;
+    padding-bottom: 2px;
+    padding-top: 8px;
+  }
+
+  :host * {
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  /* Override focus CSS for selectable items. */
+  [selectable]:focus,
+  [selectable] > :focus {
+    background-color: transparent;
+  }
+
+  /* The <a> is the entire tap target, including the padding around the
+    * visible icon and text. */
+  a {
+    background: transparent;
+    display: block;
+    padding: var(--tap-target-padding) 0;
+  }
+
+  /* "item" class draws the icon, text, and rounded background. */
+  a.item {
+    align-items: center;
+    border-block-end-width: var(--focus-border-width);
+    border-block-start-width: var(--focus-border-width);
+    /* Always apply border so item doesn't shift when focused. */
+    border-color: transparent;
+    border-inline-end-width: var(--focus-border-width);
+    /* No border on window edge (left in LTR, right in RTL). */
+    border-inline-start-width: 0;
+    border-radius: 0 20px 20px 0;
+    border-style: solid;
+    color: var(--cros-text-color-primary);
+    display: flex;
+    margin-bottom: 8px;
+    margin-inline-end: 2px;
+    min-height: 32px;
+    padding-inline-start: 20px;
+    text-decoration: none;
+  }
+
+  :host-context([dir=rtl]) a.item {
+    /* Chrome doesn't support border-start-end-radius, so override. */
+    border-radius: 20px 0 0 20px;
+  }
+
+  :host-context(body:not(.jelly-enabled)) a.item {
+    font-weight: 500;
+  }
+
+  :host-context(body.jelly-enabled) a.item {
+    font: var(--cros-button-1-font);
+  }
+
+  a.item.iron-selected {
+    background-color: var(--cros-highlight-color);
+    color: var(--cros-text-color-selection);
+  }
+
+  :host-context(body.jelly-enabled) a.item.iron-selected {
+    background-color: var(--cros-sys-primary);
+    color: var(--cros-sys-on_primary);
+  }
+
+  :host-context(.focus-outline-visible) a.item:focus {
+    border-color: var(--cros-focus-ring-color);
+  }
+
+  a.item:not(.iron-selected):hover {
+    background-color: var(--cros-ripple-color);
+  }
+
+  :host-context(body.jelly-enabled) a.item:not(.iron-selected):hover {
+    background-color: var(--cros-sys-hover_on_subtle);
+  }
+
+  iron-icon {
+    margin-inline-end: 16px;
+    pointer-events: none;
+    vertical-align: top;
+  }
+
+  a.item.iron-selected > iron-icon {
+    fill: var(--cros-icon-color-selection);
+  }
+
+  :host-context(body.jelly-enabled) a.item.iron-selected > iron-icon {
+    fill: var(--cros-sys-on_primary);
+  }
+
+  #advancedButton {
+    --ink-color: var(--cros-text-color-primary);
+    align-items: center;
+    background: none;
+    border: none;
+    border-radius: initial;
+    box-shadow: none;
+    color: var(--cros-text-color-primary);
+    display: flex;
+    height: unset;
+    margin-inline-end: 2px;
+    margin-top: 8px;
+    padding-inline-end: 0;
+    padding-inline-start: 20px;
+    text-transform: none;
+  }
+
+  :host-context(body:not(.jelly-enabled)) #advancedButton {
+    font-weight: 500;
+  }
+
+  :host-context(body.jelly-enabled) #advancedButton {
+    font: var(--cros-button-1-font);
+  }
+
+  #advancedButton:focus {
+    outline: none;
+  }
+
+  :host-context(.focus-outline-visible) #advancedButton:focus {
+    border-radius: 0 20px 20px 0;
+    outline: var(--focus-border-width) solid var(--cros-focus-ring-color);
+  }
+
+  #advancedButton > span {
+    flex: 1;
+  }
+
+  #advancedButton > iron-icon {
+    height: var(--cr-icon-size);
+    margin-inline-end: 14px;  /* 16px - 2px from margin for outline. */
+    width: var(--cr-icon-size);
+  }
+
+  #menuSeparator {
+    /* Per bettes@, this is different from the other separator lines. */
+    border-bottom: 1px solid rgba(0, 0, 0, 0.08);
+    margin-bottom: 8px;
+    margin-top: 8px;
+  }
+
+  @media (prefers-color-scheme: dark) {
+    #menuSeparator {
+      border-bottom: var(--cr-separator-line);  /* override */
+    }
+  }
+
+  #aboutItem {
+    /* Reserve space so the last menu item isn't too close to the window
+      * bottom edge, 48px under the text baseline. */
+    margin-bottom: calc(
+        48px - calc(var(--tap-target-padding) + var(--focus-border-width)));
+  }
+</style>
+<iron-selector id="topMenu"
+    selectable="a.item"
+    attr-for-selected="href"
+    role="navigation"
+    on-iron-activate="onItemActivated_"
+    on-iron-select="onItemSelected_"
+    on-iron-deselect="onItemDeselected_"
+    on-click="onLinkClick_"
+    selected="[[selectedUrl_]]">
+  <template is="dom-repeat" items="[[basicMenuItems_]]" id="topMenuRepeat">
+    <a href="[[item.href]]" class="item">
+      <iron-icon icon="[[item.icon]]"></iron-icon>
+      [[item.label]]
+    </a>
+  </template>
+
+  <template is="dom-if" if="[[!isRevampWayfindingEnabled_]]">
+    <cr-button id="advancedButton"
+        aria-expanded$="[[boolToString_(advancedOpened)]]"
+        on-click="onAdvancedButtonToggle_">
+      <span>$i18n{advancedPageTitle}</span>
+      <iron-icon icon="[[arrowState_(advancedOpened)]]" slot="suffix-icon">
+      </iron-icon>
+    </cr-button>
+    <iron-collapse id="advancedCollapse" opened="[[advancedOpened]]">
+      <iron-selector id="advancedSubmenu"
+          selectable="a.item"
+          attr-for-selected="href"
+          role="navigation"
+          on-click="onLinkClick_"
+          selected="[[selectedUrl_]]">
+        <template is="dom-repeat" items="[[advancedMenuItems_]]">
+          <a href="[[item.href]]" class="item">
+            <iron-icon icon="[[item.icon]]"></iron-icon>
+            [[item.label]]
+          </a>
+        </template>
+      </iron-selector>
+    </iron-collapse>
+    <div id="menuSeparator"></div>
+  </template>
+
+  <a id="aboutItem" href="[[aboutMenuItemHref_]]" class="item">
+    <iron-icon icon="os-settings:chrome"
+        hidden="[[!isRevampWayfindingEnabled_]]">
+    </iron-icon>
+    $i18n{aboutOsPageTitle}
+  </a>
+</iron-selector>

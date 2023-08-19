@@ -1,0 +1,87 @@
+<style include="cr-icons">
+  cr-action-menu {
+    --cr-menu-background-sheen: transparent;
+  }
+
+  cr-action-menu::part(dialog) {
+    background: var(--color-theme-color-picker-hue-slider-dialog-background,
+        var(--cr-fallback-color-surface));
+    border-radius: 12px;
+    box-shadow: var(--cr-elevation-3);
+    box-sizing: border-box;
+    color: var(--color-theme-color-picker-hue-slider-dialog-foreground,
+        var(--cr-fallback-color-on-surface));
+    height: 137px;
+    isolation: isolate;
+    overflow: hidden;
+    padding: 12px 20px;
+    width: 296px;
+  }
+
+  #header {
+    display: flex;
+    align-items: center;
+    height: 24px;
+    gap: 8px;
+  }
+
+  h2 {
+    flex: 1;
+    font-size: 16px;
+    font-weight: 500;
+    line-height: 24px;
+    margin: 0;
+  }
+
+  cr-icon-button {
+    color: var(--color-theme-color-picker-hue-slider-dialog-icon,
+        var(--cr-fallback-color-on-surface-subtle));
+    margin-inline-end: -6px;
+  }
+
+  cr-slider {
+    --cr-slider-active-color: transparent;
+    display: block;
+    height: 40px;
+    margin-block-start: 21px;
+    margin-block-end: 12px;
+    padding: 0;
+    width: 100%;
+  }
+
+  cr-slider::part(container) {
+    background: var(--hue-gradient_);
+    border-radius: 4px;
+    border: 0;
+    height: 8px;
+  }
+
+  cr-slider::part(knob) {
+    background: hsl(var(--knob-hue_), 100%, 50%);
+    border: solid 4px var(--color-theme-color-picker-hue-slider-handle, white);
+    box-shadow: var(--cr-elevation-1);
+    box-sizing: border-box;
+    height: 32px;
+    margin-block-start: 4px;
+    width: 32px;
+  }
+</style>
+
+<cr-action-menu id="crActionMenu">
+  <div id="header">
+    <h2 id="title">[[i18n('hueSliderTitle')]]</h2>
+    <cr-icon-button id="close" class="icon-clear"
+        aria-label$="[[i18n('close')]]"
+        on-click="hide">
+    </cr-icon-button>
+  </div>
+  <cr-slider id="slider" min="[[minHue_]]" max="[[maxHue_]]"
+      value="[[selectedHue]]"
+      on-cr-slider-value-changed="onCrSliderValueChanged_"
+      on-pointerup="updateSelectedHueValue_"
+      on-keyup="updateSelectedHueValue_"
+      style$="--hue-gradient_: [[hueGradient_]]; --knob-hue_: [[knobHue_]]"
+      aria-labelledby="title"
+      noink>
+  </cr-slider>
+</cr-action-menu>

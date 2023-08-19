@@ -14,15 +14,18 @@ source_set("transitions") {
     "legacy_grid_transition_layout.mm",
     "legacy_tab_grid_transition_handler.h",
     "legacy_tab_grid_transition_handler.mm",
+    "tab_grid_transition_direction.h",
+    "tab_grid_transition_handler.h",
+    "tab_grid_transition_handler.mm",
   ]
-
-  configs += [ "//build/config/compiler:enable_arc" ]
 
   deps = [
     "//base",
     "//ios/chrome/browser/crash_report",
     "//ios/chrome/browser/shared/ui/util",
+    "//ios/chrome/browser/ui/main",
     "//ios/chrome/browser/ui/tab_switcher/tab_grid:tab_grid_paging",
+    "//ios/chrome/browser/ui/tab_switcher/tab_grid/transitions/animations",
     "//ios/chrome/common/ui/util",
   ]
 }

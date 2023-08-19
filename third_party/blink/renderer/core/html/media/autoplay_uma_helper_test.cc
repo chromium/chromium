@@ -37,7 +37,7 @@ class MockAutoplayUmaHelper : public AutoplayUmaHelper {
 class AutoplayUmaHelperTest : public PageTestBase {
  protected:
   HTMLMediaElement& MediaElement() {
-    Element* element = GetDocument().getElementById("video");
+    Element* element = GetDocument().getElementById(AtomicString("video"));
     DCHECK(element);
     return To<HTMLVideoElement>(*element);
   }

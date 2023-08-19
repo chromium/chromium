@@ -26,7 +26,6 @@
 <translation id="2060505056492490888">「<ph name="INVALIDDOMAIN" />」内の「<ph name="DOT" />」の位置が間違っています。</translation>
 <translation id="2148716181193084225">今日</translation>
 <translation id="2226276347425096477">このテキストを半角 <ph name="MAX_CHARACTERS" /> 文字以下にしてください（現時点で半角 <ph name="CURRENT_LENGTH" /> 文字です）。</translation>
-<translation id="2246498165605549352">ローカル ファイル</translation>
 <translation id="2247351761944213033"><ph name="YEAR" />年第<ph name="WEEKNUMBER" />週</translation>
 <translation id="2277199496770840904">トラック <ph name="NUMBER" /></translation>
 <translation id="2393030564806080191">16 進数色コード</translation>
@@ -89,6 +88,7 @@
 <translation id="5425179576310518467">現在の日付</translation>
 <translation id="5466621249238537318">1 つ以上のファイルを選択してください。</translation>
 <translation id="5468998798572797635">全画面表示を終了</translation>
+<translation id="5514612371225420585">デバイス上のファイル</translation>
 <translation id="5516235301412634559">0.75</translation>
 <translation id="5537725057119320332">キャスト</translation>
 <translation id="5546461542133609677">ミュートを解除</translation>
@@ -113,6 +113,7 @@
 <translation id="6398862346408813489">月選択パネルを表示</translation>
 <translation id="6404546809543547843">オーディオ再生バー</translation>
 <translation id="6443871981718447451">字幕メニューを表示</translation>
+<translation id="6484738902856791350">プリティ プリント</translation>
 <translation id="6550675742724504774">オプション</translation>
 <translation id="6572309429103589720">文法が無効です</translation>
 <translation id="658823671542763450">全画面表示</translation>

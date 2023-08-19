@@ -24,7 +24,6 @@
 #include "base/types/strong_alias.h"
 #include "build/build_config.h"
 #include "components/password_manager/core/browser/affiliation/affiliated_match_helper.h"
-#include "components/password_manager/core/browser/field_info_store.h"
 #include "components/password_manager/core/browser/password_form_digest.h"
 #include "components/password_manager/core/browser/password_manager_metrics_util.h"
 #include "components/password_manager/core/browser/password_store_backend.h"
@@ -48,7 +47,6 @@ using IsAccountStore = base::StrongAlias<class IsAccountStoreTag, bool>;
 using metrics_util::GaiaPasswordHashChange;
 
 class PasswordStoreConsumer;
-class GetLoginsWithAffiliationsRequestHandler;
 
 // Used to notify that unsynced credentials are about to be deleted.
 class UnsyncedCredentialsDeletionNotifier {
@@ -121,7 +119,6 @@ class PasswordStore : public PasswordStoreInterface {
   void AddObserver(Observer* observer) override;
   void RemoveObserver(Observer* observer) override;
   SmartBubbleStatsStore* GetSmartBubbleStatsStore() override;
-  FieldInfoStore* GetFieldInfoStore() override;
   std::unique_ptr<syncer::ProxyModelTypeControllerDelegate>
   CreateSyncControllerDelegate() override;
   void OnSyncServiceInitialized(syncer::SyncService* sync_service) override;
@@ -188,13 +185,6 @@ class PasswordStore : public PasswordStoreInterface {
   void UnblocklistInternal(base::OnceClosure completion,
                            std::vector<std::unique_ptr<PasswordForm>> forms);
 
-  // Retrieves logins for `form` as well as for the affiliated realms if
-  // such realms/logins exist. `request_handler` is responsible for combining
-  // the responses from the two requests and passing them on.
-  void GetLoginsForFormAndForAffiliatedRealms(
-      const PasswordFormDigest& form,
-      scoped_refptr<GetLoginsWithAffiliationsRequestHandler> request_handler);
-
   // If |forms_or_error| contains forms, it retrieves and fills in affiliation
   // and branding information for Android credentials in the forms and invokes
   // |callback| with the result. If an error was received instead, it directly
@@ -224,7 +214,7 @@ class PasswordStore : public PasswordStoreInterface {
 
   std::unique_ptr<AffiliatedMatchHelper> affiliated_match_helper_;
 
-  raw_ptr<PrefService, DanglingUntriaged> prefs_ = nullptr;
+  raw_ptr<PrefService, AcrossTasksDanglingUntriaged> prefs_ = nullptr;
 
   InitStatus init_status_ = InitStatus::kUnknown;
 };

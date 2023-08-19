@@ -27,14 +27,14 @@ class ColorPanelCocoaTest : public CocoaTest {
     // window list to include it. The NSColorPanel cannot be dealloced, so
     // without this step the tests will fail complaining that not all
     // windows were closed.
-    [[NSColorPanel sharedColorPanel] makeKeyAndOrderFront:nil];
+    [NSColorPanel.sharedColorPanel makeKeyAndOrderFront:nil];
     MarkCurrentWindowsAsInitial();
   }
   base::test::TaskEnvironment task_environment_;
 };
 
 TEST_F(ColorPanelCocoaTest, ClearTargetOnEnd) {
-  NSColorPanel* nscolor_panel = [NSColorPanel sharedColorPanel];
+  NSColorPanel* nscolor_panel = NSColorPanel.sharedColorPanel;
   @autoreleasepool {
     ASSERT_TRUE([nscolor_panel respondsToSelector:@selector(__target)]);
     EXPECT_FALSE([nscolor_panel __target]);
@@ -57,10 +57,10 @@ TEST_F(ColorPanelCocoaTest, ClearTargetOnEnd) {
 
 TEST_F(ColorPanelCocoaTest, SetColor) {
   // Set the NSColor panel up with an initial color.
-  NSColor* blue_color = [NSColor blueColor];
-  NSColorPanel* nscolor_panel = [NSColorPanel sharedColorPanel];
-  [nscolor_panel setColor:blue_color];
-  EXPECT_TRUE([[nscolor_panel color] isEqual:blue_color]);
+  NSColor* blue_color = NSColor.blueColor;
+  NSColorPanel* nscolor_panel = NSColorPanel.sharedColorPanel;
+  nscolor_panel.color = blue_color;
+  EXPECT_TRUE([nscolor_panel.color isEqual:blue_color]);
 
   // Create a ColorChooserMac and confirm the NSColorPanel gets its initial
   // color.
@@ -70,8 +70,7 @@ TEST_F(ColorPanelCocoaTest, SetColor) {
       nullptr, SK_ColorBLACK, run_loop_create.QuitClosure());
   run_loop_create.Run();
 
-  EXPECT_NSEQ([nscolor_panel color],
-              skia::SkColorToDeviceNSColor(initial_color));
+  EXPECT_NSEQ(nscolor_panel.color, skia::SkColorToDeviceNSColor(initial_color));
 
   // Confirm that -[ColorPanelCocoa setColor:] sets the NSColorPanel's color.
   SkColor test_color = SK_ColorRED;
@@ -79,7 +78,7 @@ TEST_F(ColorPanelCocoaTest, SetColor) {
   color_chooser_mac->SetSelectedColor(test_color, run_loop_set.QuitClosure());
   run_loop_set.Run();
 
-  EXPECT_NSEQ([nscolor_panel color], skia::SkColorToDeviceNSColor(test_color));
+  EXPECT_NSEQ(nscolor_panel.color, skia::SkColorToDeviceNSColor(test_color));
 
   // Clean up.
   color_chooser_mac->End();

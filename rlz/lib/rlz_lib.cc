@@ -221,11 +221,9 @@ bool GetProductEventsAsCgiHelper(rlz_lib::Product product, char* cgi,
 
 namespace rlz_lib {
 
-#if defined(RLZ_NETWORK_IMPLEMENTATION_CHROME_NET)
 bool SetURLLoaderFactory(network::mojom::URLLoaderFactory* factory) {
   return FinancialPing::SetURLLoaderFactory(factory);
 }
-#endif
 
 bool GetProductEventsAsCgi(Product product, char* cgi, size_t cgi_size) {
   if (!cgi || cgi_size <= 0) {
@@ -423,11 +421,7 @@ bool SendFinancialPing(Product product,
                        const char* product_lang,
                        bool exclude_machine_id,
                        const bool skip_time_check) {
-  // Create the financial ping request.  To support ChromeOS retries, the
-  // same request needs to be sent out each time in order to preserve the
-  // machine id.  Not doing so could cause the RLZ server to over count
-  // ChromeOS machines under some network error conditions (for example,
-  // the request is properly received but the response it not).
+  // Create the financial ping request.
   std::string request;
   if (!FinancialPing::FormRequest(product, access_points, product_signature,
                                   product_brand, product_id, product_lang,
@@ -440,59 +434,17 @@ bool SendFinancialPing(Product product,
 
   // Send out the ping, update the last ping time irrespective of success.
   FinancialPing::UpdateLastPingTime(product);
+
+  SYSLOG(INFO) << "Attempting to send RLZ ping brand=" << product_brand;
   std::string response;
-
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-  const net::BackoffEntry::Policy policy = {
-      0,  // Number of initial errors to ignore.
-      static_cast<int>(base::Seconds(5).InMilliseconds()),  // Initial delay.
-      2,    // Factor to increase delay.
-      0.1,  // Delay fuzzing.
-      static_cast<int>(base::Minutes(5).InMilliseconds()),  // Maximum delay.
-      -1,  // Time to keep entries.  -1 == never discard.
-  };
-  net::BackoffEntry backoff(&policy);
-
-  const int kMaxRetryCount = 3;
-  FinancialPing::PingResponse res = FinancialPing::PING_FAILURE;
-  while (backoff.failure_count() < kMaxRetryCount) {
-    // Write to syslog that an RLZ ping is being attempted.  This is
-    // purposefully done via syslog so that admin and/or end users can monitor
-    // RLZ activity from this machine.  If RLZ is turned off in crosh, these
-    // messages will be absent.
-    SYSLOG(INFO) << "Attempting to send RLZ ping brand=" << product_brand;
-
-    res = FinancialPing::PingServer(request.c_str(), &response);
-    if (res != FinancialPing::PING_FAILURE)
-      break;
-
-    backoff.InformOfRequest(false);
-    if (backoff.ShouldRejectRequest()) {
-      SYSLOG(INFO) << "Failed sending RLZ ping - retrying in "
-                   << backoff.GetTimeUntilRelease().InSeconds() << " seconds";
-    }
-
-    base::PlatformThread::Sleep(backoff.GetTimeUntilRelease());
-  }
-
+  FinancialPing::PingResponse res =
+      FinancialPing::PingServer(request.c_str(), &response);
   if (res != FinancialPing::PING_SUCCESSFUL) {
-    if (res == FinancialPing::PING_FAILURE) {
-      SYSLOG(INFO) << "Failed sending RLZ ping after " << kMaxRetryCount
-                   << " tries";
-    } else {  // res == FinancialPing::PING_SHUTDOWN
-      SYSLOG(INFO) << "Failed sending RLZ ping due to chrome shutdown";
-    }
+    SYSLOG(INFO) << "Failed sending RLZ";
     return false;
   }
 
   SYSLOG(INFO) << "Succeeded in sending RLZ ping";
-#else
-  FinancialPing::PingResponse res =
-      FinancialPing::PingServer(request.c_str(), &response);
-  if (res != FinancialPing::PING_SUCCESSFUL)
-    return false;
-#endif
-
   return ParsePingResponse(product, response.c_str());
 }
 
@@ -512,11 +464,9 @@ bool ParsePingResponse(Product product, const char* response) {
   if (0 == response_length)
     return true;  // Empty response - no parsing.
 
-  std::string events_variable;
-  std::string stateful_events_variable;
-  base::SStringPrintf(&events_variable, "%s: ", kEventsCgiVariable);
-  base::SStringPrintf(&stateful_events_variable, "%s: ",
-                      kStatefulEventsCgiVariable);
+  std::string events_variable = base::StringPrintf("%s: ", kEventsCgiVariable);
+  std::string stateful_events_variable =
+      base::StringPrintf("%s: ", kStatefulEventsCgiVariable);
 
   int rlz_cgi_length = strlen(kRlzCgiVariable);
 

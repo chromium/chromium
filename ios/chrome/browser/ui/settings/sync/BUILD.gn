@@ -3,7 +3,6 @@
 # found in the LICENSE file.
 
 source_set("sync") {
-  configs += [ "//build/config/compiler:enable_arc" ]
   sources = [
     "sync_create_passphrase_table_view_controller.h",
     "sync_create_passphrase_table_view_controller.mm",
@@ -24,6 +23,7 @@ source_set("sync") {
     "//components/unified_consent",
     "//ios/chrome/app/strings",
     "//ios/chrome/browser/net:crurl",
+    "//ios/chrome/browser/settings/sync/utils",
     "//ios/chrome/browser/shared/coordinator/scene:scene_state_browser_agent",
     "//ios/chrome/browser/shared/coordinator/scene:scene_state_header",
     "//ios/chrome/browser/shared/model/application_context",
@@ -45,7 +45,6 @@ source_set("sync") {
     "//ios/chrome/browser/ui/settings:settings_root",
     "//ios/chrome/browser/ui/settings/cells",
     "//ios/chrome/browser/ui/settings/google_services:constants",
-    "//ios/chrome/browser/ui/settings/sync/utils",
     "//ios/chrome/browser/ui/settings/utils",
     "//ios/chrome/common/ui/colors",
     "//ios/chrome/common/ui/table_view:cells_constants",
@@ -55,7 +54,6 @@ source_set("sync") {
 }
 
 source_set("unit_tests") {
-  configs += [ "//build/config/compiler:enable_arc" ]
   testonly = true
   sources = [
     "sync_create_passphrase_table_view_controller_unittest.mm",
@@ -74,6 +72,7 @@ source_set("unit_tests") {
     "//components/unified_consent",
     "//ios/chrome/app/strings",
     "//ios/chrome/browser/prefs",
+    "//ios/chrome/browser/settings/sync/utils",
     "//ios/chrome/browser/shared/model/browser/test:test_support",
     "//ios/chrome/browser/shared/model/browser_state:test_support",
     "//ios/chrome/browser/shared/model/prefs:browser_prefs",
@@ -84,9 +83,10 @@ source_set("unit_tests") {
     "//ios/chrome/browser/signin:system_identity",
     "//ios/chrome/browser/sync",
     "//ios/chrome/browser/sync:test_support",
+    "//ios/chrome/browser/ui/settings:settings_root",
     "//ios/chrome/browser/ui/settings:test_support",
     "//ios/chrome/browser/ui/settings/cells",
-    "//ios/chrome/browser/ui/settings/sync/utils",
+    "//ios/chrome/browser/ui/settings/content_settings",
     "//ios/web/public/test",
     "//testing/gtest",
     "//ui/base",
@@ -94,10 +94,7 @@ source_set("unit_tests") {
 }
 
 source_set("eg2_tests") {
-  configs += [
-    "//build/config/compiler:enable_arc",
-    "//build/config/ios:xctest_config",
-  ]
+  configs += [ "//build/config/ios:xctest_config" ]
   testonly = true
   sources = [ "sync_encryption_passphrase_table_view_controller_egtest.mm" ]
   deps = [
@@ -108,6 +105,7 @@ source_set("eg2_tests") {
     "//ios/chrome/browser/signin:fake_system_identity",
     "//ios/chrome/browser/ui/authentication:eg_test_support+eg2",
     "//ios/chrome/browser/ui/settings:constants",
+    "//ios/chrome/browser/ui/settings:eg_test_support+eg2",
     "//ios/chrome/browser/ui/settings/google_services:constants",
     "//ios/chrome/test/earl_grey:eg_test_support+eg2",
     "//ios/testing/earl_grey:eg_test_support+eg2",

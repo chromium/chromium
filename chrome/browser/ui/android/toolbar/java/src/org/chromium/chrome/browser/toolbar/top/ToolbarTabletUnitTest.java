@@ -17,6 +17,7 @@ import android.view.View;
 import android.widget.ImageButton;
 import android.widget.LinearLayout;
 
+import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Rule;
@@ -31,7 +32,6 @@ import org.robolectric.annotation.LooperMode;
 import org.robolectric.shadows.ShadowToast;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
-import org.chromium.base.test.util.JniMocker;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.omnibox.LocationBarCoordinator;
 import org.chromium.chrome.browser.omnibox.LocationBarCoordinatorTablet;
@@ -46,7 +46,6 @@ import org.chromium.chrome.test.util.browser.Features;
 import org.chromium.chrome.test.util.browser.Features.DisableFeatures;
 import org.chromium.chrome.test.util.browser.Features.EnableFeatures;
 import org.chromium.ui.widget.ToastManager;
-import org.chromium.ui.widget.ToastManagerJni;
 
 import java.util.ArrayList;
 
@@ -58,10 +57,6 @@ import java.util.ArrayList;
 public final class ToolbarTabletUnitTest {
     @Rule
     public TestRule mFeaturesProcessorRule = new Features.JUnitProcessor();
-    @Rule
-    public JniMocker mJniMocker = new JniMocker();
-    @Mock
-    private ToastManager.Natives mToastManagerJni;
     @Mock
     private LocationBarCoordinator mLocationBar;
     @Mock
@@ -72,7 +67,6 @@ public final class ToolbarTabletUnitTest {
     private MenuButtonCoordinator mMenuButtonCoordinator;
     @Mock
     private View mContainerView;
-
     private Activity mActivity;
     private ToolbarTablet mToolbarTablet;
     private LinearLayout mToolbarTabletLayout;
@@ -80,6 +74,11 @@ public final class ToolbarTabletUnitTest {
     private ImageButton mReloadingButton;
     private ImageButton mBackButton;
     private ImageButton mForwardButton;
+    private ImageButton mMenuButton;
+    private ImageButton mTabSwitcherButton;
+    private ImageButton mBookmarkButton;
+    private ImageButton mSaveOfflineButton;
+    private View mLocationBarButton;
 
     @Before
     public void setUp() {
@@ -99,7 +98,16 @@ public final class ToolbarTabletUnitTest {
         mBackButton = mToolbarTablet.findViewById(R.id.back_button);
         mForwardButton = mToolbarTablet.findViewById(R.id.forward_button);
         mReloadingButton = mToolbarTablet.findViewById(R.id.refresh_button);
-        mJniMocker.mock(ToastManagerJni.TEST_HOOKS, mToastManagerJni);
+        mMenuButton = mToolbarTablet.findViewById(R.id.menu_button);
+        mTabSwitcherButton = mToolbarTablet.findViewById(R.id.tab_switcher_button);
+        mLocationBarButton = mToolbarTablet.findViewById(R.id.location_bar_status_icon);
+        mBookmarkButton = mToolbarTablet.findViewById(R.id.bookmark_button);
+        mSaveOfflineButton = mToolbarTablet.findViewById(R.id.save_offline_button);
+    }
+
+    @After
+    public void tearDown() {
+        ToastManager.resetForTesting();
     }
 
     @Test
@@ -133,7 +141,7 @@ public final class ToolbarTabletUnitTest {
     }
 
     @Test
-    @DisableFeatures({ChromeFeatureList.TABLET_TOOLBAR_REORDERING})
+    @DisableFeatures(ChromeFeatureList.TABLET_TOOLBAR_REORDERING)
     public void testButtonPosition_ShutoffToolbarReordering() {
         mToolbarTablet.onFinishInflate();
 
@@ -307,6 +315,33 @@ public final class ToolbarTabletUnitTest {
     }
 
     @Test
+    public void testHoverTooltipText() {
+        // verify tooltip texts for tablet toolbar button are set.
+        Assert.assertEquals("Tooltip text for Home button is not as expected",
+                mActivity.getResources().getString(R.string.accessibility_toolbar_btn_home),
+                mHomeButton.getTooltipText());
+        Assert.assertEquals("Tooltip text for Reload button is not as expected",
+                mActivity.getResources().getString(R.string.accessibility_btn_refresh),
+                mReloadingButton.getTooltipText());
+        Assert.assertEquals("Tooltip text for Forward button is not as expected",
+                mActivity.getResources().getString(R.string.accessibility_menu_forward),
+                mForwardButton.getTooltipText());
+        Assert.assertEquals("Tooltip text for Back button is not as expected",
+                mActivity.getResources().getString(R.string.accessibility_toolbar_btn_back),
+                mBackButton.getTooltipText());
+        Assert.assertEquals("Tooltip text for Tab Switcher button is not as expected",
+                mActivity.getResources().getString(
+                        R.string.accessibility_toolbar_btn_tabswitcher_toggle_default),
+                mTabSwitcherButton.getTooltipText());
+        Assert.assertEquals("Tooltip text for Bookmark button is not as expected",
+                mActivity.getResources().getString(R.string.accessibility_menu_bookmark),
+                mBookmarkButton.getTooltipText());
+        Assert.assertEquals("Tooltip text for Save Offline button is not as expected",
+                mActivity.getResources().getString(R.string.download_page),
+                mSaveOfflineButton.getTooltipText());
+    }
+
+    @Test
     @EnableFeatures(ChromeFeatureList.SUPPRESS_TOOLBAR_CAPTURES)
     public void testIsReadyForTextureCapture_InTabSwitcher() {
         mToolbarTablet.setTabSwitcherMode(/*inTabSwitcherMode*/ true);
@@ -356,5 +391,6 @@ public final class ToolbarTabletUnitTest {
         assertTrue("Toast is not as expected",
                 ShadowToast.showedCustomToast(
                         mActivity.getResources().getString(stringId), R.id.toast_text));
+        ToastManager.resetForTesting();
     }
 }

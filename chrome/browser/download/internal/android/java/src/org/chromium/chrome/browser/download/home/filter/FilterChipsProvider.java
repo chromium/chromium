@@ -27,8 +27,6 @@ import java.util.Map;
  * downloads.
  */
 public class FilterChipsProvider implements OfflineItemFilterObserver {
-    private static final int INVALID_INDEX = -1;
-
     /** A delegate responsible for handling UI actions like selecting filters. */
     public interface Delegate {
         /** Called when the selected filter has changed. */

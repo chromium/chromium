@@ -27,6 +27,7 @@ build_webui("build") {
     "cluster.ts",
     "clusters.ts",
     "cluster_menu.ts",
+    "horizontal_carousel.ts",
     "page_favicon.ts",
     "search_query.ts",
     "url_visit.ts",

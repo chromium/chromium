@@ -77,7 +77,7 @@
 <translation id="3157931365184549694">पुन: भण्डारण</translation>
 <translation id="3183922693828471536">यहाँसम्म स्क्रोल गर्नुहोस्</translation>
 <translation id="3234408098842461169">डाउन एरो</translation>
-<translation id="3240426699337459095">लिंक प्रतिलिपि गरियो</translation>
+<translation id="3240426699337459095">लिंक कपी गरियो</translation>
 <translation id="3291688615589870984">{DAYS,plural, =1{ १ दिन}other{ # दिन}}</translation>
 <translation id="3295886253693811851">निम्न सेवामार्फत कल गर्नुहोस्</translation>
 <translation id="3306688585798492231">अन्तर्निर्मित डिस्प्ले</translation>
@@ -105,7 +105,6 @@
 <translation id="4266252015790371705">{MONTHS,plural, =1{१ महिना अघि}other{# महिना अघि}}</translation>
 <translation id="4289300219472526559">बोल्न सुरु गर्नुहोस्</translation>
 <translation id="4289540628985791613">समीक्षा</translation>
-<translation id="4306392492252714209">क्लिपबोर्डबाट हटाउनुहोस्।</translation>
 <translation id="4491109536499578614">छवि</translation>
 <translation id="4565377596337484307">पासवर्ड लुकाउनुहोस्</translation>
 <translation id="4588090240171750605">दायाँ तिर स्क्रोल गर्नुहोस्</translation>
@@ -148,6 +147,7 @@
 <translation id="6142413573757616983"><ph name="QUANTITY" /> बा/से</translation>
 <translation id="6237461503717005873"><ph name="ROW_NAME" /> चयन गरियो।</translation>
 <translation id="6264365405983206840">&amp;सबै चयन गर्नुहोस्</translation>
+<translation id="6346952829206698721">क्लिपबोर्डबाट पेस्ट गर्नुहोस्</translation>
 <translation id="6364916375976753737">बायाँ स्क्रोल गर्नुहोस्</translation>
 <translation id="6394627529324717982">अल्पविराम</translation>
 <translation id="6397363302884558537">बोल्न बन्द गर्नुहोस्</translation>
@@ -174,6 +174,7 @@
 <translation id="7170202025028120564">अर्को पटक तपाईंको एप पुनः सुरु भएपछि तपाईंको एपको डिस्प्लेसम्बन्धी सेटिङहरू लागू हुने छन्।</translation>
 <translation id="7222373446505536781">F11</translation>
 <translation id="7238427729722629793">{MINUTES,plural, =1{ १ मिनेट बाँकी}other{ # मिनेट बाँकी}}</translation>
+<translation id="7363164521834647158">जवाफ पठाउनुहोस्</translation>
 <translation id="7365057348334984696">{MINUTES,plural, =1{ १ मिनेटअघि}other{ # मिनेटअघि}}</translation>
 <translation id="7389409599945284130">- <ph name="MESSAGE" /></translation>
 <translation id="7410957453383678442">{MINUTES,plural, =1{ १ मिनेट बाँकी}other{ # मिनेट बाँकी}}</translation>

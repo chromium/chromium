@@ -72,7 +72,7 @@
             $i18n{addressCountry}
           </label>
           <select id="country" class="md-select" aria-labelledby="select-label"
-              value="[[countryCode_]]" on-change="onCountryChange_"
+              value="[[countryCode_]]" on-change="onCountryCodeSelectChange_"
               autofocus>
             <option value="" hidden="[[isAccountAddress_]]"></option>
             <template is="dom-repeat" items="[[countries_]]">

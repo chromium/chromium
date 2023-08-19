@@ -33,42 +33,6 @@
                 "config": "chromium"
               }
             }
-          },
-          {
-            "builder_id": {
-              "bucket": "ci",
-              "builder": "android-cronet-x86-rel-kitkat-tests",
-              "project": "chromium"
-            },
-            "builder_spec": {
-              "build_gs_bucket": "chromium-android-archive",
-              "builder_group": "chromium.android",
-              "execution_mode": "TEST",
-              "legacy_android_config": {
-                "config": "x86_builder"
-              },
-              "legacy_chromium_config": {
-                "apply_configs": [
-                  "cronet_builder",
-                  "mb"
-                ],
-                "build_config": "Release",
-                "config": "android",
-                "target_bits": 32,
-                "target_platform": "android"
-              },
-              "legacy_gclient_config": {
-                "apply_configs": [
-                  "android"
-                ],
-                "config": "chromium"
-              },
-              "parent": {
-                "bucket": "ci",
-                "builder": "android-cronet-x86-rel",
-                "project": "chromium"
-              }
-            }
           }
         ]
       },
@@ -79,20 +43,9 @@
           "project": "chromium"
         }
       ],
-      "builder_ids_in_scope_for_testing": [
-        {
-          "bucket": "ci",
-          "builder": "android-cronet-x86-rel-kitkat-tests",
-          "project": "chromium"
-        }
-      ],
       "mirroring_builder_group_and_names": [
         {
           "builder": "android-cronet-x86-rel",
-          "group": "tryserver.chromium.android"
-        },
-        {
-          "builder": "android-cronet-x86-rel-kitkat-tests",
           "group": "tryserver.chromium.android"
         }
       ]
@@ -101,7 +54,8 @@
   "$build/reclient": {
     "instance": "rbe-chromium-trusted",
     "jobs": 500,
-    "metrics_project": "chromium-reclient-metrics"
+    "metrics_project": "chromium-reclient-metrics",
+    "scandeps_server": true
   },
   "$recipe_engine/resultdb/test_presentation": {
     "column_keys": [],

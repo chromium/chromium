@@ -13,44 +13,58 @@
 namespace media {
 
 RequestBuilder::RequestBuilder(CameraDeviceContext* device_context,
-                               RequestBufferCallback request_buffer_callback)
+                               RequestBufferCallback request_buffer_callback,
+                               bool use_buffer_management_apis)
     : device_context_(device_context),
       frame_number_(0),
-      request_buffer_callback_(std::move(request_buffer_callback)) {}
+      request_buffer_callback_(std::move(request_buffer_callback)),
+      use_buffer_management_apis_(use_buffer_management_apis) {}
 
 RequestBuilder::~RequestBuilder() = default;
 
 cros::mojom::Camera3CaptureRequestPtr RequestBuilder::BuildRequest(
     std::set<StreamType> stream_types,
-    cros::mojom::CameraMetadataPtr settings,
-    absl::optional<uint64_t> input_buffer_id) {
+    cros::mojom::CameraMetadataPtr settings) {
   auto capture_request = cros::mojom::Camera3CaptureRequest::New();
   for (StreamType stream_type : stream_types) {
-    absl::optional<BufferInfo> buffer_info;
-    if (IsInputStream(stream_type)) {
-      DCHECK(input_buffer_id.has_value());
-      buffer_info = request_buffer_callback_.Run(stream_type, input_buffer_id);
-    } else {
-      buffer_info = request_buffer_callback_.Run(stream_type, {});
+    // If the buffer management APIs are enabled, capture requests do not
+    // contain buffer handles.
+    if (use_buffer_management_apis_) {
+      capture_request->output_buffers.push_back(
+          CreateStreamBuffer(stream_type, absl::nullopt));
+      continue;
     }
+
+    absl::optional<BufferInfo> buffer_info =
+        request_buffer_callback_.Run(stream_type);
     if (!buffer_info) {
       return capture_request;
     }
-    const uint64_t buffer_ipc_id = buffer_info->ipc_id;
-    auto buffer_handle =
-        CreateCameraBufferHandle(stream_type, std::move(*buffer_info));
-    auto stream_buffer = CreateStreamBuffer(stream_type, buffer_ipc_id,
-                                            std::move(buffer_handle));
-    if (IsInputStream(stream_type)) {
-      capture_request->input_buffer = std::move(stream_buffer);
-    } else {
-      capture_request->output_buffers.push_back(std::move(stream_buffer));
-    }
+    capture_request->output_buffers.push_back(
+        CreateStreamBuffer(stream_type, std::move(*buffer_info)));
   }
   capture_request->settings = std::move(settings);
   capture_request->frame_number = frame_number_++;
 
   return capture_request;
+}
+
+cros::mojom::Camera3StreamBufferPtr RequestBuilder::CreateStreamBuffer(
+    StreamType stream_type,
+    absl::optional<BufferInfo> buffer_info) {
+  cros::mojom::Camera3StreamBufferPtr buffer =
+      cros::mojom::Camera3StreamBuffer::New();
+  buffer->stream_id = static_cast<uint64_t>(stream_type);
+  buffer->status = cros::mojom::Camera3BufferStatus::CAMERA3_BUFFER_STATUS_OK;
+  if (buffer_info.has_value()) {
+    buffer->buffer_id = buffer_info->ipc_id;
+    buffer->buffer_handle =
+        CreateCameraBufferHandle(stream_type, std::move(*buffer_info));
+  } else {
+    buffer->buffer_id = cros::mojom::NO_BUFFER_BUFFER_ID;
+    buffer->buffer_handle = nullptr;
+  }
+  return buffer;
 }
 
 cros::mojom::CameraBufferHandlePtr RequestBuilder::CreateCameraBufferHandle(
@@ -87,19 +101,6 @@ cros::mojom::CameraBufferHandlePtr RequestBuilder::CreateCameraBufferHandle(
   }
 
   return buffer_handle;
-}
-
-cros::mojom::Camera3StreamBufferPtr RequestBuilder::CreateStreamBuffer(
-    StreamType stream_type,
-    uint64_t buffer_ipc_id,
-    cros::mojom::CameraBufferHandlePtr buffer_handle) {
-  cros::mojom::Camera3StreamBufferPtr buffer =
-      cros::mojom::Camera3StreamBuffer::New();
-  buffer->stream_id = static_cast<uint64_t>(stream_type);
-  buffer->buffer_id = buffer_ipc_id;
-  buffer->status = cros::mojom::Camera3BufferStatus::CAMERA3_BUFFER_STATUS_OK;
-  buffer->buffer_handle = std::move(buffer_handle);
-  return buffer;
 }
 
 }  // namespace media

@@ -18,6 +18,7 @@ android_library("test_java") {
     "//chrome/test/android:chrome_java_integration_test_support",
     "//components/autofill/android:autofill_java_resources",
     "//components/autofill/android:autofill_payments_java_resources",
+    "//components/image_fetcher:java",
     "//components/image_fetcher:test_support_java",
     "//third_party/androidx:androidx_appcompat_appcompat_resources_java",
     "//third_party/androidx:androidx_test_runner_java",
@@ -31,7 +32,15 @@ android_library("test_support_java") {
   testonly = true
   resources_package = "org.chromium.chrome.browser.autofill"
 
+  srcjar_deps = [ ":jni_headers" ]
   sources = [ "android/java/src/org/chromium/chrome/browser/autofill/AutofillTestHelper.java" ]
+
+  deps = [
+    ":jni_headers",
+    "//base:jni_java",
+    "//content/public/android:content_java",
+    "//url:gurl_java",
+  ]
 
   public_deps = [
     "//base:base_java_test_support",
@@ -39,4 +48,21 @@ android_library("test_support_java") {
     "//components/autofill/android:main_autofill_java",
     "//content/public/test/android:content_java_test_support",
   ]
+}
+
+generate_jni("jni_headers") {
+  testonly = true
+  sources = [ "android/java/src/org/chromium/chrome/browser/autofill/AutofillTestHelper.java" ]
+}
+
+if (is_android) {
+  source_set("test_support") {
+    testonly = true
+    sources = [ "android/autofill_test_helper.cc" ]
+    deps = [
+      ":jni_headers",
+      "//base",
+      "//chrome/browser/ui",
+    ]
+  }
 }

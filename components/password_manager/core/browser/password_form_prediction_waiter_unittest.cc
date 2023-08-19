@@ -48,8 +48,25 @@ class PasswordFormPredictionWaiterTest : public testing::Test {
 
 TEST_F(PasswordFormPredictionWaiterTest, WaitCompletedOnTimeout) {
   prediction_waiter_.StartTimer();
+  EXPECT_TRUE(prediction_waiter_.IsActive());
   task_environment_.FastForwardBy(kMaxFillingDelayForAsyncPredictions);
+  EXPECT_FALSE(prediction_waiter_.IsActive());
   EXPECT_TRUE(client_.timed_out());
+}
+
+TEST_F(PasswordFormPredictionWaiterTest, Reset) {
+  prediction_waiter_.StartTimer();
+  auto closure = prediction_waiter_.CreateClosure();
+  EXPECT_TRUE(prediction_waiter_.IsActive());
+
+  prediction_waiter_.Reset();
+  EXPECT_FALSE(prediction_waiter_.IsActive());
+  std::move(closure).Run();
+
+  // No calls happen to the client.
+  task_environment_.FastForwardBy(kMaxFillingDelayForAsyncPredictions);
+  EXPECT_FALSE(client_.timed_out());
+  EXPECT_EQ(client_.wait_completed_count(), 0);
 }
 
 TEST_F(PasswordFormPredictionWaiterTest,
@@ -81,6 +98,7 @@ TEST_F(PasswordFormPredictionWaiterTest, WaitCompletedOnMultipleCallbacks) {
   std::move(closure2).Run();
   std::move(closure3).Run();
 
+  EXPECT_FALSE(prediction_waiter_.IsActive());
   EXPECT_EQ(client_.wait_completed_count(), 1);
   EXPECT_FALSE(client_.timed_out());
 }
@@ -91,6 +109,7 @@ TEST_F(PasswordFormPredictionWaiterTest,
   auto closure1 = prediction_waiter_.CreateClosure();
 
   task_environment_.FastForwardBy(kMaxFillingDelayForAsyncPredictions);
+  EXPECT_FALSE(prediction_waiter_.IsActive());
   EXPECT_TRUE(client_.timed_out());
   EXPECT_EQ(client_.wait_completed_count(), 0);
   std::move(closure1).Run();

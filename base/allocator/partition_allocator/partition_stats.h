@@ -118,6 +118,8 @@ struct PartitionBucketMemoryStats {
 // PartitionDumpStats for using the memory statistics.
 class PA_COMPONENT_EXPORT(PARTITION_ALLOC) PartitionStatsDumper {
  public:
+  virtual ~PartitionStatsDumper() = default;
+
   // Called to dump total memory used by partition, once per partition.
   virtual void PartitionDumpTotals(const char* partition_name,
                                    const PartitionMemoryStats*) = 0;
@@ -133,6 +135,7 @@ class PA_COMPONENT_EXPORT(PARTITION_ALLOC) SimplePartitionStatsDumper
     : public PartitionStatsDumper {
  public:
   SimplePartitionStatsDumper();
+  ~SimplePartitionStatsDumper() override = default;
 
   void PartitionDumpTotals(const char* partition_name,
                            const PartitionMemoryStats* memory_stats) override;

@@ -10,10 +10,6 @@
 #import "net/cookies/canonical_cookie.h"
 #import "net/cookies/cookie_constants.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 @implementation DownloadSessionCookieStorage {
   __strong NSMutableArray<NSHTTPCookie*>* _cookies;
   NSHTTPCookieAcceptPolicy _cookieAcceptPolicy;
@@ -66,9 +62,8 @@
   // and not secure will not be included), and legacy mode.
   cookieAccessSemantics = net::CookieAccessSemantics::UNKNOWN;
 
-  net::CookieAccessParams params = {
-      cookieAccessSemantics, delegate_treats_url_as_trustworthy,
-      net::CookieSamePartyStatus::kNoSamePartyEnforcement};
+  net::CookieAccessParams params = {cookieAccessSemantics,
+                                    delegate_treats_url_as_trustworthy};
   for (NSHTTPCookie* cookie in self.cookies) {
     std::unique_ptr<net::CanonicalCookie> canonical_cookie =
         net::CanonicalCookieFromSystemCookie(cookie, base::Time());

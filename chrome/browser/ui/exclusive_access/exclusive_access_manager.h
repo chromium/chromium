@@ -76,7 +76,8 @@ class ExclusiveAccessManager {
   void ExitExclusiveAccess();
 
  private:
-  const raw_ptr<ExclusiveAccessContext> exclusive_access_context_;
+  const raw_ptr<ExclusiveAccessContext, DanglingUntriaged>
+      exclusive_access_context_;
   FullscreenController fullscreen_controller_;
   KeyboardLockController keyboard_lock_controller_;
   MouseLockController mouse_lock_controller_;

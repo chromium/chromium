@@ -21,7 +21,9 @@ struct macroblockd;
 
 /* Encoder forward decls */
 struct macroblock;
+struct macroblock_plane;
 struct vp9_sad_table;
+struct ScanOrder;
 struct search_site_config;
 struct mv;
 union int_mv;
@@ -132,46 +134,38 @@ void vp9_iht8x8_64_add_vsx(const tran_low_t* input,
 
 void vp9_quantize_fp_c(const tran_low_t* coeff_ptr,
                        intptr_t n_coeffs,
-                       const int16_t* round_ptr,
-                       const int16_t* quant_ptr,
+                       const struct macroblock_plane* const mb_plane,
                        tran_low_t* qcoeff_ptr,
                        tran_low_t* dqcoeff_ptr,
                        const int16_t* dequant_ptr,
                        uint16_t* eob_ptr,
-                       const int16_t* scan,
-                       const int16_t* iscan);
+                       const struct ScanOrder* const scan_order);
 void vp9_quantize_fp_vsx(const tran_low_t* coeff_ptr,
                          intptr_t n_coeffs,
-                         const int16_t* round_ptr,
-                         const int16_t* quant_ptr,
+                         const struct macroblock_plane* const mb_plane,
                          tran_low_t* qcoeff_ptr,
                          tran_low_t* dqcoeff_ptr,
                          const int16_t* dequant_ptr,
                          uint16_t* eob_ptr,
-                         const int16_t* scan,
-                         const int16_t* iscan);
+                         const struct ScanOrder* const scan_order);
 #define vp9_quantize_fp vp9_quantize_fp_vsx
 
 void vp9_quantize_fp_32x32_c(const tran_low_t* coeff_ptr,
                              intptr_t n_coeffs,
-                             const int16_t* round_ptr,
-                             const int16_t* quant_ptr,
+                             const struct macroblock_plane* const mb_plane,
                              tran_low_t* qcoeff_ptr,
                              tran_low_t* dqcoeff_ptr,
                              const int16_t* dequant_ptr,
                              uint16_t* eob_ptr,
-                             const int16_t* scan,
-                             const int16_t* iscan);
+                             const struct ScanOrder* const scan_order);
 void vp9_quantize_fp_32x32_vsx(const tran_low_t* coeff_ptr,
                                intptr_t n_coeffs,
-                               const int16_t* round_ptr,
-                               const int16_t* quant_ptr,
+                               const struct macroblock_plane* const mb_plane,
                                tran_low_t* qcoeff_ptr,
                                tran_low_t* dqcoeff_ptr,
                                const int16_t* dequant_ptr,
                                uint16_t* eob_ptr,
-                               const int16_t* scan,
-                               const int16_t* iscan);
+                               const struct ScanOrder* const scan_order);
 #define vp9_quantize_fp_32x32 vp9_quantize_fp_32x32_vsx
 
 void vp9_scale_and_extend_frame_c(const struct yv12_buffer_config* src,

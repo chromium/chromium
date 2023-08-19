@@ -7,6 +7,8 @@ import {loadTimeData} from '//resources/ash/common/load_time_data.m.js';
 import {$} from '//resources/ash/common/util.js';
 import {afterNextRender} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
+import {Oobe} from '../../cr_ui.js';
+
 /**
  * @fileoverview Common testing utils methods used for OOBE tast tests.
  */
@@ -209,7 +211,41 @@ class EnrollmentScreenTester extends ScreenElementApi {
 class UserCreationScreenTester extends ScreenElementApi {
   constructor() {
     super('user-creation');
+    this.personalCrButton = new PolymerElementApi(this, '#selfButton');
+    this.enrollCrButton = new PolymerElementApi(this, '#enrollButton');
+    this.enrollTriageCrButton =
+        new PolymerElementApi(this, '#triageEnrollButton');
     this.nextButton = new PolymerElementApi(this, '#nextButton');
+    this.enrollNextButton =
+        new PolymerElementApi(this, '#enrollTriageNextButton');
+  }
+
+  /**
+   * Presses enroll device button to select it in enroll triage step.
+   */
+  selectEnrollTriageButton() {
+    this.enrollTriageCrButton.click();
+  }
+
+  /**
+   * Presses for personal use button to select it.
+   */
+  selectPersonalUser() {
+    this.personalCrButton.click();
+  }
+
+  /**
+   * Presses for work button to select it.
+   */
+  selectForWork() {
+    this.enrollCrButton.click();
+  }
+
+  /**
+   * Presses next button in enroll-triage step.
+   */
+  clickEnrollNextButton() {
+    this.enrollNextButton.click();
   }
 }
 
@@ -939,6 +975,84 @@ class GaiaInfoScreenTester extends ScreenElementApi {
   }
 }
 
+class ConsumerUpdateScreenTester extends ScreenElementApi {
+  constructor() {
+    super('consumer-update');
+    this.skipButton = new PolymerElementApi(this, '#skipButton');
+  }
+
+  clickSkip() {
+    this.skipButton.click();
+  }
+}
+
+class ChoobeScreenTester extends ScreenElementApi {
+  constructor() {
+    super('choobe');
+    this.skipButton = new PolymerElementApi(this, '#skipButton');
+    this.nextButton = new PolymerElementApi(this, '#nextButton');
+    this.choobeScreensList = new PolymerElementApi(this, '#screensList');
+    this.drivePinningScreenButton = new PolymerElementApi(
+        this.choobeScreensList, '#cr-button-drive-pinning');
+  }
+
+  isReadyForTesting() {
+    return this.isVisible();
+  }
+
+  clickDrivePinningScreen() {
+    this.drivePinningScreenButton.click();
+  }
+
+  isDrivePinningScreenVisible() {
+    return this.drivePinningScreenButton.isVisible();
+  }
+
+  isDrivePinningScreenChecked() {
+    return !!this.drivePinningScreenButton.element().getAttribute('checked');
+  }
+
+  clickNext() {
+    this.nextButton.click();
+  }
+
+  clickSkip() {
+    this.skipButton.click();
+  }
+}
+
+class ChoobeDrivePinningScreenTester extends ScreenElementApi {
+  constructor() {
+    super('drive-pinning');
+    this.nextButton = new PolymerElementApi(this, '#nextButton');
+    this.drivePinningToggle =
+        new PolymerElementApi(this, '#drivePinningToggle');
+    this.drivePinningSpaceInformation =
+        new PolymerElementApi(this, '#spaceInformation');
+  }
+
+  isReadyForTesting() {
+    return this.isVisible() && this.drivePinningToggle.isVisible() &&
+        this.drivePinningSpaceInformation.isVisible();
+  }
+
+  toggleFileSync() {
+    this.drivePinningToggle.click();
+  }
+
+  isFileSyncEnabled() {
+    return !!this.drivePinningToggle.element().checked;
+  }
+
+  getSpaceInformationString() {
+    return this.drivePinningSpaceInformation.element().innerText;
+  }
+
+  clickNext() {
+    this.nextButton.click();
+  }
+}
+
 export class OobeApiProvider {
   constructor() {
     this.screens = {
@@ -966,6 +1080,9 @@ export class OobeApiProvider {
       SmartPrivacyProtectionScreen: new SmartPrivacyProtectionScreenTester(),
       CryptohomeRecoverySetupScreen: new CryptohomeRecoverySetupScreenTester(),
       GaiaInfoScreen: new GaiaInfoScreenTester(),
+      ConsumerUpdateScreen: new ConsumerUpdateScreenTester(),
+      ChoobeScreen: new ChoobeScreenTester(),
+      ChoobeDrivePinningScreen: new ChoobeDrivePinningScreenTester(),
     };
 
     this.loginWithPin = function(username, pin) {
@@ -994,6 +1111,18 @@ export class OobeApiProvider {
 
     this.getBrowseAsGuestButtonName = function() {
       return loadTimeData.getString('testapi_browseAsGuest');
+    };
+
+    this.getCurrentScreenName = function() {
+      return Oobe.getInstance().currentScreen.id.trim();
+    };
+
+    this.getCurrentScreenStep = function() {
+      const step = Oobe.getInstance().currentScreen.getAttribute('multistep');
+      if (step === null) {
+        return 'default';
+      }
+      return step.trim();
     };
   }
 }

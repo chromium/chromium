@@ -15,7 +15,7 @@ AllAppsLockDescription::~AllAppsLockDescription() = default;
 
 AllAppsLock::AllAppsLock(base::WeakPtr<WebAppLockManager> lock_manager,
                          std::unique_ptr<content::PartitionedLockHolder> holder)
-    : Lock(std::move(holder)), WithAppResources(std::move(lock_manager)) {}
+    : Lock(std::move(holder), lock_manager), WithAppResources(lock_manager) {}
 AllAppsLock::~AllAppsLock() = default;
 
 }  // namespace web_app

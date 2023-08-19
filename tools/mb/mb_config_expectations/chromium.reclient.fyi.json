@@ -12,36 +12,12 @@
     },
     "build2": {
       "gn_args": {
-        "dcheck_always_on": false,
-        "ffmpeg_branding": "Chrome",
-        "is_component_build": false,
-        "is_debug": false,
-        "proprietary_codecs": true,
-        "use_remoteexec": true,
-        "use_remoteexec_links": true
-      }
-    }
-  },
-  "Comparison Linux (reclient vs reclient remote links)(small)": {
-    "build1": {
-      "gn_args": {
-        "dcheck_always_on": false,
-        "ffmpeg_branding": "Chrome",
-        "is_component_build": false,
-        "is_debug": false,
-        "proprietary_codecs": true,
-        "use_remoteexec": true
-      }
-    },
-    "build2": {
-      "gn_args": {
         "concurrent_links": 50,
         "dcheck_always_on": false,
         "ffmpeg_branding": "Chrome",
         "is_component_build": false,
         "is_debug": false,
         "proprietary_codecs": true,
-        "rbe_link_cfg_file": "../../buildtools/reclient_cfgs/rewrapper_linux_link.cfg",
         "use_remoteexec": true,
         "use_remoteexec_links": true
       }
@@ -87,6 +63,16 @@
       "use_remoteexec": true
     }
   },
+  "Linux Builder reclient test (casng)": {
+    "gn_args": {
+      "dcheck_always_on": false,
+      "ffmpeg_branding": "Chrome",
+      "is_component_build": false,
+      "is_debug": false,
+      "proprietary_codecs": true,
+      "use_remoteexec": true
+    }
+  },
   "Linux Builder reclient test (unified uploads)": {
     "gn_args": {
       "dcheck_always_on": false,
@@ -98,6 +84,16 @@
     }
   },
   "Linux Builder reclient test untrusted": {
+    "gn_args": {
+      "dcheck_always_on": false,
+      "ffmpeg_branding": "Chrome",
+      "is_component_build": false,
+      "is_debug": false,
+      "proprietary_codecs": true,
+      "use_remoteexec": true
+    }
+  },
+  "Linux Builder reclient test untrusted (casng)": {
     "gn_args": {
       "dcheck_always_on": false,
       "ffmpeg_branding": "Chrome",

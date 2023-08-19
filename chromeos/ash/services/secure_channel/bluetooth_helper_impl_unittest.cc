@@ -158,9 +158,9 @@ class SecureChannelBluetoothHelperImplTest : public testing::Test {
 
   std::unique_ptr<FakeBleAdvertisementGenerator>
       fake_ble_advertisement_generator_;
-  raw_ptr<MockForegroundEidGenerator, ExperimentalAsh>
+  raw_ptr<MockForegroundEidGenerator, DanglingUntriaged | ExperimentalAsh>
       mock_foreground_eid_generator_;
-  raw_ptr<FakeBackgroundEidGenerator, ExperimentalAsh>
+  raw_ptr<FakeBackgroundEidGenerator, DanglingUntriaged | ExperimentalAsh>
       fake_background_eid_generator_;
 
   std::unique_ptr<multidevice::RemoteDeviceCache> remote_device_cache_;

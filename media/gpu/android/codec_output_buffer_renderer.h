@@ -25,8 +25,6 @@ namespace media {
 class MEDIA_GPU_EXPORT CodecOutputBufferRenderer
     : public gpu::RefCountedLockHelperDrDc {
  public:
-  using BindingsMode = gpu::StreamTextureSharedImageInterface::BindingsMode;
-
   CodecOutputBufferRenderer(
       std::unique_ptr<CodecOutputBuffer> output_buffer,
       scoped_refptr<CodecBufferWaitCoordinator> codec_buffer_wait_coordinator,
@@ -44,11 +42,7 @@ class MEDIA_GPU_EXPORT CodecOutputBufferRenderer
   // Renders this image to the texture owner front buffer by first rendering
   // it to the back buffer if it's not already there, and then waiting for the
   // frame available event before calling UpdateTexImage().
-  // Also bind the latest imagecto the provided |service_id| if TextureOwner
-  // does not binds texture on update. If |bindings_mode| is other than
-  // kEnsureTexImageBound, then |service_id| is not required.
-  bool RenderToTextureOwnerFrontBuffer(BindingsMode bindings_mode,
-                                       GLuint service_id);
+  bool RenderToTextureOwnerFrontBuffer();
 
   // Renders this image to the front buffer of its backing surface.
   // Returns true if the buffer is in the front buffer. Returns false if the
@@ -63,6 +57,18 @@ class MEDIA_GPU_EXPORT CodecOutputBufferRenderer
   // pending frame and will return false in this case.
   bool RenderToTextureOwnerBackBuffer();
 
+  void InvalidateForTesting() { Invalidate(); }
+
+  // Runs the frame info callback when UpdateTexImage() is called. If the buffer
+  // is dropped without being rendered to the front buffer, absl::nullopt will
+  // be sent for the coded size and visible rect.
+  using FrameInfoCallback =
+      base::OnceCallback<void(absl::optional<gfx::Size> coded_size,
+                              absl::optional<gfx::Rect> visible_rect)>;
+  void set_frame_info_callback(FrameInfoCallback callback) {
+    frame_info_callback_ = std::move(callback);
+  }
+
   // Whether the codec buffer has been rendered to the front buffer.
   bool was_rendered_to_front_buffer() const {
     AssertAcquiredDrDcLock();
@@ -70,13 +76,13 @@ class MEDIA_GPU_EXPORT CodecOutputBufferRenderer
   }
 
   gfx::Size size() const { return output_buffer_->size(); }
+  bool CanGuessCodedSize() const { return output_buffer_->CanGuessCodedSize(); }
+  gfx::Size GuessCodedSize() const { return output_buffer_->GuessCodedSize(); }
 
   // Color space of the image.
   const gfx::ColorSpace& color_space() const {
     return output_buffer_->color_space();
   }
-
-  bool was_tex_image_bound() const { return was_tex_image_bound_; }
 
   scoped_refptr<gpu::TextureOwner> texture_owner() const {
     return codec_buffer_wait_coordinator_
@@ -95,13 +101,9 @@ class MEDIA_GPU_EXPORT CodecOutputBufferRenderer
   // kInFrontBuffer and kInvalidated are terminal.
   enum class Phase { kInCodec, kInBackBuffer, kInFrontBuffer, kInvalidated };
 
-  // Ensure that the latest image is bound to the texture |service_id| if
-  // TextureOwner does not binds texture on update. If TextureOwner binds
-  // texture on update, then it will always be bound to the TextureOwners
-  // texture and |service_id| will be ignored.
-  void EnsureBoundIfNeeded(BindingsMode mode, GLuint service_id);
-
-  void set_phase_for_testing(Phase phase) { phase_ = phase; }
+  // Sets `phase_` to Phase::kInvalidated and clears `frame_info_callback_` if
+  // needed.
+  void Invalidate();
 
   // The phase of the image buffer's lifecycle.
   Phase phase_ = Phase::kInCodec;
@@ -113,7 +115,7 @@ class MEDIA_GPU_EXPORT CodecOutputBufferRenderer
   // Or null, if this image is backed by an overlay.
   scoped_refptr<CodecBufferWaitCoordinator> codec_buffer_wait_coordinator_;
 
-  bool was_tex_image_bound_ = false;
+  FrameInfoCallback frame_info_callback_;
 };
 
 }  // namespace media

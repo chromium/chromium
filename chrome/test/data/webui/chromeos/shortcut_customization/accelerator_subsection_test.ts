@@ -5,6 +5,8 @@
 import 'chrome://shortcut-customization/js/accelerator_subsection.js';
 import 'chrome://webui-test/mojo_webui_test_support.js';
 
+import {strictQuery} from 'chrome://resources/ash/common/typescript_utils/strict_query.js';
+import {CrIconButtonElement} from 'chrome://resources/cr_elements/cr_icon_button/cr_icon_button.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {AcceleratorLookupManager} from 'chrome://shortcut-customization/js/accelerator_lookup_manager.js';
@@ -137,8 +139,9 @@ suite('acceleratorSubsectionTest', function() {
     assertEquals(
         manager!.getAcceleratorCategory(/*source=*/ 0, /*action=*/ 5)!,
         AcceleratorCategory.kGeneral);
-    let shortcutsAssignedElement = rowListElement[1]!.shadowRoot!.querySelector(
-                                       '#noShortcutAssigned') as HTMLDivElement;
+    let shortcutsAssignedElement =
+        rowListElement[1]!.shadowRoot!.querySelector(
+            '#noShortcutAssignedContainer') as HTMLDivElement;
     assertTrue(shortcutsAssignedElement.hidden);
 
     // Second accelerator row in General -> Apps category corresponds to
@@ -150,9 +153,27 @@ suite('acceleratorSubsectionTest', function() {
         manager!.getAcceleratorCategory(/*source=*/ 0, /*action=*/ 4)!,
         AcceleratorCategory.kGeneral);
     // Expect the `noShortcutsAssigned` view to be available.
-    shortcutsAssignedElement = rowListElement[0]!.shadowRoot!.querySelector(
-                                   '#noShortcutAssigned') as HTMLDivElement;
+    shortcutsAssignedElement =
+        rowListElement[0]!.shadowRoot!.querySelector(
+            '#noShortcutAssignedContainer') as HTMLDivElement;
     assertFalse(shortcutsAssignedElement.hidden);
+
+    // Expect 'noShortcutsAssigned' has an edit button.
+    const editButton = strictQuery(
+        '.edit-button', rowListElement[0]!.shadowRoot, CrIconButtonElement);
+    assertTrue(!!editButton);
+
+    // Add event listend and verify clicking edit-button will open the dialog.
+    let showDialogListenerCalled = false;
+    rowListElement[0]!.addEventListener('show-edit-dialog', () => {
+      showDialogListenerCalled = true;
+    });
+
+    editButton.click();
+    await flushTasks();
+
+    // Expect the dialog is opened.
+    assertTrue(showDialogListenerCalled);
   });
 
   test('RemoveAcceleratorWhenCertainKeysAreUnavailable', async () => {

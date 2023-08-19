@@ -4,6 +4,9 @@
 
 #include <vector>
 
+#include "base/containers/contains.h"
+#include "base/memory/raw_ptr.h"
+#include "base/strings/stringprintf.h"
 #include "chrome/browser/extensions/extension_apitest.h"
 #include "chrome/browser/extensions/extension_keeplist_chromeos.h"
 #include "chrome/browser/lacros/browser_test_util.h"
@@ -20,38 +23,36 @@
 
 namespace extensions {
 
-class LacrosExtensionKeeplistTest : public ExtensionApiTest {
- public:
-  void SetUpOnMainThread() override {
-    ExtensionApiTest::SetUpOnMainThread();
-    ash_keeplist_browser_init_params_supported_ =
-        !chromeos::BrowserParamsProxy::Get()->ExtensionKeepList().is_null();
-  }
+namespace {
 
- protected:
-  bool AshKeeplistFromBrowserInitParamsSupported() {
-    return ash_keeplist_browser_init_params_supported_;
-  }
+const char kExtensionRunInAshAndLacrosId[] = "aaaaaaaaaaaaaaaaaaaaaaaaaaaa";
+const char kExtensionAppRunInAshAndLacrosId[] = "bbbbbbbbbbbbbbbbbbbbbbbbbbbb";
+const char kExtensionRunInAshOnlyId[] = "cccccccccccccccccccccccccccc";
+const char kExtensionAppRunInAshOnlyId[] = "dddddddddddddddddddddddddddd";
 
- private:
-  bool ash_keeplist_browser_init_params_supported_ = false;
-};
+const char kTestExtensionId[] = "pkplfbidichfdicaijlchgnapepdginl";
+const char kTestChromeAppId[] = "knldjmfmopnpolahpmmgbagdohdnhkik";
 
-// Test the Ash extension keeplist data in Lacros against Ash versions that
-// support passing Ash extension keep list to Lacros with
+bool DoesAshSupportKeeplistInCmdlineSwitch() {
+  auto capabilities = chromeos::BrowserParamsProxy::Get()->AshCapabilities();
+  return capabilities && base::Contains(*capabilities, "crbug/1409199");
+}
+
+}  // namespace
+
+using LacrosExtensionKeeplistTest = ExtensionApiTest;
+
+// Tests that Ash extension keeplist data is passed from Ash to Lacros via
 // crosapi::mojom::BrowserInitParams.
 IN_PROC_BROWSER_TEST_F(LacrosExtensionKeeplistTest,
-                       AshKeeplistFromBrowserInitParamsSupported) {
-  // This test does not apply to unsupported ash version.
-  if (!AshKeeplistFromBrowserInitParamsSupported()) {
-    GTEST_SKIP();
-  }
-
-  // For Ash running in the version that supports passing Ash extension keep
-  // list to Lacros with crosapi::mojom::BrowserInitParams, just do some minimum
-  // sanity check to make sure the extension list passed from Ash is not empty.
-  // We have a more sophiscaited test in extension_keeplist_ash_browsertest.cc
-  // to verify the keep lists are idnetical in Ash and Lacros for such case.
+                       AshKeeplistFromBrowserInitParams) {
+  // Verify Ash extension keeplist data is passed to Lacros from Ash via
+  // crosapi::mojom::BrowserInitParams, and do some minimum sanity check to make
+  // sure the extension list passed from Ash is not empty. We have a more
+  // sophiscaited test in extension_keeplist_ash_browsertest.cc to verify the
+  // keep lists are idnetical in Ash and Lacros for such case.
+  ASSERT_FALSE(
+      chromeos::BrowserParamsProxy::Get()->ExtensionKeepList().is_null());
   EXPECT_FALSE(extensions::GetExtensionsRunInOSAndStandaloneBrowser().empty());
   EXPECT_FALSE(
       extensions::GetExtensionAppsRunInOSAndStandaloneBrowser().empty());
@@ -59,49 +60,59 @@ IN_PROC_BROWSER_TEST_F(LacrosExtensionKeeplistTest,
   EXPECT_FALSE(extensions::GetExtensionAppsRunInOSOnly().empty());
 }
 
-// Test the Ash extension keeplist data in Lacros against older Ash versions
-// that do NOT support passing Ash extension keep list to Lacros with
-// crosapi::mojom::BrowserInitParams.
-IN_PROC_BROWSER_TEST_F(LacrosExtensionKeeplistTest,
-                       AshKeeplistFromBrowserInitParamsNotSupported) {
-  // This test only applies to older ash version which does not support
-  // passing Ash extension keeplist data via crosapi::mojom::BrowserInitParams.
-  if (AshKeeplistFromBrowserInitParamsSupported()) {
-    GTEST_SKIP();
-  }
-
-  // Verify that Lacros uses the static compiled ash extension keep list.
-  // This tests the backward compatibility support of ash extension keeplist.
-  ASSERT_EQ(extensions::GetExtensionsRunInOSAndStandaloneBrowser().size(),
-            ExtensionsRunInOSAndStandaloneBrowserAllowlistSizeForTest());
-  ASSERT_EQ(extensions::GetExtensionAppsRunInOSAndStandaloneBrowser().size(),
-            ExtensionAppsRunInOSAndStandaloneBrowserAllowlistSizeForTest());
-  ASSERT_EQ(extensions::GetExtensionsRunInOSOnly().size(),
-            ExtensionsRunInOSOnlyAllowlistSizeForTest());
-  ASSERT_EQ(extensions::GetExtensionAppsRunInOSOnly().size(),
-            ExtensionAppsRunInOSOnlyAllowlistSizeForTest());
-}
-
 class ExtensionAppsAppServiceBlocklistTest
     : public extensions::ExtensionBrowserTest {
  public:
-  void InstallFakeGnubbydApp() {
-    DCHECK(gnubbyd_app_id_.empty());
-    const extensions::Extension* extension = LoadExtension(
-        test_data_dir_.AppendASCII("ash_extension_keeplist/fake_gnubbyd_app"));
-    gnubbyd_app_id_ = extension->id();
-    EXPECT_EQ(gnubbyd_app_id_, extension_misc::kGnubbyAppId);
+  void SetUp() override {
+    // Start unique Ash instance and pass ids of testing extension and chrome
+    // app for Ash Extension Keeplist in additional Ash commandline switches.
+    StartUniqueAshChrome(
+        /*enabled_features=*/{}, /*disabled_features=*/{},
+        {base::StringPrintf("extensions-run-in-ash-and-lacros=%s",
+                            kTestExtensionId),
+         base::StringPrintf("extension-apps-run-in-ash-and-lacros=%s",
+                            kTestChromeAppId),
+         base::StringPrintf("extension-apps-block-for-app-service-in-ash=%s",
+                            kTestChromeAppId)},
+        "crbug/1409199 test ash keeplist");
+    ExtensionBrowserTest::SetUp();
   }
 
-  void InstallFakeGCSEExtension() {
-    DCHECK(!gcse_extension_);
-    gcse_extension_ = LoadExtension(test_data_dir_.AppendASCII(
-        "ash_extension_keeplist/fake_GCSE_extension"));
-    EXPECT_EQ(gcse_extension_->id(), extension_misc::kGCSEExtensionId);
+  void InstallTestChromeApp() {
+    DCHECK(test_app_id_.empty());
+    // TODO(crbug/1409199): Remove the fake gnubbyd app when the old
+    // ash versions support commandline switches for keeplist data (M120).
+    base::StringPiece test_app_path =
+        DoesAshSupportKeeplistInCmdlineSwitch()
+            ? "ash_extension_keeplist/simple_app"
+            : "ash_extension_keeplist/fake_gnubbyd_app";
+
+    const extensions::Extension* extension =
+        LoadExtension(test_data_dir_.AppendASCII(test_app_path));
+    test_app_id_ = extension->id();
+    EXPECT_EQ(test_app_id_, DoesAshSupportKeeplistInCmdlineSwitch()
+                                ? kTestChromeAppId
+                                : extension_misc::kGnubbyAppId);
   }
 
-  const std::string& gnubbyd_app_id() const { return gnubbyd_app_id_; }
-  const extensions::Extension* gcse_extension() { return gcse_extension_; }
+  void InstallTestExtension() {
+    DCHECK(!test_extension_);
+    // TODO(crbug/1409199): Remove the fake GCSE extension when the old
+    // ash versions support commandline switches for keeplist data (M120).
+    base::StringPiece test_extension_path =
+        DoesAshSupportKeeplistInCmdlineSwitch()
+            ? "ash_extension_keeplist/simple_extension"
+            : "ash_extension_keeplist/fake_GCSE_extension";
+    test_extension_ =
+        LoadExtension(test_data_dir_.AppendASCII(test_extension_path));
+
+    EXPECT_EQ(test_extension_->id(), DoesAshSupportKeeplistInCmdlineSwitch()
+                                         ? kTestExtensionId
+                                         : extension_misc::kGCSEExtensionId);
+  }
+
+  const std::string& test_app_id() const { return test_app_id_; }
+  const extensions::Extension* test_extension() { return test_extension_; }
 
  private:
   // extensions::ExtensionBrowserTest:
@@ -117,26 +128,21 @@ class ExtensionAppsAppServiceBlocklistTest
     }
 
     // Wait for item to stop existing in shelf.
-    if (!gnubbyd_app_id_.empty()) {
-      ASSERT_TRUE(browser_test_util::WaitForShelfItem(gnubbyd_app_id_,
+    if (!test_app_id_.empty()) {
+      ASSERT_TRUE(browser_test_util::WaitForShelfItem(test_app_id_,
                                                       /*exists=*/false));
     }
   }
 
-  std::string gnubbyd_app_id_;
-  const extensions::Extension* gcse_extension_ = nullptr;
+  std::string test_app_id_;
+  raw_ptr<const extensions::Extension> test_extension_ = nullptr;
 };
 
-// This tests publishing and launching gnubbyd app (running in both ash and
-// lacros) with app service. It installs a fake gnubbyd app to simulate the test
-// case.
-// TODO(crbug.com/1409199): Remove the fake gnubbyd app, and configure ash with
-// a testing app to exercise the test case.
+// This tests publishing and launching the test app (running in both ash and
+// lacros, but only published to App Service in Lacros) with app service.
 IN_PROC_BROWSER_TEST_F(ExtensionAppsAppServiceBlocklistTest,
-                       GnubbydAppLaunchInAppList) {
-  if (!extensions::IsAppServiceBlocklistCrosapiSupported()) {
-    GTEST_SKIP() << "Unsupported ash version";
-  }
+                       TestAppLaunchInAppList) {
+  CHECK(extensions::IsAppServiceBlocklistCrosapiSupported());
 
   // Create the controller and publisher.
   std::unique_ptr<LacrosExtensionAppsPublisher> publisher =
@@ -146,125 +152,94 @@ IN_PROC_BROWSER_TEST_F(ExtensionAppsAppServiceBlocklistTest,
       LacrosExtensionAppsController::MakeForChromeApps();
   controller->Initialize(publisher->publisher());
 
-  InstallFakeGnubbydApp();
+  // Install the testing chrome app in Lacros.
+  InstallTestChromeApp();
 
-  EXPECT_TRUE(extensions::ExtensionAppRunsInBothOSAndStandaloneBrowser(
-      gnubbyd_app_id()));
+  // TODO(crbug/1459375): Install the testing chrome app in Ash and make sure
+  // it is not published to App Service in Ash. Since we don't have a convenient
+  // way to install an extension app in Ash from Lacros browser test, we will
+  // defer that until crbug/1459375 is fixed.
+
+  EXPECT_TRUE(
+      extensions::ExtensionAppRunsInBothOSAndStandaloneBrowser(test_app_id()));
   EXPECT_FALSE(
       extensions::ExtensionAppBlockListedForAppServiceInStandaloneBrowser(
-          gnubbyd_app_id()));
+          test_app_id()));
 
-  // Gnubbyd item should not exist in the shelf before the app is launched.
+  // The test chrome app item should not exist in the shelf before the app is
+  // launched.
   ASSERT_TRUE(
-      browser_test_util::WaitForShelfItem(gnubbyd_app_id(), /*exists=*/false));
+      browser_test_util::WaitForShelfItem(test_app_id(), /*exists=*/false));
 
   // There should be no app windows.
   ASSERT_TRUE(
       extensions::AppWindowRegistry::Get(profile())->app_windows().empty());
 
-  // The fake gnubbyd app should have been published in app service by lacros,
+  // The test app should have been published in app service by lacros,
   // and can be launched from app list.
   chromeos::LacrosService::Get()
       ->GetRemote<crosapi::mojom::TestController>()
-      ->LaunchAppFromAppList(gnubbyd_app_id());
+      ->LaunchAppFromAppList(test_app_id());
 
   // Wait for item to exist in shelf.
   ASSERT_TRUE(
-      browser_test_util::WaitForShelfItem(gnubbyd_app_id(), /*exists=*/true));
+      browser_test_util::WaitForShelfItem(test_app_id(), /*exists=*/true));
 }
 
-// This tests the backward compatibility for gnubbyd app with older ash which
-// does not supports app list block list. It installs a fake gnubbyd app to
-// simulate the test case.
-// TODO(crbug.com/1409199): Remove the fake gnubbyd app, and configure ash
-// with a testing app to exercise the test case.
+// This tests the test extension (running in both ash and lacros, but not
+// published to app service) should be rejected by ForWhichExtensionType, i.e.,
+// returning false for Matches()).
 IN_PROC_BROWSER_TEST_F(ExtensionAppsAppServiceBlocklistTest,
-                       GnubbydAppNotLaunchInAppList) {
-  if (extensions::IsAppServiceBlocklistCrosapiSupported()) {
-    GTEST_SKIP()
-        << "This test should not run with the new ash supporting app service "
-           "block list";
-  }
-
-  // Create the controller and publisher.
-  std::unique_ptr<LacrosExtensionAppsPublisher> publisher =
-      LacrosExtensionAppsPublisher::MakeForChromeApps();
-  publisher->Initialize();
-  std::unique_ptr<LacrosExtensionAppsController> controller =
-      LacrosExtensionAppsController::MakeForChromeApps();
-  controller->Initialize(publisher->publisher());
-
-  InstallFakeGnubbydApp();
-
-  EXPECT_TRUE(extensions::ExtensionAppRunsInBothOSAndStandaloneBrowser(
-      gnubbyd_app_id()));
-
-  // No gnubbyd app item should exist in the shelf before the window is
-  // launched.
-  ASSERT_TRUE(
-      browser_test_util::WaitForShelfItem(gnubbyd_app_id(), /*exists=*/false));
-
-  // There should be no app windows.
-  ASSERT_TRUE(
-      extensions::AppWindowRegistry::Get(profile())->app_windows().empty());
-
-  chromeos::LacrosService::Get()
-      ->GetRemote<crosapi::mojom::TestController>()
-      ->LaunchAppFromAppList(gnubbyd_app_id());
-
-  // With the older ash which does not support app service block list, gnubbyd
-  // app should not be published in app service, and can't be launched in app
-  // list.
-  // No gnubbyd item should exist in the shelf.
-  ASSERT_TRUE(
-      browser_test_util::WaitForShelfItem(gnubbyd_app_id(), /*exists=*/false));
-
-  // There should be no app windows.
-  ASSERT_TRUE(
-      extensions::AppWindowRegistry::Get(profile())->app_windows().empty());
-}
-
-// This tests the GCSE extension (running in both ash and lacros) should be
-// rejected by ForWhichExtensionType, i.e., returning false for Matches()), with
-// ash which supports app service block list.
-// TODO(crbug.com/1409199): Remove the fake GCSE extension, and configure ash
-// with a testing extension to exercise the test case.
-IN_PROC_BROWSER_TEST_F(ExtensionAppsAppServiceBlocklistTest,
-                       GCSEExtensionNotMatchWithBlocklistSupport) {
-  if (!extensions::IsAppServiceBlocklistCrosapiSupported()) {
-    GTEST_SKIP() << "Test should not run with old ash version";
-  }
+                       ExtensionNotMatch) {
+  CHECK(extensions::IsAppServiceBlocklistCrosapiSupported());
 
   ForWhichExtensionType for_which_type =
       ForWhichExtensionType(InitForExtensions());
 
-  InstallFakeGCSEExtension();
-
+  InstallTestExtension();
   EXPECT_TRUE(extensions::ExtensionRunsInBothOSAndStandaloneBrowser(
-      gcse_extension()->id()));
-  EXPECT_FALSE(for_which_type.Matches(gcse_extension()));
+      test_extension()->id()));
+  EXPECT_FALSE(for_which_type.Matches(test_extension()));
 }
 
-// This tests the GCSE extension (running in both ash and lacros) should be
-// rejected by ForWhichExtensionType, i.e., returning false for Matches()), with
-// the older ash which does not support app service block list.
-// This verifies the fix for crbug.com/1408982.
-// TODO(crbug.com/1409199): Remove the fake GCSE extension, and configure ash
-// with a testing extension to exercise the test case.
-IN_PROC_BROWSER_TEST_F(ExtensionAppsAppServiceBlocklistTest,
-                       GCSEExtensionNotMatchWithoutBlocklistSupport) {
-  if (extensions::IsAppServiceBlocklistCrosapiSupported()) {
-    GTEST_SKIP() << "Test should not run with new ash version";
+class KeeplistIdsFromAshCmdlineSwitchTest
+    : public extensions::ExtensionBrowserTest {
+ public:
+  void SetUp() override {
+    // Start unique Ash instance and pass ids of testing extensions and chrome
+    // apps for Ash Extension Keeplist in the additional Ash commandline
+    // switches.
+    StartUniqueAshChrome(
+        /*enabled_features=*/{}, /*disabled_features=*/{},
+        {base::StringPrintf("extensions-run-in-ash-and-lacros=%s",
+                            kExtensionRunInAshAndLacrosId),
+         base::StringPrintf("extension-apps-run-in-ash-and-lacros=%s",
+                            kExtensionAppRunInAshAndLacrosId),
+         base::StringPrintf("extensions-run-in-ash-only=%s",
+                            kExtensionRunInAshOnlyId),
+         base::StringPrintf("extension-apps-run-in-ash-only=%s",
+                            kExtensionAppRunInAshOnlyId)},
+        "crbug/1371250 extension and chrome app running in both ash and "
+        "lacros");
+    ExtensionBrowserTest::SetUp();
+  }
+};
+
+IN_PROC_BROWSER_TEST_F(KeeplistIdsFromAshCmdlineSwitchTest, GetTestIds) {
+  if (!DoesAshSupportKeeplistInCmdlineSwitch()) {
+    GTEST_SKIP() << "Unsupported ash version";
   }
 
-  ForWhichExtensionType for_which_type =
-      ForWhichExtensionType(InitForExtensions());
-
-  InstallFakeGCSEExtension();
-
-  EXPECT_TRUE(extensions::ExtensionRunsInBothOSAndStandaloneBrowser(
-      gcse_extension()->id()));
-  EXPECT_FALSE(for_which_type.Matches(gcse_extension()));
+  EXPECT_TRUE(
+      ExtensionRunsInBothOSAndStandaloneBrowser(kExtensionRunInAshAndLacrosId));
+  EXPECT_TRUE(ExtensionRunsInOS(kExtensionRunInAshAndLacrosId));
+  EXPECT_TRUE(ExtensionAppRunsInBothOSAndStandaloneBrowser(
+      kExtensionAppRunInAshAndLacrosId));
+  EXPECT_TRUE(ExtensionAppRunsInOS(kExtensionAppRunInAshAndLacrosId));
+  EXPECT_TRUE(ExtensionRunsInOSOnly(kExtensionRunInAshOnlyId));
+  EXPECT_TRUE(ExtensionRunsInOS(kExtensionRunInAshOnlyId));
+  EXPECT_TRUE(ExtensionAppRunsInOSOnly(kExtensionAppRunInAshOnlyId));
+  EXPECT_TRUE(ExtensionAppRunsInOS(kExtensionAppRunInAshOnlyId));
 }
 
 }  // namespace extensions

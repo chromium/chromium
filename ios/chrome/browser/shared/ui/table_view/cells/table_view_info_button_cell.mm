@@ -13,10 +13,6 @@
 #import "ios/chrome/grit/ios_strings.h"
 #import "ui/base/l10n/l10n_util_mac.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 namespace {
 
 // Proportion of `textLayoutGuide` and `statusTextLabel`. This guarantees both
@@ -29,6 +25,12 @@ const CGFloat kInfoSymbolSize = 22;
 
 @interface TableViewInfoButtonCell ()
 
+// UILabel displayed at the trailing side of the view, it's trailing anchor
+// align with the leading anchor of the `bubbleView` below. It shows the status
+// of the setting's row. Mostly show On or Off, but there is use case that shows
+// a search engine name. Corresponding to `statusText` from the item.
+@property(nonatomic, strong) UILabel* statusTextLabel;
+
 // Views for the leading icon.
 @property(nonatomic, readonly, strong) UIImageView* iconImageView;
 
@@ -36,10 +38,14 @@ const CGFloat kInfoSymbolSize = 22;
 @property(nonatomic, strong) NSLayoutConstraint* iconVisibleConstraint;
 @property(nonatomic, strong) NSLayoutConstraint* iconHiddenConstraint;
 
-// Constraint used when the `trailingButton` is visible and hidden.
+// Constraints used when the `trailingButton` is visible and hidden.
 @property(nonatomic, strong)
     NSLayoutConstraint* trailingButtonVisibleConstraint;
 @property(nonatomic, strong) NSLayoutConstraint* trailingButtonHiddenConstraint;
+
+// Constraints used based off of if `statusTextLabel` is visible.
+@property(nonatomic, strong) NSArray* standardStatusTextLabelConstraints;
+@property(nonatomic, strong) NSArray* accessibilityStatusTextLabelConstraints;
 
 // Constraints that are used when the preferred content size is an
 // "accessibility" category.
@@ -157,11 +163,6 @@ const CGFloat kInfoSymbolSize = 22;
                           forAxis:UILayoutConstraintAxisHorizontal];
 
     _standardConstraints = @[
-      [_statusTextLabel.centerYAnchor
-          constraintEqualToAnchor:self.contentView.centerYAnchor],
-      [_statusTextLabel.trailingAnchor
-          constraintEqualToAnchor:_trailingButton.leadingAnchor
-                         constant:-kTableViewHorizontalSpacing],
       [_trailingButton.centerYAnchor
           constraintEqualToAnchor:self.contentView.centerYAnchor],
       [_trailingButton.trailingAnchor
@@ -178,15 +179,6 @@ const CGFloat kInfoSymbolSize = 22;
     ];
 
     _accessibilityConstraints = @[
-      [_statusTextLabel.topAnchor
-          constraintEqualToAnchor:textLayoutGuide.bottomAnchor
-                         constant:kTableViewLargeVerticalSpacing],
-      [_statusTextLabel.leadingAnchor
-          constraintEqualToAnchor:self.contentView.leadingAnchor
-                         constant:kTableViewHorizontalSpacing],
-      [_statusTextLabel.trailingAnchor
-          constraintEqualToAnchor:self.contentView.trailingAnchor
-                         constant:-kTableViewHorizontalSpacing],
       [_trailingButton.topAnchor
           constraintEqualToAnchor:_statusTextLabel.bottomAnchor
                          constant:kTableViewLargeVerticalSpacing],
@@ -207,6 +199,28 @@ const CGFloat kInfoSymbolSize = 22;
         constraintGreaterThanOrEqualToAnchor:textLayoutGuide.bottomAnchor
                                     constant:
                                         kTableViewOneLabelCellVerticalSpacing];
+
+    _standardStatusTextLabelConstraints = @[
+      [_statusTextLabel.centerYAnchor
+          constraintEqualToAnchor:self.contentView.centerYAnchor],
+      [_statusTextLabel.leadingAnchor
+          constraintGreaterThanOrEqualToAnchor:textLayoutGuide.trailingAnchor
+                                      constant:kTableViewHorizontalSpacing],
+      [_statusTextLabel.trailingAnchor
+          constraintEqualToAnchor:_trailingButton.leadingAnchor
+                         constant:-kTableViewHorizontalSpacing]
+    ];
+    _accessibilityStatusTextLabelConstraints = @[
+      [_statusTextLabel.topAnchor
+          constraintEqualToAnchor:textLayoutGuide.bottomAnchor
+                         constant:kTableViewLargeVerticalSpacing],
+      [_statusTextLabel.leadingAnchor
+          constraintEqualToAnchor:self.contentView.leadingAnchor
+                         constant:kTableViewHorizontalSpacing],
+      [_statusTextLabel.trailingAnchor
+          constraintEqualToAnchor:self.contentView.trailingAnchor
+                         constant:-kTableViewHorizontalSpacing]
+    ];
 
     [NSLayoutConstraint activateConstraints:@[
       [_iconBackground.leadingAnchor
@@ -303,6 +317,24 @@ const CGFloat kInfoSymbolSize = 22;
         self.traitCollection.preferredContentSizeCategory);
     self.trailingButtonHiddenConstraint.active = accessibilityEnabled;
     self.trailingButtonVisibleConstraint.active = !accessibilityEnabled;
+  }
+}
+
+- (void)setStatusText:(NSString*)statusText {
+  if (statusText) {
+    _statusTextLabel.text = statusText;
+    if (UIContentSizeCategoryIsAccessibilityCategory(
+            self.traitCollection.preferredContentSizeCategory)) {
+      [NSLayoutConstraint
+          deactivateConstraints:_standardStatusTextLabelConstraints];
+      [NSLayoutConstraint
+          activateConstraints:_accessibilityStatusTextLabelConstraints];
+    } else {
+      [NSLayoutConstraint
+          deactivateConstraints:_accessibilityStatusTextLabelConstraints];
+      [NSLayoutConstraint
+          activateConstraints:_standardStatusTextLabelConstraints];
+    }
   }
 }
 

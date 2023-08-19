@@ -60,11 +60,11 @@ int main() {
   // principal unit of ordering, and that tasks across queues don't have to run
   // in posting-order, while non-delayed tasks posted to the same queue are
   // always run in FIFO order.
-  scoped_refptr<base::sequence_manager::TaskQueue> tq_a =
+  base::sequence_manager::TaskQueue::Handle tq_a =
       sequence_manager->CreateTaskQueue(base::sequence_manager::TaskQueue::Spec(
           base::sequence_manager::QueueName::TEST_TQ));
   tq_a->SetQueuePriority(TaskPriority::kNormalPriority);
-  scoped_refptr<base::sequence_manager::TaskQueue> tq_b =
+  base::sequence_manager::TaskQueue::Handle tq_b =
       sequence_manager->CreateTaskQueue(base::sequence_manager::TaskQueue::Spec(
           base::sequence_manager::QueueName::TEST2_TQ));
   tq_b->SetQueuePriority(TaskPriority::kHighPriority);

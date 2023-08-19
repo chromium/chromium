@@ -6,7 +6,7 @@
 
 #import <UIKit/UIKit.h>
 
-#import "base/mac/foundation_util.h"
+#import "base/apple/foundation_util.h"
 #import "base/test/task_environment.h"
 #import "ios/chrome/browser/shared/model/browser/test/test_browser.h"
 #import "ios/chrome/browser/shared/model/browser_state/test_chrome_browser_state.h"
@@ -22,10 +22,6 @@
 #import "third_party/ocmock/gtest_support.h"
 #import "ui/base/l10n/l10n_util.h"
 #import "ui/strings/grit/ui_strings.h"
-
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
 
 // Test fixture for BrowserContainerCoordinator.
 class BrowserContainerCoordinatorTest : public PlatformTest {
@@ -94,7 +90,7 @@ TEST_F(BrowserContainerCoordinatorTest,
   EXPECT_TRUE([coordinator.viewController.presentedViewController
       isKindOfClass:[UIAlertController class]]);
   UIAlertController* alert_controller =
-      base::mac::ObjCCastStrict<UIAlertController>(
+      base::apple::ObjCCastStrict<UIAlertController>(
           coordinator.viewController.presentedViewController);
   ASSERT_EQ(2LU, alert_controller.actions.count);
 
@@ -109,4 +105,5 @@ TEST_F(BrowserContainerCoordinatorTest,
   EXPECT_TRUE([l10n_util::GetNSString(IDS_IOS_SHARE_PAGE_BUTTON_LABEL)
       isEqualToString:share_action.title]);
   EXPECT_EQ(UIAlertActionStyleDefault, share_action.style);
+  [coordinator stop];
 }

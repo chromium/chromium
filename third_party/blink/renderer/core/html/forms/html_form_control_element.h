@@ -158,7 +158,7 @@ class CORE_EXPORT HTMLFormControlElement : public HTMLElement,
   String NameForAutofill() const;
 
   void CloneNonAttributePropertiesFrom(const Element&,
-                                       CloneChildrenFlag) override;
+                                       NodeCloningData&) override;
 
   FormAssociated* ToFormAssociatedOrNull() override { return this; }
   void AssociateWith(HTMLFormElement*) override;

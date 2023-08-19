@@ -15,6 +15,7 @@
 #include "base/metrics/histogram_macros.h"
 #include "base/notreached.h"
 #include "base/task/sequenced_task_runner.h"
+#include "components/sync/base/features.h"
 #include "components/sync/base/model_type.h"
 #include "components/sync/engine/data_type_activation_response.h"
 #include "components/sync/protocol/model_type_state_helper.h"
@@ -121,9 +122,9 @@ DataTypeManagerImpl::DataTypeManagerImpl(
   DataTypeStatusTable::TypeErrorMap existing_errors;
   for (const auto& [type, controller] : *controllers_) {
     DataTypeController::State state = controller->state();
-    DCHECK(state == DataTypeController::NOT_RUNNING ||
-           state == DataTypeController::STOPPING ||
-           state == DataTypeController::FAILED)
+    CHECK(state == DataTypeController::NOT_RUNNING ||
+          state == DataTypeController::STOPPING ||
+          state == DataTypeController::FAILED)
         << " actual=" << DataTypeController::StateToString(state) << " for "
         << ModelTypeToDebugString(type);
 
@@ -150,10 +151,7 @@ void DataTypeManagerImpl::Configure(ModelTypeSet preferred_types,
     allowed_types.Put(type);
 
     // Ensure that the initial precondition state is accurate, and clear
-    // existing metadata if necessary. Note that this happens for *all* data
-    // types, not just the preferred ones!
-    // TODO(crbug.com/897628): For non-preferred types, metadata should probably
-    // be cleared independent of the precondition state.
+    // existing metadata if necessary.
     DataTypePreconditionChanged(type);
   }
 
@@ -163,6 +161,14 @@ void DataTypeManagerImpl::Configure(ModelTypeSet preferred_types,
 void DataTypeManagerImpl::DataTypePreconditionChanged(ModelType type) {
   if (!UpdatePreconditionError(type)) {
     // Nothing changed.
+    return;
+  }
+
+  if (base::FeatureList::IsEnabled(
+          syncer::kSyncAvoidReconfigurationIfAlreadyStopping) &&
+      state_ == STOPPING) {
+    // Configuration should not be set while stopping.
+    LOG(ERROR) << "Precondition changed while stopping.";
     return;
   }
 
@@ -269,7 +275,7 @@ void DataTypeManagerImpl::ConnectDataTypes() {
     std::unique_ptr<DataTypeActivationResponse> activation_response =
         dtc->Connect();
     DCHECK(activation_response);
-    DCHECK_EQ(dtc->state(), DataTypeController::RUNNING);
+    CHECK_EQ(dtc->state(), DataTypeController::RUNNING);
 
     if (activation_response->skip_engine_connection) {
       // |skip_engine_connection| means ConnectDataType() shouldn't be invoked
@@ -743,8 +749,6 @@ ModelTypeSet DataTypeManagerImpl::GetPurgedDataTypes() const {
   ModelTypeSet purged_types;
 
   for (const auto& [type, controller] : *controllers_) {
-    // TODO(crbug.com/897628): NOT_RUNNING doesn't necessarily mean the sync
-    // metadata was cleared, if KEEP_METADATA was used when stopping.
     if (controller->state() == DataTypeController::NOT_RUNNING) {
       purged_types.Put(type);
     }

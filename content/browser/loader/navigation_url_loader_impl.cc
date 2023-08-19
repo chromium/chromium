@@ -230,6 +230,8 @@ std::unique_ptr<network::ResourceRequest> CreateResourceRequest(
     mojo::PendingRemote<network::mojom::CookieAccessObserver> cookie_observer,
     mojo::PendingRemote<network::mojom::TrustTokenAccessObserver>
         trust_token_observer,
+    mojo::PendingRemote<network::mojom::SharedDictionaryAccessObserver>
+        shared_dictionary_observer,
     mojo::PendingRemote<network::mojom::URLLoaderNetworkServiceObserver>
         url_loader_network_observer,
     mojo::PendingRemote<network::mojom::DevToolsObserver> devtools_observer,
@@ -247,6 +249,8 @@ std::unique_ptr<network::ResourceRequest> CreateResourceRequest(
   new_request->trusted_params->cookie_observer = std::move(cookie_observer);
   new_request->trusted_params->trust_token_observer =
       std::move(trust_token_observer);
+  new_request->trusted_params->shared_dictionary_observer =
+      std::move(shared_dictionary_observer);
   new_request->trusted_params->url_loader_network_observer =
       std::move(url_loader_network_observer);
   new_request->trusted_params->devtools_observer = std::move(devtools_observer);
@@ -396,26 +400,43 @@ bool IsSameOriginRedirect(const std::vector<GURL>& url_chain) {
 #if DCHECK_IS_ON()
 void CheckParsedHeadersEquals(const network::mojom::ParsedHeadersPtr& lhs,
                               const network::mojom::ParsedHeadersPtr& rhs) {
-  if (mojo::Equals(lhs, rhs))
+  // If we're running this function it means we're re-parsing the headers from
+  // cache and checking if they equal the prior parsing results. As the
+  // Clear-Site-Data header isn't cached we want to be sure not to fail just
+  // because the two parsing results mismatch in this expected way.
+  network::mojom::ParsedHeadersPtr adjusted_lhs = lhs->Clone();
+  if (rhs->client_hints_ignored_due_to_clear_site_data_header) {
+    DCHECK(!rhs->accept_ch);
+    DCHECK(!rhs->critical_ch);
+    adjusted_lhs->accept_ch = absl::nullopt;
+    adjusted_lhs->critical_ch = absl::nullopt;
+    adjusted_lhs->client_hints_ignored_due_to_clear_site_data_header = true;
+  }
+  if (mojo::Equals(adjusted_lhs, rhs)) {
     return;
-  DCHECK(
-      mojo::Equals(lhs->content_security_policy, rhs->content_security_policy));
-  DCHECK(mojo::Equals(lhs->allow_csp_from, rhs->allow_csp_from));
-  DCHECK(mojo::Equals(lhs->cross_origin_embedder_policy,
+  }
+  DCHECK(mojo::Equals(adjusted_lhs->content_security_policy,
+                      rhs->content_security_policy));
+  DCHECK(mojo::Equals(adjusted_lhs->allow_csp_from, rhs->allow_csp_from));
+  DCHECK(mojo::Equals(adjusted_lhs->cross_origin_embedder_policy,
                       rhs->cross_origin_embedder_policy));
-  DCHECK(mojo::Equals(lhs->cross_origin_opener_policy,
+  DCHECK(mojo::Equals(adjusted_lhs->cross_origin_opener_policy,
                       rhs->cross_origin_opener_policy));
-  DCHECK(mojo::Equals(lhs->origin_agent_cluster, rhs->origin_agent_cluster));
-  DCHECK(mojo::Equals(lhs->accept_ch, rhs->accept_ch));
-  DCHECK(mojo::Equals(lhs->critical_ch, rhs->critical_ch));
-  DCHECK_EQ(lhs->xfo, rhs->xfo);
-  DCHECK(mojo::Equals(lhs->link_headers, rhs->link_headers));
-  DCHECK(mojo::Equals(lhs->supports_loading_mode, rhs->supports_loading_mode));
-  DCHECK(mojo::Equals(lhs->timing_allow_origin, rhs->timing_allow_origin));
-  DCHECK(mojo::Equals(lhs->reporting_endpoints, rhs->reporting_endpoints));
-  DCHECK(mojo::Equals(lhs->variants_headers, rhs->variants_headers));
-  DCHECK(mojo::Equals(lhs->content_language, rhs->content_language));
-  DCHECK(mojo::Equals(lhs->no_vary_search_with_parse_error,
+  DCHECK(mojo::Equals(adjusted_lhs->origin_agent_cluster,
+                      rhs->origin_agent_cluster));
+  DCHECK(mojo::Equals(adjusted_lhs->accept_ch, rhs->accept_ch));
+  DCHECK(mojo::Equals(adjusted_lhs->critical_ch, rhs->critical_ch));
+  DCHECK_EQ(adjusted_lhs->xfo, rhs->xfo);
+  DCHECK(mojo::Equals(adjusted_lhs->link_headers, rhs->link_headers));
+  DCHECK(mojo::Equals(adjusted_lhs->supports_loading_mode,
+                      rhs->supports_loading_mode));
+  DCHECK(mojo::Equals(adjusted_lhs->timing_allow_origin,
+                      rhs->timing_allow_origin));
+  DCHECK(mojo::Equals(adjusted_lhs->reporting_endpoints,
+                      rhs->reporting_endpoints));
+  DCHECK(mojo::Equals(adjusted_lhs->variants_headers, rhs->variants_headers));
+  DCHECK(mojo::Equals(adjusted_lhs->content_language, rhs->content_language));
+  DCHECK(mojo::Equals(adjusted_lhs->no_vary_search_with_parse_error,
                       rhs->no_vary_search_with_parse_error));
   NOTREACHED() << "The parsed headers don't match, but we don't know which "
                   "field does not match. Please add a DCHECK before this one "
@@ -552,7 +573,10 @@ void NavigationURLLoaderImpl::CreateInterceptors(
   std::vector<std::unique_ptr<URLLoaderRequestInterceptor>>
       browser_interceptors =
           GetContentClient()->browser()->WillCreateURLLoaderRequestInterceptors(
-              navigation_ui_data_.get(), frame_tree_node_id_);
+              navigation_ui_data_.get(), frame_tree_node_id_,
+              request_info_->navigation_id,
+              content::GetUIThreadTaskRunner(
+                  {content::BrowserTaskType::kNavigationNetworkResponse}));
   if (!browser_interceptors.empty()) {
     for (auto& browser_interceptor : browser_interceptors) {
       interceptors_.push_back(
@@ -1022,7 +1046,7 @@ void NavigationURLLoaderImpl::OnComplete(
   // URLLoaderClient has already been transferred to the renderer process and
   // OnComplete is not expected to be called here.
   if (status.error_code == net::OK) {
-    SCOPED_CRASH_KEY_STRING256("NavigationURLLoader::Complete", "url",
+    SCOPED_CRASH_KEY_STRING256("NavigationURLLoader_Complete", "url",
                                url_.spec());
     base::debug::DumpWithoutCrashing();
     return;
@@ -1148,7 +1172,12 @@ void NavigationURLLoaderImpl::OnAcceptCHFrameReceived(
 
 void NavigationURLLoaderImpl::Clone(
     mojo::PendingReceiver<network::mojom::AcceptCHFrameObserver> listener) {
-  accept_ch_frame_observers_.Add(this, std::move(listener));
+  // Use |kNavigationNetworkResponse| thread runner. Messages received related
+  // to AcceptCHFrame are not order dependent and can restart the navigation,
+  // blocking navigation when they do.
+  accept_ch_frame_observers_.Add(
+      this, std::move(listener),
+      GetUIThreadTaskRunner({BrowserTaskType::kNavigationNetworkResponse}));
 }
 
 // Returns true if an interceptor wants to handle the response, i.e. return a
@@ -1300,6 +1329,8 @@ NavigationURLLoaderImpl::NavigationURLLoaderImpl(
     mojo::PendingRemote<network::mojom::CookieAccessObserver> cookie_observer,
     mojo::PendingRemote<network::mojom::TrustTokenAccessObserver>
         trust_token_observer,
+    mojo::PendingRemote<network::mojom::SharedDictionaryAccessObserver>
+        shared_dictionary_observer,
     mojo::PendingRemote<network::mojom::URLLoaderNetworkServiceObserver>
         url_loader_network_observer,
     mojo::PendingRemote<network::mojom::DevToolsObserver> devtools_observer,
@@ -1332,8 +1363,12 @@ NavigationURLLoaderImpl::NavigationURLLoaderImpl(
 
   mojo::PendingRemote<network::mojom::AcceptCHFrameObserver>
       accept_ch_frame_observer;
+  // Use |kNavigationNetworkResponse| thread runner. Messages received related
+  // to AcceptCHFrame are not order dependent and can restart the navigation,
+  // blocking navigation when they do.
   accept_ch_frame_observers_.Add(
-      this, accept_ch_frame_observer.InitWithNewPipeAndPassReceiver());
+      this, accept_ch_frame_observer.InitWithNewPipeAndPassReceiver(),
+      GetUIThreadTaskRunner({BrowserTaskType::kNavigationNetworkResponse}));
 
   FrameTreeNode* frame_tree_node =
       FrameTreeNode::GloballyFindByID(frame_tree_node_id_);
@@ -1342,8 +1377,9 @@ NavigationURLLoaderImpl::NavigationURLLoaderImpl(
 
   resource_request_ = CreateResourceRequest(
       *request_info_, frame_tree_node, std::move(cookie_observer),
-      std::move(trust_token_observer), std::move(url_loader_network_observer),
-      std::move(devtools_observer), std::move(accept_ch_frame_observer));
+      std::move(trust_token_observer), std::move(shared_dictionary_observer),
+      std::move(url_loader_network_observer), std::move(devtools_observer),
+      std::move(accept_ch_frame_observer));
 
   std::string accept_langs =
       GetContentClient()->browser()->GetAcceptLangs(browser_context_);

@@ -28,12 +28,15 @@
 
 #include <limits>
 
+#include "third_party/blink/renderer/core/dom/child_node_part.h"
 #include "third_party/blink/renderer/core/dom/comment.h"
 #include "third_party/blink/renderer/core/dom/document_fragment.h"
+#include "third_party/blink/renderer/core/dom/document_part_root.h"
 #include "third_party/blink/renderer/core/dom/document_type.h"
 #include "third_party/blink/renderer/core/dom/element.h"
 #include "third_party/blink/renderer/core/dom/element_traversal.h"
 #include "third_party/blink/renderer/core/dom/node.h"
+#include "third_party/blink/renderer/core/dom/node_part.h"
 #include "third_party/blink/renderer/core/dom/template_content_document_fragment.h"
 #include "third_party/blink/renderer/core/dom/text.h"
 #include "third_party/blink/renderer/core/dom/throw_on_dynamic_markup_insertion_count_incrementer.h"
@@ -69,6 +72,7 @@
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "third_party/blink/renderer/platform/scheduler/public/event_loop.h"
 #include "third_party/blink/renderer/platform/text/text_break_iterator.h"
+#include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 
 namespace blink {
 
@@ -280,11 +284,21 @@ static inline void ExecuteTakeAllChildrenTask(HTMLConstructionSiteTask& task) {
 
 void HTMLConstructionSite::ExecuteTask(HTMLConstructionSiteTask& task) {
   DCHECK(task_queue_.empty());
-  if (task.operation == HTMLConstructionSiteTask::kInsert)
-    return ExecuteInsertTask(task);
+  if (task.operation == HTMLConstructionSiteTask::kInsert) {
+    ExecuteInsertTask(task);
+    if (pending_dom_parts_) {
+      pending_dom_parts_->MaybeConstructNodePart(*task.child);
+    }
+    return;
+  }
 
-  if (task.operation == HTMLConstructionSiteTask::kInsertText)
-    return ExecuteInsertTextTask(task);
+  if (task.operation == HTMLConstructionSiteTask::kInsertText) {
+    ExecuteInsertTextTask(task);
+    if (pending_dom_parts_) {
+      pending_dom_parts_->MaybeConstructNodePart(*task.child);
+    }
+    return;
+  }
 
   // All the cases below this point are only used by the adoption agency.
 
@@ -454,34 +468,35 @@ void HTMLConstructionSite::ExecuteQueuedTasks() {
 HTMLConstructionSite::HTMLConstructionSite(
     HTMLParserReentryPermit* reentry_permit,
     Document& document,
-    ParserContentPolicy parser_content_policy)
+    ParserContentPolicy parser_content_policy,
+    DocumentFragment* fragment,
+    Element* context_element)
     : reentry_permit_(reentry_permit),
       document_(&document),
-      attachment_root_(document),
+      attachment_root_(fragment ? fragment
+                                : static_cast<ContainerNode*>(&document)),
+      pending_dom_parts_(
+          RuntimeEnabledFeatures::DOMPartsAPIEnabled()
+              ? MakeGarbageCollected<PendingDOMParts>(attachment_root_)
+              : nullptr),
       parser_content_policy_(parser_content_policy),
       is_scripting_content_allowed_(
           ScriptingContentIsAllowed(parser_content_policy)),
-      is_parsing_fragment_(false),
+      is_parsing_fragment_(fragment),
       redirect_attach_to_foster_parent_(false),
       in_quirks_mode_(document.InQuirksMode()),
       canonicalize_whitespace_strings_(
           RuntimeEnabledFeatures::CanonicalizeWhitespaceStringsEnabled()) {
   DCHECK(document_->IsHTMLDocument() || document_->IsXHTMLDocument());
-}
 
-void HTMLConstructionSite::InitFragmentParsing(DocumentFragment* fragment,
-                                               Element* context_element) {
-  DCHECK(context_element);
-  DCHECK_EQ(document_, &fragment->GetDocument());
-  DCHECK_EQ(in_quirks_mode_, fragment->GetDocument().InQuirksMode());
-  DCHECK(!is_parsing_fragment_);
-  DCHECK(!form_);
-
-  attachment_root_ = fragment;
-  is_parsing_fragment_ = true;
-
-  if (!context_element->GetDocument().IsTemplateDocument())
-    form_ = Traversal<HTMLFormElement>::FirstAncestorOrSelf(*context_element);
+  DCHECK_EQ(!fragment, !context_element);
+  if (fragment) {
+    DCHECK_EQ(document_, &fragment->GetDocument());
+    DCHECK_EQ(in_quirks_mode_, fragment->GetDocument().InQuirksMode());
+    if (!context_element->GetDocument().IsTemplateDocument()) {
+      form_ = Traversal<HTMLFormElement>::FirstAncestorOrSelf(*context_element);
+    }
+  }
 }
 
 HTMLConstructionSite::~HTMLConstructionSite() {
@@ -503,6 +518,7 @@ void HTMLConstructionSite::Trace(Visitor* visitor) const {
   visitor->Trace(active_formatting_elements_);
   visitor->Trace(task_queue_);
   visitor->Trace(pending_text_);
+  visitor->Trace(pending_dom_parts_);
 }
 
 void HTMLConstructionSite::Detach() {
@@ -758,10 +774,60 @@ void HTMLConstructionSite::InsertDoctype(AtomicHTMLToken* token) {
   }
 }
 
+namespace {
+Vector<String> ParseMetadataString(String metadata_string) {
+  Vector<String> tokens;
+  metadata_string.Split(' ', tokens);
+  return tokens;
+}
+
+// Check whether the comment starts with the given token string, and if so,
+// truncate the comment to the point after the token string.
+bool StartsWithDeclarativeDOMPart(String& trimmed_comment, String token_start) {
+  if (!trimmed_comment.StartsWithIgnoringASCIICase(token_start)) {
+    return false;
+  }
+  // The token must be followed by whitespace, or the end of the string.
+  if (trimmed_comment.length() == token_start.length()) {
+    trimmed_comment = WTF::g_empty_string;
+    return true;
+  }
+  if (IsHTMLSpace<UChar>(trimmed_comment[token_start.length()])) {
+    trimmed_comment = trimmed_comment.Substring(token_start.length() + 1);
+    return true;
+  }
+  return false;
+}
+}  // namespace
+
 void HTMLConstructionSite::InsertComment(AtomicHTMLToken* token) {
   DCHECK_EQ(token->GetType(), HTMLToken::kComment);
-  AttachLater(CurrentNode(),
-              Comment::Create(OwnerDocumentForCurrentNode(), token->Comment()));
+  auto comment = token->Comment();
+  Comment& comment_node =
+      *Comment::Create(OwnerDocumentForCurrentNode(), comment);
+  if (pending_dom_parts_) {
+    DCHECK(RuntimeEnabledFeatures::DOMPartsAPIEnabled());
+    // This strips HTML whitespace from the front and back, and replaces
+    // repeated whitespace with a single ' '.
+    auto trimmed_comment = comment.SimplifyWhiteSpace(IsHTMLSpace<UChar>);
+    if (trimmed_comment.EndsWith("?")) {
+      trimmed_comment.Truncate(trimmed_comment.length() - 1);
+      const String kChildNodePartStart = "?child-node-part";
+      const String kChildNodePartEnd = "?/child-node-part";
+      const String kNodePart = "?node-part";
+      if (StartsWithDeclarativeDOMPart(trimmed_comment, kChildNodePartStart)) {
+        pending_dom_parts_->AddChildNodePartStart(
+            comment_node, ParseMetadataString(trimmed_comment));
+      } else if (StartsWithDeclarativeDOMPart(trimmed_comment,
+                                              kChildNodePartEnd)) {
+        pending_dom_parts_->AddChildNodePartEnd(comment_node);
+      } else if (StartsWithDeclarativeDOMPart(trimmed_comment, kNodePart)) {
+        pending_dom_parts_->AddNodePart(comment_node,
+                                        ParseMetadataString(trimmed_comment));
+      }
+    }
+  }
+  AttachLater(CurrentNode(), &comment_node);
 }
 
 void HTMLConstructionSite::InsertCommentOnDocument(AtomicHTMLToken* token) {
@@ -826,7 +892,6 @@ void HTMLConstructionSite::InsertHTMLTemplateElement(
           DeclarativeShadowRootType::kStreamingOpen ||
       declarative_shadow_root_type ==
           DeclarativeShadowRootType::kStreamingClosed) {
-    DCHECK(RuntimeEnabledFeatures::StreamingDeclarativeShadowDOMEnabled());
     // Attach the shadow root now
     auto focus_delegation = template_stack_item->GetAttributeItem(
                                 html_names::kShadowrootdelegatesfocusAttr)
@@ -859,8 +924,17 @@ void HTMLConstructionSite::InsertHTMLTemplateElement(
     }
   }
   if (should_attach_template) {
-    // Attach a normal template element.
+    // Attach a normal template element, or the opening tag of a non-streaming
+    // declarative shadow root.
     AttachLater(CurrentNode(), template_element);
+    DocumentFragment* template_content =
+        template_element->GetDeclarativeShadowRootType() ==
+                DeclarativeShadowRootType::kNone
+            ? template_element->content()
+            : template_element->DeclarativeShadowContent();
+    if (pending_dom_parts_ && template_content) {
+      pending_dom_parts_->PushPartRoot(&template_content->getPartRoot());
+    }
   }
   open_elements_.Push(template_stack_item);
 }
@@ -1305,9 +1379,102 @@ void HTMLConstructionSite::FosterParent(Node* node) {
   QueueTask(task, true);
 }
 
+void HTMLConstructionSite::FinishedTemplateElement(
+    DocumentFragment* content_fragment) {
+  if (!pending_dom_parts_) {
+    return;
+  }
+  PartRoot* last_root = pending_dom_parts_->PopPartRoot();
+  CHECK_EQ(&content_fragment->getPartRoot(), last_root);
+}
+
+HTMLConstructionSite::PendingDOMParts::PendingDOMParts(
+    ContainerNode* attachment_root) {
+  DCHECK(RuntimeEnabledFeatures::DOMPartsAPIEnabled());
+  if (Document* document = DynamicTo<Document>(attachment_root)) {
+    part_root_stack_.push_back(&document->getPartRoot());
+  } else {
+    DocumentFragment* fragment = DynamicTo<DocumentFragment>(attachment_root);
+    CHECK(fragment) << "Attachment root should be Document or DocumentFragment";
+    part_root_stack_.push_back(&fragment->getPartRoot());
+  }
+}
+
+void HTMLConstructionSite::PendingDOMParts::AddNodePart(
+    Comment& node_part_comment,
+    Vector<String> metadata) {
+  DCHECK(RuntimeEnabledFeatures::DOMPartsAPIEnabled());
+  pending_node_part_comment_node_ = &node_part_comment;
+  pending_node_part_metadata_ = metadata;
+  // Nothing to construct yet - wait for the next Node.
+}
+void HTMLConstructionSite::PendingDOMParts::AddChildNodePartStart(
+    Node& previous_sibling,
+    Vector<String> metadata) {
+  DCHECK(RuntimeEnabledFeatures::DOMPartsAPIEnabled());
+  // Note that this ChildNodePart is constructed with both `previous_sibling`
+  // and `next_sibling` pointing to the same node, `previous_sibling`. That's
+  // because at this point we will move on to parse the children of this
+  // ChildNodePart, and at that point, we'll need a constructed PartRoot for
+  // those to attach to. So we build this currently-invalid ChildNodePart, and
+  // then update its `next_sibling` later when we find it, rendering it (and
+  // any dependant Parts) valid.
+  ChildNodePart* new_part = MakeGarbageCollected<ChildNodePart>(
+      *CurrentPartRoot(), previous_sibling, previous_sibling, metadata);
+  part_root_stack_.push_back(new_part);
+}
+void HTMLConstructionSite::PendingDOMParts::AddChildNodePartEnd(
+    Node& next_sibling) {
+  DCHECK(RuntimeEnabledFeatures::DOMPartsAPIEnabled());
+  PartRoot* current_part_root = CurrentPartRoot();
+  if (current_part_root->IsDocumentPartRoot()) {
+    // Mismatched opening/closing child parts.
+    return;
+  }
+  ChildNodePart* last_child_node_part =
+      static_cast<ChildNodePart*>(current_part_root);
+  last_child_node_part->setNextSibling(next_sibling);
+  part_root_stack_.pop_back();
+}
+
+void HTMLConstructionSite::PendingDOMParts::MaybeConstructNodePart(
+    Node& last_node) {
+  DCHECK(RuntimeEnabledFeatures::DOMPartsAPIEnabled());
+  if (!pending_node_part_comment_node_) {
+    return;
+  }
+  if (&last_node != pending_node_part_comment_node_) {
+    MakeGarbageCollected<NodePart>(*CurrentPartRoot(), last_node,
+                                   pending_node_part_metadata_);
+    pending_node_part_comment_node_ = nullptr;
+    pending_node_part_metadata_.clear();
+  }
+}
+
+PartRoot* HTMLConstructionSite::PendingDOMParts::CurrentPartRoot() const {
+  CHECK(!part_root_stack_.empty());
+  return part_root_stack_.back().Get();
+}
+
+void HTMLConstructionSite::PendingDOMParts::PushPartRoot(PartRoot* root) {
+  return part_root_stack_.push_back(root);
+}
+
+PartRoot* HTMLConstructionSite::PendingDOMParts::PopPartRoot() {
+  CHECK(!part_root_stack_.empty());
+  PartRoot* popped = part_root_stack_.back();
+  part_root_stack_.pop_back();
+  return popped;
+}
+
 void HTMLConstructionSite::PendingText::Trace(Visitor* visitor) const {
   visitor->Trace(parent);
   visitor->Trace(next_child);
+}
+
+void HTMLConstructionSite::PendingDOMParts::Trace(Visitor* visitor) const {
+  visitor->Trace(pending_node_part_comment_node_);
+  visitor->Trace(part_root_stack_);
 }
 
 }  // namespace blink

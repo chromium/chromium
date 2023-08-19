@@ -18,9 +18,7 @@ class MediaLog;
 
 class D3DAccelerator {
  public:
-  D3DAccelerator(D3D11VideoDecoderClient* client,
-                 MediaLog* media_log,
-                 ComD3D11VideoDevice video_device);
+  D3DAccelerator(D3D11VideoDecoderClient* client, MediaLog* media_log);
   virtual ~D3DAccelerator();
 
  protected:
@@ -35,7 +33,6 @@ class D3DAccelerator {
 
   raw_ptr<D3D11VideoDecoderClient> client_;
   raw_ptr<MediaLog> media_log_ = nullptr;
-  ComD3D11VideoDevice video_device_;
   std::unique_ptr<D3DVideoDecoderWrapper> video_decoder_wrapper_;
 };
 

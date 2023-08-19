@@ -60,6 +60,7 @@ class PageNodeImpl
   const WebContentsProxy& contents_proxy() const;
 
   void SetType(PageType type);
+  void SetIsFocused(bool is_focused);
   void SetIsVisible(bool is_visible);
   void SetIsAudible(bool is_audible);
   void SetLoadingState(LoadingState loading_state);
@@ -82,6 +83,11 @@ class PageNodeImpl
   // page node.
   base::TimeDelta TimeSinceLastVisibilityChange() const;
 
+  // Returns the time since the last audible change, or nullopt if the node has
+  // never been audible. If the node was audible on creation, returns the
+  // creation time.
+  absl::optional<base::TimeDelta> TimeSinceLastAudibleChange() const;
+
   // Returns the current main frame node (if there is one), otherwise returns
   // any of the potentially multiple main frames that currently exist. If there
   // are no main frames at the moment, returns nullptr.
@@ -93,6 +99,7 @@ class PageNodeImpl
   FrameNodeImpl* embedder_frame_node() const;
   EmbeddingType embedding_type() const;
   PageType type() const;
+  bool is_focused() const;
   bool is_visible() const;
   bool is_audible() const;
   LoadingState loading_state() const;
@@ -209,9 +216,12 @@ class PageNodeImpl
   const FrameNode* GetEmbedderFrameNode() const override;
   EmbeddingType GetEmbeddingType() const override;
   PageType GetType() const override;
+  bool IsFocused() const override;
   bool IsVisible() const override;
   base::TimeDelta GetTimeSinceLastVisibilityChange() const override;
   bool IsAudible() const override;
+  absl::optional<base::TimeDelta> GetTimeSinceLastAudibleChange()
+      const override;
   LoadingState GetLoadingState() const override;
   ukm::SourceId GetUkmSourceID() const override;
   LifecycleState GetLifecycleState() const override;
@@ -224,6 +234,7 @@ class PageNodeImpl
   bool VisitMainFrameNodes(const FrameNodeVisitor& visitor) const override;
   const base::flat_set<const FrameNode*> GetMainFrameNodes() const override;
   const GURL& GetMainFrameUrl() const override;
+  uint64_t EstimateMainFramePrivateFootprintSize() const override;
   bool HadFormInteraction() const override;
   bool HadUserEdits() const override;
   const WebContentsProxy& GetContentsProxy() const override;
@@ -258,6 +269,11 @@ class PageNodeImpl
 
   // The last time at which the page visibility changed.
   base::TimeTicks visibility_change_time_ GUARDED_BY_CONTEXT(sequence_checker_);
+
+  // The last time at which the audible property changed, or nullopt if the node
+  // has never been audible.
+  absl::optional<base::TimeTicks> audible_change_time_
+      GUARDED_BY_CONTEXT(sequence_checker_);
 
   // The last time at which a main frame navigation was committed.
   base::TimeTicks navigation_committed_time_
@@ -306,6 +322,10 @@ class PageNodeImpl
       &PageNodeObserver::OnTypeChanged>
       type_ GUARDED_BY_CONTEXT(sequence_checker_){PageType::kUnknown};
 
+  // Whether or not the page is focused. Driven by browser instrumentation.
+  ObservedProperty::NotifiesOnlyOnChanges<bool,
+                                          &PageNodeObserver::OnIsFocusedChanged>
+      is_focused_ GUARDED_BY_CONTEXT(sequence_checker_){false};
   // Whether or not the page is visible. Driven by browser instrumentation.
   // Initialized on construction.
   ObservedProperty::NotifiesOnlyOnChanges<bool,

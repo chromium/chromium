@@ -18,18 +18,14 @@
 #import "ios/chrome/browser/crash_report/crash_helper.h"
 #import "ios/chrome/browser/first_run/first_run.h"
 #import "ios/chrome/browser/first_run/first_run_metrics.h"
-#import "ios/chrome/browser/flags/system_flags.h"
+#import "ios/chrome/browser/settings/sync/utils/sync_util.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
+#import "ios/chrome/browser/shared/public/features/system_flags.h"
 #import "ios/chrome/browser/signin/identity_manager_factory.h"
-#import "ios/chrome/browser/ui/settings/sync/utils/sync_util.h"
 #import "ios/web/public/thread/web_thread.h"
 #import "ui/gfx/ios/NSString+CrStringDrawing.h"
-
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
 
 constexpr BOOL kDefaultMetricsReportingCheckboxValue = YES;
 
@@ -40,7 +36,8 @@ void CreateSentinel() {
   base::File::Error file_error;
   startup_metric_utils::FirstRunSentinelCreationResult sentinel_created =
       FirstRun::CreateSentinel(&file_error);
-  startup_metric_utils::RecordFirstRunSentinelCreation(sentinel_created);
+  startup_metric_utils::GetBrowser().RecordFirstRunSentinelCreation(
+      sentinel_created);
   if (sentinel_created ==
       startup_metric_utils::FirstRunSentinelCreationResult::kFileSystemError) {
     base::UmaHistogramExactLinear("FirstRun.Sentinel.CreatedFileError",

@@ -249,6 +249,11 @@ class CORE_EXPORT WindowPerformance final : public Performance,
   // Counts the total number of presentation promises we've registered for
   // events' presentation feedback since the beginning.
   uint64_t event_presentation_promise_count_ = 0;
+  // Record presentation promise index when a painted one got resolved. We
+  // believe painted presentation promise should always resolve follow their
+  // creation order. Thus, any unresolved promise with a smaller index should be
+  // reported without waiting for their callback.
+  uint64_t last_resolved_painted_event_presentation_promise_index_ = 0;
   // Map from presentation promise index to pending event presentation
   // timestamp. It gets emptied consistently once corresponding entries are
   // reported.
@@ -262,6 +267,7 @@ class CORE_EXPORT WindowPerformance final : public Performance,
   mutable Member<PerformanceNavigation> navigation_;
   mutable Member<PerformanceTiming> timing_;
   mutable Member<PerformanceTimingForReporting> timing_for_reporting_;
+  DOMHighResTimeStamp pending_pointer_down_start_time_;
   absl::optional<base::TimeDelta> pending_pointer_down_input_delay_;
   absl::optional<base::TimeDelta> pending_pointer_down_processing_time_;
   absl::optional<base::TimeDelta> pending_pointer_down_time_to_next_paint_;

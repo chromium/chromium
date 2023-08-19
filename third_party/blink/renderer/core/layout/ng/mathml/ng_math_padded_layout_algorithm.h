@@ -28,7 +28,7 @@ class CORE_EXPORT NGMathPaddedLayoutAlgorithm
   absl::optional<LayoutUnit> RequestedAscent(LayoutUnit content_ascent) const;
   absl::optional<LayoutUnit> RequestedDescent(LayoutUnit content_descent) const;
 
-  void GatherChildren(NGBlockNode* base, NGBoxFragmentBuilder* = nullptr) const;
+  void GetContentAsAnonymousMrow(NGBlockNode* content) const;
 };
 
 }  // namespace blink

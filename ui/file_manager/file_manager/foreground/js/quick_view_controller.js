@@ -164,6 +164,17 @@ export class QuickViewController {
 
     document.body.addEventListener(
         'keydown', this.onQuickViewKeyDown_.bind(this));
+
+    // Prevent selected file from being copied when quick view is open and
+    // instead allow any selected "General info" text to be copied.
+    document.body.addEventListener('copy', event => {
+      if (this.quickView_.isOpened()) {
+        // Stop 'copy' event propagation to FileTransferController and allow
+        // default copy event behaviour.
+        event.stopPropagation();
+      }
+    });
+
     this.quickView_.addEventListener('close', () => {
       this.listContainer_.focus();
     });

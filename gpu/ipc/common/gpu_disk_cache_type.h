@@ -56,7 +56,10 @@ using GpuDiskCacheGlShaderHandle =
 
 // Dawn cache handles (for the most part, these should be 1:1 per profile).
 using GpuDiskCacheDawnWebGPUHandle =
-    base::IdType32<class GpuDiskCacheDawnWebGPU>;
+    base::IdType<class GpuDiskCacheDawnWebGPU,
+                 int32_t,
+                 std::numeric_limits<int32_t>::min(),
+                 1>;
 
 //
 // Variant handle that encompasses all possible handles, and utilities.
@@ -80,6 +83,10 @@ constexpr GpuDiskCacheGlShaderHandle kDisplayCompositorGpuDiskCacheHandle(-1);
 
 // The handle used for storing shaders created by skia in the GPU process.
 constexpr GpuDiskCacheGlShaderHandle kGrShaderGpuDiskCacheHandle(-2);
+
+// The handle used by GraphiteDawn running in the GPU process. It is used by
+// RasterDecoder and SkiaRenderer.
+constexpr GpuDiskCacheDawnWebGPUHandle kGraphiteDawnGpuDiskCacheHandle(-3);
 
 GPU_EXPORT bool IsReservedGpuDiskCacheHandle(const GpuDiskCacheHandle& handle);
 

@@ -15,8 +15,7 @@
 
 namespace web_app {
 
-class WebAppRegistrar;
-class WebAppSyncBridge;
+class WebAppProvider;
 
 std::set<std::string> GetFileExtensionsFromFileHandlingProto(
     const proto::FileHandling& file_handling);
@@ -28,8 +27,7 @@ std::set<std::string> GetMimeTypesFromFileHandlingProto(
 class FileHandlingSubManager : public OsIntegrationSubManager {
  public:
   FileHandlingSubManager(const base::FilePath& profile_path,
-                         WebAppRegistrar& registrar,
-                         WebAppSyncBridge& sync_bridge);
+                         WebAppProvider& provider);
   ~FileHandlingSubManager() override;
 
   void Configure(const AppId& app_id,
@@ -54,8 +52,7 @@ class FileHandlingSubManager : public OsIntegrationSubManager {
                 base::OnceClosure callback);
 
   const base::FilePath profile_path_;
-  const raw_ref<WebAppRegistrar, DanglingUntriaged> registrar_;
-  const raw_ref<WebAppSyncBridge, DanglingUntriaged> sync_bridge_;
+  const raw_ref<WebAppProvider> provider_;
 
   base::WeakPtrFactory<FileHandlingSubManager> weak_ptr_factory_{this};
 };

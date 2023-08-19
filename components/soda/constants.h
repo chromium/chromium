@@ -16,6 +16,7 @@
 namespace speech {
 
 extern const char kUsEnglishLocale[];
+extern const char kEnglishLocaleNoCountry[];
 
 // Metrics names for keeping track of SODA installation.
 extern const char kSodaBinaryInstallationResult[];

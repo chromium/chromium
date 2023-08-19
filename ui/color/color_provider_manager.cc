@@ -16,6 +16,7 @@
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/color/color_metrics.h"
 #include "ui/color/color_provider.h"
+#include "ui/color/color_provider_key.h"
 #include "ui/color/color_provider_utils.h"
 
 #if !BUILDFLAG(IS_ANDROID)
@@ -44,47 +45,6 @@ absl::optional<GlobalManager>& GetGlobalManager() {
 }
 
 }  // namespace
-
-ColorProviderManager::InitializerSupplier::InitializerSupplier() = default;
-
-ColorProviderManager::InitializerSupplier::~InitializerSupplier() = default;
-
-ColorProviderManager::ThemeInitializerSupplier::ThemeInitializerSupplier(
-    ThemeType theme_type)
-    : theme_type_(theme_type) {}
-
-ColorProviderManager::Key::Key()
-    : Key(ColorMode::kLight,
-          ContrastMode::kNormal,
-          SystemTheme::kDefault,
-          FrameType::kChromium,
-          absl::nullopt,
-          absl::nullopt,
-          nullptr) {}
-
-ColorProviderManager::Key::Key(
-    ColorMode color_mode,
-    ContrastMode contrast_mode,
-    SystemTheme system_theme,
-    FrameType frame_type,
-    absl::optional<SkColor> user_color,
-    absl::optional<SchemeVariant> scheme_variant,
-    scoped_refptr<ThemeInitializerSupplier> custom_theme)
-    : color_mode(color_mode),
-      contrast_mode(contrast_mode),
-      elevation_mode(ElevationMode::kLow),
-      system_theme(system_theme),
-      frame_type(frame_type),
-      user_color(user_color),
-      scheme_variant(scheme_variant),
-      custom_theme(std::move(custom_theme)) {}
-
-ColorProviderManager::Key::Key(const Key&) = default;
-
-ColorProviderManager::Key& ColorProviderManager::Key::operator=(const Key&) =
-    default;
-
-ColorProviderManager::Key::~Key() = default;
 
 ColorProviderManager::ColorProviderManager() {
   ResetColorProviderInitializerList();
@@ -139,7 +99,7 @@ void ColorProviderManager::AppendColorProviderInitializer(
       initializer_list_->Add(std::move(initializer)));
 }
 
-ColorProvider* ColorProviderManager::GetColorProviderFor(Key key) {
+ColorProvider* ColorProviderManager::GetColorProviderFor(ColorProviderKey key) {
   auto iter = color_providers_.find(key);
   if (iter == color_providers_.end()) {
     base::ElapsedTimer timer;
@@ -154,7 +114,7 @@ ColorProvider* ColorProviderManager::GetColorProviderFor(Key key) {
     ++num_providers_initialized_;
 
     iter = color_providers_.emplace(key, std::move(provider)).first;
-    RecordColorProviderCacheSize(color_providers_.size());
+    RecordColorProviderCacheSize(static_cast<int>(color_providers_.size()));
   }
   ColorProvider* provider = iter->second.get();
   DCHECK(provider);

@@ -34,15 +34,14 @@ class SimpleURLLoader;
 
 namespace captions {
 
-using OnTranslateEventCallback =
-    base::OnceCallback<void(media::SpeechRecognitionResult)>;
+using OnTranslateEventCallback = base::OnceCallback<void(const std::string&)>;
 
 ///////////////////////////////////////////////////////////////////////////////
 // Live Translate Controller
 //
 //  The controller of the live translate feature. The live translate controller
 //  is a KeyedService. There exists one live translate controller per profile
-//  and it lasts for the duration of the session.
+//  and it lasts for the duration of the sessions.
 //
 class LiveTranslateController : public KeyedService {
  public:
@@ -54,21 +53,19 @@ class LiveTranslateController : public KeyedService {
 
   static void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry);
 
-  void GetTranslation(const media::SpeechRecognitionResult& result,
-                      std::string source_language,
-                      std::string target_language,
-                      OnTranslateEventCallback callback);
+  virtual void GetTranslation(const std::string& result,
+                              std::string source_language,
+                              std::string target_language,
+                              OnTranslateEventCallback callback);
 
  private:
   void ResetURLLoaderFactory();
-  void OnURLLoadComplete(bool is_final,
-                         OnTranslateEventCallback callback,
+  void OnURLLoadComplete(OnTranslateEventCallback callback,
                          std::unique_ptr<std::string> response_body);
 
   // Called when the data decoder service provides parsed JSON data for a server
   // response.
-  void OnResponseJsonParsed(bool is_final,
-                            OnTranslateEventCallback callback,
+  void OnResponseJsonParsed(OnTranslateEventCallback callback,
                             data_decoder::DataDecoder::ValueOrError result);
 
   void OnLiveCaptionEnabledChanged();

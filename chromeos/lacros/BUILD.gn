@@ -62,6 +62,7 @@ source_set("test_support") {
   testonly = true
   deps = [
     "//base",
+    "//base/test:test_support",
     "//chromeos/crosapi/mojom",
     "//chromeos/lacros",
     "//chromeos/startup",

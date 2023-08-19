@@ -20,10 +20,8 @@
 #include "ash/app_list/views/apps_container_view.h"
 #include "ash/app_list/views/apps_grid_view_test_api.h"
 #include "ash/app_list/views/search_box_view.h"
-#include "ash/drag_drop/drag_drop_controller.h"
 #include "ash/public/cpp/app_list/app_list_features.h"
 #include "ash/public/cpp/pagination/pagination_model.h"
-#include "ash/public/cpp/test/shell_test_api.h"
 #include "ash/shell.h"
 #include "ash/test/ash_test_base.h"
 #include "ash/wm/tablet_mode/tablet_mode_controller.h"
@@ -83,33 +81,6 @@ class PagedAppsGridViewTest : public AshTestBase,
     Shell::Get()->tablet_mode_controller()->SetEnabledForTest(true);
     grid_test_api_ = std::make_unique<test::AppsGridViewTestApi>(
         GetAppListTestHelper()->GetRootPagedAppsGridView());
-
-    ShellTestApi().drag_drop_controller()->SetLoopClosureForTesting(
-        base::DoNothing(), base::DoNothing());
-  }
-
-  void MaybeRunDragAndDropSequence(std::list<base::OnceClosure>* tasks) {
-    if (!GetParam()) {
-      while (!tasks->empty()) {
-        std::move(tasks->front()).Run();
-        tasks->pop_front();
-      }
-      return;
-    }
-
-    ShellTestApi().drag_drop_controller()->SetLoopClosureForTesting(
-        base::BindLambdaForTesting([&]() {
-          auto task = std::move(tasks->front());
-          tasks->pop_front();
-          std::move(task).Run();
-        }),
-        base::DoNothing());
-    tasks->push_front(base::BindLambdaForTesting([&]() {
-      // Generate OnDragEnter() event for the host view.
-      GetEventGenerator()->MoveMouseBy(10, 10);
-    }));
-    // Start Drag and Drop Sequence by moving the mouse.
-    GetEventGenerator()->MoveMouseBy(10, 10);
   }
 
   AppListItemView* StartDragOnItemView(AppListItemView* item) {
@@ -330,7 +301,7 @@ TEST_P(PagedAppsGridViewTest, DragItemToNextPage) {
     page_flip_waiter->Wait();
     GetEventGenerator()->ReleaseLeftButton();
   }));
-  MaybeRunDragAndDropSequence(&drag_page_flip);
+  MaybeRunDragAndDropSequenceForAppList(&drag_page_flip, /*is_touch=*/false);
 
   // With the drag complete, check that page 1 is now selected.
   EXPECT_EQ(1, pagination_model->selected_page());
@@ -348,7 +319,7 @@ TEST_P(PagedAppsGridViewTest, DragItemToNextPage) {
     task_environment()->FastForwardBy(base::Seconds(2));
     GetEventGenerator()->ReleaseLeftButton();
   }));
-  MaybeRunDragAndDropSequence(&drag_does_nothing);
+  MaybeRunDragAndDropSequenceForAppList(&drag_does_nothing, /*is_touch=*/false);
 
   // With the drag complete, check that page 1 is still selected, because a new
   // page cannot be created.
@@ -388,7 +359,8 @@ TEST_P(PagedAppsGridViewTest, PageFlipBufferSizedByBackgroundCard) {
     page_flip_waiter->Wait();
     GetEventGenerator()->ReleaseLeftButton();
   }));
-  MaybeRunDragAndDropSequence(&drag_page_flip_down);
+  MaybeRunDragAndDropSequenceForAppList(&drag_page_flip_down,
+                                        /*is_touch=*/false);
 
   EXPECT_EQ(1, pagination_model->selected_page());
 
@@ -411,7 +383,8 @@ TEST_P(PagedAppsGridViewTest, PageFlipBufferSizedByBackgroundCard) {
     page_flip_waiter->Wait();
     GetEventGenerator()->ReleaseLeftButton();
   }));
-  MaybeRunDragAndDropSequence(&drag_page_flip_top);
+  MaybeRunDragAndDropSequenceForAppList(&drag_page_flip_top,
+                                        /*is_touch=*/false);
 
   EXPECT_EQ(0, pagination_model->selected_page());
 }
@@ -447,7 +420,7 @@ TEST_P(PagedAppsGridViewTest, NoPageFlipUpOnFirstPage) {
     task_environment()->FastForwardBy(base::Seconds(2));
     GetEventGenerator()->ReleaseLeftButton();
   }));
-  MaybeRunDragAndDropSequence(&tasks);
+  MaybeRunDragAndDropSequenceForAppList(&tasks, /*is_touch=*/false);
 
   // Selected page should still be at the first page.
   EXPECT_EQ(0, pagination_model->selected_page());
@@ -490,7 +463,7 @@ TEST_P(PagedAppsGridViewTest, NoPageFlipDownOnLastPage) {
     task_environment()->FastForwardBy(base::Seconds(2));
     GetEventGenerator()->ReleaseLeftButton();
   }));
-  MaybeRunDragAndDropSequence(&tasks);
+  MaybeRunDragAndDropSequenceForAppList(&tasks, /*is_touch=*/false);
 
   // Selected page should not have changed and should still be the last page.
   EXPECT_EQ(1, pagination_model->selected_page());
@@ -817,7 +790,7 @@ TEST_P(PagedAppsGridViewTest, DestroyLayersOnDragLastItemFromFolder) {
                     ->FireFolderItemReparentTimerForTest());
     GetEventGenerator()->ReleaseLeftButton();
   }));
-  MaybeRunDragAndDropSequence(&tasks);
+  MaybeRunDragAndDropSequenceForAppList(&tasks, /*is_touch=*/false);
 
   ASSERT_FALSE(helper->IsInFolderView());
 
@@ -888,7 +861,7 @@ TEST_P(PagedAppsGridViewTest, EnterSearchBoxDuringDragNoCrash) {
   // Release drag, required by the drag and drop controller
   tasks.push_back(base::BindLambdaForTesting(
       [&]() { GetEventGenerator()->ReleaseLeftButton(); }));
-  MaybeRunDragAndDropSequence(&tasks);
+  MaybeRunDragAndDropSequenceForAppList(&tasks, /*is_touch=*/false);
 }
 
 // Test the case of beginning an item drag and then immediately ending the drag.
@@ -922,7 +895,7 @@ TEST_P(PagedAppsGridViewTest, QuicklyDragAndDropItem) {
     generator->MoveMouseBy(100, 100);
     GetEventGenerator()->ReleaseLeftButton();
   }));
-  MaybeRunDragAndDropSequence(&tasks);
+  MaybeRunDragAndDropSequenceForAppList(&tasks, /*is_touch=*/false);
 
   EXPECT_FALSE(IsRowChangeAnimatorAnimating());
 
@@ -971,7 +944,7 @@ TEST_P(PagedAppsGridViewTest, QuicklyDragAndDropItemToNewRow) {
     generator->MoveMouseTo(second_row_drag_point);
     GetEventGenerator()->ReleaseLeftButton();
   }));
-  MaybeRunDragAndDropSequence(&tasks);
+  MaybeRunDragAndDropSequenceForAppList(&tasks, /*is_touch=*/false);
 
   // There should be a row change animation happening.
   EXPECT_TRUE(IsRowChangeAnimatorAnimating());
@@ -1024,7 +997,8 @@ TEST_P(PagedAppsGridViewTest, CardifiedEnterAnimationInterruptedByExit) {
     EXPECT_FALSE(item_view->layer()->GetAnimator()->is_animating());
     GetEventGenerator()->ReleaseLeftButton();
   }));
-  MaybeRunDragAndDropSequence(&first_animation_completes);
+  MaybeRunDragAndDropSequenceForAppList(&first_animation_completes,
+                                        /*is_touch=*/false);
 
   EXPECT_FALSE(GetPagedAppsGridView()->cardified_state_for_testing());
 
@@ -1046,7 +1020,8 @@ TEST_P(PagedAppsGridViewTest, CardifiedEnterAnimationInterruptedByExit) {
     EXPECT_TRUE(GetPagedAppsGridView()->cardified_state_for_testing());
     GetEventGenerator()->ReleaseLeftButton();
   }));
-  MaybeRunDragAndDropSequence(&animation_not_completes);
+  MaybeRunDragAndDropSequenceForAppList(&animation_not_completes,
+                                        /*is_touch=*/false);
 
   // With the item view animating from its current position at the start of the
   // begin cardified state, to its non-cardified position, the layer transform
@@ -1103,7 +1078,7 @@ TEST_P(PagedAppsGridViewTest, DragOutsideOfNextPageSelectsOriginalPage) {
     // End Drag
     GetEventGenerator()->ReleaseLeftButton();
   }));
-  MaybeRunDragAndDropSequence(&tasks);
+  MaybeRunDragAndDropSequenceForAppList(&tasks, /*is_touch=*/false);
 
   WaitForItemLayerAnimations();
   UpdateLayout();

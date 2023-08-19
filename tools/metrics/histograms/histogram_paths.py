@@ -11,13 +11,15 @@ sys.path.append(os.path.join(os.path.dirname(__file__), '..', 'common'))
 import path_util
 
 
-def _FindHistogramsXmlFiles():
-  """Gets a list relative path to all histograms xmls under metadata/."""
+_XML_FILE_NAMES = ['histograms.xml', 'enums.xml', 'histogram_suffixes_list.xml']
+
+
+def _FindXmlFiles():
+  """Gets a list relative path to all metrics XML files under metadata/."""
   files = []
   for dir_name, _, file_list in os.walk(PATH_TO_METADATA_DIR):
     for filename in file_list:
-      if (filename == 'histograms.xml'
-          or filename == 'histogram_suffixes_list.xml'):
+      if filename in _XML_FILE_NAMES:
         # Compute the relative path of the histograms xml file.
         file_path = os.path.relpath(os.path.join(dir_name, filename),
                                     PATH_TO_METADATA_DIR)
@@ -36,7 +38,7 @@ PATH_TO_METADATA_DIR = path_util.GetInputFile(
 # TODO: Improve on the current design to avoid calling `os.walk()` at the time
 # of module import.
 HISTOGRAMS_XMLS_RELATIVE = (['tools/metrics/histograms/histograms.xml'] +
-                            _FindHistogramsXmlFiles())
+                            _FindXmlFiles())
 ALL_XMLS_RELATIVE = [ENUMS_XML_RELATIVE] + HISTOGRAMS_XMLS_RELATIVE
 
 HISTOGRAMS_PREFIX_LIST = [
@@ -50,12 +52,13 @@ ALL_XMLS = [path_util.GetInputFile(f) for f in ALL_XMLS_RELATIVE]
 
 ALL_TEST_XMLS_RELATIVE = [
     'tools/metrics/histograms/test_data/enums.xml',
+    'tools/metrics/histograms/test_data/enums2.xml',
     'tools/metrics/histograms/test_data/histograms.xml',
     'tools/metrics/histograms/test_data/histogram_suffixes_list.xml',
     'tools/metrics/histograms/test_data/ukm.xml',
 ]
 ALL_TEST_XMLS = [path_util.GetInputFile(f) for f in ALL_TEST_XMLS_RELATIVE]
-(TEST_ENUMS_XML, TEST_HISTOGRAMS_XML, TEST_SUFFIXES_XML,
+(TEST_ENUMS_XML, TEST_ENUMS2_XML, TEST_HISTOGRAMS_XML, TEST_SUFFIXES_XML,
  TEST_UKM_XML) = ALL_TEST_XMLS
 
 TEST_XML_WITH_COMPONENTS_RELATIVE = (

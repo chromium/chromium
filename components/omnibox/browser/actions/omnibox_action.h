@@ -46,7 +46,10 @@ class AutocompleteProviderClient;
 //    destroyed when the match is destroyed, so matches have the only reference.
 //  - Some actions (like Pedals) are fixed and expensive to copy, so matches
 //    should merely hold one of the references to the action.
-class OmniboxAction : public base::RefCounted<OmniboxAction> {
+// Note: `RefCountedThreadSafe` is used instead of `RefCounted` because
+//  AutocompleteMatch instances are passed across thread boundaries to
+//  different sequences and they contain `scoped_refptr<OmniboxAction>`.
+class OmniboxAction : public base::RefCountedThreadSafe<OmniboxAction> {
  public:
   struct LabelStrings {
     LabelStrings(int id_hint,
@@ -176,7 +179,7 @@ class OmniboxAction : public base::RefCounted<OmniboxAction> {
 #endif
 
  protected:
-  friend class base::RefCounted<OmniboxAction>;
+  friend class base::RefCountedThreadSafe<OmniboxAction>;
   virtual ~OmniboxAction();
 
   // Use this for the common case of navigating to a URL.

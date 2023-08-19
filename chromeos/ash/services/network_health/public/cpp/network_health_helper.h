@@ -13,6 +13,7 @@
 #include "chromeos/services/network_health/public/mojom/network_health_types.mojom.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace ash::network_health {
 
@@ -28,9 +29,9 @@ class NetworkHealthHelper
   NetworkHealthHelper& operator=(const NetworkHealthHelper&) = delete;
   ~NetworkHealthHelper() override;
 
-  // Returns the portal state of the default network if the default network is
-  // set and is a WiFi network, otherwise returns false.
-  bool IsWiFiPortalState();
+  // If the default network is set and is a WiFi network, returns the portal
+  // state of the default network, otherwise returns kUnknown.
+  chromeos::network_config::mojom::PortalState WiFiPortalState();
 
   // chromeos::network_health::mojom::NetworkEventsObserver:
   void OnConnectionStateChanged(

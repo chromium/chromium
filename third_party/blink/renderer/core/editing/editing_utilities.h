@@ -142,6 +142,10 @@ inline ContainerNode* ParentCrossingShadowBoundaries<EditingInFlatTreeStrategy>(
   return FlatTreeTraversal::Parent(node);
 }
 
+void WriteImageToClipboard(SystemClipboard& system_clipboard,
+                           const scoped_refptr<Image>& image,
+                           const KURL& url_string,
+                           const String& title);
 void WriteImageNodeToClipboard(SystemClipboard&, const Node&, const String&);
 
 // boolean functions on Node

@@ -17,17 +17,106 @@ declare global {
         isEligibleForAddressAccountStorage: boolean;
       }
 
-      export enum AddressField {
-        HONORIFIC = 'HONORIFIC',
-        FULL_NAME = 'FULL_NAME',
-        COMPANY_NAME = 'COMPANY_NAME',
-        ADDRESS_LINES = 'ADDRESS_LINES',
-        ADDRESS_LEVEL_1 = 'ADDRESS_LEVEL_1',
-        ADDRESS_LEVEL_2 = 'ADDRESS_LEVEL_2',
-        ADDRESS_LEVEL_3 = 'ADDRESS_LEVEL_3',
-        POSTAL_CODE = 'POSTAL_CODE',
-        SORTING_CODE = 'SORTING_CODE',
-        COUNTRY_CODE = 'COUNTRY_CODE',
+      /**
+       * This enum must be kept in sync with:
+       * components/autofill/core/browser/field_types.h.
+       */
+      export enum ServerFieldType {
+        NO_SERVER_DATA,
+        UNKNOWN_TYPE,
+        EMPTY_TYPE,
+        NAME_FIRST,
+        NAME_MIDDLE,
+        NAME_LAST,
+        NAME_MIDDLE_INITIAL,
+        NAME_FULL,
+        NAME_SUFFIX,
+        EMAIL_ADDRESS,
+        PHONE_HOME_NUMBER,
+        PHONE_HOME_CITY_CODE,
+        PHONE_HOME_COUNTRY_CODE,
+        PHONE_HOME_CITY_AND_NUMBER,
+        PHONE_HOME_WHOLE_NUMBER,
+        ADDRESS_HOME_LINE1,
+        ADDRESS_HOME_LINE2,
+        ADDRESS_HOME_APT_NUM,
+        ADDRESS_HOME_CITY,
+        ADDRESS_HOME_STATE,
+        ADDRESS_HOME_ZIP,
+        ADDRESS_HOME_COUNTRY,
+        CREDIT_CARD_NAME_FULL,
+        CREDIT_CARD_NUMBER,
+        CREDIT_CARD_EXP_MONTH,
+        CREDIT_CARD_EXP_2_DIGIT_YEAR,
+        CREDIT_CARD_EXP_4_DIGIT_YEAR,
+        CREDIT_CARD_EXP_DATE_2_DIGIT_YEAR,
+        CREDIT_CARD_EXP_DATE_4_DIGIT_YEAR,
+        CREDIT_CARD_TYPE,
+        CREDIT_CARD_VERIFICATION_CODE,
+        COMPANY_NAME,
+        FIELD_WITH_DEFAULT_VALUE,
+        MERCHANT_EMAIL_SIGNUP,
+        MERCHANT_PROMO_CODE,
+        PASSWORD,
+        ACCOUNT_CREATION_PASSWORD,
+        ADDRESS_HOME_STREET_ADDRESS,
+        ADDRESS_HOME_SORTING_CODE,
+        ADDRESS_HOME_DEPENDENT_LOCALITY,
+        ADDRESS_HOME_LINE3,
+        NOT_ACCOUNT_CREATION_PASSWORD,
+        USERNAME,
+        USERNAME_AND_EMAIL_ADDRESS,
+        NEW_PASSWORD,
+        PROBABLY_NEW_PASSWORD,
+        NOT_NEW_PASSWORD,
+        CREDIT_CARD_NAME_FIRST,
+        CREDIT_CARD_NAME_LAST,
+        PHONE_HOME_EXTENSION,
+        CONFIRMATION_PASSWORD,
+        AMBIGUOUS_TYPE,
+        SEARCH_TERM,
+        PRICE,
+        NOT_PASSWORD,
+        SINGLE_USERNAME,
+        NOT_USERNAME,
+        UPI_VPA,
+        ADDRESS_HOME_STREET_NAME,
+        ADDRESS_HOME_HOUSE_NUMBER,
+        ADDRESS_HOME_SUBPREMISE,
+        ADDRESS_HOME_OTHER_SUBUNIT,
+        NAME_LAST_FIRST,
+        NAME_LAST_CONJUNCTION,
+        NAME_LAST_SECOND,
+        NAME_HONORIFIC_PREFIX,
+        ADDRESS_HOME_PREMISE_NAME,
+        ADDRESS_HOME_DEPENDENT_STREET_NAME,
+        ADDRESS_HOME_STREET_AND_DEPENDENT_STREET_NAME,
+        ADDRESS_HOME_ADDRESS,
+        ADDRESS_HOME_ADDRESS_WITH_NAME,
+        ADDRESS_HOME_FLOOR,
+        NAME_FULL_WITH_HONORIFIC_PREFIX,
+        BIRTHDATE_DAY,
+        BIRTHDATE_MONTH,
+        BIRTHDATE_4_DIGIT_YEAR,
+        PHONE_HOME_CITY_CODE_WITH_TRUNK_PREFIX,
+        PHONE_HOME_CITY_AND_NUMBER_WITHOUT_TRUNK_PREFIX,
+        PHONE_HOME_NUMBER_PREFIX,
+        PHONE_HOME_NUMBER_SUFFIX,
+        IBAN_VALUE,
+        CREDIT_CARD_STANDALONE_VERIFICATION_CODE,
+        NUMERIC_QUANTITY,
+        ONE_TIME_CODE,
+        DELIVERY_INSTRUCTIONS,
+        ADDRESS_HOME_OVERFLOW,
+        ADDRESS_HOME_LANDMARK,
+        ADDRESS_HOME_OVERFLOW_AND_LANDMARK,
+        ADDRESS_HOME_ADMIN_LEVEL2,
+        ADDRESS_HOME_STREET_LOCATION,
+        ADDRESS_HOME_BETWEEN_STREETS,
+        ADDRESS_HOME_BETWEEN_STREETS_OR_LANDMARK,
+        ADDRESS_HOME_BETWEEN_STREETS_1,
+        ADDRESS_HOME_BETWEEN_STREETS_2,
+        SINGLE_USERNAME_FORGOT_PASSWORD,
       }
 
       export enum AddressSource {
@@ -46,20 +135,16 @@ declare global {
         isVirtualCardEnrolled?: boolean;
       }
 
+      export interface AddressField {
+        type: ServerFieldType;
+        value: string|undefined;
+      }
+
       export interface AddressEntry {
         guid?: string;
-        fullNames?: string[];
-        honorific?: string;
-        companyName?: string;
-        addressLines?: string;
-        addressLevel1?: string;
-        addressLevel2?: string;
-        addressLevel3?: string;
-        postalCode?: string;
-        sortingCode?: string;
-        countryCode?: string;
-        phoneNumbers?: string[];
-        emailAddresses?: string[];
+
+        fields: AddressField[];
+
         languageCode?: string;
         metadata?: AutofillMetadata;
       }
@@ -70,7 +155,7 @@ declare global {
       }
 
       export interface AddressComponent {
-        field: AddressField;
+        field: ServerFieldType;
         fieldName: string;
         isLongField: boolean;
         isRequired: boolean;
@@ -134,6 +219,7 @@ declare global {
       export function removeVirtualCard(cardId: string): void;
       export function authenticateUserAndFlipMandatoryAuthToggle(): void;
       export function authenticateUserToEditLocalCard(): Promise<boolean>;
+      export function checkIfDeviceAuthAvailable(): Promise<boolean>;
 
       export const onPersonalDataChanged: ChromeEvent<
           (addresses: AddressEntry[], creditCards: CreditCardEntry[],

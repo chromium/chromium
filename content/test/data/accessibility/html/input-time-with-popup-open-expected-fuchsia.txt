@@ -27,7 +27,7 @@ UNKNOWN focusable
 ++++++++++++UNKNOWN focusable label='AM/PM' actions='{SET_VALUE}' value='PM'
 ++++++++++++++STATIC_TEXT label='PM'
 ++++++++++++++++UNKNOWN label='PM'
-++++++++UNKNOWN focusable label='Show time picker' actions='{DEFAULT}'
+++++++++UNKNOWN focusable label='Show time picker' actions='{DEFAULT}' secondary_label='Show time picker'
 ++++++++UNKNOWN
 ++++++++++UNKNOWN hidden
 ++++++++++++UNKNOWN hidden

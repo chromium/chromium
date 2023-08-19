@@ -1,0 +1,28 @@
+// Copyright 2023 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module crosapi.mojom;
+
+// Interface for EmbeddedAccessibilityHelperClients. Implemented by ash-chrome.
+// Used by lacros-chrome (the "embedded helper") to inform when accessibility
+// features have received certain events from lacros-chrome so that
+// features can act on these events.
+[Stable, Uuid="5d670d98-5c5f-4805-ba83-b77690f5f68c"]
+interface EmbeddedAccessibilityHelperClient {
+ // Called by lacros-chrome when a context menu (added with chrome.contextMenus
+ // API) is clicked for the Select to Speak feature to request that selected
+ // text is spoken out loud for the user. This is in place of unsupported
+ // chrome.contextMenus, which is not piped through for Ash extension APIs to
+ // act in lacros-chrome.
+ SpeakSelectedText@0();
+};
+
+// A factory living in ash-chrome which brokers connections to other
+// processes for EmbeddedAccessibilityHelperClient.
+[Stable, Uuid="b6216633-c0d5-4eab-848e-d9fdfeaa3c33"]
+interface EmbeddedAccessibilityHelperClientFactory {
+ // Binds EmbeddedAccessibilityHelperClient's receiver in lacros-chrome.
+ BindEmbeddedAccessibilityHelperClient@0(
+     pending_receiver<EmbeddedAccessibilityHelperClient> embedded_ax_helper_client);
+};

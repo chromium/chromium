@@ -132,8 +132,6 @@ void RemoteCopyMessageHandler::HandleText(const std::string& text) {
     return;
   }
 
-  LogRemoteCopyReceivedTextSize(text.size());
-
   {
     ui::ScopedClipboardWriter(ui::ClipboardBuffer::kCopyPaste)
         .WriteText(base::UTF8ToUTF16(text));
@@ -166,7 +164,6 @@ void RemoteCopyMessageHandler::HandleImage(const std::string& image_url) {
 
   url_loader_ =
       network::SimpleURLLoader::Create(std::move(request), kTrafficAnnotation);
-  timer_ = base::ElapsedTimer();
   // Unretained(this) is safe here because |this| owns |url_loader_|.
   url_loader_->DownloadToString(
       profile_->GetDefaultStoragePartition()
@@ -189,27 +186,12 @@ void RemoteCopyMessageHandler::OnURLLoadComplete(
     std::unique_ptr<std::string> content) {
   TRACE_EVENT0("sharing", "RemoteCopyMessageHandler::OnURLLoadComplete");
 
-  int code;
-  if (url_loader_->NetError() != net::OK) {
-    code = url_loader_->NetError();
-  } else if (!url_loader_->ResponseInfo() ||
-             !url_loader_->ResponseInfo()->headers) {
-    code = net::OK;
-  } else {
-    code = url_loader_->ResponseInfo()->headers->response_code();
-  }
-  LogRemoteCopyLoadImageStatusCode(code);
-
   url_loader_.reset();
   if (!content || content->empty()) {
     Finish(RemoteCopyHandleMessageResult::kFailureNoImageContentLoaded);
     return;
   }
 
-  LogRemoteCopyLoadImageTime(timer_.Elapsed());
-  LogRemoteCopyReceivedImageSizeBeforeDecode(content->size());
-
-  timer_ = base::ElapsedTimer();
   ImageDecoder::Start(this, std::move(*content));
 }
 
@@ -220,9 +202,6 @@ void RemoteCopyMessageHandler::OnImageDecoded(const SkBitmap& image) {
     Finish(RemoteCopyHandleMessageResult::kFailureDecodedImageDrawsNothing);
     return;
   }
-
-  LogRemoteCopyDecodeImageTime(timer_.Elapsed());
-  LogRemoteCopyReceivedImageSizeAfterDecode(image.computeByteSize());
 
   WriteImageAndShowNotification(image);
 }
@@ -274,7 +253,6 @@ void RemoteCopyMessageHandler::ShowNotification(const std::u16string& title,
 
 void RemoteCopyMessageHandler::Finish(RemoteCopyHandleMessageResult result) {
   TRACE_EVENT1("sharing", "RemoteCopyMessageHandler::Finish", "result", result);
-  LogRemoteCopyHandleMessageResult(result);
   device_name_.clear();
 }
 

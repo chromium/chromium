@@ -35,6 +35,26 @@ class DawnPlatform : public dawn::platform::Platform {
                          const uint64_t* arg_values,
                          unsigned char flags) override;
 
+  void HistogramCustomCounts(const char* name,
+                             int sample,
+                             int min,
+                             int max,
+                             int bucketCount) override;
+
+  void HistogramCustomCountsHPC(const char* name,
+                                int sample,
+                                int min,
+                                int max,
+                                int bucketCount) override;
+
+  void HistogramEnumeration(const char* name,
+                            int sample,
+                            int boundaryValue) override;
+
+  void HistogramSparse(const char* name, int sample) override;
+
+  void HistogramBoolean(const char* name, bool sample) override;
+
   dawn::platform::CachingInterface* GetCachingInterface() override;
 
   std::unique_ptr<dawn::platform::WorkerTaskPool> CreateWorkerTaskPool()

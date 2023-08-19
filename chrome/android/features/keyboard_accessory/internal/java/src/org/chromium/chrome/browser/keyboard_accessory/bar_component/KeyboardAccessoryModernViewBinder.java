@@ -15,6 +15,7 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import org.chromium.base.TraceEvent;
+import org.chromium.chrome.browser.autofill.AutofillUiUtils;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.keyboard_accessory.R;
 import org.chromium.chrome.browser.keyboard_accessory.bar_component.KeyboardAccessoryProperties.AutofillBarItem;
@@ -125,9 +126,7 @@ class KeyboardAccessoryModernViewBinder {
             }
             chipView.setIcon(
                     getCardIcon(chipView.getContext(), item.getSuggestion().getCustomIconUrl(),
-                            iconId, R.dimen.keyboard_accessory_bar_item_cc_icon_width,
-                            R.dimen.chip_icon_size,
-                            R.dimen.keyboard_accessory_card_art_corner_radius,
+                            iconId, AutofillUiUtils.CardIconSize.SMALL,
                             /* showCustomIcon= */ true),
                     /* tintWithTextColor= */ false);
             TraceEvent.end("BarItemChipViewHolder#bind");

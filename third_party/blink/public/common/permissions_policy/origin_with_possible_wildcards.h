@@ -31,16 +31,18 @@ class BLINK_COMMON_EXPORT OriginWithPossibleWildcards {
       const OriginWithPossibleWildcards& rhs);
   ~OriginWithPossibleWildcards();
 
-  // This is a shortcut for making a wildcard-free OriginWithPossibleWildcards
-  // from a non-opaque origin.
-  static OriginWithPossibleWildcards FromOrigin(const url::Origin& origin);
+  // This is a shortcut for making a wildcard-free OriginWithPossibleWildcards.
+  // The returned value will be empty if the origin is opaque or Parse fails.
+  static absl::optional<OriginWithPossibleWildcards> FromOrigin(
+      const url::Origin& origin);
 
-  // This is a shortcut for making a wildcard-free OriginWithPossibleWildcards
-  // from a non-opaque origin. Non-tests should use Parse() if they want
+  // This is a shortcut for making a OriginWithPossibleWildcards while
+  // overriding the wildcard options. Non-tests should use Parse() if they want
   // wildcard support, or FromOrigin() if they don't need it.
-  static OriginWithPossibleWildcards FromOriginAndWildcardsForTest(
-      const url::Origin& origin,
-      bool has_subdomain_wildcard);
+  // The returned value will be empty if the origin is opaque or Parse fails.
+  static absl::optional<OriginWithPossibleWildcards>
+  FromOriginAndWildcardsForTest(const url::Origin& origin,
+                                bool has_subdomain_wildcard);
 
   // This constructs a OriginWithPossibleWildcards from an allowlist_entry which
   // might or might not have a subdomain wildcard (only if the type is kHeader).
@@ -86,9 +88,6 @@ class BLINK_COMMON_EXPORT OriginWithPossibleWildcards {
   BLINK_COMMON_EXPORT
   friend bool operator<(const OriginWithPossibleWildcards& lhs,
                         const OriginWithPossibleWildcards& rhs);
-
-  OriginWithPossibleWildcards(const url::Origin& origin,
-                              bool has_subdomain_wildcard);
 
   network::mojom::CSPSource csp_source;
 };

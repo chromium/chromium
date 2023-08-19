@@ -32,6 +32,8 @@ class MockUkmDataManager : public UkmDataManager {
 
   MOCK_METHOD(UkmDatabase*, GetUkmDatabase, (), (override));
 
+  MOCK_METHOD(bool, HasUkmDatabase, (), (override));
+
   MOCK_METHOD(void, OnEntryAdded, (ukm::mojom::UkmEntryPtr), (override));
 
   MOCK_METHOD(void,

@@ -94,7 +94,8 @@ bool GetExtensionInfo(content::WebContents* wc,
 
   auto view_type = extensions::GetViewType(wc);
   if (view_type == extensions::mojom::ViewType::kExtensionPopup ||
-      view_type == extensions::mojom::ViewType::kExtensionSidePanel) {
+      view_type == extensions::mojom::ViewType::kExtensionSidePanel ||
+      view_type == extensions::mojom::ViewType::kOffscreenDocument) {
     // Note that we are intentionally not setting name here, so that we can
     // construct a name based on the URL or page title in
     // RenderFrameDevToolsAgentHost::GetTitle()
@@ -302,17 +303,18 @@ void ChromeDevToolsManagerDelegate::ClientDetached(
 
 scoped_refptr<DevToolsAgentHost> ChromeDevToolsManagerDelegate::CreateNewTarget(
     const GURL& url,
-    bool for_tab) {
+    DevToolsManagerDelegate::TargetType target_type) {
   NavigateParams params(ProfileManager::GetLastUsedProfile(), url,
                         ui::PAGE_TRANSITION_AUTO_TOPLEVEL);
   params.disposition = WindowOpenDisposition::NEW_FOREGROUND_TAB;
   Navigate(&params);
   if (!params.navigated_or_inserted_contents)
     return nullptr;
-  return for_tab ? DevToolsAgentHost::GetOrCreateForTab(
-                       params.navigated_or_inserted_contents)
-                 : DevToolsAgentHost::GetOrCreateFor(
-                       params.navigated_or_inserted_contents);
+  return target_type == DevToolsManagerDelegate::kTab
+             ? DevToolsAgentHost::GetOrCreateForTab(
+                   params.navigated_or_inserted_contents)
+             : DevToolsAgentHost::GetOrCreateFor(
+                   params.navigated_or_inserted_contents);
 }
 
 std::vector<content::BrowserContext*>

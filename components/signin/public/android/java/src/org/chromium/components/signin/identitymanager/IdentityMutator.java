@@ -18,8 +18,6 @@ import org.chromium.components.signin.metrics.SignoutReason;
  * information.
  */
 public class IdentityMutator {
-    private static final String TAG = "IdentityMutator";
-
     // Pointer to native IdentityMutator, not final because of destroy().
     private long mNativeIdentityMutator;
 

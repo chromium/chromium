@@ -121,6 +121,16 @@ void WorkerModuleScriptFetcher::NotifyClient(
 
   const KURL response_url = response.ResponseUrl();
 
+  network::mojom::ReferrerPolicy response_referrer_policy =
+      network::mojom::ReferrerPolicy::kDefault;
+  const String response_referrer_policy_header =
+      response.HttpHeaderField(http_names::kReferrerPolicy);
+  if (!response_referrer_policy_header.IsNull()) {
+    SecurityPolicy::ReferrerPolicyFromHeaderValue(
+        response_referrer_policy_header,
+        kDoNotSupportReferrerPolicyLegacyKeywords, &response_referrer_policy);
+  }
+
   if (level_ == ModuleGraphLevel::kTopLevelModuleFetch) {
     // TODO(nhiroki, hiroshige): Access to WorkerGlobalScope in module loaders
     // is a layering violation. Also, updating WorkerGlobalScope ('module map
@@ -159,15 +169,6 @@ void WorkerModuleScriptFetcher::NotifyClient(
       return;
     }
 
-    auto response_referrer_policy = network::mojom::ReferrerPolicy::kDefault;
-    const String response_referrer_policy_header =
-        response.HttpHeaderField(http_names::kReferrerPolicy);
-    if (!response_referrer_policy_header.IsNull()) {
-      SecurityPolicy::ReferrerPolicyFromHeaderValue(
-          response_referrer_policy_header,
-          kDoNotSupportReferrerPolicyLegacyKeywords, &response_referrer_policy);
-    }
-
     std::unique_ptr<Vector<String>> response_origin_trial_tokens =
         OriginTrialContext::ParseHeaderValue(
             response.HttpHeaderField(http_names::kOriginTrial));
@@ -187,7 +188,7 @@ void WorkerModuleScriptFetcher::NotifyClient(
   client_->NotifyFetchFinishedSuccess(ModuleScriptCreationParams(
       /*source_url=*/response_url, /*base_url=*/response_url,
       ScriptSourceLocationType::kExternalFile, module_type, source_text,
-      cache_handler));
+      cache_handler, response_referrer_policy));
 }
 
 void WorkerModuleScriptFetcher::DidReceiveData(base::span<const char> span) {

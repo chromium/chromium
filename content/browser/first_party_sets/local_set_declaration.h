@@ -9,8 +9,6 @@
 
 #include "content/browser/first_party_sets/first_party_set_parser.h"
 #include "content/common/content_export.h"
-#include "net/base/schemeful_site.h"
-#include "net/first_party_sets/first_party_set_entry.h"
 
 namespace content {
 

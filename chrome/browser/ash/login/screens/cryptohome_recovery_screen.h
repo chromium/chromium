@@ -39,6 +39,11 @@ class CryptohomeRecoveryScreen : public BaseScreen {
   CryptohomeRecoveryScreen(const CryptohomeRecoveryScreen&) = delete;
   CryptohomeRecoveryScreen& operator=(const CryptohomeRecoveryScreen&) = delete;
 
+  ScreenExitCallback get_exit_callback_for_testing() { return exit_callback_; }
+  void set_exit_callback_for_testing(const ScreenExitCallback& callback) {
+    exit_callback_ = callback;
+  }
+
  protected:
   // BaseScreen:
   void ShowImpl() override;
@@ -50,6 +55,8 @@ class CryptohomeRecoveryScreen : public BaseScreen {
                                      absl::optional<AuthenticationError> error);
   void OnAuthenticateWithRecovery(std::unique_ptr<UserContext> context,
                                   absl::optional<AuthenticationError> error);
+  void OnRotateRecoveryFactor(std::unique_ptr<UserContext> context,
+                              absl::optional<AuthenticationError> error);
   void OnReplaceContextKey(std::unique_ptr<UserContext> context,
                            absl::optional<AuthenticationError> error);
 

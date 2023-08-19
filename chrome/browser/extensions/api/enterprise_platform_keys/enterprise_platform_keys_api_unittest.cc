@@ -45,7 +45,7 @@ namespace {
 
 const char kUserEmail[] = "test@google.com";
 
-void FakeRunCheckNotRegister(ash::attestation::AttestationKeyType key_type,
+void FakeRunCheckNotRegister(::attestation::VerifiedAccessFlow flow_type,
                              Profile* profile,
                              ash::attestation::TpmChallengeKeyCallback callback,
                              const std::string& challenge,
@@ -172,12 +172,13 @@ class EPKChallengeKeyTestBase : public BrowserWithTestWindowTest {
   scoped_refptr<const extensions::Extension> extension_;
   ash::StubInstallAttributes stub_install_attributes_;
   // fake_user_manager_ is owned by user_manager_enabler_.
-  raw_ptr<ash::FakeChromeUserManager, ExperimentalAsh> fake_user_manager_ =
-      nullptr;
+  raw_ptr<ash::FakeChromeUserManager, DanglingUntriaged | ExperimentalAsh>
+      fake_user_manager_ = nullptr;
   user_manager::ScopedUserManager user_manager_enabler_;
   ash::platform_keys::MockKeyPermissionsManager key_permissions_manager_;
-  raw_ptr<PrefService, ExperimentalAsh> prefs_ = nullptr;
-  raw_ptr<ash::attestation::MockTpmChallengeKey, ExperimentalAsh>
+  raw_ptr<PrefService, DanglingUntriaged | ExperimentalAsh> prefs_ = nullptr;
+  raw_ptr<ash::attestation::MockTpmChallengeKey,
+          DanglingUntriaged | ExperimentalAsh>
       mock_tpm_challenge_key_ = nullptr;
 };
 
@@ -277,12 +278,7 @@ class EPKChallengeUserKeyTest : public EPKChallengeKeyTestBase {
     func_->set_extension(extension_.get());
   }
 
-  void SetUp() override {
-    EPKChallengeKeyTestBase::SetUp();
-
-    // Set the user preferences.
-    prefs_->SetBoolean(prefs::kAttestationEnabled, true);
-  }
+  void SetUp() override { EPKChallengeKeyTestBase::SetUp(); }
 
   base::Value::List CreateArgs() { return CreateArgsInternal(true); }
 
@@ -389,14 +385,14 @@ TEST_P(EPKChallengeKeyTest, Success) {
   AllowlistExtension();
 
   auto scope = std::get<0>(GetParam());
-  ash::attestation::AttestationKeyType expected_att_key_type;
+  ::attestation::VerifiedAccessFlow expected_va_flow_type;
   switch (scope) {
     case api::enterprise_platform_keys::SCOPE_NONE:
     case api::enterprise_platform_keys::SCOPE_MACHINE:
-      expected_att_key_type = ash::attestation::KEY_DEVICE;
+      expected_va_flow_type = ::attestation::ENTERPRISE_MACHINE;
       break;
     case api::enterprise_platform_keys::SCOPE_USER:
-      expected_att_key_type = ash::attestation::KEY_USER;
+      expected_va_flow_type = ::attestation::ENTERPRISE_USER;
       break;
   }
   auto algorithm_opt = std::get<1>(GetParam());
@@ -419,7 +415,7 @@ TEST_P(EPKChallengeKeyTest, Success) {
   }
 
   EXPECT_CALL(*mock_tpm_challenge_key_,
-              BuildResponse(expected_att_key_type, _, _, _, expect_register,
+              BuildResponse(expected_va_flow_type, _, _, _, expect_register,
                             expect_crypto_key_type, _, _));
 
   base::Value value(RunFunctionAndReturnSingleResult(

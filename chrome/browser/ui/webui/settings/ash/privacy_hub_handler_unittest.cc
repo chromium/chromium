@@ -10,6 +10,7 @@
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "chrome/browser/ash/privacy_hub/privacy_hub_hats_trigger.h"
+#include "chrome/browser/ash/privacy_hub/privacy_hub_util.h"
 #include "chrome/common/chrome_features.h"
 #include "chromeos/ash/components/audio/cras_audio_handler.h"
 #include "content/public/test/test_web_ui.h"
@@ -22,6 +23,7 @@ class TestPrivacyHubHandler : public PrivacyHubHandler {
  public:
   using content::WebUIMessageHandler::set_web_ui;
 
+  using PrivacyHubHandler::HandleInitialCameraLedFallbackState;
   using PrivacyHubHandler::HandleInitialMicrophoneSwitchState;
   using PrivacyHubHandler::HandlePrivacyPageClosed;
   using PrivacyHubHandler::HandlePrivacyPageOpened;
@@ -124,11 +126,27 @@ class PrivacyHubHandlerMicrophoneTest
   }
 };
 
+class PrivacyHubHandlerCameraLedFallbackTest
+    : public PrivacyHubHandlerTest,
+      public testing::WithParamInterface<bool> {
+ public:
+  PrivacyHubHandlerCameraLedFallbackTest()
+      : scoped_camera_led_fallback_(GetParam()) {}
+
+  void ExpectValueMatchesBoolParam(const base::Value& value) const {
+    PrivacyHubHandlerTest::ExpectValueMatchesBoolParam(GetParam(), value);
+  }
+
+ private:
+  privacy_hub_util::ScopedCameraLedFallbackForTesting
+      scoped_camera_led_fallback_;
+};
+
 class PrivacyHubHandlerHatsTest : public PrivacyHubHandlerTest {
  public:
   PrivacyHubHandlerHatsTest() {
     feature_list_.InitAndEnableFeature(
-        ::features::kHappinessTrackingPrivacyHubBaseline);
+        ::features::kHappinessTrackingPrivacyHubPostLaunch);
   }
 
   bool IsTimerStarted() {
@@ -167,7 +185,24 @@ INSTANTIATE_TEST_SUITE_P(HardwareSwitchStates,
                          testing::Values(true, false),
                          testing::PrintToStringParamName());
 
-TEST_F(PrivacyHubHandlerHatsTest, OnlyTriggerHatsIfPageWasVisited) {
+TEST_P(PrivacyHubHandlerCameraLedFallbackTest,
+       HandleInitialCameraLedCallbackState) {
+  base::Value::List args;
+  args.Append(this_test_name_);
+
+  privacy_hub_handler_.HandleInitialCameraLedFallbackState(args);
+
+  const base::Value data = GetLastWebUIResponse(this_test_name_);
+
+  ExpectValueMatchesBoolParam(data);
+}
+
+INSTANTIATE_TEST_SUITE_P(CameraLedFallback,
+                         PrivacyHubHandlerCameraLedFallbackTest,
+                         testing::Values(true, false),
+                         testing::PrintToStringParamName());
+
+TEST_F(PrivacyHubHandlerHatsTest, OnlyTriggerHatsIfPageWasVisitedLongEnough) {
   const base::Value::List args;
 
   EXPECT_FALSE(IsTimerStarted());
@@ -181,9 +216,33 @@ TEST_F(PrivacyHubHandlerHatsTest, OnlyTriggerHatsIfPageWasVisited) {
   privacy_hub_handler_.HandlePrivacyPageOpened(args);
   EXPECT_FALSE(IsTimerStarted());
 
+  // Simulate the user stays on the page for 5 seconds.
+  privacy_hub_handler_.SetPrivacyPageOpenedTimeStampForTesting(
+      base::TimeTicks::Now() - base::Seconds(5));
+  EXPECT_FALSE(IsTimerStarted());
+
   // And leaves it again, now the survey should be triggered.
   privacy_hub_handler_.HandlePrivacyPageClosed(args);
   EXPECT_TRUE(IsTimerStarted());
+}
+
+TEST_F(PrivacyHubHandlerHatsTest, DontTriggerHatsIfUserLeftEarly) {
+  const base::Value::List args;
+
+  EXPECT_FALSE(IsTimerStarted());
+
+  // We trigger the HaTS survey on the leave event but the user hasn't visited
+  // the page yet.
+  privacy_hub_handler_.HandlePrivacyPageClosed(args);
+  EXPECT_FALSE(IsTimerStarted());
+
+  // User goes to the page.
+  privacy_hub_handler_.HandlePrivacyPageOpened(args);
+  EXPECT_FALSE(IsTimerStarted());
+
+  // And leaves it again immediately, now the survey shouldn't be triggered.
+  privacy_hub_handler_.HandlePrivacyPageClosed(args);
+  EXPECT_FALSE(IsTimerStarted());
 }
 
 #if DCHECK_IS_ON()
@@ -224,7 +283,7 @@ TEST_F(PrivacyHubHandlerDeathTest, OnlyTriggerHatsIfFeatureIsEnabled) {
   const base::Value::List args;
   base::test::ScopedFeatureList feature_list;
   feature_list.InitAndDisableFeature(
-      ::features::kHappinessTrackingPrivacyHubBaseline);
+      ::features::kHappinessTrackingPrivacyHubPostLaunch);
 
   // User goes to the page.
   EXPECT_DEATH(privacy_hub_handler_.HandlePrivacyPageOpened(args),

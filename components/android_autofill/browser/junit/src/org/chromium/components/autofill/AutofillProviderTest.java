@@ -18,7 +18,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.autofill.AutofillValue;
 
-import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -129,11 +128,6 @@ public class AutofillProviderTest {
         when(mRenderCoordinates.getContentOffsetYPixInt()).thenReturn(0);
 
         mJniMocker.mock(AutofillProviderJni.TEST_HOOKS, mAutofillProviderJni);
-    }
-
-    @After
-    public void tearDown() {
-        RenderCoordinatesImpl.setInstanceForTesting(null);
     }
 
     @Test

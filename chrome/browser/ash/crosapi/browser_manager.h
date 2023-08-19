@@ -7,6 +7,7 @@
 
 #include <memory>
 #include <set>
+#include <utility>
 #include <vector>
 
 #include "base/feature_list.h"
@@ -14,6 +15,7 @@
 #include "base/functional/callback.h"
 #include "base/gtest_prod_util.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/raw_ptr_exclusion.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
@@ -27,7 +29,9 @@
 #include "chrome/browser/ash/crosapi/browser_version_service_ash.h"
 #include "chrome/browser/ash/crosapi/crosapi_id.h"
 #include "chrome/browser/ash/crosapi/crosapi_util.h"
+#include "chrome/browser/ash/crosapi/device_ownership_waiter_impl.h"
 #include "chrome/browser/ash/crosapi/environment_provider.h"
+#include "chrome/browser/ash/crosapi/primary_profile_creation_waiter.h"
 #include "chrome/browser/ui/browser_navigator_params.h"
 #include "chromeos/ash/components/dbus/session_manager/session_manager_client.h"
 #include "chromeos/crosapi/mojom/crosapi.mojom.h"
@@ -41,6 +45,7 @@
 #include "components/policy/core/common/values_util.h"
 #include "components/session_manager/core/session_manager_observer.h"
 #include "components/tab_groups/tab_group_info.h"
+#include "components/user_manager/user_manager.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/ui_base_types.h"
@@ -83,6 +88,7 @@ class Crosapi;
 BASE_DECLARE_FEATURE(kLacrosLaunchAtLoginScreen);
 
 class BrowserLoader;
+class DeviceOwnershipWaiter;
 class FilesAppLauncher;
 class PersistentForcedExtensionKeepAlive;
 class TestMojoConnectionManager;
@@ -98,7 +104,8 @@ class BrowserManager : public session_manager::SessionManagerObserver,
                        public policy::CloudPolicyCore::Observer,
                        public policy::CloudPolicyStore::Observer,
                        public policy::ComponentCloudPolicyServiceObserver,
-                       public policy::CloudPolicyRefreshSchedulerObserver {
+                       public policy::CloudPolicyRefreshSchedulerObserver,
+                       public user_manager::UserManager::Observer {
  public:
   // Static getter of BrowserManager instance. In real use cases,
   // BrowserManager instance should be unique in the process.
@@ -156,6 +163,12 @@ class BrowserManager : public session_manager::SessionManagerObserver,
   // Returns true if crosapi interface supports NewWindowForDetachingTab API.
   bool NewWindowForDetachingTabSupported() const;
 
+  // NOTE on callbacks:
+  // An action's callback (e.g. the last parameter to NewWindowForDetachingTab
+  // below) will never be invoked with a CreationResult value of
+  // kBrowserShutdown. In the case of a Lacros shutdown (rather than system
+  // shutdown), BrowserManager will try to perform the action again later.
+
   using NewWindowForDetachingTabCallback =
       base::OnceCallback<void(crosapi::mojom::CreationResult,
                               const std::string&)>;
@@ -199,7 +212,8 @@ class BrowserManager : public session_manager::SessionManagerObserver,
   void OpenUrl(
       const GURL& url,
       crosapi::mojom::OpenUrlFrom from,
-      crosapi::mojom::OpenUrlParams::WindowOpenDisposition disposition);
+      crosapi::mojom::OpenUrlParams::WindowOpenDisposition disposition,
+      NavigateParams::PathBehavior path_behavior = NavigateParams::RESPECT);
 
   // If there's already a tab opening the URL in lacros-chrome, in some window
   // of the primary profile, activate the tab. Otherwise, opens a tab for
@@ -234,13 +248,13 @@ class BrowserManager : public session_manager::SessionManagerObserver,
       const std::string& app_name,
       int32_t restore_window_id);
 
-  // Initialize resources and start Lacros. This class provides two approaches
-  // to fulfill different requirements.
-  // - For most sessions, Lacros will be started automatically once
-  // `SessionState` is changed to active.
-  // - For Kiosk sessions, Lacros needs to be started earlier because all
-  // extensions and browser window should be well prepared before the user
-  // enters the session. This method should be called at the appropriate time.
+  // Ensures Lacros launches.
+  // Returns true if Lacros could be launched, resumed, or is already in the
+  // process of launching. Returns false if Lacros could not be launched.
+  // NOTE: this method requires the user profile to be already initialized.
+  bool EnsureLaunch();
+
+  // Initialize resources and start Lacros.
   //
   // NOTE: If InitializeAndStartIfNeeded finds Lacros disabled, it unloads
   // Lacros via BrowserLoader::Unload, which also deletes the user data
@@ -310,6 +324,11 @@ class BrowserManager : public session_manager::SessionManagerObserver,
     version_service_delegate_ = std::move(version_service_delegate);
   }
 
+  // TODO(crbug.com/1463883): Remove this once we refactored to use the
+  // constructor.
+  void set_device_ownership_waiter_for_testing(
+      std::unique_ptr<DeviceOwnershipWaiter> device_ownership_waiter);
+
   void set_relaunch_requested_for_testing(bool relaunch_requested);
 
   // Parameters used to launch Lacros that are calculated on a background
@@ -347,11 +366,6 @@ class BrowserManager : public session_manager::SessionManagerObserver,
   enum class LacrosLaunchMode {
     // Indicates that Lacros is disabled.
     kLacrosDisabled = 0,
-    // Indicates that Lacros and Ash are both enabled and accessible by the
-    // user.
-    kSideBySide = 1,
-    // Similar to kSideBySide but Lacros is the primary browser.
-    kLacrosPrimary = 2,
     // Lacros is the only browser and Ash is disabled.
     kLacrosOnly = 3,
 
@@ -364,34 +378,15 @@ class BrowserManager : public session_manager::SessionManagerObserver,
   enum class LacrosLaunchModeAndSource {
     // Either set by user or system/flags, indicates that Lacros is disabled.
     kPossiblySetByUserLacrosDisabled = 0,
-    // Either set by user or system/flags, indicates that Lacros and Ash are
-    // both
-    // enabled and accessible by the user.
-    kPossiblySetByUserSideBySide = 1,
-    // Either set by user or system/flags, indicates that Lacros is the primary
-    // (but not only) browser.
-    kPossiblySetByUserLacrosPrimary = 2,
     // Either set by user or system/flags, Lacros is the only browser and Ash is
     // disabled.
     kPossiblySetByUserLacrosOnly = 3,
     // Enforced by the user, indicates that Lacros is disabled.
     kForcedByUserLacrosDisabled = 4 + kPossiblySetByUserLacrosDisabled,
-    // Enforced by the user, indicates that Lacros and Ash are both enabled and
-    // accessible by the user.
-    kForcedByUserSideBySide = 4 + kPossiblySetByUserSideBySide,
-    // Enforced by the user, indicates that Lacros is the primary (but not only)
-    // browser.
-    kForcedByUserLacrosPrimary = 4 + kPossiblySetByUserLacrosPrimary,
     // Enforced by the user, Lacros is the only browser and Ash is disabled.
     kForcedByUserLacrosOnly = 4 + kPossiblySetByUserLacrosOnly,
     // Enforced by policy, indicates that Lacros is disabled.
     kForcedByPolicyLacrosDisabled = 8 + kPossiblySetByUserLacrosDisabled,
-    // Enforced by policy, indicates that Lacros and Ash are both enabled and
-    // accessible by the user.
-    kForcedByPolicySideBySide = 8 + kPossiblySetByUserSideBySide,
-    // Enforced by policy, indicates that Lacros is the primary (but not only)
-    // browser.
-    kForcedByPolicyLacrosPrimary = 8 + kPossiblySetByUserLacrosPrimary,
     // Enforced by policy, Lacros is the only browser and Ash is disabled.
     kForcedByPolicyLacrosOnly = 8 + kPossiblySetByUserLacrosOnly,
 
@@ -473,7 +468,9 @@ class BrowserManager : public session_manager::SessionManagerObserver,
     // ID managed in BrowserServiceHostAsh, which is tied to the |service|.
     mojo::RemoteSetElementId mojo_id;
     // BrowserService proxy connected to lacros-chrome.
-    mojom::BrowserService* service;
+    // This field is not a raw_ptr<> because it was filtered by the rewriter
+    // for: #union
+    RAW_PTR_EXCLUSION mojom::BrowserService* service;
     // Supported interface version of the BrowserService in Lacros-chrome.
     uint32_t interface_version;
   };
@@ -485,6 +482,8 @@ class BrowserManager : public session_manager::SessionManagerObserver,
                            LacrosKeepAliveReloadsWhenUpdateAvailable);
   FRIEND_TEST_ALL_PREFIXES(BrowserManagerTest,
                            LacrosKeepAliveDoesNotBlockRestart);
+  FRIEND_TEST_ALL_PREFIXES(BrowserManagerTest,
+                           NewWindowReloadsWhenUpdateAvailable);
   friend class apps::StandaloneBrowserExtensionApps;
   // App service require the lacros-chrome to keep alive for web apps to:
   // 1. Have lacros-chrome running before user open the browser so we can
@@ -521,6 +520,8 @@ class BrowserManager : public session_manager::SessionManagerObserver,
   //   (and Lacros started if necessary).
   // - Otherwise, the action is cancelled.
   void PerformOrEnqueue(std::unique_ptr<BrowserAction> action);
+
+  void OnActionPerformed(std::unique_ptr<BrowserAction> action, bool retry);
 
   // Remembers the launch mode of Lacros.
   void RecordLacrosLaunchMode();
@@ -618,6 +619,20 @@ class BrowserManager : public session_manager::SessionManagerObserver,
   // Resume Lacros startup process after login.
   void ResumeLaunch();
 
+  // Wait for the primary user profile to be fully created before
+  // resuming Lacros post-login.
+  void WaitForProfileAddedBeforeResuming();
+
+  // Waits for the device owner being fetched from `UserManager` and then
+  // executes a callback. If Lacros is launched at the login screen, this
+  // just executes the callback directly.
+  void WaitForDeviceOwnerFetchedAndThen(base::OnceClosure cb,
+                                        bool launching_at_login_screen);
+
+  // Called as soon as `LaunchParamsFromBackground` are fetched.
+  void OnLaunchParamsFetched(bool launching_at_login_screens,
+                             LaunchParamsFromBackground params);
+
   // Writes post login data to the Lacros process after login.
   void WritePostLoginData();
 
@@ -647,6 +662,9 @@ class BrowserManager : public session_manager::SessionManagerObserver,
   void OnFetchAttempt(policy::CloudPolicyRefreshScheduler* scheduler) override;
   void OnRefreshSchedulerDestruction(
       policy::CloudPolicyRefreshScheduler* scheduler) override;
+
+  // user_manager::UserManager::Observer:
+  void OnUserProfileCreated(const user_manager::User& user) override;
 
   // crosapi::BrowserManagerObserver:
   void OnLoadComplete(bool launching_at_login_screen,
@@ -683,14 +701,12 @@ class BrowserManager : public session_manager::SessionManagerObserver,
   // multiple events will get de-duped on the server side.
   void OnDailyLaunchModeTimer();
 
+  void PerformAction(std::unique_ptr<BrowserAction> action);
+
   // NOTE: The state is exposed to tests via autotest_private.
   State state_ = State::NOT_INITIALIZED;
 
   std::unique_ptr<crosapi::BrowserLoader> browser_loader_;
-
-  // May be null in tests.
-  const raw_ptr<ComponentUpdateService, ExperimentalAsh>
-      component_update_service_;
 
   // Delegate handling various concerns regarding the version service.
   std::unique_ptr<BrowserVersionServiceAsh::Delegate> version_service_delegate_;
@@ -752,13 +768,21 @@ class BrowserManager : public session_manager::SessionManagerObserver,
   // shared resource file after ash is rebooted.
   bool is_initial_lacros_launch_after_reboot_ = true;
 
+  // Whether a shutdown request was received while Lacros was in prelaunched
+  // state.
+  bool shutdown_requested_while_prelaunched_ = false;
+
+  // Used to pass ash-chrome specific flags/configurations to lacros-chrome.
+  std::unique_ptr<EnvironmentProvider> environment_provider_;
+
   // Helps set up and manage the mojo connections between lacros-chrome and
   // ash-chrome in testing environment. Only applicable when
   // '--lacros-mojo-socket-for-testing' is present in the command line.
   std::unique_ptr<TestMojoConnectionManager> test_mojo_connection_manager_;
 
-  // Used to pass ash-chrome specific flags/configurations to lacros-chrome.
-  std::unique_ptr<EnvironmentProvider> environment_provider_;
+  // Used to wait for the primary user profile to be fully created.
+  std::unique_ptr<PrimaryProfileCreationWaiter>
+      primary_profile_creation_waiter_;
 
   // The features that are currently registered to keep Lacros alive.
   std::set<Feature> keep_alive_features_;
@@ -768,6 +792,9 @@ class BrowserManager : public session_manager::SessionManagerObserver,
   const bool launch_at_login_screen_;
 
   const bool disabled_for_testing_;
+
+  // Indicates whether the delegate has been used.
+  bool device_ownership_waiter_called_{false};
 
   // Used to launch files.app when user clicked "Go to files" on the migration
   // error screen.
@@ -784,6 +811,13 @@ class BrowserManager : public session_manager::SessionManagerObserver,
   // deciding if Lacros should be used or not.
   absl::optional<LacrosLaunchMode> lacros_mode_;
   absl::optional<LacrosLaunchModeAndSource> lacros_mode_and_source_;
+
+  base::ScopedObservation<user_manager::UserManager,
+                          user_manager::UserManager::Observer>
+      user_manager_observation_{this};
+
+  // Used to delay an action until the definitive device owner is fetched.
+  std::unique_ptr<DeviceOwnershipWaiter> device_ownership_waiter_;
 
   base::WeakPtrFactory<BrowserManager> weak_factory_{this};
 };

@@ -14,6 +14,7 @@
 #include "ash/system/tray/tray_constants.h"
 #include "ash/system/tray/tray_utils.h"
 #include "ash/wm/tablet_mode/tablet_mode_controller.h"
+#include "chromeos/constants/chromeos_features.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/views/border.h"
 #include "ui/views/controls/label.h"
@@ -69,6 +70,18 @@ void ImeModeView::HandleLocaleChange() {
   Update();
 }
 
+void ImeModeView::UpdateLabelOrImageViewColor(bool active) {
+  if (!chromeos::features::IsJellyEnabled()) {
+    label()->SetEnabledColorId(kColorAshIconColorPrimary);
+    return;
+  }
+  TrayItemView::UpdateLabelOrImageViewColor(active);
+
+  label()->SetEnabledColorId(active
+                                 ? cros_tokens::kCrosSysSystemOnPrimaryContainer
+                                 : cros_tokens::kCrosSysOnSurface);
+}
+
 void ImeModeView::Update() {
   // Hide the IME mode icon when the locale is shown, because showing locale and
   // IME together is confusing.
@@ -99,7 +112,7 @@ void ImeModeView::Update() {
              (ime_count > 1 || ime_controller->managed_by_policy()));
 
   label()->SetText(ime_controller->current_ime().short_name);
-  label()->SetEnabledColorId(kColorAshIconColorPrimary);
+  UpdateLabelOrImageViewColor(is_active());
   std::u16string description =
       l10n_util::GetStringFUTF16(IDS_ASH_STATUS_TRAY_INDICATOR_IME_TOOLTIP,
                                  ime_controller->current_ime().name);

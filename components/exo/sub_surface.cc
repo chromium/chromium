@@ -56,7 +56,7 @@ void SubSurface::SetClipRect(const absl::optional<gfx::RectF>& clip_rect) {
   if (!parent_ || !surface_)
     return;
 
-  surface_->SetClipRect(clip_rect);
+  surface_->SetClipRectOnParentSurface(clip_rect);
 }
 
 void SubSurface::SetTransform(const gfx::Transform& transform) {

@@ -145,19 +145,19 @@ TEST_P(TabStripRegionViewTest, NewTabButtonRightOfTabs) {
 TEST_P(TabStripRegionViewTest, NewTabButtonInkDrop) {
   constexpr int kTabStripRegionViewWidth = 500;
   tab_strip_region_view_->SetBounds(0, 0, kTabStripRegionViewWidth,
-                                    GetLayoutConstant(TAB_HEIGHT));
+                                    GetLayoutConstant(TAB_STRIP_HEIGHT));
 
   // Add a few tabs and simulate the new tab button's ink drop animation. This
   // should not cause any crashes since the ink drop layer size as well as the
   // ink drop container size should remain equal to the new tab button visible
   // bounds size. https://crbug.com/814105.
+  auto* button =
+      static_cast<NewTabButton*>(tab_strip_region_view_->new_tab_button());
   for (int i = 0; i < 10; ++i) {
-    tab_strip_region_view_->new_tab_button()->AnimateToStateForTesting(
-        views::InkDropState::ACTION_TRIGGERED);
+    button->AnimateToStateForTesting(views::InkDropState::ACTION_TRIGGERED);
     controller_->AddTab(i, TabActive::kActive);
     CompleteAnimationAndLayout();
-    tab_strip_region_view_->new_tab_button()->AnimateToStateForTesting(
-        views::InkDropState::HIDDEN);
+    button->AnimateToStateForTesting(views::InkDropState::HIDDEN);
   }
 }
 
@@ -210,8 +210,7 @@ class TabStripRegionViewTestWithScrollingDisabled
 // TabStripRegionViewTestWithScrollingEnabled.TabStripCanBeLargerThanContainer.
 TEST_F(TabStripRegionViewTestWithScrollingDisabled,
        TabStripCannotBeLargerThanContainer) {
-  const int minimum_active_width =
-      TabStyleViews::Create()->GetMinimumInactiveWidth();
+  const int minimum_active_width = TabStyle::Get()->GetMinimumInactiveWidth();
   controller_->AddTab(0, TabActive::kActive);
   CompleteAnimationAndLayout();
 
@@ -251,8 +250,7 @@ class TabStripRegionViewTestWithScrollingEnabled
 // TabStripCannotBeLargerThanContainer.
 TEST_F(TabStripRegionViewTestWithScrollingEnabled,
        TabStripCanBeLargerThanContainer) {
-  const int minimum_active_width =
-      TabStyleViews::Create()->GetMinimumInactiveWidth();
+  const int minimum_active_width = TabStyle::Get()->GetMinimumInactiveWidth();
   controller_->AddTab(0, TabActive::kActive);
   CompleteAnimationAndLayout();
 
@@ -279,8 +277,7 @@ TEST_F(TabStripRegionViewTestWithScrollingEnabled,
 
 TEST_F(TabStripRegionViewTestWithScrollingEnabled,
        TabStripScrollButtonsNotInWindowCaption) {
-  const int minimum_active_width =
-      TabStyleViews::Create()->GetMinimumInactiveWidth();
+  const int minimum_active_width = TabStyle::Get()->GetMinimumInactiveWidth();
   controller_->AddTab(0, TabActive::kActive);
   CompleteAnimationAndLayout();
 

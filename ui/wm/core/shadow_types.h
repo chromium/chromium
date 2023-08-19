@@ -19,6 +19,9 @@ constexpr int kShadowElevationDefault = -1;
 // shell. Used as a value for the kShadowElevationKey property.
 constexpr int kShadowElevationNone = 0;
 
+// The shadow elevation for popups such as toasts and notifiers.
+constexpr int kShadowElevationPopup = 4;
+
 // Standard shadow elevations used by the the aura window manager. The value is
 // used to initialize an instance of wm::Shadow and controls the offset and blur
 // of the shadow style created by gfx::ShadowValue::MakeMdShadowValues() or

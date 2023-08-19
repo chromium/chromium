@@ -5,10 +5,10 @@
 #ifndef UI_VIEWS_CONTROLS_MENU_MENU_CONFIG_H_
 #define UI_VIEWS_CONTROLS_MENU_MENU_CONFIG_H_
 
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/gfx/color_palette.h"
 #include "ui/gfx/font_list.h"
-#include "ui/views/controls/menu/menu_image_util.h"
 #include "ui/views/layout/layout_provider.h"
 #include "ui/views/round_rect_painter.h"
 #include "ui/views/views_export.h"
@@ -17,6 +17,9 @@ namespace views {
 
 class MenuController;
 class MenuItemView;
+
+constexpr int kMenuCheckSize = 16;
+constexpr int kSubmenuArrowSize = 8;
 
 // Layout type information for menu items. Use the instance() method to obtain
 // the MenuConfig for the current platform.
@@ -42,37 +45,34 @@ struct VIEWS_EXPORT MenuConfig {
 
   // Initialize menu config for CR2023
   void InitCR2023();
+  void InitPlatformCR2023();
 
-  // Font list used by menus.
+  // Font lists used by menus.
   gfx::FontList font_list;
+  gfx::FontList context_menu_font_list;
 
-  // Menu border sizes. The vertical border size does not apply to menus with
-  // rounded corners - those menus always use the corner radius as the vertical
-  // border size.
-  int menu_vertical_border_size = 4;
+  // Menu border sizes. Menus with rounded corners use
+  // `rounded_menu_vertical_border_size` if set and fall back to the corner
+  // radius otherwise.
+  int nonrounded_menu_vertical_border_size = 4;
+  absl::optional<int> rounded_menu_vertical_border_size;
   int menu_horizontal_border_size = views::RoundRectPainter::kBorderWidth;
 
-  // Submenu horizontal inset with parent menu. This is the horizontal overlap
-  // between the submenu and its parent menu, not including the borders of
-  // submenu and parent menu.
-  int submenu_horizontal_inset = 3;
+  // The horizontal overlap between the submenu and its parent menu item.
+  int submenu_horizontal_overlap = 3;
 
-  // Margins between the top of the item and the label.
-  int item_top_margin = 4;
+  // Margins between the item top/bottom and its contents.
+  int item_vertical_margin = 4;
 
-  // Margins between the bottom of the item and the label.
-  int item_bottom_margin = 3;
-
-  // Margins used if the menu doesn't have icons.
-  int item_no_icon_top_margin = 4;
-  int item_no_icon_bottom_margin = 4;
+  // Margins between the item top/bottom and its contents for ash system ui
+  // layout.
+  int ash_item_vertical_margin = 4;
 
   // Minimum dimensions used for entire items. If these are nonzero, they
   // override the vertical margin constants given above - the item's text and
   // icon are vertically centered within these heights.
   int minimum_text_item_height = 0;
   int minimum_container_item_height = 0;
-  int minimum_menu_width = 0;
 
   // TODO(ftirelo): Paddings should come from the layout provider, once Harmony
   // is the default behavior.
@@ -83,23 +83,15 @@ struct VIEWS_EXPORT MenuConfig {
   // Horizontal padding between components in a touchable menu item.
   int touchable_item_horizontal_padding = 16;
 
-  // Horizontal border padding in a menu item
+  // Additional padding between the item left/right and its contents. Note that
+  // the final padding will also include `item_horizontal_padding`.
   int item_horizontal_border_padding = 0;
 
-  // Padding between the label and submenu arrow.
-  int label_to_arrow_padding = 8;
+  // Horizontal border padding in a menu item for ash system ui layout.
+  int ash_item_horizontal_border_padding = 0;
 
   // Padding between the arrow and the edge.
-  int arrow_to_edge_padding = 5;
-
-  // The space reserved for the check. The actual size of the image may be
-  // different.
-  int check_width = kMenuCheckSize;
-  int check_height = kMenuCheckSize;
-
-  // The horizontal space reserved for submenu arrow. The actual width of the
-  // image may be different.
-  int arrow_width = kSubmenuArrowSize;
+  int arrow_to_edge_padding = 8;
 
   // Height of a normal separator (ui::NORMAL_SEPARATOR).
   int separator_height = 11;
@@ -122,9 +114,13 @@ struct VIEWS_EXPORT MenuConfig {
   // Thickness of the drawn separator line in pixels for double separator.
   int double_separator_thickness = 2;
 
-  // Left & right separator padding
-  int separator_left_margin = 0;
-  int separator_right_margin = 0;
+  // Horizontal border padding of a separator.
+  int separator_horizontal_border_padding = 0;
+
+  // Padding, if any, between successive menu items. This is not applied below
+  // LOWER_SEPARATORs or above UPPER_SEPARATORs, since these are meant to be
+  // flush with the respective adjacent items.
+  int between_item_vertical_padding = 0;
 
   // Are mnemonics shown?
   bool show_mnemonics = false;
@@ -134,9 +130,6 @@ struct VIEWS_EXPORT MenuConfig {
 
   // Height of the scroll arrow.
   int scroll_arrow_height = 3;
-
-  // Minimum height of menu item.
-  int item_min_height = 0;
 
   // Edge padding for an actionable submenu arrow.
   int actionable_submenu_arrow_to_edge_padding = 14;
@@ -153,17 +146,22 @@ struct VIEWS_EXPORT MenuConfig {
   // Whether the keyboard accelerators are visible.
   bool show_accelerators = true;
 
-  // True if submenu arrow and shortcut right edge should be aligned.
-  bool align_arrow_and_shortcut = false;
-
-  // True if the context menu's should be offset from the cursor position.
-  bool offset_context_menus = false;
+  // True if submenu arrows should get their own column, separate from minor
+  // text.
+  bool reserve_dedicated_arrow_column = true;
 
   // True if the scroll container should add a border stroke around the menu.
   bool use_outer_border = true;
 
   // True if the icon is part of the label rather than in its own column.
   bool icons_in_label = false;
+
+  // Spacing between icon and main label.
+  int icon_label_spacing = LayoutProvider::Get()->GetDistanceMetric(
+      DISTANCE_RELATED_LABEL_HORIZONTAL);
+
+  // Menus lay out as if some items have checkmarks, even if none do.
+  bool always_reserve_check_region = false;
 
   // True if a combobox menu should put a checkmark next to the selected item.
   bool check_selected_combobox_item = false;
@@ -185,6 +183,9 @@ struct VIEWS_EXPORT MenuConfig {
   int touchable_corner_radius = LayoutProvider::Get()->GetCornerRadiusMetric(
       ShapeContextTokens::kMenuTouchRadius);
 
+  // Radius of selection background on menu items.
+  int item_corner_radius = 0;
+
   // Anchor offset for touchable menus created by a touch event.
   int touchable_anchor_offset = 8;
 
@@ -197,18 +198,17 @@ struct VIEWS_EXPORT MenuConfig {
   // Maximum width of touchable menus.
   int touchable_menu_max_width = 352;
 
-  // Shadow elevation of touchable menus.
-  int touchable_menu_shadow_elevation = 12;
+  // Shadow elevation of bubble menus.
+  int bubble_menu_shadow_elevation = 12;
 
-  // Shadow elevation of touchable submenus.
-  int touchable_submenu_shadow_elevation = 16;
+  // Shadow elevation of bubble submenus.
+  int bubble_submenu_shadow_elevation = 16;
 
   // Vertical padding for touchable menus.
   int vertical_touchable_menu_item_padding = 8;
 
-  // Left & right margin of padded separator (ui::PADDED_SEPARATOR).
-  int padded_separator_left_margin = 64;
-  int padded_separator_right_margin = 0;
+  // Padding at the start of a padded separator (ui::PADDED_SEPARATOR).
+  int padded_separator_start_padding = 64;
 
   // Whether arrow keys should wrap around the end of the menu when selecting.
   bool arrow_key_selection_wraps = true;

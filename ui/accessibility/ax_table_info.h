@@ -52,6 +52,8 @@ class AX_EXPORT AXTableInfo {
   bool valid() const { return valid_; }
   void Invalidate();
 
+  const AXNode* GetFirstCellInRow(const AXNode*) const;
+
   // The real row count, guaranteed to be at least as large as the
   // maximum row index of any cell.
   size_t row_count = 0;
@@ -131,6 +133,7 @@ class AX_EXPORT AXTableInfo {
   void BuildCellAndHeaderVectorsFromCellData();
   void UpdateExtraMacNodes();
   void ClearExtraMacNodes();
+
   AXNode* CreateExtraMacColumnNode(size_t col_index);
   AXNode* CreateExtraMacTableHeaderNode();
   void UpdateExtraMacColumnNodeAttributes(size_t col_index);

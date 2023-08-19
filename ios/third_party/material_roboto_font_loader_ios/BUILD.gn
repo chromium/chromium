@@ -24,7 +24,6 @@ source_set("material_roboto_font_loader_ios") {
   configs -= [ "//build/config/compiler:chromium_code" ]
   configs += [
     ":material_roboto_font_loader_ios_config",
-    "//build/config/compiler:enable_arc",
     "//build/config/compiler:no_chromium_code",
   ]
 }

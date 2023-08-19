@@ -1,0 +1,3 @@
+
+"total","scroll_dur","non_coalesced_updates","non_coalesced_dur","non_coalesced_janky_updates","non_coalesced_janky_dur","janky_percentage","avg_vsync_interval"
+2,1628470852,139,3974685214,7,310070982,7,16666666.666667

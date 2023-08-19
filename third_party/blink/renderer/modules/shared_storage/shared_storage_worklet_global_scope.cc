@@ -245,8 +245,7 @@ SharedStorageWorkletGlobalScope::SharedStorageWorkletGlobalScope(
     WorkerThread* thread)
     : WorkletGlobalScope(std::move(creation_params),
                          thread->GetWorkerReportingProxy(),
-                         thread,
-                         /*create_microtask_queue=*/true) {
+                         thread) {
   ContextFeatureSettings::From(
       this, ContextFeatureSettings::CreationMode::kCreateIfNotExists)
       ->EnablePrivateAggregationInSharedStorage(
@@ -332,6 +331,10 @@ bool SharedStorageWorkletGlobalScope::FeatureEnabled(
   // storage. It's okay to treat `kSharedStorageAPI` as enabled.
   if (feature == OriginTrialFeature::kSharedStorageAPI) {
     return true;
+  }
+
+  if (feature == OriginTrialFeature::kJavaScriptCompileHintsMagicRuntime) {
+    return false;
   }
 
   NOTREACHED_NORETURN() << "Attempted to check OriginTrialFeature: "

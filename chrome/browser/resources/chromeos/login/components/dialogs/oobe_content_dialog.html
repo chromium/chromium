@@ -57,6 +57,10 @@ found in the LICENSE file.
         2 * var(--oobe-adaptive-dialog-content-padding));
   }
 
+  :host([isGaia]) {
+    --gaia-horizontal-padding-offset: 20px;
+  }
+
   :host-context([orientation=vertical]) {
     --oobe-adaptive-dialog-item-alignment: center;
   }
@@ -68,19 +72,47 @@ found in the LICENSE file.
   #mainContainer {
     align-items: var(--oobe-adaptive-dialog-item-alignment);
     flex-direction: column;
+    margin-inline-end: var(--oobe-adaptive-dialog-content-padding);
+    margin-inline-start: var(--oobe-adaptive-dialog-content-padding);
+  }
+
+  :host([isGaia]) #mainContainer {
+    --oobe-content-dialog-content-padding: calc(
+      var(--oobe-adaptive-dialog-content-padding)
+       - var(--gaia-horizontal-padding-offset));
+    margin-inline-end: var(--oobe-content-dialog-content-padding);
+    margin-inline-start: var(--oobe-content-dialog-content-padding);
+  }
+
+  :host-context(.jelly-enabled) #mainContainer {
+    border-radius: var(--oobe-container-border-radius);
+    overflow: hidden;
+  }
+
+  :host([fullscreen]) #mainContainer {
+    margin-inline-end: 0;
+    margin-inline-start: 0;
+    overflow: visible;
   }
 
   #scrollContainer {
     border: transparent;
     overflow-y: auto;
     padding-bottom: 0;
-    padding-inline-end: var(--oobe-adaptive-dialog-content-padding);
-    padding-inline-start: var(--oobe-adaptive-dialog-content-padding);
     padding-top: 0;
   }
 
   #contentContainer {
     width: var(--oobe-adaptive-dialog-content-width);
+  }
+
+  :host([isGaia]) #contentContainer {
+    width: calc(var(--oobe-adaptive-dialog-content-width)
+                + 2 * var(--gaia-horizontal-padding-offset));
+  }
+
+  :host([fullscreen]) #contentContainer {
+    width: 100%;
   }
 
   .vertical-mode-centering {
@@ -91,21 +123,13 @@ found in the LICENSE file.
 
   .buttons-common {
     /* Always allocate height for buttons even a container is empty */
-    min-height: var(--oobe-button-height);
+    /* Compensate for 2*1px border of buttons */
+    min-height: calc(var(--oobe-button-height) + 2px);
     z-index: 1;
   }
 
   :host([no-buttons]) .buttons-common {
     display: none;
-  }
-
-  :host([fullscreen]) #scrollContainer {
-    padding-inline-end: 0;
-    padding-inline-start: 0;
-  }
-
-  :host([fullscreen]) #contentContainer {
-    width: 100%;
   }
 
   .bottom-buttons-container {
@@ -129,9 +153,9 @@ found in the LICENSE file.
 
   #oobe-icon-div ::slotted(hd-iron-icon),
   #oobe-icon-div ::slotted(iron-icon) {
-    --iron-icon-height: 32px;
-    --iron-icon-width: 32px;
-    --iron-icon-fill-color: var(--cros-icon-color-blue);
+    --iron-icon-height: var(--oobe-adaptive-dialog-icon-size);
+    --iron-icon-width: var(--oobe-adaptive-dialog-icon-size);
+    --iron-icon-fill-color: var(--oobe-adaptive-dialog-icon-fill-color);
   }
 </style>
 <cr-lazy-render id="lazy">

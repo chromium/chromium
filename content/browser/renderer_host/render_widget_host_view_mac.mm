@@ -12,17 +12,18 @@
 #include <utility>
 
 #include "base/apple/owned_objc.h"
+#include "base/apple/scoped_cftyperef.h"
 #include "base/auto_reset.h"
 #include "base/command_line.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/logging.h"
 #include "base/mac/mac_util.h"
-#include "base/mac/scoped_cftyperef.h"
 #include "base/strings/sys_string_conversions.h"
 #include "base/strings/utf_string_conversions.h"
 #import "base/task/single_thread_task_runner.h"
 #include "base/time/time.h"
+#include "components/device_event_log/device_event_log.h"
 #include "components/remote_cocoa/browser/ns_view_ids.h"
 #include "components/remote_cocoa/common/application.mojom.h"
 #include "components/viz/common/features.h"
@@ -45,9 +46,9 @@
 #include "content/browser/renderer_host/visible_time_request_trigger.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/browser_plugin_guest_manager.h"
-#include "content/public/browser/native_web_keyboard_event.h"
 #include "content/public/browser/render_widget_host.h"
 #include "content/public/browser/web_contents.h"
+#include "content/public/common/input/native_web_keyboard_event.h"
 #include "content/public/common/page_visibility_state.h"
 #include "media/base/media_switches.h"
 #include "skia/ext/platform_canvas.h"
@@ -59,6 +60,8 @@
 #import "ui/base/clipboard/clipboard_util_mac.h"
 #include "ui/base/cocoa/animation_utils.h"
 #include "ui/base/cocoa/cocoa_base_utils.h"
+#include "ui/base/cocoa/cursor_accessibility_scale_factor_observer.h"
+#include "ui/base/cocoa/cursor_utils.h"
 #include "ui/base/cocoa/remote_accessibility_api.h"
 #import "ui/base/cocoa/secure_password_input.h"
 #include "ui/base/cocoa/text_services_context_menu.h"
@@ -207,6 +210,13 @@ RenderWidgetHostViewMac::RenderWidgetHostViewMac(RenderWidgetHost* widget)
       screen->GetDisplayNearestWindow([NSApp keyWindow]).id());
   original_screen_infos_ = screen_infos_;
 
+  // TODO(crbug.com/1457025): Fix isInternal inaccuracies and remove logging.
+  DISPLAY_LOG(DEBUG) << "RWHVMac ScreenInfos initialized, count: "
+                     << screen_infos_.screen_infos.size();
+  for (const auto& screen_info : screen_infos_.screen_infos) {
+    DISPLAY_LOG(DEBUG) << screen_info.ToString();
+  }
+
   viz::FrameSinkId frame_sink_id = host()->GetFrameSinkId();
 
   browser_compositor_ = std::make_unique<BrowserCompositorMac>(
@@ -232,6 +242,14 @@ RenderWidgetHostViewMac::RenderWidgetHostViewMac(RenderWidgetHost* widget)
   }
 
   cursor_manager_ = std::make_unique<CursorManager>(this);
+  // Start observing changes to the system's cursor accessibility scale factor.
+  __block auto render_widget_host_view_mac = this;
+  cursor_scale_observer_ =
+      [[CursorAccessibilityScaleFactorObserver alloc] initWithHandler:^{
+        ui::GetCursorAccessibilityScaleFactor(/*force_update=*/true);
+        // Notify renderers of the new system cursor accessibility scale factor.
+        render_widget_host_view_mac->host()->SynchronizeVisualProperties();
+      }];
 
   if (GetTextInputManager())
     GetTextInputManager()->AddObserver(this);
@@ -256,7 +274,7 @@ void RenderWidgetHostViewMac::MigrateNSViewBridge(
     remote_cocoa::mojom::Application* remote_cocoa_application,
     uint64_t parent_ns_view_id) {
   // Destroy the previous remote accessibility element.
-  remote_window_accessible_.reset();
+  remote_window_accessible_ = nil;
 
   // Reset `ns_view_` before resetting `remote_ns_view_` to avoid dangling
   // pointers. `ns_view_` gets reinitialized later in this method.
@@ -591,8 +609,31 @@ CursorManager* RenderWidgetHostViewMac::GetCursorManager() {
   return cursor_manager_.get();
 }
 
-void RenderWidgetHostViewMac::OnDidNavigateMainFrameToNewPage() {
+void RenderWidgetHostViewMac::DidNavigateMainFramePreCommit() {
+  CHECK(browser_compositor_) << "Shouldn't be called during destruction!";
   gesture_provider_.ResetDetection();
+  if (base::FeatureList::IsEnabled(
+          features::kInvalidateLocalSurfaceIdPreCommit)) {
+    browser_compositor_->DidNavigateMainFramePreCommit();
+  }
+}
+
+void RenderWidgetHostViewMac::DidEnterBackForwardCache() {
+  CHECK(browser_compositor_) << "Shouldn't be called during destruction!";
+  browser_compositor_->DidEnterBackForwardCache();
+  // If we have the fallback content timer running, force it to stop. Else, when
+  // the page is restored the timer could also fire, setting whatever
+  // `DelegatedFrameHost::first_local_surface_id_after_navigation_` as the
+  // fallback to our Surfacelayer.
+  //
+  // This is safe for BFCache restore because we will supply specific fallback
+  // surfaces for BFCache.
+  //
+  // We do not want to call this in `RWHImpl::WasHidden()` because in the case
+  // of `Visibility::OCCLUDED` we still want to keep the timer running.
+  //
+  // Called after to prevent prematurely evict the BFCached surface.
+  host()->ForceFirstFrameAfterNavigationTimeout();
 }
 
 void RenderWidgetHostViewMac::SetIsLoading(bool is_loading) {
@@ -652,7 +693,9 @@ void RenderWidgetHostViewMac::OnImeCancelComposition(
 
 void RenderWidgetHostViewMac::OnImeCompositionRangeChanged(
     TextInputManager* text_input_manager,
-    RenderWidgetHostViewBase* updated_view) {
+    RenderWidgetHostViewBase* updated_view,
+    bool character_bounds_changed,
+    const absl::optional<std::vector<gfx::Rect>>& line_bounds) {
   const TextInputManager::CompositionRangeInfo* info =
       GetCompositionRangeInfo();
   if (!info)
@@ -747,7 +790,7 @@ void RenderWidgetHostViewMac::Destroy() {
     ns_view_->SetCursorLocked(false);
   }
 
-  // Destroy the local and remote briges to the NSView. Note that the NSView on
+  // Destroy the local and remote bridges to the NSView. Note that the NSView on
   // the other side of |ns_view_| may outlive us due to other retains.
   ns_view_ = nullptr;
   in_process_ns_view_bridge_.reset();
@@ -844,6 +887,15 @@ void RenderWidgetHostViewMac::UpdateScreenInfo() {
   if (dip_size_changed || current_display_changed) {
     browser_compositor_->UpdateSurfaceFromNSView(
         view_bounds_in_window_dip_.size());
+  }
+
+  // TODO(crbug.com/1457025): Fix isInternal innacuracies and remove logging.
+  if (any_display_changed) {
+    DISPLAY_LOG(DEBUG) << "RWHVMac ScreenInfos updated, count: "
+                       << screen_infos_.screen_infos.size();
+    for (const auto& screen_info : screen_infos_.screen_infos) {
+      DISPLAY_LOG(DEBUG) << screen_info.ToString();
+    }
   }
 
   // TODO(crbug.com/1169312): Unify display info caching and change detection.
@@ -1234,7 +1286,7 @@ void RenderWidgetHostViewMac::FocusedNodeChanged(
   // OnSelectionBoundsChanged instead.
   if (UAZoomEnabled() && !is_editable_node) {
     NSRect bounds = NSRectFromCGRect(node_bounds_in_screen.ToCGRect());
-    UAZoomChangeFocus(&bounds, NULL, kUAZoomFocusTypeOther);
+    UAZoomChangeFocus(&bounds, nullptr, kUAZoomFocusTypeOther);
   }
 }
 
@@ -1327,6 +1379,10 @@ bool RenderWidgetHostViewMac::CanBeMouseLocked() {
   return HasFocus() && is_window_key_;
 }
 
+bool RenderWidgetHostViewMac::AccessibilityHasFocus() {
+  return HasFocus() && is_window_key_;
+}
+
 bool RenderWidgetHostViewMac::LockKeyboard(
     absl::optional<base::flat_set<ui::DomCode>> dom_codes) {
   absl::optional<std::vector<uint32_t>> uint_dom_codes;
@@ -1392,7 +1448,7 @@ void RenderWidgetHostViewMac::ProcessAckedTouchEvent(
       ack_result == blink::mojom::InputEventResultState::kConsumed;
   gesture_provider_.OnTouchEventAck(
       touch.event.unique_touch_event_id, event_consumed,
-      InputEventResultStateIsSetNonBlocking(ack_result));
+      InputEventResultStateIsSetBlocking(ack_result));
   if (touch.event.touch_start_or_first_touch_move && event_consumed &&
       host()->delegate() && host()->delegate()->GetInputEventRouter()) {
     host()
@@ -1421,6 +1477,10 @@ RenderWidgetHostViewMac::CreateSyntheticGestureTarget() {
 
 const viz::LocalSurfaceId& RenderWidgetHostViewMac::GetLocalSurfaceId() const {
   return browser_compositor_->GetRendererLocalSurfaceId();
+}
+
+void RenderWidgetHostViewMac::InvalidateLocalSurfaceIdAndAllocationGroup() {
+  browser_compositor_->InvalidateSurfaceAllocationGroup();
 }
 
 const viz::FrameSinkId& RenderWidgetHostViewMac::GetFrameSinkId() const {
@@ -1569,7 +1629,7 @@ RenderWidgetHostViewMac::AccessibilityGetNativeViewAccessible() {
 gfx::NativeViewAccessible
 RenderWidgetHostViewMac::AccessibilityGetNativeViewAccessibleForWindow() {
   if (remote_window_accessible_)
-    return remote_window_accessible_.get();
+    return remote_window_accessible_;
   return [GetInProcessNSView() window];
 }
 
@@ -1615,7 +1675,7 @@ id RenderWidgetHostViewMac::GetFocusedBrowserAccessibilityElement() {
 void RenderWidgetHostViewMac::SetAccessibilityWindow(NSWindow* window) {
   // When running in-process, just use the NSView's NSWindow as its own
   // accessibility element.
-  remote_window_accessible_.reset();
+  remote_window_accessible_ = nil;
 }
 
 bool RenderWidgetHostViewMac::SyncIsWidgetForMainFrame(
@@ -2118,7 +2178,7 @@ void RenderWidgetHostViewMac::StopSpeaking() {
 void RenderWidgetHostViewMac::SetRemoteAccessibilityWindowToken(
     const std::vector<uint8_t>& window_token) {
   if (window_token.empty()) {
-    remote_window_accessible_.reset();
+    remote_window_accessible_ = nil;
   } else {
     remote_window_accessible_ =
         ui::RemoteAccessibility::GetRemoteElementFromToken(window_token);
@@ -2132,7 +2192,7 @@ void RenderWidgetHostViewMac::SetRemoteAccessibilityWindowToken(
 void RenderWidgetHostViewMac::ForwardKeyboardEventWithCommands(
     std::unique_ptr<blink::WebCoalescedInputEvent> input_event,
     const std::vector<uint8_t>& native_event_data,
-    bool skip_in_browser,
+    bool skip_if_unhandled,
     std::vector<blink::mojom::EditCommandPtr> edit_commands) {
   if (!input_event || !blink::WebInputEvent::IsKeyboardEventType(
                           input_event->Event().GetType())) {
@@ -2142,7 +2202,7 @@ void RenderWidgetHostViewMac::ForwardKeyboardEventWithCommands(
   const blink::WebKeyboardEvent& keyboard_event =
       static_cast<const blink::WebKeyboardEvent&>(input_event->Event());
   NativeWebKeyboardEvent native_event(keyboard_event, nil);
-  native_event.skip_in_browser = skip_in_browser;
+  native_event.skip_if_unhandled = skip_if_unhandled;
   // The NSEvent constructed from the InputEvent sent over mojo is not even
   // close to the original NSEvent, resulting in all sorts of bugs. Use the
   // native event serialization to reconstruct the NSEvent.

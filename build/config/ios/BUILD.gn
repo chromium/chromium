@@ -88,6 +88,10 @@ config("compiler") {
       ios_deployment_target != "14.0") {
     ldflags += [ "-Wl,-fixup_chains" ]
   }
+
+  if (ios_is_app_extension) {
+    ldflags += [ "-fapplication-extension" ]
+  }
 }
 
 # This is included by reference in the //build/config/compiler:runtime_library
@@ -152,7 +156,6 @@ config("ios_extension_executable_flags") {
   ldflags = [
     "-e",
     "_NSExtensionMain",
-    "-fapplication-extension",
   ]
 
   # On "catalyst", the bundle structure is different (uses the same structure

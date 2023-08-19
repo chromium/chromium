@@ -114,7 +114,7 @@ public class ExponentialBackoffScheduler {
             delay = Math.min(backoffCoefficient * mBaseMilliseconds, mMaxMilliseconds);
         }
 
-        // Save the delay for sanity checks.
+        // Save the delay for validation checks.
         SharedPreferences preferences = getSharedPreferences();
         preferences.edit().putLong(PREFERENCE_DELAY, delay).apply();
         return delay;

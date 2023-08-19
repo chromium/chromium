@@ -1,0 +1,4 @@
+This is a testharness.js-based test.
+FAIL Testing baselines assert_equals: Math.abs(ctx.measureText('A').alphabeticBaseline) === 0 (got NaN[number], expected 0[number]) expected 0 but got NaN
+Harness: the test ran to completion.
+

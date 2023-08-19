@@ -18,7 +18,9 @@
 #include "base/strings/string_piece.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/time/time.h"
+#include "base/types/expected.h"
 #include "dbus/dbus_export.h"
+#include "dbus/error.h"
 #include "dbus/object_path.h"
 
 namespace dbus {
@@ -27,7 +29,6 @@ class Bus;
 class ErrorResponse;
 class MethodCall;
 class Response;
-class ScopedDBusError;
 class Signal;
 
 // ObjectProxy is used to communicate with remote objects, mainly for
@@ -105,21 +106,16 @@ class CHROME_DBUS_EXPORT ObjectProxy
       base::OnceCallback<void(const std::string&, const std::string&, bool)>;
 
   // Calls the method of the remote object and blocks until the response
-  // is returned. Returns NULL on error with the error details specified
-  // in the |error| object.
+  // is returned.
+  //
+  // If this is failing due to the reason outside of libdbus, this may return
+  // an invalid error to indicate the situation.
+  // This must be called on D-Bus thread.
   //
   // BLOCKING CALL.
-  virtual std::unique_ptr<Response> CallMethodAndBlockWithErrorDetails(
+  virtual base::expected<std::unique_ptr<Response>, Error> CallMethodAndBlock(
       MethodCall* method_call,
-      int timeout_ms,
-      ScopedDBusError* error);
-
-  // Calls the method of the remote object and blocks until the response
-  // is returned. Returns NULL on error.
-  //
-  // BLOCKING CALL.
-  virtual std::unique_ptr<Response> CallMethodAndBlock(MethodCall* method_call,
-                                                       int timeout_ms);
+      int timeout_ms);
 
   // Requests to call the method of the remote object.
   //

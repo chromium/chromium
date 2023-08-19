@@ -17,7 +17,9 @@
 #include <utility>
 
 #include "absl/base/call_once.h"
+#include "absl/base/config.h"
 #include "absl/base/internal/raw_logging.h"
+#include "absl/status/internal/statusor_internal.h"
 #include "absl/status/status.h"
 #include "absl/strings/str_cat.h"
 

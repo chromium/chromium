@@ -132,9 +132,8 @@ class DiffHelper {
 
   std::string_view StripNumbers(std::string_view in) {
     static const RE2 number_regex("\\d+");
-    re2::StringPiece piece(in.data(), in.size());
-    if (RE2::PartialMatch(piece, number_regex)) {
-      tmp_strings_.push_back(std::string(in));
+    if (RE2::PartialMatch(in, number_regex)) {
+      tmp_strings_.emplace_back(in);
       RE2::GlobalReplace(&tmp_strings_.back(), number_regex, "");
       return tmp_strings_.back();
     }
@@ -144,9 +143,8 @@ class DiffHelper {
   std::string_view NormalizeStarSymbols(std::string_view in) {
     // Used only for "*" symbols to strip suffixes "abc123" or "abc123 (any)".
     static const RE2 normalize_star_symbols("\\s+\\d+(?: \\(.*\\))?$");
-    re2::StringPiece piece(in.data(), in.size());
-    if (RE2::PartialMatch(piece, normalize_star_symbols)) {
-      tmp_strings_.push_back(std::string(in));
+    if (RE2::PartialMatch(in, normalize_star_symbols)) {
+      tmp_strings_.emplace_back(in);
       RE2::Replace(&tmp_strings_.back(), normalize_star_symbols, "s");
       return tmp_strings_.back();
     }
@@ -158,15 +156,15 @@ class DiffHelper {
   MatchFunc SectionAndFullNameAndPathAndSize() {
     return [](const caspian::Symbol& sym) {
       return SymbolMatchIndex(sym.section_id_, sym.ContainerName(),
-                              sym.full_name_, GetIdPath(sym), sym.Pss());
+                              sym.full_name_, GetIdPath(sym),
+                              sym.SizeWithoutPadding());
     };
   }
 
   MatchFunc SectionAndFullNameAndPath() {
     return [this](const caspian::Symbol& sym) {
       return SymbolMatchIndex(sym.section_id_, sym.ContainerName(),
-                              StripNumbers(sym.full_name_), GetIdPath(sym),
-                              0.0f);
+                              StripNumbers(sym.full_name_), GetIdPath(sym), 0);
     };
   }
 
@@ -178,18 +176,24 @@ class DiffHelper {
         name = NormalizeStarSymbols(name);
       }
       return SymbolMatchIndex(sym.section_id_, sym.ContainerName(), name,
-                              GetIdPath(sym), 0.0f);
+                              GetIdPath(sym), 0);
     };
   }
 
   // Match on full name, but without path (to account for file moves)
   MatchFunc SectionAndFullName() {
     return [](const caspian::Symbol& sym) {
+      // For string literals that contain a prefix of the string in the name,
+      // allow matching up via name + size.
+      if (!sym.full_name_.empty() && sym.full_name_[0] == '"') {
+        return SymbolMatchIndex(sym.section_id_, sym.ContainerName(),
+                                sym.full_name_, "", sym.SizeWithoutPadding());
+      }
       if (!sym.IsNameUnique()) {
         return SymbolMatchIndex();
       }
       return SymbolMatchIndex(sym.section_id_, sym.ContainerName(),
-                              sym.full_name_, "", 0.0f);
+                              sym.full_name_, "", 0);
     };
   }
 

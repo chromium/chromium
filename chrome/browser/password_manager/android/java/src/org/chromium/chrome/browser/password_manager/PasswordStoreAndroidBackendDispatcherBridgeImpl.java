@@ -68,6 +68,15 @@ class PasswordStoreAndroidBackendDispatcherBridgeImpl {
     }
 
     @CalledByNative
+    void getAffiliatedLoginsForSignonRealm(
+            @JobId int jobId, String signonRealm, String syncingAccount) {
+        mBackend.getAffiliatedLoginsForSignonRealm(signonRealm, getAccount(syncingAccount),
+                passwords
+                -> mBackendReceiverBridge.onCompleteWithAffiliatedLogins(jobId, passwords),
+                exception -> handleAndroidBackendExceptionOnUiThread(jobId, exception));
+    }
+
+    @CalledByNative
     void addLogin(@JobId int jobId, byte[] pwdWithLocalData, String syncingAccount) {
         mBackend.addLogin(pwdWithLocalData, getAccount(syncingAccount),
                 ()

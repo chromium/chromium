@@ -430,8 +430,7 @@ public class ChromeBackupAgentImpl extends ChromeBackupAgent.Impl {
      * @return the restore status, a RestoreStatus value.
      */
     @VisibleForTesting
-    @RestoreStatus
-    static int getRestoreStatus() {
+    static @RestoreStatus int getRestoreStatus() {
         return ContextUtils.getAppSharedPreferences().getInt(
                 RESTORE_STATUS, RestoreStatus.NO_RESTORE);
     }

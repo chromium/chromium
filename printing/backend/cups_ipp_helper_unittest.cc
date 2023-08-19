@@ -13,6 +13,7 @@
 #include "base/notreached.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "build/build_config.h"
+#include "printing/backend/cups_ipp_constants.h"
 #include "printing/backend/mock_cups_printer.h"
 #include "printing/backend/print_backend_utils.h"
 #include "printing/mojom/print.mojom.h"
@@ -22,6 +23,7 @@
 namespace printing {
 
 using ::testing::Pointwise;
+using ::testing::UnorderedPointwise;
 
 // Matches the name field to a string.
 MATCHER(AdvancedCapabilityName, "") {
@@ -30,8 +32,17 @@ MATCHER(AdvancedCapabilityName, "") {
   return std::get<0>(arg).name == std::get<1>(arg);
 }
 
+// Compares an ipp_t* db entry from a media-col-database to a media_info
+// object.
+MATCHER(EqualsMediaColEntry, "") {
+  return MediaColDbEntryEquals(std::get<0>(arg), std::get<1>(arg));
+}
+
 class MockCupsPrinterWithMarginsAndAttributes : public MockCupsPrinter {
  public:
+  // name and value of IPP attribute; needed to fetch localized display name
+  using LocalizationKey = std::pair<base::StringPiece, base::StringPiece>;
+
   MockCupsPrinterWithMarginsAndAttributes() = default;
   ~MockCupsPrinterWithMarginsAndAttributes() override = default;
 
@@ -82,12 +93,27 @@ class MockCupsPrinterWithMarginsAndAttributes : public MockCupsPrinter {
     return false;
   }
 
+  const char* GetLocalizedOptionValueName(const char* option_name,
+                                          const char* value) const override {
+    LocalizationKey key = {option_name, value};
+    auto localized_name = localized_strings_.find(key);
+    if (localized_name == localized_strings_.end()) {
+      return nullptr;
+    }
+    return localized_name->second.c_str();
+  }
+
   void SetSupportedOptions(base::StringPiece name, ipp_attribute_t* attribute) {
     supported_attributes_[name] = attribute;
   }
 
   void SetOptionDefault(base::StringPiece name, ipp_attribute_t* attribute) {
     default_attributes_[name] = attribute;
+  }
+
+  void SetLocalizedOptionValueNames(
+      std::map<LocalizationKey, std::string> strings) {
+    localized_strings_ = std::move(strings);
   }
 
   void SetMediaColDatabase(ipp_attribute_t* attribute) {
@@ -97,7 +123,8 @@ class MockCupsPrinterWithMarginsAndAttributes : public MockCupsPrinter {
  private:
   std::map<base::StringPiece, ipp_attribute_t*> supported_attributes_;
   std::map<base::StringPiece, ipp_attribute_t*> default_attributes_;
-  raw_ptr<ipp_attribute_t> media_col_database_;
+  std::map<LocalizationKey, std::string> localized_strings_;
+  raw_ptr<ipp_attribute_t, DanglingUntriaged> media_col_database_;
 };
 
 class PrintBackendCupsIppHelperTest : public ::testing::Test {
@@ -112,7 +139,7 @@ class PrintBackendCupsIppHelperTest : public ::testing::Test {
     printer_.reset();
   }
 
-  raw_ptr<ipp_t> ipp_;
+  raw_ptr<ipp_t, DanglingUntriaged> ipp_;
   std::unique_ptr<MockCupsPrinterWithMarginsAndAttributes> printer_;
 };
 
@@ -150,23 +177,121 @@ struct media_info {
   int right_margin;
   int top_margin;
   std::map<const char*, const char*> keyword_attrs;
-  bool is_range;
+  bool is_width_range;
   int width_max;
+  bool is_height_range;
   int height_max;
 };
+
+// Return true if `db_entry` matches the data specified in `info`
+// (`keyword_attrs` are not checked).
+bool MediaColDbEntryEquals(ipp_t* db_entry, media_info info) {
+  if (!db_entry) {
+    return false;
+  }
+  ipp_t* media_size = ippGetCollection(
+      ippFindAttribute(db_entry, kIppMediaSize, IPP_TAG_BEGIN_COLLECTION), 0);
+  if (!media_size) {
+    return false;
+  }
+
+  ipp_attribute_t* bottom_attr =
+      ippFindAttribute(db_entry, kIppMediaBottomMargin, IPP_TAG_INTEGER);
+  ipp_attribute_t* left_attr =
+      ippFindAttribute(db_entry, kIppMediaLeftMargin, IPP_TAG_INTEGER);
+  ipp_attribute_t* right_attr =
+      ippFindAttribute(db_entry, kIppMediaRightMargin, IPP_TAG_INTEGER);
+  ipp_attribute_t* top_attr =
+      ippFindAttribute(db_entry, kIppMediaTopMargin, IPP_TAG_INTEGER);
+  if (!bottom_attr || !left_attr || !right_attr || !top_attr) {
+    return false;
+  }
+  if (ippGetInteger(bottom_attr, 0) != info.bottom_margin ||
+      ippGetInteger(left_attr, 0) != info.left_margin ||
+      ippGetInteger(right_attr, 0) != info.right_margin ||
+      ippGetInteger(top_attr, 0) != info.top_margin) {
+    return false;
+  }
+
+  if (info.is_width_range) {
+    ipp_attribute_t* width_range_attr =
+        ippFindAttribute(media_size, kIppXDimension, IPP_TAG_RANGE);
+    if (!width_range_attr) {
+      return false;
+    }
+    int max_width = 0;
+    int width = ippGetRange(width_range_attr, 0, &max_width);
+    if (width != info.width || max_width != info.width_max) {
+      return false;
+    }
+  } else {
+    ipp_attribute_t* width_attr =
+        ippFindAttribute(media_size, kIppXDimension, IPP_TAG_INTEGER);
+    if (!width_attr) {
+      return false;
+    }
+    int width = ippGetInteger(width_attr, 0);
+    if (width != info.width) {
+      return false;
+    }
+  }
+
+  if (info.is_height_range) {
+    ipp_attribute_t* height_range_attr =
+        ippFindAttribute(media_size, kIppYDimension, IPP_TAG_RANGE);
+    if (!height_range_attr) {
+      return false;
+    }
+    int max_height = 0;
+    int height = ippGetRange(height_range_attr, 0, &max_height);
+    if (height != info.height || max_height != info.height_max) {
+      return false;
+    }
+  } else {
+    ipp_attribute_t* height_attr =
+        ippFindAttribute(media_size, kIppYDimension, IPP_TAG_INTEGER);
+    if (!height_attr) {
+      return false;
+    }
+    int height = ippGetInteger(height_attr, 0);
+    if (height != info.height) {
+      return false;
+    }
+  }
+
+  return true;
+}
+
+// Returns a vector with pointers to all the entries in `media_col_db`.
+// `media_col_db` maintains ownership of the returned values.
+std::vector<ipp_t*> GetMediaColEntries(ipp_attribute_t* media_col_db) {
+  if (!media_col_db) {
+    return std::vector<ipp_t*>();
+  }
+
+  std::vector<ipp_t*> retval;
+  for (int i = 0; i < ippGetCount(media_col_db); i++) {
+    retval.push_back(ippGetCollection(media_col_db, i));
+  }
+
+  return retval;
+}
 
 ScopedIppPtr MakeMediaCol(const media_info& info) {
   ScopedIppPtr media_col = WrapIpp(ippNew());
   ScopedIppPtr media_size = WrapIpp(ippNew());
 
-  if (info.is_range) {
+  if (info.is_width_range) {
     ippAddRange(media_size.get(), IPP_TAG_ZERO, "x-dimension", info.width,
                 info.width_max);
-    ippAddRange(media_size.get(), IPP_TAG_ZERO, "y-dimension", info.height,
-                info.height_max);
   } else {
     ippAddInteger(media_size.get(), IPP_TAG_ZERO, IPP_TAG_INTEGER,
                   "x-dimension", info.width);
+  }
+  if (info.is_height_range) {
+    ippAddRange(media_size.get(), IPP_TAG_ZERO, "y-dimension", info.height,
+                info.height_max);
+  } else {
     ippAddInteger(media_size.get(), IPP_TAG_ZERO, IPP_TAG_INTEGER,
                   "y-dimension", info.height);
   }
@@ -207,7 +332,7 @@ ipp_attribute_t* MakeMediaColDatabase(ipp_t* ipp,
     collections.emplace_back(std::move(entry));
   }
 
-  return ippAddCollections(ipp, IPP_TAG_PRINTER, "TEST_DATA",
+  return ippAddCollections(ipp, IPP_TAG_PRINTER, kIppMediaColDatabase,
                            raw_collections.size(), raw_collections.data());
 }
 
@@ -217,8 +342,8 @@ TEST_F(PrintBackendCupsIppHelperTest, DefaultPaper) {
       "media-col",
       MakeMediaColDefault(ipp_, {21000, 29700, 10, 10, 10, 10, {}}));
   PrinterSemanticCapsAndDefaults::Paper default_paper = DefaultPaper(*printer_);
-  EXPECT_EQ(default_paper.size_um.width(), 210000);
-  EXPECT_EQ(default_paper.size_um.height(), 297000);
+  EXPECT_EQ(default_paper.size_um().width(), 210000);
+  EXPECT_EQ(default_paper.size_um().height(), 297000);
 }
 
 TEST_F(PrintBackendCupsIppHelperTest, CopiesCapable) {
@@ -291,6 +416,51 @@ TEST_F(PrintBackendCupsIppHelperTest, DuplexNotSupported) {
   EXPECT_EQ(mojom::DuplexMode::kSimplex, caps.duplex_default);
 }
 
+TEST_F(PrintBackendCupsIppHelperTest, MediaTypes) {
+  printer_->SetSupportedOptions(
+      "media-type",
+      MakeStringCollection(
+          ipp_, {"stationery", "custom-1", "photographic-glossy", "custom-2"}));
+  printer_->SetOptionDefault("media-type", MakeString(ipp_, "stationery"));
+
+  // set mock display names that would be read from the printer's strings file
+  // (printer-strings-uri)
+  printer_->SetLocalizedOptionValueNames({
+      {{"media-type", "stationery"}, "Plain Paper"},
+      {{"media-type", "custom-2"}, "Custom Two"},
+  });
+
+  PrinterSemanticCapsAndDefaults caps;
+  CapsAndDefaultsFromPrinter(*printer_, &caps);
+
+  EXPECT_EQ(caps.default_media_type.vendor_id, "stationery");
+  ASSERT_EQ(caps.media_types.size(), 4U);
+  EXPECT_EQ(caps.media_types[0].vendor_id, "stationery");
+  EXPECT_EQ(caps.media_types[0].display_name, "Plain Paper");
+  EXPECT_EQ(caps.media_types[1].vendor_id, "custom-1");
+  EXPECT_EQ(caps.media_types[1].display_name, "custom-1");
+  EXPECT_EQ(caps.media_types[2].vendor_id, "photographic-glossy");
+  EXPECT_EQ(caps.media_types[2].display_name, "photographic-glossy");
+  EXPECT_EQ(caps.media_types[3].vendor_id, "custom-2");
+  EXPECT_EQ(caps.media_types[3].display_name, "Custom Two");
+}
+
+TEST_F(PrintBackendCupsIppHelperTest, DefaultMediaTypeNotSupported) {
+  printer_->SetSupportedOptions(
+      "media-type",
+      MakeStringCollection(ipp_, {"stationery", "photographic-glossy"}));
+  printer_->SetOptionDefault("media-type",
+                             MakeString(ipp_, "not-actually-supported"));
+
+  PrinterSemanticCapsAndDefaults caps;
+  CapsAndDefaultsFromPrinter(*printer_, &caps);
+
+  EXPECT_EQ(caps.default_media_type.vendor_id, "stationery");
+  ASSERT_EQ(caps.media_types.size(), 2U);
+  EXPECT_EQ(caps.media_types[0].vendor_id, "stationery");
+  EXPECT_EQ(caps.media_types[1].vendor_id, "photographic-glossy");
+}
+
 TEST_F(PrintBackendCupsIppHelperTest, A4PaperSupported) {
   printer_->SetMediaColDatabase(
       MakeMediaColDatabase(ipp_, {{21000, 29700, 10, 10, 10, 10, {}}}));
@@ -298,9 +468,95 @@ TEST_F(PrintBackendCupsIppHelperTest, A4PaperSupported) {
   PrinterSemanticCapsAndDefaults caps;
   CapsAndDefaultsFromPrinter(*printer_, &caps);
 
+  ASSERT_EQ(1U, caps.papers.size());
+
   PrinterSemanticCapsAndDefaults::Paper paper = caps.papers[0];
-  EXPECT_EQ(210000, paper.size_um.width());
-  EXPECT_EQ(297000, paper.size_um.height());
+  EXPECT_EQ(210000, paper.size_um().width());
+  EXPECT_EQ(297000, paper.size_um().height());
+}
+
+#if BUILDFLAG(IS_MAC)
+TEST_F(PrintBackendCupsIppHelperTest, NearA4PaperDetected) {
+  printer_->SetMediaColDatabase(
+      MakeMediaColDatabase(ipp_, {{20990, 29704, 10, 10, 10, 10, {}}}));
+
+  PrinterSemanticCapsAndDefaults caps;
+  CapsAndDefaultsFromPrinter(*printer_, &caps);
+
+  ASSERT_EQ(1U, caps.papers.size());
+
+  PrinterSemanticCapsAndDefaults::Paper paper = caps.papers[0];
+  EXPECT_EQ(210000, paper.size_um().width());
+  EXPECT_EQ(297000, paper.size_um().height());
+}
+
+TEST_F(PrintBackendCupsIppHelperTest, NonStandardPaperUnchanged) {
+  printer_->SetMediaColDatabase(
+      MakeMediaColDatabase(ipp_, {{20800, 29500, 10, 10, 10, 10, {}}}));
+
+  PrinterSemanticCapsAndDefaults caps;
+  CapsAndDefaultsFromPrinter(*printer_, &caps);
+
+  ASSERT_EQ(1U, caps.papers.size());
+
+  PrinterSemanticCapsAndDefaults::Paper paper = caps.papers[0];
+  EXPECT_EQ(208000, paper.size_um().width());
+  EXPECT_EQ(295000, paper.size_um().height());
+}
+#endif  // BUILDFLAG(IS_MAC)
+
+TEST_F(PrintBackendCupsIppHelperTest, CustomPaperSupported) {
+  printer_->SetMediaColDatabase(MakeMediaColDatabase(
+      ipp_, {{8000, 2540, 10, 10, 10, 10, {}, false, 0, true, 254000}}));
+
+  PrinterSemanticCapsAndDefaults caps;
+  CapsAndDefaultsFromPrinter(*printer_, &caps);
+
+  ASSERT_EQ(1U, caps.papers.size());
+
+  PrinterSemanticCapsAndDefaults::Paper paper = caps.papers[0];
+  EXPECT_EQ(80000, paper.size_um().width());
+  EXPECT_EQ(25400, paper.size_um().height());
+  EXPECT_EQ(2540000, paper.max_height_um());
+}
+
+TEST_F(PrintBackendCupsIppHelperTest, CustomPaperWithZeroMinHeight) {
+  printer_->SetMediaColDatabase(MakeMediaColDatabase(
+      ipp_, {{8000, 0, 0, 0, 0, 0, {}, false, 8000, true, 254000}}));
+
+  PrinterSemanticCapsAndDefaults caps;
+  CapsAndDefaultsFromPrinter(*printer_, &caps);
+
+  ASSERT_EQ(1U, caps.papers.size());
+
+  // Zero-height paper is not allowed.  However, this paper will get used but
+  // the height will get changed into some small, non-zero value.
+  PrinterSemanticCapsAndDefaults::Paper paper = caps.papers[0];
+  EXPECT_EQ(80000, paper.size_um().width());
+  EXPECT_EQ(2540000, paper.max_height_um());
+  EXPECT_TRUE(paper.size_um().height() > 0);
+}
+
+TEST_F(PrintBackendCupsIppHelperTest, CustomPaperWithInvalidHeight) {
+  // Max height is less than min height, which is not allowed.
+  printer_->SetMediaColDatabase(MakeMediaColDatabase(
+      ipp_, {{2000, 2540, 0, 0, 0, 0, {}, true, 8000, true, 1000}}));
+
+  PrinterSemanticCapsAndDefaults caps;
+  CapsAndDefaultsFromPrinter(*printer_, &caps);
+
+  ASSERT_EQ(0U, caps.papers.size());
+}
+
+TEST_F(PrintBackendCupsIppHelperTest, CustomPaperWithInvalidWidth) {
+  // Varible-width pages are not supported.
+  printer_->SetMediaColDatabase(MakeMediaColDatabase(
+      ipp_, {{2000, 2540, 0, 0, 0, 0, {}, true, 8000, true, 254000}}));
+
+  PrinterSemanticCapsAndDefaults caps;
+  CapsAndDefaultsFromPrinter(*printer_, &caps);
+
+  ASSERT_EQ(0U, caps.papers.size());
 }
 
 TEST_F(PrintBackendCupsIppHelperTest, LegalPaperDefault) {
@@ -311,8 +567,8 @@ TEST_F(PrintBackendCupsIppHelperTest, LegalPaperDefault) {
 
   PrinterSemanticCapsAndDefaults caps;
   CapsAndDefaultsFromPrinter(*printer_, &caps);
-  EXPECT_EQ(215900, caps.default_paper.size_um.width());
-  EXPECT_EQ(355600, caps.default_paper.size_um.height());
+  EXPECT_EQ(215900, caps.default_paper.size_um().width());
+  EXPECT_EQ(355600, caps.default_paper.size_um().height());
 }
 
 // Tests that CapsAndDefaultsFromPrinter() does not propagate papers with
@@ -343,18 +599,18 @@ TEST_F(PrintBackendCupsIppHelperTest, OmitPapersWithInvalidSizes) {
   // these invalid sizes.
   ASSERT_EQ(2U, caps.papers.size());
   for (const auto& paper : caps.papers) {
-    EXPECT_NE(21000, paper.size_um.width());
-    EXPECT_NE(29700, paper.size_um.height());
+    EXPECT_NE(21000, paper.size_um().width());
+    EXPECT_NE(29700, paper.size_um().height());
   }
 }
 
-// Tests that CapsAndDefaultsFromPrinter() does not propagate custom size ranges
-// from the media-col-database to the Chromium print backend.
-TEST_F(PrintBackendCupsIppHelperTest, OmitPapersWithSizeRanges) {
+// Tests that CapsAndDefaultsFromPrinter() will propagate custom size ranges
+// from the  the media-col-database to the Chromium print backend.
+TEST_F(PrintBackendCupsIppHelperTest, IncludePapersWithSizeRanges) {
   printer_->SetMediaColDatabase(MakeMediaColDatabase(
       ipp_, {
                 {11430, 26352, 100, 100, 100, 100, {}},
-                {0, 0, 100, 100, 100, 100, {}, true, 2540000, 2540000},
+                {8000, 2540, 100, 100, 100, 100, {}, false, 0, true, 2540000},
                 {20320, 25400, 100, 100, 100, 100, {}},
                 {100000, 141400, 100, 100, 100, 100, {}},
             }));
@@ -362,11 +618,9 @@ TEST_F(PrintBackendCupsIppHelperTest, OmitPapersWithSizeRanges) {
   PrinterSemanticCapsAndDefaults caps;
   CapsAndDefaultsFromPrinter(*printer_, &caps);
 
-  // The printer reports that it supports four media sizes, one of which is not
-  // meant for users' eyes (the size range). The preceding call to
-  // CapsAndDefaultsFromPrinter() will have dropped these sizes, refusing to
-  // propagate them out of the backend.
-  ASSERT_EQ(3U, caps.papers.size());
+  // The printer reports that it supports four media sizes, one of which
+  // contains a custom range.  All four of these should be supported.
+  ASSERT_EQ(4U, caps.papers.size());
 }
 
 // Tests that when the media-col-database contains both bordered and borderless
@@ -382,7 +636,8 @@ TEST_F(PrintBackendCupsIppHelperTest, PreferBorderedSizes) {
                                  }));
   CapsAndDefaultsFromPrinter(*printer_, &caps);
   ASSERT_EQ(1U, caps.papers.size());
-  EXPECT_NE(gfx::Rect(0, 0, 210000, 297000), caps.papers[0].printable_area_um);
+  EXPECT_NE(gfx::Rect(0, 0, 210000, 297000),
+            caps.papers[0].printable_area_um());
 
   printer_->SetMediaColDatabase(
       MakeMediaColDatabase(ipp_, {
@@ -391,7 +646,8 @@ TEST_F(PrintBackendCupsIppHelperTest, PreferBorderedSizes) {
                                  }));
   CapsAndDefaultsFromPrinter(*printer_, &caps);
   ASSERT_EQ(1U, caps.papers.size());
-  EXPECT_NE(gfx::Rect(0, 0, 210000, 297000), caps.papers[0].printable_area_um);
+  EXPECT_NE(gfx::Rect(0, 0, 210000, 297000),
+            caps.papers[0].printable_area_um());
 
   // If the only available version of a size is borderless, go ahead and use it.
   // Not sure if any actual printers do this, but it's allowed by the IPP spec.
@@ -401,7 +657,8 @@ TEST_F(PrintBackendCupsIppHelperTest, PreferBorderedSizes) {
                                  }));
   CapsAndDefaultsFromPrinter(*printer_, &caps);
   ASSERT_EQ(1U, caps.papers.size());
-  EXPECT_EQ(gfx::Rect(0, 0, 210000, 297000), caps.papers[0].printable_area_um);
+  EXPECT_EQ(gfx::Rect(0, 0, 210000, 297000),
+            caps.papers[0].printable_area_um());
 }
 
 // At the time of this writing, there are no media-source or media-type
@@ -515,6 +772,250 @@ TEST_F(PrintBackendCupsIppHelperTest, NoDuplicateSizes) {
   CapsAndDefaultsFromPrinter(*printer_, &caps);
 
   ASSERT_EQ(1U, caps.papers.size());
+}
+
+TEST_F(PrintBackendCupsIppHelperTest, FilterMediaColSizesNominal) {
+  // Create db with no variable-size entries.  All 4 should be retained after
+  // filtering.
+  ScopedIppPtr ipp = WrapIpp(ippNew());
+  MakeMediaColDatabase(ipp.get(), {
+                                      {5800, 20000},
+                                      {5800, 200000},
+                                      {8000, 20000},
+                                      {8000, 200000},
+                                  });
+
+  FilterMediaColSizes(ipp);
+
+  ipp_attribute_t* media_col_db = ippFindAttribute(
+      ipp.get(), kIppMediaColDatabase, IPP_TAG_BEGIN_COLLECTION);
+
+  ASSERT_TRUE(media_col_db);
+  EXPECT_THAT(
+      GetMediaColEntries(media_col_db),
+      UnorderedPointwise(EqualsMediaColEntry(),
+                         {media_info{5800, 20000}, media_info{5800, 200000},
+                          media_info{8000, 20000}, media_info{8000, 200000}}));
+}
+
+TEST_F(PrintBackendCupsIppHelperTest,
+       FilterMediaColSizesVariableWidthAndHeight) {
+  // This db has one variable-sized entry and 2 fixed widths, so the
+  // variable-sized entry should get replaced by two variable-sized height
+  // entries with the fixed widths.
+  ScopedIppPtr ipp = WrapIpp(ippNew());
+  MakeMediaColDatabase(
+      ipp.get(), {
+                     {5800, 20000},
+                     {5800, 200000},
+                     {8000, 20000},
+                     {8000, 200000},
+                     {2540, 2540, 0, 0, 0, 0, {}, true, 8000, true, 200000},
+                 });
+
+  FilterMediaColSizes(ipp);
+  ipp_attribute_t* media_col_db = ippFindAttribute(
+      ipp.get(), kIppMediaColDatabase, IPP_TAG_BEGIN_COLLECTION);
+  ASSERT_TRUE(media_col_db);
+  EXPECT_THAT(
+      GetMediaColEntries(media_col_db),
+      UnorderedPointwise(
+          EqualsMediaColEntry(),
+          {media_info{5800, 20000}, media_info{5800, 200000},
+           media_info{8000, 20000}, media_info{8000, 200000},
+           media_info{5800, 2540, 0, 0, 0, 0, {}, false, 0, true, 200000},
+           media_info{8000, 2540, 0, 0, 0, 0, {}, false, 0, true, 200000}}));
+}
+
+TEST_F(PrintBackendCupsIppHelperTest, FilterMediaColSizesVariableWidth) {
+  // Variable width entries (with fixed height) will get filtered out.
+  ScopedIppPtr ipp = WrapIpp(ippNew());
+  MakeMediaColDatabase(ipp.get(),
+                       {
+                           {5800, 20000},
+                           {5800, 200000},
+                           {8000, 20000},
+                           {8000, 200000},
+                           {7000, 20000, 0, 0, 0, 0, {}, true, 8000, false, 0},
+                       });
+
+  FilterMediaColSizes(ipp);
+  ipp_attribute_t* media_col_db = ippFindAttribute(
+      ipp.get(), kIppMediaColDatabase, IPP_TAG_BEGIN_COLLECTION);
+  ASSERT_TRUE(media_col_db);
+  EXPECT_THAT(
+      GetMediaColEntries(media_col_db),
+      UnorderedPointwise(EqualsMediaColEntry(),
+                         {media_info{5800, 20000}, media_info{5800, 200000},
+                          media_info{8000, 20000}, media_info{8000, 200000}}));
+}
+
+TEST_F(PrintBackendCupsIppHelperTest, FilterMediaColSizesVariableHeight) {
+  // Entry with fixed width and variable height should get retained after
+  // filtering.
+  ScopedIppPtr ipp = WrapIpp(ippNew());
+  MakeMediaColDatabase(ipp.get(),
+                       {
+                           {5800, 20000},
+                           {5800, 200000},
+                           {8000, 20000},
+                           {8000, 200000},
+                           {8000, 2540, 0, 0, 0, 0, {}, false, 0, true, 200000},
+                       });
+
+  FilterMediaColSizes(ipp);
+  ipp_attribute_t* media_col_db = ippFindAttribute(
+      ipp.get(), kIppMediaColDatabase, IPP_TAG_BEGIN_COLLECTION);
+  ASSERT_TRUE(media_col_db);
+  EXPECT_THAT(
+      GetMediaColEntries(media_col_db),
+      UnorderedPointwise(
+          EqualsMediaColEntry(),
+          {media_info{5800, 20000}, media_info{5800, 200000},
+           media_info{8000, 20000}, media_info{8000, 200000},
+           media_info{8000, 2540, 0, 0, 0, 0, {}, false, 0, true, 200000}}));
+}
+
+TEST_F(PrintBackendCupsIppHelperTest, FilterMediaColSizesSameVariableHeight) {
+  // Entry with a variable height with the min and max equal to each other just
+  // ends up being a fixed height entry.
+  ScopedIppPtr ipp = WrapIpp(ippNew());
+  MakeMediaColDatabase(ipp.get(),
+                       {
+                           {8000, 20000, 0, 0, 0, 0, {}, false, 0, true, 20000},
+                       });
+
+  FilterMediaColSizes(ipp);
+  ipp_attribute_t* media_col_db = ippFindAttribute(
+      ipp.get(), kIppMediaColDatabase, IPP_TAG_BEGIN_COLLECTION);
+  ASSERT_TRUE(media_col_db);
+  EXPECT_THAT(
+      GetMediaColEntries(media_col_db),
+      UnorderedPointwise(EqualsMediaColEntry(), {media_info{8000, 20000}}));
+}
+
+TEST_F(PrintBackendCupsIppHelperTest, FilterMediaColSizesSingleVariableEntry) {
+  // Since there are no fixed widths, this will get filtered out.  Consequently,
+  // the media-col-database entry won't even exist.
+  ScopedIppPtr ipp = WrapIpp(ippNew());
+  MakeMediaColDatabase(
+      ipp.get(), {
+                     {2540, 2540, 0, 0, 0, 0, {}, true, 8000, true, 200000},
+                 });
+
+  FilterMediaColSizes(ipp);
+  ipp_attribute_t* media_col_db = ippFindAttribute(
+      ipp.get(), kIppMediaColDatabase, IPP_TAG_BEGIN_COLLECTION);
+  ASSERT_FALSE(media_col_db);
+}
+
+TEST_F(PrintBackendCupsIppHelperTest, FilterMediaColSizesInvalidWidth) {
+  // This db has one variable-sized entry which has a minimum width that only
+  // matches one of the fixed width sizes, so only one variable entry will be
+  // retained.
+  ScopedIppPtr ipp = WrapIpp(ippNew());
+  MakeMediaColDatabase(
+      ipp.get(), {
+                     {5800, 20000},
+                     {5800, 200000},
+                     {8000, 20000},
+                     {8000, 200000},
+                     {7000, 2540, 0, 0, 0, 0, {}, true, 8000, true, 200000},
+                 });
+
+  FilterMediaColSizes(ipp);
+  ipp_attribute_t* media_col_db = ippFindAttribute(
+      ipp.get(), kIppMediaColDatabase, IPP_TAG_BEGIN_COLLECTION);
+  ASSERT_TRUE(media_col_db);
+  EXPECT_THAT(
+      GetMediaColEntries(media_col_db),
+      UnorderedPointwise(
+          EqualsMediaColEntry(),
+          {media_info{5800, 20000}, media_info{5800, 200000},
+           media_info{8000, 20000}, media_info{8000, 200000},
+           media_info{8000, 2540, 0, 0, 0, 0, {}, false, 0, true, 200000}}));
+}
+
+TEST_F(PrintBackendCupsIppHelperTest,
+       FilterMediaColSizesMultipleVariableEntries) {
+  // Multiple variable entries - non-overlapping.
+  ScopedIppPtr ipp = WrapIpp(ippNew());
+  MakeMediaColDatabase(
+      ipp.get(), {
+                     {5800, 20000},
+                     {5800, 200000},
+                     {8000, 20000},
+                     {8000, 200000},
+                     {5000, 2540, 0, 0, 0, 0, {}, true, 6000, true, 100000},
+                     {7000, 2540, 0, 0, 0, 0, {}, true, 8000, true, 200000},
+                 });
+
+  FilterMediaColSizes(ipp);
+  ipp_attribute_t* media_col_db = ippFindAttribute(
+      ipp.get(), kIppMediaColDatabase, IPP_TAG_BEGIN_COLLECTION);
+  ASSERT_TRUE(media_col_db);
+  EXPECT_THAT(
+      GetMediaColEntries(media_col_db),
+      UnorderedPointwise(
+          EqualsMediaColEntry(),
+          {media_info{5800, 20000}, media_info{5800, 200000},
+           media_info{8000, 20000}, media_info{8000, 200000},
+           media_info{5800, 2540, 0, 0, 0, 0, {}, false, 0, true, 100000},
+           media_info{8000, 2540, 0, 0, 0, 0, {}, false, 0, true, 200000}}));
+}
+
+TEST_F(PrintBackendCupsIppHelperTest,
+       FilterMediaColSizesMultipleVariableEntriesOverlap) {
+  // Multiple variable entries - overlapping.
+  ScopedIppPtr ipp = WrapIpp(ippNew());
+  MakeMediaColDatabase(
+      ipp.get(), {
+                     {5800, 20000},
+                     {5800, 200000},
+                     {8000, 20000},
+                     {8000, 200000},
+                     {2540, 4000, 0, 0, 0, 0, {}, true, 8000, true, 100000},
+                     {2540, 5000, 0, 0, 0, 0, {}, true, 8000, true, 200000},
+                 });
+
+  FilterMediaColSizes(ipp);
+  ipp_attribute_t* media_col_db = ippFindAttribute(
+      ipp.get(), kIppMediaColDatabase, IPP_TAG_BEGIN_COLLECTION);
+  ASSERT_TRUE(media_col_db);
+  EXPECT_THAT(
+      GetMediaColEntries(media_col_db),
+      UnorderedPointwise(
+          EqualsMediaColEntry(),
+          {media_info{5800, 20000}, media_info{5800, 200000},
+           media_info{8000, 20000}, media_info{8000, 200000},
+           media_info{5800, 4000, 0, 0, 0, 0, {}, false, 0, true, 100000},
+           media_info{8000, 4000, 0, 0, 0, 0, {}, false, 0, true, 100000},
+           media_info{5800, 5000, 0, 0, 0, 0, {}, false, 0, true, 200000},
+           media_info{8000, 5000, 0, 0, 0, 0, {}, false, 0, true, 200000}}));
+}
+
+TEST_F(PrintBackendCupsIppHelperTest,
+       FilterMediaColSizesMultipleVariableEntriesOverlapOutsideRange) {
+  // Multiple variable entries - overlapping.  The second variable-length entry
+  // will get rejected because there is no fixed width in bounds.
+  ScopedIppPtr ipp = WrapIpp(ippNew());
+  MakeMediaColDatabase(
+      ipp.get(), {
+                     {5800, 20000},
+                     {2540, 4000, 0, 0, 0, 0, {}, true, 8000, true, 100000},
+                     {2540, 5000, 0, 0, 0, 0, {}, true, 3000, true, 200000},
+                 });
+
+  FilterMediaColSizes(ipp);
+  ipp_attribute_t* media_col_db = ippFindAttribute(
+      ipp.get(), kIppMediaColDatabase, IPP_TAG_BEGIN_COLLECTION);
+  ASSERT_TRUE(media_col_db);
+  EXPECT_THAT(
+      GetMediaColEntries(media_col_db),
+      UnorderedPointwise(
+          EqualsMediaColEntry(),
+          {media_info{5800, 20000},
+           media_info{5800, 4000, 0, 0, 0, 0, {}, false, 0, true, 100000}}));
 }
 
 #if BUILDFLAG(IS_CHROMEOS)

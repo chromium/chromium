@@ -38,7 +38,8 @@ class BrowserFrameViewLinux : public OpaqueBrowserFrameView,
 
   // Gets the shadow metrics (radius, offset, and number of shadows).  This will
   // always return shadow values, even if shadows are not actually drawn.
-  static gfx::ShadowValues GetShadowValues();
+  // `active` indicates if the shadow will be drawn on a focused browser window.
+  static gfx::ShadowValues GetShadowValues(bool active);
 
  protected:
   // ui::WindowButtonOrderObserver:

@@ -81,24 +81,6 @@ void BuiltInChromeOsApps::Initialize() {
                         /*should_notify_initialized=*/true);
 }
 
-void BuiltInChromeOsApps::LoadIcon(const std::string& app_id,
-                                   const IconKey& icon_key,
-                                   IconType icon_type,
-                                   int32_t size_hint_in_dip,
-                                   bool allow_placeholder_icon,
-                                   apps::LoadIconCallback callback) {
-  constexpr bool is_placeholder_icon = false;
-  if (icon_key.resource_id != IconKey::kInvalidResourceId) {
-    LoadIconFromResource(
-        /*profile=*/nullptr, /*app_id=*/app_id, icon_type, size_hint_in_dip,
-        icon_key.resource_id, is_placeholder_icon,
-        static_cast<IconEffects>(icon_key.icon_effects), std::move(callback));
-    return;
-  }
-  // On failure, we still run the callback, with an empty IconValue.
-  std::move(callback).Run(std::make_unique<IconValue>());
-}
-
 void BuiltInChromeOsApps::Launch(const std::string& app_id,
                                  int32_t event_flags,
                                  LaunchSource launch_source,

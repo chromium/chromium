@@ -128,7 +128,7 @@ public class AuthenticatorSelectionDialog implements AuthenticatorOptionsAdapter
                         .with(ModalDialogProperties.TITLE,
                                 mContext.getResources().getString(authenticatorOptions.size() > 1
                                                 ? R.string.autofill_card_auth_selection_dialog_title_multiple_options
-                                                : R.string.autofill_payments_authenticator_selection_dialog_title))
+                                                : R.string.autofill_card_unmask_verification_title))
                         .with(ModalDialogProperties.TITLE_ICON,
                                 ResourcesCompat.getDrawable(mContext.getResources(),
                                         R.drawable.google_pay_with_divider, mContext.getTheme()))
@@ -136,7 +136,9 @@ public class AuthenticatorSelectionDialog implements AuthenticatorOptionsAdapter
                                 mContext.getResources().getString(
                                         R.string.autofill_payments_authenticator_selection_dialog_negative_button_label))
                         .with(ModalDialogProperties.POSITIVE_BUTTON_TEXT,
-                                getPositiveButtonText(mSelectedAuthenticatorOption.getType()));
+                                getPositiveButtonText(mSelectedAuthenticatorOption.getType()))
+                        .with(ModalDialogProperties.BUTTON_STYLES,
+                                ModalDialogProperties.ButtonStyles.PRIMARY_FILLED_NEGATIVE_OUTLINE);
         mDialogModel = builder.build();
         mModalDialogManager.showDialog(mDialogModel, ModalDialogManager.ModalDialogType.TAB);
     }

@@ -173,15 +173,12 @@ SVGAnimatedPropertyBase* SVGTextPathElement::PropertyFromAttribute(
   }
 }
 
-void SVGTextPathElement::SynchronizeSVGAttribute(
-    const QualifiedName& name) const {
-  if (name == AnyQName()) {
-    SVGAnimatedPropertyBase* attrs[]{start_offset_.Get(), method_.Get(),
-                                     spacing_.Get()};
-    SynchronizeAllSVGAttributes(attrs);
-  }
-  SVGURIReference::SynchronizeSVGAttribute(name);
-  SVGTextContentElement::SynchronizeSVGAttribute(name);
+void SVGTextPathElement::SynchronizeAllSVGAttributes() const {
+  SVGAnimatedPropertyBase* attrs[]{start_offset_.Get(), method_.Get(),
+                                   spacing_.Get()};
+  SynchronizeListOfSVGAttributes(attrs);
+  SVGURIReference::SynchronizeAllSVGAttributes();
+  SVGTextContentElement::SynchronizeAllSVGAttributes();
 }
 
 }  // namespace blink

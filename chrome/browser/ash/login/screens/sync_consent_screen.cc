@@ -9,6 +9,7 @@
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_pref_names.h"
 #include "ash/constants/ash_switches.h"
+#include "ash/webui/settings/public/constants/routes.mojom.h"
 #include "base/check.h"
 #include "base/check_is_test.h"
 #include "base/check_op.h"
@@ -17,7 +18,6 @@
 #include "base/memory/weak_ptr.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/task/single_thread_task_runner.h"
-#include "chrome/browser/ash/account_manager/account_apps_availability.h"
 #include "chrome/browser/ash/crosapi/browser_util.h"
 #include "chrome/browser/ash/login/wizard_controller.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
@@ -29,7 +29,6 @@
 #include "chrome/browser/ui/settings_window_manager_chromeos.h"
 #include "chrome/browser/ui/webui/ash/login/sync_consent_screen_handler.h"
 #include "chrome/browser/ui/webui/settings/ash/pref_names.h"
-#include "chrome/browser/ui/webui/settings/chromeos/constants/routes.mojom.h"
 #include "chrome/browser/unified_consent/unified_consent_service_factory.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/common/webui_url_constants.h"
@@ -53,6 +52,7 @@ namespace {
 constexpr char kUserActionContinue[] = "continue";
 constexpr char kUserActionLacrosSync[] = "sync-everything";
 constexpr char kUserActionLacrosCustom[] = "sync-custom";
+constexpr char kUserActionLacrosDecline[] = "lacros-decline";
 // OS Sync type options
 constexpr char kOsApps[] = "osApps";
 constexpr char kOsPreferences[] = "osPreferences";
@@ -132,6 +132,8 @@ std::string SyncConsentScreen::GetResultString(Result result) {
   switch (result) {
     case Result::NEXT:
       return "Next";
+    case Result::DECLINE:
+      return "DeclineOnLacros";
     case Result::NOT_APPLICABLE:
       return BaseScreen::kNotApplicable;
   }
@@ -200,6 +202,7 @@ void SyncConsentScreen::Finish(Result result) {
                       service->GetUserSettings()->IsSyncEverythingEnabled();
   base::UmaHistogramBoolean("OOBE.SyncConsentScreen.SyncEnabled", sync_enabled);
   if (test_exit_delegate_) {
+    CHECK_IS_TEST();
     test_exit_delegate_->OnSyncConsentScreenExit(result, exit_callback_);
   } else {
     exit_callback_.Run(result);
@@ -246,14 +249,11 @@ void SyncConsentScreen::ShowImpl() {
     view_->ShowLoadedStep(IsOsSyncLacros());
   }
 
-  bool is_arc_restricted =
-      AccountAppsAvailability::IsArcAccountRestrictionsEnabled();
-
   // Show the entire screen.
   // If SyncScreenBehavior is show, this should show the sync consent screen.
   // If SyncScreenBehavior is unknown, this should show the loading throbber.
   if (view_)
-    view_->Show(is_arc_restricted);
+    view_->Show(crosapi::browser_util::IsLacrosEnabled());
 }
 
 void SyncConsentScreen::HideImpl() {
@@ -442,7 +442,7 @@ void SyncConsentScreen::PrepareScreenBasedOnCapability() {
 
 // Check if OSSyncRevamp and Lacros are enabled.
 bool SyncConsentScreen::IsOsSyncLacros() {
-  return AccountAppsAvailability::IsArcAccountRestrictionsEnabled() &&
+  return crosapi::browser_util::IsLacrosEnabled() &&
          features::IsOsSyncConsentRevampEnabled();
 }
 
@@ -553,12 +553,34 @@ void SyncConsentScreen::OnUserAction(const base::Value::List& args) {
     sync_settings->SetSelectedOsTypes(/*sync_all_os_types=*/true, os_empty_set);
 
     if (test_exit_delegate_) {
+      CHECK_IS_TEST();
       test_exit_delegate_->OnSyncConsentScreenExit(Result::NEXT,
                                                    exit_callback_);
     } else {
       exit_callback_.Run(Result::NEXT);
     }
 
+    return;
+  }
+  if (action_id == kUserActionLacrosDecline) {
+    CHECK_EQ(args.size(), 1u);
+    syncer::SyncService* sync_service = GetSyncService(profile_);
+    syncer::SyncUserSettings* sync_settings = sync_service->GetUserSettings();
+
+    base::UmaHistogramBoolean(
+        "OOBE.SyncConsentScreen.LacrosSyncOptIns.SyncEverything", false);
+
+    syncer::UserSelectableOsTypeSet os_empty_set;
+    sync_settings->SetSelectedOsTypes(/*sync_all_os_types=*/false,
+                                      os_empty_set);
+
+    if (test_exit_delegate_) {
+      CHECK_IS_TEST();
+      test_exit_delegate_->OnSyncConsentScreenExit(Result::DECLINE,
+                                                   exit_callback_);
+    } else {
+      exit_callback_.Run(Result::DECLINE);
+    }
     return;
   }
   if (action_id == kUserActionLacrosCustom) {
@@ -603,6 +625,7 @@ void SyncConsentScreen::OnUserAction(const base::Value::List& args) {
                                      wallpaper_synced);
 
     if (test_exit_delegate_) {
+      CHECK_IS_TEST();
       test_exit_delegate_->OnSyncConsentScreenExit(Result::NEXT,
                                                    exit_callback_);
     } else {

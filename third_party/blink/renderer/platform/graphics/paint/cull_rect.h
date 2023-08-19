@@ -8,7 +8,7 @@
 #include <limits>
 
 #include "third_party/abseil-cpp/absl/types/optional.h"
-#include "third_party/blink/renderer/platform/geometry/layout_rect.h"
+#include "third_party/blink/renderer/platform/geometry/infinite_int_rect.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 #include "ui/gfx/geometry/rect.h"
@@ -20,7 +20,6 @@ class RectF;
 namespace blink {
 
 class AffineTransform;
-class LayoutRect;
 class LayoutUnit;
 class PropertyTreeState;
 class TransformPaintPropertyNode;
@@ -32,9 +31,9 @@ class PLATFORM_EXPORT CullRect {
   CullRect() = default;
   explicit CullRect(const gfx::Rect& rect) : rect_(rect) {}
 
-  static CullRect Infinite() { return CullRect(LayoutRect::InfiniteIntRect()); }
+  static CullRect Infinite() { return CullRect(InfiniteIntRect()); }
 
-  bool IsInfinite() const { return rect_ == LayoutRect::InfiniteIntRect(); }
+  bool IsInfinite() const { return rect_ == InfiniteIntRect(); }
 
   bool Intersects(const gfx::Rect&) const;
   bool IntersectsTransformed(const AffineTransform&, const gfx::RectF&) const;

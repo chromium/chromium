@@ -93,7 +93,7 @@ class BASE_EXPORT MessagePumpLibevent : public MessagePump,
     friend class RefCounted<EpollInterest>;
     ~EpollInterest();
 
-    const raw_ptr<FdWatchController, DanglingUntriaged> controller_;
+    const raw_ptr<FdWatchController, AcrossTasksDanglingUntriaged> controller_;
     const EpollInterestParams params_;
     bool active_ = true;
     bool was_controller_destroyed_ = false;

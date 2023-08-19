@@ -211,16 +211,17 @@ def _CheckStyle(input_api, output_api):
         input_api.os_path.relpath(file_path, input_api.PresubmitLocalPath())
         for file_path in files if input_api.fnmatch.fnmatch(file_path, '*.py')
     ]
-    pylintrc = input_api.os_path.join('tools', 'blinkpy', 'pylintrc')
-    results.extend(
-        input_api.RunTests(
-            input_api.canned_checks.GetPylint(
-                input_api,
-                output_api,
-                files_to_check=[
-                    re.escape(path) for path in affected_python_files
-                ],
-                pylintrc=pylintrc)))
+    if affected_python_files:
+        pylintrc = input_api.os_path.join('tools', 'blinkpy', 'pylintrc')
+        results.extend(
+            input_api.RunTests(
+                input_api.canned_checks.GetPylint(
+                    input_api,
+                    output_api,
+                    files_to_check=[
+                        re.escape(path) for path in affected_python_files
+                    ],
+                    pylintrc=pylintrc)))
     return results
 
 

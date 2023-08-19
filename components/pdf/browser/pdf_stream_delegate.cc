@@ -13,13 +13,12 @@ PdfStreamDelegate::PdfStreamDelegate() = default;
 PdfStreamDelegate::~PdfStreamDelegate() = default;
 
 absl::optional<GURL> PdfStreamDelegate::MapToOriginalUrl(
-    content::WebContents* contents,
-    const GURL& stream_url) {
+    content::NavigationHandle& navigation_handle) {
   return absl::nullopt;
 }
 
 absl::optional<PdfStreamDelegate::StreamInfo> PdfStreamDelegate::GetStreamInfo(
-    content::WebContents* contents) {
+    content::RenderFrameHost* embedder_frame) {
   return absl::nullopt;
 }
 

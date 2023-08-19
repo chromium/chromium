@@ -12,7 +12,6 @@
 #include "content/public/browser/web_ui_controller.h"
 #include "content/public/browser/webui_config.h"
 #include "content/public/common/url_constants.h"
-#include "ui/base/layout.h"
 
 namespace base {
 class RefCountedString;

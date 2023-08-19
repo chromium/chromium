@@ -7,8 +7,8 @@
 
 #include <CoreFoundation/CoreFoundation.h>
 
+#include "base/apple/scoped_cftyperef.h"
 #include "base/gtest_prod_util.h"
-#include "base/mac/scoped_cftyperef.h"
 #include "net/base/net_export.h"
 #include "net/cert/pki/trust_store.h"
 

@@ -16,12 +16,12 @@
 #include <utility>
 #include <vector>
 
+#include "base/apple/osstatus_logging.h"
+#include "base/apple/scoped_cftyperef.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/functional/callback_helpers.h"
 #include "base/logging.h"
-#include "base/mac/mac_logging.h"
-#include "base/mac/scoped_cftyperef.h"
 #include "base/ranges/algorithm.h"
 #include "base/strings/sys_string_conversions.h"
 #include "base/synchronization/lock.h"
@@ -76,17 +76,10 @@ OSStatus CopyCertChain(SecCertificateRef cert_handle,
   // Evaluate trust, which creates the cert chain.
   {
     base::AutoLock lock(crypto::GetMacSecurityServicesLock());
-    if (__builtin_available(macOS 10.14, *)) {
-      // The return value is intentionally ignored since we only care about
-      // building a cert chain, not whether it is trusted (the server is the
-      // only one that can decide that.)
-      std::ignore = SecTrustEvaluateWithError(trust, nullptr);
-    } else {
-      SecTrustResultType status;
-      result = SecTrustEvaluate(trust, &status);
-      if (result)
-        return result;
-    }
+    // The return value is intentionally ignored since we only care about
+    // building a cert chain, not whether it is trusted (the server is the
+    // only one that can decide that.)
+    std::ignore = SecTrustEvaluateWithError(trust, nullptr);
     *out_cert_chain = x509_util::CertificateChainFromSecTrust(trust);
   }
   return result;

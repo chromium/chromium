@@ -249,6 +249,7 @@ bool CanShowDropdownHere(int item_height,
       element_bounds.bottom() > content_area_bounds.y() &&
       element_bounds.bottom() <= content_area_bounds.bottom();
 
+  // TODO(crbug.com/1455336): Test the space on the left/right or forbid it explicitly.
   return (enough_space_for_one_item_in_content_area_above_element &&
           element_top_is_within_content_area_bounds) ||
          (enough_space_for_one_item_in_content_area_below_element &&
@@ -532,10 +533,19 @@ BubbleBorder::Arrow GetOptimalPopupPlacement(
   return arrow;
 }
 
-bool IsFooterFrontendId(PopupItemId frontend_id) {
-  switch (frontend_id) {
+bool IsGroupFillingPopupItemId(PopupItemId popup_item_id) {
+  switch (popup_item_id) {
+    case PopupItemId::kFillFullAddress:
+    case PopupItemId::kFillFullName:
+      return true;
+    default:
+      return false;
+  }
+}
+
+bool IsFooterPopupItemId(PopupItemId popup_item_id) {
+  switch (popup_item_id) {
     case PopupItemId::kScanCreditCard:
-    case PopupItemId::kCreditCardSigninPromo:
     case PopupItemId::kPasswordAccountStorageEmpty:
     case PopupItemId::kPasswordAccountStorageOptIn:
     case PopupItemId::kPasswordAccountStorageReSignin:
@@ -543,9 +553,11 @@ bool IsFooterFrontendId(PopupItemId frontend_id) {
     case PopupItemId::kShowAccountCards:
     case PopupItemId::kUseVirtualCard:
     case PopupItemId::kAllSavedPasswordsEntry:
+    case PopupItemId::kFillEverythingFromAddressProfile:
     case PopupItemId::kClearForm:
     case PopupItemId::kAutofillOptions:
     case PopupItemId::kSeePromoCodeDetails:
+    case PopupItemId::kDeleteAddressProfile:
       return true;
     default:
       return false;

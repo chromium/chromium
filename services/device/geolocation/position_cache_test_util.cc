@@ -8,6 +8,7 @@
 
 #include "base/check_op.h"
 #include "base/uuid.h"
+#include "services/device/public/mojom/geolocation_internals.mojom.h"
 
 namespace device {
 namespace testing {
@@ -15,7 +16,7 @@ namespace testing {
 WifiData CreateUniqueWifiData(int number_of_access_points) {
   WifiData wifi_data;
   for (int i = 0; i < number_of_access_points; ++i) {
-    AccessPointData single_access_point;
+    mojom::AccessPointData single_access_point;
     single_access_point.channel = 2;
     single_access_point.mac_address =
         base::Uuid::GenerateRandomV4().AsLowercaseString();

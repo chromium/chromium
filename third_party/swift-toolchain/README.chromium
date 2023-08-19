@@ -6,6 +6,7 @@ Date: 2023 March 30
 License: Apache 2.0
 License File: LICENSE
 Security Critical: no
+Shipped: no
 
 Description:
 Compile all Swift with a consistent toolchain

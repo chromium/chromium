@@ -451,14 +451,11 @@ test.util.sync.taskWasExecuted = (contentWindow, descriptor, fileNames) => {
     console.error('Please call overrideTasks() first.');
     return null;
   }
+  const fileNamesStr = JSON.stringify(fileNames);
   const task = test.util.executedTasks_.find(
-      task => util.descriptorEqual(task.descriptor, descriptor));
-  if (!task) {
-    return false;
-  }
-
-  return JSON.stringify(fileNames) ===
-      JSON.stringify(task.entries.map(e => e.name));
+      task => util.descriptorEqual(task.descriptor, descriptor) &&
+          fileNamesStr === JSON.stringify(task.entries.map(e => e.name)));
+  return task !== undefined;
 };
 
 /**

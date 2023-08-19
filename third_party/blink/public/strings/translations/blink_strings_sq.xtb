@@ -26,7 +26,6 @@
 <translation id="2060505056492490888">"<ph name="DOT" />" përdoret në një pozicion të gabuar në "<ph name="INVALIDDOMAIN" />".</translation>
 <translation id="2148716181193084225">Sot</translation>
 <translation id="2226276347425096477">Shkurtoje këtë tekst në <ph name="MAX_CHARACTERS" /> karaktere ose më pak (aktualisht po përdor <ph name="CURRENT_LENGTH" /> karaktere).</translation>
-<translation id="2246498165605549352">Skedari lokal</translation>
 <translation id="2247351761944213033">Java <ph name="WEEKNUMBER" />, <ph name="YEAR" /></translation>
 <translation id="2277199496770840904">Kënga <ph name="NUMBER" /></translation>
 <translation id="2393030564806080191">Vlera e ngjyrave heksadecimale</translation>
@@ -89,6 +88,7 @@
 <translation id="5425179576310518467">data aktuale</translation>
 <translation id="5466621249238537318">Përzgjidh një ose më shumë skedarë.</translation>
 <translation id="5468998798572797635">dil nga ekrani i plotë</translation>
+<translation id="5514612371225420585">Skedar në pajisjen tënde</translation>
 <translation id="5516235301412634559">0,75</translation>
 <translation id="5537725057119320332">Transmeto</translation>
 <translation id="5546461542133609677">aktivizo zërin</translation>
@@ -113,6 +113,7 @@
 <translation id="6398862346408813489">Trego panelin e zgjedhjes mujore</translation>
 <translation id="6404546809543547843">shiriti kohor i audios</translation>
 <translation id="6443871981718447451">shfaq menynë e titrave</translation>
+<translation id="6484738902856791350">Formatimi elegant</translation>
 <translation id="6550675742724504774">Opsionet</translation>
 <translation id="6572309429103589720">Gramatikë e pavlefshme</translation>
 <translation id="658823671542763450">hyr në ekranin e plotë</translation>

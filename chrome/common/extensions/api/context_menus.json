@@ -151,7 +151,7 @@
               "onclick": {
                 "type": "function",
                 "optional": true,
-                "description": "A function that is called back when the menu item is clicked. Event pages cannot use this; instead, they should register a listener for $(ref:contextMenus.onClicked).",
+                "description": "A function that is called back when the menu item is clicked. This is not available inside of a service worker; instead, they should register a listener for $(ref:contextMenus.onClicked).",
                 "parameters": [
                   {
                     "name": "info",

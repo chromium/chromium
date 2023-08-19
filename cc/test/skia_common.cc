@@ -96,8 +96,9 @@ bool AreDisplayListDrawingResultsSame(const gfx::Rect& layer_rect,
 
 Region ImageRectsToRegion(const DiscardableImageMap::Rects& rects) {
   Region region;
-  for (const auto& r : rects.container())
+  for (const auto& r : rects) {
     region.Union(r);
+  }
   return region;
 }
 

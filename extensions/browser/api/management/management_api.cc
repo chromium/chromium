@@ -19,6 +19,7 @@
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/single_thread_task_runner.h"
+#include "base/types/expected_macros.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "components/supervised_user/core/common/buildflags.h"
@@ -362,11 +363,11 @@ ManagementGetPermissionWarningsByManifestFunction::Run() {
 void ManagementGetPermissionWarningsByManifestFunction::OnParse(
     data_decoder::DataDecoder::ValueOrError result) {
   Respond([&]() -> ResponseValue {
-    if (!result.has_value()) {
-      return Error(result.error());
-    }
+    ASSIGN_OR_RETURN(
+        base::Value value, std::move(result),
+        [&](std::string error) { return Error(std::move(error)); });
 
-    const base::Value::Dict* parsed_manifest = result->GetIfDict();
+    const base::Value::Dict* parsed_manifest = value.GetIfDict();
     if (!parsed_manifest) {
       return Error(keys::kManifestParseError);
     }
@@ -611,6 +612,12 @@ void ManagementSetEnabledFunction::OnExtensionApprovalDone(
 ManagementUninstallFunctionBase::ManagementUninstallFunctionBase() = default;
 
 ManagementUninstallFunctionBase::~ManagementUninstallFunctionBase() = default;
+
+bool ManagementUninstallFunctionBase::ShouldKeepWorkerAliveIndefinitely() {
+  // `management.uninstall()` can display and block on an uninstall dialog while
+  // waiting for user confirmation.
+  return true;
+}
 
 ExtensionFunction::ResponseAction ManagementUninstallFunctionBase::Uninstall(
     const std::string& target_extension_id,
@@ -914,106 +921,6 @@ ExtensionFunction::ResponseAction ManagementGenerateAppForLinkFunction::Run() {
 
   // Response is sent async in FinishCreateWebApp().
   return RespondLater();
-}
-
-ManagementCanInstallReplacementAndroidAppFunction::
-    ManagementCanInstallReplacementAndroidAppFunction() {}
-
-ManagementCanInstallReplacementAndroidAppFunction::
-    ~ManagementCanInstallReplacementAndroidAppFunction() {}
-
-ExtensionFunction::ResponseAction
-ManagementCanInstallReplacementAndroidAppFunction::Run() {
-  if (ExtensionsBrowserClient::Get()->IsRunningInForcedAppMode())
-    return RespondNow(Error(keys::kNotAllowedInKioskError));
-
-  if (!extension()->from_webstore()) {
-    return RespondNow(
-        Error(keys::kInstallReplacementAndroidAppNotFromWebstoreError));
-  }
-
-  auto* api_delegate = ManagementAPI::GetFactoryInstance()
-                           ->Get(browser_context())
-                           ->GetDelegate();
-
-  DCHECK(api_delegate);
-
-  if (!api_delegate->CanContextInstallAndroidApps(browser_context())) {
-    return RespondNow(ArgumentList(
-        management::CanInstallReplacementAndroidApp::Results::Create(false)));
-  }
-
-  DCHECK(ReplacementAppsInfo::HasReplacementAndroidApp(extension()));
-
-  const std::string& package_name =
-      ReplacementAppsInfo::GetReplacementAndroidApp(extension());
-
-  api_delegate->CheckAndroidAppInstallStatus(
-      package_name,
-      base::BindOnce(&ManagementCanInstallReplacementAndroidAppFunction::
-                         OnFinishedAndroidAppCheck,
-                     this));
-
-  // Response is sent async in FinishCheckAndroidApp().
-  return RespondLater();
-}
-
-void ManagementCanInstallReplacementAndroidAppFunction::
-    OnFinishedAndroidAppCheck(bool installable) {
-  Respond(
-      ArgumentList(management::CanInstallReplacementAndroidApp::Results::Create(
-          installable)));
-}
-
-ManagementInstallReplacementAndroidAppFunction::
-    ManagementInstallReplacementAndroidAppFunction() {}
-
-ManagementInstallReplacementAndroidAppFunction::
-    ~ManagementInstallReplacementAndroidAppFunction() {}
-
-ExtensionFunction::ResponseAction
-ManagementInstallReplacementAndroidAppFunction::Run() {
-  if (ExtensionsBrowserClient::Get()->IsRunningInForcedAppMode())
-    return RespondNow(Error(keys::kNotAllowedInKioskError));
-
-  if (!extension()->from_webstore()) {
-    return RespondNow(
-        Error(keys::kInstallReplacementAndroidAppNotFromWebstoreError));
-  }
-
-  if (!user_gesture()) {
-    return RespondNow(
-        Error(keys::kGestureNeededForInstallReplacementAndroidAppError));
-  }
-
-  auto* api_delegate = ManagementAPI::GetFactoryInstance()
-                           ->Get(browser_context())
-                           ->GetDelegate();
-
-  DCHECK(api_delegate);
-  if (!api_delegate->CanContextInstallAndroidApps(browser_context())) {
-    return RespondNow(
-        Error(keys::kInstallReplacementAndroidAppInvalidContextError));
-  }
-
-  DCHECK(ReplacementAppsInfo::HasReplacementAndroidApp(extension()));
-
-  api_delegate->InstallReplacementAndroidApp(
-      ReplacementAppsInfo::GetReplacementAndroidApp(extension()),
-      base::BindOnce(&ManagementInstallReplacementAndroidAppFunction::
-                         OnAppInstallInitiated,
-                     this));
-
-  // Response is sent async in OnAppInstallInitiated().
-  return RespondLater();
-}
-
-void ManagementInstallReplacementAndroidAppFunction::OnAppInstallInitiated(
-    bool initiated) {
-  if (!initiated)
-    return Respond(Error(keys::kInstallReplacementAndroidAppCannotInstallApp));
-
-  return Respond(NoArguments());
 }
 
 ManagementInstallReplacementWebAppFunction::

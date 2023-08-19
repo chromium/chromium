@@ -35,7 +35,8 @@
   }
 
   :host-context([chrome-refresh-2023]):host {
-    --image-background-color: var(--cr-fallback-color-tonal-container);
+    --image-background-color: var(
+        --color-side-panel-customize-chrome-theme-snapshot-background);
   }
 
   :host-context([chrome-refresh-2023]) .image-background {
@@ -51,7 +52,8 @@
     width: 272px;
   }
 
-  :host-context([chrome-refresh-2023]) img {
+  :host-context([chrome-refresh-2023]) img,
+  :host-context([chrome-refresh-2023]) svg {
     border: 0;
     border-radius: 8px;
     box-shadow: var(--cr-elevation-2);
@@ -78,11 +80,11 @@
   }
 
   :host-context([chrome-refresh-2023]) .image-background:hover .overlay {
-    background-color: var(--cr-fallback-color-state-hover-on-subtle);
+    background-color: var(--cr-hover-on-subtle-background-color);
   }
 
   paper-ripple {
-    color: var(--cr-fallback-color-state-ripple-neutral-on-subtle);
+    color: var(--cr-active-neutral-on-subtle-background-color);
     z-index: 1;
   }
 
@@ -96,7 +98,9 @@
 <iron-pages selected="[[themeType_]]" attr-for-selected="theme-type">
   <div class="snapshot-container"
       theme-type="customTheme">
-    <div class="image-background">
+    <div class="image-background"
+        id="customThemeImageBackground"
+        on-click="onThemeSnapshotClick_">
       <img class="image" id="customThemeImage" is="cr-auto-img"
           auto-src="[[theme_.backgroundImage.snapshotUrl.url]]"
           draggable="false"
@@ -111,16 +115,18 @@
   </div>
   <div class="snapshot-container"
       theme-type="classicChrome">
-    <div class="image-background image" id="classicChromeBackground">
+    <div class="image-background image"
+        id="classicChromeBackground"
+        on-click="onThemeSnapshotClick_">
       <template is="dom-if" if="[[!chromeRefresh2023Enabled_]]">
         <img id="miniNewTabPage" src="icons/mini_new_tab_page.svg"
             aria-labelledby="classicChromeThemeTitle">
         </img>
       </template>
       <template is="dom-if" if="[[chromeRefresh2023Enabled_]]">
-        <img src="icons/gm3_mini_new_tab_page.svg"
-            aria-labelledby="classicChromeThemeTitle">
-        </img>
+        <svg aria-labelledby="classicChromeThemeTitle">
+          <use href="icons/gm3_mini_new_tab_page.svg#miniNewTabPage"></use>
+        </svg>
       </template>
       <div class="overlay"></div>
       <paper-ripple></paper-ripple>
@@ -131,7 +137,9 @@
   </div>
   <div class="snapshot-container"
       theme-type="uploadedImage">
-    <div class="image-background">
+    <div class="image-background"
+        id="uploadedThemeImageBackground"
+        on-click="onThemeSnapshotClick_">
       <img class="image" id="uploadedThemeImage"
             src="icons/uploaded_image.svg"
             aria-labelledby="uploadedThemeTitle">

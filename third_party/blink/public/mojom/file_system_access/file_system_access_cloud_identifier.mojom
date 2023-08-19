@@ -1,0 +1,15 @@
+// Copyright 2023 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module blink.mojom;
+
+// Cloud identifier returned by registered sync clients for a cloud-synced file
+// or directory.
+struct FileSystemAccessCloudIdentifier {
+  // Identifier for the sync service provider (e.g. "drive.google.com").
+  string provider_name;
+
+  // Identifier given by the provider for the given file/folder.
+  string id;
+};

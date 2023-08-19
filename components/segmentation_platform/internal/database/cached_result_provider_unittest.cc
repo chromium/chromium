@@ -100,7 +100,7 @@ TEST_F(CachedResultProviderTest, CachedResultProviderWithNonEmptyPredResult) {
       metadata_utils::CreateClientResultFromPredResult(
           metadata_utils::CreatePredictionResult(
               /*model_scores=*/{0.8}, GetTestOutputConfigForBinaryClassifier(),
-              /*timestamp=*/base::Time::Now()),
+              /*timestamp=*/base::Time::Now(), /*model_version=*/1),
           /*timestamp=*/base::Time::Now()));
   cached_result_provider_ = std::make_unique<CachedResultProvider>(
       std::move(result_prefs_), configs_);
@@ -139,7 +139,7 @@ TEST_F(CachedResultProviderTest,
   proto::PredictionResult saved_prediction_result =
       metadata_utils::CreatePredictionResult(
           model_scores, GetTestOutputConfigForMultiClassClassifier(),
-          /*timestamp=*/base::Time::Now());
+          /*timestamp=*/base::Time::Now(), /*model_version=*/1);
   result_prefs_->SaveClientResultToPrefs(
       kClientKey, metadata_utils::CreateClientResultFromPredResult(
                       saved_prediction_result,
@@ -163,8 +163,7 @@ TEST_F(CachedResultProviderTest, GetPredictionResultForClient_WithNoResult) {
       std::move(result_prefs_), configs_);
   absl::optional<proto::PredictionResult> retrieved_prediction_result =
       cached_result_provider_->GetPredictionResultForClient(kClientKey);
-  EXPECT_TRUE(retrieved_prediction_result.has_value());
-  EXPECT_EQ(0, retrieved_prediction_result.value().result_size());
+  EXPECT_FALSE(retrieved_prediction_result.has_value());
 }
 
 }  // namespace segmentation_platform

@@ -4,6 +4,8 @@
 
 import {assert, assertNotReached} from '//resources/ash/common/assert.js';
 
+import {loadTimeData} from '../i18n_setup.js';
+
 /**
  * @fileoverview web view loader.
  */
@@ -20,15 +22,37 @@ export const CLEAR_ANCHORS_CONTENT_SCRIPT = {
       '}',
 };
 
-const WEB_VIEW_FONTS_CSS = {
-  code: `body * {
-        font-family: Roboto, sans-serif !important;
-        font-size: 13px !important;
-        line-height: 20px !important;}
-       body h2 {
-         font-size: 15px !important;
-         line-height: 22px !important;}`,
+const GENERATE_FONTS_CSS = () => {
+  const isOobeJellyEnabled = loadTimeData.getBoolean('isOobeJellyEnabled');
+  if (!isOobeJellyEnabled) {
+    return {
+      code: `body * {
+            font-family: Roboto, sans-serif !important;
+            font-size: 13px !important;
+            line-height: 20px !important;}
+            body h2 {
+             font-size: 15px !important;
+             line-height: 22px !important;}`,
+    };
+  }
+
+  return {
+    // 'body *' values correspond to the body2 typography token.
+    // 'body h2' values correspond to the button2 typography token.
+    code: `body * {
+      font-family: 'Google Sans Text Regular', 'Google Sans', 'Roboto', sans-serif !important;
+      font-size: 13px !important;
+      font-weight: 400 !important;
+      line-height: 20px !important;}
+      body h2 {
+       font-family: 'Google Sans Text Medium', 'Google Sans', 'Roboto', sans-serif !important;
+       font-size: 13px !important;
+       font-weight: 500 !important;
+       line-height: 20px !important;}`,
+  };
 };
+
+const WEB_VIEW_FONTS_CSS = GENERATE_FONTS_CSS();
 
 /**
  * Timeout between consequent loads of online webview.
@@ -99,7 +123,7 @@ export class WebViewLoader {
       webview.addEventListener('contentload', () => {
         webview.executeScript(CLEAR_ANCHORS_CONTENT_SCRIPT, () => {
           if (chrome.runtime.lastError) {
-            console.error(
+            console.warn(
                 'Clear anchors script failed: ' +
                 chrome.runtime.lastError.message);
           }

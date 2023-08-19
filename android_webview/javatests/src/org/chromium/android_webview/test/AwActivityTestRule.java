@@ -94,8 +94,11 @@ public class AwActivityTestRule extends BaseActivityTestRule<AwTestRunnerActivit
             @Override
             public void evaluate() throws Throwable {
                 setUp();
-                base.evaluate();
-                tearDown();
+                try {
+                    base.evaluate();
+                } finally {
+                    tearDown();
+                }
             }
         }, description);
     }
@@ -464,7 +467,7 @@ public class AwActivityTestRule extends BaseActivityTestRule<AwTestRunnerActivit
     }
 
     public boolean isHardwareAcceleratedTest() {
-        return !testMethodHasAnnotation(DisableHardwareAccelerationForTest.class);
+        return !testMethodHasAnnotation(DisableHardwareAcceleration.class);
     }
 
     public AwTestContainerView createAwTestContainerViewOnMainSync(final AwContentsClient client) {
@@ -770,7 +773,7 @@ public class AwActivityTestRule extends BaseActivityTestRule<AwTestRunnerActivit
     }
 
     private boolean testMethodHasAnnotation(Class<? extends Annotation> clazz) {
-        return mCurrentTestDescription.getAnnotation(clazz) != null ? true : false;
+        return mCurrentTestDescription.getAnnotation(clazz) != null;
     }
 
     /**

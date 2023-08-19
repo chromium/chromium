@@ -11,10 +11,6 @@
 #import "ios/chrome/browser/ui/overlays/overlay_presentation_context_impl.h"
 #import "ios/chrome/browser/ui/overlays/overlay_presentation_context_view_controller.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 @interface OverlayPresentationContextCoordinator ()
 // Whether the coordinator is started.
 @property(nonatomic, assign, getter=isStarted) BOOL started;

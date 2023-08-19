@@ -49,9 +49,10 @@
 #include <array>
 #include <cstddef>
 #include <cstdint>
-#include <type_traits>
+#include <cstring>
+#include <memory>
 
-#include "absl/base/dynamic_annotations.h"
+#include "absl/base/config.h"
 #include "absl/base/optimization.h"
 #include "absl/base/prefetch.h"
 #include "absl/crc/crc32c.h"

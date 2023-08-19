@@ -24,8 +24,7 @@ RtcEncodedAudioReceiverSourceOptimizer::PerformInProcessOptimization(
       context->GetTaskRunner(TaskType::kInternalMediaRealTime);
 
   auto* new_source = MakeGarbageCollected<RTCEncodedAudioUnderlyingSource>(
-      script_state, std::move(disconnect_callback_),
-      /*is_receiver=*/true);
+      script_state, std::move(disconnect_callback_));
 
   set_underlying_source_.Run(new_source, std::move(current_runner));
 

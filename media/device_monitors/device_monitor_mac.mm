@@ -22,10 +22,6 @@
 #include "base/threading/thread_checker.h"
 #include "media/base/mac/video_capture_device_avfoundation_helpers.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 namespace {
 
 // This class is used to keep track of system devices names and their types.
@@ -129,21 +125,12 @@ void DeviceMonitorMacImpl::ConsolidateDevicesListAndNotify(
 // Forward declaration for use by CrAVFoundationDeviceObserver.
 class SuspendObserverDelegate;
 
-BASE_FEATURE(kUseAVCaptureDeviceDiscoverySessionDeviceMonitor,
-             "UseAVCaptureDeviceDiscoverySessionDeviceMonitor",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 // When enabled, this feature will cache devices in DeviceMonitorMac. In this
 // case, MediaDevicesManager::OnDevicesChanged event will only be sent if
 // DeviceMonitorMac sees a difference in snapshot devices vs cached devices.
 BASE_FEATURE(kCacheResultsInDeviceMonitorMac,
              "CacheResultsInDeviceMonitorMac",
              base::FEATURE_DISABLED_BY_DEFAULT);
-
-NSArray<AVCaptureDevice*>* ListCameras() {
-  return media::GetVideoCaptureDevices(base::FeatureList::IsEnabled(
-      kUseAVCaptureDeviceDiscoverySessionDeviceMonitor));
-}
 
 }  // namespace
 
@@ -235,7 +222,7 @@ void SuspendObserverDelegate::StartObserver(
   // reference which keeps the devices array alive.
   device_thread->PostTaskAndReplyWithResult(
       FROM_HERE, base::BindOnce(^{
-        return ListCameras();
+        return media::GetVideoCaptureDevices();
       }),
       base::BindOnce(&SuspendObserverDelegate::DoStartObserver, this));
 }
@@ -250,7 +237,7 @@ void SuspendObserverDelegate::OnDeviceChanged(
     // array alive.
     device_thread->PostTaskAndReplyWithResult(
         FROM_HERE, base::BindOnce(^{
-          return ListCameras();
+          return media::GetVideoCaptureDevices();
         }),
         base::BindOnce(&SuspendObserverDelegate::DoOnDeviceChanged, this));
   } else {

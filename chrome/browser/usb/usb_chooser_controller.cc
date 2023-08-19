@@ -8,6 +8,7 @@
 #include <utility>
 
 #include "base/functional/bind.h"
+#include "base/ranges/algorithm.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
@@ -88,11 +89,11 @@ void OnDeviceInfoRefreshed(
 
 UsbChooserController::UsbChooserController(
     RenderFrameHost* render_frame_host,
-    std::vector<device::mojom::UsbDeviceFilterPtr> device_filters,
+    blink::mojom::WebUsbRequestDeviceOptionsPtr options,
     blink::mojom::WebUsbService::GetPermissionCallback callback)
     : ChooserController(
           CreateChooserTitle(render_frame_host, IDS_USB_DEVICE_CHOOSER_PROMPT)),
-      filters_(std::move(device_filters)),
+      options_(std::move(options)),
       callback_(std::move(callback)),
       requesting_frame_(render_frame_host) {
   RenderFrameHost* main_frame = requesting_frame_->GetMainFrame();
@@ -260,8 +261,16 @@ void UsbChooserController::GotUsbDeviceList(
 
 bool UsbChooserController::DisplayDevice(
     const device::mojom::UsbDeviceInfo& device_info) const {
-  if (!device::UsbDeviceFilterMatchesAny(filters_, device_info))
+  if (!device::UsbDeviceFilterMatchesAny(options_->filters, device_info)) {
     return false;
+  }
+
+  if (base::ranges::any_of(
+          options_->exclusion_filters, [&device_info](const auto& filter) {
+            return device::UsbDeviceFilterMatches(*filter, device_info);
+          })) {
+    return false;
+  }
 
   if (UsbBlocklist::Get().IsExcluded(device_info))
     return false;

@@ -8,6 +8,7 @@
 #include <iterator>
 
 #include "base/containers/contains.h"
+#include "base/containers/fixed_flat_set.h"
 #include "base/feature_list.h"
 #include "base/notreached.h"
 #include "base/strings/string_number_conversions.h"
@@ -25,7 +26,54 @@ namespace autofill {
 using FieldPrediction =
     AutofillQueryResponse::FormSuggestion::FieldSuggestion::FieldPrediction;
 
+template <>
+struct DenseSetTraits<FieldPrediction::Source> {
+  static constexpr FieldPrediction::Source kMinValue =
+      FieldPrediction::Source(0);
+  static constexpr FieldPrediction::Source kMaxValue =
+      FieldPrediction::Source_MAX;
+  static constexpr bool kPacked = false;
+};
+
 namespace {
+
+// This list includes pairs (heuristic_type, html_type) that express which
+// heuristic predictions should be prioritized over HTML. The list is used for
+// new field types that do not have a clear corresponding HTML type. In these
+// cases, the local heuristics predictions will be used to determine the field
+// overall type.
+static constexpr auto kAutofillHeuristicsVsHtmlOverrides =
+    base::MakeFixedFlatSet<std::pair<ServerFieldType, HtmlFieldType>>(
+        {{ADDRESS_HOME_ADMIN_LEVEL2, HtmlFieldType::kAddressLevel1},
+         {ADDRESS_HOME_ADMIN_LEVEL2, HtmlFieldType::kAddressLevel2},
+         {ADDRESS_HOME_APT_NUM, HtmlFieldType::kAddressLevel2},
+         {ADDRESS_HOME_BETWEEN_STREETS, HtmlFieldType::kAddressLevel2},
+         {ADDRESS_HOME_DEPENDENT_LOCALITY, HtmlFieldType::kAddressLevel1},
+         {ADDRESS_HOME_DEPENDENT_LOCALITY, HtmlFieldType::kAddressLevel2},
+         {ADDRESS_HOME_DEPENDENT_LOCALITY, HtmlFieldType::kAddressLevel3},
+         {ADDRESS_HOME_DEPENDENT_LOCALITY, HtmlFieldType::kAddressLine1},
+         {ADDRESS_HOME_DEPENDENT_LOCALITY, HtmlFieldType::kAddressLine2},
+         {ADDRESS_HOME_DEPENDENT_LOCALITY, HtmlFieldType::kAddressLine3},
+         {ADDRESS_HOME_OVERFLOW, HtmlFieldType::kAddressLine2}});
+
+// This list includes pairs (heuristic_type, server_type) that express which
+// heuristics predictions should be prioritized over server predictions. The
+// list is used for new field types that the server may have learned
+// incorrectly. In these cases, the local heuristics predictions will be used to
+// determine the field type.
+static constexpr auto kAutofillHeuristicsVsServerOverrides =
+    base::MakeFixedFlatSet<std::pair<ServerFieldType, ServerFieldType>>(
+        {{ADDRESS_HOME_ADMIN_LEVEL2, ADDRESS_HOME_CITY},
+         {ADDRESS_HOME_APT_NUM, ADDRESS_HOME_LINE2},
+         {ADDRESS_HOME_APT_NUM, ADDRESS_HOME_HOUSE_NUMBER},
+         {ADDRESS_HOME_BETWEEN_STREETS, ADDRESS_HOME_STREET_ADDRESS},
+         {ADDRESS_HOME_DEPENDENT_LOCALITY, ADDRESS_HOME_CITY},
+         {ADDRESS_HOME_DEPENDENT_LOCALITY, ADDRESS_HOME_STATE},
+         {ADDRESS_HOME_DEPENDENT_LOCALITY, ADDRESS_HOME_LINE1},
+         {ADDRESS_HOME_DEPENDENT_LOCALITY, ADDRESS_HOME_LINE2},
+         {ADDRESS_HOME_DEPENDENT_LOCALITY, ADDRESS_HOME_LINE3},
+         {ADDRESS_HOME_LANDMARK, ADDRESS_HOME_LINE2},
+         {ADDRESS_HOME_OVERFLOW, ADDRESS_HOME_LINE2}});
 
 // Returns true, if the prediction is non-experimental and should be used by
 // autofill or password manager.
@@ -33,10 +81,11 @@ namespace {
 // default prediction. We don't need to store it, because its meaning is that
 // there is no default prediction.
 bool IsDefaultPrediction(const FieldPrediction& prediction) {
-  constexpr DenseSet<FieldPrediction::Source, FieldPrediction::Source_MAX>
-      default_sources = {FieldPrediction::SOURCE_AUTOFILL_DEFAULT,
-                         FieldPrediction::SOURCE_PASSWORDS_DEFAULT,
-                         FieldPrediction::SOURCE_OVERRIDE};
+  constexpr DenseSet<FieldPrediction::Source> default_sources = {
+      FieldPrediction::SOURCE_AUTOFILL_DEFAULT,
+      FieldPrediction::SOURCE_PASSWORDS_DEFAULT,
+      FieldPrediction::SOURCE_OVERRIDE,
+      FieldPrediction::SOURCE_MANUAL_OVERRIDE};
   return default_sources.contains(prediction.source());
 }
 
@@ -104,6 +153,30 @@ bool AreCollapsibleLogEvents(const AutofillField::FieldLogEventType& event1,
   return false;
 }
 
+// Returns whether the `heuristic_type` should be preferred over the
+// `html_type`. For certain field types that have been recently introduced, we
+// want to prioritize local heuristics over the autocomplete type.
+bool PreferHeuristicOverHtml(ServerFieldType heuristic_type,
+                             HtmlFieldType html_type) {
+  return base::FeatureList::IsEnabled(
+             features::kAutofillLocalHeuristicsOverrides) &&
+         base::Contains(kAutofillHeuristicsVsHtmlOverrides,
+                        std::make_pair(heuristic_type, html_type));
+}
+
+// Returns whether the `heuristic_type` should be preferred over the
+// `server_type`. For certain field types that have been recently introduced, we
+// want to prioritize the local heuristics predictions because they are more
+// likely to be accurate. By prioritizing the local heuristics predictions, we
+// can help the server to "learn" the correct classification for these fields.
+bool PreferHeuristicOverServer(ServerFieldType heuristic_type,
+                               ServerFieldType server_type) {
+  return base::FeatureList::IsEnabled(
+             features::kAutofillLocalHeuristicsOverrides) &&
+         base::Contains(kAutofillHeuristicsVsServerOverrides,
+                        std::make_pair(heuristic_type, server_type));
+}
+
 // Util function for `ComputedType`. Returns the values of HtmlFieldType that
 // won't be overridden by heuristics or server predictions, up to a few
 // exceptions. Check function `ComputedType` for more details.
@@ -158,11 +231,11 @@ DenseSet<HtmlFieldType> BelievedHtmlTypes(ServerFieldType heuristic_prediction,
         features::kAutofillServerPrecedenceScopeOverAutocomplete.Get());
   }
   // If the field is credit-card related or the feature
-  // `kAutofillFillAndImportFromMoreFields` is enabled, we always override
-  // unrecognized autocomplete attributes.
+  // `kAutofillPredictionsForAutocompleteUnrecognized` is enabled, we always
+  // override unrecognized autocomplete attributes.
   if (is_credit_card_prediction ||
       base::FeatureList::IsEnabled(
-          features::kAutofillFillAndImportFromMoreFields)) {
+          features::kAutofillPredictionsForAutocompleteUnrecognized)) {
     believed_html_types.erase(HtmlFieldType::kUnrecognized);
   }
   return believed_html_types;
@@ -179,13 +252,15 @@ AutofillField::AutofillField(FieldSignature field_signature) : AutofillField() {
 }
 
 AutofillField::AutofillField(const FormFieldData& field)
-    : FormFieldData(field),
-      parseable_name_(field.name),
-      parseable_label_(field.label) {
+    : FormFieldData(field), parseable_name_(name), parseable_label_(label) {
   field_signature_ =
       CalculateFieldSignatureByNameAndType(name, form_control_type);
   local_type_predictions_.fill(NO_SERVER_DATA);
 }
+
+AutofillField::AutofillField(AutofillField&&) = default;
+
+AutofillField& AutofillField::operator=(AutofillField&&) = default;
 
 AutofillField::~AutofillField() = default;
 
@@ -320,9 +395,16 @@ AutofillType AutofillField::ComputedType() const {
     return AutofillType(server_type());
   }
 
-  // If the explicit type is cc-exp and either the server or heuristics agree
-  // on a 2 vs 4 digit specialization of cc-exp, use that specialization.
-  if (html_type_ == HtmlFieldType::kCreditCardExp) {
+  // TODO(crbug/1441057) Delete this if-statement when
+  // features::kAutofillEnableExpirationDateImprovements has launched. This
+  // should be covered by
+  // FormStructureRationalizer::RationalizeAutocompleteAttributes.
+  //
+  // If the explicit type is cc-exp and either the server or heuristics agree on
+  // a 2 vs 4 digit specialization of cc-exp, use that specialization.
+  if (html_type_ == HtmlFieldType::kCreditCardExp &&
+      !base::FeatureList::IsEnabled(
+          features::kAutofillEnableExpirationDateImprovements)) {
     if (server_type() == CREDIT_CARD_EXP_DATE_2_DIGIT_YEAR ||
         server_type() == CREDIT_CARD_EXP_DATE_4_DIGIT_YEAR) {
       return AutofillType(server_type());
@@ -332,15 +414,22 @@ AutofillType AutofillField::ComputedType() const {
       return AutofillType(heuristic_type());
     }
   }
+
   // In general, the autocomplete attribute has precedence over the other types
-  // of field detection. Except for cases detailed in `BelievedHtmlTypes()`
+  // of field detection. Except for specific cases in PreferHeuristicOverHtml
+  // and also those detailed in `BelievedHtmlTypes()`.
+  if (PreferHeuristicOverHtml(heuristic_type(), html_type())) {
+    return AutofillType(heuristic_type());
+  }
+
   if (BelievedHtmlTypes(heuristic_type(), server_type(),
                         IsCreditCardPrediction())
           .contains(html_type())) {
     return AutofillType(html_type_, html_mode_);
   }
 
-  if (server_type() != NO_SERVER_DATA) {
+  if (server_type() != NO_SERVER_DATA &&
+      !PreferHeuristicOverServer(heuristic_type(), server_type())) {
     // Sometimes the server and heuristics disagree on whether a name field
     // should be associated with an address or a credit card. There was a
     // decision to prefer the heuristics in these cases, but it looks like
@@ -436,12 +525,9 @@ bool AutofillField::HasExpirationDateType() const {
   return base::Contains(kExpirationDateTypes, Type().GetStorableType());
 }
 
-bool AutofillField::HasPredictionDespiteUnrecognizedAutocompleteAttribute()
-    const {
+bool AutofillField::ShouldSuppressSuggestionsAndFillingByDefault() const {
   return html_type_ == HtmlFieldType::kUnrecognized &&
-         !IsCreditCardPrediction() &&
-         base::FeatureList::IsEnabled(
-             features::kAutofillFillAndImportFromMoreFields);
+         !server_type_prediction_is_override() && !IsCreditCardPrediction();
 }
 
 void AutofillField::SetPasswordRequirements(PasswordRequirementsSpec spec) {
@@ -499,6 +585,8 @@ FormControlType AutofillField::FormControlType() const {
     return FormControlType::kRadio;
   } else if (form_control_type == "select-one") {
     return FormControlType::kSelectOne;
+  } else if (form_control_type == "selectlist") {
+    return FormControlType::kSelectlist;
   } else if (form_control_type == "") {
     return FormControlType::kEmpty;
   } else {

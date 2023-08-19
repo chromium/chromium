@@ -4,8 +4,10 @@
 
 #include "third_party/blink/renderer/modules/smart_card/smart_card_util.h"
 #include "services/device/public/mojom/smart_card.mojom-blink.h"
+#include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_smart_card_access_mode.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_smart_card_protocol.h"
+#include "third_party/blink/renderer/core/dom/abort_signal.h"
 
 namespace blink {
 
@@ -40,6 +42,20 @@ device::mojom::blink::SmartCardProtocolsPtr ToMojoSmartCardProtocols(
   }
 
   return result;
+}
+
+void RejectWithAbortionReason(ScriptPromiseResolver* resolver,
+                              AbortSignal* signal) {
+  CHECK(signal->aborted());
+
+  ScriptState* script_state = resolver->GetScriptState();
+  if (!IsInParallelAlgorithmRunnable(resolver->GetExecutionContext(),
+                                     script_state)) {
+    return;
+  }
+
+  ScriptState::Scope script_state_scope(script_state);
+  resolver->Reject(signal->reason(script_state));
 }
 
 }  // namespace blink

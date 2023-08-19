@@ -100,8 +100,9 @@ class SHELL_DIALOGS_EXPORT SelectFileDialog
   //
   // This is optional and should only be used by components that have to live
   // elsewhere in the tree due to layering violations. (For example, because of
-  // a dependency on chrome's extension system.)
-  static void SetFactory(SelectFileDialogFactory* factory);
+  // a dependency on chrome's extension system.) Takes ownership of `factory`,
+  // destroying it on the next SetFactory() call, and leaking otherwise.
+  static void SetFactory(std::unique_ptr<SelectFileDialogFactory> factory);
 
   // Creates a dialog box helper. This is an inexpensive wrapper around the
   // platform-native file selection dialog. |policy| is an optional class that
@@ -233,7 +234,7 @@ class SHELL_DIALOGS_EXPORT SelectFileDialog
       const GURL* caller) = 0;
 
   // The listener to be notified of selection completion.
-  raw_ptr<Listener, DanglingUntriaged> listener_;
+  raw_ptr<Listener, AcrossTasksDanglingUntriaged> listener_;
 
  private:
   // Tests if the file selection dialog can be displayed by

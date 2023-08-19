@@ -75,6 +75,23 @@
       Cancel
     </message>
 
+    <!-- Email consent dialog for price tracking -->
+    <message name="IDS_PRICE_TRACKING_EMAIL_CONSENT_BODY" desc="The main body text that is shown in the price drop email consent dialog offering to send an email notification when the product price drops on any site.">
+      Get emails sent to <ph name="EMAIL">$1<ex>example@example.com</ex></ph> when the price drops on any site.
+    </message>
+    <message name="IDS_PRICE_TRACKING_EMAIL_CONSENT_TITLE" desc="The title of the dialog that shows after a user has tracked a product asking for consent to send price drop email notifications.">
+      Want emails when the price drops?
+    </message>
+    <message name="IDS_PRICE_TRACKING_EMAIL_CONSENT_LEARN_MORE_LINK_TEXT" desc="The text that will link to a help article that explains price tracking shown in the price drop email consent dialog.">
+      Learn more about price tracking
+    </message>
+    <message name="IDS_PRICE_TRACKING_NOT_NOW" desc="The text that shows on the price drop email consent dialog to reject notifications.">
+      No thanks
+    </message>
+    <message name="IDS_PRICE_TRACKING_YES_IM_IN" desc="The text that shows on the price drop email consent dialog to allow notifications.">
+      Yes, I'm in
+    </message>
+
     <message name="IDS_OMNIBOX_TRACKING_PRICE" desc="Text shown for a button in the omnibox when the user is on a product page and the product's price is currently being tracked. User can click this button to open a dialog and view the tracking details or untrack this product from the dialog.">
       Tracking price
     </message>
@@ -107,8 +124,9 @@
       Get email alerts if the price drops on any site
     </message>
     <message name="IDS_BOOKMARK_STAR_DIALOG_TRACK_PRICE_DESCRIPTION_EMAIL_OFF" desc="The description text for the dialog that is shown when a user clicks the bookmark star icon on a product web page. We use this text only if the email notification is currently turned off by the user. It describes what will happen when price tracking is initiated.">
-      Track prices across multiple sites
+      View price drops in the side panel
     </message>
+
 
     <message name="IDS_BOOKMARKS_MANAGER_TRACKED_PRODUCTS" desc="Text shown for a product-specific bookmarks folder in the bookmarks manager. User can click this item to view their tracked product.">
       Tracked products
@@ -193,10 +211,134 @@
       <message name="IDS_SHOPPING_INSIGHTS_SIDE_PANEL_TITLE" desc="The title name of the Shopping Insights feature in the side panel combo box.">
         Shopping Insights
       </message>
+      <message name="IDS_PRICE_HISTORY_TITLE" desc="The title name of the Price History section in the Shopping Insights side panel.">
+        Price History
+      </message>
+      <message name="IDS_PRICE_HISTORY_MULTIPLE_OPTIONS_LOW_PRICE" desc="Text shown in the Price History section in the Shopping Insights side panel, indicating an option has relatively low price.">
+        Low Priced Option
+      </message>
+      <message name="IDS_PRICE_HISTORY_MULTIPLE_OPTIONS_HIGH_PRICE" desc="Text shown in the Price History section in the Shopping Insights side panel, indicating an option has relatively high price.">
+        High Priced Option
+      </message>
+      <message name="IDS_PRICE_HISTORY_MULTIPLE_OPTIONS_TYPICAL_PRICE" desc="Text shown in the Price History section in the Shopping Insights side panel, indicating an option's price is typical.">
+        Typical Price
+      </message>
+      <message name="IDS_SHOPPING_INSIGHTS_SIDE_PANEL_TRACK_PRICE_TITLE" desc="The title name of the Price Tracking section in the Shopping Insights side panel.">
+        Save and Track Price
+      </message>
+      <message name="IDS_SHOPPING_INSIGHTS_ICON_EXPANDED_TEXT_LOW_PRICE" desc="The expanded text for the price insights icon in the location bar, indicating an option has relatively low price.">
+        Price is Low
+      </message>
+      <message name="IDS_SHOPPING_INSIGHTS_ICON_EXPANDED_TEXT_HIGH_PRICE" desc="The expanded text for the price insights icon in the location bar, indicating an option has relatively high price.">
+        Price is High
+      </message>
+      <message name="IDS_SHOPPING_INSIGHTS_ICON_TOOLTIP_TEXT" desc="The tooltip text for the price insights icon in the location bar.">
+        Shopping Insights
+      </message>
     </if> <!-- use_titlecase -->
     <if expr="not use_titlecase">
       <message name="IDS_SHOPPING_INSIGHTS_SIDE_PANEL_TITLE" desc="The title name of the Shopping Insights feature in the side panel combo box.">
         Shopping insights
+      </message>
+      <message name="IDS_PRICE_HISTORY_TITLE" desc="The title name of the Price History section in the Shopping Insights side panel.">
+        Price history
+      </message>
+      <message name="IDS_PRICE_HISTORY_MULTIPLE_OPTIONS_LOW_PRICE" desc="Text shown in the Price History section in the Shopping Insights side panel, indicating an option has relatively low price.">
+        Low priced option
+      </message>
+      <message name="IDS_PRICE_HISTORY_MULTIPLE_OPTIONS_HIGH_PRICE" desc="Text shown in the Price History section in the Shopping Insights side panel, indicating an option has relatively high price.">
+        High priced option
+      </message>
+      <message name="IDS_PRICE_HISTORY_MULTIPLE_OPTIONS_TYPICAL_PRICE" desc="Text shown in the Price History section in the Shopping Insights side panel, indicating an option's price is typical.">
+        Typical price
+      </message>
+      <message name="IDS_SHOPPING_INSIGHTS_SIDE_PANEL_TRACK_PRICE_TITLE" desc="The title name of the Price Tracking section in the Shopping Insights side panel.">
+        Save and track price
+      </message>
+      <message name="IDS_SHOPPING_INSIGHTS_ICON_EXPANDED_TEXT_LOW_PRICE" desc="The expanded text for the price insights icon in the location bar, indicating an option has relatively low price.">
+        Price is low
+      </message>
+      <message name="IDS_SHOPPING_INSIGHTS_ICON_EXPANDED_TEXT_HIGH_PRICE" desc="The expanded text for the price insights icon in the location bar, indicating an option has relatively high price.">
+        Price is high
+      </message>
+      <message name="IDS_SHOPPING_INSIGHTS_ICON_TOOLTIP_TEXT" desc="The tooltip text for the price insights icon in the location bar.">
+        Shopping insights
+      </message>
+    </if> <!-- not use_titlecase -->
+
+    <message name="IDS_SHOPPING_INSIGHTS_BUYING_OPTIONS" desc="Text shown in Shopping Insights side panel. Clicking this link will bring users to a new tab where users can check price insights of all available buying options.">
+      Buying options
+    </message>
+    <message name="IDS_PRICE_HISTORY_TODAY_PRICE" desc="Text shown on the price history graph indicating today's price.">
+      Today
+    </message>
+    <message name="IDS_PRICE_HISTORY_YESTERDAY_PRICE" desc="Text shown on the price history graph indicating yesterday's price.">
+      Yesterday
+    </message>
+    <message name="IDS_PRICE_HISTORY_DESCRIPTION" desc="The description of the Price History section in the Shopping Insights side panel explaining how the prices are gathered.">
+      Typical prices are based on stores across the web over the past 90 days.
+    </message>
+    <message name="IDS_SHOPPING_INSIGHTS_COLLECT_FEEDBACK" desc="Text shown in Shopping Insights side panel. Clicking this link will pop up the feedback dialog which allows users to share feedback about the feature.">
+      Give feedback
+    </message>
+    <message name="IDS_SHOPPING_INSIGHTS_FEEDBACK_FORM_TITLE" desc="The title name of the feedback form which allows users to share feedback about the Shopping Insights feature.">
+      Tell us about your experience
+    </message>
+    <message name="IDS_PRICE_RANGE_ALL_OPTIONS" desc="Text shown in Shopping Insights side panel indicating the typical price range of all buying options found on the page.">
+      All options typically <ph name="LOW_PRICE">$1<ex>500</ex></ph> - <ph name="HIGH_PRICE">$2<ex>600</ex></ph>
+    </message>
+    <message name="IDS_PRICE_RANGE_ALL_OPTIONS_ONE_TYPICAL_PRICE" desc="Text shown in Shopping Insights side panel indicating the typical price range of all buying options found on the page. This string is used when we only find one typical price instead of a typical range.">
+      All options typically <ph name="TYPICAL_PRICE">$1<ex>500</ex></ph>
+    </message>
+    <message name="IDS_PRICE_RANGE_SINGLE_OPTION" desc="Text shown in Shopping Insights side panel indicating the typical price range. This string is used when we only find one buying option on the page.">
+      Typically <ph name="LOW_PRICE">$1<ex>500</ex></ph> - <ph name="HIGH_PRICE">$2<ex>600</ex></ph>
+    </message>
+    <message name="IDS_PRICE_RANGE_SINGLE_OPTION_ONE_TYPICAL_PRICE" desc="Text shown in Shopping Insights side panel indicating the typical price range. This string is used when we only find one buying option on the page and we only find one typical price for this option instead of a typical range.">
+      Typically <ph name="LOW_PRICE">$1<ex>500</ex></ph>
+    </message>
+    <message name="IDS_PRICE_HISTORY_SINGLE_OPTION_LOW_PRICE" desc="Text shown in the Price History section in the Shopping Insights side panel, indicating this option has relatively low price. This string is used when we only find one buying option on the page.">
+      This price is low
+    </message>
+    <message name="IDS_PRICE_HISTORY_SINGLE_OPTION_HIGH_PRICE" desc="Text shown in the Price History section in the Shopping Insights side panel, indicating this option has relatively high price. This string is used when we only find one buying option on the page.">
+      This price is high
+    </message>
+    <message name="IDS_PRICE_HISTORY_SINGLE_OPTION_TYPICAL_PRICE" desc="Text shown in the Price History section in the Shopping Insights side panel, indicating this option's price is typical. This string is used when we only find one buying option on the page.">
+      This price is typical
+    </message>
+    <message name="IDS_SHOPPING_INSIGHTS_SIDE_PANEL_TRACK_PRICE_DESCRIPTION" desc="The description of the Price Tracking section in the Shopping Insights side panel. Please ignore the period in the end of the sentence in the screenshot and don't put period in the final translation, as the period is handled separately in code.">
+      You'll get email alerts if the price drops on any site
+    </message>
+    <message name="IDS_SHOPPING_INSIGHTS_SIDE_PANEL_TRACK_PRICE_DONE" desc="The description of the Price Tracking section in the Shopping Insights side panel when a user successfully tracks the product displayed on the current web page. It indicates this product is currently being tracked and which bookmarks folder it is saved. Please ignore the period in the end of the sentence in the screenshot and don't put period in the final translation, as the period is handled separately in code.">
+      You’re tracking this product. This page is saved in <ph name="LAST_BOOKMARKS_FOLDER">$1<ex>Other Bookmarks</ex></ph>
+    </message>
+    <message name="IDS_SHOPPING_INSIGHTS_SIDE_PANEL_TRACK_PRICE_ERROR" desc="The description of the Price Tracking section in the Shopping Insights side panel when a user failed to track the product displayed on the current web page. Please ignore the period in the end of the sentence in the screenshot and don't put period in the final translation, as the period is handled separately in code.">
+      Something went wrong. Your change wasn't saved
+    </message>
+
+    <!-- For Desktop Discounts on navigation -->
+    <message name="IDS_DISCOUNT_USE_THIS_CODE_AT_CHECKOUT" desc="Text shown in the discount dialog to tell users where to use the discount code.">
+      Use this code at checkout.
+    </message>
+    <message name="IDS_DISCOUNT_EXPIRATION_DATE" desc="Text shown in the discount dialog to tell users the discount expiration date.">
+      Valid until <ph name="DATE">$1<ex>2023-01-01</ex></ph>.
+    </message>
+    <message name="IDS_DISCOUNT_CODE_COPY_BUTTON_TEXT" desc="The copy button text. User uses this button to copy the discount code, so that they can paste the code during checkout.">
+      Copy
+    </message>
+    <if expr="use_titlecase">
+      <message name="IDS_DISCOUNT_TERMS_AND_CONDITIONS" desc="This text is used in two places. 1) Use as title for the 'Terms and condition' dialog which shows users the additional qualification of the discount. 2) Use as a linked text in the discount dialog, when user clicks the text, it opens the 'Terms and conditions' dialog.">
+        Terms and Conditions
+      </message>
+      <message name="IDS_DISCOUNT_ICON_EXPANDED_TEXT" desc="The text to use when the icon is expanded in the location bar, indicating discount has been found for the viewing product.">
+        Discount Found
+      </message>
+    </if> <!-- use_titlecase -->
+    <if expr="not use_titlecase">
+      <message name="IDS_DISCOUNT_TERMS_AND_CONDITIONS" desc="This text is used in two places. 1) Use as title for the 'Terms and condition' dialog which shows users the additional qualification of the discount. 2) Use as a linked text in the discount dialog, when user clicks the text, it opens the 'Terms and conditions' dialog.">
+        Terms and conditions
+      </message>
+      <message name="IDS_DISCOUNT_ICON_EXPANDED_TEXT" desc="The text to use when the icon is expanded in the location bar, indicating discount has been found for the viewing product.">
+        Discount found
       </message>
     </if> <!-- not use_titlecase -->
   </if>
@@ -254,5 +396,8 @@
   </message>
   <message name="IDS_PRICE_DROP_POPUP_UNTRACK_BUTTON" desc="Text shown on the price drop popup notification below the content text. When users click this button, we untrack this product and will no longer send its price drop to users." formatter_data="android_java">
     Untrack price
+  </message>
+  <message name="IDS_SHOPPING_COLLECTION_FOLDER_NAME" desc="The name of bookmark folder that is automatically created when a user bookmarks a product page.">
+    Shopping collection
   </message>
 </grit-part>

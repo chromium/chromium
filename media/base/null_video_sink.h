@@ -68,7 +68,7 @@ class MEDIA_EXPORT NullVideoSink : public VideoRendererSink {
   scoped_refptr<base::SingleThreadTaskRunner> task_runner_;
 
   bool started_;
-  raw_ptr<RenderCallback, DanglingUntriaged> callback_;
+  raw_ptr<RenderCallback, AcrossTasksDanglingUntriaged> callback_;
 
   // Manages cancellation of periodic Render() callback task.
   base::CancelableRepeatingClosure cancelable_worker_;

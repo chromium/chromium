@@ -50,10 +50,6 @@
 #import "ios/chrome/test/app/chrome_test_util.h"
 #import "testing/gtest/include/gtest/gtest.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 namespace {
 
 fake_server::FakeServer* gSyncFakeServer = nullptr;
@@ -190,7 +186,7 @@ void AddSessionToFakeSyncServer(
   // Header specifics.
   sync_pb::SessionSpecifics header =
       sync_sessions::SessionSyncTestHelper::BuildHeaderSpecificsWithoutWindows(
-          session.tag, session.form_factor);
+          session.tag, session.name, session.form_factor);
   sync_sessions::SessionSyncTestHelper::AddWindowSpecifics(window_id, tab_list,
                                                            &header);
   specifics_list.push_back(header);

@@ -44,7 +44,8 @@ chromium-metrics-reviews@google.com.
 
 <variants name="ImageFetcherClients">
   <variant name=".AnswerSuggestions"
-      summary="Showing cache patterns only for AnswerSuggestions."/>
+      summary="Showing cache patterns only for AnswerSuggestions (valid until
+               M117)."/>
   <variant name=".AssistantDetails"
       summary="Showing cache patterns only for AssistantDetails."/>
   <variant name=".AutofillCardArt"
@@ -58,7 +59,8 @@ chromium-metrics-reviews@google.com.
   <variant name=".EduAccountLoginProfileImageFetcher"
       summary="Profile image fetcher for EDU account login flow"/>
   <variant name=".EntitySuggestions"
-      summary="Showing cache patterns only for EntitySuggestions."/>
+      summary="Showing cache patterns only for EntitySuggestions (valid until
+               M117)."/>
   <variant name=".FedCMAccountChooser"
       summary="Profile image fetcher for FedCM Account chooser."/>
   <variant name=".Feed" summary="Showing cache patterns only for Feed."/>
@@ -68,6 +70,8 @@ chromium-metrics-reviews@google.com.
       summary="Showing cache patterns only for NewTabPageAnimatedLogo."/>
   <variant name=".OfflinePages"
       summary="Showing cache patterns only for OfflinePages."/>
+  <variant name=".Omnibox"
+      summary="Showing cache patterns only for Omnibox (valid since M117)."/>
   <variant name=".PriceDropNotification"
       summary="Images fetched for the icon of price drop notification."/>
   <variant name=".QueryTiles" summary="Showing Query tiles images."/>
@@ -90,67 +94,100 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="ImageAnnotationService.AccessibilityV1.CacheHit"
-    enum="BooleanCacheHit" expires_after="2022-04-24">
+    enum="BooleanCacheHit" expires_after="M122">
   <owner>dtseng@chromium.org</owner>
   <owner>amoylan@chromium.org</owner>
-  <owner>martis@chromium.org</owner>
+  <owner>mschillaci@google.com</owner>
+  <owner>chrome-a11y-core@google.com</owner>
   <summary>
     For each image processed by the image annotation service, records whether or
     not results for the image already existed in the client-side cache. A hit
     means that image data was not transmitted to the image annotation server.
+
+    Warning: This histogram was expired from 2022-04-24 to 2023-06-23; data may
+    be missing. Use data from M117+ only.
   </summary>
 </histogram>
 
 <histogram name="ImageAnnotationService.AccessibilityV1.ClientResult"
-    enum="ImageAnnotationServiceClientResult" expires_after="2022-10-30">
+    enum="ImageAnnotationServiceClientResult" expires_after="M122">
   <owner>dtseng@chromium.org</owner>
   <owner>amoylan@chromium.org</owner>
-  <owner>martis@chromium.org</owner>
+  <owner>mschillaci@google.com</owner>
+  <owner>chrome-a11y-core@google.com</owner>
   <summary>
     For each request made by a client feature to the image annotation service,
     reports the final status of the service response.
+
+    Warning: This histogram was expired from 2022-10-30 to 2023-06-23; data may
+    be missing. Use data from M117+ only.
+  </summary>
+</histogram>
+
+<histogram name="ImageAnnotationService.AccessibilityV1.DescFailure"
+    enum="DescFailureReason" expires_after="M122">
+  <owner>dtseng@chromium.org</owner>
+  <owner>amoylan@chromium.org</owner>
+  <owner>mschillaci@google.com</owner>
+  <owner>chrome-a11y-core@google.com</owner>
+  <summary>
+    For each failed request made by a client feature to the image annotation
+    service, reports the reason for the failure.
   </summary>
 </histogram>
 
 <histogram name="ImageAnnotationService.AccessibilityV1.DescType"
-    enum="ImageAnnotationServiceDescType" expires_after="2022-04-24">
+    enum="ImageAnnotationServiceDescType" expires_after="M122">
   <owner>dtseng@chromium.org</owner>
   <owner>amoylan@chromium.org</owner>
-  <owner>martis@chromium.org</owner>
+  <owner>mschillaci@google.com</owner>
+  <owner>chrome-a11y-core@google.com</owner>
   <summary>
     For each annotation backend run by the image annotation server, records the
     gRPC status reported.
+
+    Warning: This histogram was expired from 2022-04-24 to 2023-06-23; data may
+    be missing. Use data from M117+ only.
   </summary>
 </histogram>
 
 <histogram name="ImageAnnotationService.AccessibilityV1.EncodedJpegSizeKB"
-    units="KB" expires_after="2022-04-24">
+    units="KB" expires_after="M122">
   <owner>dtseng@chromium.org</owner>
   <owner>amoylan@chromium.org</owner>
-  <owner>martis@chromium.org</owner>
+  <owner>mschillaci@google.com</owner>
+  <owner>chrome-a11y-core@google.com</owner>
   <summary>
     For each image sent from a client feature to the image annotation service,
     reports the image's final size (in kilobytes) after resizing and reencoding.
+
+    Warning: This histogram was expired from 2022-04-24 to 2023-06-23; data may
+    be missing. Use data from M117+ only.
   </summary>
 </histogram>
 
 <histogram name="ImageAnnotationService.AccessibilityV1.EngineKnown"
-    enum="BooleanKnown" expires_after="2022-04-24">
+    enum="BooleanKnown" expires_after="M122">
   <owner>dtseng@chromium.org</owner>
   <owner>amoylan@chromium.org</owner>
-  <owner>martis@chromium.org</owner>
+  <owner>mschillaci@google.com</owner>
+  <owner>chrome-a11y-core@google.com</owner>
   <summary>
     For each annotation backend run by the image annotation server, records
     whether or not the backend is recognised by this version of Chrome.
+
+    Warning: This histogram was expired from 2022-04-24 to 2023-06-23; data may
+    be missing. Use data from M117+ only.
   </summary>
 </histogram>
 
 <histogram
     name="ImageAnnotationService.AccessibilityV1.ImageRequestIncludesDesc"
-    enum="BooleanIncluded" expires_after="M105">
+    enum="BooleanIncluded" expires_after="M122">
   <owner>dtseng@chromium.org</owner>
   <owner>amoylan@chromium.org</owner>
-  <owner>martis@chromium.org</owner>
+  <owner>mschillaci@google.com</owner>
+  <owner>chrome-a11y-core@google.com</owner>
   <summary>
     For each image request sent to the image annotation server, records whether
     or not the description backend is included among the requested backends.
@@ -158,126 +195,169 @@ chromium-metrics-reviews@google.com.
     The description backend will not be included when the image is known to
     violate the description model policy (i.e. be too small or have too-high an
     aspect ratio).
+
+    Warning: This histogram was expired from M105 to M117; data may be missing.
+    Use data from M117+ only.
   </summary>
 </histogram>
 
 <histogram
     name="ImageAnnotationService.AccessibilityV1.ImageRequestIncludesIcon"
-    enum="BooleanIncluded" expires_after="M105">
+    enum="BooleanIncluded" expires_after="M122">
   <owner>dtseng@chromium.org</owner>
   <owner>amoylan@chromium.org</owner>
-  <owner>martis@chromium.org</owner>
+  <owner>mschillaci@google.com</owner>
+  <owner>chrome-a11y-core@google.com</owner>
   <summary>
     For each image request sent to the image annotation server, records whether
     or not the icon backend is included among the requested backends.
 
     The icon backend will not be included when the image is known to violate the
     icon model policy (i.e. be too large or have too-high an aspect ratio).
+
+    Warning: This histogram was expired from M105 to M117; data may be missing.
+    Use data from M117+ only.
   </summary>
 </histogram>
 
 <histogram name="ImageAnnotationService.AccessibilityV1.JsonParseSuccess"
-    enum="BooleanSuccess" expires_after="2022-10-31">
+    enum="BooleanSuccess" expires_after="M122">
   <owner>dtseng@chromium.org</owner>
   <owner>amoylan@chromium.org</owner>
-  <owner>martis@chromium.org</owner>
+  <owner>mschillaci@google.com</owner>
+  <owner>chrome-a11y-core@google.com</owner>
   <summary>
     For each non-empty response sent from the image annotation server, records
     whether or not JSON data were successfully parsed from the response body.
+
+    Warning: This histogram was expired from 2022-10-31 to 2023-06-23; data may
+    be missing. Use data from M117+ only.
   </summary>
 </histogram>
 
 <histogram name="ImageAnnotationService.AccessibilityV1.PixelFetchSuccess"
-    enum="BooleanSuccess" expires_after="2022-04-24">
+    enum="BooleanSuccess" expires_after="M122">
   <owner>dtseng@chromium.org</owner>
   <owner>amoylan@chromium.org</owner>
-  <owner>martis@chromium.org</owner>
+  <owner>mschillaci@google.com</owner>
+  <owner>chrome-a11y-core@google.com</owner>
   <summary>
     For each pixel fetch request sent from the image annotation service to a
     client feature, records whether or not encoded pixel data were successfully
     returned to the service.
+
+    Warning: This histogram was expired from 2022-04-24 to 2023-06-23; data may
+    be missing. Use data from M117+ only.
   </summary>
 </histogram>
 
 <histogram name="ImageAnnotationService.AccessibilityV1.ServerHttpResponseCode"
-    enum="HttpResponseCode" expires_after="2022-04-24">
+    enum="HttpResponseCode" expires_after="M122">
   <owner>dtseng@chromium.org</owner>
   <owner>amoylan@chromium.org</owner>
-  <owner>martis@chromium.org</owner>
+  <owner>mschillaci@google.com</owner>
+  <owner>chrome-a11y-core@google.com</owner>
   <summary>
     For each HTTP response from the image annotation server, reports the
     associated HTTP code.
+
+    Warning: This histogram was expired from 2022-04-24 to 2023-06-23; data may
+    be missing. Use data from M117+ only.
   </summary>
 </histogram>
 
 <histogram name="ImageAnnotationService.AccessibilityV1.ServerLatencyMs"
-    units="ms" expires_after="2022-04-24">
+    units="ms" expires_after="M122">
   <owner>dtseng@chromium.org</owner>
   <owner>amoylan@chromium.org</owner>
-  <owner>martis@chromium.org</owner>
+  <owner>mschillaci@google.com</owner>
+  <owner>chrome-a11y-core@google.com</owner>
   <summary>
     For each HTTP response from the image annotation server, reports the time
     elapsed (in milliseconds) since the corresponding request was sent.
+
+    Warning: This histogram was expired from 2022-04-24 to 2023-06-23; data may
+    be missing. Use data from M117+ only.
   </summary>
 </histogram>
 
 <histogram name="ImageAnnotationService.AccessibilityV1.ServerNetError"
-    enum="NetErrorCodes" expires_after="2022-04-24">
+    enum="NetErrorCodes" expires_after="M122">
   <owner>dtseng@chromium.org</owner>
   <owner>amoylan@chromium.org</owner>
-  <owner>martis@chromium.org</owner>
+  <owner>mschillaci@google.com</owner>
+  <owner>chrome-a11y-core@google.com</owner>
   <summary>
     For each HTTP request sent to the image annotation server, reports the net
     error (or OK status) of the request.
+
+    Warning: This histogram was expired from 2022-04-24 to 2023-06-23; data may
+    be missing. Use data from M117+ only.
   </summary>
 </histogram>
 
 <histogram name="ImageAnnotationService.AccessibilityV1.ServerRequestSizeKB"
-    units="KB" expires_after="2022-04-24">
+    units="KB" expires_after="M122">
   <owner>dtseng@chromium.org</owner>
   <owner>amoylan@chromium.org</owner>
-  <owner>martis@chromium.org</owner>
+  <owner>mschillaci@google.com</owner>
+  <owner>chrome-a11y-core@google.com</owner>
   <summary>
     For each HTTP request sent to the image annotation server, reports the size
     of the request. Measured in kilobytes, since a request can contain the pixel
     data of multiple images.
+
+    Warning: This histogram was expired from 2022-04-24 to 2023-06-23; data may
+    be missing. Use data from M117+ only.
   </summary>
 </histogram>
 
 <histogram
     name="ImageAnnotationService.AccessibilityV1.ServerResponseSizeBytes"
-    units="bytes" expires_after="2022-04-24">
+    units="bytes" expires_after="M122">
   <owner>dtseng@chromium.org</owner>
   <owner>amoylan@chromium.org</owner>
-  <owner>martis@chromium.org</owner>
+  <owner>mschillaci@google.com</owner>
+  <owner>chrome-a11y-core@google.com</owner>
   <summary>
     For each HTTP response from the image annotation server, reports the
     response size in bytes.
+
+    Warning: This histogram was expired from 2022-04-24 to 2023-06-23; data may
+    be missing. Use data from M117+ only.
   </summary>
 </histogram>
 
 <histogram name="ImageAnnotationService.AccessibilityV1.SourcePixelCount"
-    units="pixels" expires_after="2022-04-24">
+    units="pixels" expires_after="M122">
   <owner>dtseng@chromium.org</owner>
   <owner>amoylan@chromium.org</owner>
-  <owner>martis@chromium.org</owner>
+  <owner>mschillaci@google.com</owner>
+  <owner>chrome-a11y-core@google.com</owner>
   <summary>
     For each image sent from a client feature to the image annotation service,
     reports the image's original (i.e. pre-scaling) area in pixels. Images with
     pixel count above a certain threshold will be resized prior to transmission.
+
+    Warning: This histogram was expired from 2022-04-24 to 2023-06-23; data may
+    be missing. Use data from M117+ only.
   </summary>
 </histogram>
 
 <histogram
     name="ImageAnnotationService.{ImageAnnotationServiceAnnotationType}AccessibilityV1.Confidence"
-    units="%" expires_after="2022-04-24">
+    units="%" expires_after="M122">
   <owner>dtseng@chromium.org</owner>
   <owner>amoylan@chromium.org</owner>
-  <owner>martis@chromium.org</owner>
+  <owner>mschillaci@google.com</owner>
+  <owner>chrome-a11y-core@google.com</owner>
   <summary>
     For each annotation of the given type returned by the image annotation
     server, records the confidence (as a percentage) produced by the ML model
     for the annotation. {ImageAnnotationServiceAnnotationType}
+
+    Warning: This histogram was expired from 2022-04-24 to 2023-06-23; data may
+    be missing. Use data from M117+ only.
   </summary>
   <token key="ImageAnnotationServiceAnnotationType"
       variants="ImageAnnotationServiceAnnotationType"/>
@@ -285,15 +365,19 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="ImageAnnotationService.{ImageAnnotationServiceAnnotationType}AccessibilityV1.Empty"
-    enum="BooleanEmpty" expires_after="2022-04-24">
+    enum="BooleanEmpty" expires_after="M122">
   <owner>dtseng@chromium.org</owner>
   <owner>amoylan@chromium.org</owner>
-  <owner>martis@chromium.org</owner>
+  <owner>mschillaci@google.com</owner>
+  <owner>chrome-a11y-core@google.com</owner>
   <summary>
     For each annotation of the given type returned by the image annotation
     server, records whether or not the text of the annotation was empty. This is
     sometimes valid, e.g. for text extraction (OCR) on an image that does not
     contain any text. {ImageAnnotationServiceAnnotationType}
+
+    Warning: This histogram was expired from 2022-04-24 to 2023-06-23; data may
+    be missing. Use data from M117+ only.
   </summary>
   <token key="ImageAnnotationServiceAnnotationType"
       variants="ImageAnnotationServiceAnnotationType"/>
@@ -301,20 +385,24 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="ImageAnnotationService.{ImageAnnotationServiceAnnotationType}AccessibilityV1.Status"
-    enum="GoogleRpcCode" expires_after="2022-04-24">
+    enum="GoogleRpcCode" expires_after="M122">
   <owner>dtseng@chromium.org</owner>
   <owner>amoylan@chromium.org</owner>
-  <owner>martis@chromium.org</owner>
+  <owner>mschillaci@google.com</owner>
+  <owner>chrome-a11y-core@google.com</owner>
   <summary>
     For each annotation backend run by the image annotation server, records the
     gRPC status reported. {ImageAnnotationServiceAnnotationType}
+
+    Warning: This histogram was expired from 2022-04-24 to 2023-06-23; data may
+    be missing. Use data from M117+ only.
   </summary>
   <token key="ImageAnnotationServiceAnnotationType"
       variants="ImageAnnotationServiceAnnotationType"/>
 </histogram>
 
 <histogram name="ImageFetcher.CacheMetadataCount{ImageFetcherCacheStrategy}"
-    units="records" expires_after="2023-06-01">
+    units="records" expires_after="2024-01-20">
   <owner>fgorski@chromium.org</owner>
   <owner>wylieb@chromium.org</owner>
   <summary>
@@ -326,7 +414,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="ImageFetcher.CacheSize{ImageFetcherCacheStrategy}" units="KB"
-    expires_after="2023-06-01">
+    expires_after="2024-01-20">
   <owner>fgorski@chromium.org</owner>
   <owner>wylieb@chromium.org</owner>
   <summary>
@@ -337,7 +425,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="ImageFetcher.Events{ImageFetcherClients}"
-    enum="ImageFetcherEvent" expires_after="2023-06-01">
+    enum="ImageFetcherEvent" expires_after="2024-01-20">
   <owner>fgorski@chromium.org</owner>
   <owner>wylieb@chromium.org</owner>
   <summary>
@@ -351,7 +439,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="ImageFetcher.ImageLoadFromCacheTimeJava{ImageFetcherClients}"
-    units="ms" expires_after="2023-06-01">
+    units="ms" expires_after="2024-01-20">
   <owner>fgorski@chromium.org</owner>
   <owner>wylieb@chromium.org</owner>
   <summary>
@@ -364,7 +452,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="ImageFetcher.ImageLoadFromCacheTime{ImageFetcherClients}"
-    units="ms" expires_after="2023-06-01">
+    units="ms" expires_after="2024-01-20">
   <owner>fgorski@chromium.org</owner>
   <owner>wylieb@chromium.org</owner>
   <summary>
@@ -377,7 +465,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="ImageFetcher.ImageLoadFromNativeTimeJava{ImageFetcherClients}"
-    units="ms" expires_after="2023-06-01">
+    units="ms" expires_after="2024-01-20">
   <owner>fgorski@chromium.org</owner>
   <owner>wylieb@chromium.org</owner>
   <summary>
@@ -391,7 +479,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="ImageFetcher.ImageLoadFromNetworkAfterCacheHit{ImageFetcherClients}"
-    units="ms" expires_after="2023-06-01">
+    units="ms" expires_after="2024-01-20">
   <owner>fgorski@chromium.org</owner>
   <owner>wylieb@chromium.org</owner>
   <summary>
@@ -404,7 +492,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="ImageFetcher.ImageLoadFromNetworkTime{ImageFetcherClients}"
-    units="ms" expires_after="2023-06-01">
+    units="ms" expires_after="2024-01-20">
   <owner>fgorski@chromium.org</owner>
   <owner>wylieb@chromium.org</owner>
   <summary>
@@ -417,7 +505,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="ImageFetcher.LoadImageMetadata" units="ms"
-    expires_after="2023-06-01">
+    expires_after="2024-01-20">
   <owner>fgorski@chromium.org</owner>
   <owner>wylieb@chromium.org</owner>
   <summary>
@@ -426,7 +514,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="ImageFetcher.RequestStatusCode{ImageFetcherClients}"
-    enum="CombinedHttpResponseAndNetErrorCode" expires_after="2023-06-01">
+    enum="CombinedHttpResponseAndNetErrorCode" expires_after="2024-01-20">
   <owner>fgorski@chromium.org</owner>
   <owner>wylieb@chromium.org</owner>
   <summary>
@@ -440,7 +528,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="ImageFetcher.TimeSinceLastCacheLRUEviction" units="ms"
-    expires_after="2023-06-01">
+    expires_after="2024-01-20">
   <owner>fgorski@chromium.org</owner>
   <owner>wylieb@chromium.org</owner>
   <summary>

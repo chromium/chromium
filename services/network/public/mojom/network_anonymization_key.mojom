@@ -7,10 +7,19 @@ module network.mojom;
 import "mojo/public/mojom/base/unguessable_token.mojom";
 import "services/network/public/mojom/schemeful_site.mojom";
 
-// Mapped to net::NetworkAnonymizationKey.
-struct NetworkAnonymizationKey {
-  SchemefulSite? top_frame_site;
+// Used to represent an empty `net::NetworkAnonymizationKey`.
+struct EmptyNetworkAnonymizationKey {
+};
+
+struct NonEmptyNetworkAnonymizationKey {
+  SchemefulSite top_frame_site;
   bool is_cross_site;
 
   mojo_base.mojom.UnguessableToken? nonce;
+};
+
+// Mapped to `net::NetworkAnonymizationKey`.
+union NetworkAnonymizationKey {
+  EmptyNetworkAnonymizationKey empty;
+  NonEmptyNetworkAnonymizationKey non_empty;
 };

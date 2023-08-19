@@ -50,20 +50,46 @@ void RecordSurfaceWithoutWarningShown(WarningSurface surface) {
 void RecordWarningActionAdded(WarningAction action) {
   base::UmaHistogramEnumeration("Download.WarningData.ActionAdded", action);
 }
+
 }  // namespace
 
 // static
 const char DownloadItemWarningData::kKey[] = "DownloadItemWarningData key";
 
 // static
-std::vector<WarningActionEvent> DownloadItemWarningData::GetWarningActionEvents(
-    const DownloadItem* download) {
+template <typename F, typename V>
+V DownloadItemWarningData::GetWithDefault(const DownloadItem* download,
+                                          F&& f,
+                                          V&& default_value) {
+  if (!download) {
+    return default_value;
+  }
   DownloadItemWarningData* data =
       static_cast<DownloadItemWarningData*>(download->GetUserData(kKey));
-  if (!data || data->warning_first_shown_time_.is_null()) {
-    return {};
+  if (!data) {
+    return default_value;
   }
-  return data->action_events_;
+  return base::invoke(std::forward<F>(f), *data);
+}
+
+// static
+DownloadItemWarningData* DownloadItemWarningData::GetOrCreate(
+    DownloadItem* download) {
+  DownloadItemWarningData* data =
+      static_cast<DownloadItemWarningData*>(download->GetUserData(kKey));
+  if (!data) {
+    data = new DownloadItemWarningData();
+    download->SetUserData(kKey, base::WrapUnique(data));
+  }
+
+  return data;
+}
+
+// static
+std::vector<WarningActionEvent> DownloadItemWarningData::GetWarningActionEvents(
+    const DownloadItem* download) {
+  return GetWithDefault(download, &DownloadItemWarningData::ActionEvents,
+                        std::vector<WarningActionEvent>());
 }
 
 // static
@@ -75,12 +101,7 @@ void DownloadItemWarningData::AddWarningActionEvent(DownloadItem* download,
         AddWarningActionEventOutcome::NOT_ADDED_MISSING_DOWNLOAD);
     return;
   }
-  DownloadItemWarningData* data =
-      static_cast<DownloadItemWarningData*>(download->GetUserData(kKey));
-  if (!data) {
-    data = new DownloadItemWarningData();
-    download->SetUserData(kKey, base::WrapUnique(data));
-  }
+  DownloadItemWarningData* data = GetOrCreate(download);
   if (action == WarningAction::SHOWN) {
     if (data->warning_first_shown_time_.is_null()) {
       RecordAddWarningActionEventOutcome(
@@ -116,6 +137,42 @@ void DownloadItemWarningData::AddWarningActionEvent(DownloadItem* download,
   RecordAddWarningActionEventOutcome(
       AddWarningActionEventOutcome::ADDED_WARNING_ACTION);
   RecordWarningActionAdded(action);
+}
+
+// static
+bool DownloadItemWarningData::IsEncryptedArchive(
+    download::DownloadItem* download) {
+  return GetWithDefault(download,
+                        &DownloadItemWarningData::is_encrypted_archive_, false);
+}
+
+// static
+void DownloadItemWarningData::SetIsEncryptedArchive(
+    download::DownloadItem* download,
+    bool is_encrypted_archive) {
+  if (!download) {
+    return;
+  }
+
+  GetOrCreate(download)->is_encrypted_archive_ = is_encrypted_archive;
+}
+
+// static
+bool DownloadItemWarningData::HasIncorrectPassword(
+    download::DownloadItem* download) {
+  return GetWithDefault(
+      download, &DownloadItemWarningData::has_incorrect_password_, false);
+}
+
+// static
+void DownloadItemWarningData::SetHasIncorrectPassword(
+    download::DownloadItem* download,
+    bool has_incorrect_password) {
+  if (!download) {
+    return;
+  }
+
+  GetOrCreate(download)->has_incorrect_password_ = has_incorrect_password;
 }
 
 // static
@@ -186,6 +243,13 @@ DownloadItemWarningData::ConstructCsbrrDownloadWarningAction(
 DownloadItemWarningData::DownloadItemWarningData() = default;
 
 DownloadItemWarningData::~DownloadItemWarningData() = default;
+
+std::vector<WarningActionEvent> DownloadItemWarningData::ActionEvents() const {
+  if (warning_first_shown_time_.is_null()) {
+    return {};
+  }
+  return action_events_;
+}
 
 WarningActionEvent::WarningActionEvent(WarningSurface surface,
                                        WarningAction action,

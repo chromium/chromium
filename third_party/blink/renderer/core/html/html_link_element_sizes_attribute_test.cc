@@ -24,7 +24,7 @@ TEST(HTMLLinkElementSizesAttributeTest,
       MakeGarbageCollected<HTMLLinkElement>(*document, CreateElementFlags());
   DOMTokenList* sizes = link->sizes();
   EXPECT_EQ(g_null_atom, sizes->value());
-  sizes->setValue("   a b  c ");
+  sizes->setValue(AtomicString("   a b  c "));
   EXPECT_EQ("   a b  c ", link->FastGetAttribute(html_names::kSizesAttr));
   EXPECT_EQ("   a b  c ", sizes->value());
 }
@@ -38,7 +38,7 @@ TEST(HTMLLinkElementSizesAttributeTest,
       MakeGarbageCollected<HTMLLinkElement>(*document, CreateElementFlags());
   DOMTokenList* sizes = link->sizes();
   EXPECT_EQ(g_null_atom, sizes->value());
-  link->setAttribute(html_names::kSizesAttr, "y  x ");
+  link->setAttribute(html_names::kSizesAttr, AtomicString("y  x "));
   EXPECT_EQ("y  x ", sizes->value());
 }
 

@@ -69,23 +69,6 @@ TEST_F(ViewShadowTest, ShadowBoundsFollowIndirectViewBoundsChange) {
   EXPECT_EQ(gfx::Rect(10, 25, 20, 30), shadow.shadow()->content_bounds());
 }
 
-TEST_F(ViewShadowTest, ShadowCornerRadius) {
-  views::View view;
-  view.SetBoundsRect(gfx::Rect(10, 20, 30, 40));
-
-  ViewShadow shadow(&view, 1);
-  shadow.SetRoundedCornerRadius(5);
-
-  EXPECT_EQ(gfx::RoundedCornersF(5), view.layer()->rounded_corner_radii());
-  EXPECT_EQ(gfx::ShadowDetails::Get(1, 5).values,
-            shadow.shadow()->details_for_testing()->values);
-
-  shadow.SetRoundedCornerRadius(2);
-  EXPECT_EQ(gfx::RoundedCornersF(2), view.layer()->rounded_corner_radii());
-  EXPECT_EQ(gfx::ShadowDetails::Get(1, 2).values,
-            shadow.shadow()->details_for_testing()->values);
-}
-
 TEST_F(ViewShadowTest, ViewDestruction) {
   views::View root;
   root.SetPaintToLayer();
@@ -106,6 +89,31 @@ TEST_F(ViewShadowTest, ShadowKeepsLayerType) {
   ViewShadow shadow(&view, 1);
   EXPECT_TRUE(view.layer());
   EXPECT_EQ(ui::LAYER_SOLID_COLOR, view.layer()->type());
+}
+
+// Tests the shadow layer will not shift when the view's layer is reparented to
+// another layer.
+TEST_F(ViewShadowTest, NoShiftWhenReparentViewLayer) {
+  views::View root1;
+  root1.SetPaintToLayer();
+
+  views::View* view = root1.AddChildView(std::make_unique<views::View>());
+  view->SetPaintToLayer();
+  view->SetBoundsRect(gfx::Rect(10, 20, 30, 40));
+
+  ViewShadow shadow(view, 1);
+
+  // Cache current shadow position.
+  const gfx::Point pos = shadow.shadow()->layer()->bounds().origin();
+
+  // Reparent the view's layer to another layer.
+  views::View root2;
+  root2.SetPaintToLayer();
+  root2.AddChildView(view);
+  // Check if the shadow layer shifted.
+  EXPECT_EQ(pos, shadow.shadow()->layer()->bounds().origin());
+
+  //
 }
 
 }  // namespace ash

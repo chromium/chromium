@@ -2,6 +2,9 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+# @generated from third_party/rust/BUILD.gn.hbs by tools/crates/gnrt.
+# Do not edit!
+
 import("//build/rust/cargo_crate.gni")
 
 cargo_crate("lib") {
@@ -13,10 +16,36 @@ cargo_crate("lib") {
   # third_party.toml to use it from first-party code.
   visibility = [ "//third_party/rust/*" ]
   crate_root = "crate/src/lib.rs"
+  sources = [
+    "//third_party/rust/wycheproof/v0_4/crate/src/aead.rs",
+    "//third_party/rust/wycheproof/v0_4/crate/src/cipher.rs",
+    "//third_party/rust/wycheproof/v0_4/crate/src/daead.rs",
+    "//third_party/rust/wycheproof/v0_4/crate/src/dsa.rs",
+    "//third_party/rust/wycheproof/v0_4/crate/src/ecdh.rs",
+    "//third_party/rust/wycheproof/v0_4/crate/src/ecdsa.rs",
+    "//third_party/rust/wycheproof/v0_4/crate/src/eddsa.rs",
+    "//third_party/rust/wycheproof/v0_4/crate/src/hkdf.rs",
+    "//third_party/rust/wycheproof/v0_4/crate/src/jwk.rs",
+    "//third_party/rust/wycheproof/v0_4/crate/src/keywrap.rs",
+    "//third_party/rust/wycheproof/v0_4/crate/src/lib.rs",
+    "//third_party/rust/wycheproof/v0_4/crate/src/mac.rs",
+    "//third_party/rust/wycheproof/v0_4/crate/src/mac_with_iv.rs",
+    "//third_party/rust/wycheproof/v0_4/crate/src/primality.rs",
+    "//third_party/rust/wycheproof/v0_4/crate/src/rsa_oaep.rs",
+    "//third_party/rust/wycheproof/v0_4/crate/src/rsa_pkcs1_decrypt.rs",
+    "//third_party/rust/wycheproof/v0_4/crate/src/rsa_pkcs1_sign.rs",
+    "//third_party/rust/wycheproof/v0_4/crate/src/rsa_pkcs1_verify.rs",
+    "//third_party/rust/wycheproof/v0_4/crate/src/rsa_pss_verify.rs",
+    "//third_party/rust/wycheproof/v0_4/crate/src/xdh.rs",
+    "//third_party/rust/wycheproof/v0_4/crate/tests/tests.rs",
+  ]
+  inputs = [
+    "//third_party/rust/wycheproof/v0_4/crate/NEWS.md",
+    "//third_party/rust/wycheproof/v0_4/crate/README.md",
+  ]
 
   # Unit tests skipped. Generate with --with-tests to include them.
   build_native_rust_unit_tests = false
-  sources = [ "crate/src/lib.rs" ]
   edition = "2018"
   cargo_pkg_version = "0.4.0"
   cargo_pkg_authors = "Jack Lloyd <jack@randombit.net>"

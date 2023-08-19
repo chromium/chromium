@@ -23,6 +23,7 @@ import org.chromium.android_webview.AwContents;
 import org.chromium.android_webview.WebviewErrorCode;
 import org.chromium.android_webview.policy.AwPolicyProvider;
 import org.chromium.android_webview.test.TestAwContentsClient.OnReceivedErrorHelper;
+import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Feature;
 import org.chromium.components.policy.AbstractAppRestrictionsProvider;
 import org.chromium.components.policy.CombinedPolicyProvider;
@@ -78,6 +79,7 @@ public class PolicyUrlFilteringTest {
     @Feature({"AndroidWebView", "Policy"})
     // Run in single process only. crbug.com/615484
     @OnlyRunIn(SINGLE_PROCESS)
+    @DisabledTest(message = "crbug.com/623586")
     public void testBlocklistedUrl() throws Throwable {
         final AwPolicyProvider testProvider =
                 new AwPolicyProvider(mActivityTestRule.getActivity().getApplicationContext());

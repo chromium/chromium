@@ -22,47 +22,8 @@ APP_ENUM_TO_STRING(PermissionType,
                    kFileHandling)
 APP_ENUM_TO_STRING(TriState, kAllow, kBlock, kAsk)
 
-PermissionValue::PermissionValue(bool bool_value) : value(bool_value) {}
-
-PermissionValue::PermissionValue(TriState tristate_value)
-    : value(tristate_value) {}
-
-PermissionValue::~PermissionValue() = default;
-
-bool PermissionValue::operator==(const PermissionValue& other) const {
-  if (absl::holds_alternative<bool>(value) &&
-      absl::holds_alternative<bool>(other.value)) {
-    return absl::get<bool>(value) == absl::get<bool>(other.value);
-  }
-  if (absl::holds_alternative<TriState>(value) &&
-      absl::holds_alternative<TriState>(other.value)) {
-    return absl::get<TriState>(value) == absl::get<TriState>(other.value);
-  }
-  return false;
-}
-
-std::unique_ptr<PermissionValue> PermissionValue::Clone() const {
-  if (absl::holds_alternative<bool>(value)) {
-    return std::make_unique<PermissionValue>(absl::get<bool>(value));
-  }
-  if (absl::holds_alternative<TriState>(value)) {
-    return std::make_unique<PermissionValue>(absl::get<TriState>(value));
-  }
-  return nullptr;
-}
-
-bool PermissionValue::IsPermissionEnabled() const {
-  if (absl::holds_alternative<bool>(value)) {
-    return absl::get<bool>(value);
-  }
-  if (absl::holds_alternative<TriState>(value)) {
-    return absl::get<TriState>(value) == TriState::kAllow;
-  }
-  return false;
-}
-
 Permission::Permission(PermissionType permission_type,
-                       PermissionValuePtr value,
+                       PermissionValue value,
                        bool is_managed,
                        absl::optional<std::string> details)
     : permission_type(permission_type),
@@ -73,8 +34,7 @@ Permission::Permission(PermissionType permission_type,
 Permission::~Permission() = default;
 
 bool Permission::operator==(const Permission& other) const {
-  return permission_type == other.permission_type &&
-         ((!value && !other.value) || (*value == *other.value)) &&
+  return permission_type == other.permission_type && value == other.value &&
          is_managed == other.is_managed && details == other.details;
 }
 
@@ -83,33 +43,31 @@ bool Permission::operator!=(const Permission& other) const {
 }
 
 PermissionPtr Permission::Clone() const {
-  if (!value) {
-    return nullptr;
-  }
-
-  return std::make_unique<Permission>(permission_type, value->Clone(),
-                                      is_managed, details);
+  return std::make_unique<Permission>(permission_type, value, is_managed,
+                                      details);
 }
 
 bool Permission::IsPermissionEnabled() const {
-  return value && value->IsPermissionEnabled();
+  if (absl::holds_alternative<bool>(value)) {
+    return absl::get<bool>(value);
+  }
+  if (absl::holds_alternative<TriState>(value)) {
+    return absl::get<TriState>(value) == TriState::kAllow;
+  }
+  return false;
 }
 
 std::string Permission::ToString() const {
   std::stringstream out;
-  out << " permission type: " << EnumToString(permission_type);
-  out << " value: " << std::endl;
-  if (value) {
-    if (absl::holds_alternative<bool>(value->value)) {
-      out << " bool_value: "
-          << (absl::get<bool>(value->value) ? "true" : "false");
-    } else if (absl::holds_alternative<TriState>(value->value)) {
-      out << " tristate_value: "
-          << EnumToString(absl::get<TriState>(value->value));
-    }
+  out << " permission type: " << EnumToString(permission_type) << std::endl;
+  if (absl::holds_alternative<bool>(value)) {
+    out << " bool_value: " << (absl::get<bool>(value) ? "true" : "false");
+  } else if (absl::holds_alternative<TriState>(value)) {
+    out << " tristate_value: " << EnumToString(absl::get<TriState>(value));
   }
+  out << std::endl;
   if (details.has_value()) {
-    out << "details: " << details.value() << std::endl;
+    out << " details: " << details.value() << std::endl;
   }
   out << " is_managed: " << (is_managed ? "true" : "false") << std::endl;
   return out.str();

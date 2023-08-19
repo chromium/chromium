@@ -318,6 +318,8 @@ class CORE_EXPORT WebViewImpl final : public WebView,
       mojom::blink::RemoteFrameInterfacesFromBrowserPtr remote_frame_interfaces,
       mojom::blink::RemoteMainFrameInterfacesPtr remote_main_frame_interfaces)
       override;
+  void UpdatePageBrowsingContextGroup(
+      const BrowsingContextGroupInfo& browsing_context_group_info) override;
 
   void DispatchPersistedPageshow(base::TimeTicks navigation_start);
   void DispatchPagehide(mojom::blink::PagehideDispatch pagehide_dispatch);

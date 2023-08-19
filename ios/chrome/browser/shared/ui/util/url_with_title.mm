@@ -4,10 +4,6 @@
 
 #import "ios/chrome/browser/shared/ui/util/url_with_title.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 @interface URLWithTitle () {
   // URL to be shared.
   GURL _URL;

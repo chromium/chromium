@@ -12,6 +12,7 @@ import android.util.Base64;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.ContextUtils;
+import org.chromium.base.ResettersForTesting;
 import org.chromium.base.annotations.CalledByNative;
 import org.chromium.base.task.AsyncTask;
 import org.chromium.blink.mojom.DisplayMode;
@@ -37,8 +38,6 @@ import java.util.Set;
  * or open a web app.
  */
 public class ShortcutHelper {
-    private static final String TAG = "ShortcutHelper";
-
     // Holds splash images for web apps that are currently being installed. After installation is
     // complete, the image associated with the web app will be moved to the appropriate {@link
     // WebappDataStorage}.
@@ -73,9 +72,10 @@ public class ShortcutHelper {
     /**
      * Sets the delegate to use.
      */
-    @VisibleForTesting
     public static void setDelegateForTests(Delegate delegate) {
+        var oldValue = sDelegate;
         sDelegate = delegate;
+        ResettersForTesting.register(() -> sDelegate = oldValue);
     }
 
     /**

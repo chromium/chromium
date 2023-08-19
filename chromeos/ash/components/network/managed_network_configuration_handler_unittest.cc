@@ -11,6 +11,7 @@
 #include "base/functional/callback_helpers.h"
 #include "base/logging.h"
 #include "base/run_loop.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/test/values_test_util.h"
 #include "base/values.h"
@@ -32,6 +33,8 @@
 #include "chromeos/ash/components/network/network_configuration_handler.h"
 #include "chromeos/ash/components/network/network_connection_handler.h"
 #include "chromeos/ash/components/network/network_device_handler.h"
+#include "chromeos/ash/components/network/network_handler.h"
+#include "chromeos/ash/components/network/network_handler_test_helper.h"
 #include "chromeos/ash/components/network/network_policy_observer.h"
 #include "chromeos/ash/components/network/network_profile_handler.h"
 #include "chromeos/ash/components/network/network_state.h"
@@ -39,6 +42,7 @@
 #include "chromeos/ash/components/network/proxy/ui_proxy_config_service.h"
 #include "chromeos/ash/components/network/technology_state_controller.h"
 #include "chromeos/ash/components/network/test_cellular_esim_profile_handler.h"
+#include "chromeos/ash/components/network/text_message_suppression_state.h"
 #include "chromeos/components/onc/onc_signature.h"
 #include "chromeos/components/onc/onc_test_utils.h"
 #include "chromeos/components/onc/onc_utils.h"
@@ -210,18 +214,21 @@ class ManagedNetworkConfigurationHandlerTest : public testing::Test {
     ui_proxy_config_service_ = std::make_unique<UIProxyConfigService>(
         &user_prefs_, &local_state_, network_state_handler_.get(),
         network_profile_handler_.get());
+    network_handler_test_helper_ = std::make_unique<NetworkHandlerTestHelper>();
+    NetworkHandler* network_handler = NetworkHandler::Get();
     managed_network_configuration_handler_->Init(
         cellular_policy_handler_.get(), managed_cellular_pref_handler_.get(),
         network_state_handler_.get(), network_profile_handler_.get(),
         network_configuration_handler_.get(), network_device_handler_.get(),
-        prohibited_technologies_handler_.get());
+        prohibited_technologies_handler_.get(),
+        network_handler->hotspot_controller());
     managed_network_configuration_handler_->set_ui_proxy_config_service(
         ui_proxy_config_service_.get());
     managed_network_configuration_handler_->AddObserver(&policy_observer_);
     cellular_policy_handler_->Init(
         cellular_esim_profile_handler_.get(), cellular_esim_installer_.get(),
-        network_profile_handler_.get(), network_state_handler_.get(),
-        managed_cellular_pref_handler_.get(),
+        cellular_inhibitor_.get(), network_profile_handler_.get(),
+        network_state_handler_.get(), managed_cellular_pref_handler_.get(),
         managed_network_configuration_handler_.get());
     prohibited_technologies_handler_->Init(
         managed_network_configuration_handler_.get(),
@@ -234,6 +241,7 @@ class ManagedNetworkConfigurationHandlerTest : public testing::Test {
     // Run remaining tasks.
     base::RunLoop().RunUntilIdle();
     ResetManagedNetworkConfigurationHandler();
+    network_handler_test_helper_.reset();
     cellular_policy_handler_.reset();
     cellular_esim_installer_.reset();
     cellular_esim_profile_handler_.reset();
@@ -408,6 +416,7 @@ class ManagedNetworkConfigurationHandlerTest : public testing::Test {
   std::unique_ptr<CellularPolicyHandler> cellular_policy_handler_;
   std::unique_ptr<ProhibitedTechnologiesHandler>
       prohibited_technologies_handler_;
+  std::unique_ptr<NetworkHandlerTestHelper> network_handler_test_helper_;
 
   sync_preferences::TestingPrefServiceSyncable user_prefs_;
   TestingPrefServiceSimple local_state_, device_prefs_;
@@ -629,7 +638,15 @@ TEST_F(ManagedNetworkConfigurationHandlerTest, SetPolicyProhibitedTechnology) {
       IsEmpty());
 }
 
-TEST_F(ManagedNetworkConfigurationHandlerTest, SetPolicyManagedCellular) {
+TEST_F(ManagedNetworkConfigurationHandlerTest,
+       SetPolicyManagedCellular_SmdsSupportDisabled) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatures(
+      /*enabled_features=*/{},
+      /*disabled_features=*/{ash::features::kSmdsDbusMigration,
+                             ash::features::kSmdsSupport,
+                             ash::features::kSmdsSupportEuiccUpload});
+
   InitializeStandardProfiles();
   InitializeEuicc();
 
@@ -651,6 +668,55 @@ TEST_F(ManagedNetworkConfigurationHandlerTest, SetPolicyManagedCellular) {
   const std::string* iccid = properties->FindString(shill::kIccidProperty);
   ASSERT_TRUE(iccid);
   EXPECT_TRUE(managed_cellular_pref_handler_->GetSmdpAddressFromIccid(*iccid));
+
+  // Verify that applying a new cellular policy with same ICCID should update
+  // the old shill configuration.
+  EXPECT_TRUE(SetPolicy(::onc::ONC_SOURCE_DEVICE_POLICY, std::string(),
+                        "policy/policy_cellular_with_iccid.onc"));
+  base::RunLoop().RunUntilIdle();
+
+  ASSERT_EQ(std::string(), GetShillServiceClient()->FindServiceMatchingGUID(
+                               kTestGuidManagedCellular));
+  service_path = GetShillServiceClient()->FindServiceMatchingGUID(
+      kTestGuidManagedCellular2);
+  const base::Value::Dict* properties2 =
+      GetShillServiceClient()->GetServiceProperties(service_path);
+  ASSERT_TRUE(properties2);
+  absl::optional<bool> auto_connect =
+      properties2->FindBool(shill::kAutoConnectProperty);
+  ASSERT_TRUE(*auto_connect);
+}
+
+TEST_F(ManagedNetworkConfigurationHandlerTest,
+       SetPolicyManagedCellular_SmdsSupportEnabled) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatures(
+      /*enabled_features=*/{ash::features::kSmdsDbusMigration,
+                            ash::features::kSmdsSupport,
+                            ash::features::kSmdsSupportEuiccUpload},
+      /*disabled_features=*/{});
+
+  InitializeStandardProfiles();
+  InitializeEuicc();
+
+  base::Value::Dict expected_shill_properties = test_utils::ReadTestDictionary(
+      "policy/shill_policy_on_unconfigured_cellular.json");
+
+  EXPECT_TRUE(SetPolicy(::onc::ONC_SOURCE_DEVICE_POLICY, std::string(),
+                        "policy/policy_cellular.onc"));
+  FastForwardProfileRefreshDelay();
+  FastForwardAutoConnectWaiting();
+  base::RunLoop().RunUntilIdle();
+
+  std::string service_path = GetShillServiceClient()->FindServiceMatchingGUID(
+      kTestGuidManagedCellular);
+  const base::Value::Dict* properties =
+      GetShillServiceClient()->GetServiceProperties(service_path);
+  ASSERT_TRUE(properties);
+  EXPECT_THAT(*properties, DictionaryHasValues(expected_shill_properties));
+  const std::string* iccid = properties->FindString(shill::kIccidProperty);
+  ASSERT_TRUE(iccid);
+  EXPECT_TRUE(managed_cellular_pref_handler_->GetESimMetadata(*iccid));
 
   // Verify that applying a new cellular policy with same ICCID should update
   // the old shill configuration.
@@ -1318,6 +1384,7 @@ TEST_F(ManagedNetworkConfigurationHandlerTest, AllowOnlyPolicyWiFiToConnect) {
 
   // Check ManagedNetworkConfigurationHandler policy accessors.
   EXPECT_TRUE(managed_handler()->AllowCellularSimLock());
+  EXPECT_TRUE(managed_handler()->AllowCellularHotspot());
   EXPECT_FALSE(managed_handler()->AllowOnlyPolicyCellularNetworks());
   EXPECT_TRUE(managed_handler()->AllowOnlyPolicyWiFiToConnect());
   EXPECT_FALSE(managed_handler()->AllowOnlyPolicyWiFiToConnectIfAvailable());
@@ -1347,6 +1414,7 @@ TEST_F(ManagedNetworkConfigurationHandlerTest,
 
   // Check ManagedNetworkConfigurationHandler policy accessors.
   EXPECT_TRUE(managed_handler()->AllowCellularSimLock());
+  EXPECT_TRUE(managed_handler()->AllowCellularHotspot());
   EXPECT_FALSE(managed_handler()->AllowOnlyPolicyCellularNetworks());
   EXPECT_FALSE(managed_handler()->AllowOnlyPolicyWiFiToConnect());
   EXPECT_TRUE(managed_handler()->AllowOnlyPolicyWiFiToConnectIfAvailable());
@@ -1375,6 +1443,7 @@ TEST_F(ManagedNetworkConfigurationHandlerTest,
 
   // Check ManagedNetworkConfigurationHandler policy accessors.
   EXPECT_TRUE(managed_handler()->AllowCellularSimLock());
+  EXPECT_TRUE(managed_handler()->AllowCellularHotspot());
   EXPECT_FALSE(managed_handler()->AllowOnlyPolicyCellularNetworks());
   EXPECT_FALSE(managed_handler()->AllowOnlyPolicyWiFiToConnect());
   EXPECT_FALSE(managed_handler()->AllowOnlyPolicyWiFiToConnectIfAvailable());
@@ -1400,6 +1469,7 @@ TEST_F(ManagedNetworkConfigurationHandlerTest,
 
   // Check ManagedNetworkConfigurationHandler policy accessors.
   EXPECT_TRUE(managed_handler()->AllowCellularSimLock());
+  EXPECT_TRUE(managed_handler()->AllowCellularHotspot());
   EXPECT_TRUE(managed_handler()->AllowOnlyPolicyCellularNetworks());
   EXPECT_FALSE(managed_handler()->AllowOnlyPolicyWiFiToConnect());
   EXPECT_FALSE(managed_handler()->AllowOnlyPolicyWiFiToConnectIfAvailable());
@@ -1414,7 +1484,68 @@ TEST_F(ManagedNetworkConfigurationHandlerTest, AllowCellularSimLock) {
   base::RunLoop().RunUntilIdle();
 
   // Check ManagedNetworkConfigurationHandler policy accessors.
+  EXPECT_TRUE(managed_handler()->AllowCellularHotspot());
   EXPECT_FALSE(managed_handler()->AllowCellularSimLock());
+  EXPECT_FALSE(managed_handler()->AllowOnlyPolicyCellularNetworks());
+  EXPECT_FALSE(managed_handler()->AllowOnlyPolicyWiFiToConnect());
+  EXPECT_FALSE(managed_handler()->AllowOnlyPolicyWiFiToConnectIfAvailable());
+  EXPECT_FALSE(managed_handler()->AllowOnlyPolicyNetworksToAutoconnect());
+  EXPECT_TRUE(managed_handler()->GetBlockedHexSSIDs().empty());
+}
+
+TEST_F(ManagedNetworkConfigurationHandlerTest, AllowTextMessages) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(features::kSuppressTextMessages);
+
+  EXPECT_TRUE(
+      SetPolicy(::onc::ONC_SOURCE_DEVICE_POLICY, std::string(),
+                "policy/policy_empty_global_network_configuration.onc"));
+  // Check that the field returns Unset when it isn't set.
+  EXPECT_EQ(managed_handler()->GetAllowTextMessages(),
+            PolicyTextMessageSuppressionState::kUnset);
+
+  // Set 'AllowTextMessages' policy to Suppress.
+  EXPECT_TRUE(SetPolicy(::onc::ONC_SOURCE_DEVICE_POLICY, std::string(),
+                        "policy/policy_allow_text_messages_suppress.onc"));
+
+  // Check that the field is updated to Suppress.
+  EXPECT_EQ(managed_handler()->GetAllowTextMessages(),
+            PolicyTextMessageSuppressionState::kSuppress);
+
+  // Set 'AllowTextMessages' policy to Unset.
+  EXPECT_TRUE(SetPolicy(::onc::ONC_SOURCE_DEVICE_POLICY, std::string(),
+                        "policy/policy_allow_text_messages_unset.onc"));
+
+  // Check that the field is updated to Unset.
+  EXPECT_EQ(managed_handler()->GetAllowTextMessages(),
+            PolicyTextMessageSuppressionState::kUnset);
+
+  // Set 'AllowTextMessages' policy to Allow.
+  EXPECT_TRUE(SetPolicy(::onc::ONC_SOURCE_DEVICE_POLICY, std::string(),
+                        "policy/policy_allow_text_messages_allow.onc"));
+
+  // Check that the field is updated to Allow.
+  EXPECT_EQ(managed_handler()->GetAllowTextMessages(),
+            PolicyTextMessageSuppressionState::kAllow);
+
+  // Check other ManagedNetworkConfigurationHandler policy accessors.
+  EXPECT_TRUE(managed_handler()->AllowCellularSimLock());
+  EXPECT_FALSE(managed_handler()->AllowOnlyPolicyCellularNetworks());
+  EXPECT_FALSE(managed_handler()->AllowOnlyPolicyWiFiToConnect());
+  EXPECT_FALSE(managed_handler()->AllowOnlyPolicyWiFiToConnectIfAvailable());
+  EXPECT_FALSE(managed_handler()->AllowOnlyPolicyNetworksToAutoconnect());
+  EXPECT_TRUE(managed_handler()->GetBlockedHexSSIDs().empty());
+}
+
+TEST_F(ManagedNetworkConfigurationHandlerTest, AllowCellularHotspot) {
+  // Set 'AllowCellularHotspot' policy.
+  EXPECT_TRUE(SetPolicy(::onc::ONC_SOURCE_DEVICE_POLICY, std::string(),
+                        "policy/policy_allow_cellular_hotspot.onc"));
+  base::RunLoop().RunUntilIdle();
+
+  // Check ManagedNetworkConfigurationHandler policy accessors.
+  EXPECT_FALSE(managed_handler()->AllowCellularHotspot());
+  EXPECT_TRUE(managed_handler()->AllowCellularSimLock());
   EXPECT_FALSE(managed_handler()->AllowOnlyPolicyCellularNetworks());
   EXPECT_FALSE(managed_handler()->AllowOnlyPolicyWiFiToConnect());
   EXPECT_FALSE(managed_handler()->AllowOnlyPolicyWiFiToConnectIfAvailable());
@@ -1441,6 +1572,7 @@ TEST_F(ManagedNetworkConfigurationHandlerTest, GetBlacklistedHexSSIDs) {
 
   // Check ManagedNetworkConfigurationHandler policy accessors.
   EXPECT_TRUE(managed_handler()->AllowCellularSimLock());
+  EXPECT_TRUE(managed_handler()->AllowCellularHotspot());
   EXPECT_FALSE(managed_handler()->AllowOnlyPolicyCellularNetworks());
   EXPECT_FALSE(managed_handler()->AllowOnlyPolicyWiFiToConnect());
   EXPECT_FALSE(managed_handler()->AllowOnlyPolicyWiFiToConnectIfAvailable());
@@ -1466,6 +1598,7 @@ TEST_F(ManagedNetworkConfigurationHandlerTest, GetBlockedHexSSIDs) {
 
   // Check ManagedNetworkConfigurationHandler policy accessors.
   EXPECT_TRUE(managed_handler()->AllowCellularSimLock());
+  EXPECT_TRUE(managed_handler()->AllowCellularHotspot());
   EXPECT_FALSE(managed_handler()->AllowOnlyPolicyCellularNetworks());
   EXPECT_FALSE(managed_handler()->AllowOnlyPolicyWiFiToConnect());
   EXPECT_FALSE(managed_handler()->AllowOnlyPolicyWiFiToConnectIfAvailable());

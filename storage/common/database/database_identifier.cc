@@ -6,6 +6,7 @@
 
 #include <stddef.h>
 
+#include "base/containers/contains.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 #include "url/url_canon.h"
@@ -112,8 +113,9 @@ DatabaseIdentifier DatabaseIdentifier::CreateFromOrigin(const GURL& origin) {
 DatabaseIdentifier DatabaseIdentifier::Parse(const std::string& identifier) {
   if (!base::IsStringASCII(identifier))
     return DatabaseIdentifier();
-  if (identifier.find("..") != std::string::npos)
+  if (base::Contains(identifier, "..")) {
     return DatabaseIdentifier();
+  }
   static const char kForbidden[] = {'\\', '/', ':', '\0'};
   if (identifier.find_first_of(kForbidden, 0, std::size(kForbidden)) !=
       std::string::npos) {

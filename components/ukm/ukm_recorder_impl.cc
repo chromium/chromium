@@ -778,8 +778,13 @@ void UkmRecorderImpl::UpdateSourceURL(SourceId source_id,
     return;
 
   const GURL sanitized_url = SanitizeURL(unsanitized_url);
-  if (ShouldRecordUrl(source_id, sanitized_url) ==
-      ShouldRecordUrlResult::kDropped) {
+
+  // If UKM recording is disabled due to |recording_enabled|,
+  // still notify observers as they might be interested in it.
+  NotifyAllObservers(&UkmRecorderObserver::OnUpdateSourceURL, source_id,
+                     std::vector<GURL>{sanitized_url});
+
+  if (!ShouldRecordUrl(source_id, sanitized_url)) {
     return;
   }
   RecordSource(std::make_unique<UkmSource>(source_id, sanitized_url));
@@ -790,6 +795,11 @@ void UkmRecorderImpl::UpdateAppURL(SourceId source_id,
                                    const AppType app_type) {
   if (app_type != AppType::kPWA && !recording_enabled(ukm::EXTENSIONS)) {
     RecordDroppedSource(DroppedDataReason::EXTENSION_URLS_DISABLED);
+
+    // If UKM recording is disabled due to |recording_enabled|,
+    // still notify observers as they might be interested in it.
+    NotifyAllObservers(&UkmRecorderObserver::OnUpdateSourceURL, source_id,
+                       std::vector<GURL>{SanitizeURL(url)});
     return;
   }
   UpdateSourceURL(source_id, url);
@@ -804,13 +814,21 @@ void UkmRecorderImpl::RecordNavigation(
   // recorded at all if the final URL in |unsanitized_navigation_data| should
   // not be recorded.
   std::vector<GURL> urls;
+  // Observers should be notified of the source URLs even if UKM logs do not
+  // record the URL.
+  std::vector<GURL> observation_urls;
   for (const GURL& url : unsanitized_navigation_data.urls) {
     const GURL sanitized_url = SanitizeURL(url);
-    if (ShouldRecordUrl(source_id, sanitized_url) !=
-        ShouldRecordUrlResult::kDropped) {
+    observation_urls.push_back(sanitized_url);
+    if (ShouldRecordUrl(source_id, sanitized_url)) {
       urls.push_back(std::move(sanitized_url));
     }
   }
+
+  // If UKM recording is disabled due to |recording_enabled|,
+  // still notify observers as they might be interested in it.
+  NotifyAllObservers(&UkmRecorderObserver::OnUpdateSourceURL, source_id,
+                     observation_urls);
 
   // None of the URLs passed the ShouldRecordUrl check, so do not create a new
   // Source for them.
@@ -941,18 +959,12 @@ bool UkmRecorderImpl::ShouldDropExtensionUrl(
   return false;
 }
 
-UkmRecorderImpl::ShouldRecordUrlResult UkmRecorderImpl::ShouldRecordUrl(
-    SourceId source_id,
-    const GURL& sanitized_url) const {
-  ShouldRecordUrlResult result = ShouldRecordUrlResult::kOk;
+bool UkmRecorderImpl::ShouldRecordUrl(SourceId source_id,
+                                      const GURL& sanitized_url) const {
   bool has_recorded_reason = false;
   if (!recording_enabled()) {
     RecordDroppedSource(DroppedDataReason::RECORDING_DISABLED);
-    // Don't return the result yet. Check if the we are allowed to notify
-    // observers, as they may rely on the not uploaded metrics to determine
-    // how some features should work.
-    result = ShouldRecordUrlResult::kObserverOnly;
-    has_recorded_reason = true;
+    return false;
   }
 
   const auto required_consent = GetConsentType(GetSourceIdType(source_id));
@@ -966,17 +978,17 @@ UkmRecorderImpl::ShouldRecordUrlResult UkmRecorderImpl::ShouldRecordUrl(
       RecordDroppedSource(has_recorded_reason,
                           DroppedDataReason::APPS_CONSENT_DISABLED);
     }
-    return ShouldRecordUrlResult::kDropped;
+    return false;
   }
 
   if (recordings_.sources.size() >= max_sources_) {
     RecordDroppedSource(has_recorded_reason, DroppedDataReason::MAX_HIT);
-    return ShouldRecordUrlResult::kDropped;
+    return false;
   }
 
   if (sanitized_url.is_empty()) {
     RecordDroppedSource(has_recorded_reason, DroppedDataReason::EMPTY_URL);
-    return ShouldRecordUrlResult::kDropped;
+    return false;
   }
 
   if (!HasSupportedScheme(sanitized_url)) {
@@ -984,12 +996,12 @@ UkmRecorderImpl::ShouldRecordUrlResult UkmRecorderImpl::ShouldRecordUrl(
                         DroppedDataReason::UNSUPPORTED_URL_SCHEME);
     DVLOG(2) << "Dropped Unsupported UKM URL:" << source_id << ":"
              << sanitized_url.spec();
-    return ShouldRecordUrlResult::kDropped;
+    return false;
   }
 
   if (GetSourceIdType(source_id) == SourceIdType::EXTENSION_ID) {
     if (ShouldDropExtensionUrl(sanitized_url, has_recorded_reason)) {
-      return ShouldRecordUrlResult::kDropped;
+      return false;
     }
   }
 
@@ -1000,19 +1012,14 @@ UkmRecorderImpl::ShouldRecordUrlResult UkmRecorderImpl::ShouldRecordUrl(
   // extension URL to use the dedicated source ID type, and remove this check.
   if (sanitized_url.SchemeIs(kExtensionScheme)) {
     if (ShouldDropExtensionUrl(sanitized_url, has_recorded_reason)) {
-      return ShouldRecordUrlResult::kDropped;
+      return false;
     }
   }
-  return result;
+  return true;
 }
 
 void UkmRecorderImpl::RecordSource(std::unique_ptr<UkmSource> source) {
   SourceId source_id = source->id();
-  // If UKM recording is disabled due to |recording_enabled|,
-  // still notify observers as they might be interested in it.
-  NotifyAllObservers(&UkmRecorderObserver::OnUpdateSourceURL, source_id,
-                     source->urls());
-
   if (!recording_enabled()) {
     return;
   }

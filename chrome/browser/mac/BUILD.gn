@@ -19,6 +19,4 @@ source_set("keystone_glue") {
     "//components/version_info",
     "//ui/base",
   ]
-
-  configs += [ "//build/config/compiler:enable_arc" ]
 }

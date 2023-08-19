@@ -3,7 +3,6 @@
 # found in the LICENSE file.
 
 source_set("password_settings") {
-  configs += [ "//build/config/compiler:enable_arc" ]
   sources = [
     "password_export_handler.h",
     "password_settings_coordinator.h",
@@ -19,6 +18,7 @@ source_set("password_settings") {
     "//components/google/core/common",
     "//components/keyed_service/core",
     "//components/password_manager/core/browser",
+    "//components/password_manager/core/browser/features:password_features",
     "//components/password_manager/core/common",
     "//components/prefs",
     "//components/signin/public/identity_manager/objc",
@@ -45,7 +45,6 @@ source_set("password_settings") {
 }
 
 source_set("password_settings_ui") {
-  configs += [ "//build/config/compiler:enable_arc" ]
   sources = [
     "password_settings_consumer.h",
     "password_settings_delegate.h",
@@ -70,7 +69,6 @@ source_set("password_settings_ui") {
 }
 
 source_set("password_settings_constants") {
-  configs += [ "//build/config/compiler:enable_arc" ]
   sources = [
     "password_settings_constants.h",
     "password_settings_constants.mm",
@@ -79,7 +77,6 @@ source_set("password_settings_constants") {
 }
 
 source_set("common") {
-  configs += [ "//build/config/compiler:enable_arc" ]
   sources = [
     "scoped_password_settings_reauth_module_override.h",
     "scoped_password_settings_reauth_module_override.mm",
@@ -91,7 +88,6 @@ source_set("common") {
 }
 
 source_set("unit_tests") {
-  configs += [ "//build/config/compiler:enable_arc" ]
   testonly = true
   sources = [ "password_settings_mediator_unittest.mm" ]
   deps = [

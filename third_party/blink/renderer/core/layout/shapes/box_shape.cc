@@ -33,11 +33,11 @@
 
 namespace blink {
 
-LayoutRect BoxShape::ShapeMarginLogicalBoundingBox() const {
+LogicalRect BoxShape::ShapeMarginLogicalBoundingBox() const {
   gfx::RectF margin_bounds = bounds_.Rect();
   if (ShapeMargin() > 0)
     margin_bounds.Outset(ShapeMargin());
-  return EnclosingLayoutRect(margin_bounds);
+  return LogicalRect::EnclosingRect(margin_bounds);
 }
 
 FloatRoundedRect BoxShape::ShapeMarginBounds() const {

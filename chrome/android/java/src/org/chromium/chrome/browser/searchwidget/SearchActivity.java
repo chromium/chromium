@@ -26,6 +26,7 @@ import org.chromium.base.BuildInfo;
 import org.chromium.base.Callback;
 import org.chromium.base.IntentUtils;
 import org.chromium.base.Log;
+import org.chromium.base.ResettersForTesting;
 import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.supplier.UnownedUserDataSupplier;
@@ -49,9 +50,10 @@ import org.chromium.chrome.browser.omnibox.OmniboxFeatures;
 import org.chromium.chrome.browser.omnibox.OverrideUrlLoadingDelegate;
 import org.chromium.chrome.browser.omnibox.SearchEngineLogoUtils;
 import org.chromium.chrome.browser.omnibox.UrlFocusChangeListener;
+import org.chromium.chrome.browser.omnibox.styles.OmniboxResourceProvider;
 import org.chromium.chrome.browser.omnibox.suggestions.OmniboxSuggestionsDropdownScrollListener;
 import org.chromium.chrome.browser.omnibox.suggestions.action.OmniboxActionDelegateImpl;
-import org.chromium.chrome.browser.omnibox.suggestions.base.HistoryClustersProcessor.OpenHistoryClustersDelegate;
+import org.chromium.chrome.browser.omnibox.suggestions.history_clusters.HistoryClustersProcessor.OpenHistoryClustersDelegate;
 import org.chromium.chrome.browser.omnibox.voice.VoiceRecognitionHandler;
 import org.chromium.chrome.browser.password_manager.ManagePasswordsReferrer;
 import org.chromium.chrome.browser.password_manager.PasswordManagerLauncher;
@@ -269,7 +271,9 @@ public class SearchActivity extends AsyncInitializationActivity
                                     ManagePasswordsReferrer.CHROME_SETTINGS,
                                     () -> getModalDialogManager(), /*managePasskeys=*/false),
                     // Open History Clusters UI for Query:
-                    query -> {}), null,
+                    query -> {},
+                    // Open Quick Delete Dialog callback:
+                    null), null,
             ChromePureJavaExceptionReporter::reportJavaException, backPressManager,
             /*OmniboxSuggestionsDropdownScrollListener=*/this,
             new OpenHistoryClustersDelegate() {
@@ -575,8 +579,7 @@ public class SearchActivity extends AsyncInitializationActivity
 
         if (OmniboxFeatures.shouldShowModernizeVisualUpdate(this)) {
             View toolbarView = contentView.findViewById(R.id.toolbar);
-            final int edgePadding =
-                    getResources().getDimensionPixelOffset(R.dimen.toolbar_edge_padding_modern);
+            final int edgePadding = OmniboxResourceProvider.getToolbarSidePadding(this);
             toolbarView.setPaddingRelative(edgePadding, toolbarView.getPaddingTop(), edgePadding,
                     toolbarView.getPaddingBottom());
             toolbarView.setBackground(new ColorDrawable(ChromeColors.getSurfaceColor(
@@ -614,12 +617,12 @@ public class SearchActivity extends AsyncInitializationActivity
     }
 
     /** See {@link #sDelegate}. */
-    @VisibleForTesting
     static void setDelegateForTests(SearchActivityDelegate delegate) {
+        var oldValue = sDelegate;
         sDelegate = delegate;
+        ResettersForTesting.register(() -> sDelegate = oldValue);
     }
 
-    @VisibleForTesting
     public View getAnchorViewForTesting() {
         return mAnchorView;
     }

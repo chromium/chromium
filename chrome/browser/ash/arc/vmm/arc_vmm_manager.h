@@ -35,8 +35,18 @@ enum class SwapState {
 
 // ARCVM vmm features manager.
 class ArcVmmManager : public KeyedService,
-                      public arc::ConnectionObserver<arc::mojom::AppInstance> {
+                      public arc::ConnectionObserver<arc::mojom::AppInstance>,
+                      public ash::ConciergeClient::VmObserver {
  public:
+  class Observer : public base::CheckedObserver {
+   public:
+    virtual void OnArcVmSwappingOut() {}
+    virtual void OnArcVmSwappingIn() {}
+
+   protected:
+    ~Observer() override = default;
+  };
+
   // Returns singleton instance for the given BrowserContext, or nullptr if
   // the browser |context| is not allowed to use ARC.
   static ArcVmmManager* GetForBrowserContext(content::BrowserContext* context);
@@ -65,12 +75,20 @@ class ArcVmmManager : public KeyedService,
 
   static void EnsureFactoryBuilt();
 
+  void AddObserver(Observer* observer);
+  void RemoveObserver(Observer* observer);
+
   // arc::ConnectionObserver:
   void OnConnectionReady() override;
   void OnConnectionClosed() override;
 
+  // ash::ConciergeClient::VmObserver override:
+  void OnVmSwapping(
+      const vm_tools::concierge::VmSwappingSignal& signal) override;
+
  private:
   friend class ArcVmmManagerTest;
+  friend class ArcVmmManagerBrowserTest;
   // Accelerator target for experimental usage. Ctrl + Alt + Shift + O / P for
   // enable or disable vmm swap.
   class AcceleratorTarget;
@@ -78,8 +96,27 @@ class ArcVmmManager : public KeyedService,
   void SendSwapRequest(vm_tools::concierge::SwapOperation operation,
                        base::OnceClosure success_callback);
 
+  // Wrapped function of `SendSwapRequest`. Verify if the latest operation still
+  // match the calling operation. If so, pass the params to SendSwapRequest, or
+  // do nothing.
+  // Prefer use it in the chain of callbacks. Before enable vmm swap, the memory
+  // shrink may need take several minutes. During this time, if the "disable"
+  // request come, we need make sure not send the "enable" request after finish
+  // memory shrink.
+  void VerifyThenSendSwapRequest(vm_tools::concierge::SwapOperation operation,
+                                 base::OnceClosure success_callback);
+
   void SendAggressiveBalloonRequest(bool enable,
                                     base::OnceClosure success_callback);
+
+  // Wrapped function of `SendAggressiveBalloonRequest`. Verify if the latest
+  // operation still match the calling operation. If so, pass the params to
+  // SendAggressiveBalloonRequest, or do nothing.
+  // Prefer use it in the chain of callbacks, as the same with
+  // `VerifyThenSendSwapRequest`.
+  void VerifyThenSendAggressiveBalloonRequest(
+      bool enable,
+      base::OnceClosure success_callback);
 
   void PostWithSwapDelay(base::OnceClosure callback);
 
@@ -94,7 +131,10 @@ class ArcVmmManager : public KeyedService,
   // called by other caller. Update shrink result.
   void SetShrinkResult(bool success);
 
-  SwapState last_swap_state_ = SwapState::DISABLE;
+  SwapState latest_swap_state_ = SwapState::DISABLE;
+
+  // List of observers.
+  base::ObserverList<Observer> observer_list_;
 
   // Log the time stamp and result of last shrink memory request.
   absl::optional<base::Time> last_shrink_timestamp_;
@@ -132,6 +172,10 @@ class ArcVmmManager : public KeyedService,
       ConnectionHolder<mojom::AppInstance, mojom::AppHost>,
       ConnectionHolder<mojom::AppInstance, mojom::AppHost>::Observer>
       app_instance_observation_{this};
+
+  base::ScopedObservation<ash::ConciergeClient,
+                          ash::ConciergeClient::VmObserver>
+      concierge_observation_{this};
 
   base::WeakPtrFactory<ArcVmmManager> weak_ptr_factory_{this};
 };

@@ -15,14 +15,16 @@
 
 #include "base/allocator/partition_allocator/oom.h"
 #include "base/allocator/partition_allocator/page_allocator.h"
+#include "base/allocator/partition_allocator/page_allocator_constants.h"
 #include "base/allocator/partition_allocator/partition_alloc_base/debug/debugging_buildflags.h"
+#include "base/allocator/partition_allocator/partition_alloc_base/notreached.h"
 #include "base/allocator/partition_allocator/partition_alloc_base/posix/eintr_wrapper.h"
 #include "base/allocator/partition_allocator/partition_alloc_check.h"
 #include "base/allocator/partition_allocator/thread_isolation/thread_isolation.h"
 #include "build/build_config.h"
 
 #if BUILDFLAG(IS_APPLE)
-#include "base/allocator/partition_allocator/partition_alloc_base/mac/foundation_util.h"
+#include "base/allocator/partition_allocator/partition_alloc_base/apple/foundation_util.h"
 #if BUILDFLAG(IS_IOS)
 #include "base/allocator/partition_allocator/partition_alloc_base/ios/ios_util.h"
 #elif BUILDFLAG(IS_MAC)
@@ -30,7 +32,7 @@
 #else
 #error "Unknown platform"
 #endif
-#include "base/allocator/partition_allocator/partition_alloc_base/mac/scoped_cftyperef.h"
+#include "base/allocator/partition_allocator/partition_alloc_base/apple/scoped_cftyperef.h"
 
 #include <Availability.h>
 #include <Security/Security.h>
@@ -63,31 +65,42 @@ namespace partition_alloc::internal {
 
 namespace {
 
-#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_LINUX)
-#if defined(PR_SET_VMA) && defined(PR_SET_VMA_ANON_NAME)
-const char* PageTagToName(PageTag tag) {
+#if defined(LINUX_NAME_REGION)
+
+void NameRegion(void* start, size_t length, PageTag page_tag) {
   // Important: All the names should be string literals. As per prctl.h in
-  // //third_party/android_ndk the kernel keeps a pointer to the name instead
-  // of copying it.
+  // //third_party/android_toolchain/ndk the kernel keeps a pointer to the name
+  // instead of copying it.
   //
   // Having the name in .rodata ensures that the pointer remains valid as
   // long as the mapping is alive.
-  switch (tag) {
+  const char* name = nullptr;
+  switch (page_tag) {
+    case PageTag::kSimulation:
+      name = "simulation";
+      break;
     case PageTag::kBlinkGC:
-      return "blink_gc";
+      name = "blink_gc";
+      break;
     case PageTag::kPartitionAlloc:
-      return "partition_alloc";
+      name = "partition_alloc";
+      break;
     case PageTag::kChromium:
-      return "chromium";
+      name = "chromium";
+      break;
     case PageTag::kV8:
-      return "v8";
+      name = "v8";
+      break;
     default:
-      PA_DCHECK(false);
-      return "";
+      PA_NOTREACHED();
+      break;
   }
+
+  // No error checking on purpose, testing only.
+  prctl(PR_SET_VMA, PR_SET_VMA_ANON_NAME, start, length, name);
 }
-#endif
-#endif  // BUILDFLAG(IS_ANDROID)
+
+#endif  // defined(LINUX_NAME_REGION)
 
 #if BUILDFLAG(IS_MAC)
 // Tests whether the version of macOS supports the MAP_JIT flag and if the
@@ -95,15 +108,6 @@ const char* PageTagToName(PageTag tag) {
 // entitlement, returning whether MAP_JIT should be used to allocate regions
 // that will contain JIT-compiled executable code.
 bool UseMapJit() {
-  if (!base::mac::IsAtLeastOS10_14()) {
-    // MAP_JIT existed before macOS 10.14, but had somewhat different semantics.
-    // Only one MAP_JIT region was permitted per process, but calling code here
-    // will very likely require more than one such region. Since MAP_JIT is not
-    // strictly necessary to write code to a region and then execute it on these
-    // older OSes, don’t use it at all.
-    return false;
-  }
-
   // Until determining that the hardened runtime is enabled, early returns will
   // return true, so that MAP_JIT will be used. This is important on arm64,
   // which only allows pages to be simultaneously writable and executable when
@@ -137,7 +141,7 @@ bool UseMapJit() {
     return false;
   }
 
-  return base::mac::CFCast<CFBooleanRef>(jit_entitlement.get()) ==
+  return base::apple::CFCast<CFBooleanRef>(jit_entitlement.get()) ==
          kCFBooleanTrue;
 }
 #elif BUILDFLAG(IS_IOS)
@@ -168,8 +172,6 @@ uintptr_t SystemAllocPagesInternal(uintptr_t hint,
 #if BUILDFLAG(IS_APPLE)
   // Use a custom tag to make it easier to distinguish Partition Alloc regions
   // in vmmap(1). Tags between 240-255 are supported.
-  PA_DCHECK(PageTag::kFirst <= page_tag);
-  PA_DCHECK(PageTag::kLast >= page_tag);
   int fd = file_descriptor_for_shared_alloc == -1
                ? VM_MAKE_TAG(static_cast<int>(page_tag))
                : file_descriptor_for_shared_alloc;
@@ -181,12 +183,14 @@ uintptr_t SystemAllocPagesInternal(uintptr_t hint,
   int map_flags = MAP_ANONYMOUS | MAP_PRIVATE;
 
 #if BUILDFLAG(IS_APPLE)
-  // On macOS 10.14 and higher, executables that are code signed with the
-  // "runtime" option cannot execute writable memory by default. They can opt
-  // into this capability by specifying the "com.apple.security.cs.allow-jit"
-  // code signing entitlement and allocating the region with the MAP_JIT flag.
+  // On macOS, executables that are code signed with the "runtime" option cannot
+  // execute writable memory by default. They can opt into this capability by
+  // specifying the "com.apple.security.cs.allow-jit" code signing entitlement
+  // and allocating the region with the MAP_JIT flag.
   static const bool kUseMapJit = UseMapJit();
-  if (page_tag == PageTag::kV8 && kUseMapJit) {
+  if (accessibility.permissions ==
+          PageAccessibilityConfiguration::kInaccessibleWillJitLater &&
+      kUseMapJit) {
     map_flags |= MAP_JIT;
   }
 #endif
@@ -198,16 +202,10 @@ uintptr_t SystemAllocPagesInternal(uintptr_t hint,
     ret = nullptr;
   }
 
-#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_LINUX)
-#if defined(PR_SET_VMA) && defined(PR_SET_VMA_ANON_NAME)
-  // On Android and Linux, anonymous mappings can have a name attached to them.
-  // This is useful for debugging, and double-checking memory attribution.
+#if defined(LINUX_NAME_REGION)
   if (ret) {
-    // No error checking on purpose, testing only.
-    prctl(PR_SET_VMA, PR_SET_VMA_ANON_NAME, ret, length,
-          PageTagToName(page_tag));
+    NameRegion(ret, length, page_tag);
   }
-#endif
 #endif
 
   return reinterpret_cast<uintptr_t>(ret);
@@ -334,7 +332,14 @@ void DecommitSystemPagesInternal(
   }
 }
 
-void DecommitAndZeroSystemPagesInternal(uintptr_t address, size_t length) {
+void DecommitAndZeroSystemPagesInternal(uintptr_t address,
+                                        size_t length,
+                                        PageTag page_tag) {
+  int fd = -1;
+#if BUILDFLAG(IS_APPLE)
+  fd = VM_MAKE_TAG(static_cast<int>(page_tag));
+#endif
+
   // https://pubs.opengroup.org/onlinepubs/9699919799/functions/mmap.html: "If
   // a MAP_FIXED request is successful, then any previous mappings [...] for
   // those whole pages containing any part of the address range [pa,pa+len)
@@ -343,8 +348,12 @@ void DecommitAndZeroSystemPagesInternal(uintptr_t address, size_t length) {
   // zero-initialized on next access.
   void* ptr = reinterpret_cast<void*>(address);
   void* ret = mmap(ptr, length, PROT_NONE,
-                   MAP_FIXED | MAP_ANONYMOUS | MAP_PRIVATE, -1, 0);
+                   MAP_FIXED | MAP_ANONYMOUS | MAP_PRIVATE, fd, 0);
   PA_CHECK(ptr == ret);
+  // Since we just remapped the region, need to set is name again.
+#if defined(LINUX_NAME_REGION)
+  NameRegion(ret, length, page_tag);
+#endif
 }
 
 void RecommitSystemPagesInternal(

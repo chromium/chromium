@@ -2,7 +2,9 @@ Name: MediaController Android sample.
 URL: https://android.googlesource.com/platform/development/+/b356564/samples/Support4Demos/src/com/example/android/supportv4/media/MediaController.java
 Version: 74c5bcff29959931c8a4b15e4afa613975a47f4c
 License: Apache 2.0
+License File: LICENSE
 Security Critical: no
+Shipped: yes
 
 Description:
 This contains a modified copy of MediaController.java and the associated

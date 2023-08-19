@@ -63,17 +63,9 @@ class AddressField : public FormField {
                          const LanguageCode& page_language,
                          PatternSource pattern_source);
 
-  bool ParseCountry(AutofillScanner* scanner,
-                    const LanguageCode& page_language,
-                    PatternSource pattern_source);
-
   bool ParseZipCode(AutofillScanner* scanner,
                     const LanguageCode& page_language,
                     PatternSource pattern_source);
-
-  bool ParseDependentLocality(AutofillScanner* scanner,
-                              const LanguageCode& page_language,
-                              PatternSource pattern_source);
 
   bool ParseCity(AutofillScanner* scanner,
                  const LanguageCode& page_language,
@@ -82,18 +74,6 @@ class AddressField : public FormField {
   bool ParseState(AutofillScanner* scanner,
                   const LanguageCode& page_language,
                   PatternSource pattern_source);
-
-  bool ParseLandmark(AutofillScanner* scanner,
-                     const LanguageCode& page_language,
-                     PatternSource pattern_source);
-
-  bool ParseBetweenStreets(AutofillScanner* scanner,
-                           const LanguageCode& page_language,
-                           PatternSource pattern_source);
-
-  bool ParseAdminLevel2(AutofillScanner* scanner,
-                        const LanguageCode& page_language,
-                        PatternSource pattern_source);
 
   // Parses the current field pointed to by |scanner|, if it exists, and tries
   // to determine if the field's type corresponds to one of the following:
@@ -113,7 +93,7 @@ class AddressField : public FormField {
       const std::u16string& pattern,
       MatchParams match_type,
       base::span<const MatchPatternRef> patterns,
-      AutofillField** match,
+      raw_ptr<AutofillField>* match,
       const RegExLogging& logging);
 
   // Run matches on the name and label separately. If the return result is
@@ -154,64 +134,37 @@ class AddressField : public FormField {
       const LanguageCode& page_language,
       PatternSource pattern_source);
 
+  ParseNameLabelResult ParseNameAndLabelForOverflow(
+      AutofillScanner* scanner,
+      const LanguageCode& page_language,
+      PatternSource pattern_source);
+
   ParseNameLabelResult ParseNameAndLabelForState(
       AutofillScanner* scanner,
       const LanguageCode& page_language,
       PatternSource pattern_source);
 
   raw_ptr<LogManager> log_manager_;
-  // This field is not a raw_ptr<> because it was filtered by the rewriter for:
-  // #addr-of
-  RAW_PTR_EXCLUSION AutofillField* company_ = nullptr;
-  // This field is not a raw_ptr<> because it was filtered by the rewriter for:
-  // #addr-of
-  RAW_PTR_EXCLUSION AutofillField* street_name_ = nullptr;
-  // This field is not a raw_ptr<> because it was filtered by the rewriter for:
-  // #addr-of
-  RAW_PTR_EXCLUSION AutofillField* house_number_ = nullptr;
-  // This field is not a raw_ptr<> because it was filtered by the rewriter for:
-  // #addr-of
-  RAW_PTR_EXCLUSION AutofillField* address1_ = nullptr;
-  // This field is not a raw_ptr<> because it was filtered by the rewriter for:
-  // #addr-of
-  RAW_PTR_EXCLUSION AutofillField* address2_ = nullptr;
-  // This field is not a raw_ptr<> because it was filtered by the rewriter for:
-  // #addr-of
-  RAW_PTR_EXCLUSION AutofillField* address3_ = nullptr;
-  // This field is not a raw_ptr<> because it was filtered by the rewriter for:
-  // #addr-of
-  RAW_PTR_EXCLUSION AutofillField* street_address_ = nullptr;
-  // This field is not a raw_ptr<> because it was filtered by the rewriter for:
-  // #addr-of
-  RAW_PTR_EXCLUSION AutofillField* apartment_number_ = nullptr;
-  // This field is not a raw_ptr<> because it was filtered by the rewriter for:
-  // #addr-of
-  RAW_PTR_EXCLUSION AutofillField* dependent_locality_ = nullptr;
-  // This field is not a raw_ptr<> because it was filtered by the rewriter for:
-  // #addr-of
-  RAW_PTR_EXCLUSION AutofillField* city_ = nullptr;
-  // This field is not a raw_ptr<> because it was filtered by the rewriter for:
-  // #addr-of
-  RAW_PTR_EXCLUSION AutofillField* state_ = nullptr;
-  // This field is not a raw_ptr<> because it was filtered by the rewriter for:
-  // #addr-of
-  RAW_PTR_EXCLUSION AutofillField* zip_ = nullptr;
-  // This field is not a raw_ptr<> because it was filtered by the rewriter for:
-  // #addr-of
-  RAW_PTR_EXCLUSION AutofillField* zip4_ =
+
+  raw_ptr<AutofillField> company_ = nullptr;
+  raw_ptr<AutofillField> street_name_ = nullptr;
+  raw_ptr<AutofillField> house_number_ = nullptr;
+  raw_ptr<AutofillField> address1_ = nullptr;
+  raw_ptr<AutofillField> address2_ = nullptr;
+  raw_ptr<AutofillField> address3_ = nullptr;
+  raw_ptr<AutofillField> street_address_ = nullptr;
+  raw_ptr<AutofillField> apartment_number_ = nullptr;
+  raw_ptr<AutofillField> dependent_locality_ = nullptr;
+  raw_ptr<AutofillField> city_ = nullptr;
+  raw_ptr<AutofillField> state_ = nullptr;
+  raw_ptr<AutofillField> zip_ = nullptr;
+  raw_ptr<AutofillField> zip4_ =
       nullptr;  // optional ZIP+4; we don't fill this yet.
-  // This field is not a raw_ptr<> because it was filtered by the rewriter for:
-  // #addr-of
-  RAW_PTR_EXCLUSION AutofillField* country_ = nullptr;
-  // This field is not a raw_ptr<> because it was filtered by the rewriter for:
-  // #addr-of
-  RAW_PTR_EXCLUSION AutofillField* landmark_ = nullptr;
-  // This field is not a raw_ptr<> because it was filtered by the rewriter for:
-  // #addr-of
-  RAW_PTR_EXCLUSION AutofillField* between_streets_ = nullptr;
-  // This field is not a raw_ptr<> because it was filtered by the rewriter for:
-  // #addr-of
-  RAW_PTR_EXCLUSION AutofillField* admin_level2_ = nullptr;
+  raw_ptr<AutofillField> country_ = nullptr;
+  raw_ptr<AutofillField> landmark_ = nullptr;
+  raw_ptr<AutofillField> between_streets_ = nullptr;
+  raw_ptr<AutofillField> admin_level2_ = nullptr;
+  raw_ptr<AutofillField> overflow_ = nullptr;
 };
 
 }  // namespace autofill

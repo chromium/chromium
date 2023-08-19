@@ -139,6 +139,7 @@ KeyedService* PageContentAnnotationsServiceFactory::BuildServiceInstanceFor(
         optimization_guide_keyed_service, history_service, template_url_service,
         zero_suggest_cache_service, proto_db_provider, profile_path,
         optimization_guide_keyed_service->GetOptimizationGuideLogger(),
+        optimization_guide_keyed_service,
         base::ThreadPool::CreateSequencedTaskRunner(
             {base::MayBlock(), base::TaskPriority::BEST_EFFORT}));
   }

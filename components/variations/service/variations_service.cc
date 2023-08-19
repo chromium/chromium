@@ -703,7 +703,8 @@ void VariationsService::InitResourceRequestedAllowedNotifier() {
   // ResourceRequestAllowedNotifier does not install an observer if there is no
   // NetworkChangeNotifier, which results in never being notified of changes to
   // network status.
-  resource_request_allowed_notifier_->Init(this, false /* leaky */);
+  resource_request_allowed_notifier_->Init(this, /*leaky=*/false,
+                                           /*wait_for_eula=*/false);
 }
 
 void VariationsService::StartRepeatedVariationsSeedFetch() {
@@ -987,13 +988,17 @@ bool VariationsService::OverrideStoredPermanentCountry(
     const std::string& country_override) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
+  const std::string country_override_lowercase =
+      base::ToLowerASCII(country_override);
   const std::string stored_country =
       local_state_->GetString(prefs::kVariationsPermanentOverriddenCountry);
 
-  if (stored_country == country_override)
+  if (stored_country == country_override_lowercase) {
     return false;
+  }
 
-  field_trial_creator_.StoreVariationsOverriddenCountry(country_override);
+  field_trial_creator_.StoreVariationsOverriddenCountry(
+      country_override_lowercase);
   return true;
 }
 

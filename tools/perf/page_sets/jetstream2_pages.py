@@ -7,7 +7,7 @@ from telemetry import story
 
 
 class _JetStream2Story(press_story.PressStory):
-  URL = 'http://browserbench.org/JetStream/'
+  URL = 'http://browserbench.org/JetStream2.1/'
 
   def __init__(self, page_set, test_list):
     super(_JetStream2Story, self).__init__(page_set)
@@ -78,13 +78,16 @@ class _JetStream2Story(press_story.PressStory):
 
 class JetStream20Story(_JetStream2Story):
   NAME = 'JetStream20'
+  URL = 'http://browserbench.org/JetStream2.0/'
 
 
 class JetStream21Story(_JetStream2Story):
   NAME = 'JetStream21'
+  URL = 'http://browserbench.org/JetStream2.1/'
 
 
 class JetStream2Story(JetStream20Story):
+  URL = 'http://browserbench.org/JetStream/'
   NAME = 'JetStream2'
 
 
@@ -105,5 +108,5 @@ class JetStream21StorySet(_JetStream2StorySet):
   _STORY_CLS = JetStream21Story
 
 
-class JetStream2StorySet(JetStream20StorySet):
+class JetStream2StorySet(_JetStream2StorySet):
   _STORY_CLS = JetStream2Story

@@ -7,8 +7,9 @@ import("//build/config/android/rules.gni")
 import("//chrome/android/modules/buildflags.gni")
 
 android_library("java") {
+  srcjar_deps = [ ":jni_headers" ]
   sources = [ "java/src/org/chromium/chrome/modules/stack_unwinder/StackUnwinderModuleContentsImpl.java" ]
-  annotation_processor_deps = [ "//base/android/jni_generator:jni_processor" ]
+
   deps = [
     "//base:jni_java",
     "//build/android:build_java",

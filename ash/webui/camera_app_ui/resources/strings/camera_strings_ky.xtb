@@ -30,7 +30,7 @@
 <translation id="2064538373111010176"><ph name="CAMERA" /> жигердүү</translation>
 <translation id="2134029355740465625">Видеонун параметрлери</translation>
 <translation id="2144806332417375165">Жеке видеонун параметрлери</translation>
-<translation id="2175927920773552910">QR коду</translation>
+<translation id="2175927920773552910">QR код</translation>
 <translation id="2244252133441425811">Видеодогу кадр/сек. тандагычты иштетүү</translation>
 <translation id="2271433936731426666">Толук экрандагы видеону жаздыруу учурунда тартылып алынган сүрөттү иштетүү</translation>
 <translation id="2320741269052147773">Солго жылдырып кароо</translation>
@@ -57,6 +57,7 @@
 <translation id="3566302376254083266">Жогорку сол жакка жылууда</translation>
 <translation id="3573890771273113519">Скандоо режимине которулуу</translation>
 <translation id="3583444040776960729">Документтин төмөнкү сол бурчу</translation>
+<translation id="3642192109456033823">Видео иштелүүдө…</translation>
 <translation id="3789724198583203151">Сааттын жебесине каршы 90 градуска буруу</translation>
 <translation id="3810838688059735925">Видео</translation>
 <translation id="3892148308691398805">Текстти көчүрүү</translation>
@@ -87,6 +88,7 @@
 <translation id="5057360777601936059">Камераңыз учурда жеткиликсиз.
         Камера туура туташканын текшериңиз.</translation>
 <translation id="5163387177077603948">Оң жакка жылууда</translation>
+<translation id="5219374179772385066">Эми Time Lapse режими жеткиликтүү!</translation>
 <translation id="5235304959032763950">16–9</translation>
 <translation id="5266635337630551423">Документтин жогорку сол бурчу</translation>
 <translation id="5317780077021120954">Сактоо</translation>

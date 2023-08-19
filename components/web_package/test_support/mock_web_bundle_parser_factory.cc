@@ -177,16 +177,9 @@ void MockWebBundleParserFactory::GetParser(
   }
 }
 
-void MockWebBundleParserFactory::GetParserForFile(
-    mojo::PendingReceiver<mojom::WebBundleParser> receiver,
-    const absl::optional<GURL>& base_url,
-    base::File file) {
-  {
-    base::ScopedAllowBlockingForTesting allow_blocking;
-    file.Close();
-  }
-  GetParser(std::move(receiver), base_url);
-}
+void MockWebBundleParserFactory::BindFileDataSource(
+    mojo::PendingReceiver<mojom::BundleDataSource> data_source_receiver,
+    base::File file) {}
 
 void MockWebBundleParserFactory::GetParserForDataSource(
     mojo::PendingReceiver<mojom::WebBundleParser> receiver,

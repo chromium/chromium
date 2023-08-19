@@ -247,22 +247,18 @@ public class UndoRefocusHelper implements DestroyObserver {
         mSelectedTabIdWhenTabClosed = null;
     }
 
-    @VisibleForTesting
     public TabModelSelectorTabModelObserver getTabModelSelectorTabModelObserverForTests() {
         return mTabModelSelectorTabModelObserver;
     }
 
-    @VisibleForTesting
     public Callback<LayoutManagerImpl> getLayoutManagerSupplierCallbackForTests() {
         return mLayoutManagerSupplierCallback;
     }
 
-    @VisibleForTesting
     public void setTabSwitcherVisibilityForTests(boolean tabSwitcherActive) {
         this.mTabSwitcherActive = tabSwitcherActive;
     }
 
-    @VisibleForTesting
     public void setLayoutManagerForTesting(LayoutManagerImpl layoutManager) {
         this.mLayoutManager = layoutManager;
     }

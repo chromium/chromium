@@ -9,10 +9,6 @@
 #import "ios/chrome/browser/promos_manager/promo_config.h"
 #import "ios/chrome/browser/shared/public/commands/credential_provider_promo_commands.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 @implementation CredentialProviderPromoDisplayHandler {
   id<CredentialProviderPromoCommands> _handler;
 }

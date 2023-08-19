@@ -242,5 +242,39 @@ TEST_F(InheritClientPriorityVoterTest, MultipleClients) {
                          InheritClientPriorityVoter::kPriorityInheritedReason));
 }
 
+TEST_F(InheritClientPriorityVoterTest, SamePriorityDifferentReason) {
+  MockSinglePageInSingleProcessGraph mock_graph(graph());
+  TestWorkerNodeFactory test_worker_node_factory_(graph());
+
+  ProcessNodeImpl* process_node = mock_graph.process.get();
+  FrameNodeImpl* frame_node = mock_graph.frame.get();
+
+  EXPECT_EQ(observer().GetVoteCount(), 0u);
+
+  // Create the worker. A vote will be submitted to inherit the (currently
+  // default) priority of its client.
+  WorkerNodeImpl* worker_node =
+      test_worker_node_factory_.CreateDedicatedWorker(process_node, frame_node);
+  EXPECT_EQ(observer().GetVoteCount(), 1u);
+  EXPECT_TRUE(observer().HasVote(
+      voter_id(), GetExecutionContext(worker_node), base::TaskPriority::LOWEST,
+      InheritClientPriorityVoter::kPriorityInheritedReason));
+
+  // Set a different PriorityAndReason. The priority stays the same, but the
+  // reason changed.
+  frame_node->SetPriorityAndReason({base::TaskPriority::LOWEST, "Some reason"});
+
+  // Should not change the inherited priority and should not crash.
+  EXPECT_EQ(observer().GetVoteCount(), 1u);
+  EXPECT_TRUE(observer().HasVote(
+      voter_id(), GetExecutionContext(worker_node), base::TaskPriority::LOWEST,
+      InheritClientPriorityVoter::kPriorityInheritedReason));
+
+  // Removing the worker also removes the inherited vote.
+  test_worker_node_factory_.DeleteWorker(worker_node);
+
+  EXPECT_EQ(observer().GetVoteCount(), 0u);
+}
+
 }  // namespace execution_context_priority
 }  // namespace performance_manager

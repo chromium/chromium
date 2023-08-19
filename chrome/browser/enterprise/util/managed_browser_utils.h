@@ -10,6 +10,7 @@
 #include <string>
 
 #include "build/build_config.h"
+#include "net/base/host_port_pair.h"
 #include "net/ssl/client_cert_identity.h"
 
 class GURL;
@@ -27,6 +28,11 @@ bool IsBrowserManaged(Profile* profile);
 // Extracts the domain from provided |email| if it's an email address and
 // returns an empty string, otherwise.
 std::string GetDomainFromEmail(const std::string& email);
+
+// Returns an HTTPS URL for the host and port identified by `host_port_pair`.
+// This is intended to be used to build a `requesting_url` for
+// `AutoSelectCertificates`.
+GURL GetRequestingUrl(const net::HostPortPair host_port_pair);
 
 // Partitions |client_certs| according to the value of the
 // |ContentSettingsType::AUTO_SELECT_CERTIFICATE| content setting for the

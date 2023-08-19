@@ -33,6 +33,7 @@ mojom("mojo_interfaces") {
   public_deps = [
     "//mojo/public/mojom/base",
     "//printing/mojom",
+    "//ui/accessibility/mojom",
     "//ui/gfx/geometry/mojom",
   ]
 
@@ -40,11 +41,7 @@ mojom("mojo_interfaces") {
   if (enable_print_preview) {
     enabled_features += [ "enable_print_preview" ]
   }
-  if (enable_tagged_pdf) {
-    assert(enable_print_preview)
-    public_deps += [ "//ui/accessibility/mojom" ]
-    enabled_features += [ "enable_tagged_pdf" ]
-  }
+
   if (enable_print_content_analysis) {
     enabled_features += [ "enable_print_content_analysis" ]
   }

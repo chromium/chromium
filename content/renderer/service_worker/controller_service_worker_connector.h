@@ -14,11 +14,14 @@
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"
 #include "mojo/public/cpp/bindings/remote.h"
+#include "third_party/blink/public/common/service_worker/embedded_worker_status.h"
 #include "third_party/blink/public/mojom/service_worker/controller_service_worker.mojom.h"
 #include "third_party/blink/public/mojom/service_worker/service_worker_container.mojom.h"
 #include "third_party/blink/public/mojom/service_worker/service_worker_fetch_handler_bypass_option.mojom-shared.h"
 
 namespace content {
+
+class ServiceWorkerRouterEvaluator;
 
 namespace mojom {
 class ServiceWorkerContainerHost;
@@ -72,7 +75,9 @@ class CONTENT_EXPORT ControllerServiceWorkerConnector
           remote_controller,
       const std::string& client_id,
       blink::mojom::ServiceWorkerFetchHandlerBypassOption
-          fetch_handler_bypass_option);
+          fetch_handler_bypass_option,
+      absl::optional<blink::ServiceWorkerRouterRules> router_rules,
+      blink::EmbeddedWorkerStatus initial_running_status);
 
   ControllerServiceWorkerConnector(const ControllerServiceWorkerConnector&) =
       delete;
@@ -111,9 +116,26 @@ class CONTENT_EXPORT ControllerServiceWorkerConnector
     return fetch_handler_bypass_option_;
   }
 
+  const ServiceWorkerRouterEvaluator* router_evaluator() const {
+    return router_evaluator_.get();
+  }
+
+  // Returns recent ServiceWorker's running status.
+  //
+  // This method returns a cached result. Please assume the value can be old.
+  // When this method is called, it may start updating the running status
+  // without blocking the call.
+  // The initial result will be set when instantiating this class.
+  //
+  // The cached result is returned to avoid a caller to pass a callback,
+  // or the method call would be blocked until it gets a result from the
+  // browser process.
+  blink::EmbeddedWorkerStatus GetRecentRunningStatus();
+
  private:
   void SetControllerServiceWorker(
       mojo::PendingRemote<blink::mojom::ControllerServiceWorker> controller);
+  void DidGetRunningStatus(blink::EmbeddedWorkerStatus running_status);
 
   State state_ = State::kDisconnected;
 
@@ -139,6 +161,9 @@ class CONTENT_EXPORT ControllerServiceWorkerConnector
   blink::mojom::ServiceWorkerFetchHandlerBypassOption
       fetch_handler_bypass_option_ =
           blink::mojom::ServiceWorkerFetchHandlerBypassOption::kDefault;
+  std::unique_ptr<ServiceWorkerRouterEvaluator> router_evaluator_;
+  blink::EmbeddedWorkerStatus running_status_;
+  bool get_service_worker_status_inflight_ = false;
 };
 
 }  // namespace content

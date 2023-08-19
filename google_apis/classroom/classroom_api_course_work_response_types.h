@@ -71,6 +71,8 @@ class CourseWorkItem {
   const absl::optional<DueDateTime>& due_date_time() const {
     return due_date_time_;
   }
+  const base::Time& creation_time() const { return creation_time_; }
+  const base::Time& last_update() const { return last_update_; }
 
  private:
   // Classroom-assigned identifier of this course work, unique per course.
@@ -92,6 +94,12 @@ class CourseWorkItem {
   // a zero year means a repeating annual assignment). That is why it was safer,
   // more flexible and forward compatible to use the same approach here.
   absl::optional<DueDateTime> due_date_time_ = absl::nullopt;
+
+  // The timestamp when this course work was created.
+  base::Time creation_time_;
+
+  // The timestamp of the last course work item update.
+  base::Time last_update_;
 };
 
 // Container for multiple `CourseWorkItem`s.

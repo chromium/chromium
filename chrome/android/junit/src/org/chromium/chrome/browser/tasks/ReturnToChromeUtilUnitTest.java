@@ -55,6 +55,8 @@ import org.chromium.chrome.browser.ChromeInactivityTracker;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.homepage.HomepageManager;
 import org.chromium.chrome.browser.homepage.HomepagePolicyManager;
+import org.chromium.chrome.browser.layouts.LayoutStateProvider;
+import org.chromium.chrome.browser.layouts.LayoutType;
 import org.chromium.chrome.browser.ntp.NewTabPage;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.SharedPreferencesManager;
@@ -89,7 +91,7 @@ import org.chromium.url.JUnitTestGURLs;
 @Config(manifest = Config.NONE,
         shadows = {ShadowHomepageManager.class, ShadowHomepagePolicyManager.class,
                 ShadowSysUtils.class})
-@Features.EnableFeatures({ChromeFeatureList.START_SURFACE_WITH_ACCESSIBILITY})
+@EnableFeatures({ChromeFeatureList.START_SURFACE_WITH_ACCESSIBILITY})
 public class ReturnToChromeUtilUnitTest {
     /** Shadow for {@link HomepageManager}. */
     @Implements(HomepageManager.class)
@@ -253,7 +255,7 @@ public class ReturnToChromeUtilUnitTest {
 
     @Test
     @SmallTest
-    @Features.EnableFeatures({ChromeFeatureList.START_SURFACE_RETURN_TIME})
+    @EnableFeatures({ChromeFeatureList.START_SURFACE_RETURN_TIME})
     public void testShouldShowTabSwitcherWithStartReturnTimeWithoutUseModel() {
         Assert.assertTrue(ChromeFeatureList.sStartSurfaceReturnTime.isEnabled());
         Assert.assertTrue(ChromeFeatureList.sStartSurfaceAndroid.isEnabled());
@@ -289,7 +291,7 @@ public class ReturnToChromeUtilUnitTest {
 
     @Test
     @SmallTest
-    @Features.EnableFeatures({ChromeFeatureList.START_SURFACE_RETURN_TIME})
+    @EnableFeatures({ChromeFeatureList.START_SURFACE_RETURN_TIME})
     public void testShouldShowTabSwitcherWithSegmentationReturnTime() {
         final SegmentId showStartId =
                 SegmentId.OPTIMIZATION_TARGET_SEGMENTATION_CHROME_START_ANDROID_V2;
@@ -579,7 +581,7 @@ public class ReturnToChromeUtilUnitTest {
 
     @Test
     @SmallTest
-    @EnableFeatures({ChromeFeatureList.START_SURFACE_ON_TABLET})
+    @EnableFeatures(ChromeFeatureList.START_SURFACE_ON_TABLET)
     public void testShouldShowNtpAsHomeSurfaceAtStartupOnTablet() {
         Assert.assertTrue(StartSurfaceConfiguration.isNtpAsHomeSurfaceEnabled(true));
 
@@ -632,7 +634,7 @@ public class ReturnToChromeUtilUnitTest {
 
     @Test
     @SmallTest
-    @EnableFeatures({ChromeFeatureList.START_SURFACE_ON_TABLET})
+    @EnableFeatures(ChromeFeatureList.START_SURFACE_ON_TABLET)
     public void testShowNtpAsHomeSurfaceAtResumeOnTabletWithExistingNtp() {
         Assert.assertTrue(StartSurfaceConfiguration.isNtpAsHomeSurfaceEnabled(true));
 
@@ -699,7 +701,7 @@ public class ReturnToChromeUtilUnitTest {
 
     @Test
     @SmallTest
-    @EnableFeatures({ChromeFeatureList.START_SURFACE_ON_TABLET})
+    @EnableFeatures(ChromeFeatureList.START_SURFACE_ON_TABLET)
     public void testShowNtpAsHomeSurfaceAtResumeOnTabletWithoutAnyExistingNtp() {
         Assert.assertTrue(StartSurfaceConfiguration.isNtpAsHomeSurfaceEnabled(true));
 
@@ -739,7 +741,7 @@ public class ReturnToChromeUtilUnitTest {
 
     @Test
     @SmallTest
-    @EnableFeatures({ChromeFeatureList.START_SURFACE_ON_TABLET})
+    @EnableFeatures(ChromeFeatureList.START_SURFACE_ON_TABLET)
     public void testShowNtpAsHomeSurfaceAtResumeOnTabletWithMixedNtps() {
         Assert.assertTrue(StartSurfaceConfiguration.isNtpAsHomeSurfaceEnabled(true));
 
@@ -797,7 +799,7 @@ public class ReturnToChromeUtilUnitTest {
 
     @Test
     @SmallTest
-    @EnableFeatures({ChromeFeatureList.START_SURFACE_ON_TABLET})
+    @EnableFeatures(ChromeFeatureList.START_SURFACE_ON_TABLET)
     public void testNoAnyTabCase() {
         Assert.assertTrue(StartSurfaceConfiguration.isNtpAsHomeSurfaceEnabled(true));
 
@@ -813,7 +815,7 @@ public class ReturnToChromeUtilUnitTest {
 
     @Test
     @SmallTest
-    @EnableFeatures({ChromeFeatureList.START_SURFACE_ON_TABLET})
+    @EnableFeatures(ChromeFeatureList.START_SURFACE_ON_TABLET)
     public void testColdStartupWithOnlyLastActiveTabUrl() {
         Assert.assertTrue(StartSurfaceConfiguration.isNtpAsHomeSurfaceEnabled(true));
 
@@ -893,6 +895,26 @@ public class ReturnToChromeUtilUnitTest {
                             .build();
         ReturnToChromeUtil.showHomeSurfaceUiOnNtp(mNtpTab, mTab1, mHomeSurfaceTracker);
         histogram.assertExpected();
+    }
+
+    @Test
+    @SmallTest
+    public void testShouldHandleTabSwitcherShown() {
+        LayoutStateProvider layoutStateProvider = Mockito.mock(LayoutStateProvider.class);
+
+        // Verifies ReturnToChromeUtil.shouldHandleTabSwitcherShown() returns false in all invalid
+        // cases.
+        Assert.assertFalse(
+                ReturnToChromeUtil.shouldHandleTabSwitcherShown(false, layoutStateProvider));
+        Assert.assertFalse(ReturnToChromeUtil.shouldHandleTabSwitcherShown(true, null));
+        doReturn(false).when(layoutStateProvider).isLayoutVisible(eq(LayoutType.TAB_SWITCHER));
+        Assert.assertFalse(
+                ReturnToChromeUtil.shouldHandleTabSwitcherShown(true, layoutStateProvider));
+
+        // Verifies ReturnToChromeUtil.shouldHandleTabSwitcherShown() returns true.
+        doReturn(true).when(layoutStateProvider).isLayoutVisible(eq(LayoutType.TAB_SWITCHER));
+        Assert.assertTrue(
+                ReturnToChromeUtil.shouldHandleTabSwitcherShown(true, layoutStateProvider));
     }
 
     private Intent createMainIntentFromLauncher() {

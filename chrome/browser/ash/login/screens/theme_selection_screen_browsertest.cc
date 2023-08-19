@@ -77,6 +77,10 @@ class ThemeSelectionScreenTest
   }
 
   void ShowThemeSelectionScreen() {
+    LoginDisplayHost::default_host()
+        ->GetWizardContextForTesting()
+        ->skip_choobe_for_tests = true;
+
     login_manager_mixin_.LoginAsNewRegularUser();
     OobeScreenExitWaiter(GetFirstSigninScreen()).Wait();
     WizardController::default_controller()->AdvanceToScreen(
@@ -125,7 +129,7 @@ IN_PROC_BROWSER_TEST_F(ThemeSelectionScreenTest,
   EXPECT_THAT(
       histogram_tester_.GetAllSamples(kStepShownStatusHistogram),
       ElementsAre(base::Bucket(
-          static_cast<int>(WizardController::ScreenShownStatus::kShown), 1)));
+          static_cast<int>(OobeMetricsHelper::ScreenShownStatus::kShown), 1)));
   histogram_tester_.ExpectTotalCount(kStepCompletionTimeHistogram, 1);
   histogram_tester_.ExpectTotalCount(kProceedExitReasonHistogram, 1);
 }
@@ -144,7 +148,7 @@ IN_PROC_BROWSER_TEST_F(ThemeSelectionScreenTest,
   EXPECT_THAT(
       histogram_tester_.GetAllSamples(kStepShownStatusHistogram),
       ElementsAre(base::Bucket(
-          static_cast<int>(WizardController::ScreenShownStatus::kShown), 1)));
+          static_cast<int>(OobeMetricsHelper::ScreenShownStatus::kShown), 1)));
   histogram_tester_.ExpectTotalCount(kStepCompletionTimeHistogram, 1);
   histogram_tester_.ExpectTotalCount(kProceedExitReasonHistogram, 1);
 }
@@ -233,6 +237,10 @@ class ThemeSelectionScreenResumeTest
 };
 
 IN_PROC_BROWSER_TEST_P(ThemeSelectionScreenResumeTest, PRE_ResumedScreen) {
+  LoginDisplayHost::default_host()
+      ->GetWizardContextForTesting()
+      ->skip_choobe_for_tests = true;
+
   OobeScreenWaiter(UserCreationView::kScreenId).Wait();
   LoginManagerMixin::TestUserInfo test_user(user_);
   login_mixin_.LoginWithDefaultContext(test_user);

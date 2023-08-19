@@ -13,11 +13,12 @@ import android.animation.ValueAnimator.AnimatorUpdateListener;
 import android.content.Context;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
+import android.view.animation.Interpolator;
 import android.widget.FrameLayout.LayoutParams;
 import android.widget.ImageView;
 
 import org.chromium.ui.base.LocalizationUtils;
-import org.chromium.ui.interpolators.BakedBezierInterpolator;
+import org.chromium.ui.interpolators.Interpolators;
 
 /**
  * An animating ImageView that is drawn on top of the progress bar. This will animate over the
@@ -54,8 +55,7 @@ public class ToolbarProgressBarAnimatingView extends ImageView {
     /** The maximum size of the animating view. */
     private static final float ANIMATING_VIEW_MAX_WIDTH_DP = 400;
 
-    /** Interpolator for enter and exit animation. */
-    private final BakedBezierInterpolator mBezier = BakedBezierInterpolator.FADE_OUT_CURVE;
+    private final Interpolator mInterpolator = Interpolators.FAST_OUT_LINEAR_IN_INTERPOLATOR;
 
     /** The current width of the progress bar. */
     private float mProgressWidth;
@@ -180,7 +180,7 @@ public class ToolbarProgressBarAnimatingView extends ImageView {
 
             // Fade in to look nice on sites that trigger many loads that end quickly.
             animate().alpha(1.0f).setDuration(500).setInterpolator(
-                    BakedBezierInterpolator.FADE_IN_CURVE);
+                    Interpolators.LINEAR_OUT_SLOW_IN_INTERPOLATOR);
         }
     }
 
@@ -191,7 +191,7 @@ public class ToolbarProgressBarAnimatingView extends ImageView {
      */
     private void updateAnimation(ValueAnimator animator, float animatedFraction) {
         if (mIsCanceled) return;
-        float bezierProgress = mBezier.getInterpolation(animatedFraction);
+        float interpolatorProgress = mInterpolator.getInterpolation(animatedFraction);
 
         // Left and right bound change based on if the layout is RTL.
         float leftBound = mIsRtl ? -mProgressWidth : 0.0f;
@@ -217,7 +217,7 @@ public class ToolbarProgressBarAnimatingView extends ImageView {
                 Math.min(ANIMATING_VIEW_MAX_WIDTH_DP * mDpToPx, mProgressWidth * barScale);
 
         float animatorCenter =
-                ((mProgressWidth + animatingWidth) * bezierProgress) - animatingWidth / 2.0f;
+                ((mProgressWidth + animatingWidth) * interpolatorProgress) - animatingWidth / 2.0f;
         if (mIsRtl) animatorCenter *= -1.0f;
 
         // The left and right x-coordinate of the animating view.

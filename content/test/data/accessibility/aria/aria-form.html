@@ -6,7 +6,28 @@
 <!DOCTYPE html>
 <html>
 <body>
+  <fieldset role="form">
+    Unnamed ARIA form: must fall back to the native role.
+  </fieldset>
+
   <div role="form">
-  <div>
+    Unnamed ARIA form on plain div uses generic container role.
+  </div>
+
+  <div role="form" aria-label="Named form">
+    Named ARIA form#1 gets the form role.
+  </div>
+
+  <div role="form" aria-labelledby="form-name">
+    <span id="form-name">Named ARIA form#2 gets the form role.</span>
+  </div>
+
+  <div role="form" title="Named form">
+    Named ARIA form#3 gets the form role.
+  </div>
+
+  <div role="form" aria-roledescription="form">
+    An aria-rolescription works on a nameless role=form.
+  </div>
 </body>
 </html>

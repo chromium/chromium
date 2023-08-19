@@ -1,7 +1,6 @@
 include_rules = [
   "+ios/chrome/browser/ui/location_bar",
   "+ios/chrome/browser/ui/default_promo/default_browser_promo_non_modal_scheduler.h",
-  "+ios/chrome/browser/ui/gestures",
   "+ios/chrome/browser/ui/lens/lens_entrypoint.h",
   "+ios/chrome/browser/ui/orchestrator",
   "+ios/chrome/browser/ui/ntp/metrics/home_metrics.h",

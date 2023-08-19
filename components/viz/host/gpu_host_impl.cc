@@ -13,6 +13,7 @@
 #include "base/no_destructor.h"
 #include "base/process/process_handle.h"
 #include "base/strings/strcat.h"
+#include "base/system/sys_info.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/threading/thread_checker.h"
 #include "base/trace_event/trace_event.h"
@@ -31,10 +32,6 @@
 
 #if BUILDFLAG(IS_ANDROID)
 #include "base/android/build_info.h"
-#endif
-
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-#include "base/system/sys_info.h"
 #endif
 
 #if BUILDFLAG(IS_WIN)
@@ -145,7 +142,8 @@ GpuHostImpl::GpuHostImpl(Delegate* delegate,
   viz_main_->CreateGpuService(
       gpu_service_remote_.BindNewPipeAndPassReceiver(task_runner),
       gpu_host_receiver_.BindNewPipeAndPassRemote(task_runner),
-      std::move(discardable_manager_remote), activity_flags_.CloneRegion(),
+      std::move(discardable_manager_remote),
+      use_shader_cache_shm_count_.CloneRegion(),
       GetFontRenderParams().Get()->subpixel_rendering);
 
 #if BUILDFLAG(IS_OZONE)
@@ -182,8 +180,7 @@ void GpuHostImpl::OnProcessCrashed() {
   // If the GPU process crashed while compiling a shader, we may have invalid
   // cached binaries. Completely clear the shader cache to force shader binaries
   // to be re-created.
-  if (activity_flags_.IsFlagSet(
-          gpu::ActivityFlagsBase::FLAG_LOADING_PROGRAM_BINARY)) {
+  if (use_shader_cache_shm_count_.GetCount() > 0) {
     auto* gpu_disk_cache_factory = delegate_->GetGpuDiskCacheFactory();
     for (auto& [_, cache] : client_id_to_caches_) {
       // This call will temporarily extend the lifetime of the cache (kept
@@ -418,7 +415,8 @@ std::string GpuHostImpl::GetShaderPrefixKey() {
 
     shader_prefix_key_ = params_.product + "-" + info.gl_vendor + "-" +
                          info.gl_renderer + "-" + active_gpu.driver_version +
-                         "-" + active_gpu.driver_vendor;
+                         "-" + active_gpu.driver_vendor + "-" +
+                         base::SysInfo::ProcessCPUArchitecture();
 
 #if BUILDFLAG(IS_ANDROID)
     std::string build_fp =
@@ -532,6 +530,8 @@ void GpuHostImpl::DidInitialize(
                               gpu::kDisplayCompositorGpuDiskCacheHandle);
     SetChannelDiskCacheHandle(gpu::kGrShaderCacheClientId,
                               gpu::kGrShaderGpuDiskCacheHandle);
+    SetChannelDiskCacheHandle(gpu::kGraphiteDawnClientId,
+                              gpu::kGraphiteDawnGpuDiskCacheHandle);
   }
 }
 

@@ -5,7 +5,6 @@
 import("//build/config/chrome_build.gni")
 
 source_set("authentication") {
-  configs += [ "//build/config/compiler:enable_arc" ]
   sources = [
     "authentication_flow.h",
     "authentication_flow.mm",
@@ -36,13 +35,13 @@ source_set("authentication") {
     "//components/prefs",
     "//components/reading_list/features:flags",
     "//components/signin/ios/browser",
+    "//components/signin/public/base",
     "//components/signin/public/identity_manager",
     "//components/signin/public/identity_manager/objc",
     "//components/strings",
     "//components/unified_consent",
     "//google_apis",
     "//ios/chrome/app/strings",
-    "//ios/chrome/browser/flags:system_flags",
     "//ios/chrome/browser/infobars",
     "//ios/chrome/browser/policy",
     "//ios/chrome/browser/shared/coordinator/alert",
@@ -54,6 +53,8 @@ source_set("authentication") {
     "//ios/chrome/browser/shared/model/prefs:pref_names",
     "//ios/chrome/browser/shared/model/web_state_list",
     "//ios/chrome/browser/shared/public/commands",
+    "//ios/chrome/browser/shared/public/features",
+    "//ios/chrome/browser/shared/public/features:system_flags",
     "//ios/chrome/browser/shared/ui/symbols",
     "//ios/chrome/browser/shared/ui/util",
     "//ios/chrome/browser/shared/ui/util",
@@ -64,9 +65,7 @@ source_set("authentication") {
     "//ios/chrome/browser/sync",
     "//ios/chrome/browser/ui/authentication/cells",
     "//ios/chrome/browser/ui/authentication/signin:signin_headers",
-    "//ios/chrome/browser/ui/authentication/unified_consent/identity_chooser",
     "//ios/chrome/browser/ui/ntp:feature_flags",
-    "//ios/chrome/browser/ui/scoped_ui_blocker",
     "//ios/chrome/browser/ui/settings:settings_root",
     "//ios/chrome/browser/unified_consent",
     "//ios/chrome/common",
@@ -96,7 +95,6 @@ source_set("authentication") {
 }
 
 source_set("authentication_constants") {
-  configs += [ "//build/config/compiler:enable_arc" ]
   sources = [
     "authentication_constants.h",
     "authentication_constants.mm",
@@ -105,14 +103,13 @@ source_set("authentication_constants") {
 }
 
 source_set("signin_presenter") {
-  configs += [ "//build/config/compiler:enable_arc" ]
   sources = [ "signin_presenter.h" ]
 }
 
 source_set("unit_tests") {
-  configs += [ "//build/config/compiler:enable_arc" ]
   testonly = true
   sources = [
+    "authentication_flow_performer_unittest.mm",
     "authentication_flow_unittest.mm",
     "authentication_ui_util_unittest.mm",
     "re_signin_infobar_delegate_unittest.mm",
@@ -124,10 +121,12 @@ source_set("unit_tests") {
     ":signin_presenter",
     "//base",
     "//base/test:test_support",
+    "//build:branding_buildflags",
     "//components/consent_auditor",
     "//components/consent_auditor:test_support",
     "//components/pref_registry",
     "//components/prefs",
+    "//components/signin/public/base",
     "//components/signin/public/identity_manager",
     "//components/signin/public/identity_manager:test_support",
     "//components/sync:test_support",
@@ -168,10 +167,7 @@ source_set("unit_tests") {
 }
 
 source_set("eg_app_support+eg2") {
-  configs += [
-    "//build/config/compiler:enable_arc",
-    "//build/config/ios:xctest_config",
-  ]
+  configs += [ "//build/config/ios:xctest_config" ]
   testonly = true
   sources = [
     "signin_earl_grey_app_interface.h",
@@ -188,6 +184,9 @@ source_set("eg_app_support+eg2") {
     "//components/bookmarks/browser",
     "//components/prefs",
     "//components/signin/public/identity_manager",
+    "//components/signin/public/identity_manager:test_support",
+    "//components/supervised_user/core/browser:supervised_user_preferences",
+    "//components/sync",
     "//ios/chrome/browser/bookmarks",
     "//ios/chrome/browser/shared/coordinator/scene:scene_state_header",
     "//ios/chrome/browser/shared/model/application_context",
@@ -199,10 +198,9 @@ source_set("eg_app_support+eg2") {
     "//ios/chrome/browser/signin:capabilities_types",
     "//ios/chrome/browser/signin:fake_system_identity",
     "//ios/chrome/browser/signin:fake_system_identity_manager",
+    "//ios/chrome/browser/sync",
     "//ios/chrome/browser/ui/authentication/cells",
     "//ios/chrome/browser/ui/authentication/enterprise/enterprise_prompt",
-    "//ios/chrome/browser/ui/authentication/unified_consent:unified_consent_ui",
-    "//ios/chrome/browser/ui/authentication/unified_consent/identity_chooser:identity_chooser_ui",
     "//ios/chrome/test/app:test_support",
     "//ios/testing/earl_grey:eg_app_support+eg2",
     "//ios/third_party/earl_grey2:app_framework+link",
@@ -210,10 +208,7 @@ source_set("eg_app_support+eg2") {
 }
 
 source_set("eg_test_support+eg2") {
-  configs += [
-    "//build/config/compiler:enable_arc",
-    "//build/config/ios:xctest_config",
-  ]
+  configs += [ "//build/config/ios:xctest_config" ]
   testonly = true
   sources = [
     "signin_earl_grey.h",
@@ -231,6 +226,7 @@ source_set("eg_test_support+eg2") {
     "//base/test:test_support",
     "//components/signin/public/base",
     "//ios/chrome/app/strings",
+    "//ios/chrome/browser/shared/ui/table_view:constants",
     "//ios/chrome/browser/signin:capabilities_types",
     "//ios/chrome/browser/signin:fake_system_identity",
     "//ios/chrome/browser/ui/authentication/cells:constants",

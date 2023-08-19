@@ -22,6 +22,7 @@
 #import "ios/components/security_interstitials/safe_browsing/url_checker_delegate_impl.h"
 #import "ios/net/cookies/system_cookie_store.h"
 #import "ios/web/common/user_agent.h"
+#import "ios/web/public/browser_state.h"
 #import "ios/web/public/thread/web_task_traits.h"
 #import "ios/web/public/thread/web_thread.h"
 #import "ios/web/public/web_client.h"
@@ -30,10 +31,6 @@
 #import "net/url_request/url_request_context.h"
 #import "net/url_request/url_request_context_builder.h"
 #import "services/network/public/cpp/weak_wrapper_shared_url_loader_factory.h"
-
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
 
 #pragma mark - SafeBrowsingServiceImpl
 
@@ -60,7 +57,13 @@ void StartSafeBrowsingDBManagerInternal(
 
 }  // namespace
 
-SafeBrowsingServiceImpl::SafeBrowsingServiceImpl() = default;
+SafeBrowsingServiceImpl::SafeBrowsingServiceImpl() {
+  url_loader_factory_pending_reciever_ =
+      url_loader_factory_.BindNewPipeAndPassReceiver();
+  shared_url_loader_factory_ =
+      base::MakeRefCounted<network::WeakWrapperSharedURLLoaderFactory>(
+          url_loader_factory_.get());
+}
 
 SafeBrowsingServiceImpl::~SafeBrowsingServiceImpl() = default;
 
@@ -81,7 +84,8 @@ void SafeBrowsingServiceImpl::Initialize(
   safe_browsing_db_manager_ = safe_browsing::V4LocalDatabaseManager::Create(
       safe_browsing_data_path, web::GetUIThreadTaskRunner({}),
       web::GetIOThreadTaskRunner({}),
-      safe_browsing::ExtendedReportingLevelCallback());
+      safe_browsing::ExtendedReportingLevelCallback(),
+      safe_browsing::V4LocalDatabaseManager::RecordMigrationMetricsCallback());
 
   io_thread_enabler_ =
       base::MakeRefCounted<IOThreadEnabler>(safe_browsing_db_manager_);
@@ -98,11 +102,8 @@ void SafeBrowsingServiceImpl::Initialize(
   url_loader_factory_params->process_id = network::mojom::kBrowserProcessId;
   url_loader_factory_params->is_corb_enabled = false;
   network_context_client_->CreateURLLoaderFactory(
-      url_loader_factory_.BindNewPipeAndPassReceiver(),
+      std::move(url_loader_factory_pending_reciever_),
       std::move(url_loader_factory_params));
-  shared_url_loader_factory_ =
-      base::MakeRefCounted<network::WeakWrapperSharedURLLoaderFactory>(
-          url_loader_factory_.get());
 
   // Watch for changes to the Safe Browsing opt-out preference.
   pref_change_registrar_ = std::make_unique<PrefChangeRegistrar>();
@@ -152,11 +153,22 @@ SafeBrowsingServiceImpl::CreateUrlChecker(
   scoped_refptr<safe_browsing::UrlCheckerDelegate> url_checker_delegate =
       base::MakeRefCounted<UrlCheckerDelegateImpl>(safe_browsing_db_manager_,
                                                    client->AsWeakPtr());
+  safe_browsing::HashRealTimeService* hash_real_time_service =
+      client->GetHashRealTimeService();
+
+  safe_browsing::hash_realtime_utils::HashRealTimeSelection
+      hash_real_time_selection =
+          safe_browsing::hash_realtime_utils::DetermineHashRealTimeSelection(
+              web_state->GetBrowserState()->IsOffTheRecord(),
+              pref_change_registrar_->prefs(), /*log_usage_histograms=*/true);
+
   return std::make_unique<safe_browsing::SafeBrowsingUrlCheckerImpl>(
       request_destination, url_checker_delegate, web_state->GetWeakPtr(),
       can_perform_full_url_lookup, can_url_realtime_check_subresource_url,
       web::GetUIThreadTaskRunner({}),
-      url_lookup_service ? url_lookup_service->GetWeakPtr() : nullptr);
+      url_lookup_service ? url_lookup_service->GetWeakPtr() : nullptr,
+      hash_real_time_service ? hash_real_time_service->GetWeakPtr() : nullptr,
+      hash_real_time_selection);
 }
 
 bool SafeBrowsingServiceImpl::CanCheckUrl(const GURL& url) const {
@@ -171,6 +183,10 @@ SafeBrowsingServiceImpl::GetURLLoaderFactory() {
 scoped_refptr<safe_browsing::SafeBrowsingDatabaseManager>
 SafeBrowsingServiceImpl::GetDatabaseManager() {
   return safe_browsing_db_manager_;
+}
+
+network::mojom::NetworkContext* SafeBrowsingServiceImpl::GetNetworkContext() {
+  return network_context_client_.get();
 }
 
 void SafeBrowsingServiceImpl::ClearCookies(

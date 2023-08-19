@@ -58,7 +58,6 @@ void UserImageManagerRegistry::OnUserLoggedIn(const user_manager::User& user) {
   switch (user_type) {
     case user_manager::USER_TYPE_REGULAR:
     case user_manager::USER_TYPE_CHILD:
-    case user_manager::USER_TYPE_ACTIVE_DIRECTORY:
       user_is_new = user_manager_->IsCurrentUserNew();
       user_is_local = false;
       break;

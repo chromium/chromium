@@ -15,8 +15,16 @@ const char kCommercePriceTrackingName[] = "Price Tracking";
 const char kCommercePriceTrackingDescription[] =
     "Allows users to track product prices through Chrome.";
 
+const char kShoppingCollectionName[] = "Shopping Collection";
+const char kShoppingCollectionDescription[] =
+    "Organize all products into an automatically created bookmark folder.";
+
 const char kShoppingListName[] = "Shopping List";
 const char kShoppingListDescription[] = "Enable shopping list in bookmarks.";
+
+const char kShoppingListTrackByDefaultName[] = "Shopping List Track By Default";
+const char kShoppingListTrackByDefaultDescription[] =
+    "Bookmarked product pages are tracked by default if they can be.";
 
 const char kChromeCartDomBasedHeuristicsName[] =
     "ChromeCart DOM-based heuristics";
@@ -26,9 +34,17 @@ const char kChromeCartDomBasedHeuristicsDescription[] =
 const char kPriceInsightsName[] = "Price Insights";
 const char kPriceInsightsDescription[] = "Enable price insights experiment.";
 
+const char kShowDiscountOnNavigationName[] = "Show discount on navigation";
+const char kShowDiscountOnNavigationDescription[] =
+    "Enable discount to show on navigation";
+
 const char kPriceTrackingChipExperimentName[] =
     "Price Tracking Chip Experiment";
 const char kPriceTrackingChipExperimentDescription[] =
     "Enable price tracking chip experiment.";
+
+const char kShoppingPageTypesName[] = "Shopping Page Types";
+const char kShoppingPageTypesDescription[] =
+    "Enable shopping page types experiment.";
 
 }  // namespace commerce::flag_descriptions

@@ -121,6 +121,36 @@ EnumTraits<gpu::mojom::VideoCodecProfile, gpu::VideoCodecProfile>::ToMojom(
       return gpu::mojom::VideoCodecProfile::AV1PROFILE_PROFILE_HIGH;
     case gpu::VideoCodecProfile::AV1PROFILE_PROFILE_PRO:
       return gpu::mojom::VideoCodecProfile::AV1PROFILE_PROFILE_PRO;
+    case gpu::VideoCodecProfile::VVCPROFILE_MAIN10:
+      return gpu::mojom::VideoCodecProfile::VVCPROFILE_MAIN10;
+    case gpu::VideoCodecProfile::VVCPROFILE_MAIN12:
+      return gpu::mojom::VideoCodecProfile::VVCPROFILE_MAIN12;
+    case gpu::VideoCodecProfile::VVCPROFILE_MAIN12_INTRA:
+      return gpu::mojom::VideoCodecProfile::VVCPROFILE_MAIN12_INTRA;
+    case gpu::VideoCodecProfile::VVCPROIFLE_MULTILAYER_MAIN10:
+      return gpu::mojom::VideoCodecProfile::VVCPROIFLE_MULTILAYER_MAIN10;
+    case gpu::VideoCodecProfile::VVCPROFILE_MAIN10_444:
+      return gpu::mojom::VideoCodecProfile::VVCPROFILE_MAIN10_444;
+    case gpu::VideoCodecProfile::VVCPROFILE_MAIN12_444:
+      return gpu::mojom::VideoCodecProfile::VVCPROFILE_MAIN12_444;
+    case gpu::VideoCodecProfile::VVCPROFILE_MAIN16_444:
+      return gpu::mojom::VideoCodecProfile::VVCPROFILE_MAIN16_444;
+    case gpu::VideoCodecProfile::VVCPROFILE_MAIN12_444_INTRA:
+      return gpu::mojom::VideoCodecProfile::VVCPROFILE_MAIN12_444_INTRA;
+    case gpu::VideoCodecProfile::VVCPROFILE_MAIN16_444_INTRA:
+      return gpu::mojom::VideoCodecProfile::VVCPROFILE_MAIN16_444_INTRA;
+    case gpu::VideoCodecProfile::VVCPROFILE_MULTILAYER_MAIN10_444:
+      return gpu::mojom::VideoCodecProfile::VVCPROFILE_MULTILAYER_MAIN10_444;
+    case gpu::VideoCodecProfile::VVCPROFILE_MAIN10_STILL_PICTURE:
+      return gpu::mojom::VideoCodecProfile::VVCPROFILE_MAIN10_STILL_PICTURE;
+    case gpu::VideoCodecProfile::VVCPROFILE_MAIN12_STILL_PICTURE:
+      return gpu::mojom::VideoCodecProfile::VVCPROFILE_MAIN12_STILL_PICTURE;
+    case gpu::VideoCodecProfile::VVCPROFILE_MAIN10_444_STILL_PICTURE:
+      return gpu::mojom::VideoCodecProfile::VVCPROFILE_MAIN10_444_STILL_PICTURE;
+    case gpu::VideoCodecProfile::VVCPROFILE_MAIN12_444_STILL_PICTURE:
+      return gpu::mojom::VideoCodecProfile::VVCPROFILE_MAIN12_444_STILL_PICTURE;
+    case gpu::VideoCodecProfile::VVCPROFILE_MAIN16_444_STILL_PICTURE:
+      return gpu::mojom::VideoCodecProfile::VVCPROFILE_MAIN12_444_STILL_PICTURE;
   }
   NOTREACHED() << "Invalid VideoCodecProfile:" << video_codec_profile;
   return gpu::mojom::VideoCodecProfile::VIDEO_CODEC_PROFILE_UNKNOWN;
@@ -246,6 +276,51 @@ bool EnumTraits<gpu::mojom::VideoCodecProfile, gpu::VideoCodecProfile>::
       return true;
     case gpu::mojom::VideoCodecProfile::AV1PROFILE_PROFILE_PRO:
       *out = gpu::VideoCodecProfile::AV1PROFILE_PROFILE_PRO;
+      return true;
+    case gpu::mojom::VideoCodecProfile::VVCPROFILE_MAIN10:
+      *out = gpu::VideoCodecProfile::VVCPROFILE_MAIN10;
+      return true;
+    case gpu::mojom::VideoCodecProfile::VVCPROFILE_MAIN12:
+      *out = gpu::VideoCodecProfile::VVCPROFILE_MAIN12;
+      return true;
+    case gpu::mojom::VideoCodecProfile::VVCPROFILE_MAIN12_INTRA:
+      *out = gpu::VideoCodecProfile::VVCPROFILE_MAIN12_INTRA;
+      return true;
+    case gpu::mojom::VideoCodecProfile::VVCPROIFLE_MULTILAYER_MAIN10:
+      *out = gpu::VideoCodecProfile::VVCPROIFLE_MULTILAYER_MAIN10;
+      return true;
+    case gpu::mojom::VideoCodecProfile::VVCPROFILE_MAIN10_444:
+      *out = gpu::VideoCodecProfile::VVCPROFILE_MAIN10_444;
+      return true;
+    case gpu::mojom::VideoCodecProfile::VVCPROFILE_MAIN12_444:
+      *out = gpu::VideoCodecProfile::VVCPROFILE_MAIN12_444;
+      return true;
+    case gpu::mojom::VideoCodecProfile::VVCPROFILE_MAIN16_444:
+      *out = gpu::VideoCodecProfile::VVCPROFILE_MAIN16_444;
+      return true;
+    case gpu::mojom::VideoCodecProfile::VVCPROFILE_MAIN12_444_INTRA:
+      *out = gpu::VideoCodecProfile::VVCPROFILE_MAIN12_444_INTRA;
+      return true;
+    case gpu::mojom::VideoCodecProfile::VVCPROFILE_MAIN16_444_INTRA:
+      *out = gpu::VideoCodecProfile::VVCPROFILE_MAIN16_444_INTRA;
+      return true;
+    case gpu::mojom::VideoCodecProfile::VVCPROFILE_MULTILAYER_MAIN10_444:
+      *out = gpu::VideoCodecProfile::VVCPROFILE_MULTILAYER_MAIN10_444;
+      return true;
+    case gpu::mojom::VideoCodecProfile::VVCPROFILE_MAIN10_STILL_PICTURE:
+      *out = gpu::VideoCodecProfile::VVCPROFILE_MAIN10_STILL_PICTURE;
+      return true;
+    case gpu::mojom::VideoCodecProfile::VVCPROFILE_MAIN12_STILL_PICTURE:
+      *out = gpu::VideoCodecProfile::VVCPROFILE_MAIN12_STILL_PICTURE;
+      return true;
+    case gpu::mojom::VideoCodecProfile::VVCPROFILE_MAIN10_444_STILL_PICTURE:
+      *out = gpu::VideoCodecProfile::VVCPROFILE_MAIN10_444_STILL_PICTURE;
+      return true;
+    case gpu::mojom::VideoCodecProfile::VVCPROFILE_MAIN12_444_STILL_PICTURE:
+      *out = gpu::VideoCodecProfile::VVCPROFILE_MAIN12_444_STILL_PICTURE;
+      return true;
+    case gpu::mojom::VideoCodecProfile::VVCPROFILE_MAIN16_444_STILL_PICTURE:
+      *out = gpu::VideoCodecProfile::VVCPROFILE_MAIN12_444_STILL_PICTURE;
       return true;
   }
   NOTREACHED() << "Invalid VideoCodecProfile: " << input;

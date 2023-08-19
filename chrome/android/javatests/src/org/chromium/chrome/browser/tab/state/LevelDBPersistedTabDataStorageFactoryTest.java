@@ -86,7 +86,6 @@ public class LevelDBPersistedTabDataStorageFactoryTest {
     @SmallTest
     @Test
     public void testStorageDestroyedWhenProfileDestroyed() {
-        Profile.setLastUsedProfileForTesting(null);
         Profile profile = Profile.getLastUsedRegularProfile();
         LevelDBPersistedTabDataStorageFactory factory = new LevelDBPersistedTabDataStorageFactory();
         LevelDBPersistedTabDataStorage storage = factory.create();

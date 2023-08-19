@@ -460,8 +460,8 @@ InstallUtil::GetCloudManagementDmTokenLocation(
 
   base::win::RegKey key;
   if (read_only) {
-    key.Open(HKEY_LOCAL_MACHINE, key_path.c_str(),
-             KEY_QUERY_VALUE | wow_access);
+    (void)key.Open(HKEY_LOCAL_MACHINE, key_path.c_str(),
+                   KEY_QUERY_VALUE | wow_access);
   } else {
     auto result = key.Create(HKEY_LOCAL_MACHINE, key_path.c_str(),
                              KEY_SET_VALUE | wow_access);
@@ -486,8 +486,8 @@ InstallUtil::GetDeviceTrustSigningKeyLocation(ReadOnly read_only) {
       .append(L"\\DeviceTrust");
   base::win::RegKey key;
   if (read_only) {
-    key.Open(HKEY_LOCAL_MACHINE, key_path.c_str(),
-             KEY_QUERY_VALUE | KEY_WOW64_64KEY);
+    (void)key.Open(HKEY_LOCAL_MACHINE, key_path.c_str(),
+                   KEY_QUERY_VALUE | KEY_WOW64_64KEY);
   } else {
     auto result = key.Create(HKEY_LOCAL_MACHINE, key_path.c_str(),
                              KEY_SET_VALUE | KEY_WOW64_64KEY);

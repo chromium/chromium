@@ -35,6 +35,7 @@
 #include "ui/ozone/platform/wayland/host/org_kde_kwin_idle.h"
 #include "ui/ozone/platform/wayland/host/overlay_prioritizer.h"
 #include "ui/ozone/platform/wayland/host/proxy/wayland_proxy_impl.h"
+#include "ui/ozone/platform/wayland/host/single_pixel_buffer.h"
 #include "ui/ozone/platform/wayland/host/surface_augmenter.h"
 #include "ui/ozone/platform/wayland/host/wayland_buffer_factory.h"
 #include "ui/ozone/platform/wayland/host/wayland_buffer_manager_host.h"
@@ -80,7 +81,7 @@ constexpr uint32_t kMaxXdgShellVersion = 5;
 constexpr uint32_t kMaxWpPresentationVersion = 1;
 constexpr uint32_t kMaxWpViewporterVersion = 1;
 constexpr uint32_t kMaxTextInputManagerVersion = 1;
-constexpr uint32_t kMaxTextInputExtensionVersion = 11;
+constexpr uint32_t kMaxTextInputExtensionVersion = 13;
 constexpr uint32_t kMaxExplicitSyncVersion = 2;
 constexpr uint32_t kMaxAlphaCompositingVersion = 1;
 constexpr uint32_t kMaxXdgDecorationVersion = 1;
@@ -142,6 +143,8 @@ bool WaylandConnection::Initialize() {
                               &OrgKdeKwinIdle::Instantiate);
   RegisterGlobalObjectFactory(OverlayPrioritizer::kInterfaceName,
                               &OverlayPrioritizer::Instantiate);
+  RegisterGlobalObjectFactory(SinglePixelBuffer::kInterfaceName,
+                              &SinglePixelBuffer::Instantiate);
   RegisterGlobalObjectFactory(SurfaceAugmenter::kInterfaceName,
                               &SurfaceAugmenter::Instantiate);
   RegisterGlobalObjectFactory(WaylandZAuraOutputManager::kInterfaceName,
@@ -614,6 +617,46 @@ const gfx::PointF WaylandConnection::MaybeConvertLocation(
   gfx::PointF converted(location);
   converted.InvScale(window->applied_state().window_scale);
   return converted;
+}
+
+void WaylandConnection::DumpState(std::ostream& out) const {
+  out << "available globals:";
+  for (const auto& pair : available_globals_) {
+    out << pair.first << ',';
+  }
+  out << std::endl;
+
+  if (event_source_) {
+    event_source_->DumpState(out);
+    out << std::endl;
+  }
+  window_manager_.DumpState(out);
+  out << std::endl;
+
+  if (window_drag_controller_) {
+    window_drag_controller_->DumpState(out);
+    out << std::endl;
+  }
+
+  if (data_drag_controller_) {
+    data_drag_controller_->DumpState(out);
+    out << std::endl;
+  }
+
+  if (cursor_position_) {
+    cursor_position_->DumpState(out);
+    out << std::endl;
+  }
+
+  if (output_manager_) {
+    output_manager_->DumpState(out);
+    out << std::endl;
+  }
+
+  if (zaura_output_manager_) {
+    zaura_output_manager_->DumpState(out);
+    out << std::endl;
+  }
 }
 
 bool WaylandConnection::ShouldUseOverlayDelegation() const {

@@ -11,7 +11,6 @@ namespace browser_ui {
 
 // Improved 'All sites' and 'Site settings' pages on Android.
 BASE_DECLARE_FEATURE(kSiteDataImprovements);
-BASE_DECLARE_FEATURE(kRequestDesktopSiteExceptionsDowngrade);
 
 }  // namespace browser_ui
 

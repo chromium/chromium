@@ -1,0 +1,161 @@
+{
+  "description": "1 navigation source and 1 trigger produce 1 report",
+  "input": {
+    "sources": [
+      {
+        // Should register but should not result in any reports.
+        "timestamp": "0",
+        "registration_request": {
+          "source_origin": "https://source.test",
+          "attribution_src_url": "https://reporter.test/register-source",
+          "source_type": "navigation"
+        },
+        "responses": [{
+          "url": "https://reporter.test/register-source",
+          "response": {
+            "Attribution-Reporting-Register-Source": {
+              "destination": "https://destination.test",
+              "max_event_level_reports": 0,
+              "source_event_id": "123"
+            }
+          }
+        }]
+      },
+      {
+        // Should register and only result in one report.
+        "timestamp": "2000",
+        "registration_request": {
+          "source_origin": "https://source.test",
+          "attribution_src_url": "https://reporter2.test/register-source",
+          "source_type": "navigation"
+        },
+        "responses": [{
+          "url": "https://reporter2.test/register-source",
+          "response": {
+            "Attribution-Reporting-Register-Source": {
+              "destination": "https://destination2.test",
+              "max_event_level_reports": 1,
+              "source_event_id": "456"
+            }
+          }
+        }]
+      }
+    ],
+    "triggers": [
+      {
+        // Should match but not result in an event-level report.
+        "timestamp": "1000",
+        "registration_request": {
+          "attribution_src_url": "https://reporter.test/register-trigger",
+          "destination_origin": "https://destination.test"
+        },
+        "responses": [{
+          "url": "https://reporter.test/register-trigger",
+          "debug_permission": true,
+          "response": {
+            "Attribution-Reporting-Register-Trigger": {
+              "debug_reporting": true,
+              "event_trigger_data": [
+                {
+                  "trigger_data": "2"
+                }
+              ]
+            }
+          }
+        }]
+      },
+      {
+        // Should result in an event-level report.
+        "timestamp": "3000",
+        "registration_request": {
+          "attribution_src_url": "https://reporter2.test/register-trigger",
+          "destination_origin": "https://destination2.test"
+        },
+        "responses": [{
+          "url": "https://reporter2.test/register-trigger",
+          "debug_permission": true,
+          "response": {
+            "Attribution-Reporting-Register-Trigger": {
+              "debug_reporting": true,
+              "event_trigger_data": [
+                {
+                  "trigger_data": "3"
+                }
+              ]
+            }
+          }
+        }]
+      },
+      {
+        // Should not result in an event-level report.
+        "timestamp": "4000",
+        "registration_request": {
+          "attribution_src_url": "https://reporter2.test/register-trigger",
+          "destination_origin": "https://destination2.test"
+        },
+        "responses": [{
+          "url": "https://reporter2.test/register-trigger",
+          "debug_permission": true,
+          "response": {
+            "Attribution-Reporting-Register-Trigger": {
+              "debug_reporting": true,
+              "event_trigger_data": [
+                {
+                  "trigger_data": "4"
+                }
+              ]
+            }
+          }
+        }]
+      }
+    ]
+  },
+  "output": {
+    "event_level_results": [
+      {
+        "payload": {
+          "attribution_destination": "https://destination2.test",
+          "randomized_trigger_rate": 0.0000208,
+          "scheduled_report_time": "176402",
+          "source_event_id": "456",
+          "source_type": "navigation",
+          "trigger_data": "3"
+        },
+        "report_url": "https://reporter2.test/.well-known/attribution-reporting/report-event-attribution",
+        "report_time": "176402000"
+      }
+    ],
+    "verbose_debug_reports": [
+      {
+        "payload": [ {
+          "body": {
+            "attribution_destination": "https://destination.test",
+            "randomized_trigger_rate": 8e-7,
+            "scheduled_report_time": "176400",
+            "source_event_id": "123",
+            "source_type": "navigation",
+            "trigger_data": "2"
+         },
+         "type": "trigger-event-excessive-reports"
+      } ],
+      "report_time": "1000",
+      "report_url": "https://reporter.test/.well-known/attribution-reporting/debug/verbose"
+      },
+      {
+        "payload": [ {
+           "body": {
+              "attribution_destination": "https://destination2.test",
+              "randomized_trigger_rate": 0.0000208,
+              "scheduled_report_time": "176402",
+              "source_event_id": "456",
+              "source_type": "navigation",
+              "trigger_data": "4"
+           },
+           "type": "trigger-event-low-priority"
+        } ],
+      "report_time": "4000",
+      "report_url": "https://reporter2.test/.well-known/attribution-reporting/debug/verbose"
+      }
+    ]
+  }
+}

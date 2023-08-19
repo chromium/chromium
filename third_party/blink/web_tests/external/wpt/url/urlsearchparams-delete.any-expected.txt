@@ -5,6 +5,6 @@ PASS Deleting all params removes ? from URL
 PASS Removing non-existent param removes ? from URL
 FAIL Changing the query of a URL with an opaque path can impact the path assert_equals: expected "space" but got "space    "
 PASS Changing the query of a URL with an opaque path can impact the path if the URL has no fragment
-FAIL Two-argument delete() assert_equals: expected "a=b&a=d" but got ""
+PASS Two-argument delete()
 Harness: the test ran to completion.
 

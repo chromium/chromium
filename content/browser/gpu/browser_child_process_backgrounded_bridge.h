@@ -17,8 +17,8 @@ namespace content {
 
 class BrowserChildProcessHostImpl;
 
-// This class ensures that the backgrounded state of `process` mirrors the
-// backgrounded state of the browser process.
+// This class ensures that the priority of `process` mirrors the priority of the
+// browser process.
 class CONTENT_EXPORT BrowserChildProcessBackgroundedBridge
     : public base::PortProvider::Observer {
  public:

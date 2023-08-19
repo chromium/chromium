@@ -16,7 +16,6 @@
         outline: none;
         position: relative;
         width: 34px;
-
       }
 
       :host-context([chrome-refresh-2023]):host {
@@ -38,7 +37,10 @@
 
         --cr-toggle-ripple-diameter: 20px;
 
+        --cr-toggle-bar-width_: 26px;
+
         height: fit-content;
+        isolation: isolate;
         min-width: initial;
         width: fit-content;
       }
@@ -88,14 +90,13 @@
       :host-context([chrome-refresh-2023]):host([disabled]) {
         --cr-toggle-checked-bar-color:
             var(--color-toggle-button-track-on-disabled,
-                rgba(var(--cr-fallback-color-on-surface-rgb), .12));
+                var(--cr-fallback-color-disabled-background));
         --cr-toggle-checked-button-color:
             var(--color-toggle-button-thumb-on-disabled, var(--cr-fallback-color-surface));
         --cr-toggle-unchecked-bar-color: transparent;
         --cr-toggle-unchecked-button-color:
             var(--color-toggle-button-thumb-off-disabled,
-                rgba(var(--cr-fallback-color-on-surface-rgb),
-                    var(--cr-disabled-opacity)));
+                var(--cr-fallback-color-disabled-foreground));
         opacity: 1;
       }
 
@@ -124,7 +125,7 @@
         height: 16px;
         opacity: 1;
         position: initial;
-        width: 26px;
+        width: var(--cr-toggle-bar-width_);
       }
 
       :host-context([chrome-refresh-2023]):host([checked]) #bar {
@@ -140,9 +141,8 @@
       }
 
       :host-context([chrome-refresh-2023]):host(:focus-visible) #bar {
-        background-clip: padding-box;
-        border-color: transparent;
         outline: 2px solid var(--cr-toggle-checked-bar-color);
+        outline-offset: 2px;
       }
 
       #knob {
@@ -173,15 +173,45 @@
            for both checked and unchecked. */
         --cr-toggle-knob-center-edge-distance_: 8px;
 
+        /* Direction for on/off states
+            - +1 means 'off' to the left, 'on' to the right, used in LTR.
+            - -1 means 'off' to the right, 'on' to the left, used in RTL. */
+        --cr-toggle-knob-direction_: 1;
+
+        /* Absolute distance from the center position to either left or
+           right. */
+        --cr-toggle-knob-travel-distance_: calc(
+            0.5 * var(--cr-toggle-bar-width_) -
+            var(--cr-toggle-knob-center-edge-distance_));
+
+        /* Positions in the horizontal (x-axis) dimension that the knob can be
+          in. The center position is only used for calculations, and is never
+          presented to the user. */
+        --cr-toggle-knob-position-center_: calc(
+            0.5 * var(--cr-toggle-bar-width_) + -50%);
+        --cr-toggle-knob-position-start_: calc(
+            var(--cr-toggle-knob-position-center_) -
+            var(--cr-toggle-knob-direction_) *
+            var(--cr-toggle-knob-travel-distance_));
+        --cr-toggle-knob-position-end_: calc(
+            var(--cr-toggle-knob-position-center_) +
+            var(--cr-toggle-knob-direction_) *
+            var(--cr-toggle-knob-travel-distance_));
+
         box-shadow: none;
         height: var(--cr-toggle-knob-diameter_);
-        left: var(--cr-toggle-knob-center-edge-distance_);
         position: absolute;
         top: 50%;
-        transform: translate(-50%, -50%);
-        transition: left linear 80ms, background-color linear 80ms,
+        transform: translate(var(--cr-toggle-knob-position-start_), -50%);
+        transition: transform linear 80ms, background-color linear 80ms,
             width linear 80ms, height linear 80ms;
         width: var(--cr-toggle-knob-diameter_);
+      }
+
+      :host-context([dir=rtl][chrome-refresh-2023]) #knob {
+        left: 0;
+        /* Flip the knob's on/off direction for RTL */
+        --cr-toggle-knob-direction_: -1;
       }
 
       :host-context([chrome-refresh-2023]):host(:active) #knob {
@@ -190,7 +220,7 @@
 
       :host-context([chrome-refresh-2023]):host([checked]) #knob {
         --cr-toggle-knob-diameter_: 12px;
-        left: calc(100% - var(--cr-toggle-knob-center-edge-distance_));
+        transform: translate(var(--cr-toggle-knob-position-end_), -50%);
       }
 
       :host-context([chrome-refresh-2023]):host([checked]:active) #knob {
@@ -200,7 +230,7 @@
       :host-context([chrome-refresh-2023]):host([checked]:active) #knob,
       :host-context([chrome-refresh-2023]):host([checked]:hover) #knob {
         --cr-toggle-checked-button-color:
-            var(--color-toggle-button-thumb-on-hover-pressed,
+            var(--color-toggle-button-thumb-on-hover,
                 var(--cr-fallback-color-primary-container));
       }
 

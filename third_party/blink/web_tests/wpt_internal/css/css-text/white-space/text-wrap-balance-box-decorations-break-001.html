@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<link rel="help" href="https://drafts.csswg.org/css-text-4/#valdef-text-wrap-balance">
+<link rel="mismatch" href="text-wrap-balance-box-decorations-break-001-ref.html">
+<style>
+div {
+  font-family: monospace;
+  text-wrap: balance;
+  width: 22ch;
+  border: 1px solid blue;
+}
+span {
+  -webkit-box-decoration-break: clone;
+  box-decoration-break: clone;
+}
+</style>
+<div>
+  <span>
+    123 56 890
+    123 56 890
+  </span>
+  12
+</div>

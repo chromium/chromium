@@ -42,6 +42,7 @@ class MockDataRetriever : public WebAppDataRetriever {
               (content::WebContents * web_contents,
                const base::flat_set<GURL>& icon_urls,
                bool skip_page_favicons,
+               bool fail_all_if_any_fail,
                GetIconsCallback callback),
               (override));
 };

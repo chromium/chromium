@@ -6,7 +6,7 @@
 
 #include "base/check.h"
 #include "base/metrics/histogram_macros.h"
-#include "components/startup_metric_utils/browser/startup_metric_utils.h"
+#include "components/startup_metric_utils/common/startup_metric_utils.h"
 
 // static
 MacStartupProfiler* MacStartupProfiler::GetInstance() {
@@ -25,7 +25,7 @@ void MacStartupProfiler::Profile(Location location) {
 
 void MacStartupProfiler::RecordMetrics() {
   const base::TimeTicks main_entry_ticks =
-      startup_metric_utils::MainEntryPointTicks();
+      startup_metric_utils::GetCommon().MainEntryPointTicks();
   DCHECK(!main_entry_ticks.is_null());
   DCHECK(!recorded_metrics_);
 

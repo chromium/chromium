@@ -231,14 +231,16 @@ TEST_F(CastMediaRouteProviderTest, CreateRouteFailsInvalidSource) {
 TEST_F(CastMediaRouteProviderTest, CreateRoute) {
   MediaSinkInternal sink = CreateCastSink(1);
   media_sink_service_.AddOrUpdateSink(sink);
+  auto quit_closure = task_environment_.QuitClosure();
 
   std::vector<std::string> default_supported_app_types = {"WEB"};
   EXPECT_CALL(
       message_handler_,
       LaunchSession(sink.cast_data().cast_channel_id, kAppId,
                     kDefaultLaunchTimeout, default_supported_app_types, _, _))
-      .WillOnce(WithArg<5>([this](auto callback) {
+      .WillOnce(WithArg<5>([&, this](auto callback) {
         launch_session_callback_ = std::move(callback);
+        quit_closure.Run();
       }));
   provider_->CreateRoute(
       kCastSource, sink.sink().id(), kPresentationId, origin_, kFrameTreeNodeId,
@@ -246,7 +248,7 @@ TEST_F(CastMediaRouteProviderTest, CreateRoute) {
       base::BindOnce(
           &CastMediaRouteProviderTest::ExpectCreateRouteSuccessAndSetRoute,
           base::Unretained(this)));
-  base::RunLoop().RunUntilIdle();
+  task_environment_.RunUntilQuit();
   SendLaunchSessionResponseSuccess();
   ASSERT_TRUE(route_);
 }
@@ -254,10 +256,12 @@ TEST_F(CastMediaRouteProviderTest, CreateRoute) {
 TEST_F(CastMediaRouteProviderTest, TerminateRoute) {
   MediaSinkInternal sink = CreateCastSink(1);
   media_sink_service_.AddOrUpdateSink(sink);
+  auto quit_closure = task_environment_.QuitClosure();
 
   EXPECT_CALL(message_handler_, LaunchSession)
-      .WillOnce(WithArg<5>([this](auto callback) {
+      .WillOnce(WithArg<5>([&, this](auto callback) {
         launch_session_callback_ = std::move(callback);
+        quit_closure.Run();
       }));
   provider_->CreateRoute(
       kCastSource, sink.sink().id(), kPresentationId, origin_, kFrameTreeNodeId,
@@ -265,7 +269,7 @@ TEST_F(CastMediaRouteProviderTest, TerminateRoute) {
       base::BindOnce(
           &CastMediaRouteProviderTest::ExpectCreateRouteSuccessAndSetRoute,
           base::Unretained(this)));
-  base::RunLoop().RunUntilIdle();
+  task_environment_.RunUntilQuit();
   SendLaunchSessionResponseSuccess();
 
   ASSERT_TRUE(route_);

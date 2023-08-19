@@ -84,6 +84,23 @@ ASH_EXPORT const base::Value::Dict* GetLoginScreenSettingsDict(
     AccountId account_id,
     const std::string& pref_name);
 
+// These two functions are used to convert the button remapping or dict
+// in order to save the mojom object to the prefs as a dict.
+ASH_EXPORT base::Value::Dict ConvertButtonRemappingToDict(
+    const mojom::ButtonRemapping& remapping);
+ASH_EXPORT mojom::ButtonRemappingPtr ConvertDictToButtonRemapping(
+    const base::Value::Dict& dict);
+
+// This helper function converts the button remapping object array
+// to a list of dicts to be stored in prefs.
+ASH_EXPORT base::Value::List ConvertButtonRemappingArrayToList(
+    const std::vector<mojom::ButtonRemappingPtr>& remappings);
+
+// This helper function converts a list of dicts to
+// a button remapping object array. The dicts will be stored in prefs.
+ASH_EXPORT std::vector<mojom::ButtonRemappingPtr>
+ConvertListToButtonRemappingArray(const base::Value::List& list);
+
 ASH_EXPORT bool IsKeyboardPretendingToBeMouse(const ui::InputDevice& device);
 
 }  // namespace ash

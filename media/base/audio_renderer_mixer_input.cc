@@ -28,7 +28,7 @@ AudioRendererMixerInput::AudioRendererMixerInput(
     AudioRendererMixerPool* mixer_pool,
     const base::UnguessableToken& owner_token,
     const std::string& device_id,
-    AudioLatency::LatencyType latency)
+    AudioLatency::Type latency)
     : mixer_pool_(mixer_pool),
       owner_token_(owner_token),
       device_id_(device_id),

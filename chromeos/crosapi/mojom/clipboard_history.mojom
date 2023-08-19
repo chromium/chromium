@@ -13,7 +13,7 @@ import "ui/base/mojom/ui_base_types.mojom";
 // written to logs. New enum values can be added, but existing enums must
 // never be renumbered, deleted, or reused. If adding an enum, add it at the
 // bottom.
-// Next MinVersion: 3
+// Next MinVersion: 4
 [Stable, Extensible]
 enum ClipboardHistoryControllerShowSource {
   // Shown by the accelerator(search + v).
@@ -30,6 +30,10 @@ enum ClipboardHistoryControllerShowSource {
   [MinVersion=1] kToast,
   // Shown by long-pressing Ctrl+V.
   [MinVersion=2] kControlVLongpress,
+  // Shown from the submenu embedded in a render view's context memu.
+  [MinVersion=3] kRenderViewContextSubmenu,
+  // Shown from the submenu embedded in a textfield context menu.
+  [MinVersion=3] kTextfieldContextSubmenu,
 };
 
 // The formats dictating how clipboard history items are displayed.

@@ -23,7 +23,10 @@ js_type_check("closure_compile_local") {
     ":parent_access_before",
     ":parent_access_controller",
     ":parent_access_disabled",
+    ":parent_access_error",
+    ":parent_access_offline",
     ":parent_access_screen",
+    ":parent_access_template",
     ":parent_access_ui",
     ":parent_access_ui_handler",
     ":utils",
@@ -40,6 +43,7 @@ js_type_check("closure_compile_local") {
 js_library("parent_access_after") {
   deps = [
     ":parent_access_screen",
+    ":parent_access_template",
     "flows:local_web_approvals_after",
     "//chrome/browser/ui/webui/ash/parent_access:mojo_bindings_webui_js",
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
@@ -51,6 +55,7 @@ js_library("parent_access_after") {
 js_library("parent_access_before") {
   deps = [
     ":parent_access_screen",
+    ":parent_access_template",
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
   ]
   externs_list =
@@ -60,10 +65,27 @@ js_library("parent_access_before") {
 js_library("parent_access_disabled") {
   deps = [
     ":parent_access_screen",
+    ":parent_access_template",
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
   ]
   externs_list =
       [ "//ui/webui/resources/cr_elements/cr_button/cr_button_externs.js" ]
+}
+
+js_library("parent_access_error") {
+  deps = [
+    ":parent_access_template",
+    "//chrome/browser/resources/chromeos/supervision:supervised_user_error",
+    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
+  ]
+}
+
+js_library("parent_access_offline") {
+  deps = [
+    ":parent_access_template",
+    "//chrome/browser/resources/chromeos/supervision:supervised_user_offline",
+    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
+  ]
 }
 
 js_library("parent_access_app") {
@@ -71,10 +93,10 @@ js_library("parent_access_app") {
     ":parent_access_after",
     ":parent_access_before",
     ":parent_access_disabled",
+    ":parent_access_error",
+    ":parent_access_offline",
     ":parent_access_ui",
     ":parent_access_ui_handler",
-    "//chrome/browser/resources/chromeos/supervision:supervised_user_error",
-    "//chrome/browser/resources/chromeos/supervision:supervised_user_offline",
     "//chrome/browser/ui/webui/ash/parent_access:mojo_bindings_webui_js",
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
   ]
@@ -88,9 +110,18 @@ js_library("parent_access_controller") {
   ]
 }
 
+js_library("parent_access_template") {
+  deps = [
+    ":parent_access_ui_handler",
+    "//chrome/browser/ui/webui/ash/parent_access:mojo_bindings_webui_js",
+    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
+  ]
+}
+
 js_library("parent_access_ui") {
   deps = [
     ":parent_access_controller",
+    ":parent_access_template",
     ":parent_access_ui_handler",
     "//ash/webui/common/resources:load_time_data.m",
     "//chrome/browser/ui/webui/ash/parent_access:mojo_bindings_webui_js",
@@ -122,6 +153,9 @@ html_to_js("web_components") {
     "parent_access_app.js",
     "parent_access_before.js",
     "parent_access_disabled.js",
+    "parent_access_error.js",
+    "parent_access_offline.js",
+    "parent_access_template.js",
     "parent_access_ui.js",
   ]
 }

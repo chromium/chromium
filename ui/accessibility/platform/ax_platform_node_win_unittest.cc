@@ -31,6 +31,7 @@
 #include "ui/accessibility/ax_node_data.h"
 #include "ui/accessibility/platform/ax_fragment_root_win.h"
 #include "ui/accessibility/platform/ax_platform_node_win.h"
+#include "ui/accessibility/platform/sequence_affine_com_object_root_win.h"
 #include "ui/accessibility/platform/test_ax_node_wrapper.h"
 #include "ui/base/win/atl_module.h"
 
@@ -4435,7 +4436,8 @@ TEST_F(AXPlatformNodeWinTest, UIAGetControllerForPropertyId) {
   AXNodeData group1;
   group1.id = 5;
   group1.role = ax::mojom::Role::kGenericContainer;
-  group1.AddIntAttribute(ax::mojom::IntAttribute::kErrormessageId, 6);
+  group1.AddIntListAttribute(ax::mojom::IntListAttribute::kErrormessageIds,
+                             std::vector<AXNodeID>{6});
 
   AXNodeData text1;
   text1.id = 6;
@@ -5782,6 +5784,24 @@ TEST_F(AXPlatformNodeWinTest, ComputeUIAControlType) {
   EXPECT_UIA_INT_EQ(
       QueryInterfaceFromNodeId<IRawElementProviderSimple>(child7.id),
       UIA_ControlTypePropertyId, int{UIA_GroupControlTypeId});
+}
+
+TEST_F(AXPlatformNodeWinTest, IsUIAControlForStatusRole) {
+  TestAXTreeUpdate update(std::string(R"HTML(
+    ++1 kRootWebArea
+    ++++2 kStatus
+  )HTML"));
+
+  Init(update);
+
+  // Turn on web content mode for the AXTree.
+  TestAXNodeWrapper::SetGlobalIsWebContent(true);
+
+  AXNode* status_node = GetRoot()->children()[0];
+
+  ComPtr<IRawElementProviderSimple> status_node_provider =
+      QueryInterfaceFromNode<IRawElementProviderSimple>(status_node);
+  EXPECT_UIA_BOOL_EQ(status_node_provider, UIA_IsControlElementPropertyId, true);
 }
 
 TEST_F(AXPlatformNodeWinTest, UIALandmarkType) {
@@ -7720,7 +7740,7 @@ TEST_F(AXPlatformNodeWinTest, SanitizeStringAttributeForIA2) {
 //
 
 class TestIChromeAccessibleDelegate
-    : public CComObjectRootEx<CComMultiThreadModel>,
+    : public SequenceAffineComObjectRoot,
       public IDispatchImpl<IChromeAccessibleDelegate> {
   using IDispatchImpl::Invoke;
 

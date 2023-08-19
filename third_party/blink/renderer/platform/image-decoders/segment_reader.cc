@@ -37,8 +37,9 @@ size_t BufferGetSomeData(Iter& iter,
     }
 
     // Move to next block.
-    if (!iter.Next())
+    if (!iter.Next()) {
       break;
+    }
   }
   return 0;
 }
@@ -86,8 +87,9 @@ size_t SharedBufferSegmentReader::GetSomeData(const char*& data,
                                               size_t position) const {
   data = nullptr;
   auto it = shared_buffer_->GetIteratorAt(position);
-  if (it == shared_buffer_->cend())
+  if (it == shared_buffer_->cend()) {
     return 0;
+  }
   data = it->data();
   return it->size();
 }
@@ -129,8 +131,9 @@ size_t DataSegmentReader::size() const {
 
 size_t DataSegmentReader::GetSomeData(const char*& data,
                                       size_t position) const {
-  if (position >= data_->size())
+  if (position >= data_->size()) {
     return 0;
+  }
 
   data = reinterpret_cast<const char*>(data_->bytes() + position);
   return data_->size() - position;
@@ -171,8 +174,9 @@ size_t ROBufferSegmentReader::size() const {
 
 size_t ROBufferSegmentReader::GetSomeData(const char*& data,
                                           size_t position) const {
-  if (!ro_buffer_)
+  if (!ro_buffer_) {
     return 0;
+  }
 
   base::AutoLock lock(read_lock_);
 
@@ -198,8 +202,9 @@ static void UnrefROBuffer(const void* ptr, void* context) {
 }
 
 sk_sp<SkData> ROBufferSegmentReader::GetAsSkData() const {
-  if (!ro_buffer_)
+  if (!ro_buffer_) {
     return nullptr;
+  }
 
   // Check to see if the data is already contiguous.
   ROBuffer::Iter iter(ro_buffer_.get());
@@ -235,8 +240,7 @@ class ParkableImageSegmentReader : public SegmentReader {
 
 ParkableImageSegmentReader::ParkableImageSegmentReader(
     scoped_refptr<ParkableImage> image)
-    : parkable_image_(std::move(image)), available_(parkable_image_->size()) {
-}
+    : parkable_image_(std::move(image)), available_(parkable_image_->size()) {}
 
 size_t ParkableImageSegmentReader::size() const {
   return available_;
@@ -244,8 +248,9 @@ size_t ParkableImageSegmentReader::size() const {
 
 size_t ParkableImageSegmentReader::GetSomeData(const char*& data,
                                                size_t position) const {
-  if (!parkable_image_)
+  if (!parkable_image_) {
     return 0;
+  }
 
   base::AutoLock lock(parkable_image_->impl_->lock_);
   DCHECK(parkable_image_->impl_->is_locked());
@@ -257,8 +262,9 @@ size_t ParkableImageSegmentReader::GetSomeData(const char*& data,
 }
 
 sk_sp<SkData> ParkableImageSegmentReader::GetAsSkData() const {
-  if (!parkable_image_)
+  if (!parkable_image_) {
     return nullptr;
+  }
 
   base::AutoLock lock(parkable_image_->impl_->lock_);
   parkable_image_->impl_->Unpark();

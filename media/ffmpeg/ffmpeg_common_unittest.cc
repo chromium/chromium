@@ -360,7 +360,8 @@ TEST_F(FFmpegCommonTest, VerifyHDRMetadataAndColorSpaceInfo) {
   VideoDecoderConfig video_config;
   EXPECT_TRUE(AVStreamToVideoDecoderConfig(stream, &video_config));
   ASSERT_TRUE(video_config.hdr_metadata().has_value());
-  const auto& smpte_st_2086 = video_config.hdr_metadata()->smpte_st_2086;
+  const auto& smpte_st_2086 =
+      video_config.hdr_metadata()->smpte_st_2086.value();
   EXPECT_EQ(30.0, smpte_st_2086.luminance_min);
   EXPECT_EQ(40.0, smpte_st_2086.luminance_max);
   EXPECT_EQ(0.1f, smpte_st_2086.primaries.fRX);

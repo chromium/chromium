@@ -456,12 +456,6 @@ public class BaseSuggestionViewTest {
         executeLayoutTest(100, 10, View.LAYOUT_DIRECTION_LTR);
     }
 
-    @Test(expected = AssertionError.class)
-    public void layout_emptyContentViews() {
-        mContentView.setMinimumHeight(0);
-        executeLayoutTest(100, 10, View.LAYOUT_DIRECTION_LTR);
-    }
-
     @Test
     public void layout_minimumHeightWithNoFooterIsSemicompact() {
         mView.setLayoutDirection(View.LAYOUT_DIRECTION_LTR);
@@ -490,7 +484,7 @@ public class BaseSuggestionViewTest {
     }
 
     @Test
-    @EnableFeatures({ChromeFeatureList.OMNIBOX_MODERNIZE_VISUAL_UPDATE})
+    @EnableFeatures(ChromeFeatureList.OMNIBOX_MODERNIZE_VISUAL_UPDATE)
     public void testRevamp_smallBottomMargins() {
         OmniboxFeatures.MODERNIZE_VISUAL_UPDATE_SMALL_BOTTOM_MARGIN.setForTesting(true);
         View contentView = new View(mActivity);
@@ -508,7 +502,7 @@ public class BaseSuggestionViewTest {
     }
 
     @Test
-    @EnableFeatures({ChromeFeatureList.OMNIBOX_MODERNIZE_VISUAL_UPDATE})
+    @EnableFeatures(ChromeFeatureList.OMNIBOX_MODERNIZE_VISUAL_UPDATE)
     public void testRevamp_smallestMargins() {
         OmniboxFeatures.MODERNIZE_VISUAL_UPDATE_SMALLEST_MARGINS.setForTesting(true);
         View contentView = new View(mActivity);

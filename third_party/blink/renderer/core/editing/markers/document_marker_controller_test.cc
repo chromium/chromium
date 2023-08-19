@@ -231,7 +231,7 @@ TEST_F(DocumentMarkerControllerTest, UpdateRenderedRects) {
       MarkerController().LayoutRectsForTextMatchMarkers();
   EXPECT_EQ(1u, rendered_rects.size());
 
-  div->setAttribute(html_names::kStyleAttr, "margin: 200px");
+  div->setAttribute(html_names::kStyleAttr, AtomicString("margin: 200px"));
   GetDocument().UpdateStyleAndLayout(DocumentUpdateReason::kTest);
   Vector<gfx::Rect> new_rendered_rects =
       MarkerController().LayoutRectsForTextMatchMarkers();
@@ -333,7 +333,7 @@ TEST_F(DocumentMarkerControllerTest, RemoveEndOfMarker) {
 
 TEST_F(DocumentMarkerControllerTest, RemoveSpellingMarkersUnderWords) {
   SetBodyContent("<div contenteditable>foo</div>");
-  Element* div = GetDocument().QuerySelector("div");
+  Element* div = GetDocument().QuerySelector(AtomicString("div"));
   Node* text = div->firstChild();
 
   // Add a spelling marker and a text match marker to "foo".
@@ -354,7 +354,7 @@ TEST_F(DocumentMarkerControllerTest, RemoveSpellingMarkersUnderWords) {
 
 TEST_F(DocumentMarkerControllerTest, RemoveSpellingMarkersUnderAllWords) {
   SetBodyContent("<div contenteditable>foo</div>");
-  Element* div = GetDocument().QuerySelector("div");
+  Element* div = GetDocument().QuerySelector(AtomicString("div"));
   Node* text = div->firstChild();
   ASSERT_NE(text->GetLayoutObject(), nullptr);
 
@@ -372,7 +372,7 @@ TEST_F(DocumentMarkerControllerTest, RemoveSpellingMarkersUnderAllWords) {
 
 TEST_F(DocumentMarkerControllerTest, RemoveSuggestionMarkerByTag) {
   SetBodyContent("<div contenteditable>foo</div>");
-  Element* div = GetDocument().QuerySelector("div");
+  Element* div = GetDocument().QuerySelector(AtomicString("div"));
   Node* text = div->firstChild();
 
   MarkerController().AddSuggestionMarker(
@@ -388,7 +388,7 @@ TEST_F(DocumentMarkerControllerTest, RemoveSuggestionMarkerByTag) {
 
 TEST_F(DocumentMarkerControllerTest, RemoveSuggestionMarkerByTypeWithRange) {
   SetBodyContent("<div contenteditable>foo</div>");
-  Element* div = GetDocument().QuerySelector("div");
+  Element* div = GetDocument().QuerySelector(AtomicString("div"));
   Node* text = div->firstChild();
   EphemeralRange range(Position(text, 0), Position(text, 1));
   MarkerController().AddSuggestionMarker(range, SuggestionMarkerProperties());
@@ -402,7 +402,7 @@ TEST_F(DocumentMarkerControllerTest, RemoveSuggestionMarkerByTypeWithRange) {
 
 TEST_F(DocumentMarkerControllerTest, RemoveSuggestionMarkerByType) {
   SetBodyContent("<div contenteditable>123 456</div>");
-  Element* div = GetDocument().QuerySelector("div");
+  Element* div = GetDocument().QuerySelector(AtomicString("div"));
   Node* text = div->firstChild();
 
   // Add an autocorrect marker on "123"
@@ -430,7 +430,7 @@ TEST_F(DocumentMarkerControllerTest, RemoveSuggestionMarkerByType) {
 
 TEST_F(DocumentMarkerControllerTest, RemoveSuggestionMarkerInRangeOnFinish) {
   SetBodyContent("<div contenteditable>foo</div>");
-  Element* div = GetDocument().QuerySelector("div");
+  Element* div = GetDocument().QuerySelector(AtomicString("div"));
   Node* text = div->firstChild();
 
   // Add a regular suggestion marker, RemoveSuggestionMarkerInRangeOnFinish()
@@ -471,7 +471,7 @@ TEST_F(DocumentMarkerControllerTest, RemoveSuggestionMarkerInRangeOnFinish) {
 TEST_F(DocumentMarkerControllerTest, FirstMarkerIntersectingOffsetRange) {
   SetBodyContent("<div contenteditable>123456789</div>");
   GetDocument().UpdateStyleAndLayout(DocumentUpdateReason::kTest);
-  Element* div = GetDocument().QuerySelector("div");
+  Element* div = GetDocument().QuerySelector(AtomicString("div"));
   auto* text = To<Text>(div->firstChild());
 
   // Add a spelling marker on "123"
@@ -492,7 +492,7 @@ TEST_F(DocumentMarkerControllerTest,
        FirstMarkerIntersectingOffsetRange_collapsed) {
   SetBodyContent("<div contenteditable>123456789</div>");
   GetDocument().UpdateStyleAndLayout(DocumentUpdateReason::kTest);
-  Element* div = GetDocument().QuerySelector("div");
+  Element* div = GetDocument().QuerySelector(AtomicString("div"));
   auto* text = To<Text>(div->firstChild());
 
   // Add a spelling marker on "123"
@@ -511,7 +511,7 @@ TEST_F(DocumentMarkerControllerTest,
 
 TEST_F(DocumentMarkerControllerTest, MarkersAroundPosition) {
   SetBodyContent("<div contenteditable>123 456</div>");
-  Element* div = GetDocument().QuerySelector("div");
+  Element* div = GetDocument().QuerySelector(AtomicString("div"));
   Node* text = div->firstChild();
 
   // Add a spelling marker on "123"
@@ -561,7 +561,7 @@ TEST_F(DocumentMarkerControllerTest, MarkersAroundPosition) {
 
 TEST_F(DocumentMarkerControllerTest, MarkersIntersectingRange) {
   SetBodyContent("<div contenteditable>123456789</div>");
-  Element* div = GetDocument().QuerySelector("div");
+  Element* div = GetDocument().QuerySelector(AtomicString("div"));
   Node* text = div->firstChild();
 
   // Add a spelling marker on "123"
@@ -591,7 +591,7 @@ TEST_F(DocumentMarkerControllerTest, MarkersIntersectingRange) {
 
 TEST_F(DocumentMarkerControllerTest, MarkersIntersectingCollapsedRange) {
   SetBodyContent("<div contenteditable>123456789</div>");
-  Element* div = GetDocument().QuerySelector("div");
+  Element* div = GetDocument().QuerySelector(AtomicString("div"));
   Node* text = div->firstChild();
 
   // Add a spelling marker on "123"
@@ -627,10 +627,11 @@ TEST_F(DocumentMarkerControllerTest, MarkersIntersectingRangeWithShadowDOM) {
       "<div id=\"shadow1\">shadow1</div><div id=\"shadow2\">shadow2</div>",
       "shadow_root");
 
-  Element* not_shadow_div = GetDocument().QuerySelector("#not_shadow");
+  Element* not_shadow_div =
+      GetDocument().QuerySelector(AtomicString("#not_shadow"));
   Node* not_shadow_text = not_shadow_div->firstChild();
 
-  Element* shadow1 = shadow_root->QuerySelector("#shadow1");
+  Element* shadow1 = shadow_root->QuerySelector(AtomicString("#shadow1"));
   Node* shadow1_text = shadow1->firstChild();
 
   MarkerController().AddTextMatchMarker(
@@ -648,7 +649,7 @@ TEST_F(DocumentMarkerControllerTest, MarkersIntersectingRangeWithShadowDOM) {
 
 TEST_F(DocumentMarkerControllerTest, SuggestionMarkersHaveUniqueTags) {
   SetBodyContent("<div contenteditable>foo</div>");
-  Element* div = GetDocument().QuerySelector("div");
+  Element* div = GetDocument().QuerySelector(AtomicString("div"));
   Node* text = div->firstChild();
 
   MarkerController().AddSuggestionMarker(

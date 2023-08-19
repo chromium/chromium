@@ -4,8 +4,6 @@
 
 #include "components/segmentation_platform/embedder/input_delegate/tab_session_source.h"
 
-#include "base/strings/string_number_conversions_win.h"
-#include "base/strings/string_piece.h"
 #include "base/time/time.h"
 #include "components/segmentation_platform/embedder/tab_fetcher.h"
 #include "components/segmentation_platform/internal/execution/processing/feature_processor_state.h"
@@ -14,7 +12,6 @@
 #include "components/sessions/core/session_types.h"
 #include "components/sync_sessions/open_tabs_ui_delegate.h"
 #include "components/sync_sessions/synced_session.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/page_transition_types.h"
 
 namespace segmentation_platform::processing {
@@ -138,4 +135,5 @@ void TabSessionSource::AddLocalTabInfo(
     const TabFetcher::Tab& tab,
     const FeatureProcessorState& feature_processor_state,
     Tensor& inputs) {}
+
 }  // namespace segmentation_platform::processing

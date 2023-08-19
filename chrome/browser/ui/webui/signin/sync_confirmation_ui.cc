@@ -25,7 +25,7 @@
 #include "chrome/browser/signin/signin_features.h"
 #include "chrome/browser/sync/sync_service_factory.h"
 #include "chrome/browser/ui/browser.h"
-#include "chrome/browser/ui/signin/profile_colors_util.h"
+#include "chrome/browser/ui/profiles/profile_colors_util.h"
 #include "chrome/browser/ui/webui/signin/signin_url_utils.h"
 #include "chrome/browser/ui/webui/signin/sync_confirmation_handler.h"
 #include "chrome/browser/ui/webui/webui_util.h"
@@ -53,10 +53,10 @@
 #include "ui/resources/grit/webui_resources.h"
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
-#include "chrome/browser/ui/webui/settings/chromeos/constants/routes.mojom.h"
+#include "ash/webui/settings/public/constants/routes.mojom.h"
 #include "chrome/common/webui_url_constants.h"
 #include "components/sync/base/features.h"
-#include "components/sync/base/sync_prefs.h"
+#include "components/sync/service/sync_prefs.h"
 #endif
 
 namespace {
@@ -271,7 +271,6 @@ void SyncConfirmationUI::InitializeForSyncConfirmation(
   }
 #endif
   if (is_signin_intercept_promo) {
-    DCHECK(base::FeatureList::IsEnabled(kSyncPromoAfterSigninIntercept));
     info_title_id =
         IDS_SYNC_CONFIRMATION_TANGIBLE_SYNC_INFO_TITLE_SIGNIN_INTERCEPT_V2;
     confirm_label_id = IDS_SYNC_CONFIRMATION_TURN_ON_SYNC_BUTTON_LABEL;

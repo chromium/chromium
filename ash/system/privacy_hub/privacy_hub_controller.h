@@ -12,11 +12,29 @@
 #include "ash/system/privacy_hub/microphone_privacy_switch_controller.h"
 #include "ash/system/privacy_hub/speak_on_mute_detection_privacy_switch_controller.h"
 #include "base/memory/raw_ptr.h"
+#include "base/types/pass_key.h"
 #include "base/values.h"
 
 class PrefRegistrySimple;
 
 namespace ash {
+
+// Used to override the value of the LED Fallback value in tests.
+// Should not be nested.
+// TODO(b/289510726): remove when all cameras fully support the software
+// switch.
+class ASH_EXPORT ScopedLedFallbackForTesting {
+ public:
+  explicit ScopedLedFallbackForTesting(bool value);
+
+  ScopedLedFallbackForTesting(const ScopedLedFallbackForTesting&) = delete;
+  ScopedLedFallbackForTesting& operator=(const ScopedLedFallbackForTesting&) =
+      delete;
+
+  ~ScopedLedFallbackForTesting();
+
+  const bool value;
+};
 
 class ASH_EXPORT PrivacyHubController {
  public:
@@ -32,25 +50,32 @@ class ASH_EXPORT PrivacyHubController {
     kMaxValue = kAllowed,
   };
 
-  PrivacyHubController();
+  PrivacyHubController(base::PassKey<PrivacyHubController>);
 
   PrivacyHubController(const PrivacyHubController&) = delete;
   PrivacyHubController& operator=(const PrivacyHubController&) = delete;
 
   ~PrivacyHubController();
 
-  CameraPrivacySwitchController& camera_controller() {
-    return camera_controller_;
-  }
-  MicrophonePrivacySwitchController& microphone_controller() {
-    return microphone_controller_;
-  }
-  SpeakOnMuteDetectionPrivacySwitchController& speak_on_mute_controller() {
-    return speak_on_mute_controller_;
-  }
-  GeolocationPrivacySwitchController& geolocation_controller() {
-    return geolocation_switch_controller_;
-  }
+  // Creates the PrivacyHub controller with the appropriate sub-components based
+  // on the feature flags.
+  static std::unique_ptr<PrivacyHubController> CreatePrivacyHubController();
+
+  // Returns the PrivacyHubController instance from the Shell if it exists,
+  // otherwise returns nullptr.
+  static PrivacyHubController* Get();
+
+  // Gets the camera controller if available.
+  CameraPrivacySwitchController* camera_controller();
+
+  // Gets the microphone controller if available.
+  MicrophonePrivacySwitchController* microphone_controller();
+
+  // Gets the speak-on-mute controller if available.
+  SpeakOnMuteDetectionPrivacySwitchController* speak_on_mute_controller();
+
+  // Gets the geolocation controller if available.
+  GeolocationPrivacySwitchController* geolocation_controller();
 
   static void RegisterLocalStatePrefs(PrefRegistrySimple* registry);
   static void RegisterProfilePrefs(PrefRegistrySimple* registry);
@@ -61,12 +86,35 @@ class ASH_EXPORT PrivacyHubController {
   // Returns the adapter that can be used to modify the frontend
   PrivacyHubDelegate* frontend() { return frontend_; }
 
+  // Checks if we use the fallback solution for the camera LED.
+  // Returns the boolean value via callback.
+  // (go/privacy-hub:camera-led-fallback).
+  // TODO(b/289510726): remove when all cameras fully support the software
+  // switch.
+  bool UsingCameraLEDFallback();
+
+  // This checks whether the LED fallback mechanism is used directly (using the
+  // filesystem). Is used during initialization and can be used externally in
+  // case that the controller object does not exist. (E.g. to initialize the
+  // PrivacyHubNotificationController, which exists even if privacy hub is
+  // disabled). Should be used only in that case to avoid repeated blocking
+  // calls to the filesystem.
+  static bool CheckCameraLEDFallbackDirectly();
+
  private:
-  CameraPrivacySwitchController camera_controller_;
-  MicrophonePrivacySwitchController microphone_controller_;
-  SpeakOnMuteDetectionPrivacySwitchController speak_on_mute_controller_;
-  GeolocationPrivacySwitchController geolocation_switch_controller_;
+  // Used for first time initialization of the cached value.
+  // Can be called only once.
+  void InitUsingCameraLEDFallback();
+
+  std::unique_ptr<CameraPrivacySwitchController> camera_controller_;
+  std::unique_ptr<CameraPrivacySwitchDisabled> camera_disabled_;
+  std::unique_ptr<MicrophonePrivacySwitchController> microphone_controller_;
+  std::unique_ptr<SpeakOnMuteDetectionPrivacySwitchController>
+      speak_on_mute_controller_;
+  std::unique_ptr<GeolocationPrivacySwitchController>
+      geolocation_switch_controller_;
   raw_ptr<PrivacyHubDelegate> frontend_ = nullptr;
+  bool using_camera_led_fallback_ = true;
 };
 
 }  // namespace ash

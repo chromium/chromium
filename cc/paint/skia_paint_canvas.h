@@ -171,6 +171,8 @@ class CC_PAINT_EXPORT SkiaPaintCanvas final : public PaintCanvas {
       PaintRecord record,
       PlaybackParams::CustomDataRasterCallback custom_raster_callback);
 
+  int pendingOps() const { return num_of_ops_; }
+
  private:
   void FlushAfterDrawIfNeeded();
 

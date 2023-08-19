@@ -22,6 +22,19 @@ found in the LICENSE file.
         android:layout_marginBottom="@dimen/ttf_buttons_vertical_margin"/>
 
     <TextView
+        android:id="@+id/touch_to_fill_sheet_use_passkeys_other_device"
+        android:text="@string/touch_to_fill_use_device_passkey"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/ttf_buttons_height"
+        android:paddingHorizontal="@dimen/ttf_sheet_padding"
+        android:minHeight="48dp"
+        android:gravity="center_vertical|start"
+        android:textAppearance="@style/TextAppearance.TextLarge.Primary"
+        android:background="?android:attr/selectableItemBackground"
+        android:textDirection="locale"
+        android:textAlignment="viewStart"/>
+
+    <TextView
         android:id="@+id/touch_to_fill_sheet_manage_passwords"
         android:layout_width="match_parent"
         android:layout_height="@dimen/ttf_buttons_height"

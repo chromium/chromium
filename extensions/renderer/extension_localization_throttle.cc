@@ -9,6 +9,7 @@
 #include "base/strings/string_util.h"
 #include "content/public/renderer/render_thread.h"
 #include "extensions/common/constants.h"
+#include "extensions/common/extension_id.h"
 #include "extensions/renderer/shared_l10n_map.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
@@ -168,7 +169,7 @@ class ExtensionLocalizationURLLoader : public network::mojom::URLLoaderClient,
         extension_id_, &data_, message_sender);
   }
 
-  const std::string extension_id_;
+  const ExtensionId extension_id_;
   std::unique_ptr<mojo::DataPipeDrainer> data_drainer_;
   std::unique_ptr<mojo::DataPipeProducer> data_producer_;
   std::string data_;
@@ -217,7 +218,14 @@ void ExtensionLocalizationThrottle::WillProcessResponse(
       mojo::CreateDataPipe(/*options=*/nullptr, producer_handle, body);
 
   if (create_pipe_result != MOJO_RESULT_OK || force_error_for_test_) {
-    delegate_->CancelWithError(net::ERR_INSUFFICIENT_RESOURCES, kCancelReason);
+    // Synchronous call of `delegate_->CancelWithError` can cause a UAF error.
+    // So defer the request here.
+    *defer = true;
+    base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
+        FROM_HERE,
+        base::BindOnce(base::BindOnce(
+            &ExtensionLocalizationThrottle::DeferredCancelWithError,
+            weak_factory_.GetWeakPtr(), net::ERR_INSUFFICIENT_RESOURCES)));
     return;
   }
 
@@ -246,6 +254,12 @@ void ExtensionLocalizationThrottle::WillProcessResponse(
   loader_rawptr->Start(std::move(source_loader),
                        std::move(source_client_receiver), std::move(body),
                        std::move(producer_handle));
+}
+
+void ExtensionLocalizationThrottle::DeferredCancelWithError(int error_code) {
+  if (delegate_) {
+    delegate_->CancelWithError(error_code, kCancelReason);
+  }
 }
 
 }  // namespace extensions

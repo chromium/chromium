@@ -1,6 +1,5 @@
 include_rules = [
-  # The test directory can do whatever it wants within components/printing.
-  # Same for content/public.
   "+components/printing",
   "+content/public",
+  "+pdf",
 ]

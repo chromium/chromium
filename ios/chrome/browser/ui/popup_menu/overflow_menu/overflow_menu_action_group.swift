@@ -14,6 +14,9 @@ import SwiftUI
   /// The actions for this group.
   @Published public var actions: [OverflowMenuAction]
 
+  /// Whether the group can be reordered by the user.
+  @Published public var supportsReordering = false
+
   /// The footer at bottom.
   public var footer: OverflowMenuFooter?
 

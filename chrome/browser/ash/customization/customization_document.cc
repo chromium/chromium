@@ -127,7 +127,7 @@ constexpr net::NetworkTrafficAnnotationTag kCustomizationDocumentNetworkTag =
         })");
 
 struct CustomizationDocumentTestOverride {
-  raw_ptr<ServicesCustomizationDocument, ExperimentalAsh>
+  raw_ptr<ServicesCustomizationDocument, DanglingUntriaged | ExperimentalAsh>
       customization_document = nullptr;
   scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory;
 };

@@ -10,6 +10,7 @@
 
 #include "apps/switches.h"
 #include "base/command_line.h"
+#include "base/containers/contains.h"
 #include "base/process/launch.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/test_switches.h"
@@ -43,7 +44,7 @@ constexpr char kTestExtensionId[] = "behllobkkfkfnphdnhnkndlbkcpglgmj";
 // comment for InProcessBrowserTest::GetCommandLineForRelaunch().
 #if !BUILDFLAG(IS_CHROMEOS_LACROS)
 
-const char* kSwitchesToCopy[] = {
+const char* const kSwitchesToCopy[] = {
     sandbox::policy::switches::kNoSandbox,
     switches::kUserDataDir,
 };
@@ -64,8 +65,7 @@ IN_PROC_BROWSER_TEST_F(PlatformAppBrowserTest,
 
   const base::CommandLine& cmdline = *base::CommandLine::ForCurrentProcess();
   base::CommandLine new_cmdline(cmdline.GetProgram());
-  new_cmdline.CopySwitchesFrom(cmdline, kSwitchesToCopy,
-                               std::size(kSwitchesToCopy));
+  new_cmdline.CopySwitchesFrom(cmdline, kSwitchesToCopy);
 
   base::FilePath app_path = test_data_dir_
       .AppendASCII("platform_apps")
@@ -100,8 +100,7 @@ IN_PROC_BROWSER_TEST_F(PlatformAppBrowserTest,
 
   const base::CommandLine& cmdline = *base::CommandLine::ForCurrentProcess();
   base::CommandLine new_cmdline(cmdline.GetProgram());
-  new_cmdline.CopySwitchesFrom(cmdline, kSwitchesToCopy,
-                               std::size(kSwitchesToCopy));
+  new_cmdline.CopySwitchesFrom(cmdline, kSwitchesToCopy);
 
   base::FilePath app_path = test_data_dir_
       .AppendASCII("platform_apps")
@@ -213,9 +212,8 @@ IN_PROC_BROWSER_TEST_F(LoadAndLaunchExtensionBrowserTest,
 #else
   // Expect |extension_instead_of_app_error|.
   EXPECT_EQ(1u, errors->size());
-  EXPECT_NE(std::u16string::npos,
-            errors->at(0).find(
-                u"App loading flags cannot be used to load extensions"));
+  EXPECT_TRUE(base::Contains(
+      *errors, u"App loading flags cannot be used to load extensions"));
 #endif
 
   extensions::ExtensionRegistry* registry =

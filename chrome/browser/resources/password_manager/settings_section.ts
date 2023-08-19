@@ -180,7 +180,9 @@ export class SettingsSectionElement extends SettingsSectionElementBase {
       const params = new URLSearchParams();
       Router.getInstance().updateRouterParams(params);
     }
+  }
 
+  private onShortcutBannerDomChanged_() {
     const addShortcutBanner = this.root!.querySelector('#addShortcutBanner');
     if (addShortcutBanner) {
       this.registerHelpBubble(
@@ -275,12 +277,11 @@ export class SettingsSectionElement extends SettingsSectionElementBase {
     }
   }
 
+  // <if expr="is_win or is_macosx">
   private onManagePasskeysClick_() {
-    // In the future this may, e.g., open System Settings on macOS for iCloud
-    // Keychain, or open Control Panel on Windows for Hello. Currently passkey
-    // management is filled in via Chrome settings.
-    OpenWindowProxyImpl.getInstance().openUrl('chrome://settings/passkeys');
+    PasskeysBrowserProxyImpl.getInstance().managePasskeys();
   }
+  // </if>
 
   private computePasswordManagerDisabled_(): boolean {
     const pref = this.getPref('credentials_enable_service');

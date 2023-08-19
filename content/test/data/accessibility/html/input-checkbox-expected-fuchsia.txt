@@ -8,10 +8,10 @@ UNKNOWN focusable has_input_focus
 ++++++++CHECK_BOX focusable label='Checkbox1' actions='{DEFAULT}' checked_state='CHECKED'
 ++++++++STATIC_TEXT hidden label='Checkbox1'
 ++++++UNKNOWN hidden
-++++++++CHECK_BOX focusable label='Checkbox2' actions='{DEFAULT}' checked_state='CHECKED'
+++++++++CHECK_BOX focusable label='Checkbox2' actions='{DEFAULT}' checked_state='UNCHECKED'
 ++++++++STATIC_TEXT hidden label='Checkbox2'
 ++++++UNKNOWN hidden
-++++++++CHECK_BOX focusable label='Checkbox3' actions='{DEFAULT}' checked_state='CHECKED'
+++++++++CHECK_BOX focusable label='Checkbox3' actions='{DEFAULT}' checked_state='UNCHECKED'
 ++++++++STATIC_TEXT hidden label='Checkbox3'
 ++++++UNKNOWN hidden
 ++++++++CHECK_BOX focusable label='Checkbox4' actions='{DEFAULT}' checked_state='MIXED'

@@ -42,10 +42,10 @@
 #include "third_party/blink/renderer/core/dom/element.h"
 #include "third_party/blink/renderer/core/editing/markers/document_marker.h"
 #include "third_party/blink/renderer/core/inspector/protocol/accessibility.h"
+#include "third_party/blink/renderer/core/layout/geometry/physical_rect.h"
 #include "third_party/blink/renderer/core/scroll/scroll_alignment.h"
 #include "third_party/blink/renderer/modules/accessibility/ax_enums.h"
 #include "third_party/blink/renderer/modules/modules_export.h"
-#include "third_party/blink/renderer/platform/geometry/layout_rect.h"
 #include "third_party/blink/renderer/platform/graphics/color.h"
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_hash_set.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
@@ -303,7 +303,7 @@ class MODULES_EXPORT AXObject : public GarbageCollected<AXObject> {
   // whether children, parent or other pointers are actually out of date; there
   // are other dirty bits such as children_dirty_ for that.
   void SetAncestorsHaveDirtyDescendants() const;
-  void ClearHasDirtyDescendants() { has_dirty_descendants_ = false; }
+  void SetHasDirtyDescendants(bool dirty) const;
   bool HasDirtyDescendants() const { return has_dirty_descendants_; }
 
   // When the corresponding WebCore object that this AXObject
@@ -319,6 +319,13 @@ class MODULES_EXPORT AXObject : public GarbageCollected<AXObject> {
   // prevent this.
   void UpdateCachedAttributeValuesIfNeeded(
       bool notify_parent_of_ignored_changes = true) const;
+
+  // Invalidates cached_* members on this object only by resetting the
+  // modification count.
+  // To instead invalidate on all objects in a subtree, call
+  // AXObjectCacheImpl::InvalidateCachedValuesOnSubtree().
+  void InvalidateCachedValues();
+  bool NeedsToUpdateCachedValues() const { return cached_values_need_update_; }
 
   // The AXObjectCacheImpl that owns this object, and its unique ID within this
   // cache.
@@ -418,6 +425,9 @@ class MODULES_EXPORT AXObject : public GarbageCollected<AXObject> {
   // either a contenteditable, or has the CSS user-modify style set to something
   // editable.
   bool IsNonAtomicTextField() const;
+
+  // Returns the lowest text field ancestor, including itself.
+  AXObject* GetTextFieldAncestor();
 
   // Returns true if this object is a text field that is used for entering
   // passwords, i.e. <input type=password>.
@@ -803,7 +813,13 @@ class MODULES_EXPORT AXObject : public GarbageCollected<AXObject> {
   virtual String AutoComplete() const { return String(); }
   virtual void AriaOwnsElements(AXObjectVector& owns) const {}
   virtual void AriaDescribedbyElements(AXObjectVector&) const {}
-  virtual AXObject* ErrorMessage() const { return nullptr; }
+  virtual AXObjectVector ErrorMessage() const { return AXObjectVector(); }
+  virtual AXObjectVector ErrorMessageFromAria() const {
+    return AXObjectVector();
+  }
+  virtual AXObjectVector ErrorMessageFromHTML() const {
+    return AXObjectVector();
+  }
 
   // Determines whether this object has an associated popup menu, list, or grid,
   // such as in the case of an ARIA combobox or when the browser offers an
@@ -866,7 +882,7 @@ class MODULES_EXPORT AXObject : public GarbageCollected<AXObject> {
   // to enforce that prohibition. An example of something prohibited that we
   // do not enforce is aria-label/aria-labelledby on certain text containers.
   bool IsProhibited(ax::mojom::blink::StringAttribute attribute) const;
-  bool IsProhibited(ax::mojom::blink::IntAttribute attribute) const;
+  bool IsProhibited(ax::mojom::blink::IntListAttribute attribute) const;
 
   // ARIA live-region features.
   bool IsLiveRegionRoot() const;  // Any live region, including polite="off".
@@ -898,11 +914,11 @@ class MODULES_EXPORT AXObject : public GarbageCollected<AXObject> {
 
   gfx::RectF LocalBoundingBoxRectForAccessibility();
 
-  // Get the bounds in frame-relative coordinates as a LayoutRect.
-  LayoutRect GetBoundsInFrameCoordinates() const;
+  // Get the bounds in frame-relative coordinates as a PhysicalRect.
+  PhysicalRect GetBoundsInFrameCoordinates() const;
 
   // Explicitly set an object's bounding rect and offset container.
-  void SetElementRect(LayoutRect r, AXObject* container) {
+  void SetElementRect(const PhysicalRect& r, AXObject* container) {
     explicit_element_rect_ = r;
     explicit_container_id_ = container->AXObjectID();
   }
@@ -1156,8 +1172,9 @@ class MODULES_EXPORT AXObject : public GarbageCollected<AXObject> {
   // check out ComputeParent() implementation. It should match.
   void EnsureCorrectParentComputation();
 
-  // Prints the entire AX subtree to the screen for debugging, with |this|
+  // Get/Prints the entire AX subtree to the screen for debugging, with |this|
   // highlighted via a "*" notation.
+  std::string GetAXTreeForThis() const;
   void ShowAXTreeForThis() const;
 #endif
 
@@ -1194,7 +1211,7 @@ class MODULES_EXPORT AXObject : public GarbageCollected<AXObject> {
   bool NeedsToUpdateChildren() const;
   virtual void SetNeedsToUpdateChildren() const;
   virtual void ClearChildren() const;
-  void DetachFromParent() { parent_ = nullptr; }
+  void DetachFromParent();
   virtual void SelectedOptions(AXObjectVector&) const {}
 
   // Properties of the object's owning document or page.
@@ -1389,7 +1406,7 @@ class MODULES_EXPORT AXObject : public GarbageCollected<AXObject> {
   // The final role, taking into account the ARIA role and native role.
   ax::mojom::blink::Role role_;
 
-  LayoutRect explicit_element_rect_;
+  PhysicalRect explicit_element_rect_;
   AXID explicit_container_id_;
 
   virtual void AddChildren() = 0;
@@ -1416,9 +1433,10 @@ class MODULES_EXPORT AXObject : public GarbageCollected<AXObject> {
                           AXObjectSet& visited,
                           HeapVector<Member<Element>>& elements,
                           AXRelatedObjectVector* related_objects) const;
+  // Returns true if |attribute| was present on |from|.
   static bool ElementsFromAttribute(Element* from,
                                     HeapVector<Member<Element>>& elements,
-                                    const QualifiedName&,
+                                    const QualifiedName& attribute,
                                     Vector<String>& ids);
   static bool AriaLabelledbyElementVector(Element* from,
                                           HeapVector<Member<Element>>& elements,
@@ -1481,7 +1499,8 @@ class MODULES_EXPORT AXObject : public GarbageCollected<AXObject> {
   bool ComputeCanSetFocusAttribute() const;
   String KeyboardShortcut() const;
 
-  mutable int last_modification_count_;
+  // Do the rest of the cached_* member variables need to be recomputed?
+  mutable bool cached_values_need_update_ : 1;
 
   // The following cached attribute values (the ones starting with m_cached*)
   // are only valid if last_modification_count_ matches
@@ -1494,23 +1513,7 @@ class MODULES_EXPORT AXObject : public GarbageCollected<AXObject> {
   mutable bool cached_is_descendant_of_disabled_node_ : 1;
   mutable bool cached_can_set_focus_attribute_ : 1;
 
-  // Focusability can change in response to a new style (e.g. content-visibility
-  // added/removed), new dom (e.g. tabindex set/unset), or new AXCache
-  // modification count (e.g. new ax tree).
-  // TODO(accessibility) Determine whether it's worth it to store these extra
-  // variables rather than just using the usual caching mechanism in
-  // UpdateCachedAttributeValuesIfNeeded(). This reduces the number of calls to
-  // CanSetFocusAttribute() by 25% extra. It also causes updates when AXCache
-  // ModificationCount doesn't change but DOM version/style version do change.
-  // This can happen during focus action which forces a new style recalc without
-  // modifying the AX tree.
-  mutable uint64_t focus_attribute_style_version_ = 0;
-  mutable uint64_t focus_attribute_dom_tree_version_ = 0;
-  mutable int focus_attribute_cache_modification_count_ = -1;
-
   mutable Member<AXObject> cached_live_region_root_;
-  mutable int cached_aria_column_index_;
-  mutable int cached_aria_row_index_;
   mutable gfx::RectF cached_local_bounding_box_rect_for_accessibility_;
 
   Member<AXObjectCacheImpl> ax_object_cache_;
@@ -1557,6 +1560,10 @@ class MODULES_EXPORT AXObject : public GarbageCollected<AXObject> {
   void DispatchKeyboardEvent(LocalDOMWindow* local_dom_window,
                              WebInputEvent::Type type,
                              ax::mojom::blink::Action action) const;
+
+  // Return true if it's necessary to destroy a subtrees when detaching
+  // from the parent.
+  bool ShouldDestroyWhenDetachingFromParent() const;
 
   static unsigned number_of_live_ax_objects_;
 

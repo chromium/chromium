@@ -450,6 +450,46 @@ suite('searchBoxTest', function() {
         searchBoxElement.searchResults[0]?.acceleratorLayoutInfo.description);
   });
 
+  test('Filter disabled + ensure extra results are present', async () => {
+    [searchBoxElement, searchFieldElement, dropdownElement,
+     resultsListElement] = initSearchBoxElement();
+    // Create a SearchResult that doesn't have any enabled AcceleratorInfos.
+    const disabledFirstAcceleratorInfo =
+        TakeScreenshotSearchResult.acceleratorInfos[0]!;
+    disabledFirstAcceleratorInfo.state =
+        AcceleratorState.kDisabledByUnavailableKeys;
+    const disabledSecondAcceleratorInfo =
+        TakeScreenshotSearchResult.acceleratorInfos[1]!;
+    disabledSecondAcceleratorInfo.state =
+        AcceleratorState.kDisabledByUnavailableKeys;
+    const fullyDisabledSearchResult: MojoSearchResult = {
+      ...TakeScreenshotSearchResult,
+      acceleratorInfos:
+          [disabledFirstAcceleratorInfo, disabledSecondAcceleratorInfo],
+    };
+
+    handler.setFakeSearchResult([
+      fullyDisabledSearchResult,
+      CycleTabsTextSearchResult,
+      CycleTabsTextSearchResult,
+      CycleTabsTextSearchResult,
+      CycleTabsTextSearchResult,
+      CycleTabsTextSearchResult,
+      CycleTabsTextSearchResult,
+    ]);
+
+    searchBoxElement.onSearchResultsAvailabilityChanged();
+    await simulateSearch('query');
+
+    assertTrue(dropdownElement.opened);
+    // After filtering, at most 5 of the non-disabled elements should be
+    // shown.
+    assertEquals(5, searchBoxElement.searchResults.length);
+    assertEquals(
+        CycleTabsTextSearchResult.acceleratorLayoutInfo.description,
+        searchBoxElement.searchResults[0]?.acceleratorLayoutInfo.description);
+  });
+
   test('Max query length has been set', async () => {
     [searchBoxElement, searchFieldElement, dropdownElement,
      resultsListElement] = initSearchBoxElement();

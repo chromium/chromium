@@ -10,13 +10,9 @@
 // Handles updates from the mediator to the UI.
 @protocol WhatsNewMediatorConsumer <NSObject>
 
-// Sets the highlighted What's New feature item, the array of other What's New
-// feature items, the What's New chrome tip item, and whether What's New should
-// be displayed with modules or cell.
-- (void)setWhatsNewProperties:(WhatsNewItem*)highlightedFeatureItem
-                    chromeTip:(WhatsNewItem*)chromeTip
-                 featureItems:(NSArray<WhatsNewItem*>*)featureItems
-                isModuleBased:(BOOL)isModuleBased;
+// Sets What's New feature items and chrome tip item.
+- (void)setWhatsNewProperties:(WhatsNewItem*)chromeTip
+                 featureItems:(NSArray<WhatsNewItem*>*)featureItems;
 
 @end
 

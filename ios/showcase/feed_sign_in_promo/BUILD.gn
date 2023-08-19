@@ -13,5 +13,4 @@ source_set("feed_sign_in_promo") {
   ]
   deps += [ "//ios/chrome/browser/ui/ntp/feed_promos:feed_promos_ui" ]
   frameworks = [ "UIKit.framework" ]
-  configs += [ "//build/config/compiler:enable_arc" ]
 }

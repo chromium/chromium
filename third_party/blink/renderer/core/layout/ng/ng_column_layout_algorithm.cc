@@ -664,34 +664,22 @@ const NGLayoutResult* NGColumnLayoutAlgorithm::LayoutRow(
 
   bool shrink_to_fit_column_block_size = false;
 
-  bool balance_columns;
-  bool has_content_based_block_size;
-  if (RuntimeEnabledFeatures::UnconstrainedColumnFillAutoEnabled()) {
-    // If column-fill is 'balance', we should of course balance. Additionally,
-    // we need to do it if we're *inside* another multicol container that's
-    // performing its initial column balancing pass. Otherwise we might report a
-    // taller block-size that we eventually end up with, resulting in the outer
-    // columns to be overstretched.
-    balance_columns = Style().GetColumnFill() == EColumnFill::kBalance ||
-                      (ConstraintSpace().HasBlockFragmentation() &&
-                       !ConstraintSpace().HasKnownFragmentainerBlockSize());
+  // If column-fill is 'balance', we should of course balance. Additionally, we
+  // need to do it if we're *inside* another multicol container that's
+  // performing its initial column balancing pass. Otherwise we might report a
+  // taller block-size that we eventually end up with, resulting in the outer
+  // columns to be overstretched.
+  bool balance_columns = Style().GetColumnFill() == EColumnFill::kBalance ||
+                         (ConstraintSpace().HasBlockFragmentation() &&
+                          !ConstraintSpace().HasKnownFragmentainerBlockSize());
 
-    // If columns are to be balanced, we need to examine the contents of the
-    // multicol container to figure out a good initial (minimal) column
-    // block-size. We also need to do this if column-fill is 'auto' and the
-    // block-size is unconstrained.
-    has_content_based_block_size =
-        balance_columns || (column_size.block_size == kIndefiniteSize &&
-                            !is_constrained_by_outer_fragmentation_context_);
-  } else {
-    // We balance if block-size is unconstrained, or when we're explicitly told
-    // to. Note that the block-size may be constrained by outer fragmentation
-    // contexts, not just by a block-size specified on this multicol container.
-    balance_columns = Style().GetColumnFill() == EColumnFill::kBalance ||
-                      (column_size.block_size == kIndefiniteSize &&
-                       !is_constrained_by_outer_fragmentation_context_);
-    has_content_based_block_size = balance_columns;
-  }
+  // If columns are to be balanced, we need to examine the contents of the
+  // multicol container to figure out a good initial (minimal) column
+  // block-size. We also need to do this if column-fill is 'auto' and the
+  // block-size is unconstrained.
+  bool has_content_based_block_size =
+      balance_columns || (column_size.block_size == kIndefiniteSize &&
+                          !is_constrained_by_outer_fragmentation_context_);
 
   if (has_content_based_block_size) {
     column_size.block_size = ResolveColumnAutoBlockSize(
@@ -1098,8 +1086,9 @@ NGBreakStatus NGColumnLayoutAlgorithm::LayoutSpanner(
   NGFragment logical_fragment(ConstraintSpace().GetWritingDirection(),
                               spanner_fragment);
 
-  ResolveInlineMargins(spanner_style, Style(), ChildAvailableSize().inline_size,
-                       logical_fragment.InlineSize(), &margins);
+  ResolveInlineAutoMargins(spanner_style, Style(),
+                           ChildAvailableSize().inline_size,
+                           logical_fragment.InlineSize(), &margins);
 
   LogicalOffset offset(
       BorderScrollbarPadding().inline_start + margins.inline_start,

@@ -4,8 +4,12 @@
 
 package org.chromium.chrome.browser.customtabs;
 
+import static androidx.browser.customtabs.CustomTabsIntent.ACTIVITY_HEIGHT_DEFAULT;
+import static androidx.browser.customtabs.CustomTabsIntent.ACTIVITY_HEIGHT_FIXED;
 import static androidx.browser.customtabs.CustomTabsIntent.CLOSE_BUTTON_POSITION_DEFAULT;
+import static androidx.browser.customtabs.CustomTabsIntent.EXTRA_ACTIVITY_HEIGHT_RESIZE_BEHAVIOR;
 import static androidx.browser.customtabs.CustomTabsIntent.EXTRA_CLOSE_BUTTON_POSITION;
+import static androidx.browser.customtabs.CustomTabsIntent.EXTRA_INITIAL_ACTIVITY_HEIGHT_PX;
 import static androidx.browser.customtabs.CustomTabsIntent.EXTRA_TOOLBAR_CORNER_RADIUS_DP;
 
 import android.app.Activity;
@@ -28,6 +32,7 @@ import androidx.annotation.Nullable;
 import androidx.annotation.Px;
 import androidx.annotation.VisibleForTesting;
 import androidx.browser.customtabs.CustomTabsIntent;
+import androidx.browser.customtabs.CustomTabsIntent.ActivityHeightResizeBehavior;
 import androidx.browser.customtabs.CustomTabsIntent.CloseButtonPosition;
 import androidx.browser.customtabs.CustomTabsSessionToken;
 import androidx.browser.customtabs.TrustedWebUtils;
@@ -40,6 +45,7 @@ import androidx.browser.trusted.sharing.ShareTarget;
 import org.chromium.base.ApiCompatibilityUtils;
 import org.chromium.base.IntentUtils;
 import org.chromium.base.Log;
+import org.chromium.base.ResettersForTesting;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.chrome.R;
@@ -201,7 +207,7 @@ public class CustomTabIntentDataProvider extends BrowserServicesIntentDataProvid
 
     private static final int DEFAULT_BREAKPOINT_DP = 840;
 
-    private static final int MAX_CUSTOM_MENU_ITEMS = 5;
+    private static final int MAX_CUSTOM_MENU_ITEMS = 7;
 
     private static final int MAX_CUSTOM_TOOLBAR_ITEMS = 2;
 
@@ -232,13 +238,6 @@ public class CustomTabIntentDataProvider extends BrowserServicesIntentDataProvid
             "androidx.browser.customtabs.extra.INITIAL_ACTIVITY_HEIGHT_IN_PIXEL";
 
     /**
-     * Extra that, if set, makes the Custom Tab Activity's height to be x pixels, the Custom Tab
-     * will behave as a bottom sheet. x will be clamped between 50% and 100% of screen height.
-     */
-    public static final String EXTRA_INITIAL_ACTIVITY_HEIGHT_PX =
-            "androidx.browser.customtabs.extra.INITIAL_ACTIVITY_HEIGHT_PX";
-
-    /**
      * Extra that, if set, makes the Custom Tab Activity's width to be x pixels, the Custom Tab
      * will behave as a side sheet. x will be clamped between 33% and 100% of window's width based
      * on the window size classes as defined by the Android documentation:
@@ -266,14 +265,6 @@ public class CustomTabIntentDataProvider extends BrowserServicesIntentDataProvid
     /** Extra that enables the maximization button on the side sheet Custom Tab toolbar. */
     public static final String EXTRA_ACTIVITY_SIDE_SHEET_ENABLE_MAXIMIZATION =
             "androidx.browser.customtabs.extra.ACTIVITY_SIDE_SHEET_ENABLE_MAXIMIZATION";
-
-    /**
-     * Extra that, if set in combination with
-     * {@link CustomTabsIntent#EXTRA_INITIAL_ACTIVITY_HEIGHT_PX}, defines the resize behavior of
-     * the Custom Tab Activity’s height when it behaves as a bottom sheet.
-     */
-    public static final String EXTRA_ACTIVITY_HEIGHT_RESIZE_BEHAVIOR =
-            "androidx.browser.customtabs.extra.ACTIVITY_HEIGHT_RESIZE_BEHAVIOR";
 
     /**
      * Extra that, if set, allows you to set a custom breakpoint for the Custom Tab -
@@ -369,8 +360,7 @@ public class CustomTabIntentDataProvider extends BrowserServicesIntentDataProvid
     private int[] mClickableViewIds;
     private PendingIntent mRemoteViewsPendingIntent;
     private PendingIntent mSecondaryToolbarSwipeUpPendingIntent;
-    // OnFinished listener for PendingIntents. Used for testing only.
-    private PendingIntent.OnFinished mOnFinished;
+    private PendingIntent.OnFinished mOnFinishedForTesting;
 
     /** Whether this CustomTabActivity was explicitly started by another Chrome Activity. */
     private final boolean mIsOpenedByChrome;
@@ -420,8 +410,7 @@ public class CustomTabIntentDataProvider extends BrowserServicesIntentDataProvid
         return CustomTabsConnection.getInstance().isFirstParty(packageName);
     }
 
-    @Nullable
-    private static String getClientPackageNameFromSessionOrCallingActivity(
+    private static @Nullable String getClientPackageNameFromSessionOrCallingActivity(
             Intent intent, CustomTabsSessionToken session) {
         String packageNameFromSession =
                 CustomTabsConnection.getInstance().getClientPackageNameForSession(session);
@@ -475,8 +464,7 @@ public class CustomTabIntentDataProvider extends BrowserServicesIntentDataProvid
         int heightPx1 = IntentUtils.safeGetIntExtra(intent,
                 CustomTabIntentDataProvider.EXTRA_INITIAL_ACTIVITY_HEIGHT_IN_PIXEL_LEGACY, 0);
         if (heightPx1 > 0) return heightPx1;
-        int heightPx2 = IntentUtils.safeGetIntExtra(
-                intent, CustomTabIntentDataProvider.EXTRA_INITIAL_ACTIVITY_HEIGHT_PX, 0);
+        int heightPx2 = IntentUtils.safeGetIntExtra(intent, EXTRA_INITIAL_ACTIVITY_HEIGHT_PX, 0);
         return heightPx2 > 0 ? heightPx2 : 0;
     }
 
@@ -640,8 +628,7 @@ public class CustomTabIntentDataProvider extends BrowserServicesIntentDataProvid
         @ActivityHeightResizeBehavior
         int activityHeightResizeBehavior = IntentUtils.safeGetIntExtra(
                 intent, EXTRA_ACTIVITY_HEIGHT_RESIZE_BEHAVIOR, ACTIVITY_HEIGHT_DEFAULT);
-        mIsPartialCustomTabFixedHeight =
-                activityHeightResizeBehavior == ACTIVITY_HEIGHT_FIXED ? true : false;
+        mIsPartialCustomTabFixedHeight = activityHeightResizeBehavior == ACTIVITY_HEIGHT_FIXED;
 
         @BackgroundInteractBehavior
         int backgroundInteractBehavior = IntentUtils.safeGetIntExtra(
@@ -702,8 +689,8 @@ public class CustomTabIntentDataProvider extends BrowserServicesIntentDataProvid
             PendingIntent pendingIntent = mMenuEntries.get(menuIndex).second;
             ActivityOptions options = ActivityOptions.makeBasic();
             ApiCompatibilityUtils.setActivityOptionsBackgroundActivityStartMode(options);
-            pendingIntent.send(activity, 0, isMediaViewer() ? null : addedIntent, mOnFinished, null,
-                    null, options.toBundle());
+            pendingIntent.send(activity, 0, isMediaViewer() ? null : addedIntent,
+                    mOnFinishedForTesting, null, null, options.toBundle());
             if (shouldEnableEmbeddedMediaExperience()
                     && TextUtils.equals(
                             menuTitle, activity.getString(R.string.download_manager_open_with))) {
@@ -827,8 +814,7 @@ public class CustomTabIntentDataProvider extends BrowserServicesIntentDataProvid
         return url;
     }
 
-    @Nullable
-    private TrustedWebActivityDisplayMode resolveTwaDisplayMode() {
+    private @Nullable TrustedWebActivityDisplayMode resolveTwaDisplayMode() {
         Bundle bundle = IntentUtils.safeGetBundleExtra(mIntent,
                 TrustedWebActivityIntentBuilder.EXTRA_DISPLAY_MODE);
         if (bundle == null) {
@@ -921,8 +907,7 @@ public class CustomTabIntentDataProvider extends BrowserServicesIntentDataProvid
         if (mGsaExperimentIds != null) featureUsage.log(CustomTabsFeature.EXPERIMENT_IDS);
         if (IntentUtils.safeHasExtra(intent,
                     CustomTabIntentDataProvider.EXTRA_INITIAL_ACTIVITY_HEIGHT_IN_PIXEL_LEGACY)
-                || IntentUtils.safeHasExtra(
-                        intent, CustomTabIntentDataProvider.EXTRA_INITIAL_ACTIVITY_HEIGHT_PX)) {
+                || IntentUtils.safeHasExtra(intent, EXTRA_INITIAL_ACTIVITY_HEIGHT_PX)) {
             featureUsage.log(CustomTabsFeature.EXTRA_INITIAL_ACTIVITY_HEIGHT_PX);
         }
         if (IntentUtils.safeHasExtra(
@@ -1035,14 +1020,12 @@ public class CustomTabIntentDataProvider extends BrowserServicesIntentDataProvid
     }
 
     @Override
-    @Nullable
-    public CustomTabsSessionToken getSession() {
+    public @Nullable CustomTabsSessionToken getSession() {
         return mSession;
     }
 
     @Override
-    @Nullable
-    public Intent getKeepAliveServiceIntent() {
+    public @Nullable Intent getKeepAliveServiceIntent() {
         return mKeepAliveServiceIntent;
     }
 
@@ -1074,8 +1057,7 @@ public class CustomTabIntentDataProvider extends BrowserServicesIntentDataProvid
     }
 
     @Override
-    @Nullable
-    public String getClientPackageName() {
+    public @Nullable String getClientPackageName() {
         return getClientPackageNameFromSessionOrCallingActivity(mIntent, mSession);
     }
 
@@ -1087,7 +1069,7 @@ public class CustomTabIntentDataProvider extends BrowserServicesIntentDataProvid
 
     @Override
     public int getAnimationExitRes() {
-        return shouldAnimateOnFinish() && !isPartialHeightCustomTab()
+        return shouldAnimateOnFinish() && !isPartialCustomTab()
                 ? mAnimationBundle.getInt(BUNDLE_EXIT_ANIMATION_RESOURCE)
                 : 0;
     }
@@ -1099,8 +1081,7 @@ public class CustomTabIntentDataProvider extends BrowserServicesIntentDataProvid
     }
 
     @Override
-    @Nullable
-    public String getUrlToLoad() {
+    public @Nullable String getUrlToLoad() {
         if (mUrlToLoad == null) {
             mUrlToLoad = resolveUrlToLoad(getIntent());
         }
@@ -1118,8 +1099,7 @@ public class CustomTabIntentDataProvider extends BrowserServicesIntentDataProvid
     }
 
     @Override
-    @Nullable
-    public Drawable getCloseButtonDrawable() {
+    public @Nullable Drawable getCloseButtonDrawable() {
         return mCloseButtonIcon;
     }
 
@@ -1144,8 +1124,7 @@ public class CustomTabIntentDataProvider extends BrowserServicesIntentDataProvid
     }
 
     @Override
-    @Nullable
-    public RemoteViews getBottomBarRemoteViews() {
+    public @Nullable RemoteViews getBottomBarRemoteViews() {
         return mRemoteViews;
     }
 
@@ -1157,8 +1136,7 @@ public class CustomTabIntentDataProvider extends BrowserServicesIntentDataProvid
     }
 
     @Override
-    @Nullable
-    public PendingIntent getRemoteViewsPendingIntent() {
+    public @Nullable PendingIntent getRemoteViewsPendingIntent() {
         return mRemoteViewsPendingIntent;
     }
 
@@ -1186,9 +1164,9 @@ public class CustomTabIntentDataProvider extends BrowserServicesIntentDataProvid
      * Set the callback object for {@link PendingIntent}s that are sent in this class. For testing
      * purpose only.
      */
-    @VisibleForTesting
     void setPendingIntentOnFinishedForTesting(PendingIntent.OnFinished onFinished) {
-        mOnFinished = onFinished;
+        mOnFinishedForTesting = onFinished;
+        ResettersForTesting.register(() -> mOnFinishedForTesting = null);
     }
 
     @Override
@@ -1206,8 +1184,7 @@ public class CustomTabIntentDataProvider extends BrowserServicesIntentDataProvid
      * @return See {@link #EXTRA_MEDIA_VIEWER_URL}.
      */
     @Override
-    @Nullable
-    public String getMediaViewerUrl() {
+    public @Nullable String getMediaViewerUrl() {
         return mMediaViewerUrl;
     }
 
@@ -1249,8 +1226,7 @@ public class CustomTabIntentDataProvider extends BrowserServicesIntentDataProvid
     }
 
     @Override
-    @Nullable
-    public String getTranslateLanguage() {
+    public @Nullable String getTranslateLanguage() {
         return shouldAutoTranslate() ? mAutoTranslateLanguage : mTranslateLanguage;
     }
 
@@ -1275,8 +1251,7 @@ public class CustomTabIntentDataProvider extends BrowserServicesIntentDataProvid
     }
 
     @Override
-    @Nullable
-    public ShareTarget getShareTarget() {
+    public @Nullable ShareTarget getShareTarget() {
         Bundle bundle = IntentUtils.safeGetBundleExtra(
                 getIntent(), TrustedWebActivityIntentBuilder.EXTRA_SHARE_TARGET);
         if (bundle == null) return null;
@@ -1289,8 +1264,7 @@ public class CustomTabIntentDataProvider extends BrowserServicesIntentDataProvid
     }
 
     @Override
-    @Nullable
-    public ShareData getShareData() {
+    public @Nullable ShareData getShareData() {
         Bundle bundle = IntentUtils.safeGetParcelableExtra(
                 getIntent(), TrustedWebActivityIntentBuilder.EXTRA_SHARE_DATA);
         if (bundle == null) return null;

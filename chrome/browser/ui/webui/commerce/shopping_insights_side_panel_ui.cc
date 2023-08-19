@@ -20,7 +20,9 @@
 #include "chrome/grit/side_panel_shared_resources.h"
 #include "chrome/grit/side_panel_shared_resources_map.h"
 #include "components/commerce/core/commerce_constants.h"
+#include "components/commerce/core/commerce_feature_list.h"
 #include "components/commerce/core/mojom/shopping_list.mojom.h"
+#include "components/strings/grit/components_strings.h"
 #include "content/public/browser/web_ui.h"
 #include "content/public/browser/web_ui_data_source.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
@@ -35,6 +37,40 @@ ShoppingInsightsSidePanelUI::ShoppingInsightsSidePanelUI(content::WebUI* web_ui)
 
   content::WebUIDataSource* source = content::WebUIDataSource::CreateAndAdd(
       profile, commerce::kChromeUIShoppingInsightsSidePanelHost);
+
+  static constexpr webui::LocalizedString kLocalizedStrings[] = {
+      {"historyTitle", IDS_PRICE_HISTORY_TITLE},
+      {"historyDescription", IDS_PRICE_HISTORY_DESCRIPTION},
+      {"lowPriceMultipleOptions", IDS_PRICE_HISTORY_MULTIPLE_OPTIONS_LOW_PRICE},
+      {"highPriceMultipleOptions",
+       IDS_PRICE_HISTORY_MULTIPLE_OPTIONS_HIGH_PRICE},
+      {"typicalPriceMultipleOptions",
+       IDS_PRICE_HISTORY_MULTIPLE_OPTIONS_TYPICAL_PRICE},
+      {"lowPriceSingleOption", IDS_PRICE_HISTORY_SINGLE_OPTION_LOW_PRICE},
+      {"highPriceSingleOption", IDS_PRICE_HISTORY_SINGLE_OPTION_HIGH_PRICE},
+      {"typicalPriceSingleOption",
+       IDS_PRICE_HISTORY_SINGLE_OPTION_TYPICAL_PRICE},
+      {"buyOptions", IDS_SHOPPING_INSIGHTS_BUYING_OPTIONS},
+      {"feedback", IDS_SHOPPING_INSIGHTS_COLLECT_FEEDBACK},
+      {"rangeMultipleOptions", IDS_PRICE_RANGE_ALL_OPTIONS},
+      {"rangeMultipleOptionsOnePrice",
+       IDS_PRICE_RANGE_ALL_OPTIONS_ONE_TYPICAL_PRICE},
+      {"rangeSingleOption", IDS_PRICE_RANGE_SINGLE_OPTION},
+      {"rangeSingleOptionOnePrice",
+       IDS_PRICE_RANGE_SINGLE_OPTION_ONE_TYPICAL_PRICE},
+      {"trackPriceTitle", IDS_SHOPPING_INSIGHTS_SIDE_PANEL_TRACK_PRICE_TITLE},
+      {"trackPriceDescription",
+       IDS_SHOPPING_INSIGHTS_SIDE_PANEL_TRACK_PRICE_DESCRIPTION},
+      {"trackPriceDone", IDS_SHOPPING_INSIGHTS_SIDE_PANEL_TRACK_PRICE_DONE},
+      {"trackPriceError", IDS_SHOPPING_INSIGHTS_SIDE_PANEL_TRACK_PRICE_ERROR},
+      {"yesterday", IDS_PRICE_HISTORY_YESTERDAY_PRICE},
+  };
+  for (const auto& str : kLocalizedStrings) {
+    webui::AddLocalizedString(source, str.name, str.id);
+  }
+
+  source->AddBoolean("shouldShowFeedback",
+                     commerce::kPriceInsightsShowFeedback.Get());
 
   webui::SetupWebUIDataSource(source,
                               base::make_span(kSidePanelCommerceResources,
@@ -66,7 +102,7 @@ void ShoppingInsightsSidePanelUI::CreateShoppingListHandler(
   shopping_list_handler_ = std::make_unique<commerce::ShoppingListHandler>(
       std::move(page), std::move(receiver), bookmark_model, shopping_service,
       profile->GetPrefs(), tracker, g_browser_process->GetApplicationLocale(),
-      std::make_unique<commerce::ShoppingUiHandlerDelegate>());
+      std::make_unique<commerce::ShoppingUiHandlerDelegate>(this, profile));
 }
 
 WEB_UI_CONTROLLER_TYPE_IMPL(ShoppingInsightsSidePanelUI)

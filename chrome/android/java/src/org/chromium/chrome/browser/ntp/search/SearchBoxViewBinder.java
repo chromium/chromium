@@ -4,6 +4,7 @@
 
 package org.chromium.chrome.browser.ntp.search;
 
+import android.os.Build;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewGroup.MarginLayoutParams;
@@ -61,6 +62,12 @@ class SearchBoxViewBinder
         } else if (SearchBoxProperties.SEARCH_BOX_CLICK_CALLBACK == propertyKey) {
             searchBoxTextView.setOnClickListener(
                     model.get(SearchBoxProperties.SEARCH_BOX_CLICK_CALLBACK));
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
+                searchBoxTextView.setHandwritingDelegatorCallback(
+                        ()
+                                -> model.get(SearchBoxProperties.SEARCH_BOX_CLICK_CALLBACK)
+                                           .onClick(searchBoxTextView));
+            }
         } else if (SearchBoxProperties.SEARCH_BOX_TEXT_WATCHER == propertyKey) {
             searchBoxTextView.addTextChangedListener(
                     model.get(SearchBoxProperties.SEARCH_BOX_TEXT_WATCHER));

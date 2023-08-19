@@ -10,6 +10,7 @@
 
 #include "base/functional/callback.h"
 #include "base/scoped_observation.h"
+#include "base/time/time.h"
 #include "components/services/screen_ai/buildflags/buildflags.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
 #include "ui/accessibility/ax_node_id_forward.h"
@@ -28,6 +29,10 @@ class RenderFrame;
 
 namespace ui {
 class AXTree;
+}
+
+namespace ukm {
+class MojoUkmRecorder;
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -60,7 +65,7 @@ class AXTreeDistiller {
   // algorithm in this process.
   virtual void Distill(const ui::AXTree& tree,
                        const ui::AXTreeUpdate& snapshot,
-                       const ukm::SourceId& ukm_source_id);
+                       const ukm::SourceId ukm_source_id);
 
 #if BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
   void ScreenAIServiceReady();
@@ -70,7 +75,47 @@ class AXTreeDistiller {
   // Distills the AXTree via a rules-based algorithm. Results are added to
   // |content_node_ids|.
   void DistillViaAlgorithm(const ui::AXTree& tree,
+                           const ukm::SourceId ukm_source_id,
                            std::vector<ui::AXNodeID>* content_node_ids);
+
+  void RecordRulesMetrics(const ukm::SourceId ukm_source_id,
+                          base::TimeDelta elapsed_time,
+                          bool success);
+
+#if BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
+  // Passes |snapshot| to the Screen2x ML model, which identifes the main
+  // content nodes and calls |ProcessScreen2xResult()| on completion.
+  // |content_node_ids_algorithm| are the content nodes identified by the
+  // algorithm. They are passed along to the screen2x callback. start_time is
+  // the time when DistillViaAlgorithm started and is used for
+  // RecordMergedMetrics.
+  void DistillViaScreen2x(
+      const ui::AXTree& tree,
+      const ui::AXTreeUpdate& snapshot,
+      const ukm::SourceId ukm_source_id,
+      base::TimeTicks start_time,
+      std::vector<ui::AXNodeID>* content_node_ids_algorithm);
+
+  // Called by the Screen2x service from the utility process. Merges the result
+  // from the algorithm with the result from Screen2x and passes the merged
+  // vector to the callback.
+  void ProcessScreen2xResult(
+      const ui::AXTreeID& tree_id,
+      const ukm::SourceId ukm_source_id,
+      base::TimeTicks start_time,
+      std::vector<ui::AXNodeID> content_node_ids_algorithm,
+      const std::vector<ui::AXNodeID>& content_node_ids_screen2x);
+
+  // Called when the main content extractor is disconnected. Runs the callback
+  // with an empty list of content node IDs.
+  void OnMainContentExtractorDisconnected();
+
+  // Record time it takes for the merged algorithm (distillation via algorithm
+  // and via Screen2x) to run.
+  void RecordMergedMetrics(const ukm::SourceId ukm_source_id,
+                           base::TimeDelta elapsed_time,
+                           bool success);
+#endif  // BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
 
   // render_frame_ is only used in the ENABLE_SCREEN_AI_SERVICE buildflag.
   // Fuchsia does not build with that buildflag so it is throwing
@@ -81,29 +126,9 @@ class AXTreeDistiller {
   // disconnected.
   OnAXTreeDistilledCallback on_ax_tree_distilled_callback_;
 
+  std::unique_ptr<ukm::MojoUkmRecorder> ukm_recorder_;
+
 #if BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
-  // Passes |snapshot| to the Screen2x ML model, which identifes the main
-  // content nodes and calls |ProcessScreen2xResult()| on completion.
-  // |content_node_ids_algorithm| are the content nodes identified by the
-  // algorithm. They are passed along to the screen2x callback.
-  void DistillViaScreen2x(
-      const ui::AXTree& tree,
-      const ui::AXTreeUpdate& snapshot,
-      const ukm::SourceId& ukm_source_id,
-      std::vector<ui::AXNodeID>* content_node_ids_algorithm);
-
-  // Called by the Screen2x service from the utility process. Merges the result
-  // from the algorithm with the result from Screen2x and passes the merged
-  // vector to the callback.
-  void ProcessScreen2xResult(
-      const ui::AXTreeID& tree_id,
-      std::vector<ui::AXNodeID> content_node_ids_algorithm,
-      const std::vector<ui::AXNodeID>& content_node_ids_screen2x);
-
-  // Called when the main content extractor is disconnected. Runs the callback
-  // with an empty list of content node IDs.
-  void OnMainContentExtractorDisconnected();
-
   // The remote of the Screen2x main content extractor. The receiver lives in
   // the utility process.
   mojo::Remote<screen_ai::mojom::Screen2xMainContentExtractor>

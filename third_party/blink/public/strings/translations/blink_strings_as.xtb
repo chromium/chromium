@@ -26,7 +26,6 @@
 <translation id="2060505056492490888">'<ph name="INVALIDDOMAIN" />'ৰ ভুল স্থানত '<ph name="DOT" />' ব্যৱহাৰ কৰা হৈছে।</translation>
 <translation id="2148716181193084225">আজি</translation>
 <translation id="2226276347425096477">অনুগ্ৰহ কৰি এই পাঠ <ph name="MAX_CHARACTERS" />টা বর্ণ বা তাতোকৈ কম সংখ্যক বর্ণৰ ভিতৰত সীমাবদ্ধ কৰক (বর্তমান আপুনি <ph name="CURRENT_LENGTH" />টা বর্ণ ব্যৱহাৰ কৰি আছে)।</translation>
-<translation id="2246498165605549352">স্থানীয় ফাইল</translation>
 <translation id="2247351761944213033">সপ্তাহ <ph name="WEEKNUMBER" />, <ph name="YEAR" /></translation>
 <translation id="2277199496770840904">ট্ৰেক <ph name="NUMBER" /></translation>
 <translation id="2393030564806080191">হেক্সাডেচিমেল ৰঙৰ মান</translation>
@@ -89,6 +88,7 @@
 <translation id="5425179576310518467">বৰ্তমানৰ তাৰিখ</translation>
 <translation id="5466621249238537318">অনুগ্ৰহ কৰি এটা বা ততোধিক ফাইল বাছনি কৰক।</translation>
 <translation id="5468998798572797635">পূৰ্ণ স্ক্ৰীনৰ পৰা বাহিৰ হওক</translation>
+<translation id="5514612371225420585">আপোনাৰ ডিভাইচত থকা ফাইল</translation>
 <translation id="5516235301412634559">০.৭৫</translation>
 <translation id="5537725057119320332">কাষ্ট কৰক</translation>
 <translation id="5546461542133609677">আনমিউট কৰক</translation>
@@ -113,6 +113,7 @@
 <translation id="6398862346408813489">মাহ বাছনি কৰা পেনেল দেখুৱাওক</translation>
 <translation id="6404546809543547843">অডিঅ' টাইম স্ক্ৰাবাৰ</translation>
 <translation id="6443871981718447451">ছাবটাইটেলৰ মেনু দেখুৱাওক</translation>
+<translation id="6484738902856791350">আকৰ্ষণীয় প্ৰিণ্ট</translation>
 <translation id="6550675742724504774">বিকল্প</translation>
 <translation id="6572309429103589720">অমান্য ব্যাকৰণ</translation>
 <translation id="658823671542763450">স্ক্রীণখন সম্পূৰ্ণ ডাঙৰ কৰক</translation>

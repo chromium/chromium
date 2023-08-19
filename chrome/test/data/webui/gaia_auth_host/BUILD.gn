@@ -7,8 +7,7 @@ import("//ui/webui/resources/tools/generate_grd.gni")
 
 assert(enable_dice_support || is_chromeos_ash)
 
-# Creates the necessary GRDP file with local test files and the core
-# files from c/b/r/gaia_auth_host.
+# Creates the necessary GRDP file with local test files.
 generate_grd("build_grdp") {
   grd_prefix = "gaia_auth_host"
   out_grd = "$target_gen_dir/resources.grdp"

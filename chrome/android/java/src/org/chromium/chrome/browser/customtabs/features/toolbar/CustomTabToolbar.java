@@ -42,6 +42,7 @@ import android.widget.TextView;
 import androidx.annotation.ColorInt;
 import androidx.annotation.Dimension;
 import androidx.annotation.DrawableRes;
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 import androidx.appcompat.content.res.AppCompatResources;
@@ -59,7 +60,6 @@ import org.chromium.chrome.R;
 import org.chromium.chrome.browser.browser_controls.BrowserStateBrowserControlsVisibilityDelegate;
 import org.chromium.chrome.browser.compositor.bottombar.ephemeraltab.EphemeralTabCoordinator;
 import org.chromium.chrome.browser.crash.ChromePureJavaExceptionReporter;
-import org.chromium.chrome.browser.customtabs.CustomTabsConnection;
 import org.chromium.chrome.browser.customtabs.features.branding.ToolbarBrandingDelegate;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.omnibox.LocationBar;
@@ -74,6 +74,7 @@ import org.chromium.chrome.browser.page_info.ChromePageInfo;
 import org.chromium.chrome.browser.page_info.ChromePageInfoHighlight;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TrustedCdn;
+import org.chromium.chrome.browser.tabmodel.TabCreator;
 import org.chromium.chrome.browser.theme.ThemeUtils;
 import org.chromium.chrome.browser.toolbar.LocationBarModel;
 import org.chromium.chrome.browser.toolbar.ToolbarFeatures;
@@ -84,6 +85,7 @@ import org.chromium.chrome.browser.toolbar.top.CaptureReadinessResult.TopToolbar
 import org.chromium.chrome.browser.toolbar.top.ToolbarLayout;
 import org.chromium.chrome.browser.toolbar.top.ToolbarPhone;
 import org.chromium.chrome.browser.toolbar.top.ToolbarSnapshotDifference;
+import org.chromium.chrome.browser.toolbar.top.TopToolbarCoordinator.ToolbarColorObserver;
 import org.chromium.chrome.browser.ui.native_page.NativePage;
 import org.chromium.chrome.browser.ui.theme.BrandedColorScheme;
 import org.chromium.components.browser_ui.styles.ChromeColors;
@@ -96,7 +98,7 @@ import org.chromium.content_public.common.ContentUrlConstants;
 import org.chromium.ui.UiUtils;
 import org.chromium.ui.base.Clipboard;
 import org.chromium.ui.base.DeviceFormFactor;
-import org.chromium.ui.interpolators.BakedBezierInterpolator;
+import org.chromium.ui.interpolators.Interpolators;
 import org.chromium.ui.modaldialog.ModalDialogManager;
 import org.chromium.ui.text.SpanApplier;
 import org.chromium.ui.text.SpanApplier.SpanInfo;
@@ -213,6 +215,9 @@ public class CustomTabToolbar extends ToolbarLayout implements View.OnLongClickL
         mMenuButton = findViewById(R.id.menu_button_wrapper);
 
         mLocationBar.onFinishInflate(this);
+
+        // Set hover tooltip texts for toolbar buttons.
+        super.setTooltipTextForToolbarButtons();
     }
 
     @Override
@@ -283,16 +288,18 @@ public class CustomTabToolbar extends ToolbarLayout implements View.OnLongClickL
      * @param controlsVisibilityDelegate {@link BrowserStateBrowserControlsVisibilityDelegate} to
      *         show / hide the browser control. Used to ensure toolbar is shown for a certain
      *         duration.
+     * @param tabCreator {@link TabCreator} to handle a new tab creation.
      * @return The LocationBar implementation for this CustomTabToolbar.
      */
     public LocationBar createLocationBar(LocationBarModel locationBarModel,
             ActionMode.Callback actionModeCallback,
             Supplier<ModalDialogManager> modalDialogManagerSupplier,
             Supplier<EphemeralTabCoordinator> ephemeralTabCoordinatorSupplier,
-            BrowserStateBrowserControlsVisibilityDelegate controlsVisibilityDelegate) {
+            BrowserStateBrowserControlsVisibilityDelegate controlsVisibilityDelegate,
+            TabCreator tabCreator) {
         mLocationBarModel = locationBarModel;
         mLocationBar.init(locationBarModel, modalDialogManagerSupplier,
-                ephemeralTabCoordinatorSupplier, actionModeCallback);
+                ephemeralTabCoordinatorSupplier, tabCreator, actionModeCallback);
         mBrowserControlsVisibilityDelegate = controlsVisibilityDelegate;
         return mLocationBar;
     }
@@ -311,20 +318,24 @@ public class CustomTabToolbar extends ToolbarLayout implements View.OnLongClickL
             maximizeButtonStub.inflate();
             maximizeButton = (ImageButton) findViewById(R.id.custom_tabs_sidepanel_maximize);
         }
-        // The visibility will get updated after the location bar completes its layout.
-        maximizeButton.setVisibility(View.GONE);
+        // The visibility will set after the location bar completes its layout.
         mMaximizeButtonEnabled = true;
         setMaximizeButtonDrawable(maximizedOnInit);
         maximizeButton.setOnClickListener((v) -> setMaximizeButtonDrawable(callback.onClick()));
     }
 
     private void setMaximizeButtonVisibility() {
-        if (!mMaximizeButtonEnabled) return;
         var maximizeButton = (ImageButton) findViewById(R.id.custom_tabs_sidepanel_maximize);
         if (maximizeButton == null) return;
 
+        if (!mMaximizeButtonEnabled) {
+            maximizeButton.setVisibility(View.GONE);
+            return;
+        }
         // Find the title/url width threshold that turns the maximize button visible.
         int containerWidthPx = mLocationBar.mTitleUrlContainer.getWidth();
+        if (containerWidthPx == 0) return;
+
         int maximizeButtonWidthPx =
                 getResources().getDimensionPixelSize(R.dimen.location_bar_action_icon_width);
         int titleUrlPaddingEndPx =
@@ -334,11 +345,15 @@ public class CustomTabToolbar extends ToolbarLayout implements View.OnLongClickL
             // Hide the button if we can't.
             maximizeButton.setVisibility(View.GONE);
         } else {
+            mLocationBar.removeMaximizeButtonVisibilityUpdater();
+
             // Take some space from the title/url for maximization button.
             var lpTitle = (ViewGroup.MarginLayoutParams) mLocationBar.mTitleBar.getLayoutParams();
             var lpUrl = (ViewGroup.MarginLayoutParams) mLocationBar.mUrlBar.getLayoutParams();
             lpTitle.rightMargin = maximizeButtonWidthPx;
             lpUrl.rightMargin = maximizeButtonWidthPx;
+            mLocationBar.mTitleBar.setLayoutParams(lpTitle);
+            mLocationBar.mUrlBar.setLayoutParams(lpUrl);
             maximizeButton.setVisibility(View.VISIBLE);
         }
     }
@@ -390,12 +405,10 @@ public class CustomTabToolbar extends ToolbarLayout implements View.OnLongClickL
      * @return The custom action button with the given {@code index}. For test purpose only.
      * @param index The index of the custom action button to return.
      */
-    @VisibleForTesting
     public ImageButton getCustomActionButtonForTest(int index) {
         return (ImageButton) mCustomActionButtons.getChildAt(index);
     }
 
-    @VisibleForTesting
     public ImageButton getMaximizeButtonForTest() {
         return (ImageButton) findViewById(R.id.custom_tabs_sidepanel_maximize);
     }
@@ -406,8 +419,7 @@ public class CustomTabToolbar extends ToolbarLayout implements View.OnLongClickL
     }
 
     /** @return The current active {@link Tab}. */
-    @Nullable
-    private Tab getCurrentTab() {
+    private @Nullable Tab getCurrentTab() {
         return getToolbarDataProvider().getTab();
     }
 
@@ -449,11 +461,6 @@ public class CustomTabToolbar extends ToolbarLayout implements View.OnLongClickL
     }
 
     public void setHandleStrategy(HandleStrategy strategy) {
-        if (!CustomTabsConnection.getInstance().isDynamicFeatureEnabled(
-                    ChromeFeatureList.CCT_BRAND_TRANSPARENCY)) {
-            mLocationBar.showBranding();
-        }
-
         mHandleStrategy = strategy;
         if (mCloseClickListener != null) setHandleStrategyCloseClickHandler(mCloseClickListener);
     }
@@ -655,7 +662,7 @@ public class CustomTabToolbar extends ToolbarLayout implements View.OnLongClickL
 
         mBrandColorTransitionAnimation = ValueAnimator.ofFloat(0, 1).setDuration(
                 ToolbarPhone.THEME_COLOR_TRANSITION_DURATION);
-        mBrandColorTransitionAnimation.setInterpolator(BakedBezierInterpolator.TRANSFORM_CURVE);
+        mBrandColorTransitionAnimation.setInterpolator(Interpolators.FAST_OUT_SLOW_IN_INTERPOLATOR);
         mBrandColorTransitionAnimation.addUpdateListener(animation -> {
             float fraction = animation.getAnimatedFraction();
             int red   = (int) interpolate(Color.red(startColor),   Color.red(endColor),   fraction);
@@ -794,6 +801,12 @@ public class CustomTabToolbar extends ToolbarLayout implements View.OnLongClickL
         }
     }
 
+    @Override
+    public void setToolbarColorObserver(@NonNull ToolbarColorObserver toolbarColorObserver) {
+        super.setToolbarColorObserver(toolbarColorObserver);
+        notifyToolbarColorChanged(getBackground().getColor());
+    }
+
     /** Subscribe to container visibility changes. */
     public void addContainerVisibilityChangeObserver(Callback<Integer> observer) {
         mContainerVisibilityChangeObserverList.addObserver(observer);
@@ -821,7 +834,6 @@ public class CustomTabToolbar extends ToolbarLayout implements View.OnLongClickL
             implements LocationBar, UrlBar.UrlBarDelegate, LocationBarDataProvider.Observer,
                        View.OnLongClickListener, ToolbarBrandingDelegate {
         private static final int TITLE_ANIM_DELAY_MS = 800;
-        private static final int BRANDING_DELAY_MS = 1800;
         private static final int MIN_URL_BAR_VISIBLE_TIME_POST_BRANDING_MS = 3000;
 
         private static final int STATE_DOMAIN_ONLY = 0;
@@ -839,6 +851,7 @@ public class CustomTabToolbar extends ToolbarLayout implements View.OnLongClickL
         private Supplier<EphemeralTabCoordinator> mEphemeralTabCoordinatorSupplier;
         private Supplier<ModalDialogManager> mModalDialogManagerSupplier;
         private UrlBarCoordinator mUrlCoordinator;
+        private TabCreator mTabCreator;
 
         private TextView mUrlBar;
         private TextView mTitleBar;
@@ -855,6 +868,8 @@ public class CustomTabToolbar extends ToolbarLayout implements View.OnLongClickL
         };
 
         private final Runnable[] mAfterBrandingRunnables = new Runnable[TOTAL_POST_BRANDING_KEYS];
+        private final View.OnLayoutChangeListener mMaximizeButtonVisibilityUpdater =
+                (v, l, t, r, b, ol, ot, or, ob) -> setMaximizeButtonVisibility();
         private boolean mCurrentlyShowingBranding;
         private boolean mBrandingStarted;
         private boolean mAnimateIconTransition = true;
@@ -872,30 +887,6 @@ public class CustomTabToolbar extends ToolbarLayout implements View.OnLongClickL
 
         public boolean isShowingTitleOnly() {
             return mState == STATE_TITLE_ONLY;
-        }
-
-        // TODO(https://crbug.com/1343056): Remove this method after CCT Brand default enabled.
-        public void showBranding() {
-            mBrandingStarted = true;
-            mCurrentlyShowingBranding = true;
-
-            // Store the title and domain setting.
-            final boolean wasShowingTitle = mState != STATE_DOMAIN_ONLY;
-            final boolean wasShowingUrl = mState != STATE_TITLE_ONLY;
-
-            // We use url bar to show the branding text and hide the title bar so the text will
-            // align with the security icon.
-            if (wasShowingTitle) setShowTitleIgnoreBranding(false);
-            if (!wasShowingUrl) setUrlBarHiddenIgnoreBranding(false);
-            showBrandingIconAndText();
-
-            Runnable hideBranding = mCallbackController.makeCancelable(() -> {
-                mCurrentlyShowingBranding = false;
-                if (wasShowingTitle) setShowTitle(true);
-                if (!wasShowingUrl) setUrlBarHidden(true);
-                runAfterBrandingRunnables();
-            });
-            PostTask.postDelayedTask(TaskTraits.UI_DEFAULT, hideBranding, BRANDING_DELAY_MS);
         }
 
         @Override
@@ -959,6 +950,7 @@ public class CustomTabToolbar extends ToolbarLayout implements View.OnLongClickL
         }
 
         private void recoverFromRegularState() {
+            assert !mCurrentlyShowingBranding;
             assert mPreBandingState != null;
 
             boolean showTitle = mPreBandingState == STATE_TITLE_ONLY
@@ -966,8 +958,8 @@ public class CustomTabToolbar extends ToolbarLayout implements View.OnLongClickL
             boolean hideUrl = mPreBandingState == STATE_TITLE_ONLY;
             mPreBandingState = null;
 
-            setUrlBarHidden(hideUrl);
-            setShowTitle(showTitle);
+            setUrlBarHiddenIgnoreBranding(hideUrl);
+            setShowTitleIgnoreBranding(showTitle);
         }
 
         public void onFinishInflate(View container) {
@@ -981,12 +973,17 @@ public class CustomTabToolbar extends ToolbarLayout implements View.OnLongClickL
             mSecurityButton = container.findViewById(R.id.security_button);
             mAnimDelegate = new CustomTabToolbarAnimationDelegate(
                     mSecurityButton, mTitleUrlContainer, R.dimen.location_bar_icon_width);
+            mTitleUrlContainer.addOnLayoutChangeListener(mMaximizeButtonVisibilityUpdater);
+        }
+
+        private void removeMaximizeButtonVisibilityUpdater() {
+            mTitleUrlContainer.removeOnLayoutChangeListener(mMaximizeButtonVisibilityUpdater);
         }
 
         public void init(LocationBarDataProvider locationBarDataProvider,
                 Supplier<ModalDialogManager> modalDialogManagerSupplier,
                 Supplier<EphemeralTabCoordinator> ephemeralTabCoordinatorSupplier,
-                ActionMode.Callback actionModeCallback) {
+                TabCreator tabCreator, ActionMode.Callback actionModeCallback) {
             mLocationBarDataProvider = locationBarDataProvider;
             mEphemeralTabCoordinatorSupplier = ephemeralTabCoordinatorSupplier;
             mLocationBarDataProvider.addObserver(this);
@@ -999,6 +996,7 @@ public class CustomTabToolbar extends ToolbarLayout implements View.OnLongClickL
                     this, new NoOpkeyboardVisibilityDelegate(),
                     locationBarDataProvider.isIncognito(),
                     ChromePureJavaExceptionReporter::reportJavaException);
+            mTabCreator = tabCreator;
             updateColors();
             updateSecurityIcon();
             updateProgressBarColors();
@@ -1043,33 +1041,14 @@ public class CustomTabToolbar extends ToolbarLayout implements View.OnLongClickL
                 // Refresh the status icon and url bar.
                 updateUrlBar();
                 mLocationBarModel.notifySecurityStateChanged();
-            } else {
-                if (CustomTabsConnection.getInstance().isDynamicFeatureEnabled(
-                            ChromeFeatureList.CCT_BRAND_TRANSPARENCY)) {
-                    if (mState == STATE_EMPTY) {
-                        // If state is empty, that means Location bar is recovering from empty
-                        // location bar to what ever new state it is. We skip the state assertion
-                        // and the end.
-                        if (!hideUrlBar) {
-                            mState = STATE_DOMAIN_ONLY;
-                            mUrlBar.setVisibility(View.VISIBLE);
-                        }
-                        return;
-                    } else if (mState == STATE_TITLE_ONLY && hideUrlBar) {
-                        // Used for empty location bar -> show branding location bar.
-                        // TODO(https://crbug.com/1343056): Remove duplicate code added for the sake
-                        // of fp++ process.
-                        mAnimDelegate.setTitleAnimationEnabled(false);
-                        mUrlBar.setVisibility(View.GONE);
-                        mTitleBar.setVisibility(View.VISIBLE);
-                        LayoutParams lp = (LayoutParams) mTitleBar.getLayoutParams();
-                        lp.bottomMargin = 0;
-                        mTitleBar.setLayoutParams(lp);
-                        mTitleBar.setTextSize(TypedValue.COMPLEX_UNIT_PX,
-                                getResources().getDimension(R.dimen.location_bar_url_text_size));
-                        return;
-                    }
+            } else if (mState == STATE_EMPTY) {
+                // If state is empty, that means Location bar is recovering from empty location bar
+                // to whatever new state it is. We skip the state assertion and the end.
+                if (!hideUrlBar) {
+                    mState = STATE_DOMAIN_ONLY;
+                    mUrlBar.setVisibility(View.VISIBLE);
                 }
+            } else {
                 assert false : "Unreached state";
             }
         }
@@ -1087,7 +1066,7 @@ public class CustomTabToolbar extends ToolbarLayout implements View.OnLongClickL
                 new ChromePageInfo(mModalDialogManagerSupplier,
                         TrustedCdn.getContentPublisher(getToolbarDataProvider().getTab()),
                         OpenedFromSource.TOOLBAR, /*storeInfoActionHandlerSupplier=*/null,
-                        mEphemeralTabCoordinatorSupplier)
+                        mEphemeralTabCoordinatorSupplier, mTabCreator)
                         .show(currentTab, ChromePageInfoHighlight.noHighlight());
             });
         }
@@ -1229,7 +1208,7 @@ public class CustomTabToolbar extends ToolbarLayout implements View.OnLongClickL
             // LocationBarDataProvider#getTitle always returns the url. We postpone the title
             // animation until the title is authentic.
             if ((mState == STATE_DOMAIN_AND_TITLE || mState == STATE_TITLE_ONLY)
-                    && !title.equals(mLocationBarDataProvider.getCurrentUrl())
+                    && !title.equals(mLocationBarDataProvider.getCurrentGurl().getSpec())
                     && !title.equals(ContentUrlConstants.ABOUT_BLANK_DISPLAY_URL)) {
                 // Delay the title animation until security icon animation finishes.
                 // If this is updated after branding, we don't need to wait.
@@ -1329,7 +1308,6 @@ public class CustomTabToolbar extends ToolbarLayout implements View.OnLongClickL
         private void setShowTitleIgnoreBranding(boolean showTitle) {
             if (showTitle) {
                 if (mState == STATE_EMPTY) {
-                    // Only happened when CCT_BRAND_TRANSPARENCY enabled.
                     mState = STATE_TITLE_ONLY;
                 } else {
                     mState = STATE_DOMAIN_AND_TITLE;
@@ -1400,18 +1378,15 @@ public class CustomTabToolbar extends ToolbarLayout implements View.OnLongClickL
             return false;
         }
 
-        @VisibleForTesting
         void setAnimDelegateForTesting(CustomTabToolbarAnimationDelegate animDelegate) {
             mAnimDelegate = animDelegate;
         }
 
-        @VisibleForTesting
         void setTitleUrlContainerForTesting(View titleUrlContainer) {
             mTitleUrlContainer = titleUrlContainer;
         }
     }
 
-    @VisibleForTesting
     boolean isMaximizeButtonEnabledForTesting() {
         return mMaximizeButtonEnabled;
     }

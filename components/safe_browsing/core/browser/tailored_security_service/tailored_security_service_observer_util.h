@@ -10,9 +10,9 @@
 class GURL;
 class PrefService;
 
-namespace signin {
-class IdentityManager;
-}  // namespace signin
+namespace syncer {
+class SyncService;
+}
 
 namespace safe_browsing {
 
@@ -24,9 +24,8 @@ bool CanQueryTailoredSecurityForUrl(GURL url);
 
 // Checks if we can show the unconsented tailored security dialog depending on
 // the user's identity and preferences.
-bool CanShowUnconsentedTailoredSecurityDialog(
-    signin::IdentityManager* identity_manager,
-    PrefService* prefs);
+bool CanShowUnconsentedTailoredSecurityDialog(syncer::SyncService* sync_service,
+                                              PrefService* prefs);
 
 }  // namespace safe_browsing
 

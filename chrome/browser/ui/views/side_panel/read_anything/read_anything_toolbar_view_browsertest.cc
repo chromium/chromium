@@ -65,7 +65,10 @@ class ReadAnythingToolbarViewTest : public InProcessBrowserTest {
         coordinator_.get(), &toolbar_delegate_, &font_combobox_delegate_);
   }
 
-  void TearDownOnMainThread() override { coordinator_ = nullptr; }
+  void TearDownOnMainThread() override {
+    toolbar_view_ = nullptr;
+    coordinator_ = nullptr;
+  }
 
   // Wrapper methods around the ReadAnythingToolbarView.
 

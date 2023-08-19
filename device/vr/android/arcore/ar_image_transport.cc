@@ -22,7 +22,7 @@ ArImageTransport::ArImageTransport(
 ArImageTransport::~ArImageTransport() = default;
 
 void ArImageTransport::DoRuntimeInitialization() {
-  ar_renderer_ = std::make_unique<ArRenderer>();
+  renderer_ = std::make_unique<XrRenderer>();
   glGenTextures(1, &camera_texture_id_arcore_);
 
   glGenFramebuffersEXT(1, &camera_fbo_);
@@ -135,7 +135,7 @@ void ArImageTransport::CopyTextureToFramebuffer(
   DVLOG(2) << __func__;
   // Don't need face culling, depth testing, blending, etc. Turn it all off.
   // It would be a bit more efficient to do this one time on initialization,
-  // but that would only be safe if ARCore and ArRenderer were guaranteed to
+  // but that would only be safe if ARCore and `XrRenderer` were guaranteed to
   // not modify these states. For now, keep the redundant operations to avoid
   // potential hard-to-find bugs.
   glDisable(GL_DEPTH_TEST);
@@ -150,7 +150,7 @@ void ArImageTransport::CopyTextureToFramebuffer(
   uv_transform.GetColMajorF(uv_transform_floats);
 
   glBindFramebufferEXT(GL_DRAW_FRAMEBUFFER, framebuffer);
-  ar_renderer_->Draw(texture, uv_transform_floats);
+  renderer_->Draw(texture, uv_transform_floats);
 }
 
 std::unique_ptr<ArImageTransport> ArImageTransportFactory::Create(

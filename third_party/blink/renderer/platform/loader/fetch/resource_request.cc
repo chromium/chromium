@@ -227,12 +227,14 @@ std::unique_ptr<ResourceRequest> ResourceRequestHead::CreateRedirectRequest(
   request->SetFromOriginDirtyStyleSheet(IsFromOriginDirtyStyleSheet());
   request->SetRecursivePrefetchToken(RecursivePrefetchToken());
   request->SetFetchLikeAPI(IsFetchLikeAPI());
+  request->SetFetchLaterAPI(IsFetchLaterAPI());
   request->SetFavicon(IsFavicon());
   request->SetAttributionReportingSupport(GetAttributionReportingSupport());
   request->SetAttributionReportingEligibility(
       GetAttributionReportingEligibility());
   request->SetAttributionReportingRuntimeFeatures(
       GetAttributionReportingRuntimeFeatures());
+  request->SetAttributionReportingSrcToken(GetAttributionSrcToken());
 
   return request;
 }

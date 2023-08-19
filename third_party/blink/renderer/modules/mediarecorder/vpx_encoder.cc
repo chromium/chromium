@@ -8,7 +8,10 @@
 #include <utility>
 
 #include "base/numerics/safe_conversions.h"
+#include "base/strings/strcat.h"
 #include "base/system/sys_info.h"
+#include "media/base/encoder_status.h"
+#include "media/base/video_encoder_metrics_provider.h"
 #include "media/base/video_frame.h"
 #include "media/base/video_util.h"
 #include "third_party/blink/renderer/platform/instrumentation/tracing/trace_event.h"
@@ -42,6 +45,8 @@ VpxEncoder::VpxEncoder(
               on_encoded_video_cb,
               bits_per_second),
       use_vp9_(use_vp9) {
+  std::memset(&codec_config_, 0, sizeof(codec_config_));
+  std::memset(&alpha_codec_config_, 0, sizeof(alpha_codec_config_));
   codec_config_.g_timebase.den = 0;        // Not initialized.
   alpha_codec_config_.g_timebase.den = 0;  // Not initialized.
 }
@@ -159,8 +164,9 @@ void VpxEncoder::EncodeFrame(scoped_refptr<media::VideoFrame> frame,
   }
   frame = nullptr;
 
+  metrics_provider_->IncrementEncodedFrameCount();
   on_encoded_video_cb_.Run(video_params, std::move(data), std::move(alpha_data),
-                           capture_timestamp, keyframe);
+                           absl::nullopt, capture_timestamp, keyframe);
 }
 
 void VpxEncoder::DoEncode(vpx_codec_ctx_t* const encoder,
@@ -199,10 +205,13 @@ void VpxEncoder::DoEncode(vpx_codec_ctx_t* const encoder,
       vpx_codec_encode(encoder, &vpx_image, 0 /* pts */,
                        static_cast<unsigned long>(duration.InMicroseconds()),
                        flags, VPX_DL_REALTIME);
-  DCHECK_EQ(ret, VPX_CODEC_OK)
-      << vpx_codec_err_to_string(ret) << ", #" << vpx_codec_error(encoder)
-      << " -" << vpx_codec_error_detail(encoder);
-
+  if (ret != VPX_CODEC_OK) {
+    metrics_provider_->SetError(
+        {media::EncoderStatus::Codes::kEncoderFailedEncode,
+         base::StrCat(
+             {"libvpx failed to encode: ", vpx_codec_err_to_string(ret), " - ",
+              vpx_codec_error_detail(encoder)})});
+  }
   *keyframe = false;
   vpx_codec_iter_t iter = nullptr;
   const vpx_codec_cx_pkt_t* pkt = nullptr;
@@ -271,29 +280,33 @@ bool VpxEncoder::ConfigureEncoder(const gfx::Size& size,
   codec_config->g_timebase.num = 1;
   codec_config->g_timebase.den = base::Time::kMicrosecondsPerSecond;
 
-  // Let the encoder decide where to place the Keyframes, between min and max.
-  // In VPX_KF_AUTO mode libvpx will sometimes emit keyframes regardless of min/
-  // max distance out of necessity.
+  // The periodical keyframe interval is configured by KeyFrameRequestProcessor.
+  // Aside from the periodical keyframe, let the encoder decide where to place
+  // the Keyframes In VPX_KF_AUTO mode libvpx will sometimes emit keyframes out
+  // of necessity.
   // Note that due to http://crbug.com/440223, it might be necessary to force a
   // key frame after 10,000frames since decoding fails after 30,000 non-key
   // frames.
-  // Forcing a keyframe in regular intervals also allows seeking in the
-  // resulting recording with decent performance.
   codec_config->kf_mode = VPX_KF_AUTO;
-  codec_config->kf_min_dist = 0;
-  codec_config->kf_max_dist = 100;
 
   codec_config->g_threads = GetNumberOfThreadsForEncoding();
 
   // Number of frames to consume before producing output.
   codec_config->g_lag_in_frames = 0;
 
+  metrics_provider_->Initialize(
+      use_vp9_ ? media::VP9PROFILE_MIN : media::VP8PROFILE_ANY, size,
+      /*is_hardware_encoder=*/false);
   // Can't use ScopedVpxCodecCtxPtr until after vpx_codec_enc_init, since it's
   // not valid to call vpx_codec_destroy when vpx_codec_enc_init fails.
   auto tmp_encoder = std::make_unique<vpx_codec_ctx_t>();
   const vpx_codec_err_t ret = vpx_codec_enc_init(
       tmp_encoder.get(), codec_interface, codec_config, 0 /* flags */);
   if (ret != VPX_CODEC_OK) {
+    metrics_provider_->SetError(
+        {media::EncoderStatus::Codes::kEncoderInitializationError,
+         base::StrCat(
+             {"libvpx failed to initialize: ", vpx_codec_err_to_string(ret)})});
     DLOG(WARNING) << "vpx_codec_enc_init failed: " << ret;
     // Require the encoder to be reinitialized next frame.
     codec_config->g_timebase.den = 0;

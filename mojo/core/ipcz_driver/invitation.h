@@ -9,7 +9,6 @@
 #include <string>
 
 #include "base/containers/span.h"
-#include "base/containers/stack_container.h"
 #include "mojo/core/ipcz_driver/object.h"
 #include "mojo/core/scoped_ipcz_handle.h"
 #include "mojo/public/c/system/invitation.h"

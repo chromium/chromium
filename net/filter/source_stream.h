@@ -23,6 +23,7 @@ class NET_EXPORT_PRIVATE SourceStream {
     TYPE_BROTLI,
     TYPE_DEFLATE,
     TYPE_GZIP,
+    TYPE_ZSTD,
     TYPE_UNKNOWN,
     TYPE_NONE,
   };

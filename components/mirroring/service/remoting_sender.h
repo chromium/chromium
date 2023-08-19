@@ -153,7 +153,7 @@ class COMPONENT_EXPORT(MIRRORING_SERVICE) RemotingSender final
 
   // Number of EnqueueFrame() calls that have failed since the last successful
   // call.
-  int consecuitive_enqueue_frame_failure_count_ = 0;
+  int consecutive_enqueue_frame_failure_count_ = 0;
 
   // The next frame's ID. Before any frames are sent, this will be the ID of
   // the first frame.

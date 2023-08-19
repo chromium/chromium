@@ -3,7 +3,6 @@
 # found in the LICENSE file.
 
 source_set("permissions") {
-  configs += [ "//build/config/compiler:enable_arc" ]
   sources = [
     "infobar_permissions_table_view_controller.h",
     "infobar_permissions_table_view_controller.mm",

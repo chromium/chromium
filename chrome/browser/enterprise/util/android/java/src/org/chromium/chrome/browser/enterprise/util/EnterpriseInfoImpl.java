@@ -17,6 +17,7 @@ import org.chromium.base.Callback;
 import org.chromium.base.CommandLine;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.Log;
+import org.chromium.base.ResettersForTesting;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.task.AsyncTask;
@@ -165,8 +166,8 @@ public class EnterpriseInfoImpl extends EnterpriseInfo {
      * If mOwnedState != null then this function has no effect and a task to service the
      * callback will be posted immediately.
      */
-    @VisibleForTesting
     void setSkipAsyncCheckForTesting(boolean skip) {
         mSkipAsyncCheckForTesting = skip;
+        ResettersForTesting.register(() -> mSkipAsyncCheckForTesting = false);
     }
 }

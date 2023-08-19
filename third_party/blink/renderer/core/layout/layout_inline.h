@@ -154,7 +154,6 @@ class CORE_EXPORT LayoutInline : public LayoutBoxModelObject {
 
   PhysicalRect PhysicalLinesBoundingBox() const;
   PhysicalRect PhysicalVisualOverflowRect() const final;
-  PhysicalRect ReferenceBoxForClipPath() const;
 
   bool HasInlineFragments() const final;
   wtf_size_t FirstInlineFragmentItemIndex() const final;
@@ -335,7 +334,7 @@ class CORE_EXPORT LayoutInline : public LayoutBoxModelObject {
     return gfx::Rect(bounding_box.size());
   }
 
-  void DirtyLinesFromChangedChild(LayoutObject*, MarkingBehavior) final;
+  void DirtyLinesFromChangedChild(LayoutObject*) final;
 
   // TODO(leviw): This should probably be an int. We don't snap equivalent lines
   // to different heights.

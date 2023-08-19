@@ -5,7 +5,6 @@
 import("//build/config/chrome_build.gni")
 
 source_set("identity_chooser") {
-  configs += [ "//build/config/compiler:enable_arc" ]
   sources = [
     "identity_chooser_coordinator.h",
     "identity_chooser_coordinator.mm",
@@ -27,7 +26,6 @@ source_set("identity_chooser") {
 }
 
 source_set("identity_chooser_ui") {
-  configs += [ "//build/config/compiler:enable_arc" ]
   sources = [
     "identity_chooser_add_account_item.h",
     "identity_chooser_add_account_item.mm",
@@ -68,7 +66,6 @@ source_set("identity_chooser_ui") {
 }
 
 source_set("unit_tests") {
-  configs += [ "//build/config/compiler:enable_arc" ]
   testonly = true
   sources = [ "identity_chooser_coordinator_unittest.mm" ]
   deps = [

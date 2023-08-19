@@ -13,20 +13,6 @@ import {TestBrowserProxy} from 'chrome://webui-test/test_browser_proxy.js';
 import {FakeLanguageSettingsPrivate, getFakeLanguagePrefs} from './fake_language_settings_private.js';
 import {TestLanguagesBrowserProxy} from './test_languages_browser_proxy.js';
 
-const spell_check_page_metrics_test_browser = {
-  TestNames: {
-    SpellCheckMetrics: 'spell_check_metrics_all',
-    // <if expr="_google_chrome">
-    SpellCheckMetricsOfficialBuild: 'spell_check_metrics_official',
-    // </if>
-    // <if expr="not is_macosx">
-    SpellCheckMetricsNotMacOSx: 'spell_check_not_macosx',
-    // </if>
-  },
-};
-
-Object.assign(window, {spell_check_page_metrics_test_browser});
-
 /**
  * A test version of LanguageSettingsMetricsProxy.
  */
@@ -104,7 +90,7 @@ suite('SpellCheckPageMetricsBrowser', function() {
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
   });
 
-  suite(spell_check_page_metrics_test_browser.TestNames.SpellCheckMetrics, function() {
+  suite('Metrics', function() {
     test('records when disabling spellCheck globally', async () => {
       spellCheckPage.setPrefValue('browser.enable_spellchecking', true);
       const spellCheckToggle = spellCheckPage.shadowRoot!
@@ -134,7 +120,7 @@ suite('SpellCheckPageMetricsBrowser', function() {
   });
 
   // <if expr="_google_chrome">
-  suite(spell_check_page_metrics_test_browser.TestNames.SpellCheckMetricsOfficialBuild, function() {
+  suite('MetricsOfficialBuild', function() {
     test('records when selecting basic spell check', async () => {
       spellCheckPage.setPrefValue('spellcheck.use_spelling_service', true);
       const basicServiceSelect = spellCheckPage.shadowRoot!
@@ -164,7 +150,7 @@ suite('SpellCheckPageMetricsBrowser', function() {
   // </if>
 
   // <if expr="not is_macosx">
-  suite(spell_check_page_metrics_test_browser.TestNames.SpellCheckMetricsNotMacOSx, function() {
+  suite('MetricsNotMacOS', function() {
     test('records when enabling spellCheck for a language', async () => {
       spellCheckPage.setPrefValue('browser.enable_spellchecking', true);
       // enable language with support for spell check

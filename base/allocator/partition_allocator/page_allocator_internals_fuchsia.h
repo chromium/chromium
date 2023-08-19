@@ -23,8 +23,8 @@
 #include "base/allocator/partition_allocator/page_allocator.h"
 #include "base/allocator/partition_allocator/partition_alloc_base/fuchsia/fuchsia_logging.h"
 #include "base/allocator/partition_allocator/partition_alloc_base/no_destructor.h"
+#include "base/allocator/partition_allocator/partition_alloc_base/notreached.h"
 #include "base/allocator/partition_allocator/partition_alloc_check.h"
-#include "base/allocator/partition_allocator/partition_alloc_notreached.h"
 
 namespace partition_alloc::internal {
 
@@ -67,10 +67,10 @@ const char* PageTagToName(PageTag tag) {
       return "cr_chromium";
     case PageTag::kV8:
       return "cr_v8";
-    default:
-      PA_DCHECK(false);
-      return "";
+    case PageTag::kSimulation:
+      PA_NOTREACHED();
   }
+  PA_NOTREACHED();
 }
 
 zx_vm_option_t PageAccessibilityToZxVmOptions(
@@ -87,10 +87,10 @@ zx_vm_option_t PageAccessibilityToZxVmOptions(
     case PageAccessibilityConfiguration::kReadWriteExecute:
       return ZX_VM_PERM_READ | ZX_VM_PERM_WRITE | ZX_VM_PERM_EXECUTE;
     case PageAccessibilityConfiguration::kInaccessible:
+    case PageAccessibilityConfiguration::kInaccessibleWillJitLater:
       return 0;
-    default:
-      PA_NOTREACHED();
-  }
+  };
+  PA_NOTREACHED();
 }
 
 }  // namespace
@@ -121,7 +121,10 @@ uintptr_t SystemAllocPagesInternal(
   // fatal.
   PA_ZX_DCHECK(status == ZX_OK, status);
 
-  if (page_tag == PageTag::kV8) {
+  if (accessibility.permissions ==
+          PageAccessibilityConfiguration::kInaccessibleWillJitLater ||
+      accessibility.permissions ==
+          PageAccessibilityConfiguration::kReadWriteExecute) {
     // V8 uses JIT. Call zx_vmo_replace_as_executable() to allow code execution
     // in the new VMO.
     status = vmo.replace_as_executable(VmexResource(), &vmo);
@@ -220,7 +223,9 @@ void DecommitSystemPagesInternal(
   DiscardSystemPagesInternal(address, length);
 }
 
-void DecommitAndZeroSystemPagesInternal(uintptr_t address, size_t length) {
+void DecommitAndZeroSystemPagesInternal(uintptr_t address,
+                                        size_t length,
+                                        PageTag page_tag) {
   SetSystemPagesAccess(address, length,
                        PageAccessibilityConfiguration(
                            PageAccessibilityConfiguration::kInaccessible));

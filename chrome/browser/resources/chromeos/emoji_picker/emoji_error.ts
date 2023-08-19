@@ -51,6 +51,9 @@ declare global {
   interface HTMLElementTagNameMap {
     [EmojiErrorComponent.is]: EmojiErrorComponent;
   }
+  interface HTMLElementEventMap {
+    [GIF_ERROR_TRY_AGAIN]: CustomEvent;
+  }
 }
 
 customElements.define(EmojiErrorComponent.is, EmojiErrorComponent);

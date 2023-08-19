@@ -214,6 +214,11 @@ std::tuple<GURL, bool /*is_file_handling*/> WebAppLaunchProcess::GetLaunchUrl(
 
 WindowOpenDisposition WebAppLaunchProcess::GetNavigationDisposition(
     bool is_new_browser) const {
+  // For prevent-close, we always want to focus the existing window
+  if (registrar_->IsPreventCloseEnabled(params_->app_id)) {
+    return WindowOpenDisposition::CURRENT_TAB;
+  }
+
   if (registrar_->IsTabbedWindowModeEnabled(params_->app_id)) {
     return WindowOpenDisposition::NEW_FOREGROUND_TAB;
   }
@@ -289,8 +294,11 @@ Browser* WebAppLaunchProcess::MaybeFindBrowserForLaunch() const {
         &profile_.get(), /*match_original_profiles=*/false, display_id);
   }
 
+  // In the case of prevent-close, we do not want to create a new browser, but
+  // instead continue to find the existing browser window.
   if (!registrar_->IsTabbedWindowModeEnabled(params_->app_id) &&
-      GetLaunchClientMode() == LaunchHandler::ClientMode::kNavigateNew) {
+      GetLaunchClientMode() == LaunchHandler::ClientMode::kNavigateNew &&
+      !registrar_->IsPreventCloseEnabled(params_->app_id)) {
     return nullptr;
   }
 
@@ -337,7 +345,10 @@ WebAppLaunchProcess::NavigateResult WebAppLaunchProcess::MaybeNavigateBrowser(
 
   content::WebContents* existing_tab = tab_strip->GetActiveWebContents();
   DCHECK(existing_tab);
-  if (GetLaunchHandler().NeverNavigateExistingClients()) {
+  // In the case of prevent-close, we do not navigate but instead focus the
+  // existing window
+  if (GetLaunchHandler().NeverNavigateExistingClients() ||
+      registrar_->IsPreventCloseEnabled(params_->app_id)) {
     if (base::ValuesEquivalent(WebAppTabHelper::FromWebContents(existing_tab)
                                    ->EnsureLaunchQueue()
                                    .GetPendingLaunchAppId(),

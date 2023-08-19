@@ -7,6 +7,7 @@
 
 #include <memory>
 
+#include "ash/ambient/metrics/managed_screensaver_metrics.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
@@ -15,6 +16,7 @@
 #include "base/run_loop.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/test/bind.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/repeating_test_future.h"
 #include "base/test/task_environment.h"
 #include "services/network/public/cpp/weak_wrapper_shared_url_loader_factory.h"
@@ -133,6 +135,7 @@ class ScreensaverImageDownloaderTest : public testing::Test {
 };
 
 TEST_F(ScreensaverImageDownloaderTest, DownloadImagesTest) {
+  base::HistogramTester histogram_tester;
   // Setup the fake URL responses:
   //   * kImageUrl1 returns a valid response.
   //   * kImageUrl2 returns a 404 error.
@@ -173,9 +176,25 @@ TEST_F(ScreensaverImageDownloaderTest, DownloadImagesTest) {
 
   // Verify that the downloader did not create image files for the error
   // downloads.
-  base::RunLoop().RunUntilIdle();
+  task_environment()->RunUntilIdle();
   EXPECT_FALSE(base::PathExists(GetExpectedFilePath(kImageUrl2)));
   EXPECT_FALSE(base::PathExists(GetExpectedFilePath(kImageUrl3)));
+
+  const std::string& histogram_name =
+      GetManagedScreensaverHistogram(kManagedScreensaverImageDownloadResultUMA);
+  histogram_tester.ExpectTotalCount(histogram_name, /*expected_count=*/3);
+  histogram_tester.ExpectBucketCount(
+      histogram_name,
+      /*sample=*/ScreensaverImageDownloadResult::kSuccess,
+      /*expected_count=*/1);
+  histogram_tester.ExpectBucketCount(
+      histogram_name,
+      /*sample=*/ScreensaverImageDownloadResult::kNetworkError,
+      /*expected_count=*/1);
+  histogram_tester.ExpectBucketCount(
+      histogram_name,
+      /*sample=*/ScreensaverImageDownloadResult::kFileSaveError,
+      /*expected_count=*/1);
 }
 
 TEST_F(ScreensaverImageDownloaderTest, ReuseFilesInCacheTest) {
@@ -222,7 +241,7 @@ TEST_F(ScreensaverImageDownloaderTest, VerifySerializedDownloadTest) {
 
   // First job should be executing and expecting the URL response, verify that
   // the second job is in the queue
-  base::RunLoop().RunUntilIdle();
+  task_environment()->RunUntilIdle();
   VerifyDownloadingQueueSize(1u);
 
   // Resolve the first job
@@ -235,13 +254,13 @@ TEST_F(ScreensaverImageDownloaderTest, VerifySerializedDownloadTest) {
 
   // First job has been resolved, second job should be executing and expecting
   // the URL response.
-  base::RunLoop().RunUntilIdle();
+  task_environment()->RunUntilIdle();
   VerifyDownloadingQueueSize(0u);
 
   // Queue a third job while the second job is still waiting
   QueueNewImageDownload(kImageUrl3);
 
-  base::RunLoop().RunUntilIdle();
+  task_environment()->RunUntilIdle();
   VerifyDownloadingQueueSize(1u);
 
   // Resolve the second job
@@ -251,7 +270,7 @@ TEST_F(ScreensaverImageDownloaderTest, VerifySerializedDownloadTest) {
                                std::string(kFileContents));
   VerifySucessfulImageRequest(expected_images);
 
-  base::RunLoop().RunUntilIdle();
+  task_environment()->RunUntilIdle();
   VerifyDownloadingQueueSize(0u);
 
   // Resolve the third job
@@ -262,7 +281,7 @@ TEST_F(ScreensaverImageDownloaderTest, VerifySerializedDownloadTest) {
   VerifySucessfulImageRequest(expected_images);
 
   // Ensure that the queue remains empty
-  base::RunLoop().RunUntilIdle();
+  task_environment()->RunUntilIdle();
   VerifyDownloadingQueueSize(0u);
 }
 
@@ -292,13 +311,14 @@ TEST_F(ScreensaverImageDownloaderTest,
 
 TEST_F(ScreensaverImageDownloaderTest,
        ClearRequestQueueWhenEmptyListIsPassedTest) {
+  base::HistogramTester histogram_tester;
   // Queue 3 download request, the first one one will be waiting for the URL
   // response, the latter will be queued.
   QueueNewImageDownload(kImageUrl1);
   QueueNewImageDownload(kImageUrl2);
   QueueNewImageDownload(kImageUrl3);
 
-  base::RunLoop().RunUntilIdle();
+  task_environment()->RunUntilIdle();
   VerifyDownloadingQueueSize(2u);
 
   // Simulate a new policy update that clears the queue.
@@ -310,11 +330,19 @@ TEST_F(ScreensaverImageDownloaderTest,
 
   // Verify that the downloader did not create image files for the cancelled
   // downloads.
-  base::RunLoop().RunUntilIdle();
+  task_environment()->RunUntilIdle();
   EXPECT_FALSE(base::PathExists(GetExpectedFilePath(kImageUrl1)));
   EXPECT_FALSE(base::PathExists(GetExpectedFilePath(kImageUrl2)));
   EXPECT_FALSE(base::PathExists(GetExpectedFilePath(kImageUrl3)));
   VerifyScreensaverImagesCacheSize(0u);
+
+  const std::string& histogram_name =
+      GetManagedScreensaverHistogram(kManagedScreensaverImageDownloadResultUMA);
+  histogram_tester.ExpectTotalCount(histogram_name, /*expected_count=*/2);
+  histogram_tester.ExpectBucketCount(
+      histogram_name,
+      /*sample=*/ScreensaverImageDownloadResult::kCancelled,
+      /*expected_count=*/2);
 }
 
 TEST_F(ScreensaverImageDownloaderTest, ClearImagesAfterUpdateTest) {
@@ -360,7 +388,7 @@ TEST_F(ScreensaverImageDownloaderTest, ClearImagesAfterUpdateTest) {
     VerifySucessfulImageRequest(expected_images);
 
     // Verify files in disk.
-    base::RunLoop().RunUntilIdle();
+    task_environment()->RunUntilIdle();
     EXPECT_FALSE(base::PathExists(GetExpectedFilePath(kImageUrl1)));
     EXPECT_TRUE(base::PathExists(GetExpectedFilePath(kImageUrl2)));
     VerifyScreensaverImagesCacheSize(1u);
@@ -382,7 +410,7 @@ TEST_F(ScreensaverImageDownloaderTest, ClearImagesAfterUpdateTest) {
     screensaver_image_downloader()->UpdateImageUrlList(image_urls);
     VerifySucessfulImageRequest(
         {{GetExpectedFilePath(kImageUrl2), std::string(kFileContents)}});
-    base::RunLoop().RunUntilIdle();
+    task_environment()->RunUntilIdle();
     EXPECT_TRUE(base::PathExists(GetExpectedFilePath(kImageUrl2)));
     // Confirm that after the update the orphan file was successfully cleaned
     // up.

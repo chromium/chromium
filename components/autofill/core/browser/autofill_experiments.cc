@@ -70,14 +70,24 @@ std::string GetFirstSegmentFromDomain(const std::string& domain) {
 }  // namespace
 
 // The list of countries for which the credit card upload save feature is fully
-// launched. Last updated M75.
+// launched. Last updated M118.
 const char* const kAutofillUpstreamLaunchedCountries[] = {
-    "AD", "AE", "AF", "AG", "AT", "AU", "BB", "BE", "BG", "BM", "BR", "BS",
-    "CA", "CH", "CR", "CY", "CZ", "DE", "DK", "EE", "ES", "FI", "FR", "GB",
-    "GF", "GI", "GL", "GP", "GR", "GU", "HK", "HR", "HU", "IE", "IL", "IS",
-    "IT", "JP", "KY", "LC", "LT", "LU", "LV", "ME", "MK", "MO", "MQ", "MT",
-    "NC", "NL", "NO", "NZ", "PA", "PL", "PR", "PT", "RE", "RO", "RU", "SE",
-    "SG", "SI", "SK", "TH", "TR", "TT", "TW", "UA", "US", "VI", "VN", "ZA"};
+    "AD", "AE", "AF", "AG", "AI", "AL", "AO", "AR", "AS", "AT", "AU", "AW",
+    "AZ", "BA", "BB", "BE", "BF", "BG", "BH", "BJ", "BM", "BN", "BR", "BS",
+    "BT", "BW", "BZ", "CA", "CD", "CF", "CG", "CH", "CI", "CK", "CL", "CM",
+    "CO", "CR", "CV", "CX", "CY", "CZ", "DE", "DJ", "DK", "DM", "DO", "EC",
+    "EE", "EH", "ER", "ES", "FI", "FJ", "FK", "FM", "FO", "FR", "GA", "GB",
+    "GD", "GE", "GF", "GH", "GI", "GL", "GM", "GN", "GP", "GQ", "GR", "GT",
+    "GU", "GW", "GY", "HK", "HN", "HR", "HT", "HU", "IE", "IL", "IO", "IS",
+    "IT", "JP", "KE", "KH", "KI", "KM", "KN", "KW", "KY", "KZ", "LA", "LC",
+    "LI", "LK", "LR", "LS", "LT", "LU", "LV", "MC", "MD", "ME", "MG", "MH",
+    "MK", "ML", "MN", "MO", "MP", "MQ", "MR", "MS", "MT", "MU", "MW", "MX",
+    "MY", "MZ", "NA", "NC", "NE", "NF", "NG", "NI", "NL", "NO", "NR", "NZ",
+    "OM", "PA", "PE", "PF", "PG", "PH", "PL", "PM", "PR", "PT", "PW", "PY",
+    "QA", "RE", "RO", "RU", "SB", "SC", "SE", "SG", "SI", "SJ", "SK", "SL",
+    "SM", "SN", "SR", "ST", "SV", "SZ", "TC", "TD", "TG", "TH", "TL", "TM",
+    "TO", "TR", "TT", "TV", "TW", "TZ", "UA", "UG", "US", "UY", "VC", "VE",
+    "VG", "VI", "VN", "VU", "WS", "YT", "ZA", "ZM", "ZW"};
 
 // The list of supported additional email domains for credit card upload if the
 // AutofillUpstreamAllowAdditionalEmailDomains flag is enabled. Specifically
@@ -104,8 +114,7 @@ const char* const kSupportedAdditionalDomains[] = {"aol",
                                                    "yahoo",
                                                    "ymail"};
 
-bool IsCreditCardUploadEnabled(const PrefService* pref_service,
-                               const syncer::SyncService* sync_service,
+bool IsCreditCardUploadEnabled(const syncer::SyncService* sync_service,
                                const std::string& user_email,
                                const std::string& user_country,
                                const AutofillSyncSigninState sync_state,
@@ -169,15 +178,6 @@ bool IsCreditCardUploadEnabled(const PrefService* pref_service,
     autofill_metrics::LogCardUploadEnabledMetric(
         autofill_metrics::CardUploadEnabled::kLocalSyncEnabled, sync_state);
     LogCardUploadDisabled(log_manager, "USER_ONLY_SYNCING_LOCALLY");
-    return false;
-  }
-
-  // Check Payments integration user setting.
-  if (!prefs::IsPaymentsIntegrationEnabled(pref_service)) {
-    autofill_metrics::LogCardUploadEnabledMetric(
-        autofill_metrics::CardUploadEnabled::kPaymentsIntegrationDisabled,
-        sync_state);
-    LogCardUploadDisabled(log_manager, "PAYMENTS_INTEGRATION_DISABLED");
     return false;
   }
 
@@ -246,7 +246,6 @@ bool IsCreditCardUploadEnabled(const PrefService* pref_service,
 }
 
 bool IsCreditCardMigrationEnabled(PersonalDataManager* personal_data_manager,
-                                  PrefService* pref_service,
                                   syncer::SyncService* sync_service,
                                   bool is_test_mode,
                                   LogManager* log_manager) {
@@ -255,7 +254,7 @@ bool IsCreditCardMigrationEnabled(PersonalDataManager* personal_data_manager,
   // local card migration browsertests.
   if (!is_test_mode &&
       !IsCreditCardUploadEnabled(
-          pref_service, sync_service,
+          sync_service,
           personal_data_manager->GetAccountInfoForPaymentsServer().email,
           personal_data_manager->GetCountryCodeForExperimentGroup(),
           personal_data_manager->GetSyncSigninState(), log_manager)) {
@@ -265,19 +264,7 @@ bool IsCreditCardMigrationEnabled(PersonalDataManager* personal_data_manager,
   if (!payments::HasGooglePaymentsAccount(personal_data_manager))
     return false;
 
-  switch (personal_data_manager->GetSyncSigninState()) {
-    case AutofillSyncSigninState::kSignedOut:
-    case AutofillSyncSigninState::kSignedIn:
-    case AutofillSyncSigninState::kSyncPaused:
-      return false;
-    case AutofillSyncSigninState::kSignedInAndWalletSyncTransportEnabled:
-    case AutofillSyncSigninState::kSignedInAndSyncFeatureEnabled:
-      return true;
-    case AutofillSyncSigninState::kNumSyncStates:
-      break;
-  }
-  NOTREACHED();
-  return false;
+  return personal_data_manager->IsPaymentsDownloadActive();
 }
 
 bool IsInAutofillSuggestionsDisabledExperiment() {
@@ -298,12 +285,8 @@ bool IsCreditCardFidoAuthenticationEnabled() {
 
 bool ShouldShowIbanOnSettingsPage(const std::string& user_country_code,
                                   PrefService* pref_service) {
-  if (!base::FeatureList::IsEnabled(features::kAutofillFillIbanFields)) {
-    return false;
-  }
-
   std::string country_code = base::ToUpperASCII(user_country_code);
-  return IBAN::IsIbanApplicableInCountry(user_country_code) ||
+  return Iban::IsIbanApplicableInCountry(user_country_code) ||
          prefs::HasSeenIban(pref_service);
 }
 
@@ -311,7 +294,7 @@ bool IsDeviceAuthAvailable(
     scoped_refptr<device_reauth::DeviceAuthenticator> device_authenticator) {
 #if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
   CHECK(device_authenticator);
-  return device_authenticator->CanAuthenticateWithBiometrics() &&
+  return device_authenticator->CanAuthenticateWithBiometricOrScreenLock() &&
          base::FeatureList::IsEnabled(
              features::kAutofillEnablePaymentsMandatoryReauth);
 #else

@@ -23,6 +23,8 @@ COMPONENT_EXPORT(VARIATIONS) extern const char kNumExperimentsKey[];
 // a dash. The experiments are separated by a comma.
 COMPONENT_EXPORT(VARIATIONS) extern const char kExperimentListKey[];
 
+COMPONENT_EXPORT(VARIATIONS) extern const char kVariationsSeedVersionKey[];
+
 // Initializes crash keys that report the current set of active FieldTrial
 // groups (aka variations) for crash reports. After initialization, an observer
 // will be registered on FieldTrialList that will keep the crash keys up-to-date

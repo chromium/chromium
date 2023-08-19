@@ -12,11 +12,11 @@
 #include <string>
 #include <utility>
 
+#include "base/apple/foundation_util.h"
 #include "base/compiler_specific.h"
 #include "base/functional/bind.h"
 #include "base/location.h"
 #include "base/logging.h"
-#include "base/mac/foundation_util.h"
 #include "base/mac/mac_util.h"
 #include "base/mac/scoped_ioobject.h"
 #include "base/memory/ptr_util.h"
@@ -84,7 +84,7 @@ BluetoothLowEnergyAdapterApple::~BluetoothLowEnergyAdapterApple() {
   // Set low_energy_central_manager_ to nil so no devices will try to use it
   // while being destroyed after this method. |devices_| is owned by
   // BluetoothAdapter.
-  low_energy_central_manager_.reset();
+  low_energy_central_manager_ = nil;
 }
 
 std::string BluetoothLowEnergyAdapterApple::GetAddress() const {
@@ -217,14 +217,14 @@ void BluetoothLowEnergyAdapterApple::LazyInitialize() {
     return;
   }
 
-  low_energy_central_manager_.reset([[CBCentralManager alloc]
+  low_energy_central_manager_ = [[CBCentralManager alloc]
       initWithDelegate:low_energy_central_manager_delegate_
-                 queue:dispatch_get_main_queue()]);
+                 queue:dispatch_get_main_queue()];
   low_energy_discovery_manager_->SetCentralManager(low_energy_central_manager_);
 
-  low_energy_peripheral_manager_.reset([[CBPeripheralManager alloc]
+  low_energy_peripheral_manager_ = [[CBPeripheralManager alloc]
       initWithDelegate:low_energy_peripheral_manager_delegate_
-                 queue:dispatch_get_main_queue()]);
+                 queue:dispatch_get_main_queue()];
 
   lazy_initialized_ = true;
 
@@ -269,8 +269,7 @@ void BluetoothLowEnergyAdapterApple::UpdateKnownLowEnergyDevices(
 void BluetoothLowEnergyAdapterApple::SetCentralManagerForTesting(
     CBCentralManager* central_manager) {
   central_manager.delegate = low_energy_central_manager_delegate_;
-  low_energy_central_manager_.reset(central_manager,
-                                    base::scoped_policy::RETAIN);
+  low_energy_central_manager_ = central_manager;
   low_energy_discovery_manager_->SetCentralManager(low_energy_central_manager_);
 }
 
@@ -350,7 +349,7 @@ void BluetoothLowEnergyAdapterApple::InitForTest(
 }
 
 BluetoothLowEnergyAdapterApple::GetDevicePairedStatusCallback
-BluetoothLowEnergyAdapterApple::GetDevicePariedStatus() const {
+BluetoothLowEnergyAdapterApple::GetDevicePairedStatus() const {
   return base::NullCallbackAs<bool(const std::string&)>();
 }
 
@@ -614,8 +613,8 @@ bool BluetoothLowEnergyAdapterApple::IsBluetoothLowEnergyDeviceSystemPaired(
     return false;
   }
 
-  if (GetDevicePariedStatus()) {
-    return GetDevicePariedStatus().Run(it->second);
+  if (GetDevicePairedStatus()) {
+    return GetDevicePairedStatus().Run(it->second);
   }
   return true;
 }

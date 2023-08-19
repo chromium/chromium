@@ -1,0 +1,32 @@
+caption: Website telemetry reporting
+default: []
+desc: |-
+  Reports website telemetry data for allowed URLs specified by the <ph name="REPORT_WEBSITE_TELEMETRY_ALLOWLIST_POLICY_NAME">ReportWebsiteTelemetryAllowlist</ph> policy for affiliated users.
+
+  Setting the policy controls website telemetry reporting for specified telemetry data types.
+  If unset, no website telemetry data will be reported.
+example_value:
+- usage
+features:
+  dynamic_refresh: true
+  per_profile: true
+items:
+- caption: Usage
+  value: usage
+  name: usage
+owners:
+- vshenvi@google.com
+- cros-reporting-team@google.com
+schema:
+  type: array
+  items:
+    type: string
+    enum:
+    - usage
+supported_chrome_os_management:
+- google_cloud
+future_on:
+- chrome_os
+tags:
+- admin-sharing
+type: string-enum-list

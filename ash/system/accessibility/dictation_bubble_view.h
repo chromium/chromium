@@ -23,12 +23,13 @@ struct AXNodeData;
 namespace ash {
 
 namespace {
-class HintView;
 class TopRowView;
 }  // namespace
 
 enum class DictationBubbleHintType;
 enum class DictationBubbleIconType;
+
+class DictationHintView;
 
 // View for the Dictation bubble.
 class ASH_EXPORT DictationBubbleView : public views::BubbleDialogDelegateView {
@@ -66,13 +67,42 @@ class ASH_EXPORT DictationBubbleView : public views::BubbleDialogDelegateView {
   friend class DictationBubbleControllerTest;
 
   raw_ptr<TopRowView, ExperimentalAsh> top_row_view_ = nullptr;
-  raw_ptr<HintView, ExperimentalAsh> hint_view_ = nullptr;
+  raw_ptr<DictationHintView, ExperimentalAsh> hint_view_ = nullptr;
 };
 
 BEGIN_VIEW_BUILDER(/* no export */,
                    DictationBubbleView,
                    views::BubbleDialogDelegateView)
 END_VIEW_BUILDER
+
+// View responsible for showing hints for Dictation commands.
+// **important**: Chromevox expects this class to have a specific name to
+// compute when to announce hints differently. Don't change it!
+class ASH_EXPORT DictationHintView : public views::View {
+ public:
+  METADATA_HEADER(DictationHintView);
+  DictationHintView();
+  DictationHintView(const DictationHintView&) = delete;
+  DictationHintView& operator=(const DictationHintView&) = delete;
+  ~DictationHintView() override;
+
+  // Updates the text content and visibility of all labels in this view.
+  void Update(
+      const absl::optional<std::vector<DictationBubbleHintType>>& hints);
+
+  // views::View:
+  void GetAccessibleNodeData(ui::AXNodeData* node_data) override;
+
+ private:
+  friend class DictationBubbleView;
+
+  static const size_t kMaxLabelHints = 5;
+
+  // Labels containing hints for users of Dictation. A max of five hints can be
+  // shown at any given time.
+  std::vector<raw_ptr<views::Label, ExperimentalAsh>> labels_{kMaxLabelHints,
+                                                              nullptr};
+};
 
 }  // namespace ash
 

@@ -4,6 +4,8 @@
 
 package org.chromium.base;
 
+import org.chromium.build.BuildConfig;
+
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.LinkedHashSet;
@@ -25,8 +27,9 @@ import java.util.LinkedHashSet;
  *     }
  *
  *     public static void setMyClassForTesting(MyClass myClassObj) {
+ *         var oldInstance = sInstance
  *         sInstance = myClassObj;
- *         ResettersForTesting.register(() -> sInstance = null);
+ *         ResettersForTesting.register(() -> sInstance = oldInstance);
  *     }
  * }
  * </code>
@@ -39,11 +42,7 @@ import java.util.LinkedHashSet;
  *     private static Foo sFooForTesting;
  *
  *     public void doThing() {
- *         Foo foo;
- *         if (sFooForTesting != null) {
- *             foo = sFooForTesting;
- *         } else {*             foo = new FooImpl();
- *         }
+ *         Foo foo = sFooForTesting != null ? sFooForTesting : new FooImpl();
  *         foo.doItsThing();
  *     }
  *
@@ -87,15 +86,28 @@ public class ResettersForTesting {
     // ...
     // ResettersForTesting.register(sResetter);
     // </code>
-    private static final LinkedHashSet<Runnable> sResetters = new LinkedHashSet<>();
+    private static final LinkedHashSet<Runnable> sClassResetters =
+            BuildConfig.IS_FOR_TEST ? new LinkedHashSet<>() : null;
+    private static final LinkedHashSet<Runnable> sMethodResetters =
+            BuildConfig.IS_FOR_TEST ? new LinkedHashSet<>() : null;
+    // Starts in "class mode", since @BeforeClass runs before @Before.
+    // Test runners toggle this via setMethodMode(), then reset it via onAfterClass().
+    private static boolean sMethodMode;
 
     /**
      * Register a {@link Runnable} that will automatically execute during test tear down.
      * @param runnable the {@link Runnable} to execute.
      */
     public static void register(Runnable runnable) {
-        synchronized (sResetters) {
-            sResetters.add(runnable);
+        // Allow calls from non-test code without callers needing to add a BuildConfig.IS_FOR_TEST
+        // check (enables R8 to optimize away the call).
+        if (!BuildConfig.IS_FOR_TEST) {
+            return;
+        }
+        if (sMethodMode) {
+            sMethodResetters.add(runnable);
+        } else {
+            sClassResetters.add(runnable);
         }
     }
 
@@ -105,16 +117,31 @@ public class ResettersForTesting {
      * This is not intended to be invoked manually, but is intended to be invoked by the test
      * runners automatically during tear down.
      */
-    public static void executeResetters() {
-        ArrayList<Runnable> resetters;
-        synchronized (sResetters) {
-            resetters = new ArrayList<>(sResetters);
-            sResetters.clear();
-        }
+    private static void flushResetters(LinkedHashSet activeSet) {
+        ArrayList<Runnable> resetters = new ArrayList<>(activeSet);
+        activeSet.clear();
 
         // Ensure that resetters are run in reverse order, enabling nesting of values as well as
         // being more similar to C++ destruction order.
         Collections.reverse(resetters);
-        for (Runnable resetter : resetters) resetter.run();
+        for (Runnable resetter : resetters) {
+            resetter.run();
+        }
+    }
+
+    /** Called by test runners after @After methods. */
+    public static void onAfterMethod() {
+        flushResetters(sMethodResetters);
+    }
+
+    /** Called by test runners after @AfterClass methods. */
+    public static void onAfterClass() {
+        flushResetters(sClassResetters);
+        sMethodMode = false;
+    }
+
+    /** Called by test runners after @BeforeClass methods, but before @Before methods. */
+    public static void setMethodMode() {
+        sMethodMode = true;
     }
 }

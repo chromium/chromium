@@ -18,6 +18,10 @@ declare_args() {
   # TODO(rivr): Remove this and enable the tests by default once a software
   # path for D3D12 is available.
   enable_skia_graphite_gtests = false
+
+  # Enable usage of the Rust-based Fontations SkTypeface backend.
+  # See https://crbug.com/skia/14259
+  use_typeface_fontations = false
 }
 
 # Skia only needs to support GPU rasterization if we use the full Chromium
@@ -29,7 +33,7 @@ skia_support_gpu = use_blink
 # GPU rasterization is enabled.
 skia_use_gl = true
 
-skia_support_pdf = !is_ios && enable_printing
+skia_support_pdf = use_blink && (enable_printing || enable_printing_unittests)
 
 # Skottie is not used on Android. To keep apk size small the skottie library is
 # excluded from the binary. At the time this comment was written, it adds ~200KB

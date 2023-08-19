@@ -9,6 +9,7 @@
 
 #include "base/strings/string_piece.h"
 #include "base/strings/utf_string_conversions.h"
+#include "components/password_manager/core/browser/password_manager_util.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
@@ -21,8 +22,6 @@ using base::ASCIIToUTF16;
 using testing::ElementsAre;
 
 using BlocklistedStatus = OriginCredentialStore::BlocklistedStatus;
-using IsPublicSuffixMatch = UiCredential::IsPublicSuffixMatch;
-using IsAffiliationBasedMatch = UiCredential::IsAffiliationBasedMatch;
 
 constexpr char kExampleSite[] = "https://example.com/";
 
@@ -30,12 +29,11 @@ UiCredential MakeUiCredential(
     base::StringPiece username,
     base::StringPiece password,
     base::StringPiece origin = kExampleSite,
-    IsPublicSuffixMatch is_public_suffix_match = IsPublicSuffixMatch(false),
-    IsAffiliationBasedMatch is_affiliation_based_match =
-        IsAffiliationBasedMatch(false)) {
+    password_manager_util::GetLoginMatchType match_type =
+        password_manager_util::GetLoginMatchType::kExact) {
   return UiCredential(base::UTF8ToUTF16(username), base::UTF8ToUTF16(password),
-                      url::Origin::Create(GURL(origin)), is_public_suffix_match,
-                      is_affiliation_based_match, base::Time());
+                      url::Origin::Create(GURL(origin)), match_type,
+                      base::Time());
 }
 
 }  // namespace
@@ -64,9 +62,9 @@ TEST_F(OriginCredentialStoreTest, StoresOnlyNormalizedOrigins) {
   store()->SaveCredentials(
       {MakeUiCredential("Berta", "30948", kExampleSite),
        MakeUiCredential("Adam", "Pas83B", std::string(kExampleSite) + "path"),
-       MakeUiCredential("Dora", "PakudC", kExampleSite,
-                        IsPublicSuffixMatch(false),
-                        IsAffiliationBasedMatch(true))});
+       MakeUiCredential(
+           "Dora", "PakudC", kExampleSite,
+           password_manager_util::GetLoginMatchType::kAffiliated)});
 
   EXPECT_THAT(store()->GetCredentials(),
               ElementsAre(
@@ -78,9 +76,9 @@ TEST_F(OriginCredentialStoreTest, StoresOnlyNormalizedOrigins) {
                   MakeUiCredential("Adam", "Pas83B", kExampleSite),
 
                   // The android credential stays untouched.
-                  MakeUiCredential("Dora", "PakudC", kExampleSite,
-                                   IsPublicSuffixMatch(false),
-                                   IsAffiliationBasedMatch(true))));
+                  MakeUiCredential(
+                      "Dora", "PakudC", kExampleSite,
+                      password_manager_util::GetLoginMatchType::kAffiliated)));
 }
 
 TEST_F(OriginCredentialStoreTest, ReplacesCredentials) {

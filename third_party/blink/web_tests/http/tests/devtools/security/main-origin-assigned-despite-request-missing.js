@@ -5,6 +5,8 @@
 import {TestRunner} from 'test_runner';
 import {SecurityTestRunner} from 'security_test_runner';
 
+import * as Common from 'devtools/core/common/common.js';
+
 (async function() {
   TestRunner.addResult(`Tests that the Main Origin is assigned even if there is no matching Request.\n`);
   await TestRunner.showPanel('security');
@@ -17,7 +19,7 @@ import {SecurityTestRunner} from 'security_test_runner';
           /* safetyTipInfo= */ null, /* securityStateIssueIds= */ ['scheme-is-not-cryptographic']));
 
   const page_url = TestRunner.resourceTreeModel.mainFrame.url;
-  const page_origin = Common.ParsedURL.extractOrigin(page_url);
+  const page_origin = Common.ParsedURL.ParsedURL.extractOrigin(page_url);
   TestRunner.addResult('Page origin: ' + page_origin);
   // Fire a Main Frame Navigation event without firing a NetworkRequest first.
   TestRunner.mainTarget.model(SDK.ResourceTreeModel)

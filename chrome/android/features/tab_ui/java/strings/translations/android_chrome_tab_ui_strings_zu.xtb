@@ -3,8 +3,6 @@
 <translationbundle lang="zu">
 <translation id="1075622780330595106"><ph name="NUMBER_OF_TABS" /> yamathebhu akho awakasetshenziswa kamuva nje. Wavale?</translation>
 <translation id="125153950246128346">Thepha ukuze ubone enye ithebhu</translation>
-<translation id="1403228085774130835">Ungathola amathebhu akho avaliwe kumathebhu Akamuva ngaphansi kwemenyu eyinhloko ye-Chrome</translation>
-<translation id="1455506303394048917">Umsebenzi wakho kula mathebhu we-Incognito uzosulwa kusuka kule divayisi</translation>
 <translation id="1499635324672558517">Vala wonke amathebhu we-Incognito?</translation>
 <translation id="1657719826150349398">Yisa ithebhu phansi</translation>
 <translation id="1869137256605757565">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> ithebhu}one{<ph name="TABS_COUNT_MANY" /> amathebhu}other{<ph name="TABS_COUNT_MANY" /> amathebhu}}</translation>
@@ -47,6 +45,7 @@
 <translation id="5073204694187207510">Fihla igridi yesikrini esigcwele</translation>
 <translation id="5076161749301278626">Bona izibuyekezo zesitoreji?</translation>
 <translation id="5082793167783849073">Qhathanisa ngokushesha amakhasi ngokwenza iqembu. Ukuze uqale, thinta uphinde ubambe isixhumanisi.</translation>
+<translation id="5339733443032484186">Ithebhu yakho yokugcina</translation>
 <translation id="5490235265819901748">Iqembu lethebhu linwetshiwe</translation>
 <translation id="5494920125229734069">Khetha konke</translation>
 <translation id="5556417849629758491">Buka ulwazi lwesitoreji, inketho itholakala eduze naphezulu kwesikrini</translation>
@@ -62,10 +61,12 @@
 <translation id="6228793724645064692">(isilinganiso sesitolo)</translation>
 <translation id="6333260925957816943">Ulwazi olumayelana nalesi sitolo</translation>
 <translation id="639823877092900621">{TABS_COUNT,plural, =1{Hlukanisa ithebhu e-<ph name="TABS_COUNT_ONE" /> ekhethiwe}one{Hlukanisa amathebhu angu-<ph name="TABS_COUNT_MANY" /> akhethiwe}other{Hlukanisa amathebhu angu-<ph name="TABS_COUNT_MANY" /> akhethiwe}}</translation>
+<translation id="6421412308143682486">{INCOGNITO_TABS_COUNT,plural, =1{Ungathola amathebhu akho avaliwe kumathebhu Akamuva ngaphansi kwemenyu eyinhloko ye-Chrome Ithebhu yakho ye-Incognito ngeke itholakale.}one{Ungathola amathebhu akho avaliwe kumathebhu Akamuva ngaphansi kwemenyu eyinhloko ye-Chrome Amathebhu akho angu-# e-Incognito ngeke atholakale.}other{Ungathola amathebhu akho avaliwe kumathebhu Akamuva ngaphansi kwemenyu eyinhloko ye-Chrome Amathebhu akho angu-# e-Incognito ngeke atholakale.}}</translation>
 <translation id="6422650314852876533">{TABS_COUNT,plural, =1{Ithebhu e-<ph name="TABS_COUNT_ONE" />}one{Amathebhu angu-<ph name="TABS_COUNT_MANY" />}other{Amathebhu angu-<ph name="TABS_COUNT_MANY" />}}</translation>
 <translation id="6549021453810473782">Buka ulwazi lwesitolo</translation>
 <translation id="6562820390860419811">Hambisa ithebhu ngakwesokunxele</translation>
 <translation id="6615455863669487791">Ngibonise</translation>
+<translation id="661742612106409204">Ungathola amathebhu akho avaliwe kumathebhu Akamuva ngaphansi kwemenyu eyinhloko ye-Chrome</translation>
 <translation id="6840760312327750441">Ukuze uqoqe amathebhu, thinta futhi ubambe ithebhu. Bese, ihudulele kwenye ithebhu.</translation>
 <translation id="6856809498882026482">Fihla imodi yokukhetha okuningi</translation>
 <translation id="7100731960740376323">{TABS_COUNT,plural, =1{Yabelana ngethebhu}one{Yabelana ngamathebhu}other{Yabelana ngamathebhu}}</translation>
@@ -89,6 +90,7 @@
 <translation id="8398929769197326728">Ifolda Entsha - <ph name="CURRENT_TIMESTAMP_MS" /></translation>
 <translation id="8557923272772633250">Nweba iqembu lethebhu ngamathebhu angu-<ph name="NUMBER_OF_TABS" />.</translation>
 <translation id="8714939927607906138">Intengo ephansi</translation>
+<translation id="8730999928494395583">Umsebenzi wakho kula mathebhu we-Incognito uzosuswa kule divayisi</translation>
 <translation id="8820741577754260431">Bona ukwehla kwentengo kumathebhu wakho</translation>
 <translation id="9090098097337832354">Ulwazi olumayelana nalesi sitolo esivaliwe</translation>
 <translation id="9150694013019234766">Shintsha phakathi komaka kuqembu lethebhu lakho eduze kwangaphansi kwesikrini</translation>

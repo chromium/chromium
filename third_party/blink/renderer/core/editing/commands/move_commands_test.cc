@@ -23,21 +23,21 @@ class MoveCommandsTest : public EditingTestBase {
  protected:
   void VerifyCaretBrowsingPositionAndFocusUpdate(
       const std::string& initial_selection_text,
-      const AtomicString& initial_focus_element,
+      const char* initial_focus_element,
       bool (*execute)(LocalFrame&, Event*, EditorCommandSource, const String&),
       const std::string& final_selection_text,
-      const AtomicString& final_focus_element) {
+      const char* final_focus_element) {
     Selection().SetSelection(SetSelectionTextToBody(initial_selection_text),
                              SetSelectionOptions());
     GetDocument().SetFocusedElement(
-        GetDocument().QuerySelector(initial_focus_element),
+        GetDocument().QuerySelector(AtomicString(initial_focus_element)),
         FocusParams(SelectionBehaviorOnFocus::kNone,
                     mojom::blink::FocusType::kNone, nullptr));
     GetDocument().GetFrame()->GetSettings()->SetCaretBrowsingEnabled(true);
     execute(*GetDocument().GetFrame(), nullptr,
             EditorCommandSource::kMenuOrKeyBinding, String());
     EXPECT_EQ(final_selection_text, GetSelectionTextFromBody());
-    EXPECT_EQ(GetDocument().QuerySelector(final_focus_element),
+    EXPECT_EQ(GetDocument().QuerySelector(AtomicString(final_focus_element)),
               GetDocument().ActiveElement());
   }
 };
@@ -328,7 +328,7 @@ TEST_F(MoveCommandsTest, CaretBrowsingSelectionUpdate) {
       SetSelectionTextToBody("<div>|a<a href=\"foo\">b</a></div>"),
       SetSelectionOptions());
   GetDocument().SetFocusedElement(
-      GetDocument().QuerySelector("a"),
+      GetDocument().QuerySelector(AtomicString("a")),
       FocusParams(SelectionBehaviorOnFocus::kNone,
                   mojom::blink::FocusType::kNone, nullptr));
   GetDocument().GetFrame()->GetSettings()->SetCaretBrowsingEnabled(true);

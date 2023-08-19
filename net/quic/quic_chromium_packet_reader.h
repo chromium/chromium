@@ -62,7 +62,7 @@ class NET_EXPORT_PRIVATE QuicChromiumPacketReader {
   // Return true if reading should continue.
   bool ProcessReadResult(int result);
 
-  raw_ptr<DatagramClientSocket> socket_;
+  raw_ptr<DatagramClientSocket, DanglingUntriaged> socket_;
 
   raw_ptr<Visitor> visitor_;
   bool read_pending_ = false;

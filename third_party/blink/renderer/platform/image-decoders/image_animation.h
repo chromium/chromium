@@ -29,8 +29,8 @@
 #include "cc/paint/image_animation_count.h"
 
 namespace blink {
-using cc::kAnimationLoopOnce;
 using cc::kAnimationLoopInfinite;
+using cc::kAnimationLoopOnce;
 using cc::kAnimationNone;
 }  // namespace blink
 

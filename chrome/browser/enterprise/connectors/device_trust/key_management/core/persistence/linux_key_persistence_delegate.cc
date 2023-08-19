@@ -18,6 +18,7 @@
 #include "base/files/file_util.h"
 #include "base/json/json_reader.h"
 #include "base/json/json_writer.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/no_destructor.h"
 #include "base/notreached.h"
 #include "base/posix/eintr_wrapper.h"
@@ -177,7 +178,8 @@ bool LinuxKeyPersistenceDelegate::StoreKeyPair(
                        "the signing key storage.");
 }
 
-std::unique_ptr<SigningKeyPair> LinuxKeyPersistenceDelegate::LoadKeyPair() {
+scoped_refptr<SigningKeyPair> LinuxKeyPersistenceDelegate::LoadKeyPair(
+    KeyStorageType type) {
   std::string file_content;
   if (!base::ReadFileToStringWithMaxSize(GetSigningKeyFilePath(), &file_content,
                                          kMaxBufferSize)) {
@@ -251,11 +253,11 @@ std::unique_ptr<SigningKeyPair> LinuxKeyPersistenceDelegate::LoadKeyPair() {
     return nullptr;
   }
 
-  return std::make_unique<SigningKeyPair>(std::move(signing_key),
-                                          BPKUR::CHROME_BROWSER_OS_KEY);
+  return base::MakeRefCounted<SigningKeyPair>(std::move(signing_key),
+                                              BPKUR::CHROME_BROWSER_OS_KEY);
 }
 
-std::unique_ptr<SigningKeyPair> LinuxKeyPersistenceDelegate::CreateKeyPair() {
+scoped_refptr<SigningKeyPair> LinuxKeyPersistenceDelegate::CreateKeyPair() {
   // TODO (http://b/210343211): TPM support for linux.
   auto provider = std::make_unique<ECSigningKeyProvider>();
   auto algorithm = {crypto::SignatureVerifier::ECDSA_SHA256};
@@ -270,8 +272,18 @@ std::unique_ptr<SigningKeyPair> LinuxKeyPersistenceDelegate::CreateKeyPair() {
     return nullptr;
   }
 
-  return std::make_unique<SigningKeyPair>(std::move(signing_key),
-                                          BPKUR::CHROME_BROWSER_OS_KEY);
+  return base::MakeRefCounted<SigningKeyPair>(std::move(signing_key),
+                                              BPKUR::CHROME_BROWSER_OS_KEY);
+}
+
+bool LinuxKeyPersistenceDelegate::PromoteTemporaryKeyPair() {
+  // TODO(b/290068350): Implement this method.
+  return true;
+}
+
+bool LinuxKeyPersistenceDelegate::DeleteKeyPair(KeyStorageType type) {
+  // TODO(b/290068350): Implement this method.
+  return true;
 }
 
 // static

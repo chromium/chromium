@@ -57,9 +57,9 @@ ASH_EXPORT const char* GetClipboardHistoryPasteTimeDeltaHistogram(
 // of `type` and showing the clipboard history menu.
 ASH_EXPORT const char* GetMenuOpenTimeDeltaHistogram(ClipboardNudgeType type);
 
-constexpr int kNotificationLimit = 3;
+constexpr base::TimeDelta kCappedNudgeMinInterval = base::Days(1);
+constexpr int kCappedNudgeShownLimit = 3;
 constexpr int kContextMenuBadgeShowLimit = 3;
-constexpr base::TimeDelta kMinInterval = base::Days(1);
 constexpr base::TimeDelta kMaxTimeBetweenPaste = base::Minutes(10);
 
 }  // namespace ash

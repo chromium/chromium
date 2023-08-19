@@ -6,12 +6,16 @@
 
 #include <memory>
 
+#include "base/location.h"
 #include "base/memory/ptr_util.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/test/bind.h"
+#include "base/test/test_future.h"
 #include "chrome/browser/web_applications/test/web_app_test.h"
 #include "content/public/common/url_constants.h"
 #include "content/public/test/web_contents_tester.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace web_app {
 
@@ -41,20 +45,25 @@ class WebAppUrlLoaderTest : public WebAppTest {
     return *loader_;
   }
 
-  WebAppUrlLoader::Result LoadUrl(const GURL& desired, const GURL& actual) {
-    WebAppUrlLoader::Result result;
-
-    base::RunLoop run_loop;
+  WebAppUrlLoader::Result LoadUrl(
+      const GURL& desired,
+      const GURL& actual,
+      absl::optional<int> error_code = absl::nullopt) {
+    base::test::TestFuture<WebAppUrlLoader::Result> result;
     loader().LoadUrl(desired, web_contents(),
                      WebAppUrlLoader::UrlComparison::kExact,
-                     base::BindLambdaForTesting([&](WebAppUrlLoader::Result r) {
-                       result = r;
-                       run_loop.Quit();
-                     }));
-    web_contents_tester().TestDidFinishLoad(actual);
-    run_loop.Run();
-
-    return result;
+                     result.GetCallback());
+    web_contents_tester().TestDidFinishLoad(GURL{url::kAboutBlankURL});
+    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+        FROM_HERE, base::BindLambdaForTesting([&]() {
+          if (error_code) {
+            web_contents_tester().TestDidFailLoadWithError(actual,
+                                                           error_code.value());
+          } else {
+            web_contents_tester().TestDidFinishLoad(actual);
+          }
+        }));
+    return result.Get();
   }
 
  private:
@@ -76,15 +85,8 @@ TEST_F(WebAppUrlLoaderTest, Url1DidFailLoad_ThenUrl2Loaded) {
   const GURL url1{"https://example.com"};
   const GURL url2{"https://example.org"};
 
-  base::RunLoop run_loop;
-  loader().LoadUrl(
-      url1, web_contents(), WebAppUrlLoader::UrlComparison::kExact,
-      base::BindLambdaForTesting([&](WebAppUrlLoader::Result result) {
-        EXPECT_EQ(WebAppUrlLoader::Result::kFailedUnknownReason, result);
-        run_loop.Quit();
-      }));
-  web_contents_tester().TestDidFailLoadWithError(url1, /*error_code=*/1);
-  run_loop.Run();
+  EXPECT_EQ(WebAppUrlLoader::Result::kFailedUnknownReason,
+            LoadUrl(/*desired=*/url1, /*actual=*/url1, /*error_code=*/1));
 
   EXPECT_EQ(WebAppUrlLoader::Result::kUrlLoaded,
             LoadUrl(/*desired=*/url2, /*actual=*/url2));
@@ -98,26 +100,22 @@ TEST_F(WebAppUrlLoaderTest, PrepareForLoad_ExcessiveDidFinishLoad) {
   EXPECT_EQ(WebAppUrlLoader::Result::kUrlLoaded,
             LoadUrl(/*desired=*/url1, /*actual=*/url1));
 
+  base::test::TestFuture<WebAppUrlLoader::Result> result;
+  loader().LoadUrl(url2, web_contents(), WebAppUrlLoader::UrlComparison::kExact,
+                   result.GetCallback());
   // Simulate an excessive DidFinishLoad for url1 caused by active javascript
   // while in PrepareForLoad state. PrepareForLoad() acts as a barrier here:
   // it's flushing all url1-related noisy events so url2 loading will start
   // clean later.
-  {
-    base::RunLoop run_loop;
-    loader().PrepareForLoad(
-        web_contents(),
-        base::BindLambdaForTesting([&](WebAppUrlLoader::Result result) {
-          EXPECT_EQ(WebAppUrlLoader::Result::kUrlLoaded, result);
-          run_loop.Quit();
-        }));
-    web_contents_tester().TestDidFinishLoad(url1);
-    web_contents_tester().TestDidFinishLoad(GURL{url::kAboutBlankURL});
-    run_loop.Run();
-  }
+  web_contents_tester().TestDidFinishLoad(url1);
+  web_contents_tester().TestDidFinishLoad(GURL{url::kAboutBlankURL});
+  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+      FROM_HERE, base::BindLambdaForTesting(
+                     [&]() { web_contents_tester().TestDidFinishLoad(url2); }));
+  ASSERT_TRUE(result.Wait());
 
   // Expect successful navigation to url2.
-  EXPECT_EQ(WebAppUrlLoader::Result::kUrlLoaded,
-            LoadUrl(/*desired=*/url2, /*actual=*/url2));
+  EXPECT_EQ(WebAppUrlLoader::Result::kUrlLoaded, result.Get());
 }
 
 TEST_F(WebAppUrlLoaderTest, PrepareForLoad_ExcessiveDidFailLoad) {
@@ -128,26 +126,22 @@ TEST_F(WebAppUrlLoaderTest, PrepareForLoad_ExcessiveDidFailLoad) {
   EXPECT_EQ(WebAppUrlLoader::Result::kUrlLoaded,
             LoadUrl(/*desired=*/url1, /*actual=*/url1));
 
+  base::test::TestFuture<WebAppUrlLoader::Result> result;
+  loader().LoadUrl(url2, web_contents(), WebAppUrlLoader::UrlComparison::kExact,
+                   result.GetCallback());
   // Simulate an excessive DidFailLoad for url1 caused by active javascript
   // while in PrepareForLoad state. PrepareForLoad() acts as a barrier here:
   // it's flushing all url1-related noisy events so url2 loading will start
   // clean later.
-  {
-    base::RunLoop run_loop;
-    loader().PrepareForLoad(
-        web_contents(),
-        base::BindLambdaForTesting([&](WebAppUrlLoader::Result result) {
-          EXPECT_EQ(WebAppUrlLoader::Result::kUrlLoaded, result);
-          run_loop.Quit();
-        }));
-    web_contents_tester().TestDidFailLoadWithError(url1, /*error_code=*/1);
-    web_contents_tester().TestDidFinishLoad(GURL{url::kAboutBlankURL});
-    run_loop.Run();
-  }
+  web_contents_tester().TestDidFailLoadWithError(url1, /*error_code=*/1);
+  web_contents_tester().TestDidFinishLoad(GURL{url::kAboutBlankURL});
+  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+      FROM_HERE, base::BindLambdaForTesting(
+                     [&]() { web_contents_tester().TestDidFinishLoad(url2); }));
+  ASSERT_TRUE(result.Wait());
 
   // Expect successful navigation to url2.
-  EXPECT_EQ(WebAppUrlLoader::Result::kUrlLoaded,
-            LoadUrl(/*desired=*/url2, /*actual=*/url2));
+  EXPECT_EQ(WebAppUrlLoader::Result::kUrlLoaded, result.Get());
 }
 
 }  // namespace web_app

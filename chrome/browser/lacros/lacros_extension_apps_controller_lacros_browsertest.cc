@@ -11,8 +11,8 @@
 #include <vector>
 
 #include "base/functional/bind.h"
-#include "base/run_loop.h"
-#include "base/timer/timer.h"
+#include "base/test/run_until.h"
+#include "base/test/test_future.h"
 #include "chrome/browser/extensions/chrome_test_extension_loader.h"
 #include "chrome/browser/extensions/extension_browsertest.h"
 #include "chrome/browser/lacros/browser_test_util.h"
@@ -40,7 +40,7 @@ class LacrosExtensionAppsControllerTest
     DCHECK(app_id_.empty());
     const extensions::Extension* extension =
         LoadExtension(test_data_dir_.AppendASCII("platform_apps/minimal"));
-    app_id_ = lacros_extensions_util::MuxId(profile(), extension);
+    app_id_ = extension->id();
   }
 
   const std::string& app_id() const { return app_id_; }
@@ -143,13 +143,12 @@ IN_PROC_BROWSER_TEST_F(LacrosExtensionAppsControllerTest, LaunchPinnedApp) {
   ASSERT_TRUE(browser_test_util::WaitForShelfItem(app_id(), /*exists=*/true));
 
   // Pin the shelf item.
-  crosapi::mojom::TestControllerAsyncWaiter waiter(
-      chromeos::LacrosService::Get()
-          ->GetRemote<crosapi::mojom::TestController>()
-          .get());
-  bool success = false;
-  waiter.PinOrUnpinItemInShelf(app_id(), /*pin=*/true, &success);
-  ASSERT_TRUE(success);
+  auto& test_controller = chromeos::LacrosService::Get()
+                              ->GetRemote<crosapi::mojom::TestController>();
+  base::test::TestFuture<bool> success_future;
+  test_controller->PinOrUnpinItemInShelf(app_id(), /*pin=*/true,
+                                         success_future.GetCallback());
+  ASSERT_TRUE(success_future.Take());
 
   // Close all app windows.
   extensions::AppWindowRegistry::AppWindowList app_windows =
@@ -166,27 +165,20 @@ IN_PROC_BROWSER_TEST_F(LacrosExtensionAppsControllerTest, LaunchPinnedApp) {
       extensions::AppWindowRegistry::Get(profile())->app_windows().empty());
 
   // Clicking on the item in the shelf should launch the app again.
-  success = false;
-  waiter.SelectItemInShelf(app_id(), &success);
-  ASSERT_TRUE(success);
+  test_controller->SelectItemInShelf(app_id(), success_future.GetCallback());
+  ASSERT_TRUE(success_future.Take());
 
   // Wait for a window to open.
-  base::RunLoop run_loop;
-  base::RepeatingTimer timer;
-  auto wait_for_window = base::BindRepeating(
-      [](base::RunLoop* run_loop, Profile* profile) {
-        if (!extensions::AppWindowRegistry::Get(profile)
-                 ->app_windows()
-                 .empty()) {
-          run_loop->Quit();
-        }
-      },
-      &run_loop, profile());
-  timer.Start(FROM_HERE, base::Milliseconds(1), std::move(wait_for_window));
-  run_loop.Run();
+  ASSERT_TRUE(base::test::RunUntil([&]() {
+    return !extensions::AppWindowRegistry::Get(profile())
+                ->app_windows()
+                .empty();
+  }));
 
   // Now we must unpin the item to ensure ash-chrome is in consistent state.
-  waiter.PinOrUnpinItemInShelf(app_id(), /*pin=*/false, &success);
+  test_controller->PinOrUnpinItemInShelf(app_id(), /*pin=*/false,
+                                         success_future.GetCallback());
+  ASSERT_TRUE(success_future.Take());
 }
 
 // Test that the default context menu for an extension app has the correct
@@ -225,12 +217,11 @@ IN_PROC_BROWSER_TEST_F(LacrosExtensionAppsControllerTest, DefaultContextMenu) {
   ASSERT_TRUE(browser_test_util::WaitForShelfItem(app_id(), /*exists=*/true));
 
   // Get the context menu.
-  crosapi::mojom::TestControllerAsyncWaiter waiter(
-      chromeos::LacrosService::Get()
-          ->GetRemote<crosapi::mojom::TestController>()
-          .get());
-  std::vector<std::string> items;
-  waiter.GetContextMenuForShelfItem(app_id(), &items);
+  base::test::TestFuture<const std::vector<std::string>&> future;
+  chromeos::LacrosService::Get()
+      ->GetRemote<crosapi::mojom::TestController>()
+      ->GetContextMenuForShelfItem(app_id(), future.GetCallback());
+  auto items = future.Take();
   ASSERT_EQ(4u, items.size());
   EXPECT_EQ(items[0], "Pin to shelf");
   EXPECT_EQ(items[1], "Close");
@@ -277,21 +268,21 @@ IN_PROC_BROWSER_TEST_F(LacrosExtensionAppsControllerTest,
 
   // Select index 2, which corresponds to Uninstall.
   base::HistogramTester tester;
-  crosapi::mojom::TestControllerAsyncWaiter waiter(
-      chromeos::LacrosService::Get()
-          ->GetRemote<crosapi::mojom::TestController>()
-          .get());
+  auto& test_controller = chromeos::LacrosService::Get()
+                              ->GetRemote<crosapi::mojom::TestController>();
+
   std::vector<std::string> items;
-  bool success = false;
-  waiter.SelectContextMenuForShelfItem(app_id(), /*index=*/2, &success);
-  ASSERT_TRUE(success);
+  base::test::TestFuture<bool> success_future;
+  test_controller->SelectContextMenuForShelfItem(app_id(), /*index=*/2,
+                                                 success_future.GetCallback());
+  ASSERT_TRUE(success_future.Take());
 
   // This pops up an ash dialog to confirm uninstall. First we wait fo the
   // dialog to appear, and then we click the confirm button.
   std::string element_name = kAppUninstallDialogOkButtonId.GetName();
   ASSERT_TRUE(browser_test_util::WaitForElementCreation(element_name));
-  waiter.ClickElement(element_name, &success);
-  ASSERT_TRUE(success);
+  test_controller->ClickElement(element_name, success_future.GetCallback());
+  ASSERT_TRUE(success_future.Take());
 
   // Wait for the item to be no longer visible in the shelf as it's uninstalled
   // which implicitly closes the window.

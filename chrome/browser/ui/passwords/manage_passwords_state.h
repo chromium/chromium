@@ -163,7 +163,8 @@ class ManagePasswordsState {
   password_manager::ui::State state_;
 
   // The client used for logging.
-  raw_ptr<password_manager::PasswordManagerClient, DanglingUntriaged> client_;
+  raw_ptr<password_manager::PasswordManagerClient, AcrossTasksDanglingUntriaged>
+      client_;
 
   // Whether the last attempt to authenticate to opt-in using password account
   // storage failed.

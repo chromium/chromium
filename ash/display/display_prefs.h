@@ -60,6 +60,7 @@ class ASH_EXPORT DisplayPrefs : public SessionObserver {
                                      const display::DisplayLayout& layout);
   void StoreDisplayPowerStateForTest(chromeos::DisplayPowerState power_state);
   void LoadTouchAssociationPreferenceForTest();
+  void LoadDisplayPrefsForTest();
   void StoreLegacyTouchDataForTest(int64_t display_id,
                                    const display::TouchCalibrationData& data);
   // Parses the marshalled string data stored in local preferences for

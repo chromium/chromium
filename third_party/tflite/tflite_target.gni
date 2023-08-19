@@ -1,0 +1,132 @@
+# Copyright 2023 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+# There are two distinct variants of tflite:
+# . One that depends upon //base.
+# . One that does not depend upon //base.
+# Dealing with this necessitates two distinct targets, one containing the
+# dependency on base and the other containing no dependency on base. The
+# templates in this file help ease this pain by generating the two targets.
+# The templates are designed as drop in replacements for existing gn targets.
+# The primary difference is any dependency on a target that needs to be
+# treated specially should be moved to either conditional_deps, or
+# conditional_public_deps. For example, consider the following:
+#
+# source_set("tflite_internal") {
+#   sources = ["foo"]
+#   deps = [ "//base" ]
+# }
+# source_set("tflite_internal_standalone") {
+#   sources = ["foo"]
+# }
+#
+# source_set("tflite_internal2") {
+#   sources = ["foo2"]
+#   deps = [ ":tflite_internal" ]
+# }
+# source_set("tflite_internal2_standalone") {
+#   sources = ["foo2"]
+#   deps = [ ":tflite_internal_standalone" ]
+# }
+#
+# tflite_internal2 and tflite_internal2_standalone can be replaced by:
+# tflite_source_set_("tflite_internal2") {
+#   sources = ["foo2"]
+#   conditional_deps = [ ":tflite_internal" ]
+# }
+
+# Set of variables that are forwarded to the actual
+minimal_vars_to_forward_to_target = [
+  "cflags",
+  "configs",
+  "defines",
+  "deps",
+  "include_dirs",
+  "public_configs",
+  "public_deps",
+  "sources",
+  "visibility",
+]
+
+# Shared template used by all other templates.
+template("tflite_target_gen") {
+  assert(defined(invoker.target_type),
+         "Must declare a target_type of either static_library or source_set")
+
+  # Loop through twice, once for the target depending on base, and again for the
+  # target that does not depend on base.
+  foreach(type,
+          [
+            "",
+            "_standalone",
+          ]) {
+    target(invoker.target_type, target_name + type) {
+      forward_variables_from(invoker, minimal_vars_to_forward_to_target)
+      if (defined(invoker.conditional_deps)) {
+        _adjusted_deps = []
+        foreach(dep, invoker.conditional_deps) {
+          _adjusted_name = dep + type
+          _adjusted_deps += [ _adjusted_name ]
+        }
+        if (defined(deps)) {
+          deps += _adjusted_deps
+        } else {
+          deps = _adjusted_deps
+        }
+      }
+      if (defined(invoker.conditional_public_deps)) {
+        _adjusted_deps = []
+        foreach(dep, invoker.conditional_public_deps) {
+          _adjusted_name = dep + type
+          _adjusted_deps += [ _adjusted_name ]
+        }
+        if (defined(public_deps)) {
+          public_deps += _adjusted_deps
+        } else {
+          public_deps = _adjusted_deps
+        }
+      }
+      if (defined(invoker.configs_to_remove)) {
+        configs -= invoker.configs_to_remove
+      }
+      if (defined(invoker.configs_to_add)) {
+        configs += invoker.configs_to_add
+      }
+
+      # Standalone targets should not depend upon base.
+      if (type == "_standalone") {
+        assert_no_deps = [ "//base" ]
+      }
+    }
+  }
+}
+
+# Forwards variables used by the nested template.
+vars_to_forward = minimal_vars_to_forward_to_target + [
+                    "conditional_deps",
+                    "conditional_public_deps",
+                    "configs_to_add",
+                    "configs_to_remove",
+                  ]
+
+template("tflite_static_library") {
+  tflite_target_gen(target_name) {
+    target_type = "static_library"
+    forward_variables_from(invoker, vars_to_forward)
+  }
+}
+
+template("tflite_source_set") {
+  tflite_target_gen(target_name) {
+    target_type = "source_set"
+    forward_variables_from(invoker, vars_to_forward)
+  }
+}
+
+template("tflite_group") {
+  tflite_target_gen(target_name) {
+    target_type = "group"
+    forward_variables_from(invoker, vars_to_forward)
+  }
+}

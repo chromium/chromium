@@ -8,28 +8,32 @@ namespace certificateProvider {
 
   // Types of supported cryptographic signature algorithms.
   enum Algorithm {
-    // RSASSA PKCS#1 v1.5 signature algorithm with the MD5-SHA-1 hashing. The
-    // extension must not prepend a DigestInfo prefix but only add PKCS#1
-    // padding. This algorithm is deprecated and will never be requested by
-    // Chrome as of version 109.
+    // Specifies the RSASSA PKCS#1 v1.5 signature algorithm with the MD5-SHA-1
+    // hashing. The extension must not prepend a DigestInfo prefix but only
+    // add PKCS#1 padding. This algorithm is deprecated and will never be requested
+    //  by Chrome as of version 109.
     RSASSA_PKCS1_v1_5_MD5_SHA1,
-    // RSASSA PKCS#1 v1.5 signature algorithm with the SHA-1 hash function.
+    // Specifies the RSASSA PKCS#1 v1.5 signature algorithm
+    // with the SHA-1 hash function.
     RSASSA_PKCS1_v1_5_SHA1,
-    // RSASSA PKCS#1 v1.5 signature algorithm with the SHA-256 hashing function.
+    // Specifies the RSASSA PKCS#1 v1.5 signature algorithm
+    // with the SHA-256 hashing function.
     RSASSA_PKCS1_v1_5_SHA256,
-    // RSASSA PKCS#1 v1.5 signature algorithm with the SHA-384 hashing function.
+    // Specifies the RSASSA PKCS#1 v1.5 signature algorithm
+    // with the SHA-384 hashing function.
     RSASSA_PKCS1_v1_5_SHA384,
-    // RSASSA PKCS#1 v1.5 signature algorithm with the SHA-512 hashing function.
+    // Specifies the RSASSA PKCS#1 v1.5 signature algorithm
+    // with the SHA-512 hashing function.
     RSASSA_PKCS1_v1_5_SHA512,
-    // Since Chrome 89. RSASSA PSS signature algorithm with the SHA-256 hashing
+    // Specifies the RSASSA PSS signature algorithm with the SHA-256 hashing
     // function, MGF1 mask generation function and the salt of the same size as
     // the hash.
     RSASSA_PSS_SHA256,
-    // Since Chrome 89. RSASSA PSS signature algorithm with the SHA-384 hashing
+    // Specifies the RSASSA PSS signature algorithm with the SHA-384 hashing
     // function, MGF1 mask generation function and the salt of the same size as
     // the hash.
     RSASSA_PSS_SHA384,
-    // Since Chrome 89. RSASSA PSS signature algorithm with the SHA-512 hashing
+    // Specifies the RSASSA PSS signature algorithm with the SHA-512 hashing
     // function, MGF1 mask generation function and the salt of the same size as
     // the hash.
     RSASSA_PSS_SHA512
@@ -37,8 +41,8 @@ namespace certificateProvider {
 
   // Types of errors that the extension can report.
   enum Error {
-    // General error that cannot be represented by other more specific error
-    // codes.
+    // General error that cannot be represented by other more specific
+    // error codes.
     GENERAL_ERROR
   };
 
@@ -94,25 +98,36 @@ namespace certificateProvider {
 
   // Deprecated. Replaced by $(ref:Algorithm).
   enum Hash {
+    // Specifies the MD5 and SHA1 hashing algorithms.
     MD5_SHA1,
+    // Specifies the SHA1 hashing algorithm.
     SHA1,
+    // Specifies the SHA256 hashing algorithm.
     SHA256,
+    // Specifies the SHA384 hashing algorithm.
     SHA384,
+    // Specifies the SHA512 hashing algorithm.
     SHA512
   };
 
   // The type of code being requested by the extension with requestPin function.
   enum PinRequestType {
+    // Specifies the requested code is a PIN.
     PIN,
+    // Specifies the requested code is a PUK.
     PUK
   };
 
   // The types of errors that can be presented to the user through the
   // requestPin function.
   enum PinRequestErrorType {
+    // Specifies the PIN is invalid.
     INVALID_PIN,
+    // Specifies the PUK is invalid.
     INVALID_PUK,
+    // Specifies the maximum attempt number has been exceeded.
     MAX_ATTEMPTS_EXCEEDED,
+    // Specifies that the error cannot be represented by the above types.
     UNKNOWN_ERROR
   };
 

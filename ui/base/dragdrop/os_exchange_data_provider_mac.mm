@@ -6,8 +6,8 @@
 
 #import <Cocoa/Cocoa.h>
 
+#include "base/apple/foundation_util.h"
 #include "base/check_op.h"
-#include "base/mac/foundation_util.h"
 #include "base/memory/ptr_util.h"
 #include "base/notreached.h"
 #include "base/pickle.h"
@@ -28,12 +28,12 @@
 @end
 
 @implementation CrPasteboardItemWrapper {
-  base::scoped_nsobject<NSPasteboardItem> _pasteboardItem;
+  NSPasteboardItem* __strong _pasteboardItem;
 }
 
 - (instancetype)initWithPasteboardItem:(NSPasteboardItem*)pasteboardItem {
   if ((self = [super init])) {
-    _pasteboardItem.reset([pasteboardItem retain]);
+    _pasteboardItem = pasteboardItem;
   }
 
   return self;
@@ -50,7 +50,7 @@
   // is marked to receive the drags. TODO(avi): Wire up MacViews so that
   // BridgedContentView properly registers the result of View::GetDropFormats()
   // rather than OSExchangeDataProviderMac::SupportedPasteboardTypes().
-  return [[_pasteboardItem types]
+  return [_pasteboardItem.types
       arrayByAddingObject:ui::kUTTypeChromiumInitiatedDrag];
 }
 
@@ -99,7 +99,7 @@ class OwningProvider : public OSExchangeDataProviderMac {
 class WrappingProvider : public OSExchangeDataProviderMac {
  public:
   explicit WrappingProvider(NSPasteboard* pasteboard)
-      : wrapped_pasteboard_([pasteboard retain]) {}
+      : wrapped_pasteboard_(pasteboard) {}
   WrappingProvider(const WrappingProvider& provider) = default;
 
   std::unique_ptr<OSExchangeDataProvider> Clone() const override {
@@ -109,7 +109,7 @@ class WrappingProvider : public OSExchangeDataProviderMac {
   NSPasteboard* GetPasteboard() const override { return wrapped_pasteboard_; }
 
  private:
-  base::scoped_nsobject<NSPasteboard> wrapped_pasteboard_;
+  __strong NSPasteboard* wrapped_pasteboard_;
 };
 
 }  // namespace
@@ -341,10 +341,10 @@ NSArray<NSDraggingItem*>* OSExchangeDataProviderMac::GetDraggingItems() const {
 
   NSMutableArray<NSDraggingItem*>* drag_items = [NSMutableArray array];
   for (NSPasteboardItem* item in pasteboard_items) {
-    CrPasteboardItemWrapper* wrapper = [[[CrPasteboardItemWrapper alloc]
-        initWithPasteboardItem:item] autorelease];
+    CrPasteboardItemWrapper* wrapper =
+        [[CrPasteboardItemWrapper alloc] initWithPasteboardItem:item];
     NSDraggingItem* drag_item =
-        [[[NSDraggingItem alloc] initWithPasteboardWriter:wrapper] autorelease];
+        [[NSDraggingItem alloc] initWithPasteboardWriter:wrapper];
 
     [drag_items addObject:drag_item];
   }

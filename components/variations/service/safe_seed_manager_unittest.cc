@@ -16,6 +16,7 @@
 #include "components/prefs/testing_pref_service.h"
 #include "components/variations/client_filterable_state.h"
 #include "components/variations/pref_names.h"
+#include "components/variations/service/safe_seed_manager_interface.h"
 #include "components/variations/variations_seed_store.h"
 #include "components/variations/variations_switches.h"
 #include "components/variations/variations_test_utils.h"
@@ -23,7 +24,7 @@
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "chromeos/ash/components/dbus/featured/fake_featured_client.h"
-#include "components/variations/cros/featured.pb.h"
+#include "chromeos/ash/components/dbus/featured/featured.pb.h"
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 namespace variations {

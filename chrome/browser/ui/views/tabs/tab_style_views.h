@@ -34,7 +34,6 @@ class TabStyleViews {
   // Factory function allows to experiment with different variations on tab
   // style at runtime or via flag.
   static std::unique_ptr<TabStyleViews> CreateForTab(Tab* tab);
-  static std::unique_ptr<TabStyleViews> Create();
 
   TabStyleViews();
   virtual ~TabStyleViews();
@@ -64,11 +63,15 @@ class TabStyleViews {
   // active opacity.
   virtual TabActive GetApparentActiveState() const = 0;
 
+  // Returns the target opacity of the "active" portion of the tab's state. The
+  // current opacity may be animating towards this value.
+  virtual float GetTargetActiveOpacity() const = 0;
+
   // Returns the current opacity of the "active" portion of the tab's state.
-  virtual float GetActiveOpacity() const = 0;
+  virtual float GetCurrentActiveOpacity() const = 0;
 
   // Derives and returns colors for the tab. See TabColors, above.
-  virtual TabStyle::TabColors CalculateColors() const = 0;
+  virtual TabStyle::TabColors CalculateTargetColors() const = 0;
 
   // Sets the center of the radial highlight in the hover animation.
   virtual void SetHoverLocation(const gfx::Point& location) = 0;
@@ -81,14 +84,6 @@ class TabStyleViews {
 
   // Returns the progress (0 to 1) of the hover animation.
   virtual double GetHoverAnimationValue() const = 0;
-
-  // Returns the minimum possible width of a selected Tab. Selected tabs must
-  // always show a close button, and thus have a larger minimum size than
-  // unselected tabs.
-  int GetMinimumActiveWidth() const;
-
-  // Returns the minimum possible width of a single unselected Tab.
-  int GetMinimumInactiveWidth() const;
 
   const TabStyle* tab_style() const { return tab_style_; }
 

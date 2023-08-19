@@ -14,6 +14,7 @@
 #include "build/build_config.h"
 #include "gpu/ipc/common/gpu_memory_buffer_support.h"
 #include "media/base/media_switches.h"
+#include "media/capture/capture_switches.h"
 
 namespace {
 
@@ -42,7 +43,7 @@ static const double kInitialFocusDistance = 50.0;
 
 static const media::VideoPixelFormat kSupportedPixelFormats[] = {
     media::PIXEL_FORMAT_I420, media::PIXEL_FORMAT_Y16,
-    media::PIXEL_FORMAT_MJPEG};
+    media::PIXEL_FORMAT_MJPEG, media::PIXEL_FORMAT_NV12};
 
 template <typename TElement, size_t TSize>
 std::vector<TElement> ArrayToVector(const std::array<TElement, TSize>& arr) {
@@ -54,7 +55,16 @@ media::VideoPixelFormat GetPixelFormatFromDeviceIndex(int device_index) {
     return media::PIXEL_FORMAT_Y16;
   if (device_index == 2)
     return media::PIXEL_FORMAT_MJPEG;
+#if BUILDFLAG(IS_WIN)
+  if (media::IsMediaFoundationD3D11VideoCaptureEnabled() &&
+      switches::IsVideoCaptureUseGpuMemoryBufferEnabled()) {
+    return media::PIXEL_FORMAT_NV12;
+  } else {
+    return media::PIXEL_FORMAT_I420;
+  }
+#else
   return media::PIXEL_FORMAT_I420;
+#endif
 }
 
 void AppendAllCombinationsToFormatsContainer(
@@ -108,6 +118,12 @@ FakeVideoCaptureDeviceFactory::FakeVideoCaptureDeviceFactory() {
   // The default |devices_config_| is the one obtained from an empty options
   // string.
   ParseFakeDevicesConfigFromOptionsString("", &devices_config_);
+#if BUILDFLAG(IS_WIN)
+  if (media::IsMediaFoundationD3D11VideoCaptureEnabled() &&
+      switches::IsVideoCaptureUseGpuMemoryBufferEnabled()) {
+    dxgi_device_manager_ = DXGIDeviceManager::Create(luid_);
+  }
+#endif
 }
 
 FakeVideoCaptureDeviceFactory::~FakeVideoCaptureDeviceFactory() = default;
@@ -379,5 +395,19 @@ void FakeVideoCaptureDeviceFactory::ParseFakeDevicesConfigFromOptionsString(
     config->push_back(settings);
   }
 }
+
+#if BUILDFLAG(IS_WIN)
+void FakeVideoCaptureDeviceFactory::OnGpuInfoUpdate(const CHROME_LUID& luid) {
+  luid_ = luid;
+  if (dxgi_device_manager_) {
+    dxgi_device_manager_->OnGpuInfoUpdate(luid_);
+  }
+}
+
+scoped_refptr<DXGIDeviceManager>
+FakeVideoCaptureDeviceFactory::GetDxgiDeviceManager() {
+  return dxgi_device_manager_;
+}
+#endif
 
 }  // namespace media

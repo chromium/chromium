@@ -15,7 +15,7 @@
 #include "base/trace_event/traced_value.h"
 #include "cc/resources/resource_pool.h"
 #include "components/viz/client/client_resource_provider.h"
-#include "components/viz/common/gpu/context_provider.h"
+#include "components/viz/common/gpu/raster_context_provider.h"
 #include "components/viz/common/resources/platform_color.h"
 #include "components/viz/common/resources/shared_image_format_utils.h"
 #include "gpu/command_buffer/client/gpu_memory_buffer_manager.h"
@@ -101,9 +101,9 @@ class ZeroCopyRasterBufferImpl : public RasterBuffer {
       // Make a mailbox for export of the GpuMemoryBuffer to the display
       // compositor.
       backing_->mailbox = sii->CreateSharedImage(
-          gpu_memory_buffer_.get(), gpu_memory_buffer_manager_,
-          resource_color_space_, kTopLeft_GrSurfaceOrigin, kPremul_SkAlphaType,
-          usage, "ZeroCopyRasterTile");
+          format_, resource_size_, resource_color_space_,
+          kTopLeft_GrSurfaceOrigin, kPremul_SkAlphaType, usage,
+          "ZeroCopyRasterTile", gpu_memory_buffer_->CloneHandle());
     } else {
       sii->UpdateSharedImage(backing_->returned_sync_token, backing_->mailbox);
     }
@@ -171,11 +171,12 @@ class ZeroCopyRasterBufferImpl : public RasterBuffer {
 
 ZeroCopyRasterBufferProvider::ZeroCopyRasterBufferProvider(
     gpu::GpuMemoryBufferManager* gpu_memory_buffer_manager,
-    viz::ContextProvider* compositor_context_provider,
-    viz::SharedImageFormat tile_format)
+    viz::RasterContextProvider* compositor_context_provider,
+    const RasterCapabilities& raster_caps)
     : gpu_memory_buffer_manager_(gpu_memory_buffer_manager),
       compositor_context_provider_(compositor_context_provider),
-      tile_format_(tile_format) {}
+      tile_format_(raster_caps.tile_format),
+      tile_texture_target_(raster_caps.tile_texture_target) {}
 
 ZeroCopyRasterBufferProvider::~ZeroCopyRasterBufferProvider() = default;
 
@@ -189,13 +190,8 @@ ZeroCopyRasterBufferProvider::AcquireBufferForRaster(
     bool depends_on_hardware_accelerated_webp_candidates) {
   if (!resource.gpu_backing()) {
     auto backing = std::make_unique<ZeroCopyGpuBacking>();
-    const gpu::Capabilities& caps =
-        compositor_context_provider_->ContextCapabilities();
-    backing->texture_target = gpu::GetBufferTextureTarget(
-        kBufferUsage,
-        viz::SinglePlaneSharedImageFormatToBufferFormat(resource.format()),
-        caps);
     backing->overlay_candidate = true;
+    backing->texture_target = tile_texture_target_;
     // This RasterBufferProvider will modify the resource outside of the
     // GL command stream. So resources should not become available for reuse
     // until they are not in use by the gpu anymore, which a fence is used
@@ -228,7 +224,7 @@ bool ZeroCopyRasterBufferProvider::CanPartialRasterIntoProvidedResource()
 }
 
 bool ZeroCopyRasterBufferProvider::IsResourceReadyToDraw(
-    const ResourcePool::InUsePoolResource& resource) const {
+    const ResourcePool::InUsePoolResource& resource) {
   // Zero-copy resources are immediately ready to draw.
   return true;
 }
@@ -236,7 +232,7 @@ bool ZeroCopyRasterBufferProvider::IsResourceReadyToDraw(
 uint64_t ZeroCopyRasterBufferProvider::SetReadyToDrawCallback(
     const std::vector<const ResourcePool::InUsePoolResource*>& resources,
     base::OnceClosure callback,
-    uint64_t pending_callback_id) const {
+    uint64_t pending_callback_id) {
   // Zero-copy resources are immediately ready to draw.
   return 0;
 }

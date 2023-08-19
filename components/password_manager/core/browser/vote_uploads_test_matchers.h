@@ -46,7 +46,7 @@ inline auto VoteTypesAre(VoteTypeMap expected) {
     VoteTypeMap vote_types;
     for (const auto& field : actual) {
       if (field->vote_type() != kNoInformation) {
-        vote_types[field->name] = field->vote_type();
+        vote_types[field->unique_renderer_id] = field->vote_type();
       }
     }
     return vote_types;

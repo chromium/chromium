@@ -6,25 +6,33 @@
 
 #import <UIKit/UIKit.h>
 
+#import "base/feature_list.h"
+#import "base/metrics/user_metrics.h"
 #import "base/notreached.h"
 #import "base/strings/sys_string_conversions.h"
 #import "components/signin/public/identity_manager/identity_manager.h"
+#import "components/sync/base/features.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
 #import "ios/chrome/browser/signin/authentication_service.h"
 #import "ios/chrome/browser/signin/authentication_service_factory.h"
+#import "ios/chrome/browser/ui/authentication/history_sync/history_sync_coordinator.h"
 #import "ios/chrome/browser/ui/authentication/signin/signin_coordinator+protected.h"
 #import "ios/chrome/browser/ui/authentication/signin/signin_sync_screen_provider.h"
+#import "ios/chrome/browser/ui/authentication/signin/uno_signin_screen_provider.h"
 #import "ios/chrome/browser/ui/first_run/first_run_util.h"
-#import "ios/chrome/browser/ui/first_run/history_sync/history_sync_screen_coordinator.h"
 #import "ios/chrome/browser/ui/first_run/signin/signin_screen_coordinator.h"
 #import "ios/chrome/browser/ui/first_run/tangible_sync/tangible_sync_screen_coordinator.h"
 #import "ios/chrome/browser/ui/screen/screen_provider.h"
 #import "ios/chrome/browser/ui/screen/screen_type.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
+using base::RecordAction;
+using base::UserMetricsAction;
+
+@interface TwoScreensSigninCoordinator () <
+    HistorySyncCoordinatorDelegate,
+    UIAdaptivePresentationControllerDelegate>
+@end
 
 @implementation TwoScreensSigninCoordinator {
   // The accessPoint and promoAction used for signin merics.
@@ -50,7 +58,6 @@
   DCHECK(!browser->GetBrowserState()->IsOffTheRecord());
   self = [super initWithBaseViewController:viewController browser:browser];
   if (self) {
-    _screenProvider = [[SigninSyncScreenProvider alloc] init];
     // This coordinator should not be used in the FRE.
     CHECK_NE(accessPoint, signin_metrics::AccessPoint::ACCESS_POINT_START_PAGE);
     _accessPoint = accessPoint;
@@ -63,10 +70,17 @@
 
 - (void)start {
   [super start];
+  if (base::FeatureList::IsEnabled(
+          syncer::kReplaceSyncPromosWithSignInPromos)) {
+    _screenProvider = [[UnoSigninScreenProvider alloc] init];
+  } else {
+    _screenProvider = [[SigninSyncScreenProvider alloc] init];
+  }
   _navigationController =
       [[UINavigationController alloc] initWithNavigationBarClass:nil
                                                     toolbarClass:nil];
   _navigationController.modalPresentationStyle = UIModalPresentationFormSheet;
+  _navigationController.presentationController.delegate = self;
 
   [self presentScreen:[_screenProvider nextScreenType]];
 
@@ -79,7 +93,7 @@
 - (void)stop {
   if (_navigationController) {
     __block BOOL completionBlockCalled = NO;
-    [self interruptWithAction:SigninCoordinatorInterruptActionNoDismiss
+    [self interruptWithAction:SigninCoordinatorInterrupt::UIShutdownNoDismiss
                    completion:^{
                      completionBlockCalled = YES;
                    }];
@@ -143,12 +157,15 @@
                                   firstRun:NO
                                   delegate:self];
     case kHistorySync:
-      return [[HistorySyncScreenCoordinator alloc]
+      return [[HistorySyncCoordinator alloc]
           initWithBaseNavigationController:_navigationController
                                    browser:self.browser
+                                  delegate:self
                                   firstRun:NO
-                                  delegate:self];
+                             showUserEmail:NO
+                               accessPoint:_accessPoint];
     case kDefaultBrowserPromo:
+    case kChoice:
     case kStepsCompleted:
       break;
   }
@@ -165,6 +182,7 @@
     [_childCoordinator stop];
     _childCoordinator = nil;
   }
+  _navigationController.presentationController.delegate = nil;
   _navigationController = nil;
   _screenProvider = nil;
   SigninCompletionInfo* completionInfo =
@@ -190,9 +208,11 @@
 
 #pragma mark - SigninCoordinator
 
-- (void)interruptWithAction:(SigninCoordinatorInterruptAction)action
+- (void)interruptWithAction:(SigninCoordinatorInterrupt)action
                  completion:(ProceduralBlock)completion {
   __weak __typeof(self) weakSelf = self;
+  __weak __typeof(_navigationController) weakNavigationController =
+      _navigationController;
   ProceduralBlock finishCompletion = ^() {
     [weakSelf finishWithResult:SigninCoordinatorResultInterrupted identity:nil];
     if (completion) {
@@ -201,19 +221,22 @@
   };
   BOOL animated = NO;
   switch (action) {
-    case SigninCoordinatorInterruptActionNoDismiss: {
+    case SigninCoordinatorInterrupt::UIShutdownNoDismiss: {
       [_childCoordinator
-          interruptWithAction:SigninCoordinatorInterruptActionNoDismiss
+          interruptWithAction:SigninCoordinatorInterrupt::UIShutdownNoDismiss
                    completion:^{
+                     [weakNavigationController.presentingViewController
+                         dismissViewControllerAnimated:NO
+                                            completion:nil];
                      finishCompletion();
                    }];
       return;
     }
-    case SigninCoordinatorInterruptActionDismissWithoutAnimation: {
+    case SigninCoordinatorInterrupt::DismissWithoutAnimation: {
       animated = NO;
       break;
     }
-    case SigninCoordinatorInterruptActionDismissWithAnimation: {
+    case SigninCoordinatorInterrupt::DismissWithAnimation: {
       animated = YES;
       break;
     }
@@ -221,20 +244,37 @@
 
   // Interrupt the child coordinator UI first before dismissing the new
   // sign-in navigation controller.
-  __weak __typeof(_navigationController) weakNavigationController =
-      _navigationController;
   [_childCoordinator
-      interruptWithAction:
-          SigninCoordinatorInterruptActionDismissWithoutAnimation
+      interruptWithAction:SigninCoordinatorInterrupt::DismissWithoutAnimation
                completion:^{
-                 if (weakNavigationController) {
-                   [weakNavigationController.presentingViewController
+                 UIViewController* presentingViewController =
+                     weakNavigationController.presentingViewController;
+                 if (presentingViewController) {
+                   [presentingViewController
                        dismissViewControllerAnimated:animated
                                           completion:finishCompletion];
-                 } else if (finishCompletion) {
+                 } else {
                    finishCompletion();
                  }
                }];
+}
+
+#pragma mark - HistorySyncCoordinatorDelegate
+
+// Dismisses the current screen.
+- (void)closeHistorySyncCoordinator:
+            (HistorySyncCoordinator*)historySyncCoordinator
+                     declinedByUser:(BOOL)declined {
+  [self screenWillFinishPresenting];
+}
+
+#pragma mark - UIAdaptivePresentationControllerDelegate
+
+- (void)presentationControllerDidDismiss:
+    (UIPresentationController*)presentationController {
+  RecordAction(UserMetricsAction("Signin_TwoScreens_SwipeDismiss"));
+  [self interruptWithAction:SigninCoordinatorInterrupt::DismissWithoutAnimation
+                 completion:nil];
 }
 
 #pragma mark - NSObject

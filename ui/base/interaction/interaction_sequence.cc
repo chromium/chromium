@@ -126,9 +126,7 @@ InteractionSequence::Builder::Builder()
 InteractionSequence::Builder::Builder(Builder&& other) = default;
 InteractionSequence::Builder& InteractionSequence::Builder::operator=(
     Builder&& other) = default;
-InteractionSequence::Builder::~Builder() {
-  DCHECK(!configuration_);
-}
+InteractionSequence::Builder::~Builder() = default;
 
 InteractionSequence::Builder& InteractionSequence::Builder::SetAbortedCallback(
     AbortedCallback callback) {
@@ -158,9 +156,6 @@ InteractionSequence::Builder& InteractionSequence::Builder::AddStep(
       << " Only the initial step of a sequence may have a pre-set element.";
   DCHECK(!step->transition_only_on_event || !step->element)
       << " Pre-set element precludes transition_only_on_event.";
-  DCHECK(step->context != StepContext(ContextMode::kAny) ||
-         step->uses_named_element() || step->type == StepType::kShown)
-      << " Currently, find in any context only supports StepType::kShown.";
   DCHECK_NE(step->type == StepType::kSubsequence,
             step->subsequence_data.empty());
 
@@ -199,12 +194,13 @@ InteractionSequence::Builder& InteractionSequence::Builder::AddStep(
       configuration_->context = *context;
   }
 
-  // Since the must_remain_visible value can be dependent on the following
-  // step, we'll set it on the previous step, then set it on the final step
-  // when we build the sequence.
   if (!configuration_->steps.empty()) {
-    SetDefaultMustRemainVisibleValue(configuration_->steps.back().get(),
-                                     step.get());
+    auto* const prev = configuration_->steps.back().get();
+
+    // Since the must_remain_visible value can be dependent on the following
+    // step, we'll set it on the previous step, then set it on the final step
+    // when we build the sequence.
+    SetDefaultMustRemainVisibleValue(prev, step.get());
   }
 
   // Add the step.
@@ -276,6 +272,11 @@ InteractionSequence::StepBuilder& InteractionSequence::StepBuilder::SetContext(
   DCHECK(context != StepContext(ElementContext()));
   DCHECK(!step_->uses_named_element());
   step_->context = context;
+  if (const ContextMode* mode = absl::get_if<ContextMode>(&context)) {
+    step_->in_any_context = *mode == ContextMode::kAny;
+  } else {
+    step_->in_any_context = false;
+  }
   return *this;
 }
 
@@ -459,6 +460,11 @@ void InteractionSequence::RunSynchronouslyForTesting() {
   run_loop.Run();
 }
 
+bool InteractionSequence::IsCurrentStepInAnyContextForTesting() const {
+  CHECK(current_step_);
+  return current_step_->in_any_context;
+}
+
 void InteractionSequence::FailForTesting() {
   Abort(AbortedReason::kFailedForTesting);
 }
@@ -500,6 +506,44 @@ TrackedElement* InteractionSequence::GetNamedElement(
 const TrackedElement* InteractionSequence::GetNamedElement(
     const base::StringPiece& name) const {
   return const_cast<InteractionSequence*>(this)->GetNamedElement(name);
+}
+
+InteractionSequence::AbortedData InteractionSequence::BuildAbortedData(
+    AbortedReason reason) const {
+  AbortedData aborted_data;
+  aborted_data.step_index = active_step_index_;
+  aborted_data.aborted_reason = reason;
+  if (reason == AbortedReason::kElementNotVisibleAtStartOfStep ||
+      reason == AbortedReason::kElementHiddenBeforeSequenceStart ||
+      reason == AbortedReason::kSequenceDestroyed ||
+      reason == AbortedReason::kNoSubsequenceRun ||
+      reason == AbortedReason::kSubsequenceFailed ||
+      (reason == AbortedReason::kSequenceTimedOut &&
+       !running_start_callback_)) {
+    ++aborted_data.step_index;
+    if (next_step()) {
+      aborted_data.step_type = next_step()->type;
+      aborted_data.element_id = next_step()->id;
+      aborted_data.step_description = next_step()->description;
+      if (reason == AbortedReason::kSubsequenceFailed) {
+        for (const auto& data : next_step()->subsequence_data) {
+          aborted_data.subsequence_failures.emplace_back(
+              data.result == false ? absl::make_optional(data.aborted_data)
+                                   : absl::nullopt);
+        }
+      }
+    }
+  } else if (current_step_) {
+    aborted_data.step_type = current_step_->type;
+    aborted_data.element_id = current_step_->id;
+    aborted_data.element = SafeElementReference(current_step_->element);
+    aborted_data.step_description = current_step_->description;
+  }
+  return aborted_data;
+}
+
+base::WeakPtr<InteractionSequence> InteractionSequence::AsWeakPtr() {
+  return weak_factory_.GetWeakPtr();
 }
 
 void InteractionSequence::OnElementShown(TrackedElement* element) {
@@ -641,14 +685,53 @@ void InteractionSequence::OnElementHiddenDuringStepTransition(
   next_step()->subscription = ElementTracker::Subscription();
 }
 
-void InteractionSequence::OnElementHiddenWaitingForActivate(
+void InteractionSequence::OnElementHiddenWaitingForEvent(
     TrackedElement* element) {
-  if (!next_step())
+  if (!next_step()) {
     return;
+  }
 
-  if (next_step()->element == element ||
-      !ElementTracker::GetElementTracker()->GetFirstMatchingElement(
-          next_step()->id, context())) {
+  // If the next element is known and has been hidden, abort.
+  if (next_step()->element) {
+    if (next_step()->element == element) {
+      Abort(AbortedReason::kElementNotVisibleAtStartOfStep);
+    }
+    return;
+  }
+
+  // The next element is not currently known. However, if there are no elements
+  // remaining that could generate the event, the sequence should also be
+  // aborted.
+
+  // Figure out which contexts to look in based on the pending step.
+  ElementContext ctx;
+  if (const ElementContext* ctx_ptr =
+          absl::get_if<ElementContext>(&next_step()->context)) {
+    ctx = *ctx_ptr;
+  } else {
+    switch (absl::get<ContextMode>(next_step()->context)) {
+      case ContextMode::kInitial:
+        ctx = context();
+        break;
+      case ContextMode::kAny:
+        break;
+      case ContextMode::kFromPreviousStep:
+        NOTREACHED()
+            << "Context should always have been updated by this point.";
+        break;
+    }
+  }
+
+  // If the element is not in one of the contexts the step cares about, ignore.
+  if (ctx && ctx != element->context()) {
+    return;
+  }
+
+  // Determine if there are any remaining elements in the relevant context(s).
+  auto* const tracker = ElementTracker::GetElementTracker();
+  const ElementIdentifier id = next_step()->id;
+  if (!(ctx ? tracker->GetFirstMatchingElement(id, ctx)
+            : tracker->GetElementInAnyContext(id))) {
     Abort(AbortedReason::kElementNotVisibleAtStartOfStep);
   }
 }
@@ -685,23 +768,28 @@ void InteractionSequence::MaybeWatchForEarlyTrigger(const Step* current_step) {
     case StepType::kActivated:
       // For activation events the ID of the next node must be known.
       if (id) {
-        next_step()->subscription = tracker->AddElementActivatedCallback(
-            id, context,
-            base::BindRepeating(
-                &InteractionSequence::OnTriggerDuringStepTransition,
-                base::Unretained((this))));
+        auto cb = base::BindRepeating(
+            &InteractionSequence::OnTriggerDuringStepTransition,
+            base::Unretained(this));
+        next_step()->subscription =
+            context ? tracker->AddElementActivatedCallback(id, context, cb)
+                    : tracker->AddElementActivatedInAnyContextCallback(id, cb);
       }
       break;
-    case StepType::kCustomEvent:
+    case StepType::kCustomEvent: {
       // For custom events the ID is not necessary because ElementTracker allows
       // just listening for the event.
-      next_step()->subscription = tracker->AddCustomEventCallback(
-          next_step()->custom_event_type, context,
-          base::BindRepeating(
-              &InteractionSequence::OnTriggerDuringStepTransition,
-              base::Unretained((this))));
+      auto cb = base::BindRepeating(
+          &InteractionSequence::OnTriggerDuringStepTransition,
+          base::Unretained(this));
+      next_step()->subscription =
+          context ? tracker->AddCustomEventCallback(
+                        next_step()->custom_event_type, context, cb)
+                  : tracker->AddCustomEventInAnyContextCallback(
+                        next_step()->custom_event_type, cb);
       break;
-    case StepType::kShown:
+    }
+    case StepType::kShown: {
       // For shown events, the ID must be known and the event need only be
       // observed if the state change itself is being observed or the element
       // might immediately become invisible again.
@@ -715,15 +803,17 @@ void InteractionSequence::MaybeWatchForEarlyTrigger(const Step* current_step) {
                     : tracker->AddElementShownInAnyContextCallback(id, cb);
       }
       break;
+    }
     case StepType::kHidden:
       // For hidden events, the ID must be known. Only watch if the state change
       // itself is the step transition.
       if (id && next_step()->transition_only_on_event) {
-        next_step()->subscription = tracker->AddElementHiddenCallback(
-            id, context,
-            base::BindRepeating(
-                &InteractionSequence::OnTriggerDuringStepTransition,
-                base::Unretained((this))));
+        auto cb = base::BindRepeating(
+            &InteractionSequence::OnTriggerDuringStepTransition,
+            base::Unretained(this));
+        next_step()->subscription =
+            context ? tracker->AddElementHiddenCallback(id, context, cb)
+                    : tracker->AddElementHiddenInAnyContextCallback(id, cb);
       }
       break;
     case StepType::kSubsequence:
@@ -743,9 +833,8 @@ void InteractionSequence::DoStepTransition(TrackedElement* element) {
   {
     // This block is non-re-entrant.
     DCHECK(!processing_step_);
-    base::WeakAutoReset processing(weak_factory_.GetWeakPtr(),
-                                   &InteractionSequence::processing_step_,
-                                   true);
+    base::WeakAutoReset processing(
+        delete_guard, &InteractionSequence::processing_step_, true);
 
     // End the current step.
     if (current_step_) {
@@ -797,6 +886,8 @@ void InteractionSequence::DoStepTransition(TrackedElement* element) {
     // cause `element` to become invalid. Because of this we use the element
     // field of the current step from here forward, because we've installed a
     // callback above that will null it out if it becomes invalid.
+    base::WeakAutoReset running_start_callback(
+        delete_guard, &InteractionSequence::running_start_callback_, true);
     RunIfValid(std::move(current_step_->start_callback), this,
                current_step_->element.get());
     if (!delete_guard || AbortedDuringCallback())
@@ -844,7 +935,7 @@ void InteractionSequence::StageNextStep() {
     // previously recorded.
     DCHECK(!next_element || next->id == next_element->identifier());
   } else {
-    ElementContext ctx = UpdateNextStepContext(current_step_.get());
+    const ElementContext ctx = UpdateNextStepContext(current_step_.get());
     next_element =
         tracker->GetFirstMatchingElement(next->id, ctx ? ctx : context());
     if (!next_element && !ctx)
@@ -903,10 +994,13 @@ void InteractionSequence::StageNextStep() {
         DoStepTransition(nullptr);
       } else {
         DCHECK(next_element || !next->uses_named_element());
-        next->subscription = tracker->AddElementHiddenCallback(
-            next->id, context,
-            base::BindRepeating(&InteractionSequence::OnElementHidden,
-                                base::Unretained(this)));
+        auto callback = base::BindRepeating(
+            &InteractionSequence::OnElementHidden, base::Unretained(this));
+        next->subscription =
+            context
+                ? tracker->AddElementHiddenCallback(next->id, context, callback)
+                : tracker->AddElementHiddenInAnyContextCallback(next->id,
+                                                                callback);
       }
       break;
     case StepType::kActivated:
@@ -915,19 +1009,25 @@ void InteractionSequence::StageNextStep() {
         DoStepTransition(next_element);
       } else {
         DCHECK(next_element || !next->uses_named_element());
-        next->subscription = tracker->AddElementActivatedCallback(
-            next->id, context,
-            base::BindRepeating(&InteractionSequence::OnElementActivated,
-                                base::Unretained(this)));
+        auto callback = base::BindRepeating(
+            &InteractionSequence::OnElementActivated, base::Unretained(this));
+        next->subscription =
+            context ? tracker->AddElementActivatedCallback(next->id, context,
+                                                           callback)
+                    : tracker->AddElementActivatedInAnyContextCallback(
+                          next->id, callback);
         // It's possible to have the element hidden between the time we stage
         // the event and when the activation would actually come in (which
         // could be never). In this case, we should abort.
         if (next_step()->must_be_visible.value()) {
-          next_step_hidden_subscription_ = tracker->AddElementHiddenCallback(
-              next->id, context,
-              base::BindRepeating(
-                  &InteractionSequence::OnElementHiddenWaitingForActivate,
-                  base::Unretained(this)));
+          DCHECK(next->id);
+          auto cb = base::BindRepeating(
+              &InteractionSequence::OnElementHiddenWaitingForEvent,
+              base::Unretained(this));
+          next_step_hidden_subscription_ =
+              context
+                  ? tracker->AddElementHiddenCallback(next->id, context, cb)
+                  : tracker->AddElementHiddenInAnyContextCallback(next->id, cb);
         }
       }
       break;
@@ -937,20 +1037,25 @@ void InteractionSequence::StageNextStep() {
         DoStepTransition(next_element);
       } else {
         DCHECK(next_element || !next->uses_named_element());
-        next->subscription = tracker->AddCustomEventCallback(
-            next->custom_event_type, context,
-            base::BindRepeating(&InteractionSequence::OnCustomEvent,
-                                base::Unretained(this)));
+        auto callback = base::BindRepeating(&InteractionSequence::OnCustomEvent,
+                                            base::Unretained(this));
+        next->subscription =
+            context ? tracker->AddCustomEventCallback(next->custom_event_type,
+                                                      context, callback)
+                    : tracker->AddCustomEventInAnyContextCallback(
+                          next->custom_event_type, callback);
         // It's possible to have the element hidden between the time we stage
         // the event and when the custom event would actually come in (which
         // could be never). In this case, we should abort.
         if (next_step()->must_be_visible.value()) {
           DCHECK(next->id);
-          next_step_hidden_subscription_ = tracker->AddElementHiddenCallback(
-              next->id, context,
-              base::BindRepeating(
-                  &InteractionSequence::OnElementHiddenWaitingForActivate,
-                  base::Unretained(this)));
+          auto cb = base::BindRepeating(
+              &InteractionSequence::OnElementHiddenWaitingForEvent,
+              base::Unretained(this));
+          next_step_hidden_subscription_ =
+              context
+                  ? tracker->AddElementHiddenCallback(next->id, context, cb)
+                  : tracker->AddElementHiddenInAnyContextCallback(next->id, cb);
         }
       }
       break;
@@ -1023,41 +1128,17 @@ void InteractionSequence::StageNextStep() {
 void InteractionSequence::Abort(AbortedReason reason) {
   DCHECK(started_);
   next_step_hidden_subscription_ = ElementTracker::Subscription();
+
+  AbortedData aborted_data = BuildAbortedData(reason);
+
   // The entire InteractionSequence could also go away during a callback, so
   // save anything we need locally so that we don't have to access any class
   // members as we finish terminating the sequence.
   base::OnceClosure quit_closure =
       std::move(quit_run_loop_closure_for_testing_);
-  std::unique_ptr<Step> current_step = std::move(current_step_);
   AbortedCallback aborted_callback =
       std::move(configuration_->aborted_callback);
-  AbortedData aborted_data;
-  aborted_data.step_index = active_step_index_;
-  aborted_data.aborted_reason = reason;
-  if (reason == AbortedReason::kElementNotVisibleAtStartOfStep ||
-      reason == AbortedReason::kElementHiddenBeforeSequenceStart ||
-      reason == AbortedReason::kSequenceDestroyed ||
-      reason == AbortedReason::kNoSubsequenceRun ||
-      reason == AbortedReason::kSubsequenceFailed) {
-    ++aborted_data.step_index;
-    if (next_step()) {
-      aborted_data.step_type = next_step()->type;
-      aborted_data.element_id = next_step()->id;
-      aborted_data.step_description = next_step()->description;
-      if (reason == AbortedReason::kSubsequenceFailed) {
-        for (const auto& data : next_step()->subsequence_data) {
-          aborted_data.subsequence_failures.emplace_back(
-              data.result == false ? absl::make_optional(data.aborted_data)
-                                   : absl::nullopt);
-        }
-      }
-    }
-  } else if (current_step) {
-    aborted_data.step_type = current_step->type;
-    aborted_data.element_id = current_step->id;
-    aborted_data.element = SafeElementReference(current_step->element);
-    aborted_data.step_description = current_step->description;
-  }
+  std::unique_ptr<Step> current_step = std::move(current_step_);
   configuration_->steps.clear();
 
   // Note that if the sequence has already been aborted, this is a no-op, the
@@ -1233,6 +1314,11 @@ InteractionSequence::Step* InteractionSequence::next_step() {
                                        : configuration_->steps.front().get();
 }
 
+const InteractionSequence::Step* InteractionSequence::next_step() const {
+  return configuration_->steps.empty() ? nullptr
+                                       : configuration_->steps.front().get();
+}
+
 ElementContext InteractionSequence::context() const {
   return configuration_->context;
 }
@@ -1256,7 +1342,8 @@ void PrintTo(InteractionSequence::AbortedReason reason, std::ostream* os) {
       "kElementHiddenDuringStep",
       "kNoSubsequenceRun",
       "kSubsequenceFailed",
-      "kFailedForTesting"};
+      "kFailedForTesting",
+      "kSequenceTimedOut"};
   constexpr int kCount =
       sizeof(kAbortedReasonNames) / sizeof(kAbortedReasonNames[0]);
   static_assert(

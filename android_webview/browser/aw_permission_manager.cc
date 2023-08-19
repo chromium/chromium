@@ -13,6 +13,7 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/logging.h"
+#include "components/permissions/features.h"
 #include "components/permissions/permission_util.h"
 #include "content/public/browser/child_process_security_policy.h"
 #include "content/public/browser/permission_controller.h"
@@ -183,6 +184,13 @@ class AwPermissionManager::PendingRequest {
     }
     DCHECK(!IsCompleted());
     results[result->second] = status;
+    if (base::FeatureList::IsEnabled(
+            permissions::features::kBlockMidiByDefault)) {
+      if (type == PermissionType::MIDI && status == PermissionStatus::GRANTED) {
+        content::ChildProcessSecurityPolicy::GetInstance()
+            ->GrantSendMidiMessage(render_process_id);
+      }
+    }
     if (type == PermissionType::MIDI_SYSEX &&
         status == PermissionStatus::GRANTED) {
       content::ChildProcessSecurityPolicy::GetInstance()
@@ -473,9 +481,10 @@ PermissionStatus AwPermissionManager::GetPermissionStatus(
 content::PermissionResult
 AwPermissionManager::GetPermissionResultForOriginWithoutContext(
     blink::PermissionType permission,
-    const url::Origin& origin) {
-  blink::mojom::PermissionStatus status =
-      GetPermissionStatus(permission, origin.GetURL(), origin.GetURL());
+    const url::Origin& requesting_origin,
+    const url::Origin& embedding_origin) {
+  blink::mojom::PermissionStatus status = GetPermissionStatus(
+      permission, requesting_origin.GetURL(), embedding_origin.GetURL());
 
   return content::PermissionResult(
       status, content::PermissionStatusSource::UNSPECIFIED);

@@ -122,6 +122,7 @@ AxisEdge AxisEdgeFromItemPosition(bool is_inline_axis,
 GridItemData::GridItemData(
     NGBlockNode node,
     const ComputedStyle& root_grid_style,
+    FontBaseline parent_grid_font_baseline,
     bool parent_must_consider_grid_items_for_column_sizing,
     bool parent_must_consider_grid_items_for_row_sizing)
     : node(node),
@@ -132,7 +133,8 @@ GridItemData::GridItemData(
       is_sizing_dependent_on_block_size(false),
       is_subgridded_to_parent_grid(false),
       must_consider_grid_items_for_column_sizing(false),
-      must_consider_grid_items_for_row_sizing(false) {
+      must_consider_grid_items_for_row_sizing(false),
+      parent_grid_font_baseline(parent_grid_font_baseline) {
   const auto& style = node.Style();
 
   const bool is_replaced = node.IsReplaced();
@@ -198,7 +200,7 @@ GridItemData::GridItemData(
   // The `false, true, false, true` parameters get the converter to calculate
   // whether the subgrids and its root grid are opposite direction in all cases.
   const LogicalToLogical<bool> direction_converter(
-      style.GetWritingDirection(), root_grid_style.GetWritingDirection(),
+      style.GetWritingDirection(), root_grid_writing_direction,
       /* inline_start */ false, /* inline_end */ true,
       /* block_start */ false, /* block_end */ true);
 
@@ -227,8 +229,9 @@ void GridItemData::SetAlignmentFallback(
     GridTrackSizingDirection track_direction,
     bool has_synthesized_baseline) {
   // Alignment fallback is only possible when baseline alignment is specified.
-  if (!IsBaselineSpecifiedForDirection(track_direction))
+  if (!IsBaselineSpecified(track_direction)) {
     return;
+  }
 
   auto CanParticipateInBaselineAlignment = [&]() -> bool {
     // "If baseline alignment is specified on a grid item whose size in that
@@ -294,6 +297,8 @@ void GridItemData::ComputeSetIndices(
   DCHECK(!IsOutOfFlow());
 
   const auto track_direction = track_collection.Direction();
+  DCHECK(MustCachePlacementIndices(track_direction));
+
   auto& range_indices = RangeIndices(track_direction);
 
 #if DCHECK_IS_ON()
@@ -401,6 +406,13 @@ void GridItemData::ComputeOutOfFlowItemPlacement(
                      : 0;
       end_offset -= track_collection.RangeStartLine(end_range_index);
     }
+  }
+}
+
+GridItems::GridItems(const GridItems& other) {
+  item_data_.ReserveInitialCapacity(other.item_data_.size());
+  for (const auto& grid_item : other.item_data_) {
+    item_data_.emplace_back(std::make_unique<GridItemData>(*grid_item));
   }
 }
 

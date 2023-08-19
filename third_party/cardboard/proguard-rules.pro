@@ -6,3 +6,17 @@
 -keepclasseswithmembers,includedescriptorclasses class ** {
   @com.google.cardboard.sdk.UsedByNative *;
 }
+# Keep proto methods that are directly queried over JNI since proguard cannot
+# determine which methods those are.
+-keep,includedescriptorclasses class com.google.cardboard.proto.CardboardDevice$DeviceParams$VerticalAlignmentType {
+  ordinal();
+}
+-keep,includedescriptorclasses class com.google.cardboard.proto.CardboardDevice$DeviceParams {
+  getScreenToLensDistance();
+  getInterLensDistance();
+  getTrayToLensDistance();
+  getVerticalAlignment();
+  getDistortionCoefficients(int);
+  getDistortionCoefficientsCount();
+  getLeftEyeFieldOfViewAngles(int);
+}

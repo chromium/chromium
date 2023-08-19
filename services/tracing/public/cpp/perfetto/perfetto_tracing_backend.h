@@ -57,15 +57,13 @@ class PerfettoTracingBackend : public perfetto::TracingBackend {
 
  private:
   void BindProducerConnectionIfNecessary();
-  void CreateConsumerConnection();
+  void CreateConsumerConnection(base::WeakPtr<ConsumerEndpoint>);
 
   SEQUENCE_CHECKER(muxer_sequence_checker_);
   base::Lock task_runner_lock_;
   base::WeakPtr<ProducerEndpoint> producer_endpoint_;
-  base::WeakPtr<ConsumerEndpoint> consumer_endpoint_;
   raw_ptr<perfetto::base::TaskRunner> muxer_task_runner_ = nullptr;
   mojo::PendingRemote<mojom::PerfettoService> perfetto_service_;
-  mojo::PendingRemote<mojom::ConsumerHost> consumer_host_remote_;
 
   scoped_refptr<base::SequencedTaskRunner> consumer_connection_task_runner_;
   ConsumerConnectionFactory consumer_connection_factory_;

@@ -74,14 +74,14 @@ class LogManagerTest : public testing::Test {
   std::unique_ptr<BufferingLogManager> buffering_manager_;
 };
 
-TEST_F(LogManagerTest, LogTextMessageNoReceiver) {
-  EXPECT_CALL(receiver_, LogEntry(_)).Times(0);
+TEST_F(LogManagerTest, LogNoReceiver) {
+  EXPECT_CALL(receiver_, LogEntry).Times(0);
   // Before attaching the receiver, no text should be passed.
   LOG_AF(*manager_) << kTestText;
   EXPECT_FALSE(manager_->IsLoggingActive());
 }
 
-TEST_F(LogManagerTest, LogTextMessageAttachReceiver) {
+TEST_F(LogManagerTest, LogAttachReceiver) {
   EXPECT_FALSE(manager_->IsLoggingActive());
 
   EXPECT_CALL(notified_object_, NotifyAboutLoggingActivity());
@@ -95,7 +95,7 @@ TEST_F(LogManagerTest, LogTextMessageAttachReceiver) {
   EXPECT_FALSE(manager_->IsLoggingActive());
 }
 
-TEST_F(LogManagerTest, LogTextMessageDetachReceiver) {
+TEST_F(LogManagerTest, LogDetachReceiver) {
   EXPECT_CALL(notified_object_, NotifyAboutLoggingActivity());
   router_.RegisterReceiver(&receiver_);
   EXPECT_TRUE(manager_->IsLoggingActive());
@@ -104,7 +104,7 @@ TEST_F(LogManagerTest, LogTextMessageDetachReceiver) {
   EXPECT_FALSE(manager_->IsLoggingActive());
 
   // After detaching the logger, no text should be passed.
-  EXPECT_CALL(receiver_, LogEntry(_)).Times(0);
+  EXPECT_CALL(receiver_, LogEntry).Times(0);
   LOG_AF(*manager_) << kTestText;
 }
 

@@ -79,24 +79,13 @@ void SpeculationRuleLoader::NotifyFinished() {
   }
 
   const auto& source_text = resource_->DecodedText();
-  auto* source = MakeGarbageCollected<SpeculationRuleSet::Source>(
+  auto* source = SpeculationRuleSet::Source::FromRequest(
       source_text, base_url_, resource_->InspectorId());
   auto* rule_set =
       SpeculationRuleSet::Parse(source, document_->GetExecutionContext());
   CHECK(rule_set);
   DocumentSpeculationRules::From(*document_).AddRuleSet(rule_set);
-  if (rule_set->HasError()) {
-    if (rule_set->ShouldReportUMAForError()) {
-      CountSpeculationRulesLoadOutcome(
-          SpeculationRulesLoadOutcome::kParseErrorFetched);
-    }
-    document_->AddConsoleMessage(MakeGarbageCollected<ConsoleMessage>(
-        mojom::blink::ConsoleMessageSource::kOther,
-        mojom::blink::ConsoleMessageLevel::kWarning,
-        "While parsing speculation rules fetched from \"" +
-            resource_->GetResourceRequest().Url().ElidedString() +
-            "\": " + rule_set->error_message() + "\"."));
-  }
+  rule_set->AddConsoleMessageForValidation(*document_, *resource_);
   resource_->RemoveFinishObserver(this);
   resource_ = nullptr;
   DocumentSpeculationRules::From(*document_).RemoveSpeculationRuleLoader(this);

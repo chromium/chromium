@@ -35,7 +35,7 @@ class JniDistillabilityObserverWrapper
   void OnResult(const DistillabilityResult& result) override {
     Java_DistillablePageUtils_callOnIsPageDistillableUpdate(
         base::android::AttachCurrentThread(), callback_, result.is_distillable,
-        result.is_last, result.is_mobile_friendly);
+        result.is_last, result.is_long_article, result.is_mobile_friendly);
   }
 
  private:

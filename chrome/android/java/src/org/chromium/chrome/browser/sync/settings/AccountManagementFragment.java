@@ -21,7 +21,6 @@ import androidx.preference.PreferenceScreen;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.preferences.Pref;
 import org.chromium.chrome.browser.profiles.Profile;
-import org.chromium.chrome.browser.profiles.ProfileAccountManagementMetrics;
 import org.chromium.chrome.browser.settings.ChromeManagedPreferenceDelegate;
 import org.chromium.chrome.browser.settings.SettingsLauncherImpl;
 import org.chromium.chrome.browser.signin.services.DisplayableProfileData;
@@ -29,8 +28,7 @@ import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
 import org.chromium.chrome.browser.signin.services.ProfileDataCache;
 import org.chromium.chrome.browser.signin.services.SigninManager;
 import org.chromium.chrome.browser.signin.services.SigninManager.SignInStateObserver;
-import org.chromium.chrome.browser.signin.services.SigninMetricsUtils;
-import org.chromium.chrome.browser.sync.SyncService;
+import org.chromium.chrome.browser.sync.SyncServiceFactory;
 import org.chromium.chrome.browser.ui.signin.SignOutDialogCoordinator;
 import org.chromium.chrome.browser.ui.signin.SignOutDialogCoordinator.Listener;
 import org.chromium.chrome.browser.ui.signin.SigninUtils;
@@ -45,6 +43,7 @@ import org.chromium.components.signin.GAIAServiceType;
 import org.chromium.components.signin.base.CoreAccountInfo;
 import org.chromium.components.signin.identitymanager.ConsentLevel;
 import org.chromium.components.signin.metrics.SignoutReason;
+import org.chromium.components.sync.SyncService;
 import org.chromium.components.user_prefs.UserPrefs;
 import org.chromium.ui.modaldialog.ModalDialogManagerHolder;
 
@@ -72,9 +71,6 @@ public class AccountManagementFragment extends PreferenceFragmentCompat
 
     private static final String PREF_ACCOUNTS_CATEGORY = "accounts_category";
     private static final String PREF_PARENT_ACCOUNT_CATEGORY = "parent_account_category";
-    private static final String PREF_PARENTAL_SETTINGS = "parental_settings";
-    private static final String PREF_PARENT_ACCOUNTS = "parent_accounts";
-    private static final String PREF_CHILD_CONTENT = "child_content";
     private static final String PREF_SIGN_OUT = "sign_out";
     private static final String PREF_SIGN_OUT_DIVIDER = "sign_out_divider";
 
@@ -87,7 +83,9 @@ public class AccountManagementFragment extends PreferenceFragmentCompat
 
     @Override
     public void onCreatePreferences(Bundle savedState, String rootKey) {
-        SyncService syncService = SyncService.get();
+        mProfile = Profile.getLastUsedRegularProfile();
+
+        SyncService syncService = SyncServiceFactory.getForProfile(mProfile);
         if (syncService != null) {
             // Prevent sync settings changes from taking effect until the user leaves this screen.
             mSyncSetupInProgressHandle = syncService.getSetupInProgressHandle();
@@ -97,11 +95,6 @@ public class AccountManagementFragment extends PreferenceFragmentCompat
             mGaiaServiceType =
                     getArguments().getInt(SHOW_GAIA_SERVICE_TYPE_EXTRA, mGaiaServiceType);
         }
-
-        mProfile = Profile.getLastUsedRegularProfile();
-
-        SigninMetricsUtils.logProfileAccountManagementMenu(
-                ProfileAccountManagementMetrics.VIEW, mGaiaServiceType);
 
         mProfileDataCache = ProfileDataCache.createWithDefaultImageSizeAndNoBadge(requireContext());
     }
@@ -324,9 +317,6 @@ public class AccountManagementFragment extends PreferenceFragmentCompat
         addAccountPreference.setTitle(R.string.signin_add_account_to_device);
         addAccountPreference.setOnPreferenceClickListener(preference -> {
             if (!isVisible() || !isResumed()) return false;
-
-            SigninMetricsUtils.logProfileAccountManagementMenu(
-                    ProfileAccountManagementMetrics.ADD_ACCOUNT, mGaiaServiceType);
 
             AccountManagerFacade accountManagerFacade = AccountManagerFacadeProvider.getInstance();
             accountManagerFacade.createAddAccountIntent((@Nullable Intent intent) -> {

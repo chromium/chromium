@@ -696,13 +696,13 @@ bool AV1Validator::Validate(const DecoderBuffer& decoder_buffer,
   }
 
   const auto& frame_header = av1_parser.frame_header();
-  if (frame_header.width != visible_rect_.width() ||
-      frame_header.height != visible_rect_.height()) {
-    LOG(ERROR) << "Mismatched frame dimensions.";
-    LOG(ERROR) << "Got width=" << frame_header.width
-               << " height=" << frame_header.height;
-    LOG(ERROR) << "Expected width=" << visible_rect_.width()
-               << " height=" << visible_rect_.height();
+  if (gfx::Size(frame_header.render_width, frame_header.render_height) !=
+      visible_rect_.size()) {
+    LOG(ERROR) << "Mismatched visible rectangle dimensions.";
+    LOG(ERROR) << "Got render_width=" << frame_header.render_width
+               << " render_height=" << frame_header.render_height;
+    LOG(ERROR) << "Expected visible_width=" << visible_rect_.width()
+               << " visible_height=" << visible_rect_.height();
     return false;
   }
 

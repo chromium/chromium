@@ -26,7 +26,6 @@
 <translation id="2060505056492490888">' <ph name="DOT" /> 'imetumika kwenye nafasi isiyostahili katika '<ph name="INVALIDDOMAIN" />'.</translation>
 <translation id="2148716181193084225">Leo</translation>
 <translation id="2226276347425096477">Tafadhali fupisha maandishi haya hadi vibambo <ph name="MAX_CHARACTERS" /> au chini (kwa sasa unatumia vibambo <ph name="CURRENT_LENGTH" /> ).</translation>
-<translation id="2246498165605549352">Faili ya Ndani</translation>
 <translation id="2247351761944213033">Wiki <ph name="WEEKNUMBER" />, <ph name="YEAR" /></translation>
 <translation id="2277199496770840904">Wimbo wa <ph name="NUMBER" /></translation>
 <translation id="2393030564806080191">Nambari ya rangi ya heksadesimali</translation>
@@ -89,6 +88,7 @@
 <translation id="5425179576310518467">tarehe ya sasa</translation>
 <translation id="5466621249238537318">Tafadhali chagua faili moja au zaidi.</translation>
 <translation id="5468998798572797635">Ondoka kwenye Skrini nzima</translation>
+<translation id="5514612371225420585">Faili kwenye kifaa chako</translation>
 <translation id="5516235301412634559">0.75</translation>
 <translation id="5537725057119320332">Tuma</translation>
 <translation id="5546461542133609677">washa sauti</translation>
@@ -113,6 +113,7 @@
 <translation id="6398862346408813489">Onyesha kisanduku cha uchaguzi wa mwezi</translation>
 <translation id="6404546809543547843">kitelezi cha muda cha sauti</translation>
 <translation id="6443871981718447451">kuonyesha menyu ya manukuu</translation>
+<translation id="6484738902856791350">Uchapishaji maridadi</translation>
 <translation id="6550675742724504774">Chaguo</translation>
 <translation id="6572309429103589720">Sarufi si sahihi</translation>
 <translation id="658823671542763450">ingia skrini kamili</translation>

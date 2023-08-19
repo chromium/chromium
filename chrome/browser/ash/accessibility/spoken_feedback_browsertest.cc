@@ -10,6 +10,7 @@
 #include "ash/accessibility/ui/accessibility_confirmation_dialog.h"
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_switches.h"
+#include "ash/display/display_configuration_controller.h"
 #include "ash/public/cpp/accelerators.h"
 #include "ash/public/cpp/accessibility_controller.h"
 #include "ash/public/cpp/event_rewriter_controller.h"
@@ -37,6 +38,7 @@
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
 #include "chrome/browser/ash/accessibility/accessibility_manager.h"
+#include "chrome/browser/ash/accessibility/html_test_utils.h"
 #include "chrome/browser/ash/login/test/device_state_mixin.h"
 #include "chrome/browser/ash/login/test/login_manager_mixin.h"
 #include "chrome/browser/ash/login/test/oobe_base_test.h"
@@ -69,6 +71,7 @@
 #include "ui/display/test/display_manager_test_api.h"
 #include "ui/events/base_event_utils.h"
 #include "ui/events/test/event_generator.h"
+#include "ui/events/types/event_type.h"
 #include "ui/views/widget/widget.h"
 
 namespace ash {
@@ -80,10 +83,7 @@ const double kExpectedPhoneticSpeechAndHintDelayMS = 1000;
 }  // namespace
 
 LoggedInSpokenFeedbackTest::LoggedInSpokenFeedbackTest()
-    : animation_mode_(ui::ScopedAnimationDurationScaleMode::ZERO_DURATION) {
-  scoped_feature_list_.InitAndDisableFeature(
-      ::features::kAccessibilityDeprecateChromeVoxTabs);
-}
+    : animation_mode_(ui::ScopedAnimationDurationScaleMode::ZERO_DURATION) {}
 
 LoggedInSpokenFeedbackTest::~LoggedInSpokenFeedbackTest() = default;
 
@@ -538,50 +538,6 @@ IN_PROC_BROWSER_TEST_P(SpokenFeedbackTest, FocusShelf) {
   sm_.Replay();
 }
 
-IN_PROC_BROWSER_TEST_P(SpokenFeedbackTest, NavigateTabsMenu) {
-  EnableChromeVox();
-
-  // Open two tabs, titled "Hello" and "World".
-  sm_.Call([this]() {
-    ASSERT_TRUE(ui_test_utils::NavigateToURL(
-        browser(), GURL(R"(data:text/html;charset=utf-8,
-            <title>Hello</title>
-            <button autofocus>Hello webpage</button>
-            <a target="_blank" href="https://google.com">Open world</a>)")));
-  });
-  sm_.ExpectSpeech("Hello webpage");
-  sm_.Call([this]() { SendKeyPressWithSearch(ui::VKEY_RIGHT); });
-  sm_.ExpectSpeech("Open world");
-  sm_.Call([this]() { SendKeyPressWithSearch(ui::VKEY_SPACE); });
-
-  // Open the tabs menu.
-  sm_.Call([this]() { SendKeyPressWithSearch(ui::VKEY_OEM_PERIOD); });
-  sm_.ExpectSpeech("Search the menus");
-  sm_.Call([this]() {
-    SendKeyPress(ui::VKEY_RIGHT);
-    SendKeyPress(ui::VKEY_RIGHT);
-    SendKeyPress(ui::VKEY_RIGHT);
-  });
-  sm_.ExpectSpeech("Tabs Menu");
-  sm_.ExpectSpeech("Hello");
-
-  // Navigate down to the active tab.
-  sm_.Call([this]() { SendKeyPress(ui::VKEY_DOWN); });
-  sm_.ExpectSpeech("google.com (active)");
-
-  // Navigate back up to "Hello".
-  sm_.Call([this]() { SendKeyPress(ui::VKEY_UP); });
-  sm_.ExpectSpeech("Hello");
-
-  // Select that tab and expect to return to the webpage.
-  sm_.Call([this]() { SendKeyPress(ui::VKEY_SPACE); });
-  sm_.ExpectSpeech("Open world");
-  sm_.Call([this]() { SendKeyPressWithSearch(ui::VKEY_LEFT); });
-  sm_.ExpectSpeech("Hello webpage");
-
-  sm_.Replay();
-}
-
 // Verifies that pressing right arrow button with search button should move
 // focus to the next ShelfItem instead of the last one
 IN_PROC_BROWSER_TEST_P(SpokenFeedbackTest, ShelfIconFocusForward) {
@@ -915,7 +871,6 @@ IN_PROC_BROWSER_TEST_P(SpokenFeedbackTest, NavigateChromeVoxMenu) {
   sm_.Call([this]() { SendKeyPressWithSearch(ui::VKEY_OEM_PERIOD); });
   sm_.ExpectSpeech("Search the menus");
   sm_.Call([this]() {
-    SendKeyPress(ui::VKEY_RIGHT);
     SendKeyPress(ui::VKEY_RIGHT);
     SendKeyPress(ui::VKEY_RIGHT);
     SendKeyPress(ui::VKEY_RIGHT);
@@ -1558,6 +1513,134 @@ IN_PROC_BROWSER_TEST_P(SpokenFeedbackTest, TouchExploreSecondaryDisplay) {
   sm_.Replay();
 }
 
+IN_PROC_BROWSER_TEST_P(SpokenFeedbackTest, TouchExploreWebContents) {
+  EnableChromeVox();
+
+  base::SimpleTestTickClock clock;
+  auto* clock_ptr = &clock;
+  ui::SetEventTickClockForTesting(clock_ptr);
+
+  auto* root_window = Shell::Get()->GetPrimaryRootWindow();
+  ui::test::EventGenerator generator(root_window);
+  auto* generator_ptr = &generator;
+
+  gfx::Rect b2_bounds;
+  gfx::Rect b3_bounds;
+
+  sm_.Call([this]() {
+    ASSERT_TRUE(ui_test_utils::NavigateToURL(
+        browser(), GURL(R"(data:text/html;charset=utf-8,
+            <button id="b1" autofocus>First</button>
+            <button id="b2">Second</button>
+            <button id="b3">Third</button>
+        )")));
+  });
+  sm_.ExpectSpeech("First");
+  sm_.Call([this, clock_ptr, generator_ptr, &b2_bounds, &b3_bounds]() {
+    auto* web_contents = browser()->tab_strip_model()->GetActiveWebContents();
+    b2_bounds = GetControlBoundsInRoot(web_contents, "b2");
+    b3_bounds = GetControlBoundsInRoot(web_contents, "b3");
+
+    ui::TouchEvent touch_press(
+        ui::ET_TOUCH_PRESSED, b2_bounds.top_center(), base::TimeTicks::Now(),
+        ui::PointerDetails(ui::EventPointerType::kTouch, 0));
+    generator_ptr->Dispatch(&touch_press);
+
+    clock_ptr->Advance(base::Seconds(1));
+
+    ui::TouchEvent touch_move(
+        ui::ET_TOUCH_MOVED, b2_bounds.CenterPoint(), base::TimeTicks::Now(),
+        ui::PointerDetails(ui::EventPointerType::kTouch, 0));
+    generator_ptr->Dispatch(&touch_move);
+
+    clock_ptr->Advance(base::Seconds(1));
+
+    ui::TouchEvent touch_move2(
+        ui::ET_TOUCH_MOVED, b2_bounds.left_center(), base::TimeTicks::Now(),
+        ui::PointerDetails(ui::EventPointerType::kTouch, 0));
+    generator_ptr->Dispatch(&touch_move2);
+  });
+  sm_.ExpectSpeech("Second");
+  sm_.Call([clock_ptr, generator_ptr, &b3_bounds]() {
+    clock_ptr->Advance(base::Seconds(1));
+
+    ui::TouchEvent touch_move(
+        ui::ET_TOUCH_MOVED, b3_bounds.right_center(), base::TimeTicks::Now(),
+        ui::PointerDetails(ui::EventPointerType::kTouch, 0));
+    generator_ptr->Dispatch(&touch_move);
+
+    clock_ptr->Advance(base::Seconds(1));
+
+    ui::TouchEvent touch_move2(
+        ui::ET_TOUCH_MOVED, b3_bounds.CenterPoint(), base::TimeTicks::Now(),
+        ui::PointerDetails(ui::EventPointerType::kTouch, 0));
+    generator_ptr->Dispatch(&touch_move2);
+  });
+  sm_.ExpectSpeech("Third");
+  sm_.Replay();
+}
+
+IN_PROC_BROWSER_TEST_P(SpokenFeedbackTest, TouchExploreWebContentsHighDPI) {
+  ShellTestApi shell_test_api;
+  // Use DPI of Strongbad, to reproduce b/295325508.
+  display::test::DisplayManagerTestApi(shell_test_api.display_manager())
+      .UpdateDisplay("800x700*1.77778");
+
+  EnableChromeVox();
+
+  base::SimpleTestTickClock clock;
+  auto* clock_ptr = &clock;
+  ui::SetEventTickClockForTesting(clock_ptr);
+
+  auto* root_window = Shell::Get()->GetPrimaryRootWindow();
+  ui::test::EventGenerator generator(root_window);
+  auto* generator_ptr = &generator;
+
+  sm_.Call([this]() {
+    ASSERT_TRUE(ui_test_utils::NavigateToURL(
+        browser(), GURL(R"(data:text/html;charset=utf-8,
+            <button id="b1" autofocus>First</button>
+            <button id="b2">Second</button>
+        )")));
+  });
+  sm_.ExpectSpeech("First");
+  sm_.Call([this, clock_ptr, generator_ptr]() {
+    float scale_factor = 1.77778;
+    auto* web_contents = browser()->tab_strip_model()->GetActiveWebContents();
+    gfx::Rect b2_bounds = GetControlBoundsInRoot(web_contents, "b2");
+    // GetControlBoundsInRoot returns in DIPs. Multiply by resolution to get px,
+    // which is where we need to touch on a high density screen.
+    b2_bounds.set_x(b2_bounds.x() * scale_factor);
+    b2_bounds.set_y(b2_bounds.y() * scale_factor);
+    b2_bounds.set_width(b2_bounds.width() * scale_factor);
+    b2_bounds.set_height(b2_bounds.height() * scale_factor);
+
+    ui::TouchEvent touch_press(
+        ui::ET_TOUCH_PRESSED, b2_bounds.bottom_center(), base::TimeTicks::Now(),
+        ui::PointerDetails(ui::EventPointerType::kTouch, 0));
+    generator_ptr->Dispatch(&touch_press);
+
+    clock_ptr->Advance(base::Seconds(1));
+
+    ui::TouchEvent touch_move(
+        ui::ET_TOUCH_MOVED, b2_bounds.CenterPoint(), base::TimeTicks::Now(),
+        ui::PointerDetails(ui::EventPointerType::kTouch, 0));
+    generator_ptr->Dispatch(&touch_move);
+
+    clock_ptr->Advance(base::Seconds(1));
+
+    ui::TouchEvent touch_move2(
+        ui::ET_TOUCH_MOVED, b2_bounds.right_center(), base::TimeTicks::Now(),
+        ui::PointerDetails(ui::EventPointerType::kTouch, 0));
+    generator_ptr->Dispatch(&touch_move2);
+  });
+  sm_.ExpectSpeech("Second");
+  sm_.Replay();
+}
+
+// TODO(b/287488905): Add test for touch explore with screen magnifier and high
+// DPI.
+
 IN_PROC_BROWSER_TEST_P(SpokenFeedbackTest, ChromeVoxNextTabRecovery) {
   EnableChromeVox();
 
@@ -2010,6 +2093,38 @@ IN_PROC_BROWSER_TEST_P(SpokenFeedbackTest, ClipboardCopySpeech) {
   sm_.Replay();
 }
 
+IN_PROC_BROWSER_TEST_P(SpokenFeedbackTest, OrientationChanged) {
+  EnableChromeVox();
+
+  sm_.Call([]() {
+    Shell::Get()->display_configuration_controller()->SetDisplayRotation(
+        ash::Shell::Get()->display_manager()->GetDisplayAt(0).id(),
+        display::Display::ROTATE_90, display::Display::RotationSource::USER);
+  });
+
+  sm_.ExpectSpeech("portrait");
+
+  sm_.Call([]() {
+    Shell::Get()->display_configuration_controller()->SetDisplayRotation(
+        ash::Shell::Get()->display_manager()->GetDisplayAt(0).id(),
+        display::Display::ROTATE_180, display::Display::RotationSource::USER);
+  });
+
+  sm_.ExpectSpeech("landscape");
+
+  sm_.Call([]() {
+    Shell::Get()->display_configuration_controller()->SetDisplayRotation(
+        ash::Shell::Get()->display_manager()->GetDisplayAt(0).id(),
+        display::Display::ROTATE_270, display::Display::RotationSource::USER);
+  });
+
+  sm_.ExpectSpeech("portrait");
+
+  sm_.ExpectHadNoRepeatedSpeech();
+
+  sm_.Replay();
+}
+
 // Spoken feedback tests of the out-of-box experience.
 class OobeSpokenFeedbackTest : public OobeBaseTest {
  public:
@@ -2130,50 +2245,6 @@ IN_PROC_BROWSER_TEST_F(SigninToUserProfileSwitchTest, DISABLED_LoginAsNewUser) {
   sm_.Replay();
 }
 
-class DeprecateTabsSpokenFeedbackTest : public LoggedInSpokenFeedbackTest {
- public:
-  DeprecateTabsSpokenFeedbackTest() = default;
-  DeprecateTabsSpokenFeedbackTest(const DeprecateTabsSpokenFeedbackTest&) =
-      delete;
-  DeprecateTabsSpokenFeedbackTest& operator=(
-      const DeprecateTabsSpokenFeedbackTest&) = delete;
-  ~DeprecateTabsSpokenFeedbackTest() override = default;
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_{
-      ::features::kAccessibilityDeprecateChromeVoxTabs};
-};
-
-// Matches NavigateTabsMenu test.
-IN_PROC_BROWSER_TEST_F(DeprecateTabsSpokenFeedbackTest, NoTabsMenu) {
-  EnableChromeVox();
-
-  // Open two tabs, titled "Hello" and "World".
-  sm_.Call([this]() {
-    ASSERT_TRUE(ui_test_utils::NavigateToURL(
-        browser(), GURL(R"(data:text/html;charset=utf-8,
-            <title>Hello</title>
-            <button autofocus>Hello webpage</button>
-            <a target="_blank" href="https://google.com">Open world</a>)")));
-  });
-  sm_.ExpectSpeech("Hello webpage");
-  sm_.Call([this]() { SendKeyPressWithSearch(ui::VKEY_RIGHT); });
-  sm_.ExpectSpeech("Open world");
-  sm_.Call([this]() { SendKeyPressWithSearch(ui::VKEY_SPACE); });
-
-  // Move to where the tabs menu was (see SpokenFeedbackTest.NavigateTabsMenu).
-  sm_.Call([this]() { SendKeyPressWithSearch(ui::VKEY_OEM_PERIOD); });
-  sm_.ExpectSpeech("Search the menus");
-  sm_.Call([this]() {
-    SendKeyPress(ui::VKEY_RIGHT);
-    SendKeyPress(ui::VKEY_RIGHT);
-    SendKeyPress(ui::VKEY_RIGHT);
-  });
-  sm_.ExpectNextSpeechIsNot("Tabs Menu");
-
-  sm_.Replay();
-}
-
 class DeskTemplatesSpokenFeedbackTest : public LoggedInSpokenFeedbackTest {
  public:
   DeskTemplatesSpokenFeedbackTest() = default;
@@ -2248,13 +2319,13 @@ IN_PROC_BROWSER_TEST_F(DeskTemplatesSpokenFeedbackTest, DeskTemplatesBasic) {
   sm_.Replay();
 }
 
-// TODO(jimmyxgong): Update this suite after the old keyboard shortcut viewer
-// app is removed.
 class ShortcutsAppSpokenFeedbackTest : public LoggedInSpokenFeedbackTest {
  public:
   ShortcutsAppSpokenFeedbackTest() {
-    scoped_feature_list_.InitAndDisableFeature(
-        {features::kOnlyShowNewShortcutsApp});
+    scoped_feature_list_.InitWithFeatures(
+        {::features::kShortcutCustomizationApp,
+         features::kOnlyShowNewShortcutsApp},
+        {});
   }
   ShortcutsAppSpokenFeedbackTest(const ShortcutsAppSpokenFeedbackTest&) =
       delete;
@@ -2266,37 +2337,35 @@ class ShortcutsAppSpokenFeedbackTest : public LoggedInSpokenFeedbackTest {
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
-IN_PROC_BROWSER_TEST_F(ShortcutsAppSpokenFeedbackTest, KeyboardShortcutViewer) {
+// TODO(b/288602247): The test is flaky.
+IN_PROC_BROWSER_TEST_F(ShortcutsAppSpokenFeedbackTest,
+                       DISABLED_ShortcutCustomization) {
   EnableChromeVox();
   sm_.Call([this]() {
-    SendKeyPressWithControlAndAlt(ui::VKEY_OEM_2 /* forward slash */);
+    ASSERT_TRUE(ui_test_utils::NavigateToURL(
+        browser(), GURL("chrome://shortcut-customization")));
   });
-  sm_.ExpectSpeech("Shortcuts, window");
+  sm_.ExpectSpeech("Search shortcuts");
 
   // Move through all tabs; make a few expectations along the way.
-  sm_.Call([this]() { SendKeyPressWithSearch(ui::VKEY_RIGHT); });
-  sm_.ExpectSpeech("Popular Shortcuts, tab");
-  sm_.ExpectSpeech("1 of 6");
-  sm_.Call([this]() { SendKeyPressWithSearch(ui::VKEY_RIGHT); });
-  sm_.Call([this]() { SendKeyPressWithSearch(ui::VKEY_RIGHT); });
-  sm_.Call([this]() { SendKeyPressWithSearch(ui::VKEY_RIGHT); });
-  sm_.Call([this]() { SendKeyPressWithSearch(ui::VKEY_RIGHT); });
-  sm_.Call([this]() { SendKeyPressWithSearch(ui::VKEY_RIGHT); });
-  sm_.ExpectSpeech("Accessibility, tab");
-  sm_.Call([this]() { SendKeyPressWithSearch(ui::VKEY_RIGHT); });
-  sm_.ExpectSpeech("Popular Shortcuts");
-  sm_.ExpectSpeech("Tab");
+  sm_.Call([this]() { SendKeyPressWithSearch(ui::VKEY_DOWN); });
+  sm_.ExpectSpeech("General");
+  sm_.Call([this]() { SendKeyPressWithSearch(ui::VKEY_DOWN); });
+  sm_.Call([this]() { SendKeyPressWithSearch(ui::VKEY_DOWN); });
+  sm_.Call([this]() { SendKeyPressWithSearch(ui::VKEY_DOWN); });
+  sm_.Call([this]() { SendKeyPressWithSearch(ui::VKEY_DOWN); });
+  sm_.Call([this]() { SendKeyPressWithSearch(ui::VKEY_DOWN); });
+  sm_.ExpectSpeech("Accessibility");
+  sm_.Call([this]() { SendKeyPressWithSearch(ui::VKEY_DOWN); });
+  sm_.ExpectSpeech("Keyboard settings");
 
   // Moving forward again should dive into the list of shortcuts for the
   // category.
   sm_.Call([this]() { SendKeyPressWithSearch(ui::VKEY_RIGHT); });
-  sm_.ExpectSpeech("Copy selected content to the clipboard, Ctrl plus c");
-  sm_.ExpectSpeech("List item");
-  sm_.ExpectSpeech("1 of 21");
-  sm_.ExpectSpeech("Popular Shortcuts");
-  sm_.ExpectSpeech("Tab");
-  sm_.ExpectSpeech("List");
-  sm_.ExpectSpeech("with 21 items");
+  sm_.ExpectSpeech("General controls");
+  sm_.Call([this]() { SendKeyPressWithSearch(ui::VKEY_DOWN); });
+  sm_.ExpectSpeech("Open slash close Launcher");
+  sm_.ExpectSpeech("row 1 column 1");
   sm_.Replay();
 }
 }  // namespace ash

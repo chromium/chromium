@@ -5,21 +5,23 @@
 package org.chromium.chrome.browser.bookmarks;
 
 import org.chromium.chrome.browser.commerce.ShoppingFeatures;
-import org.chromium.chrome.browser.sync.SyncService;
-import org.chromium.chrome.browser.sync.SyncService.SyncStateChangedListener;
 import org.chromium.components.bookmarks.BookmarkId;
 import org.chromium.components.bookmarks.BookmarkItem;
 import org.chromium.components.power_bookmarks.PowerBookmarkMeta;
+import org.chromium.components.power_bookmarks.PowerBookmarkType;
+import org.chromium.components.sync.SyncService;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 
 /** Simple implementation of {@link BookmarkQueryHandler} for the old experience. */
 public class LegacyBookmarkQueryHandler implements BookmarkQueryHandler {
     private final BasicBookmarkQueryHandler mBasicBookmarkQueryHandler;
     private final BookmarkModel mBookmarkModel;
     private final SyncService mSyncService;
-    private final SyncStateChangedListener mSyncStateChangedListener = this::syncStateChanged;
+    private final SyncService.SyncStateChangedListener mSyncStateChangedListener =
+            this::syncStateChanged;
     private final List<BookmarkId> mTopLevelFolders = new ArrayList<>();
     private final BookmarkUiPrefs mBookmarkUiPrefs;
 
@@ -28,10 +30,10 @@ public class LegacyBookmarkQueryHandler implements BookmarkQueryHandler {
      * @param bookmarkUiPrefs Stores display preferences for bookmarks.
      */
     public LegacyBookmarkQueryHandler(
-            BookmarkModel bookmarkModel, BookmarkUiPrefs bookmarkUiPrefs) {
+            BookmarkModel bookmarkModel, BookmarkUiPrefs bookmarkUiPrefs, SyncService syncService) {
         mBookmarkModel = bookmarkModel;
         mBookmarkModel.finishLoadingBookmarkModel(this::onBookmarkModelLoaded);
-        mSyncService = SyncService.get();
+        mSyncService = syncService;
         mSyncService.addSyncStateChangedListener(mSyncStateChangedListener);
         mBasicBookmarkQueryHandler = new BasicBookmarkQueryHandler(bookmarkModel, bookmarkUiPrefs);
         mBookmarkUiPrefs = bookmarkUiPrefs;
@@ -53,8 +55,9 @@ public class LegacyBookmarkQueryHandler implements BookmarkQueryHandler {
     }
 
     @Override
-    public List<BookmarkListEntry> buildBookmarkListForSearch(String query) {
-        return mBasicBookmarkQueryHandler.buildBookmarkListForSearch(query);
+    public List<BookmarkListEntry> buildBookmarkListForSearch(
+            String query, Set<PowerBookmarkType> powerFilter) {
+        return mBasicBookmarkQueryHandler.buildBookmarkListForSearch(query, powerFilter);
     }
 
     private List<BookmarkListEntry> buildBookmarkListForRootView() {

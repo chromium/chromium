@@ -20,7 +20,7 @@ class NGLineBreakCandidateTest : public RenderingTest {
                          NGLineBreakCandidates& candidates) {
     NGConstraintSpace space = ConstraintSpaceForAvailableSize(available_width);
     NGExclusionSpace exclusion_space;
-    NGPositionedFloatVector leading_floats;
+    NGLeadingFloats leading_floats;
     NGLineLayoutOpportunity line_opportunity(available_width);
     const NGInlineBreakToken* break_token = nullptr;
     NGLineInfo line_info;
@@ -28,8 +28,8 @@ class NGLineBreakCandidateTest : public RenderingTest {
     bool is_first = true;
     do {
       NGLineBreaker line_breaker(node, NGLineBreakerMode::kContent, space,
-                                 line_opportunity, leading_floats, 0u,
-                                 break_token, /* column_spanner_path */ nullptr,
+                                 line_opportunity, leading_floats, break_token,
+                                 /* column_spanner_path */ nullptr,
                                  &exclusion_space);
       line_breaker.NextLine(&line_info);
       if (is_first) {

@@ -10,10 +10,11 @@
 #include <memory>
 
 #include "base/apple/bridging.h"
+#include "base/apple/foundation_util.h"
+#include "base/apple/scoped_cftyperef.h"
 #include "base/containers/span.h"
-#include "base/mac/foundation_util.h"
-#include "base/mac/scoped_cftyperef.h"
 #include "base/memory/raw_ptr.h"
+#include "base/strings/stringprintf.h"
 #include "base/strings/sys_string_conversions.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "chrome/browser/enterprise/connectors/device_trust/key_management/core/mac/metrics_util.h"
@@ -22,10 +23,6 @@
 #include "chrome/browser/enterprise/connectors/device_trust/key_management/core/shared_command_constants.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
-
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
 
 using testing::_;
 
@@ -38,6 +35,18 @@ constexpr char kPermanentStatusHistogramName[] =
 constexpr char kTemporaryStatusHistogramName[] =
     "Enterprise.DeviceTrust.Mac.SecureEnclaveOperation.Temporary";
 
+constexpr char kOSStatusHistogramPrefix[] =
+    "Enterprise.DeviceTrust.Mac.KeychainOSStatus.";
+constexpr char kKeychainOSStatusHistogramFormat[] =
+    "Enterprise.DeviceTrust.Mac.KeychainOSStatus.%s.%s";
+
+std::string GetOSStatusHistogramName(bool permanent_key,
+                                     const std::string& operation) {
+  return base::StringPrintf(kKeychainOSStatusHistogramFormat,
+                            permanent_key ? "Permanent" : "Temporary",
+                            operation.c_str());
+}
+
 }  // namespace
 
 using test::MockSecureEnclaveHelper;
@@ -45,9 +54,6 @@ using test::MockSecureEnclaveHelper;
 class SecureEnclaveClientTest : public testing::Test {
  protected:
   void SetUp() override {
-    if (@available(macOS 10.15, *))
-      data_protection_keychain_ = true;
-
     auto mock_secure_enclave_helper =
         std::make_unique<MockSecureEnclaveHelper>();
     mock_secure_enclave_helper_ = mock_secure_enclave_helper.get();
@@ -82,101 +88,110 @@ class SecureEnclaveClientTest : public testing::Test {
   }
 
   void VerifyQuery(CFDictionaryRef query, CFStringRef label) {
-    EXPECT_TRUE(CFEqual(label, base::mac::GetValueFromDictionary<CFStringRef>(
+    EXPECT_TRUE(CFEqual(label, base::apple::GetValueFromDictionary<CFStringRef>(
                                    query, kSecAttrLabel)));
     EXPECT_TRUE(CFEqual(kSecAttrKeyTypeECSECPrimeRandom,
-                        base::mac::GetValueFromDictionary<CFStringRef>(
+                        base::apple::GetValueFromDictionary<CFStringRef>(
                             query, kSecAttrKeyType)));
   }
 
-  raw_ptr<MockSecureEnclaveHelper> mock_secure_enclave_helper_ = nullptr;
+  base::HistogramTester histogram_tester_;
+  raw_ptr<MockSecureEnclaveHelper, DanglingUntriaged>
+      mock_secure_enclave_helper_ = nullptr;
   std::unique_ptr<SecureEnclaveClient> secure_enclave_client_;
   base::ScopedCFTypeRef<SecKeyRef> test_key_;
-  bool data_protection_keychain_ = false;
 };
 
 // Tests that the CreatePermanentKey method invokes both the SE helper's
 // Delete and CreateSecureKey method and that the key attributes are set
 // correctly.
 TEST_F(SecureEnclaveClientTest, CreateKey_Success) {
-  base::HistogramTester histogram_tester;
-
   EXPECT_CALL(*mock_secure_enclave_helper_, Delete(_))
       .Times(1)
       .WillOnce([this](CFDictionaryRef query) {
         VerifyQuery(query, base::SysUTF8ToCFStringRef(
                                constants::kDeviceTrustSigningKeyLabel));
-        return true;
+        return errSecSuccess;
       });
 
-  EXPECT_CALL(*mock_secure_enclave_helper_, CreateSecureKey(_))
+  EXPECT_CALL(*mock_secure_enclave_helper_, CreateSecureKey(_, _))
       .Times(1)
-      .WillOnce([this](CFDictionaryRef attributes) {
+      .WillOnce([this](CFDictionaryRef attributes, OSStatus* status) {
         EXPECT_TRUE(CFEqual(
             base::SysUTF8ToCFStringRef(constants::kDeviceTrustSigningKeyLabel),
-            base::mac::GetValueFromDictionary<CFStringRef>(attributes,
-                                                           kSecAttrLabel)));
+            base::apple::GetValueFromDictionary<CFStringRef>(attributes,
+                                                             kSecAttrLabel)));
         EXPECT_TRUE(CFEqual(kSecAttrKeyTypeECSECPrimeRandom,
-                            base::mac::GetValueFromDictionary<CFStringRef>(
+                            base::apple::GetValueFromDictionary<CFStringRef>(
                                 attributes, kSecAttrKeyType)));
         EXPECT_TRUE(CFEqual(kSecAttrTokenIDSecureEnclave,
-                            base::mac::GetValueFromDictionary<CFStringRef>(
+                            base::apple::GetValueFromDictionary<CFStringRef>(
                                 attributes, kSecAttrTokenID)));
         EXPECT_TRUE(CFEqual(base::apple::NSToCFPtrCast(@256),
-                            base::mac::GetValueFromDictionary<CFNumberRef>(
+                            base::apple::GetValueFromDictionary<CFNumberRef>(
                                 attributes, kSecAttrKeySizeInBits)));
         auto* private_key_attributes =
-            base::mac::GetValueFromDictionary<CFDictionaryRef>(
+            base::apple::GetValueFromDictionary<CFDictionaryRef>(
                 attributes, kSecPrivateKeyAttrs);
         EXPECT_TRUE(CFEqual(kCFBooleanTrue,
-                            base::mac::GetValueFromDictionary<CFBooleanRef>(
+                            base::apple::GetValueFromDictionary<CFBooleanRef>(
                                 private_key_attributes, kSecAttrIsPermanent)));
+
+        *status = errSecSuccess;
         return test_key_;
       });
   EXPECT_EQ(secure_enclave_client_->CreatePermanentKey(), test_key_);
 
   // Should expect no create key failure metrics.
-  histogram_tester.ExpectTotalCount(kPermanentStatusHistogramName, 0);
-  histogram_tester.ExpectTotalCount(kTemporaryStatusHistogramName, 0);
+  histogram_tester_.ExpectTotalCount(kPermanentStatusHistogramName, 0);
+  histogram_tester_.ExpectTotalCount(kTemporaryStatusHistogramName, 0);
+  EXPECT_TRUE(
+      histogram_tester_.GetTotalCountsForPrefix(kOSStatusHistogramPrefix)
+          .empty());
 }
 
 // Tests that a create key failure metric is logged when the CreatePermanentKey
 // method fails to create the permanent key.
 TEST_F(SecureEnclaveClientTest, CreateKey_Failure) {
-  base::HistogramTester histogram_tester;
-
   EXPECT_CALL(*mock_secure_enclave_helper_, Delete(_))
       .Times(1)
       .WillOnce([this](CFDictionaryRef query) {
         VerifyQuery(query, base::SysUTF8ToCFStringRef(
                                constants::kDeviceTrustSigningKeyLabel));
-        return true;
+        return errSecSuccess;
       });
 
-  EXPECT_CALL(*mock_secure_enclave_helper_, CreateSecureKey(_))
+  EXPECT_CALL(*mock_secure_enclave_helper_, CreateSecureKey(_, _))
       .Times(1)
-      .WillOnce([](CFDictionaryRef attributes) {
+      .WillOnce([](CFDictionaryRef attributes, OSStatus* status) {
+        *status = errSecItemNotFound;
         return base::ScopedCFTypeRef<SecKeyRef>();
       });
   EXPECT_FALSE(secure_enclave_client_->CreatePermanentKey());
 
   // Should expect one create key failure metric for the permanent key.
-  histogram_tester.ExpectUniqueSample(
+  histogram_tester_.ExpectUniqueSample(
       kPermanentStatusHistogramName,
       SecureEnclaveOperationStatus::kCreateSecureKeyFailed, 1);
+  histogram_tester_.ExpectUniqueSample(GetOSStatusHistogramName(true, "Create"),
+                                       errSecItemNotFound, 1);
+  EXPECT_EQ(histogram_tester_.GetTotalCountsForPrefix(kOSStatusHistogramPrefix)
+                .size(),
+            1U);
 
   // Should expect no create key failure metric for the temporary key.
-  histogram_tester.ExpectTotalCount(kTemporaryStatusHistogramName, 0);
+  histogram_tester_.ExpectTotalCount(kTemporaryStatusHistogramName, 0);
 }
 
 // Tests when the CopyStoredKey method invokes the SE helper's CopyKey method
 // and a key is found using both a permanent and a temporary key type.
 TEST_F(SecureEnclaveClientTest, CopyStoredKey_KeyFound) {
-  base::HistogramTester histogram_tester;
-
-  EXPECT_CALL(*mock_secure_enclave_helper_, CopyKey(_))
+  EXPECT_CALL(*mock_secure_enclave_helper_, CopyKey(_, _))
       .Times(2)
-      .WillRepeatedly([this](CFDictionaryRef query) { return test_key_; });
+      .WillRepeatedly([this](CFDictionaryRef query, OSStatus* status) {
+        *status = errSecSuccess;
+        return test_key_;
+      });
   EXPECT_EQ(secure_enclave_client_->CopyStoredKey(
                 SecureEnclaveClient::KeyType::kPermanent),
             test_key_);
@@ -185,18 +200,20 @@ TEST_F(SecureEnclaveClientTest, CopyStoredKey_KeyFound) {
             test_key_);
 
   // Should expect no copy key failure metrics.
-  histogram_tester.ExpectTotalCount(kPermanentStatusHistogramName, 0);
-  histogram_tester.ExpectTotalCount(kTemporaryStatusHistogramName, 0);
+  histogram_tester_.ExpectTotalCount(kPermanentStatusHistogramName, 0);
+  histogram_tester_.ExpectTotalCount(kTemporaryStatusHistogramName, 0);
+  EXPECT_TRUE(
+      histogram_tester_.GetTotalCountsForPrefix(kOSStatusHistogramPrefix)
+          .empty());
 }
 
 // Tests when the CopyStoredKey method invokes the SE helper's CopyKey method
 // and a key is not found using both a permanent and a temporary key type.
 TEST_F(SecureEnclaveClientTest, CopyStoredKey_KeyNotFound) {
-  base::HistogramTester histogram_tester;
-
-  EXPECT_CALL(*mock_secure_enclave_helper_, CopyKey(_))
+  EXPECT_CALL(*mock_secure_enclave_helper_, CopyKey(_, _))
       .Times(2)
-      .WillRepeatedly([](CFDictionaryRef query) {
+      .WillRepeatedly([](CFDictionaryRef query, OSStatus* status) {
+        *status = errSecItemNotFound;
         return base::ScopedCFTypeRef<SecKeyRef>();
       });
   EXPECT_FALSE(secure_enclave_client_->CopyStoredKey(
@@ -204,16 +221,24 @@ TEST_F(SecureEnclaveClientTest, CopyStoredKey_KeyNotFound) {
   EXPECT_FALSE(secure_enclave_client_->CopyStoredKey(
       SecureEnclaveClient::KeyType::kTemporary));
 
-  auto status = data_protection_keychain_
-                    ? SecureEnclaveOperationStatus::
-                          kCopySecureKeyRefDataProtectionKeychainFailed
-                    : SecureEnclaveOperationStatus::kCopySecureKeyRefFailed;
+  auto status = SecureEnclaveOperationStatus::
+      kCopySecureKeyRefDataProtectionKeychainFailed;
 
   // Should expect one copy key reference failure metric for the permanent key.
-  histogram_tester.ExpectUniqueSample(kPermanentStatusHistogramName, status, 1);
+  histogram_tester_.ExpectUniqueSample(kPermanentStatusHistogramName, status,
+                                       1);
 
   // Should expect one copy key reference failure metric for the temporary key.
-  histogram_tester.ExpectUniqueSample(kTemporaryStatusHistogramName, status, 1);
+  histogram_tester_.ExpectUniqueSample(kTemporaryStatusHistogramName, status,
+                                       1);
+
+  histogram_tester_.ExpectUniqueSample(GetOSStatusHistogramName(true, "Copy"),
+                                       errSecItemNotFound, 1);
+  histogram_tester_.ExpectUniqueSample(GetOSStatusHistogramName(false, "Copy"),
+                                       errSecItemNotFound, 1);
+  EXPECT_EQ(histogram_tester_.GetTotalCountsForPrefix(kOSStatusHistogramPrefix)
+                .size(),
+            2U);
 }
 
 // Tests that the UpdateStoredKeyLabel method invokes the SE helper's
@@ -221,11 +246,9 @@ TEST_F(SecureEnclaveClientTest, CopyStoredKey_KeyNotFound) {
 // the permanent key label being updated to the temporary key label.
 TEST_F(SecureEnclaveClientTest,
        UpdateStoredKeyLabel_PermanentToTemporary_Success) {
-  base::HistogramTester histogram_tester;
-
   EXPECT_CALL(*mock_secure_enclave_helper_, Delete(_))
       .Times(1)
-      .WillOnce([](CFDictionaryRef query) { return true; });
+      .WillOnce([](CFDictionaryRef query) { return errSecSuccess; });
 
   EXPECT_CALL(*mock_secure_enclave_helper_, Update(_, _))
       .Times(1)
@@ -234,19 +257,22 @@ TEST_F(SecureEnclaveClientTest,
             EXPECT_TRUE(
                 CFEqual(base::SysUTF8ToCFStringRef(
                             constants::kTemporaryDeviceTrustSigningKeyLabel),
-                        base::mac::GetValueFromDictionary<CFStringRef>(
+                        base::apple::GetValueFromDictionary<CFStringRef>(
                             attribute_to_update, kSecAttrLabel)));
             VerifyQuery(query, base::SysUTF8ToCFStringRef(
                                    constants::kDeviceTrustSigningKeyLabel));
-            return true;
+            return errSecSuccess;
           });
   EXPECT_TRUE(secure_enclave_client_->UpdateStoredKeyLabel(
       SecureEnclaveClient::KeyType::kPermanent,
       SecureEnclaveClient::KeyType::kTemporary));
 
   // Should expect no update key failure metrics.
-  histogram_tester.ExpectTotalCount(kPermanentStatusHistogramName, 0);
-  histogram_tester.ExpectTotalCount(kTemporaryStatusHistogramName, 0);
+  histogram_tester_.ExpectTotalCount(kPermanentStatusHistogramName, 0);
+  histogram_tester_.ExpectTotalCount(kTemporaryStatusHistogramName, 0);
+  EXPECT_TRUE(
+      histogram_tester_.GetTotalCountsForPrefix(kOSStatusHistogramPrefix)
+          .empty());
 }
 
 // Tests that an update key failure metric is logged when the
@@ -254,31 +280,33 @@ TEST_F(SecureEnclaveClientTest,
 // key storage.
 TEST_F(SecureEnclaveClientTest,
        UpdateStoredKeyLabel_PermanentToTemporary_Failure) {
-  base::HistogramTester histogram_tester;
-
   EXPECT_CALL(*mock_secure_enclave_helper_, Delete(_))
       .Times(1)
-      .WillOnce([](CFDictionaryRef query) { return true; });
+      .WillOnce([](CFDictionaryRef query) { return errSecSuccess; });
 
   EXPECT_CALL(*mock_secure_enclave_helper_, Update(_, _))
       .Times(1)
       .WillOnce([](CFDictionaryRef query, CFDictionaryRef attribute_to_update) {
-        return false;
+        return errSecItemNotFound;
       });
   EXPECT_FALSE(secure_enclave_client_->UpdateStoredKeyLabel(
       SecureEnclaveClient::KeyType::kPermanent,
       SecureEnclaveClient::KeyType::kTemporary));
 
-  auto status = data_protection_keychain_
-                    ? SecureEnclaveOperationStatus::
-                          kUpdateSecureKeyLabelDataProtectionKeychainFailed
-                    : SecureEnclaveOperationStatus::kUpdateSecureKeyLabelFailed;
+  auto status = SecureEnclaveOperationStatus::
+      kUpdateSecureKeyLabelDataProtectionKeychainFailed;
 
   // Should expect an update failure metric for the permanent key.
-  histogram_tester.ExpectUniqueSample(kPermanentStatusHistogramName, status, 1);
+  histogram_tester_.ExpectUniqueSample(kPermanentStatusHistogramName, status,
+                                       1);
+  histogram_tester_.ExpectUniqueSample(GetOSStatusHistogramName(true, "Update"),
+                                       errSecItemNotFound, 1);
+  EXPECT_EQ(histogram_tester_.GetTotalCountsForPrefix(kOSStatusHistogramPrefix)
+                .size(),
+            1U);
 
   // Should expect no update key failure metric for the temporary key.
-  histogram_tester.ExpectTotalCount(kTemporaryStatusHistogramName, 0);
+  histogram_tester_.ExpectTotalCount(kTemporaryStatusHistogramName, 0);
 }
 
 // Tests that the UpdateStoredKeyLabel method invokes the SE helper's
@@ -286,11 +314,9 @@ TEST_F(SecureEnclaveClientTest,
 // the temporary key label being updated to the permanent key label.
 TEST_F(SecureEnclaveClientTest,
        UpdateStoredKeyLabel_TemporaryToPermanent_Success) {
-  base::HistogramTester histogram_tester;
-
   EXPECT_CALL(*mock_secure_enclave_helper_, Delete(_))
       .Times(1)
-      .WillOnce([](CFDictionaryRef query) { return true; });
+      .WillOnce([](CFDictionaryRef query) { return errSecSuccess; });
 
   EXPECT_CALL(*mock_secure_enclave_helper_, Update(_, _))
       .Times(1)
@@ -298,20 +324,23 @@ TEST_F(SecureEnclaveClientTest,
                        CFDictionaryRef attribute_to_update) {
         EXPECT_TRUE(CFEqual(
             base::SysUTF8ToCFStringRef(constants::kDeviceTrustSigningKeyLabel),
-            base::mac::GetValueFromDictionary<CFStringRef>(attribute_to_update,
-                                                           kSecAttrLabel)));
+            base::apple::GetValueFromDictionary<CFStringRef>(
+                attribute_to_update, kSecAttrLabel)));
         VerifyQuery(query,
                     base::SysUTF8ToCFStringRef(
                         constants::kTemporaryDeviceTrustSigningKeyLabel));
-        return true;
+        return errSecSuccess;
       });
   EXPECT_TRUE(secure_enclave_client_->UpdateStoredKeyLabel(
       SecureEnclaveClient::KeyType::kTemporary,
       SecureEnclaveClient::KeyType::kPermanent));
 
   // Should expect no update key failure metrics.
-  histogram_tester.ExpectTotalCount(kPermanentStatusHistogramName, 0);
-  histogram_tester.ExpectTotalCount(kTemporaryStatusHistogramName, 0);
+  histogram_tester_.ExpectTotalCount(kPermanentStatusHistogramName, 0);
+  histogram_tester_.ExpectTotalCount(kTemporaryStatusHistogramName, 0);
+  EXPECT_TRUE(
+      histogram_tester_.GetTotalCountsForPrefix(kOSStatusHistogramPrefix)
+          .empty());
 }
 
 // Tests that an update key failure metric is logged when the
@@ -319,131 +348,138 @@ TEST_F(SecureEnclaveClientTest,
 // key storage.
 TEST_F(SecureEnclaveClientTest,
        UpdateStoredKeyLabel_TemporaryToPermanent_Failure) {
-  base::HistogramTester histogram_tester;
-
   EXPECT_CALL(*mock_secure_enclave_helper_, Delete(_))
       .Times(1)
-      .WillOnce([](CFDictionaryRef query) { return true; });
+      .WillOnce([](CFDictionaryRef query) { return errSecSuccess; });
 
   EXPECT_CALL(*mock_secure_enclave_helper_, Update(_, _))
       .Times(1)
       .WillOnce([](CFDictionaryRef query, CFDictionaryRef attribute_to_update) {
-        return false;
+        return errSecItemNotFound;
       });
   EXPECT_FALSE(secure_enclave_client_->UpdateStoredKeyLabel(
       SecureEnclaveClient::KeyType::kTemporary,
       SecureEnclaveClient::KeyType::kPermanent));
 
-  auto status = data_protection_keychain_
-                    ? SecureEnclaveOperationStatus::
-                          kUpdateSecureKeyLabelDataProtectionKeychainFailed
-                    : SecureEnclaveOperationStatus::kUpdateSecureKeyLabelFailed;
+  auto status = SecureEnclaveOperationStatus::
+      kUpdateSecureKeyLabelDataProtectionKeychainFailed;
 
   // Should expect an update failure metric for the temporary key.
-  histogram_tester.ExpectUniqueSample(kTemporaryStatusHistogramName, status, 1);
+  histogram_tester_.ExpectUniqueSample(kTemporaryStatusHistogramName, status,
+                                       1);
+  histogram_tester_.ExpectUniqueSample(
+      GetOSStatusHistogramName(false, "Update"), errSecItemNotFound, 1);
+  EXPECT_EQ(histogram_tester_.GetTotalCountsForPrefix(kOSStatusHistogramPrefix)
+                .size(),
+            1U);
 
   // Should expect no update key failure metric for the permanent key.
-  histogram_tester.ExpectTotalCount(kPermanentStatusHistogramName, 0);
+  histogram_tester_.ExpectTotalCount(kPermanentStatusHistogramName, 0);
 }
 
 // Tests that the DeleteKey method invokes the SE helper's Delete method
 // and that the key query is set correctly with the temporary key label.
 TEST_F(SecureEnclaveClientTest, DeleteKey_TempKeyLabel_Success) {
-  base::HistogramTester histogram_tester;
-
   EXPECT_CALL(*mock_secure_enclave_helper_, Delete(_))
       .Times(1)
       .WillOnce([this](CFDictionaryRef query) {
         VerifyQuery(query,
                     base::SysUTF8ToCFStringRef(
                         constants::kTemporaryDeviceTrustSigningKeyLabel));
-        return true;
+        return errSecSuccess;
       });
   EXPECT_TRUE(secure_enclave_client_->DeleteKey(
       SecureEnclaveClient::KeyType::kTemporary));
 
   // Should expect no delete key failure metrics.
-  histogram_tester.ExpectTotalCount(kPermanentStatusHistogramName, 0);
-  histogram_tester.ExpectTotalCount(kTemporaryStatusHistogramName, 0);
+  histogram_tester_.ExpectTotalCount(kPermanentStatusHistogramName, 0);
+  histogram_tester_.ExpectTotalCount(kTemporaryStatusHistogramName, 0);
+  EXPECT_TRUE(
+      histogram_tester_.GetTotalCountsForPrefix(kOSStatusHistogramPrefix)
+          .empty());
 }
 
 // Tests that a delete key failure metric is logged when the DeleteKey method
 // fails to delete the temporary key.
 TEST_F(SecureEnclaveClientTest, DeleteKey_TempKeyLabel_Failure) {
-  base::HistogramTester histogram_tester;
-
   EXPECT_CALL(*mock_secure_enclave_helper_, Delete(_))
       .Times(1)
-      .WillOnce([](CFDictionaryRef query) { return false; });
+      .WillOnce([](CFDictionaryRef query) { return errSecItemNotFound; });
   EXPECT_FALSE(secure_enclave_client_->DeleteKey(
       SecureEnclaveClient::KeyType::kTemporary));
 
-  auto status = data_protection_keychain_
-                    ? SecureEnclaveOperationStatus::
-                          kDeleteSecureKeyDataProtectionKeychainFailed
-                    : SecureEnclaveOperationStatus::kDeleteSecureKeyFailed;
+  auto status = SecureEnclaveOperationStatus::
+      kDeleteSecureKeyDataProtectionKeychainFailed;
 
   // Should expect one delete key failure metric for the temporary key.
-  histogram_tester.ExpectUniqueSample(kTemporaryStatusHistogramName, status, 1);
+  histogram_tester_.ExpectUniqueSample(kTemporaryStatusHistogramName, status,
+                                       1);
+  histogram_tester_.ExpectUniqueSample(
+      GetOSStatusHistogramName(false, "Delete"), errSecItemNotFound, 1);
+  EXPECT_EQ(histogram_tester_.GetTotalCountsForPrefix(kOSStatusHistogramPrefix)
+                .size(),
+            1U);
 
   // Should expect no delete key failure metric for the permanent key.
-  histogram_tester.ExpectTotalCount(kPermanentStatusHistogramName, 0);
+  histogram_tester_.ExpectTotalCount(kPermanentStatusHistogramName, 0);
 }
 
 // Tests that the DeleteKey method invokes the SE helper's Delete method
 // and that the key query is set correctly with the permanent key label.
 TEST_F(SecureEnclaveClientTest, DeleteKey_PermanentKeyLabel_Success) {
-  base::HistogramTester histogram_tester;
-
   EXPECT_CALL(*mock_secure_enclave_helper_, Delete(_))
       .Times(1)
       .WillOnce([this](CFDictionaryRef query) {
         VerifyQuery(query, base::SysUTF8ToCFStringRef(
                                constants::kDeviceTrustSigningKeyLabel));
-        return true;
+        return errSecSuccess;
       });
   EXPECT_TRUE(secure_enclave_client_->DeleteKey(
       SecureEnclaveClient::KeyType::kPermanent));
 
   // Should expect no delete key failure metrics.
-  histogram_tester.ExpectTotalCount(kPermanentStatusHistogramName, 0);
-  histogram_tester.ExpectTotalCount(kTemporaryStatusHistogramName, 0);
+  histogram_tester_.ExpectTotalCount(kPermanentStatusHistogramName, 0);
+  histogram_tester_.ExpectTotalCount(kTemporaryStatusHistogramName, 0);
+  EXPECT_TRUE(
+      histogram_tester_.GetTotalCountsForPrefix(kOSStatusHistogramPrefix)
+          .empty());
 }
 
 // Tests that a delete key failure metric is logged when the DeleteKey method
 // fails to delete the permanent key.
 TEST_F(SecureEnclaveClientTest, DeleteKey_PermanentKeyLabel_Failure) {
-  base::HistogramTester histogram_tester;
-
   EXPECT_CALL(*mock_secure_enclave_helper_, Delete(_))
       .Times(1)
-      .WillOnce([](CFDictionaryRef query) { return false; });
+      .WillOnce([](CFDictionaryRef query) { return errSecItemNotFound; });
   EXPECT_FALSE(secure_enclave_client_->DeleteKey(
       SecureEnclaveClient::KeyType::kPermanent));
 
-  auto status = data_protection_keychain_
-                    ? SecureEnclaveOperationStatus::
-                          kDeleteSecureKeyDataProtectionKeychainFailed
-                    : SecureEnclaveOperationStatus::kDeleteSecureKeyFailed;
+  auto status = SecureEnclaveOperationStatus::
+      kDeleteSecureKeyDataProtectionKeychainFailed;
 
   // Should expect one delete key failure metric for the permanent key.
-  histogram_tester.ExpectUniqueSample(kPermanentStatusHistogramName, status, 1);
+  histogram_tester_.ExpectUniqueSample(kPermanentStatusHistogramName, status,
+                                       1);
+  histogram_tester_.ExpectUniqueSample(GetOSStatusHistogramName(true, "Delete"),
+                                       errSecItemNotFound, 1);
+  EXPECT_EQ(histogram_tester_.GetTotalCountsForPrefix(kOSStatusHistogramPrefix)
+                .size(),
+            1U);
 
   // Should expect no delete key failure metric for the temporary key.
-  histogram_tester.ExpectTotalCount(kTemporaryStatusHistogramName, 0);
+  histogram_tester_.ExpectTotalCount(kTemporaryStatusHistogramName, 0);
 }
 
 // Tests that the GetStoredKeyLabel method invokes the SE helper's CopyKey
 // method, and that the query and output is correct for a temporary key.
 TEST_F(SecureEnclaveClientTest, GetStoredKeyLabel_TempKeyLabelFound) {
-  base::HistogramTester histogram_tester;
-
   std::vector<uint8_t> output;
   std::string temp_label = constants::kTemporaryDeviceTrustSigningKeyLabel;
-  EXPECT_CALL(*mock_secure_enclave_helper_, CopyKey(_))
+  EXPECT_CALL(*mock_secure_enclave_helper_, CopyKey(_, _))
       .Times(1)
-      .WillOnce([this, &temp_label](CFDictionaryRef query) {
+      .WillOnce([this, &temp_label](CFDictionaryRef query, OSStatus* status) {
         VerifyQuery(query, base::SysUTF8ToCFStringRef(temp_label));
+        *status = errSecSuccess;
         return test_key_;
       });
 
@@ -454,20 +490,22 @@ TEST_F(SecureEnclaveClientTest, GetStoredKeyLabel_TempKeyLabelFound) {
   EXPECT_EQ(expected_output, output);
 
   // Should expect no copy key failure metrics.
-  histogram_tester.ExpectTotalCount(kPermanentStatusHistogramName, 0);
-  histogram_tester.ExpectTotalCount(kTemporaryStatusHistogramName, 0);
+  histogram_tester_.ExpectTotalCount(kPermanentStatusHistogramName, 0);
+  histogram_tester_.ExpectTotalCount(kTemporaryStatusHistogramName, 0);
+  EXPECT_TRUE(
+      histogram_tester_.GetTotalCountsForPrefix(kOSStatusHistogramPrefix)
+          .empty());
 }
 
 // Tests that the GetStoredKeyLabel method invokes the SE helper's CopyKey
 // method and that the query search returns false. Also tests that a copy key
 // failure metric is logged.
 TEST_F(SecureEnclaveClientTest, GetStoredKeyLabel_TemporaryKeyNotFound) {
-  base::HistogramTester histogram_tester;
-
   std::vector<uint8_t> output;
-  EXPECT_CALL(*mock_secure_enclave_helper_, CopyKey(_))
+  EXPECT_CALL(*mock_secure_enclave_helper_, CopyKey(_, _))
       .Times(1)
-      .WillOnce([](CFDictionaryRef query) {
+      .WillOnce([](CFDictionaryRef query, OSStatus* status) {
+        *status = errSecItemNotFound;
         return base::ScopedCFTypeRef<SecKeyRef>();
       });
   EXPECT_FALSE(secure_enclave_client_->GetStoredKeyLabel(
@@ -475,31 +513,35 @@ TEST_F(SecureEnclaveClientTest, GetStoredKeyLabel_TemporaryKeyNotFound) {
   std::vector<uint8_t> expected_output;
   EXPECT_EQ(expected_output, output);
 
-  auto status = data_protection_keychain_
-                    ? SecureEnclaveOperationStatus::
-                          kCopySecureKeyRefDataProtectionKeychainFailed
-                    : SecureEnclaveOperationStatus::kCopySecureKeyRefFailed;
+  auto status = SecureEnclaveOperationStatus::
+      kCopySecureKeyRefDataProtectionKeychainFailed;
 
   // Should expect one copy key failure metric for the temporary key.
-  histogram_tester.ExpectUniqueSample(kTemporaryStatusHistogramName, status, 1);
+  histogram_tester_.ExpectUniqueSample(kTemporaryStatusHistogramName, status,
+                                       1);
+  histogram_tester_.ExpectUniqueSample(GetOSStatusHistogramName(false, "Copy"),
+                                       errSecItemNotFound, 1);
+  EXPECT_EQ(histogram_tester_.GetTotalCountsForPrefix(kOSStatusHistogramPrefix)
+                .size(),
+            1U);
 
   // Should expect no copy key failure metric for the permanent key.
-  histogram_tester.ExpectTotalCount(kPermanentStatusHistogramName, 0);
+  histogram_tester_.ExpectTotalCount(kPermanentStatusHistogramName, 0);
 }
 
 // Tests that the GetStoredKeyLabel method invokes the SE helper's CopyKey
 // method and that the query and output is correct for a permanent key.
 TEST_F(SecureEnclaveClientTest, GetStoredKeyLabel_PermanentKeyLabelFound) {
-  base::HistogramTester histogram_tester;
-
   std::vector<uint8_t> output;
   std::string permanent_label = constants::kDeviceTrustSigningKeyLabel;
-  EXPECT_CALL(*mock_secure_enclave_helper_, CopyKey(_))
+  EXPECT_CALL(*mock_secure_enclave_helper_, CopyKey(_, _))
       .Times(1)
-      .WillOnce([this, &permanent_label](CFDictionaryRef query) {
-        VerifyQuery(query, base::SysUTF8ToCFStringRef(permanent_label));
-        return test_key_;
-      });
+      .WillOnce(
+          [this, &permanent_label](CFDictionaryRef query, OSStatus* status) {
+            VerifyQuery(query, base::SysUTF8ToCFStringRef(permanent_label));
+            *status = errSecSuccess;
+            return test_key_;
+          });
   EXPECT_TRUE(secure_enclave_client_->GetStoredKeyLabel(
       SecureEnclaveClient::KeyType::kPermanent, output));
   std::vector<uint8_t> expected_output;
@@ -507,20 +549,22 @@ TEST_F(SecureEnclaveClientTest, GetStoredKeyLabel_PermanentKeyLabelFound) {
   EXPECT_EQ(expected_output, output);
 
   // Should expect no copy key failure metrics.
-  histogram_tester.ExpectTotalCount(kPermanentStatusHistogramName, 0);
-  histogram_tester.ExpectTotalCount(kTemporaryStatusHistogramName, 0);
+  histogram_tester_.ExpectTotalCount(kPermanentStatusHistogramName, 0);
+  histogram_tester_.ExpectTotalCount(kTemporaryStatusHistogramName, 0);
+  EXPECT_TRUE(
+      histogram_tester_.GetTotalCountsForPrefix(kOSStatusHistogramPrefix)
+          .empty());
 }
 
 // Tests that the GetStoredKeyLabel method invokes the SE helper's CopyKey
 // method and that the query search returns false. Also tests that a copy key
 // failure metric is logged.
 TEST_F(SecureEnclaveClientTest, GetStoredKeyLabel_PermanentKeyNotFound) {
-  base::HistogramTester histogram_tester;
-
   std::vector<uint8_t> output;
-  EXPECT_CALL(*mock_secure_enclave_helper_, CopyKey(_))
+  EXPECT_CALL(*mock_secure_enclave_helper_, CopyKey(_, _))
       .Times(1)
-      .WillOnce([](CFDictionaryRef query) {
+      .WillOnce([](CFDictionaryRef query, OSStatus* status) {
+        *status = errSecItemNotFound;
         return base::ScopedCFTypeRef<SecKeyRef>();
       });
   EXPECT_FALSE(secure_enclave_client_->GetStoredKeyLabel(
@@ -528,16 +572,20 @@ TEST_F(SecureEnclaveClientTest, GetStoredKeyLabel_PermanentKeyNotFound) {
   std::vector<uint8_t> expected_output;
   EXPECT_EQ(expected_output, output);
 
-  auto status = data_protection_keychain_
-                    ? SecureEnclaveOperationStatus::
-                          kCopySecureKeyRefDataProtectionKeychainFailed
-                    : SecureEnclaveOperationStatus::kCopySecureKeyRefFailed;
+  auto status = SecureEnclaveOperationStatus::
+      kCopySecureKeyRefDataProtectionKeychainFailed;
 
   // Should expect one copy key failure metric for the permanent key.
-  histogram_tester.ExpectUniqueSample(kPermanentStatusHistogramName, status, 1);
+  histogram_tester_.ExpectUniqueSample(kPermanentStatusHistogramName, status,
+                                       1);
+  histogram_tester_.ExpectUniqueSample(GetOSStatusHistogramName(true, "Copy"),
+                                       errSecItemNotFound, 1);
+  EXPECT_EQ(histogram_tester_.GetTotalCountsForPrefix(kOSStatusHistogramPrefix)
+                .size(),
+            1U);
 
   // Should expect no copy key failure metric for the temporary key.
-  histogram_tester.ExpectTotalCount(kTemporaryStatusHistogramName, 0);
+  histogram_tester_.ExpectTotalCount(kTemporaryStatusHistogramName, 0);
 }
 
 // Tests that the ExportPublicKey method successfully creates the public key

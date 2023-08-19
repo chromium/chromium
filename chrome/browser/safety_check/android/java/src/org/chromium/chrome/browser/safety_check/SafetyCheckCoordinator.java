@@ -4,6 +4,7 @@
 
 package org.chromium.chrome.browser.safety_check;
 
+import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 import androidx.lifecycle.DefaultLifecycleObserver;
 import androidx.lifecycle.LifecycleOwner;
@@ -12,6 +13,7 @@ import androidx.lifecycle.Observer;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.chrome.browser.ui.signin.SyncConsentActivityLauncher;
 import org.chromium.components.browser_ui.settings.SettingsLauncher;
+import org.chromium.components.sync.SyncService;
 import org.chromium.ui.modaldialog.ModalDialogManager;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
@@ -37,15 +39,17 @@ public class SafetyCheckCoordinator implements DefaultLifecycleObserver {
     public static void create(SafetyCheckSettingsFragment settingsFragment,
             SafetyCheckUpdatesDelegate updatesClient, SettingsLauncher settingsLauncher,
             SyncConsentActivityLauncher signinLauncher,
-            ObservableSupplier<ModalDialogManager> modalDialogManagerSupplier) {
+            ObservableSupplier<ModalDialogManager> modalDialogManagerSupplier,
+            @Nullable SyncService syncService) {
         new SafetyCheckCoordinator(settingsFragment, updatesClient, settingsLauncher,
-                signinLauncher, modalDialogManagerSupplier);
+                signinLauncher, modalDialogManagerSupplier, syncService);
     }
 
     private SafetyCheckCoordinator(SafetyCheckSettingsFragment settingsFragment,
             SafetyCheckUpdatesDelegate updatesClient, SettingsLauncher settingsLauncher,
             SyncConsentActivityLauncher signinLauncher,
-            ObservableSupplier<ModalDialogManager> modalDialogManagerSupplier) {
+            ObservableSupplier<ModalDialogManager> modalDialogManagerSupplier,
+            @Nullable SyncService syncService) {
         mSettingsFragment = settingsFragment;
         mUpdatesClient = updatesClient;
         // Create the model and the mediator once the view is created.
@@ -69,7 +73,8 @@ public class SafetyCheckCoordinator implements DefaultLifecycleObserver {
                             // Mediator.
                             PropertyModel model = createModelAndMcp(mSettingsFragment);
                             mMediator = new SafetyCheckMediator(model, mUpdatesClient,
-                                    settingsLauncher, signinLauncher, modalDialogManagerSupplier);
+                                    settingsLauncher, signinLauncher, syncService,
+                                    modalDialogManagerSupplier);
                         }
                     }
                 });

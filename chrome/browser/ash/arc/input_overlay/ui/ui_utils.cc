@@ -4,17 +4,12 @@
 
 #include "chrome/browser/ash/arc/input_overlay/ui/ui_utils.h"
 
-#include "ash/bubble/bubble_utils.h"
-#include "ash/style/typography.h"
+#include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
-#include "chrome/browser/ash/arc/input_overlay/actions/action.h"
-#include "chrome/browser/ash/arc/input_overlay/ui/edit_label.h"
+#include "chrome/browser/ash/arc/input_overlay/constants.h"
 #include "chromeos/strings/grit/chromeos_strings.h"
 #include "ui/base/l10n/l10n_util.h"
-#include "ui/chromeos/styles/cros_tokens_color_mappings.h"
-#include "ui/views/layout/flex_layout.h"
-#include "ui/views/layout/table_layout.h"
-#include "ui/views/view.h"
+#include "ui/events/keycodes/dom/keycode_converter.h"
 
 namespace arc::input_overlay {
 
@@ -46,67 +41,8 @@ constexpr char16_t kAlt[] = u"alt";
 constexpr char16_t kCtrl[] = u"ctrl";
 constexpr char16_t kShift[] = u"shift";
 constexpr char16_t kCap[] = u"cap";
+
 }  // namespace
-
-std::unique_ptr<views::View> CreateNameTag(const std::u16string& title,
-                                           const std::u16string& sub_title) {
-  auto name_tag = std::make_unique<views::View>();
-  name_tag->SetLayoutManager(std::make_unique<views::FlexLayout>())
-      ->SetOrientation(views::LayoutOrientation::kVertical)
-      .SetMainAxisAlignment(views::LayoutAlignment::kStart)
-      .SetCrossAxisAlignment(views::LayoutAlignment::kStart);
-  name_tag->AddChildView(
-      ash::bubble_utils::CreateLabel(ash::TypographyToken::kCrosButton1, title,
-                                     cros_tokens::kCrosRefNeutral100));
-  name_tag->AddChildView(ash::bubble_utils::CreateLabel(
-      ash::TypographyToken::kCrosAnnotation2, sub_title,
-      cros_tokens::kCrosSysSecondary));
-  return name_tag;
-}
-
-std::unique_ptr<views::View> CreateActionTapEditForKeyboard(Action* action) {
-  return std::make_unique<EditLabel>(action);
-}
-
-std::unique_ptr<views::View> CreateActionMoveEditForKeyboard(Action* action) {
-  auto keys = std::make_unique<views::View>();
-  // Create a 2x3 table with column and row padding of 4.
-  keys->SetLayoutManager(std::make_unique<views::TableLayout>())
-      ->AddColumn(/*h_align=*/views::LayoutAlignment::kCenter,
-                  /*v_align=*/views::LayoutAlignment::kCenter,
-                  /*horizontal_resize=*/1.0f,
-                  /*size_type=*/views::TableLayout::ColumnSize::kUsePreferred,
-                  /*fixed_width=*/0, /*min_width=*/0)
-      .AddPaddingColumn(/*horizontal_resize=*/views::TableLayout::kFixedSize,
-                        /*width=*/4)
-      .AddColumn(/*h_align=*/views::LayoutAlignment::kCenter,
-                 /*v_align=*/views::LayoutAlignment::kCenter,
-                 /*horizontal_resize=*/1.0f,
-                 /*size_type=*/views::TableLayout::ColumnSize::kUsePreferred,
-                 /*fixed_width=*/0, /*min_width=*/0)
-      .AddPaddingColumn(/*horizontal_resize=*/views::TableLayout::kFixedSize,
-                        /*width=*/4)
-      .AddColumn(/*h_align=*/views::LayoutAlignment::kCenter,
-                 /*v_align=*/views::LayoutAlignment::kCenter,
-                 /*horizontal_resize=*/1.0f,
-                 /*size_type=*/views::TableLayout::ColumnSize::kUsePreferred,
-                 /*fixed_width=*/0, /*min_width=*/0)
-      .AddRows(1, /*vertical_resize=*/views::TableLayout::kFixedSize)
-      .AddPaddingRow(/*vertical_resize=*/views::TableLayout::kFixedSize,
-                     /*height=*/4)
-      .AddRows(1, /*vertical_resize=*/views::TableLayout::kFixedSize);
-
-  int index = 0;
-  for (int i = 0; i < 6; i++) {
-    // Column 1 row 1 and Column 3 row 1 are empty.
-    if (i == 0 || i == 2) {
-      keys->AddChildView(std::make_unique<views::View>());
-    } else {
-      keys->AddChildView(std::make_unique<EditLabel>(action, index++));
-    }
-  }
-  return keys;
-}
 
 std::u16string GetDisplayText(const ui::DomCode code) {
   switch (code) {
@@ -191,6 +127,22 @@ std::u16string GetDisplayTextAccessibleName(const std::u16string& text) {
   } else {
     return text;
   }
+}
+
+int GetIndexOfActionName(const std::vector<std::u16string>& action_names,
+                         const std::u16string& action_name) {
+  auto it = std::find(action_names.begin(), action_names.end(), action_name);
+  return it == action_names.end() ? -1 : it - action_names.begin();
+}
+
+std::u16string GetActionNameAtIndex(
+    const std::vector<std::u16string>& action_names,
+    int index) {
+  if (index < 0 || index >= static_cast<int>(action_names.size())) {
+    // TODO(b/274690042): Replace placeholder text with localized strings.
+    return u"Unassigned";
+  }
+  return action_names[index];
 }
 
 }  // namespace arc::input_overlay

@@ -66,7 +66,7 @@ BrowserCaptionButtonContainer::BrowserCaptionButtonContainer(
           frame_view_,
           VIEW_ID_CLOSE_BUTTON,
           IDS_APP_ACCNAME_CLOSE))) {
-  if (WindowFrameUtil::IsWin10TabSearchCaptionButtonEnabled(
+  if (WindowFrameUtil::IsWindowsTabSearchCaptionButtonEnabled(
           frame_view_->browser_view()->browser())) {
     tab_search_button_ =
         AddChildViewAt(std::make_unique<WindowsTabSearchCaptionButton>(
@@ -79,7 +79,7 @@ BrowserCaptionButtonContainer::BrowserCaptionButtonContainer(
   auto* const layout = SetLayoutManager(std::make_unique<views::FlexLayout>());
   layout->SetOrientation(views::LayoutOrientation::kHorizontal)
       .SetMainAxisAlignment(views::LayoutAlignment::kEnd)
-      .SetCrossAxisAlignment(views::LayoutAlignment::kStart)
+      .SetCrossAxisAlignment(views::LayoutAlignment::kStretch)
       .SetDefault(
           views::kFlexBehaviorKey,
           views::FlexSpecification(views::LayoutOrientation::kHorizontal,

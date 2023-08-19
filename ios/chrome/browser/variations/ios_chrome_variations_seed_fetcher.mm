@@ -22,10 +22,6 @@
 
 #import "ios/chrome/browser/variations/ios_chrome_variations_seed_store+fetcher.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 namespace {
 
 // Maximum time allowed to fetch the seed before the request is cancelled.

@@ -7,6 +7,7 @@
 #import <Foundation/Foundation.h>
 
 #import "base/test/metrics/histogram_tester.h"
+#import "base/test/metrics/user_action_tester.h"
 #import "components/feed/core/v2/public/common_enums.h"
 #import "ios/chrome/browser/ui/ntp/feed_control_delegate.h"
 #import "ios/chrome/browser/ui/ntp/metrics/feed_metrics_recorder+testing.h"
@@ -19,9 +20,12 @@
 #import "base/test/ios/wait_util.h"
 #import "base/test/scoped_mock_clock_override.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
+#define EXPECT_ACTION(action, method_call)                 \
+  {                                                        \
+    EXPECT_EQ(actions_tester_->GetActionCount(action), 0); \
+    [recorder method_call];                                \
+    EXPECT_EQ(actions_tester_->GetActionCount(action), 1); \
+  }
 
 using feed::FeedEngagementType;
 
@@ -33,6 +37,7 @@ class FeedMetricsRecorderTest : public PlatformTest {
     mockedDelegate = OCMProtocolMock(@protocol(FeedControlDelegate));
     recorder.feedControlDelegate = mockedDelegate;
     histogram_tester_.reset(new base::HistogramTester());
+    actions_tester_.reset(new base::UserActionTester());
   }
 
  protected:
@@ -49,6 +54,7 @@ class FeedMetricsRecorderTest : public PlatformTest {
   FeedMetricsRecorder* recorder;
   id<FeedControlDelegate> mockedDelegate;
   std::unique_ptr<base::HistogramTester> histogram_tester_;
+  std::unique_ptr<base::UserActionTester> actions_tester_;
 };
 
 #pragma mark - All Feeds Good Visit tests
@@ -450,3 +456,174 @@ TEST_F(FeedMetricsRecorderTest, TimeSpent_RecordedCorrectly) {
 
 // TODO(crbug.com/1403009) Add test to check if the histogram is recorded
 // appropriately.
+
+#pragma mark - Unit tests of histogram methods.
+
+// Test if a refresh trigger has been actioned and recorded properly.
+TEST_F(FeedMetricsRecorderTest, Histograms_RecordRefreshTrigger) {
+  // Testing the kOther Refresh Trigger.
+  FeedRefreshTrigger trigger = FeedRefreshTrigger::kOther;
+  // There should not be a trigger recorded yet.
+  histogram_tester_->ExpectBucketCount(kDiscoverFeedRefreshTrigger, trigger, 0);
+  // Trigger the Refresh.
+  [FeedMetricsRecorder recordFeedRefreshTrigger:FeedRefreshTrigger::kOther];
+  // There should be one metric reported.
+  histogram_tester_->ExpectBucketCount(kDiscoverFeedRefreshTrigger, trigger, 1);
+}
+
+#pragma mark - Unit tests of action methods.
+
+// Test if a change in device orientation is recorded correctly.
+TEST_F(FeedMetricsRecorderTest, Actions_RecordChangeOrientation) {
+  // There should not be a user action recorded yet.
+  EXPECT_EQ(actions_tester_->GetActionCount(
+                kDiscoverFeedHistogramDeviceOrientationChangedToPortrait),
+            0);
+  // Change orientation to portrait.
+  [recorder recordDeviceOrientationChanged:UIDeviceOrientationPortrait];
+  // `kDiscoverFeedHistogramDeviceOrientationChangedToLandscape` should be 0.
+  EXPECT_EQ(actions_tester_->GetActionCount(
+                kDiscoverFeedHistogramDeviceOrientationChangedToPortrait),
+            1);
+  EXPECT_NE(actions_tester_->GetActionCount(
+                kDiscoverFeedHistogramDeviceOrientationChangedToLandscape),
+            1);
+  // Change orientation to Landscape.
+  [recorder recordDeviceOrientationChanged:UIDeviceOrientationLandscapeRight];
+  // Both actions should be 1.
+  EXPECT_EQ(actions_tester_->GetActionCount(
+                kDiscoverFeedHistogramDeviceOrientationChangedToPortrait),
+            1);
+  EXPECT_EQ(actions_tester_->GetActionCount(
+                kDiscoverFeedHistogramDeviceOrientationChangedToLandscape),
+            1);
+}
+
+// Testing `recordDiscoverFeedPreviewTapped`.
+TEST_F(FeedMetricsRecorderTest, Actions_PreviewTapped) {
+  EXPECT_ACTION(kDiscoverFeedUserActionPreviewTapped,
+                recordDiscoverFeedPreviewTapped);
+}
+
+// Testing `recordHeaderMenuManageFollowingTapped`.
+TEST_F(FeedMetricsRecorderTest, Actions_ManageFollowingTapped) {
+  EXPECT_ACTION(kDiscoverFeedUserActionManageFollowingTapped,
+                recordHeaderMenuManageFollowingTapped);
+}
+
+// Testing `recordOpenURLInNewTab`.
+TEST_F(FeedMetricsRecorderTest, Actions_OpenNewTab) {
+  EXPECT_ACTION(kDiscoverFeedUserActionOpenNewTab, recordOpenURLInNewTab);
+}
+
+// Testing `recordTapSendFeedback`.
+TEST_F(FeedMetricsRecorderTest, Actions_SendFeedbackOpened) {
+  EXPECT_ACTION(kDiscoverFeedUserActionSendFeedbackOpened,
+                recordTapSendFeedback);
+}
+
+// Testing `recordOpenBackOfCardMenu`.
+TEST_F(FeedMetricsRecorderTest, Actions_ContextMenuOpened) {
+  EXPECT_ACTION(kDiscoverFeedUserActionContextMenuOpened,
+                recordOpenBackOfCardMenu);
+}
+
+// Testing `recordCloseBackOfCardMenu`.
+TEST_F(FeedMetricsRecorderTest, Actions_CloseContextMenu) {
+  EXPECT_ACTION(kDiscoverFeedUserActionCloseContextMenu,
+                recordCloseBackOfCardMenu);
+}
+
+// Testing `recordOpenNativeBackOfCardMenu`.
+TEST_F(FeedMetricsRecorderTest, Actions_NativeActionSheetOpened) {
+  EXPECT_ACTION(kDiscoverFeedUserActionNativeActionSheetOpened,
+                recordOpenNativeBackOfCardMenu);
+}
+
+// Testing `recordShowDialog`.
+TEST_F(FeedMetricsRecorderTest, Actions_ReportContentOpened) {
+  EXPECT_ACTION(kDiscoverFeedUserActionReportContentOpened, recordShowDialog);
+}
+
+// Testing `recordDismissDialog`.
+TEST_F(FeedMetricsRecorderTest, Actions_ReportContentClosed) {
+  EXPECT_ACTION(kDiscoverFeedUserActionReportContentClosed,
+                recordDismissDialog);
+}
+
+// Testing `recordDismissCard`.
+TEST_F(FeedMetricsRecorderTest, Actions_HideStory) {
+  EXPECT_ACTION(kDiscoverFeedUserActionHideStory, recordDismissCard);
+}
+
+// Testing `recordBrokenNTPHierarchy`.
+TEST_F(FeedMetricsRecorderTest, Actions_kNTPViewHierarchyFixed) {
+  EXPECT_ACTION(
+      kNTPViewHierarchyFixed, recordBrokenNTPHierarchy
+      : BrokenNTPHierarchyRelationship::kContentSuggestionsHeaderParent);
+}
+
+// Testing `recordFeedWillRefresh`.
+TEST_F(FeedMetricsRecorderTest, Actions_kFeedWillRefresh) {
+  EXPECT_ACTION(kFeedWillRefresh, recordFeedWillRefresh);
+}
+
+// Testing `recordFollowFromMenu`.
+TEST_F(FeedMetricsRecorderTest, Actions_kFollowFromMenu) {
+  EXPECT_ACTION(kFollowFromMenu, recordFollowFromMenu);
+}
+
+// Testing `recordUnfollowFromMenu`.
+TEST_F(FeedMetricsRecorderTest, Actions_kUnfollowFromMenu) {
+  EXPECT_ACTION(kUnfollowFromMenu, recordUnfollowFromMenu);
+}
+
+// Testing `recordManagementTappedUnfollow`.
+TEST_F(FeedMetricsRecorderTest, Actions_ManagementTappedUnfollow) {
+  EXPECT_ACTION(kDiscoverFeedUserActionManagementTappedUnfollow,
+                recordManagementTappedUnfollow);
+}
+
+// Testing `recordManagementTappedRefollowAfterUnfollowOnSnackbar`.
+TEST_F(FeedMetricsRecorderTest,
+       Actions_ManagementTappedRefollowAfterUnfollowOnSnackbar) {
+  EXPECT_ACTION(
+      kDiscoverFeedUserActionManagementTappedRefollowAfterUnfollowOnSnackbar,
+      recordManagementTappedRefollowAfterUnfollowOnSnackbar);
+}
+
+// Testing `recordFirstFollowTappedGoToFeed`.
+TEST_F(FeedMetricsRecorderTest, Actions_FirstFollowGoToFeedButtonTapped) {
+  EXPECT_ACTION(kFirstFollowGoToFeedButtonTapped,
+                recordFirstFollowTappedGoToFeed);
+}
+
+// Testing `recordFirstFollowTappedGotIt`.
+TEST_F(FeedMetricsRecorderTest, Actions_FirstFollowGotItButtonTapped) {
+  EXPECT_ACTION(kFirstFollowGotItButtonTapped, recordFirstFollowTappedGotIt);
+}
+
+// Testing `recordSignInPromoUIContinueTapped`.
+TEST_F(FeedMetricsRecorderTest, Actions_FeedSignInPromoUIContinueTapped) {
+  EXPECT_ACTION(kFeedSignInPromoUIContinueTapped,
+                recordSignInPromoUIContinueTapped);
+}
+
+// Testing `recordSignInPromoUICancelTapped`.
+TEST_F(FeedMetricsRecorderTest, Actions_FeedSignInPromoUICancelTapped) {
+  EXPECT_ACTION(kFeedSignInPromoUICancelTapped,
+                recordSignInPromoUICancelTapped);
+}
+
+// Testing `recordShowSignInOnlyUIWithUserId` with user Id.
+TEST_F(FeedMetricsRecorderTest, Actions_ShowFeedSignInOnlyUIWithUserId) {
+  EXPECT_ACTION(kShowFeedSignInOnlyUIWithUserId,
+                recordShowSignInOnlyUIWithUserId
+                : YES);
+}
+// Testing `recordShowSignInOnlyUIWithUserId` without User Id.
+TEST_F(FeedMetricsRecorderTest, Actions_ShowFeedSignInOnlyUIWithoutUserId) {
+  EXPECT_ACTION(kShowFeedSignInOnlyUIWithoutUserId,
+                recordShowSignInOnlyUIWithUserId
+                : NO);
+}

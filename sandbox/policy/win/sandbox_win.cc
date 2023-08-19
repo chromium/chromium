@@ -5,14 +5,18 @@
 #include "sandbox/policy/win/sandbox_win.h"
 
 #include <stddef.h>
+#include <windows.h>
+#include <winternl.h>
 
 #include <map>
 #include <sstream>
 #include <string>
+#include <string_view>
 #include <utility>
 #include <vector>
 
 #include "base/command_line.h"
+#include "base/containers/contains.h"
 #include "base/feature_list.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
@@ -40,6 +44,8 @@
 #include "base/trace_event/trace_event.h"
 #include "base/win/iat_patch_function.h"
 #include "base/win/scoped_handle.h"
+#include "base/win/scoped_process_information.h"
+#include "base/win/security_util.h"
 #include "base/win/sid.h"
 #include "base/win/win_util.h"
 #include "base/win/windows_version.h"
@@ -54,12 +60,10 @@
 #include "sandbox/policy/switches.h"
 #include "sandbox/policy/win/lpac_capability.h"
 #include "sandbox/policy/win/sandbox_diagnostics.h"
-#include "sandbox/win/src/job.h"
+#include "sandbox/win/src/app_container.h"
 #include "sandbox/win/src/process_mitigations.h"
 #include "sandbox/win/src/sandbox.h"
-#include "sandbox/win/src/sandbox_nt_util.h"
-#include "sandbox/win/src/sandbox_policy_base.h"
-#include "sandbox/win/src/win_utils.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace sandbox {
 namespace policy {
@@ -207,8 +211,7 @@ std::map<std::wstring, std::wstring> GetShortNameModules() {
     base::FilePath module_path(path);
     base::FilePath name = module_path.BaseName();
     if (name.RemoveExtension().value().size() > 8 ||
-        name.Extension().size() > 4 ||
-        name.value().find(L"~") == std::wstring::npos) {
+        name.Extension().size() > 4 || !base::Contains(name.value(), L"~")) {
       continue;
     }
     base::FilePath fname = base::MakeLongFilePath(module_path);
@@ -338,17 +341,9 @@ base::win::IATPatchFunction& GetIATPatchFunctionHandle() {
   return *iat_patch_duplicate_handle;
 }
 
-typedef BOOL(WINAPI* DuplicateHandleFunctionPtr)(HANDLE source_process_handle,
-                                                 HANDLE source_handle,
-                                                 HANDLE target_process_handle,
-                                                 LPHANDLE target_handle,
-                                                 DWORD desired_access,
-                                                 BOOL inherit_handle,
-                                                 DWORD options);
+using DuplicateHandleFunctionPtr = decltype(::DuplicateHandle)*;
 
 DuplicateHandleFunctionPtr g_iat_orig_duplicate_handle;
-
-NtQueryObjectFunction g_QueryObject = NULL;
 
 static const char* kDuplicateHandleWarning =
     "You are attempting to duplicate a privileged handle into a sandboxed"
@@ -356,29 +351,26 @@ static const char* kDuplicateHandleWarning =
 
 void CheckDuplicateHandle(HANDLE handle) {
   // Get the object type (32 characters is safe; current max is 14).
-  BYTE buffer[sizeof(OBJECT_TYPE_INFORMATION) + 32 * sizeof(wchar_t)];
-  OBJECT_TYPE_INFORMATION* type_info =
-      reinterpret_cast<OBJECT_TYPE_INFORMATION*>(buffer);
-  ULONG size = sizeof(buffer) - sizeof(wchar_t);
-  NTSTATUS error;
-  error = g_QueryObject(handle, ObjectTypeInformation, type_info, size, &size);
+  BYTE buffer[sizeof(PUBLIC_OBJECT_TYPE_INFORMATION) + 32 * sizeof(wchar_t)];
+  PPUBLIC_OBJECT_TYPE_INFORMATION type_info =
+      reinterpret_cast<PPUBLIC_OBJECT_TYPE_INFORMATION>(buffer);
+  ULONG size = sizeof(buffer);
+  NTSTATUS error =
+      ::NtQueryObject(handle, ObjectTypeInformation, type_info, size, &size);
   CHECK(NT_SUCCESS(error));
-  type_info->Name.Buffer[type_info->Name.Length / sizeof(wchar_t)] = L'\0';
+  std::wstring_view type_name(type_info->TypeName.Buffer,
+                              type_info->TypeName.Length / sizeof(wchar_t));
 
-  // Get the object basic information.
-  OBJECT_BASIC_INFORMATION basic_info;
-  size = sizeof(basic_info);
-  error =
-      g_QueryObject(handle, ObjectBasicInformation, &basic_info, size, &size);
-  CHECK(NT_SUCCESS(error));
+  absl::optional<ACCESS_MASK> granted_access =
+      base::win::GetGrantedAccess(handle);
+  CHECK(granted_access.has_value());
 
-  CHECK(!(basic_info.GrantedAccess & WRITE_DAC)) << kDuplicateHandleWarning;
+  CHECK(!(*granted_access & WRITE_DAC)) << kDuplicateHandleWarning;
 
-  if (0 == _wcsicmp(type_info->Name.Buffer, L"Process")) {
+  if (base::EqualsCaseInsensitiveASCII(type_name, L"Process")) {
     const ACCESS_MASK kDangerousMask =
         ~static_cast<DWORD>(PROCESS_QUERY_LIMITED_INFORMATION | SYNCHRONIZE);
-    CHECK(!(basic_info.GrantedAccess & kDangerousMask))
-        << kDuplicateHandleWarning;
+    CHECK(!(*granted_access & kDangerousMask)) << kDuplicateHandleWarning;
   }
 }
 
@@ -542,6 +534,8 @@ ResultCode SetupAppContainerProfile(AppContainer* container,
         base::win::WellKnownCapability::kEnterpriseAuthentication);
     container->AddCapability(kLpacIdentityServices);
     container->AddCapability(kLpacCryptoServices);
+    container->SetEnableLowPrivilegeAppContainer(base::FeatureList::IsEnabled(
+        features::kWinSboxNetworkServiceSandboxIsLPAC));
   }
 
   if (sandbox_type == Sandbox::kWindowsSystemProxyResolver) {
@@ -555,7 +549,6 @@ ResultCode SetupAppContainerProfile(AppContainer* container,
   if ((sandbox_type == Sandbox::kGpu &&
        base::FeatureList::IsEnabled(features::kGpuLPAC)) ||
       sandbox_type == Sandbox::kMediaFoundationCdm ||
-      sandbox_type == Sandbox::kNetwork ||
       sandbox_type == Sandbox::kWindowsSystemProxyResolver) {
     container->SetEnableLowPrivilegeAppContainer(true);
   }
@@ -608,9 +601,17 @@ ResultCode GenerateConfigForSandboxedProcess(const base::CommandLine& cmd_line,
     return result;
 
   if (process_type == switches::kRendererProcess) {
+    if (base::FeatureList::IsEnabled(features::kWinSboxRendererCloseKsecDD)) {
+      // TODO(crbug.com/74242) Remove if we can avoid loading cryptbase.dll.
+      result = config->AddKernelObjectToClose(L"File", L"\\Device\\KsecDD");
+      if (result != SBOX_ALL_OK) {
+        return result;
+      }
+    }
     result = SandboxWin::AddWin32kLockdownPolicy(config);
-    if (result != SBOX_ALL_OK)
+    if (result != SBOX_ALL_OK) {
       return result;
+    }
   }
 
   if (!delegate->DisableDefaultPolicy()) {
@@ -684,6 +685,22 @@ ResultCode GenerateConfigForSandboxedProcess(const base::CommandLine& cmd_line,
   return SBOX_ALL_OK;
 }
 
+// Create the job object for unsandboxed processes.
+base::win::ScopedHandle CreateUnsandboxedJob() {
+  base::win::ScopedHandle job(::CreateJobObject(nullptr, nullptr));
+  if (!job.is_valid()) {
+    return base::win::ScopedHandle();
+  }
+
+  JOBOBJECT_EXTENDED_LIMIT_INFORMATION limits = {};
+  limits.BasicLimitInformation.LimitFlags = JOB_OBJECT_LIMIT_KILL_ON_JOB_CLOSE;
+  if (!::SetInformationJobObject(job.get(), JobObjectExtendedLimitInformation,
+                                 &limits, sizeof(limits))) {
+    return base::win::ScopedHandle();
+  }
+  return job;
+}
+
 // Launches outside of the sandbox - the process will not be associated with
 // a Policy or TargetProcess. This supports both kNoSandbox and the --no-sandbox
 // command line flag.
@@ -699,13 +716,12 @@ ResultCode LaunchWithoutSandbox(
   // on process shutdown, in which case TerminateProcess can fail. See
   // https://crbug.com/820996.
   if (delegate->ShouldUnsandboxedRunInJob()) {
-    static base::NoDestructor<Job> job_object;
-    if (!job_object->IsValid()) {
-      DWORD result = job_object->Init(JobLevel::kUnprotected, 0, 0);
-      if (result != ERROR_SUCCESS)
-        return SBOX_ERROR_CANNOT_INIT_JOB;
+    static base::NoDestructor<base::win::ScopedHandle> job_object(
+        CreateUnsandboxedJob());
+    if (!job_object->is_valid()) {
+      return SBOX_ERROR_CANNOT_INIT_JOB;
     }
-    options.job_handle = job_object->GetHandle();
+    options.job_handle = job_object->get();
   }
 
   // Chromium binaries are marked as CET Compatible but some processes
@@ -897,7 +913,6 @@ bool SandboxWin::InitBrokerServices(BrokerServices* broker_services) {
                               &module));
     DWORD result = ::GetModuleFileNameW(module, module_name, MAX_PATH);
     if (result && (result != MAX_PATH)) {
-      ResolveNTFunctionPtr("NtQueryObject", &g_QueryObject);
       result = GetIATPatchFunctionHandle().Patch(
           module_name, "kernel32.dll", "DuplicateHandle",
           reinterpret_cast<void*>(DuplicateHandlePatch));

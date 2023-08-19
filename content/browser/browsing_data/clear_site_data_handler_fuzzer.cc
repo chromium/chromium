@@ -21,15 +21,13 @@ extern "C" int LLVMFuzzerInitialize(int* argc, char*** argv) {
 extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
   std::string header(reinterpret_cast<const char*>(data), size);
 
-  bool remove_cookies;
-  bool remove_storage;
-  bool remove_cache;
+  ClearSiteDataTypeSet clear_site_data_types;
   std::set<std::string> storage_buckets_to_remove;
   ClearSiteDataHandler::ConsoleMessagesDelegate delegate_;
 
   content::ClearSiteDataHandler::ParseHeaderForTesting(
-      header, &remove_cookies, &remove_storage, &remove_cache,
-      &storage_buckets_to_remove, &delegate_, GURL());
+      header, &clear_site_data_types, &storage_buckets_to_remove, &delegate_,
+      GURL());
 
   return 0;
 }

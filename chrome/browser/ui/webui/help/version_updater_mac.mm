@@ -4,21 +4,20 @@
 
 #include "chrome/browser/ui/webui/help/version_updater_mac.h"
 
-#include "base/memory/raw_ptr.h"
-
 #import <Foundation/Foundation.h>
 
 #include <algorithm>
 #include <string>
 #include <utility>
 
+#include "base/apple/foundation_util.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/functional/callback_helpers.h"
 #include "base/logging.h"
 #include "base/mac/authorization_util.h"
-#include "base/mac/foundation_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/strings/escape.h"
 #include "base/strings/stringprintf.h"
@@ -42,10 +41,7 @@
 
 // KeystoneObserver is a simple notification observer for Keystone status
 // updates. It will be created and managed by VersionUpdaterMac.
-@interface KeystoneObserver : NSObject {
- @private
-  raw_ptr<VersionUpdaterMac> _versionUpdater;  // Weak.
-}
+@interface KeystoneObserver : NSObject
 
 // Initialize an observer with an updater. The updater owns this object.
 - (instancetype)initWithUpdater:(VersionUpdaterMac*)updater;
@@ -55,27 +51,28 @@
 
 @end  // @interface KeystoneObserver
 
-@implementation KeystoneObserver
+@implementation KeystoneObserver {
+  raw_ptr<VersionUpdaterMac> _versionUpdater;  // Weak.
+}
 
 - (instancetype)initWithUpdater:(VersionUpdaterMac*)updater {
   if ((self = [super init])) {
     _versionUpdater = updater;
-    NSNotificationCenter* center = [NSNotificationCenter defaultCenter];
-    [center addObserver:self
-               selector:@selector(handleStatusNotification:)
-                   name:kAutoupdateStatusNotification
-                 object:nil];
+    [NSNotificationCenter.defaultCenter
+        addObserver:self
+           selector:@selector(handleStatusNotification:)
+               name:kAutoupdateStatusNotification
+             object:nil];
   }
   return self;
 }
 
 - (void)dealloc {
-  [[NSNotificationCenter defaultCenter] removeObserver:self];
-  [super dealloc];
+  [NSNotificationCenter.defaultCenter removeObserver:self];
 }
 
 - (void)handleStatusNotification:(NSNotification*)notification {
-  _versionUpdater->UpdateStatus([notification userInfo]);
+  _versionUpdater->UpdateStatus(notification.userInfo);
 }
 
 @end  // @implementation KeystoneObserver
@@ -192,11 +189,11 @@ void VersionUpdaterMac::PromoteUpdater() {
 }
 
 void VersionUpdaterMac::UpdateStatus(NSDictionary* dictionary) {
-  AutoupdateStatus keystone_status = static_cast<AutoupdateStatus>(
-      [base::mac::ObjCCastStrict<NSNumber>(dictionary[kAutoupdateStatusStatus])
-          intValue]);
+  AutoupdateStatus keystone_status =
+      static_cast<AutoupdateStatus>([base::apple::ObjCCastStrict<NSNumber>(
+          dictionary[kAutoupdateStatusStatus]) intValue]);
   std::string error_messages =
-      base::SysNSStringToUTF8(base::mac::ObjCCastStrict<NSString>(
+      base::SysNSStringToUTF8(base::apple::ObjCCastStrict<NSString>(
           dictionary[kAutoupdateStatusErrorMessages]));
 
   bool enable_promote_button = true;

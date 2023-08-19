@@ -8,7 +8,7 @@
 #import <Foundation/Foundation.h>
 #import <Security/Security.h>
 
-#include "base/mac/scoped_cftyperef.h"
+#include "base/apple/scoped_cftyperef.h"
 #include "ios/web/public/security/security_style.h"
 #include "net/cert/cert_status_flags.h"
 

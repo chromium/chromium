@@ -58,9 +58,6 @@ source_set("util") {
   if (is_chromeos_ash) {
     deps += [ "//chromeos/ash/components/system" ]
   }
-  if (is_ios) {
-    deps += [ "//base/ios" ]
-  }
 }
 
 source_set("internal") {
@@ -159,6 +156,10 @@ source_set("internal") {
     "features.h",
     "json_schema_constants.cc",
     "json_schema_constants.h",
+    "local_test_policy_loader.cc",
+    "local_test_policy_loader.h",
+    "local_test_policy_provider.cc",
+    "local_test_policy_provider.h",
     "management/management_service.cc",
     "management/management_service.h",
     "management/platform_management_service.cc",
@@ -166,10 +167,10 @@ source_set("internal") {
     "policy_bundle.cc",
     "policy_bundle.h",
     "policy_details.h",
-    "policy_load_status.cc",
-    "policy_load_status.h",
     "policy_loader_command_line.cc",
     "policy_loader_command_line.h",
+    "policy_loader_common.cc",
+    "policy_loader_common.h",
     "policy_logger.cc",
     "policy_logger.h",
     "policy_map.cc",
@@ -186,6 +187,8 @@ source_set("internal") {
     "policy_service_impl.h",
     "policy_statistics_collector.cc",
     "policy_statistics_collector.h",
+    "policy_utils.cc",
+    "policy_utils.h",
     "proxy_policy_provider.cc",
     "proxy_policy_provider.h",
     "remote_commands/remote_command_job.cc",
@@ -244,6 +247,8 @@ source_set("internal") {
 
   if (is_chromeos_lacros) {
     sources += [
+      "management/platform_management_status_provider_lacros.cc",
+      "management/platform_management_status_provider_lacros.h",
       "policy_loader_lacros.cc",
       "policy_loader_lacros.h",
     ]
@@ -285,13 +290,6 @@ source_set("internal") {
     ]
   }
 
-  if (is_win || is_mac) {
-    sources += [
-      "policy_loader_common.cc",
-      "policy_loader_common.h",
-    ]
-  }
-
   if (is_win || is_mac || is_linux) {
     sources += [
       "cloud/profile_cloud_policy_manager.cc",
@@ -304,8 +302,6 @@ source_set("internal") {
   # Compile on Linux for fuzzer and since code is reused on Chrome OS.
   if (is_win || is_linux || is_chromeos) {
     sources += [
-      "preg_parser.cc",
-      "preg_parser.h",
       "registry_dict.cc",
       "registry_dict.h",
     ]
@@ -328,8 +324,6 @@ source_set("internal") {
       "cloud/resource_cache.h",
       "config_dir_policy_loader.cc",
       "config_dir_policy_loader.h",
-      "policy_load_status.cc",
-      "policy_load_status.h",
     ]
   }
   if (is_android) {
@@ -377,7 +371,6 @@ source_set("internal") {
       "mac_util.h",
     ]
     frameworks = [ "Foundation.framework" ]
-    configs += [ "//build/config/compiler:enable_arc" ]
 
     if (is_mac) {
       sources += [
@@ -405,6 +398,8 @@ static_library("test_support") {
     "cloud/mock_cloud_external_data_manager.h",
     "cloud/mock_cloud_policy_client.cc",
     "cloud/mock_cloud_policy_client.h",
+    "cloud/mock_cloud_policy_manager.cc",
+    "cloud/mock_cloud_policy_manager.h",
     "cloud/mock_cloud_policy_service.cc",
     "cloud/mock_cloud_policy_service.h",
     "cloud/mock_cloud_policy_store.cc",
@@ -427,6 +422,8 @@ static_library("test_support") {
     "mock_configuration_policy_provider.h",
     "mock_policy_service.cc",
     "mock_policy_service.h",
+    "policy_service_stub.cc",
+    "policy_service_stub.h",
     "policy_test_utils.cc",
     "policy_test_utils.h",
     "remote_commands/test_support/echo_remote_command_job.cc",
@@ -479,7 +476,10 @@ static_library("test_support") {
     "//testing/gtest",
   ]
 
-  deps = [ "//build:chromeos_buildflags" ]
+  deps = [
+    "//build:chromeos_buildflags",
+    "//services/network:test_support",
+  ]
 }
 
 source_set("common_constants") {
@@ -500,10 +500,6 @@ source_set("common_constants") {
     "proxy_settings_constants.cc",
     "proxy_settings_constants.h",
   ]
-
-  if (is_apple) {
-    configs += [ "//build/config/compiler:enable_arc" ]
-  }
 
   if (is_ios) {
     sources += [
@@ -527,9 +523,11 @@ source_set("unit_tests") {
     "cloud/user_info_fetcher_unittest.cc",
     "command_line_policy_provider_unittest.cc",
     "generate_policy_source_unittest.cc",
+    "local_test_policy_loader_unittest.cc",
     "management/management_service_unittest.cc",
     "policy_bundle_unittest.cc",
     "policy_loader_command_line_unittest.cc",
+    "policy_logger_unittest.cc",
     "policy_map_unittest.cc",
     "policy_proto_decoders_unittest.cc",
     "policy_service_impl_unittest.cc",
@@ -553,10 +551,7 @@ source_set("unit_tests") {
   }
 
   if (is_win || is_linux || is_chromeos) {
-    sources += [
-      "preg_parser_unittest.cc",
-      "registry_dict_unittest.cc",
-    ]
+    sources += [ "registry_dict_unittest.cc" ]
   }
   if (is_chromeos_ash) {
     sources += [
@@ -599,9 +594,7 @@ source_set("unit_tests") {
   } else {
     sources += [ "async_policy_provider_unittest.cc" ]
   }
-  if (is_android || is_ios) {
-    sources += [ "policy_logger_unittest.cc" ]
-  } else {
+  if (!is_android && !is_ios) {
     sources += [
       "cloud/cloud_external_data_store_unittest.cc",
       "cloud/component_cloud_policy_service_unittest.cc",
@@ -617,7 +610,6 @@ source_set("unit_tests") {
   }
   if (is_apple) {
     sources += [ "mac_util_unittest.cc" ]
-    configs += [ "//build/config/compiler:enable_arc" ]
 
     if (is_mac) {
       sources += [ "policy_loader_mac_unittest.cc" ]
@@ -628,7 +620,7 @@ source_set("unit_tests") {
     }
   }
   if (is_win || is_linux || is_chromeos) {
-    # Needed by policy_loader_win_unittest.cc and preg_parser_unittest.cc
+    # Needed by policy_loader_win_unittest.cc
     data = [ "//chrome/test/data/policy/" ]
   }
   if (is_win) {
@@ -673,18 +665,6 @@ source_set("unit_tests") {
       "//chromeos/lacros",
       "//chromeos/lacros:test_support",
       "//chromeos/startup:startup",
-    ]
-  }
-}
-
-if (is_win || is_linux || is_chromeos) {
-  fuzzer_test("preg_parser_fuzzer") {
-    sources = [ "preg_parser_fuzzer.cc" ]
-    seed_corpus = "//chrome/test/data/policy/gpo/fuzzer_corpus"
-    dict = "//chrome/test/data/policy/gpo/fuzzer.dict"
-    deps = [
-      ":internal",
-      "//base",
     ]
   }
 }

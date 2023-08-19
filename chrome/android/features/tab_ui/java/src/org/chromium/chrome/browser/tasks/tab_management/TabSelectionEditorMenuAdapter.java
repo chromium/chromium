@@ -136,10 +136,6 @@ public class TabSelectionEditorMenuAdapter implements ListModelChangeProcessor.V
             textView.setText(model.get(TabSelectionEditorActionProperties.TITLE));
         } else if (propertyKey == TabSelectionEditorActionProperties.ICON) {
             startIcon.setImageDrawable(model.get(TabSelectionEditorActionProperties.ICON));
-            textView.setPaddingRelative(
-                    view.getResources().getDimensionPixelOffset(R.dimen.menu_padding_start),
-                    textView.getPaddingTop(), textView.getPaddingEnd(),
-                    textView.getPaddingBottom());
             startIcon.setVisibility(View.VISIBLE);
             endIcon.setVisibility(View.GONE);
         } else if (propertyKey == TabSelectionEditorActionProperties.ENABLED

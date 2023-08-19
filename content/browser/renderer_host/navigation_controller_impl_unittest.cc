@@ -59,6 +59,7 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/frame/frame_policy.h"
+#include "third_party/blink/public/common/page/browsing_context_group_info.h"
 #include "third_party/blink/public/common/page_state/page_state.h"
 #include "third_party/blink/public/common/tokens/tokens.h"
 #include "third_party/blink/public/mojom/frame/frame_owner_properties.mojom.h"
@@ -142,6 +143,12 @@ class MockPageBroadcast : public blink::mojom::PageBroadcast {
        blink::mojom::RemoteFrameInterfacesFromBrowserPtr
            remote_frame_interfaces,
        blink::mojom::RemoteMainFrameInterfacesPtr remote_main_frame_interfaces),
+      (override));
+
+  MOCK_METHOD(
+      void,
+      UpdatePageBrowsingContextGroup,
+      (const blink::BrowsingContextGroupInfo& browsing_context_group_info),
       (override));
 
   mojo::PendingAssociatedRemote<blink::mojom::PageBroadcast> GetRemote() {
@@ -1266,6 +1273,8 @@ TEST_F(NavigationControllerTest, Reload) {
   EXPECT_TRUE(controller.GetPendingEntry());
   EXPECT_FALSE(controller.CanGoBack());
   EXPECT_FALSE(controller.CanGoForward());
+  // So no committed reload in RFH yet.
+  EXPECT_EQ(ReloadType::NONE, main_test_rfh()->reload_type());
 
   navigation->Commit();
   EXPECT_EQ(1U, navigation_entry_committed_counter_);
@@ -1279,6 +1288,7 @@ TEST_F(NavigationControllerTest, Reload) {
   EXPECT_FALSE(controller.GetPendingEntry());
   EXPECT_FALSE(controller.CanGoBack());
   EXPECT_FALSE(controller.CanGoForward());
+  EXPECT_EQ(ReloadType::NORMAL, main_test_rfh()->reload_type());
 
   // The timestamp should have been updated.
   ASSERT_TRUE(controller.GetVisibleEntry());
@@ -1371,6 +1381,7 @@ TEST_F(NavigationControllerTest, ReloadOriginalRequestURL) {
   navigation->Commit();
   EXPECT_EQ(1U, navigation_entry_committed_counter_);
   navigation_entry_committed_counter_ = 0;
+  EXPECT_EQ(ReloadType::NONE, main_test_rfh()->reload_type());
 
   // The NavigationEntry should save both the original URL and the final
   // redirected URL.
@@ -1379,15 +1390,16 @@ TEST_F(NavigationControllerTest, ReloadOriginalRequestURL) {
   EXPECT_EQ(final_url, controller.GetVisibleEntry()->GetURL());
 
   // Reload using the original URL.
-  controller.Reload(ReloadType::ORIGINAL_REQUEST_URL, false);
+  controller.LoadOriginalRequestURL();
   EXPECT_EQ(0U, navigation_entry_changed_counter_);
   EXPECT_EQ(0U, navigation_list_pruned_counter_);
 
-  // The reload is pending. The request should point to the original URL.
+  // The reload is pending as a new pending entry with replacement. The request
+  // should point to the original URL.
   EXPECT_EQ(original_url, navigated_url());
   EXPECT_EQ(controller.GetEntryCount(), 1);
   EXPECT_EQ(controller.GetLastCommittedEntryIndex(), 0);
-  EXPECT_EQ(controller.GetPendingEntryIndex(), 0);
+  EXPECT_EQ(controller.GetPendingEntryIndex(), -1);
   EXPECT_TRUE(controller.GetLastCommittedEntry());
   EXPECT_TRUE(controller.GetPendingEntry());
   EXPECT_FALSE(controller.CanGoBack());
@@ -1409,6 +1421,7 @@ TEST_F(NavigationControllerTest, ReloadOriginalRequestURL) {
   EXPECT_FALSE(controller.GetPendingEntry());
   EXPECT_FALSE(controller.CanGoBack());
   EXPECT_FALSE(controller.CanGoForward());
+  EXPECT_EQ(ReloadType::NONE, main_test_rfh()->reload_type());
 }
 
 // Test that certain non-persisted NavigationEntryImpl values get reset after
@@ -1511,7 +1524,7 @@ TEST_F(NavigationControllerTest, GoBackWithUserAgentOverrideChange) {
   // Simulate the behavior of "Request Desktop Site" being checked in
   // NavigationControllerAndroid::SetUseDesktopUserAgent.
   controller.GetVisibleEntry()->SetIsOverridingUserAgent(true);
-  controller.Reload(ReloadType::ORIGINAL_REQUEST_URL, true);
+  controller.LoadOriginalRequestURL();
   auto reload =
       NavigationSimulator::CreateFromPending(contents()->GetController());
   reload->Commit();
@@ -1529,6 +1542,7 @@ TEST_F(NavigationControllerTest, GoBackWithUserAgentOverrideChange) {
   back_navigation->Commit();
 
   EXPECT_EQ(1, change_counter);
+  contents()->set_web_preferences_changed_counter(nullptr);
 }
 
 // Tests what happens when we navigate back successfully
@@ -4172,6 +4186,7 @@ TEST_F(NavigationControllerTest, MultipleNavigationsAndReload) {
   EXPECT_EQ(initial_url, controller.GetVisibleEntry()->GetURL());
   navigation1->Commit();
   EXPECT_EQ(ReloadType::NONE, last_reload_type_);
+  EXPECT_EQ(ReloadType::NONE, main_test_rfh()->reload_type());
 
   // Test 2.
   // A navigation to initial_url with the navigation commit delayed should be
@@ -4205,6 +4220,7 @@ TEST_F(NavigationControllerTest, MultipleNavigationsAndReload) {
   EXPECT_EQ(ReloadType::NONE, last_reload_type_);
 
   navigation2->Commit();
+  EXPECT_EQ(ReloadType::NORMAL, main_test_rfh()->reload_type());  // from nav2.
 
   // Test 5
   // A navigation to url_2 followed by a navigation to the previously pending
@@ -4223,6 +4239,7 @@ TEST_F(NavigationControllerTest, MultipleNavigationsAndReload) {
   EXPECT_EQ(url_1, controller.GetVisibleEntry()->GetURL());
   EXPECT_EQ(ReloadType::NONE, last_reload_type_);
   navigation6->Commit();
+  EXPECT_EQ(ReloadType::NONE, main_test_rfh()->reload_type());
 }
 
 // Tests that NavigationUIData has been passed to the NavigationHandle.
@@ -4255,6 +4272,7 @@ TEST_F(NavigationControllerTest, MainFrameNavigationReloadType) {
 
   EXPECT_TRUE(observer.is_main_frame());
   EXPECT_EQ(observer.reload_type(), ReloadType::BYPASSING_CACHE);
+  EXPECT_EQ(ReloadType::BYPASSING_CACHE, main_test_rfh()->reload_type());
 }
 
 // Tests calling LoadURLParams with NavigationUIData and for a sub frame.
@@ -4289,11 +4307,12 @@ TEST_F(NavigationControllerTest, SubFrameNavigationUIData) {
   LoadCommittedDetailsObserver observer(contents());
 
   // Navigate sub frame.
-  auto navigation =
-      NavigationSimulatorImpl::CreateBrowserInitiated(url1, contents());
   NavigationController::LoadURLParams load_url_params(url1);
   load_url_params.navigation_ui_data = std::make_unique<TestNavigationUIData>();
   load_url_params.frame_tree_node_id = subframe->GetFrameTreeNodeId();
+
+  auto navigation =
+      NavigationSimulatorImpl::CreateBrowserInitiated(url1, contents());
   navigation->SetLoadURLParams(&load_url_params);
 
   // We DCHECK to prevent misuse of the API.
@@ -4659,6 +4678,53 @@ TEST_F(NavigationControllerTest, NavigationApiDisposedEntries) {
   auto main_frame_disposed_keys = main_frame.disposed_keys();
   EXPECT_EQ(main_frame_disposed_keys.size(), 1u);
   EXPECT_EQ(main_frame_disposed_keys[0], "3");
+}
+
+// Once instantiated, will insert `mock_page_broadcast` as the PageBroadcast on
+// a newly created RenderViewHost. This is important for listening for the
+// update to a RenderViewHost which was created for a proxy, as it swaps to a
+// local frame in a different browsing context group. Note that this this will
+// only work once, as MockPageBroadcast does not support multiple bindings.
+class PageBroadcastMockInserter : public WebContentsObserver {
+ public:
+  explicit PageBroadcastMockInserter(
+      content::WebContents* web_contents,
+      testing::NiceMock<MockPageBroadcast>* mock_page_broadcast)
+      : WebContentsObserver(web_contents),
+        mock_page_broadcast_(mock_page_broadcast) {}
+
+  void RenderViewHostChanged(RenderViewHost* old_host,
+                             RenderViewHost* new_host) override {
+    static_cast<TestRenderViewHost*>(new_host)->BindPageBroadcast(
+        mock_page_broadcast_->GetRemote());
+  }
+
+ private:
+  raw_ptr<testing::NiceMock<MockPageBroadcast>> mock_page_broadcast_;
+};
+
+// Test that navigations across browsing context groups trigger a page broadcast
+// with up to date browsing context group information.
+TEST_F(NavigationControllerTest, BrowsingContextGroupUpdate) {
+  const GURL url1("http://a/");
+  const GURL url2("chrome://ukm");
+
+  // Start on a first page.
+  NavigateAndCommit(url1);
+  SiteInstanceImpl* initial_instance = main_test_rfh()->GetSiteInstance();
+
+  // Setup the page broadcast expectations. We expect no call to be made, as the
+  // RenderViewHost for B will get its update through the local frame commit.
+  testing::NiceMock<MockPageBroadcast> mock_page_broadcast;
+  EXPECT_CALL(mock_page_broadcast, UpdatePageBrowsingContextGroup(testing::_))
+      .Times(0);
+  PageBroadcastMockInserter mock_inserter(contents(), &mock_page_broadcast);
+
+  // Navigate to a cross browsing context group page. The update function should
+  // not be called.
+  NavigateAndCommit(url2);
+  SiteInstanceImpl* final_instance = main_test_rfh()->GetSiteInstance();
+  EXPECT_FALSE(initial_instance->IsRelatedSiteInstance(final_instance));
 }
 
 class NavigationControllerFencedFrameTest : public NavigationControllerTest {

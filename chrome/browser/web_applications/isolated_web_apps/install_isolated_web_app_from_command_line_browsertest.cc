@@ -11,8 +11,10 @@
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
+#include "base/threading/thread_restrictions.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/web_applications/test/isolated_web_app_builder.h"
 #include "chrome/browser/ui/web_applications/test/isolated_web_app_test_utils.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_url_info.h"
 #include "chrome/browser/web_applications/test/web_app_test_observers.h"
@@ -106,9 +108,16 @@ class InstallIsolatedWebAppFromCommandLineFromFileBrowserTest
  protected:
   void SetUp() override {
     CHECK(scoped_temp_dir_.CreateUniqueTempDir());
-    signed_web_bundle_path_ = scoped_temp_dir_.GetPath().Append(
-        base::FilePath::FromASCII("test-bundle.swbn"));
-    TestSignedWebBundle bundle = BuildDefaultTestSignedWebBundle();
+    // Add a "foo" subdirectory so that we can add a relative segment to the Web
+    // Bundle path to test that it is converted into an absolute path when
+    // persisted to the Web App Database.
+    CHECK(base::CreateDirectory(scoped_temp_dir_.GetPath().AppendASCII("foo")));
+    signed_web_bundle_path_ =
+        scoped_temp_dir_.GetPath()
+            .AppendASCII("foo")
+            .Append(base::FilePath::kParentDirectory)
+            .Append(base::FilePath::FromASCII("test-bundle.swbn"));
+    TestSignedWebBundle bundle = TestSignedWebBundleBuilder::BuildDefault();
     bundle_id_ = std::make_unique<web_package::SignedWebBundleId>(bundle.id);
     CHECK(base::WriteFile(signed_web_bundle_path_, bundle.data));
 
@@ -139,13 +148,26 @@ IN_PROC_BROWSER_TEST_F(InstallIsolatedWebAppFromCommandLineFromFileBrowserTest,
       IsolatedWebAppUrlInfo::CreateFromSignedWebBundleId(*bundle_id_).app_id());
   ASSERT_THAT(GetWebAppRegistrar().IsInstalled(id), IsTrue());
 
+  // Even if we didn't artificially add a relative `foo/..` segment to
+  // `signed_web_bundle_path_`, it might still not be absolute _and_ free of
+  // symlinks, because there is no guarantee that `ScopedTempDir::GetPath`
+  // returns a symlink-free path (this was observed on macOS 14,
+  // crbug.com/1454276). `base::MakeAbsoluteFilePath`, which the code under test
+  // uses as well, will resolve those symlinks, hence we also need to do so
+  // here.
+  base::FilePath absolute_path;
+  {
+    base::ScopedAllowBlockingForTesting allow_blocking;
+    absolute_path = base::MakeAbsoluteFilePath(signed_web_bundle_path_);
+  }
+
   EXPECT_THAT(
       GetWebAppRegistrar().GetAppById(id),
-      Pointee(Property(&WebApp::isolation_data,
-                       Optional(Field(&WebApp::IsolationData::location,
-                                      VariantWith<DevModeBundle>(Field(
-                                          &DevModeBundle::path,
-                                          Eq(signed_web_bundle_path_))))))));
+      Pointee(Property(
+          &WebApp::isolation_data,
+          Optional(Field(&WebApp::IsolationData::location,
+                         VariantWith<DevModeBundle>(Field(
+                             &DevModeBundle::path, Eq(absolute_path))))))));
 }
 
 }  // namespace

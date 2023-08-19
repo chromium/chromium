@@ -8,6 +8,7 @@
 #include <memory>
 
 #include "base/time/time.h"
+#include "media/base/mock_filters.h"
 #include "media/cast/cast_config.h"
 #include "media/cast/common/sender_encoded_frame.h"
 #include "media/cast/encoding/vpx_encoder.h"
@@ -75,7 +76,9 @@ class VpxQuantizerParserTest : public ::testing::Test {
   // Reconstruct a vp8 encoder with new config since the Vp8Encoder
   // class has no interface to update the config.
   void RecreateVp8Encoder() {
-    vp8_encoder_ = std::make_unique<VpxEncoder>(video_config_);
+    vp8_encoder_ = std::make_unique<VpxEncoder>(
+        video_config_,
+        std::make_unique<media::MockVideoEncoderMetricsProvider>());
     vp8_encoder_->Initialize();
   }
 

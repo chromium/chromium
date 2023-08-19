@@ -88,7 +88,7 @@ class SessionServiceLogTest : public InProcessBrowserTest {
 
  protected:
   // Cached as browser() may be destroyed.
-  raw_ptr<Profile, DanglingUntriaged> profile_ = nullptr;
+  raw_ptr<Profile, AcrossTasksDanglingUntriaged> profile_ = nullptr;
   std::unique_ptr<ScopedKeepAlive> keep_alive_;
 };
 

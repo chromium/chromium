@@ -111,7 +111,7 @@ class WifiLanServerSocketTest : public testing::Test {
   base::test::TaskEnvironment task_environment_;
   size_t num_running_accept_calls_ = 0;
   base::OnceClosure on_accept_calls_finished_;
-  raw_ptr<ash::nearby::FakeTcpServerSocket, ExperimentalAsh>
+  raw_ptr<ash::nearby::FakeTcpServerSocket, DanglingUntriaged | ExperimentalAsh>
       fake_tcp_server_socket_;
   mojo::SelfOwnedReceiverRef<network::mojom::TCPServerSocket>
       tcp_server_socket_self_owned_receiver_ref_;

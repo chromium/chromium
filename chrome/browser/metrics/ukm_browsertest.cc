@@ -79,8 +79,8 @@
 #endif  // !BUILDFLAG(IS_ANDROID)
 
 #if !BUILDFLAG(IS_CHROMEOS_ASH) && !BUILDFLAG(IS_ANDROID)
-#include "chrome/browser/ui/profile_picker.h"
-#include "chrome/browser/ui/profile_ui_test_utils.h"
+#include "chrome/browser/ui/profiles/profile_picker.h"
+#include "chrome/browser/ui/profiles/profile_ui_test_utils.h"
 #endif  // !BUILDFLAG(IS_CHROMEOS_ASH) && !BUILDFLAG(IS_ANDROID)
 
 namespace metrics {
@@ -916,11 +916,13 @@ IN_PROC_BROWSER_TEST_F(UkmBrowserTest, MultiDisableExtensionsSyncCheck) {
   }
 #endif
 
-  harness2->DisableSyncForType(syncer::UserSelectableType::kExtensions);
+  ASSERT_TRUE(
+      harness2->DisableSyncForType(syncer::UserSelectableType::kExtensions));
   EXPECT_TRUE(ukm_test_helper.IsRecordingEnabled());
   EXPECT_FALSE(ukm_test_helper.IsExtensionRecordingEnabled());
 
-  harness2->EnableSyncForType(syncer::UserSelectableType::kExtensions);
+  ASSERT_TRUE(
+      harness2->EnableSyncForType(syncer::UserSelectableType::kExtensions));
   EXPECT_TRUE(ukm_test_helper.IsRecordingEnabled());
   EXPECT_TRUE(ukm_test_helper.IsExtensionRecordingEnabled());
   EXPECT_EQ(original_client_id, ukm_test_helper.GetClientId());
@@ -1233,14 +1235,11 @@ IN_PROC_BROWSER_TEST_F(UkmBrowserTestWithSyncTransport,
             sync_service->GetTransportState());
   ASSERT_FALSE(sync_service->IsSyncFeatureEnabled());
 
-  // History Sync is not active, but (maybe surprisingly) TYPED_URLS is still
-  // considered part of the "chosen" data types, since the user hasn't disabled
-  // it.
+  // History Sync is not active.
+  ASSERT_FALSE(sync_service->GetActiveDataTypes().Has(syncer::HISTORY));
   ASSERT_FALSE(sync_service->GetActiveDataTypes().Has(syncer::TYPED_URLS));
   ASSERT_FALSE(sync_service->GetActiveDataTypes().Has(
       syncer::HISTORY_DELETE_DIRECTIVES));
-  ASSERT_TRUE(sync_service->GetUserSettings()->GetSelectedTypes().Has(
-      syncer::UserSelectableType::kHistory));
 
   EXPECT_FALSE(ukm_test_helper.IsRecordingEnabled());
 }

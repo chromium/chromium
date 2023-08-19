@@ -7,15 +7,13 @@
 
 #import <UIKit/UIKit.h>
 
-#import "ios/chrome/browser/ui/browser_view/common_tab_helper_delegate.h"
-
-@protocol CommonTabHelperDelegate;
 @class CommandDispatcher;
-@class DownloadManagerCoordinator;
+@protocol DownloadManagerTabHelperDelegate;
 @class NewTabPageCoordinator;
 @protocol FollowIPHPresenter;
+@protocol PasswordControllerDelegate;
 class PrerenderService;
-@class PrintController;
+@class PrintCoordinator;
 @protocol RepostFormTabHelperDelegate;
 @class SadTabCoordinator;
 @protocol SnapshotGeneratorDelegate;
@@ -23,6 +21,7 @@ class TabInsertionBrowserAgent;
 class WebStateList;
 @protocol NetExportTabHelperDelegate;
 @protocol NewTabPageTabHelperDelegate;
+@protocol OverscrollActionsControllerDelegate;
 @protocol PriceNotificationsIPHPresenter;
 @protocol SnapshotGeneratorDelegate;
 
@@ -33,8 +32,8 @@ class WebStateList;
 // lifetime. The mediator keeps only weak references to injected dependencies.
 @interface TabLifecycleMediator : NSObject
 
-@property(nonatomic, weak)
-    DownloadManagerCoordinator* downloadManagerCoordinator;
+@property(nonatomic, weak) id<DownloadManagerTabHelperDelegate>
+    downloadManagerTabHelperDelegate;
 @property(nonatomic, assign) PrerenderService* prerenderService;
 @property(nonatomic, weak) UIViewController* baseViewController;
 @property(nonatomic, weak) CommandDispatcher* commandDispatcher;
@@ -43,11 +42,14 @@ class WebStateList;
 @property(nonatomic, weak) id<NewTabPageTabHelperDelegate> NTPTabHelperDelegate;
 @property(nonatomic, weak) id<PriceNotificationsIPHPresenter>
     priceNotificationsIPHPresenter;
-@property(nonatomic, weak) PrintController* printController;
+@property(nonatomic, weak) PrintCoordinator* printCoordinator;
 @property(nonatomic, weak) id<RepostFormTabHelperDelegate> repostFormDelegate;
 @property(nonatomic, weak) id<FollowIPHPresenter> followIPHPresenter;
 @property(nonatomic, assign) TabInsertionBrowserAgent* tabInsertionBrowserAgent;
-@property(nonatomic, weak) id<CommonTabHelperDelegate> delegate;
+@property(nonatomic, weak) id<OverscrollActionsControllerDelegate>
+    overscrollActionsDelegate;
+@property(nonatomic, weak) id<PasswordControllerDelegate>
+    passwordControllerDelegate;
 @property(nonatomic, weak) id<SnapshotGeneratorDelegate>
     snapshotGeneratorDelegate;
 

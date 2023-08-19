@@ -6,6 +6,7 @@ import("//build/config/features.gni")
 import("//build/config/ozone.gni")
 import("//build/config/ui.gni")
 import("//device/vr/buildflags/buildflags.gni")
+import("//gpu/vulkan/features.gni")
 import("//testing/libfuzzer/fuzzer_test.gni")
 import("//testing/test.gni")
 
@@ -118,6 +119,7 @@ component("gfx") {
     "overlay_plane_data.h",
     "overlay_transform_utils.cc",
     "overlay_transform_utils.h",
+    "platform_font.cc",
     "platform_font.h",
     "scrollbar_size.cc",
     "scrollbar_size.h",
@@ -279,10 +281,6 @@ component("gfx") {
     "//build/config:precompiled_headers",
     "//build/config/compiler:wexit_time_destructors",
   ]
-
-  if (is_apple) {
-    configs += [ "//build/config/compiler:enable_arc" ]
-  }
 
   # This is part of the gfx component in the component build.
   defines = [ "GFX_IMPLEMENTATION" ]
@@ -481,7 +479,6 @@ component("color_space") {
       "CoreFoundation.framework",
       "CoreGraphics.framework",
     ]
-    configs += [ "//build/config/compiler:enable_arc" ]
     if (is_mac) {
       sources += [
         "mac/display_icc_profiles.cc",
@@ -513,7 +510,6 @@ source_set("native_widget_types_sources") {
   visibility = [ ":*" ]  # Depend on through ":native_widget_types".
 
   public = [ "native_widget_types.h" ]
-  sources = [ "native_widget_types.cc" ]
 
   public_deps = [
     ":gfx_export",
@@ -525,9 +521,8 @@ source_set("native_widget_types_sources") {
   defines = [ "GFX_IMPLEMENTATION" ]
 
   if (is_mac) {
-    sources += [ "native_widget_types_mac.mm" ]
+    sources = [ "native_widget_types_mac.mm" ]
     frameworks = [ "AppKit.framework" ]
-    deps += [ "//base:base_arc" ]
   }
 }
 
@@ -628,6 +623,7 @@ source_set("memory_buffer_sources") {
     "//base",
     "//build:chromecast_buildflags",
     "//build:chromeos_buildflags",
+    "//gpu/vulkan:buildflags",
     "//ui/gfx/geometry",
   ]
 
@@ -641,6 +637,7 @@ source_set("memory_buffer_sources") {
       "linux/client_native_pixmap_dmabuf.h",
       "linux/client_native_pixmap_factory_dmabuf.cc",
       "linux/client_native_pixmap_factory_dmabuf.h",
+      "linux/dmabuf_uapi.h",
       "linux/native_pixmap_dmabuf.cc",
       "linux/native_pixmap_dmabuf.h",
     ]
@@ -670,6 +667,11 @@ source_set("memory_buffer_sources") {
       "native_pixmap_handle.cc",
       "native_pixmap_handle.h",
     ]
+  }
+
+  if (enable_vulkan) {
+    public_deps +=
+        [ "//third_party/vulkan-deps/vulkan-headers/src:vulkan_headers" ]
   }
 }
 
@@ -708,7 +710,6 @@ static_library("test_support") {
   ]
   if (is_apple) {
     sources += [ "image/image_unittest_util_apple.mm" ]
-    configs += [ "//build/config/compiler:enable_arc" ]
   }
   if (use_fuzzing_engine) {
     sources += [
@@ -767,7 +768,6 @@ test("gfx_unittests") {
     sources += [ "font_fallback_linux_unittest.cc" ]
   }
   if (is_apple) {
-    configs += [ "//build/config/compiler:enable_arc" ]
     frameworks = [ "IOSurface.framework" ]
   }
   if (is_mac) {
@@ -855,6 +855,7 @@ test("gfx_unittests") {
       "selection_bound_unittest.cc",
       "selection_model_unittest.cc",
       "sequential_id_generator_unittest.cc",
+      "shadow_util_unittest.cc",
       "shadow_value_unittest.cc",
       "skbitmap_operations_unittest.cc",
       "skia_util_unittest.cc",

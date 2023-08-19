@@ -92,28 +92,6 @@ public abstract class BrowserServicesIntentDataProvider {
     /** Side shset's slide-in behavior for side-wise animation. */
     public static final int ACTIVITY_SIDE_SHEET_SLIDE_IN_FROM_SIDE = 2;
 
-    @IntDef({ACTIVITY_HEIGHT_DEFAULT, ACTIVITY_HEIGHT_ADJUSTABLE, ACTIVITY_HEIGHT_FIXED})
-    @Retention(RetentionPolicy.SOURCE)
-    public @interface ActivityHeightResizeBehavior {}
-
-    /**
-     * Applies the default height resize behavior for the Custom Tab Activity when it behaves as a
-     * bottom sheet. Same as {@link #ACTIVITY_HEIGHT_ADJUSTABLE}.
-     */
-    public static final int ACTIVITY_HEIGHT_DEFAULT = 0;
-
-    /**
-     * The Custom Tab Activity, when it behaves as a bottom sheet, can have its height manually
-     * resized by the user.
-     */
-    public static final int ACTIVITY_HEIGHT_ADJUSTABLE = 1;
-
-    /**
-     * The Custom Tab Activity, when it behaves as a bottom sheet, cannot have its height manually
-     * resized by the user.
-     */
-    public static final int ACTIVITY_HEIGHT_FIXED = 2;
-
     @IntDef({ACTIVITY_SIDE_SHEET_DECORATION_TYPE_DEFAULT, ACTIVITY_SIDE_SHEET_DECORATION_TYPE_NONE,
             ACTIVITY_SIDE_SHEET_DECORATION_TYPE_SHADOW,
             ACTIVITY_SIDE_SHEET_DECORATION_TYPE_DIVIDER})
@@ -198,24 +176,21 @@ public abstract class BrowserServicesIntentDataProvider {
     /**
      * @return the Intent this instance was created with.
      */
-    @Nullable
-    public Intent getIntent() {
+    public @Nullable Intent getIntent() {
         return null;
     }
 
     /**
      * @return The session specified in the intent, or null.
      */
-    @Nullable
-    public CustomTabsSessionToken getSession() {
+    public @Nullable CustomTabsSessionToken getSession() {
         return null;
     }
 
     /**
      * @return The keep alive service intent specified in the intent, or null.
      */
-    @Nullable
-    public Intent getKeepAliveServiceIntent() {
+    public @Nullable Intent getKeepAliveServiceIntent() {
         return null;
     }
 
@@ -231,8 +206,7 @@ public abstract class BrowserServicesIntentDataProvider {
      * @return The package name of the client app. This is used for a workaround in order to
      *         retrieve the client's animation resources.
      */
-    @Nullable
-    public String getClientPackageName() {
+    public @Nullable String getClientPackageName() {
         return null;
     }
 
@@ -266,8 +240,7 @@ public abstract class BrowserServicesIntentDataProvider {
      * @return The URL that should be used from this intent.
      * Must be called only after native has loaded.
      */
-    @Nullable
-    public String getUrlToLoad() {
+    public @Nullable String getUrlToLoad() {
         return null;
     }
 
@@ -278,14 +251,16 @@ public abstract class BrowserServicesIntentDataProvider {
         return true;
     }
 
-    @NonNull
-    public abstract ColorProvider getColorProvider();
+    public abstract @NonNull ColorProvider getColorProvider();
+
+    public @NonNull ColorProvider getDarkColorProvider() {
+        return getColorProvider();
+    }
 
     /**
      * @return The drawable of the icon of close button shown in the custom tab toolbar.
      */
-    @Nullable
-    public Drawable getCloseButtonDrawable() {
+    public @Nullable Drawable getCloseButtonDrawable() {
         return null;
     }
 
@@ -321,8 +296,7 @@ public abstract class BrowserServicesIntentDataProvider {
      * @return The {@link RemoteViews} to show on the bottom bar, or null if the extra is not
      *         specified.
      */
-    @Nullable
-    public RemoteViews getBottomBarRemoteViews() {
+    public @Nullable RemoteViews getBottomBarRemoteViews() {
         return null;
     }
 
@@ -337,8 +311,7 @@ public abstract class BrowserServicesIntentDataProvider {
     /**
      * @return The {@link PendingIntent} that is sent when the user clicks on the remote view.
      */
-    @Nullable
-    public PendingIntent getRemoteViewsPendingIntent() {
+    public @Nullable PendingIntent getRemoteViewsPendingIntent() {
         return null;
     }
 
@@ -346,8 +319,7 @@ public abstract class BrowserServicesIntentDataProvider {
      * @return The {@link PendingIntent} that is sent when the user swipes up from the secondary
      *         (bottom) toolbar.
      */
-    @Nullable
-    public PendingIntent getSecondaryToolbarSwipeUpPendingIntent() {
+    public @Nullable PendingIntent getSecondaryToolbarSwipeUpPendingIntent() {
         return null;
     }
 
@@ -373,16 +345,14 @@ public abstract class BrowserServicesIntentDataProvider {
         return false;
     }
 
-    @CustomTabsUiType
-    public int getUiType() {
+    public @CustomTabsUiType int getUiType() {
         return CustomTabsUiType.DEFAULT;
     }
 
     /**
      * @return URL that should be loaded in place of the URL in {@link Intent#getData()}.
      */
-    @Nullable
-    public String getMediaViewerUrl() {
+    public @Nullable String getMediaViewerUrl() {
         return null;
     }
 
@@ -443,8 +413,7 @@ public abstract class BrowserServicesIntentDataProvider {
     /**
      * Returns {@link TrustedWebActivityDisplayMode} supplied in the intent.
      */
-    @Nullable
-    public TrustedWebActivityDisplayMode getTwaDisplayMode() {
+    public @Nullable TrustedWebActivityDisplayMode getTwaDisplayMode() {
         return null;
     }
 
@@ -458,8 +427,7 @@ public abstract class BrowserServicesIntentDataProvider {
     /**
      * @return The component name of the module entry point, or null if not specified.
      */
-    @Nullable
-    public ComponentName getModuleComponentName() {
+    public @Nullable ComponentName getModuleComponentName() {
         return null;
     }
 
@@ -467,8 +435,7 @@ public abstract class BrowserServicesIntentDataProvider {
      * @return The resource identifier for the dex that contains module code. {@code 0} if no dex
      * resource is provided.
      */
-    @Nullable
-    public String getModuleDexAssetName() {
+    public @Nullable String getModuleDexAssetName() {
         return null;
     }
 
@@ -484,8 +451,7 @@ public abstract class BrowserServicesIntentDataProvider {
      * @return ISO 639 code of target language the page should be translated to.
      * This method requires native.
      */
-    @Nullable
-    public String getTranslateLanguage() {
+    public @Nullable String getTranslateLanguage() {
         return null;
     }
 
@@ -501,32 +467,28 @@ public abstract class BrowserServicesIntentDataProvider {
      * Returns {@link ShareTarget} describing the share target, or null if there is no associated
      * share target.
      */
-    @Nullable
-    public ShareTarget getShareTarget() {
+    public @Nullable ShareTarget getShareTarget() {
         return null;
     }
 
     /**
      * Returns {@link ShareData} if there is data to be shared, and null otherwise.
      */
-    @Nullable
-    public ShareData getShareData() {
+    public @Nullable ShareData getShareData() {
         return null;
     }
 
     /**
      * Returns {@link WebappExtras} if the intent targets a webapp, and null otherwise.
      */
-    @Nullable
-    public WebappExtras getWebappExtras() {
+    public @Nullable WebappExtras getWebappExtras() {
         return null;
     }
 
     /**
      * Returns {@link WebApkExtras} if the intent targets a WebAPK, and null otherwise.
      */
-    @Nullable
-    public WebApkExtras getWebApkExtras() {
+    public @Nullable WebApkExtras getWebApkExtras() {
         return null;
     }
 
@@ -555,8 +517,7 @@ public abstract class BrowserServicesIntentDataProvider {
      * @return The {@link CustomButtonParams} (either on the toolbar or bottom bar) with the given
      *         {@code id}, or null if no such button can be found.
      */
-    @Nullable
-    public final CustomButtonParams getButtonParamsForId(int id) {
+    public final @Nullable CustomButtonParams getButtonParamsForId(int id) {
         List<CustomButtonParams> customButtonParams = getAllCustomButtons();
         for (CustomButtonParams params : customButtonParams) {
             // A custom button params will always carry an ID. If the client calls updateVisuals()
@@ -580,8 +541,7 @@ public abstract class BrowserServicesIntentDataProvider {
         return getUiType() == CustomTabsUiType.INFO_PAGE;
     }
 
-    @TwaDisclosureUi
-    public int getTwaDisclosureUi() {
+    public @TwaDisclosureUi int getTwaDisclosureUi() {
         return TwaDisclosureUi.DEFAULT;
     }
 

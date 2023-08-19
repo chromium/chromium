@@ -3,7 +3,6 @@
 # found in the LICENSE file.
 
 source_set("prefs") {
-  configs += [ "//build/config/compiler:enable_arc" ]
   sources = [
     "ios_chrome_pref_model_associator_client.cc",
     "ios_chrome_pref_model_associator_client.h",
@@ -18,6 +17,8 @@ source_set("prefs") {
     "//components/prefs/ios",
     "//components/proxy_config",
     "//components/search_engines",
+    "//components/supervised_user/core/browser",
+    "//components/supervised_user/core/common",
     "//components/sync_preferences",
     "//ios/chrome/browser/shared/model/application_context",
     "//ios/chrome/browser/sync/prefs",

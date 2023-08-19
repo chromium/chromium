@@ -23,9 +23,8 @@ class MockIdentityRequestDialogController
   MockIdentityRequestDialogController& operator=(
       const MockIdentityRequestDialogController&) = delete;
 
-  MOCK_METHOD8(ShowAccountsDialog,
-               void(WebContents*,
-                    const std::string&,
+  MOCK_METHOD7(ShowAccountsDialog,
+               void(const std::string&,
                     const absl::optional<std::string>&,
                     const std::vector<content::IdentityProviderData>&,
                     IdentityRequestAccount::SignInMode,
@@ -34,14 +33,15 @@ class MockIdentityRequestDialogController
                     DismissCallback));
   MOCK_METHOD0(DestructorCalled, void());
   MOCK_METHOD7(ShowFailureDialog,
-               void(WebContents*,
-                    const std::string&,
+               void(const std::string&,
                     const absl::optional<std::string>&,
                     const std::string&,
+                    const blink::mojom::RpContext& rp_context,
                     const content::IdentityProviderMetadata&,
                     DismissCallback,
                     SigninToIdPCallback));
   MOCK_METHOD2(ShowModalDialog, WebContents*(const GURL&, DismissCallback));
+  MOCK_METHOD0(CloseModalDialog, void());
 };
 
 }  // namespace content

@@ -53,6 +53,8 @@ void SelectToSpeakMenuBubbleController::Show(const gfx::Rect& anchor,
     init_params.translucent = true;
     init_params.preferred_width = kPreferredWidth;
     init_params.close_on_deactivate = false;
+    init_params.type = TrayBubbleView::TrayBubbleType::kAccessibilityBubble;
+
     bubble_view_ = new TrayBubbleView(init_params);
     bubble_view_->SetArrow(views::BubbleBorder::TOP_LEFT);
     bubble_view_->SetCanActivate(true);

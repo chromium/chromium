@@ -6,66 +6,141 @@
 
 #include <algorithm>
 
+#include "ash/constants/ash_features.h"
+#include "ash/public/cpp/shelf_config.h"
 #include "ash/public/cpp/shelf_types.h"
-#include "ash/style/system_toast_style.h"
+#include "ash/public/cpp/shell_window_ids.h"
+#include "ash/root_window_controller.h"
+#include "ash/shelf/hotseat_widget.h"
+#include "ash/shelf/shelf.h"
+#include "ash/shell.h"
+#include "ash/system/toast/system_nudge_view.h"
+#include "ash/wm/work_area_insets.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
+#include "base/i18n/rtl.h"
 #include "ui/aura/window.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/events/event.h"
+#include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/native_widget_types.h"
 #include "ui/views/bubble/bubble_border.h"
 #include "ui/views/bubble/bubble_dialog_delegate_view.h"
 #include "ui/views/bubble/bubble_frame_view.h"
 #include "ui/views/layout/flex_layout.h"
 #include "ui/views/widget/widget.h"
+#include "ui/views/window/dialog_client_view.h"
 
 namespace ash {
 
-///////////////////////////////////////////////////////////////////////////////
-//  AnchoredNudge
+namespace {
+
+constexpr gfx::Insets kBubbleBorderInsets = gfx::Insets(8);
+
+// Offsets the bottom of work area to account for the current hotseat state.
+void AdjustWorkAreaBoundsForHotseatState(const HotseatWidget* hotseat_widget,
+                                         gfx::Rect& work_area_bounds) {
+  switch (hotseat_widget->state()) {
+    case HotseatState::kExtended:
+      work_area_bounds.set_height(work_area_bounds.height() -
+                                  hotseat_widget->GetHotseatSize() -
+                                  ShelfConfig::Get()->hotseat_bottom_padding());
+      break;
+    case HotseatState::kShownHomeLauncher:
+      work_area_bounds.set_height(hotseat_widget->GetTargetBounds().y() -
+                                  work_area_bounds.y());
+      break;
+    case HotseatState::kHidden:
+    case HotseatState::kShownClamshell:
+    case HotseatState::kNone:
+      // Do nothing.
+      return;
+  }
+}
+
+}  // namespace
+
 AnchoredNudge::AnchoredNudge(const AnchoredNudgeData& nudge_data)
     : views::BubbleDialogDelegateView(nudge_data.anchor_view,
                                       nudge_data.arrow,
                                       views::BubbleBorder::NO_SHADOW),
       id_(nudge_data.id),
-      nudge_click_callback_(std::move(nudge_data.nudge_click_callback)),
-      nudge_dismiss_callback_(std::move(nudge_data.nudge_dimiss_callback)) {
+      anchored_to_shelf_(nudge_data.anchored_to_shelf),
+      click_callback_(std::move(nudge_data.click_callback)),
+      dismiss_callback_(std::move(nudge_data.dismiss_callback)) {
+  DCHECK(features::IsSystemNudgeV2Enabled());
+
   SetButtons(ui::DIALOG_BUTTON_NONE);
   set_color(SK_ColorTRANSPARENT);
   set_margins(gfx::Insets());
   set_close_on_deactivate(false);
   SetLayoutManager(std::make_unique<views::FlexLayout>());
-  toast_contents_view_ = AddChildView(std::make_unique<SystemToastStyle>(
-      nudge_data.dismiss_callback, nudge_data.text, nudge_data.dismiss_text));
-  // TODO(b/283159669): Will use `SystemToastStyle` with a second button
-  // temporarily for M116, migrate to `DialogStyle` once implemented.
-  if (nudge_data.second_button_text != std::u16string()) {
-    toast_contents_view_->AddSecondButton(nudge_data.second_button_callback,
-                                          nudge_data.second_button_text);
+  system_nudge_view_ =
+      AddChildView(std::make_unique<SystemNudgeView>(nudge_data));
+
+  if (anchored_to_shelf_ || !GetAnchorView()) {
+    Shell::Get()->AddShellObserver(this);
   }
 }
 
 AnchoredNudge::~AnchoredNudge() {
-  if (!nudge_dismiss_callback_.is_null()) {
-    std::move(nudge_dismiss_callback_).Run();
+  if (!dismiss_callback_.is_null()) {
+    std::move(dismiss_callback_).Run();
+  }
+
+  if (anchored_to_shelf_) {
+    disable_shelf_auto_hide_.reset();
+  }
+
+  if (anchored_to_shelf_ || !GetAnchorView()) {
+    Shell::Get()->RemoveShellObserver(this);
   }
 }
 
-const std::u16string& AnchoredNudge::GetText() {
-  CHECK(toast_contents_view_);
-  CHECK(toast_contents_view_->label());
-  return toast_contents_view_->label()->GetText();
+views::ImageView* AnchoredNudge::GetImageView() {
+  return system_nudge_view_->image_view();
 }
 
-views::LabelButton* AnchoredNudge::GetDismissButton() {
-  CHECK(toast_contents_view_);
-  return toast_contents_view_->dismiss_button();
+const std::u16string& AnchoredNudge::GetBodyText() {
+  CHECK(system_nudge_view_->body_label());
+  return system_nudge_view_->body_label()->GetText();
+}
+
+const std::u16string& AnchoredNudge::GetTitleText() {
+  CHECK(system_nudge_view_->title_label());
+  return system_nudge_view_->title_label()->GetText();
+}
+
+views::LabelButton* AnchoredNudge::GetFirstButton() {
+  return system_nudge_view_->first_button();
 }
 
 views::LabelButton* AnchoredNudge::GetSecondButton() {
-  CHECK(toast_contents_view_);
-  return toast_contents_view_->second_button();
+  return system_nudge_view_->second_button();
+}
+
+gfx::Rect AnchoredNudge::GetBubbleBounds() {
+  auto* root_window = GetWidget()->GetNativeWindow();
+
+  gfx::Rect work_area_bounds =
+      WorkAreaInsets::ForWindow(root_window)->user_work_area_bounds();
+
+  auto* hotseat_widget =
+      RootWindowController::ForWindow(root_window)->shelf()->hotseat_widget();
+  if (hotseat_widget) {
+    AdjustWorkAreaBoundsForHotseatState(hotseat_widget, work_area_bounds);
+  }
+
+  gfx::Rect bubble_bounds = views::BubbleDialogDelegateView::GetBubbleBounds();
+  bubble_bounds.AdjustToFit(work_area_bounds);
+
+  return bubble_bounds;
+}
+
+void AnchoredNudge::OnBeforeBubbleWidgetInit(views::Widget::InitParams* params,
+                                             views::Widget* widget) const {
+  params->parent = Shell::GetRootWindowForNewWindows()->GetChildById(
+      kShellWindowId_SettingBubbleContainer);
 }
 
 std::unique_ptr<views::NonClientFrameView>
@@ -75,17 +150,36 @@ AnchoredNudge::CreateNonClientFrameView(views::Widget* widget) {
       std::make_unique<views::BubbleBorder>(arrow(),
                                             views::BubbleBorder::NO_SHADOW);
   bubble_border->set_avoid_shadow_overlap(true);
-
-  // TODO(b/279769899): Have insets adjust to shelf alignment, and set their
-  // value from a param in AnchoredNudge constructor. The value 16 works for VC
-  // tray icons because the icon is 8px away from the shelf top and we need an
-  // extra 8 for spacing between the shelf and nudge.
-  bubble_border->set_insets(gfx::Insets(16));
+  bubble_border->set_insets(kBubbleBorderInsets);
 
   auto frame = BubbleDialogDelegateView::CreateNonClientFrameView(widget);
   static_cast<views::BubbleFrameView*>(frame.get())
       ->SetBubbleBorder(std::move(bubble_border));
   return frame;
+}
+
+void AnchoredNudge::AddedToWidget() {
+  // Do not attempt fitting the bubble inside the anchor view window.
+  GetBubbleFrameView()->set_use_anchor_window_bounds(false);
+
+  // Remove accelerator so the nudge won't be closed when pressing the Esc key.
+  GetDialogClientView()->RemoveAccelerator(
+      ui::Accelerator(ui::VKEY_ESCAPE, ui::EF_NONE));
+
+  auto* shelf = Shelf::ForWindow(GetWidget()->GetNativeWindow());
+
+  if (anchored_to_shelf_) {
+    DCHECK(GetAnchorView());
+    SetArrowFromShelf(shelf);
+    disable_shelf_auto_hide_ =
+        std::make_unique<Shelf::ScopedDisableAutoHide>(shelf);
+    return;
+  }
+
+  if (!GetAnchorView()) {
+    shelf_observation_.Observe(shelf);
+    SetDefaultAnchorRect();
+  }
 }
 
 bool AnchoredNudge::OnMousePressed(const ui::MouseEvent& event) {
@@ -97,16 +191,16 @@ bool AnchoredNudge::OnMouseDragged(const ui::MouseEvent& event) {
 }
 
 void AnchoredNudge::OnMouseReleased(const ui::MouseEvent& event) {
-  if (event.IsOnlyLeftMouseButton() && !nudge_click_callback_.is_null()) {
-    std::move(nudge_click_callback_).Run();
+  if (event.IsOnlyLeftMouseButton() && !click_callback_.is_null()) {
+    std::move(click_callback_).Run();
   }
 }
 
 void AnchoredNudge::OnGestureEvent(ui::GestureEvent* event) {
   switch (event->type()) {
     case ui::ET_GESTURE_TAP: {
-      if (!nudge_click_callback_.is_null()) {
-        std::move(nudge_click_callback_).Run();
+      if (!click_callback_.is_null()) {
+        std::move(click_callback_).Run();
         event->SetHandled();
       }
       return;
@@ -115,6 +209,70 @@ void AnchoredNudge::OnGestureEvent(ui::GestureEvent* event) {
       // Do nothing.
     }
   }
+}
+
+void AnchoredNudge::OnAutoHideStateChanged(ShelfAutoHideState new_state) {
+  if (!GetAnchorView()) {
+    SetDefaultAnchorRect();
+  }
+}
+
+void AnchoredNudge::OnHotseatStateChanged(HotseatState old_state,
+                                          HotseatState new_state) {
+  if (!GetAnchorView()) {
+    SetDefaultAnchorRect();
+  }
+}
+
+void AnchoredNudge::OnShelfAlignmentChanged(aura::Window* root_window,
+                                            ShelfAlignment old_alignment) {
+  if (!GetWidget()) {
+    return;
+  }
+
+  // Nudges without an anchor view will be shown on their default location.
+  if (!GetAnchorView()) {
+    SetDefaultAnchorRect();
+    return;
+  }
+
+  // Nudges anchored to a view that exists in the shelf need to update their
+  // arrow value when the shelf alignment changes.
+  if (anchored_to_shelf_) {
+    auto* shelf = Shelf::ForWindow(GetWidget()->GetNativeWindow());
+    if (shelf == Shelf::ForWindow(root_window)) {
+      SetArrowFromShelf(shelf);
+    }
+  }
+}
+
+void AnchoredNudge::OnDisplayMetricsChanged(const display::Display& display,
+                                            uint32_t changed_metrics) {
+  OnAnchorBoundsChanged();
+  system_nudge_view_->UpdateShadowBounds();
+}
+
+void AnchoredNudge::SetArrowFromShelf(Shelf* shelf) {
+  SetArrow(shelf->SelectValueForShelfAlignment(
+      views::BubbleBorder::BOTTOM_CENTER, views::BubbleBorder::LEFT_CENTER,
+      views::BubbleBorder::RIGHT_CENTER));
+}
+
+void AnchoredNudge::SetDefaultAnchorRect() {
+  if (!GetWidget()) {
+    return;
+  }
+
+  // The default location for a nudge without an `anchor_view` is the leading
+  // bottom corner of the work area bounds (bottom-left for LTR languages).
+  gfx::Rect work_area_bounds =
+      WorkAreaInsets::ForWindow(GetWidget()->GetNativeWindow())
+          ->user_work_area_bounds();
+  SetAnchorRect(
+      gfx::Rect(gfx::Point(base::i18n::IsRTL() ? work_area_bounds.right()
+                                               : work_area_bounds.x(),
+                           work_area_bounds.bottom()),
+                gfx::Size(0, 0)));
 }
 
 BEGIN_METADATA(AnchoredNudge, views::BubbleDialogDelegateView)

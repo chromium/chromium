@@ -10,9 +10,7 @@
 #include "base/ios/block_types.h"
 #include "base/time/time.h"
 
-namespace base {
-namespace test {
-namespace ios {
+namespace base::test::ios {
 
 // Constant for UI wait loop.
 constexpr TimeDelta kSpinDelaySeconds = Milliseconds(10);
@@ -44,30 +42,17 @@ constexpr TimeDelta kWaitForCookiesTimeout = Seconds(4);
 constexpr TimeDelta kWaitForFileOperationTimeout = Seconds(2);
 
 // Returns true when condition() becomes true, otherwise returns false after
-// |timeout|.
+// |timeout|. Repetitively runs the current NSRunLoop and the current
+// MessageLoop (if |run_message_loop| is true).
+// TODO(crbug.com/1462320): Investigate whether we can always run the
+// message loop.
 [[nodiscard]] bool WaitUntilConditionOrTimeout(TimeDelta timeout,
+                                               bool run_message_loop,
                                                ConditionBlock condition);
 
-// Runs |action| if non-nil. Then, until either |condition| is true or |timeout|
-// expires, repetitively runs the current NSRunLoop and the current MessageLoop
-// (if |run_message_loop| is true). |condition| may be nil if there is no
-// condition to wait for; the NSRunLoop and current MessageLoop will be run run
-// until |timeout| expires. DCHECKs if |condition| is non-nil and |timeout|
-// expires before |condition| becomes true. If |timeout| is zero, a reasonable
-// default is used. Returns the time spent in the function.
-// DEPRECATED - Do not use in new code. http://crbug.com/784735
-TimeDelta TimeUntilCondition(ProceduralBlock action,
-                             ConditionBlock condition,
-                             bool run_message_loop,
-                             TimeDelta timeout);
-
-// Same as TimeUntilCondition, but doesn't run an action.
-// DEPRECATED - Do not use in new code. http://crbug.com/784735
-void WaitUntilCondition(ConditionBlock condition,
-                        bool run_message_loop,
-                        TimeDelta timeout);
-// DEPRECATED - Do not use in new code. http://crbug.com/784735
-void WaitUntilCondition(ConditionBlock condition);
+// Same as above but `run_message_loop` is false.
+[[nodiscard]] bool WaitUntilConditionOrTimeout(TimeDelta timeout,
+                                               ConditionBlock condition);
 
 // Lets the run loop of the current thread process other messages
 // within the given maximum delay. This method may return before max_delay
@@ -79,8 +64,6 @@ void SpinRunLoopWithMaxDelay(TimeDelta max_delay);
 // elapsed.
 void SpinRunLoopWithMinDelay(TimeDelta min_delay);
 
-}  // namespace ios
-}  // namespace test
-}  // namespace base
+}  // namespace base::test::ios
 
 #endif  // BASE_TEST_IOS_WAIT_UTIL_H_

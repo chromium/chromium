@@ -23,11 +23,14 @@
 #include "ui/gfx/codec/jpeg_codec.h"
 #include "ui/gfx/geometry/point_f.h"
 #include "ui/gfx/geometry/rect.h"
+#include "ui/gfx/geometry/rect_conversions.h"
 #include "ui/gfx/geometry/size.h"
+#include "ui/gfx/geometry/size_conversions.h"
 #include "ui/gfx/geometry/size_f.h"
 
 using printing::ConvertUnit;
 using printing::ConvertUnitFloat;
+using printing::kPixelsPerInch;
 using printing::kPointsPerInch;
 
 namespace chrome_pdf {
@@ -244,6 +247,20 @@ bool FlattenPrintData(FPDF_DOCUMENT doc) {
   return true;
 }
 
+gfx::RectF CSSPixelsToPoints(const gfx::RectF& rect) {
+  return gfx::RectF(
+      ConvertUnitFloat(rect.x(), kPixelsPerInch, kPointsPerInch),
+      ConvertUnitFloat(rect.y(), kPixelsPerInch, kPointsPerInch),
+      ConvertUnitFloat(rect.width(), kPixelsPerInch, kPointsPerInch),
+      ConvertUnitFloat(rect.height(), kPixelsPerInch, kPointsPerInch));
+}
+
+gfx::SizeF CSSPixelsToPoints(const gfx::SizeF& size) {
+  return gfx::SizeF(
+      ConvertUnitFloat(size.width(), kPixelsPerInch, kPointsPerInch),
+      ConvertUnitFloat(size.height(), kPixelsPerInch, kPointsPerInch));
+}
+
 }  // namespace
 
 PDFiumPrint::PDFiumPrint(PDFiumEngine* engine) : engine_(engine) {}
@@ -322,10 +339,15 @@ ScopedFPDFDocument PDFiumPrint::CreatePrintPdf(
     return nullptr;
   }
 
+  gfx::Size int_paper_size =
+      ToFlooredSize(CSSPixelsToPoints(print_params.paper_size_in_css_pixels));
+  gfx::Rect int_printable_area = ToEnclosedRect(
+      CSSPixelsToPoints(print_params.printable_area_in_css_pixels));
+
   float scale_factor = print_params.scale_factor / 100.0f;
-  FitContentsToPrintableAreaIfRequired(
-      output_doc.get(), scale_factor, print_params.print_scaling_option,
-      print_params.paper_size, print_params.printable_area);
+  FitContentsToPrintableAreaIfRequired(output_doc.get(), scale_factor,
+                                       print_params.print_scaling_option,
+                                       int_paper_size, int_printable_area);
   if (!FlattenPrintData(output_doc.get()))
     return nullptr;
 
@@ -334,13 +356,12 @@ ScopedFPDFDocument PDFiumPrint::CreatePrintPdf(
     return output_doc;
 
   gfx::Rect symmetrical_printable_area =
-      printing::PageSetup::GetSymmetricalPrintableArea(
-          print_params.paper_size, print_params.printable_area);
+      printing::PageSetup::GetSymmetricalPrintableArea(int_paper_size,
+                                                       int_printable_area);
   if (symmetrical_printable_area.IsEmpty())
     return nullptr;
   return CreateNupPdfDocument(std::move(output_doc), pages_per_sheet,
-                              print_params.paper_size,
-                              symmetrical_printable_area);
+                              int_paper_size, symmetrical_printable_area);
 }
 
 ScopedFPDFDocument PDFiumPrint::CreateRasterPdf(ScopedFPDFDocument doc,
@@ -379,8 +400,8 @@ ScopedFPDFDocument PDFiumPrint::CreateSinglePageRasterPdf(
   float source_page_width = FPDF_GetPageWidthF(page_to_print);
   float source_page_height = FPDF_GetPageHeightF(page_to_print);
 
-  // For computing size in pixels, use a square dpi since the source PDF page
-  // has square DPI.
+  // For computing size in pixels, use square pixels since the source PDF page
+  // has square pixels.
   int width_in_pixels = ConvertUnit(source_page_width, kPointsPerInch, dpi);
   int height_in_pixels = ConvertUnit(source_page_height, kPointsPerInch, dpi);
 

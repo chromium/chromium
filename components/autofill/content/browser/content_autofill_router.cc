@@ -16,25 +16,8 @@
 #include "components/autofill/core/common/autofill_features.h"
 #include "components/autofill/core/common/signatures.h"
 #include "components/autofill/core/common/unique_ids.h"
-#include "content/public/browser/render_process_host.h"
-#include "content/public/browser/web_contents.h"
 #include "third_party/abseil-cpp/absl/types/variant.h"
 #include "third_party/blink/public/common/permissions_policy/permissions_policy_features.h"
-
-// AFCHECK(condition[, error_handler]) creates a crash dump and executes
-// |error_handler| if |condition| is false.
-// TODO(crbug/1187842): Replace AFCHECK() with DCHECK().
-#define AFCHECK(condition, ...)                                                \
-  if (!(condition)) {                                                          \
-    SCOPED_CRASH_KEY_STRING256("autofill", "main_url", MainUrlForDebugging()); \
-    AFCRASHDUMP();                                                             \
-    __VA_ARGS__;                                                               \
-  }
-#if DCHECK_IS_ON()
-#define AFCRASHDUMP() DCHECK(false)
-#else
-#define AFCRASHDUMP() base::debug::DumpWithoutCrashing()
-#endif
 
 namespace autofill {
 
@@ -45,9 +28,6 @@ template <typename UnaryFunction>
 void ForEachFrame(internal::FormForest& form_forest, UnaryFunction fun) {
   for (const std::unique_ptr<internal::FormForest::FrameData>& some_frame :
        form_forest.frame_datas()) {
-    // Required for AFCHECK().
-    auto MainUrlForDebugging = []() { return std::string(); };
-    AFCHECK(some_frame, continue);
     if (some_frame->driver)
       base::invoke(fun,
                    static_cast<ContentAutofillDriver*>(some_frame->driver));
@@ -58,22 +38,6 @@ void ForEachFrame(internal::FormForest& form_forest, UnaryFunction fun) {
 
 ContentAutofillRouter::ContentAutofillRouter() = default;
 ContentAutofillRouter::~ContentAutofillRouter() = default;
-
-std::string ContentAutofillRouter::MainUrlForDebugging() const {
-  content::RenderFrameHost* some_rfh =
-      content::RenderFrameHost::FromID(some_rfh_for_debugging_);
-  if (!some_rfh) {
-    for (const auto& frame_data : form_forest_.frame_datas()) {
-      if (frame_data && frame_data->driver) {
-        some_rfh = static_cast<ContentAutofillDriver*>(frame_data->driver)
-                       ->render_frame_host();
-      }
-    }
-  }
-  if (!some_rfh)
-    return std::string();
-  return some_rfh->GetMainFrame()->GetLastCommittedURL().spec();
-}
 
 ContentAutofillDriver* ContentAutofillRouter::DriverOfFrame(
     LocalFrameToken frame) {
@@ -86,13 +50,9 @@ ContentAutofillDriver* ContentAutofillRouter::DriverOfFrame(
 
 void ContentAutofillRouter::UnregisterDriver(ContentAutofillDriver* driver,
                                              bool driver_is_dying) {
-  some_rfh_for_debugging_ = content::GlobalRenderFrameHostId();
-
-  AFCHECK(driver, return );
-
+  CHECK(driver);
   for (const std::unique_ptr<internal::FormForest::FrameData>& frame :
        form_forest_.frame_datas()) {
-    AFCHECK(frame, continue);
     if (frame->driver == driver) {
       form_forest_.EraseFormsOfFrame(frame->frame_token,
                                      /*keep_frame=*/!driver_is_dying);
@@ -110,7 +70,6 @@ void ContentAutofillRouter::SetLastQueriedSource(
     ContentAutofillDriver* source) {
   if (last_queried_source_ && last_queried_source_ != source) {
     last_queried_source_->UnsetKeyPressHandlerCallback();
-    last_queried_source_->SetShouldSuppressKeyboardCallback(false);
   }
   last_queried_source_ = source;
 }
@@ -126,8 +85,6 @@ void ContentAutofillRouter::SetKeyPressHandler(
     void (*callback)(
         ContentAutofillDriver* target,
         const content::RenderWidgetHost::KeyPressEventCallback& handler)) {
-  some_rfh_for_debugging_ = source->render_frame_host()->GetGlobalId();
-
   // The asynchronous AutocompleteHistoryManager::OnAutofillValuesReturned()
   // calls SetKeyPressHandler() through AutofillPopupControllerImpl::Show().
   // Before this call, UnregisterDriver() may have reset |last_queried_source_|
@@ -142,8 +99,6 @@ void ContentAutofillRouter::SetKeyPressHandler(
 void ContentAutofillRouter::UnsetKeyPressHandler(
     ContentAutofillDriver* source,
     void (*callback)(ContentAutofillDriver* target)) {
-  some_rfh_for_debugging_ = source->render_frame_host()->GetGlobalId();
-
   // When AutofillPopupControllerImpl::Hide() calls this function,
   // UnregisterDriver() may have reset |last_queried_source_| already to
   // nullptr due to Mojo race conditions (https://crbug.com/1240246).
@@ -151,19 +106,6 @@ void ContentAutofillRouter::UnsetKeyPressHandler(
     return;
 
   callback(last_queried_source_);
-}
-
-void ContentAutofillRouter::SetShouldSuppressKeyboard(
-    ContentAutofillDriver* source,
-    bool suppress,
-    void (*callback)(ContentAutofillDriver* target, bool suppress)) {
-  some_rfh_for_debugging_ = source->render_frame_host()->GetGlobalId();
-
-  // TODO(crbug.com/1247698): Double check if this could happen.
-  if (!last_queried_source_)
-    return;
-
-  callback(last_queried_source_, suppress);
 }
 
 // Routing of events called by the renderer:
@@ -206,8 +148,6 @@ void ContentAutofillRouter::FormsSeen(
     void (*callback)(ContentAutofillDriver* target,
                      const std::vector<FormData>& updated_forms,
                      const std::vector<FormGlobalId>& removed_forms)) {
-  some_rfh_for_debugging_ = source->render_frame_host()->GetGlobalId();
-
   base::flat_set<FormGlobalId> forms_with_removed_fields =
       form_forest_.EraseForms(removed_forms);
 
@@ -229,23 +169,21 @@ void ContentAutofillRouter::FormsSeen(
   std::vector<FormData> browser_forms;
   browser_forms.reserve(renderer_form_ids.size());
   for (FormGlobalId renderer_form_id : renderer_form_ids) {
-    const FormData* browser_form =
+    const FormData& browser_form =
         form_forest_.GetBrowserForm(renderer_form_id);
-    AFCHECK(browser_form, return);
-    if (!base::Contains(browser_forms, browser_form->global_id(),
+    if (!base::Contains(browser_forms, browser_form.global_id(),
                         &FormData::global_id)) {
-      browser_forms.push_back(*browser_form);
+      browser_forms.push_back(browser_form);
     }
   }
   DCHECK(browser_forms.size() == renderer_form_ids.size() ||
          browser_forms.size() == 1);
 
   for (const FormGlobalId form_id : forms_with_removed_fields) {
-    const FormData* browser_form = form_forest_.GetBrowserForm(form_id);
-    AFCHECK(browser_form, continue);
-    if (!base::Contains(browser_forms, browser_form->global_id(),
+    const FormData& browser_form = form_forest_.GetBrowserForm(form_id);
+    if (!base::Contains(browser_forms, browser_form.global_id(),
                         &FormData::global_id)) {
-      browser_forms.push_back(*browser_form);
+      browser_forms.push_back(browser_form);
     }
   }
 
@@ -256,7 +194,7 @@ void ContentAutofillRouter::FormsSeen(
       return f.host_frame == frame;
     }));
     ContentAutofillDriver* target = DriverOfFrame(frame);
-    AFCHECK(target, return );
+    CHECK(target);
     callback(target, browser_forms, removed_forms);
   } else if (!removed_forms.empty()) {
     callback(source, {}, removed_forms);
@@ -268,8 +206,6 @@ void ContentAutofillRouter::SetFormToBeProbablySubmitted(
     absl::optional<FormData> form,
     void (*callback)(ContentAutofillDriver* target,
                      const FormData* optional_form)) {
-  some_rfh_for_debugging_ = source->render_frame_host()->GetGlobalId();
-
   if (!form) {
     callback(source, nullptr);
     return;
@@ -278,11 +214,10 @@ void ContentAutofillRouter::SetFormToBeProbablySubmitted(
   FormGlobalId form_id = form->global_id();
   form_forest_.UpdateTreeOfRendererForm(std::move(form).value(), source);
 
-  const FormData* browser_form = form_forest_.GetBrowserForm(form_id);
-  AFCHECK(browser_form, return);
-  auto* target = DriverOfFrame(browser_form->host_frame);
-  AFCHECK(target, return );
-  callback(target, browser_form);
+  const FormData& browser_form = form_forest_.GetBrowserForm(form_id);
+  auto* target = DriverOfFrame(browser_form.host_frame);
+  CHECK(target);
+  callback(target, &browser_form);
 }
 
 void ContentAutofillRouter::FormSubmitted(
@@ -294,16 +229,13 @@ void ContentAutofillRouter::FormSubmitted(
                      const FormData& form,
                      bool known_success,
                      mojom::SubmissionSource submission_source)) {
-  some_rfh_for_debugging_ = source->render_frame_host()->GetGlobalId();
-
   FormGlobalId form_id = form.global_id();
   form_forest_.UpdateTreeOfRendererForm(std::move(form), source);
 
-  const FormData* browser_form = form_forest_.GetBrowserForm(form_id);
-  AFCHECK(browser_form, return);
-  auto* target = DriverOfFrame(browser_form->host_frame);
-  AFCHECK(target, return );
-  callback(target, *browser_form, known_success, submission_source);
+  const FormData& browser_form = form_forest_.GetBrowserForm(form_id);
+  auto* target = DriverOfFrame(browser_form.host_frame);
+  CHECK(target);
+  callback(target, browser_form, known_success, submission_source);
 }
 
 void ContentAutofillRouter::TextFieldDidChange(
@@ -317,18 +249,15 @@ void ContentAutofillRouter::TextFieldDidChange(
                      const FormFieldData& field,
                      const gfx::RectF& bounding_box,
                      base::TimeTicks timestamp)) {
-  some_rfh_for_debugging_ = source->render_frame_host()->GetGlobalId();
-
   FormGlobalId form_id = form.global_id();
   form_forest_.UpdateTreeOfRendererForm(std::move(form), source);
 
   TriggerFormExtractionExcept(source);
 
-  const FormData* browser_form = form_forest_.GetBrowserForm(form_id);
-  AFCHECK(browser_form, return);
-  auto* target = DriverOfFrame(browser_form->host_frame);
-  AFCHECK(target, return );
-  callback(target, *browser_form, field, bounding_box, timestamp);
+  const FormData& browser_form = form_forest_.GetBrowserForm(form_id);
+  auto* target = DriverOfFrame(browser_form.host_frame);
+  CHECK(target);
+  callback(target, browser_form, field, bounding_box, timestamp);
 }
 
 void ContentAutofillRouter::TextFieldDidScroll(
@@ -340,18 +269,15 @@ void ContentAutofillRouter::TextFieldDidScroll(
                      const FormData& form,
                      const FormFieldData& field,
                      const gfx::RectF& bounding_box)) {
-  some_rfh_for_debugging_ = source->render_frame_host()->GetGlobalId();
-
   FormGlobalId form_id = form.global_id();
   form_forest_.UpdateTreeOfRendererForm(std::move(form), source);
 
   TriggerFormExtractionExcept(source);
 
-  const FormData* browser_form = form_forest_.GetBrowserForm(form_id);
-  AFCHECK(browser_form, return);
-  auto* target = DriverOfFrame(browser_form->host_frame);
-  AFCHECK(target, return );
-  callback(target, *browser_form, field, bounding_box);
+  const FormData& browser_form = form_forest_.GetBrowserForm(form_id);
+  auto* target = DriverOfFrame(browser_form.host_frame);
+  CHECK(target);
+  callback(target, browser_form, field, bounding_box);
 }
 
 void ContentAutofillRouter::SelectControlDidChange(
@@ -363,18 +289,15 @@ void ContentAutofillRouter::SelectControlDidChange(
                      const FormData& form,
                      const FormFieldData& field,
                      const gfx::RectF& bounding_box)) {
-  some_rfh_for_debugging_ = source->render_frame_host()->GetGlobalId();
-
   FormGlobalId form_id = form.global_id();
   form_forest_.UpdateTreeOfRendererForm(std::move(form), source);
 
   TriggerFormExtractionExcept(source);
 
-  const FormData* browser_form = form_forest_.GetBrowserForm(form_id);
-  AFCHECK(browser_form, return);
-  auto* target = DriverOfFrame(browser_form->host_frame);
-  AFCHECK(target, return );
-  callback(target, *browser_form, field, bounding_box);
+  const FormData& browser_form = form_forest_.GetBrowserForm(form_id);
+  auto* target = DriverOfFrame(browser_form.host_frame);
+  CHECK(target);
+  callback(target, browser_form, field, bounding_box);
 }
 
 void ContentAutofillRouter::AskForValuesToFill(
@@ -382,36 +305,28 @@ void ContentAutofillRouter::AskForValuesToFill(
     FormData form,
     const FormFieldData& field,
     const gfx::RectF& bounding_box,
-    AutoselectFirstSuggestion autoselect_first_suggestion,
-    FormElementWasClicked form_element_was_clicked,
+    AutofillSuggestionTriggerSource trigger_source,
     void (*callback)(ContentAutofillDriver* target,
                      const FormData& form,
                      const FormFieldData& field,
                      const gfx::RectF& bounding_box,
-                     AutoselectFirstSuggestion autoselect_first_suggestion,
-                     FormElementWasClicked form_element_was_clicked)) {
-  some_rfh_for_debugging_ = source->render_frame_host()->GetGlobalId();
-
+                     AutofillSuggestionTriggerSource trigger_source)) {
   FormGlobalId form_id = form.global_id();
   form_forest_.UpdateTreeOfRendererForm(std::move(form), source);
 
   TriggerFormExtractionExcept(source);
 
-  const FormData* browser_form = form_forest_.GetBrowserForm(form_id);
-  AFCHECK(browser_form, return);
-  auto* target = DriverOfFrame(browser_form->host_frame);
-  AFCHECK(target, return );
+  const FormData& browser_form = form_forest_.GetBrowserForm(form_id);
+  auto* target = DriverOfFrame(browser_form.host_frame);
+  CHECK(target);
   SetLastQueriedSource(source);
   SetLastQueriedTarget(target);
-  callback(target, *browser_form, field, bounding_box,
-           autoselect_first_suggestion, form_element_was_clicked);
+  callback(target, browser_form, field, bounding_box, trigger_source);
 }
 
 void ContentAutofillRouter::HidePopup(
     ContentAutofillDriver* source,
     void (*callback)(ContentAutofillDriver* target)) {
-  some_rfh_for_debugging_ = source->render_frame_host()->GetGlobalId();
-
   // For Password Manager forms, |last_queried_target_| is not set. Since these
   // forms are not form-transcending, the we can unicast to the |source|.
   if (!last_queried_target_) {
@@ -425,8 +340,6 @@ void ContentAutofillRouter::FocusNoLongerOnForm(
     ContentAutofillDriver* source,
     bool had_interacted_form,
     void (*callback)(ContentAutofillDriver* target, bool had_interacted_form)) {
-  some_rfh_for_debugging_ = source->render_frame_host()->GetGlobalId();
-
   // Suppresses FocusNoLongerOnForm() if the focus has already moved to a
   // different frame.
   LocalFrameToken frame_token(
@@ -455,8 +368,6 @@ void ContentAutofillRouter::FocusOnFormField(
                      const FormData& form,
                      const FormFieldData& field,
                      const gfx::RectF& bounding_box)) {
-  some_rfh_for_debugging_ = source->render_frame_host()->GetGlobalId();
-
   FormGlobalId form_id = form.global_id();
   form_forest_.UpdateTreeOfRendererForm(std::move(form), source);
 
@@ -476,11 +387,10 @@ void ContentAutofillRouter::FocusOnFormField(
 
   TriggerFormExtractionExcept(source);
 
-  const FormData* browser_form = form_forest_.GetBrowserForm(form_id);
-  AFCHECK(browser_form, return);
-  auto* target = DriverOfFrame(browser_form->host_frame);
-  AFCHECK(target, return );
-  callback(target, *browser_form, field, bounding_box);
+  const FormData& browser_form = form_forest_.GetBrowserForm(form_id);
+  auto* target = DriverOfFrame(browser_form.host_frame);
+  CHECK(target);
+  callback(target, browser_form, field, bounding_box);
 }
 
 void ContentAutofillRouter::DidFillAutofillFormData(
@@ -490,26 +400,21 @@ void ContentAutofillRouter::DidFillAutofillFormData(
     void (*callback)(ContentAutofillDriver* target,
                      const FormData& form,
                      base::TimeTicks timestamp)) {
-  some_rfh_for_debugging_ = source->render_frame_host()->GetGlobalId();
-
   FormGlobalId form_id = form.global_id();
   form_forest_.UpdateTreeOfRendererForm(std::move(form), source);
 
-  const FormData* browser_form = form_forest_.GetBrowserForm(form_id);
-  AFCHECK(browser_form, return);
-  auto* target = DriverOfFrame(browser_form->host_frame);
+  const FormData& browser_form = form_forest_.GetBrowserForm(form_id);
+  auto* target = DriverOfFrame(browser_form.host_frame);
   // Usually, `target == last_queried_target_`, but this is not guaranteed
   // because ContentAutofillRouter may have learned about `form`'s parent form
   // in between AskForValuesToFill() and DidFillAutofillFormData().
-  AFCHECK(target, return );
-  callback(target, *browser_form, timestamp);
+  CHECK(target);
+  callback(target, browser_form, timestamp);
 }
 
 void ContentAutofillRouter::DidPreviewAutofillFormData(
     ContentAutofillDriver* source,
     void (*callback)(ContentAutofillDriver* target)) {
-  some_rfh_for_debugging_ = source->render_frame_host()->GetGlobalId();
-
   if (last_queried_target_)
     callback(last_queried_target_);
 }
@@ -517,8 +422,6 @@ void ContentAutofillRouter::DidPreviewAutofillFormData(
 void ContentAutofillRouter::DidEndTextFieldEditing(
     ContentAutofillDriver* source,
     void (*callback)(ContentAutofillDriver* target)) {
-  some_rfh_for_debugging_ = source->render_frame_host()->GetGlobalId();
-
   TriggerFormExtractionExcept(source);
 
   // TODO(crbug/1228706): Retrofit event with the FormGlobalId and FieldGlobalId
@@ -526,22 +429,19 @@ void ContentAutofillRouter::DidEndTextFieldEditing(
   ForEachFrame(form_forest_, callback);
 }
 
-void ContentAutofillRouter::SelectFieldOptionsDidChange(
+void ContentAutofillRouter::SelectOrSelectListFieldOptionsDidChange(
     ContentAutofillDriver* source,
     FormData form,
     void (*callback)(ContentAutofillDriver* target, const FormData& form)) {
-  some_rfh_for_debugging_ = source->render_frame_host()->GetGlobalId();
-
   FormGlobalId form_id = form.global_id();
   form_forest_.UpdateTreeOfRendererForm(std::move(form), source);
 
   TriggerFormExtractionExcept(source);
 
-  const FormData* browser_form = form_forest_.GetBrowserForm(form_id);
-  AFCHECK(browser_form, return);
-  auto* target = DriverOfFrame(browser_form->host_frame);
-  AFCHECK(target, return );
-  callback(target, *browser_form);
+  const FormData& browser_form = form_forest_.GetBrowserForm(form_id);
+  auto* target = DriverOfFrame(browser_form.host_frame);
+  CHECK(target);
+  callback(target, browser_form);
 }
 
 void ContentAutofillRouter::JavaScriptChangedAutofilledValue(
@@ -553,18 +453,15 @@ void ContentAutofillRouter::JavaScriptChangedAutofilledValue(
                      const FormData& form,
                      const FormFieldData& field,
                      const std::u16string& old_value)) {
-  some_rfh_for_debugging_ = source->render_frame_host()->GetGlobalId();
-
   FormGlobalId form_id = form.global_id();
   form_forest_.UpdateTreeOfRendererForm(std::move(form), source);
 
   TriggerFormExtractionExcept(source);
 
-  const FormData* browser_form = form_forest_.GetBrowserForm(form_id);
-  AFCHECK(browser_form, return);
-  auto* target = DriverOfFrame(browser_form->host_frame);
-  AFCHECK(target, return);
-  callback(target, *browser_form, field, old_value);
+  const FormData& browser_form = form_forest_.GetBrowserForm(form_id);
+  auto* target = DriverOfFrame(browser_form.host_frame);
+  CHECK(target);
+  callback(target, browser_form, field, old_value);
 }
 
 void ContentAutofillRouter::OnContextMenuShownInField(
@@ -574,8 +471,6 @@ void ContentAutofillRouter::OnContextMenuShownInField(
     void (*callback)(ContentAutofillDriver* target,
                      const FormGlobalId& form_global_id,
                      const FieldGlobalId& field_global_id)) {
-  some_rfh_for_debugging_ = source->render_frame_host()->GetGlobalId();
-
   TriggerFormExtractionExcept(source);
 
   ForEachFrame(form_forest_, [&](ContentAutofillDriver* some_driver) {
@@ -592,18 +487,16 @@ void ContentAutofillRouter::OnContextMenuShownInField(
 
 std::vector<FieldGlobalId> ContentAutofillRouter::FillOrPreviewForm(
     ContentAutofillDriver* source,
-    mojom::RendererFormDataAction action,
+    mojom::AutofillActionPersistence action_persistence,
     const FormData& data,
     const url::Origin& triggered_origin,
     const base::flat_map<FieldGlobalId, ServerFieldType>& field_type_map,
     void (*callback)(ContentAutofillDriver* target,
-                     mojom::RendererFormDataAction action,
+                     mojom::AutofillActionPersistence action_persistence,
                      const FormData& form)) {
-  some_rfh_for_debugging_ = source->render_frame_host()->GetGlobalId();
-
   internal::FormForest::RendererForms renderer_forms =
-      form_forest_.GetRendererFormsOfBrowserForm(data, triggered_origin,
-                                                 field_type_map);
+      form_forest_.GetRendererFormsOfBrowserForm(
+          data, {&triggered_origin, &field_type_map});
   for (const FormData& renderer_form : renderer_forms.renderer_forms) {
     // Sending empty fill data to the renderer is semantically a no-op but
     // causes some further mojo calls.
@@ -612,9 +505,28 @@ std::vector<FieldGlobalId> ContentAutofillRouter::FillOrPreviewForm(
       continue;
     }
     if (auto* target = DriverOfFrame(renderer_form.host_frame))
-      callback(target, action, renderer_form);
+      callback(target, action_persistence, renderer_form);
   }
   return renderer_forms.safe_fields;
+}
+
+void ContentAutofillRouter::UndoAutofill(
+    ContentAutofillDriver* source,
+    mojom::AutofillActionPersistence action_persistence,
+    const FormData& data,
+    const url::Origin& triggered_origin,
+    const base::flat_map<FieldGlobalId, ServerFieldType>& field_type_map,
+    void (*callback)(ContentAutofillDriver* target,
+                     const FormData& form,
+                     mojom::AutofillActionPersistence action_persistence)) {
+  internal::FormForest::RendererForms renderer_forms =
+      form_forest_.GetRendererFormsOfBrowserForm(
+          data, {&triggered_origin, &field_type_map});
+  for (const FormData& renderer_form : renderer_forms.renderer_forms) {
+    if (auto* target = DriverOfFrame(renderer_form.host_frame)) {
+      callback(target, renderer_form, action_persistence);
+    }
+  }
 }
 
 void ContentAutofillRouter::SendAutofillTypePredictionsToRenderer(
@@ -622,8 +534,6 @@ void ContentAutofillRouter::SendAutofillTypePredictionsToRenderer(
     const std::vector<FormDataPredictions>& browser_fdps,
     void (*callback)(ContentAutofillDriver* target,
                      const std::vector<FormDataPredictions>& predictions)) {
-  some_rfh_for_debugging_ = source->render_frame_host()->GetGlobalId();
-
   // Splits each FrameDataPredictions according to the respective FormData's
   // renderer forms, and groups these FormDataPredictions by the renderer form's
   // frame. We uso "fdp" as abbreviation of FormDataPredictions.
@@ -643,7 +553,8 @@ void ContentAutofillRouter::SendAutofillTypePredictionsToRenderer(
     // the renderer form's frame in |renderer_fdps|.
     internal::FormForest::RendererForms renderer_forms =
         form_forest_.GetRendererFormsOfBrowserForm(
-            browser_fdp.data, browser_fdp.data.main_frame_origin, {});
+            browser_fdp.data,
+            {&browser_fdp.data.main_frame_origin, /*field_type_map=*/nullptr});
     for (FormData& renderer_form : renderer_forms.renderer_forms) {
       LocalFrameToken frame = renderer_form.host_frame;
       FormDataPredictions renderer_fdp;
@@ -671,8 +582,6 @@ void ContentAutofillRouter::SendFieldsEligibleForManualFillingToRenderer(
     const std::vector<FieldGlobalId>& fields,
     void (*callback)(ContentAutofillDriver* target,
                      const std::vector<FieldRendererId>& fields)) {
-  some_rfh_for_debugging_ = source->render_frame_host()->GetGlobalId();
-
   // Splits FieldGlobalIds by their frames and reduce them to the
   // FieldRendererIds.
   std::map<LocalFrameToken, std::vector<FieldRendererId>> fields_by_frame;
@@ -695,8 +604,6 @@ void ContentAutofillRouter::RendererShouldAcceptDataListSuggestion(
     void (*callback)(ContentAutofillDriver* target,
                      const FieldRendererId& field,
                      const std::u16string& value)) {
-  some_rfh_for_debugging_ = source->render_frame_host()->GetGlobalId();
-
   if (auto* target = DriverOfFrame(field.frame_token)) {
     callback(target, field.renderer_id, value);
   }
@@ -705,17 +612,25 @@ void ContentAutofillRouter::RendererShouldAcceptDataListSuggestion(
 void ContentAutofillRouter::RendererShouldClearFilledSection(
     ContentAutofillDriver* source,
     void (*callback)(ContentAutofillDriver* target)) {
-  some_rfh_for_debugging_ = source->render_frame_host()->GetGlobalId();
-
   ForEachFrame(form_forest_, callback);
 }
 
 void ContentAutofillRouter::RendererShouldClearPreviewedForm(
     ContentAutofillDriver* source,
     void (*callback)(ContentAutofillDriver* target)) {
-  some_rfh_for_debugging_ = source->render_frame_host()->GetGlobalId();
-
   ForEachFrame(form_forest_, callback);
+}
+
+void ContentAutofillRouter::RendererShouldTriggerSuggestions(
+    ContentAutofillDriver* source,
+    const FieldGlobalId& field,
+    AutofillSuggestionTriggerSource trigger_source,
+    void (*callback)(ContentAutofillDriver* target,
+                     const FieldRendererId& field,
+                     AutofillSuggestionTriggerSource trigger_source)) {
+  if (ContentAutofillDriver* target = DriverOfFrame(field.frame_token)) {
+    callback(target, field.renderer_id, trigger_source);
+  }
 }
 
 void ContentAutofillRouter::RendererShouldFillFieldWithValue(
@@ -725,8 +640,6 @@ void ContentAutofillRouter::RendererShouldFillFieldWithValue(
     void (*callback)(ContentAutofillDriver* target,
                      const FieldRendererId& field,
                      const std::u16string& value)) {
-  some_rfh_for_debugging_ = source->render_frame_host()->GetGlobalId();
-
   if (auto* target = DriverOfFrame(field.frame_token))
     callback(target, field.renderer_id, value);
 }
@@ -738,8 +651,6 @@ void ContentAutofillRouter::RendererShouldPreviewFieldWithValue(
     void (*callback)(ContentAutofillDriver* target,
                      const FieldRendererId& field,
                      const std::u16string& value)) {
-  some_rfh_for_debugging_ = source->render_frame_host()->GetGlobalId();
-
   if (auto* target = DriverOfFrame(field.frame_token))
     callback(target, field.renderer_id, value);
 }
@@ -751,11 +662,18 @@ void ContentAutofillRouter::RendererShouldSetSuggestionAvailability(
     void (*callback)(ContentAutofillDriver* target,
                      const FieldRendererId& field,
                      const mojom::AutofillState state)) {
-  some_rfh_for_debugging_ = source->render_frame_host()->GetGlobalId();
-
   if (auto* target = DriverOfFrame(field.frame_token)) {
     callback(target, field.renderer_id, state);
   }
+}
+
+std::vector<FormData> ContentAutofillRouter::GetRendererForms(
+    const FormData& browser_form) const {
+  return form_forest_
+      .GetRendererFormsOfBrowserForm(
+          browser_form,
+          internal::FormForest::SecurityOptions::TrustAllOrigins())
+      .renderer_forms;
 }
 
 }  // namespace autofill

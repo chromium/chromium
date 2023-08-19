@@ -7,8 +7,7 @@
 
 #include <stdint.h>
 
-#include <string>
-#include <vector>
+#include <utility>
 
 #include "base/atomicops.h"
 #include "base/check_op.h"

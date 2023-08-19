@@ -497,8 +497,7 @@ WaylandRemoteShell::CreateShellSurface(Surface* surface,
                                        int container,
                                        double default_device_scale_factor) {
   return display_->CreateOrGetClientControlledShellSurface(
-      surface, container, default_device_scale_factor,
-      use_default_scale_cancellation_,
+      surface, container, use_default_scale_cancellation_,
       /*supports_floated_state=*/event_mapping_.has_bounds_change_reason_float);
 }
 
@@ -516,18 +515,14 @@ WaylandRemoteShell::CreateNotificationSurface(
 }
 
 std::unique_ptr<InputMethodSurface>
-WaylandRemoteShell::CreateInputMethodSurface(
-    Surface* surface,
-    double default_device_scale_factor) {
-  return display_->CreateInputMethodSurface(
-      surface, default_device_scale_factor, use_default_scale_cancellation_);
+WaylandRemoteShell::CreateInputMethodSurface(Surface* surface) {
+  return display_->CreateInputMethodSurface(surface,
+                                            use_default_scale_cancellation_);
 }
 
 std::unique_ptr<ToastSurface> WaylandRemoteShell::CreateToastSurface(
-    Surface* surface,
-    double default_device_scale_factor) {
-  return display_->CreateToastSurface(surface, default_device_scale_factor,
-                                      use_default_scale_cancellation_);
+    Surface* surface) {
+  return display_->CreateToastSurface(surface, use_default_scale_cancellation_);
 }
 
 void WaylandRemoteShell::SetUseDefaultScaleCancellation(
@@ -1083,8 +1078,7 @@ void remote_surface_set_scale(wl_client* client,
                               wl_resource* resource,
                               wl_fixed_t scale) {
   // DEPRECATED (b/141715728) - The server updates the client's scale.
-  GetUserDataAs<ClientControlledShellSurface>(resource)->SetScale(
-      wl_fixed_to_double(scale));
+  NOTREACHED();
 }
 
 void remote_surface_set_rectangular_shadow_DEPRECATED(wl_client* client,
@@ -1478,6 +1472,16 @@ void remote_surface_set_resize_lock_type(wl_client* client,
 
 void remote_surface_set_float(wl_client* client, wl_resource* resource) {
   GetUserDataAs<ClientControlledShellSurface>(resource)->SetFloat();
+}
+
+void remote_surface_set_scale_factor(wl_client* client,
+                                     wl_resource* resource,
+                                     uint scale_factor_as_uint) {
+  static_assert(sizeof(uint32_t) == sizeof(float),
+                "Sizes much match for reinterpret cast to be meaningful");
+  float scale_factor = *reinterpret_cast<float*>(&scale_factor_as_uint);
+  GetUserDataAs<ClientControlledShellSurface>(resource)->SetScaleFactor(
+      scale_factor);
 }
 
 ////////////////////////////////////////////////////////////////////////////////

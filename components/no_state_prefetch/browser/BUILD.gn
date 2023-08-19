@@ -12,6 +12,8 @@ static_library("browser") {
     "no_state_prefetch_field_trial.h",
     "no_state_prefetch_handle.cc",
     "no_state_prefetch_handle.h",
+    "no_state_prefetch_history.cc",
+    "no_state_prefetch_history.h",
     "no_state_prefetch_link_manager.cc",
     "no_state_prefetch_link_manager.h",
     "no_state_prefetch_manager.cc",
@@ -27,8 +29,6 @@ static_library("browser") {
     "prerender_config.h",
     "prerender_histograms.cc",
     "prerender_histograms.h",
-    "prerender_history.cc",
-    "prerender_history.h",
   ]
 
   deps = [
@@ -36,6 +36,7 @@ static_library("browser") {
     "//components/google/core/common",
     "//components/no_state_prefetch/common",
     "//components/no_state_prefetch/common:mojo_bindings",
+    "//components/paint_preview/browser:browser",
     "//content/public/browser",
     "//net",
     "//services/metrics/public/cpp:ukm_builders",
@@ -53,9 +54,9 @@ static_library("browser") {
 source_set("unit_tests") {
   testonly = true
   sources = [
+    "no_state_prefetch_history_unittest.cc",
     "no_state_prefetch_processor_impl_unittest.cc",
     "no_state_prefetch_utils_unittest.cc",
-    "prerender_history_unittest.cc",
   ]
 
   deps = [

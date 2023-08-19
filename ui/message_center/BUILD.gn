@@ -137,7 +137,6 @@ component("message_center") {
         "//ui/views",
       ]
       if (is_mac) {
-        configs += [ "//build/config/compiler:enable_arc" ]
         frameworks = [ "Foundation.framework" ]
       }
       if (is_chromeos) {
@@ -183,6 +182,7 @@ if (enable_message_center) {
 
     sources = [
       "message_center_impl_unittest.cc",
+      "notification_blocker_unittest.cc",
       "notification_list_unittest.cc",
       "public/cpp/notification_delegate_unittest.cc",
       "test/run_all_unittests.cc",

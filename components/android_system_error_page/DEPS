@@ -4,5 +4,4 @@ include_rules = [
   "+net",
   "+third_party/blink/public",
   "+ui/base",
-  "+components/content_relationship_verification"
 ]

@@ -657,15 +657,9 @@ struct _xmlDOMWrapCtxt {
 /*
  * Some helper functions
  */
-#if defined(LIBXML_TREE_ENABLED) || defined(LIBXML_XPATH_ENABLED) || \
-    defined(LIBXML_SCHEMAS_ENABLED) || defined(LIBXML_DEBUG_ENABLED) || \
-    defined (LIBXML_HTML_ENABLED) || defined(LIBXML_SAX1_ENABLED) || \
-    defined(LIBXML_HTML_ENABLED) || defined(LIBXML_WRITER_ENABLED) || \
-    defined(LIBXML_LEGACY_ENABLED)
 XMLPUBFUN int
 		xmlValidateNCName	(const xmlChar *value,
 					 int space);
-#endif
 
 #if defined(LIBXML_TREE_ENABLED) || defined(LIBXML_SCHEMAS_ENABLED)
 XMLPUBFUN int

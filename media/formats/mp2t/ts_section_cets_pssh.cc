@@ -39,7 +39,9 @@ bool TsSectionCetsPssh::Parse(bool payload_unit_start_indicator,
   uint8_t declared_box_bytes = static_cast<uint8_t>(pssh[3]);
   RCHECK(declared_box_bytes <= box_length_bits * 8);
   pssh.resize(declared_box_bytes);
-  register_pssh_boxes_cb_.Run(std::vector<uint8_t>(pssh.begin(), pssh.end()));
+  if (declared_box_bytes) {
+    register_pssh_boxes_cb_.Run(std::vector<uint8_t>(pssh.begin(), pssh.end()));
+  }
   return true;
 }
 

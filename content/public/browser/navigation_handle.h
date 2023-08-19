@@ -9,6 +9,7 @@
 #include <string>
 #include <vector>
 
+#include "base/functional/callback.h"
 #include "base/memory/safe_ref.h"
 #include "base/supports_user_data.h"
 #include "content/common/content_export.h"
@@ -30,6 +31,7 @@
 #include "third_party/blink/public/common/navigation/impression.h"
 #include "third_party/blink/public/common/runtime_feature_state/runtime_feature_state_context.h"
 #include "third_party/blink/public/common/tokens/tokens.h"
+#include "third_party/blink/public/mojom/lcp_critical_path_predictor/lcp_critical_path_predictor.mojom.h"
 #include "third_party/blink/public/mojom/loader/referrer.mojom.h"
 #include "third_party/blink/public/mojom/loader/transferrable_url_loader.mojom-forward.h"
 #include "third_party/blink/public/mojom/navigation/navigation_initiator_activation_and_ad_status.mojom.h"
@@ -82,7 +84,14 @@ class CONTENT_EXPORT NavigationHandle : public base::SupportsUserData {
   virtual int64_t GetNavigationId() = 0;
 
   // Get the page UKM ID that will be in use once this navigation fully commits
-  // (the eventual value of GetRenderFrameHost()->GetPageUkmSourceId()).
+  // (typically the eventual value of
+  // GetRenderFrameHost()->GetPageUkmSourceId()).
+  //
+  // WARNING: For prerender activations, this will return a UKM ID that is
+  // different from the eventual value of
+  // GetRenderFrameHost()->GetPageUkmSourceId(). See
+  // https://chromium.googlesource.com/chromium/src/+/main/content/browser/preloading/prerender/README.md#ukm-source-ids
+  // for more details.
   virtual ukm::SourceId GetNextPageUkmSourceId() = 0;
 
   // The URL the frame is navigating to. This may change during the navigation
@@ -388,6 +397,15 @@ class CONTENT_EXPORT NavigationHandle : public base::SupportsUserData {
   virtual void SetCorsExemptRequestHeader(const std::string& header_name,
                                           const std::string& header_value) = 0;
 
+  // Set LCP Critical Path Predictor hint data to be passed along to the
+  // renderer process on the navigation commit.
+  virtual void SetLCPPNavigationHint(
+      const blink::mojom::LCPCriticalPathPredictorNavigationTimeHint& hint) = 0;
+
+  // Peek into LCP Critical Path Predictor hint data attached to the navigation.
+  virtual const blink::mojom::LCPCriticalPathPredictorNavigationTimeHintPtr&
+  GetLCPPNavigationHint() = 0;
+
   // Returns the response headers for the request, or nullptr if there aren't
   // any response headers or they have not been received yet. The response
   // headers may change during the navigation (e.g. after encountering a server
@@ -466,14 +484,14 @@ class CONTENT_EXPORT NavigationHandle : public base::SupportsUserData {
   // navigation. This can be nullptr if the navigation was not associated with a
   // frame, or may return a valid frame token to a frame that no longer exists
   // because it was deleted before the navigation began. This parameter is
-  // defined if and only if GetInitiatorProcessID below is.
+  // defined if and only if GetInitiatorProcessId below is.
   virtual const absl::optional<blink::LocalFrameToken>&
   GetInitiatorFrameToken() = 0;
 
   // Return the ID of the renderer process of the frame host that initiated the
   // navigation. This is defined if and only if GetInitiatorFrameToken above is,
   // and it is only valid in conjunction with it.
-  virtual int GetInitiatorProcessID() = 0;
+  virtual int GetInitiatorProcessId() = 0;
 
   // Returns, if available, the origin of the document that has initiated the
   // navigation for this NavigationHandle.
@@ -533,6 +551,10 @@ class CONTENT_EXPORT NavigationHandle : public base::SupportsUserData {
   // the navigation: no error page will commit.
   virtual void SetSilentlyIgnoreErrors() = 0;
 
+  // The sandbox flags of the initiator of the navigation, if any.
+  // WebSandboxFlags::kNone otherwise.
+  virtual network::mojom::WebSandboxFlags SandboxFlagsInitiator() = 0;
+
   // The sandbox flags inherited at the beginning of the navigation.
   //
   // This is the sandbox flags intersection of:
@@ -585,6 +607,26 @@ class CONTENT_EXPORT NavigationHandle : public base::SupportsUserData {
   // Configures whether a Cookie header added to this request should not be
   // overwritten by the network service.
   virtual void SetAllowCookiesFromBrowser(bool allow_cookies_from_browser) = 0;
+
+  // Returns the contents of the response body via callback.
+  //
+  // This method should only be called by NavigationThrottle implementations.
+  // When calling this method, the NavigationThrottle should either already be
+  // deferred or be processing and about to be deferred.
+  //
+  // The callback may be called with an empty response body if:
+  // - The NavigationThrottle resumes before the response body is read
+  // - An unhandled MojoResult is encountered while reading the response body in
+  //   `NavigationRequest::OnResponseBodyReady()`
+  //
+  // The response body is read from the data pipe using MOJO_READ_DATA_FLAG_PEEK
+  // so that the body is not consumed before reaching its intended target.
+  //
+  // Only the first response body data that is read from the data pipe will be
+  // passed into the callback.
+  using ResponseBodyCallback =
+      base::OnceCallback<void(const std::string& initial_body_chunk)>;
+  virtual void GetResponseBody(ResponseBodyCallback callback) = 0;
 
   // Prerender2:
   // Used for metrics.

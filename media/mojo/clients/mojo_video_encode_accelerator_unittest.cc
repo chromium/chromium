@@ -83,16 +83,16 @@ class MockMojoVideoEncodeAccelerator : public mojom::VideoEncodeAccelerator {
            mojo::AssociatedRemote<mojom::VideoEncodeAcceleratorClient>*));
 
   void Encode(const scoped_refptr<VideoFrame>& frame,
-              bool keyframe,
+              const VideoEncoder::EncodeOptions& options,
               EncodeCallback callback) override {
     EXPECT_NE(-1, configured_bitstream_buffer_id_);
     EXPECT_TRUE(client_);
     client_->BitstreamBufferReady(
         configured_bitstream_buffer_id_,
-        BitstreamBufferMetadata(0, keyframe, frame->timestamp()));
+        BitstreamBufferMetadata(0, options.key_frame, frame->timestamp()));
     configured_bitstream_buffer_id_ = -1;
 
-    DoEncode(frame, keyframe);
+    DoEncode(frame, options.key_frame);
     std::move(callback).Run();
   }
   MOCK_METHOD2(DoEncode, void(const scoped_refptr<VideoFrame>&, bool));

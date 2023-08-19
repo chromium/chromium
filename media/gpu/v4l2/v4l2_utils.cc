@@ -14,49 +14,35 @@
 #endif
 
 #include "base/containers/contains.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/ranges/algorithm.h"
 #include "build/build_config.h"
 #include "media/base/video_codecs.h"
+#include "media/base/video_frame.h"
 #include "media/base/video_types.h"
+#include "media/gpu/chromeos/fourcc.h"
 #include "media/gpu/macros.h"
 #include "ui/gfx/geometry/size.h"
 
-#if BUILDFLAG(IS_CHROMEOS)
-#ifndef V4L2_CID_MPEG_VIDEO_AV1_PROFILE
-#define V4L2_CID_MPEG_VIDEO_AV1_PROFILE V4L2_CID_STATELESS_AV1_PROFILE
-#endif
-#ifndef V4L2_MPEG_VIDEO_AV1_PROFILE_MAIN
-#define V4L2_MPEG_VIDEO_AV1_PROFILE_MAIN V4L2_STATELESS_AV1_PROFILE_MAIN
-#endif
-#ifndef V4L2_MPEG_VIDEO_AV1_PROFILE_HIGH
-#define V4L2_MPEG_VIDEO_AV1_PROFILE_HIGH V4L2_STATELESS_AV1_PROFILE_HIGH
-#endif
-#ifndef V4L2_MPEG_VIDEO_AV1_PROFILE_PROFESSIONAL
-#define V4L2_MPEG_VIDEO_AV1_PROFILE_PROFESSIONAL \
-  V4L2_STATELESS_AV1_PROFILE_PROFESSIONAL
-#endif
-#endif
-
-// TODO(b/255770680): Remove this once V4L2 header is updated.
-// https://patchwork.linuxtv.org/project/linux-media/patch/20210810220552.298140-2-daniel.almeida@collabora.com/
+// This has not been accepted upstream.
 #ifndef V4L2_PIX_FMT_AV1
 #define V4L2_PIX_FMT_AV1 v4l2_fourcc('A', 'V', '0', '1') /* AV1 */
 #endif
+// This has been upstreamed and backported for ChromeOS, but has not been
+// picked up by the Chromium sysroots.
 #ifndef V4L2_PIX_FMT_AV1_FRAME
 #define V4L2_PIX_FMT_AV1_FRAME v4l2_fourcc('A', 'V', '1', 'F')
 #endif
 
-// TODO(b/278157861): Remove this once ChromeOS V4L2 header is updated
-// Add it directly instead of including hevc-ctrls-upstream.h
-#ifndef V4L2_PIX_FMT_HEVC_SLICE
-#define V4L2_PIX_FMT_HEVC_SLICE \
-  v4l2_fourcc('S', '2', '6', '5') /* HEVC parsed slices */
-#endif
+#define MAKE_V4L2_CODEC_PAIR(codec, suffix) \
+  std::make_pair(codec##_##suffix, codec)
 
 namespace media {
 
-// Numerical value of ioctl() OK return value;
-constexpr int kIoctlOk = 0;
+void RecordMediaIoctlUMA(MediaIoctlRequests function) {
+  base::UmaHistogramEnumeration("Media.V4l2VideoDecoder.MediaIoctlError",
+                                function);
+}
 
 const char* V4L2MemoryToString(const v4l2_memory memory) {
   switch (memory) {
@@ -173,7 +159,8 @@ VideoCodecProfile V4L2ProfileToVideoCodecProfile(uint32_t v4l2_codec,
         case V4L2_MPEG_VIDEO_VP9_PROFILE_0:
           return VP9PROFILE_PROFILE0;
         case V4L2_MPEG_VIDEO_VP9_PROFILE_2:
-          return VP9PROFILE_PROFILE2;
+          // TODO(b/250698011): Support Profile 2 when launched
+          return VIDEO_CODEC_PROFILE_UNKNOWN;
       }
       break;
 #if BUILDFLAG(ENABLE_HEVC_PARSER_AND_HW_DECODER)
@@ -202,6 +189,108 @@ VideoCodecProfile V4L2ProfileToVideoCodecProfile(uint32_t v4l2_codec,
 #endif
   }
   return VIDEO_CODEC_PROFILE_UNKNOWN;
+}
+
+size_t GetNumPlanesOfV4L2PixFmt(uint32_t pix_fmt) {
+  absl::optional<Fourcc> fourcc = Fourcc::FromV4L2PixFmt(pix_fmt);
+  if (fourcc && fourcc->IsMultiPlanar()) {
+    return VideoFrame::NumPlanes(fourcc->ToVideoPixelFormat());
+  }
+  return 1u;
+}
+
+absl::optional<VideoFrameLayout> V4L2FormatToVideoFrameLayout(
+    const struct v4l2_format& format) {
+  if (!V4L2_TYPE_IS_MULTIPLANAR(format.type)) {
+    VLOGF(1) << "v4l2_buf_type is not multiplanar: " << std::hex << "0x"
+             << format.type;
+    return absl::nullopt;
+  }
+  const v4l2_pix_format_mplane& pix_mp = format.fmt.pix_mp;
+  const uint32_t& pix_fmt = pix_mp.pixelformat;
+  const auto video_fourcc = Fourcc::FromV4L2PixFmt(pix_fmt);
+  if (!video_fourcc) {
+    VLOGF(1) << "Failed to convert pixel format to VideoPixelFormat: "
+             << FourccToString(pix_fmt);
+    return absl::nullopt;
+  }
+  const VideoPixelFormat video_format = video_fourcc->ToVideoPixelFormat();
+  const size_t num_buffers = pix_mp.num_planes;
+  const size_t num_color_planes = VideoFrame::NumPlanes(video_format);
+  if (num_color_planes == 0) {
+    VLOGF(1) << "Unsupported video format for NumPlanes(): "
+             << VideoPixelFormatToString(video_format);
+    return absl::nullopt;
+  }
+  if (num_buffers > num_color_planes) {
+    VLOGF(1) << "pix_mp.num_planes: " << num_buffers
+             << " should not be larger than NumPlanes("
+             << VideoPixelFormatToString(video_format)
+             << "): " << num_color_planes;
+    return absl::nullopt;
+  }
+  // Reserve capacity in advance to prevent unnecessary vector reallocation.
+  std::vector<ColorPlaneLayout> planes;
+  planes.reserve(num_color_planes);
+  for (size_t i = 0; i < num_buffers; ++i) {
+    const v4l2_plane_pix_format& plane_format = pix_mp.plane_fmt[i];
+    planes.emplace_back(static_cast<int32_t>(plane_format.bytesperline), 0u,
+                        plane_format.sizeimage);
+  }
+  // For the case that #color planes > #buffers, it fills stride of color
+  // plane which does not map to buffer.
+  // Right now only some pixel formats are supported: NV12, YUV420, YVU420.
+  if (num_color_planes > num_buffers) {
+    const int32_t y_stride = planes[0].stride;
+    // Note that y_stride is from v4l2 bytesperline and its type is uint32_t.
+    // It is safe to cast to size_t.
+    const size_t y_stride_abs = static_cast<size_t>(y_stride);
+    switch (pix_fmt) {
+      case V4L2_PIX_FMT_NV12:
+        // The stride of UV is the same as Y in NV12.
+        // The height is half of Y plane.
+        planes.emplace_back(y_stride, y_stride_abs * pix_mp.height,
+                            y_stride_abs * pix_mp.height / 2);
+        DCHECK_EQ(2u, planes.size());
+        break;
+      case V4L2_PIX_FMT_YUV420:
+      case V4L2_PIX_FMT_YVU420: {
+        // The spec claims that two Cx rows (including padding) is exactly as
+        // long as one Y row (including padding). So stride of Y must be even
+        // number.
+        if (y_stride % 2 != 0 || pix_mp.height % 2 != 0) {
+          VLOGF(1) << "Plane-Y stride and height should be even; stride: "
+                   << y_stride << ", height: " << pix_mp.height;
+          return absl::nullopt;
+        }
+        const int32_t half_stride = y_stride / 2;
+        const size_t plane_0_area = y_stride_abs * pix_mp.height;
+        const size_t plane_1_area = plane_0_area / 4;
+        planes.emplace_back(half_stride, plane_0_area, plane_1_area);
+        planes.emplace_back(half_stride, plane_0_area + plane_1_area,
+                            plane_1_area);
+        DCHECK_EQ(3u, planes.size());
+        break;
+      }
+      default:
+        VLOGF(1) << "Cannot derive stride for each plane for pixel format "
+                 << FourccToString(pix_fmt);
+        return absl::nullopt;
+    }
+  }
+
+  // Some V4L2 devices expect buffers to be page-aligned. We cannot detect
+  // such devices individually, so set this as a video frame layout property.
+  constexpr size_t buffer_alignment = 0x1000;
+  if (num_buffers == 1) {
+    return VideoFrameLayout::CreateWithPlanes(
+        video_format, gfx::Size(pix_mp.width, pix_mp.height), std::move(planes),
+        buffer_alignment);
+  } else {
+    return VideoFrameLayout::CreateMultiPlanar(
+        video_format, gfx::Size(pix_mp.width, pix_mp.height), std::move(planes),
+        buffer_alignment);
+  }
 }
 
 namespace {
@@ -243,6 +332,26 @@ static const std::map<v4l2_enum_type, std::vector<VideoCodecProfile>>
         {V4L2_CID_MPEG_VIDEO_AV1_PROFILE, {AV1PROFILE_PROFILE_MAIN}},
 #endif
 };
+
+// Correspondence from a VideoCodecProfiles to V4L2 codec described
+// as a pixel format.
+static const std::map<VideoCodecProfile,
+                      std::pair<v4l2_enum_type, v4l2_enum_type>>
+    kVideoCodecProfileToV4L2CodecPixFmt = {
+        {H264PROFILE_BASELINE, MAKE_V4L2_CODEC_PAIR(V4L2_PIX_FMT_H264, SLICE)},
+        {H264PROFILE_MAIN, MAKE_V4L2_CODEC_PAIR(V4L2_PIX_FMT_H264, SLICE)},
+        {H264PROFILE_HIGH, MAKE_V4L2_CODEC_PAIR(V4L2_PIX_FMT_H264, SLICE)},
+#if BUILDFLAG(ENABLE_HEVC_PARSER_AND_HW_DECODER)
+        {HEVCPROFILE_MAIN, MAKE_V4L2_CODEC_PAIR(V4L2_PIX_FMT_HEVC, SLICE)},
+#endif  // BUILDFLAG(ENABLE_HEVC_PARSER_AND_HW_DECODER)
+        {VP8PROFILE_ANY, MAKE_V4L2_CODEC_PAIR(V4L2_PIX_FMT_VP8, FRAME)},
+        {VP9PROFILE_PROFILE0, MAKE_V4L2_CODEC_PAIR(V4L2_PIX_FMT_VP9, FRAME)},
+#if BUILDFLAG(IS_CHROMEOS)
+        {AV1PROFILE_PROFILE_MAIN,
+         MAKE_V4L2_CODEC_PAIR(V4L2_PIX_FMT_AV1, FRAME)},
+#endif
+};
+
 }  // namespace
 
 std::vector<VideoCodecProfile> EnumerateSupportedProfilesForV4L2Codec(
@@ -342,6 +451,26 @@ void GetSupportedResolution(const IoctlAsCallback& ioctl_cb,
   } else {
     DLOGF(INFO) << "VIDIOC_ENUM_FRAMESIZES failed, using default values";
   }
+}
+
+uint32_t VideoCodecProfileToV4L2PixFmt(VideoCodecProfile profile,
+                                       bool slice_based) {
+  CHECK(base::Contains(kVideoCodecProfileToV4L2CodecPixFmt, profile))
+      << "Unsupported profile: " << GetProfileName(profile);
+
+  const auto& v4l2_pix_fmt = kVideoCodecProfileToV4L2CodecPixFmt.at(profile);
+  return slice_based ? v4l2_pix_fmt.first : v4l2_pix_fmt.second;
+}
+
+base::TimeDelta TimeValToTimeDelta(const struct timeval& timeval) {
+  struct timespec ts;
+  const struct timeval temp_timeval = timeval;
+  TIMEVAL_TO_TIMESPEC(&temp_timeval, &ts);
+  return base::TimeDelta::FromTimeSpec(ts);
+}
+
+struct timeval TimeDeltaToTimeVal(base::TimeDelta time_delta) {
+  return base::Time::FromTimeSpec(time_delta.ToTimeSpec()).ToTimeVal();
 }
 
 }  // namespace media

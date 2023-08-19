@@ -5,6 +5,7 @@
 #include "components/navigation_interception/intercept_navigation_delegate.h"
 
 #include <memory>
+#include <tuple>
 
 #include "base/android/jni_android.h"
 #include "base/android/jni_string.h"
@@ -18,6 +19,7 @@
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_view_host.h"
 #include "content/public/browser/web_contents.h"
+#include "content/public/common/page_visibility_state.h"
 #include "mojo/public/cpp/bindings/self_owned_receiver.h"
 #include "net/http/http_status_code.h"
 #include "net/http/http_util.h"
@@ -188,13 +190,23 @@ bool InterceptNavigationDelegate::ShouldIgnoreNavigation(
   if (jdelegate.is_null())
     return false;
 
+  bool hidden_cross_frame = false;
   // Only main frame navigations use this path, so we only need to check if the
   // navigation is cross-frame to the main frame.
-  bool cross_frame = navigation_handle->GetInitiatorFrameToken() &&
-                     navigation_handle->GetInitiatorFrameToken() !=
-                         navigation_handle->GetWebContents()
-                             ->GetPrimaryMainFrame()
-                             ->GetFrameToken();
+  if (navigation_handle->GetInitiatorFrameToken() &&
+      navigation_handle->GetInitiatorFrameToken() !=
+          navigation_handle->GetWebContents()
+              ->GetPrimaryMainFrame()
+              ->GetFrameToken()) {
+    content::RenderFrameHost* initiator_frame_host =
+        content::RenderFrameHost::FromFrameToken(
+            navigation_handle->GetInitiatorProcessId(),
+            navigation_handle->GetInitiatorFrameToken().value());
+    // If the initiator is gone treat it as not visible.
+    hidden_cross_frame =
+        !initiator_frame_host || initiator_frame_host->GetVisibilityState() !=
+                                     content::PageVisibilityState::kVisible;
+  }
 
   // We don't care which sandbox flags are present, only that any sandbox flags
   // are present, as we don't support persisting sandbox flags through fallback
@@ -202,9 +214,15 @@ bool InterceptNavigationDelegate::ShouldIgnoreNavigation(
   bool is_sandboxed = navigation_handle->SandboxFlagsInherited() !=
                       network::mojom::WebSandboxFlags::kNone;
 
+  bool initiator_is_sandboxed = navigation_handle->SandboxFlagsInitiator() !=
+                                network::mojom::WebSandboxFlags::kNone;
+
+  // TODO(https://crbug.com/1425355) Use the initiator sandbox flags.
+  std::ignore = initiator_is_sandboxed;
+
   return Java_InterceptNavigationDelegate_shouldIgnoreNavigation(
       env, jdelegate, navigation_handle->GetJavaNavigationHandle(),
-      url::GURLAndroid::FromNativeGURL(env, escaped_url), cross_frame,
+      url::GURLAndroid::FromNativeGURL(env, escaped_url), hidden_cross_frame,
       is_sandboxed);
 }
 

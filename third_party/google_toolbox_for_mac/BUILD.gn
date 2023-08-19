@@ -17,6 +17,10 @@ component("google_toolbox_for_mac") {
 
   configs -= [ "//build/config/compiler:chromium_code" ]
   configs += [ "//build/config/compiler:no_chromium_code" ]
+
+  # Do not compile with ARC because GTM code is not compatible with being
+  # compiled with ARC.
+  configs -= [ "//build/config/compiler:enable_arc" ]
   public_configs = [ ":google_toolbox_for_mac_public_config" ]
 
   if (!is_ios) {

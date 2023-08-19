@@ -15,7 +15,6 @@
 #include "cc/base/completion_event.h"
 #include "cc/base/delayed_unique_notifier.h"
 #include "cc/input/browser_controls_state.h"
-#include "cc/metrics/jank_injector.h"
 #include "cc/scheduler/scheduler.h"
 #include "cc/trees/layer_tree_host_impl.h"
 
@@ -27,8 +26,6 @@ namespace cc {
 class LayerTreeHost;
 class ProxyMain;
 class RenderFrameMetadataObserver;
-
-class JankInjector;
 class ScopedCommitCompletionEvent;
 
 // This class aggregates all the interactions that the main side of the
@@ -91,6 +88,10 @@ class CC_EXPORT ProxyImpl : public LayerTreeHostImplClient,
 
   void ClearHistory() override;
   size_t CommitDurationSampleCountForTesting() const override;
+  const DelayedUniqueNotifier& SmoothnessPriorityExpirationNotifierForTesting()
+      const {
+    return smoothness_priority_expiration_notifier_;
+  }
 
  private:
   // LayerTreeHostImplClient implementation
@@ -169,8 +170,6 @@ class CC_EXPORT ProxyImpl : public LayerTreeHostImplClient,
   base::SingleThreadTaskRunner* MainThreadTaskRunner();
   bool ShouldDeferBeginMainFrame() const;
 
-  void OnHungCommit();
-
   const int layer_tree_host_id_;
 
   std::unique_ptr<Scheduler> scheduler_;
@@ -208,17 +207,11 @@ class CC_EXPORT ProxyImpl : public LayerTreeHostImplClient,
 
   bool send_compositor_frame_ack_;
 
-  JankInjector jank_injector_;
-
-  TreePriority last_raster_priority_;
-
   raw_ptr<TaskRunnerProvider> task_runner_provider_;
 
   DelayedUniqueNotifier smoothness_priority_expiration_notifier_;
 
   std::unique_ptr<LayerTreeHostImpl> host_impl_;
-
-  bool is_jank_injection_enabled_ = false;
 
   // Used to post tasks to ProxyMain on the main thread.
   base::WeakPtr<ProxyMain> proxy_main_weak_ptr_;
@@ -230,9 +223,6 @@ class CC_EXPORT ProxyImpl : public LayerTreeHostImplClient,
   // Either thread can request deferring BeginMainFrame; keep track of both.
   bool main_wants_defer_begin_main_frame_ = false;
   bool impl_wants_defer_begin_main_frame_ = false;
-
-  // Temporary for production debugging of renderer hang (crbug.com/1159366).
-  base::OneShotTimer hung_commit_timer_;
 };
 
 }  // namespace cc

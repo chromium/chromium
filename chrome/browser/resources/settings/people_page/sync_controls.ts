@@ -2,7 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import '//resources/js/util_ts.js';
 import '//resources/cr_components/localized_link/localized_link.js';
 import '//resources/cr_elements/cr_link_row/cr_link_row.js';
 import '//resources/cr_elements/cr_radio_button/cr_radio_button.js';
@@ -10,6 +9,7 @@ import '//resources/cr_elements/cr_radio_group/cr_radio_group.js';
 import '//resources/cr_elements/cr_toggle/cr_toggle.js';
 import '//resources/cr_elements/cr_shared_style.css.js';
 import '//resources/cr_elements/cr_shared_vars.css.js';
+import '//resources/cr_elements/policy/cr_policy_indicator.js';
 import '//resources/polymer/v3_0/iron-flex-layout/iron-flex-layout-classes.js';
 import '../settings_shared.css.js';
 
@@ -130,12 +130,6 @@ export class SettingsSyncControlsElement extends
   }
   // </if>
 
-  // <if expr="is_chromeos">
-  private shouldShowLacrosSideBySideWarning_(): boolean {
-    return loadTimeData.getBoolean('shouldShowLacrosSideBySideWarning');
-  }
-  // </if>
-
   /**
    * Handler for when the sync preferences are updated.
    */
@@ -143,8 +137,9 @@ export class SettingsSyncControlsElement extends
     this.syncPrefs = syncPrefs;
 
     // If autofill is not registered or synced, force Payments integration off.
+    // TODO(crbug.com/1435431): Remove this coupling.
     if (!this.syncPrefs.autofillRegistered || !this.syncPrefs.autofillSynced) {
-      this.set('syncPrefs.paymentsIntegrationEnabled', false);
+      this.set('syncPrefs.paymentsSynced', false);
     }
   }
 
@@ -168,9 +163,15 @@ export class SettingsSyncControlsElement extends
   }
 
   // <if expr="chromeos_lacros">
-  private shouldAppsToggleBeDisabled_(
-      syncAllDataTypes: boolean, showSyncSettingsRevamp: boolean): boolean {
-    return syncAllDataTypes || showSyncSettingsRevamp;
+  private disableAppsToggle_(
+      syncAllDataTypes: boolean, showSyncSettingsRevamp: boolean,
+      appsManaged: boolean): boolean {
+    return syncAllDataTypes || showSyncSettingsRevamp || appsManaged;
+  }
+
+  private showAppsPolicyIndicator_(
+      appsManaged: boolean, showSyncSettingsRevamp: boolean): boolean {
+    return appsManaged && !showSyncSettingsRevamp;
   }
   // </if>
 
@@ -210,15 +211,29 @@ export class SettingsSyncControlsElement extends
    * Handler for when the autofill data type checkbox is changed.
    */
   private onAutofillDataTypeChanged_() {
-    this.set(
-        'syncPrefs.paymentsIntegrationEnabled', this.syncPrefs!.autofillSynced);
+    // TODO(crbug.com/1435431): Remove this coupling.
+    this.set('syncPrefs.paymentsSynced', this.syncPrefs!.autofillSynced);
 
     this.onSingleSyncDataTypeChanged_();
   }
 
-  private shouldPaymentsCheckboxBeDisabled_(
-      syncAllDataTypes: boolean, autofillSynced: boolean): boolean {
-    return syncAllDataTypes || !autofillSynced;
+  // TODO(crbug.com/1435431): Remove this coupling.
+  private shouldPaymentsCheckboxBeHidden_(
+      paymentsRegistered: boolean, autofillRegistered: boolean): boolean {
+    return !paymentsRegistered || !autofillRegistered;
+  }
+
+  // TODO(crbug.com/1435431): Remove this coupling.
+  private disablePaymentsCheckbox_(
+      syncAllDataTypes: boolean, autofillSynced: boolean,
+      autofillManaged: boolean, paymentsManaged: boolean): boolean {
+    return syncAllDataTypes || !autofillSynced || autofillManaged ||
+        paymentsManaged;
+  }
+
+  private disableTypeCheckBox_(
+      syncAllDataTypes: boolean, dataTypeManaged: boolean): boolean {
+    return syncAllDataTypes || dataTypeManaged;
   }
 
   private syncStatusChanged_() {

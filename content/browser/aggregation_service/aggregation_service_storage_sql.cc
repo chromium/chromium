@@ -7,6 +7,7 @@
 #include <stddef.h>
 #include <stdint.h>
 
+#include <set>
 #include <string>
 #include <utility>
 #include <vector>
@@ -705,6 +706,31 @@ AggregationServiceStorageSql::AdjustOfflineReportTimes(
   statement.Run();
 
   return NextReportTimeAfterImpl(base::Time::Min());
+}
+
+std::set<url::Origin>
+AggregationServiceStorageSql::GetReportRequestReportingOrigins() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  if (!EnsureDatabaseOpen(DbCreationPolicy::kFailIfAbsent)) {
+    return {};
+  }
+
+  std::set<url::Origin> origins;
+  static constexpr char kSelectRequestReportingOrigins[] =
+      "SELECT reporting_origin FROM report_requests";
+  sql::Statement statement(
+      db_.GetCachedStatement(SQL_FROM_HERE, kSelectRequestReportingOrigins));
+
+  while (statement.Step()) {
+    url::Origin reporting_origin =
+        url::Origin::Create(GURL(statement.ColumnString(0)));
+    if (reporting_origin.opaque()) {
+      continue;
+    }
+    origins.insert(std::move(reporting_origin));
+  }
+
+  return origins;
 }
 
 void AggregationServiceStorageSql::ClearDataBetween(

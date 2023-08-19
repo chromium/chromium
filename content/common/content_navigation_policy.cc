@@ -167,6 +167,7 @@ const char kRenderDocumentLevelParameterName[] = "level";
 constexpr base::FeatureParam<RenderDocumentLevel>::Option
     render_document_levels[] = {
         {RenderDocumentLevel::kCrashedFrame, "crashed-frame"},
+        {RenderDocumentLevel::kNonLocalRootSubframe, "non-local-root-subframe"},
         {RenderDocumentLevel::kSubframe, "subframe"},
         {RenderDocumentLevel::kAllFrames, "all-frames"}};
 const base::FeatureParam<RenderDocumentLevel> render_document_level{
@@ -183,8 +184,26 @@ std::string GetRenderDocumentLevelName(RenderDocumentLevel level) {
   return render_document_level.GetName(level);
 }
 
-bool ShouldCreateNewHostForSameSiteSubframe() {
-  return GetRenderDocumentLevel() >= RenderDocumentLevel::kSubframe;
+bool ShouldCreateNewRenderFrameHostOnSameSiteNavigation(
+    bool is_main_frame,
+    bool is_local_root,
+    bool has_committed_any_navigation,
+    bool must_be_replaced) {
+  if (must_be_replaced) {
+    return true;
+  }
+  if (!has_committed_any_navigation) {
+    return false;
+  }
+  RenderDocumentLevel level = GetRenderDocumentLevel();
+  if (is_main_frame) {
+    CHECK(is_local_root);
+    return level >= RenderDocumentLevel::kAllFrames;
+  }
+  if (is_local_root) {
+    return level >= RenderDocumentLevel::kSubframe;
+  }
+  return level >= RenderDocumentLevel::kNonLocalRootSubframe;
 }
 
 bool ShouldCreateNewHostForAllFrames() {
@@ -211,6 +230,11 @@ const base::FeatureParam<NavigationQueueingFeatureLevel>
         &kNavigationQueueingFeatureLevels};
 
 NavigationQueueingFeatureLevel GetNavigationQueueingFeatureLevel() {
+  if (GetRenderDocumentLevel() >= RenderDocumentLevel::kNonLocalRootSubframe) {
+    // When RenderDocument is enabled with a level of "non-local-root-subframe"
+    // or more, navigation queueing needs to be enabled too, to avoid crashes.
+    return NavigationQueueingFeatureLevel::kFull;
+  }
   if (base::FeatureList::IsEnabled(
           features::kQueueNavigationsWhileWaitingForCommit)) {
     return kNavigationQueueingFeatureLevelParam.Get();
@@ -236,4 +260,9 @@ bool ShouldRestrictCanAccessDataForOriginToUIThread() {
          base::FeatureList::IsEnabled(
              net::features::kSupportPartitionedBlobUrl);
 }
+
+bool ShouldCreateSiteInstanceForDataUrls() {
+  return base::FeatureList::IsEnabled(features::kSiteInstanceGroupsForDataUrls);
+}
+
 }  // namespace content

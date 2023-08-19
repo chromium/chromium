@@ -85,12 +85,12 @@ source_set("policy") {
     "//components/variations/service",
     "//components/version_info:version_info",
     "//ios/chrome/app/application_delegate:app_state_header",
-    "//ios/chrome/browser/paths",
     "//ios/chrome/browser/shared/coordinator/scene:scene_state_browser_agent",
     "//ios/chrome/browser/shared/coordinator/scene:scene_state_header",
     "//ios/chrome/browser/shared/model/application_context",
     "//ios/chrome/browser/shared/model/browser",
     "//ios/chrome/browser/shared/model/browser_state",
+    "//ios/chrome/browser/shared/model/paths",
     "//ios/chrome/browser/shared/model/prefs:pref_names",
     "//ios/chrome/browser/shared/public/commands",
     "//ios/chrome/browser/signin",
@@ -102,12 +102,9 @@ source_set("policy") {
   ]
 
   public_deps = [ "//components/policy/core/browser" ]
-
-  configs += [ "//build/config/compiler:enable_arc" ]
 }
 
 source_set("policy_util") {
-  configs += [ "//build/config/compiler:enable_arc" ]
   sources = [
     "policy_util.h",
     "policy_util.mm",
@@ -116,12 +113,22 @@ source_set("policy_util") {
     "//base",
     "//components/policy/core/common:common_constants",
     "//components/prefs",
-    "//ios/chrome/browser/shared/model/prefs:pref_names",
+  ]
+}
+
+source_set("policy_earl_grey_matchers") {
+  testonly = true
+  sources = [
+    "policy_earl_grey_matchers.h",
+    "policy_earl_grey_matchers.mm",
+  ]
+  deps = [
+    "//ios/chrome/test/earl_grey:eg_test_support+eg2",
+    "//ios/testing/earl_grey:eg_test_support+eg2",
   ]
 }
 
 source_set("constants") {
-  configs += [ "//build/config/compiler:enable_arc" ]
   sources = [
     "cloud/user_policy_constants.h",
     "cloud/user_policy_constants.mm",
@@ -158,8 +165,6 @@ source_set("test_support") {
     "//components/policy/core/common:test_support",
     "//testing/gmock",
   ]
-
-  configs += [ "//build/config/compiler:enable_arc" ]
 }
 
 bundle_data("test_resources") {
@@ -175,7 +180,6 @@ bundle_data("test_resources") {
 }
 
 source_set("unit_tests") {
-  configs += [ "//build/config/compiler:enable_arc" ]
   testonly = true
   sources = [
     "browser_dm_token_storage_ios_unittest.mm",
@@ -213,7 +217,6 @@ source_set("unit_tests") {
     "//google_apis",
     "//ios/chrome/app/application_delegate:app_state_header",
     "//ios/chrome/browser/flags:system_flags",
-    "//ios/chrome/browser/paths",
     "//ios/chrome/browser/prefs",
     "//ios/chrome/browser/shared/coordinator/scene:scene_state_browser_agent",
     "//ios/chrome/browser/shared/coordinator/scene:scene_state_header",
@@ -221,9 +224,11 @@ source_set("unit_tests") {
     "//ios/chrome/browser/shared/model/application_context",
     "//ios/chrome/browser/shared/model/browser/test:test_support",
     "//ios/chrome/browser/shared/model/browser_state:test_support",
+    "//ios/chrome/browser/shared/model/paths",
     "//ios/chrome/browser/shared/model/prefs:browser_prefs",
     "//ios/chrome/browser/shared/model/prefs:pref_names",
     "//ios/chrome/browser/shared/public/commands",
+    "//ios/chrome/browser/shared/public/features:system_flags",
     "//ios/chrome/browser/signin:fake_system_identity",
     "//ios/chrome/browser/signin:fake_system_identity_manager",
     "//ios/chrome/browser/signin:signin",
@@ -240,10 +245,7 @@ source_set("unit_tests") {
 }
 
 source_set("eg2_tests") {
-  configs += [
-    "//build/config/compiler:enable_arc",
-    "//build/config/ios:xctest_config",
-  ]
+  configs += [ "//build/config/ios:xctest_config" ]
   testonly = true
 
   sources = [
@@ -256,6 +258,7 @@ source_set("eg2_tests") {
   deps = [
     ":constants",
     ":eg_test_support+eg2",
+    ":policy_earl_grey_matchers",
     ":test_resources",
     "//base",
     "//components/autofill/core/common",
@@ -287,6 +290,7 @@ source_set("eg2_tests") {
     "//ios/chrome/browser/ui/settings/autofill:constants",
     "//ios/chrome/browser/ui/settings/elements:constants",
     "//ios/chrome/browser/ui/settings/language:language_ui_constants",
+    "//ios/chrome/browser/ui/settings/password:eg_test_support+eg2",
     "//ios/chrome/browser/ui/settings/password:password_constants",
     "//ios/chrome/browser/ui/settings/password/password_settings:password_settings_constants",
     "//ios/chrome/browser/ui/settings/privacy:privacy_constants",
@@ -305,7 +309,6 @@ source_set("eg2_tests") {
 }
 
 source_set("eg_app_support+eg2") {
-  configs += [ "//build/config/compiler:enable_arc" ]
   testonly = true
   sources = [
     "policy_app_interface.h",
@@ -319,20 +322,17 @@ source_set("eg_app_support+eg2") {
     "//components/policy/core/browser",
     "//components/policy/core/common",
     "//google_apis",
-    "//ios/chrome/browser/paths",
     "//ios/chrome/browser/policy_url_blocking",
     "//ios/chrome/browser/shared/model/application_context",
     "//ios/chrome/browser/shared/model/browser_state",
+    "//ios/chrome/browser/shared/model/paths",
     "//ios/chrome/test/app:test_support",
   ]
   frameworks = [ "Foundation.framework" ]
 }
 
 source_set("eg_test_support+eg2") {
-  configs += [
-    "//build/config/compiler:enable_arc",
-    "//build/config/ios:xctest_config",
-  ]
+  configs += [ "//build/config/ios:xctest_config" ]
   testonly = true
   sources = [
     "policy_app_interface.h",

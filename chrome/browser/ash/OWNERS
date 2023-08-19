@@ -13,5 +13,7 @@ per-file BUILD.gn=*
 
 per-file *active_directory*=file://chrome/browser/ash/authpolicy/OWNERS
 per-file note_taking*=glenrob@chromium.org
-per-file note_taking*=ericwilligers@chromium.org
 per-file camera_presence_notifier*=file://ash/webui/camera_app_ui/OWNERS
+
+# Prefer rsult over directory owners.
+per-file browser_context_keyed_service_factories.*=rsult@google.com

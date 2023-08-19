@@ -12,10 +12,12 @@ import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.ObserverList;
+import org.chromium.base.ResettersForTesting;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.chrome.browser.homepage.settings.HomepageMetricsEnums.HomepageLocationType;
 import org.chromium.chrome.browser.homepage.settings.HomepageSettings;
+import org.chromium.chrome.browser.partnercustomizations.HomepageCharacterizationHelper;
 import org.chromium.chrome.browser.partnercustomizations.PartnerBrowserCustomizations;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.SharedPreferencesManager;
@@ -138,8 +140,7 @@ public class HomepageManager implements HomepagePolicyManager.HomepagePolicyStat
      * @see #getPrefHomepageUseChromeNTP()
      * @see #getPrefHomepageUseDefaultUri()
      */
-    @Nullable
-    public static String getHomepageUri() {
+    public static @Nullable String getHomepageUri() {
         if (!isHomepageEnabled()) return null;
 
         String homepageUri = getInstance().getHomepageUriIgnoringEnabledState();
@@ -352,8 +353,47 @@ public class HomepageManager implements HomepagePolicyManager.HomepagePolicyStat
         notifyHomepageUpdated();
     }
 
-    @VisibleForTesting
     public void setSettingsLauncherForTesting(SettingsLauncher launcher) {
+        var oldValue = mSettingsLauncher;
         mSettingsLauncher = launcher;
+        ResettersForTesting.register(() -> mSettingsLauncher = oldValue);
+    }
+
+    /**
+     * Provides a helper for UMA reporting of partner customization and Homepage outcomes.
+     * @return A {@link HomepageCharacterizationHelper} that provides access to a few helpful
+     *         methods.
+     */
+    public static HomepageCharacterizationHelper getHomepageCharacterizationHelper() {
+        return new HomepageCharacterizationHelper() {
+            @Override
+            public boolean isUrlNtp(@Nullable String url) {
+                return UrlConstants.NTP_URL.equals(url) || UrlUtilities.isNTPUrl(url);
+            }
+
+            @Override
+            public boolean isPartner() {
+                switch (getInstance().getHomepageLocationType()) {
+                    case HomepageLocationType.PARTNER_PROVIDED_OTHER:
+                    case HomepageLocationType.PARTNER_PROVIDED_NTP:
+                        return true;
+                    default:
+                        return false;
+                }
+            }
+
+            @Override
+            public boolean isNtp() {
+                switch (getInstance().getHomepageLocationType()) {
+                    case HomepageLocationType.POLICY_NTP:
+                    case HomepageLocationType.PARTNER_PROVIDED_NTP:
+                    case HomepageLocationType.USER_CUSTOMIZED_NTP:
+                    case HomepageLocationType.DEFAULT_NTP:
+                        return true;
+                    default:
+                        return false;
+                }
+            }
+        };
     }
 }

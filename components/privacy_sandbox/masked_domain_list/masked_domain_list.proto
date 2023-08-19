@@ -11,8 +11,14 @@ message Resource {
     // TODO(aakallam): Add the categories once they have been finalized.
   }
 
+  enum Experiment {
+    EXPERIMENT_UNKNOWN = 0;
+    EXPERIMENT_AFP = 1;
+  }
+
   optional string domain = 1;
   repeated Category categories = 2 [packed = true];
+  repeated Experiment experiments = 3 [packed = true];
 }
 
 // Contains ownership information about resources that are used in a 3rd party

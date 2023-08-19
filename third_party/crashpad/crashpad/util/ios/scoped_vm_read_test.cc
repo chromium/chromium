@@ -16,7 +16,7 @@
 
 #include <sys/time.h>
 
-#include "base/mac/scoped_mach_vm.h"
+#include "base/apple/scoped_mach_vm.h"
 #include "gtest/gtest.h"
 #include "test/mac/mach_errors.h"
 
@@ -68,8 +68,8 @@ TEST(ScopedVMReadTest, MissingMiddleVM) {
                                  VM_FLAGS_ANYWHERE);
   ASSERT_EQ(kr, KERN_SUCCESS) << MachErrorMessage(kr, "vm_allocate");
 
-  base::mac::ScopedMachVM vm_owner(reinterpret_cast<vm_address_t>(region),
-                                   region_size);
+  base::apple::ScopedMachVM vm_owner(reinterpret_cast<vm_address_t>(region),
+                                     region_size);
 
   internal::ScopedVMRead<char> vmread_missing_middle;
   ASSERT_TRUE(vmread_missing_middle.Read(region, region_size));

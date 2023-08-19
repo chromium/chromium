@@ -20,6 +20,12 @@ FakeSyncService::FakeSyncService() = default;
 
 FakeSyncService::~FakeSyncService() = default;
 
+#if BUILDFLAG(IS_ANDROID)
+base::android::ScopedJavaLocalRef<jobject> FakeSyncService::GetJavaObject() {
+  return base::android::ScopedJavaLocalRef<jobject>();
+}
+#endif  // BUILDFLAG(IS_ANDROID)
+
 void FakeSyncService::SetSyncFeatureRequested() {}
 
 syncer::SyncUserSettings* FakeSyncService::GetUserSettings() {
@@ -169,21 +175,15 @@ SyncService::ModelTypeDownloadStatus FakeSyncService::GetDownloadStatusFor(
 
 void FakeSyncService::SetInvalidationsForSessionsEnabled(bool enabled) {}
 
-void FakeSyncService::AddTrustedVaultDecryptionKeysFromWeb(
-    const std::string& gaia_id,
-    const std::vector<std::vector<uint8_t>>& keys,
-    int last_key_version) {}
-
-void FakeSyncService::AddTrustedVaultRecoveryMethodFromWeb(
-    const std::string& gaia_id,
-    const std::vector<uint8_t>& public_key,
-    int method_type_hint,
-    base::OnceClosure callback) {}
-
 bool FakeSyncService::IsSyncFeatureConsideredRequested() const {
   return HasSyncConsent();
 }
 
 void FakeSyncService::Shutdown() {}
+
+void FakeSyncService::GetTypesWithUnsyncedData(
+    base::OnceCallback<void(ModelTypeSet)> cb) const {
+  std::move(cb).Run(ModelTypeSet());
+}
 
 }  // namespace syncer

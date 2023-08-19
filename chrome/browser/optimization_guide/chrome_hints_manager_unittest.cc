@@ -12,8 +12,8 @@
 #include "chrome/browser/optimization_guide/optimization_guide_tab_url_provider.h"
 #include "chrome/browser/optimization_guide/optimization_guide_web_contents_observer.h"
 #include "chrome/test/base/testing_profile.h"
-#include "components/optimization_guide/content/browser/optimization_guide_decider.h"
 #include "components/optimization_guide/core/hints_fetcher.h"
+#include "components/optimization_guide/core/optimization_guide_decider.h"
 #include "components/optimization_guide/core/optimization_guide_features.h"
 #include "components/optimization_guide/core/optimization_guide_logger.h"
 #include "components/optimization_guide/core/optimization_guide_prefs.h"
@@ -58,7 +58,8 @@ class ChromeHintsManagerFetchingTest
     scoped_feature_list_.InitWithFeaturesAndParameters(
         {{
              optimization_guide::features::kRemoteOptimizationGuideFetching,
-             {{"max_concurrent_page_navigation_fetches", "2"}},
+             {{"max_concurrent_page_navigation_fetches", "2"},
+              {"max_urls_for_optimization_guide_service_hints_fetch", "30"}},
          },
          {optimization_guide::features::kOptimizationHints,
           {{"max_host_keyed_hint_cache_size", "1"}}}},
@@ -406,5 +407,4 @@ TEST_F(ChromeHintsManagerFetchingTest, NoOptimizationGuideWebContentsObserver) {
   // `OptimizationGuideWebContentsObserver` should not cause a crash.
   hints_manager()->OnPredictionUpdated(prediction);
 }
-
 }  // namespace optimization_guide

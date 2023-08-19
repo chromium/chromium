@@ -11,8 +11,6 @@
 #include "base/trace_event/memory_dump_manager.h"
 #include "base/trace_event/trace_event.h"
 #include "services/resource_coordinator/public/cpp/memory_instrumentation/tracing_observer.h"
-#include "services/resource_coordinator/public/mojom/memory_instrumentation/memory_instrumentation.mojom.h"
-#include "services/tracing/public/cpp/perfetto/perfetto_traced_process.h"
 #include "third_party/perfetto/include/perfetto/ext/tracing/core/trace_writer.h"
 
 namespace perfetto {
@@ -27,19 +25,14 @@ namespace memory_instrumentation {
 
 // Version of TracingObserver that serializes the dump into a proto TracePacket.
 class COMPONENT_EXPORT(RESOURCE_COORDINATOR_PUBLIC_MEMORY_INSTRUMENTATION)
-    TracingObserverProto
-    : public TracingObserver,
-      public tracing::PerfettoTracedProcess::DataSourceBase {
+    TracingObserverProto : public TracingObserver {
  public:
-  TracingObserverProto(base::trace_event::TraceLog*,
-                       base::trace_event::MemoryDumpManager*);
-
+  static TracingObserverProto* GetInstance();
+  TracingObserverProto();
   TracingObserverProto(const TracingObserverProto&) = delete;
   TracingObserverProto& operator=(const TracingObserverProto&) = delete;
 
   ~TracingObserverProto() override;
-
-  static void RegisterForTesting();
 
   bool AddChromeDumpToTraceIfEnabled(
       const base::trace_event::MemoryDumpRequestArgs&,
@@ -53,36 +46,23 @@ class COMPONENT_EXPORT(RESOURCE_COORDINATOR_PUBLIC_MEMORY_INSTRUMENTATION)
       const std::vector<mojom::VmRegionPtr>&,
       const base::TimeTicks& timestamp) override;
 
-#if !BUILDFLAG(USE_PERFETTO_CLIENT_LIBRARY)
-  void StartTracingImpl(
-      tracing::PerfettoProducer* producer,
-      const perfetto::DataSourceConfig& data_source_config) override;
-
-  void StopTracingImpl(
-      base::OnceClosure stop_complete_callback = base::OnceClosure()) override;
-
-  void Flush(base::RepeatingClosure flush_complete_callback) override;
-#endif  // !BUILDFLAG(USE_PERFETTO_CLIENT_LIBRARY)
-
   static void MemoryMapsAsProtoInto(
       const std::vector<mojom::VmRegionPtr>& memory_maps,
       perfetto::protos::pbzero::SmapsPacket* smaps,
       bool is_argument_filtering_enabled);
 
-#if BUILDFLAG(USE_PERFETTO_CLIENT_LIBRARY)
-  using DataSourceProxy =
-      tracing::PerfettoTracedProcess::DataSourceProxy<TracingObserverProto>;
-#endif
+  void ResetForTesting();
+
+  using OnChromeDumpCallback = base::OnceCallback<void(void)>;
+
+  // Set a callback that will fire after a dump is written into trace, but only
+  // once. Useful in tracing tests.
+  void SetOnChromeDumpCallbackForTesting(OnChromeDumpCallback);
 
  private:
-#if BUILDFLAG(USE_PERFETTO_CLIENT_LIBRARY)
-  friend class perfetto::DataSource<TracingObserverProto>;
-#else   // !BUILDFLAG(USE_PERFETTO_CLIENT_LIBRARY)
-  base::Lock writer_lock_;
-  std::unique_ptr<perfetto::TraceWriter> trace_writer_ GUARDED_BY(writer_lock_);
-#endif  // !BUILDFLAG(USE_PERFETTO_CLIENT_LIBRARY)
-
-  static tracing::PerfettoTracedProcess::DataSourceBase* instance_for_testing_;
+  base::Lock on_chrome_dump_callback_lock_;
+  OnChromeDumpCallback on_chrome_dump_callback_for_testing_
+      GUARDED_BY(on_chrome_dump_callback_lock_);
 };
 
 }  // namespace memory_instrumentation

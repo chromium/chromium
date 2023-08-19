@@ -182,7 +182,7 @@ void TrustTokenRequestIssuanceHelper::OnGotKeyCommitment(
   if (!commitment_result) {
     LogOutcome(net_log_, kBegin, "No keys for issuer");
     std::move(done).Run(absl::nullopt,
-                        mojom::TrustTokenOperationStatus::kFailedPrecondition);
+                        mojom::TrustTokenOperationStatus::kMissingIssuerKeys);
     return;
   }
 

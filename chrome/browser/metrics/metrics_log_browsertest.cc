@@ -41,8 +41,9 @@ IN_PROC_BROWSER_TEST_F(MetricsLogBrowserTest, CommandLineKeyHash) {
   MetricsLog log("0a94430b-18e5-43c8-a657-580f7e855ce1", 0,
                  MetricsLog::INITIAL_STABILITY_LOG, &client);
   std::string encoded;
+  // Don't set the close_time param since this is an initial stability log.
   log.FinalizeLog(/*truncate_events=*/false, client.GetVersionString(),
-                  &encoded);
+                  /*close_time=*/absl::nullopt, &encoded);
   ChromeUserMetricsExtension uma_proto;
   uma_proto.ParseFromString(encoded);
   const auto hashes = uma_proto.system_profile().command_line_key_hash();

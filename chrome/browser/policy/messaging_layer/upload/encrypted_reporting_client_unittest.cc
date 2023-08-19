@@ -27,12 +27,13 @@
 #include "components/policy/core/common/cloud/encrypted_reporting_job_configuration.h"
 #include "components/policy/core/common/cloud/mock_cloud_policy_client.h"
 #include "components/reporting/proto/synced/record_constants.pb.h"
+#include "components/reporting/util/statusor.h"
+#include "components/reporting/util/test_support_callbacks.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "services/network/public/cpp/weak_wrapper_shared_url_loader_factory.h"
 #include "services/network/test/test_url_loader_factory.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "chromeos/ash/components/system/fake_statistics_provider.h"
@@ -40,6 +41,7 @@
 #endif
 
 using testing::Eq;
+using testing::Property;
 using testing::SizeIs;
 using testing::StartsWith;
 using testing::StrEq;
@@ -148,73 +150,144 @@ class EncryptedReportingClientTest : public ::testing::Test {
 };
 
 TEST_F(EncryptedReportingClientTest, Default) {
-  absl::optional<base::Value::Dict> actual_reponse;
-  auto cb = base::BindLambdaForTesting(
-      [&actual_reponse](absl::optional<base::Value::Dict> response) {
-        actual_reponse = std::move(response);
-      });
-
   EncryptedReportingClient encrypted_reporting_client(
       std::make_unique<FakeDelegate>(device_management_service_.get()));
-  encrypted_reporting_client.UploadReport(std::move(merging_payload_),
-                                          std::move(context_),
-                                          &cloud_policy_client_, cb);
-  base::RunLoop().RunUntilIdle();
 
-  ASSERT_THAT(*url_loader_factory_.pending_requests(), SizeIs(1));
+  {
+    test::TestEvent<StatusOr<base::Value::Dict>> response_event;
+    encrypted_reporting_client.UploadReport(
+        std::move(merging_payload_), std::move(context_), &cloud_policy_client_,
+        response_event.cb());
+    base::RunLoop().RunUntilIdle();
 
-  // Verify request header contains dm token
-  EXPECT_TRUE(base::Contains(
-      (*url_loader_factory_.pending_requests())[0].request.headers.ToString(),
-      kDmToken));
+    ASSERT_THAT(*url_loader_factory_.pending_requests(), SizeIs(1));
 
-  const std::string& pending_request_url =
-      (*url_loader_factory_.pending_requests())[0].request.url.spec();
+    // Verify request header contains dm token
+    EXPECT_TRUE(base::Contains(
+        (*url_loader_factory_.pending_requests())[0].request.headers.ToString(),
+        kDmToken));
 
-  EXPECT_THAT(pending_request_url, StartsWith(kServerUrl));
+    const std::string& pending_request_url =
+        (*url_loader_factory_.pending_requests())[0].request.url.spec();
 
-  // Verify request contains dm token
-  EXPECT_TRUE(base::Contains(
-      (*url_loader_factory_.pending_requests())[0].request.headers.ToString(),
-      kDmToken));
+    EXPECT_THAT(pending_request_url, StartsWith(kServerUrl));
 
-  url_loader_factory_.SimulateResponseForPendingRequest(
-      pending_request_url,
-      base::StringPrintf(R"({"%s" : "%s"})", kResponseKey, kResponseValue));
+    // Verify request contains dm token
+    EXPECT_TRUE(base::Contains(
+        (*url_loader_factory_.pending_requests())[0].request.headers.ToString(),
+        kDmToken));
 
-  ASSERT_TRUE(actual_reponse.has_value());
-  ASSERT_THAT(actual_reponse.value(), SizeIs(1));
-  ASSERT_TRUE(actual_reponse->FindString(kResponseKey));
-  EXPECT_THAT(*(actual_reponse->FindString(kResponseKey)),
-              StrEq(kResponseValue));
+    url_loader_factory_.SimulateResponseForPendingRequest(
+        pending_request_url,
+        base::StringPrintf(R"({"%s" : "%s"})", kResponseKey, kResponseValue));
 
+    const auto actual_response = response_event.result();
+    ASSERT_OK(actual_response);
+    ASSERT_THAT(actual_response.ValueOrDie(), SizeIs(1));
+    ASSERT_TRUE(actual_response.ValueOrDie().FindString(kResponseKey));
+    EXPECT_THAT(*(actual_response.ValueOrDie().FindString(kResponseKey)),
+                StrEq(kResponseValue));
+  }
+
+  // Avoid rate limiting by time, but still reject the upload because of lower
+  // sequence id.
+  task_environment_.FastForwardBy(base::Minutes(1));
   DecrementSequenceId();
-  BuildPayload();
-  encrypted_reporting_client.UploadReport(std::move(merging_payload_),
-                                          std::move(context_),
-                                          &cloud_policy_client_, cb);
 
-  // Sequence ID decreased, upload is rejected.
-  EXPECT_FALSE(actual_reponse.has_value());
+  {
+    BuildPayload();
+
+    test::TestEvent<StatusOr<base::Value::Dict>> response_event;
+    encrypted_reporting_client.UploadReport(
+        std::move(merging_payload_), std::move(context_), &cloud_policy_client_,
+        response_event.cb());
+
+    // Sequence ID decreased, upload is rejected.
+    const auto actual_response = response_event.result();
+    EXPECT_THAT(actual_response,
+                Property(&StatusOr<base::Value::Dict>::status,
+                         AllOf(Property(&Status::code, Eq(error::OUT_OF_RANGE)),
+                               Property(&Status::error_message,
+                                        StrEq("Too many upload requests")))));
+  }
 }
 
 TEST_F(EncryptedReportingClientTest, ServiceUnavailable) {
-  bool responded = false;
-  absl::optional<base::Value::Dict> actual_reponse;
-
   EncryptedReportingClient encrypted_reporting_client(
       std::make_unique<FakeDelegate>(nullptr));
+
+  test::TestEvent<StatusOr<base::Value::Dict>> response_event;
   encrypted_reporting_client.UploadReport(
       std::move(merging_payload_), std::move(context_), &cloud_policy_client_,
-      base::BindLambdaForTesting(
-          [&responded,
-           &actual_reponse](absl::optional<base::Value::Dict> response) {
-            responded = true;
-            actual_reponse = std::move(response);
-          }));
+      response_event.cb());
+  const auto actual_response = response_event.result();
+  EXPECT_THAT(
+      actual_response,
+      Property(
+          &StatusOr<base::Value::Dict>::status,
+          AllOf(
+              Property(&Status::code, Eq(error::NOT_FOUND)),
+              Property(
+                  &Status::error_message,
+                  StrEq(
+                      "Device management service required, but not found")))));
+}
 
-  ASSERT_TRUE(responded);
-  EXPECT_FALSE(actual_reponse.has_value());
+TEST_F(EncryptedReportingClientTest, ServiceRejectedByRateLimiting) {
+  EncryptedReportingClient encrypted_reporting_client(
+      std::make_unique<FakeDelegate>(device_management_service_.get()));
+
+  {
+    test::TestEvent<StatusOr<base::Value::Dict>> response_event;
+
+    encrypted_reporting_client.UploadReport(
+        merging_payload_.Clone(), context_.Clone(), &cloud_policy_client_,
+        response_event.cb());
+    base::RunLoop().RunUntilIdle();
+
+    ASSERT_THAT(*url_loader_factory_.pending_requests(), SizeIs(1));
+
+    // Verify request header contains dm token
+    EXPECT_TRUE(base::Contains(
+        (*url_loader_factory_.pending_requests())[0].request.headers.ToString(),
+        kDmToken));
+
+    const std::string& pending_request_url =
+        (*url_loader_factory_.pending_requests())[0].request.url.spec();
+
+    EXPECT_THAT(pending_request_url, StartsWith(kServerUrl));
+
+    // Verify request contains dm token
+    EXPECT_TRUE(base::Contains(
+        (*url_loader_factory_.pending_requests())[0].request.headers.ToString(),
+        kDmToken));
+
+    url_loader_factory_.SimulateResponseForPendingRequest(
+        pending_request_url,
+        base::StringPrintf(R"({"%s" : "%s"})", kResponseKey, kResponseValue));
+
+    const auto actual_response = response_event.result();
+    ASSERT_OK(actual_response);
+    ASSERT_THAT(actual_response.ValueOrDie(), SizeIs(1));
+    ASSERT_TRUE(actual_response.ValueOrDie().FindString(kResponseKey));
+    EXPECT_THAT(*(actual_response.ValueOrDie().FindString(kResponseKey)),
+                StrEq(kResponseValue));
+  }
+
+  // Repeat the same upload, get it rejected by rate limiter.
+  task_environment_.FastForwardBy(base::Seconds(1));
+  {
+    test::TestEvent<StatusOr<base::Value::Dict>> response_event;
+    encrypted_reporting_client.UploadReport(
+        std::move(merging_payload_), std::move(context_), &cloud_policy_client_,
+        response_event.cb());
+    const auto actual_response = response_event.result();
+    EXPECT_THAT(actual_response,
+                Property(&StatusOr<base::Value::Dict>::status,
+                         AllOf(Property(&Status::code, Eq(error::OUT_OF_RANGE)),
+                               Property(&Status::error_message,
+                                        StrEq("Too many upload requests")))));
+  }
 }
 
 // Verify that when the cloud policy client isn't provided, device info is not

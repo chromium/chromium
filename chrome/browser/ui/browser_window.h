@@ -12,6 +12,7 @@
 #include "base/feature_list.h"
 #include "base/functional/callback_forward.h"
 #include "base/functional/callback_helpers.h"
+#include "build/branding_buildflags.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/apps/intent_helper/apps_navigation_types.h"
@@ -411,6 +412,14 @@ class BrowserWindow : public ui::BaseWindow {
   // |already_bookmarked| is true if the url is already bookmarked.
   virtual void ShowBookmarkBubble(const GURL& url, bool already_bookmarked) = 0;
 
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
+  // Checks if the user is eligible for the iOS Password Promo Bubble. If they
+  // are, make a final eligibility check with a call to the segmentation
+  // platform with `MaybeShowIOSPasswordPromoBubble` passed as callback. That
+  // method may create/show a bubble to the user.
+  virtual void VerifyUserEligibilityIOSPasswordPromoBubble() = 0;
+#endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
+
   // Shows the Screenshot bubble.
   virtual sharing_hub::ScreenshotCapturedBubble* ShowScreenshotCapturedBubble(
       content::WebContents* contents,
@@ -585,10 +594,12 @@ class BrowserWindow : public ui::BaseWindow {
   // calling MaybeShowStartupFeaturePromo() instead.
   virtual bool MaybeShowFeaturePromo(
       const base::Feature& iph_feature,
-      user_education::FeaturePromoSpecification::StringReplacements
-          body_text_replacements = {},
       user_education::FeaturePromoController::BubbleCloseCallback
-          close_callback = base::DoNothing()) = 0;
+          close_callback = base::DoNothing(),
+      user_education::FeaturePromoSpecification::FormatParameters body_params =
+          user_education::FeaturePromoSpecification::NoSubstitution(),
+      user_education::FeaturePromoSpecification::FormatParameters title_params =
+          user_education::FeaturePromoSpecification::NoSubstitution()) = 0;
 
   // Maybe shows an in-product help promo at startup, whenever the Feature
   // Engagement system is fully initialized. If the promo cannot be queued for
@@ -606,12 +617,14 @@ class BrowserWindow : public ui::BaseWindow {
   // MaybeShowFeaturePromo() - which always runs synchronously - instead.
   virtual bool MaybeShowStartupFeaturePromo(
       const base::Feature& iph_feature,
-      user_education::FeaturePromoSpecification::StringReplacements
-          body_text_replacements = {},
       user_education::FeaturePromoController::StartupPromoCallback
           promo_callback = base::DoNothing(),
       user_education::FeaturePromoController::BubbleCloseCallback
-          close_callback = base::DoNothing()) = 0;
+          close_callback = base::DoNothing(),
+      user_education::FeaturePromoSpecification::FormatParameters body_params =
+          user_education::FeaturePromoSpecification::NoSubstitution(),
+      user_education::FeaturePromoSpecification::FormatParameters title_params =
+          user_education::FeaturePromoSpecification::NoSubstitution()) = 0;
 
   // Closes the in-product help promo for `iph_feature` if it is showing or
   // cancels a pending startup promo; returns true if a promo bubble was

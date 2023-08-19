@@ -26,7 +26,7 @@ class LightweightDetector {
   //  - Bits 0 - 15 are set to 0x8000 so that small increments/decrements
   //    don't affect the metadata ID stored in the higher bits.
   //  - Bits 16 - 47 contain the metadata ID.
-  //  - Bits 48 - 63 are set to 0xEDED so that access at the address always
+  //  - Bits 48 - 63 are set to 0xEFED so that access at the address always
   //    results in a memory access error, and the address can be recognized by
   //    the crash handler.
   static constexpr uint64_t kMetadataIdMarker = 0xEFED000000000000;
@@ -36,7 +36,8 @@ class LightweightDetector {
   static constexpr uint64_t kMetadataRemainder = 0xED;
 
   static PseudoAddresss EncodeMetadataId(MetadataId metadata_id) {
-    return kMetadataIdMarker | (metadata_id << kMetadataIdShift) |
+    return kMetadataIdMarker |
+           (static_cast<PseudoAddresss>(metadata_id) << kMetadataIdShift) |
            kMetadataIdOffset;
   }
 

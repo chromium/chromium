@@ -11,7 +11,6 @@
 namespace content {
 
 class RenderProcessHost;
-class SiteInstanceGroup;
 class SiteInstanceImpl;
 
 // Policy class that manages groups of SiteInstances and controls whether
@@ -44,19 +43,6 @@ class SiteInstanceGroupManager final : private RenderProcessHostObserver {
   // it could be the default process if that process mode is enabled and the
   // process is suitable.
   RenderProcessHost* GetExistingGroupProcess(SiteInstanceImpl* site_instance);
-
-  // Returns the group `site_instance` is assigned to. This should only be
-  // called once for each SiteInstance.
-  // Also sets the RenderProcessHost and AgentSchedulingGroupHost for the group.
-  // TODO(crbug.com/1291351): Remove the `process` parameter. Currently it's
-  // required due to SiteInstanceImpl::ReuseExistingProcessIfPossible. This
-  // function could instead take a hint for which process the caller would like
-  // to use if possible. This will be needed before a group can have multiple
-  // SiteInstances. When this change happens, this should be renamed as it can
-  // be called multiple times per SiteInstance at that point.
-  scoped_refptr<SiteInstanceGroup> GetOrCreateGroupForNewSiteInstance(
-      SiteInstanceImpl* site_instance,
-      RenderProcessHost* process);
 
   // Called when the SiteInfo is set on `site_instance`. This is used to
   // discover new SiteInstances when they are assigned a specific security

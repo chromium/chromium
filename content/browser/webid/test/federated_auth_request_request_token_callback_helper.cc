@@ -18,14 +18,24 @@ void FederatedAuthRequestRequestTokenCallbackHelper::WaitForCallback() {
   wait_for_callback_loop_.Run();
 }
 
+void FederatedAuthRequestRequestTokenCallbackHelper::Reset() {
+  status_.reset();
+  selected_idp_config_url_.reset();
+  token_.reset();
+  was_called_ = false;
+  wait_for_callback_loop_.Quit();
+}
+
 void FederatedAuthRequestRequestTokenCallbackHelper::ReceiverMethod(
     blink::mojom::RequestTokenStatus status,
     const absl::optional<GURL>& selected_idp_config_url,
-    const absl::optional<std::string>& token) {
+    const absl::optional<std::string>& token,
+    bool is_auto_reauthn) {
   CHECK(!was_called_);
   status_ = status;
   selected_idp_config_url_ = selected_idp_config_url;
   token_ = token;
+  is_auto_reauthn_ = is_auto_reauthn;
   was_called_ = true;
   wait_for_callback_loop_.Quit();
 }

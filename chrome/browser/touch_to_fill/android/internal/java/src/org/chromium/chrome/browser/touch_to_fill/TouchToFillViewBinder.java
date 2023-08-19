@@ -12,7 +12,9 @@ import static org.chromium.chrome.browser.touch_to_fill.TouchToFillProperties.Cr
 import static org.chromium.chrome.browser.touch_to_fill.TouchToFillProperties.CredentialProperties.SHOW_SUBMIT_BUTTON;
 import static org.chromium.chrome.browser.touch_to_fill.TouchToFillProperties.DISMISS_HANDLER;
 import static org.chromium.chrome.browser.touch_to_fill.TouchToFillProperties.FooterProperties.MANAGE_BUTTON_TEXT;
+import static org.chromium.chrome.browser.touch_to_fill.TouchToFillProperties.FooterProperties.ON_CLICK_HYBRID;
 import static org.chromium.chrome.browser.touch_to_fill.TouchToFillProperties.FooterProperties.ON_CLICK_MANAGE;
+import static org.chromium.chrome.browser.touch_to_fill.TouchToFillProperties.FooterProperties.SHOW_HYBRID;
 import static org.chromium.chrome.browser.touch_to_fill.TouchToFillProperties.HeaderProperties.FORMATTED_URL;
 import static org.chromium.chrome.browser.touch_to_fill.TouchToFillProperties.HeaderProperties.IMAGE_DRAWABLE_ID;
 import static org.chromium.chrome.browser.touch_to_fill.TouchToFillProperties.HeaderProperties.ORIGIN_SECURE;
@@ -24,7 +26,6 @@ import static org.chromium.chrome.browser.touch_to_fill.TouchToFillProperties.We
 import static org.chromium.chrome.browser.touch_to_fill.TouchToFillProperties.WebAuthnCredentialProperties.SHOW_WEBAUTHN_SUBMIT_BUTTON;
 import static org.chromium.chrome.browser.touch_to_fill.TouchToFillProperties.WebAuthnCredentialProperties.WEBAUTHN_CREDENTIAL;
 import static org.chromium.chrome.browser.touch_to_fill.TouchToFillProperties.WebAuthnCredentialProperties.WEBAUTHN_FAVICON_OR_FALLBACK;
-import static org.chromium.components.embedder_support.util.UrlUtilities.stripScheme;
 
 import android.content.Context;
 import android.text.method.PasswordTransformationMethod;
@@ -157,10 +158,7 @@ class TouchToFillViewBinder {
             pslOriginText.setVisibility(credential.isExactMatch() ? View.GONE : View.VISIBLE);
         } else if (propertyKey == CREDENTIAL) {
             TextView pslOriginText = view.findViewById(R.id.credential_origin);
-            String formattedOrigin = stripScheme(credential.getOriginUrl());
-            formattedOrigin =
-                    formattedOrigin.replaceFirst("/$", ""); // Strip possibly trailing slash.
-            pslOriginText.setText(formattedOrigin);
+            pslOriginText.setText(credential.getDisplayName());
             pslOriginText.setVisibility(credential.isExactMatch() ? View.GONE : View.VISIBLE);
 
             TextView usernameText = view.findViewById(R.id.username);
@@ -310,6 +308,12 @@ class TouchToFillViewBinder {
         if (key == ON_CLICK_MANAGE) {
             view.findViewById(R.id.touch_to_fill_sheet_manage_passwords)
                     .setOnClickListener((v) -> model.get(ON_CLICK_MANAGE).run());
+        } else if (key == ON_CLICK_HYBRID) {
+            view.findViewById(R.id.touch_to_fill_sheet_use_passkeys_other_device)
+                    .setOnClickListener((v) -> model.get(ON_CLICK_HYBRID).run());
+        } else if (key == SHOW_HYBRID) {
+            view.findViewById(R.id.touch_to_fill_sheet_use_passkeys_other_device)
+                    .setVisibility(model.get(SHOW_HYBRID) ? View.VISIBLE : View.GONE);
         } else if (key == MANAGE_BUTTON_TEXT) {
             TextView managePasswordsView =
                     view.findViewById(R.id.touch_to_fill_sheet_manage_passwords);

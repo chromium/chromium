@@ -12,18 +12,18 @@
 #include "chrome/browser/extensions/permissions_updater.h"
 #include "chrome/browser/extensions/scripting_permissions_modifier.h"
 #include "chrome/test/base/testing_profile.h"
-#include "components/version_info/channel.h"
 #include "extensions/browser/event_router.h"
 #include "extensions/browser/event_router_factory.h"
 #include "extensions/browser/extension_prefs.h"
 #include "extensions/browser/extension_registry.h"
 #include "extensions/common/extension_builder.h"
-#include "extensions/common/features/feature_channel.h"
+#include "extensions/common/features/simple_feature.h"
 #include "extensions/common/permissions/api_permission.h"
 #include "extensions/common/permissions/api_permission_set.h"
 #include "extensions/common/permissions/manifest_permission_set.h"
 #include "extensions/common/permissions/permission_set.h"
 #include "extensions/common/permissions/permissions_data.h"
+#include "extensions/common/switches.h"
 #include "extensions/common/url_pattern_set.h"
 #include "extensions/common/user_script.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -44,16 +44,15 @@ std::unique_ptr<KeyedService> BuildEventRouter(
 // Test that active and optional permissions show up correctly in the JSON
 // returned by WriteToString.
 TEST_F(ExtensionsInternalsUnitTest, WriteToStringPermissions) {
-  // The automation manifest entry is restricted to the dev channel, so we do
-  // this so the test is fine on stable/beta.
-  extensions::ScopedCurrentChannel current_channel(version_info::Channel::DEV);
-
   InitializeEmptyExtensionService();
   extensions::EventRouterFactory::GetInstance()->SetTestingFactory(
       profile(), base::BindRepeating(&BuildEventRouter));
 
+  extensions::SimpleFeature::ScopedThreadUnsafeAllowlistForTest
+      allow_automation("ddchlicdkolnonkihahngkmmmjnjlkkf");
   scoped_refptr<const extensions::Extension> extension =
       extensions::ExtensionBuilder("test")
+          .SetID("ddchlicdkolnonkihahngkmmmjnjlkkf")
           .AddPermission("activeTab")
           .SetManifestKey("automation", true)
           .SetManifestKey("optional_permissions",
@@ -61,8 +60,8 @@ TEST_F(ExtensionsInternalsUnitTest, WriteToStringPermissions) {
           .AddPermission("https://example.com/*")
           .AddContentScript("not-real.js", {"https://chromium.org/foo"})
           .Build();
-  service()->AddExtension(extension.get());
 
+  service()->AddExtension(extension.get());
   ExtensionsInternalsSource source(profile());
   auto extensions_list = base::JSONReader::Read(source.WriteToString());
   ASSERT_TRUE(extensions_list) << "Failed to parse extensions internals json.";

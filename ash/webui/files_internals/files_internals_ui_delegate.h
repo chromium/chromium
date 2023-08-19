@@ -5,6 +5,7 @@
 #ifndef ASH_WEBUI_FILES_INTERNALS_FILES_INTERNALS_UI_DELEGATE_H_
 #define ASH_WEBUI_FILES_INTERNALS_FILES_INTERNALS_UI_DELEGATE_H_
 
+#include "base/functional/callback_forward.h"
 #include "base/values.h"
 
 namespace ash {
@@ -14,7 +15,13 @@ class FilesInternalsUIDelegate {
  public:
   virtual ~FilesInternalsUIDelegate() = default;
 
-  virtual base::Value GetDebugJSON() const = 0;
+  virtual void GetDebugJSON(
+      base::OnceCallback<void(const base::Value&)> callback) const = 0;
+  virtual void GetDownloadsFSURLs(
+      base::OnceCallback<void(const std::string_view)> callback) const = 0;
+  virtual void GetFileTasks(
+      const std::string& file_system_url,
+      base::OnceCallback<void(const std::string_view)> callback) const = 0;
 
   virtual bool GetSmbfsEnableVerboseLogging() const = 0;
   virtual void SetSmbfsEnableVerboseLogging(bool enabled) = 0;

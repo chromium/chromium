@@ -1271,7 +1271,9 @@ void GvrSchedulerDelegate::ProcessWebVrFrameFromMailbox(
   DCHECK(webxr_.HaveProcessingFrame());
   webxr_.GetProcessingFrame()->state_locked = true;
 
-  bool swapped = mailbox_bridge_->CopyMailboxToSurfaceAndSwap(mailbox);
+  // We don't do any scaling here, so we can just pass an identity transform.
+  bool swapped =
+      mailbox_bridge_->CopyMailboxToSurfaceAndSwap(mailbox, gfx::Transform());
   DCHECK(swapped);
   // Tell OnWebXrFrameAvailable to expect a new frame to arrive on
   // the SurfaceTexture, and save the associated frame index.
@@ -1327,13 +1329,6 @@ void GvrSchedulerDelegate::GetEnvironmentIntegrationProvider(
   // be made on this device.
   frame_data_receiver_.ReportBadMessage(
       "Environment integration is not supported.");
-}
-
-void GvrSchedulerDelegate::SetInputSourceButtonListener(
-    mojo::PendingAssociatedRemote<device::mojom::XRInputSourceButtonListener>) {
-  // Input eventing is not supported. This call should not
-  // be made on this device.
-  frame_data_receiver_.ReportBadMessage("Input eventing is not supported.");
 }
 
 }  // namespace vr

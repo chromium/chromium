@@ -35,6 +35,10 @@
 #include "net/dns/mock_host_resolver.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "pdf/buildflags.h"
+#include "storage/browser/file_system/external_mount_points.h"
+#include "storage/common/file_system/file_system_mount_option.h"
+#include "storage/common/file_system/file_system_types.h"
+#include "third_party/blink/public/common/features.h"
 
 #if BUILDFLAG(ENABLE_PLUGINS)
 #include "content/public/browser/plugin_service.h"
@@ -1417,5 +1421,59 @@ IN_PROC_BROWSER_TEST_P(BlockedSchemeNavigationBrowserTest,
     EXPECT_EQ(entry->GetURL(), entry->GetVirtualURL());
   }
 }
+
+class FilesystemUrlNavigationBrowserTest
+    : public ContentBrowserTest,
+      public testing::WithParamInterface<bool> {
+ public:
+  FilesystemUrlNavigationBrowserTest() {
+    if (GetParam()) {
+      scoped_feature_list_.InitWithFeatureState(
+          blink::features::kFileSystemUrlNavigation, GetParam());
+    }
+  }
+
+  FilesystemUrlNavigationBrowserTest(
+      const FilesystemUrlNavigationBrowserTest&) = delete;
+  FilesystemUrlNavigationBrowserTest& operator=(
+      const FilesystemUrlNavigationBrowserTest&) = delete;
+
+  ~FilesystemUrlNavigationBrowserTest() override = default;
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+// Tests that navigation to external mounted filesystem: URLs are blocked
+// unless FileSystemUrlNavigation feature flag is enabled (b/291526810).
+IN_PROC_BROWSER_TEST_P(FilesystemUrlNavigationBrowserTest, External) {
+  base::ScopedAllowBlockingForTesting allow_blocking;
+  base::ScopedTempDir mount_point;
+  ASSERT_TRUE(mount_point.CreateUniqueTempDir());
+  ASSERT_TRUE(
+      base::WriteFile(mount_point.GetPath().AppendASCII("file.html"),
+                      "<html><script>console.log('success')</script></html>"));
+  storage::ExternalMountPoints::GetSystemInstance()->RegisterFileSystem(
+      "mount-name", storage::kFileSystemTypeLocal,
+      storage::FileSystemMountOption(), mount_point.GetPath());
+
+  WebContentsConsoleObserver console_observer(shell()->web_contents());
+  console_observer.SetPattern(
+      GetParam() ? "success" : "Not allowed to navigate to filesystem URL:*");
+  EXPECT_EQ(GetParam(),
+            NavigateToURL(shell(), GURL("filesystem:http://remote/"
+                                        "external/mount-name/file.html")));
+  ASSERT_TRUE(console_observer.Wait());
+
+  storage::ExternalMountPoints::GetSystemInstance()->RevokeFileSystem(
+      "mount-name");
+}
+
+INSTANTIATE_TEST_SUITE_P(All,
+                         FilesystemUrlNavigationBrowserTest,
+                         testing::Bool(),
+                         [](const testing::TestParamInfo<bool> info) {
+                           return info.param ? "FlagOn" : "FlagOff";
+                         });
 
 }  // namespace content

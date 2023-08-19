@@ -22,6 +22,7 @@ See also the general instructions about the dangling pointer detector:
     - [Object vended from C API](#object-vended-from-c-api)
     - [Object conditionally owned](#object-conditionally-owned)
     - [Fallback solution](#fallback-solution-1)
+- [I can't figure out which pointer is dangling](I-can_t-figure-out-which-pointer-is-dangling)
 - [FAQ - Why dangling pointers matter](#faq-why-dangling-pointers-matter)
 
 ## What to do about dangling pointers
@@ -197,6 +198,15 @@ the dangling raw_ptr.
 |Before|After |
 |--|--|
 |`ExternalAPIDelete(ptr_);`|`ExternalAPIDelete(ptr_.ExtractAsDangling());`|
+
+## I can't figure out which pointer is dangling
+
+Usually this is a matter of straightforward reasoning, but should all else
+fail, another option is to re-build with the alternative dangling pointer
+detector as described in
+[docs/dangling_ptr.md](./dangling_ptr.md#alternative-dangling-pointer-detector-experimental).
+This will show the stacks for object creation, object destruction, and the
+destruction of the object containing the dangling ptr member.
 
 ## FAQ - Why dangling pointers matter
 

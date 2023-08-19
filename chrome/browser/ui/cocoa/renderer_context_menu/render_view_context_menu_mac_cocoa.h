@@ -7,7 +7,6 @@
 
 #import <Cocoa/Cocoa.h>
 
-#include "base/mac/scoped_nsobject.h"
 #include "chrome/browser/ui/cocoa/renderer_context_menu/render_view_context_menu_mac.h"
 
 @class MenuControllerCocoa;
@@ -44,12 +43,11 @@ class RenderViewContextMenuMacCocoa : public RenderViewContextMenuMac {
                              const std::u16string& title);
 
   // The Cocoa menu controller for this menu.
-  base::scoped_nsobject<MenuControllerCocoa> menu_controller_;
-  base::scoped_nsobject<MenuControllerCocoaDelegateImpl>
-      menu_controller_delegate_;
+  MenuControllerCocoa* __strong menu_controller_;
+  MenuControllerCocoaDelegateImpl* __strong menu_controller_delegate_;
 
   // The Cocoa parent view.
-  NSView* parent_view_;
+  NSView* __weak parent_view_;
 };
 
 // The ChromeSwizzleServicesMenuUpdater filters Services menu items in the

@@ -90,11 +90,8 @@ bool ContentAnalysisDownloadsDelegate::BypassRequiresJustification() const {
 
 std::u16string ContentAnalysisDownloadsDelegate::GetBypassJustificationLabel()
     const {
-  // TODO(crbug.com/1278000): Change this to a downloads-specific string when
-  // this feature is supported for downloads. Returning a non-empty string is
-  // required to avoid a DCHECK in the a11y code that looks for an a11y label.
   return l10n_util::GetStringUTF16(
-      IDS_DEEP_SCANNING_DIALOG_UPLOAD_BYPASS_JUSTIFICATION_LABEL);
+      IDS_DEEP_SCANNING_DIALOG_DOWNLOAD_BYPASS_JUSTIFICATION_LABEL);
 }
 
 absl::optional<std::u16string>

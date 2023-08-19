@@ -177,7 +177,7 @@ TEST_F(ArcContainerClientAdapterTest, StartArc_DisableUreadahead) {
 }
 
 TEST_F(ArcContainerClientAdapterTest,
-       StartArc_HostUreadaheadGenerationByDefault) {
+       StartArc_NoHostUreadaheadGenerationByDefault) {
   StartParams start_params;
   client_adapter()->StartMiniArc(std::move(start_params),
                                  base::BindOnce(&OnMiniInstanceStarted));
@@ -196,6 +196,27 @@ TEST_F(ArcContainerClientAdapterTest, StartArc_HostUreadaheadGenerationSet) {
                             ->last_start_arc_mini_container_request();
   EXPECT_TRUE(request.has_host_ureadahead_generation());
   EXPECT_TRUE(request.host_ureadahead_generation());
+}
+
+TEST_F(ArcContainerClientAdapterTest, StartArc_DoNotUseDevCachesByDefault) {
+  StartParams start_params;
+  client_adapter()->StartMiniArc(std::move(start_params),
+                                 base::BindOnce(&OnMiniInstanceStarted));
+  const auto& request = ash::FakeSessionManagerClient::Get()
+                            ->last_start_arc_mini_container_request();
+  EXPECT_TRUE(request.has_use_dev_caches());
+  EXPECT_FALSE(request.use_dev_caches());
+}
+
+TEST_F(ArcContainerClientAdapterTest, StartArc_UseDevCachesSet) {
+  StartParams start_params;
+  start_params.use_dev_caches = true;
+  client_adapter()->StartMiniArc(std::move(start_params),
+                                 base::BindOnce(&OnMiniInstanceStarted));
+  const auto& request = ash::FakeSessionManagerClient::Get()
+                            ->last_start_arc_mini_container_request();
+  EXPECT_TRUE(request.has_use_dev_caches());
+  EXPECT_TRUE(request.use_dev_caches());
 }
 
 TEST_F(ArcContainerClientAdapterTest, ArcVmTTSCachingDefault) {

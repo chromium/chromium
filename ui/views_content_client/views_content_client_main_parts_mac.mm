@@ -19,10 +19,6 @@
 #include "ui/views_content_client/views_content_client.h"
 #include "ui/views_content_client/views_content_client_main_parts.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 // A simple NSApplicationDelegate that provides a basic mainMenu and can
 // activate a task when the application has finished loading.
 @interface ViewsContentClientAppController : NSObject <NSApplicationDelegate> {

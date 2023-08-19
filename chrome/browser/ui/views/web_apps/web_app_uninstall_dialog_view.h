@@ -9,14 +9,14 @@
 #include <memory>
 
 #include "base/functional/callback.h"
+#include "base/functional/callback_forward.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
-#include "base/threading/thread_checker.h"
-#include "chrome/browser/ui/web_applications/web_app_uninstall_dialog.h"
 #include "chrome/browser/web_applications/web_app_id.h"
 #include "chrome/browser/web_applications/web_app_install_manager.h"
 #include "chrome/browser/web_applications/web_app_install_manager_observer.h"
+#include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/browser/web_applications/web_app_registrar.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "ui/base/metadata/metadata_header_macros.h"
@@ -26,7 +26,6 @@
 #include "url/gurl.h"
 
 class Profile;
-class WebAppUninstallDialogViews;
 
 namespace webapps {
 enum class UninstallResultCode;
@@ -35,20 +34,23 @@ enum class WebappUninstallSource;
 
 namespace views {
 class Checkbox;
-class NativeWindowTracker;
 }
 
+using UninstallChoiceCallback = base::OnceCallback<void(bool)>;
+
 // The dialog's view, owned by the views framework.
-class WebAppUninstallDialogDelegateView : public views::DialogDelegateView {
+class WebAppUninstallDialogDelegateView
+    : public views::DialogDelegateView,
+      public web_app::WebAppInstallManagerObserver {
  public:
   METADATA_HEADER(WebAppUninstallDialogDelegateView);
   // Constructor for view component of dialog.
   WebAppUninstallDialogDelegateView(
       Profile* profile,
-      WebAppUninstallDialogViews* dialog_view,
       web_app::AppId app_id,
       webapps::WebappUninstallSource uninstall_source,
-      std::map<SquareSizePx, SkBitmap> icon_bitmaps);
+      std::map<SquareSizePx, SkBitmap> icon_bitmaps,
+      UninstallChoiceCallback uninstall_choice_callback);
   WebAppUninstallDialogDelegateView(const WebAppUninstallDialogDelegateView&) =
       delete;
   WebAppUninstallDialogDelegateView& operator=(
@@ -68,7 +70,9 @@ class WebAppUninstallDialogDelegateView : public views::DialogDelegateView {
   void OnDialogAccepted();
   void OnDialogCanceled();
 
-  raw_ptr<WebAppUninstallDialogViews, DanglingUntriaged> dialog_;
+  // web_app::WebAppInstallManagerObserver:
+  void OnWebAppWillBeUninstalled(const web_app::AppId& app_id) override;
+  void OnWebAppInstallManagerDestroyed() override;
 
   raw_ptr<views::Checkbox> checkbox_ = nullptr;
   gfx::ImageSkia image_;
@@ -78,77 +82,15 @@ class WebAppUninstallDialogDelegateView : public views::DialogDelegateView {
 
   // The dialog needs start_url copy even if app gets uninstalled.
   GURL app_start_url_;
-
-  const raw_ptr<Profile, DanglingUntriaged> profile_;
-
-  webapps::WebappUninstallSource uninstall_source_;
-};
-
-// The implementation of the uninstall dialog for web apps.
-class WebAppUninstallDialogViews
-    : public web_app::WebAppUninstallDialog,
-      public web_app::WebAppInstallManagerObserver {
- public:
-  // Implement this callback to handle checking for the dialog's header message.
-  using OnWillShowCallback =
-      base::RepeatingCallback<void(WebAppUninstallDialogViews*)>;
-
-  WebAppUninstallDialogViews(Profile* profile, gfx::NativeWindow parent);
-  WebAppUninstallDialogViews(const WebAppUninstallDialogViews&) = delete;
-  WebAppUninstallDialogViews& operator=(const WebAppUninstallDialogViews&) =
-      delete;
-  ~WebAppUninstallDialogViews() override;
-
-  // web_app::WebAppUninstallDialog:
-  void ConfirmUninstall(const web_app::AppId& app_id,
-                        webapps::WebappUninstallSource uninstall_source,
-                        OnWebAppUninstallDialogClosed closed_callback) override;
-  void SetDialogShownCallbackForTesting(base::OnceClosure callback) override;
-
-  // The following methods are used by WebAppUninstallDialogDelegateView to
-  // report the uninstallation request status. After calling one of these
-  // methods, it is invalid to call any of them again.
-
-  // Called when the view is triggering an uninstallation with the
-  // WebAppProvider system. Returns a callback to be passed to this system.
-  base::OnceCallback<void(webapps::UninstallResultCode code)>
-  UninstallStarted();
-
-  // Called to signify that the uninstall has been cancelled.
-  void UninstallCancelled();
-
- private:
-  // web_app::WebAppInstallManagerObserver:
-  void OnWebAppWillBeUninstalled(const web_app::AppId& app_id) override;
-  void OnWebAppInstallManagerDestroyed() override;
-
-  void OnIconsRead(webapps::WebappUninstallSource uninstall_source,
-                   std::map<SquareSizePx, SkBitmap> icon_bitmaps);
-
-  // The dialog's parent window.
-  const gfx::NativeWindow parent_;
-
-  // The callback we will call Accepted/Canceled on after confirmation dialog.
-  OnWebAppUninstallDialogClosed closed_callback_;
-
-  base::OnceClosure dialog_shown_callback_for_testing_;
-
-  // Tracks whether |parent_| got destroyed.
-  std::unique_ptr<views::NativeWindowTracker> parent_window_tracker_;
+  const raw_ptr<Profile, AcrossTasksDanglingUntriaged> profile_;
+  base::WeakPtr<web_app::WebAppProvider> provider_;
+  UninstallChoiceCallback uninstall_choice_callback_;
 
   base::ScopedObservation<web_app::WebAppInstallManager,
                           web_app::WebAppInstallManagerObserver>
       install_manager_observation_{this};
 
-  raw_ptr<WebAppUninstallDialogDelegateView> view_ = nullptr;
-
-  // The web app we are showing the dialog for.
-  web_app::AppId app_id_;
-  const raw_ptr<Profile, DanglingUntriaged> profile_;
-
-  THREAD_CHECKER(thread_checker_);
-
-  base::WeakPtrFactory<WebAppUninstallDialogViews> weak_ptr_factory_{this};
+  webapps::WebappUninstallSource uninstall_source_;
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_WEB_APPS_WEB_APP_UNINSTALL_DIALOG_VIEW_H_

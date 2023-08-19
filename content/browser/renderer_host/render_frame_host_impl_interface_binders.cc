@@ -43,6 +43,7 @@
 #include "third_party/blink/public/common/associated_interfaces/associated_interface_registry.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/mojom/blob/blob_url_store.mojom.h"
+#include "third_party/blink/public/mojom/blob/file_backed_blob_factory.mojom.h"
 #include "third_party/blink/public/mojom/broadcastchannel/broadcast_channel.mojom.h"
 #include "third_party/blink/public/mojom/frame/back_forward_cache_controller.mojom.h"
 #include "third_party/blink/public/mojom/frame/frame.mojom.h"
@@ -346,6 +347,13 @@ void RenderFrameHostImpl::SetUpMojoConnection() {
         base::BindRepeating(
             &RenderFrameHostImpl::BindBlobUrlStoreAssociatedReceiver,
             base::Unretained(this)));
+  }
+
+  if (base::FeatureList::IsEnabled(
+          blink::features::kEnableFileBackedBlobFactory)) {
+    associated_registry_->AddInterface<blink::mojom::FileBackedBlobFactory>(
+        base::BindRepeating(&RenderFrameHostImpl::BindFileBackedBlobFactory,
+                            base::Unretained(this)));
   }
 
   // Allow embedders to register their binders.

@@ -4,13 +4,17 @@
 
 #include "services/network/attribution/attribution_test_utils.h"
 
+#include <stddef.h>
+
 #include <memory>
 #include <string>
+#include <vector>
 
 #include "base/ranges/algorithm.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_piece_forward.h"
 #include "base/strings/string_util.h"
+#include "net/http/structured_headers.h"
 #include "net/test/embedded_test_server/http_request.h"
 #include "net/test/embedded_test_server/http_response.h"
 #include "services/network/attribution/attribution_request_helper.h"
@@ -109,10 +113,15 @@ std::unique_ptr<net::test_server::HttpResponse> HandleVerificationRequest(
     return nullptr;
   }
 
+  size_t received_blind_messages_count =
+      DeserializeStructuredHeaderListOfStrings(verification_header->second)
+          .size();
+
   auto http_response = std::make_unique<net::test_server::BasicHttpResponse>();
   http_response->AddCustomHeader(
       AttributionVerificationMediator::kReportVerificationHeader,
-      kTestBlindToken);
+      SerializeStructureHeaderListOfStrings(std::vector<std::string>(
+          received_blind_messages_count, kTestBlindToken)));
 
   if (request.relative_url == kRedirectVerificationRequestPath) {
     http_response->set_code(net::HTTP_FOUND);
@@ -159,9 +168,54 @@ std::unique_ptr<AttributionRequestHelper> CreateTestAttributionRequestHelper(
 
 AttributionVerificationMediator CreateTestVerificationMediator(
     TrustTokenKeyCommitments* trust_token_key_commitments) {
+  std::vector<std::unique_ptr<AttributionVerificationMediator::Cryptographer>>
+      cryptographers;
+  cryptographers.reserve(
+      AttributionRequestHelper::kVerificationTokensPerTrigger);
+  for (size_t i = 0;
+       i < AttributionRequestHelper::kVerificationTokensPerTrigger; ++i) {
+    cryptographers.push_back(std::make_unique<FakeCryptographer>());
+  }
   return AttributionVerificationMediator(
-      trust_token_key_commitments, std::make_unique<FakeCryptographer>(),
+      trust_token_key_commitments, std::move(cryptographers),
       std::make_unique<AttributionVerificationMediatorMetricsRecorder>());
+}
+
+std::vector<const std::string> DeserializeStructuredHeaderListOfStrings(
+    base::StringPiece header) {
+  absl::optional<net::structured_headers::List> parsed_list =
+      net::structured_headers::ParseList(header);
+  if (!parsed_list.has_value()) {
+    return {};
+  }
+
+  std::vector<const std::string> strings;
+  strings.reserve(parsed_list->size());
+  for (const auto& item : parsed_list.value()) {
+    if (item.member_is_inner_list || item.member.size() != 1u ||
+        !item.member.at(0).item.is_string()) {
+      return {};
+    }
+    strings.emplace_back(item.member.at(0).item.GetString());
+  }
+
+  return strings;
+}
+
+std::string SerializeStructureHeaderListOfStrings(
+    const std::vector<std::string>& strings) {
+  net::structured_headers::List headers;
+
+  for (const std::string& string : strings) {
+    net::structured_headers::Item item(
+        string, net::structured_headers::Item::ItemType::kStringType);
+    headers.emplace_back(
+        net::structured_headers::ParameterizedMember(item, {}));
+  }
+  absl::optional<std::string> serialized =
+      net::structured_headers::SerializeList(headers);
+  CHECK(serialized.has_value());
+  return serialized.value();
 }
 
 }  // namespace network

@@ -10,7 +10,6 @@
 #include "ash/shelf/shelf_bubble.h"
 #include "base/functional/callback_forward.h"
 #include "base/memory/raw_ptr.h"
-#include "base/time/time.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/views/controls/button/label_button.h"
 #include "ui/views/controls/image_view.h"
@@ -84,9 +83,6 @@ class ASH_EXPORT ShelfShutdownConfirmationBubble : public ShelfBubble {
 
   // A simple state machine to keep track of the dialog result.
   DialogResult dialog_result_{DialogResult::kNone};
-
-  // Track time delta between bubble opened to an action taken
-  base::TimeTicks bubble_opened_timestamp_;
 };
 
 }  // namespace ash

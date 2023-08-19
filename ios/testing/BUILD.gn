@@ -12,7 +12,6 @@ group("all_tests") {
 }
 
 source_set("verify_custom_webkit") {
-  configs += [ "//build/config/compiler:enable_arc" ]
   testonly = true
   sources = [
     "verify_custom_webkit.h",
@@ -22,7 +21,6 @@ source_set("verify_custom_webkit") {
 }
 
 source_set("hardware_keyboard_support") {
-  configs += [ "//build/config/compiler:enable_arc" ]
   testonly = true
   sources = [
     "hardware_keyboard_util.h",
@@ -32,7 +30,6 @@ source_set("hardware_keyboard_support") {
 }
 
 source_set("open_url_context") {
-  configs += [ "//build/config/compiler:enable_arc" ]
   testonly = true
   sources = [
     "open_url_context.h",
@@ -41,7 +38,6 @@ source_set("open_url_context") {
 }
 
 source_set("block_swizzler") {
-  configs += [ "//build/config/compiler:enable_arc" ]
   testonly = true
   sources = [
     "scoped_block_swizzler.h",
@@ -51,7 +47,6 @@ source_set("block_swizzler") {
 }
 
 source_set("nserror_support") {
-  configs += [ "//build/config/compiler:enable_arc" ]
   testonly = true
   sources = [
     "nserror_util.h",
@@ -60,7 +55,6 @@ source_set("nserror_support") {
 }
 
 source_set("embedded_test_server_support") {
-  configs += [ "//build/config/compiler:enable_arc" ]
   testonly = true
 
   deps = [ "//net:test_support" ]
@@ -71,10 +65,7 @@ source_set("embedded_test_server_support") {
 }
 
 source_set("system_alert_handler") {
-  configs += [
-    "//build/config/compiler:enable_arc",
-    "//build/config/ios:xctest_config",
-  ]
+  configs += [ "//build/config/ios:xctest_config" ]
   testonly = true
   sources = [
     "system_alert_handler.h",
@@ -84,7 +75,6 @@ source_set("system_alert_handler") {
 }
 
 source_set("ocmock_support") {
-  configs += [ "//build/config/compiler:enable_arc" ]
   testonly = true
 
   deps = [ "//base" ]
@@ -98,7 +88,6 @@ source_set("ocmock_support") {
 }
 
 test("ios_testing_unittests") {
-  configs += [ "//build/config/compiler:enable_arc" ]
   deps = [
     ":block_swizzler",
     ":ocmock_support",

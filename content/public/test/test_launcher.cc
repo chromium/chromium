@@ -15,6 +15,7 @@
 
 #include "base/check_op.h"
 #include "base/command_line.h"
+#include "base/containers/contains.h"
 #include "base/debug/debugger.h"
 #include "base/environment.h"
 #include "base/files/file_util.h"
@@ -67,7 +68,7 @@
 // To avoid conflicts with the macro from the Windows SDK...
 #undef GetCommandLine
 #elif BUILDFLAG(IS_MAC)
-#include "base/mac/scoped_nsautorelease_pool.h"
+#include "base/apple/scoped_nsautorelease_pool.h"
 #include "sandbox/mac/seatbelt_exec.h"
 #endif
 
@@ -227,7 +228,7 @@ base::CommandLine WrapperTestLauncherDelegate::GetCommandLine(
   new_cmd_line.AppendSwitchPath(switches::kTestLauncherOutput, *output_file);
 
   // Selecting sample tests to enable switches::kEnableTracing.
-  if (switches.find(switches::kEnableTracingFraction) != switches.end()) {
+  if (base::Contains(switches, switches::kEnableTracingFraction)) {
     double enable_tracing_fraction = 0;
     if (!base::StringToDouble(switches[switches::kEnableTracingFraction],
                               &enable_tracing_fraction) ||

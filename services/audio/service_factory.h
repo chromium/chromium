@@ -27,13 +27,9 @@ std::unique_ptr<Service> CreateEmbeddedService(
 // Creates an instance of Audio service which will live in the current process
 // and will create and own an AudioManager instance. |extra_binders| can provide
 // additional interface binders for the service to include. Useful for e.g.
-// test-only environments. When |run_audio_processing| is true, the service will
-// run Audio Processing Module (including for example acoustic echo
-// cancellation).
-
+// test-only environments.
 std::unique_ptr<Service> CreateStandaloneService(
-    mojo::PendingReceiver<mojom::AudioService> receiver,
-    bool run_audio_processing);
+    mojo::PendingReceiver<mojom::AudioService> receiver);
 
 }  // namespace audio
 

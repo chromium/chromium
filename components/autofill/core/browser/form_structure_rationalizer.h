@@ -6,7 +6,6 @@
 #define COMPONENTS_AUTOFILL_CORE_BROWSER_FORM_STRUCTURE_RATIONALIZER_H_
 
 #include <memory>
-#include <set>
 #include <vector>
 
 #include "base/memory/raw_ref.h"
@@ -14,6 +13,7 @@
 #include "components/autofill/core/browser/field_types.h"
 #include "components/autofill/core/browser/metrics/autofill_metrics.h"
 #include "components/autofill/core/common/form_field_data.h"
+#include "url/origin.h"
 
 namespace autofill {
 
@@ -25,8 +25,9 @@ class LogManager;
 class FormStructureRationalizer {
  public:
   // `fields` must outlive the FormStructureRationalizer and must not be null.
-  FormStructureRationalizer(std::vector<std::unique_ptr<AutofillField>>* fields,
-                            FormSignature form_signature);
+  // The rationalizer only modifies elements of `fields`, not the vector itself.
+  explicit FormStructureRationalizer(
+      std::vector<std::unique_ptr<AutofillField>>* fields);
   ~FormStructureRationalizer();
   FormStructureRationalizer(const FormStructureRationalizer&) = delete;
   FormStructureRationalizer& operator=(const FormStructureRationalizer&) =
@@ -38,12 +39,15 @@ class FormStructureRationalizer {
   void RationalizeAutocompleteAttributes(LogManager* log_manager);
 
   // Tunes the fields with identical predictions.
-  void RationalizeRepeatedFields(AutofillMetrics::FormInteractionsUkmLogger*,
+  // The `form_signature` is needed for logging.
+  void RationalizeRepeatedFields(FormSignature form_signature,
+                                 AutofillMetrics::FormInteractionsUkmLogger*,
                                  LogManager* log_manager);
 
   // A helper function to review the predictions and do appropriate adjustments
   // when it considers necessary.
-  void RationalizeFieldTypePredictions(LogManager* log_manager);
+  void RationalizeFieldTypePredictions(const url::Origin& main_origin,
+                                       LogManager* log_manager);
 
   // Ensures that only a single phone number (which can be split across multiple
   // fields) is autofilled in the `section`. If the section contains multiple
@@ -64,6 +68,12 @@ class FormStructureRationalizer {
   // card fields in an otherwise non-credit-card related form is unlikely to be
   // correct, the function will override that prediction.
   void RationalizeCreditCardFieldPredictions(LogManager* log_manager);
+
+  // Eradicates the type of credit card number and CVC fields on the main
+  // frame's origin if there are also fields of this type in a child frame.
+  // See crbug.com/1450502 for details.
+  void RationalizeMultiOriginCreditCardFields(const url::Origin& main_origin,
+                                              LogManager* log_manager);
 
   // Sets the offsets of adjacent credit card number fields. For example:
   // four adjacent card fields with `FormFieldData::max_length == 4` should
@@ -91,6 +101,7 @@ class FormStructureRationalizer {
   void ApplyRationalizationsToHiddenSelects(
       size_t field_index,
       ServerFieldType new_type,
+      FormSignature form_signature,
       AutofillMetrics::FormInteractionsUkmLogger*);
 
   // Returns true if we can replace server predictions with the heuristics one.
@@ -106,6 +117,7 @@ class FormStructureRationalizer {
       size_t lower_index,
       ServerFieldType upper_type,
       ServerFieldType lower_type,
+      FormSignature form_signature,
       AutofillMetrics::FormInteractionsUkmLogger*);
 
   // Returns true if the fields_[index] server type should be rationalized to
@@ -116,12 +128,14 @@ class FormStructureRationalizer {
   void ApplyRationalizationsToFieldAndLog(
       size_t field_index,
       ServerFieldType new_type,
+      FormSignature form_signature,
       AutofillMetrics::FormInteractionsUkmLogger* form_interactions_ukm_logger);
 
   // Two or three fields predicted as the whole address should be address lines
   // 1, 2 and 3 instead.
   void RationalizeAddressLineFields(
       SectionedFieldsIndexes* sections_of_address_indexes,
+      FormSignature form_signature,
       AutofillMetrics::FormInteractionsUkmLogger*,
       LogManager* log_manager);
 
@@ -129,6 +143,7 @@ class FormStructureRationalizer {
   void RationalizeAddressStateCountry(
       SectionedFieldsIndexes* sections_of_state_indexes,
       SectionedFieldsIndexes* sections_of_country_indexes,
+      FormSignature form_signature,
       AutofillMetrics::FormInteractionsUkmLogger*,
       LogManager* log_manager);
 
@@ -139,9 +154,6 @@ class FormStructureRationalizer {
   // A vector of all the input fields in the form. The reference is const but
   // the fields are mutable by design.
   const raw_ref<const std::vector<std::unique_ptr<AutofillField>>> fields_;
-
-  // Signature for the rationalized form. Required for logging.
-  const FormSignature form_signature_;
 };
 
 }  // namespace autofill

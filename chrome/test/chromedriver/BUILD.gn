@@ -180,6 +180,8 @@ source_set("automation_client_lib") {
     "chrome/scoped_temp_dir_with_retry.h",
     "chrome/status.cc",
     "chrome/status.h",
+    "chrome/target_utils.cc",
+    "chrome/target_utils.h",
     "chrome/ui_events.cc",
     "chrome/ui_events.h",
     "chrome/util.cc",
@@ -187,6 +189,8 @@ source_set("automation_client_lib") {
     "chrome/web_view.h",
     "chrome/web_view_impl.cc",
     "chrome/web_view_impl.h",
+    "chrome/web_view_info.cc",
+    "chrome/web_view_info.h",
     "constants/version.h",
     "log_replay/chrome_replay_impl.cc",
     "log_replay/chrome_replay_impl.h",
@@ -202,8 +206,9 @@ source_set("automation_client_lib") {
     "net/command_id.h",
     "net/net_util.cc",
     "net/net_util.h",
-    "net/pipe_handler.cc",
-    "net/pipe_handler.h",
+    "net/pipe_builder.cc",
+    "net/pipe_builder.h",
+    "net/pipe_connection.h",
     "net/sync_websocket.h",
     "net/sync_websocket_factory.cc",
     "net/sync_websocket_factory.h",
@@ -217,8 +222,26 @@ source_set("automation_client_lib") {
     "net/websocket.h",
   ]
 
+  if (is_posix) {
+    sources += [
+      "net/pipe_connection_posix.cc",
+      "net/pipe_connection_posix.h",
+      "net/pipe_reader_posix.cc",
+      "net/pipe_reader_posix.h",
+      "net/pipe_writer_posix.cc",
+      "net/pipe_writer_posix.h",
+    ]
+  }
+
   if (is_mac) {
     sources += [ "chrome/chrome_finder_mac.mm" ]
+  }
+
+  if (is_win) {
+    sources += [
+      "net/pipe_connection_win.cc",
+      "net/pipe_connection_win.h",
+    ]
   }
 
   # Also compile the generated files.
@@ -494,9 +517,11 @@ test("chromedriver_unittests") {
     "logging_unittest.cc",
     "net/adb_client_socket_unittest.cc",
     "net/net_util_unittest.cc",
+    "net/pipe_builder_unittest.cc",
     "net/sync_websocket_impl_unittest.cc",
     "net/test_http_server.cc",
     "net/test_http_server.h",
+    "net/test_http_server_unittest.cc",
     "net/timeout_unittest.cc",
     "net/websocket_unittest.cc",
     "performance_logger_unittest.cc",
@@ -506,6 +531,18 @@ test("chromedriver_unittests") {
     "util_unittest.cc",
     "window_commands_unittest.cc",
   ]
+
+  if (is_posix) {
+    sources += [
+      "net/pipe_connection_unittest.cc",
+      "net/pipe_reader_posix_unittest.cc",
+      "net/pipe_writer_posix_unittest.cc",
+    ]
+  }
+
+  if (is_win) {
+    sources += [ "net/pipe_connection_unittest.cc" ]
+  }
 
   data = [
     "//chrome/test/data/chromedriver/",
@@ -517,6 +554,7 @@ test("chromedriver_unittests") {
     ":lib",
     "//base",
     "//base/test:run_all_unittests",
+    "//base/test:test_support",
     "//build:chromeos_buildflags",
     "//chrome/common",
     "//mojo/core/embedder",

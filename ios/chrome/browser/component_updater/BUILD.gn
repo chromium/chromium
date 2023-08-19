@@ -3,7 +3,6 @@
 # found in the LICENSE file.
 
 source_set("component_updater") {
-  configs += [ "//build/config/compiler:enable_arc" ]
   sources = [
     "ios_component_updater_configurator.h",
     "ios_component_updater_configurator.mm",

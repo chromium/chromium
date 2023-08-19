@@ -10,6 +10,8 @@ component("select_file_dialog") {
     "headless_select_file_dialog.h",
   ]
 
+  configs += [ "//build/config/compiler:wexit_time_destructors" ]
+
   deps = [
     "//base",
     "//ui/gfx:native_widget_types",

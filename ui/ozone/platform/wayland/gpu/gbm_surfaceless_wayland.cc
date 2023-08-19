@@ -11,6 +11,7 @@
 #include <memory>
 #include <utility>
 
+#include "base/check.h"
 #include "base/functional/bind.h"
 #include "base/ranges/algorithm.h"
 #include "base/task/thread_pool.h"
@@ -65,8 +66,13 @@ GbmSurfacelessWayland::SolidColorBufferHolder::GetOrCreateSolidColorBuffer(
     // startup.
     next_buffer_id = buffer_manager->AllocateBufferID();
     // Create wl_buffer on the browser side.
-    buffer_manager->CreateSolidColorBuffer(color, kSolidColorBufferSize,
-                                           next_buffer_id);
+    if (buffer_manager->supports_non_backed_solid_color_buffers()) {
+      buffer_manager->CreateSolidColorBuffer(color, kSolidColorBufferSize,
+                                             next_buffer_id);
+    } else {
+      CHECK(buffer_manager->supports_single_pixel_buffer());
+      buffer_manager->CreateSinglePixelBuffer(color, next_buffer_id);
+    }
     // Allocate a backing structure that will be used to figure out if such
     // buffer has already existed.
     inflight_solid_color_buffers_.emplace_back(
@@ -142,7 +148,7 @@ bool GbmSurfacelessWayland::ScheduleOverlayPlane(
     // Only solid color overlays can be non-backed.
     if (!overlay_plane_data.is_solid_color) {
       LOG(WARNING) << "Only solid color overlay planes are allowed to be "
-                      "scheduled without GLImage.";
+                      "scheduled without backing.";
       frame->schedule_planes_succeeded = false;
       return false;
     }

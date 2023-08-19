@@ -39,7 +39,7 @@ static_library("status") {
 
 source_set("status_macros") {
   sources = [ "status_macros.h" ]
-
+  public_deps = [ "//base" ]
   deps = [ ":status" ]
 }
 
@@ -155,6 +155,7 @@ source_set("unit_tests") {
     "status_macros_unittest.cc",
     "status_unittest.cc",
     "statusor_unittest.cc",
+    "task_runner_context_unittest.cc",
     "wrapped_rate_limiter_unittest.cc",
   ]
   deps = [

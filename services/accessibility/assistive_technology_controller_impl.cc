@@ -5,8 +5,11 @@
 #include "services/accessibility/assistive_technology_controller_impl.h"
 
 #include <memory>
+#include <utility>
 
+#include "base/types/cxx23_to_underlying.h"
 #include "services/accessibility/automation_impl.h"
+#include "services/accessibility/features/interface_binder.h"
 #include "services/accessibility/features/v8_manager.h"
 #include "services/accessibility/public/mojom/accessibility_service.mojom.h"
 
@@ -34,7 +37,7 @@ void AssistiveTechnologyControllerImpl::BindAccessibilityServiceClient(
 }
 
 void AssistiveTechnologyControllerImpl::BindAutomation(
-    mojo::PendingRemote<mojom::Automation> automation,
+    mojo::PendingAssociatedRemote<mojom::Automation> automation,
     mojo::PendingReceiver<mojom::AutomationClient> automation_client) {
   accessibility_service_client_remote_->BindAutomation(
       std::move(automation), std::move(automation_client));
@@ -45,17 +48,26 @@ void AssistiveTechnologyControllerImpl::BindTts(
   accessibility_service_client_remote_->BindTts(std::move(tts_receiver));
 }
 
+void AssistiveTechnologyControllerImpl::BindUserInterface(
+    mojo::PendingReceiver<mojom::UserInterface> user_interface_receiver) {
+  accessibility_service_client_remote_->BindUserInterface(
+      std::move(user_interface_receiver));
+}
+
 void AssistiveTechnologyControllerImpl::EnableAssistiveTechnology(
     const std::vector<mojom::AssistiveTechnologyType>& enabled_features) {
-  for (int i = static_cast<int>(mojom::AssistiveTechnologyType::kMinValue);
-       i <= static_cast<int>(mojom::AssistiveTechnologyType::kMaxValue); i++) {
+  for (auto i = base::to_underlying(mojom::AssistiveTechnologyType::kMinValue);
+       i <= base::to_underlying(mojom::AssistiveTechnologyType::kMaxValue);
+       i++) {
     mojom::AssistiveTechnologyType type =
         static_cast<mojom::AssistiveTechnologyType>(i);
-    bool enabled = std::find(enabled_features.begin(), enabled_features.end(),
-                             type) != enabled_features.end();
+    bool enabled = base::Contains(enabled_features, type);
     auto it = enabled_ATs_.find(type);
     if (enabled && it == enabled_ATs_.end()) {
-      enabled_ATs_[type] = GetOrMakeV8Manager(type);
+      // TODO(b/293348920): Re-use an existing V8Manager and install additional
+      // bindings there rather than always making a new one when sharing
+      // V8Managers across different AT types.
+      CreateV8ManagerForType(type);
     } else if (!enabled && it != enabled_ATs_.end()) {
       enabled_ATs_.erase(type);
     }
@@ -64,45 +76,67 @@ void AssistiveTechnologyControllerImpl::EnableAssistiveTechnology(
 
 bool AssistiveTechnologyControllerImpl::IsFeatureEnabled(
     mojom::AssistiveTechnologyType type) const {
-  return enabled_ATs_.find(type) != enabled_ATs_.end();
+  return base::Contains(enabled_ATs_, type);
 }
 
 void AssistiveTechnologyControllerImpl::RunScriptForTest(
     mojom::AssistiveTechnologyType type,
     const std::string& script,
     base::OnceClosure on_complete) {
-  enabled_ATs_[type]->ExecuteScript(script, std::move(on_complete));
+  GetV8Manager(type)->RunScriptForTest(  // IN-TEST
+      script, std::move(on_complete));
 }
 
-void AssistiveTechnologyControllerImpl::SetTestInterface(
+void AssistiveTechnologyControllerImpl::AddInterfaceForTest(
     mojom::AssistiveTechnologyType type,
     std::unique_ptr<InterfaceBinder> test_interface) {
-  enabled_ATs_[type]->SetTestMojoInterface(std::move(test_interface));
+  GetV8Manager(type)->AddInterfaceForTest(  // IN-TEST
+      std::move(test_interface));
 }
 
-scoped_refptr<V8Manager> AssistiveTechnologyControllerImpl::GetOrMakeV8Manager(
+V8Manager* AssistiveTechnologyControllerImpl::GetV8Manager(
+    mojom::AssistiveTechnologyType type) {
+  if (auto it = enabled_ATs_.find(type); it != enabled_ATs_.end()) {
+    return &it->second;
+  }
+  return nullptr;
+}
+
+void AssistiveTechnologyControllerImpl::CreateV8ManagerForType(
     mojom::AssistiveTechnologyType type) {
   // For the first one we can ask it to initialize v8.
   if (!v8_initialized_) {
     BindingsIsolateHolder::InitializeV8();
     v8_initialized_ = true;
   }
-
-  scoped_refptr<V8Manager> v8_manager = V8Manager::Create();
+  V8Manager& manager = enabled_ATs_[type];
 
   // Install bindings on the global context depending on the type.
   // For example, some types may need TTS and some may not. All need Automation.
-  v8_manager->InstallAutomation(weak_ptr_factory_.GetWeakPtr());
+  // TODO(b/262637071): Create a easy way to map AT types to APIs needed instead
+  // of these large if statements.
+  mojo::PendingAssociatedReceiver<mojom::Automation> automation;
+  mojo::PendingRemote<mojom::AutomationClient> automation_client;
+  BindAutomation(automation.InitWithNewEndpointAndPassRemote(),
+                 automation_client.InitWithNewPipeAndPassReceiver());
+  manager.ConfigureAutomation(std::move(automation),
+                              std::move(automation_client));
   if (type == mojom::AssistiveTechnologyType::kChromeVox ||
       type == mojom::AssistiveTechnologyType::kSelectToSpeak) {
-    v8_manager->InstallTts(weak_ptr_factory_.GetWeakPtr());
+    // TTS needs to know the type that is speaking.
+    manager.ConfigureTts(this);
   }
-  // TODO(crbug.com/1355633): Install other bindings based on the type
+  if (type == mojom::AssistiveTechnologyType::kChromeVox ||
+      type == mojom::AssistiveTechnologyType::kSelectToSpeak ||
+      type == mojom::AssistiveTechnologyType::kAutoClick ||
+      type == mojom::AssistiveTechnologyType::kSwitchAccess) {
+    manager.ConfigureUserInterface(this);
+  }
+  // TODO(b/262637071): Configure other bindings based on the type
   // once they are implemented.
 
-  // After installing all bindings, initialize.
-  v8_manager->AddV8Bindings();
-  return v8_manager;
+  // After configuring all bindings, initialize.
+  manager.FinishContextSetUp();
 }
 
 }  // namespace ax

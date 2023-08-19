@@ -99,6 +99,12 @@ class AutocompleteResult {
   // Adds a new set of matches to the result set.  Does not re-sort.
   void AppendMatches(const ACMatches& matches);
 
+  // Modifies |matches| such that any duplicate matches are coalesced into
+  // representative "best" matches. The erased matches are moved into the
+  // |duplicate_matches| members of their representative matches.
+  void DeduplicateMatches(const AutocompleteInput& input,
+                          TemplateURLService* template_url_service);
+
   // Removes duplicates, puts the list in sorted order and culls to leave only
   // the best GetMaxMatches() matches. Sets the default match to the best match
   // and updates the alternate nav URL.
@@ -313,7 +319,9 @@ class AutocompleteResult {
   // Modifies |matches| such that any duplicate matches are coalesced into
   // representative "best" matches. The erased matches are moved into the
   // |duplicate_matches| members of their representative matches.
-  static void DeduplicateMatches(ACMatches* matches);
+  static void DeduplicateMatches(ACMatches* matches,
+                                 const AutocompleteInput& input,
+                                 TemplateURLService* template_url_service);
 
   // Returns true if |matches| contains a match with the same destination as
   // |match|.

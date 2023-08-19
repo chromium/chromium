@@ -608,7 +608,7 @@ DisplayConfigurator::DisplayConfigurator()
           base::BindRepeating(&DisplayConfigurator::configurator_disabled,
                               base::Unretained(this)))),
       has_unassociated_display_(false),
-      pending_vrr_state_(::features::IsVariableRefreshRateEnabled()) {
+      pending_vrr_state_(::features::IsVariableRefreshRateAlwaysOn()) {
   AddObserver(content_protection_manager_.get());
 }
 

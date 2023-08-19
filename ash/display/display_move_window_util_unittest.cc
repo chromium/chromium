@@ -464,8 +464,9 @@ TEST_F(DisplayMoveWindowUtilTest, RestoreHistoryOnUpdatedRestoreBounds) {
   WindowState* window_state = WindowState::Get(w);
   window_state->Maximize();
 
-  const std::vector<WindowState::RestoreState>& restore_stack =
-      window_state->window_state_restore_history_for_testing();
+  using chromeos::WindowStateType;
+  const std::vector<chromeos::WindowStateType>& restore_stack =
+      window_state->window_state_restore_history();
   EXPECT_EQ(gfx::Rect(10, 20, 200, 100),
             window_state->GetRestoreBoundsInScreen());
 
@@ -476,8 +477,7 @@ TEST_F(DisplayMoveWindowUtilTest, RestoreHistoryOnUpdatedRestoreBounds) {
   EXPECT_EQ(restore_bounds_in_second_display,
             window_state->GetRestoreBoundsInScreen());
   EXPECT_EQ(1u, restore_stack.size());
-  EXPECT_EQ(restore_bounds_in_second_display,
-            restore_stack[0].restore_bounds_in_screen);
+  EXPECT_EQ(restore_stack[0], WindowStateType::kDefault);
 
   // Verify the restore bounds and restore history after toggling to fullscreen
   // the window.
@@ -487,8 +487,8 @@ TEST_F(DisplayMoveWindowUtilTest, RestoreHistoryOnUpdatedRestoreBounds) {
   EXPECT_EQ(restore_bounds_in_second_display,
             window_state->GetRestoreBoundsInScreen());
   EXPECT_EQ(2u, restore_stack.size());
-  EXPECT_EQ(restore_bounds_in_second_display,
-            restore_stack[1].restore_bounds_in_screen);
+  EXPECT_EQ(restore_stack[0], WindowStateType::kDefault);
+  EXPECT_EQ(restore_stack[1], WindowStateType::kMaximized);
 
   // Verify the restore bounds and restore history after toggling to
   // restore the window to maxmized.
@@ -499,8 +499,7 @@ TEST_F(DisplayMoveWindowUtilTest, RestoreHistoryOnUpdatedRestoreBounds) {
   EXPECT_EQ(gfx::Rect(400, 0, 400, 300 - ShelfConfig::Get()->shelf_size()),
             w->GetBoundsInScreen());
   EXPECT_EQ(1u, restore_stack.size());
-  EXPECT_EQ(restore_bounds_in_second_display,
-            restore_stack[0].restore_bounds_in_screen);
+  EXPECT_EQ(restore_stack[0], WindowStateType::kDefault);
 
   // Verify the restore bounds and restore history after toggling to fullscreen
   // the window again. And the window should stay in the second display with
@@ -511,8 +510,8 @@ TEST_F(DisplayMoveWindowUtilTest, RestoreHistoryOnUpdatedRestoreBounds) {
             window_state->GetRestoreBoundsInScreen());
   EXPECT_EQ(gfx::Rect(400, 0, 400, 300), w->GetBoundsInScreen());
   EXPECT_EQ(2u, restore_stack.size());
-  EXPECT_EQ(restore_bounds_in_second_display,
-            restore_stack[1].restore_bounds_in_screen);
+  EXPECT_EQ(restore_stack[0], WindowStateType::kDefault);
+  EXPECT_EQ(restore_stack[1], WindowStateType::kMaximized);
 }
 
 }  // namespace display_move_window_util

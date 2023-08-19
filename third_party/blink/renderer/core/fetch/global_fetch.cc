@@ -4,8 +4,10 @@
 
 #include "third_party/blink/renderer/core/fetch/global_fetch.h"
 
+#include "third_party/blink/renderer/bindings/core/v8/v8_deferred_request_init.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_request_init.h"
 #include "third_party/blink/renderer/core/execution_context/navigator_base.h"
+#include "third_party/blink/renderer/core/fetch/fetch_later_result.h"
 #include "third_party/blink/renderer/core/fetch/fetch_manager.h"
 #include "third_party/blink/renderer/core/fetch/request.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
@@ -45,14 +47,16 @@ class GlobalFetchImpl final : public GarbageCollected<GlobalFetchImpl<T>>,
     GlobalFetchImpl* supplement =
         Supplement<T>::template From<GlobalFetchImpl>(supplementable);
     if (!supplement) {
-      supplement = MakeGarbageCollected<GlobalFetchImpl>(execution_context);
+      supplement = MakeGarbageCollected<GlobalFetchImpl>(supplementable,
+                                                         execution_context);
       Supplement<T>::ProvideTo(supplementable, supplement);
     }
     return supplement;
   }
 
-  explicit GlobalFetchImpl(ExecutionContext* execution_context)
-      : Supplement<T>(nullptr),
+  explicit GlobalFetchImpl(T& supplementable,
+                           ExecutionContext* execution_context)
+      : Supplement<T>(supplementable),
         fetch_manager_(MakeGarbageCollected<FetchManager>(execution_context)) {}
 
   ScriptPromise Fetch(ScriptState* script_state,
@@ -86,6 +90,41 @@ class GlobalFetchImpl final : public GarbageCollected<GlobalFetchImpl<T>>,
     return promise;
   }
 
+  FetchLaterResult* FetchLater(ScriptState* script_state,
+                               const V8RequestInfo* input,
+                               const DeferredRequestInit* init,
+                               ExceptionState& exception_state) override {
+    ExecutionContext* execution_context = fetch_manager_->GetExecutionContext();
+    if (!script_state->ContextIsValid() || !execution_context) {
+      exception_state.ThrowTypeError("The global scope is shutting down.");
+      return MakeGarbageCollected<FetchLaterResult>();
+    }
+
+    // https://whatpr.org/fetch/1647/094ea69...152d725.html#fetch-later-method
+    // Run the fetchLater(input, init) method steps:
+
+    // Step 1: Let `r` be the result of invoking the initial value of Request as
+    // constructor with `input` and `init` as arguments. This may throw an
+    // exception.
+    Request* r =
+        Request::Create(script_state, input,
+                        static_cast<const RequestInit*>(init), exception_state);
+    if (exception_state.HadException()) {
+      return nullptr;
+    }
+
+    probe::WillSendXMLHttpOrFetchNetworkRequest(execution_context, r->url());
+    FetchRequestData* request_data = r->PassRequestData(script_state);
+    MeasureFetchProperties(execution_context, request_data);
+    auto* result = fetch_manager_->FetchLater(script_state, request_data,
+                                              r->signal(), exception_state);
+    if (exception_state.HadException()) {
+      return nullptr;
+    }
+
+    return result;
+  }
+
   uint32_t FetchCount() const override { return fetch_count_; }
 
   void Trace(Visitor* visitor) const override {
@@ -106,6 +145,14 @@ const char GlobalFetchImpl<T>::kSupplementName[] = "GlobalFetchImpl";
 }  // namespace
 
 GlobalFetch::ScopedFetcher::~ScopedFetcher() {}
+
+FetchLaterResult* GlobalFetch::ScopedFetcher::FetchLater(
+    ScriptState* script_state,
+    const V8RequestInfo* input,
+    const DeferredRequestInit* init,
+    ExceptionState& exception_state) {
+  NOTREACHED_NORETURN();
+}
 
 GlobalFetch::ScopedFetcher* GlobalFetch::ScopedFetcher::From(
     LocalDOMWindow& window) {
@@ -149,6 +196,20 @@ ScriptPromise GlobalFetch::fetch(ScriptState* script_state,
   UseCounter::Count(worker.GetExecutionContext(), WebFeature::kFetch);
   return ScopedFetcher::From(worker)->Fetch(script_state, input, init,
                                             exception_state);
+}
+
+FetchLaterResult* GlobalFetch::fetchLater(ScriptState* script_state,
+                                          LocalDOMWindow& window,
+                                          const V8RequestInfo* input,
+                                          const DeferredRequestInit* init,
+                                          ExceptionState& exception_state) {
+  UseCounter::Count(window.GetExecutionContext(), WebFeature::kFetchLater);
+  if (!window.GetFrame()) {
+    exception_state.ThrowTypeError("The global scope is shutting down.");
+    return MakeGarbageCollected<FetchLaterResult>();
+  }
+  return ScopedFetcher::From(window)->FetchLater(script_state, input, init,
+                                                 exception_state);
 }
 
 }  // namespace blink

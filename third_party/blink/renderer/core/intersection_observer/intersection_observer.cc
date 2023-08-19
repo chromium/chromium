@@ -177,8 +177,6 @@ void ParseThresholds(
 }  // anonymous namespace
 
 static bool throttle_delay_enabled = true;
-const float IntersectionObserver::kMinimumThreshold =
-    std::numeric_limits<float>::min();
 
 void IntersectionObserver::SetThrottleDelayEnabledForTesting(bool enabled) {
   throttle_delay_enabled = enabled;
@@ -294,7 +292,6 @@ IntersectionObserver::IntersectionObserver(
       track_visibility_(track_visibility),
       track_fraction_of_root_(semantics == kFractionOfRoot),
       always_report_root_bounds_(always_report_root_bounds),
-      can_use_cached_rects_(0),
       use_overflow_clip_edge_(use_overflow_clip_edge) {
   switch (margin.size()) {
     case 0:
@@ -344,6 +341,12 @@ void IntersectionObserver::ProcessCustomWeakness(const LivenessBroker& info) {
 
 bool IntersectionObserver::RootIsValid() const {
   return RootIsImplicit() || root();
+}
+
+void IntersectionObserver::InvalidateCachedRects() {
+  for (auto& observation : observations_) {
+    observation->InvalidateCachedRects();
+  }
 }
 
 void IntersectionObserver::observe(Element* target,
@@ -467,6 +470,15 @@ DOMHighResTimeStamp IntersectionObserver::GetTimeStamp(
       ->MonotonicTimeToDOMHighResTimeStamp(monotonic_time);
 }
 
+bool IntersectionObserver::HasRootMargin() const {
+  if (margin_target_ == kApplyMarginToTarget) {
+    return false;
+  }
+  CHECK_EQ(margin_.size(), 4u);
+  return !margin_[0].IsZero() || !margin_[1].IsZero() || !margin_[2].IsZero() ||
+         !margin_[3].IsZero();
+}
+
 int64_t IntersectionObserver::ComputeIntersections(
     unsigned flags,
     absl::optional<base::TimeTicks>& monotonic_time) {
@@ -490,9 +502,7 @@ int64_t IntersectionObserver::ComputeIntersections(
     flags |= IntersectionObservation::kUseOverflowClipEdge;
 
   IntersectionGeometry::RootGeometry root_geometry(
-      IntersectionGeometry::GetRootLayoutObjectForTarget(root(), nullptr,
-                                                         false),
-      RootMargin());
+      IntersectionGeometry::GetExplicitRootLayoutObject(*root()), RootMargin());
   // TODO(szager): Is this copy necessary?
   HeapVector<Member<IntersectionObservation>> observations_to_process(
       observations_);
@@ -501,7 +511,14 @@ int64_t IntersectionObserver::ComputeIntersections(
     result +=
         observation->ComputeIntersection(root_geometry, flags, monotonic_time);
   }
-  can_use_cached_rects_ = 1;
+  return result;
+}
+
+gfx::Vector2dF IntersectionObserver::MinScrollDeltaToUpdate() const {
+  gfx::Vector2dF result = IntersectionGeometry::kInfiniteScrollDelta;
+  for (const auto& observation : observations_) {
+    result.SetToMin(observation->MinScrollDeltaToUpdate());
+  }
   return result;
 }
 

@@ -61,6 +61,14 @@ BASE_DECLARE_FEATURE(kEnableEmails);
 // Feature flag to enable Phone Numbers detection.
 BASE_DECLARE_FEATURE(kEnablePhoneNumbers);
 
+// Feature flag to enable Measurements detection.
+BASE_DECLARE_FEATURE(kEnableMeasurements);
+
+// Feature param under kOneTapForMaps to select consent behavior.
+extern const char kOneTapForMapsConsentModeParamTitle[];
+extern const char kOneTapForMapsConsentModeDefaultParam[];
+extern const char kOneTapForMapsConsentModeForcedParam[];
+extern const char kOneTapForMapsConsentModeDisabledParam[];
 // Feature flag to enable One tap experience for Maps.
 BASE_DECLARE_FEATURE(kOneTapForMaps);
 
@@ -85,9 +93,6 @@ BASE_DECLARE_FEATURE(kEnableSessionSerializationOptimizations);
 // When true, the new loadSimulatedRequest API should be used when displaying
 // error pages.
 bool IsLoadSimulatedRequestAPIEnabled();
-
-// When true, the fullscreen API should be used to enable fullscreen mode.
-bool IsFullscreenAPIEnabled();
 
 // When true, an option to enable Web Inspector should be present in Settings.
 bool IsWebInspectorSupportEnabled();

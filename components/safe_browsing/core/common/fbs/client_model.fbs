@@ -39,6 +39,7 @@ table ClientSideModel {
   tflite_model_input_width: int (deprecated);
   tflite_model_input_height: int (deprecated);
   tflite_metadata:safe_browsing.flat.TfLiteModelMetadata;
+  img_embedding_metadata:safe_browsing.flat.TfLiteModelMetadata;
   dom_model_version:int;
 }
 

@@ -8,8 +8,6 @@ source_set("web_usage_enabler") {
     "web_usage_enabler_browser_agent.mm",
   ]
 
-  configs += [ "//build/config/compiler:enable_arc" ]
-
   deps = [
     "//base",
     "//components/keyed_service/core",
@@ -24,8 +22,6 @@ source_set("unit_tests") {
   testonly = true
 
   sources = [ "web_usage_enabler_browser_agent_unittest.mm" ]
-
-  configs += [ "//build/config/compiler:enable_arc" ]
 
   deps = [
     ":web_usage_enabler",

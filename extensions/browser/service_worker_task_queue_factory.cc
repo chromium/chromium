@@ -39,7 +39,8 @@ KeyedService* ServiceWorkerTaskQueueFactory::BuildServiceInstanceFor(
     BrowserContext* context) const {
   ServiceWorkerTaskQueue* task_queue = new ServiceWorkerTaskQueue(context);
   BrowserContext* original_context =
-      ExtensionsBrowserClient::Get()->GetOriginalContext(context);
+      ExtensionsBrowserClient::Get()->GetContextRedirectedToOriginal(
+          context, /*force_guest_profile=*/true);
   if (original_context != context) {
     // To let incognito context's ServiceWorkerTaskQueue know about extensions
     // that were activated (which has its own instance of
@@ -53,7 +54,8 @@ KeyedService* ServiceWorkerTaskQueueFactory::BuildServiceInstanceFor(
 
 BrowserContext* ServiceWorkerTaskQueueFactory::GetBrowserContextToUse(
     BrowserContext* context) const {
-  return context;
+  return ExtensionsBrowserClient::Get()->GetContextOwnInstance(
+      context, /*force_guest_profile=*/true);
 }
 
 }  // namespace extensions

@@ -17,6 +17,7 @@
 #include "ash/app_list/app_list_controller_impl.h"
 #include "ash/constants/app_types.h"
 #include "ash/constants/ash_features.h"
+#include "ash/constants/ash_pref_names.h"
 #include "ash/display/screen_orientation_controller.h"
 #include "ash/display/screen_orientation_controller_test_api.h"
 #include "ash/drag_drop/drag_drop_controller.h"
@@ -33,6 +34,7 @@
 #include "ash/style/rounded_label_widget.h"
 #include "ash/test/ash_test_base.h"
 #include "ash/test/test_window_builder.h"
+#include "ash/wm/desks/cros_next_desk_icon_button.h"
 #include "ash/wm/desks/desk.h"
 #include "ash/wm/desks/desks_constants.h"
 #include "ash/wm/desks/desks_test_util.h"
@@ -43,6 +45,7 @@
 #include "ash/wm/desks/zero_state_button.h"
 #include "ash/wm/drag_window_resizer.h"
 #include "ash/wm/gestures/back_gesture/back_gesture_event_handler.h"
+#include "ash/wm/gestures/wm_gesture_handler.h"
 #include "ash/wm/mru_window_tracker.h"
 #include "ash/wm/overview/overview_constants.h"
 #include "ash/wm/overview/overview_controller.h"
@@ -65,6 +68,7 @@
 #include "ash/wm/splitview/split_view_utils.h"
 #include "ash/wm/tablet_mode/tablet_mode_controller.h"
 #include "ash/wm/tablet_mode/tablet_mode_controller_test_api.h"
+#include "ash/wm/test/fake_window_state.h"
 #include "ash/wm/window_mini_view_header_view.h"
 #include "ash/wm/window_preview_view.h"
 #include "ash/wm/window_state.h"
@@ -83,7 +87,9 @@
 #include "base/task/single_thread_task_runner.h"
 #include "base/test/metrics/user_action_tester.h"
 #include "base/test/scoped_feature_list.h"
+#include "base/test/to_vector.h"
 #include "base/time/time.h"
+#include "chromeos/constants/chromeos_features.h"
 #include "chromeos/ui/wm/features.h"
 #include "ui/aura/client/aura_constants.h"
 #include "ui/aura/client/window_types.h"
@@ -110,6 +116,7 @@
 #include "ui/gfx/geometry/point_conversions.h"
 #include "ui/gfx/geometry/transform.h"
 #include "ui/gfx/geometry/transform_util.h"
+#include "ui/views/controls/button/label_button.h"
 #include "ui/views/controls/label.h"
 #include "ui/views/widget/widget.h"
 #include "ui/wm/core/coordinate_conversion.h"
@@ -243,9 +250,16 @@ TEST_P(OverviewSessionTest, CloseButtonDisabledOnDrag) {
       gfx::ToRoundedPoint(item1->GetTransformedBounds().CenterPoint()));
   GetEventGenerator()->MoveTouchIdBy(/*touch_id=*/0, -100, 0);
 
-  // Make sure the drag event triggered the fade animations.
-  EXPECT_EQ(0.f, GetTitlebarOpacity(item1));
-  EXPECT_EQ(1.f, GetCloseButtonOpacity(item1));
+  if (chromeos::features::IsJellyEnabled()) {
+    // When Jellyroll is enabled, we show the title and hide the close button
+    // only for the overview item being dragged.
+    EXPECT_EQ(1.f, GetTitlebarOpacity(item1));
+    EXPECT_EQ(0.f, GetCloseButtonOpacity(item1));
+  } else {
+    // Make sure the drag event triggered the fade animations.
+    EXPECT_EQ(0.f, GetTitlebarOpacity(item1));
+    EXPECT_EQ(1.f, GetCloseButtonOpacity(item1));
+  }
   EXPECT_EQ(1.f, GetTitlebarOpacity(item2));
   EXPECT_EQ(0.f, GetCloseButtonOpacity(item2));
 
@@ -788,12 +802,31 @@ TEST_P(OverviewSessionTest, CloseButtonOnMultipleDisplay) {
 
   ToggleOverview();
   gfx::Rect bounds = GetTransformedBoundsInRootWindow(window2);
-  gfx::Point point(bounds.right() - 5, bounds.y() + 5);
+  gfx::Point point(bounds.right() - 15, bounds.y() + 15);
   ui::test::EventGenerator event_generator(window2->GetRootWindow(), point);
 
   EXPECT_FALSE(widget->IsClosed());
   event_generator.ClickLeftButton();
   EXPECT_TRUE(widget->IsClosed());
+}
+
+// Tests that dragging an overview item with multiple displays and then exiting
+// overview does not result in a u-a-f. Regression test for b/293867778.
+TEST_P(OverviewSessionTest, DraggingOnMultipleDisplay) {
+  UpdateDisplay("600x400,600x400");
+
+  auto window = CreateAppWindow();
+
+  ToggleOverview();
+  auto* generator = GetEventGenerator();
+  OverviewItem* item = GetOverviewItemForWindow(window.get());
+  generator->set_current_screen_location(
+      gfx::ToRoundedPoint(item->target_bounds().CenterPoint()));
+  generator->PressLeftButton();
+  generator->MoveMouseBy(20, 20);
+
+  // Exit overview without completing the drag.
+  ToggleOverview();
 }
 
 // Tests entering overview mode with two windows and selecting one.
@@ -1598,6 +1631,28 @@ TEST_P(OverviewSessionTest, AcceleratorInOverviewSession) {
   EXPECT_TRUE(IsUIShown(ewh));
 }
 
+// Tests that overview session will exit when clicking on the empty area in
+// overview.
+TEST_P(OverviewSessionTest, ExitOverviewWhenClickingEmptyArea) {
+  std::unique_ptr<aura::Window> window(CreateTestWindow());
+  ToggleOverview();
+  OverviewController* overview_controller = GetOverviewController();
+  ASSERT_TRUE(overview_controller->InOverviewSession());
+  ASSERT_EQ(1u, GetOverviewSession()->grid_list().size());
+
+  OverviewItem* overview_item = GetOverviewItemForWindow(window.get());
+  EXPECT_TRUE(overview_item);
+  const auto outside_point =
+      gfx::ToRoundedPoint(
+          overview_item->GetTransformedBounds().bottom_right()) +
+      gfx::Vector2d(20, 20);
+
+  auto* event_generator = GetEventGenerator();
+  event_generator->MoveMouseTo(outside_point);
+  event_generator->ClickLeftButton();
+  EXPECT_FALSE(overview_controller->InOverviewSession());
+}
+
 // Tests hitting the escape and back keys exits overview mode.
 TEST_P(OverviewSessionTest, ExitOverviewWithKey) {
   std::unique_ptr<aura::Window> window(CreateTestWindow());
@@ -2081,9 +2136,14 @@ TEST_P(OverviewSessionTest, HandleActiveWindowNotInOverviewGrid) {
 
   ClickWindow(widget->GetNativeWindow());
 
+  const bool is_jellyroll_enabled = chromeos::features::IsJellyrollEnabled();
   // |window1| and |window2| should animate.
-  EXPECT_EQ(gfx::Tween::EASE_OUT, tester1.tween_type());
-  EXPECT_EQ(gfx::Tween::EASE_OUT, tester2.tween_type());
+  EXPECT_EQ(is_jellyroll_enabled ? gfx::Tween::ACCEL_20_DECEL_100
+                                 : gfx::Tween::EASE_OUT,
+            tester1.tween_type());
+  EXPECT_EQ(is_jellyroll_enabled ? gfx::Tween::ACCEL_20_DECEL_100
+                                 : gfx::Tween::EASE_OUT,
+            tester2.tween_type());
   EXPECT_EQ(gfx::Tween::ZERO, tester3.tween_type());
 }
 
@@ -2333,8 +2393,16 @@ TEST_P(OverviewSessionTest, OverviewItemTitleCloseVisibilityOnDrag) {
       gfx::ToRoundedPoint(item1->target_bounds().CenterPoint()));
   generator->PressLeftButton();
   base::RunLoop().RunUntilIdle();
-  EXPECT_EQ(0.f, GetTitlebarOpacity(item1));
-  EXPECT_EQ(1.f, GetCloseButtonOpacity(item1));
+
+  if (chromeos::features::IsJellyEnabled()) {
+    // When Jellyroll is enabled, we show the title and hide the close button
+    // only for the overview item being dragged.
+    EXPECT_EQ(1.f, GetTitlebarOpacity(item1));
+    EXPECT_EQ(0.f, GetCloseButtonOpacity(item1));
+  } else {
+    EXPECT_EQ(0.f, GetTitlebarOpacity(item1));
+    EXPECT_EQ(1.f, GetCloseButtonOpacity(item1));
+  }
   EXPECT_EQ(1.f, GetTitlebarOpacity(item2));
   EXPECT_EQ(0.f, GetCloseButtonOpacity(item2));
 
@@ -2628,7 +2696,9 @@ TEST_P(OverviewSessionTest, ShadowBounds) {
   // Helper function which returns the ratio of the item width and height minus
   // the header and window margin.
   auto item_ratio = [](OverviewItem* item) {
-    gfx::RectF boundsf = item->GetWindowTargetBoundsWithInsets();
+    gfx::RectF boundsf = chromeos::features::IsJellyrollEnabled()
+                             ? item->target_bounds()
+                             : item->GetWindowTargetBoundsWithInsets();
     return boundsf.width() / boundsf.height();
   };
 
@@ -2671,7 +2741,7 @@ TEST_P(OverviewSessionTest, ShadowBounds) {
   // the header of window margin.
   EXPECT_NEAR(shadow_ratio(wide_item), item_ratio(wide_item), 0.01f);
   EXPECT_NEAR(shadow_ratio(tall_item), item_ratio(tall_item), 0.01f);
-  EXPECT_NEAR(shadow_ratio(normal_item), 1.f, 0.01f);
+  EXPECT_NEAR(shadow_ratio(normal_item), item_ratio(normal_item), 0.01f);
 
   // Verify all the shadows are within the bounds of their respective item
   // widgets when the overview windows are positioned with animations.
@@ -2684,7 +2754,7 @@ TEST_P(OverviewSessionTest, ShadowBounds) {
 
   EXPECT_NEAR(shadow_ratio(wide_item), item_ratio(wide_item), 0.01f);
   EXPECT_NEAR(shadow_ratio(tall_item), item_ratio(tall_item), 0.01f);
-  EXPECT_NEAR(shadow_ratio(normal_item), 1.f, 0.01f);
+  EXPECT_NEAR(shadow_ratio(normal_item), item_ratio(normal_item), 0.01f);
 
   // Test that leaving overview mode cleans up properly.
   ToggleOverview();
@@ -3358,9 +3428,8 @@ TEST_P(OverviewSessionTest, FrameThrottlingArc) {
                             static_cast<int>(AppType::ARC_APP));
   }
 
-  std::vector<aura::Window*> windows_to_throttle(window_count, nullptr);
-  base::ranges::transform(windows, windows_to_throttle.begin(),
-                          &std::unique_ptr<aura::Window>::get);
+  auto windows_to_throttle =
+      base::test::ToVector(windows, &std::unique_ptr<aura::Window>::get);
   EXPECT_CALL(observer,
               OnThrottlingStarted(
                   testing::UnorderedElementsAreArray(windows_to_throttle),
@@ -3428,7 +3497,13 @@ TEST_P(OverviewSessionTest, WindowClippingAfterCombiningDesks) {
   EXPECT_TRUE(normal_window->layer()->clip_rect().IsEmpty());
 }
 
-INSTANTIATE_TEST_SUITE_P(All, OverviewSessionTest, testing::Bool());
+INSTANTIATE_TEST_SUITE_P(/*no prefix*/,
+                         OverviewSessionTest,
+                         testing::Bool(),
+                         [](const testing::TestParamInfo<bool>& info) {
+                           return info.param ? "DesksTemplatesOn"
+                                             : "DesksTemplatesOff";
+                         });
 
 class FloatOverviewSessionTest : public OverviewTestBase {
  public:
@@ -3600,20 +3675,24 @@ TEST_F(FloatOverviewSessionTest, DraggingToNewDeskWithFloatedWindow) {
       GetOverviewGridForRoot(Shell::GetPrimaryRootWindow());
   const auto* desks_bar_view = overview_grid->desks_bar_view();
   ASSERT_TRUE(desks_bar_view);
-  const auto* zero_state_new_desk_button =
-      desks_bar_view->zero_state_new_desk_button();
-  ASSERT_TRUE(zero_state_new_desk_button);
-  ASSERT_TRUE(zero_state_new_desk_button->GetVisible());
-  generator->DragMouseTo(
-      zero_state_new_desk_button->GetBoundsInScreen().CenterPoint());
+  views::LabelButton* new_desk_button = nullptr;
+  if (chromeos::features::IsJellyrollEnabled()) {
+    new_desk_button =
+        const_cast<CrOSNextDeskIconButton*>(desks_bar_view->new_desk_button());
+  } else {
+    new_desk_button = desks_bar_view->zero_state_new_desk_button();
+  }
+  ASSERT_TRUE(new_desk_button);
+  ASSERT_TRUE(new_desk_button->GetVisible());
+  generator->DragMouseTo(new_desk_button->GetBoundsInScreen().CenterPoint());
 
   // Check that a new desk has been created, and there should be no crash when
   // dropping the window.
   generator->ReleaseLeftButton();
   auto* controller = DesksController::Get();
   EXPECT_EQ(2u, controller->desks().size());
-  EXPECT_TRUE(
-      base::Contains(controller->desks()[1]->windows(), normal_window.get()));
+  EXPECT_TRUE(base::Contains(controller->GetDeskAtIndex(1)->windows(),
+                             normal_window.get()));
 }
 
 // Tests that the overview item associated with the floated window appears
@@ -3680,29 +3759,11 @@ class TabletModeOverviewSessionTest : public OverviewTestBase {
     GetEventGenerator()->GestureScrollSequence(start, end,
                                                base::Milliseconds(100), 1000);
   }
-
-  void DispatchLongPress(OverviewItem* item) {
-    const gfx::Point point =
-        gfx::ToRoundedPoint(item->target_bounds().CenterPoint());
-    ui::GestureEvent long_press(
-        point.x(), point.y(), 0, base::TimeTicks::Now(),
-        ui::GestureEventDetails(ui::ET_GESTURE_LONG_PRESS));
-    GetEventGenerator()->Dispatch(&long_press);
-  }
-
-  // Creates |n| test windows. They are created in reverse order, so that the
-  // first window in the vector is the MRU window.
-  std::vector<std::unique_ptr<aura::Window>> CreateTestWindows(int n) {
-    std::vector<std::unique_ptr<aura::Window>> windows(n);
-    for (int i = n - 1; i >= 0; --i)
-      windows[i] = CreateTestWindow();
-    return windows;
-  }
 };
 
 // Tests that windows are in proper positions in the new overview layout.
 TEST_F(TabletModeOverviewSessionTest, CheckNewLayoutWindowPositions) {
-  auto windows = CreateTestWindows(6);
+  auto windows = CreateAppWindows(6);
   ToggleOverview();
   ASSERT_TRUE(InOverviewSession());
 
@@ -3734,7 +3795,7 @@ TEST_F(TabletModeOverviewSessionTest, CheckNewLayoutWindowPositions) {
 
 // Tests that with the tablet mode layout, some of the windows are offscreen.
 TEST_F(TabletModeOverviewSessionTest, CheckOffscreenWindows) {
-  auto windows = CreateTestWindows(10);
+  auto windows = CreateAppWindows(10);
   ToggleOverview();
   ASSERT_TRUE(InOverviewSession());
 
@@ -3763,7 +3824,7 @@ TEST_F(TabletModeOverviewSessionTest, CheckOffscreenWindows) {
 // Tests to see if windows are not shifted if all already available windows
 // fit on screen.
 TEST_F(TabletModeOverviewSessionTest, CheckNoOverviewItemShift) {
-  auto windows = CreateTestWindows(4);
+  auto windows = CreateAppWindows(4);
   ToggleOverview();
   ASSERT_TRUE(InOverviewSession());
 
@@ -3777,7 +3838,7 @@ TEST_F(TabletModeOverviewSessionTest, CheckNoOverviewItemShift) {
 // Tests to see if windows are shifted if at least one window is
 // partially/completely positioned offscreen.
 TEST_F(TabletModeOverviewSessionTest, CheckOverviewItemShift) {
-  auto windows = CreateTestWindows(7);
+  auto windows = CreateAppWindows(7);
   ToggleOverview();
   ASSERT_TRUE(InOverviewSession());
 
@@ -3790,7 +3851,7 @@ TEST_F(TabletModeOverviewSessionTest, CheckOverviewItemShift) {
 
 // Tests to see if windows remain in bounds after scrolling extremely far.
 TEST_F(TabletModeOverviewSessionTest, CheckOverviewItemScrollingBounds) {
-  auto windows = CreateTestWindows(8);
+  auto windows = CreateAppWindows(8);
   ToggleOverview();
   ASSERT_TRUE(InOverviewSession());
 
@@ -3823,7 +3884,7 @@ TEST_F(TabletModeOverviewSessionTest, CheckOverviewItemScrollingBounds) {
 // Tests that destroying a window does not cause a crash while scrolling the
 // overview grid. Regression test for https://crbug.com/1200605.
 TEST_F(TabletModeOverviewSessionTest, WindowDestroyWhileScrolling) {
-  auto windows = CreateTestWindows(8);
+  auto windows = CreateAppWindows(8);
   ToggleOverview();
   ASSERT_TRUE(InOverviewSession());
 
@@ -3862,6 +3923,37 @@ TEST_F(TabletModeOverviewSessionTest, WindowDestroyWhileScrolling) {
   ui::TouchEvent release(ui::ET_TOUCH_RELEASED, gfx::Point(x, y), timestamp,
                          ui::PointerDetails());
   event_generator->Dispatch(&release);
+}
+
+// Tests that removing a desk does not cause a crash while scrolling the
+// overview grid. Regression test for https://crbug.com/1455360.
+TEST_F(TabletModeOverviewSessionTest, DeskRemovalWhileScrolling) {
+  // The crash happened when closing a desk (which would add its app windows as
+  // items in overview) midway through a scroll. Create two desks with windows;
+  // the first desk has enough windows so that overview is scrollable.
+  auto desk1_windows = CreateAppWindows(15);
+
+  auto* controller = DesksController::Get();
+  controller->NewDesk(DesksCreationRemovalSource::kKeyboard);
+  ActivateDesk(controller->GetDeskAtIndex(1));
+  auto desk2_windows = CreateAppWindows(2);
+
+  // Activate the desk with 15 windows. There may be more than the windows we
+  // created (i.e. backdrop, nudges), so we assert greater than.
+  ActivateDesk(controller->GetDeskAtIndex(0));
+  ASSERT_GT(controller->GetDeskAtIndex(0)->windows().size(), 15u);
+  ASSERT_GT(controller->GetDeskAtIndex(1)->windows().size(), 2u);
+
+  ToggleOverview();
+  ASSERT_TRUE(InOverviewSession());
+
+  // Start scrolling the overview grid.
+  GetEventGenerator()->PressTouch(gfx::Point(400, 300));
+  GetEventGenerator()->MoveTouchBy(-50, 0);
+
+  // Remove the desk and continue scrolling. There should be no crash.
+  RemoveDesk(controller->GetDeskAtIndex(1), DeskCloseType::kCombineDesks);
+  GetEventGenerator()->MoveTouchBy(-50, 0);
 }
 
 // Tests the windows are stacked correctly when entering or exiting splitview
@@ -3940,7 +4032,7 @@ TEST_F(TabletModeOverviewSessionTest, StackingOrderAfterGestureEvent) {
 // Test that scrolling occurs if started on top of a window using the window's
 // center-point as a start.
 TEST_F(TabletModeOverviewSessionTest, HorizontalScrollingOnOverviewItem) {
-  auto windows = CreateTestWindows(8);
+  auto windows = CreateAppWindows(8);
   ToggleOverview();
   ASSERT_TRUE(InOverviewSession());
 
@@ -3976,6 +4068,478 @@ TEST_F(TabletModeOverviewSessionTest, SnappingFullscreenWindow) {
   generator->ReleaseLeftButton();
 
   EXPECT_TRUE(WindowState::Get(window.get())->IsSnapped());
+}
+
+class ContinuousOverviewAnimationTest
+    : public OverviewTestBase,
+      public testing::WithParamInterface<bool> {
+ public:
+  ContinuousOverviewAnimationTest() = default;
+  ContinuousOverviewAnimationTest(const ContinuousOverviewAnimationTest&) =
+      delete;
+  ContinuousOverviewAnimationTest& operator=(
+      const ContinuousOverviewAnimationTest&) = delete;
+  ~ContinuousOverviewAnimationTest() override = default;
+
+  // OverviewTestBase:
+  void SetUp() override {
+    scoped_feature_list_.InitWithFeatures(
+        /*enabled_features=*/{features::kContinuousOverviewScrollAnimation,
+                              chromeos::features::kJelly},
+        /*disabled_features=*/{});
+    OverviewTestBase::SetUp();
+
+    // Toggle natural scrolling. Behavior should always stay the same.
+    PrefService* pref_service =
+        Shell::Get()->session_controller()->GetActivePrefService();
+    bool enabled = GetParam();
+    pref_service->SetBoolean(prefs::kTouchpadEnabled, true);
+    pref_service->SetBoolean(prefs::kNaturalScroll, enabled);
+  }
+
+  // If `complete_scroll` is false, end the scroll with the fingers still on the
+  // trackpad.
+  void ThreeFingerScroll(float x_offset, float y_offset, bool complete_scroll) {
+    GetEventGenerator()->ScrollSequence(
+        gfx::Point(), base::Milliseconds(5), x_offset, y_offset,
+        /*steps=*/100, /*fingers=*/3,
+        /*end_state=*/
+        complete_scroll
+            ? ui::test::EventGenerator::ScrollSequenceType::UpToFling
+            : ui::test::EventGenerator::ScrollSequenceType::ScrollOnly);
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+// Tests that continuous scrolls slowly shrink active windows and increase the
+// opacity of minimized windows, regardless of the state of `NaturalScroll`.
+TEST_P(ContinuousOverviewAnimationTest, WindowSizesAndOpacities) {
+  std::unique_ptr<aura::Window> window1(CreateTestWindow());
+  std::unique_ptr<aura::Window> window2(CreateTestWindow());
+  std::unique_ptr<aura::Window> window3(CreateTestWindow());
+  std::unique_ptr<aura::Window> minimized_window(CreateTestWindow());
+  WindowState::Get(minimized_window.get())->Minimize();
+
+  // Get the original positions.
+  const gfx::Rect original_bounds1 = window1->bounds();
+  const gfx::Rect original_bounds2 = window2->bounds();
+  const gfx::Rect original_bounds3 = window3->bounds();
+
+  // Get the final positions by toggling overview mode regularly.
+  ToggleOverview();
+  ASSERT_TRUE(InOverviewSession());
+  OverviewItem* item1 = GetOverviewItemForWindow(window1.get());
+  OverviewItem* item2 = GetOverviewItemForWindow(window2.get());
+  OverviewItem* item3 = GetOverviewItemForWindow(window3.get());
+
+  const gfx::Rect final_bounds1 = gfx::ToEnclosedRect(item1->target_bounds());
+  const gfx::Rect final_bounds2 = gfx::ToEnclosedRect(item2->target_bounds());
+  const gfx::Rect final_bounds3 = gfx::ToEnclosedRect(item3->target_bounds());
+  ToggleOverview();
+  ASSERT_FALSE(InOverviewSession());
+
+  // Swipe up a little bit and keep the fingers rested on the trackpad so that
+  // the window placements are paused. Technically, we are in an overview
+  // session, but the windows have not been placed in their final positions yet
+  // due to the scroll still being in progress.
+  const float short_scroll = 50.f;
+  ThreeFingerScroll(0, short_scroll, /*complete_scroll=*/false);
+  ASSERT_TRUE(InOverviewSession());
+
+  // Get the current window positions and opacities.
+  int top_inset = window1.get()->GetProperty(aura::client::kTopViewInset);
+  gfx::RectF curr_bounds1 =
+      window_util::GetTransformedBounds(window1.get(), top_inset);
+  gfx::RectF curr_bounds2 =
+      window_util::GetTransformedBounds(window2.get(), top_inset);
+  gfx::RectF curr_bounds3 =
+      window_util::GetTransformedBounds(window3.get(), top_inset);
+
+  // Each active window should be smaller than their original state, but larger
+  // than their final overview mode state.
+  EXPECT_LT(curr_bounds1.width(), original_bounds1.width());
+  EXPECT_GT(curr_bounds1.width(), final_bounds1.width());
+  EXPECT_LT(curr_bounds2.width(), original_bounds2.width());
+  EXPECT_GT(curr_bounds2.width(), final_bounds2.width());
+  EXPECT_LT(curr_bounds3.width(), original_bounds3.width());
+  EXPECT_GT(curr_bounds3.width(), final_bounds3.width());
+
+  EXPECT_LT(curr_bounds1.height(), original_bounds1.height());
+  EXPECT_GT(curr_bounds1.height(), final_bounds1.height());
+  EXPECT_LT(curr_bounds2.height(), original_bounds2.height());
+  EXPECT_GT(curr_bounds2.height(), final_bounds2.height());
+  EXPECT_LT(curr_bounds3.height(), original_bounds3.height());
+  EXPECT_GT(curr_bounds3.height(), final_bounds3.height());
+
+  // Confirm the opacity of minimized windows is not 100%.
+  float opacity = GetOverviewItemForWindow(minimized_window.get())
+                      ->overview_item_view()
+                      ->layer()
+                      ->opacity();
+  EXPECT_NE(opacity, 1.f);
+  EXPECT_NE(opacity, 0.f);
+}
+
+// Test that the rounded corners and shadows are shown at the correct times
+// throughout a continuous scroll.
+TEST_P(ContinuousOverviewAnimationTest, WindowCornerRadiiAndShadows) {
+  std::unique_ptr<aura::Window> active_window(CreateTestWindow());
+  std::unique_ptr<aura::Window> minimized_window(CreateTestWindow());
+  WindowState::Get(minimized_window.get())->Minimize();
+
+  // Swipe up a little bit and keep the fingers rested on the trackpad so
+  // that the window placements are paused.
+  const float short_scroll = 50.f;
+  ThreeFingerScroll(0, short_scroll, /*complete_scroll=*/false);
+  ASSERT_TRUE(InOverviewSession());
+
+  OverviewItem* active_item = GetOverviewItemForWindow(active_window.get());
+  OverviewItem* minimized_item =
+      GetOverviewItemForWindow(minimized_window.get());
+
+  // If a window is minimized, it should immediately show rounded corners.
+  // Otherwise, retain sharp corners until the enter animation ends.
+  EXPECT_FALSE(HasRoundedCorner(active_item));
+  EXPECT_TRUE(HasRoundedCorner(minimized_item));
+
+  // If a window is minimized, it should hide its shadows until the enter
+  // animation ends. Otherwise, retain its shadow the entire time.
+  EXPECT_FALSE(GetShadowBounds(active_item).IsEmpty());
+  EXPECT_TRUE(GetShadowBounds(minimized_item).IsEmpty());
+
+  // Reset.
+  ToggleOverview();
+  ASSERT_FALSE(InOverviewSession());
+
+  // Give us some time to check the entry animation since we will be triggering
+  // it by scrolling up and then lifting the fingers off of the trackpad.
+  ui::ScopedAnimationDurationScaleMode test_duration_mode(
+      ui::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
+
+  // Scroll up more than 50% of the threshold then let go of the trackpad.
+  const float medium_scroll =
+      (WmGestureHandler::kVerticalThresholdDp / 2.f) + 1.f;
+  ThreeFingerScroll(0, medium_scroll, /*complete_scroll=*/true);
+
+  // Get the overview items again since this is a new overview session.
+  active_item = GetOverviewItemForWindow(active_window.get());
+  minimized_item = GetOverviewItemForWindow(minimized_window.get());
+
+  // During the entry animation, the non-minimized windows do not show their
+  // rounded corners or shadows until the animation is complete. Minimized
+  // windows always have rounded corners and immediately show their shadows.
+  // TODO(b/293923755): Both minimized and non-minimized windows should show
+  // their shadow after the animation is complete.
+  EXPECT_FALSE(HasRoundedCorner(active_item));
+  EXPECT_TRUE(GetShadowBounds(active_item).IsEmpty());
+  EXPECT_TRUE(HasRoundedCorner(minimized_item));
+  EXPECT_FALSE(GetShadowBounds(minimized_item).IsEmpty());
+
+  // Ensure overview has been entered completely.
+  ShellTestApi().WaitForOverviewAnimationState(
+      OverviewAnimationState::kEnterAnimationComplete);
+  ASSERT_TRUE(InOverviewSession());
+
+  // All items should have rounded corners and shadows.
+  EXPECT_TRUE(HasRoundedCorner(active_item));
+  EXPECT_TRUE(HasRoundedCorner(minimized_item));
+  EXPECT_FALSE(GetShadowBounds(active_item).IsEmpty());
+  EXPECT_FALSE(GetShadowBounds(minimized_item).IsEmpty());
+}
+
+// Tests that scrolls enter/exit overview mode as expected, regardless of the
+// state of `NaturalScroll`.
+TEST_P(ContinuousOverviewAnimationTest, ReverseGesturesTest) {
+  const float long_scroll = 600.f;
+  const float short_scroll = 50.f;
+  ASSERT_FALSE(InOverviewSession());
+
+  // Test an incorrect, complete, scroll.
+  ThreeFingerScroll(0, -long_scroll, /*complete_scroll=*/true);
+  ASSERT_FALSE(InOverviewSession());
+
+  // Test a correct, complete, scroll.
+  ThreeFingerScroll(0, long_scroll, /*complete_scroll=*/true);
+  ASSERT_TRUE(InOverviewSession());
+
+  // Test an incorrect, complete, scroll.
+  ThreeFingerScroll(0, long_scroll, /*complete_scroll=*/true);
+  ASSERT_TRUE(InOverviewSession());
+
+  // Test a correct, complete, scroll.
+  ThreeFingerScroll(0, -long_scroll, /*complete_scroll=*/true);
+  ASSERT_FALSE(InOverviewSession());
+
+  // Test an incorrect, incomplete, scroll.
+  ThreeFingerScroll(0, -short_scroll, /*complete_scroll=*/false);
+  ASSERT_FALSE(InOverviewSession());
+
+  // Test a correct, incomplete, scroll.
+  ThreeFingerScroll(0, short_scroll, /*complete_scroll=*/false);
+  ASSERT_TRUE(InOverviewSession());
+}
+
+INSTANTIATE_TEST_SUITE_P(/*no prefix*/,
+                         ContinuousOverviewAnimationTest,
+                         testing::Bool(),
+                         [](const testing::TestParamInfo<bool>& info) {
+                           return info.param ? "NaturalScrollOn"
+                                             : "NaturalScrollOff";
+                         });
+
+class ClamshellScrollOverviewSessionTest : public OverviewTestBase {
+ public:
+  ClamshellScrollOverviewSessionTest() = default;
+  ClamshellScrollOverviewSessionTest(
+      const ClamshellScrollOverviewSessionTest&) = delete;
+  ClamshellScrollOverviewSessionTest& operator=(
+      const ClamshellScrollOverviewSessionTest&) = delete;
+  ~ClamshellScrollOverviewSessionTest() override = default;
+
+  // OverviewTestBase:
+  void SetUp() override {
+    scoped_feature_list_.InitWithFeatures(
+        /*enabled_features=*/{features::kOverviewScrollLayoutForClamshell,
+                              chromeos::features::kJelly},
+        /*disabled_features=*/{});
+    OverviewTestBase::SetUp();
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+// Tests that when 10 windows are open, the scrolling layout for
+// overview mode in clamshell has some of the windows offscreen.
+TEST_F(ClamshellScrollOverviewSessionTest, CheckManyWindowsOffScreen) {
+  auto windows = CreateAppWindows(kMinimumItemsForNewLayoutInClamshell);
+  ToggleOverview();
+  ASSERT_TRUE(InOverviewSession());
+
+  OverviewItem* item0 = GetOverviewItemForWindow(windows[0].get());
+  OverviewItem* item1 = GetOverviewItemForWindow(windows[1].get());
+  OverviewItem* item8 = GetOverviewItemForWindow(windows[8].get());
+  OverviewItem* item9 = GetOverviewItemForWindow(windows[9].get());
+
+  const gfx::RectF screen_bounds(GetGridBounds());
+  const gfx::RectF item0_bounds = item0->target_bounds();
+  const gfx::RectF item1_bounds = item1->target_bounds();
+  const gfx::RectF item8_bounds = item8->target_bounds();
+  const gfx::RectF item9_bounds = item9->target_bounds();
+
+  // `item0` should be within `screen_bounds`.
+  EXPECT_TRUE(screen_bounds.Contains(item0_bounds));
+
+  // `item1` should be within `screen_bounds`.
+  EXPECT_TRUE(screen_bounds.Contains(item1_bounds));
+
+  // `item9` should not be within `screen_bounds` but it should have an
+  // x value within `screen_bounds`.
+  EXPECT_FALSE(screen_bounds.Contains(item9_bounds));
+  EXPECT_GT(item9_bounds.x(), screen_bounds.x());
+  EXPECT_LT(item9_bounds.x(), screen_bounds.x() + screen_bounds.width());
+
+  // `item8` should not be within `screen_bounds` but it should have an
+  // x value within `screen_bounds`.
+  EXPECT_FALSE(screen_bounds.Contains(item8_bounds));
+  EXPECT_GT(item8_bounds.x(), screen_bounds.x());
+  EXPECT_LT(item8_bounds.x(), screen_bounds.x() + screen_bounds.width());
+}
+
+// Tests that when 4 windows are open, the scrolling layout for
+// overview mode in clamshell has all of the windows onscreen.
+TEST_F(ClamshellScrollOverviewSessionTest, CheckFewWindowsOnScreen) {
+  auto windows = CreateAppWindows(4);
+  ToggleOverview();
+  ASSERT_TRUE(InOverviewSession());
+
+  OverviewItem* item0 = GetOverviewItemForWindow(windows[0].get());
+  OverviewItem* item1 = GetOverviewItemForWindow(windows[1].get());
+  OverviewItem* item2 = GetOverviewItemForWindow(windows[2].get());
+  OverviewItem* item3 = GetOverviewItemForWindow(windows[3].get());
+
+  const gfx::RectF screen_bounds(GetGridBounds());
+  const gfx::RectF item0_bounds = item0->target_bounds();
+  const gfx::RectF item1_bounds = item1->target_bounds();
+  const gfx::RectF item2_bounds = item2->target_bounds();
+  const gfx::RectF item3_bounds = item3->target_bounds();
+
+  // All items should be within `screen_bounds`.
+  EXPECT_TRUE(screen_bounds.Contains(item0_bounds));
+  EXPECT_TRUE(screen_bounds.Contains(item1_bounds));
+  EXPECT_TRUE(screen_bounds.Contains(item2_bounds));
+  EXPECT_TRUE(screen_bounds.Contains(item3_bounds));
+}
+
+// Tests that windows cannot be scrolled if all windows fit on screen.
+TEST_F(ClamshellScrollOverviewSessionTest, CheckNoOverviewItemShift) {
+  auto windows = CreateAppWindows(4);
+  ToggleOverview();
+  ASSERT_TRUE(InOverviewSession());
+
+  OverviewItem* item0 = GetOverviewItemForWindow(windows[0].get());
+  const gfx::RectF before_shift_bounds = item0->target_bounds();
+
+  GetEventGenerator()->MoveMouseTo(GetGridBounds().width(),
+                                   GetGridBounds().height());
+  GetEventGenerator()->MoveMouseWheel(0, -200);
+
+  EXPECT_EQ(before_shift_bounds, item0->target_bounds());
+}
+
+// Tests to see that windows can be scrolled if at least one window is
+// partially/completely positioned offscreen.
+TEST_F(ClamshellScrollOverviewSessionTest, CheckOverviewItemShift) {
+  auto windows = CreateAppWindows(kMinimumItemsForNewLayoutInClamshell);
+  ToggleOverview();
+  ASSERT_TRUE(InOverviewSession());
+
+  OverviewItem* item0 = GetOverviewItemForWindow(windows[0].get());
+  const gfx::RectF before_shift_bounds = item0->target_bounds();
+
+  GetEventGenerator()->MoveMouseTo(GetGridBounds().width(),
+                                   GetGridBounds().height());
+  GetEventGenerator()->MoveMouseWheel(0, -200);
+
+  EXPECT_LT(item0->target_bounds().y(), before_shift_bounds.y());
+}
+
+// Tests to see if windows remain in bounds after scrolling extremely far.
+TEST_F(ClamshellScrollOverviewSessionTest, CheckOverviewItemScrollingBounds) {
+  auto windows = CreateAppWindows(kMinimumItemsForNewLayoutInClamshell);
+  ToggleOverview();
+  ASSERT_TRUE(InOverviewSession());
+
+  // Scroll an extreme amount to see if windows at the top are still in
+  // bounds. First, align the top window (`windows[0]`) to the top bound
+  // and store the item's location. Then, scroll a far amount and check
+  // to see if the item moved at all.
+  OverviewItem* top_window = GetOverviewItemForWindow(windows[0].get());
+
+  GetEventGenerator()->MoveMouseTo(GetGridBounds().width(),
+                                   GetGridBounds().height());
+  GetEventGenerator()->MoveMouseWheel(0, -500);
+
+  const gfx::RectF top_bounds = top_window->target_bounds();
+  GetEventGenerator()->MoveMouseWheel(0, -500);
+  EXPECT_EQ(top_bounds, top_window->target_bounds());
+
+  // Scroll an extreme amount to see if windows on the bottom are still in
+  // bounds. First, align the bottom window (`windows[7]`) to the bottom
+  // bound and store the item's location. Then, scroll a far amount and
+  // check to see if the item moved at all.
+  OverviewItem* bottom_window = GetOverviewItemForWindow(windows[7].get());
+  GetEventGenerator()->MoveMouseWheel(0, 500);
+  const gfx::RectF bottom_bounds = bottom_window->target_bounds();
+  GetEventGenerator()->MoveMouseWheel(0, 500);
+  EXPECT_EQ(bottom_bounds, bottom_window->target_bounds());
+}
+
+// Test that overview widgets are stacked underneath the desk bar widget
+// when scrolling vertically in overview mode.
+TEST_F(ClamshellScrollOverviewSessionTest,
+       OverviewWidgetsAreStackedUnderDeskBar) {
+  auto windows = CreateAppWindows(kMinimumItemsForNewLayoutInClamshell);
+  ToggleOverview();
+  auto* desk_bar_view =
+      GetOverviewGridForRoot(Shell::Get()->GetPrimaryRootWindow())
+          ->desks_bar_view();
+  auto* top_window = GetOverviewItemForWindow(windows[0].get());
+  ASSERT_TRUE(InOverviewSession());
+
+  // Ensure the two windows in question share the same root window.
+  ASSERT_EQ(top_window->root_window(), desk_bar_view->root());
+
+  // Before we start scrolling, the items have not been restacked.
+  // So, check that the overview item is still stacked in front of the desk bar
+  // like the default behavior expects.
+  EXPECT_FALSE(window_util::IsStackedBelow(
+      top_window->item_widget()->GetNativeWindow(),
+      desk_bar_view->GetWidget()->GetNativeWindow()));
+
+  // Scroll so the overview widget gets restacked.
+  GetEventGenerator()->MoveMouseTo(GetGridBounds().width(),
+                                   GetGridBounds().height());
+  GetEventGenerator()->MoveMouseWheel(0, -100);
+
+  EXPECT_TRUE(window_util::IsStackedBelow(
+      top_window->item_widget()->GetNativeWindow(),
+      desk_bar_view->GetWidget()->GetNativeWindow()));
+}
+
+// Test scrolling behavior when floated and minimized windows are present.
+TEST_F(ClamshellScrollOverviewSessionTest,
+       CheckOverviewScrollWithFloatedWindow) {
+  auto windows = CreateAppWindows(kMinimumItemsForNewLayoutInClamshell);
+
+  // Create a floated, non-floated active, and minimized window.
+  auto active_window = CreateAppWindow();
+  auto minimized_window = CreateAppWindow();
+  auto floated_window = CreateAppWindow();
+
+  // Confirm minimized window.
+  WindowState::Get(minimized_window.get())->Minimize();
+  ASSERT_TRUE(WindowState::Get(minimized_window.get())->IsMinimized());
+
+  // Confirm floated window.
+  PressAndReleaseKey(ui::VKEY_F, ui::EF_ALT_DOWN | ui::EF_COMMAND_DOWN);
+  ASSERT_TRUE(WindowState::Get(floated_window.get())->IsFloated());
+
+  ToggleOverview();
+  ASSERT_TRUE(InOverviewSession());
+
+  auto* desk_bar_view =
+      GetOverviewGridForRoot(Shell::Get()->GetPrimaryRootWindow())
+          ->desks_bar_view();
+  OverviewItem* floated_window_item =
+      GetOverviewItemForWindow(floated_window.get());
+  OverviewItem* active_window_item =
+      GetOverviewItemForWindow(active_window.get());
+  OverviewItem* minimized_window_item =
+      GetOverviewItemForWindow(minimized_window.get());
+
+  const gfx::RectF float_before_shift_bounds =
+      floated_window_item->target_bounds();
+  const gfx::RectF active_before_shift_bounds =
+      active_window_item->target_bounds();
+  const gfx::RectF minimized_before_shift_bounds =
+      minimized_window_item->target_bounds();
+
+  // Ensure the non-floated windows share the same root window. Floated windows
+  // are parented to a different container and guaranteed be below the desk bar.
+  ASSERT_EQ(active_window_item->root_window(), desk_bar_view->root());
+  ASSERT_EQ(minimized_window_item->root_window(), desk_bar_view->root());
+
+  // Before we start scrolling, the items have not been restacked.
+  EXPECT_FALSE(window_util::IsStackedBelow(
+      active_window_item->item_widget()->GetNativeWindow(),
+      desk_bar_view->GetWidget()->GetNativeWindow()));
+  EXPECT_FALSE(window_util::IsStackedBelow(
+      minimized_window_item->item_widget()->GetNativeWindow(),
+      desk_bar_view->GetWidget()->GetNativeWindow()));
+
+  // Scroll so the overview widget gets restacked.
+  GetEventGenerator()->MoveMouseTo(GetGridBounds().width(),
+                                   GetGridBounds().height());
+  GetEventGenerator()->MoveMouseWheel(0, -100);
+
+  // Check windows are stacked below the desk bar.
+  EXPECT_TRUE(window_util::IsStackedBelow(
+      active_window_item->item_widget()->GetNativeWindow(),
+      desk_bar_view->GetWidget()->GetNativeWindow()));
+  EXPECT_TRUE(window_util::IsStackedBelow(
+      minimized_window_item->item_widget()->GetNativeWindow(),
+      desk_bar_view->GetWidget()->GetNativeWindow()));
+
+  // Check windows have been re-positioned.
+  EXPECT_LT(floated_window_item->target_bounds().y(),
+            float_before_shift_bounds.y());
+  EXPECT_LT(active_window_item->target_bounds().y(),
+            active_before_shift_bounds.y());
+  EXPECT_LT(minimized_window_item->target_bounds().y(),
+            minimized_before_shift_bounds.y());
 }
 
 // A unique test class for testing flings in overview as those rely on observing
@@ -4067,7 +4631,7 @@ TEST_F(TabletModeOverviewSessionTest, VerticalScrollingOnOverviewItem) {
 
 // Test that scrolling occurs if we hit the associated keyboard shortcut.
 TEST_F(TabletModeOverviewSessionTest, CheckScrollingWithKeyboardShortcut) {
-  auto windows = CreateTestWindows(8);
+  auto windows = CreateAppWindows(8);
   ToggleOverview();
   ASSERT_TRUE(InOverviewSession());
 
@@ -4081,7 +4645,7 @@ TEST_F(TabletModeOverviewSessionTest, CheckScrollingWithKeyboardShortcut) {
 // Test that tapping a window in overview closes overview mode.
 TEST_F(TabletModeOverviewSessionTest, CheckWindowActivateOnTap) {
   base::UserActionTester user_action_tester;
-  auto windows = CreateTestWindows(8);
+  auto windows = CreateAppWindows(8);
   wm::ActivateWindow(windows[1].get());
 
   ToggleOverview();
@@ -4106,7 +4670,7 @@ TEST_F(TabletModeOverviewSessionTest, LayoutValidAfterRotation) {
   display::test::ScopedSetInternalDisplayId set_internal(
       Shell::Get()->display_manager(),
       display::Screen::GetScreen()->GetPrimaryDisplay().id());
-  auto windows = CreateTestWindows(7);
+  auto windows = CreateAppWindows(7);
 
   // Helper to determine whether a grid layout is valid. It is considered valid
   // if the left edge of the first item is close enough to the left edge of the
@@ -4903,7 +5467,7 @@ TEST_F(SplitViewOverviewSessionTest, Clipping) {
   auto aspect_ratio_near = [](const gfx::Rect& rect1, const gfx::Rect& rect2) {
     DCHECK_GT(rect1.height(), 0);
     DCHECK_GT(rect2.height(), 0);
-    constexpr float kEpsilon = 0.05f;
+    constexpr float kEpsilon = 0.07f;
     const float rect1_aspect_ratio =
         static_cast<float>(rect1.width()) / rect1.height();
     const float rect2_aspect_ratio =
@@ -6999,29 +7563,6 @@ TEST_F(SplitViewOverviewSessionInClamshellTest,
   EXPECT_FALSE(split_view_controller()->InSplitViewMode());
 }
 
-class TestWindowStateDelegate : public WindowStateDelegate {
- public:
-  TestWindowStateDelegate() = default;
-  TestWindowStateDelegate(const TestWindowStateDelegate&) = delete;
-  TestWindowStateDelegate& operator=(const TestWindowStateDelegate&) = delete;
-  ~TestWindowStateDelegate() override = default;
-
-  // WindowStateDelegate:
-  std::unique_ptr<PresentationTimeRecorder> OnDragStarted(
-      int component) override {
-    drag_in_progress_ = true;
-    return nullptr;
-  }
-  void OnDragFinished(bool cancel, const gfx::PointF& location) override {
-    drag_in_progress_ = false;
-  }
-
-  bool drag_in_progress() { return drag_in_progress_; }
-
- private:
-  bool drag_in_progress_ = false;
-};
-
 // Tests that when a split view window carries over to clamshell split view
 // while the divider is being dragged, the window resize is properly completed.
 TEST_F(SplitViewOverviewSessionInClamshellTest,
@@ -7029,8 +7570,7 @@ TEST_F(SplitViewOverviewSessionInClamshellTest,
   std::unique_ptr<aura::Window> snapped_window = CreateTestWindow();
   std::unique_ptr<aura::Window> overview_window = CreateTestWindow();
   WindowState* snapped_window_state = WindowState::Get(snapped_window.get());
-  TestWindowStateDelegate* snapped_window_state_delegate =
-      new TestWindowStateDelegate();
+  auto* snapped_window_state_delegate = new FakeWindowStateDelegate();
   snapped_window_state->SetDelegate(
       base::WrapUnique(snapped_window_state_delegate));
 

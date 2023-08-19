@@ -148,6 +148,23 @@ export class StatsTable {
    * @private
    */
   addStatsToTable_(statsTable, time, statsData) {
+    const definedMetrics = new Set();
+    for (let i = 0; i < statsData.length - 1; i = i + 2) {
+      definedMetrics.add(statsData[i]);
+    }
+    // For any previously reported metric that is no longer defined, replace its
+    // now obsolete value with the magic string "(removed)".
+    const metricsContainer = statsTable.firstChild;
+    for (let i = 0; i < metricsContainer.children.length; ++i) {
+      const metricElement = metricsContainer.children[i];
+      const metricName =
+          metricElement.id.substring(metricElement.id.lastIndexOf('-') + 1);
+      if (metricName && metricName != 'timestamp' &&
+          !definedMetrics.has(metricName)) {
+        this.updateStatsTableRow_(statsTable, metricName, '(removed)');
+      }
+    }
+    // Add or update all "metric: value" that have a defined value.
     const date = new Date(time);
     this.updateStatsTableRow_(statsTable, 'timestamp', date.toLocaleString());
     for (let i = 0; i < statsData.length - 1; i = i + 2) {

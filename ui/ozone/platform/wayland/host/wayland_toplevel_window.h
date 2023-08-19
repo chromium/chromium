@@ -5,6 +5,9 @@
 #ifndef UI_OZONE_PLATFORM_WAYLAND_HOST_WAYLAND_TOPLEVEL_WINDOW_H_
 #define UI_OZONE_PLATFORM_WAYLAND_HOST_WAYLAND_TOPLEVEL_WINDOW_H_
 
+#include <memory>
+#include <ostream>
+
 #include "base/memory/raw_ptr.h"
 #include "build/chromeos_buildflags.h"
 #include "ui/base/dragdrop/mojom/drag_drop_types.mojom-shared.h"
@@ -104,8 +107,13 @@ class WaylandToplevelWindow : public WaylandWindow,
                    const base::TimeDelta hide_delay) override;
   void HideTooltip() override;
   void PropagateBufferScale(float new_scale) override;
+  void OnRotateFocus(uint32_t serial, uint32_t direction, bool restart);
 
-  // WmDragHandler overrides:
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+  void OnOverviewModeChanged(bool in_overview);
+#endif
+
+  // WmDragHandler:
   bool ShouldReleaseCaptureForDrag(ui::OSExchangeData* data) const override;
 
   // WmMoveResizeHandler
@@ -139,8 +147,9 @@ class WaylandToplevelWindow : public WaylandWindow,
   bool ShouldUseNativeFrame() const override;
   bool ShouldUpdateWindowShape() const override;
   bool CanSetDecorationInsets() const override;
-  void SetOpaqueRegion(const std::vector<gfx::Rect>* region_px) override;
-  void SetInputRegion(const gfx::Rect* region_px) override;
+  void SetOpaqueRegion(
+      absl::optional<std::vector<gfx::Rect>> region_px) override;
+  void SetInputRegion(absl::optional<gfx::Rect> region_px) override;
   bool IsClientControlledWindowMovementSupported() const override;
   void NotifyStartupComplete(const std::string& startup_id) override;
   void SetAspectRatio(const gfx::SizeF& aspect_ratio) override;
@@ -157,6 +166,7 @@ class WaylandToplevelWindow : public WaylandWindow,
       bool allow_system_drag) override;
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
   void SetImmersiveFullscreenStatus(bool status) override;
+  void SetTopInset(int height) override;
 #endif
   void ShowSnapPreview(WaylandWindowSnapDirection snap,
                        bool allow_haptic_feedback) override;
@@ -189,6 +199,8 @@ class WaylandToplevelWindow : public WaylandWindow,
 
   // SystemModalExtension:
   void SetSystemModal(bool modal) override;
+
+  void DumpState(std::ostream& out) const override;
 
  private:
   // WaylandWindow protected overrides:

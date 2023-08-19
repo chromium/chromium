@@ -25,6 +25,7 @@ enum {
   DIR_LOGS = PATH_START,  // Directory where logs should be written.
   DIR_USER_DATA,          // Directory where user data can be written.
   DIR_CRASH_DUMPS,        // Directory where crash dumps are written.
+  DIR_LOCAL_TRACES,       // Directory where local traces are written.
 #if BUILDFLAG(IS_WIN)
   DIR_WATCHER_DATA,       // Directory where the Chrome watcher stores
                           // data.
@@ -87,8 +88,9 @@ enum {
                              // bundled Widevine CDM.
   DIR_COMPONENT_UPDATED_WIDEVINE_CDM,  // Base directory of the Widevine CDM
                                        // downloaded by the component updater.
-  FILE_COMPONENT_WIDEVINE_CDM_HINT,    // A file in a known location that points
-                                       // to the component updated Widevine CDM.
+  FILE_COMPONENT_WIDEVINE_CDM_HINT,    // A file in a known location that
+                                       // points to the component updated
+                                       // Widevine CDM.
 #endif
   FILE_RESOURCES_PACK,  // Full path to the .pak file containing binary data.
                         // This includes data for internal pages (e.g., html
@@ -116,6 +118,10 @@ enum {
                                       // wallpaper thumbnails reside.
   DIR_CHROMEOS_CUSTOM_WALLPAPERS,     // Directory where custom wallpapers
                                       // reside.
+  DIR_CHROMEOS_CRD_DATA,  // Directory where Chrome Remote Desktop can store
+                          // data that must persist a Chrome restart but that
+                          // must be cleared on device reboot.
+
 #endif
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_MAC)
   DIR_NATIVE_MESSAGING,       // System directory where native messaging host
@@ -139,6 +145,10 @@ enum {
 
   // Flag file indicating SRK ROCA vulnerability status.
   FILE_CHROME_OS_TPM_FIRMWARE_UPDATE_SRK_VULNERABLE_ROCA,
+
+  // Base directory where user cryptohome mount point (named as hash of
+  // username) resides.
+  DIR_CHROMEOS_HOMEDIR_MOUNT,
 #endif                                       // BUILDFLAG(IS_CHROMEOS_ASH)
   DIR_OPTIMIZATION_GUIDE_PREDICTION_MODELS,  // Directory where verified models
                                              // downloaded by the Optimization

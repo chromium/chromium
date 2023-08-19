@@ -4,20 +4,33 @@
 
 #include "services/network/shared_dictionary/shared_dictionary_on_disk.h"
 
+#include <string>
+
+#include "base/metrics/histogram_functions.h"
+#include "base/strings/strcat.h"
 #include "net/base/io_buffer.h"
 #include "net/base/net_errors.h"
 #include "services/network/shared_dictionary/shared_dictionary_disk_cache.h"
 
 namespace network {
+namespace {
+
+constexpr char kHistogramPrefix[] = "Net.SharedDictionaryOnDisk.";
+
+}  // namespace
 
 SharedDictionaryOnDisk::SharedDictionaryOnDisk(
     size_t size,
     const net::SHA256HashValue& hash,
     const base::UnguessableToken& disk_cache_key_token,
-    SharedDictionaryDiskCache* disk_cahe)
-    : size_(size), hash_(hash) {
+    SharedDictionaryDiskCache* disk_cahe,
+    base::OnceClosure disk_cache_error_callback)
+    : size_(size),
+      hash_(hash),
+      disk_cache_error_callback_(std::move(disk_cache_error_callback)) {
   auto split_callback = base::SplitOnceCallback(base::BindOnce(
-      &SharedDictionaryOnDisk::OnEntry, weak_factory_.GetWeakPtr()));
+      &SharedDictionaryOnDisk::OnEntry, weak_factory_.GetWeakPtr(),
+      /*open_start_time=*/base::Time::Now()));
   disk_cache::EntryResult result = disk_cahe->OpenOrCreateEntry(
       disk_cache_key_token.ToString(),
       /*create=*/false, std::move(split_callback.first));
@@ -52,8 +65,15 @@ const net::SHA256HashValue& SharedDictionaryOnDisk::hash() const {
   return hash_;
 }
 
-void SharedDictionaryOnDisk::OnEntry(disk_cache::EntryResult result) {
-  if (result.net_error() != net::OK) {
+void SharedDictionaryOnDisk::OnEntry(base::Time open_start_time,
+                                     disk_cache::EntryResult result) {
+  bool succeeded = result.net_error() == net::OK;
+  base::Time now = base::Time::Now();
+  base::UmaHistogramTimes(base::StrCat({kHistogramPrefix, "OpenEntryLatency.",
+                                        succeeded ? "Success" : "Failure"}),
+                          now - open_start_time);
+
+  if (!succeeded) {
     SetState(State::kFailed);
     return;
   }
@@ -66,8 +86,9 @@ void SharedDictionaryOnDisk::OnEntry(disk_cache::EntryResult result) {
   }
   data_ = base::MakeRefCounted<net::IOBufferWithSize>(size_);
 
-  auto split_callback = base::SplitOnceCallback(base::BindOnce(
-      &SharedDictionaryOnDisk::OnDataRead, weak_factory_.GetWeakPtr()));
+  auto split_callback = base::SplitOnceCallback(
+      base::BindOnce(&SharedDictionaryOnDisk::OnDataRead,
+                     weak_factory_.GetWeakPtr(), /*read_start_time=*/now));
 
   int rv = entry_->ReadData(/*index=*/1,
                             /*offset=*/0, data_.get(), size_,
@@ -77,20 +98,24 @@ void SharedDictionaryOnDisk::OnEntry(disk_cache::EntryResult result) {
   }
 }
 
-void SharedDictionaryOnDisk::OnDataRead(int result) {
+void SharedDictionaryOnDisk::OnDataRead(base::Time read_start_time,
+                                        int result) {
+  bool succeeded = result >= 0 && (base::checked_cast<size_t>(result) == size_);
+  base::UmaHistogramTimes(base::StrCat({kHistogramPrefix, "ReadDataLatency.",
+                                        succeeded ? "Success" : "Failure"}),
+                          base::Time::Now() - read_start_time);
   entry_.reset();
-
-  if (result < 0 || (base::checked_cast<size_t>(result) != size_)) {
-    SetState(State::kFailed);
-    return;
-  }
-  SetState(State::kDone);
+  SetState(succeeded ? State::kDone : State::kFailed);
 }
 
 void SharedDictionaryOnDisk::SetState(State state) {
   CHECK_NE(State::kLoading, state);
   CHECK_EQ(State::kLoading, state_);
   state_ = state;
+
+  if (state_ == State::kFailed && disk_cache_error_callback_) {
+    std::move(disk_cache_error_callback_).Run();
+  }
   auto readall_callbacks = std::move(readall_callbacks_);
   for (auto& readall_callback : readall_callbacks) {
     if (state_ == State::kDone) {

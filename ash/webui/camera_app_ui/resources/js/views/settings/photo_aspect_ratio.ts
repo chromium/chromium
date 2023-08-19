@@ -16,7 +16,7 @@ import {BaseSettings} from './base.js';
 import * as util from './util.js';
 
 /**
- * View controller of photo resolution settings.
+ * View controller of photo aspect ratio settings.
  */
 export class PhotoAspectRatioSettings extends BaseSettings {
   private readonly menu: HTMLElement;

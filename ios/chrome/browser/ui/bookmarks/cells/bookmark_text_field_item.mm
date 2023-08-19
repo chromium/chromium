@@ -4,8 +4,8 @@
 
 #import "ios/chrome/browser/ui/bookmarks/cells/bookmark_text_field_item.h"
 
+#import "base/apple/foundation_util.h"
 #import "base/check_op.h"
-#import "base/mac/foundation_util.h"
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
 #import "ios/chrome/browser/ui/bookmarks/bookmark_ui_constants.h"
 #import "ios/chrome/browser/ui/bookmarks/bookmark_utils_ios.h"
@@ -13,10 +13,6 @@
 #import "ios/chrome/common/ui/util/constraints_ui_util.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ui/base/l10n/l10n_util_mac.h"
-
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
 
 #pragma mark - BookmarkTextFieldItem
 
@@ -39,7 +35,7 @@
   [super configureCell:tableCell withStyler:styler];
 
   BookmarkTextFieldCell* cell =
-      base::mac::ObjCCastStrict<BookmarkTextFieldCell>(tableCell);
+      base::apple::ObjCCastStrict<BookmarkTextFieldCell>(tableCell);
   cell.textField.text = self.text;
   cell.titleLabel.text = self.placeholder;
   cell.textField.placeholder = self.placeholder;

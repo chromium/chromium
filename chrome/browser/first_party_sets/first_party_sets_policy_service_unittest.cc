@@ -18,6 +18,8 @@
 #include "content/public/browser/first_party_sets_handler.h"
 #include "content/public/common/content_features.h"
 #include "content/public/test/browser_task_environment.h"
+#include "mojo/public/cpp/bindings/receiver.h"
+#include "net/base/features.h"
 #include "net/base/schemeful_site.h"
 #include "net/first_party_sets/first_party_set_entry.h"
 #include "net/first_party_sets/first_party_set_entry_override.h"
@@ -27,6 +29,7 @@
 #include "services/network/public/mojom/first_party_sets_access_delegate.mojom.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "url/gurl.h"
 
 using ::testing::_;
 using ::testing::Eq;
@@ -182,7 +185,7 @@ class FirstPartySetsPolicyServiceTest
   }
 
   void TearDown() override {
-    DCHECK(service_);
+    CHECK(service_);
     // Even though we reassign this in SetUp, service may be persisted between
     // tests if the factory has already created a service for the testing
     // profile being used.
@@ -595,7 +598,6 @@ TEST_F(FirstPartySetsPolicyServiceTest,
 
   base::test::TestFuture<net::FirstPartySetMetadata> future;
   service()->ComputeFirstPartySetMetadata(test_primary, &test_primary,
-                                          /*party_context=*/{},
                                           future.GetCallback());
   EXPECT_FALSE(future.IsReady());
 
@@ -620,7 +622,6 @@ TEST_F(FirstPartySetsPolicyServiceTest,
 
   base::test::TestFuture<net::FirstPartySetMetadata> future;
   service()->ComputeFirstPartySetMetadata(test_primary, &test_primary,
-                                          /*party_context=*/{},
                                           future.GetCallback());
   EXPECT_NE(future.Take(), net::FirstPartySetMetadata());
 }
@@ -639,7 +640,6 @@ TEST_F(FirstPartySetsPolicyServiceTest,
 
   base::test::TestFuture<net::FirstPartySetMetadata> future;
   service()->ComputeFirstPartySetMetadata(test_primary, &test_primary,
-                                          /*party_context=*/{},
                                           future.GetCallback());
   EXPECT_TRUE(future.IsReady());
   EXPECT_NE(future.Take(), net::FirstPartySetMetadata());
@@ -661,10 +661,52 @@ TEST_F(FirstPartySetsPolicyServiceTest,
 
   base::test::TestFuture<net::FirstPartySetMetadata> future;
   service()->ComputeFirstPartySetMetadata(test_primary, &test_primary,
-                                          /*party_context=*/{},
                                           future.GetCallback());
   EXPECT_TRUE(future.IsReady());
   EXPECT_EQ(future.Take(), net::FirstPartySetMetadata());
+}
+
+class ThirdPartyCookieBlockingFirstPartySetsPolicyServiceTest
+    : public DefaultFirstPartySetsPolicyServiceTest {
+ protected:
+  ThirdPartyCookieBlockingFirstPartySetsPolicyServiceTest() {
+    features_.InitWithFeatures(
+        {
+            features::kFirstPartySets,
+            net::features::kForceThirdPartyCookieBlocking,
+        },
+        {});
+  }
+
+ private:
+  base::test::ScopedFeatureList features_;
+};
+
+TEST_F(ThirdPartyCookieBlockingFirstPartySetsPolicyServiceTest, EnabledAtInit) {
+  EXPECT_CALL(mock_delegate, SetEnabled(true)).Times(1);
+
+  TestingProfile profile;
+  FirstPartySetsPolicyService* service =
+      FirstPartySetsPolicyServiceFactory::GetForBrowserContext(&profile);
+  service->AddRemoteAccessDelegate(std::move(mock_delegate_remote_));
+
+  env().RunUntilIdle();
+}
+
+TEST_F(ThirdPartyCookieBlockingFirstPartySetsPolicyServiceTest, AlwaysEnabled) {
+  // The mock method is called once during the service construction.
+  EXPECT_CALL(mock_delegate, SetEnabled(true)).Times(1);
+
+  TestingProfile profile;
+  FirstPartySetsPolicyService* service =
+      FirstPartySetsPolicyServiceFactory::GetForBrowserContext(&profile);
+  service->AddRemoteAccessDelegate(std::move(mock_delegate_remote_));
+
+  // These changes should not be forwarded to the delegate.
+  service->OnFirstPartySetsEnabledChanged(false);
+  service->OnFirstPartySetsEnabledChanged(true);
+
+  env().RunUntilIdle();
 }
 
 namespace {

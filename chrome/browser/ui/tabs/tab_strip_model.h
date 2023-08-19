@@ -20,8 +20,6 @@
 #include "base/observer_list.h"
 #include "base/scoped_multi_source_observation.h"
 #include "base/scoped_observation.h"
-#include "base/time/time.h"
-#include "base/timer/timer.h"
 #include "build/build_config.h"
 #include "chrome/browser/ui/tabs/tab_group_controller.h"
 #include "chrome/browser/ui/tabs/tab_strip_scrubbing_metrics.h"
@@ -114,7 +112,7 @@ class TabStripModel : public TabGroupController {
     // guaranteed to be valid for the life time of the notification (and
     // possibly longer).
     std::unique_ptr<content::WebContents> owned_contents;
-    raw_ptr<content::WebContents, DanglingUntriaged> contents;
+    raw_ptr<content::WebContents, AcrossTasksDanglingUntriaged> contents;
 
     // The index of the WebContents in the original selection model of the tab
     // strip [prior to any tabs being removed, if multiple tabs are being
@@ -214,11 +212,8 @@ class TabStripModel : public TabGroupController {
       absl::optional<tab_groups::TabGroupId> group = absl::nullopt);
   // Closes the WebContents at the specified index. This causes the
   // WebContents to be destroyed, but it may not happen immediately.
-  // |close_types| is a bitmask of CloseTypes. Returns true if the
-  // WebContents was closed immediately, false if it was not closed (we
-  // may be waiting for a response from an onunload handler, or waiting for the
-  // user to confirm closure).
-  bool CloseWebContentsAt(int index, uint32_t close_types);
+  // |close_types| is a bitmask of CloseTypes.
+  void CloseWebContentsAt(int index, uint32_t close_types);
 
   // Replaces the WebContents at |index| with |new_contents|. The
   // WebContents that was at |index| is returned and its ownership returns
@@ -349,6 +344,10 @@ class TabStripModel : public TabGroupController {
 
   // Returns true if the tab at |index| is allowed to be closed.
   bool IsTabClosable(int index) const;
+
+  // Returns true if the tab corresponding to |contents| is allowed to be
+  // closed.
+  bool IsTabClosable(const content::WebContents* contents) const;
 
   // Returns the group that contains the tab at |index|, or nullopt if the tab
   // index is invalid or not grouped.
@@ -513,6 +512,8 @@ class TabStripModel : public TabGroupController {
     CommandFollowSite,
     CommandUnfollowSite,
     CommandCopyURL,
+    CommandGoBack,
+    CommandCloseAllTabs,
     CommandLast
   };
 
@@ -669,10 +670,7 @@ class TabStripModel : public TabGroupController {
   // the page in question has an unload event the WebContents will not be
   // destroyed until after the event has completed, which will then call back
   // into this method.
-  //
-  // Returns true if the WebContentses were closed immediately, false if we
-  // are waiting for the result of an onunload handler.
-  bool CloseTabs(base::span<content::WebContents* const> items,
+  void CloseTabs(base::span<content::WebContents* const> items,
                  uint32_t close_types);
 
   // |close_types| is a bitmask of the types in CloseTypes.
@@ -801,6 +799,9 @@ class TabStripModel : public TabGroupController {
   // Takes the |selection| change and decides whether to forget the openers.
   void OnActiveTabChanged(const TabStripSelectionChange& selection);
 
+  // Checks if policy allows a tab to be closed.
+  bool PolicyAllowsTabClosing(content::WebContents* contents) const;
+
   // Determine where to shift selection after a tab is closed.
   absl::optional<int> DetermineNewSelectedIndex(int removed_index) const;
 
@@ -818,7 +819,7 @@ class TabStripModel : public TabGroupController {
   base::ObserverList<TabStripModelObserver>::Unchecked observers_;
 
   // A profile associated with this TabStripModel.
-  raw_ptr<Profile, DanglingUntriaged> profile_;
+  raw_ptr<Profile, AcrossTasksDanglingUntriaged> profile_;
 
   // True if all tabs are currently being closed via CloseAllTabs.
   bool closing_all_ = false;

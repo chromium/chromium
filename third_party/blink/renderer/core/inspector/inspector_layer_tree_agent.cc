@@ -464,17 +464,17 @@ protocol::Response InspectorLayerTreeAgent::replaySnapshot(
   protocol::Response response = GetSnapshotById(snapshot_id, snapshot);
   if (!response.IsSuccess())
     return response;
-  auto png_data = snapshot->Replay(from_step.fromMaybe(0), to_step.fromMaybe(0),
-                                   scale.fromMaybe(1.0));
+  auto png_data = snapshot->Replay(from_step.value_or(0), to_step.value_or(0),
+                                   scale.value_or(1.0));
   if (png_data.empty())
     return protocol::Response::ServerError("Image encoding failed");
   *data_url = "data:image/png;base64," + Base64Encode(png_data);
   return protocol::Response::Success();
 }
 
-static void ParseRect(protocol::DOM::Rect* object, gfx::RectF* rect) {
-  *rect = gfx::RectF(object->getX(), object->getY(), object->getWidth(),
-                     object->getHeight());
+static void ParseRect(protocol::DOM::Rect& object, gfx::RectF* rect) {
+  *rect = gfx::RectF(object.getX(), object.getY(), object.getWidth(),
+                     object.getHeight());
 }
 
 protocol::Response InspectorLayerTreeAgent::profileSnapshot(
@@ -488,11 +488,12 @@ protocol::Response InspectorLayerTreeAgent::profileSnapshot(
   if (!response.IsSuccess())
     return response;
   gfx::RectF rect;
-  if (clip_rect.isJust())
-    ParseRect(clip_rect.fromJust(), &rect);
-  auto timings = snapshot->Profile(min_repeat_count.fromMaybe(1),
-                                   base::Seconds(min_duration.fromMaybe(0)),
-                                   clip_rect.isJust() ? &rect : nullptr);
+  if (clip_rect.has_value()) {
+    ParseRect(clip_rect.value(), &rect);
+  }
+  auto timings = snapshot->Profile(min_repeat_count.value_or(1),
+                                   base::Seconds(min_duration.value_or(0)),
+                                   clip_rect.has_value() ? &rect : nullptr);
   *out_timings = std::make_unique<Array<Array<double>>>();
   for (const auto& row : timings) {
     auto out_row = std::make_unique<protocol::Array<double>>();

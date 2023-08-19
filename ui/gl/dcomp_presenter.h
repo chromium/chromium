@@ -65,6 +65,7 @@ class GL_EXPORT DCompPresenter : public Presenter, public VSyncObserver {
               const gfx::ColorSpace& color_space,
               bool has_alpha) override;
   bool SetDrawRectangle(const gfx::Rect& rect) override;
+  bool SupportsViewporter() const override;
   bool SupportsGpuVSync() const override;
   void SetGpuVSyncEnabled(bool enabled) override;
   // This schedules an overlay plane to be displayed on the next SwapBuffers

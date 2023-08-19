@@ -41,24 +41,34 @@ class PrefetchAgent extends RemoteContext {
   // In the future, this should also use browser hooks to force the prefetch to
   // occur despite heuristic matching, etc., and await the completion of the
   // prefetch.
-  async forceSinglePrefetch(url, extra = {}) {
+  async forceSinglePrefetch(url, extra = {}, wait_for_completion = true) {
     await this.execute_script((url, extra) => {
       insertSpeculationRules({ prefetch: [{source: 'list', urls: [url], ...extra}] });
     }, [url, extra]);
+    if (!wait_for_completion) {
+      return Promise.resolve();
+    }
     return new Promise(resolve => this.t.step_timeout(resolve, 2000));
   }
 
-  async navigate(url) {
+  // `url` is the URL to navigate.
+  //
+  // `expectedDestinationUrl` is the expected URL after navigation.
+  // When omitted, `url` is used.
+  async navigate(url, {expectedDestinationUrl} = {}) {
     await this.execute_script((url) => {
       window.executor.suspend(() => {
         location.href = url;
       });
     }, [url]);
-    url.username = '';
-    url.password = '';
+    if (!expectedDestinationUrl) {
+      expectedDestinationUrl = url;
+    }
+    expectedDestinationUrl.username = '';
+    expectedDestinationUrl.password = '';
     assert_equals(
         await this.execute_script(() => location.href),
-        url.toString(),
+        expectedDestinationUrl.toString(),
         "expected navigation to reach destination URL");
     await this.execute_script(() => {});
   }
@@ -115,11 +125,6 @@ function getPrefetchUrlList(n) {
   return Array.from({ length: n }, () => getPrefetchUrl());
 }
 
-function getRedirectUrl() {
-  let params = new URLSearchParams({uuid: token()});
-  return new URL(`redirect.py?${params}`, SR_PREFETCH_UTILS_URL);
-}
-
 async function isUrlPrefetched(url) {
   let response = await fetch(url, {redirect: 'follow'});
   assert_true(response.ok);
@@ -127,11 +132,17 @@ async function isUrlPrefetched(url) {
 }
 
 // Must also include /common/utils.js and /common/dispatcher/dispatcher.js to use this.
-async function spawnWindow(t, options = {}, uuid = token()) {
+async function spawnWindowWithReference(t, options = {}, uuid = token()) {
   let agent = new PrefetchAgent(uuid, t);
   let w = window.open(agent.getExecutorURL(options), '_blank', options);
   t.add_cleanup(() => w.close());
-  return agent;
+  return {"agent":agent, "window":w};
+}
+
+// Must also include /common/utils.js and /common/dispatcher/dispatcher.js to use this.
+async function spawnWindow(t, options = {}, uuid = token()) {
+  let agent_window_pair = await spawnWindowWithReference(t, options, uuid);
+  return agent_window_pair.agent;
 }
 
 function insertSpeculationRules(body) {
@@ -173,4 +184,12 @@ function assert_prefetched (requestHeaders, description) {
 function assert_not_prefetched (requestHeaders, description){
   assert_equals(requestHeaders.purpose, "", description);
   assert_equals(requestHeaders.sec_purpose, "", description);
+}
+
+// Use nvs_header query parameter to ask the wpt server
+// to populate No-Vary-Search response header.
+function addNoVarySearchHeaderUsingQueryParam(url, value){
+  if(value){
+    url.searchParams.append("nvs_header", value);
+  }
 }

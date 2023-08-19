@@ -1,0 +1,18 @@
+# Copyright 2023 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/android/rules.gni")
+
+android_library("java") {
+  sources = [ "java/src/org/chromium/chrome/browser/mandatory_reauth/MandatoryReauthOptInBottomSheetComponent.java" ]
+
+  deps = [
+    "//components/autofill/android:main_autofill_java",
+    "//components/browser_ui/bottomsheet/android:java",
+  ]
+}
+
+group("jni_headers") {
+  public_deps = [ "//chrome/browser/mandatory_reauth/android/internal:jni" ]
+}

@@ -372,12 +372,6 @@ void UseCounterCallback(v8::Isolate* isolate,
     case v8::Isolate::kWasmRefTypes:
       blink_feature = WebFeature::kV8WasmRefTypes;
       break;
-    case v8::Isolate::kWasmBulkMemory:
-      blink_feature = WebFeature::kV8WasmBulkMemory;
-      break;
-    case v8::Isolate::kWasmMultiValue:
-      blink_feature = WebFeature::kV8WasmMultiValue;
-      break;
     case v8::Isolate::kWasmExceptionHandling:
       blink_feature = WebFeature::kV8WasmExceptionHandling;
       break;
@@ -402,6 +396,15 @@ void UseCounterCallback(v8::Isolate* isolate,
       break;
     case v8::Isolate::kCompileHintsMagicAll:
       blink_feature = WebFeature::kV8CompileHintsMagicAll;
+      break;
+    case v8::Isolate::kWasmMemory64:
+      blink_feature = WebFeature::kV8WasmMemory64;
+      break;
+    case v8::Isolate::kWasmMultiMemory:
+      blink_feature = WebFeature::kV8WasmMultiMemory;
+      break;
+    case v8::Isolate::kWasmGC:
+      blink_feature = WebFeature::kV8WasmGC;
       break;
     default:
       // This can happen if V8 has added counters that this version of Blink

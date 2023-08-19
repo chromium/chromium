@@ -12,6 +12,7 @@
 #include "build/build_config.h"
 #include "components/viz/common/display/overlay_strategy.h"
 #include "components/viz/common/viz_common_export.h"
+#include "ui/display/types/display_constants.h"
 #include "ui/gfx/color_space.h"
 #include "ui/gfx/geometry/size.h"
 
@@ -23,7 +24,6 @@ class VIZ_COMMON_EXPORT RendererSettings {
   RendererSettings(const RendererSettings& other);
   ~RendererSettings();
 
-  bool apply_simple_frame_rate_throttling = false;
   bool allow_antialiasing = true;
   bool force_antialiasing = false;
   bool force_blending_with_shaders = false;
@@ -64,7 +64,7 @@ class VIZ_COMMON_EXPORT RendererSettings {
 #if BUILDFLAG(IS_MAC)
   // CGDirectDisplayID for the screen on which the browser is currently
   // displayed.
-  int64_t display_id;
+  int64_t display_id = display::kInvalidDisplayId;
 #endif
 };
 

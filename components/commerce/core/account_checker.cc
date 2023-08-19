@@ -68,6 +68,8 @@ AccountChecker::AccountChecker(
 AccountChecker::~AccountChecker() = default;
 
 bool AccountChecker::IsSignedIn() {
+  // TODO(crbug.com/1463438): ConsentLevel::kSync is deprecated and should be
+  //     removed. See ConsentLevel::kSync documentation for details.
   return identity_manager_ &&
          identity_manager_->HasPrimaryAccount(signin::ConsentLevel::kSync);
 }
@@ -361,9 +363,12 @@ std::unique_ptr<EndpointFetcher> AccountChecker::CreateEndpointFetcher(
     int64_t timeout_ms,
     const std::string& post_data,
     const net::NetworkTrafficAnnotationTag& annotation_tag) {
+  // TODO(crbug.com/1463438): ConsentLevel::kSync is deprecated and should be
+  //     removed. See ConsentLevel::kSync documentation for details.
   return std::make_unique<EndpointFetcher>(
       url_loader_factory_, oauth_consumer_name, url, http_method, content_type,
-      scopes, timeout_ms, post_data, annotation_tag, identity_manager_);
+      scopes, timeout_ms, post_data, annotation_tag, identity_manager_,
+      signin::ConsentLevel::kSync);
 }
 
 }  // namespace commerce

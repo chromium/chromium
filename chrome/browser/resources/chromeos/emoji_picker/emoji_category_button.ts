@@ -11,7 +11,7 @@ import {getTemplate} from './emoji_category_button.html.js';
 import {CATEGORY_BUTTON_CLICK, CategoryButtonClickEvent, createCustomEvent} from './events.js';
 import {CategoryEnum} from './types.js';
 
-const DEFAULT_ARIA_LABELS: Record<CategoryEnum, string> = {
+const ARIA_LABELS_WITH_GIF_SUPPORT: Record<CategoryEnum, string> = {
   [CategoryEnum.EMOJI]: 'Emoji category',
   [CategoryEnum.SYMBOL]: 'Symbol category',
   [CategoryEnum.EMOTICON]: 'Emoticon category',
@@ -29,7 +29,7 @@ export class EmojiCategoryButton extends PolymerElement {
 
   static get properties() {
     return {
-      name: {type: String, readonly: true},
+      name: {type: CategoryEnum, readonly: true},
       icon: {type: String, readonly: true},
       active: {type: Boolean, value: false},
       searchActive: {type: Boolean, value: false},
@@ -61,7 +61,11 @@ export class EmojiCategoryButton extends PolymerElement {
       return name;
     }
 
-    return DEFAULT_ARIA_LABELS[name] ?? name;
+    return ARIA_LABELS_WITH_GIF_SUPPORT[name] ?? name;
+  }
+
+  private getAriaPressedState(active: boolean): string {
+    return active ? 'true' : 'false';
   }
 }
 

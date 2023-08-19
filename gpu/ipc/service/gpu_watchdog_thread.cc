@@ -147,9 +147,7 @@ std::unique_ptr<GpuWatchdogThread> GpuWatchdogThread::Create(
     const std::string& thread_name) {
   auto watchdog_thread = base::WrapUnique(new GpuWatchdogThread(
       timeout, init_factor, restart_factor, is_test_mode, thread_name));
-  base::Thread::Options options;
-  options.timer_slack = base::TIMER_SLACK_MAXIMUM;
-  watchdog_thread->StartWithOptions(std::move(options));
+  watchdog_thread->Start();
   if (start_backgrounded)
     watchdog_thread->OnBackgrounded();
   return watchdog_thread;
@@ -178,6 +176,11 @@ std::unique_ptr<GpuWatchdogThread> GpuWatchdogThread::Create(
 
 // Android Chrome goes to the background. Called from the gpu io thread.
 void GpuWatchdogThread::OnBackgrounded() {
+  {
+    base::AutoLock lock(skip_lock_);
+    skip_for_backgrounded_ = true;
+  }
+
   task_runner()->PostTask(
       FROM_HERE,
       base::BindOnce(&GpuWatchdogThread::StopWatchdogTimeoutTask,
@@ -186,6 +189,11 @@ void GpuWatchdogThread::OnBackgrounded() {
 
 // Android Chrome goes to the foreground. Called from the gpu io thread.
 void GpuWatchdogThread::OnForegrounded() {
+  {
+    base::AutoLock lock(skip_lock_);
+    skip_for_backgrounded_ = false;
+  }
+
   task_runner()->PostTask(
       FROM_HERE,
       base::BindOnce(&GpuWatchdogThread::RestartWatchdogTimeoutTask,
@@ -223,6 +231,10 @@ void GpuWatchdogThread::OnGpuProcessTearDown() {
 // Called from the watched gpu thread.
 void GpuWatchdogThread::PauseWatchdog() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(watched_thread_sequence_checker_);
+  {
+    base::AutoLock lock(skip_lock_);
+    skip_for_pause_ = true;
+  }
 
   task_runner()->PostTask(
       FROM_HERE, base::BindOnce(&GpuWatchdogThread::StopWatchdogTimeoutTask,
@@ -232,6 +244,10 @@ void GpuWatchdogThread::PauseWatchdog() {
 // Called from the watched gpu thread.
 void GpuWatchdogThread::ResumeWatchdog() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(watched_thread_sequence_checker_);
+  {
+    base::AutoLock lock(skip_lock_);
+    skip_for_pause_ = false;
+  }
 
   task_runner()->PostTask(
       FROM_HERE, base::BindOnce(&GpuWatchdogThread::RestartWatchdogTimeoutTask,
@@ -483,6 +499,13 @@ void GpuWatchdogThread::OnWatchdogTimeout() {
   DCHECK(!is_backgrounded_);
   DCHECK(!in_power_suspension_);
   DCHECK(!is_paused_);
+
+  {
+    base::AutoLock lock(skip_lock_);
+    if (skip_for_pause_ || skip_for_backgrounded_) {
+      return;
+    }
+  }
 
   // If this metric is added too early (eg. watchdog creation time), it cannot
   // be persistent. The histogram data will be lost after crash or browser exit.

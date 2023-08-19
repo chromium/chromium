@@ -8,9 +8,8 @@
 
 #include <vector>
 
+#include "base/apple/foundation_util.h"
 #include "base/check.h"
-#include "base/mac/foundation_util.h"
-#include "base/mac/scoped_nsobject.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/ranges/algorithm.h"
@@ -61,7 +60,9 @@ class ImmersiveModeControllerMac : public ImmersiveModeController,
     base::WeakPtr<ImmersiveModeControllerMac> controller_;
   };
 
-  ImmersiveModeControllerMac();
+  // If `separate_tab_strip` is true, the tab strip is split out into its own
+  // widget separate from the overlay view so that it can live in the title bar.
+  explicit ImmersiveModeControllerMac(bool separate_tab_strip);
 
   ImmersiveModeControllerMac(const ImmersiveModeControllerMac&) = delete;
   ImmersiveModeControllerMac& operator=(const ImmersiveModeControllerMac&) =
@@ -83,6 +84,7 @@ class ImmersiveModeControllerMac : public ImmersiveModeController,
       const gfx::Rect& new_visible_bounds_in_screen) override;
   bool ShouldStayImmersiveAfterExitingFullscreen() override;
   void OnWidgetActivationChanged(views::Widget* widget, bool active) override;
+  int GetMinimumContentOffset() const override;
 
   // Set the widget id of the tab hosting widget. Set before calling SetEnabled.
   void SetTabNativeWidgetID(uint64_t widget_id);
@@ -141,6 +143,16 @@ class ImmersiveModeControllerMac : public ImmersiveModeController,
   // placed in the titlebar.
   uint64_t tab_native_widget_id_ = 0;
 
+  // Whether the tab strip should be a separate widget.
+  bool separate_tab_strip_ = false;
+  // Height of the tab widget, used when resizing. Only non-zero if
+  // `separate_tab_strip_` is true.
+  int tab_widget_height_ = 0;
+  // Total height of the overlay (including the separate tab strip if relevant).
+  int overlay_height_ = 0;
+  // Whether the find bar is currently visible.
+  bool find_bar_visible_ = false;
+
   base::WeakPtrFactory<ImmersiveModeControllerMac> weak_ptr_factory_;
 };
 
@@ -177,8 +189,8 @@ ImmersiveModeControllerMac::RevealedLock::~RevealedLock() {
     controller->LockDestroyed();
 }
 
-ImmersiveModeControllerMac::ImmersiveModeControllerMac()
-    : weak_ptr_factory_(this) {}
+ImmersiveModeControllerMac::ImmersiveModeControllerMac(bool separate_tab_strip)
+    : separate_tab_strip_(separate_tab_strip), weak_ptr_factory_(this) {}
 
 ImmersiveModeControllerMac::~ImmersiveModeControllerMac() {
   CHECK(!views::WidgetObserver::IsInObserverList());
@@ -193,11 +205,43 @@ void ImmersiveModeControllerMac::Init(BrowserView* browser_view) {
 }
 
 void ImmersiveModeControllerMac::SetEnabled(bool enabled) {
-  if (enabled_ == enabled)
+  if (enabled_ == enabled) {
     return;
+  }
   enabled_ = enabled;
   if (enabled) {
-    browser_view_->GetWidget()->GetFocusManager()->AddFocusChangeListener(this);
+    if (separate_tab_strip_) {
+      tab_widget_height_ = browser_view_->tab_strip_region_view()->height();
+      tab_widget_height_ += static_cast<BrowserNonClientFrameViewMac*>(
+                                browser_view_->frame()->GetFrameView())
+                                ->GetTopInset(false);
+
+      browser_view_->tab_overlay_widget()->SetBounds(
+          gfx::Rect(0, 0, browser_view_->top_container()->size().width(),
+                    tab_widget_height_));
+      browser_view_->tab_overlay_widget()->Show();
+
+      // Move the tab strip to the `tab_overlay_widget`, the host of the
+      // `tab_overlay_view`.
+      browser_view_->tab_overlay_view()->AddChildView(
+          browser_view_->tab_strip_region_view());
+
+      // Inset the start of |tab_strip_region_view()| by |kTrafficLightsWidth|.
+      // This will leave a hole for the traffic light to appear.
+      // Without this +1 top inset the tabs sit 1px too high. I assume this is
+      // because in fullscreen there is no resize handle.
+      gfx::Insets insets =
+          browser_view_->frame()->GetFrameView()->CaptionButtonsOnLeadingEdge()
+              ? gfx::Insets::TLBR(1, kTrafficLightsWidth, 0, 0)
+              : gfx::Insets::TLBR(1, 0, 0, kTrafficLightsWidth);
+      browser_view_->tab_strip_region_view()->SetBorder(
+          views::CreateEmptyBorder(insets));
+
+      views::NativeWidgetMacNSWindowHost* tab_overlay_host =
+          views::NativeWidgetMacNSWindowHost::GetFromNativeWindow(
+              browser_view_->tab_overlay_widget()->GetNativeWindow());
+      SetTabNativeWidgetID(tab_overlay_host->bridged_native_widget_id());
+    }
     top_container_observation_.Observe(browser_view_->top_container());
     browser_frame_observation_.Observe(browser_view_->GetWidget());
 
@@ -208,7 +252,8 @@ void ImmersiveModeControllerMac::SetEnabled(bool enabled) {
                                .GetNativeNSWindow()
                                .contentView;
     browser_view_->overlay_widget()->SetNativeWindowProperty(
-        views::NativeWidgetMacNSWindowHost::kMovedContentNSView, content_view);
+        views::NativeWidgetMacNSWindowHost::kMovedContentNSView,
+        (__bridge void*)content_view);
 
     // Move the appropriate children from the browser widget to the overlay
     // widget. Make sure to call `Show()` on the overlay widget before enabling
@@ -231,6 +276,7 @@ void ImmersiveModeControllerMac::SetEnabled(bool enabled) {
     ns_window_mojo_->EnableImmersiveFullscreen(
         overlay_host->bridged_native_widget_id(), tab_native_widget_id_);
 
+    browser_view_->GetWidget()->GetFocusManager()->AddFocusChangeListener(this);
     // Set up a root FocusTraversable that handles focus cycles between overlay
     // widgets and the browser widget.
     browser_view_->GetWidget()->SetFocusTraversableParent(this);
@@ -248,11 +294,14 @@ void ImmersiveModeControllerMac::SetEnabled(bool enabled) {
     // when transitioning to full screen. Call it now.
     OnViewBoundsChanged(browser_view_->top_container());
   } else {
-    browser_view_->GetWidget()->GetFocusManager()->RemoveFocusChangeListener(
-        this);
+    if (separate_tab_strip_) {
+      browser_view_->tab_overlay_widget()->Hide();
+      browser_view_->tab_strip_region_view()->SetBorder(nullptr);
+      browser_view_->top_container()->AddChildViewAt(
+          browser_view_->tab_strip_region_view(), 0);
+    }
     top_container_observation_.Reset();
     browser_frame_observation_.Reset();
-    focus_lock_.reset();
 
     // Notify BrowserView about the fullscreen exit so that the top container
     // can be reparented, otherwise it might be destroyed along with the
@@ -267,6 +316,9 @@ void ImmersiveModeControllerMac::SetEnabled(bool enabled) {
     browser_view_->overlay_widget()->SetNativeWindowProperty(
         views::NativeWidgetMacNSWindowHost::kMovedContentNSView, nullptr);
 
+    browser_view_->GetWidget()->GetFocusManager()->RemoveFocusChangeListener(
+        this);
+    focus_lock_.reset();
     // Remove the root FocusTraversable.
     browser_view_->GetWidget()->SetFocusTraversableParent(nullptr);
     browser_view_->GetWidget()->SetFocusTraversableParentView(nullptr);
@@ -304,7 +356,14 @@ ImmersiveModeControllerMac::GetRevealedLock(AnimateReveal animate_reveal) {
 }
 
 void ImmersiveModeControllerMac::OnFindBarVisibleBoundsChanged(
-    const gfx::Rect& new_visible_bounds_in_screen) {}
+    const gfx::Rect& new_visible_bounds_in_screen) {
+  bool was_visible =
+      std::exchange(find_bar_visible_, !new_visible_bounds_in_screen.IsEmpty());
+  if (enabled_ && was_visible != find_bar_visible_) {
+    // Ensure web content is fully visible if find bar is showing.
+    browser_view_->InvalidateLayout();
+  }
+}
 
 bool ImmersiveModeControllerMac::ShouldStayImmersiveAfterExitingFullscreen() {
   return false;
@@ -313,6 +372,10 @@ bool ImmersiveModeControllerMac::ShouldStayImmersiveAfterExitingFullscreen() {
 void ImmersiveModeControllerMac::OnWidgetActivationChanged(
     views::Widget* widget,
     bool active) {}
+
+int ImmersiveModeControllerMac::GetMinimumContentOffset() const {
+  return find_bar_visible_ ? overlay_height_ : 0;
+}
 
 void ImmersiveModeControllerMac::OnWillChangeFocus(views::View* focused_before,
                                                    views::View* focused_now) {}
@@ -330,10 +393,21 @@ void ImmersiveModeControllerMac::OnDidChangeFocus(views::View* focused_before,
 
 void ImmersiveModeControllerMac::OnViewBoundsChanged(
     views::View* observed_view) {
-  if (!observed_view->bounds().IsEmpty()) {
-    browser_view_->overlay_widget()->SetBounds(observed_view->bounds());
-    ns_window_mojo_->OnTopContainerViewBoundsChanged(observed_view->bounds());
+  gfx::Rect bounds = observed_view->bounds();
+  if (bounds.IsEmpty()) {
+    return;
   }
+  overlay_height_ = bounds.height();
+  if (separate_tab_strip_) {
+    gfx::Size new_size(bounds.width(), tab_widget_height_);
+    browser_view_->tab_overlay_widget()->SetSize(new_size);
+    browser_view_->tab_overlay_view()->SetSize(new_size);
+    browser_view_->tab_strip_region_view()->SetSize(gfx::Size(
+        new_size.width(), browser_view_->tab_strip_region_view()->height()));
+    overlay_height_ += tab_widget_height_;
+  }
+  browser_view_->overlay_widget()->SetBounds(bounds);
+  ns_window_mojo_->OnTopContainerViewBoundsChanged(bounds);
 }
 
 void ImmersiveModeControllerMac::OnWidgetDestroying(views::Widget* widget) {
@@ -411,86 +485,6 @@ bool ImmersiveModeControllerMac::ShouldMoveChild(views::Widget* child) {
   return false;
 }
 
-// A derived class of ImmersiveModeControllerMac that peels off the tab strip
-// from the top container.
-class ImmersiveModeTabbedControllerMac : public ImmersiveModeControllerMac {
- public:
-  ImmersiveModeTabbedControllerMac() = default;
-
-  ImmersiveModeTabbedControllerMac(const ImmersiveModeTabbedControllerMac&) =
-      delete;
-  ImmersiveModeTabbedControllerMac& operator=(
-      const ImmersiveModeTabbedControllerMac&) = delete;
-
-  // ImmersiveModeControllerMac overrides:
-  void SetEnabled(bool enabled) override;
-  void OnViewBoundsChanged(views::View* observed_view) override;
-
- private:
-  int tab_widget_height_ = 0;
-
-  base::ScopedObservation<views::View, views::ViewObserver>
-      tab_container_observation_{this};
-};
-
-void ImmersiveModeTabbedControllerMac::SetEnabled(bool enabled) {
-  if (enabled == IsEnabled()) {
-    return;
-  }
-  BrowserView* browser_view = ImmersiveModeControllerMac::browser_view();
-  if (enabled) {
-    tab_container_observation_.Observe(browser_view->tab_overlay_view());
-
-    tab_widget_height_ = browser_view->tab_strip_region_view()->height();
-    tab_widget_height_ += static_cast<BrowserNonClientFrameViewMac*>(
-                              browser_view->frame()->GetFrameView())
-                              ->GetTopInset(false);
-
-    browser_view->tab_overlay_widget()->SetBounds(
-        gfx::Rect(0, 0, browser_view->top_container()->size().width(),
-                  tab_widget_height_));
-    browser_view->tab_overlay_widget()->Show();
-
-    // Move the tab strip to the `tab_overlay_widget`, the host of the
-    // `tab_overlay_view`.
-    browser_view->tab_overlay_view()->AddChildView(
-        browser_view->tab_strip_region_view());
-
-    // Inset the start of |tab_strip_region_view()| by |kTrafficLightsWidth|.
-    // This will leave a hole for the traffic light to appear.
-    // Without this +1 top inset the tabs sit 1px too high. I assume this is
-    // because in fullscreen there is no resize handle.
-    gfx::Insets insets = gfx::Insets::TLBR(1, kTrafficLightsWidth, 0, 0);
-    browser_view->tab_strip_region_view()->SetBorder(
-        views::CreateEmptyBorder(insets));
-
-    views::NativeWidgetMacNSWindowHost* tab_overlay_host =
-        views::NativeWidgetMacNSWindowHost::GetFromNativeWindow(
-            browser_view->tab_overlay_widget()->GetNativeWindow());
-    SetTabNativeWidgetID(tab_overlay_host->bridged_native_widget_id());
-    ImmersiveModeControllerMac::SetEnabled(enabled);
-  } else {
-    tab_container_observation_.Reset();
-    browser_view->tab_overlay_widget()->Hide();
-    browser_view->tab_strip_region_view()->SetBorder(nullptr);
-    browser_view->top_container()->AddChildViewAt(
-        browser_view->tab_strip_region_view(), 0);
-    ImmersiveModeControllerMac::SetEnabled(enabled);
-  }
-}
-
-void ImmersiveModeTabbedControllerMac::OnViewBoundsChanged(
-    views::View* observed_view) {
-  // Resize the width of |tab_overlay_view()| and |tab_overlay_widget()|.
-  BrowserView* browser_view = ImmersiveModeControllerMac::browser_view();
-  gfx::Size new_size(observed_view->size().width(), tab_widget_height_);
-  browser_view->tab_overlay_widget()->SetSize(new_size);
-  browser_view->tab_overlay_view()->SetSize(new_size);
-  browser_view->tab_strip_region_view()->SetSize(gfx::Size(
-      new_size.width(), browser_view->tab_strip_region_view()->height()));
-  ImmersiveModeControllerMac::OnViewBoundsChanged(observed_view);
-}
-
 views::FocusSearch* ImmersiveModeControllerMac::GetFocusSearch() {
   return focus_search_.get();
 }
@@ -566,8 +560,6 @@ views::View* ImmersiveModeFocusSearchMac::FindNextFocusableView(
 
 std::unique_ptr<ImmersiveModeController> CreateImmersiveModeControllerMac(
     const BrowserView* browser_view) {
-  if (browser_view->UsesImmersiveFullscreenTabbedMode()) {
-    return std::make_unique<ImmersiveModeTabbedControllerMac>();
-  }
-  return std::make_unique<ImmersiveModeControllerMac>();
+  return std::make_unique<ImmersiveModeControllerMac>(
+      /*separate_tab_strip=*/browser_view->UsesImmersiveFullscreenTabbedMode());
 }

@@ -9,15 +9,20 @@
 #include <vector>
 
 #include "base/base64.h"
+#include "base/containers/flat_map.h"
 #include "base/metrics/field_trial.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/task_environment.h"
 #include "components/autofill/core/browser/autofill_field.h"
 #include "components/autofill/core/browser/autofill_test_utils.h"
+#include "components/autofill/core/browser/autofill_type.h"
+#include "components/autofill/core/browser/field_types.h"
 #include "components/autofill/core/browser/form_structure.h"
 #include "components/autofill/core/browser/metrics/autofill_metrics.h"
+#include "components/autofill/core/browser/metrics/log_event.h"
 #include "components/autofill/core/browser/proto/password_requirements.pb.h"
+#include "components/autofill/core/common/autofill_test_utils.h"
 #include "components/autofill/core/common/form_data.h"
 #include "components/autofill/core/common/form_field_data.h"
 #include "components/autofill/core/common/password_form_generation_data.h"
@@ -38,10 +43,19 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
 
+using autofill::AutofillField;
+using autofill::AutofillType;
+using autofill::FieldGlobalId;
+using autofill::FormData;
+using autofill::FormSignature;
 using autofill::FormStructure;
 using autofill::PasswordRequirementsSpec;
+using autofill::ServerFieldType;
+using autofill::test::CreateFieldPrediction;
+using autofill::test::CreateTestFormField;
 using base::ASCIIToUTF16;
-using testing::_;
+using ::testing::_;
+using ::testing::NiceMock;
 
 namespace password_manager {
 
@@ -73,8 +87,7 @@ class TestPasswordManagerDriver : public StubPasswordManagerDriver {
     return &password_autofill_manager_;
   }
 
-  MOCK_METHOD0(AllowToRunFormClassifier, void());
-  MOCK_CONST_METHOD0(GetLastCommittedURL, GURL&());
+  MOCK_METHOD(GURL&, GetLastCommittedURL, (), (const override));
 
  private:
   GURL empty_url_;
@@ -152,9 +165,10 @@ class MockPasswordManagerClient : public StubPasswordManagerClient {
   TestPasswordManagerDriver* test_driver() { return &driver_; }
 
  private:
+  autofill::test::AutofillUnitTestEnvironment autofill_environment_;
   std::unique_ptr<PrefService> prefs_;
   scoped_refptr<TestPasswordStore> store_;
-  TestPasswordManagerDriver driver_;
+  NiceMock<TestPasswordManagerDriver> driver_;
   PasswordRequirementsService password_requirements_service_;
   url::Origin last_committed_origin_;
 };
@@ -266,14 +280,11 @@ TEST_F(PasswordGenerationFrameHelperTest, ProcessPasswordRequirements) {
     SCOPED_TRACE(test.name);
     ++test_counter;
 
-    autofill::FormFieldData username;
-    username.name = u"login";
-    username.form_control_type = "text";
-
-    autofill::FormFieldData password;
-    password.name =
-        ASCIIToUTF16(base::StringPrintf("password%d", test_counter));
-    password.form_control_type = "password";
+    autofill::FormFieldData username = CreateTestFormField(
+        /*label=*/"", /*name=*/"login", /*value=*/"", /*type=*/"text");
+    autofill::FormFieldData password = CreateTestFormField(
+        /*label=*/"", /*name=*/base::StringPrintf("password%d", test_counter),
+        /*value=*/"", /*type=*/"password");
 
     // Configure the last committed entry URL with some magic constants for
     // which the FakePasswordRequirementsFetcher is configured to respond
@@ -283,57 +294,42 @@ TEST_F(PasswordGenerationFrameHelperTest, ProcessPasswordRequirements) {
                                        ? kHasServerResponse
                                        : kNoServerResponse));
 
-    autofill::FormData account_creation_form;
+    FormData account_creation_form;
     account_creation_form.url = origin;
     account_creation_form.action = origin;
     account_creation_form.name = u"account_creation_form";
     account_creation_form.fields.push_back(username);
     account_creation_form.fields.push_back(password);
 
-    autofill::FormStructure form(account_creation_form);
-
-    std::vector<autofill::FormStructure*> forms = {&form};
-
-    // EMAIL_ADDRESS = 9
-    // ACCOUNT_CREATION_PASSWORD = 76
-    autofill::AutofillQueryResponse response;
-    auto* form_suggestion = response.add_form_suggestions();
-
-    auto* field_suggestion = form_suggestion->add_field_suggestions();
-    field_suggestion->set_field_signature(
-        CalculateFieldSignatureForField(username).value());
-    field_suggestion->add_predictions()->set_type(9);
-
-    field_suggestion = form_suggestion->add_field_suggestions();
-    field_suggestion->set_field_signature(
-        CalculateFieldSignatureForField(password).value());
-    field_suggestion->add_predictions()->set_type(76);
-
-    if (test.has_field_requirements) {
-      *form_suggestion->mutable_field_suggestions(1)
-           ->mutable_password_requirements() = GetFieldRequirements();
-    }
-
     client_->SetLastCommittedEntryUrl(origin);
-
-    std::string unencoded_response_string;
-    std::string response_string;
-    ASSERT_TRUE(response.SerializeToString(&unencoded_response_string));
-    base::Base64Encode(unencoded_response_string, &response_string);
-
-    autofill::FormStructure::ParseApiQueryResponse(
-        response_string, forms, autofill::test::GetEncodedSignatures(forms),
-        /*form_interactions_ukm_logger=*/nullptr, /*log_manager=*/nullptr);
-
     GetGenerationHelper()->PrefetchSpec(origin.DeprecatedGetOriginAsURL());
 
     // Processs the password requirements with expected side effects of
     // either storing the requirements from the AutofillQueryResponseContents)
     // in the PasswordRequirementsService.
-    GetGenerationHelper()->ProcessPasswordRequirements(forms);
+    base::flat_map<FieldGlobalId, AutofillType::ServerPrediction> predictions;
+
+    AutofillType::ServerPrediction username_prediction;
+    username_prediction.server_predictions = {
+        autofill::test::CreateFieldPrediction(ServerFieldType::EMAIL_ADDRESS,
+                                              /*is_override=*/false)};
+    AutofillType::ServerPrediction password_prediction;
+    password_prediction.server_predictions = {
+        autofill::test::CreateFieldPrediction(
+            ServerFieldType::ACCOUNT_CREATION_PASSWORD,
+            /*is_override=*/false)};
+    if (test.has_field_requirements) {
+      password_prediction.password_requirements = GetFieldRequirements();
+    }
+
+    predictions.insert({username.global_id(), std::move(username_prediction)});
+    predictions.insert({password.global_id(), std::move(password_prediction)});
+
+    std::vector<const FormData*> forms = {&account_creation_form};
+    GetGenerationHelper()->ProcessPasswordRequirements(forms, predictions);
 
     // Validate the result.
-    autofill::FormSignature form_signature =
+    FormSignature form_signature =
         autofill::CalculateFormSignature(account_creation_form);
     autofill::FieldSignature field_signature =
         autofill::CalculateFieldSignatureForField(password);
@@ -344,8 +340,7 @@ TEST_F(PasswordGenerationFrameHelperTest, ProcessPasswordRequirements) {
 
     PasswordRequirementsSpec spec_for_unknown_signature =
         client_->GetPasswordRequirementsService()->GetSpec(
-            origin, autofill::FormSignature(form_signature.value() + 1),
-            field_signature);
+            origin, FormSignature(form_signature.value() + 1), field_signature);
     EXPECT_EQ(test.expected_spec_for_unknown_signature.max_length(),
               spec.max_length());
   }

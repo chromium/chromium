@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 import {UntrustedProjectorPageCallbackRouter, UntrustedProjectorPageHandlerFactory, UntrustedProjectorPageHandlerRemote, UntrustedProjectorPageRemote} from './ash/webui/projector_app/mojom/untrusted_projector.mojom-webui.js';
-import {PrefsThatProjectorCanAskFor, RequestType, XhrResponseCode} from './ash/webui/projector_app/public/mojom/projector_types.mojom-webui.js';
+import {JsNetErrorCode, PrefsThatProjectorCanAskFor, RequestType, XhrResponseCode} from './ash/webui/projector_app/public/mojom/projector_types.mojom-webui.js';
 
 const booleanUserPrefs = new Map([
   [
@@ -185,10 +185,15 @@ export class UntrustedProjectorBrowserProxyImpl {
 
     // TODO(b/237337607): Remove the success field and just pass response
     // directly.
+
+    const errorCode = 'netErrorCode' in response ? response.netErrorCode :
+                                                   JsNetErrorCode.kNoError;
+
     return {
       success: response.responseCode === XhrResponseCode.kSuccess,
       response: response.response,
       error: errorCodeMap.get(response.responseCode),
+      errorCode: errorCode,
     };
   }
 

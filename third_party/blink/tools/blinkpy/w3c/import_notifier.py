@@ -10,30 +10,52 @@ Design doc: https://docs.google.com/document/d/1W3V81l94slAC_rPcTKWXgv3YxRxtlSIA
 """
 
 from collections import defaultdict
+import io
 import logging
 import re
+import typing
+from typing import NamedTuple, Optional, Set, Tuple
+from urllib.parse import urljoin
 
+from blinkpy.common import path_finder
 from blinkpy.common.net.luci_auth import LuciAuth
-from blinkpy.common.path_finder import PathFinder
+from blinkpy.common.system.executive import ScriptError
+from blinkpy.w3c import wpt_metadata
 from blinkpy.w3c.common import WPT_GH_URL, WPT_GH_RANGE_URL_TEMPLATE
 from blinkpy.w3c.directory_owners_extractor import DirectoryOwnersExtractor
 from blinkpy.w3c.monorail import MonorailAPI, MonorailIssue
 from blinkpy.w3c.wpt_expectations_updater import WPTExpectationsUpdater
+
+path_finder.bootstrap_wpt_imports()
+from wptrunner import manifestexpected, metadata
+from wptrunner.wptmanifest.backends import static
 
 _log = logging.getLogger(__name__)
 
 GITHUB_COMMIT_PREFIX = WPT_GH_URL + 'commit/'
 SHORT_GERRIT_PREFIX = 'https://crrev.com/c/'
 
-class ImportNotifier(object):
-    def __init__(self, host, chromium_git, local_wpt):
+MetadataChange = Tuple[manifestexpected.ExpectedManifest,
+                       manifestexpected.ExpectedManifest]
+
+
+class ImportNotifier:
+    def __init__(self,
+                 host,
+                 chromium_git,
+                 local_wpt,
+                 configs: Optional[wpt_metadata.TestConfigurations] = None):
         self.host = host
         self.git = chromium_git
         self.local_wpt = local_wpt
+        self._configs = configs or wpt_metadata.TestConfigurations.generate(
+            self.host)
 
         self._monorail_api = MonorailAPI
         self.default_port = host.port_factory.get()
-        self.finder = PathFinder(host.filesystem)
+        self.default_port.set_option_default(
+            'test_types', typing.get_args(wpt_metadata.TestType))
+        self.finder = path_finder.PathFinder(host.filesystem)
         self.owners_extractor = DirectoryOwnersExtractor(host)
         self.new_failures_by_directory = defaultdict(list)
 
@@ -72,6 +94,7 @@ class ImportNotifier(object):
             rebaselined_tests)
         self.examine_baseline_changes(changed_test_baselines,
                                       gerrit_url_with_ps)
+        self.examine_metadata_changes(gerrit_url_with_ps)
         self.examine_new_test_expectations(test_expectations)
 
         bugs = self.create_bugs_from_new_failures(wpt_revision_start,
@@ -112,19 +135,15 @@ class ImportNotifier(object):
             gerrit_url_with_ps: Gerrit URL of this CL with the patchset number.
         """
         for test_name, changed_baselines in changed_test_baselines.items():
-            directory = self.find_owned_directory(test_name)
+            directory = self.find_directory_for_bug(test_name)
             if not directory:
-                _log.warning('Cannot find OWNERS of %s', test_name)
                 continue
 
             for baseline in changed_baselines:
                 if self.more_failures_in_baseline(baseline):
                     self.new_failures_by_directory[directory].append(
-                        TestFailure(
-                            TestFailure.BASELINE_CHANGE,
-                            test_name,
-                            baseline_path=baseline,
-                            gerrit_url_with_ps=gerrit_url_with_ps))
+                        TestFailure.from_file(test_name, baseline,
+                                              gerrit_url_with_ps))
 
     def more_failures_in_baseline(self, baseline):
         """Determines if a testharness.js baseline file has new failures.
@@ -152,6 +171,110 @@ class ImportNotifier(object):
                 delta_harness_errors -= 1
         return delta_failures > 0 or delta_harness_errors > 0
 
+    def examine_metadata_changes(self, gerrit_url_with_ps: str):
+        manifest = self.default_port.wpt_manifest('external/wpt')
+        for changed_file in self.git.changed_files(diff_filter='AM'):
+            test_path = self._metadata_path_to_test_path(changed_file)
+            if not test_path:
+                continue
+            test_type = manifest.get_test_type(
+                self.finder.strip_wpt_path(test_path))
+            # TODO(crbug.com/1464051): After the switch to wptrunner, change the
+            # condition to just `if not test_type` to check for failures in
+            # metadata for other test types. Then, remove the other `examine_*`
+            # methods.
+            if test_type != 'wdspec':
+                continue
+            failing_tests = set()
+            for config in self._configs:
+                exp_before, exp_after = self._load_metadata_change(
+                    test_path, config)
+                exp_before.set('type', test_type)
+                exp_after.set('type', test_type)
+                failing_tests.update(
+                    self._detect_new_metadata_failures(exp_before, exp_after))
+            for test_name in failing_tests:
+                directory = self.find_directory_for_bug(test_name)
+                if not directory:
+                    continue
+                self.new_failures_by_directory[directory].append(
+                    TestFailure.from_file(test_name, changed_file,
+                                          gerrit_url_with_ps))
+
+    def _load_metadata_change(self, test_path: str,
+                              config: metadata.RunInfo) -> MetadataChange:
+        try:
+            rel_test_path = path_finder.RELATIVE_WEB_TESTS + test_path
+            contents_before = self.git.show_blob(
+                rel_test_path + wpt_metadata.METADATA_EXTENSION)
+        except ScriptError:
+            contents_before = b''
+        exp_before = static.compile(io.BytesIO(contents_before),
+                                    config.data,
+                                    manifestexpected.data_cls_getter,
+                                    test_path=test_path)
+        metadata_path = self.finder.path_from_web_tests(
+            test_path + wpt_metadata.METADATA_EXTENSION)
+        with self.host.filesystem.open_binary_file_for_reading(
+                metadata_path) as metadata_file:
+            exp_after = static.compile(metadata_file,
+                                       config.data,
+                                       manifestexpected.data_cls_getter,
+                                       test_path=test_path)
+        return exp_before, exp_after
+
+    def _detect_new_metadata_failures(
+            self, exp_before: manifestexpected.ExpectedManifest,
+            exp_after: manifestexpected.ExpectedManifest) -> Set[str]:
+        failing_tests = set()
+        for test_after in exp_after.iterchildren():
+            test_before = exp_before.get_test(test_after.id)
+            if not test_before:
+                test_before = wpt_metadata.make_empty_test(test_after)
+            wpt_metadata.fill_implied_expectations(test_before,
+                                                   set(test_after.subtests),
+                                                   test_before.test_type)
+            wpt_metadata.fill_implied_expectations(test_after,
+                                                   set(test_before.subtests),
+                                                   test_after.test_type)
+            assert set(test_before.subtests) == set(test_after.subtests)
+            nodes = [(test_before, test_after)]
+            nodes.extend((
+                test_before.get_subtest(subtest),
+                test_after.get_subtest(subtest),
+            ) for subtest in test_after.subtests)
+            if any(
+                    self._has_new_failure(before, after)
+                    for before, after in nodes):
+                # Replace the test path's basename with the metadata section header.
+                test = urljoin(exp_after.test_path, test_after.id)
+                failing_tests.add(test)
+        return failing_tests
+
+    def _has_new_failure(self, test_before: manifestexpected.TestNode,
+                         test_after: manifestexpected.TestNode) -> bool:
+        is_subtest = isinstance(test_before, manifestexpected.SubtestNode)
+        default_statuses = wpt_metadata.default_expected_by_type()
+        default_status = default_statuses[test_after.test_type, is_subtest]
+        statuses_before = {
+            test_before.expected, *test_before.known_intermittent
+        }
+        # Never notify when `statuses_before` has known failures, even if they
+        # may not be the same as those for `test_after`. Doing so could be too
+        # noisy (e.g., a flaky TIMEOUT timing out a random subtest).
+        if statuses_before - {default_status}:
+            return False
+        statuses_after = {test_after.expected, *test_after.known_intermittent}
+        new_statuses = statuses_after - statuses_before
+        return bool(new_statuses - {default_status})
+
+    def _metadata_path_to_test_path(self, path: str) -> Optional[str]:
+        if path.startswith(path_finder.RELATIVE_WEB_TESTS) and path.endswith(
+                wpt_metadata.METADATA_EXTENSION):
+            path = path[len(path_finder.RELATIVE_WEB_TESTS):]
+            return path[:-len(wpt_metadata.METADATA_EXTENSION)]
+        return None
+
     def examine_new_test_expectations(self, test_expectations):
         """Examines new test expectations to find new failures.
 
@@ -160,17 +283,14 @@ class ImportNotifier(object):
                 be rebaselined to a list of new test expectation lines.
         """
         for test_name, expectation_lines in test_expectations.items():
-            directory = self.find_owned_directory(test_name)
+            directory = self.find_directory_for_bug(test_name)
             if not directory:
-                _log.warning('Cannot find OWNERS of %s', test_name)
                 continue
 
             for expectation_line in expectation_lines:
                 self.new_failures_by_directory[directory].append(
-                    TestFailure(
-                        TestFailure.NEW_EXPECTATION,
-                        test_name,
-                        expectation_line=expectation_line))
+                    TestFailure.from_expectation_line(test_name,
+                                                      expectation_line))
 
     def create_bugs_from_new_failures(self, wpt_revision_start,
                                       wpt_revision_end, gerrit_url):
@@ -196,33 +316,28 @@ class ImportNotifier(object):
             full_directory = self.host.filesystem.join(
                 self.finder.web_tests_dir(), directory)
             owners_file = self.host.filesystem.join(full_directory, 'OWNERS')
-            metadata_file = self.host.filesystem.join(full_directory,
-                                                      'DIR_METADATA')
-            is_wpt_notify_enabled = False
-            try:
-                is_wpt_notify_enabled = self.owners_extractor.is_wpt_notify_enabled(
-                    metadata_file)
-            except KeyError:
-                _log.info('KeyError when parsing %s' % metadata_file)
-
-            if not is_wpt_notify_enabled:
+            metadata = self.owners_extractor.read_dir_metadata(full_directory)
+            if not metadata or not metadata.should_notify:
                 _log.info("WPT-NOTIFY disabled in %s." % full_directory)
                 continue
 
-            owners = self.owners_extractor.extract_owners(owners_file)
-            # owners may be empty but not None.
-            cc = owners
+            cc = []
+            if metadata.team_email:
+                cc.append(metadata.team_email)
+            try:
+                cc.extend(self.owners_extractor.extract_owners(owners_file))
+            except FileNotFoundError:
+                _log.warning(f'{owners_file!r} does not exist and '
+                             'was not added to the CC list.')
 
-            component = self.owners_extractor.extract_component(metadata_file)
             # component could be None.
-            components = [component] if component else None
+            components = [metadata.component] if metadata.component else None
 
             prologue = ('WPT import {} introduced new failures in {}:\n\n'
                         'List of new failures:\n'.format(
                             gerrit_url, directory))
-            failure_list = ''
-            for failure in failures:
-                failure_list += str(failure) + '\n'
+            failure_list = ''.join(f'{failure.message}\n'
+                                   for failure in failures)
 
             expectations_statement = (
                 '\nExpectations or baseline files [0] have been automatically '
@@ -275,26 +390,27 @@ class ImportNotifier(object):
             commit_list += line + '\n'
         return commit_list
 
-    def find_owned_directory(self, test_name):
-        """Finds the lowest directory that contains the test and has OWNERS.
+    def find_directory_for_bug(self, test_name: str) -> Optional[str]:
+        """Find the lowest directory with `DIR_METADATA` containing the test.
 
         Args:
-            The name of the test (a path relative to web_tests).
+            test_name: The name of the test (a path relative to web_tests).
 
         Returns:
-            The path of the found directory relative to web_tests.
+            The path of the found directory relative to web_tests, if found.
         """
-        # Always use non-virtual test names when looking up OWNERS.
+        # Always use non-virtual test names when looking up `DIR_METADATA`.
         if self.default_port.lookup_virtual_test_base(test_name):
             test_name = self.default_port.lookup_virtual_test_base(test_name)
-        # find_owners_file takes either a relative path from the *root* of the
-        # repository, or an absolute path.
+        # `find_dir_metadata_file` takes either a relative path from the *root*
+        # of the repository, or an absolute path.
         abs_test_path = self.finder.path_from_web_tests(test_name)
-        owners_file = self.owners_extractor.find_owners_file(
+        metadata_file = self.owners_extractor.find_dir_metadata_file(
             self.host.filesystem.dirname(abs_test_path))
-        if not owners_file:
+        if not metadata_file:
+            _log.warning('Cannot find DIR_METADATA for %s.', test_name)
             return None
-        owned_directory = self.host.filesystem.dirname(owners_file)
+        owned_directory = self.host.filesystem.dirname(metadata_file)
         short_directory = self.host.filesystem.relpath(
             owned_directory, self.finder.web_tests_dir())
         return short_directory
@@ -329,59 +445,24 @@ class ImportNotifier(object):
         return self._monorail_api(access_token=token)
 
 
-class TestFailure(object):
+class TestFailure(NamedTuple):
     """A simple abstraction of a new test failure for the notifier."""
+    message: str
+    test: str
 
-    # Failure types:
-    BASELINE_CHANGE = 1
-    NEW_EXPECTATION = 2
-
-    def __init__(self,
-                 failure_type,
-                 test_name,
-                 expectation_line='',
-                 baseline_path='',
-                 gerrit_url_with_ps=''):
-        if failure_type == self.BASELINE_CHANGE:
-            assert baseline_path and gerrit_url_with_ps
-        else:
-            assert failure_type == self.NEW_EXPECTATION
-            assert expectation_line
-
-        self.failure_type = failure_type
-        self.test_name = test_name
-        self.expectation_line = expectation_line
-        self.baseline_path = baseline_path
-        self.gerrit_url_with_ps = gerrit_url_with_ps
-
-    def __str__(self):
-        if self.failure_type == self.BASELINE_CHANGE:
-            return self._format_baseline_change()
-        else:
-            return self._format_new_expectation()
-
-    def __eq__(self, other):
-        return (self.failure_type == other.failure_type
-                and self.test_name == other.test_name
-                and self.expectation_line == other.expectation_line
-                and self.baseline_path == other.baseline_path
-                and self.gerrit_url_with_ps == other.gerrit_url_with_ps)
-
-    def _format_baseline_change(self):
-        assert self.failure_type == self.BASELINE_CHANGE
-        result = ''
-        # TODO(robertma): Is there any better way than using regexp?
-        platform = re.search(r'/platform/([^/]+)/', self.baseline_path)
+    @classmethod
+    def from_file(cls, test: str, baseline_path: str,
+                  gerrit_url_with_ps: str) -> 'TestFailure':
+        message = ''
+        platform = re.search(r'/platform/([^/]+)/', baseline_path)
         if platform:
-            result += '[ {} ] '.format(platform.group(1).capitalize())
-        result += '{} new failing tests: {}{}'.format(
-            self.test_name, self.gerrit_url_with_ps, self.baseline_path)
-        return result
+            message += '[ {} ] '.format(platform.group(1).capitalize())
+        message += f'{test} new failing tests: '
+        message += gerrit_url_with_ps + baseline_path
+        return cls(message, test)
 
-    def _format_new_expectation(self):
-        assert self.failure_type == self.NEW_EXPECTATION
-        # TODO(robertma): Are there saner ways to remove the link to the umbrella bug?
-        line = self.expectation_line
+    @classmethod
+    def from_expectation_line(cls, test: str, line: str) -> 'TestFailure':
         if line.startswith(WPTExpectationsUpdater.UMBRELLA_BUG):
             line = line[len(WPTExpectationsUpdater.UMBRELLA_BUG):].lstrip()
-        return line
+        return cls(line, test)

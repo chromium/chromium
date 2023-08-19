@@ -190,9 +190,13 @@ ExtensionFunction::ResponseAction TabCaptureCaptureFunction::Run() {
   DesktopMediaID source =
       BuildDesktopMediaID(target_contents, &params->options);
   TabCaptureRegistry* registry = TabCaptureRegistry::Get(browser_context());
-  std::string device_id =
-      registry->AddRequest(target_contents, extension_id, false,
-                           extension()->url(), source, extension_web_contents);
+  content::RenderFrameHost* main_frame =
+      extension_web_contents->GetPrimaryMainFrame();
+  int caller_process_id = main_frame->GetProcess()->GetID();
+  int frame_id = main_frame->GetRoutingID();
+  std::string device_id = registry->AddRequest(
+      target_contents, extension_id, false, extension()->url(), source,
+      caller_process_id, frame_id);
   if (device_id.empty()) {
     return RespondNow(Error(kCapturingSameTab));
   }
@@ -253,16 +257,20 @@ ExtensionFunction::ResponseAction TabCaptureGetMediaStreamIdFunction::Run() {
     return RespondNow(Error(kGrantError));
   }
 
-  // |consumer_contents| is the WebContents for which the stream is created.
-  content::WebContents* consumer_contents = nullptr;
   GURL origin;
+  int caller_process_id = -1;
+  absl::optional<int> restrict_to_render_frame_id;
+  bool should_restrict_to_render_frame = extension()->manifest_version() < 3;
   if (params->options && params->options->consumer_tab_id) {
+    content::WebContents* consumer_contents = nullptr;
     if (!ExtensionTabUtil::GetTabById(*(params->options->consumer_tab_id),
                                       browser_context(), true,
                                       &consumer_contents)) {
       return RespondNow(Error(kInvalidTabIdError));
     }
 
+    // TODO(https://crbug.com/1270878): Use url::Origin directly here and
+    // throughout this stack.
     origin =
         consumer_contents->GetLastCommittedURL().DeprecatedGetOriginAsURL();
     if (!origin.is_valid()) {
@@ -272,16 +280,42 @@ ExtensionFunction::ResponseAction TabCaptureGetMediaStreamIdFunction::Run() {
     if (!network::IsUrlPotentiallyTrustworthy(origin)) {
       return RespondNow(Error(kTabUrlNotSecure));
     }
-  } else {
+
+    content::RenderFrameHost* main_frame =
+        consumer_contents->GetPrimaryMainFrame();
+    caller_process_id = main_frame->GetProcess()->GetID();
+    restrict_to_render_frame_id = main_frame->GetRoutingID();
+  } else if (should_restrict_to_render_frame) {
+    content::WebContents* sender_contents = GetSenderWebContents();
+    if (!sender_contents) {
+      return RespondNow(Error(
+          "`tabCapture.getMediaStreamId()` must be called from a frame in "
+          "manifest version 2."));
+    }
+
+    // TODO(https://crbug.com/1270878): Use url::Origin directly here and
+    // throughout this stack.
     origin = extension()->url();
-    consumer_contents = GetSenderWebContents();
+    content::RenderFrameHost* main_frame =
+        sender_contents->GetPrimaryMainFrame();
+    caller_process_id = main_frame->GetProcess()->GetID();
+    restrict_to_render_frame_id = main_frame->GetRoutingID();
+  } else {
+    // TODO(https://crbug.com/1270878): Use url::Origin directly here and
+    // throughout this stack.
+    origin = extension()->url();
+    caller_process_id = source_process_id();
   }
-  EXTENSION_FUNCTION_VALIDATE(consumer_contents);
+
+  CHECK_NE(-1, caller_process_id);
+  CHECK(restrict_to_render_frame_id.has_value() ||
+        !should_restrict_to_render_frame);
 
   DesktopMediaID source = BuildDesktopMediaID(target_contents, nullptr);
   TabCaptureRegistry* registry = TabCaptureRegistry::Get(browser_context());
-  std::string device_id = registry->AddRequest(
-      target_contents, extension_id, false, origin, source, consumer_contents);
+  std::string device_id =
+      registry->AddRequest(target_contents, extension_id, false, origin, source,
+                           caller_process_id, restrict_to_render_frame_id);
   if (device_id.empty()) {
     return RespondNow(Error(kCapturingSameTab));
   }

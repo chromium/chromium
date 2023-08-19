@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import {getTrustedHTML} from 'chrome://resources/js/static_types.js';
 import {assertEquals, assertFalse, assertNotEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {eventToPromise} from 'chrome://webui-test/test_util.js';
 
@@ -15,8 +16,11 @@ import {TREE_ITEM_INDENT, TreeItemCollapsedEvent, TreeItemExpandedEvent, XfTreeI
 /** Construct a single tree item. */
 async function setUpSingleTreeItem() {
   document.body.setAttribute('theme', 'refresh23');
-  document.body.innerHTML =
-      '<xf-tree><xf-tree-item id="item1" label="item1"></xf-tree-item></xf-tree>';
+  document.body.innerHTML = getTrustedHTML`
+    <xf-tree>
+      <xf-tree-item id="item1" label="item1"></xf-tree-item>
+    </xf-tree>
+  `;
   const element = document.querySelector('xf-tree-item');
   assertNotEquals(null, element);
   await waitForElementUpdate(element!);
@@ -30,7 +34,9 @@ async function setUpNestedTreeItems() {
   //    └── item1b
   //        └── item1bi
   // ── item2
-  document.body.innerHTML = '<xf-tree><xf-tree>';
+  document.body.innerHTML = getTrustedHTML`
+    <xf-tree><xf-tree>
+  `;
   const tree = document.querySelector('xf-tree')!;
   assertNotEquals(null, tree);
 
@@ -101,7 +107,6 @@ export async function testRenderWithSingleTreeItem(done: () => void) {
 
   // Test attributes on the root element.
   assertEquals('treeitem', root.getAttribute('role'));
-  assertEquals('-1', root.getAttribute('tabindex'));
   assertEquals('false', root.getAttribute('aria-selected'));
   assertFalse(root.hasAttribute('aria-expanded'));
   assertEquals('false', root.getAttribute('aria-disabled'));
@@ -439,6 +444,26 @@ export async function testIconSetIgnoreIcon(done: () => void) {
   const {treeLabelIcon} = getTreeItemInnerElements(item1);
   assertEquals(null, treeLabelIcon.type);
   assertEquals('fake-base64-data', treeLabelIcon.iconSet!.icon32x32Url);
+
+  done();
+}
+
+/** Tests the has-children attribute. */
+export async function testHasChildrenAttribute(done: () => void) {
+  await setUpSingleTreeItem();
+  const item1 = getTreeItemById('item1');
+
+  // Check has-children attribute is false because we have no children.
+  assertEquals('false', item1.getAttribute('has-children'));
+
+  // Add a child item for item1.
+  const item1a = document.createElement('xf-tree-item');
+  item1a.id = 'item1a';
+  item1.appendChild(item1a);
+  await waitForElementUpdate(item1);
+
+  // Check has-children attribute is true now because we have 1 child now.
+  assertEquals('true', item1.getAttribute('has-children'));
 
   done();
 }

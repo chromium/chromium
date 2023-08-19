@@ -144,7 +144,7 @@ void Sensor::Trace(Visitor* visitor) const {
   visitor->Trace(sensor_proxy_);
   ActiveScriptWrappable::Trace(visitor);
   ExecutionContextLifecycleObserver::Trace(visitor);
-  EventTargetWithInlineData::Trace(visitor);
+  EventTarget::Trace(visitor);
 }
 
 bool Sensor::HasPendingActivity() const {
@@ -188,6 +188,8 @@ void Sensor::InitSensorProxyIfNeeded() {
 void Sensor::ContextDestroyed() {
   if (!IsIdleOrErrored())
     Deactivate();
+
+  state_ = SensorState::kIdle;
 
   if (sensor_proxy_)
     sensor_proxy_->Detach();

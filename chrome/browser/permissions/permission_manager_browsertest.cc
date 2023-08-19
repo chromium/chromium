@@ -104,7 +104,7 @@ class PermissionManagerBrowserTest : public InProcessBrowserTest {
   Browser* incognito_browser() { return incognito_browser_; }
 
  private:
-  raw_ptr<Browser, DanglingUntriaged> incognito_browser_ = nullptr;
+  raw_ptr<Browser, AcrossTasksDanglingUntriaged> incognito_browser_ = nullptr;
 };
 
 IN_PROC_BROWSER_TEST_F(PermissionManagerBrowserTest,

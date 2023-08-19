@@ -16,6 +16,10 @@
 
 class TokensLoadedCallbackRunner;
 
+namespace signin_util {
+class CookiesMover;
+}
+
 // Extracts an account from an existing profile and moves it to a new profile.
 class DiceSignedInProfileCreator {
  public:
@@ -51,6 +55,12 @@ class DiceSignedInProfileCreator {
   // Called when the profile is initialized.
   void OnNewProfileInitialized(Profile* profile);
 
+  // Called when cookies have been moved from `source_profile_` to
+  // `new_profile`.
+  void OnCookiesMoved(Profile* new_profile);
+
+  void LoadNewProfileTokens(base::WeakPtr<Profile> new_profile);
+
   // Callback invoked once the token service is ready for the new profile.
   void OnNewProfileTokensLoaded(Profile* new_profile);
 
@@ -59,6 +69,7 @@ class DiceSignedInProfileCreator {
 
   base::OnceCallback<void(Profile*)> callback_;
   std::unique_ptr<TokensLoadedCallbackRunner> tokens_loaded_callback_runner_;
+  std::unique_ptr<signin_util::CookiesMover> cookies_mover_;
 
   base::WeakPtrFactory<DiceSignedInProfileCreator> weak_pointer_factory_{this};
 };

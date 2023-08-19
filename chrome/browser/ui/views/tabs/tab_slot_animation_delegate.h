@@ -28,7 +28,7 @@ class TabSlotAnimationDelegate : public gfx::AnimationDelegate {
 
  private:
   const raw_ptr<TabContainer, DanglingUntriaged> tab_container_;
-  const raw_ptr<TabSlotView, DanglingUntriaged> slot_view_;
+  const raw_ptr<TabSlotView, AcrossTasksDanglingUntriaged> slot_view_;
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_TABS_TAB_SLOT_ANIMATION_DELEGATE_H_

@@ -26,9 +26,9 @@ struct SyncToken;
 
 namespace viz {
 class ClientResourceProvider;
-class ContextProvider;
 class DisplayResourceProvider;
 class CompositorRenderPass;
+class RasterContextProvider;
 }  // namespace viz
 
 namespace cc {
@@ -126,7 +126,7 @@ void AddOneOfEveryQuadTypeInDisplayResourceProvider(
     viz::AggregatedRenderPass* to_pass,
     viz::DisplayResourceProvider* resource_provider,
     viz::ClientResourceProvider* child_resource_provider,
-    viz::ContextProvider* child_context_provider,
+    viz::RasterContextProvider* child_context_provider,
     viz::AggregatedRenderPassId child_pass_id,
     gpu::SyncToken* sync_token_for_mailbox_texture);
 

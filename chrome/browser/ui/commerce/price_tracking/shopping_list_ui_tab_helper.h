@@ -60,6 +60,8 @@ class ShoppingListUiTabHelper
   virtual const gfx::Image& GetProductImage();
   // Return whether the PriceTrackingIconView is visible.
   virtual bool ShouldShowPriceTrackingIconView();
+  // Return whether the PriceInsightsIconView is visible.
+  virtual bool ShouldShowPriceInsightsIconView();
 
   // The URL for the last fetched product image. A reference to this object
   // should not be kept directly, if one is needed, a copy should be made.
@@ -88,6 +90,12 @@ class ShoppingListUiTabHelper
   virtual void SetPriceTrackingState(bool enable,
                                      bool is_new_bookmark,
                                      base::OnceCallback<void(bool)> callback);
+  void OnPriceInsightsIconClicked();
+
+  // Return the PriceInsightsInfo for the last fetched product URL. A reference
+  // to this object should not be kept directly, if one is needed, a copy should
+  // be made.
+  virtual const absl::optional<PriceInsightsInfo>& GetPriceInsightsInfo();
 
  protected:
   ShoppingListUiTabHelper(content::WebContents* contents,
@@ -97,6 +105,8 @@ class ShoppingListUiTabHelper
 
   const absl::optional<bool>& GetPendingTrackingStateForTesting();
 
+  virtual std::unique_ptr<views::View> CreateShoppingInsightsWebView();
+
  private:
   friend class content::WebContentsUserData<ShoppingListUiTabHelper>;
   friend class ShoppingListUiTabHelperTest;
@@ -104,12 +114,18 @@ class ShoppingListUiTabHelper
   void HandleProductInfoResponse(const GURL& url,
                                  const absl::optional<ProductInfo>& info);
 
+  void HandlePriceInsightsInfoResponse(
+      const GURL& url,
+      const absl::optional<PriceInsightsInfo>& info);
+
   void HandleImageFetcherResponse(
       const GURL image_url,
       const gfx::Image& image,
       const image_fetcher::RequestMetadata& request_metadata);
 
   void UpdatePriceTrackingIconView();
+
+  void UpdatePriceInsightsIconView();
 
   // Update the flag tracking the price tracking state of the product from
   // subscriptions.
@@ -132,9 +148,9 @@ class ShoppingListUiTabHelper
   // first.
   void MakeShoppingInsightsSidePanelUnavailable();
 
-  std::unique_ptr<views::View> CreateShoppingInsightsWebView();
-
   SidePanelUI* GetSidePanelUI() const;
+
+  void DelayUpdateForIconView();
 
   // The shopping service is tied to the lifetime of the browser context
   // which will always outlive this tab helper.
@@ -172,6 +188,9 @@ class ShoppingListUiTabHelper
   // The url from the previous successful main frame navigation. This will be
   // empty if this is the first navigation for this tab or post-restart.
   GURL previous_main_frame_url_;
+
+  // The PriceInsightsInfo associated with the last committed URL.
+  absl::optional<PriceInsightsInfo> price_insights_info_;
 
   // Automatically remove this observer from its host when destroyed.
   base::ScopedObservation<ShoppingService, SubscriptionsObserver>

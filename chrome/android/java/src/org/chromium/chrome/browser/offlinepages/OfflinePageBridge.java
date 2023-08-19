@@ -521,8 +521,7 @@ public class OfflinePageBridge {
      * @param webContents Web contents used to find the offline page.
      * @return The offline page if tab currently displays it, null otherwise.
      */
-    @Nullable
-    public OfflinePageItem getOfflinePage(WebContents webContents) {
+    public @Nullable OfflinePageItem getOfflinePage(WebContents webContents) {
         return org.chromium.chrome.browser.offlinepages.OfflinePageBridgeJni.get().getOfflinePage(
                 mNativeOfflinePageBridge, OfflinePageBridge.this, webContents);
     }

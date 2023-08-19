@@ -5,6 +5,7 @@
 import("//build/config/android/rules.gni")
 
 android_library("java") {
+  srcjar_deps = [ ":jni_headers" ]
   sources = [
     "java/src/org/chromium/components/external_intents/ExternalIntentsFeatures.java",
     "java/src/org/chromium/components/external_intents/ExternalIntentsSwitches.java",
@@ -16,7 +17,6 @@ android_library("java") {
     "java/src/org/chromium/components/external_intents/RedirectHandler.java",
   ]
 
-  annotation_processor_deps = [ "//base/android/jni_generator:jni_processor" ]
   deps = [
     ":java_resources",
     "//base:base_java",
@@ -100,8 +100,8 @@ android_library("unit_device_javatests") {
 
 android_library("test_support_java") {
   testonly = true
-  annotation_processor_deps = [ "//base/android/jni_generator:jni_processor" ]
 
+  srcjar_deps = [ ":test_support_java_jni_headers" ]
   sources = [ "javatests/src/org/chromium/components/external_intents/TestChildFrameNavigationObserver.java" ]
 
   deps = [

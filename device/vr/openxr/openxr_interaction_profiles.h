@@ -30,7 +30,8 @@ enum class OpenXrButtonType {
   kButton2 = 6,
   kGrasp = 7,
   kShoulder = 8,
-  kMaxValue = 8,
+  kMenu = 9,
+  kMaxValue = 9,
 };
 
 enum class OpenXrAxisType {

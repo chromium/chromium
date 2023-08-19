@@ -4,6 +4,7 @@
 
 package org.chromium.chrome.browser.back_press;
 
+import android.text.format.DateUtils;
 import android.util.SparseIntArray;
 
 import androidx.activity.OnBackPressedCallback;
@@ -11,8 +12,10 @@ import androidx.annotation.NonNull;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.Callback;
+import org.chromium.base.TimeUtils;
 import org.chromium.base.lifetime.Destroyable;
 import org.chromium.base.metrics.RecordHistogram;
+import org.chromium.chrome.browser.flags.BooleanCachedFieldTrialParameter;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.components.browser_ui.widget.gesture.BackPressHandler;
 import org.chromium.components.browser_ui.widget.gesture.BackPressHandler.BackPressResult;
@@ -33,6 +36,9 @@ import java.util.List;
  * {@link BackPressHandler} with the new defined {@link Type}.
  */
 public class BackPressManager implements Destroyable {
+    public static final BooleanCachedFieldTrialParameter TAB_HISTORY_RECOVER =
+            new BooleanCachedFieldTrialParameter(
+                    ChromeFeatureList.BACK_GESTURE_REFACTOR, "tab_history_recover", false);
     private static final SparseIntArray sMetricsMap;
     private static final int sMetricsMaxValue;
     static {
@@ -71,6 +77,7 @@ public class BackPressManager implements Destroyable {
 
     static final String HISTOGRAM = "Android.BackPress.Intercept";
     static final String FAILURE_HISTOGRAM = "Android.BackPress.Failure";
+    static final String INTERVAL_HISTOGRAM = "Android.BackPress.Interval";
 
     private final BackPressHandler[] mHandlers = new BackPressHandler[Type.NUM_TYPES];
     private final boolean mUseSystemBack;
@@ -79,6 +86,8 @@ public class BackPressManager implements Destroyable {
     private final Callback<Boolean>[] mObserverCallbacks = new Callback[Type.NUM_TYPES];
     private Runnable mFallbackOnBackPressed;
     private int mLastCalledHandlerForTesting = -1;
+    // Do not use static; otherwise the data might be corrupted because of multi-window usage.
+    private long mLastPressMs = -1;
 
     /**
      * @return True if the back gesture refactor is enabled.
@@ -98,7 +107,14 @@ public class BackPressManager implements Destroyable {
      * @return True if ActivityTabProvider should replace ChromeTabActivity#getActivityTab
      */
     public static boolean shouldUseActivityTabProvider() {
-        return ChromeFeatureList.sBackGestureActivityTabProvider.isEnabled();
+        return isEnabled() || ChromeFeatureList.sBackGestureActivityTabProvider.isEnabled();
+    }
+
+    /**
+     * @return True if the tab navigation should be corrected on fallback callback.
+     */
+    public static boolean correctTabNavigationOnFallback() {
+        return isEnabled() && TAB_HISTORY_RECOVER.getValue();
     }
 
     /**
@@ -108,6 +124,19 @@ public class BackPressManager implements Destroyable {
     public static void record(@Type int type) {
         RecordHistogram.recordEnumeratedHistogram(
                 HISTOGRAM, sMetricsMap.get(type), sMetricsMaxValue);
+    }
+
+    /**
+     * Record the interval between two consecutive back press events. Should be called when
+     * a back press event is intercepted.
+     */
+    public void recordLastPressInterval() {
+        long now = TimeUtils.elapsedRealtimeMillis();
+        if (mLastPressMs != -1) {
+            RecordHistogram.recordCustomTimesHistogram(
+                    INTERVAL_HISTOGRAM, now - mLastPressMs, 1, DateUtils.SECOND_IN_MILLIS * 3, 50);
+        }
+        mLastPressMs = now;
     }
 
     private static void recordFailure(@Type int type) {
@@ -191,6 +220,14 @@ public class BackPressManager implements Destroyable {
         mHasSystemBackArm = hasSystemBackArm;
     }
 
+    /**
+     * Get the timestamp of when the latest back press occurs.
+     * @return The timestamp of when the latest back press occurs. -1 if no previous back press.
+     */
+    public long getLastPressMs() {
+        return mLastPressMs;
+    }
+
     private void backPressStateChanged() {
         boolean intercept = shouldInterceptBackPress();
         if (mHasSystemBackArm) {
@@ -219,6 +256,7 @@ public class BackPressManager implements Destroyable {
                     recordFailure(i);
                 } else {
                     record(i);
+                    recordLastPressInterval();
                     assertListOfFailedHandlers(failed, i);
                     return;
                 }
@@ -226,7 +264,7 @@ public class BackPressManager implements Destroyable {
         }
         if (mFallbackOnBackPressed != null) mFallbackOnBackPressed.run();
         assertListOfFailedHandlers(failed, -1);
-        assert false : "Callback is enabled but no handler consumed back gesture.";
+        assert !failed.isEmpty() : "Callback is enabled but no handler consumed back gesture.";
     }
 
     @Override
@@ -255,27 +293,22 @@ public class BackPressManager implements Destroyable {
             : String.format("%s didn't correctly handle back press; handled by %s.", msg, succeed);
     }
 
-    @VisibleForTesting
     public BackPressHandler[] getHandlersForTesting() {
         return mHandlers;
     }
 
-    @VisibleForTesting
     public int getLastCalledHandlerForTesting() {
         return mLastCalledHandlerForTesting;
     }
 
-    @VisibleForTesting
     public void resetLastCalledHandlerForTesting() {
         mLastCalledHandlerForTesting = -1;
     }
 
-    @VisibleForTesting
     public static String getHistogramForTesting() {
         return HISTOGRAM;
     }
 
-    @VisibleForTesting
     public static int getHistogramValueForTesting(int type) {
         return sMetricsMap.get(type);
     }

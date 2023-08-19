@@ -412,7 +412,8 @@ class KEYBOARD_EXPORT KeyboardUIController
   std::unique_ptr<KeyboardUIFactory> ui_factory_;
   std::unique_ptr<KeyboardUI> ui_;
   std::unique_ptr<ui::VirtualKeyboardController> virtual_keyboard_controller_;
-  raw_ptr<KeyboardLayoutDelegate, ExperimentalAsh> layout_delegate_ = nullptr;
+  raw_ptr<KeyboardLayoutDelegate, DanglingUntriaged | ExperimentalAsh>
+      layout_delegate_ = nullptr;
   base::ScopedObservation<ui::InputMethod, ui::InputMethodObserver>
       ime_observation_{this};
 

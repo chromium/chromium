@@ -74,6 +74,7 @@ ResourceResponse::ResourceResponse()
       was_fetched_via_spdy_(false),
       was_fetched_via_service_worker_(false),
       did_service_worker_navigation_preload_(false),
+      did_use_shared_dictionary_(false),
       async_revalidation_requested_(false),
       is_signed_exchange_inner_response_(false),
       was_in_prefetch_cache_(false),

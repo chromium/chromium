@@ -183,6 +183,9 @@ class PLATFORM_EXPORT FetchContext : public GarbageCollected<FetchContext> {
   // Update SubresourceLoad metrics.
   virtual void UpdateSubresourceLoadMetrics(
       const SubresourceLoadMetrics& subresource_load_metrics) {}
+
+  // Returns true iff we have LCPP hint data for the fetch context.
+  virtual bool DoesLCPPHaveAnyHintData() { return false; }
 };
 
 }  // namespace blink

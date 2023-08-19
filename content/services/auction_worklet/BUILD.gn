@@ -32,8 +32,6 @@ inspector_protocol_generate("protocol_sources") {
 
 source_set("auction_worklet") {
   sources = [
-    "auction_downloader.cc",
-    "auction_downloader.h",
     "auction_v8_devtools_agent.cc",
     "auction_v8_devtools_agent.h",
     "auction_v8_devtools_session.cc",
@@ -60,6 +58,8 @@ source_set("auction_worklet") {
     "private_aggregation_bindings.h",
     "register_ad_beacon_bindings.cc",
     "register_ad_beacon_bindings.h",
+    "register_ad_macro_bindings.cc",
+    "register_ad_macro_bindings.h",
     "report_bindings.cc",
     "report_bindings.h",
     "seller_worklet.cc",
@@ -76,6 +76,8 @@ source_set("auction_worklet") {
     "trusted_signals.h",
     "trusted_signals_request_manager.cc",
     "trusted_signals_request_manager.h",
+    "webidl_compat.cc",
+    "webidl_compat.h",
     "worklet_loader.cc",
     "worklet_loader.h",
   ]
@@ -93,7 +95,6 @@ source_set("auction_worklet") {
     "//base",
     "//content:export",
     "//content/common",
-    "//content/services/worklet_utils",
     "//gin",
     "//mojo/public/cpp/bindings",
     "//net",
@@ -104,7 +105,10 @@ source_set("auction_worklet") {
     "//v8",
   ]
 
-  public_deps = [ "public/mojom" ]
+  public_deps = [
+    "public/cpp",
+    "public/mojom",
+  ]
 }
 
 # See comment at the top of //content/BUILD.gn for how this works.
@@ -129,14 +133,15 @@ source_set("tests") {
   }
 
   sources = [
-    "auction_downloader_unittest.cc",
     "auction_v8_inspector_util_unittest.cc",
     "context_recycler_unittest.cc",
     "debug_command_queue_unittest.cc",
     "direct_from_seller_signals_requester_unittest.cc",
+    "public/cpp/auction_downloader_unittest.cc",
     "seller_worklet_unittest.cc",
     "trusted_signals_request_manager_unittest.cc",
     "trusted_signals_unittest.cc",
+    "webidl_compat_unittest.cc",
     "worklet_devtools_debug_test_util.cc",
     "worklet_devtools_debug_test_util.h",
     "worklet_test_util.cc",

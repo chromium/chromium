@@ -51,29 +51,15 @@ void RequestDesktopSiteWebContentsObserverAndroid::DidStartNavigation(
     return;
   }
 
-  // TODO(shuyng): Remove this if Domain Settings is launched before Additional
-  // Settings.
-  if (!base::FeatureList::IsEnabled(features::kRequestDesktopSiteExceptions)) {
-    // Stop UA override if there is a tab level setting.
-    TabModel::TabUserAgent tabSetting =
-        tab_android_
-            ? static_cast<TabModel::TabUserAgent>(tab_android_->GetUserAgent())
-            : TabModel::TabUserAgent::DEFAULT;
-    if (tabSetting != TabModel::TabUserAgent::DEFAULT) {
-      return;
-    }
-  }
-
   const GURL& url = navigation_handle->GetParentFrameOrOuterDocument()
                         ? navigation_handle->GetParentFrameOrOuterDocument()
                               ->GetOutermostMainFrame()
                               ->GetLastCommittedURL()
                         : navigation_handle->GetURL();
   content_settings::SettingInfo setting_info;
-  const base::Value setting = host_content_settings_map_->GetWebsiteSetting(
+  ContentSetting setting = host_content_settings_map_->GetContentSetting(
       url, url, ContentSettingsType::REQUEST_DESKTOP_SITE, &setting_info);
-  bool use_rds =
-      content_settings::ValueToContentSetting(setting) == CONTENT_SETTING_ALLOW;
+  bool use_rds = setting == CONTENT_SETTING_ALLOW;
   // For --request-desktop-sites, always override the user agent.
   use_rds |= base::CommandLine::ForCurrentProcess()->HasSwitch(
       switches::kRequestDesktopSites);

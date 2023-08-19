@@ -277,29 +277,19 @@ void SVGTextContentElement::CollectStyleForPresentationAttribute(
 
     if (value == preserve_string) {
       UseCounter::Count(GetDocument(), WebFeature::kWhiteSpacePreFromXMLSpace);
-      if (!RuntimeEnabledFeatures::CSSWhiteSpaceShorthandEnabled()) {
-        AddPropertyToPresentationAttributeStyle(
-            style, CSSPropertyID::kWhiteSpace, CSSValueID::kPre);
-      } else {
-        // Longhands of `white-space: pre`.
-        AddPropertyToPresentationAttributeStyle(
-            style, CSSPropertyID::kWhiteSpaceCollapse, CSSValueID::kPreserve);
-        AddPropertyToPresentationAttributeStyle(style, CSSPropertyID::kTextWrap,
-                                                CSSValueID::kNowrap);
-      }
+      // Longhands of `white-space: pre`.
+      AddPropertyToPresentationAttributeStyle(
+          style, CSSPropertyID::kWhiteSpaceCollapse, CSSValueID::kPreserve);
+      AddPropertyToPresentationAttributeStyle(style, CSSPropertyID::kTextWrap,
+                                              CSSValueID::kNowrap);
     } else {
       UseCounter::Count(GetDocument(),
                         WebFeature::kWhiteSpaceNowrapFromXMLSpace);
-      if (!RuntimeEnabledFeatures::CSSWhiteSpaceShorthandEnabled()) {
-        AddPropertyToPresentationAttributeStyle(
-            style, CSSPropertyID::kWhiteSpace, CSSValueID::kNowrap);
-      } else {
-        // Longhands of `white-space: nowrap`.
-        AddPropertyToPresentationAttributeStyle(
-            style, CSSPropertyID::kWhiteSpaceCollapse, CSSValueID::kCollapse);
-        AddPropertyToPresentationAttributeStyle(style, CSSPropertyID::kTextWrap,
-                                                CSSValueID::kNowrap);
-      }
+      // Longhands of `white-space: nowrap`.
+      AddPropertyToPresentationAttributeStyle(
+          style, CSSPropertyID::kWhiteSpaceCollapse, CSSValueID::kCollapse);
+      AddPropertyToPresentationAttributeStyle(style, CSSPropertyID::kTextWrap,
+                                              CSSValueID::kNowrap);
     }
   } else {
     SVGGraphicsElement::CollectStyleForPresentationAttribute(name, value,
@@ -355,13 +345,10 @@ SVGAnimatedPropertyBase* SVGTextContentElement::PropertyFromAttribute(
   }
 }
 
-void SVGTextContentElement::SynchronizeSVGAttribute(
-    const QualifiedName& name) const {
-  if (name == AnyQName()) {
-    SVGAnimatedPropertyBase* attrs[]{text_length_.Get(), length_adjust_.Get()};
-    SynchronizeAllSVGAttributes(attrs);
-  }
-  SVGGraphicsElement::SynchronizeSVGAttribute(name);
+void SVGTextContentElement::SynchronizeAllSVGAttributes() const {
+  SVGAnimatedPropertyBase* attrs[]{text_length_.Get(), length_adjust_.Get()};
+  SynchronizeListOfSVGAttributes(attrs);
+  SVGGraphicsElement::SynchronizeAllSVGAttributes();
 }
 
 }  // namespace blink

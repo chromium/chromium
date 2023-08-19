@@ -12,7 +12,11 @@ source_set("safe_browsing") {
     "chrome_password_protection_service.mm",
     "chrome_password_protection_service_factory.h",
     "chrome_password_protection_service_factory.mm",
+    "hash_realtime_service_factory.h",
+    "hash_realtime_service_factory.mm",
     "input_event_observer.h",
+    "ohttp_key_service_factory.h",
+    "ohttp_key_service_factory.mm",
     "password_protection_java_script_feature.h",
     "password_protection_java_script_feature.mm",
     "real_time_url_lookup_service_factory.h",
@@ -44,6 +48,8 @@ source_set("safe_browsing") {
     "//components/safe_browsing/core/browser:safe_browsing_metrics_collector",
     "//components/safe_browsing/core/browser:verdict_cache_manager",
     "//components/safe_browsing/core/browser/db:v4_protocol_manager_util",
+    "//components/safe_browsing/core/browser/hashprefix_realtime:hash_realtime_service",
+    "//components/safe_browsing/core/browser/hashprefix_realtime:hash_realtime_utils",
     "//components/safe_browsing/core/browser/password_protection:password_protection_metrics_util",
     "//components/safe_browsing/core/browser/realtime:url_lookup_service",
     "//components/safe_browsing/core/browser/sync",
@@ -78,8 +84,6 @@ source_set("safe_browsing") {
     "//net",
     "//ui/base",
   ]
-
-  configs += [ "//build/config/compiler:enable_arc" ]
 }
 
 optimize_ts("password_protection_ts") {
@@ -99,15 +103,10 @@ source_set("features") {
     "//base",
     "//components/password_manager/core/common:features",
   ]
-
-  configs += [ "//build/config/compiler:enable_arc" ]
 }
 
 source_set("eg2_tests") {
-  configs += [
-    "//build/config/compiler:enable_arc",
-    "//build/config/ios:xctest_config",
-  ]
+  configs += [ "//build/config/ios:xctest_config" ]
   testonly = true
   sources = [
     "password_protection_egtest.mm",
@@ -115,6 +114,7 @@ source_set("eg2_tests") {
   ]
   deps = [
     "//base",
+    "//components/bookmarks/common",
     "//components/password_manager/core/common:features",
     "//components/safe_browsing/core/common",
     "//components/safe_browsing/core/common:safe_browsing_prefs",
@@ -138,6 +138,8 @@ source_set("unit_tests") {
   testonly = true
   sources = [
     "chrome_password_protection_service_unittest.mm",
+    "hash_realtime_service_factory_unittest.mm",
+    "ohttp_key_service_factory_unittest.mm",
     "real_time_url_lookup_service_factory_unittest.mm",
     "safe_browsing_blocking_page_unittest.mm",
     "safe_browsing_client_factory_unittest.mm",
@@ -156,6 +158,7 @@ source_set("unit_tests") {
     "//components/safe_browsing/core/browser",
     "//components/safe_browsing/core/browser:token_fetcher",
     "//components/safe_browsing/core/browser:verdict_cache_manager",
+    "//components/safe_browsing/core/browser/hashprefix_realtime:hash_realtime_utils",
     "//components/safe_browsing/core/browser/password_protection:password_protection_metrics_util",
     "//components/safe_browsing/core/browser/realtime:url_lookup_service",
     "//components/safe_browsing/core/common",
@@ -186,6 +189,4 @@ source_set("unit_tests") {
     "//ui/base",
     "//url",
   ]
-
-  configs += [ "//build/config/compiler:enable_arc" ]
 }

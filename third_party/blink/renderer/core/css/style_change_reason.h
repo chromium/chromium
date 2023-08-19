@@ -23,6 +23,7 @@ extern const char kControlValue[];
 extern const char kDeclarativeContent[];
 extern const char kDesignMode[];
 extern const char kDialog[];
+extern const char kEditContext[];
 extern const char kDisplayLock[];
 extern const char kViewTransition[];
 extern const char kFrame[];

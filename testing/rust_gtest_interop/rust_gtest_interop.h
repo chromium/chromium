@@ -8,6 +8,8 @@
 #include <stdint.h>
 #include <type_traits>
 
+#include "base/memory/raw_ptr_exclusion.h"
+
 namespace testing {
 class Test;
 }
@@ -41,7 +43,13 @@ class RustTest : public Subclass {
   void TestBody() override { test_fn_(this); }
 
  private:
-  void (&test_fn_)(Subclass*);
+  // Not a `raw_ref<T>`, because the pointee (a function) is never
+  // heap/PartitionAlloc-allocated.
+  //
+  // TODO(https://crbug.com/1451571): An explicit exclusion shouldn't be needed
+  // for function pointers. Remove the //base dependency when RAW_PTR_EXCLUSION
+  // isn't needed.
+  void(RAW_PTR_EXCLUSION& test_fn_)(Subclass*);
 };
 
 // The TestSuite factory function which will construct a testing::Test subclass

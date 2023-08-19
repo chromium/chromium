@@ -52,21 +52,6 @@ class ScopedDeviceSettings {
   std::unique_ptr<FakeOwnerSettingsService> owner_settings_service_;
 };
 
-class ScopedCanConfigureNetwork {
- public:
-  explicit ScopedCanConfigureNetwork(bool can_configure);
-  ScopedCanConfigureNetwork(const ScopedCanConfigureNetwork&) = delete;
-  ScopedCanConfigureNetwork& operator=(const ScopedCanConfigureNetwork&) =
-      delete;
-  ~ScopedCanConfigureNetwork();
-
-  bool CanConfigureNetwork() const { return can_configure_; }
-
- private:
-  const bool can_configure_;
-  KioskLaunchController::ReturnBoolCallback can_configure_network_callback_;
-};
-
 }  // namespace ash
 
 #endif  // CHROME_BROWSER_ASH_LOGIN_APP_MODE_TEST_KIOSK_TEST_HELPERS_H_

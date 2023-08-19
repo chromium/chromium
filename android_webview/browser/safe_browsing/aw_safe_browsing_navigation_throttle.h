@@ -26,6 +26,7 @@ namespace android_webview {
 // BrowserURLLoaderThrottle and RendererURLLoaderThrottles and related code.
 // Those cause the navigation to fail which invokes this throttle to show the
 // interstitial.
+// Lifetime: Temporary
 class AwSafeBrowsingNavigationThrottle : public content::NavigationThrottle {
  public:
   static std::unique_ptr<AwSafeBrowsingNavigationThrottle>

@@ -6,10 +6,6 @@
 
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 @implementation SCFirstRunDefaultScreenViewController
 
 #pragma mark - Public
@@ -22,7 +18,7 @@
   self.secondaryActionString = @"Not now";
   self.tertiaryActionString = @"Customize sync";
   self.bannerName = @"Sample-banner";
-  self.isTallBanner = NO;
+  self.bannerSize = BannerImageSizeType::kStandard;
 
   // Add some screen-specific content and its constraints.
   UILabel* label = [[UILabel alloc] init];

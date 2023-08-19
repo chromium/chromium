@@ -50,5 +50,5 @@ KeyedService* PrivacySandboxSettingsFactory::BuildServiceInstanceFor(
   return new privacy_sandbox::PrivacySandboxSettingsImpl(
       std::make_unique<PrivacySandboxSettingsDelegate>(profile),
       HostContentSettingsMapFactory::GetForProfile(profile),
-      CookieSettingsFactory::GetForProfile(profile).get(), profile->GetPrefs());
+      CookieSettingsFactory::GetForProfile(profile), profile->GetPrefs());
 }

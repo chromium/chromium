@@ -6,4 +6,5 @@ include_rules = [
   "+ios/chrome/browser/ui/default_promo/default_browser_promo_non_modal_scheduler.h",
   "+ios/chrome/browser/ui/orchestrator",
   "+ios/chrome/browser/ui/ntp/new_tab_page_util.h",
+  "+ios/chrome/browser/ui/toolbar/public/toolbar_type.h",
 ]

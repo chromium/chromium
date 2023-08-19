@@ -72,22 +72,25 @@ IsolateHolder::IsolateHolder(
     IsolateType isolate_type,
     IsolateCreationMode isolate_creation_mode,
     v8::CreateHistogramCallback create_histogram_callback,
-    v8::AddHistogramSampleCallback add_histogram_sample_callback)
-    : IsolateHolder(task_runner,
+    v8::AddHistogramSampleCallback add_histogram_sample_callback,
+    scoped_refptr<base::SingleThreadTaskRunner> low_priority_task_runner)
+    : IsolateHolder(std::move(task_runner),
                     access_mode,
                     isolate_type,
                     getModifiedIsolateParams(getDefaultIsolateParams(),
                                              atomics_wait_mode,
                                              create_histogram_callback,
                                              add_histogram_sample_callback),
-                    isolate_creation_mode) {}
+                    isolate_creation_mode,
+                    std::move(low_priority_task_runner)) {}
 
 IsolateHolder::IsolateHolder(
     scoped_refptr<base::SingleThreadTaskRunner> task_runner,
     AccessMode access_mode,
     IsolateType isolate_type,
     std::unique_ptr<v8::Isolate::CreateParams> params,
-    IsolateCreationMode isolate_creation_mode)
+    IsolateCreationMode isolate_creation_mode,
+    scoped_refptr<base::SingleThreadTaskRunner> low_priority_task_runner)
     : access_mode_(access_mode), isolate_type_(isolate_type) {
   CHECK(Initialized())
       << "You need to invoke gin::IsolateHolder::Initialize first";
@@ -99,8 +102,9 @@ IsolateHolder::IsolateHolder(
   DCHECK(allocator);
 
   isolate_ = v8::Isolate::Allocate();
-  isolate_data_ = std::make_unique<PerIsolateData>(isolate_, allocator,
-                                                   access_mode_, task_runner);
+  isolate_data_ = std::make_unique<PerIsolateData>(
+      isolate_, allocator, access_mode_, task_runner,
+      std::move(low_priority_task_runner));
   //  TODO(https://crbug.com/1347092): Refactor such that caller need not
   //  provide params when creating a snapshot.
   if (isolate_creation_mode == IsolateCreationMode::kCreateSnapshot) {

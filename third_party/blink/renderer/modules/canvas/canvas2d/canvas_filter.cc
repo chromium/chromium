@@ -4,24 +4,22 @@
 
 #include "third_party/blink/renderer/modules/canvas/canvas2d/canvas_filter.h"
 
+#include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/modules/canvas/canvas2d/canvas_filter_operation_resolver.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 
 namespace blink {
 
-class ExecutionContext;
-
 CanvasFilter::CanvasFilter(FilterOperations filter_operations)
     : filter_operations_(std::move(filter_operations)) {}
 
-CanvasFilter* CanvasFilter::Create(ExecutionContext* execution_context,
+CanvasFilter* CanvasFilter::Create(ScriptState* script_state,
                                    const V8CanvasFilterInput* init,
                                    ExceptionState& exception_state) {
-  CHECK(execution_context);
   CHECK(init);
   return MakeGarbageCollected<CanvasFilter>(
       CanvasFilterOperationResolver::CreateFilterOperations(
-          *init, *execution_context, exception_state));
+          *init, *ExecutionContext::From(script_state), exception_state));
 }
 
 void CanvasFilter::Trace(Visitor* visitor) const {

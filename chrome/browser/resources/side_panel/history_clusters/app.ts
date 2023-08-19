@@ -3,10 +3,12 @@
 // found in the LICENSE file.
 
 import '../strings.m.js';
+import 'chrome://history-clusters-side-panel.top-chrome/shared/sp_shared_style.css.js';
 import 'chrome://resources/cr_components/history_clusters/browser_proxy.js';
 import 'chrome://resources/cr_components/history_clusters/clusters.js';
 import 'chrome://resources/cr_elements/cr_toolbar/cr_toolbar_search_field.js';
 
+import {ColorChangeUpdater} from 'chrome://resources/cr_components/color_change_listener/colors_css_updater.js';
 import {BrowserProxyImpl} from 'chrome://resources/cr_components/history_clusters/browser_proxy.js';
 import {CrToolbarSearchFieldElement} from 'chrome://resources/cr_elements/cr_toolbar/cr_toolbar_search_field.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
@@ -38,6 +40,11 @@ export class HistoryClustersAppElement extends PolymerElement {
         value: '',
       },
     };
+  }
+
+  constructor() {
+    super();
+    ColorChangeUpdater.forDocument().start();
   }
 
   //============================================================================

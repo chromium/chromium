@@ -111,7 +111,7 @@ class CryptohomeMiscClientTest : public testing::Test {
 
     EXPECT_CALL(*proxy_.get(), DoCallMethod(_, _, _))
         .WillRepeatedly(Invoke(this, &CryptohomeMiscClientTest::OnCallMethod));
-    EXPECT_CALL(*proxy_.get(), CallMethodAndBlockWithErrorDetails(_, _, _))
+    EXPECT_CALL(*proxy_.get(), CallMethodAndBlock(_, _))
         .WillRepeatedly(
             Invoke(this, &CryptohomeMiscClientTest::OnBlockingCallMethod));
 
@@ -133,7 +133,7 @@ class CryptohomeMiscClientTest : public testing::Test {
   scoped_refptr<dbus::MockObjectProxy> proxy_;
 
   // Convenience pointer to the global instance.
-  raw_ptr<CryptohomeMiscClient, ExperimentalAsh> client_;
+  raw_ptr<CryptohomeMiscClient, DanglingUntriaged | ExperimentalAsh> client_;
 
   // The expected replies to the respective D-Bus calls.
   ::user_data_auth::GetSystemSaltReply expected_get_system_salt_reply_;
@@ -187,11 +187,9 @@ class CryptohomeMiscClientTest : public testing::Test {
                                   std::move(response)));
   }
 
-  // Handles blocking call to |proxy_|'s `CallMethodAndBlockWithErrorDetails`.
-  std::unique_ptr<dbus::Response> OnBlockingCallMethod(
-      dbus::MethodCall* method_call,
-      int timeout_ms,
-      dbus::ScopedDBusError* error) {
+  // Handles blocking call to |proxy_|'s `CallMethodAndBlock`.
+  base::expected<std::unique_ptr<dbus::Response>, dbus::Error>
+  OnBlockingCallMethod(dbus::MethodCall* method_call, int timeout_ms) {
     std::unique_ptr<dbus::Response> response(dbus::Response::CreateEmpty());
     dbus::MessageWriter writer(response.get());
     if (shall_message_parsing_fail_) {
@@ -207,9 +205,8 @@ class CryptohomeMiscClientTest : public testing::Test {
           expected_blocking_get_sanitized_username_reply_);
     } else {
       LOG(FATAL) << "Unrecognized member: " << method_call->GetMember();
-      return nullptr;
     }
-    return response;
+    return base::ok(std::move(response));
   }
 };
 

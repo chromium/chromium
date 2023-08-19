@@ -1,0 +1,60 @@
+// Copyright 2023 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+// https://www.khronos.org/registry/webgl/extensions/WEBGL_shader_pixel_local_storage/
+
+[
+    LegacyNoInterfaceObject
+] interface WebGLShaderPixelLocalStorage {
+    const unsigned long MAX_PIXEL_LOCAL_STORAGE_PLANES_WEBGL = 0x96E0;
+    const unsigned long MAX_COLOR_ATTACHMENTS_WITH_ACTIVE_PIXEL_LOCAL_STORAGE_WEBGL = 0x96E1;
+    const unsigned long MAX_COMBINED_DRAW_BUFFERS_AND_PIXEL_LOCAL_STORAGE_PLANES_WEBGL = 0x96E2;
+    const unsigned long PIXEL_LOCAL_STORAGE_ACTIVE_PLANES_WEBGL = 0x96E3;
+    const unsigned long LOAD_OP_ZERO_WEBGL = 0x96E4;
+    const unsigned long LOAD_OP_CLEAR_WEBGL = 0x96E5;
+    const unsigned long LOAD_OP_LOAD_WEBGL = 0x96E6;
+    const unsigned long STORE_OP_STORE_WEBGL = 0x96E7;
+    const unsigned long PIXEL_LOCAL_FORMAT_WEBGL = 0x96E8;
+    const unsigned long PIXEL_LOCAL_TEXTURE_NAME_WEBGL = 0x96E9;
+    const unsigned long PIXEL_LOCAL_TEXTURE_LEVEL_WEBGL = 0x96EA;
+    const unsigned long PIXEL_LOCAL_TEXTURE_LAYER_WEBGL = 0x96EB;
+    const unsigned long PIXEL_LOCAL_CLEAR_VALUE_FLOAT_WEBGL = 0x96EC;
+    const unsigned long PIXEL_LOCAL_CLEAR_VALUE_INT_WEBGL = 0x96ED;
+    const unsigned long PIXEL_LOCAL_CLEAR_VALUE_UNSIGNED_INT_WEBGL = 0x96EE;
+    boolean isCoherent();
+    undefined framebufferTexturePixelLocalStorageWEBGL(GLint plane,
+                                                       WebGLTexture? texture,
+                                                       GLint level,
+                                                       GLint layer);
+    undefined framebufferPixelLocalClearValuefvWEBGL(
+            GLint plane,
+            [AllowShared, BufferSourceTypeNoSizeLimit] Float32Array value,
+            optional GLuint srcOffset = 0);
+    undefined framebufferPixelLocalClearValuefvWEBGL(
+            GLint plane,
+            sequence<GLfloat> value,
+            optional GLuint srcOffset = 0);
+    undefined framebufferPixelLocalClearValueivWEBGL(
+            GLint plane,
+            [AllowShared, BufferSourceTypeNoSizeLimit] Int32Array value,
+            optional GLuint srcOffset = 0);
+    undefined framebufferPixelLocalClearValueivWEBGL(
+            GLint plane,
+            sequence<GLint> value,
+            optional GLuint srcOffset = 0);
+    undefined framebufferPixelLocalClearValueuivWEBGL(
+            GLint plane,
+            [AllowShared, BufferSourceTypeNoSizeLimit] Uint32Array value,
+            optional GLuint srcOffset = 0);
+    undefined framebufferPixelLocalClearValueuivWEBGL(
+            GLint plane,
+            sequence<GLuint> value,
+            optional GLuint srcOffset = 0);
+    undefined beginPixelLocalStorageWEBGL(sequence<GLenum> loadops);
+    undefined endPixelLocalStorageWEBGL(sequence<GLenum> storeops);
+    undefined pixelLocalStorageBarrierWEBGL();
+    [CallWith=ScriptState] any getFramebufferPixelLocalStorageParameterWEBGL(
+            GLint plane,
+            GLenum pname);
+};

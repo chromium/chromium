@@ -19,17 +19,21 @@ component("global_media_controls") {
     "public/views/media_item_ui_footer.h",
     "public/views/media_item_ui_list_view.h",
     "public/views/media_item_ui_view.h",
+    "public/views/media_notification_view_ash_impl.h",
   ]
 
   defines = [ "IS_GLOBAL_MEDIA_CONTROLS_IMPL" ]
 
   deps = [
     "//base",
+    "//components/media_message_center/vector_icons",
     "//components/strings:components_strings_grit",
     "//components/vector_icons",
     "//media",
     "//media/remoting:remoting_constants",
     "//skia",
+    "//ui/accessibility:ax_base",
+    "//ui/accessibility:ax_enums_mojo",
     "//ui/color",
     "//ui/message_center/public/cpp",
   ]
@@ -53,6 +57,7 @@ component("global_media_controls") {
     "public/media_session_notification_item.cc",
     "public/views/media_item_ui_list_view.cc",
     "public/views/media_item_ui_view.cc",
+    "public/views/media_notification_view_ash_impl.cc",
   ]
 
   friend = [ ":*" ]
@@ -67,6 +72,7 @@ source_set("unit_tests") {
     "public/media_session_notification_item_unittest.cc",
     "public/views/media_item_ui_list_view_unittest.cc",
     "public/views/media_item_ui_view_unittest.cc",
+    "public/views/media_notification_view_ash_impl_unittest.cc",
   ]
 
   deps = [

@@ -464,7 +464,6 @@ class ContextualSearchPolicy {
      * @param decidedState Whether the user has decided to opt-in to sending page content or not.
      * @return whether the previous decided state was fully enabled or not.
      */
-    @VisibleForTesting
     boolean overrideDecidedStateForTesting(boolean decidedState) {
         boolean wasEnabled = mFullyEnabledForTesting;
         mDidOverrideFullyEnabledForTesting = true;
@@ -476,7 +475,6 @@ class ContextualSearchPolicy {
      * Overrides the user preference for sending the page URL to Google.
      * @param doAllowSendingPageUrl Whether to allow sending the page URL or not, for tests.
      */
-    @VisibleForTesting
     void overrideAllowSendingPageUrlForTesting(boolean doAllowSendingPageUrl) {
         mDidOverrideAllowSendingPageUrlForTesting = true;
         mAllowSendingPageUrlForTesting = doAllowSendingPageUrl;

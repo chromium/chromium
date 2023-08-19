@@ -135,6 +135,9 @@ AuditsIssue::GenericIssueErrorTypeToProtocol(
         kFormInputHasWrongButWellIntendedAutocompleteValueError:
       return protocol::Audits::GenericIssueErrorTypeEnum::
           FormInputHasWrongButWellIntendedAutocompleteValueError;
+    case mojom::blink::GenericIssueErrorType::kResponseWasBlockedByORB:
+      return protocol::Audits::GenericIssueErrorTypeEnum::
+          ResponseWasBlockedByORB;
   }
 }
 
@@ -227,6 +230,10 @@ BuildAttributionReportingIssueType(AttributionReportingIssueType type) {
     case AttributionReportingIssueType::kNoWebOrOsSupport:
       return protocol::Audits::AttributionReportingIssueTypeEnum::
           NoWebOrOsSupport;
+    case AttributionReportingIssueType::
+        kNavigationRegistrationWithoutTransientUserActivation:
+      return protocol::Audits::AttributionReportingIssueTypeEnum::
+          NavigationRegistrationWithoutTransientUserActivation;
   }
 }
 
@@ -262,42 +269,6 @@ void AuditsIssue::ReportAttributionIssue(ExecutionContext* execution_context,
                                 AttributionReportingIssue)
                    .setDetails(std::move(issue_details))
                    .build();
-  execution_context->AddInspectorIssue(AuditsIssue(std::move(issue)));
-}
-
-void AuditsIssue::ReportNavigatorUserAgentAccess(
-    ExecutionContext* execution_context,
-    String url) {
-  auto navigator_user_agent_details =
-      protocol::Audits::NavigatorUserAgentIssueDetails::create()
-          .setUrl(url)
-          .build();
-
-  // Try to get only the script name quickly.
-  std::unique_ptr<SourceLocation> location;
-  String script_url = GetCurrentScriptUrl(execution_context->GetIsolate());
-  if (!script_url.empty()) {
-    location =
-        std::make_unique<SourceLocation>(script_url, String(), 1, 0, nullptr);
-  } else {
-    location = CaptureSourceLocation(execution_context);
-  }
-
-  if (location) {
-    navigator_user_agent_details->setLocation(
-        CreateProtocolLocation(*location));
-  }
-
-  auto details = protocol::Audits::InspectorIssueDetails::create()
-                     .setNavigatorUserAgentIssueDetails(
-                         std::move(navigator_user_agent_details))
-                     .build();
-  auto issue =
-      protocol::Audits::InspectorIssue::create()
-          .setCode(
-              protocol::Audits::InspectorIssueCodeEnum::NavigatorUserAgentIssue)
-          .setDetails(std::move(details))
-          .build();
   execution_context->AddInspectorIssue(AuditsIssue(std::move(issue)));
 }
 
@@ -668,6 +639,85 @@ void AuditsIssue::ReportGenericIssue(
           .build();
 
   frame->DomWindow()->AddInspectorIssue(AuditsIssue(std::move(issue)));
+}
+
+void AuditsIssue::ReportStylesheetLoadingLateImportIssue(
+    Document* document,
+    const KURL& url,
+    WTF::OrdinalNumber line,
+    WTF::OrdinalNumber column) {
+  if (!document || !document->GetExecutionContext()) {
+    return;
+  }
+  auto sourceCodeLocation = protocol::Audits::SourceCodeLocation::create()
+                                .setUrl(url)
+                                .setLineNumber(line.ZeroBasedInt())
+                                .setColumnNumber(column.ZeroBasedInt())
+                                .build();
+  auto details = protocol::Audits::StylesheetLoadingIssueDetails::create()
+                     .setSourceCodeLocation(std::move(sourceCodeLocation))
+                     .setStyleSheetLoadingIssueReason(
+                         protocol::Audits::StyleSheetLoadingIssueReasonEnum::
+                             LateImportRule)
+                     .build();
+
+  auto issue =
+      protocol::Audits::InspectorIssue::create()
+          .setCode(
+              protocol::Audits::InspectorIssueCodeEnum::StylesheetLoadingIssue)
+          .setDetails(protocol::Audits::InspectorIssueDetails::create()
+                          .setStylesheetLoadingIssueDetails(std::move(details))
+                          .build())
+          .build();
+
+  document->GetExecutionContext()->AddInspectorIssue(
+      AuditsIssue(std::move(issue)));
+}
+
+void AuditsIssue::ReportStylesheetLoadingRequestFailedIssue(
+    Document* document,
+    const KURL& url,
+    const absl::optional<String>& requestId,
+    const KURL& initiator_url,
+    WTF::OrdinalNumber initiator_line,
+    WTF::OrdinalNumber initiator_column,
+    const String& failureMessage) {
+  if (!document || !document->GetExecutionContext()) {
+    return;
+  }
+  auto sourceCodeLocation =
+      protocol::Audits::SourceCodeLocation::create()
+          .setUrl(initiator_url)
+          .setLineNumber(initiator_line.ZeroBasedInt())
+          .setColumnNumber(initiator_column.ZeroBasedInt())
+          .build();
+  auto requestDetails = protocol::Audits::FailedRequestInfo::create()
+                            .setUrl(url)
+                            .setFailureMessage(failureMessage)
+                            .build();
+
+  if (requestId) {
+    requestDetails->setRequestId(*requestId);
+  }
+  auto details =
+      protocol::Audits::StylesheetLoadingIssueDetails::create()
+          .setSourceCodeLocation(std::move(sourceCodeLocation))
+          .setFailedRequestInfo(std::move(requestDetails))
+          .setStyleSheetLoadingIssueReason(
+              protocol::Audits::StyleSheetLoadingIssueReasonEnum::RequestFailed)
+          .build();
+
+  auto issue =
+      protocol::Audits::InspectorIssue::create()
+          .setCode(
+              protocol::Audits::InspectorIssueCodeEnum::StylesheetLoadingIssue)
+          .setDetails(protocol::Audits::InspectorIssueDetails::create()
+                          .setStylesheetLoadingIssueDetails(std::move(details))
+                          .build())
+          .build();
+
+  document->GetExecutionContext()->AddInspectorIssue(
+      AuditsIssue(std::move(issue)));
 }
 
 AuditsIssue AuditsIssue::CreateContentSecurityPolicyIssue(

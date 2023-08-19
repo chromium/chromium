@@ -13,10 +13,12 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/strings/string_piece_forward.h"
 #include "base/task/single_thread_task_runner.h"
+#include "base/test/gmock_expected_support.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
 #include "components/services/storage/public/cpp/buckets/bucket_locator.h"
 #include "components/services/storage/public/cpp/constants.h"
+#include "content/browser/media/cdm_storage_common.h"
 #include "content/browser/media/media_license_quota_client.h"
 #include "content/public/browser/storage_partition.h"
 #include "media/cdm/cdm_type.h"
@@ -154,9 +156,9 @@ TEST_F(MediaLicenseManagerTest, DeleteBucketData) {
   mojo::Remote<media::mojom::CdmStorage> remote;
   blink::StorageKey storage_key =
       blink::StorageKey::CreateFromStringForTesting(kExampleOrigin);
-  auto bucket = GetOrCreateBucket(storage_key);
-  ASSERT_TRUE(bucket.has_value());
-  MediaLicenseManager::BindingContext binding_context(storage_key, kCdmType);
+  ASSERT_OK_AND_ASSIGN(storage::BucketLocator bucket,
+                       GetOrCreateBucket(storage_key));
+  CdmStorageBindingContext binding_context(storage_key, kCdmType);
 
   // Open CDM storage for a storage key.
   manager_->OpenCdmStorage(binding_context,
@@ -172,7 +174,7 @@ TEST_F(MediaLicenseManagerTest, DeleteBucketData) {
 
   // Delete data for this storage key.
   base::test::TestFuture<blink::mojom::QuotaStatusCode> delete_future;
-  manager_->DeleteBucketData(*bucket, delete_future.GetCallback());
+  manager_->DeleteBucketData(bucket, delete_future.GetCallback());
   EXPECT_EQ(delete_future.Get(), blink::mojom::QuotaStatusCode::kOk);
 
   // Confirm that the database was deleted, but the Media License directory was
@@ -189,9 +191,9 @@ TEST_F(MediaLicenseManagerTest, DeleteBucketDataClosedStorage) {
   mojo::Remote<media::mojom::CdmStorage> remote;
   blink::StorageKey storage_key =
       blink::StorageKey::CreateFromStringForTesting(kExampleOrigin);
-  auto bucket = GetOrCreateBucket(storage_key);
-  ASSERT_TRUE(bucket.has_value());
-  MediaLicenseManager::BindingContext binding_context(storage_key, kCdmType);
+  ASSERT_OK_AND_ASSIGN(storage::BucketLocator bucket,
+                       GetOrCreateBucket(storage_key));
+  CdmStorageBindingContext binding_context(storage_key, kCdmType);
 
   // Open CDM storage for a storage key.
   manager_->OpenCdmStorage(binding_context,
@@ -211,7 +213,7 @@ TEST_F(MediaLicenseManagerTest, DeleteBucketDataClosedStorage) {
 
   // Delete data for this storage key.
   base::test::TestFuture<blink::mojom::QuotaStatusCode> delete_future;
-  manager_->DeleteBucketData(*bucket, delete_future.GetCallback());
+  manager_->DeleteBucketData(bucket, delete_future.GetCallback());
   EXPECT_EQ(delete_future.Get(), blink::mojom::QuotaStatusCode::kOk);
 
   // Confirm that the database was deleted, but the Media License
@@ -225,9 +227,9 @@ TEST_F(MediaLicenseManagerTest, DeleteBucketDataOpenConnection) {
   mojo::Remote<media::mojom::CdmStorage> remote;
   blink::StorageKey storage_key =
       blink::StorageKey::CreateFromStringForTesting(kExampleOrigin);
-  auto bucket = GetOrCreateBucket(storage_key);
-  ASSERT_TRUE(bucket.has_value());
-  MediaLicenseManager::BindingContext binding_context(storage_key, kCdmType);
+  ASSERT_OK_AND_ASSIGN(storage::BucketLocator bucket,
+                       GetOrCreateBucket(storage_key));
+  CdmStorageBindingContext binding_context(storage_key, kCdmType);
 
   // Open CDM storage for a storage key.
   manager_->OpenCdmStorage(binding_context,
@@ -241,7 +243,7 @@ TEST_F(MediaLicenseManagerTest, DeleteBucketDataOpenConnection) {
 
   // Delete data for this storage key.
   base::test::TestFuture<blink::mojom::QuotaStatusCode> delete_future;
-  manager_->DeleteBucketData(*bucket, delete_future.GetCallback());
+  manager_->DeleteBucketData(bucket, delete_future.GetCallback());
   EXPECT_EQ(delete_future.Get(), blink::mojom::QuotaStatusCode::kOk);
 
   // Confirm that the database was deleted, but the Media License directory was
@@ -264,8 +266,9 @@ TEST_F(MediaLicenseManagerTest, BucketCreationFailed) {
   mojo::Remote<media::mojom::CdmStorage> remote;
   blink::StorageKey storage_key =
       blink::StorageKey::CreateFromStringForTesting(kExampleOrigin);
-  ASSERT_TRUE(GetOrCreateBucket(storage_key).has_value());
-  MediaLicenseManager::BindingContext binding_context(storage_key, kCdmType);
+  ASSERT_OK_AND_ASSIGN(storage::BucketLocator bucket,
+                       GetOrCreateBucket(storage_key));
+  CdmStorageBindingContext binding_context(storage_key, kCdmType);
 
   // Disable the quota database, causing GetOrCreateBucket() to fail.
   quota_manager_->SetDisableDatabase(/*disable=*/true);
@@ -295,9 +298,9 @@ TEST_F(MediaLicenseManagerIncognitoTest, DeleteBucketData) {
   mojo::Remote<media::mojom::CdmStorage> remote;
   blink::StorageKey storage_key =
       blink::StorageKey::CreateFromStringForTesting(kExampleOrigin);
-  auto bucket = GetOrCreateBucket(storage_key);
-  ASSERT_TRUE(bucket.has_value());
-  MediaLicenseManager::BindingContext binding_context(storage_key, kCdmType);
+  ASSERT_OK_AND_ASSIGN(storage::BucketLocator bucket,
+                       GetOrCreateBucket(storage_key));
+  CdmStorageBindingContext binding_context(storage_key, kCdmType);
 
   // Open CDM storage for a storage key.
   manager_->OpenCdmStorage(binding_context,
@@ -312,7 +315,7 @@ TEST_F(MediaLicenseManagerIncognitoTest, DeleteBucketData) {
 
   // Delete data for this storage key.
   base::test::TestFuture<blink::mojom::QuotaStatusCode> delete_future;
-  manager_->DeleteBucketData(*bucket, delete_future.GetCallback());
+  manager_->DeleteBucketData(bucket, delete_future.GetCallback());
   EXPECT_EQ(delete_future.Get(), blink::mojom::QuotaStatusCode::kOk);
 
   // Confirm that the file is now empty.
@@ -324,9 +327,9 @@ TEST_F(MediaLicenseManagerIncognitoTest, DeleteBucketDataClosedStorage) {
   mojo::Remote<media::mojom::CdmStorage> remote;
   blink::StorageKey storage_key =
       blink::StorageKey::CreateFromStringForTesting(kExampleOrigin);
-  auto bucket = GetOrCreateBucket(storage_key);
-  ASSERT_TRUE(bucket.has_value());
-  MediaLicenseManager::BindingContext binding_context(storage_key, kCdmType);
+  ASSERT_OK_AND_ASSIGN(storage::BucketLocator bucket,
+                       GetOrCreateBucket(storage_key));
+  CdmStorageBindingContext binding_context(storage_key, kCdmType);
 
   // Open CDM storage for a storage key.
   manager_->OpenCdmStorage(binding_context,
@@ -344,7 +347,7 @@ TEST_F(MediaLicenseManagerIncognitoTest, DeleteBucketDataClosedStorage) {
 
   // Delete data for this storage key.
   base::test::TestFuture<blink::mojom::QuotaStatusCode> delete_future;
-  manager_->DeleteBucketData(*bucket, delete_future.GetCallback());
+  manager_->DeleteBucketData(bucket, delete_future.GetCallback());
   EXPECT_EQ(delete_future.Get(), blink::mojom::QuotaStatusCode::kOk);
 }
 
@@ -353,9 +356,9 @@ TEST_F(MediaLicenseManagerIncognitoTest, DeleteBucketDataOpenConnection) {
   mojo::Remote<media::mojom::CdmStorage> remote;
   blink::StorageKey storage_key =
       blink::StorageKey::CreateFromStringForTesting(kExampleOrigin);
-  auto bucket = GetOrCreateBucket(storage_key);
-  ASSERT_TRUE(bucket.has_value());
-  MediaLicenseManager::BindingContext binding_context(storage_key, kCdmType);
+  ASSERT_OK_AND_ASSIGN(storage::BucketLocator bucket,
+                       GetOrCreateBucket(storage_key));
+  CdmStorageBindingContext binding_context(storage_key, kCdmType);
 
   // Open CDM storage for a storage key.
   manager_->OpenCdmStorage(binding_context,
@@ -371,7 +374,7 @@ TEST_F(MediaLicenseManagerIncognitoTest, DeleteBucketDataOpenConnection) {
 
   // Delete data for this storage key.
   base::test::TestFuture<blink::mojom::QuotaStatusCode> delete_future;
-  manager_->DeleteBucketData(*bucket, delete_future.GetCallback());
+  manager_->DeleteBucketData(bucket, delete_future.GetCallback());
   EXPECT_EQ(delete_future.Get(), blink::mojom::QuotaStatusCode::kOk);
 
   // Confirm that the file is now empty.
@@ -389,8 +392,9 @@ TEST_F(MediaLicenseManagerIncognitoTest, BucketCreationFailed) {
   mojo::Remote<media::mojom::CdmStorage> remote;
   blink::StorageKey storage_key =
       blink::StorageKey::CreateFromStringForTesting(kExampleOrigin);
-  ASSERT_TRUE(GetOrCreateBucket(storage_key).has_value());
-  MediaLicenseManager::BindingContext binding_context(storage_key, kCdmType);
+  ASSERT_OK_AND_ASSIGN(storage::BucketLocator bucket,
+                       GetOrCreateBucket(storage_key));
+  CdmStorageBindingContext binding_context(storage_key, kCdmType);
 
   // Disable the quota database, causing GetOrCreateBucket() to fail.
   quota_manager_->SetDisableDatabase(/*disable=*/true);

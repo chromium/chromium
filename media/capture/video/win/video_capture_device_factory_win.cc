@@ -38,6 +38,7 @@
 #include "media/base/media_switches.h"
 #include "media/base/win/mf_initializer.h"
 #include "media/capture/capture_switches.h"
+#include "media/capture/video/video_capture_metrics.h"
 #include "media/capture/video/win/metrics.h"
 #include "media/capture/video/win/video_capture_device_mf_win.h"
 #include "media/capture/video/win/video_capture_device_win.h"
@@ -50,6 +51,10 @@ using base::win::ScopedVariant;
 using Microsoft::WRL::ComPtr;
 
 namespace media {
+
+BASE_FEATURE(kMediaFoundationD3D11VideoCaptureBlocklist,
+             "MediaFoundationD3D11VideoCaptureBlocklist",
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 namespace {
 
@@ -190,7 +195,9 @@ bool IsDeviceBlockedForMediaFoundationByModelId(const std::string& model_id) {
 
 bool IsDeviceBlockedForMediaFoundationD3D11ByModelId(
     const std::string& model_id) {
-  return base::Contains(kModelIdsBlockedForMediaFoundationD3D11VideoCapture,
+  return base::FeatureList::IsEnabled(
+             kMediaFoundationD3D11VideoCaptureBlocklist) &&
+         base::Contains(kModelIdsBlockedForMediaFoundationD3D11VideoCapture,
                         model_id);
 }
 
@@ -223,10 +230,8 @@ bool LoadMediaFoundationDlls() {
   }
 
   // Load optional DLLs whose availability depends on Windows version.
-  if (base::win::GetVersion() >= base::win::Version::WIN11_22H2) {
-    ExpandEnvironmentStringsAndLoadLibrary(
-        L"%WINDIR%\\system32\\mfsensorgroup.dll");
-  }
+  ExpandEnvironmentStringsAndLoadLibrary(
+      L"%WINDIR%\\system32\\mfsensorgroup.dll");
 
   return true;
 }
@@ -418,6 +423,7 @@ VideoCaptureErrorOrDevice VideoCaptureDeviceFactoryWin::CreateDevice(
           DVLOG(1) << " MediaFoundation Device: "
                    << device_descriptor.display_name();
           if (device->Init()) {
+            LogCaptureDeviceHashedModelId(device_descriptor);
             return VideoCaptureErrorOrDevice(std::move(device));
           }
           return VideoCaptureErrorOrDevice(
@@ -443,8 +449,10 @@ VideoCaptureErrorOrDevice VideoCaptureDeviceFactoryWin::CreateDevice(
       auto device = std::make_unique<VideoCaptureDeviceWin>(
           device_descriptor, std::move(capture_filter));
       DVLOG(1) << " DirectShow Device: " << device_descriptor.display_name();
-      if (device->Init())
+      if (device->Init()) {
+        LogCaptureDeviceHashedModelId(device_descriptor);
         return VideoCaptureErrorOrDevice(std::move(device));
+      }
       return VideoCaptureErrorOrDevice(
           VideoCaptureError::kWinDirectShowDeviceInitializationFailed);
     }

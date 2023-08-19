@@ -354,14 +354,14 @@ bool P2PSocketTcpBase::HandleReadResult(int result) {
   return true;
 }
 
-void P2PSocketTcpBase::Send(base::span<const uint8_t> data,
-                            const P2PPacketInfo& packet_info) {
+bool P2PSocketTcpBase::SendPacket(base::span<const uint8_t> data,
+                                  const P2PPacketInfo& packet_info) {
   // Renderer should use this socket only to send data to |remote_address_|.
   if (data.size() > kMaximumPacketSize ||
       !(packet_info.destination == remote_address_.ip_address)) {
     NOTREACHED();
     OnError();
-    return;
+    return false;
   }
 
   if (!connected_) {
@@ -372,17 +372,28 @@ void P2PSocketTcpBase::Send(base::span<const uint8_t> data,
                  << packet_info.destination.ToString()
                  << " before STUN binding is finished.";
       OnError();
-      return;
+      return false;
     }
   }
 
   DoSend(packet_info.destination, data, packet_info.packet_options);
+  return true;
+}
+
+void P2PSocketTcpBase::Send(base::span<const uint8_t> data,
+                            const P2PPacketInfo& packet_info) {
+  SendPacket(data, packet_info);
 }
 
 void P2PSocketTcpBase::SendBatch(
     std::vector<mojom::P2PSendPacketPtr> packet_batch) {
   for (auto& packet : packet_batch) {
-    Send(packet->data, packet->packet_info);
+    // If there's an error in SendPacket, this object is destroyed by the
+    // internal call to P2PSocket::OnError, so do not reference this after
+    // SendPacket returns false.
+    if (!SendPacket(packet->data, packet->packet_info)) {
+      return;
+    }
   }
 }
 

@@ -19,6 +19,7 @@
 #include "services/network/public/mojom/fetch_api.mojom.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/public/platform/web_security_origin.h"
 #include "third_party/blink/public/platform/web_string.h"
 #include "third_party/blink/public/platform/web_url.h"
 
@@ -127,8 +128,9 @@ TEST_F(WebSocketSBHandshakeThrottleTest, Construction) {}
 
 TEST_F(WebSocketSBHandshakeThrottleTest, CheckArguments) {
   throttle_->ThrottleHandshake(
-      GURL(kTestUrl), base::BindOnce(&FakeCallback::OnCompletion,
-                                     base::Unretained(&fake_callback_)));
+      GURL(kTestUrl), blink::WebSecurityOrigin::CreateFromString(kTestUrl),
+      base::BindOnce(&FakeCallback::OnCompletion,
+                     base::Unretained(&fake_callback_)));
   safe_browsing_.RunUntilCalled();
   EXPECT_EQ(MSG_ROUTING_NONE, safe_browsing_.render_frame_id_);
   EXPECT_EQ(GURL(kTestUrl), safe_browsing_.url_);
@@ -144,22 +146,22 @@ TEST_F(WebSocketSBHandshakeThrottleTest, CheckArguments) {
 
 TEST_F(WebSocketSBHandshakeThrottleTest, Safe) {
   throttle_->ThrottleHandshake(
-      GURL(kTestUrl), base::BindOnce(&FakeCallback::OnCompletion,
-                                     base::Unretained(&fake_callback_)));
+      GURL(kTestUrl), blink::WebSecurityOrigin::CreateFromString(kTestUrl),
+      base::BindOnce(&FakeCallback::OnCompletion,
+                     base::Unretained(&fake_callback_)));
   safe_browsing_.RunUntilCalled();
-  std::move(safe_browsing_.callback_)
-      .Run(mojo::NullReceiver(), true, false, false, false);
+  std::move(safe_browsing_.callback_).Run(mojo::NullReceiver(), true, false);
   fake_callback_.RunUntilCalled();
   EXPECT_EQ(FakeCallback::RESULT_SUCCESS, fake_callback_.result_);
 }
 
 TEST_F(WebSocketSBHandshakeThrottleTest, Unsafe) {
   throttle_->ThrottleHandshake(
-      GURL(kTestUrl), base::BindOnce(&FakeCallback::OnCompletion,
-                                     base::Unretained(&fake_callback_)));
+      GURL(kTestUrl), blink::WebSecurityOrigin::CreateFromString(kTestUrl),
+      base::BindOnce(&FakeCallback::OnCompletion,
+                     base::Unretained(&fake_callback_)));
   safe_browsing_.RunUntilCalled();
-  std::move(safe_browsing_.callback_)
-      .Run(mojo::NullReceiver(), false, false, false, false);
+  std::move(safe_browsing_.callback_).Run(mojo::NullReceiver(), false, false);
   fake_callback_.RunUntilCalled();
   EXPECT_EQ(FakeCallback::RESULT_ERROR, fake_callback_.result_);
   EXPECT_EQ(
@@ -170,18 +172,18 @@ TEST_F(WebSocketSBHandshakeThrottleTest, Unsafe) {
 
 TEST_F(WebSocketSBHandshakeThrottleTest, SlowCheckNotifier) {
   throttle_->ThrottleHandshake(
-      GURL(kTestUrl), base::BindOnce(&FakeCallback::OnCompletion,
-                                     base::Unretained(&fake_callback_)));
+      GURL(kTestUrl), blink::WebSecurityOrigin::CreateFromString(kTestUrl),
+      base::BindOnce(&FakeCallback::OnCompletion,
+                     base::Unretained(&fake_callback_)));
   safe_browsing_.RunUntilCalled();
 
   mojo::Remote<mojom::UrlCheckNotifier> slow_check_notifier;
   std::move(safe_browsing_.callback_)
-      .Run(slow_check_notifier.BindNewPipeAndPassReceiver(), false, false,
-           false, false);
+      .Run(slow_check_notifier.BindNewPipeAndPassReceiver(), false, false);
   fake_callback_.RunUntilIdle();
   EXPECT_EQ(FakeCallback::RESULT_NOT_CALLED, fake_callback_.result_);
 
-  slow_check_notifier->OnCompleteCheck(true, false, false, false);
+  slow_check_notifier->OnCompleteCheck(true, false);
   fake_callback_.RunUntilCalled();
   EXPECT_EQ(FakeCallback::RESULT_SUCCESS, fake_callback_.result_);
 }
@@ -189,8 +191,9 @@ TEST_F(WebSocketSBHandshakeThrottleTest, SlowCheckNotifier) {
 TEST_F(WebSocketSBHandshakeThrottleTest, MojoServiceNotThere) {
   mojo_receiver_.reset();
   throttle_->ThrottleHandshake(
-      GURL(kTestUrl), base::BindOnce(&FakeCallback::OnCompletion,
-                                     base::Unretained(&fake_callback_)));
+      GURL(kTestUrl), blink::WebSecurityOrigin::CreateFromString(kTestUrl),
+      base::BindOnce(&FakeCallback::OnCompletion,
+                     base::Unretained(&fake_callback_)));
   fake_callback_.RunUntilCalled();
   EXPECT_EQ(FakeCallback::RESULT_SUCCESS, fake_callback_.result_);
 }

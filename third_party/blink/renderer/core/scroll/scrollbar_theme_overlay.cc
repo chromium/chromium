@@ -194,10 +194,13 @@ void ScrollbarThemeOverlay::PaintThumb(GraphicsContext& context,
   if (scrollbar.Orientation() == kVerticalScrollbar)
     part = WebThemeEngine::kPartScrollbarVerticalThumb;
 
-  blink::WebThemeEngine::ExtraParams params;
-  params.scrollbar_thumb.scrollbar_theme =
-      static_cast<WebScrollbarOverlayColorTheme>(
-          scrollbar.GetScrollbarOverlayColorTheme());
+  blink::WebThemeEngine::ScrollbarThumbExtraParams scrollbar_thumb;
+  scrollbar_thumb.scrollbar_theme = static_cast<WebScrollbarOverlayColorTheme>(
+      scrollbar.GetScrollbarOverlayColorTheme());
+  if (scrollbar.ScrollbarThumbColor().has_value()) {
+    scrollbar_thumb.thumb_color =
+        scrollbar.ScrollbarThumbColor().value().toSkColor4f().toSkColor();
+  }
 
   // Horizontally flip the canvas if it is left vertical scrollbar.
   if (scrollbar.IsLeftSideVerticalScrollbar()) {
@@ -205,6 +208,8 @@ void ScrollbarThemeOverlay::PaintThumb(GraphicsContext& context,
     canvas->translate(rect.width(), 0);
     canvas->scale(-1, 1);
   }
+
+  blink::WebThemeEngine::ExtraParams params(scrollbar_thumb);
 
   WebThemeEngineHelper::GetNativeThemeEngine()->Paint(
       canvas, part, state, rect, &params, scrollbar.UsedColorScheme());

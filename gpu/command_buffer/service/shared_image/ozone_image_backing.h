@@ -5,7 +5,7 @@
 #ifndef GPU_COMMAND_BUFFER_SERVICE_SHARED_IMAGE_OZONE_IMAGE_BACKING_H_
 #define GPU_COMMAND_BUFFER_SERVICE_SHARED_IMAGE_OZONE_IMAGE_BACKING_H_
 
-#include <dawn/webgpu.h>
+#include <dawn/webgpu_cpp.h>
 
 #include <memory>
 
@@ -47,9 +47,9 @@ class OzoneImageBacking final : public ClearTrackingSharedImageBacking {
       uint32_t usage,
       scoped_refptr<SharedContextState> context_state,
       scoped_refptr<gfx::NativePixmap> pixmap,
-      scoped_refptr<base::RefCountedData<DawnProcTable>> dawn_procs,
       const GpuDriverBugWorkarounds& workarounds,
-      bool use_passthrough);
+      bool use_passthrough,
+      absl::optional<gfx::BufferUsage> buffer_usage = absl::nullopt);
 
   OzoneImageBacking(const OzoneImageBacking&) = delete;
   OzoneImageBacking& operator=(const OzoneImageBacking&) = delete;
@@ -61,6 +61,7 @@ class OzoneImageBacking final : public ClearTrackingSharedImageBacking {
   void Update(std::unique_ptr<gfx::GpuFence> in_fence) override;
   bool UploadFromMemory(const std::vector<SkPixmap>& pixmaps) override;
   scoped_refptr<gfx::NativePixmap> GetNativePixmap() override;
+  gfx::GpuMemoryBufferHandle GetGpuMemoryBufferHandle() override;
 
   enum class AccessStream { kGL, kVulkan, kWebGPU, kOverlay, kLast };
 
@@ -68,9 +69,9 @@ class OzoneImageBacking final : public ClearTrackingSharedImageBacking {
   std::unique_ptr<DawnImageRepresentation> ProduceDawn(
       SharedImageManager* manager,
       MemoryTypeTracker* tracker,
-      WGPUDevice device,
-      WGPUBackendType backend_type,
-      std::vector<WGPUTextureFormat> view_formats) override;
+      const wgpu::Device& device,
+      wgpu::BackendType backend_type,
+      std::vector<wgpu::TextureFormat> view_formats) override;
   std::unique_ptr<GLTextureImageRepresentation> ProduceGLTexture(
       SharedImageManager* manager,
       MemoryTypeTracker* tracker) override;
@@ -119,7 +120,6 @@ class OzoneImageBacking final : public ClearTrackingSharedImageBacking {
   int write_streams_count_;
 
   scoped_refptr<gfx::NativePixmap> pixmap_;
-  scoped_refptr<base::RefCountedData<DawnProcTable>> dawn_procs_;
   std::vector<scoped_refptr<GLOzoneImageRepresentationShared::TextureHolder>>
       cached_texture_holders_;
 

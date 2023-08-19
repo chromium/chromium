@@ -8,6 +8,7 @@
 #include "ash/ash_export.h"
 #include "ash/shutdown_reason.h"
 #include "ash/system/power/power_button_controller.h"
+#include "base/memory/raw_ptr_exclusion.h"
 #include "ui/compositor/layer_animation_observer.h"
 #include "ui/views/view.h"
 
@@ -47,6 +48,9 @@ class ASH_EXPORT PowerButtonMenuView : public views::View,
   PowerButtonMenuItemView* lock_screen_item_for_test() const {
     return lock_screen_item_;
   }
+  PowerButtonMenuItemView* capture_mode_item_for_test() const {
+    return capture_mode_item_;
+  }
   PowerButtonMenuItemView* feedback_item_for_test() const {
     return feedback_item_;
   }
@@ -79,11 +83,21 @@ class ASH_EXPORT PowerButtonMenuView : public views::View,
                      base::RepeatingClosure callback);
 
   // Items in the menu. Owned by views hierarchy.
-  PowerButtonMenuItemView* power_off_item_ = nullptr;
-  PowerButtonMenuItemView* sign_out_item_ = nullptr;
-  PowerButtonMenuItemView* lock_screen_item_ = nullptr;
-  PowerButtonMenuItemView* capture_mode_item_ = nullptr;
-  PowerButtonMenuItemView* feedback_item_ = nullptr;
+  // This field is not a raw_ptr<> because it was filtered by the rewriter
+  // for: #addr-of
+  RAW_PTR_EXCLUSION PowerButtonMenuItemView* power_off_item_ = nullptr;
+  // This field is not a raw_ptr<> because it was filtered by the rewriter
+  // for: #addr-of
+  RAW_PTR_EXCLUSION PowerButtonMenuItemView* sign_out_item_ = nullptr;
+  // This field is not a raw_ptr<> because it was filtered by the rewriter
+  // for: #addr-of
+  RAW_PTR_EXCLUSION PowerButtonMenuItemView* lock_screen_item_ = nullptr;
+  // This field is not a raw_ptr<> because it was filtered by the rewriter
+  // for: #addr-of
+  RAW_PTR_EXCLUSION PowerButtonMenuItemView* capture_mode_item_ = nullptr;
+  // This field is not a raw_ptr<> because it was filtered by the rewriter
+  // for: #addr-of
+  RAW_PTR_EXCLUSION PowerButtonMenuItemView* feedback_item_ = nullptr;
 
   ShutdownReason shutdown_reason_;
   // The physical display side of power button in landscape primary.

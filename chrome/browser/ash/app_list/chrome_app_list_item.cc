@@ -8,9 +8,11 @@
 
 #include "ash/public/cpp/tablet_mode.h"
 #include "base/notreached.h"
+#include "base/trace_event/trace_event.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/ash/app_list/app_list_client_impl.h"
 #include "chrome/browser/ash/app_list/app_list_syncable_service_factory.h"
+#include "chrome/browser/ash/app_list/app_service/app_service_promise_app_item.h"
 #include "chrome/browser/ash/app_list/chrome_app_list_model_updater.h"
 #include "chrome/browser/ash/app_list/reorder/app_list_reorder_util.h"
 #include "chrome/browser/ash/login/demo_mode/demo_session.h"
@@ -90,6 +92,7 @@ void ChromeAppListItem::PerformActivate(int event_flags) {
 
 syncer::StringOrdinal
 ChromeAppListItem::CalculateDefaultPositionIfApplicable() {
+  TRACE_EVENT0("ui", "ChromeAppListItem::CalculateDefaultPositionIfApplicable");
   syncer::StringOrdinal page_ordinal;
   syncer::StringOrdinal launch_ordinal;
   extensions::AppSorting* app_sorting = GetAppSorting();
@@ -132,6 +135,7 @@ void ChromeAppListItem::MaybeDismissAppList() {
 }
 
 extensions::AppSorting* ChromeAppListItem::GetAppSorting() {
+  TRACE_EVENT0("ui", "ChromeAppListItem::GetAppSorting");
   return extensions::ExtensionSystem::Get(profile())->app_sorting();
 }
 
@@ -166,6 +170,7 @@ void ChromeAppListItem::IncrementIconVersion() {
 
 void ChromeAppListItem::SetIcon(const gfx::ImageSkia& icon,
                                 bool is_place_holder_icon) {
+  TRACE_EVENT0("ui", "ChromeAppListItem::SetIcon");
   metadata_->icon = icon;
   metadata_->icon.EnsureRepsForSupportedScales();
   metadata_->badge_color =
@@ -190,6 +195,7 @@ void ChromeAppListItem::SetIcon(const gfx::ImageSkia& icon,
 }
 
 void ChromeAppListItem::SetAppStatus(ash::AppStatus app_status) {
+  TRACE_EVENT0("ui", "ChromeAppListItem::SetAppStatus");
   metadata_->app_status = app_status;
   AppListModelUpdater* updater = model_updater();
   if (updater)
@@ -204,6 +210,15 @@ void ChromeAppListItem::SetName(const std::string& name) {
   metadata_->name = name;
   if (model_updater())
     model_updater()->SetItemName(id(), name);
+}
+
+void ChromeAppListItem::SetPromisePackageId(
+    const std::string& promise_package_id) {
+  metadata_->promise_package_id = promise_package_id;
+}
+
+void ChromeAppListItem::SetProgress(float progress) {
+  metadata_->progress = progress;
 }
 
 void ChromeAppListItem::SetPosition(const syncer::StringOrdinal& position) {
@@ -243,6 +258,10 @@ void ChromeAppListItem::SetChromePosition(
 
 void ChromeAppListItem::SetIsEphemeral(bool is_ephemeral) {
   metadata_->is_ephemeral = is_ephemeral;
+}
+
+bool ChromeAppListItem::IsPromiseApp() const {
+  return GetItemType() == AppServicePromiseAppItem::kItemType;
 }
 
 bool ChromeAppListItem::CompareForTest(const ChromeAppListItem* other) const {

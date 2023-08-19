@@ -35,6 +35,8 @@ void AccountTracker::RemoveObserver(Observer* observer) {
 }
 
 std::vector<CoreAccountInfo> AccountTracker::GetAccounts() const {
+  // TODO(crbug.com/1466865): Delete account-tracking code, latest when
+  // ConsentLevel::kSync is cleaned up from the codebase.
   const CoreAccountId active_account_id =
       identity_manager_->GetPrimaryAccountId(signin::ConsentLevel::kSync);
   std::vector<CoreAccountInfo> accounts;
@@ -64,6 +66,8 @@ void AccountTracker::OnRefreshTokenUpdatedForAccount(
                "account_id", account_info.account_id.ToString());
 
   // Ignore refresh tokens if there is no active account ID at all.
+  // TODO(crbug.com/1466865): Delete account-tracking code, latest when
+  // ConsentLevel::kSync is cleaned up from the codebase.
   if (!identity_manager_->HasPrimaryAccount(signin::ConsentLevel::kSync))
     return;
 
@@ -83,6 +87,8 @@ void AccountTracker::OnRefreshTokenRemovedForAccount(
 
 void AccountTracker::OnPrimaryAccountChanged(
     const signin::PrimaryAccountChangeEvent& event) {
+  // TODO(crbug.com/1466865): Delete account-tracking code, latest when
+  // ConsentLevel::kSync is cleaned up from the codebase.
   switch (event.GetEventTypeFor(signin::ConsentLevel::kSync)) {
     case signin::PrimaryAccountChangeEvent::Type::kSet: {
       TRACE_EVENT0("identity", "AccountTracker::OnPrimaryAccountSet");

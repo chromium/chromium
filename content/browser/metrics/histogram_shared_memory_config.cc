@@ -22,7 +22,7 @@ GetHistogramSharedMemoryConfig(int process_type) {
       return Config{"RendererMetrics", 2 << 20};  // 2 MiB
 
     case PROCESS_TYPE_UTILITY:
-      return Config{"UtilityMetrics", 256 << 10};  // 256 KiB
+      return Config{"UtilityMetrics", 512 << 10};  // 512 KiB
 
     case PROCESS_TYPE_ZYGOTE:
       return Config{"ZygoteMetrics", 64 << 10};  // 64 KiB

@@ -10,6 +10,7 @@
 
 #include "ash/ash_export.h"
 #include "ash/login/ui/auth_factor_model.h"
+#include "ash/login/ui/login_arrow_navigation_delegate.h"
 #include "ash/login/ui/login_error_bubble.h"
 #include "ash/login/ui/login_password_view.h"
 #include "ash/login/ui/login_user_view.h"
@@ -31,6 +32,8 @@ class LabelButton;
 
 namespace ash {
 
+class DisabledAuthMessageView;
+class LockedTpmMessageView;
 class LoginAuthFactorsView;
 class FingerprintAuthFactorModel;
 class SmartLockAuthFactorModel;
@@ -103,6 +106,7 @@ class ASH_EXPORT LoginAuthUserView : public NonAccessibleView {
     ~TestApi();
 
     LoginUserView* user_view() const;
+    LoginRemoveAccountDialog* remove_account_dialog() const;
     LoginPasswordView* password_view() const;
     LoginPinView* pin_view() const;
     LoginPinInputView* pin_input_view() const;
@@ -118,16 +122,16 @@ class ASH_EXPORT LoginAuthUserView : public NonAccessibleView {
     const std::u16string& GetDisabledAuthMessageContent() const;
     void SetFingerprintState(FingerprintState state) const;
     void SetSmartLockState(SmartLockState state) const;
+    void ShowDialog();
 
    private:
-    const raw_ptr<LoginAuthUserView, ExperimentalAsh> view_;
+    const raw_ptr<LoginAuthUserView, DanglingUntriaged | ExperimentalAsh> view_;
   };
 
   using OnAuthCallback =
       base::RepeatingCallback<void(bool auth_success,
                                    bool display_error_messages,
                                    bool authenticated_by_pin)>;
-  using OnEasyUnlockIconHovered = base::RepeatingClosure;
 
   struct Callbacks {
     Callbacks();
@@ -144,8 +148,6 @@ class ASH_EXPORT LoginAuthUserView : public NonAccessibleView {
     // Called when the user should be removed. The callback should do the actual
     // removal.
     LoginUserView::OnRemove on_remove;
-    // Called when the easy unlock icon is hovered.
-    OnEasyUnlockIconHovered on_easy_unlock_icon_hovered;
     // Called when LoginAuthFactorsView enters/exits a state where an auth
     // factor wants to hide the password and pin.
     base::RepeatingCallback<void(bool)>
@@ -168,10 +170,6 @@ class ASH_EXPORT LoginAuthUserView : public NonAccessibleView {
       const AuthMethodsMetadata& auth_metadata = AuthMethodsMetadata());
   AuthMethods auth_methods() const { return auth_methods_; }
   InputFieldMode input_field_mode() const { return input_field_mode_; }
-
-  // Add an easy unlock icon.
-  void SetEasyUnlockIcon(EasyUnlockIconState icon_state,
-                         const std::u16string& accessibility_label);
 
   // Captures any metadata about the current view state that will be used for
   // animation.
@@ -210,6 +208,7 @@ class ASH_EXPORT LoginAuthUserView : public NonAccessibleView {
   base::WeakPtr<views::View> GetActiveInputView();
   LoginPasswordView* password_view() { return password_view_; }
   LoginUserView* user_view() { return user_view_; }
+  views::Button* pin_password_toggle() { return pin_password_toggle_; }
 
   // views::View:
   gfx::Size CalculatePreferredSize() const override;
@@ -219,8 +218,6 @@ class ASH_EXPORT LoginAuthUserView : public NonAccessibleView {
  private:
   struct UiState;
   class ChallengeResponseView;
-  class DisabledAuthMessageView;
-  class LockedTpmMessageView;
 
   // Called when the user submits an auth method. Runs mojo call.
   void OnAuthSubmit(const std::u16string& password);
@@ -231,6 +228,16 @@ class ASH_EXPORT LoginAuthUserView : public NonAccessibleView {
   // Called with the result of the request started in
   // |AttemptAuthenticateWithChallengeResponse|.
   void OnChallengeResponseAuthComplete(absl::optional<bool> auth_success);
+
+  // Create a new LoginRemoveAccountDialog for the user and make ot visible.
+  // Existing dialog has to be deleted before this call.
+  void ShowRemoveAccountDialog();
+
+  // Delete the existing LoginRemoveAccountDialog, if present.
+  void DeleteRemoveAccountDialog();
+
+  // Dropdown icon was pressed in the user view.
+  void OnAccountRemovalRequested();
 
   // Called when the LoginAuthFactorsView "arrow button" is tapped for the
   // Smart Lock auth factor; the user's phone is unlocked and the user has
@@ -295,7 +302,7 @@ class ASH_EXPORT LoginAuthUserView : public NonAccessibleView {
   // Convenience methods to determine UI text based on the InputFieldMode.
   std::u16string GetPinPasswordToggleText() const;
   std::u16string GetPasswordViewPlaceholder() const;
-  std::u16string GetMultiprofileDisableAuthMessage() const;
+  std::u16string GetMultiUserSignInDisableAuthMessage() const;
 
   // Authentication methods available and extra parameters that control the UI.
   AuthMethods auth_methods_ = AUTH_NONE;
@@ -332,13 +339,26 @@ class ASH_EXPORT LoginAuthUserView : public NonAccessibleView {
   // Preferred size will change base on current auth method.
   raw_ptr<NonAccessibleView, ExperimentalAsh> padding_below_password_view_ =
       nullptr;
+
+  // Bubble used for displaying the user remove account dialog. Its parent is
+  // the top level view, either LockContentsView or LockDebugView. This allows
+  // the remove account dialog to be clicked outside the bounds of the user
+  // view.
+  std::unique_ptr<LoginRemoveAccountDialog> remove_account_dialog_;
+
   const OnAuthCallback on_auth_;
   const LoginUserView::OnTap on_tap_;
+  const LoginUserView::OnRemoveWarningShown on_remove_warning_shown_;
+  const LoginUserView::OnRemove on_remove_;
 
   // UI state that was stored before setting new authentication methods.
   // Generated by `CaptureStateForAnimationPreLayout` and consumed by
   // `ApplyAnimationPostLayout`.
   std::unique_ptr<UiState> previous_state_;
+
+  // The delegate of the password field's arrow keys.
+  std::unique_ptr<LoginScreenArrowNavigationDelegate>
+      arrow_navigation_delegate_;
 
   base::WeakPtrFactory<LoginAuthUserView> weak_factory_{this};
 };

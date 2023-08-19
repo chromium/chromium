@@ -23,6 +23,7 @@
 #include "net/base/net_errors.h"
 #include "net/base/registry_controlled_domains/registry_controlled_domain.h"
 #include "net/base/url_util.h"
+#include "net/http/http_request_headers.h"
 #include "net/http/http_response_headers.h"
 #include "net/http/http_status_code.h"
 #include "net/http/http_util.h"
@@ -37,7 +38,7 @@
 namespace payments {
 namespace {
 
-static constexpr size_t kMaxManifestSize = 1024 * 1024;
+static constexpr size_t kMaxManifestSize = 5 * 1024 * 1024;
 static_assert(kMaxManifestSize <=
                   network::SimpleURLLoader::kMaxBoundedStringDownloadSize,
               "Max manifest size bigger than largest allowed download size");
@@ -142,7 +143,7 @@ void PaymentManifestDownloader::DownloadPaymentMethodManifest(
   // Restrict number of redirects for efficiency and breaking circle.
   InitiateDownload(merchant_origin, url, /*url_before_redirects=*/url,
                    /*did_follow_redirect=*/false,
-                   Download::Type::RESPONSE_BODY_OR_LINK_HEADER,
+                   Download::Type::LINK_HEADER_WITH_FALLBACK_TO_RESPONSE_BODY,
                    /*allowed_number_of_redirects=*/3, std::move(callback));
 }
 
@@ -170,6 +171,14 @@ PaymentManifestDownloader::Download::Download() = default;
 
 PaymentManifestDownloader::Download::~Download() = default;
 
+bool PaymentManifestDownloader::Download::IsLinkHeaderDownload() const {
+  return type == Type::LINK_HEADER_WITH_FALLBACK_TO_RESPONSE_BODY;
+}
+
+bool PaymentManifestDownloader::Download::IsResponseBodyDownload() const {
+  return type == Type::FALLBACK_TO_RESPONSE_BODY || type == Type::RESPONSE_BODY;
+}
+
 void PaymentManifestDownloader::OnURLLoaderRedirect(
     network::SimpleURLLoader* url_loader,
     const GURL& url_before_redirect,
@@ -185,7 +194,7 @@ void PaymentManifestDownloader::OnURLLoaderRedirect(
   // Manually follow some type of redirects.
   std::string error_message;
   if (download->allowed_number_of_redirects > 0) {
-    DCHECK_EQ(Download::Type::RESPONSE_BODY_OR_LINK_HEADER, download->type);
+    DCHECK(download->IsLinkHeaderDownload());
     GURL redirect_url = ParseRedirectUrl(redirect_info, download->original_url,
                                          *log_, &error_message);
     if (!redirect_url.is_empty()) {
@@ -198,7 +207,7 @@ void PaymentManifestDownloader::OnURLLoaderRedirect(
             download->request_initiator, redirect_url,
             /*url_before_redirects=*/download->url_before_redirects,
             /*did_follow_redirect=*/true,
-            Download::Type::RESPONSE_BODY_OR_LINK_HEADER,
+            Download::Type::LINK_HEADER_WITH_FALLBACK_TO_RESPONSE_BODY,
             --download->allowed_number_of_redirects,
             std::move(download->callback));
         return;
@@ -258,26 +267,27 @@ void PaymentManifestDownloader::OnURLLoaderCompleteInternal(
   }
 
   std::string error_message;
-  if (download->type == Download::Type::RESPONSE_BODY) {
-    if (!headers) {
-      RespondWithError(errors::kPaymentManifestDownloadFailed, final_url, *log_,
-                       std::move(download->callback));
-    } else if (headers->response_code() != net::HTTP_OK) {
+  if (download->IsResponseBodyDownload()) {
+    if (headers && headers->response_code() != net::HTTP_OK) {
       RespondWithHttpStatusCodeError(
           final_url, static_cast<net::HttpStatusCode>(headers->response_code()),
           *log_, std::move(download->callback));
     } else {
-      RespondWithContent(response_body, errors::kNoContentInPaymentManifest,
-                         final_url, *log_, std::move(download->callback));
+      RespondWithContent(
+          response_body,
+          download->type == Download::Type::FALLBACK_TO_RESPONSE_BODY
+              ? errors::kNoContentAndNoLinkHeader
+              : errors::kNoContentInPaymentManifest,
+          final_url, *log_, std::move(download->callback));
     }
     return;
   }
 
-  DCHECK_EQ(Download::Type::RESPONSE_BODY_OR_LINK_HEADER, download->type);
+  DCHECK(download->IsLinkHeaderDownload());
 
   if (!headers) {
-    RespondWithContent(response_body, errors::kNoContentAndNoLinkHeader,
-                       final_url, *log_, std::move(download->callback));
+    // Fallback to HTTP GET when HTTP HEAD response has no headers.
+    FallbackToDownloadingResponseBody(final_url, std::move(download));
     return;
   }
 
@@ -292,8 +302,9 @@ void PaymentManifestDownloader::OnURLLoaderCompleteInternal(
   std::string link_header;
   headers->GetNormalizedHeader("link", &link_header);
   if (link_header.empty()) {
-    RespondWithContent(response_body, errors::kNoContentAndNoLinkHeader,
-                       final_url, *log_, std::move(download->callback));
+    // Fallback to HTTP GET when HTTP HEAD response does not contain a Link
+    // header.
+    FallbackToDownloadingResponseBody(final_url, std::move(download));
     return;
   }
 
@@ -345,8 +356,22 @@ void PaymentManifestDownloader::OnURLLoaderCompleteInternal(
     }
   }
 
-  RespondWithContent(response_body, errors::kNoContentAndNoLinkHeader,
-                     final_url, *log_, std::move(download->callback));
+  // Fallback to HTTP GET when HTTP HEAD response does not contain a Link header
+  // with rel="payment-method-manifest".
+  FallbackToDownloadingResponseBody(final_url, std::move(download));
+}
+
+void PaymentManifestDownloader::FallbackToDownloadingResponseBody(
+    const GURL& url_to_download,
+    std::unique_ptr<Download> download_info) {
+  InitiateDownload(
+      /*request_initiator=*/download_info->request_initiator,
+      /*url=*/url_to_download,
+      /*url_before_redirects=*/download_info->url_before_redirects,
+      /*did_follow_redirect=*/download_info->did_follow_redirect,
+      /*download_type=*/Download::Type::FALLBACK_TO_RESPONSE_BODY,
+      /*allowed_number_of_redirects=*/0,
+      /*callback=*/std::move(download_info->callback));
 }
 
 network::SimpleURLLoader* PaymentManifestDownloader::GetLoaderForTesting() {
@@ -372,7 +397,8 @@ void PaymentManifestDownloader::InitiateDownload(
   // Only initial download of the payment method manifest (which might contain
   // an HTTP Link header) is allowed to redirect.
   DCHECK(allowed_number_of_redirects == 0 ||
-         download_type == Download::Type::RESPONSE_BODY_OR_LINK_HEADER);
+         download_type ==
+             Download::Type::LINK_HEADER_WITH_FALLBACK_TO_RESPONSE_BODY);
 
   net::NetworkTrafficAnnotationTag traffic_annotation =
       net::DefineNetworkTrafficAnnotation("payment_manifest_downloader", R"(
@@ -397,7 +423,17 @@ void PaymentManifestDownloader::InitiateDownload(
   auto resource_request = std::make_unique<network::ResourceRequest>();
   resource_request->request_initiator = request_initiator;
   resource_request->url = url;
-  resource_request->method = "GET";
+
+  switch (download_type) {
+    case Download::Type::LINK_HEADER_WITH_FALLBACK_TO_RESPONSE_BODY:
+      resource_request->method = net::HttpRequestHeaders::kHeadMethod;
+      break;
+    case Download::Type::FALLBACK_TO_RESPONSE_BODY:
+    // Intentional fall through.
+    case Download::Type::RESPONSE_BODY:
+      resource_request->method = net::HttpRequestHeaders::kGetMethod;
+      break;
+  }
   resource_request->credentials_mode = network::mojom::CredentialsMode::kOmit;
   std::unique_ptr<network::SimpleURLLoader> loader =
       network::SimpleURLLoader::Create(std::move(resource_request),

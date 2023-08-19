@@ -12,21 +12,31 @@
 #include "ash/components/arc/session/arc_service_manager.h"
 #include "ash/components/arc/test/arc_util_test_support.h"
 #include "ash/components/arc/test/fake_arc_session.h"
+#include "ash/public/cpp/shelf_model.h"
 #include "base/command_line.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/raw_ptr.h"
+#include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
 #include "chrome/browser/ash/app_list/arc/arc_app_test.h"
 #include "chrome/browser/ash/arc/session/arc_session_manager.h"
 #include "chrome/browser/ash/arc/test/test_arc_session_manager.h"
 #include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
+#include "chrome/browser/ash/plugin_vm/plugin_vm_manager.h"
+#include "chrome/browser/ash/plugin_vm/plugin_vm_manager_factory.h"
+#include "chrome/browser/ui/ash/shelf/chrome_shelf_controller.h"
+#include "chrome/browser/ui/ash/shelf/shelf_controller_helper.h"
+#include "chrome/common/chrome_features.h"
 #include "chrome/test/base/browser_with_test_window_test.h"
 #include "chromeos/ash/components/dbus/anomaly_detector/anomaly_detector_client.h"
 #include "chromeos/ash/components/dbus/chunneld/chunneld_client.h"
 #include "chromeos/ash/components/dbus/cicerone/cicerone_client.h"
 #include "chromeos/ash/components/dbus/concierge/concierge_client.h"
 #include "chromeos/ash/components/dbus/concierge/fake_concierge_client.h"
+#include "chromeos/ash/components/dbus/debug_daemon/debug_daemon_client.h"
+#include "chromeos/ash/components/dbus/dlcservice/dlcservice_client.h"
 #include "chromeos/ash/components/dbus/seneschal/seneschal_client.h"
+#include "chromeos/ash/components/dbus/session_manager/session_manager_client.h"
 #include "chromeos/ash/components/dbus/userdataauth/fake_cryptohome_misc_client.h"
 #include "chromeos/ash/components/dbus/vm_plugin_dispatcher/vm_plugin_dispatcher_client.h"
 #include "chromeos/ash/components/login/session/session_termination_manager.h"
@@ -53,7 +63,10 @@ class LockToSingleUserManagerTest : public BrowserWithTestWindowTest {
     ash::ChunneldClient::InitializeFake();
     ash::CiceroneClient::InitializeFake();
     ash::ConciergeClient::InitializeFake();
+    ash::DebugDaemonClient::InitializeFake();
+    ash::DlcserviceClient::InitializeFake();
     ash::SeneschalClient::InitializeFake();
+    ash::SessionManagerClient::InitializeFakeInMemory();
 
     arc::SetArcAvailableCommandLineForTesting(
         base::CommandLine::ForCurrentProcess());
@@ -61,6 +74,7 @@ class LockToSingleUserManagerTest : public BrowserWithTestWindowTest {
     ash::CryptohomeMiscClient::InitializeFake();
     ash::VmPluginDispatcherClient::InitializeFake();
     lock_to_single_user_manager_ = std::make_unique<LockToSingleUserManager>();
+    scoped_feature_list_.InitAndEnableFeature(features::kPluginVm);
 
     BrowserWithTestWindowTest::SetUp();
 
@@ -75,11 +89,6 @@ class LockToSingleUserManagerTest : public BrowserWithTestWindowTest {
     arc::prefs::RegisterLocalStatePrefs(local_state_.registry());
     arc::StabilityMetricsManager::Initialize(&local_state_);
     arc::ArcMetricsService::GetForBrowserContextForTesting(profile());
-
-    // TODO(yusukes): Stop re-creating the client here.
-    ash::ConciergeClient::Shutdown();
-    ash::ConciergeClient::InitializeFake(/*fake_cicerone_client=*/nullptr);
-    fake_concierge_client_ = ash::FakeConciergeClient::Get();
   }
 
   void TearDown() override {
@@ -87,6 +96,9 @@ class LockToSingleUserManagerTest : public BrowserWithTestWindowTest {
     // lock_to_single_user_manager has to be cleaned up first due to implicit
     // dependency on ArcSessionManager.
     lock_to_single_user_manager_.reset();
+
+    chrome_shelf_controller_.reset();
+    shelf_model_.reset();
 
     arc_session_manager_->Shutdown();
     arc_session_manager_.reset();
@@ -105,13 +117,17 @@ class LockToSingleUserManagerTest : public BrowserWithTestWindowTest {
     ash::VmPluginDispatcherClient::Shutdown();
     ash::CryptohomeMiscClient::Shutdown();
     ash::AnomalyDetectorClient::Shutdown();
+    ash::SessionManagerClient::Shutdown();
     ash::SeneschalClient::Shutdown();
+    ash::DlcserviceClient::Shutdown();
+    ash::DebugDaemonClient::Shutdown();
     ash::ConciergeClient::Shutdown();
     ash::CiceroneClient::Shutdown();
     ash::ChunneldClient::Shutdown();
   }
 
   void LogInUser(bool is_affiliated) {
+    base::RunLoop run_loop;
     const AccountId account_id(AccountId::FromUserEmailGaiaId(
         profile()->GetProfileUserName(), "1234567890"));
     fake_user_manager_->AddUserWithAffiliation(account_id, is_affiliated);
@@ -126,32 +142,40 @@ class LockToSingleUserManagerTest : public BrowserWithTestWindowTest {
 
     arc_session_manager_->SetProfile(profile());
     arc_session_manager_->Initialize();
+
+    // Set up ChromeShelfController to avoid a crash in LaunchPluginVm().
+    shelf_model_ = std::make_unique<ash::ShelfModel>();
+    chrome_shelf_controller_ = std::make_unique<ChromeShelfController>(
+        profile(), shelf_model_.get(), /*shelf_item_factory=*/nullptr);
+    chrome_shelf_controller_->SetProfileForTest(profile());
+    chrome_shelf_controller_->SetShelfControllerHelperForTest(
+        std::make_unique<ShelfControllerHelper>(profile()));
+    chrome_shelf_controller_->Init();
+
+    run_loop.RunUntilIdle();
   }
 
   void SetPolicyValue(int value) {
     settings_helper_.SetInteger(ash::kDeviceRebootOnUserSignout, value);
   }
 
-  void StartArc() { arc_session_manager_->StartArcForTesting(); }
-  void StartedVm(bool expect_ok = true) {
-    EXPECT_EQ(expect_ok,
-              ash::SessionTerminationManager::Get()->IsLockedToSingleUser());
-
-    vm_tools::concierge::VmStartedSignal signal;  // content is irrelevant
-    fake_concierge_client_->NotifyVmStarted(signal);
+  void StartArc() {
+    base::RunLoop run_loop;
+    arc_session_manager_->StartArcForTesting();
+    run_loop.RunUntilIdle();
   }
 
   void StartPluginVm() {
     base::RunLoop run_loop;
-    if (fake_concierge_client_->HasVmObservers())
-      lock_to_single_user_manager_->OnVmStarting();
+    plugin_vm::PluginVmManagerFactory::GetForProfile(profile())->LaunchPluginVm(
+        base::DoNothing());
     run_loop.RunUntilIdle();
   }
 
   void StartConciergeVm() {
     base::RunLoop run_loop;
-    if (fake_concierge_client_->HasVmObservers())
-      lock_to_single_user_manager_->OnVmStarting();
+    vm_tools::concierge::VmStartedSignal signal;
+    ash::FakeConciergeClient::Get()->NotifyVmStarted(signal);
     run_loop.RunUntilIdle();
   }
 
@@ -161,24 +185,29 @@ class LockToSingleUserManagerTest : public BrowserWithTestWindowTest {
     run_loop.RunUntilIdle();
   }
 
-  bool is_device_locked() const {
-    return ash::FakeCryptohomeMiscClient::Get()
-        ->is_device_locked_to_single_user();
+  void CheckIsDeviceLocked(bool should_be_locked) {
+    EXPECT_EQ(
+        ash::FakeCryptohomeMiscClient::Get()->is_device_locked_to_single_user(),
+        should_be_locked);
+    EXPECT_EQ(ash::SessionTerminationManager::Get()->IsLockedToSingleUser(),
+              should_be_locked);
   }
 
  private:
+  base::test::ScopedFeatureList scoped_feature_list_;
   ash::ScopedCrosSettingsTestHelper settings_helper_{
       /* create_settings_service= */ false};
-  raw_ptr<ash::FakeChromeUserManager, ExperimentalAsh> fake_user_manager_{
-      new ash::FakeChromeUserManager()};
+  raw_ptr<ash::FakeChromeUserManager, DanglingUntriaged | ExperimentalAsh>
+      fake_user_manager_{new ash::FakeChromeUserManager()};
   user_manager::ScopedUserManager scoped_user_manager_{
       base::WrapUnique(fake_user_manager_.get())};
   std::unique_ptr<arc::ArcServiceManager> arc_service_manager_;
   std::unique_ptr<arc::ArcSessionManager> arc_session_manager_;
+  std::unique_ptr<ash::ShelfModel> shelf_model_;
+  std::unique_ptr<ChromeShelfController> chrome_shelf_controller_;
   // Required for initialization.
   ash::SessionTerminationManager termination_manager_;
   std::unique_ptr<LockToSingleUserManager> lock_to_single_user_manager_;
-  raw_ptr<ash::FakeConciergeClient, ExperimentalAsh> fake_concierge_client_;
   TestingPrefServiceSimple local_state_;
 };
 
@@ -186,75 +215,62 @@ TEST_F(LockToSingleUserManagerTest, ArcSessionLockTest) {
   SetPolicyValue(
       enterprise_management::DeviceRebootOnUserSignoutProto::ARC_SESSION);
   LogInUser(false /* is_affiliated */);
-  EXPECT_FALSE(is_device_locked());
+  CheckIsDeviceLocked(false);
   StartConciergeVm();
   StartPluginVm();
   StartDbusVm();
-  StartedVm(false);
-  EXPECT_FALSE(is_device_locked());
+  CheckIsDeviceLocked(false);
   StartArc();
-  EXPECT_TRUE(is_device_locked());
+  CheckIsDeviceLocked(true);
 }
 
 TEST_F(LockToSingleUserManagerTest, ConciergeStartLockTest) {
   SetPolicyValue(enterprise_management::DeviceRebootOnUserSignoutProto::
                      VM_STARTED_OR_ARC_SESSION);
   LogInUser(false /* is_affiliated */);
-  EXPECT_FALSE(is_device_locked());
+  CheckIsDeviceLocked(false);
   StartConciergeVm();
-  StartedVm();
-  EXPECT_TRUE(is_device_locked());
+  CheckIsDeviceLocked(true);
 }
 
 TEST_F(LockToSingleUserManagerTest, PluginVmStartLockTest) {
   SetPolicyValue(enterprise_management::DeviceRebootOnUserSignoutProto::
                      VM_STARTED_OR_ARC_SESSION);
   LogInUser(false /* is_affiliated */);
-  EXPECT_FALSE(is_device_locked());
+  CheckIsDeviceLocked(false);
   StartPluginVm();
-  StartedVm();
-  EXPECT_TRUE(is_device_locked());
+  CheckIsDeviceLocked(true);
+  StartConciergeVm();
+  CheckIsDeviceLocked(true);
 }
 
 TEST_F(LockToSingleUserManagerTest, DbusVmStartLockTest) {
   SetPolicyValue(enterprise_management::DeviceRebootOnUserSignoutProto::
                      VM_STARTED_OR_ARC_SESSION);
   LogInUser(false /* is_affiliated */);
-  EXPECT_FALSE(is_device_locked());
+  CheckIsDeviceLocked(false);
   StartDbusVm();
-  StartedVm();
-  EXPECT_TRUE(is_device_locked());
-}
-
-TEST_F(LockToSingleUserManagerTest, UnexpectedVmStartLockTest) {
-  SetPolicyValue(enterprise_management::DeviceRebootOnUserSignoutProto::
-                     VM_STARTED_OR_ARC_SESSION);
-  LogInUser(false /* is_affiliated */);
-  EXPECT_FALSE(is_device_locked());
-  StartedVm(false);
-  EXPECT_TRUE(is_device_locked());
+  CheckIsDeviceLocked(true);
+  StartConciergeVm();
+  CheckIsDeviceLocked(true);
 }
 
 TEST_F(LockToSingleUserManagerTest, ArcSessionOrVmLockTest) {
   SetPolicyValue(enterprise_management::DeviceRebootOnUserSignoutProto::
                      VM_STARTED_OR_ARC_SESSION);
   LogInUser(false /* is_affiliated */);
-  EXPECT_FALSE(is_device_locked());
+  CheckIsDeviceLocked(false);
   StartArc();
-  EXPECT_TRUE(is_device_locked());
+  CheckIsDeviceLocked(true);
 }
 
 TEST_F(LockToSingleUserManagerTest, AlwaysLockTest) {
   SetPolicyValue(enterprise_management::DeviceRebootOnUserSignoutProto::ALWAYS);
+  // The device should not be locked at this point because of async affiliation
+  // loading.
+  CheckIsDeviceLocked(false);
   LogInUser(false /* is_affiliated */);
-  EXPECT_TRUE(is_device_locked());
-}
-
-TEST_F(LockToSingleUserManagerTest, LateAffilitionNotificationTest) {
-  SetPolicyValue(enterprise_management::DeviceRebootOnUserSignoutProto::ALWAYS);
-  EXPECT_FALSE(is_device_locked());
-  LogInUser(false /* is_affiliated */);
-  EXPECT_TRUE(is_device_locked());
+  CheckIsDeviceLocked(true);
 }
 
 TEST_F(LockToSingleUserManagerTest, NeverLockTest) {
@@ -264,8 +280,7 @@ TEST_F(LockToSingleUserManagerTest, NeverLockTest) {
   StartConciergeVm();
   StartArc();
   StartDbusVm();
-  StartedVm(false);
-  EXPECT_FALSE(is_device_locked());
+  CheckIsDeviceLocked(false);
 }
 
 TEST_F(LockToSingleUserManagerTest, DbusCallErrorTest) {
@@ -273,20 +288,20 @@ TEST_F(LockToSingleUserManagerTest, DbusCallErrorTest) {
       ::user_data_auth::CryptohomeErrorCode::CRYPTOHOME_ERROR_KEY_NOT_FOUND);
   SetPolicyValue(enterprise_management::DeviceRebootOnUserSignoutProto::ALWAYS);
   LogInUser(false /* is_affiliated */);
-  EXPECT_FALSE(is_device_locked());
+  CheckIsDeviceLocked(false);
 }
 
 TEST_F(LockToSingleUserManagerTest, DoesNotAffectAffiliatedUsersTest) {
   SetPolicyValue(enterprise_management::DeviceRebootOnUserSignoutProto::ALWAYS);
   LogInUser(true /* is_affiliated */);
-  EXPECT_FALSE(is_device_locked());
+  CheckIsDeviceLocked(false);
 }
 
 TEST_F(LockToSingleUserManagerTest, FutureTest) {
   // Unknown values should be the same as ALWAYS
   SetPolicyValue(100);
   LogInUser(false /* is_affiliated */);
-  EXPECT_TRUE(is_device_locked());
+  CheckIsDeviceLocked(true);
 }
 
 }  // namespace policy

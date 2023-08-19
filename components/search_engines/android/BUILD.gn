@@ -13,8 +13,8 @@ android_library("java") {
     "//third_party/androidx:androidx_annotation_annotation_java",
     "//url:gurl_java",
   ]
-  annotation_processor_deps = [ "//base/android/jni_generator:jni_processor" ]
 
+  srcjar_deps = [ ":jni_headers" ]
   sources = [
     "java/src/org/chromium/components/search_engines/TemplateUrl.java",
     "java/src/org/chromium/components/search_engines/TemplateUrlService.java",

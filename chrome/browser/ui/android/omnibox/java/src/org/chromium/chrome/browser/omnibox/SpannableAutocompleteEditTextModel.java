@@ -24,6 +24,7 @@ import android.view.inputmethod.InputContentInfo;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.Log;
+import org.chromium.ui.accessibility.AccessibilityState;
 
 import java.util.Locale;
 import java.util.regex.Pattern;
@@ -64,6 +65,7 @@ public class SpannableAutocompleteEditTextModel implements AutocompleteEditTextM
     private AutocompleteInputConnection mInputConnection;
     private boolean mLastEditWasTyping = true;
     private boolean mIgnoreTextChangeFromAutocomplete = true;
+    private boolean mLayoutDirectionIsLtr = true;
     private int mBatchEditNestCount;
     private int mDeletePostfixOnNextBeginImeCommand;
 
@@ -102,6 +104,10 @@ public class SpannableAutocompleteEditTextModel implements AutocompleteEditTextM
         mInputConnection = new AutocompleteInputConnection();
         mInputConnection.setTarget(inputConnection);
         return mInputConnection;
+    }
+
+    public void setInputConnectionForTesting(AutocompleteInputConnection connection) {
+        mInputConnection = connection;
     }
 
     /**
@@ -177,7 +183,7 @@ public class SpannableAutocompleteEditTextModel implements AutocompleteEditTextM
 
     private void notifyAccessibilityService() {
         if (mCurrentState.equals(mPreviouslyNotifiedState)) return;
-        if (!mDelegate.isAccessibilityEnabled()) return;
+        if (!AccessibilityState.isAccessibilityEnabled()) return;
         sendAccessibilityEventForUserTextChange(mPreviouslyNotifiedState, mCurrentState);
         // Read autocomplete text separately.
         sendAccessibilityEventForAppendingAutocomplete(mCurrentState);
@@ -241,12 +247,21 @@ public class SpannableAutocompleteEditTextModel implements AutocompleteEditTextM
         if (mInputConnection == null) {
             return mDelegate.super_dispatchKeyEvent(event);
         }
+
+        boolean retVal;
         mInputConnection.onBeginImeCommand();
-        if (event.getKeyCode() == KeyEvent.KEYCODE_ENTER
+        if (hasAutocomplete()
+                && ((mLayoutDirectionIsLtr && event.getKeyCode() == KeyEvent.KEYCODE_DPAD_RIGHT)
+                        || (!mLayoutDirectionIsLtr
+                                && event.getKeyCode() == KeyEvent.KEYCODE_DPAD_LEFT)
+                        || (event.getKeyCode() == KeyEvent.KEYCODE_TAB)
+                        || event.getKeyCode() == KeyEvent.KEYCODE_ENTER)
                 && event.getAction() == KeyEvent.ACTION_DOWN) {
             mInputConnection.commitAutocomplete();
+            retVal = true;
+        } else {
+            retVal = mDelegate.super_dispatchKeyEvent(event);
         }
-        boolean retVal = mDelegate.super_dispatchKeyEvent(event);
         mInputConnection.onEndImeCommand();
         return retVal;
     }
@@ -426,6 +441,16 @@ public class SpannableAutocompleteEditTextModel implements AutocompleteEditTextM
         return mDelegateShouldIgnoreAccessibilityEvents;
     }
 
+    @Override
+    public void setLayoutDirectionIsLtr(boolean isLtr) {
+        mLayoutDirectionIsLtr = isLtr;
+    }
+
+    @VisibleForTesting
+    public AutocompleteState getCurrentAutocompleteState() {
+        return mCurrentState;
+    }
+
     /**
      * A class to set and remove, or do other operations on Span and SpannableString of autocomplete
      * text that will be appended to the user text. In addition, cursor will be hidden whenever we
@@ -509,7 +534,8 @@ public class SpannableAutocompleteEditTextModel implements AutocompleteEditTextM
         }
     }
 
-    private class AutocompleteInputConnection extends InputConnectionWrapper {
+    @VisibleForTesting
+    public class AutocompleteInputConnection extends InputConnectionWrapper {
         private final AutocompleteState mPreBatchEditState;
 
         public AutocompleteInputConnection() {

@@ -17,11 +17,14 @@
 #include "base/task/single_thread_task_runner.h"
 #include "base/task/thread_pool.h"
 #include "base/time/time.h"
+#include "chrome/browser/ash/login/demo_mode/demo_mode_dimensions.h"
+#include "chrome/browser/ash/login/demo_mode/demo_setup_controller.h"
 #include "chrome/browser/ash/ownership/owner_settings_service_ash.h"
 #include "chrome/browser/ash/policy/core/device_cloud_policy_store_ash.h"
 #include "chrome/browser/ash/policy/dev_mode/dev_mode_policy_util.h"
 #include "chrome/browser/ash/policy/enrollment/auto_enrollment_type_checker.h"
 #include "chrome/browser/ash/policy/enrollment/enrollment_config.h"
+#include "chrome/browser/ash/policy/enrollment/enrollment_requisition_manager.h"
 #include "chrome/browser/ash/policy/enrollment/enrollment_status.h"
 #include "chrome/browser/ash/policy/enrollment/tpm_enrollment_key_signing_service.h"
 #include "chrome/browser/ash/policy/server_backed_state/server_backed_state_keys_broker.h"
@@ -71,8 +74,8 @@ em::DeviceRegisterRequest::Flavor EnrollmentModeToRegistrationFlavor(
     EnrollmentConfig::Mode mode) {
   switch (mode) {
     case EnrollmentConfig::MODE_NONE:
-    case EnrollmentConfig::OBSOLETE_MODE_ENROLLED_ROLLBACK:
-    case EnrollmentConfig::MODE_OFFLINE_DEMO_DEPRECATED:
+    case EnrollmentConfig::DEPRECATED_MODE_ENROLLED_ROLLBACK:
+    case EnrollmentConfig::DEPRECATED_MODE_OFFLINE_DEMO:
       break;
     case EnrollmentConfig::MODE_MANUAL:
       return em::DeviceRegisterRequest::FLAVOR_ENROLLMENT_MANUAL;
@@ -223,6 +226,11 @@ EnrollmentHandler::EnrollmentHandler(
 
   register_params_->requisition = requisition;
 
+  if (requisition == EnrollmentRequisitionManager::kDemoRequisition) {
+    register_params_->demo_mode_dimensions =
+        ash::demo_mode::GetDemoModeDimensions();
+  }
+
   store_->AddObserver(this);
   client_->AddObserver(this);
   client_->AddPolicyTypeToFetch(dm_protocol::kChromeDevicePolicyType,
@@ -257,7 +265,7 @@ void EnrollmentHandler::StartEnrollment() {
     return;
   }
 
-  // Currently reven devices don't support sever-backed state keys, but they
+  // Currently reven devices don't support server-backed state keys, but they
   // also don't support FRE/AutoRE so don't block enrollment on the
   // availability of state keys.
   // TODO(b/208705225): Remove this special case when reven supports state keys.

@@ -12,6 +12,7 @@
 #include "third_party/blink/public/platform/web_security_origin.h"
 #include "third_party/blink/public/platform/web_string.h"
 #include "third_party/blink/renderer/core/fragment_directive/text_fragment_anchor.h"
+#include "third_party/blink/renderer/core/fragment_directive/text_fragment_test_util.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/frame/local_frame_view.h"
 #include "third_party/blink/renderer/core/input/event_handler.h"
@@ -31,20 +32,8 @@ using test::RunPendingTasks;
 const char kSuccessUkmMetric[] = "Success";
 const char kSourceUkmMetric[] = "Source";
 
-class TextFragmentAnchorMetricsTest : public SimTest {
+class TextFragmentAnchorMetricsTest : public TextFragmentAnchorTestBase {
  public:
-  void SetUp() override {
-    SimTest::SetUp();
-    WebView().MainFrameViewWidget()->Resize(gfx::Size(800, 600));
-  }
-
-  void RunAsyncMatchingTasks() {
-    ThreadScheduler::Current()
-        ->ToMainThreadScheduler()
-        ->StartIdlePeriodForTesting();
-    RunPendingTasks();
-  }
-
   void SimulateClick(int x, int y) {
     WebMouseEvent event(WebInputEvent::Type::kMouseDown, gfx::PointF(x, y),
                         gfx::PointF(x, y), WebPointerProperties::Button::kLeft,
@@ -52,17 +41,6 @@ class TextFragmentAnchorMetricsTest : public SimTest {
                         base::TimeTicks::Now());
     event.SetFrameScale(1);
     GetDocument().GetFrame()->GetEventHandler().HandleMousePressEvent(event);
-  }
-
-  void BeginEmptyFrame() {
-    // If a test case doesn't find a match and therefore doesn't schedule the
-    // beforematch event, we should still render a second frame as if we did
-    // schedule the event to retain test coverage.
-    // When the beforematch event is not scheduled, a DCHECK will fail on
-    // BeginFrame() because no event was scheduled, so we schedule an empty task
-    // here.
-    GetDocument().EnqueueAnimationFrameTask(WTF::BindOnce([]() {}));
-    Compositor().BeginFrame();
   }
 
  protected:
@@ -93,11 +71,7 @@ TEST_F(TextFragmentAnchorMetricsTest, UMAMetricsCollected) {
     <p>This is a test page</p>
     <p>With ambiguous test content</p>
   )HTML");
-  RunAsyncMatchingTasks();
-
-  // Render two frames to handle the async step added by the beforematch event.
-  Compositor().BeginFrame();
-  BeginEmptyFrame();
+  RunUntilTextFragmentFinalization();
 
   histogram_tester_.ExpectTotalCount("TextFragmentAnchor.Unknown.MatchRate", 1);
   histogram_tester_.ExpectUniqueSample("TextFragmentAnchor.Unknown.MatchRate",
@@ -140,11 +114,7 @@ TEST_F(TextFragmentAnchorMetricsTest, UMAMetricsCollectedSearchEngineReferrer) {
     <p>This is a test page</p>
     <p>With ambiguous test content</p>
   )HTML");
-  RunAsyncMatchingTasks();
-
-  // Render two frames to handle the async step added by the beforematch event.
-  Compositor().BeginFrame();
-  BeginEmptyFrame();
+  RunUntilTextFragmentFinalization();
 
   histogram_tester_.ExpectTotalCount(
       "TextFragmentAnchor.SearchEngine.MatchRate", 1);
@@ -182,11 +152,7 @@ TEST_F(TextFragmentAnchorMetricsTest, NoMatchFoundWithUnknownSource) {
     </style>
     <p>This is a test page</p>
   )HTML");
-  RunAsyncMatchingTasks();
-
-  // Render two frames to handle the async step added by the beforematch event.
-  Compositor().BeginFrame();
-  BeginEmptyFrame();
+  RunUntilTextFragmentFinalization();
 
   histogram_tester_.ExpectTotalCount("TextFragmentAnchor.Unknown.MatchRate", 1);
   histogram_tester_.ExpectUniqueSample("TextFragmentAnchor.Unknown.MatchRate",
@@ -229,11 +195,7 @@ TEST_F(TextFragmentAnchorMetricsTest, NoMatchFoundWithSearchEngineSource) {
     </style>
     <p>This is a test page</p>
   )HTML");
-  RunAsyncMatchingTasks();
-
-  // Render two frames to handle the async step added by the beforematch event.
-  Compositor().BeginFrame();
-  BeginEmptyFrame();
+  RunUntilTextFragmentFinalization();
 
   histogram_tester_.ExpectTotalCount(
       "TextFragmentAnchor.SearchEngine.MatchRate", 1);
@@ -261,11 +223,7 @@ TEST_F(TextFragmentAnchorMetricsTest, NoTextFragmentAnchor) {
     <!DOCTYPE html>
     <p>This is a test page</p>
   )HTML");
-  // Render two frames to handle the async step added by the beforematch event.
   Compositor().BeginFrame();
-  BeginEmptyFrame();
-
-  RunAsyncMatchingTasks();
 
   histogram_tester_.ExpectTotalCount("TextFragmentAnchor.Unknown.MatchRate", 0);
 
@@ -287,11 +245,10 @@ TEST_F(TextFragmentAnchorMetricsTest, MatchFoundNoScroll) {
     <!DOCTYPE html>
     <p>This is a test page</p>
   )HTML");
-  RunAsyncMatchingTasks();
-
-  // Render two frames to handle the async step added by the beforematch event.
   Compositor().BeginFrame();
-  BeginEmptyFrame();
+
+  // The anchor should have been found and finalized.
+  EXPECT_FALSE(GetDocument().GetFrame()->View()->GetFragmentAnchor());
 
   histogram_tester_.ExpectTotalCount("TextFragmentAnchor.Unknown.MatchRate", 1);
   histogram_tester_.ExpectUniqueSample("TextFragmentAnchor.Unknown.MatchRate",
@@ -327,10 +284,7 @@ TEST_F(TextFragmentAnchorMetricsTest, ExactTextParameters) {
     <p>This is a test page</p>
     <p>With some content</p>
   )HTML");
-  RunAsyncMatchingTasks();
-
-  Compositor().BeginFrame();
-  BeginEmptyFrame();
+  RunUntilTextFragmentFinalization();
 
   histogram_tester_.ExpectTotalCount("TextFragmentAnchor.Unknown.MatchRate", 1);
   histogram_tester_.ExpectUniqueSample("TextFragmentAnchor.Unknown.MatchRate",
@@ -367,10 +321,7 @@ TEST_F(TextFragmentAnchorMetricsTest, TextRangeParameters) {
     <p>With some content</p>
     <p>About nothing at all</p>
   )HTML");
-  RunAsyncMatchingTasks();
-
-  Compositor().BeginFrame();
-  BeginEmptyFrame();
+  RunUntilTextFragmentFinalization();
 
   histogram_tester_.ExpectTotalCount("TextFragmentAnchor.Unknown.MatchRate", 1);
   histogram_tester_.ExpectUniqueSample("TextFragmentAnchor.Unknown.MatchRate",
@@ -414,12 +365,9 @@ TEST_F(TextFragmentAnchorMetricsTest, InvalidFragmentDirective) {
       <!DOCTYPE html>
       <p id="element">This is a test page</p>
     )HTML");
-    // Render two frames to handle the async step added by the beforematch
-    // event.
-    Compositor().BeginFrame();
-    BeginEmptyFrame();
-
-    RunAsyncMatchingTasks();
+    if (GetDocument().GetFrame()->View()->GetFragmentAnchor()) {
+      RunUntilTextFragmentFinalization();
+    }
 
     bool is_use_counted =
         GetDocument().IsUseCounted(WebFeature::kInvalidFragmentDirective);
@@ -459,8 +407,8 @@ TEST_P(TextFragmentRelatedMetricTest, TextFragmentAPIUseCounter) {
     </script>
     <p>This is a test page</p>
   )HTML");
+  RunPendingTasks();
   Compositor().BeginFrame();
-  RunAsyncMatchingTasks();
 
   bool text_fragments_enabled = GetParam();
 
@@ -477,10 +425,11 @@ TEST_P(TextFragmentRelatedMetricTest, TextFragmentActivationDoesNotCountAPI) {
     <!DOCTYPE html>
     <p>This is a test page</p>
   )HTML");
-  Compositor().BeginFrame();
-  RunAsyncMatchingTasks();
-
   bool text_fragments_enabled = GetParam();
+  if (text_fragments_enabled) {
+    RunUntilTextFragmentFinalization();
+  }
+
   EXPECT_EQ(text_fragments_enabled,
             GetDocument().IsUseCounted(WebFeature::kTextFragmentAnchor));
   EXPECT_FALSE(GetDocument().IsUseCounted(
@@ -506,11 +455,7 @@ TEST_F(TextFragmentAnchorMetricsTest, LinkOpenedSuccessUKM) {
     </style>
     <p>This is a test page</p>
   )HTML");
-  RunAsyncMatchingTasks();
-
-  // Render two frames to handle the async step added by the beforematch event.
-  Compositor().BeginFrame();
-  BeginEmptyFrame();
+  RunUntilTextFragmentFinalization();
 
   // Flush UKM logging mojo request.
   RunPendingTasks();
@@ -545,11 +490,7 @@ TEST_F(TextFragmentAnchorMetricsTest, LinkOpenedFailedUKM) {
     </style>
     <p>This is a test page</p>
   )HTML");
-  RunAsyncMatchingTasks();
-
-  // Render two frames to handle the async step added by the beforematch event.
-  Compositor().BeginFrame();
-  BeginEmptyFrame();
+  RunUntilTextFragmentFinalization();
 
   // Flush UKM logging mojo request.
   RunPendingTasks();
@@ -575,11 +516,8 @@ TEST_F(TextFragmentAnchorMetricsTest, ForceLoadAtTopUseCounter) {
     <!DOCTYPE html>
     <p>This is a test page</p>
   )HTML");
-  RunAsyncMatchingTasks();
-
-  // Render two frames to handle the async step added by the beforematch event.
+  RunPendingTasks();
   Compositor().BeginFrame();
-  BeginEmptyFrame();
 
   EXPECT_TRUE(GetDocument().IsUseCounted(WebFeature::kForceLoadAtTop));
 }
@@ -597,11 +535,8 @@ TEST_F(TextFragmentAnchorMetricsTest, NoForceLoadAtTopUseCounter) {
     <!DOCTYPE html>
     <p>This is a test page</p>
   )HTML");
-  RunAsyncMatchingTasks();
-
-  // Render two frames to handle the async step added by the beforematch event.
+  RunPendingTasks();
   Compositor().BeginFrame();
-  BeginEmptyFrame();
 
   EXPECT_FALSE(GetDocument().IsUseCounted(WebFeature::kForceLoadAtTop));
 
@@ -612,10 +547,8 @@ TEST_F(TextFragmentAnchorMetricsTest, NoForceLoadAtTopUseCounter) {
     <!DOCTYPE html>
     <p>This is a different test page</p>
   )HTML");
-  RunAsyncMatchingTasks();
-
+  RunPendingTasks();
   Compositor().BeginFrame();
-  BeginEmptyFrame();
 
   EXPECT_FALSE(GetDocument().IsUseCounted(WebFeature::kForceLoadAtTop));
 }
@@ -636,12 +569,8 @@ TEST_F(TextFragmentAnchorMetricsTest,
       <!DOCTYPE html>
       <p>This is a test page</p>
     )HTML");
-    RunAsyncMatchingTasks();
-
-    // Render two frames to handle the async step added by the beforematch
-    // event.
+    RunPendingTasks();
     Compositor().BeginFrame();
-    BeginEmptyFrame();
 
     ASSERT_TRUE(GetDocument().IsUseCounted(WebFeature::kForceLoadAtTop));
     EXPECT_FALSE(GetDocument().IsUseCounted(
@@ -660,12 +589,7 @@ TEST_F(TextFragmentAnchorMetricsTest,
       <!DOCTYPE html>
       <p>This is a test page</p>
     )HTML");
-    RunAsyncMatchingTasks();
-
-    // Render two frames to handle the async step added by the beforematch
-    // event.
-    Compositor().BeginFrame();
-    BeginEmptyFrame();
+    RunUntilTextFragmentFinalization();
 
     ASSERT_TRUE(GetDocument().IsUseCounted(WebFeature::kForceLoadAtTop));
     EXPECT_TRUE(GetDocument().IsUseCounted(
@@ -682,12 +606,7 @@ TEST_F(TextFragmentAnchorMetricsTest,
       <!DOCTYPE html>
       <p>This is a test page</p>
     )HTML");
-    RunAsyncMatchingTasks();
-
-    // Render two frames to handle the async step added by the beforematch
-    // event.
-    Compositor().BeginFrame();
-    BeginEmptyFrame();
+    RunUntilTextFragmentFinalization();
 
     ASSERT_FALSE(GetDocument().IsUseCounted(WebFeature::kForceLoadAtTop));
     EXPECT_FALSE(GetDocument().IsUseCounted(
@@ -717,11 +636,7 @@ TEST_F(TextFragmentAnchorMetricsTest, TextFragmentLinkOpenSource_GoogleDomain) {
     <p>This is a test page</p>
     <p>With ambiguous test content</p>
   )HTML");
-  RunAsyncMatchingTasks();
-
-  // Render two frames to handle the async step added by the beforematch event.
-  Compositor().BeginFrame();
-  BeginEmptyFrame();
+  RunUntilTextFragmentFinalization();
 
   // This should be recorded as coming from an unknown source (not search
   // engine).

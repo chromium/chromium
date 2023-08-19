@@ -14,7 +14,7 @@ FakeOnDeviceTailModelService::FakeOnDeviceTailModelService() = default;
 
 void FakeOnDeviceTailModelService::OnModelUpdated(
     optimization_guide::proto::OptimizationTarget optimization_target,
-    const optimization_guide::ModelInfo& model_info) {
+    base::optional_ref<const optimization_guide::ModelInfo> model_info) {
   if (optimization_target !=
       optimization_guide::proto::
           OPTIMIZATION_TARGET_OMNIBOX_ON_DEVICE_TAIL_SUGGEST) {

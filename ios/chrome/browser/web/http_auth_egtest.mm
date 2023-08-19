@@ -21,10 +21,6 @@
 #import "ui/base/l10n/l10n_util_mac.h"
 #import "url/gurl.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 using base::test::ios::WaitUntilConditionOrTimeout;
 using base::test::ios::kWaitForPageLoadTimeout;
 
@@ -102,9 +98,9 @@ void WaitForHttpAuthDialog() {
 
     // Enter valid username and password.
     [[EarlGrey selectElementWithMatcher:UsernameField()]
-        performAction:grey_typeText(@"gooduser")];
+        performAction:grey_replaceText(@"gooduser")];
     [[EarlGrey selectElementWithMatcher:PasswordField()]
-        performAction:grey_typeText(@"goodpass")];
+        performAction:grey_replaceText(@"goodpass")];
     [[EarlGrey selectElementWithMatcher:LoginButton()]
         performAction:grey_tap()];
   }  // EG synchronization disabled block.
@@ -135,9 +131,9 @@ void WaitForHttpAuthDialog() {
 
     // Enter invalid username and password.
     [[EarlGrey selectElementWithMatcher:UsernameField()]
-        performAction:grey_typeText(@"gooduser")];
+        performAction:grey_replaceText(@"gooduser")];
     [[EarlGrey selectElementWithMatcher:PasswordField()]
-        performAction:grey_typeText(@"goodpass")];
+        performAction:grey_replaceText(@"goodpass")];
     [[EarlGrey selectElementWithMatcher:LoginButton()]
         performAction:grey_tap()];
 

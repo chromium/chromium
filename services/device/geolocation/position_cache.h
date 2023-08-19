@@ -11,6 +11,7 @@ namespace device {
 namespace mojom {
 class Geoposition;
 class GeopositionResult;
+class PositionCacheDiagnostics;
 }  // namespace mojom
 
 struct WifiData;
@@ -31,8 +32,7 @@ class PositionCache {
   // Returns nullptr if the position is not in the cache, or the cached
   // position if available. Ownership remains with the cache. Do not store
   // the pointer, treat it as an iterator into the cache's internals.
-  virtual const mojom::Geoposition* FindPosition(
-      const WifiData& wifi_data) const = 0;
+  virtual const mojom::Geoposition* FindPosition(const WifiData& wifi_data) = 0;
 
   // Returns the number of cached position responses stored in the cache.
   virtual size_t GetPositionCacheSize() const = 0;
@@ -45,6 +45,8 @@ class PositionCache {
   // Stores the most recently used position.
   virtual void SetLastUsedNetworkPosition(
       const mojom::GeopositionResult& result) = 0;
+
+  virtual void FillDiagnostics(mojom::PositionCacheDiagnostics& diagnostics) {}
 };
 
 }  // namespace device

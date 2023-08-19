@@ -9,10 +9,6 @@
 #import "base/metrics/user_metrics_action.h"
 #import "base/notreached.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 using base::RecordAction;
 using base::UserMetricsAction;
 using base::UmaHistogramEnumeration;
@@ -45,13 +41,54 @@ void LogNonModalPromoAction(NonModalPromoAction action,
       break;
   }
 
-  if (impression_number == 0) {
-    UmaHistogramEnumeration("IOS.DefaultBrowserPromo.NonModal.FirstImpression",
-                            action);
-  } else if (impression_number == 1) {
-    UmaHistogramEnumeration("IOS.DefaultBrowserPromo.NonModal.SecondImpression",
-                            action);
+  std::string histogramString;
+
+  switch (impression_number) {
+    case 0:
+      histogramString = "IOS.DefaultBrowserPromo.NonModal.FirstImpression";
+      break;
+
+    case 1:
+      histogramString = "IOS.DefaultBrowserPromo.NonModal.SecondImpression";
+      break;
+
+    case 2:
+      histogramString = "IOS.DefaultBrowserPromo.NonModal.ThirdImpression";
+      break;
+
+    case 3:
+      histogramString = "IOS.DefaultBrowserPromo.NonModal.FourthImpression";
+      break;
+
+    case 4:
+      histogramString = "IOS.DefaultBrowserPromo.NonModal.FifthImpression";
+      break;
+
+    case 5:
+      histogramString = "IOS.DefaultBrowserPromo.NonModal.SixthImpression";
+      break;
+
+    case 6:
+      histogramString = "IOS.DefaultBrowserPromo.NonModal.SeventhImpression";
+      break;
+
+    case 7:
+      histogramString = "IOS.DefaultBrowserPromo.NonModal.EighthImpression";
+      break;
+
+    case 8:
+      histogramString = "IOS.DefaultBrowserPromo.NonModal.NinthImpression";
+      break;
+
+    case 9:
+      histogramString = "IOS.DefaultBrowserPromo.NonModal.TenthImpression";
+      break;
+
+    default:
+      NOTREACHED_NORETURN();
   }
+
+  UmaHistogramEnumeration(histogramString, action);
 
   switch (type) {
     case NonModalPromoTriggerType::kPastedLink:

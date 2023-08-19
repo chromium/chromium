@@ -21,10 +21,6 @@
 #import "remoting/ios/persistence/remoting_preferences.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 static const char kOauthRedirectUrl[] =
     "https://chromoting-oauth.talkgadget."
     "google.com/talkgadget/oauth/chrome-remote-desktop/dev";

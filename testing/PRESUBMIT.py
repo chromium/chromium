@@ -28,15 +28,6 @@ def _GetTestingEnv(input_api):
   return testing_env
 
 
-def CheckTestingUnittests(input_api, output_api):
-  """Runs unittests in the testing/ directory."""
-  return input_api.canned_checks.RunUnitTestsInDirectory(
-      input_api,
-      output_api,
-      '.',
-      [r'^.+_unittest\.py$'])
-
-
 def CheckFlakeSuppressorCommonUnittests(input_api, output_api):
   """Runs unittests in the testing/flake_suppressor_common/ directory."""
   return input_api.canned_checks.RunUnitTestsInDirectory(

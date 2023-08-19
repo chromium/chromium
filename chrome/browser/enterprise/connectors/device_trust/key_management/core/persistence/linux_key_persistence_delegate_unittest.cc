@@ -386,4 +386,14 @@ TEST_F(LinuxKeyPersistenceDelegateTest, CreateKeyPair) {
       base::StringPrintf(kErrorHistogramFormat, "CreateKeyPair"), 0);
 }
 
+// TODO(b/290068350): Add test coverage for this method.
+TEST_F(LinuxKeyPersistenceDelegateTest, PromoteTemporaryKeyPair) {
+  EXPECT_TRUE(persistence_delegate_.PromoteTemporaryKeyPair());
+}
+
+// TODO(b/290068350): Add test coverage for this method.
+TEST_F(LinuxKeyPersistenceDelegateTest, DeleteKeyPair) {
+  EXPECT_TRUE(persistence_delegate_.DeleteKeyPair(KeyStorageType::kTemporary));
+}
+
 }  // namespace enterprise_connectors

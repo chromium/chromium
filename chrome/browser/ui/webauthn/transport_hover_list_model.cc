@@ -4,23 +4,37 @@
 
 #include "chrome/browser/ui/webauthn/transport_hover_list_model.h"
 
+#include "chrome/browser/webauthn/authenticator_request_dialog_model.h"
 #include "ui/base/models/image_model.h"
 #include "ui/color/color_id.h"
-#include "ui/gfx/paint_vector_icon.h"
-#include "ui/gfx/vector_icon_types.h"
+
+namespace {
+
+std::vector<int> GetMechanismIndices(
+    base::span<const AuthenticatorRequestDialogModel::Mechanism> mechanisms) {
+  std::vector<int> tag_list(mechanisms.size());
+  for (size_t i = 0; i < mechanisms.size(); i++) {
+    tag_list[i] = static_cast<int>(i);
+  }
+  return tag_list;
+}
+
+}  // namespace
 
 TransportHoverListModel::TransportHoverListModel(
     base::span<const AuthenticatorRequestDialogModel::Mechanism> mechanisms)
-    : mechanisms_(mechanisms) {}
+    : TransportHoverListModel(mechanisms, GetMechanismIndices(mechanisms)) {}
+
+TransportHoverListModel::TransportHoverListModel(
+    base::span<const AuthenticatorRequestDialogModel::Mechanism> mechanisms,
+    std::vector<int> mechanism_indices_to_display)
+    : mechanisms_(mechanisms),
+      mechanism_indices_to_display_(std::move(mechanism_indices_to_display)) {}
 
 TransportHoverListModel::~TransportHoverListModel() = default;
 
 std::vector<int> TransportHoverListModel::GetButtonTags() const {
-  std::vector<int> tag_list(mechanisms_.size());
-  for (size_t i = 0; i < mechanisms_.size(); i++) {
-    tag_list[i] = static_cast<int>(i);
-  }
-  return tag_list;
+  return mechanism_indices_to_display_;
 }
 
 std::u16string TransportHoverListModel::GetItemText(int item_tag) const {
@@ -28,7 +42,7 @@ std::u16string TransportHoverListModel::GetItemText(int item_tag) const {
 }
 
 std::u16string TransportHoverListModel::GetDescriptionText(int item_tag) const {
-  return std::u16string();
+  return mechanisms_[item_tag].description;
 }
 
 ui::ImageModel TransportHoverListModel::GetItemIcon(int item_tag) const {
@@ -41,5 +55,5 @@ void TransportHoverListModel::OnListItemSelected(int item_tag) {
 }
 
 size_t TransportHoverListModel::GetPreferredItemCount() const {
-  return mechanisms_.size();
+  return mechanism_indices_to_display_.size();
 }

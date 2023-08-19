@@ -52,8 +52,6 @@ class AutocompleteProviderClientImpl : public AutocompleteProviderClient {
   const TemplateURLService* GetTemplateURLService() const override;
   RemoteSuggestionsService* GetRemoteSuggestionsService(
       bool create_if_necessary) const override;
-  DocumentSuggestionsService* GetDocumentSuggestionsService(
-      bool create_if_necessary) const override;
   ZeroSuggestCacheService* GetZeroSuggestCacheService() override;
   const ZeroSuggestCacheService* GetZeroSuggestCacheService() const override;
   OmniboxPedalProvider* GetPedalProvider() const override;

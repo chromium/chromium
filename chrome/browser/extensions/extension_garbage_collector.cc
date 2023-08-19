@@ -7,7 +7,6 @@
 #include <stddef.h>
 
 #include <memory>
-#include <unordered_set>
 #include <utility>
 
 #include "base/check_op.h"
@@ -31,9 +30,7 @@
 #include "components/crx_file/id_util.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/browser_thread.h"
-#include "content/public/browser/storage_partition.h"
 #include "extensions/browser/extension_file_task_runner.h"
-#include "extensions/browser/extension_prefs.h"
 #include "extensions/browser/extension_registry.h"
 #include "extensions/browser/extension_system.h"
 #include "extensions/browser/extension_util.h"
@@ -143,12 +140,6 @@ ExtensionGarbageCollector::ExtensionGarbageCollector(
                      weak_factory_.GetWeakPtr()),
       kGarbageCollectStartupDelay);
 
-  extension_system->ready().Post(
-      FROM_HERE,
-      base::BindOnce(
-          &ExtensionGarbageCollector::GarbageCollectIsolatedStorageIfNeeded,
-          weak_factory_.GetWeakPtr()));
-
   InstallTracker::Get(context_)->AddObserver(this);
 }
 
@@ -251,52 +242,16 @@ void ExtensionGarbageCollector::GarbageCollectExtensions() {
   }
 }
 
-void ExtensionGarbageCollector::GarbageCollectIsolatedStorageIfNeeded() {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-
-  ExtensionPrefs* extension_prefs = ExtensionPrefs::Get(context_);
-  DCHECK(extension_prefs);
-  if (!extension_prefs->NeedsStorageGarbageCollection())
-    return;
-  extension_prefs->SetNeedsStorageGarbageCollection(false);
-
-  std::unordered_set<base::FilePath> active_paths;
-  const ExtensionSet extensions =
-      ExtensionRegistry::Get(context_)->GenerateInstalledExtensionsSet();
-  for (const auto& ext : extensions) {
-    if (extensions::util::HasIsolatedStorage(*ext.get(), context_)) {
-      active_paths.insert(
-          util::GetStoragePartitionForExtensionId(ext->id(), context_)
-              ->GetPath());
-    }
-  }
-
-  DCHECK(!installs_delayed_for_gc_);
-  installs_delayed_for_gc_ = true;
-  context_->GarbageCollectStoragePartitions(
-      std::move(active_paths),
-      base::BindOnce(
-          &ExtensionGarbageCollector::OnGarbageCollectIsolatedStorageFinished,
-          weak_factory_.GetWeakPtr()));
-}
-
-void ExtensionGarbageCollector::OnGarbageCollectIsolatedStorageFinished() {
-  DCHECK(installs_delayed_for_gc_);
-  installs_delayed_for_gc_ = false;
-
-  ExtensionSystem::Get(context_)
-      ->extension_service()
-      ->MaybeFinishDelayedInstallations();
-}
-
 void ExtensionGarbageCollector::OnBeginCrxInstall(
     content::BrowserContext* context,
+    const CrxInstaller& installer,
     const std::string& extension_id) {
   crx_installs_in_progress_++;
 }
 
 void ExtensionGarbageCollector::OnFinishCrxInstall(
     content::BrowserContext* context,
+    const CrxInstaller& installer,
     const std::string& extension_id,
     bool success) {
   crx_installs_in_progress_--;
@@ -309,12 +264,6 @@ void ExtensionGarbageCollector::OnFinishCrxInstall(
     // an install is actually in progress.
     crx_installs_in_progress_ = 0;
   }
-}
-
-InstallGate::Action ExtensionGarbageCollector::ShouldDelay(
-    const Extension* extension,
-    bool install_immediately) {
-  return installs_delayed_for_gc_ ? DELAY : INSTALL;
 }
 
 }  // namespace extensions

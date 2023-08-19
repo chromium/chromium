@@ -15,19 +15,15 @@
 #include <cmath>
 #include <limits>
 
+#include "base/apple/foundation_util.h"
 #include "base/check_op.h"
 #include "base/containers/fixed_flat_set.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/location.h"
-#include "base/mac/foundation_util.h"
 #include "base/mac/scoped_ioobject.h"
 #include "base/task/sequenced_task_runner.h"
 #include "device/gamepad/gamepad_uma.h"
-
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
 
 namespace device {
 

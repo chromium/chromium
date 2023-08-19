@@ -224,9 +224,7 @@ class RenderWidgetHostVisibilityObserver
 
 namespace extensions {
 
-WebViewAPITest::WebViewAPITest() {
-  GuestViewManager::set_factory_for_testing(&factory_);
-}
+WebViewAPITest::WebViewAPITest() = default;
 
 void WebViewAPITest::LaunchApp(const std::string& app_location) {
   base::ScopedAllowBlockingForTesting allow_blocking;
@@ -347,18 +345,8 @@ content::WebContents* WebViewAPITest::GetEmbedderWebContents() {
 TestGuestViewManager* WebViewAPITest::GetGuestViewManager() {
   content::BrowserContext* context =
       ShellContentBrowserClient::Get()->GetBrowserContext();
-  TestGuestViewManager* manager = static_cast<TestGuestViewManager*>(
-      TestGuestViewManager::FromBrowserContext(context));
-  // Test code may access the TestGuestViewManager before it would be created
-  // during creation of the first guest.
-  if (!manager) {
-    manager =
-        static_cast<TestGuestViewManager*>(GuestViewManager::CreateWithDelegate(
-            context,
-            ExtensionsAPIClient::Get()->CreateGuestViewManagerDelegate(
-                context)));
-  }
-  return manager;
+  return factory_.GetOrCreateTestGuestViewManager(
+      context, ExtensionsAPIClient::Get()->CreateGuestViewManagerDelegate());
 }
 
 void WebViewDPIAPITest::SetUp() {
@@ -524,20 +512,21 @@ IN_PROC_BROWSER_TEST_F(WebViewAPITest, TestContextMenu) {
   auto* guest_view = GetGuestViewManager()->WaitForSingleGuestViewCreated();
   ASSERT_TRUE(guest_view);
 
-  auto* guest_rfh = guest_view->GetGuestMainFrame();
-  content::WaitForHitTestData(guest_rfh);
+  auto* guest_render_frame_host = guest_view->GetGuestMainFrame();
+  content::WaitForHitTestData(guest_render_frame_host);
 
   // Create a ContextMenuInterceptor to intercept the ShowContextMenu event
   // before RenderFrameHost receives.
   auto context_menu_interceptor =
-      std::make_unique<content::ContextMenuInterceptor>(guest_rfh);
+      std::make_unique<content::ContextMenuInterceptor>(
+          guest_render_frame_host);
 
   // Trigger the context menu. AppShell doesn't show a context menu; this is
   // just a sanity check that nothing breaks.
   content::WebContents* embedder_web_contents = GetEmbedderWebContents();
 
   content::RenderWidgetHostView* guest_rwhv =
-      guest_rfh->GetRenderWidgetHost()->GetView();
+      guest_render_frame_host->GetRenderWidgetHost()->GetView();
   gfx::Point guest_context_menu_position(5, 5);
   gfx::Point root_context_menu_position =
       guest_rwhv->TransformPointToRootCoordSpace(guest_context_menu_position);
@@ -782,9 +771,6 @@ IN_PROC_BROWSER_TEST_F(WebViewAPITest, TestRemoveWebviewOnExit) {
 
   // Launch the app and wait until it's ready to load a test.
   LaunchApp("web_view/apitest");
-
-  GURL::Replacements replace_host;
-  replace_host.SetHostStr("localhost");
 
   // Run the test and wait until the guest is available and has finished
   // loading.

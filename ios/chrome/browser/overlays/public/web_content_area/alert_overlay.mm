@@ -7,10 +7,6 @@
 #import "base/check_op.h"
 #import "base/strings/string_piece.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 namespace alert_overlays {
 
 #pragma mark - ButtonConfig

@@ -301,37 +301,31 @@ public class WarmupManagerTest {
         ProfileType profileType = ProfileType.valueOf(profileParameter);
         Profile profile = getProfile(profileType);
         EmbeddedTestServer server = new EmbeddedTestServer();
-        try {
-            // The predictor prepares 2 connections when asked to preconnect. Initializes the
-            // semaphore to be unlocked after 2 connections.
-            final Semaphore connectionsSemaphore = new Semaphore(1 - 2);
-
-            // Cannot use EmbeddedTestServer#createAndStartServer(), as we need to add the
-            // connection listener.
-            server.initializeNative(mContext, EmbeddedTestServer.ServerHTTPSSetting.USE_HTTP);
-            server.addDefaultHandlers("");
-            server.setConnectionListener(new EmbeddedTestServer.ConnectionListener() {
-                @Override
-                public void acceptedSocket(long socketId) {
-                    connectionsSemaphore.release();
-                }
-            });
-            server.start();
-
-            final String url = server.getURL("/hello_world.html");
-            PostTask.runOrPostTask(TaskTraits.UI_DEFAULT,
-                    () -> { mWarmupManager.maybePreconnectUrlAndSubResources(profile, url); });
-            boolean isAcquired = connectionsSemaphore.tryAcquire(5, TimeUnit.SECONDS);
-            if (profileType == ProfileType.REGULAR_PROFILE && !isAcquired) {
-                // Starts at -1.
-                int actualConnections = connectionsSemaphore.availablePermits() + 1;
-                Assert.fail("Pre-connect failed for regular profile: Expected 2 connections, got "
-                        + actualConnections);
-            } else if (profileType != ProfileType.REGULAR_PROFILE && isAcquired) {
-                Assert.fail("Pre-connect should fail for incognito profiles.");
+        // The predictor prepares 2 connections when asked to preconnect. Initializes the
+        // semaphore to be unlocked after 2 connections.
+        final Semaphore connectionsSemaphore = new Semaphore(1 - 2);
+        // Cannot use EmbeddedTestServer#createAndStartServer(), as we need to add the
+        // connection listener.
+        server.initializeNative(mContext, EmbeddedTestServer.ServerHTTPSSetting.USE_HTTP);
+        server.addDefaultHandlers("");
+        server.setConnectionListener(new EmbeddedTestServer.ConnectionListener() {
+            @Override
+            public void acceptedSocket(long socketId) {
+                connectionsSemaphore.release();
             }
-        } finally {
-            server.stopAndDestroyServer();
+        });
+        server.start();
+        final String url = server.getURL("/hello_world.html");
+        PostTask.runOrPostTask(TaskTraits.UI_DEFAULT,
+                () -> { mWarmupManager.maybePreconnectUrlAndSubResources(profile, url); });
+        boolean isAcquired = connectionsSemaphore.tryAcquire(5, TimeUnit.SECONDS);
+        if (profileType == ProfileType.REGULAR_PROFILE && !isAcquired) {
+            // Starts at -1.
+            int actualConnections = connectionsSemaphore.availablePermits() + 1;
+            Assert.fail("Pre-connect failed for regular profile: Expected 2 connections, got "
+                    + actualConnections);
+        } else if (profileType != ProfileType.REGULAR_PROFILE && isAcquired) {
+            Assert.fail("Pre-connect should fail for incognito profiles.");
         }
     }
 
@@ -341,7 +335,7 @@ public class WarmupManagerTest {
     @Test
     @MediumTest
     @Feature({"SpareTab"})
-    @EnableFeatures({ChromeFeatureList.SPARE_TAB})
+    @EnableFeatures(ChromeFeatureList.SPARE_TAB)
     public void testCreateAndTakeSpareTabWithInitializeRenderer() {
         // Set the param to true allowing renderer initialization.
         WarmupManager.SPARE_TAB_INITIALIZE_RENDERER.setForTesting(true);
@@ -369,10 +363,12 @@ public class WarmupManagerTest {
     }
 
     // Test to check the functionality of spare tab creation without initializing renderer.
+    // Disable CreateNewTabInitializeRenderer to test spare tab without renderer initialization.
     @Test
     @MediumTest
     @Feature({"SpareTab"})
-    @EnableFeatures({ChromeFeatureList.SPARE_TAB})
+    @EnableFeatures(ChromeFeatureList.SPARE_TAB)
+    @DisableFeatures(ChromeFeatureList.CREATE_NEW_TAB_INITIALIZE_RENDERER)
     public void testCreateAndTakeSpareTabWithoutInitializeRenderer() {
         WarmupManager.SPARE_TAB_INITIALIZE_RENDERER.setForTesting(false);
 
@@ -399,7 +395,7 @@ public class WarmupManagerTest {
     @Test
     @MediumTest
     @Feature({"SpareTab"})
-    @EnableFeatures({ChromeFeatureList.SPARE_TAB})
+    @EnableFeatures(ChromeFeatureList.SPARE_TAB)
     @UiThreadTest
     public void testTakeSpareTab() {
         var histogramWatcher = HistogramWatcher.newSingleRecordWatcher(
@@ -419,7 +415,7 @@ public class WarmupManagerTest {
     @Test
     @MediumTest
     @Feature({"SpareTab"})
-    @EnableFeatures({ChromeFeatureList.SPARE_TAB})
+    @EnableFeatures(ChromeFeatureList.SPARE_TAB)
     @UiThreadTest
     public void testDestroySpareTab() {
         var histogramWatcher = HistogramWatcher.newSingleRecordWatcher(
@@ -478,7 +474,7 @@ public class WarmupManagerTest {
     @Test
     @MediumTest
     @Feature({"SpareTab"})
-    @EnableFeatures({ChromeFeatureList.SPARE_TAB})
+    @EnableFeatures(ChromeFeatureList.SPARE_TAB)
     public void testLoadURLInSpareTab() {
         var histogramWatcher = HistogramWatcher.newSingleRecordWatcher(
                 HISTOGRAM_SPARE_TAB_FINAL_STATUS, SpareTabFinalStatus.TAB_USED);
@@ -511,7 +507,7 @@ public class WarmupManagerTest {
     @Test
     @MediumTest
     @Feature({"SpareTab"})
-    @EnableFeatures({ChromeFeatureList.SPARE_TAB})
+    @EnableFeatures(ChromeFeatureList.SPARE_TAB)
     public void testMetricsRecordedWithSpareTab() {
         Assert.assertNotNull(mActivityTestRule.getActivity().getCurrentTabCreator());
 

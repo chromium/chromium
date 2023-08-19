@@ -19,16 +19,33 @@ class AuthHubConnector;
 // Authentication factor state. This is a superset of states for all factors,
 // so some states might not be applicable for individual factors.
 enum class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_OSAUTH) AuthFactorState {
+  // Transient state during initialization, while engine checks if factor
+  // is present for the user;
   kCheckingForPresence,
+  // State that indicates that there is some critical error in factor engine
+  // logic;
   kEngineError,
-  kNoFactor,
+  // Factor is present, and is ready for authentication;
   kFactorReady,
+  // Factor can not be used due to enterprise policy restrictions;
   kDisabledByPolicy,
+  // Weaker Factor can not be used until user successfully authenticates with
+  // stronger factor;
   kDisabledStrongFactorRequired,
+  // Factor is disabled after number of incorrect attempts. It will not be
+  // re-enabled unless user successfully authenticates with
+  // stronger factor;
   kLockedOutIndefinite,
+  // Factor is disabled after number of incorrect attempts. It will be
+  // re-enabled after some timeout;
   kLockedOutTemporary,
+  // This state allows particular factors indicate that they are disabled
+  // for some reason that is relevant only for this factor.
   kDisabledFactorSpecific,
+  // When one factor attempts an authentication, all other factors are temporary
+  // marked as disabled, to prevent multiple parallel authentication attempts.
   kDisabledParallelAttempt,
+  // Indicates that factor is performing an authentication attempt.
   kOngoingAttempt,
   kMaxValue = kOngoingAttempt,
 };
@@ -73,6 +90,12 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_OSAUTH)
   //   `kDisabledParallelAttempt`;
   // * Policy change might affect multiple factors.
   virtual void OnFactorStatusesChanged(FactorsStatusMap incremental_update) = 0;
+
+  // This method would be called by AuthHub when some factor sends a custom
+  // signal to the UI. Such signals are used to indicate some state changes
+  // that are not covered by AuthFactorState, for example, SmartUnlockEngine
+  // might indicate user action is required to complete authentication.
+  virtual void OnFactorCustomSignal(AshAuthFactor factor) = 0;
 
   // This method would be called by AuthHub upon attempt failure.
   // UI can provide additional visual feedback in this case.

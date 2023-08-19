@@ -12,6 +12,7 @@
 #include "ui/color/color_id.h"
 #include "ui/color/color_provider.h"
 #include "ui/gfx/canvas.h"
+#include "ui/gfx/geometry/rounded_corners_f.h"
 #include "ui/gfx/geometry/skia_conversions.h"
 #include "ui/views/painter.h"
 #include "ui/views/view.h"
@@ -41,19 +42,8 @@ class SolidBackground : public Background {
 // Shared class for RoundedRectBackground and ThemedRoundedRectBackground.
 class BaseRoundedRectBackground : public Background {
  public:
-  BaseRoundedRectBackground(float top_radius,
-                            float bottom_radius,
+  BaseRoundedRectBackground(const gfx::RoundedCornersF& radii,
                             int for_border_thickness)
-      : BaseRoundedRectBackground(
-            Radii{
-                .top_left = top_radius,
-                .top_right = top_radius,
-                .bottom_right = bottom_radius,
-                .bottom_left = bottom_radius,
-            },
-            for_border_thickness) {}
-
-  BaseRoundedRectBackground(const Radii& radii, int for_border_thickness)
       : radii_(radii), half_thickness_(for_border_thickness / 2.0f) {}
 
   BaseRoundedRectBackground(const BaseRoundedRectBackground&) = delete;
@@ -64,10 +54,10 @@ class BaseRoundedRectBackground : public Background {
     gfx::Rect rect(view->GetLocalBounds());
     rect.Inset(half_thickness_);
     SkPath path;
-    SkScalar radii[8] = {radii_.top_left,     radii_.top_left,
-                         radii_.top_right,    radii_.top_right,
-                         radii_.bottom_right, radii_.bottom_right,
-                         radii_.bottom_left,  radii_.bottom_left};
+    SkScalar radii[8] = {radii_.upper_left(),  radii_.upper_left(),
+                         radii_.upper_right(), radii_.upper_right(),
+                         radii_.lower_right(), radii_.lower_right(),
+                         radii_.lower_left(),  radii_.lower_left()};
     path.addRoundRect(gfx::RectToSkRect(rect), radii);
 
     cc::PaintFlags flags;
@@ -78,7 +68,7 @@ class BaseRoundedRectBackground : public Background {
   }
 
  private:
-  const Radii radii_;
+  const gfx::RoundedCornersF radii_;
   const float half_thickness_;
 };
 
@@ -86,8 +76,10 @@ class BaseRoundedRectBackground : public Background {
 // rounded corners.
 class RoundedRectBackground : public BaseRoundedRectBackground {
  public:
-  RoundedRectBackground(SkColor color, float radius, int for_border_thickness)
-      : BaseRoundedRectBackground(radius, radius, for_border_thickness) {
+  RoundedRectBackground(SkColor color,
+                        const gfx::RoundedCornersF& radii,
+                        int for_border_thickness)
+      : BaseRoundedRectBackground(radii, for_border_thickness) {
     SetNativeControlColor(color);
   }
 
@@ -144,26 +136,7 @@ class ThemedSolidBackground : public SolidBackground {
 class ThemedRoundedRectBackground : public BaseRoundedRectBackground {
  public:
   ThemedRoundedRectBackground(ui::ColorId color_id,
-                              float radius,
-                              int for_border_thickness)
-      : ThemedRoundedRectBackground(color_id,
-                                    radius,
-                                    radius,
-                                    for_border_thickness) {}
-
-  ThemedRoundedRectBackground(ui::ColorId color_id,
-                              float top_radius,
-                              float bottom_radius,
-                              int for_border_thickness)
-      : ThemedRoundedRectBackground(color_id,
-                                    Radii{.top_left = top_radius,
-                                          .top_right = top_radius,
-                                          .bottom_right = bottom_radius,
-                                          .bottom_left = bottom_radius},
-                                    for_border_thickness) {}
-
-  ThemedRoundedRectBackground(ui::ColorId color_id,
-                              const Radii& radii,
+                              const gfx::RoundedCornersF& radii,
                               int for_border_thickness)
       : BaseRoundedRectBackground(radii, for_border_thickness),
         color_id_(color_id) {}
@@ -221,7 +194,15 @@ std::unique_ptr<Background> CreateRoundedRectBackground(
     SkColor color,
     float radius,
     int for_border_thickness) {
-  return std::make_unique<RoundedRectBackground>(color, radius,
+  return std::make_unique<RoundedRectBackground>(
+      color, gfx::RoundedCornersF{radius}, for_border_thickness);
+}
+
+std::unique_ptr<Background> CreateRoundedRectBackground(
+    SkColor color,
+    const gfx::RoundedCornersF& radii,
+    int for_border_thickness) {
+  return std::make_unique<RoundedRectBackground>(color, radii,
                                                  for_border_thickness);
 }
 
@@ -229,8 +210,8 @@ std::unique_ptr<Background> CreateThemedRoundedRectBackground(
     ui::ColorId color_id,
     float radius,
     int for_border_thickness) {
-  return std::make_unique<ThemedRoundedRectBackground>(color_id, radius,
-                                                       for_border_thickness);
+  return std::make_unique<ThemedRoundedRectBackground>(
+      color_id, gfx::RoundedCornersF{radius}, for_border_thickness);
 }
 
 std::unique_ptr<Background> CreateThemedRoundedRectBackground(
@@ -239,12 +220,15 @@ std::unique_ptr<Background> CreateThemedRoundedRectBackground(
     float bottom_radius,
     int for_border_thickness) {
   return std::make_unique<ThemedRoundedRectBackground>(
-      color_id, top_radius, bottom_radius, for_border_thickness);
+      color_id,
+      gfx::RoundedCornersF{top_radius, top_radius, bottom_radius,
+                           bottom_radius},
+      for_border_thickness);
 }
 
 std::unique_ptr<Background> CreateThemedRoundedRectBackground(
     ui::ColorId color_id,
-    const Radii& radii,
+    const gfx::RoundedCornersF& radii,
     int for_border_thickness) {
   return std::make_unique<ThemedRoundedRectBackground>(color_id, radii,
                                                        for_border_thickness);

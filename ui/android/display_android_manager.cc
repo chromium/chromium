@@ -142,7 +142,7 @@ void DisplayAndroidManager::DoUpdateDisplay(display::Display* display,
           gfx::ContentColorUsage::kHDR, needs_alpha, cs_for_hdr,
           gfx::BufferFormat::RGBA_8888);
     }
-    display->set_color_spaces(display_color_spaces);
+    display->SetColorSpaces(display_color_spaces);
   }
 
   display->set_size_in_pixels(size_in_pixels);

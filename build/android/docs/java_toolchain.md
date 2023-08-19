@@ -111,7 +111,7 @@ This step happens only when targets that have `jar_excluded_patterns` or
   * E.g.: `AppHooksImpl.class` - how `chrome_java` wires up different
     implementations for [non-public builds][apphooks].
 
-[JNI]: /base/android/jni_generator/README.md
+[JNI]: /third_party/jni_zero/README.md
 [Android Resources]: life_of_a_resource.md
 [apphooks]: /chrome/android/java/src/org/chromium/chrome/browser/AppHooksImpl.java
 
@@ -140,7 +140,7 @@ This step happens only when targets have `supports_android = true`.
   * Final `GEN_JNI.java` for [JNI glue].
   * `BuildConfig.java` and `NativeLibraries.java` (//base dependencies).
 
-[JNI glue]: /base/android/jni_generator/README.md
+[JNI glue]: /third_party/jni_zero/README.md
 
 ### Step 8: Final Dexing
 

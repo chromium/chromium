@@ -757,7 +757,9 @@ TEST_P(RTCVideoDecoderAdapterTest, DecodesImageWithSingleSpatialLayer) {
 
   // Check the side data was not set as there was only 1 spatial layer.
   ASSERT_TRUE(decoder_buffer);
-  EXPECT_EQ(0u, decoder_buffer->side_data_size());
+  if (decoder_buffer->has_side_data()) {
+    EXPECT_TRUE(decoder_buffer->side_data()->spatial_layers.empty());
+  }
 }
 
 #if BUILDFLAG(IS_WIN)

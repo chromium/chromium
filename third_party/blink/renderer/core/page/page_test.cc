@@ -37,4 +37,26 @@ TEST(PageTest, CreateNonOrdinaryBrowsingContextGroup) {
   EXPECT_NE(page->BrowsingContextGroupToken(), page->CoopRelatedGroupToken());
 }
 
+TEST(PageTest, BrowsingContextGroupUpdate) {
+  EmptyChromeClient client;
+  auto* scheduler = scheduler::CreateDummyAgentGroupScheduler();
+  auto initial_bcg_info = BrowsingContextGroupInfo::CreateUnique();
+
+  Page* page = Page::CreateOrdinary(client, /*opener=*/nullptr, *scheduler,
+                                    initial_bcg_info);
+
+  EXPECT_EQ(page->BrowsingContextGroupToken(),
+            initial_bcg_info.browsing_context_group_token);
+  EXPECT_EQ(page->CoopRelatedGroupToken(),
+            initial_bcg_info.coop_related_group_token);
+
+  auto updated_bcg_info = BrowsingContextGroupInfo::CreateUnique();
+  page->UpdateBrowsingContextGroup(updated_bcg_info);
+
+  EXPECT_EQ(page->BrowsingContextGroupToken(),
+            updated_bcg_info.browsing_context_group_token);
+  EXPECT_EQ(page->CoopRelatedGroupToken(),
+            updated_bcg_info.coop_related_group_token);
+}
+
 }  // namespace blink

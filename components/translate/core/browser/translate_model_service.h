@@ -48,7 +48,8 @@ class TranslateModelService
   // optimization_guide::OptimizationTargetModelObserver implementation:
   void OnModelUpdated(
       optimization_guide::proto::OptimizationTarget optimization_target,
-      const optimization_guide::ModelInfo& model_info) override;
+      base::optional_ref<const optimization_guide::ModelInfo> model_info)
+      override;
 
   // Returns the language detection model file, should only be called when the
   // is model file is already available. See the |NotifyOnModelFileAvailable|
@@ -68,6 +69,12 @@ class TranslateModelService
   void NotifyOnModelFileAvailable(NotifyModelAvailableCallback callback);
 
  private:
+  // Unloads the model in background task.
+  void UnloadModelFile();
+
+  // Notifies the model update to observers, and clears the observer list.
+  void NotifyModelUpdatesAndClear(bool is_model_available);
+
   void OnModelFileLoaded(base::File model_file);
 
   // Optimization Guide Service that provides model files for this service.

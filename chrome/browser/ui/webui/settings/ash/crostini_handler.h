@@ -18,6 +18,7 @@
 #include "chrome/browser/ash/settings/cros_settings.h"
 #include "chrome/browser/ui/webui/settings/settings_page_ui_handler.h"
 #include "chromeos/ash/components/dbus/session_manager/session_manager_client.h"
+#include "chromeos/ash/components/network/network_state_handler_observer.h"
 #include "components/prefs/pref_change_registrar.h"
 #include "components/services/app_service/public/cpp/intent.h"
 
@@ -104,6 +105,8 @@ class CrostiniHandler : public ::settings::SettingsPageUIHandler,
   void HandleRemoveAllCrostiniPortForwards(const base::Value::List& args);
   // CrostiniPortForwarder::Observer.
   void OnActivePortsChanged(const base::Value::List& activePorts) override;
+  void OnActiveNetworkChanged(const base::Value& interface,
+                              const base::Value& ipAddress) override;
   // Handles a request for activating an existing port.
   void HandleActivateCrostiniPortForward(const base::Value::List& args);
   // Handles a request for deactivating an existing port.
@@ -121,6 +124,8 @@ class CrostiniHandler : public ::settings::SettingsPageUIHandler,
                                          bool succeeded);
   // Returns a list of currently forwarded ports.
   void HandleGetCrostiniActivePorts(const base::Value::List& args);
+  // Returns the current active network for forwarded ports.
+  void HandleGetCrostiniActiveNetworkInfo(const base::Value::List& args);
   // Checks if Crostini is running.
   void HandleCheckCrostiniIsRunning(const base::Value::List& args);
   // guest_os::ContainerStartedObserver

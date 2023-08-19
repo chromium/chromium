@@ -9,7 +9,7 @@
 #include "components/webauthn/android/webauthn_client_android.h"
 
 // Chrome implementation of WebAuthnClientAndroid.
-class ChromeWebAuthnClientAndroid : public components::WebAuthnClientAndroid {
+class ChromeWebAuthnClientAndroid : public webauthn::WebAuthnClientAndroid {
  public:
   ChromeWebAuthnClientAndroid();
   ~ChromeWebAuthnClientAndroid() override;
@@ -18,7 +18,7 @@ class ChromeWebAuthnClientAndroid : public components::WebAuthnClientAndroid {
   ChromeWebAuthnClientAndroid& operator=(const ChromeWebAuthnClientAndroid&) =
       delete;
 
-  // components::WebAuthnClientAndroid:
+  // webauthn::WebAuthnClientAndroid:
   void OnWebAuthnRequestPending(
       content::RenderFrameHost* frame_host,
       const std::vector<device::DiscoverableCredentialMetadata>& credentials,

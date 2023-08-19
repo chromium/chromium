@@ -6,8 +6,8 @@
 
 #include <CoreMedia/CoreMedia.h>
 
+#include "base/apple/foundation_util.h"
 #include "base/containers/span.h"
-#include "base/mac/foundation_util.h"
 #include "base/mac/mac_util.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/strings/sys_string_conversions.h"
@@ -20,28 +20,29 @@ namespace {
 
 std::string GetStrValue(CFDictionaryRef dict, CFStringRef key) {
   return base::SysCFStringRefToUTF8(
-      base::mac::CFCastStrict<CFStringRef>(CFDictionaryGetValue(dict, key)));
+      base::apple::CFCastStrict<CFStringRef>(CFDictionaryGetValue(dict, key)));
 }
 
 CFStringRef GetCFStrValue(CFDictionaryRef dict, CFStringRef key) {
-  return base::mac::CFCastStrict<CFStringRef>(CFDictionaryGetValue(dict, key));
+  return base::apple::CFCastStrict<CFStringRef>(
+      CFDictionaryGetValue(dict, key));
 }
 
 int GetIntValue(CFDictionaryRef dict, CFStringRef key) {
   CFNumberRef value =
-      base::mac::CFCastStrict<CFNumberRef>(CFDictionaryGetValue(dict, key));
+      base::apple::CFCastStrict<CFNumberRef>(CFDictionaryGetValue(dict, key));
   int result;
   return CFNumberGetValue(value, kCFNumberIntType, &result) ? result : -1;
 }
 
 bool GetBoolValue(CFDictionaryRef dict, CFStringRef key) {
   return CFBooleanGetValue(
-      base::mac::CFCastStrict<CFBooleanRef>(CFDictionaryGetValue(dict, key)));
+      base::apple::CFCastStrict<CFBooleanRef>(CFDictionaryGetValue(dict, key)));
 }
 
 base::span<const uint8_t> GetDataValue(CFDictionaryRef dict, CFStringRef key) {
   CFDataRef data =
-      base::mac::CFCastStrict<CFDataRef>(CFDictionaryGetValue(dict, key));
+      base::apple::CFCastStrict<CFDataRef>(CFDictionaryGetValue(dict, key));
   return data ? base::span<const uint8_t>(
                     reinterpret_cast<const uint8_t*>(CFDataGetBytePtr(data)),
                     base::checked_cast<size_t>(CFDataGetLength(data)))
@@ -51,15 +52,15 @@ base::span<const uint8_t> GetDataValue(CFDictionaryRef dict, CFStringRef key) {
 base::span<const uint8_t> GetNestedDataValue(CFDictionaryRef dict,
                                              CFStringRef key1,
                                              CFStringRef key2) {
-  CFDictionaryRef nested_dict = base::mac::CFCastStrict<CFDictionaryRef>(
+  CFDictionaryRef nested_dict = base::apple::CFCastStrict<CFDictionaryRef>(
       CFDictionaryGetValue(dict, key1));
   return GetDataValue(nested_dict, key2);
 }
 
 base::ScopedCFTypeRef<CVImageBufferRef> CreateCVImageBuffer(
     media::VideoColorSpace cs) {
-  base::ScopedCFTypeRef<CFDictionaryRef> fmt(CreateFormatExtensions(
-      kCMVideoCodecType_H264, media::H264PROFILE_MAIN, cs, gfx::HDRMetadata()));
+  base::ScopedCFTypeRef<CFDictionaryRef> fmt = CreateFormatExtensions(
+      kCMVideoCodecType_H264, media::H264PROFILE_MAIN, cs, gfx::HDRMetadata());
 
   base::ScopedCFTypeRef<CVImageBufferRef> image_buffer;
   OSStatus err =
@@ -144,9 +145,9 @@ constexpr char kVpccKey[] = "vpcC";
 namespace media {
 
 TEST(VTConfigUtil, CreateFormatExtensions_H264_BT709) {
-  base::ScopedCFTypeRef<CFDictionaryRef> fmt(
+  base::ScopedCFTypeRef<CFDictionaryRef> fmt =
       CreateFormatExtensions(kCMVideoCodecType_H264, H264PROFILE_MAIN,
-                             VideoColorSpace::REC709(), absl::nullopt));
+                             VideoColorSpace::REC709(), absl::nullopt);
 
   EXPECT_EQ("avc1", GetStrValue(fmt, kCMFormatDescriptionExtension_FormatName));
   EXPECT_EQ(24, GetIntValue(fmt, kCMFormatDescriptionExtension_Depth));
@@ -167,13 +168,13 @@ TEST(VTConfigUtil, CreateFormatExtensions_H264_BT709) {
 }
 
 TEST(VTConfigUtil, CreateFormatExtensions_H264_BT2020_PQ) {
-  base::ScopedCFTypeRef<CFDictionaryRef> fmt(CreateFormatExtensions(
+  base::ScopedCFTypeRef<CFDictionaryRef> fmt = CreateFormatExtensions(
       kCMVideoCodecType_H264, H264PROFILE_MAIN,
       VideoColorSpace(VideoColorSpace::PrimaryID::BT2020,
                       VideoColorSpace::TransferID::SMPTEST2084,
                       VideoColorSpace::MatrixID::BT2020_NCL,
                       gfx::ColorSpace::RangeID::FULL),
-      gfx::HDRMetadata()));
+      gfx::HDRMetadata());
 
   EXPECT_EQ("avc1", GetStrValue(fmt, kCMFormatDescriptionExtension_FormatName));
   EXPECT_EQ(24, GetIntValue(fmt, kCMFormatDescriptionExtension_Depth));
@@ -188,13 +189,13 @@ TEST(VTConfigUtil, CreateFormatExtensions_H264_BT2020_PQ) {
 }
 
 TEST(VTConfigUtil, CreateFormatExtensions_H264_BT2020_HLG) {
-  base::ScopedCFTypeRef<CFDictionaryRef> fmt(CreateFormatExtensions(
+  base::ScopedCFTypeRef<CFDictionaryRef> fmt = CreateFormatExtensions(
       kCMVideoCodecType_H264, H264PROFILE_MAIN,
       VideoColorSpace(VideoColorSpace::PrimaryID::BT2020,
                       VideoColorSpace::TransferID::ARIB_STD_B67,
                       VideoColorSpace::MatrixID::BT2020_NCL,
                       gfx::ColorSpace::RangeID::FULL),
-      gfx::HDRMetadata()));
+      gfx::HDRMetadata());
 
   EXPECT_EQ("avc1", GetStrValue(fmt, kCMFormatDescriptionExtension_FormatName));
   EXPECT_EQ(24, GetIntValue(fmt, kCMFormatDescriptionExtension_Depth));
@@ -212,19 +213,19 @@ TEST(VTConfigUtil, CreateFormatExtensions_HDRMetadata) {
   // Values from real YouTube HDR content.
   gfx::HDRMetadata hdr_meta;
   hdr_meta.cta_861_3 = gfx::HdrMetadataCta861_3(1000, 600);
-  auto& cv_metadata = hdr_meta.smpte_st_2086;
-  cv_metadata.luminance_min = 0;
-  cv_metadata.luminance_max = 1000;
-  cv_metadata.primaries = {0.6800f, 0.3200f, 0.2649f, 0.6900f,
-                           0.1500f, 0.0600f, 0.3127f, 0.3290f};
+  hdr_meta.smpte_st_2086 = gfx::HdrMetadataSmpteSt2086(
+      {0.6800f, 0.3200f, 0.2649f, 0.6900f, 0.1500f, 0.0600f, 0.3127f, 0.3290f},
+      /*luminance_max=*/1000,
+      /*luminance_min=*/0);
+  const auto& cv_metadata = hdr_meta.smpte_st_2086.value();
 
-  base::ScopedCFTypeRef<CFDictionaryRef> fmt(CreateFormatExtensions(
+  base::ScopedCFTypeRef<CFDictionaryRef> fmt = CreateFormatExtensions(
       kCMVideoCodecType_H264, H264PROFILE_MAIN,
       VideoColorSpace(VideoColorSpace::PrimaryID::BT2020,
                       VideoColorSpace::TransferID::SMPTEST2084,
                       VideoColorSpace::MatrixID::BT2020_NCL,
                       gfx::ColorSpace::RangeID::FULL),
-      hdr_meta));
+      hdr_meta);
 
   {
     auto mdcv = GetDataValue(
@@ -259,9 +260,9 @@ TEST(VTConfigUtil, CreateFormatExtensions_HDRMetadata) {
     mp4::ContentLightLevelInformation clli_box;
     ASSERT_TRUE(clli_box.Parse(box_reader.get()));
     EXPECT_EQ(clli_box.max_content_light_level,
-              hdr_meta.cta_861_3.max_content_light_level);
+              hdr_meta.cta_861_3->max_content_light_level);
     EXPECT_EQ(clli_box.max_pic_average_light_level,
-              hdr_meta.cta_861_3.max_frame_average_light_level);
+              hdr_meta.cta_861_3->max_frame_average_light_level);
   }
 }
 
@@ -290,8 +291,8 @@ TEST(VTConfigUtil, CreateFormatExtensions_VP9Profile2) {
       VideoColorSpace::PrimaryID::BT2020,
       VideoColorSpace::TransferID::SMPTEST2084,
       VideoColorSpace::MatrixID::BT2020_NCL, gfx::ColorSpace::RangeID::LIMITED);
-  base::ScopedCFTypeRef<CFDictionaryRef> fmt(CreateFormatExtensions(
-      kCMVideoCodecType_VP9, kTestProfile, kTestColorSpace, absl::nullopt));
+  base::ScopedCFTypeRef<CFDictionaryRef> fmt = CreateFormatExtensions(
+      kCMVideoCodecType_VP9, kTestProfile, kTestColorSpace, absl::nullopt);
   EXPECT_EQ(10, GetIntValue(fmt, base::SysUTF8ToCFStringRef(kBitDepthKey)));
 
   auto vpcc = GetNestedDataValue(

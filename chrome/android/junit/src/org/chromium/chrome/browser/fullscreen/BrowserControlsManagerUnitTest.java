@@ -279,7 +279,7 @@ public class BrowserControlsManagerUnitTest {
     }
 
     @Test
-    @EnableFeatures({ChromeFeatureList.SUPPRESS_TOOLBAR_CAPTURES})
+    @EnableFeatures(ChromeFeatureList.SUPPRESS_TOOLBAR_CAPTURES)
     public void testShowAndroidControlsObserver() {
         BrowserControlsManager browserControlsManager =
                 new BrowserControlsManager(mActivity, BrowserControlsManager.ControlsPosition.TOP);

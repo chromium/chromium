@@ -45,6 +45,11 @@ class ViewsTextServicesContextMenuLacros
   void ExecuteCommand(int command_id, int event_flags) override;
   bool SupportsCommand(int command_id) const override;
 
+ private:
+  // Shows the standalone clipboard history menu in Ash. `event_flags` describes
+  // the event that caused the menu to show.
+  void ShowClipboardHistoryMenu(int event_flags);
+
   // A submenu model to contain clipboard history item descriptors. Used only if
   // the clipboard history refresh feature is enabled.
   std::unique_ptr<chromeos::clipboard_history::ClipboardHistorySubmenuModel>

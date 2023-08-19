@@ -70,10 +70,10 @@ const size_t* QueryResults::MatchesForURL(const GURL& url,
 
   // All entries in the map should have at least one index, otherwise it
   // shouldn't be in the map.
-  DCHECK(!found->second->empty());
+  DCHECK(!found->second.empty());
   if (num_matches)
-    *num_matches = found->second->size();
-  return &found->second->front();
+    *num_matches = found->second.size();
+  return &found->second.front();
 }
 
 void QueryResults::Swap(QueryResults* other) {
@@ -121,18 +121,19 @@ void QueryResults::DeleteRange(size_t begin, size_t end) {
     }
 
     // Need a signed loop type since we do -- which may take us to -1.
-    for (int match = 0; match < static_cast<int>(found->second->size());
+    for (int match = 0; match < static_cast<int>(found->second.size());
          match++) {
       if (found->second[match] >= begin && found->second[match] <= end) {
         // Remove this reference from the list.
-        found->second->erase(found->second->begin() + match);
+        found->second.erase(found->second.begin() + match);
         match--;
       }
     }
 
     // Clear out an empty lists if we just made one.
-    if (found->second->empty())
+    if (found->second.empty()) {
       url_to_results_.erase(found);
+    }
   }
 
   // Shift all other indices over to account for the removed ones.
@@ -144,19 +145,19 @@ void QueryResults::AddURLUsageAtIndex(const GURL& url, size_t index) {
   auto found = url_to_results_.find(url);
   if (found != url_to_results_.end()) {
     // The URL is already in the list, so we can just append the new index.
-    found->second->push_back(index);
+    found->second.push_back(index);
     return;
   }
 
   // Need to add a new entry for this URL.
-  base::StackVector<size_t, 4> new_list;
-  new_list->push_back(index);
+  absl::InlinedVector<size_t, 4> new_list;
+  new_list.push_back(index);
   url_to_results_[url] = new_list;
 }
 
 void QueryResults::AdjustResultMap(size_t begin, size_t end, ptrdiff_t delta) {
   for (auto& url_to_result : url_to_results_) {
-    for (size_t match = 0; match < url_to_result.second->size(); match++) {
+    for (size_t match = 0; match < url_to_result.second.size(); match++) {
       size_t match_index = url_to_result.second[match];
       if (match_index >= begin && match_index <= end)
         url_to_result.second[match] += delta;
@@ -245,6 +246,18 @@ FilteredURL::~FilteredURL() = default;
 
 FilteredURL::ExtendedInfo::ExtendedInfo() = default;
 
+// DomainsVisitedResult -------------------------------------------------------
+
+DomainsVisitedResult::DomainsVisitedResult() = default;
+
+DomainsVisitedResult::DomainsVisitedResult(DomainsVisitedResult&& other) =
+    default;
+
+DomainsVisitedResult& DomainsVisitedResult::operator=(
+    DomainsVisitedResult&& other) = default;
+
+DomainsVisitedResult::~DomainsVisitedResult() = default;
+
 // TopSitesDelta --------------------------------------------------------------
 
 TopSitesDelta::TopSitesDelta() = default;
@@ -272,6 +285,7 @@ HistoryAddPageArgs::HistoryAddPageArgs()
                          base::Time(),
                          0,
                          0,
+                         absl::nullopt,
                          GURL(),
                          RedirectList(),
                          ui::PAGE_TRANSITION_LINK,
@@ -289,6 +303,7 @@ HistoryAddPageArgs::HistoryAddPageArgs(
     base::Time time,
     ContextID context_id,
     int nav_entry_id,
+    absl::optional<int64_t> local_navigation_id,
     const GURL& referrer,
     const RedirectList& redirects,
     ui::PageTransition transition,
@@ -304,6 +319,7 @@ HistoryAddPageArgs::HistoryAddPageArgs(
       time(time),
       context_id(context_id),
       nav_entry_id(nav_entry_id),
+      local_navigation_id(local_navigation_id),
       referrer(referrer),
       redirects(redirects),
       transition(transition),
@@ -384,8 +400,22 @@ DeletionInfo::DeletionInfo(const DeletionTimeRange& time_range,
                            URLRows deleted_rows,
                            std::set<GURL> favicon_urls,
                            absl::optional<std::set<GURL>> restrict_urls)
+    : DeletionInfo(time_range,
+                   is_from_expiration,
+                   Reason::kOther,
+                   std::move(deleted_rows),
+                   std::move(favicon_urls),
+                   std::move(restrict_urls)) {}
+
+DeletionInfo::DeletionInfo(const DeletionTimeRange& time_range,
+                           bool is_from_expiration,
+                           Reason deletion_reason,
+                           URLRows deleted_rows,
+                           std::set<GURL> favicon_urls,
+                           absl::optional<std::set<GURL>> restrict_urls)
     : time_range_(time_range),
       is_from_expiration_(is_from_expiration),
+      deletion_reason_(deletion_reason),
       deleted_rows_(std::move(deleted_rows)),
       favicon_urls_(std::move(favicon_urls)),
       restrict_urls_(std::move(restrict_urls)) {

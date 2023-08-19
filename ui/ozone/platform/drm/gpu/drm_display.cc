@@ -161,13 +161,12 @@ DrmDisplay::DrmDisplay(const scoped_refptr<DrmDevice>& drm,
       is_hdr_capable_ &&
       base::FeatureList::IsEnabled(display::features::kUseHDRTransferFunction);
 
-  if (base::FeatureList::IsEnabled(
-          display::features::kEnableExternalDisplayHDR10Mode) &&
-      display_snapshot.color_space() == gfx::ColorSpace::CreateHDR10()) {
-    current_color_space_ = gfx::ColorSpace::CreateHDR10();
-    // More likely it should be end users' choice to turn on the hdr mode or
-    // not. For now we always turn it on.
-    SetHDR10Mode();
+  if (is_hdr_capable_ &&
+      base::FeatureList::IsEnabled(
+          display::features::kEnableExternalDisplayHDR10Mode)) {
+    current_color_space_ = display_snapshot.color_space();
+    SetColorspaceProperty(display_snapshot.color_space());
+    SetHdrOutputMetadata(display_snapshot.color_space());
   }
 #endif
 }
@@ -382,10 +381,14 @@ bool DrmDisplay::SetHdrOutputMetadata(const gfx::ColorSpace color_space) {
   hdr_output_metadata->hdmi_metadata_type1.max_cll = 0;
   hdr_output_metadata->hdmi_metadata_type1.max_fall =
       hdr_static_metadata_->max_avg;
+  // This value is coded as an unsigned 16-bit value in units of 1 cd/m2,
+  // where 0x0001 represents 1 cd/m2 and 0xFFFF represents 65535 cd/m2.
   hdr_output_metadata->hdmi_metadata_type1.max_display_mastering_luminance =
       hdr_static_metadata_->max;
+  // This value is coded as an unsigned 16-bit value in units of 0.0001 cd/m2,
+  // where 0x0001 represents 0.0001 cd/m2 and 0xFFFF represents 6.5535 cd/m2.
   hdr_output_metadata->hdmi_metadata_type1.min_display_mastering_luminance =
-      hdr_static_metadata_->min;
+      hdr_static_metadata_->min * 10000.0;
 
   SkColorSpacePrimaries primaries = color_space.GetPrimaries();
   constexpr int kPrimariesFixedPoint = 50000;
@@ -427,7 +430,7 @@ bool DrmDisplay::SetHdrOutputMetadata(const gfx::ColorSpace color_space) {
   return true;
 }
 
-bool DrmDisplay::SetHDR10Mode() {
+bool DrmDisplay::SetColorspaceProperty(const gfx::ColorSpace color_space) {
   DCHECK(connector_);
   DCHECK(hdr_static_metadata_.has_value());
   ScopedDrmPropertyPtr color_space_property(
@@ -439,13 +442,12 @@ bool DrmDisplay::SetHDR10Mode() {
   if (!drm_->SetProperty(
           connector_->connector_id, color_space_property->prop_id,
           GetEnumValueForName(*drm_, color_space_property->prop_id,
-                              kColorSpaceBT2020RGBEnumName))) {
-    PLOG(INFO) << "Cannot set '" << kColorSpaceBT2020RGBEnumName
+                              GetNameForColorspace(color_space)))) {
+    PLOG(INFO) << "Cannot set '" << GetNameForColorspace(color_space)
                << "' to 'Colorspace' property.";
     return false;
   }
-
-  return SetHdrOutputMetadata(gfx::ColorSpace::CreateHDR10());
+  return true;
 }
 
 void DrmDisplay::SetColorSpace(const gfx::ColorSpace& color_space) {

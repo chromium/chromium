@@ -8,6 +8,7 @@
 #include <vector>
 
 #include "base/files/file_path.h"
+#include "base/functional/bind.h"
 #include "base/strings/strcat.h"
 #include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
@@ -30,20 +31,22 @@
 #include "components/version_info/version_info.h"
 #include "content/public/browser/network_service_instance.h"
 #include "content/public/browser/network_service_util.h"
+#include "content/public/browser/service_process_host.h"
+#include "content/public/browser/service_process_info.h"
 #include "content/public/common/content_features.h"
 #include "content/public/common/user_agent.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
-#include "content/public/test/frame_test_utils.h"
+#include "content/public/test/content_browser_test_utils.h"
 #include "content/public/test/test_utils.h"
+#include "mojo/public/cpp/bindings/sync_call_restrictions.h"
 #include "net/base/features.h"
 #include "net/cookies/canonical_cookie_test_helpers.h"
 #include "net/dns/mock_host_resolver.h"
 #include "net/net_buildflags.h"
-#include "net/proxy_resolution/proxy_info.h"
+#include "sandbox/policy/features.h"
 #include "services/network/public/cpp/features.h"
 #include "services/network/public/cpp/network_service_buildflags.h"
-#include "services/network/public/cpp/network_switches.h"
 #include "services/network/public/mojom/network_context.mojom.h"
 #include "services/network/public/mojom/network_service.mojom.h"
 #include "services/network/public/mojom/network_service_test.mojom.h"
@@ -53,9 +56,13 @@
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/features.h"
 
+#if BUILDFLAG(IS_CHROMEOS)
+#include "sandbox/policy/linux/sandbox_seccomp_bpf_linux.h"
+#endif  // BUILDFLAG(IS_CHROMEOS)
+
 using SystemNetworkContextManagerBrowsertest = InProcessBrowserTest;
 
-const char* kSamePartyCookieName = "SamePartyCookie";
+const char* kCookieName = "Cookie";
 const char* kHostA = "a.test";
 
 IN_PROC_BROWSER_TEST_F(SystemNetworkContextManagerBrowsertest,
@@ -214,259 +221,128 @@ IN_PROC_BROWSER_TEST_F(SystemNetworkContextManagerBrowsertest, AuthParams) {
             dynamic_params->patterns_allowed_to_use_all_schemes);
 }
 
-class SystemNetworkContextManagerWithCustomProxyConfigBrowserTest
-    : public SystemNetworkContextManagerBrowsertest {
- protected:
-  void SetUpDefaultCommandLine(base::CommandLine* command_line) override {
-    SystemNetworkContextManagerBrowsertest::SetUpDefaultCommandLine(
-        command_line);
-    command_line->AppendSwitchASCII(
-        network::switches::kIPAnonymizationProxyServer, "testproxy:80");
-    command_line->AppendSwitchASCII(
-        network::switches::kIPAnonymizationProxyAllowList,
-        "a.test, foo.a.test, foo.test, b.test:1234");
-    command_line->AppendSwitchASCII(
-        network::switches::kIPAnonymizationProxyPassword, "value");
-  }
-};
-
-IN_PROC_BROWSER_TEST_F(
-    SystemNetworkContextManagerWithCustomProxyConfigBrowserTest,
-    InitialCustomProxyConfig) {
-  network::mojom::NetworkContextParamsPtr network_context_params =
-      g_browser_process->system_network_context_manager()
-          ->CreateDefaultNetworkContextParams();
-
-  // Check that command line switches were correctly set in
-  // `initial_custom_proxy_config`
-  EXPECT_TRUE(network_context_params->initial_custom_proxy_config->rules
-                  .reverse_bypass);
-  EXPECT_TRUE(network_context_params->initial_custom_proxy_config
-                  ->should_replace_direct);
-  EXPECT_FALSE(network_context_params->initial_custom_proxy_config
-                   ->should_override_existing_config);
-
-  EXPECT_EQ(network_context_params->initial_custom_proxy_config->rules
-                .single_proxies.ToValue(),
-            base::test::ParseJson(R"(["testproxy:80"])"));
-  EXPECT_EQ(network_context_params->initial_custom_proxy_config->rules
-                .bypass_rules.ToString(),
-            "a.test;foo.a.test;foo.test;b.test:1234;");
-
-  net::HttpRequestHeaders expected_header;
-  expected_header.SetHeader("password", "value");
-  EXPECT_EQ(network_context_params->initial_custom_proxy_config
-                ->connect_tunnel_headers.ToString(),
-            expected_header.ToString());
-
-  // Check that rules are applied correctly
-  net::ProxyInfo result;
-  network_context_params->initial_custom_proxy_config->rules.Apply(
-      GURL("http://example.test"), &result);
-  EXPECT_TRUE(result.did_bypass_proxy());
-  EXPECT_EQ(result.proxy_server(), net::ProxyServer::Direct());
-
-  network_context_params->initial_custom_proxy_config->rules.Apply(
-      GURL("http://foo.test"), &result);
-  EXPECT_FALSE(result.did_bypass_proxy());
-  EXPECT_EQ(result.ToPacString(), "PROXY testproxy:80");
-
-  network_context_params->initial_custom_proxy_config->rules.Apply(
-      GURL("http://a.test"), &result);
-  EXPECT_FALSE(result.did_bypass_proxy());
-  EXPECT_EQ(result.ToPacString(), "PROXY testproxy:80");
-
-  network_context_params->initial_custom_proxy_config->rules.Apply(
-      GURL("https://a.test"), &result);
-  EXPECT_FALSE(result.did_bypass_proxy());
-  EXPECT_EQ(result.ToPacString(), "PROXY testproxy:80");
-
-  network_context_params->initial_custom_proxy_config->rules.Apply(
-      GURL("https://foo.a.test"), &result);
-  EXPECT_FALSE(result.did_bypass_proxy());
-  EXPECT_EQ(result.ToPacString(), "PROXY testproxy:80");
-
-  network_context_params->initial_custom_proxy_config->rules.Apply(
-      GURL("https://bar.a.test"), &result);
-  EXPECT_TRUE(result.did_bypass_proxy());
-  EXPECT_EQ(result.proxy_server(), net::ProxyServer::Direct());
-
-  network_context_params->initial_custom_proxy_config->rules.Apply(
-      GURL("https://b.test:1234"), &result);
-  EXPECT_FALSE(result.did_bypass_proxy());
-  EXPECT_EQ(result.ToPacString(), "PROXY testproxy:80");
-
-  network_context_params->initial_custom_proxy_config->rules.Apply(
-      GURL("https://b.test:5678"), &result);
-  EXPECT_TRUE(result.did_bypass_proxy());
-  EXPECT_EQ(result.proxy_server(), net::ProxyServer::Direct());
-}
-
-class SystemNetworkContextManagerWithIpProtectionFlagsEnabled
-    : public SystemNetworkContextManagerBrowsertest {
+#if BUILDFLAG(IS_CHROMEOS)
+class SystemNetworkContextManagerNetworkServiceSandboxEnabledBrowsertest
+    : public SystemNetworkContextManagerBrowsertest,
+      public content::ServiceProcessHost::Observer {
  public:
-  SystemNetworkContextManagerWithIpProtectionFlagsEnabled() {
-    // Enable the IP protection feature and set parameters for the proxy server
-    // and proxy allowlist.
-    base::FieldTrialParams params;
-    params[net::features::kIpPrivacyProxyServer.name] =
-        "testproxyenabledfromflag.test:80";
-    params[net::features::kIpPrivacyProxyAllowlist.name] =
-        "enabledfromflag.test";
+  SystemNetworkContextManagerNetworkServiceSandboxEnabledBrowsertest() {
+    scoped_feature_list_.InitAndEnableFeature(
+        sandbox::policy::features::kNetworkServiceSandbox);
+  }
 
-    feature_list_.InitAndEnableFeatureWithParameters(
-        net::features::kEnableIpProtectionProxy, params);
+  void SetUpOnMainThread() override {
+    // If the sandbox or the seccomp policy is disabled, these tests are
+    // meaningless.
+    if (!sandbox::policy::SandboxSeccompBPF::IsSeccompBPFDesired()) {
+      GTEST_SKIP();
+    }
+
+    SystemNetworkContextManagerBrowsertest::SetUpOnMainThread();
+
+    content::ServiceProcessHost::AddObserver(this);
+    auto running_processes =
+        content::ServiceProcessHost::GetRunningProcessInfo();
+    for (const auto& info : running_processes) {
+      if (info.IsService<network::mojom::NetworkService>()) {
+        network_process_ = info.GetProcess().Duplicate();
+        break;
+      }
+    }
+  }
+
+  void WaitForNextLaunch() {
+    launch_run_loop_.emplace();
+    launch_run_loop_->Run();
+  }
+
+  void WaitForNetworkServiceReady() {
+    mojo::Remote<network::mojom::NetworkServiceTest> network_service_test;
+    content::GetNetworkService()->BindTestInterfaceForTesting(
+        network_service_test.BindNewPipeAndPassReceiver());
+    mojo::ScopedAllowSyncCallForTesting allow_sync_call;
+    // Log() is sync so this thread will wait for this call to succeed.
+    network_service_test->Log(
+        "Logging in network service to ensure it's ready.");
+  }
+
+  void ExpectNetworkServiceSeccompSandboxed(bool sandboxed) {
+    // The network service may have been launched but has not yet sandboxed
+    // itself. So, wait for the Mojo endpoints to start accepting messages.
+    WaitForNetworkServiceReady();
+    EXPECT_EQ(sandboxed, GetNetworkServiceProcess().IsSeccompSandboxed());
+  }
+
+  base::Process GetNetworkServiceProcess() {
+    CHECK(content::IsOutOfProcessNetworkService());
+    return network_process_.Duplicate();
   }
 
  private:
-  base::test::ScopedFeatureList feature_list_;
-};
-
-IN_PROC_BROWSER_TEST_F(
-    SystemNetworkContextManagerWithIpProtectionFlagsEnabled,
-    EnableIpProtectionProxyByFeature) {
-  network::mojom::NetworkContextParamsPtr network_context_params =
-      g_browser_process->system_network_context_manager()
-          ->CreateDefaultNetworkContextParams();
-
-  // Check that feature configuration was correctly set in
-  // `initial_custom_proxy_config`
-  EXPECT_TRUE(network_context_params->initial_custom_proxy_config->rules
-                  .reverse_bypass);
-  EXPECT_TRUE(network_context_params->initial_custom_proxy_config
-                  ->should_replace_direct);
-  EXPECT_FALSE(network_context_params->initial_custom_proxy_config
-                   ->should_override_existing_config);
-
-  EXPECT_EQ(network_context_params->initial_custom_proxy_config->rules
-                .single_proxies.ToValue(),
-            base::test::ParseJson(R"(["testproxyenabledfromflag.test:80"])"));
-  EXPECT_EQ(network_context_params->initial_custom_proxy_config->rules
-                .bypass_rules.ToString(),
-            "enabledfromflag.test;");
-
-  // Check that rules are applied correctly
-  net::ProxyInfo result;
-  network_context_params->initial_custom_proxy_config->rules.Apply(
-      GURL("http://example.test"), &result);
-  EXPECT_TRUE(result.did_bypass_proxy());
-  EXPECT_EQ(result.proxy_server(), net::ProxyServer::Direct());
-
-  network_context_params->initial_custom_proxy_config->rules.Apply(
-      GURL("http://enabledfromflag.test"), &result);
-  EXPECT_FALSE(result.did_bypass_proxy());
-  EXPECT_EQ(result.ToPacString(), "PROXY testproxyenabledfromflag.test:80");
-
-  network_context_params->initial_custom_proxy_config->rules.Apply(
-      GURL("https://enabledfromflag.test"), &result);
-  EXPECT_FALSE(result.did_bypass_proxy());
-  EXPECT_EQ(result.ToPacString(), "PROXY testproxyenabledfromflag.test:80");
-
-  network_context_params->initial_custom_proxy_config->rules.Apply(
-      GURL("http://a.test"), &result);
-  EXPECT_TRUE(result.did_bypass_proxy());
-  EXPECT_EQ(result.proxy_server(), net::ProxyServer::Direct());
-
-  network_context_params->initial_custom_proxy_config->rules.Apply(
-      GURL("https://a.test"), &result);
-  EXPECT_TRUE(result.did_bypass_proxy());
-  EXPECT_EQ(result.proxy_server(), net::ProxyServer::Direct());
-
-  network_context_params->initial_custom_proxy_config->rules.Apply(
-      GURL("https://bar.a.test"), &result);
-  EXPECT_TRUE(result.did_bypass_proxy());
-  EXPECT_EQ(result.proxy_server(), net::ProxyServer::Direct());
-
-  network_context_params->initial_custom_proxy_config->rules.Apply(
-      GURL("https://b.test:1234"), &result);
-  EXPECT_TRUE(result.did_bypass_proxy());
-  EXPECT_EQ(result.proxy_server(), net::ProxyServer::Direct());
-}
-
-class
-    SystemNetworkContextManagerWithIpProtectionFlagsEnabledAndCommandLineSettingsEnabled
-    : public SystemNetworkContextManagerWithCustomProxyConfigBrowserTest {
- public:
-  SystemNetworkContextManagerWithIpProtectionFlagsEnabledAndCommandLineSettingsEnabled() {
-    // Enable the IP protection feature flag using default params.
-    feature_list_.InitAndEnableFeature(net::features::kEnableIpProtectionProxy);
+  void OnServiceProcessLaunched(
+      const content::ServiceProcessInfo& info) override {
+    if (!info.IsService<network::mojom::NetworkService>()) {
+      return;
+    }
+    network_process_ = info.GetProcess().Duplicate();
+    if (launch_run_loop_) {
+      launch_run_loop_->Quit();
+    }
   }
 
- private:
-  base::test::ScopedFeatureList feature_list_;
+  void OnServiceProcessTerminatedNormally(
+      const content::ServiceProcessInfo& info) override {}
+
+  void OnServiceProcessCrashed(
+      const content::ServiceProcessInfo& info) override {}
+
+  base::test::ScopedFeatureList scoped_feature_list_;
+  base::Process network_process_;
+  absl::optional<base::RunLoop> launch_run_loop_;
 };
 
 IN_PROC_BROWSER_TEST_F(
-    SystemNetworkContextManagerWithIpProtectionFlagsEnabledAndCommandLineSettingsEnabled,
-    EnableIpProtectionProxyCommandLineOverridesFeature) {
-  network::mojom::NetworkContextParamsPtr network_context_params =
-      g_browser_process->system_network_context_manager()
-          ->CreateDefaultNetworkContextParams();
+    SystemNetworkContextManagerNetworkServiceSandboxEnabledBrowsertest,
+    NetworkServiceRestartsUnsandboxedOnKerberosEnabled) {
+  PrefService* local_state = g_browser_process->local_state();
 
-  // Check that command line switches were correctly set in
-  // `initial_custom_proxy_config`even though feature flag parameters were set.
-  EXPECT_TRUE(network_context_params->initial_custom_proxy_config->rules
-                  .reverse_bypass);
-  EXPECT_TRUE(network_context_params->initial_custom_proxy_config
-                  ->should_replace_direct);
-  EXPECT_FALSE(network_context_params->initial_custom_proxy_config
-                   ->should_override_existing_config);
+  // Ensure kerberos starts disabled.
+  EXPECT_FALSE(local_state->GetBoolean(prefs::kKerberosEnabled));
+  // Ensure the network service starts sandboxed.
+  ExpectNetworkServiceSeccompSandboxed(/*sandboxed=*/true);
 
-  EXPECT_EQ(network_context_params->initial_custom_proxy_config->rules
-                .single_proxies.ToValue(),
-            base::test::ParseJson(R"(["testproxy:80"])"));
-  EXPECT_EQ(network_context_params->initial_custom_proxy_config->rules
-                .bypass_rules.ToString(),
-            "a.test;foo.a.test;foo.test;b.test:1234;");
+  // Now enable kerberos.
+  local_state->SetBoolean(prefs::kKerberosEnabled, true);
+  EXPECT_TRUE(local_state->GetBoolean(prefs::kKerberosEnabled));
+  // The network service should automatically restart, and be unsandboxed.
+  WaitForNextLaunch();
+  ExpectNetworkServiceSeccompSandboxed(/*sandboxed=*/false);
 
-  net::HttpRequestHeaders expected_header;
-  expected_header.SetHeader("password", "value");
-  EXPECT_EQ(network_context_params->initial_custom_proxy_config
-                ->connect_tunnel_headers.ToString(),
-            expected_header.ToString());
-
-  // Check that rules are applied correctly
-  net::ProxyInfo result;
-  network_context_params->initial_custom_proxy_config->rules.Apply(
-      GURL("http://example.test"), &result);
-  EXPECT_TRUE(result.did_bypass_proxy());
-  EXPECT_EQ(result.proxy_server(), net::ProxyServer::Direct());
-
-  network_context_params->initial_custom_proxy_config->rules.Apply(
-      GURL("http://foo.test"), &result);
-  EXPECT_FALSE(result.did_bypass_proxy());
-  EXPECT_EQ(result.ToPacString(), "PROXY testproxy:80");
-
-  network_context_params->initial_custom_proxy_config->rules.Apply(
-      GURL("http://a.test"), &result);
-  EXPECT_FALSE(result.did_bypass_proxy());
-  EXPECT_EQ(result.ToPacString(), "PROXY testproxy:80");
-
-  network_context_params->initial_custom_proxy_config->rules.Apply(
-      GURL("https://a.test"), &result);
-  EXPECT_FALSE(result.did_bypass_proxy());
-  EXPECT_EQ(result.ToPacString(), "PROXY testproxy:80");
-
-  network_context_params->initial_custom_proxy_config->rules.Apply(
-      GURL("https://foo.a.test"), &result);
-  EXPECT_FALSE(result.did_bypass_proxy());
-  EXPECT_EQ(result.ToPacString(), "PROXY testproxy:80");
-
-  network_context_params->initial_custom_proxy_config->rules.Apply(
-      GURL("https://bar.a.test"), &result);
-  EXPECT_TRUE(result.did_bypass_proxy());
-  EXPECT_EQ(result.proxy_server(), net::ProxyServer::Direct());
-
-  network_context_params->initial_custom_proxy_config->rules.Apply(
-      GURL("https://b.test:1234"), &result);
-  EXPECT_FALSE(result.did_bypass_proxy());
-  EXPECT_EQ(result.ToPacString(), "PROXY testproxy:80");
-
-  network_context_params->initial_custom_proxy_config->rules.Apply(
-      GURL("https://b.test:5678"), &result);
-  EXPECT_TRUE(result.did_bypass_proxy());
-  EXPECT_EQ(result.proxy_server(), net::ProxyServer::Direct());
+  // After killing the network service, it should still restart unsandboxed.
+  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+      FROM_HERE,
+      base::BindOnce(base::IgnoreResult(&content::RestartNetworkService)));
+  WaitForNextLaunch();
+  ExpectNetworkServiceSeccompSandboxed(/*sandboxed=*/false);
 }
+
+IN_PROC_BROWSER_TEST_F(
+    SystemNetworkContextManagerNetworkServiceSandboxEnabledBrowsertest,
+    PRE_NetworkServiceStartsUnsandboxedWithKerberosEnabled) {
+  PrefService* local_state = g_browser_process->local_state();
+  // Enable kerberos.
+  local_state->SetBoolean(prefs::kKerberosEnabled, true);
+  EXPECT_TRUE(local_state->GetBoolean(prefs::kKerberosEnabled));
+}
+
+IN_PROC_BROWSER_TEST_F(
+    SystemNetworkContextManagerNetworkServiceSandboxEnabledBrowsertest,
+    NetworkServiceStartsUnsandboxedWithKerberosEnabled) {
+  // Ensure the network service starts sandboxed.
+  ExpectNetworkServiceSeccompSandboxed(/*sandboxed=*/false);
+}
+
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 class SystemNetworkContextManagerWithFirstPartySetComponentBrowserTest
     : public SystemNetworkContextManagerBrowsertest {
@@ -485,8 +361,10 @@ class SystemNetworkContextManagerWithFirstPartySetComponentBrowserTest
 
   void SetUpInProcessBrowserTestFixture() override {
     SystemNetworkContextManagerBrowsertest::SetUpInProcessBrowserTestFixture();
+    // Since we set kWaitForFirstPartySetsInit, all cookie-carrying network
+    // requests are blocked until FPS is initialized.
     feature_list_.InitWithFeatures(
-        {features::kFirstPartySets, net::features::kSamePartyAttributeEnabled},
+        {features::kFirstPartySets, net::features::kWaitForFirstPartySetsInit},
         {});
     CHECK(component_dir_.CreateUniqueTempDir());
     base::ScopedAllowBlockingForTesting allow_blocking;
@@ -546,12 +424,10 @@ IN_PROC_BROWSER_TEST_F(
   const GURL host_root = https_server()->GetURL(kHostA, "/");
   ASSERT_TRUE(content::SetCookie(
       browser()->profile(), host_root,
-      base::StrCat(
-          {kSamePartyCookieName,
-           "=1; samesite=lax; secure; sameparty; max-age=2147483647"})));
+      base::StrCat({kCookieName, "=1; secure; max-age=2147483647"})));
   ASSERT_THAT(content::GetCookies(browser()->profile(), host_root),
-              net::CookieStringIs(testing::UnorderedElementsAre(
-                  testing::Key(kSamePartyCookieName))));
+              net::CookieStringIs(
+                  testing::UnorderedElementsAre(testing::Key(kCookieName))));
 }
 
 IN_PROC_BROWSER_TEST_F(
@@ -563,22 +439,22 @@ IN_PROC_BROWSER_TEST_F(
 
   const GURL host_root = https_server()->GetURL(kHostA, "/");
   ASSERT_THAT(content::GetCookies(browser()->profile(), host_root),
-              net::CookieStringIs(testing::UnorderedElementsAre(
-                  testing::Key(kSamePartyCookieName))));
+              net::CookieStringIs(
+                  testing::UnorderedElementsAre(testing::Key(kCookieName))));
 
-  EXPECT_THAT(content::ArrangeFramesAndGetContentFromLeaf(
-                  web_contents(), https_server(), "b.test(%s)", {0},
-                  EchoCookiesUrl(kHostA)),
-              net::CookieStringIs(testing::UnorderedElementsAre(
-                  testing::Key(kSamePartyCookieName))));
+  ASSERT_TRUE(content::NavigateToURL(web_contents(), EchoCookiesUrl(kHostA)));
+  EXPECT_THAT(content::EvalJs(web_contents(), "document.body.textContent")
+                  .ExtractString(),
+              net::CookieStringIs(
+                  testing::UnorderedElementsAre(testing::Key(kCookieName))));
 
   SimulateNetworkServiceCrash();
 
-  EXPECT_THAT(content::ArrangeFramesAndGetContentFromLeaf(
-                  web_contents(), https_server(), "b.test(%s)", {0},
-                  EchoCookiesUrl(kHostA)),
-              net::CookieStringIs(testing::UnorderedElementsAre(
-                  testing::Key(kSamePartyCookieName))));
+  ASSERT_TRUE(content::NavigateToURL(web_contents(), EchoCookiesUrl(kHostA)));
+  EXPECT_THAT(content::EvalJs(web_contents(), "document.body.textContent")
+                  .ExtractString(),
+              net::CookieStringIs(
+                  testing::UnorderedElementsAre(testing::Key(kCookieName))));
 }
 
 class SystemNetworkContextManagerReferrersFeatureBrowsertest
@@ -589,7 +465,7 @@ class SystemNetworkContextManagerReferrersFeatureBrowsertest
     scoped_feature_list_.InitWithFeatureState(features::kNoReferrers,
                                               GetParam());
   }
-  ~SystemNetworkContextManagerReferrersFeatureBrowsertest() override {}
+  ~SystemNetworkContextManagerReferrersFeatureBrowsertest() override = default;
 
   void SetUpOnMainThread() override {}
 
@@ -615,24 +491,13 @@ class SystemNetworkContextManagerFreezeQUICUaBrowsertest
     : public SystemNetworkContextManagerBrowsertest {
  public:
   SystemNetworkContextManagerFreezeQUICUaBrowsertest() = default;
-  ~SystemNetworkContextManagerFreezeQUICUaBrowsertest() override {}
+  ~SystemNetworkContextManagerFreezeQUICUaBrowsertest() override = default;
 
   void SetUpOnMainThread() override {}
 
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
 };
-
-IN_PROC_BROWSER_TEST_F(SystemNetworkContextManagerFreezeQUICUaBrowsertest,
-                       QUICUaConfig) {
-  network::mojom::NetworkContextParamsPtr network_context_params =
-      g_browser_process->system_network_context_manager()
-          ->CreateDefaultNetworkContextParams();
-
-  std::string quic_ua = network_context_params->quic_user_agent_id;
-
-  EXPECT_EQ("", quic_ua);
-}
 
 class SystemNetworkContextManagerWPADQuickCheckBrowsertest
     : public SystemNetworkContextManagerBrowsertest,

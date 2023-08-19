@@ -46,8 +46,9 @@ class ASH_EXPORT AppListPresenterImpl
       public display::DisplayObserver,
       public ShelfObserver {
  public:
-  static constexpr std::array<int, 7> kIdsOfContainersThatWontHideAppList = {
+  static constexpr std::array<int, 8> kIdsOfContainersThatWontHideAppList = {
       kShellWindowId_AppListContainer,
+      kShellWindowId_HelpBubbleContainer,
       kShellWindowId_HomeScreenContainer,
       kShellWindowId_MenuContainer,
       kShellWindowId_PowerMenuContainer,

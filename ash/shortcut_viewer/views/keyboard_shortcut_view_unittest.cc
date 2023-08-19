@@ -13,9 +13,12 @@
 #include "ash/test/ash_test_base.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
+#include "chromeos/constants/chromeos_features.h"
 #include "chromeos/ui/base/window_properties.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/abseil-cpp/absl/strings/ascii.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/aura/window.h"
 #include "ui/display/display.h"
@@ -51,6 +54,8 @@ class KeyboardShortcutViewTest : public ash::AshTestBase {
 
   // ash::AshTestBase:
   void SetUp() override {
+    // TODO(b/291803593): This is the old UI so it's not compatible with Jelly.
+    scoped_features_.InitAndDisableFeature(chromeos::features::kJelly);
     ash::AshTestBase::SetUp();
     // Simulate the complete listing of input devices, required by the viewer.
     ui::DeviceDataManagerTestApi().OnDeviceListsComplete();
@@ -85,8 +90,8 @@ class KeyboardShortcutViewTest : public ash::AshTestBase {
       return;
 
     // Emulates the input method.
-    if (::isalnum(static_cast<int>(key_code))) {
-      char16_t character = ::tolower(static_cast<int>(key_code));
+    if (absl::ascii_isalnum(key_code)) {
+      char16_t character = absl::ascii_tolower(key_code);
       GetSearchBoxView()->search_box()->InsertText(
           std::u16string(1, character),
           ui::TextInputClient::InsertTextCursorBehavior::kMoveCursorAfterText);
@@ -96,6 +101,9 @@ class KeyboardShortcutViewTest : public ash::AshTestBase {
   KeyboardShortcutView* GetView() const {
     return KeyboardShortcutView::GetInstanceForTesting();
   }
+
+ private:
+  base::test::ScopedFeatureList scoped_features_;
 };
 
 // Shows and closes the widget for KeyboardShortcutViewer.
@@ -318,9 +326,10 @@ TEST_F(KeyboardShortcutViewTest, FrameAndBackgroundColorUpdates) {
   EXPECT_EQ(kTitleAndFrameColorDark, GetView()->GetBackground()->get_color());
 }
 
-// TODO(https://crbug.com/1439747): Flaky on ASAN, probably due to hard-coded
-// timeout.
-#if BUILDFLAG(IS_LINUX) && defined(ADDRESS_SANITIZER)
+// TODO(https://crbug.com/1439747): Flaky on ASAN and chromeos, probably due to
+// hard-coded timeout.
+#if (BUILDFLAG(IS_LINUX) && defined(ADDRESS_SANITIZER)) || \
+    BUILDFLAG(IS_CHROMEOS)
 #define MAYBE_AccessibilityProperties DISABLED_AccessibilityProperties
 #else
 #define MAYBE_AccessibilityProperties AccessibilityProperties

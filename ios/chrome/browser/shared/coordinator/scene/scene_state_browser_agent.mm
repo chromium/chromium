@@ -4,10 +4,6 @@
 
 #import "ios/chrome/browser/shared/coordinator/scene/scene_state_browser_agent.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 BROWSER_USER_DATA_KEY_IMPL(SceneStateBrowserAgent)
 
 SceneStateBrowserAgent::~SceneStateBrowserAgent() {}

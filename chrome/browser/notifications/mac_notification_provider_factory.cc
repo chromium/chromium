@@ -6,10 +6,13 @@
 
 #include <utility>
 
+#include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
+#include "chrome/browser/apps/app_shim/app_shim_manager_mac.h"
 #include "chrome/browser/child_process_host_flags.h"
+#include "chrome/common/chrome_features.h"
 #include "chrome/services/mac_notifications/mac_notification_provider_impl.h"
 #include "chrome/services/mac_notifications/public/mojom/mac_notifications.mojom.h"
 #include "content/public/browser/service_process_host.h"
@@ -52,12 +55,31 @@ LaunchInProcessProvider() {
 
 }  // namespace
 
-MacNotificationProviderFactory::MacNotificationProviderFactory(bool in_process)
-    : in_process_(in_process) {}
+MacNotificationProviderFactory::MacNotificationProviderFactory(
+    mac_notifications::NotificationStyle notification_style,
+    const web_app::AppId& web_app_id)
+    : notification_style_(notification_style), web_app_id_(web_app_id) {
+  CHECK_NE(
+      notification_style_ == mac_notifications::NotificationStyle::kAppShim,
+      web_app_id_.empty());
+  if (notification_style_ == mac_notifications::NotificationStyle::kAppShim) {
+    CHECK(base::FeatureList::IsEnabled(
+        features::kAppShimNotificationAttribution));
+  }
+}
 
 MacNotificationProviderFactory::~MacNotificationProviderFactory() = default;
 
 mojo::Remote<mac_notifications::mojom::MacNotificationProvider>
 MacNotificationProviderFactory::LaunchProvider() {
-  return in_process_ ? LaunchInProcessProvider() : LaunchOutOfProcessProvider();
+  switch (notification_style_) {
+    case mac_notifications::NotificationStyle::kBanner:
+      return LaunchInProcessProvider();
+    case mac_notifications::NotificationStyle::kAlert:
+      return LaunchOutOfProcessProvider();
+    case mac_notifications::NotificationStyle::kAppShim:
+      return apps::AppShimManager::Get()->LaunchNotificationProvider(
+          web_app_id_);
+  }
+  NOTREACHED();
 }

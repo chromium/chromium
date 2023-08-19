@@ -46,6 +46,7 @@
 #include "third_party/blink/renderer/core/dom/child_node_list.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/dom/document_fragment.h"
+#include "third_party/blink/renderer/core/dom/document_part_root.h"
 #include "third_party/blink/renderer/core/dom/document_type.h"
 #include "third_party/blink/renderer/core/dom/dom_node_ids.h"
 #include "third_party/blink/renderer/core/dom/element.h"
@@ -62,10 +63,12 @@
 #include "third_party/blink/renderer/core/dom/focus_params.h"
 #include "third_party/blink/renderer/core/dom/layout_tree_builder_traversal.h"
 #include "third_party/blink/renderer/core/dom/mutation_observer_registration.h"
+#include "third_party/blink/renderer/core/dom/node_cloning_data.h"
 #include "third_party/blink/renderer/core/dom/node_computed_style.h"
 #include "third_party/blink/renderer/core/dom/node_lists_node_data.h"
 #include "third_party/blink/renderer/core/dom/node_rare_data.h"
 #include "third_party/blink/renderer/core/dom/node_traversal.h"
+#include "third_party/blink/renderer/core/dom/part.h"
 #include "third_party/blink/renderer/core/dom/processing_instruction.h"
 #include "third_party/blink/renderer/core/dom/range.h"
 #include "third_party/blink/renderer/core/dom/shadow_root.h"
@@ -131,6 +134,7 @@
 #include "third_party/blink/renderer/platform/bindings/dom_data_store.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/bindings/v8_dom_wrapper.h"
+#include "third_party/blink/renderer/platform/heap/collection_support/heap_hash_set.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/instrumentation/instance_counters.h"
 #include "third_party/blink/renderer/platform/instrumentation/tracing/trace_event.h"
@@ -848,7 +852,7 @@ static Node* ConvertNodesIntoNode(
   return fragment;
 }
 
-void Node::Prepend(
+void Node::prepend(
     const HeapVector<Member<V8UnionNodeOrStringOrTrustedScript>>& nodes,
     ExceptionState& exception_state) {
   auto* this_node = DynamicTo<ContainerNode>(this);
@@ -864,7 +868,7 @@ void Node::Prepend(
     this_node->InsertBefore(node, this_node->firstChild(), exception_state);
 }
 
-void Node::Append(
+void Node::append(
     const HeapVector<Member<V8UnionNodeOrStringOrTrustedScript>>& nodes,
     ExceptionState& exception_state) {
   auto* this_node = DynamicTo<ContainerNode>(this);
@@ -880,7 +884,7 @@ void Node::Append(
     this_node->AppendChild(node, exception_state);
 }
 
-void Node::Before(
+void Node::before(
     const HeapVector<Member<V8UnionNodeOrStringOrTrustedScript>>& nodes,
     ExceptionState& exception_state) {
   ContainerNode* parent = parentNode();
@@ -897,7 +901,7 @@ void Node::Before(
   }
 }
 
-void Node::After(
+void Node::after(
     const HeapVector<Member<V8UnionNodeOrStringOrTrustedScript>>& nodes,
     ExceptionState& exception_state) {
   ContainerNode* parent = parentNode();
@@ -909,7 +913,7 @@ void Node::After(
     parent->InsertBefore(node, viable_next_sibling, exception_state);
 }
 
-void Node::ReplaceWith(
+void Node::replaceWith(
     const HeapVector<Member<V8UnionNodeOrStringOrTrustedScript>>& nodes,
     ExceptionState& exception_state) {
   ContainerNode* parent = parentNode();
@@ -927,7 +931,7 @@ void Node::ReplaceWith(
 }
 
 // https://dom.spec.whatwg.org/#dom-parentnode-replacechildren
-void Node::ReplaceChildren(
+void Node::replaceChildren(
     const HeapVector<Member<V8UnionNodeOrStringOrTrustedScript>>& nodes,
     ExceptionState& exception_state) {
   auto* this_node = DynamicTo<ContainerNode>(this);
@@ -970,6 +974,14 @@ void Node::remove() {
   remove(ASSERT_NO_EXCEPTION);
 }
 
+Element* Node::previousElementSibling() {
+  return ElementTraversal::PreviousSibling(*this);
+}
+
+Element* Node::nextElementSibling() {
+  return ElementTraversal::NextSibling(*this);
+}
+
 Node* Node::cloneNode(bool deep, ExceptionState& exception_state) const {
   // https://dom.spec.whatwg.org/#dom-node-clonenode
 
@@ -983,12 +995,15 @@ Node* Node::cloneNode(bool deep, ExceptionState& exception_state) const {
   // 2. Return a clone of this, with the clone children flag set if deep is
   // true, and the clone shadows flag set if this is a DocumentFragment whose
   // host is an HTML template element.
-  auto* fragment = DynamicTo<DocumentFragment>(this);
-  bool clone_shadows_flag = fragment && fragment->IsTemplateContent();
-  return Clone(GetDocument(),
-               deep ? (clone_shadows_flag ? CloneChildrenFlag::kCloneWithShadows
-                                          : CloneChildrenFlag::kClone)
-                    : CloneChildrenFlag::kSkip);
+  NodeCloningData data;
+  if (deep) {
+    data.Put(CloneOption::kIncludeDescendants);
+    auto* fragment = DynamicTo<DocumentFragment>(this);
+    if (fragment && fragment->IsTemplateContent()) {
+      data.Put(CloneOption::kIncludeShadowRoots);
+    }
+  }
+  return Clone(GetDocument(), data, /*append_to*/ nullptr);
 }
 
 Node* Node::cloneNode(bool deep) const {
@@ -1607,15 +1622,6 @@ void Node::DetachLayoutTree(bool performing_reattach) {
   }
 }
 
-const ComputedStyle* Node::VirtualEnsureComputedStyle(
-    PseudoId pseudo_element_specifier,
-    const AtomicString& pseudo_argument) {
-  return ParentOrShadowHostNode()
-             ? ParentOrShadowHostNode()->EnsureComputedStyle(
-                   pseudo_element_specifier, pseudo_argument)
-             : nullptr;
-}
-
 void Node::SetForceReattachLayoutTree() {
   DCHECK(!GetDocument().GetStyleEngine().InRebuildLayoutTree());
   DCHECK(IsElementNode() || IsTextNode());
@@ -1923,16 +1929,14 @@ const AtomicString& Node::lookupNamespaceURI(
     case kElementNode: {
       const auto& element = To<Element>(*this);
 
-      if (RuntimeEnabledFeatures::NodeAsNSResolverEnabled()) {
-        // 1. If prefix is "xml", then return the XML namespace.
-        if (prefix == g_xml_atom) {
-          return xml_names::kNamespaceURI;
-        }
+      // 1. If prefix is "xml", then return the XML namespace.
+      if (prefix == g_xml_atom) {
+        return xml_names::kNamespaceURI;
+      }
 
-        // 2. If prefix is "xmlns", then return the XMLNS namespace.
-        if (prefix == g_xmlns_atom) {
-          return xmlns_names::kNamespaceURI;
-        }
+      // 2. If prefix is "xmlns", then return the XMLNS namespace.
+      if (prefix == g_xmlns_atom) {
+        return xmlns_names::kNamespaceURI;
       }
 
       // 3. If its namespace is not null and its namespace prefix is prefix,
@@ -2229,18 +2233,41 @@ void Node::InvalidateIfHasEffectiveAppearance() const {
   layout_object->SetSubtreeShouldDoFullPaintInvalidation();
 }
 
+void Node::UpdateForRemovedDOMParts(ContainerNode& insertion_point) {
+  if (LIKELY(!RuntimeEnabledFeatures::DOMPartsAPIEnabled())) {
+    return;
+  }
+  if (auto* parts = GetDOMParts()) {
+    for (Part* part : *parts) {
+      part->PartDisconnected(*this);
+    }
+  }
+}
+
+void Node::UpdateForInsertedDOMParts(ContainerNode& insertion_point) {
+  if (LIKELY(!RuntimeEnabledFeatures::DOMPartsAPIEnabled())) {
+    return;
+  }
+  if (auto* parts = GetDOMParts()) {
+    for (Part* part : *parts) {
+      part->PartConnected(*this, insertion_point);
+    }
+  }
+}
+
 Node::InsertionNotificationRequest Node::InsertedInto(
     ContainerNode& insertion_point) {
   DCHECK(!ChildNeedsStyleInvalidation());
   DCHECK(!NeedsStyleInvalidation());
   DCHECK(insertion_point.isConnected() || insertion_point.IsInShadowTree() ||
-         IsContainerNode());
+         IsContainerNode() || GetDOMParts());
   if (insertion_point.isConnected()) {
     SetFlag(kIsConnectedFlag);
 #if DCHECK_IS_ON()
     insertion_point.GetDocument().IncrementNodeCount();
 #endif
   }
+  UpdateForInsertedDOMParts(insertion_point);
   if (ParentOrShadowHostNode()->IsInShadowTree())
     SetFlag(kIsInShadowTreeFlag);
   if (auto* cache = GetDocument().ExistingAXObjectCache()) {
@@ -2250,8 +2277,7 @@ Node::InsertionNotificationRequest Node::InsertedInto(
 }
 
 void Node::RemovedFrom(ContainerNode& insertion_point) {
-  DCHECK(insertion_point.isConnected() || IsContainerNode() ||
-         IsInShadowTree());
+  DCHECK(IsContainerNode() || IsInTreeScope() || GetDOMParts());
   if (insertion_point.isConnected()) {
     ClearNeedsStyleRecalc();
     ClearChildNeedsStyleRecalc();
@@ -2262,6 +2288,7 @@ void Node::RemovedFrom(ContainerNode& insertion_point) {
     insertion_point.GetDocument().DecrementNodeCount();
 #endif
   }
+  UpdateForRemovedDOMParts(insertion_point);
   if (IsInShadowTree() && !ContainingTreeScope().RootNode().IsShadowRoot())
     ClearFlag(kIsInShadowTreeFlag);
   if (auto* cache = GetDocument().ExistingAXObjectCache()) {
@@ -2271,7 +2298,7 @@ void Node::RemovedFrom(ContainerNode& insertion_point) {
 
 String Node::DebugName() const {
   StringBuilder name;
-  name.Append(DebugNodeName());
+  name.Append(nodeName());
   if (const auto* this_element = DynamicTo<Element>(this)) {
     if (this_element->HasID()) {
       name.Append(" id=\'");
@@ -2290,10 +2317,6 @@ String Node::DebugName() const {
     }
   }
   return name.ReleaseString();
-}
-
-String Node::DebugNodeName() const {
-  return nodeName();
 }
 
 static void DumpAttributeDesc(const Node& node,
@@ -2712,47 +2735,6 @@ void Node::RemoveAllEventListenersRecursively() {
   }
 }
 
-namespace {
-
-// Helper object to allocate EventTargetData which is otherwise only used
-// through EventTargetWithInlineData.
-class EventTargetDataObject final
-    : public GarbageCollected<EventTargetDataObject> {
- public:
-  void Trace(Visitor* visitor) const { visitor->Trace(data_); }
-
-  EventTargetData& GetEventTargetData() { return data_; }
-
- private:
-  EventTargetData data_;
-};
-
-}  // namespace
-
-using EventTargetDataMap =
-    HeapHashMap<WeakMember<Node>, Member<EventTargetDataObject>>;
-static EventTargetDataMap& GetEventTargetDataMap() {
-  DEFINE_STATIC_LOCAL(Persistent<EventTargetDataMap>, map,
-                      (MakeGarbageCollected<EventTargetDataMap>()));
-  return *map;
-}
-
-EventTargetData* Node::GetEventTargetData() {
-  return HasEventTargetData()
-             ? &GetEventTargetDataMap().at(this)->GetEventTargetData()
-             : nullptr;
-}
-
-EventTargetData& Node::EnsureEventTargetData() {
-  if (HasEventTargetData())
-    return GetEventTargetDataMap().at(this)->GetEventTargetData();
-  DCHECK(!GetEventTargetDataMap().Contains(this));
-  auto* data = MakeGarbageCollected<EventTargetDataObject>();
-  GetEventTargetDataMap().Set(this, data);
-  SetHasEventTargetData(true);
-  return data->GetEventTargetData();
-}
-
 const HeapVector<Member<MutationObserverRegistration>>*
 Node::MutationObserverRegistry() {
   if (!HasRareData())
@@ -2897,8 +2879,9 @@ void Node::NotifyMutationObserversNodeWillDetach() {
 }
 
 void Node::HandleLocalEvents(Event& event) {
-  if (!HasEventTargetData())
+  if (!GetEventTargetData()) {
     return;
+  }
 
   if (IsDisabledFormControl(this) && IsA<MouseEvent>(event) &&
       !RuntimeEnabledFeatures::SendMouseEventsDisabledFormControlsEnabled()) {
@@ -3396,7 +3379,7 @@ void Node::RemovedFromFlatTree() {
 
   // Ensure removal from accessibility cache even if it doesn't have layout.
   if (auto* cache = GetDocument().ExistingAXObjectCache()) {
-    cache->Remove(this);
+    cache->RemoveSubtreeWhenSafe(this);
   }
 }
 
@@ -3416,8 +3399,8 @@ HTMLSlotElement* Node::ManuallyAssignedSlot() {
   return nullptr;
 }
 
-HashSet<Member<TreeScope>> Node::GetAncestorTreeScopes() const {
-  HashSet<Member<TreeScope>> ancestor_tree_scopes;
+HeapHashSet<Member<TreeScope>> Node::GetAncestorTreeScopes() const {
+  HeapHashSet<Member<TreeScope>> ancestor_tree_scopes;
   for (TreeScope* scope = &GetTreeScope(); scope;
        scope = scope->ParentTreeScope()) {
     ancestor_tree_scopes.insert(scope);

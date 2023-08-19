@@ -4,8 +4,6 @@
 
 package org.chromium.content_public.browser.test.util;
 
-import androidx.annotation.VisibleForTesting;
-
 import org.chromium.content.browser.BackgroundSyncNetworkObserver;
 import org.chromium.net.ConnectionType;
 
@@ -18,7 +16,6 @@ public class BackgroundSyncNetworkUtils {
      * @param connectionType The connectionType to override to. BackgroundSync code will be notified
      * of this connection type.
      */
-    @VisibleForTesting
     public static void setConnectionTypeForTesting(@ConnectionType int connectionType) {
         BackgroundSyncNetworkObserver.setConnectionTypeForTesting(connectionType);
     }

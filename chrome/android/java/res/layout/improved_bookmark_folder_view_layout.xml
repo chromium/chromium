@@ -1,0 +1,129 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+Copyright 2023 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+
+<org.chromium.chrome.browser.bookmarks.ImprovedBookmarkFolderView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/improved_bookmark_folder_view"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content">
+
+  <androidx.constraintlayout.widget.ConstraintLayout
+      android:layout_width="wrap_content"
+      android:layout_height="wrap_content">
+
+    <FrameLayout
+        android:id="@+id/no_image_placeholder_background"
+        android:layout_width="@dimen/improved_bookmark_row_size"
+        android:layout_height="@dimen/improved_bookmark_row_size"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintRight_toRightOf="parent">
+      <ImageView
+          android:id="@+id/no_image_placeholder_image"
+          android:layout_width="24dp"
+          android:layout_height="24dp"
+          android:layout_marginLeft="14dp"
+          android:layout_marginTop="14dp"
+          android:layout_gravity="top|left"
+          android:scaleType="center"
+          android:src="@drawable/ic_folder_outline_24dp"
+          app:tint="@macro/default_icon_color_secondary"
+          android:importantForAccessibility="no"
+          tools:ignore="RtlHardcoded" />
+    </FrameLayout>
+
+    <ImageView
+        android:id="@+id/primary_image"
+        android:layout_width="@dimen/improved_bookmark_row_size"
+        android:layout_height="@dimen/improved_bookmark_row_size"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        android:scaleType="fitCenter"
+        android:clipToOutline="true"
+        android:importantForAccessibility="no" />
+
+    <!--
+      The secondary image has a container because it serves as the padding
+      between it and its neighbors. The container is slightly larger than its
+      contents so the background color is visible.
+    -->
+    <FrameLayout
+        android:id="@+id/secondary_image_container"
+        android:layout_width="@dimen/improved_bookmark_row_secondary_outer_size"
+        android:layout_height="@dimen/improved_bookmark_row_secondary_inner_size"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintRight_toRightOf="parent">
+
+      <ImageView
+          android:id="@+id/secondary_image"
+          android:layout_width="@dimen/improved_bookmark_row_secondary_inner_size"
+          android:layout_height="@dimen/improved_bookmark_row_secondary_inner_size"
+          android:layout_gravity="right|top"
+          android:scaleType="fitCenter"
+          android:clipToOutline="true"
+          android:importantForAccessibility="no"
+          tools:ignore="RtlHardcoded" />
+    </FrameLayout>
+
+      <!--
+        The child count has a container because it serves as the padding
+        between it and its neighbors. The container is slightly larger than its
+        contents so the background color is visible. Draws the outline of the
+        child count when there are image present.
+
+        The container isn't a parent of child_count_text because the text is used
+        for the 0 image case where no padding is needed and thus no container.
+      -->
+      <View
+          android:id="@+id/child_count_container"
+          android:layout_width="@dimen/improved_bookmark_row_secondary_outer_size"
+          android:layout_height="@dimen/improved_bookmark_row_secondary_outer_size"
+          app:layout_constraintBottom_toBottomOf="parent"
+          app:layout_constraintRight_toRightOf="parent" />
+
+      <!-- Background for child count when there's one image. -->
+      <FrameLayout
+        android:id="@+id/child_count_background_one_image"
+        android:layout_width="@dimen/improved_bookmark_row_secondary_inner_size"
+        android:layout_height="@dimen/improved_bookmark_row_secondary_inner_size"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintRight_toRightOf="parent">
+          <View
+          android:id="@+id/child_count_background_one_image_top"
+          android:layout_width="@dimen/improved_bookmark_row_secondary_inner_size"
+          android:layout_height="@dimen/improved_bookmark_row_secondary_inner_half_size"
+          android:layout_gravity="top"/>
+          <View
+          android:id="@+id/child_count_background_one_image_bot"
+          android:layout_width="@dimen/improved_bookmark_row_secondary_inner_size"
+          android:layout_height="@dimen/improved_bookmark_row_secondary_inner_half_size"
+          android:layout_gravity="bottom" />
+      </FrameLayout>
+
+      <View
+          android:id="@+id/child_count_background_two_images"
+          android:layout_width="@dimen/improved_bookmark_row_secondary_inner_size"
+          android:layout_height="@dimen/improved_bookmark_row_secondary_inner_size"
+          app:layout_constraintBottom_toBottomOf="parent"
+          app:layout_constraintRight_toRightOf="parent" />
+
+    <TextView
+            android:id="@+id/child_count_text"
+            android:layout_width="@dimen/improved_bookmark_row_secondary_inner_size"
+            android:layout_height="@dimen/improved_bookmark_row_secondary_inner_size"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintRight_toRightOf="parent"
+            android:gravity="center"
+            android:textAppearance="@style/TextAppearance.FolderChildCount" />
+
+  </androidx.constraintlayout.widget.ConstraintLayout>
+</org.chromium.chrome.browser.bookmarks.ImprovedBookmarkFolderView>

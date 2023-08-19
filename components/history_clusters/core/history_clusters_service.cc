@@ -36,7 +36,7 @@
 #include "components/history_clusters/core/history_clusters_util.h"
 #include "components/history_clusters/core/on_device_clustering_backend.h"
 #include "components/optimization_guide/core/entity_metadata_provider.h"
-#include "components/optimization_guide/core/new_optimization_guide_decider.h"
+#include "components/optimization_guide/core/optimization_guide_decider.h"
 #include "components/prefs/pref_service.h"
 #include "components/site_engagement/core/site_engagement_score_provider.h"
 
@@ -118,7 +118,7 @@ HistoryClustersService::HistoryClustersService(
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
     site_engagement::SiteEngagementScoreProvider* engagement_score_provider,
     TemplateURLService* template_url_service,
-    optimization_guide::NewOptimizationGuideDecider* optimization_guide_decider,
+    optimization_guide::OptimizationGuideDecider* optimization_guide_decider,
     PrefService* prefs)
     : persist_caches_to_prefs_(GetConfig().persist_caches_to_prefs),
       is_journeys_feature_flag_enabled_(

@@ -179,7 +179,7 @@ class UserDataAuthClientTest : public testing::Test {
   scoped_refptr<dbus::MockObjectProxy> proxy_;
 
   // Convenience pointer to the global instance.
-  raw_ptr<UserDataAuthClient, ExperimentalAsh> client_;
+  raw_ptr<UserDataAuthClient, DanglingUntriaged | ExperimentalAsh> client_;
 
   // The expected replies to the respective D-Bus calls.
   ::user_data_auth::IsMountedReply expected_is_mounted_reply_;

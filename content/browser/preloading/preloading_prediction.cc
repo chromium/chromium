@@ -4,6 +4,8 @@
 
 #include "content/browser/preloading/preloading_prediction.h"
 
+#include "base/metrics/histogram_functions.h"
+#include "base/strings/strcat.h"
 #include "content/public/browser/page.h"
 #include "services/metrics/public/cpp/metrics_utils.h"
 #include "services/metrics/public/cpp/ukm_builders.h"
@@ -66,6 +68,38 @@ void PreloadingPrediction::SetIsAccuratePrediction(const GURL& navigated_url) {
   // Use the predicate to match the URLs as the matching logic varies for each
   // predictor.
   is_accurate_prediction_ |= url_match_predicate_.Run(navigated_url);
+}
+
+ExperimentalPreloadingPrediction::ExperimentalPreloadingPrediction(
+    base::StringPiece name,
+    PreloadingURLMatchCallback url_match_predicate,
+    float score,
+    float min_score,
+    float max_score,
+    size_t buckets)
+    : name_(name),
+      score_(score),
+      min_score_(min_score),
+      max_score_(max_score),
+      buckets_(buckets),
+      url_match_predicate_(std::move(url_match_predicate)) {
+  CHECK(max_score > min_score);
+}
+
+void ExperimentalPreloadingPrediction::SetIsAccuratePrediction(
+    const GURL& navigated_url) {
+  is_accurate_prediction_ = url_match_predicate_.Run(navigated_url);
+}
+
+ExperimentalPreloadingPrediction::~ExperimentalPreloadingPrediction() = default;
+
+void ExperimentalPreloadingPrediction::RecordToUMA() const {
+  const auto uma_experimental_prediction =
+      base::StrCat({"Preloading.Experimental.", PredictorName(), ".",
+                    IsAccuratePrediction() ? "Positive" : "Negative"});
+  float normalized_param = (Score() - min_score_) / (max_score_ - min_score_);
+  base::UmaHistogramExactLinear(uma_experimental_prediction,
+                                normalized_param * buckets_, buckets_ + 1);
 }
 
 }  // namespace content

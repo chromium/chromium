@@ -24,6 +24,8 @@
 
 namespace blink {
 
+using mojom::blink::MediaStreamRequestResult;
+
 MediaStreamVideoCapturerSource::MediaStreamVideoCapturerSource(
     scoped_refptr<base::SingleThreadTaskRunner> main_task_runner,
     LocalFrame* frame,
@@ -77,7 +79,7 @@ void MediaStreamVideoCapturerSource::RequestRefreshFrame() {
   source_->RequestRefreshFrame();
 }
 
-void MediaStreamVideoCapturerSource::OnFrameDropped(
+void MediaStreamVideoCapturerSource::OnFrameDroppedInternal(
     media::VideoCaptureFrameDropReason reason) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   source_->OnFrameDropped(reason);
@@ -238,14 +240,20 @@ void MediaStreamVideoCapturerSource::OnRunStateChanged(
       if (is_running) {
         state_ = kStarted;
         DCHECK(capture_params_ == new_capture_params);
-        OnStartDone(mojom::blink::MediaStreamRequestResult::OK);
+        OnStartDone(MediaStreamRequestResult::OK);
       } else {
         state_ = kStopped;
-        auto result = (run_state == RunState::kSystemPermissionsError)
-                          ? mojom::blink::MediaStreamRequestResult::
-                                SYSTEM_PERMISSION_DENIED
-                          : mojom::blink::MediaStreamRequestResult::
-                                TRACK_START_FAILURE_VIDEO;
+        MediaStreamRequestResult result;
+        switch (run_state) {
+          case RunState::kSystemPermissionsError:
+            result = MediaStreamRequestResult::SYSTEM_PERMISSION_DENIED;
+            break;
+          case RunState::kCameraBusyError:
+            result = MediaStreamRequestResult::DEVICE_IN_USE;
+            break;
+          default:
+            result = MediaStreamRequestResult::TRACK_START_FAILURE_VIDEO;
+        }
         OnStartDone(result);
       }
       break;

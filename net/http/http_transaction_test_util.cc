@@ -211,6 +211,7 @@ MockHttpRequest::MockHttpRequest(const MockTransaction& t) {
   SchemefulSite site(url);
   network_isolation_key = NetworkIsolationKey(site, site);
   network_anonymization_key = NetworkAnonymizationKey::CreateSameSite(site);
+  frame_origin = url::Origin::Create(url);
   fps_cache_filter = t.fps_cache_filter;
   browser_run_id = t.browser_run_id;
 }
@@ -495,8 +496,16 @@ int MockNetworkTransaction::StartInternal(const HttpRequestInfo* request,
   std::string resp_status = t->status;
   std::string resp_headers = t->response_headers;
   std::string resp_data = t->data;
-  if (t->handler)
+
+  if (modify_request_headers_callback_) {
+    HttpRequestInfo new_request = *request;
+    modify_request_headers_callback_.Run(&new_request.extra_headers);
+    if (t->handler) {
+      (t->handler)(&new_request, &resp_status, &resp_headers, &resp_data);
+    }
+  } else if (t->handler) {
     (t->handler)(request, &resp_status, &resp_headers, &resp_data);
+  }
   if (t->read_handler)
     read_handler_ = t->read_handler;
 
@@ -562,6 +571,11 @@ int MockNetworkTransaction::StartInternal(const HttpRequestInfo* request,
 void MockNetworkTransaction::SetBeforeNetworkStartCallback(
     BeforeNetworkStartCallback callback) {
   before_network_start_callback_ = std::move(callback);
+}
+
+void MockNetworkTransaction::SetModifyRequestHeadersCallback(
+    base::RepeatingCallback<void(net::HttpRequestHeaders*)> callback) {
+  modify_request_headers_callback_ = std::move(callback);
 }
 
 void MockNetworkTransaction::SetConnectedCallback(

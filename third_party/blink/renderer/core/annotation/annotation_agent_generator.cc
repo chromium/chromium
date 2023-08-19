@@ -38,16 +38,6 @@ void AnnotationAgentGenerator::GetForCurrentSelection(
 
   // Preemptive generation was completed.
   if (generation_result_.has_value()) {
-    // If the type is different from shared highlighting and the selection was
-    // on a child frame, make sure SelectorGenerationCallback isn't invoke with
-    // a valid selector.
-    if (type_ != mojom::blink::AnnotationType::kSharedHighlight &&
-        !frame_->IsOutermostMainFrame()) {
-      generation_result_.emplace(
-          TextFragmentSelector(TextFragmentSelector::SelectorType::kInvalid));
-      selector_error_ = shared_highlighting::LinkGenerationError::kIFrame;
-    }
-
     InvokeCompletionCallbackIfNeeded(
         shared_highlighting::LinkGenerationReadyStatus::kRequestedAfterReady);
     return;

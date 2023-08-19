@@ -8,7 +8,6 @@
 #include "base/check.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/scoped_refptr.h"
-#include "components/viz/common/resources/resource_format_utils.h"
 #include "gpu/command_buffer/service/gl_utils.h"
 #include "gpu/command_buffer/service/memory_tracking.h"
 #include "gpu/command_buffer/service/shared_image/ozone_image_backing.h"
@@ -84,6 +83,7 @@ gfx::BufferPlane GetBufferPlane(viz::SharedImageFormat format,
                                 int plane_index) {
   DCHECK(format.IsValidPlaneIndex(plane_index));
   switch (format.plane_config()) {
+    case viz::SharedImageFormat::PlaneConfig::kY_U_V:
     case viz::SharedImageFormat::PlaneConfig::kY_V_U:
       switch (plane_index) {
         case 0:
@@ -259,6 +259,8 @@ GLOzoneImageRepresentationShared::CreateTextureHolder(
   gles2::Texture* texture =
       gles2::CreateGLES2TextureWithLightRef(gl_texture_service_id, target);
 
+  // TODO(crbug.com/1468989): Make sure these match with corresponding formats
+  // from ToGLFormatDesc{ExternalSampler}.
   GLuint internal_format = np_gl_binding->GetInternalFormat();
   GLenum gl_format = GetDataFormatFromInternalFormat(internal_format);
   GLenum gl_type = np_gl_binding->GetDataType();
@@ -288,6 +290,8 @@ GLOzoneImageRepresentationShared::CreateTextureHolderPassthrough(
     return nullptr;
   }
 
+  // TODO(crbug.com/1468989): Make sure these match with corresponding formats
+  // from ToGLFormatDesc{ExternalSampler}.
   GLuint internal_format = np_gl_binding->GetInternalFormat();
   GLenum gl_format = GetDataFormatFromInternalFormat(internal_format);
   GLenum gl_type = np_gl_binding->GetDataType();

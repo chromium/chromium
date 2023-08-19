@@ -4,8 +4,8 @@
 
 #include "content/browser/cocoa/system_hotkey_helper_mac.h"
 
+#include "base/apple/foundation_util.h"
 #include "base/files/file_path.h"
-#include "base/mac/foundation_util.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/no_destructor.h"
 #include "content/browser/cocoa/system_hotkey_map.h"
@@ -16,10 +16,10 @@ constexpr auto* kSystemHotkeyPlistPath =
     "Preferences/com.apple.symbolichotkeys.plist";
 
 content::SystemHotkeyMap LoadSystemHotkeyMap() {
-  auto* hotkey_plist_url = base::mac::FilePathToNSURL(
-      base::mac::GetUserLibraryPath().Append(kSystemHotkeyPlistPath));
+  auto* hotkey_plist_url = base::apple::FilePathToNSURL(
+      base::apple::GetUserLibraryPath().Append(kSystemHotkeyPlistPath));
   NSDictionary* dictionary =
-      [NSDictionary dictionaryWithContentsOfURL:hotkey_plist_url];
+      [NSDictionary dictionaryWithContentsOfURL:hotkey_plist_url error:nil];
 
   content::SystemHotkeyMap map;
   bool success = map.ParseDictionary(dictionary);

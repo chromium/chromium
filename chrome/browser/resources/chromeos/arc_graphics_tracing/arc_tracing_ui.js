@@ -461,8 +461,9 @@ class SVG {
   // Creates text element in the |svg| with provided attributes.
   static addText(svg, x, y, fontSize, textContent, anchor, transform) {
     const lines = textContent.split('\n');
+    let text;
     for (let i = 0; i < lines.length; ++i) {
-      const text = document.createElementNS(svgNS, 'text');
+      text = document.createElementNS(svgNS, 'text');
       text.setAttributeNS(null, 'x', x);
       text.setAttributeNS(null, 'y', y);
       text.setAttributeNS(null, 'fill', 'black');

@@ -88,7 +88,7 @@ public class TabUmaTest {
                 cta.getModalDialogManagerSupplier(), cta::getSnackbarManager,
                 cta.getBrowserControlsManager(), cta.getActivityTabProvider(),
                 cta.getLifecycleDispatcher(), cta.getWindowAndroid(),
-                rootUiCoordinator.getToolbarManager()::getToolbar, null);
+                rootUiCoordinator.getToolbarManager()::getToolbar, null, null);
         // clang-format on
     }
 

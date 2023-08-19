@@ -73,6 +73,11 @@ ChromeWebAuthnCredentialsDelegate::GetPasskeys() const {
   return passkeys_;
 }
 
+bool ChromeWebAuthnCredentialsDelegate::OfferPasskeysFromAnotherDeviceOption()
+    const {
+  return offer_passkey_from_another_device_;
+}
+
 void ChromeWebAuthnCredentialsDelegate::RetrievePasskeys(
     base::OnceClosure callback) {
   if (passkeys_.has_value()) {
@@ -85,8 +90,10 @@ void ChromeWebAuthnCredentialsDelegate::RetrievePasskeys(
 }
 
 void ChromeWebAuthnCredentialsDelegate::OnCredentialsReceived(
-    std::vector<PasskeyCredential> credentials) {
+    std::vector<PasskeyCredential> credentials,
+    bool offer_passkey_from_another_device) {
   passkeys_ = std::move(credentials);
+  offer_passkey_from_another_device_ = offer_passkey_from_another_device;
   if (retrieve_passkeys_callback_) {
     std::move(retrieve_passkeys_callback_).Run();
   }
@@ -98,3 +105,21 @@ void ChromeWebAuthnCredentialsDelegate::NotifyWebAuthnRequestAborted() {
     std::move(retrieve_passkeys_callback_).Run();
   }
 }
+
+#if BUILDFLAG(IS_ANDROID)
+void ChromeWebAuthnCredentialsDelegate::ShowAndroidHybridSignIn() {
+  if (WebAuthnRequestDelegateAndroid* delegate =
+          WebAuthnRequestDelegateAndroid::GetRequestDelegate(web_contents_)) {
+    delegate->ShowHybridSignIn();
+  }
+}
+
+bool ChromeWebAuthnCredentialsDelegate::IsAndroidHybridAvailable() const {
+  return android_hybrid_available_.value();
+}
+
+void ChromeWebAuthnCredentialsDelegate::SetAndroidHybridAvailable(
+    AndroidHybridAvailable available) {
+  android_hybrid_available_ = available;
+}
+#endif

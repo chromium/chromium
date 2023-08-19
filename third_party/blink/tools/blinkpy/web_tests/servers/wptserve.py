@@ -97,8 +97,6 @@ class WPTServe(server_base.ServerBase):
             finder.path_from_wpt_tests(),
         ]
 
-        # Some users (e.g. run_webdriver_tests.py) do not need WebSocket
-        # handlers, so we only add the flag if the directory exists.
         path_to_ws_handlers = finder.path_from_wpt_tests(
             'websockets', 'handlers')
         if self._port_obj.host.filesystem.exists(path_to_ws_handlers):

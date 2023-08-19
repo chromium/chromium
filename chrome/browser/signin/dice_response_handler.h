@@ -67,6 +67,8 @@ class ProcessDiceHeaderDelegate {
   virtual void HandleTokenExchangeFailure(
       const std::string& email,
       const GoogleServiceAuthError& error) = 0;
+
+  virtual signin_metrics::AccessPoint GetAccessPoint() = 0;
 };
 
 // Processes the Dice responses from Gaia.
@@ -183,8 +185,9 @@ class DiceResponseHandler : public KeyedService {
     std::unique_ptr<GaiaAuthFetcher> gaia_auth_fetcher_;
 #if BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
     std::unique_ptr<RegistrationTokenHelper> registration_token_helper_;
-    absl::optional<unexportable_keys::UnexportableKeyId> binding_key_id_;
+    // The following fields are empty if the binding key wasn't generated.
     std::string binding_registration_token_;
+    std::vector<uint8_t> wrapped_binding_key_;
 #endif  // BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
   };
 
@@ -212,13 +215,12 @@ class DiceResponseHandler : public KeyedService {
 
   // Called after exchanging an OAuth 2.0 authorization code for a refresh token
   // after DiceAction::SIGNIN.
-  void OnTokenExchangeSuccess(
-      DiceTokenFetcher* token_fetcher,
-      const std::string& refresh_token,
-      bool is_under_advanced_protection
+  void OnTokenExchangeSuccess(DiceTokenFetcher* token_fetcher,
+                              const std::string& refresh_token,
+                              bool is_under_advanced_protection
 #if BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
-      ,
-      absl::optional<unexportable_keys::UnexportableKeyId> binding_key_id
+                              ,
+                              const std::vector<uint8_t>& wrapped_binding_key
 #endif  // BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
   );
   void OnTokenExchangeFailure(DiceTokenFetcher* token_fetcher,

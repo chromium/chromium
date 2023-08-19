@@ -27,6 +27,10 @@ namespace {
 // Contains base64 random key encrypted with DPAPI.
 constexpr char kOsCryptEncryptedKeyPrefName[] = "os_crypt.encrypted_key";
 
+// Whether or not an attempt has been made to enable audit for the DPAPI
+// encryption backing the random key.
+constexpr char kOsCryptAuditEnabledPrefName[] = "os_crypt.audit_enabled";
+
 // AEAD key length in bytes.
 constexpr size_t kKeyLength = 256 / 8;
 
@@ -39,9 +43,6 @@ constexpr char kEncryptionVersionPrefix[] = "v10";
 // Key prefix for a key encrypted with DPAPI.
 constexpr char kDPAPIKeyPrefix[] = "DPAPI";
 
-// Name used for a feature to used named encryption source in DPAPI.
-constexpr char kNamedEncryptionSourceName[] = "NamedEncryptionSource";
-
 bool EncryptStringWithDPAPI(const std::string& plaintext,
                             std::string* ciphertext) {
   DATA_BLOB input;
@@ -53,20 +54,13 @@ bool EncryptStringWithDPAPI(const std::string& plaintext,
   DATA_BLOB output;
   {
     SCOPED_UMA_HISTOGRAM_TIMER("OSCrypt.Win.Encrypt.Time");
-    static BASE_FEATURE(kNamedEncyptionSource, kNamedEncryptionSourceName,
-                        base::FEATURE_ENABLED_BY_DEFAULT);
-    DWORD flags = 0;
-    std::string data_description;
-    if (base::FeatureList::IsEnabled(kNamedEncyptionSource)) {
-      data_description = version_info::GetProductName();
-      flags = CRYPTPROTECT_AUDIT;
-    }
     result = ::CryptProtectData(
         /*pDataIn=*/&input,
-        /*szDataDescr=*/base::SysUTF8ToWide(data_description).c_str(),
+        /*szDataDescr=*/
+        base::SysUTF8ToWide(version_info::GetProductName()).c_str(),
         /*pOptionalEntropy=*/nullptr,
         /*pvReserved=*/nullptr,
-        /*pPromptStruct=*/nullptr, /*dwFlags=*/flags,
+        /*pPromptStruct=*/nullptr, /*dwFlags=*/CRYPTPROTECT_AUDIT,
         /*pDataOut=*/&output);
   }
   base::UmaHistogramBoolean("OSCrypt.Win.Encrypt.Result", result);
@@ -107,6 +101,23 @@ bool DecryptStringWithDPAPI(const std::string& ciphertext,
   LocalFree(output.pbData);
   return true;
 }
+
+// Takes `key` and encrypts it with DPAPI, then stores it in the `local_state`.
+// Returns true if the key was successfully encrypted and stored.
+bool EncryptAndStoreKey(const std::string& key, PrefService* local_state) {
+  std::string encrypted_key;
+  if (!EncryptStringWithDPAPI(key, &encrypted_key)) {
+    return false;
+  }
+
+  // Add header indicating this key is encrypted with DPAPI.
+  encrypted_key.insert(0, kDPAPIKeyPrefix);
+  std::string base64_key;
+  base::Base64Encode(encrypted_key, &base64_key);
+  local_state->SetString(kOsCryptEncryptedKeyPrefName, base64_key);
+  return true;
+}
+
 }  // namespace
 
 namespace OSCrypt {
@@ -223,6 +234,7 @@ bool OSCryptImpl::DecryptString(const std::string& ciphertext,
 // static
 void OSCryptImpl::RegisterLocalPrefs(PrefRegistrySimple* registry) {
   registry->RegisterStringPref(kOsCryptEncryptedKeyPrefName, "");
+  registry->RegisterBooleanPref(kOsCryptAuditEnabledPrefName, false);
 }
 
 bool OSCryptImpl::Init(PrefService* local_state) {
@@ -243,15 +255,13 @@ bool OSCryptImpl::Init(PrefService* local_state) {
   std::string key;
   crypto::RandBytes(base::WriteInto(&key, kKeyLength + 1), kKeyLength);
 
-  std::string encrypted_key;
-  if (!EncryptStringWithDPAPI(key, &encrypted_key))
+  if (!EncryptAndStoreKey(key, local_state)) {
     return false;
+  }
 
-  // Add header indicating this key is encrypted with DPAPI.
-  encrypted_key.insert(0, kDPAPIKeyPrefix);
-  std::string base64_key;
-  base::Base64Encode(encrypted_key, &base64_key);
-  local_state->SetString(kOsCryptEncryptedKeyPrefName, base64_key);
+  // This new key is already encrypted with audit flag enabled.
+  local_state->SetBoolean(kOsCryptAuditEnabledPrefName, true);
+
   encryption_key_.assign(key);
   return true;
 }
@@ -285,6 +295,18 @@ OSCrypt::InitResult OSCryptImpl::InitWithExistingKey(PrefService* local_state) {
     return OSCrypt::kDecryptionFailed;
   }
 
+  if (!local_state->GetBoolean(kOsCryptAuditEnabledPrefName)) {
+    // In theory, EncryptAndStoreKey could fail if DPAPI fails to encrypt, but
+    // DPAPI decrypted the old data fine. In this case it's better to leave the
+    // previously encrypted key, since the code has been able to decrypt it.
+    // Trying over and over makes no sense so the code explicitly does not
+    // attempt again, and audit will simply not be enabled in this case.
+    std::ignore = EncryptAndStoreKey(key, local_state);
+
+    // Indicate that an attempt has been made to turn audit flag on, so retry is
+    // not attempted.
+    local_state->SetBoolean(kOsCryptAuditEnabledPrefName, true);
+  }
   encryption_key_.assign(key);
   return OSCrypt::kSuccess;
 }

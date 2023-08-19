@@ -33,9 +33,11 @@
 #include "chrome/browser/ash/guest_os/guest_os_registry_service_factory.h"
 #include "chrome/browser/ash/system_web_apps/system_web_app_manager.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/ui/ash/shelf/chrome_shelf_controller.h"
 #include "chrome/browser/ui/ash/shelf/chrome_shelf_controller_test_util.h"
 #include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/tabs/tab_enums.h"
 #include "chrome/browser/ui/web_applications/test/web_app_browsertest_util.h"
@@ -45,6 +47,7 @@
 #include "chrome/browser/web_applications/web_app_install_info.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/test/base/ui_test_utils.h"
+#include "chromeos/ash/components/standalone_browser/feature_refs.h"
 #include "components/app_constants/constants.h"
 #include "components/exo/shell_surface_util.h"
 #include "components/services/app_service/public/cpp/instance.h"
@@ -362,7 +365,9 @@ class AppServiceAppWindowLacrosBrowserTest
     : public AppServiceAppWindowBrowserTest {
  public:
   AppServiceAppWindowLacrosBrowserTest() {
-    feature_list_.InitAndEnableFeature(ash::features::kLacrosSupport);
+    feature_list_.InitWithFeatures(
+        /*enabled_features=*/ash::standalone_browser::GetFeatureRefs(),
+        /*disabled_features=*/{});
   }
   ~AppServiceAppWindowLacrosBrowserTest() override = default;
 
@@ -370,7 +375,9 @@ class AppServiceAppWindowLacrosBrowserTest
   base::test::ScopedFeatureList feature_list_;
 };
 
-IN_PROC_BROWSER_TEST_F(AppServiceAppWindowLacrosBrowserTest, LacrosWindow) {
+// TODO(crbug.com/1467170): Fix this test.
+IN_PROC_BROWSER_TEST_F(AppServiceAppWindowLacrosBrowserTest,
+                       DISABLED_LacrosWindow) {
   // Create a fake Lacros window. The native window owns the widget.
   views::Widget* widget = CreateExoWindow("org.chromium.lacros.12345");
 
@@ -514,7 +521,7 @@ class AppServiceAppWindowWebAppBrowserTest
   // |SetUpWebApp()| must be called after |SetUpOnMainThread()| to make sure
   // the Network Service process has been setup properly.
   std::string CreateWebApp() const {
-    auto web_app_info = std::make_unique<WebAppInstallInfo>();
+    auto web_app_info = std::make_unique<web_app::WebAppInstallInfo>();
     web_app_info->start_url = GetAppURL();
     web_app_info->scope = GetAppURL().GetWithoutFilename();
 
@@ -917,7 +924,19 @@ IN_PROC_BROWSER_TEST_F(AppServiceAppWindowArcAppBrowserTest, PaymentApp) {
 
 class AppServiceAppWindowSystemWebAppBrowserTest
     : public AppServiceAppWindowWebAppBrowserTest,
-      public WithCrosapiParam {};
+      public WithCrosapiParam {
+  void SetUpOnMainThread() override {
+    AppServiceAppWindowWebAppBrowserTest::SetUpOnMainThread();
+    if (browser() == nullptr) {
+      // Create a new Ash browser window so test code using browser() can work
+      // even when Lacros is the only browser.
+      // TODO(crbug.com/1450158): Remove uses of browser() from such tests.
+      chrome::NewEmptyWindow(ProfileManager::GetActiveUserProfile());
+      SelectFirstBrowser();
+    }
+    VerifyLacrosStatus();
+  }
+};
 
 IN_PROC_BROWSER_TEST_P(AppServiceAppWindowSystemWebAppBrowserTest,
                        SystemWebAppWindow) {

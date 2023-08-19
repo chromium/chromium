@@ -43,7 +43,7 @@ TEST_F(InspectorStyleResolverTest, DirectlyMatchedRules) {
     <div id="grid">
     </div>
   )HTML");
-  Element* grid = GetDocument().getElementById("grid");
+  Element* grid = GetDocument().getElementById(AtomicString("grid"));
   InspectorStyleResolver resolver(grid, kPseudoIdNone, g_null_atom);
   RuleIndexList* matched_rules = resolver.MatchedRules();
   // Some rules are coming for UA.
@@ -73,11 +73,12 @@ TEST_F(InspectorStyleResolverTest, ParentRules) {
       <div id="grid"></div>
     </div>
   )HTML");
-  Element* grid = GetDocument().getElementById("grid");
+  Element* grid = GetDocument().getElementById(AtomicString("grid"));
   InspectorStyleResolver resolver(grid, kPseudoIdNone, g_null_atom);
   HeapVector<Member<InspectorCSSMatchedRules>> parent_rules =
       resolver.ParentRules();
-  Element* grid_container = GetDocument().getElementById("grid-container");
+  Element* grid_container =
+      GetDocument().getElementById(AtomicString("grid-container"));
   // Some rules are coming for UA.
   EXPECT_EQ(3u, parent_rules.size());
   // grid_container is the first parent.
@@ -127,10 +128,10 @@ TEST_F(InspectorStyleResolverTest, HighlightPseudoInheritance) {
       </div>
     </body>
   )HTML");
-  Element* target = GetDocument().getElementById("target");
-  Element* middle = GetDocument().getElementById("middle");
-  Element* outer = GetDocument().getElementById("outer");
-  Element* body = GetDocument().QuerySelector("body");
+  Element* target = GetDocument().getElementById(AtomicString("target"));
+  Element* middle = GetDocument().getElementById(AtomicString("middle"));
+  Element* outer = GetDocument().getElementById(AtomicString("outer"));
+  Element* body = GetDocument().QuerySelector(AtomicString("body"));
   InspectorStyleResolver resolver(target, kPseudoIdNone, g_null_atom);
   HeapVector<Member<InspectorCSSMatchedPseudoElements>> parent_pseudos =
       resolver.ParentPseudoElementRules();

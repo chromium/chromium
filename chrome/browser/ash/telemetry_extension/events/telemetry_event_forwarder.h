@@ -63,6 +63,8 @@ class CrosHealthdEventForwarder : public cros_healthd::mojom::EventObserver {
  private:
   void CallDeleter();
 
+  const crosapi::mojom::TelemetryEventCategoryEnum category_;
+
   // Called when the connection is reset from either side.
   base::OnceCallback<void(CrosHealthdEventForwarder*)> deleter_callback_;
 

@@ -14,6 +14,7 @@
 #include "chrome/browser/chromeos/extensions/login_screen/login/cleanup/files_cleanup_handler.h"
 #include "chrome/browser/chromeos/extensions/login_screen/login/cleanup/lacros_cleanup_handler.h"
 #include "chrome/browser/chromeos/extensions/login_screen/login/cleanup/print_jobs_cleanup_handler.h"
+#include "chrome/browser/chromeos/extensions/login_screen/login/cleanup/web_app_cleanup_handler.h"
 
 namespace chromeos {
 
@@ -27,6 +28,7 @@ constexpr char kExtensionCleanupHandlerHistogramName[] = "Extension";
 constexpr char kFilesCleanupHandlerHistogramName[] = "Files";
 constexpr char kLacrosCleanupHandlerHistogramName[] = "Lacros";
 constexpr char kPrintJobsCleanupHandlerHistogramName[] = "PrintJobs";
+constexpr char kWebAppCleanupHandlerHistogramName[] = "WebApp";
 
 }  // namespace
 
@@ -53,6 +55,8 @@ void CleanupManagerAsh::InitializeCleanupHandlers() {
                             std::make_unique<PrintJobsCleanupHandler>()});
   cleanup_handlers_.insert({kExtensionCleanupHandlerHistogramName,
                             std::make_unique<ExtensionCleanupHandler>()});
+  cleanup_handlers_.insert({kWebAppCleanupHandlerHistogramName,
+                            std::make_unique<WebAppCleanupHandler>()});
 }
 
 }  // namespace chromeos

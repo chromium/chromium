@@ -12,14 +12,15 @@
 #import "ios/chrome/grit/ios_strings.h"
 #import "ui/base/l10n/l10n_util_mac.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 namespace {
 // Horizontal spacing between views in `AppendHorizontalConstraintsForViews`.
 constexpr CGFloat kHorizontalSpacing = 16;
 }  // namespace
+
+const CGFloat kButtonHorizontalMargin = 16;
+const CGFloat kChipsHorizontalMargin = -1;
+const CGFloat TopSystemSpacingMultiplier = 2;
+const CGFloat BottomSystemSpacingMultiplier = 2.26;
 
 UIButton* CreateChipWithSelectorAndTarget(SEL action, id target) {
   UIButton* button = [ChipButton buttonWithType:UIButtonTypeCustom];

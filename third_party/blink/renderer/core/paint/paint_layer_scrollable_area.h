@@ -47,7 +47,6 @@
 #include "base/check_op.h"
 #include "base/task/single_thread_task_runner.h"
 #include "third_party/blink/public/mojom/scroll/scroll_into_view_params.mojom-blink-forward.h"
-#include "third_party/blink/public/mojom/scroll/scrollbar_mode.mojom-blink.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/layout/scroll_anchor.h"
 #include "third_party/blink/renderer/core/scroll/scrollable_area.h"
@@ -84,7 +83,6 @@ struct CORE_EXPORT PaintLayerScrollableAreaRareData final
   HeapLinkedHashSet<Member<PaintLayer>> sticky_layers_;
   absl::optional<cc::SnapContainerData> snap_container_data_;
   bool snap_container_data_needs_update_ = true;
-  bool needs_resnap_ = false;
   Vector<gfx::Rect> tickmarks_override_;
 };
 
@@ -288,11 +286,11 @@ class CORE_EXPORT PaintLayerScrollableArea final
   int ScrollSize(ScrollbarOrientation) const override;
   gfx::PointF ScrollOffsetToPosition(
       const ScrollOffset& offset) const override {
-    return gfx::PointF(ScrollOriginInt()) + offset;
+    return gfx::PointF(ScrollOrigin()) + offset;
   }
   ScrollOffset ScrollPositionToOffset(
       const gfx::PointF& position) const override {
-    return ScrollOffset(position - gfx::PointF(ScrollOriginInt()));
+    return ScrollOffset(position - gfx::PointF(ScrollOrigin()));
   }
   gfx::Vector2d ScrollOffsetInt() const override;
   ScrollOffset GetScrollOffset() const override;
@@ -335,7 +333,7 @@ class CORE_EXPORT PaintLayerScrollableArea final
   void VisibleSizeChanged();
 
   // See renderer/core/layout/README.md for an explanation of scroll origin.
-  gfx::Point ScrollOriginInt() const { return scroll_origin_int_; }
+  gfx::Point ScrollOrigin() const { return scroll_origin_; }
   bool ScrollOriginChanged() const { return scroll_origin_changed_; }
 
   void ScrollToAbsolutePosition(const gfx::PointF& position,
@@ -343,7 +341,7 @@ class CORE_EXPORT PaintLayerScrollableArea final
                                     mojom::blink::ScrollBehavior::kInstant,
                                 mojom::blink::ScrollType scroll_type =
                                     mojom::blink::ScrollType::kProgrammatic) {
-    SetScrollOffset(ScrollOffset(position - gfx::PointF(ScrollOriginInt())),
+    SetScrollOffset(ScrollOffset(position - gfx::PointF(ScrollOrigin())),
                     scroll_type, scroll_behavior);
   }
 
@@ -386,7 +384,7 @@ class CORE_EXPORT PaintLayerScrollableArea final
 
   LayoutCustomScrollbarPart* ScrollCorner() const { return scroll_corner_; }
 
-  void Resize(const gfx::Point& pos, const LayoutSize& old_offset);
+  void Resize(const gfx::Point& pos, const gfx::Vector2d& old_offset);
   gfx::Vector2d OffsetFromResizeCorner(const gfx::Point& absolute_point) const;
 
   bool InResizeMode() const { return in_resize_mode_; }
@@ -394,7 +392,7 @@ class CORE_EXPORT PaintLayerScrollableArea final
     in_resize_mode_ = in_resize_mode;
   }
 
-  LayoutSize Size() const;
+  PhysicalSize Size() const;
   LayoutUnit ScrollWidth() const;
   LayoutUnit ScrollHeight() const;
 
@@ -507,10 +505,13 @@ class CORE_EXPORT PaintLayerScrollableArea final
     had_vertical_scrollbar_before_relayout_ = val;
   }
 
+  void EnqueueForSnapUpdateIfNeeded();
+
   void AddStickyLayer(PaintLayer*);
   bool HasStickyLayer(PaintLayer* layer) const {
     return rare_data_ && rare_data_->sticky_layers_.Contains(layer);
   }
+  void UpdateAllStickyConstraints();
   void InvalidateAllStickyConstraints();
   void InvalidatePaintForStickyDescendants();
 
@@ -565,8 +566,6 @@ class CORE_EXPORT PaintLayerScrollableArea final
   bool SetTargetSnapAreaElementIds(cc::TargetSnapAreaElementIds) override;
   bool SnapContainerDataNeedsUpdate() const override;
   void SetSnapContainerDataNeedsUpdate(bool) override;
-  bool NeedsResnap() const override;
-  void SetNeedsResnap(bool) override;
 
   absl::optional<gfx::PointF> GetSnapPositionAndSetTarget(
       const cc::SnapSelectionStrategy& strategy) override;
@@ -616,6 +615,9 @@ class CORE_EXPORT PaintLayerScrollableArea final
 
   CompositorElementId GetScrollCornerElementId() const;
 
+  void StopApplyingScrollStart() final;
+  bool IsApplyingScrollStart() const final;
+
  private:
   // This also updates main thread scrolling reasons and the LayoutBox's
   // background paint location.
@@ -656,25 +658,10 @@ class CORE_EXPORT PaintLayerScrollableArea final
     kDependsOnOverflow,
     kOverflowIndependent
   };
-  enum ComputeScrollbarExistenceReason {
-    kLayout,
-    kStyleChange,
-    kOverflowRecalc,
-    kRootScrollerChange,
-  };
   void ComputeScrollbarExistence(
-      ComputeScrollbarExistenceReason,
       bool& needs_horizontal_scrollbar,
       bool& needs_vertical_scrollbar,
       ComputeScrollbarExistenceOption = kDependsOnOverflow) const;
-
-  void TraceComputeScrollbarExistence(ComputeScrollbarExistenceReason reason,
-                                      bool needs_horizontal_scrollbar,
-                                      bool needs_vertical_scrollbar,
-                                      ComputeScrollbarExistenceOption option,
-                                      bool early_exit,
-                                      mojom::blink::ScrollbarMode h_mode,
-                                      mojom::blink::ScrollbarMode v_mode) const;
 
   // If the content fits entirely in the area without auto scrollbars, returns
   // true to try to remove them. This is a heuristic and can be incorrect if the
@@ -725,6 +712,9 @@ class CORE_EXPORT PaintLayerScrollableArea final
 
   void DelayableClampScrollOffsetAfterOverflowChange();
   void ClampScrollOffsetAfterOverflowChangeInternal();
+  Element* GetElementForScrollStart() const;
+
+  void SetShouldCheckForPaintInvalidation();
 
   // PaintLayer is destructed before PaintLayerScrollable area, during this
   // time before PaintLayerScrollableArea has been collected layer_ will
@@ -758,14 +748,14 @@ class CORE_EXPORT PaintLayerScrollableArea final
   // There are 6 possible combinations of writing mode and direction. Scroll
   // origin will be non-zero in the x or y axis if there is any reversed
   // direction or writing-mode. The combinations are:
-  // writing-mode / direction     ScrollOrigin.x() set    ScrollOrigin.y() set
+  // writing-mode / direction     scrollOrigin.x() set    scrollOrigin.y() set
   // horizontal-tb / ltr          NO                      NO
   // horizontal-tb / rtl          YES                     NO
   // vertical-lr / ltr            NO                      NO
   // vertical-lr / rtl            NO                      YES
   // vertical-rl / ltr            YES                     NO
   // vertical-rl / rtl            YES                     YES
-  gfx::Point scroll_origin_int_;
+  gfx::Point scroll_origin_;
 
   // The width/height of our scrolled area.
   // This is OverflowModel's layout overflow translated to physical

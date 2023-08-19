@@ -11,7 +11,7 @@
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/manifest/manifest.h"
 #include "third_party/blink/public/common/permissions_policy/permissions_policy.h"
-#include "third_party/blink/public/common/url_pattern.h"
+#include "third_party/blink/public/common/safe_url_pattern.h"
 #include "third_party/blink/public/mojom/manifest/manifest.mojom-blink-forward.h"
 #include "third_party/blink/public/mojom/manifest/manifest.mojom-blink.h"
 #include "third_party/blink/public/mojom/permissions_policy/permissions_policy.mojom-blink.h"
@@ -529,7 +529,7 @@ class MODULES_EXPORT ManifestParser {
 
   // Parses the 'scope_patterns' field of the 'tab_strip.home_tab' field
   // of the manifest.
-  Vector<UrlPattern> ParseScopePatterns(const JSONObject* object);
+  Vector<SafeUrlPattern> ParseScopePatterns(const JSONObject* object);
 
   String ParseVersion(const JSONObject* object);
 

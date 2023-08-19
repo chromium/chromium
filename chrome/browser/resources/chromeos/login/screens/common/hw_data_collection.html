@@ -4,10 +4,14 @@ Use of this source code is governed by a BSD-style license that can be
 found in the LICENSE file.
 -->
 
-<style include="oobe-dialog-host-styles">
+<style include="oobe-dialog-host-styles cros-color-overrides">
   #dataUsageLabelContainer {
     color: var(--google-grey-700); /* #5F6368 */
-    line-height: 18px;
+    line-height: var(--oobe-hw-data-collection-usage-line-height);
+  }
+
+  :host-context(.jelly-enabled) #dataUsageLabelContainer {
+    color: var(--oobe-subheader-text-color);
   }
 
   #dataUsageLabel {

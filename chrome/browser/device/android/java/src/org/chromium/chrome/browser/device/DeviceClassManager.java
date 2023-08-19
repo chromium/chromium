@@ -6,8 +6,6 @@ package org.chromium.chrome.browser.device;
 
 import android.content.Context;
 
-import androidx.annotation.VisibleForTesting;
-
 import org.chromium.base.CommandLine;
 import org.chromium.base.SysUtils;
 import org.chromium.chrome.browser.flags.BooleanCachedFieldTrialParameter;
@@ -25,15 +23,16 @@ import org.chromium.ui.base.DeviceFormFactor;
 public class DeviceClassManager {
     // Params for controlling Grid Tab Switcher (GTS) rollout for accessibility and low-end device
     // users.
+    // TODO(crbug/1466158): Remove and keep in true state for both.
     private static final String GTS_ACCESSIBILITY_SUPPORT_PARAM = "gts-accessibility-support";
     public static final BooleanCachedFieldTrialParameter GTS_ACCESSIBILITY_SUPPORT =
             new BooleanCachedFieldTrialParameter(ChromeFeatureList.TAB_GROUPS_CONTINUATION_ANDROID,
-                    GTS_ACCESSIBILITY_SUPPORT_PARAM, false);
+                    GTS_ACCESSIBILITY_SUPPORT_PARAM, true);
 
     private static final String GTS_LOW_END_SUPPORT_PARAM = "gts-low-end-support";
     public static final BooleanCachedFieldTrialParameter GTS_LOW_END_SUPPORT =
             new BooleanCachedFieldTrialParameter(ChromeFeatureList.TAB_GROUPS_CONTINUATION_ANDROID,
-                    GTS_LOW_END_SUPPORT_PARAM, false);
+                    GTS_LOW_END_SUPPORT_PARAM, true);
 
     private static DeviceClassManager sInstance;
 
@@ -104,8 +103,7 @@ public class DeviceClassManager {
         final boolean defaultBehavior = enableAccessibilityLayoutInternal();
 
         // TODO(crbug.com/1007598): Support TabGrid and TabGroup in Accessibility mode.
-        if (ChromeFeatureList.sTabGroupsContinuationAndroid.isEnabled()
-                && ChromeFeatureList.sTabGroupsAndroid.isEnabled()) {
+        if (ChromeFeatureList.sTabGroupsContinuationAndroid.isEnabled()) {
             final boolean isLowEndDevice = SysUtils.isLowEndDevice();
             final boolean isAccessibilityEnabled =
                     ChromeAccessibilityUtil.get().isAccessibilityEnabled();
@@ -169,7 +167,6 @@ public class DeviceClassManager {
     /**
      * Reset the instance for testing.
      */
-    @VisibleForTesting
     public static void resetForTesting() {
         sInstance = null;
     }

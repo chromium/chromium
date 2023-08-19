@@ -4,12 +4,14 @@
 
 #include "chrome/browser/policy/developer_tools_policy_handler.h"
 
+#include "base/command_line.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/values.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
+#include "chrome/common/chrome_switches.h"
 #include "chrome/common/pref_names.h"
 #include "components/policy/core/browser/policy_error_map.h"
 #include "components/policy/core/common/policy_map.h"
@@ -19,13 +21,6 @@
 #include "components/prefs/pref_value_map.h"
 #include "components/strings/grit/components_strings.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
-
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-
-#include "ash/constants/ash_switches.h"
-#include "base/command_line.h"
-
-#endif
 
 namespace policy {
 
@@ -262,9 +257,9 @@ void DeveloperToolsPolicyHandler::RegisterProfilePrefs(
 
 policy::DeveloperToolsPolicyHandler::Availability
 DeveloperToolsPolicyHandler::GetEffectiveAvailability(Profile* profile) {
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
-  if (command_line->HasSwitch(ash::switches::kForceDevToolsAvailable)) {
+  if (command_line->HasSwitch(switches::kForceDevToolsAvailable)) {
     return Availability::kAllowed;
   }
 #endif

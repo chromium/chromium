@@ -72,7 +72,8 @@ Vector<AtomicString> PerformanceObserver::supportedEntryTypes(
         performance_entry_names::kLargestContentfulPaint);
     supportedEntryTypes.push_back(performance_entry_names::kLayoutShift);
 
-    if (RuntimeEnabledFeatures::LongAnimationFrameTimingEnabled()) {
+    if (RuntimeEnabledFeatures::LongAnimationFrameTimingEnabled(
+            execution_context)) {
       supportedEntryTypes.push_back(
           performance_entry_names::kLongAnimationFrame);
     }

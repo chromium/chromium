@@ -66,8 +66,9 @@ constexpr ShellWindowId kAppParentContainers[19] = {
 // TODO(crbug.com/1164472): Checking app type is temporary solution until we
 // can get windows which are allowed to window restore from the
 // FullRestoreService.
-constexpr AppType kSupportedAppTypes[4] = {
-    AppType::BROWSER, AppType::CHROME_APP, AppType::ARC_APP, AppType::LACROS};
+constexpr AppType kSupportedAppTypes[5] = {
+    AppType::BROWSER, AppType::CHROME_APP, AppType::ARC_APP,
+    AppType::SYSTEM_APP, AppType::LACROS};
 
 // Delay for certain app types before activation is allowed. This is because
 // some apps' client request activation after creation, which can break user
@@ -235,7 +236,7 @@ WindowRestoreController::GetWindowToInsertBefore(
 
   // If this is an admin template window, it should be placed on top of existing
   // windows (but relative to other desk template windows).
-  if (saved_desk_util::IsAdminTemplateWindow(window)) {
+  if (saved_desk_util::IsWindowOnTopForTemplate(window)) {
     for (auto it = windows.begin(); it != windows.end(); ++it) {
       const int32_t* next_activation_index =
           (*it)->GetProperty(app_restore::kActivationIndexKey);
@@ -558,7 +559,8 @@ void WindowRestoreController::RestoreStateTypeAndClearLaunchedKey(
         window_state->OnWMEvent(&snap_event);
       }
       if (*state_type == chromeos::WindowStateType::kFloated) {
-        const WMEvent float_event(WM_EVENT_FLOAT);
+        const WindowFloatWMEvent float_event(
+            chromeos::FloatStartLocation::kBottomRight);
         window_state->OnWMEvent(&float_event);
       }
     }

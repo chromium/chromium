@@ -62,7 +62,7 @@ class ImageFrameGeneratorTest : public testing::Test,
   void SetUp() override {
     ImageDecodingStore::Instance().SetCacheLimitInBytes(1024 * 1024);
     generator_ = ImageFrameGenerator::Create(FullSize(), false,
-                                             ColorBehavior::Ignore(), {});
+                                             ColorBehavior::kIgnore, {});
     data_ = SharedBuffer::Create();
     segment_reader_ = SegmentReader::CreateFromSharedBuffer(data_);
     UseMockImageDecoderFactory();
@@ -117,14 +117,14 @@ class ImageFrameGeneratorTest : public testing::Test,
     if (count > 1) {
       generator_ = nullptr;
       generator_ = ImageFrameGenerator::Create(FullSize(), true,
-                                               ColorBehavior::Ignore(), {});
+                                               ColorBehavior::kIgnore, {});
       UseMockImageDecoderFactory();
     }
   }
   void SetSupportedSizes(Vector<SkISize> sizes) {
     generator_ = nullptr;
     generator_ = ImageFrameGenerator::Create(
-        FullSize(), true, ColorBehavior::Ignore(), std::move(sizes));
+        FullSize(), true, ColorBehavior::kIgnore, std::move(sizes));
     UseMockImageDecoderFactory();
   }
 

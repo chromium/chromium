@@ -48,13 +48,13 @@ class TestMultiUserWindowManager : public ash::MultiUserWindowManager {
                              const AccountId& desktop_owner);
 
   // The window of the visiting browser.
-  raw_ptr<aura::Window, DanglingUntriaged> browser_window_;
+  raw_ptr<aura::Window, AcrossTasksDanglingUntriaged> browser_window_;
   // The owner of the visiting browser.
   AccountId browser_owner_;
   // The owner of the currently shown desktop.
   AccountId desktop_owner_;
   // The created window.
-  raw_ptr<aura::Window, DanglingUntriaged> created_window_ = nullptr;
+  raw_ptr<aura::Window, AcrossTasksDanglingUntriaged> created_window_ = nullptr;
   // The location of the window.
   AccountId created_window_shown_for_;
   // The current selected active user.

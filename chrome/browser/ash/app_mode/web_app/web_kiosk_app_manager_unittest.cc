@@ -10,7 +10,6 @@
 #include <memory>
 #include <vector>
 
-#include "base/test/repeating_test_future.h"
 #include "base/test/test_future.h"
 #include "chrome/browser/apps/app_service/app_launch_params.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
@@ -94,14 +93,14 @@ class FakeKioskAppManagerObserver : public KioskAppManagerObserver {
 
   // `KioskAppManagerObserver` implementation:
   void OnKioskAppDataChanged(const std::string& app_id) override {
-    change_waiter_.AddValue(app_id);
+    change_waiter_.SetValue(app_id);
   }
 
-  void WaitForAppDataChange() { change_waiter_.Take(); }
-  bool HasAppDataChange() const { return !change_waiter_.IsEmpty(); }
+  void WaitForAppDataChange() { std::ignore = change_waiter_.Take(); }
+  bool HasAppDataChange() const { return change_waiter_.IsReady(); }
 
  private:
-  base::test::RepeatingTestFuture<std::string> change_waiter_;
+  base::test::TestFuture<std::string> change_waiter_;
 };
 
 }  // namespace
@@ -116,7 +115,7 @@ class WebKioskAppManagerTest : public BrowserWithTestWindowTest {
     app_service_test_.SetUp(profile());
     app_service_ = apps::AppServiceProxyFactory::GetForProfile(profile());
 
-    // |WebKioskAppUpdateObserver| requires WebAppProvider to be ready before it
+    // `WebKioskAppUpdateObserver` requires WebAppProvider to be ready before it
     // is created.
     fake_web_app_provider_ = web_app::FakeWebAppProvider::Get(profile());
     web_app::test::AwaitStartWebAppProviderAndSubsystems(profile());
@@ -186,10 +185,12 @@ class WebKioskAppManagerTest : public BrowserWithTestWindowTest {
   AccountId account_id_;
 
   apps::AppServiceTest app_service_test_;
-  raw_ptr<apps::AppServiceProxy, ExperimentalAsh> app_service_ = nullptr;
+  raw_ptr<apps::AppServiceProxy, DanglingUntriaged | ExperimentalAsh>
+      app_service_ = nullptr;
 
   // A keyed service not owned by this class.
-  raw_ptr<web_app::FakeWebAppProvider> fake_web_app_provider_;
+  raw_ptr<web_app::FakeWebAppProvider, DanglingUntriaged>
+      fake_web_app_provider_;
 
   std::unique_ptr<FakePublisher> app_publisher_;
 
@@ -290,7 +291,7 @@ TEST_F(WebKioskAppManagerTest, ShouldNotUpdateAppInfoForNonKioskApps) {
 
 TEST_F(WebKioskAppManagerTest, ShouldNotUpdateAppInfoForPlaceholders) {
   // Install app as placeholder.
-  auto app_info = std::make_unique<WebAppInstallInfo>();
+  auto app_info = std::make_unique<web_app::WebAppInstallInfo>();
   app_info->start_url = GURL(kAppLaunchUrl);
   app_info->scope = GURL(kAppInstallUrl);
   app_info->title = u"placeholder_title";

@@ -9,12 +9,15 @@
 #include <utility>
 
 #include "base/memory/raw_ptr.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/scoped_observation.h"
+#include "base/time/time.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/bubble/bubble_contents_wrapper_service.h"
 #include "chrome/browser/ui/views/bubble/bubble_contents_wrapper_service_factory.h"
 #include "chrome/browser/ui/views/bubble/webui_bubble_dialog_view.h"
 #include "chrome/browser/ui/views/close_bubble_on_tab_activation_helper.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/interaction/element_identifier.h"
 #include "ui/views/bubble/bubble_dialog_delegate_view.h"
 #include "ui/views/widget/widget.h"
@@ -33,8 +36,10 @@ class WebUIBubbleManager : public views::WidgetObserver {
   const WebUIBubbleManager& operator=(const WebUIBubbleManager&) = delete;
   ~WebUIBubbleManager() override;
 
-  bool ShowBubble(const absl::optional<gfx::Rect>& anchor = absl::nullopt,
-                  ui::ElementIdentifier identifier = ui::ElementIdentifier());
+  bool ShowBubble(
+      const absl::optional<gfx::Rect>& anchor = absl::nullopt,
+      views::BubbleBorder::Arrow arrow = views::BubbleBorder::TOP_RIGHT,
+      ui::ElementIdentifier identifier = ui::ElementIdentifier());
   void CloseBubble();
   views::Widget* GetBubbleWidget() const;
   bool bubble_using_cached_web_contents() const {
@@ -44,7 +49,8 @@ class WebUIBubbleManager : public views::WidgetObserver {
   // Creates the persistent renderer process if the feature is enabled.
   virtual void MaybeInitPersistentRenderer() = 0;
   virtual base::WeakPtr<WebUIBubbleDialogView> CreateWebUIBubbleDialog(
-      const absl::optional<gfx::Rect>& anchor) = 0;
+      const absl::optional<gfx::Rect>& anchor,
+      views::BubbleBorder::Arrow arrow) = 0;
 
   // views::WidgetObserver:
   void OnWidgetDestroying(views::Widget* widget) override;
@@ -66,6 +72,8 @@ class WebUIBubbleManager : public views::WidgetObserver {
   void set_bubble_using_cached_web_contents(bool is_cached) {
     bubble_using_cached_web_contents_ = is_cached;
   }
+
+  absl::optional<base::TimeTicks> bubble_init_start_time_;
 
  private:
   void ResetContentsWrapper();
@@ -119,7 +127,8 @@ class WebUIBubbleManagerT : public WebUIBubbleManager {
   }
 
   base::WeakPtr<WebUIBubbleDialogView> CreateWebUIBubbleDialog(
-      const absl::optional<gfx::Rect>& anchor) override {
+      const absl::optional<gfx::Rect>& anchor,
+      views::BubbleBorder::Arrow arrow) override {
     BubbleContentsWrapper* contents_wrapper = nullptr;
 
     // Only use per profile peristence if the flag is set and if a
@@ -160,7 +169,20 @@ class WebUIBubbleManagerT : public WebUIBubbleManager {
     }
 
     auto bubble_view = std::make_unique<WebUIBubbleDialogView>(
-        anchor_view_, contents_wrapper, anchor);
+        anchor_view_, contents_wrapper, anchor, arrow);
+
+    // Register callback to emit histogram when the widget is created
+    if (bubble_init_start_time_) {
+      bubble_view->RegisterWidgetInitializedCallback(base::BindOnce(
+          [](base::TimeTicks bubble_init_start_time) {
+            base::UmaHistogramMediumTimes(
+                "Tabs.TabSearch.BubbleWidgetInitializationTime",
+                base::TimeTicks::Now() - bubble_init_start_time);
+          },
+          *bubble_init_start_time_));
+      bubble_init_start_time_.reset();
+    }
+
     auto weak_ptr = bubble_view->GetWeakPtr();
     views::BubbleDialogDelegateView::CreateBubble(std::move(bubble_view));
     return weak_ptr;

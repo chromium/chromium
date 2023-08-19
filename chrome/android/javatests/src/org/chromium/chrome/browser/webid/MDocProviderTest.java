@@ -65,7 +65,7 @@ public class MDocProviderTest {
 
     @Test
     @LargeTest
-    @EnableFeatures({ContentFeatureList.WEB_IDENTITY_MDOCS})
+    @EnableFeatures(ContentFeatureList.WEB_IDENTITY_MDOCS)
     public void testRequestMDoc() throws TimeoutException {
         mActivityTestRule.loadUrl(mTestServer.getURL(TEST_PAGE));
         JavaScriptUtils.executeJavaScriptAndWaitForResult(

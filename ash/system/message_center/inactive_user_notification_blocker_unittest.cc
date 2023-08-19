@@ -111,7 +111,8 @@ class InactiveUserNotificationBlockerTest
 
  private:
   int state_changed_count_ = 0;
-  raw_ptr<InactiveUserNotificationBlocker, ExperimentalAsh> blocker_ = nullptr;
+  raw_ptr<InactiveUserNotificationBlocker, DanglingUntriaged | ExperimentalAsh>
+      blocker_ = nullptr;
 };
 
 TEST_F(InactiveUserNotificationBlockerTest, Basic) {

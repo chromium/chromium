@@ -27,12 +27,14 @@ void ConvertTemplatesToShadowRoots(HTMLElement& element) {
   // |element| and descendant elements can have TEMPLATE element with
   // |data-mode="open"|, which is required. Each elemnt can have only one
   // TEMPLATE element.
-  HTMLCollection* const templates = element.getElementsByTagName("template");
+  HTMLCollection* const templates =
+      element.getElementsByTagName(AtomicString("template"));
   HeapVector<Member<Element>> template_vector;
   for (Element* template_element : *templates)
     template_vector.push_back(template_element);
   for (Element* template_element : template_vector) {
-    const AtomicString& data_mode = template_element->getAttribute("data-mode");
+    const AtomicString& data_mode =
+        template_element->getAttribute(AtomicString("data-mode"));
     DCHECK_EQ(data_mode, "open");
 
     Element* const parent = template_element->parentElement();

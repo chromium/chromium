@@ -52,7 +52,7 @@ class LayoutSVGModelObject : public LayoutObject {
 
   gfx::RectF VisualRectInLocalSVGCoordinates() const override {
     NOT_DESTROYED();
-    return StrokeBoundingBox();
+    return DecoratedBoundingBox();
   }
 
   void AbsoluteQuads(Vector<gfx::QuadF>&,
@@ -83,7 +83,6 @@ class LayoutSVGModelObject : public LayoutObject {
   void InsertedIntoTree() override;
   void WillBeRemovedFromTree() override;
 
-  AffineTransform CalculateLocalTransform() const;
   bool CheckForImplicitTransformChange(bool bbox_changed) const;
 
  private:

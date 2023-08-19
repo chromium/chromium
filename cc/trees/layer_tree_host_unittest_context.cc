@@ -65,7 +65,6 @@ class LayerTreeHostContextTest : public LayerTreeTest {
         times_to_expect_create_failed_(0),
         times_create_failed_(0),
         committed_at_least_once_(false),
-        context_should_support_io_surface_(false),
         fallback_context_works_(false),
         async_layer_tree_frame_sink_creation_(false) {
     media::InitializeMediaLibrary();
@@ -87,15 +86,12 @@ class LayerTreeHostContextTest : public LayerTreeTest {
   std::unique_ptr<TestLayerTreeFrameSink> CreateLayerTreeFrameSink(
       const viz::RendererSettings& renderer_settings,
       double refresh_rate,
-      scoped_refptr<viz::ContextProvider> compositor_context_provider,
+      scoped_refptr<viz::RasterContextProvider> compositor_context_provider,
       scoped_refptr<viz::RasterContextProvider> worker_context_provider)
       override {
     base::AutoLock lock(gl_lock_);
 
     auto gl_owned = std::make_unique<viz::TestGLES2Interface>();
-    if (context_should_support_io_surface_) {
-      gl_owned->set_have_extension_egl_image(true);
-    }
 
     gl_ = gl_owned.get();
 
@@ -163,8 +159,9 @@ class LayerTreeHostContextTest : public LayerTreeTest {
   // Protects use of gl_ so LoseContext and
   // CreateDisplayLayerTreeFrameSink can both use it on different threads.
   base::Lock gl_lock_;
-  raw_ptr<viz::TestGLES2Interface, DanglingUntriaged> gl_ = nullptr;
-  raw_ptr<viz::TestSharedImageInterface, DanglingUntriaged> sii_ = nullptr;
+  raw_ptr<viz::TestGLES2Interface, AcrossTasksDanglingUntriaged> gl_ = nullptr;
+  raw_ptr<viz::TestSharedImageInterface, AcrossTasksDanglingUntriaged> sii_ =
+      nullptr;
 
   int times_to_fail_create_;
   int times_to_lose_during_commit_;
@@ -173,7 +170,6 @@ class LayerTreeHostContextTest : public LayerTreeTest {
   int times_to_expect_create_failed_;
   int times_create_failed_;
   bool committed_at_least_once_;
-  bool context_should_support_io_surface_;
   bool fallback_context_works_;
   bool async_layer_tree_frame_sink_creation_;
 };
@@ -698,7 +694,7 @@ class LayerTreeHostContextTestLostContextAndEvictTextures
  protected:
   bool lose_after_evict_;
   FakeContentLayerClient client_;
-  raw_ptr<LayerTreeHostImpl, DanglingUntriaged> impl_host_;
+  raw_ptr<LayerTreeHostImpl, AcrossTasksDanglingUntriaged> impl_host_;
   int num_commits_;
   bool lost_context_;
 };
@@ -815,9 +811,7 @@ class LayerTreeHostContextTestDontUseLostResources
     : public LayerTreeHostContextTest {
  public:
   LayerTreeHostContextTestDontUseLostResources() : lost_context_(false) {
-    context_should_support_io_surface_ = true;
-
-    child_context_provider_ = viz::TestContextProvider::Create();
+    child_context_provider_ = viz::TestContextProvider::CreateRaster();
     auto result = child_context_provider_->BindToCurrentSequence();
     CHECK_EQ(result, gpu::ContextResult::kSuccess);
     shared_bitmap_manager_ = std::make_unique<viz::TestSharedBitmapManager>();
@@ -828,12 +822,12 @@ class LayerTreeHostContextTestDontUseLostResources
                                    bool lost) {}
 
   void SetupTree() override {
-    gpu::gles2::GLES2Interface* gl = child_context_provider_->ContextGL();
+    auto* ri = child_context_provider_->RasterInterface();
 
     gpu::Mailbox mailbox = gpu::Mailbox::GenerateForSharedImage();
 
     gpu::SyncToken sync_token;
-    gl->GenSyncTokenCHROMIUM(sync_token.GetData());
+    ri->GenSyncTokenCHROMIUM(sync_token.GetData());
 
     scoped_refptr<Layer> root = Layer::Create();
     root->SetBounds(gfx::Size(10, 10));
@@ -1608,7 +1602,7 @@ class SoftwareTileResourceFreedIfLostWhileExported : public LayerTreeTest {
   std::unique_ptr<TestLayerTreeFrameSink> CreateLayerTreeFrameSink(
       const viz::RendererSettings& renderer_settings,
       double refresh_rate,
-      scoped_refptr<viz::ContextProvider> compositor_context_provider,
+      scoped_refptr<viz::RasterContextProvider> compositor_context_provider,
       scoped_refptr<viz::RasterContextProvider> worker_context_provider)
       override {
     // Induce software compositing in cc.

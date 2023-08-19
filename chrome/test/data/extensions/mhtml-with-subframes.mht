@@ -1,0 +1,47 @@
+From: <Manually authored based on blink/web_tests/mhtml/multi_frames_contentid.mht>
+Subject: =?iso-2022-jp?B?QSBwYWdlIHRoYXQgY29udGFpbnMgbXVsdGlwbGUgbmVzdGVkIGZyYW1lcw==?=
+Date: Wed, May 18 2011 15:20:34 GMT-0700
+MIME-Version: 1.0
+Content-Type: multipart/related;
+	boundary="----=_NextPart_000_0000_58874EE0.2096A571";
+	type="text/html"
+
+------=_NextPart_000_0000_58874EE0.2096A571
+Content-Type: text/html; charset="ISO-8859-1"
+Content-Transfer-Encoding: quoted-printable
+Content-Location: http://bar.com/top_frame.html
+
+<html><head><meta http-equiv=3D"Content-Type" content=3D"text/html; charset=
+=3Diso-8859-1">
+
+
+<title>A page that contains a nested frame</title>
+<base href=3D"http://localhost/"></base></head><body>
+This page from bar.com contains a frame.<br>
+<iframe src=3D"http://foo.com/frame_0.html"></iframe><br>
+<iframe src=3D"cid:frame1@foo.bar"></iframe><br>
+</body></html>
+------=_NextPart_000_0000_58874EE0.2096A571
+Content-Type: text/html; charset="ISO-8859-1"
+Content-Transfer-Encoding: quoted-printable
+Content-Location: http://foo.com/frame_0.html
+
+<html><head><meta http-equiv=3D"Content-Type" content=3D"text/html; charset=
+=3Diso-8859-1">
+
+</head><body>
+foo.com frame!
+</body></html>
+------=_NextPart_000_0000_58874EE0.2096A571
+Content-Type: text/html; charset="ISO-8859-1"
+Content-Transfer-Encoding: quoted-printable
+Content-ID: <frame1@foo.bar>
+Content-Location: http://localhost/frame_1.html
+
+<html><head><meta http-equiv=3D"Content-Type" content=3D"text/html; charset=
+=3Diso-8859-1">
+
+<base href=3D"http://localhost/"></base></head><body>
+cid frame
+</body></html>
+------=_NextPart_000_0000_58874EE0.2096A571--

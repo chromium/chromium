@@ -21,26 +21,6 @@ const char* HighestPmfReporter::highest_pmf_metric_names[] = {
     "Memory.Experimental.Renderer.HighestPrivateMemoryFootprint.4to8min",
     "Memory.Experimental.Renderer.HighestPrivateMemoryFootprint.8to16min"};
 
-const char* HighestPmfReporter::peak_resident_bytes_metric_names[] = {
-    "Memory.Experimental.Renderer.PeakResidentSet."
-    "AtHighestPrivateMemoryFootprint.0to2min",
-    "Memory.Experimental.Renderer.PeakResidentSet."
-    "AtHighestPrivateMemoryFootprint.2to4min",
-    "Memory.Experimental.Renderer.PeakResidentSet."
-    "AtHighestPrivateMemoryFootprint.4to8min",
-    "Memory.Experimental.Renderer.PeakResidentSet."
-    "AtHighestPrivateMemoryFootprint.8to16min"};
-
-const char* HighestPmfReporter::webpage_counts_metric_names[] = {
-    "Memory.Experimental.Renderer.WebpageCount.AtHighestPrivateMemoryFootprint."
-    "0to2min",
-    "Memory.Experimental.Renderer.WebpageCount.AtHighestPrivateMemoryFootprint."
-    "2to4min",
-    "Memory.Experimental.Renderer.WebpageCount.AtHighestPrivateMemoryFootprint."
-    "4to8min",
-    "Memory.Experimental.Renderer.WebpageCount.AtHighestPrivateMemoryFootprint."
-    "8to16min"};
-
 constexpr base::TimeDelta HighestPmfReporter::time_to_report[] = {
     base::Minutes(2), base::Minutes(4), base::Minutes(8), base::Minutes(16)};
 
@@ -140,14 +120,6 @@ void HighestPmfReporter::ReportMetrics() {
   base::UmaHistogramMemoryMB(highest_pmf_metric_names[report_count_],
                              base::saturated_cast<base::Histogram::Sample>(
                                  current_highest_pmf_ / 1024 / 1024));
-
-  base::UmaHistogramMemoryMB(
-      peak_resident_bytes_metric_names[report_count_],
-      base::saturated_cast<base::Histogram::Sample>(
-          peak_resident_bytes_at_current_highest_pmf_ / 1024 / 1024));
-
-  base::UmaHistogramCounts100(webpage_counts_metric_names[report_count_],
-                              webpage_counts_at_current_highest_pmf_);
 }
 
 }  // namespace blink

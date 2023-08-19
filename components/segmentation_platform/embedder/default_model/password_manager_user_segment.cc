@@ -3,12 +3,15 @@
 // found in the LICENSE file.
 
 #include "components/segmentation_platform/embedder/default_model/password_manager_user_segment.h"
+
 #include <cstdint>
 #include <memory>
-#include "components/segmentation_platform/internal/metadata/metadata_writer.h"
 
+#include "base/task/sequenced_task_runner.h"
+#include "components/segmentation_platform/internal/metadata/metadata_writer.h"
 #include "components/segmentation_platform/public/config.h"
 #include "components/segmentation_platform/public/constants.h"
+#include "components/segmentation_platform/public/features.h"
 #include "components/segmentation_platform/public/proto/aggregation.pb.h"
 #include "components/segmentation_platform/public/proto/model_metadata.pb.h"
 
@@ -133,21 +136,26 @@ constexpr std::array<MetadataWriter::UMAFeature, 7>
 
 // static
 std::unique_ptr<Config> PasswordManagerUserModel::GetConfig() {
+  if (!base::FeatureList::IsEnabled(
+          features::kSegmentationPlatformPasswordManagerUser)) {
+    return nullptr;
+  }
   auto config = std::make_unique<Config>();
   config->segmentation_key = kPasswordManagerUserKey;
   config->segmentation_uma_name = kPasswordManagerUserUmaName;
   config->AddSegmentId(kPasswordManagerUserSegmentId,
                        std::make_unique<PasswordManagerUserModel>());
+  config->auto_execute_and_cache = true;
   config->is_boolean_segment = true;
 
   return config;
 }
 
 PasswordManagerUserModel::PasswordManagerUserModel()
-    : ModelProvider(kPasswordManagerUserSegmentId) {}
+    : DefaultModelProvider(kPasswordManagerUserSegmentId) {}
 
-void PasswordManagerUserModel::InitAndFetchModel(
-    const ModelUpdatedCallback& model_updated_callback) {
+std::unique_ptr<DefaultModelProvider::ModelConfig>
+PasswordManagerUserModel::GetModelConfig() {
   proto::SegmentationModelMetadata intentional_user_metadata;
   MetadataWriter writer(&intentional_user_metadata);
   writer.SetDefaultSegmentationMetadataConfig(
@@ -167,11 +175,8 @@ void PasswordManagerUserModel::InitAndFetchModel(
   writer.AddUmaFeatures(kPasswordManagerUserUMAFeatures.data(),
                         kPasswordManagerUserUMAFeatures.size());
 
-  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
-      FROM_HERE,
-      base::BindRepeating(model_updated_callback, kPasswordManagerUserSegmentId,
-                          std::move(intentional_user_metadata),
-                          /* Model version number. */ 1));
+  return std::make_unique<ModelConfig>(std::move(intentional_user_metadata),
+                                       /*model_version=*/1);
 }
 
 void PasswordManagerUserModel::ExecuteModelWithInput(
@@ -204,10 +209,6 @@ void PasswordManagerUserModel::ExecuteModelWithInput(
   base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE,
       base::BindOnce(std::move(callback), ModelProvider::Response(1, result)));
-}
-
-bool PasswordManagerUserModel::ModelAvailable() {
-  return true;
 }
 
 }  // namespace segmentation_platform

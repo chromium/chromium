@@ -7,14 +7,11 @@
 #import <memory>
 
 #import "base/check.h"
+#import "ios/chrome/browser/find_in_page/util.h"
 #import "ios/chrome/browser/ui/fullscreen/fullscreen_controller.h"
 #import "ios/chrome/browser/ui/fullscreen/fullscreen_mediator.h"
 #import "ios/chrome/browser/ui/fullscreen/scoped_fullscreen_disabler.h"
-#import "ios/public/provider/chrome/browser/find_in_page/find_in_page_api.h"
-
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
+#import "ios/web/common/features.h"
 
 @interface FullscreenSystemNotificationObserver () {
   // The disabler created when VoiceOver is enabled.
@@ -72,10 +69,17 @@
                           name:UIKeyboardDidHideNotification
                         object:nil];
     // Register for application lifecycle events.
-    [defaultCenter addObserver:self
-                      selector:@selector(applicationWillEnterForeground)
-                          name:UIApplicationWillEnterForegroundNotification
-                        object:nil];
+    if (base::FeatureList::IsEnabled(web::features::kSmoothScrollingDefault)) {
+      [defaultCenter addObserver:self
+                        selector:@selector(applicationWillEnterForeground)
+                            name:UIApplicationWillEnterForegroundNotification
+                          object:nil];
+    } else {
+      [defaultCenter addObserver:self
+                        selector:@selector(applicationDidEnterBackground)
+                            name:UIApplicationDidEnterBackgroundNotification
+                          object:nil];
+    }
   }
   return self;
 }
@@ -102,7 +106,7 @@
 }
 
 - (void)keyboardWillShow {
-  if (ios::provider::IsNativeFindInPageWithSystemFindPanel()) {
+  if (IsNativeFindInPageAvailable()) {
     // If Native Find in Page with system Find panel is active, then triggering
     // Find in Page will show the keyboard AND make Chrome enter full screen
     // mode.
@@ -114,6 +118,10 @@
 
 - (void)keyboardDidHide {
   _keyboardDisabler = nullptr;
+}
+
+- (void)applicationDidEnterBackground {
+  self.mediator->ExitFullscreen();
 }
 
 - (void)applicationWillEnterForeground {

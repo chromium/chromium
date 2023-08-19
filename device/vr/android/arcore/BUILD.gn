@@ -15,8 +15,6 @@ component("arcore") {
     "ar_compositor_frame_sink.h",
     "ar_image_transport.cc",
     "ar_image_transport.h",
-    "ar_renderer.cc",
-    "ar_renderer.h",
     "arcore.cc",
     "arcore.h",
     "arcore_anchor_manager.cc",
@@ -37,8 +35,8 @@ component("arcore") {
     "arcore_shim.cc",
     "arcore_shim.h",
     "scoped_arcore_objects.h",
-    "type_converters.cc",
-    "type_converters.h",
+    "vr_service_type_converters.cc",
+    "vr_service_type_converters.h",
   ]
 
   public_deps = [

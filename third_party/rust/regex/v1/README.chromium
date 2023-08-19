@@ -4,4 +4,5 @@ Description: An implementation of regular expressions for Rust. This implementat
 finite automata and guarantees linear time matching on all inputs.
 Version: 1.6.0
 Security Critical: no
+Shipped: no
 License: Apache 2.0

@@ -5,8 +5,8 @@
 #include "components/permissions/android/android_permission_util.h"
 
 #include "base/android/jni_array.h"
+#include "components/permissions/android/core_jni/PermissionUtil_jni.h"
 #include "components/permissions/android/jni_headers/AndroidPermissionRequester_jni.h"
-#include "components/permissions/android/jni_headers/PermissionUtil_jni.h"
 #include "components/permissions/permission_uma_util.h"
 #include "content/public/browser/web_contents.h"
 #include "ui/android/window_android.h"

@@ -2,10 +2,12 @@
   #container {
     display: grid;
     grid-template-areas:
-      '. leftspacertop    userpreview rightspacertop    .'
-      '. leftspacerbottom avatars     rightspacerbottom .';
-    grid-template-columns: 1fr 24px minmax(568px, 920px) 24px 1fr;
-    grid-template-rows: auto auto;
+      'leftspacertop    userpreview rightspacertop   '
+      'leftspacerbottom avatars     rightspacerbottom';
+    grid-template-columns: minmax(24px, 1fr) minmax(568px, 920px) minmax(24px, 1fr);
+    grid-template-rows: auto minmax(0, 1fr);
+    height: 100%;
+    min-height: var(--personalization-app-subpage-container-min-height);
   }
   user-preview {
     grid-area: userpreview;

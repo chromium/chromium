@@ -9,27 +9,50 @@
 
 #include <memory>
 
+#include "base/containers/span.h"
 #include "base/functional/callback_forward.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/signin/bound_session_credentials/bound_session_cookie_controller.h"
-#include "components/keyed_service/core/keyed_service.h"
-#include "components/signin/public/identity_manager/identity_manager.h"
+#include "chrome/browser/signin/bound_session_credentials/bound_session_registration_fetcher.h"
+#include "chrome/browser/signin/bound_session_credentials/bound_session_registration_fetcher_param.h"
+#include "chrome/browser/signin/bound_session_credentials/bound_session_registration_params.pb.h"
+#include "content/public/browser/storage_partition.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
-class SigninClient;
+namespace unexportable_keys {
+class UnexportableKeyService;
+}
+
+namespace user_prefs {
+class PrefRegistrySyncable;
+}
+
+namespace content {
+class StoragePartition;
+}
+
+class PrefService;
 
 class BoundSessionCookieRefreshServiceImpl
     : public BoundSessionCookieRefreshService,
       public BoundSessionCookieController::Delegate {
  public:
   explicit BoundSessionCookieRefreshServiceImpl(
-      SigninClient* client,
-      signin::IdentityManager* identity_manager);
+      unexportable_keys::UnexportableKeyService& key_service,
+      PrefService* pref_service,
+      content::StoragePartition* storage_partion);
 
   ~BoundSessionCookieRefreshServiceImpl() override;
 
+  static void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry);
+
   // BoundSessionCookieRefreshService:
   void Initialize() override;
+  // Can be called iff the kBoundSessionExplicitRegistration feature is enabled.
+  void RegisterNewBoundSession(
+      const bound_session_credentials::RegistrationParams& params) override;
+  void MaybeTerminateSession(const net::HttpResponseHeaders* headers) override;
   bool IsBoundSession() const override;
   chrome::mojom::BoundSessionParamsPtr GetBoundSessionParams() const override;
   void AddBoundSessionRequestThrottledListenerReceiver(
@@ -39,6 +62,9 @@ class BoundSessionCookieRefreshServiceImpl
   // chrome::mojom::BoundSessionRequestThrottledListener:
   void OnRequestBlockedOnCookie(
       OnRequestBlockedOnCookieCallback resume_blocked_request) override;
+
+  void CreateRegistrationRequest(
+      BoundSessionRegistrationFetcherParam registration_params) override;
 
   base::WeakPtr<BoundSessionCookieRefreshService> GetWeakPtr() override;
 
@@ -50,8 +76,8 @@ class BoundSessionCookieRefreshServiceImpl
   // `BoundSessionCookieController`.
   using BoundSessionCookieControllerFactoryForTesting =
       base::RepeatingCallback<std::unique_ptr<BoundSessionCookieController>(
-          const GURL& url,
-          const std::string& cookie_name,
+          bound_session_credentials::RegistrationParams registration_params,
+          const base::flat_set<std::string>& cookie_names,
           Delegate* delegate)>;
 
   // BoundSessionCookieRefreshService:
@@ -64,28 +90,43 @@ class BoundSessionCookieRefreshServiceImpl
     controller_factory_for_testing_ = controller_factory_for_testing;
   }
 
+  void OnRegistrationRequestComplete(
+      absl::optional<bound_session_credentials::RegistrationParams>
+          registration_params);
+  bool IsValidRegistrationParams(
+      const bound_session_credentials::RegistrationParams& registration_params);
+  bool PersistRegistrationParams(
+      const bound_session_credentials::RegistrationParams& registration_params);
+  absl::optional<bound_session_credentials::RegistrationParams>
+  GetRegistrationParams();
+
   // BoundSessionCookieController::Delegate
-  void OnCookieExpirationDateChanged() override;
+  void OnBoundSessionParamsChanged() override;
+  void TerminateSession() override;
 
   std::unique_ptr<BoundSessionCookieController>
-  CreateBoundSessionCookieController(const GURL& url,
-                                     const std::string& cookie_name);
-  void StartManagingBoundSessionCookie();
-  void StopManagingBoundSessionCookie();
+  CreateBoundSessionCookieController(
+      bound_session_credentials::RegistrationParams registration_params,
+      const base::flat_set<std::string>& cookie_names);
+  void InitializeBoundSession();
+  void ResetBoundSession();
   void OnBoundSessionUpdated();
 
   void UpdateAllRenderers();
 
-  const raw_ptr<SigninClient> client_;
-  const raw_ptr<signin::IdentityManager> identity_manager_;
+  const raw_ref<unexportable_keys::UnexportableKeyService> key_service_;
+  const raw_ptr<PrefService> pref_service_;
+  const raw_ptr<content::StoragePartition> storage_partition_;
   BoundSessionCookieControllerFactoryForTesting controller_factory_for_testing_;
   RendererBoundSessionParamsUpdaterDelegate renderer_updater_;
 
-  std::unique_ptr<BoundSessionStateTracker> bound_session_tracker_;
   std::unique_ptr<BoundSessionCookieController> cookie_controller_;
 
   mojo::ReceiverSet<chrome::mojom::BoundSessionRequestThrottledListener>
       renderer_request_throttled_listener_;
+
+  // There is only one active session registration at a time.
+  std::unique_ptr<BoundSessionRegistrationFetcher> active_registration_request_;
 
   base::WeakPtrFactory<BoundSessionCookieRefreshService> weak_ptr_factory_{
       this};

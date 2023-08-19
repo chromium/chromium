@@ -12,18 +12,25 @@ assert(is_chromeos_ash)
 
 action("gen_preload_images_js") {
   script = "utils/gen_preload_images_js.py"
-  inputs = []
+
+  in_app_image_paths = []
   foreach(image, in_app_images) {
+    in_app_image_paths += [ "images/$image" ]
+  }
+
+  inputs = in_app_image_paths
+  foreach(image, standalone_images) {
     inputs += [ "images/$image" ]
   }
 
   outputs = [ "$target_gen_dir/js/preload_images.js" ]
-  response_file_contents = rebase_path(inputs)
+  response_file_contents = rebase_path(in_app_image_paths)
   args = [
-    "--output_file",
-    rebase_path(outputs[0], root_build_dir),
-    "--images_list_file={{response_file_name}}",
-  ]
+           "--output_file",
+           rebase_path(outputs[0], root_build_dir),
+           "--in_app_images_file={{response_file_name}}",
+           "--standalone_images",
+         ] + standalone_images
 }
 
 copy("copy_sources") {
@@ -71,6 +78,7 @@ ts_library("build_ts") {
     "//third_party/material_web_components:bundle_lit_ts",
     "//third_party/material_web_components:library",
     "//ui/webui/resources/cr_components/color_change_listener:build_ts",
+    "//ui/webui/resources/js:build_ts",
     "//ui/webui/resources/mojo:build_ts",
   ]
 
@@ -86,12 +94,18 @@ ts_library("build_ts") {
 
   definitions = [
     "js/externs/types.d.ts",
+    "js/lib/ffmpeg.d.ts",
     "//tools/typescript/definitions/pending.d.ts",
   ]
 
   mojo_files_rebased = []
   foreach(mojo, mojo_files) {
     mojo_files_rebased += [ "mojom/$mojo" ]
+  }
+
+  manifest_excludes = []
+  foreach(js, local_dev_js_files) {
+    manifest_excludes += [ "js/$js" ]
   }
 
   in_files =

@@ -79,6 +79,13 @@ BASE_FEATURE(kCoopRestrictProperties,
              "CoopRestrictProperties",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// Enables the origin trial for COOP: restrict-properties. We need a new feature
+// because token validation is not possible in the network process. This also
+// allows us to keep using CoopRestrictProperties to enable COOP: RP for WPTs.
+BASE_FEATURE(kCoopRestrictPropertiesOriginTrial,
+             "CoopRestrictPropertiesOriginTrial",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
 // Enables or defaults splittup up server (not proxy) entries in the
 // HttpAuthCache.
 BASE_FEATURE(kSplitAuthCacheByNetworkIsolationKey,
@@ -103,6 +110,10 @@ BASE_FEATURE(kMaskedDomainList,
              "MaskedDomainList",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+const base::FeatureParam<std::string> kMaskedDomainListExperimentalVersion{
+    &kMaskedDomainList, /*name=*/"MaskedDomainListExperimentalVersion",
+    /*default_value=*/""};
+
 // If this feature is enabled, the mDNS responder service responds to queries
 // for TXT records associated with
 // "Generated-Names._mdns_name_generator._udp.local" with a list of generated
@@ -113,10 +124,19 @@ BASE_FEATURE(kMdnsResponderGeneratedNameListing,
 
 // Enables ORB blocked responses being treated as errors (according to the spec)
 // rather than the current, CORB-style handling of injecting an empty response.
+// This exempts fetches initiated by scripts. (Technically, fetches with an
+// empty destination.)
 // This is ORB v0.2.
 // Implementing ORB in Chromium is tracked in https://crbug.com/1178928
 BASE_FEATURE(kOpaqueResponseBlockingV02,
              "OpaqueResponseBlockingV02",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+// Treat ORB blocked responses to script-initiated fetches as errors too.
+// Complements ORB v0.2, which exempts script-initiated fetches.
+// Implementing ORB in Chromium is tracked in https://crbug.com/1178928
+BASE_FEATURE(kOpaqueResponseBlockingErrorsForAllFetches,
+             "OpaqueResponseBlockingErrorsForAllFetches",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 // Enables preprocessing the Attribution API's trigger registration ping
@@ -138,11 +158,11 @@ BASE_FEATURE(kAttributionReportingCrossAppWeb,
 // (See https://github.com/WICG/trust-token-api.)
 BASE_FEATURE(kPrivateStateTokens,
              "PrivateStateTokens",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Secondary flag used by the FLEDGE ads experiment in the interim before
 // PSTs are fully rolled out to stable.
-BASE_FEATURE(kFledgePst, "TrustTokens", base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kFledgePst, "TrustTokens", base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Determines which Trust Tokens operations require the TrustTokens origin trial
 // active in order to be used. This is runtime-configurable so that the Trust
@@ -286,11 +306,6 @@ BASE_FEATURE(kReduceAcceptLanguageOriginTrial,
              "ReduceAcceptLanguageOriginTrial",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-// Disable ResourceScheduler.
-BASE_FEATURE(kDisableResourceScheduler,
-             "DisableResourceScheduler",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
 // Reduce PNA preflight response waiting time to 200ms.
 // See: https://wicg.github.io/private-network-access/#cors-preflight
 BASE_FEATURE(kPrivateNetworkAccessPreflightShortTimeout,
@@ -302,6 +317,12 @@ BASE_FEATURE(kPrivateNetworkAccessPreflightShortTimeout,
 BASE_FEATURE(kLocalNetworkAccessAllowPotentiallyTrustworthySameOrigin,
              "LocalNetworkAccessAllowPotentiallyTrustworthySameOrigin",
              base::FEATURE_ENABLED_BY_DEFAULT);
+
+// When kPrivateNetworkAccessPermissionPrompt is enabled, public secure websites
+// are allowed to access private insecure subresources with user's permission.
+BASE_FEATURE(kPrivateNetworkAccessPermissionPrompt,
+             "PrivateNetworkAccessPermissionPrompt",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 // Enables out-of-process system DNS resolution so getaddrinfo() never runs in
 // the network service sandbox. System DNS resolution will instead be brokered
@@ -318,12 +339,41 @@ BASE_FEATURE(kPrefetchNoVarySearch,
              "PrefetchNoVarySearch",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-BASE_FEATURE(kLessChattyNetworkService,
-             "LessChattyNetworkService",
-             base::FEATURE_DISABLED_BY_DEFAULT);
 #if BUILDFLAG(IS_ANDROID)
 BASE_FEATURE(kNetworkServiceEmptyOutOfProcess,
              "NetworkServiceEmptyOutOfProcess",
              base::FEATURE_DISABLED_BY_DEFAULT);
 #endif
+
+// Enables the backend of the compression dictionary transport feature.
+// When this feature is enabled, the following will happen:
+//   * The network service loads the metadata database.
+//   * If there is a matching dictionary for a sending request, it adds the
+//     `sec-available-dictionary` header.
+//   * And if the `content-encoding` header of the response is `sbr`, it
+//     decompresses the response body using the dictionary.
+BASE_FEATURE(kCompressionDictionaryTransportBackend,
+             "CompressionDictionaryTransportBackend",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+// When both this feature and the kCompressionDictionaryTransportBackend feature
+// are enabled, the following will happen:
+//   * A <link rel=dictionary> HTML tag and a `Link: rel=dictionary` HTTP header
+//     will trigger dictionary download.
+//   * HTMLLinkElement.relList.supports('dictionary') will return true.
+//   * The network service may register a HTTP response as a dictionary if the
+//     response header contains a `use-as-dictionary` header.
+// This feature can be enabled by an Origin Trial token in Blink. To propagate
+// the enabled state to the network service, Blink sets the
+// `shared_dictionary_writer_enabled` flag in resource requests.
+BASE_FEATURE(kCompressionDictionaryTransport,
+             "CompressionDictionaryTransport",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+BASE_FEATURE(kVisibilityAwareResourceScheduler,
+             "VisibilityAwareResourceScheduler",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+BASE_FEATURE(kSharedZstd, "SharedZstd", base::FEATURE_DISABLED_BY_DEFAULT);
+
 }  // namespace network::features

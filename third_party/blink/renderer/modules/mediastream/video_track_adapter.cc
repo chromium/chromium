@@ -433,11 +433,15 @@ void VideoTrackAdapter::VideoFrameResolutionAdapter::DeliverFrame(
     region_in_frame.set_y(region_in_frame.y() & ~1);
 
     // ComputeLetterboxRegion() sometimes produces odd dimensions due to
-    // internal rounding errors; |region_in_frame| is always smaller or equal
-    // to video_frame->visible_rect(), we can "grow it" if the dimensions are
-    // odd.
-    region_in_frame.set_width((region_in_frame.width() + 1) & ~1);
-    region_in_frame.set_height((region_in_frame.height() + 1) & ~1);
+    // internal rounding errors; allow to round upwards if there's slack
+    // otherwise round downwards.
+    bool width_has_slack =
+        region_in_frame.right() < video_frame->visible_rect().right();
+    region_in_frame.set_width((region_in_frame.width() + width_has_slack) & ~1);
+    bool height_has_slack =
+        region_in_frame.bottom() < video_frame->visible_rect().bottom();
+    region_in_frame.set_height((region_in_frame.height() + height_has_slack) &
+                               ~1);
 
     delivered_video_frame = media::VideoFrame::WrapVideoFrame(
         video_frame, video_frame->format(), region_in_frame, desired_size);

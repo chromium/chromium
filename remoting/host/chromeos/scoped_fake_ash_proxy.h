@@ -32,8 +32,14 @@ class ScopedFakeAshProxy : public AshProxy {
   ~ScopedFakeAshProxy() override;
 
   display::Display& AddPrimaryDisplay(DisplayId id = kDefaultPrimaryDisplayId);
+  display::Display& AddPrimaryDisplayFromSpec(
+      const std::string& spec,
+      DisplayId id = kDefaultPrimaryDisplayId);
+  bool HasPrimaryDisplay() const;
   display::Display& AddDisplayWithId(DisplayId id);
   void RemoveDisplay(DisplayId id);
+  void UpdateDisplaySpec(DisplayId id, const std::string& spec);
+  void UpdatePrimaryDisplaySpec(const std::string& spec);
   // Create a display with the given specifications.
   // See display::ManagedDisplayInfo::CreateFromSpec for details of the
   // specification string.
@@ -44,6 +50,7 @@ class ScopedFakeAshProxy : public AshProxy {
   DisplayId GetPrimaryDisplayId() const override;
   const std::vector<display::Display>& GetActiveDisplays() const override;
   const display::Display* GetDisplayForId(DisplayId display_id) const override;
+  aura::Window* GetSelectFileContainer() override;
   ash::curtain::SecurityCurtainController& GetSecurityCurtainController()
       override;
 

@@ -13,10 +13,6 @@
 #import "ios/web/public/test/web_task_environment.h"
 #import "testing/platform_test.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 // Test fixture for TestContainedOverlayCoordinator.
 class TestContainedOverlayCoordinatorTest : public PlatformTest {
  public:
@@ -32,6 +28,8 @@ class TestContainedOverlayCoordinatorTest : public PlatformTest {
                           delegate:&delegate_];
     scoped_window_.Get().rootViewController = root_view_controller_;
   }
+
+  ~TestContainedOverlayCoordinatorTest() override { [coordinator_ stop]; }
 
  protected:
   web::WebTaskEnvironment task_environment_;

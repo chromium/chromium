@@ -4,10 +4,15 @@
 
 #include "components/safe_browsing/core/browser/ping_manager.h"
 
+#include <memory>
 #include <utility>
 
+#include "base/base64url.h"
 #include "base/check.h"
+#include "base/containers/contains.h"
+#include "base/containers/fixed_flat_set.h"
 #include "base/functional/bind.h"
+#include "base/functional/callback.h"
 #include "base/memory/ptr_util.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/notreached.h"
@@ -16,6 +21,7 @@
 #include "base/strings/stringprintf.h"
 #include "base/task/sequenced_task_runner.h"
 #include "components/safe_browsing/core/browser/db/v4_protocol_manager_util.h"
+#include "components/safe_browsing/core/browser/safe_browsing_hats_delegate.h"
 #include "components/safe_browsing/core/common/features.h"
 #include "components/safe_browsing/core/common/proto/csd.pb.h"
 #include "components/safe_browsing/core/common/utils.h"
@@ -94,11 +100,13 @@ PingManager* PingManager::Create(
     base::RepeatingCallback<ChromeUserPopulation()>
         get_user_population_callback,
     base::RepeatingCallback<ChromeUserPopulation::PageLoadToken(GURL)>
-        get_page_load_token_callback) {
+        get_page_load_token_callback,
+    std::unique_ptr<SafeBrowsingHatsDelegate> hats_delegate) {
   return new PingManager(config, url_loader_factory, std::move(token_fetcher),
                          get_should_fetch_access_token, webui_delegate,
                          ui_task_runner, get_user_population_callback,
-                         get_page_load_token_callback);
+                         get_page_load_token_callback,
+                         std::move(hats_delegate));
 }
 
 PingManager::PingManager(
@@ -111,7 +119,8 @@ PingManager::PingManager(
     base::RepeatingCallback<ChromeUserPopulation()>
         get_user_population_callback,
     base::RepeatingCallback<ChromeUserPopulation::PageLoadToken(GURL)>
-        get_page_load_token_callback)
+        get_page_load_token_callback,
+    std::unique_ptr<SafeBrowsingHatsDelegate> hats_delegate)
     : config_(config),
       url_loader_factory_(url_loader_factory),
       token_fetcher_(std::move(token_fetcher)),
@@ -119,7 +128,8 @@ PingManager::PingManager(
       webui_delegate_(webui_delegate),
       ui_task_runner_(ui_task_runner),
       get_user_population_callback_(get_user_population_callback),
-      get_page_load_token_callback_(get_page_load_token_callback) {}
+      get_page_load_token_callback_(get_page_load_token_callback),
+      hats_delegate_(std::move(hats_delegate)) {}
 
 PingManager::~PingManager() {}
 
@@ -150,6 +160,9 @@ void PingManager::OnThreatDetailsReportURLLoaderComplete(
 // Sends a SafeBrowsing "hit" report.
 void PingManager::ReportSafeBrowsingHit(
     std::unique_ptr<safe_browsing::HitReport> hit_report) {
+  base::UmaHistogramBoolean("SafeBrowsing.HitReport.IsSubresource",
+                            hit_report->is_subresource);
+
   auto resource_request = std::make_unique<network::ResourceRequest>();
   SanitizeHitReport(hit_report.get());
   GURL report_url = SafeBrowsingHitUrl(hit_report.get());
@@ -211,7 +224,6 @@ PingManager::ReportThreatDetailsResult PingManager::ReportThreatDetails(
     DLOG(ERROR) << "The threat report is empty.";
     return ReportThreatDetailsResult::EMPTY_REPORT;
   }
-
   if (attach_default_data && get_should_fetch_access_token_.Run()) {
     token_fetcher_->Start(
         base::BindOnce(&PingManager::ReportThreatDetailsOnGotAccessToken,
@@ -234,6 +246,49 @@ PingManager::ReportThreatDetailsResult PingManager::ReportThreatDetails(
                      base::Unretained(webui_delegate_), std::move(report)));
 
   return ReportThreatDetailsResult::SUCCESS;
+}
+
+void PingManager::AttachThreatDetailsAndLaunchSurvey(
+    std::unique_ptr<ClientSafeBrowsingReportRequest> report) {
+  // Return early if HaTS survey is disabled by policy.
+  if (!hats_delegate_) {
+    return;
+  }
+  static constexpr auto valid_report_types =
+      base::MakeFixedFlatSet<ClientSafeBrowsingReportRequest::ReportType>(
+          {ClientSafeBrowsingReportRequest::URL_CLIENT_SIDE_PHISHING,
+           ClientSafeBrowsingReportRequest::URL_PHISHING,
+           ClientSafeBrowsingReportRequest::URL_UNWANTED,
+           ClientSafeBrowsingReportRequest::URL_MALWARE});
+  CHECK(base::Contains(valid_report_types, report->type()));
+  SanitizeThreatDetailsReport(report.get());
+  if (!get_user_population_callback_.is_null()) {
+    *report->mutable_population() = get_user_population_callback_.Run();
+  }
+  if (!get_page_load_token_callback_.is_null()) {
+    ChromeUserPopulation::PageLoadToken token =
+        get_page_load_token_callback_.Run(GURL(report->page_url()));
+    report->mutable_population()->mutable_page_load_tokens()->Add()->Swap(
+        &token);
+  }
+  std::string serialized_report;
+  if (!report->SerializeToString(&serialized_report)) {
+    DLOG(ERROR) << "Unable to serialize the threat report.";
+    return;
+  }
+  if (serialized_report.empty()) {
+    DLOG(ERROR) << "The threat report is empty.";
+    return;
+  }
+  std::string url_encoded_serialized_report;
+  base::Base64UrlEncode(serialized_report,
+                        base::Base64UrlEncodePolicy::INCLUDE_PADDING,
+                        &url_encoded_serialized_report);
+  hats_delegate_->LaunchRedWarningSurvey(
+      {{kFlaggedUrl, report->url()},
+       {kMainFrameUrl, report->page_url()},
+       {kReferrerUrl, report->referrer_url()},
+       {kUserActivityWithUrls, url_encoded_serialized_report}});
 }
 
 void PingManager::ReportThreatDetailsOnGotAccessToken(
@@ -316,6 +371,12 @@ GURL PingManager::SafeBrowsingHitUrl(
     case safe_browsing::ThreatSource::URL_REAL_TIME_CHECK:
       threat_source = "rt";
       break;
+    case safe_browsing::ThreatSource::NATIVE_PVER5_REAL_TIME:
+      threat_source = "n5rt";
+      break;
+    case safe_browsing::ThreatSource::ANDROID_SAFEBROWSING_REAL_TIME:
+      threat_source = "asbrt";
+      break;
     case safe_browsing::ThreatSource::UNKNOWN:
       NOTREACHED();
   }
@@ -384,6 +445,11 @@ void PingManager::SetURLLoaderFactoryForTesting(
 void PingManager::SetTokenFetcherForTesting(
     std::unique_ptr<SafeBrowsingTokenFetcher> token_fetcher) {
   token_fetcher_ = std::move(token_fetcher);
+}
+
+void PingManager::SetHatsDelegateForTesting(
+    std::unique_ptr<SafeBrowsingHatsDelegate> hats_delegate) {
+  hats_delegate_ = std::move(hats_delegate);
 }
 
 base::WeakPtr<PingManager> PingManager::GetWeakPtr() {

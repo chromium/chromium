@@ -40,6 +40,10 @@
 @property(nonatomic, weak) id<ManageSyncSettingsServiceDelegate>
     serviceDelegate;
 
+// Tells the controller if it is being viewed for a signed-in not syncing
+// account or not.
+@property(nonatomic, assign) BOOL isAccountStateSignedIn;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_UI_SETTINGS_GOOGLE_SERVICES_MANAGE_SYNC_SETTINGS_TABLE_VIEW_CONTROLLER_H_

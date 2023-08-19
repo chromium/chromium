@@ -18,7 +18,6 @@
 #include "net/first_party_sets/first_party_sets_cache_filter.h"
 #include "net/first_party_sets/first_party_sets_context_config.h"
 #include "net/first_party_sets/global_first_party_sets.h"
-#include "net/first_party_sets/same_party_context.h"
 #include "services/network/public/cpp/schemeful_site_mojom_traits.h"
 #include "services/network/public/mojom/first_party_sets.mojom-shared.h"
 
@@ -84,55 +83,10 @@ bool StructTraits<network::mojom::FirstPartySetEntryDataView,
   return true;
 }
 
-bool EnumTraits<network::mojom::SamePartyCookieContextType,
-                net::SamePartyContext::Type>::
-    FromMojom(network::mojom::SamePartyCookieContextType context_type,
-              net::SamePartyContext::Type* out) {
-  switch (context_type) {
-    case network::mojom::SamePartyCookieContextType::kCrossParty:
-      *out = net::SamePartyContext::Type::kCrossParty;
-      return true;
-    case network::mojom::SamePartyCookieContextType::kSameParty:
-      *out = net::SamePartyContext::Type::kSameParty;
-      return true;
-  }
-  return false;
-}
-
-network::mojom::SamePartyCookieContextType
-EnumTraits<network::mojom::SamePartyCookieContextType,
-           net::SamePartyContext::Type>::ToMojom(net::SamePartyContext::Type
-                                                     context_type) {
-  switch (context_type) {
-    case net::SamePartyContext::Type::kCrossParty:
-      return network::mojom::SamePartyCookieContextType::kCrossParty;
-    case net::SamePartyContext::Type::kSameParty:
-      return network::mojom::SamePartyCookieContextType::kSameParty;
-  }
-  NOTREACHED();
-  return network::mojom::SamePartyCookieContextType::kCrossParty;
-}
-
-bool StructTraits<network::mojom::SamePartyContextDataView,
-                  net::SamePartyContext>::
-    Read(network::mojom::SamePartyContextDataView context,
-         net::SamePartyContext* out) {
-  net::SamePartyContext::Type context_type;
-  if (!context.ReadContextType(&context_type))
-    return false;
-
-  *out = net::SamePartyContext(context_type);
-  return true;
-}
-
 bool StructTraits<network::mojom::FirstPartySetMetadataDataView,
                   net::FirstPartySetMetadata>::
     Read(network::mojom::FirstPartySetMetadataDataView metadata,
          net::FirstPartySetMetadata* out_metadata) {
-  net::SamePartyContext context;
-  if (!metadata.ReadContext(&context))
-    return false;
-
   absl::optional<net::FirstPartySetEntry> frame_entry;
   if (!metadata.ReadFrameEntry(&frame_entry))
     return false;
@@ -141,9 +95,8 @@ bool StructTraits<network::mojom::FirstPartySetMetadataDataView,
   if (!metadata.ReadTopFrameEntry(&top_frame_entry))
     return false;
 
-  *out_metadata =
-      net::FirstPartySetMetadata(context, base::OptionalToPtr(frame_entry),
-                                 base::OptionalToPtr(top_frame_entry));
+  *out_metadata = net::FirstPartySetMetadata(
+      base::OptionalToPtr(frame_entry), base::OptionalToPtr(top_frame_entry));
 
   return true;
 }

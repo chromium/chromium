@@ -8,6 +8,7 @@
 #include "base/time/default_tick_clock.h"
 #include "base/time/tick_clock.h"
 #include "base/time/time.h"
+#include "base/trace_event/trace_event.h"
 #include "chrome/browser/ash/login/login_pref_names.h"
 #include "chrome/browser/policy/profile_policy_connector.h"
 #include "chrome/browser/profiles/profile.h"
@@ -153,6 +154,7 @@ void OnboardingUserActivityCounter::StopObserving() {
 }
 
 void OnboardingUserActivityCounter::OnSessionStateChanged() {
+  TRACE_EVENT0("login", "OnboardingUserActivityCounter::OnSessionStateChanged");
   SetActiveState(GetActiveState());
 }
 

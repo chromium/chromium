@@ -34,34 +34,6 @@ BASE_FEATURE(kSendCnameAliasesToSubresourceFilterFromBrowser,
 
 namespace subresource_filter {
 
-namespace {
-
-void LogCnameAliasMetrics(const CnameAliasMetricInfo& info) {
-  bool has_aliases = info.list_length > 0;
-
-  UMA_HISTOGRAM_BOOLEAN("SubresourceFilter.CnameAlias.Browser.HadAliases",
-                        has_aliases);
-
-  if (has_aliases) {
-    UMA_HISTOGRAM_COUNTS_1000("SubresourceFilter.CnameAlias.Browser.ListLength",
-                              info.list_length);
-    UMA_HISTOGRAM_COUNTS_1000(
-        "SubresourceFilter.CnameAlias.Browser.WasAdTaggedBasedOnAliasCount",
-        info.was_ad_tagged_based_on_alias_count);
-    UMA_HISTOGRAM_COUNTS_1000(
-        "SubresourceFilter.CnameAlias.Browser.WasBlockedBasedOnAliasCount",
-        info.was_blocked_based_on_alias_count);
-    UMA_HISTOGRAM_COUNTS_1000(
-        "SubresourceFilter.CnameAlias.Browser.InvalidCount",
-        info.invalid_count);
-    UMA_HISTOGRAM_COUNTS_1000(
-        "SubresourceFilter.CnameAlias.Browser.RedundantCount",
-        info.redundant_count);
-  }
-}
-
-}  // namespace
-
 ChildFrameNavigationFilteringThrottle::ChildFrameNavigationFilteringThrottle(
     content::NavigationHandle* handle,
     AsyncDocumentSubresourceFilter* parent_frame_filter)
@@ -94,9 +66,6 @@ ChildFrameNavigationFilteringThrottle::
           total_defer_time_, base::Microseconds(1), base::Seconds(10), 50);
       break;
   }
-
-  if (alias_check_enabled_)
-    LogCnameAliasMetrics(alias_info_);
 }
 
 content::NavigationThrottle::ThrottleCheckResult
@@ -114,14 +83,11 @@ ChildFrameNavigationFilteringThrottle::WillProcessResponse() {
   DCHECK_NE(load_policy_, LoadPolicy::DISALLOW);
 
   if (alias_check_enabled_) {
-    alias_info_.list_length = navigation_handle()->GetDnsAliases().size();
-
     std::vector<GURL> alias_urls;
     const GURL& base_url = navigation_handle()->GetURL();
 
     for (const auto& alias : navigation_handle()->GetDnsAliases()) {
       if (alias == navigation_handle()->GetURL().host_piece()) {
-        alias_info_.redundant_count++;
         continue;
       }
 
@@ -129,12 +95,9 @@ ChildFrameNavigationFilteringThrottle::WillProcessResponse() {
       replacements.SetHostStr(alias);
       GURL alias_url = base_url.ReplaceComponents(replacements);
 
-      if (!alias_url.is_valid()) {
-        alias_info_.invalid_count++;
-        continue;
+      if (alias_url.is_valid()) {
+        alias_urls.push_back(alias_url);
       }
-
-      alias_urls.push_back(alias_url);
     }
 
     if (!alias_urls.empty()) {
@@ -154,7 +117,7 @@ ChildFrameNavigationFilteringThrottle::WillProcessResponse() {
   if (pending_load_policy_calculations_ > 0) {
     DCHECK(parent_frame_filter_->activation_state().activation_level ==
                mojom::ActivationLevel::kDryRun ||
-           alias_info_.list_length > 0);
+           navigation_handle()->GetDnsAliases().size() > 0);
     DeferStart(DeferStage::kWillProcessResponse);
     return DEFER;
   }
@@ -189,8 +152,9 @@ void ChildFrameNavigationFilteringThrottle::HandleDisallowedLoad() {
 content::NavigationThrottle::ThrottleCheckResult
 ChildFrameNavigationFilteringThrottle::MaybeDeferToCalculateLoadPolicy() {
   DCHECK_NE(load_policy_, LoadPolicy::DISALLOW);
-  if (load_policy_ == LoadPolicy::WOULD_DISALLOW)
+  if (load_policy_ == LoadPolicy::WOULD_DISALLOW) {
     return PROCEED;
+  }
 
   pending_load_policy_calculations_ += 1;
   parent_frame_filter_->GetLoadPolicyForSubdocument(
@@ -223,8 +187,9 @@ void ChildFrameNavigationFilteringThrottle::OnCalculatedLoadPolicy(
   pending_load_policy_calculations_ -= 1;
 
   // Callback is not responsible for handling navigation if we are not deferred.
-  if (defer_stage_ == DeferStage::kNotDeferring)
+  if (defer_stage_ == DeferStage::kNotDeferring) {
     return;
+  }
 
   DCHECK(defer_stage_ == DeferStage::kWillProcessResponse ||
          defer_stage_ == DeferStage::kWillStartOrRedirectRequest);
@@ -239,8 +204,9 @@ void ChildFrameNavigationFilteringThrottle::OnCalculatedLoadPolicy(
   }
 
   // If there are still pending load calculations, then don't resume.
-  if (pending_load_policy_calculations_ > 0)
+  if (pending_load_policy_calculations_ > 0) {
     return;
+  }
 
   ResumeNavigation();
 }
@@ -256,10 +222,6 @@ void ChildFrameNavigationFilteringThrottle::
   for (LoadPolicy policy : policies) {
     most_restricive_alias_policy =
         MoreRestrictiveLoadPolicy(most_restricive_alias_policy, policy);
-    if (policy == LoadPolicy::WOULD_DISALLOW)
-      alias_info_.was_ad_tagged_based_on_alias_count++;
-    else if (policy == LoadPolicy::DISALLOW)
-      alias_info_.was_blocked_based_on_alias_count++;
   }
 
   OnCalculatedLoadPolicy(most_restricive_alias_policy);
@@ -275,8 +237,9 @@ void ChildFrameNavigationFilteringThrottle::DeferStart(DeferStage stage) {
 void ChildFrameNavigationFilteringThrottle::NotifyLoadPolicy() const {
   auto* observer_manager = SubresourceFilterObserverManager::FromWebContents(
       navigation_handle()->GetWebContents());
-  if (!observer_manager)
+  if (!observer_manager) {
     return;
+  }
 
   observer_manager->NotifyChildFrameNavigationEvaluated(navigation_handle(),
                                                         load_policy_);
@@ -297,10 +260,11 @@ void ChildFrameNavigationFilteringThrottle::CancelNavigation() {
   HandleDisallowedLoad();
   NotifyLoadPolicy();
 
-  if (defer_stage_was_will_process_response)
+  if (defer_stage_was_will_process_response) {
     CancelDeferredNavigation(CANCEL);
-  else
+  } else {
     CancelDeferredNavigation(BLOCK_REQUEST_AND_COLLAPSE);
+  }
 }
 
 void ChildFrameNavigationFilteringThrottle::ResumeNavigation() {
@@ -312,8 +276,9 @@ void ChildFrameNavigationFilteringThrottle::ResumeNavigation() {
 
   // If the defer stage was WillProcessResponse, then this is the last
   // LoadPolicy that we will calculate.
-  if (defer_stage_was_will_process_response)
+  if (defer_stage_was_will_process_response) {
     NotifyLoadPolicy();
+  }
 
   Resume();
 }

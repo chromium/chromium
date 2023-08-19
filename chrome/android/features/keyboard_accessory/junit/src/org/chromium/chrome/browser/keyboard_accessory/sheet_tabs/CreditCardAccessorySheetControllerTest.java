@@ -15,12 +15,10 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
 
-import static org.chromium.chrome.browser.keyboard_accessory.ManualFillingMetricsRecorder.getHistogramForType;
 import static org.chromium.chrome.browser.keyboard_accessory.sheet_tabs.AccessorySheetTabItemsModel.AccessorySheetDataPiece.Type.CREDIT_CARD_INFO;
 import static org.chromium.chrome.browser.keyboard_accessory.sheet_tabs.AccessorySheetTabItemsModel.AccessorySheetDataPiece.Type.PROMO_CODE_INFO;
 import static org.chromium.chrome.browser.keyboard_accessory.sheet_tabs.AccessorySheetTabItemsModel.AccessorySheetDataPiece.Type.TITLE;
 import static org.chromium.chrome.browser.keyboard_accessory.sheet_tabs.AccessorySheetTabItemsModel.AccessorySheetDataPiece.getType;
-import static org.chromium.chrome.browser.keyboard_accessory.sheet_tabs.AccessorySheetTabMetricsRecorder.UMA_KEYBOARD_ACCESSORY_SHEET_SUGGESTIONS;
 
 import android.graphics.drawable.Drawable;
 
@@ -35,11 +33,9 @@ import org.mockito.MockitoAnnotations;
 import org.robolectric.RuntimeEnvironment;
 import org.robolectric.annotation.Config;
 
-import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.metrics.UmaRecorderHolder;
 import org.chromium.base.task.test.CustomShadowAsyncTask;
 import org.chromium.base.test.BaseRobolectricTestRunner;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.keyboard_accessory.AccessoryTabType;
 import org.chromium.chrome.browser.keyboard_accessory.data.KeyboardAccessoryData;
 import org.chromium.chrome.browser.keyboard_accessory.data.KeyboardAccessoryData.AccessorySheetData;
@@ -56,7 +52,6 @@ import org.chromium.ui.modelutil.ListObservable;
  */
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE, shadows = {CustomShadowAsyncTask.class})
-@Features.EnableFeatures(ChromeFeatureList.AUTOFILL_KEYBOARD_ACCESSORY)
 public class CreditCardAccessorySheetControllerTest {
     @Rule
     public TestRule mFeaturesProcessorRule = new Features.JUnitProcessor();
@@ -216,57 +211,5 @@ public class CreditCardAccessorySheetControllerTest {
         assertThat(getType(mSheetDataPieces.get(0)), is(PROMO_CODE_INFO));
         assertThat(getType(mSheetDataPieces.get(1)), is(TITLE));
         assertThat(mSheetDataPieces.get(1).getDataPiece(), is(equalTo("No payment methods")));
-    }
-
-    @Test
-    public void testRecordsNoSuggestionsImpressionsWithoutInteractiveElements() {
-        final PropertyProvider<AccessorySheetData> testProvider = new PropertyProvider<>();
-        mCoordinator.registerDataProvider(testProvider);
-        assertThat(RecordHistogram.getHistogramTotalCountForTesting(
-                           UMA_KEYBOARD_ACCESSORY_SHEET_SUGGESTIONS),
-                is(0));
-        assertThat(getSuggestionsImpressions(AccessoryTabType.CREDIT_CARDS, 0), is(0));
-        assertThat(getSuggestionsImpressions(AccessoryTabType.ALL, 0), is(0));
-
-        // If the tab is shown without interactive item, log "0" samples.
-        AccessorySheetData accessorySheetData =
-                new AccessorySheetData(AccessoryTabType.CREDIT_CARDS, "Payments", "");
-        testProvider.notifyObservers(accessorySheetData);
-        mCoordinator.onTabShown();
-
-        assertThat(getSuggestionsImpressions(AccessoryTabType.CREDIT_CARDS, 0), is(1));
-        assertThat(getSuggestionsImpressions(AccessoryTabType.ALL, 0), is(1));
-    }
-
-    @Test
-    public void testRecordsSelectableSuggestionsImpressionsWhenShown() {
-        final PropertyProvider<AccessorySheetData> testProvider = new PropertyProvider<>();
-        mCoordinator.registerDataProvider(testProvider);
-        assertThat(RecordHistogram.getHistogramTotalCountForTesting(
-                           UMA_KEYBOARD_ACCESSORY_SHEET_SUGGESTIONS),
-                is(0));
-        assertThat(getSuggestionsImpressions(AccessoryTabType.CREDIT_CARDS, 1), is(0));
-        assertThat(getSuggestionsImpressions(AccessoryTabType.ALL, 1), is(0));
-
-        // Add only two interactive items - the third one should not be recorded.
-        AccessorySheetData accessorySheetData =
-                new AccessorySheetData(AccessoryTabType.CREDIT_CARDS, "Payments", "");
-        accessorySheetData.getUserInfoList().add(new UserInfo("", false));
-        accessorySheetData.getUserInfoList().get(0).addField(
-                new UserInfoField("Todd Tester", "Todd Tester", "0", false, result -> {}));
-        accessorySheetData.getUserInfoList().get(0).addField(
-                new UserInfoField("**** 9219", "Card for Todd Tester", "1", false, result -> {}));
-        accessorySheetData.getUserInfoList().get(0).addField(
-                new UserInfoField("Unselectable", "Unselectable", "-1", false, null));
-        testProvider.notifyObservers(accessorySheetData);
-        mCoordinator.onTabShown();
-
-        assertThat(getSuggestionsImpressions(AccessoryTabType.CREDIT_CARDS, 2), is(1));
-        assertThat(getSuggestionsImpressions(AccessoryTabType.ALL, 2), is(1));
-    }
-
-    private int getSuggestionsImpressions(@AccessoryTabType int type, int sample) {
-        return RecordHistogram.getHistogramValueCountForTesting(
-                getHistogramForType(UMA_KEYBOARD_ACCESSORY_SHEET_SUGGESTIONS, type), sample);
     }
 }

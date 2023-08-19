@@ -4,9 +4,12 @@ Source URL: http://www.daemonology.net/bsdiff/bsdiff-4.3.tar.gz
 Version: 4.3
 License: BSD
 License File: LICENSE
+Shipped: yes
 
 Description:
-Binary diff/patch utility. There are other copies of BSDiff in the Chromium
+Binary diff/patch utility. This is used by the Mac diff updaters, not Chrome
+itself. Still, we have set Shipped to yes to ensure the license is included in
+chrome://credits. There are other copies of BSDiff in the Chromium
 repository, but they're all different. The other copies are based on Mozilla's
 fork of BSDiff, which serves a different set of needs. Relative to upstream
 BSDiff, Mozilla's version removes all compression, adds a CRC-32 check of the

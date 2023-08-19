@@ -23,13 +23,10 @@ import org.junit.runner.RunWith;
 
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Feature;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.test.ScreenShooter;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
-import org.chromium.chrome.test.util.browser.Features.DisableFeatures;
-import org.chromium.chrome.test.util.browser.Features.EnableFeatures;
 import org.chromium.components.browser_ui.widget.RecyclerViewTestUtils;
 
 import java.util.concurrent.TimeoutException;
@@ -40,7 +37,6 @@ import java.util.concurrent.TimeoutException;
  * components belong into {@link ManualFillingIntegrationTest}.
  */
 @RunWith(ChromeJUnit4ClassRunner.class)
-@EnableFeatures({ChromeFeatureList.AUTOFILL_KEYBOARD_ACCESSORY})
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
 public class ManualFillingUiCaptureTest {
     @Rule
@@ -59,60 +55,6 @@ public class ManualFillingUiCaptureTest {
 
     @Test
     @MediumTest
-    @DisableFeatures(ChromeFeatureList.AUTOFILL_KEYBOARD_ACCESSORY)
-    @Feature({"KeyboardAccessory", "LTR", "UiCatalogue"})
-    public void testCaptureKeyboardAccessoryWithPasswords()
-            throws InterruptedException, TimeoutException {
-        mHelper.loadTestPage(false);
-        mHelper.cacheTestCredentials();
-        mHelper.addGenerationButton();
-
-        mHelper.focusPasswordField();
-        mHelper.waitForKeyboardAccessoryToBeShown();
-
-        waitForActionsInAccessory();
-        waitForUnrelatedChromeUi();
-        mScreenShooter.shoot("AccessoryBar");
-
-        whenDisplayed(withId(R.id.tabs)).perform(selectTabAtPosition(0));
-        waitForSuggestionsInSheet();
-        waitForUnrelatedChromeUi();
-        mScreenShooter.shoot("AccessorySheetPasswords");
-
-        whenDisplayed(withId(R.id.passwords_sheet)).perform(scrollToLastElement());
-        waitForUnrelatedChromeUi();
-        mScreenShooter.shoot("AccessorySheetPasswordsScrolled");
-    }
-
-    @Test
-    @MediumTest
-    @DisableFeatures(ChromeFeatureList.AUTOFILL_KEYBOARD_ACCESSORY)
-    @Feature({"KeyboardAccessory", "RTL", "UiCatalogue"})
-    public void testCaptureKeyboardAccessoryWithPasswordsRTL()
-            throws InterruptedException, TimeoutException {
-        mHelper.loadTestPage(true);
-        mHelper.cacheTestCredentials();
-        mHelper.focusPasswordField();
-        mHelper.waitForKeyboardAccessoryToBeShown();
-        mHelper.addGenerationButton();
-
-        waitForActionsInAccessory();
-        waitForUnrelatedChromeUi();
-        mScreenShooter.shoot("AccessoryBarRTL");
-
-        whenDisplayed(withId(R.id.tabs)).perform(selectTabAtPosition(0));
-        waitForSuggestionsInSheet();
-        waitForUnrelatedChromeUi();
-        mScreenShooter.shoot("AccessorySheetPasswordsRTL");
-
-        whenDisplayed(withId(R.id.passwords_sheet)).perform(scrollToLastElement());
-        waitForUnrelatedChromeUi();
-        mScreenShooter.shoot("AccessorySheetPasswordsScrolledRTL");
-    }
-
-    @Test
-    @MediumTest
-    @EnableFeatures(ChromeFeatureList.AUTOFILL_KEYBOARD_ACCESSORY)
     @Feature({"KeyboardAccessoryModern", "LTR", "UiCatalogue"})
     public void testCaptureKeyboardAccessoryV2WithPasswords()
             throws InterruptedException, TimeoutException {
@@ -142,7 +84,6 @@ public class ManualFillingUiCaptureTest {
 
     @Test
     @MediumTest
-    @EnableFeatures(ChromeFeatureList.AUTOFILL_KEYBOARD_ACCESSORY)
     @Feature({"KeyboardAccessoryModern", "RTL", "UiCatalogue"})
     public void testCaptureKeyboardAccessoryV2WithPasswordsRTL()
             throws InterruptedException, TimeoutException {

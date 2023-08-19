@@ -253,6 +253,9 @@ class WebStateImpl;
 // UIActivityViewController to add additional share action for the current URL.
 - (id)activityItem;
 
+// Returns the page theme color.
+- (UIColor*)themeColor;
+
 #pragma mark Navigation Message Handlers
 
 // Handles a navigation hash change message for the current webpage.

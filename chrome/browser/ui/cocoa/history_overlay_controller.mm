@@ -4,15 +4,15 @@
 
 #import "chrome/browser/ui/cocoa/history_overlay_controller.h"
 
-#include "base/check.h"
-#include "base/mac/scoped_cftyperef.h"
-#include "chrome/grit/theme_resources.h"
-#include "ui/base/resource/resource_bundle.h"
-#include "ui/gfx/image/image.h"
-
 #import <QuartzCore/QuartzCore.h>
 
 #include <cmath>
+
+#include "base/apple/scoped_cftyperef.h"
+#include "base/check.h"
+#include "chrome/grit/theme_resources.h"
+#include "ui/base/resource/resource_bundle.h"
+#include "ui/gfx/image/image.h"
 
 // Constants ///////////////////////////////////////////////////////////////////
 
@@ -32,17 +32,15 @@ const CGFloat kShieldHeightCompletionAdjust = 10;
 // HistoryOverlayView //////////////////////////////////////////////////////////
 
 // The content view that draws the semicircle and the arrow.
-@interface HistoryOverlayView : NSView {
- @private
-  HistoryOverlayMode _mode;
-  CGFloat _shieldAlpha;
-  base::scoped_nsobject<CAShapeLayer> _shapeLayer;
-}
+@interface HistoryOverlayView : NSView
 @property(nonatomic) CGFloat shieldAlpha;
 - (instancetype)initWithMode:(HistoryOverlayMode)mode image:(NSImage*)image;
 @end
 
-@implementation HistoryOverlayView
+@implementation HistoryOverlayView {
+  HistoryOverlayMode _mode;
+  CAShapeLayer* __strong _shapeLayer;
+}
 
 @synthesize shieldAlpha = _shieldAlpha;
 
@@ -53,9 +51,9 @@ const CGFloat kShieldHeightCompletionAdjust = 10;
     _shieldAlpha = 1.0;  // CAShapeLayer's fillColor defaults to opaque black.
 
     // A layer-hosting view.
-    _shapeLayer.reset([[CAShapeLayer alloc] init]);
-    [self setLayer:_shapeLayer];
-    [self setWantsLayer:YES];
+    _shapeLayer = [[CAShapeLayer alloc] init];
+    self.layer = _shapeLayer;
+    self.wantsLayer = YES;
 
     // If going backward, the arrow needs to be in the right half of the circle,
     // so offset the X position.
@@ -63,24 +61,23 @@ const CGFloat kShieldHeightCompletionAdjust = 10;
     NSRect arrowRect = NSMakeRect(offset, 0, kShieldRadius, kShieldHeight);
     arrowRect = NSInsetRect(arrowRect, 10, 0);  // Give a little padding.
 
-    base::scoped_nsobject<NSImageView> imageView(
-        [[NSImageView alloc] initWithFrame:arrowRect]);
-    [imageView setImage:image];
-    [imageView setAutoresizingMask:NSViewMinYMargin | NSViewMaxYMargin];
+    NSImageView* imageView = [[NSImageView alloc] initWithFrame:arrowRect];
+    imageView.image = image;
+    imageView.autoresizingMask = NSViewMinYMargin | NSViewMaxYMargin;
     [self addSubview:imageView];
   }
   return self;
 }
 
 - (void)setFrameSize:(CGSize)newSize {
-  NSSize oldSize = [self frame].size;
+  NSSize oldSize = self.frame.size;
   [super setFrameSize:newSize];
 
-  if (![_shapeLayer path] || !NSEqualSizes(oldSize, newSize))  {
+  if (!_shapeLayer.path || !NSEqualSizes(oldSize, newSize)) {
     base::ScopedCFTypeRef<CGMutablePathRef> oval(CGPathCreateMutable());
     CGRect ovalRect = CGRectMake(0, 0, newSize.width, newSize.height);
     CGPathAddEllipseInRect(oval, nullptr, ovalRect);
-    [_shapeLayer setPath:oval];
+    _shapeLayer.path = oval;
   }
 }
 
@@ -89,7 +86,7 @@ const CGFloat kShieldHeightCompletionAdjust = 10;
     _shieldAlpha = shieldAlpha;
     base::ScopedCFTypeRef<CGColorRef> fillColor(
         CGColorCreateGenericGray(0, shieldAlpha));
-    [_shapeLayer setFillColor:fillColor];
+    _shapeLayer.fillColor = fillColor;
   }
 }
 
@@ -97,7 +94,10 @@ const CGFloat kShieldHeightCompletionAdjust = 10;
 
 // HistoryOverlayController ////////////////////////////////////////////////////
 
-@implementation HistoryOverlayController
+@implementation HistoryOverlayController {
+  HistoryOverlayMode _mode;
+  HistoryOverlayView* __strong _contentView;
+}
 
 - (instancetype)initForMode:(HistoryOverlayMode)mode {
   if ((self = [super init])) {
@@ -113,14 +113,13 @@ const CGFloat kShieldHeightCompletionAdjust = 10;
       ui::ResourceBundle::GetSharedInstance().GetNativeImageNamed(
           _mode == kHistoryOverlayModeBack ? IDR_SWIPE_BACK
                                            : IDR_SWIPE_FORWARD);
-  _contentView.reset(
-      [[HistoryOverlayView alloc] initWithMode:_mode
-                                         image:image.ToNSImage()]);
+  _contentView = [[HistoryOverlayView alloc] initWithMode:_mode
+                                                    image:image.ToNSImage()];
   self.view = _contentView;
 }
 
 - (void)setProgress:(CGFloat)gestureAmount finished:(BOOL)finished {
-  NSRect parentFrame = [_parent frame];
+  NSRect parentFrame = self.view.superview.frame;
   // When tracking the gesture, the height is constant and the alpha value
   // changes from [0.25, 0.65].
   CGFloat height = kShieldHeight;
@@ -147,21 +146,20 @@ const CGFloat kShieldHeightCompletionAdjust = 10;
     frame.origin.x = NSMinX(parentFrame) - kShieldWidth + width;
 
   self.view.frame = frame;
-  [_contentView setShieldAlpha:shieldAlpha];
+  _contentView.shieldAlpha = shieldAlpha;
 }
 
 - (void)showPanelForView:(NSView*)view {
-  _parent.reset([view retain]);
   [self setProgress:0 finished:NO];  // Set initial view position.
-  [_parent addSubview:self.view];
+  [view addSubview:self.view];
 }
 
 - (void)dismiss {
   const CGFloat kFadeOutDurationSeconds = 0.4;
 
   [NSAnimationContext beginGrouping];
-  [NSAnimationContext currentContext].duration = kFadeOutDurationSeconds;
-  [[self.view animator] removeFromSuperview];
+  NSAnimationContext.currentContext.duration = kFadeOutDurationSeconds;
+  [self.view.animator removeFromSuperview];
   [NSAnimationContext endGrouping];
 }
 

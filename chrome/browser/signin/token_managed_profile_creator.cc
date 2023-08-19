@@ -17,17 +17,20 @@
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/signin/account_consistency_mode_manager_factory.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
+#include "chrome/browser/signin/signin_util.h"
 #include "components/prefs/pref_service.h"
 #include "components/signin/public/base/signin_pref_names.h"
 #include "components/signin/public/identity_manager/accounts_mutator.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 
 TokenManagedProfileCreator::TokenManagedProfileCreator(
+    Profile* source_profile,
     const std::string& id,
     const std::string& enrollment_token,
     const std::u16string& local_profile_name,
-    base::OnceCallback<void(Profile*)> callback)
-    : id_(id),
+    base::OnceCallback<void(base::WeakPtr<Profile>)> callback)
+    : source_profile_(source_profile),
+      id_(id),
       enrollment_token_(enrollment_token),
       expected_profile_path_(g_browser_process->profile_manager()
                                  ->GetNextExpectedProfileDirectoryPath()),
@@ -48,9 +51,10 @@ TokenManagedProfileCreator::TokenManagedProfileCreator(
 }
 
 TokenManagedProfileCreator::TokenManagedProfileCreator(
+    Profile* source_profile,
     const base::FilePath& target_profile_path,
-    base::OnceCallback<void(Profile*)> callback)
-    : callback_(std::move(callback)) {
+    base::OnceCallback<void(base::WeakPtr<Profile>)> callback)
+    : source_profile_(source_profile), callback_(std::move(callback)) {
   // Make sure the callback is not called synchronously.
   base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE,
@@ -90,7 +94,9 @@ void TokenManagedProfileCreator::OnNewProfileCreated(Profile* new_profile) {
 }
 
 void TokenManagedProfileCreator::OnNewProfileInitialized(Profile* new_profile) {
-  if (callback_) {
-    std::move(callback_).Run(new_profile);
-  }
+  // base::Unretained is fine because `cookies_mover_` is owned by this.
+  cookies_mover_ = std::make_unique<signin_util::CookiesMover>(
+      source_profile_->GetWeakPtr(), new_profile->GetWeakPtr(),
+      base::BindOnce(std::move(callback_), new_profile->GetWeakPtr()));
+  cookies_mover_->StartMovingCookies();
 }

@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html>
+<title>View Transitions: @view-transitions opt out in new document. (new page)</title>
+<link rel="help" href="https://github.com/WICG/view-transitions">
+<link rel="author" href="mailto:bokan@chromium.org">
+<style>
+  @view-transitions {
+    navigation-trigger: none;
+  }
+
+  html {
+    background: grey;
+  }
+
+  html::view-transition-group(root) { animation-duration: 3s; }
+
+  html::view-transition-old(root) {
+    animation-duration: 3s;
+    width: 50vw;
+    height: 100vh;
+    position: fixed;
+    left: 0px;
+    top: 0px;
+  }
+
+  html::view-transition-new(root) {
+    animation-duration: 3s;
+    width: 50vw;
+    height: 100vh;
+    position: fixed;
+    left: 50vw;
+    top: 0px;
+  }
+</style>
+

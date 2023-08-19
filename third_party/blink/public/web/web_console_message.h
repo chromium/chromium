@@ -35,11 +35,10 @@
 #include "third_party/blink/public/platform/web_common.h"
 #include "third_party/blink/public/platform/web_string.h"
 #include "third_party/blink/public/web/web_node.h"
+#include "v8/include/v8-local-handle.h"
 
 namespace v8 {
 class Context;
-template <typename T>
-class Local;
 }  // namespace v8
 
 namespace blink {

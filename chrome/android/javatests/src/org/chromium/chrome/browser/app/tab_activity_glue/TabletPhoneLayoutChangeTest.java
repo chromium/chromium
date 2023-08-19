@@ -19,6 +19,7 @@ import org.junit.runner.RunWith;
 
 import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.CommandLineFlags;
+import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.DoNotBatch;
 import org.chromium.base.test.util.Restriction;
 import org.chromium.chrome.browser.ChromeTabbedActivity;
@@ -50,6 +51,7 @@ public class TabletPhoneLayoutChangeTest {
     @Test
     @MediumTest
     @Restriction(RESTRICTION_TYPE_NON_LOW_END_DEVICE) // See crbug.com/1302618.
+    @DisabledTest(message = "crbug.com/1444252")
     public void testIsRecreatedOnLayoutChange() throws TimeoutException {
         ChromeTabbedActivity cta = mActivityTestRule.getActivity();
         boolean isTestOnTablet = cta.isTablet();

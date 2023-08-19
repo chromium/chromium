@@ -244,8 +244,8 @@ EnrollmentConfig::Mode EnrollmentConfig::GetManualFallbackMode(
     case EnrollmentConfig::MODE_ATTESTATION:
     case EnrollmentConfig::MODE_ATTESTATION_LOCAL_FORCED:
     case EnrollmentConfig::MODE_ATTESTATION_MANUAL_FALLBACK:
-    case EnrollmentConfig::MODE_OFFLINE_DEMO_DEPRECATED:
-    case EnrollmentConfig::OBSOLETE_MODE_ENROLLED_ROLLBACK:
+    case EnrollmentConfig::DEPRECATED_MODE_OFFLINE_DEMO:
+    case EnrollmentConfig::DEPRECATED_MODE_ENROLLED_ROLLBACK:
     case EnrollmentConfig::MODE_INITIAL_SERVER_FORCED:
     case EnrollmentConfig::MODE_ATTESTATION_INITIAL_MANUAL_FALLBACK:
     case EnrollmentConfig::MODE_ATTESTATION_ROLLBACK_MANUAL_FALLBACK:

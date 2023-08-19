@@ -50,8 +50,8 @@ using animation_test_helpers::CreateSimpleKeyframeEffectForTest;
 
 class StyleResolverTest : public PageTestBase {
  protected:
-  scoped_refptr<const ComputedStyle> StyleForId(AtomicString id) {
-    Element* element = GetDocument().getElementById(id);
+  scoped_refptr<const ComputedStyle> StyleForId(const char* id) {
+    Element* element = GetElementById(id);
     StyleRecalcContext recalc_context;
     recalc_context.old_style = element->GetComputedStyle();
     auto style = GetStyleEngine().GetStyleResolver().ResolveStyle(
@@ -142,7 +142,7 @@ TEST_F(StyleResolverTest, AnimationBaseComputedStyle) {
   )HTML");
   UpdateAllLifecyclePhasesForTest();
 
-  Element* div = GetDocument().getElementById("div");
+  Element* div = GetDocument().getElementById(AtomicString("div"));
   ElementAnimations& animations = div->EnsureElementAnimations();
   animations.SetAnimationStyleChange(true);
 
@@ -185,7 +185,7 @@ TEST_F(StyleResolverTest, HasEmUnits) {
 TEST_F(StyleResolverTest, BaseReusableIfFontRelativeUnitsAbsent) {
   GetDocument().documentElement()->setInnerHTML("<div id=div>Test</div>");
   UpdateAllLifecyclePhasesForTest();
-  Element* div = GetDocument().getElementById("div");
+  Element* div = GetDocument().getElementById(AtomicString("div"));
 
   auto* effect = CreateSimpleKeyframeEffectForTest(
       div, CSSPropertyID::kFontSize, "50px", "100px");
@@ -213,7 +213,7 @@ TEST_F(StyleResolverTest, AnimationNotMaskedByImportant) {
     <div id=div></div>
   )HTML");
   UpdateAllLifecyclePhasesForTest();
-  Element* div = GetDocument().getElementById("div");
+  Element* div = GetDocument().getElementById(AtomicString("div"));
 
   auto* effect = CreateSimpleKeyframeEffectForTest(div, CSSPropertyID::kWidth,
                                                    "50px", "100px");
@@ -252,7 +252,7 @@ TEST_F(StyleResolverTest, AnimationNotMaskedWithoutBitset) {
     <div id=div></div>
   )HTML");
   UpdateAllLifecyclePhasesForTest();
-  Element* div = GetDocument().getElementById("div");
+  Element* div = GetDocument().getElementById(AtomicString("div"));
 
   auto* effect = CreateSimpleKeyframeEffectForTest(div, CSSPropertyID::kWidth,
                                                    "50px", "100px");
@@ -283,7 +283,7 @@ TEST_F(StyleResolverTest, AnimationMaskedByImportant) {
     <div id=div></div>
   )HTML");
   UpdateAllLifecyclePhasesForTest();
-  Element* div = GetDocument().getElementById("div");
+  Element* div = GetDocument().getElementById(AtomicString("div"));
 
   auto* effect = CreateSimpleKeyframeEffectForTest(div, CSSPropertyID::kHeight,
                                                    "50px", "100px");
@@ -318,14 +318,14 @@ TEST_F(StyleResolverTest,
   UpdateAllLifecyclePhasesForTest();
 
   Element* element = GetDocument().documentElement();
-  element->setAttribute(html_names::kIdAttr, "target");
+  element->setAttribute(html_names::kIdAttr, AtomicString("target"));
   UpdateAllLifecyclePhasesForTest();
   EXPECT_EQ("20px", ComputedValue("font-size", *StyleForId("target")));
   ElementAnimations* element_animations = element->GetElementAnimations();
   EXPECT_FALSE(element_animations);
 
   // Trigger a transition with a dependency on the parent style.
-  element->setAttribute(html_names::kClassAttr, "adjust");
+  element->setAttribute(html_names::kClassAttr, AtomicString("adjust"));
   UpdateAllLifecyclePhasesForTest();
   element_animations = element->GetElementAnimations();
   EXPECT_TRUE(element_animations);
@@ -342,7 +342,7 @@ TEST_F(StyleResolverTest,
       ComputedValue("font-size", *StyleForId("target"));
 
   // Verify there is no discontinuity in the font-size on transition reversal.
-  element->setAttribute(html_names::kClassAttr, "");
+  element->setAttribute(html_names::kClassAttr, g_empty_atom);
   UpdateAllLifecyclePhasesForTest();
   element_animations = element->GetElementAnimations();
   EXPECT_TRUE(element_animations);
@@ -363,7 +363,7 @@ TEST_P(StyleResolverFontRelativeUnitTest,
       String::Format("<div id=div style='width:1%s'>Test</div>", GetParam()));
   UpdateAllLifecyclePhasesForTest();
 
-  Element* div = GetDocument().getElementById("div");
+  Element* div = GetDocument().getElementById(AtomicString("div"));
   auto* effect = CreateSimpleKeyframeEffectForTest(
       div, CSSPropertyID::kFontSize, "50px", "100px");
   GetDocument().Timeline().Play(effect);
@@ -387,7 +387,7 @@ TEST_P(StyleResolverFontRelativeUnitTest,
       String::Format("<div id=div style='width:1%s'>Test</div>", GetParam()));
   UpdateAllLifecyclePhasesForTest();
 
-  Element* div = GetDocument().getElementById("div");
+  Element* div = GetDocument().getElementById(AtomicString("div"));
   auto* effect = CreateSimpleKeyframeEffectForTest(div, CSSPropertyID::kHeight,
                                                    "50px", "100px");
   GetDocument().Timeline().Play(effect);
@@ -521,22 +521,28 @@ TEST_F(StyleResolverTest, BackgroundImageFetch) {
   GetDocument().documentElement()->AppendChild(frameset1);
   GetDocument().documentElement()->AppendChild(frameset2);
 
-  GetDocument().getElementById("host")->AttachShadowRootInternal(
-      ShadowRootType::kOpen);
+  GetDocument()
+      .getElementById(AtomicString("host"))
+      ->AttachShadowRootInternal(ShadowRootType::kOpen);
   UpdateAllLifecyclePhasesForTest();
 
-  auto* none = GetDocument().getElementById("none");
-  auto* inside_none = GetDocument().getElementById("inside-none");
-  auto* none_image_set = GetDocument().getElementById("none-image-set");
-  auto* hidden = GetDocument().getElementById("hidden");
-  auto* inside_hidden = GetDocument().getElementById("inside-hidden");
-  auto* contents = GetDocument().getElementById("contents");
-  auto* inside_contents = GetDocument().getElementById("inside-contents");
-  auto* non_slotted = GetDocument().getElementById("non-slotted");
-  auto* no_pseudo = GetDocument().getElementById("no-pseudo");
-  auto* first_line = GetDocument().getElementById("first-line");
-  auto* first_line_span = GetDocument().getElementById("first-line-span");
-  auto* first_line_none = GetDocument().getElementById("first-line-none");
+  auto* none = GetDocument().getElementById(AtomicString("none"));
+  auto* inside_none = GetDocument().getElementById(AtomicString("inside-none"));
+  auto* none_image_set =
+      GetDocument().getElementById(AtomicString("none-image-set"));
+  auto* hidden = GetDocument().getElementById(AtomicString("hidden"));
+  auto* inside_hidden =
+      GetDocument().getElementById(AtomicString("inside-hidden"));
+  auto* contents = GetDocument().getElementById(AtomicString("contents"));
+  auto* inside_contents =
+      GetDocument().getElementById(AtomicString("inside-contents"));
+  auto* non_slotted = GetDocument().getElementById(AtomicString("non-slotted"));
+  auto* no_pseudo = GetDocument().getElementById(AtomicString("no-pseudo"));
+  auto* first_line = GetDocument().getElementById(AtomicString("first-line"));
+  auto* first_line_span =
+      GetDocument().getElementById(AtomicString("first-line-span"));
+  auto* first_line_none =
+      GetDocument().getElementById(AtomicString("first-line-none"));
 
   inside_none->EnsureComputedStyle();
   non_slotted->EnsureComputedStyle();
@@ -605,7 +611,7 @@ TEST_F(StyleResolverTest, NoFetchForAtPage) {
 
   GetDocument().GetStyleEngine().UpdateActiveStyle();
   scoped_refptr<const ComputedStyle> page_style =
-      GetDocument().GetStyleResolver().StyleForPage(0, "");
+      GetDocument().GetStyleResolver().StyleForPage(0, g_empty_atom);
   ASSERT_TRUE(page_style);
   const CSSValue* computed_value = ComputedStyleUtils::ComputedPropertyValue(
       GetCSSPropertyBackgroundImage(), *page_style);
@@ -707,7 +713,7 @@ TEST_F(StyleResolverTest, CSSMarkerPseudoElement) {
       <li style="list-style: none inside"><b></b></li>
     </ul>
   )HTML");
-  StaticElementList* lis = GetDocument().QuerySelectorAll("li");
+  StaticElementList* lis = GetDocument().QuerySelectorAll(AtomicString("li"));
   EXPECT_EQ(lis->length(), 10U);
 
   UpdateAllLifecyclePhasesForTest();
@@ -715,7 +721,7 @@ TEST_F(StyleResolverTest, CSSMarkerPseudoElement) {
     Element* li = lis->item(i);
     PseudoElement* marker = li->GetPseudoElement(kPseudoIdMarker);
     PseudoElement* before =
-        li->QuerySelector("b")->GetPseudoElement(kPseudoIdBefore);
+        li->QuerySelector(AtomicString("b"))->GetPseudoElement(kPseudoIdBefore);
     PseudoElement* nested_marker = before->GetPseudoElement(kPseudoIdMarker);
 
     // Check that UA styles for list markers don't set HasPseudoElementStyle
@@ -741,12 +747,12 @@ TEST_F(StyleResolverTest, CSSMarkerPseudoElement) {
               UnicodeBidi::kIsolate);
   }
 
-  GetDocument().body()->SetIdAttribute("marker");
+  GetDocument().body()->SetIdAttribute(AtomicString("marker"));
   UpdateAllLifecyclePhasesForTest();
   for (unsigned i = 0; i < lis->length(); ++i) {
     Element* li = lis->item(i);
     PseudoElement* before =
-        li->QuerySelector("b")->GetPseudoElement(kPseudoIdBefore);
+        li->QuerySelector(AtomicString("b"))->GetPseudoElement(kPseudoIdBefore);
 
     // Check that author styles for list markers do set HasPseudoElementStyle
     const ComputedStyle* li_style = li->GetComputedStyle();
@@ -831,7 +837,7 @@ TEST_F(StyleResolverTest, CascadedValuesForElement) {
   UpdateAllLifecyclePhasesForTest();
 
   auto& resolver = GetDocument().GetStyleResolver();
-  Element* div = GetDocument().getElementById("div");
+  Element* div = GetDocument().getElementById(AtomicString("div"));
   ASSERT_TRUE(div);
 
   auto map = resolver.CascadedValuesForElement(div, kPseudoIdNone);
@@ -873,7 +879,7 @@ TEST_F(StyleResolverTest, CascadedValuesForPseudoElement) {
   UpdateAllLifecyclePhasesForTest();
 
   auto& resolver = GetDocument().GetStyleResolver();
-  Element* div = GetDocument().getElementById("div");
+  Element* div = GetDocument().getElementById(AtomicString("div"));
   ASSERT_TRUE(div);
 
   auto map = resolver.CascadedValuesForElement(div, kPseudoIdBefore);
@@ -903,7 +909,7 @@ TEST_F(StyleResolverTestCQ, CascadedValuesForElementInContainer) {
   UpdateAllLifecyclePhasesForTest();
 
   auto& resolver = GetDocument().GetStyleResolver();
-  Element* inner = GetDocument().getElementById("inner");
+  Element* inner = GetDocument().getElementById(AtomicString("inner"));
   ASSERT_TRUE(inner);
 
   auto map = resolver.CascadedValuesForElement(inner, kPseudoIdNone);
@@ -933,7 +939,7 @@ TEST_F(StyleResolverTestCQ, CascadedValuesForPseudoElementInContainer) {
   UpdateAllLifecyclePhasesForTest();
 
   auto& resolver = GetDocument().GetStyleResolver();
-  Element* inner = GetDocument().getElementById("inner");
+  Element* inner = GetDocument().getElementById(AtomicString("inner"));
   ASSERT_TRUE(inner);
 
   auto map = resolver.CascadedValuesForElement(inner, kPseudoIdBefore);
@@ -949,15 +955,16 @@ TEST_F(StyleResolverTest, EnsureComputedStyleSlotFallback) {
   )HTML");
 
   ShadowRoot& shadow_root =
-      GetDocument().getElementById("host")->AttachShadowRootInternal(
-          ShadowRootType::kOpen);
+      GetDocument()
+          .getElementById(AtomicString("host"))
+          ->AttachShadowRootInternal(ShadowRootType::kOpen);
   shadow_root.setInnerHTML(R"HTML(
     <style>
       slot { color: red }
     </style>
     <slot><span id="fallback"></span></slot>
   )HTML");
-  Element* fallback = shadow_root.getElementById("fallback");
+  Element* fallback = shadow_root.getElementById(AtomicString("fallback"));
   ASSERT_TRUE(fallback);
 
   UpdateAllLifecyclePhasesForTest();
@@ -979,7 +986,7 @@ TEST_F(StyleResolverTest, EnsureComputedStyleOutsideFlatTree) {
       .documentElement()
       ->setInnerHTMLWithDeclarativeShadowDOMForTesting(R"HTML(
     <div id=host>
-      <template shadowroot=open>
+      <template shadowrootmode=open>
       </template>
       <div id=a>
         <div id=b>
@@ -1057,7 +1064,7 @@ TEST_F(StyleResolverTest, ComputeValueStandardProperty) {
   )HTML");
   UpdateAllLifecyclePhasesForTest();
 
-  Element* target = GetDocument().getElementById("target");
+  Element* target = GetDocument().getElementById(AtomicString("target"));
   ASSERT_TRUE(target);
 
   // Unable to parse a variable reference with css_test_helpers::ParseLonghand.
@@ -1101,10 +1108,10 @@ TEST_F(StyleResolverTest, ComputeValueCustomProperty) {
   )HTML");
   UpdateAllLifecyclePhasesForTest();
 
-  Element* target = GetDocument().getElementById("target");
+  Element* target = GetDocument().getElementById(AtomicString("target"));
   ASSERT_TRUE(target);
 
-  AtomicString custom_property_name = "--color";
+  AtomicString custom_property_name("--color");
   const CSSValue* parsed_value = ParseCustomProperty(
       GetDocument(), CustomProperty(custom_property_name, GetDocument()),
       "blue");
@@ -1125,7 +1132,7 @@ TEST_F(StyleResolverTest, TreeScopedReferences) {
     </host>
   )HTML");
 
-  Element* host = GetDocument().getElementById("host");
+  Element* host = GetDocument().getElementById(AtomicString("host"));
   ASSERT_TRUE(host);
   ShadowRoot& root = host->AttachShadowRootInternal(ShadowRootType::kOpen);
   root.setInnerHTML(R"HTML(
@@ -1138,7 +1145,7 @@ TEST_F(StyleResolverTest, TreeScopedReferences) {
     </div>
   )HTML");
 
-  Element* inner_host = root.getElementById("inner-host");
+  Element* inner_host = root.getElementById(AtomicString("inner-host"));
   ASSERT_TRUE(inner_host);
   ShadowRoot& inner_root =
       inner_host->AttachShadowRootInternal(ShadowRootType::kOpen);
@@ -1178,7 +1185,7 @@ TEST_F(StyleResolverTest, TreeScopedReferences) {
   }
 
   {
-    auto* span = GetDocument().getElementById("slotted");
+    auto* span = GetDocument().getElementById(AtomicString("slotted"));
     StyleResolverState state(GetDocument(), *span);
     SelectorFilter filter;
     MatchResult match_result;
@@ -1235,7 +1242,7 @@ TEST_F(StyleResolverTest, InheritStyleImagesFromDisplayContents) {
 
   UpdateAllLifecyclePhasesForTest();
 
-  auto* child = GetDocument().getElementById("child");
+  auto* child = GetDocument().getElementById(AtomicString("child"));
   auto* style = child->GetComputedStyle();
   ASSERT_TRUE(style);
 
@@ -1292,7 +1299,7 @@ TEST_F(StyleResolverTest, TextShadowInHighlightPseudoNotCounted1) {
   )HTML");
   UpdateAllLifecyclePhasesForTest();
 
-  Element* target = GetDocument().getElementById("target");
+  Element* target = GetDocument().getElementById(AtomicString("target"));
   ASSERT_TRUE(target);
   const auto* element_style = target->GetComputedStyle();
   ASSERT_TRUE(element_style);
@@ -1333,7 +1340,7 @@ TEST_F(StyleResolverTest, TextShadowInHighlightPseudoNotCounted2) {
   )HTML");
   UpdateAllLifecyclePhasesForTest();
 
-  Element* target = GetDocument().getElementById("target");
+  Element* target = GetDocument().getElementById(AtomicString("target"));
   ASSERT_TRUE(target);
   const auto* element_style = target->GetComputedStyle();
   ASSERT_TRUE(element_style);
@@ -1373,7 +1380,7 @@ TEST_F(StyleResolverTest, TextShadowInHighlightPseudotNone) {
   )HTML");
   UpdateAllLifecyclePhasesForTest();
 
-  Element* target = GetDocument().getElementById("target");
+  Element* target = GetDocument().getElementById(AtomicString("target"));
   ASSERT_TRUE(target);
   const auto* element_style = target->GetComputedStyle();
   ASSERT_TRUE(element_style);
@@ -1410,7 +1417,7 @@ TEST_F(StyleResolverTest, TextShadowInHighlightPseudoNotNone1) {
   )HTML");
   UpdateAllLifecyclePhasesForTest();
 
-  Element* target = GetDocument().getElementById("target");
+  Element* target = GetDocument().getElementById(AtomicString("target"));
   ASSERT_TRUE(target);
   const auto* element_style = target->GetComputedStyle();
   ASSERT_TRUE(element_style);
@@ -1450,7 +1457,7 @@ TEST_F(StyleResolverTest, TextShadowInHighlightPseudoNotNone2) {
   )HTML");
   UpdateAllLifecyclePhasesForTest();
 
-  Element* target = GetDocument().getElementById("target");
+  Element* target = GetDocument().getElementById(AtomicString("target"));
   ASSERT_TRUE(target);
   const auto* element_style = target->GetComputedStyle();
   ASSERT_TRUE(element_style);
@@ -1490,11 +1497,11 @@ TEST_F(StyleResolverTestCQ, DependsOnSizeContainerQueries) {
 
   UpdateAllLifecyclePhasesForTest();
 
-  auto* a = GetDocument().getElementById("a");
-  auto* b = GetDocument().getElementById("b");
-  auto* c = GetDocument().getElementById("c");
-  auto* d = GetDocument().getElementById("d");
-  auto* e = GetDocument().getElementById("e");
+  auto* a = GetDocument().getElementById(AtomicString("a"));
+  auto* b = GetDocument().getElementById(AtomicString("b"));
+  auto* c = GetDocument().getElementById(AtomicString("c"));
+  auto* d = GetDocument().getElementById(AtomicString("d"));
+  auto* e = GetDocument().getElementById(AtomicString("e"));
 
   ASSERT_TRUE(a);
   ASSERT_TRUE(b);
@@ -1531,7 +1538,7 @@ TEST_F(StyleResolverTestCQ, DependsOnSizeContainerQueriesPseudo) {
 
   UpdateAllLifecyclePhasesForTest();
 
-  auto* a = GetDocument().getElementById("a");
+  auto* a = GetDocument().getElementById(AtomicString("a"));
   auto* before = a->GetPseudoElement(kPseudoIdBefore);
   auto* after = a->GetPseudoElement(kPseudoIdAfter);
 
@@ -1569,8 +1576,8 @@ TEST_F(StyleResolverTestCQ, DependsOnSizeContainerQueriesMPC) {
 
   UpdateAllLifecyclePhasesForTest();
 
-  auto* a = GetDocument().getElementById("a");
-  auto* b = GetDocument().getElementById("b");
+  auto* a = GetDocument().getElementById(AtomicString("a"));
+  auto* b = GetDocument().getElementById(AtomicString("b"));
 
   ASSERT_TRUE(a);
   ASSERT_TRUE(b);
@@ -1598,11 +1605,11 @@ TEST_F(StyleResolverTestCQ, DependsOnStyleContainerQueries) {
 
   UpdateAllLifecyclePhasesForTest();
 
-  auto* a = GetDocument().getElementById("a");
-  auto* b = GetDocument().getElementById("b");
-  auto* c = GetDocument().getElementById("c");
-  auto* d = GetDocument().getElementById("d");
-  auto* e = GetDocument().getElementById("e");
+  auto* a = GetDocument().getElementById(AtomicString("a"));
+  auto* b = GetDocument().getElementById(AtomicString("b"));
+  auto* c = GetDocument().getElementById(AtomicString("c"));
+  auto* d = GetDocument().getElementById(AtomicString("d"));
+  auto* e = GetDocument().getElementById(AtomicString("e"));
 
   ASSERT_TRUE(a);
   ASSERT_TRUE(b);
@@ -1634,7 +1641,8 @@ TEST_F(StyleResolverTest, NoCascadeLayers) {
 
   UpdateAllLifecyclePhasesForTest();
 
-  StyleResolverState state(GetDocument(), *GetDocument().getElementById("a"));
+  StyleResolverState state(GetDocument(),
+                           *GetDocument().getElementById(AtomicString("a")));
   SelectorFilter filter;
   MatchResult match_result;
   ElementRuleCollector collector(state.ElementContext(), StyleRecalcContext(),
@@ -1681,7 +1689,8 @@ TEST_F(StyleResolverTest, CascadeLayersInDifferentSheets) {
 
   UpdateAllLifecyclePhasesForTest();
 
-  StyleResolverState state(GetDocument(), *GetDocument().getElementById("a"));
+  StyleResolverState state(GetDocument(),
+                           *GetDocument().getElementById(AtomicString("a")));
   SelectorFilter filter;
   MatchResult match_result;
   ElementRuleCollector collector(state.ElementContext(), StyleRecalcContext(),
@@ -1727,7 +1736,7 @@ TEST_F(StyleResolverTest, CascadeLayersInDifferentTreeScopes) {
       }
     </style>
     <div id=host>
-      <template shadowroot=open>
+      <template shadowrootmode=open>
         <style>
           @layer bar {
             :host { font-size: 16px; }
@@ -1740,7 +1749,7 @@ TEST_F(StyleResolverTest, CascadeLayersInDifferentTreeScopes) {
   UpdateAllLifecyclePhasesForTest();
 
   StyleResolverState state(GetDocument(),
-                           *GetDocument().getElementById("host"));
+                           *GetDocument().getElementById(AtomicString("host")));
   SelectorFilter filter;
   MatchResult match_result;
   ElementRuleCollector collector(state.ElementContext(), StyleRecalcContext(),
@@ -1762,8 +1771,9 @@ TEST_F(StyleResolverTest, CascadeLayersInDifferentTreeScopes) {
   EXPECT_TRUE(properties[1].properties->HasProperty(CSSPropertyID::kFontSize));
   EXPECT_EQ(0u, properties[1].types_.layer_order);
   EXPECT_EQ(properties[1].types_.origin, CascadeOrigin::kAuthor);
-  EXPECT_EQ(match_result.ScopeFromTreeOrder(properties[1].types_.tree_order),
-            GetDocument().getElementById("host")->GetShadowRoot());
+  EXPECT_EQ(
+      match_result.ScopeFromTreeOrder(properties[1].types_.tree_order),
+      GetDocument().getElementById(AtomicString("host"))->GetShadowRoot());
 
   // @layer foo { #host { color: green } }
   EXPECT_TRUE(properties[2].properties->HasProperty(CSSPropertyID::kColor));
@@ -1786,15 +1796,17 @@ TEST_F(StyleResolverTest, CascadeLayersAfterModifyingAnotherSheet) {
 
   UpdateAllLifecyclePhasesForTest();
 
-  GetDocument().getElementById("addrule")->appendChild(
-      GetDocument().createTextNode("target { font-size: 10px; }"));
+  GetDocument()
+      .getElementById(AtomicString("addrule"))
+      ->appendChild(
+          GetDocument().createTextNode("target { font-size: 10px; }"));
 
   UpdateAllLifecyclePhasesForTest();
 
   ASSERT_TRUE(GetDocument().GetScopedStyleResolver()->GetCascadeLayerMap());
 
-  StyleResolverState state(GetDocument(),
-                           *GetDocument().QuerySelector("target"));
+  StyleResolverState state(
+      GetDocument(), *GetDocument().QuerySelector(AtomicString("target")));
   SelectorFilter filter;
   MatchResult match_result;
   ElementRuleCollector collector(state.ElementContext(), StyleRecalcContext(),
@@ -1827,8 +1839,9 @@ TEST_F(StyleResolverTest, CascadeLayersAddLayersWithImportantDeclarations) {
 
   UpdateAllLifecyclePhasesForTest();
 
-  GetDocument().getElementById("addrule")->appendChild(
-      GetDocument().createTextNode(
+  GetDocument()
+      .getElementById(AtomicString("addrule"))
+      ->appendChild(GetDocument().createTextNode(
           "@layer { target { font-size: 20px !important; } }"
           "@layer { target { font-size: 10px !important; } }"));
 
@@ -1836,8 +1849,8 @@ TEST_F(StyleResolverTest, CascadeLayersAddLayersWithImportantDeclarations) {
 
   ASSERT_TRUE(GetDocument().GetScopedStyleResolver()->GetCascadeLayerMap());
 
-  StyleResolverState state(GetDocument(),
-                           *GetDocument().QuerySelector("target"));
+  StyleResolverState state(
+      GetDocument(), *GetDocument().QuerySelector(AtomicString("target")));
   SelectorFilter filter;
   MatchResult match_result;
   ElementRuleCollector collector(state.ElementContext(), StyleRecalcContext(),
@@ -1866,8 +1879,8 @@ TEST_F(StyleResolverTest, CascadeLayersAddLayersWithImportantDeclarations) {
   EXPECT_EQ(properties[1].types_.origin, CascadeOrigin::kAuthor);
 }
 
-// TODO(crbug.com/1095765): We should have a WPT for this test case, but
-// currently Blink web test runner can't test @page rules in WPT.
+// TODO(crbug.com/1095765): We should have a WPT for this test case, and the
+// Blink web test runner can now test @page rules in WPT.
 TEST_F(StyleResolverTest, CascadeLayersAndPageRules) {
   GetDocument().documentElement()->setInnerHTML(R"HTML(
     <style>
@@ -1878,12 +1891,10 @@ TEST_F(StyleResolverTest, CascadeLayersAndPageRules) {
     </style>
   )HTML");
 
-  constexpr gfx::SizeF initial_page_size(800, 600);
-
-  GetDocument().GetFrame()->StartPrinting(initial_page_size, initial_page_size);
+  GetDocument().GetFrame()->StartPrinting();
   GetDocument().View()->UpdateLifecyclePhasesForPrinting();
 
-  WebPrintPageDescription description;
+  WebPrintPageDescription description(gfx::SizeF(800, 600));
   GetDocument().GetPageDescription(0, &description);
 
   // The layered declaraion should win the cascading.
@@ -1893,7 +1904,7 @@ TEST_F(StyleResolverTest, CascadeLayersAndPageRules) {
 TEST_F(StyleResolverTest, BodyPropagationLayoutImageContain) {
   GetDocument().documentElement()->setAttribute(
       html_names::kStyleAttr,
-      "contain:size; display:inline-table; content:url(img);");
+      AtomicString("contain:size; display:inline-table; content:url(img);"));
   GetDocument().body()->SetInlineStyleProperty(CSSPropertyID::kBackgroundColor,
                                                "red");
 
@@ -1918,9 +1929,10 @@ TEST_F(StyleResolverTest, IsInertWithAttributeAndDialog) {
   )HTML");
   Element* html = document.documentElement();
   Element* body = document.body();
-  Element* div = document.QuerySelector("div");
+  Element* div = document.QuerySelector(AtomicString("div"));
   Node* div_text = div->firstChild();
-  auto* dialog = To<HTMLDialogElement>(document.QuerySelector("dialog"));
+  auto* dialog =
+      To<HTMLDialogElement>(document.QuerySelector(AtomicString("dialog")));
   Node* dialog_text = dialog->firstChild();
   UpdateAllLifecyclePhasesForTest();
 
@@ -1990,14 +2002,15 @@ TEST_F(StyleResolverTest, IsInertWithDialogs) {
       <dialog>dialog3_text</dialog>
     </div>
   )HTML");
-  StaticElementList* dialogs = document.QuerySelectorAll("dialog");
+  StaticElementList* dialogs =
+      document.QuerySelectorAll(AtomicString("dialog"));
   Element* html = document.documentElement();
   Element* body = document.body();
   auto* dialog1 = To<HTMLDialogElement>(dialogs->item(0));
   Node* dialog1_text = dialog1->firstChild();
   auto* dialog2 = To<HTMLDialogElement>(dialogs->item(1));
   Node* dialog2_text = dialog2->firstChild();
-  Element* div = document.QuerySelector("div");
+  Element* div = document.QuerySelector(AtomicString("div"));
   auto* dialog3 = To<HTMLDialogElement>(dialogs->item(2));
   Node* dialog3_text = dialog3->firstChild();
   UpdateAllLifecyclePhasesForTest();
@@ -2108,11 +2121,11 @@ TEST_F(StyleResolverTest, IsInertWithFullscreen) {
   )HTML");
   Element* html = document.documentElement();
   Element* body = document.body();
-  Element* div = document.QuerySelector("div");
+  Element* div = document.QuerySelector(AtomicString("div"));
   Node* div_text = div->firstChild();
-  Element* span = document.QuerySelector("span");
+  Element* span = document.QuerySelector(AtomicString("span"));
   Node* span_text = span->firstChild();
-  Element* p = document.QuerySelector("p");
+  Element* p = document.QuerySelector(AtomicString("p"));
   Node* p_text = p->firstChild();
   UpdateAllLifecyclePhasesForTest();
 
@@ -2181,7 +2194,7 @@ TEST_F(StyleResolverTest, IsInertWithFrameAndFullscreen) {
   )HTML");
   Element* html = document.documentElement();
   Element* body = document.body();
-  Element* div = document.QuerySelector("div");
+  Element* div = document.QuerySelector(AtomicString("div"));
   Node* div_text = div->firstChild();
   UpdateAllLifecyclePhasesForTest();
 
@@ -2230,7 +2243,8 @@ TEST_F(StyleResolverTest, IsInertWithBackdrop) {
   )HTML");
   Element* html = document.documentElement();
   Element* body = document.body();
-  auto* dialog = To<HTMLDialogElement>(document.QuerySelector("dialog"));
+  auto* dialog =
+      To<HTMLDialogElement>(document.QuerySelector(AtomicString("dialog")));
 
   auto IsBackdropInert = [](Element* element) {
     PseudoElement* backdrop = element->GetPseudoElement(kPseudoIdBackdrop);
@@ -2285,8 +2299,9 @@ TEST_F(StyleResolverTest, IsInertWithDialogAndFullscreen) {
   )HTML");
   Element* html = document.documentElement();
   Element* body = document.body();
-  Element* div = document.QuerySelector("div");
-  auto* dialog = To<HTMLDialogElement>(document.QuerySelector("dialog"));
+  Element* div = document.QuerySelector(AtomicString("div"));
+  auto* dialog =
+      To<HTMLDialogElement>(document.QuerySelector(AtomicString("dialog")));
   UpdateAllLifecyclePhasesForTest();
 
   EXPECT_FALSE(html->GetComputedStyle()->IsInert());
@@ -2377,7 +2392,7 @@ TEST_F(StyleResolverTestCQ, StyleRulesForElementContainerQuery) {
 
   UpdateAllLifecyclePhasesForTest();
 
-  auto* target = GetDocument().getElementById("target");
+  auto* target = GetDocument().getElementById(AtomicString("target"));
   auto& resolver = GetDocument().GetStyleResolver();
 
   auto* rule_list =
@@ -3054,7 +3069,7 @@ TEST_F(StyleResolverTest,
 
   UpdateAllLifecyclePhasesForTest();
 
-  auto* element = GetDocument().getElementById("target");
+  auto* element = GetDocument().getElementById(AtomicString("target"));
   ASSERT_TRUE(element);
   auto* before = element->GetPseudoElement(kPseudoIdBefore);
   ASSERT_TRUE(before);
@@ -3097,7 +3112,7 @@ TEST_F(StyleResolverTestCQ, ContainerUnitContext) {
     </div>
   )HTML");
 
-  Element* div = GetDocument().getElementById("div");
+  Element* div = GetDocument().getElementById(AtomicString("div"));
   ASSERT_TRUE(div);
 
   // Don't provide a StyleRecalcContext here.
@@ -3117,7 +3132,7 @@ TEST_F(StyleResolverTest, ScopedAnchorName) {
     <div id="outer-anchor" style="anchor-name: --outer"></div>
     <style>#host::part(anchor) { anchor-name: --part; }</style>
     <div id="host">
-      <template shadowroot=open>
+      <template shadowrootmode=open>
         <style>:host { anchor-name: --host; }</style>
         <div id="part" part="anchor"></div>
         <div id="inner-anchor" style="anchor-name: --inner"></div>
@@ -3130,30 +3145,34 @@ TEST_F(StyleResolverTest, ScopedAnchorName) {
   Element* outer_anchor = GetElementById("outer-anchor");
   Element* host = GetElementById("host");
   ShadowRoot* shadow = host->GetShadowRoot();
-  Element* part = shadow->getElementById("part");
-  Element* inner_anchor = shadow->getElementById("inner-anchor");
+  Element* part = shadow->getElementById(AtomicString("part"));
+  Element* inner_anchor = shadow->getElementById(AtomicString("inner-anchor"));
 
-  EXPECT_EQ(*MakeGarbageCollected<ScopedCSSName>("--outer", &GetDocument()),
+  EXPECT_EQ(*MakeGarbageCollected<ScopedCSSName>(AtomicString("--outer"),
+                                                 &GetDocument()),
             *outer_anchor->ComputedStyleRef().AnchorName());
-  EXPECT_EQ(*MakeGarbageCollected<ScopedCSSName>("--host", shadow),
-            *host->ComputedStyleRef().AnchorName());
-  EXPECT_EQ(*MakeGarbageCollected<ScopedCSSName>("--part", &GetDocument()),
+  EXPECT_EQ(
+      *MakeGarbageCollected<ScopedCSSName>(AtomicString("--host"), shadow),
+      *host->ComputedStyleRef().AnchorName());
+  EXPECT_EQ(*MakeGarbageCollected<ScopedCSSName>(AtomicString("--part"),
+                                                 &GetDocument()),
             *part->ComputedStyleRef().AnchorName());
-  EXPECT_EQ(*MakeGarbageCollected<ScopedCSSName>("--inner", shadow),
-            *inner_anchor->ComputedStyleRef().AnchorName());
+  EXPECT_EQ(
+      *MakeGarbageCollected<ScopedCSSName>(AtomicString("--inner"), shadow),
+      *inner_anchor->ComputedStyleRef().AnchorName());
 }
 
-TEST_F(StyleResolverTest, ScopedAnchorScroll) {
+TEST_F(StyleResolverTest, ScopedAnchorDefault) {
   GetDocument()
       .documentElement()
       ->setInnerHTMLWithDeclarativeShadowDOMForTesting(R"HTML(
-    <div id="outer-anchor" style="anchor-scroll: --outer"></div>
-    <style>#host::part(anchor) { anchor-scroll: --part; }</style>
+    <div id="outer-anchor" style="anchor-default: --outer"></div>
+    <style>#host::part(anchor) { anchor-default: --part; }</style>
     <div id="host">
-      <template shadowroot=open>
-        <style>:host { anchor-scroll: --host; }</style>
+      <template shadowrootmode=open>
+        <style>:host { anchor-default: --host; }</style>
         <div id="part" part="anchor"></div>
-        <div id="inner-anchor" style="anchor-scroll: --inner"></div>
+        <div id="inner-anchor" style="anchor-default: --inner"></div>
       </template>
     </div>
   )HTML");
@@ -3163,17 +3182,21 @@ TEST_F(StyleResolverTest, ScopedAnchorScroll) {
   Element* outer_anchor = GetElementById("outer-anchor");
   Element* host = GetElementById("host");
   ShadowRoot* shadow = host->GetShadowRoot();
-  Element* part = shadow->getElementById("part");
-  Element* inner_anchor = shadow->getElementById("inner-anchor");
+  Element* part = shadow->getElementById(AtomicString("part"));
+  Element* inner_anchor = shadow->getElementById(AtomicString("inner-anchor"));
 
-  EXPECT_EQ(*MakeGarbageCollected<ScopedCSSName>("--outer", &GetDocument()),
-            outer_anchor->ComputedStyleRef().AnchorScroll()->GetName());
-  EXPECT_EQ(*MakeGarbageCollected<ScopedCSSName>("--host", shadow),
-            host->ComputedStyleRef().AnchorScroll()->GetName());
-  EXPECT_EQ(*MakeGarbageCollected<ScopedCSSName>("--part", &GetDocument()),
-            part->ComputedStyleRef().AnchorScroll()->GetName());
-  EXPECT_EQ(*MakeGarbageCollected<ScopedCSSName>("--inner", shadow),
-            inner_anchor->ComputedStyleRef().AnchorScroll()->GetName());
+  EXPECT_EQ(*MakeGarbageCollected<ScopedCSSName>(AtomicString("--outer"),
+                                                 &GetDocument()),
+            *outer_anchor->ComputedStyleRef().AnchorDefault());
+  EXPECT_EQ(
+      *MakeGarbageCollected<ScopedCSSName>(AtomicString("--host"), shadow),
+      *host->ComputedStyleRef().AnchorDefault());
+  EXPECT_EQ(*MakeGarbageCollected<ScopedCSSName>(AtomicString("--part"),
+                                                 &GetDocument()),
+            *part->ComputedStyleRef().AnchorDefault());
+  EXPECT_EQ(
+      *MakeGarbageCollected<ScopedCSSName>(AtomicString("--inner"), shadow),
+      *inner_anchor->ComputedStyleRef().AnchorDefault());
 }
 
 // |length| must be a calculated value of a single anchor query node.
@@ -3198,7 +3221,7 @@ TEST_F(StyleResolverTest, ScopedAnchorFunction) {
     </style>
     <div id="left"></div>
     <div id="bottom">
-      <template shadowroot=open>
+      <template shadowrootmode=open>
         <style>
           div { position: absolute; }
           #top { top: anchor(--a top); }
@@ -3215,7 +3238,7 @@ TEST_F(StyleResolverTest, ScopedAnchorFunction) {
     </style>
     <div id="inline-start"></div>
     <div id="block-end">
-      <template shadowroot=open>
+      <template shadowrootmode=open>
         <style>
           div { position: absolute }
           :host { inset-block-end: anchor(--a bottom); }
@@ -3233,8 +3256,8 @@ TEST_F(StyleResolverTest, ScopedAnchorFunction) {
     Element* left = GetElementById("left");
     Element* bottom = GetElementById("bottom");
     ShadowRoot* shadow = bottom->GetShadowRoot();
-    Element* top = shadow->getElementById("top");
-    Element* right = shadow->getElementById("right");
+    Element* top = shadow->getElementById(AtomicString("top"));
+    Element* right = shadow->getElementById(AtomicString("right"));
 
     EXPECT_EQ(&GetDocument(),
               GetAnchorQueryTreeScope(GetLeft(left->ComputedStyleRef())));
@@ -3250,8 +3273,8 @@ TEST_F(StyleResolverTest, ScopedAnchorFunction) {
     Element* inline_start = GetElementById("inline-start");
     Element* block_end = GetElementById("block-end");
     ShadowRoot* shadow = block_end->GetShadowRoot();
-    Element* block_start = shadow->getElementById("block-start");
-    Element* inline_end = shadow->getElementById("inline-end");
+    Element* block_start = shadow->getElementById(AtomicString("block-start"));
+    Element* inline_end = shadow->getElementById(AtomicString("inline-end"));
 
     EXPECT_EQ(&GetDocument(), GetAnchorQueryTreeScope(
                                   GetLeft(inline_start->ComputedStyleRef())));
@@ -3273,7 +3296,7 @@ TEST_F(StyleResolverTest, ScopedAnchorSizeFunction) {
       #width { width: anchor-size(--a width); }
     </style>
     <div id="width">
-      <template shadowroot=open>
+      <template shadowrootmode=open>
         <style>
           div { position: absolute; }
           #height { height: anchor-size(--a height); }
@@ -3288,7 +3311,7 @@ TEST_F(StyleResolverTest, ScopedAnchorSizeFunction) {
     </style>
     <div id="min-width"></div>
     <div id="max-width">
-      <template shadowroot=open>
+      <template shadowrootmode=open>
         <style>
           div { position: absolute; }
           #min-height { min-height: anchor-size(--a height); }
@@ -3307,9 +3330,9 @@ TEST_F(StyleResolverTest, ScopedAnchorSizeFunction) {
   Element* max_width = GetElementById("max-width");
   ShadowRoot* shadow1 = width->GetShadowRoot();
   ShadowRoot* shadow2 = max_width->GetShadowRoot();
-  Element* height = shadow1->getElementById("height");
-  Element* min_height = shadow2->getElementById("min-height");
-  Element* max_height = shadow2->getElementById("max-height");
+  Element* height = shadow1->getElementById(AtomicString("height"));
+  Element* min_height = shadow2->getElementById(AtomicString("min-height"));
+  Element* max_height = shadow2->getElementById(AtomicString("max-height"));
 
   EXPECT_EQ(&GetDocument(),
             GetAnchorQueryTreeScope(GetWidth(width->ComputedStyleRef())));
@@ -3340,9 +3363,9 @@ TEST_F(StyleResolverTestCQ, CanAffectAnimationsMPC) {
 
   UpdateAllLifecyclePhasesForTest();
 
-  auto* a = GetDocument().getElementById("a");
-  auto* b = GetDocument().getElementById("b");
-  auto* c = GetDocument().getElementById("c");
+  auto* a = GetDocument().getElementById(AtomicString("a"));
+  auto* b = GetDocument().getElementById(AtomicString("b"));
+  auto* c = GetDocument().getElementById(AtomicString("c"));
 
   ASSERT_TRUE(a);
   ASSERT_TRUE(b);
@@ -3351,6 +3374,132 @@ TEST_F(StyleResolverTestCQ, CanAffectAnimationsMPC) {
   EXPECT_TRUE(a->ComputedStyleRef().CanAffectAnimations());
   EXPECT_FALSE(b->ComputedStyleRef().CanAffectAnimations());
   EXPECT_FALSE(c->ComputedStyleRef().CanAffectAnimations());
+}
+
+TEST_F(StyleResolverTest, HasAutoAnchorPositioning) {
+  GetDocument().documentElement()->setInnerHTML(R"HTML(
+    <style>
+      #target {
+        position: absolute;
+        position-fallback: --pf;
+        left: anchor(auto);
+      }
+      @position-fallback --pf {
+        @try { width: 100px; }
+        @try { top: anchor(auto); }
+        @try { left: anchor(auto); }
+        @try { left: anchor(auto); top: anchor(auto); }
+      }
+    </style>
+    <div id="target"></div>
+  )HTML");
+
+  UpdateAllLifecyclePhasesForTest();
+
+  Element* target = GetDocument().getElementById(AtomicString("target"));
+
+  const ComputedStyle& base_style = target->ComputedStyleRef();
+  EXPECT_TRUE(base_style.HasAutoAnchorPositioning());
+  EXPECT_FALSE(base_style.HasAutoAnchorPositioningInXAxisFromTryBlock());
+  EXPECT_FALSE(base_style.HasAutoAnchorPositioningInYAxisFromTryBlock());
+
+  // First @try block doesn't have any auto anchor positioning in it.
+  const ComputedStyle& fallback1 = *target->StyleForPositionFallback(0);
+  EXPECT_TRUE(fallback1.HasAutoAnchorPositioning());
+  EXPECT_FALSE(fallback1.HasAutoAnchorPositioningInXAxisFromTryBlock());
+  EXPECT_FALSE(fallback1.HasAutoAnchorPositioningInYAxisFromTryBlock());
+
+  // Second @try block has auto anchor positioning only in y axis.
+  const ComputedStyle& fallback2 = *target->StyleForPositionFallback(1);
+  EXPECT_TRUE(fallback2.HasAutoAnchorPositioning());
+  EXPECT_FALSE(fallback2.HasAutoAnchorPositioningInXAxisFromTryBlock());
+  EXPECT_TRUE(fallback2.HasAutoAnchorPositioningInYAxisFromTryBlock());
+
+  // Third @try block has auto anchor positioning only in x axis, even if the
+  // resolved computed style is equal to the base style.
+  const ComputedStyle& fallback3 = *target->StyleForPositionFallback(2);
+  EXPECT_TRUE(fallback3.HasAutoAnchorPositioning());
+  EXPECT_TRUE(fallback3.HasAutoAnchorPositioningInXAxisFromTryBlock());
+  EXPECT_FALSE(fallback3.HasAutoAnchorPositioningInYAxisFromTryBlock());
+
+  // Fourth @try block has auto anchor positioning in both axes.
+  const ComputedStyle& fallback4 = *target->StyleForPositionFallback(3);
+  EXPECT_TRUE(fallback4.HasAutoAnchorPositioning());
+  EXPECT_TRUE(fallback4.HasAutoAnchorPositioningInXAxisFromTryBlock());
+  EXPECT_TRUE(fallback4.HasAutoAnchorPositioningInYAxisFromTryBlock());
+}
+
+TEST_F(StyleResolverTest, CssRulesForElementExcludeStartingStyle) {
+  ScopedCSSStartingStyleForTest enabled(true);
+
+  SetBodyInnerHTML(R"HTML(
+    <style>
+      @starting-style {
+        #target {
+          color: red;
+        }
+      }
+    </style>
+    <div id="wrapper" hidden>
+      <span id="target"></span>
+    </div>
+  )HTML");
+
+  Element* target = GetDocument().getElementById(AtomicString("target"));
+  EXPECT_EQ(target->GetComputedStyle(), nullptr);
+  EXPECT_EQ(GetStyleEngine().GetStyleResolver().CssRulesForElement(target),
+            nullptr);
+
+  GetElementById("wrapper")->removeAttribute(html_names::kHiddenAttr);
+  UpdateAllLifecyclePhasesForTest();
+
+  EXPECT_NE(target->GetComputedStyle(), nullptr);
+  EXPECT_EQ(GetStyleEngine().GetStyleResolver().CssRulesForElement(target),
+            nullptr);
+}
+
+TEST_F(StyleResolverTest, PseudoCSSRulesForElementExcludeStartingStyle) {
+  ScopedCSSStartingStyleForTest enabled(true);
+
+  SetBodyInnerHTML(R"HTML(
+    <style>
+      @starting-style {
+        #target::before {
+          color: red;
+        }
+      }
+      #target::before {
+        content: "X";
+        color: green;
+      }
+    </style>
+    <div id="wrapper" hidden>
+      <span id="target"></span>
+    </div>
+  )HTML");
+
+  Element* target = GetDocument().getElementById(AtomicString("target"));
+  EXPECT_EQ(target->GetComputedStyle(), nullptr);
+  EXPECT_EQ(target->GetPseudoElement(kPseudoIdBefore), nullptr);
+
+  RuleIndexList* pseudo_rules =
+      GetStyleEngine().GetStyleResolver().PseudoCSSRulesForElement(
+          target, kPseudoIdBefore, g_null_atom);
+  ASSERT_NE(pseudo_rules, nullptr);
+  EXPECT_EQ(pseudo_rules->size(), 1u);
+
+  GetElementById("wrapper")->removeAttribute(html_names::kHiddenAttr);
+  UpdateAllLifecyclePhasesForTest();
+
+  EXPECT_NE(target->GetComputedStyle(), nullptr);
+  EXPECT_NE(target->GetPseudoElement(kPseudoIdBefore), nullptr);
+
+  pseudo_rules = GetStyleEngine().GetStyleResolver().PseudoCSSRulesForElement(
+      target, kPseudoIdBefore, g_null_atom);
+  ASSERT_NE(pseudo_rules, nullptr);
+  EXPECT_EQ(pseudo_rules->size(), 1u);
+  EXPECT_EQ(pseudo_rules->at(0).first->cssText(),
+            "#target::before { content: \"X\"; color: green; }");
 }
 
 }  // namespace blink

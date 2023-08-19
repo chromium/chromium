@@ -74,7 +74,7 @@ class TextfieldTestApi {
   void SetDisplayOffsetX(int x) const;
 
  private:
-  raw_ptr<Textfield, DanglingUntriaged> textfield_;
+  raw_ptr<Textfield, AcrossTasksDanglingUntriaged> textfield_;
 };
 
 }  // namespace views

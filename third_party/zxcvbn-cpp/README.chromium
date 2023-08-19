@@ -7,6 +7,7 @@ Revision: cf092c952cd2325ce390b2691231a8f1cb195d59
 License: MIT
 License File: LICENSE.txt
 Security Critical: yes
+Shipped: yes
 
 Description:
 A realistic password strength estimator. https://tech.dropbox.com/2012/04/zxcvbn-realistic-password-strength-estimation/
@@ -55,6 +56,8 @@ Applied the following patches:
   exist once Chrome is built with -fmodules.
 - patches/no_wstring_convert.diff: Replace usages of std::wstring_convert with
   //base equivalents as the former is deprecated in C++17.
+- patches/rank_dict_for_testing.diff: Add a getter for testing and replace
+  StringPiece with std::string_view.
 
 Ran the following commands to generate adjacency graphs:
 $ python ./data-scripts/build_keyboard_adjacency_graphs.py ./native-src/zxcvbn/adjacency_graphs.hpp

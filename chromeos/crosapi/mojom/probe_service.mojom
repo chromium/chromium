@@ -74,7 +74,8 @@ interface TelemetryProbeService {
 
 // An enumeration of each category of information that cros_healthd can report.
 //
-// Next ID: 16
+// Next ID: 17
+// Next Version: 2
 [Stable, Extensible]
 enum ProbeCategoryEnum {
   [Default] kUnknown = 11,
@@ -93,6 +94,7 @@ enum ProbeCategoryEnum {
   kTpm = 13,
   kAudio = 14,
   kBus = 15,
+  [MinVersion=1] kDisplay = 16,
 };
 
 // An enumeration of the different categories of errors that can occur when
@@ -820,6 +822,106 @@ union ProbeAudioResult {
   ProbeError error;
 };
 
+// An enumeration of display input type.
+//
+// NextMinVersion: 1, NextIndex: 3
+[Stable, Extensible]
+enum ProbeDisplayInputType {
+  // An enum value not defined in this version of the enum definition.
+  [Default] kUnmappedEnumField = 0,
+  // Digital input.
+  kDigital = 1,
+  // Analog input.
+  kAnalog = 2,
+};
+
+// NextMinVersion: 1, NextIndex: 15
+[Stable]
+struct ProbeEmbeddedDisplayInfo {
+  // Privacy screen is supported or not.
+  bool? privacy_screen_supported@0;
+  // Privacy screen is enabled or not.
+  bool? privacy_screen_enabled@1;
+  // Display width in millimeters.
+  uint32? display_width@2;
+  // Display height in millimeters.
+  uint32? display_height@3;
+  // Horizontal resolution.
+  uint32? resolution_horizontal@4;
+  // Vertical resolution.
+  uint32? resolution_vertical@5;
+  // Refresh rate.
+  double? refresh_rate@6;
+  // Three letter manufacturer ID.
+  string? manufacturer@7;
+  // Manufacturer product code.
+  uint16? model_id@8;
+  // 32 bits serial number.
+  uint32? serial_number@9;
+  // Week of manufacture.
+  uint8? manufacture_week@10;
+  // Year of manufacture.
+  uint16? manufacture_year@11;
+  // EDID version.
+  string? edid_version@12;
+  // Digital or analog input.
+  ProbeDisplayInputType input_type@13;
+  // Name of display product.
+  string? display_name@14;
+};
+
+// NextMinVersion: 1, NextIndex: 13
+[Stable]
+struct ProbeExternalDisplayInfo {
+  // Display width in millimeters.
+  uint32? display_width@0;
+  // Display height in millimeters.
+  uint32? display_height@1;
+  // Horizontal resolution.
+  uint32? resolution_horizontal@2;
+  // Vertical resolution.
+  uint32? resolution_vertical@3;
+  // Refresh rate.
+  double? refresh_rate@4;
+  // Three letter manufacturer ID.
+  string? manufacturer@5;
+  // Manufacturer product code.
+  uint16? model_id@6;
+  // 32 bits serial number.
+  uint32? serial_number@7;
+  // Week of manufacture.
+  uint8? manufacture_week@8;
+  // Year of manufacture.
+  uint16? manufacture_year@9;
+  // EDID version.
+  string? edid_version@10;
+  // Digital or analog input.
+  ProbeDisplayInputType input_type@11;
+  // Name of display product.
+  string? display_name@12;
+};
+
+// Display information.
+//
+// NextMinVersion: 1, NextIndex: 2
+[Stable]
+struct ProbeDisplayInfo {
+  // Embedded display info.
+  ProbeEmbeddedDisplayInfo? embedded_display@0;
+  // External display info.
+  array<ProbeExternalDisplayInfo>? external_displays@1;
+};
+
+// Can either be populated with the Display result or an error retrieving the
+// information.
+[Stable]
+union ProbeDisplayResult {
+  // Valid DisplayInfo.
+  ProbeDisplayInfo display_info;
+  // The error that occurred attempting to retrieve DisplayInfo.
+  ProbeError error;
+};
+
 // A collection of all the device's telemetry information that cros_healthd is
 // capable of reporting. Note that every field in TelemetryInfo is nullable, and
 // the response for a particular ProbeTelemetryInfo request will only contain
@@ -828,8 +930,8 @@ union ProbeAudioResult {
 // attempt to fetch that information, and size zero if cros_healthd did attempt
 // to fetch that information, but was unable to.
 //
-// Next ID: 15
-// Next MinVersion: 3
+// Next ID: 16
+// Next MinVersion: 4
 [Stable]
 struct ProbeTelemetryInfo {
   // Information about the device's main battery. Only present when kBattery was
@@ -880,6 +982,9 @@ struct ProbeTelemetryInfo {
   // Information about the bus devices. Only present when kBus was included
   // in the categories input to ProbeTelemetryInfo.
   [MinVersion=2] ProbeBusResult? bus_result@14;
+  // Information about the bus devices. Only present when kDisplay was included
+  // in the categories input to ProbeTelemetryInfo.
+  [MinVersion=3] ProbeDisplayResult? display_result@15;
 };
 
 // Result of running /usr/share/cros/oemdata.sh script.

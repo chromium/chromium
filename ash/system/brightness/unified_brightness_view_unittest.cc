@@ -11,6 +11,8 @@
 #include "ash/system/unified/unified_system_tray_bubble.h"
 #include "ash/system/unified/unified_system_tray_controller.h"
 #include "ash/test/ash_test_base.h"
+#include "ash/wm/window_state.h"
+#include "ash/wm/window_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/test/scoped_feature_list.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -75,6 +77,18 @@ class UnifiedBrightnessViewTest : public AshTestBase {
 
   views::Slider* slider() { return unified_brightness_view_->slider(); }
 
+  views::Button* more_button() {
+    return static_cast<UnifiedBrightnessView*>(
+               controller()->unified_brightness_view_)
+        ->more_button();
+  }
+
+  views::Button* night_light_button() {
+    return static_cast<UnifiedBrightnessView*>(
+               controller()->unified_brightness_view_)
+        ->night_light_button();
+  }
+
   const gfx::VectorIcon& GetIcon(float level) {
     return unified_brightness_view_->GetBrightnessIconForLevel(level);
   }
@@ -88,16 +102,30 @@ class UnifiedBrightnessViewTest : public AshTestBase {
  private:
   // The `UnifiedBrightnessView` containing a `QuickSettingsSlider`, a
   // `NightLight` button, and a drill-in button.
-  raw_ptr<UnifiedBrightnessView, ExperimentalAsh> unified_brightness_view_ =
-      nullptr;
+  raw_ptr<UnifiedBrightnessView, DanglingUntriaged | ExperimentalAsh>
+      unified_brightness_view_ = nullptr;
 
   // The `UnifiedBrightnessView` containing only a `QuickSettingsSlider`.
   std::unique_ptr<UnifiedBrightnessView> brightness_slider_ = nullptr;
 
-  raw_ptr<UnifiedBrightnessSliderController, ExperimentalAsh>
+  raw_ptr<UnifiedBrightnessSliderController,
+          DanglingUntriaged | ExperimentalAsh>
       brightness_slider_controller_ = nullptr;
   base::test::ScopedFeatureList feature_list_;
 };
+
+// Tests to ensure that the `slider_button` does not handle any events,
+// letting them get through to the slider. Effectively the `slider_button` is
+// part of the slider in the brightness view.
+TEST_F(UnifiedBrightnessViewTest, SliderButtonClickThrough) {
+  slider()->SetValue(1.0);
+  EXPECT_FLOAT_EQ(unified_brightness_view()->slider()->GetValue(), 1.0);
+
+  // A click on the `slider_button` for `unified_brightness_view()` should go
+  // through to the slider and change the value to the minimum.
+  LeftClickOn(unified_brightness_view()->slider_button());
+  EXPECT_FLOAT_EQ(unified_brightness_view()->slider()->GetValue(), 0.0);
+}
 
 // Tests that `UnifiedBrightnessView` is made up of a `QuickSettingsSlider`, a
 // `NightLight` button, and a drill-in button that leads to the display subpage.
@@ -172,6 +200,65 @@ TEST_F(UnifiedBrightnessViewTest, SliderIcon) {
                    UnifiedBrightnessView::kBrightnessLevelIcons[2]->name);
     }
   }
+}
+
+// Tests that the `UnifiedBrightnessView` `more_button` is not enabled if and
+// only if there is a trusted pinned window.
+TEST_F(UnifiedBrightnessViewTest, MoreButton) {
+  // At the start of the test, the system tray containing the brightness view is
+  // already shown. Since there is no pinned window, the `more_button` should
+  // not be disabled.
+  EXPECT_TRUE(more_button()->GetEnabled());
+
+  // Close the bubble so the brightness view can be recreated.
+  GetPrimaryUnifiedSystemTray()->CloseBubble();
+
+  // Create and trusted pin a window.
+  std::unique_ptr<aura::Window> window(CreateTestWindow());
+  wm::ActivateWindow(window.get());
+  window_util::PinWindow(window.get(), /*trusted=*/true);
+
+  // Open the bubble and check that the new brightness view more button is in
+  // the correct state.
+  GetPrimaryUnifiedSystemTray()->ShowBubble();
+  EXPECT_FALSE(more_button()->GetEnabled());
+
+  // Close the bubble so the brightness view can be recreated.
+  GetPrimaryUnifiedSystemTray()->CloseBubble();
+
+  // Unpin the window
+  WindowState::Get(window.get())->Restore();
+
+  // Make sure the more button is not disabled.
+  GetPrimaryUnifiedSystemTray()->ShowBubble();
+  EXPECT_TRUE(more_button()->GetEnabled());
+}
+
+// Tests that the night light button is disabled in the sign-in and lock screen.
+// TODO(b/294868714): remove the test for the lock screen.
+TEST_F(UnifiedBrightnessViewTest, NightLightButtonState) {
+  // Close the bubble so the brightness view can be recreated.
+  GetPrimaryUnifiedSystemTray()->CloseBubble();
+
+  // In the sign-in screen, the `night_light_button_` is disabled.
+  GetSessionControllerClient()->SetSessionState(
+      session_manager::SessionState::LOGIN_PRIMARY);
+  GetPrimaryUnifiedSystemTray()->ShowBubble();
+  EXPECT_FALSE(night_light_button()->GetEnabled());
+
+  GetPrimaryUnifiedSystemTray()->CloseBubble();
+  // In the lock screen, the `night_light_button_` is disabled.
+  GetSessionControllerClient()->SetSessionState(
+      session_manager::SessionState::LOCKED);
+  GetPrimaryUnifiedSystemTray()->ShowBubble();
+  EXPECT_FALSE(night_light_button()->GetEnabled());
+
+  GetPrimaryUnifiedSystemTray()->CloseBubble();
+  // In the active user session, the `night_light_button_` is enabled.
+  GetSessionControllerClient()->SetSessionState(
+      session_manager::SessionState::ACTIVE);
+  GetPrimaryUnifiedSystemTray()->ShowBubble();
+  EXPECT_TRUE(night_light_button()->GetEnabled());
 }
 
 }  // namespace ash

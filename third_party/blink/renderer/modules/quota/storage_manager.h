@@ -23,7 +23,7 @@ class ScriptPromise;
 class ScriptPromiseResolver;
 class ScriptState;
 
-class StorageManager final : public EventTargetWithInlineData,
+class StorageManager final : public EventTarget,
                              public ExecutionContextClient,
                              public mojom::blink::QuotaChangeListener {
   DEFINE_WRAPPERTYPEINFO();
@@ -39,7 +39,7 @@ class StorageManager final : public EventTargetWithInlineData,
 
   void Trace(Visitor* visitor) const override;
 
-  // EventTargetWithInlineData
+  // EventTarget
   DEFINE_ATTRIBUTE_EVENT_LISTENER(quotachange, kQuotachange)
   const AtomicString& InterfaceName() const override;
   ExecutionContext* GetExecutionContext() const override;

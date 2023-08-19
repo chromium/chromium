@@ -21,8 +21,9 @@ namespace internal {
 
 #if defined(ARCH_CPU_X86_64)
 
-void InitializeCPUContextX86_64_NoFloatingPoint(
+void InitializeCPUContextX86_64(
     const zx_thread_state_general_regs_t& thread_context,
+    const zx_thread_state_fp_regs_t& float_context,
     CPUContextX86_64* context) {
   memset(context, 0, sizeof(*context));
   context->rax = thread_context.rax;
@@ -43,6 +44,19 @@ void InitializeCPUContextX86_64_NoFloatingPoint(
   context->r15 = thread_context.r15;
   context->rip = thread_context.rip;
   context->rflags = thread_context.rflags;
+
+  context->fxsave.fcw = float_context.fcw;
+  context->fxsave.fsw = float_context.fsw;
+  context->fxsave.ftw = float_context.ftw;
+  context->fxsave.fop = float_context.fop;
+  context->fxsave.fpu_ip_64 = float_context.fip;
+  context->fxsave.fpu_dp_64 = float_context.fdp;
+
+  for (size_t i = 0; i < std::size(float_context.st); ++i) {
+    memcpy(&context->fxsave.st_mm[i],
+           &float_context.st[i],
+           sizeof(float_context.st[i]));
+  }
 }
 
 #elif defined(ARCH_CPU_ARM64)
@@ -87,6 +101,52 @@ void InitializeCPUContextARM64(
   static_assert(sizeof(context->fpsimd) == sizeof(vector_context.v),
                 "registers size mismatch");
   memcpy(&context->fpsimd, &vector_context.v, sizeof(vector_context.v));
+}
+
+#elif defined(ARCH_CPU_RISCV64)
+
+void InitializeCPUContextRISCV64(
+    const zx_thread_state_general_regs_t& thread_context,
+    const zx_thread_state_fp_regs_t& float_context,
+    CPUContextRISCV64* context) {
+  context->pc = thread_context.pc;
+  context->regs[0] = thread_context.ra;
+  context->regs[1] = thread_context.sp;
+  context->regs[2] = thread_context.gp;
+  context->regs[3] = thread_context.tp;
+  context->regs[4] = thread_context.t0;
+  context->regs[5] = thread_context.t1;
+  context->regs[6] = thread_context.t2;
+  context->regs[7] = thread_context.s0;
+  context->regs[8] = thread_context.s1;
+  context->regs[9] = thread_context.a0;
+  context->regs[10] = thread_context.a1;
+  context->regs[11] = thread_context.a2;
+  context->regs[12] = thread_context.a3;
+  context->regs[13] = thread_context.a4;
+  context->regs[14] = thread_context.a5;
+  context->regs[15] = thread_context.a6;
+  context->regs[16] = thread_context.a7;
+  context->regs[17] = thread_context.s2;
+  context->regs[18] = thread_context.s3;
+  context->regs[19] = thread_context.s4;
+  context->regs[20] = thread_context.s5;
+  context->regs[21] = thread_context.s6;
+  context->regs[22] = thread_context.s7;
+  context->regs[23] = thread_context.s8;
+  context->regs[24] = thread_context.s9;
+  context->regs[25] = thread_context.s10;
+  context->regs[26] = thread_context.s11;
+  context->regs[27] = thread_context.t3;
+  context->regs[28] = thread_context.t4;
+  context->regs[29] = thread_context.t5;
+  context->regs[30] = thread_context.t6;
+
+  for (size_t i = 0; i < std::size(context->fpregs); ++i) {
+    context->fpregs[i] = float_context.q[i].low;
+  }
+
+  context->fcsr = float_context.fcsr;
 }
 
 #endif  // ARCH_CPU_X86_64

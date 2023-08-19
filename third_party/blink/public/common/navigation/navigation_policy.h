@@ -103,6 +103,7 @@ struct BLINK_COMMON_EXPORT NavigationDownloadPolicy {
 BLINK_COMMON_EXPORT
 blink::mojom::NavigationInitiatorActivationAndAdStatus
 GetNavigationInitiatorActivationAndAdStatus(bool has_user_activation,
+                                            bool initiator_frame_is_ad,
                                             bool is_ad_script_in_stack);
 
 }  // namespace blink

@@ -31,10 +31,10 @@ TEST_F(ShadowIncludingTreeOrderTraversalTest, Next) {
   GetDocument().body()->setInnerHTMLWithDeclarativeShadowDOMForTesting(R"HTML(
     <div id="c0">
       <div id="c00">
-        <template shadowroot="open"></template>
+        <template shadowrootmode="open"></template>
       </div>
       <div id="c01">
-        <template shadowroot="open">
+        <template shadowrootmode="open">
           <div id="s0"></div>
           <div id="s1">
             <div id="s10"></div>
@@ -44,7 +44,7 @@ TEST_F(ShadowIncludingTreeOrderTraversalTest, Next) {
       <div id="c02">
         <div id="c020"></div>
         <div id="c021" slot="t01"></div>
-        <template shadowroot="open">
+        <template shadowrootmode="open">
           <div id="t0">
             <slot id="t00"></slot>
             <slot id="t01"></slot>
@@ -69,16 +69,16 @@ TEST_F(ShadowIncludingTreeOrderTraversalTest, Next) {
   ShadowRoot* shadow_root_1 = c01->GetShadowRoot();
   ASSERT_TRUE(shadow_root_1);
   RemoveWhiteSpaceOnlyTextNodes(*shadow_root_1);
-  auto* s0 = shadow_root_1->getElementById("s0");
-  auto* s1 = shadow_root_1->getElementById("s1");
-  auto* s10 = shadow_root_1->getElementById("s10");
+  auto* s0 = shadow_root_1->getElementById(AtomicString("s0"));
+  auto* s1 = shadow_root_1->getElementById(AtomicString("s1"));
+  auto* s10 = shadow_root_1->getElementById(AtomicString("s10"));
 
   ShadowRoot* shadow_root_2 = c02->GetShadowRoot();
   ASSERT_TRUE(shadow_root_2);
   RemoveWhiteSpaceOnlyTextNodes(*shadow_root_2);
-  auto* t0 = shadow_root_2->getElementById("t0");
-  auto* t00 = shadow_root_2->getElementById("t00");
-  auto* t01 = shadow_root_2->getElementById("t01");
+  auto* t0 = shadow_root_2->getElementById(AtomicString("t0"));
+  auto* t00 = shadow_root_2->getElementById(AtomicString("t00"));
+  auto* t01 = shadow_root_2->getElementById(AtomicString("t01"));
 
   // Test iteration order using Next.
   EXPECT_EQ(ShadowIncludingTreeOrderTraversal::Next(*GetDocument().body(),
@@ -122,7 +122,7 @@ TEST_F(ShadowIncludingTreeOrderTraversalTest, DescendantsOf) {
       <div id="a01"></div>
     </div>
     <div id="a1">
-      <template shadowroot="open" id="sr1">
+      <template shadowrootmode="open" id="sr1">
         <div id="b0">
           <div id="b00"></div>
         </div>

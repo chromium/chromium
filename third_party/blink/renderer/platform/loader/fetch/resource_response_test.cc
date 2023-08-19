@@ -6,6 +6,7 @@
 
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/renderer/platform/network/http_names.h"
 #include "third_party/blink/renderer/platform/scheduler/public/non_main_thread.h"
 #include "third_party/blink/renderer/platform/scheduler/public/post_cross_thread_task.h"
 #include "third_party/blink/renderer/platform/testing/testing_platform_support_with_mock_scheduler.h"
@@ -17,15 +18,19 @@ namespace {
 
 ResourceResponse CreateTestResponse() {
   ResourceResponse response;
-  response.AddHttpHeaderField("age", "0");
-  response.AddHttpHeaderField("cache-control", "no-cache");
-  response.AddHttpHeaderField("date", "Tue, 17 Jan 2017 04:01:00 GMT");
-  response.AddHttpHeaderField("expires", "Tue, 17 Jan 2017 04:11:00 GMT");
-  response.AddHttpHeaderField("last-modified", "Tue, 17 Jan 2017 04:00:00 GMT");
-  response.AddHttpHeaderField("pragma", "public");
-  response.AddHttpHeaderField("etag", "abc");
-  response.AddHttpHeaderField("content-disposition",
-                              "attachment; filename=a.txt");
+  response.AddHttpHeaderField(http_names::kLowerAge, AtomicString("0"));
+  response.AddHttpHeaderField(http_names::kCacheControl,
+                              AtomicString("no-cache"));
+  response.AddHttpHeaderField(http_names::kDate,
+                              AtomicString("Tue, 17 Jan 2017 04:01:00 GMT"));
+  response.AddHttpHeaderField(http_names::kExpires,
+                              AtomicString("Tue, 17 Jan 2017 04:11:00 GMT"));
+  response.AddHttpHeaderField(http_names::kLastModified,
+                              AtomicString("Tue, 17 Jan 2017 04:00:00 GMT"));
+  response.AddHttpHeaderField(http_names::kPragma, AtomicString("public"));
+  response.AddHttpHeaderField(http_names::kETag, AtomicString("abc"));
+  response.AddHttpHeaderField(http_names::kContentDisposition,
+                              AtomicString("attachment; filename=a.txt"));
   return response;
 }
 
@@ -35,18 +40,22 @@ TEST(ResourceResponseTest, AddHttpHeaderFieldWithMultipleValues) {
   ResourceResponse response(CreateTestResponse());
 
   Vector<AtomicString> empty_values;
-  response.AddHttpHeaderFieldWithMultipleValues("set-cookie", empty_values);
-  EXPECT_EQ(AtomicString(), response.HttpHeaderField("set-cookie"));
+  response.AddHttpHeaderFieldWithMultipleValues(http_names::kLowerSetCookie,
+                                                empty_values);
+  EXPECT_EQ(AtomicString(),
+            response.HttpHeaderField(http_names::kLowerSetCookie));
 
-  response.AddHttpHeaderField("set-cookie", "a=1");
-  EXPECT_EQ("a=1", response.HttpHeaderField("set-cookie"));
+  response.AddHttpHeaderField(http_names::kLowerSetCookie, AtomicString("a=1"));
+  EXPECT_EQ("a=1", response.HttpHeaderField(http_names::kLowerSetCookie));
 
   Vector<AtomicString> values;
   values.push_back("b=2");
   values.push_back("c=3");
-  response.AddHttpHeaderFieldWithMultipleValues("set-cookie", values);
+  response.AddHttpHeaderFieldWithMultipleValues(http_names::kLowerSetCookie,
+                                                values);
 
-  EXPECT_EQ("a=1, b=2, c=3", response.HttpHeaderField("set-cookie"));
+  EXPECT_EQ("a=1, b=2, c=3",
+            response.HttpHeaderField(http_names::kLowerSetCookie));
 }
 
 TEST(ResourceResponseTest, DnsAliasesCanBeSetAndAccessed) {

@@ -10,10 +10,6 @@
 #import "ios/chrome/grit/ios_strings.h"
 #import "ui/base/l10n/l10n_util_mac.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 namespace {
 
 // These values are used in the TableViewModel to indicate sections of the
@@ -70,6 +66,8 @@ typedef NS_ENUM(NSInteger, ItemType) {
       [[TableViewDetailTextItem alloc] initWithType:FollowingItemType];
   followingItem.text =
       l10n_util::GetNSString(IDS_IOS_FEED_MANAGEMENT_FOLLOWING_TEXT);
+  followingItem.detailText =
+      l10n_util::GetNSString(IDS_IOS_FEED_MANAGEMENT_FOLLOWING_DETAIL);
   followingItem.accessorySymbol = TableViewDetailTextCellAccessorySymbolChevron;
   [model addItem:followingItem
       toSectionWithIdentifier:FollowingSectionIdentifier];

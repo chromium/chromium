@@ -15,6 +15,9 @@ namespace ash {
 
 class COMPONENT_EXPORT(SHILL_CLIENT) FakeSMSClient : public SMSClient {
  public:
+  static const char kNumber[];
+  static const char kTimestamp[];
+
   FakeSMSClient();
 
   FakeSMSClient(const FakeSMSClient&) = delete;

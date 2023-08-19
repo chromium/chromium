@@ -29,6 +29,10 @@ namespace apps {
 enum class LaunchSource;
 }
 
+namespace safe_browsing {
+enum class SafeBrowsingSettingReferralMethod;
+}
+
 namespace signin {
 enum class ConsentLevel;
 }  // namespace signin
@@ -63,6 +67,9 @@ enum HelpSource {
   // WebUI (the OS "About" page).
   HELP_SOURCE_WEBUI_CHROME_OS,
 #endif
+
+  // WebUSB help center article.
+  HELP_SOURCE_WEBUSB,
 };
 
 // Sources of feedback requests.
@@ -114,6 +121,8 @@ enum FeedbackSource {
   kFeedbackSourceAutofillContextMenu,
   kFeedbackSourceUnknownLacrosSource,
   kFeedbackSourceWindowLayoutMenu,
+  kFeedbackSourcePriceInsights,
+  kFeedbackSourceCookieControls,
 
   // Must be last.
   kFeedbackSourceCount,
@@ -157,7 +166,6 @@ void ShowChromeWhatsNew(Browser* browser);
 #endif
 void LaunchReleaseNotes(Profile* profile, apps::LaunchSource source);
 void ShowBetaForum(Browser* browser);
-void ShowPolicy(Browser* browser);
 void ShowSlow(Browser* browser);
 
 // Constructs a settings GURL for the specified |sub_page|.
@@ -191,6 +199,9 @@ void ShowClearBrowsingDataDialog(Browser* browser);
 void ShowPasswordManager(Browser* browser);
 void ShowPasswordCheck(Browser* browser);
 void ShowSafeBrowsingEnhancedProtection(Browser* browser);
+void ShowSafeBrowsingEnhancedProtectionWithIph(
+    Browser* browser,
+    safe_browsing::SafeBrowsingSettingReferralMethod referral_method);
 void ShowImportDialog(Browser* browser);
 void ShowAboutChrome(Browser* browser);
 void ShowSearchEngineSettings(Browser* browser);
@@ -232,22 +243,13 @@ void ShowFirmwareUpdatesApp(Profile* profile);
 void ShowShortcutCustomizationApp(Profile* profile);
 #endif
 
-#if BUILDFLAG(ENABLE_DICE_SUPPORT)
-// Initiates signin in a new browser tab.
-void ShowBrowserSignin(Browser* browser,
-                       signin_metrics::AccessPoint access_point,
-                       signin::ConsentLevel consent_level);
-
-// If the user is already signed in, shows the "Signin" portion of Settings,
-// otherwise initiates signin in a new browser tab.
-void ShowBrowserSigninOrSettings(Browser* browser,
-                                 signin_metrics::AccessPoint access_point);
-#endif
-
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || \
     BUILDFLAG(IS_FUCHSIA)
 // Show chrome://app-settings/<app-id> page.
 void ShowWebAppSettings(Browser* browser,
+                        const std::string& app_id,
+                        web_app::AppSettingsPageEntryPoint entry_point);
+void ShowWebAppSettings(Profile* profile,
                         const std::string& app_id,
                         web_app::AppSettingsPageEntryPoint entry_point);
 #endif

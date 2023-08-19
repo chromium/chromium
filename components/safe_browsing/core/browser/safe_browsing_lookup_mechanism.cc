@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "components/safe_browsing/core/browser/safe_browsing_lookup_mechanism.h"
+#include "components/safe_browsing/core/browser/db/v4_protocol_manager_util.h"
 
 namespace safe_browsing {
 
@@ -28,7 +29,7 @@ SafeBrowsingLookupMechanism::CompleteCheckResult::CompleteCheckResult(
     const GURL& url,
     SBThreatType threat_type,
     const ThreatMetadata& metadata,
-    bool is_from_url_real_time_check,
+    absl::optional<ThreatSource> threat_source,
     std::unique_ptr<RTLookupResponse> url_real_time_lookup_response,
     absl::optional<bool> matched_high_confidence_allowlist,
     absl::optional<SBThreatType> locally_cached_results_threat_type,
@@ -36,11 +37,13 @@ SafeBrowsingLookupMechanism::CompleteCheckResult::CompleteCheckResult(
     : url(url),
       threat_type(threat_type),
       metadata(metadata),
-      is_from_url_real_time_check(is_from_url_real_time_check),
+      threat_source(threat_source),
       url_real_time_lookup_response(std::move(url_real_time_lookup_response)),
       matched_high_confidence_allowlist(matched_high_confidence_allowlist),
       locally_cached_results_threat_type(locally_cached_results_threat_type),
-      real_time_request_failed(real_time_request_failed) {}
+      real_time_request_failed(real_time_request_failed) {
+  DCHECK(threat_source.has_value() || threat_type == SB_THREAT_TYPE_SAFE);
+}
 
 SafeBrowsingLookupMechanism::CompleteCheckResult::~CompleteCheckResult() =
     default;

@@ -12,6 +12,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/renderer/platform/image-decoders/image_decoder_test_helpers.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
+#include "third_party/skia/include/core/SkColorPriv.h"
 #include "third_party/skia/include/core/SkColorSpace.h"
 #include "third_party/skia/include/core/SkImage.h"
 #include "third_party/skia/include/core/SkImageInfo.h"
@@ -43,7 +44,7 @@ std::unique_ptr<ImageDecoder> CreatePNGDecoder(
     ImageDecoder::AlphaOption alpha_option) {
   return std::make_unique<PNGImageDecoder>(
       alpha_option, ImageDecoder::kDefaultBitDepth,
-      ColorBehavior::TransformToSRGB(), ImageDecoder::kNoDecodedImageByteLimit);
+      ColorBehavior::kTransformToSRGB, ImageDecoder::kNoDecodedImageByteLimit);
 }
 
 std::unique_ptr<ImageDecoder> CreatePNGDecoder() {
@@ -53,7 +54,7 @@ std::unique_ptr<ImageDecoder> CreatePNGDecoder() {
 std::unique_ptr<ImageDecoder> Create16BitPNGDecoder() {
   return std::make_unique<PNGImageDecoder>(
       ImageDecoder::kAlphaNotPremultiplied,
-      ImageDecoder::kHighBitDepthToHalfFloat, ColorBehavior::Tag(),
+      ImageDecoder::kHighBitDepthToHalfFloat, ColorBehavior::kTag,
       ImageDecoder::kNoDecodedImageByteLimit);
 }
 
@@ -483,8 +484,9 @@ TEST(AnimatedPNGTests, ActlErrors) {
     for (size_t times = 0; times < 2; times++) {
       scoped_refptr<SharedBuffer> extra_actl_data =
           SharedBuffer::Create(data2->Data(), kPostIDATOffset);
-      for (size_t i = 0; i < times; i++)
+      for (size_t i = 0; i < times; i++) {
         extra_actl_data->Append(ac_tl, kAcTLSize);
+      }
       extra_actl_data->Append(data2->Data() + kPostIDATOffset,
                               data2->size() - kPostIDATOffset);
 
@@ -1026,7 +1028,7 @@ TEST(AnimatedPNGTests, Offset) {
   // non-zero offset.
   auto decoder = std::make_unique<PNGImageDecoder>(
       ImageDecoder::kAlphaNotPremultiplied, ImageDecoder::kDefaultBitDepth,
-      ColorBehavior::TransformToSRGB(), ImageDecoder::kNoDecodedImageByteLimit,
+      ColorBehavior::kTransformToSRGB, ImageDecoder::kNoDecodedImageByteLimit,
       kOffset);
   decoder->SetData(data, true);
   ASSERT_EQ(kExpectedFrameCount, decoder->FrameCount());
@@ -1089,6 +1091,53 @@ TEST(StaticPNGTests, MetaDataTest) {
       CreatePNGDecoderWithPngData("/images/resources/png-simple.png");
   EXPECT_EQ(kExpectedFrameCount, decoder->FrameCount());
   EXPECT_EQ(kExpectedDuration, decoder->FrameDurationAtIndex(0));
+}
+
+// circle-trns-before-plte.png is of color type 2 (PNG_COLOR_TYPE_RGB) and has
+// a tRNS chunk before a PLTE chunk. The image has an opaque blue circle on a
+// transparent green background.
+//
+// The PNG specification version 1.2 says:
+//   When present, the tRNS chunk must precede the first IDAT chunk, and must
+//   follow the PLTE chunk, if any.
+// Therefore, in the default libpng configuration (which defines the
+// PNG_READ_OPT_PLTE_SUPPORTED macro), the tRNS chunk is considered invalid and
+// ignored. However, png_get_valid(png, info, PNG_INFO_tRNS) still returns a
+// nonzero value, so an application may call png_set_tRNS_to_alpha(png) and
+// assume libpng's output has alpha, resulting in memory errors. See
+// https://github.com/glennrp/libpng/issues/482.
+//
+// Since Chromium chooses to undefine PNG_READ_OPT_PLTE_SUPPORTED in
+// pnglibconf.h, it is not affected by this potential bug. For extra assurance,
+// this test decodes this image and makes sure there are no errors.
+TEST(StaticPNGTests, ColorType2TrnsBeforePlte) {
+  auto decoder = CreatePNGDecoderWithPngData(
+      "/images/resources/circle-trns-before-plte.png");
+  ASSERT_EQ(decoder->FrameCount(), 1u);
+  ImageFrame* frame = decoder->DecodeFrameBufferAtIndex(0);
+  ASSERT_TRUE(frame);
+  ASSERT_EQ(frame->GetStatus(), ImageFrame::kFrameComplete);
+  ASSERT_EQ(frame->GetPixelFormat(), ImageFrame::kN32);
+#ifdef PNG_READ_OPT_PLTE_SUPPORTED
+  // When the color type is not PNG_COLOR_TYPE_PALETTE, the PLTE chunk is
+  // optional. If PNG_READ_OPT_PLTE_SUPPORTED is defined, libpng performs full
+  // processing of an optional PLTE chunk. In particular, it checks if there is
+  // a tRNS chunk before the PLTE chunk and ignores any such tRNS chunks.
+  // Therefore the tRNS chunk in this image is ignored and the frame should not
+  // have alpha.
+  EXPECT_FALSE(frame->HasAlpha());
+  // The background is opaque green.
+  EXPECT_EQ(*frame->GetAddr(1, 1), SkPackARGB32NoCheck(0xFF, 0, 0xFF, 0));
+#else
+  // If PNG_READ_OPT_PLTE_SUPPORTED is not defined, libpng performs only minimum
+  // processing of an optional PLTE chunk. In particular, it doesn't check if
+  // there is a tRNS chunk before the PLTE chunk (which would make the tRNS
+  // chunk invalid). Therefore the tRNS chunk in this image is considered valid
+  // and the frame should have alpha.
+  EXPECT_TRUE(frame->HasAlpha());
+  // The background is transparent green.
+  EXPECT_EQ(*frame->GetAddr(1, 1), SkPackARGB32NoCheck(0, 0, 0xFF, 0));
+#endif
 }
 
 TEST(StaticPNGTests, InvalidIHDRChunk) {
@@ -1402,17 +1451,19 @@ TEST(PNGTests, VerifyFrameCompleteBehavior) {
     // With full data, parsing the size still does not mark a frame as
     // complete for animated images.
     EXPECT_TRUE(decoder->IsSizeAvailable());
-    if (rec.expected_frame_count > 1)
+    if (rec.expected_frame_count > 1) {
       EXPECT_FALSE(decoder->FrameIsReceivedAtIndex(0));
-    else
+    } else {
       EXPECT_TRUE(decoder->FrameIsReceivedAtIndex(0));
+    }
 
     const auto frame_count = decoder->FrameCount();
     ASSERT_EQ(rec.expected_frame_count, frame_count);
 
     // After parsing (the full file), all frames are complete.
-    for (size_t i = 0; i < frame_count; ++i)
+    for (size_t i = 0; i < frame_count; ++i) {
       EXPECT_TRUE(decoder->FrameIsReceivedAtIndex(i));
+    }
 
     frame = decoder->DecodeFrameBufferAtIndex(0);
     ASSERT_TRUE(frame);
@@ -1471,6 +1522,37 @@ TEST(PNGTests, cicp) {
 
   const skcms_ICCProfile* png_profile = transform->SrcProfile();
   EXPECT_TRUE(skcms_TransferFunction_isPQish(&png_profile->trc[0].parametric));
+}
+
+TEST(PNGTests, HDRMetadata) {
+  const char* png_file = "/images/resources/cicp_pq.png";
+  scoped_refptr<SharedBuffer> data = ReadFile(png_file);
+  ASSERT_TRUE(data);
+
+  auto decoder = CreatePNGDecoder();
+  decoder->SetData(data.get(), true);
+  auto* frame = decoder->DecodeFrameBufferAtIndex(0);
+  ASSERT_TRUE(frame);
+  ASSERT_FALSE(decoder->Failed());
+  const absl::optional<gfx::HDRMetadata> hdr_metadata =
+      decoder->GetHDRMetadata();
+  ASSERT_TRUE(hdr_metadata);
+
+  ASSERT_TRUE(hdr_metadata->cta_861_3);
+  EXPECT_EQ(hdr_metadata->cta_861_3->max_content_light_level, 4000u);
+  EXPECT_EQ(hdr_metadata->cta_861_3->max_frame_average_light_level, 2627u);
+
+  ASSERT_TRUE(hdr_metadata->smpte_st_2086);
+  EXPECT_FLOAT_EQ(hdr_metadata->smpte_st_2086->primaries.fRX, .680f);
+  EXPECT_FLOAT_EQ(hdr_metadata->smpte_st_2086->primaries.fRY, .320f);
+  EXPECT_FLOAT_EQ(hdr_metadata->smpte_st_2086->primaries.fGX, .265f);
+  EXPECT_FLOAT_EQ(hdr_metadata->smpte_st_2086->primaries.fGY, .690f);
+  EXPECT_FLOAT_EQ(hdr_metadata->smpte_st_2086->primaries.fBX, .150f);
+  EXPECT_FLOAT_EQ(hdr_metadata->smpte_st_2086->primaries.fBY, .060f);
+  EXPECT_FLOAT_EQ(hdr_metadata->smpte_st_2086->primaries.fWX, .3127f);
+  EXPECT_FLOAT_EQ(hdr_metadata->smpte_st_2086->primaries.fWY, .3290f);
+  EXPECT_FLOAT_EQ(hdr_metadata->smpte_st_2086->luminance_max, 5000.f);
+  EXPECT_FLOAT_EQ(hdr_metadata->smpte_st_2086->luminance_min, .01f);
 }
 
 TEST(AnimatedPNGTests, TrnsMeansAlpha) {

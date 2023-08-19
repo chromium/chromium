@@ -57,14 +57,14 @@ void SetSupportedResourceScaleFactors(
 
 const std::vector<ResourceScaleFactor>& GetSupportedResourceScaleFactors() {
   CHECK_NE(g_supported_resource_scale_factors, nullptr)
-      << "ResourceBundle needs to be intialized.";
+      << "ResourceBundle needs to be initialized.";
 
   return *g_supported_resource_scale_factors;
 }
 
 ResourceScaleFactor GetSupportedResourceScaleFactor(float scale) {
   CHECK_NE(g_supported_resource_scale_factors, nullptr)
-      << "ResourceBundle needs to be intialized.";
+      << "ResourceBundle needs to be initialized.";
 
   ResourceScaleFactor closest_match = k100Percent;
   float smallest_diff = std::numeric_limits<float>::max();
@@ -85,7 +85,7 @@ ResourceScaleFactor GetSupportedResourceScaleFactor(float scale) {
 
 ResourceScaleFactor GetSupportedResourceScaleFactorForRescale(float scale) {
   CHECK_NE(g_supported_resource_scale_factors, nullptr)
-      << "ResourceBundle needs to be intialized.";
+      << "ResourceBundle needs to be initialized.";
 
   // Returns an exact match, a smaller scale within
   // `kFallbackToSmallerScaleDiff` units, the nearest larger scale, or the max
@@ -103,7 +103,7 @@ ResourceScaleFactor GetSupportedResourceScaleFactorForRescale(float scale) {
 
 ResourceScaleFactor GetMaxSupportedResourceScaleFactor() {
   CHECK_NE(g_supported_resource_scale_factors, nullptr)
-      << "ResourceBundle needs to be intialized.";
+      << "ResourceBundle needs to be initialized.";
 
   ResourceScaleFactor max_scale = g_supported_resource_scale_factors->back();
   CHECK_NE(max_scale, kScaleFactorNone);
@@ -116,7 +116,7 @@ float GetScaleForMaxSupportedResourceScaleFactor() {
 
 bool IsScaleFactorSupported(ResourceScaleFactor scale_factor) {
   CHECK_NE(g_supported_resource_scale_factors, nullptr)
-      << "ResourceBundle needs to be intialized.";
+      << "ResourceBundle needs to be initialized.";
 
   return base::Contains(*g_supported_resource_scale_factors, scale_factor);
 }

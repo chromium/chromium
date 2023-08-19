@@ -46,18 +46,6 @@ class MockWebRtcTransformedFrameCallback
                void(std::unique_ptr<webrtc::TransformableFrameInterface>));
 };
 
-class FakeVideoFrame : public webrtc::TransformableFrameInterface {
- public:
-  rtc::ArrayView<const uint8_t> GetData() const override {
-    return rtc::ArrayView<const uint8_t>();
-  }
-
-  void SetData(rtc::ArrayView<const uint8_t> data) override {}
-  uint32_t GetTimestamp() const override { return 0xDEADBEEF; }
-  uint32_t GetSsrc() const override { return 0; }
-  uint8_t GetPayloadType() const override { return 255; }
-};
-
 }  // namespace
 
 class RTCEncodedVideoUnderlyingSinkTest : public testing::Test {

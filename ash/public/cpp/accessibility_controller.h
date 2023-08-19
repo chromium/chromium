@@ -117,6 +117,13 @@ class ASH_PUBLIC_EXPORT AccessibilityController {
   // Starts or stops dictation. Records metrics for toggling via SwitchAccess.
   virtual void ToggleDictationFromSource(DictationToggleSource source) = 0;
 
+  // Enables Dictation if the feature is currently disabled. Toggles (starts or
+  // stops) Dictation if the feature is currently enabled. Note: this behavior
+  // is currently behind a feature flag - if the feature flag is off, then this
+  // method behaves like ToggleDictationFromSource.
+  virtual void EnableOrToggleDictationFromSource(
+      DictationToggleSource source) = 0;
+
   // Shows a nudge explaining that a user's dictation language was upgraded to
   // work offline.
   virtual void ShowDictationLanguageUpgradedNudge(
@@ -151,9 +158,13 @@ class ASH_PUBLIC_EXPORT AccessibilityController {
   // Disables restoring of recommended policy values.
   virtual void DisablePolicyRecommendationRestorerForTesting() {}
 
-  // Set to true to disable the dialog.
+  // Disables the dialog shown when Switch Access is turned off.
   // Used in tests.
   virtual void DisableSwitchAccessDisableConfirmationDialogTesting() = 0;
+
+  // Disables the dialog shown when Switch Access is turned on.
+  // Used in tests.
+  virtual void DisableSwitchAccessEnableNotificationTesting() = 0;
 
   // Shows floating accessibility menu if it was enabled by policy.
   virtual void ShowFloatingMenuIfEnabled() {}
@@ -164,11 +175,12 @@ class ASH_PUBLIC_EXPORT AccessibilityController {
   // Enables ChromeVox's volume slide gesture.
   virtual void EnableChromeVoxVolumeSlideGesture() {}
 
-  // Shows a confirmation dialog with the given text and description,
-  // and calls the relevant callback when the dialog is confirmed, canceled
-  // or closed.
+  // Shows a confirmation dialog with the given text, description,
+  // and cancel button name, and calls the relevant callback when the
+  // dialog is confirmed, canceled or closed.
   virtual void ShowConfirmationDialog(const std::u16string& title,
                                       const std::u16string& description,
+                                      const std::u16string& cancel_name,
                                       base::OnceClosure on_accept_callback,
                                       base::OnceClosure on_cancel_callback,
                                       base::OnceClosure on_close_callback) {}

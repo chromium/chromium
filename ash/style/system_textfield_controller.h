@@ -22,8 +22,7 @@ namespace ash {
 // - While editing the textfield, pressing ESCAPE will discard the changes and
 // deactivate the textfield but keep focus.
 // - The focus ring would only show on active.
-class ASH_EXPORT SystemTextfieldController : public views::TextfieldController,
-                                             public SystemTextfield::Delegate {
+class ASH_EXPORT SystemTextfieldController : public views::TextfieldController {
  public:
   explicit SystemTextfieldController(SystemTextfield* textfield);
   SystemTextfieldController(const SystemTextfieldController&) = delete;
@@ -31,15 +30,13 @@ class ASH_EXPORT SystemTextfieldController : public views::TextfieldController,
       delete;
   ~SystemTextfieldController() override;
 
-  // SystemTextfield::Delegate:
-  void OnTextfieldFocused(SystemTextfield* textfield) override;
-  void OnTextfieldBlurred(SystemTextfield* textfield) override;
-
   // views::TextfieldController:
   bool HandleKeyEvent(views::Textfield* sender,
                       const ui::KeyEvent& key_event) override;
   bool HandleMouseEvent(views::Textfield* sender,
                         const ui::MouseEvent& mouse_event) override;
+  bool HandleGestureEvent(views::Textfield* sender,
+                          const ui::GestureEvent& gesture_event) override;
 
  private:
   // The textfield that the controller binds with.

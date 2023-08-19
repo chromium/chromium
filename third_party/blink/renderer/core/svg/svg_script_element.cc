@@ -166,6 +166,14 @@ void SVGScriptElement::DispatchErrorEvent() {
   DispatchEvent(*Event::Create(event_type_names::kError));
 }
 
+bool SVGScriptElement::HasLoadEventHandler() {
+  return EventPath(*this).HasEventListenersInPath(event_type_names::kLoad);
+}
+
+bool SVGScriptElement::HasErrorEventHandler() {
+  return EventPath(*this).HasEventListenersInPath(event_type_names::kError);
+}
+
 ScriptElementBase::Type SVGScriptElement::GetScriptElementType() {
   return ScriptElementBase::Type::kSVGScriptElement;
 }
@@ -209,10 +217,9 @@ SVGAnimatedPropertyBase* SVGScriptElement::PropertyFromAttribute(
   return SVGElement::PropertyFromAttribute(attribute_name);
 }
 
-void SVGScriptElement::SynchronizeSVGAttribute(
-    const QualifiedName& name) const {
-  SVGURIReference::SynchronizeSVGAttribute(name);
-  SVGElement::SynchronizeSVGAttribute(name);
+void SVGScriptElement::SynchronizeAllSVGAttributes() const {
+  SVGURIReference::SynchronizeAllSVGAttributes();
+  SVGElement::SynchronizeAllSVGAttributes();
 }
 
 void SVGScriptElement::Trace(Visitor* visitor) const {

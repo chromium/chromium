@@ -33,7 +33,7 @@ bool ParamTraits<gfx::BufferUsageAndFormat>::Read(
 void ParamTraits<gfx::BufferUsageAndFormat>::Log(
     const gfx::BufferUsageAndFormat& p,
     std::string* l) {
-  l->append(base::StringPrintf("(%d, %u)", p.usage,
+  l->append(base::StringPrintf("(%d, %u)", static_cast<int>(p.usage),
                                base::strict_cast<uint32_t>(p.format)));
 }
 

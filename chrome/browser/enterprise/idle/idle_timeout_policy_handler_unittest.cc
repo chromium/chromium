@@ -335,6 +335,10 @@ TEST_F(IdleTimeoutPolicyHandlerTest, AllActions) {
 
 #if !BUILDFLAG(IS_ANDROID)
 TEST_F(IdleTimeoutPolicyHandlerTest, SyncNotDisabled) {
+  base::test::ScopedFeatureList scoped_feature_list_;
+  scoped_feature_list_.InitWithFeatureState(
+      browsing_data::features::kDataRetentionPoliciesDisableSyncTypesNeeded,
+      false);
   SetPolicyValue(policy::key::kSyncDisabled, base::Value(false));
   SetPolicyValue(policy::key::kIdleTimeout, base::Value(15));
   base::Value::List list;
@@ -367,6 +371,10 @@ TEST_F(IdleTimeoutPolicyHandlerTest, SyncNotDisabled) {
 }
 
 TEST_F(IdleTimeoutPolicyHandlerTest, SyncDisabledIsFalse) {
+  base::test::ScopedFeatureList scoped_feature_list_;
+  scoped_feature_list_.InitWithFeatureState(
+      browsing_data::features::kDataRetentionPoliciesDisableSyncTypesNeeded,
+      false);
   policies().Erase(policy::key::kSyncDisabled);
   SetPolicyValue(policy::key::kIdleTimeout, base::Value(15));
   base::Value::List list;

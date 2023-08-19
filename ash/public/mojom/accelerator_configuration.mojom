@@ -32,4 +32,7 @@ enum AcceleratorConfigResult {
   kShiftOnlyNotAllowed = 8,
   // Error - reached maximum number of allowed accelerators for the action.
   kMaximumAcceleratorsReached = 9,
+  // Success - Restoring an action was successful but the default accelerators
+  // have existing conflicts.
+  kRestoreSuccessWithConflicts = 10,
 };

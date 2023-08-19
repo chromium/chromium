@@ -19,7 +19,7 @@
 #include "components/content_settings/core/browser/content_settings_provider.h"
 #include "components/content_settings/core/common/content_settings.h"
 #include "components/content_settings/core/common/content_settings_pattern.h"
-#include "extensions/browser/extension_prefs_scope.h"
+#include "extensions/common/api/types.h"
 
 namespace content_settings {
 class OriginIdentifierValueMap;
@@ -35,6 +35,8 @@ namespace extensions {
 class ContentSettingsStore
     : public base::RefCountedThreadSafe<ContentSettingsStore> {
  public:
+  using ChromeSettingScope = extensions::api::types::ChromeSettingScope;
+
   class Observer {
    public:
     virtual ~Observer() = default;
@@ -73,29 +75,29 @@ class ContentSettingsStore
       const ContentSettingsPattern& top_level_pattern,
       ContentSettingsType type,
       ContentSetting setting,
-      ExtensionPrefsScope scope);
+      ChromeSettingScope scope);
 
   // Clears all contents settings set by the extension |ext_id|.
   void ClearContentSettingsForExtension(const std::string& ext_id,
-                                        ExtensionPrefsScope scope);
+                                        ChromeSettingScope scope);
 
   // Clears all contents settings set by the extension |ext_id| for the
   // content type |content_type|.
   void ClearContentSettingsForExtensionAndContentType(
       const std::string& ext_id,
-      ExtensionPrefsScope scope,
+      ChromeSettingScope scope,
       ContentSettingsType content_type);
 
   // Serializes all content settings set by the extension with ID |extension_id|
   // and returns them as a list of Values.
   base::Value::List GetSettingsForExtension(const std::string& extension_id,
-                                            ExtensionPrefsScope scope) const;
+                                            ChromeSettingScope scope) const;
 
   // Deserializes content settings rules from |list| and applies them as set by
   // the extension with ID |extension_id|.
   void SetExtensionContentSettingFromList(const std::string& extension_id,
                                           const base::Value::List& list,
-                                          ExtensionPrefsScope scope);
+                                          ChromeSettingScope scope);
 
   // //////////////////////////////////////////////////////////////////////////
 
@@ -130,11 +132,11 @@ class ContentSettingsStore
 
   content_settings::OriginIdentifierValueMap* GetValueMap(
       const std::string& ext_id,
-      ExtensionPrefsScope scope) EXCLUSIVE_LOCKS_REQUIRED(lock_);
+      ChromeSettingScope scope) EXCLUSIVE_LOCKS_REQUIRED(lock_);
 
   const content_settings::OriginIdentifierValueMap* GetValueMap(
       const std::string& ext_id,
-      ExtensionPrefsScope scope) const EXCLUSIVE_LOCKS_REQUIRED(lock_);
+      ChromeSettingScope scope) const EXCLUSIVE_LOCKS_REQUIRED(lock_);
 
   void NotifyOfContentSettingChanged(const std::string& extension_id,
                                      bool incognito);

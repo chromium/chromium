@@ -12,31 +12,13 @@
 #include "base/supports_user_data.h"
 #include "content/common/content_export.h"
 #include "content/public/browser/web_ui_controller.h"
+#include "content/public/browser/web_ui_managed_interface.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
 
 namespace content {
-
-CONTENT_EXPORT void RemoveWebUIManagedInterfaces(
-    WebUIController* webui_controller);
-
-namespace internal {
-
-class CONTENT_EXPORT WebUIManagedInterfaceBase {
- public:
-  virtual ~WebUIManagedInterfaceBase() = default;
-};
-
-// Stores an interface implementation instance in the WebUI host Document.
-// This is called when constructing an implementation instance in
-// WebUIManagedInterface::Create().
-void CONTENT_EXPORT
-SaveWebUIManagedInterfaceInDocument(content::WebUIController*,
-                                    std::unique_ptr<WebUIManagedInterfaceBase>);
-
-}  // namespace internal
 
 using WebUIManagedInterfaceNoPageHandler = void;
 
@@ -64,22 +46,30 @@ using WebUIManagedInterfaceNoPageHandler = void;
 //
 // TODO(crbug.com/1417272): provide helpers to retrieve InterfaceImpl objects.
 template <typename InterfaceImpl, typename PageHandler, typename Page = void>
-class WebUIManagedInterface : public internal::WebUIManagedInterfaceBase {
+class WebUIManagedInterface : public WebUIManagedInterfaceBase {
  public:
   template <typename T>
-  using EnableIfNotVoid = typename std::enable_if_t<!std::is_void_v<T>>;
+  using EnableIfNotVoid = std::enable_if_t<!std::is_void_v<T>>;
+  template <typename T>
+  using EnableIfVoid = std::enable_if_t<std::is_void_v<T>>;
 
-  // Method for when PageHandler is void.
-  static void Create(content::WebUIController* webui_controller,
+  template <typename T = Page, typename = EnableIfVoid<T>>
+  static void Create(WebUIController* web_ui_controller,
+                     mojo::PendingReceiver<PageHandler> pending_receiver) {
+    return WebUIManagedInterface::Create(
+        web_ui_controller, std::move(pending_receiver), mojo::NullRemote());
+  }
+
+  template <typename T = PageHandler, typename = EnableIfVoid<T>>
+  static void Create(WebUIController* webui_controller,
                      mojo::PendingRemote<Page> pending_remote) {
     return WebUIManagedInterface::Create(webui_controller, mojo::NullReceiver(),
                                          std::move(pending_remote));
   }
 
-  static void Create(
-      content::WebUIController* webui_controller,
-      mojo::PendingReceiver<PageHandler> pending_receiver,
-      mojo::PendingRemote<Page> pending_remote = mojo::NullRemote()) {
+  static void Create(WebUIController* webui_controller,
+                     mojo::PendingReceiver<PageHandler> pending_receiver,
+                     mojo::PendingRemote<Page> pending_remote) {
     static_assert(
         !std::is_void_v<PageHandler> || !std::is_void_v<Page>,
         "Either PageHandler must be non-void or Page must be non-void.");
@@ -97,8 +87,8 @@ class WebUIManagedInterface : public internal::WebUIManagedInterfaceBase {
       interface_impl->page_remote_.Bind(std::move(pending_remote));
     }
 
-    internal::SaveWebUIManagedInterfaceInDocument(webui_controller,
-                                                  std::move(interface_impl));
+    SaveWebUIManagedInterfaceInDocument(webui_controller,
+                                        std::move(interface_impl));
     interface_impl_ptr->ready_ = true;
     interface_impl_ptr->OnReady();
   }
@@ -120,7 +110,7 @@ class WebUIManagedInterface : public internal::WebUIManagedInterfaceBase {
     return page_remote_;
   }
 
-  content::WebUIController* webui_controller() {
+  WebUIController* webui_controller() {
     CHECK(ready_) << "webui_controller() is not ready. Please use OnReady().";
     return webui_controller_;
   }
@@ -146,7 +136,7 @@ class WebUIManagedInterface : public internal::WebUIManagedInterfaceBase {
       std::conditional_t<std::is_void_v<Page>, bool, mojo::Remote<Page>>;
   PageRemoteType page_remote_;
 
-  raw_ptr<content::WebUIController> webui_controller_;
+  raw_ptr<WebUIController> webui_controller_;
 };
 
 }  // namespace content

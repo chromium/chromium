@@ -13,6 +13,7 @@
 #include <utility>
 #include <vector>
 
+#include "base/containers/flat_map.h"
 #include "base/gtest_prod_util.h"
 #include "base/strings/string_piece.h"
 #include "components/autofill/core/browser/autofill_field.h"
@@ -274,10 +275,6 @@ class FormStructure {
   // Rationalize phone number fields in a given section, that is only fill
   // the fields that are considered composing a first complete phone number.
   void RationalizePhoneNumbersInSection(const Section& section);
-
-  // Overrides server predictions with specific heuristic predictions:
-  // * NAME_LAST_SECOND heuristic predictions are unconditionally used.
-  void OverrideServerPredictionsWithHeuristics();
 
   // Returns the FieldGlobalIds of the |fields_| that are eligible for manual
   // filling on form interaction.
@@ -677,6 +674,25 @@ class FormStructure {
 
 LogBuffer& operator<<(LogBuffer& buffer, const FormStructure& form);
 std::ostream& operator<<(std::ostream& buffer, const FormStructure& form);
+
+// TODO(crbug.com/1466435): Remove once the refactoring is complete.
+// Helper struct for `GetFormDataAndServerPredictions`.
+struct FormDataAndServerPredictions {
+  FormDataAndServerPredictions();
+  FormDataAndServerPredictions(const FormDataAndServerPredictions&);
+  FormDataAndServerPredictions& operator=(const FormDataAndServerPredictions&);
+  FormDataAndServerPredictions(FormDataAndServerPredictions&&);
+  FormDataAndServerPredictions& operator=(FormDataAndServerPredictions&&);
+  ~FormDataAndServerPredictions();
+
+  std::vector<FormData> form_datas;
+  base::flat_map<FieldGlobalId, AutofillType::ServerPrediction> predictions;
+};
+
+// Returns the `FormData` and `ServerPrediction` objects underlying
+// `form_structures`.
+FormDataAndServerPredictions GetFormDataAndServerPredictions(
+    base::span<const FormStructure* const> form_structures);
 
 }  // namespace autofill
 

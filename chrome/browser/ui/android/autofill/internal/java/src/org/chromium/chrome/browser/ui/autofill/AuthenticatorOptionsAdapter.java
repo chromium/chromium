@@ -77,6 +77,7 @@ public class AuthenticatorOptionsAdapter extends RecyclerView.Adapter<ViewHolder
     }
 
     class AuthenticatorOptionViewHolder extends RecyclerView.ViewHolder {
+        private final View mAuthenticatorOptionView;
         private final TextView mTitleTextView;
         private final TextView mDescriptionTextView;
         private final ImageView mIconImageView;
@@ -84,6 +85,7 @@ public class AuthenticatorOptionsAdapter extends RecyclerView.Adapter<ViewHolder
 
         AuthenticatorOptionViewHolder(View view, ItemClickListener itemClickListener) {
             super(view);
+            mAuthenticatorOptionView = view;
             mTitleTextView = view.findViewById(R.id.authenticator_option_title);
             mDescriptionTextView = view.findViewById(R.id.authenticator_option_description);
             mIconImageView = view.findViewById(R.id.authenticator_option_icon);
@@ -98,6 +100,13 @@ public class AuthenticatorOptionsAdapter extends RecyclerView.Adapter<ViewHolder
                 itemClickListener.onItemClicked(
                         mAuthenticatorOptions.get(mSelectedAuthenticatorIndex));
             });
+            if (getItemCount() > 1) {
+                view.setOnClickListener((challengeOptionView) -> mRadioButton.performClick());
+            }
+        }
+
+        public View getAuthenticatorOptionView() {
+            return mAuthenticatorOptionView;
         }
 
         public TextView getTitleTextView() {

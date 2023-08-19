@@ -8,10 +8,6 @@ import './autofill_page/autofill_section.js';
 // <if expr="is_win or is_macosx">
 import './autofill_page/passkeys_subpage.js';
 // </if>
-import './autofill_page/password_check.js';
-import './autofill_page/password_view.js';
-import './autofill_page/passwords_device_section.js';
-import './autofill_page/passwords_section.js';
 import './autofill_page/payments_section.js';
 import './clear_browsing_data_dialog/clear_browsing_data_dialog.js';
 import './search_engines_page/search_engines_page.js';
@@ -20,8 +16,6 @@ import './privacy_page/anti_abuse_page.js';
 import './privacy_page/preloading_page.js';
 import './privacy_page/privacy_guide/privacy_guide_description_item.js';
 import './privacy_page/privacy_guide/privacy_guide_dialog.js';
-import './privacy_page/privacy_guide/privacy_guide_history_sync_fragment.js';
-import './privacy_page/privacy_guide/privacy_guide_msbb_fragment.js';
 import './privacy_page/privacy_guide/privacy_guide_page.js';
 import './privacy_page/privacy_sandbox/privacy_sandbox_ad_measurement_subpage.js';
 import './privacy_page/privacy_sandbox/privacy_sandbox_fledge_subpage.js';
@@ -33,6 +27,8 @@ import './privacy_page/security_keys_phones_subpage.js';
 import './privacy_page/security_keys_phones_list.js';
 import './privacy_page/security_keys_phones_dialog.js';
 import './privacy_page/security_page.js';
+import './safety_hub/safety_hub_page.js';
+import './safety_hub/safety_hub_entry_point.js';
 import './site_settings/all_sites.js';
 import './site_settings/file_system_site_entry.js';
 import './site_settings/file_system_site_entry_item.js';
@@ -97,6 +93,7 @@ export {CrCheckboxElement} from 'chrome://resources/cr_elements/cr_checkbox/cr_c
 export {CrDialogElement} from 'chrome://resources/cr_elements/cr_dialog/cr_dialog.js';
 export {CrIconButtonElement} from 'chrome://resources/cr_elements/cr_icon_button/cr_icon_button.js';
 export {CrInputElement} from 'chrome://resources/cr_elements/cr_input/cr_input.js';
+export {CrLazyRenderElement} from 'chrome://resources/cr_elements/cr_lazy_render/cr_lazy_render.js';
 export {CrSliderElement} from 'chrome://resources/cr_elements/cr_slider/cr_slider.js';
 export {CrTextareaElement} from 'chrome://resources/cr_elements/cr_textarea/cr_textarea.js';
 export {getToastManager} from 'chrome://resources/cr_elements/cr_toast/cr_toast_manager.js';
@@ -113,9 +110,6 @@ export {CountryDetailManager, CountryDetailManagerImpl, SettingsAddressEditDialo
 export {SettingsAddressRemoveConfirmationDialogElement} from './autofill_page/address_remove_confirmation_dialog.js';
 export {AutofillManagerImpl, AutofillManagerProxy, PersonalDataChangedListener} from './autofill_page/autofill_manager_proxy.js';
 export {SettingsAutofillSectionElement} from './autofill_page/autofill_section.js';
-// <if expr="is_chromeos">
-export {BlockingRequestManager} from './autofill_page/blocking_request_manager.js';
-// </if>
 export {SettingsCreditCardEditDialogElement} from './autofill_page/credit_card_edit_dialog.js';
 export {SettingsCreditCardListEntryElement} from './autofill_page/credit_card_list_entry.js';
 export {SettingsIbanEditDialogElement} from './autofill_page/iban_edit_dialog.js';
@@ -124,19 +118,6 @@ export {SettingsIbanListEntryElement} from './autofill_page/iban_list_entry.js';
 export {Passkey, PasskeysBrowserProxy, PasskeysBrowserProxyImpl} from './autofill_page/passkeys_browser_proxy.js';
 export {SettingsPasskeysSubpageElement} from './autofill_page/passkeys_subpage.js';
 // </if>
-export {SettingsPasswordCheckElement} from './autofill_page/password_check.js';
-export {SettingsPasswordEditDisclaimerDialogElement} from './autofill_page/password_check_edit_disclaimer_dialog.js';
-export {PasswordCheckListItemElement} from './autofill_page/password_check_list_item.js';
-export {PasswordDialogMode, PasswordEditDialogElement} from './autofill_page/password_edit_dialog.js';
-export {PasswordListItemElement} from './autofill_page/password_list_item.js';
-export {PasswordMoveMultiplePasswordsToAccountDialogElement} from './autofill_page/password_move_multiple_passwords_to_account_dialog.js';
-export {SettingsPasswordRemoveConfirmationDialogElement} from './autofill_page/password_remove_confirmation_dialog.js';
-export {PasswordRemoveDialogElement} from './autofill_page/password_remove_dialog.js';
-export {PasswordViewElement} from './autofill_page/password_view.js';
-export {PasswordsDeviceSectionElement} from './autofill_page/passwords_device_section.js';
-export {PasswordsExportDialogElement} from './autofill_page/passwords_export_dialog.js';
-export {IMPORT_HELP_LANDING_PAGE, ImportDialogState, PasswordsImportDialogElement} from './autofill_page/passwords_import_dialog.js';
-export {PasswordsSectionElement} from './autofill_page/passwords_section.js';
 export {PaymentsManagerImpl, PaymentsManagerProxy} from './autofill_page/payments_manager_proxy.js';
 export {SettingsPaymentsSectionElement} from './autofill_page/payments_section.js';
 export {SettingsVirtualCardUnenrollDialogElement} from './autofill_page/virtual_card_unenroll_dialog.js';
@@ -178,9 +159,10 @@ export {ManageProfileBrowserProxy, ManageProfileBrowserProxyImpl, ProfileShortcu
 export {SettingsSyncControlsElement} from './people_page/sync_controls.js';
 export {SettingsSyncEncryptionOptionsElement} from './people_page/sync_encryption_options.js';
 export {SettingsSyncPageElement} from './people_page/sync_page.js';
+export {NetworkPredictionOptions} from './performance_page/constants.js';
 export {SettingsAntiAbusePageElement} from './privacy_page/anti_abuse_page.js';
 export {SettingsCollapseRadioButtonElement} from './privacy_page/collapse_radio_button.js';
-export {NetworkPredictionOptions, SettingsCookiesPageElement} from './privacy_page/cookies_page.js';
+export {SettingsCookiesPageElement} from './privacy_page/cookies_page.js';
 export {SettingsDoNotTrackToggleElement} from './privacy_page/do_not_track_toggle.js';
 export {SettingsPersonalizationOptionsElement} from './privacy_page/personalization_options.js';
 export {PreloadingPageElement} from './privacy_page/preloading_page.js';
@@ -193,6 +175,7 @@ export {PrivacyGuideHistorySyncFragmentElement} from './privacy_page/privacy_gui
 export {PrivacyGuideMsbbFragmentElement} from './privacy_page/privacy_guide/privacy_guide_msbb_fragment.js';
 export {SettingsPrivacyGuidePageElement} from './privacy_page/privacy_guide/privacy_guide_page.js';
 export {PrivacyGuideSafeBrowsingFragmentElement} from './privacy_page/privacy_guide/privacy_guide_safe_browsing_fragment.js';
+export {PrivacyGuideSearchSuggestionsFragmentElement} from './privacy_page/privacy_guide/privacy_guide_search_suggestions_fragment.js';
 export {PrivacyGuideWelcomeFragmentElement} from './privacy_page/privacy_guide/privacy_guide_welcome_fragment.js';
 export {SettingsPrivacySandboxAdMeasurementSubpageElement} from './privacy_page/privacy_sandbox/privacy_sandbox_ad_measurement_subpage.js';
 export {SettingsPrivacySandboxFledgeSubpageElement} from './privacy_page/privacy_sandbox/privacy_sandbox_fledge_subpage.js';
@@ -208,7 +191,12 @@ export {SetPinDialogPage, SettingsSecurityKeysSetPinDialogElement} from './priva
 export {SafeBrowsingSetting, SettingsSecurityPageElement} from './privacy_page/security_page.js';
 export {SettingsResetPageElement} from './reset_page/reset_page.js';
 export {SettingsResetProfileDialogElement} from './reset_page/reset_profile_dialog.js';
-export {SafetyHubBrowserProxy, SafetyHubBrowserProxyImpl, UnusedSitePermissions} from './safety_hub/safety_hub_browser_proxy.js';
+export {CardInfo, CardState, NotificationPermission, SafetyHubBrowserProxy, SafetyHubBrowserProxyImpl, SafetyHubEvent, UnusedSitePermissions} from './safety_hub/safety_hub_browser_proxy.js';
+export {SettingsSafetyHubCardElement} from './safety_hub/safety_hub_card.js';
+export {SettingsSafetyHubEntryPointElement} from './safety_hub/safety_hub_entry_point.js';
+export {SettingsSafetyHubModuleElement, SiteInfo} from './safety_hub/safety_hub_module.js';
+export {SettingsSafetyHubPageElement} from './safety_hub/safety_hub_page.js';
+export {SettingsSafetyHubUnusedSitePermissionsModuleElement} from './safety_hub/unused_site_permissions_module.js';
 export {SettingsOmniboxExtensionEntryElement} from './search_engines_page/omnibox_extension_entry.js';
 export {SettingsSearchEngineEditDialogElement} from './search_engines_page/search_engine_edit_dialog.js';
 export {SettingsSearchEngineEntryElement} from './search_engines_page/search_engine_entry.js';
@@ -227,7 +215,7 @@ export {ChooserType, ContentSetting, ContentSettingsTypes, CookieControlsMode, C
 export {SettingsEditExceptionDialogElement} from './site_settings/edit_exception_dialog.js';
 export {FileSystemSiteEntryElement} from './site_settings/file_system_site_entry.js';
 export {FileSystemSiteEntryItemElement} from './site_settings/file_system_site_entry_item.js';
-export {FileSystemGrant, FileSystemSiteListElement, OriginFileSystemGrants} from './site_settings/file_system_site_list.js';
+export {FileSystemSiteListElement} from './site_settings/file_system_site_list.js';
 export {AppHandlerEntry, AppProtocolEntry, HandlerEntry, ProtocolEntry, ProtocolHandlersElement} from './site_settings/protocol_handlers.js';
 export {SettingsReviewNotificationPermissionsElement} from './site_settings/review_notification_permissions.js';
 export {SettingsCategoryDefaultRadioGroupElement} from './site_settings/settings_category_default_radio_group.js';
@@ -238,7 +226,10 @@ export {SiteDetailsPermissionDeviceEntryElement} from './site_settings/site_deta
 export {SiteEntryElement} from './site_settings/site_entry.js';
 export {SiteListElement} from './site_settings/site_list.js';
 export {SiteListEntryElement} from './site_settings/site_list_entry.js';
-export {ChooserException, ContentSettingProvider, CookiePrimarySetting, DefaultContentSetting, FileSystemGrantsForOrigin, NotificationPermission, OriginInfo, RawChooserException, RawFileSystemGrant, RawSiteException, RecentSitePermissions, SiteException, SiteGroup, SiteSettingsPrefsBrowserProxy, SiteSettingsPrefsBrowserProxyImpl, ZoomLevelEntry} from './site_settings/site_settings_prefs_browser_proxy.js';
+export {ChooserException, ContentSettingProvider, CookiePrimarySetting, DefaultContentSetting, FileSystemGrant, OriginFileSystemGrants, OriginInfo, RawChooserException, RawSiteException, RecentSitePermissions, SiteException, SiteGroup, SiteSettingsPrefsBrowserProxy, SiteSettingsPrefsBrowserProxyImpl, StorageAccessEmbeddingException, StorageAccessSiteException, ZoomLevelEntry} from './site_settings/site_settings_prefs_browser_proxy.js';
+export {StorageAccessSiteListElement} from './site_settings/storage_access_site_list.js';
+export {StorageAccessSiteListEntryElement} from './site_settings/storage_access_site_list_entry.js';
+export {StorageAccessStaticSiteListEntry, StorageAccessStaticSiteListEntryElement} from './site_settings/storage_access_static_site_list_entry.js';
 export {WebsiteUsageBrowserProxy, WebsiteUsageBrowserProxyImpl} from './site_settings/website_usage_browser_proxy.js';
 export {ZoomLevelsElement} from './site_settings/zoom_levels.js';
 export {SettingsRecentSitePermissionsElement} from './site_settings_page/recent_site_permissions.js';

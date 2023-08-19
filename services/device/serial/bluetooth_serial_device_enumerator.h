@@ -17,6 +17,7 @@
 #include "base/threading/sequence_bound.h"
 #include "device/bluetooth/bluetooth_adapter.h"
 #include "services/device/public/mojom/serial.mojom-forward.h"
+#include "services/device/serial/bluetooth_serial_port_impl.h"
 #include "services/device/serial/serial_device_enumerator.h"
 
 namespace device {
@@ -40,7 +41,12 @@ class BluetoothSerialDeviceEnumerator : public SerialDeviceEnumerator {
                    BluetoothDevice::UUIDSet service_class_ids);
   void DeviceRemoved(const std::string& device_address);
 
-  scoped_refptr<BluetoothAdapter> GetAdapter();
+  void OpenPort(const std::string& address,
+                const BluetoothUUID& service_class_id,
+                mojom::SerialConnectionOptionsPtr options,
+                mojo::PendingRemote<mojom::SerialPortClient> client,
+                mojo::PendingRemote<mojom::SerialPortConnectionWatcher> watcher,
+                BluetoothSerialPortImpl::OpenCallback callback);
 
   // This method will search the map of Bluetooth ports and find the
   // address with the matching token.
@@ -70,11 +76,7 @@ class BluetoothSerialDeviceEnumerator : public SerialDeviceEnumerator {
   void AddService(base::StringPiece device_address,
                   base::StringPiece16 device_name,
                   const BluetoothUUID& service_class_id);
-  // Set the "classic" `adapter`. Called once during initialization.
-  void SetClassicAdapter(scoped_refptr<device::BluetoothAdapter> adapter);
 
-  base::OnceClosure got_adapter_callback_;
-  scoped_refptr<BluetoothAdapter> adapter_;
   DevicePortsMap device_ports_;
   base::SequenceBound<AdapterHelper> helper_;
   SEQUENCE_CHECKER(sequence_checker_);

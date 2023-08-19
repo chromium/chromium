@@ -6,6 +6,7 @@
 #define IOS_CHROME_BROWSER_UI_SETTINGS_GOOGLE_SERVICES_MANAGE_SYNC_SETTINGS_COORDINATOR_H_
 
 #import "ios/chrome/browser/shared/coordinator/chrome_coordinator/chrome_coordinator.h"
+#import "ios/chrome/browser/ui/settings/google_services/manage_sync_settings_constants.h"
 
 @class ManageSyncSettingsCoordinator;
 
@@ -26,6 +27,9 @@
 - (void)manageSyncSettingsCoordinatorNeedToOpenChromeSyncWebPage:
     (ManageSyncSettingsCoordinator*)coordinator;
 
+// Called when the user signs out from the account settings.
+- (void)showSignOutToast;
+
 @end
 
 // Coordinator for the Manage Sync Settings TableView Controller.
@@ -39,6 +43,8 @@
 - (instancetype)initWithBaseNavigationController:
                     (UINavigationController*)navigationController
                                          browser:(Browser*)browser
+                                    accountState:
+                                        (SyncSettingsAccountState)accountState
     NS_DESIGNATED_INITIALIZER;
 
 // Delegate.

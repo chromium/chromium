@@ -13,20 +13,20 @@ import subprocess
 
 from contextlib import AbstractContextManager
 
-from common import find_image_in_sdk, get_system_info, run_ffx_command, \
-                   SDK_ROOT
-from compatible_utils import get_host_arch, get_sdk_hash
+from common import run_ffx_command, IMAGES_ROOT, SDK_ROOT
+from compatible_utils import get_host_arch
 
 _EMU_COMMAND_RETRIES = 3
 
 
 class FfxEmulator(AbstractContextManager):
     """A helper for managing emulators."""
+    # pylint: disable=too-many-branches
     def __init__(self, args: argparse.Namespace) -> None:
-        if args.product_bundle:
-            self._product_bundle = args.product_bundle
+        if args.product:
+            self._product = args.product
         else:
-            self._product_bundle = 'terminal.qemu-' + get_host_arch()
+            self._product = 'terminal.qemu-' + get_host_arch()
 
         self._enable_graphics = args.enable_graphics
         self._hardware_gpu = args.hardware_gpu
@@ -44,20 +44,19 @@ class FfxEmulator(AbstractContextManager):
             self._node_name = 'fuchsia-emulator-' + str(random.randint(
                 1, 9999))
 
-        # Set the download path parallel to Fuchsia SDK directory
-        # permanently so that scripts can always find the product bundles.
-        run_ffx_command(cmd=('config', 'set', 'pbms.storage.path',
-                             os.path.join(SDK_ROOT, os.pardir, 'images')))
-
     def _everlasting(self) -> bool:
         return self._node_name == 'fuchsia-everlasting-emulator'
 
-    def _start_emulator(self) -> None:
-        """Start the emulator."""
+    def __enter__(self) -> str:
+        """Start the emulator.
+
+        Returns:
+            The node name of the emulator.
+        """
         logging.info('Starting emulator %s', self._node_name)
-        emu_command = [
-            'emu', 'start', self._product_bundle, '--name', self._node_name
-        ]
+        prod, board = self._product.split('.', 1)
+        image_dir = os.path.join(IMAGES_ROOT, prod, board)
+        emu_command = ['emu', 'start', image_dir, '--name', self._node_name]
         if not self._enable_graphics:
             emu_command.append('-H')
         if self._hardware_gpu:
@@ -66,11 +65,13 @@ class FfxEmulator(AbstractContextManager):
             emu_command.extend(
                 ('-l', os.path.join(self._logs_dir, 'emulator_log')))
         if self._with_network:
-            emu_command.extend(('--net', 'tap'))
+            emu_command.extend(['--net', 'tap'])
         else:
-            emu_command.extend(('--net', 'user'))
+            emu_command.extend(['--net', 'user'])
+        if self._everlasting():
+            emu_command.extend(['--reuse-with-check'])
 
-        # TODO(https://crbug.com/1336776): remove when ffx has native support
+        # TODO(https://fxbug.dev/99321): remove when ffx has native support
         # for starting emulator on arm64 host.
         if get_host_arch() == 'arm64':
 
@@ -116,47 +117,31 @@ class FfxEmulator(AbstractContextManager):
             # failed to be brought up and a retry is needed.
             # TODO(fxb/103540): Remove retry when start up issue is fixed.
             try:
-                # TODO(fxb/125872): Debug is added for examining flakiness.
-                configs = ['emu.start.timeout=90']
                 if i > 0:
                     logging.warning(
                         'Emulator failed to start.')
-                run_ffx_command(cmd=emu_command, timeout=100, configs=configs)
+                configs = ['emu.start.timeout=90']
+                if self._everlasting():
+                    configs.append('emu.instance_dir=' \
+                                   '/home/chrome-bot/.fuchsia_emulator/')
+                run_ffx_command(cmd=emu_command,
+                                timeout=100,
+                                configs=configs)
                 break
             except (subprocess.TimeoutExpired, subprocess.CalledProcessError):
                 run_ffx_command(cmd=('emu', 'stop'))
 
-    def _shutdown_emulator(self) -> None:
-        """Shutdown the emulator."""
-
-        logging.info('Stopping the emulator %s', self._node_name)
-        # The emulator might have shut down unexpectedly, so this command
-        # might fail.
-        run_ffx_command(cmd=('emu', 'stop', self._node_name), check=False)
-
-    def __enter__(self) -> str:
-        """Start the emulator if necessary.
-
-        Returns:
-            The node name of the emulator.
-        """
-
-        if self._everlasting():
-            sdk_hash = get_sdk_hash(find_image_in_sdk(self._product_bundle))
-            sys_info = get_system_info(self._node_name)
-            if sdk_hash == sys_info:
-                return self._node_name
-            logging.info(
-                ('The emulator version [%s] does not match the SDK [%s], '
-                 'updating...'), sys_info, sdk_hash)
-
-        self._start_emulator()
         return self._node_name
 
     def __exit__(self, exc_type, exc_value, traceback) -> bool:
-        """Shutdown the emulator if necessary."""
+        """Shutdown the emulator."""
 
-        if not self._everlasting():
-            self._shutdown_emulator()
+        logging.info('Stopping the emulator %s', self._node_name)
+        cmd = ['emu', 'stop', self._node_name]
+        if self._everlasting():
+            cmd.extend(['--persist'])
+        # The emulator might have shut down unexpectedly, so this command
+        # might fail.
+        run_ffx_command(cmd=cmd, check=False)
         # Do not suppress exceptions.
         return False

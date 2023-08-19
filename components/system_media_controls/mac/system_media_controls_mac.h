@@ -19,8 +19,7 @@ namespace internal {
 
 // Interfaces with Mac OS's MPNowPlayingInfoCenter and related MediaPlayer API.
 // The combination of those two form the full SystemMediaControls API.
-class API_AVAILABLE(macos(10.13.1)) SystemMediaControlsMac
-    : public SystemMediaControls {
+class SystemMediaControlsMac : public SystemMediaControls {
  public:
   SystemMediaControlsMac();
   SystemMediaControlsMac(const SystemMediaControlsMac&) = delete;

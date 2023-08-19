@@ -66,7 +66,8 @@ void TableExample::CreateExampleView(View* container) {
                        .WithWeight(1);
 
   const auto make_checkbox =
-      [](const std::u16string& label, int id, raw_ptr<TableView>* table,
+      [](const std::u16string& label, int id,
+         raw_ptr<TableView, DanglingUntriaged>* table,
          raw_ptr<Checkbox>* checkbox, FlexSpecification full_flex) {
         return Builder<Checkbox>()
             .CopyAddressTo(checkbox)

@@ -81,7 +81,7 @@ class GestureListenerManager::ResetScrollObserver : public WebContentsObserver {
   ResetScrollObserver(const ResetScrollObserver&) = delete;
   ResetScrollObserver& operator=(const ResetScrollObserver&) = delete;
 
-  void DidFinishNavigation(NavigationHandle* navigation_handle) override;
+  void PrimaryPageChanged(Page& page) override;
   void PrimaryMainFrameRenderProcessGone(
       base::TerminationStatus status) override;
 
@@ -94,9 +94,8 @@ GestureListenerManager::ResetScrollObserver::ResetScrollObserver(
     GestureListenerManager* manager)
     : WebContentsObserver(web_contents), manager_(manager) {}
 
-void GestureListenerManager::ResetScrollObserver::DidFinishNavigation(
-    NavigationHandle* navigation_handle) {
-  manager_->OnNavigationFinished(navigation_handle);
+void GestureListenerManager::ResetScrollObserver::PrimaryPageChanged(Page&) {
+  manager_->OnPrimaryPageChanged();
 }
 
 void GestureListenerManager::ResetScrollObserver::
@@ -148,10 +147,6 @@ void GestureListenerManager::SetRootScrollOffsetUpdateFrequency(
     jint frequency) {
   auto new_frequency =
       static_cast<cc::mojom::RootScrollOffsetUpdateFrequency>(frequency);
-  if (root_scroll_offset_update_frequency_ == new_frequency) {
-    return;
-  }
-
   root_scroll_offset_update_frequency_ = new_frequency;
   if (rwhva_)
     rwhva_->UpdateRootScrollOffsetUpdateFrequency();
@@ -288,13 +283,8 @@ void GestureListenerManager::UpdateRenderProcessConnection(
   rwhva_ = new_rwhva;
 }
 
-void GestureListenerManager::OnNavigationFinished(
-    NavigationHandle* navigation_handle) {
-  if (navigation_handle->IsInPrimaryMainFrame() &&
-      navigation_handle->HasCommitted() &&
-      !navigation_handle->IsSameDocument()) {
-    ResetPopupsAndInput(false);
-  }
+void GestureListenerManager::OnPrimaryPageChanged() {
+  ResetPopupsAndInput(false);
 }
 
 void GestureListenerManager::OnRenderProcessGone() {

@@ -7,10 +7,6 @@
 #import "ios/chrome/browser/shared/public/commands/password_breach_commands.h"
 #import "ios/chrome/test/app/chrome_test_util.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 @implementation PasswordBreachAppInterface
 
 + (void)showPasswordBreachWithCheckButton:(BOOL)checkButtonPresent {

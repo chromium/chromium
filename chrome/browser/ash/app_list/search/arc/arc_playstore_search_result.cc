@@ -141,7 +141,7 @@ void ArcPlayStoreSearchResult::ExecuteLaunchCommand(int event_flags) {
 }
 
 void ArcPlayStoreSearchResult::OnIconDecoded(const gfx::ImageSkia& icon) {
-  SetIcon(IconInfo(icon, kAppIconDimension));
+  SetIcon(IconInfo(ui::ImageModel::FromImageSkia(icon), kAppIconDimension));
 }
 
 }  // namespace app_list

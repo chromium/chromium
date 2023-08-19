@@ -3,8 +3,6 @@
 <translationbundle lang="it">
 <translation id="1075622780330595106"><ph name="NUMBER_OF_TABS" /> delle tue schede non sono state usate ultimamente. Vuoi chiuderle?</translation>
 <translation id="125153950246128346">Tocca per visualizzare un'altra scheda</translation>
-<translation id="1403228085774130835">Puoi trovare le tue schede chiuse in Schede recenti sotto al menu principale di Chrome</translation>
-<translation id="1455506303394048917">La tua attività in queste schede di navigazione in incognito verrà cancellata da questo dispositivo</translation>
 <translation id="1499635324672558517">Chiudere tutte le schede di navigazione in incognito?</translation>
 <translation id="1657719826150349398">Sposta scheda in basso</translation>
 <translation id="1869137256605757565">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> scheda}other{<ph name="TABS_COUNT_MANY" /> schede}}</translation>
@@ -47,6 +45,7 @@
 <translation id="5073204694187207510">Nascondi la griglia a schermo intero</translation>
 <translation id="5076161749301278626">Vuoi visualizzare le recensioni sul negozio?</translation>
 <translation id="5082793167783849073">Confronta rapidamente le pagine creando un gruppo. Innanzitutto, tocca e tieni premuto un link.</translation>
+<translation id="5339733443032484186">Ultima scheda</translation>
 <translation id="5490235265819901748">Gruppo di schede espanso</translation>
 <translation id="5494920125229734069">Seleziona tutto</translation>
 <translation id="5556417849629758491">Visualizza informazioni sul negozio, opzione disponibile nella parte superiore dello schermo</translation>
@@ -62,10 +61,12 @@
 <translation id="6228793724645064692">(valutazione del negozio)</translation>
 <translation id="6333260925957816943">Informazioni su questo negozio</translation>
 <translation id="639823877092900621">{TABS_COUNT,plural, =1{Separa <ph name="TABS_COUNT_ONE" /> scheda selezionata}other{Separa <ph name="TABS_COUNT_MANY" /> schede selezionate}}</translation>
+<translation id="6421412308143682486">{INCOGNITO_TABS_COUNT,plural, =1{Puoi trovare le tue schede chiuse in Schede recenti sotto al menu principale di Chrome. La scheda di navigazione in incognito non sarà disponibile.}other{Puoi trovare le tue schede chiuse in Schede recenti sotto al menu principale di Chrome. # schede di navigazione in incognito non saranno disponibili.}}</translation>
 <translation id="6422650314852876533">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> scheda}other{<ph name="TABS_COUNT_MANY" /> schede}}</translation>
 <translation id="6549021453810473782">Visualizza informazioni sul negozio</translation>
 <translation id="6562820390860419811">Sposta scheda a sinistra</translation>
 <translation id="6615455863669487791">Mostrami</translation>
+<translation id="661742612106409204">Puoi trovare le tue schede chiuse in Schede recenti sotto al menu principale di Chrome.</translation>
 <translation id="6840760312327750441">Per raggruppare le schede, tocca e tienine premuta una. Poi trascinala su un'altra scheda.</translation>
 <translation id="6856809498882026482">Nascondi modalità di selezione multipla</translation>
 <translation id="7100731960740376323">{TABS_COUNT,plural, =1{Condividi scheda}other{Condividi schede}}</translation>

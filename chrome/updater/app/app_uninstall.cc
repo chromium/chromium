@@ -16,6 +16,7 @@
 #include "base/logging.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/process/launch.h"
+#include "base/strings/utf_string_conversions.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
@@ -28,6 +29,7 @@
 #include "chrome/updater/lock.h"
 #include "chrome/updater/persisted_data.h"
 #include "chrome/updater/prefs.h"
+#include "chrome/updater/updater_scope.h"
 #include "chrome/updater/updater_version.h"
 #include "chrome/updater/util/util.h"
 #include "components/update_client/update_client.h"
@@ -40,42 +42,75 @@
 #endif
 
 namespace updater {
-namespace {
 
-// Uninstalls all versions not matching this version of the updater for the
-// given `scope`.
-void UninstallOtherVersions(UpdaterScope scope) {
+std::vector<base::FilePath> GetVersionExecutablePaths(UpdaterScope scope) {
   const absl::optional<base::FilePath> updater_folder_path =
       GetInstallDirectory(scope);
   if (!updater_folder_path) {
-    LOG(ERROR) << "Failed to get updater folder path.";
-    return;
+    LOG(ERROR) << __func__ << ": failed to get the updater install directory.";
+    return {};
   }
-  base::FileEnumerator file_enumerator(*updater_folder_path, true,
-                                       base::FileEnumerator::DIRECTORIES);
-  for (base::FilePath version_folder_path = file_enumerator.Next();
-       !version_folder_path.empty() &&
-       version_folder_path != GetVersionedInstallDirectory(scope);
-       version_folder_path = file_enumerator.Next()) {
-    const base::FilePath version_executable_path =
-        version_folder_path.Append(GetExecutableRelativePath());
+  std::vector<base::FilePath> version_executable_paths;
+  base::FileEnumerator(*updater_folder_path, false,
+                       base::FileEnumerator::DIRECTORIES)
+      .ForEach([&scope, &version_executable_paths](
+                   const base::FilePath& version_folder_path) {
+        // Skip the current version.
+        if (version_folder_path == GetVersionedInstallDirectory(scope)) {
+          return;
+        }
 
-    if (base::PathExists(version_executable_path)) {
-      base::CommandLine command_line(version_executable_path);
-      command_line.AppendSwitch(kUninstallSelfSwitch);
-      if (IsSystemInstall(scope)) {
-        command_line.AppendSwitch(kSystemSwitch);
-      }
-      command_line.AppendSwitch(kEnableLoggingSwitch);
-      command_line.AppendSwitchASCII(kLoggingModuleSwitch,
-                                     kLoggingModuleSwitchValue);
-      int exit_code = -1;
-      std::string output;
-      base::GetAppOutputWithExitCode(command_line, &output, &exit_code);
-    } else {
-      VLOG(1) << base::CommandLine::ForCurrentProcess()->GetCommandLineString()
-              << " : Path doesn't exist: " << version_executable_path;
-    }
+        // Skip if the folder is not named as a valid version. All updater
+        // version directories are named as valid versions.
+        if (!base::Version(version_folder_path.BaseName().MaybeAsASCII())
+                 .IsValid()) {
+          return;
+        }
+
+        const base::FilePath version_executable_path =
+            version_folder_path.Append(GetExecutableRelativePath());
+
+        if (base::PathExists(version_executable_path)) {
+          version_executable_paths.push_back(version_executable_path);
+          VLOG(1) << __func__ << " : added to version_executable_paths: "
+                  << version_executable_path;
+        } else {
+          VLOG(1) << __func__
+                  << " : File does not exist: " << version_executable_path;
+        }
+      });
+
+  return version_executable_paths;
+}
+
+base::CommandLine GetUninstallSelfCommandLine(
+    UpdaterScope scope,
+    const base::FilePath& executable_path) {
+  base::CommandLine command_line(executable_path);
+  command_line.AppendSwitch(kUninstallSelfSwitch);
+  if (IsSystemInstall(scope)) {
+    command_line.AppendSwitch(kSystemSwitch);
+  }
+  command_line.AppendSwitch(kEnableLoggingSwitch);
+  command_line.AppendSwitchASCII(kLoggingModuleSwitch,
+                                 kLoggingModuleSwitchValue);
+  return command_line;
+}
+
+namespace {
+
+// Uninstalls all versions not matching the current version of the updater for
+// the given `scope`.
+void UninstallOtherVersions(UpdaterScope scope) {
+  for (const base::FilePath& version_executable_path :
+       GetVersionExecutablePaths(scope)) {
+    const base::CommandLine command_line(
+        GetUninstallSelfCommandLine(scope, version_executable_path));
+    int exit_code = -1;
+    std::string output;
+    base::GetAppOutputWithExitCode(command_line, &output, &exit_code);
+    VLOG(1) << __func__ << ": Ran: " << command_line.GetCommandLineString()
+            << ": " << output << ": " << exit_code;
   }
 }
 
@@ -88,8 +123,7 @@ class AppUninstall : public App {
 
  private:
   ~AppUninstall() override = default;
-  void Initialize() override;
-  void Uninitialize() override;
+  [[nodiscard]] int Initialize() override;
   void FirstTaskRun() override;
 
   void UninstallAll(int reason);
@@ -104,22 +138,17 @@ class AppUninstall : public App {
   scoped_refptr<Configurator> config_;
 };
 
-void AppUninstall::Initialize() {
+int AppUninstall::Initialize() {
   setup_lock_ =
       ScopedLock::Create(kSetupMutex, updater_scope(), kWaitForSetupLock);
-
   global_prefs_ = CreateGlobalPrefs(updater_scope());
-
   if (global_prefs_) {
     persisted_data_ = base::MakeRefCounted<PersistedData>(
         updater_scope(), global_prefs_->GetPrefService());
     config_ = base::MakeRefCounted<Configurator>(global_prefs_,
                                                  CreateExternalConstants());
   }
-}
-
-void AppUninstall::Uninitialize() {
-  global_prefs_ = nullptr;
+  return kErrorOk;
 }
 
 void AppUninstall::UninstallAll(int reason) {
@@ -140,8 +169,7 @@ void AppUninstall::UninstallAll(int reason) {
           [](base::OnceCallback<void(int)> shutdown, UpdaterScope scope,
              update_client::Error uninstall_ping_error) {
             VLOG_IF(1, uninstall_ping_error != update_client::Error::NONE)
-                << "Uninstall ping failed: "
-                << static_cast<int>(uninstall_ping_error);
+                << "Uninstall ping failed: " << uninstall_ping_error;
             base::ThreadPool::PostTaskAndReplyWithResult(
                 FROM_HERE, {base::MayBlock()},
                 base::BindOnce(

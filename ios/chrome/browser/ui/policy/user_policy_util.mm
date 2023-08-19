@@ -12,13 +12,10 @@
 #import "ios/chrome/browser/signin/authentication_service.h"
 #import "ios/chrome/browser/signin/authentication_service_factory.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 bool IsUserPolicyNotificationNeeded(AuthenticationService* authService,
                                     PrefService* prefService) {
-  if (!policy::IsUserPolicyEnabled()) {
+  if (!policy::IsAnyUserPolicyFeatureEnabled()) {
+    // Return false immediately if none of the user policy features is enabled.
     return false;
   }
 
@@ -28,7 +25,28 @@ bool IsUserPolicyNotificationNeeded(AuthenticationService* authService,
     return false;
   }
 
-  // Return true if the primary identity is managed. Return false if there is
-  // no account that is syncing (can be signed out or signed in with sync off).
-  return authService->HasPrimaryIdentityManaged(signin::ConsentLevel::kSync);
+  // TODO(crbug.com/1462552): Remove kSync usage after users are migrated to
+  // kSignin only after kSync sunset. See ConsentLevel::kSync for more details.
+
+  bool enabled_for_signin =
+      policy::IsUserPolicyEnabledForSigninAndNoSyncConsentLevel();
+  bool enabled_for_sync =
+      policy::IsUserPolicyEnabledForSigninOrSyncConsentLevel();
+
+  if (!enabled_for_sync &&
+      authService->HasPrimaryIdentityManaged(signin::ConsentLevel::kSync)) {
+    // Return false if sync is turned ON while the feature for that consent
+    // level isn't enabled.
+    return false;
+  }
+
+  // Set the minimal consent level to kSignin if User Policy is enabled for
+  // signed in users, or otherwise to kSync which is the only other option.
+  signin::ConsentLevel consent_level = enabled_for_signin
+                                           ? signin::ConsentLevel::kSignin
+                                           : signin::ConsentLevel::kSync;
+
+  // Return true if the primary identity is managed with the minimal
+  // `consent_level` to enable User Policy.
+  return authService->HasPrimaryIdentityManaged(consent_level);
 }

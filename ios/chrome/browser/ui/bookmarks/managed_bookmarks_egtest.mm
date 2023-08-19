@@ -18,10 +18,6 @@
 #import "ios/testing/earl_grey/app_launch_configuration.h"
 #import "ios/testing/earl_grey/earl_grey_test.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 using chrome_test_util::BookmarksDeleteSwipeButton;
 using chrome_test_util::ButtonWithAccessibilityLabelId;
 using chrome_test_util::ContextBarCenterButtonWithLabel;
@@ -91,7 +87,7 @@ void VerifyBookmarkNodeWithLabelNotNil(NSString* bookmark_node_label) {
 void SearchBookmarksForText(NSString* search_text) {
   // Search and hide keyboard.
   [[EarlGrey selectElementWithMatcher:SearchIconButton()]
-      performAction:grey_typeText(search_text)];
+      performAction:grey_replaceText(search_text)];
 }
 
 }  // namespace
@@ -123,7 +119,7 @@ void SearchBookmarksForText(NSString* search_text) {
 
 - (void)setUp {
   [super setUp];
-  [ChromeEarlGrey waitForBookmarksToFinishLoading];
+  [BookmarkEarlGrey waitForBookmarkModelsLoaded];
 }
 
 // Tear down called once per test.

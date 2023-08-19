@@ -105,7 +105,6 @@
 <translation id="4266252015790371705">{MONTHS,plural, =1{۱ ماه قبل}one{# ماه قبل}other{# ماه قبل}}</translation>
 <translation id="4289300219472526559">شروع صحبت</translation>
 <translation id="4289540628985791613">نمای کلی</translation>
-<translation id="4306392492252714209">برداشتن از بریده‌دان.</translation>
 <translation id="4491109536499578614">تصویر</translation>
 <translation id="4565377596337484307">عدم نمایش گذرواژه</translation>
 <translation id="4588090240171750605">پیمایش به راست</translation>
@@ -148,6 +147,7 @@
 <translation id="6142413573757616983"><ph name="QUANTITY" /> بایت/ثانیه</translation>
 <translation id="6237461503717005873"><ph name="ROW_NAME" /> انتخاب می‌شود.</translation>
 <translation id="6264365405983206840">انتخاب &amp;همه</translation>
+<translation id="6346952829206698721">جای‌گذاری از بریده‌دان</translation>
 <translation id="6364916375976753737">پیمایش به چپ</translation>
 <translation id="6394627529324717982">کاما</translation>
 <translation id="6397363302884558537">توقف صحبت</translation>
@@ -168,12 +168,13 @@
 <translation id="6907759265145635167"><ph name="QUANTITY" /> پتابایت/ثانیه</translation>
 <translation id="6917971086528278418">{YEARS,plural, =1{۱ سال باقی مانده است}one{#سال باقی مانده است}other{#سال باقی مانده است}}</translation>
 <translation id="6945221475159498467">انتخاب</translation>
-<translation id="6965382102122355670">قبول</translation>
+<translation id="6965382102122355670">تأیید</translation>
 <translation id="6974053822202609517">راست به چپ</translation>
 <translation id="7052633198403197513">F1</translation>
 <translation id="7170202025028120564">تنظیمات نمایش برنامه‌تان در بازراه‌اندازی بعدی اعمال می‌شود.</translation>
 <translation id="7222373446505536781">F11</translation>
 <translation id="7238427729722629793">{MINUTES,plural, =1{۱ دقیقه باقی مانده است}one{# دقیقه باقی مانده است}other{# دقیقه باقی مانده است}}</translation>
+<translation id="7363164521834647158">ارسال پاسخ</translation>
 <translation id="7365057348334984696">{MINUTES,plural, =1{۱ دقیقه قبل}one{# دقیقه قبل}other{# دقیقه قبل}}</translation>
 <translation id="7389409599945284130">- <ph name="MESSAGE" /></translation>
 <translation id="7410957453383678442">{MINUTES,plural, =1{۱ دقیقه باقی مانده است}one{# دقیقه باقی مانده است}other{# دقیقه باقی مانده است}}</translation>

@@ -992,6 +992,19 @@
       is_animation_property: true,
     },
     {
+      name: "transition-behavior",
+      property_methods: ["ParseSingleValue", "CSSValueFromComputedStyleInternal", "InitialValue"],
+      typedom_types: ["Keyword"],
+      separator: ",",
+      style_builder_template: "transition",
+      style_builder_template_args: {
+        attribute: "Behavior",
+      },
+      valid_for_marker: true,
+      is_animation_property: true,
+      runtime_flag: "CSSTransitionDiscrete",
+    },
+    {
       name: "transition-timing-function",
       property_methods: ["ParseSingleValue", "CSSValueFromComputedStyleInternal", "InitialValue"],
       style_builder_template: "transition",
@@ -1164,7 +1177,7 @@
       name_for_methods: "SizeAdjust",
       converter: "ConvertFontSizeAdjust",
       priority: "High",
-      keywords: ["none", "ex-height", "cap-height", "ch-width", "ic-width"],
+      keywords: ["none", "ex-height", "cap-height", "ch-width", "ic-width", "from-font"],
       typedom_types: ["Keyword", "Number"],
       valid_for_first_letter: true,
       valid_for_first_line: true,
@@ -1296,7 +1309,6 @@
       property_methods: ["ParseSingleValue", "CSSValueFromComputedStyleInternal"],
       inherited: true,
       font: true,
-      runtime_flag: "FontVariantAlternates",
       type_name: "FontVariantAlternates",
       name_for_methods: "FontVariantAlternates",
       converter: "ConvertFontVariantAlternates",
@@ -1464,7 +1476,6 @@
       field_template: "primitive",
       inherited: true,
       property_methods: ["ParseSingleValue", "CSSValueFromComputedStyleInternal"],
-      runtime_flag: "CSSMathDepth",
       style_builder_custom_functions: ["value"],
       type_name: "short",
       typedom_types: ["Number"],
@@ -1536,7 +1547,6 @@
       // Setting zoom affects the _EffectiveZoom_, which in turns affects every px value
       // stored on ComputedStyle; see CSSToLengthConversionData::ZoomedComputedPixels.
       supports_incremental_style: false,
-      runtime_flag: "CSSZoom",
     },
     {
       name: "accent-color",
@@ -1622,20 +1632,6 @@
       field_group: "*",
       field_template: "external",
       converter: "ConvertNoneOrCustomIdent",
-      keywords: ["none"],
-      typedom_types: ["Keyword"],
-      runtime_flag: "CSSAnchorPositioning",
-    },
-    {
-      name: "anchor-scroll",
-      property_methods: ["ParseSingleValue", "CSSValueFromComputedStyleInternal" ],
-      include_paths: ["third_party/blink/renderer/core/style/anchor_specifier_value.h"],
-      type_name: "AnchorSpecifierValue",
-      wrapper_pointer_name: "Persistent",
-      default_value: "AnchorSpecifierValue::Default()",
-      field_group: "*",
-      field_template: "external",
-      converter: "ConvertAnchorScroll",
       keywords: ["none"],
       typedom_types: ["Keyword"],
       runtime_flag: "CSSAnchorPositioning",
@@ -2305,7 +2301,7 @@
       default_value: "Length()",
       typedom_types: ["Keyword", "Length", "Percentage"],
       computed_style_protected_functions: ["getter"],
-      converter: "ConvertLengthOrAuto",
+      style_builder_custom_functions: ["value"],
       logical_property_group: {
         name: "inset",
         resolver: "bottom",
@@ -2542,8 +2538,8 @@
       field_template: "external",
       include_paths: ["third_party/blink/renderer/core/style/style_intrinsic_length.h"],
       keywords: ["auto", "none"],
-      default_value: "absl::nullopt",
-      type_name: "absl::optional<StyleIntrinsicLength>",
+      default_value: "StyleIntrinsicLength()",
+      type_name: "StyleIntrinsicLength",
       converter: "ConvertIntrinsicDimension",
     },
     {
@@ -2554,8 +2550,8 @@
       field_template: "external",
       include_paths: ["third_party/blink/renderer/core/style/style_intrinsic_length.h"],
       keywords: ["auto", "none"],
-      default_value: "absl::optional<StyleIntrinsicLength>()",
-      type_name: "absl::optional<StyleIntrinsicLength>",
+      default_value: "StyleIntrinsicLength()",
+      type_name: "StyleIntrinsicLength",
       converter: "ConvertIntrinsicDimension",
     },
     {
@@ -2887,8 +2883,8 @@
       field_group: "*",
       field_template: "external",
       include_paths: ["third_party/blink/renderer/core/style/grid_track_list.h"],
-      default_value: "GridTrackList(GridTrackSize(Length::Auto()))",
-      type_name: "GridTrackList",
+      default_value: "NGGridTrackList(GridTrackSize(Length::Auto()))",
+      type_name: "NGGridTrackList",
       converter: "ConvertGridTrackSizeList",
       keywords: ["auto", "min-content", "max-content"],
       typedom_types: ["Keyword", "Length", "Percentage", "Flex"],
@@ -2913,8 +2909,8 @@
       field_group: "*",
       field_template: "external",
       include_paths: ["third_party/blink/renderer/core/style/grid_track_list.h"],
-      default_value: "GridTrackList(GridTrackSize(Length::Auto()))",
-      type_name: "GridTrackList",
+      default_value: "NGGridTrackList(GridTrackSize(Length::Auto()))",
+      type_name: "NGGridTrackList",
       converter: "ConvertGridTrackSizeList",
       keywords: ["auto", "min-content", "max-content"],
       typedom_types: ["Keyword", "Length", "Percentage", "Flex"],
@@ -3105,6 +3101,17 @@
       converter: "ConvertImageOrientation",
     },
     {
+      name: "dynamic-range-limit",
+      property_methods: ["ParseSingleValue", "CSSValueFromComputedStyleInternal"],
+      inherited: true,
+      runtime_flag: "CSSDynamicRangeLimit",
+      field_group: "*",
+      field_template: "keyword",
+      keywords: ["standard", "high", "constrained-high"],
+      typedom_types: ["Keyword"],
+      default_value: "high",
+    },
+    {
       name: "initial-letter",
       converter: "ConvertInitialLetter",
       default_value: "StyleInitialLetter()",
@@ -3170,7 +3177,7 @@
       default_value: "Length()",
       typedom_types: ["Keyword", "Length", "Percentage"],
       computed_style_protected_functions: ["getter"],
-      converter: "ConvertLengthOrAuto",
+      style_builder_custom_functions: ["value"],
       logical_property_group: {
         name: "inset",
         resolver: "left",
@@ -3419,7 +3426,6 @@
       keywords: ["normal", "compact"],
       typedom_types: ["Keyword"],
       default_value: "normal",
-      runtime_flag: "CSSMathShift",
     },
     {
       name: "math-style",
@@ -3430,7 +3436,6 @@
       keywords: ["normal", "compact"],
       typedom_types: ["Keyword"],
       default_value: "normal",
-      runtime_flag: "CSSMathStyle",
     },
     {
       name: "max-height",
@@ -3761,12 +3766,26 @@
       runtime_flag: "CSSLogicalOverflow",
     },
     {
+      name: "-internal-overflow-inline",
+      logical_property_group: {
+        name: "overflow",
+        resolver: "inline",
+      },
+    },
+    {
       name: "overflow-block",
       logical_property_group: {
         name: "overflow",
         resolver: "block",
       },
       runtime_flag: "CSSLogicalOverflow",
+    },
+    {
+      name: "-internal-overflow-block",
+      logical_property_group: {
+        name: "overflow",
+        resolver: "block",
+      },
     },
     {
       name: "overflow-clip-margin",
@@ -4047,6 +4066,20 @@
       runtime_flag: "CSSAnchorPositioning",
     },
     {
+      name: "position-fallback-bounds",
+      property_methods: ["ParseSingleValue", "CSSValueFromComputedStyleInternal" ],
+      include_paths: ["third_party/blink/renderer/core/style/scoped_css_name.h"],
+      type_name: "ScopedCSSName",
+      wrapper_pointer_name: "Persistent",
+      default_value: "nullptr",
+      field_group: "*",
+      field_template: "external",
+      converter: "ConvertNormalOrCustomIdent",
+      keywords: ["normal"],
+      typedom_types: ["Keyword"],
+      runtime_flag: "CSSAnchorPositioning",
+    },
+    {
       name: "quotes",
       property_methods: ["ParseSingleValue", "CSSValueFromComputedStyleInternal"],
       inherited: true,
@@ -4096,7 +4129,7 @@
       default_value: "Length()",
       typedom_types: ["Keyword", "Length", "Percentage"],
       computed_style_protected_functions: ["getter"],
-      converter: "ConvertLengthOrAuto",
+      style_builder_custom_functions: ["value"],
       logical_property_group: {
         name: "inset",
         resolver: "right",
@@ -4463,7 +4496,7 @@
       },
       keywords: ["auto", "start", "end", "center", "top", "bottom", "left", "right"],
       typedom_types: ["Keyword", "Length", "Percentage"],
-      runtime_flag: "CSSScrollSnap2",
+      runtime_flag: "CSSScrollStart",
     },
     {
       name: "scroll-start-inline",
@@ -4479,7 +4512,7 @@
       },
       keywords: ["auto", "start", "end", "center", "top", "bottom", "left", "right"],
       typedom_types: ["Keyword", "Length", "Percentage"],
-      runtime_flag: "CSSScrollSnap2",
+      runtime_flag: "CSSScrollStart",
     },
     {
       name: "scroll-start-x",
@@ -4494,7 +4527,7 @@
         name: "scroll-start",
         resolver: "horizontal"
       },
-      runtime_flag: "CSSScrollSnap2",
+      runtime_flag: "CSSScrollStart",
     },
     {
       name: "scroll-start-y",
@@ -4509,7 +4542,7 @@
         name: "scroll-start",
         resolver: "vertical"
       },
-      runtime_flag: "CSSScrollSnap2",
+      runtime_flag: "CSSScrollStart",
     },
     {
       name: "scroll-start-target-block",
@@ -4524,7 +4557,7 @@
       },
       keywords: ["none", "auto"],
       typedom_types: ["Keyword"],
-      runtime_flag: "CSSScrollSnap2",
+      runtime_flag: "CSSScrollStart",
     },
     {
       name: "scroll-start-target-inline",
@@ -4539,7 +4572,7 @@
       },
       keywords: ["none", "auto"],
       typedom_types: ["Keyword"],
-      runtime_flag: "CSSScrollSnap2",
+      runtime_flag: "CSSScrollStart",
     },
     {
       name: "scroll-start-target-x",
@@ -4553,7 +4586,7 @@
         resolver: "horizontal"
       },
       keywords: ["none", "auto"],
-      runtime_flag: "CSSScrollSnap2",
+      runtime_flag: "CSSScrollStart",
     },
     {
       name: "scroll-start-target-y",
@@ -4567,18 +4600,7 @@
         resolver: "vertical"
       },
       keywords: ["none", "auto"],
-      runtime_flag: "CSSScrollSnap2",
-    },
-    {
-      name: "scroll-timeline-attachment",
-      property_methods: ["ParseSingleValue", "CSSValueFromComputedStyleInternal", "InitialValue"],
-      field_group: "*->timeline",
-      field_template: "external",
-      default_value: "Vector<TimelineAttachment>()",
-      type_name: "Vector<TimelineAttachment>",
-      converter: "ConvertViewTimelineAttachment",
-      separator: ",",
-      runtime_flag: "ScrollTimelineAttachment",
+      runtime_flag: "CSSScrollStart",
     },
     {
       name: "scroll-timeline-axis",
@@ -4874,6 +4896,17 @@
       keywords: ["start", "middle", "end"],
       default_value: "start",
       typedom_types: ["Keyword"],
+    },
+    {
+      name: "text-autospace",
+      property_methods: ["CSSValueFromComputedStyleInternal"],
+      inherited: true,
+      field_group: "*",
+      field_template: "keyword",
+      keywords: ["normal", "no-autospace"],
+      default_value: "normal",
+      typedom_types: ["Keyword"],
+      runtime_flag: "CSSTextAutoSpace",
     },
     {
       name: "text-box-trim",
@@ -5189,7 +5222,7 @@
       default_value: "Length()",
       typedom_types: ["Keyword", "Length", "Percentage"],
       computed_style_protected_functions: ["getter"],
-      converter: "ConvertLengthOrAuto",
+      style_builder_custom_functions: ["value"],
       logical_property_group: {
         name: "inset",
         resolver: "top",
@@ -5240,7 +5273,7 @@
       name: "transform-box",
       property_methods: ["CSSValueFromComputedStyleInternal"],
       field_template: "keyword",
-      keywords: ["fill-box", "view-box"],
+      keywords: ["content-box", "border-box", "fill-box", "stroke-box", "view-box"],
       default_value: "view-box",
       typedom_types: ["Keyword"],
       computable: false,
@@ -5352,17 +5385,6 @@
       keywords: ["baseline", "sub", "super", "text-top", "text-bottom", "middle"],
       valid_for_first_letter: true,
       valid_for_first_line: true,
-    },
-    {
-      name: "view-timeline-attachment",
-      property_methods: ["ParseSingleValue", "CSSValueFromComputedStyleInternal", "InitialValue"],
-      field_group: "*->timeline",
-      field_template: "external",
-      default_value: "Vector<TimelineAttachment>()",
-      type_name: "Vector<TimelineAttachment>",
-      converter: "ConvertViewTimelineAttachment",
-      separator: ",",
-      runtime_flag: "ScrollTimelineAttachment",
     },
     {
       name: "view-timeline-axis",
@@ -5688,17 +5710,6 @@
       converter: "ConvertComputedLength<float>",
       keywords: ["auto"],
       typedom_types: ["Keyword", "Length"],
-    },
-    {
-      name: "-webkit-highlight",
-      property_methods: ["ParseSingleValue", "CSSValueFromComputedStyleInternal"],
-      inherited: true,
-      field_group: "*",
-      field_template: "external",
-      include_paths: ["third_party/blink/renderer/platform/wtf/text/atomic_string.h"],
-      default_value: "g_null_atom",
-      type_name: "AtomicString",
-      converter: "ConvertString<CSSValueID::kNone>",
     },
     {
       name: "hyphenate-character",
@@ -6098,33 +6109,10 @@
     },
     {
       name: "white-space",
-      property_methods: ["CSSValueFromComputedStyleInternal"],
-      independent: false,  // Actually true, but setting it to false saves a precious bit in ComputedStyleBase.
-      inherited: true,
-      // This property is "keyword" but use "primitive" to use `EWhiteSpace` defined manually.
-      field_template: "primitive",
-      // The values are stored in `white-space-collapse` and `text-wrap` by
-      // `computed_style_custom_functions` even when `CSSWhiteSpaceShorthand`
-      // is off, but give 1 bit to it because `field_size` can't be zero.
-      field_size: 1,
-      include_paths: ["third_party/blink/renderer/core/css/white_space.h"],
-      keywords: [
-        "normal", "pre", "pre-wrap", "pre-line", "nowrap", "break-spaces"
-      ],
-      computed_style_custom_functions: ["getter", "setter", "resetter"],
-      typedom_types: ["Keyword"],
-      default_value: "EWhiteSpace::kNormal",
-      valid_for_cue: true,
-      valid_for_marker: true,
-    },
-    {
-      name: "-alternative-white-space",
-      alternative_of: "white-space",
       longhands: [
         "white-space-collapse", "text-wrap"
       ],
       property_methods: ["ParseShorthand", "CSSValueFromComputedStyleInternal"],
-      runtime_flag: "CSSWhiteSpaceShorthand",
     },
     {
       name: "white-space-collapse",
@@ -6139,7 +6127,6 @@
       typedom_types: ["Keyword"],
       valid_for_cue: true,
       valid_for_marker: true,
-      runtime_flag: "CSSWhiteSpaceShorthand",
     },
     {
       name: "text-wrap",
@@ -6154,7 +6141,6 @@
       typedom_types: ["Keyword"],
       valid_for_cue: true,
       valid_for_marker: true,
-      runtime_flag: "CSSTextWrap",
     },
     {
       name: "widows",
@@ -6202,7 +6188,7 @@
       field_group: "*",
       field_template: "keyword",
       // Word Break Values. Matches WinIE and CSS3
-      keywords: ["normal", "break-all", "keep-all", "break-word"],
+      keywords: ["normal", "break-all", "keep-all", "break-word", "auto-phrase"],
       default_value: "normal",
       typedom_types: ["Keyword"],
       valid_for_marker: true,
@@ -6230,6 +6216,7 @@
       type_name: "int",
       computed_style_custom_functions: ["setter"],
       style_builder_template: "auto",
+      converter: "ConvertInteger",
       keywords: ["auto"],
       typedom_types: ["Keyword", "Number"],
     },
@@ -6815,6 +6802,12 @@
       is_descriptor: true,
       is_property: false,
     },
+    {
+      name: "navigation-trigger",
+      is_descriptor: true,
+      is_property: false,
+      runtime_flag: "ViewTransitionOnNavigation",
+    },
 
     // Shorthands
     {
@@ -7365,17 +7358,17 @@
       name: "scroll-start",
       longhands: ["scroll-start-block", "scroll-start-inline"],
       property_methods: ["ParseShorthand", "CSSValueFromComputedStyleInternal"],
-      runtime_flag: "CSSScrollSnap2",
+      runtime_flag: "CSSScrollStart",
     },
     {
       name: "scroll-start-target",
       longhands: ["scroll-start-target-block", "scroll-start-target-inline"],
       property_methods: ["ParseShorthand", "CSSValueFromComputedStyleInternal"],
-      runtime_flag: "CSSScrollSnap2",
+      runtime_flag: "CSSScrollStart",
     },
     {
       name: "scroll-timeline",
-      longhands: ["scroll-timeline-name", "scroll-timeline-axis", "scroll-timeline-attachment"],
+      longhands: ["scroll-timeline-name", "scroll-timeline-axis"],
       property_methods: ["ParseShorthand", "CSSValueFromComputedStyleInternal"],
       runtime_flag: "ScrollTimeline",
     },
@@ -7395,13 +7388,14 @@
       name: "transition",
       longhands: [
         "transition-property", "transition-duration",
-        "transition-timing-function", "transition-delay"
+        "transition-timing-function", "transition-delay",
+        "transition-behavior",
       ],
       property_methods: ["ParseShorthand", "CSSValueFromComputedStyleInternal"],
     },
     {
       name: "view-timeline",
-      longhands: ["view-timeline-name", "view-timeline-axis", "view-timeline-attachment"],
+      longhands: ["view-timeline-name", "view-timeline-axis"],
       property_methods: ["ParseShorthand", "CSSValueFromComputedStyleInternal"],
       runtime_flag: "ScrollTimeline",
     },

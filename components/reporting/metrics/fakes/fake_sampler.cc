@@ -41,7 +41,7 @@ void FakeDelayedSampler::MaybeCollect(OptionalMetricCallback cb) {
 }
 
 void FakeDelayedSampler::RunCallback() {
-  DCHECK(cb_);
+  CHECK(cb_);
   std::move(cb_).Run(metric_data_);
 }
 

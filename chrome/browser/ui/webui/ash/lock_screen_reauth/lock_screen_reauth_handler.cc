@@ -42,8 +42,9 @@ namespace ash {
 namespace {
 
 bool ShouldDoSamlRedirect(const std::string& email) {
-  if (email.empty())
+  if (email.empty()) {
     return false;
+  }
 
   // If there's a populated email, we must check first that this user is using
   // SAML in order to decide whether to show the interstitial page.
@@ -194,21 +195,19 @@ void LockScreenReauthHandler::OnSetCookieForLoadGaiaWithPartition(
       GaiaUrls::GetInstance()->embedded_setup_chromeos_url().path().substr(1));
   params.Set("clientId", GaiaUrls::GetInstance()->oauth2_chrome_client_id());
   params.Set("dontResizeNonEmbeddedPages", false);
-  params.Set("enableGaiaActionButtons", false);
 
   std::string hosted_domain = GetHostedDomain(context.gaia_id);
-
-  if (hosted_domain.empty()) {
-    LOG(ERROR) << "Couldn't get hosted_domain from account info.";
-    params.Set("doSamlRedirect", force_saml_redirect_for_testing_);
+  bool do_saml_redirect =
+      force_saml_redirect_for_testing_ || ShouldDoSamlRedirect(context.email);
+  params.Set("doSamlRedirect", do_saml_redirect);
+  if (force_saml_redirect_for_testing_) {
+    params.Set("enterpriseEnrollmentDomain", kIdpTestingDomain);
+  } else if (!hosted_domain.empty()) {
+    params.Set("enterpriseEnrollmentDomain", hosted_domain);
   } else {
-    params.Set("enterpriseEnrollmentDomain", force_saml_redirect_for_testing_
-                                                 ? kIdpTestingDomain
-                                                 : hosted_domain);
-    params.Set("doSamlRedirect", force_saml_redirect_for_testing_ ||
-                                     ShouldDoSamlRedirect(context.email));
+    LOG(ERROR) << "Couldn't get hosted_domain from account info.";
   }
-
+  params.Set("enableGaiaActionButtons", !do_saml_redirect);
   const std::string sso_profile(GetSSOProfile());
   if (!sso_profile.empty()) {
     params.Set("ssoProfile", sso_profile);
@@ -407,6 +406,11 @@ void LockScreenReauthHandler::SamlConfirmPassword(
 }
 
 void LockScreenReauthHandler::HandleWebviewLoadAborted(int error_code) {
+  if (error_code == net::ERR_BLOCKED_BY_ADMINISTRATOR) {
+    // Ignore this error to let the user see the error screen for blocked sites.
+    return;
+  }
+
   if (error_code == net::ERR_INVALID_AUTH_CREDENTIALS) {
     // Silently ignore this error - it is used as an intermediate state for
     // committed interstitials (see https://crbug.com/1049349 for details).
@@ -460,8 +464,9 @@ void LockScreenReauthHandler::RegisterMessages() {
 
 bool LockScreenReauthHandler::IsAuthenticatorLoaded(
     base::OnceClosure callback) {
-  if (authenticator_state_ == AuthenticatorState::LOADED)
+  if (authenticator_state_ == AuthenticatorState::LOADED) {
     return true;
+  }
 
   waiting_caller_ = std::move(callback);
   return false;

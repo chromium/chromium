@@ -67,7 +67,8 @@ class FileSystemAccessFileWriterBrowserTest : public ContentBrowserTest {
     EXPECT_TRUE(base::WriteFile(test_file, contents));
 
     ui::SelectFileDialog::SetFactory(
-        new FakeSelectFileDialogFactory({test_file}));
+        std::make_unique<FakeSelectFileDialogFactory>(
+            std::vector<base::FilePath>{test_file}));
     EXPECT_TRUE(NavigateToURL(shell(), test_url_));
     EXPECT_EQ(test_file.BaseName().AsUTF8Unsafe(),
               EvalJs(shell(),
@@ -91,7 +92,8 @@ class FileSystemAccessFileWriterBrowserTest : public ContentBrowserTest {
     EXPECT_TRUE(base::WriteFile(test_file, file_data));
 
     ui::SelectFileDialog::SetFactory(
-        new FakeSelectFileDialogFactory({test_file}));
+        std::make_unique<FakeSelectFileDialogFactory>(
+            std::vector<base::FilePath>{test_file}));
     EXPECT_TRUE(NavigateToURL(shell(), test_url_));
     EXPECT_EQ(test_file.BaseName().AsUTF8Unsafe(),
               EvalJs(shell(),
@@ -336,7 +338,8 @@ IN_PROC_BROWSER_TEST_F(FileSystemAccessFileWriterBrowserTest,
         temp_dir_.GetPath(), FILE_PATH_LITERAL("parent"), &test_dir));
 
     ui::SelectFileDialog::SetFactory(
-        new FakeSelectFileDialogFactory({test_dir}));
+        std::make_unique<FakeSelectFileDialogFactory>(
+            std::vector<base::FilePath>{test_dir}));
     EXPECT_TRUE(NavigateToURL(shell(), test_url_));
     EXPECT_EQ(test_dir.BaseName().AsUTF8Unsafe(),
               EvalJs(shell(),

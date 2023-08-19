@@ -43,7 +43,7 @@ SetValueEffectSlider::SetValueEffectSlider(const VcHostedEffect* effect)
         std::make_unique<views::Label>(effect->label_text()));
     label->SetFocusBehavior(FocusBehavior::ACCESSIBLE_ONLY);
     label->SetAutoColorReadabilityEnabled(false);
-    TypographyProvider::Get()->StyleLabel(TypographyToken::kLegacyButton2,
+    TypographyProvider::Get()->StyleLabel(TypographyToken::kCrosButton2,
                                           *label);
     label->SetEnabledColorId(cros_tokens::kCrosSysOnSurface);
 

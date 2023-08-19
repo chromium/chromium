@@ -11,11 +11,12 @@
 #include "components/content_settings/browser/page_specific_content_settings.h"
 #include "components/content_settings/core/common/content_settings_types.h"
 #include "components/page_info/page_info.h"
-#include "components/permissions/permission_result.h"
 #include "components/permissions/permission_uma_util.h"
 #include "components/safe_browsing/buildflags.h"
 #include "components/safe_browsing/core/browser/password_protection/metrics_util.h"
 #include "components/security_state/core/security_state.h"
+#include "content/public/browser/permission_result.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace blink {
 enum class PermissionType;
@@ -62,9 +63,10 @@ class PageInfoDelegate {
 #endif
   // Get permission status for the permission associated with ContentSetting of
   // type |type|.
-  virtual permissions::PermissionResult GetPermissionResult(
+  virtual content::PermissionResult GetPermissionResult(
       blink::PermissionType permission,
-      const url::Origin& origin) = 0;
+      const url::Origin& origin,
+      const absl::optional<url::Origin>& requesting_origin) = 0;
 #if !BUILDFLAG(IS_ANDROID)
   // Returns absl::nullopt if `site_url` is not recognised as a member of any
   // FPS or if FPS functionality is not allowed .

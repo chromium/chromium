@@ -55,6 +55,8 @@ public class MessageBannerMediatorUnitTest {
     @Mock
     private DisplayMetrics mDisplayMetrics;
     @Mock
+    private Supplier<Integer> mTopOffsetSupplier;
+    @Mock
     private Supplier<Integer> mMaxTranslationSupplier;
     @Mock
     private Runnable mDismissedRunnable;
@@ -82,8 +84,6 @@ public class MessageBannerMediatorUnitTest {
                 .thenReturn(16);
         when(mResources.getDimensionPixelSize(R.dimen.message_horizontal_hide_threshold))
                 .thenReturn(24);
-        when(mResources.getDimensionPixelSize(R.dimen.message_max_horizontal_translation))
-                .thenReturn(120);
         when(mResources.getDimensionPixelSize(R.dimen.message_peeking_layer_height))
                 .thenReturn(PEEKING_LAYER_HEIGHT);
         when(mResources.getDimensionPixelSize(R.dimen.message_shadow_top_margin))
@@ -94,8 +94,9 @@ public class MessageBannerMediatorUnitTest {
         })
                 .when(mSwipeAnimationHandler)
                 .onSwipeEnd(any(Animator.class));
-        mMediator = new MessageBannerMediator(mModel, mMaxTranslationSupplier, mResources,
-                mDismissedRunnable, mSwipeAnimationHandler);
+        mMediator = new MessageBannerMediator(mModel, mTopOffsetSupplier, mMaxTranslationSupplier,
+                mResources, mDismissedRunnable, mSwipeAnimationHandler);
+        when(mTopOffsetSupplier.get()).thenReturn(75);
         when(mMaxTranslationSupplier.get()).thenReturn(100);
     }
 
@@ -104,12 +105,12 @@ public class MessageBannerMediatorUnitTest {
         Animator animator = mMediator.show(Position.INVISIBLE, Position.FRONT, 0, mShownRunnable);
 
         verify(mShownRunnable, times(0)).run();
-        assertModelState(0, -100, 0, DEFAULT_MARGIN, "before showing.");
+        assertModelState(0, -75, 0, 0, DEFAULT_MARGIN, "before showing.");
 
         animator.start();
         shadowOf(getMainLooper()).idle();
 
-        assertModelState(0, 0, 1, DEFAULT_MARGIN, "fully shown.");
+        assertModelState(0, 0, 1, 1, DEFAULT_MARGIN, "fully shown.");
         verify(mShownRunnable, times(1)).run();
     }
 
@@ -118,12 +119,12 @@ public class MessageBannerMediatorUnitTest {
         Animator animator = mMediator.show(Position.FRONT, Position.BACK, 0, mShownRunnable);
 
         verify(mShownRunnable, times(0)).run();
-        assertModelState(0, 0, 0, DEFAULT_MARGIN, "before showing.");
+        assertModelState(0, 0, 0, 0, DEFAULT_MARGIN, "before showing.");
 
         animator.start();
         shadowOf(getMainLooper()).idle();
 
-        assertModelState(0, 0, 1, PEEKING_MARGIN, "fully shown.");
+        assertModelState(0, 0, 1, 1, PEEKING_MARGIN, "fully shown.");
         verify(mShownRunnable, times(1)).run();
     }
 
@@ -132,12 +133,12 @@ public class MessageBannerMediatorUnitTest {
         Animator animator = mMediator.show(Position.FRONT, Position.BACK, 20, mShownRunnable);
 
         verify(mShownRunnable, times(0)).run();
-        assertModelState(0, 0, 0, DEFAULT_MARGIN, "before showing.");
+        assertModelState(0, 0, 0, 0, DEFAULT_MARGIN, "before showing.");
 
         animator.start();
         shadowOf(getMainLooper()).idle();
 
-        assertModelState(0, 0, 1, PEEKING_MARGIN + 20, "fully shown.");
+        assertModelState(0, 0, 1, 1, PEEKING_MARGIN + 20, "fully shown.");
         verify(mShownRunnable, times(1)).run();
     }
 
@@ -148,7 +149,7 @@ public class MessageBannerMediatorUnitTest {
 
         shadowOf(getMainLooper()).idle();
 
-        assertModelState(0, 0, 1, DEFAULT_MARGIN, "fully shown.");
+        assertModelState(0, 0, 1, 1, DEFAULT_MARGIN, "fully shown.");
 
         animator = mMediator.hide(Position.FRONT, Position.INVISIBLE, true, mHiddenRunnable);
         verify(mHiddenRunnable, times(0)).run();
@@ -156,7 +157,7 @@ public class MessageBannerMediatorUnitTest {
         animator.start();
         shadowOf(getMainLooper()).idle();
 
-        assertModelState(0, -100, 0, DEFAULT_MARGIN, "after hidden.");
+        assertModelState(0, -75, 0, 0, DEFAULT_MARGIN, "after hidden.");
         verify(mHiddenRunnable, times(1)).run();
     }
 
@@ -167,7 +168,7 @@ public class MessageBannerMediatorUnitTest {
 
         shadowOf(getMainLooper()).idle();
 
-        assertModelState(0, 0, 1, PEEKING_MARGIN, "fully shown.");
+        assertModelState(0, 0, 1, 1, PEEKING_MARGIN, "fully shown.");
 
         animator = mMediator.hide(Position.BACK, Position.FRONT, true, mHiddenRunnable);
         verify(mHiddenRunnable, times(0)).run();
@@ -176,7 +177,7 @@ public class MessageBannerMediatorUnitTest {
         shadowOf(getMainLooper()).idle();
 
         // because of it is hidden, marginTop is not reset to default margin top
-        assertModelState(0, 0, 0, PEEKING_MARGIN, "after hidden.");
+        assertModelState(0, 0, 0, 0, PEEKING_MARGIN, "after hidden.");
         verify(mHiddenRunnable, times(1)).run();
     }
 
@@ -187,11 +188,11 @@ public class MessageBannerMediatorUnitTest {
 
         shadowOf(getMainLooper()).idle();
 
-        assertModelState(0, 0, 1, DEFAULT_MARGIN, "fully shown.");
+        assertModelState(0, 0, 1, 1, DEFAULT_MARGIN, "fully shown.");
 
         mMediator.hide(Position.FRONT, Position.INVISIBLE, false, mHiddenRunnable);
 
-        assertModelState(0, -100, 0, DEFAULT_MARGIN, "after hidden.");
+        assertModelState(0, -75, 0, 0, DEFAULT_MARGIN, "after hidden.");
         verify(mHiddenRunnable, times(1)).run();
     }
 
@@ -202,17 +203,16 @@ public class MessageBannerMediatorUnitTest {
         shadowOf(getMainLooper()).idle();
 
         verify(mDismissedRunnable, times(0)).run();
-        assertModelState(0, 0, 1, DEFAULT_MARGIN, "fully shown.");
+        assertModelState(0, 0, 1, 1, DEFAULT_MARGIN, "fully shown.");
 
         // More than the threshold to dismiss
         swipeVertical(-20, 0);
 
-        // .8 is 1 (fully opaque) - 20 (translationY) / 100 (maxTranslation)
-        assertModelState(0, -20, .8f, DEFAULT_MARGIN, "after swipe.");
+        assertModelState(0, -20, 1 - 20 / 75f, 1, DEFAULT_MARGIN, "after swipe.");
 
         shadowOf(getMainLooper()).idle();
 
-        assertModelState(0, -100, 0, DEFAULT_MARGIN, "after dismiss animation.");
+        assertModelState(0, -75, 0, 0, DEFAULT_MARGIN, "after dismiss animation.");
         verify(mDismissedRunnable, times(1)).run();
     }
 
@@ -223,18 +223,18 @@ public class MessageBannerMediatorUnitTest {
         shadowOf(getMainLooper()).idle();
 
         verify(mDismissedRunnable, times(0)).run();
-        assertModelState(0, 0, 1, DEFAULT_MARGIN, "fully shown.");
+        assertModelState(0, 0, 1, 1, DEFAULT_MARGIN, "fully shown.");
 
         // Less than the threshold to dismiss
         swipeVertical(-10, 0);
 
-        // .9 is 1 (fully opaque) - 20 (translationY) / 100 (maxTranslation)
-        assertModelState(0, -10, .9f, DEFAULT_MARGIN, "after swipe.");
+        // alpha: 1 - move distance / max translation
+        assertModelState(0, -10, 1 - 10 / 75f, 1, DEFAULT_MARGIN, "after swipe.");
 
         shadowOf(getMainLooper()).idle();
 
         // Should return back to idle position
-        assertModelState(0, 0, 1, DEFAULT_MARGIN, "animated to idle position.");
+        assertModelState(0, 0, 1, 1, DEFAULT_MARGIN, "animated to idle position.");
         verify(mDismissedRunnable, times(0)).run();
     }
 
@@ -245,11 +245,11 @@ public class MessageBannerMediatorUnitTest {
         shadowOf(getMainLooper()).idle();
 
         verify(mDismissedRunnable, times(0)).run();
-        assertModelState(0, 0, 1, DEFAULT_MARGIN, "fully shown.");
+        assertModelState(0, 0, 1, 1, DEFAULT_MARGIN, "fully shown.");
 
         swipeVertical(10, 0);
 
-        assertModelState(0, 0, 1, DEFAULT_MARGIN, "swipe doesn't do anything.");
+        assertModelState(0, 0, 1, 1, DEFAULT_MARGIN, "swipe doesn't do anything.");
 
         shadowOf(getMainLooper()).idle();
         verify(mDismissedRunnable, times(0)).run();
@@ -262,17 +262,16 @@ public class MessageBannerMediatorUnitTest {
         shadowOf(getMainLooper()).idle();
 
         verify(mDismissedRunnable, times(0)).run();
-        assertModelState(0, 0, 1, DEFAULT_MARGIN, "fully shown.");
+        assertModelState(0, 0, 1, 1, DEFAULT_MARGIN, "fully shown.");
 
         // More than the threshold to dismiss
         swipeHorizontal(-30, 0);
 
-        // .75 is 1 (fully opaque) - 30 (translationX) / 120 (maxTranslation)
-        assertModelState(-30, 0, .75f, DEFAULT_MARGIN, "after swipe.");
+        assertModelState(-30, 0, 1 - 30 / 500f, 1, DEFAULT_MARGIN, "after swipe.");
 
         shadowOf(getMainLooper()).idle();
 
-        assertModelState(-120, 0, 0, DEFAULT_MARGIN, "after dismiss animation.");
+        assertModelState(-500, 0, 0, 1, DEFAULT_MARGIN, "after dismiss animation.");
         verify(mDismissedRunnable, times(1)).run();
     }
 
@@ -283,17 +282,17 @@ public class MessageBannerMediatorUnitTest {
         shadowOf(getMainLooper()).idle();
 
         verify(mDismissedRunnable, times(0)).run();
-        assertModelState(0, 0, 1, DEFAULT_MARGIN, "fully shown.");
+        assertModelState(0, 0, 1, 1, DEFAULT_MARGIN, "fully shown.");
 
         // Less than the threshold to dismiss
         swipeHorizontal(-12, 0);
 
-        // Alpha .9 is 1 (fully opaque) - 12 (translationY) / 120 (maxTranslation)
-        assertModelState(-12, 0, .9f, DEFAULT_MARGIN, "after swipe.");
+        // Alpha is 1 (fully opaque) - 12 (translationY) / 500 (maxTranslation)
+        assertModelState(-12, 0, 1 - 12 / 500f, 1, DEFAULT_MARGIN, "after swipe.");
 
         shadowOf(getMainLooper()).idle();
 
-        assertModelState(0, 0, 1, DEFAULT_MARGIN, "animated to idle position.");
+        assertModelState(0, 0, 1, 1, DEFAULT_MARGIN, "animated to idle position.");
         verify(mDismissedRunnable, times(0)).run();
     }
 
@@ -304,17 +303,17 @@ public class MessageBannerMediatorUnitTest {
         shadowOf(getMainLooper()).idle();
 
         verify(mDismissedRunnable, times(0)).run();
-        assertModelState(0, 0, 1, DEFAULT_MARGIN, "fully shown.");
+        assertModelState(0, 0, 1, 1, DEFAULT_MARGIN, "fully shown.");
 
         // More than the threshold to dismiss
         swipeHorizontal(30, 0);
 
-        // Alpha .75 is 1 (fully opaque) - 30 (translationY) / 120 (maxTranslation)
-        assertModelState(30, 0, .75f, DEFAULT_MARGIN, "after swipe.");
+        // Alpha is 1 (fully opaque) - 30 (translationY) / 500 (screenWidth)
+        assertModelState(30, 0, 1 - 30 / 500f, 1, DEFAULT_MARGIN, "after swipe.");
 
         shadowOf(getMainLooper()).idle();
 
-        assertModelState(120, 0, 0, DEFAULT_MARGIN, "after dismiss animation.");
+        assertModelState(500, 0, 0, 1, DEFAULT_MARGIN, "after dismiss animation.");
         verify(mDismissedRunnable, times(1)).run();
     }
 
@@ -325,17 +324,17 @@ public class MessageBannerMediatorUnitTest {
         shadowOf(getMainLooper()).idle();
 
         verify(mDismissedRunnable, times(0)).run();
-        assertModelState(0, 0, 1, DEFAULT_MARGIN, "fully shown.");
+        assertModelState(0, 0, 1, 1, DEFAULT_MARGIN, "fully shown.");
 
         // Less than the threshold to dismiss
         swipeHorizontal(12, 0);
 
-        // Alpha .9 is 1 (fully opaque) - 12 (translationY) / 120 (maxTranslation)
-        assertModelState(12, 0, .9f, DEFAULT_MARGIN, "after swipe.");
+        // Alpha is 1 (fully opaque) - 12 (translationY) / 500 (screen width)
+        assertModelState(12, 0, 1 - 12 / 500f, 1, DEFAULT_MARGIN, "after swipe.");
 
         shadowOf(getMainLooper()).idle();
 
-        assertModelState(0, 0, 1, DEFAULT_MARGIN, "animated to idle position.");
+        assertModelState(0, 0, 1, 1, DEFAULT_MARGIN, "animated to idle position.");
         verify(mDismissedRunnable, times(0)).run();
     }
 
@@ -346,17 +345,17 @@ public class MessageBannerMediatorUnitTest {
         shadowOf(getMainLooper()).idle();
 
         verify(mDismissedRunnable, times(0)).run();
-        assertModelState(0, 0, 1, DEFAULT_MARGIN, "fully shown.");
+        assertModelState(0, 0, 1, 1, DEFAULT_MARGIN, "fully shown.");
 
         // More than the threshold to dismiss, fling back to center
         swipeHorizontal(60, -100);
 
-        // Alpha .5 is 1 (fully opaque) - 60 (translationY) / 120 (maxTranslation)
-        assertModelState(60, 0, .5f, DEFAULT_MARGIN, "after swipe.");
+        // Alpha is 1 (fully opaque) - 60 (translationY) / 500 (maxTranslation)
+        assertModelState(60, 0, 1 - 60 / 500f, 1, DEFAULT_MARGIN, "after swipe.");
 
         shadowOf(getMainLooper()).idle();
 
-        assertModelState(120, 0, 0, DEFAULT_MARGIN, "after swipe");
+        assertModelState(500, 0, 0, 1, DEFAULT_MARGIN, "after swipe");
         verify(mDismissedRunnable).run();
     }
 
@@ -367,17 +366,17 @@ public class MessageBannerMediatorUnitTest {
         shadowOf(getMainLooper()).idle();
 
         verify(mDismissedRunnable, times(0)).run();
-        assertModelState(0, 0, 1, DEFAULT_MARGIN, "fully shown.");
+        assertModelState(0, 0, 1, 1, DEFAULT_MARGIN, "fully shown.");
 
         // More than the threshold to dismiss, fling back to center
         swipeVertical(-20, 100);
 
-        // .8 is 1 (fully opaque) - 20 (translationY) / 100 (maxTranslation)
-        assertModelState(0, -20, .8f, DEFAULT_MARGIN, "after swipe.");
+        // Alpha is 1 (fully opaque) - 20 (translationY) / 75 (maxTranslation)
+        assertModelState(0, -20, 1 - 20 / 75f, 1, DEFAULT_MARGIN, "after swipe.");
 
         shadowOf(getMainLooper()).idle();
 
-        assertModelState(0, -100, 0, DEFAULT_MARGIN, "after swipe");
+        assertModelState(0, -75, 0, 0, DEFAULT_MARGIN, "after swipe");
         verify(mDismissedRunnable, times(1)).run();
     }
 
@@ -388,11 +387,11 @@ public class MessageBannerMediatorUnitTest {
         shadowOf(getMainLooper()).idle();
 
         verify(mDismissedRunnable, times(0)).run();
-        assertModelState(0, 0, 1, DEFAULT_MARGIN, "fully shown.");
+        assertModelState(0, 0, 1, 1, DEFAULT_MARGIN, "fully shown.");
 
         // Swipe and fling down
         swipeVertical(10, 100);
-        assertModelState(0, 0, 1, DEFAULT_MARGIN, "gesture doesn't do anything.");
+        assertModelState(0, 0, 1, 1, DEFAULT_MARGIN, "gesture doesn't do anything.");
 
         shadowOf(getMainLooper()).idle();
         verify(mDismissedRunnable, times(0)).run();
@@ -405,15 +404,15 @@ public class MessageBannerMediatorUnitTest {
         shadowOf(getMainLooper()).idle();
 
         verify(mDismissedRunnable, times(0)).run();
-        assertModelState(0, 0, 1, DEFAULT_MARGIN, "fully shown.");
+        assertModelState(0, 0, 1, 1, DEFAULT_MARGIN, "fully shown.");
 
         // Swipe less than threshold and fling up
-        swipeVertical(-10, -100);
-        // .9 is 1 (fully opaque) - 10 (translationY) / 100 (maxTranslation)
-        assertModelState(0, -10, .9f, DEFAULT_MARGIN, "after swipe.");
+        swipeVertical(-10, -75);
+        // Alpha is 1 (fully opaque) - 10 (translationY) / 75 (maxTranslation)
+        assertModelState(0, -10, 1 - 10 / 75f, 1, DEFAULT_MARGIN, "after swipe.");
 
         shadowOf(getMainLooper()).idle();
-        assertModelState(0, -100, 0, DEFAULT_MARGIN, "after dismiss animation.");
+        assertModelState(0, -75, 0, 0, DEFAULT_MARGIN, "after dismiss animation.");
         verify(mDismissedRunnable, times(1)).run();
     }
 
@@ -424,15 +423,15 @@ public class MessageBannerMediatorUnitTest {
         shadowOf(getMainLooper()).idle();
 
         verify(mDismissedRunnable, times(0)).run();
-        assertModelState(0, 0, 1, DEFAULT_MARGIN, "fully shown.");
+        assertModelState(0, 0, 1, 1, DEFAULT_MARGIN, "fully shown.");
 
         // Swipe more than threshold and fling up
-        swipeVertical(-20, -100);
+        swipeVertical(-20, -75);
         // .8 is 1 (fully opaque) - 10 (translationY) / 100 (maxTranslation)
-        assertModelState(0, -20, .8f, DEFAULT_MARGIN, "after swipe.");
+        assertModelState(0, -20, 1 - 20 / 75f, 1, DEFAULT_MARGIN, "after swipe.");
 
         shadowOf(getMainLooper()).idle();
-        assertModelState(0, -100, 0, DEFAULT_MARGIN, "after dismiss animation.");
+        assertModelState(0, -75, 0, 0, DEFAULT_MARGIN, "after dismiss animation.");
         verify(mDismissedRunnable, times(1)).run();
     }
 
@@ -443,17 +442,17 @@ public class MessageBannerMediatorUnitTest {
         shadowOf(getMainLooper()).idle();
 
         verify(mDismissedRunnable, times(0)).run();
-        assertModelState(0, 0, 1, DEFAULT_MARGIN, "fully shown.");
+        assertModelState(0, 0, 1, 1, DEFAULT_MARGIN, "fully shown.");
 
         // Less than the threshold to dismiss to the right, fling left
-        swipeHorizontal(12, -100);
+        swipeHorizontal(12, -75);
 
-        // Alpha .9 is 1 (fully opaque) - 12 (translationY) / 120 (maxTranslation)
-        assertModelState(12, 0, .9f, DEFAULT_MARGIN, "after swipe.");
+        // Alpha is 1 (fully opaque) - 12 (translationY) / 500 (maxTranslation: i.e. screen width)
+        assertModelState(12, 0, 1 - 12 / 500f, 1, DEFAULT_MARGIN, "after swipe.");
 
         shadowOf(getMainLooper()).idle();
 
-        assertModelState(0, 0, 1, DEFAULT_MARGIN, "animate back to center.");
+        assertModelState(0, 0, 1, 1, DEFAULT_MARGIN, "animate back to center.");
         verify(mDismissedRunnable, times(0)).run();
     }
 
@@ -464,17 +463,17 @@ public class MessageBannerMediatorUnitTest {
         shadowOf(getMainLooper()).idle();
 
         verify(mDismissedRunnable, times(0)).run();
-        assertModelState(0, 0, 1, DEFAULT_MARGIN, "fully shown.");
+        assertModelState(0, 0, 1, 1, DEFAULT_MARGIN, "fully shown.");
 
         // Less than the threshold to dismiss to the left, fling left
-        swipeHorizontal(-12, -100);
+        swipeHorizontal(-12, -75);
 
-        // Alpha .9 is 1 (fully opaque) - 12 (translationY) / 120 (maxTranslation)
-        assertModelState(-12, 0, .9f, DEFAULT_MARGIN, "after swipe.");
+        // Alpha is 1 (fully opaque) - 12 (translationY) / 500 (maxTranslation: i.e. screen width)
+        assertModelState(-12, 0, 1 - 12 / 500f, 1, DEFAULT_MARGIN, "after swipe.");
 
         shadowOf(getMainLooper()).idle();
 
-        assertModelState(0, 0, 1, DEFAULT_MARGIN, "animate back to center.");
+        assertModelState(0, 0, 1, 1, DEFAULT_MARGIN, "animate back to center.");
         verify(mDismissedRunnable, times(0)).run();
     }
 
@@ -485,17 +484,17 @@ public class MessageBannerMediatorUnitTest {
         shadowOf(getMainLooper()).idle();
 
         verify(mDismissedRunnable, times(0)).run();
-        assertModelState(0, 0, 1, DEFAULT_MARGIN, "fully shown.");
+        assertModelState(0, 0, 1, 1, DEFAULT_MARGIN, "fully shown.");
 
         // Less than the threshold to dismiss to the left, fling right
         swipeHorizontal(-12, 100);
 
-        // Alpha .9 is 1 (fully opaque) - 12 (translationY) / 120 (maxTranslation)
-        assertModelState(-12, 0, .9f, DEFAULT_MARGIN, "after swipe.");
+        // Alpha is 1 (fully opaque) - 12 (translationY) / 500 (maxTranslation: i.e. screen width)
+        assertModelState(-12, 0, 1 - 12 / 500f, 1, DEFAULT_MARGIN, "after swipe.");
 
         shadowOf(getMainLooper()).idle();
 
-        assertModelState(0, 0, 1, DEFAULT_MARGIN, "animate back to center.");
+        assertModelState(0, 0, 1, 1, DEFAULT_MARGIN, "animate back to center.");
         verify(mDismissedRunnable, times(0)).run();
     }
 
@@ -506,17 +505,17 @@ public class MessageBannerMediatorUnitTest {
         shadowOf(getMainLooper()).idle();
 
         verify(mDismissedRunnable, times(0)).run();
-        assertModelState(0, 0, 1, DEFAULT_MARGIN, "fully shown.");
+        assertModelState(0, 0, 1, 1, DEFAULT_MARGIN, "fully shown.");
 
         // Less than the threshold to dismiss to the right, fling right
         swipeHorizontal(12, 100);
 
-        // Alpha .9 is 1 (fully opaque) - 12 (translationY) / 120 (maxTranslation)
-        assertModelState(12, 0, .9f, DEFAULT_MARGIN, "after swipe.");
+        // Alpha is 1 (fully opaque) - 12 (translationY) / 500 (maxTranslation: i.e. screen width)
+        assertModelState(12, 0, 1 - 12 / 500f, 1, DEFAULT_MARGIN, "after swipe.");
 
         shadowOf(getMainLooper()).idle();
 
-        assertModelState(0, 0, 1, DEFAULT_MARGIN, "animate back to center.");
+        assertModelState(0, 0, 1, 1, DEFAULT_MARGIN, "animate back to center.");
         verify(mDismissedRunnable, times(0)).run();
     }
 
@@ -527,17 +526,17 @@ public class MessageBannerMediatorUnitTest {
         shadowOf(getMainLooper()).idle();
 
         verify(mDismissedRunnable, times(0)).run();
-        assertModelState(0, 0, 1, DEFAULT_MARGIN, "fully shown.");
+        assertModelState(0, 0, 1, 1, DEFAULT_MARGIN, "fully shown.");
 
         // More than the threshold to dismiss to the left, fling left
-        swipeHorizontal(-30, -100);
+        swipeHorizontal(-30, -75);
 
-        // Alpha .75 is 1 (fully opaque) - 30 (translationY) / 120 (maxTranslation)
-        assertModelState(-30, 0, .75f, DEFAULT_MARGIN, "after swipe.");
+        // Alpha is 1 (fully opaque) - 30 (translationY) / 500 (maxTranslation: i.e. screen width)
+        assertModelState(-30, 0, 1 - 30 / 500f, 1, DEFAULT_MARGIN, "after swipe.");
 
         shadowOf(getMainLooper()).idle();
 
-        assertModelState(-120, 0, 0, DEFAULT_MARGIN, "dismissed to left after fling.");
+        assertModelState(-500, 0, 0, 1, DEFAULT_MARGIN, "dismissed to left after fling.");
         verify(mDismissedRunnable, times(1)).run();
     }
 
@@ -548,32 +547,18 @@ public class MessageBannerMediatorUnitTest {
         shadowOf(getMainLooper()).idle();
 
         verify(mDismissedRunnable, times(0)).run();
-        assertModelState(0, 0, 1, DEFAULT_MARGIN, "fully shown.");
+        assertModelState(0, 0, 1, 1, DEFAULT_MARGIN, "fully shown.");
 
         // More than the threshold to dismiss to the right, fling right
         swipeHorizontal(30, 100);
 
-        // Alpha .75 is 1 (fully opaque) - 30 (translationY) / 120 (maxTranslation)
-        assertModelState(30, 0, .75f, DEFAULT_MARGIN, "after swipe.");
+        // Alpha is 1 (fully opaque) - 30 (translationY) / 500 (maxTranslation)
+        assertModelState(30, 0, 1 - 30 / 500f, 1, DEFAULT_MARGIN, "after swipe.");
 
         shadowOf(getMainLooper()).idle();
 
-        assertModelState(120, 0, 0, DEFAULT_MARGIN, "dismissed to right after fling.");
+        assertModelState(500, 0, 0, 1, DEFAULT_MARGIN, "dismissed to right after fling.");
         verify(mDismissedRunnable, times(1)).run();
-    }
-
-    @Test
-    public void testHorizontalTranslationSupplier() {
-        // Minimum of max translation dimen (120) and half the screen width (500/2 = 250).
-        assertEquals("Wrong initial max horizontal translation.", 120,
-                mMediator.getMaxHorizontalTranslationSupplierForTesting().get(), MathUtils.EPSILON);
-
-        // Update the screen width to 200
-        mDisplayMetrics.widthPixels = 200;
-
-        // Minimum of max translation dimen (120) and half the screen width (200/2 = 100).
-        assertEquals("Max horizontal translation isn't updated width screen width.", 100,
-                mMediator.getMaxHorizontalTranslationSupplierForTesting().get(), MathUtils.EPSILON);
     }
 
     /**
@@ -613,13 +598,15 @@ public class MessageBannerMediatorUnitTest {
     }
 
     private void assertModelState(float translationXExpected, float translationYExpected,
-            float alphaExpected, int marginTopExpected, String message) {
+            float alphaExpected, float heightExpected, int marginTopExpected, String message) {
         assertEquals("Incorrect translation x, " + message, translationXExpected,
                 mModel.get(MessageBannerProperties.TRANSLATION_X), MathUtils.EPSILON);
         assertEquals("Incorrect translation y, " + message, translationYExpected,
                 mModel.get(MessageBannerProperties.TRANSLATION_Y), MathUtils.EPSILON);
         assertEquals("Incorrect alpha, " + message, alphaExpected,
-                mModel.get(MessageBannerProperties.ALPHA), MathUtils.EPSILON);
+                mModel.get(MessageBannerProperties.CONTENT_ALPHA), MathUtils.EPSILON);
+        assertEquals("Incorrect visual height, " + message, heightExpected,
+                mModel.get(MessageBannerProperties.VISUAL_HEIGHT), MathUtils.EPSILON);
         assertEquals("Incorrect margin top, " + message, marginTopExpected,
                 mModel.get(MessageBannerProperties.MARGIN_TOP));
     }

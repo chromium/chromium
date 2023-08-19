@@ -304,6 +304,8 @@ some previously-stored state, such as browsing history.
 No. Chromium once contained a reflected XSS filter called the [XSSAuditor](https://www.chromium.org/developers/design-documents/xss-auditor)
 that was a best-effort second line of defense against reflected XSS flaws found
 in web sites. The XSS Auditor was [removed in Chrome 78](https://groups.google.com/a/chromium.org/forum/#!msg/blink-dev/TuYw-EZhO9g/blGViehIAwAJ).
+Consequently, Chromium no longer takes any special action in response to an
+X-XSS-Protection header.
 
 <a name="TOC-Are-denial-of-service-issues-considered-security-bugs-"></a>
 ### Are denial of service issues considered security bugs?
@@ -654,7 +656,7 @@ allows stuck users to still, for example, conduct searches and access Chrome's
 homepage to hopefully get unstuck.
 
 In order to determine whether key pinning is active, try loading
-[https://pinningtest.appspot.com](https://pinningtest.appspot.com). If key
+[https://pinning-test.badssl.com/](https://pinning-test.badssl.com/). If key
 pinning is active the load will _fail_ with a pinning error.
 
 <a name="TOC-How-does-certificate-transparency-interact-with-local-proxies-and-filters-"></a>
@@ -851,11 +853,11 @@ specific:
      encrypted on disk with a key that is then stored in the user's Keychain.
      See [Issue 466638](https://crbug.com/466638) for further explanation.
 *    On Linux, Chrome previously stored credentials directly in the user's
-     Gnome Keyring or KWallet, but for technical reasons, it has switched to
+     Gnome Secret Service or KWallet, but for technical reasons, it has switched to
      storing the credentials in "Login Data" in the Chrome user's profile directory,
      but encrypted on disk with a key that is then stored in the user's Gnome
-     Keyring or KWallet. If there is no available Keyring or KWallet, the data is
-     not encrypted when stored.
+     Secret Service or KWallet. If there is no available Secret Service or KWallet,
+     the data is not encrypted when stored.
 *    On iOS, passwords are currently stored directly in the iOS Keychain and
      referenced from the rest of the metadata stored in a separate DB. The plan
      there is to just store them in plain text in the DB, because iOS gives

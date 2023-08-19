@@ -70,6 +70,20 @@ class FlossSocketManagerTest : public testing::Test {
   }
 
   void TearDown() override {
+    // Expected call to UnregisterCallback when client is destroyed
+    EXPECT_CALL(*sockmgr_proxy_.get(),
+                DoCallMethodWithErrorResponse(
+                    HasMemberOf(socket_manager::kUnregisterCallback), _, _))
+        .WillOnce([this](::dbus::MethodCall* method_call, int timeout_ms,
+                         ::dbus::ObjectProxy::ResponseOrErrorCallback* cb) {
+          dbus::MessageReader msg(method_call);
+          // D-Bus method call should have 1 parameter.
+          uint32_t param1;
+          ASSERT_TRUE(FlossDBusClient::ReadAllDBusParams(&msg, &param1));
+          EXPECT_EQ(this->callback_id_ctr_ - 1, param1);
+          EXPECT_FALSE(msg.HasMoreData());
+        });
+
     // Clean up the socket manager first to get rid of all references to various
     // buses, object proxies, etc.
     sockmgr_.reset();

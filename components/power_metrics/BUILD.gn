@@ -29,7 +29,6 @@ static_library("power_metrics") {
       "smc_mac.h",
       "smc_mac.mm",
     ]
-    configs += [ "//build/config/compiler:enable_arc" ]
   }
 
   if (is_win) {
@@ -73,7 +72,6 @@ source_set("unit_tests") {
       "energy_impact_mac_unittest.mm",
       "resource_coalition_mac_unittest.mm",
     ]
-    configs += [ "//build/config/compiler:enable_arc" ]
 
     data = [ "test/data/" ]
   }

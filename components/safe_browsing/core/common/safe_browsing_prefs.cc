@@ -91,6 +91,7 @@ const char kSafeBrowsingSawInterstitialScoutReporting[] =
     "safebrowsing.saw_interstitial_sber2";
 const char kSafeBrowsingScoutReportingEnabled[] =
     "safebrowsing.scout_reporting_enabled";
+const char kSafeBrowsingSurveysEnabled[] = "safebrowsing.surveys_enabled";
 const char kSafeBrowsingTriggerEventTimestamps[] =
     "safebrowsing.trigger_event_timestamps";
 const char kSafeBrowsingUnhandledGaiaPasswordReuses[] =
@@ -118,8 +119,18 @@ const char kSafeBrowsingHashRealTimeOhttpKey[] =
     "safebrowsing.hash_real_time_ohttp_key";
 const char kAccountTailoredSecurityUpdateTimestamp[] =
     "safebrowsing.aesb_update_time_windows_epoch_micros";
+const char kTailoredSecurityNextSyncFlowTimestamp[] =
+    "safebrowsing.aesb_next_sync_flow_timestamp";
 const char kAccountTailoredSecurityShownNotification[] =
     "safebrowsing.aesb_shown_notification";
+const char kTailoredSecuritySyncFlowLastRunTime[] =
+    "safebrowsing.aesb_sync_flow_start_timestamp";
+const char kTailoredSecuritySyncFlowLastUserInteractionState[] =
+    "safebrowsing.aesb_sync_flow_last_user_interaction_state";
+const char kTailoredSecuritySyncFlowRetryState[] =
+    "safebrowsing.aesb_sync_flow_retry_state";
+const char kTailoredSecuritySyncFlowObservedOutcomeUnsetTimestamp[] =
+    "safebrowsing.aesb_sync_flow_observed_outcome_unset_timestamp";
 const char kEnhancedProtectionEnabledViaTailoredSecurity[] =
     "safebrowsing.esb_enabled_via_tailored_security";
 const char kExtensionTelemetryLastUploadTime[] =
@@ -132,6 +143,8 @@ const char kRealTimeDownloadProtectionRequestAllowedByPolicy[] =
     "safebrowsing.real_time_download_protection_request_allowed_by_policy";
 const char kSafeBrowsingExtensionProtectionAllowedByPolicy[] =
     "safebrowsing.extension_protection_allowed_by_policy";
+const char kHashPrefixRealTimeChecksAllowedByPolicy[] =
+    "safebrowsing.hash_prefix_real_time_checks_allowed_by_policy";
 }  // namespace prefs
 
 namespace safe_browsing {
@@ -201,6 +214,13 @@ bool IsSafeBrowsingPolicyManaged(const PrefService& prefs) {
          prefs.IsManagedPreference(prefs::kSafeBrowsingEnhanced);
 }
 
+bool IsSafeBrowsingExtensionControlled(const PrefService& prefs) {
+  // Checking only kSafeBrowsingEnabled since there is no extension API
+  // that can control the kSafeBrowsingEnhanced protection pref.
+  return prefs.FindPreference(prefs::kSafeBrowsingEnabled)
+             ->IsExtensionControlled();
+}
+
 bool IsRealTimeDownloadProtectionRequestAllowed(const PrefService& prefs) {
   return prefs.GetBoolean(
       prefs::kRealTimeDownloadProtectionRequestAllowedByPolicy);
@@ -214,6 +234,18 @@ bool IsCsdPhishingProtectionAllowed(const PrefService& prefs) {
 bool IsSafeBrowsingExtensionProtectionAllowed(const PrefService& prefs) {
   return prefs.GetBoolean(
       prefs::kSafeBrowsingExtensionProtectionAllowedByPolicy);
+}
+
+bool AreHashPrefixRealTimeLookupsAllowedByPolicy(const PrefService& prefs) {
+  return prefs.GetBoolean(prefs::kHashPrefixRealTimeChecksAllowedByPolicy);
+}
+
+bool IsSafeBrowsingSurveysEnabled(const PrefService& prefs) {
+  return prefs.GetBoolean(prefs::kSafeBrowsingSurveysEnabled);
+}
+
+bool IsSafeBrowsingProceedAnywayDisabled(const PrefService& prefs) {
+  return prefs.GetBoolean(prefs::kSafeBrowsingProceedAnywayDisabled);
 }
 
 void RecordExtendedReportingMetrics(const PrefService& prefs) {
@@ -274,6 +306,20 @@ void RegisterProfilePrefs(PrefRegistrySimple* registry) {
       prefs::kAccountTailoredSecurityShownNotification, false);
   registry->RegisterBooleanPref(
       prefs::kEnhancedProtectionEnabledViaTailoredSecurity, false);
+  registry->RegisterTimePref(prefs::kTailoredSecuritySyncFlowLastRunTime,
+                             base::Time());
+  registry->RegisterTimePref(prefs::kTailoredSecurityNextSyncFlowTimestamp,
+                             base::Time());
+  // TODO(crbug.com/1469133): remove sync flow last user interaction pref.
+  registry->RegisterIntegerPref(
+      prefs::kTailoredSecuritySyncFlowLastUserInteractionState,
+      TailoredSecurityRetryState::UNSET);
+  registry->RegisterIntegerPref(prefs::kTailoredSecuritySyncFlowRetryState,
+                                TailoredSecurityRetryState::UNSET);
+  registry->RegisterTimePref(
+      prefs::kTailoredSecuritySyncFlowObservedOutcomeUnsetTimestamp,
+      base::Time());
+
   registry->RegisterTimePref(prefs::kExtensionTelemetryLastUploadTime,
                              base::Time::Now());
   registry->RegisterDictionaryPref(prefs::kExtensionTelemetryConfig);
@@ -282,6 +328,9 @@ void RegisterProfilePrefs(PrefRegistrySimple* registry) {
       prefs::kRealTimeDownloadProtectionRequestAllowedByPolicy, true);
   registry->RegisterBooleanPref(
       prefs::kSafeBrowsingExtensionProtectionAllowedByPolicy, true);
+  registry->RegisterBooleanPref(prefs::kHashPrefixRealTimeChecksAllowedByPolicy,
+                                true);
+  registry->RegisterBooleanPref(prefs::kSafeBrowsingSurveysEnabled, true);
 }
 
 const base::Value::Dict& GetExtensionTelemetryConfig(const PrefService& prefs) {
@@ -401,6 +450,12 @@ base::Value::List GetSafeBrowsingPoliciesList(PrefService* prefs) {
       prefs::kSafeBrowsingExtensionProtectionAllowedByPolicy));
   preferences_list.Append(
       prefs::kSafeBrowsingExtensionProtectionAllowedByPolicy);
+  preferences_list.Append(
+      prefs->GetBoolean(prefs::kHashPrefixRealTimeChecksAllowedByPolicy));
+  preferences_list.Append(prefs::kHashPrefixRealTimeChecksAllowedByPolicy);
+  preferences_list.Append(
+      prefs->GetBoolean(prefs::kSafeBrowsingSurveysEnabled));
+  preferences_list.Append(prefs::kSafeBrowsingSurveysEnabled);
   return preferences_list;
 }
 

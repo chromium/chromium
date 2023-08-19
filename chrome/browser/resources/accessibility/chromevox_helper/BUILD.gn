@@ -1,0 +1,37 @@
+# Copyright 2023 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/features.gni")
+import("//chrome/common/features.gni")
+import("//tools/typescript/ts_library.gni")
+
+out_dir = "$root_out_dir/resources/accessibility/chromevox_helper"
+tsc_output_dir = "$target_gen_dir/tsc"
+
+group("build") {
+  deps = [ ":chromevox_helper_copied_files" ]
+}
+
+ts_library("build_ts") {
+  in_files = [
+    "content.ts",
+    "service_worker.ts",
+  ]
+  out_dir = tsc_output_dir
+  definitions = [
+    "//tools/typescript/definitions/runtime.d.ts",
+    "//tools/typescript/definitions/scripting.d.ts",
+    "//tools/typescript/definitions/storage.d.ts",
+    "//tools/typescript/definitions/tabs.d.ts",
+    "//tools/typescript/definitions/windows.d.ts",
+  ]
+}
+
+copy("chromevox_helper_copied_files") {
+  sources =
+      filter_include(get_target_outputs(":build_ts"), [ "*.js" ]) +
+      [ "../../chromeos/accessibility/chromevox/injected/cvox_gdocs_script.js" ]
+  outputs = [ "$out_dir/{{source_file_part}}" ]
+  deps = [ ":build_ts" ]
+}

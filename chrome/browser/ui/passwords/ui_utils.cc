@@ -223,11 +223,11 @@ GURL GetGooglePasswordManagerURL(ManagePasswordsReferrer referrer) {
       case ManagePasswordsReferrer::kSafetyCheck:
       case ManagePasswordsReferrer::kBiometricAuthenticationBeforeFillingDialog:
       case ManagePasswordsReferrer::kChromeMenuItem:
-        NOTREACHED();
+      case ManagePasswordsReferrer::kSharedPasswordsNotificationBubble:
+        NOTREACHED_NORETURN();
     }
 
-    NOTREACHED();
-    return "";
+    NOTREACHED_NORETURN();
   }();
 
   return net::AppendQueryParameter(url, "utm_campaign", campaign);
@@ -235,14 +235,6 @@ GURL GetGooglePasswordManagerURL(ManagePasswordsReferrer referrer) {
 
 // Navigation is handled differently on Android.
 #if !BUILDFLAG(IS_ANDROID)
-void NavigateToGooglePasswordManager(Profile* profile,
-                                     ManagePasswordsReferrer referrer) {
-  NavigateParams params(profile, GetGooglePasswordManagerURL(referrer),
-                        ui::PAGE_TRANSITION_LINK);
-  params.disposition = WindowOpenDisposition::NEW_FOREGROUND_TAB;
-  Navigate(&params);
-}
-
 void NavigateToManagePasswordsPage(Browser* browser,
                                    ManagePasswordsReferrer referrer) {
   UMA_HISTOGRAM_ENUMERATION("PasswordManager.ManagePasswordsReferrer",

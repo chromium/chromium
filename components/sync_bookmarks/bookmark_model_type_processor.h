@@ -16,6 +16,7 @@
 #include "base/sequence_checker.h"
 #include "components/sync/engine/model_type_processor.h"
 #include "components/sync/model/model_type_controller_delegate.h"
+#include "components/sync/model/wipe_model_upon_sync_disabled_behavior.h"
 #include "components/sync_bookmarks/synced_bookmark_tracker.h"
 
 class BookmarkUndoService;
@@ -36,11 +37,9 @@ class BookmarkModelTypeProcessor : public syncer::ModelTypeProcessor,
                                    public syncer::ModelTypeControllerDelegate {
  public:
   // `bookmark_undo_service` must not be nullptr and must outlive this object.
-  // If `wipe_model_on_stopping_sync_with_clear_data` is `true`, then calling
-  // `OnSyncStopping` with `CLEAR_METADATA` will trigger the removal of all user
-  // bookmarks from the corresponding `BookmarkModel`.
   BookmarkModelTypeProcessor(BookmarkUndoService* bookmark_undo_service,
-                             bool wipe_model_on_stopping_sync_with_clear_data);
+                             syncer::WipeModelUponSyncDisabledBehavior
+                                 wipe_model_upon_sync_disabled_behavior);
 
   BookmarkModelTypeProcessor(const BookmarkModelTypeProcessor&) = delete;
   BookmarkModelTypeProcessor& operator=(const BookmarkModelTypeProcessor&) =
@@ -140,6 +139,10 @@ class BookmarkModelTypeProcessor : public syncer::ModelTypeProcessor,
   // instead the caller must meet this precondition.
   void StopTrackingMetadataAndResetTracker();
 
+  // Honors `wipe_model_upon_sync_disabled_behavior_`, i.e. deletes all
+  // bookmarks in the model depending on the selected behavior.
+  void TriggerWipeModelUponSyncDisabledBehavior();
+
   // Creates a DictionaryValue for local and remote debugging information about
   // `node` and appends it to `all_nodes`. It does the same for child nodes
   // recursively. `index` is the index of `node` within its parent. `index`
@@ -156,22 +159,22 @@ class BookmarkModelTypeProcessor : public syncer::ModelTypeProcessor,
   // The bookmark model we are processing local changes from and forwarding
   // remote changes to. It is set during ModelReadyToSync(), which is called
   // during startup, as part of the bookmark-loading process.
-  raw_ptr<bookmarks::BookmarkModel, DanglingUntriaged> bookmark_model_ =
-      nullptr;
+  raw_ptr<bookmarks::BookmarkModel, AcrossTasksDanglingUntriaged>
+      bookmark_model_ = nullptr;
 
   // Used to when processing remote updates to apply favicon information. It's
   // not set at start up because it's only avialable after the bookmark model
   // has been loaded.
-  raw_ptr<favicon::FaviconService, DanglingUntriaged> favicon_service_ =
-      nullptr;
+  raw_ptr<favicon::FaviconService, AcrossTasksDanglingUntriaged>
+      favicon_service_ = nullptr;
 
   // Used to suspend bookmark undo when processing remote changes.
   const raw_ptr<BookmarkUndoService, DanglingUntriaged> bookmark_undo_service_;
 
-  // Controls whether bookmarks should be wiped when sync is stopped. Contains
-  // `true` for Account `BookmarkModel` and `false` for LocalOrSyncable
-  // `BookmarkModel`.
-  const bool wipe_model_on_stopping_sync_with_clear_data_;
+  // Controls whether bookmarks should be wiped when sync is stopped.
+  syncer::WipeModelUponSyncDisabledBehavior
+      wipe_model_upon_sync_disabled_behavior_ =
+          syncer::WipeModelUponSyncDisabledBehavior::kNever;
 
   // The callback used to schedule the persistence of bookmark model as well as
   // the metadata to a file during which latest metadata should also be pulled

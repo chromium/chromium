@@ -9,23 +9,32 @@ import("//build/toolchain/goma.gni")
 import("//build/toolchain/rbe.gni")
 import("//build/toolchain/toolchain.gni")
 
-assert(current_os == "mac" || current_toolchain == default_toolchain)
+assert(
+    current_os == "mac" || current_toolchain == default_toolchain ||
+    (current_os == "ios" && current_toolchain == "${default_toolchain}_blink"))
 
 declare_args() {
-  # The `MACOSX_DEPLOYMENT_TARGET` variable used when compiling. This partially
-  # controls the minimum supported version of macOS for Chromium by
-  # affecting the symbol availability rules. This may differ from
-  # `mac_min_system_version` when dropping support for older macOSes but where
-  # additional code changes are required to be compliant with the availability
-  # rules.
-  mac_deployment_target = "10.13"
+  # The following two variables control the minimum supported version for
+  # macOS:
+  #
+  # This variable affects how Chromium is compiled and corresponds to the
+  # `MACOSX_DEPLOYMENT_TARGET` define. Changing this controls which symbols
+  # the macOS SDK marks as available (via `__builtin_available` and
+  # `@available`) and deprecated (producing a warning if called). Modifying
+  # this variable often requires additional code changes to handle differences
+  # in availability and deprecation, which is why it is often changed
+  # separately from `mac_min_system_version` when dropping support for older
+  # macOSes.
+  mac_deployment_target = "10.15"
 
-  # The value of the `LSMinimumSystemVersion` in `Info.plist` files. This
-  # partially controls the minimum supported version of macOS for Chromium by
-  # affecting the `Info.plist`. This may differ from `mac_deployment_target`
-  # when dropping support for older macOSes. This must be greater than or equal
-  # to the `mac_deployment_target` version.
-  mac_min_system_version = "10.13"
+  # The value of the `LSMinimumSystemVersion` in `Info.plist` files. This value
+  # controls the minimum OS version that may launch the application, and OS
+  # releases older than this will refuse to launch the application. When
+  # dropping support for older macOSes, this variable is often changed before
+  # `mac_deployment_target` to increase the system requirement without changing
+  # how Chromium is compiled. This must be greater than or equal to the
+  # `mac_deployment_target` version.
+  mac_min_system_version = "10.15"
 
   # Path to a specific version of the Mac SDK, not including a slash at the end.
   # If empty, the path to the lowest version greater than or equal to

@@ -5,7 +5,7 @@
 #import <memory>
 #import <string>
 
-#import "base/mac/foundation_util.h"
+#import "base/apple/foundation_util.h"
 #import "base/strings/sys_string_conversions.h"
 #import "base/values.h"
 #import "components/strings/grit/components_strings.h"
@@ -17,10 +17,6 @@
 #import "ios/chrome/browser/ui/autofill/card_name_fix_flow_view_bridge.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ui/base/l10n/l10n_util.h"
-
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
 
 NSString* const kCellReuseID = @"ConfirmNameTableViewTextEditCell";
 CGFloat const kMainSection = 0;

@@ -105,7 +105,6 @@
 <translation id="4266252015790371705">{MONTHS,plural, =1{1 महीने पहले}one{# महीने पहले}other{# महीने पहले}}</translation>
 <translation id="4289300219472526559">बोलना प्रारंभ करें</translation>
 <translation id="4289540628985791613">संक्षिप्त विवरण</translation>
-<translation id="4306392492252714209">क्लिपबोर्ड से हटाएं.</translation>
 <translation id="4491109536499578614">इमेज</translation>
 <translation id="4565377596337484307">पासवर्ड छिपाएं</translation>
 <translation id="4588090240171750605">दाएं स्क्रोल करें</translation>
@@ -148,6 +147,7 @@
 <translation id="6142413573757616983"><ph name="QUANTITY" /> B/s</translation>
 <translation id="6237461503717005873"><ph name="ROW_NAME" /> को चुना गया है.</translation>
 <translation id="6264365405983206840">&amp;सभी को चुनें</translation>
+<translation id="6346952829206698721">क्लिपबोर्ड से चिपकाएं</translation>
 <translation id="6364916375976753737">बाएं स्क्रोल करें</translation>
 <translation id="6394627529324717982">अल्पविराम</translation>
 <translation id="6397363302884558537">बोलना रोकें</translation>
@@ -174,6 +174,7 @@
 <translation id="7170202025028120564">आपके ऐप्लिकेशन की डिसप्ले सेटिंग, रीस्टार्ट होने पर लागू होंगी.</translation>
 <translation id="7222373446505536781">F11</translation>
 <translation id="7238427729722629793">{MINUTES,plural, =1{1 मिनट शेष}one{# मिनट शेष}other{# मिनट शेष}}</translation>
+<translation id="7363164521834647158">जवाब भेजें</translation>
 <translation id="7365057348334984696">{MINUTES,plural, =1{1 मिनट पहले}one{# मिनट पहले}other{# मिनट पहले}}</translation>
 <translation id="7389409599945284130">- <ph name="MESSAGE" /></translation>
 <translation id="7410957453383678442">{MINUTES,plural, =1{1 मिनट शेष}one{# मिनट शेष}other{# मिनट शेष}}</translation>

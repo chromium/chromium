@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+Copyright 2023 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+
+<resources xmlns:tools="http://schemas.android.com/tools">
+    <!-- Shared -->
+    <dimen name="readaloud_close_button_size">24dp</dimen>
+
+    <!-- Mini player -->
+    <dimen name="readaloud_mini_player_top_shadow_height">8dp</dimen>
+    <dimen name="readaloud_mini_player_margin_horizontal">16dp</dimen>
+    <dimen name="readaloud_mini_player_play_button_diameter">44dp</dimen>
+    <dimen name="readaloud_mini_player_play_button_margin_vertical">12dp</dimen>
+    <dimen name="readaloud_mini_player_play_button_margin_right">12dp</dimen>
+    <dimen name="readaloud_mini_player_close_button_margin_vertical">22dp</dimen>
+    <dimen name="readaloud_mini_player_progress_bar_height">4dp</dimen>
+
+    <!-- Expanded player -->
+    <!-- Overall margins -->
+    <dimen name="readaloud_expanded_player_margin_horizontal">24dp</dimen>
+    <dimen name="readaloud_expanded_player_margin_bottom">12dp</dimen>
+
+    <!-- Header -->
+    <dimen name="readaloud_sheet_drag_bar_margin">8dp</dimen>
+    <dimen name="readaloud_close_button_margin">12dp</dimen>
+    <dimen name="readaloud_now_playing_spacing">20dp</dimen>
+
+    <!-- Title -->
+    <dimen name="readaloud_expanded_player_title_margin_vertical">4dp</dimen>
+
+    <!-- Publisher button -->
+    <dimen name="readaloud_expanded_player_publisher_margin_left">11dp</dimen>
+    <dimen name="readaloud_expanded_player_publisher_margin_vertical">4dp</dimen>
+    <dimen name="readaloud_expanded_player_publisher_chevron_width">10dp</dimen>
+    <dimen name="readaloud_expanded_player_publisher_chevron_height">14dp</dimen>
+    <dimen name="readaloud_expanded_player_publisher_chevron_margin_horizontal">8dp</dimen>
+    <dimen name="readaloud_expanded_player_publisher_chevron_margin_vertical">8dp</dimen>
+
+    <!-- Seek bar -->
+    <dimen name="readaloud_expanded_player_seek_bar_height">4dp</dimen>
+    <dimen name="readaloud_expanded_player_seek_bar_margin_top">38dp</dimen>
+
+    <!-- Times -->
+    <dimen name="readaloud_expanded_player_times_margin_top">4dp</dimen>
+
+    <!-- Control buttons -->
+    <dimen name="readaloud_control_buttons_margin_top">24dp</dimen>
+    <dimen name="readaloud_control_buttons_margin_bottom">20dp</dimen>
+    <dimen name="readaloud_control_button_diameter">72dp</dimen>
+    <dimen name="readaloud_play_button_width">104dp</dimen>
+    <dimen name="readaloud_control_button_spacing">12dp</dimen>
+</resources>

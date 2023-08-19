@@ -4,6 +4,8 @@
 
 #include "chrome/browser/ui/views/autofill/payments/offer_notification_bubble_views_test_base.h"
 
+#include <string_view>
+
 #include "chrome/browser/autofill/autofill_uitest_util.h"
 #include "chrome/browser/autofill/personal_data_manager_factory.h"
 #include "chrome/browser/commerce/coupons/coupon_service.h"
@@ -21,6 +23,8 @@
 #include "components/autofill/core/common/autofill_clock.h"
 #include "components/autofill/core/common/autofill_payments_features.h"
 #include "components/commerce/core/commerce_feature_list.h"
+#include "content/public/test/content_mock_cert_verifier.h"
+#include "net/dns/mock_host_resolver.h"
 
 namespace autofill {
 
@@ -32,22 +36,21 @@ const char kDefaultTestUsageInstructionsText[] =
 const char kDefaultTestDetailsUrlString[] = "https://pay.google.com";
 
 OfferNotificationBubbleViewsTestBase::OfferNotificationBubbleViewsTestBase(
-    bool promo_code_flag_enabled) {
+    bool promo_code_flag_enabled)
+    : https_server_(net::EmbeddedTestServer::TYPE_HTTPS) {
   if (promo_code_flag_enabled) {
     scoped_feature_list_.InitWithFeaturesAndParameters(
         /*enabled_features=*/
         {{commerce::kRetailCoupons,
           {{commerce::kRetailCouponsWithCodeParam, "true"}}},
-         {features::kAutofillEnableOfferNotificationForPromoCodes, {}},
-         {features::kAutofillFillMerchantPromoCodeFields, {}}},
+         {features::kAutofillEnableOfferNotificationForPromoCodes, {}}},
         /*disabled_features=*/{});
   } else {
     scoped_feature_list_.InitWithFeatures(
         /*enabled_features=*/{},
         /*disabled_features=*/{
             commerce::kRetailCoupons,
-            features::kAutofillEnableOfferNotificationForPromoCodes,
-            features::kAutofillFillMerchantPromoCodeFields});
+            features::kAutofillEnableOfferNotificationForPromoCodes});
   }
 }
 
@@ -66,9 +69,29 @@ void OfferNotificationBubbleViewsTestBase::SetUpOnMainThread() {
       PersonalDataManagerFactory::GetForProfile(browser()->profile());
   coupon_service_ = CouponServiceFactory::GetForProfile(browser()->profile());
 
+  // Mimic the user is signed in so payments integration is considered enabled.
+  personal_data_->SetSyncingForTest(true);
+
   // Wait for Personal Data Manager to be fully loaded to prevent that
   // spurious notifications deceive the tests.
   WaitForPersonalDataManagerToBeLoaded(browser()->profile());
+
+  host_resolver()->AddRule("*", "127.0.0.1");
+  cert_verifier_.mock_cert_verifier()->set_default_result(net::OK);
+  https_server_.SetSSLConfig(net::EmbeddedTestServer::CERT_OK);
+  https_server_.RegisterRequestHandler(base::BindRepeating(
+      [](const net::test_server::HttpRequest& request)
+          -> std::unique_ptr<net::test_server::HttpResponse> {
+        auto response = std::make_unique<net::test_server::BasicHttpResponse>();
+        response->set_code(net::HTTP_OK);
+        response->set_content_type("text/html;charset=utf-8");
+        response->set_content(R"(
+          <html> <body> <form> <input> </form>
+        )");
+        return response;
+      }));
+  ASSERT_TRUE(https_server_.InitializeAndListen());
+  https_server_.StartAcceptingConnections();
 }
 
 void OfferNotificationBubbleViewsTestBase::TearDownOnMainThread() {
@@ -77,6 +100,11 @@ void OfferNotificationBubbleViewsTestBase::TearDownOnMainThread() {
   personal_data_ = nullptr;
 
   InProcessBrowserTest::TearDownOnMainThread();
+}
+
+void OfferNotificationBubbleViewsTestBase::SetUpCommandLine(
+    base::CommandLine* command_line) {
+  cert_verifier_.SetUpCommandLine(command_line);
 }
 
 void OfferNotificationBubbleViewsTestBase::OnBubbleShown() {
@@ -215,14 +243,18 @@ OfferNotificationBubbleViewsTestBase::GetAutofillManager() {
   return autofill_manager_injector_[GetActiveWebContents()];
 }
 
-void OfferNotificationBubbleViewsTestBase::NavigateTo(
-    const std::string& file_path) {
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GURL(file_path)));
+GURL OfferNotificationBubbleViewsTestBase::GetUrl(std::string_view host,
+                                                  std::string_view path) const {
+  return https_server_.GetURL(host, path);
+}
+
+void OfferNotificationBubbleViewsTestBase::NavigateTo(const GURL& url) {
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
 }
 
 void OfferNotificationBubbleViewsTestBase::NavigateToAndWaitForForm(
-    const std::string& file_path) {
-  NavigateTo(file_path);
+    const GURL& url) {
+  NavigateTo(url);
   ASSERT_TRUE(GetAutofillManager()->WaitForFormsSeen(1));
 }
 

@@ -22,7 +22,7 @@ CollectorBase::~CollectorBase() {
 }
 
 void CollectorBase::Collect(bool is_event_driven) {
-  DCHECK(base::SequencedTaskRunner::HasCurrentDefault());
+  CHECK(base::SequencedTaskRunner::HasCurrentDefault());
   CheckOnSequence();
 
   if (!CanCollect()) {

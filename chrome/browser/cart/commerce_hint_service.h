@@ -9,7 +9,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/version.h"
 #include "chrome/common/cart/commerce_hints.mojom.h"
-#include "components/optimization_guide/content/browser/optimization_guide_decider.h"
+#include "components/optimization_guide/core/optimization_guide_decider.h"
 #include "components/optimization_guide/proto/hints.pb.h"
 #include "content/public/browser/web_contents_user_data.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"

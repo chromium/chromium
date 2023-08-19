@@ -6,20 +6,16 @@
 
 #import <AppKit/AppKit.h>
 
+#include "base/apple/foundation_util.h"
+#include "base/apple/scoped_cftyperef.h"
 #include "base/check_op.h"
 #include "base/files/file_path.h"
-#include "base/mac/foundation_util.h"
-#include "base/mac/scoped_cftyperef.h"
 #include "base/no_destructor.h"
 #include "base/strings/sys_string_conversions.h"
 #include "base/threading/scoped_blocking_call.h"
 #include "printing/units.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/size.h"
-
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
 
 namespace printing {
 
@@ -46,7 +42,7 @@ PrinterSemanticCapsAndDefaults::Papers GetMacCustomPaperSizes() {
 
   base::FilePath local_library;
   bool success =
-      base::mac::GetUserDirectory(NSLibraryDirectory, &local_library);
+      base::apple::GetUserDirectory(NSLibraryDirectory, &local_library);
   DCHECK(success);
 
   base::FilePath plist = local_library.Append("Preferences")
@@ -57,7 +53,7 @@ PrinterSemanticCapsAndDefaults::Papers GetMacCustomPaperSizes() {
 void SetMacCustomPaperSizesForTesting(
     const PrinterSemanticCapsAndDefaults::Papers& papers) {
   for (const PrinterSemanticCapsAndDefaults::Paper& paper : papers)
-    DCHECK_EQ("", paper.vendor_id);
+    DCHECK_EQ("", paper.vendor_id());
 
   GetTestPapers() = papers;
 }
@@ -73,7 +69,7 @@ PrinterSemanticCapsAndDefaults::Papers GetMacCustomPaperSizesFromFile(
     base::ScopedBlockingCall scoped_block(FROM_HERE,
                                           base::BlockingType::MAY_BLOCK);
     custom_papers_dict = [[NSDictionary alloc]
-        initWithContentsOfURL:base::mac::FilePathToNSURL(path)
+        initWithContentsOfURL:base::apple::FilePathToNSURL(path)
                         error:nil];
     if (!custom_papers_dict) {
       return custom_paper_sizes;
@@ -81,7 +77,7 @@ PrinterSemanticCapsAndDefaults::Papers GetMacCustomPaperSizesFromFile(
   }
 
   for (id key in custom_papers_dict) {
-    NSDictionary* paper = base::mac::ObjCCast<NSDictionary>(
+    NSDictionary* paper = base::apple::ObjCCast<NSDictionary>(
         [custom_papers_dict objectForKey:key]);
     if (!paper) {
       continue;
@@ -138,7 +134,7 @@ PrinterSemanticCapsAndDefaults::Papers GetMacCustomPaperSizesFromFile(
   std::sort(custom_paper_sizes.begin(), custom_paper_sizes.end(),
             [](const PrinterSemanticCapsAndDefaults::Paper& a,
                const PrinterSemanticCapsAndDefaults::Paper& b) {
-              return a.display_name < b.display_name;
+              return a.display_name() < b.display_name();
             });
 
   return custom_paper_sizes;

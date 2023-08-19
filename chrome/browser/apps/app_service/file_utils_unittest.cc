@@ -91,7 +91,7 @@ class FileUtilsTest : public ::testing::Test {
   content::BrowserTaskEnvironment task_environment_;
   std::unique_ptr<TestingProfileManager> profile_manager_;
   base::ScopedTempDir scoped_temp_dir_;
-  raw_ptr<TestingProfile, ExperimentalAsh> profile_;
+  raw_ptr<TestingProfile, DanglingUntriaged | ExperimentalAsh> profile_;
 };
 
 TEST_F(FileUtilsTest, GetFileSystemURL) {

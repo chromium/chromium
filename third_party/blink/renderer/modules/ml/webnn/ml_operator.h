@@ -43,6 +43,8 @@ class MODULES_EXPORT MLOperator : public GarbageCollected<MLOperator> {
     kMaxPool2d,
     kPad,
     kPRelu,
+    kReduceMean,
+    kReduceSum,
     kRelu,
     kReshape,
     kResample2d,
@@ -50,6 +52,7 @@ class MODULES_EXPORT MLOperator : public GarbageCollected<MLOperator> {
     kSlice,
     kSoftmax,
     kSplit,
+    kTanh,
     kTranspose
   };
 
@@ -107,6 +110,21 @@ class MODULES_EXPORT MLOperator : public GarbageCollected<MLOperator> {
   HeapVector<Member<const MLOperand>> outputs_;
 };
 
+class MODULES_EXPORT MLConcatOperator : public MLOperator {
+ public:
+  MLConcatOperator(MLGraphBuilder* builder, const uint32_t axis);
+
+  MLConcatOperator(const MLConcatOperator&) = delete;
+  MLConcatOperator& operator=(const MLConcatOperator&) = delete;
+
+  ~MLConcatOperator();
+
+  uint32_t Axis() const;
+
+ private:
+  uint32_t axis_;
+};
+
 class MODULES_EXPORT MLPadOperator : public MLOperator {
  public:
   MLPadOperator(MLGraphBuilder* builder,
@@ -160,7 +178,7 @@ class MODULES_EXPORT MLSplitOperator : public MLOperator {
 
   ~MLSplitOperator();
 
-  bool isEvenSplit() const;
+  bool IsEvenSplit() const;
   uint32_t SplitNumber() const;
   const Vector<uint32_t>& SplitSizes() const;
 

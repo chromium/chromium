@@ -85,11 +85,13 @@ class MediaFormatBuilder {
             // Already set. The source of the format may know better, so do nothing.
             return;
         }
-        int maxHeight = format.getInteger(MediaFormat.KEY_HEIGHT);
+
+        // The size calculations break down at small sizes, so use at least 128x128.
+        int maxHeight = Math.max(128, format.getInteger(MediaFormat.KEY_HEIGHT));
         if (allowAdaptivePlayback && format.containsKey(MediaFormat.KEY_MAX_HEIGHT)) {
             maxHeight = Math.max(maxHeight, format.getInteger(MediaFormat.KEY_MAX_HEIGHT));
         }
-        int maxWidth = format.getInteger(MediaFormat.KEY_WIDTH);
+        int maxWidth = Math.max(128, format.getInteger(MediaFormat.KEY_WIDTH));
         if (allowAdaptivePlayback && format.containsKey(MediaFormat.KEY_MAX_WIDTH)) {
             maxWidth = Math.max(maxHeight, format.getInteger(MediaFormat.KEY_MAX_WIDTH));
         }

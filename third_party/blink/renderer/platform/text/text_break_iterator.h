@@ -30,6 +30,7 @@
 #include "base/containers/span.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
 #include "third_party/blink/renderer/platform/text/character.h"
+#include "third_party/blink/renderer/platform/text/layout_locale.h"
 #include "third_party/blink/renderer/platform/wtf/text/atomic_string.h"
 #include "third_party/blink/renderer/platform/wtf/text/character_names.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_uchar.h"
@@ -72,7 +73,9 @@ PLATFORM_EXPORT bool IsWordTextBreak(TextBreakIterator*);
 
 const int kTextBreakDone = -1;
 
-enum class LineBreakType {
+// A Unicode Line Break Word Identifier (key "lw".)
+// https://www.unicode.org/reports/tr35/#UnicodeLineBreakWordIdentifier
+enum class LineBreakType : uint8_t {
   kNormal,
 
   // word-break:break-all allows breaks between letters/numbers, but prohibits
@@ -89,32 +92,18 @@ enum class LineBreakType {
   // word-break:keep-all doesn't allow breaks between all kind of
   // letters/numbers except some south east asians'.
   kKeepAll,
+
+  // `lw=phrase`, which prioritize keeping natural phrases (of multiple words)
+  // together when breaking.
+  // https://www.unicode.org/reports/tr35/#UnicodeLineBreakWordIdentifier
+  kPhrase,
 };
 
 // Determines break opportunities around collapsible space characters (space,
 // newline, and tabulation characters.)
-enum class BreakSpaceType {
-  // Break before every collapsible space character.
-  // This is a specialized optimization for CSS, where leading/trailing spaces
-  // in each line are removed, and thus breaking before spaces can save
-  // computing hanging spaces.
-  // Callers are expected to handle spaces by themselves. Because a run of
-  // spaces can include different types of spaces, break opportunity is given
-  // for every space character.
-  // Pre-LayoutNG line breaker uses this type.
-  kBeforeEverySpace,
-
-  // Break before a run of white space characters.
-  // This is for CSS line breaking as in |kBeforeEverySpace|, but when
-  // whitespace collapsing is already applied to the target string. In this
-  // case, a run of white spaces are preserved spaces. There should not be break
-  // opportunities between white spaces.
-  // LayoutNG line breaker uses this type.
-  kBeforeSpaceRun,
-
+enum class BreakSpaceType : uint8_t {
   // Break after a run of white space characters.
-  // This mode enables the LazyLineBreakIterator to completely rely on
-  // ICU for determining the breaking opportunities.
+  // This is the default mode, matching the ICU behavior.
   kAfterSpaceRun,
 
   // white-spaces:break-spaces allows breaking after any preserved white-space,
@@ -130,20 +119,29 @@ class PLATFORM_EXPORT LazyLineBreakIterator final {
   STACK_ALLOCATED();
 
  public:
-  LazyLineBreakIterator()
-      : iterator_(nullptr),
-        break_type_(LineBreakType::kNormal) {
-    ResetPriorContext();
-  }
-
-  LazyLineBreakIterator(String string,
-                        const AtomicString& locale = AtomicString(),
-                        LineBreakType break_type = LineBreakType::kNormal)
-      : string_(std::move(string)),
+  explicit LazyLineBreakIterator(
+      const String& string,
+      const LayoutLocale* locale = nullptr,
+      LineBreakType break_type = LineBreakType::kNormal)
+      : string_(string),
         locale_(locale),
         iterator_(nullptr),
         break_type_(break_type) {
     ResetPriorContext();
+  }
+
+  LazyLineBreakIterator(const String& string,
+                        const AtomicString& locale,
+                        LineBreakType break_type = LineBreakType::kNormal)
+      : LazyLineBreakIterator(string, LayoutLocale::Get(locale), break_type) {}
+
+  // Create an instance with the same settings as `other`, except `string`.
+  LazyLineBreakIterator(const LazyLineBreakIterator& other, String string)
+      : LazyLineBreakIterator(std::move(string),
+                              other.Locale(),
+                              other.BreakType()) {
+    SetBreakSpace(other.BreakSpace());
+    SetStrictness(other.Strictness());
   }
 
   ~LazyLineBreakIterator() {
@@ -205,11 +203,10 @@ class PLATFORM_EXPORT LazyLineBreakIterator final {
   unsigned PriorContextLength() const { return GetPriorContext().length; }
 
   void ResetStringAndReleaseIterator(String string,
-                                     const AtomicString& locale) {
+                                     const LayoutLocale* locale) {
     string_ = string;
     start_offset_ = 0;
-    locale_ = locale;
-
+    SetLocale(locale);
     ReleaseIterator();
   }
 
@@ -223,18 +220,25 @@ class PLATFORM_EXPORT LazyLineBreakIterator final {
     ReleaseIterator();
   }
 
-  const AtomicString& Locale() const { return locale_; }
-  void SetLocale(const AtomicString& locale) {
-    if (locale == locale_)
+  const LayoutLocale* Locale() const { return locale_; }
+  void SetLocale(const LayoutLocale* locale) {
+    if (locale == locale_) {
       return;
+    }
     locale_ = locale;
-    ReleaseIterator();
+    InvalidateLocaleWithKeyword();
   }
 
   LineBreakType BreakType() const { return break_type_; }
-  void SetBreakType(LineBreakType break_type) { break_type_ = break_type; }
+  void SetBreakType(LineBreakType break_type);
   BreakSpaceType BreakSpace() const { return break_space_; }
   void SetBreakSpace(BreakSpaceType break_space) { break_space_ = break_space; }
+  LineBreakStrictness Strictness() const { return strictness_; }
+  void SetStrictness(LineBreakStrictness strictness);
+
+  // Enable/disable breaking at soft hyphens (U+00AD). Enabled by default.
+  bool IsSoftHyphenEnabled() const { return !disable_soft_hyphen_; }
+  void EnableSoftHyphen(bool value) { disable_soft_hyphen_ = !value; }
 
   inline bool IsBreakable(int pos,
                           int& next_breakable,
@@ -273,9 +277,16 @@ class PLATFORM_EXPORT LazyLineBreakIterator final {
   }
 
  private:
+  FRIEND_TEST_ALL_PREFIXES(TextBreakIteratorTest, Strictness);
+
+  const AtomicString& LocaleWithKeyword() const;
+  void InvalidateLocaleWithKeyword();
+
   void ReleaseIterator() const {
-    if (iterator_)
-      ReleaseLineBreakIterator(iterator_);
+    if (!iterator_) {
+      return;
+    }
+    ReleaseLineBreakIterator(iterator_);
     iterator_ = nullptr;
     cached_prior_context_.text = nullptr;
     cached_prior_context_.length = 0;
@@ -304,13 +315,14 @@ class PLATFORM_EXPORT LazyLineBreakIterator final {
     // |start_offset_|.
     cached_prior_context_ = prior_context;
     CHECK_LE(start_offset_, string_.length());
+    const AtomicString& locale = LocaleWithKeyword();
     if (string_.Is8Bit()) {
       iterator_ = AcquireLineBreakIterator(
-          string_.Span8().subspan(start_offset_), locale_, prior_context.text,
+          string_.Span8().subspan(start_offset_), locale, prior_context.text,
           prior_context.length);
     } else {
       iterator_ = AcquireLineBreakIterator(
-          string_.Span16().subspan(start_offset_), locale_, prior_context.text,
+          string_.Span16().subspan(start_offset_), locale, prior_context.text,
           prior_context.length);
     }
     return iterator_;
@@ -337,14 +349,58 @@ class PLATFORM_EXPORT LazyLineBreakIterator final {
 
   static const unsigned kPriorContextCapacity = 2;
   String string_;
-  AtomicString locale_;
+  const LayoutLocale* locale_ = nullptr;
+  mutable AtomicString locale_with_keyword_;
   mutable TextBreakIterator* iterator_;
   UChar prior_context_[kPriorContextCapacity];
   mutable PriorContext cached_prior_context_;
   unsigned start_offset_ = 0;
   LineBreakType break_type_;
-  BreakSpaceType break_space_ = BreakSpaceType::kBeforeEverySpace;
+  BreakSpaceType break_space_ = BreakSpaceType::kAfterSpaceRun;
+  LineBreakStrictness strictness_ = LineBreakStrictness::kDefault;
+  bool disable_soft_hyphen_ = false;
 };
+
+inline const AtomicString& LazyLineBreakIterator::LocaleWithKeyword() const {
+  if (!locale_with_keyword_) {
+    if (!locale_) {
+      locale_with_keyword_ = g_empty_atom;
+    } else if (strictness_ == LineBreakStrictness::kDefault &&
+               break_type_ != LineBreakType::kPhrase) {
+      locale_with_keyword_ = locale_->LocaleString();
+    } else {
+      locale_with_keyword_ = locale_->LocaleWithBreakKeyword(
+          strictness_, break_type_ == LineBreakType::kPhrase);
+    }
+    DCHECK(locale_with_keyword_);
+  }
+  return locale_with_keyword_;
+}
+
+inline void LazyLineBreakIterator::InvalidateLocaleWithKeyword() {
+  if (locale_with_keyword_) {
+    locale_with_keyword_ = AtomicString();
+    ReleaseIterator();
+  }
+}
+
+inline void LazyLineBreakIterator::SetBreakType(LineBreakType break_type) {
+  if (break_type_ != break_type) {
+    if (break_type_ == LineBreakType::kPhrase ||
+        break_type == LineBreakType::kPhrase) {
+      InvalidateLocaleWithKeyword();
+    }
+    break_type_ = break_type;
+  }
+}
+
+inline void LazyLineBreakIterator::SetStrictness(
+    LineBreakStrictness strictness) {
+  if (strictness_ != strictness) {
+    strictness_ = strictness;
+    InvalidateLocaleWithKeyword();
+  }
+}
 
 // Iterates over "extended grapheme clusters", as defined in UAX #29.
 // Note that platform implementations may be less sophisticated - e.g. ICU prior

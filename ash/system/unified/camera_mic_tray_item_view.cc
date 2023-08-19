@@ -16,9 +16,12 @@
 #include "ash/system/model/system_tray_model.h"
 #include "ash/system/tray/tray_constants.h"
 #include "base/feature_list.h"
+#include "base/notreached.h"
 #include "base/strings/utf_string_conversions.h"
+#include "chromeos/constants/chromeos_features.h"
 #include "components/vector_icons/vector_icons.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/chromeos/styles/cros_tokens_color_mappings.h"
 #include "ui/gfx/paint_vector_icon.h"
 #include "ui/gfx/vector_icon_types.h"
 #include "ui/message_center/message_center.h"
@@ -31,19 +34,13 @@ CameraMicTrayItemView::CameraMicTrayItemView(Shelf* shelf, Type type)
   CreateImageView();
   FetchMessage();
 
-  const gfx::VectorIcon* icon = nullptr;
-  switch (type_) {
-    case Type::kCamera:
-      icon = &::vector_icons::kVideocamIcon;
-      break;
-    case Type::kMic:
-      icon = &::vector_icons::kMicIcon;
-      break;
+  if (!chromeos::features::IsJellyEnabled()) {
+    image_view()->SetImage(gfx::CreateVectorIcon(gfx::IconDescription(
+        GetIcon(type), kUnifiedTrayIconSize,
+        AshColorProvider::Get()->GetContentLayerColor(
+            AshColorProvider::ContentLayerType::kIconColorPrimary))));
   }
-  image_view()->SetImage(gfx::CreateVectorIcon(gfx::IconDescription(
-      *icon, kUnifiedTrayIconSize,
-      AshColorProvider::Get()->GetContentLayerColor(
-          AshColorProvider::ContentLayerType::kIconColorPrimary))));
+  UpdateLabelOrImageViewColor(/*active=*/false);
 
   auto* shell = Shell::Get();
   shell->session_controller()->AddObserver(this);
@@ -108,6 +105,19 @@ void CameraMicTrayItemView::HandleLocaleChange() {
   FetchMessage();
 }
 
+void CameraMicTrayItemView::UpdateLabelOrImageViewColor(bool active) {
+  if (!chromeos::features::IsJellyEnabled()) {
+    return;
+  }
+  TrayItemView::UpdateLabelOrImageViewColor(active);
+
+  image_view()->SetImage(ui::ImageModel::FromVectorIcon(
+      GetIcon(type_),
+      active ? cros_tokens::kCrosSysSystemOnPrimaryContainer
+             : cros_tokens::kCrosSysOnSurface,
+      kUnifiedTrayIconSize));
+}
+
 void CameraMicTrayItemView::FetchMessage() {
   switch (type_) {
     case Type::kCamera:
@@ -118,6 +128,15 @@ void CameraMicTrayItemView::FetchMessage() {
     case Type::kMic:
       message_ = l10n_util::GetStringUTF16(IDS_ASH_CAMERA_MIC_VM_USING_MIC);
       break;
+  }
+}
+
+const gfx::VectorIcon& CameraMicTrayItemView::GetIcon(Type type) {
+  switch (type_) {
+    case Type::kCamera:
+      return ::vector_icons::kVideocamIcon;
+    case Type::kMic:
+      return ::vector_icons::kMicIcon;
   }
 }
 

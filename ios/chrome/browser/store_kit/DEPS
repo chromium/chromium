@@ -1,7 +1,7 @@
 specific_include_rules = {
   # TODO(crbug.com/1294160): Remove this dependency.
   "^store_kit_coordinator.h": [
-    "+ios/chrome/browser/ui/coordinators/chrome_coordinator.h",
+    "+ios/chrome/browser/shared/coordinator/chrome_coordinator/chrome_coordinator.h",
   ],
 }
 

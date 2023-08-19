@@ -33,12 +33,6 @@ class PersonalDataManagerAndroid : public PersonalDataManagerObserver {
       const base::android::JavaRef<jobject>& jcard,
       JNIEnv* env,
       CreditCard* card);
-  static base::android::ScopedJavaLocalRef<jobject> CreateJavaProfileFromNative(
-      JNIEnv* env,
-      const AutofillProfile& profile);
-  static AutofillProfile CreateNativeProfileFromJava(
-      const base::android::JavaParamRef<jobject>& jprofile,
-      JNIEnv* env);
 
   // Returns true if personal data manager has loaded the initial data.
   jboolean IsDataLoaded(
@@ -87,14 +81,15 @@ class PersonalDataManagerAndroid : public PersonalDataManagerObserver {
   base::android::ScopedJavaLocalRef<jstring> SetProfile(
       JNIEnv* env,
       const base::android::JavaParamRef<jobject>& unused_obj,
-      const base::android::JavaParamRef<jobject>& jprofile);
-
+      const base::android::JavaParamRef<jobject>& jprofile,
+      const base::android::JavaParamRef<jstring>& jguid);
   // Adds or modifies a profile like SetProfile interface if |jprofile| is
   // local. Otherwise it creates a local copy of it.
   base::android::ScopedJavaLocalRef<jstring> SetProfileToLocal(
       JNIEnv* env,
       const base::android::JavaParamRef<jobject>& unused_obj,
-      const base::android::JavaParamRef<jobject>& jprofile);
+      const base::android::JavaParamRef<jobject>& jprofile,
+      const base::android::JavaParamRef<jstring>& jguid);
 
   // Gets the labels for all known profiles. These labels are useful for
   // distinguishing the profiles from one another.
@@ -237,17 +232,16 @@ class PersonalDataManagerAndroid : public PersonalDataManagerObserver {
       const base::android::JavaParamRef<jobject>& unused_obj,
       const base::android::JavaParamRef<jstring>& jguid);
 
-  // Sets the use count and use date of the profile associated to the |jguid|.
-  // Both |count| and |date| should be non-negative. |date| represents an
-  // absolute point in coordinated universal time (UTC) represented as
-  // microseconds since the Windows epoch. For more details see the comment
-  // header in time.h.
+  // Sets the use count and number of days since last use of the profile
+  // associated to the `jguid`. Both `count` and `days_since_last_used` should
+  // be non-negative. `days_since_last_used` represents the numbers of days
+  // since the profile was last used.
   void SetProfileUseStatsForTesting(
       JNIEnv* env,
       const base::android::JavaParamRef<jobject>& unused_obj,
       const base::android::JavaParamRef<jstring>& jguid,
       jint count,
-      jint date);
+      jint days_since_last_used);
 
   // Returns the use count of the profile associated to the |jguid|.
   jint GetProfileUseCountForTesting(
@@ -272,17 +266,16 @@ class PersonalDataManagerAndroid : public PersonalDataManagerObserver {
       const base::android::JavaParamRef<jobject>& unused_obj,
       const base::android::JavaParamRef<jstring>& jguid);
 
-  // Sets the use count and use date of the credit card associated to the
-  // |jguid|. Both |count| and |date| should be non-negative. |date| represents
-  // an absolute point in coordinated universal time (UTC) represented as
-  // microseconds since the Windows epoch. For more details see the comment
-  // header in time.h.
+  // Sets the use count and number of days since last use of the credit card
+  // associated to the`jguid`. Both `count` and `days_since_last_used` should be
+  // non-negative. `days_since_last_used` represents the numbers of days since
+  // the card was last used.
   void SetCreditCardUseStatsForTesting(
       JNIEnv* env,
       const base::android::JavaParamRef<jobject>& unused_obj,
       const base::android::JavaParamRef<jstring>& jguid,
       jint count,
-      jint date);
+      jint days_since_last_used);
 
   // Returns the use count of the credit card associated to the |jguid|.
   jint GetCreditCardUseCountForTesting(
@@ -305,6 +298,14 @@ class PersonalDataManagerAndroid : public PersonalDataManagerObserver {
   jlong GetCurrentDateForTesting(
       JNIEnv* env,
       const base::android::JavaParamRef<jobject>& unused_obj);
+
+  // Calculates a point in time `days` days ago from the current
+  // time. Returns the result as an absolute point in coordinated universal time
+  // (UTC) represented as microseconds since the Windows epoch.
+  jlong GetDateNDaysAgoForTesting(
+      JNIEnv* env,
+      const base::android::JavaParamRef<jobject>& unused_obj,
+      jint days);
 
   // Clears server profiles and cards, to be used in tests only.
   void ClearServerDataForTesting(

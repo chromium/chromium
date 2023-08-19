@@ -19,6 +19,7 @@
 #include "base/sequence_checker.h"
 #include "base/task/sequenced_task_runner.h"
 #include "components/services/storage/public/cpp/buckets/bucket_locator.h"
+#include "mojo/public/cpp/bindings/callback_helpers.h"
 #include "storage/browser/file_system/file_system_backend.h"
 #include "storage/browser/file_system/file_system_context.h"
 #include "storage/common/file_system/file_system_types.h"
@@ -196,6 +197,8 @@ void FileSystemQuotaClient::DeleteBucketData(
   base::span<const FileSystemType> fs_types =
       QuotaStorageTypeToFileSystemTypes(bucket.type);
 
+  auto wrapped_callback = mojo::WrapCallbackWithDefaultInvokeIfNotRun(
+      std::move(callback), blink::mojom::QuotaStatusCode::kUnknown);
   base::RepeatingCallback<void(blink::mojom::QuotaStatusCode)> barrier =
       base::BarrierCallback<blink::mojom::QuotaStatusCode>(
           fs_types.size(),
@@ -206,7 +209,7 @@ void FileSystemQuotaClient::DeleteBucketData(
                 return status;
             }
             return blink::mojom::QuotaStatusCode::kOk;
-          }).Then(std::move(callback)));
+          }).Then(std::move(wrapped_callback)));
 
   for (const auto fs_type : fs_types) {
     file_task_runner()->PostTaskAndReplyWithResult(

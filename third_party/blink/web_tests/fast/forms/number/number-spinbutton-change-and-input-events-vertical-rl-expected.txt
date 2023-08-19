@@ -1,0 +1,27 @@
+Test for event dispatching by spin buttons in a input[type=number] with writing-mode: vertical-rl.
+
+On success, you will see a series of "PASS" messages, followed by "TEST COMPLETE".
+
+Initial state
+PASS changeEventCounter is 0
+PASS inputEventCounter is 0
+Click the upper button
+Triggers only input event on mouseDown
+PASS testInput.value is "1"
+PASS changeEventCounter is 0
+PASS inputEventCounter is 1
+Triggers only change event on mouseUp
+PASS testInput.value is "1"
+PASS changeEventCounter is 1
+PASS inputEventCounter is 1
+Click again, but the value is not changed.
+PASS testInput.value is "1"
+PASS changeEventCounter is 1
+PASS inputEventCounter is 1
+Focus on another field
+PASS changeEventCounter is 1
+PASS inputEventCounter is 1
+PASS successfullyParsed is true
+
+TEST COMPLETE
+

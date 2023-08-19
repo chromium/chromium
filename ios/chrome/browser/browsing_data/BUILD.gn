@@ -8,12 +8,10 @@ source_set("feature_flags") {
     "browsing_data_features.h",
   ]
   deps = [ "//base" ]
-  configs += [ "//build/config/compiler:enable_arc" ]
 }
 
 source_set("browsing_data_remove_mask") {
   sources = [ "browsing_data_remove_mask.h" ]
-  configs += [ "//build/config/compiler:enable_arc" ]
 }
 
 source_set("browsing_data") {
@@ -27,10 +25,13 @@ source_set("browsing_data") {
     "browsing_data_remover_impl.h",
     "browsing_data_remover_impl.mm",
     "browsing_data_remover_observer.h",
+    "browsing_data_remover_observer.mm",
     "browsing_data_remover_observer_bridge.h",
     "browsing_data_remover_observer_bridge.mm",
     "sessions_storage_util.h",
     "sessions_storage_util.mm",
+    "system_snapshots_cleaner.h",
+    "system_snapshots_cleaner.mm",
   ]
   deps = [
     ":counters",
@@ -61,7 +62,6 @@ source_set("browsing_data") {
     "//ios/chrome/browser/language",
     "//ios/chrome/browser/optimization_guide",
     "//ios/chrome/browser/passwords",
-    "//ios/chrome/browser/paths",
     "//ios/chrome/browser/reading_list:reading_list_remover",
     "//ios/chrome/browser/search_engines",
     "//ios/chrome/browser/sessions",
@@ -69,6 +69,7 @@ source_set("browsing_data") {
     "//ios/chrome/browser/sessions:session_service",
     "//ios/chrome/browser/shared/model/application_context",
     "//ios/chrome/browser/shared/model/browser_state",
+    "//ios/chrome/browser/shared/model/paths",
     "//ios/chrome/browser/signin",
     "//ios/chrome/browser/snapshots",
     "//ios/chrome/browser/sync",
@@ -79,7 +80,9 @@ source_set("browsing_data") {
     "//ios/components/security_interstitials/https_only_mode",
     "//ios/components/security_interstitials/safe_browsing",
     "//ios/net",
+    "//ios/web/common:features",
     "//ios/web/common:web_view_creation_util",
+    "//ios/web/public/browsing_data",
     "//net",
     "//url",
   ]
@@ -87,8 +90,6 @@ source_set("browsing_data") {
     ":browsing_data_remove_mask",
     "//components/search_engines",
   ]
-
-  configs += [ "//build/config/compiler:enable_arc" ]
 }
 
 source_set("counters") {
@@ -103,16 +104,15 @@ source_set("counters") {
     "//ios/web/public",
     "//net",
   ]
-  configs += [ "//build/config/compiler:enable_arc" ]
 }
 
 source_set("unit_tests") {
-  configs += [ "//build/config/compiler:enable_arc" ]
   testonly = true
   sources = [
     "browsing_data_remover_impl_unittest.mm",
     "browsing_data_remover_observer_bridge_unittest.mm",
     "cache_counter_unittest.cc",
+    "system_snapshots_cleaner_unittest.mm",
   ]
   deps = [
     ":browsing_data",
@@ -154,6 +154,4 @@ source_set("test_support") {
     "//base",
     "//testing/gtest",
   ]
-
-  configs += [ "//build/config/compiler:enable_arc" ]
 }

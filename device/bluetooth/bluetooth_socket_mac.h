@@ -13,7 +13,6 @@
 #include <string>
 
 #include "base/containers/queue.h"
-#include "base/mac/scoped_nsobject.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/threading/thread_checker.h"
 #include "device/bluetooth/bluetooth_adapter.h"
@@ -33,7 +32,7 @@ namespace device {
 class BluetoothAdapterMac;
 class BluetoothChannelMac;
 
-// Implements the BluetoothSocket class for the Mac OS X platform.
+// Implements the BluetoothSocket class for the macOS platform.
 class BluetoothSocketMac : public BluetoothSocket {
  public:
   static scoped_refptr<BluetoothSocketMac> CreateSocket();
@@ -125,9 +124,9 @@ class BluetoothSocketMac : public BluetoothSocket {
     int buffer_size;
     SendCompletionCallback success_callback;
     ErrorCompletionCallback error_callback;
-    IOReturn status;
-    int active_async_writes;
-    bool error_signaled;
+    IOReturn status = kIOReturnSuccess;
+    int active_async_writes = 0;
+    bool error_signaled = false;
   };
 
   struct ReceiveCallbacks {
@@ -167,14 +166,12 @@ class BluetoothSocketMac : public BluetoothSocket {
 
   // Simple helpers that register for OS notifications and forward them to
   // |this| profile.
-  base::scoped_nsobject<BluetoothRfcommConnectionListener>
-      rfcomm_connection_listener_;
-  base::scoped_nsobject<BluetoothL2capConnectionListener>
-      l2cap_connection_listener_;
+  BluetoothRfcommConnectionListener* __strong rfcomm_connection_listener_;
+  BluetoothL2capConnectionListener* __strong l2cap_connection_listener_;
 
   // The service record registered in the system SDP server, used to
   // eventually unregister the service.
-  base::scoped_nsobject<IOBluetoothSDPServiceRecord> service_record_;
+  IOBluetoothSDPServiceRecord* __strong service_record_;
 
   // The channel used to issue commands.
   std::unique_ptr<BluetoothChannelMac> channel_;

@@ -26,7 +26,9 @@
 #include "chromeos/ash/components/network/cellular_policy_handler.h"
 #include "chromeos/ash/components/network/client_cert_util.h"
 #include "chromeos/ash/components/network/device_state.h"
+#include "chromeos/ash/components/network/hotspot_controller.h"
 #include "chromeos/ash/components/network/metrics/esim_policy_login_metrics_logger.h"
+#include "chromeos/ash/components/network/metrics/wifi_network_metrics_helper.h"
 #include "chromeos/ash/components/network/network_configuration_handler.h"
 #include "chromeos/ash/components/network/network_device_handler.h"
 #include "chromeos/ash/components/network/network_event_log.h"
@@ -44,6 +46,7 @@
 #include "chromeos/ash/components/network/proxy/ui_proxy_config_service.h"
 #include "chromeos/ash/components/network/shill_property_util.h"
 #include "chromeos/ash/components/network/tether_constants.h"
+#include "chromeos/ash/components/network/text_message_suppression_state.h"
 #include "chromeos/components/onc/onc_signature.h"
 #include "chromeos/components/onc/onc_utils.h"
 #include "chromeos/components/onc/onc_validator.h"
@@ -375,14 +378,26 @@ void ManagedNetworkConfigurationHandlerImpl::CreateConfiguration(
   std::string guid =
       GetStringFromDictionary(properties, ::onc::network_config::kGUID);
   const NetworkState* network_state = nullptr;
-  if (!guid.empty())
+  if (!guid.empty()) {
     network_state = network_state_handler_->GetNetworkStateFromGuid(guid);
+  }
   if (network_state) {
     NET_LOG(USER) << "CreateConfiguration for: " << NetworkId(network_state);
   } else {
     std::string type =
         GetStringFromDictionary(properties, ::onc::network_config::kType);
     NET_LOG(USER) << "Create new network configuration, Type: " << type;
+
+    if (type == ::onc::network_type::kWiFi) {
+      const base::Value::Dict* type_dict =
+          properties.FindDict(::onc::network_config::kWiFi);
+      const absl::optional<bool> is_hidden =
+          type_dict ? type_dict->FindBool(::onc::wifi::kHiddenSSID)
+                    : absl::nullopt;
+      if (is_hidden.has_value()) {
+        WifiNetworkMetricsHelper::LogInitiallyConfiguredAsHidden(*is_hidden);
+      }
+    }
   }
 
   // Validate the ONC dictionary. We are liberal and ignore unknown field
@@ -753,27 +768,32 @@ void ManagedNetworkConfigurationHandlerImpl::TriggerCellularPolicyApplication(
   const ProfilePolicies* policies = GetPoliciesForUser(profile.userhash);
   DCHECK(policies);
 
+  if (!cellular_policy_handler_) {
+    NET_LOG(ERROR) << "Unable to attempt policy eSIM installation since "
+                   << "CellularPolicyHandler has not been initialized";
+    return;
+  }
+
   for (const std::string& guid : new_cellular_policy_guids) {
     const base::Value::Dict* network_policy = policies->GetPolicyByGuid(guid);
     DCHECK(network_policy);
 
-    const std::string* smdp_address =
-        policy_util::GetSMDPAddressFromONC(*network_policy);
-    if (smdp_address) {
-      NET_LOG(EVENT)
-          << "Found ONC configuration with SMDP: " << *smdp_address
-          << ". Start installing policy eSim profile with ONC config: "
-          << *network_policy;
-      if (cellular_policy_handler_) {
+    if (ash::features::IsSmdsSupportEnabled()) {
+      cellular_policy_handler_->InstallESim(*network_policy);
+    } else {
+      const std::string* smdp_address =
+          policy_util::GetSMDPAddressFromONC(*network_policy);
+      if (smdp_address) {
+        NET_LOG(EVENT)
+            << "Found ONC configuration with SMDP: " << *smdp_address << ". "
+            << "Start installing policy eSim profile with ONC config: "
+            << *network_policy;
         cellular_policy_handler_->InstallESim(*smdp_address, *network_policy);
       } else {
-        NET_LOG(ERROR) << "Unable to install eSIM. CellularPolicyHandler not "
-                          "initialized.";
+        NET_LOG(EVENT) << "Skip installing policy eSIM either because the eSIM "
+                       << "policy feature is not enabled or the SMDP address "
+                       << "is missing from ONC.";
       }
-    } else {
-      NET_LOG(EVENT) << "Skip installing policy eSIM either because "
-                        "the eSIM policy feature is not enabled or the SMDP "
-                        "address is missing from ONC.";
     }
   }
 }
@@ -791,6 +811,13 @@ void ManagedNetworkConfigurationHandlerImpl::OnCellularPoliciesApplied(
       (!is_device_policy && user_policy_applied_)) {
     for (auto& observer : observers_)
       observer.PoliciesApplied(userhash);
+  }
+}
+
+void ManagedNetworkConfigurationHandlerImpl::
+    OnEnterpriseMonitoredWebPoliciesApplied() const {
+  for (auto& observer : observers_) {
+    observer.PoliciesApplied(std::string());
   }
 }
 
@@ -830,6 +857,10 @@ void ManagedNetworkConfigurationHandlerImpl::OnPoliciesApplied(
 
   if (network_device_handler_) {
     network_device_handler_->SetAllowCellularSimLock(AllowCellularSimLock());
+  }
+
+  if (hotspot_controller_) {
+    hotspot_controller_->SetPolicyAllowHotspot(AllowCellularHotspot());
   }
 
   if (device_policy_applied_ && user_policy_applied_) {
@@ -942,6 +973,33 @@ bool ManagedNetworkConfigurationHandlerImpl::CanRemoveNetworkConfig(
   return !IsNetworkConfiguredByPolicy(guid, profile_path);
 }
 
+PolicyTextMessageSuppressionState
+ManagedNetworkConfigurationHandlerImpl::GetAllowTextMessages() const {
+  CHECK(features::IsSuppressTextMessagesEnabled());
+  const base::Value::Dict* global_network_config = GetGlobalConfigFromPolicy(
+      std::string() /* no username hash, device policy */);
+
+  if (!global_network_config) {
+    return PolicyTextMessageSuppressionState::kUnset;
+  }
+
+  const std::string* managed_only_value = global_network_config->FindString(
+      ::onc::global_network_config::kAllowTextMessages);
+  if (!managed_only_value) {
+    return PolicyTextMessageSuppressionState::kUnset;
+  }
+
+  if (*managed_only_value == ::onc::cellular::kTextMessagesAllow) {
+    return PolicyTextMessageSuppressionState::kAllow;
+  }
+
+  if (*managed_only_value == ::onc::cellular::kTextMessagesSuppress) {
+    return PolicyTextMessageSuppressionState::kSuppress;
+  }
+
+  return PolicyTextMessageSuppressionState::kUnset;
+}
+
 bool ManagedNetworkConfigurationHandlerImpl::AllowCellularSimLock() const {
   const base::Value::Dict* global_network_config = GetGlobalConfigFromPolicy(
       std::string() /* no username hash, device policy */);
@@ -955,6 +1013,22 @@ bool ManagedNetworkConfigurationHandlerImpl::AllowCellularSimLock() const {
   const absl::optional<bool> managed_only_value =
       global_network_config->FindBool(
           ::onc::global_network_config::kAllowCellularSimLock);
+  return managed_only_value.value_or(true);
+}
+
+bool ManagedNetworkConfigurationHandlerImpl::AllowCellularHotspot() const {
+  const base::Value::Dict* global_network_config = GetGlobalConfigFromPolicy(
+      std::string() /* no username hash, device policy */);
+
+  // If |global_network_config| does not exist, default to allowing cellular
+  // hotspot
+  if (!global_network_config) {
+    return true;
+  }
+
+  const absl::optional<bool> managed_only_value =
+      global_network_config->FindBool(
+          ::onc::global_network_config::kAllowCellularHotspot);
   return managed_only_value.value_or(true);
 }
 
@@ -1088,7 +1162,8 @@ void ManagedNetworkConfigurationHandlerImpl::Init(
     NetworkProfileHandler* network_profile_handler,
     NetworkConfigurationHandler* network_configuration_handler,
     NetworkDeviceHandler* network_device_handler,
-    ProhibitedTechnologiesHandler* prohibited_technologies_handler) {
+    ProhibitedTechnologiesHandler* prohibited_technologies_handler,
+    HotspotController* hotspot_controller) {
   cellular_policy_handler_ = cellular_policy_handler;
   managed_cellular_pref_handler_ = managed_cellular_pref_handler;
   network_state_handler_ = network_state_handler;
@@ -1098,6 +1173,7 @@ void ManagedNetworkConfigurationHandlerImpl::Init(
   if (network_profile_handler_)
     network_profile_handler_->AddObserver(this);
   prohibited_technologies_handler_ = prohibited_technologies_handler;
+  hotspot_controller_ = hotspot_controller;
 }
 
 void ManagedNetworkConfigurationHandlerImpl::OnPolicyAppliedToNetwork(

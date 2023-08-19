@@ -40,7 +40,8 @@ struct StructTraits<PermissionDataView, apps::PermissionPtr> {
     return r->permission_type;
   }
 
-  static const apps::PermissionValuePtr& value(const apps::PermissionPtr& r) {
+  static const apps::Permission::PermissionValue& value(
+      const apps::PermissionPtr& r) {
     return r->value;
   }
 
@@ -66,31 +67,33 @@ struct EnumTraits<TriState, apps::TriState> {
 };
 
 template <>
-struct UnionTraits<PermissionValueDataView, apps::PermissionValuePtr> {
-  static PermissionValueDataView::Tag GetTag(const apps::PermissionValuePtr& r);
+struct UnionTraits<PermissionValueDataView, apps::Permission::PermissionValue> {
+  static PermissionValueDataView::Tag GetTag(
+      const apps::Permission::PermissionValue& r);
 
-  static bool IsNull(const apps::PermissionValuePtr& r) {
-    return !absl::holds_alternative<bool>(r->value) &&
-           !absl::holds_alternative<apps::TriState>(r->value);
+  static bool IsNull(const apps::Permission::PermissionValue& r) {
+    return false;
   }
 
-  static void SetToNull(apps::PermissionValuePtr* out) { out->reset(); }
+  static void SetToNull(apps::Permission::PermissionValue* out) {}
 
-  static bool bool_value(const apps::PermissionValuePtr& r) {
-    if (absl::holds_alternative<bool>(r->value)) {
-      return absl::get<bool>(r->value);
+  static bool bool_value(const apps::Permission::PermissionValue& r) {
+    if (absl::holds_alternative<bool>(r)) {
+      return absl::get<bool>(r);
     }
     return false;
   }
 
-  static apps::TriState tristate_value(const apps::PermissionValuePtr& r) {
-    if (absl::holds_alternative<apps::TriState>(r->value)) {
-      return absl::get<apps::TriState>(r->value);
+  static apps::TriState tristate_value(
+      const apps::Permission::PermissionValue& r) {
+    if (absl::holds_alternative<apps::TriState>(r)) {
+      return absl::get<apps::TriState>(r);
     }
     return apps::TriState::kBlock;
   }
 
-  static bool Read(PermissionValueDataView data, apps::PermissionValuePtr* out);
+  static bool Read(PermissionValueDataView data,
+                   apps::Permission::PermissionValue* out);
 };
 
 template <>

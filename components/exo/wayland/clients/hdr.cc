@@ -59,7 +59,6 @@ void DrawToGbm(const gfx::Size& size, DrawFunction draw_func, gbm_bo* bo) {
 
   std::move(draw_func).Run(size, canvas.get());
 
-  canvas->flush();
   gbm_bo_unmap(bo, mapped_data);
 }
 

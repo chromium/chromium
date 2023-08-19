@@ -264,7 +264,7 @@ public class ContentSettingsResources {
                         R.string.website_settings_category_motion_sensors_blocked;
                 try {
                     if (FeatureList.isNativeInitialized()
-                            && DeviceFeatureMap.getInstance().isEnabled(
+                            && DeviceFeatureMap.isEnabled(
                                     DeviceFeatureList.GENERIC_SENSOR_EXTRA_CLASSES)) {
                         sensorsPermissionTitle = R.string.sensors_permission_title;
                         sensorsAllowedDescription =

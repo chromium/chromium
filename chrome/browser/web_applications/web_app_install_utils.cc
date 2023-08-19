@@ -47,7 +47,6 @@
 #include "chrome/browser/web_applications/web_app_icon_generator.h"
 #include "chrome/browser/web_applications/web_app_install_info.h"
 #include "chrome/browser/web_applications/web_app_install_params.h"
-#include "chrome/browser/web_applications/web_app_sources.h"
 #include "chrome/browser/web_applications/web_app_utils.h"
 #include "chrome/common/chrome_features.h"
 #include "components/services/app_service/public/cpp/file_handler.h"
@@ -222,7 +221,22 @@ std::vector<SquareSizePx> GetSquareSizePxs(
   return sizes;
 }
 
-std::vector<IconSizes> GetDownloadedShortcutsMenuIconsSizes(
+std::vector<SquareSizePx> GetSquareSizePxs(const IconBitmaps& icon_bitmaps,
+                                           IconPurpose purpose) {
+  switch (purpose) {
+    case IconPurpose::ANY:
+      return GetSquareSizePxs(icon_bitmaps.any);
+    case IconPurpose::MASKABLE:
+      return GetSquareSizePxs(icon_bitmaps.maskable);
+    case IconPurpose::MONOCHROME:
+      return GetSquareSizePxs(icon_bitmaps.monochrome);
+  }
+}
+
+// Returns a new vector of item infos with `downloaded_icon_sizes` set from
+// `shortcuts_menu_icon_bitmaps` and other info copied from
+// `shortcuts_menu_items`.
+std::vector<WebAppShortcutsMenuItemInfo> GetShortcutsMenuInfoWithIconSizes(
     const std::vector<WebAppShortcutsMenuItemInfo>& shortcuts_menu_items,
     const ShortcutsMenuIconBitmaps& shortcuts_menu_icon_bitmaps) {
   // Due to the bitmaps possibly being not populated (see
@@ -230,8 +244,8 @@ std::vector<IconSizes> GetDownloadedShortcutsMenuIconsSizes(
   // continue to check to make sure that there aren't MORE bitmaps than
   // items.
   CHECK_LE(shortcuts_menu_icon_bitmaps.size(), shortcuts_menu_items.size());
-  std::vector<IconSizes> shortcuts_menu_icons_sizes;
-  shortcuts_menu_icons_sizes.reserve(shortcuts_menu_items.size());
+  std::vector<WebAppShortcutsMenuItemInfo> items_with_sizes;
+  items_with_sizes.reserve(shortcuts_menu_items.size());
   IconBitmaps empty_icon_bitmaps;
   for (size_t i = 0; i < shortcuts_menu_items.size(); ++i) {
     const IconBitmaps* shortcut_icon_bitmaps;
@@ -240,18 +254,16 @@ std::vector<IconSizes> GetDownloadedShortcutsMenuIconsSizes(
     } else {
       shortcut_icon_bitmaps = &empty_icon_bitmaps;
     }
-    IconSizes icon_sizes;
-    icon_sizes.SetSizesForPurpose(IconPurpose::ANY,
-                                  GetSquareSizePxs(shortcut_icon_bitmaps->any));
-    icon_sizes.SetSizesForPurpose(
-        IconPurpose::MASKABLE,
-        GetSquareSizePxs(shortcut_icon_bitmaps->maskable));
-    icon_sizes.SetSizesForPurpose(
-        IconPurpose::MONOCHROME,
-        GetSquareSizePxs(shortcut_icon_bitmaps->monochrome));
-    shortcuts_menu_icons_sizes.push_back(std::move(icon_sizes));
+
+    WebAppShortcutsMenuItemInfo item_info = shortcuts_menu_items[i];
+    for (IconPurpose purpose : kIconPurposes) {
+      item_info.downloaded_icon_sizes.SetSizesForPurpose(
+          purpose, GetSquareSizePxs(*shortcut_icon_bitmaps, purpose));
+    }
+
+    items_with_sizes.push_back(std::move(item_info));
   }
-  return shortcuts_menu_icons_sizes;
+  return items_with_sizes;
 }
 
 apps::ShareTarget::Method ToAppsShareTargetMethod(
@@ -997,8 +1009,6 @@ webapps::WebappInstallSource ConvertExternalInstallSourceToInstallSource(
       return webapps::WebappInstallSource::EXTERNAL_POLICY;
     case ExternalInstallSource::kSystemInstalled:
       return webapps::WebappInstallSource::SYSTEM_DEFAULT;
-    case ExternalInstallSource::kArc:
-      return webapps::WebappInstallSource::ARC;
     case ExternalInstallSource::kKiosk:
       return webapps::WebappInstallSource::KIOSK;
     case ExternalInstallSource::kExternalLockScreen:
@@ -1019,15 +1029,13 @@ webapps::WebappUninstallSource ConvertExternalInstallSourceToUninstallSource(
       return webapps::WebappUninstallSource::kExternalPolicy;
     case ExternalInstallSource::kSystemInstalled:
       return webapps::WebappUninstallSource::kSystemPreinstalled;
-    case ExternalInstallSource::kArc:
-      return webapps::WebappUninstallSource::kArc;
     case ExternalInstallSource::kKiosk:
       NOTREACHED() << "Kiosk apps should not be uninstalled";
       return webapps::WebappUninstallSource::kUnknown;
     case ExternalInstallSource::kExternalLockScreen:
       return webapps::WebappUninstallSource::kExternalLockScreen;
     case ExternalInstallSource::kInternalMicrosoft365Setup:
-      NOTREACHED() << "Microsoft 365 apps should not be unistalled externally";
+      NOTREACHED() << "Microsoft 365 apps should not be uninstalled externally";
       return webapps::WebappUninstallSource::kUnknown;
   }
 }
@@ -1046,6 +1054,7 @@ WebAppManagement::Type ConvertInstallSurfaceToWebAppSource(
     case webapps::WebappInstallSource::AMBIENT_BADGE_BROWSER_TAB:
     case webapps::WebappInstallSource::AMBIENT_BADGE_CUSTOM_TAB:
     case webapps::WebappInstallSource::RICH_INSTALL_UI_WEBLAYER:
+    case webapps::WebappInstallSource::ML_PROMOTION:
     case webapps::WebappInstallSource::OMNIBOX_INSTALL_ICON:
     case webapps::WebappInstallSource::SYNC:
     case webapps::WebappInstallSource::MENU_CREATE_SHORTCUT:
@@ -1103,10 +1112,10 @@ void MaybeRegisterOsUninstall(const WebApp* web_app,
   // |web_app| object will remove target |source_uninstalling| type.
   // If the remaining source types and they happen to be user
   // uninstallable, then it should register OsSettings.
-  WebAppSources sources = web_app->GetSources();
-  DCHECK(sources.test(source_uninstalling));
+  WebAppManagementTypes sources = web_app->GetSources();
+  DCHECK(sources.Has(source_uninstalling));
   bool user_installable_before_uninstall = CanUserUninstallWebApp(sources);
-  sources[source_uninstalling] = false;
+  sources.Remove(source_uninstalling);
   bool user_installable_after_uninstall = CanUserUninstallWebApp(sources);
 
   if (!user_installable_before_uninstall && user_installable_after_uninstall) {
@@ -1133,9 +1142,9 @@ void MaybeUnregisterOsUninstall(const WebApp* web_app,
   // |web_app| object will add target |source_installing| type.
   // If the old source types are user installable, but new type is not, then
   // it should unregister OsSettings.
-  WebAppSources sources = web_app->GetSources();
+  WebAppManagementTypes sources = web_app->GetSources();
   bool user_installable_before_install = CanUserUninstallWebApp(sources);
-  sources[source_installing] = true;
+  sources.Put(source_installing);
   bool user_installable_after_install = CanUserUninstallWebApp(sources);
 
   if (user_installable_before_install && !user_installable_after_install) {
@@ -1197,20 +1206,14 @@ void SetWebAppManifestFields(const WebAppInstallInfo& web_app_info,
 
   if (!skip_icons_on_download_failure) {
     web_app.SetManifestIcons(web_app_info.manifest_icons);
-    web_app.SetDownloadedIconSizes(
-        IconPurpose::ANY, GetSquareSizePxs(web_app_info.icon_bitmaps.any));
-    web_app.SetDownloadedIconSizes(
-        IconPurpose::MASKABLE,
-        GetSquareSizePxs(web_app_info.icon_bitmaps.maskable));
-    web_app.SetDownloadedIconSizes(
-        IconPurpose::MONOCHROME,
-        GetSquareSizePxs(web_app_info.icon_bitmaps.monochrome));
+    for (IconPurpose purpose : kIconPurposes) {
+      web_app.SetDownloadedIconSizes(
+          purpose, GetSquareSizePxs(web_app_info.icon_bitmaps, purpose));
+    }
     web_app.SetIsGeneratedIcon(web_app_info.is_generated_icon);
-    web_app.SetShortcutsMenuItemInfos(web_app_info.shortcuts_menu_item_infos);
-    web_app.SetDownloadedShortcutsMenuIconsSizes(
-        GetDownloadedShortcutsMenuIconsSizes(
-            web_app_info.shortcuts_menu_item_infos,
-            web_app_info.shortcuts_menu_icon_bitmaps));
+    web_app.SetShortcutsMenuInfo(GetShortcutsMenuInfoWithIconSizes(
+        web_app_info.shortcuts_menu_item_infos,
+        web_app_info.shortcuts_menu_icon_bitmaps));
   }
 
   web_app.SetPermissionsPolicy(web_app_info.permissions_policy);
@@ -1280,7 +1283,7 @@ bool CanWebAppUpdateIdentity(const WebApp* web_app) {
   // WebAppChromeOsData::oem_installed will be migrated to
   // WebAppManagement::kOem eventually.
   return web_app->IsPreinstalledApp() || web_app->IsKioskInstalledApp() ||
-         web_app->GetSources().test(WebAppManagement::kOem);
+         web_app->GetSources().Has(WebAppManagement::kOem);
 }
 
 void ApplyParamsToWebAppInstallInfo(const WebAppInstallParams& install_params,

@@ -9,8 +9,7 @@ import org.chromium.chrome.browser.base.SplitCompatService;
 
 /** See {@link DownloadBroadcastManagerImpl}. */
 public class DownloadBroadcastManager extends SplitCompatService {
-    @IdentifierNameString
-    private static String sImplClassName =
+    private static @IdentifierNameString String sImplClassName =
             "org.chromium.chrome.browser.download.DownloadBroadcastManagerImpl";
 
     public DownloadBroadcastManager() {

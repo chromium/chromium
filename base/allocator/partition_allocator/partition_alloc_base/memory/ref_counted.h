@@ -6,11 +6,11 @@
 #define BASE_ALLOCATOR_PARTITION_ALLOCATOR_PARTITION_ALLOC_BASE_MEMORY_REF_COUNTED_H_
 
 #include "base/allocator/partition_allocator/partition_alloc_base/atomic_ref_count.h"
+#include "base/allocator/partition_allocator/partition_alloc_base/check.h"
 #include "base/allocator/partition_allocator/partition_alloc_base/compiler_specific.h"
 #include "base/allocator/partition_allocator/partition_alloc_base/component_export.h"
 #include "base/allocator/partition_allocator/partition_alloc_base/debug/debugging_buildflags.h"
 #include "base/allocator/partition_allocator/partition_alloc_base/memory/scoped_refptr.h"
-#include "base/allocator/partition_allocator/partition_alloc_check.h"
 #include "build/build_config.h"
 
 namespace partition_alloc::internal::base {
@@ -60,37 +60,37 @@ class PA_COMPONENT_EXPORT(PARTITION_ALLOC) RefCountedThreadSafeBase {
 
   void Adopted() const {
 #if BUILDFLAG(PA_DCHECK_IS_ON)
-    PA_DCHECK(needs_adopt_ref_);
+    PA_BASE_DCHECK(needs_adopt_ref_);
     needs_adopt_ref_ = false;
 #endif
   }
 
   PA_ALWAYS_INLINE void AddRefImpl() const {
 #if BUILDFLAG(PA_DCHECK_IS_ON)
-    PA_DCHECK(!in_dtor_);
+    PA_BASE_DCHECK(!in_dtor_);
     // This RefCounted object is created with non-zero reference count.
     // The first reference to such a object has to be made by AdoptRef or
     // MakeRefCounted.
-    PA_DCHECK(!needs_adopt_ref_);
+    PA_BASE_DCHECK(!needs_adopt_ref_);
 #endif
     ref_count_.Increment();
   }
 
   PA_ALWAYS_INLINE void AddRefWithCheckImpl() const {
 #if BUILDFLAG(PA_DCHECK_IS_ON)
-    PA_DCHECK(!in_dtor_);
+    PA_BASE_DCHECK(!in_dtor_);
     // This RefCounted object is created with non-zero reference count.
     // The first reference to such a object has to be made by AdoptRef or
     // MakeRefCounted.
-    PA_DCHECK(!needs_adopt_ref_);
+    PA_BASE_DCHECK(!needs_adopt_ref_);
 #endif
-    PA_CHECK(ref_count_.Increment() > 0);
+    PA_BASE_CHECK(ref_count_.Increment() > 0);
   }
 
   PA_ALWAYS_INLINE bool ReleaseImpl() const {
 #if BUILDFLAG(PA_DCHECK_IS_ON)
-    PA_DCHECK(!in_dtor_);
-    PA_DCHECK(!ref_count_.IsZero());
+    PA_BASE_DCHECK(!in_dtor_);
+    PA_BASE_DCHECK(!ref_count_.IsZero());
 #endif
     if (!ref_count_.Decrement()) {
 #if BUILDFLAG(PA_DCHECK_IS_ON)

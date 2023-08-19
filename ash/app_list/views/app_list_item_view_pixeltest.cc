@@ -29,6 +29,7 @@
 #include "base/strings/string_util.h"
 #include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
+#include "chromeos/constants/chromeos_features.h"
 
 namespace ash {
 
@@ -41,7 +42,8 @@ class AppListItemViewPixelTest
                      /*use_dense_ui=*/bool,
                      /*use_rtl=*/bool,
                      /*is_new_install=*/bool,
-                     /*has_notification=*/bool>> {
+                     /*has_notification=*/bool,
+                     /*jelly_enabled=*/bool>> {
  public:
   // AshTestBase:
   absl::optional<pixel_test::InitParams> CreatePixelTestInitParams()
@@ -53,6 +55,11 @@ class AppListItemViewPixelTest
 
   // AshTestBase:
   void SetUp() override {
+    scoped_feature_list_.InitWithFeatureStates(
+        {{app_list_features::kDragAndDropRefactor, use_drag_drop_refactor()},
+         {features::kAppCollectionFolderRefresh, use_folder_icon_refresh()},
+         {chromeos::features::kJelly, jelly_enabled()}});
+
     AshTestBase::SetUp();
 
     // As per `app_list_config_provider.cc`, dense values are used for screens
@@ -64,10 +71,6 @@ class AppListItemViewPixelTest
           std::make_unique<DragDropControllerTestApi>(drag_controller);
       drag_controller->SetDisableNestedLoopForTesting(true);
     }
-
-    scoped_feature_list_.InitWithFeatureStates(
-        {{app_list_features::kDragAndDropRefactor, use_drag_drop_refactor()},
-         {features::kAppCollectionFolderRefresh, use_folder_icon_refresh()}});
   }
 
   void TearDown() override {
@@ -123,13 +126,16 @@ class AppListItemViewPixelTest
   }
 
   std::string GenerateScreenshotName() {
-    std::string stringified_params = base::JoinString(
-        {use_tablet_mode() ? "tablet_mode" : "clamshell_mode",
-         use_dense_ui() ? "dense_ui" : "regular_ui", use_rtl() ? "rtl" : "ltr",
-         is_new_install() ? "new_install=true" : "new_install=false",
-         has_notification() ? "has_notification=true"
-                            : "has_notification=false"},
-        "|");
+    std::vector<std::string> parameters = {
+        use_tablet_mode() ? "tablet_mode" : "clamshell_mode",
+        use_dense_ui() ? "dense_ui" : "regular_ui", use_rtl() ? "rtl" : "ltr",
+        is_new_install() ? "new_install=true" : "new_install=false",
+        has_notification() ? "has_notification=true"
+                           : "has_notification=false"};
+    if (jelly_enabled()) {
+      parameters.push_back("jelly_enabled");
+    }
+    std::string stringified_params = base::JoinString(parameters, "|");
     return base::JoinString({"app_list_item_view", stringified_params}, ".");
   }
 
@@ -142,7 +148,12 @@ class AppListItemViewPixelTest
   }
 
   size_t GetRevisionNumber() {
-    size_t base_revision_number = 3;
+    if (jelly_enabled()) {
+      // Revision numbers reset with Jelly.
+      return 3;
+    }
+
+    size_t base_revision_number = 5;
     if (use_folder_icon_refresh()) {
       ++base_revision_number;
     }
@@ -160,6 +171,7 @@ class AppListItemViewPixelTest
   bool use_rtl() const { return std::get<4>(GetParam()); }
   bool is_new_install() const { return std::get<5>(GetParam()); }
   bool has_notification() const { return std::get<6>(GetParam()); }
+  bool jelly_enabled() const { return std::get<7>(GetParam()); }
 
  private:
   std::unique_ptr<DragDropControllerTestApi> drag_drop_controller_test_api_;
@@ -175,7 +187,8 @@ INSTANTIATE_TEST_SUITE_P(
                      /*use_dense_ui=*/testing::Bool(),
                      /*use_rtl=*/testing::Bool(),
                      /*is_new_install=*/testing::Bool(),
-                     /*has_notification=*/testing::Bool()));
+                     /*has_notification=*/testing::Bool(),
+                     /*jelly_enabled=*/testing::Bool()));
 
 TEST_P(AppListItemViewPixelTest, AppListItemView) {
   // Folder icon refresh doesn't change the app list item view.
@@ -186,10 +199,9 @@ TEST_P(AppListItemViewPixelTest, AppListItemView) {
   CreateAppListItem("App with a loooooooong name");
 
   ShowAppList();
-
   EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
-      GenerateScreenshotName(), /*revision_number=*/1, GetItemViewAt(0),
-      GetItemViewAt(1)));
+      GenerateScreenshotName(), /*revision_number=*/jelly_enabled() ? 1 : 1,
+      GetItemViewAt(0), GetItemViewAt(1)));
 }
 
 // Verifies the layout of the item icons inside a folder.
@@ -212,14 +224,24 @@ TEST_P(AppListItemViewPixelTest, AppListFolderItemsLayoutInIcon) {
   CreateFoldersContainingDifferentNumOfItems(max_items_in_folder);
   ShowAppList();
 
-  if (use_folder_icon_refresh()) {
+  if (jelly_enabled()) {
+    if (use_folder_icon_refresh()) {
+      // In production, use_folder_icon_refresh() is always enabled when jelly
+      // is enabled.
+      EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
+          GenerateScreenshotName(), /*revision_number=*/2, GetItemViewAt(0),
+          GetItemViewAt(1), GetItemViewAt(2), GetItemViewAt(3),
+          GetItemViewAt(4)));
+    }
+    // jelly_enabled && !use_folder_icon_refresh is deliberately skipped.
+  } else if (use_folder_icon_refresh()) {
     EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
-        GenerateScreenshotName(), /*revision_number=*/2, GetItemViewAt(0),
+        GenerateScreenshotName(), /*revision_number=*/3, GetItemViewAt(0),
         GetItemViewAt(1), GetItemViewAt(2), GetItemViewAt(3),
         GetItemViewAt(4)));
   } else {
     EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
-        GenerateScreenshotName(), /*revision_number=*/1, GetItemViewAt(0),
+        GenerateScreenshotName(), /*revision_number=*/2, GetItemViewAt(0),
         GetItemViewAt(1), GetItemViewAt(2), GetItemViewAt(3)));
   }
 }
@@ -257,14 +279,23 @@ TEST_P(AppListItemViewPixelTest, AppListFolderIconExtendedState) {
     GetItemViewAt(i)->OnDraggedViewEnter();
   }
 
-  if (use_folder_icon_refresh()) {
+  if (jelly_enabled()) {
+    if (use_folder_icon_refresh()) {
+      EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
+          GenerateScreenshotName(), /*revision_number=*/2, GetItemViewAt(0),
+          GetItemViewAt(1), GetItemViewAt(2), GetItemViewAt(3),
+          GetItemViewAt(4)));
+    }
+    // Skip the !use_folder_icon_refresh && jelly_enabled state as it doesn't
+    // occur in production.
+  } else if (use_folder_icon_refresh()) {
     EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
-        GenerateScreenshotName(), /*revision_number=*/2, GetItemViewAt(0),
+        GenerateScreenshotName(), /*revision_number=*/3, GetItemViewAt(0),
         GetItemViewAt(1), GetItemViewAt(2), GetItemViewAt(3),
         GetItemViewAt(4)));
   } else {
     EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
-        GenerateScreenshotName(), /*revision_number=*/1, GetItemViewAt(0),
+        GenerateScreenshotName(), /*revision_number=*/2, GetItemViewAt(0),
         GetItemViewAt(1), GetItemViewAt(2), GetItemViewAt(3)));
   }
 

@@ -6,6 +6,7 @@
 
 #include <stddef.h>
 
+#include <algorithm>
 #include <utility>
 
 #include "base/functional/bind.h"
@@ -18,17 +19,19 @@
 #include "chrome/browser/extensions/api/autofill_private/autofill_util.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/common/extensions/api/autofill_private.h"
-#include "chrome/grit/chromium_strings.h"
 #include "components/autofill/content/browser/content_autofill_client.h"
 #include "components/autofill/content/browser/content_autofill_driver.h"
 #include "components/autofill/content/browser/content_autofill_driver_factory.h"
 #include "components/autofill/core/browser/autofill_address_util.h"
+#include "components/autofill/core/browser/autofill_experiments.h"
 #include "components/autofill/core/browser/browser_autofill_manager.h"
 #include "components/autofill/core/browser/data_model/autofill_profile.h"
 #include "components/autofill/core/browser/data_model/credit_card.h"
 #include "components/autofill/core/browser/data_model/iban.h"
 #include "components/autofill/core/browser/form_data_importer.h"
+#include "components/autofill/core/browser/metrics/payments/mandatory_reauth_metrics.h"
 #include "components/autofill/core/browser/payments/local_card_migration_manager.h"
+#include "components/autofill/core/browser/payments/mandatory_reauth_manager.h"
 #include "components/autofill/core/browser/payments/virtual_card_enrollment_flow.h"
 #include "components/autofill/core/browser/payments/virtual_card_enrollment_manager.h"
 #include "components/autofill/core/browser/personal_data_manager.h"
@@ -36,6 +39,8 @@
 #include "components/autofill/core/common/autofill_payments_features.h"
 #include "components/autofill/core/common/autofill_prefs.h"
 #include "components/signin/public/identity_manager/account_info.h"
+#include "components/strings/grit/components_chromium_strings.h"
+#include "components/strings/grit/components_google_chrome_strings.h"
 #include "components/strings/grit/components_strings.h"
 #include "content/public/browser/web_contents.h"
 #include "extensions/browser/extension_function.h"
@@ -48,6 +53,11 @@
 
 namespace autofill_private = extensions::api::autofill_private;
 namespace addressinput = i18n::addressinput;
+
+using autofill::autofill_metrics::LogMandatoryReauthOptInOrOutUpdateEvent;
+using autofill::autofill_metrics::LogMandatoryReauthSettingsPageEditCardEvent;
+using autofill::autofill_metrics::MandatoryReauthAuthenticationFlowEvent;
+using autofill::autofill_metrics::MandatoryReauthOptInOrOutSource;
 
 namespace {
 
@@ -66,87 +76,17 @@ constexpr char kFieldLengthKey[] = "isLongField";
 constexpr char kFieldNameKey[] = "fieldName";
 constexpr char kFieldRequired[] = "isRequired";
 
-// Field names for the address components.
-constexpr char kFullNameField[] = "FULL_NAME";
-constexpr char kCompanyNameField[] = "COMPANY_NAME";
-constexpr char kAddressLineField[] = "ADDRESS_LINES";
-constexpr char kDependentLocalityField[] = "ADDRESS_LEVEL_3";
-constexpr char kCityField[] = "ADDRESS_LEVEL_2";
-constexpr char kStateField[] = "ADDRESS_LEVEL_1";
-constexpr char kPostalCodeField[] = "POSTAL_CODE";
-constexpr char kSortingCodeField[] = "SORTING_CODE";
-constexpr char kCountryField[] = "COUNTY_CODE";
-
-// Converts an autofill::ServerFieldType to string format. Used in serilization
-// of field type info to be used in JavaScript code, and hence those values
-// shouldn't be modified.
-const char* GetStringFromAddressField(i18n::addressinput::AddressField type) {
-  switch (type) {
-    case i18n::addressinput::RECIPIENT:
-      return kFullNameField;
-    case i18n::addressinput::ORGANIZATION:
-      return kCompanyNameField;
-    case i18n::addressinput::STREET_ADDRESS:
-      return kAddressLineField;
-    case i18n::addressinput::DEPENDENT_LOCALITY:
-      return kDependentLocalityField;
-    case i18n::addressinput::LOCALITY:
-      return kCityField;
-    case i18n::addressinput::ADMIN_AREA:
-      return kStateField;
-    case i18n::addressinput::POSTAL_CODE:
-      return kPostalCodeField;
-    case i18n::addressinput::SORTING_CODE:
-      return kSortingCodeField;
-    case i18n::addressinput::COUNTRY:
-      return kCountryField;
-    default:
-      NOTREACHED();
-      return "";
-  }
-}
-
 // Serializes the AddressUiComponent a map from string to base::Value().
 base::Value::Dict AddressUiComponentAsValueMap(
-    const autofill::ExtendedAddressUiComponent& address_ui_component) {
+    const autofill::AutofillAddressUIComponent& address_ui_component) {
   base::Value::Dict info;
   info.Set(kFieldNameKey, address_ui_component.name);
-  info.Set(kFieldTypeKey,
-           GetStringFromAddressField(address_ui_component.field));
+  info.Set(kFieldTypeKey, FieldTypeToStringPiece(address_ui_component.field));
   info.Set(kFieldLengthKey,
            address_ui_component.length_hint ==
-               i18n::addressinput::AddressUiComponent::HINT_LONG);
+               autofill::AutofillAddressUIComponent::HINT_LONG);
   info.Set(kFieldRequired, address_ui_component.is_required);
   return info;
-}
-
-// Searches the |list| for the value at |index|.  If this value is present in
-// any of the rest of the list, then the item (at |index|) is removed. The
-// comparison of phone number values is done on normalized versions of the phone
-// number values.
-void RemoveDuplicatePhoneNumberAtIndex(size_t index,
-                                       const std::string& country_code,
-                                       base::Value::List& list) {
-  if (list.size() <= index) {
-    NOTREACHED() << "List should have a value at index " << index;
-    return;
-  }
-  const std::string& new_value = list[index].GetString();
-
-  bool is_duplicate = false;
-  std::string app_locale = g_browser_process->GetApplicationLocale();
-  for (size_t i = 0; i < list.size() && !is_duplicate; ++i) {
-    if (i == index)
-      continue;
-
-    const std::string& existing_value = list[i].GetString();
-    is_duplicate = autofill::i18n::PhoneNumbersMatch(
-        base::UTF8ToUTF16(new_value), base::UTF8ToUTF16(existing_value),
-        country_code, app_locale);
-  }
-
-  if (is_duplicate)
-    list.erase(list.begin() + index);
 }
 
 autofill::AutofillManager* GetAutofillManager(
@@ -237,90 +177,33 @@ ExtensionFunction::ResponseAction AutofillPrivateSaveAddressFunction::Run() {
     if (!existing_profile)
       return RespondNow(Error(kErrorDataUnavailable));
   }
+  absl::optional<base::StringPiece> country_code;
+  if (auto it = std::find_if(
+          address->fields.begin(), address->fields.end(),
+          [](const auto& field) {
+            return field.type ==
+                   autofill_private::ServerFieldType::kAddressHomeCountry;
+          });
+      it != address->fields.end()) {
+    country_code = it->value;
+  }
   autofill::AutofillProfile profile =
-      existing_profile
-          ? *existing_profile
-          : CreateNewAutofillProfile(personal_data, address->country_code);
+      existing_profile ? *existing_profile
+                       : CreateNewAutofillProfile(personal_data, country_code);
 
-  if (address->full_names) {
-    std::string full_name;
-    if (!address->full_names->empty())
-      full_name = address->full_names->at(0);
-    profile.SetInfoWithVerificationStatus(
-        autofill::AutofillType(autofill::NAME_FULL),
-        base::UTF8ToUTF16(full_name), g_browser_process->GetApplicationLocale(),
-        kUserVerified);
-  }
-
-  if (address->honorific) {
-    profile.SetRawInfoWithVerificationStatus(
-        autofill::NAME_HONORIFIC_PREFIX, base::UTF8ToUTF16(*address->honorific),
-        kUserVerified);
-  }
-
-  if (address->company_name) {
-    profile.SetRawInfoWithVerificationStatus(
-        autofill::COMPANY_NAME, base::UTF8ToUTF16(*address->company_name),
-        kUserVerified);
-  }
-
-  if (address->address_lines) {
-    profile.SetRawInfoWithVerificationStatus(
-        autofill::ADDRESS_HOME_STREET_ADDRESS,
-        base::UTF8ToUTF16(*address->address_lines), kUserVerified);
-  }
-
-  if (address->address_level1) {
-    profile.SetRawInfoWithVerificationStatus(
-        autofill::ADDRESS_HOME_STATE,
-        base::UTF8ToUTF16(*address->address_level1), kUserVerified);
-  }
-
-  if (address->address_level2) {
-    profile.SetRawInfoWithVerificationStatus(
-        autofill::ADDRESS_HOME_CITY,
-        base::UTF8ToUTF16(*address->address_level2), kUserVerified);
-  }
-
-  if (address->address_level3) {
-    profile.SetRawInfoWithVerificationStatus(
-        autofill::ADDRESS_HOME_DEPENDENT_LOCALITY,
-        base::UTF8ToUTF16(*address->address_level3), kUserVerified);
-  }
-
-  if (address->postal_code) {
-    profile.SetRawInfoWithVerificationStatus(
-        autofill::ADDRESS_HOME_ZIP, base::UTF8ToUTF16(*address->postal_code),
-        kUserVerified);
-  }
-
-  if (address->sorting_code) {
-    profile.SetRawInfoWithVerificationStatus(
-        autofill::ADDRESS_HOME_SORTING_CODE,
-        base::UTF8ToUTF16(*address->sorting_code), kUserVerified);
-  }
-
-  if (address->country_code) {
-    profile.SetRawInfoWithVerificationStatus(
-        autofill::ADDRESS_HOME_COUNTRY,
-        base::UTF8ToUTF16(*address->country_code), kUserVerified);
-  }
-
-  if (address->phone_numbers) {
-    std::string phone;
-    if (!address->phone_numbers->empty())
-      phone = address->phone_numbers->at(0);
-    profile.SetRawInfoWithVerificationStatus(autofill::PHONE_HOME_WHOLE_NUMBER,
-                                             base::UTF8ToUTF16(phone),
-                                             kUserVerified);
-  }
-
-  if (address->email_addresses) {
-    std::string email;
-    if (!address->email_addresses->empty())
-      email = address->email_addresses->at(0);
-    profile.SetRawInfoWithVerificationStatus(
-        autofill::EMAIL_ADDRESS, base::UTF8ToUTF16(email), kUserVerified);
+  // TODO(crbug.com/1441904): Fields not visible for the autofill profile's
+  // country must be reset.
+  for (const api::autofill_private::AddressField& field : address->fields) {
+    if (field.type == autofill_private::ServerFieldType::kNameFull) {
+      profile.SetInfoWithVerificationStatus(
+          autofill::AutofillType(autofill::NAME_FULL),
+          base::UTF8ToUTF16(field.value),
+          g_browser_process->GetApplicationLocale(), kUserVerified);
+    } else {
+      profile.SetRawInfoWithVerificationStatus(
+          autofill::TypeNameToFieldType(autofill_private::ToString(field.type)),
+          base::UTF8ToUTF16(field.value), kUserVerified);
+    }
   }
 
   if (address->language_code)
@@ -368,7 +251,7 @@ AutofillPrivateGetAddressComponentsFunction::Run() {
           api::autofill_private::GetAddressComponents::Params::Create(args());
   EXTENSION_FUNCTION_VALIDATE(parameters);
 
-  std::vector<std::vector<autofill::ExtendedAddressUiComponent>> lines;
+  std::vector<std::vector<autofill::AutofillAddressUIComponent>> lines;
   std::string language_code;
 
   autofill::GetAddressComponents(
@@ -381,7 +264,7 @@ AutofillPrivateGetAddressComponentsFunction::Run() {
 
   for (auto& line : lines) {
     base::Value::List row_values;
-    for (const autofill::ExtendedAddressUiComponent& component : line) {
+    for (const autofill::AutofillAddressUIComponent& component : line) {
       row_values.Append(AddressUiComponentAsValueMap(component));
     }
     base::Value::Dict row;
@@ -507,37 +390,13 @@ ExtensionFunction::ResponseAction AutofillPrivateRemoveEntryFunction::Run() {
   if (!personal_data || !personal_data->IsDataLoaded())
     return RespondNow(Error(kErrorDataUnavailable));
 
-  if (personal_data->GetIBANByGUID(parameters->guid)) {
+  if (personal_data->GetIbanByGUID(parameters->guid)) {
     base::RecordAction(base::UserMetricsAction("AutofillIbanDeleted"));
   }
 
   personal_data->RemoveByGUID(parameters->guid);
 
   return RespondNow(NoArguments());
-}
-
-////////////////////////////////////////////////////////////////////////////////
-// AutofillPrivateValidatePhoneNumbersFunction
-
-ExtensionFunction::ResponseAction
-AutofillPrivateValidatePhoneNumbersFunction::Run() {
-  absl::optional<api::autofill_private::ValidatePhoneNumbers::Params>
-      parameters =
-          api::autofill_private::ValidatePhoneNumbers::Params::Create(args());
-  EXTENSION_FUNCTION_VALIDATE(parameters);
-
-  api::autofill_private::ValidatePhoneParams& params = parameters->params;
-
-  // Extract the phone numbers into a base::Value::List.
-  base::Value::List phone_numbers;
-  for (auto phone_number : params.phone_numbers) {
-    phone_numbers.Append(phone_number);
-  }
-
-  RemoveDuplicatePhoneNumberAtIndex(params.index_of_new_number,
-                                    params.country_code, phone_numbers);
-
-  return RespondNow(WithArguments(std::move(phone_numbers)));
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -593,13 +452,14 @@ AutofillPrivateMigrateCreditCardsFunction::Run() {
   // FormDataImporter.
   autofill::AutofillManager* autofill_manager =
       GetAutofillManager(GetSenderWebContents());
-  if (!autofill_manager || !autofill_manager->client())
+  if (!autofill_manager) {
     return RespondNow(Error(kErrorDataUnavailable));
+  }
 
   // Get the FormDataImporter from AutofillClient. FormDataImporter owns
   // LocalCardMigrationManager.
   autofill::FormDataImporter* form_data_importer =
-      autofill_manager->client()->GetFormDataImporter();
+      autofill_manager->client().GetFormDataImporter();
   if (!form_data_importer)
     return RespondNow(Error(kErrorDataUnavailable));
 
@@ -680,16 +540,16 @@ ExtensionFunction::ResponseAction AutofillPrivateSaveIbanFunction::Run() {
   // the Chrome payment settings page. Otherwise, leaving it blank creates a new
   // IBAN.
   std::string guid = iban_entry->guid ? *iban_entry->guid : "";
-  const autofill::IBAN* existing_iban = nullptr;
+  const autofill::Iban* existing_iban = nullptr;
   if (!guid.empty()) {
-    existing_iban = personal_data->GetIBANByGUID(guid);
+    existing_iban = personal_data->GetIbanByGUID(guid);
     if (!existing_iban)
       return RespondNow(Error(kErrorDataUnavailable));
   }
-  autofill::IBAN iban =
+  autofill::Iban iban =
       existing_iban
           ? *existing_iban
-          : autofill::IBAN(base::Uuid::GenerateRandomV4().AsLowercaseString());
+          : autofill::Iban(base::Uuid::GenerateRandomV4().AsLowercaseString());
 
   iban.SetRawInfo(autofill::IBAN_VALUE, base::UTF8ToUTF16(*iban_entry->value));
 
@@ -697,7 +557,7 @@ ExtensionFunction::ResponseAction AutofillPrivateSaveIbanFunction::Run() {
     iban.set_nickname(base::UTF8ToUTF16(*iban_entry->nickname));
 
   if (guid.empty()) {
-    personal_data->AddIBAN(iban);
+    personal_data->AddIban(iban);
     base::RecordAction(base::UserMetricsAction("AutofillIbanAdded"));
     if (!iban.nickname().empty()) {
       base::RecordAction(
@@ -707,7 +567,7 @@ ExtensionFunction::ResponseAction AutofillPrivateSaveIbanFunction::Run() {
   }
 
   if (existing_iban->Compare(iban) != 0) {
-    personal_data->UpdateIBAN(iban);
+    personal_data->UpdateIban(iban);
     base::RecordAction(base::UserMetricsAction("AutofillIbanEdited"));
     // Record when nickname is updated.
     if (existing_iban->nickname() != iban.nickname()) {
@@ -743,7 +603,7 @@ ExtensionFunction::ResponseAction AutofillPrivateIsValidIbanFunction::Run() {
       api::autofill_private::IsValidIban::Params::Create(args());
   EXTENSION_FUNCTION_VALIDATE(parameters);
   return RespondNow(WithArguments(
-      autofill::IBAN::IsValid(base::UTF8ToUTF16(parameters->iban_value))));
+      autofill::Iban::IsValid(base::UTF8ToUTF16(parameters->iban_value))));
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -782,17 +642,16 @@ ExtensionFunction::ResponseAction AutofillPrivateAddVirtualCardFunction::Run() {
 
   autofill::AutofillManager* autofill_manager =
       GetAutofillManager(GetSenderWebContents());
-  if (!autofill_manager || !autofill_manager->client() ||
-      !autofill_manager->client()->GetFormDataImporter() ||
+  if (!autofill_manager || !autofill_manager->client().GetFormDataImporter() ||
       !autofill_manager->client()
-           ->GetFormDataImporter()
+           .GetFormDataImporter()
            ->GetVirtualCardEnrollmentManager()) {
     return RespondNow(Error(kErrorDataUnavailable));
   }
 
   autofill::VirtualCardEnrollmentManager* virtual_card_enrollment_manager =
       autofill_manager->client()
-          ->GetFormDataImporter()
+          .GetFormDataImporter()
           ->GetVirtualCardEnrollmentManager();
 
   virtual_card_enrollment_manager->InitVirtualCardEnroll(
@@ -823,17 +682,16 @@ AutofillPrivateRemoveVirtualCardFunction::Run() {
 
   autofill::AutofillManager* autofill_manager =
       GetAutofillManager(GetSenderWebContents());
-  if (!autofill_manager || !autofill_manager->client() ||
-      !autofill_manager->client()->GetFormDataImporter() ||
+  if (!autofill_manager || !autofill_manager->client().GetFormDataImporter() ||
       !autofill_manager->client()
-           ->GetFormDataImporter()
+           .GetFormDataImporter()
            ->GetVirtualCardEnrollmentManager()) {
     return RespondNow(Error(kErrorDataUnavailable));
   }
 
   autofill::VirtualCardEnrollmentManager* virtual_card_enrollment_manager =
       autofill_manager->client()
-          ->GetFormDataImporter()
+          .GetFormDataImporter()
           ->GetVirtualCardEnrollmentManager();
 
   virtual_card_enrollment_manager->Unenroll(
@@ -855,50 +713,75 @@ AutofillPrivateAuthenticateUserAndFlipMandatoryAuthToggleFunction::Run() {
     return RespondNow(Error(kErrorDeviceAuthUnavailable));
   }
 
-  // If `device_authenticator` is not available, then don't do anything.
-  scoped_refptr<device_reauth::DeviceAuthenticator> device_authenticator =
-      client->GetDeviceAuthenticator();
-  if (!device_authenticator) {
-    return RespondNow(Error(kErrorDeviceAuthUnavailable));
-  }
-
-  // `device_authenticator` is a scoped_refptr, so we need to keep it alive
-  // until the callback that uses it is complete.
-  base::OnceClosure bind_device_authenticator =
-      base::DoNothingWithBoundArgs(device_authenticator);
   const std::u16string message =
       l10n_util::GetStringUTF16(IDS_PAYMENTS_AUTOFILL_MANDATORY_REAUTH_PROMPT);
+
+  // If `personal_data_manager` is not available or `IsDataLoaded` is false,
+  // then don't do anything.
+  autofill::PersonalDataManager* personal_data_manager =
+      client->GetPersonalDataManager();
+  if (!personal_data_manager || !personal_data_manager->IsDataLoaded()) {
+    return RespondNow(Error(kErrorDataUnavailable));
+  }
 
   // We will be modifying the pref `kAutofillPaymentMethodsMandatoryReauth`
   // asynchronously. The pref value directly correlates to the mandatory auth
   // toggle.
-  autofill_util::AuthenticateUser(
-      device_authenticator, message,
+  // We are also logging the start of the auth flow and
+  // `!personal_data_manager->IsPaymentMethodsMandatoryReauthEnabled()` denotes
+  // if the user is either opting in or out.
+  base::RecordAction(base::UserMetricsAction(
+      "PaymentsUserAuthTriggeredForMandatoryAuthToggle"));
+  LogMandatoryReauthOptInOrOutUpdateEvent(
+      MandatoryReauthOptInOrOutSource::kSettingsPage,
+      /*opt_in=*/
+      !personal_data_manager->IsPaymentMethodsMandatoryReauthEnabled(),
+      MandatoryReauthAuthenticationFlowEvent::kFlowStarted);
+  client->GetOrCreatePaymentsMandatoryReauthManager()->AuthenticateWithMessage(
+      message,
       base::BindOnce(
           &AutofillPrivateAuthenticateUserAndFlipMandatoryAuthToggleFunction::
               UpdateMandatoryAuthTogglePref,
-          this)
-          .Then(base::IgnoreArgs(std::move(bind_device_authenticator))));
-  base::RecordAction(base::UserMetricsAction(
-      "PaymentsUserAuthTriggeredForMandatoryAuthToggle"));
+          this));
+
   return RespondNow(NoArguments());
 #else
   return RespondNow(Error(kErrorDeviceAuthUnavailable));
 #endif  // BUILDFLAG (IS_MAC) || BUILDFLAG(IS_WIN)
 }
 
-// Update the Mandatory auth toggle pref after a successful user auth.
+// Update the Mandatory auth toggle pref and log whether the auth was successful
+// or not.
 void AutofillPrivateAuthenticateUserAndFlipMandatoryAuthToggleFunction::
     UpdateMandatoryAuthTogglePref(bool reauth_succeeded) {
 #if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
-  if (reauth_succeeded && browser_context()) {
-    PrefService* prefs =
-        Profile::FromBrowserContext(browser_context())->GetPrefs();
-    autofill::prefs::SetAutofillPaymentMethodsMandatoryReauth(
-        prefs, !prefs->GetBoolean(
-                   autofill::prefs::kAutofillPaymentMethodsMandatoryReauth));
+  content::WebContents* sender_web_contents = GetSenderWebContents();
+  if (!sender_web_contents) {
+    return;
+  }
+  autofill::ContentAutofillClient* client =
+      autofill::ContentAutofillClient::FromWebContents(sender_web_contents);
+  CHECK(client);
+  autofill::PersonalDataManager* personal_data_manager =
+      client->GetPersonalDataManager();
+  // This function is not called in incognito mode and therefore a
+  // PersonalDataManager should always exist.
+  CHECK(personal_data_manager);
+
+  // `opt_in` bool denotes whether the user is trying to opt in or out of the
+  // mandatory reauth feature. If the mandatory reauth toggle on the settings is
+  // currently enabled, then the `opt_in` bool will be false because the user is
+  // opting-out, otherwise the `opt_in` bool will be true.
+  const bool opt_in =
+      !personal_data_manager->IsPaymentMethodsMandatoryReauthEnabled();
+  LogMandatoryReauthOptInOrOutUpdateEvent(
+      MandatoryReauthOptInOrOutSource::kSettingsPage, opt_in,
+      reauth_succeeded ? MandatoryReauthAuthenticationFlowEvent::kFlowSucceeded
+                       : MandatoryReauthAuthenticationFlowEvent::kFlowFailed);
+  if (reauth_succeeded) {
     base::RecordAction(base::UserMetricsAction(
         "PaymentsUserAuthSuccessfulForMandatoryAuthToggle"));
+    personal_data_manager->SetPaymentMethodsMandatoryReauthEnabled(opt_in);
   }
 #endif
 }
@@ -922,50 +805,62 @@ AutofillPrivateAuthenticateUserToEditLocalCardFunction::Run() {
   if (!personal_data_manager || !personal_data_manager->IsDataLoaded()) {
     return RespondNow(Error(kErrorDataUnavailable));
   }
-  if (personal_data_manager->IsAutofillPaymentMethodsMandatoryReauthEnabled()) {
-    // If `device_authenticator` is not available, then don't do anything.
-    scoped_refptr<device_reauth::DeviceAuthenticator> device_authenticator =
-        client->GetDeviceAuthenticator();
-    if (!device_authenticator) {
-      return RespondNow(Error(kErrorDeviceAuthUnavailable));
-    }
-
-    // `device_authenticator` is a scoped_refptr, so we need to keep it alive
-    // until the callback that uses it is complete.
-    base::OnceClosure bind_device_authenticator =
-        base::DoNothingWithBoundArgs(device_authenticator);
+  if (personal_data_manager->IsPaymentMethodsMandatoryReauthEnabled()) {
     const std::u16string message = l10n_util::GetStringUTF16(
         IDS_PAYMENTS_AUTOFILL_EDIT_CARD_MANDATORY_REAUTH_PROMPT);
 
     base::RecordAction(base::UserMetricsAction(
         "PaymentsUserAuthTriggeredToShowEditLocalCardDialog"));
+    LogMandatoryReauthSettingsPageEditCardEvent(
+        MandatoryReauthAuthenticationFlowEvent::kFlowStarted);
     // Based on the result of the auth, we will be asynchronously returning if
     // the user can edit the local card.
-    autofill_util::AuthenticateUser(
-        device_authenticator, message,
-        base::BindOnce(&AutofillPrivateAuthenticateUserToEditLocalCardFunction::
-                           CanShowEditDialogForLocalCard,
-                       this)
-            .Then(base::IgnoreArgs(std::move(bind_device_authenticator))));
+    client->GetOrCreatePaymentsMandatoryReauthManager()
+        ->AuthenticateWithMessage(
+            message,
+            base::BindOnce(
+                &AutofillPrivateAuthenticateUserToEditLocalCardFunction::
+                    CanShowEditDialogForLocalCard,
+                this));
 
-    // Due to async nature of AuthenticateWithMessage() on device authenticator
-    // we use the below check to make sure we have a `Respond` captured. If we
-    // didn't have this check, then we would show the edit card dialog box even
-    // before the user successfully completes the auth.
+    // Due to async nature of AuthenticateWithMessage() on mandatory re-auth
+    // manager we use the below check to make sure we have a `Respond` captured.
+    // If we didn't have this check, then we would show the edit card dialog box
+    // even before the user successfully completes the auth.
     return did_respond() ? AlreadyResponded() : RespondLater();
   }
 #endif
   return RespondNow(WithArguments(true));
 }
 
-// Return the auth result for showing the edit card for local card.
+// Return the auth result for showing the edit card dialog for local card. We
+// also log whether the auth was successful or not.
 void AutofillPrivateAuthenticateUserToEditLocalCardFunction::
     CanShowEditDialogForLocalCard(bool can_show) {
+  LogMandatoryReauthSettingsPageEditCardEvent(
+      can_show ? MandatoryReauthAuthenticationFlowEvent::kFlowSucceeded
+               : MandatoryReauthAuthenticationFlowEvent::kFlowFailed);
   if (can_show) {
     base::RecordAction(base::UserMetricsAction(
         "PaymentsUserAuthSuccessfulToShowEditLocalCardDialog"));
   }
   Respond(WithArguments(can_show));
+}
+
+////////////////////////////////////////////////////////////////////////////////
+// AutofillPrivateCheckIfDeviceAuthAvailableFunction
+
+ExtensionFunction::ResponseAction
+AutofillPrivateCheckIfDeviceAuthAvailableFunction::Run() {
+#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
+  autofill::ContentAutofillClient* client =
+      autofill::ContentAutofillClient::FromWebContents(GetSenderWebContents());
+  if (client) {
+    return RespondNow(WithArguments(
+        autofill::IsDeviceAuthAvailable(client->GetDeviceAuthenticator())));
+  }
+#endif  // BUILDFLAG (IS_MAC) || BUILDFLAG(IS_WIN)
+  return RespondNow(Error(kErrorDeviceAuthUnavailable));
 }
 
 }  // namespace extensions

@@ -158,8 +158,8 @@ class ExtendedDragSourceTest : public test::ExoTestBase {
         exo_test_helper()->CreateGpuMemoryBuffer(size));
   }
 
-  raw_ptr<ash::DragDropController, ExperimentalAsh> drag_drop_controller_ =
-      nullptr;
+  raw_ptr<ash::DragDropController, DanglingUntriaged | ExperimentalAsh>
+      drag_drop_controller_ = nullptr;
   std::unique_ptr<Seat> seat_;
   std::unique_ptr<DataSource> data_source_;
   std::unique_ptr<ExtendedDragSource> extended_drag_source_;
@@ -291,38 +291,33 @@ class WindowObserverHookChecker : public aura::WindowObserver {
     dragged_window_->SetProperty(aura::client::kAppType,
                                  static_cast<int>(ash::AppType::LACROS));
   }
+
+  void OnWindowVisibilityChanging(aura::Window* window, bool visible) override {
+    if (surface_window_->GetRootWindow() &&
+        window == surface_window_->GetToplevelWindow()) {
+      OnToplevelWindowVisibilityChanging(window, visible);
+    }
+  }
+
+  void OnWindowVisibilityChanged(aura::Window* window, bool visible) override {
+    if (surface_window_->GetRootWindow() &&
+        window == surface_window_->GetToplevelWindow()) {
+      OnToplevelWindowVisibilityChanged(window, visible);
+    }
+  }
+
   MOCK_METHOD(void,
-              OnWindowVisibilityChanging,
+              OnToplevelWindowVisibilityChanging,
               (aura::Window*, bool),
-              (override));
+              ());
   MOCK_METHOD(void,
-              OnWindowVisibilityChanged,
+              OnToplevelWindowVisibilityChanged,
               (aura::Window*, bool),
-              (override));
+              ());
 
  private:
   raw_ptr<aura::Window, ExperimentalAsh> surface_window_ = nullptr;
   raw_ptr<aura::Window, ExperimentalAsh> dragged_window_ = nullptr;
-};
-
-// Differently than the window observer class above, this one observers
-// the window instance being directly provided to its ctor.
-class WindowObserverHookChecker2 : public aura::WindowObserver {
- public:
-  explicit WindowObserverHookChecker2(aura::Window* surface_window)
-      : surface_window_(surface_window) {
-    surface_window_->AddObserver(this);
-  }
-  ~WindowObserverHookChecker2() override {
-    surface_window_->RemoveObserver(this);
-  }
-  MOCK_METHOD(void,
-              OnWindowPropertyChanged,
-              (aura::Window*, const void*, intptr_t),
-              (override));
-
- private:
-  raw_ptr<aura::Window, ExperimentalAsh> surface_window_ = nullptr;
 };
 
 TEST_F(ExtendedDragSourceTest, DragSurfaceNotMappedYet) {
@@ -362,7 +357,7 @@ TEST_F(ExtendedDragSourceTest, DragSurfaceNotMappedYet) {
   // ExtendedDragSource::OnDraggedWindowVisibilityChanged()
   aura::Window* toplevel_window;
   WindowObserverHookChecker checker(detached_surface->window());
-  EXPECT_CALL(checker, OnWindowVisibilityChanging(_, _))
+  EXPECT_CALL(checker, OnToplevelWindowVisibilityChanging(_, _))
       .Times(1)
       .WillOnce(DoAll(
           SaveArg<0>(&toplevel_window), InvokeWithoutArgs([&]() {
@@ -372,7 +367,7 @@ TEST_F(ExtendedDragSourceTest, DragSurfaceNotMappedYet) {
             EXPECT_TRUE(toplevel_window->GetProperty(ash::kIsDraggingTabsKey));
           })));
 
-  EXPECT_CALL(checker, OnWindowVisibilityChanged(_, _))
+  EXPECT_CALL(checker, OnToplevelWindowVisibilityChanged(_, _))
       .Times(1)
       .WillOnce(InvokeWithoutArgs([]() {
         auto* toplevel_handler =

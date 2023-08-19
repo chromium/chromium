@@ -33,8 +33,7 @@ class ProjectorSessionImplTest : public AshTestBase {
   // AshTestBase:
   void SetUp() override {
     scoped_feature_list_.InitWithFeatures(
-        /*enabled_features=*/{features::kProjector,
-                              features::kProjectorManagedUser},
+        /*enabled_features=*/{features::kProjectorManagedUser},
         /*disabled_features=*/{});
     AshTestBase::SetUp();
     session_ = static_cast<ProjectorSessionImpl*>(ProjectorSession::Get());
@@ -42,7 +41,7 @@ class ProjectorSessionImplTest : public AshTestBase {
 
  protected:
   base::test::ScopedFeatureList scoped_feature_list_;
-  raw_ptr<ProjectorSessionImpl, ExperimentalAsh> session_;
+  raw_ptr<ProjectorSessionImpl, DanglingUntriaged | ExperimentalAsh> session_;
 };
 
 TEST_F(ProjectorSessionImplTest, Start) {

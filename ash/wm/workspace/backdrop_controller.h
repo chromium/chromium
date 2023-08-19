@@ -167,7 +167,8 @@ class ASH_EXPORT BackdropController : public AccessibilityObserver,
       nullptr;
 
   // The window for which a backdrop has been installed.
-  raw_ptr<aura::Window, ExperimentalAsh> window_having_backdrop_ = nullptr;
+  raw_ptr<aura::Window, DanglingUntriaged | ExperimentalAsh>
+      window_having_backdrop_ = nullptr;
 
   // The container of the window that should have a backdrop.
   raw_ptr<aura::Window, ExperimentalAsh> container_;
@@ -178,7 +179,8 @@ class ASH_EXPORT BackdropController : public AccessibilityObserver,
 
   // Event hanlder used to implement actions for accessibility.
   std::unique_ptr<ui::EventHandler> backdrop_event_handler_;
-  raw_ptr<ui::EventHandler, ExperimentalAsh> original_event_handler_ = nullptr;
+  raw_ptr<ui::EventHandler, DanglingUntriaged | ExperimentalAsh>
+      original_event_handler_ = nullptr;
 
   // If true, skip updating background. Used to avoid recursive update
   // when updating the window stack, or delay hiding the backdrop

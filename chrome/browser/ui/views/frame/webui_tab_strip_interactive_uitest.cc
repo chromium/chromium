@@ -269,10 +269,17 @@ INSTANTIATE_TEST_SUITE_P(/* no prefix */,
 //
 // This sequence of events would crash without the associated bugfix. More
 // detail is provided in the actual test sequence.
-//
-// Note: if this test flakes, please reopen https://crbug.com/1399655.
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+// TODO(https://crbug.com/1399655): Flaky on linux-chromeos-chrome. Reenable
+// this test when the flakiness will be resolved.
+#define MAYBE_CloseTabDuringDragDoesNotCrash \
+  DISABLED_CloseTabDuringDragDoesNotCrash
+#else
+#define MAYBE_CloseTabDuringDragDoesNotCrash CloseTabDuringDragDoesNotCrash
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 IN_PROC_BROWSER_TEST_P(WebUITabStripDragInteractiveTest,
-                       CloseTabDuringDragDoesNotCrash) {
+                       MAYBE_CloseTabDuringDragDoesNotCrash) {
   DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kSecondTabElementId);
   DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kWebUiTabStripElementId);
 

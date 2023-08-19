@@ -27,13 +27,19 @@ source_set("almanac_api_client") {
     "//components/language/core/browser",
     "//components/prefs",
     "//components/version_info",
+    "//google_apis",
+    "//services/network/public/cpp",
+    "//services/network/public/mojom",
   ]
 }
 
 source_set("unit_tests") {
   testonly = true
 
-  sources = [ "device_info_manager_unittest.cc" ]
+  sources = [
+    "almanac_api_util_unittest.cc",
+    "device_info_manager_unittest.cc",
+  ]
 
   deps = [
     ":almanac_api_client",

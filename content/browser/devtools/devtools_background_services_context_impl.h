@@ -117,7 +117,7 @@ class CONTENT_EXPORT DevToolsBackgroundServicesContextImpl
 
   void OnRecordingTimeExpired(devtools::proto::BackgroundService service);
 
-  const raw_ref<BrowserContext, DanglingUntriaged> browser_context_;
+  const raw_ref<BrowserContext, AcrossTasksDanglingUntriaged> browser_context_;
   scoped_refptr<ServiceWorkerContextWrapper> service_worker_context_;
 
   // Maps from the background service to the time up until the events can be

@@ -7,6 +7,8 @@
 #include <memory>
 
 #include "base/functional/bind.h"
+#include "base/test/scoped_mock_clock_override.h"
+#include "base/time/time.h"
 #include "ui/aura/test/aura_test_base.h"
 #include "ui/aura/test/test_windows.h"
 #include "ui/aura/window.h"
@@ -16,7 +18,16 @@
 
 namespace wm {
 
-typedef aura::test::AuraTestBase WindowUtilTest;
+namespace {
+
+int dump_count = 0;
+void FakeDumpWithoutCrashing() {
+  ++dump_count;
+}
+
+}  // namespace
+
+using WindowUtilTest = aura::test::AuraTestBase;
 
 // Test if the recreate layers does not recreate layers that have
 // already been acquired.
@@ -98,6 +109,73 @@ TEST_F(WindowUtilTest, RecreateLayersWithClosure) {
   ASSERT_EQ(2u, window1->layer()->children().size());
   EXPECT_EQ(window11->layer(), window1->layer()->children()[0]);
   EXPECT_EQ(window12->layer(), window1->layer()->children()[1]);
+}
+
+TEST_F(WindowUtilTest, NoMutationAfterCopy) {
+  base::debug::SetDumpWithoutCrashingFunction(&FakeDumpWithoutCrashing);
+  base::ScopedMockClockOverride clock;
+
+  std::unique_ptr<aura::Window> window1(
+      aura::test::CreateTestWindowWithId(0, nullptr));
+  std::unique_ptr<aura::Window> window11(
+      aura::test::CreateTestWindowWithId(1, window1.get()));
+
+  // Add and SetMaskLayer on `window1` and `window11` works before
+  // RecreateLayers.
+  {
+    std::unique_ptr<ui::Layer> layer = std::make_unique<ui::Layer>();
+    window1->layer()->Add(layer.get());
+
+    std::unique_ptr<ui::Layer> mask_layer = std::make_unique<ui::Layer>();
+    window1->layer()->SetMaskLayer(layer.get());
+
+    std::unique_ptr<ui::Layer> child_layer = std::make_unique<ui::Layer>();
+    window11->layer()->Add(child_layer.get());
+
+    std::unique_ptr<ui::Layer> child_mask_layer = std::make_unique<ui::Layer>();
+    window11->layer()->SetMaskLayer(child_mask_layer.get());
+  }
+
+  std::unique_ptr<ui::LayerTreeOwner> tree = wm::RecreateLayers(window1.get());
+
+  // Add and SetMaskLayer on `window1` and `window11` crashes after
+  // RecreateLayers.
+  {
+    ASSERT_EQ(dump_count, 0);
+
+    ui::Layer* window1_old_layer = tree->root();
+    std::unique_ptr<ui::Layer> layer = std::make_unique<ui::Layer>();
+    window1_old_layer->Add(layer.get());
+
+    std::unique_ptr<ui::Layer> mask_layer = std::make_unique<ui::Layer>();
+    window1_old_layer->SetMaskLayer(mask_layer.get());
+
+    // 2 dumps should be created from Add/SetMaskLayer calls above.
+    EXPECT_EQ(dump_count, 2);
+
+    {
+      ui::Layer* window11_old_layer = tree->root()->children().front();
+      std::unique_ptr<ui::Layer> child_layer = std::make_unique<ui::Layer>();
+      window11_old_layer->Add(child_layer.get());
+
+      // No new dumps within the 1 day interval.
+      EXPECT_EQ(dump_count, 2);
+    }
+
+    // Skip the dump blocking time.
+    clock.Advance(base::Days(1));
+
+    ui::Layer* window11_old_layer = tree->root()->children().front();
+    std::unique_ptr<ui::Layer> child_layer = std::make_unique<ui::Layer>();
+    window11_old_layer->Add(child_layer.get());
+
+    std::unique_ptr<ui::Layer> child_mask_layer = std::make_unique<ui::Layer>();
+    window11_old_layer->SetMaskLayer(child_mask_layer.get());
+
+    EXPECT_EQ(dump_count, 4);
+  }
+
+  base::debug::SetDumpWithoutCrashingFunction(nullptr);
 }
 
 }  // namespace wm

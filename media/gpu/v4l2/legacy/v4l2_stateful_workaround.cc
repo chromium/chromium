@@ -149,7 +149,7 @@ SupportResolutionChecker::CreateIfNeeded(V4L2Device::Type device_type,
     return nullptr;
   }
 
-  scoped_refptr<V4L2Device> device = V4L2Device::Create();
+  auto device = base::MakeRefCounted<V4L2Device>();
   if (!device->Open(V4L2Device::Type::kDecoder, V4L2_PIX_FMT_VP8)) {
     VPLOGF(1) << "Failed to open device for profile: " << profile
               << " fourcc: " << FourccToString(V4L2_PIX_FMT_VP8);
@@ -173,7 +173,7 @@ SupportResolutionChecker::CreateIfNeeded(V4L2Device::Type device_type,
 
   // Recreate the V4L2 device in order to close the opened decoder, since
   // we are about to query the supported decode profiles.
-  device = V4L2Device::Create();
+  device = base::MakeRefCounted<V4L2Device>();
   auto supported_profiles =
       device->GetSupportedDecodeProfiles(supported_input_fourccs);
   SupportedProfileMap supported_profile_map;
@@ -228,16 +228,16 @@ CreateV4L2StatefulWorkarounds(V4L2Device::Type device_type,
 }
 
 bool AppendVP9SuperFrameIndex(scoped_refptr<DecoderBuffer>& buffer) {
-  DCHECK_GT(buffer->side_data_size(), 0u);
+  DCHECK(buffer->has_side_data());
+  DCHECK(!buffer->side_data()->spatial_layers.empty());
 
-  const size_t num_of_layers = buffer->side_data_size() / sizeof(uint32_t);
+  const size_t num_of_layers = buffer->side_data()->spatial_layers.size();
   if (num_of_layers > 3u) {
     LOG(ERROR) << "The maximum number of spatial layers in VP9 is three";
     return false;
   }
 
-  const uint32_t* cue_data =
-      reinterpret_cast<const uint32_t*>(buffer->side_data());
+  const uint32_t* cue_data = buffer->side_data()->spatial_layers.data();
   std::vector<uint32_t> frame_sizes(cue_data, cue_data + num_of_layers);
   std::vector<uint8_t> superframe_index = CreateSuperFrameIndex(frame_sizes);
   const size_t vp9_superframe_size =

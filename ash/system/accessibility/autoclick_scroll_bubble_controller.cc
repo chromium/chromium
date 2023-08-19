@@ -210,6 +210,8 @@ void AutoclickScrollBubbleController::ShowBubble(
   init_params.preferred_width = kAutoclickScrollMenuSizeDips;
   init_params.max_height = kAutoclickScrollMenuSizeDips;
   init_params.translucent = true;
+  init_params.type = TrayBubbleView::TrayBubbleType::kAccessibilityBubble;
+
   bubble_view_ = new AutoclickScrollBubbleView(init_params);
   bubble_view_->SetArrow(alignment);
 

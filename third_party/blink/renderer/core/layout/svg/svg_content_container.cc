@@ -10,12 +10,15 @@
 #include "third_party/blink/renderer/core/layout/svg/layout_svg_image.h"
 #include "third_party/blink/renderer/core/layout/svg/layout_svg_resource_marker.h"
 #include "third_party/blink/renderer/core/layout/svg/layout_svg_shape.h"
+#include "third_party/blink/renderer/core/layout/svg/layout_svg_transformable_container.h"
 #include "third_party/blink/renderer/core/layout/svg/svg_layout_support.h"
 #include "third_party/blink/renderer/core/layout/svg/svg_resources.h"
 
 namespace blink {
 
-static void LayoutMarkerResourcesIfNeeded(LayoutObject& layout_object) {
+namespace {
+
+void LayoutMarkerResourcesIfNeeded(LayoutObject& layout_object) {
   SVGElementResourceClient* client = SVGResources::GetClient(layout_object);
   if (!client)
     return;
@@ -30,6 +33,52 @@ static void LayoutMarkerResourcesIfNeeded(LayoutObject& layout_object) {
           *client, style.MarkerEndResource()))
     marker->LayoutIfNeeded();
 }
+
+// Update a bounding box taking into account the validity of the other bounding
+// box.
+inline void UpdateObjectBoundingBox(gfx::RectF& object_bounding_box,
+                                    bool& object_bounding_box_valid,
+                                    const gfx::RectF& other_bounding_box) {
+  if (!object_bounding_box_valid) {
+    object_bounding_box = other_bounding_box;
+    object_bounding_box_valid = true;
+    return;
+  }
+  object_bounding_box.UnionEvenIfEmpty(other_bounding_box);
+}
+
+bool HasValidBoundingBoxForContainer(const LayoutObject& object) {
+  if (auto* svg_shape = DynamicTo<LayoutSVGShape>(object)) {
+    return !svg_shape->IsShapeEmpty();
+  }
+  if (auto* ng_text = DynamicTo<LayoutNGSVGText>(object)) {
+    return ng_text->IsObjectBoundingBoxValid();
+  }
+  if (auto* svg_container = DynamicTo<LayoutSVGContainer>(object)) {
+    return svg_container->IsObjectBoundingBoxValid() &&
+           !svg_container->IsSVGHiddenContainer();
+  }
+  if (auto* foreign_object = DynamicTo<LayoutNGSVGForeignObject>(object)) {
+    return foreign_object->IsObjectBoundingBoxValid();
+  }
+  if (auto* svg_image = DynamicTo<LayoutSVGImage>(object)) {
+    return svg_image->IsObjectBoundingBoxValid();
+  }
+  return false;
+}
+
+gfx::RectF ObjectBoundsForPropagation(const LayoutObject& object) {
+  gfx::RectF bounds = object.ObjectBoundingBox();
+  // The local-to-parent transform for <foreignObject> contains a zoom inverse,
+  // so we need to apply zoom to the bounding box that we use for propagation to
+  // be in the correct coordinate space.
+  if (object.IsSVGForeignObject()) {
+    bounds.Scale(object.StyleRef().EffectiveZoom());
+  }
+  return bounds;
+}
+
+}  // namespace
 
 // static
 bool SVGContentContainer::IsChildAllowed(const LayoutObject& child) {
@@ -68,12 +117,19 @@ void SVGContentContainer::Layout(const SVGContainerLayoutInfo& layout_info) {
           // FIXME: this should be done on invalidation, not during layout.
           // When the layout size changed and when using relative values tell
           // the LayoutSVGShape to update its shape object
-          if (auto* shape = DynamicTo<LayoutSVGShape>(child)) {
+          if (auto* shape = DynamicTo<LayoutSVGShape>(*child)) {
             shape->SetNeedsShapeUpdate();
-          } else if (auto* ng_text = DynamicTo<LayoutNGSVGText>(child)) {
+          } else if (auto* ng_text = DynamicTo<LayoutNGSVGText>(*child)) {
             ng_text->SetNeedsTextMetricsUpdate();
+          } else if (auto* container =
+                         DynamicTo<LayoutSVGTransformableContainer>(*child)) {
+            container->SetNeedsTransformUpdate();
           }
 
+          force_child_layout = true;
+        }
+        if (!child->NeedsLayout() &&
+            child->SVGSelfOrDescendantHasViewportDependency()) {
           force_child_layout = true;
         }
       }
@@ -122,58 +178,11 @@ bool SVGContentContainer::HitTest(HitTestResult& result,
   return false;
 }
 
-// Update a bounding box taking into account the validity of the other bounding
-// box.
-static inline void UpdateObjectBoundingBox(
-    gfx::RectF& object_bounding_box,
-    bool& object_bounding_box_valid,
-    const gfx::RectF& other_bounding_box) {
-  if (!object_bounding_box_valid) {
-    object_bounding_box = other_bounding_box;
-    object_bounding_box_valid = true;
-    return;
-  }
-  object_bounding_box.UnionEvenIfEmpty(other_bounding_box);
-}
-
-static bool HasValidBoundingBoxForContainer(const LayoutObject& object) {
-  if (object.IsSVGShape())
-    return !To<LayoutSVGShape>(object).IsShapeEmpty();
-
-  if (const auto* ng_text = DynamicTo<LayoutNGSVGText>(object))
-    return ng_text->IsObjectBoundingBoxValid();
-
-  if (auto* svg_container = DynamicTo<LayoutSVGContainer>(object)) {
-    return svg_container->IsObjectBoundingBoxValid() &&
-           !svg_container->IsSVGHiddenContainer();
-  }
-
-  if (auto* foreign_object = DynamicTo<LayoutNGSVGForeignObject>(object)) {
-    return foreign_object->IsObjectBoundingBoxValid();
-  }
-
-  if (object.IsSVGImage())
-    return To<LayoutSVGImage>(object).IsObjectBoundingBoxValid();
-
-  return false;
-}
-
-static gfx::RectF ObjectBoundsForPropagation(const LayoutObject& object) {
-  gfx::RectF bounds = object.ObjectBoundingBox();
-  // The local-to-parent transform for <foreignObject> contains a zoom inverse,
-  // so we need to apply zoom to the bounding box that we use for propagation to
-  // be in the correct coordinate space.
-  if (object.IsSVGForeignObject()) {
-    bounds.Scale(object.StyleRef().EffectiveZoom());
-  }
-  return bounds;
-}
-
 bool SVGContentContainer::UpdateBoundingBoxes(bool& object_bounding_box_valid) {
   object_bounding_box_valid = false;
 
   gfx::RectF object_bounding_box;
-  gfx::RectF stroke_bounding_box;
+  gfx::RectF decorated_bounding_box;
   for (LayoutObject* current = children_.FirstChild(); current;
        current = current->NextSibling()) {
     // Don't include elements that are not rendered.
@@ -183,14 +192,15 @@ bool SVGContentContainer::UpdateBoundingBoxes(bool& object_bounding_box_valid) {
     UpdateObjectBoundingBox(
         object_bounding_box, object_bounding_box_valid,
         transform.MapRect(ObjectBoundsForPropagation(*current)));
-    stroke_bounding_box.Union(transform.MapRect(current->StrokeBoundingBox()));
+    decorated_bounding_box.Union(
+        transform.MapRect(current->DecoratedBoundingBox()));
   }
 
   bool changed = false;
   changed |= object_bounding_box_ != object_bounding_box;
   object_bounding_box_ = object_bounding_box;
-  changed |= stroke_bounding_box_ != stroke_bounding_box;
-  stroke_bounding_box_ = stroke_bounding_box;
+  changed |= decorated_bounding_box_ != decorated_bounding_box;
+  decorated_bounding_box_ = decorated_bounding_box;
   return changed;
 }
 
@@ -204,6 +214,19 @@ bool SVGContentContainer::ComputeHasNonIsolatedBlendingDescendants() const {
       return true;
   }
   return false;
+}
+
+gfx::RectF SVGContentContainer::ComputeStrokeBoundingBox() const {
+  gfx::RectF stroke_bbox;
+  for (LayoutObject* child = children_.FirstChild(); child;
+       child = child->NextSibling()) {
+    // Don't include elements that are not rendered.
+    if (!HasValidBoundingBoxForContainer(*child)) {
+      continue;
+    }
+    stroke_bbox.Union(child->StrokeBoundingBox());
+  }
+  return stroke_bbox;
 }
 
 }  // namespace blink

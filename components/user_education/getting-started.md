@@ -42,7 +42,7 @@ platforms such as ChromeOS:
   * [BrowserView](/chrome/browser/ui/views/frame/browser_view.cc#831) - sets up
     the `FeaturePromoController`.
   * [browser_user_education_service](
-    /chrome/browser/ui/views/user_education/browser_user_education_service.h) -
+    /chrome/browser/ui/views/user_education/browser_user_education_service.cc) -
     registers Chrome-specific IPH and Tutorials.
   * Concrete implementations of abstract User Education base classes can be
     found in [c/b/ui/user_education](/chrome/browser/ui/user_education/) and

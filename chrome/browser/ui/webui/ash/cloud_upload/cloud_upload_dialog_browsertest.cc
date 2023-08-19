@@ -93,7 +93,7 @@ void CreateFakeWebApps(
   for (int i = 0; i < n; ++i) {
     std::string start_url =
         "https://www.example" + base::NumberToString(i) + ".com";
-    auto web_app_info = std::make_unique<WebAppInstallInfo>();
+    auto web_app_info = std::make_unique<web_app::WebAppInstallInfo>();
     web_app_info->start_url = GURL(start_url);
     web_app_info->scope = GURL(start_url);
     apps::FileHandler handler;
@@ -918,10 +918,10 @@ IN_PROC_BROWSER_TEST_F(FixUpFlowBrowserTest,
   }
 
   // Click through the Upload Page.
-  while (
-      !content::ExecJs(web_contents,
-                       "document.querySelector('cloud-upload').$('upload-page')"
-                       ".querySelector('.action-button').click()")) {
+  while (!content::ExecJs(
+      web_contents,
+      "document.querySelector('cloud-upload').$('complete-page')"
+      ".querySelector('.action-button').click()")) {
   }
 
   // Check that the Office PWA has been made the default for doc and xlsx files.
@@ -987,10 +987,10 @@ IN_PROC_BROWSER_TEST_F(FixUpFlowBrowserTest,
   }
 
   // Click through the Upload Page.
-  while (
-      !content::ExecJs(web_contents,
-                       "document.querySelector('cloud-upload').$('upload-page')"
-                       ".querySelector('.action-button').click()")) {
+  while (!content::ExecJs(
+      web_contents,
+      "document.querySelector('cloud-upload').$('complete-page')"
+      ".querySelector('.action-button').click()")) {
   }
 
   // Check that the default task for doc files is still Drive, and not OneDrive,

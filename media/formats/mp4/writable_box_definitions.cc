@@ -51,4 +51,17 @@ MediaData::~MediaData() = default;
 MediaData::MediaData(const MediaData&) = default;
 MediaData& MediaData::operator=(const MediaData&) = default;
 
+FileType::FileType() = default;
+FileType::~FileType() = default;
+
+FragmentRandomAccess::FragmentRandomAccess() = default;
+FragmentRandomAccess::~FragmentRandomAccess() = default;
+
+TrackFragmentRandomAccess::TrackFragmentRandomAccess() = default;
+TrackFragmentRandomAccess::~TrackFragmentRandomAccess() = default;
+TrackFragmentRandomAccess::TrackFragmentRandomAccess(
+    const TrackFragmentRandomAccess&) = default;
+TrackFragmentRandomAccess& TrackFragmentRandomAccess::operator=(
+    const TrackFragmentRandomAccess&) = default;
+
 }  // namespace media::mp4::writable_boxes

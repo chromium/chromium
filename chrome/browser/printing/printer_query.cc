@@ -143,7 +143,7 @@ void PrinterQuery::GetSettingsDone(base::OnceClosure callback,
     cookie_ = PrintSettings::NewCookie();
   } else {
     // Failure.
-    cookie_ = 0;
+    cookie_ = PrintSettings::NewInvalidCookie();
   }
 
   std::move(callback).Run();
@@ -418,6 +418,7 @@ void PrinterQuery::GetSettingsWithUI(uint32_t document_page_count,
     web_contents->ExitFullscreen(true);
   }
 
+  PRINTER_LOG(EVENT) << "Getting printer settings from user in-process";
   printing_context_->AskUserForSettings(
       base::checked_cast<int>(document_page_count), has_selection, is_scripted,
       base::BindOnce(&PrinterQuery::InvokeSettingsCallback,
@@ -427,6 +428,7 @@ void PrinterQuery::GetSettingsWithUI(uint32_t document_page_count,
 void PrinterQuery::UseDefaultSettings(SettingsCallback callback) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
+  PRINTER_LOG(EVENT) << "Using printer default settings in-process";
   mojom::ResultCode result;
   {
 #if BUILDFLAG(IS_WIN)

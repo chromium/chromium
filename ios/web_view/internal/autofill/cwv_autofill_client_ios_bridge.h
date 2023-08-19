@@ -55,7 +55,7 @@ class WebFrame;
 // Bridge for AutofillClient's method |LoadRiskData|.
 - (void)loadRiskData:(base::OnceCallback<void(const std::string&)>)callback;
 
-// Bridge for AutofillClient's method |PropagateAutofillPredictions|.
+// Bridge for AutofillClient's method |PropagateAutofillPredictionsDeprecated|.
 - (void)propagateAutofillPredictionsForForms:
             (const std::vector<autofill::FormStructure*>&)forms
                                      inFrame:(web::WebFrame*)frame;

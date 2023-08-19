@@ -7,7 +7,6 @@
 
 #include <functional>
 #include <string>
-#include <unordered_map>
 
 #include "base/containers/flat_map.h"
 #include "chrome/common/extensions/api/passwords_private.h"
@@ -67,10 +66,9 @@ class IdGenerator {
 
  private:
   // Maps credential key to id.
-  std::unordered_map<std::string, int> key_to_id_;
+  base::flat_map<std::string, int> key_to_id_;
   // Maps id to the credential.
-  std::unordered_map<int, password_manager::CredentialUIEntry>
-      id_to_credential_;
+  base::flat_map<int, password_manager::CredentialUIEntry> id_to_credential_;
   int next_id_ = 0;
 };
 

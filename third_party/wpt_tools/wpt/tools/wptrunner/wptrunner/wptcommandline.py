@@ -64,6 +64,8 @@ scheme host and port.""")
                         "directory")
     parser.add_argument("--processes", action="store", type=int, default=None,
                         help="Number of simultaneous processes to use")
+    parser.add_argument("--max-restarts", action="store", type=int, default=5,
+                        help="Maximum number of browser restart retries")
 
     parser.add_argument("--no-capture-stdio", action="store_true", default=False,
                         help="Don't capture stdio and write to logging")
@@ -166,6 +168,9 @@ scheme host and port.""")
                                       help="Do not enable WebTransport tests on experimental channels")
     test_selection_group.add_argument("--tag", action="append", dest="tags",
                                       help="Labels applied to tests to include in the run. "
+                                           "Labels starting dir: are equivalent to top-level directories.")
+    test_selection_group.add_argument("--exclude-tag", action="append", dest="exclude_tags",
+                                      help="Labels applied to tests to exclude in the run. Takes precedence over `--tag`. "
                                            "Labels starting dir: are equivalent to top-level directories.")
     test_selection_group.add_argument("--default-exclude", action="store_true",
                                       default=False,
@@ -327,8 +332,6 @@ scheme host and port.""")
                              "silently ignored for opt, mobile)")
     gecko_group.add_argument("--no-leak-check", dest="leak_check", action="store_false", default=None,
                              help="Disable leak checking")
-    gecko_group.add_argument("--stylo-threads", action="store", type=int, default=1,
-                             help="Number of parallel threads to use for stylo")
     gecko_group.add_argument("--reftest-internal", dest="reftest_internal", action="store_true",
                              default=None, help="Enable reftest runner implemented inside Marionette")
     gecko_group.add_argument("--reftest-external", dest="reftest_internal", action="store_false",
@@ -341,6 +344,10 @@ scheme host and port.""")
                              help="Enable chaos mode with the specified feature flag "
                              "(see http://searchfox.org/mozilla-central/source/mfbt/ChaosMode.h for "
                              "details). If no value is supplied, all features are activated")
+
+    gecko_view_group = parser.add_argument_group("GeckoView-specific")
+    gecko_view_group.add_argument("--setenv", dest="env", action="append", default=[],
+                                  help="Set target environment variable, like FOO=BAR")
 
     servo_group = parser.add_argument_group("Servo-specific")
     servo_group.add_argument("--user-stylesheet",
@@ -659,6 +666,11 @@ def check_args(kwargs):
     if kwargs["preload_browser"] is None:
         # Default to preloading a gecko instance if we're only running a single process
         kwargs["preload_browser"] = kwargs["processes"] == 1
+
+    if kwargs["tags"] and kwargs["exclude_tags"]:
+        contradictory = set(kwargs["tags"]) & set(kwargs["exclude_tags"])
+        if contradictory:
+            print("contradictory tags found; exclusion will take precedence:", contradictory)
 
     return kwargs
 

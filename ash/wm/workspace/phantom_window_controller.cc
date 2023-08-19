@@ -235,6 +235,7 @@ std::unique_ptr<views::Widget> PhantomWindowController::CreateMaximizeCue(
 
   ui::Layer* layer = maximize_cue_widget->GetLayer();
   layer->SetBackgroundBlur(ColorProvider::kBackgroundBlurSigma);
+  layer->SetBackdropFilterQuality(ColorProvider::kBackgroundBlurQuality);
   layer->SetRoundedCornerRadius(gfx::RoundedCornersF(kMaximizeCueHeight / 2.f));
 
   aura::Window* maximize_cue_widget_window =

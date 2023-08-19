@@ -7,7 +7,9 @@
 
 #include <map>
 #include <set>
+#include <string>
 
+#include "components/keyed_service/core/keyed_service.h"
 #include "components/prefs/pref_change_registrar.h"
 #include "url/origin.h"
 
@@ -19,12 +21,13 @@ class PrefRegistrySimple;
 class PrefService;
 
 // This class is used to maintain and interpret the
-// WebHidAllowAllDevicesForUrls, WebHidAllowDevicesForUrls, and
+// WebHidAllowAllDevicesForUrls, WebHidAllowDevicesForUrls,
+// DeviceLoginScreenWebHidAllowDevicesForUrls, and
 // WebHidAllowDevicesWithHidUsagesForUrls policies.
 //
 // A PrefChangeRegistrar is used to observe changes to the preference values so
 // that the policy can be updated in real-time.
-class HidPolicyAllowedDevices {
+class HidPolicyAllowedDevices : public KeyedService {
  public:
   using OriginSet = std::set<url::Origin>;
   using VendorPolicyMap = std::map<uint16_t, OriginSet>;
@@ -32,10 +35,11 @@ class HidPolicyAllowedDevices {
   using UsagePagePolicyMap = std::map<uint16_t, OriginSet>;
   using UsagePolicyMap = std::map<std::pair<uint16_t, uint16_t>, OriginSet>;
 
-  explicit HidPolicyAllowedDevices(PrefService* pref_service);
+  explicit HidPolicyAllowedDevices(PrefService* pref_service,
+                                   bool on_login_screen);
   HidPolicyAllowedDevices(const HidPolicyAllowedDevices&) = delete;
   HidPolicyAllowedDevices& operator=(const HidPolicyAllowedDevices&) = delete;
-  ~HidPolicyAllowedDevices();
+  ~HidPolicyAllowedDevices() override;
 
   static void RegisterLocalStatePrefs(PrefRegistrySimple* registry);
 
@@ -55,6 +59,10 @@ class HidPolicyAllowedDevices {
   void LoadAllowAllDevicesForUrlsPolicy();
   void LoadAllowDevicesForUrlsPolicy();
   void LoadAllowDevicesWithHidUsagesForUrlsPolicy();
+
+  // Stores the name of a pref that should be used by the class. It can either
+  // be the login screen or the in-session pref.
+  const std::string allow_devices_for_urls_pref_name_;
 
   PrefChangeRegistrar pref_change_registrar_;
 

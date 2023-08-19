@@ -15,6 +15,7 @@ namespace content {
 class WebContents;
 }
 
+class Browser;
 class ExtensionsToolbarButton;
 class ExtensionsRequestAccessButton;
 class ToolbarActionViewController;
@@ -35,8 +36,7 @@ class ExtensionsToolbarControls : public ToolbarIconContainerView {
     return extensions_button_;
   }
 
-  // Methods for testing.
-  ExtensionsRequestAccessButton* request_access_button_for_testing() const {
+  ExtensionsRequestAccessButton* request_access_button() const {
     return request_access_button_;
   }
 
@@ -46,7 +46,8 @@ class ExtensionsToolbarControls : public ToolbarIconContainerView {
       bool is_restricted_url,
       const std::vector<std::unique_ptr<ToolbarActionViewController>>& actions,
       extensions::PermissionsManager::UserSiteSetting site_setting,
-      content::WebContents* current_web_contents);
+      content::WebContents* current_web_contents,
+      Browser* browser);
 
   // Updates `request_access_button_` visibility given the user `site_setting`
   // and `actions` in `web_contents`.
@@ -54,6 +55,15 @@ class ExtensionsToolbarControls : public ToolbarIconContainerView {
       const std::vector<std::unique_ptr<ToolbarActionViewController>>& actions,
       extensions::PermissionsManager::UserSiteSetting site_setting,
       content::WebContents* web_contents);
+
+  // Hides the confirmation message in the request access button.
+  void ResetConfirmation();
+
+  // Returns whether the button is showing a confirmation message.
+  bool IsShowingConfirmation() const;
+
+  // Returns whether the button is showing a confirmation message for `origin`.
+  bool IsShowingConfirmationFor(const url::Origin& origin) const;
 
   // ToolbarIconContainerView:
   void UpdateAllIcons() override;

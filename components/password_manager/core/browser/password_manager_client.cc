@@ -5,8 +5,8 @@
 #include <utility>
 
 #include "components/autofill/core/common/password_generation_util.h"
-#include "components/autofill/core/common/unique_ids.h"
 #include "components/device_reauth/device_authenticator.h"
+#include "components/password_manager/core/browser/field_info_manager.h"
 #include "components/password_manager/core/browser/http_auth_manager.h"
 #include "components/password_manager/core/browser/password_form_manager_for_ui.h"
 #include "components/password_manager/core/browser/password_manager_client.h"
@@ -33,9 +33,10 @@ void PasswordManagerClient::ShowPasswordManagerErrorMessage(
     ErrorMessageFlowType flow_type,
     password_manager::PasswordStoreBackendErrorType error_type) {}
 
-void PasswordManagerClient::ShowTouchToFill(
+void PasswordManagerClient::ShowKeyboardReplacingSurface(
     PasswordManagerDriver* driver,
-    autofill::mojom::SubmissionReadinessState submission_readiness) {}
+    const SubmissionReadinessParams& submission_readiness_params,
+    bool is_webauthn_form) {}
 #endif
 
 scoped_refptr<device_reauth::DeviceAuthenticator>
@@ -153,6 +154,11 @@ favicon::FaviconService* PasswordManagerClient::GetFaviconService() {
   return nullptr;
 }
 
+password_manager::FieldInfoManager* PasswordManagerClient::GetFieldInfoManager()
+    const {
+  return nullptr;
+}
+
 network::mojom::NetworkContext* PasswordManagerClient::GetNetworkContext()
     const {
   return nullptr;
@@ -165,7 +171,7 @@ PasswordManagerClient::GetWebAuthnCredentialsDelegateForDriver(
 }
 
 #if BUILDFLAG(IS_ANDROID)
-WebAuthnCredManDelegate*
+webauthn::WebAuthnCredManDelegate*
 PasswordManagerClient::GetWebAuthnCredManDelegateForDriver(
     PasswordManagerDriver* driver) {
   return nullptr;

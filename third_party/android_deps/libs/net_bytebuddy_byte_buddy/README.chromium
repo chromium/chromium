@@ -1,11 +1,12 @@
 Name: Byte Buddy (without dependencies)
 Short Name: byte-buddy
 URL: https://github.com/raphw/byte-buddy
-Version: 1.14.4
+Version: 1.14.5
 License: Apache 2.0
-License File: NOT_SHIPPED
+License File: LICENSE
 CPEPrefix: unknown
 Security Critical: no
+Shipped: no
 
 Description:
 Byte Buddy is a Java library for creating Java classes at run time. This artifact is a build of Byte Buddy with all ASM dependencies repackaged into its own name space.

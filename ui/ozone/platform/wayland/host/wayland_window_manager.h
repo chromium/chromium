@@ -6,6 +6,7 @@
 #define UI_OZONE_PLATFORM_WAYLAND_HOST_WAYLAND_WINDOW_MANAGER_H_
 
 #include <memory>
+#include <ostream>
 
 #include "base/containers/flat_map.h"
 #include "base/memory/raw_ptr.h"
@@ -113,6 +114,8 @@ class WaylandWindowManager {
 
   // Creates a new unique gfx::AcceleratedWidget.
   gfx::AcceleratedWidget AllocateAcceleratedWidget();
+
+  void DumpState(std::ostream& out) const;
 
  private:
   raw_ptr<WaylandWindow> pointer_focused_window_ = nullptr;

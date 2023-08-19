@@ -52,6 +52,8 @@ message WebApk {
     PRIMARY_ICON_MASKABLE_DIFFERS = 15;
     SHORTCUTS_DIFFER = 16;
     SPLASH_ICON_HASH_DIFFERS = 17;
+    DARK_BACKGROUND_COLOR_DIFFERS = 18;
+    DARK_THEME_COLOR_DIFFERS = 19;
 
     reserved 4;
   }
@@ -110,6 +112,8 @@ message WebAppManifest {
   repeated ShareTarget share_targets = 17;
   repeated ShortcutItem shortcuts = 18;
   optional string id = 19;
+  optional string dark_theme_color = 20;
+  optional string dark_background_color = 21;
 
   reserved 3, 7, 8, 13 to 16;
 }

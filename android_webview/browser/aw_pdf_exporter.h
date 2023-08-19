@@ -21,6 +21,15 @@ class PrintSettings;
 
 namespace android_webview {
 
+// Native companion to Java AwPdfExporter.
+// Owned by native AwContents, which lazy-instantiates this object when
+// instructed to by the Java side.
+//
+// The Java AwPdfExporter holds a pointer to this native component but is not
+// responsible for its lifetime.
+// The Java AwPdfExporter is similarly owned by the Java AwContents.
+//
+// Lifetime: WebView
 class AwPdfExporter {
  public:
   AwPdfExporter(JNIEnv* env,

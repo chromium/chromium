@@ -45,13 +45,13 @@ TEST_F(DlpScopedFileAccessDelegateTest, TestNoSingleton) {
   base::CreateTemporaryFile(&file_path);
 
   base::test::TestFuture<file_access::ScopedFileAccess> future1;
-  delegate_->RequestFilesAccess({file_path}, GURL("example.com"),
+  delegate_->RequestFilesAccess({file_path}, GURL("https://example.com"),
                                 future1.GetCallback());
   EXPECT_TRUE(future1.Get<0>().is_allowed());
 
   fake_dlp_client_.SetFileAccessAllowed(false);
   base::test::TestFuture<file_access::ScopedFileAccess> future2;
-  delegate_->RequestFilesAccess({file_path}, GURL("example.com"),
+  delegate_->RequestFilesAccess({file_path}, GURL("https://example.com"),
                                 future2.GetCallback());
   EXPECT_FALSE(future2.Get<0>().is_allowed());
 }
@@ -64,13 +64,13 @@ TEST_F(DlpScopedFileAccessDelegateTest, TestFileAccessSingletonForUrl) {
 
   base::test::TestFuture<file_access::ScopedFileAccess> future1;
   auto* delegate = file_access::ScopedFileAccessDelegate::Get();
-  delegate->RequestFilesAccess({file_path}, GURL("example.com"),
+  delegate->RequestFilesAccess({file_path}, GURL("https://example.com"),
                                future1.GetCallback());
   EXPECT_TRUE(future1.Get<0>().is_allowed());
 
   fake_dlp_client_.SetFileAccessAllowed(false);
   base::test::TestFuture<file_access::ScopedFileAccess> future2;
-  delegate->RequestFilesAccess({file_path}, GURL("example.com"),
+  delegate->RequestFilesAccess({file_path}, GURL("https://example.com"),
                                future2.GetCallback());
   EXPECT_FALSE(future2.Get<0>().is_allowed());
 }

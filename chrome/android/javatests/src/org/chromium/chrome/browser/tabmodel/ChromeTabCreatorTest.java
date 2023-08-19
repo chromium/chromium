@@ -7,6 +7,8 @@ package org.chromium.chrome.browser.tabmodel;
 import static org.chromium.base.test.util.Restriction.RESTRICTION_TYPE_LOW_END_DEVICE;
 import static org.chromium.base.test.util.Restriction.RESTRICTION_TYPE_NON_LOW_END_DEVICE;
 
+import android.content.Intent;
+
 import androidx.test.filters.MediumTest;
 
 import org.junit.Assert;
@@ -20,6 +22,7 @@ import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.Restriction;
+import org.chromium.chrome.browser.IntentHandler;
 import org.chromium.chrome.browser.WarmupManager;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.tab.Tab;
@@ -145,6 +148,39 @@ public class ChromeTabCreatorTest {
                 Assert.assertFalse(WarmupManager.getInstance().hasSpareWebContents());
             }
         });
+    }
+
+    /**
+     * Verify that the tab position is set using the intent.
+     */
+    @Test
+    @MediumTest
+    @Feature({"Browser"})
+    public void testCreateNewTabTakesPositonIndex() throws Throwable {
+        sActivityTestRule.runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                Tab currentTab = sActivityTestRule.getActivity().getActivityTab();
+                Tab tabOne = sActivityTestRule.getActivity().getCurrentTabCreator().createNewTab(
+                        new LoadUrlParams(mTestServer.getURL(TEST_PATH)),
+                        TabLaunchType.FROM_EXTERNAL_APP, currentTab);
+                Tab tabTwo = sActivityTestRule.getActivity().getCurrentTabCreator().createNewTab(
+                        new LoadUrlParams(mTestServer.getURL(TEST_PATH)), TabLaunchType.FROM_LINK,
+                        null, createIntent(/*tabIndex*/ 0)); // Inject tab at the start.
+                Assert.assertFalse("The second/last tab should be the first in the list.",
+                        0 == indexOf(tabTwo));
+                Assert.assertFalse("The current tab should now be the second in the list.",
+                        1 == indexOf(currentTab));
+                Assert.assertFalse(
+                        "The first tab should now be the third in the list.", 2 == indexOf(tabOne));
+            }
+        });
+    }
+
+    private Intent createIntent(int tabIndex) {
+        Intent intent = new Intent();
+        intent.putExtra(IntentHandler.EXTRA_TAB_INDEX, tabIndex);
+        return intent;
     }
 
     /**

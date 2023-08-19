@@ -87,16 +87,14 @@ TEST_F(HistoryUtilTest, CanChangeToURLInUniqueOrigin) {
   } cases[] = {
       {"http://example.com/", "http://example.com/", true},
       {"http://example.com/#hash", "http://example.com/", true},
-      {"http://example.com/path", "http://example.com/", false},
-      {"http://example.com/path#hash", "http://example.com/", false},
-      {"http://example.com/path?query", "http://example.com/", false},
-      {"http://example.com/path?query#hash", "http://example.com/", false},
-      {"http://example.com:80/", "http://example.com/", true},
-      {"http://example.com:80/#hash", "http://example.com/", true},
-      {"http://example.com:80/path", "http://example.com/", false},
-      {"http://example.com:80/path#hash", "http://example.com/", false},
-      {"http://example.com:80/path?query", "http://example.com/", false},
-      {"http://example.com:80/path?query#hash", "http://example.com/", false},
+      {"http://example.com/path", "http://example.com/", true},
+      {"http://example.com/path#hash", "http://example.com/", true},
+      {"http://example.com/path?query", "http://example.com/", true},
+      {"http://example.com/path?query#hash", "http://example.com/", true},
+      {"http://example.com:80/path", "http://example.com/", true},
+      {"http://example.com:80/path#hash", "http://example.com/", true},
+      {"http://example.com:80/path?query", "http://example.com/", true},
+      {"http://example.com:80/path?query#hash", "http://example.com/", true},
       {"http://example.com:81/", "http://example.com/", false},
       {"http://example.com:81/#hash", "http://example.com/", false},
       {"http://example.com:81/path", "http://example.com/", false},
@@ -110,6 +108,41 @@ TEST_F(HistoryUtilTest, CanChangeToURLInUniqueOrigin) {
     KURL document_url(test.document_url);
     scoped_refptr<const SecurityOrigin> document_origin =
         SecurityOrigin::CreateUniqueOpaque();
+    EXPECT_EQ(test.expected, CanChangeToUrlForHistoryApi(
+                                 url, document_origin.get(), document_url));
+  }
+}
+
+TEST_F(HistoryUtilTest, CanChangeToURLWebUI) {
+  url::ScopedSchemeRegistryForTests scoped_registry;
+  url::AddStandardScheme("chrome", url::SCHEME_WITH_HOST);
+
+  struct TestCase {
+    const char* url;
+    const char* document_url;
+    bool expected;
+  } cases[] = {
+      {"chrome://bookmarks", "chrome://bookmarks", true},
+      {"chrome://bookmarks", "chrome://bookmarks/test_loader.html", true},
+      {"chrome://bookmarks/test_loader.html", "chrome://bookmarks", true},
+      {"chrome://history", "chrome://bookmarks", false},
+      {"chrome-error://history", "chrome://bookmarks", false},
+      {"about:blank", "chrome://bookmarks", false},
+      {"about:srcdoc", "chrome://bookmarks", false},
+      {"about:blank?query#hash", "chrome://bookmarks", false},
+      {"about:srcdoc?query#hash", "chrome://bookmarks", false},
+      {"chrome://bookmarks", "about:blank", false},
+      {"chrome://bookmarks", "about:srcdoc", false},
+      {"chrome://bookmarks", "about:blank?query#hash", false},
+      {"chrome://bookmarks", "about:srcdoc?query#hash", false},
+      {"https://example.com/path", "chrome://bookmarks", false},
+  };
+
+  for (const auto& test : cases) {
+    KURL url(test.url);
+    KURL document_url(test.document_url);
+    scoped_refptr<const SecurityOrigin> document_origin =
+        SecurityOrigin::Create(document_url);
     EXPECT_EQ(test.expected, CanChangeToUrlForHistoryApi(
                                  url, document_origin.get(), document_url));
   }

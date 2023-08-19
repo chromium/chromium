@@ -195,6 +195,7 @@ template("webapk_tmpl") {
       "res/drawable-xxxhdpi/shortcut_3_icon.png",
       "res/drawable-xxxhdpi/shortcut_4_icon.png",
       "res/drawable-xxxhdpi/splash_icon.xml",
+      "res/layout-night-v31/splash_screen_view.xml",
       "res/layout-v31/splash_screen_view.xml",
       "res/layout/choose_host_browser_dialog.xml",
       "res/layout/host_browser_list_item.xml",
@@ -227,6 +228,9 @@ template("webapk_tmpl") {
       "res/mipmap-xxxhdpi/maskable_app_icon.xml",
       "res/values-hdpi/is_splash_icon_maskable_bool.xml",
       "res/values-mdpi/is_splash_icon_maskable_bool.xml",
+      "res/values-night-v17/styles.xml",
+      "res/values-night-v31/dimens.xml",
+      "res/values-night-v31/styles.xml",
       "res/values-v17/styles.xml",
       "res/values-v24/default_enabled_activity.xml",
       "res/values-v31/dimens.xml",
@@ -282,10 +286,7 @@ template("webapk_tmpl") {
 
     if (!is_java_debug) {
       proguard_enabled = true
-      proguard_configs = [
-        "//chrome/android/webapk/shell_apk/proguard.flags",
-        "//chrome/android/proguard/main.flags",
-      ]
+      proguard_configs = [ "//chrome/android/webapk/shell_apk/proguard.flags" ]
     }
   }
 }
@@ -412,6 +413,7 @@ robolectric_binary("webapk_shell_apk_h2o_junit_tests") {
     "junit/src/org/chromium/webapk/shell_apk/TestBrowserInstaller.java",
     "junit/src/org/chromium/webapk/shell_apk/h2o/LaunchTest.java",
     "junit/src/org/chromium/webapk/shell_apk/h2o/SplashActivityTest.java",
+    "junit/src/org/chromium/webapk/shell_apk/h2o/SplashUtilsUnitTest.java",
   ]
   deps = [
     ":${h2o_junit_manifest_target_name}",

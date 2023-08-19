@@ -24,9 +24,9 @@
 #import "ios/web/public/navigation/navigation_manager.h"
 #import "ios/web/public/web_state.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
+// To get access to UseSessionSerializationOptimizations().
+// TODO(crbug.com/1383087): remove once the feature is fully launched.
+#import "ios/web/common/features.h"
 
 BROWSER_USER_DATA_KEY_IMPL(WebStateListMetricsBrowserAgent)
 
@@ -42,10 +42,12 @@ WebStateListMetricsBrowserAgent::WebStateListMetricsBrowserAgent(
   web_state_forwarder_.reset(
       new AllWebStateObservationForwarder(web_state_list_, this));
 
-  SessionRestorationBrowserAgent* restoration_agent =
-      SessionRestorationBrowserAgent::FromBrowser(browser);
-  if (restoration_agent) {
-    restoration_agent->AddObserver(this);
+  if (!web::features::UseSessionSerializationOptimizations()) {
+    SessionRestorationBrowserAgent* restoration_agent =
+        SessionRestorationBrowserAgent::FromBrowser(browser);
+    if (restoration_agent) {
+      restoration_agent->AddObserver(this);
+    }
   }
 }
 
@@ -60,52 +62,53 @@ void WebStateListMetricsBrowserAgent::SessionRestorationFinished(
   metric_collection_paused_ = false;
 }
 
-void WebStateListMetricsBrowserAgent::WebStateInsertedAt(
+#pragma mark - WebStateListObserver
+
+void WebStateListMetricsBrowserAgent::WebStateListWillChange(
     WebStateList* web_state_list,
-    web::WebState* web_state,
-    int index,
-    bool activating) {
-  if (metric_collection_paused_) {
+    const WebStateListChangeDetach& detach_change,
+    const WebStateListStatus& status) {
+  if (!detach_change.is_closing()) {
     return;
   }
-  base::RecordAction(base::UserMetricsAction("MobileNewTabOpened"));
-}
 
-void WebStateListMetricsBrowserAgent::WillCloseWebStateAt(
-    WebStateList* web_state_list,
-    web::WebState* web_state,
-    int index,
-    bool user_action) {
   if (metric_collection_paused_) {
     return;
   }
 
   base::TimeDelta age_at_deletion =
-      base::Time::Now() - web_state->GetCreationTime();
+      base::Time::Now() - detach_change.detached_web_state()->GetCreationTime();
   base::UmaHistogramCustomTimes("Tab.AgeAtDeletion", age_at_deletion,
                                 base::Minutes(1), base::Days(24), 50);
 
-  if (user_action) {
+  if (detach_change.is_user_action()) {
     base::RecordAction(base::UserMetricsAction("MobileTabClosed"));
   }
 }
 
-void WebStateListMetricsBrowserAgent::WebStateActivatedAt(
+void WebStateListMetricsBrowserAgent::WebStateListDidChange(
     WebStateList* web_state_list,
-    web::WebState* old_web_state,
-    web::WebState* new_web_state,
-    int active_index,
-    ActiveWebStateChangeReason reason) {
+    const WebStateListChange& change,
+    const WebStateListStatus& status) {
   if (metric_collection_paused_) {
     return;
   }
-  session_metrics_->OnWebStateActivated();
-  if (reason == ActiveWebStateChangeReason::Replaced) {
-    return;
+
+  if (change.type() == WebStateListChange::Type::kInsert) {
+    base::RecordAction(base::UserMetricsAction("MobileNewTabOpened"));
   }
 
-  base::RecordAction(base::UserMetricsAction("MobileTabSwitched"));
+  if (status.active_web_state_change()) {
+    session_metrics_->OnWebStateActivated();
+    if (change.type() == WebStateListChange::Type::kReplace) {
+      return;
+    }
+
+    base::RecordAction(base::UserMetricsAction("MobileTabSwitched"));
+  }
 }
+
+#pragma mark - WebStateObserver
 
 void WebStateListMetricsBrowserAgent::DidFinishNavigation(
     web::WebState* web_state,
@@ -148,13 +151,17 @@ void WebStateListMetricsBrowserAgent::PageLoaded(
   }
 }
 
+#pragma mark - BrowserObserver
+
 void WebStateListMetricsBrowserAgent::BrowserDestroyed(Browser* browser) {
   DCHECK_EQ(browser->GetWebStateList(), web_state_list_);
 
-  SessionRestorationBrowserAgent* restoration_agent =
-      SessionRestorationBrowserAgent::FromBrowser(browser);
-  if (restoration_agent) {
-    restoration_agent->RemoveObserver(this);
+  if (!web::features::UseSessionSerializationOptimizations()) {
+    SessionRestorationBrowserAgent* restoration_agent =
+        SessionRestorationBrowserAgent::FromBrowser(browser);
+    if (restoration_agent) {
+      restoration_agent->RemoveObserver(this);
+    }
   }
 
   web_state_forwarder_.reset(nullptr);

@@ -18,6 +18,9 @@
 #include "chrome/browser/k_anonymity_service/remote_trust_token_query_answerer.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/common/chrome_features.h"
+#include "components/signin/public/identity_manager/account_info.h"
+#include "components/signin/public/identity_manager/identity_manager.h"
+#include "components/signin/public/identity_manager/tribool.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/storage_partition.h"
 #include "crypto/sha2.h"
@@ -192,10 +195,6 @@ KAnonymityServiceClient::KAnonymityServiceClient(Profile* profile)
                     &trust_token_answerer_,
                     storage_.get()),
       profile_(profile) {
-  // We are currently relying on callers of this service to limit which users
-  // are allowed to use this service. No children should use this service
-  // since we are not approved to process their data.
-  DCHECK(!profile->IsChild());
   join_origin_ =
       url::Origin::Create(GURL(features::kKAnonymityServiceJoinServer.Get()));
   DCHECK(!join_origin_.opaque());
@@ -206,8 +205,27 @@ KAnonymityServiceClient::KAnonymityServiceClient(Profile* profile)
 
 KAnonymityServiceClient::~KAnonymityServiceClient() = default;
 
+bool KAnonymityServiceClient::CanUseKAnonymityService(Profile* profile) {
+  signin::IdentityManager* identity_manager =
+      IdentityManagerFactory::GetForProfile(profile);
+  if (!identity_manager) {
+    return false;
+  }
+  const AccountInfo account_info = identity_manager->FindExtendedAccountInfo(
+      identity_manager->GetPrimaryAccountInfo(signin::ConsentLevel::kSignin));
+  auto capability =
+      account_info.capabilities.can_run_chrome_privacy_sandbox_trials();
+  return capability == signin::Tribool::kTrue;
+}
+
 void KAnonymityServiceClient::JoinSet(std::string id,
                                       base::OnceCallback<void(bool)> callback) {
+  if (!CanUseKAnonymityService(profile_)) {
+    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+        FROM_HERE, base::BindOnce(std::move(callback), false));
+    return;
+  }
+
   RecordJoinSetAction(KAnonymityServiceJoinSetAction::kJoinSet);
 
   // Fail immediately if the queue is full.
@@ -428,6 +446,12 @@ void KAnonymityServiceClient::DoJoinSetCallback(bool status) {
 void KAnonymityServiceClient::QuerySets(
     std::vector<std::string> set_ids,
     base::OnceCallback<void(std::vector<bool>)> callback) {
+  if (!CanUseKAnonymityService(profile_)) {
+    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+        FROM_HERE, base::BindOnce(std::move(callback), std::vector<bool>()));
+    return;
+  }
+
   RecordQuerySetAction(KAnonymityServiceQuerySetAction::kQuerySet);
   RecordQuerySetSize(set_ids.size());
 

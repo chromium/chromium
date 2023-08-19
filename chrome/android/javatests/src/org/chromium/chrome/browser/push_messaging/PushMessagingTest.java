@@ -6,7 +6,6 @@ package org.chromium.chrome.browser.push_messaging;
 
 import static androidx.test.espresso.matcher.ViewMatchers.assertThat;
 
-import android.annotation.SuppressLint;
 import android.app.Notification;
 import android.os.Bundle;
 import android.util.Pair;
@@ -33,7 +32,7 @@ import org.chromium.chrome.browser.notifications.NotificationTestRule;
 import org.chromium.chrome.browser.permissions.PermissionTestRule;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
-import org.chromium.chrome.test.util.browser.Features;
+import org.chromium.chrome.test.util.browser.Features.DisableFeatures;
 import org.chromium.chrome.test.util.browser.TabTitleObserver;
 import org.chromium.components.browser_ui.notifications.MockNotificationManagerProxy.NotificationEntry;
 import org.chromium.components.content_settings.ContentSettingValues;
@@ -50,11 +49,9 @@ import java.util.concurrent.TimeoutException;
 /**
  * Instrumentation tests for the Push API and the integration with the Notifications API on Android.
  */
-// TODO(mvanouwerkerk): remove @SuppressLint once crbug.com/501900 is fixed.
 @RunWith(ChromeJUnit4ClassRunner.class)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
-@Features.DisableFeatures({ChromeFeatureList.PUSH_MESSAGING_DISALLOW_SENDER_IDS})
-@SuppressLint("NewApi")
+@DisableFeatures({ChromeFeatureList.PUSH_MESSAGING_DISALLOW_SENDER_IDS})
 public class PushMessagingTest implements PushMessagingServiceObserver.Listener {
     @Rule
     public EmbeddedTestServerRule mEmbeddedTestServerRule = new EmbeddedTestServerRule();
@@ -66,7 +63,6 @@ public class PushMessagingTest implements PushMessagingServiceObserver.Listener 
             "/chrome/test/data/push_messaging/push_messaging_test_android.html";
     private static final String ABOUT_BLANK = "about:blank";
     private static final int TITLE_UPDATE_TIMEOUT_SECONDS = 5;
-    private static final String PRIVATE_DATA_DIRECTORY_SUFFIX = "chrome";
 
     private final CallbackHelper mMessageHandledHelper;
     private String mPushTestPage;

@@ -9,7 +9,6 @@ import android.view.View;
 
 import androidx.annotation.Nullable;
 import androidx.annotation.StringRes;
-import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.ApplicationStatus;
 import org.chromium.chrome.browser.ChromeTabbedActivity;
@@ -39,7 +38,6 @@ import java.util.List;
  */
 public class TabGroupUtils {
     private static TabModelSelectorTabObserver sTabModelSelectorTabObserver;
-    private static final String TAB_GROUP_TITLES_FILE_NAME = "tab_group_titles";
 
     public static void maybeShowIPH(@FeatureConstants String featureName, View view,
             @Nullable BottomSheetController bottomSheetController) {
@@ -181,7 +179,6 @@ public class TabGroupUtils {
         return tabModel.indexOf(tabs.get(tabs.size() - 1));
     }
 
-    @VisibleForTesting
     public static void triggerAssertionForTesting() {
         assert false;
     }

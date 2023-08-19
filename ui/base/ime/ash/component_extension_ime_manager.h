@@ -11,6 +11,7 @@
 
 #include "base/component_export.h"
 #include "base/files/file_path.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/ime/ash/component_extension_ime_manager_delegate.h"
 #include "ui/base/ime/ash/input_method_descriptor.h"
 
@@ -28,6 +29,7 @@ struct COMPONENT_EXPORT(UI_BASE_IME_ASH) ComponentExtensionEngine {
   std::string indicator;
   std::vector<std::string> language_codes;  // e.g. "en".
   std::string layout;
+  absl::optional<std::string> handwriting_language;
   GURL options_page_url;
   GURL input_view_url;
 };
@@ -48,7 +50,7 @@ struct COMPONENT_EXPORT(UI_BASE_IME_ASH) ComponentExtensionIME {
 // This class manages component extension input method.
 class COMPONENT_EXPORT(UI_BASE_IME_ASH) ComponentExtensionIMEManager {
  public:
-  ComponentExtensionIMEManager(
+  explicit ComponentExtensionIMEManager(
       std::unique_ptr<ComponentExtensionIMEManagerDelegate> delegate);
 
   ComponentExtensionIMEManager(const ComponentExtensionIMEManager&) = delete;
@@ -84,7 +86,7 @@ class COMPONENT_EXPORT(UI_BASE_IME_ASH) ComponentExtensionIMEManager {
 
  private:
   // Finds ComponentExtensionIME and EngineDescription associated with
-  // |input_method_id|. This function retruns true if it is found, otherwise
+  // |input_method_id|. This function returns true if it is found, otherwise
   // returns false. |out_extension| and |out_engine| can be nullptr.
   bool FindEngineEntry(const std::string& input_method_id,
                        ComponentExtensionIME* out_extension);

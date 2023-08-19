@@ -9,10 +9,8 @@ import "mojo/public/mojom/base/string16.mojom";
 import "mojo/public/mojom/base/values.mojom";
 import "mojo/public/mojom/base/unguessable_token.mojom";
 import "printing/mojom/print.mojom";
-import "ui/gfx/geometry/mojom/geometry.mojom";
-
-[EnableIf=enable_tagged_pdf]
 import "ui/accessibility/mojom/ax_tree_update.mojom";
+import "ui/gfx/geometry/mojom/geometry.mojom";
 
 // Preview Ids, the id of the preview request and the print preview ui
 // associated with this request.
@@ -76,7 +74,7 @@ struct DidStartPreviewParams {
   // number of pages per sheet and should be greater or equal to 1.
   int32 pages_per_sheet;
   // Physical size of the page, including non-printable margins.
-  gfx.mojom.Size page_size;
+  gfx.mojom.SizeF page_size;
   // Scaling % to fit to page
   int32 fit_to_page_scaling;
 };
@@ -104,16 +102,16 @@ struct DidPreviewDocumentParams {
 // Parameters for a render request.
 struct PrintParams {
   // Physical size of the page, including non-printable margins,
-  // in pixels according to dpi.
-  gfx.mojom.Size page_size;
-  // In pixels according to dpi.
-  gfx.mojom.Size content_size;
-  // Physical printable area of the page in pixels according to dpi.
-  gfx.mojom.Rect printable_area;
-  // The y-offset of the printable area, in pixels according to dpi.
-  int32 margin_top = 0;
-  // The x-offset of the printable area, in pixels according to dpi.
-  int32 margin_left = 0;
+  // in device pixels.
+  gfx.mojom.SizeF page_size;
+  // In device pixels.
+  gfx.mojom.SizeF content_size;
+  // Physical printable area of the page in device pixels.
+  gfx.mojom.RectF printable_area;
+  // The y-offset of the printable area, in device pixels.
+  float margin_top = 0;
+  // The x-offset of the printable area, in device pixels.
+  float margin_left = 0;
   // Specifies the page orientation.
   PageOrientation page_orientation = kUpright;
   // Specifies dots per inch in the x and y direction.
@@ -124,8 +122,6 @@ struct PrintParams {
   int32 document_cookie = 0;
   // Should only print currently selected text.
   bool selection_only = false;
-  // Does the printer support alpha blending?
-  bool supports_alpha_blend = false;
 
   // *** Parameters in this section are used only for Print Preview. ***
   // The print preview ui associated with this request.
@@ -166,6 +162,9 @@ struct PrintParams {
   // Defaults to 1 if the feature is disabled, and some number greater
   // than 1 otherwise.  See printing::NupParameters for supported values.
   uint32 pages_per_sheet = 1;
+  // Whether tagged (accessible) PDF should be generated. No value assumes
+  // embedder choice provided by PrintRenderFrameHelper delegate.
+  bool? generate_tagged_pdf;
 };
 
 // Parameters for a print setting that has parameters for a print request and an
@@ -270,7 +269,7 @@ interface PrintPreviewUI {
   // additionally has a custom orientation on ALL pages, otherwise false.
   [EnableIf=enable_print_preview]
   DidGetDefaultPageLayout(PageSizeMargins page_layout_in_points,
-      gfx.mojom.Rect printable_area_in_points,
+      gfx.mojom.RectF printable_area_in_points,
       bool all_pages_have_custom_size,
       bool all_pages_have_custom_orientation,
       int32 request_id);
@@ -280,6 +279,11 @@ interface PrintPreviewUI {
   DidStartPreview(DidStartPreviewParams params, int32 request_id);
 };
 
+struct PrintWithParamsResultData {
+  DidPrintDocumentParams params;
+  ax.mojom.AXTreeUpdate accessibility_tree;
+};
+
 enum PrintFailureReason {
   kGeneralFailure,
   kInvalidPageRange,
@@ -287,7 +291,7 @@ enum PrintFailureReason {
 };
 
 union PrintWithParamsResult {
-  DidPrintDocumentParams params;
+  PrintWithParamsResultData data;
   PrintFailureReason failure_reason;
 };
 
@@ -425,9 +429,7 @@ interface PrintManagerHost {
   CheckForCancel(int32 preview_ui_id, int32 request_id) => (bool cancel);
 
   // Sends the accessibility tree corresponding to a document being
-  // printed, needed for a tagged (accessible) PDF. Note that
-  // enable_print_preview must be set to true as well, but Mojo cannot express
-  // that. Instead, this dependency is enforced by GN.
-  [EnableIf=enable_tagged_pdf]
+  // printed, needed for a tagged (accessible) PDF.
+  [EnableIf=enable_print_preview]
   SetAccessibilityTree(int32 cookie, ax.mojom.AXTreeUpdate accessibility_tree);
 };

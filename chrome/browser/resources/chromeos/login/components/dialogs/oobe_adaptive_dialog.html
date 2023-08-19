@@ -49,7 +49,7 @@ found in the LICENSE file.
     no-lazy           - prevents lazy instantiation of the dialog.
 -->
 
-<style include="oobe-dialog-host-styles cr-shared-style">
+<style include="oobe-dialog-host-styles cr-shared-style cros-color-overrides">
   /* Please check whether |multidevice_setup/ui_page.html| needs to be */
   /* updated when below css rules are changed. */
   :host {
@@ -121,6 +121,8 @@ found in the LICENSE file.
   }
 
   #header-container {
+    max-height: 100%;
+    overflow-y: auto;
     padding-bottom: 0;
     padding-inline-end: var(--oobe-adaptive-dialog-content-padding);
     padding-inline-start: var(--oobe-adaptive-dialog-content-padding);
@@ -161,18 +163,45 @@ found in the LICENSE file.
   #oobe-title {
     padding-top: var(--oobe-adaptive-dialog-title-top-padding);
   }
+  :host-context(.jelly-enabled) #oobe-title {
+    padding-top: var(--oobe-adaptive-dialog-item-vertical-padding);
+  }
+
+  #oobe-progress ::slotted(*) {
+    margin-top: 32px;
+  }
+  :host-context(.jelly-enabled) #oobe-progress ::slotted(*) {
+    margin-top: var(--oobe-adaptive-dialog-item-vertical-padding);
+  }
 
   #oobe-progress ::slotted(paper-progress) {
     /* TODO(https://crbug.com/1320715) Revise the colors */
     --paper-progress-active-color: var(--cros-slider-color-active);
     --paper-progress-container-color: var(--cros-slider-track-color-active);
     height: 4px;
-    margin-top: 32px;
     width: 100%;
+  }
+  :host-context(.jelly-enabled) #oobe-progress ::slotted(paper-progress) {
+    --paper-progress-active-color: var(--cros-sys-primary);
+    --paper-progress-container-color: var(--cros-sys-primary_container);
   }
 
   #oobe-subtitle {
     padding-top: 16px;
+  }
+  /* Avoid applying the padding twice if there's no text */
+  :host-context(.jelly-enabled) #oobe-subtitle {
+    padding-top: 0;
+  }
+  :host-context(.jelly-enabled) #oobe-subtitle ::slotted(*) {
+    padding-top: var(--oobe-adaptive-dialog-item-vertical-padding);
+  }
+
+  #oobe-subtitle-illustration ::slotted(*) {
+    padding-top: 16px;
+  }
+  :host-context(.jelly-enabled) #oobe-subtitle-illustration ::slotted(*) {
+    padding-top: var(--oobe-adaptive-dialog-item-vertical-padding);
   }
 
   #contentContainer {
@@ -188,21 +217,23 @@ found in the LICENSE file.
     flex-direction: column;
   }
 
-  .bottom-buttons-container {
+  .buttons-common {
     /* Always allocate height for buttons even a container is empty */
-    min-height: var(--oobe-button-height);
+    /* Compensate for 2*1px border of buttons */
+    min-height: calc(var(--oobe-button-height) + 2px);
+    z-index: 1;
+  }
+
+  .bottom-buttons-container {
     padding-bottom: var(--oobe-adaptive-dialog-buttons-vertical-padding);
     padding-inline-end:
       var(--oobe-adaptive-dialog-buttons-horizontal-padding);
     padding-inline-start:
       var(--oobe-adaptive-dialog-buttons-horizontal-padding);
     padding-top: var(--oobe-adaptive-dialog-buttons-vertical-padding);
-    z-index: 1;
   }
 
   .back-button-container {
-    /* Always allocate height for buttons even a container is empty */
-    min-height: var(--oobe-button-height);
     padding-bottom:
       var(--oobe-adaptive-dialog-back-button-vertical-padding);
     padding-inline-end:
@@ -210,19 +241,18 @@ found in the LICENSE file.
     padding-inline-start:
       var(--oobe-adaptive-dialog-back-button-horizontal-padding);
     padding-top: var(--oobe-adaptive-dialog-back-button-vertical-padding);
-    z-index: 1;
   }
 
   #oobe-icon-div ::slotted(hd-iron-icon),
   #oobe-icon-div ::slotted(iron-icon) {
     --iron-icon-height: var(--oobe-adaptive-dialog-icon-size);
     --iron-icon-width: var(--oobe-adaptive-dialog-icon-size);
-    --iron-icon-fill-color: var(--cros-icon-color-blue);
+    --iron-icon-fill-color: var(--oobe-adaptive-dialog-icon-fill-color);
   }
 </style>
 <cr-lazy-render id="lazy">
   <template>
-    <div class="back-button-container">
+    <div class="buttons-common back-button-container">
       <slot name="back-navigation"></slot>
     </div>
     <div id="main-container" class="layout vertical flex">
@@ -238,6 +268,9 @@ found in the LICENSE file.
         </div>
         <div id="oobe-subtitle" class="vertical-mode-centering">
           <slot name="subtitle"></slot>
+        </div>
+        <div id="oobe-subtitle-illustration" class="vertical-mode-centering">
+          <slot name="subtitle-illustration"></slot>
         </div>
       </div>
       <div id="scrollContainer" class="layout vertical flex scrollable"
@@ -255,7 +288,8 @@ found in the LICENSE file.
         </div>
       </div>
     </div>
-    <div class="bottom-buttons-container vertical-mode-centering">
+    <div class="buttons-common bottom-buttons-container
+        vertical-mode-centering">
       <slot class="layout horizontal end-justified" name="bottom-buttons"
           hidden="[[showReadMoreButton_]]">
       </slot>

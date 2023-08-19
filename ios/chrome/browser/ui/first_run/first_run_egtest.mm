@@ -8,9 +8,12 @@
 #import "base/strings/sys_string_conversions.h"
 #import "components/policy/core/common/policy_loader_ios_constants.h"
 #import "components/policy/policy_constants.h"
-#import "components/signin/internal/identity_manager/account_capabilities_constants.h"
 #import "components/signin/ios/browser/features.h"
-#import "components/signin/public/base/signin_metrics.h"
+#import "components/signin/public/base/consent_level.h"
+#import "components/sync/base/features.h"
+#import "components/sync/base/user_selectable_type.h"
+#import "components/sync/service/sync_prefs.h"
+#import "components/unified_consent/pref_names.h"
 #import "ios/chrome/browser/metrics/metrics_app_interface.h"
 #import "ios/chrome/browser/policy/policy_earl_grey_utils.h"
 #import "ios/chrome/browser/policy/policy_util.h"
@@ -20,6 +23,7 @@
 #import "ios/chrome/browser/signin/fake_system_identity.h"
 #import "ios/chrome/browser/ui/authentication/signin/signin_constants.h"
 #import "ios/chrome/browser/ui/authentication/signin_earl_grey.h"
+#import "ios/chrome/browser/ui/authentication/signin_earl_grey_app_interface.h"
 #import "ios/chrome/browser/ui/authentication/signin_earl_grey_ui_test_util.h"
 #import "ios/chrome/browser/ui/authentication/signin_matchers.h"
 #import "ios/chrome/browser/ui/bookmarks/bookmark_earl_grey.h"
@@ -33,6 +37,7 @@
 #import "ios/chrome/grit/ios_strings.h"
 #import "ios/chrome/test/earl_grey/chrome_actions.h"
 #import "ios/chrome/test/earl_grey/chrome_earl_grey.h"
+#import "ios/chrome/test/earl_grey/chrome_earl_grey_app_interface.h"
 #import "ios/chrome/test/earl_grey/chrome_earl_grey_ui.h"
 #import "ios/chrome/test/earl_grey/chrome_matchers.h"
 #import "ios/chrome/test/earl_grey/chrome_test_case.h"
@@ -41,10 +46,7 @@
 #import "ios/testing/earl_grey/app_launch_manager.h"
 #import "ios/testing/earl_grey/earl_grey_test.h"
 #import "ui/base/l10n/l10n_util.h"
-
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
+#import "ui/base/test/ios/ui_image_test_utils.h"
 
 namespace {
 
@@ -66,18 +68,29 @@ NSString* const kSyncPassphrase = @"hello";
 
 // Returns matcher for the primary action button.
 id<GREYMatcher> PromoStylePrimaryActionButtonMatcher() {
-  return grey_accessibilityID(kPromoStylePrimaryActionAccessibilityIdentifier);
+  return grey_allOf(
+      grey_accessibilityID(kPromoStylePrimaryActionAccessibilityIdentifier),
+      grey_sufficientlyVisible(), nil);
+}
+
+// Returns matcher for the sync encryption action button.
+id<GREYMatcher> SyncEncryptionButtonMatcher() {
+  return grey_allOf(chrome_test_util::ButtonWithAccessibilityLabelId(
+                        IDS_IOS_MANAGE_SYNC_ENCRYPTION),
+                    grey_sufficientlyVisible(), nil);
 }
 
 // Returns matcher for the secondary action button.
 id<GREYMatcher> PromoStyleSecondaryActionButtonMatcher() {
-  return grey_accessibilityID(
-      kPromoStyleSecondaryActionAccessibilityIdentifier);
+  return grey_allOf(
+      grey_accessibilityID(kPromoStyleSecondaryActionAccessibilityIdentifier),
+      grey_sufficientlyVisible(), nil);
 }
 
 // Returns matcher for UMA manage link.
 id<GREYMatcher> ManageUMALinkMatcher() {
-  return grey_accessibilityLabel(@"Manage");
+  return grey_allOf(grey_accessibilityLabel(@"Manage"),
+                    grey_sufficientlyVisible(), nil);
 }
 
 // Returns matcher for the button to open the Sync settings.
@@ -85,31 +98,17 @@ id<GREYMatcher> GetSyncSettings() {
   id<GREYMatcher> disclaimer =
       grey_accessibilityID(kPromoStyleDisclaimerViewAccessibilityIdentifier);
   return grey_allOf(grey_accessibilityLabel(@"settings"),
-                    grey_ancestor(disclaimer), nil);
+                    grey_ancestor(disclaimer), grey_sufficientlyVisible(), nil);
 }
 
 // Dismiss default browser promo.
 void DismissDefaultBrowserPromo() {
-  id<GREYMatcher> buttonMatcher = nil;
-
-  // TODO(crbug.com/1418068): Simplify after minimum version required is >=
-  // iOS 15.
-  if (base::ios::IsRunningOnIOS15OrLater() &&
-      [ChromeEarlGrey isUIButtonConfigurationEnabled]) {
-    buttonMatcher = grey_allOf(
-        grey_ancestor(grey_accessibilityID(
-            first_run::kFirstRunDefaultBrowserScreenAccessibilityIdentifier)),
-        grey_accessibilityLabel(l10n_util::GetNSString(
-            IDS_IOS_FIRST_RUN_DEFAULT_BROWSER_SCREEN_SECONDARY_ACTION)),
-        grey_kindOfClassName(@"UILabel"), nil);
-  } else {
-    buttonMatcher = grey_allOf(
-        grey_ancestor(grey_accessibilityID(
-            first_run::kFirstRunDefaultBrowserScreenAccessibilityIdentifier)),
-        grey_accessibilityLabel(l10n_util::GetNSString(
-            IDS_IOS_FIRST_RUN_DEFAULT_BROWSER_SCREEN_SECONDARY_ACTION)),
-        nil);
-  }
+  id<GREYMatcher> buttonMatcher = grey_allOf(
+      grey_ancestor(grey_accessibilityID(
+          first_run::kFirstRunDefaultBrowserScreenAccessibilityIdentifier)),
+      grey_accessibilityLabel(l10n_util::GetNSString(
+          IDS_IOS_FIRST_RUN_DEFAULT_BROWSER_SCREEN_SECONDARY_ACTION)),
+      nil);
 
   [[[EarlGrey selectElementWithMatcher:buttonMatcher]
       assertWithMatcher:grey_notNil()] performAction:grey_tap()];
@@ -145,6 +144,22 @@ void DismissDefaultBrowserPromo() {
                        syncTimeout:syncher::kSyncUKMOperationsTimeout];
   [ChromeEarlGrey clearSyncServerData];
 
+  // Clear sync prefs for data types.
+  [ChromeEarlGreyAppInterface
+      clearUserPrefWithName:base::SysUTF8ToNSString(
+                                syncer::SyncPrefs::GetPrefNameForTypeForTesting(
+                                    syncer::UserSelectableType::kTabs))];
+  [ChromeEarlGreyAppInterface
+      clearUserPrefWithName:base::SysUTF8ToNSString(
+                                syncer::SyncPrefs::GetPrefNameForTypeForTesting(
+                                    syncer::UserSelectableType::kHistory))];
+
+  // Clear MSBB consent.
+  [ChromeEarlGreyAppInterface
+      clearUserPrefWithName:base::SysUTF8ToNSString(
+                                unified_consent::prefs::
+                                    kUrlKeyedAnonymizedDataCollectionEnabled)];
+
   [super tearDown];
 }
 
@@ -156,6 +171,23 @@ void DismissDefaultBrowserPromo() {
   config.additional_args.push_back("true");
   // Relaunch app at each test to rewind the startup state.
   config.relaunch_policy = ForceRelaunchByKilling;
+
+  if ([self isRunningTest:@selector(testHistorySyncSkipIfNoSignIn)] ||
+      [self isRunningTest:@selector(testHistorySyncShownAfterSignIn)] ||
+      [self isRunningTest:@selector
+            (testSignInSubtitleIfHistorySyncOptInEnabled)] ||
+      [self
+          isRunningTest:@selector(testHistorySyncConsentGrantedAfterConfirm)] ||
+      [self isRunningTest:@selector
+            (testHistorySyncConsentNotGrantedAfterReject)] ||
+      [self isRunningTest:@selector(testHistorySyncSkipIfSyncDisabled)] ||
+      [self isRunningTest:@selector(testHistorySyncSkipIfTabsSyncDisabled)] ||
+      [self isRunningTest:@selector
+            (testHistorySyncShownIfBookmarksSyncDisabled)] ||
+      [self isRunningTest:@selector(testHistorySyncLayout)]) {
+    config.features_enabled.push_back(
+        syncer::kReplaceSyncPromosWithSignInPromos);
+  }
 
   return config;
 }
@@ -446,56 +478,6 @@ void DismissDefaultBrowserPromo() {
   [SigninEarlGrey verifySyncUIEnabled:NO];
 }
 
-// Tests that the histogram is called when user taps on the instruction view
-// from the Tangible Sync screen.
-- (void)testHistogramCalledWhenTangibleSyncInstructionViewTapped {
-  // Setup histogram tester.
-  GREYAssertNil([MetricsAppInterface setupHistogramTester],
-                @"Cannot setup histogram tester.");
-  // Add identity.
-  FakeSystemIdentity* fakeIdentity = [FakeSystemIdentity fakeIdentity1];
-  [SigninEarlGrey addFakeIdentity:fakeIdentity];
-  // Verify 2 step FRE.
-  [self verifyEnterpriseWelcomeScreenIsDisplayedWithFRESigninIntent:
-            FRESigninIntentRegular];
-  // Accept sign-in.
-  [[self
-      elementInteractionWithGreyMatcher:PromoStylePrimaryActionButtonMatcher()
-                   scrollViewIdentifier:
-                       kPromoStyleScrollViewAccessibilityIdentifier]
-      performAction:grey_tap()];
-  // Wait for the sync screen.
-  [ChromeEarlGrey
-      waitForUIElementToAppearWithMatcher:
-          grey_accessibilityID(kTangibleSyncViewAccessibilityIdentifier)];
-  // Check that UMA is on.
-  GREYAssertTrue(
-      [FirstRunAppInterface isUMACollectionEnabled],
-      @"kMetricsReportingEnabled pref was unexpectedly false by default.");
-  // Tap on the instructions views and test histogram calls.
-  [self
-      verifyHistogramWhenInstructionTappedAtIndex:0
-                                 previousTapCount:0
-                                   expectedMetric:signin_metrics::
-                                                      SigninSyncConsentDataRow::
-                                                          kBookmarksRowTapped];
-  [self
-      verifyHistogramWhenInstructionTappedAtIndex:1
-                                 previousTapCount:1
-                                   expectedMetric:signin_metrics::
-                                                      SigninSyncConsentDataRow::
-                                                          kAutofillRowTapped];
-  [self
-      verifyHistogramWhenInstructionTappedAtIndex:2
-                                 previousTapCount:2
-                                   expectedMetric:signin_metrics::
-                                                      SigninSyncConsentDataRow::
-                                                          kHistoryRowTapped];
-  // Release histogram tester.
-  GREYAssertNil([MetricsAppInterface releaseHistogramTester],
-                @"Cannot reset histogram tester.");
-}
-
 // Tests accepting sync with 2 datatype disabled.
 - (void)testAdvancedSettingsAndDisableTwoDataTypes {
   // Add identity.
@@ -600,9 +582,7 @@ void DismissDefaultBrowserPromo() {
   [[EarlGrey selectElementWithMatcher:GetSyncSettings()]
       performAction:grey_tap()];
   // Select Encryption item.
-  [[self elementInteractionWithGreyMatcher:
-             chrome_test_util::ButtonWithAccessibilityLabelId(
-                 IDS_IOS_MANAGE_SYNC_ENCRYPTION)
+  [[self elementInteractionWithGreyMatcher:SyncEncryptionButtonMatcher()
                       scrollViewIdentifier:
                           kManageSyncTableViewAccessibilityIdentifier]
       performAction:grey_tap()];
@@ -886,13 +866,8 @@ void DismissDefaultBrowserPromo() {
   FakeSystemIdentity* fakeSupervisedIdentity =
       [FakeSystemIdentity fakeIdentity1];
   [SigninEarlGrey addFakeIdentity:fakeSupervisedIdentity];
-
-  ios::CapabilitiesDict* capabilities = @{
-    @(kIsSubjectToParentalControlsCapabilityName) :
-        @(static_cast<int>(SystemIdentityCapabilityResult::kTrue))
-  };
-  [SigninEarlGrey setCapabilities:capabilities
-                      forIdentity:fakeSupervisedIdentity];
+  [SigninEarlGrey setIsSubjectToParentalControls:YES
+                                     forIdentity:fakeSupervisedIdentity];
 
   // Verify 2 step FRE.
   [self verifyEnterpriseWelcomeScreenIsDisplayedWithFRESigninIntent:
@@ -924,6 +899,327 @@ void DismissDefaultBrowserPromo() {
   DismissDefaultBrowserPromo();
   [ChromeEarlGreyUI openSettingsMenu];
   [SigninEarlGrey verifySyncUIEnabled:YES];
+}
+
+#pragma mark - History Sync Opt-in
+
+// Tests if the user skip the Sign-in step, the History Sync Opt-in screen is
+// skipped and the default browser screen is shown.
+- (void)testHistorySyncSkipIfNoSignIn {
+  // Skip sign-in.
+  [[self
+      elementInteractionWithGreyMatcher:PromoStyleSecondaryActionButtonMatcher()
+                   scrollViewIdentifier:
+                       kPromoStyleScrollViewAccessibilityIdentifier]
+      performAction:grey_tap()];
+  [SigninEarlGrey verifySignedOut];
+  // Verify that the History Sync Opt-In screen is hidden.
+  [[EarlGrey
+      selectElementWithMatcher:grey_accessibilityID(
+                                   kHistorySyncViewAccessibilityIdentifier)]
+      assertWithMatcher:grey_nil()];
+  // Verify that the default browser choice screen is shown.
+  [[EarlGrey
+      selectElementWithMatcher:
+          grey_accessibilityID(
+              first_run::kFirstRunDefaultBrowserScreenAccessibilityIdentifier)]
+      assertWithMatcher:grey_sufficientlyVisible()];
+}
+
+// Tests if the user signs in with the first screen, the History Sync Opt-In
+// screen is shown next.
+- (void)testHistorySyncShownAfterSignIn {
+  // Add identity.
+  FakeSystemIdentity* fakeIdentity = [FakeSystemIdentity fakeIdentity1];
+  [SigninEarlGrey addFakeIdentity:fakeIdentity];
+  // Accept sign-in.
+  [[self
+      elementInteractionWithGreyMatcher:PromoStylePrimaryActionButtonMatcher()
+                   scrollViewIdentifier:
+                       kPromoStyleScrollViewAccessibilityIdentifier]
+      performAction:grey_tap()];
+  [SigninEarlGrey verifyPrimaryAccountWithEmail:fakeIdentity.userEmail
+                                        consent:signin::ConsentLevel::kSignin];
+  // Verify that the History Sync Opt-In screen is shown.
+  [[EarlGrey
+      selectElementWithMatcher:grey_accessibilityID(
+                                   kHistorySyncViewAccessibilityIdentifier)]
+      assertWithMatcher:grey_sufficientlyVisible()];
+  // Verify that the footer is shown without the user's email.
+  NSString* disclaimerText =
+      l10n_util::GetNSString(IDS_IOS_HISTORY_SYNC_FOOTER_WITHOUT_EMAIL);
+  [[self elementInteractionWithGreyMatcher:grey_allOf(
+                                               grey_text(disclaimerText),
+                                               grey_sufficientlyVisible(), nil)
+                      scrollViewIdentifier:
+                          kPromoStyleScrollViewAccessibilityIdentifier]
+      assertWithMatcher:grey_notNil()];
+}
+
+// Tests that the correct subtitle is shown in the FRE sign-in screen if the
+// History Sync Opt-In feature is enabled.
+- (void)testSignInSubtitleIfHistorySyncOptInEnabled {
+  // Verify that the first run screen is present.
+  [[EarlGrey selectElementWithMatcher:
+                 grey_accessibilityID(
+                     first_run::kFirstRunSignInScreenAccessibilityIdentifier)]
+      assertWithMatcher:grey_notNil()];
+  // Validate the subtitle text.
+  NSString* subtitle =
+      l10n_util::GetNSString(IDS_IOS_FIRST_RUN_SIGNIN_BENEFITS_SUBTITLE_SHORT);
+  [[self elementInteractionWithGreyMatcher:grey_allOf(
+                                               grey_text(subtitle),
+                                               grey_sufficientlyVisible(), nil)
+                      scrollViewIdentifier:
+                          kPromoStyleScrollViewAccessibilityIdentifier]
+      assertWithMatcher:grey_notNil()];
+}
+
+// Tests that the standard subtitle is shown in the FRE sign-in screen, and that
+// History Sync Opt-In screen is skipped, if the sync is disabled by policy, and
+// History Sync Opt-In feature is enabled.
+- (void)testHistorySyncSkipIfSyncDisabled {
+  [self relaunchAppWithPolicyKey:policy::key::kSyncDisabled
+                  xmlPolicyValue:"<true/>"];
+  // Add identity.
+  FakeSystemIdentity* fakeIdentity = [FakeSystemIdentity fakeIdentity1];
+  [SigninEarlGrey addFakeIdentity:fakeIdentity];
+  // Verify that the first run screen is present.
+  [[EarlGrey selectElementWithMatcher:
+                 grey_accessibilityID(
+                     first_run::kFirstRunSignInScreenAccessibilityIdentifier)]
+      assertWithMatcher:grey_notNil()];
+  // Verify the subtitle text is the standard one.
+  NSString* subtitle =
+      l10n_util::GetNSString(IDS_IOS_FIRST_RUN_SIGNIN_SUBTITLE_SHORT);
+  [[self elementInteractionWithGreyMatcher:grey_allOf(
+                                               grey_text(subtitle),
+                                               grey_sufficientlyVisible(), nil)
+                      scrollViewIdentifier:
+                          kPromoStyleScrollViewAccessibilityIdentifier]
+      assertWithMatcher:grey_notNil()];
+  // Accept sign-in.
+  [[self
+      elementInteractionWithGreyMatcher:PromoStylePrimaryActionButtonMatcher()
+                   scrollViewIdentifier:
+                       kPromoStyleScrollViewAccessibilityIdentifier]
+      performAction:grey_tap()];
+  [SigninEarlGrey verifyPrimaryAccountWithEmail:fakeIdentity.userEmail
+                                        consent:signin::ConsentLevel::kSignin];
+  // Verify that the History Sync Opt-In screen is hidden.
+  [[EarlGrey
+      selectElementWithMatcher:grey_accessibilityID(
+                                   kHistorySyncViewAccessibilityIdentifier)]
+      assertWithMatcher:grey_nil()];
+  // Verify that the default browser choice screen is shown.
+  [[EarlGrey
+      selectElementWithMatcher:
+          grey_accessibilityID(
+              first_run::kFirstRunDefaultBrowserScreenAccessibilityIdentifier)]
+      assertWithMatcher:grey_sufficientlyVisible()];
+}
+
+// Tests that the standard subtitle is shown in the FRE sign-in screen, and that
+// History Sync Opt-In screen is skipped, in case the tabs sync is disabled by
+// policy, and History Sync Opt-In feature is enabled.
+- (void)testHistorySyncSkipIfTabsSyncDisabled {
+  [self relaunchAppWithPolicyKey:policy::key::kSyncTypesListDisabled
+                  xmlPolicyValue:"<array><string>tabs</string></array>"];
+  // Add identity.
+  FakeSystemIdentity* fakeIdentity = [FakeSystemIdentity fakeIdentity1];
+  [SigninEarlGrey addFakeIdentity:fakeIdentity];
+  // Verify that the first run screen is present.
+  [[EarlGrey selectElementWithMatcher:
+                 grey_accessibilityID(
+                     first_run::kFirstRunSignInScreenAccessibilityIdentifier)]
+      assertWithMatcher:grey_notNil()];
+  // Verify the subtitle text is the standard one.
+  NSString* subtitle =
+      l10n_util::GetNSString(IDS_IOS_FIRST_RUN_SIGNIN_SUBTITLE_SHORT);
+  [[self elementInteractionWithGreyMatcher:grey_allOf(
+                                               grey_text(subtitle),
+                                               grey_sufficientlyVisible(), nil)
+                      scrollViewIdentifier:
+                          kPromoStyleScrollViewAccessibilityIdentifier]
+      assertWithMatcher:grey_notNil()];
+  // Accept sign-in.
+  [[self
+      elementInteractionWithGreyMatcher:PromoStylePrimaryActionButtonMatcher()
+                   scrollViewIdentifier:
+                       kPromoStyleScrollViewAccessibilityIdentifier]
+      performAction:grey_tap()];
+  [SigninEarlGrey verifyPrimaryAccountWithEmail:fakeIdentity.userEmail
+                                        consent:signin::ConsentLevel::kSignin];
+  // Verify that the History Sync Opt-In screen is hidden.
+  [[EarlGrey
+      selectElementWithMatcher:grey_accessibilityID(
+                                   kHistorySyncViewAccessibilityIdentifier)]
+      assertWithMatcher:grey_nil()];
+  // Verify that the default browser choice screen is shown.
+  [[EarlGrey
+      selectElementWithMatcher:
+          grey_accessibilityID(
+              first_run::kFirstRunDefaultBrowserScreenAccessibilityIdentifier)]
+      assertWithMatcher:grey_sufficientlyVisible()];
+}
+
+// Tests that the standard subtitle is shown in the FRE sign-in screen, and
+// that History Sync Opt-In screen is shown, in case only the bookmarks sync is
+// disabled by policy, and History Sync Opt-In feature is enabled.
+- (void)testHistorySyncShownIfBookmarksSyncDisabled {
+  [self relaunchAppWithPolicyKey:policy::key::kSyncTypesListDisabled
+                  xmlPolicyValue:"<array><string>bookmarks</string></array>"];
+  // Add identity.
+  FakeSystemIdentity* fakeIdentity = [FakeSystemIdentity fakeIdentity1];
+  [SigninEarlGrey addFakeIdentity:fakeIdentity];
+  // Verify that the first run screen is present.
+  [[EarlGrey selectElementWithMatcher:
+                 grey_accessibilityID(
+                     first_run::kFirstRunSignInScreenAccessibilityIdentifier)]
+      assertWithMatcher:grey_notNil()];
+  // Verify the subtitle text is the standard one.
+  NSString* subtitle =
+      l10n_util::GetNSString(IDS_IOS_FIRST_RUN_SIGNIN_SUBTITLE_SHORT);
+  [[self elementInteractionWithGreyMatcher:grey_allOf(
+                                               grey_text(subtitle),
+                                               grey_sufficientlyVisible(), nil)
+                      scrollViewIdentifier:
+                          kPromoStyleScrollViewAccessibilityIdentifier]
+      assertWithMatcher:grey_notNil()];
+  // Accept sign-in.
+  [[self
+      elementInteractionWithGreyMatcher:PromoStylePrimaryActionButtonMatcher()
+                   scrollViewIdentifier:
+                       kPromoStyleScrollViewAccessibilityIdentifier]
+      performAction:grey_tap()];
+  [SigninEarlGrey verifyPrimaryAccountWithEmail:fakeIdentity.userEmail
+                                        consent:signin::ConsentLevel::kSignin];
+  // Verify that the History Sync Opt-In screen is shown.
+  [[EarlGrey
+      selectElementWithMatcher:grey_accessibilityID(
+                                   kHistorySyncViewAccessibilityIdentifier)]
+      assertWithMatcher:grey_sufficientlyVisible()];
+}
+
+// Tests that accepting History Sync enables the history sync, grants the
+// history sync and MSBB consent.
+- (void)testHistorySyncConsentGrantedAfterConfirm {
+  // Add identity.
+  FakeSystemIdentity* fakeIdentity = [FakeSystemIdentity fakeIdentity1];
+  [SigninEarlGrey addFakeIdentity:fakeIdentity];
+  // Accept sign-in.
+  [[self
+      elementInteractionWithGreyMatcher:PromoStylePrimaryActionButtonMatcher()
+                   scrollViewIdentifier:
+                       kPromoStyleScrollViewAccessibilityIdentifier]
+      performAction:grey_tap()];
+  // Accept History Sync.
+  [[self
+      elementInteractionWithGreyMatcher:PromoStylePrimaryActionButtonMatcher()
+                   scrollViewIdentifier:
+                       kPromoStyleScrollViewAccessibilityIdentifier]
+      performAction:grey_tap()];
+  // Verify that the default browser choice screen is shown.
+  [[EarlGrey
+      selectElementWithMatcher:
+          grey_accessibilityID(
+              first_run::kFirstRunDefaultBrowserScreenAccessibilityIdentifier)]
+      assertWithMatcher:grey_sufficientlyVisible()];
+  // Verify that the history sync is enabled.
+  GREYAssertTrue(
+      [SigninEarlGreyAppInterface
+          isSelectedTypeEnabled:syncer::UserSelectableType::kHistory],
+      @"History sync should be enabled.");
+  GREYAssertTrue([SigninEarlGreyAppInterface
+                     isSelectedTypeEnabled:syncer::UserSelectableType::kTabs],
+                 @"Tabs sync should be enabled.");
+  // TODO(crbug.com/1467853): Verify that sync consent is granted.
+  // Verify that MSBB consent is granted.
+  GREYAssertTrue(
+      [ChromeEarlGrey
+          userBooleanPref:unified_consent::prefs::
+                              kUrlKeyedAnonymizedDataCollectionEnabled],
+      @"MSBB consent was not granted.");
+  // Verify that the identity is signed in.
+  [SigninEarlGrey verifySignedInWithFakeIdentity:fakeIdentity];
+}
+
+// Tests that refusing History Sync keep the history syncdisabled, and does not
+// grant the history sync and MSBB consent.
+- (void)testHistorySyncConsentNotGrantedAfterReject {
+  // Add identity.
+  FakeSystemIdentity* fakeIdentity = [FakeSystemIdentity fakeIdentity1];
+  [SigninEarlGrey addFakeIdentity:fakeIdentity];
+  // Accept sign-in.
+  [[self
+      elementInteractionWithGreyMatcher:PromoStylePrimaryActionButtonMatcher()
+                   scrollViewIdentifier:
+                       kPromoStyleScrollViewAccessibilityIdentifier]
+      performAction:grey_tap()];
+  // Refuse History Sync.
+  [[self
+      elementInteractionWithGreyMatcher:PromoStyleSecondaryActionButtonMatcher()
+                   scrollViewIdentifier:
+                       kPromoStyleScrollViewAccessibilityIdentifier]
+      performAction:grey_tap()];
+  // Verify that the default browser choice screen is shown.
+  [[EarlGrey
+      selectElementWithMatcher:
+          grey_accessibilityID(
+              first_run::kFirstRunDefaultBrowserScreenAccessibilityIdentifier)]
+      assertWithMatcher:grey_sufficientlyVisible()];
+  // Verify that the history sync is disabled.
+  GREYAssertFalse(
+      [SigninEarlGreyAppInterface
+          isSelectedTypeEnabled:syncer::UserSelectableType::kHistory],
+      @"History sync should be disabled.");
+  GREYAssertFalse([SigninEarlGreyAppInterface
+                      isSelectedTypeEnabled:syncer::UserSelectableType::kTabs],
+                  @"Tabs sync should be disabled.");
+  // TODO(crbug.com/1467853): Verify that sync consent is not granted.
+  // Verify that MSBB consent is not granted.
+  GREYAssertFalse(
+      [ChromeEarlGrey
+          userBooleanPref:unified_consent::prefs::
+                              kUrlKeyedAnonymizedDataCollectionEnabled],
+      @"MSBB consent should not be granted.");
+  // Verify that the identity is signed in.
+  [SigninEarlGrey verifySignedInWithFakeIdentity:fakeIdentity];
+}
+
+// Tests that the History Sync Opt-In screen contains the avatar of the
+// signed-in user, and the correct background image for the avatar.
+- (void)testHistorySyncLayout {
+  // Add identity.
+  FakeSystemIdentity* fakeIdentity = [FakeSystemIdentity fakeIdentity1];
+  [SigninEarlGrey addFakeIdentity:fakeIdentity];
+  // Accept sign-in.
+  [[self
+      elementInteractionWithGreyMatcher:PromoStylePrimaryActionButtonMatcher()
+                   scrollViewIdentifier:
+                       kPromoStyleScrollViewAccessibilityIdentifier]
+      performAction:grey_tap()];
+  // Verify that the History Sync Opt-In screen is shown.
+  [[EarlGrey
+      selectElementWithMatcher:grey_accessibilityID(
+                                   kHistorySyncViewAccessibilityIdentifier)]
+      assertWithMatcher:grey_sufficientlyVisible()];
+  // Verify that the user's avatar is shown.
+  NSString* avatarLabel =
+      [NSString stringWithFormat:@"%@ %@", fakeIdentity.userFullName,
+                                 fakeIdentity.userEmail];
+  [[EarlGrey selectElementWithMatcher:grey_accessibilityLabel(avatarLabel)]
+      assertWithMatcher:grey_sufficientlyVisible()];
+  // Verify that the avatar background is shown.
+  [[EarlGrey
+      selectElementWithMatcher:
+          grey_allOf(
+              grey_accessibilityID(
+                  kPromoStyleHeaderViewBackgroundAccessibilityIdentifier),
+              chrome_test_util::ImageViewWithImageNamed(
+                  @"history_sync_opt_in_background"),
+              grey_sufficientlyVisible(), nil)]
+      assertWithMatcher:grey_notNil()];
 }
 
 #pragma mark - Helper
@@ -1082,54 +1378,6 @@ void DismissDefaultBrowserPromo() {
   return [[EarlGrey selectElementWithMatcher:matcher]
          usingSearchAction:searchAction
       onElementWithMatcher:scrollViewMatcher];
-}
-
-// Tests that histogram is called with correct values when an instruction row
-// from the Tangible Sync screen is tapped at a given index.
-- (void)
-    verifyHistogramWhenInstructionTappedAtIndex:(int)index
-                               previousTapCount:(int)previousTapCount
-                                 expectedMetric:
-                                     (signin_metrics::SigninSyncConsentDataRow)
-                                         expectedMetric {
-  // Verify that histogram is not called yet.
-  NSError* error = [MetricsAppInterface
-      expectTotalCount:previousTapCount
-          forHistogram:@"Signin.SyncConsentScreen.DataRowClicked"];
-  GREYAssertNil(error,
-                @"Signin.SyncConsentScreen.DataRowClicked pre-tap total count "
-                @"failed, at row index %i",
-                index);
-  // Verify the histogram is not called with the expected bucket yet.
-  error = [MetricsAppInterface
-       expectCount:0
-         forBucket:static_cast<int>(expectedMetric)
-      forHistogram:@"Signin.SyncConsentScreen.DataRowClicked"];
-  GREYAssertNil(error,
-                @"Signin.SyncConsentScreen.DataRowClicked bucket already called"
-                @", at row index %i",
-                index);
-  // Tap on the data row.
-  NSString* identifier = InstructionViewRowAccessibilityIdentifier(index);
-  [[EarlGrey selectElementWithMatcher:grey_accessibilityID(identifier)]
-      performAction:grey_tap()];
-  // Verify that histogram is called.
-  error = [MetricsAppInterface
-      expectTotalCount:previousTapCount + 1
-          forHistogram:@"Signin.SyncConsentScreen.DataRowClicked"];
-  GREYAssertNil(error,
-                @"Signin.SyncConsentScreen.DataRowClicked total count failed, "
-                @"at row index %i",
-                index);
-  // Verify the logged value of the histogram.
-  error = [MetricsAppInterface
-       expectCount:1
-         forBucket:static_cast<int>(expectedMetric)
-      forHistogram:@"Signin.SyncConsentScreen.DataRowClicked"];
-  GREYAssertNil(error,
-                @"Wrong bucket for Signin.SyncConsentScreen.DataRowClicked, at "
-                @"row index %i",
-                index);
 }
 
 @end

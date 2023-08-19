@@ -8,14 +8,11 @@
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
-          "can_use_on_swarming_builders": true,
-          "dimension_sets": [
-            {
-              "device_type": "foo_device",
-              "integrity": "high",
-              "os": "Linux"
-            }
-          ],
+          "dimensions": {
+            "device_type": "foo_device",
+            "integrity": "high",
+            "os": "Linux"
+          },
           "expiration": 120
         },
         "test": "foo_test",

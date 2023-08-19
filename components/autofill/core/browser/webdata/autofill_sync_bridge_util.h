@@ -9,10 +9,12 @@
 #include <string>
 
 #include "components/sync/model/entity_change.h"
+#include "components/sync/protocol/autofill_wallet_credential_specifics.pb.h"
 
 namespace autofill {
 
 class AutofillOfferData;
+struct ServerCvc;
 class AutofillWalletUsageData;
 class AutofillProfile;
 class AutofillTable;
@@ -73,6 +75,11 @@ void SetAutofillOfferSpecificsFromOfferData(
 // |offer_specifics| must be valid (as per IsOfferSpecificsValid()).
 AutofillOfferData AutofillOfferDataFromOfferSpecifics(
     const sync_pb::AutofillOfferSpecifics& offer_specifics);
+
+// Returns a AutofillWalletCredentialSpecifics object based on the specified
+// `server_cvc` data. The CVC must be present in the `server_cvc`.
+sync_pb::AutofillWalletCredentialSpecifics
+AutofillWalletCredentialSpecificsFromStructData(const ServerCvc& server_cvc);
 
 // Creates a VirtualCardUsageData from the specified |usage_specifics|.
 // |usage_specifics| must be valid (as per

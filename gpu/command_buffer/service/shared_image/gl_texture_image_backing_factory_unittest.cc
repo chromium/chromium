@@ -30,9 +30,9 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/skia/include/core/SkBitmap.h"
-#include "third_party/skia/include/core/SkPromiseImageTexture.h"
 #include "third_party/skia/include/gpu/GrBackendSemaphore.h"
 #include "third_party/skia/include/gpu/GrBackendSurface.h"
+#include "third_party/skia/include/private/chromium/GrPromiseImageTexture.h"
 #include "ui/gfx/color_space.h"
 #include "ui/gfx/gpu_memory_buffer.h"
 #include "ui/gl/progress_reporter.h"
@@ -78,6 +78,8 @@ class GLTextureImageBackingFactoryTestBase : public SharedImageTestBase {
     supports_ar30_ = feature_info->feature_flags().chromium_image_ar30;
     supports_ab30_ = feature_info->feature_flags().chromium_image_ab30;
 
+    supports_bgra_ = feature_info->feature_flags().ext_texture_format_bgra8888;
+
     backing_factory_ = std::make_unique<GLTextureImageBackingFactory>(
         gpu_preferences_, gpu_workarounds_, context_state_->feature_info(),
         &progress_reporter_, for_cpu_upload_usage);
@@ -90,20 +92,29 @@ class GLTextureImageBackingFactoryTestBase : public SharedImageTestBase {
         return false;
       }
       return supports_r_rg_;
-    } else if (format == viz::SinglePlaneFormat::kR_8 ||
-               format == viz::SinglePlaneFormat::kRG_88) {
+    }
+    if (format == viz::SinglePlaneFormat::kR_8 ||
+        format == viz::SinglePlaneFormat::kRG_88) {
       return supports_r_rg_;
-    } else if (format == viz::SinglePlaneFormat::kR_16 ||
-               format == viz::SinglePlaneFormat::kRG_1616) {
+    }
+    if (format == viz::SinglePlaneFormat::kR_16 ||
+        format == viz::SinglePlaneFormat::kRG_1616) {
       return supports_rg16_;
-    } else if (format == viz::SinglePlaneFormat::kRGBA_F16) {
+    }
+    if (format == viz::SinglePlaneFormat::kRGBA_F16) {
       return supports_rgba_f16_;
-    } else if (format == viz::SinglePlaneFormat::kBGRA_1010102 ||
-               format == viz::SinglePlaneFormat::kRGBA_1010102) {
+    }
+    if (format == viz::SinglePlaneFormat::kBGRA_1010102 ||
+        format == viz::SinglePlaneFormat::kRGBA_1010102) {
       return supports_ar30_ || supports_ab30_;
-    } else if (format == viz::SinglePlaneFormat::kETC1) {
+    }
+    if (format == viz::SinglePlaneFormat::kETC1) {
       return supports_etc1_;
     }
+    if (format == viz::SinglePlaneFormat::kBGRA_8888) {
+      return supports_bgra_;
+    }
+
     return true;
   }
 
@@ -115,6 +126,7 @@ class GLTextureImageBackingFactoryTestBase : public SharedImageTestBase {
   bool supports_etc1_ = false;
   bool supports_ar30_ = false;
   bool supports_ab30_ = false;
+  bool supports_bgra_ = false;
 };
 
 // Non-parameterized tests.
@@ -206,15 +218,17 @@ TEST_F(GLTextureImageBackingFactoryTest, TexImageTexStorageEquivalence) {
     if (format == viz::SinglePlaneFormat::kBGR_565 || format.IsCompressed()) {
       continue;
     }
-    int storage_format = TextureStorageFormat(
-        format, feature_info->feature_flags().angle_rgbx_internal_format);
 
-    int image_gl_format = GLDataFormat(format);
+    GLFormatDesc format_desc = ToGLFormatDesc(
+        format, /*plane_index=*/0,
+        feature_info->feature_flags().angle_rgbx_internal_format);
+    int storage_format = format_desc.storage_internal_format;
+    int image_gl_format = format_desc.data_format;
     int storage_gl_format =
         gles2::TextureManager::ExtractFormatFromStorageFormat(storage_format);
     EXPECT_EQ(image_gl_format, storage_gl_format);
 
-    int image_gl_type = GLDataType(format);
+    int image_gl_type = format_desc.data_type;
     int storage_gl_type =
         gles2::TextureManager::ExtractTypeFromStorageFormat(storage_format);
 
@@ -227,7 +241,7 @@ TEST_F(GLTextureImageBackingFactoryTest, TexImageTexStorageEquivalence) {
     }
 
     // confirm that we support TexStorage2D only if we support TexImage2D:
-    int image_internal_format = GLInternalFormat(format);
+    int image_internal_format = format_desc.image_internal_format;
     bool supports_tex_image =
         validators->texture_internal_format.IsValid(image_internal_format) &&
         validators->texture_format.IsValid(image_gl_format) &&
@@ -631,7 +645,8 @@ const auto kSharedImageFormats =
                       viz::SinglePlaneFormat::kRG_1616,
                       viz::SinglePlaneFormat::kRGBA_F16,
                       viz::MultiPlaneFormat::kNV12,
-                      viz::MultiPlaneFormat::kYV12);
+                      viz::MultiPlaneFormat::kYV12,
+                      viz::MultiPlaneFormat::kI420);
 
 INSTANTIATE_TEST_SUITE_P(,
                          GLTextureImageBackingFactoryWithFormatTest,
@@ -650,7 +665,8 @@ const auto kReadbackFormats =
                       viz::SinglePlaneFormat::kRGBX_8888,
                       viz::SinglePlaneFormat::kBGRX_8888,
                       viz::MultiPlaneFormat::kNV12,
-                      viz::MultiPlaneFormat::kYV12);
+                      viz::MultiPlaneFormat::kYV12,
+                      viz::MultiPlaneFormat::kI420);
 
 INSTANTIATE_TEST_SUITE_P(,
                          GLTextureImageBackingFactoryWithReadbackTest,

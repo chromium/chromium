@@ -26,6 +26,24 @@ source_set("safe_browsing_service") {
   ]
 }
 
+source_set("client_report_util") {
+  sources = [
+    "client_report_util.cc",
+    "client_report_util.h",
+  ]
+
+  configs += [ "//build/config/compiler:wexit_time_destructors" ]
+
+  deps = [
+    "//base:base",
+    "//components/safe_browsing/core/common/proto:csd_proto",
+    "//components/security_interstitials/content:security_interstitial_page",
+    "//components/security_interstitials/core",
+    "//components/security_interstitials/core:unsafe_resource",
+    "//content/public/browser",
+  ]
+}
+
 # NOTE: This target is separated from :browser as
 # //components/safe_browsing/content/browser/triggers, which this depends on, depends
 # on :browser.
@@ -48,6 +66,7 @@ if (safe_browsing_mode > 0) {
 
     deps = [
       ":browser",
+      ":client_report_util",
       "//base",
       "//components/no_state_prefetch/browser",
       "//components/prefs",
@@ -57,6 +76,7 @@ if (safe_browsing_mode > 0) {
       "//components/safe_browsing/core/browser:safe_browsing_metrics_collector",
       "//components/safe_browsing/core/common",
       "//components/safe_browsing/core/common:safe_browsing_prefs",
+      "//components/safe_browsing/core/common/proto:csd_proto",
       "//components/security_interstitials/content:security_interstitial_page",
       "//components/security_interstitials/core",
       "//components/security_interstitials/core:unsafe_resource",
@@ -94,6 +114,7 @@ source_set("browser") {
   configs += [ "//build/config/compiler:wexit_time_destructors" ]
 
   deps = [
+    ":client_report_util",
     "//base",
     "//base:i18n",
     "//components/back_forward_cache",
@@ -106,6 +127,7 @@ source_set("browser") {
     "//components/safe_browsing/core/browser:verdict_cache_manager",
     "//components/safe_browsing/core/browser/db:database_manager",
     "//components/safe_browsing/core/browser/hashprefix_realtime:hash_realtime_service",
+    "//components/safe_browsing/core/browser/hashprefix_realtime:hash_realtime_utils",
     "//components/safe_browsing/core/browser/realtime:policy_engine",
     "//components/safe_browsing/core/browser/realtime:url_lookup_service_base",
     "//components/safe_browsing/core/browser/utils",
@@ -147,6 +169,7 @@ source_set("browser") {
 source_set("unit_tests") {
   testonly = true
   sources = [
+    "client_report_util_unittest.cc",
     "client_side_phishing_model_unittest.cc",
     "web_api_handshake_checker_unittest.cc",
   ]
@@ -160,6 +183,7 @@ source_set("unit_tests") {
     "//components/optimization_guide/proto:optimization_guide_proto",
     "//components/safe_browsing:buildflags",
     "//components/safe_browsing/content/browser:browser",
+    "//components/safe_browsing/content/browser:client_report_util",
     "//components/safe_browsing/core/browser:browser",
     "//components/safe_browsing/core/browser/db:test_database_manager",
     "//components/safe_browsing/core/common",
@@ -186,8 +210,10 @@ source_set("unit_tests") {
       "//components/prefs",
       "//components/prefs:test_support",
       "//components/safe_browsing/content/browser:safe_browsing_blocking_page",
+      "//components/safe_browsing/core/browser/hashprefix_realtime:hash_realtime_utils",
       "//components/security_interstitials/content:security_interstitial_page",
       "//components/security_interstitials/core",
+      "//net/traffic_annotation:test_support",
     ]
   }
 
@@ -214,8 +240,6 @@ source_set("client_side_detection") {
     "client_side_detection_service.h",
     "client_side_phishing_model.cc",
     "client_side_phishing_model.h",
-    "client_side_phishing_model_optimization_guide.cc",
-    "client_side_phishing_model_optimization_guide.h",
     "safe_browsing_tab_observer.cc",
     "safe_browsing_tab_observer.h",
   ]

@@ -10,6 +10,7 @@
 #include <sys/stat.h>
 
 #include "ash/constants/ash_features.h"
+#include "ash/shell.h"
 #include "base/containers/contains.h"
 #include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
@@ -22,6 +23,8 @@
 #include "components/viz/common/gpu/context_provider.h"
 #include "ui/aura/env.h"
 #include "ui/compositor/compositor.h"
+#include "ui/display/manager/display_manager.h"
+#include "ui/display/manager/managed_display_info.h"
 #include "ui/display/types/display_constants.h"
 #include "ui/gfx/linux/drm_util_linux.h"
 
@@ -134,7 +137,10 @@ class WaylandDmabufFeedback {
 
     const display::Display surface_display = surface->GetDisplay();
     display::DrmFormatsAndModifiers display_formats_and_modifiers =
-        surface_display.GetDRMFormatsAndModifiers();
+        ash::Shell::Get()
+            ->display_manager()
+            ->GetDisplayInfo(surface_display.id())
+            .GetDRMFormatsAndModifiers();
     IndexedDrmFormatsAndModifiers scanout_formats_and_modifiers;
 
     for (const auto& [format, modifier_entries] :
@@ -310,6 +316,21 @@ WaylandDmabufFeedbackManager::WaylandDmabufFeedbackManager(Display* display)
           ->SharedMainThreadContextProvider();
   gpu::Capabilities caps = context_provider->ContextCapabilities();
 
+  // Intel CCS modifiers leak memory on gbm to gl buffer import. Block these
+  // modifiers for now. See crbug.com/1445252, crbug.com/1458575
+  // Also blocking |DRM_FORMAT_YVU420| for a specific modifier based a test
+  // failing in minigbm. See b/289714323
+  const base::flat_set<std::pair<uint64_t, uint64_t>> modifier_block_list = {
+      {DRM_FORMAT_INVALID, I915_FORMAT_MOD_Y_TILED_CCS},
+      {DRM_FORMAT_INVALID, I915_FORMAT_MOD_Yf_TILED_CCS},
+      {DRM_FORMAT_INVALID, I915_FORMAT_MOD_Y_TILED_GEN12_RC_CCS},
+      {DRM_FORMAT_INVALID, I915_FORMAT_MOD_Y_TILED_GEN12_MC_CCS},
+      {DRM_FORMAT_INVALID, I915_FORMAT_MOD_Y_TILED_GEN12_RC_CCS_CC},
+      {DRM_FORMAT_INVALID, I915_FORMAT_MOD_4_TILED_DG2_RC_CCS},
+      {DRM_FORMAT_INVALID, I915_FORMAT_MOD_4_TILED_DG2_MC_CCS},
+      {DRM_FORMAT_INVALID, I915_FORMAT_MOD_4_TILED_DG2_RC_CCS_CC},
+      {DRM_FORMAT_YVU420, DRM_FORMAT_MOD_QCOM_COMPRESSED}};
+
   size_t format_table_index = 0;
   for (const auto& [drm_format, modifiers] : caps.drm_formats_and_modifiers) {
     if (!ui::IsValidBufferFormat(drm_format))
@@ -324,8 +345,13 @@ WaylandDmabufFeedbackManager::WaylandDmabufFeedbackManager(Display* display)
     modifier_entries.emplace(format_table_index++, DRM_FORMAT_MOD_INVALID);
 
     if (base::FeatureList::IsEnabled(ash::features::kExoLinuxDmabufModifiers)) {
-      for (uint64_t modifier : modifiers)
-        modifier_entries.emplace(format_table_index++, modifier);
+      for (uint64_t modifier : modifiers) {
+        // Check for generic blocking first then format specific blocking.
+        if (!modifier_block_list.contains({DRM_FORMAT_INVALID, modifier}) &&
+            !modifier_block_list.contains({drm_format, modifier})) {
+          modifier_entries.emplace(format_table_index++, modifier);
+        }
+      }
     }
 
     drm_formats_and_modifiers_.emplace(drm_format, modifier_entries);

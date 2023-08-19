@@ -10,10 +10,12 @@
 #include <vector>
 
 #include "base/containers/contains.h"
+#include "base/feature_list.h"
 #include "base/memory/raw_ptr.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
 #include "chrome/browser/media/router/chrome_media_router_factory.h"
+#include "chrome/browser/media/router/media_router_feature.h"
 #include "chrome/browser/media/router/providers/wired_display/wired_display_media_route_provider.h"
 #include "chrome/browser/sessions/session_tab_helper_factory.h"
 #include "chrome/browser/ui/media_router/cast_dialog_controller.h"
@@ -38,11 +40,6 @@
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/display/display.h"
 #include "url/origin.h"
-
-#if BUILDFLAG(IS_MAC)
-#include "base/mac/mac_util.h"
-#include "ui/base/cocoa/permissions_utils.h"
-#endif
 
 using testing::_;
 using testing::Invoke;
@@ -548,11 +545,6 @@ TEST_F(MediaRouterViewsUITest, RouteCreationTimeoutIssueTitle) {
 
 #if BUILDFLAG(IS_MAC)
 TEST_F(MediaRouterViewsUITest, DesktopMirroringFailsWhenDisallowedOnMac) {
-  // Failure due to a lack of screen capture permissions only happens on macOS
-  // 10.15 or later. See crbug.com/1087236 for more info.
-  if (!base::mac::IsAtLeastOS10_15())
-    return;
-
   set_screen_capture_allowed_for_testing(false);
   MockControllerObserver observer(ui_.get());
   MediaSink sink{CreateCastSink(kSinkId, kSinkName)};
@@ -738,10 +730,14 @@ TEST_F(MediaRouterViewsUITest, OnFreezeInfoChanged) {
 class MediaRouterViewsUIIncognitoTest : public MediaRouterViewsUITest {
  protected:
   void SetMediaRouterFactory() override {
-    // We must set the factory on the non-incognito browser context.
-    MediaRouterFactory::GetInstance()->SetTestingFactory(
-        MediaRouterViewsUITest::GetBrowserContext(),
-        base::BindRepeating(&MockMediaRouter::Create));
+    if (base::FeatureList::IsEnabled(kMediaRouterOTRInstance)) {
+      MediaRouterViewsUITest::SetMediaRouterFactory();
+    } else {
+      // We must set the factory on the original browser context.
+      MediaRouterFactory::GetInstance()->SetTestingFactory(
+          MediaRouterViewsUITest::GetBrowserContext(),
+          base::BindRepeating(&MockMediaRouter::Create));
+    }
   }
 
   content::BrowserContext* GetBrowserContext() override {

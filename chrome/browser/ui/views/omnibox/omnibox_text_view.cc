@@ -56,7 +56,7 @@ struct TextStyle {
   int touchable_size_delta = 0;
 
   // The baseline shift. Ignored under touch (text is always baseline-aligned).
-  gfx::BaselineStyle baseline = gfx::NORMAL_BASELINE;
+  gfx::BaselineStyle baseline = gfx::BaselineStyle::kNormalBaseline;
 };
 
 // The new answer layout has separate and different treatment of text styles,
@@ -77,8 +77,8 @@ void ApplyTextStyleForType(SuggestionAnswer::TextStyle text_style,
 
   const gfx::BaselineStyle baseline =
       (text_style == SuggestionAnswer::TextStyle::SUPERIOR)
-          ? gfx::SUPERIOR
-          : gfx::NORMAL_BASELINE;
+          ? gfx::BaselineStyle::kSuperior
+          : gfx::BaselineStyle::kNormalBaseline;
   render_text->ApplyBaselineStyle(baseline, range);
 
   const bool selected =

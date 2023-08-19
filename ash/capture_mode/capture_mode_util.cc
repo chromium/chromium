@@ -29,6 +29,7 @@
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/models/image_model.h"
 #include "ui/chromeos/styles/cros_tokens_color_mappings.h"
+#include "ui/color/color_provider_manager.h"
 #include "ui/compositor/layer.h"
 #include "ui/events/ash/keyboard_capability.h"
 #include "ui/gfx/geometry/point.h"
@@ -153,6 +154,10 @@ bool IsCaptureModeActive() {
   return CaptureModeController::Get()->IsActive();
 }
 
+gfx::PointF GetEventScreenLocation(const ui::LocatedEvent& event) {
+  return event.target()->GetScreenLocationF(event);
+}
+
 gfx::Point GetLocationForFineTunePosition(const gfx::Rect& rect,
                                           FineTunePosition position) {
   switch (position) {
@@ -238,6 +243,23 @@ void TriggerAccessibilityAlertSoon(const std::string& message) {
 
 void TriggerAccessibilityAlertSoon(int message_id) {
   TriggerAccessibilityAlertSoon(l10n_util::GetStringUTF8(message_id));
+}
+
+void AdjustBoundsWithinConfinedBounds(const gfx::Rect& confined_bounds,
+                                      gfx::Rect& out_bounds) {
+  if (int confined_x = confined_bounds.x(); confined_x > out_bounds.x()) {
+    out_bounds.set_x(confined_x);
+  } else if (int confined_right = confined_bounds.right();
+             confined_right < out_bounds.right()) {
+    out_bounds.set_x(confined_right - out_bounds.width());
+  }
+
+  if (int confined_y = confined_bounds.y(); confined_y > out_bounds.y()) {
+    out_bounds.set_y(confined_y);
+  } else if (int confined_bottom = confined_bounds.bottom();
+             confined_bottom < out_bounds.bottom()) {
+    out_bounds.set_y(confined_bottom - out_bounds.height());
+  }
 }
 
 CameraPreviewSnapPosition GetCameraNextHorizontalSnapPosition(
@@ -422,23 +444,9 @@ aura::Window* GetTopMostCapturableWindowAtPoint(
     ignore_windows.insert(camera_preview_widget->GetNativeWindow());
 
   if (controller->IsActive()) {
-    auto* capture_session = controller->capture_mode_session();
-    DCHECK(capture_session->capture_mode_bar_widget());
-    ignore_windows.insert(
-        capture_session->capture_mode_bar_widget()->GetNativeWindow());
-
-    if (auto* capture_settings_widget =
-            capture_session->capture_mode_settings_widget()) {
-      ignore_windows.insert(capture_settings_widget->GetNativeWindow());
-    }
-
-    if (auto* capture_label_widget = capture_session->capture_label_widget())
-      ignore_windows.insert(capture_label_widget->GetNativeWindow());
-
-    if (auto* capture_toast_widget = capture_session->capture_toast_controller()
-                                         ->capture_toast_widget()) {
-      ignore_windows.insert(capture_toast_widget->GetNativeWindow());
-    }
+    std::set<aura::Window*> session_windows =
+        controller->capture_mode_session()->GetWindowsToIgnoreFromWidgets();
+    ignore_windows.insert(session_windows.begin(), session_windows.end());
   }
 
   return GetTopmostWindowAtPoint(screen_point, ignore_windows);

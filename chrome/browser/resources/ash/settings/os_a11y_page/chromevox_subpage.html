@@ -1,0 +1,294 @@
+<!--
+Copyright 2023 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+
+<style include="settings-shared md-select">
+  :host {
+    --cr-section-indent-width: 60px;
+  }
+
+  h2 {
+    padding-inline-start: var(--cr-section-padding);
+  }
+
+  .sub-item {
+    padding-inline-start: var(--cr-section-indent-width);
+  }
+
+  .indented {
+    margin-inline-start: 32px;
+  }
+
+  .settings-box {
+    justify-content: space-between;
+    margin-inline-end: var(--cr-section-padding);
+    padding-inline-end: 0;
+    padding-inline-start: 0;
+  }
+
+  settings-dropdown-menu {
+    --md-select-width: 100%;
+  }
+
+  settings-dropdown-menu + settings-dropdown-menu {
+    padding-inline-start: 16px;
+  }
+
+  settings-toggle-button,
+  cr-link-row {
+    padding-inline-end: var(--cr-section-padding);
+    padding-inline-start: var(--cr-section-padding);
+  }
+
+  .text-row {
+    min-height: var(--cr-section-min-height);
+    padding-bottom: 8px;
+    padding-top: 14px;
+  }
+
+  cr-input {
+    --cr-input-error-display: none;
+    width: 80px;
+  }
+
+  cr-expand-button {
+    margin-top: 20px;
+  }
+
+  #developerOptionsExpandButton {
+    min-height: var(--cr-section-min-height);
+    padding-inline-end: var(--cr-section-padding);
+  }
+
+  #developerOptionsHeading {
+    padding-bottom: 0;
+    padding-top: 0;
+  }
+</style>
+
+<h2>$i18n{chromeVoxGeneralLabel}</h2>
+<div class="sub-item">
+  <settings-toggle-button
+      id="useVerboseModeToggle"
+      class="settings-box continuation"
+      pref="{{prefs.settings.a11y.chromevox.use_verbose_mode}}"
+      label="$i18n{chromeVoxUseVerboseMode}">
+  </settings-toggle-button>
+  <settings-toggle-button
+      id="autoReadToggle"
+      class="settings-box"
+      pref="{{prefs.settings.a11y.chromevox.auto_read}}"
+      label="$i18n{chromeVoxAutoRead}">
+  </settings-toggle-button>
+  <settings-toggle-button
+      id="speakTextUnderMouseToggle"
+      class="settings-box"
+      pref="{{prefs.settings.a11y.chromevox.speak_text_under_mouse}}"
+      label="$i18n{chromeVoxSpeakTextUnderMouse}">
+  </settings-toggle-button>
+  <settings-toggle-button
+      id="announceRichTextAttributesToggle"
+      class="settings-box"
+      pref="{{prefs.settings.a11y.chromevox.announce_rich_text_attributes}}"
+      label="$i18n{chromeVoxAnnounceRichTextAttributes}">
+  </settings-toggle-button>
+  <settings-toggle-button
+      id="usePitchChangesToggle"
+      class="settings-box"
+      pref="{{prefs.settings.a11y.chromevox.use_pitch_changes}}"
+      label="$i18n{chromeVoxUsePitchChanges}"
+      on-change="onUsePitchChangesToggled_">
+  </settings-toggle-button>
+  <div class="settings-box">
+    <div class="start settings-box-text" aria-hidden="true">
+      $i18n{chromeVoxCapitalStrategy}
+    </div>
+    <settings-dropdown-menu id="capitalStrategyDropdown"
+        label="$i18n{chromeVoxCapitalStrategy}"
+        pref="{{prefs.settings.a11y.chromevox.capital_strategy}}"
+        menu-options="[[capitalStrategyOptions_]]">
+    </settings-dropdown-menu>
+  </div>
+  <div class="settings-box">
+    <div class="start settings-box-text" aria-hidden="true">
+      $i18n{chromeVoxNumberReadingStyle}
+    </div>
+    <settings-dropdown-menu id="numberReadingStyleDropdown"
+        label="$i18n{chromeVoxNumberReadingStyle}"
+        pref="{{prefs.settings.a11y.chromevox.number_reading_style}}"
+        menu-options="[[numberReadingStyleOptions_]]">
+    </settings-dropdown-menu>
+  </div>
+  <div class="settings-box">
+    <div class="start settings-box-text" aria-hidden="true">
+      $i18n{chromeVoxPunctuationEcho}
+    </div>
+    <settings-dropdown-menu id="punctuationEchoDropdown"
+        label="$i18n{chromeVoxPunctuationEcho}"
+        pref="{{prefs.settings.a11y.chromevox.punctuation_echo}}"
+        menu-options="[[punctuationEchoOptions_]]">
+    </settings-dropdown-menu>
+  </div>
+  <settings-toggle-button
+      id="announceDownloadNotificationsToggle"
+      class="settings-box"
+      pref="{{prefs.settings.a11y.chromevox.announce_download_notifications}}"
+      label="$i18n{chromeVoxAnnounceDownloadNotifications}">
+  </settings-toggle-button>
+  <settings-toggle-button
+      id="smartStickyModeToggle"
+      class="settings-box"
+      pref="{{prefs.settings.a11y.chromevox.smart_sticky_mode}}"
+      label="$i18n{chromeVoxSmartStickyMode}">
+  </settings-toggle-button>
+  <div class="settings-box">
+    <div class="start settings-box-text" aria-hidden="true">
+      $i18n{chromeVoxAudioStrategy}
+    </div>
+    <settings-dropdown-menu id="audioStrategyDropdown"
+        label="$i18n{chromeVoxAudioStrategy}"
+        pref="{{prefs.settings.a11y.chromevox.audio_strategy}}"
+        menu-options="[[audioStrategyOptions_]]">
+    </settings-dropdown-menu>
+  </div>
+</div>
+<h2>$i18n{chromeVoxVoicesLabel}</h2>
+<div class="sub-item">
+  <div class="settings-box continuation">
+    <div class="start settings-box-text" aria-hidden="true">
+      $i18n{chromeVoxVoice}
+    </div>
+    <settings-dropdown-menu id="voiceDropdown"
+        label="$i18n{chromeVoxVoice}"
+        pref="{{prefs.settings.a11y.chromevox.voice_name}}"
+        menu-options="[[voiceOptions_]]">
+    </settings-dropdown-menu>
+  </div>
+  <settings-toggle-button
+      id="languageSwitchingToggle"
+      class="settings-box"
+      pref="{{prefs.settings.a11y.chromevox.language_switching}}"
+      label="$i18n{chromeVoxLanguageSwitching}">
+  </settings-toggle-button>
+  <cr-link-row class="settings-box"
+      label="$i18n{chromeVoxTtsSettingsLink}"
+      sub-label="$i18n{chromeVoxTtsSettingsDescription}"
+      on-click="onTtsSettingsClick_"
+      external
+      embedded>
+  </cr-link-row>
+</div>
+<h2>$i18n{chromeVoxBrailleLabel}</h2>
+<div class="sub-item">
+  <div class="settings-box continuation">
+    <div class="start settings-box-text">
+      $i18n{chromeVoxBrailleTableDescription}
+    </div>
+    <settings-dropdown-menu id="brailleTableTypeDropdown"
+        pref="{{prefs.settings.a11y.chromevox.braille_table_type}}"
+        menu-options="[[brailleTableTypeOptions_]]">
+    </settings-dropdown-menu>
+    <settings-dropdown-menu id="brailleTableDropdown"
+        pref="{{prefs.settings.a11y.chromevox.braille_table}}"
+        menu-options="[[brailleTableOptions_]]">
+    </settings-dropdown-menu>
+  </div>
+  <settings-toggle-button
+      id="brailleWordWrapToggle"
+      class="settings-box"
+      pref="{{prefs.settings.a11y.chromevox.braille_word_wrap}}"
+      label="$i18n{chromeVoxBrailleWordWrap}">
+  </settings-toggle-button>
+  <settings-toggle-button
+      id="menuBrailleCommandsToggle"
+      class="settings-box"
+      pref="{{prefs.settings.a11y.chromevox.menu_braille_commands}}"
+      label="$i18n{chromeVoxMenuBrailleCommands}">
+  </settings-toggle-button>
+  <div class="hr">
+    <bluetooth-braille-display-ui></bluetooth-braille-display-ui>
+  </div>
+  <div class="text-row hr">
+    <div>$i18n{chromeVoxVirtualBrailleDisplay}</div>
+    <div class="secondary">$i18n{chromeVoxVirtualBrailleDisplayDetails}</div>
+  </div>
+  <div class="settings-box indented continuation">
+    $i18n{chromeVoxVirtualBrailleDisplayRows}
+    <cr-input id="virtualBrailleDisplayRowsInput" type="number" min="1" max="99"
+        value="[[prefs.settings.a11y.chromevox.virtual_braille_rows.value]]"
+        on-input="onBrailleRowsInput_" on-focusout="onBrailleRowsFocusout_">
+    </cr-input>
+  </div>
+  <div class="settings-box indented">
+    $i18n{chromeVoxVirtualBrailleDisplayColumns}
+    <cr-input id="virtualBrailleDisplayColumnsInput" type="number" min="1" max="99"
+        value="[[prefs.settings.a11y.chromevox.virtual_braille_columns.value]]"
+        on-input="onBrailleColumnsInput_" on-focusout="onBrailleColumnsFocusout_">
+    </cr-input>
+  </div>
+  <div class="settings-box indented">
+    <div class="start settings-box-text" aria-hidden="true">
+      $i18n{chromeVoxVirtualBrailleDisplayStyleLabel}
+    </div>
+    <settings-dropdown-menu id="virtualBrailleDisplayStyleDropdown"
+        label="$i18n{chromeVoxVirtualBrailleDisplayStyleLabel}"
+        pref="{{prefs.settings.a11y.chromevox.braille_side_by_side}}"
+        menu-options="[[virtualBrailleDisplayStyleOptions_]]">
+    </settings-dropdown-menu>
+  </div>
+</div>
+<cr-expand-button id="developerOptionsExpandButton" class="hr"
+    expanded="{{developerOptionsExpanded_}}">
+  <h2 id="developerOptionsHeading">$i18n{chromeVoxDeveloperOptionsLabel}</h2>
+</cr-expand-button>
+<iron-collapse opened="[[developerOptionsExpanded_]]">
+  <div class="sub-item">
+    <cr-link-row class="settings-box continuation"
+        label="$i18n{chromeVoxEventLogLink}"
+        sub-label="$i18n{chromeVoxEventLogDescription}"
+        on-click="onEventLogClick_"
+        external
+        embedded>
+    </cr-link-row>
+    <settings-toggle-button
+        id="enableSpeechLoggingToggle"
+        class="settings-box"
+        pref="{{prefs.settings.a11y.chromevox.enable_speech_logging}}"
+        label="$i18n{chromeVoxEnableSpeechLogging}">
+    </settings-toggle-button>
+    <settings-toggle-button
+        id="enableEarconLoggingToggle"
+        class="settings-box"
+        pref="{{prefs.settings.a11y.chromevox.enable_earcon_logging}}"
+        label="$i18n{chromeVoxEnableEarconLogging}">
+    </settings-toggle-button>
+    <settings-toggle-button
+        id="enableBrailleLoggingToggle"
+        class="settings-box"
+        pref="{{prefs.settings.a11y.chromevox.enable_braille_logging}}"
+        label="$i18n{chromeVoxEnableBrailleLogging}">
+    </settings-toggle-button>
+    <settings-toggle-button
+        id="enableEventStreamLoggingToggle"
+        class="settings-box"
+        pref="{{prefs.settings.a11y.chromevox.enable_event_stream_logging}}"
+        label="$i18n{chromeVoxEnableEventStreamLogging}">
+    </settings-toggle-button>
+    <template is="dom-if" if="[[prefs.settings.a11y.chromevox.enable_event_stream_logging.value]]">
+      <div class="indented">
+        <template is="dom-repeat" items="[[eventStreamFilters_]]">
+          <settings-toggle-button
+              id="[[item]]"
+              class="settings-box"
+              pref="[[getEventStreamFilterPref_(item, prefs.settings.a11y.chromevox.event_stream_filters)]]"
+              label="[[item]]"
+              on-settings-boolean-control-change="onEventStreamFilterPrefChanged_"
+              no-set-pref>
+          </settings-toggle-button>
+        </template>
+      </div>
+    </template>
+  </div>
+</iron-collapse>

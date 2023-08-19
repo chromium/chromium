@@ -6,11 +6,6 @@
       "all"
     ]
   },
-  "Comparison Linux (reclient vs reclient remote links)(small)": {
-    "additional_compile_targets": [
-      "all"
-    ]
-  },
   "Linux Builder (reclient compare)": {
     "additional_compile_targets": [
       "all"

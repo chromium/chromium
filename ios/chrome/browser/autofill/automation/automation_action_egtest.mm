@@ -2,17 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "base/strings/sys_string_conversions.h"
+#import "base/base_paths.h"
+#import "base/path_service.h"
 #import "base/values.h"
 #import "ios/chrome/browser/autofill/automation/automation_action.h"
 #import "ios/chrome/test/earl_grey/chrome_earl_grey.h"
 #import "ios/chrome/test/earl_grey/chrome_test_case.h"
 #import "ios/testing/earl_grey/earl_grey_test.h"
 #import "net/test/embedded_test_server/embedded_test_server.h"
-
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
 
 const char kTestPageUrl[] = "/components/test/data/autofill/"
                             "credit_card_upload_form_address_and_cc.html";
@@ -28,9 +25,8 @@ const char kTestPageUrl[] = "/components/test/data/autofill/"
 - (void)setUp {
   [super setUp];
 
-  NSString* bundlePath = [NSBundle bundleForClass:[self class]].resourcePath;
   self.testServer->ServeFilesFromDirectory(
-      base::FilePath(base::SysNSStringToUTF8(bundlePath)));
+      base::PathService::CheckedGet(base::DIR_ASSETS));
   XCTAssertTrue(self.testServer->Start());
 
   [ChromeEarlGrey loadURL:self.testServer->GetURL(kTestPageUrl)];

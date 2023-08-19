@@ -492,7 +492,7 @@ void AppendHeader(std::string* output, const std::string& unescaped_title) {
 // calling browser is Lacros.
 bool isLacrosPrimaryOrCurrentBrowser() {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-  return crosapi::browser_util::IsLacrosPrimaryBrowser();
+  return crosapi::browser_util::IsLacrosEnabled();
 #else
   return true;
 #endif
@@ -694,26 +694,31 @@ void AboutUIHTMLSource::StartDataRequest(
     response = AboutLinuxProxyConfig();
 #endif
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-  } else if (source_name_ == chrome::kChromeUIOSCreditsHost) {
-    if (path == kCreditsCssPath) {
-      response = ui::ResourceBundle::GetSharedInstance().LoadDataResourceString(
-          IDR_ABOUT_UI_CREDITS_CSS);
-    } else {
-      ChromeOSCreditsHandler::Start(path, std::move(callback),
-                                    os_credits_prefix_);
+  } else if (source_name_ == chrome::kChromeUIOSCreditsHost ||
+             source_name_ == chrome::kChromeUICrostiniCreditsHost ||
+             source_name_ == chrome::kChromeUIBorealisCreditsHost) {
+    int idr = IDR_ABOUT_UI_CREDITS_HTML;
+    if (path == kCreditsJsPath) {
+      idr = IDR_ABOUT_UI_CREDITS_JS;
+    } else if (path == kCreditsCssPath) {
+      idr = IDR_ABOUT_UI_CREDITS_CSS;
+    }
+    if (idr == IDR_ABOUT_UI_CREDITS_HTML) {
+      if (source_name_ == chrome::kChromeUIOSCreditsHost) {
+        ChromeOSCreditsHandler::Start(path, std::move(callback),
+                                      os_credits_prefix_);
+      } else if (source_name_ == chrome::kChromeUICrostiniCreditsHost) {
+        CrostiniCreditsHandler::Start(profile(), path, std::move(callback));
+      } else if (source_name_ == chrome::kChromeUIBorealisCreditsHost) {
+        HandleBorealisCredits(profile(), std::move(callback));
+      } else {
+        NOTREACHED();
+      }
       return;
     }
-  } else if (source_name_ == chrome::kChromeUICrostiniCreditsHost) {
-    if (path == kCreditsCssPath) {
-      response = ui::ResourceBundle::GetSharedInstance().LoadDataResourceString(
-          IDR_ABOUT_UI_CREDITS_CSS);
-    } else {
-      CrostiniCreditsHandler::Start(profile(), path, std::move(callback));
-      return;
-    }
-  } else if (source_name_ == chrome::kChromeUIBorealisCreditsHost) {
-    HandleBorealisCredits(profile(), std::move(callback));
-    return;
+
+    response =
+        ui::ResourceBundle::GetSharedInstance().LoadDataResourceString(idr);
 #endif
 #if !BUILDFLAG(IS_ANDROID)
   } else if (source_name_ == chrome::kChromeUITermsHost) {
@@ -751,17 +756,6 @@ std::string AboutUIHTMLSource::GetMimeType(const GURL& url) {
   return "text/html";
 }
 
-bool AboutUIHTMLSource::ShouldAddContentSecurityPolicy() {
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-  if (source_name_ == chrome::kChromeUIOSCreditsHost ||
-      source_name_ == chrome::kChromeUICrostiniCreditsHost ||
-      source_name_ == chrome::kChromeUIBorealisCreditsHost) {
-    return false;
-  }
-#endif
-  return content::URLDataSource::ShouldAddContentSecurityPolicy();
-}
-
 std::string AboutUIHTMLSource::GetAccessControlAllowOriginForOrigin(
     const std::string& origin) {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
@@ -775,7 +769,7 @@ std::string AboutUIHTMLSource::GetAccessControlAllowOriginForOrigin(
   return content::URLDataSource::GetAccessControlAllowOriginForOrigin(origin);
 }
 
-AboutUI::AboutUI(content::WebUI* web_ui, const std::string& name)
+AboutUI::AboutUI(content::WebUI* web_ui, const std::string& host)
     : WebUIController(web_ui) {
   Profile* profile = Profile::FromWebUI(web_ui);
 
@@ -785,7 +779,7 @@ AboutUI::AboutUI(content::WebUI* web_ui, const std::string& name)
 #endif
 
   content::URLDataSource::Add(
-      profile, std::make_unique<AboutUIHTMLSource>(name, profile));
+      profile, std::make_unique<AboutUIHTMLSource>(host, profile));
 }
 
 #if BUILDFLAG(IS_CHROMEOS)

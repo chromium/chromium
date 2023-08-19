@@ -40,12 +40,6 @@ struct ScreenInfo {
   // this may be negative.
   gfx.mojom.Rect rect;
 
-  // This lets `window.screen` provide viewport dimensions while the frame is
-  // fullscreen as a speculative site compatibility measure, because web authors
-  // may assume that screen dimensions match window.innerWidth/innerHeight while
-  // a page is fullscreen, but that is not always true. crbug.com/1367416
-  gfx.mojom.Size? size_override;
-
   // The portion of the monitor's rectangle that can be used by applications.
   gfx.mojom.Rect available_rect;
 

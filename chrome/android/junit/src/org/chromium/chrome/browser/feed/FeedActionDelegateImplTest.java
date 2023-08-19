@@ -14,7 +14,6 @@ import android.content.Intent;
 
 import com.google.common.collect.ImmutableMap;
 
-import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -71,11 +70,6 @@ public final class FeedActionDelegateImplTest {
         mFeedActionDelegateImpl = new FeedActionDelegateImpl(mActivityContext, mMockSnackbarManager,
                 mMockNavigationDelegate, mMockBookmarkModel, BrowserUiUtils.HostSurface.NOT_SET,
                 mTabModelSelector);
-    }
-
-    @After
-    public void tearDown() {
-        SyncConsentActivityLauncherImpl.setLauncherForTest(null);
     }
 
     @Test

@@ -27,6 +27,7 @@
 #include "net/log/net_log_event_type.h"
 #include "net/spdy/spdy_buffer_producer.h"
 #include "net/spdy/spdy_http_utils.h"
+#include "net/spdy/spdy_log_util.h"
 #include "net/spdy/spdy_session.h"
 
 namespace net {
@@ -111,8 +112,7 @@ SpdyStream::SpdyStream(SpdyStreamType type,
       traffic_annotation_(traffic_annotation),
       detect_broken_connection_(detect_broken_connection) {
   CHECK(type_ == SPDY_BIDIRECTIONAL_STREAM ||
-        type_ == SPDY_REQUEST_RESPONSE_STREAM ||
-        type_ == SPDY_PUSH_STREAM);
+        type_ == SPDY_REQUEST_RESPONSE_STREAM);
   CHECK_GE(priority_, MINIMUM_PRIORITY);
   CHECK_LE(priority_, MAXIMUM_PRIORITY);
 }
@@ -126,59 +126,7 @@ void SpdyStream::SetDelegate(Delegate* delegate) {
   CHECK(delegate);
   delegate_ = delegate;
 
-  CHECK(io_state_ == STATE_IDLE ||
-        io_state_ == STATE_HALF_CLOSED_LOCAL_UNCLAIMED ||
-        io_state_ == STATE_RESERVED_REMOTE);
-
-  if (io_state_ == STATE_HALF_CLOSED_LOCAL_UNCLAIMED) {
-    DCHECK_EQ(type_, SPDY_PUSH_STREAM);
-    base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
-        FROM_HERE,
-        base::BindOnce(&SpdyStream::PushedStreamReplay, GetWeakPtr()));
-  }
-}
-
-void SpdyStream::PushedStreamReplay() {
-  DCHECK_EQ(type_, SPDY_PUSH_STREAM);
-  DCHECK_NE(stream_id_, 0u);
-  CHECK_EQ(stream_id_ % 2, 0u);
-
-  CHECK_EQ(io_state_, STATE_HALF_CLOSED_LOCAL_UNCLAIMED);
-  io_state_ = STATE_HALF_CLOSED_LOCAL;
-
-  // The delegate methods called below may delete |this|, so use
-  // |weak_this| to detect that.
-  base::WeakPtr<SpdyStream> weak_this = GetWeakPtr();
-
-  CHECK(delegate_);
-  delegate_->OnHeadersReceived(response_headers_, &request_headers_);
-
-  // OnHeadersReceived() may have closed |this|.
-  if (!weak_this)
-    return;
-
-  while (!pending_recv_data_.empty()) {
-    // Take ownership of the first element of |pending_recv_data_|.
-    std::unique_ptr<SpdyBuffer> buffer = std::move(pending_recv_data_.at(0));
-    pending_recv_data_.erase(pending_recv_data_.begin());
-
-    bool eof = (buffer == nullptr);
-
-    CHECK(delegate_);
-    delegate_->OnDataReceived(std::move(buffer));
-
-    // OnDataReceived() may have closed |this|.
-    if (!weak_this)
-      return;
-
-    if (eof) {
-      DCHECK(pending_recv_data_.empty());
-      session_->CloseActiveStream(stream_id_, OK);
-      DCHECK(!weak_this);
-      // |pending_recv_data_| is invalid at this point.
-      break;
-    }
-  }
+  CHECK(io_state_ == STATE_IDLE || io_state_ == STATE_RESERVED_REMOTE);
 }
 
 std::unique_ptr<spdy::SpdySerializedFrame> SpdyStream::ProduceHeadersFrame() {
@@ -447,18 +395,6 @@ void SpdyStream::OnHeadersReceived(
             return;
           }
           break;
-
-        case SPDY_PUSH_STREAM:
-          // Push streams transition to a locally half-closed state upon
-          // headers.  We must continue to buffer data while waiting for a call
-          // to SetDelegate() (which may not ever happen).
-          DCHECK_EQ(io_state_, STATE_RESERVED_REMOTE);
-          if (!delegate_) {
-            io_state_ = STATE_HALF_CLOSED_LOCAL_UNCLAIMED;
-          } else {
-            io_state_ = STATE_HALF_CLOSED_LOCAL;
-          }
-          break;
       }
 
       DCHECK_NE(io_state_, STATE_IDLE);
@@ -470,13 +406,6 @@ void SpdyStream::OnHeadersReceived(
     }
     case READY_FOR_DATA_OR_TRAILERS:
       // Second header block is trailers.
-      if (type_ == SPDY_PUSH_STREAM) {
-        const std::string error("Trailers not supported for push stream.");
-        LogStreamError(ERR_HTTP2_PROTOCOL_ERROR, error);
-        session_->ResetStream(stream_id_, ERR_HTTP2_PROTOCOL_ERROR, error);
-        return;
-      }
-
       response_state_ = TRAILERS_RECEIVED;
       delegate_->OnTrailers(response_headers);
       break;
@@ -488,24 +417,6 @@ void SpdyStream::OnHeadersReceived(
       session_->ResetStream(stream_id_, ERR_HTTP2_PROTOCOL_ERROR, error);
       break;
   }
-}
-
-bool SpdyStream::ShouldRetryRSTPushStream() const {
-  // Retry if the stream is a pushed stream, has been claimed, but did not yet
-  // receive response headers
-  return (response_headers_.empty() && type_ == SPDY_PUSH_STREAM && delegate_);
-}
-
-void SpdyStream::OnPushPromiseHeadersReceived(spdy::Http2HeaderBlock headers,
-                                              GURL url) {
-  CHECK(!request_headers_valid_);
-  CHECK_EQ(io_state_, STATE_IDLE);
-  CHECK_EQ(type_, SPDY_PUSH_STREAM);
-  DCHECK(!delegate_);
-
-  io_state_ = STATE_RESERVED_REMOTE;
-  request_headers_ = std::move(headers);
-  request_headers_valid_ = true;
 }
 
 void SpdyStream::OnDataReceived(std::unique_ptr<SpdyBuffer> buffer) {
@@ -535,22 +446,6 @@ void SpdyStream::OnDataReceived(std::unique_ptr<SpdyBuffer> buffer) {
   // Track our bandwidth.
   recv_bytes_ += buffer ? buffer->GetRemainingSize() : 0;
   recv_last_byte_time_ = base::TimeTicks::Now();
-
-  // If we're still buffering data for a push stream, we will do the check for
-  // data received with incomplete headers in PushedStreamReplay().
-  if (io_state_ == STATE_HALF_CLOSED_LOCAL_UNCLAIMED) {
-    DCHECK_EQ(type_, SPDY_PUSH_STREAM);
-    // It should be valid for this to happen in the server push case.
-    // We'll return received data when delegate gets attached to the stream.
-    if (buffer) {
-      pending_recv_data_.push_back(std::move(buffer));
-    } else {
-      pending_recv_data_.push_back(nullptr);
-      // Note: we leave the stream open in the session until the stream
-      //       is claimed.
-    }
-    return;
-  }
 
   CHECK(!IsClosed());
 
@@ -602,8 +497,6 @@ void SpdyStream::OnFrameWriteComplete(spdy::SpdyFrameType frame_type,
       frame_type != spdy::SpdyFrameType::DATA) {
     return;
   }
-
-  DCHECK_NE(type_, SPDY_PUSH_STREAM);
 
   int result = (frame_type == spdy::SpdyFrameType::HEADERS)
                    ? OnHeadersSent()
@@ -728,7 +621,11 @@ base::WeakPtr<SpdyStream> SpdyStream::GetWeakPtr() {
 
 int SpdyStream::SendRequestHeaders(spdy::Http2HeaderBlock request_headers,
                                    SpdySendStatus send_status) {
-  CHECK_NE(type_, SPDY_PUSH_STREAM);
+  net_log_.AddEvent(
+      NetLogEventType::HTTP_TRANSACTION_HTTP2_SEND_REQUEST_HEADERS,
+      [&](NetLogCaptureMode capture_mode) {
+        return Http2HeaderBlockNetLogParams(&request_headers, capture_mode);
+      });
   CHECK_EQ(pending_send_status_, MORE_DATA_TO_SEND);
   CHECK(!request_headers_valid_);
   CHECK(!pending_send_data_.get());
@@ -745,7 +642,6 @@ int SpdyStream::SendRequestHeaders(spdy::Http2HeaderBlock request_headers,
 void SpdyStream::SendData(IOBuffer* data,
                           int length,
                           SpdySendStatus send_status) {
-  CHECK_NE(type_, SPDY_PUSH_STREAM);
   CHECK_EQ(pending_send_status_, MORE_DATA_TO_SEND);
   CHECK(io_state_ == STATE_OPEN ||
         io_state_ == STATE_HALF_CLOSED_REMOTE) << io_state_;
@@ -786,9 +682,7 @@ bool SpdyStream::IsClosed() const {
 }
 
 bool SpdyStream::IsLocallyClosed() const {
-  return io_state_ == STATE_HALF_CLOSED_LOCAL_UNCLAIMED ||
-      io_state_ == STATE_HALF_CLOSED_LOCAL ||
-      io_state_ == STATE_CLOSED;
+  return io_state_ == STATE_HALF_CLOSED_LOCAL || io_state_ == STATE_CLOSED;
 }
 
 bool SpdyStream::IsIdle() const {
@@ -815,13 +709,6 @@ bool SpdyStream::GetLoadTimingInfo(LoadTimingInfo* load_timing_info) const {
   if (stream_id_ == 0)
     return false;
   bool result = session_->GetLoadTimingInfo(stream_id_, load_timing_info);
-  if (type_ == SPDY_PUSH_STREAM) {
-    load_timing_info->push_start = recv_first_byte_time_;
-    bool done_receiving = IsClosed() || (!pending_recv_data_.empty() &&
-                                         !pending_recv_data_.back());
-    if (done_receiving)
-      load_timing_info->push_end = recv_last_byte_time_;
-  }
   // TODO(acomminos): recv_first_byte_time_ is actually the time after all
   // headers have been parsed. We should add support for reporting the time the
   // first bytes of the HEADERS frame were received to BufferedSpdyFramer
@@ -934,32 +821,12 @@ void SpdyStream::SaveResponseHeaders(
     response_headers_.insert(*it);
   }
 
-  // Reject pushed stream with unsupported status code regardless of whether
-  // delegate is already attached or not.
-  // TODO(https://crbug.com/1426477): Remove this code, since pushed streams are
-  // already rejected.
-  if (type_ == SPDY_PUSH_STREAM &&
-      (status / 100 != 2 && status / 100 != 3 && status != 416)) {
-    session_->ResetStream(stream_id_, ERR_HTTP2_CLIENT_REFUSED_STREAM,
-                          "Unsupported status code for pushed stream.");
-    return;
-  }
-
   // If delegate is not yet attached, OnHeadersReceived() will be called after
   // the delegate gets attached to the stream.
   if (!delegate_)
     return;
 
-  // TODO(https://crbug.com/1426477): Remove this code, since pushed streams are
-  // already rejected.
-  if (type_ == SPDY_PUSH_STREAM) {
-    // OnPushPromiseHeadersReceived() must have been called before
-    // OnHeadersReceived().
-    DCHECK(request_headers_valid_);
-    delegate_->OnHeadersReceived(response_headers_, &request_headers_);
-  } else {
-    delegate_->OnHeadersReceived(response_headers_, nullptr);
-  }
+  delegate_->OnHeadersReceived(response_headers_);
 }
 
 #define STATE_CASE(s)                                       \
@@ -972,7 +839,6 @@ std::string SpdyStream::DescribeState(State state) {
   switch (state) {
     STATE_CASE(STATE_IDLE);
     STATE_CASE(STATE_OPEN);
-    STATE_CASE(STATE_HALF_CLOSED_LOCAL_UNCLAIMED);
     STATE_CASE(STATE_HALF_CLOSED_LOCAL);
     STATE_CASE(STATE_CLOSED);
     default:

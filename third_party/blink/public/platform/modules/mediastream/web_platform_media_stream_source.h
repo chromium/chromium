@@ -101,9 +101,9 @@ class BLINK_PLATFORM_EXPORT WebPlatformMediaStreamSource {
  private:
   MediaStreamDevice device_;
   SourceStoppedCallback stop_callback_;
-  WebPrivatePtr<MediaStreamSource,
-                kWebPrivatePtrDestructionSameThread,
-                WebPrivatePtrStrength::kWeak>
+  WebPrivatePtrForGC<MediaStreamSource,
+                     WebPrivatePtrDestruction::kSameThread,
+                     WebPrivatePtrStrength::kWeak>
       owner_;
 
   // Task runner for the main thread. Also used to check that all methods that

@@ -5,13 +5,12 @@
 #include "components/segmentation_platform/internal/database/cached_result_writer.h"
 
 #include "base/logging.h"
-#include "base/task/single_thread_task_runner.h"
 #include "base/time/time.h"
 #include "components/segmentation_platform/internal/logging.h"
+#include "components/segmentation_platform/internal/metadata/metadata_utils.h"
 #include "components/segmentation_platform/internal/post_processor/post_processor.h"
 #include "components/segmentation_platform/internal/stats.h"
 #include "components/segmentation_platform/public/config.h"
-#include "components/segmentation_platform/public/result.h"
 
 namespace segmentation_platform {
 
@@ -23,10 +22,9 @@ CachedResultWriter::~CachedResultWriter() = default;
 
 void CachedResultWriter::UpdatePrefsIfExpired(
     const Config* config,
-    proto::ClientResult client_result,
+    const proto::ClientResult& client_result,
     const PlatformOptions& platform_options) {
-  if (!IsPrefUpdateRequiredForClient(config, platform_options) ||
-      config->on_demand_execution) {
+  if (!IsPrefUpdateRequiredForClient(config, client_result, platform_options)) {
     return;
   }
   VLOG(1) << "CachedResultWriter updating prefs with new result: "
@@ -36,21 +34,63 @@ void CachedResultWriter::UpdatePrefsIfExpired(
   UpdateNewClientResultToPrefs(config, client_result);
 }
 
+void CachedResultWriter::MarkResultAsUsed(const Config* config) {
+  absl::optional<proto::ClientResult> old_result =
+      result_prefs_->ReadClientResultFromPrefs(config->segmentation_key);
+  if (!old_result || old_result->first_used_timestamp() > 0) {
+    return;
+  }
+
+  old_result->set_first_used_timestamp(
+      base::Time::Now().ToDeltaSinceWindowsEpoch().InMicroseconds());
+  result_prefs_->SaveClientResultToPrefs(config->segmentation_key, *old_result);
+}
+
+void CachedResultWriter::CacheModelExecution(
+    const Config* config,
+    const proto::PredictionResult& result) {
+  auto now = base::Time::Now();
+  proto::ClientResult update =
+      metadata_utils::CreateClientResultFromPredResult(result, now);
+  update.set_first_used_timestamp(
+      now.ToDeltaSinceWindowsEpoch().InMicroseconds());
+  result_prefs_->SaveClientResultToPrefs(config->segmentation_key, update);
+}
+
 bool CachedResultWriter::IsPrefUpdateRequiredForClient(
     const Config* config,
+    const proto::ClientResult& new_client_result,
     const PlatformOptions& platform_options) {
-  absl::optional<proto::ClientResult> client_result =
+  absl::optional<proto::ClientResult> old_client_result =
       result_prefs_->ReadClientResultFromPrefs(config->segmentation_key);
-  if (!client_result.has_value()) {
+  if (!old_client_result.has_value()) {
+    return true;
+  }
+  const proto::PredictionResult& old_pred_result =
+      old_client_result->client_result();
+  const proto::PredictionResult& new_pred_result =
+      new_client_result.client_result();
+
+  // When migrating from legacy, `model_version` would be missing. We consider
+  // model is updated, if old model version is missing or if new model version
+  // is greater than old model version. We also assume model_version is always
+  // increasing monotonically.
+  bool is_model_updated =
+      new_pred_result.has_model_version() &&
+      (!old_pred_result.has_model_version() ||
+       (old_pred_result.has_model_version() &&
+        old_pred_result.model_version() < new_pred_result.model_version()));
+
+  if (is_model_updated &&
+      new_pred_result.output_config().ignore_previous_model_ttl()) {
     return true;
   }
   PostProcessor post_processor;
-  proto::PredictionResult pred_result = client_result->client_result();
   base::TimeDelta ttl_to_use =
-      post_processor.GetTTLForPredictedResult(pred_result);
+      post_processor.GetTTLForPredictedResult(old_pred_result);
   base::Time expiration_time =
       base::Time::FromDeltaSinceWindowsEpoch(
-          base::Microseconds(client_result->timestamp_us())) +
+          base::Microseconds(old_client_result->timestamp_us())) +
       ttl_to_use;
 
   bool force_refresh_results = platform_options.force_refresh_results;

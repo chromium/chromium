@@ -6,7 +6,7 @@ found in the LICENSE file.
 -->
 
 <set xmlns:android="http://schemas.android.com/apk/res/android" android:shareInterpolator="false">
-    <scale android:interpolator="@android:anim/decelerate_interpolator"
+    <scale android:interpolator="@anim/emphasized"
         android:fromXScale="1"
         android:toXScale="0.5"
         android:fromYScale="1"
@@ -14,7 +14,7 @@ found in the LICENSE file.
         android:pivotX="@fraction/menu_animation_pivot_x"
         android:pivotY="100%"
         android:duration="150" />
-    <alpha android:interpolator="@android:anim/decelerate_interpolator"
+    <alpha android:interpolator="@anim/emphasized"
         android:fromAlpha="1"
         android:toAlpha="0"
         android:duration="150" />

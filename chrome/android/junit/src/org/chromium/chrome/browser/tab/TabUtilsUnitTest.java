@@ -26,8 +26,6 @@ import org.robolectric.annotation.Implementation;
 import org.robolectric.annotation.Implements;
 import org.robolectric.annotation.Resetter;
 
-import org.chromium.base.FeatureList;
-import org.chromium.base.FeatureList.TestValues;
 import org.chromium.base.UserDataHost;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.JniMocker;
@@ -38,7 +36,6 @@ import org.chromium.components.browser_ui.site_settings.WebsitePreferenceBridge;
 import org.chromium.components.browser_ui.site_settings.WebsitePreferenceBridgeJni;
 import org.chromium.components.content_settings.ContentSettingValues;
 import org.chromium.components.content_settings.ContentSettingsType;
-import org.chromium.content_public.browser.ContentFeatureList;
 import org.chromium.content_public.browser.NavigationController;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.url.GURL;
@@ -93,6 +90,7 @@ public class TabUtilsUnitTest {
 
     private boolean mRdsDefault;
     private @ContentSettingValues int mRdsException;
+    private boolean mIsGlobal;
     private boolean mUseDesktopUserAgent;
     private @TabUserAgent int mTabUserAgent;
 
@@ -119,6 +117,10 @@ public class TabUtilsUnitTest {
         doAnswer(invocation -> mRdsException)
                 .when(mWebsitePreferenceBridgeJniMock)
                 .getContentSetting(
+                        any(), eq(ContentSettingsType.REQUEST_DESKTOP_SITE), any(), any());
+        doAnswer(invocation -> mIsGlobal)
+                .when(mWebsitePreferenceBridgeJniMock)
+                .isContentSettingGlobal(
                         any(), eq(ContentSettingsType.REQUEST_DESKTOP_SITE), any(), any());
         doAnswer(invocation -> mUseDesktopUserAgent)
                 .when(mNavigationController)
@@ -273,24 +275,7 @@ public class TabUtilsUnitTest {
     }
 
     @Test
-    public void testReadRequestDesktopSiteContentSettings_DesktopSiteExceptionDisabled() {
-        enableDesktopSiteException(false);
-        GURL gurl = new GURL(JUnitTestGURLs.EXAMPLE_URL);
-
-        // Global setting is Mobile.
-        mRdsDefault = false;
-        Assert.assertFalse("The result should match RDS global setting.",
-                TabUtils.readRequestDesktopSiteContentSettings(mProfile, gurl));
-
-        // Global setting is Desktop.
-        mRdsDefault = true;
-        Assert.assertTrue("The result should match RDS global setting.",
-                TabUtils.readRequestDesktopSiteContentSettings(mProfile, gurl));
-    }
-
-    @Test
-    public void testReadRequestDesktopSiteContentSettings_DesktopSiteExceptionEnabled() {
-        enableDesktopSiteException(true);
+    public void testReadRequestDesktopSiteContentSettings() {
         GURL gurl = new GURL(JUnitTestGURLs.EXAMPLE_URL);
 
         // Site level setting is Mobile.
@@ -308,9 +293,22 @@ public class TabUtilsUnitTest {
                 TabUtils.readRequestDesktopSiteContentSettings(mProfile, gurl));
     }
 
-    private void enableDesktopSiteException(boolean enable) {
-        TestValues features = new TestValues();
-        features.addFeatureFlagOverride(ContentFeatureList.REQUEST_DESKTOP_SITE_EXCEPTIONS, enable);
-        FeatureList.setTestValues(features);
+    @Test
+    public void testIsRequestDesktopSiteContentSettingsGlobal() {
+        GURL gurl = new GURL(JUnitTestGURLs.EXAMPLE_URL);
+
+        // Content setting is global setting.
+        mIsGlobal = true;
+        Assert.assertTrue("The result should be true when there is no url",
+                TabUtils.isRequestDesktopSiteContentSettingsGlobal(mProfile, null));
+        Assert.assertTrue("Content setting is global setting.",
+                TabUtils.isRequestDesktopSiteContentSettingsGlobal(mProfile, gurl));
+
+        // Content setting is NOT global setting.
+        mIsGlobal = false;
+        Assert.assertTrue("The result should be true when there is no url",
+                TabUtils.isRequestDesktopSiteContentSettingsGlobal(mProfile, null));
+        Assert.assertFalse("Content setting is domain setting.",
+                TabUtils.isRequestDesktopSiteContentSettingsGlobal(mProfile, gurl));
     }
 }

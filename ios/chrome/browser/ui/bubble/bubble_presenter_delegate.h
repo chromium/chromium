@@ -12,8 +12,12 @@
 
 // Whether the root view is visible.
 - (BOOL)rootViewVisibleForBubblePresenter:(BubblePresenter*)bubblePresenter;
-// Scroll offset for the current tab.
-- (BOOL)isTabScrolledToTopForBubblePresenter:(BubblePresenter*)bubblePresenter;
+
+// Whether the NTP exists.
+- (BOOL)isNTPActiveForBubblePresenter:(BubblePresenter*)bubblePresenter;
+
+// Whether the NTP is scrolled to top.
+- (BOOL)isNTPScrolledToTopForBubblePresenter:(BubblePresenter*)bubblePresenter;
 
 @end
 

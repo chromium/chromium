@@ -14,7 +14,6 @@
 #include "base/functional/bind.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/time/time.h"
-#include "base/unguessable_token.h"
 #include "chromeos/ash/components/cryptohome/common_types.h"
 #include "chromeos/ash/components/login/auth/auth_performer.h"
 #include "chromeos/ash/components/login/auth/public/auth_session_intent.h"
@@ -135,7 +134,7 @@ void AuthenticationDialog::Init() {
 }
 
 void AuthenticationDialog::NotifyResult(bool success,
-                                        const base::UnguessableToken& token,
+                                        const AuthProofToken& token,
                                         base::TimeDelta timeout) {
   if (on_auth_complete_) {
     std::move(on_auth_complete_).Run(success, token, timeout);

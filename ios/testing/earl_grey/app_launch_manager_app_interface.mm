@@ -4,10 +4,6 @@
 
 #import "ios/testing/earl_grey/app_launch_manager_app_interface.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 @implementation AppLaunchManagerAppInterface
 
 + (int)processIdentifier {

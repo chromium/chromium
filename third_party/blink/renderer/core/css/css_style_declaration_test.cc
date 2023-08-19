@@ -79,83 +79,29 @@ TEST(CSSStyleDeclarationTest, ExposureCacheLeak) {
 
   DummyExceptionStateForTesting exception_state;
 
+  const AtomicString origin_trial_test_property("originTrialTestProperty");
   {
     ScopedOriginTrialsSampleAPIForTest scoped_feature(true);
     EXPECT_TRUE(
-        style->NamedPropertyQuery("originTrialTestProperty", exception_state));
+        style->NamedPropertyQuery(origin_trial_test_property, exception_state));
     EXPECT_EQ(NamedPropertySetterResult::kIntercepted,
               style->AnonymousNamedSetter(script_state,
-                                          "originTrialTestProperty", normal));
-    EXPECT_EQ("normal", style->AnonymousNamedGetter("originTrialTestProperty"));
+                                          origin_trial_test_property, normal));
+    EXPECT_EQ("normal",
+              style->AnonymousNamedGetter(origin_trial_test_property));
   }
 
   {
     ScopedOriginTrialsSampleAPIForTest scoped_feature(false);
-    // Now that the feature is disabled, 'originTrialTestProperty' must not
+    // Now that the feature is disabled, 'origin_trial_test_property' must not
     // be usable just because it was enabled and accessed previously.
     EXPECT_FALSE(
-        style->NamedPropertyQuery("originTrialTestProperty", exception_state));
+        style->NamedPropertyQuery(origin_trial_test_property, exception_state));
     EXPECT_EQ(NamedPropertySetterResult::kDidNotIntercept,
               style->AnonymousNamedSetter(script_state,
-                                          "originTrialTestProperty", normal));
+                                          origin_trial_test_property, normal));
     EXPECT_EQ(g_null_atom,
-              style->AnonymousNamedGetter("originTrialTestProperty"));
-  }
-}
-
-TEST(CSSStyleDeclarationTest, ScrollTimelineShorthandWithAttachment) {
-  V8TestingScope v8_testing_scope;
-
-  {
-    ScopedScrollTimelineAttachmentForTest enabled(false);
-    const CSSPropertyValueSet* set = css_test_helpers::ParseDeclarationBlock(
-        "scroll-timeline: --foo inline");
-    ASSERT_TRUE(set);
-    auto* style = static_cast<CSSStyleDeclaration*>(
-        MakeGarbageCollected<PropertySetCSSStyleDeclaration>(
-            v8_testing_scope.GetExecutionContext(), *set->MutableCopy()));
-    EXPECT_EQ(AtomicString("--foo inline"),
-              style->getPropertyValue("scroll-timeline"));
-  }
-
-  {
-    ScopedScrollTimelineAttachmentForTest enabled(true);
-    const CSSPropertyValueSet* set = css_test_helpers::ParseDeclarationBlock(
-        "scroll-timeline: --foo inline defer");
-    ASSERT_TRUE(set);
-    auto* style = static_cast<CSSStyleDeclaration*>(
-        MakeGarbageCollected<PropertySetCSSStyleDeclaration>(
-            v8_testing_scope.GetExecutionContext(), *set->MutableCopy()));
-    EXPECT_EQ(AtomicString("--foo inline defer"),
-              style->getPropertyValue("scroll-timeline"));
-  }
-}
-
-TEST(CSSStyleDeclarationTest, ViewTimelineShorthandWithAttachment) {
-  V8TestingScope v8_testing_scope;
-
-  {
-    ScopedScrollTimelineAttachmentForTest enabled(false);
-    const CSSPropertyValueSet* set =
-        css_test_helpers::ParseDeclarationBlock("view-timeline: --foo inline");
-    ASSERT_TRUE(set);
-    auto* style = static_cast<CSSStyleDeclaration*>(
-        MakeGarbageCollected<PropertySetCSSStyleDeclaration>(
-            v8_testing_scope.GetExecutionContext(), *set->MutableCopy()));
-    EXPECT_EQ(AtomicString("--foo inline"),
-              style->getPropertyValue("view-timeline"));
-  }
-
-  {
-    ScopedScrollTimelineAttachmentForTest enabled(true);
-    const CSSPropertyValueSet* set = css_test_helpers::ParseDeclarationBlock(
-        "view-timeline: --foo inline defer");
-    ASSERT_TRUE(set);
-    auto* style = static_cast<CSSStyleDeclaration*>(
-        MakeGarbageCollected<PropertySetCSSStyleDeclaration>(
-            v8_testing_scope.GetExecutionContext(), *set->MutableCopy()));
-    EXPECT_EQ(AtomicString("--foo inline defer"),
-              style->getPropertyValue("view-timeline"));
+              style->AnonymousNamedGetter(origin_trial_test_property));
   }
 }
 

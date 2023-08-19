@@ -2508,8 +2508,9 @@ AtkObject* AXPlatformNodeAuraLinux::FindPrimaryWebContentDocument() {
   for (auto* object : web_content_candidates) {
     auto* child_node = AXPlatformNodeAuraLinux::FromAtkObject(object);
     // If it is a primary web contents, return it.
-    if (child_node->IsPrimaryWebContentsForWindow())
+    if (child_node->GetDelegate()->IsPrimaryWebContentsForWindow()) {
       return object;
+    }
   }
   return nullptr;
 }
@@ -3165,6 +3166,10 @@ void AXPlatformNodeAuraLinux::GetAtkState(AtkStateSet* atk_state_set) {
   }
 }
 
+// Some relations only exist in a high enough ATK version.
+// If a relation has a version requirement, it will be documented in
+// the link below.
+// https://docs.gtk.org/atk/enum.RelationType.html
 struct AtkIntRelation {
   ax::mojom::IntAttribute attribute;
   AtkRelationType relation;
@@ -3176,10 +3181,6 @@ static AtkIntRelation kIntRelations[] = {
      absl::nullopt},
     {ax::mojom::IntAttribute::kPopupForId, ATK_RELATION_POPUP_FOR,
      absl::nullopt},
-#if defined(ATK_226)
-    {ax::mojom::IntAttribute::kErrormessageId, ATK_RELATION_ERROR_MESSAGE,
-     ATK_RELATION_ERROR_FOR},
-#endif
 };
 
 struct AtkIntListRelation {
@@ -3197,6 +3198,10 @@ static AtkIntListRelation kIntListRelations[] = {
 #endif
     {ax::mojom::IntListAttribute::kDescribedbyIds, ATK_RELATION_DESCRIBED_BY,
      ATK_RELATION_DESCRIPTION_FOR},
+#if defined(ATK_226)
+    {ax::mojom::IntListAttribute::kErrormessageIds, ATK_RELATION_ERROR_MESSAGE,
+     ATK_RELATION_ERROR_FOR},
+#endif
     {ax::mojom::IntListAttribute::kFlowtoIds, ATK_RELATION_FLOWS_TO,
      ATK_RELATION_FLOWS_FROM},
     {ax::mojom::IntListAttribute::kLabelledbyIds, ATK_RELATION_LABELLED_BY,
@@ -3207,10 +3212,7 @@ void AXPlatformNodeAuraLinux::AddRelationToSet(AtkRelationSet* relation_set,
                                                AtkRelationType relation,
                                                AXPlatformNode* target) {
   DCHECK(target);
-
-  // Avoid adding self-referential relations.
-  if (target == this)
-    return;
+  DCHECK(GetDelegate()->IsValidRelationTarget(target));
 
   // If we were compiled with a newer version of ATK than the runtime version,
   // it's possible that we might try to add a relation that doesn't exist in
@@ -3254,11 +3256,8 @@ AtkRelationSet* AXPlatformNodeAuraLinux::GetAtkRelations() {
   }
 
   // For each possible relation defined by an IntAttribute, we test that
-  // attribute and then look for reverse relations. AddRelationToSet handles
-  // discarding self-referential relations.
-  for (unsigned i = 0; i < G_N_ELEMENTS(kIntRelations); i++) {
-    const AtkIntRelation& relation = kIntRelations[i];
-
+  // attribute and then look for reverse relations.
+  for (auto relation : kIntRelations) {
     if (AXPlatformNode* target =
             GetDelegate()->GetTargetNodeForRelation(relation.attribute))
       AddRelationToSet(relation_set, relation.relation, target);
@@ -3266,7 +3265,7 @@ AtkRelationSet* AXPlatformNodeAuraLinux::GetAtkRelations() {
     if (!relation.reverse_relation.has_value())
       continue;
 
-    std::set<AXPlatformNode*> target_ids =
+    std::vector<AXPlatformNode*> target_ids =
         GetDelegate()->GetSourceNodesForReverseRelations(relation.attribute);
     for (AXPlatformNode* target : target_ids) {
       AddRelationToSet(relation_set, relation.reverse_relation.value(), target);
@@ -3285,7 +3284,7 @@ AtkRelationSet* AXPlatformNodeAuraLinux::GetAtkRelations() {
     if (!relation.reverse_relation.has_value())
       continue;
 
-    std::set<AXPlatformNode*> reverse_target_ids =
+    std::vector<AXPlatformNode*> reverse_target_ids =
         GetDelegate()->GetSourceNodesForReverseRelations(relation.attribute);
     for (AXPlatformNode* target : reverse_target_ids) {
       AddRelationToSet(relation_set, relation.reverse_relation.value(), target);

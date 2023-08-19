@@ -30,11 +30,11 @@
 #include "cc/trees/layer_tree_host.h"
 #include "content/common/renderer.mojom.h"
 #include "content/public/browser/browser_context.h"
-#include "content/public/browser/native_web_keyboard_event.h"
 #include "content/public/browser/web_ui_controller.h"
 #include "content/public/browser/web_ui_controller_factory.h"
 #include "content/public/common/bindings_policy.h"
 #include "content/public/common/content_switches.h"
+#include "content/public/common/input/native_web_keyboard_event.h"
 #include "content/public/common/url_constants.h"
 #include "content/public/common/url_utils.h"
 #include "content/public/renderer/content_renderer_client.h"
@@ -418,9 +418,9 @@ class RenderViewImplTest : public RenderViewTest {
     NativeWebKeyboardEvent keydown_web_event(keydown_event);
     SendNativeKeyEvent(keydown_web_event);
 
-    ui::KeyEvent char_event(keydown_event.GetCharacter(),
-                            static_cast<ui::KeyboardCode>(key_code),
-                            ui::DomCode::NONE, flags);
+    ui::KeyEvent char_event = ui::KeyEvent::FromCharacter(
+        keydown_event.GetCharacter(), static_cast<ui::KeyboardCode>(key_code),
+        ui::DomCode::NONE, flags);
     NativeWebKeyboardEvent char_web_event(char_event);
     SendNativeKeyEvent(char_web_event);
 
@@ -807,7 +807,7 @@ TEST_F(RenderViewImplTest, BeginNavigation) {
   frame()->BeginNavigation(std::move(navigation_info));
   // If this is a renderer-initiated navigation that just begun, it should
   // stop and be sent to the browser.
-  EXPECT_TRUE(frame()->IsBrowserSideNavigationPending());
+  EXPECT_TRUE(frame()->IsRequestingNavigation());
 
   // Form posts to WebUI URLs.
   auto form_navigation_info = std::make_unique<blink::WebNavigationInfo>();
@@ -2723,8 +2723,7 @@ TEST_F(RenderViewImplTest, NavigationStartForReload) {
 
   auto common_params = blink::CreateCommonNavigationParams();
   common_params->url = GURL(url_string);
-  common_params->navigation_type =
-      blink::mojom::NavigationType::RELOAD_ORIGINAL_REQUEST_URL;
+  common_params->navigation_type = blink::mojom::NavigationType::RELOAD;
   common_params->transition = ui::PAGE_TRANSITION_RELOAD;
 
   // The browser navigation_start should not be used because beforeunload will

@@ -113,9 +113,6 @@ void AndroidTelemetryService::OnDownloadUpdated(download::DownloadItem* item) {
   }
 
   if (item->GetState() == download::DownloadItem::COMPLETE) {
-    base::UmaHistogramBoolean(
-        "SafeBrowsing.AndroidTelemetry.ApkDownload.IsMimeTypeApk",
-        (item->GetMimeType() == kApkMimeType));
     // Download completed. Send report.
     std::unique_ptr<ClientSafeBrowsingReportRequest> report = GetReport(item);
     MaybeSendApkDownloadReport(

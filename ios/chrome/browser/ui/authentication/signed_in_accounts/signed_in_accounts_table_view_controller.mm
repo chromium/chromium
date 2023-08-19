@@ -4,7 +4,8 @@
 
 #import "ios/chrome/browser/ui/authentication/signed_in_accounts/signed_in_accounts_table_view_controller.h"
 
-#import "base/mac/foundation_util.h"
+#import "base/apple/foundation_util.h"
+#import "base/memory/raw_ptr.h"
 #import "components/signin/public/identity_manager/identity_manager.h"
 #import "ios/chrome/browser/signin/chrome_account_manager_service.h"
 #import "ios/chrome/browser/signin/chrome_account_manager_service_factory.h"
@@ -12,10 +13,6 @@
 #import "ios/chrome/browser/signin/identity_manager_factory.h"
 #import "ios/chrome/browser/signin/system_identity.h"
 #import "ios/chrome/browser/ui/authentication/cells/table_view_identity_item.h"
-
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
 
 namespace {
 
@@ -41,8 +38,8 @@ typedef NS_ENUM(NSInteger, ItemType) {
   // Enable lookup of item corresponding to a given identity GAIA ID string.
   NSDictionary<NSString*, TableViewIdentityItem*>* _identityMap;
   // Account manager service to retrieve Chrome identities.
-  ChromeAccountManagerService* _accountManagerService;
-  signin::IdentityManager* _identityManager;
+  raw_ptr<ChromeAccountManagerService> _accountManagerService;
+  raw_ptr<signin::IdentityManager> _identityManager;
 }
 
 - (instancetype)initWithIdentityManager:
@@ -51,6 +48,8 @@ typedef NS_ENUM(NSInteger, ItemType) {
                       (ChromeAccountManagerService*)accountManagerService {
   self = [super initWithStyle:UITableViewStylePlain];
   if (self) {
+    CHECK(identityManager);
+    CHECK(accountManagerService);
     _identityManager = identityManager;
     _accountManagerService = accountManagerService;
     _accountManagerServiceObserver.reset(
@@ -58,6 +57,12 @@ typedef NS_ENUM(NSInteger, ItemType) {
                                                       _accountManagerService));
   }
   return self;
+}
+
+- (void)teardownUI {
+  _accountManagerServiceObserver.reset();
+  _accountManagerService = nullptr;
+  _identityManager = nullptr;
 }
 
 #pragma mark - UIViewController
@@ -102,7 +107,7 @@ typedef NS_ENUM(NSInteger, ItemType) {
 
 - (void)identityUpdated:(id<SystemIdentity>)identity {
   TableViewIdentityItem* item =
-      base::mac::ObjCCastStrict<TableViewIdentityItem>(
+      base::apple::ObjCCastStrict<TableViewIdentityItem>(
           [_identityMap objectForKey:identity.gaiaID]);
   [self updateAccountItem:item withIdentity:identity];
   [self reconfigureCellsForItems:@[ item ]];

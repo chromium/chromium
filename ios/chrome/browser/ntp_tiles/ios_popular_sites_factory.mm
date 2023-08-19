@@ -14,10 +14,6 @@
 #import "services/network/public/cpp/shared_url_loader_factory.h"
 #import "services/network/public/cpp/weak_wrapper_shared_url_loader_factory.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 std::unique_ptr<ntp_tiles::PopularSites>
 IOSPopularSitesFactory::NewForBrowserState(ChromeBrowserState* browser_state) {
   return std::make_unique<ntp_tiles::PopularSitesImpl>(

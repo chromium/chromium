@@ -9,10 +9,6 @@
 #import "ios/web/public/web_state.h"
 #import "ios/web_view/internal/app/application_context.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 WebViewSafeBrowsingClient::WebViewSafeBrowsingClient() = default;
 
 WebViewSafeBrowsingClient::~WebViewSafeBrowsingClient() = default;
@@ -29,6 +25,12 @@ SafeBrowsingService* WebViewSafeBrowsingClient::GetSafeBrowsingService() {
 safe_browsing::RealTimeUrlLookupService*
 WebViewSafeBrowsingClient::GetRealTimeUrlLookupService() {
   // ios/web_view does not support real time lookups, for now.
+  return nullptr;
+}
+
+safe_browsing::HashRealTimeService*
+WebViewSafeBrowsingClient::GetHashRealTimeService() {
+  // ios/web_view does not support hash-real-time lookups.
   return nullptr;
 }
 

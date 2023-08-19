@@ -1,0 +1,42 @@
+# Copyright 2023 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/chromeos/ui_mode.gni")
+import("//testing/test.gni")
+
+assert(is_chromeos_ash, "Non-Chrome-OS builds must not depend on //ash")
+
+source_set("common") {
+  deps = [ "//base" ]
+  sources = [ "early_prefs_constants.h" ]
+}
+
+source_set("writer") {
+  deps = [
+    ":common",
+    "//base",
+  ]
+  sources = [
+    "early_prefs_writer.cc",
+    "early_prefs_writer.h",
+  ]
+}
+
+source_set("reader") {
+  deps = [
+    ":common",
+    "//base",
+  ]
+  sources = [
+    "early_prefs_reader.cc",
+    "early_prefs_reader.h",
+  ]
+}
+
+source_set("early_prefs") {
+  deps = [
+    ":reader",
+    ":writer",
+  ]
+}

@@ -3,8 +3,6 @@
 <translationbundle lang="hi">
 <translation id="1075622780330595106">आपके <ph name="NUMBER_OF_TABS" /> टैब का हाल फ़िलहाल में इस्तेमाल नहीं हुआ है. उन्हें बंद करना चाहेंगे?</translation>
 <translation id="125153950246128346">कोई दूसरा टैब देखने के लिए टैप करें</translation>
-<translation id="1403228085774130835">आपके बंद किए गए टैब, Chrome के मुख्य मेन्यू में 'हाल ही में देखे गए' टैब पर जाकर देखे जा सकते हैं</translation>
-<translation id="1455506303394048917">इन गुप्त टैब में की गई आपकी गतिविधि को इस डिवाइस से मिटा दिया जाएगा</translation>
 <translation id="1499635324672558517">क्या सभी गुप्त टैब बंद करने हैं?</translation>
 <translation id="1657719826150349398">टैब को नीचे ले जाएं</translation>
 <translation id="1869137256605757565">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> टैब}one{<ph name="TABS_COUNT_MANY" /> टैब}other{<ph name="TABS_COUNT_MANY" /> टैब}}</translation>
@@ -47,6 +45,7 @@
 <translation id="5073204694187207510">फ़ुलस्क्रीन ग्रिड को छिपाएं</translation>
 <translation id="5076161749301278626">स्टोर की समीक्षाएं देखें?</translation>
 <translation id="5082793167783849073">पेजों की तुलना तुरंत करने के लिए समूह बनाएं. शुरू करने के लिए, लिंक को दबाकर रखें.</translation>
+<translation id="5339733443032484186">आपका आखिरी टैब</translation>
 <translation id="5490235265819901748">टैब ग्रुप बड़ा किया गया</translation>
 <translation id="5494920125229734069">सभी को चुनें</translation>
 <translation id="5556417849629758491">स्क्रीन पर सबसे ऊपर मौजूद विकल्प से स्टोर की जानकारी देखें</translation>
@@ -62,10 +61,12 @@
 <translation id="6228793724645064692">(स्टोर की रेटिंग)</translation>
 <translation id="6333260925957816943">इस स्टोर के बारे में जानकारी</translation>
 <translation id="639823877092900621">{TABS_COUNT,plural, =1{चुने गए <ph name="TABS_COUNT_ONE" /> टैब को ग्रुप से अलग करें}one{चुने गए <ph name="TABS_COUNT_MANY" /> टैब को ग्रुप से अलग करें}other{चुने गए <ph name="TABS_COUNT_MANY" /> टैब ग्रुप से अलग करें}}</translation>
+<translation id="6421412308143682486">{INCOGNITO_TABS_COUNT,plural, =1{अपने बंद किए गए टैब, Chrome के मुख्य मेन्यू में 'हाल ही में खोले गए टैब' पर जाकर देखे जा सकते हैं. हालांकि, गुप्त मोड में खोला गया टैब आपको यहां नहीं दिखेगा.}one{अपने बंद किए गए टैब, Chrome के मुख्य मेन्यू में 'हाल ही में खोले गए टैब' पर जाकर देखे जा सकते हैं. हालांकि, गुप्त मोड में खोला गया आपका # टैब यहां नहीं दिखेगा.}other{अपने बंद किए गए टैब, Chrome के मुख्य मेन्यू में 'हाल ही में खोले गए टैब' पर जाकर देखे जा सकते हैं. हालांकि, गुप्त मोड में खोले गए आपके # टैब यहां नहीं दिखेंगे.}}</translation>
 <translation id="6422650314852876533">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> टैब}one{<ph name="TABS_COUNT_MANY" /> टैब}other{<ph name="TABS_COUNT_MANY" /> टैब}}</translation>
 <translation id="6549021453810473782">स्टोर की जानकारी देखें</translation>
 <translation id="6562820390860419811">टैब को बाईं ओर ले जाएं</translation>
 <translation id="6615455863669487791">मुझे दिखाएं</translation>
+<translation id="661742612106409204">अपने बंद किए गए टैब, Chrome के मुख्य मेन्यू में 'हाल ही में खोले गए टैब' पर जाकर देखे जा सकते हैं.</translation>
 <translation id="6840760312327750441">टैब को ग्रुप करने के लिए, टैब को दबाकर रखें. इसके बाद, इसे दूसरे टैब पर खींचें और छोड़ें.</translation>
 <translation id="6856809498882026482">एक साथ कई टैब चुनने का मोड छिपाएं</translation>
 <translation id="7100731960740376323">{TABS_COUNT,plural, =1{टैब को शेयर करें}one{टैब को शेयर करें}other{टैब को शेयर करें}}</translation>

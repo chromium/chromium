@@ -13,7 +13,6 @@
 #include "base/task/single_thread_task_runner.h"
 #include "extensions/browser/image_loader.h"
 #include "extensions/common/extension.h"
-#include "ui/base/layout.h"
 #include "ui/gfx/canvas.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/gfx/geometry/size_conversions.h"

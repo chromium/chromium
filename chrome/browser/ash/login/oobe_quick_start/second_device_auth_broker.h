@@ -13,6 +13,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/types/expected.h"
 #include "chromeos/ash/components/attestation/attestation_flow.h"
+#include "chromeos/ash/components/quick_start/types.h"
 #include "components/endpoint_fetcher/endpoint_fetcher.h"
 #include "google_apis/gaia/gaia_auth_consumer.h"
 #include "third_party/abseil-cpp/absl/types/variant.h"
@@ -110,12 +111,18 @@ class SecondDeviceAuthBroker : public GaiaAuthConsumer {
     std::string fallback_url;
   };
 
-  using ChallengeBytesCallback = base::OnceCallback<void(
-      const base::expected<std::string, GoogleServiceAuthError>&)>;
-  using AttestationCertificateCallback = base::OnceCallback<void(
-      const base::expected<std::string, AttestationErrorType>&)>;
-  using RefreshTokenOrErrorCallback = base::OnceCallback<void(
-      const base::expected<std::string, GoogleServiceAuthError>&)>;
+  using ChallengeBytesOrError =
+      const base::expected<Base64UrlString, GoogleServiceAuthError>&;
+  using ChallengeBytesCallback =
+      base::OnceCallback<void(ChallengeBytesOrError)>;
+  using AttestationCertificateOrError =
+      const base::expected<PEMCertChain, AttestationErrorType>&;
+  using AttestationCertificateCallback =
+      base::OnceCallback<void(AttestationCertificateOrError)>;
+  using RefreshTokenOrError =
+      const base::expected<std::string, GoogleServiceAuthError>&;
+  using RefreshTokenOrErrorCallback =
+      base::OnceCallback<void(RefreshTokenOrError)>;
 
   // Possible set of response types for `RefreshTokenCallback`.
   using RefreshTokenResponse =
@@ -138,18 +145,20 @@ class SecondDeviceAuthBroker : public GaiaAuthConsumer {
   SecondDeviceAuthBroker& operator=(const SecondDeviceAuthBroker&) = delete;
   ~SecondDeviceAuthBroker() override;
 
-  // Gets Base64 encoded nonce challenge bytes from Gaia SecondDeviceAuth
+  // Fetches Base64Url encoded nonce challenge bytes from Gaia SecondDeviceAuth
   // service.
   // The callback is completed with either the challenge bytes - for successful
   // execution, or with a `GoogleServiceAuthError` - for a failed execution.
-  void GetChallengeBytes(ChallengeBytesCallback challenge_callback);
+  // Virtual for testing.
+  virtual void FetchChallengeBytes(ChallengeBytesCallback challenge_callback);
 
   // Fetches a new Remote Attestation certificate - for proving device
   // integrity.
   // The callback is completed with either a PEM encoded certificate chain
   // string, or with the type of error (`AttestationErrorType`) which occurred
   // during attestation.
-  void FetchAttestationCertificate(
+  // Virtual for testing.
+  virtual void FetchAttestationCertificate(
       const std::string& fido_credential_id,
       AttestationCertificateCallback certificate_callback);
 
@@ -158,9 +167,10 @@ class SecondDeviceAuthBroker : public GaiaAuthConsumer {
   // `FetchAttestationCertificate()`.
   // `refresh_token_callback` is completed with one of a possible set of result
   // types. See the type definition of `RefreshTokenResponse` for reference.
-  void FetchRefreshToken(const FidoAssertionInfo& fido_assertion_info,
-                         const std::string& certificate,
-                         RefreshTokenCallback refresh_token_callback);
+  // Virtual for testing.
+  virtual void FetchRefreshToken(const FidoAssertionInfo& fido_assertion_info,
+                                 const PEMCertChain& certificate,
+                                 RefreshTokenCallback refresh_token_callback);
 
  private:
   // Callback for handling challenge bytes response from Gaia.

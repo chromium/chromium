@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "content/common/service_worker/service_worker_resource_loader.h"
+#include "base/check_op.h"
 
 namespace content {
 ServiceWorkerResourceLoader::ServiceWorkerResourceLoader() = default;
@@ -10,16 +11,41 @@ ServiceWorkerResourceLoader::~ServiceWorkerResourceLoader() = default;
 
 void ServiceWorkerResourceLoader::SetCommitResponsibility(
     FetchResponseFrom fetch_response_from) {
-  DCHECK(commit_responsibility_ == FetchResponseFrom::kNoResponseYet);
-  commit_responsibility_ = fetch_response_from;
-  RecordFetchResponseFrom();
+  switch (fetch_response_from) {
+    case FetchResponseFrom::kNoResponseYet:
+      NOTREACHED_NORETURN();
+    case FetchResponseFrom::kSubresourceLoaderIsHandlingRedirect:
+      // kSubresourceLoaderIsHandlingRedirect is called only from subresources.
+      CHECK(!IsMainResourceLoader());
+      CHECK(commit_responsibility_ == FetchResponseFrom::kServiceWorker ||
+            commit_responsibility_ == FetchResponseFrom::kWithoutServiceWorker);
+      commit_responsibility_ = fetch_response_from;
+      break;
+    case FetchResponseFrom::kServiceWorker:
+    case FetchResponseFrom::kWithoutServiceWorker:
+      if (IsMainResourceLoader()) {
+        CHECK_EQ(commit_responsibility_, FetchResponseFrom::kNoResponseYet);
+      } else {
+        CHECK(commit_responsibility_ == FetchResponseFrom::kNoResponseYet ||
+              commit_responsibility_ ==
+                  FetchResponseFrom::kSubresourceLoaderIsHandlingRedirect);
+      }
+      commit_responsibility_ = fetch_response_from;
+      break;
+  }
 }
 
 void ServiceWorkerResourceLoader::RecordFetchResponseFrom() {
-  UMA_HISTOGRAM_ENUMERATION(
-      IsMainResourceLoader()
-          ? "ServiceWorker.FetchEvent.MainResource.FetchResponseFrom"
-          : "ServiceWorker.FetchEvent.Subresource.FetchResponseFrom",
-      commit_responsibility_);
+  CHECK(commit_responsibility_ == FetchResponseFrom::kServiceWorker ||
+        commit_responsibility_ == FetchResponseFrom::kWithoutServiceWorker);
+  if (IsMainResourceLoader()) {
+    UMA_HISTOGRAM_ENUMERATION(
+        "ServiceWorker.FetchEvent.MainResource.FetchResponseFrom",
+        commit_responsibility_);
+  } else {
+    UMA_HISTOGRAM_ENUMERATION(
+        "ServiceWorker.FetchEvent.Subresource.FetchResponseFrom",
+        commit_responsibility_);
+  }
 }
 }  // namespace content

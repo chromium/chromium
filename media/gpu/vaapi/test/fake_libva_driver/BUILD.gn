@@ -17,6 +17,8 @@ shared_library("fake_drv_video") {
 source_set("fake_libva_driver_internals") {
   visibility = [ ":fake_drv_video" ]
   sources = [
+    "fake_buffer.cc",
+    "fake_buffer.h",
     "fake_config.cc",
     "fake_config.h",
     "fake_context.cc",

@@ -8,6 +8,7 @@
 
 #include "ash/constants/ash_features.h"
 #include "ash/public/cpp/holding_space/holding_space_controller.h"
+#include "ash/public/cpp/holding_space/holding_space_file.h"
 #include "ash/public/cpp/holding_space/holding_space_image.h"
 #include "ash/public/cpp/holding_space/holding_space_item.h"
 #include "ash/public/cpp/holding_space/holding_space_model.h"
@@ -234,11 +235,15 @@ const HoldingSpaceItem* AddHoldingSpaceItem(
   auto* holding_space_model = ash::HoldingSpaceController::Get()->model();
   EXPECT_TRUE(holding_space_model);
 
+  const GURL file_system_url =
+      holding_space_util::ResolveFileSystemUrl(profile, item_path);
+  const HoldingSpaceFile::FileSystemType file_system_type =
+      holding_space_util::ResolveFileSystemType(profile, file_system_url);
+
   std::unique_ptr<HoldingSpaceItem> item =
       HoldingSpaceItem::CreateFileBackedItem(
-          HoldingSpaceItem::Type::kDownload, item_path,
-          holding_space_util::ResolveFileSystemUrl(profile, item_path),
-          progress,
+          HoldingSpaceItem::Type::kDownload, HoldingSpaceFile(file_system_type),
+          item_path, file_system_url, progress,
           base::BindLambdaForTesting([&](HoldingSpaceItem::Type type,
                                          const base::FilePath& file_path) {
             return std::make_unique<HoldingSpaceImage>(

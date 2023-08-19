@@ -9,10 +9,6 @@
 #import "base/strings/sys_string_conversions.h"
 #import "ios/chrome/browser/widget_kit/widget_kit_swift.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 using base::UmaHistogramEnumeration;
 
 namespace {
@@ -31,7 +27,8 @@ enum class WidgetKitExtensionKind {
   kLockscreenLauncherVoiceSearch = 6,
   kLockscreenLauncherGame = 7,
   kShortcuts = 8,
-  kMaxValue = kShortcuts,
+  kSearchPasswords = 9,
+  kMaxValue = kSearchPasswords,
 };
 
 WidgetKitExtensionKind UMAKindForWidgetKind(NSString* kind) {
@@ -49,6 +46,9 @@ WidgetKitExtensionKind UMAKindForWidgetKind(NSString* kind) {
   }
   if ([kind isEqualToString:@"ShortcutsWidget"]) {
     return WidgetKitExtensionKind::kShortcuts;
+  }
+  if ([kind isEqualToString:@"SearchPasswordsWidget"]) {
+    return WidgetKitExtensionKind::kSearchPasswords;
   }
   if ([kind isEqualToString:@"LockscreenLauncherSearchWidget"]) {
     return WidgetKitExtensionKind::kLockscreenLauncherSearch;

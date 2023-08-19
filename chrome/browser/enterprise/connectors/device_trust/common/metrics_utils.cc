@@ -91,9 +91,7 @@ void LogAttestationResult(DTAttestationResult result) {
   static constexpr char kAttestationResultHistogram[] =
       "Enterprise.DeviceTrust.Attestation.Result";
   base::UmaHistogramEnumeration(kAttestationResultHistogram, result);
-  if (result == DTAttestationResult::kSuccess) {
-    VLOG(1) << "Device Trust attestation was successful";
-  } else {
+  if (!IsSuccessAttestationResult(result)) {
     LOG(ERROR) << "Device Trust attestation error: "
                << AttestationErrorToString(result);
   }

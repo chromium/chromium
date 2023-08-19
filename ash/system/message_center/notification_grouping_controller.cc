@@ -289,7 +289,8 @@ NotificationGroupingController::CreateCopyForParentNotification(
   auto copy = std::make_unique<Notification>(
       message_center::NotificationType::NOTIFICATION_TYPE_SIMPLE,
       parent_notification.id() +
-          message_center::kIdSuffixForGroupContainerNotification,
+          message_center_utils::GenerateGroupParentNotificationIdSuffix(
+              parent_notification.notifier_id()),
       parent_notification.title(), parent_notification.message(),
       ui::ImageModel(), std::u16string(), parent_notification.origin_url(),
       parent_notification.notifier_id(), message_center::RichNotificationData(),
@@ -467,7 +468,11 @@ void NotificationGroupingController::OnNotificationUpdated(
   Notification* notification =
       message_center->FindNotificationById(notification_id);
 
-  if (!notification || !notification->group_child()) {
+  if (!notification) {
+    return;
+  }
+  ReparentNotificationIfNecessary(notification);
+  if (!notification->group_child()) {
     return;
   }
 
@@ -558,6 +563,34 @@ void NotificationGroupingController::UpdateParentNotificationPinnedState(
   }
 
   parent_notification->set_pinned(pinned);
+}
+
+void NotificationGroupingController::ReparentNotificationIfNecessary(
+    message_center::Notification* notification) {
+  if (!grouped_notification_list_->GroupedChildNotificationExists(
+          notification->id())) {
+    return;
+  }
+  auto* parent_notification =
+      message_center::MessageCenter::Get()->FindParentNotification(
+          notification);
+
+  if (!parent_notification || parent_notification == notification) {
+    grouped_notification_list_->RemoveGroupedChildNotification(
+        notification->id());
+    return;
+  }
+
+  // Update the group state for the `notification` if the parent notification
+  // does not match the parent id in `grouped_notification_list_`. This happens
+  // when a notification is updated with a different `NotifierId`.
+  if (grouped_notification_list_->GetParentForChild(notification->id()) !=
+      parent_notification->id()) {
+    grouped_notification_list_->RemoveGroupedChildNotification(
+        notification->id());
+    grouped_notification_list_->AddGroupedNotification(
+        notification->id(), parent_notification->id());
+  }
 }
 
 }  // namespace ash

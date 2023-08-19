@@ -142,10 +142,11 @@ class LauncherNudgeControllerTest : public AshTestBase {
     test_api_->RunMessageLoopUntilAnimationsDone();
   }
 
-  raw_ptr<LauncherNudgeController, ExperimentalAsh> nudge_controller_;
+  raw_ptr<LauncherNudgeController, DanglingUntriaged | ExperimentalAsh>
+      nudge_controller_;
   std::unique_ptr<TestNudgeAnimationObserver> observer_;
-  raw_ptr<ScrollableShelfView, ExperimentalAsh> scrollable_shelf_view_ =
-      nullptr;
+  raw_ptr<ScrollableShelfView, DanglingUntriaged | ExperimentalAsh>
+      scrollable_shelf_view_ = nullptr;
   std::unique_ptr<ShelfViewTestAPI> test_api_;
 };
 

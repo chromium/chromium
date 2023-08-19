@@ -119,10 +119,6 @@ class InMemoryURLIndexTest : public testing::Test {
   URLIndexPrivateData* GetPrivateData() const;
   base::CancelableTaskTracker* GetPrivateDataTracker() const;
   void ClearPrivateData();
-  void set_history_dir(const base::FilePath& dir_path);
-  bool GetCacheFilePath(base::FilePath* file_path) const;
-  void PostRestoreFromCacheFileTask();
-  void PostSaveToCacheFileTask();
   const SchemeSet& scheme_allowlist();
 
   // Pass-through functions to simplify our friendship with URLIndexPrivateData.

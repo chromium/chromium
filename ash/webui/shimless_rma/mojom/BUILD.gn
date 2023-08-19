@@ -93,6 +93,10 @@ mojom("mojom") {
           mojom = "ash.shimless_rma.mojom.ShutdownMethod"
           cpp = "::rmad::RepairCompleteState_ShutdownMethod"
         },
+        {
+          mojom = "ash.shimless_rma.mojom.FeatureLevel"
+          cpp = "::rmad::UpdateDeviceInfoState_FeatureLevel"
+        },
       ]
       traits_headers = [
         "shimless_rma_mojom_traits.h",

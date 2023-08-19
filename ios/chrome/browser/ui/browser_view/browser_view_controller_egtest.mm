@@ -8,6 +8,7 @@
 #import "base/feature_list.h"
 #import "base/ios/ios_util.h"
 #import "base/strings/sys_string_conversions.h"
+#import "base/test/ios/wait_util.h"
 #import "components/strings/grit/components_strings.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
@@ -25,10 +26,6 @@
 #import "ios/web/public/test/http_server/http_server.h"
 #import "ios/web/public/test/http_server/http_server_util.h"
 #import "ui/base/l10n/l10n_util.h"
-
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
 
 // This test suite only tests javascript in the omnibox. Nothing to do with BVC
 // really, the name is a bit misleading.
@@ -116,9 +113,16 @@
 
   // Types some javascript in the omnibox to trigger a navigation.
   NSString* script =
-      [NSString stringWithFormat:@"javascript:location.href='%s'\n",
+      [NSString stringWithFormat:@"javascript:location.href='%s'",
                                  destinationURL.spec().c_str()];
   [ChromeEarlGreyUI focusOmniboxAndType:script];
+
+  // The omnibox popup may update multiple times.
+  base::test::ios::SpinRunLoopWithMinDelay(base::Seconds(1));
+
+  // TODO(crbug.com/1454516): Use simulatePhysicalKeyboardEvent until
+  // replaceText can properly handle \n.
+  [ChromeEarlGrey simulatePhysicalKeyboardEvent:@"\n" flags:0];
 
   // In the omnibox, the new URL should be present, without the http:// prefix.
   [[EarlGrey selectElementWithMatcher:chrome_test_util::Omnibox()]

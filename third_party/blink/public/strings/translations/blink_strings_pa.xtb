@@ -26,7 +26,6 @@
 <translation id="2060505056492490888">'<ph name="DOT" />' ,'<ph name="INVALIDDOMAIN" />' ਵਿੱਚ ਇੱਕ ਗ਼ਲਤ ਪੋਜੀਸ਼ਨ ਤੇ ਵਰਤਿਆ ਜਾਂਦਾ ਹੈ।</translation>
 <translation id="2148716181193084225">ਅੱਜ</translation>
 <translation id="2226276347425096477">ਕਿਰਪਾ ਕਰਕੇ ਇਸ ਲਿਖਤ ਨੂੰ <ph name="MAX_CHARACTERS" /> ਅੱਖਰਾਂ ਤੱਕ ਜਾਂ ਇਸ ਤੋਂ ਘੱਟ ਵਿੱਚ ਛੋਟਾ ਕਰੋ (ਇਸ ਵੇਲੇ ਤੁਸੀਂ <ph name="CURRENT_LENGTH" /> ਅੱਖਰ ਵਰਤ ਰਹੇ ਹੋ)।</translation>
-<translation id="2246498165605549352">ਸਥਾਨਕ ਫ਼ਾਈਲ</translation>
 <translation id="2247351761944213033">ਹਫ਼ਤਾ <ph name="WEEKNUMBER" />, <ph name="YEAR" /></translation>
 <translation id="2277199496770840904">ਟਰੈਕ <ph name="NUMBER" /></translation>
 <translation id="2393030564806080191">ਛੇ-ਦਸ਼ਮਲਵ ਪ੍ਰਨਾਲੀ ਰੰਗ ਮੁੱਲ</translation>
@@ -89,6 +88,7 @@
 <translation id="5425179576310518467">ਮੌਜੂਦਾ ਤਾਰੀਖ</translation>
 <translation id="5466621249238537318">ਕਿਰਪਾ ਕਰਕੇ ਇੱਕ ਜਾਂ ਵੱਧ ਫਾਈਲਾਂ ਚੁਣੋ।</translation>
 <translation id="5468998798572797635">ਪੂਰੀ ਸਕ੍ਰੀਨ ਤੋਂ ਬਾਹਰ ਜਾਓ</translation>
+<translation id="5514612371225420585">ਤੁਹਾਡੇ ਡੀਵਾਈਸ 'ਤੇ ਮੌਜੂਦ ਫ਼ਾਈਲ</translation>
 <translation id="5516235301412634559">0.75</translation>
 <translation id="5537725057119320332">ਕਾਸਟ ਕਰੋ</translation>
 <translation id="5546461542133609677">ਅਨਮਿਊਟ ਕਰੋ</translation>
@@ -113,6 +113,7 @@
 <translation id="6398862346408813489">ਮਹੀਨਾ ਚੋਣ ਪੈਨਲ ਦਿਖਾਓ</translation>
 <translation id="6404546809543547843">ਆਡੀਓ ਸਮਾਂ ਸਕਰੱਬਰ</translation>
 <translation id="6443871981718447451">ਬੰਦ ਸੁਰਖੀਆਂ ਵਾਲਾ ਮੀਨੂ ਦਿਖਾਓ</translation>
+<translation id="6484738902856791350">ਪ੍ਰਿਟੀ ਪ੍ਰਿੰਟ</translation>
 <translation id="6550675742724504774">ਚੋਣਾਂ</translation>
 <translation id="6572309429103589720">ਅਵੈਧ ਵਿਆਕਰਨ</translation>
 <translation id="658823671542763450">ਪੂਰੀ ਸਕ੍ਰੀਨ ਦਰਜ ਕਰੋ</translation>

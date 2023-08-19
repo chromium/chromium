@@ -12,6 +12,7 @@ proto_library("optimization_guide_proto") {
   proto_in_dir = "//"
   sources = [
     "autocomplete_scoring_model_metadata.proto",
+    "client_side_phishing_model_metadata.proto",
     "common_types.proto",
     "hint_cache.proto",
     "hints.proto",
@@ -24,6 +25,7 @@ proto_library("optimization_guide_proto") {
     "page_topics_override_list.proto",
     "push_notification.proto",
     "salient_image_metadata.proto",
+    "visual_search_model_metadata.proto",
   ]
 }
 

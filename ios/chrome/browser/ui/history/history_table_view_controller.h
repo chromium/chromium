@@ -16,7 +16,7 @@ enum class UrlLoadStrategy;
 @class ActionSheetCoordinator;
 @protocol TableViewFaviconDataSource;
 @protocol HistoryMenuProvider;
-@protocol HistoryUIDelegate;
+@protocol HistoryTableViewControllerDelegate;
 @protocol HistoryPresentationDelegate;
 
 // ChromeTableViewController for displaying history items.
@@ -35,7 +35,7 @@ enum class UrlLoadStrategy;
 // `searchTerms` will be the initial value of the text in the search bar.
 @property(nonatomic, copy) NSString* searchTerms;
 // Delegate for this HistoryTableView.
-@property(nonatomic, weak) id<HistoryUIDelegate> delegate;
+@property(nonatomic, weak) id<HistoryTableViewControllerDelegate> delegate;
 // Delegate used to make the Tab UI visible.
 @property(nonatomic, weak) id<HistoryPresentationDelegate> presentationDelegate;
 // Data source for favicon images.

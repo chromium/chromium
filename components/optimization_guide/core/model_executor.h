@@ -11,6 +11,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/time/time.h"
+#include "base/types/optional_ref.h"
 #include "components/optimization_guide/proto/models.pb.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
@@ -46,8 +47,11 @@ class ModelExecutor {
       scoped_refptr<base::SequencedTaskRunner> reply_task_runner) = 0;
 
   // Updates model file. If `SetShouldUnloadModelOnComplete` is false,
-  // immedidately loads model into memory.
-  virtual void UpdateModelFile(const base::FilePath& file_path) = 0;
+  // immedidately loads model into memory. `file_path` will be nullopt if no
+  // valid model is found, and the previous model should be unloaded in that
+  // case.
+  virtual void UpdateModelFile(
+      base::optional_ref<const base::FilePath> file_path) = 0;
 
   virtual void UnloadModel() = 0;
 
@@ -75,6 +79,10 @@ class ModelExecutor {
   virtual void SendForBatchExecution(
       BatchExecutionCallback callback_on_complete,
       base::TimeTicks start_time,
+      ConstRefInputVector inputs) = 0;
+
+  // Synchronous batch execution.
+  virtual std::vector<absl::optional<OutputType>> SendForBatchExecutionSync(
       ConstRefInputVector inputs) = 0;
 
   // IMPORTANT: These WeakPointers must only be dereferenced on the

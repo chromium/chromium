@@ -60,8 +60,8 @@ class FakeTabSlotController : public TabSlotController {
       TabSlotView* source,
       const ui::LocatedEvent& event,
       const ui::ListSelectionModel& original_selection) override {}
-  void ContinueDrag(views::View* view, const ui::LocatedEvent& event) override {
-  }
+  Liveness ContinueDrag(views::View* view,
+                        const ui::LocatedEvent& event) override;
   bool EndDrag(EndDragReason reason) override;
   Tab* GetTabAt(const gfx::Point& point) override;
   const Tab* GetAdjacentTab(const Tab* tab, int offset) override;
@@ -71,14 +71,10 @@ class FakeTabSlotController : public TabSlotController {
   bool ShowDomainInHoverCards() const override;
   bool HoverCardIsShowingForTab(Tab* tab) override;
   int GetBackgroundOffset() const override;
-  bool ShouldPaintAsActiveFrame() const override;
   int GetStrokeThickness() const override;
   bool CanPaintThrobberToLayer() const override;
   bool HasVisibleBackgroundTabShapes() const override;
   SkColor GetTabSeparatorColor() const override;
-  SkColor GetTabBackgroundColor(
-      TabActive active,
-      BrowserFrameActiveState active_state) const override;
   SkColor GetTabForegroundColor(TabActive active) const override;
   absl::optional<int> GetCustomBackgroundId(
       BrowserFrameActiveState active_state) const override;
@@ -99,13 +95,8 @@ class FakeTabSlotController : public TabSlotController {
   void ShiftGroupRight(const tab_groups::TabGroupId& group) override {}
   const Browser* GetBrowser() const override;
 
-  void SetTabColors(SkColor bg_color_active,
-                    SkColor fg_color_active,
-                    SkColor bg_color_inactive,
-                    SkColor fg_color_inactive) {
-    tab_bg_color_active_ = bg_color_active;
+  void SetTabColors(SkColor fg_color_active, SkColor fg_color_inactive) {
     tab_fg_color_active_ = fg_color_active;
-    tab_bg_color_inactive_ = bg_color_inactive;
     tab_fg_color_inactive_ = fg_color_inactive;
   }
 
@@ -116,9 +107,7 @@ class FakeTabSlotController : public TabSlotController {
   raw_ptr<Tab, DanglingUntriaged> active_tab_ = nullptr;
   bool paint_throbber_to_layer_ = true;
 
-  SkColor tab_bg_color_active_ = gfx::kPlaceholderColor;
   SkColor tab_fg_color_active_ = gfx::kPlaceholderColor;
-  SkColor tab_bg_color_inactive_ = gfx::kPlaceholderColor;
   SkColor tab_fg_color_inactive_ = gfx::kPlaceholderColor;
 };
 

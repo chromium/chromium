@@ -59,11 +59,17 @@ class ASH_EXPORT FloatController : public TabletModeObserver,
   ~FloatController() override;
 
   // Returns float window bounds in clamshell mode in root window coordinates.
-  static gfx::Rect GetPreferredFloatWindowClamshellBounds(aura::Window* window);
+  static gfx::Rect GetFloatWindowClamshellBounds(
+      aura::Window* window,
+      chromeos::FloatStartLocation location);
 
   // Gets the ideal float bounds of `window` in tablet mode if it were to be
   // floated, in root window coordinates.
-  static gfx::Rect GetPreferredFloatWindowTabletBounds(aura::Window* window);
+  static gfx::Rect GetFloatWindowTabletBounds(aura::Window* window);
+
+  // Float the `window` if it's not floated, otherwise unfloat it. If called in
+  // clamshell mode, the default location is the bottom right.
+  void ToggleFloat(aura::Window* window);
 
   // Untucks `floated_window`. Does nothing if the window is already untucked.
   void MaybeUntuckFloatedWindowForTablet(aura::Window* floated_window);
@@ -139,7 +145,9 @@ class ASH_EXPORT FloatController : public TabletModeObserver,
   void OnPinnedStateChanged(aura::Window* pinned_window) override;
 
   // chromeos::FloatControllerBase:
-  void ToggleFloat(aura::Window* window) override;
+  void SetFloat(aura::Window* window,
+                chromeos::FloatStartLocation float_start_location) override;
+  void UnsetFloat(aura::Window* window) override;
 
   // ScreenRotationAnimatorObserver:
   void OnScreenCopiedBeforeRotation() override;

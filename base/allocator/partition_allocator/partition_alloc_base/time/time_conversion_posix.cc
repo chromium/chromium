@@ -10,7 +10,7 @@
 
 #include <limits>
 
-#include "base/allocator/partition_allocator/partition_alloc_check.h"
+#include "base/allocator/partition_allocator/partition_alloc_base/check.h"
 
 namespace partition_alloc::internal::base {
 
@@ -35,8 +35,8 @@ struct timespec TimeDelta::ToTimeSpec() const {
 
 // static
 Time Time::FromTimeVal(struct timeval t) {
-  PA_DCHECK(t.tv_usec < static_cast<int>(Time::kMicrosecondsPerSecond));
-  PA_DCHECK(t.tv_usec >= 0);
+  PA_BASE_DCHECK(t.tv_usec < static_cast<int>(Time::kMicrosecondsPerSecond));
+  PA_BASE_DCHECK(t.tv_usec >= 0);
   if (t.tv_usec == 0 && t.tv_sec == 0)
     return Time();
   if (t.tv_usec == static_cast<suseconds_t>(Time::kMicrosecondsPerSecond) - 1 &&

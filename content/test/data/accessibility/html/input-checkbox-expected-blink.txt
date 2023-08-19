@@ -8,10 +8,10 @@ rootWebArea
 ++++++++checkBox inputType='checkbox' name='Checkbox1' checkedState=true
 ++++++++staticText ignored name='Checkbox1'
 ++++++labelText ignored
-++++++++checkBox inputType='checkbox' name='Checkbox2' checkedState=true
+++++++++checkBox inputType='checkbox' name='Checkbox2' checkedState=false
 ++++++++staticText ignored name='Checkbox2'
 ++++++labelText ignored
-++++++++checkBox inputType='checkbox' name='Checkbox3' checkedState=true
+++++++++checkBox inputType='checkbox' name='Checkbox3' checkedState=false
 ++++++++staticText ignored name='Checkbox3'
 ++++++labelText ignored
 ++++++++checkBox inputType='checkbox' name='Checkbox4' checkedState=mixed

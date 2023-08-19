@@ -40,6 +40,7 @@ class AddressEditorViewTest : public ChromeViewsTestBase {
 
   void TearDown() override {
     test_web_contents_.reset();
+    controller_ = nullptr;
     view_.reset();
     ChromeViewsTestBase::TearDown();
   }
@@ -50,7 +51,7 @@ class AddressEditorViewTest : public ChromeViewsTestBase {
   autofill::AutofillProfile profile_to_edit_;
   TestingProfile profile_;
   std::unique_ptr<content::WebContents> test_web_contents_;
-  raw_ptr<AddressEditorController, DanglingUntriaged> controller_;
+  raw_ptr<AddressEditorController> controller_;
   std::unique_ptr<AddressEditorView> view_;
 };
 

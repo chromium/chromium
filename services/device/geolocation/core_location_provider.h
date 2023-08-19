@@ -9,6 +9,7 @@
 #include "base/task/single_thread_task_runner.h"
 #include "services/device/public/cpp/geolocation/geolocation_manager.h"
 #include "services/device/public/cpp/geolocation/location_provider.h"
+#include "services/device/public/mojom/geolocation_internals.mojom.h"
 #include "services/device/public/mojom/geoposition.mojom.h"
 
 namespace device {
@@ -26,6 +27,7 @@ class CoreLocationProvider : public LocationProvider,
   ~CoreLocationProvider() override;
 
   // LocationProvider implementation.
+  void FillDiagnostics(mojom::GeolocationDiagnostics& diagnostics) override;
   void SetUpdateCallback(
       const LocationProviderUpdateCallback& callback) override;
   void StartProvider(bool high_accuracy) override;
@@ -53,6 +55,7 @@ class CoreLocationProvider : public LocationProvider,
   scoped_refptr<GeolocationManager::PositionObserverList> position_observers_;
   mojom::GeopositionResultPtr last_result_;
   LocationProviderUpdateCallback callback_;
+  bool is_started_ = false;
   bool has_permission_ = false;
   bool provider_start_attemped_ = false;
   bool high_accuracy_ = false;

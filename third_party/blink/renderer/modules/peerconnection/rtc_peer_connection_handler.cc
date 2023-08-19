@@ -4,7 +4,6 @@
 
 #include "third_party/blink/renderer/modules/peerconnection/rtc_peer_connection_handler.h"
 
-#include <ctype.h>
 #include <string.h>
 
 #include <functional>
@@ -167,9 +166,9 @@ void RunSynchronousOnceClosure(base::OnceClosure closure,
 
 // Converter functions from Blink types to WebRTC types.
 
-std::vector<const GoogMediaConstraintsSet*> AllMediaConstraintSets(
+HeapVector<Member<const GoogMediaConstraintsSet>> AllMediaConstraintSets(
     GoogMediaConstraints* media_constraints) {
-  std::vector<const GoogMediaConstraintsSet*> result;
+  HeapVector<Member<const GoogMediaConstraintsSet>> result;
   if (media_constraints->hasMandatory()) {
     result.push_back(media_constraints->mandatory());
   }
@@ -193,12 +192,12 @@ void CopyConstraintsIntoRtcConfiguration(
   // Legacy constraints parsing looks at both mandatory and optional constraints
   // sets (similar to how ScanConstraintsForExactValue() looks at basic and
   // advanced constraints). The sets are iterated until a value is found.
-  std::vector<const GoogMediaConstraintsSet*> all_constraints_sets =
+  HeapVector<Member<const GoogMediaConstraintsSet>> all_constraints_sets =
       AllMediaConstraintSets(media_constraints);
 
   // TODO(crbug.com/804275): Delete when Fuchsia no longer depends on it.
   absl::optional<bool> dtls_srtp_key_agreement;
-  for (auto* constraints_set : all_constraints_sets) {
+  for (auto& constraints_set : all_constraints_sets) {
     if (constraints_set->hasDtlsSrtpKeyAgreement()) {
       dtls_srtp_key_agreement = constraints_set->dtlsSrtpKeyAgreement();
       break;

@@ -26,20 +26,18 @@
 #import "ios/chrome/browser/browser_state_metrics/browser_state_metrics.h"
 #import "ios/chrome/browser/optimization_guide/optimization_guide_service.h"
 #import "ios/chrome/browser/optimization_guide/optimization_guide_service_factory.h"
-#import "ios/chrome/browser/paths/paths.h"
 #import "ios/chrome/browser/push_notification/push_notification_browser_state_service_factory.h"
 #import "ios/chrome/browser/segmentation_platform/segmentation_platform_service_factory.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/browser_state/browser_state_info_cache.h"
+#import "ios/chrome/browser/shared/model/paths/paths.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
 #import "ios/chrome/browser/signin/account_consistency_service_factory.h"
 #import "ios/chrome/browser/signin/account_reconcilor_factory.h"
 #import "ios/chrome/browser/signin/identity_manager_factory.h"
+#import "ios/chrome/browser/supervised_user/child_account_service_factory.h"
+#import "ios/chrome/browser/supervised_user/supervised_user_service_factory.h"
 #import "ios/chrome/browser/unified_consent/unified_consent_service_factory.h"
-
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
 
 namespace {
 
@@ -148,7 +146,7 @@ ChromeBrowserState* ChromeBrowserStateManagerImpl::GetBrowserState(
           {base::TaskShutdownBehavior::BLOCK_SHUTDOWN, base::MayBlock()});
 
   std::unique_ptr<ChromeBrowserStateImpl> browser_state_impl(
-      new ChromeBrowserStateImpl(io_task_runner, path));
+      new ChromeBrowserStateImpl(path, io_task_runner));
   DCHECK(!browser_state_impl->IsOffTheRecord());
 
   std::pair<ChromeBrowserStateImplPathMap::iterator, bool> insert_result =
@@ -229,6 +227,9 @@ void ChromeBrowserStateManagerImpl::DoFinalInitForServices(
       browser_state);
 
   PushNotificationBrowserStateServiceFactory::GetForBrowserState(browser_state);
+
+  ChildAccountServiceFactory::GetForBrowserState(browser_state)->Init();
+  SupervisedUserServiceFactory::GetForBrowserState(browser_state)->Init();
 }
 
 void ChromeBrowserStateManagerImpl::AddBrowserStateToCache(
@@ -240,6 +241,9 @@ void ChromeBrowserStateManagerImpl::AddBrowserStateToCache(
 
   signin::IdentityManager* identity_manager =
       IdentityManagerFactory::GetForBrowserState(browser_state);
+  // TODO(crbug.com/1463438): Requires additional investigation regarding
+  // whether to remove kSync or replace it with kSignin. See
+  // ConsentLevel::kSync for details.
   CoreAccountInfo account_info =
       identity_manager->GetPrimaryAccountInfo(signin::ConsentLevel::kSync);
   std::u16string username = base::UTF8ToUTF16(account_info.email);

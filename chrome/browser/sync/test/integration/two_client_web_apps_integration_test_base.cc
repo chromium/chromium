@@ -51,7 +51,7 @@ void TwoClientWebAppsIntegrationTestBase::SyncTurnOff() {
 
 void TwoClientWebAppsIntegrationTestBase::SyncTurnOn() {
   for (SyncServiceImplHarness* client : GetSyncClients()) {
-    client->EnableSyncFeature();
+    ASSERT_TRUE(client->EnableSyncFeature());
   }
   AwaitWebAppQuiescence();
 }

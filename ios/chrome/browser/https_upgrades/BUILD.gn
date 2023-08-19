@@ -3,7 +3,6 @@
 # found in the LICENSE file.
 
 source_set("https_upgrades") {
-  configs += [ "//build/config/compiler:enable_arc" ]
   sources = [
     "https_only_mode_upgrade_tab_helper.h",
     "https_only_mode_upgrade_tab_helper.mm",
@@ -35,12 +34,12 @@ source_set("https_upgrades") {
 }
 
 source_set("unit_tests") {
-  configs += [ "//build/config/compiler:enable_arc" ]
   testonly = true
   sources = [ "https_only_mode_upgrade_tab_helper_unittest.mm" ]
   deps = [
     ":https_upgrades",
     "//base/test:test_support",
+    "//components/keyed_service/core",
     "//components/keyed_service/ios",
     "//components/prefs:test_support",
     "//components/security_interstitials/core",
@@ -49,6 +48,7 @@ source_set("unit_tests") {
     "//ios/chrome/browser/shared/model/browser_state:test_support",
     "//ios/chrome/browser/shared/model/prefs:pref_names",
     "//ios/components/security_interstitials/https_only_mode",
+    "//ios/components/security_interstitials/https_only_mode:feature",
     "//ios/components/security_interstitials/https_only_mode:test_util",
     "//ios/web/public",
     "//ios/web/public/test",
@@ -59,10 +59,7 @@ source_set("unit_tests") {
 }
 
 source_set("eg_test_support+eg2") {
-  configs += [
-    "//build/config/compiler:enable_arc",
-    "//build/config/ios:xctest_config",
-  ]
+  configs += [ "//build/config/ios:xctest_config" ]
   testonly = true
 
   sources = [
@@ -77,10 +74,7 @@ source_set("eg_test_support+eg2") {
 }
 
 source_set("eg_app_support+eg2") {
-  configs += [
-    "//build/config/compiler:enable_arc",
-    "//build/config/ios:xctest_config",
-  ]
+  configs += [ "//build/config/ios:xctest_config" ]
   testonly = true
 
   sources = [
@@ -104,10 +98,7 @@ source_set("eg_app_support+eg2") {
 }
 
 source_set("eg2_tests") {
-  configs += [
-    "//build/config/compiler:enable_arc",
-    "//build/config/ios:xctest_config",
-  ]
+  configs += [ "//build/config/ios:xctest_config" ]
   testonly = true
 
   sources = [

@@ -17,7 +17,9 @@ using UsbManualApiTest = extensions::ExtensionApiTest;
 #define MAYBE_MANUAL_ListInterfaces MANUAL_ListInterfaces
 #endif
 IN_PROC_BROWSER_TEST_F(UsbManualApiTest, MAYBE_MANUAL_ListInterfaces) {
+  auto dialog_action_reset =
+      extensions::PermissionsRequestFunction::SetDialogActionForTests(
+          extensions::PermissionsRequestFunction::DialogAction::kAutoConfirm);
   extensions::PermissionsRequestFunction::SetIgnoreUserGestureForTests(true);
-  extensions::PermissionsRequestFunction::SetAutoConfirmForTests(true);
   ASSERT_TRUE(RunExtensionTest("usb_manual/list_interfaces"));
 }

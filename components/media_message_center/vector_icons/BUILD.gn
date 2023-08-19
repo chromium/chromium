@@ -9,7 +9,8 @@ aggregate_vector_icons("media_vector_icons") {
 
   sources = [
     "chevron_right.icon",
-    "media_cast.icon",
+    "media_cast_start.icon",
+    "media_cast_stop.icon",
     "media_enter_pip.icon",
     "media_exit_pip.icon",
     "media_next_track.icon",

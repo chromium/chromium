@@ -1,3 +1,4 @@
 per-file new_tab_page*=file://chrome/android/java/src/org/chromium/chrome/browser/ntp/OWNERS
 per-file *feed_*=file://components/feed/OWNERS
 per-file *incognito_*=file://chrome/browser/incognito/OWNERS
+per-file tab_switcher_module_container.xml=file://chrome/android/features/start_surface/OWNERS

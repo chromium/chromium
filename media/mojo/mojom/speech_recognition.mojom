@@ -9,6 +9,8 @@ import "mojo/public/mojom/base/time.mojom";
 import "mojo/public/mojom/base/unguessable_token.mojom";
 import "ui/gfx/geometry/mojom/geometry.mojom";
 
+// Next MinVersion: 4
+
 // Corresponds to the LangIdEvent.ConfidenceInterval defined in
 // http://google3/speech/soda/public/soda_event.proto.
 [Stable, Extensible]
@@ -17,6 +19,16 @@ enum ConfidenceLevel {
   kNotConfident,
   kConfident,
   kHighlyConfident,
+};
+
+// Corresponds to the LangIdEvent.AsrSwitchResult defined in
+// http://google3/speech/soda/public/soda_event.proto.
+[Stable, Extensible]
+enum AsrSwitchResult {
+  [Default] kDefaultNoSwitch,
+  kSwitchSucceeded,
+  kSwitchFailed,
+  kSwitchSkipedNoLp,
 };
 
 // The main interface a renderer client uses to interact with a speech
@@ -56,6 +68,10 @@ interface SpeechRecognitionRecognizer {
   // Notify the speech recognition recognizer that the language changed. Takes
   // in the locale string (e.g. "en-US").
   OnLanguageChanged@2(string language);
+
+  // Notify the speech recognition recognizer that the mask offensive words
+  // setting has changed.
+  [MinVersion=2] OnMaskOffensiveWordsChanged@3(bool mask_offensive_words);
 };
 
 // The interface used to return speech recognition events from the speech
@@ -142,6 +158,10 @@ struct LanguageIdentificationEvent {
 
   // The confidence interval.
   ConfidenceLevel confidence_level;
+
+  // If multilang is enabled, describes the actions Automatic Speech Recognition
+  // took as a result of this event.
+  [MinVersion=1] AsrSwitchResult? asr_switch_result;
 };
 
 // The interface used to notify the speech recognition client of events
@@ -157,6 +177,11 @@ interface SpeechRecognitionBrowserObserver {
   // Notify the speech recognition client when the speech recognition language
   // changes.
   SpeechRecognitionLanguageChanged@1(string language);
+
+  // Notify the speech recognition client when the mask offensive words pref
+  // changes.
+  [MinVersion=2] SpeechRecognitionMaskOffensiveWordsChanged@2(
+      bool mask_offensive_words);
 };
 
 // The user-facing source of recognized speech; typically a tab. The remote
@@ -247,7 +272,6 @@ enum RecognizerClientType {
 };
 
 // Options for speech recognition.
-// Next version: 2
 [Stable]
 struct SpeechRecognitionOptions {
   // What kind of recognition to use.
@@ -270,4 +294,12 @@ struct SpeechRecognitionOptions {
 
   // Which client is requesting the speech recognition session.
   [MinVersion=1] RecognizerClientType recognizer_client_type;
+
+  // When true, if the incoming audio buffer is zero for an extended period
+  // (e.g. 10 seconds), audio won't be fed to the captioning model until nonzero
+  // audio is received.
+  // When false, even empty audio is captioned indefinitely.
+  // Set to false if accurate TimingInfo relative to the start of captioning is
+  // needed.
+  [MinVersion=4] bool skip_continuously_empty_audio = false;
 };

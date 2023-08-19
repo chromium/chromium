@@ -8,7 +8,6 @@
 #include "base/containers/contains.h"
 #include "base/logging.h"
 #include "base/memory/raw_ptr.h"
-#include "base/memory/raw_ref.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/test/scoped_run_loop_timeout.h"
@@ -64,7 +63,7 @@ std::string TestAutofillManagerWaiter::State::Describe() const {
 
 TestAutofillManagerWaiter::TestAutofillManagerWaiter(
     AutofillManager& manager,
-    std::initializer_list<Event> relevant_events)
+    DenseSet<Event> relevant_events)
     : relevant_events_(relevant_events) {
   observation_.Observe(&manager);
 }
@@ -117,6 +116,34 @@ void TestAutofillManagerWaiter::OnAfterTextFieldDidChange(
   Decrement(Event::kTextFieldDidChange);
 }
 
+void TestAutofillManagerWaiter::OnBeforeTextFieldDidScroll(
+    AutofillManager& manager,
+    FormGlobalId form,
+    FieldGlobalId field) {
+  Increment(Event::kTextFieldDidScroll);
+}
+
+void TestAutofillManagerWaiter::OnAfterTextFieldDidScroll(
+    AutofillManager& manager,
+    FormGlobalId form,
+    FieldGlobalId field) {
+  Decrement(Event::kTextFieldDidScroll);
+}
+
+void TestAutofillManagerWaiter::OnBeforeSelectControlDidChange(
+    AutofillManager& manager,
+    FormGlobalId form,
+    FieldGlobalId field) {
+  Increment(Event::kSelectControlDidChange);
+}
+
+void TestAutofillManagerWaiter::OnAfterSelectControlDidChange(
+    AutofillManager& manager,
+    FormGlobalId form,
+    FieldGlobalId field) {
+  Decrement(Event::kSelectControlDidChange);
+}
+
 void TestAutofillManagerWaiter::OnBeforeAskForValuesToFill(
     AutofillManager& manager,
     FormGlobalId form,
@@ -157,13 +184,9 @@ void TestAutofillManagerWaiter::OnAfterJavaScriptChangedAutofilledValue(
   Decrement(Event::kJavaScriptChangedAutofilledValue);
 }
 
-void TestAutofillManagerWaiter::OnBeforeFormSubmitted(AutofillManager& manager,
-                                                      FormGlobalId form) {
+void TestAutofillManagerWaiter::OnFormSubmitted(AutofillManager& manager,
+                                                FormGlobalId form) {
   Increment(Event::kFormSubmitted);
-}
-
-void TestAutofillManagerWaiter::OnAfterFormSubmitted(AutofillManager& manager,
-                                                     FormGlobalId form) {
   Decrement(Event::kFormSubmitted);
 }
 
@@ -179,7 +202,7 @@ void TestAutofillManagerWaiter::Reset() {
 }
 
 bool TestAutofillManagerWaiter::IsRelevant(Event event) const {
-  return relevant_events_.empty() || base::Contains(relevant_events_, event);
+  return relevant_events_.empty() || relevant_events_.contains(event);
 }
 
 void TestAutofillManagerWaiter::Increment(Event event,
@@ -262,7 +285,7 @@ const FormStructure* WaitForMatchingForm(
    public:
     explicit Waiter(AutofillManager* manager,
                     base::RepeatingCallback<bool(const FormStructure&)> pred)
-        : manager_(*manager), pred_(std::move(pred)) {
+        : manager_(manager), pred_(std::move(pred)) {
       observation_.Observe(manager);
     }
 
@@ -289,20 +312,22 @@ const FormStructure* WaitForMatchingForm(
 
    private:
     void OnAutofillManagerDestroyed(AutofillManager& manager) override {
-      DCHECK_EQ(&manager, &manager_.get());
+      DCHECK_EQ(&manager, manager_.get());
+      manager_ = nullptr;
       run_loop_.Quit();
       observation_.Reset();
     }
 
     void OnAutofillManagerReset(AutofillManager& manager) override {
-      DCHECK_EQ(&manager, &manager_.get());
+      DCHECK_EQ(&manager, manager_.get());
+      manager_ = nullptr;
       run_loop_.Quit();
       observation_.Reset();
     }
 
     void OnAfterFormsSeen(AutofillManager& manager,
                           base::span<const FormGlobalId> forms) override {
-      DCHECK_EQ(&manager, &manager_.get());
+      DCHECK_EQ(&manager, manager_.get());
       if (const auto* form = FindForm()) {
         matching_form_ = form;
         run_loop_.Quit();
@@ -319,7 +344,7 @@ const FormStructure* WaitForMatchingForm(
 
     base::ScopedObservation<AutofillManager, AutofillManager::Observer>
         observation_{this};
-    const raw_ref<AutofillManager, FlakyDanglingUntriaged> manager_;
+    raw_ptr<AutofillManager> manager_;
     base::RepeatingCallback<bool(const FormStructure&)> pred_;
     base::RunLoop run_loop_;
     raw_ptr<const FormStructure> matching_form_ = nullptr;

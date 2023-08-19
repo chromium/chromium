@@ -14,11 +14,16 @@ build_webui("build") {
     "images/empty_state.svg",
   ]
 
-  web_component_files = [ "app.ts" ]
+  web_component_files = [
+    "app.ts",
+    "read_anything_toolbar.ts",
+  ]
+  icons_html_files = [ "icons.html" ]
 
   ts_composite = true
   ts_deps = [
     "//third_party/polymer/v3_0:library",
+    "//ui/webui/resources/cr_components/color_change_listener:build_ts",
     "//ui/webui/resources/cr_elements:build_ts",
     "//ui/webui/resources/js:build_ts",
     "//ui/webui/resources/mojo:build_ts",

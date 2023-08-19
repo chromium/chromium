@@ -250,8 +250,6 @@ TEST(ExternalMountPointsTest, HandlesFileSystemMountType) {
   // Not even if it's external subtype.
   EXPECT_FALSE(mount_points->HandlesFileSystemMountType(kFileSystemTypeLocal));
   EXPECT_FALSE(
-      mount_points->HandlesFileSystemMountType(kFileSystemTypeRestrictedLocal));
-  EXPECT_FALSE(
       mount_points->HandlesFileSystemMountType(kFileSystemTypeDriveFs));
   EXPECT_FALSE(
       mount_points->HandlesFileSystemMountType(kFileSystemTypeSyncable));

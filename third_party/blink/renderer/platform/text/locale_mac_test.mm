@@ -35,10 +35,6 @@
 #include "third_party/blink/renderer/platform/wtf/date_math.h"
 #include "third_party/blink/renderer/platform/wtf/math_extras.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 namespace blink {
 
 class LocalePlatformSupport : public TestingPlatformSupport {
@@ -401,17 +397,17 @@ void TestNumbers(const AtomicString& locale_string,
 
 TEST_F(LocaleMacTest, localizedNumberRoundTrip) {
   // Test some of major locales.
-  TestNumbers("en_US", ".");
-  TestNumbers("fr_FR", ",");
-  TestNumbers("ar");
-  TestNumbers("de_DE");
-  TestNumbers("es_ES");
-  TestNumbers("fa");
-  TestNumbers("ja_JP");
-  TestNumbers("ko_KR");
-  TestNumbers("zh_CN");
-  TestNumbers("zh_HK");
-  TestNumbers("zh_TW");
+  TestNumbers(AtomicString("en_US"), ".");
+  TestNumbers(AtomicString("fr_FR"), ",");
+  TestNumbers(AtomicString("ar"));
+  TestNumbers(AtomicString("de_DE"));
+  TestNumbers(AtomicString("es_ES"));
+  TestNumbers(AtomicString("fa"));
+  TestNumbers(AtomicString("ja_JP"));
+  TestNumbers(AtomicString("ko_KR"));
+  TestNumbers(AtomicString("zh_CN"));
+  TestNumbers(AtomicString("zh_HK"));
+  TestNumbers(AtomicString("zh_TW"));
 }
 
 }  // namespace blink

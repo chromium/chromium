@@ -1,0 +1,107 @@
+<style>
+  :host {
+    --color-row-hover: rgb(255, 255, 187);
+    --color-engagement-bar: black;
+  }
+
+  @media (prefers-color-scheme: dark) {
+    :host {
+      --color-row-hover: rgb(3, 220, 176);
+      --color-engagement-bar: white;
+    }
+  }
+
+  table {
+    border-collapse: collapse;
+  }
+
+  table td,
+  table th {
+    border: 1px solid #777;
+    padding-left: 4px;
+    padding-right: 4px;
+  }
+
+  table th {
+    background: rgb(224, 236, 255);
+    color: black;
+    cursor: pointer;
+    padding-bottom: 4px;
+    padding-right: 16px;
+    padding-top: 4px;
+    white-space: nowrap;
+  }
+
+  .engagement-bar {
+    background-color: var(--color-engagement-bar);
+    height: 2px;
+  }
+
+  .engagement-bar-cell {
+    border: none;
+  }
+
+  .origin-cell {
+    background-color: rgba(230, 230, 230, 0.5);
+    min-width: 500px;
+  }
+
+  .base-score-cell,
+  .bonus-score-cell,
+  .total-score-cell {
+    background-color: rgba(230, 230, 230, 0.5);
+    text-align: right;
+  }
+
+  .base-score-input {
+    border: 1px solid #ccc;
+    border-radius: 2px;
+    text-align: right;
+    width: 70px;
+  }
+
+  .base-score-input:focus {
+    border: 1px solid rgb(143, 185, 252);
+    box-shadow: 0 0 2px rgb(113, 158, 206);
+    outline: none;
+  }
+
+  .add-origin-button {
+    width: 10em;
+  }
+
+  table tr:hover {
+    background: var(--color-row-hover);
+  }
+
+  th.sort-column::after {
+    content: '▲';
+    position: absolute;
+  }
+
+  th[sort-reverse].sort-column::after {
+    content: '▼';
+    position: absolute;
+  }
+</style>
+<h1>Site Engagement</h1>
+<table>
+  <thead>
+    <tr id="engagement-table-header">
+      <th sort-key="origin">
+        Origin
+      </th>
+      <th sort-key="baseScore" sort-reverse>
+        Base
+      </th>
+      <th sort-key="bonusScore" sort-reverse>
+        Bonus
+      </th>
+      <th sort-key="totalScore" class="sort-column" sort-reverse>
+        Total
+      </th>
+    </tr>
+  </thead>
+  <tbody id="engagement-table-body">
+  </tbody>
+</table>

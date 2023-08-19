@@ -14,7 +14,6 @@ import android.graphics.Paint;
 import android.util.AttributeSet;
 import android.view.View;
 
-import androidx.annotation.VisibleForTesting;
 import androidx.core.view.ViewCompat;
 
 import org.chromium.components.browser_ui.styles.SemanticColorUtils;
@@ -240,7 +239,6 @@ public class MaterialProgressBar extends View implements AnimatorUpdateListener 
     }
 
     /** @return The current progress value. */
-    @VisibleForTesting
     public int getProgressForTesting() {
         return mProgress;
     }

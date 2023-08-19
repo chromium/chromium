@@ -28,7 +28,7 @@ public class HttpURLConnectionFactoryImpl implements HttpURLConnectionFactory {
                             + "}"
                             + "policy {"
                             + "  cookies_allowed: NO"
-                            + "  setting: 'Settings > Google Services > Help improve Chrome\'s '"
+                            + "  setting: 'Settings > Google Services > Help improve Chrome\\'s '"
                             + "           'features and performance.'"
                             + "  policy_exception_justification:"
                             + "      'MetricsReportingEnabled is only implemented on desktop and '"

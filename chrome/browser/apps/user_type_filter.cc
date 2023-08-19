@@ -33,7 +33,7 @@ std::string DetermineUserType(Profile* profile) {
     return kUserTypeChild;
   if (profile->GetProfilePolicyConnector()->IsManaged()) {
 #if BUILDFLAG(IS_CHROMEOS)
-    if (profiles::IsPublicSession()) {
+    if (profiles::IsManagedGuestSession()) {
       return kUserTypeManagedGuest;
     }
 #endif  // BUILDFLAG(IS_CHROMEOS)

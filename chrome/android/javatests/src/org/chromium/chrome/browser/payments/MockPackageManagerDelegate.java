@@ -217,8 +217,7 @@ class MockPackageManagerDelegate extends PackageManagerDelegate {
     }
 
     @Override
-    @Nullable
-    public String getInstallerPackage(String packageName) {
+    public @Nullable String getInstallerPackage(String packageName) {
         return mMockInstallerPackageMap.get(packageName);
     }
 

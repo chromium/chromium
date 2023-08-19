@@ -564,15 +564,14 @@ class SequenceManagerThreadDelegate : public Thread::Delegate {
     return task_queue_->task_runner();
   }
 
-  void BindToCurrentThread(base::TimerSlack timer_slack) override {
+  void BindToCurrentThread() override {
     sequence_manager_->BindToMessagePump(
         base::MessagePump::Create(base::MessagePumpType::DEFAULT));
-    sequence_manager_->SetTimerSlack(timer_slack);
   }
 
  private:
   std::unique_ptr<base::sequence_manager::SequenceManager> sequence_manager_;
-  scoped_refptr<TaskQueue> task_queue_;
+  TaskQueue::Handle task_queue_;
 };
 
 }  // namespace

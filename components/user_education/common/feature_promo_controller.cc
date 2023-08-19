@@ -19,6 +19,7 @@
 #include "components/strings/grit/components_strings.h"
 #include "components/user_education/common/feature_promo_registry.h"
 #include "components/user_education/common/feature_promo_snooze_service.h"
+#include "components/user_education/common/feature_promo_specification.h"
 #include "components/user_education/common/help_bubble_factory_registry.h"
 #include "components/user_education/common/help_bubble_params.h"
 #include "components/user_education/common/tutorial.h"
@@ -57,8 +58,9 @@ FeaturePromoControllerCommon::~FeaturePromoControllerCommon() {
 
 bool FeaturePromoControllerCommon::MaybeShowPromo(
     const base::Feature& iph_feature,
-    FeaturePromoSpecification::StringReplacements body_text_replacements,
-    BubbleCloseCallback close_callback) {
+    BubbleCloseCallback close_callback,
+    FeaturePromoSpecification::FormatParameters body_params,
+    FeaturePromoSpecification::FormatParameters title_params) {
   // Fail if the promo is already queued to run at FE initialization.
   if (base::Contains(startup_promos_, &iph_feature))
     return false;
@@ -78,16 +80,17 @@ bool FeaturePromoControllerCommon::MaybeShowPromo(
   if (!anchor_element)
     return false;
 
-  return MaybeShowPromoFromSpecification(*spec, anchor_element,
-                                         std::move(body_text_replacements),
-                                         std::move(close_callback));
+  return MaybeShowPromoFromSpecification(
+      *spec, anchor_element, std::move(close_callback), std::move(body_params),
+      std::move(title_params));
 }
 
 bool FeaturePromoControllerCommon::MaybeShowStartupPromo(
     const base::Feature& iph_feature,
-    FeaturePromoSpecification::StringReplacements body_text_replacements,
     StartupPromoCallback promo_callback,
-    BubbleCloseCallback close_callback) {
+    BubbleCloseCallback close_callback,
+    FeaturePromoSpecification::FormatParameters body_params,
+    FeaturePromoSpecification::FormatParameters title_params) {
   // If the promo is currently running, fail.
   if (current_iph_feature_ == &iph_feature)
     return false;
@@ -101,7 +104,8 @@ bool FeaturePromoControllerCommon::MaybeShowStartupPromo(
   feature_engagement_tracker_->AddOnInitializedCallback(base::BindOnce(
       &FeaturePromoControllerCommon::OnFeatureEngagementTrackerInitialized,
       weak_ptr_factory_.GetWeakPtr(), base::Unretained(&iph_feature),
-      std::move(body_text_replacements), std::move(close_callback)));
+      std::move(close_callback), std::move(body_params),
+      std::move(title_params)));
 
   // The promo has been successfully queued. Once the FE backend is initialized,
   // MaybeShowPromo() will be called to see if the promo should actually be
@@ -111,16 +115,21 @@ bool FeaturePromoControllerCommon::MaybeShowStartupPromo(
 
 bool FeaturePromoControllerCommon::MaybeShowPromoForDemoPage(
     const base::Feature* iph_feature,
-    FeaturePromoSpecification::StringReplacements body_text_replacements,
-    BubbleCloseCallback close_callback) {
-  if (current_iph_feature_ && promo_bubble_)
+    BubbleCloseCallback close_callback,
+    FeaturePromoSpecification::FormatParameters body_params,
+    FeaturePromoSpecification::FormatParameters title_params) {
+  if (current_iph_feature_ && promo_bubble_) {
     EndPromo(*current_iph_feature_);
+  }
   iph_feature_bypassing_tracker_ = iph_feature;
 
-  bool showed_promo = MaybeShowPromo(*iph_feature);
+  bool showed_promo =
+      MaybeShowPromo(*iph_feature, std::move(close_callback),
+                     std::move(body_params), std::move(title_params));
 
-  if (!showed_promo && iph_feature_bypassing_tracker_)
+  if (!showed_promo && iph_feature_bypassing_tracker_) {
     iph_feature_bypassing_tracker_ = nullptr;
+  }
 
   return showed_promo;
 }
@@ -128,43 +137,62 @@ bool FeaturePromoControllerCommon::MaybeShowPromoForDemoPage(
 bool FeaturePromoControllerCommon::MaybeShowPromoFromSpecification(
     const FeaturePromoSpecification& spec,
     ui::TrackedElement* anchor_element,
-    FeaturePromoSpecification::StringReplacements body_text_replacements,
-    BubbleCloseCallback close_callback) {
+    BubbleCloseCallback close_callback,
+    FeaturePromoSpecification::FormatParameters body_params,
+    FeaturePromoSpecification::FormatParameters title_params) {
   CHECK(anchor_element);
 
-  if (promos_blocked_for_testing_)
+  if (promos_blocked_for_testing_) {
     return false;
+  }
 
   // A normal promo cannot show if a critical promo is displayed. These
   // are not registered with |tracker_| so check here.
-  if (critical_promo_bubble_)
+  if (critical_promo_bubble_) {
     return false;
+  }
 
   // Some contexts and anchors are not appropriate for showing normal promos.
-  if (!CanShowPromo(anchor_element))
+  if (!CanShowPromo(anchor_element)) {
     return false;
+  }
+
+  // Can't show a standard promo if another help bubble is visible.
+  if (bubble_factory_registry_->is_any_bubble_showing()) {
+    return false;
+  }
 
   // Some checks should not be done in demo mode, because we absolutely want to
   // trigger the bubble if possible. Put any checks that should be bypassed in
   // demo mode in this block.
-  const base::Feature* feature = spec.feature();
-  bool feature_is_bypassing_tracker = feature == iph_feature_bypassing_tracker_;
-  if (!(base::FeatureList::IsEnabled(feature_engagement::kIPHDemoMode) ||
-        feature_is_bypassing_tracker) &&
-      snooze_service_->IsBlocked(*feature))
-    return false;
-
-  // Can't show a standard promo if another help bubble is visible.
-  if (bubble_factory_registry_->is_any_bubble_showing())
-    return false;
+  const base::Feature* const feature = spec.feature();
+  const bool feature_is_bypassing_tracker =
+      feature == iph_feature_bypassing_tracker_;
+  const bool is_demo_mode =
+      base::FeatureList::IsEnabled(feature_engagement::kIPHDemoMode);
+  if (!is_demo_mode && !feature_is_bypassing_tracker) {
+    // When not bypassing the normal gating systems, don't try to show promos
+    // for disabled features. This prevents us from calling into the Feature
+    // Engagement tracker more times than necessary, emitting unnecessary
+    // logging even when features are disabled.
+    if (!base::FeatureList::IsEnabled(*feature)) {
+      return false;
+    }
+    // Don't try to show promos on snooze cooldown or that have hit maximum
+    // snooze count.
+    if (snooze_service_->IsBlocked(*feature)) {
+      return false;
+    }
+  }
 
   // TODO(crbug.com/1258216): Currently this must be called before
   // ShouldTriggerHelpUI() below. See bug for details.
   const bool screen_reader_available = CheckScreenReaderPromptAvailable();
 
   if (!feature_is_bypassing_tracker &&
-      !feature_engagement_tracker_->ShouldTriggerHelpUI(*feature))
+      !feature_engagement_tracker_->ShouldTriggerHelpUI(*feature)) {
     return false;
+  }
 
   // If the tracker says we should trigger, but we have a promo
   // currently showing, there is a bug somewhere in here.
@@ -173,19 +201,21 @@ bool FeaturePromoControllerCommon::MaybeShowPromoFromSpecification(
 
   // Try to show the bubble and bail out if we cannot.
   promo_bubble_ = ShowPromoBubbleImpl(
-      spec, anchor_element, std::move(body_text_replacements),
+      spec, anchor_element, std::move(body_params), std::move(title_params),
       screen_reader_available, /* is_critical_promo =*/false);
   if (!promo_bubble_) {
     current_iph_feature_ = nullptr;
-    if (!feature_is_bypassing_tracker)
+    if (!feature_is_bypassing_tracker) {
       feature_engagement_tracker_->Dismissed(*feature);
+    }
     return false;
   }
 
   bubble_closed_callback_ = std::move(close_callback);
 
-  if (!feature_is_bypassing_tracker)
+  if (!feature_is_bypassing_tracker) {
     snooze_service_->OnPromoShown(*feature);
+  }
 
   return true;
 }
@@ -193,7 +223,8 @@ bool FeaturePromoControllerCommon::MaybeShowPromoFromSpecification(
 std::unique_ptr<HelpBubble> FeaturePromoControllerCommon::ShowCriticalPromo(
     const FeaturePromoSpecification& spec,
     ui::TrackedElement* anchor_element,
-    FeaturePromoSpecification::StringReplacements body_text_replacements) {
+    FeaturePromoSpecification::FormatParameters body_params,
+    FeaturePromoSpecification::FormatParameters title_params) {
   if (promos_blocked_for_testing_)
     return nullptr;
 
@@ -212,7 +243,7 @@ std::unique_ptr<HelpBubble> FeaturePromoControllerCommon::ShowCriticalPromo(
 
   // Create the bubble.
   auto bubble = ShowPromoBubbleImpl(
-      spec, anchor_element, std::move(body_text_replacements),
+      spec, anchor_element, std::move(body_params), std::move(title_params),
       CheckScreenReaderPromptAvailable(), /* is_critical_promo =*/true);
   critical_promo_bubble_ = bubble.get();
   return bubble;
@@ -313,8 +344,9 @@ bool FeaturePromoControllerCommon::CheckScreenReaderPromptAvailable() const {
 
 void FeaturePromoControllerCommon::OnFeatureEngagementTrackerInitialized(
     const base::Feature* iph_feature,
-    FeaturePromoSpecification::StringReplacements body_text_replacements,
     BubbleCloseCallback close_callback,
+    FeaturePromoSpecification::FormatParameters body_params,
+    FeaturePromoSpecification::FormatParameters title_params,
     bool tracker_initialized_successfully) {
   // If the promo has been canceled, do not proceed.
   const auto it = startup_promos_.find(iph_feature);
@@ -328,8 +360,8 @@ void FeaturePromoControllerCommon::OnFeatureEngagementTrackerInitialized(
   // Try to start the promo, assuming the tracker was successfully initialized.
   bool success = false;
   if (tracker_initialized_successfully) {
-    success = MaybeShowPromo(*iph_feature, std::move(body_text_replacements),
-                             std::move(close_callback));
+    success = MaybeShowPromo(*iph_feature, std::move(close_callback),
+                             std::move(body_params), std::move(title_params));
   }
   std::move(callback).Run(*iph_feature, success);
 }
@@ -337,13 +369,15 @@ void FeaturePromoControllerCommon::OnFeatureEngagementTrackerInitialized(
 std::unique_ptr<HelpBubble> FeaturePromoControllerCommon::ShowPromoBubbleImpl(
     const FeaturePromoSpecification& spec,
     ui::TrackedElement* anchor_element,
-    FeaturePromoSpecification::StringReplacements body_text_replacements,
+    FeaturePromoSpecification::FormatParameters body_params,
+    FeaturePromoSpecification::FormatParameters title_params,
     bool screen_reader_prompt_available,
     bool is_critical_promo) {
   HelpBubbleParams create_params;
-  create_params.body_text = l10n_util::GetStringFUTF16(
-      spec.bubble_body_string_id(), std::move(body_text_replacements), nullptr);
-  create_params.title_text = spec.bubble_title_text();
+  create_params.body_text = FeaturePromoSpecification::FormatString(
+      spec.bubble_body_string_id(), std::move(body_params));
+  create_params.title_text = FeaturePromoSpecification::FormatString(
+      spec.bubble_title_string_id(), std::move(title_params));
   if (spec.screen_reader_string_id()) {
     create_params.screenreader_text =
         spec.screen_reader_accelerator()

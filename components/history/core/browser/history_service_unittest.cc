@@ -38,10 +38,12 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
+#include "base/test/test_future.h"
 #include "components/history/core/browser/features.h"
 #include "components/history/core/browser/history_backend.h"
 #include "components/history/core/browser/history_database_params.h"
 #include "components/history/core/browser/history_db_task.h"
+#include "components/history/core/browser/history_types.h"
 #include "components/history/core/test/database_test_utils.h"
 #include "components/history/core/test/test_history_database.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -782,6 +784,16 @@ void AddPageInThePast(HistoryService* history,
   AddPageAtTime(history, url_spec, time_in_the_past);
 }
 
+// Helper to add a synced page at a specified day in the past.
+void AddSyncedPageInThePast(HistoryService* history,
+                            const std::string& url_spec,
+                            int days_back) {
+  base::Time time_in_the_past = base::Time::Now() - base::Days(days_back);
+  history->AddPage(GURL(url_spec), time_in_the_past, 0, 0, GURL(),
+                   history::RedirectList(), ui::PAGE_TRANSITION_LINK,
+                   history::SOURCE_SYNCED, false);
+}
+
 // Helper to add a page with specified days back in the past.
 base::Time GetTimeInThePast(base::Time base_time,
                             int days_back,
@@ -1066,6 +1078,95 @@ TEST_F(HistoryServiceTest, GetDomainDiversityBitmaskTest) {
   TestDomainMetricSet(all_res[3], -1, 1, 2);
   TestDomainMetricSet(all_res[4], -1, 1, 2);
   TestDomainMetricSet(all_res[5], -1, 1, 2);
+}
+
+// Gets unique local and synced domains visited and the last visited domain
+// within a time range.
+TEST_F(HistoryServiceTest, GetUniqueDomainsVisited) {
+  base::Time base_time = base::Time::Now();
+  HistoryService* history = history_service_.get();
+  ASSERT_TRUE(history);
+
+  // Add local visits to history database at specific days back.
+  AddPageInThePast(history, "http://www.test1.com/", 1);
+  AddPageInThePast(history, "http://www.test2.com/test", 2);
+  AddPageInThePast(history, "http://www.test2.com/", 3);
+  AddPageInThePast(history, "http://www.test3.com/", 4);
+
+  // Add synced visits to history database at specific days back.
+  AddSyncedPageInThePast(history, "http://www.test3.com/", 3);
+  AddSyncedPageInThePast(history, "http://www.test4.com/", 5);
+
+  {
+    // DomainsVisitedResult should be empty when no domains in range.
+    base::test::TestFuture<DomainsVisitedResult> future;
+
+    history->GetUniqueDomainsVisited(
+        /*begin_time=*/base_time - base::Days(10),
+        /*end_time=*/base_time - base::Days(5), future.GetCallback(),
+        &tracker_);
+
+    DomainsVisitedResult result = future.Take();
+
+    EXPECT_EQ(0u, result.locally_visited_domains.size());
+    EXPECT_EQ(0u, result.all_visited_domains.size());
+  }
+
+  {
+    // DomainsVisitedResult should include unique domains in range in
+    // reverse-chronological order.
+    base::test::TestFuture<DomainsVisitedResult> future;
+
+    history->GetUniqueDomainsVisited(
+        /*begin_time=*/base_time - base::Days(2), /*end_time=*/base_time,
+        future.GetCallback(), &tracker_);
+
+    std::vector<std::string> expectedLocalResult({"test1.com", "test2.com"});
+    std::vector<std::string> expectedSyncedResult({"test1.com", "test2.com"});
+
+    DomainsVisitedResult result = future.Take();
+
+    EXPECT_EQ(expectedLocalResult, result.locally_visited_domains);
+    EXPECT_EQ(expectedSyncedResult, result.all_visited_domains);
+  }
+
+  {
+    // DomainsVisitedResult should not include duplicate domains in range.
+    base::test::TestFuture<DomainsVisitedResult> future;
+
+    history->GetUniqueDomainsVisited(
+        /*begin_time=*/base_time - base::Days(4), /*end_time=*/base_time,
+        future.GetCallback(), &tracker_);
+
+    std::vector<std::string> expectedLocalResult(
+        {"test1.com", "test2.com", "test3.com"});
+    std::vector<std::string> expectedSyncedResult(
+        {"test1.com", "test2.com", "test3.com"});
+
+    DomainsVisitedResult result = future.Take();
+
+    EXPECT_EQ(expectedLocalResult, result.locally_visited_domains);
+    EXPECT_EQ(expectedSyncedResult, result.all_visited_domains);
+  }
+
+  {
+    // local domains should not include synced visits in range.
+    base::test::TestFuture<DomainsVisitedResult> future;
+
+    history->GetUniqueDomainsVisited(
+        /*begin_time=*/base_time - base::Days(5), /*end_time=*/base_time,
+        future.GetCallback(), &tracker_);
+
+    std::vector<std::string> expectedLocalResult(
+        {"test1.com", "test2.com", "test3.com"});
+    std::vector<std::string> expectedSyncedResult(
+        {"test1.com", "test2.com", "test3.com", "test4.com"});
+
+    DomainsVisitedResult result = future.Take();
+
+    EXPECT_EQ(expectedLocalResult, result.locally_visited_domains);
+    EXPECT_EQ(expectedSyncedResult, result.all_visited_domains);
+  }
 }
 
 namespace {

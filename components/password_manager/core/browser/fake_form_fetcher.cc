@@ -56,7 +56,7 @@ bool FakeFormFetcher::IsBlocklisted() const {
   return is_blocklisted_;
 }
 
-bool FakeFormFetcher::IsMovingBlocked(const autofill::GaiaIdHash& destination,
+bool FakeFormFetcher::IsMovingBlocked(const signin::GaiaIdHash& destination,
                                       const std::u16string& username) const {
   // This is analogous to the implementation in
   // MultiStoreFormFetcher::IsMovingBlocked().

@@ -6,15 +6,15 @@
 
 #import <memory>
 
+#import "base/apple/scoped_nsautorelease_pool.h"
 #import "base/check.h"
-#import "base/mac/scoped_nsautorelease_pool.h"
 #import "ios/chrome/test/block_cleanup_test.h"
 
 BlockCleanupTest::BlockCleanupTest() = default;
 BlockCleanupTest::~BlockCleanupTest() = default;
 
 void BlockCleanupTest::SetUp() {
-  pool_ = std::make_unique<base::mac::ScopedNSAutoreleasePool>();
+  pool_ = std::make_unique<base::apple::ScopedNSAutoreleasePool>();
 }
 
 void BlockCleanupTest::TearDown() {

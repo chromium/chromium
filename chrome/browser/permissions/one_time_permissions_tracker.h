@@ -11,6 +11,7 @@
 #include "base/observer_list.h"
 #include "base/timer/timer.h"
 #include "chrome/browser/permissions/one_time_permissions_tracker_observer.h"
+#include "components/content_settings/core/common/content_settings_pattern.h"
 #include "components/content_settings/core/common/content_settings_types.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "content/public/browser/visibility.h"
@@ -59,6 +60,14 @@ class OneTimePermissionsTracker : public KeyedService {
                              bool is_capturing_audio);
 
   void Shutdown() override;
+
+  // When the provider expires content settings, this function clears the
+  // associated state in the tracker. This prevents unnecessary calls to the
+  // provider for already expired content settings.
+  void CleanupStateForExpiredContentSetting(
+      ContentSettingsType type,
+      ContentSettingsPattern primary_pattern,
+      ContentSettingsPattern secondary_pattern);
 
   // Fires all running timers for testing purposes.
   void FireRunningTimersForTesting();

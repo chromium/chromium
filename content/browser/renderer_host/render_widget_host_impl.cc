@@ -43,9 +43,6 @@
 #include "cc/base/switches.h"
 #include "cc/trees/browser_controls_params.h"
 #include "cc/trees/render_frame_metadata.h"
-#include "components/power_scheduler/power_mode.h"
-#include "components/power_scheduler/power_mode_arbiter.h"
-#include "components/power_scheduler/power_mode_voter.h"
 #include "components/viz/common/features.h"
 #include "components/viz/host/host_frame_sink_manager.h"
 #include "content/browser/accessibility/browser_accessibility_manager.h"
@@ -91,7 +88,6 @@
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/device_service.h"
 #include "content/public/browser/keyboard_event_processing_result.h"
-#include "content/public/browser/native_web_keyboard_event.h"
 #include "content/public/browser/notification_service.h"
 #include "content/public/browser/notification_types.h"
 #include "content/public/browser/peak_gpu_memory_tracker.h"
@@ -104,6 +100,7 @@
 #include "content/public/common/content_features.h"
 #include "content/public/common/content_switches.h"
 #include "content/public/common/drop_data.h"
+#include "content/public/common/input/native_web_keyboard_event.h"
 #include "content/public/common/result_codes.h"
 #include "gpu/GLES2/gl2extchromium.h"
 #include "gpu/command_buffer/service/gpu_switches.h"
@@ -155,6 +152,7 @@
 #include "content/browser/renderer_host/input/fling_scheduler_mac.h"
 #include "services/device/public/mojom/wake_lock_provider.mojom.h"
 #include "ui/accelerated_widget_mac/window_resize_helper_mac.h"
+#include "ui/base/cocoa/cursor_utils.h"
 #endif
 
 using blink::DragOperationsMask;
@@ -451,13 +449,7 @@ RenderWidgetHostImpl::RenderWidgetHostImpl(
           frame_token_message_queue_.get()),
       frame_sink_id_(base::checked_cast<uint32_t>(
                          agent_scheduling_group_->GetProcess()->GetID()),
-                     base::checked_cast<uint32_t>(routing_id_)),
-      power_mode_input_voter_(
-          power_scheduler::PowerModeArbiter::GetInstance()->NewVoter(
-              "PowerModeVoter.Input")),
-      power_mode_loading_voter_(
-          power_scheduler::PowerModeArbiter::GetInstance()->NewVoter(
-              "PowerModeVoter.Loading")) {
+                     base::checked_cast<uint32_t>(routing_id_)) {
   DCHECK(frame_token_message_queue_);
   frame_token_message_queue_->Init(this);
 
@@ -799,9 +791,6 @@ void RenderWidgetHostImpl::ShutdownAndDestroyWidget(bool also_delete) {
 }
 
 void RenderWidgetHostImpl::SetIsLoading(bool is_loading) {
-  power_mode_loading_voter_->VoteFor(is_loading
-                                         ? power_scheduler::PowerMode::kLoading
-                                         : power_scheduler::PowerMode::kIdle);
   if (view_) {
     view_->SetIsLoading(is_loading);
   }
@@ -914,6 +903,12 @@ void RenderWidgetHostImpl::WasShown(
   // resize from SynchronizeVisualProperties is usually processed before the
   // renderer is painted.
   SynchronizeVisualProperties();
+
+  if (synthetic_gesture_controller_) {
+    // Synthetic gestures queued while hidden are deferred until the widget
+    // becomes visible.
+    synthetic_gesture_controller_->StartIfNeeded();
+  }
 }
 
 void RenderWidgetHostImpl::RequestSuccessfulPresentationTimeForNextFrame(
@@ -1046,17 +1041,6 @@ blink::VisualProperties RenderWidgetHostImpl::GetVisualProperties() {
 
   visual_properties.new_size = view_->GetRequestedRendererSize();
 
-  // While in fullscreen, provide the view size as a ScreenInfo size override.
-  // This lets `window.screen` provide viewport dimensions while the frame is
-  // fullscreen as a speculative site compatibility measure, because web authors
-  // may assume that screen dimensions match window.innerWidth/innerHeight while
-  // a page is fullscreen, but that is not always true. crbug.com/1367416
-  if (visual_properties.is_fullscreen_granted &&
-      !base::FeatureList::IsEnabled(
-          blink::features::kFullscreenScreenSizeMatchesDisplay)) {
-    current_screen_info.size_override = visual_properties.new_size;
-  }
-
   // This widget is for a frame that is the main frame of the outermost frame
   // tree. That makes it the top-most frame. OR this is a non-frame widget.
   const bool is_top_most_widget = !view_->IsRenderWidgetHostViewChildFrame();
@@ -1109,6 +1093,12 @@ blink::VisualProperties RenderWidgetHostImpl::GetVisualProperties() {
 
   visual_properties.compositing_scale_factor =
       properties_from_parent_local_root_.compositing_scale_factor;
+
+#if BUILDFLAG(IS_MAC)
+  // Only macOS cursor scaling affects CSS custom cursor images for now.
+  visual_properties.cursor_accessibility_scale_factor =
+      ui::GetCursorAccessibilityScaleFactor();
+#endif
 
   // The |visible_viewport_size| is affected by auto-resize which is magical and
   // tricky.
@@ -1311,6 +1301,7 @@ void RenderWidgetHostImpl::LostFocus() {
   if (owner_delegate_) {
     owner_delegate_->RenderWidgetLostFocus();
   }
+  has_lost_focus_ = true;
 }
 
 void RenderWidgetHostImpl::Focus() {
@@ -1800,7 +1791,7 @@ void RenderWidgetHostImpl::ForwardKeyboardEventWithCommands(
   bool is_shortcut = false;
 
   // Only pre-handle the key event if it's not handled by the input method.
-  if (delegate_ && !key_event.skip_in_browser) {
+  if (delegate_ && !key_event.skip_if_unhandled) {
     // We need to set |suppress_events_until_keydown_| to true if
     // PreHandleKeyboardEvent() handles the event, but |this| may already be
     // destroyed at that time. So set |suppress_events_until_keydown_| true
@@ -2566,7 +2557,8 @@ void RenderWidgetHostImpl::OnKeyboardEventAck(
   // We only send unprocessed key event upwards if we are not hidden,
   // because the user has moved away from us and no longer expect any effect
   // of this key event.
-  if (delegate_ && !processed && !is_hidden() && !event.event.skip_in_browser) {
+  if (delegate_ && !processed && !is_hidden() &&
+      !event.event.skip_if_unhandled) {
     delegate_->HandleKeyboardEvent(event.event);
   }
   // WARNING: This RenderWidgetHostImpl can be deallocated at this point
@@ -2789,6 +2781,8 @@ bool RenderWidgetHostImpl::StoredVisualPropertiesNeedsUpdate(
              new_visual_properties.page_scale_factor ||
          old_visual_properties->compositing_scale_factor !=
              new_visual_properties.compositing_scale_factor ||
+         old_visual_properties->cursor_accessibility_scale_factor !=
+             new_visual_properties.cursor_accessibility_scale_factor ||
          old_visual_properties->is_pinch_gesture_active !=
              new_visual_properties.is_pinch_gesture_active ||
          old_visual_properties->root_widget_window_segments !=
@@ -2862,25 +2856,7 @@ void RenderWidgetHostImpl::StartDragging(
     const gfx::Vector2d& cursor_offset_in_dip,
     const gfx::Rect& drag_obj_rect_in_dip,
     blink::mojom::DragEventSourceInfoPtr event_info) {
-  RenderViewHostDelegateView* view = delegate_->GetDelegateView();
-  if (!view || !GetView()) {
-    // Need to clear drag and drop state in blink.
-    DragSourceSystemDragEnded();
-    return;
-  }
-
   DropData drop_data = DragDataToDropData(*drag_data);
-
-  if (frame_tree_) {
-    bool intercepted = false;
-    devtools_instrumentation::WillStartDragging(
-        frame_tree_->root(), std::move(drag_data), drag_operations_mask,
-        &intercepted);
-    if (intercepted) {
-      return;
-    }
-  }
-
   DropData filtered_data(drop_data);
   RenderProcessHost* process = GetProcess();
   ChildProcessSecurityPolicyImpl* policy =
@@ -2929,6 +2905,22 @@ void RenderWidgetHostImpl::StartDragging(
     }
   }
 
+  if (frame_tree_) {
+    bool intercepted = false;
+    devtools_instrumentation::WillStartDragging(
+        frame_tree_->root(), filtered_data, std::move(drag_data),
+        drag_operations_mask, &intercepted);
+    if (intercepted) {
+      return;
+    }
+  }
+
+  RenderViewHostDelegateView* view = delegate_->GetDelegateView();
+  if (!view || !GetView()) {
+    // Need to clear drag and drop state in blink.
+    DragSourceSystemDragEnded();
+    return;
+  }
   float scale = GetScaleFactorForView(GetView());
   gfx::ImageSkia image = gfx::ImageSkia::CreateFromBitmap(bitmap, scale);
   gfx::Vector2d offset = cursor_offset_in_dip;
@@ -2985,9 +2977,10 @@ void RenderWidgetHostImpl::TextInputStateChanged(
 
 void RenderWidgetHostImpl::OnImeCompositionRangeChanged(
     const gfx::Range& range,
-    const std::vector<gfx::Rect>& character_bounds) {
+    const absl::optional<std::vector<gfx::Rect>>& character_bounds,
+    const absl::optional<std::vector<gfx::Rect>>& line_bounds) {
   if (view_) {
-    view_->ImeCompositionRangeChanged(range, character_bounds);
+    view_->ImeCompositionRangeChanged(range, character_bounds, line_bounds);
   }
 }
 
@@ -3154,7 +3147,7 @@ void RenderWidgetHostImpl::RequestForceRedraw(int snapshot_id) {
 
 bool RenderWidgetHostImpl::KeyPressListenersHandleEvent(
     const NativeWebKeyboardEvent& event) {
-  if (event.skip_in_browser ||
+  if (event.skip_if_unhandled ||
       event.GetType() != WebKeyboardEvent::Type::kRawKeyDown) {
     return false;
   }
@@ -3208,7 +3201,6 @@ blink::mojom::InputEventResultState RenderWidgetHostImpl::FilterInputEvent(
 void RenderWidgetHostImpl::IncrementInFlightEventCount() {
   ++in_flight_event_count_;
   if (in_flight_event_count_ == 1) {
-    power_mode_input_voter_->VoteFor(power_scheduler::PowerMode::kResponse);
     user_input_active_handle_ = BrowserTaskExecutor::OnUserInputStart();
   }
 
@@ -3228,8 +3220,6 @@ void RenderWidgetHostImpl::DecrementInFlightEventCount(
   if (in_flight_event_count_ <= 0) {
     // Cancel pending hung renderer checks since the renderer is responsive.
     StopInputEventAckTimeout();
-    power_mode_input_voter_->ResetVoteAfterTimeout(
-        power_scheduler::PowerModeVoter::kResponseTimeout);
     user_input_active_handle_.reset();
   } else {
     // Only restart the hang monitor timer if we got a response from the
@@ -3688,6 +3678,10 @@ bool RenderWidgetHostImpl::HasGestureStopped() {
   }
 
   return true;
+}
+
+bool RenderWidgetHostImpl::IsHidden() const {
+  return is_hidden_;
 }
 
 void RenderWidgetHostImpl::DidProcessFrame(uint32_t frame_token,

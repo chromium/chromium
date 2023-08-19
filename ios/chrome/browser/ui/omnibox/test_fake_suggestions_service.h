@@ -35,7 +35,8 @@ class TestFakeSuggestionsService : public RemoteSuggestionsService::Observer {
   void TearDown(RemoteSuggestionsService* remote_suggestions_service,
                 network::mojom::URLLoaderFactory* url_loader_factory);
 
-  void OnSuggestRequestStarting(
+  // RemoteSuggestionsService::Observer:
+  void OnSuggestRequestCreated(
       const base::UnguessableToken& request_id,
       const network::ResourceRequest* request) override;
 

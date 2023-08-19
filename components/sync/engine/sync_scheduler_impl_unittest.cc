@@ -265,8 +265,8 @@ class SyncSchedulerImplTest : public testing::Test {
     context_ = std::make_unique<SyncCycleContext>(
         connection_.get(), extensions_activity_.get(),
         std::vector<SyncEngineEventListener*>(), nullptr,
-        model_type_registry_.get(), "fake_invalidator_client_id",
-        "fake_cache_guid", "fake_birthday", "fake_bag_of_chips",
+        model_type_registry_.get(), "fake_cache_guid", "fake_birthday",
+        "fake_bag_of_chips",
         /*poll_interval=*/base::Minutes(30));
     context_->set_notifications_enabled(true);
     context_->set_account_name("Test");

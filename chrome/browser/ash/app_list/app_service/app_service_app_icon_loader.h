@@ -10,6 +10,7 @@
 #include <string>
 
 #include "base/memory/weak_ptr.h"
+#include "base/scoped_observation.h"
 #include "chrome/browser/ui/app_icon_loader.h"
 #include "components/services/app_service/public/cpp/app_registry_cache.h"
 #include "components/services/app_service/public/cpp/app_update.h"
@@ -64,6 +65,10 @@ class AppServiceAppIconLoader : public AppIconLoader,
 
   // Maps from an app id to the icon to track the icons added via FetchImage.
   AppIDToIconMap icon_map_;
+
+  base::ScopedObservation<apps::AppRegistryCache,
+                          apps::AppRegistryCache::Observer>
+      app_registry_cache_observer_{this};
 
   base::WeakPtrFactory<AppServiceAppIconLoader> weak_ptr_factory_{this};
 };

@@ -354,7 +354,6 @@ suite('GooglePhotosPhotosByAlbumIdTest', function() {
     // Complete the pending selection.
     personalizationStore.data.wallpaper.pendingSelected = null;
     personalizationStore.data.wallpaper.currentSelected = {
-      attribution: [],
       descriptionContent: '',
       descriptionTitle: '',
       key: photo.id,
@@ -380,7 +379,6 @@ suite('GooglePhotosPhotosByAlbumIdTest', function() {
     // Complete the pending selection.
     personalizationStore.data.wallpaper.pendingSelected = null;
     personalizationStore.data.wallpaper.currentSelected = {
-      attribution: [],
       descriptionContent: '',
       descriptionTitle: '',
       key: anotherPhoto.id,
@@ -406,7 +404,6 @@ suite('GooglePhotosPhotosByAlbumIdTest', function() {
     // Complete the pending selection.
     personalizationStore.data.wallpaper.pendingSelected = null;
     personalizationStore.data.wallpaper.currentSelected = {
-      attribution: [],
       descriptionContent: '',
       descriptionTitle: '',
       key: yetAnotherPhoto.dedupKey!,
@@ -432,7 +429,6 @@ suite('GooglePhotosPhotosByAlbumIdTest', function() {
     // Complete the pending selection.
     personalizationStore.data.wallpaper.pendingSelected = null;
     personalizationStore.data.wallpaper.currentSelected = {
-      attribution: [],
       descriptionContent: '',
       descriptionTitle: '',
       key: '//foo',
@@ -746,7 +742,8 @@ suite('GooglePhotosPhotosByAlbumIdTest', function() {
     // Select |photo| and verify selection started.
     photoEls[0]!.click();
     assertEquals(personalizationStore.data.wallpaper.loading.setImage, 1);
-    assertEquals(personalizationStore.data.wallpaper.loading.selected, true);
+    assertEquals(
+        personalizationStore.data.wallpaper.loading.selected.image, true);
     assertEquals(personalizationStore.data.wallpaper.pendingSelected, photo);
 
     // Wait for and verify hard-coded selection failure.
@@ -755,7 +752,8 @@ suite('GooglePhotosPhotosByAlbumIdTest', function() {
     assertEquals(await wallpaperProvider.whenCalled(methodName), photo.id);
     await waitAfterNextRender(googlePhotosPhotosByAlbumIdElement);
     assertEquals(personalizationStore.data.wallpaper.loading.setImage, 0);
-    assertEquals(personalizationStore.data.wallpaper.loading.selected, false);
+    assertEquals(
+        personalizationStore.data.wallpaper.loading.selected.image, false);
     assertEquals(personalizationStore.data.wallpaper.pendingSelected, null);
   });
 });

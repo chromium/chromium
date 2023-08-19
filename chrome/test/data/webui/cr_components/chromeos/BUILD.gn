@@ -2,26 +2,52 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 import("//third_party/closure_compiler/compile_js.gni")
+import("//tools/typescript/ts_library.gni")
 import("//ui/webui/resources/tools/generate_grd.gni")
 
 assert(is_chromeos, "CrComponents Chromeos tests are Chrome OS only.")
 
+ts_library("build_ts") {
+  root_dir = "."
+  out_dir = "$target_gen_dir/tsc"
+  composite = true
+  tsconfig_base = "//chrome/test/data/webui/tsconfig_base.json"
+
+  in_files = [
+    "bluetooth/fake_bluetooth_config.js",
+    "bluetooth/fake_bluetooth_discovery_delegate.js",
+    "bluetooth/fake_device_pairing_handler.js",
+    "cellular_setup/fake_esim_manager_remote.js",
+    "network/cr_policy_strings.js",
+  ]
+
+  deps = [
+    "//ash/webui/common/resources:build_ts",
+    "//chrome/test/data/webui/chromeos:build_ts",
+    "//ui/webui/resources/js:build_ts",
+    "//ui/webui/resources/mojo:build_ts",
+  ]
+  extra_deps = [ "//ash/webui/common/resources:generate_definitions" ]
+}
+
 generate_grd("build_grdp") {
+  testonly = true
   grd_prefix = "cr_components_chromeos"
   out_grd = "$target_gen_dir/resources.grdp"
   resource_path_prefix = "cr_components/chromeos"
 
+  deps = [ ":build_ts" ]
+
   # Add local test files.
   input_files_base_dir = rebase_path(".", "//")
   input_files = [
-    "bluetooth/fake_bluetooth_config.js",
-    "bluetooth/fake_device_pairing_handler.js",
-    "cellular_setup/fake_esim_manager_remote.js",
     "multidevice_setup/integration_test.js",
     "multidevice_setup/setup_succeeded_page_test.js",
     "multidevice_setup/start_setup_page_test.js",
-    "network/cr_policy_strings.js",
   ]
+
+  manifest_files =
+      filter_include(get_target_outputs(":build_ts"), [ "*_manifest.json" ])
 }
 
 group("closure_compile") {

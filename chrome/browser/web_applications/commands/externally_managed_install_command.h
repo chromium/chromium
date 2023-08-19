@@ -13,10 +13,11 @@
 #include "base/values.h"
 #include "chrome/browser/web_applications/commands/web_app_command.h"
 #include "chrome/browser/web_applications/external_install_options.h"
+#include "chrome/browser/web_applications/jobs/uninstall/web_app_uninstall_and_replace_job.h"
 #include "chrome/browser/web_applications/os_integration/os_integration_manager.h"
 #include "chrome/browser/web_applications/web_app_install_params.h"
 #include "chrome/browser/web_applications/web_app_logging.h"
-#include "chrome/browser/web_applications/web_app_uninstall_and_replace_job.h"
+#include "chrome/browser/web_applications/web_contents/web_app_url_loader.h"
 #include "components/webapps/browser/install_result_code.h"
 #include "components/webapps/browser/installable/installable_logging.h"
 #include "components/webapps/browser/installable/installable_metrics.h"
@@ -55,8 +56,7 @@ class ExternallyManagedInstallCommand : public WebAppCommandTemplate<NoopLock> {
       const ExternalInstallOptions& external_install_options,
       InstallAndReplaceCallback callback,
       base::WeakPtr<content::WebContents> contents,
-      std::unique_ptr<WebAppDataRetriever> data_retriever,
-      WebAppUrlLoader* web_app_url_loader);
+      std::unique_ptr<WebAppDataRetriever> data_retriever);
   ~ExternallyManagedInstallCommand() override;
 
   // WebAppCommandTemplate<NoopLock>:
@@ -113,7 +113,7 @@ class ExternallyManagedInstallCommand : public WebAppCommandTemplate<NoopLock> {
 
   std::unique_ptr<WebAppDataRetriever> data_retriever_;
   std::unique_ptr<WebAppInstallInfo> web_app_info_;
-  const raw_ptr<WebAppUrlLoader, DanglingUntriaged> web_app_url_loader_;
+  std::unique_ptr<WebAppUrlLoader> web_app_url_loader_;
 
   absl::optional<WebAppUninstallAndReplaceJob> uninstall_and_replace_job_;
 

@@ -8,10 +8,10 @@
 #include <utility>
 #include <vector>
 
+#include "ash/capture_mode/base_capture_mode_session.h"
 #include "ash/capture_mode/capture_mode_constants.h"
 #include "ash/capture_mode/capture_mode_controller.h"
 #include "ash/capture_mode/capture_mode_metrics.h"
-#include "ash/capture_mode/capture_mode_session.h"
 #include "ash/capture_mode/capture_mode_types.h"
 #include "ash/capture_mode/capture_mode_util.h"
 #include "ash/capture_mode/game_capture_bar_view.h"
@@ -41,7 +41,7 @@ namespace {
 constexpr int kFullCaptureBarWidth = 376;
 
 // Width of the game capture bar.
-constexpr int kGameCaptureBarWidth = 260;
+constexpr int kGameCaptureBarWidth = 250;
 
 // Returns the current configs before been overwritten by the client-initiated
 // capture mode session
@@ -199,7 +199,7 @@ class GameDashboardBehavior : public CaptureModeBehavior,
     SetCaptureModeSessionConfigs(capture_mode_configs_);
 
     CaptureModeController* controller = CaptureModeController::Get();
-    CaptureModeSession* session = controller->capture_mode_session();
+    BaseCaptureModeSession* session = controller->capture_mode_session();
     CHECK(session);
     if (!pre_selected_window_) {
       base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
@@ -252,10 +252,9 @@ class GameDashboardBehavior : public CaptureModeBehavior,
 
   std::vector<message_center::ButtonInfo> GetNotificationButtonsInfo(
       bool for_video) const override {
-    CHECK(for_video);
-
     return {message_center::ButtonInfo{l10n_util::GetStringUTF16(
-                IDS_ASH_SCREEN_CAPTURE_SHARE_TO_YOUTUBE)},
+                for_video ? IDS_ASH_SCREEN_CAPTURE_SHARE_TO_YOUTUBE
+                          : IDS_ASH_SCREEN_CAPTURE_BUTTON_EDIT)},
             message_center::ButtonInfo{l10n_util::GetStringUTF16(
                 IDS_ASH_SCREEN_CAPTURE_BUTTON_DELETE)}};
   }
@@ -282,6 +281,10 @@ class GameDashboardBehavior : public CaptureModeBehavior,
   gfx::Rect GetBarAnchorBoundsInScreen(aura::Window* root) const override {
     CHECK(pre_selected_window_);
     return pre_selected_window_->GetBoundsInScreen();
+  }
+
+  int GetCaptureBarBottomPadding() const override {
+    return capture_mode::kGameCaptureBarBottomPadding;
   }
 
   int GetCaptureBarWidth() const override { return kGameCaptureBarWidth; }
@@ -420,13 +423,12 @@ CaptureModeBehavior::GetNotificationButtonsInfo(bool for_video) const {
 
   if (!for_video &&
       !Shell::Get()->session_controller()->IsUserSessionBlocked()) {
-    message_center::ButtonInfo edit_button(
+    buttons_info.emplace_back(
         l10n_util::GetStringUTF16(IDS_ASH_SCREEN_CAPTURE_BUTTON_EDIT));
-    buttons_info.push_back(edit_button);
   }
-  message_center::ButtonInfo delete_button(
+
+  buttons_info.emplace_back(
       l10n_util::GetStringUTF16(IDS_ASH_SCREEN_CAPTURE_BUTTON_DELETE));
-  buttons_info.push_back(delete_button);
 
   return buttons_info;
 }
@@ -438,7 +440,7 @@ CaptureModeBehavior::CreateCaptureModeBarView() {
 
 gfx::Rect CaptureModeBehavior::GetCaptureBarBounds(aura::Window* root) const {
   auto bounds = GetBarAnchorBoundsInScreen(root);
-  const int bar_y = bounds.bottom() - capture_mode::kCaptureBarBottomPadding -
+  const int bar_y = bounds.bottom() - GetCaptureBarBottomPadding() -
                     capture_mode::kCaptureBarHeight;
   bounds.ClampToCenteredSize(
       gfx::Size(GetCaptureBarWidth(), capture_mode::kCaptureBarHeight));
@@ -466,6 +468,10 @@ gfx::Rect CaptureModeBehavior::GetBarAnchorBoundsInScreen(
   }
   bounds.set_height(new_bottom - bounds.y());
   return bounds;
+}
+
+int CaptureModeBehavior::GetCaptureBarBottomPadding() const {
+  return capture_mode::kCaptureBarBottomPadding;
 }
 
 int CaptureModeBehavior::GetCaptureBarWidth() const {

@@ -45,7 +45,7 @@ type AddressEntry = chrome.autofillPrivate.AddressEntry;
 type AccountInfo = chrome.autofillPrivate.AccountInfo;
 type AddressComponents = chrome.autofillPrivate.AddressComponents;
 const AddressSource = chrome.autofillPrivate.AddressSource;
-const AddressField = chrome.autofillPrivate.AddressField;
+const ServerFieldType = chrome.autofillPrivate.ServerFieldType;
 const SettingsAddressEditDialogElementBase = I18nMixin(PolymerElement);
 
 export class SettingsAddressEditDialogElement extends
@@ -73,7 +73,7 @@ export class SettingsAddressEditDialogElement extends
        */
       countryCode_: {
         type: String,
-        observer: 'onUpdateCountryCode_',
+        observer: 'onCountryCodeChanged_',
       },
 
       components_: Array,
@@ -112,13 +112,15 @@ export class SettingsAddressEditDialogElement extends
    * it is a referce for soft (or "dont make it worse") validation, which
    * basically means skipping validation for fields that are already invalid.
    */
-  private originalAddress_?: AddressEntry;
   private title_: string;
   private validationError_?: string;
   private countries_: CountryEntry[];
+  private addressFields_:
+      Map<chrome.autofillPrivate.ServerFieldType, string|undefined> = new Map();
+  private originalAddressFields_?:
+      Map<chrome.autofillPrivate.ServerFieldType, string|undefined>;
   private countryCode_: string|undefined;
-  private components_: Array<Array<uiComponents.AddressComponentUi<unknown>>> =
-      [];
+  private components_: uiComponents.AddressComponentUi[][] = [];
   private canSave_: boolean;
   private isAccountAddress_: boolean;
   private showHonorific_: boolean;
@@ -129,6 +131,9 @@ export class SettingsAddressEditDialogElement extends
     super.connectedCallback();
 
     assert(this.address);
+    for (const entry of this.address.fields) {
+      this.addressFields_.set(entry.type, entry.value);
+    }
 
     this.countryInfo_.getCountryList().then(countryList => {
       if (this.address.guid && this.address.metadata !== undefined &&
@@ -144,21 +149,22 @@ export class SettingsAddressEditDialogElement extends
       const isEditingExistingAddress = !!this.address.guid;
       this.title_ = this.i18n(
           isEditingExistingAddress ? 'editAddressTitle' : 'addAddressTitle');
-      this.originalAddress_ =
-          isEditingExistingAddress ? structuredClone(this.address) : undefined;
+      this.originalAddressFields_ =
+          isEditingExistingAddress ? new Map(this.addressFields_) : undefined;
 
       microTask.run(() => {
-        if (Object.keys(this.address).length === 0 && countryList.length > 0) {
+        const countryField =
+            this.addressFields_.get(ServerFieldType.ADDRESS_HOME_COUNTRY);
+        if (!countryField) {
+          assert(countryList.length > 0);
           // If the address is completely empty, the dialog is creating a new
           // address. The first address in the country list is what we suspect
           // the user's country is.
-          this.address.countryCode = countryList[0].countryCode;
+          this.addressFields_.set(
+              ServerFieldType.ADDRESS_HOME_COUNTRY, countryList[0].countryCode);
         }
-        if (this.countryCode_ === this.address.countryCode) {
-          this.updateAddressComponents_();
-        } else {
-          this.countryCode_ = this.address.countryCode;
-        }
+        this.countryCode_ =
+            this.addressFields_.get(ServerFieldType.ADDRESS_HOME_COUNTRY);
       });
     });
 
@@ -187,30 +193,33 @@ export class SettingsAddressEditDialogElement extends
       this.components_ = [];
       for (const row of format.components) {
         // If this is the name field, add a honorific title row before it.
-        if (row.row[0].field === AddressField.FULL_NAME &&
+        if (row.row[0].field === ServerFieldType.NAME_FULL &&
             this.showHonorific_) {
-          this.components_.push(
-              [new ADDRESS_FIELD_COMPONENT_UI[AddressField.HONORIFIC](
-                  this.address, this.originalAddress_,
-                  this.i18n('honorificLabel'), 'long')]);
+          this.components_.push([new uiComponents.AddressComponentUi(
+              this.addressFields_, this.originalAddressFields_,
+              ServerFieldType.NAME_HONORIFIC_PREFIX,
+              this.i18n('honorificLabel'), 'long')]);
         }
 
         this.components_.push(row.row.map(
-            component => new ADDRESS_FIELD_COMPONENT_UI[component.field](
-                this.address, this.originalAddress_, component.fieldName,
+            component => new uiComponents.AddressComponentUi(
+                this.addressFields_, this.originalAddressFields_,
+                component.field, component.fieldName,
                 component.isLongField ? 'long' : '',
-                component.field === AddressField.ADDRESS_LINES, skipValidation,
-                component.isRequired)));
+                component.field === ServerFieldType.ADDRESS_HOME_STREET_ADDRESS,
+                skipValidation, component.isRequired)));
       }
 
       // Phone and email do not come in the address format as fields, but
       // should be editable and saveable in the resulting address.
       this.components_.push([
-        new uiComponents.PhoneComponentUi(
-            this.address, this.originalAddress_, this.i18n('addressPhone'),
+        new uiComponents.AddressComponentUi(
+            this.addressFields_, this.originalAddressFields_,
+            ServerFieldType.PHONE_HOME_WHOLE_NUMBER, this.i18n('addressPhone'),
             'last-row'),
-        new uiComponents.EmailComponentUi(
-            this.address, this.originalAddress_, this.i18n('addressEmail'),
+        new uiComponents.AddressComponentUi(
+            this.addressFields_, this.originalAddressFields_,
+            ServerFieldType.EMAIL_ADDRESS, this.i18n('addressEmail'),
             'long last-row'),
       ]);
 
@@ -261,7 +270,6 @@ export class SettingsAddressEditDialogElement extends
 
     this.updateCanSave_();
   }
-
 
   /**
    * Notifies all components validity (see notifyComponentValidity_()).
@@ -379,25 +387,26 @@ export class SettingsAddressEditDialogElement extends
       return;
     }
 
-    // Set a default country if none is set.
-    if (!this.address.countryCode) {
-      this.address.countryCode = this.countries_[0].countryCode;
-    }
+    this.address.fields = [];
+    this.addressFields_.forEach((value, key, _map) => {
+      this.address.fields.push({type: key, value: value});
+    });
 
     this.fire_('save-address', this.address);
     this.$.dialog.close();
+  }
+
+  private onCountryCodeChanged_(): void {
+    this.updateAddressComponents_();
   }
 
   /**
    * Syncs the country code back to the address and rebuilds the address
    * components for the new location.
    */
-  private onUpdateCountryCode_(countryCode: string|undefined): void {
-    this.address.countryCode = countryCode;
-    this.updateAddressComponents_();
-  }
-
-  private onCountryChange_(): void {
+  private onCountryCodeSelectChange_(): void {
+    this.addressFields_.set(
+        ServerFieldType.ADDRESS_HOME_COUNTRY, this.$.country.value);
     this.countryCode_ = this.$.country.value;
   }
 }
@@ -410,22 +419,6 @@ declare global {
 
 customElements.define(
     SettingsAddressEditDialogElement.is, SettingsAddressEditDialogElement);
-
-export const ADDRESS_FIELD_COMPONENT_UI: Record<
-    chrome.autofillPrivate.AddressField,
-    typeof uiComponents.StringComponentUi|
-    typeof uiComponents.ArrayStringComponentUi> = {
-  [AddressField.HONORIFIC]: uiComponents.HonorificComponentUi,
-  [AddressField.COMPANY_NAME]: uiComponents.CompanyNameComponentUi,
-  [AddressField.FULL_NAME]: uiComponents.FullNamesComponentUi,
-  [AddressField.ADDRESS_LINES]: uiComponents.AddressLinesComponentUi,
-  [AddressField.ADDRESS_LEVEL_1]: uiComponents.AddressLevel1ComponentUi,
-  [AddressField.ADDRESS_LEVEL_2]: uiComponents.AddressLevel2ComponentUi,
-  [AddressField.ADDRESS_LEVEL_3]: uiComponents.AddressLevel3ComponentUi,
-  [AddressField.POSTAL_CODE]: uiComponents.PostalCodeComponentUi,
-  [AddressField.COUNTRY_CODE]: uiComponents.CountryCodeComponentUi,
-  [AddressField.SORTING_CODE]: uiComponents.SortingCodeComponentUi,
-};
 
 export interface CountryDetailManager {
   /**

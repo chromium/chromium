@@ -445,13 +445,25 @@
         </if>
       </if>
       <if expr="not use_titlecase">
+        <message name="IDS_RECENT_TABS" desc="The section header for the Recent Tabs section of the Recent Tabs menu.">
+          Recent tabs
+        </message>
         <message name="IDS_RECENTLY_CLOSED" desc="The section header for the Recently Closed section of the Recent Tabs menu.">
           Recently closed
         </message>
+        <message name="IDS_YOUR_DEVICES" desc="The section header for the Your Devices section of the Recent Tabs menu.">
+          Your devices
+        </message>
       </if>
       <if expr="use_titlecase">
+        <message name="IDS_RECENT_TABS" desc="The section header for the Recent Tabs section of the Recent Tabs menu.">
+          Recent Tabs
+        </message>
         <message name="IDS_RECENTLY_CLOSED" desc="In Title Case: The section header for the Recently Closed section of the Recent Tabs menu.">
           Recently Closed
+        </message>
+        <message name="IDS_YOUR_DEVICES" desc="In Title Case: The section header for the Your Devices section of the Recent Tabs menu.">
+          Your Devices
         </message>
       </if>
       <message name="IDS_CHOOSE" desc="Label for a button to choose something, like a shipping address for a payment request. [CHAR_LIMIT=20]" formatter_data="android_java">
@@ -525,9 +537,6 @@
       </message>
       <message name="IDS_PASSWORD_MANAGER_CSV_PASSWORD_PARSER_SERVICE_DISPLAY_NAME" desc="The display name (in the system task manager, etc) of the service process used for parsing a csv passwords file.">
         CSV Password Parser Service
-      </message>
-      <message name="IDS_PASSWORD_MANAGER_PASSWORD_STRENGTH_CALCULATOR_SERVICE_DISPLAY_NAME" desc="The display name (in the system task manager, etc) of the service process used for calculating the strength of a password.">
-        Password Strength Calculator
       </message>
       <message name="IDS_UNZIP_SERVICE_DISPLAY_NAME" desc="The display name (in the system task manager, etc) of the service process used for unzipping files.">
         Unzip Service

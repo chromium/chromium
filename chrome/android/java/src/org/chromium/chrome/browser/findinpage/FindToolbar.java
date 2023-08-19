@@ -63,8 +63,6 @@ import java.lang.annotation.RetentionPolicy;
 
 /** A toolbar providing find in page functionality. */
 public class FindToolbar extends LinearLayout implements BackPressHandler {
-    private static final String TAG = "FindInPage";
-
     private static final long ACCESSIBLE_ANNOUNCEMENT_DELAY_MILLIS = 500;
 
     @IntDef({FindLocationBarState.SHOWN, FindLocationBarState.SHOWING, FindLocationBarState.HIDDEN,
@@ -105,10 +103,8 @@ public class FindToolbar extends LinearLayout implements BackPressHandler {
     /** Whether the search key should trigger a new search. */
     private boolean mSearchKeyShouldTriggerSearch;
 
-    @FindLocationBarState
-    private int mCurrentState = FindLocationBarState.HIDDEN;
-    @FindLocationBarState
-    private int mDesiredState = FindLocationBarState.HIDDEN;
+    private @FindLocationBarState int mCurrentState = FindLocationBarState.HIDDEN;
+    private @FindLocationBarState int mDesiredState = FindLocationBarState.HIDDEN;
 
     private Handler mHandler = new Handler();
     private Runnable mAccessibleAnnouncementRunnable;

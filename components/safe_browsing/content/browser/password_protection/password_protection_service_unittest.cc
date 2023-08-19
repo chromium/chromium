@@ -396,8 +396,8 @@ class PasswordProtectionServiceBaseTest
     auto token_fetcher =
         std::make_unique<StrictMock<MockSafeBrowsingTokenFetcher>>();
     raw_token_fetcher_ = token_fetcher.get();
-    identity_test_env_.MakePrimaryAccountAvailable("user@gmail.com",
-                                                   signin::ConsentLevel::kSync);
+    identity_test_env_.MakePrimaryAccountAvailable(
+        "user@gmail.com", signin::ConsentLevel::kSignin);
     password_protection_service_ =
         std::make_unique<NiceMock<TestPasswordProtectionService>>(
             database_manager_,
@@ -1618,6 +1618,114 @@ TEST_P(PasswordProtectionServiceBaseTest, TestWebContentsDestroyed) {
                                            web_contents.get());
   web_contents.reset();
   task_environment_.RunUntilIdle();
+}
+
+// TODO(crbug.com/1457312): [Also TODO(thefrog)] Remove test case once
+// kHashPrefixRealTimeLookups is launched.
+TEST_P(PasswordProtectionServiceBaseTest,
+       TestHashPrefixRealTimeLookupsFeatureEnabled) {
+  base::FieldTrialList::CreateFieldTrial(
+      "SafeBrowsingHashPrefixRealTimeLookups", "Enabled");
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitFromCommandLine(
+      "SafeBrowsingHashPrefixRealTimeLookups<"
+      "SafeBrowsingHashPrefixRealTimeLookups.Enabled",
+      "");
+
+  LoginReputationClientResponse expected_response =
+      CreateVerdictProto(LoginReputationClientResponse::PHISHING, 10 * kMinute,
+                         GURL("about:blank").host());
+  test_url_loader_factory_.AddResponse(url_.spec(),
+                                       expected_response.SerializeAsString());
+  std::unique_ptr<content::WebContents> web_contents = GetWebContents();
+  password_protection_service_->StartRequest(
+      web_contents.get(), GURL("about:blank"), GURL(), GURL(), kUserName,
+      PasswordType::SAVED_PASSWORD, {{"example.com", u"username"}},
+      LoginReputationClientRequest::UNFAMILIAR_LOGIN_PAGE, true);
+  base::RunLoop().RunUntilIdle();
+
+  password_protection_service_->WaitForResponse();
+  const LoginReputationClientRequest* proto =
+      password_protection_service_->GetLatestRequestProto();
+  ASSERT_NE(nullptr, proto);
+  EXPECT_TRUE(base::Contains(proto->population().finch_active_groups(),
+                             "SafeBrowsingHashPrefixRealTimeLookups.Enabled"));
+  EXPECT_FALSE(base::Contains(proto->population().finch_active_groups(),
+                              "SafeBrowsingHashPrefixRealTimeLookups.Control"));
+  EXPECT_FALSE(base::Contains(proto->population().finch_active_groups(),
+                              "SafeBrowsingHashPrefixRealTimeLookups.Default"));
+}
+
+// TODO(crbug.com/1457312): [Also TODO(thefrog)] Remove test case once
+// kHashPrefixRealTimeLookups is launched.
+TEST_P(PasswordProtectionServiceBaseTest,
+       TestHashPrefixRealTimeLookupsFeatureControl) {
+  base::FieldTrialList::CreateFieldTrial(
+      "SafeBrowsingHashPrefixRealTimeLookups", "Control");
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitFromCommandLine(
+      "SafeBrowsingHashPrefixRealTimeLookups<"
+      "SafeBrowsingHashPrefixRealTimeLookups.Control",
+      "");
+
+  LoginReputationClientResponse expected_response =
+      CreateVerdictProto(LoginReputationClientResponse::PHISHING, 10 * kMinute,
+                         GURL("about:blank").host());
+  test_url_loader_factory_.AddResponse(url_.spec(),
+                                       expected_response.SerializeAsString());
+  std::unique_ptr<content::WebContents> web_contents = GetWebContents();
+  password_protection_service_->StartRequest(
+      web_contents.get(), GURL("about:blank"), GURL(), GURL(), kUserName,
+      PasswordType::SAVED_PASSWORD, {{"example.com", u"username"}},
+      LoginReputationClientRequest::UNFAMILIAR_LOGIN_PAGE, true);
+  base::RunLoop().RunUntilIdle();
+
+  password_protection_service_->WaitForResponse();
+  const LoginReputationClientRequest* proto =
+      password_protection_service_->GetLatestRequestProto();
+  ASSERT_NE(nullptr, proto);
+  EXPECT_FALSE(base::Contains(proto->population().finch_active_groups(),
+                              "SafeBrowsingHashPrefixRealTimeLookups.Enabled"));
+  EXPECT_TRUE(base::Contains(proto->population().finch_active_groups(),
+                             "SafeBrowsingHashPrefixRealTimeLookups.Control"));
+  EXPECT_FALSE(base::Contains(proto->population().finch_active_groups(),
+                              "SafeBrowsingHashPrefixRealTimeLookups.Default"));
+}
+
+// TODO(crbug.com/1457312): [Also TODO(thefrog)] Remove test case once
+// kHashPrefixRealTimeLookups is launched.
+TEST_P(PasswordProtectionServiceBaseTest,
+       TestHashPrefixRealTimeLookupsFeatureDefault) {
+  base::FieldTrialList::CreateFieldTrial(
+      "SafeBrowsingHashPrefixRealTimeLookups", "Default");
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitFromCommandLine(
+      "SafeBrowsingHashPrefixRealTimeLookups<"
+      "SafeBrowsingHashPrefixRealTimeLookups.Default",
+      "");
+
+  LoginReputationClientResponse expected_response =
+      CreateVerdictProto(LoginReputationClientResponse::PHISHING, 10 * kMinute,
+                         GURL("about:blank").host());
+  test_url_loader_factory_.AddResponse(url_.spec(),
+                                       expected_response.SerializeAsString());
+  std::unique_ptr<content::WebContents> web_contents = GetWebContents();
+  password_protection_service_->StartRequest(
+      web_contents.get(), GURL("about:blank"), GURL(), GURL(), kUserName,
+      PasswordType::SAVED_PASSWORD, {{"example.com", u"username"}},
+      LoginReputationClientRequest::UNFAMILIAR_LOGIN_PAGE, true);
+  base::RunLoop().RunUntilIdle();
+
+  password_protection_service_->WaitForResponse();
+  const LoginReputationClientRequest* proto =
+      password_protection_service_->GetLatestRequestProto();
+  ASSERT_NE(nullptr, proto);
+  EXPECT_FALSE(base::Contains(proto->population().finch_active_groups(),
+                              "SafeBrowsingHashPrefixRealTimeLookups.Enabled"));
+  EXPECT_FALSE(base::Contains(proto->population().finch_active_groups(),
+                              "SafeBrowsingHashPrefixRealTimeLookups.Control"));
+  EXPECT_FALSE(base::Contains(proto->population().finch_active_groups(),
+                              "SafeBrowsingHashPrefixRealTimeLookups.Default"));
 }
 
 INSTANTIATE_TEST_SUITE_P(Regular,

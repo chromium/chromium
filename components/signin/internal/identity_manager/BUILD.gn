@@ -66,7 +66,8 @@ source_set("identity_manager") {
     "//components/image_fetcher/core",
     "//components/prefs",
     "//components/signin/public/webdata",
-    "//components/supervised_user/core/common:common",
+    "//components/supervised_user/core/common:features",
+    "//components/version_info",
     "//services/network/public/cpp",
     "//ui/gfx",
   ]
@@ -105,6 +106,14 @@ source_set("identity_manager") {
       "profile_oauth2_token_service_delegate_chromeos.h",
     ]
     deps += [ "//components/account_manager_core" ]
+  }
+
+  if (enable_bound_session_credentials) {
+    sources += [
+      "token_binding_helper.cc",
+      "token_binding_helper.h",
+    ]
+    deps += [ "//components/unexportable_keys" ]
   }
 
   if (is_chromeos_ash) {
@@ -168,7 +177,7 @@ source_set("unit_tests") {
     "//components/signin/public/identity_manager",
     "//components/signin/public/identity_manager:test_support",
     "//components/signin/public/webdata",
-    "//components/supervised_user/core/common:common",
+    "//components/supervised_user/core/common:features",
     "//components/sync_preferences:test_support",
     "//components/webdata/common",
     "//google_apis",
@@ -207,6 +216,16 @@ source_set("unit_tests") {
 
   if (enable_dice_support) {
     sources += [ "mutable_profile_oauth2_token_service_delegate_unittest.cc" ]
+  }
+
+  if (enable_bound_session_credentials) {
+    sources += [ "token_binding_helper_unittest.cc" ]
+
+    deps += [
+      "//components/unexportable_keys",
+      "//components/unexportable_keys:test_support",
+      "//crypto:test_support",
+    ]
   }
 }
 

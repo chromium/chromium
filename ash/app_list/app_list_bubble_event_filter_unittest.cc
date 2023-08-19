@@ -6,12 +6,15 @@
 
 #include <memory>
 
+#include "ash/shell.h"
 #include "ash/test/ash_test_base.h"
 #include "ash/test/test_widget_builder.h"
 #include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/test/bind.h"
+#include "base/test/mock_callback.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/base/interaction/expect_call_in_scope.h"
 
 namespace ash {
 namespace {
@@ -97,6 +100,38 @@ TEST_P(AppListBubbleEventFilterTest, ClickInsideViewDoesNotRunCallback) {
   ClickOrTapAt(view_->GetBoundsInScreen().CenterPoint());
 
   EXPECT_FALSE(callback_ran);
+}
+
+TEST_P(AppListBubbleEventFilterTest,
+       ClickInsideHelpBubbleContainerDoesNotRunCallback) {
+  // Cache root window for help bubble widget.
+  aura::Window* help_bubble_widget_root_window =
+      view_holder_widget_->GetNativeWindow()->GetRootWindow();
+
+  // Cache parent for help bubble widget in the help bubble container.
+  aura::Window* help_bubble_widget_parent = Shell::GetContainer(
+      help_bubble_widget_root_window, kShellWindowId_HelpBubbleContainer);
+
+  // Cache bounds for help bubble widget, ensuring they are outside the bounds
+  // for the `view_` associated with the event filter.
+  gfx::Rect help_bubble_widget_bounds(
+      view_holder_widget_->GetWindowBoundsInScreen());
+  help_bubble_widget_bounds += gfx::Vector2d(
+      help_bubble_widget_bounds.width(), help_bubble_widget_bounds.height());
+
+  // Create help bubble widget.
+  auto help_bubble_widget = TestWidgetBuilder()
+                                .SetBounds(help_bubble_widget_bounds)
+                                .SetParent(help_bubble_widget_parent)
+                                .SetShow(true)
+                                .BuildOwnsNativeWidget();
+
+  // Create event filter.
+  UNCALLED_MOCK_CALLBACK(base::RepeatingClosure, callback);
+  AppListBubbleEventFilter filter(widget_.get(), view_, callback.Get());
+
+  // Verify that clicking/tapping help bubble widget does not run `callback`.
+  ClickOrTapAt(help_bubble_widget->GetWindowBoundsInScreen().CenterPoint());
 }
 
 }  // namespace

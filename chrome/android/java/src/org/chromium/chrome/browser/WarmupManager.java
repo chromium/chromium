@@ -75,7 +75,7 @@ public class WarmupManager {
     /**
      * Records stats, observes crashes, and cleans up spareTab object.
      */
-    private final TabObserver mSpareTabObserver = new EmptyTabObserver() {
+    private TabObserver mSpareTabObserver = new EmptyTabObserver() {
         @Override
         // Invoked when tab crashes, or when the associated renderer process is killed.
         public void onCrash(Tab tab) {
@@ -212,12 +212,16 @@ public class WarmupManager {
             Tab spareTab = tabCreator.buildDetachedSpareTab(type, initialize_renderer);
 
             mSpareTab = spareTab;
+            assert mSpareTab != null : "Building a spare detached tab shouldn't return null.";
+
             mSpareTabFinalStatus = SpareTabFinalStatus.TAB_CREATED_BUT_NOT_USED;
         }
 
         // Ensure that the TabObserver is set before adding it.
         assert mSpareTabObserver != null;
-        mSpareTab.addObserver(mSpareTabObserver);
+        if (mSpareTab != null) {
+            mSpareTab.addObserver(mSpareTabObserver);
+        }
     }
 
     /**
@@ -294,7 +298,6 @@ public class WarmupManager {
     /**
      * Removes the singleton instance for the WarmupManager for testing.
      */
-    @VisibleForTesting
     public static void deInitForTesting() {
         sWarmupManager = null;
     }

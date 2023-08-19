@@ -14,6 +14,7 @@
 #include "base/functional/callback.h"
 #include "base/ranges/algorithm.h"
 #include "base/scoped_observation.h"
+#include "base/task/single_thread_task_runner.h"
 #include "chrome/browser/browsing_data/chrome_browsing_data_remover_constants.h"
 #include "chrome/browser/enterprise/idle/action_runner.h"
 #include "chrome/browser/enterprise/idle/idle_service_factory.h"
@@ -32,7 +33,7 @@
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/idle_bubble.h"
-#include "chrome/browser/ui/profile_picker.h"
+#include "chrome/browser/ui/profiles/profile_picker.h"
 #endif  // BUILDFLAG(IS_ANDROID)
 
 namespace enterprise_idle {
@@ -63,10 +64,17 @@ class ShowDialogAction : public Action {
     continuation_ = std::move(continuation);
     // Action object's lifetime extends until it calls `continuation_`, so
     // passing `this` as a raw pointer is safe.
-    subscription_ = DialogManager::GetInstance()->ShowDialog(
-        timeout, action_types_,
-        base::BindOnce(&ShowDialogAction::OnCloseFinished,
-                       base::Unretained(this)));
+    base::CallbackListSubscription subscription =
+        DialogManager::GetInstance()->MaybeShowDialog(
+            profile, timeout, action_types_,
+            base::BindOnce(&ShowDialogAction::OnDialogFinished,
+                           base::Unretained(this)));
+    if (subscription) {
+      // If there is no dialog to show, MaybeShowDialog() resolves immediately
+      // and we destroy this object via OnCloseFinished(). This if guards
+      // against a use-after-free.
+      subscription_ = std::move(subscription);
+    }
   }
 
   bool ShouldNotifyUserOfPendingDestructiveAction(Profile* profile) override {
@@ -75,7 +83,7 @@ class ShowDialogAction : public Action {
   }
 
  private:
-  void OnCloseFinished(bool expired) {
+  void OnDialogFinished(bool expired) {
     std::move(continuation_).Run(/*success=*/expired);
   }
 
@@ -290,19 +298,20 @@ class ShowBubbleAction : public Action {
 
   void Run(Profile* profile, Continuation continuation) override {
     Browser* browser = chrome::FindBrowserWithActiveWindow();
+    profile->GetPrefs()->SetBoolean(prefs::kIdleTimeoutShowBubbleOnStartup,
+                                    true);
     if (browser && browser->profile() == profile &&
         !base::Contains(action_types_, ActionType::kCloseBrowsers)) {
       // A browser for this profile has focus. Show the bubble there.
       ShowIdleBubble(
           browser,
           IdleServiceFactory::GetForBrowserContext(profile)->GetTimeout(),
-          ActionsToActionSet(action_types_));
+          ActionsToActionSet(action_types_),
+          base::BindOnce(&ShowBubbleAction::OnClose, browser->AsWeakPtr()));
     } else {
       // No active browser for this profile. Show the bubble when a browser
-      // gains focus, or on next startup. Let IdleServide::BrowserObserver do
-      // the work.
-      profile->GetPrefs()->SetBoolean(prefs::kIdleTimeoutShowBubbleOnStartup,
-                                      true);
+      // gains focus, or on next startup. Let IdleService::BrowserObserver do
+      // it.
     }
     std::move(continuation).Run(true);
   }
@@ -312,6 +321,14 @@ class ShowBubbleAction : public Action {
   }
 
  private:
+  static void OnClose(base::WeakPtr<Browser> browser) {
+    if (!browser) {
+      return;
+    }
+    browser->profile()->GetPrefs()->SetBoolean(
+        prefs::kIdleTimeoutShowBubbleOnStartup, false);
+  }
+
   base::flat_set<ActionType> action_types_;
 };
 #endif  // !BUILDFLAG(IS_ANDROID)

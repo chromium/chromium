@@ -1,3 +1,4 @@
+## Line return
 When writing multiline descriptions, single line returns may be used to keep
 the line lengths reasonably short (~80 characters). Those single line returns
 will be ignored in the generated [documentation](https://chromeenterprise.google/intl/en_ca/policies).
@@ -5,6 +6,7 @@ will be ignored in the generated [documentation](https://chromeenterprise.google
 If you want an explicit line return in the generated [documentation](https://chromeenterprise.google/intl/en_ca/policies),
 use double line returns.
 
+## Product names
 To ensure consistency in policy descriptions, the following is a mapping of
 how various product names and the like should be referenced. All placeholders
 tags must be opened and closed on the same line to avoid validation errors.
@@ -32,3 +34,14 @@ tags must be opened and closed on the same line to avoid validation errors.
 * Microsoft Active Directory: `<ph name="MS_AD_NAME">Microsoft® Active Directory®</ph>`
 * Microsoft Azure Active Directory `<ph name="MS_AAD_NAME">Microsoft® Azure® Active Directory®</ph>`
 * Fuchsia: `<ph name="FUCHSIA_OS_NAME">Fuchsia</ph>`
+
+## Sensitive policies
+Malwares could abuse policies to control users' device. Some policies are
+particularly dangerous so there will be additional management requirements
+before applying them. For those policies, please append the following statements
+in the end of policy description.
+```
+On <ph name="MS_WIN_NAME">Microsoft® Windows®</ph>, this policy is only available on instances that are joined to a <ph name="MS_AD_NAME">Microsoft® Active Directory®</ph> domain, joined to <ph name="MS_AAD_NAME">Microsoft® Azure® Active Directory®</ph>` or enrolled in `<ph name="CHROME_BROWSER_CLOUD_MANAGEMENT_NAME">Chrome Browser Cloud Management</ph>`.
+
+On <ph name="MAC_OS_NAME">macOS</ph>, this policy is only available on instances that are managed via MDM, joined to a domain via MCX or enrolled in `<ph name="CHROME_BROWSER_CLOUD_MANAGEMENT_NAME">Chrome Browser Cloud Management</ph>`.
+```

@@ -17,7 +17,9 @@ namespace blink {
 class Document;
 class ExecutionContext;
 class KURL;
+class ScriptElementBase;
 class SpeculationRule;
+class SpeculationRulesResource;
 class StyleRule;
 
 using SpeculationRuleSetId = String;
@@ -44,10 +46,20 @@ class CORE_EXPORT SpeculationRuleSet final
   // the document's base URL) used for parsing a rule set.
   class CORE_EXPORT Source : public GarbageCollected<Source> {
    public:
-    Source(const String& source_text, Document&, DOMNodeId node_id);
-    Source(const String& source_text,
-           const KURL& base_url,
-           uint64_t request_id);
+    // Don't call this directly; use the factory methods below instead!
+    Source(base::PassKey<Source>,
+           const String& source_text,
+           Document*,
+           absl::optional<DOMNodeId> node_id,
+           absl::optional<KURL> base_url,
+           absl::optional<uint64_t> request_id);
+
+    static Source* FromInlineScript(const String& source_text,
+                                    Document&,
+                                    DOMNodeId node_id);
+    static Source* FromRequest(const String& source_text,
+                               const KURL& base_url,
+                               uint64_t request_id);
 
     const String& GetSourceText() const;
     const absl::optional<DOMNodeId>& GetNodeId() const;
@@ -98,11 +110,22 @@ class CORE_EXPORT SpeculationRuleSet final
 
   // Returns an summary and detail of an error got in `Parse`.
   // `error_message` is empty iff `error_type` is `kNoError`.
+  // An error indicates that one or more rules were skipped.
   SpeculationRuleSetErrorType error_type() const { return error_type_; }
   const String& error_message() const { return error_message_; }
+  // Returns a list of detailed warnings from the `Parse` method. Warnings
+  // indicate that there are issues with one or more rules but these rules were
+  // still accepted in contrast with rules with an error that would be skipped.
+  const Vector<String>& warning_messages() const { return warning_messages_; }
   // Shorthand to check `error_type` is not `kNoError`.
   bool HasError() const;
+  // Shorthand to check if there are any warning messages.
+  bool HasWarnings() const;
   bool ShouldReportUMAForError() const;
+
+  void AddConsoleMessageForValidation(ScriptElementBase& script_element);
+  void AddConsoleMessageForValidation(Document& element_document,
+                                      SpeculationRulesResource& resource);
 
   static mojom::blink::SpeculationTargetHint SpeculationTargetHintFromString(
       const StringView& target_hint_str);
@@ -110,7 +133,8 @@ class CORE_EXPORT SpeculationRuleSet final
   void Trace(Visitor*) const;
 
  private:
-  void SetError(SpeculationRuleSetErrorType error_type, String error_message_);
+  void SetError(SpeculationRuleSetErrorType error_type, String error_message);
+  void SetWarnings(Vector<String> warning_messages);
 
   SpeculationRuleSetId inspector_id_;
   HeapVector<Member<SpeculationRule>> prefetch_rules_;
@@ -131,6 +155,7 @@ class CORE_EXPORT SpeculationRuleSet final
   SpeculationRuleSetErrorType error_type_ =
       SpeculationRuleSetErrorType::kNoError;
   String error_message_;
+  Vector<String> warning_messages_;
 };
 
 }  // namespace blink

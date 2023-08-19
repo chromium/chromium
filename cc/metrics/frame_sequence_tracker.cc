@@ -447,7 +447,7 @@ void FrameSequenceTracker::ReportFramePresented(
         << TRACKER_DCHECK_MSG;
     ++impl_throughput().frames_produced;
     if (metrics()->GetEffectiveThread() == ThreadType::kCompositor) {
-      metrics()->AdvanceTrace(feedback.timestamp);
+      metrics()->AdvanceTrace(feedback.timestamp, frame_token);
     }
 
     metrics()->ComputeJank(FrameInfo::SmoothEffectDrivingThread::kCompositor,
@@ -468,7 +468,7 @@ void FrameSequenceTracker::ReportFramePresented(
           << TRACKER_DCHECK_MSG;
       ++main_throughput().frames_produced;
       if (metrics()->GetEffectiveThread() == ThreadType::kMain) {
-        metrics()->AdvanceTrace(feedback.timestamp);
+        metrics()->AdvanceTrace(feedback.timestamp, frame_token);
       }
 
       metrics()->ComputeJank(FrameInfo::SmoothEffectDrivingThread::kMain,

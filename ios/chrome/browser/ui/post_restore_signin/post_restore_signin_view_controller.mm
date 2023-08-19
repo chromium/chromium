@@ -17,10 +17,6 @@
 
 #import <Foundation/Foundation.h>
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 @interface PostRestoreSignInViewController ()
 
 // Returns the given name of the last account that was signed in pre-restore.

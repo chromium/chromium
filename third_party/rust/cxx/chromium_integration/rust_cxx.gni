@@ -99,7 +99,11 @@ template("rust_cxx") {
 
     cxxbridge_out_dir = get_label_info(cxxbridge_target, "root_out_dir")
     cxxbridge_executable = "${cxxbridge_out_dir}/cxxbridge"
-    if (is_win) {
+
+    # The executable is always built with the `rust_macro_toolchain` which
+    # targets the `host_os`. The rule here is on the `target_toolchain` which
+    # can be different (e.g. compiling on Linux, targeting Windows).
+    if (host_os == "win") {
       cxxbridge_executable = "${cxxbridge_executable}.exe"
     }
 

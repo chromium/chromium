@@ -146,6 +146,8 @@ source_set("common") {
     "process_visibility_tracker.h",
     "pseudonymization_salt.cc",
     "pseudonymization_salt.h",
+    "service_worker/forwarded_race_network_request_url_loader_factory.cc",
+    "service_worker/forwarded_race_network_request_url_loader_factory.h",
     "service_worker/race_network_request_url_loader_client.cc",
     "service_worker/race_network_request_url_loader_client.h",
     "service_worker/service_worker_resource_loader.cc",
@@ -199,7 +201,6 @@ source_set("common") {
     "//build:chromeos_buildflags",
     "//build/util:chromium_git_revision",
     "//components/discardable_memory/common",
-    "//components/power_scheduler",
     "//components/services/filesystem/public/mojom",
     "//components/tracing:startup_tracing",
     "//content:content_resources",
@@ -324,7 +325,6 @@ source_set("common") {
 
   if (is_apple) {
     sources += [ "font_list_mac.mm" ]
-    configs += [ "//build/config/compiler:enable_arc" ]
   }
 
   if (is_win) {
@@ -344,7 +344,7 @@ source_set("common") {
     libs += [ "android" ]
   }
 
-  if (is_debug && !is_component_build && enable_plugins) {
+  if (is_debug && !is_component_build && enable_ppapi) {
     # Content depends on the PPAPI message logging stuff; if this isn't here,
     # some unit test binaries won't compile. This only worked in release mode
     # because logging is disabled there.

@@ -8,7 +8,7 @@
 
 namespace blink {
 const AtomicString& MockMediaStreamTrack::InterfaceName() const {
-  static AtomicString interface_name_ = "MockMediaStreamTrack";
+  static AtomicString interface_name_("MockMediaStreamTrack");
   return interface_name_;
 }
 

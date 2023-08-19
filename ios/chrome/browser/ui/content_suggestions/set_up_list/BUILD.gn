@@ -11,16 +11,24 @@ source_set("set_up_list") {
     "set_up_list_item_view.mm",
     "set_up_list_item_view_data.h",
     "set_up_list_item_view_data.mm",
+    "set_up_list_show_more_item_view.h",
+    "set_up_list_show_more_item_view.mm",
+    "set_up_list_show_more_view_controller.h",
+    "set_up_list_show_more_view_controller.mm",
     "set_up_list_view.h",
     "set_up_list_view.mm",
   ]
-  configs += [ "//build/config/compiler:enable_arc" ]
   deps = [
+    ":constants",
     "//base",
+    "//components/password_manager/core/common:features",
+    "//components/sync/base:features",
     "//ios/chrome/app/strings",
     "//ios/chrome/browser/ntp:set_up_list_item_type",
     "//ios/chrome/browser/shared/ui/elements",
     "//ios/chrome/browser/shared/ui/symbols",
+    "//ios/chrome/browser/shared/ui/util",
+    "//ios/chrome/browser/ui/content_suggestions:feature_flags",
     "//ios/chrome/browser/ui/content_suggestions/set_up_list/resources",
     "//ios/chrome/common/ui/colors",
     "//ios/chrome/common/ui/util",
@@ -35,7 +43,6 @@ source_set("default_browser_promo") {
     "set_up_list_default_browser_promo_coordinator.mm",
     "set_up_list_default_browser_promo_coordinator_delegate.h",
   ]
-  configs += [ "//build/config/compiler:enable_arc" ]
   deps = [
     "//base",
     "//components/feature_engagement/public",
@@ -53,14 +60,22 @@ source_set("default_browser_promo") {
   ]
 }
 
+source_set("constants") {
+  sources = [
+    "constants.h",
+    "constants.mm",
+  ]
+  deps = [ "//base" ]
+}
+
 source_set("utils") {
   sources = [
     "utils.h",
     "utils.mm",
   ]
-  configs += [ "//build/config/compiler:enable_arc" ]
   deps = [
     "//base",
+    "//ios/chrome/browser/first_run",
     "//ios/chrome/browser/ntp:set_up_list_prefs",
     "//ios/chrome/browser/ui/first_run:utils",
   ]
@@ -72,8 +87,8 @@ source_set("unit_tests") {
     "set_up_list_default_browser_promo_coordinator_unittest.mm",
     "set_up_list_view_unittest.mm",
   ]
-  configs += [ "//build/config/compiler:enable_arc" ]
   deps = [
+    ":constants",
     ":default_browser_promo",
     ":set_up_list",
     "//base",

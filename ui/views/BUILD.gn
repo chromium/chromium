@@ -31,6 +31,8 @@ aggregate_vector_icons("views_vector_icons") {
     "drag_general_selection.icon",
     "eye.icon",
     "eye_crossed.icon",
+    "eye_crossed_refresh.icon",
+    "eye_refresh.icon",
     "ic_close.icon",
     "info.icon",
     "info_chrome_refresh.icon",
@@ -96,6 +98,7 @@ component("views") {
     "animation/ink_drop_state.h",
     "animation/ink_drop_stub.h",
     "animation/ink_drop_util.h",
+    "animation/pulsing_ink_drop_mask.h",
     "animation/scroll_animator.h",
     "animation/slide_out_controller.h",
     "animation/slide_out_controller_delegate.h",
@@ -150,7 +153,6 @@ component("views") {
     "controls/menu/menu_delegate.h",
     "controls/menu/menu_host.h",
     "controls/menu/menu_host_root_view.h",
-    "controls/menu/menu_image_util.h",
     "controls/menu/menu_insertion_delegate_win.h",
     "controls/menu/menu_item_view.h",
     "controls/menu/menu_model_adapter.h",
@@ -330,6 +332,7 @@ component("views") {
     "animation/ink_drop_state.cc",
     "animation/ink_drop_stub.cc",
     "animation/ink_drop_util.cc",
+    "animation/pulsing_ink_drop_mask.cc",
     "animation/scroll_animator.cc",
     "animation/slide_out_controller.cc",
     "animation/square_ink_drop_ripple.cc",
@@ -383,7 +386,6 @@ component("views") {
     "controls/menu/menu_delegate.cc",
     "controls/menu/menu_host.cc",
     "controls/menu/menu_host_root_view.cc",
-    "controls/menu/menu_image_util.cc",
     "controls/menu/menu_item_view.cc",
     "controls/menu/menu_model_adapter.cc",
     "controls/menu/menu_runner.cc",
@@ -546,6 +548,7 @@ component("views") {
     "//ui/native_theme:native_theme_browser",
     "//ui/resources",
     "//ui/strings",
+    "//ui/touch_selection",
     "//ui/views/debug:views_debug",
     "//ui/views/resources",
     "//url",
@@ -574,6 +577,7 @@ component("views") {
     "//ui/gfx",
     "//ui/gfx/animation",
     "//ui/gfx/geometry",
+    "//ui/touch_selection/vector_icons",
     "//ui/views/resources",
     "//ui/views/window/vector_icons",
   ]
@@ -667,7 +671,6 @@ component("views") {
     ]
     public_deps += [ "//components/remote_cocoa/common:mojo" ]
     deps += [
-      "//base:base_arc",
       "//components/crash/core/common",
       "//components/remote_cocoa/app_shim",
       "//components/remote_cocoa/browser",
@@ -721,6 +724,7 @@ component("views") {
       "/DELAYLOAD:user32.dll",
     ]
     deps += [
+      "//services/tracing/public/cpp:cpp",
       "//third_party/iaccessible2",
       "//third_party/wtl",
     ]
@@ -739,15 +743,12 @@ component("views") {
       "accessibility/ax_window_obj_wrapper.h",
       "controls/native/native_view_host_aura.h",
       "corewm/tooltip.h",
-      "corewm/tooltip_aura.h",
       "corewm/tooltip_controller.h",
       "corewm/tooltip_state_manager.h",
       "corewm/tooltip_view_aura.h",
       "event_monitor_aura.h",
       "native_window_tracker_aura.h",
       "touchui/touch_selection_controller_impl.h",
-      "touchui/touch_selection_menu_runner_views.h",
-      "touchui/touch_selection_menu_views.h",
       "view_constants_aura.h",
       "widget/focus_manager_event_handler.h",
       "widget/native_widget_aura.h",
@@ -770,7 +771,6 @@ component("views") {
       "controls/menu/menu_pre_target_handler_aura.cc",
       "controls/menu/menu_pre_target_handler_aura.h",
       "controls/native/native_view_host_aura.cc",
-      "corewm/tooltip_aura.cc",
       "corewm/tooltip_controller.cc",
       "corewm/tooltip_state_manager.cc",
       "corewm/tooltip_view_aura.cc",
@@ -779,8 +779,6 @@ component("views") {
       "metrics_aura.cc",
       "native_window_tracker_aura.cc",
       "touchui/touch_selection_controller_impl.cc",
-      "touchui/touch_selection_menu_runner_views.cc",
-      "touchui/touch_selection_menu_views.cc",
       "view_constants_aura.cc",
       "views_touch_selection_controller_factory_aura.cc",
       "widget/focus_manager_event_handler.cc",
@@ -797,8 +795,10 @@ component("views") {
     }
     if (is_chromeos_lacros) {
       public += [ "corewm/tooltip_lacros.h" ]
-
       sources += [ "corewm/tooltip_lacros.cc" ]
+    } else {
+      public += [ "corewm/tooltip_aura.h" ]
+      sources += [ "corewm/tooltip_aura.cc" ]
     }
     deps += [
       "//ui/aura",
@@ -806,10 +806,19 @@ component("views") {
       "//ui/events",
       "//ui/platform_window",
       "//ui/platform_window/wm",
-      "//ui/touch_selection",
       "//ui/wm",
       "//ui/wm/public",
     ]
+    if (enable_desktop_aura || is_chromeos_ash) {
+      public += [
+        "touchui/touch_selection_menu_runner_views.h",
+        "touchui/touch_selection_menu_views.h",
+      ]
+      sources += [
+        "touchui/touch_selection_menu_runner_views.cc",
+        "touchui/touch_selection_menu_views.cc",
+      ]
+    }
     if (enable_desktop_aura) {
       public += [
         "widget/desktop_aura/desktop_capture_client.h",
@@ -998,6 +1007,8 @@ source_set("test_support") {
     "interaction/interactive_views_test.h",
     "interaction/interactive_views_test_internal.cc",
     "interaction/interactive_views_test_internal.h",
+    "interaction/widget_focus_observer.cc",
+    "interaction/widget_focus_observer.h",
     "layout/animating_layout_manager_test_util.cc",
     "layout/animating_layout_manager_test_util.h",
     "test/ax_event_counter.cc",
@@ -1169,22 +1180,6 @@ source_set("test_support") {
   }
 }
 
-if (is_mac) {
-  # TODO(https://crbug.com/1280317): Merge back into views_unittests once all
-  # .mm files are ARCed.
-  source_set("views_unittests_arc") {
-    testonly = true
-    sources = [ "widget/ax_native_widget_mac_unittest.mm" ]
-    configs += [ "//build/config/compiler:enable_arc" ]
-    deps = [
-      ":views",
-      "//testing/gtest",
-      "//ui/accessibility",
-      "//ui/views:test_support",
-    ]
-  }
-}
-
 test("views_unittests") {
   use_xvfb = use_xvfb_in_this_config
 
@@ -1351,6 +1346,7 @@ test("views_unittests") {
     "//ui/resources",
     "//ui/resources:ui_test_pak",
     "//ui/strings",
+    "//ui/touch_selection",
     "//url",
   ]
 
@@ -1422,6 +1418,7 @@ test("views_unittests") {
       "controls/native/native_view_host_mac_unittest.mm",
       "controls/tabbed_pane/tabbed_pane_accessibility_mac_unittest.mm",
       "view_unittest_mac.mm",
+      "widget/ax_native_widget_mac_unittest.mm",
       "widget/native_widget_mac_unittest.mm",
       "widget/sublevel_manager_mac_unittest.mm",
     ]
@@ -1430,7 +1427,6 @@ test("views_unittests") {
     sources -= [ "controls/native/native_view_host_unittest.cc" ]
 
     public_deps = [
-      ":views_unittests_arc",
       "//components/remote_cocoa/app_shim",
       "//ui/accelerated_widget_mac",
     ]
@@ -1456,7 +1452,6 @@ test("views_unittests") {
       "controls/native/native_view_host_aura_unittest.cc",
       "corewm/tooltip_controller_unittest.cc",
       "touchui/touch_selection_controller_impl_unittest.cc",
-      "touchui/touch_selection_menu_runner_views_unittest.cc",
       "view_unittest_aura.cc",
       "widget/native_widget_aura_unittest.cc",
       "widget/window_reorderer_unittest.cc",
@@ -1466,7 +1461,6 @@ test("views_unittests") {
       "//ui/aura",
       "//ui/aura:test_support",
       "//ui/base/cursor/mojom:cursor_type",
-      "//ui/touch_selection",
       "//ui/wm",
       "//ui/wm/public",
     ]
@@ -1479,6 +1473,10 @@ test("views_unittests") {
     if (is_win) {
       sources +=
           [ "widget/desktop_aura/desktop_window_tree_host_win_unittest.cc" ]
+    }
+
+    if (enable_desktop_aura || is_chromeos_ash) {
+      sources += [ "touchui/touch_selection_menu_runner_views_unittest.cc" ]
     }
 
     if (enable_desktop_aura) {
@@ -1567,7 +1565,6 @@ source_set("views_interactive_ui_tests") {
       "widget/native_widget_mac_interactive_uitest.mm",
     ]
     deps += [ "//components/remote_cocoa/app_shim" ]
-    configs += [ "//build/config/compiler:enable_arc" ]
   }
 
   if (use_aura) {

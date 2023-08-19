@@ -36,6 +36,7 @@ import androidx.annotation.VisibleForTesting;
 import org.chromium.base.ApplicationState;
 import org.chromium.base.ApplicationStatus;
 import org.chromium.base.ContextUtils;
+import org.chromium.base.ResettersForTesting;
 import org.chromium.base.StrictModeContext;
 import org.chromium.base.TraceEvent;
 import org.chromium.base.compat.ApiHelperForM;
@@ -413,8 +414,12 @@ public class NetworkChangeNotifierAutoDetect extends BroadcastReceiver {
                 NetworkRequest networkRequest, NetworkCallback networkCallback, Handler handler) {
             // Starting with Oreo specifying a Handler is allowed.  Use this to avoid thread-hops.
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-                ApiHelperForO.registerNetworkCallback(
-                        mConnectivityManager, networkRequest, networkCallback, handler);
+                try (StrictModeContext ignored = StrictModeContext.allowDiskReads()) {
+                    // Samsung Android O devices aggressively trigger StrictMode violations.
+                    // See https://crbug.com/1450175 for detail.
+                    mConnectivityManager.registerNetworkCallback(
+                            networkRequest, networkCallback, handler);
+                }
             } else {
                 mConnectivityManager.registerNetworkCallback(networkRequest, networkCallback);
             }
@@ -1064,14 +1069,18 @@ public class NetworkChangeNotifierAutoDetect extends BroadcastReceiver {
      * Allows overriding the ConnectivityManagerDelegate for tests.
      */
     void setConnectivityManagerDelegateForTests(ConnectivityManagerDelegate delegate) {
+        var oldValue = mConnectivityManagerDelegate;
         mConnectivityManagerDelegate = delegate;
+        ResettersForTesting.register(() -> mConnectivityManagerDelegate = oldValue);
     }
 
     /**
      * Allows overriding the WifiManagerDelegate for tests.
      */
     void setWifiManagerDelegateForTests(WifiManagerDelegate delegate) {
+        var oldValue = mWifiManagerDelegate;
         mWifiManagerDelegate = delegate;
+        ResettersForTesting.register(() -> mWifiManagerDelegate = oldValue);
     }
 
     @VisibleForTesting
@@ -1082,7 +1091,6 @@ public class NetworkChangeNotifierAutoDetect extends BroadcastReceiver {
     /**
      * Returns whether the object has registered to receive network connectivity intents.
      */
-    @VisibleForTesting
     boolean isReceiverRegisteredForTesting() {
         return mRegistered;
     }

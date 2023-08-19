@@ -2,6 +2,7 @@ include_rules = [
   "+components/policy",
   "+components/prefs",
   "+components/reporting/client",
+  "+components/reporting/proto",
   "+components/safe_browsing/core/common/proto",
   "+components/strings/grit",
   "+components/version_info",

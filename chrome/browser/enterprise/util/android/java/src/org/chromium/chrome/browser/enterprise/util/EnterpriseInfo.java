@@ -7,6 +7,7 @@ package org.chromium.chrome.browser.enterprise.util;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.Callback;
+import org.chromium.base.ResettersForTesting;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.annotations.CalledByNative;
 import org.chromium.base.annotations.NativeMethods;
@@ -61,12 +62,13 @@ public abstract class EnterpriseInfo {
      * Overrides the single static {@link EnterpriseInfo}. This instance is shared globally, an if
      * native is initialized in a given test, there will likely be other keyed services crossing the
      * JNI and calling the test instance. The test implementation must uphold the async callback
-     * behavior of {@link EnterpriseInfo#getDeviceEnterpriseInfo(Callback)}. Suggested that callers
-     * consider using {@link FakeEnterpriseInfo}.
+     * behavior of {@link EnterpriseInfo#getDeviceEnterpriseInfo( Callback )}. Suggested that
+     * callers consider using {@link FakeEnterpriseInfo}.
      */
-    @VisibleForTesting
     public static void setInstanceForTest(EnterpriseInfo instance) {
+        var oldValue = sInstance;
         sInstance = instance;
+        ResettersForTesting.register(() -> sInstance = oldValue);
     }
 
     @VisibleForTesting

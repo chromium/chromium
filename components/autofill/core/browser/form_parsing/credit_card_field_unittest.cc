@@ -585,10 +585,12 @@ TEST_P(CreditCardFieldTest, ParseCreditCardContextualNameWithVerification) {
 }
 
 struct DetermineExpirationDateFormatTestCase {
-  const std::string label;
-  const int max_length;
   const std::string expected_separator;
   const uint8_t expected_year_length;
+  const std::string label;
+  const int max_length;
+  ServerFieldType server_type_hint = NO_SERVER_DATA;
+  bool is_server_override = false;
 };
 
 class DetermineExpirationDateFormat
@@ -606,89 +608,128 @@ class DetermineExpirationDateFormat
   base::test::ScopedFeatureList scoped_features_;
 };
 
-TEST_P(DetermineExpirationDateFormat, TestDetermineFormat) {
-  // Assists in identifying which case has failed.
-  SCOPED_TRACE(test_case().label);
-  SCOPED_TRACE(test_case().max_length);
-  SCOPED_TRACE(test_case().expected_separator);
-  SCOPED_TRACE(test_case().expected_year_length);
-
-  AutofillField field;
-  field.max_length = test_case().max_length;
-  field.label = base::UTF8ToUTF16(test_case().label);
-
-  ServerFieldType assumed_field_type = CREDIT_CARD_EXP_DATE_4_DIGIT_YEAR;
-
-  CreditCardField::ExpirationDateFormat result =
-      CreditCardField::DetermineExpirationDateFormat(field, assumed_field_type);
-  EXPECT_EQ(base::UTF8ToUTF16(test_case().expected_separator),
-            result.separator);
-  EXPECT_EQ(test_case().expected_year_length, result.digits_in_expiration_year);
-}
-
 INSTANTIATE_TEST_SUITE_P(
-    ,
+    CreditCardFieldTest,
     DetermineExpirationDateFormat,
     testing::Values(
         // The order of parameters is:
         // label, max length, expected separator, expected digits in year:
         //
         // No label, no maxlength. -> "MM/YYYY"
-        DetermineExpirationDateFormatTestCase{"", 0, "/", 4},
+        DetermineExpirationDateFormatTestCase{"/", 4, "", 0},
         // No label, maxlength 4. -> "MMYY"
-        DetermineExpirationDateFormatTestCase{"", 4, "", 2},
+        DetermineExpirationDateFormatTestCase{"", 2, "", 4},
         // No label, maxlength 5. -> "MM/YY"
-        DetermineExpirationDateFormatTestCase{"", 5, "/", 2},
+        DetermineExpirationDateFormatTestCase{"/", 2, "", 5},
         // No label, maxlength 6. -> "MMYYYY"
-        DetermineExpirationDateFormatTestCase{"", 6, "", 4},
+        DetermineExpirationDateFormatTestCase{"", 4, "", 6},
         // No label, maxlength 7. -> "MM/YYYY"
-        DetermineExpirationDateFormatTestCase{"", 7, "/", 4},
+        DetermineExpirationDateFormatTestCase{"/", 4, "", 7},
         // No label, large maxlength. -> "MM/YYYY"
-        DetermineExpirationDateFormatTestCase{"", 12, "/", 4},
+        DetermineExpirationDateFormatTestCase{"/", 4, "", 12},
 
         // Unsupported maxlength, general label.
-        DetermineExpirationDateFormatTestCase{"", 3, "", 2},
+        DetermineExpirationDateFormatTestCase{"", 2, "", 3},
         // Unsupported maxlength, two digit year label.
-        DetermineExpirationDateFormatTestCase{"MM/YY", 3, "", 2},
+        DetermineExpirationDateFormatTestCase{"", 2, "MM/YY", 3},
         // Unsupported maxlength, four digit year label.
-        DetermineExpirationDateFormatTestCase{"MM/YYYY", 3, "", 2},
+        DetermineExpirationDateFormatTestCase{"", 2, "MM/YYYY", 3},
 
         // Two digit year, simple label.
-        DetermineExpirationDateFormatTestCase{"MM / YY", 0, " / ", 2},
+        DetermineExpirationDateFormatTestCase{" / ", 2, "MM / YY", 0},
         // Two digit year, with slash (MM/YY).
-        DetermineExpirationDateFormatTestCase{"(MM/YY)", 0, "/", 2},
+        DetermineExpirationDateFormatTestCase{"/", 2, "(MM/YY)", 0},
         // Two digit year, no slash (MMYY).
-        DetermineExpirationDateFormatTestCase{"(MMYY)", 4, "", 2},
+        DetermineExpirationDateFormatTestCase{"", 2, "(MMYY)", 4},
         // Two digit year, with slash and maxlength (MM/YY).
-        DetermineExpirationDateFormatTestCase{"(MM/YY)", 5, "/", 2},
+        DetermineExpirationDateFormatTestCase{"/", 2, "(MM/YY)", 5},
         // Two digit year, with slash and large maxlength (MM/YY).
-        DetermineExpirationDateFormatTestCase{"(MM/YY)", 12, "/", 2},
+        DetermineExpirationDateFormatTestCase{"/", 2, "(MM/YY)", 12},
 
         // Four digit year, simple label.
-        DetermineExpirationDateFormatTestCase{"MM / YYYY", 0, " / ", 4},
+        DetermineExpirationDateFormatTestCase{" / ", 4, "MM / YYYY", 0},
         // Four digit year, with slash (MM/YYYY).
-        DetermineExpirationDateFormatTestCase{"(MM/YYYY)", 0, "/", 4},
+        DetermineExpirationDateFormatTestCase{"/", 4, "(MM/YYYY)", 0},
         // Four digit year, no slash (MMYYYY).
-        DetermineExpirationDateFormatTestCase{"(MMYYYY)", 6, "", 4},
+        DetermineExpirationDateFormatTestCase{"", 4, "(MMYYYY)", 6},
         // Four digit year, with slash and maxlength (MM/YYYY).
-        DetermineExpirationDateFormatTestCase{"(MM/YYYY)", 7, "/", 4},
+        DetermineExpirationDateFormatTestCase{"/", 4, "(MM/YYYY)", 7},
         // Four digit year, with slash and large maxlength (MM/YYYY).
-        DetermineExpirationDateFormatTestCase{"(MM/YYYY)", 12, "/", 4},
+        DetermineExpirationDateFormatTestCase{"/", 4, "(MM/YYYY)", 12},
 
         // Four digit year label with restrictive maxlength (4).
-        DetermineExpirationDateFormatTestCase{"(MM/YYYY)", 4, "", 2},
+        DetermineExpirationDateFormatTestCase{"", 2, "(MM/YYYY)", 4},
         // Four digit year label with restrictive maxlength (5).
-        DetermineExpirationDateFormatTestCase{"(MM/YYYY)", 5, "/", 2},
+        DetermineExpirationDateFormatTestCase{"/", 2, "(MM/YYYY)", 5},
 
         // Spanish format.
-        DetermineExpirationDateFormatTestCase{"MM / AA", 0, " / ", 2},
-        DetermineExpirationDateFormatTestCase{"MM / AAAA", 0, " / ", 4},
+        DetermineExpirationDateFormatTestCase{" / ", 2, "MM / AA", 0},
+        DetermineExpirationDateFormatTestCase{" / ", 4, "MM / AAAA", 0},
 
         // Different separator.
-        DetermineExpirationDateFormatTestCase{"MM - YY", 0, " - ", 2},
+        DetermineExpirationDateFormatTestCase{" - ", 2, "MM - YY", 0},
 
         // Date fits after stripping whitespaces from separator.
-        DetermineExpirationDateFormatTestCase{"MM - YY", 5, "-", 2}));
+        DetermineExpirationDateFormatTestCase{"-", 2, "MM - YY", 5},
+
+        // Verify that server hints are getting priority over max_length
+        // but not over the pattern.
+        //
+        // Due to the MM / YY pattern, the 2 digit expiration date is chosen.
+        DetermineExpirationDateFormatTestCase{
+            " / ", 2, "MM / YY", 0, CREDIT_CARD_EXP_DATE_4_DIGIT_YEAR},
+        DetermineExpirationDateFormatTestCase{
+            " / ", 2, "MM / YY", 7, CREDIT_CARD_EXP_DATE_4_DIGIT_YEAR},
+        // If no pattern and max length are given, the server hint wins.
+        DetermineExpirationDateFormatTestCase{
+            "/", 4, "", 0, CREDIT_CARD_EXP_DATE_4_DIGIT_YEAR},
+        DetermineExpirationDateFormatTestCase{
+            "/", 2, "", 0, CREDIT_CARD_EXP_DATE_2_DIGIT_YEAR},
+        // The max-length may require a pruning of the separator.
+        DetermineExpirationDateFormatTestCase{
+            "/", 4, "", 7, CREDIT_CARD_EXP_DATE_4_DIGIT_YEAR},
+        DetermineExpirationDateFormatTestCase{
+            "", 4, "", 6, CREDIT_CARD_EXP_DATE_4_DIGIT_YEAR},
+        // But at some point we ignore the server if the type does not fit:
+        DetermineExpirationDateFormatTestCase{
+            "/", 2, "", 5, CREDIT_CARD_EXP_DATE_4_DIGIT_YEAR},
+
+        // Verify that server overrides are prioritized over everything else.
+        DetermineExpirationDateFormatTestCase{
+            " / ", 4, "MM / YY", 0, CREDIT_CARD_EXP_DATE_4_DIGIT_YEAR, true},
+        // The max-length may require a pruning of the separator.
+        DetermineExpirationDateFormatTestCase{
+            "/", 4, "MM / YY", 7, CREDIT_CARD_EXP_DATE_4_DIGIT_YEAR, true},
+        DetermineExpirationDateFormatTestCase{
+            "", 4, "MM / YY", 6, CREDIT_CARD_EXP_DATE_4_DIGIT_YEAR, true},
+        // But at some point we ignore the server if the type does not fit:
+        DetermineExpirationDateFormatTestCase{
+            "/", 2, "MM / YY", 5, CREDIT_CARD_EXP_DATE_4_DIGIT_YEAR, true}));
+
+TEST_P(DetermineExpirationDateFormat, TestDetermineFormat) {
+  // Assists in identifying which case has failed.
+  SCOPED_TRACE(test_case().expected_separator);
+  SCOPED_TRACE(test_case().expected_year_length);
+  SCOPED_TRACE(test_case().label);
+  SCOPED_TRACE(test_case().max_length);
+  SCOPED_TRACE(test_case().server_type_hint);
+  SCOPED_TRACE(test_case().is_server_override);
+
+  AutofillField field;
+  field.max_length = test_case().max_length;
+  field.label = base::UTF8ToUTF16(test_case().label);
+
+  ServerFieldType fallback_type = CREDIT_CARD_EXP_DATE_4_DIGIT_YEAR;
+
+  CreditCardField::ExpirationDateFormat result =
+      CreditCardField::DetermineExpirationDateFormat(
+          field, fallback_type, test_case().server_type_hint,
+          test_case().is_server_override ? test_case().server_type_hint
+                                         : NO_SERVER_DATA);
+  EXPECT_EQ(base::UTF8ToUTF16(test_case().expected_separator),
+            result.separator);
+  EXPECT_EQ(test_case().expected_year_length, result.digits_in_expiration_year);
+}
 
 }  // namespace
 }  // namespace autofill

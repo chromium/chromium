@@ -16,8 +16,9 @@ namespace {
 
 class MockSnapFlingClient : public SnapFlingClient {
  public:
-  MOCK_CONST_METHOD3(GetSnapFlingInfoAndSetAnimatingSnapTarget,
-                     bool(const gfx::Vector2dF& natural_displacement,
+  MOCK_CONST_METHOD4(GetSnapFlingInfoAndSetAnimatingSnapTarget,
+                     bool(const gfx::Vector2dF& current_delta,
+                          const gfx::Vector2dF& natural_displacement,
                           gfx::PointF* initial_offset,
                           gfx::PointF* target_offset));
   MOCK_METHOD1(ScrollEndForSnapFling, void(bool));
@@ -76,9 +77,9 @@ TEST_F(SnapFlingControllerTest, CreatesAndAnimatesCurveOnFirstInertialGSU) {
   gsu.is_in_inertial_phase = true;
 
   EXPECT_CALL(mock_client_, GetSnapFlingInfoAndSetAnimatingSnapTarget(
-                                testing::_, testing::_, testing::_))
-      .WillOnce(testing::DoAll(testing::SetArgPointee<1>(gfx::PointF(0, 0)),
-                               testing::SetArgPointee<2>(gfx::PointF(0, 100)),
+                                testing::_, testing::_, testing::_, testing::_))
+      .WillOnce(testing::DoAll(testing::SetArgPointee<2>(gfx::PointF(0, 0)),
+                               testing::SetArgPointee<3>(gfx::PointF(0, 100)),
                                testing::Return(true)));
   EXPECT_CALL(mock_client_, RequestAnimationForSnapFling()).Times(1);
   EXPECT_CALL(mock_client_, ScrollByForSnapFling(testing::_)).Times(1);
@@ -92,9 +93,9 @@ TEST_F(SnapFlingControllerTest, ScrollEndWhenHasEqualOffsetsOnInertialGSU) {
   gsu.is_in_inertial_phase = true;
 
   EXPECT_CALL(mock_client_, GetSnapFlingInfoAndSetAnimatingSnapTarget(
-                                testing::_, testing::_, testing::_))
-      .WillOnce(testing::DoAll(testing::SetArgPointee<1>(gfx::PointF(0, 0)),
-                               testing::SetArgPointee<2>(gfx::PointF(0, 0)),
+                                testing::_, testing::_, testing::_, testing::_))
+      .WillOnce(testing::DoAll(testing::SetArgPointee<2>(gfx::PointF(0, 0)),
+                               testing::SetArgPointee<3>(gfx::PointF(0, 0)),
                                testing::Return(true)));
   EXPECT_CALL(mock_client_, RequestAnimationForSnapFling()).Times(0);
   EXPECT_CALL(mock_client_, ScrollByForSnapFling(testing::_)).Times(0);
@@ -109,7 +110,7 @@ TEST_F(SnapFlingControllerTest, DoesNotHandleNonInertialGSU) {
   gsu.is_in_inertial_phase = false;
 
   EXPECT_CALL(mock_client_, GetSnapFlingInfoAndSetAnimatingSnapTarget(
-                                testing::_, testing::_, testing::_))
+                                testing::_, testing::_, testing::_, testing::_))
       .Times(0);
   EXPECT_CALL(mock_client_, RequestAnimationForSnapFling()).Times(0);
   EXPECT_CALL(mock_client_, ScrollByForSnapFling(testing::_)).Times(0);

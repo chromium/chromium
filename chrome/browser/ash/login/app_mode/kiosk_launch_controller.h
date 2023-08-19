@@ -93,8 +93,6 @@ class KioskLaunchController : public KioskProfileLoader::Delegate,
     virtual void OnKioskProfileLoadFailed() = 0;
   };
 
-  using ReturnBoolCallback = base::RepeatingCallback<bool()>;
-
   // Factory class that constructs a `KioskAppLauncher`.
   // The default implementation constructs the correct implementation of
   // `KioskAppLauncher` based on the kiosk type associated with `KioskAppId`.
@@ -105,9 +103,11 @@ class KioskLaunchController : public KioskProfileLoader::Delegate,
           KioskAppLauncher::NetworkDelegate*)>;
 
   explicit KioskLaunchController(OobeUI* oobe_ui);
-  KioskLaunchController(LoginDisplayHost* host,
-                        AppLaunchSplashScreenView* splash_screen,
-                        KioskAppLauncherFactory app_launcher_factory);
+  KioskLaunchController(
+      LoginDisplayHost* host,
+      AppLaunchSplashScreenView* splash_screen,
+      KioskAppLauncherFactory app_launcher_factory,
+      std::unique_ptr<NetworkUiController::NetworkMonitor> network_monitor);
   KioskLaunchController(const KioskLaunchController&) = delete;
   KioskLaunchController& operator=(const KioskLaunchController&) = delete;
   ~KioskLaunchController() override;
@@ -116,15 +116,9 @@ class KioskLaunchController : public KioskProfileLoader::Delegate,
   DisableLoginOperationsForTesting();
   [[nodiscard]] static std::unique_ptr<base::AutoReset<bool>>
   SkipSplashScreenWaitForTesting();
-  [[nodiscard]] static std::unique_ptr<base::AutoReset<base::TimeDelta>>
-  SetNetworkWaitForTesting(base::TimeDelta wait_time);
   [[nodiscard]] static std::unique_ptr<base::AutoReset<bool>>
   BlockAppLaunchForTesting();
   [[nodiscard]] static base::AutoReset<bool> BlockExitOnFailureForTesting();
-
-  bool waiting_for_network() const {
-    return app_state_ == AppState::kInitNetwork;
-  }
 
   void Start(const KioskAppId& kiosk_app_id, bool auto_launch);
 
@@ -187,9 +181,6 @@ class KioskLaunchController : public KioskProfileLoader::Delegate,
 
   KioskAppManagerBase::App GetAppData();
 
-  // Whether the network could be configured during launching.
-  bool CanConfigureNetwork();
-
   void HandleWebAppInstallFailed();
 
   // Continues launching after forced extensions are installed if required.
@@ -237,10 +228,6 @@ class KioskLaunchController : public KioskProfileLoader::Delegate,
   // Used to prepare and launch the actual kiosk app, is created after
   // profile initialization. Is nullptr for arc kiosks.
   std::unique_ptr<KioskAppLauncher> app_launcher_;
-
-  // A timer that fires when the network was not prepared and we require user
-  // network configuration to continue.
-  base::OneShotTimer network_wait_timer_;
 
   // Tracks the moment when Kiosk launcher is started.
   base::Time launcher_start_time_;

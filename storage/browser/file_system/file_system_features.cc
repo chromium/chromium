@@ -17,11 +17,4 @@ BASE_FEATURE(kIncognitoFileSystemContextForTesting,
              "IncognitoFileSystemContextForTesting",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// TODO(https://crbug.com/1396116): Remove this eventually.
-// When enabled, FileSystemURL comparators will treat opaque origins as a null
-// state. See https://crbug.com/1396116.
-BASE_FEATURE(kFileSystemURLComparatorsTreatOpaqueOriginAsNoOrigin,
-             "FileSystemURLComparatorsTreatOpaqueOriginAsNoOrigin",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 }  // namespace storage::features

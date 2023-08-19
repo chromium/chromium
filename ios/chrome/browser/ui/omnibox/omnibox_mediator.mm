@@ -4,7 +4,7 @@
 
 #import "ios/chrome/browser/ui/omnibox/omnibox_mediator.h"
 
-#import "base/mac/foundation_util.h"
+#import "base/apple/foundation_util.h"
 #import "base/metrics/user_metrics.h"
 #import "base/metrics/user_metrics_action.h"
 #import "base/strings/sys_string_conversions.h"
@@ -16,7 +16,7 @@
 #import "ios/chrome/browser/net/crurl.h"
 #import "ios/chrome/browser/search_engines/search_engine_observer_bridge.h"
 #import "ios/chrome/browser/search_engines/search_engines_util.h"
-#import "ios/chrome/browser/shared/coordinator/default_browser_promo/non_modal_default_browser_promo_scheduler_scene_agent.h"
+#import "ios/chrome/browser/shared/coordinator/default_browser_promo/default_browser_promo_scene_agent_utils.h"
 #import "ios/chrome/browser/shared/coordinator/scene/scene_state_browser_agent.h"
 #import "ios/chrome/browser/shared/public/commands/lens_commands.h"
 #import "ios/chrome/browser/shared/public/commands/load_query_commands.h"
@@ -38,10 +38,6 @@
 #import "ios/public/provider/chrome/browser/branded_images/branded_images_api.h"
 #import "ios/public/provider/chrome/browser/lens/lens_api.h"
 #import "ios/web/public/navigation/navigation_manager.h"
-
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
 
 using base::UserMetricsAction;
 
@@ -341,7 +337,7 @@ using base::UserMetricsAction;
   __weak __typeof(self) weakSelf = self;
   auto textCompletion =
       ^(__kindof id<NSItemProviderReading> providedItem, NSError* error) {
-        LogLikelyInterestedDefaultBrowserUserActivity(DefaultPromoTypeGeneral);
+        LogCopyPasteInOmniboxForDefaultBrowserPromo();
         dispatch_async(dispatch_get_main_queue(), ^{
           NSString* text = static_cast<NSString*>(providedItem);
           if (text) {
@@ -363,7 +359,7 @@ using base::UserMetricsAction;
   auto lensCompletion =
       ^(__kindof id<NSItemProviderReading> providedItem, NSError* error) {
         dispatch_async(dispatch_get_main_queue(), ^{
-          UIImage* image = base::mac::ObjCCast<UIImage>(providedItem);
+          UIImage* image = base::apple::ObjCCast<UIImage>(providedItem);
           if (image) {
             [weakSelf lensImage:image];
           }
@@ -468,9 +464,7 @@ using base::UserMetricsAction;
     return;
   }
 
-  [[NonModalDefaultBrowserPromoSchedulerSceneAgent
-      agentFromScene:self.sceneState] logUserPastedInOmnibox];
-
+  NotifyDefaultBrowserPromoUserPastedInOmnibox(self.sceneState);
   LogToFETUserPastedURLIntoOmnibox(self.tracker);
 }
 

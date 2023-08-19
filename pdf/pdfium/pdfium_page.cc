@@ -43,6 +43,7 @@
 #include "ui/gfx/geometry/vector2d.h"
 #include "ui/gfx/geometry/vector2d_f.h"
 #include "ui/gfx/range/range.h"
+#include "ui/gfx/skbitmap_operations.h"
 
 using printing::ConvertUnitFloat;
 using printing::kPixelsPerInch;
@@ -769,10 +770,82 @@ std::vector<AccessibilityImageInfo> PDFiumPage::GetImageInfo(
     cur_info.bounds =
         gfx::RectF(image.bounding_rect.x(), image.bounding_rect.y(),
                    image.bounding_rect.width(), image.bounding_rect.height());
-    cur_info.image_data = image.image_data;
+    cur_info.page_object_index = image.page_object_index;
     image_info.push_back(std::move(cur_info));
   }
   return image_info;
+}
+
+SkBitmap PDFiumPage::GetImageForOcr(int page_object_index) {
+  SkBitmap bitmap;
+
+  FPDF_PAGE page = GetPage();
+  FPDF_PAGEOBJECT page_object = FPDFPage_GetObject(page, page_object_index);
+
+  if (FPDFPageObj_GetType(page_object) != FPDF_PAGEOBJ_IMAGE) {
+    return bitmap;
+  }
+
+  // OCR needs the image with the highest available quality. To get it, the
+  // image transform matrix is reset to no-scale, the bitmap is extracted,
+  // and then the original matrix is restored.
+  FS_MATRIX original_matrix;
+  if (!FPDFPageObj_GetMatrix(page_object, &original_matrix)) {
+    return bitmap;
+  }
+
+  // Get the actual image size.
+  unsigned int width;
+  unsigned int height;
+  if (!FPDFImageObj_GetImagePixelSize(page_object, &width, &height)) {
+    return bitmap;
+  }
+
+  // Resize the matrix to actual size.
+  FS_MATRIX new_matrix = {static_cast<float>(width),  0, 0,
+                          static_cast<float>(height), 0, 0};
+  if (!FPDFPageObj_SetMatrix(page_object, &new_matrix)) {
+    return bitmap;
+  }
+
+  ScopedFPDFBitmap raw_bitmap(
+      FPDFImageObj_GetRenderedBitmap(engine_->doc(), page, page_object));
+
+  // Restore the original matrix.
+  CHECK(FPDFPageObj_SetMatrix(page_object, &original_matrix));
+
+  if (!raw_bitmap) {
+    return SkBitmap();
+  }
+
+  CHECK_EQ(FPDFBitmap_GetFormat(raw_bitmap.get()), FPDFBitmap_BGRA);
+  SkImageInfo info =
+      SkImageInfo::Make(FPDFBitmap_GetWidth(raw_bitmap.get()),
+                        FPDFBitmap_GetHeight(raw_bitmap.get()),
+                        kBGRA_8888_SkColorType, kOpaque_SkAlphaType);
+  const size_t row_bytes = FPDFBitmap_GetStride(raw_bitmap.get());
+  SkPixmap pixels(info, FPDFBitmap_GetBuffer(raw_bitmap.get()), row_bytes);
+  if (!bitmap.tryAllocPixels(info, row_bytes)) {
+    return bitmap;
+  }
+  bitmap.writePixels(pixels);
+
+  SkBitmapOperations::RotationAmount rotation;
+  switch (FPDFPage_GetRotation(page)) {
+    case 0:
+      return bitmap;
+    case 1:
+      rotation = SkBitmapOperations::RotationAmount::ROTATION_90_CW;
+      break;
+    case 2:
+      rotation = SkBitmapOperations::RotationAmount::ROTATION_180_CW;
+      break;
+    case 3:
+      rotation = SkBitmapOperations::RotationAmount::ROTATION_270_CW;
+      break;
+  }
+
+  return SkBitmapOperations::Rotate(bitmap, rotation);
 }
 
 std::vector<AccessibilityHighlightInfo> PDFiumPage::GetHighlightInfo(
@@ -1270,33 +1343,6 @@ void PDFiumPage::CalculateImages() {
 
   if (!marked_content_id_image_map.empty())
     PopulateImageAltText(marked_content_id_image_map);
-
-  if (!features::IsPdfOcrEnabled())
-    return;
-
-  // If requested by the user, we store the raw image data so that the OCR
-  // service can try and retrieve textual and layout information from the image.
-  // This is because alt text might be empty, or the PDF might simply be
-  // untagged for accessibility.
-  for (Image& image : images_) {
-    if (!image.alt_text.empty())
-      continue;
-
-    FPDF_PAGEOBJECT page_object =
-        FPDFPage_GetObject(page, image.page_object_index);
-    ScopedFPDFBitmap bitmap(
-        FPDFImageObj_GetRenderedBitmap(engine_->doc(), page, page_object));
-    if (!bitmap)
-      continue;
-
-    SkImageInfo info = SkImageInfo::Make(
-        FPDFBitmap_GetWidth(bitmap.get()), FPDFBitmap_GetHeight(bitmap.get()),
-        kBGRA_8888_SkColorType, kOpaque_SkAlphaType);
-    const size_t row_bytes = FPDFBitmap_GetStride(bitmap.get());
-    SkPixmap pixels(info, FPDFBitmap_GetBuffer(bitmap.get()), row_bytes);
-    if (image.image_data.tryAllocPixels(info, row_bytes))
-      image.image_data.writePixels(pixels);
-  }
 }
 
 void PDFiumPage::PopulateImageAltText(

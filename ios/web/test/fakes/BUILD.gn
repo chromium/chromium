@@ -3,7 +3,6 @@
 # found in the LICENSE file.
 
 source_set("fakes") {
-  configs += [ "//build/config/compiler:enable_arc" ]
   testonly = true
 
   deps = [
@@ -30,6 +29,8 @@ source_set("fakes") {
     "crw_fake_nsurl_session_task.mm",
     "crw_fake_script_message_handler.h",
     "crw_fake_script_message_handler.mm",
+    "crw_fake_web_view_navigation_proxy.h",
+    "crw_fake_web_view_navigation_proxy.mm",
     "crw_fake_wk_frame_info.h",
     "crw_fake_wk_frame_info.mm",
     "crw_fake_wk_navigation_action.h",

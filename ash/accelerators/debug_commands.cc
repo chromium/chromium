@@ -9,6 +9,7 @@
 
 #include "ash/accelerators/accelerator_commands.h"
 #include "ash/constants/ash_features.h"
+#include "ash/constants/ash_pref_names.h"
 #include "ash/constants/ash_switches.h"
 #include "ash/constants/notifier_catalogs.h"
 #include "ash/glanceables/glanceables_controller.h"
@@ -20,6 +21,7 @@
 #include "ash/root_window_controller.h"
 #include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"
+#include "ash/style/color_palette_controller.h"
 #include "ash/style/dark_light_mode_controller_impl.h"
 #include "ash/style/style_viewer/system_ui_components_style_viewer_view.h"
 #include "ash/system/power/power_button_controller.h"
@@ -29,6 +31,7 @@
 #include "ash/system/video_conference/video_conference_tray.h"
 #include "ash/system/video_conference/video_conference_tray_controller.h"
 #include "ash/touch/touch_devices_controller.h"
+#include "ash/virtual_trackpad/virtual_trackpad_view.h"
 #include "ash/wallpaper/wallpaper_controller_impl.h"
 #include "ash/wm/float/float_controller.h"
 #include "ash/wm/tablet_mode/tablet_mode_controller.h"
@@ -39,6 +42,7 @@
 #include "base/metrics/user_metrics_action.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chromeos/constants/chromeos_features.h"
+#include "components/prefs/pref_service.h"
 #include "ui/accessibility/ax_tree_id.h"
 #include "ui/aura/client/aura_constants.h"
 #include "ui/display/manager/display_manager.h"
@@ -153,6 +157,27 @@ void HandleToggleDynamicColor() {
   theme->NotifyOnNativeThemeUpdated();
 }
 
+// TODO(b/292584649): Remove this shortcut after testing is complete.
+void HandleClearKMeansPref() {
+  if (auto* controller = Shell::Get()->session_controller();
+      !(controller && controller->IsActiveUserSessionStarted())) {
+    return;
+  }
+
+  const UserSession* session =
+      Shell::Get()->session_controller()->GetUserSession(/*index=*/0);
+  const AccountId& account_id = session->user_info.account_id;
+  PrefService* pref_service =
+      Shell::Get()->session_controller()->GetUserPrefServiceForUser(account_id);
+  pref_service->ClearPref(prefs::kDynamicColorUseKMeans);
+
+  // Setting the color scheme is a visual indicator that the pref has been
+  // cleared. Tonal spot is the default color scheme, which is necessary to see
+  // the k means color.
+  Shell::Get()->color_palette_controller()->SetColorScheme(
+      ColorScheme::kTonalSpot, account_id, base::DoNothing());
+}
+
 void HandleToggleGlanceables() {
   if (!features::AreGlanceablesEnabled())
     return;
@@ -227,15 +252,8 @@ void HandleTriggerHUDDisplay() {
   hud_display::HUDDisplayView::Toggle();
 }
 
-void HandleTuckFloatedWindow(AcceleratorAction action) {
-  auto* floated_window = window_util::GetFloatedWindowForActiveDesk();
-  DCHECK(floated_window);
-
-  const float velocity_x =
-      action == AcceleratorAction::kDebugTuckFloatedWindowLeft ? -500.f : 500.f;
-  Shell::Get()->float_controller()->OnFlingOrSwipeForTablet(floated_window,
-                                                            velocity_x,
-                                                            /*velocity_y=*/0.f);
+void HandleToggleVirtualTrackpad() {
+  VirtualTrackpadView::Toggle();
 }
 
 // Toast debug shortcut constants.
@@ -276,10 +294,6 @@ void PrintUIHierarchies() {
   HandlePrintLayerHierarchy();
   HandlePrintWindowHierarchy();
   HandlePrintViewHierarchy();
-}
-
-bool CanTuckFloatedWindow() {
-  return !!window_util::GetFloatedWindowForActiveDesk();
 }
 
 bool DebugAcceleratorsEnabled() {
@@ -324,6 +338,9 @@ void PerformDebugActionIfEnabled(AcceleratorAction action) {
     case AcceleratorAction::kDebugToggleDynamicColor:
       HandleToggleDynamicColor();
       break;
+    case AcceleratorAction::kDebugClearUseKMeansPref:
+      HandleClearKMeansPref();
+      break;
     case AcceleratorAction::kDebugToggleGlanceables:
       HandleToggleGlanceables();
       break;
@@ -348,9 +365,8 @@ void PerformDebugActionIfEnabled(AcceleratorAction action) {
     case AcceleratorAction::kDebugToggleHudDisplay:
       HandleTriggerHUDDisplay();
       break;
-    case AcceleratorAction::kDebugTuckFloatedWindowLeft:
-    case AcceleratorAction::kDebugTuckFloatedWindowRight:
-      HandleTuckFloatedWindow(action);
+    case AcceleratorAction::kDebugToggleVirtualTrackpad:
+      HandleToggleVirtualTrackpad();
       break;
     case AcceleratorAction::kDebugToggleVideoConferenceCameraTrayIcon:
       HandleToggleVideoConferenceCameraTrayIcon();

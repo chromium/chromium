@@ -12,10 +12,6 @@
 #import "ios/chrome/browser/ui/alert_view/alert_action.h"
 #import "ios/chrome/browser/ui/alert_view/alert_consumer.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 using alert_overlays::AlertRequest;
 using alert_overlays::AlertResponse;
 

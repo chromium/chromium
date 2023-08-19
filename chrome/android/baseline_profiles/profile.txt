@@ -7060,9 +7060,6 @@ Lorg/chromium/chrome/browser/toolbar/top/VisibleUrlText;
 HSPLorg/chromium/chrome/browser/toolbar/top/VisibleUrlText;-><init>(Ljava/lang/CharSequence;Ljava/lang/CharSequence;)V
 Lorg/chromium/chrome/browser/translate/TranslateUtils;
 HSPLorg/chromium/chrome/browser/translate/TranslateUtils;->canTranslateCurrentTab(Lorg/chromium/chrome/browser/tab/Tab;Z)Z
-Lorg/chromium/chrome/browser/ui/AppLaunchDrawBlocker;
-HSPLorg/chromium/chrome/browser/ui/AppLaunchDrawBlocker;-><init>(Lorg/chromium/chrome/browser/init/ActivityLifecycleDispatcherImpl;Lorg/chromium/chrome/browser/ChromeTabbedActivity$$ExternalSyntheticLambda4;Lorg/chromium/chrome/browser/ChromeTabbedActivity$$ExternalSyntheticLambda4;Lorg/chromium/chrome/browser/ChromeTabbedActivity$$ExternalSyntheticLambda4;Lorg/chromium/chrome/browser/ChromeTabbedActivity$$ExternalSyntheticLambda4;Lorg/chromium/chrome/browser/ChromeTabbedActivity$$ExternalSyntheticLambda4;Lorg/chromium/chrome/browser/ChromeTabbedActivity$$ExternalSyntheticLambda4;Lorg/chromium/chrome/browser/ui/IncognitoRestoreAppLaunchDrawBlockerFactory;)V
-HSPLorg/chromium/chrome/browser/ui/AppLaunchDrawBlocker;->recordBlockDrawForInitialTabHistograms(ZZ)V
 Lorg/chromium/chrome/browser/ui/AppLaunchDrawBlocker$$ExternalSyntheticLambda0;
 HSPLorg/chromium/chrome/browser/ui/AppLaunchDrawBlocker$$ExternalSyntheticLambda0;-><init>(Lorg/chromium/chrome/browser/ui/AppLaunchDrawBlocker;)V
 HSPLorg/chromium/chrome/browser/ui/AppLaunchDrawBlocker$$ExternalSyntheticLambda0;->run()V

@@ -5,7 +5,6 @@
 #import "ios/chrome/browser/find_in_page/find_in_page_egtest_util.h"
 
 #import "base/test/ios/wait_util.h"
-#import "ios/chrome/browser/find_in_page/features.h"
 #import "ios/chrome/browser/find_in_page/find_in_page_app_interface.h"
 #import "ios/chrome/browser/ui/find_bar/find_bar_constants.h"
 #import "ios/chrome/browser/ui/popup_menu/popup_menu_constants.h"
@@ -15,10 +14,6 @@
 #import "ios/chrome/test/earl_grey/chrome_test_case.h"
 #import "ios/testing/earl_grey/earl_grey_test.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 namespace {
 
 // Constants to identify the Find navigator UI components in the view hierarchy.
@@ -27,8 +22,6 @@ constexpr char kFindInPageSearchFieldID[] = "find.searchField";
 constexpr char kFindInPageResultLabelID[] = "find.resultLabel";
 constexpr char kFindInPageNextButtonID[] = "find.nextButton";
 constexpr char kFindInPagePreviousButtonID[] = "find.previousButton";
-constexpr char kFindInPageClearButtonKindOfClassName[] =
-    "_UITextFieldClearButton";
 }
 
 // Tests for Native Find in Page. This tests the variant of Native Find in Page
@@ -42,21 +35,6 @@ constexpr char kFindInPageClearButtonKindOfClassName[] =
 
 @implementation FindInPageTestCase {
   FindInPageTestCaseHelper* _helper;
-}
-
-- (AppLaunchConfiguration)appConfigurationForTestCase {
-  AppLaunchConfiguration config = [super appConfigurationForTestCase];
-
-  // Enable `kNativeFindInPage`. This test case only tests the "System Find
-  // Panel" variant of Native Find in Page i.e. the one relying on a Find
-  // interaction and the new system UI.
-  config.additional_args.push_back(
-      "--enable-features=" + std::string(kNativeFindInPage.name) + "<" +
-      std::string(kNativeFindInPage.name));
-  config.additional_args.push_back(
-      "--force-fieldtrials=" + std::string(kNativeFindInPage.name) + "/Test");
-
-  return config;
 }
 
 - (void)setUp {
@@ -97,9 +75,9 @@ constexpr char kFindInPageClearButtonKindOfClassName[] =
       performAction:grey_tap()];
 }
 
-- (void)typeFindInPageText:(NSString*)text {
+- (void)replaceFindInPageText:(NSString*)text {
   [[EarlGrey selectElementWithMatcher:[self findInPageInputField]]
-      performAction:grey_typeText(text)];
+      performAction:grey_replaceText(text)];
 }
 
 - (void)pasteTextToFindInPage:(NSString*)text {
@@ -110,10 +88,8 @@ constexpr char kFindInPageClearButtonKindOfClassName[] =
 }
 
 - (void)clearFindInPageText {
-  [[EarlGrey
-      selectElementWithMatcher:grey_kindOfClassName(
-                                   @(kFindInPageClearButtonKindOfClassName))]
-      performAction:grey_tap()];
+  [[EarlGrey selectElementWithMatcher:[self findInPageInputField]]
+      performAction:grey_replaceText(@"")];
 }
 
 - (id<GREYMatcher>)findInPageInputField {
@@ -232,12 +208,24 @@ constexpr char kFindInPageClearButtonKindOfClassName[] =
 // the web page contains the same text without spanish accents e.g. 'a'. This
 // test assumes removing accents from `kFindInPageTestWithSpanishAccentText`
 // yields `kFindInPageTestWithoutSpanishAccentText`.
-- (void)testFindInPageDifferentAccent {
+// TODO(crbug.com/1473338): Test is flaky on device. Re-enable the test.
+#if !TARGET_OS_SIMULATOR
+#define MAYBE_testFindInPageDifferentAccent FLAKY_testFindInPageDifferentAccent
+#else
+#define MAYBE_testFindInPageDifferentAccent testFindInPageDifferentAccent
+#endif
+- (void)MAYBE_testFindInPageDifferentAccent {
   [_helper helperTestFindInPageDifferentAccent];
 }
 
 // Test that there is no query persistence with this variant of Native Find in
 // Page i.e. with Find interaction.
+// TODO(crbug.com/1473338): Test is flaky on device. Re-enable the test.
+#if !TARGET_OS_SIMULATOR
+#define MAYBE_testFindInPageHistory FLAKY_testFindInPageHistory
+#else
+#define MAYBE_testFindInPageHistory testFindInPageHistory
+#endif
 - (void)testFindInPageHistory {
   [_helper helperTestFindInPageHistoryWithQueryPersistence:NO];
 }
@@ -277,6 +265,13 @@ constexpr char kFindInPageClearButtonKindOfClassName[] =
 // Tests that there is no query persistence when coming back to a normal tab
 // after switching temporarily to another tab.
 - (void)testFindInPageSwitchingTabs {
+  // TODO(crbug.com/1464379): Failing on iOS17 iPhone.
+  if (@available(iOS 17.0, *)) {
+    if (![ChromeEarlGrey isIPadIdiom]) {
+      XCTSkip(@"Failing on iOS17 iPhone");
+    }
+  }
+
   [_helper helperTestFindInPageSwitchingTabsWithQueryPersistence:NO];
 }
 
@@ -297,6 +292,11 @@ constexpr char kFindInPageClearButtonKindOfClassName[] =
 
 // Tests that Native Find in Page works as expected for PDF documents.
 - (void)testFindInPagePDF {
+// TODO(crbug.com/1473338): Failing on devices.
+#if !TARGET_IPHONE_SIMULATOR
+  XCTSkip(@"Failing on device");
+#endif
+
   [_helper helperTestFindInPagePDF];
 }
 

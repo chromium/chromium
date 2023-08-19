@@ -3,10 +3,7 @@
 // found in the LICENSE file.
 
 import {Destination, DestinationOrigin, DuplexOption, DuplexType, Margins, MarginsType, MediaSizeOption, PrintPreviewModelElement, Size} from 'chrome://print/print_preview.js';
-// <if expr="is_chromeos">
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
-// </if>
-
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 
 import {getCddTemplate, getSaveAsPdfDestination} from './print_preview_test_utils.js';
@@ -264,6 +261,29 @@ suite('ModelSettingsAvailabilityTest', function() {
     model.set('documentSettings.allPagesHaveCustomSize', true);
     assertFalse(model.settings.mediaSize.available);
     assertFalse(model.settings.color.setFromUi);
+  });
+
+  test('mediaType', function() {
+    // Check that media type setting is unavailable without the feature flag.
+    loadTimeData.overrideValues({isBorderlessPrintingEnabled: false});
+    model.set(
+        'destination.capabilities',
+        getCddTemplate(model.destination.id).capabilities);
+    assertFalse(model.settings.mediaType.available);
+
+    // Enable the feature flag and set capabilities again to update media type
+    // availability.
+    loadTimeData.overrideValues({isBorderlessPrintingEnabled: true});
+    model.set(
+        'destination.capabilities',
+        getCddTemplate(model.destination.id).capabilities);
+    assertTrue(model.settings.mediaType.available);
+
+    // Remove media type capability.
+    const capabilities = getCddTemplate(model.destination.id).capabilities!;
+    delete capabilities.printer!.media_type;
+    model.set('destination.capabilities', capabilities);
+    assertFalse(model.settings.mediaType.available);
   });
 
   test('margins', function() {

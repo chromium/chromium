@@ -1,0 +1,19 @@
+This is a testharness.js-based test.
+PASS [audio] Locally stopped transceiver goes from stopping to stopped
+PASS [audio] Locally stopping a transceiver ends the track
+FAIL [audio] Remotely stopping a transceiver ends the track assert_equals: expected "live" but got "ended"
+PASS [audio] Remotely stopped transceiver goes directly to stopped
+PASS [audio] Rollback when transceiver is not removed does not end track
+FAIL [audio] Rollback when removing transceiver does end the track assert_equals: expected "live" but got "ended"
+PASS [audio] Rollback when removing transceiver makes it stopped
+PASS [audio] Glare when transceiver is not removed does not end track
+PASS [video] Locally stopped transceiver goes from stopping to stopped
+PASS [video] Locally stopping a transceiver ends the track
+FAIL [video] Remotely stopping a transceiver ends the track assert_equals: expected "live" but got "ended"
+PASS [video] Remotely stopped transceiver goes directly to stopped
+PASS [video] Rollback when transceiver is not removed does not end track
+FAIL [video] Rollback when removing transceiver does end the track assert_equals: expected "live" but got "ended"
+PASS [video] Rollback when removing transceiver makes it stopped
+PASS [video] Glare when transceiver is not removed does not end track
+Harness: the test ran to completion.
+

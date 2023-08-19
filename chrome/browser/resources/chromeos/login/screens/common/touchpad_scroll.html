@@ -3,7 +3,7 @@ Copyright 2023 The Chromium Authors
 Use of this source code is governed by a BSD-style license that can be
 found in the LICENSE file.
 -->
-<style include="oobe-dialog-host-styles">
+<style include="oobe-dialog-host-styles cros-color-overrides">
 
 #scrollArea {
   display: flex;
@@ -13,7 +13,7 @@ found in the LICENSE file.
   overflow-x: hidden;
   position: relative;
   box-sizing: border-box;
-  border: 1px solid var(--cros-sys-system_border);
+  border: 1px solid rgba(var(--cros-icon-color-secondary-rgb), 0.3);
   border-radius: 16px;
 }
 
@@ -26,17 +26,32 @@ found in the LICENSE file.
 
 #areaText {
   color: var(--cros-text-color-primary);
+  font-size: 14px;
+  font-weight: 500; /* roboto-medium */
   left: 20px;
+  line-height: 20px;
+  padding-top: 20px;
   position: sticky;
-  top: 20px;
+  top: 0px;
   z-index : 1;
+}
+
+:host-context(.jelly-enabled) #areaText {
+  color: var(--oobe-text-color);
+  font-size: var(--oobe-touchpad-scroll-font-size);
+  font-weight: var(--oobe-touchpad-scroll-font-weight);
+  line-height: var(--oobe-touchpad-scroll-line-height);
 }
 
 #toggleTitle {
   color: var(--cros-text-color-primary);
 }
 
-.illustration-jelly{
+:host-context(.jelly-enabled) #toggleTitle {
+  color: var(--oobe-text-color);
+}
+
+.illustration-jelly {
   width: 100%;
   height: auto;
   position: absolute;
@@ -59,7 +74,7 @@ found in the LICENSE file.
     [[i18nDynamic(locale, 'TouchpadScrollScreenDescription')]]
   </div>
   <div slot="content" class="layout vertical center-justified">
-    <div id="scrollArea">
+    <div id="scrollArea" aria-hidden="true">
       <div id="areaText">
         [[i18nDynamic(locale, 'TouchpadScrollAreaDescription')]]
       </div>
@@ -69,14 +84,19 @@ found in the LICENSE file.
     </div>
     <div id="toggleElementBox" class="layout horizontal">
         <div class="flex layout vertical center-justified">
-          <div id="toggleTitle">
+          <div id="toggleTitle" aria-hidden="true">
             [[i18nDynamic(locale, 'TouchpadScrollToggleTitle')]]
           </div>
           <div id="toggleDesc" aria-hidden="true">
             [[i18nDynamic(locale, 'TouchpadScrollToggleDescription')]]
           </div>
         </div>
-        <cr-toggle id="updateToggle" checked="{{isReverseScrolling_}}">
+        <cr-toggle id="updateToggle" checked="{{isReverseScrolling_}}"
+            role="checkbox"
+            aria-checked="[[isReverseScrolling_]]"
+            aria-label$="[[getAriaLabelToggleButtons_(locale,
+                'TouchpadScrollToggleTitle' ,
+                'TouchpadScrollToggleDescription')]]">
         </cr-toggle>
     </div>
   </div>

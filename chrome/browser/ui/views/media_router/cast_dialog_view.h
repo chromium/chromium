@@ -85,7 +85,8 @@ class CastDialogView : public views::BubbleDialogDelegateView,
   void KeepShownForTesting();
 
   // Called by tests.
-  const std::vector<raw_ptr<CastDialogSinkView>>& sink_views_for_test() const {
+  const std::vector<raw_ptr<CastDialogSinkView, DanglingUntriaged>>&
+  sink_views_for_test() const {
     return sink_views_;
   }
   views::ScrollView* scroll_view_for_test() { return scroll_view_; }
@@ -166,7 +167,7 @@ class CastDialogView : public views::BubbleDialogDelegateView,
   SourceType selected_source_ = SourceType::kTab;
 
   // Contains references to sink views in the order they appear.
-  std::vector<raw_ptr<CastDialogSinkView>> sink_views_;
+  std::vector<raw_ptr<CastDialogSinkView, DanglingUntriaged>> sink_views_;
 
   raw_ptr<CastDialogController> controller_;
 

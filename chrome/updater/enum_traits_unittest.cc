@@ -17,10 +17,6 @@ enum class MyEnum {
   kVal3 = 1,
 };
 
-std::ostream& operator<<(std::ostream& os, const MyEnum& e) {
-  return os << "MyEnum: " << static_cast<int>(e);
-}
-
 template <>
 struct EnumTraits<MyEnum> {
   static constexpr MyEnum first_elem = MyEnum::kVal1;

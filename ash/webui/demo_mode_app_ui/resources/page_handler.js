@@ -20,6 +20,10 @@ class PageHandler {
   toggleFullscreen() {
     this.handler.toggleFullscreen();
   }
+
+  launchApp(appId) {
+    this.handler.launchApp(appId);
+  }
 }
 
 export const pageHandler = new PageHandler();

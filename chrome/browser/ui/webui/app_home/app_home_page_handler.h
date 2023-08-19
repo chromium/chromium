@@ -12,12 +12,12 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/extensions/extension_enable_flow_delegate.h"
 #include "chrome/browser/ui/webui/app_home/app_home.mojom.h"
-#include "chrome/browser/web_applications/app_registrar_observer.h"
 #include "chrome/browser/web_applications/mojom/user_display_mode.mojom.h"
 #include "chrome/browser/web_applications/web_app_id.h"
 #include "chrome/browser/web_applications/web_app_install_manager.h"
 #include "chrome/browser/web_applications/web_app_install_manager_observer.h"
 #include "chrome/browser/web_applications/web_app_registrar.h"
+#include "chrome/browser/web_applications/web_app_registrar_observer.h"
 #include "chrome/common/extensions/extension_constants.h"
 #include "extensions/browser/extension_registry_observer.h"
 #include "extensions/common/constants.h"
@@ -49,7 +49,7 @@ class AppHomePageHandler
       public extensions::ExtensionRegistryObserver,
       public extensions::ExtensionUninstallDialog::Delegate,
       public ExtensionEnableFlowDelegate,
-      public web_app::AppRegistrarObserver {
+      public web_app::WebAppRegistrarObserver {
  public:
   AppHomePageHandler(
       content::WebUI*,
@@ -82,7 +82,7 @@ class AppHomePageHandler
                            const extensions::Extension* extension,
                            extensions::UnloadedExtensionReason reason) override;
 
-  // web_app::AppRegistrarObserver:
+  // web_app::WebAppRegistrarObserver:
   void OnWebAppRunOnOsLoginModeChanged(
       const web_app::AppId& app_id,
       web_app::RunOnOsLoginMode run_on_os_login_mode) override;
@@ -175,7 +175,7 @@ class AppHomePageHandler
   const raw_ref<extensions::ExtensionSystem> extension_system_;
 
   base::ScopedObservation<web_app::WebAppRegistrar,
-                          web_app::AppRegistrarObserver>
+                          web_app::WebAppRegistrarObserver>
       web_app_registrar_observation_{this};
 
   base::ScopedObservation<web_app::WebAppInstallManager,

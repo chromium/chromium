@@ -31,7 +31,6 @@
 #include "base/time/default_clock.h"
 #include "base/values.h"
 #include "components/prefs/pref_filter.h"
-#include "components/prefs/prefs_features.h"
 
 // Result returned from internal read tasks.
 struct JsonPrefStore::ReadResult {
@@ -60,13 +59,6 @@ bool BackupPrefsFile(const base::FilePath& path) {
   const bool bad_existed = base::PathExists(bad);
   base::Move(path, bad);
   return bad_existed;
-}
-
-bool PrefStoreBackgroundSerializationEnabledOrFeatureListUnavailable() {
-  // TODO(crbug.com/1364606#c12): Ensure that this is not invoked before
-  // FeatureList initialization.
-  return !base::FeatureList::GetInstance() ||
-         base::FeatureList::IsEnabled(kPrefStoreBackgroundSerialization);
 }
 
 PersistentPrefStore::PrefReadError HandleReadErrors(
@@ -532,10 +524,9 @@ void JsonPrefStore::ScheduleWrite(uint32_t flags) {
   if (read_only_)
     return;
 
-  if (flags & LOSSY_PREF_WRITE_FLAG)
+  if (flags & LOSSY_PREF_WRITE_FLAG) {
     pending_lossy_write_ = true;
-  else if (PrefStoreBackgroundSerializationEnabledOrFeatureListUnavailable())
+  } else {
     writer_.ScheduleWriteWithBackgroundDataSerializer(this);
-  else
-    writer_.ScheduleWrite(this);
+  }
 }

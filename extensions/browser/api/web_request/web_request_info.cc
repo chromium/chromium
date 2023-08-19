@@ -219,12 +219,11 @@ void WebRequestInfoInitParams::InitializeWebViewAndFrameData(
       web_view_embedder_process_id = web_view_info.embedder_process_id;
     }
 
-    // For subresource loads we attempt to resolve the FrameData immediately.
-    frame_data = ExtensionApiFrameIdMap::Get()->GetFrameData(
-        content::GlobalRenderFrameHostId(render_process_id, frame_routing_id));
-
     parent_routing_id =
         content::GlobalRenderFrameHostId(render_process_id, frame_routing_id);
+
+    // For subresource loads we attempt to resolve the FrameData immediately.
+    frame_data = ExtensionApiFrameIdMap::Get()->GetFrameData(parent_routing_id);
   }
 }
 

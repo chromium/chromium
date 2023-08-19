@@ -29,6 +29,7 @@ class SessionSyncTestHelper {
   // otherwise.
   static sync_pb::SessionSpecifics BuildHeaderSpecificsWithoutWindows(
       const std::string& tag,
+      const std::string& client_name,
       const syncer::DeviceInfo::FormFactor& device_form_factor =
           syncer::DeviceInfo::FormFactor::kUnknown);
 

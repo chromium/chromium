@@ -1,7 +1,0 @@
-Tests trace events for timer firing.
-Recording started
-Tracing complete
-TimerInstall has frame: true
-TimerInstall frames match: true
-SUCCESS: found all expected events.
-

@@ -4,4 +4,5 @@ Description: A simple cross platform library for writing colored text to a termi
 
 Version: 1.1.2
 Security Critical: no
+Shipped: yes
 License: MIT

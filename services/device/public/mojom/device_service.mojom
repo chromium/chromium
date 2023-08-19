@@ -9,6 +9,7 @@ import "services/device/public/mojom/fingerprint.mojom";
 import "services/device/public/mojom/geolocation_config.mojom";
 import "services/device/public/mojom/geolocation_context.mojom";
 import "services/device/public/mojom/geolocation_control.mojom";
+import "services/device/public/mojom/geolocation_internals.mojom";
 import "services/device/public/mojom/power_monitor.mojom";
 import "services/device/public/mojom/pressure_manager.mojom";
 import "services/device/public/mojom/public_ip_address_geolocation_provider.mojom";
@@ -55,6 +56,9 @@ interface DeviceService {
 
   // Binds a GeolocationContext endpoint.
   BindGeolocationControl(pending_receiver<GeolocationControl> receiver);
+
+  // Binds a GeolocationInternals endpoint.
+  BindGeolocationInternals(pending_receiver<GeolocationInternals> receiver);
 
   // Binds a InputDeviceManager endpoint.
   [EnableIf=enable_input_device_manager]

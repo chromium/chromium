@@ -43,6 +43,7 @@ class ASH_EXPORT NetworkTrayView : public TrayItemView,
   // TrayItemView:
   void HandleLocaleChange() override;
   void OnThemeChanged() override;
+  void UpdateLabelOrImageViewColor(bool active) override;
 
   // network_icon::AnimationObserver:
   void NetworkIconChanged() override;
@@ -63,6 +64,9 @@ class ASH_EXPORT NetworkTrayView : public TrayItemView,
 
   // Updates the tooltip and calls NotifyAccessibilityEvent when necessary.
   void UpdateConnectionStatus(bool notify_a11y);
+
+  // Gets the icon type to paint different icons for different states.
+  network_icon::IconType GetIconType();
 
   ActiveNetworkIcon::Type type_;
 

@@ -7,6 +7,7 @@ Revision:
 License: University of Illinois/NCSA Open Source License
 License File: LICENSE
 Security Critical: yes
+Shipped: yes
 
 Description:
 A package for accessing the Sudden Motion Sensors in Mac laptops.

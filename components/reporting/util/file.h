@@ -50,11 +50,11 @@ StatusOr<std::string> MaybeReadFile(const base::FilePath& file_path,
 
 // Appends |data| with a new line to |file_path|.
 Status AppendLine(const base::FilePath& file_path,
-                  const base::StringPiece& data);
+                  const std::string_view& data);
 
 // Overwrites or creates a new file at |file_path| with the contents |data|.
 Status MaybeWriteFile(const base::FilePath& file_path,
-                      const base::StringPiece& data);
+                      const std::string_view& data);
 
 // Removes the first |pos| bytes from a file at |file_path| and also removes
 // the rest of the line which the byte at position |pos| was on.

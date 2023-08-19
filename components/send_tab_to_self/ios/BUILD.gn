@@ -3,7 +3,6 @@
 # found in the LICENSE file.
 
 source_set("ios") {
-  configs += [ "//build/config/compiler:enable_arc" ]
   sources = [
     "send_tab_to_self_model_bridge_observer.h",
     "send_tab_to_self_model_bridge_observer.mm",

@@ -4,23 +4,18 @@ Copyright 2020 The Chromium Authors
 Use of this source code is governed by a BSD-style license that can be
 found in the LICENSE file.
 -->
-<ScrollView
+<org.chromium.components.browser_ui.widget.FadingEdgeScrollView
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/permission_layout"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical">
+    android:orientation="vertical"
+    app:topEdgeVisibility="fading">
   <LinearLayout
       android:layout_width="match_parent"
       android:layout_height="wrap_content"
       android:orientation="vertical">
-      <ImageView
-          android:id="@+id/tab_line"
-          android:layout_width="match_parent"
-          style="@style/TabBarShadow"
-          android:importantForAccessibility="no"/>
-
       <org.chromium.ui.widget.ChromeImageView
           android:id="@+id/camera_icon"
           android:layout_marginTop="112dp"
@@ -52,4 +47,4 @@ found in the LICENSE file.
           android:text="@string/qr_code_permission_continue_label"
           style="@style/TextButton"/>
   </LinearLayout>
-</ScrollView>
+</org.chromium.components.browser_ui.widget.FadingEdgeScrollView>

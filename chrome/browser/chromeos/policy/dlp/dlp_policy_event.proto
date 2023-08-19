@@ -65,8 +65,6 @@ message DlpPolicyEvent {
   optional DlpPolicyEventDestination destination = 2;
   optional Restriction restriction = 3;
   optional Mode mode = 4;
-  // Whether the restriction was enforced or not. Valuable for WARN.
-  optional bool restriction_enforced = 5;
   optional int64 timestamp_micro = 6;
   optional UserType user_type = 7;
   // Currently used for the filename involved in a file event.
@@ -75,4 +73,6 @@ message DlpPolicyEvent {
   optional string triggered_rule_name = 9;
   // Obfuscated rule id of the triggered rule.
   optional string triggered_rule_id = 10;
+
+  reserved 5;
 }

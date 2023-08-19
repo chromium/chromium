@@ -5,8 +5,6 @@
 #ifndef CHROME_BROWSER_PRELOADING_PREFETCH_SEARCH_PREFETCH_SEARCH_PREFETCH_URL_LOADER_H_
 #define CHROME_BROWSER_PRELOADING_PREFETCH_SEARCH_PREFETCH_SEARCH_PREFETCH_URL_LOADER_H_
 
-#include <memory>
-
 #include "base/time/time.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
@@ -15,32 +13,31 @@
 
 // A simple interface that defines the behavior that a search prefetch URL
 // loader must provide.
+// Basically, it should implement a method that takes its pointer as the input
+// `loader`, and return `loader` which is the owning pointer to `this`.
+// That method will be called when the response should be served to the user.
+// `loader` needs to be stored within the returned `RequestHandler` to allow
+// `this` to be owned by the callback. This allows ownership until the callback
+// is run, which then should have ownership owned via a mojo connection.
+// Since its implementations use different ownership model, it does not define
+// virtual functions for creating `RequestHandler`. See
+// StreamingSearchPrefetchURLLoader::GetCallbackForReadingViaResponseReader as
+// an example.
+// TODO(https://crbug.com/1400881): Remove this class.
 class SearchPrefetchURLLoader {
  public:
   virtual ~SearchPrefetchURLLoader() = default;
-
   using RequestHandler = base::OnceCallback<void(
       const network::ResourceRequest& resource_request,
       mojo::PendingReceiver<network::mojom::URLLoader> url_loader_receiver,
       mojo::PendingRemote<network::mojom::URLLoaderClient> client)>;
 
-  // Called when the response should be served to the user. Returns a handler.
-  // |loader| is the owning pointer to |this|. It needs to be stored within the
-  // returned |RequestHandler| to allow |this| to be owned by the callback.
-  // This allows ownership until the callback is run, which then should have
-  // ownership owned via a mojo connection.
-  static RequestHandler GetServingResponseHandlerFromLoader(
-      std::unique_ptr<SearchPrefetchURLLoader> loader);
-
  protected:
-  virtual RequestHandler ServingResponseHandlerImpl(
-      std::unique_ptr<SearchPrefetchURLLoader> loader) = 0;
+  void RecordInterceptionTime();
 
   void OnForwardingComplete();
 
  private:
-  void RecordInterceptionTime();
-
   base::TimeTicks interception_time_;
 };
 

@@ -9,11 +9,14 @@ include_rules = [
   "+components/language/core/browser",
   "+components/leveldb_proto",
   "+components/metrics",
+  "+components/optimization_guide/core",
+  "+components/plus_addresses",
   "+components/profile_metrics",
   "+components/policy",
   "+components/security_state",
   "+components/security_interstitials/core/pref_names.h",
   "+components/signin/public",
+  "+components/strings",
   "+components/sync",
   "+components/translate/core/browser",
   "+components/translate/core/common",
@@ -33,6 +36,8 @@ include_rules = [
   "+third_party/libaddressinput", # For address i18n.
   "+third_party/libphonenumber",  # For phone number i18n.
   "+third_party/re2",
+  "+third_party/tflite",
+  "+third_party/tflite_support",
   "+ui/accessibility",
   "+ui/base",
   "+ui/gfx",

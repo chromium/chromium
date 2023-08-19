@@ -408,11 +408,14 @@ void AppListBubblePresenter::OnWindowActivated(ActivationReason reason,
   if (gained_active) {
     if (auto* container = GetContainerForWindow(gained_active)) {
       const int container_id = container->GetId();
-      // If the bubble or one of its children (e.g. an uninstall dialog) gained
-      // activation, the bubble should stay open. Likewise, allow focus to move
-      // to the shelf (e.g. by pressing Alt-Shift-L).
+      // The bubble can be shown without activation if:
+      // 1. The bubble or one of its children (e.g. an uninstall dialog) gains
+      //    activation; OR
+      // 2. The shelf gains activation (e.g. by pressing Alt-Shift-L); OR
+      // 3. A help bubble container's descendant gains activation.
       if (container_id == kShellWindowId_AppListContainer ||
-          container_id == kShellWindowId_ShelfContainer) {
+          container_id == kShellWindowId_ShelfContainer ||
+          container_id == kShellWindowId_HelpBubbleContainer) {
         return;
       }
     }

@@ -27,6 +27,7 @@
 #include "content/public/browser/audio_stream_broker.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
+#include "content/public/browser/global_routing_id.h"
 #include "content/public/browser/media_device_id.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_process_host.h"
@@ -76,9 +77,8 @@ void TranslateDeviceId(const std::string& device_id,
   DCHECK_CURRENTLY_ON(BrowserThread::IO);
   for (const auto& device_info :
        device_array[static_cast<size_t>(MediaDeviceType::MEDIA_AUDIO_OUTPUT)]) {
-    if (MediaStreamManager::DoesMediaDeviceIDMatchHMAC(
-            salt_and_origin.device_id_salt, salt_and_origin.origin, device_id,
-            device_info.device_id)) {
+    if (DoesRawMediaDeviceIDMatchHMAC(salt_and_origin, device_id,
+                                      device_info.device_id)) {
       cb.Run(device_info.device_id);
       break;
     }
@@ -86,17 +86,26 @@ void TranslateDeviceId(const std::string& device_id,
   // If we're unable to translate the device id, |cb| will not be run.
 }
 
-void GetSaltOriginAndPermissionsOnUIThread(
+void GotSaltAndOrigin(
     int process_id,
     int frame_id,
-    base::OnceCallback<void(MediaDeviceSaltAndOrigin salt_and_origin,
-                            bool has_access)> cb) {
-  auto salt_and_origin = GetMediaDeviceSaltAndOrigin(process_id, frame_id);
+    base::OnceCallback<void(const MediaDeviceSaltAndOrigin& salt_and_origin,
+                            bool has_access)> cb,
+    const MediaDeviceSaltAndOrigin& salt_and_origin) {
   bool access = MediaDevicesPermissionChecker().CheckPermissionOnUIThread(
       MediaDeviceType::MEDIA_AUDIO_OUTPUT, process_id, frame_id);
   GetIOThreadTaskRunner({})->PostTask(
-      FROM_HERE,
-      base::BindOnce(std::move(cb), std::move(salt_and_origin), access));
+      FROM_HERE, base::BindOnce(std::move(cb), salt_and_origin, access));
+}
+
+void GetSaltOriginAndPermissionsOnUIThread(
+    int process_id,
+    int frame_id,
+    base::OnceCallback<void(const MediaDeviceSaltAndOrigin& salt_and_origin,
+                            bool has_access)> cb) {
+  GetMediaDeviceSaltAndOrigin(
+      GlobalRenderFrameHostId(process_id, frame_id),
+      base::BindOnce(&GotSaltAndOrigin, process_id, frame_id, std::move(cb)));
 }
 
 }  // namespace
@@ -142,7 +151,7 @@ class RenderFrameAudioInputStreamFactory::Core final
   void AssociateInputAndOutputForAecAfterCheckingAccess(
       const base::UnguessableToken& input_stream_id,
       const std::string& output_device_id,
-      MediaDeviceSaltAndOrigin salt_and_origin,
+      const MediaDeviceSaltAndOrigin& salt_and_origin,
       bool access_granted);
 
   void AssociateTranslatedOutputDeviceForAec(
@@ -152,7 +161,6 @@ class RenderFrameAudioInputStreamFactory::Core final
   const raw_ptr<MediaStreamManager> media_stream_manager_;
   const int process_id_;
   const int frame_id_;
-  const url::Origin origin_;
 
   mojo::Receiver<RendererAudioInputStreamFactory> receiver_{this};
   // Always null-check this weak pointer before dereferencing it.
@@ -189,8 +197,7 @@ RenderFrameAudioInputStreamFactory::Core::Core(
     RenderFrameHost* render_frame_host)
     : media_stream_manager_(media_stream_manager),
       process_id_(render_frame_host->GetProcess()->GetID()),
-      frame_id_(render_frame_host->GetRoutingID()),
-      origin_(render_frame_host->GetLastCommittedOrigin()) {
+      frame_id_(render_frame_host->GetRoutingID()) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
   ForwardingAudioStreamFactory::Core* tmp_factory =
@@ -322,7 +329,7 @@ void RenderFrameAudioInputStreamFactory::Core::
     AssociateInputAndOutputForAecAfterCheckingAccess(
         const base::UnguessableToken& input_stream_id,
         const std::string& output_device_id,
-        MediaDeviceSaltAndOrigin salt_and_origin,
+        const MediaDeviceSaltAndOrigin& salt_and_origin,
         bool access_granted) {
   DCHECK_CURRENTLY_ON(BrowserThread::IO);
 

@@ -5,7 +5,6 @@
 /**
  * @fileoverview Classes that handle the ChromeVox range.
  */
-import {AsyncUtil} from '../../common/async_util.js';
 import {AutomationUtil} from '../../common/automation_util.js';
 import {CursorRange} from '../../common/cursors/range.js';
 import {BridgeConstants} from '../common/bridge_constants.js';

@@ -10,7 +10,7 @@
   RuntimeEnabled=WebEnvironmentIntegrity
 ] partial interface Navigator {
 
-  [CallWith=ScriptState, RaisesException]
+  [CallWith=ScriptState, RaisesException, Measure]
   Promise<EnvironmentIntegrity> getEnvironmentIntegrity(DOMString contentBinding);
 
 };

@@ -28,10 +28,6 @@
 #import "ios/chrome/grit/ios_strings.h"
 #import "ui/base/l10n/l10n_util.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 using autofill_address_profile_infobar_overlays::
     SaveAddressProfileModalRequestConfig;
 
@@ -112,14 +108,14 @@ using autofill_address_profile_infobar_overlays::
     InfobarEditAddressProfileTableViewController* editModalViewController =
         [[InfobarEditAddressProfileTableViewController alloc]
             initWithModalDelegate:modalMediator];
-    self.sharedEditViewController = [[AutofillProfileEditTableViewController
-        alloc]
-        initWithDelegate:self.sharedEditViewMediator
-               userEmail:(self.config->syncing_user_email()
-                              ? base::SysUTF16ToNSString(
-                                    self.config->syncing_user_email().value())
-                              : nil)controller:editModalViewController
-            settingsView:NO];
+    self.sharedEditViewController =
+        [[AutofillProfileEditTableViewController alloc]
+            initWithDelegate:self.sharedEditViewMediator
+                   userEmail:(self.config->user_email()
+                                  ? base::SysUTF16ToNSString(
+                                        self.config->user_email().value())
+                                  : nil)controller:editModalViewController
+                settingsView:NO];
     self.sharedEditViewMediator.consumer = self.sharedEditViewController;
     editModalViewController.handler = self.sharedEditViewController;
 

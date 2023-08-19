@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 import {assertInstanceof} from 'chrome://resources/ash/common/assert.js';
+import {getTrustedHTML} from 'chrome://resources/js/static_types.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chromeos/chai_assert.js';
 
 import {queryDecoratedElement, queryRequiredElement} from '../../../common/js/dom_utils.js';
@@ -17,7 +18,7 @@ let submenu = null;
 let separator = null;
 
 export function setUp() {
-  document.body.innerHTML = `
+  document.body.innerHTML = getTrustedHTML`
       <command id="share" label="Share"></command>
       <command id="manage-in-drive" label="Manage in Drive"></command>
       <command id="toggle-pinned" label="Toggle pinned"></command>

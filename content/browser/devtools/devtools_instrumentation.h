@@ -193,9 +193,9 @@ void OnFrameTreeNodeDestroyed(FrameTreeNode& frame_tree_node);
 
 bool IsPrerenderAllowed(FrameTree& frame_tree);
 void WillInitiatePrerender(FrameTree& frame_tree);
-void DidActivatePrerender(
-    const NavigationRequest& nav_request,
-    const base::UnguessableToken& initiator_devtools_navigation_token);
+void DidActivatePrerender(const NavigationRequest& nav_request,
+                          const absl::optional<base::UnguessableToken>&
+                              initiator_devtools_navigation_token);
 // This function reports cancellation status to DevTools with the
 // `disallowed_api_method`, which is used to give users more information about
 // the cancellation details if the prerendering uses disallowed API method, and
@@ -213,14 +213,16 @@ void DidUpdatePrefetchStatus(
     const base::UnguessableToken& initiator_devtools_navigation_token,
     const GURL& prefetch_url,
     PreloadingTriggeringOutcome status,
-    PrefetchStatus prefetch_status);
+    PrefetchStatus prefetch_status,
+    const std::string& request_id);
 
 void DidUpdatePrerenderStatus(
     int initiator_frame_tree_node_id,
     const base::UnguessableToken& initiator_devtools_navigation_token,
     const GURL& prerender_url,
     PreloadingTriggeringOutcome status,
-    absl::optional<PrerenderFinalStatus> prerender_status);
+    absl::optional<PrerenderFinalStatus> prerender_status,
+    absl::optional<std::string> disallowed_mojo_interface);
 
 void OnSignedExchangeReceived(
     FrameTreeNode* frame_tree_node,
@@ -281,6 +283,7 @@ void ThrottleWorkerMainScriptFetch(
 bool ShouldWaitForDebuggerInWindowOpen();
 
 void WillStartDragging(FrameTreeNode* main_frame_tree_node,
+                       const content::DropData& drop_data,
                        const blink::mojom::DragDataPtr drag_data,
                        blink::DragOperationsMask drag_operations_mask,
                        bool* intercepted);
@@ -305,11 +308,6 @@ void PortalActivated(Portal& portal);
 void FencedFrameCreated(
     base::SafeRef<RenderFrameHostImpl> owner_render_frame_host,
     FencedFrame* fenced_frame);
-
-// Tells tracing that process `pid` is being used for an auction worklet
-// associated to `owner`.
-void DidCreateProcessForAuctionWorklet(RenderFrameHostImpl* owner,
-                                       base::ProcessId pid);
 
 void ReportCookieIssue(
     RenderFrameHostImpl* render_frame_host_impl,
@@ -409,7 +407,18 @@ void WillSendFedCmRequest(RenderFrameHost* render_frame_host,
                           bool* intercept,
                           bool* disable_delay);
 void WillShowFedCmDialog(RenderFrameHost* render_frame_host, bool* intercept);
-void OnFedCmAccountsDialogShown(RenderFrameHost* render_frame_host);
+void OnFedCmDialogShown(RenderFrameHost* render_frame_host);
+
+// Handles dev tools integration for fenced frame reporting beacons. Used in
+// `FencedFrameReporter`.
+void OnFencedFrameReportRequestSent(int initiator_frame_tree_node_id,
+                                    const std::string& devtools_request_id,
+                                    network::ResourceRequest& request);
+void OnFencedFrameReportResponseReceived(
+    int initiator_frame_tree_node_id,
+    const std::string& devtools_request_id,
+    const GURL& final_url,
+    scoped_refptr<net::HttpResponseHeaders> headers);
 
 }  // namespace devtools_instrumentation
 

@@ -5,6 +5,8 @@
 #ifndef IOS_CHROME_TEST_APP_SIGNIN_TEST_UTIL_H_
 #define IOS_CHROME_TEST_APP_SIGNIN_TEST_UTIL_H_
 
+#import "base/ios/block_types.h"
+
 @protocol SystemIdentity;
 
 namespace chrome_test_util {
@@ -18,7 +20,7 @@ void TearDownMockAuthentication();
 
 // Signs the user out and starts clearing all identities from the
 // ChromeIdentityService.
-void SignOutAndClearIdentities();
+void SignOutAndClearIdentities(ProceduralBlock completion);
 
 // Returns true when there are no identities in the ChromeIdentityService.
 bool HasIdentities();

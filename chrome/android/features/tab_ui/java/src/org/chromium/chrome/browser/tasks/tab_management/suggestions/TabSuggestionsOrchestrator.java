@@ -14,6 +14,7 @@ import androidx.annotation.VisibleForTesting;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.Log;
 import org.chromium.base.ObserverList;
+import org.chromium.base.ResettersForTesting;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
@@ -169,14 +170,10 @@ public class TabSuggestionsOrchestrator implements TabSuggestions, DestroyObserv
         }
     }
 
-    @VisibleForTesting
     protected void setMinTimeBetweenPreFetchesForTesting(int minTimeBetweenPrefetchesMs) {
+        var oldValue = mMinTimeBetweenPrefetchesMs;
         mMinTimeBetweenPrefetchesMs = minTimeBetweenPrefetchesMs;
-    }
-
-    @VisibleForTesting
-    protected void restoreMinTimeBetweenPrefetchesForTesting() {
-        mMinTimeBetweenPrefetchesMs = MIN_TIME_BETWEEN_PREFETCHES_DEFAULT_MS;
+        ResettersForTesting.register(() -> mMinTimeBetweenPrefetchesMs = oldValue);
     }
 
     private boolean isBackoffEnabled() {

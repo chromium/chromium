@@ -16,7 +16,7 @@
 #include "extensions/browser/extension_system.h"
 #include "extensions/browser/updater/extension_downloader.h"
 
-namespace ash {
+namespace chromeos {
 
 StartupAppLauncherUpdateChecker::StartupAppLauncherUpdateChecker(
     Profile* profile)
@@ -63,8 +63,8 @@ void StartupAppLauncherUpdateChecker::MarkUpdateFound(
 }
 
 void StartupAppLauncherUpdateChecker::OnExtensionUpdaterDone() {
-  // It is not safe to use |this| after the callback has been run.
+  // It is not safe to use `this` after the callback has been run.
   std::move(callback_).Run(update_found_);
 }
 
-}  // namespace ash
+}  // namespace chromeos

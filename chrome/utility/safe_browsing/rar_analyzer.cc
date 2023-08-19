@@ -36,7 +36,8 @@ bool RarAnalyzer::ResumeExtraction() {
         reader_.current_entry();
     if (!UpdateResultsForEntry(
             temp_file_.Duplicate(), GetRootPath().Append(entry.file_path),
-            entry.file_size, entry.is_encrypted, entry.is_directory)) {
+            entry.file_size, entry.is_encrypted, entry.is_directory,
+            /*contents_valid=*/!entry.is_encrypted)) {
       return false;
     }
   }

@@ -26,7 +26,6 @@
 <translation id="2060505056492490888">"<ph name="DOT" />" posizio okerrean erabili da "<ph name="INVALIDDOMAIN" />" domeinuan.</translation>
 <translation id="2148716181193084225">Gaur</translation>
 <translation id="2226276347425096477">Laburtu testua <ph name="MAX_CHARACTERS" /> karakteretara edo gutxiagora (<ph name="CURRENT_LENGTH" /> erabiltzen ari zara).</translation>
-<translation id="2246498165605549352">Gailuko fitxategia</translation>
 <translation id="2247351761944213033"><ph name="WEEKNUMBER" />. astea, <ph name="YEAR" /></translation>
 <translation id="2277199496770840904"><ph name="NUMBER" />. pista</translation>
 <translation id="2393030564806080191">Kolore hamaseitarraren balioa</translation>
@@ -89,6 +88,7 @@
 <translation id="5425179576310518467">une honetako data</translation>
 <translation id="5466621249238537318">Hautatu fitxategi bat gutxienez.</translation>
 <translation id="5468998798572797635">irten pantaila osoko modutik</translation>
+<translation id="5514612371225420585">Gailuko fitxategia</translation>
 <translation id="5516235301412634559">0,75</translation>
 <translation id="5537725057119320332">Igorri</translation>
 <translation id="5546461542133609677">aktibatu audioa</translation>
@@ -113,6 +113,7 @@
 <translation id="6398862346408813489">Erakutsi hilabetearen hautapenaren panela</translation>
 <translation id="6404546809543547843">audioaren erreprodukzio-denboraren arrastatze-kontrola</translation>
 <translation id="6443871981718447451">erakutsi azpitituluen menua</translation>
+<translation id="6484738902856791350">Eman formatua</translation>
 <translation id="6550675742724504774">Aukerak</translation>
 <translation id="6572309429103589720">Gramatika-akatsa</translation>
 <translation id="658823671542763450">sartu pantaila osoko moduan</translation>

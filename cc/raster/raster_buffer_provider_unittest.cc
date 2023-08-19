@@ -42,6 +42,7 @@
 #include "cc/test/fake_layer_tree_frame_sink.h"
 #include "cc/test/fake_raster_source.h"
 #include "cc/tiles/tile_task_manager.h"
+#include "cc/trees/raster_capabilities.h"
 #include "components/viz/client/client_resource_provider.h"
 #include "components/viz/common/resources/platform_color.h"
 #include "components/viz/test/test_context_provider.h"
@@ -173,28 +174,34 @@ class RasterBufferProviderTest
 
   // Overridden from testing::Test:
   void SetUp() override {
+    RasterCapabilities raster_caps;
+    raster_caps.tile_format = viz::SinglePlaneFormat::kRGBA_8888;
+    raster_caps.tile_texture_target = GL_TEXTURE_2D;
+
     switch (GetParam()) {
       case RASTER_BUFFER_PROVIDER_TYPE_ZERO_COPY:
         Create3dResourceProvider();
+        raster_caps.use_gpu_rasterization = false;
         raster_buffer_provider_ =
             std::make_unique<ZeroCopyRasterBufferProvider>(
                 &gpu_memory_buffer_manager_, context_provider_.get(),
-                viz::SinglePlaneFormat::kRGBA_8888);
+                raster_caps);
         break;
       case RASTER_BUFFER_PROVIDER_TYPE_ONE_COPY:
         Create3dResourceProvider();
+        raster_caps.use_gpu_rasterization = false;
         raster_buffer_provider_ = std::make_unique<OneCopyRasterBufferProvider>(
             base::SingleThreadTaskRunner::GetCurrentDefault().get(),
             context_provider_.get(), worker_context_provider_.get(),
             &gpu_memory_buffer_manager_, kMaxBytesPerCopyOperation, false,
-            false, kMaxStagingBuffers, viz::SinglePlaneFormat::kRGBA_8888);
+            kMaxStagingBuffers, raster_caps);
         break;
       case RASTER_BUFFER_PROVIDER_TYPE_GPU:
         Create3dResourceProvider();
+        raster_caps.use_gpu_rasterization = true;
         raster_buffer_provider_ = std::make_unique<GpuRasterBufferProvider>(
-            context_provider_.get(), worker_context_provider_.get(), false,
-            viz::SinglePlaneFormat::kRGBA_8888, gfx::Size(), true,
-            pending_raster_queries_.get(), 1);
+            context_provider_.get(), worker_context_provider_.get(),
+            raster_caps, gfx::Size(), true, pending_raster_queries_.get(), 1);
         break;
       case RASTER_BUFFER_PROVIDER_TYPE_BITMAP:
         CreateSoftwareResourceProvider();
@@ -308,18 +315,17 @@ class RasterBufferProviderTest
     return completed_tasks_;
   }
 
-  void LoseContext(viz::ContextProvider* context_provider) {
-    if (!context_provider)
+  void LoseContext(viz::RasterContextProvider* context_provider,
+                   bool use_lock) {
+    if (!context_provider) {
       return;
-    context_provider->ContextGL()->LoseContextCHROMIUM(
-        GL_GUILTY_CONTEXT_RESET_ARB, GL_INNOCENT_CONTEXT_RESET_ARB);
-    context_provider->ContextGL()->Flush();
-  }
+    }
 
-  void LoseContext(viz::RasterContextProvider* context_provider) {
-    if (!context_provider)
-      return;
-    viz::RasterContextProvider::ScopedRasterContextLock lock(context_provider);
+    absl::optional<viz::RasterContextProvider::ScopedRasterContextLock> lock;
+    if (use_lock) {
+      lock.emplace(context_provider);
+    }
+
     context_provider->RasterInterface()->LoseContextCHROMIUM(
         GL_GUILTY_CONTEXT_RESET_ARB, GL_INNOCENT_CONTEXT_RESET_ARB);
     context_provider->RasterInterface()->Flush();
@@ -334,15 +340,14 @@ class RasterBufferProviderTest
 
  private:
   void Create3dResourceProvider() {
-    auto gl_owned = std::make_unique<viz::TestGLES2Interface>();
-    gl_owned->set_support_sync_query(true);
-    context_provider_ = viz::TestContextProvider::Create(std::move(gl_owned));
+    context_provider_ = viz::TestContextProvider::Create();
     context_provider_->BindToCurrentSequence();
 
     worker_context_provider_ = viz::TestContextProvider::CreateWorker();
     DCHECK(worker_context_provider_);
 
-    layer_tree_frame_sink_ = FakeLayerTreeFrameSink::Create3d();
+    layer_tree_frame_sink_ = FakeLayerTreeFrameSink::Create3d(
+        context_provider_, worker_context_provider_);
     resource_provider_ = std::make_unique<viz::ClientResourceProvider>();
 
     pending_raster_queries_ =
@@ -391,21 +396,6 @@ TEST_P(RasterBufferProviderTest, Basic) {
   EXPECT_FALSE(completed_tasks()[1].canceled);
 }
 
-TEST_P(RasterBufferProviderTest, FailedMapResource) {
-  if (GetParam() == RASTER_BUFFER_PROVIDER_TYPE_BITMAP)
-    return;
-
-  viz::TestGLES2Interface* gl = context_provider_->TestContextGL();
-  gl->set_times_map_buffer_chromium_succeeds(0);
-  AppendTask(0u);
-  ScheduleTasks();
-
-  RunMessageLoopUntilAllTasksHaveCompleted();
-
-  ASSERT_EQ(1u, completed_tasks().size());
-  EXPECT_FALSE(completed_tasks()[0].canceled);
-}
-
 // This test checks that replacing a pending raster task with another does
 // not prevent the DidFinishRunningTileTasks notification from being sent.
 TEST_P(RasterBufferProviderTest, FalseThrottling) {
@@ -431,9 +421,8 @@ TEST_P(RasterBufferProviderTest, FalseThrottling) {
 }
 
 TEST_P(RasterBufferProviderTest, LostContext) {
-  LoseContext(static_cast<viz::ContextProvider*>(context_provider_.get()));
-  LoseContext(
-      static_cast<viz::RasterContextProvider*>(worker_context_provider_.get()));
+  LoseContext(context_provider_.get(), /*use_lock=*/false);
+  LoseContext(worker_context_provider_.get(), /*use_lock=*/true);
 
   AppendTask(0u);
   AppendTask(1u);
@@ -523,7 +512,7 @@ TEST_P(RasterBufferProviderTest, WaitOnSyncTokenAfterReschedulingTask) {
   RunMessageLoopUntilAllTasksHaveCompleted();
 
   {
-    viz::ContextProvider::ScopedContextLock context_lock(
+    viz::RasterContextProvider::ScopedRasterContextLock context_lock(
         worker_context_provider_.get());
     viz::TestRasterInterface* ri =
         worker_context_provider_->GetTestRasterInterface();

@@ -11,11 +11,7 @@ import {constants} from '../../common/constants.js';
 import {CursorRange} from '../../common/cursors/range.js';
 import {BrailleKeyEvent} from '../common/braille/braille_key_types.js';
 import {NavBraille} from '../common/braille/nav_braille.js';
-import {BridgeConstants} from '../common/bridge_constants.js';
-import {BridgeHelper} from '../common/bridge_helper.js';
 import {TtsSpeechProperties} from '../common/tts_types.js';
-
-import {UserActionMonitor} from './user_action_monitor.js';
 
 export class ChromeVoxState {
   /** @return {!Promise} */

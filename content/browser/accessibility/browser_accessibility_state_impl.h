@@ -75,6 +75,8 @@ class CONTENT_EXPORT BrowserAccessibilityStateImpl
   void UpdateUniqueUserHistograms() override;
   void UpdateHistogramsForTesting() override;
   void SetCaretBrowsingState(bool enabled) override;
+  void SetPerformanceFilteringAllowed(bool enabled) override;
+  bool IsPerformanceFilteringAllowed() override;
 #if BUILDFLAG(IS_ANDROID)
   void SetImageLabelsModeForProfile(bool enabled,
                                     BrowserContext* profile) override;
@@ -115,6 +117,9 @@ class CONTENT_EXPORT BrowserAccessibilityStateImpl
   // Notifies listeners that the focused element changed inside a WebContents.
   void OnFocusChangedInPage(const FocusedNodeDetails& details);
 
+  // Do not allow further changes to the AXMode.
+  void DisallowAXModeChanges();
+
  protected:
   // Called a short while after startup to allow time for the accessibility
   // state to be determined. Updates histograms with the current state.
@@ -150,17 +155,10 @@ class CONTENT_EXPORT BrowserAccessibilityStateImpl
   // Whether there is a pending task to run UpdateAccessibilityActivityTask.
   bool accessibility_update_task_pending_ = false;
 
-  // Whether the force-renderer-accessibility flag is enabled.
-  // Cached here so that we don't have to check base::CommandLine in
-  // a function that's called frequently.
-  bool force_renderer_accessibility_ = false;
-
-  // The AXMode flags to set only if the the force-renderer-accessibility flag
-  // is enabled. If the optional parameter is present, then force the AXMode to
-  // be the provided bundle value. If the optional parameter is
-  // invalid, this will default to kAXModeComplete. If the optional parameter is
-  // absent, the .flags() will default to kNone.
-  ui::AXMode force_renderer_accessibility_ax_mode_flags_;
+  // Whether changes to the AXMode are disallowed.
+  // Changes are disallowed while running tests or when
+  // --force-renderer-accessibility is used on the command line.
+  bool disallow_ax_mode_changes_ = false;
 
   // Disable hot tracking, i.e. hover state - needed just to avoid flaky tests.
   bool disable_hot_tracking_ = false;
@@ -168,6 +166,11 @@ class CONTENT_EXPORT BrowserAccessibilityStateImpl
   // Keeps track of whether caret browsing is enabled for the most
   // recently used profile.
   bool caret_browsing_enabled_ = false;
+
+  // Keeps track of whether performance filtering is allowed for the device.
+  // Default is true to defer to feature flag. Value may be set to false by
+  // prefs.
+  bool performance_filtering_allowed_ = true;
 
   // The time of the first user input event; if we receive multiple
   // user input events within a 30-second period and no

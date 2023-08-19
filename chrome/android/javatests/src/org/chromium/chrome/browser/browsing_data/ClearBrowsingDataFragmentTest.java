@@ -94,7 +94,9 @@ public class ClearBrowsingDataFragmentTest {
     public ChromeTabbedActivityTestRule mActivityTestRule = new ChromeTabbedActivityTestRule();
     @Rule
     public SettingsActivityTestRule<ClearBrowsingDataFragmentAdvanced> mSettingsActivityTestRule =
-            new SettingsActivityTestRule<>(ClearBrowsingDataFragmentAdvanced.class);
+            new SettingsActivityTestRule<>(ClearBrowsingDataFragmentAdvanced.class,
+                    ClearBrowsingDataFragment.createFragmentArgs(
+                            /*isFetcherSuppliedFromOutside=*/false));
     @Rule
     public SettingsActivityTestRule<ClearBrowsingDataTabsFragment>
             mSettingsActivityTabFragmentTestRule =
@@ -164,10 +166,9 @@ public class ClearBrowsingDataFragmentTest {
 
     private SettingsActivity startPreferences() {
         SettingsActivity settingsActivity = mSettingsActivityTestRule.startSettingsActivity();
-        ClearBrowsingDataFetcher fetcher = new ClearBrowsingDataFetcher();
         ClearBrowsingDataFragment fragment = mSettingsActivityTestRule.getFragment();
-        fragment.setClearBrowsingDataFetcher(fetcher);
-        TestThreadUtils.runOnUiThreadBlocking(fetcher::fetchImportantSites);
+        TestThreadUtils.runOnUiThreadBlocking(
+                fragment.getClearBrowsingDataFetcher()::fetchImportantSites);
         return settingsActivity;
     }
 
@@ -325,9 +326,7 @@ public class ClearBrowsingDataFragmentTest {
         Spinner spinner = spinnerPref.getSpinnerForTesting();
         int itemCount = spinner.getAdapter().getCount();
         for (int i = 0; i < itemCount; i++) {
-            ClearBrowsingDataFragment.TimePeriodSpinnerOption option =
-                    (ClearBrowsingDataFragment.TimePeriodSpinnerOption) spinner.getAdapter()
-                            .getItem(i);
+            var option = (TimePeriodUtils.TimePeriodSpinnerOption) spinner.getAdapter().getItem(i);
             if (option.getTimePeriod() == time) {
                 spinner.setSelection(i);
                 return;

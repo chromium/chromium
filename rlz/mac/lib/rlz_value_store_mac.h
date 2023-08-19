@@ -12,10 +12,6 @@
 #include "base/compiler_specific.h"
 #include "rlz/lib/rlz_value_store.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 namespace rlz_lib {
 
 // An implementation of RlzValueStore for mac. It stores information in a

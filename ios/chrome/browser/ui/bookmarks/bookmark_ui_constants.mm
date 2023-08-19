@@ -4,10 +4,6 @@
 
 #import "ios/chrome/browser/ui/bookmarks/bookmark_ui_constants.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 NSString* const kBookmarksHomeViewContainerIdentifier =
     @"kBookmarksHomeViewContainerIdentifier";
 NSString* const kBookmarkEditViewContainerIdentifier =
@@ -56,8 +52,8 @@ const CGFloat kBookmarkCellHorizontalLeadingInset = 16.0f;
 const CGFloat kBookmarkCellHorizontalTrailingInset = 24.0f;
 const CGFloat kBookmarkCellHorizontalAccessoryViewSpacing = 11.0f;
 
-NSString* const kBookmarkCreateNewProfileFolderCellIdentifier =
-    @"kBookmarkCreateNewProfileFolderCellIdentifier";
+NSString* const kBookmarkCreateNewLocalOrSyncableFolderCellIdentifier =
+    @"kBookmarkCreateNewLocalOrSyncableFolderCellIdentifier";
 
 NSString* const kBookmarkCreateNewAccountFolderCellIdentifier =
     @"kBookmarkCreateNewAccountFolderCellIdentifier";

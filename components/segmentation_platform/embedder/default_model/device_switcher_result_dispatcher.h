@@ -66,7 +66,8 @@ class DeviceSwitcherResultDispatcher : public base::SupportsUserData::Data,
   const raw_ptr<SegmentationPlatformService> segmentation_service_;
   const raw_ptr<syncer::SyncService> sync_service_;
   const raw_ptr<PrefService> prefs_;
-  const raw_ptr<FieldTrialRegister, DanglingUntriaged> field_trial_register_;
+  const raw_ptr<FieldTrialRegister, AcrossTasksDanglingUntriaged>
+      field_trial_register_;
   ClassificationResultCallback waiting_callback_;
   absl::optional<ClassificationResult> latest_result_;
 

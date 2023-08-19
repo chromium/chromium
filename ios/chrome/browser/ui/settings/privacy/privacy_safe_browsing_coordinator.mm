@@ -4,7 +4,7 @@
 
 #import "ios/chrome/browser/ui/settings/privacy/privacy_safe_browsing_coordinator.h"
 
-#import "base/mac/foundation_util.h"
+#import "base/apple/foundation_util.h"
 #import "base/metrics/user_metrics.h"
 #import "base/metrics/user_metrics_action.h"
 #import "components/safe_browsing/core/common/safe_browsing_settings_metrics.h"
@@ -26,10 +26,6 @@
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ui/base/l10n/l10n_util.h"
-
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
 
 // Currently takes into account a view controller delegate and not a command
 // handler to communicate with the mediator since there's currently no needed
@@ -85,6 +81,12 @@
   safe_browsing::LogShowEnhancedProtectionAction();
   [self.baseNavigationController pushViewController:self.viewController
                                            animated:YES];
+}
+
+- (void)stop {
+  [self stopSafeBrowsingEnhancedProtectionCoordinator];
+  [self stopSafeBrowsingStandardProtectionCoordinator];
+  [super stop];
 }
 
 #pragma mark - SafeBrowsingViewControllerPresentationDelegate
@@ -162,9 +164,7 @@
 - (void)safeBrowsingEnhancedProtectionCoordinatorDidRemove:
     (SafeBrowsingEnhancedProtectionCoordinator*)coordinator {
   DCHECK_EQ(self.safeBrowsingEnhancedProtectionCoordinator, coordinator);
-  [self.safeBrowsingEnhancedProtectionCoordinator stop];
-  self.safeBrowsingEnhancedProtectionCoordinator.delegate = nil;
-  self.safeBrowsingEnhancedProtectionCoordinator = nil;
+  [self stopSafeBrowsingEnhancedProtectionCoordinator];
 }
 
 #pragma mark - SafeBrowsingStandardProtectionCoordinatorDelegate
@@ -172,9 +172,23 @@
 - (void)safeBrowsingStandardProtectionCoordinatorDidRemove:
     (SafeBrowsingStandardProtectionCoordinator*)coordinator {
   DCHECK_EQ(self.safeBrowsingStandardProtectionCoordinator, coordinator);
+  [self stopSafeBrowsingStandardProtectionCoordinator];
+}
+
+#pragma mark - Private
+
+- (void)stopSafeBrowsingStandardProtectionCoordinator {
   [self.safeBrowsingStandardProtectionCoordinator stop];
   self.safeBrowsingStandardProtectionCoordinator.delegate = nil;
   self.safeBrowsingStandardProtectionCoordinator = nil;
+}
+
+#pragma mark - Private
+
+- (void)stopSafeBrowsingEnhancedProtectionCoordinator {
+  [self.safeBrowsingEnhancedProtectionCoordinator stop];
+  self.safeBrowsingEnhancedProtectionCoordinator.delegate = nil;
+  self.safeBrowsingEnhancedProtectionCoordinator = nil;
 }
 
 @end

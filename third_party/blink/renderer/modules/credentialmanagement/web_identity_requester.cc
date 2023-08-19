@@ -20,7 +20,8 @@ WebIdentityRequester::WebIdentityRequester(ExecutionContext* context,
 void WebIdentityRequester::OnRequestToken(
     mojom::blink::RequestTokenStatus status,
     const absl::optional<KURL>& selected_idp_config_url,
-    const WTF::String& token) {
+    const WTF::String& token,
+    bool is_auto_reauthn) {
   for (const auto& provider_resolver_pair : provider_to_resolver_) {
     KURL provider = provider_resolver_pair.key;
     ScriptPromiseResolver* resolver = provider_resolver_pair.value;
@@ -50,7 +51,8 @@ void WebIdentityRequester::OnRequestToken(
               DOMExceptionCode::kNetworkError, "Error retrieving a token."));
           continue;
         }
-        IdentityCredential* credential = IdentityCredential::Create(token);
+        IdentityCredential* credential =
+            IdentityCredential::Create(token, is_auto_reauthn);
         resolver->Resolve(credential);
         continue;
       }
@@ -59,6 +61,7 @@ void WebIdentityRequester::OnRequestToken(
     }
   }
   provider_to_resolver_.clear();
+  scoped_abort_states_.clear();
   is_requesting_token_ = false;
 }
 
@@ -187,6 +190,22 @@ void WebIdentityRequester::StopDelayTimer(bool timer_started_before_onload) {
   }
   UMA_HISTOGRAM_MEDIUM_TIMES("Blink.FedCm.Timing.PostTaskDelayDuration",
                              delay_duration);
+}
+
+void WebIdentityRequester::AbortRequest(ScriptState* script_state) {
+  if (!script_state->ContextIsValid()) {
+    return;
+  }
+
+  if (!is_requesting_token_) {
+    OnRequestToken(mojom::blink::RequestTokenStatus::kErrorCanceled,
+                   absl::nullopt, "", /*is_auto_reauthn=*/false);
+    return;
+  }
+
+  auto* auth_request =
+      CredentialManagerProxy::From(script_state)->FederatedAuthRequest();
+  auth_request->CancelTokenRequest();
 }
 
 void WebIdentityRequester::Trace(Visitor* visitor) const {

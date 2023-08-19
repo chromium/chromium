@@ -48,7 +48,7 @@ void XRDeviceAbstraction::HandleDeviceLost() {}
 bool XRDeviceAbstraction::HasSessionEnded() {
   return false;
 }
-void XRDeviceAbstraction::OnLayerBoundsChanged() {}
+void XRDeviceAbstraction::OnLayerBoundsChanged(const gfx::Size& frame_size) {}
 device::mojom::XREnvironmentBlendMode
 XRDeviceAbstraction::GetEnvironmentBlendMode(
     device::mojom::XRSessionMode session_mode) {
@@ -81,6 +81,7 @@ XRCompositorCommon::~XRCompositorCommon() {
 }
 
 void XRCompositorCommon::ClearPendingFrame() {
+  DVLOG(3) << __func__;
   // Notify the derived class first so it can clear its pending frame before
   // potentially starting a new frame with delayed_get_frame_data_callback_.
   ClearPendingFrameInternal();
@@ -133,17 +134,13 @@ void XRCompositorCommon::SubmitFrameDrawnIntoTexture(
   NOTREACHED();
 }
 
-#if BUILDFLAG(IS_WIN)
-void XRCompositorCommon::SubmitFrameWithTextureHandle(
-    int16_t frame_index,
-    mojo::PlatformHandle texture_handle,
-    const gpu::SyncToken& sync_token) {
-  DVLOG(3) << __func__ << " frame_index=" << frame_index;
-  TRACE_EVENT1("xr", "SubmitFrameWithTextureHandle", "frameIndex", frame_index);
+bool XRCompositorCommon::MarkFrameSubmitted(int16_t frame_index) {
+  DVLOG(3) << __func__;
   webxr_has_pose_ = false;
   // Tell the browser that WebXR has submitted a frame.
-  if (on_webxr_submitted_)
+  if (on_webxr_submitted_) {
     std::move(on_webxr_submitted_).Run();
+  }
 
   if (!pending_frame_ ||
       pending_frame_->render_info_->frame_id != frame_index) {
@@ -154,18 +151,32 @@ void XRCompositorCommon::SubmitFrameWithTextureHandle(
       submit_client_->OnSubmitFrameRendered();
       TRACE_EVENT1("xr", "SubmitFrameTransferred", "success", false);
     }
-    return;
+    return false;
   }
 
   pending_frame_->waiting_for_webxr_ = false;
+  pending_frame_->webxr_submitted_ = true;
   pending_frame_->submit_frame_time_ = base::TimeTicks::Now();
+
+  return true;
+}
+
+#if BUILDFLAG(IS_WIN)
+void XRCompositorCommon::SubmitFrameWithTextureHandle(
+    int16_t frame_index,
+    mojo::PlatformHandle texture_handle,
+    const gpu::SyncToken& sync_token) {
+  DVLOG(3) << __func__ << " frame_index=" << frame_index;
+  TRACE_EVENT1("xr", "SubmitFrameWithTextureHandle", "frameIndex", frame_index);
+  if (!MarkFrameSubmitted(frame_index)) {
+    return;
+  }
 
   base::win::ScopedHandle scoped_handle = texture_handle.is_valid()
                                               ? texture_handle.TakeHandle()
                                               : base::win::ScopedHandle();
   texture_helper_.SetSourceTexture(std::move(scoped_handle), sync_token,
                                    left_webxr_bounds_, right_webxr_bounds_);
-  pending_frame_->webxr_submitted_ = true;
 
   // Regardless of success - try to composite what we have.
   MaybeCompositeAndSubmit();
@@ -179,7 +190,6 @@ void XRCompositorCommon::CleanUp() {
   presentation_receiver_.reset();
   frame_data_receiver_.reset();
   overlay_receiver_.reset();
-  input_event_listener_.reset();
   StopRuntime();
 }
 
@@ -191,12 +201,6 @@ void XRCompositorCommon::RequestOverlay(
   // WebXR is visible and overlay hidden by default until the overlay overrides
   // this.
   SetOverlayAndWebXRVisibility(false, true);
-}
-
-bool XRCompositorCommon::UsesInputEventing() {
-  // By default we don't use input eventing.  Any subclass that does will need
-  // to override this.
-  return false;
 }
 
 void XRCompositorCommon::UpdateLayerBounds(int16_t frame_id,
@@ -218,7 +222,7 @@ void XRCompositorCommon::UpdateLayerBounds(int16_t frame_id,
 
   source_size_ = source_size;
 
-  OnLayerBoundsChanged();
+  OnLayerBoundsChanged(source_size_);
 }
 
 void XRCompositorCommon::RequestSession(
@@ -306,7 +310,6 @@ void XRCompositorCommon::StartRuntimeFinish(
                                    enabled_features_.end());
 
   session->device_config = device::mojom::XRSessionDeviceConfig::New();
-  session->device_config->uses_input_eventing = UsesInputEventing();
   session->device_config->enable_anti_aliasing = CanEnableAntiAliasing();
   session->device_config->views = GetDefaultViews();
   session->enviroment_blend_mode = GetEnvironmentBlendMode(options->mode);
@@ -479,14 +482,6 @@ void XRCompositorCommon::GetFrameData(
   }
 }
 
-void XRCompositorCommon::SetInputSourceButtonListener(
-    mojo::PendingAssociatedRemote<device::mojom::XRInputSourceButtonListener>
-        input_listener_remote) {
-  DCHECK(UsesInputEventing());
-  input_event_listener_.reset();
-  input_event_listener_.Bind(std::move(input_listener_remote));
-}
-
 void XRCompositorCommon::SendFrameData(
     XRFrameDataProvider::GetFrameDataCallback callback,
     mojom::XRFrameDataPtr frame_data) {
@@ -594,6 +589,7 @@ void XRCompositorCommon::RequestNotificationOnWebXrSubmitted(
 }
 
 void XRCompositorCommon::MaybeCompositeAndSubmit() {
+  DVLOG(3) << __func__;
   if (!pending_frame_) {
     // There is no outstanding frame, nor frame to composite, but there may be
     // pending GetFrameData calls, so ClearPendingFrame() to respond to them.
@@ -604,13 +600,16 @@ void XRCompositorCommon::MaybeCompositeAndSubmit() {
   // Check if we have obtained all layers (overlay and webxr) that we need.
   if (pending_frame_->waiting_for_webxr_ ||
       pending_frame_->waiting_for_overlay_) {
+    DVLOG(3) << __func__ << "Waiting for additional layers, waiting_for_webxr_="
+             << pending_frame_->waiting_for_webxr_
+             << " waiting_for_overlay=" << pending_frame_->waiting_for_overlay_;
     // Haven't received submits from all layers.
     return;
   }
 
-  // TODO(https://crbug.com/1441073): Refactor OpenXR Rendering.
-  bool copy_successful = false;
+  // TODO(https://crbug.com/1454950): Unify OpenXr Rendering paths.
 #if BUILDFLAG(IS_WIN)
+  bool copy_successful = false;
   bool has_webxr_content = pending_frame_->webxr_submitted_ && webxr_visible_;
   bool has_overlay_content =
       pending_frame_->overlay_submitted_ && overlay_visible_;
@@ -624,6 +623,8 @@ void XRCompositorCommon::MaybeCompositeAndSubmit() {
   } else {
     texture_helper_.CleanupNoSubmit();
   }
+#elif BUILDFLAG(IS_ANDROID)
+  bool copy_successful = true;
 #endif
 
   // A copy can only be succesful if we actually tried to submit.

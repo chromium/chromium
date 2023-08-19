@@ -14,10 +14,6 @@
 #import "third_party/ocmock/OCMock/OCMock.h"
 #include "url/gurl.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 using base::test::ios::kWaitForUIElementTimeout;
 
 namespace ios_web_view {

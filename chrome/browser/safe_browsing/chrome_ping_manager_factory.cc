@@ -8,15 +8,18 @@
 #include "base/no_destructor.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/safe_browsing/chrome_safe_browsing_hats_delegate.h"
 #include "chrome/browser/safe_browsing/chrome_user_population_helper.h"
 #include "chrome/browser/safe_browsing/chrome_v4_protocol_config_provider.h"
 #include "chrome/browser/safe_browsing/safe_browsing_service.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
+#include "chrome/browser/ui/hats/hats_service_factory.h"
+#include "components/prefs/pref_service.h"
 #include "components/safe_browsing/content/browser/web_ui/safe_browsing_ui.h"
 #include "components/safe_browsing/core/browser/ping_manager.h"
 #include "components/safe_browsing/core/browser/sync/safe_browsing_primary_account_token_fetcher.h"
 #include "components/safe_browsing/core/browser/sync/sync_utils.h"
-#include "components/safe_browsing/core/common/features.h"
+#include "components/safe_browsing/core/common/safe_browsing_prefs.h"
 #include "content/public/browser/browser_thread.h"
 
 namespace safe_browsing {
@@ -44,6 +47,9 @@ ChromePingManagerFactory::ChromePingManagerFactory()
               .WithGuest(ProfileSelection::kOriginalOnly)
               .Build()) {
   DependsOn(IdentityManagerFactory::GetInstance());
+#if BUILDFLAG(FULL_SAFE_BROWSING)
+  DependsOn(HatsServiceFactory::GetInstance());
+#endif
 }
 
 ChromePingManagerFactory::~ChromePingManagerFactory() = default;
@@ -51,6 +57,11 @@ ChromePingManagerFactory::~ChromePingManagerFactory() = default;
 KeyedService* ChromePingManagerFactory::BuildServiceInstanceFor(
     content::BrowserContext* context) const {
   Profile* profile = Profile::FromBrowserContext(context);
+  std::unique_ptr<ChromeSafeBrowsingHatsDelegate> hats_delegate = nullptr;
+#if BUILDFLAG(FULL_SAFE_BROWSING)
+  hats_delegate = std::make_unique<ChromeSafeBrowsingHatsDelegate>(
+      HatsServiceFactory::GetForProfile(profile, /*create_if_necessary=*/true));
+#endif
   return PingManager::Create(
       GetV4ProtocolConfig(),
       g_browser_process->safe_browsing_service()->GetURLLoaderFactory(profile),
@@ -61,10 +72,8 @@ KeyedService* ChromePingManagerFactory::BuildServiceInstanceFor(
       safe_browsing::WebUIInfoSingleton::GetInstance(),
       content::GetUIThreadTaskRunner({}),
       base::BindRepeating(&safe_browsing::GetUserPopulationForProfile, profile),
-      base::FeatureList::IsEnabled(
-          safe_browsing::kAddPageLoadTokenToClientSafeBrowsingReport)
-          ? base::BindRepeating(&safe_browsing::GetPageLoadTokenForURL, profile)
-          : base::NullCallback());
+      base::BindRepeating(&safe_browsing::GetPageLoadTokenForURL, profile),
+      std::move(hats_delegate));
 }
 
 // static

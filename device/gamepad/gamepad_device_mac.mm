@@ -8,8 +8,8 @@
 #import <Foundation/Foundation.h>
 
 #include "base/apple/bridging.h"
-#include "base/mac/foundation_util.h"
-#include "base/mac/scoped_cftyperef.h"
+#include "base/apple/foundation_util.h"
+#include "base/apple/scoped_cftyperef.h"
 #include "base/strings/sys_string_conversions.h"
 #include "device/gamepad/dualshock4_controller.h"
 #include "device/gamepad/gamepad_data_fetcher.h"
@@ -17,10 +17,6 @@
 #include "device/gamepad/hid_haptic_gamepad.h"
 #include "device/gamepad/hid_writer_mac.h"
 #include "device/gamepad/xbox_hid_controller.h"
-
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
 
 namespace device {
 
@@ -79,7 +75,7 @@ float NormalizeUInt32Axis(uint32_t value, uint32_t min, uint32_t max) {
 }
 
 GamepadBusType QueryBusType(IOHIDDeviceRef device) {
-  CFStringRef transport_cf = base::mac::CFCast<CFStringRef>(
+  CFStringRef transport_cf = base::apple::CFCast<CFStringRef>(
       IOHIDDeviceGetProperty(device, CFSTR(kIOHIDTransportKey)));
   if (transport_cf) {
     std::string transport = base::SysCFStringRefToUTF8(transport_cf);

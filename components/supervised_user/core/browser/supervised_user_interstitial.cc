@@ -38,7 +38,7 @@ std::unique_ptr<SupervisedUserInterstitial> SupervisedUserInterstitial::Create(
   std::unique_ptr<SupervisedUserInterstitial> interstitial =
       base::WrapUnique(new SupervisedUserInterstitial(
           std::move(web_content_handler), supervised_user_service, url,
-          supervised_user_name, reason));
+          supervised_user_name));
 
   interstitial->web_content_handler()->CleanUpInfoBarOnMainFrame();
   // Caller is responsible for deleting the interstitial.
@@ -49,14 +49,13 @@ SupervisedUserInterstitial::SupervisedUserInterstitial(
     std::unique_ptr<WebContentHandler> web_content_handler,
     SupervisedUserService& supervised_user_service,
     const GURL& url,
-    const std::u16string& supervised_user_name,
-    FilteringBehaviorReason reason)
+    const std::u16string& supervised_user_name)
     : supervised_user_service_(supervised_user_service),
       web_content_handler_(std::move(web_content_handler)),
       url_(url),
-      supervised_user_name_(supervised_user_name),
-      reason_(reason) {}
-SupervisedUserInterstitial::~SupervisedUserInterstitial() {}
+      supervised_user_name_(supervised_user_name) {}
+
+SupervisedUserInterstitial::~SupervisedUserInterstitial() = default;
 
 // static
 std::string SupervisedUserInterstitial::GetHTMLContents(
@@ -120,16 +119,6 @@ void SupervisedUserInterstitial::RequestUrlAccessLocal(
          "empty";
   web_content_handler_->RequestLocalApproval(url_, supervised_user_name_,
                                              std::move(callback));
-}
-
-void SupervisedUserInterstitial::ShowFeedback() {
-  std::string second_custodian =
-      supervised_user_service_->GetSecondCustodianName();
-
-  std::u16string reason = l10n_util::GetStringUTF16(
-      GetBlockMessageID(reason_, second_custodian.empty()));
-  web_content_handler_->ShowFeedback(url_, reason);
-  return;
 }
 
 void SupervisedUserInterstitial::OutputRequestPermissionSourceMetric() {

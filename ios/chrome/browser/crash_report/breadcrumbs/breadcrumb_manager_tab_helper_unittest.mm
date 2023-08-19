@@ -7,6 +7,7 @@
 #import <string>
 
 #import "base/containers/circular_deque.h"
+#import "base/containers/contains.h"
 #import "base/strings/string_split.h"
 #import "base/strings/stringprintf.h"
 #import "base/test/task_environment.h"
@@ -29,10 +30,6 @@
 #import "testing/gtest_mac.h"
 #import "testing/platform_test.h"
 #import "third_party/ocmock/OCMock/OCMock.h"
-
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
 
 using infobars::InfoBarDelegate;
 
@@ -111,14 +108,14 @@ TEST_F(BreadcrumbManagerTabHelperTest, EventsLogged) {
   first_web_state_.OnNavigationStarted(&context);
   const auto& events = GetEvents();
   ASSERT_EQ(1u, events.size());
-  EXPECT_NE(std::string::npos,
-            events.back().find(breadcrumbs::kBreadcrumbDidStartNavigation))
+  EXPECT_TRUE(
+      base::Contains(events.back(), breadcrumbs::kBreadcrumbDidStartNavigation))
       << events.back();
 
   first_web_state_.OnNavigationFinished(&context);
   ASSERT_EQ(2u, events.size());
-  EXPECT_NE(std::string::npos,
-            events.back().find(breadcrumbs::kBreadcrumbDidFinishNavigation))
+  EXPECT_TRUE(base::Contains(events.back(),
+                             breadcrumbs::kBreadcrumbDidFinishNavigation))
       << events.back();
 }
 
@@ -134,11 +131,11 @@ TEST_F(BreadcrumbManagerTabHelperTest, UniqueEvents) {
   const auto& events = GetEvents();
   ASSERT_EQ(2u, events.size());
   EXPECT_STRNE(events.front().c_str(), events.back().c_str());
-  EXPECT_NE(std::string::npos,
-            events.front().find(breadcrumbs::kBreadcrumbDidStartNavigation))
+  EXPECT_TRUE(base::Contains(events.front(),
+                             breadcrumbs::kBreadcrumbDidStartNavigation))
       << events.front();
-  EXPECT_NE(std::string::npos,
-            events.back().find(breadcrumbs::kBreadcrumbDidStartNavigation))
+  EXPECT_TRUE(
+      base::Contains(events.back(), breadcrumbs::kBreadcrumbDidStartNavigation))
       << events.back();
 }
 
@@ -152,8 +149,8 @@ TEST_F(BreadcrumbManagerTabHelperTest, GoogleNavigationStart) {
   const auto& events = GetEvents();
   ASSERT_EQ(1u, events.size());
 
-  EXPECT_NE(std::string::npos,
-            events.front().find(breadcrumbs::kBreadcrumbGoogleNavigation))
+  EXPECT_TRUE(
+      base::Contains(events.front(), breadcrumbs::kBreadcrumbGoogleNavigation))
       << events.front();
 }
 
@@ -169,8 +166,8 @@ TEST_F(BreadcrumbManagerTabHelperTest, GooglePlayNavigationStart) {
 
   // #google is useful to indicate SRP. There is no need to know URLs of other
   // visited google properties.
-  EXPECT_EQ(std::string::npos,
-            events.front().find(breadcrumbs::kBreadcrumbGoogleNavigation))
+  EXPECT_FALSE(
+      base::Contains(events.front(), breadcrumbs::kBreadcrumbGoogleNavigation))
       << events.front();
 }
 
@@ -184,13 +181,13 @@ TEST_F(BreadcrumbManagerTabHelperTest, ChromeNewTabNavigationStart) {
   const auto& events = GetEvents();
   ASSERT_EQ(1u, events.size());
 
-  EXPECT_NE(std::string::npos,
-            events.front().find(base::StringPrintf(
-                "%s%lld", breadcrumbs::kBreadcrumbDidStartNavigation,
-                context.GetNavigationId())))
+  EXPECT_TRUE(base::Contains(
+      events.front(),
+      base::StringPrintf("%s%lld", breadcrumbs::kBreadcrumbDidStartNavigation,
+                         context.GetNavigationId())))
       << events.front();
-  EXPECT_NE(std::string::npos,
-            events.front().find(breadcrumbs::kBreadcrumbNtpNavigation))
+  EXPECT_TRUE(
+      base::Contains(events.front(), breadcrumbs::kBreadcrumbNtpNavigation))
       << events.front();
 }
 
@@ -204,13 +201,13 @@ TEST_F(BreadcrumbManagerTabHelperTest, AboutNewTabNavigationStart) {
   const auto& events = GetEvents();
   ASSERT_EQ(1u, events.size());
 
-  EXPECT_NE(std::string::npos,
-            events.front().find(base::StringPrintf(
-                "%s%lld", breadcrumbs::kBreadcrumbDidStartNavigation,
-                context.GetNavigationId())))
+  EXPECT_TRUE(base::Contains(
+      events.front(),
+      base::StringPrintf("%s%lld", breadcrumbs::kBreadcrumbDidStartNavigation,
+                         context.GetNavigationId())))
       << events.front();
-  EXPECT_NE(std::string::npos,
-            events.front().find(breadcrumbs::kBreadcrumbNtpNavigation))
+  EXPECT_TRUE(
+      base::Contains(events.front(), breadcrumbs::kBreadcrumbNtpNavigation))
       << events.front();
 }
 
@@ -224,19 +221,19 @@ TEST_F(BreadcrumbManagerTabHelperTest, NavigationUniqueId) {
   const auto& events = GetEvents();
   ASSERT_EQ(1u, events.size());
 
-  EXPECT_NE(std::string::npos,
-            events.front().find(base::StringPrintf(
-                "%s%lld", breadcrumbs::kBreadcrumbDidStartNavigation,
-                context.GetNavigationId())))
+  EXPECT_TRUE(base::Contains(
+      events.front(),
+      base::StringPrintf("%s%lld", breadcrumbs::kBreadcrumbDidStartNavigation,
+                         context.GetNavigationId())))
       << events.front();
 
   // DidFinishNavigation
   first_web_state_.OnNavigationFinished(&context);
   ASSERT_EQ(2u, events.size());
-  EXPECT_NE(std::string::npos,
-            events.back().find(base::StringPrintf(
-                "%s%lld", breadcrumbs::kBreadcrumbDidFinishNavigation,
-                context.GetNavigationId())))
+  EXPECT_TRUE(base::Contains(
+      events.back(),
+      base::StringPrintf("%s%lld", breadcrumbs::kBreadcrumbDidFinishNavigation,
+                         context.GetNavigationId())))
       << events.back();
 }
 
@@ -251,16 +248,15 @@ TEST_F(BreadcrumbManagerTabHelperTest, RendererInitiatedByUser) {
   const auto& events = GetEvents();
   ASSERT_EQ(1u, events.size());
 
-  EXPECT_NE(std::string::npos, events.back().find("#link")) << events.back();
-  EXPECT_NE(std::string::npos,
-            events.back().find(breadcrumbs::kBreadcrumbDidStartNavigation))
+  EXPECT_TRUE(base::Contains(events.back(), "#link")) << events.back();
+  EXPECT_TRUE(
+      base::Contains(events.back(), breadcrumbs::kBreadcrumbDidStartNavigation))
       << events.back();
-  EXPECT_NE(std::string::npos,
-            events.back().find(breadcrumbs::kBreadcrumbRendererInitiatedByUser))
+  EXPECT_TRUE(base::Contains(events.back(),
+                             breadcrumbs::kBreadcrumbRendererInitiatedByUser))
       << events.back();
-  EXPECT_EQ(
-      std::string::npos,
-      events.back().find(breadcrumbs::kBreadcrumbRendererInitiatedByScript))
+  EXPECT_FALSE(base::Contains(
+      events.back(), breadcrumbs::kBreadcrumbRendererInitiatedByScript))
       << events.back();
 }
 
@@ -276,16 +272,15 @@ TEST_F(BreadcrumbManagerTabHelperTest, RendererInitiatedByScript) {
   const auto& events = GetEvents();
   ASSERT_EQ(1u, events.size());
 
-  EXPECT_NE(std::string::npos, events.back().find("#reload")) << events.back();
-  EXPECT_NE(std::string::npos,
-            events.back().find(breadcrumbs::kBreadcrumbDidStartNavigation))
+  EXPECT_TRUE(base::Contains(events.back(), "#reload")) << events.back();
+  EXPECT_TRUE(
+      base::Contains(events.back(), breadcrumbs::kBreadcrumbDidStartNavigation))
       << events.back();
-  EXPECT_EQ(std::string::npos,
-            events.back().find(breadcrumbs::kBreadcrumbRendererInitiatedByUser))
+  EXPECT_FALSE(base::Contains(events.back(),
+                              breadcrumbs::kBreadcrumbRendererInitiatedByUser))
       << events.back();
-  EXPECT_NE(
-      std::string::npos,
-      events.back().find(breadcrumbs::kBreadcrumbRendererInitiatedByScript))
+  EXPECT_TRUE(base::Contains(events.back(),
+                             breadcrumbs::kBreadcrumbRendererInitiatedByScript))
       << events.back();
 }
 
@@ -300,16 +295,15 @@ TEST_F(BreadcrumbManagerTabHelperTest, BrowserInitiatedByScript) {
   const auto& events = GetEvents();
   ASSERT_EQ(1u, events.size());
 
-  EXPECT_NE(std::string::npos, events.back().find("#typed")) << events.back();
-  EXPECT_NE(std::string::npos,
-            events.back().find(breadcrumbs::kBreadcrumbDidStartNavigation))
+  EXPECT_TRUE(base::Contains(events.back(), "#typed")) << events.back();
+  EXPECT_TRUE(
+      base::Contains(events.back(), breadcrumbs::kBreadcrumbDidStartNavigation))
       << events.back();
-  EXPECT_EQ(std::string::npos,
-            events.back().find(breadcrumbs::kBreadcrumbRendererInitiatedByUser))
+  EXPECT_FALSE(base::Contains(events.back(),
+                              breadcrumbs::kBreadcrumbRendererInitiatedByUser))
       << events.back();
-  EXPECT_EQ(
-      std::string::npos,
-      events.back().find(breadcrumbs::kBreadcrumbRendererInitiatedByScript))
+  EXPECT_FALSE(base::Contains(
+      events.back(), breadcrumbs::kBreadcrumbRendererInitiatedByScript))
       << events.back();
 }
 
@@ -323,11 +317,10 @@ TEST_F(BreadcrumbManagerTabHelperTest, Download) {
   const auto& events = GetEvents();
   ASSERT_EQ(1u, events.size());
 
-  EXPECT_NE(std::string::npos,
-            events.back().find(breadcrumbs::kBreadcrumbDidFinishNavigation))
+  EXPECT_TRUE(base::Contains(events.back(),
+                             breadcrumbs::kBreadcrumbDidFinishNavigation))
       << events.back();
-  EXPECT_NE(std::string::npos,
-            events.back().find(breadcrumbs::kBreadcrumbDownload))
+  EXPECT_TRUE(base::Contains(events.back(), breadcrumbs::kBreadcrumbDownload))
       << events.back();
 }
 
@@ -340,15 +333,13 @@ TEST_F(BreadcrumbManagerTabHelperTest, PdfLoad) {
   const auto& events = GetEvents();
   ASSERT_EQ(1u, events.size());
 
-  EXPECT_NE(std::string::npos,
-            events.back().find(breadcrumbs::kBreadcrumbPageLoaded))
+  EXPECT_TRUE(base::Contains(events.back(), breadcrumbs::kBreadcrumbPageLoaded))
       << events.back();
-  EXPECT_NE(std::string::npos,
-            events.back().find(breadcrumbs::kBreadcrumbPdfLoad))
+  EXPECT_TRUE(base::Contains(events.back(), breadcrumbs::kBreadcrumbPdfLoad))
       << events.back();
 }
 
-// Tests page load succeess.
+// Tests page load success.
 TEST_F(BreadcrumbManagerTabHelperTest, PageLoadSuccess) {
   ASSERT_TRUE(EventsEmpty());
 
@@ -356,11 +347,10 @@ TEST_F(BreadcrumbManagerTabHelperTest, PageLoadSuccess) {
   const auto& events = GetEvents();
   ASSERT_EQ(1u, events.size());
 
-  EXPECT_NE(std::string::npos,
-            events.back().find(breadcrumbs::kBreadcrumbPageLoaded))
+  EXPECT_TRUE(base::Contains(events.back(), breadcrumbs::kBreadcrumbPageLoaded))
       << events.back();
-  EXPECT_EQ(std::string::npos,
-            events.back().find(breadcrumbs::kBreadcrumbPageLoadFailure))
+  EXPECT_FALSE(
+      base::Contains(events.back(), breadcrumbs::kBreadcrumbPageLoadFailure))
       << events.back();
 }
 
@@ -372,11 +362,10 @@ TEST_F(BreadcrumbManagerTabHelperTest, PageLoadFailure) {
   const auto& events = GetEvents();
   ASSERT_EQ(1u, events.size());
 
-  EXPECT_NE(std::string::npos,
-            events.back().find(breadcrumbs::kBreadcrumbPageLoaded))
+  EXPECT_TRUE(base::Contains(events.back(), breadcrumbs::kBreadcrumbPageLoaded))
       << events.back();
-  EXPECT_NE(std::string::npos,
-            events.back().find(breadcrumbs::kBreadcrumbPageLoadFailure))
+  EXPECT_TRUE(
+      base::Contains(events.back(), breadcrumbs::kBreadcrumbPageLoadFailure))
       << events.back();
 }
 
@@ -389,18 +378,16 @@ TEST_F(BreadcrumbManagerTabHelperTest, NtpPageLoad) {
   const auto& events = GetEvents();
   ASSERT_EQ(1u, events.size());
 
-  EXPECT_NE(std::string::npos,
-            events.back().find(breadcrumbs::kBreadcrumbPageLoaded))
+  EXPECT_TRUE(base::Contains(events.back(), breadcrumbs::kBreadcrumbPageLoaded))
       << events.back();
-  EXPECT_NE(std::string::npos,
-            events.back().find(breadcrumbs::kBreadcrumbNtpNavigation))
+  EXPECT_TRUE(
+      base::Contains(events.back(), breadcrumbs::kBreadcrumbNtpNavigation))
       << events.back();
   // NTP navigation can't fail, so there is no success/failure metadata.
-  EXPECT_NE(std::string::npos,
-            events.back().find(breadcrumbs::kBreadcrumbPageLoaded))
+  EXPECT_TRUE(base::Contains(events.back(), breadcrumbs::kBreadcrumbPageLoaded))
       << events.back();
-  EXPECT_NE(std::string::npos,
-            events.back().find(breadcrumbs::kBreadcrumbNtpNavigation))
+  EXPECT_TRUE(
+      base::Contains(events.back(), breadcrumbs::kBreadcrumbNtpNavigation))
       << events.back();
 }
 
@@ -418,11 +405,11 @@ TEST_F(BreadcrumbManagerTabHelperTest, NavigationError) {
   const auto& events = GetEvents();
   ASSERT_EQ(1u, events.size());
 
-  EXPECT_NE(std::string::npos,
-            events.back().find(breadcrumbs::kBreadcrumbDidFinishNavigation))
+  EXPECT_TRUE(base::Contains(events.back(),
+                             breadcrumbs::kBreadcrumbDidFinishNavigation))
       << events.back();
-  EXPECT_NE(std::string::npos, events.back().find(net::ErrorToShortString(
-                                   net::ERR_INTERNET_DISCONNECTED)))
+  EXPECT_TRUE(base::Contains(
+      events.back(), net::ErrorToShortString(net::ERR_INTERNET_DISCONNECTED)))
       << events.back();
 }
 
@@ -449,11 +436,11 @@ TEST_F(BreadcrumbManagerTabHelperTest, DidChangeVisibleSecurityState) {
   first_web_state_.OnVisibleSecurityStateChanged();
   const auto& events = GetEvents();
   ASSERT_EQ(1u, events.size());
-  EXPECT_NE(std::string::npos,
-            events.back().find(breadcrumbs::kBreadcrumbMixedContent))
+  EXPECT_TRUE(
+      base::Contains(events.back(), breadcrumbs::kBreadcrumbMixedContent))
       << events.back();
-  EXPECT_EQ(std::string::npos,
-            events.back().find(breadcrumbs::kBreadcrumbAuthenticationBroken))
+  EXPECT_FALSE(base::Contains(events.back(),
+                              breadcrumbs::kBreadcrumbAuthenticationBroken))
       << events.back();
 
   // Broken authentication.
@@ -461,11 +448,11 @@ TEST_F(BreadcrumbManagerTabHelperTest, DidChangeVisibleSecurityState) {
   status.security_style = web::SECURITY_STYLE_AUTHENTICATION_BROKEN;
   first_web_state_.OnVisibleSecurityStateChanged();
   ASSERT_EQ(2u, events.size());
-  EXPECT_EQ(std::string::npos,
-            events.back().find(breadcrumbs::kBreadcrumbMixedContent))
+  EXPECT_FALSE(
+      base::Contains(events.back(), breadcrumbs::kBreadcrumbMixedContent))
       << events.back();
-  EXPECT_NE(std::string::npos,
-            events.back().find(breadcrumbs::kBreadcrumbAuthenticationBroken))
+  EXPECT_TRUE(base::Contains(events.back(),
+                             breadcrumbs::kBreadcrumbAuthenticationBroken))
       << events.back();
 }
 
@@ -484,9 +471,10 @@ TEST_F(BreadcrumbManagerTabHelperTest, AddInfobar) {
 
   const auto& events = GetEvents();
   ASSERT_EQ(1u, events.size());
-  EXPECT_NE(std::string::npos,
-            events.back().find(base::StringPrintf(
-                "%s%d", breadcrumbs::kBreadcrumbInfobarAdded, identifier)))
+  EXPECT_TRUE(base::Contains(
+      events.back(),
+      base::StringPrintf("%s%d", breadcrumbs::kBreadcrumbInfobarAdded,
+                         identifier)))
       << events.back();
 }
 
@@ -519,13 +507,15 @@ TEST_F(BreadcrumbManagerTabHelperTest, InfobarTypes) {
   const auto& events = GetEvents();
   ASSERT_EQ(3u, events.size());
   EXPECT_NE(events.front(), events.back());
-  EXPECT_NE(std::string::npos, events.front().find(base::StringPrintf(
-                                   "%s%d", breadcrumbs::kBreadcrumbInfobarAdded,
-                                   first_identifier)))
+  EXPECT_TRUE(base::Contains(
+      events.front(),
+      base::StringPrintf("%s%d", breadcrumbs::kBreadcrumbInfobarAdded,
+                         first_identifier)))
       << events.back();
-  EXPECT_NE(std::string::npos, events.back().find(base::StringPrintf(
-                                   "%s%d", breadcrumbs::kBreadcrumbInfobarAdded,
-                                   second_identifier)))
+  EXPECT_TRUE(base::Contains(
+      events.back(),
+      base::StringPrintf("%s%d", breadcrumbs::kBreadcrumbInfobarAdded,
+                         second_identifier)))
       << events.back();
 }
 
@@ -548,12 +538,13 @@ TEST_F(BreadcrumbManagerTabHelperTest, RemoveInfobarNotAnimated) {
 
   const auto& events = GetEvents();
   ASSERT_EQ(2u, events.size());
-  EXPECT_NE(std::string::npos,
-            events.back().find(base::StringPrintf(
-                "%s%d", breadcrumbs::kBreadcrumbInfobarRemoved, identifier)))
+  EXPECT_TRUE(base::Contains(
+      events.back(),
+      base::StringPrintf("%s%d", breadcrumbs::kBreadcrumbInfobarRemoved,
+                         identifier)))
       << events.back();
-  EXPECT_NE(std::string::npos,
-            events.back().find(breadcrumbs::kBreadcrumbInfobarNotAnimated))
+  EXPECT_TRUE(
+      base::Contains(events.back(), breadcrumbs::kBreadcrumbInfobarNotAnimated))
       << events.back();
 }
 
@@ -576,12 +567,13 @@ TEST_F(BreadcrumbManagerTabHelperTest, RemoveInfobarAnimated) {
 
   const auto& events = GetEvents();
   ASSERT_EQ(2u, events.size());
-  EXPECT_NE(std::string::npos,
-            events.back().find(base::StringPrintf(
-                "%s%d", breadcrumbs::kBreadcrumbInfobarRemoved, identifier)))
+  EXPECT_TRUE(base::Contains(
+      events.back(),
+      base::StringPrintf("%s%d", breadcrumbs::kBreadcrumbInfobarRemoved,
+                         identifier)))
       << events.back();
-  EXPECT_EQ(std::string::npos,
-            events.back().find(breadcrumbs::kBreadcrumbInfobarNotAnimated))
+  EXPECT_FALSE(
+      base::Contains(events.back(), breadcrumbs::kBreadcrumbInfobarNotAnimated))
       << events.back();
 }
 
@@ -601,9 +593,10 @@ TEST_F(BreadcrumbManagerTabHelperTest, ReplaceInfobar) {
 
   InfoBarDelegate::InfoBarIdentifier identifier =
       InfoBarDelegate::InfoBarIdentifier::TEST_INFOBAR;
-  EXPECT_NE(std::string::npos,
-            events.back().find(base::StringPrintf(
-                "%s%d", breadcrumbs::kBreadcrumbInfobarReplaced, identifier)))
+  EXPECT_TRUE(base::Contains(
+      events.back(),
+      base::StringPrintf("%s%d", breadcrumbs::kBreadcrumbInfobarReplaced,
+                         identifier)))
       << events.back();
 }
 
@@ -631,8 +624,7 @@ TEST_F(BreadcrumbManagerTabHelperTest, SequentialInfobarReplacements) {
   std::string expected_event =
       base::StringPrintf("%s%d %d", breadcrumbs::kBreadcrumbInfobarReplaced,
                          InfoBarDelegate::InfoBarIdentifier::TEST_INFOBAR, 200);
-  EXPECT_NE(std::string::npos, events.back().find(expected_event))
-      << events.back();
+  EXPECT_TRUE(base::Contains(events.back(), expected_event)) << events.back();
 }
 
 // Tests Zoom event.
@@ -645,7 +637,7 @@ TEST_F(BreadcrumbManagerTabHelperTest, Zoom) {
 
   const auto& events = GetEvents();
   ASSERT_EQ(1u, events.size());
-  EXPECT_NE(std::string::npos, events.back().find(breadcrumbs::kBreadcrumbZoom))
+  EXPECT_TRUE(base::Contains(events.back(), breadcrumbs::kBreadcrumbZoom))
       << events.back();
 }
 
@@ -658,8 +650,7 @@ TEST_F(BreadcrumbManagerTabHelperTest, Scroll) {
 
   const auto& events = GetEvents();
   ASSERT_EQ(1u, events.size());
-  EXPECT_NE(std::string::npos,
-            events.back().find(breadcrumbs::kBreadcrumbScroll))
+  EXPECT_TRUE(base::Contains(events.back(), breadcrumbs::kBreadcrumbScroll))
       << events.back();
 }
 
@@ -681,5 +672,5 @@ TEST_F(BreadcrumbManagerTabHelperTest, MultipleScrolls) {
   // Validate the last one, which occurs at the 200th scroll completion.
   std::string expected =
       base::StringPrintf("%s %d", breadcrumbs::kBreadcrumbScroll, 200);
-  EXPECT_NE(std::string::npos, events.back().find(expected)) << events.back();
+  EXPECT_TRUE(base::Contains(events.back(), expected)) << events.back();
 }

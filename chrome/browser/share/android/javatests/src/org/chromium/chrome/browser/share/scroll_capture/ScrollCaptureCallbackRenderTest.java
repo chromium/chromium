@@ -39,11 +39,13 @@ import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.Feature;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.chrome.test.batch.BlankCTATabInitialStateRule;
+import org.chromium.chrome.test.util.browser.Features.DisableFeatures;
 import org.chromium.content_public.browser.RenderCoordinates;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.ui.test.util.RenderTestRule;
@@ -108,6 +110,8 @@ public class ScrollCaptureCallbackRenderTest {
     @Test
     @LargeTest
     @Feature({"RenderTest"})
+    // TODO(crbug.com/1453741): Fix test with CREATE_NEW_TAB_INITIALIZE_RENDERER.
+    @DisableFeatures(ChromeFeatureList.CREATE_NEW_TAB_INITIALIZE_RENDERER)
     public void testCaptureTop() throws Exception {
         View view = mTab.getView();
         Size size = new Size(view.getWidth(), view.getHeight());
@@ -121,6 +125,8 @@ public class ScrollCaptureCallbackRenderTest {
     @Test
     @LargeTest
     @Feature({"RenderTest"})
+    // TODO(crbug.com/1453741): Fix test with CREATE_NEW_TAB_INITIALIZE_RENDERER.
+    @DisableFeatures(ChromeFeatureList.CREATE_NEW_TAB_INITIALIZE_RENDERER)
     public void testCaptureBottom() throws Exception {
         RenderCoordinates renderCoordinates =
                 RenderCoordinates.fromWebContents(mTab.getWebContents());

@@ -16,10 +16,6 @@
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/image/image.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 namespace ui {
 namespace {
 
@@ -30,11 +26,6 @@ class GrabWindowSnapshotTest : public CocoaTest {
 };
 
 TEST_F(GrabWindowSnapshotTest, TestGrabWindowSnapshot) {
-  // Flaky only on the 10.13 bot yet not on any subsequent macOS bot.
-  // https://crbug.com/1359153
-  if (base::mac::IsOS10_13())
-    GTEST_SKIP() << "flaky on macOS 10.13 bot";
-
   // The window snapshot code uses `CGWindowListCreateImage` which requires
   // going to the windowserver. By default, unittests are run with the
   // `NSApplicationActivationPolicyProhibited` policy which prohibits

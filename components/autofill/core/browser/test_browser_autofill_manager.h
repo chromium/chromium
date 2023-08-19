@@ -52,8 +52,7 @@ class TestBrowserAutofillManager : public BrowserAutofillManager {
       const FormData& form,
       const FormFieldData& field,
       const gfx::RectF& bounding_box,
-      AutoselectFirstSuggestion autoselect_first_suggestion,
-      FormElementWasClicked form_element_was_clicked) override;
+      AutofillSuggestionTriggerSource trigger_source) override;
   void OnJavaScriptChangedAutofilledValue(
       const FormData& form,
       const FormFieldData& field,
@@ -113,10 +112,8 @@ class TestBrowserAutofillManager : public BrowserAutofillManager {
       const FormData& form,
       const FormFieldData& field,
       const gfx::RectF& bounding_box = {},
-      AutoselectFirstSuggestion autoselect_first_suggestion =
-          AutoselectFirstSuggestion(false),
-      FormElementWasClicked form_element_was_clicked =
-          FormElementWasClicked(false));
+      AutofillSuggestionTriggerSource trigger_source =
+          AutofillSuggestionTriggerSource::kTextFieldDidChange);
 
   // Require a TestAutofillClient because `this` does not know whether its
   // `client()` is a *Test*AutofillClient.
@@ -130,18 +127,11 @@ class TestBrowserAutofillManager : public BrowserAutofillManager {
 
   void SetExpectedObservedSubmission(bool expected);
 
-  struct MakeFrontendIdParams {
-    std::string credit_card_id;
-    std::string profile_id;
-  };
-
-  Suggestion::FrontendId MakeFrontendId(const MakeFrontendIdParams& params);
-
  private:
   bool autofill_profile_enabled_ = true;
   bool autofill_credit_card_enabled_ = true;
   absl::optional<bool> expected_observed_submission_;
-  const gfx::Image card_image_ = gfx::test::CreateImage(32, 20);
+  const gfx::Image card_image_ = gfx::test::CreateImage(40, 24);
 
   std::unique_ptr<base::RunLoop> run_loop_;
 

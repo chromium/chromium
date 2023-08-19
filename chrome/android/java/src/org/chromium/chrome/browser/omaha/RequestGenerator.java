@@ -25,8 +25,6 @@ import java.util.Locale;
  * Generates XML requests to send to the Omaha server.
  */
 public abstract class RequestGenerator {
-    private static final String TAG = "RequestGenerator";
-
     // The Omaha specs say that new installs should use "-1".
     public static final int INSTALL_AGE_IMMEDIATELY_AFTER_INSTALLING = -1;
 
@@ -55,7 +53,7 @@ public abstract class RequestGenerator {
     /**
      * Generates the XML for the current request. Follows the format laid out at
      * https://github.com/google/omaha/blob/master/doc/ServerProtocolV3.md
-     * with some additional dummy values supplied.
+     * with some additional placeholder values supplied.
      */
     public String generateXML(String sessionID, String versionName, long installAge,
             int lastCheckDate, RequestData data) throws RequestFailureException {

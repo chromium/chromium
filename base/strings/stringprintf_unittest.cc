@@ -37,7 +37,6 @@ TEST(StringPrintfTest, StringPrintfMisc) {
   EXPECT_EQ("123hello w", StringPrintf("%3d%2s %1c", 123, "hello", 'w'));
 #if BUILDFLAG(IS_WIN)
   EXPECT_EQ(L"123hello w", StringPrintf(L"%3d%2ls %1lc", 123, L"hello", 'w'));
-  EXPECT_EQ(u"123hello w", StringPrintf(u"%3d%2ls %1lc", 123, u"hello", 'w'));
 #endif
 }
 
@@ -50,10 +49,6 @@ TEST(StringPrintfTest, StringAppendfEmptyString) {
   std::wstring valuew(L"Hello");
   StringAppendF(&valuew, L"%ls", L"");
   EXPECT_EQ(L"Hello", valuew);
-
-  std::u16string value16(u"Hello");
-  StringAppendF(&value16, u"%ls", u"");
-  EXPECT_EQ(u"Hello", value16);
 #endif
 }
 
@@ -66,10 +61,6 @@ TEST(StringPrintfTest, StringAppendfString) {
   std::wstring valuew(L"Hello");
   StringAppendF(&valuew, L" %ls", L"World");
   EXPECT_EQ(L"Hello World", valuew);
-
-  std::u16string value16(u"Hello");
-  StringAppendF(&value16, u" %ls", u"World");
-  EXPECT_EQ(u"Hello World", value16);
 #endif
 }
 
@@ -82,10 +73,6 @@ TEST(StringPrintfTest, StringAppendfInt) {
   std::wstring valuew(L"Hello");
   StringAppendF(&valuew, L" %d", 123);
   EXPECT_EQ(L"Hello 123", valuew);
-
-  std::u16string value16(u"Hello");
-  StringAppendF(&value16, u" %d", 123);
-  EXPECT_EQ(u"Hello 123", value16);
 #endif
 }
 
@@ -105,22 +92,11 @@ TEST(StringPrintfTest, StringPrintfBounds) {
   for (int i = 1; i < 3; i++) {
     src[kSrcLen - i] = 0;
     std::string out;
-    SStringPrintf(&out, "%s", src);
-    EXPECT_STREQ(src, out.c_str());
+    EXPECT_EQ(src, StringPrintf("%s", src));
 
 #if BUILDFLAG(IS_WIN)
     srcw[kSrcLen - i] = 0;
-    std::wstring outw;
-    SStringPrintf(&outw, L"%ls", srcw);
-    EXPECT_STREQ(srcw, outw.c_str());
-
-    src16[kSrcLen - i] = 0;
-    std::u16string out16;
-    SStringPrintf(&out16, u"%ls", src16);
-    // EXPECT_STREQ does not support const char16_t* strings yet.
-    // Dispatch to the const wchar_t* overload instead.
-    EXPECT_STREQ(reinterpret_cast<const wchar_t*>(src16),
-                 reinterpret_cast<const wchar_t*>(out16.c_str()));
+    EXPECT_EQ(srcw, StringPrintf(L"%ls", srcw));
 #endif
   }
 }
@@ -134,9 +110,6 @@ TEST(StringPrintfTest, Grow) {
 
   const char fmt[] = "%sB%sB%sB%sB%sB%sB%s";
 
-  std::string out;
-  SStringPrintf(&out, fmt, src, src, src, src, src, src, src);
-
   const int kRefSize = 320000;
   char* ref = new char[kRefSize];
 #if BUILDFLAG(IS_WIN)
@@ -145,7 +118,7 @@ TEST(StringPrintfTest, Grow) {
   snprintf(ref, kRefSize, fmt, src, src, src, src, src, src, src);
 #endif
 
-  EXPECT_STREQ(ref, out.c_str());
+  EXPECT_EQ(ref, StringPrintf(fmt, src, src, src, src, src, src, src));
   delete[] ref;
 }
 
@@ -158,10 +131,6 @@ TEST(StringPrintfTest, StringAppendV) {
   std::wstring outw;
   StringAppendVTestHelper(&outw, L"%d foo %ls", 1, L"bar");
   EXPECT_EQ(L"1 foo bar", outw);
-
-  std::u16string out16;
-  StringAppendVTestHelper(&out16, u"%d foo %ls", 1, u"bar");
-  EXPECT_EQ(u"1 foo bar", out16);
 #endif
 }
 
@@ -178,10 +147,7 @@ TEST(StringPrintfTest, GrowBoundary) {
     src[i] = 'a';
   src[kBufLen - 1] = 0;
 
-  std::string out;
-  SStringPrintf(&out, "%s", src);
-
-  EXPECT_STREQ(src, out.c_str());
+  EXPECT_EQ(src, StringPrintf("%s", src));
 }
 
 #if BUILDFLAG(IS_WIN)
@@ -190,9 +156,7 @@ TEST(StringPrintfTest, Invalid) {
   invalid[0] = 0xffff;
   invalid[1] = 0;
 
-  std::wstring out;
-  SStringPrintf(&out, L"%ls", invalid);
-  EXPECT_STREQ(invalid, out.c_str());
+  EXPECT_EQ(invalid, StringPrintf(L"%ls", invalid));
 }
 #endif
 

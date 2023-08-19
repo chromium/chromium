@@ -8,11 +8,30 @@
 #include "services/metrics/public/cpp/metrics_utils.h"
 #include "services/metrics/public/cpp/ukm_builders.h"
 
+namespace {
+
+absl::optional<ukm::SourceId> GetUkmSourceId(
+    content::RenderFrameHost* render_frame_host) {
+  if (render_frame_host->IsInLifecycleState(
+          content::RenderFrameHost::LifecycleState::kPrerendering)) {
+    // We don't collect UKM while prerendering due to data collection policy.
+    return absl::nullopt;
+  }
+  return render_frame_host->GetPageUkmSourceId();
+}
+
+}  // namespace
+
+NavigationPredictorMetricsDocumentData::UserInteractionsData::
+    UserInteractionsData() = default;
+NavigationPredictorMetricsDocumentData::UserInteractionsData::
+    UserInteractionsData(const UserInteractionsData&) = default;
+
 NavigationPredictorMetricsDocumentData::NavigationPredictorMetricsDocumentData(
     content::RenderFrameHost* render_frame_host)
     : DocumentUserData<NavigationPredictorMetricsDocumentData>(
           render_frame_host),
-      ukm_source_id_(render_frame_host->GetMainFrame()->GetPageUkmSourceId()) {}
+      ukm_source_id_(GetUkmSourceId(render_frame_host)) {}
 
 NavigationPredictorMetricsDocumentData::
     ~NavigationPredictorMetricsDocumentData() {
@@ -208,6 +227,8 @@ void NavigationPredictorMetricsDocumentData::RecordUserInteractionsData(
     builder.SetIsInViewport(user_interaction.is_in_viewport);
     builder.SetPointerHoveringOverCount(ukm::GetExponentialBucketMin(
         user_interaction.pointer_hovering_over_count, 1.3));
+    builder.SetEnteredViewportCount(ukm::GetExponentialBucketMin(
+        user_interaction.entered_viewport_count, 1.3));
     builder.SetIsPointerHoveringOver(user_interaction.is_hovered);
     builder.SetMaxEnteredViewportToLeftViewportMs(ukm::GetExponentialBucketMin(
         get_max_time_ms(
@@ -218,6 +239,10 @@ void NavigationPredictorMetricsDocumentData::RecordUserInteractionsData(
         get_max_time_ms(user_interaction.max_hover_dwell_time,
                         user_interaction.last_navigation_start_to_pointer_over),
         1.3));
+    builder.SetMouseVelocity(ukm::GetExponentialBucketMin(
+        user_interaction.mouse_velocity.value_or(0.0), 1.3));
+    builder.SetMouseAcceleration(ukm::GetExponentialBucketMin(
+        user_interaction.mouse_acceleration.value_or(0.0), 1.3));
     builder.Record(ukm_recorder);
   }
   // Clear the UserInteractionData for the next page load.

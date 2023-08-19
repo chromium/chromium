@@ -211,6 +211,11 @@ struct VIZ_COMMON_EXPORT BeginFrameArgs {
   // the client and service as the id for trace-events.
   int64_t trace_id = -1;
 
+  // The time when viz dispatched this to a client.
+  base::TimeTicks dispatch_time;
+  // For clients to denote when they received this being dispatched.
+  base::TimeTicks client_arrival_time;
+
   BeginFrameArgsType type = INVALID;
   bool on_critical_path = true;
 

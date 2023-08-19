@@ -11,6 +11,7 @@ import static org.chromium.android_webview.test.AwActivityTestRule.WAIT_TIMEOUT_
 import static org.chromium.android_webview.test.OnlyRunIn.ProcessMode.MULTI_PROCESS;
 import static org.chromium.android_webview.test.OnlyRunIn.ProcessMode.SINGLE_PROCESS;
 
+import android.content.ComponentCallbacks2;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
@@ -35,22 +36,28 @@ import com.google.common.util.concurrent.SettableFuture;
 import org.junit.Assert;
 import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.TestRule;
 import org.junit.runner.RunWith;
 
 import org.chromium.android_webview.AwContents;
 import org.chromium.android_webview.AwRenderProcess;
 import org.chromium.android_webview.AwSettings;
+import org.chromium.android_webview.common.AwFeatures;
 import org.chromium.android_webview.renderer_priority.RendererPriority;
 import org.chromium.android_webview.test.TestAwContentsClient.OnDownloadStartHelper;
 import org.chromium.android_webview.test.util.CommonResources;
 import org.chromium.android_webview.test.util.GraphicsTestUtils;
 import org.chromium.base.ContextUtils;
+import org.chromium.base.FakeTimeTestRule;
 import org.chromium.base.Log;
-import org.chromium.base.metrics.RecordHistogram;
+import org.chromium.base.TimeUtils;
 import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.DisabledTest;
+import org.chromium.base.test.util.DoNotBatch;
 import org.chromium.base.test.util.Feature;
+import org.chromium.base.test.util.Features;
+import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.base.test.util.MinAndroidSdkLevel;
 import org.chromium.content_public.browser.test.util.RenderProcessHostUtils;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
@@ -70,11 +77,14 @@ import java.util.Map;
 import java.util.concurrent.Semaphore;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.function.BiFunction;
+import java.util.function.Predicate;
 
 /**
  * AwContents tests.
  */
 @RunWith(AwJUnit4ClassRunner.class)
+@DoNotBatch(reason = "Tests that need browser start are incompatible with @Batch")
 public class AwContentsTest {
     private static final String TAG = "AwContentsTest";
 
@@ -87,8 +97,12 @@ public class AwContentsTest {
         }
     };
 
+    @Rule
+    public FakeTimeTestRule mFakeTimeTestRule = new FakeTimeTestRule();
+    @Rule
+    public TestRule mProcessor = new Features.InstrumentationProcessor();
+
     private TestAwContentsClient mContentsClient = new TestAwContentsClient();
-    private volatile Integer mHistogramTotalCount = 0;
 
     @Test
     @SmallTest
@@ -576,34 +590,25 @@ public class AwContentsTest {
         EmbeddedTestServer testServer = EmbeddedTestServer.createAndStartServer(
                 InstrumentationRegistry.getInstrumentation().getContext());
 
-        try {
-            String url = testServer.getURL("/echoheader?X-foo");
-
-            final Map<String, String> extraHeaders = new HashMap<String, String>();
-            extraHeaders.put("X-foo", "bar");
-            mActivityTestRule.loadUrlSync(
-                    awContents, mContentsClient.getOnPageFinishedHelper(), url, extraHeaders);
-
-            String xfoo = mActivityTestRule.getJavaScriptResultBodyTextContent(
-                    awContents, mContentsClient);
-            Assert.assertEquals("bar", xfoo);
-
-            url = testServer.getURL("/echoheader?Referer");
-
-            mActivityTestRule.loadUrlSync(awContents, mContentsClient.getOnPageFinishedHelper(),
-                    url, ImmutableMap.of("Referer", "http://www.example.com/"));
-
-            String referer = mActivityTestRule.getJavaScriptResultBodyTextContent(
-                    awContents, mContentsClient);
-            Assert.assertEquals("http://www.example.com/", referer);
-        } finally {
-            testServer.stopAndDestroyServer();
-        }
+        String url = testServer.getURL("/echoheader?X-foo");
+        final Map<String, String> extraHeaders = new HashMap<String, String>();
+        extraHeaders.put("X-foo", "bar");
+        mActivityTestRule.loadUrlSync(
+                awContents, mContentsClient.getOnPageFinishedHelper(), url, extraHeaders);
+        String xfoo =
+                mActivityTestRule.getJavaScriptResultBodyTextContent(awContents, mContentsClient);
+        Assert.assertEquals("bar", xfoo);
+        url = testServer.getURL("/echoheader?Referer");
+        mActivityTestRule.loadUrlSync(awContents, mContentsClient.getOnPageFinishedHelper(), url,
+                ImmutableMap.of("Referer", "http://www.example.com/"));
+        String referer =
+                mActivityTestRule.getJavaScriptResultBodyTextContent(awContents, mContentsClient);
+        Assert.assertEquals("http://www.example.com/", referer);
     }
 
     // This is a meta test that we don't accidentally turn off hardware
     // acceleration in instrumentation tests without notice. Do not add the
-    // @DisableHardwareAccelerationForTest annotation for this test.
+    // @DisableHardwareAcceleration annotation for this test.
     @Test
     @Feature({"AndroidWebView"})
     @SmallTest
@@ -973,27 +978,36 @@ public class AwContentsTest {
     private void doHardwareRenderingSmokeTest() throws Throwable {
         AwTestContainerView testView =
                 mActivityTestRule.createAwTestContainerViewOnMainSync(mContentsClient);
-        final AwContents awContents = testView.getAwContents();
-        String html = "<html>"
-                + "  <body style=\""
-                + "       padding: 0;"
-                + "       margin: 0;"
-                + "       display: grid;"
-                + "       display: grid;"
-                + "       grid-template-columns: 50% 50%;"
-                + "       grid-template-rows: 50% 50%;\">"
-                + "   <div style=\"background-color: rgb(255, 0, 0);\"></div>"
-                + "   <div style=\"background-color: rgb(0, 255, 0);\"></div>"
-                + "   <div style=\"background-color: rgb(0, 0, 255);\"></div>"
-                + "   <div style=\"background-color: rgb(128, 128, 128);\"></div>"
-                + "  </body>"
-                + "</html>";
+        doHardwareRenderingSmokeTest(testView);
+    }
+
+    private void doHardwareRenderingSmokeTest(AwTestContainerView testView) throws Throwable {
+        doHardwareRenderingSmokeTest(testView, 128, 128, 128);
+    }
+
+    private void doHardwareRenderingSmokeTest(AwTestContainerView testView, int r, int g, int b)
+            throws Throwable {
+        String html = String.format("<html>"
+                        + "  <body style=\""
+                        + "       padding: 0;"
+                        + "       margin: 0;"
+                        + "       display: grid;"
+                        + "       display: grid;"
+                        + "       grid-template-columns: 50%% 50%%;"
+                        + "       grid-template-rows: 50%% 50%%;\">"
+                        + "   <div style=\"background-color: rgb(255, 0, 0);\"></div>"
+                        + "   <div style=\"background-color: rgb(0, 255, 0);\"></div>"
+                        + "   <div style=\"background-color: rgb(0, 0, 255);\"></div>"
+                        + "   <div style=\"background-color: rgb(%d, %d, %d);\"></div>"
+                        + "  </body>"
+                        + "</html>",
+                r, g, b);
         mActivityTestRule.loadDataSync(testView.getAwContents(),
                 mContentsClient.getOnPageFinishedHelper(), html, "text/html", false);
         mActivityTestRule.waitForVisualStateCallback(testView.getAwContents());
 
         int expectedQuadrantColors[] = {Color.rgb(255, 0, 0), Color.rgb(0, 255, 0),
-                Color.rgb(0, 0, 255), Color.rgb(128, 128, 128)};
+                Color.rgb(0, 0, 255), Color.rgb(r, g, b)};
 
         GraphicsTestUtils.pollForQuadrantColors(testView, expectedQuadrantColors);
     }
@@ -1112,11 +1126,44 @@ public class AwContentsTest {
         }
     }
 
-    private int getHistogramSampleCount(String name) {
-        TestThreadUtils.runOnUiThreadBlocking(() -> {
-            mHistogramTotalCount = RecordHistogram.getHistogramTotalCountForTesting(name);
-        });
-        return mHistogramTotalCount;
+    @Test
+    @Feature({"AndroidWebView"})
+    @MediumTest
+    public void testLoadsJsModule() throws Throwable {
+        mActivityTestRule.startBrowserProcess();
+        AwTestContainerView testView =
+                mActivityTestRule.createAwTestContainerViewOnMainSync(mContentsClient);
+        final AwContents awContents = testView.getAwContents();
+
+        AwSettings awSettings = mActivityTestRule.getAwSettingsOnUiThread(awContents);
+
+        // This test is specifically about relative file urls
+        awSettings.setAllowFileAccess(true);
+        awSettings.setAllowFileAccessFromFileURLs(true);
+
+        // This test runs some javascript to verify if it passes
+        AwActivityTestRule.enableJavaScriptOnUiThread(awContents);
+
+        // Using a future to wait to see if the js module was loaded or not.
+        // The page in the test will expect this object.
+        final SettableFuture<Boolean> fetchResultFuture = SettableFuture.create();
+        Object injectedObject = new Object() {
+            @JavascriptInterface
+            public void success() {
+                fetchResultFuture.set(true);
+            }
+            @JavascriptInterface
+            public void error() {
+                fetchResultFuture.set(false);
+            }
+        };
+        AwActivityTestRule.addJavascriptInterfaceOnUiThread(
+                awContents, injectedObject, "injectedObject");
+
+        final String url = "file:///android_asset/page_with_module.html";
+        mActivityTestRule.loadUrlAsync(awContents, url);
+
+        Assert.assertTrue(AwActivityTestRule.waitForFuture(fetchResultFuture));
     }
 
     @Test
@@ -1172,18 +1219,13 @@ public class AwContentsTest {
                 mActivityTestRule.createAwTestContainerViewOnMainSync(mContentsClient);
         final AwContents awContents = testView.getAwContents();
 
-        Assert.assertEquals(0,
-                RecordHistogram.getHistogramTotalCountForTesting(
-                        AwContents.LOAD_URL_SCHEME_HISTOGRAM_NAME));
+        HistogramWatcher histogramExpectation = HistogramWatcher.newSingleRecordWatcher(
+                AwContents.LOAD_URL_SCHEME_HISTOGRAM_NAME, expectedSchemeEnum);
+
         // Note: we use async because not all loads emit onPageFinished. This relies on the UMA
         // metric being logged in the synchronous part of loadUrl().
         mActivityTestRule.loadUrlAsync(awContents, url);
-        Assert.assertEquals(1,
-                RecordHistogram.getHistogramTotalCountForTesting(
-                        AwContents.LOAD_URL_SCHEME_HISTOGRAM_NAME));
-        Assert.assertEquals(1,
-                RecordHistogram.getHistogramValueCountForTesting(
-                        AwContents.LOAD_URL_SCHEME_HISTOGRAM_NAME, expectedSchemeEnum));
+        histogramExpectation.assertExpected();
     }
 
     @Test
@@ -1218,7 +1260,7 @@ public class AwContentsTest {
         }
     }
 
-    // This test verifies that Local Network Access' secure context
+    // This test verifies that Private Network Access' secure context
     // restriction (feature flag BlockInsecurePrivateNetworkRequests) does not
     // apply to Webview: insecure private network requests are allowed.
     //
@@ -1227,7 +1269,7 @@ public class AwContentsTest {
     @Feature({"AndroidWebView"})
     @CommandLineFlags.Add(ContentSwitches.HOST_RESOLVER_RULES + "=MAP * 127.0.0.1")
     @SmallTest
-    public void testInsecureLocalNetworkAccess() throws Throwable {
+    public void testInsecurePrivateNetworkAccess() throws Throwable {
         mActivityTestRule.startBrowserProcess();
         final AwTestContainerView testContainer =
                 mActivityTestRule.createAwTestContainerViewOnMainSync(mContentsClient);
@@ -1302,47 +1344,34 @@ public class AwContentsTest {
 
         EmbeddedTestServer testServer = EmbeddedTestServer.createAndStartServer(
                 InstrumentationRegistry.getInstrumentation().getContext());
-        try {
-            final String pageUrl = testServer.getURL(HELLO_WORLD_URL);
-
-            mActivityTestRule.loadUrlSync(
-                    awContents, mContentsClient.getOnPageFinishedHelper(), pageUrl);
-            Assert.assertEquals(
-                    HELLO_WORLD_TITLE, mActivityTestRule.getTitleOnUiThread(awContents));
-
-            final AwRenderProcess rendererProcess1 = getRenderProcessOnUiThread(awContents);
-            Assert.assertNotNull(rendererProcess1);
-
-            // Until AW gets site isolation, ordinary web content should not be
-            // locked to origin.
-            boolean isLocked = TestThreadUtils.runOnUiThreadBlocking(
-                    () -> rendererProcess1.isProcessLockedToSiteForTesting());
-            Assert.assertFalse("Initial renderer process should not be locked", isLocked);
-
-            mActivityTestRule.loadUrlSync(
-                    awContents, mContentsClient.getOnPageFinishedHelper(), WEBUI_URL);
-            Assert.assertEquals(WEBUI_TITLE, mActivityTestRule.getTitleOnUiThread(awContents));
-
-            final AwRenderProcess webuiProcess = getRenderProcessOnUiThread(awContents);
-            Assert.assertNotEquals(rendererProcess1, webuiProcess);
-            // WebUI pages should be locked to origin even on AW.
-            isLocked = TestThreadUtils.runOnUiThreadBlocking(
-                    () -> webuiProcess.isProcessLockedToSiteForTesting());
-            Assert.assertTrue("WebUI process should be locked", isLocked);
-
-            mActivityTestRule.loadUrlSync(
-                    awContents, mContentsClient.getOnPageFinishedHelper(), pageUrl);
-
-            final AwRenderProcess rendererProcess2 = getRenderProcessOnUiThread(awContents);
-            Assert.assertEquals(
-                    HELLO_WORLD_TITLE, mActivityTestRule.getTitleOnUiThread(awContents));
-            Assert.assertNotEquals(rendererProcess2, webuiProcess);
-            isLocked = TestThreadUtils.runOnUiThreadBlocking(
-                    () -> rendererProcess2.isProcessLockedToSiteForTesting());
-            Assert.assertFalse("Final renderer process should not be locked", isLocked);
-        } finally {
-            testServer.stopAndDestroyServer();
-        }
+        final String pageUrl = testServer.getURL(HELLO_WORLD_URL);
+        mActivityTestRule.loadUrlSync(
+                awContents, mContentsClient.getOnPageFinishedHelper(), pageUrl);
+        Assert.assertEquals(HELLO_WORLD_TITLE, mActivityTestRule.getTitleOnUiThread(awContents));
+        final AwRenderProcess rendererProcess1 = getRenderProcessOnUiThread(awContents);
+        Assert.assertNotNull(rendererProcess1);
+        // Until AW gets site isolation, ordinary web content should not be
+        // locked to origin.
+        boolean isLocked = TestThreadUtils.runOnUiThreadBlocking(
+                () -> rendererProcess1.isProcessLockedToSiteForTesting());
+        Assert.assertFalse("Initial renderer process should not be locked", isLocked);
+        mActivityTestRule.loadUrlSync(
+                awContents, mContentsClient.getOnPageFinishedHelper(), WEBUI_URL);
+        Assert.assertEquals(WEBUI_TITLE, mActivityTestRule.getTitleOnUiThread(awContents));
+        final AwRenderProcess webuiProcess = getRenderProcessOnUiThread(awContents);
+        Assert.assertNotEquals(rendererProcess1, webuiProcess);
+        // WebUI pages should be locked to origin even on AW.
+        isLocked = TestThreadUtils.runOnUiThreadBlocking(
+                () -> webuiProcess.isProcessLockedToSiteForTesting());
+        Assert.assertTrue("WebUI process should be locked", isLocked);
+        mActivityTestRule.loadUrlSync(
+                awContents, mContentsClient.getOnPageFinishedHelper(), pageUrl);
+        final AwRenderProcess rendererProcess2 = getRenderProcessOnUiThread(awContents);
+        Assert.assertEquals(HELLO_WORLD_TITLE, mActivityTestRule.getTitleOnUiThread(awContents));
+        Assert.assertNotEquals(rendererProcess2, webuiProcess);
+        isLocked = TestThreadUtils.runOnUiThreadBlocking(
+                () -> rendererProcess2.isProcessLockedToSiteForTesting());
+        Assert.assertFalse("Final renderer process should not be locked", isLocked);
     }
 
     // In single-process mode, navigations to WebUI should work, but WebUI does
@@ -1361,26 +1390,17 @@ public class AwContentsTest {
 
         EmbeddedTestServer testServer = EmbeddedTestServer.createAndStartServer(
                 InstrumentationRegistry.getInstrumentation().getContext());
-        try {
-            final String pageUrl = testServer.getURL(HELLO_WORLD_URL);
-
-            mActivityTestRule.loadUrlSync(
-                    awContents, mContentsClient.getOnPageFinishedHelper(), pageUrl);
-            Assert.assertEquals(
-                    HELLO_WORLD_TITLE, mActivityTestRule.getTitleOnUiThread(awContents));
-
-            final AwRenderProcess rendererProcess1 = getRenderProcessOnUiThread(awContents);
-            Assert.assertNull(rendererProcess1);
-
-            mActivityTestRule.loadUrlSync(
-                    awContents, mContentsClient.getOnPageFinishedHelper(), WEBUI_URL);
-            Assert.assertEquals(WEBUI_TITLE, mActivityTestRule.getTitleOnUiThread(awContents));
-
-            final AwRenderProcess webuiProcess = getRenderProcessOnUiThread(awContents);
-            Assert.assertNull(webuiProcess);
-        } finally {
-            testServer.stopAndDestroyServer();
-        }
+        final String pageUrl = testServer.getURL(HELLO_WORLD_URL);
+        mActivityTestRule.loadUrlSync(
+                awContents, mContentsClient.getOnPageFinishedHelper(), pageUrl);
+        Assert.assertEquals(HELLO_WORLD_TITLE, mActivityTestRule.getTitleOnUiThread(awContents));
+        final AwRenderProcess rendererProcess1 = getRenderProcessOnUiThread(awContents);
+        Assert.assertNull(rendererProcess1);
+        mActivityTestRule.loadUrlSync(
+                awContents, mContentsClient.getOnPageFinishedHelper(), WEBUI_URL);
+        Assert.assertEquals(WEBUI_TITLE, mActivityTestRule.getTitleOnUiThread(awContents));
+        final AwRenderProcess webuiProcess = getRenderProcessOnUiThread(awContents);
+        Assert.assertNull(webuiProcess);
     }
 
     @Test
@@ -1450,5 +1470,314 @@ public class AwContentsTest {
         } finally {
             webServer.shutdown();
         }
+    }
+
+    private class FakePostDelayedTask implements BiFunction<Runnable, Long, Void> {
+        @Override
+        public Void apply(Runnable runnable, Long delay) {
+            long time = TimeUtils.uptimeMillis() + delay;
+            mTasks.add(new Pair<Runnable, Long>(runnable, time));
+            return null;
+        }
+
+        public void fastForwardBy(long delay) {
+            mFakeTimeTestRule.advanceMillis(delay);
+            final long now = TimeUtils.uptimeMillis();
+            Predicate<Pair<Runnable, Long>> deadlinePassed = (Pair<Runnable, Long> p) -> {
+                return p.second <= now;
+            };
+
+            // Tasks running can post other tasks, do it in stages to prevent concurrent
+            // modification errors.
+            var toRun = new ArrayList<Pair<Runnable, Long>>();
+            for (var p : mTasks) {
+                if (deadlinePassed.test(p)) toRun.add(p);
+            }
+            mTasks.removeIf(deadlinePassed);
+            for (var p : toRun) p.first.run();
+        }
+
+        public int getPendingTasksCount() {
+            return mTasks.size();
+        }
+
+        private List<Pair<Runnable, Long>> mTasks = new ArrayList<Pair<Runnable, Long>>();
+    }
+
+    @Test
+    @Feature({"AndroidWebView"})
+    @MediumTest
+    @Features.EnableFeatures({AwFeatures.WEBVIEW_CLEAR_FUNCTOR_IN_BACKGROUND})
+    public void testClearDrawFunctorInBackground() throws Throwable {
+        mActivityTestRule.startBrowserProcess();
+
+        AwTestContainerView testView =
+                mActivityTestRule.createAwTestContainerViewOnMainSync(mContentsClient);
+        final AwContents awContents = testView.getAwContents();
+        AwContents.resetRecordMemoryForTesting();
+
+        // Load a page to ensure that at least one draw has happened.
+        doHardwareRenderingSmokeTest(testView);
+        Assert.assertTrue(awContents.hasDrawFunctor());
+
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
+            var postTask = new FakePostDelayedTask();
+            awContents.setPostDelayedTaskForTesting(postTask);
+            awContents.onWindowVisibilityChanged(View.INVISIBLE);
+
+            // Delayed release task.
+            Assert.assertEquals(1, postTask.getPendingTasksCount());
+
+            postTask.fastForwardBy(AwContents.FUNCTOR_RECLAIM_DELAY_MS);
+            // Metrics task is still pending.
+            Assert.assertEquals(1, postTask.getPendingTasksCount());
+            Assert.assertFalse(awContents.hasDrawFunctor());
+
+            awContents.onWindowVisibilityChanged(View.VISIBLE);
+            Assert.assertFalse(awContents.hasDrawFunctor());
+
+            // Metrics task will not report histograms because we went back to foreground in the
+            // meantime.
+            var histograms = HistogramWatcher.newBuilder()
+                                     .expectNoRecords(AwContents.PSS_HISTOGRAM)
+                                     .expectNoRecords(AwContents.PRIVATE_DIRTY_HISTOGRAM)
+                                     .build();
+            postTask.fastForwardBy(AwContents.METRICS_COLLECTION_DELAY_MS);
+            Assert.assertEquals(0, postTask.getPendingTasksCount());
+            histograms.assertExpected();
+        });
+
+        // Rendering still works.
+        doHardwareRenderingSmokeTest(testView, 42, 42, 42);
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> { Assert.assertTrue(awContents.hasDrawFunctor()); });
+    }
+
+    @Test
+    @Feature({"AndroidWebView"})
+    @MediumTest
+    @Features.EnableFeatures({AwFeatures.WEBVIEW_CLEAR_FUNCTOR_IN_BACKGROUND})
+    public void testClearDrawFunctorInBackgroundMultipleTransitions() throws Throwable {
+        mActivityTestRule.startBrowserProcess();
+        AwContents.resetRecordMemoryForTesting();
+
+        AwTestContainerView testView =
+                mActivityTestRule.createAwTestContainerViewOnMainSync(mContentsClient);
+        final AwContents awContents = testView.getAwContents();
+
+        // Load a page to ensure that at least one draw has happened.
+        doHardwareRenderingSmokeTest(testView);
+        Assert.assertTrue(awContents.hasDrawFunctor());
+
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
+            var postTask = new FakePostDelayedTask();
+            awContents.setPostDelayedTaskForTesting(postTask);
+            awContents.onWindowVisibilityChanged(View.INVISIBLE);
+
+            Assert.assertEquals(1, postTask.getPendingTasksCount());
+
+            postTask.fastForwardBy(AwContents.FUNCTOR_RECLAIM_DELAY_MS / 2);
+            awContents.onWindowVisibilityChanged(View.VISIBLE);
+            awContents.onWindowVisibilityChanged(View.INVISIBLE);
+            Assert.assertEquals(1, postTask.getPendingTasksCount());
+            postTask.fastForwardBy(AwContents.FUNCTOR_RECLAIM_DELAY_MS / 2);
+
+            // Not enough continuous time in background.
+            Assert.assertTrue(awContents.hasDrawFunctor());
+            // But there is still a task pending.
+            Assert.assertEquals(1, postTask.getPendingTasksCount());
+
+            // Multiple transitions do not post multiple tasks.
+            awContents.onWindowVisibilityChanged(View.VISIBLE);
+            awContents.onWindowVisibilityChanged(View.INVISIBLE);
+            Assert.assertEquals(1, postTask.getPendingTasksCount());
+
+            // Functor is reclaimed after enough continuous time in background.
+            postTask.fastForwardBy(AwContents.FUNCTOR_RECLAIM_DELAY_MS);
+            Assert.assertFalse(awContents.hasDrawFunctor());
+
+            // Metrics task.
+            var histograms = HistogramWatcher.newBuilder()
+                                     .expectAnyRecord(AwContents.PSS_HISTOGRAM)
+                                     .expectAnyRecord(AwContents.PRIVATE_DIRTY_HISTOGRAM)
+                                     .build();
+            Assert.assertEquals(1, postTask.getPendingTasksCount());
+            postTask.fastForwardBy(AwContents.METRICS_COLLECTION_DELAY_MS);
+            Assert.assertEquals(0, postTask.getPendingTasksCount());
+            histograms.assertExpected();
+        });
+
+        // Not testing rendering here, because all the back and forth advanced the virtual clock too
+        // much, the test would time out.
+    }
+
+    @Test
+    @Feature({"AndroidWebView"})
+    @MediumTest
+    @Features.DisableFeatures({AwFeatures.WEBVIEW_CLEAR_FUNCTOR_IN_BACKGROUND})
+    public void testDoeNotClearDrawFunctorInBackground() throws Throwable {
+        mActivityTestRule.startBrowserProcess();
+        AwContents.resetRecordMemoryForTesting();
+
+        AwTestContainerView testView =
+                mActivityTestRule.createAwTestContainerViewOnMainSync(mContentsClient);
+        final AwContents awContents = testView.getAwContents();
+
+        // Load a page to ensure that at least one draw has happened.
+        doHardwareRenderingSmokeTest(testView);
+        Assert.assertTrue(awContents.hasDrawFunctor());
+
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
+            var postTask = new FakePostDelayedTask();
+            awContents.setPostDelayedTaskForTesting(postTask);
+            awContents.onWindowVisibilityChanged(View.INVISIBLE);
+
+            // Background cleanup task is posted even when the feature is disabled.
+            Assert.assertEquals(1, postTask.getPendingTasksCount());
+            postTask.fastForwardBy(AwContents.FUNCTOR_RECLAIM_DELAY_MS);
+            // But the functor is not cleared.
+            Assert.assertTrue(awContents.hasDrawFunctor());
+
+            // Metrics task.
+            var histograms = HistogramWatcher.newBuilder()
+                                     .expectAnyRecord(AwContents.PSS_HISTOGRAM)
+                                     .expectAnyRecord(AwContents.PRIVATE_DIRTY_HISTOGRAM)
+                                     .build();
+            Assert.assertEquals(1, postTask.getPendingTasksCount());
+            postTask.fastForwardBy(AwContents.METRICS_COLLECTION_DELAY_MS);
+            Assert.assertEquals(0, postTask.getPendingTasksCount());
+            histograms.assertExpected();
+
+            awContents.onWindowVisibilityChanged(View.VISIBLE);
+            Assert.assertEquals(0, postTask.getPendingTasksCount());
+            Assert.assertTrue(awContents.hasDrawFunctor());
+        });
+
+        // Rendering still works.
+        doHardwareRenderingSmokeTest(testView, 42, 42, 42);
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> { Assert.assertTrue(awContents.hasDrawFunctor()); });
+    }
+
+    @Test
+    @Feature({"AndroidWebView"})
+    @MediumTest
+    @Features.EnableFeatures({AwFeatures.WEBVIEW_CLEAR_FUNCTOR_IN_BACKGROUND})
+    public void testClearFunctorOnBackgroundMemorySignal() throws Throwable {
+        mActivityTestRule.startBrowserProcess();
+        AwContents.resetRecordMemoryForTesting();
+
+        AwTestContainerView testView =
+                mActivityTestRule.createAwTestContainerViewOnMainSync(mContentsClient);
+        final AwContents awContents = testView.getAwContents();
+
+        // Load a page to ensure that at least one draw has happened.
+        doHardwareRenderingSmokeTest(testView);
+        Assert.assertTrue(awContents.hasDrawFunctor());
+
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
+            var postTask = new FakePostDelayedTask();
+            awContents.setPostDelayedTaskForTesting(postTask);
+
+            // Not required to happen in background, but this is how the notification is
+            // dispatched in real code.
+            awContents.onWindowVisibilityChanged(View.INVISIBLE);
+            Assert.assertTrue(awContents.hasDrawFunctor());
+            Assert.assertEquals(1, postTask.getPendingTasksCount());
+
+            awContents.onTrimMemory(ComponentCallbacks2.TRIM_MEMORY_BACKGROUND);
+            Assert.assertFalse(awContents.hasDrawFunctor());
+
+            // Metrics task.
+            var histograms = HistogramWatcher.newBuilder()
+                                     .expectAnyRecord(AwContents.PSS_HISTOGRAM)
+                                     .expectAnyRecord(AwContents.PRIVATE_DIRTY_HISTOGRAM)
+                                     .build();
+            Assert.assertEquals(2, postTask.getPendingTasksCount());
+            postTask.fastForwardBy(AwContents.METRICS_COLLECTION_DELAY_MS);
+            Assert.assertEquals(1, postTask.getPendingTasksCount());
+            histograms.assertExpected();
+
+            awContents.onWindowVisibilityChanged(View.VISIBLE);
+            Assert.assertFalse(awContents.hasDrawFunctor());
+        });
+
+        // Rendering still works.
+        doHardwareRenderingSmokeTest(testView, 42, 42, 42);
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> { Assert.assertTrue(awContents.hasDrawFunctor()); });
+    }
+
+    @Test
+    @Feature({"AndroidWebView"})
+    @MediumTest
+    @Features.DisableFeatures({AwFeatures.WEBVIEW_CLEAR_FUNCTOR_IN_BACKGROUND})
+    public void testMetricsRecordingIsThrottled() throws Throwable {
+        mActivityTestRule.startBrowserProcess();
+        AwContents.resetRecordMemoryForTesting();
+
+        AwTestContainerView testView =
+                mActivityTestRule.createAwTestContainerViewOnMainSync(mContentsClient);
+        final AwContents awContents = testView.getAwContents();
+
+        // Load a page to ensure that at least one draw has happened.
+        doHardwareRenderingSmokeTest(testView);
+        Assert.assertTrue(awContents.hasDrawFunctor());
+
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
+            var postTask = new FakePostDelayedTask();
+            awContents.setPostDelayedTaskForTesting(postTask);
+
+            // Not required to happen in background, but this is how the notification is
+            // dispatched in real code.
+            awContents.onWindowVisibilityChanged(View.INVISIBLE);
+            awContents.onTrimMemory(ComponentCallbacks2.TRIM_MEMORY_BACKGROUND);
+            Assert.assertTrue(awContents.hasDrawFunctor());
+
+            // Metrics task.
+            var histograms = HistogramWatcher.newBuilder()
+                                     .expectAnyRecord(AwContents.PSS_HISTOGRAM)
+                                     .expectAnyRecord(AwContents.PRIVATE_DIRTY_HISTOGRAM)
+                                     .build();
+            Assert.assertEquals(2, postTask.getPendingTasksCount());
+            postTask.fastForwardBy(AwContents.METRICS_COLLECTION_DELAY_MS);
+            Assert.assertEquals(1, postTask.getPendingTasksCount());
+            histograms.assertExpected();
+
+            postTask.fastForwardBy(
+                    AwContents.FUNCTOR_RECLAIM_DELAY_MS - AwContents.METRICS_COLLECTION_DELAY_MS);
+            Assert.assertEquals(1, postTask.getPendingTasksCount());
+
+            // Metrics are not recorded this time, not enough time has passed.
+            histograms = HistogramWatcher.newBuilder()
+                                 .expectNoRecords(AwContents.PSS_HISTOGRAM)
+                                 .expectNoRecords(AwContents.PRIVATE_DIRTY_HISTOGRAM)
+                                 .build();
+            postTask.fastForwardBy(AwContents.METRICS_COLLECTION_DELAY_MS);
+            Assert.assertEquals(0, postTask.getPendingTasksCount());
+            histograms.assertExpected();
+        });
+    }
+
+    // Disables hardware acceleration and ensures that there is no crash in the code that adds and
+    // removes frame metrics listener. This code should do nothing when hardware acceleration is
+    // disabled.
+    @Test
+    @DisableHardwareAcceleration
+    @SmallTest
+    @Feature({"AndroidWebView"})
+    public void testNoCrashWithoutHardwareAcceleration() throws Throwable {
+        mActivityTestRule.startBrowserProcess();
+        AwContents.resetRecordMemoryForTesting();
+
+        AwTestContainerView testView =
+                mActivityTestRule.createAwTestContainerViewOnMainSync(mContentsClient);
+        final AwContents awContents = testView.getAwContents();
+
+        // Frame metrics listener is detached when AwContents becomes invisible.
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> { awContents.onWindowVisibilityChanged(View.INVISIBLE); });
+
+        Assert.assertFalse(testView.isBackedByHardwareView());
     }
 }

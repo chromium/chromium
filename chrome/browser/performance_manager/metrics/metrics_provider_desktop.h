@@ -6,7 +6,7 @@
 #define CHROME_BROWSER_PERFORMANCE_MANAGER_METRICS_METRICS_PROVIDER_DESKTOP_H_
 
 #include "base/memory/raw_ptr.h"
-#include "chrome/browser/performance_manager/public/user_tuning/user_performance_tuning_manager.h"
+#include "chrome/browser/performance_manager/public/user_tuning/battery_saver_mode_manager.h"
 #include "components/metrics/metrics_provider.h"
 #include "components/prefs/pref_change_registrar.h"
 
@@ -23,7 +23,7 @@ class ScopedTimeInModeTracker;
 // available physical memory. Only present on desktop platforms.
 class MetricsProviderDesktop : public ::metrics::MetricsProvider,
                                public performance_manager::user_tuning::
-                                   UserPerformanceTuningManager::Observer {
+                                   BatterySaverModeManager::Observer {
  public:
   enum class EfficiencyMode {
     // No efficiency mode for the entire upload window
@@ -57,7 +57,7 @@ class MetricsProviderDesktop : public ::metrics::MetricsProvider,
 
   explicit MetricsProviderDesktop(PrefService* local_state);
 
-  // UserPerformanceTuningManager::Observer:
+  // BatterySaverModeManager::Observer:
   void OnBatterySaverModeChanged(bool is_active) override;
 
   void OnHighEfficiencyPrefChanged();

@@ -107,6 +107,7 @@ class MODULES_EXPORT MLGraphXnnpack final : public MLGraph {
       scoped_refptr<SharedXnnpackContext> xnn_context,
       Vector<DataBufferPtr> static_data_buffers,
       CrossThreadHandle<MLGraphXnnpack> graph,
+      uint32_t num_threads,
       CrossThreadHandle<ScriptPromiseResolver> resolver,
       scoped_refptr<base::SequencedTaskRunner> resolver_task_runner);
 

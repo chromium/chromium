@@ -39,7 +39,7 @@ class ScriptPromiseResolver;
 class ScriptState;
 
 class MODULES_EXPORT PaymentRequest final
-    : public EventTargetWithInlineData,
+    : public EventTarget,
       public payments::mojom::blink::PaymentRequestClient,
       public PaymentStateResolver,
       public PaymentRequestDelegate,
@@ -94,7 +94,7 @@ class MODULES_EXPORT PaymentRequest final
   // ScriptWrappable:
   bool HasPendingActivity() const override;
 
-  // EventTargetWithInlineData:
+  // EventTarget:
   const AtomicString& InterfaceName() const override;
   ExecutionContext* GetExecutionContext() const override;
 

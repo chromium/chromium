@@ -25,7 +25,8 @@ class ASH_EXPORT Checkbox : public OptionButtonBase {
   explicit Checkbox(int button_width,
                     PressedCallback callback,
                     const std::u16string& label = std::u16string(),
-                    const gfx::Insets& insets = kDefaultPadding);
+                    const gfx::Insets& insets = kDefaultPadding,
+                    int image_label_spacing = kImageLabelSpacingDP);
   Checkbox(const Checkbox&) = delete;
   Checkbox& operator=(const Checkbox&) = delete;
   ~Checkbox() override;

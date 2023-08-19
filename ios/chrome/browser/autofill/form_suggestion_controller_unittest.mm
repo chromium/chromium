@@ -7,7 +7,7 @@
 #import <utility>
 #import <vector>
 
-#import "base/mac/foundation_util.h"
+#import "base/apple/foundation_util.h"
 #import "base/path_service.h"
 #import "base/test/scoped_feature_list.h"
 #import "components/autofill/core/browser/ui/popup_types.h"
@@ -30,10 +30,6 @@
 #import "testing/platform_test.h"
 #import "third_party/ocmock/OCMock/OCMock.h"
 #import "third_party/ocmock/gtest_support.h"
-
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
 
 using autofill::FieldRendererId;
 using autofill::FormRendererId;
@@ -172,6 +168,7 @@ class FormSuggestionControllerTest : public PlatformTest {
   }
 
   void TearDown() override {
+    [accessory_mediator_ disconnect];
     [suggestion_controller_ detachFromWebState];
     PlatformTest::TearDown();
   }

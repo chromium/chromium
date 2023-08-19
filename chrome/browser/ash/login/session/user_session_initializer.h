@@ -13,6 +13,7 @@
 #include "components/session_manager/core/session_manager_observer.h"
 #include "components/user_manager/user.h"
 
+class ClipboardHistoryUrlTitleFetcherImpl;
 class ClipboardImageModelFactoryImpl;
 class Profile;
 
@@ -75,6 +76,9 @@ class UserSessionInitializer : public session_manager::SessionManagerObserver {
   void InitializePrimaryProfileServices(Profile* profile,
                                         const user_manager::User* user);
 
+  // Initialize a `ScalableIph` service for a profile.
+  void InitializeScalableIph(Profile* profile);
+
   // Initializes RLZ. If `disabled` is true, RLZ pings are disabled.
   void InitRlzImpl(Profile* profile, const RlzInitParams& params);
 
@@ -83,6 +87,10 @@ class UserSessionInitializer : public session_manager::SessionManagerObserver {
 
   bool inited_for_testing_ = false;
   base::OnceClosure init_rlz_impl_closure_for_testing_;
+
+  // Clipboard history URL title fetcher for the primary user.
+  std::unique_ptr<ClipboardHistoryUrlTitleFetcherImpl>
+      clipboard_history_url_title_fetcher_impl_;
 
   // Clipboard html image generator for the primary user.
   std::unique_ptr<ClipboardImageModelFactoryImpl>

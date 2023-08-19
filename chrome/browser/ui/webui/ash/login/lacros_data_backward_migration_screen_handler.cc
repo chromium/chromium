@@ -27,6 +27,10 @@ void LacrosDataBackwardMigrationScreenHandler::DeclareLocalizedValues(
                IDS_LACROS_DATA_MIGRATION_SCREEN_SUBTITLE);
   builder->Add("lacrosDataBackwardMigrationErrorTitle",
                IDS_LACROS_DATA_MIGRATION_SCREEN_ERROR_TITLE);
+  builder->Add("lacrosDataBackwardMigrationErrorSubtitle",
+               IDS_LACROS_DATA_BACKWARD_MIGRATION_SCREEN_ERROR_SUBTITLE);
+  builder->Add("lacrosDataBackwardMigrationErrorCancelButton",
+               IDS_LACROS_DATA_MIGRATION_SCREEN_ERROR_CANCEL_BUTTON);
 }
 
 void LacrosDataBackwardMigrationScreenHandler::Show() {

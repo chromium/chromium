@@ -33,7 +33,6 @@ class MEDIA_GPU_EXPORT LibYUVImageProcessorBackend
       const PortConfig& input_config,
       const PortConfig& output_config,
       OutputMode output_mode,
-      VideoRotation relative_rotation,
       ErrorCB error_cb);
   // This is the same as Create() but the caller can specify
   // |backend_task_runner_|.
@@ -43,7 +42,6 @@ class MEDIA_GPU_EXPORT LibYUVImageProcessorBackend
       const PortConfig& input_config,
       const PortConfig& output_config,
       OutputMode output_mode,
-      VideoRotation relative_rotation,
       ErrorCB error_cb,
       scoped_refptr<base::SequencedTaskRunner> backend_task_runner);
 
@@ -72,7 +70,6 @@ class MEDIA_GPU_EXPORT LibYUVImageProcessorBackend
       const PortConfig& input_config,
       const PortConfig& output_config,
       OutputMode output_mode,
-      VideoRotation relative_rotation,
       ErrorCB error_cb,
       scoped_refptr<base::SequencedTaskRunner> backend_task_runner);
   ~LibYUVImageProcessorBackend() override;

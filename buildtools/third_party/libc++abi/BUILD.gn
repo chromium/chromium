@@ -4,6 +4,7 @@
 
 import("//build/config/android/config.gni")
 import("//build/config/c++/c++.gni")
+import("//build/config/unwind.gni")
 
 source_set("libc++abi") {
   if (export_libcxxabi_from_executables) {
@@ -15,33 +16,34 @@ source_set("libc++abi") {
   # Fuchsia builds don't link against any libraries that provide stack
   # unwinding symbols, unlike Linux does with glibc (same applies for Android).
   # Build and link against libunwind manually to get this functionality.
-  if (is_fuchsia || is_android) {
+  if (use_custom_libunwind) {
     deps = [ "//buildtools/third_party/libunwind" ]
   }
 
+  # TODO(crbug.com/1458042): Move this build file to third_party/libc++/BUILD.gn once submodule migration is done
   sources = [
-    "trunk/src/abort_message.cpp",
-    "trunk/src/cxa_aux_runtime.cpp",
-    "trunk/src/cxa_default_handlers.cpp",
-    "trunk/src/cxa_exception.cpp",
-    "trunk/src/cxa_exception_storage.cpp",
-    "trunk/src/cxa_handlers.cpp",
+    "//third_party/libc++abi/src/src/abort_message.cpp",
+    "//third_party/libc++abi/src/src/cxa_aux_runtime.cpp",
+    "//third_party/libc++abi/src/src/cxa_default_handlers.cpp",
+    "//third_party/libc++abi/src/src/cxa_exception.cpp",
+    "//third_party/libc++abi/src/src/cxa_exception_storage.cpp",
+    "//third_party/libc++abi/src/src/cxa_handlers.cpp",
 
     # This file is supposed to be used in fno-exception builds of
     # libc++abi.  We build lib++/libc++abi with exceptions enabled.
-    #"trunk/src/cxa_noexception.cpp",
-    "trunk/src/cxa_personality.cpp",
-    "trunk/src/cxa_vector.cpp",
-    "trunk/src/cxa_virtual.cpp",
-    "trunk/src/fallback_malloc.cpp",
-    "trunk/src/private_typeinfo.cpp",
-    "trunk/src/stdlib_exception.cpp",
-    "trunk/src/stdlib_stdexcept.cpp",
-    "trunk/src/stdlib_typeinfo.cpp",
+    #"//third_party/libc++abi/src/src/cxa_noexception.cpp",
+    "//third_party/libc++abi/src/src/cxa_personality.cpp",
+    "//third_party/libc++abi/src/src/cxa_vector.cpp",
+    "//third_party/libc++abi/src/src/cxa_virtual.cpp",
+    "//third_party/libc++abi/src/src/fallback_malloc.cpp",
+    "//third_party/libc++abi/src/src/private_typeinfo.cpp",
+    "//third_party/libc++abi/src/src/stdlib_exception.cpp",
+    "//third_party/libc++abi/src/src/stdlib_stdexcept.cpp",
+    "//third_party/libc++abi/src/src/stdlib_typeinfo.cpp",
   ]
 
   if (!is_tsan) {
-    sources += [ "trunk/src/cxa_guard.cpp" ]
+    sources += [ "//third_party/libc++abi/src/src/cxa_guard.cpp" ]
   }
 
   # See the comment in cxa_demangle_stub.cc for why we don't use LLVM's
@@ -51,13 +53,13 @@ source_set("libc++abi") {
   if (is_android) {
     sources += [ "cxa_demangle_stub.cc" ]
   } else {
-    sources += [ "trunk/src/cxa_demangle.cpp" ]
+    sources += [ "//third_party/libc++abi/src/src/cxa_demangle.cpp" ]
   }
 
   defines = [ "LIBCXXABI_SILENT_TERMINATE" ]
 
   if (is_fuchsia || (is_posix && !is_apple)) {
-    sources += [ "trunk/src/cxa_thread_atexit.cpp" ]
+    sources += [ "//third_party/libc++abi/src/src/cxa_thread_atexit.cpp" ]
 
     # Android's bionic libc added support for '__cxa_thread_atexit_impl' as of
     # API level 23.
@@ -95,5 +97,5 @@ source_set("libc++abi") {
   }
 
   # libc++abi depends on libc++ internals.
-  include_dirs = [ "../libc++/trunk/src" ]
+  include_dirs = [ "//third_party/libc++/src/src" ]
 }

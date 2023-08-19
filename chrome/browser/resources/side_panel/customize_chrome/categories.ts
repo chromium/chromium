@@ -19,6 +19,7 @@ import {DomRepeatEvent, PolymerElement} from 'chrome://resources/polymer/v3_0/po
 import {getTemplate} from './categories.html.js';
 import {BackgroundCollection, CustomizeChromePageHandlerInterface, Theme} from './customize_chrome.mojom-webui.js';
 import {CustomizeChromeApiProxy} from './customize_chrome_api_proxy.js';
+import {WindowProxy} from './window_proxy.js';
 
 export enum CategoryType {
   NONE,
@@ -44,7 +45,6 @@ const CategoriesElementBase = HelpBubbleMixin(PolymerElement) as
 export interface CategoriesElement {
   $: {
     chromeWebStoreTile: HTMLElement,
-    chromeColorsTile: HTMLElement,
     classicChromeTile: HTMLElement,
     heading: SpHeading,
     uploadImageTile: HTMLElement,
@@ -62,6 +62,11 @@ export class CategoriesElement extends CategoriesElementBase {
 
   static get properties() {
     return {
+      chromeRefresh2023Enabled_: {
+        type: Boolean,
+        value: () =>
+            document.documentElement.hasAttribute('chrome-refresh-2023'),
+      },
       collections_: Array,
       theme_: Object,
       selectedCategory_: {
@@ -86,13 +91,15 @@ export class CategoriesElement extends CategoriesElementBase {
   private collections_: BackgroundCollection[];
   private selectedCategory_: SelectedCategory;
   private theme_: Theme;
-  private setThemeListenerId_: number|null = null;
 
   private pageHandler_: CustomizeChromePageHandlerInterface;
+  private previewImageLoadStartEpoch_: number;
+  private setThemeListenerId_: number|null = null;
 
   constructor() {
     super();
     this.pageHandler_ = CustomizeChromeApiProxy.getInstance().handler;
+    this.previewImageLoadStartEpoch_ = WindowProxy.getInstance().now();
     this.pageHandler_.getBackgroundCollections().then(({collections}) => {
       this.collections_ = collections;
     });
@@ -131,6 +138,20 @@ export class CategoriesElement extends CategoriesElementBase {
       this.registerHelpBubble(
           CHROME_THEME_COLLECTION_ELEMENT_ID, collections[4]);
     }
+  }
+
+  private onPreviewImageLoad_() {
+    chrome.metricsPrivate.recordValue(
+        {
+          metricName: 'NewTabPage.Images.ShownTime.CollectionPreviewImage',
+          type: chrome.metricsPrivate.MetricTypeType.HISTOGRAM_LOG,
+          min: 1,
+          max: 60000,  // 60 seconds.
+          buckets: 100,
+        },
+        Math.floor(
+            WindowProxy.getInstance().now() -
+            this.previewImageLoadStartEpoch_));
   }
 
   private computeSelectedCategory_() {

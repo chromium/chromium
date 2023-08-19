@@ -6,10 +6,6 @@
 
 #import "ios/web/common/crw_input_view_provider.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 @implementation CRWWebView
 
 #pragma mark - UIResponder

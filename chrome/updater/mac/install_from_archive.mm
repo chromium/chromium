@@ -39,10 +39,6 @@
 #include "chrome/updater/util/util.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 namespace updater {
 namespace {
 
@@ -272,37 +268,35 @@ int RunExecutable(const base::FilePath& existence_checker_path,
 
 void CopyDMGContents(const base::FilePath& dmg_path,
                      const base::FilePath& destination_path) {
-  base::FileEnumerator file_enumerator(
+  base::FileEnumerator(
       dmg_path, false,
-      base::FileEnumerator::FILES | base::FileEnumerator::DIRECTORIES);
+      base::FileEnumerator::FILES | base::FileEnumerator::DIRECTORIES)
+      .ForEach([&destination_path](const base::FilePath& path) {
+        base::File::Info file_info;
+        if (!base::GetFileInfo(path, &file_info)) {
+          VLOG(0) << "Couldn't get file info for: " << path.value();
+          return;
+        }
 
-  for (base::FilePath path = file_enumerator.Next(); !path.empty();
-       path = file_enumerator.Next()) {
-    base::File::Info file_info;
-    if (!base::GetFileInfo(path, &file_info)) {
-      VLOG(0) << "Couldn't get file info for: " << path.value();
-      continue;
-    }
+        if (base::IsLink(path)) {
+          VLOG(0) << "File is symbolic link: " << path.value();
+          return;
+        }
 
-    if (base::IsLink(path)) {
-      VLOG(0) << "File is symbolic link: " << path.value();
-      continue;
-    }
-
-    if (file_info.is_directory) {
-      if (!base::CopyDirectory(path, destination_path, true)) {
-        VLOG(0) << "Couldn't copy directory for: " << path.value() << " to "
-                << destination_path.value();
-        continue;
-      }
-    } else {
-      if (!base::CopyFile(path, destination_path.Append(path.BaseName()))) {
-        VLOG(0) << "Couldn't copy file for: " << path.value() << " to "
-                << destination_path.value();
-        continue;
-      }
-    }
-  }
+        if (file_info.is_directory) {
+          if (!base::CopyDirectory(path, destination_path, true)) {
+            VLOG(0) << "Couldn't copy directory for: " << path.value() << " to "
+                    << destination_path.value();
+            return;
+          }
+        } else {
+          if (!base::CopyFile(path, destination_path.Append(path.BaseName()))) {
+            VLOG(0) << "Couldn't copy file for: " << path.value() << " to "
+                    << destination_path.value();
+            return;
+          }
+        }
+      });
 }
 
 // Mounts the DMG specified by `dmg_file_path`. The install executable located

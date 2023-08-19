@@ -24,7 +24,6 @@ import org.chromium.base.ContextUtils;
 import org.chromium.base.Log;
 import org.chromium.base.TraceEvent;
 import org.chromium.base.annotations.CalledByNative;
-import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.chrome.browser.omnibox.geo.VisibleNetworks.VisibleCell;
 import org.chromium.chrome.browser.omnibox.geo.VisibleNetworks.VisibleWifi;
 import org.chromium.chrome.browser.profiles.Profile;
@@ -250,13 +249,11 @@ public class GeolocationHeader {
 
     private static boolean isGeoHeaderEnabledForDSE(
             Profile profile, TemplateUrlService templateService) {
-        return geoHeaderStateForUrl(profile, templateService.getUrlForSearchQuery(DUMMY_URL_QUERY),
-                       /* recordUma */ false)
+        return geoHeaderStateForUrl(profile, templateService.getUrlForSearchQuery(DUMMY_URL_QUERY))
                 == HeaderState.HEADER_ENABLED;
     }
 
-    @HeaderState
-    private static int geoHeaderStateForUrl(Profile profile, String url, boolean recordUma) {
+    private static @HeaderState int geoHeaderStateForUrl(Profile profile, String url) {
         try (TraceEvent e = TraceEvent.scoped("GeolocationHeader.geoHeaderStateForUrl")) {
             // Only send X-Geo in normal mode.
             if (profile.isOffTheRecord()) return HeaderState.INCOGNITO;
@@ -268,13 +265,11 @@ public class GeolocationHeader {
             if (!UrlConstants.HTTPS_SCHEME.equals(uri.getScheme())) return HeaderState.NOT_HTTPS;
 
             if (!hasGeolocationPermission()) {
-                if (recordUma) recordHistogram(UMA_LOCATION_DISABLED_FOR_CHROME_APP);
                 return HeaderState.LOCATION_PERMISSION_BLOCKED;
             }
 
             // Only send X-Geo header if the user hasn't disabled geolocation for url.
             if (isLocationDisabledForUrl(profile, uri)) {
-                if (recordUma) recordHistogram(UMA_LOCATION_DISABLED_FOR_GOOGLE_DOMAIN);
                 return HeaderState.LOCATION_PERMISSION_BLOCKED;
             }
 
@@ -295,8 +290,7 @@ public class GeolocationHeader {
      * @param tab The Tab currently being accessed.
      * @return The X-Geo header string or null.
      */
-    @Nullable
-    public static String getGeoHeader(String url, Tab tab) {
+    public static @Nullable String getGeoHeader(String url, Tab tab) {
         Profile profile = Profile.fromWebContents(tab.getWebContents());
         if (profile == null) return null;
 
@@ -318,8 +312,7 @@ public class GeolocationHeader {
      */
     @SuppressWarnings("unused")
     @CalledByNative
-    @Nullable
-    public static String getGeoHeader(String url, Profile profile) {
+    public static @Nullable String getGeoHeader(String url, Profile profile) {
         if (profile == null) return null;
         Tab tab = null;
 
@@ -341,27 +334,21 @@ public class GeolocationHeader {
      *         will never prompt.
      * @return The X-Geo header string or null.
      */
-    @Nullable
-    private static String getGeoHeader(String url, Profile profile, Tab tab) {
+    private static @Nullable String getGeoHeader(String url, Profile profile, Tab tab) {
         try (TraceEvent e = TraceEvent.scoped("GeolocationHeader.getGeoHeader")) {
             Location locationToAttach = null;
             VisibleNetworks visibleNetworksToAttach = null;
             long locationAge = Long.MAX_VALUE;
             @HeaderState
-            int headerState = geoHeaderStateForUrl(profile, url, true);
+            int headerState = geoHeaderStateForUrl(profile, url);
             if (headerState == HeaderState.HEADER_ENABLED) {
                 locationToAttach = GeolocationTracker.getLastKnownLocation(
                         ContextUtils.getApplicationContext());
-                if (locationToAttach == null) {
-                    recordHistogram(UMA_LOCATION_NOT_AVAILABLE);
-                } else {
+                if (locationToAttach != null) {
                     locationAge = GeolocationTracker.getLocationAge(locationToAttach);
                     if (locationAge > MAX_LOCATION_AGE) {
                         // Do not attach the location
-                        recordHistogram(UMA_LOCATION_STALE);
                         locationToAttach = null;
-                    } else {
-                        recordHistogram(UMA_HEADER_SENT);
                     }
                 }
 
@@ -416,8 +403,7 @@ public class GeolocationHeader {
      * Returns the app level geolocation permission.
      * This permission can be either granted, blocked or prompt.
      */
-    @Permission
-    static int getGeolocationPermission(Tab tab) {
+    static @Permission int getGeolocationPermission(Tab tab) {
         try (TraceEvent e = TraceEvent.scoped("GeolocationHeader.getGeolocationPermission")) {
             if (sUseAppPermissionGrantedForTesting) {
                 return sAppPermissionGrantedForTesting ? Permission.GRANTED : Permission.BLOCKED;
@@ -458,31 +444,22 @@ public class GeolocationHeader {
         return locationSettings.getContentSetting(profile);
     }
 
-    @VisibleForTesting
     static void setLocationSourceForTesting(int locationSourceForTesting) {
         sLocationSourceForTesting = locationSourceForTesting;
         sUseLocationSourceForTesting = true;
     }
 
-    @VisibleForTesting
     static void setAppPermissionGrantedForTesting(boolean appPermissionGrantedForTesting) {
         sAppPermissionGrantedForTesting = appPermissionGrantedForTesting;
         sUseAppPermissionGrantedForTesting = true;
     }
 
-    @VisibleForTesting
     static long getFirstLocationTimeForTesting() {
         return sFirstLocationTime;
     }
 
-    /** Records a data point for the Geolocation.HeaderSentOrNot histogram. */
-    private static void recordHistogram(int result) {
-        RecordHistogram.recordEnumeratedHistogram("Geolocation.HeaderSentOrNot", result, UMA_MAX);
-    }
-
     /** Returns the location source. */
-    @LocationSource
-    private static int getLocationSource() {
+    private static @LocationSource int getLocationSource() {
         try (TraceEvent te = TraceEvent.scoped("GeolocationHeader.getLocationSource")) {
             if (sUseLocationSourceForTesting) return sLocationSourceForTesting;
 
@@ -523,8 +500,7 @@ public class GeolocationHeader {
      * This is based upon the location permission for sharing their location with url (e.g. via the
      * geolocation infobar).
      */
-    @Permission
-    private static int getDomainPermission(Profile profile, String url) {
+    private static @Permission int getDomainPermission(Profile profile, String url) {
         try (TraceEvent e = TraceEvent.scoped("GeolocationHeader.getDomainPermission")) {
             @ContentSettingValues
             @Nullable
@@ -544,8 +520,7 @@ public class GeolocationHeader {
      * Returns the enum to use in the Geolocation.Header.PermissionState histogram.
      * Unexpected input values return UmaPermission.UNKNOWN.
      */
-    @UmaPermission
-    private static int getPermissionHistogramEnum(@LocationSource int locationSource,
+    private static @UmaPermission int getPermissionHistogramEnum(@LocationSource int locationSource,
             @Permission int appPermission, @Permission int domainPermission,
             boolean locationAttached, @HeaderState int headerState) {
         if (headerState == HeaderState.UNSUITABLE_URL) return UmaPermission.UNSUITABLE_URL;
@@ -667,32 +642,6 @@ public class GeolocationHeader {
             }
         }
         return UmaPermission.UNKNOWN;
-    }
-
-    /**
-     * Determines the name for a Time Listening Histogram. Returns empty string if the location
-     * source is LOCATION_OFF as we do not record histograms for that case.
-     */
-    private static String getTimeListeningHistogramEnum(
-            int locationSource, boolean locationAttached) {
-        switch (locationSource) {
-            case LocationSource.HIGH_ACCURACY:
-                return locationAttached
-                        ? "Geolocation.Header.TimeListening.HighAccuracy.LocationAttached"
-                        : "Geolocation.Header.TimeListening.HighAccuracy.LocationNotAttached";
-            case LocationSource.GPS_ONLY:
-                return locationAttached
-                        ? "Geolocation.Header.TimeListening.GpsOnly.LocationAttached"
-                        : "Geolocation.Header.TimeListening.GpsOnly.LocationNotAttached";
-            case LocationSource.BATTERY_SAVING:
-                return locationAttached
-                        ? "Geolocation.Header.TimeListening.BatterySaving.LocationAttached"
-                        : "Geolocation.Header.TimeListening.BatterySaving.LocationNotAttached";
-            default:
-                Log.e(TAG, "Unexpected locationSource: " + locationSource);
-                assert false : "Unexpected locationSource: " + locationSource;
-                return null;
-        }
     }
 
     /**

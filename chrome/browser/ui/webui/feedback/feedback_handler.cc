@@ -39,7 +39,7 @@ void ShowChildPage(Profile* profile,
   ChildWebDialog* child_dialog = new ChildWebDialog(
       profile, dialog->GetWidget(), url, title,
       /*modal_type=*/
-      isParentModal ? ui::MODAL_TYPE_WINDOW : ui::MODAL_TYPE_NONE, args,
+      isParentModal ? ui::MODAL_TYPE_SYSTEM : ui::MODAL_TYPE_NONE, args,
       dialog_width, dialog_height, can_resize, can_minimize);
 
   child_dialog->Show();
@@ -101,7 +101,7 @@ void FeedbackHandler::HandleShowBluetoothLogsInfo(
   ShowChildPage(Profile::FromWebUI(web_ui()), dialog_,
                 ChildPageURL("html/bluetooth_logs_info.html"), std::u16string(),
                 std::string(),
-                /*dialog_width=*/400, /*dialog_height=*/120,
+                /*dialog_width=*/400, /*dialog_height=*/190,
                 /*can_resize=*/false, /*can_minimize=*/false);
 }
 #endif  // BUILDFLAG(IS_CHROMEOS)

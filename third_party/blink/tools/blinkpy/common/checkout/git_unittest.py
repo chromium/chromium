@@ -129,6 +129,17 @@ class GitTestWithRealFilesystemAndExecutive(unittest.TestCase):
         git.commit_locally_with_message('deleting foo')
         self.assertFalse(git.exists('foo.txt'))
 
+    def test_show_blob(self):
+        self._chdir(self.untracking_checkout_path)
+        git = self.untracking_git
+        self._chdir(git.checkout_root)
+        self.filesystem.write_binary_file('foo.txt',
+                                          b'some stuff, possibly binary \xff')
+        git.add_list(['foo.txt'])
+        git.commit_locally_with_message('adding foo')
+        self.assertEqual(git.show_blob('foo.txt', ref='HEAD'),
+                         b'some stuff, possibly binary \xff')
+
     def test_move(self):
         self._chdir(self.untracking_checkout_path)
         git = self.untracking_git

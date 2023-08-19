@@ -8,8 +8,8 @@
 #include <IOKit/IOKitLib.h>
 #include <IOKit/ps/IOPSKeys.h>
 
-#include "base/mac/foundation_util.h"
-#include "base/mac/scoped_cftyperef.h"
+#include "base/apple/foundation_util.h"
+#include "base/apple/scoped_cftyperef.h"
 #include "base/mac/scoped_ioobject.h"
 
 namespace base {
@@ -21,7 +21,7 @@ namespace {
 absl::optional<SInt64> GetValueAsSInt64(CFDictionaryRef description,
                                         CFStringRef key) {
   CFNumberRef number_ref =
-      base::mac::GetValueFromDictionary<CFNumberRef>(description, key);
+      base::apple::GetValueFromDictionary<CFNumberRef>(description, key);
 
   SInt64 value;
   if (number_ref && CFNumberGetValue(number_ref, kCFNumberSInt64Type, &value))
@@ -33,7 +33,7 @@ absl::optional<SInt64> GetValueAsSInt64(CFDictionaryRef description,
 absl::optional<bool> GetValueAsBoolean(CFDictionaryRef description,
                                        CFStringRef key) {
   CFBooleanRef boolean =
-      base::mac::GetValueFromDictionary<CFBooleanRef>(description, key);
+      base::apple::GetValueFromDictionary<CFBooleanRef>(description, key);
   if (!boolean)
     return absl::nullopt;
   return CFBooleanGetValue(boolean);
@@ -72,8 +72,9 @@ BatteryLevelProviderMac::GetBatteryStateImpl() {
   }
 
   base::ScopedCFTypeRef<CFMutableDictionaryRef> dict;
-  kern_return_t result = IORegistryEntryCreateCFProperties(
-      service.get(), dict.InitializeInto(), 0, 0);
+  kern_return_t result =
+      IORegistryEntryCreateCFProperties(service.get(), dict.InitializeInto(),
+                                        /*allocator=*/nullptr, /*options=*/0);
 
   if (result != KERN_SUCCESS) {
     // Failing to retrieve the dictionary is unexpected.
@@ -99,26 +100,14 @@ BatteryLevelProviderMac::GetBatteryStateImpl() {
     return absl::nullopt;
   }
 
-  CFStringRef capacity_key;
-  CFStringRef max_capacity_key;
-
-  // Use the correct capacity keys depending on macOS version.
-  if (@available(macOS 10.14.0, *)) {
-    capacity_key = CFSTR("AppleRawCurrentCapacity");
-    max_capacity_key = CFSTR("AppleRawMaxCapacity");
-  } else {
-    capacity_key = CFSTR("CurrentCapacity");
-    max_capacity_key = CFSTR("RawMaxCapacity");
-  }
-
   absl::optional<SInt64> current_capacity =
-      GetValueAsSInt64(dict, capacity_key);
+      GetValueAsSInt64(dict, CFSTR("AppleRawCurrentCapacity"));
   if (!current_capacity.has_value()) {
     return absl::nullopt;
   }
 
   absl::optional<SInt64> max_capacity =
-      GetValueAsSInt64(dict, max_capacity_key);
+      GetValueAsSInt64(dict, CFSTR("AppleRawMaxCapacity"));
   if (!max_capacity.has_value()) {
     return absl::nullopt;
   }

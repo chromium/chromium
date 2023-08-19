@@ -13,7 +13,6 @@ import static org.mockito.Mockito.verify;
 
 import androidx.test.filters.MediumTest;
 
-import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -62,11 +61,6 @@ public class IncognitoProfileDestroyerIntegrationTest {
             mIncognitoTabModel =
                     mActivityTestRule.getActivity().getTabModelSelector().getModel(true);
         });
-    }
-
-    @After
-    public void tearDown() {
-        AutocompleteControllerProvider.setControllerForTesting(null);
     }
 
     @Test

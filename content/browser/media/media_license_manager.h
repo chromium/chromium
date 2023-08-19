@@ -15,6 +15,7 @@
 #include "base/task/sequenced_task_runner.h"
 #include "base/types/pass_key.h"
 #include "components/services/storage/public/cpp/buckets/bucket_locator.h"
+#include "content/browser/media/cdm_storage_common.h"
 #include "content/browser/media/media_license_quota_client.h"
 #include "content/common/content_export.h"
 #include "media/cdm/cdm_type.h"
@@ -33,43 +34,6 @@ class MediaLicenseStorageHost;
 // the same sequence.
 class CONTENT_EXPORT MediaLicenseManager {
  public:
-  // CdmStorage provides per-storage key, per-CDM type storage.
-  struct CONTENT_EXPORT BindingContext {
-    BindingContext(const blink::StorageKey& storage_key,
-                   const media::CdmType& cdm_type)
-        : storage_key(storage_key), cdm_type(cdm_type) {}
-
-    const blink::StorageKey storage_key;
-    const media::CdmType cdm_type;
-  };
-
-  // A CDM file for a given storage key can be uniquely identified by its name
-  // and CDM type.
-  struct CONTENT_EXPORT CdmFileId {
-    CdmFileId(const std::string& name, const media::CdmType& cdm_type);
-    CdmFileId(const CdmFileId&);
-    ~CdmFileId();
-
-    bool operator==(const CdmFileId& rhs) const {
-      return (name == rhs.name) && (cdm_type == rhs.cdm_type);
-    }
-    bool operator<(const CdmFileId& rhs) const {
-      return std::tie(name, cdm_type) < std::tie(rhs.name, rhs.cdm_type);
-    }
-
-    const std::string name;
-    const media::CdmType cdm_type;
-  };
-
-  struct CONTENT_EXPORT CdmFileIdAndContents {
-    CdmFileIdAndContents(const CdmFileId& file, std::vector<uint8_t> data);
-    CdmFileIdAndContents(const CdmFileIdAndContents&);
-    ~CdmFileIdAndContents();
-
-    const CdmFileId file;
-    const std::vector<uint8_t> data;
-  };
-
   MediaLicenseManager(
       bool in_memory,
       scoped_refptr<storage::SpecialStoragePolicy> special_storage_policy,
@@ -78,7 +42,7 @@ class CONTENT_EXPORT MediaLicenseManager {
   MediaLicenseManager& operator=(const MediaLicenseManager&) = delete;
   ~MediaLicenseManager();
 
-  void OpenCdmStorage(const BindingContext& binding_context,
+  void OpenCdmStorage(const CdmStorageBindingContext& binding_context,
                       mojo::PendingReceiver<media::mojom::CdmStorage> receiver);
 
   // Called by the MediaLicenseQuotaClient.
@@ -138,7 +102,7 @@ class CONTENT_EXPORT MediaLicenseManager {
   // information from the quota system before they can be bound.
   base::flat_map<
       blink::StorageKey,
-      std::vector<std::pair<BindingContext,
+      std::vector<std::pair<CdmStorageBindingContext,
                             mojo::PendingReceiver<media::mojom::CdmStorage>>>>
       pending_receivers_;
 

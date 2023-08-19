@@ -5,11 +5,10 @@
 #import "ios/chrome/browser/ui/infobars/modals/autofill_address_profile/infobar_edit_address_profile_table_view_controller.h"
 
 #import <memory>
+#import "base/apple/foundation_util.h"
 #import "base/feature_list.h"
-#import "base/mac/foundation_util.h"
 #import "base/strings/sys_string_conversions.h"
 #import "base/strings/utf_string_conversions.h"
-#import "base/test/scoped_feature_list.h"
 #import "components/autofill/core/browser/autofill_test_utils.h"
 #import "components/autofill/core/common/autofill_features.h"
 #import "components/strings/grit/components_strings.h"
@@ -30,10 +29,6 @@
 #import "testing/platform_test.h"
 #import "third_party/ocmock/OCMock/OCMock.h"
 #import "ui/base/l10n/l10n_util_mac.h"
-
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
 
 namespace {
 
@@ -150,63 +145,16 @@ class InfobarEditAddressProfileTableViewControllerTest
   id delegate_modal_mock_;
 };
 
-// Tests the edit view initialisation for a profile in the save prompt.
-TEST_F(InfobarEditAddressProfileTableViewControllerTest,
-       TestEditViewForProfile) {
-  if (base::FeatureList::IsEnabled(
-          autofill::features::kAutofillAccountProfilesUnionView)) {
-    // The test is incompatible with the feature as the country is a selection
-    // field.
-    // TODO(crbug.com/1423319): Cleanup
-    return;
-  }
-
-  TableViewModel* model = [controller() tableViewModel];
-
-  autofill::AutofillProfile profile = autofill::test::GetFullProfile2();
-  std::vector<std::u16string> expected_values;
-
-  for (size_t i = 0; i < std::size(kProfileFieldsToDisplay); ++i) {
-    const AutofillProfileFieldDisplayInfo& field = kProfileFieldsToDisplay[i];
-    if (field.autofillType == autofill::NAME_HONORIFIC_PREFIX &&
-        !base::FeatureList::IsEnabled(
-            autofill::features::kAutofillEnableSupportForHonorificPrefixes)) {
-      continue;
-    }
-
-    expected_values.push_back(profile.GetRawInfo(field.autofillType));
-  }
-
-  EXPECT_EQ(1, [model numberOfSections]);
-  EXPECT_EQ(expected_values.size() + 1,
-            (size_t)[model numberOfItemsInSection:0]);
-
-  for (size_t row = 0; row < expected_values.size() - 1; row++) {
-    TableViewTextEditItem* cell =
-        static_cast<TableViewTextEditItem*>(GetTableViewItem(0, row));
-    EXPECT_NSEQ(base::SysUTF16ToNSString(expected_values[row]),
-                cell.textFieldValue);
-  }
-
-  TableViewTextButtonItem* buttonCell = static_cast<TableViewTextButtonItem*>(
-      GetTableViewItem(0, expected_values.size()));
-  EXPECT_NSEQ(
-      buttonCell.buttonText,
-      l10n_util::GetNSString(IDS_AUTOFILL_SAVE_ADDRESS_PROMPT_OK_BUTTON_LABEL));
-}
-
 // Tests that there are no requirement checks for the profiles saved to sync.
 TEST_F(InfobarEditAddressProfileTableViewControllerTest, TestNoRequirements) {
   TestRequirements(NO);
 }
 
+// TODO(crbug.com/1348294): Merge into main test fixture.
 class InfobarEditAddressProfileTableViewControllerTestWithUnionViewEnabled
     : public InfobarEditAddressProfileTableViewControllerTest {
  protected:
-  InfobarEditAddressProfileTableViewControllerTestWithUnionViewEnabled() {
-    scoped_feature_list_.InitAndEnableFeature(
-        autofill::features::kAutofillAccountProfilesUnionView);
-  }
+  InfobarEditAddressProfileTableViewControllerTestWithUnionViewEnabled() {}
 
   InfobarEditAddressProfileTableViewController*
   CreateInfobarEditAddressProfileTableViewController() {
@@ -280,8 +228,6 @@ class InfobarEditAddressProfileTableViewControllerTestWithUnionViewEnabled
         GetTableViewItem(0, expected_values.size() + 1));
     EXPECT_NSEQ(buttonCell.buttonText, expectedButtonText);
   }
-
-  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 // Tests the edit view initialisation for the save prompt of an account profile.

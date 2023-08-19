@@ -13,9 +13,9 @@
 #import "ios/chrome/browser/shared/model/browser_state/browser_state_otr_helper.h"
 #import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
+// To get access to UseSessionSerializationOptimizations().
+// TODO(crbug.com/1383087): remove once the feature is fully launched.
+#import "ios/web/common/features.h"
 
 // static
 BrowsingDataRemover* BrowsingDataRemoverFactory::GetForBrowserState(
@@ -47,10 +47,14 @@ BrowsingDataRemoverFactory::~BrowsingDataRemoverFactory() = default;
 std::unique_ptr<KeyedService>
 BrowsingDataRemoverFactory::BuildServiceInstanceFor(
     web::BrowserState* context) const {
+  SessionServiceIOS* sessionServiceIOS = nil;
+  if (!web::features::UseSessionSerializationOptimizations()) {
+    sessionServiceIOS = [SessionServiceIOS sharedService];
+  }
   ChromeBrowserState* browser_state =
       ChromeBrowserState::FromBrowserState(context);
-  return std::make_unique<BrowsingDataRemoverImpl>(
-      browser_state, [SessionServiceIOS sharedService]);
+  return std::make_unique<BrowsingDataRemoverImpl>(browser_state,
+                                                   sessionServiceIOS);
 }
 
 web::BrowserState* BrowsingDataRemoverFactory::GetBrowserStateToUse(

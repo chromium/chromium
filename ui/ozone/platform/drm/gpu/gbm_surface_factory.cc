@@ -475,6 +475,15 @@ GbmSurfaceFactory::CreateNativePixmapForProtectedBufferHandle(
                                               std::move(handle));
 }
 
+bool GbmSurfaceFactory::SupportsDrmModifiersFilter() const {
+  return true;
+}
+
+void GbmSurfaceFactory::SetDrmModifiersFilter(
+    std::unique_ptr<DrmModifiersFilter> filter) {
+  drm_thread_proxy_->SetDrmModifiersFilter(std::move(filter));
+}
+
 void GbmSurfaceFactory::SetGetProtectedNativePixmapDelegate(
     const GetProtectedNativePixmapCallback&
         get_protected_native_pixmap_callback) {

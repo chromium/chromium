@@ -47,6 +47,7 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_OSAUTH) AuthSessionStorageImpl
   bool IsValid(const AuthProofToken& token) override;
   std::unique_ptr<UserContext> Borrow(const base::Location& location,
                                       const AuthProofToken& token) override;
+  UserContext* Peek(const AuthProofToken& token) override;
   void Return(const AuthProofToken& token,
               std::unique_ptr<UserContext> context) override;
   void Invalidate(const AuthProofToken& token,

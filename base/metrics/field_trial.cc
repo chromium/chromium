@@ -38,8 +38,10 @@
 #include "base/mac/mach_port_rendezvous.h"
 #endif
 
+#if BUILDFLAG(IS_POSIX) && BUILDFLAG(USE_BLINK)
+#include <unistd.h>  // For getppid().
+#include "base/threading/platform_thread.h"
 // On POSIX, the fd is shared using the mapping in GlobalDescriptors.
-#if BUILDFLAG(IS_POSIX) && !BUILDFLAG(IS_NACL)
 #include "base/posix/global_descriptors.h"
 #endif
 
@@ -167,36 +169,31 @@ bool ParseFieldTrialsString(const std::string& trials_string,
   return true;
 }
 
+void OnOutOfMemory(size_t size) {
+  TerminateBecauseOutOfMemory(size);
+}
+
 #if BUILDFLAG(USE_BLINK)
-void AddFeatureAndFieldTrialFlags(CommandLine* cmd_line) {
-  std::string enabled_features;
-  std::string disabled_features;
-  FeatureList::GetInstance()->GetFeatureOverrides(&enabled_features,
-                                                  &disabled_features);
-
-  if (!enabled_features.empty())
-    cmd_line->AppendSwitchASCII(switches::kEnableFeatures, enabled_features);
-  if (!disabled_features.empty())
-    cmd_line->AppendSwitchASCII(switches::kDisableFeatures, disabled_features);
-
-  std::string field_trial_states;
-  FieldTrialList::AllStatesToString(&field_trial_states);
-  if (!field_trial_states.empty()) {
-    cmd_line->AppendSwitchASCII(switches::kForceFieldTrials,
-                                field_trial_states);
+#if BUILDFLAG(IS_POSIX)
+// Exits the process gracefully if the parent process is dead. We've seen cases
+// where the child will still be executing after its parent process has died.
+// In those cases, if we hit an error that would otherwise result in a CHECK,
+// this function can be used to exit gracefully instead of producing a crash
+// report. Note: This function calls Sleep() so should not be called in a code
+// path that wouldn't otherwise result in a CHECK().
+void ExitGracefullyIfParentProcessIsDead() {
+  // The parent process crash may not be visible immediately so loop for 100ms.
+  for (int i = 0; i < 100; i++) {
+    // If the parent process has died, getppid() will return 1, meaning we were
+    // orphaned and parented to init.
+    if (getppid() == 1) {
+      base::Process::TerminateCurrentProcessImmediately(0);
+    }
+    PlatformThread::Sleep(base::Milliseconds(1));
   }
 }
-#endif  // BUILDFLAG(USE_BLINK)
+#endif  // BUILDFLAG(IS_POSIX)
 
-void OnOutOfMemory(size_t size) {
-#if BUILDFLAG(IS_NACL)
-  NOTREACHED();
-#else
-  TerminateBecauseOutOfMemory(size);
-#endif
-}
-
-#if !BUILDFLAG(IS_NACL) && BUILDFLAG(USE_BLINK)
 // Returns whether the operation succeeded.
 bool DeserializeGUIDFromStringPieces(StringPiece first,
                                      StringPiece second,
@@ -215,7 +212,7 @@ bool DeserializeGUIDFromStringPieces(StringPiece first,
   *guid = token.value();
   return true;
 }
-#endif  // !BUILDFLAG(IS_NACL) && BUILDFLAG(USE_BLINK)
+#endif  // BUILDFLAG(USE_BLINK)
 
 }  // namespace
 
@@ -517,8 +514,7 @@ bool FieldTrialList::TrialExists(StringPiece trial_name) {
 // static
 bool FieldTrialList::IsTrialActive(StringPiece trial_name) {
   FieldTrial* field_trial = Find(trial_name);
-  FieldTrial::ActiveGroup active_group;
-  return field_trial && field_trial->GetActiveGroup(&active_group);
+  return field_trial && field_trial->group_reported_;
 }
 
 // static
@@ -618,38 +614,15 @@ void FieldTrialList::GetActiveFieldTrialGroups(
 }
 
 // static
-void FieldTrialList::GetActiveFieldTrialGroupsFromString(
-    const std::string& trials_string,
-    FieldTrial::ActiveGroups* active_groups) {
-  std::vector<FieldTrial::State> entries;
-  if (!ParseFieldTrialsString(trials_string, &entries))
-    return;
+std::set<std::string> FieldTrialList::GetActiveTrialsOfParentProcess() {
+  CHECK(global_);
+  CHECK(global_->create_trials_in_child_process_called_);
 
-  for (const auto& entry : entries) {
-    if (entry.activated) {
-      FieldTrial::ActiveGroup group;
-      group.trial_name = std::string(entry.trial_name);
-      group.group_name = std::string(entry.group_name);
-      active_groups->push_back(group);
-    }
-  }
-}
-
-// static
-void FieldTrialList::GetInitiallyActiveFieldTrials(
-    const CommandLine& command_line,
-    FieldTrial::ActiveGroups* active_groups) {
-  DCHECK(global_);
-  DCHECK(global_->create_trials_from_command_line_called_);
-
+  std::set<std::string> result;
+  // CreateTrialsInChildProcess() may not have created the allocator if
+  // kFieldTrialHandle was not passed on the command line.
   if (!global_->field_trial_allocator_) {
-    UmaHistogramBoolean(
-        "ChildProcess.FieldTrials.GetInitiallyActiveFieldTrials.FromString",
-        true);
-    GetActiveFieldTrialGroupsFromString(
-        command_line.GetSwitchValueASCII(switches::kForceFieldTrials),
-        active_groups);
-    return;
+    return result;
   }
 
   FieldTrialAllocator* allocator = global_->field_trial_allocator_.get();
@@ -661,12 +634,10 @@ void FieldTrialList::GetInitiallyActiveFieldTrials(
     StringPiece group_name;
     if (subtle::NoBarrier_Load(&entry->activated) &&
         entry->GetTrialAndGroupName(&trial_name, &group_name)) {
-      FieldTrial::ActiveGroup group;
-      group.trial_name = std::string(trial_name);
-      group.group_name = std::string(group_name);
-      active_groups->push_back(group);
+      result.insert(std::string(trial_name));
     }
   }
+  return result;
 }
 
 // static
@@ -690,43 +661,37 @@ bool FieldTrialList::CreateTrialsFromFieldTrialStates(
 }
 
 // static
-void FieldTrialList::CreateTrialsFromCommandLine(const CommandLine& cmd_line,
-                                                 uint32_t fd_key) {
-  global_->create_trials_from_command_line_called_ = true;
+void FieldTrialList::CreateTrialsInChildProcess(const CommandLine& cmd_line,
+                                                uint32_t fd_key) {
+  global_->create_trials_in_child_process_called_ = true;
 
-#if !BUILDFLAG(IS_NACL) && BUILDFLAG(USE_BLINK)
+#if BUILDFLAG(USE_BLINK)
+  // TODO(crbug.com/867558): Change to a CHECK.
   if (cmd_line.HasSwitch(switches::kFieldTrialHandle)) {
     std::string switch_value =
         cmd_line.GetSwitchValueASCII(switches::kFieldTrialHandle);
     bool result = CreateTrialsFromSwitchValue(switch_value, fd_key);
-    UMA_HISTOGRAM_BOOLEAN("ChildProcess.FieldTrials.CreateFromShmemSuccess",
-                          result);
-    DCHECK(result);
+#if BUILDFLAG(IS_POSIX)
+    if (!result) {
+      // This may be an error mapping the shared memory segment if the parent
+      // process just died. Exit gracefully in this case.
+      ExitGracefullyIfParentProcessIsDead();
+    }
+#endif  // BUILDFLAG(IS_POSIX)
+    CHECK(result);
   }
-#endif  // !BUILDFLAG(IS_NACL) && BUILDFLAG(USE_BLINK)
-
-  if (cmd_line.HasSwitch(switches::kForceFieldTrials)) {
-    bool result = FieldTrialList::CreateTrialsFromString(
-        cmd_line.GetSwitchValueASCII(switches::kForceFieldTrials));
-    UMA_HISTOGRAM_BOOLEAN("ChildProcess.FieldTrials.CreateFromSwitchSuccess",
-                          result);
-    DCHECK(result);
-  }
+#endif  // BUILDFLAG(USE_BLINK)
 }
 
 // static
-void FieldTrialList::CreateFeaturesFromCommandLine(
-    const CommandLine& command_line,
+void FieldTrialList::ApplyFeatureOverridesInChildProcess(
     FeatureList* feature_list) {
-  // Fallback to command line if not using shared memory.
-  if (!global_->field_trial_allocator_.get()) {
-    return feature_list->InitializeFromCommandLine(
-        command_line.GetSwitchValueASCII(switches::kEnableFeatures),
-        command_line.GetSwitchValueASCII(switches::kDisableFeatures));
+  CHECK(global_->create_trials_in_child_process_called_);
+  // TODO(crbug.com/867558): Change to a CHECK.
+  if (global_->field_trial_allocator_) {
+    feature_list->InitializeFromSharedMemory(
+        global_->field_trial_allocator_.get());
   }
-
-  feature_list->InitializeFromSharedMemory(
-      global_->field_trial_allocator_.get());
 }
 
 #if BUILDFLAG(USE_BLINK)
@@ -734,26 +699,18 @@ void FieldTrialList::CreateFeaturesFromCommandLine(
 void FieldTrialList::PopulateLaunchOptionsWithFieldTrialState(
     CommandLine* command_line,
     LaunchOptions* launch_options) {
-  DCHECK(command_line);
+  CHECK(command_line);
 
   // Use shared memory to communicate field trial state to child processes.
   // The browser is the only process that has write access to the shared memory.
   InstantiateFieldTrialAllocatorIfNeeded();
+  CHECK(global_);
+  CHECK(global_->readonly_allocator_region_.IsValid());
 
-  // If the readonly handle did not get created, fall back to flags.
-  if (!global_ || !global_->readonly_allocator_region_.IsValid()) {
-    UmaHistogramBoolean(
-        "ChildProcess.FieldTrials.PopulateLaunchOptions.CommandLine", true);
-    AddFeatureAndFieldTrialFlags(command_line);
-    return;
-  }
-
-#if !BUILDFLAG(IS_NACL)
   global_->field_trial_allocator_->UpdateTrackingHistograms();
   std::string switch_value = SerializeSharedMemoryRegionMetadata(
       global_->readonly_allocator_region_, launch_options);
   command_line->AppendSwitchASCII(switches::kFieldTrialHandle, switch_value);
-#endif  // !BUILDFLAG(IS_NACL)
 
   // Append --enable-features and --disable-features switches corresponding
   // to the features enabled on the command-line, so that child and browser
@@ -775,7 +732,7 @@ void FieldTrialList::PopulateLaunchOptionsWithFieldTrialState(
 }
 #endif  // BUILDFLAG(USE_BLINK)
 
-#if BUILDFLAG(IS_POSIX) && !BUILDFLAG(IS_APPLE) && !BUILDFLAG(IS_NACL)
+#if BUILDFLAG(USE_BLINK) && BUILDFLAG(IS_POSIX) && !BUILDFLAG(IS_APPLE)
 // static
 int FieldTrialList::GetFieldTrialDescriptor() {
   InstantiateFieldTrialAllocatorIfNeeded();
@@ -788,7 +745,7 @@ int FieldTrialList::GetFieldTrialDescriptor() {
   return global_->readonly_allocator_region_.GetPlatformHandle().fd;
 #endif
 }
-#endif  // BUILDFLAG(IS_POSIX) && !BUILDFLAG(IS_APPLE) && !BUILDFLAG(IS_NACL)
+#endif  // BUILDFLAG(USE_BLINK) && BUILDFLAG(IS_POSIX) && !BUILDFLAG(IS_APPLE)
 
 // static
 ReadOnlySharedMemoryRegion
@@ -1047,7 +1004,7 @@ void FieldTrialList::RestoreInstanceForTesting(FieldTrialList* instance) {
   global_ = instance;
 }
 
-#if !BUILDFLAG(IS_NACL) && BUILDFLAG(USE_BLINK)
+#if BUILDFLAG(USE_BLINK)
 
 // static
 std::string FieldTrialList::SerializeSharedMemoryRegionMetadata(
@@ -1148,7 +1105,7 @@ FieldTrialList::DeserializeSharedMemoryRegionMetadata(
   auto* rendezvous = MachPortRendezvousClient::GetInstance();
   if (!rendezvous)
     return ReadOnlySharedMemoryRegion();
-  mac::ScopedMachSendRight scoped_handle = rendezvous->TakeSendRight(
+  apple::ScopedMachSendRight scoped_handle = rendezvous->TakeSendRight(
       static_cast<MachPortsForRendezvous::key_type>(field_trial_handle));
   if (!scoped_handle.is_valid())
     return ReadOnlySharedMemoryRegion();
@@ -1195,12 +1152,13 @@ bool FieldTrialList::CreateTrialsFromSwitchValue(
 #endif  // BUILDFLAG(IS_POSIX)
   ReadOnlySharedMemoryRegion shm =
       DeserializeSharedMemoryRegionMetadata(switch_value, fd);
-  if (!shm.IsValid())
+  if (!shm.IsValid()) {
     return false;
+  }
   return FieldTrialList::CreateTrialsFromSharedMemoryRegion(shm);
 }
 
-#endif  // !BUILDFLAG(IS_NACL) && BUILDFLAG(USE_BLINK)
+#endif  // BUILDFLAG(USE_BLINK)
 
 // static
 bool FieldTrialList::CreateTrialsFromSharedMemoryRegion(
@@ -1274,9 +1232,7 @@ void FieldTrialList::InstantiateFieldTrialAllocatorIfNeeded() {
   FeatureList::GetInstance()->AddFeaturesToAllocator(
       global_->field_trial_allocator_.get());
 
-#if !BUILDFLAG(IS_NACL)
   global_->readonly_allocator_region_ = std::move(shm.region);
-#endif
 }
 
 // static

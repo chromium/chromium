@@ -7,14 +7,20 @@
 #import "base/feature_list.h"
 #import "ios/chrome/browser/policy/cloud/user_policy_constants.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 namespace policy {
 
-bool IsUserPolicyEnabled() {
-  return base::FeatureList::IsEnabled(kUserPolicy);
+bool IsUserPolicyEnabledForSigninOrSyncConsentLevel() {
+  return base::FeatureList::IsEnabled(kUserPolicyForSigninOrSyncConsentLevel);
+}
+
+bool IsUserPolicyEnabledForSigninAndNoSyncConsentLevel() {
+  return base::FeatureList::IsEnabled(
+      kUserPolicyForSigninAndNoSyncConsentLevel);
+}
+
+bool IsAnyUserPolicyFeatureEnabled() {
+  return IsUserPolicyEnabledForSigninOrSyncConsentLevel() ||
+         IsUserPolicyEnabledForSigninAndNoSyncConsentLevel();
 }
 
 }  // namespace policy

@@ -7,13 +7,18 @@
 #import <map>
 #import <memory>
 
-#import "base/mac/foundation_util.h"
+#import "base/apple/foundation_util.h"
 #import "base/strings/stringprintf.h"
 #import "base/strings/sys_string_conversions.h"
 #import "build/branding_buildflags.h"
 #import "components/strings/grit/components_strings.h"
+#import "components/sync/base/features.h"
+#import "ios/chrome/browser/shared/public/features/features.h"
+#import "ios/chrome/browser/signin/test_constants.h"
 #import "ios/chrome/browser/ui/authentication/signin/signin_constants.h"
+#import "ios/chrome/browser/ui/authentication/signin_matchers.h"
 #import "ios/chrome/browser/ui/settings/settings_app_interface.h"
+#import "ios/chrome/browser/ui/settings/signin_settings_app_interface.h"
 #import "ios/chrome/grit/ios_chromium_strings.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ios/chrome/test/earl_grey/chrome_actions_app_interface.h"
@@ -26,10 +31,6 @@
 #import "ui/base/l10n/l10n_util.h"
 #import "url/gurl.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 using chrome_test_util::ButtonWithAccessibilityLabelId;
 using chrome_test_util::ClearBrowsingDataButton;
 using chrome_test_util::ClearBrowsingDataView;
@@ -41,6 +42,7 @@ using chrome_test_util::SettingsCollectionView;
 using chrome_test_util::SettingsDoneButton;
 using chrome_test_util::SettingsMenuBackButton;
 using chrome_test_util::SettingsMenuPrivacyButton;
+using chrome_test_util::SettingsSignInRowMatcher;
 
 namespace {
 
@@ -64,6 +66,29 @@ id<GREYMatcher> ClearBrowsingDataCell() {
 @end
 
 @implementation SettingsTestCase
+
+- (AppLaunchConfiguration)appConfigurationForTestCase {
+  AppLaunchConfiguration config;
+  if ([self isRunningTest:@selector
+            (testSettingsKeyboardCommandsIfSyncToSigninDisabled)]) {
+    config.features_disabled.push_back(
+        syncer::kReplaceSyncPromosWithSignInPromos);
+  }
+  if ([self isRunningTest:@selector
+            (testSettingsKeyboardCommandsIfSyncToSigninEnabled)]) {
+    config.features_enabled.push_back(kConsistencyNewAccountInterface);
+    config.features_enabled.push_back(
+        syncer::kReplaceSyncPromosWithSignInPromos);
+  }
+  return config;
+}
+
+- (void)setUp {
+  [super setUp];
+
+  // TODO(crbug.com/1450472): Remove when kHideSettingsSyncPromo is launched.
+  [SigninSettingsAppInterface setSettingsSigninPromoDisplayedCount:INT_MAX];
+}
 
 - (void)tearDown {
   // It is possible for a test to fail with a menu visible, which can cause
@@ -313,8 +338,9 @@ id<GREYMatcher> ClearBrowsingDataCell() {
 }
 
 // Verifies that the Settings UI registers keyboard commands when presented, but
-// not when it itslef presents something.
-- (void)testSettingsKeyboardCommands {
+// not when it itself presents something. kReplaceSyncPromosWithSignInPromos is
+// disabled.
+- (void)testSettingsKeyboardCommandsIfSyncToSigninDisabled {
   [ChromeEarlGreyUI openSettingsMenu];
   [[EarlGrey selectElementWithMatcher:SettingsCollectionView()]
       assertWithMatcher:grey_notNil()];
@@ -324,8 +350,8 @@ id<GREYMatcher> ClearBrowsingDataCell() {
                  @"Settings should register key commands when presented.");
 
   // Present the Sign-in UI.
-  id<GREYMatcher> matcher = grey_allOf(chrome_test_util::PrimarySignInButton(),
-                                       grey_sufficientlyVisible(), nil);
+  id<GREYMatcher> matcher =
+      grey_allOf(SettingsSignInRowMatcher(), grey_sufficientlyVisible(), nil);
   [[EarlGrey selectElementWithMatcher:matcher] performAction:grey_tap()];
   // Wait for UI to finish loading the Sign-in screen.
   [ChromeEarlGreyUI waitForAppToIdle];
@@ -337,6 +363,42 @@ id<GREYMatcher> ClearBrowsingDataCell() {
   // Cancel the sign-in operation.
   [[EarlGrey selectElementWithMatcher:grey_accessibilityID(
                                           kSkipSigninAccessibilityIdentifier)]
+      performAction:grey_tap()];
+
+  // Wait for UI to finish closing the Sign-in screen.
+  [ChromeEarlGreyUI waitForAppToIdle];
+
+  // Verify that the Settings register keyboard commands.
+  GREYAssertTrue([SettingsAppInterface settingsRegisteredKeyboardCommands],
+                 @"Settings should register key commands when presented.");
+}
+
+// Verifies that the Settings UI registers keyboard commands when presented, but
+// not when it itself presents something. kReplaceSyncPromosWithSignInPromos and
+// kConsistencyNewAccountInterface are enabled.
+- (void)testSettingsKeyboardCommandsIfSyncToSigninEnabled {
+  [ChromeEarlGreyUI openSettingsMenu];
+  [[EarlGrey selectElementWithMatcher:SettingsCollectionView()]
+      assertWithMatcher:grey_notNil()];
+
+  // Verify that the Settings register keyboard commands.
+  GREYAssertTrue([SettingsAppInterface settingsRegisteredKeyboardCommands],
+                 @"Settings should register key commands when presented.");
+
+  // Present the Sign-in UI.
+  id<GREYMatcher> matcher =
+      grey_allOf(SettingsSignInRowMatcher(), grey_sufficientlyVisible(), nil);
+  [[EarlGrey selectElementWithMatcher:matcher] performAction:grey_tap()];
+  // Wait for UI to finish loading the Sign-in screen.
+  [ChromeEarlGreyUI waitForAppToIdle];
+
+  // Verify that the Settings register keyboard commands.
+  GREYAssertFalse([SettingsAppInterface settingsRegisteredKeyboardCommands],
+                  @"Settings should not register key commands when presented.");
+
+  // Cancel the sign-in operation.
+  [[EarlGrey selectElementWithMatcher:grey_accessibilityID(
+                                          kFakeAuthCancelButtonIdentifier)]
       performAction:grey_tap()];
 
   // Wait for UI to finish closing the Sign-in screen.

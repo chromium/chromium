@@ -7,11 +7,14 @@
 #include "base/base_switches.h"
 #include "base/command_line.h"
 #include "base/containers/contains.h"
+#include "base/cpu.h"
 #include "base/files/file_util.h"
 #include "base/functional/callback_helpers.h"
+#include "base/no_destructor.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
+#include "base/test/bind.h"
 #include "build/build_config.h"
 #include "media/base/decoder_buffer.h"
 #include "media/base/encryption_scheme.h"
@@ -21,6 +24,7 @@
 #include "media/base/video_decoder_config.h"
 #include "media/base/video_transformation.h"
 #include "media/filters/dav1d_video_decoder.h"
+#include "media/gpu/chromeos/platform_video_frame_pool.h"
 #include "media/gpu/test/video_bitstream.h"
 #include "media/gpu/test/video_frame_file_writer.h"
 #include "media/gpu/test/video_frame_validator.h"
@@ -203,15 +207,50 @@ class VideoDecoderTest : public ::testing::Test {
     LOG_ASSERT(video_player);
     LOG_ASSERT(video_player->Initialize(video));
 
-    // Increase event timeout when outputting video frames.
-    if (g_env->GetFrameOutputMode() != FrameOutputMode::kNone) {
+    // Increase the time out if
+    // (1) video frames are output, or
+    // (2) on Intel GLK, where mapping is very slow.
+    if (g_env->GetFrameOutputMode() != FrameOutputMode::kNone ||
+        IsSlowMappingDevice()) {
       video_player->SetEventWaitTimeout(
           std::max(kDefaultEventWaitTimeout, g_env->Video()->Duration() * 10));
     }
     return video_player;
   }
 
+  bool InitializeDecoderWithConfig(VideoDecoderConfig& decoder_config) {
+    auto frame_pool = std::make_unique<PlatformVideoFramePool>();
+    std::unique_ptr<VideoDecoder> decoder = VideoDecoderPipeline::Create(
+        gpu::GpuDriverBugWorkarounds(),
+        base::SingleThreadTaskRunner::GetCurrentDefault(),
+        std::move(frame_pool),
+        /*frame_converter=*/nullptr,
+        VideoDecoderPipeline::DefaultPreferredRenderableFourccs(),
+        std::make_unique<NullMediaLog>(),
+        /*oop_video_decoder=*/{});
+
+    bool init_result = false;
+    VideoDecoder::InitCB init_cb = base::BindLambdaForTesting(
+        [&init_result](DecoderStatus result) { init_result = result.is_ok(); });
+    decoder->Initialize(decoder_config, /*low_delay=*/false,
+                        /*cdm_context=*/nullptr, std::move(init_cb),
+                        base::BindRepeating(&VideoDecoderTest::AddModelFrame,
+                                            base::Unretained(this)),
+                        /*waiting_cb=*/base::NullCallback());
+    return init_result;
+  }
+
  private:
+  bool IsSlowMappingDevice() const {
+    static const base::NoDestructor<base::CPU> cpuid;
+    constexpr int kPentiumAndLaterFamily = 0x06;
+    constexpr int kGeminiLakeModelId = 0x7A;
+    static const bool is_glk_device =
+        cpuid->family() == kPentiumAndLaterFamily &&
+        cpuid->model() == kGeminiLakeModelId;
+    return is_glk_device;
+  }
+
   // TODO(hiroh): Move this to Video class or video_frame_helpers.h.
   // TODO(hiroh): Create model frames once during the test.
   bool CreateModelFrames(const VideoBitstream* video) {
@@ -272,7 +311,6 @@ class VideoDecoderTest : public ::testing::Test {
 
     return flush_success && model_frames_.size() == video->NumFrames();
   }
-
   void AddModelFrame(scoped_refptr<VideoFrame> frame) {
     model_frames_.push_back(std::move(frame));
   }
@@ -380,6 +418,42 @@ TEST_F(VideoDecoderTest, DestroyBeforeInitialize) {
   EXPECT_NE(tvp, nullptr);
 }
 
+#if BUILDFLAG(USE_V4L2_CODEC)
+// This test case calls Decode() a number of times and expect OK DecodeCBs. This
+// test only makes sense for V4L2 (VA-API doesn't have an input queue).
+TEST_F(VideoDecoderTest, Decode) {
+  auto tvp = CreateDecoderListener(g_env->Video());
+
+  tvp->Play();
+  // We usually allocate at least 8 buffers for input queues.
+  const size_t kNumDecodeBuffers = 8;
+  EXPECT_TRUE(tvp->WaitForEvent(DecoderListener::Event::kDecoderBufferAccepted,
+                                /*times=*/kNumDecodeBuffers));
+}
+
+// This test case sends all the frames and expects them to be fully decoded
+// (as in, VideoDecoder::OutputCB should be called). Most of them should be
+// decoded as well, but since this test doesn't exercise an End-of-Stream
+// (a.k.a. "a flush"), some will likely be held onto by the VideoDecoder/driver
+// as part of its decoding pipeline. We don't know how many (it depends also on
+// the ImageProcessor, if any), so it's not a good idea to set expectations on
+// the number of kFrameDecoded events.
+TEST_F(VideoDecoderTest, DecodeAndOutputAllFrames) {
+  auto tvp = CreateDecoderListener(g_env->Video());
+
+  tvp->Play();
+  EXPECT_TRUE(tvp->WaitForEvent(DecoderListener::Event::kDecoderBufferAccepted,
+                                /*times=*/g_env->Video()->NumFrames()));
+
+  // This is a hack to allow Qualcomm devices (e.g. trogdor) to flush the pipes
+  // after the last resolution change event that comes out when running the
+  // resolution_change_500frames.vp9.ivf sequence. It should be fixed but since
+  // a new V4L2StatefulVideoDecoder backend is in the making, let's just leave
+  // the hack. See b/294611425.
+  base::PlatformThread::Sleep(base::Milliseconds(100));
+}
+#endif
+
 // Play video from start to end. Wait for the kFlushDone event at the end of the
 // stream, that notifies us all frames have been decoded.
 TEST_F(VideoDecoderTest, FlushAtEndOfStream) {
@@ -388,7 +462,7 @@ TEST_F(VideoDecoderTest, FlushAtEndOfStream) {
   // This test case is used for video.ChromeStackDecoderVerification.
   // Mapping is very slow on some intel devices and hit the default timeout
   // in long 4k video verification. Increase the timeout more than 1080p video
-  // to mitigate the issue. See b/230378122 for the discussion.
+  // to mitigate the issue.
   // 180 seconds are selected as it is long enough to pass the existing tests.
   constexpr gfx::Size k1080p(1920, 1080);
   if (g_env->Video()->Resolution().GetArea() > k1080p.GetArea()) {
@@ -402,6 +476,36 @@ TEST_F(VideoDecoderTest, FlushAtEndOfStream) {
   EXPECT_EQ(tvp->GetFrameDecodedCount(), g_env->Video()->NumFrames());
   EXPECT_TRUE(tvp->WaitForFrameProcessors());
 }
+
+#if BUILDFLAG(USE_V4L2_CODEC)
+// Flush the decoder somewhere mid-stream, then continue as normal. This is a
+// contrived use case to exercise important V4L2 stateful areas.
+TEST_F(VideoDecoderTest, FlushMidStream) {
+  if (!base::FeatureList::IsEnabled(kV4L2FlatStatefulVideoDecoder)) {
+    GTEST_SKIP();
+  }
+
+  auto tvp = CreateDecoderListener(g_env->Video());
+
+  tvp->Play();
+  const size_t flush_location_in_frames =
+      std::min(static_cast<size_t>(10), g_env->Video()->NumFrames() / 2);
+  EXPECT_TRUE(tvp->WaitForFrameDecoded(flush_location_in_frames));
+  tvp->Flush();
+  EXPECT_TRUE(tvp->WaitForFlushDone());
+  // GetFrameDecodedCount() is likely larger than |flush_location_in_frames|
+  // because there are likely submitted encoded chunks ready to be decoded at
+  // the time of Flush().
+  EXPECT_GE(tvp->GetFrameDecodedCount(), flush_location_in_frames);
+  tvp->Play();
+  EXPECT_TRUE(tvp->WaitForFlushDone());
+
+  // Total flush count must be two: once mid-stream and once at the end.
+  EXPECT_EQ(tvp->GetFlushDoneCount(), 2u);
+  EXPECT_EQ(tvp->GetFrameDecodedCount(), g_env->Video()->NumFrames());
+  EXPECT_TRUE(tvp->WaitForFrameProcessors());
+}
+#endif
 
 // Flush the decoder immediately after initialization.
 TEST_F(VideoDecoderTest, FlushAfterInitialize) {
@@ -579,6 +683,18 @@ TEST_F(VideoDecoderTest, FlushAtEndOfStream_MultipleConcurrentDecodes) {
     EXPECT_EQ(tvps[i]->GetFrameDecodedCount(), g_env->Video()->NumFrames());
     EXPECT_TRUE(tvps[i]->WaitForFrameProcessors());
   }
+}
+
+TEST_F(VideoDecoderTest, InitializeWithNonSupportedConfig) {
+  const auto* video = g_env->Video();
+  constexpr VideoCodecProfile kProfileNotSupportedByChromeOS =
+      THEORAPROFILE_ANY;
+  VideoDecoderConfig non_supported_decoder_config(
+      video->Codec(), kProfileNotSupportedByChromeOS,
+      VideoDecoderConfig::AlphaMode::kIsOpaque, VideoColorSpace(),
+      kNoTransformation, video->Resolution(), gfx::Rect(video->Resolution()),
+      video->Resolution(), EmptyExtraData(), EncryptionScheme::kUnencrypted);
+  EXPECT_FALSE(InitializeDecoderWithConfig(non_supported_decoder_config));
 }
 
 }  // namespace test

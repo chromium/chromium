@@ -75,6 +75,9 @@ build_webui("build") {
     "more_permissions_item.ts",
     "permission_item.ts",
     "run_on_os_login_item.ts",
+    "supported_links_dialog.ts",
+    "supported_links_item.ts",
+    "supported_links_overlapping_apps_dialog.ts",
     "toggle_row.ts",
     "uninstall_button.ts",
     "window_mode_item.ts",
@@ -103,6 +106,7 @@ build_webui("build") {
   ts_composite = true
   ts_deps = [
     "//third_party/polymer/v3_0:library",
+    "//ui/webui/resources/cr_components/localized_link:build_ts",
     "//ui/webui/resources/cr_elements:build_ts",
     "//ui/webui/resources/js:build_ts",
     "//ui/webui/resources/mojo:build_ts",

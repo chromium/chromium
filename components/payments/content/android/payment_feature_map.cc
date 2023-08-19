@@ -7,7 +7,7 @@
 #include "base/android/feature_map.h"
 #include "base/feature_list.h"
 #include "base/no_destructor.h"
-#include "components/payments/content/android/jni_headers/PaymentFeatureMap_jni.h"
+#include "components/payments/content/android/feature_list_jni/PaymentFeatureMap_jni.h"
 #include "components/payments/core/features.h"
 #include "content/public/common/content_features.h"
 #include "third_party/blink/public/common/features_generated.h"

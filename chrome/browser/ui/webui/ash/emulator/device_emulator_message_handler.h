@@ -7,6 +7,7 @@
 
 #include <memory>
 
+#include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/ash/system/pointer_device_observer.h"
@@ -131,12 +132,14 @@ class DeviceEmulatorMessageHandler
 
   void UpdateAudioNodes();
 
-  bluez::FakeBluetoothDeviceClient* fake_bluetooth_device_client_;
+  raw_ptr<bluez::FakeBluetoothDeviceClient, ExperimentalAsh>
+      fake_bluetooth_device_client_;
   std::unique_ptr<BluetoothObserver> bluetooth_observer_;
 
   std::unique_ptr<CrasAudioObserver> cras_audio_observer_;
 
-  chromeos::FakePowerManagerClient* fake_power_manager_client_;
+  raw_ptr<chromeos::FakePowerManagerClient, ExperimentalAsh>
+      fake_power_manager_client_;
   std::unique_ptr<PowerObserver> power_observer_;
 
   scoped_refptr<device::BluetoothAdapter> bluetooth_adapter_;

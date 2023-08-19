@@ -7,8 +7,8 @@
 #include <stdint.h>
 
 #include "base/apple/bundle_locations.h"
+#include "base/apple/foundation_util.h"
 #include "base/check_op.h"
-#include "base/mac/scoped_nsobject.h"
 #include "content/public/browser/browser_thread.h"
 #include "ui/gfx/scoped_ns_graphics_context_save_gstate_mac.h"
 
@@ -35,12 +35,7 @@ constexpr int64_t kUpdateFrequencyMs = 200;
 }  // namespace
 
 // A view that draws our dock tile.
-@interface DockTileView : NSView {
- @private
-  int _downloads;
-  BOOL _indeterminate;
-  float _progress;
-}
+@interface DockTileView : NSView
 
 // Indicates how many downloads are in progress.
 @property (nonatomic) int downloads;
@@ -65,7 +60,7 @@ constexpr int64_t kUpdateFrequencyMs = 200;
   // custom icon.
   NSString* appPath = [base::apple::MainBundle() bundlePath];
   NSImage* appIcon = [[NSWorkspace sharedWorkspace] iconForFile:appPath];
-  [appIcon drawInRect:[self bounds]
+  [appIcon drawInRect:self.bounds
              fromRect:NSZeroRect
             operation:NSCompositingOperationSourceOver
              fraction:1.0];
@@ -82,14 +77,14 @@ constexpr int64_t kUpdateFrequencyMs = 200;
 
   NSBezierPath* backgroundPath =
       [NSBezierPath bezierPathWithOvalInRect:badgeRect];
-  [[NSColor clearColor] setFill];
+  [NSColor.clearColor setFill];
 
-  base::scoped_nsobject<NSShadow> shadow([[NSShadow alloc] init]);
-  shadow.get().shadowColor = [NSColor blackColor];
+  NSShadow* shadow = [[NSShadow alloc] init];
+  shadow.shadowColor = NSColor.blackColor;
   for (const auto shadowProps : kBadgeShadows) {
     gfx::ScopedNSGraphicsContextSaveGState scopedGState;
-    shadow.get().shadowOffset = NSMakeSize(0, -shadowProps.offset);
-    shadow.get().shadowBlurRadius = shadowProps.radius;
+    shadow.shadowOffset = NSMakeSize(0, -shadowProps.offset);
+    shadow.shadowBlurRadius = shadowProps.radius;
     [[NSColor colorWithCalibratedWhite:0 alpha:shadowProps.opacity] setFill];
     [shadow set];
     [backgroundPath fill];
@@ -129,14 +124,13 @@ constexpr int64_t kUpdateFrequencyMs = 200;
   }
 
   // Download count
-  base::scoped_nsobject<NSNumberFormatter> formatter(
-      [[NSNumberFormatter alloc] init]);
+  NSNumberFormatter* formatter = [[NSNumberFormatter alloc] init];
   NSString* countString = [formatter stringFromNumber:@(_downloads)];
 
   CGFloat countFontSize = 24;
   NSSize countSize = NSZeroSize;
-  base::scoped_nsobject<NSAttributedString> countAttrString;
-  while (1) {
+  NSAttributedString* countAttrString = nil;
+  while (true) {
     NSFont* countFont = [NSFont systemFontOfSize:countFontSize
                                           weight:NSFontWeightMedium];
 
@@ -148,13 +142,13 @@ constexpr int64_t kUpdateFrequencyMs = 200;
     if (!countFont)
       break;
 
-    countAttrString.reset([[NSAttributedString alloc]
+    countAttrString = [[NSAttributedString alloc]
         initWithString:countString
             attributes:@{
               NSForegroundColorAttributeName :
                   [NSColor colorWithCalibratedWhite:0 alpha:0.65],
               NSFontAttributeName : countFont,
-            }]);
+            }];
     countSize = [countAttrString size];
     if (countSize.width > (badgeRadius - kBadgeStrokeWidth) * 1.5) {
       countFontSize -= 1.0;
@@ -167,22 +161,26 @@ constexpr int64_t kUpdateFrequencyMs = 200;
   countOrigin.x -= countSize.width / 2;
   countOrigin.y -= countSize.height / 2;
 
-  [countAttrString.get() drawAtPoint:countOrigin];
+  [countAttrString drawAtPoint:countOrigin];
 }
 
 @end
 
+@implementation DockIcon {
+  // The time that the icon was last updated.
+  base::TimeTicks _lastUpdate;
 
-@implementation DockIcon
+  // If true, the state has changed in a significant way since the last icon
+  // update and throttling should not prevent icon redraw.
+  BOOL _forceUpdate;
+}
 
 + (DockIcon*)sharedDockIcon {
   static DockIcon* icon;
   if (!icon) {
-    NSDockTile* dockTile = [[NSApplication sharedApplication] dockTile];
+    NSDockTile* dockTile = [NSApp dockTile];
 
-    base::scoped_nsobject<DockTileView> dockTileView(
-        [[DockTileView alloc] init]);
-    [dockTile setContentView:dockTileView];
+    dockTile.contentView = [[DockTileView alloc] init];
 
     icon = [[DockIcon alloc] init];
   }
@@ -203,15 +201,15 @@ constexpr int64_t kUpdateFrequencyMs = 200;
   _lastUpdate = now;
   _forceUpdate = NO;
 
-  NSDockTile* dockTile = [[NSApplication sharedApplication] dockTile];
+  NSDockTile* dockTile = NSApp.dockTile;
 
   [dockTile display];
 }
 
 - (void)setDownloads:(int)downloads {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  NSDockTile* dockTile = [[NSApplication sharedApplication] dockTile];
-  DockTileView* dockTileView = (DockTileView*)([dockTile contentView]);
+  DockTileView* dockTileView =
+      base::apple::ObjCCast<DockTileView>(NSApp.dockTile.contentView);
 
   if (downloads != [dockTileView downloads]) {
     [dockTileView setDownloads:downloads];
@@ -221,8 +219,8 @@ constexpr int64_t kUpdateFrequencyMs = 200;
 
 - (void)setIndeterminate:(BOOL)indeterminate {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  NSDockTile* dockTile = [[NSApplication sharedApplication] dockTile];
-  DockTileView* dockTileView = (DockTileView*)([dockTile contentView]);
+  DockTileView* dockTileView =
+      base::apple::ObjCCast<DockTileView>(NSApp.dockTile.contentView);
 
   if (indeterminate != [dockTileView indeterminate]) {
     [dockTileView setIndeterminate:indeterminate];
@@ -232,8 +230,8 @@ constexpr int64_t kUpdateFrequencyMs = 200;
 
 - (void)setProgress:(float)progress {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  NSDockTile* dockTile = [[NSApplication sharedApplication] dockTile];
-  DockTileView* dockTileView = (DockTileView*)([dockTile contentView]);
+  DockTileView* dockTileView =
+      base::apple::ObjCCast<DockTileView>(NSApp.dockTile.contentView);
 
   [dockTileView setProgress:progress];
 }

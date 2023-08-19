@@ -15,12 +15,12 @@ import org.junit.runner.RunWith;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Feature;
 import org.chromium.chrome.browser.autofill.AutofillTestHelper;
-import org.chromium.chrome.browser.autofill.PersonalDataManager.AutofillProfile;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.payments.PaymentRequestTestRule.AppPresence;
 import org.chromium.chrome.browser.payments.PaymentRequestTestRule.FactorySpeed;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.R;
+import org.chromium.components.autofill.AutofillProfile;
 
 import java.util.concurrent.TimeoutException;
 
@@ -32,6 +32,9 @@ import java.util.concurrent.TimeoutException;
 @RunWith(ChromeJUnit4ClassRunner.class)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
 public class PaymentRequestIncompleteContactDetailsAndFreeShippingTest {
+    // A fake payment method.
+    private static final String BOBPAY_TEST = "https://bobpay.test";
+
     @Rule
     public PaymentRequestTestRule mPaymentRequestTestRule = new PaymentRequestTestRule(
             "payment_request_contact_details_and_free_shipping_test.html");
@@ -63,7 +66,9 @@ public class PaymentRequestIncompleteContactDetailsAndFreeShippingTest {
     @MediumTest
     @Feature({"Payments"})
     public void testEditIncompleteShippingAndPay() throws TimeoutException {
-        mPaymentRequestTestRule.triggerUIAndWait("buy", mPaymentRequestTestRule.getReadyForInput());
+        mPaymentRequestTestRule.runJavaScriptAndWaitForUIEvent(
+            "buyWithMethods([{supportedMethods: '" + BOBPAY_TEST + "'}]);",
+            mPaymentRequestTestRule.getReadyForInput());
         mPaymentRequestTestRule.clickInShippingAddressAndWait(
                 R.id.payments_section, mPaymentRequestTestRule.getReadyForInput());
 
@@ -100,7 +105,9 @@ public class PaymentRequestIncompleteContactDetailsAndFreeShippingTest {
     @MediumTest
     @Feature({"Payments"})
     public void testEditIncompleteShippingAndContactAndPay() throws TimeoutException {
-        mPaymentRequestTestRule.triggerUIAndWait("buy", mPaymentRequestTestRule.getReadyForInput());
+        mPaymentRequestTestRule.runJavaScriptAndWaitForUIEvent(
+            "buyWithMethods([{supportedMethods: '" + BOBPAY_TEST + "'}]);",
+            mPaymentRequestTestRule.getReadyForInput());
         mPaymentRequestTestRule.clickInShippingAddressAndWait(
                 R.id.payments_section, mPaymentRequestTestRule.getReadyForInput());
 

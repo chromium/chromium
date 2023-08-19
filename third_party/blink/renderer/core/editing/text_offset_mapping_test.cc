@@ -257,7 +257,7 @@ TEST_F(TextOffsetMappingTest, RangeOfEmptyBlock) {
           "<div><p>abc</p><p id='target'>|</p><p>ghi</p></div>")
           .Base());
   const LayoutObject* const target_layout_object =
-      GetDocument().getElementById("target")->GetLayoutObject();
+      GetDocument().getElementById(AtomicString("target"))->GetLayoutObject();
   const TextOffsetMapping::InlineContents inline_contents =
       TextOffsetMapping::FindForwardInlineContents(position);
   ASSERT_TRUE(inline_contents.IsNotNull());
@@ -306,7 +306,7 @@ TEST_F(TextOffsetMappingTest, ForwardRangesWithTextControl) {
 
   // InlineContents for positions inside text control should not escape the text
   // control in forward iteration.
-  const Element* input = GetDocument().QuerySelector("input");
+  const Element* input = GetDocument().QuerySelector(AtomicString("input"));
   const PositionInFlatTree inside_first =
       PositionInFlatTree::FirstPositionInNode(*input);
   const TextOffsetMapping::InlineContents inside_contents =
@@ -334,7 +334,7 @@ TEST_F(TextOffsetMappingTest, BackwardRangesWithTextControl) {
 
   // InlineContents for positions inside text control should not escape the text
   // control in backward iteration.
-  const Element* input = GetDocument().QuerySelector("input");
+  const Element* input = GetDocument().QuerySelector(AtomicString("input"));
   const PositionInFlatTree inside_last =
       PositionInFlatTree::LastPositionInNode(*input);
   const TextOffsetMapping::InlineContents inside_contents =
@@ -442,7 +442,7 @@ TEST_F(TextOffsetMappingTest, RangeWithNestedPosition) {
 // http://crbug.com//834623
 TEST_F(TextOffsetMappingTest, RangeWithSelect1) {
   SetBodyContent("<select></select>foo");
-  Element* select = GetDocument().QuerySelector("select");
+  Element* select = GetDocument().QuerySelector(AtomicString("select"));
   const auto& expected_outer =
       "^<select>"
       "<div aria-hidden=\"true\"></div>"
@@ -460,7 +460,7 @@ TEST_F(TextOffsetMappingTest, RangeWithSelect1) {
 
 TEST_F(TextOffsetMappingTest, RangeWithSelect2) {
   SetBodyContent("<select>bar</select>foo");
-  Element* select = GetDocument().QuerySelector("select");
+  Element* select = GetDocument().QuerySelector(AtomicString("select"));
   const auto& expected_outer =
       "^<select>"
       "<div aria-hidden=\"true\"></div>"
@@ -555,12 +555,13 @@ TEST_F(TextOffsetMappingTest, InlineContentsWithDocumentBoundary) {
 // https://crbug.com/1224206
 TEST_F(TextOffsetMappingTest, ComputeTextOffsetWithBrokenImage) {
   SetBodyContent("A<img alt='X'>B<div>C</div>D");
-  Element* img = GetDocument().QuerySelector("img");
+  Element* img = GetDocument().QuerySelector(AtomicString("img"));
   To<HTMLImageElement>(img)->EnsureCollapsedOrFallbackContent();
   UpdateAllLifecyclePhasesForTest();
   ShadowRoot* shadow = img->UserAgentShadowRoot();
   DCHECK(shadow);
-  const Element* alt_img = shadow->getElementById("alttext-image");
+  const Element* alt_img =
+      shadow->getElementById(AtomicString("alttext-image"));
   DCHECK(alt_img);
 
   const PositionInFlatTree position = PositionInFlatTree::BeforeNode(*alt_img);

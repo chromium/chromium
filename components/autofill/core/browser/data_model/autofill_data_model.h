@@ -92,10 +92,6 @@ class AutofillDataModel : public FormGroup {
   // count and most recent use date.
   virtual double GetRankingScore(base::Time current_time) const;
 
-  // Called to update |use_count_| and |use_date_| when this data model is
-  // the subject of user interaction (usually, when it's used to fill a form).
-  void RecordUse();
-
  private:
   // A globally unique ID for this object.
   std::string guid_;

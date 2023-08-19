@@ -63,9 +63,7 @@ class MockMessageCenterObserver : public message_center::MessageCenterObserver {
 
 class ProjectorUiControllerTest : public AshTestBase {
  public:
-  ProjectorUiControllerTest() {
-    scoped_feature_list_.InitWithFeatures({features::kProjector}, {});
-  }
+  ProjectorUiControllerTest() = default;
 
   ProjectorUiControllerTest(const ProjectorUiControllerTest&) = delete;
   ProjectorUiControllerTest& operator=(const ProjectorUiControllerTest&) =
@@ -81,11 +79,9 @@ class ProjectorUiControllerTest : public AshTestBase {
   }
 
  protected:
-  raw_ptr<ProjectorUiController, ExperimentalAsh> controller_;
+  raw_ptr<ProjectorUiController, DanglingUntriaged | ExperimentalAsh>
+      controller_;
   MockProjectorClient projector_client_;
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 TEST_F(ProjectorUiControllerTest, ShowAndHideTray) {
@@ -323,6 +319,9 @@ TEST_F(ProjectorUiControllerTest, ShowFailureNotification) {
       /*count=*/1);
   histogram_tester.ExpectTotalCount(kProjectorCreationFlowErrorHistogramName,
                                     /*count=*/2);
+
+  message_center::MessageCenter::Get()->RemoveObserver(
+      &mock_message_center_observer);
 }
 
 TEST_F(ProjectorUiControllerTest, ShowFailureNotificationWithTitle) {
@@ -362,6 +361,9 @@ TEST_F(ProjectorUiControllerTest, ShowFailureNotificationWithTitle) {
       /*expected_count=*/1);
   histogram_tester.ExpectTotalCount(kProjectorCreationFlowErrorHistogramName,
                                     /*count=*/1);
+
+  message_center::MessageCenter::Get()->RemoveObserver(
+      &mock_message_center_observer);
 }
 
 TEST_F(ProjectorUiControllerTest, ShowSaveFailureNotification) {
@@ -400,6 +402,9 @@ TEST_F(ProjectorUiControllerTest, ShowSaveFailureNotification) {
   histogram_tester.ExpectUniqueSample(kProjectorCreationFlowErrorHistogramName,
                                       ProjectorCreationFlowError::kSaveError,
                                       /*count=*/2);
+
+  message_center::MessageCenter::Get()->RemoveObserver(
+      &mock_message_center_observer);
 }
 
 TEST_F(ProjectorUiControllerTest, OnCanvasInitialized) {

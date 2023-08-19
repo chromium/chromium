@@ -75,6 +75,7 @@ class MockDaemonProcess : public DaemonProcess {
               (const std::string&),
               (override));
   MOCK_METHOD(void, SendTerminalDisconnected, (int terminal_id), (override));
+  MOCK_METHOD(void, StartChromotingHostServices, (), (override));
 };
 
 FakeDesktopSession::FakeDesktopSession(DaemonProcess* daemon_process, int id)
@@ -155,6 +156,8 @@ void DaemonProcessTest::SetUp() {
   EXPECT_CALL(*daemon_process_, LaunchNetworkProcess())
       .Times(AnyNumber())
       .WillRepeatedly(Invoke(this, &DaemonProcessTest::LaunchNetworkProcess));
+  EXPECT_CALL(*daemon_process_, StartChromotingHostServices())
+      .Times(AnyNumber());
 }
 
 void DaemonProcessTest::TearDown() {

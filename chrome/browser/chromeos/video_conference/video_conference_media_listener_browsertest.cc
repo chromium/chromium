@@ -28,6 +28,7 @@
 #include "chrome/browser/media/webrtc/media_capture_devices_dispatcher.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/test/base/in_process_browser_test.h"
+#include "chromeos/crosapi/mojom/video_conference.mojom-forward.h"
 #include "content/public/browser/navigation_entry.h"
 #include "content/public/browser/web_contents_user_data.h"
 #include "content/public/test/browser_test.h"
@@ -102,9 +103,13 @@ class VideoConferenceMediaListenerBrowserTest : public InProcessBrowserTest {
   ~VideoConferenceMediaListenerBrowserTest() override = default;
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-  void SetUpCommandLine(base::CommandLine* command_line) override {
-    command_line->AppendSwitch(
-        ::ash::switches::kCameraEffectsSupportedByHardware);
+  void SetUp() override {
+    scoped_feature_list_.InitWithFeatures(
+        {ash::features::kVideoConference,
+         ash::features::kCameraEffectsSupportedByHardware},
+        {});
+
+    InProcessBrowserTest::SetUp();
   }
 #endif
 
@@ -147,7 +152,9 @@ class VideoConferenceMediaListenerBrowserTest : public InProcessBrowserTest {
   VideoConferenceWebApp* CreateVcWebApp(content::WebContents* web_contents) {
     content::WebContentsUserData<VideoConferenceWebApp>::CreateForWebContents(
         web_contents, base::UnguessableToken::Create(),
-        base::BindRepeating([](const base::UnguessableToken& id) {}));
+        base::BindRepeating([](const base::UnguessableToken& id) {}),
+        base::DoNothingAs<void(
+            crosapi::mojom::VideoConferenceClientUpdatePtr)>());
 
     return content::WebContentsUserData<VideoConferenceWebApp>::FromWebContents(
         web_contents);
@@ -171,8 +178,7 @@ class VideoConferenceMediaListenerBrowserTest : public InProcessBrowserTest {
 
   int tab_count_{0};
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-  base::test::ScopedFeatureList scoped_feature_list_{
-      ash::features::kVideoConference};
+  base::test::ScopedFeatureList scoped_feature_list_;
 #endif
 };
 

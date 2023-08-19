@@ -263,18 +263,15 @@ SVGAnimatedPropertyBase* SVGFEConvolveMatrixElement::PropertyFromAttribute(
   }
 }
 
-void SVGFEConvolveMatrixElement::SynchronizeSVGAttribute(
-    const QualifiedName& name) const {
-  if (name == AnyQName()) {
-    SVGAnimatedPropertyBase* attrs[]{
-        preserve_alpha_.Get(), divisor_.Get(),
-        bias_.Get(),           kernel_unit_length_.Get(),
-        kernel_matrix_.Get(),  in1_.Get(),
-        edge_mode_.Get(),      order_.Get(),
-        target_x_.Get(),       target_y_.Get()};
-    SynchronizeAllSVGAttributes(attrs);
-  }
-  SVGFilterPrimitiveStandardAttributes::SynchronizeSVGAttribute(name);
+void SVGFEConvolveMatrixElement::SynchronizeAllSVGAttributes() const {
+  SVGAnimatedPropertyBase* attrs[]{
+      preserve_alpha_.Get(), divisor_.Get(),
+      bias_.Get(),           kernel_unit_length_.Get(),
+      kernel_matrix_.Get(),  in1_.Get(),
+      edge_mode_.Get(),      order_.Get(),
+      target_x_.Get(),       target_y_.Get()};
+  SynchronizeListOfSVGAttributes(attrs);
+  SVGFilterPrimitiveStandardAttributes::SynchronizeAllSVGAttributes();
 }
 
 }  // namespace blink

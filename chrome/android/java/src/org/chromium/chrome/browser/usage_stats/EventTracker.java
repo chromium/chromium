@@ -25,7 +25,7 @@ public class EventTracker {
     public EventTracker(UsageStatsBridge bridge) {
         mBridge = bridge;
         mRootPromise = new Promise<>();
-        // We need to add a dummy exception handler so that Promise doesn't complain when we
+        // We need to add a placeholder exception handler so that Promise doesn't complain when we
         // call variants of then() that don't take a single callback. These variants set an
         // exception handler on the returned promise, so they expect there to be one on the root
         // promise.

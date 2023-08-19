@@ -11,7 +11,6 @@ import androidx.annotation.CallSuper;
 import androidx.annotation.Nullable;
 
 import org.chromium.base.TraceEvent;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.keyboard_accessory.AccessoryAction;
 import org.chromium.chrome.browser.keyboard_accessory.AccessoryTabType;
 import org.chromium.chrome.browser.keyboard_accessory.AccessoryToggleType;
@@ -78,8 +77,6 @@ class AccessorySheetTabMediator implements Provider.Observer<AccessorySheetData>
 
     @CallSuper
     void onTabShown() {
-        AccessorySheetTabMetricsRecorder.recordSheetSuggestions(mTabType, mModel.get(ITEMS));
-
         // This is a compromise: we log an impression, even if the user didn't scroll down far
         // enough to see it. If we moved it into the view layer (i.e. when the actual button is
         // created and shown), we could record multiple impressions of the user scrolls up and
@@ -178,7 +175,6 @@ class AccessorySheetTabMediator implements Provider.Observer<AccessorySheetData>
         return AccessoryToggleType.COUNT;
     }
     private boolean shouldShowTitle(List<UserInfo> userInfoList) {
-        return !ChromeFeatureList.isEnabled(ChromeFeatureList.AUTOFILL_KEYBOARD_ACCESSORY)
-                || userInfoList.isEmpty();
+        return userInfoList.isEmpty();
     }
 }

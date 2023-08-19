@@ -58,6 +58,7 @@ const char kFileHandlerIncludeDirectories[] = "include_directories";
 const char kFileHandlerTypes[] = "types";
 const char kFileHandlerVerb[] = "verb";
 const char kGlobal[] = "global";
+const char kHandwritingLanguage[] = "handwriting_language";
 const char kHideBookmarkButton[] = "hide_bookmark_button";
 const char kHomepageURL[] = "homepage_url";
 const char kHostPermissions[] = "host_permissions";
@@ -114,7 +115,6 @@ const char kPlatformAppBackgroundScripts[] = "app.background.scripts";
 const char kPlatformAppContentSecurityPolicy[] = "app.content_security_policy";
 const char kPublicKey[] = "key";
 const char kRemoveButton[] = "remove_button";
-const char kReplacementAndroidApp[] = "replacement_android_app";
 const char kReplacementWebApp[] = "replacement_web_app";
 const char kSandboxedPages[] = "sandbox.pages";
 const char kSandboxedPagesCSP[] = "sandbox.content_security_policy";
@@ -526,8 +526,6 @@ const char kInvalidPermission[] =
 const char kInvalidPermissions[] =
     "Invalid value for 'permissions'.";
 const char kInvalidPermissionScheme[] = "Invalid scheme for '*[*]'.";
-const char16_t kInvalidReplacementAndroidApp[] =
-    u"Invalid value for 'replacement_android_app'";
 const char16_t kInvalidReplacementWebApp[] =
     u"Invalid value for 'replacement_web_app'.";
 const char kInvalidRulesetID[] =
@@ -591,7 +589,7 @@ const char16_t kInvalidURLHandlerPatternElement16[] =
 const char16_t kInvalidURLHandlerTitle[] =
     u"Invalid value for 'url_handlers[*].title'.";
 const char kInvalidURLHandlerPattern[] =
-    "Invalid value for 'url_handlers[*].matches[*]'.";
+    "Invalid value for 'url_handlers[*].matches'.";
 const char kInvalidURLPatternError[] =
     "Invalid url pattern '*'";
 const char16_t kInvalidVersion[] =

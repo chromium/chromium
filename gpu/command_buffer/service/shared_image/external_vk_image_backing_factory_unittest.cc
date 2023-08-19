@@ -27,10 +27,10 @@
 #include "third_party/skia/include/core/SkCanvas.h"
 #include "third_party/skia/include/core/SkColorSpace.h"
 #include "third_party/skia/include/core/SkImage.h"
-#include "third_party/skia/include/core/SkPromiseImageTexture.h"
 #include "third_party/skia/include/core/SkSurface.h"
 #include "third_party/skia/include/gpu/GrBackendSemaphore.h"
 #include "third_party/skia/include/gpu/ganesh/SkImageGanesh.h"
+#include "third_party/skia/include/private/chromium/GrPromiseImageTexture.h"
 #include "ui/gl/buildflags.h"
 
 #if BUILDFLAG(USE_DAWN)
@@ -69,6 +69,8 @@ class ExternalVkImageBackingFactoryDawnTest
 
     ExternalVkImageBackingFactoryTest::SetUp();
 
+    dawnProcSetProcs(&dawn::native::GetProcs());
+
     // Create a Dawn Vulkan device
     dawn_instance_.DiscoverDefaultPhysicalDevices();
 
@@ -81,15 +83,16 @@ class ExternalVkImageBackingFactoryDawnTest
                                          });
     ASSERT_NE(adapter_it, adapters.end());
 
-    DawnProcTable procs = dawn::native::GetProcs();
-    dawnProcSetProcs(&procs);
-
     // We need to request internal usage to be able to do operations with
     // internal methods that would need specific usages.
     wgpu::FeatureName dawn_internal_usage =
         wgpu::FeatureName::DawnInternalUsages;
     wgpu::DeviceDescriptor device_descriptor;
+#ifdef WGPU_BREAKING_CHANGE_COUNT_RENAME
+    device_descriptor.requiredFeatureCount = 1;
+#else
     device_descriptor.requiredFeaturesCount = 1;
+#endif
     device_descriptor.requiredFeatures = &dawn_internal_usage;
 
     dawn_device_ =
@@ -128,11 +131,11 @@ TEST_F(ExternalVkImageBackingFactoryDawnTest, DawnWrite_SkiaVulkanRead) {
   {
     // Create a Dawn representation to clear the texture contents to a green.
     auto dawn_representation = shared_image_representation_factory_.ProduceDawn(
-        mailbox, dawn_device_.Get(), WGPUBackendType_Vulkan, {});
+        mailbox, dawn_device_, wgpu::BackendType::Vulkan, {});
     ASSERT_TRUE(dawn_representation);
 
     auto dawn_scoped_access = dawn_representation->BeginScopedAccess(
-        WGPUTextureUsage_RenderAttachment,
+        wgpu::TextureUsage::RenderAttachment,
         SharedImageRepresentation::AllowUnclearedAccess::kYes);
     ASSERT_TRUE(dawn_scoped_access);
 
@@ -280,13 +283,13 @@ TEST_F(ExternalVkImageBackingFactoryDawnTest, SkiaVulkanWrite_DawnRead) {
   {
     // Create a Dawn representation
     auto dawn_representation = shared_image_representation_factory_.ProduceDawn(
-        mailbox, dawn_device_.Get(), WGPUBackendType_Vulkan, {});
+        mailbox, dawn_device_, wgpu::BackendType::Vulkan, {});
     ASSERT_TRUE(dawn_representation);
 
     // Begin access to copy the data out. Skia should have initialized the
     // contents.
     auto dawn_scoped_access = dawn_representation->BeginScopedAccess(
-        WGPUTextureUsage_CopySrc,
+        wgpu::TextureUsage::CopySrc,
         SharedImageRepresentation::AllowUnclearedAccess::kNo);
     ASSERT_TRUE(dawn_scoped_access);
 
@@ -539,7 +542,8 @@ const auto kSharedImageFormats =
                       viz::SinglePlaneFormat::kR_8,
                       viz::SinglePlaneFormat::kRG_88,
                       viz::MultiPlaneFormat::kNV12,
-                      viz::MultiPlaneFormat::kYV12);
+                      viz::MultiPlaneFormat::kYV12,
+                      viz::MultiPlaneFormat::kI420);
 
 INSTANTIATE_TEST_SUITE_P(,
                          ExternalVkImageBackingFactoryWithFormatTest,

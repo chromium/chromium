@@ -16,8 +16,6 @@
 #include "base/functional/function_ref.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
-#include "base/metrics/histogram_functions.h"
-#include "base/strings/strcat.h"
 #include "base/timer/timer.h"
 #include "base/values.h"
 #include "components/performance_manager/public/execution_context/execution_context.h"
@@ -95,19 +93,6 @@ class V8DetailedMemoryDecorator::ObserverNotifier {
 namespace {
 
 using MeasurementMode = V8DetailedMemoryRequest::MeasurementMode;
-
-// Measurement modes for logging to histograms. Use this for logging instead of
-// `MeasurementMode` so that the public API can be updated without breaking
-// histogram compatibility.
-//
-// These values are persisted to logs. Entries should not be renumbered and
-// numeric values should never be reused.
-enum class V8DetailedMemoryMeasurementMode {
-  kBounded = 0,
-  kLazy = 1,
-  kEagerForTesting = 2,
-  kMaxValue = kEagerForTesting,
-};
 
 // Forwards the pending receiver to the RenderProcessHost and binds it on the
 // UI thread.
@@ -285,10 +270,8 @@ class NodeAttachedProcessData
       const ProcessNode* process_node);
 
  private:
-  // Sends a measurement request to the renderer process. `is_global_request` is
-  // true if this measurement request came from the global request queue (so a
-  // copy if it will be sent to all renderers).
-  void StartMeasurement(MeasurementMode mode, bool is_global_request);
+  // Sends a measurement request to the renderer process.
+  void StartMeasurement(MeasurementMode mode);
 
   // Schedules a call to UpgradeToBoundedMeasurementIfNeeded() at the point
   // when the next measurement with mode kBounded would start, to ensure that
@@ -298,10 +281,7 @@ class NodeAttachedProcessData
   // If a measurement with mode kLazy is in progress, calls StartMeasurement()
   // with mode `bounded_mode` to override it. Otherwise do nothing to let
   // ScheduleNextMeasurement() start the bounded measurement.
-  // `is_global_request` is true if the bounded measurement request came from
-  // the global request queue (so a copy if it will be sent to all renderers).
-  void UpgradeToBoundedMeasurementIfNeeded(MeasurementMode bounded_mode,
-                                           bool is_global_request);
+  void UpgradeToBoundedMeasurementIfNeeded(MeasurementMode bounded_mode);
 
   void EnsureRemote();
   void OnV8MemoryUsage(blink::mojom::PerProcessV8MemoryUsagePtr result);
@@ -415,7 +395,7 @@ void NodeAttachedProcessData::ScheduleNextMeasurement() {
   state_ = State::kWaiting;
   if (last_request_time_.is_null()) {
     // This is the first measurement. Perform it immediately.
-    StartMeasurement(next_request->mode(), next_request == next_global_request);
+    StartMeasurement(next_request->mode());
     return;
   }
 
@@ -424,12 +404,10 @@ void NodeAttachedProcessData::ScheduleNextMeasurement() {
   request_timer_.Start(
       FROM_HERE, next_request_time - base::TimeTicks::Now(),
       base::BindOnce(&NodeAttachedProcessData::StartMeasurement,
-                     base::Unretained(this), next_request->mode(),
-                     next_request == next_global_request));
+                     base::Unretained(this), next_request->mode()));
 }
 
-void NodeAttachedProcessData::StartMeasurement(MeasurementMode mode,
-                                               bool is_global_request) {
+void NodeAttachedProcessData::StartMeasurement(MeasurementMode mode) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (IsMeasurementBounded(mode)) {
     DCHECK(state_ == State::kWaiting || state_ == State::kMeasuringLazy);
@@ -453,30 +431,21 @@ void NodeAttachedProcessData::StartMeasurement(MeasurementMode mode,
   // NodeAttachedProcessData when the last V8DetailedMemoryRequest is deleted,
   // which could happen at any time.
   blink::mojom::V8DetailedMemoryReporter::Mode mojo_mode;
-  V8DetailedMemoryMeasurementMode metrics_mode;
   switch (mode) {
     case MeasurementMode::kLazy:
       mojo_mode = blink::mojom::V8DetailedMemoryReporter::Mode::LAZY;
-      metrics_mode = V8DetailedMemoryMeasurementMode::kLazy;
       break;
     case MeasurementMode::kBounded:
       mojo_mode = blink::mojom::V8DetailedMemoryReporter::Mode::DEFAULT;
-      metrics_mode = V8DetailedMemoryMeasurementMode::kBounded;
       break;
     case MeasurementMode::kEagerForTesting:
       mojo_mode = blink::mojom::V8DetailedMemoryReporter::Mode::EAGER;
-      metrics_mode = V8DetailedMemoryMeasurementMode::kEagerForTesting;
       break;
   }
 
   resource_usage_reporter_->GetV8MemoryUsage(
       mojo_mode, base::BindOnce(&NodeAttachedProcessData::OnV8MemoryUsage,
                                 weak_factory_.GetWeakPtr()));
-  base::UmaHistogramEnumeration(
-      base::StrCat({"PerformanceManager.V8DetailedMemory.",
-                    is_global_request ? "AllRenderers" : "SingleRenderer",
-                    ".MeasurementMode"}),
-      metrics_mode);
 }
 
 void NodeAttachedProcessData::ScheduleUpgradeToBoundedMeasurement() {
@@ -505,20 +474,18 @@ void NodeAttachedProcessData::ScheduleUpgradeToBoundedMeasurement() {
       FROM_HERE, bounded_request_time - base::TimeTicks::Now(),
       base::BindOnce(
           &NodeAttachedProcessData::UpgradeToBoundedMeasurementIfNeeded,
-          base::Unretained(this), bounded_request->mode(),
-          bounded_request == global_bounded_request));
+          base::Unretained(this), bounded_request->mode()));
 }
 
 void NodeAttachedProcessData::UpgradeToBoundedMeasurementIfNeeded(
-    MeasurementMode bounded_mode,
-    bool is_global_request) {
+    MeasurementMode bounded_mode) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (state_ != State::kMeasuringLazy) {
     // State changed before timer expired.
     return;
   }
   DCHECK(IsMeasurementBounded(bounded_mode));
-  StartMeasurement(bounded_mode, is_global_request);
+  StartMeasurement(bounded_mode);
 }
 
 void NodeAttachedProcessData::OnV8MemoryUsage(

@@ -9,10 +9,6 @@
 #import "base/notreached.h"
 #import "ios/chrome/browser/default_browser/utils.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 namespace {
 
 // Histogram names for InfobarTypeConfirm.
@@ -128,6 +124,18 @@ const char kInfobarSyncErrorModalEventHistogram[] =
 const char kInfobarSyncErrorBadgeTappedHistogram[] =
     "Mobile.Messages.Badge.Tapped.InfobarTypeSyncError";
 
+// Histogram names for the Tabpickup banner.
+const char kInfobarTabPickupBannerEventHistogram[] =
+    "Mobile.Messages.Banner.Event.InfobarTypeTabPickup";
+const char kInfobarTabPickupBannerDismissTypeHistogram[] =
+    "Mobile.Messages.Banner.Dismiss.InfobarTypeTabPickup";
+// Modal.
+const char kInfobarTabPickupModalEventHistogram[] =
+    "Mobile.Messages.Modal.Event.InfobarTypeTabPickup";
+// Badge.
+const char kInfobarTabPickupBadgeTappedHistogram[] =
+    "Mobile.Messages.Badge.Tapped.InfobarTypeTabPickup";
+
 }  // namespace
 
 @interface InfobarMetricsRecorder ()
@@ -187,6 +195,9 @@ const char kInfobarSyncErrorBadgeTappedHistogram[] =
     case InfobarType::kInfobarTypeSyncError:
       UMA_HISTOGRAM_ENUMERATION(kInfobarSyncErrorBannerEventHistogram, event);
       break;
+    case InfobarType::kInfobarTypeTabPickup:
+      UMA_HISTOGRAM_ENUMERATION(kInfobarTabPickupBannerEventHistogram, event);
+      break;
   }
 }
 
@@ -229,6 +240,10 @@ const char kInfobarSyncErrorBadgeTappedHistogram[] =
       UMA_HISTOGRAM_ENUMERATION(kInfobarSyncErrorBannerDismissTypeHistogram,
                                 dismissType);
       break;
+    case InfobarType::kInfobarTypeTabPickup:
+      UMA_HISTOGRAM_ENUMERATION(kInfobarTabPickupBannerDismissTypeHistogram,
+                                dismissType);
+      break;
   }
 }
 
@@ -269,6 +284,9 @@ const char kInfobarSyncErrorBadgeTappedHistogram[] =
     case InfobarType::kInfobarTypeSyncError:
       UMA_HISTOGRAM_ENUMERATION(kInfobarSyncErrorModalEventHistogram, event);
       break;
+    case InfobarType::kInfobarTypeTabPickup:
+      UMA_HISTOGRAM_ENUMERATION(kInfobarTabPickupModalEventHistogram, event);
+      break;
   }
 }
 
@@ -305,6 +323,9 @@ const char kInfobarSyncErrorBadgeTappedHistogram[] =
       break;
     case InfobarType::kInfobarTypeSyncError:
       UMA_HISTOGRAM_ENUMERATION(kInfobarSyncErrorBadgeTappedHistogram, state);
+      break;
+    case InfobarType::kInfobarTypeTabPickup:
+      UMA_HISTOGRAM_ENUMERATION(kInfobarTabPickupBadgeTappedHistogram, state);
       break;
   }
 }

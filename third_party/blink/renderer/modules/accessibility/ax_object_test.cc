@@ -1298,8 +1298,8 @@ TEST_F(AccessibilityTest, GetBoundsInFrameCoordinatesSvgText) {
   ASSERT_NE(text1, nullptr);
   AXObject* text2 = GetAXObjectByElementId("t2");
   ASSERT_NE(text2, nullptr);
-  LayoutRect bounds1 = text1->GetBoundsInFrameCoordinates();
-  LayoutRect bounds2 = text2->GetBoundsInFrameCoordinates();
+  PhysicalRect bounds1 = text1->GetBoundsInFrameCoordinates();
+  PhysicalRect bounds2 = text2->GetBoundsInFrameCoordinates();
 
   // Check if bounding boxes for SVG <text> respect to positioning
   // attributes such as 'x'.
@@ -1485,7 +1485,7 @@ TEST_F(AccessibilityTest, ComputeIsInertWithNonHTMLElements) {
   )HTML");
 
   Document& document = GetDocument();
-  Element* element = document.QuerySelector("main");
+  Element* element = document.QuerySelector(AtomicString("main"));
   while (element) {
     Node* node = element->firstChild();
     AXObject* ax_node = GetAXObjectCache().GetOrCreate(node);
@@ -1587,19 +1587,19 @@ TEST_F(AccessibilityTest, CanComputeAsNaturalParent) {
   SetBodyInnerHTML(R"HTML(M<img usemap="#map"><map name="map"><hr><progress>
     <div><input type="range">M)HTML");
 
-  Element* elem = GetDocument().QuerySelector("img");
+  Element* elem = GetDocument().QuerySelector(AtomicString("img"));
   EXPECT_FALSE(AXObject::CanComputeAsNaturalParent(elem));
-  elem = GetDocument().QuerySelector("map");
+  elem = GetDocument().QuerySelector(AtomicString("map"));
   EXPECT_FALSE(AXObject::CanComputeAsNaturalParent(elem));
-  elem = GetDocument().QuerySelector("hr");
+  elem = GetDocument().QuerySelector(AtomicString("hr"));
   EXPECT_FALSE(AXObject::CanComputeAsNaturalParent(elem));
-  elem = GetDocument().QuerySelector("progress");
+  elem = GetDocument().QuerySelector(AtomicString("progress"));
   EXPECT_FALSE(AXObject::CanComputeAsNaturalParent(elem));
-  elem = GetDocument().QuerySelector("input");
+  elem = GetDocument().QuerySelector(AtomicString("input"));
   EXPECT_FALSE(AXObject::CanComputeAsNaturalParent(elem));
-  elem = GetDocument().QuerySelector("div");
+  elem = GetDocument().QuerySelector(AtomicString("div"));
   EXPECT_TRUE(AXObject::CanComputeAsNaturalParent(elem));
-  elem = GetDocument().QuerySelector("input");
+  elem = GetDocument().QuerySelector(AtomicString("input"));
   EXPECT_FALSE(AXObject::CanComputeAsNaturalParent(elem));
 }
 

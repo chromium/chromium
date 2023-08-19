@@ -4,6 +4,8 @@
 
 package org.chromium.chrome.browser.history_clusters;
 
+import static android.content.Context.ACCESSIBILITY_SERVICE;
+
 import static androidx.test.espresso.matcher.ViewMatchers.assertThat;
 
 import static org.junit.Assert.assertEquals;
@@ -33,6 +35,7 @@ import android.text.SpannableString;
 import android.text.style.StyleSpan;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.accessibility.AccessibilityManager;
 
 import androidx.annotation.Nullable;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -45,6 +48,7 @@ import org.hamcrest.BaseMatcher;
 import org.hamcrest.Description;
 import org.hamcrest.Matcher;
 import org.hamcrest.Matchers;
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -76,11 +80,11 @@ import org.chromium.components.browser_ui.widget.selectable_list.SelectionDelega
 import org.chromium.components.favicon.LargeIconBridge;
 import org.chromium.components.search_engines.TemplateUrlService;
 import org.chromium.content_public.browser.LoadUrlParams;
+import org.chromium.ui.accessibility.AccessibilityState;
 import org.chromium.ui.modelutil.MVCListAdapter.ListItem;
 import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.shadows.ShadowAppCompatResources;
-import org.chromium.ui.util.AccessibilityUtil;
 import org.chromium.url.GURL;
 import org.chromium.url.JUnitTestGURLs;
 import org.chromium.url.ShadowGURL;
@@ -144,7 +148,7 @@ public class HistoryClustersMediatorTest {
     @Mock
     private HistoryClustersMetricsLogger mMetricsLogger;
     @Mock
-    private AccessibilityUtil mAccessibilityUtil;
+    private AccessibilityManager mAccessibilityManager;
     @Mock
     private Configuration mConfiguration;
     @Mock
@@ -180,6 +184,7 @@ public class HistoryClustersMediatorTest {
     @Before
     public void setUp() {
         ContextUtils.initApplicationContextForTests(mContext);
+        doReturn(mAccessibilityManager).when(mContext).getSystemService(ACCESSIBILITY_SERVICE);
         doReturn(mResources).when(mContext).getResources();
         doReturn(ITEM_URL_SPEC).when(mMockGurl).getSpec();
         doReturn(mLayoutManager).when(mRecyclerView).getLayoutManager();
@@ -270,8 +275,7 @@ public class HistoryClustersMediatorTest {
 
         mMediator = new HistoryClustersMediator(mBridge, mLargeIconBridge, mContext, mResources,
                 mModelList, mToolbarModel, mHistoryClustersDelegate, mClock, mTemplateUrlService,
-                mSelectionDelegate, mMetricsLogger, mAccessibilityUtil, mAnnounceCallback,
-                mHandler);
+                mSelectionDelegate, mMetricsLogger, mAnnounceCallback, mHandler);
         mVisit1 = new ClusterVisit(1.0F, mGurl1, "Title 1", "url1.com/", new ArrayList<>(),
                 new ArrayList<>(), mGurl1, 123L, new ArrayList<>());
         mVisit2 = new ClusterVisit(1.0F, mGurl2, "Title 2", "url2.com/", new ArrayList<>(),
@@ -303,6 +307,12 @@ public class HistoryClustersMediatorTest {
                 new HistoryClustersResult(Arrays.asList(mCluster1, mCluster2),
                         new LinkedHashMap<>(ImmutableMap.of("label", 1, "hostname.com", 1)), "",
                         false, false);
+    }
+
+    @After
+    public void tearDown() {
+        AccessibilityState.setIsTouchExplorationEnabledForTesting(false);
+        AccessibilityState.setIsPerformGesturesEnabledForTesting(false);
     }
 
     @Test
@@ -357,10 +367,11 @@ public class HistoryClustersMediatorTest {
     @Test
     public void testScrollToLoadDisabled() {
         mConfiguration.keyboard = Configuration.KEYBOARD_12KEY;
+        AccessibilityState.setIsTouchExplorationEnabledForTesting(true);
+        AccessibilityState.setIsPerformGesturesEnabledForTesting(true);
         mMediator = new HistoryClustersMediator(mBridge, mLargeIconBridge, mContext, mResources,
                 mModelList, mToolbarModel, mHistoryClustersDelegate, mClock, mTemplateUrlService,
-                mSelectionDelegate, mMetricsLogger, mAccessibilityUtil, mAnnounceCallback,
-                mHandler);
+                mSelectionDelegate, mMetricsLogger, mAnnounceCallback, mHandler);
 
         Promise<HistoryClustersResult> promise = new Promise<>();
         doReturn(promise).when(mBridge).queryClusters("query");
@@ -506,7 +517,7 @@ public class HistoryClustersMediatorTest {
     @Test
     public void testSearchTextChanged() {
         doReturn(new Promise<>()).when(mBridge).queryClusters("pan");
-        // Add a dummy entry to mModelList so we can check it was cleared.
+        // Add a placeholder entry to mModelList so we can check it was cleared.
         mModelList.add(new ListItem(42, new PropertyModel()));
         mMediator.onSearchTextChanged("p");
         mMediator.onSearchTextChanged("pa");

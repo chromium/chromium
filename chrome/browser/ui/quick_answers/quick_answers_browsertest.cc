@@ -46,7 +46,7 @@ namespace quick_answers {
 namespace {
 
 constexpr char kTestQuery[] = "test";
-constexpr int kCursorXToOverlapWithANotification = 600;
+constexpr int kCursorXToOverlapWithANotification = 630;
 constexpr int kCursorYToOverlapWithANotification = 400;
 
 constexpr char kTestNotificationId[] = "id";
@@ -126,16 +126,8 @@ class QuickAnswersBrowserTest : public QuickAnswersBrowserTestBase {
   }
 };
 
-// Test is flaky on ChromeOS. https://crbug.com/1450432
-#if BUILDFLAG(IS_CHROMEOS)
-#define MAYBE_QuickAnswersViewAboveNotification \
-  DISABLED_QuickAnswersViewAboveNotification
-#else
-#define MAYBE_QuickAnswersViewAboveNotification \
-  QuickAnswersViewAboveNotification
-#endif
 IN_PROC_BROWSER_TEST_F(QuickAnswersBrowserTest,
-                       MAYBE_QuickAnswersViewAboveNotification) {
+                       QuickAnswersViewAboveNotification) {
   SetQuickAnswersEnabled(true);
 
   views::NamedWidgetShownWaiter quick_answers_view_widget_waiter(
@@ -176,15 +168,8 @@ IN_PROC_BROWSER_TEST_F(QuickAnswersBrowserTest,
       quick_answers_view_widget->GetNativeView()));
 }
 
-// Test is flaky on ChromeOS. https://crbug.com/1450432
-#if BUILDFLAG(IS_CHROMEOS)
-#define MAYBE_UserConsentViewAboveNotification \
-  DISABLED_UserConsentViewAboveNotification
-#else
-#define MAYBE_UserConsentViewAboveNotification UserConsentViewAboveNotification
-#endif
 IN_PROC_BROWSER_TEST_F(QuickAnswersBrowserTest,
-                       MAYBE_UserConsentViewAboveNotification) {
+                       UserConsentViewAboveNotification) {
   views::NamedWidgetShownWaiter user_consent_view_widget_waiter(
       views::test::AnyWidgetTestPasskey(), UserConsentView::kWidgetName);
 

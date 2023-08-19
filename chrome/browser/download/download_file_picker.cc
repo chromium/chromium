@@ -74,7 +74,7 @@ DownloadFilePicker::DownloadFilePicker(download::DownloadItem* item,
       ui::SelectFileDialog::FileTypeInfo::NATIVE_PATH;
   gfx::NativeWindow owning_window =
       web_contents ? platform_util::GetTopLevel(web_contents->GetNativeView())
-                   : gfx::kNullNativeWindow;
+                   : gfx::NativeWindow();
 
   // If select_file_dialog_ issued by extension API,
   // (e.g. chrome.downloads.download), the |owning_window| host

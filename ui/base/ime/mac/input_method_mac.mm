@@ -11,8 +11,7 @@ namespace ui {
 InputMethodMac::InputMethodMac(ImeKeyEventDispatcher* ime_key_event_dispatcher)
     : InputMethodBase(ime_key_event_dispatcher) {}
 
-InputMethodMac::~InputMethodMac() {
-}
+InputMethodMac::~InputMethodMac() = default;
 
 ui::EventDispatchDetails InputMethodMac::DispatchKeyEvent(ui::KeyEvent* event) {
   // This is used on Mac only to dispatch events post-IME.
@@ -26,7 +25,7 @@ void InputMethodMac::CancelComposition(const TextInputClient* client) {
   if (!IsTextInputClientFocused(client))
     return;
 
-  [[NSTextInputContext currentInputContext] discardMarkedText];
+  [NSTextInputContext.currentInputContext discardMarkedText];
 }
 
 bool InputMethodMac::IsCandidatePopupOpen() const {

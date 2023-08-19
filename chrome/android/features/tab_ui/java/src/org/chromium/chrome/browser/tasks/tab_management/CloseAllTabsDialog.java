@@ -6,10 +6,14 @@ package org.chromium.chrome.browser.tasks.tab_management;
 
 import android.content.Context;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.VisibleForTesting;
+
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.R;
+import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.ui.modaldialog.DialogDismissalCause;
 import org.chromium.ui.modaldialog.ModalDialogManager;
 import org.chromium.ui.modaldialog.ModalDialogProperties;
@@ -24,14 +28,16 @@ public class CloseAllTabsDialog {
     /**
      * Shows a modal dialog to confirm or cancel the close all tabs action.
      * @param modalDialogManagerSupplier Provides access to the modal dialog manager.
+     * @param tabModelSelector {@link TabModelSelector} to get the Incognito tab count to
+     *         show in the regular mode dialog.
      * @param onCloseAll Invoked on a positive button input.
-     * @param isIncognito Whether to show incognito strings.
      */
     public static void show(Context context,
-            Supplier<ModalDialogManager> modalDialogManagerSupplier, Runnable onCloseAll,
-            boolean isIncognito) {
+            Supplier<ModalDialogManager> modalDialogManagerSupplier,
+            @NonNull TabModelSelector tabModelSelector, Runnable onCloseAll) {
         assert modalDialogManagerSupplier.hasValue();
         final ModalDialogManager manager = modalDialogManagerSupplier.get();
+        final boolean isIncognito = tabModelSelector.getCurrentModel().isIncognito();
 
         ModalDialogProperties.Controller controller = new ModalDialogProperties.Controller() {
             @Override
@@ -71,9 +77,7 @@ public class CloseAllTabsDialog {
                                                 ? R.string.close_all_tabs_dialog_title_incognito
                                                 : R.string.close_all_tabs_dialog_title))
                         .with(ModalDialogProperties.MESSAGE_PARAGRAPH_1,
-                                context.getString(isIncognito
-                                                ? R.string.close_all_tabs_dialog_message_incognito
-                                                : R.string.close_all_tabs_dialog_message))
+                                getDialogDescriptionString(context, tabModelSelector))
                         .with(ModalDialogProperties.POSITIVE_BUTTON_TEXT,
                                 context.getString(R.string.menu_close_all_tabs))
                         .with(ModalDialogProperties.NEGATIVE_BUTTON_TEXT,
@@ -84,5 +88,21 @@ public class CloseAllTabsDialog {
                         .build();
 
         manager.showDialog(model, ModalDialogManager.ModalDialogType.APP, true);
+    }
+
+    @VisibleForTesting
+    static String getDialogDescriptionString(
+            @NonNull Context context, @NonNull TabModelSelector tabModelSelector) {
+        boolean isIncognito = tabModelSelector.getCurrentModel().isIncognito();
+        int incognitoCount = tabModelSelector.getModel(/*incognito=*/true).getCount();
+
+        if (isIncognito) {
+            return context.getString(R.string.close_all_tabs_dialog_message_incognito);
+        } else {
+            return (incognitoCount > 0) ? context.getResources().getQuantityString(
+                           R.plurals.close_all_tabs_dialog_message_with_incognito_tabs,
+                           incognitoCount, incognitoCount)
+                                        : context.getString(R.string.close_all_tabs_dialog_message);
+        }
     }
 }

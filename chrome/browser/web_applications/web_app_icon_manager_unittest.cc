@@ -41,7 +41,6 @@
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "third_party/skia/include/core/SkColor.h"
-#include "ui/base/layout.h"
 #include "ui/base/resource/resource_scale_factor.h"
 #include "ui/gfx/favicon_size.h"
 
@@ -52,22 +51,26 @@ namespace {
 using IconSizeAndPurpose = WebAppIconManager::IconSizeAndPurpose;
 const int kMinimumHomeTabIconSizeInPx = 16;
 
+// Returns a vector of item infos for the shortcuts menu. Each item is empty
+// except `downloaded_icon_sizes` is set to `icon_sizes`.
+std::vector<WebAppShortcutsMenuItemInfo> CreateShortcutsMenuItemInfos(
+    int num_menu_items,
+    const IconSizes& icon_sizes) {
+  std::vector<WebAppShortcutsMenuItemInfo> result;
+
+  for (int i = 0; i < num_menu_items; ++i) {
+    result.emplace_back();
+    result.back().downloaded_icon_sizes = icon_sizes;
+  }
+
+  return result;
+}
+
 }  // namespace
 
 class WebAppIconManagerTest : public WebAppTest {
   void SetUp() override {
     WebAppTest::SetUp();
-
-    provider_ = FakeWebAppProvider::Get(profile());
-    auto install_manager = std::make_unique<WebAppInstallManager>(profile());
-    install_manager_ = install_manager.get();
-    provider_->SetInstallManager(std::move(install_manager));
-
-    file_utils_ = base::MakeRefCounted<TestFileUtils>();
-    auto icon_manager =
-        std::make_unique<WebAppIconManager>(profile(), file_utils_);
-    icon_manager_ = icon_manager.get();
-    provider_->SetIconManager(std::move(icon_manager));
 
     test::AwaitStartWebAppProviderAndSubsystems(profile());
   }
@@ -119,38 +122,6 @@ class WebAppIconManagerTest : public WebAppTest {
                     }));
     run_loop.Run();
     return result;
-  }
-
-  // Returns a list of downloaded sizes for the menu indexed by menu item
-  // number.
-  std::vector<IconSizes> CreateDownloadedShortcutsMenuIconsSizes(
-      const std::vector<SquareSizePx>& sizes_any,
-      const std::vector<SquareSizePx>& sizes_maskable,
-      const std::vector<SquareSizePx>& sizes_monochrome,
-      int num_menu_items) {
-    std::vector<IconSizes> downloaded_shortcuts_menu_icons_sizes;
-
-    for (int i = 0; i < num_menu_items; ++i) {
-      IconSizes icon_sizes;
-
-      for (IconPurpose purpose : kIconPurposes) {
-        switch (purpose) {
-          case IconPurpose::ANY:
-            icon_sizes.SetSizesForPurpose(purpose, sizes_any);
-            break;
-          case IconPurpose::MASKABLE:
-            icon_sizes.SetSizesForPurpose(purpose, sizes_maskable);
-            break;
-          case IconPurpose::MONOCHROME:
-            icon_sizes.SetSizesForPurpose(purpose, sizes_monochrome);
-            break;
-        }
-      }
-
-      downloaded_shortcuts_menu_icons_sizes.push_back(std::move(icon_sizes));
-    }
-
-    return downloaded_shortcuts_menu_icons_sizes;
   }
 
   struct PurposeAndBitmap {
@@ -229,11 +200,9 @@ class WebAppIconManagerTest : public WebAppTest {
   }
 
   void AddAppToRegistry(std::unique_ptr<WebApp> web_app) {
-    ScopedRegistryUpdate update(&sync_bridge());
+    ScopedRegistryUpdate update = sync_bridge().BeginUpdate();
     update->CreateApp(std::move(web_app));
   }
-
-  FakeWebAppProvider& provider() { return *provider_; }
 
   // Read favicons on web_app installation and await
   // WebAppIconManager::favicon_read_callback_ synchronously.
@@ -268,21 +237,17 @@ class WebAppIconManagerTest : public WebAppTest {
     run_loop.Run();
   }
 
-  WebAppRegistrar& registrar() { return provider().registrar_unsafe(); }
-  WebAppInstallManager& install_manager() { return *install_manager_; }
-  WebAppSyncBridge& sync_bridge() { return provider().sync_bridge_unsafe(); }
-  WebAppIconManager& icon_manager() { return *icon_manager_; }
-  TestFileUtils& file_utils() {
-    DCHECK(file_utils_);
-    return *file_utils_;
+  WebAppRegistrar& registrar() { return fake_provider().registrar_unsafe(); }
+  WebAppInstallManager& install_manager() {
+    return fake_provider().install_manager();
   }
-
- private:
-  raw_ptr<FakeWebAppProvider, DanglingUntriaged> provider_;
-  raw_ptr<WebAppInstallManager, DanglingUntriaged> install_manager_;
-  raw_ptr<WebAppIconManager, DanglingUntriaged> icon_manager_;
-
-  scoped_refptr<TestFileUtils> file_utils_;
+  WebAppSyncBridge& sync_bridge() {
+    return fake_provider().sync_bridge_unsafe();
+  }
+  WebAppIconManager& icon_manager() { return fake_provider().icon_manager(); }
+  TestFileUtils& file_utils() {
+    return *fake_provider().file_utils()->AsTestFileUtils();
+  }
 };
 
 TEST_F(WebAppIconManagerTest, WriteAndReadIcons_AnyOnly) {
@@ -579,7 +544,7 @@ TEST_F(WebAppIconManagerTest, OverwriteIcons) {
 
     run_loop.Run();
 
-    ScopedRegistryUpdate update(&sync_bridge());
+    ScopedRegistryUpdate update = sync_bridge().BeginUpdate();
     update->UpdateApp(app_id)->SetDownloadedIconSizes(IconPurpose::ANY,
                                                       overwritten_sizes_px);
     update->UpdateApp(app_id)->SetDownloadedIconSizes(IconPurpose::MASKABLE,
@@ -703,9 +668,14 @@ TEST_F(WebAppIconManagerTest, ReadAllShortcutMenuIconsWithTimestamp) {
                                     {IconPurpose::MASKABLE, sizes, colors},
                                     {IconPurpose::MONOCHROME, sizes, colors}},
                                    num_menu_items);
-  web_app->SetDownloadedShortcutsMenuIconsSizes(
-      CreateDownloadedShortcutsMenuIconsSizes(sizes, sizes, sizes,
-                                              num_menu_items));
+
+  IconSizes icon_sizes;
+  icon_sizes.any = sizes;
+  icon_sizes.maskable = sizes;
+  icon_sizes.monochrome = sizes;
+
+  web_app->SetShortcutsMenuInfo(
+      CreateShortcutsMenuItemInfos(num_menu_items, icon_sizes));
 
   AddAppToRegistry(std::move(web_app));
 
@@ -802,13 +772,14 @@ TEST_F(WebAppIconManagerTest, ReadShortcutsMenuIconsFailed) {
   const AppId app_id = web_app->app_id();
 
   const std::vector<SquareSizePx> sizes_px_any{icon_size::k96, icon_size::k256};
+  const int num_menu_items = 10;
+
+  IconSizes icon_sizes;
+  icon_sizes.any = sizes_px_any;
 
   // Set shortcuts menu icons meta-info but don't write bitmaps to disk.
-  web_app->SetDownloadedShortcutsMenuIconsSizes(
-      CreateDownloadedShortcutsMenuIconsSizes(sizes_px_any,
-                                              /*sizes_maskable=*/{},
-                                              /*sizes_monochrome=*/{},
-                                              /*num_menu_items=*/10));
+  web_app->SetShortcutsMenuInfo(
+      CreateShortcutsMenuItemInfos(num_menu_items, icon_sizes));
 
   AddAppToRegistry(std::move(web_app));
 
@@ -849,9 +820,13 @@ TEST_F(WebAppIconManagerTest, WriteAndReadAllShortcutsMenuIcons) {
        {IconPurpose::MONOCHROME, sizes_monochrome, colors_monochrome}},
       num_menu_items);
 
-  web_app->SetDownloadedShortcutsMenuIconsSizes(
-      CreateDownloadedShortcutsMenuIconsSizes(
-          sizes_any, sizes_maskable, sizes_monochrome, num_menu_items));
+  IconSizes icon_sizes;
+  icon_sizes.any = sizes_any;
+  icon_sizes.maskable = sizes_maskable;
+  icon_sizes.monochrome = sizes_monochrome;
+
+  web_app->SetShortcutsMenuInfo(
+      CreateShortcutsMenuItemInfos(num_menu_items, icon_sizes));
 
   AddAppToRegistry(std::move(web_app));
 
@@ -902,7 +877,7 @@ TEST_F(WebAppIconManagerTest, WriteNonProductIconsEmptyMaps) {
   auto web_app = test::CreateWebApp();
   const AppId app_id = web_app->app_id();
 
-  web_app->SetDownloadedShortcutsMenuIconsSizes(std::vector<IconSizes>{});
+  web_app->SetShortcutsMenuInfo({});
 
   AddAppToRegistry(std::move(web_app));
 

@@ -92,7 +92,8 @@ TEST_F(ExternalDateTimeChooserTest,
       )HTML");
   GetDocument().View()->UpdateAllLifecyclePhasesForTest();
 
-  auto* input = To<HTMLInputElement>(GetDocument().getElementById("test"));
+  auto* input =
+      To<HTMLInputElement>(GetDocument().getElementById(AtomicString("test")));
   ASSERT_TRUE(input);
 
   DateTimeChooserParameters params;

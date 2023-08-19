@@ -12,8 +12,8 @@
 
 #include <vector>
 
+#include "base/apple/scoped_cftyperef.h"
 #include "base/containers/span.h"
-#include "base/mac/scoped_cftyperef.h"
 #include "testing/gmock/include/gmock/gmock.h"
 
 namespace enterprise_connectors::test {

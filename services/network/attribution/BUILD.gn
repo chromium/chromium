@@ -9,6 +9,7 @@ source_set("attribution") {
     "//services/network:test_support",
     "//services/network:tests",
   ]
+  configs += [ "//build/config/compiler:wexit_time_destructors" ]
   defines = [ "IS_NETWORK_SERVICE_IMPL" ]
   sources = [
     "attribution_request_helper.cc",

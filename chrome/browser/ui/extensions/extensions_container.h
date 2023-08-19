@@ -8,7 +8,6 @@
 #include <string>
 
 #include "base/functional/callback_forward.h"
-#include "chrome/browser/extensions/extension_context_menu_model.h"
 #include "chrome/browser/ui/extensions/extension_popup_types.h"
 #include "chrome/browser/ui/toolbar/toolbar_action_hover_card_types.h"
 
@@ -36,16 +35,9 @@ class ExtensionsContainer {
   // necessary cleanup.
   virtual void OnContextMenuClosed() {}
 
-  // Whether the container supports showing extensions on the toolbar.
-  virtual bool CanShowActionsInToolbar() const = 0;
-
   // Returns true if the action pointed by `action_id` is visible on the
   // toolbar.
   virtual bool IsActionVisibleOnToolbar(const std::string& action_id) const = 0;
-
-  // Returns the action's toolbar button visibility.
-  virtual extensions::ExtensionContextMenuModel::ButtonVisibility
-  GetActionVisibility(const std::string& action_id) const = 0;
 
   // Undoes the current "pop out"; i.e., moves the popped out action back into
   // overflow.
@@ -85,6 +77,11 @@ class ExtensionsContainer {
   virtual void UpdateToolbarActionHoverCard(
       ToolbarActionView* action_view,
       ToolbarActionHoverCardUpdateType update_type) = 0;
+
+  // Collapses the confirmation on the request access button, effectively
+  // hiding the button. Does nothing if the confirmation is not showing
+  // anymore.
+  virtual void CollapseConfirmation() = 0;
 };
 
 #endif  // CHROME_BROWSER_UI_EXTENSIONS_EXTENSIONS_CONTAINER_H_

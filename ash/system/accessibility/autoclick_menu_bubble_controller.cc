@@ -160,6 +160,7 @@ void AutoclickMenuBubbleController::ShowBubble(AutoclickEventType type,
                                          kCollisionWindowWorkAreaInsetsDp);
   init_params.preferred_width = kAutoclickMenuWidth;
   init_params.translucent = true;
+  init_params.type = TrayBubbleView::TrayBubbleType::kAccessibilityBubble;
   bubble_view_ = new TrayBubbleView(init_params);
 
   menu_view_ = new AutoclickMenuView(type, position);

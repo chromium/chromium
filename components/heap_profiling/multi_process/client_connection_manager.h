@@ -7,6 +7,8 @@
 
 #include <unordered_set>
 
+#include "base/functional/callback_forward.h"
+#include "base/functional/callback_helpers.h"
 #include "base/gtest_prod_util.h"
 #include "base/memory/weak_ptr.h"
 #include "content/public/browser/browser_child_process_observer.h"
@@ -64,10 +66,12 @@ class ClientConnectionManager
 
   Mode GetMode();
 
-  // In additional to profiling |pid|, this will change the Mode to kManual.
-  // From here on out, the caller must manually specify processes to be
-  // profiled.
-  void StartProfilingProcess(base::ProcessId pid);
+  // In addition to profiling `pid`, this will change the Mode to kManual. From
+  // here on out, the caller must manually specify processes to be profiled.
+  // Invokes `started_profiling_closure` if and when profiling starts
+  // successfully.
+  void StartProfilingProcess(base::ProcessId pid,
+                             base::OnceClosure started_profiling_closure);
 
   virtual bool AllowedToProfileRenderer(content::RenderProcessHost* host);
 
@@ -87,7 +91,9 @@ class ClientConnectionManager
   void BrowserChildProcessLaunchedAndConnected(
       const content::ChildProcessData& data) override;
 
-  void StartProfilingNonRendererChild(const content::ChildProcessData& data);
+  void StartProfilingNonRendererChild(
+      const content::ChildProcessData& data,
+      base::OnceClosure started_profiling_closure = base::DoNothing());
 
   // content::RenderProcessHostCreationObserver
   void OnRenderProcessHostCreated(content::RenderProcessHost* host) override;
@@ -100,7 +106,9 @@ class ClientConnectionManager
 
   bool ShouldProfileNewRenderer(content::RenderProcessHost* renderer);
 
-  void StartProfilingRenderer(content::RenderProcessHost* renderer);
+  void StartProfilingRenderer(
+      content::RenderProcessHost* renderer,
+      base::OnceClosure started_profiling_closure = base::DoNothing());
 
   // The owner of this instance must guarantee that |controller_| outlives this
   // class.

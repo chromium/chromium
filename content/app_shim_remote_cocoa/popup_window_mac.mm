@@ -7,14 +7,14 @@
 #import "content/app_shim_remote_cocoa/render_widget_host_view_cocoa.h"
 #include "ui/gfx/mac/coordinate_conversion.h"
 
-@interface RenderWidgetPopupWindow : NSWindow {
-  // The event tap that allows monitoring of all events, to properly close with
-  // a click outside the bounds of the window.
-  id _clickEventTap;
-}
+@interface RenderWidgetPopupWindow : NSWindow
 @end
 
-@implementation RenderWidgetPopupWindow
+@implementation RenderWidgetPopupWindow {
+  // The event tap that allows monitoring of all events, to properly close with
+  // a click outside the bounds of the window.
+  id __strong _clickEventTap;
+}
 
 - (instancetype)initWithContentRect:(NSRect)contentRect
                           styleMask:(NSUInteger)windowStyle
@@ -24,7 +24,7 @@
                               styleMask:windowStyle
                                 backing:bufferingType
                                   defer:deferCreation]) {
-    [self setBackgroundColor:[NSColor clearColor]];
+    self.backgroundColor = NSColor.clearColor;
     [self startObservingClicks];
   }
   return self;
@@ -32,7 +32,6 @@
 
 - (void)dealloc {
   [self stopObservingClicks];
-  [super dealloc];
 }
 
 - (void)close {
@@ -48,25 +47,31 @@
 
 // Install the callback.
 - (void)startObservingClicks {
+  RenderWidgetPopupWindow* __weak weakSelf = self;
   _clickEventTap = [NSEvent
       addLocalMonitorForEventsMatchingMask:NSEventMaskAny
                                    handler:^NSEvent*(NSEvent* event) {
-                                     if ([event window] == self)
+                                     RenderWidgetPopupWindow* strongSelf =
+                                         weakSelf;
+
+                                     if (event.window == strongSelf) {
                                        return event;
-                                     NSEventType eventType = [event type];
+                                     }
+                                     NSEventType eventType = event.type;
                                      if (eventType ==
                                              NSEventTypeLeftMouseDown ||
-                                         eventType == NSEventTypeRightMouseDown)
-                                       [self close];
+                                         eventType ==
+                                             NSEventTypeRightMouseDown) {
+                                       [strongSelf close];
+                                     }
                                      return event;
                                    }];
 
-  NSNotificationCenter* notificationCenter =
-      [NSNotificationCenter defaultCenter];
-  [notificationCenter addObserver:self
-                         selector:@selector(beganTracking:)
-                             name:NSMenuDidBeginTrackingNotification
-                           object:[NSApp mainMenu]];
+  [NSNotificationCenter.defaultCenter
+      addObserver:self
+         selector:@selector(beganTracking:)
+             name:NSMenuDidBeginTrackingNotification
+           object:NSApp.mainMenu];
 }
 
 // Remove the callback.
@@ -77,11 +82,10 @@
   [NSEvent removeMonitor:_clickEventTap];
   _clickEventTap = nil;
 
-  NSNotificationCenter* notificationCenter =
-      [NSNotificationCenter defaultCenter];
-  [notificationCenter removeObserver:self
-                                name:NSMenuDidBeginTrackingNotification
-                              object:[NSApp mainMenu]];
+  [NSNotificationCenter.defaultCenter
+      removeObserver:self
+                name:NSMenuDidBeginTrackingNotification
+              object:[NSApp mainMenu]];
 }
 
 @end
@@ -91,22 +95,22 @@ namespace remote_cocoa {
 PopupWindowMac::PopupWindowMac(const gfx::Rect& content_rect,
                                RenderWidgetHostViewCocoa* cocoa_view)
     : cocoa_view_(cocoa_view) {
-  [cocoa_view_ setCloseOnDeactivate:YES];
-  [cocoa_view_ setCanBeKeyView:NO];
+  cocoa_view_.closeOnDeactivate = YES;
+  cocoa_view_.canBeKeyView = NO;
 
-  popup_window_.reset([[RenderWidgetPopupWindow alloc]
+  popup_window_ = [[RenderWidgetPopupWindow alloc]
       initWithContentRect:gfx::ScreenRectToNSRect(content_rect)
                 styleMask:NSWindowStyleMaskBorderless
                   backing:NSBackingStoreBuffered
-                    defer:NO]);
-  [popup_window_ setHasShadow:YES];
-  [popup_window_ setLevel:NSPopUpMenuWindowLevel];
-  [popup_window_ setReleasedWhenClosed:NO];
+                    defer:NO];
+  popup_window_.hasShadow = YES;
+  popup_window_.level = NSPopUpMenuWindowLevel;
+  popup_window_.releasedWhenClosed = NO;
   [popup_window_ makeKeyAndOrderFront:nil];
-  [[popup_window_ contentView] addSubview:cocoa_view_];
-  [cocoa_view_ setFrame:[[popup_window_ contentView] bounds]];
-  [cocoa_view_ setAutoresizingMask:NSViewWidthSizable | NSViewHeightSizable];
-  [[NSNotificationCenter defaultCenter]
+  [popup_window_.contentView addSubview:cocoa_view_];
+  cocoa_view_.frame = popup_window_.contentView.bounds;
+  cocoa_view_.autoresizingMask = NSViewWidthSizable | NSViewHeightSizable;
+  [NSNotificationCenter.defaultCenter
       addObserver:cocoa_view_
          selector:@selector(popupWindowWillClose:)
              name:NSWindowWillCloseNotification
@@ -114,12 +118,10 @@ PopupWindowMac::PopupWindowMac(const gfx::Rect& content_rect,
 }
 
 PopupWindowMac::~PopupWindowMac() {
-  [[NSNotificationCenter defaultCenter]
+  [NSNotificationCenter.defaultCenter
       removeObserver:cocoa_view_
                 name:NSWindowWillCloseNotification
               object:popup_window_];
-  [popup_window_ close];
-  popup_window_.autorelease();
 }
 
 }  // namespace remote_cocoa

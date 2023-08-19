@@ -51,7 +51,7 @@ class WebUITestPageHandler : public web_ui_test::mojom::TestRunner,
   content::WebUI* GetWebUI() override { return web_ui_; }
 
  private:
-  raw_ptr<content::WebUI, DanglingUntriaged> web_ui_;
+  raw_ptr<content::WebUI, AcrossTasksDanglingUntriaged> web_ui_;
   mojo::Receiver<web_ui_test::mojom::TestRunner> receiver_{this};
 };
 

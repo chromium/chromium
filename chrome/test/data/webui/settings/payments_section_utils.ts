@@ -8,8 +8,11 @@ import {PaymentsManagerImpl, SettingsPaymentsSectionElement, SettingsCreditCardL
 import {assertTrue, assertLT} from 'chrome://webui-test/chai_assert.js';
 import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
 import {eventToPromise, whenAttributeIs} from 'chrome://webui-test/test_util.js';
+// <if expr="is_win or is_macosx">
+import {loadTimeData} from 'chrome://settings/settings.js';
+// </if>
 
-import {PaymentsManagerExpectations, TestPaymentsManager} from './passwords_and_autofill_fake_data.js';
+import {PaymentsManagerExpectations, TestPaymentsManager} from './autofill_fake_data.js';
 
 // clang-format on
 
@@ -26,6 +29,10 @@ export async function createPaymentsSection(
   paymentsManager.data.creditCards = creditCards;
   paymentsManager.data.ibans = ibans;
   paymentsManager.data.upiIds = upiIds;
+  // <if expr="is_win or is_macosx">
+  paymentsManager.setIsDeviceAuthAvailable(
+      loadTimeData.getBoolean('deviceAuthAvailable'));
+  // </if>
   PaymentsManagerImpl.setInstance(paymentsManager);
 
   const section = document.createElement('settings-payments-section');

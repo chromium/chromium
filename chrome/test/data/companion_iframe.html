@@ -3,9 +3,12 @@
   <a id="some_link" href="google.html" target="_blank">Click Here</a>
 </body>
 <script>
-
   // The proto received on last update postmessage. Reset on getLastReceivedCompanionProto().
   lastReceivedCompanionProto = null;
+  // The url received on last NotifyLinkOpen postmessage.
+  lastReceivedLinkOpenedUrl = null;
+  // The metadata for the last URL received on the NotifyLinkOpen postmessage.
+  lastReceivedLinkOpenedMetadata = null;
 
   // Promise to be returned to for browser tests when the test needs to wait
   // for a postmessage call from the browser to be received by the companion
@@ -23,6 +26,12 @@
       promiseResolve(event.data['companionUpdateParams']);
     } else if (event.data['type'] == 32) { // `MethodType.kOnCqFindTextResultsAvailable`
       promiseResolve(event.data['cqTextFindResults']);
+    } else if (event.data['type'] == 33) { // `MethodType.kOnDeviceVisualClassificationResult`
+      promiseResolve(event.data['visualSearchParams']);
+    } else if (event.data['type'] == 34) { // `MethodType.kNotifyLinkOpen`
+      window.lastReceivedLinkOpenedUrl = event.data['openedUrl'];
+      window.lastReceivedLinkOpenedMetadata = event.data['openMetadata'];
+      promiseResolve(event.data['openedUrl']);
     }
   }
 
@@ -30,6 +39,14 @@
     protoCopy = window.lastReceivedCompanionProto;
     window.lastReceivedCompanionProto = null;
     return protoCopy;
+  }
+
+  function getLastReceivedLinkOpenedUrl() {
+    return window.lastReceivedLinkOpenedUrl;
+  }
+
+  function getLastReceivedLinkOpenedMetadata() {
+    return JSON.stringify(window.lastReceivedLinkOpenedMetadata);
   }
 
   function waitForMessage() {

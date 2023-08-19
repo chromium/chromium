@@ -26,7 +26,6 @@
 <translation id="2060505056492490888">"<ph name="DOT" />" er placeret forkert i "<ph name="INVALIDDOMAIN" />".</translation>
 <translation id="2148716181193084225">I dag</translation>
 <translation id="2226276347425096477">Forkort denne tekst til <ph name="MAX_CHARACTERS" /> tegn eller færre (du bruger i øjeblikket <ph name="CURRENT_LENGTH" /> tegn).</translation>
-<translation id="2246498165605549352">Lokal fil</translation>
 <translation id="2247351761944213033">Uge <ph name="WEEKNUMBER" />, <ph name="YEAR" /></translation>
 <translation id="2277199496770840904">Spor <ph name="NUMBER" /></translation>
 <translation id="2393030564806080191">Hexadecimal farveværdi</translation>
@@ -89,6 +88,7 @@
 <translation id="5425179576310518467">aktuel dato</translation>
 <translation id="5466621249238537318">Vælg en eller flere filer.</translation>
 <translation id="5468998798572797635">afslut fuld skærm</translation>
+<translation id="5514612371225420585">Fil på din enhed</translation>
 <translation id="5516235301412634559">0,75</translation>
 <translation id="5537725057119320332">Cast</translation>
 <translation id="5546461542133609677">slå lyden til</translation>
@@ -113,6 +113,7 @@
 <translation id="6398862346408813489">Vis panel til valg af måned</translation>
 <translation id="6404546809543547843">afspilningsbjælke for lyd</translation>
 <translation id="6443871981718447451">vis menuen for undertekster</translation>
+<translation id="6484738902856791350">Anvend pretty print</translation>
 <translation id="6550675742724504774">Valgmuligheder</translation>
 <translation id="6572309429103589720">Ugyldig grammatik</translation>
 <translation id="658823671542763450">åbn fuld skærm</translation>

@@ -55,26 +55,26 @@ class AudioSinkAudioTrackImpl {
     private static final int DEBUG_LEVEL = 0;
 
     // Mapping from Android's stream_type to Cast's AudioContentType (used for callback).
-    private static final SparseIntArray CAST_TYPE_TO_ANDROID_USAGE_TYPE_MAP = new SparseIntArray(
-            4) {
-        {
-            append(AudioContentType.MEDIA, AudioAttributes.USAGE_MEDIA);
-            append(AudioContentType.ALARM, AudioAttributes.USAGE_ALARM);
-            append(AudioContentType.COMMUNICATION, AudioAttributes.USAGE_ASSISTANCE_SONIFICATION);
-            append(AudioContentType.OTHER, AudioAttributes.USAGE_VOICE_COMMUNICATION);
-        }
-    };
+    private static final SparseIntArray CAST_TYPE_TO_ANDROID_USAGE_TYPE_MAP;
+    static {
+        var array = new SparseIntArray(4);
+        array.append(AudioContentType.MEDIA, AudioAttributes.USAGE_MEDIA);
+        array.append(AudioContentType.ALARM, AudioAttributes.USAGE_ALARM);
+        array.append(AudioContentType.COMMUNICATION, AudioAttributes.USAGE_ASSISTANCE_SONIFICATION);
+        array.append(AudioContentType.OTHER, AudioAttributes.USAGE_VOICE_COMMUNICATION);
+        CAST_TYPE_TO_ANDROID_USAGE_TYPE_MAP = array;
+    }
 
-    private static final SparseIntArray CAST_TYPE_TO_ANDROID_CONTENT_TYPE_MAP = new SparseIntArray(
-            4) {
-        {
-            append(AudioContentType.MEDIA, AudioAttributes.CONTENT_TYPE_MUSIC);
-            // Note: ALARM uses the same as COMMUNICATON.
-            append(AudioContentType.ALARM, AudioAttributes.CONTENT_TYPE_SONIFICATION);
-            append(AudioContentType.COMMUNICATION, AudioAttributes.CONTENT_TYPE_SONIFICATION);
-            append(AudioContentType.OTHER, AudioAttributes.CONTENT_TYPE_SPEECH);
-        }
-    };
+    private static final SparseIntArray CAST_TYPE_TO_ANDROID_CONTENT_TYPE_MAP;
+    static {
+        var array = new SparseIntArray(4);
+        array.append(AudioContentType.MEDIA, AudioAttributes.CONTENT_TYPE_MUSIC);
+        // Note: ALARM uses the same as COMMUNICATON.
+        array.append(AudioContentType.ALARM, AudioAttributes.CONTENT_TYPE_SONIFICATION);
+        array.append(AudioContentType.COMMUNICATION, AudioAttributes.CONTENT_TYPE_SONIFICATION);
+        array.append(AudioContentType.OTHER, AudioAttributes.CONTENT_TYPE_SPEECH);
+        CAST_TYPE_TO_ANDROID_CONTENT_TYPE_MAP = array;
+    }
 
     // Hardcoded AudioTrack config parameters.
     private static final int AUDIO_FORMAT = AudioFormat.ENCODING_PCM_FLOAT;

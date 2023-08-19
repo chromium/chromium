@@ -63,7 +63,7 @@ class RegistryReader {
  public:
   explicit RegistryReader(const wchar_t key[]) {
     // Ignoring the result. |key_.Valid()| will catch failures.
-    key_.Open(HKEY_LOCAL_MACHINE, key, KEY_QUERY_VALUE);
+    (void)key_.Open(HKEY_LOCAL_MACHINE, key, KEY_QUERY_VALUE);
   }
 
   RegistryReader(const RegistryReader&) = delete;

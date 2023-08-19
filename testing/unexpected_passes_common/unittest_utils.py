@@ -113,6 +113,12 @@ class FakePool():
             inputs: Iterable[Any]) -> 'FakeAsyncResult':
     return FakeAsyncResult(f(inputs))
 
+  def close(self) -> None:
+    pass
+
+  def join(self) -> None:
+    pass
+
 
 class FakeAsyncResult():
   """A fake AsyncResult like the one from multiprocessing or pathos."""

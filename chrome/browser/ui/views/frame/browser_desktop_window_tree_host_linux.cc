@@ -212,7 +212,9 @@ void BrowserDesktopWindowTreeHostLinux::UpdateFrameHints() {
     gfx::Rect input_bounds(widget_size);
     input_bounds.Inset(insets + view->GetInputInsets());
     input_bounds = gfx::ScaleToEnclosingRect(input_bounds, scale);
-    window->SetInputRegion(showing_frame ? &input_bounds : nullptr);
+    window->SetInputRegion(showing_frame
+                               ? absl::optional<gfx::Rect>(input_bounds)
+                               : absl::nullopt);
   }
 
   if (window->IsTranslucentWindowOpacitySupported()) {
@@ -272,7 +274,7 @@ void BrowserDesktopWindowTreeHostLinux::UpdateFrameHints() {
       opaque_region.push_back(
           gfx::ScaleToEnclosingRect(opaque_region_dip, scale));
     }
-    window->SetOpaqueRegion(&opaque_region);
+    window->SetOpaqueRegion(opaque_region);
   }
 
   SizeConstraintsChanged();

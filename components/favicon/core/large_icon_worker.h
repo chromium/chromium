@@ -17,7 +17,7 @@
 
 namespace favicon {
 
-class LargeFaviconProvider;
+class FaviconService;
 
 // Processes the png data returned from the FaviconService as part of a
 // LargeIconService request (resizing and decoding from PNG format).
@@ -40,7 +40,7 @@ class LargeIconWorker : public base::RefCountedThreadSafe<LargeIconWorker> {
       const favicon_base::FaviconRawBitmapResult& db_result);
 
   static base::CancelableTaskTracker::TaskId GetLargeIconRawBitmap(
-      LargeFaviconProvider* provider,
+      FaviconService* favicon_service,
       const GURL& page_url,
       int min_source_size_in_pixel,
       int desired_size_in_pixel,

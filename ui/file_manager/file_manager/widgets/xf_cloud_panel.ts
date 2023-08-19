@@ -21,6 +21,7 @@ import type {CrActionMenuElement} from 'chrome://resources/cr_elements/cr_action
  */
 export enum CloudPanelType {
   OFFLINE = 'offline',
+  BATTERY_SAVER = 'battery_saver',
   NOT_ENOUGH_SPACE = 'not_enough_space',
 }
 
@@ -28,8 +29,8 @@ export enum CloudPanelType {
  * The `<xf-cloud-panel>` represents the current state that the Drive bulk
  * pinning process is currently in. When files are being pinned and downloaded,
  * the `items` and `progress` attributes are used to signify that the panel is
- * in progress. The `type` attribute can be used with `not_enough_space` and
- * `offline` to signify possible error or paused states.
+ * in progress. The `type` attribute can be used with `not_enough_space`,
+ * `offline`, and `battery_saver` to signify possible error or paused states.
  */
 @customElement('xf-cloud-panel')
 export class XfCloudPanel extends XfBase {
@@ -48,18 +49,8 @@ export class XfCloudPanel extends XfBase {
     converter: {
       fromAttribute:
           (value: string) => {
-            let percentage = null;
-            try {
-              percentage = parseInt(value, 10);
-            } catch (e) {
-              return null;
-            }
-            if (util.isNullOrUndefined(percentage) ||
-                Number.isNaN(percentage) || percentage < 0 ||
-                percentage > 100) {
-              return null;
-            }
-            return percentage;
+            const percentage = parseInt(value, 10);
+            return percentage >= 0 && percentage <= 100 ? percentage : null;
           },
       toAttribute: (value: number) => String(value),
     },
@@ -88,6 +79,20 @@ export class XfCloudPanel extends XfBase {
     },
   })
   type?: CloudPanelType;
+
+  @property({
+    type: Number,
+    reflect: true,
+    converter: {
+      fromAttribute:
+          (value: string) => {
+            const seconds = parseInt(value, 10);
+            return seconds >= 0 ? seconds : null;
+          },
+      toAttribute: (value: number) => String(value),
+    },
+  })
+  seconds?: number;
 
   /**
    * The cloud panel uses the `CrActionMenu` to provide the dialog behaviour and
@@ -189,13 +194,17 @@ export class XfCloudPanel extends XfBase {
               value="${this.percentage}">
             ${this.percentage}%
           </progress>
-          <div class="progress-description">3 minutes remaining</div>
+          <div class="progress-description">
+          ${
+        this.seconds && this.seconds > 0 ?
+            util.secondsToRemainingTimeString(this.seconds) :
+            str('DRIVE_BULK_PINNING_CALCULATING')}
+          </div>
         </div>
         <div class="static" id="progress-finished">
-          <xf-icon type="${
-        constants.ICON_TYPES.BULK_PINNING_DONE}" size="large"></xf-icon>
+          <xf-icon type="${constants.ICON_TYPES.CLOUD}" size="large"></xf-icon>
           <div class="status-description">
-            ${str('DRIVE_ALL_FILES_SYNCED')}
+            ${str('BULK_PINNING_FILE_SYNC_ON')}
           </div>
         </div>
         <div class="static" id="progress-offline">
@@ -203,6 +212,14 @@ export class XfCloudPanel extends XfBase {
         constants.ICON_TYPES.BULK_PINNING_OFFLINE}" size="large"></xf-icon>
           <div class="status-description">
             ${str('DRIVE_BULK_PINNING_OFFLINE')}
+          </div>
+        </div>
+        <div class="static" id="progress-battery-saver">
+        <xf-icon type="${
+        constants.ICON_TYPES
+            .BULK_PINNING_BATTERY_SAVER}" size="large"></xf-icon>
+          <div class="status-description">
+            ${str('DRIVE_BULK_PINNING_BATTERY_SAVER')}
           </div>
         </div>
         <div class="static" id="progress-not-enough-space">
@@ -235,7 +252,6 @@ function getCSS() {
 
     :host(:not([items][percentage])) #progress-state,
     :host([percentage="100"]) #progress-state,
-    :host([percentage="0"]) #progress-state,
     :host([type]) #progress-state {
       display: none;
     }
@@ -245,12 +261,16 @@ function getCSS() {
       display: none;
     }
 
-    :host(:not([items][percentage="0"])) #progress-preparing,
+    :host([percentage][items]) #progress-preparing,
     :host([type]) #progress-preparing {
       display: none;
     }
 
     :host(:not([type="offline"])) #progress-offline {
+      display: none;
+    }
+
+    :host(:not([type="battery_saver"])) #progress-battery-saver {
       display: none;
     }
 
@@ -281,6 +301,10 @@ function getCSS() {
     }
 
     xf-icon[type="bulk_pinning_offline"] {
+      --xf-icon-color: var(--cros-sys-secondary);
+    }
+
+    xf-icon[type="bulk_pinning_battery_saver"] {
       --xf-icon-color: var(--cros-sys-secondary);
     }
 

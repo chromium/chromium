@@ -6,14 +6,13 @@
 
 #import "ios/chrome/common/ui/util/constraints_ui_util.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 namespace {
 // Default corner radius for the favicon image view.
 const CGFloat kDefaultCornerRadius = 3;
 }
+
+const CGFloat kFaviconMinSize = 16.0f;
+const CGFloat kFaviconPreferredSize = 24.0f;
 
 @interface FaviconView () {
   // Property releaser for FaviconView.

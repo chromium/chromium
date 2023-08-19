@@ -6,7 +6,6 @@
 #define UI_VIEWS_EXAMPLES_BUTTON_EXAMPLE_H_
 
 #include "base/memory/raw_ptr.h"
-#include "base/memory/raw_ptr_exclusion.h"
 #include "ui/views/examples/example_base.h"
 
 namespace gfx {
@@ -43,15 +42,13 @@ class VIEWS_EXAMPLES_EXPORT ButtonExample : public ExampleBase {
   void ImageButtonPressed();
 
   // Example buttons.
-  // These fields are not a raw_ptr<> because they were filtered by the rewriter
-  // for: #addr-of
-  RAW_PTR_EXCLUSION LabelButton* label_button_ = nullptr;
-  RAW_PTR_EXCLUSION MdTextButton* md_button_ = nullptr;
-  RAW_PTR_EXCLUSION MdTextButton* md_disabled_button_ = nullptr;
-  RAW_PTR_EXCLUSION MdTextButton* md_default_button_ = nullptr;
-  RAW_PTR_EXCLUSION MdTextButton* md_tonal_button_ = nullptr;
-  RAW_PTR_EXCLUSION MdTextButton* md_text_button_ = nullptr;
-  RAW_PTR_EXCLUSION ImageButton* image_button_ = nullptr;
+  raw_ptr<LabelButton> label_button_ = nullptr;
+  raw_ptr<MdTextButton> md_button_ = nullptr;
+  raw_ptr<MdTextButton> md_disabled_button_ = nullptr;
+  raw_ptr<MdTextButton> md_default_button_ = nullptr;
+  raw_ptr<MdTextButton> md_tonal_button_ = nullptr;
+  raw_ptr<MdTextButton> md_text_button_ = nullptr;
+  raw_ptr<ImageButton> image_button_ = nullptr;
 
   raw_ptr<const gfx::ImageSkia> icon_ = nullptr;
 

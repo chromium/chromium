@@ -202,7 +202,7 @@ class CORE_EXPORT LayoutText : public LayoutObject {
 
   // Compute the rect and offset of text boxes for this LayoutText.
   struct TextBoxInfo {
-    LayoutRect local_rect;
+    PhysicalRect local_rect;
     unsigned dom_start_offset;
     unsigned dom_length;
   };
@@ -369,9 +369,8 @@ class CORE_EXPORT LayoutText : public LayoutObject {
  protected:
   void WillBeDestroyed() override;
 
-  void StyleWillChange(StyleDifference, const ComputedStyle&) final {
-    NOT_DESTROYED();
-  }
+  void StyleWillChange(StyleDifference, const ComputedStyle&) final;
+
   void StyleDidChange(StyleDifference, const ComputedStyle* old_style) override;
 
   void InLayoutNGInlineFormattingContextWillChange(bool) final;
@@ -399,14 +398,6 @@ class CORE_EXPORT LayoutText : public LayoutObject {
   template <typename PhysicalRectCollector>
   void CollectLineBoxRects(const PhysicalRectCollector&,
                            ClippingOption option = kNoClipping) const;
-
-  // Make length() private so that callers that have a LayoutText*
-  // will use the more efficient textLength() instead, while
-  // callers with a LayoutObject* can continue to use length().
-  unsigned length() const final {
-    NOT_DESTROYED();
-    return TextLength();
-  }
 
   // See the class comment as to why we shouldn't call this function directly.
   void Paint(const PaintInfo&) const final {

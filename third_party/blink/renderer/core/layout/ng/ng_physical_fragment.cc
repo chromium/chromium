@@ -33,7 +33,7 @@ struct SameSizeAsNGPhysicalFragment
   Member<void*> layout_object;
   PhysicalSize size;
   unsigned flags;
-  Member<void*> members[2];
+  Member<void*> members[3];
 };
 
 ASSERT_SIZE(NGPhysicalFragment, SameSizeAsNGPhysicalFragment);
@@ -67,11 +67,6 @@ String StringForBoxType(const NGPhysicalFragment& fragment) {
     case NGPhysicalFragment::NGBoxType::kRenderedLegend:
       result.Append("rendered-legend");
       break;
-  }
-  if (fragment.IsLegacyLayoutRoot()) {
-    if (result.length())
-      result.Append(" ");
-    result.Append("legacy-layout-root");
   }
   if (fragment.IsBlockFlow()) {
     if (result.length())
@@ -190,16 +185,6 @@ class FragmentTreeDumper {
   void AppendLegacySubtree(const LayoutObject& layout_object, unsigned indent) {
     for (const LayoutObject* descendant = &layout_object; descendant;) {
       if (!IsNGRootWithFragments(*descendant)) {
-        if (const auto* block = DynamicTo<LayoutBlock>(descendant)) {
-          if (const auto* positioned_descendants = block->PositionedObjects()) {
-            for (const auto& positioned_object : *positioned_descendants) {
-              if (IsNGRootWithFragments(*positioned_object))
-                AppendNGRootInLegacySubtree(*positioned_object, indent);
-              else
-                AppendLegacySubtree(*positioned_object, indent);
-            }
-          }
-        }
         if (descendant->IsOutOfFlowPositioned() && descendant != &layout_object)
           descendant = descendant->NextInPreOrderAfterChildren(&layout_object);
         else
@@ -354,7 +339,6 @@ NGPhysicalFragment::NGPhysicalFragment(NGFragmentBuilder* builder,
           builder->may_have_descendant_above_block_start_),
       is_fieldset_container_(false),
       is_table_ng_part_(false),
-      is_legacy_layout_root_(false),
       is_painted_atomically_(false),
       has_collapsed_borders_(builder->has_collapsed_borders_),
       has_first_baseline_(false),
@@ -366,6 +350,13 @@ NGPhysicalFragment::NGPhysicalFragment(NGFragmentBuilder* builder,
       has_out_of_flow_fragment_child_(builder->HasOutOfFlowFragmentChild()),
       has_out_of_flow_in_fragmentainer_subtree_(
           builder->HasOutOfFlowInFragmentainerSubtree()),
+      propagated_data_((builder->sticky_descendants_ || builder->snap_areas_ ||
+                        builder->scroll_start_targets_)
+                           ? MakeGarbageCollected<PropagatedData>(
+                                 builder->sticky_descendants_,
+                                 builder->snap_areas_,
+                                 builder->scroll_start_targets_)
+                           : nullptr),
       break_token_(std::move(builder->break_token_)),
       oof_data_(builder->oof_positioned_descendants_.empty() &&
                         !builder->AnchorQuery() &&
@@ -443,7 +434,6 @@ NGPhysicalFragment::NGPhysicalFragment(const NGPhysicalFragment& other)
           other.may_have_descendant_above_block_start_),
       is_fieldset_container_(other.is_fieldset_container_),
       is_table_ng_part_(other.is_table_ng_part_),
-      is_legacy_layout_root_(other.is_legacy_layout_root_),
       is_painted_atomically_(other.is_painted_atomically_),
       has_collapsed_borders_(other.has_collapsed_borders_),
       has_first_baseline_(other.has_first_baseline_),
@@ -455,6 +445,7 @@ NGPhysicalFragment::NGPhysicalFragment(const NGPhysicalFragment& other)
       has_out_of_flow_in_fragmentainer_subtree_(
           other.has_out_of_flow_in_fragmentainer_subtree_),
       base_direction_(other.base_direction_),
+      propagated_data_(other.propagated_data_),
       break_token_(other.break_token_),
       oof_data_(other.oof_data_ ? other.CloneOutOfFlowData() : nullptr) {
   CHECK(layout_object_);
@@ -675,16 +666,6 @@ void NGPhysicalFragment::AdjustScrollableOverflowForPropagation(
   }
 }
 
-TouchAction NGPhysicalFragment::EffectiveAllowedTouchAction() const {
-  DCHECK(layout_object_);
-  return layout_object_->EffectiveAllowedTouchAction();
-}
-
-bool NGPhysicalFragment::InsideBlockingWheelEventHandler() const {
-  DCHECK(layout_object_);
-  return layout_object_->InsideBlockingWheelEventHandler();
-}
-
 LogicalRect NGPhysicalFragment::ConvertChildToLogical(
     const PhysicalRect& physical_rect) const {
   return WritingModeConverter(Style().GetWritingDirection(), Size())
@@ -753,6 +734,7 @@ void NGPhysicalFragment::Trace(Visitor* visitor) const {
 
 void NGPhysicalFragment::TraceAfterDispatch(Visitor* visitor) const {
   visitor->Trace(layout_object_);
+  visitor->Trace(propagated_data_);
   visitor->Trace(break_token_);
   visitor->Trace(oof_data_);
 }

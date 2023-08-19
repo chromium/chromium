@@ -171,10 +171,10 @@ class AsyncSharedStorageDatabase {
       base::OnceCallback<void(OperationResult)> callback) = 0;
 
   // Clears all origins that match `storage_key_matcher` run on the owning
-  // StoragePartition's `SpecialStoragePolicy` and have `last_used_time` between
-  // the times `begin` and `end`. If `perform_storage_cleanup` is true, vacuums
-  // the database afterwards. The parameter of `callback` reports whether the
-  // transaction was successful.
+  // StoragePartition's `SpecialStoragePolicy` and have any key with
+  // `last_used_time` between the times `begin` and `end`. If
+  // `perform_storage_cleanup` is true, vacuums the database afterwards. The
+  // parameter of `callback` reports whether the transaction was successful.
   //
   // Note that `storage_key_matcher` is accessed on a different sequence than
   // where it was created.
