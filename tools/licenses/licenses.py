@@ -565,20 +565,21 @@ def ParseDir(path,
       raise LicenseError("missing README.chromium or licenses.py "
                          "SPECIAL_CASES entry in %s\n" % path)
 
-    for line in codecs.open(readme_path, encoding='utf-8'):
-      line = line.strip()
-      if not line:
-        break
-      for key in list(metadata.keys()) + optional_keys:
-        field = key + ": "
-        if line.startswith(field):
-          value = line[len(field):]
-          # Multiple license files can be specified.
-          if key == "License File":
-            licenses = value.split(LICENSE_FILE_DELIMITER)
-            metadata[key] = [license.strip() for license in licenses]
-          else:
-            metadata[key] = value
+    with codecs.open(readme_path, encoding='utf-8') as readme:
+      for line in readme:
+        line = line.strip()
+        if not line:
+          break
+        for key in list(metadata.keys()) + optional_keys:
+          field = key + ": "
+          if line.startswith(field):
+            value = line[len(field):]
+            # Multiple license files can be specified.
+            if key == "License File":
+              licenses = value.split(LICENSE_FILE_DELIMITER)
+              metadata[key] = [license.strip() for license in licenses]
+            else:
+              metadata[key] = value
 
   if enable_warnings:
     # Check for the deprecated special value used in the "License File" field.
