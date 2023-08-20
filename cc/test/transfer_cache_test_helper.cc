@@ -86,8 +86,7 @@ ServiceTransferCacheEntry* TransferCacheTestHelper::GetEntryInternal(
     TransferCacheEntryType type,
     uint32_t id) {
   auto key = std::make_pair(type, id);
-  if (!base::Contains(locked_entries_, key) &&
-      !base::Contains(local_entries_, key)) {
+  if (locked_entries_.count(key) + local_entries_.count(key) == 0) {
     return nullptr;
   }
   if (!base::Contains(entries_, key)) {

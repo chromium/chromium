@@ -65,19 +65,19 @@ class FakeDiscardableManager {
  public:
   void SetGLES2Interface(viz::TestGLES2Interface* gl) { gl_ = gl; }
   void Initialize(GLuint texture_id) {
-    DCHECK(!base::Contains(textures_, texture_id));
+    EXPECT_TRUE(!base::Contains(textures_, texture_id));
     textures_[texture_id] = kHandleLockedStart;
     live_textures_count_++;
   }
   void Unlock(GLuint texture_id) {
-    DCHECK(base::Contains(textures_, texture_id));
+    EXPECT_TRUE(base::Contains(textures_, texture_id));
     ExpectLocked(texture_id);
     textures_[texture_id]--;
   }
   bool Lock(GLuint texture_id) {
     EnforceLimit();
 
-    DCHECK(base::Contains(textures_, texture_id));
+    EXPECT_TRUE(base::Contains(textures_, texture_id));
     if (textures_[texture_id] >= kHandleUnlocked) {
       textures_[texture_id]++;
       return true;
