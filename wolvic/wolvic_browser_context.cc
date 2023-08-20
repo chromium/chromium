@@ -38,6 +38,7 @@
 #include "content/test/mock_background_sync_controller.h"
 #include "content/test/mock_reduce_accept_language_controller_delegate.h"
 #include "third_party/blink/public/common/origin_trials/trial_token_validator.h"
+#include "wolvic/browser/downloads/wolvic_download_manager_delegate.h"
 
 namespace content {
 
@@ -99,7 +100,11 @@ bool WolvicBrowserContext::IsOffTheRecord() {
 }
 
 DownloadManagerDelegate* WolvicBrowserContext::GetDownloadManagerDelegate() {
-  return nullptr;
+  if (!download_manager_delegate_) {
+    download_manager_delegate_ =
+        std::make_unique<wolvic::WolvicDownloadManagerDelegate>();
+  }
+  return download_manager_delegate_.get();
 }
 
 ResourceContext* WolvicBrowserContext::GetResourceContext() {
