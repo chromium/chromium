@@ -1038,9 +1038,20 @@ def GenerateLicenseFile(args: argparse.Namespace):
         os.path.normpath(path) for path in extra_third_party_dirs
     ]
 
-  third_party_dirs = FindThirdPartyDeps(args.gn_out_dir, args.gn_target,
-                                        args.target_os, extra_third_party_dirs,
-                                        args.extra_allowed_dirs)
+  if args.gn_target is not None:
+    third_party_dirs = FindThirdPartyDeps(args.gn_out_dir, args.gn_target,
+                                          args.target_os,
+                                          extra_third_party_dirs,
+                                          args.extra_allowed_dirs)
+
+    # Sanity-check to raise a build error if invalid gn_... settings are
+    # somehow passed to this script.
+    if not third_party_dirs:
+      raise RuntimeError("No deps found.")
+
+  else:
+    third_party_dirs = FindThirdPartyDirs(PRUNE_PATHS, _REPOSITORY_ROOT,
+                                          extra_third_party_dirs)
 
   metadatas = {}
   for d in third_party_dirs:
