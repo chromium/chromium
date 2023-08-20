@@ -6,6 +6,11 @@ new builder changes. This doc describes how to use it with Chromium's builders.
 
 [TOC]
 
+*** note
+**Note for Googlers:** Ensure that `depot_tools` appears in front of your system paths
+in your `$PATH`, so that you are invoking the `led` in `depot_tools`.
+***
+
 ## When to use it
 
 Use cases include, but are not limited to, the following:

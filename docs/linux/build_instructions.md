@@ -46,12 +46,12 @@ Clone the `depot_tools` repository:
 $ git clone https://chromium.googlesource.com/chromium/tools/depot_tools.git
 ```
 
-Add `depot_tools` to the end of your PATH (you will probably want to put this
-in your `~/.bashrc` or `~/.zshrc`). Assuming you cloned `depot_tools` to
+Add `depot_tools` to the beginning of your `PATH` (you will probably want to put
+this in your `~/.bashrc` or `~/.zshrc`). Assuming you cloned `depot_tools` to
 `/path/to/depot_tools`:
 
 ```shell
-$ export PATH="$PATH:/path/to/depot_tools"
+$ export PATH="/path/to/depot_tools:$PATH"
 ```
 
 When cloning `depot_tools` to your home directory **do not** use `~` on PATH,
@@ -59,7 +59,7 @@ otherwise `gclient runhooks` will fail to run. Rather, you should use either
 `$HOME` or the absolute path:
 
 ```shell
-$ export PATH="$PATH:${HOME}/depot_tools"
+$ export PATH="${HOME}/depot_tools:$PATH"
 ```
 
 ## Get the code
