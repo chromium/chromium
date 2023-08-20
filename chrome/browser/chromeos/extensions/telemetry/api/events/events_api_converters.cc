@@ -190,6 +190,25 @@ cx_events::TouchpadConnectedEventInfo UncheckedConvertPtr(
   return result;
 }
 
+cx_events::TouchscreenTouchEventInfo UncheckedConvertPtr(
+    crosapi::TelemetryTouchscreenTouchEventInfoPtr ptr) {
+  cx_events::TouchscreenTouchEventInfo result;
+  std::vector<cx_events::TouchPointInfo> converted_touch_points =
+      ConvertStructPtrVector<cx_events::TouchPointInfo>(
+          std::move(ptr->touch_points));
+  result.touch_points = std::move(converted_touch_points);
+  return result;
+}
+
+cx_events::TouchscreenConnectedEventInfo UncheckedConvertPtr(
+    crosapi::TelemetryTouchscreenConnectedEventInfoPtr ptr) {
+  cx_events::TouchscreenConnectedEventInfo result;
+  result.max_x = ptr->max_x;
+  result.max_y = ptr->max_y;
+  result.max_pressure = ptr->max_pressure;
+  return result;
+}
+
 cx_events::TouchPointInfo UncheckedConvertPtr(
     crosapi::TelemetryTouchPointInfoPtr ptr) {
   cx_events::TouchPointInfo result;
@@ -510,6 +529,10 @@ crosapi::TelemetryEventCategoryEnum Convert(cx_events::EventCategory input) {
       return crosapi::TelemetryEventCategoryEnum::kTouchpadTouch;
     case cx_events::EventCategory::kTouchpadConnected:
       return crosapi::TelemetryEventCategoryEnum::kTouchpadConnected;
+    case cx_events::EventCategory::kTouchscreenTouch:
+      return crosapi::TelemetryEventCategoryEnum::kTouchscreenTouch;
+    case cx_events::EventCategory::kTouchscreenConnected:
+      return crosapi::TelemetryEventCategoryEnum::kTouchscreenConnected;
     case cx_events::EventCategory::kStylusTouch:
       return crosapi::TelemetryEventCategoryEnum::kStylusTouch;
     case cx_events::EventCategory::kStylusConnected:

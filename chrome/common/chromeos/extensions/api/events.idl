@@ -20,6 +20,8 @@ namespace os.events {
         touchpad_button,
         touchpad_touch,
         touchpad_connected,
+        touchscreen_touch,
+        touchscreen_connected,
         external_display,
         stylus_touch,
         stylus_connected
@@ -345,6 +347,21 @@ namespace os.events {
       InputTouchButton[] buttons;
     };
 
+    dictionary TouchscreenTouchEventInfo {
+      // The touch points reported by the touchscreen.
+      TouchPointInfo[] touchPoints;
+    };
+
+    dictionary TouchscreenConnectedEventInfo {
+      // The maximum possible x position of touch points.
+      long? maxX;
+      // The maximum possible y position of touch points.
+      long? maxY;
+      // The maximum possible pressure of touch points, or 0 if pressure is not
+      // supported.
+      long? maxPressure;
+    };
+
     dictionary StylusTouchPointInfo {
       // The x position. The value ranges from 0 to |max_x| as defined in
       // StylusConnectedEventInfo.
@@ -431,6 +448,14 @@ namespace os.events {
         // Informs the extension that a `Touchpad Connected` event occured.
         static void onTouchpadConnectedEvent(
             TouchpadConnectedEventInfo event_info);
+
+        // Informs the extension that a `Touchscreen Touch` event occured.
+        static void onTouchscreenTouchEvent(
+            TouchscreenTouchEventInfo event_info);
+
+        // Informs the extension that a `Touchscreen Connected` event occured.
+        static void onTouchscreenConnectedEvent(
+            TouchscreenConnectedEventInfo event_info);
 
         // Informs the extension that a `Stylus Touch` event occured.
         static void onStylusTouchEvent(StylusTouchEventInfo event_info);

@@ -365,6 +365,12 @@ TEST(TelemetryExtensionEventsApiConvertersUnitTest, ConvertEventCategoryEnum) {
   EXPECT_EQ(Convert(cx_events::EventCategory::kTouchpadConnected),
             crosapi::TelemetryEventCategoryEnum::kTouchpadConnected);
 
+  EXPECT_EQ(Convert(cx_events::EventCategory::kTouchscreenTouch),
+            crosapi::TelemetryEventCategoryEnum::kTouchscreenTouch);
+
+  EXPECT_EQ(Convert(cx_events::EventCategory::kTouchscreenConnected),
+            crosapi::TelemetryEventCategoryEnum::kTouchscreenConnected);
+
   EXPECT_EQ(Convert(cx_events::EventCategory::kStylusTouch),
             crosapi::TelemetryEventCategoryEnum::kStylusTouch);
 
@@ -708,6 +714,64 @@ TEST(TelemetryExtensionEventsApiConvertersUnitTest,
   EXPECT_EQ(result.buttons[0], cx_events::InputTouchButton::kLeft);
   EXPECT_EQ(result.buttons[1], cx_events::InputTouchButton::kMiddle);
   EXPECT_EQ(result.buttons[2], cx_events::InputTouchButton::kRight);
+}
+
+TEST(TelemetryExtensionEventsApiConvertersUnitTest,
+     ConvertTouchscreenEventInfoTouchEvent) {
+  constexpr int32_t kTrackingId1 = 1;
+  constexpr int32_t kX1 = 2;
+  constexpr int32_t kY1 = 3;
+  constexpr int32_t kPressure1 = 4;
+  constexpr int32_t kTouchMajor1 = 5;
+  constexpr int32_t kTouchMinor1 = 6;
+  constexpr int32_t kTrackingId2 = 7;
+  constexpr int32_t kX2 = 8;
+  constexpr int32_t kY2 = 9;
+
+  std::vector<crosapi::TelemetryTouchPointInfoPtr> touch_points;
+  touch_points.push_back(crosapi::TelemetryTouchPointInfo::New(
+      kTrackingId1, kX1, kY1, crosapi::UInt32Value::New(kPressure1),
+      crosapi::UInt32Value::New(kTouchMajor1),
+      crosapi::UInt32Value::New(kTouchMinor1)));
+  touch_points.push_back(crosapi::TelemetryTouchPointInfo::New(
+      kTrackingId2, kX2, kY2, nullptr, nullptr, nullptr));
+
+  auto touch_event =
+      crosapi::TelemetryTouchscreenTouchEventInfo::New(std::move(touch_points));
+
+  auto result = ConvertStructPtr(std::move(touch_event));
+
+  EXPECT_EQ(result.touch_points.size(), static_cast<size_t>(2));
+
+  EXPECT_EQ(result.touch_points[0].tracking_id, kTrackingId1);
+  EXPECT_EQ(result.touch_points[0].x, kX1);
+  EXPECT_EQ(result.touch_points[0].y, kY1);
+  EXPECT_EQ(result.touch_points[0].pressure, kPressure1);
+  EXPECT_EQ(result.touch_points[0].touch_major, kTouchMajor1);
+  EXPECT_EQ(result.touch_points[0].touch_minor, kTouchMinor1);
+
+  EXPECT_EQ(result.touch_points[1].tracking_id, kTrackingId2);
+  EXPECT_EQ(result.touch_points[1].x, kX2);
+  EXPECT_EQ(result.touch_points[1].y, kY2);
+  EXPECT_EQ(result.touch_points[1].pressure, absl::nullopt);
+  EXPECT_EQ(result.touch_points[1].touch_major, absl::nullopt);
+  EXPECT_EQ(result.touch_points[1].touch_minor, absl::nullopt);
+}
+
+TEST(TelemetryExtensionEventsApiConvertersUnitTest,
+     ConvertTouchscreenEventInfoConnectedEvent) {
+  constexpr int32_t kMaxX = 1;
+  constexpr int32_t kMaxY = 2;
+  constexpr int32_t kMaxPressure = 3;
+
+  auto connected_event = crosapi::TelemetryTouchscreenConnectedEventInfo::New(
+      kMaxX, kMaxY, kMaxPressure);
+
+  auto result = ConvertStructPtr(std::move(connected_event));
+
+  EXPECT_EQ(result.max_x, kMaxX);
+  EXPECT_EQ(result.max_y, kMaxY);
+  EXPECT_EQ(result.max_pressure, kMaxPressure);
 }
 
 TEST(TelemetryExtensionEventsApiConvertersUnitTest, ConvertNullableInt) {

@@ -430,7 +430,7 @@ and **events**.
 | trackingId | number | An id to track an initiated contact throughout its life cycle |
 | x | number | The x position |
 | y | number | The y position |
-| pressure | number | The pressure applied to the touch contact. The value ranges from 0 to `max_pressure` as defined in `TouchpadConnectedEventInfo` |
+| pressure | number | The pressure applied to the touch contact. The value ranges from 0 to `max_pressure` as defined in `TouchpadConnectedEventInfo` and `TouchscreenConnectedEventInfo` |
 | touchMajor | number | The length of the longer dimension of the touch contact |
 | touchMinor | number | The length of the shorter dimension of the touch contact |
 
@@ -446,6 +446,18 @@ and **events**.
 | maxY | number | The maximum possible y position of touch points |
 | maxPressure | number | The maximum possible pressure of touch points, or 0 if pressure is not supported |
 | buttons | Array<InputTouchButton\> | The supported buttons |
+
+### TouchscreenTouchEventInfo
+| Property Name | Type | Description |
+------------ | ------- | ----------- |
+| touchPoints | Array<TouchPointInfo\> | The touch points reported by the touchscreen |
+
+### TouchscreenConnectedEventInfo
+| Property Name | Type | Description |
+------------ | ------- | ----------- |
+| maxX | number | The maximum possible x position of touch points |
+| maxY | number | The maximum possible y position of touch points |
+| maxPressure | number | The maximum possible pressure of touch points, or 0 if pressure is not supported |
 
 ### StylusTouchPointInfo
 | Property Name | Type | Description |
@@ -489,6 +501,8 @@ and **events**.
 | onTouchpadButtonEvent | function(TouchpadButtonEventInfo) | `os.events` | M117 | Informs the extension that a `Touchpad Button` event occurred |
 | onTouchpadTouchEvent | function(TouchpadTouchEventInfo) | `os.events` | M117 | Informs the extension that a `Touchpad Touch` event occurred |
 | onTouchpadConnectedEvent | function(TouchpadConnectedEventInfo) | `os.events` | M117 | Informs the extension that a `Touchpad Connected` event occurred |
+| onTouchscreenTouchEvent | function(TouchscreenTouchEventInfo) | `os.events` | M118 | Informs the extension that a `Touchscreen Touch` event occurred |
+| onTouchscreenConnectedEvent | function(TouchscreenConnectedEventInfo) | `os.events` | M118 | Informs the extension that a `Touchscreen Connected` event occurred |
 | onStylusTouchEvent | function(StylusTouchEventInfo) | `os.events` | M117 | Informs the extension that a `Stylus Touch` event occurred |
 | onStylusConnectedEvent | function(StylusConnectedEventInfo) | `os.events` | M117 | Informs the extension that a `Stylus Connected` event occurred |
 

@@ -173,6 +173,30 @@ class DefaultEventDelegate : public EventObservationCrosapi::Delegate {
         break;
       }
       case crosapi::internal::TelemetryEventInfo_Data::TelemetryEventInfo_Tag::
+          kTouchscreenTouchEventInfo: {
+        event = std::make_unique<extensions::Event>(
+            extensions::events::OS_EVENTS_ON_TOUCHSCREEN_TOUCH_EVENT,
+            api::os_events::OnTouchscreenTouchEvent::kEventName,
+            base::Value::List().Append(
+                converters::events::ConvertStructPtr(
+                    std::move(info->get_touchscreen_touch_event_info()))
+                    .ToValue()),
+            browser_context_);
+        break;
+      }
+      case crosapi::internal::TelemetryEventInfo_Data::TelemetryEventInfo_Tag::
+          kTouchscreenConnectedEventInfo: {
+        event = std::make_unique<extensions::Event>(
+            extensions::events::OS_EVENTS_ON_TOUCHSCREEN_CONNECTED_EVENT,
+            api::os_events::OnTouchscreenConnectedEvent::kEventName,
+            base::Value::List().Append(
+                converters::events::ConvertStructPtr(
+                    std::move(info->get_touchscreen_connected_event_info()))
+                    .ToValue()),
+            browser_context_);
+        break;
+      }
+      case crosapi::internal::TelemetryEventInfo_Data::TelemetryEventInfo_Tag::
           kStylusTouchEventInfo: {
         event = std::make_unique<extensions::Event>(
             extensions::events::OS_EVENTS_ON_STYLUS_TOUCH_EVENT,

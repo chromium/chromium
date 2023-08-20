@@ -275,6 +275,30 @@ struct TelemetryTouchpadConnectedEventInfo {
   array<TelemetryInputTouchButton> buttons@3;
 };
 
+// Emitted when new touch points are updated.
+//
+// NextMinVersion: 1, NextIndex: 1
+[Stable]
+struct TelemetryTouchscreenTouchEventInfo {
+  // The touch points reported by the touchscreen.
+  array<TelemetryTouchPointInfo> touch_points@0;
+};
+
+// Emitted once the observer get connected to the touchscreen events. This will
+// be the first event from the touchscreen.
+//
+// NextMinVersion: 1, NextIndex: 3
+[Stable]
+struct TelemetryTouchscreenConnectedEventInfo {
+  // The maximum possible x position of touch points.
+  uint32? max_x@0;
+  // The maximum possible y position of touch points.
+  uint32? max_y@1;
+  // The maximum possible pressure of touch points, or 0 if pressure is not
+  // supported.
+  uint32? max_pressure@2;
+};
+
 // Stylus touch point info.
 //
 // NextMinVersion: 1, NextIndex: 3
@@ -318,7 +342,7 @@ struct TelemetryStylusConnectedEventInfo {
 
 // Union of event info.
 //
-// NextMinVersion: 10, NextIndex: 14
+// NextMinVersion: 11, NextIndex: 16
 [Stable, Extensible]
 union TelemetryEventInfo {
   // The default value for forward compatibility. All the unknown type will be
@@ -354,11 +378,17 @@ union TelemetryEventInfo {
   // Stylus connected event info.
   [MinVersion=9] TelemetryStylusConnectedEventInfo
       stylus_connected_event_info@13;
+  // Touchscreen Touch event info.
+  [MinVersion=10] TelemetryTouchscreenTouchEventInfo
+      touchscreen_touch_event_info@14;
+  // Touchscreen Connected event info.
+  [MinVersion=10] TelemetryTouchscreenConnectedEventInfo
+      touchscreen_connected_event_info@15;
 };
 
 // An enumeration of event categories.
 //
-// NextMinVersion: 10, NextIndex: 14
+// NextMinVersion: 11, NextIndex: 16
 [Stable, Extensible]
 enum TelemetryEventCategoryEnum {
   // This is required for backwards compatibility, should not be used.
@@ -376,6 +406,8 @@ enum TelemetryEventCategoryEnum {
   [MinVersion=8] kExternalDisplay = 11,
   [MinVersion=9] kStylusTouch = 12,
   [MinVersion=9] kStylusConnected = 13,
+  [MinVersion=10] kTouchscreenTouch = 14,
+  [MinVersion=10] kTouchscreenConnected = 15,
 };
 
 // Implemented by clients who desire events.

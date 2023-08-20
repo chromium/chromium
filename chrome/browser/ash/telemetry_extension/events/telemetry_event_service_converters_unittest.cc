@@ -414,6 +414,15 @@ TEST(TelemetryEventServiceConvertersTest, ConvertTelemetryEventCategoryEnum) {
       Convert(crosapi::mojom::TelemetryEventCategoryEnum::kTouchpadConnected),
       cros_healthd::mojom::EventCategoryEnum::kTouchpad);
 
+  EXPECT_EQ(
+      Convert(crosapi::mojom::TelemetryEventCategoryEnum::kTouchscreenTouch),
+      cros_healthd::mojom::EventCategoryEnum::kTouchscreen);
+
+  EXPECT_EQ(
+      Convert(
+          crosapi::mojom::TelemetryEventCategoryEnum::kTouchscreenConnected),
+      cros_healthd::mojom::EventCategoryEnum::kTouchscreen);
+
   EXPECT_EQ(Convert(crosapi::mojom::TelemetryEventCategoryEnum::kStylusTouch),
             cros_healthd::mojom::EventCategoryEnum::kStylus);
 
@@ -753,6 +762,56 @@ TEST(TelemetryEventServiceConvertersTest,
           crosapi::mojom::TelemetryInputTouchButton::kMiddle,
           crosapi::mojom::TelemetryInputTouchButton::kRight};
   EXPECT_EQ(connected_event_output->buttons, expected_buttons);
+}
+
+TEST(TelemetryEventServiceConvertersTest,
+     ConvertTouchscreenEventInfoTouchEvent) {
+  std::vector<cros_healthd::mojom::TouchPointInfoPtr> touch_points;
+  touch_points.push_back(cros_healthd::mojom::TouchPointInfo::New(
+      1, 2, 3, nullptr, nullptr, nullptr));
+  touch_points.push_back(cros_healthd::mojom::TouchPointInfo::New(
+      4, 5, 6, cros_healthd::mojom::NullableUint32::New(7),
+      cros_healthd::mojom::NullableUint32::New(8),
+      cros_healthd::mojom::NullableUint32::New(9)));
+
+  auto touch_event_input =
+      cros_healthd::mojom::TouchscreenTouchEvent::New(std::move(touch_points));
+  auto input = cros_healthd::mojom::EventInfo::NewTouchscreenEventInfo(
+      cros_healthd::mojom::TouchscreenEventInfo::NewTouchEvent(
+          std::move(touch_event_input)));
+
+  auto result = ConvertStructPtr(std::move(input));
+
+  EXPECT_TRUE(result->is_touchscreen_touch_event_info());
+  const auto& touch_event_output = result->get_touchscreen_touch_event_info();
+  EXPECT_EQ(touch_event_output->touch_points.size(), 2UL);
+  EXPECT_EQ(touch_event_output->touch_points[0],
+            crosapi::mojom::TelemetryTouchPointInfo::New(1, 2, 3, nullptr,
+                                                         nullptr, nullptr));
+
+  EXPECT_EQ(touch_event_output->touch_points[1],
+            crosapi::mojom::TelemetryTouchPointInfo::New(
+                4, 5, 6, crosapi::mojom::UInt32Value::New(7),
+                crosapi::mojom::UInt32Value::New(8),
+                crosapi::mojom::UInt32Value::New(9)));
+}
+
+TEST(TelemetryEventServiceConvertersTest,
+     ConvertTouchscreenEventInfoConnectedEvent) {
+  auto connected_event_input =
+      cros_healthd::mojom::TouchscreenConnectedEvent::New(1, 2, 3);
+  auto input = cros_healthd::mojom::EventInfo::NewTouchscreenEventInfo(
+      cros_healthd::mojom::TouchscreenEventInfo::NewConnectedEvent(
+          std::move(connected_event_input)));
+
+  auto result = ConvertStructPtr(std::move(input));
+  EXPECT_TRUE(result->is_touchscreen_connected_event_info());
+  const auto& connected_event_output =
+      result->get_touchscreen_connected_event_info();
+
+  EXPECT_EQ(connected_event_output->max_x, 1UL);
+  EXPECT_EQ(connected_event_output->max_y, 2UL);
+  EXPECT_EQ(connected_event_output->max_pressure, 3UL);
 }
 
 TEST(TelemetryEventServiceConvertersTest, ConvertStylusEventInfoTouchEvent) {

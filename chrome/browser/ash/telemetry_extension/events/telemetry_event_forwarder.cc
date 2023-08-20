@@ -65,6 +65,18 @@ void CrosHealthdEventForwarder::OnEvent(
       }
       return;
     }
+    case crosapi::mojom::TelemetryEventCategoryEnum::kTouchscreenTouch: {
+      if (event->is_touchscreen_touch_event_info()) {
+        crosapi_observer_->OnEvent(std::move(event));
+      }
+      return;
+    }
+    case crosapi::mojom::TelemetryEventCategoryEnum::kTouchscreenConnected: {
+      if (event->is_touchscreen_connected_event_info()) {
+        crosapi_observer_->OnEvent(std::move(event));
+      }
+      return;
+    }
     case crosapi::mojom::TelemetryEventCategoryEnum::kStylusTouch: {
       if (event->is_stylus_touch_event_info()) {
         crosapi_observer_->OnEvent(std::move(event));

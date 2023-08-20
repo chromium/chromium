@@ -62,6 +62,12 @@ api::os_events::TouchpadTouchEventInfo UncheckedConvertPtr(
 api::os_events::TouchpadConnectedEventInfo UncheckedConvertPtr(
     crosapi::mojom::TelemetryTouchpadConnectedEventInfoPtr ptr);
 
+api::os_events::TouchscreenTouchEventInfo UncheckedConvertPtr(
+    crosapi::mojom::TelemetryTouchscreenTouchEventInfoPtr ptr);
+
+api::os_events::TouchscreenConnectedEventInfo UncheckedConvertPtr(
+    crosapi::mojom::TelemetryTouchscreenConnectedEventInfoPtr ptr);
+
 api::os_events::TouchPointInfo UncheckedConvertPtr(
     crosapi::mojom::TelemetryTouchPointInfoPtr ptr);
 

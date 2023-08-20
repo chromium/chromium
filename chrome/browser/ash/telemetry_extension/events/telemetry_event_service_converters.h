@@ -67,6 +67,12 @@ crosapi::mojom::TelemetryTouchpadTouchEventInfoPtr UncheckedConvertPtr(
 crosapi::mojom::TelemetryTouchpadConnectedEventInfoPtr UncheckedConvertPtr(
     cros_healthd::mojom::TouchpadConnectedEventPtr input);
 
+crosapi::mojom::TelemetryTouchscreenTouchEventInfoPtr UncheckedConvertPtr(
+    cros_healthd::mojom::TouchscreenTouchEventPtr input);
+
+crosapi::mojom::TelemetryTouchscreenConnectedEventInfoPtr UncheckedConvertPtr(
+    cros_healthd::mojom::TouchscreenConnectedEventPtr input);
+
 crosapi::mojom::TelemetryStylusTouchEventInfoPtr UncheckedConvertPtr(
     cros_healthd::mojom::StylusTouchEventPtr input);
 

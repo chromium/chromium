@@ -145,6 +145,23 @@ crosapi::mojom::TelemetryTouchpadConnectedEventInfoPtr UncheckedConvertPtr(
       std::move(converted_touch_buttons));
 }
 
+crosapi::mojom::TelemetryTouchscreenTouchEventInfoPtr UncheckedConvertPtr(
+    cros_healthd::mojom::TouchscreenTouchEventPtr input) {
+  std::vector<crosapi::mojom::TelemetryTouchPointInfoPtr>
+      converted_touch_points;
+  for (auto& touch_point : input->touch_points) {
+    converted_touch_points.push_back(ConvertStructPtr(std::move(touch_point)));
+  }
+  return crosapi::mojom::TelemetryTouchscreenTouchEventInfo::New(
+      std::move(converted_touch_points));
+}
+
+crosapi::mojom::TelemetryTouchscreenConnectedEventInfoPtr UncheckedConvertPtr(
+    cros_healthd::mojom::TouchscreenConnectedEventPtr input) {
+  return crosapi::mojom::TelemetryTouchscreenConnectedEventInfo::New(
+      input->max_x, input->max_y, input->max_pressure);
+}
+
 crosapi::mojom::TelemetryStylusTouchEventInfoPtr UncheckedConvertPtr(
     cros_healthd::mojom::StylusTouchEventPtr input) {
   return crosapi::mojom::TelemetryStylusTouchEventInfo::New(
@@ -207,6 +224,22 @@ crosapi::mojom::TelemetryEventInfoPtr UncheckedConvertPtr(
                   ConvertStructPtr(std::move(info->get_connected_event())));
         case cros_healthd::mojom::TouchpadEventInfo::Tag::kDefaultType:
           LOG(WARNING) << "Got unsupported touchpad event";
+          return nullptr;
+      }
+    }
+    case cros_healthd::mojom::EventInfo::Tag::kTouchscreenEventInfo: {
+      auto info = std::move(input->get_touchscreen_event_info());
+      switch (info->which()) {
+        case cros_healthd::mojom::TouchscreenEventInfo::Tag::kTouchEvent:
+          return crosapi::mojom::TelemetryEventInfo::
+              NewTouchscreenTouchEventInfo(
+                  ConvertStructPtr(std::move(info->get_touch_event())));
+        case cros_healthd::mojom::TouchscreenEventInfo::Tag::kConnectedEvent:
+          return crosapi::mojom::TelemetryEventInfo::
+              NewTouchscreenConnectedEventInfo(
+                  ConvertStructPtr(std::move(info->get_connected_event())));
+        case cros_healthd::mojom::TouchscreenEventInfo::Tag::kDefaultType:
+          LOG(WARNING) << "Got unsupported touchscreen event";
           return nullptr;
       }
     }
@@ -532,6 +565,10 @@ cros_healthd::mojom::EventCategoryEnum Convert(
       return cros_healthd::mojom::EventCategoryEnum::kTouchpad;
     case crosapi::mojom::TelemetryEventCategoryEnum::kTouchpadConnected:
       return cros_healthd::mojom::EventCategoryEnum::kTouchpad;
+    case crosapi::mojom::TelemetryEventCategoryEnum::kTouchscreenTouch:
+      return cros_healthd::mojom::EventCategoryEnum::kTouchscreen;
+    case crosapi::mojom::TelemetryEventCategoryEnum::kTouchscreenConnected:
+      return cros_healthd::mojom::EventCategoryEnum::kTouchscreen;
     case crosapi::mojom::TelemetryEventCategoryEnum::kExternalDisplay:
       return cros_healthd::mojom::EventCategoryEnum::kExternalDisplay;
     case crosapi::mojom::TelemetryEventCategoryEnum::kStylusTouch:
