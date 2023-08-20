@@ -835,7 +835,6 @@ crbug.com/1448570 [ android android-pixel-2 angle-disabled no-passthrough ] conf
 crbug.com/1448570 [ android android-pixel-2 angle-disabled no-passthrough ] conformance/extensions/webgl-compressed-texture-etc1.html [ Failure ]
 crbug.com/1448569 [ win angle-d3d11 ] conformance2/glsl3/texture-bias.html [ Failure ]
 crbug.com/1450357 [ chromeos lacros-chrome chromeos-board-jacuzzi passthrough ] conformance2/glsl3/texture-bias.html [ Failure ]
-crbug.com/1450367 [ chromeos chromeos-board-amd64-generic passthrough ] conformance2/extensions/webgl-clip-cull-distance.html [ Failure ]
 
 #######################################################################
 # Automated Entries After This Point - Do Not Manually Add Below Here #
