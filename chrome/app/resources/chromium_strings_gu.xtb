@@ -209,11 +209,13 @@
 <translation id="5527463683072221100">Chromiumમાં PDFs ખોલો</translation>
 <translation id="5614091477838198795">જ્યારે ચાલુ હોય, ત્યારે તમે Chromiumમાંથી પણ સાઇન આઉટ થશો</translation>
 <translation id="5623402015214259806">{0,plural, =0{Chromium અપડેટ ઉપલબ્ધ છે}=1{Chromium અપડેટ ઉપલબ્ધ છે}one{Chromium અપડેટ # દિવસ માટે ઉપલબ્ધ છે}other{Chromium અપડેટ # દિવસ માટે ઉપલબ્ધ છે}}</translation>
+<translation id="5643865575100044307">જ્યારે તમે Chromium બંધ કરો, ત્યારે હંમેશાં તમારા ડિવાઇસમાંથી સાઇટનો ડેટા ડિલીટ કરો</translation>
 <translation id="5653831366781983928">કૃપા કરીને હવે Chromium ફરી શરૂ કરો</translation>
 <translation id="5690427481109656848">Google LLC</translation>
 <translation id="5698481217667032250">આ ભાષામાં Chromium બતાવો</translation>
 <translation id="5862307444128926510">Chromium માં સ્વાગત છે</translation>
 <translation id="5883558403894052917">Chromiumને આ આઇટમમાં માલવેર હોવાનું જાણવા મળ્યું છે:</translation>
+<translation id="5889361821821684993">Chromium નિયમિત રીતે ચેક કરીને એ વાતની ખાતરી કરતું રહે છે કે તમારા બ્રાઉઝરના સેટિંગ સૌથી સલામત છે. જો કોઈ બાબતનો રિવ્યૂ કરવો જરૂરી હશે તો અમે તમને તેની જાણ કરીશું.</translation>
 <translation id="5895138241574237353">પુનઃપ્રારંભ કરો</translation>
 <translation id="5903106910045431592"><ph name="PAGE_TITLE" /> - નેટવર્ક સાઇન ઇન</translation>
 <translation id="5924017743176219022">ઇન્ટરનેટ સાથે કનેક્ટ કરી રહ્યાં છીએ...</translation>
@@ -224,6 +226,7 @@
 <translation id="5988505247484123880">તમારા અનુભવને મનગમતો બનાવવા માટે તમે જે સાઇટની મુલાકાત લો છો તે બધી સાઇટ તમને જેમાં રુચિ હોય એવી તમામ વસ્તુઓ યાદ રાખી લે તે સામાન્ય બાબત છે. સાઇટ, Chromium પર તમારી રુચિના વિષયો વિશેની માહિતી પણ સ્ટોર કરી શકે છે.</translation>
 <translation id="6003112304606738118">ડાઉનલોડ કરી રહ્યાં છીએ… <ph name="HOURS" /> કલાક બાકી છે</translation>
 <translation id="6040143037577758943">બંધ કરો</translation>
+<translation id="6055611795418209449">Chromium કેટલાક ડાઉનલોડ બ્લૉક કરે છે</translation>
 <translation id="6055895534982063517">Chromiumનું એક નવું વર્ઝન ઉપલબ્ધ છે અને તે પહેલાં કરતાંય વધુ ઝડપી છે.</translation>
 <translation id="6063093106622310249">અને Chromiumમાં ખોલો</translation>
 <translation id="6072279588547424923"><ph name="EXTENSION_NAME" />ને Chromiumમાં ઉમેરવામાં આવ્યું છે</translation>
@@ -237,6 +240,7 @@
 <translation id="6132897690380286411">Chromium ટૂંક સમયમાં જ બંધ થશે અને ડેટા ડિલીટ કરશે</translation>
 <translation id="6134968993075716475">Safe Browsingની સુવિધા બંધ છે. Chromium તેને ચાલુ રાખવાનો સુઝાવ આપે છે.</translation>
 <translation id="6145820983052037069">તમે અહીં એક Chromium પ્રોફાઇલથી બીજી Chromium પ્રોફાઇલ પર સ્વિચ કરી શકો છો</translation>
+<translation id="6175304430031192654">તમારા સેટિંગને આધારે, Chromium તમને કુકી અને તમારા વર્તમાન URL પણ મોકલી શકે છે</translation>
 <translation id="6183079672144801177">ખાતરી કરો કે તમે તમારા <ph name="TARGET_DEVICE_NAME" /> પર Chromiumમાં સાઇન ઇન કર્યું છે અને પછી ફરીથી મોકલવાનો પ્રયાસ કરો.</translation>
 <translation id="6212496753309875659">આ કમ્પ્યુટર પર પહેલાંથી જ Chromiumનું સૌથી તાજેતરનું વર્ઝન છે. જો સૉફ્ટવેર કાર્ય કરી રહ્યું નથી, તો કૃપા કરીને Chromiumને અનઇન્સ્ટૉલ કરો અને ફરીથી પ્રયાસ કરો.</translation>
 <translation id="6219195342503754812">{0,plural, =0{Chromium હમણાં ફરીથી લૉન્ચ થશે}=1{Chromium 1 સેકન્ડમાં ફરીથી લૉન્ચ થશે}one{Chromium # સેકન્ડમાં ફરીથી લૉન્ચ થશે}other{Chromium # સેકન્ડમાં ફરીથી લૉન્ચ થશે}}</translation>
@@ -257,6 +261,7 @@
 <translation id="6373523479360886564">શું તમે ખરેખર તમે Chromium ને અનઇન્સ્ટૉલ કરવા માંગો છો?</translation>
 <translation id="6375219077595103062">Password Managerમાં શૉર્ટકટ ઉમેરો</translation>
 <translation id="6384011394608460044"><ph name="BEGIN_BOLD" />અમે આ ડેટાનો ઉપયોગ કેવી રીતે કરીએ છીએ:<ph name="END_BOLD" /> Chromium તમારી રુચિઓનું અનુમાન લગાવી શકે છે. પછી, તમે જેની મુલાકાત લો તે સાઇટ Chromiumને તમારી રુચિઓ જોવા માટે કહી શકે છે, જેથી તમને જોવા મળતી જાહેરાતોને મનગમતી બનાવી શકાય.</translation>
+<translation id="6400112897226594999">કમ્પ્યૂટરની સ્ક્રીનમાં Chromiumનો લોગો.</translation>
 <translation id="6403826409255603130">Chromium એ એક એવું વેબ બ્રાઉઝર છે જે પ્રકાશની ગતિએ વેબપૃષ્ઠો અને એપ્લિકેશંસને ચલાવે છે. તે ઝડપી, સ્થિર અને ઉપયોગમાં સરળ છે. Google Chromium માં નિર્મિત મૉલવેર અને ફિશીંગ સુરક્ષા સાથે વેબને વધુ સુરક્ષિત રૂપે બ્રાઉઝ કરો.</translation>
 <translation id="6442900851116057561">ChromiumOS ફરી શરૂ કરો</translation>
 <translation id="6455857529632101747">Chromium પ્રોફાઇલમાં આપનું સ્વાગત છે</translation>
@@ -306,6 +311,7 @@
 <translation id="718435575166326686">આ સાઇટ માટે Chromiumને કૅમેરાની પરવાનગીની જરૂર છે</translation>
 <translation id="7196312274710523067">Chromium લૉન્ચ કરી શકાયું નથી. ફરી પ્રયાસ કરો.</translation>
 <translation id="7197677400338048821">Chromium તમારા પાસવર્ડ ચેક કરી શકતું નથી. 24 કલાક પછી ફરી પ્રયાસ કરો.</translation>
+<translation id="7213407614656404070">જ્યારે પણ તમે મેસેજ, દસ્તાવેજો અને અન્ય ઍપમાંની લિંક પર ક્લિક કરો, ત્યારે Chromiumનો ઉપયોગ કરો</translation>
 <translation id="7223968959479464213">કાર્ય વ્યવસ્થાપક - Chromium</translation>
 <translation id="7246575524853130370">Chromium દ્વારા અનુમાન લગાવ્યા મુજબની તમારી રુચિઓ</translation>
 <translation id="7309928523159922338">Ad measurement તમે જેની મુલાકાત લો છો તે સાઇટને Chromium પાસેથી માહિતીની વિનંતી કરવાની મંજૂરી આપે છે, જે સાઇટને તેની જાહેરાતોનું કાર્યપ્રદર્શન માપવામાં સહાય કરે છે. Ad measurement સાઇટ વચ્ચે શક્ય તેટલી ઓછી માહિતી ટ્રાન્સફર કરીને, સાઇટ દ્વારા પરસ્પરના ટ્રૅકિંગને પ્રતિબંધિત કરે છે.</translation>

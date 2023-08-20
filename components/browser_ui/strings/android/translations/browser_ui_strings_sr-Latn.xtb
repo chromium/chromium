@@ -4,6 +4,7 @@
 <translation id="1006017844123154345">Otvori onlajn</translation>
 <translation id="1036348656032585052">Isključi</translation>
 <translation id="1044891598689252897">Sajtovi će normalno raditi</translation>
+<translation id="1073417869336441572">Pomozite nam da poboljšamo Chrome tako što ćete nam reći zašto ste dozvolili kolačiće treće strane. <ph name="BEGIN_LINK" />Pošaljite povratne informacije<ph name="END_LINK" /></translation>
 <translation id="1124090076051167250">Ovim brišete <ph name="DATASIZE" /> podataka i kolačića koje čuvaju sajtovi ili aplikacije na početnom ekranu.</translation>
 <translation id="1178581264944972037">Pauziraj</translation>
 <translation id="1181037720776840403">Ukloni</translation>
@@ -50,6 +51,7 @@
 <translation id="1984937141057606926">Dozvoljeni, osim treće strane</translation>
 <translation id="1989112275319619282">Pregledaj</translation>
 <translation id="1994173015038366702">URL sajta</translation>
+<translation id="1999195646219379110">{COUNT,plural, =1{Ističe za 1 dan}one{Ističe za # dan}few{Ističe za # dana}other{Ističe za # dana}}</translation>
 <translation id="2004697686368036666">Funkcije na nekim sajtovima mogu da ne rade</translation>
 <translation id="2025115093177348061">Proširena realnost</translation>
 <translation id="2030769033451695672">Dodirnite da biste se vratili na <ph name="URL_OF_THE_CURRENT_TAB" /></translation>
@@ -140,6 +142,7 @@
 <translation id="3386292677130313581">Pitaj pre nego što dozvoliš sajtovima da znaju lokaciju (preporučeno)</translation>
 <translation id="3403537308306431953"><ph name="ZOOM_LEVEL" />%%</translation>
 <translation id="344449859752187052">Kolačići treće strane su blokirani</translation>
+<translation id="3465378418721443318">{DAYS,plural, =1{Chrome će sutra ponovo blokirati kolačiće}one{Još # dan dok Chrome ponovo ne blokira kolačiće}few{Još # dana dok Chrome ponovo ne blokira kolačiće}other{Još # dana dok Chrome ponovo ne blokira kolačiće}}</translation>
 <translation id="3521663503435878242">Sajtovi na domenu <ph name="DOMAIN" /></translation>
 <translation id="3538390592868664640">Sprečite sajtove da prave 3D mapu okruženja ili da prate položaj kamere</translation>
 <translation id="3544058026430919413">Preduzeće može da definiše grupu sajtova koji mogu da koriste kolačiće da bi delili aktivnosti u grupi. Ovo je isključeno u režimu bez arhiviranja.</translation>
@@ -162,6 +165,7 @@
 <translation id="381841723434055211">Brojevi telefona</translation>
 <translation id="3826050100957962900">Prijavljivanje treće strane</translation>
 <translation id="3835233591525155343">Korišćenje uređaja</translation>
+<translation id="3843916486309149084">Chrome će danas ponovo blokirati kolačiće</translation>
 <translation id="385051799172605136">Nazad</translation>
 <translation id="3859306556332390985">Premotaj unapred</translation>
 <translation id="3895926599014793903">Prinudno omogući zumiranje</translation>
@@ -301,6 +305,7 @@
 <translation id="6367753977865761591">Blokirajte prijavljivanje trećih strana za određeni sajt.</translation>
 <translation id="6388207532828177975">Obriši i resetuj</translation>
 <translation id="6398765197997659313">Izađi iz režima celog ekrana</translation>
+<translation id="640163077447496506">Ističe danas</translation>
 <translation id="6405650995156823521"><ph name="FIRST_PART" /> • <ph name="SECOND_PART" /></translation>
 <translation id="6439114592976064011">Ne dozvoljava sajtovima da koriste uređaj i podatke virtuelne realnosti</translation>
 <translation id="6447842834002726250">Kolačići</translation>
@@ -396,6 +401,7 @@
 <translation id="8131740175452115882">Potvrdi</translation>
 <translation id="8154912474061769055">Funkcije na mnogim sajtovima mogu da ne rade</translation>
 <translation id="8168435359814927499">Sadržaj</translation>
+<translation id="8186479265534291036">Da li sajt ne radi? Kolačići treće strane su blokirani</translation>
 <translation id="8197286292360124385">Odobrena je dozvola <ph name="PERMISSION_1" /></translation>
 <translation id="8200772114523450471">Nastavi</translation>
 <translation id="8206354486702514201">Ovo podešavanje primenjuje administrator.</translation>

@@ -2737,7 +2737,7 @@ Unaweza kudhibiti mipangilio ya akaunti hii kwa kusakinisha programu ya Family L
 <translation id="3183944777708523606">Mpangilio wa skrini</translation>
 <translation id="3184536091884214176">Dhibiti au weka mipangilio ya printa za CUPS. <ph name="LINK_BEGIN" />Pata maelezo zaidi<ph name="LINK_END" /></translation>
 <translation id="3185014249447200271">{NUM_APPS,plural, =1{Programu hii imezuiwa}other{Baadhi ya programu zimezuiwa}}</translation>
-<translation id="3187472288455401631">Upimaji wa tangazo</translation>
+<translation id="3187472288455401631">Upimaji wa matangazo</translation>
 <translation id="3188257591659621405">Faili zangu</translation>
 <translation id="3188465121994729530">Wastani Unaosonga</translation>
 <translation id="3189187154924005138">Kiteuzi kikubwa</translation>
@@ -7559,7 +7559,7 @@ Una manenosiri # zaidi yaliyoathiriwa. Kidhibiti cha Manenosiri cha Google kinap
 <translation id="7258192266780953209">Ugeuzaji</translation>
 <translation id="7258225044283673131">Programu haifanyi kazi. Chagua "Lazimisha kufunga" ili ufunge programu.</translation>
 <translation id="7260186537988033909">Uandikishaji wa kifaa cha skrini ya kuonyesha matangazo na mabango ya dijitali umekamilika</translation>
-<translation id="7260367682327802201">Kifaa chako cha Android kinaweza kujumuisha mipangilio inayolingana. Ikiwa kipimo cha Tangazo kimewashwa kwenye Chrome na kwenye kifaa chako cha Android, kampuni inaweza kupima ufanisi wa tangazo kwenye tovuti unazotembelea na programu unazotumia.</translation>
+<translation id="7260367682327802201">Kifaa chako cha Android kinaweza kujumuisha mipangilio inayolingana. Ikiwa Upimaji wa matangazo umewashwa kwenye Chrome na kwenye kifaa chako cha Android, kampuni inaweza kupima ufanisi wa tangazo kwenye tovuti unazotembelea na programu unazotumia.</translation>
 <translation id="7261612856573623172">Sauti ya mfumo wa Ubadilishaji wa Maandishi kwenda Usemi</translation>
 <translation id="7262004276116528033">Huduma hii ya kuingia katika akaunti inatolewa na <ph name="SAML_DOMAIN" /></translation>
 <translation id="7263162347647986485">{NUM_SITES,plural, =1{Ruhusa zimeondolewa katika tovuti 1}other{Ruhusa zimeondolewa katika tovuti {NUM_SITES}}}</translation>

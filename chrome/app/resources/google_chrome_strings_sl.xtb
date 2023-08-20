@@ -40,6 +40,7 @@ Nekatere funkcije morda niso na voljo in spremembe nastavitev ne bodo shranjene.
 <translation id="1627304841979541023"><ph name="BEGIN_BOLD" />Kako lahko upravljate podatke:<ph name="END_BOLD" /> Zaradi zaščite vaše varnosti samodejno izbrišemo vaša zanimanja, starejša od 4 tednov. Ko brskate naprej, se zanimanje morda znova prikaže na seznamu. Odstranite lahko tudi zanimanja, za katera ne želite, da jih Chrome predlaga.</translation>
 <translation id="1628000112320670027">Pomoč za Chrome</translation>
 <translation id="1640672724030957280">Prenos ...</translation>
+<translation id="1642309806724967937">Chrome lahko glede na nastavitve pošlje tudi piškotke in vaš trenutni URL</translation>
 <translation id="1662146548738125461">O sistemu ChromeOS Flex</translation>
 <translation id="1674870198290878346">Odpiranje povezave v Chromovem oknu brez belež&amp;enja zgodovine</translation>
 <translation id="1682634494516646069">Google Chrome ne more brati svojega imenika s podatki ali pisati vanj:
@@ -97,6 +98,7 @@ Nekatere funkcije morda niso na voljo in spremembe nastavitev ne bodo shranjene.
 <translation id="2597976513418770460">Prenesite stvari za brskalnik Chrome iz računa <ph name="ACCOUNT_EMAIL" /></translation>
 <translation id="2622559029861875898">Chrome ne more preveriti, ali so na voljo posodobitve. Poskusite preveriti internetno povezavo.</translation>
 <translation id="2645435784669275700">Chrome OS</translation>
+<translation id="2649768380733403658">Chrome redno preverja, ali so v brskalniku na voljo najvarnejše nastavitve Če boste morali kaj pregledati, vam bomo sporočili.</translation>
 <translation id="2652691236519827073">Odpiranje povezave na novem &amp;zavihku v Chromu</translation>
 <translation id="2665296953892887393">Pomagajte izboljšati Chrome – Googlu pošiljajte poročila o zrušitvah in ta dokument: <ph name="UMA_LINK" />.</translation>
 <translation id="2689103672227170538">Zaradi te razširitve se je spremenila stran, ki je prikazana, ko zaženete Chrome.</translation>
@@ -236,6 +238,7 @@ Nekatere funkcije morda niso na voljo in spremembe nastavitev ne bodo shranjene.
 
 Nekatere funkcije morda ne bodo na voljo. Navedite drug imenik profila ali uporabite novejšo različico Google Chroma.</translation>
 <translation id="521447420733633466">Če napravo souporabljate z drugimi, lahko prijatelji in sorodniki ločeno brskajo ter nastavijo Chrome tako, kot želijo.</translation>
+<translation id="5239627039202700673">Uporaba Chroma ob vsakem kliku povezav v sporočilih, dokumentih in drugih aplikacijah</translation>
 <translation id="5251420635869119124">Gostje lahko uporabljajo Chrome, ne da bi za seboj pustili kar koli.</translation>
 <translation id="5334309298019785904">Chrome OS ni mogel sinhronizirati podatkov, ker sinhronizacija ni na voljo za vašo domeno.</translation>
 <translation id="5334487786912937552">Chrome potrebuje dovoljenje za dostop do shrambe za prenos datotek.</translation>
@@ -252,6 +255,7 @@ Google Chrome ne more obnoviti vaših nastavitev.</translation>
 <translation id="5566025111015594046">Google Chrome (mDNS-In)</translation>
 <translation id="565744775970812598">Datoteka <ph name="FILE_NAME" /> je morda nevarna, zato jo je Chrome blokiral.</translation>
 <translation id="5678190148303298925">{COUNT,plural, =0{Skrbnik prosi, da za uveljavitev te posodobitve znova zaženete Chrome.}=1{Skrbnik prosi, da za uveljavitev te posodobitve znova zaženete Chrome. Anonimno okno se ne bo znova odprlo.}one{Skrbnik prosi, da za uveljavitev te posodobitve znova zaženete Chrome. # anonimno okno se ne bo znova odprlo.}two{Skrbnik prosi, da za uveljavitev te posodobitve znova zaženete Chrome. # anonimni okni se ne bosta znova odprli.}few{Skrbnik prosi, da za uveljavitev te posodobitve znova zaženete Chrome. # anonimna okna se ne bodo znova odprla.}other{Skrbnik prosi, da za uveljavitev te posodobitve znova zaženete Chrome. # anonimnih oken se ne bo znova odprlo.}}</translation>
+<translation id="5682679001737420487">Chrome blokira nekatere prenose</translation>
 <translation id="5686916850681061684">Prilagajanje in nadziranje Google Chroma. Nekaj morate preveriti – kliknite za podrobnosti.</translation>
 <translation id="5690427481109656848">Google LLC</translation>
 <translation id="570005089986962444">Če je vklopljeno, Chrome sprosti pomnilnik z neaktivnih zavihkov. Tako imajo aktivni zavihki in druge aplikacije več računalniških sredstev, Chrome pa je še naprej hiter. Neaktivni zavihki znova postanejo aktivni, ko se vrnete nanje.</translation>
@@ -309,6 +313,7 @@ Google Chrome ne more obnoviti vaših nastavitev.</translation>
 <translation id="6739177684496155661">Želite nadaljevati v novem profilu v Chromu?</translation>
 <translation id="6750954913813541382">Chrome zaradi odpravljanja napak pri črkovanju Googlu pošlje besedilo, ki ga vnesete v brskalnik</translation>
 <translation id="677276454032249905">Želite vseeno zapreti Chrome?</translation>
+<translation id="6794858689789885890">Podatki spletnih mest se vedno izbrišejo iz naprave, ko zaprete Chrome</translation>
 <translation id="683440813066116847">Pravilo za dohodni promet za Google Chrome Canary, ki dovoli promet mDNS.</translation>
 <translation id="6881299373831449287">Posodabljanje Chroma</translation>
 <translation id="6885412569789873916">Aplikacije za Chrome Beta</translation>
@@ -393,6 +398,7 @@ Dovoljenja, ki ste jih že odobrili spletnim mestom in aplikacijam, morda veljaj
 <translation id="8383226135083126309"><ph name="BEGIN_BOLD" />Kako uporabljamo te podatke:<ph name="END_BOLD" /> Chrome lahko oceni vaša zanimanja. Pozneje lahko stran, ki jo obiščete, od Chroma zahteva ogled vaših zanimanj zaradi osebnega prilagajanj oglasov, ki so vam prikazani.</translation>
 <translation id="8387459386171870978">Še naprej uporabljaj Chrome</translation>
 <translation id="8394720698884623075">Preveri URL-je, tako da jih primerja s seznamom spletnih mest, ki niso varna, shranjenim v Chromu.</translation>
+<translation id="8403038600646341038">Chromov logotip na zaslonu računalnika.</translation>
 <translation id="8416347857511542594">Preberite več o osebnem prilagajanju oglasov v Chromu</translation>
 <translation id="8418845734693287262">Chrome OS ni mogel sinhronizirati podatkov, ker so podatki za prijavo v račun zastareli.</translation>
 <translation id="8433638294851456451">Če želite poslati telefonsko številko od tukaj v telefon Android, se prijavite v Chrome v obeh napravah.</translation>

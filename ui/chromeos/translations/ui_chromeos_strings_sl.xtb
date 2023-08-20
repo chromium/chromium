@@ -94,6 +94,7 @@
 <translation id="174937106936716857">Skupno število datotek</translation>
 <translation id="1755345808328621801">Ta datoteka je namenjena za računalnike s programsko opremo Windows in ni združljiva z vašo napravo, ki uporablja Chrome OS. V Spletni trgovini Chrome poiščite ustrezno nadomestno aplikacijo.</translation>
 <translation id="1757915090001272240">Široka latinica</translation>
+<translation id="1761091787730831947">Deli z: <ph name="VM_NAME" /></translation>
 <translation id="1773212559869067373">Potrdilo za preverjanje pristnosti je bilo zavrnjeno lokalno</translation>
 <translation id="1775381402323441512">Podatki o videoposnetku</translation>
 <translation id="180035236176489073">Če želite dostopati do datotek, mora biti vzpostavljena povezava z internetom.</translation>
@@ -211,6 +212,7 @@
 <translation id="2718540689505416944">Namestitev aplikacije z Linuxom</translation>
 <translation id="2719020180254996569">Omrežje <ph name="NETWORK_INDEX" /> od <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" />, podrobnosti</translation>
 <translation id="2724954091494693138">turščina s tipkovnico F</translation>
+<translation id="2732288874651063549">Uredite deljenje z: <ph name="VM_NAME" /></translation>
 <translation id="2732839045120506979">vietnamščina (tipkovnica VNI)</translation>
 <translation id="2735623501230989521">Programu Parallels Desktop dovolite dostop do datotek v mapi <ph name="FOLDER_NAME" />.</translation>
 <translation id="2764206540577097904">Porabili ste ves posamezen prostor za shranjevanje za Google Workspace.</translation>
@@ -305,6 +307,7 @@
 <translation id="3509680540198371098">Omrežje <ph name="NETWORK_INDEX" /> od <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="SECURITY_STATUS" />, <ph name="CONNECTION_STATUS" />, moč signala je <ph name="SIGNAL_STRENGTH" />%, podrobnosti</translation>
 <translation id="3511705761158917664">Priprava na sinhronizacijo datotek (<ph name="NUMBER_OF_ITEMS" />) …</translation>
 <translation id="3522708245912499433">portugalščina</translation>
+<translation id="3523225005467146490">1 mapa je deljena z: <ph name="VM_NAME" /></translation>
 <translation id="3524311639100184459">Pozor: Te datoteke so začasne in bodo morda samodejno izbrisane, da se sprosti prostor na disku.  <ph name="BEGIN_LINK" />Več o tem<ph name="END_LINK" /></translation>
 <translation id="3527085408025491307">Mapa</translation>
 <translation id="3548125359243647069">Prevečkrat ste vnesli napačno kodo PIN.</translation>
@@ -664,6 +667,7 @@
 <translation id="6164412158936057769">Metulji</translation>
 <translation id="6165508094623778733">Več o tem</translation>
 <translation id="6170470584681422115">Sendvič</translation>
+<translation id="6181912134988520389">Omogočite dostop do datotek v Googlu Drive temu: <ph name="VM_NAME" />. Spremembe bodo sinhronizirane z drugimi napravami.</translation>
 <translation id="6187719147498869044">madžarščina</translation>
 <translation id="6198252989419008588">Spremeni PIN</translation>
 <translation id="6199801702437275229">Čakanje na podatke o prostoru ...</translation>
@@ -767,6 +771,7 @@
 <translation id="6989942356279143254">švedščina</translation>
 <translation id="6990081529015358884">Zmanjkalo vam je prostora</translation>
 <translation id="6993826899923627728">Ti elementi so v smetnjaku</translation>
+<translation id="6996593023542748157">Deljenje mape z: <ph name="VM_NAME" /></translation>
 <translation id="7008426324576352165">Vaša organizacija potrebuje več prostora za shranjevanje, da bo mogoče dokončati nalaganje.</translation>
 <translation id="7009985720488544166">Premikanje <ph name="COUNT" /> datotek(-e) blokira skrbniški pravilnik</translation>
 <translation id="7012943028104619157"><ph name="ROOT_TITLE" /> (<ph name="ROOT_SUMMARY" />)</translation>
@@ -952,6 +957,7 @@
 <translation id="8335837413233998004">beloruščina</translation>
 <translation id="8336153091935557858">Včeraj <ph name="YESTERDAY_DAYTIME" /></translation>
 <translation id="8342318071240498787">Datoteka ali imenik s tem imenom že obstaja.</translation>
+<translation id="83651606385705612">Temu omogočite dostop do datotek v mapi <ph name="FOLDER_NAME" />: <ph name="VM_NAME" /></translation>
 <translation id="8372369524088641025">Napačen ključ WEP</translation>
 <translation id="8372852072747894550">grščina</translation>
 <translation id="8386903983509584791">Iskanje je končano</translation>
@@ -961,6 +967,7 @@
 <translation id="8408068190360279472">Omrežje <ph name="NETWORK_TYPE" />, vzpostavljanje povezave</translation>
 <translation id="8425213833346101688">Spremeni</translation>
 <translation id="8428213095426709021">Nastavitve</translation>
+<translation id="8429998526804961548">Št. deljenih map (s tem: <ph name="VM_NAME" />):<ph name="NUMBER_OF_ITEMS" /></translation>
 <translation id="8431909052837336408">Spreminjanje kode PIN kartice SIM</translation>
 <translation id="8437209419043462667">Združene države</translation>
 <translation id="8452135315243592079">Ni kartice SIM</translation>

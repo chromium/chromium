@@ -21,6 +21,7 @@
 <translation id="1128128132059598906">EAP-TTLS</translation>
 <translation id="1145018782460575098">Okno za posodobitev vdelane programske opreme za zunanje naprave je odprto. Na voljo je toliko posodobitev: <ph name="NUM_UPDATES" />.</translation>
 <translation id="1145516343487477149">Poiščite članke s pomočjo in odgovore na pogosta vprašanja o Chromebookih.</translation>
+<translation id="1154390310959620237">Prilagodite lahko največ 5 bližnjic. Izbrišite bližnjico, če želite dodati novo.</translation>
 <translation id="1164939766849482256">Ohranjevalnik zaslona od zore do mraka</translation>
 <translation id="1167755866710282443">Odprite meni za prilagajanje tipk. Povlecite meni, če ga želite premakniti.</translation>
 <translation id="1175697296044146566">To napravo <ph name="DEVICE_TYPE" /> upravlja <ph name="MANAGER" />.</translation>
@@ -216,6 +217,7 @@
 <translation id="253029298928638905">Vnovičen zagon …</translation>
 <translation id="2533048460510040082">Predlagana vsebina s pomočjo</translation>
 <translation id="2536159006530886390">Internetne povezave ni mogoče vzpostaviti.</translation>
+<translation id="2555662516429796509">Pritisnite 1–4 modifikatorje in še 1 drugo tipko na tipkovnici</translation>
 <translation id="2570743873672969996">Izvajanje preizkusa <ph name="TEST_NAME" /> …</translation>
 <translation id="2584559707064218956">Če želite nastaviti, odprite nastavitve.</translation>
 <translation id="2597774443162333062">Datoteke bodo poslane Googlu zaradi odpravljanja napak.</translation>
@@ -296,6 +298,7 @@
 <translation id="3369013195428705271">Ali ste prepričani, da želite izbrisati vso zgodovino tiskanja? Tiskalna opravila, ki potekajo, ne bodo izbrisana.</translation>
 <translation id="3373141842870501561">Zaslonsko ozadje premika Zemlje</translation>
 <translation id="337375748120863155">Podatki, povezani z vašim izborom. Za dostop do kontrolnikov uporabite puščično tipko levo ali desno.</translation>
+<translation id="3383623117265110236">Ekskluzivno</translation>
 <translation id="3404249063913988450">Omogočanje ohranjevalnika zaslona</translation>
 <translation id="3413935475507503304">Če želite nadaljevati posodobitev, kliknite Naprej.</translation>
 <translation id="3434107140712555581">Akumulator: <ph name="BATTERY_PERCENTAGE" /> %</translation>
@@ -401,6 +404,7 @@
 <translation id="4171077696775491955">zmanjšanje svetlosti</translation>
 <translation id="4176463684765177261">Onemogočeno</translation>
 <translation id="4176659219503619100">Nadzorna plošča</translation>
+<translation id="4185315616950253617">Bližnjica s tipkami zgornje vrstice mora vključevati tipko za iskanje.</translation>
 <translation id="420283545744377356">Izklop ohranjevalnika zaslona</translation>
 <translation id="4213104098953699324">Tipkovnica USB</translation>
 <translation id="4227825898293920515">Geslo poteče čez toliko časa: <ph name="TIME" /></translation>
@@ -411,6 +415,7 @@
 <translation id="4258281355379922695">Zakasnitev HTTP</translation>
 <translation id="4271957103967917607">Ogled v celozaslonskem načinu</translation>
 <translation id="4275663329226226506">Predstavnost</translation>
+<translation id="4278766082079064416">Bližnjica se uporablja za »<ph name="CONFLICT_ACCEL_NAME" />«. Uredite ali odstranite jo, da razrešite spor.</translation>
 <translation id="4289540628985791613">Pregled</translation>
 <translation id="4289849978083912975">Diaprojekcija</translation>
 <translation id="4297501883039923494">Ustavljeno – neznana napaka</translation>
@@ -491,6 +496,7 @@
 <translation id="4861758251032006121">{ATTEMPTS_LEFT,plural, =1{<ph name="ERROR_MESSAGE" /> Na voljo imate še {0} poskus}one{<ph name="ERROR_MESSAGE" /> Na voljo imate še {0} poskus}two{<ph name="ERROR_MESSAGE" /> Na voljo imate še {0} poskusa}few{<ph name="ERROR_MESSAGE" /> Na voljo imate še {0} poskuse}other{<ph name="ERROR_MESSAGE" /> Na voljo imate še {0} poskusov}}</translation>
 <translation id="4873827928179867585">Algoritem preverjanja pristnosti</translation>
 <translation id="4880328057631981605">Ime dostopne točke</translation>
+<translation id="488307179443832524">Bližnjica se uporablja za »<ph name="CONFLICT_ACCEL_NAME" />«. Pritisnite novo bližnjico.</translation>
 <translation id="4885705234041587624">MSCHAPv2</translation>
 <translation id="4890353053343094602">Takoj izberite novo</translation>
 <translation id="4891842000192098784">Obremenitev</translation>
@@ -606,6 +612,7 @@
 <translation id="576835345334454681">Povečanje svetlosti zaslona</translation>
 <translation id="57838592816432529">Izklopi zvok</translation>
 <translation id="5784136236926853061">Velika zakasnitev HTTP</translation>
+<translation id="5816802250591013230">Ni dodeljene bližnjice</translation>
 <translation id="5826644637650799838">O likovnem izdelku</translation>
 <translation id="5832805196449965646">Dodaj osebo</translation>
 <translation id="583281660410589416">Neznano</translation>
@@ -767,6 +774,7 @@
 <translation id="7028979494427204405"><ph name="MANAGER" /> upravlja to napravo in ima dostop do vse dejavnosti uporabnika, vključno z obiskanimi spletnimi mesti, gesli in e-pošto.</translation>
 <translation id="7040230719604914234">Operater</translation>
 <translation id="7041549558901442110">Naprava ni povezana.</translation>
+<translation id="7046522406494308071">Želite ponastaviti vse bližnjice na privzete vrednosti?</translation>
 <translation id="7058278511608979688">Končaj in shrani</translation>
 <translation id="7059230779847288458">Polnjenje; do napolnjenosti še <ph name="TIME_VALUE" /></translation>
 <translation id="7068619307603204412">Pripravite napravo</translation>
@@ -774,6 +782,7 @@
 <translation id="7086440545492620869"><ph name="VALUE" /> <ph name="DISPLAY_NAME" /></translation>
 <translation id="710028965487274708">Ni uspelo – Pooblastitev ni uspela.</translation>
 <translation id="7103252855940681301">Naprava <ph name="INDEX" /> od <ph name="COUNT" /> z imenom <ph name="NAME" />.</translation>
+<translation id="7107255225945990211">Izberite ekskluzivna umetniška dela za <ph name="PRODUCT_NAME" /></translation>
 <translation id="7108668606237948702">vnos</translation>
 <translation id="7130438335435247835">Ime dostopne točke (APN)</translation>
 <translation id="7134436342991564651">{0,plural, =1{Imenski strežnik}one{Imenski strežniki}two{Imenski strežniki}few{Imenski strežniki}other{Imenski strežniki}}</translation>
@@ -795,6 +804,7 @@
 <translation id="7216409898977639127">Ponudnik mobilnih storitev</translation>
 <translation id="725133483556299729">Izberite e-poštni naslov</translation>
 <translation id="7271040990581020067">Optični bralnik je trenutno v uporabi. Poskusite pozneje.</translation>
+<translation id="7273347807225967898">Bližnjica ni na voljo. Pritisnite novo bližnjico s modifikatorsko tipko (ctrl, alt, shift, iskanje ali zaganjalnik).</translation>
 <translation id="7274587244503383581"><ph name="PRINTED_PAGES_NUMBER" />/<ph name="TOTAL_PAGES_NUMBER" /></translation>
 <translation id="7281657306185710294">Začutite vetrič</translation>
 <translation id="7287310195820267359">Zbirke zaslonskih ozadij</translation>
@@ -854,6 +864,7 @@
 <translation id="7718231387947923843">lučka za osvetlitev tipkovnice</translation>
 <translation id="773153675489693198">Število ciklov</translation>
 <translation id="7747039790905080783">Vnaprej deljeni ključ</translation>
+<translation id="7752963721013053477">Od zore do mraka – ekskluzivno</translation>
 <translation id="7762130827864645708">Sprememba gesla je bila uspešna. Od zdaj naprej uporabljajte novo geslo.</translation>
 <translation id="7763470514545477072">Ujemanje pripone domene</translation>
 <translation id="7769672763586021400">ID modela</translation>
@@ -873,6 +884,7 @@
 <translation id="7881066108824108340">DNS</translation>
 <translation id="7882358943899516840">Vrsta ponudnika</translation>
 <translation id="7882501334836096755">Javni ključ</translation>
+<translation id="7903695460270716054">Izberite izbrani slikovni material in slike</translation>
 <translation id="7915220255123750251">Upravljanje nastavitev APN-ja. APN-ji vzpostavijo povezavo med mobilnim omrežjem in internetom.</translation>
 <translation id="7936303884198020182">Najden ni bil noben imenski strežnik</translation>
 <translation id="7942349550061667556">Rdeča</translation>
@@ -899,6 +911,7 @@
 <translation id="808894953321890993">Sprememba gesla</translation>
 <translation id="8094062939584182041">Googlu dovolite, da se po e-pošti obrne na vas glede te težave</translation>
 <translation id="8104083085214006426">Uporabljate odprto omrežje, ki ni varno.</translation>
+<translation id="8111706652656628199">Bližnjica ni na voljo. Pritisnite novo bližnjico s tipko Shift in še 1 modifikatorsko tipko (ctrl, alt, iskanje ali zaganjalnik).</translation>
 <translation id="811820734797650957">Prehod je mogoče preveriti (Android)</translation>
 <translation id="8129620843620772246"><ph name="TEMPERATURE_C" /> °C</translation>
 <translation id="8132480444149501833">Zahtevaj števce prometa</translation>
@@ -977,6 +990,7 @@
 <translation id="8764414543112028321">WireGuard</translation>
 <translation id="87646919272181953">Album v Googlu Foto</translation>
 <translation id="877985182522063539">A4</translation>
+<translation id="8789196995628578448">Bližnjica se uporablja za »<ph name="CONFLICT_ACCEL_NAME" />«. Pritisnite novo bližnjico. Če želite zamenjati prvotno bližnjico, znova pritisnite to bližnjico.</translation>
 <translation id="879568662008399081">To omrežje ima morda prestrezni portal.</translation>
 <translation id="8798099450830957504">Privzeto</translation>
 <translation id="8798441408945964110">Ime ponudnika</translation>

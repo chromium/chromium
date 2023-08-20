@@ -21,6 +21,7 @@
 <translation id="1128128132059598906">EAP-TTLS</translation>
 <translation id="1145018782460575098">Prozor za ažuriranje firmvera za spoljne uređaje je otvoren. Dostupnih ažuriranja: <ph name="NUM_UPDATES" />.</translation>
 <translation id="1145516343487477149">Pronađite članke pomoći i odgovore na česta pitanja o Chromebook-u</translation>
+<translation id="1154390310959620237">Možete da prilagodite samo 5 prečica. Izbrišite neku prečicu da biste dodali novu.</translation>
 <translation id="1164939766849482256">Čuvar ekrana koji prikazuje ceo dan od svitanja do mraka</translation>
 <translation id="1167755866710282443">Otvorite meni da biste prilagodili tastere. Prevucite meni da biste ga premestili.</translation>
 <translation id="1175697296044146566"><ph name="MANAGER" /> upravlja ovim <ph name="DEVICE_TYPE" /> uređajem.</translation>
@@ -216,6 +217,7 @@
 <translation id="253029298928638905">Restartuje se...</translation>
 <translation id="2533048460510040082">Predloženi sadržaj pomoći</translation>
 <translation id="2536159006530886390">Povezivanje na internet nije uspelo.</translation>
+<translation id="2555662516429796509">Pritisnite modifikatore 1–4 i još 1 taster na tastaturi</translation>
 <translation id="2570743873672969996">Pokreće se test <ph name="TEST_NAME" />...</translation>
 <translation id="2584559707064218956">Da biste podesili mrežu, idite u Podešavanja</translation>
 <translation id="2597774443162333062">Fajlovi će se poslati Google-u radi otklanjanja grešaka</translation>
@@ -296,6 +298,7 @@
 <translation id="3369013195428705271">Želite li stvarno da obrišete svu istoriju štampanja? Zadaci štampanja koji su u toku se ne brišu.</translation>
 <translation id="3373141842870501561">Pozadina sa Zemljom</translation>
 <translation id="337375748120863155">Informacije vezane za vaš izbor. Koristite tastere sa strelicama nalevo ili nadesno da biste pristupili kontrolama.</translation>
+<translation id="3383623117265110236">Ekskluzivno</translation>
 <translation id="3404249063913988450">Omogućite čuvar ekrana</translation>
 <translation id="3413935475507503304">Da biste nastavili sa ažuriranjem, kliknite na Dalje.</translation>
 <translation id="3434107140712555581"><ph name="BATTERY_PERCENTAGE" />%</translation>
@@ -401,6 +404,7 @@
 <translation id="4171077696775491955">smanjite osvetljenost</translation>
 <translation id="4176463684765177261">Onemogućeno</translation>
 <translation id="4176659219503619100">Kontrolna tabla</translation>
+<translation id="4185315616950253617">Prečica sa tasterima u gornjem redu treba da sadrži taster za pretragu.</translation>
 <translation id="420283545744377356">Isključite čuvar ekrana</translation>
 <translation id="4213104098953699324">USB tastatura</translation>
 <translation id="4227825898293920515">Lozinka ističe za <ph name="TIME" /></translation>
@@ -411,6 +415,7 @@
 <translation id="4258281355379922695">HTTP kašnjenje</translation>
 <translation id="4271957103967917607">Prikaži preko celog ekrana</translation>
 <translation id="4275663329226226506">Mediji</translation>
+<translation id="4278766082079064416">Prečica se koristi za „<ph name="CONFLICT_ACCEL_NAME" />“. Izmenite ili uklonite da biste rešili neusaglašenost.</translation>
 <translation id="4289540628985791613">Pregled</translation>
 <translation id="4289849978083912975">Projekcija slajdova</translation>
 <translation id="4297501883039923494">Zaustavljeno – nepoznata greška</translation>
@@ -491,6 +496,7 @@
 <translation id="4861758251032006121">{ATTEMPTS_LEFT,plural, =1{<ph name="ERROR_MESSAGE" /> Preostaje {0} pokušaj}one{<ph name="ERROR_MESSAGE" /> Preostaje {0} pokušaj}few{<ph name="ERROR_MESSAGE" /> Preostaju {0} pokušaja}other{<ph name="ERROR_MESSAGE" /> Preostaje {0} pokušaja}}</translation>
 <translation id="4873827928179867585">Algoritam potvrde identiteta</translation>
 <translation id="4880328057631981605">Naziv pristupne tačke</translation>
+<translation id="488307179443832524">Prečica se koristi za „<ph name="CONFLICT_ACCEL_NAME" />“. Pritisnite novu prečicu.</translation>
 <translation id="4885705234041587624">MSCHAPv2</translation>
 <translation id="4890353053343094602">Odmah odaberite novu</translation>
 <translation id="4891842000192098784">Stres</translation>
@@ -606,6 +612,7 @@
 <translation id="576835345334454681">Povećajte osvetljenost ekrana</translation>
 <translation id="57838592816432529">Isključi zvuk</translation>
 <translation id="5784136236926853061">Veliko HTTP kašnjenje</translation>
+<translation id="5816802250591013230">Nije dodeljena nijedna prečica</translation>
 <translation id="5826644637650799838">O pozadini</translation>
 <translation id="5832805196449965646">Dodaj osobu</translation>
 <translation id="583281660410589416">Nepoznato</translation>
@@ -767,6 +774,7 @@
 <translation id="7028979494427204405"><ph name="MANAGER" /> upravlja ovim uređajem i ima pristup svim aktivnostima korisnika, uključujući posećene veb-stranice, lozinke i imejlove.</translation>
 <translation id="7040230719604914234">Mobilni operater</translation>
 <translation id="7041549558901442110">Uređaj nije povezan.</translation>
+<translation id="7046522406494308071">Želite da resetujete sve prečice na podrazumevane vrednosti?</translation>
 <translation id="7058278511608979688">Završi i sačuvaj</translation>
 <translation id="7059230779847288458">Puni se. <ph name="TIME_VALUE" /> do kraja punjenja</translation>
 <translation id="7068619307603204412">Pripremite uređaj</translation>
@@ -774,6 +782,7 @@
 <translation id="7086440545492620869"><ph name="VALUE" /> <ph name="DISPLAY_NAME" /></translation>
 <translation id="710028965487274708">Neuspešno – ovlašćenje nije uspelo</translation>
 <translation id="7103252855940681301"><ph name="INDEX" />. uređaj od <ph name="COUNT" /> sa nazivom <ph name="NAME" />.</translation>
+<translation id="7107255225945990211">Odaberite ekskluzivne ilustracije za <ph name="PRODUCT_NAME" /></translation>
 <translation id="7108668606237948702">enter</translation>
 <translation id="7130438335435247835">Naziv pristupne tačke (APN)</translation>
 <translation id="7134436342991564651">{0,plural, =1{Server imena}one{Serveri imena}few{Serveri imena}other{Serveri imena}}</translation>
@@ -795,6 +804,7 @@
 <translation id="7216409898977639127">Mobilni operater</translation>
 <translation id="725133483556299729">Izaberite imejl</translation>
 <translation id="7271040990581020067">Skener se trenutno koristi. Probajte ponovo kasnije.</translation>
+<translation id="7273347807225967898">Prečica nije dostupna. Pritisnite novu prečicu pomoću modifikujućeg tastera (ctrl, alt, shift, tastera za pretragu ili tastera pokretača).</translation>
 <translation id="7274587244503383581"><ph name="PRINTED_PAGES_NUMBER" />/<ph name="TOTAL_PAGES_NUMBER" /></translation>
 <translation id="7281657306185710294">Osetite povetarac</translation>
 <translation id="7287310195820267359">Kolekcije pozadina</translation>
@@ -854,6 +864,7 @@
 <translation id="7718231387947923843">svetlo tastature</translation>
 <translation id="773153675489693198">Broj ciklusa</translation>
 <translation id="7747039790905080783">Tajni ključ</translation>
+<translation id="7752963721013053477">Od svitanja do mraka – ekskluzivno</translation>
 <translation id="7762130827864645708">Lozinka je promenjena. Od sada koristite novu lozinku.</translation>
 <translation id="7763470514545477072">Podudaranje sufiksa domena</translation>
 <translation id="7769672763586021400">ID modela</translation>
@@ -873,6 +884,7 @@
 <translation id="7881066108824108340">DNS</translation>
 <translation id="7882358943899516840">Tip dobavljača</translation>
 <translation id="7882501334836096755">Javni ključ</translation>
+<translation id="7903695460270716054">Odaberite neke od pripremljenih ilustracija i slika</translation>
 <translation id="7915220255123750251">Upravljajte podešavanjima naziva pristupne tačke mreže. Nazivi pristupnih tačaka uspostavljaju vezu između mobilne mreže i interneta.</translation>
 <translation id="7936303884198020182">Nije pronađen nijedan server za imena</translation>
 <translation id="7942349550061667556">Crvena</translation>
@@ -899,6 +911,7 @@
 <translation id="808894953321890993">Promeni lozinku</translation>
 <translation id="8094062939584182041">Dozvolite Google-u da vam pošalje imejl o ovom problemu</translation>
 <translation id="8104083085214006426">Koristite otvorenu i neobezbeđenu mrežu</translation>
+<translation id="8111706652656628199">Prečica nije dostupna. Pritisnite novu prečicu pomoću tastera shift i još 1 modifikujućeg tastera (ctrl, alt, shift, tastera za pretragu ili tastera pokretača).</translation>
 <translation id="811820734797650957">(Android) Mrežni prolaz može da se pinguje</translation>
 <translation id="8129620843620772246"><ph name="TEMPERATURE_C" /> °C</translation>
 <translation id="8132480444149501833">Zatraži brojače saobraćaja</translation>
@@ -977,6 +990,7 @@
 <translation id="8764414543112028321">WireGuard</translation>
 <translation id="87646919272181953">Album Google slika</translation>
 <translation id="877985182522063539">A4</translation>
+<translation id="8789196995628578448">Prečica se koristi za „<ph name="CONFLICT_ACCEL_NAME" />“. Pritisnite novu prečicu. Da biste zamenili prvobitnu prečicu, ponovo pritisnite ovu prečicu.</translation>
 <translation id="879568662008399081">Ova mreža možda ima ulazni portal</translation>
 <translation id="8798099450830957504">Podrazumevano</translation>
 <translation id="8798441408945964110">Naziv dobavljača</translation>

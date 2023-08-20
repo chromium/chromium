@@ -21,6 +21,7 @@
 <translation id="1128128132059598906">EAP-TTLS</translation>
 <translation id="1145018782460575098">બાહ્ય ડિવાઇસનું ફર્મવેયર અપડેટ કરવા માટેની વિન્ડો ખુલ્લી છે. <ph name="NUM_UPDATES" /> અપડેટ ઉપલબ્ધ છે.</translation>
 <translation id="1145516343487477149">સહાય લેખ અને Chromebook વિશેના સામાન્ય પ્રશ્નોના જવાબો શોધો</translation>
+<translation id="1154390310959620237">તમે માત્ર 5 શૉર્ટકટ કસ્ટમાઇઝ કરી શકો છો. નવો શૉર્ટકટ ઉમેરવા માટે અસ્તિત્વમાં હોય એવો કોઈ શૉર્ટકટ ડિલીટ કરો.</translation>
 <translation id="1164939766849482256">ડૉન ટુ ડાર્ક સ્ક્રીન સેવર</translation>
 <translation id="1167755866710282443">કી કસ્ટમાઇઝ કરવા માટે મેનૂ ખોલો. ખસેડવા માટે મેનૂ ખેંચો.</translation>
 <translation id="1175697296044146566"><ph name="MANAGER" /> દ્વારા <ph name="DEVICE_TYPE" />ને મેનેજ કરવામાં આવે છે.</translation>
@@ -216,6 +217,7 @@
 <translation id="253029298928638905">ફરી શરૂ કરી રહ્યાં છીએ…</translation>
 <translation id="2533048460510040082">સૂચિત સહાયક કન્ટેન્ટ</translation>
 <translation id="2536159006530886390">ઇન્ટરનેટથી કનેક્ટ થઈ શકતા નથી.</translation>
+<translation id="2555662516429796509">તમારા કીબોર્ડ પર 1-4 મૉડિફાયર અને અન્ય 1 કી દબાવો</translation>
 <translation id="2570743873672969996"><ph name="TEST_NAME" /> પરીક્ષણ ચલાવી રહ્યાં છીએ…</translation>
 <translation id="2584559707064218956">સેટઅપ કરવા માટે, સેટિંગમાં જાઓ</translation>
 <translation id="2597774443162333062">ડિબગીંગ માટે ફાઇલ Googleને મોકલવામાં આવશે</translation>
@@ -296,6 +298,7 @@
 <translation id="3369013195428705271">શું તમે ખરેખર પ્રિન્ટનો બધો ઇતિહાસ સાફ કરવા માગો છો? તમારી હાલની પ્રિન્ટ જોબ સાફ કરવામાં આવશે નહીં.</translation>
 <translation id="3373141842870501561">અર્થ ફ્લો વૉલપેપર</translation>
 <translation id="337375748120863155">તમારી પસંદગી સંબંધિત માહિતી. નિયંત્રણોને ઍક્સેસ કરવા માટે ડાબી કે જમણી ઍરો કીનો ઉપયોગ કરો.</translation>
+<translation id="3383623117265110236">વિશેષ</translation>
 <translation id="3404249063913988450">સ્ક્રીન સેવર ચાલુ કરો</translation>
 <translation id="3413935475507503304">અપડેટમાં આગળ વધવા માટે આગળ પર ક્લિક કરો.</translation>
 <translation id="3434107140712555581"><ph name="BATTERY_PERCENTAGE" />%</translation>
@@ -401,6 +404,7 @@
 <translation id="4171077696775491955">બ્રાઇટનેસ ઘટાડો</translation>
 <translation id="4176463684765177261">અક્ષમ કરેલું</translation>
 <translation id="4176659219503619100">કન્ટ્રોલ પૅનલ</translation>
+<translation id="4185315616950253617">જે શૉર્ટકટમાં સૌથી ઉપરની પંક્તિવાળી કી શામેલ હોય, તેમાં શોધ કી શામેલ કરવી જરૂરી છે.</translation>
 <translation id="420283545744377356">સ્ક્રીન સેવર બંધ કરો</translation>
 <translation id="4213104098953699324">USB કીબોર્ડ</translation>
 <translation id="4227825898293920515"><ph name="TIME" />માં પાસવર્ડની સમયસીમા સમાપ્ત થાય છે</translation>
@@ -411,6 +415,7 @@
 <translation id="4258281355379922695">HTTPની વિલંબતા</translation>
 <translation id="4271957103967917607">પૂર્ણ સ્ક્રીન જુઓ</translation>
 <translation id="4275663329226226506">મીડિયા</translation>
+<translation id="4278766082079064416">આ શૉર્ટકટનો ઉપયોગ "<ph name="CONFLICT_ACCEL_NAME" />" માટે કરવામાં આવી રહ્યો છે. આ વિરોધાભાસના નિરાકરણ માટે તેમાં ફેરફાર કરો અથવા તેને કાઢી નાખો.</translation>
 <translation id="4289540628985791613">ઓવરવ્યૂ</translation>
 <translation id="4289849978083912975">સ્લાઇડ શો</translation>
 <translation id="4297501883039923494">બંધ - અજાણી ભૂલ</translation>
@@ -491,6 +496,7 @@
 <translation id="4861758251032006121">{ATTEMPTS_LEFT,plural, =1{<ph name="ERROR_MESSAGE" /> {0} પ્રયત્ન બાકી}one{<ph name="ERROR_MESSAGE" /> {0} પ્રયત્ન બાકી}other{<ph name="ERROR_MESSAGE" /> {0} પ્રયત્ન બાકી}}</translation>
 <translation id="4873827928179867585">પ્રમાણીકરણનું ઍલ્ગોરિધમ</translation>
 <translation id="4880328057631981605">ઍક્સેસ પૉઇન્ટનું નામ</translation>
+<translation id="488307179443832524">આ શૉર્ટકટનો ઉપયોગ "<ph name="CONFLICT_ACCEL_NAME" />" માટે કરવામાં આવી રહ્યો છે. કોઈ નવો શૉર્ટકટ દબાવો.</translation>
 <translation id="4885705234041587624">MSCHAPv2</translation>
 <translation id="4890353053343094602">તરત જ નવો પાસવર્ડ પસંદ કરો</translation>
 <translation id="4891842000192098784">તાણ</translation>
@@ -606,6 +612,7 @@
 <translation id="576835345334454681">ડિસ્પ્લેનું બ્રાઇટનેસ વધારવાની કી</translation>
 <translation id="57838592816432529">અવાજ બંધ કરો</translation>
 <translation id="5784136236926853061">HTTPની ઉચ્ચ વિલંબતા</translation>
+<translation id="5816802250591013230">કોઈ શૉર્ટકટ અસાઇન કરવામાં આવ્યો નથી</translation>
 <translation id="5826644637650799838">આર્ટ વિશે</translation>
 <translation id="5832805196449965646">વ્યક્તિ ઉમેરો</translation>
 <translation id="583281660410589416">અજ્ઞાત</translation>
@@ -767,6 +774,7 @@
 <translation id="7028979494427204405"><ph name="MANAGER" /> આ ડિવાઇસને મેનેજ કરે છે અને મુલાકાત લીધેલા વેબપેજ, પાસવર્ડ અને ઇમેઇલ સહિત, બધી વપરાશકર્તા પ્રવૃત્તિઓનો ઍક્સેસ ધરાવે છે.</translation>
 <translation id="7040230719604914234">ઑપરેટર</translation>
 <translation id="7041549558901442110">ડિવાઇસ કનેક્ટ થયું નથી.</translation>
+<translation id="7046522406494308071">બધા શોર્ટકર્ટને ડિફૉલ્ટ તરીકે રીસેટ કરીએ?</translation>
 <translation id="7058278511608979688">બંધ કરો અને સાચવો</translation>
 <translation id="7059230779847288458">ચાર્જ થઈ રહી છે, પૂર્ણ ચાર્જ થવામાં <ph name="TIME_VALUE" /> બાકી</translation>
 <translation id="7068619307603204412">તમારું ડિવાઇસ તૈયાર કરો</translation>
@@ -774,6 +782,7 @@
 <translation id="7086440545492620869"><ph name="VALUE" /> <ph name="DISPLAY_NAME" /></translation>
 <translation id="710028965487274708">નિષ્ફળ રહ્યું - અધિકરણ નિષ્ફળ</translation>
 <translation id="7103252855940681301"><ph name="NAME" /> નામનું ડિવાઇસ (<ph name="INDEX" />/<ph name="COUNT" />).</translation>
+<translation id="7107255225945990211"><ph name="PRODUCT_NAME" /> માટે વિશેષ આર્ટવર્ક પસંદ કરો</translation>
 <translation id="7108668606237948702">Enter</translation>
 <translation id="7130438335435247835">ઍક્સેસ પૉઇન્ટનું નામ (APN)</translation>
 <translation id="7134436342991564651">{0,plural, =1{સર્વરનું નામ}one{સર્વરનું નામ}other{સર્વરનું નામ}}</translation>
@@ -795,6 +804,7 @@
 <translation id="7216409898977639127">સેલ્યુલર પ્રદાતા</translation>
 <translation id="725133483556299729">ઇમેઇલ પસંદ કરો</translation>
 <translation id="7271040990581020067">સ્કૅનર હાલમાં ઉપયોગમાં છે. થોડા સમય પછી ફરી પ્રયાસ કરો.</translation>
+<translation id="7273347807225967898">શૉર્ટકટ ઉપલબ્ધ નથી. કોઈ મૉડિફાયર કી (ctrl, alt, shift, શોધ કે લૉન્ચર)નો ઉપયોગ કરીને નવો શૉર્ટકટ દબાવો.</translation>
 <translation id="7274587244503383581"><ph name="PRINTED_PAGES_NUMBER" />/<ph name="TOTAL_PAGES_NUMBER" /></translation>
 <translation id="7281657306185710294">પવનની લહેર અનુભવો</translation>
 <translation id="7287310195820267359">વૉલપેપરના સંગ્રહો</translation>
@@ -854,6 +864,7 @@
 <translation id="7718231387947923843">કીબોર્ડની લાઇટ</translation>
 <translation id="773153675489693198">ચક્રની સંખ્યા</translation>
 <translation id="7747039790905080783">પહેલેથી-શેર કરેલી કી</translation>
+<translation id="7752963721013053477">ડૉન ટુ ડાર્ક - વિશેષ</translation>
 <translation id="7762130827864645708">પાસવર્ડ બદલવાનું સફળ રહ્યું. કૃપા કરીને હવેથી નવા પાસવર્ડનો ઉપયોગ કરો.</translation>
 <translation id="7763470514545477072">ડોમેન સફિક્સનો મેળ</translation>
 <translation id="7769672763586021400">મોડલ ID</translation>
@@ -873,6 +884,7 @@
 <translation id="7881066108824108340">DNS</translation>
 <translation id="7882358943899516840">પ્રદાતાનો પ્રકાર</translation>
 <translation id="7882501334836096755">જાહેર કી</translation>
+<translation id="7903695460270716054">ક્યુરેટ કરેલા આર્ટવર્ક અને છબીઓ પસંદ કરો</translation>
 <translation id="7915220255123750251">નેટવર્ક APN સેટિંગ મેનેજ કરો. APN સેલ્યુલર નેટવર્ક અને ઇન્ટરનેટ વચ્ચે કનેક્શન સ્થાપિત કરે છે.</translation>
 <translation id="7936303884198020182">IP કન્ફિગ્યુરેશનમાં કોઈ નામ સર્વર મળ્યા નથી</translation>
 <translation id="7942349550061667556">લાલ</translation>
@@ -899,6 +911,7 @@
 <translation id="808894953321890993">પાસવર્ડ બદલો</translation>
 <translation id="8094062939584182041">Googleને આ સમસ્યા વિશે તમને ઇમેઇલ કરવાની મંજૂરી આપો</translation>
 <translation id="8104083085214006426">તમે ઓપન અને અસુરક્ષિત નેટવર્કનો ઉપયોગ કરી રહ્યાં છો</translation>
+<translation id="8111706652656628199">શૉર્ટકટ ઉપલબ્ધ નથી. shift અને વધુ 1 મૉડિફાયર કી (ctrl, alt, શોધ કે લૉન્ચર)નો ઉપયોગ કરીને નવો શૉર્ટકટ દબાવો.</translation>
 <translation id="811820734797650957">(Android) ગેટવેને પિંગ કરી શકાય છે</translation>
 <translation id="8129620843620772246"><ph name="TEMPERATURE_C" />° C</translation>
 <translation id="8132480444149501833">ટ્રાફિક કાઉન્ટરની વિનંતી કરો</translation>
@@ -977,6 +990,7 @@
 <translation id="8764414543112028321">WireGuard</translation>
 <translation id="87646919272181953">Google Photos આલ્બમ</translation>
 <translation id="877985182522063539">A4</translation>
+<translation id="8789196995628578448">આ શૉર્ટકટનો ઉપયોગ "<ph name="CONFLICT_ACCEL_NAME" />" માટે કરવામાં આવી રહ્યો છે. કોઈ નવો શૉર્ટકટ દબાવો. ઑરિજિનલ શૉર્ટકટને બદલવા માટે, આ શૉર્ટકટને ફરી દબાવો.</translation>
 <translation id="879568662008399081">આ નેટવર્કમાં કૅપ્ટિવ પોર્ટલ હોઈ શકે છે</translation>
 <translation id="8798099450830957504">ડિફૉલ્ટ</translation>
 <translation id="8798441408945964110">પ્રદાતાનું નામ</translation>
