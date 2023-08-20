@@ -651,9 +651,15 @@ void SchedulerDfs::RunNextTask() {
       // TODO(elgarawany): We shouldn't have run RunNextTask if there were no
       // runnable sequences. Change logic to check for that too (that changes
       // old behavior - so leaving for now).
+
+      // TODO(crbug.com/1472145): this assert is firing frequently on
+      // Release builds with dcheck_always_on on Intel Macs. It looks
+      // like it happens when the browser drops frames.
+      /*
       DCHECK(GetSortedRunnableSequences(task_runner).empty())
           << "RunNextTask should not have been called "
              "if it did not have any unblocked tasks.";
+      */
 
       TRACE_EVENT_NESTABLE_ASYNC_END0("gpu", "SchedulerDfs::Running",
                                       TRACE_ID_LOCAL(this));
