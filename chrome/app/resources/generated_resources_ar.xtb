@@ -1889,6 +1889,7 @@
 <translation id="2480868415629598489">تعديل البيانات التي يتم نسخها ولصقها</translation>
 <translation id="2482878487686419369">الإشعارات</translation>
 <translation id="2482895651873876648">تم نقل علامة التبويب إلى المجموعة <ph name="GROUP_NAME" /> والتي تحتوي على <ph name="GROUP_CONTENTS" />.</translation>
+<translation id="2483627560139625913">‏ضبط محرك البحث في إعدادات متصفّح Chrome</translation>
 <translation id="2484743711056182585">إزالة إذن الوصول</translation>
 <translation id="2484909293434545162">سيظهر هنا أي موقع إلكتروني يستخدم ملفات تعريف الارتباط.</translation>
 <translation id="2484959914739448251">‏لمحو بيانات التصفُّح من جميع أجهزتك التي تمت مزامنتها ومن حسابك على Google، يُرجى <ph name="BEGIN_LINK" />إدخال عبارة المرور<ph name="END_LINK" />.</translation>
@@ -2044,6 +2045,7 @@
 <translation id="2612676031748830579">رقم البطاقة</translation>
 <translation id="2613210758071148851">عدم السماح لأي إضافات على الموقع الإلكتروني <ph name="RESTRICTED_SITE" /></translation>
 <translation id="2613535083491958306">سيتمكّن <ph name="ORIGIN" /> من تعديل <ph name="FILENAME" />.</translation>
+<translation id="2615159404909536465">{FILE_COUNT,plural, =1{فتح وتعديل ملف <ph name="FILE1" /> في هذه الإضافة}zero{فتح وتعديل الملفات <ph name="FILE1" />، … في هذه الإضافة}two{فتح وتعديل الملفَين <ph name="FILE1" />، … في هذه الإضافة}few{فتح وتعديل الملفات <ph name="FILE1" />، … في هذه الإضافة}many{فتح وتعديل الملفات <ph name="FILE1" />، … في هذه الإضافة}other{فتح وتعديل الملفات <ph name="FILE1" />، … في هذه الإضافة}}</translation>
 <translation id="2616366145935564096">قراءة بياناتك وتغييرها في <ph name="WEBSITE_1" /></translation>
 <translation id="2618797463720777311">إعداد ميزة "المشاركة عن قرب"</translation>
 <translation id="261953424982546039">‏متصفِّح Chrome والميزات الاختبارية...</translation>
@@ -4417,6 +4419,7 @@
 <translation id="4585793705637313973">تعديل الصفحة</translation>
 <translation id="4586275095964870617">تعذَّر فتح <ph name="URL" /> في متصفِّح بديل. يُرجى التواصل مع مشرف النظام.</translation>
 <translation id="4587589328781138893">المواقع</translation>
+<translation id="4588749726511456218">تسريع الانتقال للأعلى أو للأسفل. <ph name="LINK_BEGIN" />مزيد من المعلومات<ph name="LINK_END" /></translation>
 <translation id="4589713469967853491">تمّت كتابة السجلّات في دليل "عمليات التنزيل" بنجاح.</translation>
 <translation id="459204634473266369">ما مِن أجهزة محفوظة في الحساب <ph name="PRIMARY_EMAIL" /></translation>
 <translation id="4592525994536856567">التصفُّح والبحث أسرع من ذي قبل</translation>
@@ -6235,6 +6238,7 @@
 <translation id="6130692320435119637">‏إضافة شبكة Wi-Fi</translation>
 <translation id="6130887916931372608">مفتاح لوحة المفاتيح</translation>
 <translation id="6132714462430777655">هل تريد تخطي تسجيل الجهاز ضمن المؤسسة التعليمية؟</translation>
+<translation id="6134428719487602109">‏إزالة جميع حسابات المستخدمِين وإعادة ضبط جهاز Chromebook ليصبح كما لو كان جديدًا</translation>
 <translation id="6135823405800500595">‏يجب أن يكون هاتفك قريبًا وغير مُقفَل وأن يكون البلوتوث وشبكة Wi-Fi مفعَّلَين.</translation>
 <translation id="6135826623269483856">المواقع الإلكترونية التي لا يُسمح لها بإدارة النوافذ على جميع شاشات أجهزتك</translation>
 <translation id="6136114942382973861">إغلاق شريط عمليات التنزيل</translation>
